@@ -2063,7 +2063,6 @@
 				"dm": {
 					"char": "Trò chuyện riêng với nhân vật",
 					"failed": "Không thể mở tin nhắn riêng tư: ${error}",
-					"fed": "Tin nhắn riêng liên bang",
 					"user": "Gửi tin nhắn riêng tư"
 				}
 			},

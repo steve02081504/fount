@@ -2063,7 +2063,6 @@
 				"dm": {
 					"char": "Chatea en privado con un personaje.",
 					"failed": "No se puede abrir el mensaje privado: ${error}",
-					"fed": "mensaje privado federal",
 					"user": "enviar mensaje privado"
 				}
 			},

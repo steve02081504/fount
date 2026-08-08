@@ -2063,7 +2063,6 @@
 				"dm": {
 					"char": "Privé chatten met een personage",
 					"failed": "Kan privébericht niet openen: ${error}",
-					"fed": "Federaal privébericht",
 					"user": "Stuur een privébericht"
 				}
 			},

@@ -2063,7 +2063,6 @@
 				"dm": {
 					"char": "Chatte privat mit einem Charakter",
 					"failed": "Private Nachricht kann nicht geöffnet werden: ${error}",
-					"fed": "Private Nachricht des Bundes",
 					"user": "Private Nachricht senden"
 				}
 			},

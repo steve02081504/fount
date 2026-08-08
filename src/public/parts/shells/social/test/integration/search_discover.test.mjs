@@ -2,6 +2,8 @@
  * 搜索 / 探索 / 热门话题。
  */
 /* global Deno */
+import { mkdir, writeFile } from 'node:fs/promises'
+
 import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createTestSession } from '../harness.mjs'
@@ -12,6 +14,8 @@ const append = await import('../../src/timeline/append.mjs')
 const search = await import('../../src/search.mjs')
 const discoverLocal = await import('../../src/discover/local.mjs')
 const trending = await import('../../src/trending/hashtags.mjs')
+const paths = await import('../../src/paths.mjs')
+const searchIndex = await import('../../src/searchIndex.mjs')
 
 Deno.test('searchPosts finds operator post by hashtag', async () => {
 	const { username, operator } = await getSession()
@@ -77,4 +81,47 @@ Deno.test('buildTrendingHashtags skips hashtags inside code fences', async () =>
 	const { tags } = await trending.buildTrendingHashtags(username, { limit: 32 })
 	assert(tags.some(row => row.tag === 'trendoutsidecode' && row.count >= 1))
 	assert(!tags.some(row => row.tag === 'feedlist' || row.tag === 'plug'))
+})
+
+Deno.test('trending display prunes phantoms and keeps live tags', async () => {
+	const { username, operator } = await getSession()
+	await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: {
+			text: 'keep #TrendKeepReal\n```\n#phantomfeedlist\n#phantomplug\n```',
+			visibility: 'public',
+		},
+	}, { fanout: false })
+
+	const indexDir = paths.socialSearchIndexPath(username)
+	await mkdir(indexDir, { recursive: true })
+	await writeFile(paths.socialTrendingIndexPath(username), `${JSON.stringify({
+		phantomfeedlist: 9,
+		phantomplug: 7,
+		trendkeepreal: 1,
+	})}\n`, 'utf8')
+
+	const { tags } = await trending.buildTrendingHashtags(username, { limit: 12 })
+	assert(tags.some(row => row.tag === 'trendkeepreal' && row.count >= 1))
+	assert(!tags.some(row => row.tag === 'phantomfeedlist' || row.tag === 'phantomplug'))
+})
+
+Deno.test('deleting a post drops its hashtags from trending', async () => {
+	const { username, operator } = await getSession()
+	const tag = `trenddelete${Date.now().toString(36)}`
+	const row = await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: { text: `soon gone #${tag}`, visibility: 'public' },
+	}, { fanout: false })
+
+	let { tags } = await searchIndex.readTrendingHashtagCounts(username, 32)
+	assert(tags.some(entry => entry.tag === tag && entry.count >= 1))
+
+	await append.commitTimelineEvent(username, operator, {
+		type: 'post_delete',
+		content: { targetPostId: row.id },
+	}, { fanout: false })
+
+	;({ tags } = await searchIndex.readTrendingHashtagCounts(username, 32))
+	assert(!tags.some(entry => entry.tag === tag))
 })

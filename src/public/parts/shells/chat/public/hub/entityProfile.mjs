@@ -161,18 +161,39 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 	const dmButton = root.querySelector('[data-profile-popup-dm]')
 	if (dmButton instanceof HTMLButtonElement) {
 		const isSelf = isViewerEntityHash(entityHash)
-		const canDm = !isSelf && (entity.charname || isHex64(entity.pubKeyHex))
+		const pubKeyHex = String(entity.pubKeyHex || profile?.activePubKeyHex || '').trim().toLowerCase()
+		// Social「私信」只带 entityHash；有实体即可露出按钮，点下再解析活跃公钥
+		const canDm = !isSelf && (entity.charname || isHex64(pubKeyHex) || isEntityHash128(entityHash))
 		dmButton.hidden = !canDm
 		dmButton.dataset.i18n = entity.charname
 			? 'chat.hub.profilePopup.dm.char'
-			: 'chat.hub.profilePopup.dm.fed'
+			: 'chat.hub.profilePopup.dm.user'
 		/** 点击发起私聊。 */
 		dmButton.onclick = () => {
 			options.onBeforeDm?.()
-			const dmEntity = entity.charname
-				? { type: 'char', id: entity.charname, displayName: entity.displayName, entityHash }
-				: { type: 'user', displayName: entity.displayName, pubKeyHex: entity.pubKeyHex, entityHash }
-			void dispatchFriendChat(dmEntity).catch(error => {
+			void (async () => {
+				if (entity.charname) {
+					await dispatchFriendChat({
+						type: 'char',
+						id: entity.charname,
+						displayName: entity.displayName,
+						entityHash,
+					})
+					return
+				}
+				let peerPub = pubKeyHex
+				if (!isHex64(peerPub) && isEntityHash128(entityHash)) {
+					const fresh = await getEntityProfile(entityHash, store.context.currentGroupId, { forceRemote: true })
+						.catch(() => null)
+					peerPub = String(fresh?.profile?.activePubKeyHex || '').trim().toLowerCase()
+				}
+				await dispatchFriendChat({
+					type: 'user',
+					displayName: entity.displayName || profile?.name,
+					pubKeyHex: isHex64(peerPub) ? peerPub : null,
+					entityHash,
+				})
+			})().catch(error => {
 				showToastI18n('error', 'chat.hub.profilePopup.dm.failed', { error: error.message })
 			})
 		}

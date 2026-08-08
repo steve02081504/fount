@@ -2,7 +2,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
-import { indexDocument, getShardMeta, queryIndex, removeDocument } from '../../../../../scripts/search/invertedIndex.mjs'
+import { indexDocument, getShardMeta, queryIndex, removeDocument, loadActiveDocs } from '../../../../../scripts/search/invertedIndex.mjs'
 
 import { socialPostKey } from './federation/post_key.mjs'
 import { extractHashtagsFromText } from './lib/hashtags.mjs'
@@ -142,6 +142,39 @@ async function bumpTrendingTags(username, tags, delta) {
 }
 
 /**
+ * 按新旧正文差量调整 trending（空话题自动从计数表删除）。
+ * @param {string} username replica
+ * @param {string} [oldText] 旧正文
+ * @param {string} [newText] 新正文
+ * @returns {Promise<void>}
+ */
+async function reconcileTrendingTags(username, oldText, newText) {
+	const before = new Set(oldText ? extractHashtagsFromText(oldText) : [])
+	const after = new Set(newText ? extractHashtagsFromText(newText) : [])
+	const removed = [...before].filter(tag => !after.has(tag))
+	const added = [...after].filter(tag => !before.has(tag))
+	if (removed.length) await bumpTrendingTags(username, removed, -1)
+	if (added.length) await bumpTrendingTags(username, added, 1)
+}
+
+/**
+ * @param {string} ownerEntityHash 作者
+ * @param {string} postId 帖 ID
+ * @param {object} [content] 帖正文
+ * @returns {object} 索引 fields
+ */
+function postIndexFields(ownerEntityHash, postId, content) {
+	const replyTo = content?.replyTo
+	return {
+		entityHash: ownerEntityHash,
+		postId,
+		...replyTo?.entityHash && replyTo?.postId
+			? { replyToEntityHash: replyTo.entityHash, replyToPostId: replyTo.postId }
+			: {},
+	}
+}
+
+/**
  * @param {string} username replica
  * @param {string} ownerEntityHash 时间线 owner
  * @returns {Promise<void>}
@@ -160,7 +193,7 @@ async function ensureTimelineIndexed(username, ownerEntityHash) {
 			id: post.id,
 			text: content.text,
 			ts: Number(post.hlc?.wall || Date.now()),
-			fields: { entityHash: ownerEntityHash, postId: post.id },
+			fields: postIndexFields(ownerEntityHash, post.id, content),
 		})
 		const replyTo = content.replyTo
 		if (replyTo?.entityHash && replyTo?.postId)
@@ -236,7 +269,24 @@ export async function indexTimelineEventForSearch(username, entityHash, row) {
 
 	if (row.type === 'post_delete') {
 		const postId = String(row.content?.targetPostId || row.content?.postId || '').trim()
-		if (postId) await removeDocument(indexDir, owner, postId)
+		if (!postId) return
+		const docs = await loadActiveDocs(indexDir, owner)
+		const doc = docs.get(postId)
+		if (doc) {
+			await unindexDeletedPost(username, owner, {
+				id: postId,
+				content: {
+					text: doc.text,
+					replyTo: doc.fields?.replyToEntityHash && doc.fields?.replyToPostId
+						? {
+							entityHash: doc.fields.replyToEntityHash,
+							postId: doc.fields.replyToPostId,
+						}
+						: undefined,
+				},
+			})
+		}
+		await removeDocument(indexDir, owner, postId)
 		return
 	}
 
@@ -245,12 +295,15 @@ export async function indexTimelineEventForSearch(username, entityHash, row) {
 		if (!postId) return
 		const content = await maybeDecryptPostContent(username, owner, row.content)
 		if (!content?.text) return
+		const docs = await loadActiveDocs(indexDir, owner)
+		const oldText = docs.get(postId)?.text || ''
 		await indexDocument(indexDir, owner, {
 			id: postId,
 			text: content.text,
 			ts: Number(row.hlc?.wall || row.timestamp || Date.now()),
-			fields: { entityHash: owner, postId },
+			fields: postIndexFields(owner, postId, content),
 		})
+		await reconcileTrendingTags(username, oldText, content.text)
 		return
 	}
 
@@ -265,7 +318,7 @@ export async function indexTimelineEventForSearch(username, entityHash, row) {
 		id: postId,
 		text: content.text,
 		ts: Number(row.hlc?.wall || row.timestamp || Date.now()),
-		fields: { entityHash: owner, postId },
+		fields: postIndexFields(owner, postId, content),
 	})
 
 	const tags = extractHashtagsFromText(content.text)
@@ -321,15 +374,48 @@ export async function queryReplyIndex(username, targetEntityHash, targetPostId) 
 /**
  * @param {string} username replica
  * @param {number} limit 条数
- * @returns {Promise<{ tags: { tag: string, count: number }[] }>} 热门话题计数
+ * @returns {Promise<{ tags: { tag: string, count: number }[] }>} 热门话题（显示时核活并补满）
  */
 export async function readTrendingHashtagCounts(username, limit = 12) {
-	const counts = await loadTrendingCounts(username)
-	const tags = Object.entries(counts)
-		.sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
-		.slice(0, limit)
-		.map(([tag, count]) => ({ tag, count }))
-	return { tags }
+	return withAsyncMutex(`social-trending:${username}`, async () => {
+		const raw = await readTrendingFile(username)
+		if (raw == null) return { tags: [] }
+		let parsed = parseTrendingCounts(raw)
+		if (!parsed) {
+			parsed = await rebuildTrendingCounts(username)
+			await writeTrendingCounts(username, parsed)
+		}
+		const ranked = Object.entries(parsed)
+			.sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+		if (!ranked.length) return { tags: [] }
+
+		// 显示路径：一遍扫帖，去掉当前提取规则下已无帖的登记；再按原排名取满 limit。
+		const pending = new Set(ranked.map(([tag]) => tag))
+		for (const owner of await listLocalTimelineDirs(username)) {
+			if (!pending.size) break
+			const view = await getTimelineMaterialized(username, owner)
+			for (const post of view.posts || []) {
+				if (!pending.size) break
+				const content = await maybeDecryptPostContent(username, owner, post.content)
+				if (!content?.text) continue
+				for (const tag of extractHashtagsFromText(content.text))
+					pending.delete(tag)
+			}
+		}
+		if (pending.size) {
+			const next = { ...parsed }
+			for (const tag of pending) delete next[tag]
+			await writeTrendingCounts(username, next)
+			parsed = next
+		}
+
+		return {
+			tags: ranked
+				.filter(([tag]) => !pending.has(tag))
+				.slice(0, limit)
+				.map(([tag, count]) => ({ tag, count })),
+		}
+	})
 }
 
 /**

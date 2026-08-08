@@ -2063,7 +2063,6 @@
 				"dm": {
 					"char": "Discutez en privé avec un personnage",
 					"failed": "Impossible d'ouvrir le message privé : ${error}",
-					"fed": "Message privé fédéral",
 					"user": "Envoyer un message privé"
 				}
 			},

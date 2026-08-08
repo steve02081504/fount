@@ -2063,7 +2063,6 @@
 				"dm": {
 					"char": "Spjallaðu einslega við persónu",
 					"failed": "Ekki tókst að opna einkaskilaboð: ${error}",
-					"fed": "AlStaðas einkaskilaboð",
 					"user": "Sendið einkaskilaboð"
 				}
 			},

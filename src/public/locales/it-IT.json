@@ -2063,7 +2063,6 @@
 				"dm": {
 					"char": "Chatta in privato con un personaggio",
 					"failed": "Impossibile aprire DM: ${error}",
-					"fed": "DM federato",
 					"user": "Invia messaggio"
 				}
 			},

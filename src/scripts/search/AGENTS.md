@@ -21,4 +21,4 @@ alwaysApply: false
 
 Chat cold archive: lazy `ensureArchiveIndexed()` on first query touching uncovered months.
 
-Social extras: `replies.json` reverse index + `trending.json` hashtag counts.
+Social extras: `replies.json` reverse index + `trending.json` hashtag counts. Trending **display** (`readTrendingHashtagCounts`) drops empty tags then fills to `limit` from remaining live ranked entries; `buildTrendingHashtags` live-scans if still short.

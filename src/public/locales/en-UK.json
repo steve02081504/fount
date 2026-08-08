@@ -2058,7 +2058,6 @@
 				"dm": {
 					"char": "Chat privately with a character",
 					"failed": "Unable to open DM: ${error}",
-					"fed": "Federated DM",
 					"user": "Send DM"
 				}
 			},

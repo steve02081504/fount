@@ -36,6 +36,39 @@ const THEME_COLOR_RE = /^#[\da-f]{6}$/i
 /** entityHash → 负缓存截止时间（仅远端拉取失败） */
 const remoteProfileNegativeCache = new Map()
 const REMOTE_PROFILE_NEGATIVE_TTL_MS = 60_000
+/** 远端 EVFS profile 拉取上限；超时回落本地默认/磁盘资料，避免资料卡 HTTP 挂死 */
+export const REMOTE_PROFILE_FETCH_TIMEOUT_MS = 2500
+
+/**
+ * @template T
+ * @param {Promise<T>} promise 目标
+ * @param {number} timeoutMs 超时毫秒
+ * @param {string} label 超时错误文案
+ * @returns {Promise<T>} 成功值；超时抛错
+ */
+function raceTimeout(promise, timeoutMs, label) {
+	if (!(timeoutMs > 0)) return promise
+	let timer
+	return Promise.race([
+		promise.finally(() => clearTimeout(timer)),
+		new Promise((_, reject) => {
+			timer = setTimeout(() => reject(new Error(label)), timeoutMs)
+		}),
+	])
+}
+
+/**
+ * @param {string} replicaUsername replica
+ * @param {string} entityHash 128 hex
+ * @param {string} logicalPath EVFS 逻辑路径
+ * @param {(username: string, entityHash: string, path: string) => Promise<Uint8Array | Buffer | null>} [readPlain] 可注入（测试）
+ * @returns {Promise<Uint8Array | Buffer | null>} 明文或 null
+ */
+async function readRemoteProfilePlain(replicaUsername, entityHash, logicalPath, readPlain) {
+	if (readPlain) return readPlain(replicaUsername, entityHash, logicalPath)
+	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+	return readPublicFile(replicaUsername, entityHash, logicalPath)
+}
 
 /**
  * 规范化实体 handle；空串表示未设置。非法输入抛错（调用方应校验）。
@@ -68,7 +101,7 @@ function getDefaultProfile(entityHash, parsed) {
 		activePubKeyHex: '',
 		keyGeneration: 0,
 		localized: {},
-		status: 'online',
+		status: 'offline',
 		customStatus: '',
 		lastSeenAt: 0,
 		stats: {
@@ -189,7 +222,7 @@ async function publishStaticProfile(replicaUsername, entityHash, stored) {
  * @returns {string} 有效状态
  */
 export function computeEffectiveStatus(profile, viewerEntityHash, options = {}) {
-	const stored = String(profile?.status || 'online')
+	const stored = String(profile?.status || 'offline')
 	const isSelf = options.isSelf
 		?? (viewerEntityHash && profile?.entityHash === viewerEntityHash)
 	const lastSeen = profile?.lastSeenAt || 0
@@ -205,22 +238,34 @@ export function computeEffectiveStatus(profile, viewerEntityHash, options = {}) 
 }
 
 /**
- * 远端实体：经 EVFS 拉签名 profile 落盘（显式路径用；带负缓存）。
+ * 远端实体：经 EVFS 拉签名 profile 落盘（显式路径用；带负缓存与超时）。
  * @param {string} replicaUsername replica
  * @param {string} entityHash 128 hex
+ * @param {{ timeoutMs?: number, readPlain?: (username: string, entityHash: string, path: string) => Promise<Uint8Array | Buffer | null> }} [options] 超时与可读注入
  * @returns {Promise<object | null>} 落盘后的 stored profile，或 null
  */
-export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash) {
+export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash, options = {}) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed || isWritableLocalEntity(parsed.entityHash)) return null
 	const now = Date.now()
 	const negUntil = remoteProfileNegativeCache.get(parsed.entityHash) || 0
 	if (negUntil > now) return null
 
-	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
-	const plain = await readPublicFile(replicaUsername, parsed.entityHash, PUBLIC_PROFILE_PATH)
+	const timeoutMs = options.timeoutMs ?? REMOTE_PROFILE_FETCH_TIMEOUT_MS
+	let plain
+	try {
+		plain = await raceTimeout(
+			readRemoteProfilePlain(replicaUsername, parsed.entityHash, PUBLIC_PROFILE_PATH, options.readPlain),
+			timeoutMs,
+			'remote profile fetch timeout',
+		)
+	}
+	catch {
+		remoteProfileNegativeCache.set(parsed.entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		return null
+	}
 	if (!plain) {
-		remoteProfileNegativeCache.set(parsed.entityHash, now + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		remoteProfileNegativeCache.set(parsed.entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
 		return null
 	}
 	let payload
@@ -228,11 +273,11 @@ export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash) {
 		payload = JSON.parse(plain.toString('utf8'))
 	}
 	catch {
-		remoteProfileNegativeCache.set(parsed.entityHash, now + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		remoteProfileNegativeCache.set(parsed.entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
 		return null
 	}
 	if (String(payload?.entityHash || '').toLowerCase() !== parsed.entityHash) {
-		remoteProfileNegativeCache.set(parsed.entityHash, now + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		remoteProfileNegativeCache.set(parsed.entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
 		return null
 	}
 	const defaultProfile = getDefaultProfile(parsed.entityHash, parsed)
@@ -254,7 +299,7 @@ function viewerSfw(replicaUsername) {
 /**
  * @param {string} entityHash 128 位 entityHash
  * @param {string | null} [replicaUsername] 展示默认字段用
- * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[], infoDefaults?: object, fetchRemote?: boolean }} [options] 选项；`fetchRemote` 仅显式查看/搜索路径
+ * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[], infoDefaults?: object, fetchRemote?: boolean, forceRemote?: boolean, remoteTimeoutMs?: number, readPlain?: (username: string, entityHash: string, path: string) => Promise<Uint8Array | Buffer | null> }} [options] 选项；`fetchRemote` 仅显式查看/搜索路径；`forceRemote` 跳过负缓存再拉
  * @returns {Promise<object>} 资料对象
  */
 export async function getProfile(entityHash, replicaUsername = null, options = {}) {
@@ -275,8 +320,12 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 	}
 
 	if (!isWritableLocalEntity(parsed.entityHash) && options.fetchRemote && replicaUsername) {
-		remoteProfileNegativeCache.delete(parsed.entityHash)
-		const remote = await fetchAndCacheRemoteProfile(replicaUsername, parsed.entityHash)
+		if (options.forceRemote)
+			remoteProfileNegativeCache.delete(parsed.entityHash)
+		const remote = await fetchAndCacheRemoteProfile(replicaUsername, parsed.entityHash, {
+			timeoutMs: options.remoteTimeoutMs,
+			readPlain: options.readPlain,
+		})
 		if (remote) stored = remote
 	}
 
