@@ -17,7 +17,7 @@ import {
 	ICON_W, ICON_H, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
 	BODY, maxBodyD, maxPillarH,
 } from './icon.mjs'
-import { terminalSize } from './player.mjs'
+import { terminalSize } from './terminal.mjs'
 import { generateTerrain, resizeTerrain, refreshTerrainGeometry } from './terrain.mjs'
 
 /** @typedef {ReturnType<typeof createAnimState>} AnimState */

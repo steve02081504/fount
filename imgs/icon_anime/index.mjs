@@ -33,8 +33,10 @@ export {
 export {
 	signal, abort, start, intro, dismiss, farewell, sleep,
 } from './session.mjs'
+/** 终端尺寸。 */
+export { terminalSize } from './terminal.mjs'
 /** 底层播放器工具。 */
-export { fps, terminalSize, consumeStdin } from './player.mjs'
+export { fps, consumeStdin } from './player.mjs'
 
 if (import.meta.main) {
 	await icon.start()

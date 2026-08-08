@@ -44,8 +44,8 @@ Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then qui
 | `icon.mjs` | Packed silhouette, pillars, body growth order |
 | `scene.mjs` | Anim state, materials, rain edges, pool leak, enter/hold/exit, resize |
 | `compose.mjs` | Frame paint + ANSI; lava palette; pointer torch/ripples |
-| `player.mjs` | TUI singleton: `canUseTui`, play/loop, mouse, alt-screen, console block |
-| `terminal.mjs` | `canUseTui` (TTY + ANSI); consumed only by `player.mjs` |
+| `player.mjs` | TUI singleton: play/loop, mouse, alt-screen, console block |
+| `terminal.mjs` | `canUseTui` (TTY + ANSI), `terminalSize` / `watchTerminalSize` |
 | `gesture/` | `pointer` / `light` (torch+ripple) / `wind` (stroke+vortex) |
 | `terrain.mjs` | Pedestal-anchored surface + caves + test vessel templates |
 | `hash.mjs` | `hash01` + fBm + ortho deltas |
