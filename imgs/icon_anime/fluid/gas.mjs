@@ -117,6 +117,7 @@ const takeRegion = (pool, id, openToAtm) => {
 export const labelAirRegions = (world) => {
 	const { worldW: W, worldH: H } = world
 	const n = W * H
+	const depth = fillCellDepths(world)
 	const oldId = world.regionId
 	const regionId = clearLabels(world, 'prevRegionId', n)
 
@@ -178,7 +179,7 @@ export const labelAirRegions = (world) => {
 		 * @param {{ sumDepth: number }} stats 分量统计
 		 */
 		onCell: (w, cell, x, y, id, stats) => {
-			stats.sumDepth += gravityDepth(w, x, y)
+			stats.sumDepth += depth[cell]
 		},
 	})
 
@@ -245,6 +246,8 @@ export const labelAirRegions = (world) => {
 	world.regions = nextRegions
 	world.airDirty = false
 	world.gasGeomDirty = true
+	world.scratch.airEpoch = (/** @type {number} */ (world.scratch.airEpoch) | 0) + 1
+	world.scratch.thermoPEpoch = -1
 }
 
 /**
@@ -280,6 +283,65 @@ const pressureAlongUp = (world, x, y, depth) => {
 }
 
 /**
+ * 热力学气压（无 Bernoulli）：与 `pressureAt` 同式，写入 `thermoP` scratch。
+ * 气区标注或重力深度基变化后惰性重建；供液体/熔岩热路径查表。
+ * @param {FluidWorld} world 流体世界
+ * @returns {Float32Array} 长度 WH 的热力学压场
+ */
+export const ensureThermoPressure = (world) => {
+	const { worldW: W, worldH: H, regionId, regions } = world
+	const n = W * H
+	const depth = fillCellDepths(world)
+	const airEpoch = /** @type {number} */ (world.scratch.airEpoch) | 0
+	const thermoP = scratch(world, 'thermoP', n, Float32Array)
+	if (world.scratch.thermoPEpoch === airEpoch) return thermoP
+
+	const up = strongestUp(world)
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const cell = y * W + x
+			const rid = regionId[cell]
+			if (rid) {
+				const region = regions[rid]
+				const d = depth[cell]
+				thermoP[cell] = region.openToAtm
+					? openHydroPressure(d)
+					: sealedHydroPressure(region, d, region.yMean)
+				continue
+			}
+			// Same walk as pressureAlongUp, but reuse depth[] / strongestUp once.
+			if (up.w <= 0) {
+				thermoP[cell] = openHydroPressure(depth[cell])
+				continue
+			}
+			let cx = x
+			let cy = y
+			let found = false
+			const maxSteps = Math.max(W, H)
+			for (let step = 0; step < maxSteps; step++) {
+				cx += up.dx
+				cy += up.dy
+				if (cx < 0 || cy < 0 || cx >= W || cy >= H) break
+				const above = cy * W + cx
+				if (isBlockMat(world.mat[above])) break
+				const aboveRid = regionId[above]
+				if (aboveRid) {
+					const region = regions[aboveRid]
+					const d = depth[above]
+					thermoP[cell] = region.openToAtm
+						? openHydroPressure(d)
+						: sealedHydroPressure(region, d, region.yMean)
+					found = true
+					break
+				}
+			}
+			if (!found) thermoP[cell] = openHydroPressure(depth[cell])
+		}
+	world.scratch.thermoPEpoch = airEpoch
+	return thermoP
+}
+
+/**
  * 格的热力学/静压气体压力（无动态 Bernoulli 项）。
  * 开放空气：P_ATM + ATM_HYDRO·depth。
  * 密闭：Boyle 均值 + ATM_HYDRO·(depth − depthMean)，使区平均保持 Boyle。
@@ -294,8 +356,14 @@ export const pressureAt = (world, x, y) => {
 		const depth = gravityDepth(world, Math.max(0, x), Math.max(0, y))
 		return openHydroPressure(Math.max(0, depth))
 	}
-	const depth = gravityDepth(world, x, y)
 	const cell = idx(world, x, y)
+	const airEpoch = /** @type {number} */ (world.scratch.airEpoch) | 0
+	if (world.scratch.thermoPEpoch === airEpoch) {
+		const thermoP = /** @type {Float32Array | undefined} */ (world.scratch.thermoP)
+		if (thermoP && thermoP.length === world.worldW * world.worldH)
+			return thermoP[cell]
+	}
+	const depth = gravityDepth(world, x, y)
 	const rid = world.regionId[cell]
 	if (rid) {
 		const region = world.regions[rid]
@@ -397,9 +465,10 @@ export const dynamicPressure = (ux, uy = 0) => 0.5 * RHO_AIR * (ux * ux + uy * u
 export const staticPressureAt = (world, x, y) => {
 	const cx = x | 0
 	const cy = y | 0
-	if (!inWorld(world, cx, cy)) return Math.max(0.05, pressureAt(world, x, y))
+	const p = pressureAt(world, x, y)
+	if (!inWorld(world, cx, cy)) return Math.max(0.05, p)
 	const cell = idx(world, cx, cy)
-	return Math.max(0.05, pressureAt(world, x, y) - dynamicPressure(world.gasUx[cell], world.gasUy[cell]))
+	return Math.max(0.05, p - dynamicPressure(world.gasUx[cell], world.gasUy[cell]))
 }
 
 /**

@@ -48,6 +48,7 @@ export {
 	setMat, addMoisture, addLiquid, addMelt, totalGridWater, totalWorldWater, totalMelt,
 	gravityDepth, gravityDownWeights, gravityUpWeights, gravitySideWeights,
 	gravitySettleWeights, strongestUp, strongestDown, applyGravityToWorld, impartLiquidMomentum,
+	fillCellDepths, buildDepthOrder, isLiquidFreeSurface,
 } from './world.mjs'
 
 /** 视觉格纵横比（邻接 û / 渲染半径；不参与静水深标定）。 */
@@ -56,7 +57,7 @@ export { CELL_ASPECT } from '../hash.mjs'
 /** 气相区域、压力与风速。 */
 export {
 	WIND_BASE, WIND_GUST, WIND_SHEAR_POWER, GAS_BLEND, GAS_NOZZLE, GAS_SPEED_MAX,
-	isAirCell, fillBlocked, labelAirRegions, pressureAt, globalWindAt, windShear,
+	isAirCell, fillBlocked, labelAirRegions, pressureAt, ensureThermoPressure, globalWindAt, windShear,
 	gasVelocityAt, gasUxAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
 } from './gas.mjs'
 

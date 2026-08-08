@@ -12,6 +12,7 @@ import { labelAirRegions, stepGas } from './gas.mjs'
 import { stepLiquid } from './liquid/index.mjs'
 import { liftLiquidByWind, stepParticles } from './particles.mjs'
 import { stepThermal } from './thermal.mjs'
+import { fillCellDepths } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
@@ -26,6 +27,7 @@ const NOOP_HIT = () => { /* airborne until land / expire-deposit */ }
  */
 export const stepResizeWeather = (world, ticks) => {
 	for (let tick = 0; tick < ticks; tick++) {
+		fillCellDepths(world)
 		labelAirRegions(world)
 		stepThermal(world)
 		stepLiquid(world)
@@ -48,6 +50,7 @@ export const stepResizeWeather = (world, ticks) => {
  * @returns {void}
  */
 export const stepFluid = (world, opts = {}) => {
+	fillCellDepths(world)
 	if (world.airDirty) labelAirRegions(world)
 	stepGas(world, opts)
 	liftLiquidByWind(world)

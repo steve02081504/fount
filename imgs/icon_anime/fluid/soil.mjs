@@ -116,25 +116,6 @@ export const condenseDripSource = (world, x, y, up = gravityUpWeights(world)) =>
 }
 
 /**
- * 重力下沿是否仍为开放空气（悬挂凝结的附着面）。
- * @param {FluidWorld} world 世界
- * @param {number} x 列
- * @param {number} y 行
- * @param {{ dx: number[], dy: number[], w: number[], n: number }} down 下向权重
- * @returns {boolean} 是否开放
- */
-const hasOpenUnderside = (world, x, y, down) => {
-	const { mat, worldW } = world
-	for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-		const belowX = x + down.dx[offsetIndex]
-		const belowY = y + down.dy[offsetIndex]
-		if (!inWorld(world, belowX, belowY)) continue
-		if (mat[belowY * worldW + belowX] === MAT.AIR) return true
-	}
-	return false
-}
-
-/**
  * 将多余质量溢到邻接空气（按下向权重分配，再任意正交）。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
@@ -188,7 +169,7 @@ export const stepSoil = (world) => {
 	const step = world.soilStep
 	const up = gravityUpWeights(world)
 	const down = gravityDownWeights(world)
-	const strongDown = strongestDown(world)
+	const strongDown = strongestDown(world, down)
 	if (strongDown.w > 0 && strongDown.dx !== 0) {
 		SIDE_A.dx = 0
 		SIDE_A.dy = -1
@@ -385,27 +366,22 @@ export const stepSoil = (world) => {
 				if (mat[belowY * W + belowX] !== MAT.AIR) continue
 				weightSum += down.w[offsetIndex]
 			}
-			if (weightSum <= 1e-8) continue
-			const held = condense[cell]
-			const amount = held >= COND_DRIP ? held : held * COND_WEEP_FRAC
-			if (amount <= 1e-8) continue
-			let written = 0
-			for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-				const belowX = x + down.dx[offsetIndex]
-				const belowY = y + down.dy[offsetIndex]
-				if (!inWorld(world, belowX, belowY)) continue
-				if (mat[belowY * W + belowX] !== MAT.AIR) continue
-				written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
+			if (weightSum > 1e-8) {
+				const held = condense[cell]
+				const amount = held >= COND_DRIP ? held : held * COND_WEEP_FRAC
+				if (amount <= 1e-8) continue
+				let written = 0
+				for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
+					const belowX = x + down.dx[offsetIndex]
+					const belowY = y + down.dy[offsetIndex]
+					if (!inWorld(world, belowX, belowY)) continue
+					if (mat[belowY * W + belowX] !== MAT.AIR) continue
+					written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
+				}
+				condense[cell] = held - written
+				continue
 			}
-			condense[cell] = held - written
-		}
-
-	// ĝ 转离开放下沿 → 悬挂凝结收回（回潮，满则溢到邻接空气；溢不完留在 condense）。
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
-			if (!isSoilMat(mat[cell]) || condense[cell] <= 1e-8) continue
-			if (hasOpenUnderside(world, x, y, down)) continue
+			// ĝ 转离开放下沿 → 悬挂凝结收回（回潮，满则溢到邻接空气；溢不完留在 condense）。
 			const back = condense[cell]
 			const room = Math.max(0, SOIL_CAP - moisture[cell])
 			const toMoist = Math.min(back, room)

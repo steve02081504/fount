@@ -36,8 +36,10 @@ const injectSteam = (world, cell, steamMass) => {
 	const region = world.regions[rid]
 	if (!region) return
 	region.gasAmount += steamMass * STEAM_GAS
-	if (!region.openToAtm)
+	if (!region.openToAtm) {
 		region.pressure = Math.max(0.05, Math.min(8, region.gasAmount / Math.max(0.25, region.airCells)))
+		world.scratch.thermoPEpoch = -1
+	}
 }
 
 /**
@@ -46,10 +48,10 @@ const injectSteam = (world, cell, steamMass) => {
  * @returns {void}
  */
 export const stepThermal = (world) => {
-	const { worldW: W, worldH: H, mat, liq, melt, temp, moisture, condense } = world
+	const { worldW: W, worldH: H, mat, liq, melt, moisture, condense } = world
 	const n = W * H
+	const prevT = world.temp
 	const nextT = scratch(world, 'thermNextT', n, Float32Array)
-	nextT.set(temp)
 
 	// --- Conduction among rock / melt / water-bearing cells ---
 	for (let y = 0; y < H; y++)
@@ -60,35 +62,37 @@ export const stepThermal = (world) => {
 				nextT[cell] = T_AMB
 				continue
 			}
-			let acc = temp[cell]
+			let acc = prevT[cell]
 			let w = 1
 			if (x > 0) {
 				const ni = cell - 1
 				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				if (nMass) { acc += temp[ni] * CONDUCT; w += CONDUCT }
+				if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
 			}
 			if (x + 1 < W) {
 				const ni = cell + 1
 				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				if (nMass) { acc += temp[ni] * CONDUCT; w += CONDUCT }
+				if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
 			}
 			if (y > 0) {
 				const ni = cell - W
 				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				if (nMass) { acc += temp[ni] * CONDUCT; w += CONDUCT }
+				if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
 			}
 			if (y + 1 < H) {
 				const ni = cell + W
 				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				if (nMass) { acc += temp[ni] * CONDUCT; w += CONDUCT }
+				if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
 			}
 			nextT[cell] = acc / w
 		}
 
-	temp.set(nextT)
+	world.scratch.thermNextT = prevT
+	world.temp = nextT
+	const temp = nextT
 
 	const upW = gravityUpWeights(world)
-	const up = strongestUp(world)
+	const up = strongestUp(world, upW)
 
 	// --- Flash water on melt; evaporate soil moisture ---
 	for (let y = 0; y < H; y++)

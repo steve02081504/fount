@@ -10,7 +10,7 @@ import { neighborCoord } from '../edges.mjs'
 import {
 	pressureMove, sheetMove, applyTransfer, P_FLOW_GAIN,
 } from '../flow.mjs'
-import { labelAirRegions, pressureAt, gasUxAt } from '../gas.mjs'
+import { labelAirRegions, pressureAt, gasUxAt, ensureThermoPressure } from '../gas.mjs'
 import {
 	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, ST_DRY_FRAC, isLiquidBarrier,
 	SUBSTANCE, rhoOf, viscOf,
@@ -19,7 +19,7 @@ import {
 	scratch, idx, inWorld,
 	markAirIfDrawCrossed,
 	gravitySettleWeights, gravitySideWeights,
-	buildDepthOrder,
+	buildDepthOrder, isLiquidFreeSurface,
 } from '../world.mjs'
 
 import { beginLiquidPressure } from './pressure.mjs'
@@ -46,28 +46,6 @@ const canOccupy = (world, x, y) => {
 	const m = world.mat[cell]
 	if (isLiquidBarrier(m)) return false
 	if (m === MAT.POOL) return world.liq[cell] < LIQ_FULL
-	return true
-}
-
-/**
- * 自由面格？（所有上向加权邻格皆非液 / 出界）。
- * @param {FluidWorld} world 流体世界
- * @param {number} x 列
- * @param {number} y 行
- * @param {{ dx: number[], dy: number[], w: number[], n: number }} up 上向权重
- * @returns {boolean} 液体上方是否为空气
- */
-const isFreeSurface = (world, x, y, up) => {
-	if (up.n <= 0) return true
-	const { mat, liq, worldW: W } = world
-	for (let i = 0; i < up.n; i++) {
-		const ux = x + up.dx[i]
-		const uy = y + up.dy[i]
-		if (!inWorld(world, ux, uy)) continue
-		const above = uy * W + ux
-		if (!isLiquidBarrier(mat[above]) && liq[above] >= LIQ_DRAW)
-			return false
-	}
 	return true
 }
 
@@ -137,6 +115,7 @@ const WATER_FLOW = {
 export const stepWater = (world) => {
 	const { worldW: W, worldH: H, mat, liq } = world
 	if (world.airDirty) labelAirRegions(world)
+	ensureThermoPressure(world)
 
 	const n = W * H
 	const flowX = scratch(world, 'liqFlowX', n, Float32Array)
@@ -216,7 +195,7 @@ export const stepWater = (world) => {
 			const cell = y * W + x
 			if (liq[cell] <= 0.05 || isLiquidBarrier(mat[cell])) continue
 			const pSrc = pAt(x, y)
-			const freeSurface = isFreeSurface(world, x, y, upWeights)
+			const freeSurface = isLiquidFreeSurface(world, x, y, upWeights)
 
 			for (let s = 0; s < sides.n; s++) {
 				const dx = sides.dx[s]

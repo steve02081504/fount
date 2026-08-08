@@ -309,6 +309,8 @@ export const clearDynamics = (world) => {
 	world.airDirty = true
 	world.gasGeomDirty = true
 	world.maxUpdraft = NaN
+	world.scratch.airEpoch = (/** @type {number} */ (world.scratch.airEpoch) | 0) + 1
+	world.scratch.thermoPEpoch = -1
 	resetBoundary(world.boundary)
 }
 
@@ -516,6 +518,7 @@ export const gravityDepth = (world, x, y) =>
 
 /**
  * 填充每格重力深度 scratch（同行共享 `y·gy − depth0`）。
+ * 同一重力基（gx/gy/depth0/尺寸）下复用，避免 tick 内多次 O(WH) 重写。
  * @param {FluidWorld} world 世界
  * @returns {Float32Array} 长度 WH 的深度场
  */
@@ -523,12 +526,28 @@ export const fillCellDepths = (world) => {
 	const { worldW: W, worldH: H, gravity: { gx, gy }, gravityDepth0 } = world
 	const n = W * H
 	const depth = scratch(world, 'cellDepth', n, Float32Array)
+	let basis = /** @type {{ gx: number, gy: number, depth0: number, W: number, H: number } | undefined} */ (
+		world.scratch.cellDepthBasis
+	)
+	if (!basis) {
+		basis = { gx: NaN, gy: NaN, depth0: NaN, W: 0, H: 0 }
+		world.scratch.cellDepthBasis = basis
+	}
+	if (basis.gx === gx && basis.gy === gy && basis.depth0 === gravityDepth0 && basis.W === W && basis.H === H)
+		return depth
 	for (let y = 0; y < H; y++) {
 		const row = y * W
 		const base = y * gy - gravityDepth0
 		for (let x = 0; x < W; x++)
 			depth[row + x] = x * gx + base
 	}
+	basis.gx = gx
+	basis.gy = gy
+	basis.depth0 = gravityDepth0
+	basis.W = W
+	basis.H = H
+	// Depth changed → thermo table (if any) is stale.
+	world.scratch.thermoPEpoch = -1
 	return depth
 }
 
@@ -639,47 +658,65 @@ const STRONG_UP = { dx: 0, dy: 0, w: 0 }
 const STRONG_DOWN = { dx: 0, dy: 0, w: 0 }
 
 /**
- * 最强上向邻格方向与权重。
- * @param {FluidWorld} world 世界
- * @returns {{ dx: number, dy: number, w: number }} 最强上向
+ * 从已有上/下向权重里取最强项写入 shell。
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} weights 权重
+ * @param {{ dx: number, dy: number, w: number }} out 输出 shell
+ * @returns {{ dx: number, dy: number, w: number }} out
  */
-export const strongestUp = (world) => {
-	const up = gravityUpWeights(world)
-	if (up.n <= 0) {
-		STRONG_UP.dx = 0
-		STRONG_UP.dy = 0
-		STRONG_UP.w = 0
-		return STRONG_UP
+const pickStrongest = (weights, out) => {
+	if (weights.n <= 0) {
+		out.dx = 0
+		out.dy = 0
+		out.w = 0
+		return out
 	}
 	let best = 0
-	for (let i = 1; i < up.n; i++)
-		if (up.w[i] > up.w[best]) best = i
-	STRONG_UP.dx = up.dx[best]
-	STRONG_UP.dy = up.dy[best]
-	STRONG_UP.w = up.w[best]
-	return STRONG_UP
+	for (let i = 1; i < weights.n; i++)
+		if (weights.w[i] > weights.w[best]) best = i
+	out.dx = weights.dx[best]
+	out.dy = weights.dy[best]
+	out.w = weights.w[best]
+	return out
 }
+
+/**
+ * 最强上向邻格方向与权重。
+ * @param {FluidWorld} world 世界
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} [weights] 已有上向权重；缺省则现算
+ * @returns {{ dx: number, dy: number, w: number }} 最强上向
+ */
+export const strongestUp = (world, weights) =>
+	pickStrongest(weights || gravityUpWeights(world), STRONG_UP)
 
 /**
  * 最强下向邻格方向与权重。
  * @param {FluidWorld} world 世界
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} [weights] 已有下向权重；缺省则现算
  * @returns {{ dx: number, dy: number, w: number }} 最强下向
  */
-export const strongestDown = (world) => {
-	const down = gravityDownWeights(world)
-	if (down.n <= 0) {
-		STRONG_DOWN.dx = 0
-		STRONG_DOWN.dy = 0
-		STRONG_DOWN.w = 0
-		return STRONG_DOWN
+export const strongestDown = (world, weights) =>
+	pickStrongest(weights || gravityDownWeights(world), STRONG_DOWN)
+
+/**
+ * 自由面格？（所有上向加权邻格皆非液 / 出界）。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} up 上向权重
+ * @returns {boolean} 液体上方是否为空气
+ */
+export const isLiquidFreeSurface = (world, x, y, up) => {
+	if (up.n <= 0) return true
+	const { mat, liq, worldW: W } = world
+	for (let i = 0; i < up.n; i++) {
+		const ux = x + up.dx[i]
+		const uy = y + up.dy[i]
+		if (!inWorld(world, ux, uy)) continue
+		const above = uy * W + ux
+		if (!isLiquidBarrier(mat[above]) && liq[above] >= LIQ_DRAW)
+			return false
 	}
-	let best = 0
-	for (let i = 1; i < down.n; i++)
-		if (down.w[i] > down.w[best]) best = i
-	STRONG_DOWN.dx = down.dx[best]
-	STRONG_DOWN.dy = down.dy[best]
-	STRONG_DOWN.w = down.w[best]
-	return STRONG_DOWN
+	return true
 }
 
 /**

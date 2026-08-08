@@ -5,10 +5,10 @@
 
 import { neighborCoord } from '../edges.mjs'
 import { pressureMove, sheetMove, applyTransfer, viscGain } from '../flow.mjs'
-import { pressureAt } from '../gas.mjs'
+import { pressureAt, ensureThermoPressure } from '../gas.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, P_ATM, ST_DRY_FRAC, isLiquidBarrier } from '../mat.mjs'
 import {
-	scratch, markAirIfDrawCrossed,
+	scratch, markAirIfDrawCrossed, fillCellDepths,
 	gravitySideWeights, gravitySettleWeights, buildDepthOrder,
 } from '../world.mjs'
 
@@ -120,12 +120,25 @@ const transferNeighbor = (world, phase, flowX, flowY, W, cell, x, y, dx, dy, mov
 }
 
 /**
+ * 格上热力学气压（表或即时）。
+ * @param {FluidWorld} world 世界
+ * @param {Float32Array | null} thermoP 热力学压表
+ * @param {number} W 宽
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {number} 气压
+ */
+const gasP = (world, thermoP, W, x, y) =>
+	thermoP ? thermoP[y * W + x] : pressureAt(world, x, y)
+
+/**
  * 推进一凝聚相：沿重力加权沉降 + 垂直重力侧向液膜。
  * @param {FluidWorld} world 世界
  * @param {PhaseDesc} phase 相描述
+ * @param {{ depth?: Float32Array, order?: Int32Array }} [opts] 可复用深度序
  * @returns {void}
  */
-export const stepPhaseTransport = (world, phase) => {
+export const stepPhaseTransport = (world, phase, opts) => {
 	const { worldW: W, worldH: H } = world
 	const n = W * H
 	const mass = phase.mass
@@ -136,13 +149,11 @@ export const stepPhaseTransport = (world, phase) => {
 	const down = gravitySettleWeights(world)
 	const mark = phase.markDirty ?? markAirIfDrawCrossed
 
-	const order = buildDepthOrder(world, 'phaseOrder', 'phaseDepthCounts', true)
+	const depth = opts?.depth ?? fillCellDepths(world)
+	const order = opts?.order ?? buildDepthOrder(world, 'phaseOrder', 'phaseDepthCounts', true, depth)
+	const thermoP = ensureThermoPressure(world)
 
 	const viscBuf = scratch(world, 'phaseVisc', n, Float32Array)
-	for (let cell = 0; cell < n; cell++) {
-		if (mass[cell] <= 0) continue
-		viscBuf[cell] = phase.viscAt(world, cell)
-	}
 
 	// --- Settle along gravity-weighted down neighbors ---
 	for (let si = 0; si < n; si++) {
@@ -155,9 +166,9 @@ export const stepPhaseTransport = (world, phase) => {
 			phase.onBarrier?.(world, cell, before)
 			continue
 		}
-		const visc = viscBuf[cell]
+		const visc = viscBuf[cell] = phase.viscAt(world, cell)
 		const rhoSrc = phase.rhoAt(world, cell)
-		const pSrc = pressureAt(world, x, y) + rhoSrc * mass[cell]
+		const pSrc = gasP(world, thermoP, W, x, y) + rhoSrc * mass[cell]
 
 		for (let i = 0; i < down.n; i++) {
 			const dx = down.dx[i]
@@ -178,14 +189,14 @@ export const stepPhaseTransport = (world, phase) => {
 				dstMass = mass[target]
 				room = LIQ_FULL - dstMass
 				if (room <= 0) continue
-				pDst = pressureAt(world, nbX, nbY) + phase.rhoAt(world, target) * dstMass
+				pDst = gasP(world, thermoP, W, nbX, nbY) + phase.rhoAt(world, target) * dstMass
 			}
 			else if (wrappedFrac > 0) {
 				const target = nbY * W + nbX
 				if (phase.canEnter(world, target)) {
 					dstMass = mass[target]
 					room = LIQ_FULL - dstMass
-					pDst = pressureAt(world, nbX, nbY) + phase.rhoAt(world, target) * dstMass
+					pDst = gasP(world, thermoP, W, nbX, nbY) + phase.rhoAt(world, target) * dstMass
 				}
 				else if (outFrac <= 0) continue
 			}
@@ -211,7 +222,8 @@ export const stepPhaseTransport = (world, phase) => {
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (mass[cell] < LIQ_DRAW) continue
-			const visc = viscBuf[cell]
+			let visc = viscBuf[cell]
+			if (!(visc > 0)) visc = viscBuf[cell] = phase.viscAt(world, cell)
 			for (let si = 0; si < sides.n; si++) {
 				const dx = sides.dx[si]
 				const dy = sides.dy[si]

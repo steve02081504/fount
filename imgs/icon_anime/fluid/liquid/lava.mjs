@@ -8,7 +8,7 @@ import { cellRho } from '../thermal.mjs'
 import {
 	scratch, inWorld,
 	markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
-	gravityDownWeights, buildDepthOrder,
+	gravityDownWeights, buildDepthOrder, fillCellDepths,
 } from '../world.mjs'
 
 import { stepPhaseTransport } from './transport.mjs'
@@ -85,26 +85,29 @@ const MELT_PHASE = {
 /**
  * 熔岩输运（共用凝聚相核）。
  * @param {FluidWorld} world 世界
+ * @param {{ depth?: Float32Array, order?: Int32Array }} [opts] 可复用深度序
  * @returns {void}
  */
-export const stepLava = (world) => {
+export const stepLava = (world, opts) => {
 	MELT_PHASE.mass = world.melt
 	MELT_PHASE.vx = world.meltVx
 	MELT_PHASE.vy = world.meltVy
-	stepPhaseTransport(world, MELT_PHASE)
+	stepPhaseTransport(world, MELT_PHASE, opts)
 }
 
 /**
  * 沿重力：下方更轻则与上方交换（对流 / 气泡）。
  * 同时交换熔岩与自由水，使热熔岩可穿过水柱上浮。
  * @param {FluidWorld} world 世界
+ * @param {{ depth?: Float32Array, order?: Int32Array }} [opts] 可复用深度序
  * @returns {void}
  */
-export const stepBuoyancy = (world) => {
+export const stepBuoyancy = (world, opts) => {
 	const { worldW: W, worldH: H, melt, liq, temp, mat } = world
 	const n = W * H
 	const down = gravityDownWeights(world)
-	const order = buildDepthOrder(world, 'buoyOrder', 'buoyCounts', true)
+	const depth = opts?.depth ?? fillCellDepths(world)
+	const order = opts?.order ?? buildDepthOrder(world, 'buoyOrder', 'buoyCounts', true, depth)
 
 	const swapMark = scratch(world, 'buoyMark', n, Int32Array)
 	let gen = (/** @type {number} */ world.scratch.buoyGen | 0) + 1

@@ -6,6 +6,7 @@
  */
 
 import { stepSoil } from '../soil.mjs'
+import { fillCellDepths, buildDepthOrder } from '../world.mjs'
 
 import { equilibrateHydraulic } from './hydraulic.mjs'
 import { stepLava, stepBuoyancy, meltVisc } from './lava.mjs'
@@ -15,7 +16,7 @@ import { stepWater, commitWaterVelocity, WATER_VISC } from './water.mjs'
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
 
 /**
- *
+ * 自由水静压、熔岩粘滞与液体步进。
  */
 export { liquidPressureAt, meltVisc, stepLava, WATER_VISC }
 
@@ -28,7 +29,10 @@ export const stepLiquid = (world) => {
 	const { flowX, flowY } = stepWater(world)
 	stepSoil(world)
 	equilibrateHydraulic(world, flowX, flowY)
-	stepLava(world)
-	stepBuoyancy(world)
+	const depth = fillCellDepths(world)
+	const deepOrder = buildDepthOrder(world, 'liqDeepOrder', 'liqDeepCounts', true, depth)
+	const shared = { depth, order: deepOrder }
+	stepLava(world, shared)
+	stepBuoyancy(world, shared)
 	commitWaterVelocity(world, flowX, flowY)
 }

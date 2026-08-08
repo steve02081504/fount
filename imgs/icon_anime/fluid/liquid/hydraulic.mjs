@@ -11,9 +11,9 @@ import { hydraulicPhi, applyTransfer } from '../flow.mjs'
 import { pressureAt } from '../gas.mjs'
 import { LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from '../mat.mjs'
 import {
-	scratch, growScratch, floodClear, floodPush, gravityDepth,
+	scratch, growScratch, floodClear, floodPush, fillCellDepths,
 	gravityUpWeights, strongestUp, inWorld,
-	markAirIfDrawCrossed,
+	markAirIfDrawCrossed, isLiquidFreeSurface,
 } from '../world.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
@@ -89,7 +89,8 @@ export const labelLiquidComponents = (world) => {
 	surf.n = 0
 
 	const upW = gravityUpWeights(world)
-	const up = strongestUp(world)
+	const up = strongestUp(world, upW)
+	const depth = fillCellDepths(world)
 
 	const { components } = labelComponents(world, {
 		/**
@@ -111,21 +112,7 @@ export const labelLiquidComponents = (world) => {
 		 * @returns {void}
 		 */
 		onCell: (world, cell, x, y, id) => {
-			let isSurf = upW.n <= 0
-			if (!isSurf) {
-				isSurf = true
-				for (let o = 0; o < upW.n; o++) {
-					const ax = x + upW.dx[o]
-					const ay = y + upW.dy[o]
-					if (!inWorld(world, ax, ay)) continue
-					const above = ay * W + ax
-					if (!isLiquidBarrier(world.mat[above]) && world.liq[above] >= LIQ_DRAW) {
-						isSurf = false
-						break
-					}
-				}
-			}
-			if (!isSurf) return
+			if (!isLiquidFreeSurface(world, x, y, upW)) return
 			let airP = pressureAt(world, x, y)
 			if (up.w > 0) {
 				const ax = x + up.dx
@@ -133,7 +120,7 @@ export const labelLiquidComponents = (world) => {
 				if (inWorld(world, ax, ay) && !isLiquidBarrier(world.mat[ay * W + ax]))
 					airP = pressureAt(world, ax, ay)
 			}
-			pushSurface(world, x, y, id, airP, hydraulicPhi(airP, gravityDepth(world, x, y)), surf)
+			pushSurface(world, x, y, id, airP, hydraulicPhi(airP, depth[cell]), surf)
 		},
 	})
 	recycleComponents(world, components, 'liqComponentPool')
