@@ -1,7 +1,68 @@
-# WeChat Bot shell (fount)
+# wechatbot shell Web API
 
-- Part path: `parts/shells:wechatbot`
-- Backend routes: `/api/parts/shells:wechatbot/*` (start, stop, getbotlist, setbotconfig, …)
-- Binds a **fount character** via `char.interfaces.chat.GetReply` (same pattern as `discordbot`).
-- **QR login** (recommended): `POST .../qrcode/start` then poll `GET .../qrcode/poll?sessionKey=` — talks to `https://ilinkai.weixin.qq.com` (no separate gateway process required).
-- Transport: iLink HTTP (`ilink/bot/getupdates`, `ilink/bot/sendmessage`). Default base URL `https://ilinkai.weixin.qq.com` if apiBaseUrl is empty.
+本 shell 管理微信机器人：配置 CRUD、启停，以及 iLink QR 登录。绑定角色后走 `char.interfaces.chat.GetReply`（与 discordbot / telegrambot 同构）；会话为虚拟桥接群 `bridge:wechat:{platformChatId}`，不建真实 Hub 群。
+
+默认传输基址 `https://ilinkai.weixin.qq.com`（配置 `apiBaseUrl` 为空时）；协议为 iLink HTTP（`ilink/bot/getupdates`、`ilink/bot/sendmessage`）。
+
+路径前缀：`/api/parts/shells:wechatbot`。均需登录。
+
+---
+
+## 页面
+
+### GET /parts/shells:wechatbot/
+- 用途：微信机器人管理页（配置、启停、扫码登录）。
+
+---
+
+## 生命周期
+
+### POST /api/parts/shells:wechatbot/start
+- Body：`botname`
+- 用途：启动指定机器人。
+
+### POST /api/parts/shells:wechatbot/stop
+- Body：`botname`
+- 用途：停止指定机器人。
+
+### GET /api/parts/shells:wechatbot/getbotlist
+- 用途：当前用户全部机器人配置名列表。
+
+### GET /api/parts/shells:wechatbot/getrunningbotlist
+- 用途：正在运行的机器人名列表。
+
+---
+
+## 配置
+
+### GET /api/parts/shells:wechatbot/getbotconfig
+- 查询：`botname`
+- 用途：读取指定配置。
+
+### GET /api/parts/shells:wechatbot/getbotConfigTemplate
+- 查询：`charname`（可选）
+- 用途：配置模板；可按角色预填。
+
+### POST /api/parts/shells:wechatbot/setbotconfig
+- Body：`botname`、`config`
+- 用途：保存配置。
+
+### POST /api/parts/shells:wechatbot/deletebotconfig
+- Body：`botname`
+- 用途：删除配置（若在运行会先停止）。
+
+### POST /api/parts/shells:wechatbot/newbotconfig
+- Body：`botname`（必填）
+- 用途：新建空配置。
+
+---
+
+## QR 登录（推荐）
+
+### POST /api/parts/shells:wechatbot/qrcode/start
+- Body：`botname`（可选；成功后凭证写回该配置）
+- 用途：向 iLink 申请登录二维码会话，返回 `sessionKey` 与二维码信息。
+
+### GET /api/parts/shells:wechatbot/qrcode/poll
+- 查询：`sessionKey`（必填）
+- 用途：轮询扫码状态。成功且带 `token`/`botname` 时服务端写回配置（token、apiBaseUrl；必要时更新 OwnerWeChatId 并绑定桥接身份）。

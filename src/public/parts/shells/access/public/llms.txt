@@ -1,13 +1,6 @@
-# access shell 支持的 Web 端点说明
+# access shell
 
-本 shell 仅提供登录/访问相关静态页面（如登录表单），无独立 HTTP 或 WebSocket API 端点。
-登录等请使用基础 API：/api/login、/api/register、/api/logout、/api/whoami 等。本 shell 通过 /parts/shells:access/ 提供前端入口。
-
----
-
-## 提供的页面
+仅提供登录 / 注册静态页，无独立 shell HTTP 或 WebSocket API。认证请用基础 API：`/api/login`、`/api/register`、`/api/logout`、`/api/whoami` 等（见 `src/public/pages/llms.txt`）。
 
 ### GET /parts/shells:access/
-- 用途：登录/访问页面，提供用户登录和注册界面。包含登录表单、注册表单等功能，是用户访问系统的入口页面。
-
----
+- 用途：登录与注册入口页。
