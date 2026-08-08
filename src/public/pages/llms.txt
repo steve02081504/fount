@@ -203,7 +203,7 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 - 认证：需要
 - 用途：节点网络图、节点 denylist、mailbox 积压摘要。
 
-实体面（viewer / profile / EVFS / personal-lists / 密钥 rotate·revoke）在 chat shell：`/api/parts/shells:chat/{viewer,entities…}`。
+实体面（viewer / profile / EVFS / personal-lists / 密钥 rotate·revoke）在 chat shell：`/api/parts/shells:chat/viewer`、`/api/parts/shells:chat/entities/*`。
 
 ---
 

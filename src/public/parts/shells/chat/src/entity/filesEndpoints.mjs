@@ -88,11 +88,11 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
-			return res.status(400).end()
+			throw httpError(400, 'invalid path')
 		const { username } = getUserByReq(req)
 		const manifest = await loadFileManifest(entityHash, logicalPath)
 		if (!manifest || !await canReadManifest(username, entityHash, manifest))
-			return res.status(404).end()
+			throw httpError(404, 'not found')
 		applySafeContentHeaders(res, {
 			mimeType: manifest.mimeType,
 			filename: logicalPath.split('/').pop() || 'file',

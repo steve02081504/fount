@@ -21,7 +21,7 @@ P2P 文件柜：个人 EVFS 柜 + 无托管共享柜（签名 op-log）。字段
 | `GET /parts/shells:cabinet/` | 主壳 |
 | `#cabinet:{id}` / `#cabinet:{id}/{folderId}` | 个人柜 |
 | `#shared:{cabinetId}` / `#shared:{cabinetId}/{folderId}` | 共享柜 |
-| `#user:{entityHash}` / `#user:{entityHash}/{cabinetId}`[/`{folderId}`] | 远端只读浏览 |
+| `#user:{entityHash}` / `#user:{entityHash}/{cabinetId}` / `#user:{entityHash}/{cabinetId}/{folderId}` | 远端只读浏览 |
 
 ---
 

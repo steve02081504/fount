@@ -211,8 +211,7 @@ export function registerEntityEndpoints(router) {
 		if (!resolveAgentCharPartName(replicaUsername, entityHash))
 			throw httpError(400, 'rebuild-from-part is only for local agents')
 		const { syncAgentProfileFromCharPart } = await import('../profile/syncFromCharPart.mjs')
-		const stored = await syncAgentProfileFromCharPart(replicaUsername, entityHash, { force: true })
-		if (!stored)
+		if (!await syncAgentProfileFromCharPart(replicaUsername, entityHash, { force: true }))
 			throw httpError(400, 'rebuild failed')
 		const locales = localesFromRequest(req, replicaUsername)
 		const groupId = String(req.query?.groupId || '').trim() || undefined
@@ -224,8 +223,7 @@ export function registerEntityEndpoints(router) {
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!operatorEntityHash)
 			throw httpError(400, 'operator identity not configured')
-		const raw = req.body?.ownerEntityHash
-		const ownerEntityHash = raw ? String(raw).trim().toLowerCase() : null
+		const ownerEntityHash = req.body?.ownerEntityHash ? String(req.body.ownerEntityHash).trim().toLowerCase() : null
 		if (ownerEntityHash && !isEntityHash128(ownerEntityHash))
 			throw httpError(400, 'invalid ownerEntityHash')
 		const row = await setEntityOwner(replicaUsername, operatorEntityHash, ownerEntityHash)
