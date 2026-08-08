@@ -5,9 +5,9 @@
 
 import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 
-import { floodClear, floodPush, scratch } from './world.mjs'
+import { floodClear, floodPush, scratch } from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld */
 
 /**
  * @typedef {{
@@ -33,6 +33,14 @@ const takeStats = (pool, id) => {
 	return stats
 }
 
+/** `labelComponents` 返回壳。 */
+const LABEL_OUT = {
+	/** @type {(ComponentStats | undefined)[]} */
+	components: /** @type {(ComponentStats | undefined)[]} */ ([]),
+	nextId: 1,
+	seedComponentId: 0,
+}
+
 /**
  * 正交连通分量标注。
  * `labels` 写分量 id（0 = 未接受 / 未标注）；分量 id 从 1 起稠密。
@@ -42,6 +50,8 @@ const takeStats = (pool, id) => {
  *   labels: Int32Array,
  *   onCell?: (world: FluidWorld, cell: number, x: number, y: number, id: number, stats: ComponentStats) => void,
  *   seedCells?: { x: number, y: number }[],
+ *   seedPairs?: Int32Array,
+ *   seedPairCount?: number,
  *   startId?: number,
  *   poolKey?: string,
  * }} opts 选项
@@ -58,8 +68,12 @@ export const labelComponents = (world, opts) => {
 	const onCell = opts.onCell
 	const poolKey = opts.poolKey ?? 'componentPool'
 	const pool = /** @type {ComponentStats[]} */ world.scratch[poolKey] ??= []
+	const listKey = `${poolKey}List`
 	/** @type {(ComponentStats | undefined)[]} */
-	const components = []
+	const components = /** @type {(ComponentStats | undefined)[]} */ (
+		world.scratch[listKey] ??= []
+	)
+	components.length = 0
 	let next = opts.startId ?? 1
 	let seedComponentId = 0
 
@@ -88,7 +102,7 @@ export const labelComponents = (world, opts) => {
 	 * @returns {void}
 	 */
 	const flood = (id, stats) => {
-		for (let qi = 0; qi < world.floodQ.length; qi += 2) {
+		for (let qi = 0; qi < world.floodLen; qi += 2) {
 			const x = world.floodQ[qi]
 			const y = world.floodQ[qi + 1]
 			for (let o = 0; o < 4; o++)
@@ -129,7 +143,18 @@ export const labelComponents = (world, opts) => {
 		return finish(id, stats)
 	}
 
-	if (opts.seedCells?.length) {
+	const seedPairCount = opts.seedPairCount | 0
+	if (seedPairCount > 0 && opts.seedPairs) {
+		const id = next++
+		const stats = takeStats(pool, id)
+		floodClear(world)
+		const pairs = opts.seedPairs
+		for (let i = 0; i < seedPairCount; i++)
+			seed(pairs[i * 2], pairs[i * 2 + 1], id, stats)
+		flood(id, stats)
+		if (finish(id, stats)) seedComponentId = id
+	}
+	else if (opts.seedCells?.length) {
 		const id = next++
 		const stats = takeStats(pool, id)
 		floodClear(world)
@@ -143,7 +168,10 @@ export const labelComponents = (world, opts) => {
 		for (let x = 0; x < W; x++)
 			startAt(x, y)
 
-	return { components, nextId: next, seedComponentId }
+	LABEL_OUT.components = components
+	LABEL_OUT.nextId = next
+	LABEL_OUT.seedComponentId = seedComponentId
+	return LABEL_OUT
 }
 
 /**

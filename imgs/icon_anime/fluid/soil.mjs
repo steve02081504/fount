@@ -5,18 +5,24 @@
  * 凝结膜挂在重力下沿；ĝ 转离开放下沿时收回水分。由 `stepLiquid` 在水力均衡前调用。
  */
 
+import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
+
 import {
 	MAT, SOIL_CAP,
 	SOIL_ABSORB_RATE, SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
-	COND_DRAW, COND_DRIP, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
+	COND_DRAW, COND_DRIP, COND_WEEP_FRAC, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
 	isSoilMat, isLiquidBarrier, soilAbsorbFactor,
 } from './mat.mjs'
 import {
 	scratch, growScratch, addLiquid, markAirIfDrawCrossed,
 	gravityDownWeights, gravityUpWeights, strongestDown, inWorld,
-} from './world.mjs'
+} from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld */
+
+/** ⊥ĝ 侧向渗流方向（复用）。 */
+const SIDE_A = { dx: -1, dy: 0 }
+const SIDE_B = { dx: 1, dy: 0 }
 
 /**
  * 渗流队列 scratch（预分配 typed array，按 tick 复用）。
@@ -40,14 +46,6 @@ const soilQueues = {
 	feedAmt: new Float32Array(0),
 	feedN: 0,
 }
-
-/** 正交邻格，用于收回后溢流。 */
-const ORTHOGONAL_OFFSETS = [
-	[1, 0],
-	[-1, 0],
-	[0, 1],
-	[0, -1],
-]
 
 /**
  * 将 `moisture[cell]` 钳在 `[0, SOIL_CAP]`。
@@ -102,11 +100,11 @@ const pushFeed = (world, queues, from, amount) => {
  * @param {FluidWorld} world 世界
  * @param {number} x 列
  * @param {number} y 行
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} [up] 上向权重（复用）
  * @returns {number} 土壤格索引，无则 -1
  */
-export const condenseDripSource = (world, x, y) => {
+export const condenseDripSource = (world, x, y, up = gravityUpWeights(world)) => {
 	const { mat, condense, worldW } = world
-	const up = gravityUpWeights(world)
 	for (let offsetIndex = 0; offsetIndex < up.n; offsetIndex++) {
 		const soilX = x + up.dx[offsetIndex]
 		const soilY = y + up.dy[offsetIndex]
@@ -118,22 +116,87 @@ export const condenseDripSource = (world, x, y) => {
 }
 
 /**
- * 重力下沿是否仍为开放空气（悬挂凝结的附着面）。
+ * 预填悬挂凝结源（稀疏：仅扫描有 COND_DRAW 的土壤）。
+ * compose 读 `dripFrom[cell]`，当 `dripGen[cell] === epoch` 时有效。
+ * @param {FluidWorld} world 世界
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} [up] 上向权重
+ * @returns {{ dripFrom: Int32Array, dripGen: Int32Array, epoch: number }} 滴落表
+ */
+export const prepareDripSources = (world, up = gravityUpWeights(world)) => {
+	const { worldW: W, worldH: H, mat, condense } = world
+	const n = W * H
+	const dripFrom = scratch(world, 'dripFrom', n, Int32Array)
+	const dripGen = scratch(world, 'dripGen', n, Int32Array)
+	const dripPri = scratch(world, 'dripPri', n, Uint8Array)
+	let epoch = (/** @type {number} */ (world.scratch.dripEpoch) | 0) + 1
+	if (epoch >= 0x7fffffff) {
+		dripGen.fill(0)
+		epoch = 1
+	}
+	world.scratch.dripEpoch = epoch
+
+	// Match condenseDripSource: lower up-offset index wins.
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const soil = y * W + x
+			if (!isSoilMat(mat[soil]) || condense[soil] < COND_DRAW) continue
+			for (let oi = 0; oi < up.n; oi++) {
+				const ax = x - up.dx[oi]
+				const ay = y - up.dy[oi]
+				if (!inWorld(world, ax, ay)) continue
+				const air = ay * W + ax
+				if (mat[air] !== MAT.AIR) continue
+				if (dripGen[air] === epoch && dripPri[air] <= oi) continue
+				dripFrom[air] = soil
+				dripGen[air] = epoch
+				dripPri[air] = oi
+			}
+		}
+	return { dripFrom, dripGen, epoch }
+}
+
+/**
+ * 下向开放空气邻格的权重和（无则 0）。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
  * @param {number} y 行
  * @param {{ dx: number[], dy: number[], w: number[], n: number }} down 下向权重
- * @returns {boolean} 是否开放
+ * @returns {number} Σw
  */
-const hasOpenUnderside = (world, x, y, down) => {
-	const { mat, worldW } = world
+const undersideAirWeightSum = (world, x, y, down) => {
+	const { worldW: W, mat } = world
+	let weightSum = 0
 	for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
 		const belowX = x + down.dx[offsetIndex]
 		const belowY = y + down.dy[offsetIndex]
 		if (!inWorld(world, belowX, belowY)) continue
-		if (mat[belowY * worldW + belowX] === MAT.AIR) return true
+		if (mat[belowY * W + belowX] !== MAT.AIR) continue
+		weightSum += down.w[offsetIndex]
 	}
-	return false
+	return weightSum
+}
+
+/**
+ * 按已算好的下向空气权重和，把质量比例写入下方空气。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} amount 质量
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} down 下向权重
+ * @param {number} weightSum 权重和（须 > 0）
+ * @returns {number} 实际写入量
+ */
+const distributeToUndersideAir = (world, x, y, amount, down, weightSum) => {
+	const { worldW: W, mat } = world
+	let written = 0
+	for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
+		const belowX = x + down.dx[offsetIndex]
+		const belowY = y + down.dy[offsetIndex]
+		if (!inWorld(world, belowX, belowY)) continue
+		if (mat[belowY * W + belowX] !== MAT.AIR) continue
+		written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
+	}
+	return written
 }
 
 /**
@@ -147,28 +210,15 @@ const hasOpenUnderside = (world, x, y, down) => {
  */
 const spillToAir = (world, x, y, amount, down) => {
 	if (amount <= 1e-8) return 0
-	let written = 0
-	let weightSum = 0
-	for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-		const belowX = x + down.dx[offsetIndex]
-		const belowY = y + down.dy[offsetIndex]
-		if (!inWorld(world, belowX, belowY)) continue
-		if (world.mat[belowY * world.worldW + belowX] !== MAT.AIR) continue
-		weightSum += down.w[offsetIndex]
-	}
-	if (weightSum > 1e-8)
-		for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-			const belowX = x + down.dx[offsetIndex]
-			const belowY = y + down.dy[offsetIndex]
-			if (!inWorld(world, belowX, belowY)) continue
-			if (world.mat[belowY * world.worldW + belowX] !== MAT.AIR) continue
-			written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
-		}
+	const weightSum = undersideAirWeightSum(world, x, y, down)
+	let written = weightSum > 1e-8
+		? distributeToUndersideAir(world, x, y, amount, down, weightSum)
+		: 0
 	let rest = amount - written
 	if (rest <= 1e-8) return written
-	for (const [offsetX, offsetY] of ORTHOGONAL_OFFSETS) {
-		const neighborX = x + offsetX
-		const neighborY = y + offsetY
+	for (let i = 0; i < 4; i++) {
+		const neighborX = x + ORTHO_DX[i]
+		const neighborY = y + ORTHO_DY[i]
 		if (!inWorld(world, neighborX, neighborY)) continue
 		if (world.mat[neighborY * world.worldW + neighborX] !== MAT.AIR) continue
 		const got = addLiquid(world, neighborX, neighborY, rest)
@@ -190,13 +240,21 @@ export const stepSoil = (world) => {
 	const step = world.soilStep
 	const up = gravityUpWeights(world)
 	const down = gravityDownWeights(world)
-	const strongDown = strongestDown(world)
-	let sideA = { dx: -1, dy: 0 }
-	let sideB = { dx: 1, dy: 0 }
+	const strongDown = strongestDown(world, down)
 	if (strongDown.w > 0 && strongDown.dx !== 0) {
-		sideA = { dx: 0, dy: -1 }
-		sideB = { dx: 0, dy: 1 }
+		SIDE_A.dx = 0
+		SIDE_A.dy = -1
+		SIDE_B.dx = 0
+		SIDE_B.dy = 1
 	}
+	else {
+		SIDE_A.dx = -1
+		SIDE_A.dy = 0
+		SIDE_B.dx = 1
+		SIDE_B.dy = 0
+	}
+	const sideA = SIDE_A
+	const sideB = SIDE_B
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
@@ -254,19 +312,39 @@ export const stepSoil = (world) => {
 				}
 			}
 
-			const sideNeighbors = []
-			for (const side of [sideA, sideB]) {
-				const sx = x + side.dx
-				const sy = y + side.dy
-				if (!inWorld(world, sx, sy)) continue
-				const neighbor = sy * W + sx
-				if (isSoilMat(mat[neighbor])) sideNeighbors.push(neighbor)
+			let side0 = -1
+			let side1 = -1
+			let sideN = 0
+			{
+				const sx = x + sideA.dx
+				const sy = y + sideA.dy
+				if (inWorld(world, sx, sy)) {
+					const neighbor = sy * W + sx
+					if (isSoilMat(mat[neighbor])) {
+						side0 = neighbor
+						sideN = 1
+					}
+				}
 			}
-			if (sideNeighbors.length) {
-				const each = (moistureAmount * SOIL_SIDE_FRAC) / sideNeighbors.length
-				for (const neighbor of sideNeighbors) {
-					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[neighbor]))
-					if (take > 1e-8) pushMove(world, queues, cell, neighbor, take)
+			{
+				const sx = x + sideB.dx
+				const sy = y + sideB.dy
+				if (inWorld(world, sx, sy)) {
+					const neighbor = sy * W + sx
+					if (isSoilMat(mat[neighbor])) {
+						if (sideN === 0) side0 = neighbor
+						else side1 = neighbor
+						sideN++
+					}
+				}
+			}
+			if (sideN) {
+				const each = (moistureAmount * SOIL_SIDE_FRAC) / sideN
+				const take0 = Math.min(each, Math.max(0, SOIL_CAP - moisture[side0]))
+				if (take0 > 1e-8) pushMove(world, queues, cell, side0, take0)
+				if (sideN > 1) {
+					const take1 = Math.min(each, Math.max(0, SOIL_CAP - moisture[side1]))
+					if (take1 > 1e-8) pushMove(world, queues, cell, side1, take1)
 				}
 			}
 		}
@@ -364,34 +442,17 @@ export const stepSoil = (world) => {
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
-			if (!isSoilMat(mat[cell]) || condense[cell] < COND_DRIP) continue
-			let weightSum = 0
-			for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-				const belowX = x + down.dx[offsetIndex]
-				const belowY = y + down.dy[offsetIndex]
-				if (!inWorld(world, belowX, belowY)) continue
-				if (mat[belowY * W + belowX] !== MAT.AIR) continue
-				weightSum += down.w[offsetIndex]
-			}
-			if (weightSum <= 1e-8) continue
-			const amount = condense[cell]
-			let written = 0
-			for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-				const belowX = x + down.dx[offsetIndex]
-				const belowY = y + down.dy[offsetIndex]
-				if (!inWorld(world, belowX, belowY)) continue
-				if (mat[belowY * W + belowX] !== MAT.AIR) continue
-				written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
-			}
-			condense[cell] = amount - written
-		}
-
-	// ĝ 转离开放下沿 → 悬挂凝结收回（回潮，满则溢到邻接空气；溢不完留在 condense）。
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
 			if (!isSoilMat(mat[cell]) || condense[cell] <= 1e-8) continue
-			if (hasOpenUnderside(world, x, y, down)) continue
+			const weightSum = undersideAirWeightSum(world, x, y, down)
+			if (weightSum > 1e-8) {
+				const held = condense[cell]
+				const amount = held >= COND_DRIP ? held : held * COND_WEEP_FRAC
+				if (amount <= 1e-8) continue
+				const written = distributeToUndersideAir(world, x, y, amount, down, weightSum)
+				condense[cell] = held - written
+				continue
+			}
+			// ĝ 转离开放下沿 → 悬挂凝结收回（回潮，满则溢到邻接空气；溢不完留在 condense）。
 			const back = condense[cell]
 			const room = Math.max(0, SOIL_CAP - moisture[cell])
 			const toMoist = Math.min(back, room)

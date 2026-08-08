@@ -1,11 +1,11 @@
 /**
  * 仅测试用地形分析辅助（基于导出的 `labelCavities` 组合）。
  */
-import { labelCavities, TALL_LAND_HEIGHT_FRAC } from '../terrain.mjs'
+import { labelCavities, TALL_LAND_HEIGHT_FRAC } from '../terrain/index.mjs'
 
 /**
  * 统计地下空气腔体。
- * @param {import('../terrain.mjs').TerrainData} terrain 已生成地形包
+ * @param {import('../terrain/index.mjs').TerrainData} terrain 已生成地形包
  * @returns {{ count: number, sizes: number[], hasUTube: boolean, hasChamber: boolean }} 腔体摘要
  */
 export function analyzeTerrain(terrain) {
@@ -44,7 +44,7 @@ export function surfacePeriodicityScore(surface) {
 
 /**
  * 视口内高陆覆盖率。
- * @param {import('../terrain.mjs').TerrainData} terrain 已生成地形包
+ * @param {import('../terrain/index.mjs').TerrainData} terrain 已生成地形包
  * @param {{ viewH: number, viewW: number }} size 视口尺寸
  * @returns {{ tall: number, total: number, fraction: number, minThick: number }} 高列统计
  */

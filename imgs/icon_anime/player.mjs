@@ -9,7 +9,7 @@ import { setTimeout as sleep } from 'node:timers/promises'
 
 import { console } from 'npm:@steve02081504/virtual-console'
 
-import { canUseTui } from './terminal.mjs'
+import { canUseTui, watchTerminalSize } from './terminal.mjs'
 
 const nativeStdout = process.stdout.targetStream
 
@@ -18,14 +18,6 @@ const nativeStdout = process.stdout.targetStream
  * @returns {boolean} 是否写入成功
  */
 const write = (text) => nativeStdout.write(text)
-
-/**
- * @returns {{ columns: number, rows: number }} 终端尺寸
- */
-export const terminalSize = () => ({
-	columns: process.stdout.columns || 0,
-	rows: process.stdout.rows || 0,
-})
 
 /**
  * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧或工厂
@@ -154,15 +146,15 @@ export const fps = 24
 
 /** @type {AbortController} */
 let ac = new AbortController()
-/** 当前播放中止信号。 */
-export let signal = ac.signal
+/** 当前播放中止信号（模块私有）。 */
+let playSignal = ac.signal
 
 /** @type {string} */
 let stdinCarry = ''
 /** @type {((buf: Buffer) => void) | null} */
 let onData = null
 /** @type {(() => void) | null} */
-let resizeListener = null
+let unwatchResize = null
 
 /**
  * 中止当前 play/loop。
@@ -178,8 +170,8 @@ export function abort() {
  */
 export function refreshSignal() {
 	ac = new AbortController()
-	signal = ac.signal
-	return signal
+	playSignal = ac.signal
+	return playSignal
 }
 
 /**
@@ -202,9 +194,7 @@ export function start({ onResize, onPointer, onUserAbort } = {}) {
 	// Alternate screen keeps the pre-start scrollback + cursor row; leave restores them.
 	write(`\x1b[?1049h\x1b[?25l\x1b[2J\x1b[H${MOUSE_ON}`)
 
-	/** @returns {void} */
-	resizeListener = () => onResize?.(terminalSize())
-	process.stdout.on('resize', resizeListener)
+	if (onResize) unwatchResize = watchTerminalSize(onResize)
 
 	process.stdin.setRawMode(true)
 	process.stdin.resume()
@@ -259,13 +249,13 @@ export function paint(frame) {
 async function playFrames(frames) {
 	if (!canUseTui) return
 	for await (const frame of iterateFrames(frames)) {
-		if (signal.aborted) return
+		if (playSignal.aborted) return
 		const started = performance.now()
 		paint(frame)
 		const wait = 1000 / fps - (performance.now() - started)
 		if (wait <= 0) continue
 		try {
-			await sleep(wait, undefined, { signal })
+			await sleep(wait, undefined, { signal: playSignal })
 		}
 		catch (error) {
 			if (error?.name === 'AbortError') return
@@ -281,7 +271,7 @@ async function playFrames(frames) {
  */
 async function loopFrames(frames) {
 	if (!canUseTui) return
-	while (!signal.aborted)
+	while (!playSignal.aborted)
 		await playFrames(frames)
 }
 
@@ -331,9 +321,9 @@ export function stop() {
 
 	if (!canUseTui) return
 
-	if (resizeListener) {
-		process.stdout.off('resize', resizeListener)
-		resizeListener = null
+	if (unwatchResize) {
+		unwatchResize()
+		unwatchResize = null
 	}
 	if (onData) {
 		process.stdin.off('data', onData)

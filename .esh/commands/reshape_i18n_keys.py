@@ -41,7 +41,7 @@ I18N_REWRITE_SUFFIXES = (".mjs", ".js", ".ts", ".html", ".ps1", ".sh", ".py")
 AFFIX_RE = re.compile(r"^(?:Suffix|Prefix)|(?:Suffix|Prefix)$")
 NUMBERED_RE = re.compile(r"^[A-Za-z][A-Za-z]*\d+$")
 SCREAMING_SNAKE_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
-UPDATE_LOCALE_DATA_HINT = "搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。"
+UPDATE_LOCALE_DATA_HINT = "搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），勿手改各语言 JSON。详见 src/public/locales/docs/locale-edits.md。"
 AFFIX_HINT = "应用 `${param}` 格式化完整句子，不要用 Suffix/Prefix 碎片硬拼字符串。"
 
 

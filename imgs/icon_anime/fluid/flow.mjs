@@ -6,7 +6,8 @@
  *   VISC_INERTIAL < visc < VISC_SOLID → Stokes 通量（水 / 熔岩）
  *   visc ≥ VISC_SOLID             → 冻结
  *
- * 所有自由液体运动经 Torricelli √(ΔP/ρg) 或自由液面填平均衡。
+ * 所有自由液体运动经 Torricelli √(ΔP/ρg) 或自由液面填平均衡；
+ * 另叠加 `inertiaMove`（Stokes 带内由速度场回馈的惯性通量）。
  * 液压势 φ = P/(ρg) − depth 为连通器坐标。
  */
 
@@ -18,6 +19,10 @@ export const P_FLOW_CAP = 0.45
 export const P_FLOW_GAIN = 0.55
 /** 自由液面薄层蠕动的填充分差比例。 */
 export const SHEET_GAIN = 0.25
+/** 速度场 → 惯性质量通量增益（再乘 viscGain）。 */
+export const INERT_GAIN = 0.35
+/** 单边惯性通量上限。 */
+export const INERT_CAP = 0.28
 
 /**
  * 粘滞 → 流量增益 [0, 1]（Stokes 分支 mobility）。
@@ -78,6 +83,25 @@ export const sheetMove = (srcLiq, dstLiq, dstRoom, visc) => {
 }
 
 /**
+ * 由格速度场回馈的惯性质量通量（Stokes 带；高粘滞自动掐死）。
+ * @param {number} vx 源格 vx
+ * @param {number} vy 源格 vy
+ * @param {number} dx 邻接列步
+ * @param {number} dy 邻接行步
+ * @param {number} srcMass 可用质量
+ * @param {number} dstRoom 目标剩余容量
+ * @param {number} visc 源粘滞
+ * @returns {number} 转移量
+ */
+export const inertiaMove = (vx, vy, dx, dy, srcMass, dstRoom, visc) => {
+	const gain = viscGain(visc)
+	if (gain <= 0 || srcMass <= 0 || dstRoom <= 0) return 0
+	const along = vx * dx + vy * dy
+	if (along <= 0.02) return 0
+	return Math.min(INERT_CAP, srcMass, dstRoom, along * INERT_GAIN * gain * srcMass)
+}
+
+/**
  * 执行 src → dst 质量转移，并累加流向 EMA。
  * @param {Float32Array} mass 质量场
  * @param {Float32Array} flowX 水平流累加器
@@ -87,11 +111,13 @@ export const sheetMove = (srcLiq, dstLiq, dstRoom, visc) => {
  * @param {number} dx 水平步长
  * @param {number} dy 垂直步长
  * @param {number} move 质量
+ * @param {number} [dstRoom] 目标剩余容量（缺省 = LIQ_FULL − mass[ni]）
  * @returns {number} 实际转移质量
  */
-export const applyTransfer = (mass, flowX, flowY, i, ni, dx, dy, move) => {
+export const applyTransfer = (mass, flowX, flowY, i, ni, dx, dy, move, dstRoom) => {
 	if (move <= 0) return 0
-	const m = Math.min(move, mass[i], LIQ_FULL - mass[ni])
+	const room = dstRoom === undefined ? LIQ_FULL - mass[ni] : dstRoom
+	const m = Math.min(move, mass[i], Math.max(0, room))
 	if (m <= 0) return 0
 	mass[i] -= m
 	mass[ni] += m

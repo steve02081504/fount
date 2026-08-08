@@ -7,12 +7,13 @@
  */
 
 import { applyPointer } from './pointer.mjs'
+import { CELL_ASPECT } from '../hash.mjs'
 
 /** 低于此移动量（视图格 / tick）视为静止。 */
 export const STILL_EPS = 0.55
 /** 涡旋出现前的静止帧数。 */
 export const VORTEX_DELAY = 10
-/** 涡旋视觉半径（格纵横比 ≈ 1×2 → hypot(dx, 2·dy)）。 */
+/** 涡旋视觉半径（格纵横比 CELL_ASPECT → hypot(dx, ASPECT·dy)）。 */
 export const VORTEX_RADIUS = 9
 /** 笔画段周围的笔刷半径。 */
 export const STROKE_RADIUS = 2.8
@@ -267,8 +268,8 @@ export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy, dirty
 		for (let x = minX; x <= maxX; x++) {
 			const rx = (x + 0.5) - cx
 			const ry = (y + 0.5) - cy
-			// Tall terminal cells: visual circle via hypot(dx, 2·dy).
-			const rVis = Math.hypot(rx, 2 * ry)
+			// Tall terminal cells: visual circle via CELL_ASPECT.
+			const rVis = Math.hypot(rx, CELL_ASPECT * ry)
 			if (rVis > R) continue
 			const fall = rVis < 0.35 ? 1 : (1 - rVis / R) ** 1.1
 			const rRaw = Math.hypot(rx, ry) || 1

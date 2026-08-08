@@ -8,7 +8,7 @@ alwaysApply: false
 
 World distribution: [world-distribution-spec.md](../../../../../../../../docs/design/world-distribution-spec.md).
 Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../src/scripts/test/docs/domain-harness.md).
-World shared state / `WorldChatHost`: [world-host.md](world-host.md).
+World shared state / `WorldChatHost`: [docs/world-host.md](docs/world-host.md).
 
 ## Speaker identity (`Uid`)
 

@@ -3,20 +3,36 @@
  *
  * 场景 / 测试调用此函数（或各子步）。
  * `labelAirRegions` 仅在 `world.airDirty`（材质 / LIQ_DRAW 占用变化）时运行。
- * `stepLiquid` 在粒子 / 抬升再次弄脏自由液体拓扑时于 tick 中途重新标记。
+ * `stepLiquid` 入口在粒子 / 抬升再次弄脏拓扑时重新标记。
  */
 
 import { stepBoundary } from './boundary.mjs'
 import { stepBubbles } from './bubbles.mjs'
-import { labelAirRegions, stepGas } from './gas.mjs'
-import { stepLiquid } from './liquid.mjs'
+import { labelAirRegions, stepGas } from './gas/index.mjs'
+import { stepLiquid } from './liquid/index.mjs'
 import { liftLiquidByWind, stepParticles } from './particles.mjs'
 import { stepThermal } from './thermal.mjs'
+import { fillCellDepths } from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld */
 
 /** 空操作冲击处理器（模块级 — 避免每 tick 闭包分配）。 */
 const NOOP_HIT = () => { /* airborne until land / expire-deposit */ }
+
+/**
+ * 缩放后新土壤沉降：空气标记 + 热力 + 液体步进。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} ticks 迭代次数
+ * @returns {void}
+ */
+export const stepResizeWeather = (world, ticks) => {
+	for (let tick = 0; tick < ticks; tick++) {
+		fillCellDepths(world)
+		labelAirRegions(world)
+		stepThermal(world)
+		stepLiquid(world)
+	}
+}
 
 /**
  * 推进完整流体栈一个 tick。
@@ -34,6 +50,7 @@ const NOOP_HIT = () => { /* airborne until land / expire-deposit */ }
  * @returns {void}
  */
 export const stepFluid = (world, opts = {}) => {
+	fillCellDepths(world)
 	if (world.airDirty) labelAirRegions(world)
 	stepGas(world, opts)
 	liftLiquidByWind(world)

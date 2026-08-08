@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Chat Shell Guide
 
-Less-common entity traps (`member_join`, avatars, Load reentrancy, session tip frontier): [entity-details.md](entity-details.md).
+Less-common entity traps (`member_join`, avatars, Load reentrancy, session tip frontier): [docs/entity-details.md](docs/entity-details.md).
 
 ## Entity model
 

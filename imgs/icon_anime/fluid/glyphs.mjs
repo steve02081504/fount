@@ -1,8 +1,9 @@
 /**
- * 由水量 × 液体速度（非气体风）驱动的水 / 水滴字形集。
+ * 由水量 × 液体速度（非气体风）驱动的流体字形集。
+ * 水 / 熔岩 / 雨滴共用同一套运动字形；粘滞只改物理流速，不改字母表。
  */
 
-import { COND_DRAW, COND_DRIP, SUBSTANCE, VISC_SOLID, rhoOf, viscOf } from './mat.mjs'
+import { COND_DRAW, COND_DRIP } from './mat.mjs'
 
 /** 垂直下落 / 水流达到此量时优先使用密竖条字形。 */
 export const FALL_HEAVY = 0.5
@@ -29,24 +30,6 @@ export const WATER_LOW_DR = ['‵', '‛', '‶', '‟', '‷', '⁏']
 export const WATER_FALL = ['|', '¦', '‖', '⁞', '⁚', '⁝', '.']
 /** 近静水池（轻 → 重）。 */
 export const WATER_STILL = ['‥', '…', '~', '⁓', '–']
-/** 高粘滞熔岩块状。 */
-export const LAVA_THICK = ['█', '▓', '▒', '░', '#', '%', '*']
-
-/**
- * 熔岩字形：高粘滞块状，低粘滞复用流动水字形。
- * @param {number} amount 质量
- * @param {number} temp 温度
- * @param {number} [phase=0] 相位
- * @param {number} [vx=0] 水平速度
- * @param {number} [vy=0] 垂直速度
- * @returns {string} 字形
- */
-export const lavaChar = (amount, temp, phase = 0, vx = 0, vy = 0) => {
-	const visc = viscOf(rhoOf(SUBSTANCE.ROCK, temp))
-	if (visc >= VISC_SOLID)
-		return pickWaterGlyph(LAVA_THICK, amount * (0.4 + Math.min(1, visc) * 0.6), phase, true)
-	return waterChar(amount, phase, vx, vy)
-}
 
 /**
  * 按水量（+ 相位抖动）从字形集中选取。
@@ -65,7 +48,7 @@ export const pickWaterGlyph = (chars, amount, phase, heavyFirst = false) => {
 }
 
 /**
- * 由水量 + 液体/粒子速度（非气体风）选取水字形。
+ * 由水量 + 液体/粒子速度（非气体风）选取流体字形。
  * @param {number} amount 水量
  * @param {number} [phase=0] 闪烁种子
  * @param {number} [vx=0] 水平速度
@@ -98,18 +81,38 @@ export const waterChar = (amount, phase = 0, vx = 0, vy = 0) => {
 }
 
 /**
- * 自由液体字形；可选 `falling` 使平静格偏向向下。
+ * 自由液体字形；可选 `falling` 在低速时沿 ĝ 偏向下落字形。
  * @param {number} amount 水量
  * @param {number} phase 闪烁种子
- * @param {boolean} [falling=false] 下方无支撑
+ * @param {boolean} [falling=false] 重力下无支撑
  * @param {number} [vx=0] 水平速度
  * @param {number} [vy=0] 垂直速度
+ * @param {number} [gx=0] 重力 x（单位）
+ * @param {number} [gy=1] 重力 y（单位）
  * @returns {string} 字形
  */
-export const liquidChar = (amount, phase, falling = false, vx = 0, vy = 0) => {
-	if (falling && vx * vx + vy * vy < STILL_SPEED * STILL_SPEED) vy = 0.55
+export const liquidChar = (amount, phase, falling = false, vx = 0, vy = 0, gx = 0, gy = 1) => {
+	if (falling && vx * vx + vy * vy < STILL_SPEED * STILL_SPEED) {
+		const len = Math.hypot(gx, gy) || 1
+		vx = gx / len * 0.55
+		vy = gy / len * 0.55
+	}
 	return waterChar(amount, phase, vx, vy)
 }
+
+/**
+ * 熔岩字形：与水同一套雨滴/流向字母表；着色在 compose。
+ * @param {number} amount 质量
+ * @param {number} [phase=0] 相位
+ * @param {number} [vx=0] 水平速度
+ * @param {number} [vy=0] 垂直速度
+ * @param {boolean} [falling=false] 重力下方无支撑
+ * @param {number} [gx=0] 重力 x
+ * @param {number} [gy=1] 重力 y
+ * @returns {string} 字形
+ */
+export const lavaChar = (amount, phase = 0, vx = 0, vy = 0, falling = false, gx = 0, gy = 1) =>
+	liquidChar(amount, phase, falling, vx, vy, gx, gy)
 
 /**
  * 土壤天花板悬挂水滴，按凝结量选取。

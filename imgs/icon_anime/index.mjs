@@ -24,17 +24,19 @@ export {
 	ICON_BODY_H, maxBodyD, maxPillarH,
 } from './icon.mjs'
 /** 网格 / 缓冲帧合成器。 */
-export { renderBuffers, renderGrid } from './compose.mjs'
+export { renderBuffers, renderGrid } from './compose/index.mjs'
 /** 动画状态机（入场 / 保持 / 退场）。 */
 export {
 	createAnimState, resizeAnimState, enter, hold, exit,
-} from './scene.mjs'
+} from './scene/index.mjs'
 /** 交互式 TUI 会话。 */
 export {
 	signal, abort, start, intro, dismiss, farewell, sleep,
 } from './session.mjs'
+/** 终端尺寸。 */
+export { terminalSize } from './terminal.mjs'
 /** 底层播放器工具。 */
-export { fps, terminalSize, consumeStdin } from './player.mjs'
+export { fps, consumeStdin } from './player.mjs'
 
 if (import.meta.main) {
 	await icon.start()

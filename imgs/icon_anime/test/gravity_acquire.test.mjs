@@ -1,10 +1,17 @@
 /**
- * gravity_acquire：termux-sensor stdout / JSON 解析。
+ * gravity_acquire：termux-sensor stdout / JSON 解析 / 退出释放。
+ *
+ * SensorAPI：流式监听把 listener 挂在 Termux:API 进程里；仅 kill CLI
+ * 会弄断 socket 并把 outputWriter 置空，却不 unregisterListener。
+ * 之后再 `termux-sensor -c` 会走 “cleanup unnecessary” 分支，传感器一直占着
+ * ——表现为要强杀 Termux + Termux:API 才恢复。正确停法：先 -c 再 kill。
  */
 /* global Deno */
 import { assertAlmostEquals, assertEquals } from 'jsr:@std/assert'
 
-import { parseSensorStdout, valuesFromSensorJson } from '../gravity_acquire/termux.mjs'
+import {
+	parseSensorStdout, valuesFromSensorJson, start as startTermuxAcquire,
+} from '../gravity_acquire/termux.mjs'
 
 Deno.test('gravity_acquire: pretty-printed termux-sensor stream (indent=2)', () => {
 	// SensorAPI: sensorReadout.toString(INDENTATION) + "\n"
@@ -40,4 +47,83 @@ Deno.test('gravity_acquire: compact + concatenated sensor objects', () => {
 Deno.test('gravity_acquire: valuesFromSensorJson skips short values arrays', () => {
 	assertEquals(valuesFromSensorJson({ empty: { values: [1] } }), null)
 	assertEquals(valuesFromSensorJson({ Gravity: { values: [1, 2, 3] } }), [1, 2, 3])
+})
+
+/**
+ * @returns {{
+ *   calls: unknown[],
+ *   stop: () => void,
+ *   fireExit: () => void,
+ * }} 记录调用顺序的 harness
+ */
+const mockTermuxLifecycle = () => {
+	/** @type {unknown[]} */
+	const calls = []
+	/** @type {(() => void) | null} */
+	let exitListener = null
+	const fakeChild = {
+		stdout: {
+			setEncoding() { /* noop */ },
+			on() { /* noop */ },
+			removeAllListeners() { /* noop */ },
+		},
+		on() { /* noop */ },
+		removeAllListeners() { /* noop */ },
+		kill() { calls.push('kill') },
+	}
+	const stop = startTermuxAcquire(() => { /* noop */ }, {
+		spawn: (cmd, args) => {
+			calls.push(['spawn', cmd, ...args])
+			return fakeChild
+		},
+		spawnSync: (cmd, args) => {
+			calls.push(['spawnSync', cmd, ...args])
+			return { status: 0 }
+		},
+		process: {
+			on(event, listener) {
+				if (event === 'exit') exitListener = listener
+			},
+			off(event, listener) {
+				if (event === 'exit' && exitListener === listener) exitListener = null
+			},
+		},
+	})
+	return {
+		calls,
+		stop,
+		fireExit: () => {
+			exitListener?.()
+		},
+	}
+}
+
+/**
+ * @param {unknown[]} calls 调用记录
+ * @returns {void}
+ */
+const assertCleanupBeforeKill = (calls) => {
+	const cleanupAt = calls.findIndex(entry =>
+		Array.isArray(entry) && entry[0] === 'spawnSync' && entry[1] === 'termux-sensor' && entry[2] === '-c')
+	const killAt = calls.findIndex(entry => entry === 'kill')
+	assertEquals(cleanupAt >= 0, true, 'expected termux-sensor -c')
+	assertEquals(killAt >= 0, true, 'expected child kill')
+	assertEquals(cleanupAt < killAt, true, 'SensorAPI requires -c before kill')
+}
+
+Deno.test('gravity_acquire: stop runs termux-sensor -c before kill', () => {
+	const { calls, stop } = mockTermuxLifecycle()
+	const spawnAt = calls.findIndex(entry =>
+		Array.isArray(entry) && entry[0] === 'spawn' && entry[1] === 'termux-sensor')
+	assertEquals(spawnAt >= 0, true)
+	calls.length = 0
+	stop()
+	assertCleanupBeforeKill(calls)
+})
+
+Deno.test('gravity_acquire: process exit still releases sensors before kill', () => {
+	const { calls, fireExit } = mockTermuxLifecycle()
+	calls.length = 0
+	fireExit()
+	assertCleanupBeforeKill(calls)
 })
