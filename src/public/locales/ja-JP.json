@@ -1994,7 +1994,9 @@
 				"unsavedHint": "ウィンドウを閉じると、保存されていない変更が破棄されます",
 				"tagsLabel": "ラベル",
 				"tagAdd": "追加",
-				"tagRemove": "タグの削除",
+				"tagRemove": {
+					"aria-label": "タグの削除"
+				},
 				"linksLabel": "リンク",
 				"handleLabel": "カスタムID",
 				"handleHint": "ネットワーク内の他のノードから検索できます。一意性は保証されず、競合は信頼リストに従って曖昧さが解消されます。",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "テキストを表示"
 					},
-					"remove": "リンクを削除する",
+					"remove": {
+						"aria-label": "リンクを削除する"
+					},
 					"url": {
 						"placeholder": "https://…またはfount://…"
 					}
@@ -4167,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "いまどうしてる？Markdown（fount 方言）対応。@ でメンション",
-			"locale": "コンテンツ言語",
+			"locale": {
+				"aria-label": "コンテンツ言語"
+			},
 			"aria-label": "投稿を作成",
 			"publish": "投稿",
 			"saveDraft": "下書きを保存",
@@ -4331,7 +4337,9 @@
 			},
 			"createFolderPrompt": "フォルダ名",
 			"pickFolderTitle": "お気に入りに追加",
-			"folderSelect": "お気に入りフォルダ",
+			"folderSelect": {
+				"aria-label": "お気に入りフォルダ"
+			},
 			"confirm": "確認",
 			"cancel": "キャンセル",
 			"remove": {
@@ -4494,7 +4502,9 @@
 				"aria-label": "検索"
 			},
 			"submit": "検索",
-			"clear": "クリア",
+			"clear": {
+				"aria-label": "クリア"
+			},
 			"empty": "一致する投稿はありません",
 			"tooShort": "少なくとも 2 文字を入力してください",
 			"usersTitle": "ユーザー",
@@ -4641,7 +4651,9 @@
 			"linking": "チャットグループに接続する",
 			"clear": "関連付けを解除する",
 			"pick": "チャットグループ/チャンネルに接続…",
-			"select": "チャットグループまたはチャンネルに接続する"
+			"select": {
+				"aria-label": "チャットグループまたはチャンネルに接続する"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

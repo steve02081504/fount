@@ -1994,7 +1994,9 @@
 				"unsavedHint": "闔窗則變更盡棄",
 				"tagsLabel": "標籤",
 				"tagAdd": "添",
-				"tagRemove": "刪標籤",
+				"tagRemove": {
+					"aria-label": "刪標籤"
+				},
 				"linksLabel": "鏈接",
 				"handleLabel": "自定義 ID",
 				"handleHint": "通衢內他節點可據此尋蹤；不保證唯一，衝突時按信任度名錄消歧。",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "示文"
 					},
-					"remove": "刪鏈接",
+					"remove": {
+						"aria-label": "刪鏈接"
+					},
 					"url": {
 						"placeholder": "https://… 或 fount://…"
 					}
@@ -4167,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "方今何思？可用墨記（fount 方言），入 @ 可提及",
-			"locale": "內容語言",
+			"locale": {
+				"aria-label": "內容語言"
+			},
 			"aria-label": "書言",
 			"publish": "發布",
 			"saveDraft": "存底稿",
@@ -4331,7 +4337,9 @@
 			},
 			"createFolderPrompt": "帙名",
 			"pickFolderTitle": "收藏到",
-			"folderSelect": "收藏帙",
+			"folderSelect": {
+				"aria-label": "收藏帙"
+			},
 			"confirm": "允",
 			"cancel": "止",
 			"remove": {
@@ -4494,7 +4502,9 @@
 				"aria-label": "尋蹤"
 			},
 			"submit": "尋蹤",
-			"clear": "清除",
+			"clear": {
+				"aria-label": "清除"
+			},
 			"empty": "無契合之言",
 			"tooShort": "請入二字以上",
 			"usersTitle": "客",
@@ -4641,7 +4651,9 @@
 			"linking": "關聯 Chat 群",
 			"clear": "否關聯",
 			"pick": "關聯 Chat 群/分苑…",
-			"select": "關聯 Chat 群或分苑"
+			"select": {
+				"aria-label": "關聯 Chat 群或分苑"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

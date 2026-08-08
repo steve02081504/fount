@@ -4,9 +4,11 @@
  * 1. 单段 key 不得以 Suffix/Prefix 开头或结尾（应用 ${param} 整句，勿碎片硬拼）
  * 2. 同级 ≥4 个键共享同一驼峰前缀 → 须嵌套
  * 3. 字母后纯数字结尾的 key（xxx1）禁用；用有意义名或数组
+ * 4. 各语言与 zh-CN 在共有路径上类型须一致（string ↔ object 会导致 UI 空白 / aria 丢失）
  *
  * 搬键请用 .esh/commands/update_locale_data.py（见 locale-edits.md）。
  * 批量前缀嵌套写回 locale：.esh/commands/reshape_i18n_keys.py（勿用 JS 写 locale JSON，会打乱如 404 的键序）。
+ * string → `{ aria-label }` 等单 applicator 包装见 locale-edits.md；`update-locales.py` 同步时也会规范化并在残留类型不匹配时 exit 1。
  */
 
 /**
@@ -100,10 +102,68 @@ export function findPrefixClusters(keys, min = PREFIX_CLUSTER_MIN) {
 /**
  * i18n 键结构问题。
  * @typedef {object} I18nKeyIssue
- * @property {'affix' | 'prefix_cluster' | 'numbered'} kind
+ * @property {'affix' | 'prefix_cluster' | 'numbered' | 'type_mismatch'} kind
  * @property {string} path 点分路径（含违规键或簇所在父路径）
  * @property {string} message 说明
  */
+
+/**
+ * @param {unknown} value locale 节点
+ * @returns {'null' | 'array' | 'object' | 'string' | 'number' | 'boolean' | 'undefined' | string} 粗粒度类型名
+ */
+export function localeValueKind(value) {
+	if (value === null) return 'null'
+	if (value === undefined) return 'undefined'
+	if (Array.isArray(value)) return 'array'
+	const type = typeof value
+	if (type === 'object') return 'object'
+	return type
+}
+
+/**
+ * 对照参考 locale，扫描另一语言在共有路径上的类型不一致。
+ * @param {unknown} reference 参考树（通常 zh-CN）
+ * @param {unknown} other 待检树
+ * @param {string} [path=''] 当前点分路径
+ * @returns {I18nKeyIssue[]} 类型不匹配列表
+ */
+export function scanLocaleTreeShape(reference, other, path = '') {
+	/** @type {I18nKeyIssue[]} */
+	const issues = []
+	if (reference === undefined || other === undefined) return issues
+
+	const refKind = localeValueKind(reference)
+	const otherKind = localeValueKind(other)
+	if (refKind !== otherKind) {
+		issues.push({
+			kind: 'type_mismatch',
+			path: path || '(root)',
+			message: `类型不匹配：参考为 ${refKind}，此处为 ${otherKind}。请用 update_locale_data 对齐结构（string→单 applicator 对象见 locale-edits.md），或跑 update-locales.py 规范化。${UPDATE_LOCALE_DATA_HINT}`,
+		})
+		return issues
+	}
+
+	if (refKind === 'object') {
+		const refObj = /** @type {Record<string, unknown>} */ reference
+		const otherObj = /** @type {Record<string, unknown>} */ other
+		for (const key of Object.keys(refObj)) {
+			if (!Object.hasOwn(otherObj, key)) continue
+			const child = path ? `${path}.${key}` : key
+			issues.push(...scanLocaleTreeShape(refObj[key], otherObj[key], child))
+		}
+		return issues
+	}
+
+	if (refKind === 'array') {
+		const refArr = /** @type {unknown[]} */ reference
+		const otherArr = /** @type {unknown[]} */ other
+		const n = Math.min(refArr.length, otherArr.length)
+		for (let index = 0; index < n; index++)
+			issues.push(...scanLocaleTreeShape(refArr[index], otherArr[index], `${path}[${index}]`))
+	}
+
+	return issues
+}
 
 /**
  * 扫描一棵 locale 对象树。

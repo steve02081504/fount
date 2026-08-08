@@ -14,9 +14,11 @@ import {
 	camelPrefixes,
 	decapitalize,
 	findPrefixClusters,
+	localeValueKind,
 	nestAllPrefixClusters,
 	nestAllPrefixClustersWithMap,
 	scanI18nKeyStructure,
+	scanLocaleTreeShape,
 } from '../i18n_keys.mjs'
 
 Deno.test('camelPrefixes / decapitalize / findPrefixClusters', () => {
@@ -190,4 +192,33 @@ Deno.test('zh-CN.json passes i18n key structure rules', async () => {
 		[],
 		issues.map(keyIssue => `[${keyIssue.kind}] ${keyIssue.path}: ${keyIssue.message}`).join('\n'),
 	)
+})
+
+Deno.test('scanLocaleTreeShape flags string vs object', () => {
+	assertEquals(localeValueKind({ 'aria-label': 'x' }), 'object')
+	assertEquals(localeValueKind('x'), 'string')
+	const issues = scanLocaleTreeShape(
+		{ a: { 'aria-label': '删' }, b: { nested: 'ok' } },
+		{ a: 'Delete', b: { nested: 'ok' } },
+	)
+	assertEquals(issues.length, 1)
+	assertEquals(issues[0]?.kind, 'type_mismatch')
+	assertEquals(issues[0]?.path, 'a')
+	assert(issues[0]?.message.includes(UPDATE_LOCALE_DATA_HINT))
+})
+
+Deno.test('all locale JSON trees match zh-CN value kinds on shared paths', async () => {
+	const { readdir } = await import('node:fs/promises')
+	const localesDir = join(REPO_ROOT, 'src/public/locales')
+	const zhCn = JSON.parse(await readFile(join(localesDir, 'zh-CN.json'), 'utf8'))
+	const localeFiles = (await readdir(localesDir)).filter(name => name.endsWith('.json') && name !== 'zh-CN.json')
+	assert(localeFiles.length > 0, 'expected non-zh-CN locale JSON files')
+	/** @type {string[]} */
+	const failures = []
+	for (const fileName of localeFiles) {
+		const data = JSON.parse(await readFile(join(localesDir, fileName), 'utf8'))
+		for (const issue of scanLocaleTreeShape(zhCn, data))
+			failures.push(`${fileName}: [${issue.kind}] ${issue.path}: ${issue.message}`)
+	}
+	assertEquals(failures, [], failures.join('\n'))
 })

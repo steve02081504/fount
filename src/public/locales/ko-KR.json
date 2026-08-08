@@ -1994,7 +1994,9 @@
 				"unsavedHint": "창을 닫으면 저장되지 않은 변경사항이 삭제됩니다.",
 				"tagsLabel": "라벨",
 				"tagAdd": "다음에 추가",
-				"tagRemove": "태그 삭제",
+				"tagRemove": {
+					"aria-label": "태그 삭제"
+				},
 				"linksLabel": "링크",
 				"handleLabel": "맞춤 ID",
 				"handleHint": "네트워크의 다른 노드에서 검색할 수 있습니다. 고유성은 보장되지 않으며 신뢰 목록에 따라 충돌이 명확해집니다.",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "텍스트 표시"
 					},
-					"remove": "링크 삭제",
+					"remove": {
+						"aria-label": "링크 삭제"
+					},
 					"url": {
 						"placeholder": "https://… 또는 fount://…"
 					}
@@ -4167,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "무슨 생각을 하고 계신가요? Markdown(fount 방언) 지원, @로 멘션",
-			"locale": "콘텐츠 언어",
+			"locale": {
+				"aria-label": "콘텐츠 언어"
+			},
 			"aria-label": "게시물 작성",
 			"publish": "게시",
 			"saveDraft": "초안 저장",
@@ -4331,7 +4337,9 @@
 			},
 			"createFolderPrompt": "폴더 이름",
 			"pickFolderTitle": "즐겨찾기에 추가",
-			"folderSelect": "즐겨찾는 폴더",
+			"folderSelect": {
+				"aria-label": "즐겨찾는 폴더"
+			},
 			"confirm": "확인",
 			"cancel": "취소",
 			"remove": {
@@ -4494,7 +4502,9 @@
 				"aria-label": "찾다"
 			},
 			"submit": "찾다",
-			"clear": "지우기",
+			"clear": {
+				"aria-label": "지우기"
+			},
 			"empty": "일치하는 게시물이 없습니다.",
 			"tooShort": "2자 이상 입력해주세요.",
 			"usersTitle": "사용자",
@@ -4641,7 +4651,9 @@
 			"linking": "채팅 그룹 연결",
 			"clear": "연결 해제",
 			"pick": "채팅 그룹/채널 연결…",
-			"select": "채팅 그룹 또는 채널에 연결"
+			"select": {
+				"aria-label": "채팅 그룹 또는 채널에 연결"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

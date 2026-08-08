@@ -495,32 +495,59 @@ def translate_value(value, source_lang, target_lang):
 		return value
 
 
-def normalize_string_vs_object_with_textContent(parent_dict_a, parent_dict_b, key, lang_a, lang_b, path):
+# 与前端 translateSingularElement / i18n_refs.mjs 对齐的 DOM applicator 字段
+I18N_ELEMENT_APPLICATOR_KEYS = frozenset({
+	"placeholder",
+	"title",
+	"label",
+	"value",
+	"alt",
+	"aria-label",
+	"textContent",
+	"innerHTML",
+	"dataset",
+})
+
+# 同步过程中无法自动对齐的类型不匹配（脚本结束时 exit 1）
+_type_mismatch_errors: list[str] = []
+
+
+def single_applicator_key(value):
+	"""若 value 为仅含一个 DOM applicator 字段的对象，返回该字段名，否则 None。"""
+	if not isinstance(value, (OrderedDict, dict)) or len(value) != 1:
+		return None
+	only_key = next(iter(value))
+	return only_key if only_key in I18N_ELEMENT_APPLICATOR_KEYS else None
+
+
+def report_type_mismatch(path, lang_a, val_a, lang_b, val_b):
+	"""记录并打印类型不匹配（不再仅警告跳过）。"""
+	msg = f"类型不匹配 @ '{path}'. {lang_a}: {type(val_a).__name__}, {lang_b}: {type(val_b).__name__}"
+	print(f"  - 错误: {msg}。无法自动同步。")
+	_type_mismatch_errors.append(msg)
+
+
+def normalize_string_vs_applicator_object(parent_dict_a, parent_dict_b, key, lang_a, lang_b, path):
 	"""
-	Normalizes cases where one value is a string and the other is an object with a 'textContent' property.
-	This aligns with the logic in i18n.mjs where a string is treated as textContent.
-	Modifies the parent dictionary in place.
+	一侧为 string、另一侧为单 applicator 对象时，把字符串包成同结构对象（保留原译文）。
+	覆盖 textContent / aria-label / title / placeholder 等（与 i18n 对象模式一致）。
 	Returns (val_a, val_b, changed_flag).
 	"""
 	val_a, val_b = parent_dict_a.get(key), parent_dict_b.get(key)
 	changed_here = False
 
-	is_val_a_str = isinstance(val_a, str)
-	is_val_b_str = isinstance(val_b, str)
-	is_val_a_tc_obj = isinstance(val_a, (OrderedDict, dict)) and "textContent" in val_a
-	is_val_b_tc_obj = isinstance(val_b, (OrderedDict, dict)) and "textContent" in val_b
+	app_a = single_applicator_key(val_a)
+	app_b = single_applicator_key(val_b)
 
-	# Case 1: A is string, B is object with textContent -> Convert A to object
-	if is_val_a_str and is_val_b_tc_obj:
-		parent_dict_a[key] = OrderedDict([("textContent", val_a)])
+	if isinstance(val_a, str) and app_b:
+		parent_dict_a[key] = OrderedDict([(app_b, val_a)])
 		val_a = parent_dict_a[key]
-		print(f"  - 规范化: @ '{path}' 中 '{lang_a}' 的字符串值已转换为 {{'textContent': ...}} 以匹配 '{lang_b}'。")
+		print(f"  - 规范化: @ '{path}' 中 '{lang_a}' 的字符串已转换为 {{'{app_b}': ...}} 以匹配 '{lang_b}'。")
 		changed_here = True
-	# Case 2: B is string, A is object with textContent -> Convert B to object
-	elif is_val_b_str and is_val_a_tc_obj:
-		parent_dict_b[key] = OrderedDict([("textContent", val_b)])
+	elif isinstance(val_b, str) and app_a:
+		parent_dict_b[key] = OrderedDict([(app_a, val_b)])
 		val_b = parent_dict_b[key]
-		print(f"  - 规范化: @ '{path}' 中 '{lang_b}' 的字符串值已转换为 {{'textContent': ...}} 以匹配 '{lang_a}'。")
+		print(f"  - 规范化: @ '{path}' 中 '{lang_b}' 的字符串已转换为 {{'{app_a}': ...}} 以匹配 '{lang_a}'。")
 		changed_here = True
 
 	return val_a, val_b, changed_here
@@ -577,7 +604,7 @@ def sync_common_key(dict_a, dict_b, key, lang_a, lang_b, reference_codes, path):
 		return False
 
 	changed_here = False
-	val_a, val_b, normalized_changed = normalize_string_vs_object_with_textContent(dict_a, dict_b, key, lang_a, lang_b, path)
+	val_a, val_b, normalized_changed = normalize_string_vs_applicator_object(dict_a, dict_b, key, lang_a, lang_b, path)
 	if normalized_changed:
 		changed_here = True
 
@@ -588,7 +615,7 @@ def sync_common_key(dict_a, dict_b, key, lang_a, lang_b, reference_codes, path):
 		is_val_a_text_like = isinstance(val_a, OrderedDict) and "text" in val_a and len(val_a) == 1
 		is_val_b_text_like = isinstance(val_b, OrderedDict) and "text" in val_b and len(val_b) == 1
 		if not ((isinstance(val_a, str) and is_val_b_text_like) or (isinstance(val_b, str) and is_val_a_text_like)):
-			print(f"  - 警告: 类型不匹配 @ '{path}'. {lang_a}: {type(val_a).__name__}, {lang_b}: {type(val_b).__name__}。跳过同步。")
+			report_type_mismatch(path, lang_a, val_a, lang_b, val_b)
 	return changed_here
 
 
@@ -1597,9 +1624,39 @@ export type LocaleKeyWithoutParams = Exclude<LocaleKey, LocaleKeyWithParams>
 		print(f"  - Error: Failed to write to {output_path}: {e}")
 
 
+def self_test_normalize_applicator() -> int:
+	"""CLI smoke：string ↔ 单 applicator 对象规范化。"""
+	import io
+	from contextlib import redirect_stdout
+
+	a = OrderedDict([("k", "Delete tag")])
+	b = OrderedDict([("k", OrderedDict([("aria-label", "删除标签")]))])
+	with redirect_stdout(io.StringIO()):
+		val_a, val_b, changed = normalize_string_vs_applicator_object(a, b, "k", "en-UK", "zh-CN", "demo.k")
+	if not changed or not isinstance(val_a, OrderedDict) or val_a.get("aria-label") != "Delete tag":
+		print(f"normalize failed: changed={changed} val_a={val_a!r}", file=sys.stderr)
+		return 1
+	if not isinstance(val_b, OrderedDict) or val_b.get("aria-label") != "删除标签":
+		print(f"normalize corrupted object side: {val_b!r}", file=sys.stderr)
+		return 1
+	# multi-key object vs string must not auto-wrap
+	c = OrderedDict([("k", "plain")])
+	d = OrderedDict([("k", OrderedDict([("base", "x"), ("heavy", "y")]))])
+	with redirect_stdout(io.StringIO()):
+		_, _, changed2 = normalize_string_vs_applicator_object(c, d, "k", "en-UK", "zh-CN", "demo.multi")
+	if changed2 or not isinstance(c["k"], str):
+		print(f"multi-key should not normalize: changed={changed2} c={c!r}", file=sys.stderr)
+		return 1
+	print(json.dumps({"ok": True, "aria-label": val_a["aria-label"]}, ensure_ascii=False))
+	return 0
+
+
 # --- 主逻辑 (重构后) ---
 def main():
 	"""主执行函数"""
+	global _type_mismatch_errors
+	_type_mismatch_errors = []
+
 	ensure_allowed_to_run()
 	load_supported_google_codes()
 	gitignore_spec = load_gitignore_spec(FOUNT_DIR)
@@ -1636,6 +1693,17 @@ def main():
 
 	print("\n脚本执行完毕。" + ("（翻译中途熔断）" if is_translation_aborted() else ""))
 
+	if _type_mismatch_errors:
+		unique = list(dict.fromkeys(_type_mismatch_errors))
+		print(f"\n发现 {len(unique)} 处类型不匹配（无法自动同步），请用 update_locale_data 对齐结构后重跑。", file=sys.stderr)
+		for msg in unique[:20]:
+			print(f"  - {msg}", file=sys.stderr)
+		if len(unique) > 20:
+			print(f"  … 另有 {len(unique) - 20} 处", file=sys.stderr)
+		sys.exit(1)
+
 
 if __name__ == "__main__":
+	if len(sys.argv) > 1 and sys.argv[1] == "--self-test":
+		sys.exit(self_test_normalize_applicator())
 	main()

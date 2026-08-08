@@ -1993,7 +1993,9 @@
 				"unsavedHint": "關閉視窗將放棄未儲存的更改",
 				"tagsLabel": "標籤",
 				"tagAdd": "新增",
-				"tagRemove": "刪除標籤",
+				"tagRemove": {
+					"aria-label": "刪除標籤"
+				},
 				"linksLabel": "連結",
 				"handleLabel": "自訂 ID",
 				"handleHint": "可被網路內他節點搜尋；不保證唯一，衝突時按信任度列表消歧。",
@@ -2040,7 +2042,9 @@
 					"name": {
 						"placeholder": "顯示文字"
 					},
-					"remove": "刪除連結",
+					"remove": {
+						"aria-label": "刪除連結"
+					},
 					"url": {
 						"placeholder": "https://… 或 fount://…"
 					}
@@ -4166,7 +4170,9 @@
 		},
 		"composer": {
 			"placeholder": "在想什麼？支援 Markdown（fount 方言），輸入 @ 可提及",
-			"locale": "內容語言",
+			"locale": {
+				"aria-label": "內容語言"
+			},
 			"aria-label": "寫動態",
 			"publish": "釋出",
 			"saveDraft": "存草稿",
@@ -4330,7 +4336,9 @@
 			},
 			"createFolderPrompt": "資料夾名稱",
 			"pickFolderTitle": "收藏到",
-			"folderSelect": "收藏資料夾",
+			"folderSelect": {
+				"aria-label": "收藏資料夾"
+			},
 			"confirm": "確認",
 			"cancel": "取消",
 			"remove": {
@@ -4493,7 +4501,9 @@
 				"aria-label": "搜尋"
 			},
 			"submit": "搜尋",
-			"clear": "清除",
+			"clear": {
+				"aria-label": "清除"
+			},
 			"empty": "沒有匹配的帖子",
 			"tooShort": "請輸入至少 2 個字元",
 			"usersTitle": "使用者",
@@ -4640,7 +4650,9 @@
 			"linking": "關聯 Chat 群",
 			"clear": "取消關聯",
 			"pick": "關聯 Chat 群/頻道…",
-			"select": "關聯 Chat 群或頻道"
+			"select": {
+				"aria-label": "關聯 Chat 群或頻道"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

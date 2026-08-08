@@ -1994,7 +1994,9 @@
 				"unsavedHint": "Đóng cửa sổ sẽ loại bỏ những thay đổi chưa được lưu",
 				"tagsLabel": "Nhãn",
 				"tagAdd": "Thêm",
-				"tagRemove": "Xóa thẻ",
+				"tagRemove": {
+					"aria-label": "Xóa thẻ"
+				},
 				"linksLabel": "liên kết",
 				"handleLabel": "ID tùy chỉnh",
 				"handleHint": "Có thể được tìm kiếm bởi các nút khác trong mạng; tính duy nhất không được đảm bảo và xung đột sẽ được giải quyết theo danh sách tin cậy.",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "Hiển thị văn bản"
 					},
-					"remove": "Xóa liên kết",
+					"remove": {
+						"aria-label": "Xóa liên kết"
+					},
 					"url": {
 						"placeholder": "https://… hoặc fount://…"
 					}
@@ -4167,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "Bạn đang nghĩ về điều gì? Hỗ trợ Markdown (phương ngữ nguồn), nhập @ để đề cập",
-			"locale": "ngôn ngữ nội dung",
+			"locale": {
+				"aria-label": "ngôn ngữ nội dung"
+			},
 			"aria-label": "Viết bài đăng",
 			"publish": "giải phóng",
 			"saveDraft": "lưu bản nháp",
@@ -4331,7 +4337,9 @@
 			},
 			"createFolderPrompt": "tên thư mục",
 			"pickFolderTitle": "Lưu vào",
-			"folderSelect": "thư mục yêu thích",
+			"folderSelect": {
+				"aria-label": "thư mục yêu thích"
+			},
 			"confirm": "xác nhận",
 			"cancel": "Hủy bỏ",
 			"remove": {
@@ -4494,7 +4502,9 @@
 				"aria-label": "tìm kiếm"
 			},
 			"submit": "Tìm kiếm",
-			"clear": "Thông thoáng",
+			"clear": {
+				"aria-label": "Thông thoáng"
+			},
 			"empty": "Không có bài viết phù hợp",
 			"tooShort": "Vui lòng nhập ít nhất 2 ký tự",
 			"usersTitle": "người dùng",
@@ -4641,7 +4651,9 @@
 			"linking": "Kết nối nhóm trò chuyện",
 			"clear": "Tách rời",
 			"pick": "Kết nối Nhóm/Kênh trò chuyện…",
-			"select": "Kết nối với nhóm hoặc kênh Trò chuyện"
+			"select": {
+				"aria-label": "Kết nối với nhóm hoặc kênh Trò chuyện"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

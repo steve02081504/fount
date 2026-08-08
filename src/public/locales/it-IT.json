@@ -1994,7 +1994,9 @@
 				"unsavedHint": "Chiudendo la finestra verranno eliminate le modifiche non salvate",
 				"tagsLabel": "Etichetta",
 				"tagAdd": "Aggiungere",
-				"tagRemove": "Elimina etichetta",
+				"tagRemove": {
+					"aria-label": "Elimina etichetta"
+				},
 				"linksLabel": "Collegamento",
 				"handleLabel": "ID personalizzato",
 				"handleHint": "Può essere ricercato da altri nodi della rete; l'unicità non è garantita e i conflitti verranno chiariti in base all'elenco di fiducia.",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "Mostra testo"
 					},
-					"remove": "Rimuovi collegamento",
+					"remove": {
+						"aria-label": "Rimuovi collegamento"
+					},
 					"url": {
 						"placeholder": "https://… o fonte://…"
 					}
@@ -4167,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "A cosa stai pensando? Supporta Markdown (dialetto dei caratteri), inserisci @ per menzionare",
-			"locale": "linguaggio dei contenuti",
+			"locale": {
+				"aria-label": "linguaggio dei contenuti"
+			},
 			"aria-label": "Scrivi un post",
 			"publish": "pubblicazione",
 			"saveDraft": "salva bozza",
@@ -4331,7 +4337,9 @@
 			},
 			"createFolderPrompt": "Nome della cartella",
 			"pickFolderTitle": "Salva in…",
-			"folderSelect": "Cartella salvata",
+			"folderSelect": {
+				"aria-label": "Cartella salvata"
+			},
 			"confirm": "Confermare",
 			"cancel": "Annulla",
 			"remove": {
@@ -4494,7 +4502,9 @@
 				"aria-label": "Ricerca"
 			},
 			"submit": "Ricerca",
-			"clear": "Chiaro",
+			"clear": {
+				"aria-label": "Chiaro"
+			},
 			"empty": "Nessun post corrispondente",
 			"tooShort": "Inserisci almeno 2 caratteri",
 			"usersTitle": "Utenti",
@@ -4641,7 +4651,9 @@
 			"linking": "Collega il gruppo di chat",
 			"clear": "Scollega",
 			"pick": "Collega gruppo/canale di chat...",
-			"select": "Connettiti a un gruppo o canale di chat"
+			"select": {
+				"aria-label": "Connettiti a un gruppo o canale di chat"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

@@ -1994,7 +1994,9 @@
 				"unsavedHint": "✖️ ➡️ 🚫💾✏️",
 				"tagsLabel": "🏷️",
 				"tagAdd": "➕",
-				"tagRemove": "🗑️🏷️",
+				"tagRemove": {
+					"aria-label": "🗑️🏷️"
+				},
 				"linksLabel": "🔗",
 				"handleLabel": "🔧🆔",
 				"handleHint": "🌐🔍；🚫1️⃣ 🤝📋🔀",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "👀🔤"
 					},
-					"remove": "🗑️🔗",
+					"remove": {
+						"aria-label": "🗑️🔗"
+					},
 					"url": {
 						"placeholder": "https://… ⛲://…"
 					}
@@ -4167,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "💭… ✅📝⛲🗣️ @️⃣✅",
-			"locale": "📄🗣️",
+			"locale": {
+				"aria-label": "📄🗣️"
+			},
 			"aria-label": "✍️📰",
 			"publish": "📤",
 			"saveDraft": "💾📝",
@@ -4331,7 +4337,9 @@
 			},
 			"createFolderPrompt": "📁🏷️",
 			"pickFolderTitle": "⭐➡️",
-			"folderSelect": "⭐📁",
+			"folderSelect": {
+				"aria-label": "⭐📁"
+			},
 			"confirm": "✅",
 			"cancel": "↩️",
 			"remove": {
@@ -4494,7 +4502,9 @@
 				"aria-label": "🔍"
 			},
 			"submit": "🔍",
-			"clear": "🧹",
+			"clear": {
+				"aria-label": "🧹"
+			},
 			"empty": "🔍📄📭",
 			"tooShort": "✍️⬆️2🔤",
 			"usersTitle": "👤",
@@ -4641,7 +4651,9 @@
 			"linking": "🔗💬👥",
 			"clear": "🔓🔗",
 			"pick": "🔗💬👥/📺…",
-			"select": "🔗💬👥/📺"
+			"select": {
+				"aria-label": "🔗💬👥/📺"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

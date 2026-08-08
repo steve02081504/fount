@@ -1994,7 +1994,9 @@
 				"unsavedHint": "Ef glugganum er lokað verður óvistuðum breytingum fleygt",
 				"tagsLabel": "Merki",
 				"tagAdd": "Bæta við",
-				"tagRemove": "Eyða merki",
+				"tagRemove": {
+					"aria-label": "Eyða merki"
+				},
 				"linksLabel": "Tengill",
 				"handleLabel": "Sérsniðið auðkenni",
 				"handleHint": "Hægt að leita af öðrum hnútum á netinu; sérstaða er ekki tryggð og árekstrar verða aðgreindir samkvæmt traustalistanum.",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "Sýna texta"
 					},
-					"remove": "Fjarlægja tengil",
+					"remove": {
+						"aria-label": "Fjarlægja tengil"
+					},
 					"url": {
 						"placeholder": "Https://… eða uppspretta://…"
 					}
@@ -4167,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "Hvað ertu að hugsa um? Styðjið Markdown (font mállýska), sláðu inn @ til að nefna",
-			"locale": "Efnismál",
+			"locale": {
+				"aria-label": "Efnismál"
+			},
 			"aria-label": "Skrifa færslu",
 			"publish": "Birta",
 			"saveDraft": "Vista drög",
@@ -4331,7 +4337,9 @@
 			},
 			"createFolderPrompt": "Nafn möppu",
 			"pickFolderTitle": "Bæta við eftirlæti",
-			"folderSelect": "Uppáhalds mappa",
+			"folderSelect": {
+				"aria-label": "Uppáhalds mappa"
+			},
 			"confirm": "Staðfesta",
 			"cancel": "Hætta við",
 			"remove": {
@@ -4494,7 +4502,9 @@
 				"aria-label": "Leita"
 			},
 			"submit": "Leita",
-			"clear": "Hreinsa",
+			"clear": {
+				"aria-label": "Hreinsa"
+			},
 			"empty": "Engar samsvarandi færslur",
 			"tooShort": "Vinsamlegast sláðu inn að minnsta kosti 2 stafi",
 			"usersTitle": "Notendur",
@@ -4641,7 +4651,9 @@
 			"linking": "Tengdu spjallhóp",
 			"clear": "Aftengja",
 			"pick": "Tengja spjallhóp/rás...",
-			"select": "Tengstu við spjallhóp eða rás"
+			"select": {
+				"aria-label": "Tengstu við spjallhóp eða rás"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

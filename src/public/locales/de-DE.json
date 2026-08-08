@@ -1994,7 +1994,9 @@
 				"unsavedHint": "Durch das Schließen des Fensters werden nicht gespeicherte Änderungen verworfen",
 				"tagsLabel": "Etikett",
 				"tagAdd": "Hinzufügen zu",
-				"tagRemove": "Tag löschen",
+				"tagRemove": {
+					"aria-label": "Tag löschen"
+				},
 				"linksLabel": "Link",
 				"handleLabel": "Benutzerdefinierte ID",
 				"handleHint": "Kann von anderen Knoten im Netzwerk durchsucht werden; Die Eindeutigkeit ist nicht garantiert und Konflikte werden anhand der Vertrauensliste eindeutig gelöst.",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "Text anzeigen"
 					},
-					"remove": "Link entfernen",
+					"remove": {
+						"aria-label": "Link entfernen"
+					},
 					"url": {
 						"placeholder": "https://… oder fount://…"
 					}
@@ -4167,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "Woran denken Sie? Markdown (fount-Dialekt) wird unterstützt, @ zum Erwähnen",
-			"locale": "Inhaltssprache",
+			"locale": {
+				"aria-label": "Inhaltssprache"
+			},
 			"aria-label": "Beitrag schreiben",
 			"publish": "Veröffentlichen",
 			"saveDraft": "Entwurf speichern",
@@ -4331,7 +4337,9 @@
 			},
 			"createFolderPrompt": "Ordnername",
 			"pickFolderTitle": "Zu Favoriten hinzufügen",
-			"folderSelect": "Sammlungsordner",
+			"folderSelect": {
+				"aria-label": "Sammlungsordner"
+			},
 			"confirm": "Bestätigen",
 			"cancel": "Abbrechen",
 			"remove": {
@@ -4494,7 +4502,9 @@
 				"aria-label": "Suchen"
 			},
 			"submit": "Suchen",
-			"clear": "Leeren",
+			"clear": {
+				"aria-label": "Leeren"
+			},
 			"empty": "Keine passenden Beiträge",
 			"tooShort": "Bitte geben Sie mindestens 2 Zeichen ein",
 			"usersTitle": "Benutzer",
@@ -4641,7 +4651,9 @@
 			"linking": "Chat-Gruppe verbinden",
 			"clear": "Verknüpfung aufheben",
 			"pick": "Chat-Gruppe/Kanal verbinden…",
-			"select": "Stellen Sie eine Verbindung zu einer Chat-Gruppe oder einem Chat-Kanal her"
+			"select": {
+				"aria-label": "Stellen Sie eine Verbindung zu einer Chat-Gruppe oder einem Chat-Kanal her"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {
