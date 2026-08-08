@@ -7,15 +7,11 @@
 
 import { neighborCoord } from './edges.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
-import { markAirIfDrawCrossed, strongestUp, inWorld } from './world.mjs'
+import { pushParticle } from './particle_pool.mjs'
+import { markAirIfDrawCrossed, markAirIfFillCrossed, strongestUp, inWorld, impartLiquidMomentum, cellRoom, cellFill } from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld
- * @typedef {{
- *   x: Float32Array, y: Float32Array,
- *   vx: Float32Array, vy: Float32Array,
- *   life: Float32Array, amt: Float32Array,
- *   count: number,
- * }} ParticlePool
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld
+ * @typedef {import('./particle_pool.mjs').ParticlePool} ParticlePool
  */
 
 /** 粒子速度向局地气体混合（水平）。 */
@@ -36,68 +32,8 @@ export const WIND_LIFT_MAX = 0.4
 export const WIND_HOLD_LIFE = 36
 
 const MAX_SPEED = 1.15
-const PARTICLE_CAP = 1200
 /** 默认粒子重力模长（兼容旧测试/外部引用）。 */
 export const PARTICLE_GRAVITY = 0.12
-
-/**
- * 分配空粒子 SoA 池。
- * @param {number} [cap=PARTICLE_CAP] 容量
- * @returns {ParticlePool} 池
- */
-export const createParticlePool = (cap = PARTICLE_CAP) => ({
-	x: new Float32Array(cap),
-	y: new Float32Array(cap),
-	vx: new Float32Array(cap),
-	vy: new Float32Array(cap),
-	life: new Float32Array(cap),
-	amt: new Float32Array(cap),
-	count: 0,
-})
-
-/**
- * 清空粒子池。
- * @param {ParticlePool} pool 粒子池
- * @returns {void}
- */
-export const clearParticlePool = (pool) => {
-	pool.count = 0
-}
-
-/**
- * 池内粒子水质量总和。
- * @param {ParticlePool} pool 粒子池
- * @returns {number} amt 总量
- */
-export const totalParticleWater = (pool) => {
-	let t = 0
-	for (let i = 0; i < pool.count; i++) t += pool.amt[i]
-	return t
-}
-
-/**
- * 向池压入一粒子（满则跳过）。
- * @param {ParticlePool} pool 粒子池
- * @param {number} x 列
- * @param {number} y 行
- * @param {number} vx 水平速度
- * @param {number} vy 垂直速度
- * @param {number} life 剩余帧
- * @param {number} amt 水质量
- * @returns {number} 写入索引，满则 -1
- */
-const pushParticle = (pool, x, y, vx, vy, life, amt) => {
-	const i = pool.count
-	if (i >= pool.x.length) return -1
-	pool.x[i] = x
-	pool.y[i] = y
-	pool.vx[i] = vx
-	pool.vy[i] = vy
-	pool.life[i] = life
-	pool.amt[i] = amt
-	pool.count = i + 1
-	return i
-}
 
 /**
  * 未超上限时生成雨/溅射粒子。
@@ -143,49 +79,56 @@ export const verticalGasDrag = (gux, guy) => {
 }
 
 /**
- * 尝试存入一格；返回已存增量。
+ * 尝试存入一格；返回已存增量。携带入射动量。
  * @param {FluidWorld} world 流体世界
  * @param {number} px 列
  * @param {number} py 行
  * @param {number} left 剩余质量
+ * @param {number} vx 入射 vx
+ * @param {number} vy 入射 vy
  * @returns {number} 已存
  */
-const tryDepositCell = (world, px, py, left) => {
+const tryDepositCell = (world, px, py, left, vx, vy) => {
 	const { worldW: W, worldH: H, mat, liq } = world
 	if (px < 0 || py < 0 || px >= W || py >= H) return 0
 	const i = py * W + px
 	if (isLiquidBarrier(mat[i])) return 0
 	if (mat[i] !== MAT.AIR && mat[i] !== MAT.POOL) return 0
-	const room = LIQ_FULL - liq[i]
+	const room = cellRoom(world, i)
 	if (room <= 0) return 0
 	const take = Math.min(left, room)
+	const fillBefore = cellFill(world, i)
 	const before = liq[i]
 	liq[i] += take
-	markAirIfDrawCrossed(world, before, liq[i])
+	impartLiquidMomentum(world, i, before, take, vx, vy)
+	markAirIfFillCrossed(world, fillBefore, cellFill(world, i))
 	return take
 }
 
 /**
  * 将粒子质量存入 `(x, y)` 附近网格。优先 AIR / POOL；
- * 无处落地时在世界边缘_sink。返回已沉积（或_sink）质量。
+ * 无处落地时在世界边缘 sink。返回已沉积（或 sink）质量。
+ * 入射速度写入 `liqVx`/`liqVy`（质量加权），供字形与后续 EMA。
  * @param {FluidWorld} world 流体世界
  * @param {number} x 列
  * @param {number} y 行
  * @param {number} amt 水质量
+ * @param {number} [vx=0] 入射 vx
+ * @param {number} [vy=0] 入射 vy
  * @returns {number} 已计入质量
  */
-export const depositParticleMass = (world, x, y, amt) => {
+export const depositParticleMass = (world, x, y, amt, vx = 0, vy = 0) => {
 	if (amt <= 0) return 0
 	const { worldW: W, worldH: H } = world
 	const cx = Math.max(0, Math.min(W - 1, x | 0))
 	const cy = Math.max(0, Math.min(H - 1, y | 0))
 
 	let left = amt
-	left -= tryDepositCell(world, cx, cy, left)
-	if (left > 1e-8 && cy + 1 < H) left -= tryDepositCell(world, cx, cy + 1, left)
-	if (left > 1e-8 && cy > 0) left -= tryDepositCell(world, cx, cy - 1, left)
-	if (left > 1e-8) left -= tryDepositCell(world, cx - 1, cy, left)
-	if (left > 1e-8) left -= tryDepositCell(world, cx + 1, cy, left)
+	left -= tryDepositCell(world, cx, cy, left, vx, vy)
+	if (left > 1e-8 && cy + 1 < H) left -= tryDepositCell(world, cx, cy + 1, left, vx, vy)
+	if (left > 1e-8 && cy > 0) left -= tryDepositCell(world, cx, cy - 1, left, vx, vy)
+	if (left > 1e-8) left -= tryDepositCell(world, cx - 1, cy, left, vx, vy)
+	if (left > 1e-8) left -= tryDepositCell(world, cx + 1, cy, left, vx, vy)
 	// Remainder leaves through world edge / impermeable bed — intentional sink.
 	return amt
 }
@@ -221,7 +164,7 @@ export const stepParticles = (world, onHit, state) => {
 		live.amt[dst] = pending.amt[pi]
 	}
 	for (; pi < pending.count; pi++)
-		depositParticleMass(world, pending.x[pi], pending.y[pi], pending.amt[pi])
+		depositParticleMass(world, pending.x[pi], pending.y[pi], pending.amt[pi], pending.vx[pi], pending.vy[pi])
 	pending.count = 0
 
 	let write = 0
@@ -262,7 +205,7 @@ export const stepParticles = (world, onHit, state) => {
 		}
 
 		if (life <= 0) {
-			depositParticleMass(world, px, py, amt)
+			depositParticleMass(world, px, py, amt, pvx, pvy)
 			continue
 		}
 
@@ -272,15 +215,20 @@ export const stepParticles = (world, onHit, state) => {
 		// Side wrap when leaving edges with wrap role.
 		if (nx < 0 || nx >= W) {
 			const nb = neighborCoord(world, px | 0, py | 0, nx < 0 ? -1 : 1, 0, (life | 0) + i)
-			if (nb.wrapped) nx = nb.x + (nx - Math.floor(nx))
-			else if (nb.out) 
+			const wrapped = nb.wrapped
+			const out = nb.out
+			const nbX = nb.x
+			if (wrapped) nx = nbX + (nx - Math.floor(nx))
+			else if (out)
 				continue
-			
 		}
 		if (ny < 0 || ny >= H) {
 			const nb = neighborCoord(world, px | 0, py | 0, 0, ny < 0 ? -1 : 1, (life | 0) + i + 17)
-			if (nb.wrapped) ny = nb.y + (ny - Math.floor(ny))
-			else if (nb.out)
+			const wrapped = nb.wrapped
+			const out = nb.out
+			const nbY = nb.y
+			if (wrapped) ny = nbY + (ny - Math.floor(ny))
+			else if (out)
 				continue
 		}
 

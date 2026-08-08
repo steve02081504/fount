@@ -7,12 +7,13 @@
  */
 
 import { applyPointer, trimCap } from './pointer.mjs'
+import { CELL_ASPECT } from '../hash.mjs'
 
 /** 手电筒激活前的按住帧数。 */
 export const TORCH_DELAY = 5
 /** torchBlend 0↔1 渐变速率帧数（进入 / 退出）。 */
 export const TORCH_FADE = 10
-/** 涟漪扩散速度（视觉半径单位 / tick；纵横比 via hypot(dx, 2·dy)）。 */
+/** 涟漪扩散速度（视觉半径单位 / tick；纵横比 via CELL_ASPECT）。 */
 export const RIPPLE_SPEED = 1.85
 /** 涟漪环的软半宽。 */
 export const RIPPLE_WIDTH = 2.4
@@ -22,6 +23,24 @@ export const RIPPLE_LIFE = 20
 export const RIPPLE_GAIN = 1.35
 /** 最大并发涟漪数。 */
 const RIPPLE_CAP = 6
+
+/** 指针聚光灯的视觉半径（单元格宽高比 = CELL_ASPECT）。 */
+export const LIGHT_RADIUS = 14
+
+/**
+ * 视口格内的平滑径向衰减（补偿终端格偏高）。
+ * @param {number} dx 距光源列偏移
+ * @param {number} dy 距光源行偏移
+ * @param {number} [radius=LIGHT_RADIUS] 视觉半径
+ * @returns {number} 0..1 强度
+ */
+export const lightFalloff = (dx, dy, radius = LIGHT_RADIUS) => {
+	const d2 = dx * dx + (CELL_ASPECT * dy) * (CELL_ASPECT * dy)
+	const r2 = radius * radius
+	if (d2 >= r2) return 0
+	const t = 1 - Math.sqrt(d2) / radius
+	return t * t
+}
 
 /**
  * @typedef {{ x: number, y: number, age: number, life: number }} LightRipple

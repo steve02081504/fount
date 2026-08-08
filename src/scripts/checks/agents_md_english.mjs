@@ -1,6 +1,7 @@
 /**
- * AGENTS.md 及 agent 面向的链接 `.md` 须保持英文（禁止 CJK）。
+ * AGENTS.md 及被其（间接）引用的 `.md` 须保持英文（禁止 CJK）。
  * 人类面向的 `docs/design/`、`docs/review/`、`docs/issues/` 可为中文；仍会遍历以解析链接。
+ * 闭包内非 `AGENTS.md` 的 `.md` 必须位于名为 `docs` 的目录下（路径含 `/docs/` 段）。
  */
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
@@ -42,6 +43,27 @@ export function localMdLinkTargets(text) {
  */
 export function isHumanFacingDocsPath(relativePath) {
 	return HUMAN_FACING_DOCS_PREFIXES.some(prefix => relativePath.startsWith(prefix))
+}
+
+/**
+ * 文件名是否为 `AGENTS.md`（大小写不敏感）。
+ * @param {string} relativePath 仓库相对 posix 路径
+ * @returns {boolean} 是否为 AGENTS.md
+ */
+export function isAgentsMdBasename(relativePath) {
+	const slash = relativePath.lastIndexOf('/')
+	const base = slash === -1 ? relativePath : relativePath.slice(slash + 1)
+	return base.toLowerCase() === 'agents.md'
+}
+
+/**
+ * 非 AGENTS.md 的 agent 闭包文档须在名为 `docs` 的目录内。
+ * @param {string} relativePath 仓库相对 posix 路径
+ * @returns {boolean} 路径是否含 `docs` 段（或本身是 AGENTS.md）
+ */
+export function isAgentsAuxDocPlacementOk(relativePath) {
+	if (isAgentsMdBasename(relativePath)) return true
+	return relativePath.split('/').includes('docs')
 }
 
 /**
@@ -87,8 +109,9 @@ async function collectAgentsMd(repoRoot, directoryPath, paths) {
 /**
  * 遍历 repoRoot 下所有 AGENTS.md 及其链接的仓库内 `.md`（传递闭包）。
  * `docs/design/`、`docs/review/`、`docs/issues/` 之外禁止 CJK。
+ * 闭包内非 `AGENTS.md` 须位于 `docs/` 目录下。
  * @param {string} repoRoot 仓库根绝对路径
- * @returns {Promise<{ files: string[], issues: { path: string, lines: number[], missing?: boolean, from?: string }[] }>} 已扫描文件与 CJK/缺失链接问题
+ * @returns {Promise<{ files: string[], issues: { path: string, lines: number[], missing?: boolean, placement?: boolean, from?: string }[] }>} 已扫描文件与问题
  */
 export async function scanAgentsMdEnglish(repoRoot) {
 	/** @type {string[]} */
@@ -97,7 +120,7 @@ export async function scanAgentsMdEnglish(repoRoot) {
 	const queue = [...roots]
 	const checkedTargets = new Set(queue)
 	const files = new Set(queue)
-	/** @type {{ path: string, lines: number[], missing?: boolean, from?: string }[]} */
+	/** @type {{ path: string, lines: number[], missing?: boolean, placement?: boolean, from?: string }[]} */
 	const issues = []
 
 	while (queue.length) {
@@ -114,6 +137,8 @@ export async function scanAgentsMdEnglish(repoRoot) {
 			}
 			throw error
 		}
+		if (!isAgentsAuxDocPlacementOk(relativePath))
+			issues.push({ path: relativePath, lines: [0], placement: true })
 		if (!isHumanFacingDocsPath(relativePath)) {
 			const lines = text.split(/\r?\n/)
 			const hitLines = []

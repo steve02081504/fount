@@ -7,6 +7,61 @@ export const ORTHO_DX = [1, -1, 0, 0]
 /** 正交邻居 dy：与 ORTHO_DX 同序。 */
 export const ORTHO_DY = [0, 0, 1, -1]
 
+/** 对角邻居 dx：右下、左下、右上、左上。 */
+export const DIAG_DX = [1, -1, 1, -1]
+/** 对角邻居 dy：与 DIAG_DX 同序。 */
+export const DIAG_DY = [1, 1, -1, -1]
+
+/** 八邻 dx：正交在前，对角在后。 */
+export const NEIGH8_DX = [1, -1, 0, 0, 1, -1, 1, -1]
+/** 八邻 dy：与 NEIGH8_DX 同序。 */
+export const NEIGH8_DY = [0, 0, 1, -1, 1, 1, -1, -1]
+
+/**
+ * 终端格高/宽比（字形格约 1×2）。
+ * 物理深度与邻接单位向量用此度量；光照/涡旋半径同此。
+ */
+export const CELL_ASPECT = 2
+
+/**
+ * 格步 `(dx, dy)` 的物理长度（列宽 = 1，行高 = CELL_ASPECT）。
+ * @param {number} dx 列步
+ * @param {number} dy 行步
+ * @returns {number} 物理长度
+ */
+export const cellStepLen = (dx, dy) => Math.hypot(dx, dy * CELL_ASPECT)
+
+/** 八邻物理单位方向 ux（与 NEIGH8_DX 同序；启动时填好）。 */
+export const NEIGH8_UX = new Float64Array(8)
+/** 八邻物理单位方向 uy（与 NEIGH8_DY 同序）。 */
+export const NEIGH8_UY = new Float64Array(8)
+/** 八邻物理步长。 */
+export const NEIGH8_LEN = new Float64Array(8)
+for (let c = 0; c < 8; c++) {
+	const len = cellStepLen(NEIGH8_DX[c], NEIGH8_DY[c])
+	NEIGH8_LEN[c] = len
+	NEIGH8_UX[c] = NEIGH8_DX[c] / len
+	NEIGH8_UY[c] = NEIGH8_DY[c] * CELL_ASPECT / len
+}
+
+/** `cellStepUnit` 复用结果（勿长期持有；热路径请用 NEIGH8_UX/UY）。 */
+const STEP_UNIT = { ux: 0, uy: 0, len: 0 }
+
+/**
+ * 格步在物理平面上的单位方向（与设备 ĝ 同一视觉度量）。
+ * 返回模块内复用对象；固定八邻请用 `NEIGH8_UX`/`NEIGH8_UY`。
+ * @param {number} dx 列步
+ * @param {number} dy 行步
+ * @returns {{ ux: number, uy: number, len: number }} 单位向量与长度
+ */
+export const cellStepUnit = (dx, dy) => {
+	const len = cellStepLen(dx, dy)
+	STEP_UNIT.ux = dx / len
+	STEP_UNIT.uy = dy * CELL_ASPECT / len
+	STEP_UNIT.len = len
+	return STEP_UNIT
+}
+
 /**
  * [0, 1) 区间确定性哈希。
  * @param {number} a 盐值 a

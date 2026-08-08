@@ -18,8 +18,8 @@ export {
 	MAT, P_ATM, RHO_G, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE,
 	SOIL_CAP, SOIL_ABSORB_RATE, SOIL_ABSORB_EXPO, SOIL_HIT_ABSORB_FRAC,
 	SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
-	COND_DRAW, COND_DRIP, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
-	LIQ_DRAW, LIQ_FULL,
+	COND_DRAW, COND_DRIP, COND_WEEP_FRAC, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
+	LIQ_DRAW, LIQ_FULL, ST_DRY_FRAC,
 	T_AMB, T_SOLIDUS, T_LIQUIDUS, T_BOIL, T_MAX,
 	RHO_ROCK, RHO_LAVA_HOT, VISC_SOLID, VISC_INERTIAL, BUBBLE_MIN_CELLS, BUBBLE_MIN_MELT_CONTACT,
 	LAVA_ONSET_EXPOSURE,
@@ -29,8 +29,9 @@ export {
 
 /** 压强驱动质量传递原语。 */
 export {
-	P_FLOW_CAP, P_FLOW_GAIN, SHEET_GAIN, viscGain, isInertialVisc,
-	hydraulicPhi, pressureMove, sheetMove, applyTransfer,
+	P_FLOW_CAP, P_FLOW_GAIN, SHEET_GAIN, INERT_GAIN, INERT_CAP,
+	viscGain, isInertialVisc,
+	hydraulicPhi, pressureMove, sheetMove, inertiaMove, applyTransfer,
 } from './flow.mjs'
 
 /** 液体/水滴/熔岩字形集。 */
@@ -46,18 +47,24 @@ export {
 	floodClear, floodPush, markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
 	clearDynamics, clearMaterials, releaseNonSoilWater,
 	setMat, addMoisture, addLiquid, addMelt, totalGridWater, totalWorldWater, totalMelt,
-	gravityDepth, gravityDownWeights, gravityUpWeights, strongestUp, strongestDown, applyGravityToWorld,
-} from './world.mjs'
+	cellFill, cellRoom, isCondensed, markAirIfFillCrossed,
+	gravityDepth, gravityDownWeights, gravityUpWeights, gravitySideWeights,
+	gravitySettleWeights, strongestUp, strongestDown, applyGravityToWorld, impartLiquidMomentum,
+	fillCellDepths, buildDepthOrder, buildDepthOrders, isLiquidFreeSurface,
+} from './world/index.mjs'
+
+/** 视觉格纵横比（邻接 û / 渲染半径；不参与静水深标定）。 */
+export { CELL_ASPECT } from '../hash.mjs'
 
 /** 气相区域、压力与风速。 */
 export {
 	WIND_BASE, WIND_GUST, WIND_SHEAR_POWER, GAS_BLEND, GAS_NOZZLE, GAS_SPEED_MAX,
-	isAirCell, fillBlocked, labelAirRegions, pressureAt, globalWindAt, windShear,
+	isAirCell, fillBlocked, labelAirRegions, pressureAt, ensureThermoPressure, globalWindAt, windShear,
 	gasVelocityAt, gasUxAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
-} from './gas.mjs'
+} from './gas/index.mjs'
 
 /** 土壤湿度 / 凝结 / 滴落。 */
-export { stepSoil, condenseDripSource } from './soil.mjs'
+export { stepSoil, condenseDripSource, prepareDripSources } from './soil.mjs'
 
 /** 热力与相变。 */
 export { stepThermal, cellRho, meltVisc } from './thermal.mjs'
@@ -75,15 +82,20 @@ export { regurgitateTemp, stepBoundary } from './boundary.mjs'
 export { stepBubbles } from './bubbles.mjs'
 
 /** 自由液体静压与步进。 */
-export { liquidPressureAt, stepLiquid } from './liquid.mjs'
+export { liquidPressureAt, condensedPressureAt, stepLiquid, stepLava, WATER_VISC } from './liquid/index.mjs'
+
+/** 粒子池。 */
+export {
+	createParticlePool, clearParticlePool, totalParticleWater, pushParticle, PARTICLE_CAP,
+} from './particle_pool.mjs'
 
 /** 粒子雨与风抬升。 */
 export {
 	GAS_DRAG, GAS_DRAG_Y, GAS_DRAG_Y_BOOST_FROM, GAS_DRAG_Y_BOOST_SPAN,
 	WIND_LIFT_UY, WIND_LIFT_RATE, WIND_LIFT_MAX, WIND_HOLD_LIFE, PARTICLE_GRAVITY,
-	verticalGasDrag, createParticlePool, clearParticlePool, totalParticleWater,
+	verticalGasDrag,
 	spawnParticle, queueSplash, depositParticleMass, stepParticles, liftLiquidByWind,
 } from './particles.mjs'
 
 /** 单 tick 流体编排入口。 */
-export { stepFluid } from './step.mjs'
+export { stepFluid, stepResizeWeather } from './step.mjs'

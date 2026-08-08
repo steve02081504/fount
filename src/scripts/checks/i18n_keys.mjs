@@ -13,7 +13,7 @@
  * 搬键/改 locale 时的操作提示文案。
  */
 export const UPDATE_LOCALE_DATA_HINT =
-	'搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。'
+	'搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），勿手改各语言 JSON。详见 src/public/locales/docs/locale-edits.md。'
 
 /**
  * 禁止 Suffix/Prefix 碎片硬拼时的说明文案。

@@ -8,7 +8,7 @@ For maintainers of `docs/design/`, `docs/review/`, and `docs/issues/`.
 | `docs/review/` | Gap analysis vs current state; code and tests are ground truth — do not re-describe landed work as long prose |
 | `docs/issues/` | Standing conclusions for open / blocked GitHub issues (ours or upstream) — status, don't-dos, what to change when unblocked. Not day-to-day agent reading |
 
-**Language**: `docs/design/`, `docs/review/`, and `docs/issues/` are **human-facing Chinese** (keep Chinese). Every `AGENTS.md` and other agent-facing linked guides stay **English** — enforced by `fount test checks:agents_md_english` (`docs/design|review|issues` exempt from CJK).
+**Language**: `docs/design/`, `docs/review/`, and `docs/issues/` are **human-facing Chinese** (keep Chinese). Every `AGENTS.md` and non-`AGENTS.md` file in its link closure stay **English** — enforced by `fount test checks:agents_md_english` (`docs/design|review|issues` exempt from CJK). Non-`AGENTS.md` files in that closure must live under a directory named `docs`.
 
 Milestone codes (`M1` / `G4` etc.) are fine in design/review while a batch is open; **never** leak them into source / test names / `llms.txt` (see root `AGENTS.md`).
 

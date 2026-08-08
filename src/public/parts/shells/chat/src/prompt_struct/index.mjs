@@ -114,8 +114,8 @@ export async function buildPromptStruct(
 		locales,
 	}
 
-	if (world.interfaces.chat.GetPrompt) promptStruct.world_prompt = world.interfaces.chat.GetPrompt(args)
-	if (user.interfaces.chat.GetPrompt) promptStruct.user_prompt = user.interfaces.chat.GetPrompt(args)
+	if (world?.interfaces?.chat?.GetPrompt) promptStruct.world_prompt = world.interfaces.chat.GetPrompt(args)
+	if (user?.interfaces?.chat?.GetPrompt) promptStruct.user_prompt = user.interfaces.chat.GetPrompt(args)
 	if (char?.interfaces?.chat) promptStruct.char_prompt = char.interfaces.chat.GetPrompt(args)
 	for (const otherCharName of Object.keys(other_chars || {}))
 		promptStruct.other_chars_prompts[otherCharName] = other_chars[otherCharName].interfaces.chat?.GetPromptForOther?.(args)
@@ -126,7 +126,7 @@ export async function buildPromptStruct(
 
 	// 远端 world 未实现 GetPrompt 时（METHOD_NOT_FOUND → undefined）保持空贡献
 	promptStruct.world_prompt = await promptStruct.world_prompt ?? getSinglePartPrompt()
-	if (world.interfaces.chat.GetGroupPrompt) {
+	if (world?.interfaces?.chat?.GetGroupPrompt) {
 		const groupPrompt = await world.interfaces.chat.GetGroupPrompt(args)
 		if (groupPrompt?.public)
 			promptStruct.world_prompt.text.push({
@@ -162,8 +162,8 @@ export async function buildPromptStruct(
 	injectAttributionWarnings(promptStruct, args)
 
 	while (detail_level--) await Promise.all([
-		world.interfaces.chat.TweakPrompt?.(args, promptStruct, promptStruct.world_prompt, detail_level),
-		user.interfaces.chat.TweakPrompt?.(args, promptStruct, promptStruct.user_prompt, detail_level),
+		world?.interfaces?.chat?.TweakPrompt?.(args, promptStruct, promptStruct.world_prompt, detail_level),
+		user?.interfaces?.chat?.TweakPrompt?.(args, promptStruct, promptStruct.user_prompt, detail_level),
 		char?.interfaces?.chat?.TweakPrompt?.(args, promptStruct, promptStruct.char_prompt, detail_level),
 		...Object.keys(other_chars || {}).map(otherCharName => other_chars[otherCharName].interfaces.chat?.TweakPromptForOther?.(args, promptStruct, promptStruct.other_chars_prompts[otherCharName], detail_level)),
 		...Object.keys(other_personas || {}).map(personaKey => other_personas[personaKey].interfaces.chat?.TweakPromptForOther?.(args, promptStruct, promptStruct.other_personas_prompts[personaKey], detail_level)),
