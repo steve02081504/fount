@@ -1,16 +1,19 @@
 /**
  * 凝聚相 Stokes 输运核：熔岩等粘滞相的沉降 + 侧向液膜。
- * 水相因静压柱 / POOL / 密闭气特化，见 `water.mjs`。
+ * 压强走 `condensedPressureAt`（与水同一静水柱语言）。
+ * 水相因 POOL / 密闭气特化，见 `water.mjs`。
  */
 
 import { neighborCoord } from '../edges.mjs'
-import { pressureMove, sheetMove, applyTransfer, viscGain } from '../flow.mjs'
-import { pressureAt, ensureThermoPressure } from '../gas.mjs'
+import { pressureMove, sheetMove, applyTransfer, viscGain, inertiaMove } from '../flow.mjs'
+import { pressureAt } from '../gas.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, P_ATM, ST_DRY_FRAC, isLiquidBarrier } from '../mat.mjs'
 import {
-	scratch, markAirIfDrawCrossed, fillCellDepths,
+	scratch, markAirIfFillCrossed, cellRoom, cellFill, fillCellDepths,
 	gravitySideWeights, gravitySettleWeights, buildDepthOrder,
 } from '../world.mjs'
+
+import { beginLiquidPressure } from './pressure.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
 
@@ -31,7 +34,7 @@ import {
  */
 
 /**
- * 向格内目标转移（无分配）。
+ * 向格内目标转移（体积互斥 room）。
  * @param {FluidWorld} world 世界
  * @param {PhaseDesc} phase 相描述
  * @param {Float32Array} flowX 水平流
@@ -44,22 +47,23 @@ import {
  * @param {number} tx 目标列
  * @param {number} ty 目标行
  * @param {number} amount 质量
- * @param {(world: FluidWorld, before: number, after: number) => void} mark 脏标记
  * @returns {void}
  */
-const transferToCell = (world, phase, flowX, flowY, mass, W, cell, x, y, tx, ty, amount, mark) => {
+const transferToCell = (world, phase, flowX, flowY, mass, W, cell, x, y, tx, ty, amount) => {
 	if (amount <= 1e-8) return
 	const target = ty * W + tx
 	if (!phase.canEnter(world, target)) return
-	const room = LIQ_FULL - mass[target]
+	const room = cellRoom(world, target)
 	if (room <= 0) return
+	const fillS = cellFill(world, cell)
+	const fillT = cellFill(world, target)
 	const before = mass[cell]
 	const beforeT = mass[target]
-	const moved = applyTransfer(mass, flowX, flowY, cell, target, tx - x, ty - y, Math.min(amount, room))
+	const moved = applyTransfer(mass, flowX, flowY, cell, target, tx - x, ty - y, Math.min(amount, room), room)
 	if (moved > 0) {
 		phase.onTransfer?.(world, cell, target, moved, before, beforeT)
-		mark(world, before, mass[cell])
-		mark(world, beforeT, mass[target])
+		markAirIfFillCrossed(world, fillS, cellFill(world, cell))
+		markAirIfFillCrossed(world, fillT, cellFill(world, target))
 	}
 }
 
@@ -73,16 +77,15 @@ const transferToCell = (world, phase, flowX, flowY, mass, W, cell, x, y, tx, ty,
  * @param {number} dy 方向行偏移
  * @param {number} amount 质量
  * @param {FluidWorld} world 世界
- * @param {(world: FluidWorld, before: number, after: number) => void} mark 脏标记
  * @returns {void}
  */
-const sinkOut = (mass, flowX, flowY, cell, dx, dy, amount, world, mark) => {
+const sinkOut = (mass, flowX, flowY, cell, dx, dy, amount, world) => {
 	if (amount <= 1e-8) return
-	const before = mass[cell]
+	const fillBefore = cellFill(world, cell)
 	mass[cell] -= amount
 	flowX[cell] += dx * amount
 	flowY[cell] += dy * amount
-	mark(world, before, mass[cell])
+	markAirIfFillCrossed(world, fillBefore, cellFill(world, cell))
 }
 
 /**
@@ -102,40 +105,27 @@ const sinkOut = (mass, flowX, flowY, cell, dx, dy, amount, world, mark) => {
  * @param {number} nbY 邻格行
  * @param {number} wrappedFrac 环绕份额
  * @param {number} outFrac 出界份额
- * @param {(world: FluidWorld, before: number, after: number) => void} mark 脏标记
  * @returns {void}
  */
-const transferNeighbor = (world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, wrappedFrac, outFrac, mark) => {
+const transferNeighbor = (world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, wrappedFrac, outFrac) => {
 	if (move <= 1e-8) return
 	const mass = phase.mass
 	const crossed = wrappedFrac > 0 || outFrac > 0
 	if (!crossed) {
-		transferToCell(world, phase, flowX, flowY, mass, W, cell, x, y, nbX, nbY, move, mark)
+		transferToCell(world, phase, flowX, flowY, mass, W, cell, x, y, nbX, nbY, move)
 		return
 	}
 	if (wrappedFrac > 0)
-		transferToCell(world, phase, flowX, flowY, mass, W, cell, x, y, nbX, nbY, move * wrappedFrac, mark)
+		transferToCell(world, phase, flowX, flowY, mass, W, cell, x, y, nbX, nbY, move * wrappedFrac)
 	if (outFrac > 0)
-		sinkOut(mass, flowX, flowY, cell, dx, dy, move * outFrac, world, mark)
+		sinkOut(mass, flowX, flowY, cell, dx, dy, move * outFrac, world)
 }
-
-/**
- * 格上热力学气压（表或即时）。
- * @param {FluidWorld} world 世界
- * @param {Float32Array | null} thermoP 热力学压表
- * @param {number} W 宽
- * @param {number} x 列
- * @param {number} y 行
- * @returns {number} 气压
- */
-const gasP = (world, thermoP, W, x, y) =>
-	thermoP ? thermoP[y * W + x] : pressureAt(world, x, y)
 
 /**
  * 推进一凝聚相：沿重力加权沉降 + 垂直重力侧向液膜。
  * @param {FluidWorld} world 世界
  * @param {PhaseDesc} phase 相描述
- * @param {{ depth?: Float32Array, order?: Int32Array }} [opts] 可复用深度序
+ * @param {{ depth?: Float32Array, order?: Int32Array, pAt?: (x: number, y: number) => number, markDirty?: (x: number, y: number) => void }} [opts] 可复用深度序 / 压强
  * @returns {void}
  */
 export const stepPhaseTransport = (world, phase, opts) => {
@@ -147,13 +137,17 @@ export const stepPhaseTransport = (world, phase, opts) => {
 	flowX.fill(0)
 	flowY.fill(0)
 	const down = gravitySettleWeights(world)
-	const mark = phase.markDirty ?? markAirIfDrawCrossed
 
 	const depth = opts?.depth ?? fillCellDepths(world)
 	const order = opts?.order ?? buildDepthOrder(world, 'phaseOrder', 'phaseDepthCounts', true, depth)
-	const thermoP = ensureThermoPressure(world)
+	const pressure = opts?.pAt && opts?.markDirty
+		? { pAt: opts.pAt, markDirty: opts.markDirty }
+		: beginLiquidPressure(world)
+	const { pAt, markDirty } = pressure
 
 	const viscBuf = scratch(world, 'phaseVisc', n, Float32Array)
+	const vx = phase.vx
+	const vy = phase.vy
 
 	// --- Settle along gravity-weighted down neighbors ---
 	for (let si = 0; si < n; si++) {
@@ -162,13 +156,15 @@ export const stepPhaseTransport = (world, phase, opts) => {
 		const y = (cell / W) | 0
 		if (mass[cell] <= 0.02) continue
 		if (isLiquidBarrier(world.mat[cell]) && world.mat[cell] !== MAT.AIR) {
-			const before = mass[cell]
-			phase.onBarrier?.(world, cell, before)
+			phase.onBarrier?.(world, cell, mass[cell])
 			continue
 		}
 		const visc = viscBuf[cell] = phase.viscAt(world, cell)
 		const rhoSrc = phase.rhoAt(world, cell)
-		const pSrc = gasP(world, thermoP, W, x, y) + rhoSrc * mass[cell]
+		// Sub-draw blobs use local fill head (free-fall); pools use condensed column cache.
+		const pSrc = mass[cell] >= LIQ_DRAW
+			? pAt(x, y)
+			: pressureAt(world, x, y) + rhoSrc * mass[cell]
 
 		for (let i = 0; i < down.n; i++) {
 			const dx = down.dx[i]
@@ -187,16 +183,20 @@ export const stepPhaseTransport = (world, phase, opts) => {
 				const target = nbY * W + nbX
 				if (!phase.canEnter(world, target)) continue
 				dstMass = mass[target]
-				room = LIQ_FULL - dstMass
+				room = cellRoom(world, target)
 				if (room <= 0) continue
-				pDst = gasP(world, thermoP, W, nbX, nbY) + phase.rhoAt(world, target) * dstMass
+				pDst = dstMass >= LIQ_DRAW
+					? pAt(nbX, nbY)
+					: pressureAt(world, nbX, nbY) + phase.rhoAt(world, target) * dstMass
 			}
 			else if (wrappedFrac > 0) {
 				const target = nbY * W + nbX
 				if (phase.canEnter(world, target)) {
 					dstMass = mass[target]
-					room = LIQ_FULL - dstMass
-					pDst = gasP(world, thermoP, W, nbX, nbY) + phase.rhoAt(world, target) * dstMass
+					room = cellRoom(world, target)
+					pDst = dstMass >= LIQ_DRAW
+						? pAt(nbX, nbY)
+						: pressureAt(world, nbX, nbY) + phase.rhoAt(world, target) * dstMass
 				}
 				else if (outFrac <= 0) continue
 			}
@@ -208,10 +208,13 @@ export const stepPhaseTransport = (world, phase, opts) => {
 				if (gain > 0)
 					move = Math.min(mass[cell] * 0.5 * w, room, (mass[cell] - dstMass) * 0.5 * w) * gain
 			}
+			if (!crossed)
+				move = Math.max(move, inertiaMove(vx[cell], vy[cell], dx, dy, mass[cell] * w, room, visc))
 			if (move <= 0.01 && crossed && outFrac > 0)
 				move = mass[cell] * w
 			if (move <= 0.01) continue
-			transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, wrappedFrac, outFrac, mark)
+			transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, wrappedFrac, outFrac)
+			markDirty(x, y)
 		}
 	}
 
@@ -236,22 +239,24 @@ export const stepPhaseTransport = (world, phase, opts) => {
 				if (!crossed) {
 					const target = nbY * W + nbX
 					if (!phase.canEnter(world, target)) continue
-					const room = LIQ_FULL - mass[target]
+					const room = cellRoom(world, target)
+					if (room <= 0) continue
 					const dry = mass[target] < LIQ_DRAW
-					const move = sheetMove(mass[cell], mass[target], room, visc) * (dry ? ST_DRY_FRAC : 1)
+					let move = sheetMove(mass[cell], mass[target], room, visc) * (dry ? ST_DRY_FRAC : 1)
 					if (move <= 0) continue
-					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, 0, 0, mark)
+					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, 0, 0)
+					markDirty(x, y)
+					markDirty(nbX, nbY)
 				}
 				else {
-					const move = sheetMove(mass[cell], 0, LIQ_FULL, visc) * ST_DRY_FRAC
+					let move = sheetMove(mass[cell], 0, LIQ_FULL, visc) * ST_DRY_FRAC
 					if (move <= 0) continue
-					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, wrappedFrac, outFrac, mark)
+					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, wrappedFrac, outFrac)
+					markDirty(x, y)
 				}
 			}
 		}
 
-	const vx = phase.vx
-	const vy = phase.vy
 	for (let i = 0; i < n; i++) {
 		const m = mass[i]
 		if (m < 1e-6) {

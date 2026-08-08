@@ -1,12 +1,13 @@
 /**
- * 自由水静压柱：P_air(表面) + RHO_G·深度。
- * 供水相输运与对外查询（`liquidPressureAt`）。
+ * 凝聚相静压柱：P_air(表面) + Σ ρ·Δh（水 / 熔岩同一压语）。
+ * `liquidPressureAt` 为对外兼容查询；输运用 `condensedPressureAt` / `beginLiquidPressure`。
  */
 
 import { pressureAt } from '../gas.mjs'
 import { LIQ_DRAW, RHO_G, isLiquidBarrier } from '../mat.mjs'
+import { cellRho } from '../thermal.mjs'
 import {
-	idx, inWorld, scratch, growScratch,
+	idx, inWorld, scratch, growScratch, cellFill, isCondensed,
 	gravityDepth, gravityUpWeights, strongestUp, strongestDown,
 	fillCellDepths, buildDepthOrder,
 } from '../world.mjs'
@@ -21,28 +22,39 @@ const UP_LINE = { dx: 0, dy: 0, w: 0 }
 const DOWN_LINE = { dx: 0, dy: 0, w: 0 }
 
 /**
- * 静压深度：P_air(表面) + RHO_G·(深度 + 部分填充)。
- * @param {number} airP 自由面行的空气压
- * @param {number} depth 当前深度
- * @param {number} surfDepth 自由面深度
- * @param {number} amount 格内液体填充
- * @returns {number} 该格静压
+ * 格对静压柱的有效填充贡献（按密度归一到 RHO_G 压头）。
+ * @param {FluidWorld} world 世界
+ * @param {number} cell 索引
+ * @returns {number} 等效压头填充
  */
-const columnDepthPressure = (airP, depth, surfDepth, amount) =>
-	airP + RHO_G * ((depth - surfDepth) + Math.min(1, Math.max(amount, LIQ_DRAW)))
+const columnFillHead = (world, cell) => {
+	const fill = Math.min(1, Math.max(cellFill(world, cell), LIQ_DRAW))
+	const rho = cellRho(world, cell)
+	return fill * (rho / RHO_G)
+}
 
 /**
- * `(x, y)` 处液体静压。
+ * 静压：P_air + RHO_G · (深度差 + 等效填充头)。
+ * @param {number} airP 自由面空气压
+ * @param {number} depth 当前深度
+ * @param {number} surfDepth 自由面深度
+ * @param {number} fillHead 等效填充压头
+ * @returns {number} 该格静压
+ */
+const columnDepthPressure = (airP, depth, surfDepth, fillHead) =>
+	airP + RHO_G * ((depth - surfDepth) + fillHead)
+
+/**
+ * `(x, y)` 处凝聚相静压（水+熔岩柱）。
  * @param {FluidWorld} world 流体世界
  * @param {number} x 列
  * @param {number} y 行
- * @returns {number} `(x, y)` 液体压力
+ * @returns {number} 静压
  */
-export const liquidPressureAt = (world, x, y) => {
+export const condensedPressureAt = (world, x, y) => {
 	if (!inWorld(world, x, y)) return pressureAt(world, x, Math.max(0, y))
 	const cell = idx(world, x, y)
-	const L = world.liq[cell]
-	if (L < LIQ_DRAW && !isLiquidBarrier(world.mat[cell]))
+	if (!isCondensed(world, cell) && !isLiquidBarrier(world.mat[cell]))
 		return pressureAt(world, x, y)
 
 	const up = strongestUp(world)
@@ -55,7 +67,7 @@ export const liquidPressureAt = (world, x, y) => {
 		if (!inWorld(world, nx, ny)) break
 		const above = idx(world, nx, ny)
 		if (isLiquidBarrier(world.mat[above])) break
-		if (world.liq[above] < LIQ_DRAW) break
+		if (!isCondensed(world, above)) break
 		sx = nx
 		sy = ny
 	}
@@ -69,11 +81,46 @@ export const liquidPressureAt = (world, x, y) => {
 	const airP = inWorld(world, airX, airY) && !isLiquidBarrier(world.mat[idx(world, airX, airY)])
 		? pressureAt(world, airX, airY)
 		: pressureAt(world, sx, sy)
-	return columnDepthPressure(airP, gravityDepth(world, x, y), gravityDepth(world, sx, sy), L)
+
+	// Integrate density-weighted heads from surface down to (x,y).
+	let p = airP
+	let cx = sx
+	let cy = sy
+	const down = strongestDown(world)
+	const steps = Math.max(world.worldW, world.worldH) + 2
+	for (let s = 0; s < steps; s++) {
+		const ci = cy * world.worldW + cx
+		const head = columnFillHead(world, ci)
+		if (s === 0)
+			p = columnDepthPressure(airP, gravityDepth(world, cx, cy), gravityDepth(world, sx, sy), head)
+		else {
+			const prev = (cy - down.dy) * world.worldW + (cx - down.dx)
+			const dPrev = gravityDepth(world, cx - down.dx, cy - down.dy)
+			const dHere = gravityDepth(world, cx, cy)
+			const headPrev = columnFillHead(world, prev)
+			p += RHO_G * (dHere - dPrev) + RHO_G * (head - headPrev)
+		}
+		if (cx === x && cy === y) return p
+		if (down.w <= 0) break
+		cx += down.dx
+		cy += down.dy
+		if (!inWorld(world, cx, cy)) break
+		if (!isCondensed(world, cy * world.worldW + cx)) break
+	}
+	return columnDepthPressure(airP, gravityDepth(world, x, y), gravityDepth(world, sx, sy), columnFillHead(world, cell))
 }
 
 /**
- * 填充整网液体压力缓存。
+ * `(x, y)` 处液体静压（兼容别名 → 凝聚柱）。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {number} 静压
+ */
+export const liquidPressureAt = (world, x, y) => condensedPressureAt(world, x, y)
+
+/**
+ * 填充整网凝聚相压力缓存。
  * @param {FluidWorld} world 流体世界
  * @param {Float32Array} cache 压力缓冲
  * @param {Float32Array} depth 每格深度
@@ -83,15 +130,14 @@ export const liquidPressureAt = (world, x, y) => {
  * @returns {void}
  */
 const fillPressureByDepth = (world, cache, depth, order, up, strongUp) => {
-	const { worldW: W, mat, liq } = world
+	const { worldW: W, mat } = world
 	const n = order.length
 
 	for (let si = 0; si < n; si++) {
 		const cell = order[si]
 		const x = cell % W
 		const y = (cell / W) | 0
-		const L = liq[cell]
-		if (L < LIQ_DRAW || isLiquidBarrier(mat[cell])) {
+		if (!isCondensed(world, cell) || isLiquidBarrier(mat[cell])) {
 			cache[cell] = pressureAt(world, x, y)
 			continue
 		}
@@ -103,13 +149,14 @@ const fillPressureByDepth = (world, cache, depth, order, up, strongUp) => {
 			const ay = y + up.dy[i]
 			if (!inWorld(world, ax, ay)) continue
 			const above = ay * W + ax
-			if (!isLiquidBarrier(mat[above]) && liq[above] >= LIQ_DRAW)
+			if (!isLiquidBarrier(mat[above]) && isCondensed(world, above))
 				if (up.w[i] > bestW) {
 					bestW = up.w[i]
 					bestAbove = above
 				}
 		}
 
+		const headHere = columnFillHead(world, cell)
 		if (bestAbove < 0) {
 			let airX = x
 			let airY = y
@@ -121,14 +168,13 @@ const fillPressureByDepth = (world, cache, depth, order, up, strongUp) => {
 				? pressureAt(world, airX, airY)
 				: pressureAt(world, x, y)
 			const dHere = depth[cell]
-			cache[cell] = columnDepthPressure(airP, dHere, dHere, L)
+			cache[cell] = columnDepthPressure(airP, dHere, dHere, headHere)
 		}
 		else {
 			const dAbove = depth[bestAbove]
 			const dHere = depth[cell]
-			const fillAbove = Math.min(1, Math.max(liq[bestAbove], LIQ_DRAW))
-			const fillHere = Math.min(1, Math.max(L, LIQ_DRAW))
-			cache[cell] = cache[bestAbove] + RHO_G * (dHere - dAbove) + RHO_G * (fillHere - fillAbove)
+			const headAbove = columnFillHead(world, bestAbove)
+			cache[cell] = cache[bestAbove] + RHO_G * (dHere - dAbove) + RHO_G * (headHere - headAbove)
 		}
 	}
 }
@@ -145,20 +191,20 @@ const fillPressureByDepth = (world, cache, depth, order, up, strongUp) => {
  * @returns {void}
  */
 const refreshGravityLine = (world, x0, y0, cache, depth, up, down) => {
-	const { worldW: W, worldH: H, mat, liq } = world
+	const { worldW: W, worldH: H, mat } = world
 
 	let sx = x0
 	let sy = y0
 	for (;;) {
 		if (!inWorld(world, sx, sy)) break
 		const cell = sy * W + sx
-		if (isLiquidBarrier(mat[cell]) || liq[cell] < LIQ_DRAW) break
+		if (isLiquidBarrier(mat[cell]) || !isCondensed(world, cell)) break
 		if (up.w <= 0) break
 		const nx = sx + up.dx
 		const ny = sy + up.dy
 		if (!inWorld(world, nx, ny)) break
 		const above = ny * W + nx
-		if (isLiquidBarrier(mat[above]) || liq[above] < LIQ_DRAW) break
+		if (isLiquidBarrier(mat[above]) || !isCondensed(world, above)) break
 		sx = nx
 		sy = ny
 	}
@@ -176,11 +222,10 @@ const refreshGravityLine = (world, x0, y0, cache, depth, up, down) => {
 
 	if (inWorld(world, x0, y0)) {
 		const cell0 = y0 * W + x0
-		const L0 = liq[cell0]
-		if (L0 < LIQ_DRAW && !isLiquidBarrier(mat[cell0]))
+		if (!isCondensed(world, cell0) && !isLiquidBarrier(mat[cell0]))
 			cache[cell0] = pressureAt(world, x0, y0)
 		else if (!isLiquidBarrier(mat[cell0]))
-			cache[cell0] = columnDepthPressure(airP, depth[cell0], surfDepth, L0)
+			cache[cell0] = columnDepthPressure(airP, depth[cell0], surfDepth, columnFillHead(world, cell0))
 	}
 
 	const steps = Math.max(W, H)
@@ -198,16 +243,16 @@ const refreshGravityLine = (world, x0, y0, cache, depth, up, down) => {
 			y += dy
 			if (!inWorld(world, x, y)) break
 			const cell = y * W + x
-			if (isLiquidBarrier(mat[cell]) || liq[cell] < LIQ_DRAW) {
-				if (liq[cell] < LIQ_DRAW && !isLiquidBarrier(mat[cell]))
+			if (isLiquidBarrier(mat[cell]) || !isCondensed(world, cell)) {
+				if (!isCondensed(world, cell) && !isLiquidBarrier(mat[cell]))
 					cache[cell] = pressureAt(world, x, y)
 				break
 			}
 			const prevCell = (y - dy) * W + (x - dx)
 			const prev = cache[prevCell]
-			const fillPrev = Math.min(1, Math.max(liq[prevCell], LIQ_DRAW))
-			const fillHere = Math.min(1, Math.max(liq[cell], LIQ_DRAW))
-			cache[cell] = prev + RHO_G * (depth[cell] - depth[prevCell]) + RHO_G * (fillHere - fillPrev)
+			const headPrev = columnFillHead(world, prevCell)
+			const headHere = columnFillHead(world, cell)
+			cache[cell] = prev + RHO_G * (depth[cell] - depth[prevCell]) + RHO_G * (headHere - headPrev)
 		}
 	}
 	if (down.w > 0) walk(down.dx, down.dy)
@@ -215,7 +260,7 @@ const refreshGravityLine = (world, x0, y0, cache, depth, up, down) => {
 }
 
 /**
- * 构建本 tick 液体静压查询（脏种子惰性刷新）。
+ * 构建本 tick 凝聚相静压查询（脏种子惰性刷新）。
  * @param {FluidWorld} world 流体世界
  * @returns {{
  *   pAt: (x: number, y: number) => number,

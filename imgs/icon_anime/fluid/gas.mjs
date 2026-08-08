@@ -3,15 +3,15 @@
  * 调用方须在 `stepGas` / 压力查询前先执行 `labelAirRegions`。
  *
  * 开放空气：P = P_ATM + ATM_HYDRO·depth；密闭：等温 Boyle 均值 + ATM_HYDRO·(depth−depthMean)。
- * 速度：风切变 + 喷嘴连续性 + 邻格静压 ΔP（Bernoulli 反馈）。
- * 不做 2D ∇·u=0 投影——指针涡旋/上升气流为有意源项。
+ * 速度：风切变 + 喷嘴连续性 + 邻格静压 ΔP（Bernoulli 反馈）+ 弱 Boussinesq。
+ * 开放气在目标速度合成后做有限次 ∇·u≈0 投影；`driveUx/Uy` 超阈格回注以保留指针涡旋。
  */
 
 import { hash01, fbm1d } from '../hash.mjs'
 
 import { clearLabels, labelComponents, recycleComponents } from './components.mjs'
 import {
-	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, isBlockMat,
+	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, T_AMB, isBlockMat,
 } from './mat.mjs'
 import {
 	scratch, idx, inWorld, gravityDepth, strongestUp, fillCellDepths,
@@ -43,6 +43,14 @@ export const GAS_BLEND = 0.28
 export const GAS_NOZZLE = 1.55
 /** 格内气体速度的软上限（格/帧）。 */
 export const GAS_SPEED_MAX = 5
+/** 散度投影 Jacobi 迭代次数。 */
+const GAS_PROJ_ITERS = 16
+/** 投影松弛。 */
+const GAS_PROJ_OMEGA = 1
+/** |drive| 超过此值的格投影后回注驱动（保留涡旋源）。 */
+const GAS_DRIVE_KEEP = 0.08
+/** 开放气 Boussinesq 浮力增益（沿 −ĝ）。 */
+const GAS_BOUSSINESQ = 0.55
 
 /** 每空气格在 P_ATM 下的气体质量单位（Boyle 参考）。 */
 const GAS_UNIT_PER_CELL = 1
@@ -71,7 +79,7 @@ const sealedHydroPressure = (region, depth, depthMean) =>
  * @returns {boolean} 空气格
  */
 export const isAirCell = (world, cell) =>
-	!isBlockMat(world.mat[cell]) && world.liq[cell] < LIQ_DRAW && world.melt[cell] < LIQ_DRAW
+	!isBlockMat(world.mat[cell]) && world.liq[cell] + world.melt[cell] < LIQ_DRAW
 
 /**
  * 填充阻挡掩码：气体不可占据处为 1。
@@ -522,6 +530,7 @@ const fillGasSpans = (blocked, W, H, outVert, outHoriz) => {
  *   forceWind?: number,
  *   driveUx?: Float32Array,
  *   driveUy?: Float32Array,
+ *   holdVelocity?: boolean,
  * }} [opts] 驱动选项
  * @returns {void}
  */
@@ -558,6 +567,7 @@ export const stepGas = (world, opts) => {
 	const depth = fillCellDepths(world)
 	const shear = scratch(world, 'gasShear', n, Float32Array)
 	let maxUpdraft = 0
+	const holdVelocity = !!opts?.holdVelocity
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
@@ -586,6 +596,12 @@ export const stepGas = (world, opts) => {
 				continue
 			}
 
+			if (holdVelocity) {
+				nextUx[cell] = gasUx[cell]
+				nextUy[cell] = gasUy[cell]
+				continue
+			}
+
 			const region = regionId[cell] ? regions[regionId[cell]] : null
 			const open = !region || region.openToAtm
 			const localDrive = driveUx
@@ -598,6 +614,13 @@ export const stepGas = (world, opts) => {
 			if (driveUx) {
 				tx += driveUx[cell]
 				ty += driveUy[cell]
+			}
+			if (open) {
+				const dT = world.temp[cell] - T_AMB
+				if (Math.abs(dT) > 0.02) {
+					tx -= gravity.gx * dT * GAS_BOUSSINESQ
+					ty -= gravity.gy * dT * GAS_BOUSSINESQ
+				}
 			}
 
 			const openL = x > 0 && !blocked[cell - 1]
@@ -651,10 +674,92 @@ export const stepGas = (world, opts) => {
 			const outUy = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, uy))
 			nextUx[cell] = outUx
 			nextUy[cell] = outUy
-			// Updraft = velocity against gravity (negative along ĝ).
-			const alongG = outUx * gravity.gx + outUy * gravity.gy
-			if (alongG < maxUpdraft) maxUpdraft = alongG
 		}
+
+	// --- Divergence projection (Jacobi); skip entirely while pointer drive is active ---
+	let hasDrive = false
+	if (driveUx)
+		for (let i = 0; i < n; i++)
+			if (Math.abs(driveUx[i]) + Math.abs(driveUy[i]) > GAS_DRIVE_KEEP) {
+				hasDrive = true
+				break
+			}
+
+	if (!hasDrive) {
+		const phi = scratch(world, 'gasProjPhi', n, Float32Array)
+		const phiNext = scratch(world, 'gasProjPhiN', n, Float32Array)
+		phi.fill(0)
+		for (let iter = 0; iter < GAS_PROJ_ITERS; iter++) {
+			for (let y = 0; y < H; y++)
+				for (let x = 0; x < W; x++) {
+					const cell = y * W + x
+					if (blocked[cell]) {
+						phiNext[cell] = 0
+						continue
+					}
+					const openL = x > 0 && !blocked[cell - 1]
+					const openR = x + 1 < W && !blocked[cell + 1]
+					const openU = y > 0 && !blocked[cell - W]
+					const openD = y + 1 < H && !blocked[cell + W]
+					let du = 0
+					if (openL && openR) du += 0.5 * (nextUx[cell + 1] - nextUx[cell - 1])
+					else if (openR) du += nextUx[cell + 1] - nextUx[cell]
+					else if (openL) du += nextUx[cell] - nextUx[cell - 1]
+					if (openU && openD) du += 0.5 * (nextUy[cell + W] - nextUy[cell - W])
+					else if (openD) du += nextUy[cell + W] - nextUy[cell]
+					else if (openU) du += nextUy[cell] - nextUy[cell - W]
+					let nOpen = 0
+					let sum = 0
+					if (openL) { sum += phi[cell - 1]; nOpen++ }
+					if (openR) { sum += phi[cell + 1]; nOpen++ }
+					if (openU) { sum += phi[cell - W]; nOpen++ }
+					if (openD) { sum += phi[cell + W]; nOpen++ }
+					phiNext[cell] = nOpen > 0
+						? (1 - Math.min(1, GAS_PROJ_OMEGA)) * phi[cell]
+							+ Math.min(1, GAS_PROJ_OMEGA) * (sum - du) / nOpen
+						: 0
+				}
+			phi.set(phiNext)
+		}
+
+		for (let y = 0; y < H; y++)
+			for (let x = 0; x < W; x++) {
+				const cell = y * W + x
+				if (blocked[cell]) {
+					nextUx[cell] = 0
+					nextUy[cell] = 0
+					continue
+				}
+				const openL = x > 0 && !blocked[cell - 1]
+				const openR = x + 1 < W && !blocked[cell + 1]
+				const openU = y > 0 && !blocked[cell - W]
+				const openD = y + 1 < H && !blocked[cell + W]
+				let gx = 0
+				let gy = 0
+				if (openL && openR) gx = 0.5 * (phi[cell + 1] - phi[cell - 1])
+				else if (openR) gx = phi[cell + 1] - phi[cell]
+				else if (openL) gx = phi[cell] - phi[cell - 1]
+				if (openU && openD) gy = 0.5 * (phi[cell + W] - phi[cell - W])
+				else if (openD) gy = phi[cell + W] - phi[cell]
+				else if (openU) gy = phi[cell] - phi[cell - W]
+				let ux = nextUx[cell] - gx
+				let uy = nextUy[cell] - gy
+				if (!openL && ux < 0) ux = 0
+				if (!openR && ux > 0) ux = 0
+				if (!openU && uy < 0) uy = 0
+				if (!openD && uy > 0) uy = 0
+				nextUx[cell] = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, ux))
+				nextUy[cell] = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, uy))
+			}
+	}
+
+	for (let cell = 0; cell < n; cell++) {
+		if (blocked[cell]) continue
+		const ux = nextUx[cell]
+		const uy = nextUy[cell]
+		const alongG = ux * gravity.gx + uy * gravity.gy
+		if (alongG < maxUpdraft) maxUpdraft = alongG
+	}
 
 	world.scratch.gasNextUx = gasUx
 	world.scratch.gasNextUy = gasUy

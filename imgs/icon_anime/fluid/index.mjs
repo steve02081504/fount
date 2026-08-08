@@ -29,8 +29,9 @@ export {
 
 /** 压强驱动质量传递原语。 */
 export {
-	P_FLOW_CAP, P_FLOW_GAIN, SHEET_GAIN, viscGain, isInertialVisc,
-	hydraulicPhi, pressureMove, sheetMove, applyTransfer,
+	P_FLOW_CAP, P_FLOW_GAIN, SHEET_GAIN, INERT_GAIN, INERT_CAP,
+	viscGain, isInertialVisc,
+	hydraulicPhi, pressureMove, sheetMove, inertiaMove, applyTransfer,
 } from './flow.mjs'
 
 /** 液体/水滴/熔岩字形集。 */
@@ -46,6 +47,7 @@ export {
 	floodClear, floodPush, markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
 	clearDynamics, clearMaterials, releaseNonSoilWater,
 	setMat, addMoisture, addLiquid, addMelt, totalGridWater, totalWorldWater, totalMelt,
+	cellFill, cellRoom, isCondensed, markAirIfFillCrossed,
 	gravityDepth, gravityDownWeights, gravityUpWeights, gravitySideWeights,
 	gravitySettleWeights, strongestUp, strongestDown, applyGravityToWorld, impartLiquidMomentum,
 	fillCellDepths, buildDepthOrder, isLiquidFreeSurface,
@@ -80,7 +82,7 @@ export { regurgitateTemp, stepBoundary } from './boundary.mjs'
 export { stepBubbles } from './bubbles.mjs'
 
 /** 自由液体静压与步进。 */
-export { liquidPressureAt, stepLiquid, meltVisc, stepLava, WATER_VISC } from './liquid/index.mjs'
+export { liquidPressureAt, condensedPressureAt, stepLiquid, meltVisc, stepLava, WATER_VISC } from './liquid/index.mjs'
 
 /** 粒子池。 */
 export {

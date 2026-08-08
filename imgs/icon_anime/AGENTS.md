@@ -74,7 +74,8 @@ Open-stage: ungrown base columns do not splash — rain falls through until it h
 
 ## Invariants (do not break)
 
-- **One pressure language** / **one density language** — see [physics-notes.md](physics-notes.md). Do not invent parallel hydro models.
+- **One pressure language** / **one density language** — see [physics-notes.md](physics-notes.md). Do not invent parallel hydro models. Condensed hydro is `condensedPressureAt` (water alias `liquidPressureAt`); melt pools share the column, sub-draw blobs keep local fill heads for free-fall.
+- **Volume exclusivity**: `cellFill = liq+melt`, `cellRoom = LIQ_FULL−fill`. Never stack phases past one cell.
 - **Viscosity ladder** is the sole branch knob: `≤ VISC_INERTIAL` → inertial gas velocity; `< VISC_SOLID` → Stokes mass flux; `≥ VISC_SOLID` → frozen.
 - Water mass = `liq + moisture + condense + particles` (`totalWorldWater`); melt is separate. Closed transfers conserve; intentional sinks are world-edge / down-edge wipe / BODY impact. Particle expiry deposits back.
 - Soil condense hangs on the gravity-down face; when ĝ leaves that open underside it reabsorbs into moisture. Below `COND_DRIP`, hanging films weep at `COND_WEEP_FRAC` so Matthew-split mass cannot trap water forever (open land bowls empty under any cardinal ĝ). Drip glyphs follow `condenseDripSource` (ĝ), not screen-down.

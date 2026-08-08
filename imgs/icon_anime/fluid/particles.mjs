@@ -8,7 +8,7 @@
 import { neighborCoord } from './edges.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
 import { pushParticle } from './particle_pool.mjs'
-import { markAirIfDrawCrossed, strongestUp, inWorld, impartLiquidMomentum } from './world.mjs'
+import { markAirIfDrawCrossed, markAirIfFillCrossed, strongestUp, inWorld, impartLiquidMomentum, cellRoom, cellFill } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {import('./particle_pool.mjs').ParticlePool} ParticlePool
@@ -94,13 +94,14 @@ const tryDepositCell = (world, px, py, left, vx, vy) => {
 	const i = py * W + px
 	if (isLiquidBarrier(mat[i])) return 0
 	if (mat[i] !== MAT.AIR && mat[i] !== MAT.POOL) return 0
-	const room = LIQ_FULL - liq[i]
+	const room = cellRoom(world, i)
 	if (room <= 0) return 0
 	const take = Math.min(left, room)
+	const fillBefore = cellFill(world, i)
 	const before = liq[i]
 	liq[i] += take
 	impartLiquidMomentum(world, i, before, take, vx, vy)
-	markAirIfDrawCrossed(world, before, liq[i])
+	markAirIfFillCrossed(world, fillBefore, cellFill(world, i))
 	return take
 }
 

@@ -8,7 +8,7 @@
 import { ORTHO_DX, ORTHO_DY } from '../../hash.mjs'
 import { neighborCoord } from '../edges.mjs'
 import {
-	pressureMove, sheetMove, applyTransfer, P_FLOW_GAIN,
+	pressureMove, sheetMove, applyTransfer, P_FLOW_GAIN, inertiaMove,
 } from '../flow.mjs'
 import { labelAirRegions, pressureAt, gasUxAt, ensureThermoPressure } from '../gas.mjs'
 import {
@@ -17,7 +17,7 @@ import {
 } from '../mat.mjs'
 import {
 	scratch, idx, inWorld,
-	markAirIfDrawCrossed,
+	markAirIfDrawCrossed, markAirIfFillCrossed, cellRoom, cellFill,
 	gravitySettleWeights, gravitySideWeights,
 	buildDepthOrder, isLiquidFreeSurface,
 } from '../world.mjs'
@@ -45,7 +45,8 @@ const canOccupy = (world, x, y) => {
 	const cell = y * world.worldW + x
 	const m = world.mat[cell]
 	if (isLiquidBarrier(m)) return false
-	if (m === MAT.POOL) return world.liq[cell] < LIQ_FULL
+	if (cellRoom(world, cell) <= 0) return false
+	if (m === MAT.POOL) return true
 	return true
 }
 
@@ -88,12 +89,13 @@ const sealedGasBlocks = (world, neighbor, pSrc) => {
  * @returns {number} 已移质量
  */
 const transfer = (world, liq, flowX, flowY, src, dst, dx, dy, move) => {
-	const a0 = liq[src]
-	const b0 = liq[dst]
-	const m = applyTransfer(liq, flowX, flowY, src, dst, dx, dy, move)
+	const fillA = cellFill(world, src)
+	const fillB = cellFill(world, dst)
+	const room = cellRoom(world, dst)
+	const m = applyTransfer(liq, flowX, flowY, src, dst, dx, dy, move, room)
 	if (m > 0) {
-		markAirIfDrawCrossed(world, a0, liq[src])
-		markAirIfDrawCrossed(world, b0, liq[dst])
+		markAirIfFillCrossed(world, fillA, cellFill(world, src))
+		markAirIfFillCrossed(world, fillB, cellFill(world, dst))
 	}
 	return m
 }
@@ -149,9 +151,9 @@ export const stepWater = (world) => {
 			const ny = y + ddy
 			if (!canOccupy(world, nx, ny)) continue
 			const below = ny * W + nx
-			if (liq[below] >= LIQ_FULL || poolRetainBlocks(world, cell, below)) continue
+			const room = cellRoom(world, below)
+			if (room <= 0 || poolRetainBlocks(world, cell, below)) continue
 			const pDst = pAt(nx, ny)
-			const room = LIQ_FULL - liq[below]
 			let move = pressureMove(pSrc, pDst, liq[cell] * w, room, WATER_VISC)
 			if (move < 0.01 && liq[below] < liq[cell] && pDst < pSrc + RHO_G * 0.85)
 				move = Math.min(liq[cell] * w, room, Math.max(0.08, (liq[cell] - liq[below]) * 0.85 * w))
@@ -177,11 +179,12 @@ export const stepWater = (world) => {
 			const sy = y + dy
 			if (!canOccupy(world, sx, sy)) continue
 			const neighbor = sy * W + sx
-			if (liq[neighbor] >= liq[cell] || poolRetainBlocks(world, cell, neighbor)) continue
+			const crawlRoom = cellRoom(world, neighbor)
+			if (crawlRoom <= 0 || liq[neighbor] >= liq[cell] || poolRetainBlocks(world, cell, neighbor)) continue
 			const pN = pAt(sx, sy)
-			let m = pressureMove(pSrc, pN, liq[cell] * 0.5, LIQ_FULL - liq[neighbor], WATER_VISC)
+			let m = pressureMove(pSrc, pN, liq[cell] * 0.5, crawlRoom, WATER_VISC)
 			if (m <= 0.01)
-				m = Math.min(liq[cell] * 0.5, (liq[cell] - liq[neighbor]) * 0.5, LIQ_FULL - liq[neighbor])
+				m = Math.min(liq[cell] * 0.5, (liq[cell] - liq[neighbor]) * 0.5, crawlRoom)
 			if (m <= 0.01) continue
 			transfer(world, liq, flowX, flowY, cell, neighbor, dx, dy, m)
 			markDirty(x, y)
@@ -208,7 +211,7 @@ export const stepWater = (world) => {
 						const neighbor = nb.y * W + nb.x
 						if (!isLiquidBarrier(mat[neighbor])) {
 							const pDst = pAt(nb.x, nb.y)
-							const room = LIQ_FULL - liq[neighbor]
+							const room = cellRoom(world, neighbor)
 							let move = freeSurface && liq[neighbor] < LIQ_DRAW
 								? sheetMove(liq[cell], liq[neighbor], room, WATER_VISC) * ST_DRY_FRAC
 								: pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
@@ -240,7 +243,8 @@ export const stepWater = (world) => {
 				if (sealedGasBlocks(world, neighbor, pSrc)) continue
 
 				const pDst = pAt(nx, ny)
-				const room = LIQ_FULL - liq[neighbor]
+				const room = cellRoom(world, neighbor)
+				if (room <= 0) continue
 				let move = 0
 				if (freeSurface && liq[neighbor] < LIQ_DRAW)
 					move = sheetMove(liq[cell], liq[neighbor], room, WATER_VISC) * ST_DRY_FRAC
@@ -249,6 +253,9 @@ export const stepWater = (world) => {
 					move = pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
 					if (move < 0.01 && liq[neighbor] < liq[cell] - 0.02)
 						move = Math.min((liq[cell] - liq[neighbor]) * 0.25, room)
+					// Submerged lateral inertia only (free-surface sheet stays φ/pressure dominated).
+					if (!freeSurface)
+						move = Math.max(move, inertiaMove(world.liqVx[cell], world.liqVy[cell], dx, dy, liq[cell], room, WATER_VISC))
 				}
 
 				if (freeSurface && liq[cell] >= LIQ_DRAW) {
@@ -303,7 +310,7 @@ export const stepWater = (world) => {
 				const tx = nx + dx
 				const ty = ny + dy
 				const target = idx(world, tx, ty)
-				if (canOccupy(world, tx, ty) && liq[target] < LIQ_FULL)
+				if (canOccupy(world, tx, ty) && cellRoom(world, target) > 0)
 					transfer(world, liq, flowX, flowY, neighbor, target, tx - nx, ty - ny, push)
 				else if (strongDown.w > 0) {
 					const bx = nx + strongDown.dx

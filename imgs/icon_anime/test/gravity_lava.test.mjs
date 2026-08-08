@@ -415,7 +415,10 @@ Deno.test('buoyancy: hot melt rises above cold melt', () => {
 	clearMaterials(world)
 	world.melt.fill(0)
 	world.temp.fill(0)
-	addMelt(world, 1, 2, 1, 0.2)
+	for (let x = 0; x < world.worldW; x++)
+		setMat(world, x, world.worldH - 1, MAT.SEAL)
+	// Both above T_SOLIDUS so thermal does not freeze the stack mid-test.
+	addMelt(world, 1, 2, 1, 0.4)
 	addMelt(world, 1, 3, 1, 0.95)
 	for (let i = 0; i < 30; i++)
 		stepFluid(world, { forceWind: 0 })

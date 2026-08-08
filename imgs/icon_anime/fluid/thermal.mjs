@@ -1,6 +1,7 @@
 /**
- * 热传导、蒸发、熔化 / 凝固。
+ * 热传导、蒸发、熔化 / 凝固、空气温度平流。
  * 土壤与熔岩同源：温度决定密度与粘滞；跨 T_LIQUIDUS / T_SOLIDUS 翻转 mat 缓存。
+ * 空气格参与传导与气体平流，不再强制 T_AMB。
  */
 
 import {
@@ -15,15 +16,21 @@ import { scratch, markAirIfDrawCrossed, markAirIfMeltDrawCrossed, gravityUpWeigh
 
 /** 邻格传导系数。 */
 const CONDUCT = 0.08
+/** 空气邻格传导（略弱于凝聚相）。 */
+const AIR_CONDUCT = 0.045
 /** 蒸发带走的潜热 / 质量。 */
 const LATENT_EVAP = 0.55
 /** 每 tick 蒸发质量上限。 */
 const EVAP_RATE = 0.12
 /** 蒸汽注入气区的质量倍率。 */
 const STEAM_GAS = 0.35
+/** 蒸汽注入的局部升温 / 质量。 */
+const STEAM_HEAT = 0.4
+/** 气体温度上风平流混合。 */
+const AIR_ADVECT = 0.22
 
 /**
- * 向气区注入蒸汽质量（升压）。
+ * 向气区注入蒸汽质量（升压）并抬局部温度。
  * @param {FluidWorld} world 世界
  * @param {number} cell 扁平索引
  * @param {number} steamMass 蒸汽质量
@@ -31,6 +38,7 @@ const STEAM_GAS = 0.35
  */
 const injectSteam = (world, cell, steamMass) => {
 	if (steamMass <= 0) return
+	world.temp[cell] = Math.min(1, world.temp[cell] + steamMass * STEAM_HEAT)
 	const rid = world.regionId[cell]
 	if (!rid) return
 	const region = world.regions[rid]
@@ -43,7 +51,7 @@ const injectSteam = (world, cell, steamMass) => {
 }
 
 /**
- * 热力步进：传导 → 蒸发 / 闪蒸 → 熔化 / 凝固。
+ * 热力步进：传导 → 空气平流 → 蒸发 / 闪蒸 → 熔化 / 凝固。
  * @param {FluidWorld} world 流体世界
  * @returns {void}
  */
@@ -53,43 +61,70 @@ export const stepThermal = (world) => {
 	const prevT = world.temp
 	const nextT = scratch(world, 'thermNextT', n, Float32Array)
 
-	// --- Conduction among rock / melt / water-bearing cells ---
+	// --- Conduction: mass cells only among mass; air cells among air+mass ---
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			const hasMass = melt[cell] > 0.02 || isSoilMat(mat[cell]) || liq[cell] > 0.02
-			if (!hasMass) {
+			const isAir = !hasMass && mat[cell] === MAT.AIR
+			if (!hasMass && !isAir) {
 				nextT[cell] = T_AMB
 				continue
 			}
 			let acc = prevT[cell]
 			let w = 1
-			if (x > 0) {
-				const ni = cell - 1
+			/**
+			 * @param {number} ni 邻格
+			 * @returns {void}
+			 */
+			const accum = (ni) => {
 				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
+				const nAir = !nMass && mat[ni] === MAT.AIR
+				if (hasMass) {
+					// Mass thermal capacity ≫ air: ignore ambient air neighbors so
+					// soil melt / lava heat is not quenched in one tick.
+					if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
+				}
+				else if (nMass || nAir) {
+					acc += prevT[ni] * AIR_CONDUCT
+					w += AIR_CONDUCT
+				}
 			}
-			if (x + 1 < W) {
-				const ni = cell + 1
-				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
-			}
-			if (y > 0) {
-				const ni = cell - W
-				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
-			}
-			if (y + 1 < H) {
-				const ni = cell + W
-				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
-			}
+			if (x > 0) accum(cell - 1)
+			if (x + 1 < W) accum(cell + 1)
+			if (y > 0) accum(cell - W)
+			if (y + 1 < H) accum(cell + W)
 			nextT[cell] = acc / w
 		}
 
+	// --- Air temperature advection by gas velocity ---
+	const gasUx = world.gasUx
+	const gasUy = world.gasUy
+	const advT = scratch(world, 'thermAdvT', n, Float32Array)
+	advT.set(nextT)
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const cell = y * W + x
+			if (mat[cell] !== MAT.AIR) continue
+			if (melt[cell] > 0.02 || liq[cell] > 0.02) continue
+			const ux = gasUx[cell]
+			const uy = gasUy[cell]
+			const ox = ux > 0.05 ? -1 : ux < -0.05 ? 1 : 0
+			const oy = uy > 0.05 ? -1 : uy < -0.05 ? 1 : 0
+			if (ox === 0 && oy === 0) continue
+			const sx = x + ox
+			const sy = y + oy
+			if (!inWorld(world, sx, sy)) continue
+			const src = sy * W + sx
+			if (mat[src] !== MAT.AIR && melt[src] <= 0.02 && !isSoilMat(mat[src]) && liq[src] <= 0.02)
+				continue
+			const speed = Math.min(1, Math.hypot(ux, uy) * 0.35)
+			advT[cell] = nextT[cell] + (nextT[src] - nextT[cell]) * AIR_ADVECT * speed
+		}
+
 	world.scratch.thermNextT = prevT
-	world.temp = nextT
-	const temp = nextT
+	world.temp = advT
+	const temp = advT
 
 	const upW = gravityUpWeights(world)
 	const up = strongestUp(world, upW)
@@ -193,17 +228,25 @@ export const stepThermal = (world) => {
 }
 
 /**
- * 格的有效密度（空气 / 水 / 岩熔连续体）。
+ * 格的有效密度（空气 / 水 / 岩熔；同格双相质量加权）。
  * @param {FluidWorld} world 世界
  * @param {number} cell 索引
  * @returns {number} rho
  */
 export const cellRho = (world, cell) => {
-	if (world.melt[cell] >= LIQ_DRAW)
-		return rhoOf(SUBSTANCE.ROCK, world.temp[cell])
-	if (world.liq[cell] >= LIQ_DRAW)
+	const m = world.melt[cell]
+	const l = world.liq[cell]
+	const fill = m + l
+	if (fill > 0.02) {
+		if (m > 1e-6 && l > 1e-6) {
+			const rhoM = rhoOf(SUBSTANCE.ROCK, world.temp[cell])
+			const rhoL = rhoOf(SUBSTANCE.WATER, T_AMB)
+			return (rhoM * m + rhoL * l) / fill
+		}
+		if (m > 1e-6) return rhoOf(SUBSTANCE.ROCK, world.temp[cell])
 		return rhoOf(SUBSTANCE.WATER, T_AMB)
+	}
 	if (isSoilMat(world.mat[cell]))
 		return rhoOf(SUBSTANCE.ROCK, world.temp[cell])
-	return rhoOf(SUBSTANCE.AIR, T_AMB)
+	return rhoOf(SUBSTANCE.AIR, world.temp[cell])
 }

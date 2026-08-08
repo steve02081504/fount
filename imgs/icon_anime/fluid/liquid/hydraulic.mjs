@@ -230,17 +230,19 @@ const relaxComponent = (world, flowX, flowY, liq, componentOf, dist, visit, gen,
 			if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
 			const neighbor = ny * W + nx
 			if (componentOf[neighbor] !== comp || visit[neighbor] !== gen || dist[neighbor] >= bestD) continue
-			if (liq[neighbor] >= LIQ_FULL - 1e-6) continue
+			if (liq[neighbor] + world.melt[neighbor] >= LIQ_FULL - 1e-6) continue
 			bestD = dist[neighbor]
 			bestNeighbor = neighbor
 			bestDx = dx
 			bestDy = dy
 		}
 		if (bestNeighbor < 0) continue
-		const move = Math.min(0.12, liq[cell] * 0.35, delta * 0.08) * mobility
+		const room = LIQ_FULL - liq[bestNeighbor] - world.melt[bestNeighbor]
+		if (room <= 1e-6) continue
+		const move = Math.min(0.12, liq[cell] * 0.35, delta * 0.08, room) * mobility
 		const a0 = liq[cell]
 		const b0 = liq[bestNeighbor]
-		const m = applyTransfer(liq, flowX, flowY, cell, bestNeighbor, bestDx, bestDy, move)
+		const m = applyTransfer(liq, flowX, flowY, cell, bestNeighbor, bestDx, bestDy, move, room)
 		if (m > 0) {
 			markAirIfDrawCrossed(world, a0, liq[cell])
 			markAirIfDrawCrossed(world, b0, liq[bestNeighbor])
@@ -295,5 +297,185 @@ export const equilibrateHydraulic = (world, flowX, flowY, mobility = 1) => {
 
 		buildDistField(world, componentOf, dist, visit, gen, comp, sink, surf)
 		relaxComponent(world, flowX, flowY, liq, componentOf, dist, visit, gen, comp, start, end, sink, sinkPhi, mobility, surf)
+	}
+}
+
+/**
+ * 标注熔岩连通分量与自由面 φ（独立于水，禁止水–熔岩经 φ 互抽）。
+ * @param {FluidWorld} world 流体世界
+ * @returns {{
+ *   surf: { x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, phi: Float32Array, n: number },
+ *   componentOf: Int32Array,
+ * }} 自由面样本与每格分量 id
+ */
+export const labelMeltComponents = (world) => {
+	const W = world.worldW
+	const componentOf = clearLabels(world, 'meltComp', W * world.worldH)
+	const surf = {
+		x: growScratch(world, 'meltSurfX', 64, Int32Array),
+		y: growScratch(world, 'meltSurfY', 64, Int32Array),
+		c: growScratch(world, 'meltSurfC', 64, Int32Array),
+		p: growScratch(world, 'meltSurfP', 64, Float32Array),
+		phi: growScratch(world, 'meltSurfPhi', 64, Float32Array),
+		n: 0,
+	}
+
+	const upW = gravityUpWeights(world)
+	const up = strongestUp(world, upW)
+	const depth = fillCellDepths(world)
+
+	const { components } = labelComponents(world, {
+		/**
+		 * @param {FluidWorld} world 世界
+		 * @param {number} cell 索引
+		 * @returns {boolean} 熔岩格
+		 */
+		accept: (world, cell) => world.melt[cell] >= LIQ_DRAW && !isLiquidBarrier(world.mat[cell]),
+		labels: componentOf,
+		poolKey: 'meltComponentPool',
+		/**
+		 * @param {FluidWorld} world 世界
+		 * @param {number} cell 索引
+		 * @param {number} x 列
+		 * @param {number} y 行
+		 * @param {number} id 分量
+		 * @returns {void}
+		 */
+		onCell: (world, cell, x, y, id) => {
+			// Melt free surface: no condensed melt above along −ĝ.
+			let free = true
+			for (let i = 0; i < upW.n; i++) {
+				const ax = x + upW.dx[i]
+				const ay = y + upW.dy[i]
+				if (!inWorld(world, ax, ay)) continue
+				const above = ay * W + ax
+				if (!isLiquidBarrier(world.mat[above]) && world.melt[above] >= LIQ_DRAW) {
+					free = false
+					break
+				}
+			}
+			if (!free) return
+			let airP = pressureAt(world, x, y)
+			if (up.w > 0) {
+				const ax = x + up.dx
+				const ay = y + up.dy
+				if (inWorld(world, ax, ay) && !isLiquidBarrier(world.mat[ay * W + ax]))
+					airP = pressureAt(world, ax, ay)
+			}
+			const n = surf.n
+			if (n >= surf.x.length) {
+				surf.x = growScratch(world, 'meltSurfX', n + 1, Int32Array)
+				surf.y = growScratch(world, 'meltSurfY', n + 1, Int32Array)
+				surf.c = growScratch(world, 'meltSurfC', n + 1, Int32Array)
+				surf.p = growScratch(world, 'meltSurfP', n + 1, Float32Array)
+				surf.phi = growScratch(world, 'meltSurfPhi', n + 1, Float32Array)
+			}
+			surf.x[n] = x
+			surf.y[n] = y
+			surf.c[n] = id
+			surf.p[n] = airP
+			surf.phi[n] = hydraulicPhi(airP, depth[cell])
+			surf.n = n + 1
+		},
+	})
+	recycleComponents(world, components, 'meltComponentPool')
+	return { surf, componentOf }
+}
+
+/**
+ * 熔岩连通器 φ 松弛（mobility 由粘滞增益给出）。
+ * @param {FluidWorld} world 流体世界
+ * @param {Float32Array} flowX 流累加器
+ * @param {Float32Array} flowY 流累加器
+ * @param {number} [mobility=1] 迁移率
+ * @returns {void}
+ */
+export const equilibrateMeltHydraulic = (world, flowX, flowY, mobility = 1) => {
+	const { surf, componentOf } = labelMeltComponents(world)
+	const { n: surfN, c: sc, phi } = surf
+	if (surfN < 2) return
+
+	const { worldW: W, melt } = world
+	const n = W * world.worldH
+	const dist = scratch(world, 'meltHydroDist', n, Int32Array)
+	const visit = scratch(world, 'meltHydroVisit', n, Int32Array)
+	let gen = (/** @type {number} */ world.scratch.meltHydroGen | 0) + 1
+	if (gen >= 0x7fffffff) {
+		visit.fill(0)
+		gen = 1
+	}
+	world.scratch.meltHydroGen = gen
+
+	let i = 0
+	while (i < surfN) {
+		const comp = sc[i]
+		const start = i
+		while (i < surfN && sc[i] === comp) i++
+		const end = i
+		if (end - start < 2) continue
+
+		const sink = sinkOfComponent(surf, start, end)
+		const sinkPhi = phi[sink]
+
+		let need = false
+		for (let k = start; k < end; k++) {
+			if (k === sink) continue
+			if (phi[k] - sinkPhi > 0.35) {
+				need = true
+				break
+			}
+		}
+		if (!need) continue
+
+		buildDistField(world, componentOf, dist, visit, gen, comp, sink, surf)
+
+		const { x: sx, y: sy } = surf
+		for (let k = start; k < end; k++) {
+			if (k === sink) continue
+			const delta = phi[k] - sinkPhi
+			if (delta <= 0.35) continue
+			const cell = sy[k] * W + sx[k]
+			if (visit[cell] !== gen || melt[cell] < 0.05) continue
+			let bestNeighbor = -1
+			let bestD = dist[cell]
+			let bestDx = 0
+			let bestDy = 0
+			const x0 = sx[k]
+			const y0 = sy[k]
+			for (let o = 0; o < 4; o++) {
+				const dx = ORTHO_DX[o]
+				const dy = ORTHO_DY[o]
+				const nx = x0 + dx
+				const ny = y0 + dy
+				if (nx < 0 || ny < 0 || nx >= W || ny >= world.worldH) continue
+				const neighbor = ny * W + nx
+				if (componentOf[neighbor] !== comp || visit[neighbor] !== gen || dist[neighbor] >= bestD) continue
+				if (melt[neighbor] + world.liq[neighbor] >= LIQ_FULL - 1e-6) continue
+				bestD = dist[neighbor]
+				bestNeighbor = neighbor
+				bestDx = dx
+				bestDy = dy
+			}
+			if (bestNeighbor < 0) continue
+			const room = LIQ_FULL - melt[bestNeighbor] - world.liq[bestNeighbor]
+			if (room <= 1e-6) continue
+			const move = Math.min(0.12, melt[cell] * 0.35, delta * 0.08, room) * mobility
+			const a0 = melt[cell]
+			const b0 = melt[bestNeighbor]
+			const m = applyTransfer(melt, flowX, flowY, cell, bestNeighbor, bestDx, bestDy, move, room)
+			if (m > 0) {
+				// Carry temperature with mass.
+				const tSrc = world.temp[cell]
+				const heat = tSrc * m
+				const destMass = melt[bestNeighbor]
+				const prevMass = destMass - m
+				world.temp[bestNeighbor] = prevMass > 0
+					? (world.temp[bestNeighbor] * prevMass + heat) / destMass
+					: tSrc
+				if (melt[cell] <= 1e-8) world.temp[cell] = 0
+				markAirIfDrawCrossed(world, a0, melt[cell])
+				markAirIfDrawCrossed(world, b0, melt[bestNeighbor])
+			}
+		}
 	}
 }
