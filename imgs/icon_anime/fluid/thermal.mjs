@@ -6,7 +6,7 @@
 import {
 	MAT, LIQ_DRAW,
 	T_AMB, T_SOLIDUS, T_LIQUIDUS, T_BOIL,
-	SUBSTANCE, rhoOf, viscOf,
+	SUBSTANCE, rhoOf,
 	isSoilMat,
 } from './mat.mjs'
 import { scratch, markAirIfDrawCrossed, markAirIfMeltDrawCrossed, gravityUpWeights, strongestUp, inWorld } from './world.mjs'
@@ -203,12 +203,3 @@ export const cellRho = (world, cell) => {
 		return rhoOf(SUBSTANCE.ROCK, world.temp[cell])
 	return rhoOf(SUBSTANCE.AIR, T_AMB)
 }
-
-/**
- * 熔岩格粘滞。
- * @param {FluidWorld} world 世界
- * @param {number} cell 索引
- * @returns {number} 粘滞
- */
-export const meltVisc = (world, cell) =>
-	viscOf(rhoOf(SUBSTANCE.ROCK, world.temp[cell]))

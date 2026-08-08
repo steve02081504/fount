@@ -1,12 +1,12 @@
 /**
- * 凝聚相输运核：水 / 熔岩共用沉降 + 侧向液膜。
+ * 凝聚相输运核：水 / 熔岩等相描述符共用沉降 + 侧向液膜。
  * 相描述符携带质量场、速度场、粘滞查询与转移后钩子。
  */
 
 import { neighborCoord } from '../edges.mjs'
 import { pressureMove, sheetMove, applyTransfer, viscGain } from '../flow.mjs'
 import { pressureAt } from '../gas.mjs'
-import { MAT, LIQ_DRAW, LIQ_FULL, T_AMB, P_ATM, isLiquidBarrier } from '../mat.mjs'
+import { MAT, LIQ_DRAW, LIQ_FULL, P_ATM, isLiquidBarrier } from '../mat.mjs'
 import {
 	scratch, markAirIfDrawCrossed,
 	gravityDownWeights, strongestDown, gravityDepth,
@@ -29,32 +29,6 @@ import {
  *   flowScratchY: string,
  * }} PhaseDesc
  */
-
-/**
- * 默认：AIR / POOL 可进；土壤不可。
- * @param {FluidWorld} world 世界
- * @param {number} cell 索引
- * @returns {boolean} 可进
- */
-export const defaultCanEnter = (world, cell) => {
-	const m = world.mat[cell]
-	if (isLiquidBarrier(m)) return false
-	if (m === MAT.POOL) return world.liq[cell] < LIQ_FULL
-	return true
-}
-
-/**
- * 熔岩可进判定。
- * @param {FluidWorld} world 世界
- * @param {number} cell 索引
- * @returns {boolean} 可进
- */
-export const meltCanEnter = (world, cell) => {
-	const m = world.mat[cell]
-	if (m === MAT.SOLID || m === MAT.HORIZON) return false
-	if (isLiquidBarrier(m) && m !== MAT.AIR) return false
-	return true
-}
 
 /**
  * 按 neighborCoord 分数合约转移质量（含环绕与出界汇）。
@@ -205,10 +179,8 @@ export const stepPhaseTransport = (world, phase) => {
 					pDst = pressureAt(world, nb.x, nb.y) + phase.rhoAt(world, target) * dstMass
 				}
 				else if (nb.outFrac <= 0) continue
-				// else: wrap target blocked — treat remaining outFrac as ambient sink
 			}
 			else if (nb.outFrac <= 0) continue
-			// pure out: pDst stays P_ATM, room stays LIQ_FULL — never index OOB cells
 
 			let move = pressureMove(pSrc, pDst, mass[cell] * w, room, visc)
 			if (move < 0.01 && !crossed && dstMass < mass[cell]) {
@@ -265,24 +237,4 @@ export const stepPhaseTransport = (world, phase) => {
 		phase.vx[i] = phase.vx[i] * 0.35 + (flowX[i] / m) * 0.65
 		phase.vy[i] = phase.vy[i] * 0.35 + (flowY[i] / m) * 0.65
 	}
-}
-
-/**
- * 熔岩温度质量加权钩子。
- * @param {FluidWorld} world 世界
- * @param {number} src 源
- * @param {number} dst 目标
- * @param {number} moved 质量
- * @param {number} beforeSrc 源前质量
- * @returns {void}
- */
-export const meltTempOnTransfer = (world, src, dst, moved, beforeSrc) => {
-	const tSrc = world.temp[src]
-	const heat = tSrc * moved
-	const destMass = world.melt[dst]
-	const prevMass = destMass - moved
-	world.temp[dst] = prevMass > 0
-		? (world.temp[dst] * prevMass + heat) / destMass
-		: tSrc
-	if (world.melt[src] <= 1e-8) world.temp[src] = T_AMB
 }

@@ -51,7 +51,7 @@ Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then qui
 | `hash.mjs` | `hash01` + fBm + ortho deltas |
 | `fluid/` | Particles, liquid/melt, soil, thermal, boundary, bubbles, gas, glyphs |
 
-`fluid/` files: `mat`, `flow`, `components`, `world`, `particle_pool`, `edges`, `boundary`, `thermal`, `bubbles`, `gas`, `liquid/` (`index`, `equilibrate`, `transport`), `soil`, `particles`, `step` (`stepFluid`, `stepResizeWeather`), `glyphs`.
+`fluid/` files: `mat`, `flow`, `components`, `world`, `particle_pool`, `edges`, `boundary`, `thermal`, `bubbles`, `gas`, `liquid/` (`index` 编排, `water`, `lava`, `transport` 共用核, `equilibrate`), `soil`, `particles`, `step` (`stepFluid`, `stepResizeWeather`), `glyphs`.
 
 ## Material standard
 

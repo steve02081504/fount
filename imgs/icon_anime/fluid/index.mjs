@@ -60,7 +60,7 @@ export {
 export { stepSoil, condenseDripSource } from './soil.mjs'
 
 /** 热力与相变。 */
-export { stepThermal, cellRho, meltVisc } from './thermal.mjs'
+export { stepThermal, cellRho } from './thermal.mjs'
 
 /** 分数边角色与邻格环绕。 */
 export {
@@ -76,6 +76,12 @@ export { stepBubbles } from './bubbles.mjs'
 
 /** 自由液体静压与步进。 */
 export { liquidPressureAt, stepLiquid } from './liquid/index.mjs'
+
+/** 熔岩粘滞与输运特化。 */
+export { meltVisc, stepLava } from './liquid/lava.mjs'
+
+/** 水相粘滞。 */
+export { WATER_VISC } from './liquid/water.mjs'
 
 /** 粒子池。 */
 export {
