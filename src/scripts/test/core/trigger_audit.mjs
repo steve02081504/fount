@@ -10,7 +10,7 @@ import { matchGlob } from './trigger_filter.mjs'
  */
 
 /**
- * 未命中任何文件的 trigger 警告。
+ * 未命中任何文件的 trigger（硬错误：fount test 直接 exit 1）。
  * @typedef {object} TriggerWarning
  * @property {string} manifestId manifest id
  * @property {string} suiteName suite 名
@@ -49,6 +49,7 @@ export function triggerPatternMatchesAny(pattern, repoFiles) {
 
 /**
  * 扫描全部 suite，找出未命中任何文件的 trigger。
+ * 命中结果由 runner 视为硬错误：有任一条则 `fount test` exit 1、不调度套件。
  * @param {SuiteDef[]} suites 全部 suite
  * @param {string[]} repoFiles 仓库文件列表
  * @returns {TriggerWarning[]} 未命中任何文件的 trigger

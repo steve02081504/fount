@@ -235,18 +235,18 @@ function formatRunningSuiteMessage({ manifestId, name, heavy, expected, speculat
 }
 
 /**
- * 将未命中任何文件的 trigger 警告打到控制台。
- * @param {import('../core/trigger_audit.mjs').TriggerWarning[]} warnings trigger 警告
+ * 将未命中任何文件的 trigger 打到控制台（硬错误）。
+ * @param {import('../core/trigger_audit.mjs').TriggerWarning[]} warnings 死 trigger
  */
-function logTriggerWarnings(warnings) {
+function logDeadTriggers(warnings) {
 	if (!warnings.length) return
 	for (const warning of warnings) {
 		const scope = warning.subtestName
 			? `${warning.manifestId}:${warning.suiteName}:${warning.subtestName}`
 			: `${warning.manifestId}:${warning.suiteName}`
-		console.warnI18n('fountConsole.test.triggerNoMatch', { scope, pattern: warning.pattern })
+		console.errorI18n('fountConsole.test.triggerNoMatch', { scope, pattern: warning.pattern })
 	}
-	console.warnI18n('fountConsole.test.triggerNoMatchSummary', { count: warnings.length })
+	console.errorI18n('fountConsole.test.triggerNoMatchSummary', { count: warnings.length })
 }
 
 /**
@@ -301,7 +301,6 @@ async function executeWave(context) {
 		runId,
 		command,
 		subtestFilterByKey,
-		triggerWarnings,
 	} = context
 
 	const goalKeys = selection.goalKeys ?? new Set()
@@ -332,7 +331,6 @@ async function executeWave(context) {
 		commitHash,
 		uncommittedHash,
 		continueReasons: continueReasons.size ? continueReasons : undefined,
-		triggerWarnings,
 	})
 	const reportPath = await reportWriter.init()
 	beginTestProgress()
@@ -581,8 +579,11 @@ export async function runTests(options = {}) {
 	const command = buildTestCommand(options)
 
 	const allSuites = await loadAllSuites(REPO_ROOT)
-	const triggerWarnings = await auditTriggerCoverage(REPO_ROOT, allSuites)
-	logTriggerWarnings(triggerWarnings)
+	const deadTriggers = await auditTriggerCoverage(REPO_ROOT, allSuites)
+	if (deadTriggers.length) {
+		logDeadTriggers(deadTriggers)
+		return 1
+	}
 	const knownIds = listManifestIds(allSuites)
 	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
 
@@ -691,7 +692,6 @@ export async function runTests(options = {}) {
 				runId,
 				command,
 				subtestFilterByKey,
-				triggerWarnings,
 			})
 		}
 
@@ -729,7 +729,6 @@ export async function runTests(options = {}) {
 					runId,
 					command,
 					subtestFilterByKey,
-					triggerWarnings,
 				})
 				if (code !== 0) return code
 				continue
@@ -763,7 +762,6 @@ export async function runTests(options = {}) {
 					runId,
 					command,
 					subtestFilterByKey,
-					triggerWarnings,
 				})
 				if (code !== 0) return code
 				continue

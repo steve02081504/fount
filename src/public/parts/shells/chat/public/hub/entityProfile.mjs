@@ -3,7 +3,7 @@
  * 【职责】实体（用户/角色）资料数据到 Hub UI 的绘制：简介 Markdown、资料卡操作按钮绑定。
  * 【原理】`paintEntityProfileUi`、`paintBioMarkdown`、`wireEntityProfileCardActions` 更新资料卡 DOM。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../src/entityProfileApi、core/state、entityResolve、presence、profileEdit。
+ * 【关联】../src/endpoints/entities、core/state、entityResolve、presence、profileEdit。
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
