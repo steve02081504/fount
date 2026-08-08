@@ -129,7 +129,7 @@ export const stepThermal = (world) => {
 	const upW = gravityUpWeights(world)
 	const up = strongestUp(world, upW)
 
-	// --- Flash water on melt; evaporate soil moisture ---
+	// --- Flash water on melt; evaporate soil moisture; melt/solidify ---
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
@@ -170,12 +170,6 @@ export const stepThermal = (world) => {
 				if (latentLoss > 0)
 					temp[cell] = Math.max(T_AMB, temp[cell] - latentLoss)
 			}
-		}
-
-	// --- Melt soil when dry + hot; solidify cool melt ---
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
 
 			if (isSoilMat(mat[cell]) && moisture[cell] < 1e-6 && temp[cell] >= T_LIQUIDUS) {
 				const before = melt[cell]

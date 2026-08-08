@@ -9,7 +9,7 @@ import { cellRho } from '../thermal.mjs'
 import {
 	idx, inWorld, scratch, growScratch, cellFill, isCondensed,
 	gravityDepth, gravityUpWeights, strongestUp, strongestDown,
-	fillCellDepths, buildDepthOrder,
+	fillCellDepths, buildDepthOrders,
 } from '../world.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
@@ -132,13 +132,17 @@ export const liquidPressureAt = (world, x, y) => condensedPressureAt(world, x, y
 const fillPressureByDepth = (world, cache, depth, order, up, strongUp) => {
 	const { worldW: W, mat } = world
 	const n = order.length
+	const airEpoch = /** @type {number} */ (world.scratch.airEpoch) | 0
+	const thermoP = world.scratch.thermoPEpoch === airEpoch
+		? /** @type {Float32Array | undefined} */ (world.scratch.thermoP)
+		: undefined
 
 	for (let si = 0; si < n; si++) {
 		const cell = order[si]
 		const x = cell % W
 		const y = (cell / W) | 0
 		if (!isCondensed(world, cell) || isLiquidBarrier(mat[cell])) {
-			cache[cell] = pressureAt(world, x, y)
+			cache[cell] = thermoP ? thermoP[cell] : pressureAt(world, x, y)
 			continue
 		}
 
@@ -266,6 +270,7 @@ const refreshGravityLine = (world, x0, y0, cache, depth, up, down) => {
  *   pAt: (x: number, y: number) => number,
  *   markDirty: (x: number, y: number) => void,
  *   depth: Float32Array,
+ *   deepOrder: Int32Array,
  *   upWeights: { dx: number[], dy: number[], w: number[], n: number },
  *   strongUp: { dx: number, dy: number, w: number },
  *   strongDown: { dx: number, dy: number, w: number },
@@ -285,7 +290,9 @@ export const beginLiquidPressure = (world) => {
 	DOWN_LINE.dy = strongDown.dy
 	DOWN_LINE.w = strongDown.w
 
-	const order = buildDepthOrder(world, 'liqPFOrder', 'liqPFCounts', false, depth)
+	const { shallow: order, deep: deepOrder } = buildDepthOrders(
+		world, 'liqPFOrder', 'liqDeepOrder', 'liqDepthCounts', depth,
+	)
 	const cache = scratch(world, 'liqP', n, Float32Array)
 	fillPressureByDepth(world, cache, depth, order, upWeights, UP_LINE)
 
@@ -340,5 +347,5 @@ export const beginLiquidPressure = (world) => {
 		return cache[y * W + x]
 	}
 
-	return { pAt, markDirty, depth, upWeights, strongUp, strongDown }
+	return { pAt, markDirty, depth, deepOrder, upWeights, strongUp, strongDown }
 }

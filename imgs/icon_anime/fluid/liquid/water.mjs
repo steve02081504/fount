@@ -19,7 +19,7 @@ import {
 	scratch, idx, inWorld,
 	markAirIfDrawCrossed, markAirIfFillCrossed, cellRoom, cellFill,
 	gravitySettleWeights, gravitySideWeights,
-	buildDepthOrder, isLiquidFreeSurface,
+	isLiquidFreeSurface,
 } from '../world.mjs'
 
 import { beginLiquidPressure } from './pressure.mjs'
@@ -125,10 +125,9 @@ export const stepWater = (world) => {
 	flowX.fill(0)
 	flowY.fill(0)
 
-	const { pAt, markDirty, depth, upWeights, strongUp, strongDown } = beginLiquidPressure(world)
+	const { pAt, markDirty, deepOrder: order, upWeights, strongUp, strongDown } = beginLiquidPressure(world)
 	const downW = gravitySettleWeights(world)
 	const sides = gravitySideWeights(world)
-	const order = buildDepthOrder(world, 'liqSettleOrder', 'liqSettleCounts', true, depth)
 
 	for (let si = 0; si < n; si++) {
 		const cell = order[si]

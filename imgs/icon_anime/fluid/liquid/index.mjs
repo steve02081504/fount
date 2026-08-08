@@ -9,7 +9,7 @@
 import { viscGain } from '../flow.mjs'
 import { SUBSTANCE, rhoOf, viscOf } from '../mat.mjs'
 import { stepSoil } from '../soil.mjs'
-import { scratch, fillCellDepths, buildDepthOrder } from '../world.mjs'
+import { scratch, fillCellDepths } from '../world.mjs'
 
 import { equilibrateHydraulic, equilibrateMeltHydraulic } from './hydraulic.mjs'
 import { stepLava, stepBuoyancy, meltVisc } from './lava.mjs'
@@ -45,7 +45,8 @@ export const stepLiquid = (world) => {
 	equilibrateHydraulic(world, hydroX, hydroY)
 
 	const depth = fillCellDepths(world)
-	const deepOrder = buildDepthOrder(world, 'liqDeepOrder', 'liqDeepCounts', true, depth)
+	// Deep order built once in beginLiquidPressure (shared with water settle).
+	const deepOrder = /** @type {Int32Array} */ (world.scratch.liqDeepOrder)
 	const shared = { depth, order: deepOrder }
 	stepLava(world, shared)
 

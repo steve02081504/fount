@@ -621,9 +621,91 @@ export const fillCellDepths = (world) => {
 	basis.depth0 = gravityDepth0
 	basis.W = W
 	basis.H = H
-	// Depth changed → thermo table (if any) is stale.
+	// Depth changed → thermo table / depth orders are stale.
 	world.scratch.thermoPEpoch = -1
+	world.scratch.depthOrderBasis = null
 	return depth
+}
+
+/**
+ * 桶索引：投影深度 → counting-sort 槽。
+ * @param {number} d 深度
+ * @param {number} scale 桶缩放
+ * @param {number} depthBuckets 桶数
+ * @returns {number} 桶
+ */
+const depthBucket = (d, scale, depthBuckets) =>
+	Math.min(depthBuckets - 1, Math.max(0, (d * scale) | 0))
+
+/**
+ * 按投影深度 counting-sort 同时产出浅→深与深→浅序（共享一次分桶计数）。
+ * 同一重力基下复用，避免 tick 内多次 O(WH) 重排。
+ * @param {FluidWorld} world 世界
+ * @param {string} shallowKey 浅→深 order scratch 键
+ * @param {string} deepKey 深→浅 order scratch 键
+ * @param {string} countsKey 桶计数 scratch 键
+ * @param {Float32Array} [depth] 已有深度场；缺省则 `fillCellDepths`
+ * @returns {{ shallow: Int32Array, deep: Int32Array }} 两序
+ */
+export const buildDepthOrders = (world, shallowKey, deepKey, countsKey, depth) => {
+	const { worldW: W, worldH: H, gravity: { gx, gy }, gravityDepth0 } = world
+	const n = W * H
+	const d = depth || fillCellDepths(world)
+	const shallow = scratch(world, shallowKey, n, Int32Array)
+	const deep = scratch(world, deepKey, n, Int32Array)
+	let basis = /** @type {{ gx: number, gy: number, depth0: number, W: number, H: number, shallowKey: string, deepKey: string } | undefined} */ (
+		world.scratch.depthOrderBasis
+	)
+	if (
+		basis
+		&& basis.gx === gx && basis.gy === gy && basis.depth0 === gravityDepth0
+		&& basis.W === W && basis.H === H
+		&& basis.shallowKey === shallowKey && basis.deepKey === deepKey
+	)
+		return { shallow, deep }
+
+	const depthBuckets = Math.max(W, H) + 2
+	const dCounts = scratch(world, countsKey, depthBuckets, Int32Array)
+	const cursors = scratch(world, `${countsKey}Cur`, depthBuckets, Int32Array)
+	dCounts.fill(0)
+	const scale = (depthBuckets - 1) / (world.gravityDepthSpan || 1)
+	for (let cell = 0; cell < n; cell++)
+		dCounts[depthBucket(d[cell], scale, depthBuckets)]++
+
+	let run = 0
+	for (let b = 0; b < depthBuckets; b++) {
+		cursors[b] = run
+		run += dCounts[b]
+	}
+	for (let cell = 0; cell < n; cell++) {
+		const b = depthBucket(d[cell], scale, depthBuckets)
+		shallow[cursors[b]++] = cell
+	}
+
+	run = 0
+	for (let b = depthBuckets - 1; b >= 0; b--) {
+		cursors[b] = run
+		run += dCounts[b]
+	}
+	for (let cell = 0; cell < n; cell++) {
+		const b = depthBucket(d[cell], scale, depthBuckets)
+		deep[cursors[b]++] = cell
+	}
+
+	if (!basis) {
+		basis = { gx, gy, depth0: gravityDepth0, W, H, shallowKey, deepKey }
+		world.scratch.depthOrderBasis = basis
+	}
+	else {
+		basis.gx = gx
+		basis.gy = gy
+		basis.depth0 = gravityDepth0
+		basis.W = W
+		basis.H = H
+		basis.shallowKey = shallowKey
+		basis.deepKey = deepKey
+	}
+	return { shallow, deep }
 }
 
 /**
@@ -644,10 +726,8 @@ export const buildDepthOrder = (world, orderKey, countsKey, reverse, depth) => {
 	const dCounts = scratch(world, countsKey, depthBuckets, Int32Array)
 	dCounts.fill(0)
 	const scale = (depthBuckets - 1) / (world.gravityDepthSpan || 1)
-	for (let cell = 0; cell < n; cell++) {
-		const b = Math.min(depthBuckets - 1, Math.max(0, (d[cell] * scale) | 0))
-		dCounts[b]++
-	}
+	for (let cell = 0; cell < n; cell++)
+		dCounts[depthBucket(d[cell], scale, depthBuckets)]++
 	let run = 0
 	if (reverse)
 		for (let b = depthBuckets - 1; b >= 0; b--) {
@@ -662,7 +742,7 @@ export const buildDepthOrder = (world, orderKey, countsKey, reverse, depth) => {
 			run += c
 		}
 	for (let cell = 0; cell < n; cell++) {
-		const b = Math.min(depthBuckets - 1, Math.max(0, (d[cell] * scale) | 0))
+		const b = depthBucket(d[cell], scale, depthBuckets)
 		order[dCounts[b]++] = cell
 	}
 	return order

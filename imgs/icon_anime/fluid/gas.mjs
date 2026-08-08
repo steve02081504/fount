@@ -14,7 +14,7 @@ import {
 	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, T_AMB, isBlockMat,
 } from './mat.mjs'
 import {
-	scratch, idx, inWorld, gravityDepth, strongestUp, fillCellDepths,
+	scratch, idx, inWorld, gravityDepth, strongestUp, fillCellDepths, buildDepthOrder,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
@@ -45,8 +45,6 @@ export const GAS_NOZZLE = 1.55
 export const GAS_SPEED_MAX = 5
 /** 散度投影 Jacobi 迭代次数。 */
 const GAS_PROJ_ITERS = 16
-/** 投影松弛。 */
-const GAS_PROJ_OMEGA = 1
 /** |drive| 超过此值的格投影后回注驱动（保留涡旋源）。 */
 const GAS_DRIVE_KEEP = 0.08
 /** 开放气 Boussinesq 浮力增益（沿 −ĝ）。 */
@@ -90,6 +88,37 @@ export const isAirCell = (world, cell) =>
 export const fillBlocked = (world, blocked) => {
 	for (let cell = 0; cell < blocked.length; cell++)
 		blocked[cell] = isAirCell(world, cell) ? 0 : 1
+}
+
+/** 开放邻接位：左 / 右 / 上 / 下。 */
+const OPEN_L = 1
+const OPEN_R = 2
+const OPEN_U = 4
+const OPEN_D = 8
+
+/**
+ * 由 `blocked` 预计算四邻开放掩码（与投影 / 速度合成共用）。
+ * @param {Uint8Array} blocked 阻挡
+ * @param {number} W 宽
+ * @param {number} H 高
+ * @param {Uint8Array} mask 输出
+ * @returns {void}
+ */
+const fillOpenMask = (blocked, W, H, mask) => {
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const cell = y * W + x
+			if (blocked[cell]) {
+				mask[cell] = 0
+				continue
+			}
+			let m = 0
+			if (x > 0 && !blocked[cell - 1]) m |= OPEN_L
+			if (x + 1 < W && !blocked[cell + 1]) m |= OPEN_R
+			if (y > 0 && !blocked[cell - W]) m |= OPEN_U
+			if (y + 1 < H && !blocked[cell + W]) m |= OPEN_D
+			mask[cell] = m
+		}
 }
 
 /**
@@ -293,11 +322,12 @@ const pressureAlongUp = (world, x, y, depth) => {
 /**
  * 热力学气压（无 Bernoulli）：与 `pressureAt` 同式，写入 `thermoP` scratch。
  * 气区标注或重力深度基变化后惰性重建；供液体/熔岩热路径查表。
+ * 非气格沿 −ĝ 浅→深传播：上邻已解析到气区则拷贝，否则与 `pressureAlongUp` 同样回退开大气。
  * @param {FluidWorld} world 流体世界
  * @returns {Float32Array} 长度 WH 的热力学压场
  */
 export const ensureThermoPressure = (world) => {
-	const { worldW: W, worldH: H, regionId, regions } = world
+	const { worldW: W, worldH: H, regionId, regions, mat } = world
 	const n = W * H
 	const depth = fillCellDepths(world)
 	const airEpoch = /** @type {number} */ (world.scratch.airEpoch) | 0
@@ -305,46 +335,44 @@ export const ensureThermoPressure = (world) => {
 	if (world.scratch.thermoPEpoch === airEpoch) return thermoP
 
 	const up = strongestUp(world)
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
-			const rid = regionId[cell]
-			if (rid) {
-				const region = regions[rid]
-				const d = depth[cell]
-				thermoP[cell] = region.openToAtm
-					? openHydroPressure(d)
-					: sealedHydroPressure(region, d, region.yMean)
-				continue
-			}
-			// Same walk as pressureAlongUp, but reuse depth[] / strongestUp once.
-			if (up.w <= 0) {
-				thermoP[cell] = openHydroPressure(depth[cell])
-				continue
-			}
-			let cx = x
-			let cy = y
-			let found = false
-			const maxSteps = Math.max(W, H)
-			for (let step = 0; step < maxSteps; step++) {
-				cx += up.dx
-				cy += up.dy
-				if (cx < 0 || cy < 0 || cx >= W || cy >= H) break
-				const above = cy * W + cx
-				if (isBlockMat(world.mat[above])) break
-				const aboveRid = regionId[above]
-				if (aboveRid) {
-					const region = regions[aboveRid]
-					const d = depth[above]
-					thermoP[cell] = region.openToAtm
-						? openHydroPressure(d)
-						: sealedHydroPressure(region, d, region.yMean)
-					found = true
-					break
-				}
-			}
-			if (!found) thermoP[cell] = openHydroPressure(depth[cell])
+	const order = buildDepthOrder(world, 'thermoPOrder', 'thermoPCounts', false, depth)
+	const resolved = scratch(world, 'thermoResolved', n, Uint8Array)
+	for (let si = 0; si < n; si++) {
+		const cell = order[si]
+		const rid = regionId[cell]
+		if (rid) {
+			const region = regions[rid]
+			const d = depth[cell]
+			thermoP[cell] = region.openToAtm
+				? openHydroPressure(d)
+				: sealedHydroPressure(region, d, region.yMean)
+			resolved[cell] = 1
+			continue
 		}
+		if (up.w <= 0) {
+			thermoP[cell] = openHydroPressure(depth[cell])
+			resolved[cell] = 0
+			continue
+		}
+		const x = cell % W
+		const y = (cell / W) | 0
+		const ax = x + up.dx
+		const ay = y + up.dy
+		if (ax < 0 || ay < 0 || ax >= W || ay >= H || isBlockMat(mat[ay * W + ax])) {
+			thermoP[cell] = openHydroPressure(depth[cell])
+			resolved[cell] = 0
+			continue
+		}
+		const above = ay * W + ax
+		if (resolved[above]) {
+			thermoP[cell] = thermoP[above]
+			resolved[cell] = 1
+		}
+		else {
+			thermoP[cell] = openHydroPressure(depth[cell])
+			resolved[cell] = 0
+		}
+	}
 	world.scratch.thermoPEpoch = airEpoch
 	return thermoP
 }
@@ -549,6 +577,7 @@ export const stepGas = (world, opts) => {
 	const nextUx = scratch(world, 'gasNextUx', n, Float32Array)
 	const nextUy = scratch(world, 'gasNextUy', n, Float32Array)
 	const blocked = scratch(world, 'gasBlocked', n, Uint8Array)
+	const openMask = scratch(world, 'gasOpenMask', n, Uint8Array)
 	const vertSpan = scratch(world, 'gasVertSpan', n, Uint16Array)
 	const horizSpan = scratch(world, 'gasHorizSpan', n, Uint16Array)
 	const staticP = scratch(world, 'gasStaticP', n, Float32Array)
@@ -556,6 +585,7 @@ export const stepGas = (world, opts) => {
 	if (world.gasGeomDirty) {
 		fillBlocked(world, blocked)
 		fillGasSpans(blocked, W, H, vertSpan, horizSpan)
+		fillOpenMask(blocked, W, H, openMask)
 		world.gasGeomDirty = false
 	}
 
@@ -603,19 +633,19 @@ export const stepGas = (world, opts) => {
 			}
 
 			const region = regionId[cell] ? regions[regionId[cell]] : null
-			const open = !region || region.openToAtm
+			const openAtm = !region || region.openToAtm
 			const localDrive = driveUx
 				? Math.abs(driveUx[cell]) + Math.abs(driveUy[cell])
 				: 0
 
 			const drive = wind0 * shear[cell]
-			let tx = open ? drive * px : 0
-			let ty = open ? drive * py : 0
+			let tx = openAtm ? drive * px : 0
+			let ty = openAtm ? drive * py : 0
 			if (driveUx) {
 				tx += driveUx[cell]
 				ty += driveUy[cell]
 			}
-			if (open) {
+			if (openAtm) {
 				const dT = world.temp[cell] - T_AMB
 				if (Math.abs(dT) > 0.02) {
 					tx -= gravity.gx * dT * GAS_BOUSSINESQ
@@ -623,10 +653,11 @@ export const stepGas = (world, opts) => {
 				}
 			}
 
-			const openL = x > 0 && !blocked[cell - 1]
-			const openR = x + 1 < W && !blocked[cell + 1]
-			const openU = y > 0 && !blocked[cell - W]
-			const openD = y + 1 < H && !blocked[cell + W]
+			const neigh = openMask[cell]
+			const openL = neigh & OPEN_L
+			const openR = neigh & OPEN_R
+			const openU = neigh & OPEN_U
+			const openD = neigh & OPEN_D
 
 			const p0 = staticP[cell]
 			if (openL) tx += -1 * (p0 - staticP[cell - 1]) * GAS_DP_DRIVE
@@ -665,7 +696,7 @@ export const stepGas = (world, opts) => {
 			ux = ux * 0.65 + (sumUx / count) * 0.35
 			uy = uy * 0.65 + (sumUy / count) * 0.35
 
-			if (!open && localDrive <= 0.05) {
+			if (!openAtm && localDrive <= 0.05) {
 				ux *= 0.85
 				uy *= 0.85
 			}
@@ -686,8 +717,8 @@ export const stepGas = (world, opts) => {
 			}
 
 	if (!hasDrive) {
-		const phi = scratch(world, 'gasProjPhi', n, Float32Array)
-		const phiNext = scratch(world, 'gasProjPhiN', n, Float32Array)
+		let phi = scratch(world, 'gasProjPhi', n, Float32Array)
+		let phiNext = scratch(world, 'gasProjPhiN', n, Float32Array)
 		phi.fill(0)
 		for (let iter = 0; iter < GAS_PROJ_ITERS; iter++) {
 			for (let y = 0; y < H; y++)
@@ -697,10 +728,11 @@ export const stepGas = (world, opts) => {
 						phiNext[cell] = 0
 						continue
 					}
-					const openL = x > 0 && !blocked[cell - 1]
-					const openR = x + 1 < W && !blocked[cell + 1]
-					const openU = y > 0 && !blocked[cell - W]
-					const openD = y + 1 < H && !blocked[cell + W]
+					const neigh = openMask[cell]
+					const openL = neigh & OPEN_L
+					const openR = neigh & OPEN_R
+					const openU = neigh & OPEN_U
+					const openD = neigh & OPEN_D
 					let du = 0
 					if (openL && openR) du += 0.5 * (nextUx[cell + 1] - nextUx[cell - 1])
 					else if (openR) du += nextUx[cell + 1] - nextUx[cell]
@@ -714,13 +746,15 @@ export const stepGas = (world, opts) => {
 					if (openR) { sum += phi[cell + 1]; nOpen++ }
 					if (openU) { sum += phi[cell - W]; nOpen++ }
 					if (openD) { sum += phi[cell + W]; nOpen++ }
-					phiNext[cell] = nOpen > 0
-						? (1 - Math.min(1, GAS_PROJ_OMEGA)) * phi[cell]
-							+ Math.min(1, GAS_PROJ_OMEGA) * (sum - du) / nOpen
-						: 0
+					// ω=1 Jacobi: φ' = (Σφ_n − ∇·u) / nOpen
+					phiNext[cell] = nOpen > 0 ? (sum - du) / nOpen : 0
 				}
-			phi.set(phiNext)
+			const swap = phi
+			phi = phiNext
+			phiNext = swap
 		}
+		world.scratch.gasProjPhi = phi
+		world.scratch.gasProjPhiN = phiNext
 
 		for (let y = 0; y < H; y++)
 			for (let x = 0; x < W; x++) {
@@ -730,10 +764,11 @@ export const stepGas = (world, opts) => {
 					nextUy[cell] = 0
 					continue
 				}
-				const openL = x > 0 && !blocked[cell - 1]
-				const openR = x + 1 < W && !blocked[cell + 1]
-				const openU = y > 0 && !blocked[cell - W]
-				const openD = y + 1 < H && !blocked[cell + W]
+				const neigh = openMask[cell]
+				const openL = neigh & OPEN_L
+				const openR = neigh & OPEN_R
+				const openU = neigh & OPEN_U
+				const openD = neigh & OPEN_D
 				let gx = 0
 				let gy = 0
 				if (openL && openR) gx = 0.5 * (phi[cell + 1] - phi[cell - 1])

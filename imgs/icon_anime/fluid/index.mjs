@@ -50,7 +50,7 @@ export {
 	cellFill, cellRoom, isCondensed, markAirIfFillCrossed,
 	gravityDepth, gravityDownWeights, gravityUpWeights, gravitySideWeights,
 	gravitySettleWeights, strongestUp, strongestDown, applyGravityToWorld, impartLiquidMomentum,
-	fillCellDepths, buildDepthOrder, isLiquidFreeSurface,
+	fillCellDepths, buildDepthOrder, buildDepthOrders, isLiquidFreeSurface,
 } from './world.mjs'
 
 /** 视觉格纵横比（邻接 û / 渲染半径；不参与静水深标定）。 */

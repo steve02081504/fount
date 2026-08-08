@@ -42,11 +42,14 @@ const ROLES = [
 
 /**
  * 计算四边分数角色。
+ * 同一 `(gx, gy)` 下复用（`neighborCoord` 热路径每邻接会问一次）。
  * @param {FluidWorld} world 世界
  * @returns {EdgeRole[]} 长度为 4 的角色（复用缓冲）
  */
 export const edgeRoles = (world) => {
 	const { gx, gy } = world.gravity
+	const cached = /** @type {{ gx: number, gy: number } | undefined} */ (world.scratch.edgeRolesAt)
+	if (cached && cached.gx === gx && cached.gy === gy) return ROLES
 	for (let e = 0; e < 4; e++) {
 		const nx = EDGE_NX[e]
 		const ny = EDGE_NY[e]
@@ -57,6 +60,11 @@ export const edgeRoles = (world) => {
 		r.sink = Math.max(0, dot)
 		r.source = Math.max(0, -dot)
 		r.wrap = 1 - Math.abs(dot)
+	}
+	if (!cached) world.scratch.edgeRolesAt = { gx, gy }
+	else {
+		cached.gx = gx
+		cached.gy = gy
 	}
 	return ROLES
 }

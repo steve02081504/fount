@@ -116,6 +116,50 @@ export const condenseDripSource = (world, x, y, up = gravityUpWeights(world)) =>
 }
 
 /**
+ * 下向开放空气邻格的权重和（无则 0）。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} down 下向权重
+ * @returns {number} Σw
+ */
+const undersideAirWeightSum = (world, x, y, down) => {
+	const { worldW: W, mat } = world
+	let weightSum = 0
+	for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
+		const belowX = x + down.dx[offsetIndex]
+		const belowY = y + down.dy[offsetIndex]
+		if (!inWorld(world, belowX, belowY)) continue
+		if (mat[belowY * W + belowX] !== MAT.AIR) continue
+		weightSum += down.w[offsetIndex]
+	}
+	return weightSum
+}
+
+/**
+ * 按已算好的下向空气权重和，把质量比例写入下方空气。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} amount 质量
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} down 下向权重
+ * @param {number} weightSum 权重和（须 > 0）
+ * @returns {number} 实际写入量
+ */
+const distributeToUndersideAir = (world, x, y, amount, down, weightSum) => {
+	const { worldW: W, mat } = world
+	let written = 0
+	for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
+		const belowX = x + down.dx[offsetIndex]
+		const belowY = y + down.dy[offsetIndex]
+		if (!inWorld(world, belowX, belowY)) continue
+		if (mat[belowY * W + belowX] !== MAT.AIR) continue
+		written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
+	}
+	return written
+}
+
+/**
  * 将多余质量溢到邻接空气（按下向权重分配，再任意正交）。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
@@ -126,23 +170,10 @@ export const condenseDripSource = (world, x, y, up = gravityUpWeights(world)) =>
  */
 const spillToAir = (world, x, y, amount, down) => {
 	if (amount <= 1e-8) return 0
-	let written = 0
-	let weightSum = 0
-	for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-		const belowX = x + down.dx[offsetIndex]
-		const belowY = y + down.dy[offsetIndex]
-		if (!inWorld(world, belowX, belowY)) continue
-		if (world.mat[belowY * world.worldW + belowX] !== MAT.AIR) continue
-		weightSum += down.w[offsetIndex]
-	}
-	if (weightSum > 1e-8)
-		for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-			const belowX = x + down.dx[offsetIndex]
-			const belowY = y + down.dy[offsetIndex]
-			if (!inWorld(world, belowX, belowY)) continue
-			if (world.mat[belowY * world.worldW + belowX] !== MAT.AIR) continue
-			written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
-		}
+	const weightSum = undersideAirWeightSum(world, x, y, down)
+	let written = weightSum > 1e-8
+		? distributeToUndersideAir(world, x, y, amount, down, weightSum)
+		: 0
 	let rest = amount - written
 	if (rest <= 1e-8) return written
 	for (let i = 0; i < 4; i++) {
@@ -358,26 +389,12 @@ export const stepSoil = (world) => {
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (!isSoilMat(mat[cell]) || condense[cell] <= 1e-8) continue
-			let weightSum = 0
-			for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-				const belowX = x + down.dx[offsetIndex]
-				const belowY = y + down.dy[offsetIndex]
-				if (!inWorld(world, belowX, belowY)) continue
-				if (mat[belowY * W + belowX] !== MAT.AIR) continue
-				weightSum += down.w[offsetIndex]
-			}
+			const weightSum = undersideAirWeightSum(world, x, y, down)
 			if (weightSum > 1e-8) {
 				const held = condense[cell]
 				const amount = held >= COND_DRIP ? held : held * COND_WEEP_FRAC
 				if (amount <= 1e-8) continue
-				let written = 0
-				for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
-					const belowX = x + down.dx[offsetIndex]
-					const belowY = y + down.dy[offsetIndex]
-					if (!inWorld(world, belowX, belowY)) continue
-					if (mat[belowY * W + belowX] !== MAT.AIR) continue
-					written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
-				}
+				const written = distributeToUndersideAir(world, x, y, amount, down, weightSum)
 				condense[cell] = held - written
 				continue
 			}
