@@ -1,22 +1,18 @@
-# home shell 支持的 Web 端点说明
+# home shell Web API
 
-本 shell 提供首页/仪表盘入口，仅有一个 API 用于获取首页注册表（按钮与 part 入口等）。
+本 shell 是 fount 主首页：聚合各 shell 功能按钮与 part 入口。
 
 ---
 
-## 提供的页面
+## 页面
 
 ### GET /parts/shells:home/
-- 用途：fount 主首页/仪表盘页面，提供所有 part（角色、世界、插件等）的浏览和管理入口。显示各 shell 的功能按钮和 part 类型界面，是用户的主要导航中心。
+- 用途：主首页 / 仪表盘。
 
 ---
 
-## 首页注册表
+## API
 
 ### GET /api/parts/shells:home/gethomeregistry
-- 用途：获取首页注册表，包含各 shell 的入口按钮与 part 界面配置，用于渲染首页。
-- 实现：服务端从各 part 的 `fount.json` → `registries.home_*` 聚合（`home_function_buttons`、`home_drag_in_handlers`、`home_drag_out_generators`、`home_interfaces`），读取各条目的 `path` JSON 后合并返回。
-
-### GET /api/registries/:name（底层）
 - 认证：需要
-- 用途：泛型 registry 聚合端点；home 相关 name 见上。条目为 `{ id, level, path }`（`path` 为前端 URL）。
+- 用途：首页注册表（`home_function_buttons`、`home_drag_in_handlers`、`home_drag_out_generators`、`home_interfaces` 等聚合结果），用于渲染首页。底层泛型聚合见 `GET /api/registries/:name`。

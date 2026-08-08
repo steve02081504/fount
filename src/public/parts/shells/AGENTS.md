@@ -15,7 +15,7 @@ alwaysApply: false
 ## Standard Structure
 
 - `main.mjs`: Backend entry. Default export must include `Load({ router })`.
-- `public/`: Frontend assets. `public/llms.txt`: AI-readable API docs.
+- `public/`: Frontend assets. `public/llms.txt`: AI-readable docs — **Chinese only**; keep part intro, operational conclusions/guidelines, and every HTTP/WS API with usage. No research notes, design-doc § refs, wire-protocol dumps, or in-process client APIs (those belong in `AGENTS.md` / `decl/`).
 - `src/endpoints.mjs`: **Backend** Express routes via `router.get/post/ws`. Path: `/api/parts/shells:<name>/...`.
 - **Frontend HTTP**: `public/src/endpoints.mjs` or `public/src/endpoints/*.mjs` — **named exports only**. No path-string clients (`socialApi('/…')`, `api(method, path)`, UI-facing `groupFetch(path)`). UI / shared / providers must not `fetch` shell REST; use endpoints. Global `/api/whoami`, `/api/getdetails…`, EVFS → `@src/public/pages/scripts/endpoints/`. HTML templates → `renderTemplate` / `mountTemplate` / `withTemplates`, never `fetch(…html)`.
 - **HTTP API**: Success = 2xx JSON (no `success` wrapper); failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs`.

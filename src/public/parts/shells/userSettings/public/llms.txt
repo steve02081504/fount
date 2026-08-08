@@ -1,36 +1,72 @@
-# userSettings shell 支持的 Web 端点说明
+# userSettings shell Web API
 
-本 shell 提供用户账户设置：统计、改密、重命名、设备管理、注销账户等。
+本 shell 提供账户设置：统计、改密、重命名、设备与通行密钥、注销，以及本机编辑器命令配置。
+
+路径前缀：`/api/parts/shells:userSettings`。均需登录。
 
 ---
 
-## 提供的页面
+## 页面
 
 ### GET /parts/shells:userSettings/
-- 用途：用户设置页面，用于管理用户账户信息。包括查看统计信息、修改密码、重命名账户、管理已登录设备、注销账户等功能。
+- 用途：用户账户设置页。
 
 ---
 
-## 用户与账户
+## 账户
 
 ### GET /api/parts/shells:userSettings/stats
-- 用途：获取当前用户统计信息。
+- 用途：当前用户统计信息。
 
 ### POST /api/parts/shells:userSettings/change_password
-- Body：JSON。`currentPassword`（字符串，必填）、`newPassword`（字符串，必填）。
-- 用途：修改当前用户密码。
+- Body：`currentPassword`、`newPassword`（均必填）
+- 用途：修改密码。
 
 ### POST /api/parts/shells:userSettings/rename_user
-- Body：JSON。`newUsername`（字符串，必填）、`password`（字符串，必填）。
+- Body：`newUsername`、`password`（均必填）
 - 用途：重命名当前用户。
 
 ### POST /api/parts/shells:userSettings/delete_account
-- Body：JSON。`password`（字符串，必填）。
-- 用途：注销当前用户账户。
+- Body：`password`（必填）
+- 用途：注销账户。
 
 ### GET /api/parts/shells:userSettings/devices
-- 用途：获取当前用户已登录设备列表。返回 `{ devices: [...] }`，每项含 `deviceId`、`jti`、`expiry`、`lastSeen`、`ipAddress`、`userAgent` 等。撤销设备时使用其中的 `jti` 作为 tokenJti。
+- 用途：已登录设备列表 `{ devices: [...] }`（含 `deviceId`、`jti`、`expiry`、`lastSeen`、`ipAddress`、`userAgent` 等）。撤销时用 `jti` 作 `tokenJti`。
 
 ### POST /api/parts/shells:userSettings/revoke_device
-- Body：JSON。`tokenJti`（字符串，必填，来自 GET devices 返回的某设备的 `jti` 字段）、`password`（字符串，必填）。
-- 用途：撤销指定设备的登录会话。
+- Body：`tokenJti`、`password`（均必填）
+- 用途：撤销指定设备会话。
+
+---
+
+## 通行密钥（WebAuthn）
+
+### GET /api/parts/shells:userSettings/webauthn_credentials
+- 用途：已注册通行密钥列表 `{ credentials }`。
+
+### POST /api/parts/shells:userSettings/webauthn_register_begin
+- Body：`password`（必填）
+- 用途：开始注册；返回浏览器 `navigator.credentials.create` 所需选项。
+
+### POST /api/parts/shells:userSettings/webauthn_register_complete
+- Body：`credential`、`password`（必填），`nickname`（可选）
+- 用途：完成注册并保存凭证。
+
+### POST /api/parts/shells:userSettings/webauthn_remove
+- Body：`credentialId`、`password`（均必填）
+- 用途：删除通行密钥。
+
+---
+
+## 本机编辑器
+
+### GET /api/parts/shells:userSettings/editor_command
+- 用途：当前编辑器命令配置 `{ config }`。
+
+### POST /api/parts/shells:userSettings/editor_command
+- Body：`editorId`、`command`、`argsTemplate` 等
+- 用途：保存打开本地文件所用的编辑器命令。
+
+### POST /api/parts/shells:userSettings/open_editor
+- Body：`filePath`（必填），`line`、`column`（可选）
+- 用途：用已配置命令在本机打开文件。

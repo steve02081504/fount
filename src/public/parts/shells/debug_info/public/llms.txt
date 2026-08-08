@@ -1,17 +1,28 @@
-# debug_info shell 支持的 Web 端点说明
+# debug_info shell Web API
 
-本 shell 提供调试用系统信息接口。
+本 shell 提供调试用系统信息、自动更新开关查询、重启与打开源码目录。
+
+路径前缀：`/api/parts/shells:debug_info`。均需登录。
 
 ---
 
-## 提供的页面
+## 页面
 
 ### GET /parts/shells:debug_info/
-- 用途：调试信息页面，用于查看服务器系统信息、运行环境详情、连接状态等调试相关信息，便于问题排查和系统诊断。
+- 用途：调试信息页（系统信息、连接状态等）。
 
 ---
 
-## 系统信息
+## API
 
 ### GET /api/parts/shells:debug_info/system_info
-- 用途：获取当前服务器/运行环境的系统信息，用于调试与问题排查。
+- 用途：服务器 / 运行环境系统信息。
+
+### GET /api/parts/shells:debug_info/auto_update_enabled
+- 用途：当前是否启用自动更新。
+
+### POST /api/parts/shells:debug_info/restart
+- 用途：请求重启 fount 进程。
+
+### POST /api/parts/shells:debug_info/open_source
+- 用途：在本机打开源码目录（依赖本机环境）。
