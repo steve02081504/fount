@@ -92,33 +92,48 @@ export const labelLiquidComponents = (world) => {
 	const up = strongestUp(world)
 
 	const { components } = labelComponents(world, {
-		accept: (w, cell) => w.liq[cell] >= LIQ_DRAW && !isLiquidBarrier(w.mat[cell]),
+		/**
+		 * 是否为连通液体分量成员。
+		 * @param {FluidWorld} world 流体世界
+		 * @param {number} cell 扁平索引
+		 * @returns {boolean} 可标注
+		 */
+		accept: (world, cell) => world.liq[cell] >= LIQ_DRAW && !isLiquidBarrier(world.mat[cell]),
 		labels: componentOf,
 		poolKey: 'liqComponentPool',
-		onCell: (w, cell, x, y, id) => {
+		/**
+		 * 标注格时收集自由面样本。
+		 * @param {FluidWorld} world 流体世界
+		 * @param {number} cell 扁平索引
+		 * @param {number} x 列
+		 * @param {number} y 行
+		 * @param {number} id 分量 id
+		 * @returns {void}
+		 */
+		onCell: (world, cell, x, y, id) => {
 			let isSurf = upW.n <= 0
 			if (!isSurf) {
 				isSurf = true
 				for (let o = 0; o < upW.n; o++) {
 					const ax = x + upW.dx[o]
 					const ay = y + upW.dy[o]
-					if (!inWorld(w, ax, ay)) continue
+					if (!inWorld(world, ax, ay)) continue
 					const above = ay * W + ax
-					if (!isLiquidBarrier(w.mat[above]) && w.liq[above] >= LIQ_DRAW) {
+					if (!isLiquidBarrier(world.mat[above]) && world.liq[above] >= LIQ_DRAW) {
 						isSurf = false
 						break
 					}
 				}
 			}
 			if (!isSurf) return
-			let airP = pressureAt(w, x, y)
+			let airP = pressureAt(world, x, y)
 			if (up.w > 0) {
 				const ax = x + up.dx
 				const ay = y + up.dy
-				if (inWorld(w, ax, ay) && !isLiquidBarrier(w.mat[ay * W + ax]))
-					airP = pressureAt(w, ax, ay)
+				if (inWorld(world, ax, ay) && !isLiquidBarrier(world.mat[ay * W + ax]))
+					airP = pressureAt(world, ax, ay)
 			}
-			pushSurface(w, x, y, id, airP, hydraulicPhi(airP, gravityDepth(w, x, y)), surf)
+			pushSurface(world, x, y, id, airP, hydraulicPhi(airP, gravityDepth(world, x, y)), surf)
 		},
 	})
 	recycleComponents(world, components, 'liqComponentPool')

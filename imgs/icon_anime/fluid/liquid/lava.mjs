@@ -1,6 +1,6 @@
 /**
- * 熔岩相：粘滞输运、温度随质量加权，以及与水共享的密度对流。
- * 沉降 / 侧膜走共用凝聚相核 `transport.mjs`。
+ * 熔岩相：粘滞 Stokes 输运、温度随质量加权，以及密度对流。
+ * 沉降 / 侧膜走 `transport.mjs`。
  */
 
 import { MAT, T_AMB, SUBSTANCE, rhoOf, viscOf, isLiquidBarrier } from '../mat.mjs'

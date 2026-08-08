@@ -6,6 +6,7 @@
  */
 
 import { stepSoil } from '../soil.mjs'
+
 import { equilibrateHydraulic } from './hydraulic.mjs'
 import { stepLava, stepBuoyancy, meltVisc } from './lava.mjs'
 import { liquidPressureAt } from './pressure.mjs'
@@ -13,6 +14,9 @@ import { stepWater, commitWaterVelocity, WATER_VISC } from './water.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
 
+/**
+ *
+ */
 export { liquidPressureAt, meltVisc, stepLava, WATER_VISC }
 
 /**
@@ -23,7 +27,7 @@ export { liquidPressureAt, meltVisc, stepLava, WATER_VISC }
 export const stepLiquid = (world) => {
 	const { flowX, flowY } = stepWater(world)
 	stepSoil(world)
-	equilibrateHydraulic(world, flowX, flowY, 1)
+	equilibrateHydraulic(world, flowX, flowY)
 	stepLava(world)
 	stepBuoyancy(world)
 	commitWaterVelocity(world, flowX, flowY)

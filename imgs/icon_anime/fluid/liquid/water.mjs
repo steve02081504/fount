@@ -21,6 +21,7 @@ import {
 	gravitySettleWeights, gravitySideWeights,
 	buildDepthOrder,
 } from '../world.mjs'
+
 import { beginLiquidPressure } from './pressure.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */

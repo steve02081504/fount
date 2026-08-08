@@ -4,12 +4,12 @@
 
 import { composeFrame, renderBuffers } from '../compose/index.mjs'
 import { MAT, LIQ_DRAW, SOIL_CAP, T_AMB } from '../fluid/mat.mjs'
+import { spawnParticle } from '../fluid/particles.mjs'
+import { stepFluid, stepResizeWeather } from '../fluid/step.mjs'
 import {
 	createWorld, clearDynamics, addLiquid, addMelt,
 	idx, inWorld, scratch, applyGravityToWorld,
 } from '../fluid/world.mjs'
-import { spawnParticle } from '../fluid/particles.mjs'
-import { stepFluid, stepResizeWeather } from '../fluid/step.mjs'
 import { createLightGesture, tickLightGesture } from '../gesture/light.mjs'
 import { createWindGesture, tickWindGesture, fillWindDrive } from '../gesture/wind.mjs'
 import { tickGravity } from '../gravity.mjs'
@@ -20,6 +20,7 @@ import {
 } from '../icon.mjs'
 import { terminalSize } from '../terminal.mjs'
 import { generateTerrain, resizeTerrain } from '../terrain/index.mjs'
+
 import { BASE_WIDTH, rebuildMaterials, refreshLandGeometry } from './materials.mjs'
 import { onParticleHit } from './particle_hit.mjs'
 import { leakPool } from './pool.mjs'
