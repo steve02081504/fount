@@ -37,7 +37,6 @@ const THEME_COLOR_RE = /^#[\da-f]{6}$/i
 /** entityHash → 负缓存截止时间（仅远端拉取失败）；有界 LRU + TTL */
 const REMOTE_PROFILE_NEGATIVE_CACHE_MAX = 2048
 const REMOTE_PROFILE_NEGATIVE_TTL_MS = 60_000
-const REMOTE_PROFILE_NEGATIVE_SWEEP_MS = REMOTE_PROFILE_NEGATIVE_TTL_MS
 /** @type {ReturnType<typeof createLruMap<string, number>>} */
 const remoteProfileNegativeCache = createLruMap(REMOTE_PROFILE_NEGATIVE_CACHE_MAX)
 /** 远端 EVFS profile 拉取上限；超时回落本地默认/磁盘资料，避免资料卡 HTTP 挂死 */
@@ -76,9 +75,6 @@ function markRemoteProfileNegative(entityHash) {
 	sweepRemoteProfileNegativeCache()
 	remoteProfileNegativeCache.touch(entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
 }
-
-const remoteProfileNegativeSweepTimer = setInterval(sweepRemoteProfileNegativeCache, REMOTE_PROFILE_NEGATIVE_SWEEP_MS)
-remoteProfileNegativeSweepTimer.unref?.()
 
 /**
  * @template T
