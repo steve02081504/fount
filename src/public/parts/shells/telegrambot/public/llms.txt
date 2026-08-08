@@ -38,8 +38,8 @@
 - 用途：读取指定配置。
 
 ### GET /api/parts/shells:telegrambot/getbotConfigTemplate
-- 查询：`charname`（可选）
-- 用途：配置模板；可按角色预填。
+- 查询：`charname`（必填）
+- 用途：配置模板；按角色预填。
 
 ### POST /api/parts/shells:telegrambot/setbotconfig
 - Body：`botname`、`config`

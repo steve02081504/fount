@@ -34,19 +34,19 @@ P2P 文件柜：个人 EVFS 柜 + 无托管共享柜（签名 op-log）。字段
 | POST | `/cabinets` | 新建个人柜，或 `{ type:'shared', name }` |
 | PATCH | `/cabinets/:cabinet_id` | 重命名 / visibility / sync_binding |
 | DELETE | `/cabinets/:cabinet_id` | 删除柜 |
-| GET | `/cabinets/:id/index?parent_id=&show_hidden=` | 列目录（含 `folder_trail`）；加密夹需 `X-Cabinet-Unlock` |
-| POST | `/cabinets/:id/unlock` | body `{ folder_id, password }` → `{ unlock_token }` |
-| POST | `/cabinets/:id/entries` | 登记条目；可带 `plaintext_base64` 上传 |
-| PATCH | `/cabinets/:id/entries/:entry_id` | 重命名 / description / attrs / preview / set_password |
-| POST | `/cabinets/:id/entries/copy` | `{ entry_ids, target_parent_id, as_links?, target_cabinet_id? }` |
-| DELETE | `/cabinets/:id/entries` | `{ entry_ids, recoverable? }`；可恢复时返回 `recovery_token` |
-| POST | `/cabinets/:id/entries/restore` | `{ recovery_token }` 按原 id 恢复 |
-| POST | `/cabinets/:id/entries/finalize-delete` | `{ recovery_token }` 硬删 blob |
-| GET | `/cabinets/:id/entries/:entry_id/resolve` | 解析链接 |
-| GET | `/cabinets/:id/entries/:entry_id/download` | 共享柜文件明文下载 |
-| GET | `/cabinets/:id/zip?folder_id=` | 文件夹 zip |
-| PUT | `/cabinets/:id/sync-binding` | `{ path, interval_ms }` |
-| POST | `/cabinets/:id/sync` | 立即同步 |
-| POST | `/cabinets/:id/preview` | 上传预览图 |
-| GET | `/remote/:entityHash/cabinets` | 远端公开 / followers 柜列表 |
-| GET | `/remote/:entityHash/cabinets/:id/index?parent_id=&show_hidden=` | 远端柜目录（形状同本地 index） |
+| GET | `/cabinets/:cabinet_id/index?parent_id=&show_hidden=` | 列目录（含 `folder_trail`）；加密夹需 `X-Cabinet-Unlock` |
+| POST | `/cabinets/:cabinet_id/unlock` | body `{ folder_id, password }` → `{ unlock_token }` |
+| POST | `/cabinets/:cabinet_id/entries` | 登记条目；可带 `plaintext_base64` 上传 |
+| PATCH | `/cabinets/:cabinet_id/entries/:entry_id` | 重命名 / description / attrs / preview / set_password |
+| POST | `/cabinets/:cabinet_id/entries/copy` | `{ entry_ids, target_parent_id, as_links?, target_cabinet_id? }` |
+| DELETE | `/cabinets/:cabinet_id/entries` | `{ entry_ids, recoverable? }`；可恢复时返回 `recovery_token` |
+| POST | `/cabinets/:cabinet_id/entries/restore` | `{ recovery_token }` 按原 id 恢复 |
+| POST | `/cabinets/:cabinet_id/entries/finalize-delete` | `{ recovery_token }` 硬删 blob |
+| GET | `/cabinets/:cabinet_id/entries/:entry_id/resolve` | 解析链接 |
+| GET | `/cabinets/:cabinet_id/entries/:entry_id/download` | 共享柜文件明文下载 |
+| GET | `/cabinets/:cabinet_id/zip?folder_id=` | 文件夹 zip |
+| PUT | `/cabinets/:cabinet_id/sync-binding` | `{ path, interval_ms }` |
+| POST | `/cabinets/:cabinet_id/sync` | 立即同步 |
+| POST | `/cabinets/:cabinet_id/preview` | 上传预览图 |
+| GET | `/remote/:entity_hash/cabinets` | 远端公开 / followers 柜列表 |
+| GET | `/remote/:entity_hash/cabinets/:cabinet_id/index?parent_id=&show_hidden=` | 远端柜目录（形状同本地 index） |

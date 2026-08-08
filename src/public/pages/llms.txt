@@ -191,7 +191,7 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 
 ---
 
-## P2P 用户级
+## P2P 服务器级
 
 服务器级路由，与 shell Load 无关。
 

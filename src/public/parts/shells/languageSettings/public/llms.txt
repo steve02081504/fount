@@ -2,7 +2,5 @@
 
 界面语言设置前端页，无独立 shell HTTP / WebSocket API。语言数据用基础 API `/api/getlocaledata`、`/api/getavailablelocales`。
 
-**指引**：切换界面语言在前端执行 `/scripts/i18n/index.mjs` 的 `setLanguage(['ja-JP'])`（写入 preferredLangs 并重载文案）。只读某语种 JSON 用 `loadLocaleData(['zh-CN'])`。
-
 ### GET /parts/shells:languageSettings/
 - 用途：语言偏好设置页。
