@@ -559,6 +559,11 @@
 				"môi trường chạy"
 			]
 		},
+		"utm_welcome": {
+			"title": "Từ xa đến",
+			"message": "Chào mừng khách từ `${source}`!\nỞ đây không có trà hay bánh — chỉ là lời chào thôi :)",
+			"dismiss": "Cảm ơn, để tôi xem qua"
+		},
 		"footer": {
 			"ready_text": "Sẵn sàng bắt đầu hành trình của bạn?",
 			"wait_text": "Vui lòng đợi một lát...",

@@ -559,6 +559,11 @@
 				"🏃‍♂️"
 			]
 		},
+		"utm_welcome": {
+			"title": "🛤️✨",
+			"message": "👋 ⬅️ ${source}\n🍵❌ 🍪❌ 👋 :)",
+			"dismiss": "👌👀"
+		},
 		"footer": {
 			"ready_text": "🚀❓",
 			"wait_text": "⏳…",

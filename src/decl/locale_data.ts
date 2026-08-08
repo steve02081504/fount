@@ -527,6 +527,11 @@ export type LocaleData = {
 			nouns: string[]
 			platforms: string[]
 		}
+		utm_welcome: {
+			title: string
+			message: string
+			dismiss: string
+		}
 		footer: {
 			ready_text: string
 			wait_text: string
@@ -6181,6 +6186,7 @@ export type LocaleKeyParams = {
 	'import.errors.textImportFailed': { message: string | number }
 	'installer_wait_screen.features.aiSources.description': { atlasCloudLink: string | number; evolinkLink: string | number }
 	'installer_wait_screen.footer.error_message': { error: string | number }
+	'installer_wait_screen.utm_welcome.message': { source: string | number }
 	'log_viewer.logs.openSourceFailed': { message: string | number }
 	'login_info.modal.retrieve_error': { error: string | number }
 	'login_info.modal.transfer_error': { error: string | number }
