@@ -3,23 +3,24 @@
  */
 
 import { MAT, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, isLiquidBarrier } from '../fluid/mat.mjs'
-import { addLiquid, addMoisture, idx, impartLiquidMomentum } from '../fluid/world.mjs'
 import { queueSplash } from '../fluid/particles.mjs'
+import { addLiquid, addMoisture, idx, impartLiquidMomentum } from '../fluid/world/index.mjs'
 import { hash01 } from '../hash.mjs'
 import { ICON_BASE_ROWS } from '../icon.mjs'
+
 import { leakPool } from './pool.mjs'
 
 /** @typedef {import('../fluid/particles.mjs').ParticleView} ParticleView */
 
 /**
  * 粒子撞击处理：水池渗漏、体部飞溅、土壤吸收、斜坡。
- * @param {import('../fluid/world.mjs').FluidWorld} world 流体世界
+ * @param {import('../fluid/world/index.mjs').FluidWorld} world 流体世界
  * @param {number} x 撞击格 X
  * @param {number} y 撞击格 Y
  * @param {number} m 撞击处材质
  * @param {ParticleView} particle 粒子视图
  * @param {boolean} wet 粒子是否带水质量
- * @param {import('./index.mjs').AnimState} state 动画状态
+ * @param {import('./create.mjs').AnimState} state 动画状态
  * @returns {void}
  */
 export const onParticleHit = (world, x, y, m, particle, wet, state) => {

@@ -20,7 +20,7 @@ import { rainEdgeWeights, pickRainEdge } from '../scene/rain.mjs'
 
 /**
  * 关闭底层岩浆：清曝露与熔岩，避免汇边注岩浆 / 抹水干扰水量。
- * @param {import('../fluid/world.mjs').FluidWorld} world 世界
+ * @param {import('../fluid/world/index.mjs').FluidWorld} world 世界
  */
 const disableLava = (world) => {
 	world.boundary.exposure.fill(0)
@@ -30,7 +30,7 @@ const disableLava = (world) => {
 
 /**
  * 游离液体总量。
- * @param {import('../fluid/world.mjs').FluidWorld} world 世界
+ * @param {import('../fluid/world/index.mjs').FluidWorld} world 世界
  * @returns {number} 总量
  */
 const totalFreeLiquid = (world) => {
@@ -205,7 +205,7 @@ Deno.test('soil: inverted dry land with no drip stays free of free liquid (lava 
 
 /**
  * 回字浸水土：外框 SOLID，内院 AIR，湿度灌满。
- * @param {import('../fluid/world.mjs').FluidWorld} world 世界
+ * @param {import('../fluid/world/index.mjs').FluidWorld} world 世界
  * @returns {number} 土壤格数
  */
 const paintSoakedRing = (world) => {
@@ -492,7 +492,7 @@ Deno.test('gravity: sealed gas conserved under tilt', () => {
 
 /**
  * 悬空 U 形土地碗：两侧立壁 + 底，顶口敞开；腔内灌满游离水。
- * @param {import('../fluid/world.mjs').FluidWorld} world 世界
+ * @param {import('../fluid/world/index.mjs').FluidWorld} world 世界
  * @returns {number} 初始总水量
  */
 const paintLandBowlFullOfWater = (world) => {

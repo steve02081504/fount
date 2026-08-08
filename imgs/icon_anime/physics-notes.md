@@ -8,7 +8,7 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 
 `stepLiquid`: water → soil → commit liqV → hydraulic φ（独立流缓冲）→ lava → melt hydraulic φ → buoyancy.
 
-`labelAirRegions` runs only when `world.airDirty` (mat change or condensed fill crossing `LIQ_DRAW`). Occupancy is `cellFill = liq+melt`; `isCondensed` / `cellRoom` enforce volume exclusivity. `stepLiquid` may re-label mid-tick if particles/lift dirty topology again. Set `airDirty` / `gasGeomDirty` together on occupancy flips — not on every liquid mass move. Skip Boyle overlap when there are no sealed regions.
+`labelAirRegions` runs only when `world.airDirty` (mat change or condensed fill crossing `LIQ_DRAW`). Occupancy is `cellFill = liq+melt`; `isCondensed` / `cellRoom` enforce volume exclusivity. `stepLiquid` re-labels at entry if particles/lift dirtied topology again (not inside `water.mjs`). Set `airDirty` / `gasGeomDirty` together on occupancy flips — not on every liquid mass move. Skip Boyle overlap when there are no sealed regions.
 
 ## Layout / allocation
 
@@ -56,7 +56,7 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - Open air: region mean `P_ATM`; cell `pressureAt = P_ATM + ATM_HYDRO·depth`.
 - Sealed: Boyle mean `≈ gasAmount / airCells` plus hydrostatic `ATM_HYDRO·(depth − depthMean)` so spatial average stays Boyle; mass transfers by cell overlap on topology split/merge. Evaporation injects steam into the local region (and heats local `temp`).
 - Keep `RHO_AIR ≪ RHO_G` so Bernoulli dynamic head does not rival liquid depth (`RHO_AIR` ~ `ATM_HYDRO`).
-- Shared structure: `components.mjs` labels air + liquid; `liquid/hydraulic.mjs` relaxes φ on the **water** graph then again on the **melt** graph (never cross-phase φ siphon). Boyle sealed-gas pressure lives in `gas.mjs`. `liquid/transport.mjs` is the Stokes settle+sheet kernel for melt (per-cell visc; pools use condensed column, sub-`LIQ_DRAW` blobs use local fill head). Free water keeps a hydrostatic column in `liquid/pressure.mjs` + specialized settle/sheet/wind/gas-push in `liquid/water.mjs`.
+- Shared structure: `components.mjs` labels air + liquid; `liquid/hydraulic.mjs` relaxes φ on the **water** graph then again on the **melt** graph (never cross-phase φ siphon). Boyle sealed-gas pressure lives in `gas/`. `liquid/transport.mjs` is the Stokes settle+sheet kernel for melt (per-cell visc; pools use condensed column, sub-`LIQ_DRAW` blobs use local fill head). Free water keeps a hydrostatic column in `liquid/pressure.mjs` + specialized settle/sheet/wind/gas-push in `liquid/water.mjs`.
 - Volume: `cellRoom = LIQ_FULL − liq − melt`. `addMelt` spills displaced water to ortho neighbors before wipe/flash.
 
 ## Gas / wind

@@ -6,16 +6,16 @@
 
 import { neighborCoord } from '../edges.mjs'
 import { pressureMove, sheetMove, applyTransfer, viscGain, inertiaMove } from '../flow.mjs'
-import { pressureAt } from '../gas.mjs'
+import { pressureAt } from '../gas/index.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, P_ATM, ST_DRY_FRAC, isLiquidBarrier } from '../mat.mjs'
 import {
 	scratch, markAirIfFillCrossed, cellRoom, cellFill, fillCellDepths,
 	gravitySideWeights, gravitySettleWeights, buildDepthOrder,
-} from '../world.mjs'
+} from '../world/index.mjs'
 
 import { beginLiquidPressure } from './pressure.mjs'
 
-/** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld */
 
 /**
  * @typedef {{

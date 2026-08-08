@@ -9,9 +9,9 @@ import {
 import {
 	MAT, LIQ_FULL, T_MAX, T_AMB, LAVA_ONSET_EXPOSURE,
 } from './mat.mjs'
-import { markAirIfDrawCrossed, markAirIfMeltDrawCrossed, addMelt } from './world.mjs'
+import { markAirIfDrawCrossed, markAirIfMeltDrawCrossed, addMelt } from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld */
 
 /** 下边每 tick 注入熔岩质量（满 sink 权重时）。 */
 const LAVA_INJECT = 0.35

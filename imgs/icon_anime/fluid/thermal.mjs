@@ -7,12 +7,12 @@
 import {
 	MAT, LIQ_DRAW,
 	T_AMB, T_SOLIDUS, T_LIQUIDUS, T_BOIL,
-	SUBSTANCE, rhoOf,
+	SUBSTANCE, rhoOf, viscOf,
 	isSoilMat,
 } from './mat.mjs'
-import { scratch, markAirIfDrawCrossed, markAirIfMeltDrawCrossed, gravityUpWeights, strongestUp, inWorld } from './world.mjs'
+import { scratch, markAirIfDrawCrossed, markAirIfMeltDrawCrossed, gravityUpWeights, strongestUp, inWorld } from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld */
 
 /** 邻格传导系数。 */
 const CONDUCT = 0.08
@@ -61,11 +61,11 @@ const injectSteam = (world, cell, steamMass) => {
  */
 const neighborConduct = (mat, melt, liq, ni, hasMass) => {
 	const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-	if (hasMass) {
+	if (hasMass) 
 		// Mass thermal capacity ≫ air: ignore ambient air neighbors so
 		// soil melt / lava heat is not quenched in one tick.
 		return nMass ? CONDUCT : 0
-	}
+	
 	return nMass || mat[ni] === MAT.AIR ? AIR_CONDUCT : 0
 }
 
@@ -257,3 +257,12 @@ export const cellRho = (world, cell) => {
 		return rhoOf(SUBSTANCE.ROCK, world.temp[cell])
 	return rhoOf(SUBSTANCE.AIR, world.temp[cell])
 }
+
+/**
+ * 熔岩格粘滞（由温度密度决定）。
+ * @param {FluidWorld} world 世界
+ * @param {number} cell 索引
+ * @returns {number} 粘滞
+ */
+export const meltVisc = (world, cell) =>
+	viscOf(rhoOf(SUBSTANCE.ROCK, world.temp[cell]))

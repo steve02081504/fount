@@ -5,15 +5,14 @@
 import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 
 import { viscGain } from './flow.mjs'
-import { meltVisc } from './liquid/lava.mjs'
 import {
 	LIQ_DRAW, BUBBLE_MIN_CELLS, BUBBLE_MIN_MELT_CONTACT,
 	SUBSTANCE, rhoOf, T_AMB,
 } from './mat.mjs'
-import { cellRho } from './thermal.mjs'
-import { scratch, gravityUpWeights, markAirIfMeltDrawCrossed } from './world.mjs'
+import { cellRho, meltVisc } from './thermal.mjs'
+import { scratch, gravityUpWeights, markAirIfMeltDrawCrossed } from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld */
 
 /** 每 tick 气泡交换的基础速率（再乘 mobility / Δρ）。 */
 const BUBBLE_RISE = 0.18

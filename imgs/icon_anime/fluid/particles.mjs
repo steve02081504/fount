@@ -8,9 +8,9 @@
 import { neighborCoord } from './edges.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
 import { pushParticle } from './particle_pool.mjs'
-import { markAirIfDrawCrossed, markAirIfFillCrossed, strongestUp, inWorld, impartLiquidMomentum, cellRoom, cellFill } from './world.mjs'
+import { markAirIfDrawCrossed, markAirIfFillCrossed, strongestUp, inWorld, impartLiquidMomentum, cellRoom, cellFill } from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld
  * @typedef {import('./particle_pool.mjs').ParticlePool} ParticlePool
  */
 

@@ -3,18 +3,18 @@
  */
 
 import { MAT } from '../fluid/mat.mjs'
-import { releaseNonSoilWater, setMat } from '../fluid/world.mjs'
-import { refreshTerrainGeometry } from '../terrain/index.mjs'
+import { releaseNonSoilWater, setMat } from '../fluid/world/index.mjs'
 import {
 	BODY, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
 } from '../icon.mjs'
+import { refreshTerrainGeometry } from '../terrain/index.mjs'
 
 /** 底座板列跨度。 */
 export const BASE_WIDTH = ICON_BASE_X1 - ICON_BASE_X0
 
 /**
  * 按 `world.land` 给暴露土地打 HORIZON / SOLID。
- * @param {import('./index.mjs').AnimState} state 动画状态
+ * @param {import('./create.mjs').AnimState} state 动画状态
  * @returns {void}
  */
 const applyTerrain = (state) => {
@@ -30,7 +30,7 @@ const applyTerrain = (state) => {
 
 /**
  * 将已生长的底座板列绘制为 POOL（软边为 SLOPE_*）。
- * @param {import('./index.mjs').AnimState} state 动画状态
+ * @param {import('./create.mjs').AnimState} state 动画状态
  * @returns {void}
  */
 const paintBaseMats = (state) => {
@@ -54,7 +54,7 @@ const paintBaseMats = (state) => {
 
 /**
  * 仅清除图标材质（BODY / POOL / SLOPE），保留土壤与 SEAL。
- * @param {import('../fluid/world.mjs').FluidWorld} world 流体世界
+ * @param {import('../fluid/world/index.mjs').FluidWorld} world 流体世界
  * @returns {void}
  */
 const clearIconMats = (world) => {
@@ -73,7 +73,7 @@ const clearIconMats = (world) => {
 
 /**
  * 土地占位变更后重算地表 / 轮廓。
- * @param {import('./index.mjs').AnimState} state 动画状态
+ * @param {import('./create.mjs').AnimState} state 动画状态
  * @returns {void}
  */
 export const refreshLandGeometry = (state) => {
@@ -84,7 +84,7 @@ export const refreshLandGeometry = (state) => {
 
 /**
  * 在 [bodyMinD, bodyReach] 范围内将体素格绘制为 BODY。
- * @param {import('./index.mjs').AnimState} state 动画状态
+ * @param {import('./create.mjs').AnimState} state 动画状态
  * @returns {void}
  */
 const paintBodyMats = (state) => {
@@ -99,7 +99,7 @@ const paintBodyMats = (state) => {
 
 /**
  * 将阶段字段打包为单个 int，用于跳过材质重建。
- * @param {import('./index.mjs').AnimState} state 动画状态
+ * @param {import('./create.mjs').AnimState} state 动画状态
  * @returns {number} 打包的阶段键
  */
 const matStageKey = (state) =>
@@ -107,7 +107,7 @@ const matStageKey = (state) =>
 
 /**
  * 打包阶段键变化时重建图标材质。
- * @param {import('./index.mjs').AnimState} state 动画状态
+ * @param {import('./create.mjs').AnimState} state 动画状态
  * @returns {void}
  */
 export const rebuildMaterials = (state) => {

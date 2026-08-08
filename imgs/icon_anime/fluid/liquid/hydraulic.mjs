@@ -2,21 +2,58 @@
  * 液体连通分量内的液压势 φ 松弛（连通器）。
  * φ = P/(ρg) − depth；沿液体图从最低-φ 自由面 BFS 松弛，无瞬移。
  *
- * Boyle 密闭气压在 `gas.mjs`；本文件只管液体 φ。
+ * Boyle 密闭气压在 `gas/`；本文件只管液体 φ。
  */
 
 import { ORTHO_DX, ORTHO_DY } from '../../hash.mjs'
 import { clearLabels, labelComponents, recycleComponents } from '../components.mjs'
 import { hydraulicPhi, applyTransfer } from '../flow.mjs'
-import { pressureAt } from '../gas.mjs'
+import { pressureAt } from '../gas/index.mjs'
 import { LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from '../mat.mjs'
 import {
 	scratch, growScratch, floodClear, floodPush, fillCellDepths,
 	gravityUpWeights, strongestUp, inWorld,
 	markAirIfDrawCrossed, isLiquidFreeSurface,
-} from '../world.mjs'
+} from '../world/index.mjs'
 
-/** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld */
+
+/** @typedef {{
+ *   x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, phi: Float32Array, n: number,
+ *   prefix: string,
+ * }} SurfSoa */
+
+/**
+ * 空自由面 SoA 壳（typed 缓冲挂在 world.scratch）。
+ * @param {string} prefix scratch 键前缀（如 `liqSurf` / `meltSurf`）
+ * @returns {SurfSoa} 壳
+ */
+const emptySurfSoa = (prefix) => ({
+	x: new Int32Array(0),
+	y: new Int32Array(0),
+	c: new Int32Array(0),
+	p: new Float32Array(0),
+	phi: new Float32Array(0),
+	n: 0,
+	prefix,
+})
+
+/**
+ * 将 SoA 绑到 world.scratch 缓冲并清空计数。
+ * @param {FluidWorld} world 流体世界
+ * @param {SurfSoa} surf 自由面壳
+ * @returns {SurfSoa} surf
+ */
+const bindSurfScratch = (world, surf) => {
+	const { prefix } = surf
+	surf.x = growScratch(world, `${prefix}X`, 64, Int32Array)
+	surf.y = growScratch(world, `${prefix}Y`, 64, Int32Array)
+	surf.c = growScratch(world, `${prefix}C`, 64, Int32Array)
+	surf.p = growScratch(world, `${prefix}P`, 64, Float32Array)
+	surf.phi = growScratch(world, `${prefix}Phi`, 64, Float32Array)
+	surf.n = 0
+	return surf
+}
 
 /**
  * 将一自由面样本压入复用 SoA 暂存。
@@ -26,18 +63,17 @@ import {
  * @param {number} component 连通分量 id
  * @param {number} pressure 面上方空气压
  * @param {number} phi 液压势
- * @param {{
- *   x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, phi: Float32Array, n: number,
- * }} surf 自由面 SoA
+ * @param {SurfSoa} surf 自由面 SoA
  */
 const pushSurface = (world, x, y, component, pressure, phi, surf) => {
 	const n = surf.n
 	if (n >= surf.x.length) {
-		surf.x = growScratch(world, 'liqSurfX', n + 1, Int32Array)
-		surf.y = growScratch(world, 'liqSurfY', n + 1, Int32Array)
-		surf.c = growScratch(world, 'liqSurfC', n + 1, Int32Array)
-		surf.p = growScratch(world, 'liqSurfP', n + 1, Float32Array)
-		surf.phi = growScratch(world, 'liqSurfPhi', n + 1, Float32Array)
+		const { prefix } = surf
+		surf.x = growScratch(world, `${prefix}X`, n + 1, Int32Array)
+		surf.y = growScratch(world, `${prefix}Y`, n + 1, Int32Array)
+		surf.c = growScratch(world, `${prefix}C`, n + 1, Int32Array)
+		surf.p = growScratch(world, `${prefix}P`, n + 1, Float32Array)
+		surf.phi = growScratch(world, `${prefix}Phi`, n + 1, Float32Array)
 	}
 	surf.x[n] = x
 	surf.y[n] = y
@@ -47,35 +83,10 @@ const pushSurface = (world, x, y, component, pressure, phi, surf) => {
 	surf.n = n + 1
 }
 
-/** 自由面 SoA 壳（typed 缓冲挂在 world.scratch）。 */
-const SURF_SOA = {
-	/** @type {Int32Array} */
-	x: new Int32Array(0),
-	/** @type {Int32Array} */
-	y: new Int32Array(0),
-	/** @type {Int32Array} */
-	c: new Int32Array(0),
-	/** @type {Float32Array} */
-	p: new Float32Array(0),
-	/** @type {Float32Array} */
-	phi: new Float32Array(0),
-	n: 0,
-}
-
+/** 水自由面 SoA 壳。 */
+const SURF_SOA = emptySurfSoa('liqSurf')
 /** 熔岩自由面 SoA 壳。 */
-const MELT_SURF_SOA = {
-	/** @type {Int32Array} */
-	x: new Int32Array(0),
-	/** @type {Int32Array} */
-	y: new Int32Array(0),
-	/** @type {Int32Array} */
-	c: new Int32Array(0),
-	/** @type {Float32Array} */
-	p: new Float32Array(0),
-	/** @type {Float32Array} */
-	phi: new Float32Array(0),
-	n: 0,
-}
+const MELT_SURF_SOA = emptySurfSoa('meltSurf')
 
 /** `labelLiquidComponents` 返回壳。 */
 const LIQ_COMP_OUT = {
@@ -123,10 +134,10 @@ const acceptLiquidCell = (world, cell) =>
  */
 const onLiquidCell = (world, cell, x, y, id) => {
 	const ctx = LIQ_LABEL_CTX
-	const upW = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ (ctx.upW)
+	const upW = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ ctx.upW
 	if (!isLiquidFreeSurface(world, x, y, upW)) return
-	const up = /** @type {{ dx: number, dy: number, w: number }} */ (ctx.up)
-	const depth = /** @type {Float32Array} */ (ctx.depth)
+	const up = /** @type {{ dx: number, dy: number, w: number }} */ ctx.up
+	const depth = /** @type {Float32Array} */ ctx.depth
 	const W = ctx.W
 	let airP = pressureAt(world, x, y)
 	if (up.w > 0) {
@@ -168,7 +179,7 @@ const acceptMeltCell = (world, cell) =>
  */
 const onMeltCell = (world, cell, x, y, id) => {
 	const ctx = MELT_LABEL_CTX
-	const upW = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ (ctx.upW)
+	const upW = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ ctx.upW
 	const W = ctx.W
 	let free = true
 	for (let i = 0; i < upW.n; i++) {
@@ -182,8 +193,8 @@ const onMeltCell = (world, cell, x, y, id) => {
 		}
 	}
 	if (!free) return
-	const up = /** @type {{ dx: number, dy: number, w: number }} */ (ctx.up)
-	const depth = /** @type {Float32Array} */ (ctx.depth)
+	const up = /** @type {{ dx: number, dy: number, w: number }} */ ctx.up
+	const depth = /** @type {Float32Array} */ ctx.depth
 	const surf = ctx.surf
 	let airP = pressureAt(world, x, y)
 	if (up.w > 0) {
@@ -206,13 +217,7 @@ const onMeltCell = (world, cell, x, y, id) => {
 export const labelLiquidComponents = (world) => {
 	const W = world.worldW
 	const componentOf = clearLabels(world, 'liqComp', W * world.worldH)
-	const surf = SURF_SOA
-	surf.x = growScratch(world, 'liqSurfX', 64, Int32Array)
-	surf.y = growScratch(world, 'liqSurfY', 64, Int32Array)
-	surf.c = growScratch(world, 'liqSurfC', 64, Int32Array)
-	surf.p = growScratch(world, 'liqSurfP', 64, Float32Array)
-	surf.phi = growScratch(world, 'liqSurfPhi', 64, Float32Array)
-	surf.n = 0
+	const surf = bindSurfScratch(world, SURF_SOA)
 
 	const upW = gravityUpWeights(world)
 	const up = strongestUp(world, upW)
@@ -418,13 +423,7 @@ export const equilibrateHydraulic = (world, flowX, flowY, mobility = 1) => {
 export const labelMeltComponents = (world) => {
 	const W = world.worldW
 	const componentOf = clearLabels(world, 'meltComp', W * world.worldH)
-	const surf = MELT_SURF_SOA
-	surf.x = growScratch(world, 'meltSurfX', 64, Int32Array)
-	surf.y = growScratch(world, 'meltSurfY', 64, Int32Array)
-	surf.c = growScratch(world, 'meltSurfC', 64, Int32Array)
-	surf.p = growScratch(world, 'meltSurfP', 64, Float32Array)
-	surf.phi = growScratch(world, 'meltSurfPhi', 64, Float32Array)
-	surf.n = 0
+	const surf = bindSurfScratch(world, MELT_SURF_SOA)
 
 	const upW = gravityUpWeights(world)
 	const up = strongestUp(world, upW)

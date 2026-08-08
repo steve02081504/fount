@@ -51,7 +51,7 @@ export {
 	gravityDepth, gravityDownWeights, gravityUpWeights, gravitySideWeights,
 	gravitySettleWeights, strongestUp, strongestDown, applyGravityToWorld, impartLiquidMomentum,
 	fillCellDepths, buildDepthOrder, buildDepthOrders, isLiquidFreeSurface,
-} from './world.mjs'
+} from './world/index.mjs'
 
 /** 视觉格纵横比（邻接 û / 渲染半径；不参与静水深标定）。 */
 export { CELL_ASPECT } from '../hash.mjs'
@@ -61,13 +61,13 @@ export {
 	WIND_BASE, WIND_GUST, WIND_SHEAR_POWER, GAS_BLEND, GAS_NOZZLE, GAS_SPEED_MAX,
 	isAirCell, fillBlocked, labelAirRegions, pressureAt, ensureThermoPressure, globalWindAt, windShear,
 	gasVelocityAt, gasUxAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
-} from './gas.mjs'
+} from './gas/index.mjs'
 
 /** 土壤湿度 / 凝结 / 滴落。 */
 export { stepSoil, condenseDripSource, prepareDripSources } from './soil.mjs'
 
 /** 热力与相变。 */
-export { stepThermal, cellRho } from './thermal.mjs'
+export { stepThermal, cellRho, meltVisc } from './thermal.mjs'
 
 /** 分数边角色与邻格环绕。 */
 export {
@@ -82,7 +82,7 @@ export { regurgitateTemp, stepBoundary } from './boundary.mjs'
 export { stepBubbles } from './bubbles.mjs'
 
 /** 自由液体静压与步进。 */
-export { liquidPressureAt, condensedPressureAt, stepLiquid, meltVisc, stepLava, WATER_VISC } from './liquid/index.mjs'
+export { liquidPressureAt, condensedPressureAt, stepLiquid, stepLava, WATER_VISC } from './liquid/index.mjs'
 
 /** 粒子池。 */
 export {

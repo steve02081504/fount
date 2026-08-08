@@ -10,9 +10,9 @@ import { neighborCoord } from '../edges.mjs'
 import {
 	pressureMove, sheetMove, applyTransfer, P_FLOW_GAIN, inertiaMove,
 } from '../flow.mjs'
-import { labelAirRegions, pressureAt, gasUxAt, ensureThermoPressure } from '../gas.mjs'
+import { pressureAt, gasUxAt, ensureThermoPressure } from '../gas/index.mjs'
 import {
-	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, ST_DRY_FRAC, isLiquidBarrier,
+	MAT, P_ATM, RHO_G, LIQ_DRAW, ST_DRY_FRAC, isLiquidBarrier,
 	SUBSTANCE, rhoOf, viscOf,
 } from '../mat.mjs'
 import {
@@ -20,11 +20,11 @@ import {
 	markAirIfDrawCrossed, markAirIfFillCrossed, cellRoom, cellFill,
 	gravitySettleWeights, gravitySideWeights,
 	isLiquidFreeSurface,
-} from '../world.mjs'
+} from '../world/index.mjs'
 
 import { beginLiquidPressure } from './pressure.mjs'
 
-/** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld */
 
 /** 水平风 → 自由面液膜耦合（每单位 gas ux 的格/帧）。 */
 const WIND_SHEET = 0.12
@@ -116,7 +116,6 @@ const WATER_FLOW = {
  */
 export const stepWater = (world) => {
 	const { worldW: W, worldH: H, mat, liq } = world
-	if (world.airDirty) labelAirRegions(world)
 	ensureThermoPressure(world)
 
 	const n = W * H

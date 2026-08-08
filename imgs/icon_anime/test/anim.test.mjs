@@ -499,7 +499,7 @@ Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async
 		createWindGesture, windPointer, tickWindGesture, fillWindDrive,
 		VORTEX_DELAY, STILL_EPS, VORTEX_MAX,
 	} = await import('../gesture/wind.mjs')
-	const { createWorld, scratch } = await import('../fluid/world.mjs')
+	const { createWorld, scratch } = await import('../fluid/world/index.mjs')
 	const world = createWorld({ width: 40, height: 24, margin: 4, bottomExtra: 2 })
 	const n = world.worldW * world.worldH
 	const driveUx = scratch(world, 'tUx', n, Float32Array)

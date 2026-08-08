@@ -7,7 +7,7 @@ import {
 	MAT, LIQ_DRAW, BUBBLE_MIN_CELLS, isLiquidBarrier,
 } from '../fluid/mat.mjs'
 import { prepareDripSources } from '../fluid/soil.mjs'
-import { strongestDown, gravityUpWeights } from '../fluid/world.mjs'
+import { strongestDown, gravityUpWeights } from '../fluid/world/index.mjs'
 import { ICON_W, ICON_BODY_H, PILLARS, BODY_DIST, maxBodyD } from '../icon.mjs'
 
 import {

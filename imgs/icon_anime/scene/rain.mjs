@@ -2,8 +2,8 @@
  * 降雨边权重与雨粒子生成。
  */
 
+import { globalWindAt, windShear } from '../fluid/gas/index.mjs'
 import { spawnParticle } from '../fluid/particles.mjs'
-import { globalWindAt, windShear } from '../fluid/gas.mjs'
 import { hash01 } from '../hash.mjs'
 
 /** 四边出雨权重壳（原地写 w，勿跨调用持有）。 */
@@ -58,7 +58,7 @@ export const pickRainEdge = (edges, u) => {
 
 /**
  * 降雨活跃时，从重力「天空」边生成雨粒子。
- * @param {import('./index.mjs').AnimState} state 动画状态
+ * @param {import('./create.mjs').AnimState} state 动画状态
  * @returns {void}
  */
 export const spawnRain = (state) => {

@@ -1,33 +1,24 @@
 /**
- * 气区（Boyle）、全局风、气体速度场。
- * 调用方须在 `stepGas` / 压力查询前先执行 `labelAirRegions`。
+ * 全局风、气体速度场与 `stepGas` 推进。
+ * 调用方须在 `stepGas` 前先执行 `labelAirRegions`。
  *
- * 开放空气：P = P_ATM + ATM_HYDRO·depth；密闭：等温 Boyle 均值 + ATM_HYDRO·(depth−depthMean)。
  * 速度：风切变 + 喷嘴连续性 + 邻格静压 ΔP（Bernoulli 反馈）+ 弱 Boussinesq。
  * 开放气在目标速度合成后做有限次 ∇·u≈0 投影；`driveUx/Uy` 超阈格回注以保留指针涡旋。
  */
 
-import { hash01, fbm1d } from '../hash.mjs'
+import { hash01, fbm1d } from '../../hash.mjs'
 
-import { clearLabels, labelComponents, recycleComponents } from './components.mjs'
 import {
-	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, T_AMB, isBlockMat,
-} from './mat.mjs'
+	GAS_DP_DRIVE, T_AMB,
+} from '../mat.mjs'
 import {
-	scratch, idx, inWorld, gravityDepth, strongestUp, fillCellDepths, buildDepthOrder,
-} from './world.mjs'
+	scratch, idx, inWorld, fillCellDepths,
+} from '../world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld
- * @typedef {{
- *   id: number,
- *   openToAtm: boolean,
- *   airCells: number,
- *   sumY: number,
- *   yMean: number,
- *   gasAmount: number,
- *   pressure: number,
- * }} AirRegion
- */
+import { dynamicPressure } from './pressure.mjs'
+import { fillBlocked, openHydroPressure, sealedHydroPressure } from './regions.mjs'
+
+/** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld */
 
 /** 全局风平均振幅（格/帧）。 */
 export const WIND_BASE = 0.38
@@ -49,46 +40,6 @@ const GAS_PROJ_ITERS = 16
 const GAS_DRIVE_KEEP = 0.08
 /** 开放气 Boussinesq 浮力增益（沿 −ĝ）。 */
 const GAS_BOUSSINESQ = 0.55
-
-/** 每空气格在 P_ATM 下的气体质量单位（Boyle 参考）。 */
-const GAS_UNIT_PER_CELL = 1
-
-/**
- * 开放空气在重力深度 `depth` 的静水压（向下 → P↑）。
- * @param {number} depth 重力深度
- * @returns {number} 压力
- */
-const openHydroPressure = (depth) => P_ATM + ATM_HYDRO * depth
-
-/**
- * 密闭腔在 Boyle 均值附近的静水压。
- * @param {AirRegion} region 密闭腔区
- * @param {number} depth 当前深度
- * @param {number} depthMean 区平均深度
- * @returns {number} 压力
- */
-const sealedHydroPressure = (region, depth, depthMean) =>
-	Math.max(0.05, region.pressure + ATM_HYDRO * (depth - depthMean))
-
-/**
- * 格是否为气区泛洪/气体占据意义上的空气格。
- * @param {FluidWorld} world 流体世界
- * @param {number} cell 扁平索引
- * @returns {boolean} 空气格
- */
-export const isAirCell = (world, cell) =>
-	!isBlockMat(world.mat[cell]) && world.liq[cell] + world.melt[cell] < LIQ_DRAW
-
-/**
- * 填充阻挡掩码：气体不可占据处为 1。
- * @param {FluidWorld} world 流体世界
- * @param {Uint8Array} blocked 输出掩码
- * @returns {void}
- */
-export const fillBlocked = (world, blocked) => {
-	for (let cell = 0; cell < blocked.length; cell++)
-		blocked[cell] = isAirCell(world, cell) ? 0 : 1
-}
 
 /** 开放邻接位：左 / 右 / 上 / 下。 */
 const OPEN_L = 1
@@ -119,296 +70,6 @@ const fillOpenMask = (blocked, W, H, mask) => {
 			if (y + 1 < H && !blocked[cell + W]) m |= OPEN_D
 			mask[cell] = m
 		}
-}
-
-/**
- * 重置/分配气区记录（尽量复用池内对象）。
- * @param {AirRegion[]} pool 空闲列表
- * @param {number} id 区 id
- * @param {boolean} openToAtm 是否对大气开放
- * @returns {AirRegion} 气区
- */
-const takeRegion = (pool, id, openToAtm) => {
-	const region = pool.pop() || {
-		id: 0, openToAtm: false, airCells: 0, sumY: 0, yMean: 0,
-		gasAmount: 0, pressure: P_ATM,
-	}
-	region.id = id
-	region.openToAtm = openToAtm
-	region.airCells = 0
-	region.sumY = 0
-	region.yMean = 0
-	region.gasAmount = 0
-	region.pressure = P_ATM
-	return region
-}
-
-/**
- * 标注气区，拓扑变化时守恒传递气体质量。
- * 对大气开放区取 P = P_ATM；密闭区用 Boyle 均值 + depthMean。
- * 经 `scratch.prevRegionId` 双缓冲 `regionId`。
- * 气区为稠密 id 索引数组（`regions[id]`；槽 0 未用）。
- * @param {FluidWorld} world 流体世界
- * @returns {void}
- */
-export const labelAirRegions = (world) => {
-	const { worldW: W, worldH: H } = world
-	const n = W * H
-	const depth = fillCellDepths(world)
-	const oldId = world.regionId
-	const regionId = clearLabels(world, 'prevRegionId', n)
-
-	const oldRegions = world.regions
-	const regionPool = /** @type {AirRegion[]} */ world.scratch.regionPool ??= []
-	const oldGas = scratch(world, 'oldRegionGas', Math.max(oldRegions.length, 1), Float32Array)
-	oldGas.fill(0)
-	for (let id = 1; id < oldRegions.length; id++) {
-		const r = oldRegions[id]
-		if (!r) continue
-		oldGas[id] = r.gasAmount
-		regionPool.push(r)
-	}
-
-	/** @type {(AirRegion | undefined)[]} */
-	const nextRegions = []
-
-	const borderCap = 2 * (W + Math.max(0, H - 2))
-	const borderPairs = scratch(world, 'airBorderPairs', Math.max(2, borderCap * 2), Int32Array)
-	let borderN = 0
-	for (let x = 0; x < W; x++) {
-		borderPairs[borderN * 2] = x
-		borderPairs[borderN * 2 + 1] = 0
-		borderN++
-	}
-	for (let y = 1; y < H - 1; y++) {
-		borderPairs[borderN * 2] = 0
-		borderPairs[borderN * 2 + 1] = y
-		borderN++
-		borderPairs[borderN * 2] = W - 1
-		borderPairs[borderN * 2 + 1] = y
-		borderN++
-	}
-	for (let x = 0; x < W; x++) {
-		borderPairs[borderN * 2] = x
-		borderPairs[borderN * 2 + 1] = H - 1
-		borderN++
-	}
-
-	const { components, seedComponentId } = labelComponents(world, {
-		/**
-		 * 泛洪时是否接受该格为空气分量成员。
-		 * @param {FluidWorld} w 流体世界
-		 * @param {number} cell 扁平索引
-		 * @returns {boolean} 空气格
-		 */
-		accept: (w, cell) => isAirCell(w, cell),
-		labels: regionId,
-		poolKey: 'airCompPool',
-		seedPairs: borderPairs,
-		seedPairCount: borderN,
-		/**
-		 * 每格累加重力深度供分量均值。
-		 * @param {FluidWorld} w 流体世界
-		 * @param {number} cell 扁平索引
-		 * @param {number} x 列
-		 * @param {number} y 行
-		 * @param {number} id 分量 id
-		 * @param {{ sumDepth: number }} stats 分量统计
-		 */
-		onCell: (w, cell, x, y, id, stats) => {
-			stats.sumDepth += depth[cell]
-		},
-	})
-
-	for (let id = 1; id < components.length; id++) {
-		const stats = components[id]
-		if (!stats || stats.cells <= 0) continue
-		const openToAtm = seedComponentId > 0 && id === seedComponentId
-		const region = takeRegion(regionPool, id, openToAtm)
-		region.airCells = stats.cells
-		region.sumY = stats.sumDepth
-		region.yMean = stats.depthMean
-		if (openToAtm) {
-			region.gasAmount = region.airCells * GAS_UNIT_PER_CELL * P_ATM
-			region.pressure = P_ATM
-		}
-		nextRegions[id] = region
-	}
-	recycleComponents(world, components, 'airCompPool')
-
-	let hasSealed = false
-	for (let id = 1; id < nextRegions.length; id++) {
-		const region = nextRegions[id]
-		if (region && !region.openToAtm) hasSealed = true
-	}
-
-	if (hasSealed) {
-		/** @type {Map<number, number>} */
-		const overlap = /** @type {Map<number, number>} */ (world.scratch.sealedOverlapMap ??= new Map())
-		overlap.clear()
-		const oldTotal = scratch(world, 'oldRegionTotal', Math.max(oldRegions.length, 1), Float32Array)
-		oldTotal.fill(0)
-		for (let cell = 0; cell < n; cell++) {
-			const old = oldId[cell]
-			const nid = regionId[cell]
-			if (!old || !nid) continue
-			const region = nextRegions[nid]
-			if (!region || region.openToAtm) continue
-			const key = (old << 16) | nid
-			overlap.set(key, (overlap.get(key) || 0) + 1)
-			oldTotal[old]++
-		}
-
-		const sealedGas = scratch(world, 'sealedGasAcc', nextRegions.length, Float32Array)
-		const sealedGot = scratch(world, 'sealedGasGot', nextRegions.length, Uint8Array)
-		sealedGas.fill(0)
-		sealedGot.fill(0)
-		for (const [key, cells] of overlap) {
-			const nid = key & 0xffff
-			const oldRid = key >>> 16
-			if (!oldRegions[oldRid]) continue
-			sealedGot[nid] = 1
-			sealedGas[nid] += oldGas[oldRid] * (cells / Math.max(1, oldTotal[oldRid]))
-		}
-		for (let id = 1; id < nextRegions.length; id++) {
-			const region = nextRegions[id]
-			if (!region || region.openToAtm) continue
-			const gas = sealedGot[id] ? sealedGas[id] : region.airCells * GAS_UNIT_PER_CELL * P_ATM
-			region.gasAmount = gas
-			region.pressure = Math.max(0.05, Math.min(8, gas / Math.max(GAS_UNIT_PER_CELL * 0.25, region.airCells * GAS_UNIT_PER_CELL)))
-		}
-	}
-
-	world.scratch.prevRegionId = oldId
-	world.regionId = regionId
-	world.regions = nextRegions
-	world.airDirty = false
-	world.gasGeomDirty = true
-	world.scratch.airEpoch = (/** @type {number} */ (world.scratch.airEpoch) | 0) + 1
-	world.scratch.thermoPEpoch = -1
-}
-
-/**
- * 沿 −ĝ 走线查找上覆气区压力。
- * @param {FluidWorld} world 世界
- * @param {number} x 列
- * @param {number} y 行
- * @param {number} depth 当前深度
- * @returns {number} 压力
- */
-const pressureAlongUp = (world, x, y, depth) => {
-	const up = strongestUp(world)
-	if (up.w <= 0) return openHydroPressure(depth)
-	let cx = x
-	let cy = y
-	const maxSteps = Math.max(world.worldW, world.worldH)
-	for (let step = 0; step < maxSteps; step++) {
-		cx += up.dx
-		cy += up.dy
-		if (!inWorld(world, cx, cy)) break
-		const above = idx(world, cx, cy)
-		if (isBlockMat(world.mat[above])) break
-		const aboveRid = world.regionId[above]
-		if (aboveRid) {
-			const region = world.regions[aboveRid]
-			const d = gravityDepth(world, cx, cy)
-			return region.openToAtm
-				? openHydroPressure(d)
-				: sealedHydroPressure(region, d, region.yMean)
-		}
-	}
-	return openHydroPressure(depth)
-}
-
-/**
- * 热力学气压（无 Bernoulli）：与 `pressureAt` 同式，写入 `thermoP` scratch。
- * 气区标注或重力深度基变化后惰性重建；供液体/熔岩热路径查表。
- * 非气格沿 −ĝ 浅→深传播：上邻已解析到气区则拷贝，否则与 `pressureAlongUp` 同样回退开大气。
- * @param {FluidWorld} world 流体世界
- * @returns {Float32Array} 长度 WH 的热力学压场
- */
-export const ensureThermoPressure = (world) => {
-	const { worldW: W, worldH: H, regionId, regions, mat } = world
-	const n = W * H
-	const depth = fillCellDepths(world)
-	const airEpoch = /** @type {number} */ (world.scratch.airEpoch) | 0
-	const thermoP = scratch(world, 'thermoP', n, Float32Array)
-	if (world.scratch.thermoPEpoch === airEpoch) return thermoP
-
-	const up = strongestUp(world)
-	const order = buildDepthOrder(world, 'thermoPOrder', 'thermoPCounts', false, depth)
-	const resolved = scratch(world, 'thermoResolved', n, Uint8Array)
-	for (let si = 0; si < n; si++) {
-		const cell = order[si]
-		const rid = regionId[cell]
-		if (rid) {
-			const region = regions[rid]
-			const d = depth[cell]
-			thermoP[cell] = region.openToAtm
-				? openHydroPressure(d)
-				: sealedHydroPressure(region, d, region.yMean)
-			resolved[cell] = 1
-			continue
-		}
-		if (up.w <= 0) {
-			thermoP[cell] = openHydroPressure(depth[cell])
-			resolved[cell] = 0
-			continue
-		}
-		const x = cell % W
-		const y = (cell / W) | 0
-		const ax = x + up.dx
-		const ay = y + up.dy
-		if (ax < 0 || ay < 0 || ax >= W || ay >= H || isBlockMat(mat[ay * W + ax])) {
-			thermoP[cell] = openHydroPressure(depth[cell])
-			resolved[cell] = 0
-			continue
-		}
-		const above = ay * W + ax
-		if (resolved[above]) {
-			thermoP[cell] = thermoP[above]
-			resolved[cell] = 1
-		}
-		else {
-			thermoP[cell] = openHydroPressure(depth[cell])
-			resolved[cell] = 0
-		}
-	}
-	world.scratch.thermoPEpoch = airEpoch
-	return thermoP
-}
-
-/**
- * 格的热力学/静压气体压力（无动态 Bernoulli 项）。
- * 开放空气：P_ATM + ATM_HYDRO·depth。
- * 密闭：Boyle 均值 + ATM_HYDRO·(depth − depthMean)，使区平均保持 Boyle。
- * 液体格用上覆空气（或大气压）。
- * @param {FluidWorld} world 流体世界
- * @param {number} x 列
- * @param {number} y 行
- * @returns {number} 压力
- */
-export const pressureAt = (world, x, y) => {
-	if (!inWorld(world, x, y)) {
-		const depth = gravityDepth(world, Math.max(0, x), Math.max(0, y))
-		return openHydroPressure(Math.max(0, depth))
-	}
-	const cell = idx(world, x, y)
-	const airEpoch = /** @type {number} */ (world.scratch.airEpoch) | 0
-	if (world.scratch.thermoPEpoch === airEpoch) {
-		const thermoP = /** @type {Float32Array | undefined} */ (world.scratch.thermoP)
-		if (thermoP && thermoP.length === world.worldW * world.worldH)
-			return thermoP[cell]
-	}
-	const depth = gravityDepth(world, x, y)
-	const rid = world.regionId[cell]
-	if (rid) {
-		const region = world.regions[rid]
-		return region.openToAtm
-			? openHydroPressure(depth)
-			: sealedHydroPressure(region, depth, region.yMean)
-	}
-	return pressureAlongUp(world, x, y, depth)
 }
 
 /**
@@ -481,31 +142,6 @@ export const gasUxAt = (world, x, y) => {
 	const cy = y | 0
 	if (!inWorld(world, cx, cy)) return 0
 	return world.gasUx[idx(world, cx, cy)]
-}
-
-/**
- * 动压代理 ½ρu²。
- * @param {number} ux 水平速度
- * @param {number} [uy=0] 垂直速度
- * @returns {number} 动压
- */
-export const dynamicPressure = (ux, uy = 0) => 0.5 * RHO_AIR * (ux * ux + uy * uy)
-
-/**
- * Bernoulli 静压：热力学 P − ½ρu²（钳位）。
- * 既作查询，也作 `stepGas` 中驱动邻格 ΔP 的场。
- * @param {FluidWorld} world 流体世界
- * @param {number} x 列
- * @param {number} y 行
- * @returns {number} 静压
- */
-export const staticPressureAt = (world, x, y) => {
-	const cx = x | 0
-	const cy = y | 0
-	const p = pressureAt(world, x, y)
-	if (!inWorld(world, cx, cy)) return Math.max(0.05, p)
-	const cell = idx(world, cx, cy)
-	return Math.max(0.05, p - dynamicPressure(world.gasUx[cell], world.gasUy[cell]))
 }
 
 /**
@@ -802,18 +438,4 @@ export const stepGas = (world, opts) => {
 	world.gasUx = nextUx
 	world.gasUy = nextUy
 	world.maxUpdraft = maxUpdraft
-}
-
-/**
- * 密闭气体总量（供测试）。
- * @param {FluidWorld} world 流体世界
- * @returns {number} 密闭气体质量
- */
-export const totalSealedGas = (world) => {
-	let gas = 0
-	for (let id = 1; id < world.regions.length; id++) {
-		const region = world.regions[id]
-		if (region && !region.openToAtm) gas += region.gasAmount
-	}
-	return gas
 }

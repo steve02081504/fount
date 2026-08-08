@@ -3,16 +3,16 @@
  * `liquidPressureAt` 为对外兼容查询；输运用 `condensedPressureAt` / `beginLiquidPressure`。
  */
 
-import { pressureAt } from '../gas.mjs'
+import { pressureAt } from '../gas/index.mjs'
 import { LIQ_DRAW, RHO_G, isLiquidBarrier } from '../mat.mjs'
 import { cellRho } from '../thermal.mjs'
 import {
 	idx, inWorld, scratch, growScratch, cellFill, isCondensed,
 	gravityDepth, gravityUpWeights, strongestUp, strongestDown,
 	fillCellDepths, buildDepthOrders,
-} from '../world.mjs'
+} from '../world/index.mjs'
 
-/** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld */
 
 /** 脏压强种子过多时直接全网重填。 */
 const P_DIRTY_FULL_THRESH = 48

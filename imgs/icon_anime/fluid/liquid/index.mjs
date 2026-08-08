@@ -7,19 +7,18 @@
  */
 
 import { viscGain } from '../flow.mjs'
+import { labelAirRegions } from '../gas/index.mjs'
 import { SUBSTANCE, rhoOf, viscOf } from '../mat.mjs'
 import { stepSoil } from '../soil.mjs'
-import { scratch, fillCellDepths } from '../world.mjs'
+import { meltVisc } from '../thermal.mjs'
+import { scratch, fillCellDepths } from '../world/index.mjs'
 
 import { equilibrateHydraulic, equilibrateMeltHydraulic } from './hydraulic.mjs'
-import { stepLava, stepBuoyancy, meltVisc } from './lava.mjs'
+import { stepLava, stepBuoyancy } from './lava.mjs'
 import { liquidPressureAt, condensedPressureAt } from './pressure.mjs'
 import { stepWater, commitWaterVelocity, WATER_VISC } from './water.mjs'
 
-/** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
-
-/** 熔岩 φ 松弛代表迁移率（中温岩粘滞）。 */
-const MELT_HYDRO_MOBILITY = Math.max(0.05, viscGain(viscOf(rhoOf(SUBSTANCE.ROCK, 0.7))))
+/** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld */
 
 /**
  * 自由水静压、熔岩粘滞与液体步进。
@@ -28,10 +27,12 @@ export { liquidPressureAt, condensedPressureAt, meltVisc, stepLava, WATER_VISC }
 
 /**
  * 推进自由水 + 熔岩一个 tick。
+ * 粒子 / 抬升可能再次弄脏空气拓扑，故在水步进前按需重标气区。
  * @param {FluidWorld} world 流体世界
  * @returns {void}
  */
 export const stepLiquid = (world) => {
+	if (world.airDirty) labelAirRegions(world)
 	const { flowX, flowY } = stepWater(world)
 	stepSoil(world)
 	// Commit transport velocities before φ relax so inertia cannot amplify hydrostatic equalize.
@@ -46,7 +47,7 @@ export const stepLiquid = (world) => {
 
 	const depth = fillCellDepths(world)
 	// Deep order built once in beginLiquidPressure (shared with water settle).
-	const deepOrder = /** @type {Int32Array} */ (world.scratch.liqDeepOrder)
+	const deepOrder = /** @type {Int32Array} */ world.scratch.liqDeepOrder
 	const shared = { depth, order: deepOrder }
 	stepLava(world, shared)
 
@@ -54,7 +55,10 @@ export const stepLiquid = (world) => {
 	const meltFlowY = scratch(world, 'meltHydroFlowY', n, Float32Array)
 	meltFlowX.fill(0)
 	meltFlowY.fill(0)
-	equilibrateMeltHydraulic(world, meltFlowX, meltFlowY, MELT_HYDRO_MOBILITY)
+	equilibrateMeltHydraulic(
+		world, meltFlowX, meltFlowY,
+		Math.max(0.05, viscGain(viscOf(rhoOf(SUBSTANCE.ROCK, 0.7)))),
+	)
 
 	stepBuoyancy(world, shared)
 }

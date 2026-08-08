@@ -33,6 +33,8 @@ fount test icon_anime --no-parallel
 
 Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then quit). Left quick-click → ripple; left hold/drag → cool spotlight (ambient dims). Right-drag → stroke wind; right long-still → tornado vortex (can suspend rain and lift free-liquid puddles). Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.
 
+Tests live under `test/` (`fluid_gas` / `fluid_soil` / `fluid_liquid` / `fluid_glyphs` / `fluid_particles` + anim / terrain / gravity_*).
+
 ## Modules
 
 | Path | Role |
@@ -42,7 +44,7 @@ Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then qui
 | `gravity.mjs` | Gravity **processing** (smooth unit vector `{gx,gy,mag}`); loads acquire backend |
 | `gravity_acquire/` | Signal **acquisition**: `browser` (GravitySensor → DeviceMotionEvent) / `termux` / `none` |
 | `icon.mjs` | Packed silhouette, pillars, body growth order |
-| `scene/` | `index` — anim state, enter/hold/exit, resize; `rain` — edge weights + spawn; `pool` — leak/splash; `particle_hit`; `materials` — mat rebuild |
+| `scene/` | `index` barrel; `create` 状态; `resize`; `sim` 单帧; `stages` enter/hold/exit; `rain` / `pool` / `particle_hit` / `materials` |
 | `compose/` | `index` — public API; `palette` — ANSI/lava SGR; `render` — `renderBuffers`/`renderGrid`; `frame` — `composeFrame` |
 | `player.mjs` | TUI singleton: play/loop, mouse, alt-screen, console block |
 | `terminal.mjs` | `canUseTui` (TTY + ANSI), `terminalSize` / `watchTerminalSize` (also used by `scene/`) |
@@ -51,9 +53,9 @@ Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then qui
 | `hash.mjs` | `hash01` + fBm + ortho deltas |
 | `fluid/` | Particles, liquid/melt, soil, thermal, boundary, bubbles, gas, glyphs |
 
-`fluid/` files: `mat`, `flow`, `components`, `world`, `particle_pool`, `edges`, `boundary`, `thermal`, `bubbles`, `gas`, `liquid/` (`index` 编排, `pressure` 静压柱, `water` 水特化, `lava`, `transport` Stokes 核, `hydraulic` φ 松弛), `soil`, `particles`, `step` (`stepFluid`, `stepResizeWeather`), `glyphs`.
+`fluid/` files: `mat`, `flow`, `components`, `world/` (`create` / `cells` / `depth`), `particle_pool`, `edges`, `boundary`, `thermal` (`cellRho` / `meltVisc`), `bubbles`, `gas/` (`regions` / `pressure` / `velocity`), `liquid/` (`index` 编排, `pressure` 静压柱, `water` 水特化, `lava`, `transport` Stokes 核, `hydraulic` φ 松弛), `soil`, `particles`, `step` (`stepFluid`, `stepResizeWeather`), `glyphs`.
 
-生产路径深链 `fluid/*.mjs`；`fluid/index.mjs` 是测试与对外 barrel。
+生产路径深链 `fluid/**`；`fluid/index.mjs` 是测试与对外 barrel。
 
 ## Material standard
 

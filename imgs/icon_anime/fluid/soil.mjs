@@ -16,9 +16,9 @@ import {
 import {
 	scratch, growScratch, addLiquid, markAirIfDrawCrossed,
 	gravityDownWeights, gravityUpWeights, strongestDown, inWorld,
-} from './world.mjs'
+} from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld */
 
 /** ⊥ĝ 侧向渗流方向（复用）。 */
 const SIDE_A = { dx: -1, dy: 0 }

@@ -3,26 +3,17 @@
  * 沉降 / 侧膜走 `transport.mjs`。
  */
 
-import { MAT, T_AMB, SUBSTANCE, rhoOf, viscOf, isLiquidBarrier } from '../mat.mjs'
-import { cellRho } from '../thermal.mjs'
+import { MAT, T_AMB, SUBSTANCE, rhoOf, isLiquidBarrier } from '../mat.mjs'
+import { cellRho, meltVisc } from '../thermal.mjs'
 import {
 	scratch, inWorld,
 	markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
 	gravityDownWeights, buildDepthOrder, fillCellDepths,
-} from '../world.mjs'
+} from '../world/index.mjs'
 
 import { stepPhaseTransport } from './transport.mjs'
 
-/** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
-
-/**
- * 熔岩格粘滞。
- * @param {FluidWorld} world 世界
- * @param {number} cell 索引
- * @returns {number} 粘滞
- */
-export const meltVisc = (world, cell) =>
-	viscOf(rhoOf(SUBSTANCE.ROCK, world.temp[cell]))
+/** @typedef {import('../world/index.mjs').FluidWorld} FluidWorld */
 
 /**
  * 熔岩可进判定。

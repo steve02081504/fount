@@ -9,7 +9,7 @@
 
 import { hash01 } from '../hash.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld */
 
 /** 边：0 上、1 下、2 左、3 右。 */
 export const EDGE_TOP = 0

@@ -5,9 +5,9 @@
 
 import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 
-import { floodClear, floodPush, scratch } from './world.mjs'
+import { floodClear, floodPush, scratch } from './world/index.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld */
 
 /**
  * @typedef {{
