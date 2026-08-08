@@ -7,20 +7,20 @@
  * 熔岩经 `transport.mjs` 共用核。土壤渗流见 `soil.mjs`。
  */
 
-import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
+import { ORTHO_DX, ORTHO_DY } from '../../hash.mjs'
 
-import { neighborCoord } from './edges.mjs'
+import { neighborCoord } from '../edges.mjs'
 import { equilibrateHydraulic } from './equilibrate.mjs'
 import {
 	pressureMove, sheetMove, applyTransfer, P_FLOW_GAIN,
-} from './flow.mjs'
-import { labelAirRegions, pressureAt, gasUxAt } from './gas.mjs'
+} from '../flow.mjs'
+import { labelAirRegions, pressureAt, gasUxAt } from '../gas.mjs'
 import {
 	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier,
 	SUBSTANCE, rhoOf, viscOf,
-} from './mat.mjs'
-import { stepSoil } from './soil.mjs'
-import { meltVisc, cellRho } from './thermal.mjs'
+} from '../mat.mjs'
+import { stepSoil } from '../soil.mjs'
+import { meltVisc, cellRho } from '../thermal.mjs'
 import {
 	stepPhaseTransport, meltCanEnter, meltTempOnTransfer,
 } from './transport.mjs'
@@ -29,9 +29,9 @@ import {
 	markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
 	gravityDepth, gravityDownWeights, gravityUpWeights,
 	strongestUp, strongestDown,
-} from './world.mjs'
+} from '../world.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
 
 /** 水平风 → 自由面液膜耦合（每单位 gas ux 的格/帧）。 */
 const WIND_SHEET = 0.12

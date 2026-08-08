@@ -23,6 +23,24 @@ export const RIPPLE_GAIN = 1.35
 /** 最大并发涟漪数。 */
 const RIPPLE_CAP = 6
 
+/** 指针聚光灯的视觉半径（单元格宽高比 ≈ 1×2）。 */
+export const LIGHT_RADIUS = 14
+
+/**
+ * 视口格内的平滑径向衰减（补偿终端格偏高）。
+ * @param {number} dx 距光源列偏移
+ * @param {number} dy 距光源行偏移
+ * @param {number} [radius=LIGHT_RADIUS] 视觉半径
+ * @returns {number} 0..1 强度
+ */
+export const lightFalloff = (dx, dy, radius = LIGHT_RADIUS) => {
+	const d2 = dx * dx + 4 * dy * dy
+	const r2 = radius * radius
+	if (d2 >= r2) return 0
+	const t = 1 - Math.sqrt(d2) / radius
+	return t * t
+}
+
 /**
  * @typedef {{ x: number, y: number, age: number, life: number }} LightRipple
  * @typedef {{

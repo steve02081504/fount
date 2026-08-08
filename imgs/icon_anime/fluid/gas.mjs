@@ -157,13 +157,13 @@ export const labelAirRegions = (world) => {
 		/**
 		 * 每格累加重力深度供分量均值。
 		 * @param {FluidWorld} w 流体世界
-		 * @param {number} _cell 扁平索引
+		 * @param {number} cell 扁平索引
 		 * @param {number} x 列
 		 * @param {number} y 行
-		 * @param {number} _id 分量 id
+		 * @param {number} id 分量 id
 		 * @param {{ sumDepth: number }} stats 分量统计
 		 */
-		onCell: (w, _cell, x, y, _id, stats) => {
+		onCell: (w, cell, x, y, id, stats) => {
 			stats.sumDepth += gravityDepth(w, x, y)
 		},
 	})

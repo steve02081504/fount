@@ -16,7 +16,7 @@ import {
 	mapSensorToScreen, defaultGravity,
 	BASE_PARTICLE_G,
 } from '../gravity.mjs'
-import { rainEdgeWeights, pickRainEdge } from '../scene.mjs'
+import { rainEdgeWeights, pickRainEdge } from '../scene/rain.mjs'
 
 /**
  * 关闭底层岩浆：清曝露与熔岩，避免汇边注岩浆 / 抹水干扰水量。

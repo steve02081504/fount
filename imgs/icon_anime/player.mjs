@@ -146,8 +146,8 @@ export const fps = 24
 
 /** @type {AbortController} */
 let ac = new AbortController()
-/** 当前播放中止信号。 */
-export let signal = ac.signal
+/** 当前播放中止信号（模块私有）。 */
+let playSignal = ac.signal
 
 /** @type {string} */
 let stdinCarry = ''
@@ -170,8 +170,8 @@ export function abort() {
  */
 export function refreshSignal() {
 	ac = new AbortController()
-	signal = ac.signal
-	return signal
+	playSignal = ac.signal
+	return playSignal
 }
 
 /**
@@ -249,13 +249,13 @@ export function paint(frame) {
 async function playFrames(frames) {
 	if (!canUseTui) return
 	for await (const frame of iterateFrames(frames)) {
-		if (signal.aborted) return
+		if (playSignal.aborted) return
 		const started = performance.now()
 		paint(frame)
 		const wait = 1000 / fps - (performance.now() - started)
 		if (wait <= 0) continue
 		try {
-			await sleep(wait, undefined, { signal })
+			await sleep(wait, undefined, { signal: playSignal })
 		}
 		catch (error) {
 			if (error?.name === 'AbortError') return
@@ -271,7 +271,7 @@ async function playFrames(frames) {
  */
 async function loopFrames(frames) {
 	if (!canUseTui) return
-	while (!signal.aborted)
+	while (!playSignal.aborted)
 		await playFrames(frames)
 }
 

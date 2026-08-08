@@ -3,16 +3,16 @@
  * 相描述符携带质量场、速度场、粘滞查询与转移后钩子。
  */
 
-import { neighborCoord } from './edges.mjs'
-import { pressureMove, sheetMove, applyTransfer, viscGain } from './flow.mjs'
-import { pressureAt } from './gas.mjs'
-import { MAT, LIQ_DRAW, LIQ_FULL, T_AMB, P_ATM, isLiquidBarrier } from './mat.mjs'
+import { neighborCoord } from '../edges.mjs'
+import { pressureMove, sheetMove, applyTransfer, viscGain } from '../flow.mjs'
+import { pressureAt } from '../gas.mjs'
+import { MAT, LIQ_DRAW, LIQ_FULL, T_AMB, P_ATM, isLiquidBarrier } from '../mat.mjs'
 import {
-	scratch, inWorld, markAirIfDrawCrossed,
+	scratch, markAirIfDrawCrossed,
 	gravityDownWeights, strongestDown, gravityDepth,
-} from './world.mjs'
+} from '../world.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
 
 /**
  * @typedef {{
@@ -21,8 +21,8 @@ import {
  *   vy: Float32Array,
  *   viscAt: (world: FluidWorld, cell: number) => number,
  *   rhoAt: (world: FluidWorld, cell: number) => number,
- *   canEnter: (world: FluidWorld, x: number, y: number, cell: number) => boolean,
- *   onTransfer?: (world: FluidWorld, src: number, dst: number, moved: number, beforeSrc: number, beforeDst: number) => void,
+ *   canEnter: (world: FluidWorld, cell: number) => boolean,
+ *   onTransfer?: (world: FluidWorld, src: number, dst: number, moved: number, beforeSrc: number) => void,
  *   onBarrier?: (world: FluidWorld, cell: number, before: number) => void,
  *   markDirty?: (world: FluidWorld, before: number, after: number) => void,
  *   flowScratchX: string,
@@ -33,13 +33,10 @@ import {
 /**
  * 默认：AIR / POOL 可进；土壤不可。
  * @param {FluidWorld} world 世界
- * @param {number} x 列
- * @param {number} y 行
  * @param {number} cell 索引
  * @returns {boolean} 可进
  */
-export const defaultCanEnter = (world, x, y, cell) => {
-	if (!inWorld(world, x, y)) return false
+export const defaultCanEnter = (world, cell) => {
 	const m = world.mat[cell]
 	if (isLiquidBarrier(m)) return false
 	if (m === MAT.POOL) return world.liq[cell] < LIQ_FULL
@@ -49,12 +46,10 @@ export const defaultCanEnter = (world, x, y, cell) => {
 /**
  * 熔岩可进判定。
  * @param {FluidWorld} world 世界
- * @param {number} _x 列
- * @param {number} _y 行
  * @param {number} cell 索引
  * @returns {boolean} 可进
  */
-export const meltCanEnter = (world, _x, _y, cell) => {
+export const meltCanEnter = (world, cell) => {
 	const m = world.mat[cell]
 	if (m === MAT.SOLID || m === MAT.HORIZON) return false
 	if (isLiquidBarrier(m) && m !== MAT.AIR) return false
@@ -93,7 +88,7 @@ const transferNeighbor = (world, phase, flowX, flowY, W, cell, x, y, dx, dy, mov
 	const toCell = (tx, ty, amount) => {
 		if (amount <= 1e-8) return
 		const target = ty * W + tx
-		if (!phase.canEnter(world, tx, ty, target)) return
+		if (!phase.canEnter(world, target)) return
 		const room = LIQ_FULL - mass[target]
 		if (room <= 0) return
 		const before = mass[cell]
@@ -196,7 +191,7 @@ export const stepPhaseTransport = (world, phase) => {
 			let pDst = P_ATM
 			if (!crossed) {
 				const target = nb.y * W + nb.x
-				if (!phase.canEnter(world, nb.x, nb.y, target)) continue
+				if (!phase.canEnter(world, target)) continue
 				dstMass = mass[target]
 				room = LIQ_FULL - dstMass
 				if (room <= 0) continue
@@ -204,7 +199,7 @@ export const stepPhaseTransport = (world, phase) => {
 			}
 			else if (nb.wrappedFrac > 0) {
 				const target = nb.y * W + nb.x
-				if (phase.canEnter(world, nb.x, nb.y, target)) {
+				if (phase.canEnter(world, target)) {
 					dstMass = mass[target]
 					room = LIQ_FULL - dstMass
 					pDst = pressureAt(world, nb.x, nb.y) + phase.rhoAt(world, target) * dstMass
@@ -246,7 +241,7 @@ export const stepPhaseTransport = (world, phase) => {
 				const crossed = nb.wrappedFrac > 0 || nb.outFrac > 0
 				if (!crossed) {
 					const target = nb.y * W + nb.x
-					if (!phase.canEnter(world, nb.x, nb.y, target)) continue
+					if (!phase.canEnter(world, target)) continue
 					const room = LIQ_FULL - mass[target]
 					const move = sheetMove(mass[cell], mass[target], room, visc)
 					if (move <= 0) continue
@@ -279,10 +274,9 @@ export const stepPhaseTransport = (world, phase) => {
  * @param {number} dst 目标
  * @param {number} moved 质量
  * @param {number} beforeSrc 源前质量
- * @param {number} _beforeDst 目标前质量
  * @returns {void}
  */
-export const meltTempOnTransfer = (world, src, dst, moved, beforeSrc, _beforeDst) => {
+export const meltTempOnTransfer = (world, src, dst, moved, beforeSrc) => {
 	const tSrc = world.temp[src]
 	const heat = tSrc * moved
 	const destMass = world.melt[dst]

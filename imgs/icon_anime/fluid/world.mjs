@@ -5,7 +5,7 @@
 import { defaultGravity } from '../gravity.mjs'
 
 import { MAT, SOIL_CAP, LIQ_FULL, LIQ_DRAW, isSoilMat, isLiquidBarrier } from './mat.mjs'
-import { createParticlePool, clearParticlePool, totalParticleWater } from './particles.mjs'
+import { createParticlePool, clearParticlePool, totalParticleWater } from './particle_pool.mjs'
 
 /** @typedef {import('../gravity.mjs').GravityState} GravityState */
 
@@ -20,8 +20,8 @@ import { createParticlePool, clearParticlePool, totalParticleWater } from './par
  *   meltVx: Float32Array, meltVy: Float32Array,
  *   regionId: Int32Array,
  *   regions: (import('./gas.mjs').AirRegion | undefined)[],
- *   particles: import('./particles.mjs').ParticlePool,
- *   pendingSplash: import('./particles.mjs').ParticlePool,
+ *   particles: import('./particle_pool.mjs').ParticlePool,
+ *   pendingSplash: import('./particle_pool.mjs').ParticlePool,
  *   soilStep: number, gasTime: number,
  *   airDirty: boolean,
  *   gasGeomDirty: boolean,

@@ -9,7 +9,7 @@
 import { stepBoundary } from './boundary.mjs'
 import { stepBubbles } from './bubbles.mjs'
 import { labelAirRegions, stepGas } from './gas.mjs'
-import { stepLiquid } from './liquid.mjs'
+import { stepLiquid } from './liquid/index.mjs'
 import { liftLiquidByWind, stepParticles } from './particles.mjs'
 import { stepThermal } from './thermal.mjs'
 
@@ -17,6 +17,20 @@ import { stepThermal } from './thermal.mjs'
 
 /** 空操作冲击处理器（模块级 — 避免每 tick 闭包分配）。 */
 const NOOP_HIT = () => { /* airborne until land / expire-deposit */ }
+
+/**
+ * 缩放后新土壤沉降：空气标记 + 热力 + 液体步进。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} ticks 迭代次数
+ * @returns {void}
+ */
+export const stepResizeWeather = (world, ticks) => {
+	for (let tick = 0; tick < ticks; tick++) {
+		labelAirRegions(world)
+		stepThermal(world)
+		stepLiquid(world)
+	}
+}
 
 /**
  * 推进完整流体栈一个 tick。

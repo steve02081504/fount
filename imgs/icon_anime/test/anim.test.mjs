@@ -297,7 +297,7 @@ Deno.test('renderGrid: fixed height/width', () => {
 })
 
 Deno.test('lightFalloff: center bright, edge zero, soft circle', async () => {
-	const { lightFalloff, LIGHT_RADIUS } = await import('../compose.mjs')
+	const { lightFalloff, LIGHT_RADIUS } = await import('../gesture/light.mjs')
 	assertEquals(lightFalloff(0, 0), 1)
 	assertEquals(lightFalloff(LIGHT_RADIUS, 0), 0)
 	assertEquals(lightFalloff(0, LIGHT_RADIUS), 0)
@@ -312,7 +312,7 @@ Deno.test('light gesture: quick release → ripple; hold → torch fade', async 
 		createLightGesture, lightPointer, tickLightGesture, sampleLight,
 		rippleFalloff, TORCH_DELAY, TORCH_FADE, RIPPLE_SPEED, RIPPLE_LIFE,
 	} = await import('../gesture/light.mjs')
-	const { lightFalloff } = await import('../compose.mjs')
+	const { lightFalloff } = await import('../gesture/light.mjs')
 
 	// Soft ring: peak on wavefront, quiet at centre for a large radius
 	assert(rippleFalloff(0, 0, 8) < 0.05)
@@ -562,7 +562,7 @@ Deno.test('stepGas: pointer drive accelerates local gas', async () => {
 })
 
 Deno.test('composeFrame: light yields truecolor near cursor', async () => {
-	const { composeFrame } = await import('../compose.mjs')
+	const { composeFrame } = await import('../compose/index.mjs')
 	const { lightPointer, tickLightGesture, TORCH_DELAY, TORCH_FADE } = await import('../gesture/light.mjs')
 	const state = createAnimState({ width: 40, height: 20, seed: 9 })
 	for (const _ of enter(state));

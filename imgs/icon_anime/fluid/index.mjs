@@ -75,15 +75,20 @@ export { regurgitateTemp, stepBoundary } from './boundary.mjs'
 export { stepBubbles } from './bubbles.mjs'
 
 /** 自由液体静压与步进。 */
-export { liquidPressureAt, stepLiquid } from './liquid.mjs'
+export { liquidPressureAt, stepLiquid } from './liquid/index.mjs'
+
+/** 粒子池。 */
+export {
+	createParticlePool, clearParticlePool, totalParticleWater, pushParticle, PARTICLE_CAP,
+} from './particle_pool.mjs'
 
 /** 粒子雨与风抬升。 */
 export {
 	GAS_DRAG, GAS_DRAG_Y, GAS_DRAG_Y_BOOST_FROM, GAS_DRAG_Y_BOOST_SPAN,
 	WIND_LIFT_UY, WIND_LIFT_RATE, WIND_LIFT_MAX, WIND_HOLD_LIFE, PARTICLE_GRAVITY,
-	verticalGasDrag, createParticlePool, clearParticlePool, totalParticleWater,
+	verticalGasDrag,
 	spawnParticle, queueSplash, depositParticleMass, stepParticles, liftLiquidByWind,
 } from './particles.mjs'
 
 /** 单 tick 流体编排入口。 */
-export { stepFluid } from './step.mjs'
+export { stepFluid, stepResizeWeather } from './step.mjs'

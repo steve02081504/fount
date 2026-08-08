@@ -11,7 +11,7 @@ import {
 import {
 	generateTerrain, outlineChar, refreshTerrainGeometry, TERRAIN_CH,
 	TALL_LAND_FRACTION, TALL_LAND_HEIGHT_FRAC,
-} from '../terrain.mjs'
+} from '../terrain/index.mjs'
 
 import {
 	analyzeTerrain, surfacePeriodicityScore, tallLandCoverage,

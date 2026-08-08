@@ -632,7 +632,7 @@ const freeFallColumn = (kind) => {
 				const vx = kind === 'lava' ? world.meltVx[i] : world.liqVx[i]
 				const vy = kind === 'lava' ? world.meltVy[i] : world.liqVy[i]
 				const ch = kind === 'lava'
-					? lavaChar(amt, world.temp[i], y, vx, vy, true)
+					? lavaChar(amt, y, vx, vy, true)
 					: liquidChar(amt, y, true, vx, vy)
 				glyphs.push(ch)
 			}

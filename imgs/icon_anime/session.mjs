@@ -12,7 +12,7 @@ import { ICON_W, ICON_H } from './icon.mjs'
 import * as player from './player.mjs'
 import {
 	createAnimState, resizeAnimState, enter, hold, exit,
-} from './scene.mjs'
+} from './scene/index.mjs'
 
 /** 用户中止本会话：一旦 abort 保持到进程结束。 */
 const userAc = new AbortController()
@@ -37,8 +37,6 @@ let running = null
 const enterFrames = () => enter(state)
 /** @returns {Generator<string, void, unknown>} 保持帧 */
 const holdFrames = () => hold(state)
-/** @returns {Generator<string, void, unknown>} 退场帧 */
-const exitFrames = () => exit(state)
 
 /**
  * 接线 player 回调并进入备用屏。
@@ -145,7 +143,7 @@ export async function farewell() {
 	else openTui()
 	player.refreshSignal()
 	try {
-		await player.play(exitFrames)
+		await player.play(() => exit(state))
 	}
 	finally {
 		player.stop()

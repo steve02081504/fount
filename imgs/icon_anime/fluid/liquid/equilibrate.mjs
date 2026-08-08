@@ -4,18 +4,18 @@
  *   mobility 有限 → 沿液体图最低-φ BFS 松弛
  */
 
-import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
+import { ORTHO_DX, ORTHO_DY } from '../../hash.mjs'
 
-import { hydraulicPhi, applyTransfer } from './flow.mjs'
-import { pressureAt } from './gas.mjs'
-import { P_ATM, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
+import { hydraulicPhi, applyTransfer } from '../flow.mjs'
+import { pressureAt } from '../gas.mjs'
+import { P_ATM, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from '../mat.mjs'
 import {
 	scratch, growScratch, floodClear, floodPush, gravityDepth,
 	gravityUpWeights, strongestUp, inWorld,
 	markAirIfDrawCrossed,
-} from './world.mjs'
+} from '../world.mjs'
 
-/** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+/** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
 
 /**
  * 密闭气区 Boyle 均值（mobility = ∞）。

@@ -42,16 +42,16 @@ Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then qui
 | `gravity.mjs` | Gravity **processing** (smooth unit vector `{gx,gy,mag}`); loads acquire backend |
 | `gravity_acquire/` | Signal **acquisition**: `browser` (GravitySensor → DeviceMotionEvent) / `termux` / `none` |
 | `icon.mjs` | Packed silhouette, pillars, body growth order |
-| `scene.mjs` | Anim state, materials, rain edges, pool leak, enter/hold/exit, resize |
-| `compose.mjs` | Frame paint + ANSI; lava palette; pointer torch/ripples |
+| `scene/` | `index` — anim state, enter/hold/exit, resize; `rain` — edge weights + spawn; `pool` — leak/splash; `particle_hit`; `materials` — mat rebuild |
+| `compose/` | `index` — public API; `palette` — ANSI/lava SGR; `render` — `renderBuffers`/`renderGrid`; `frame` — `composeFrame` |
 | `player.mjs` | TUI singleton: play/loop, mouse, alt-screen, console block |
-| `terminal.mjs` | `canUseTui` (TTY + ANSI), `terminalSize` / `watchTerminalSize` |
-| `gesture/` | `pointer` / `light` (torch+ripple) / `wind` (stroke+vortex) |
-| `terrain.mjs` | Pedestal-anchored surface + caves + test vessel templates |
+| `terminal.mjs` | `canUseTui` (TTY + ANSI), `terminalSize` / `watchTerminalSize` (also used by `scene/`) |
+| `gesture/` | `pointer` / `light` (torch+ripple, `LIGHT_RADIUS`/`lightFalloff`) / `wind` (stroke+vortex) |
+| `terrain/` | `index` — `generateTerrain`/`resizeTerrain`; `surface` — walk/build/outline; `caves` — noise/CA/connectors/`labelCavities` |
 | `hash.mjs` | `hash01` + fBm + ortho deltas |
 | `fluid/` | Particles, liquid/melt, soil, thermal, boundary, bubbles, gas, glyphs |
 
-`fluid/` files: `mat` (density/`rhoOf`/`viscOf` + visc ladder), `flow`, `components` (shared BFS label), `equilibrate` (Boyle / φ), `transport` (condensed-phase kernel), `world`, `edges` (fractional edge roles), `boundary`, `thermal`, `bubbles`, `gas`, `liquid`, `soil`, `particles`, `step` (`stepFluid`), `glyphs`.
+`fluid/` files: `mat`, `flow`, `components`, `world`, `particle_pool`, `edges`, `boundary`, `thermal`, `bubbles`, `gas`, `liquid/` (`index`, `equilibrate`, `transport`), `soil`, `particles`, `step` (`stepFluid`, `stepResizeWeather`), `glyphs`.
 
 ## Material standard
 

@@ -24,11 +24,11 @@ export {
 	ICON_BODY_H, maxBodyD, maxPillarH,
 } from './icon.mjs'
 /** 网格 / 缓冲帧合成器。 */
-export { renderBuffers, renderGrid } from './compose.mjs'
+export { renderBuffers, renderGrid } from './compose/index.mjs'
 /** 动画状态机（入场 / 保持 / 退场）。 */
 export {
 	createAnimState, resizeAnimState, enter, hold, exit,
-} from './scene.mjs'
+} from './scene/index.mjs'
 /** 交互式 TUI 会话。 */
 export {
 	signal, abort, start, intro, dismiss, farewell, sleep,

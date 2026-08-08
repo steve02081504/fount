@@ -101,9 +101,8 @@ export const liquidChar = (amount, phase, falling = false, vx = 0, vy = 0, gx = 
 }
 
 /**
- * 熔岩字形：与水同一套雨滴/流向字母表；`temp` 仅保留调用签名（着色在 compose）。
+ * 熔岩字形：与水同一套雨滴/流向字母表；着色在 compose。
  * @param {number} amount 质量
- * @param {number} _temp 温度（未用于选字）
  * @param {number} [phase=0] 相位
  * @param {number} [vx=0] 水平速度
  * @param {number} [vy=0] 垂直速度
@@ -112,7 +111,7 @@ export const liquidChar = (amount, phase, falling = false, vx = 0, vy = 0, gx = 
  * @param {number} [gy=1] 重力 y
  * @returns {string} 字形
  */
-export const lavaChar = (amount, _temp, phase = 0, vx = 0, vy = 0, falling = false, gx = 0, gy = 1) =>
+export const lavaChar = (amount, phase = 0, vx = 0, vy = 0, falling = false, gx = 0, gy = 1) =>
 	liquidChar(amount, phase, falling, vx, vy, gx, gy)
 
 /**
