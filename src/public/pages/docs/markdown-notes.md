@@ -1,6 +1,6 @@
 # Markdown convertor notes
 
-Day-to-day API: [AGENTS.md](AGENTS.md) (`markdown.mjs` / `getConvertor` / `renderMarkdownAsString`).
+Day-to-day API: [AGENTS.md](../AGENTS.md) (`markdown.mjs` / `getConvertor` / `renderMarkdownAsString`).
 
 ## Trust tiers
 

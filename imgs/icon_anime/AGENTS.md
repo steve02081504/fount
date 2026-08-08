@@ -8,7 +8,7 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Physics / hot-path detail (not day-to-day): [physics-notes.md](physics-notes.md).
+Physics / hot-path detail (not day-to-day): [docs/physics-notes.md](docs/physics-notes.md).
 
 ## Hosting
 
@@ -53,7 +53,7 @@ Tests under `test/` (`fluid_*`, `anim`, `terrain`, `gravity_*`).
 | `hash.mjs` | `hash01` + fBm + ortho deltas |
 | `fluid/` | Particles, liquid/melt, soil, thermal, boundary, bubbles, gas, glyphs |
 
-Production deep-links `fluid/**`; `fluid/index.mjs` is the test/public barrel. Layout inside `fluid/` (gas/, liquid/, world/, …): [physics-notes.md](physics-notes.md).
+Production deep-links `fluid/**`; `fluid/index.mjs` is the test/public barrel. Layout inside `fluid/` (gas/, liquid/, world/, …): [docs/physics-notes.md](docs/physics-notes.md).
 
 ## Material standard
 
@@ -74,7 +74,7 @@ Open-stage: ungrown base columns do not splash. Compose priority (top wins): par
 
 ## Invariants (do not break)
 
-- **One pressure language** / **one density language** / **viscosity ladder** — see [physics-notes.md](physics-notes.md). Do not invent parallel hydro models.
+- **One pressure language** / **one density language** / **viscosity ladder** — see [docs/physics-notes.md](docs/physics-notes.md). Do not invent parallel hydro models.
 - **Volume exclusivity**: `cellFill = liq+melt`, `cellRoom = LIQ_FULL−fill`. Never stack phases past one cell.
 - Water mass = `liq + moisture + condense + particles` (`totalWorldWater`); melt is separate. Closed transfers conserve; intentional sinks are world-edge / down-edge wipe / BODY impact.
 - Gravity is a continuous unit vector everywhere. Terrain is **pedestal-anchored**; land occupancy is `world.land` (alias `terrain.solid`). New/expanded soil stays dry.

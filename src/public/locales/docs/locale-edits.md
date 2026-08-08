@@ -1,6 +1,6 @@
 # Locale bulk edits
 
-Day-to-day i18n rules: [root AGENTS.md](../../../AGENTS.md).
+Day-to-day i18n rules: [root AGENTS.md](../../../../AGENTS.md).
 
 ## Key structure (enforced by `fount test checks:i18n_keys`)
 

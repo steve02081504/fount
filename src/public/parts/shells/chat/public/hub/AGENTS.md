@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Chat Hub Frontend Guide
 
-Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms): [ui-details.md](ui-details.md).
+Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms): [docs/ui-details.md](docs/ui-details.md).
 
 ## Trust model
 
@@ -21,7 +21,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 
 - Default (no `streamingSfuWss`): WebCodecs + **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`). `subscribe mode=preview|full`.
 - Group call: `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; card wire `type: 'call'`. Shift+click = audio-only.
-- Session lifecycle traps + shared client: [ui-details.md](ui-details.md#streaming-av-lifecycle).
+- Session lifecycle traps + shared client: [docs/ui-details.md](docs/ui-details.md#streaming-av-lifecycle).
 
 ## UI conventions
 
@@ -35,7 +35,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 
 ## Files / messages / archive
 
-- Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind permission matrix: [ui-details.md](ui-details.md#files--cabinets). Attachments stay on chat DAG.
+- Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind permission matrix: [docs/ui-details.md](docs/ui-details.md#files--cabinets). Attachments stay on chat DAG.
 - Main read: `GET …/view-log` (`getChannelViewLog`); backfill `POST …/view-log/batch-get`. Raw `/messages` = moderation only. Decrypt failure: `decryptView: { failed: true }` with `content: null`.
 - Navigation: `messages/channelMessageStore.mjs` + `scrollToMessageEventId`.
 - Portable archive: [archive AGENTS](../../src/chat/archive/AGENTS.md). HTTP: `GET …/channels/:id/export`, `POST …/channels/import` (`MANAGE_CHANNELS`).

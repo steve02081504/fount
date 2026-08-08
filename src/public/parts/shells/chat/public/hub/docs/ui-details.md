@@ -1,6 +1,6 @@
 # Hub UI details (less common)
 
-Day-to-day rules: [AGENTS.md](AGENTS.md).
+Day-to-day rules: [AGENTS.md](../AGENTS.md).
 
 ## Streaming AV lifecycle
 

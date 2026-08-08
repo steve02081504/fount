@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Social Shell Frontend Guide
 
-Deeper UI (video/live, body fold, feed replay, hash routing, search/replies/own-write): [ui-details.md](ui-details.md).
+Deeper UI (video/live, body fold, feed replay, hash routing, search/replies/own-write): [docs/ui-details.md](docs/ui-details.md).
 Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../src/scripts/test/docs/domain-harness.md).
 
 ## Trust & backend surface
@@ -30,7 +30,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - Prefer `data-i18n` / `setElementI18n` / `renderTemplate` / `promptDialog`. **@-mention**: `aria-controls` + `aria-activedescendant` only — no `role="combobox"` on `<textarea>`.
 - Fire-and-forget: `.catch(handleError('social.…'))` for fount faults; `showToastI18n` for user mistakes — never empty `.catch`.
 - **Frontend HTTP**: named functions in `public/src/endpoints/*.mjs` only. Backend: `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
-- Hash routing / search / replies / own-write: [ui-details.md](ui-details.md). Avatars/names: chat `entityAvatar` / `resolveDisplayName` / `formatEntityAtId`. Bio/post Markdown: chat `shared/trustedMarkdown.mjs` (remote self-declared `ownerEntityHash` does not elevate).
+- Hash routing / search / replies / own-write: [docs/ui-details.md](docs/ui-details.md). Avatars/names: chat `entityAvatar` / `resolveDisplayName` / `formatEntityAtId`. Bio/post Markdown: chat `shared/trustedMarkdown.mjs` (remote self-declared `ownerEntityHash` does not elevate).
 - Hashtags: `src/lib/hashtags.mjs`; trending aside paints cache/local first, then `scope=nearby`. Browser imports of chat: absolute `/parts/shells:chat/...` URLs.
 
 ## Identity / private state

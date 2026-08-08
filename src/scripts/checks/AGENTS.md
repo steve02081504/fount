@@ -15,7 +15,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `i18n_keys` | locale key structure (below) |
 | `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
-| `agents_md_english` | `AGENTS.md` + agent-facing linked `.md` English-only |
+| `agents_md_english` | `AGENTS.md` + linked `.md` English-only; non-`AGENTS.md` under `docs/` |
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
 
 ## i18n keys
@@ -33,8 +33,9 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 
 ## Agent docs language
 
-- `AGENTS.md` and agent-facing linked `.md`: English only (no CJK).
-- Exempt: human-facing `docs/design/`, `docs/review/`, `docs/issues/` (still walked for link resolution).
+- `AGENTS.md` and `.md` files linked from them (transitive closure): English only (no CJK).
+- Exempt from CJK: human-facing `docs/design/`, `docs/review/`, `docs/issues/` (still walked for link resolution).
+- Non-`AGENTS.md` files in that closure must live under a directory named `docs` (path segment `docs`).
 - Transitive local `.md` links must resolve.
 
 ## JSDoc language (`jsdoc_no_english`)

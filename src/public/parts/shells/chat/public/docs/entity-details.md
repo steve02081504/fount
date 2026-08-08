@@ -1,6 +1,6 @@
 # Entity model details (less common)
 
-Day-to-day rules: [AGENTS.md](AGENTS.md).
+Day-to-day rules: [AGENTS.md](../AGENTS.md).
 
 ## Profile handle / entity search
 

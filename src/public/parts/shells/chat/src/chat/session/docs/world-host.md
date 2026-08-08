@@ -1,6 +1,6 @@
 # World shared state + WorldChatHost
 
-Day-to-day session / viewer rules: [AGENTS.md](AGENTS.md).
+Day-to-day session / viewer rules: [AGENTS.md](../AGENTS.md).
 
 - DAG `world_state`: `{ worldname, action: 'set'|'delete', key, value? }` → `state.worldStates[worldname][key]` (LWW, group-scoped — use key prefixes for channel scope).
 - Shell reducer is ACL-agnostic; world's fold layer ignores unauthorized ops.

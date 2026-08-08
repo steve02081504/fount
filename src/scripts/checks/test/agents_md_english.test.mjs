@@ -1,5 +1,6 @@
 /**
- * AGENTS.md 与 agent 面向链接 `.md` 须英文；`docs/design/`、`docs/review/`、`docs/issues/` 可为中文。
+ * AGENTS.md 与引用闭包 `.md`：英文、可解析链接；非 AGENTS.md 须在 docs/ 下。
+ * `docs/design/`、`docs/review/`、`docs/issues/` 可为中文。
  */
 /* global Deno */
 import { mkdir, writeFile, rm } from 'node:fs/promises'
@@ -10,11 +11,24 @@ import { assertEquals, assert } from 'https://deno.land/std/assert/mod.ts'
 import { REPO_ROOT } from '../../test/core/repo_root.mjs'
 import {
 	CJK_RE,
+	isAgentsAuxDocPlacementOk,
+	isAgentsMdBasename,
 	isHumanFacingDocsPath,
 	localMdLinkTargets,
 	resolveMdLink,
 	scanAgentsMdEnglish,
 } from '../agents_md_english.mjs'
+
+/**
+ * 将 scan 问题格式化为断言可读字符串。
+ * @param {{ path: string, lines: number[], missing?: boolean, placement?: boolean, from?: string }} issue 问题
+ * @returns {string} 一行摘要
+ */
+function formatIssue(issue) {
+	if (issue.missing) return `missing ${issue.path}${issue.from ? ` <- ${issue.from}` : ''}`
+	if (issue.placement) return `placement ${issue.path}`
+	return `${issue.path}:${issue.lines.join(',')}`
+}
 
 Deno.test('resolveMdLink handles repo-root and relative links', () => {
 	assertEquals(resolveMdLink('AGENTS.md', 'docs/AGENTS.md'), 'docs/AGENTS.md')
@@ -43,6 +57,16 @@ Deno.test('localMdLinkTargets parses bare, angle-bracket, titled, and fragment f
 	assertEquals(localMdLinkTargets('skip [ext](https://example.com/x.md)'), [])
 })
 
+Deno.test('isAgentsAuxDocPlacementOk / isAgentsMdBasename', () => {
+	assertEquals(isAgentsMdBasename('AGENTS.md'), true)
+	assertEquals(isAgentsMdBasename('src/foo/agents.md'), true)
+	assertEquals(isAgentsMdBasename('docs/notes.md'), false)
+	assertEquals(isAgentsAuxDocPlacementOk('AGENTS.md'), true)
+	assertEquals(isAgentsAuxDocPlacementOk('path/docs/git-notes.md'), true)
+	assertEquals(isAgentsAuxDocPlacementOk('docs/design/spec.md'), true)
+	assertEquals(isAgentsAuxDocPlacementOk('imgs/icon_anime/physics-notes.md'), false)
+})
+
 Deno.test('angle-bracket and titled .md links are discovered and scanned recursively', async () => {
 	const { mkdtemp } = await import('node:fs/promises')
 	const { tmpdir } = await import('node:os')
@@ -51,35 +75,38 @@ Deno.test('angle-bracket and titled .md links are discovered and scanned recursi
 		await writeFile(join(dir, 'AGENTS.md'), [
 			'# Root',
 			'',
-			'See [angled](<nested/guide.md#top>) and [titled](nested/other.md "Other").',
+			'See [angled](<nested/docs/guide.md#top>) and [titled](nested/docs/other.md "Other") and [bad](nested/loose.md).',
 			'',
 		].join('\n'), 'utf8')
-		await mkdir(join(dir, 'nested'))
-		await writeFile(join(dir, 'nested', 'guide.md'), [
+		await mkdir(join(dir, 'nested', 'docs'), { recursive: true })
+		await writeFile(join(dir, 'nested', 'docs', 'guide.md'), [
 			'# Guide',
 			'',
 			'See [leaf](leaf.md).',
 			'中文说明',
 			'',
 		].join('\n'), 'utf8')
-		await writeFile(join(dir, 'nested', 'other.md'), [
+		await writeFile(join(dir, 'nested', 'docs', 'other.md'), [
 			'# Other',
 			'',
 			'See [missing](gone.md).',
 			'',
 		].join('\n'), 'utf8')
-		await writeFile(join(dir, 'nested', 'leaf.md'), '# Leaf\n', 'utf8')
+		await writeFile(join(dir, 'nested', 'docs', 'leaf.md'), '# Leaf\n', 'utf8')
+		await writeFile(join(dir, 'nested', 'loose.md'), '# Loose\n', 'utf8')
 
 		const { files, issues } = await scanAgentsMdEnglish(dir)
-		assertEquals(issues, [
-			{ path: 'nested/guide.md', lines: [4] },
-			{ path: 'nested/gone.md', lines: [0], missing: true, from: 'nested/other.md' },
-		])
+		assertEquals(issues.map(formatIssue).sort(), [
+			'missing nested/docs/gone.md <- nested/docs/other.md',
+			'nested/docs/guide.md:4',
+			'placement nested/loose.md',
+		].sort())
 		assertEquals(files, [
 			'AGENTS.md',
-			'nested/guide.md',
-			'nested/leaf.md',
-			'nested/other.md',
+			'nested/docs/guide.md',
+			'nested/docs/leaf.md',
+			'nested/docs/other.md',
+			'nested/loose.md',
 		].sort())
 	}
 	finally {
@@ -103,15 +130,11 @@ Deno.test('CJK_RE matches CJK scripts', () => {
 	assertEquals(CJK_RE.test('English … — ok'), false)
 })
 
-Deno.test('AGENTS.md closure has no CJK (except human-facing docs) and no missing links', async () => {
+Deno.test('AGENTS.md closure: English, resolvable links, aux docs under docs/', async () => {
 	const { issues } = await scanAgentsMdEnglish(REPO_ROOT)
 	assertEquals(
-		issues.map(issue => issue.missing
-			? `missing ${issue.path}${issue.from ? ` <- ${issue.from}` : ''}`
-			: `${issue.path}:${issue.lines.join(',')}`),
+		issues.map(formatIssue),
 		[],
-		issues.map(issue => issue.missing
-			? `missing ${issue.path}${issue.from ? ` <- ${issue.from}` : ''}`
-			: `${issue.path} lines ${issue.lines.join(', ')}`).join('\n'),
+		issues.map(formatIssue).join('\n'),
 	)
 })

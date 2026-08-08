@@ -1,6 +1,6 @@
 # data-i18n notes
 
-Day-to-day API: [AGENTS.md](AGENTS.md) (`i18n.mjs` / `setLanguage` / `primaryLocale`).
+Day-to-day API: [AGENTS.md](../AGENTS.md) (`i18n.mjs` / `setLanguage` / `primaryLocale`).
 
 ## Interpolation
 
@@ -18,7 +18,7 @@ Do **not** name keys `fooPlaceholder` / `fooAlt` — use `foo: { placeholder|alt
 
 Use `data-i18n` / `setElementI18n` (swap the key to retarget) — not one-shot `geti18n()` → `textContent`. Shared `promptText` / `promptTextArea` / `confirmAction` take **i18n keys** (reactive). Keep `geti18n` for thrown errors / toast params / one-off non-dialog strings.
 
-Icon-only controls: locale `{ title, aria-label }` ([locale-edits.md](../locales/locale-edits.md)); string keys on icon parents wipe children.
+Icon-only controls: locale `{ title, aria-label }` ([locale-edits.md](../../locales/docs/locale-edits.md)); string keys on icon parents wipe children.
 
 **Icon / empty `<label>` controls** (DaisyUI drawer toggle/overlay, file-upload chrome): axe forbids `aria-label` on bare `<label>`, and `role="button"` on `<label>` fails `aria-allowed-role`. Do **not** put `{ aria-label }` objects on the `<label>`. Use a **string** key on a child `<span class="sr-only" data-i18n="…">`; keep `{ title, aria-label }` for real `<button>`s. Drawer overlay + panel must sit inside one landmark (`aside.drawer-side`) so sr-only text does not trip `region`.
 

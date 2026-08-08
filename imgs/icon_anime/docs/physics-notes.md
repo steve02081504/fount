@@ -1,6 +1,6 @@
 # icon_anime physics & hot-path notes
 
-Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid, gravity, terrain, or frame paint.
+Day-to-day map / hosting: [AGENTS.md](../AGENTS.md). Read this when changing fluid, gravity, terrain, or frame paint.
 
 ## `fluid/` layout
 
