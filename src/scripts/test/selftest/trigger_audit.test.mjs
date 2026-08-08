@@ -20,8 +20,7 @@ Deno.test('findDeadTriggers reports suite-level dead triggers', () => {
 	const suite = makeSuite('shells/chat', 'pure', {
 		triggers: ['src/public/parts/shells/chat/**', 'src/no/such/tree/**'],
 	})
-	const dead = findDeadTriggers([suite], REPO_FILES)
-	assertEquals(dead, [{
+	assertEquals(findDeadTriggers([suite], REPO_FILES), [{
 		manifestId: 'shells/chat',
 		suiteName: 'pure',
 		pattern: 'src/no/such/tree/**',
@@ -37,8 +36,7 @@ Deno.test('findDeadTriggers reports subtest-level dead triggers', () => {
 			triggers: ['src/public/parts/shells/chat/src/foo.mjs', 'src/dead/feed.mjs'],
 		}],
 	}
-	const dead = findDeadTriggers([suite], REPO_FILES)
-	assertEquals(dead, [{
+	assertEquals(findDeadTriggers([suite], REPO_FILES), [{
 		manifestId: 'shells/social',
 		suiteName: 'frontend',
 		subtestName: 'feed',

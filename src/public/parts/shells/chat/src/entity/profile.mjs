@@ -4,6 +4,7 @@ import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/public_manifest'
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
+import { createLruMap } from 'npm:@steve02081504/fount-p2p/utils/lru'
 
 import { localesForUser } from '../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
@@ -33,11 +34,51 @@ const PUBLIC_PROFILE_PATH = 'profile.json'
 const HANDLE_RE = /^[a-z0-9_.-]{2,32}$/
 const THEME_COLOR_RE = /^#[\da-f]{6}$/i
 
-/** entityHash → 负缓存截止时间（仅远端拉取失败） */
-const remoteProfileNegativeCache = new Map()
+/** entityHash → 负缓存截止时间（仅远端拉取失败）；有界 LRU + TTL */
+const REMOTE_PROFILE_NEGATIVE_CACHE_MAX = 2048
 const REMOTE_PROFILE_NEGATIVE_TTL_MS = 60_000
+const REMOTE_PROFILE_NEGATIVE_SWEEP_MS = REMOTE_PROFILE_NEGATIVE_TTL_MS
+/** @type {ReturnType<typeof createLruMap<string, number>>} */
+const remoteProfileNegativeCache = createLruMap(REMOTE_PROFILE_NEGATIVE_CACHE_MAX)
 /** 远端 EVFS profile 拉取上限；超时回落本地默认/磁盘资料，避免资料卡 HTTP 挂死 */
 export const REMOTE_PROFILE_FETCH_TIMEOUT_MS = 2500
+
+/**
+ * 删除已过期的负缓存条目。
+ * @returns {void}
+ */
+function sweepRemoteProfileNegativeCache() {
+	const now = Date.now()
+	for (const [entityHash, until] of remoteProfileNegativeCache)
+		if (until <= now) remoteProfileNegativeCache.delete(entityHash)
+}
+
+/**
+ * @param {string} entityHash 128 hex
+ * @returns {boolean} 负缓存是否仍有效（命中则应跳过远端拉取）
+ */
+function isRemoteProfileNegativelyCached(entityHash) {
+	const until = remoteProfileNegativeCache.get(entityHash)
+	if (until == null) return false
+	if (until <= Date.now()) {
+		remoteProfileNegativeCache.delete(entityHash)
+		return false
+	}
+	remoteProfileNegativeCache.touch(entityHash, until)
+	return true
+}
+
+/**
+ * @param {string} entityHash 128 hex
+ * @returns {void}
+ */
+function markRemoteProfileNegative(entityHash) {
+	sweepRemoteProfileNegativeCache()
+	remoteProfileNegativeCache.touch(entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+}
+
+const remoteProfileNegativeSweepTimer = setInterval(sweepRemoteProfileNegativeCache, REMOTE_PROFILE_NEGATIVE_SWEEP_MS)
+remoteProfileNegativeSweepTimer.unref?.()
 
 /**
  * @template T
@@ -247,7 +288,7 @@ export function computeEffectiveStatus(profile, viewerEntityHash, options = {}) 
 export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash, options = {}) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed || isWritableLocalEntity(parsed.entityHash)) return null
-	if ((remoteProfileNegativeCache.get(parsed.entityHash) || 0) > Date.now()) return null
+	if (isRemoteProfileNegativelyCached(parsed.entityHash)) return null
 
 	let plain
 	try {
@@ -258,11 +299,11 @@ export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash, op
 		)
 	}
 	catch {
-		remoteProfileNegativeCache.set(parsed.entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		markRemoteProfileNegative(parsed.entityHash)
 		return null
 	}
 	if (!plain) {
-		remoteProfileNegativeCache.set(parsed.entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		markRemoteProfileNegative(parsed.entityHash)
 		return null
 	}
 	let payload
@@ -270,11 +311,11 @@ export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash, op
 		payload = JSON.parse(plain.toString('utf8'))
 	}
 	catch {
-		remoteProfileNegativeCache.set(parsed.entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		markRemoteProfileNegative(parsed.entityHash)
 		return null
 	}
 	if (String(payload?.entityHash || '').toLowerCase() !== parsed.entityHash) {
-		remoteProfileNegativeCache.set(parsed.entityHash, Date.now() + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		markRemoteProfileNegative(parsed.entityHash)
 		return null
 	}
 	const defaultProfile = getDefaultProfile(parsed.entityHash, parsed)

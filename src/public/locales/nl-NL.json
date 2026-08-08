@@ -4172,7 +4172,7 @@
 		"composer": {
 			"placeholder": "Waar denk je aan? Markdown (fount-dialect) wordt ondersteund — typ @ om te vermelden",
 			"locale": {
-				"aria-label": "inhoud taal"
+				"aria-label": "Taal van de inhoud"
 			},
 			"aria-label": "Een bericht schrijven",
 			"publish": "Plaatsen",
