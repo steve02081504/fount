@@ -166,7 +166,12 @@
 			"speculativeDiscard": "Discarding speculative result: ${label} (dependency not passed: ${deps})",
 			"continueImperfect": "Failed/noisy/incomplete waves: ${count} suite(s)",
 			"outdatedSelected": "Stale waves: ${count} outdated/unrun suite(s)",
-			"runningSuite": "\n>>> running ${manifestId}/${name}",
+			"runningSuite": {
+				"base": "\n>>> running ${manifestId}:${name}",
+				"speculative": "optimistic parallel",
+				"heavy": "high load",
+				"expected": "expected ${expected}"
+			},
 			"reusedSuite": ">>> Reusing ${manifestId}:${name} (trigger unchanged — using last ${status})",
 			"noisyOnlyRemain": "${count} suite(s) still passing with noise: ${suites}",
 			"noRealRunPlanned": "No real run this time: ${reused} reused, ${blocked} expected blocked (trigger unchanged)",
@@ -1989,7 +1994,9 @@
 				"unsavedHint": "Closing the window will discard unsaved changes",
 				"tagsLabel": "Label",
 				"tagAdd": "Add",
-				"tagRemove": "Delete tag",
+				"tagRemove": {
+					"aria-label": "Delete tag"
+				},
 				"linksLabel": "Link",
 				"handleLabel": "Custom ID",
 				"handleHint": "Can be searched by other nodes in the network; uniqueness is not guaranteed, and conflicts will be disambiguated according to the trust list.",
@@ -2036,7 +2043,9 @@
 					"name": {
 						"placeholder": "Show text"
 					},
-					"remove": "Remove link",
+					"remove": {
+						"aria-label": "Remove link"
+					},
 					"url": {
 						"placeholder": "https://… or fount://…"
 					}
@@ -2058,7 +2067,6 @@
 				"dm": {
 					"char": "Chat privately with a character",
 					"failed": "Unable to open DM: ${error}",
-					"fed": "Federated DM",
 					"user": "Send DM"
 				}
 			},
@@ -4329,7 +4337,9 @@
 			},
 			"createFolderPrompt": "Folder name",
 			"pickFolderTitle": "Save to…",
-			"folderSelect": "Saved folder",
+			"folderSelect": {
+				"aria-label": "Saved folder"
+			},
 			"confirm": "Confirm",
 			"cancel": "Cancel",
 			"remove": {
@@ -4492,7 +4502,9 @@
 				"aria-label": "Search"
 			},
 			"submit": "Search",
-			"clear": "Clear",
+			"clear": {
+				"aria-label": "Clear"
+			},
 			"empty": "No matching posts",
 			"tooShort": "Please enter at least 2 characters",
 			"usersTitle": "Users",
@@ -4639,7 +4651,9 @@
 			"linking": "Link Chat group",
 			"clear": "Unlink",
 			"pick": "Link Chat group/channel…",
-			"select": "Connect to a Chat group or channel"
+			"select": {
+				"aria-label": "Connect to a Chat group or channel"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

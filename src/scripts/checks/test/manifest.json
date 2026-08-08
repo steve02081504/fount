@@ -89,6 +89,17 @@
 			]
 		},
 		{
+			"name": "update_locales",
+			"run": [
+				"python",
+				".esh/commands/update-locales.py",
+				"--self-test"
+			],
+			"triggers": [
+				".esh/commands/update-locales.py"
+			]
+		},
+		{
 			"name": "agents_md_english",
 			"run": [
 				"deno",

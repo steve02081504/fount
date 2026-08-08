@@ -1994,7 +1994,9 @@
 				"unsavedHint": "Fechar a janela descartará as alterações não salvas",
 				"tagsLabel": "Rótulo",
 				"tagAdd": "Adicionar",
-				"tagRemove": "Eliminar tag",
+				"tagRemove": {
+					"aria-label": "Eliminar tag"
+				},
 				"linksLabel": "Link",
 				"handleLabel": "ID personalizado",
 				"handleHint": "Pode ser pesquisado por outros nós da rede; a exclusividade não é garantida e os conflitos serão eliminados de acordo com a lista de confiança.",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "Mostrar text"
 					},
-					"remove": "Remover link",
+					"remove": {
+						"aria-label": "Remover link"
+					},
 					"url": {
 						"placeholder": "Https://… ou fount://…"
 					}
@@ -2063,7 +2067,6 @@
 				"dm": {
 					"char": "Converse em particular com um personagem",
 					"failed": "Não foi possível abrir a mensagem privada: ${error}",
-					"fed": "Mensagem privada federal",
 					"user": "Enviar mensagem privada"
 				}
 			},
@@ -4168,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "O que está pensando? Suporte Markdown (dialeto fount), digite @ para mencionar",
-			"locale": "Linguagem do conteúdo",
+			"locale": {
+				"aria-label": "Linguagem do conteúdo"
+			},
 			"aria-label": "Escrever uma publicação",
 			"publish": "Liberar",
 			"saveDraft": "Guardar draft",
@@ -4332,7 +4337,9 @@
 			},
 			"createFolderPrompt": "Nome da pasta",
 			"pickFolderTitle": "Guardar to…",
-			"folderSelect": "Pasta favorita",
+			"folderSelect": {
+				"aria-label": "Pasta favorita"
+			},
 			"confirm": "Confirmar",
 			"cancel": "Cancelar",
 			"remove": {
@@ -4495,7 +4502,9 @@
 				"aria-label": "Procurar"
 			},
 			"submit": "Procurar",
-			"clear": "Limpar",
+			"clear": {
+				"aria-label": "Limpar"
+			},
 			"empty": "Nenhuma postagem correspondente",
 			"tooShort": "Por favor insira pelo menos 2 caracteres",
 			"usersTitle": "Utilizador",
@@ -4642,7 +4651,9 @@
 			"linking": "Conectar grupo de bate-papo",
 			"clear": "Desassociar",
 			"pick": "Conectar grupo/canal de bate-papo…",
-			"select": "Conecte-se a um grupo ou canal de bate-papo"
+			"select": {
+				"aria-label": "Conecte-se a um grupo ou canal de bate-papo"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

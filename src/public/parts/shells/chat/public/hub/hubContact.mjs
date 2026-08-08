@@ -1,12 +1,15 @@
 /**
  * Hub 落地页 `?contact=<entityHash>`（Social「私信」等入口）。
  */
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
 import { buildCharFriendBinding, buildUserFriendBinding } from '../shared/friendBinding.mjs'
+import { cachedProfileFromApi, getEntityProfile } from '../src/endpoints/entities.mjs'
 
 import { store } from './core/state.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
-import { enterFriendChat } from './friendChat.mjs'
+import { dispatchFriendChat, enterFriendChat } from './friendChat.mjs'
 import { loadFriendsList } from './friendsList.mjs'
 import { setMode } from './mode.mjs'
 import { showProfilePopup } from './profilePopup.mjs'
@@ -28,8 +31,7 @@ export async function applyHubContactQuery(contactRaw) {
 		return true
 	}
 
-	const { nodeHash } = store
-	if (nodeHash) {
+	if (store.viewer.nodeHash) {
 		const friends = await loadFriendsList()
 		for (const friend of friends) {
 			if (!friend.charname) continue
@@ -52,15 +54,32 @@ export async function applyHubContactQuery(contactRaw) {
 			return true
 		}
 	}
-	catch { /* 无已有群则展示资料卡 */ }
+	catch { /* 无已有群则继续 */ }
 
 	await setMode('friends')
-	void showProfilePopup({
+	const profile = await getEntityProfile(entityHash)
+		.then(data => data?.profile ? cachedProfileFromApi(data.profile, entityHash) : null)
+		.catch(() => null)
+	const pubKeyHex = String(profile?.activePubKeyHex || '').trim().toLowerCase()
+	const displayName = profile?.name || entityHashLabel(entityHash)
+
+	// 已能解析对端活跃钥时直接进私信（对齐 Social「私信」语义）
+	if (isHex64(pubKeyHex)) {
+		await dispatchFriendChat({
+			type: 'user',
+			entityHash,
+			pubKeyHex,
+			displayName,
+		})
+		return true
+	}
+
+	await showProfilePopup({
 		entityHash,
 		charname: null,
-		pubKeyHex: null,
+		pubKeyHex: isHex64(pubKeyHex) ? pubKeyHex : null,
 		pubKeyHash: null,
-		displayName: entityHashLabel(entityHash),
+		displayName,
 	})
 	return true
 }

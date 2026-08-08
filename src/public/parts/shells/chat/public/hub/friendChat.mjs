@@ -310,15 +310,21 @@ export async function dispatchFriendChat(entity) {
 		showToastI18n('warning', 'chat.hub.profilePopup.noFedIdentity')
 		return
 	}
-	const peerHex = String(entity.pubKeyHex || '').trim().toLowerCase()
-	if (!isHex64(peerHex) && !isEntityHash128(entity.entityHash)) {
+	let peerHex = String(entity.pubKeyHex || '').trim().toLowerCase()
+	const entityHash = String(entity.entityHash || '').trim().toLowerCase()
+	if (!isHex64(peerHex) && isEntityHash128(entityHash)) {
+		const { getEntityProfile } = await import('../src/endpoints/entities.mjs')
+		const data = await getEntityProfile(entityHash, undefined, { forceRemote: true }).catch(() => null)
+		peerHex = String(data?.profile?.activePubKeyHex || '').trim().toLowerCase()
+	}
+	if (!isHex64(peerHex)) {
 		showToastI18n('warning', 'chat.hub.profilePopup.peerNoIdentity')
 		return
 	}
 	const data = await createDirectMessageByPubKeys(myPubKeyHex, peerHex)
 	const binding = friendBindingForGroup(data.groupId)
 		|| await buildUserFriendBinding({
-			entityHash: entity.entityHash,
+			entityHash: isEntityHash128(entityHash) ? entityHash : undefined,
 			pubKeyHex: peerHex,
 			displayName: entity.displayName,
 		})

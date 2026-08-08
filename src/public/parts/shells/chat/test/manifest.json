@@ -759,7 +759,7 @@
 						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfilePopup.mjs",
 						"src/public/parts/shells/chat/public/shared/profileEdit.css",
-						"src/public/parts/shells/chat/public/src/entityProfileApi.mjs",
+						"src/public/parts/shells/chat/public/src/endpoints/entities.mjs",
 						"src/public/parts/shells/chat/public/src/profileLocaleEditor.mjs",
 						"src/public/parts/shells/chat/public/shared/profileLocaleState.mjs",
 						"src/public/parts/shells/chat/public/src/templates/profile/**",

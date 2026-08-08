@@ -1994,7 +1994,9 @@
 				"unsavedHint": "Cerrar la ventana descartará los cambios no guardados.",
 				"tagsLabel": "Etiqueta",
 				"tagAdd": "añadir",
-				"tagRemove": "Eliminar etiqueta",
+				"tagRemove": {
+					"aria-label": "Eliminar etiqueta"
+				},
 				"linksLabel": "Enlace",
 				"handleLabel": "Identificación personalizada",
 				"handleHint": "Puede ser buscado por otros nodos de la red; la unicidad no está garantizada y los conflictos se eliminarán de acuerdo con la lista de confianza.",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "Mostrar texto"
 					},
-					"remove": "Quitar enlace",
+					"remove": {
+						"aria-label": "Quitar enlace"
+					},
 					"url": {
 						"placeholder": "https://… o 0://…"
 					}
@@ -2063,7 +2067,6 @@
 				"dm": {
 					"char": "Chatea en privado con un personaje.",
 					"failed": "No se puede abrir el mensaje privado: ${error}",
-					"fed": "mensaje privado federal",
 					"user": "enviar mensaje privado"
 				}
 			},
@@ -4168,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "¿En qué estás pensando? Admite Markdown (dialecto 0), ingresa @ para mencionar",
-			"locale": "idioma del contenido",
+			"locale": {
+				"aria-label": "idioma del contenido"
+			},
 			"aria-label": "Escribir una publicación",
 			"publish": "Publicar",
 			"saveDraft": "guardar borrador",
@@ -4332,7 +4337,9 @@
 			},
 			"createFolderPrompt": "nombre de la carpeta",
 			"pickFolderTitle": "Añadir a favoritos",
-			"folderSelect": "carpeta favorita",
+			"folderSelect": {
+				"aria-label": "carpeta favorita"
+			},
 			"confirm": "confirm",
 			"cancel": "Cancelar",
 			"remove": {
@@ -4495,7 +4502,9 @@
 				"aria-label": "buscar"
 			},
 			"submit": "buscar",
-			"clear": "Claro",
+			"clear": {
+				"aria-label": "Borrar búsqueda"
+			},
 			"empty": "No hay publicaciones coincidentes",
 			"tooShort": "Introduce al menos 2 caracteres",
 			"usersTitle": "usuario",
@@ -4642,7 +4651,9 @@
 			"linking": "Conectar grupo de chat",
 			"clear": "Desasociar",
 			"pick": "Conectar grupo/canal de chat…",
-			"select": "Conectarse a un grupo o canal de chat"
+			"select": {
+				"aria-label": "Conectarse a un grupo o canal de chat"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

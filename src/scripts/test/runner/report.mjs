@@ -16,7 +16,6 @@ import { suiteKey } from '../core/state.mjs'
  * @typedef {import('./continue_reason.mjs').GoalEvidenceKind} ContinueReasonKind
  * @typedef {import('../core/estimate.mjs').EstimateTask} EstimateTask
  * @typedef {import('../core/plan.mjs').PlanSlot} PlanSlot
- * @typedef {import('../core/trigger_audit.mjs').TriggerWarning} TriggerWarning
  */
 
 /**
@@ -53,16 +52,13 @@ export class RunReportWriter {
 	 * @param {string} options.commitHash HEAD
 	 * @param {string | null} options.uncommittedHash 未提交 digest
 	 * @param {Map<string, ContinueReason>} [options.continueReasons] suite 键 -> 触发原因
-	 * @param {TriggerWarning[]} [options.triggerWarnings] 未命中任何文件的 trigger
 	 */
-	constructor({ repoRoot, planSlots, runId, command, commitHash, uncommittedHash, continueReasons, triggerWarnings }) {
+	constructor({ repoRoot, planSlots, runId, command, commitHash, uncommittedHash, continueReasons }) {
 		this.repoRoot = repoRoot
 		this.runId = runId
 		this.command = command
 		this.commitHash = commitHash
 		this.uncommittedHash = uncommittedHash
-		/** @type {TriggerWarning[]} */
-		this.triggerWarnings = triggerWarnings ?? []
 		/** @type {ReportSlot[]} */
 		this.slots = planSlots.map(slot => ({
 			manifestId: slot.suite.manifestId,
@@ -210,7 +206,6 @@ export class RunReportWriter {
 			parallelRatePct: timing.parallelRatePct,
 			estimate,
 			estimateTasks,
-			triggerWarnings: this.triggerWarnings,
 			slots: this.slots,
 		}
 		await writeFile(reportJsonPath(this.repoRoot), `${JSON.stringify(payload, null, '\t')}\n`, 'utf8')
@@ -275,7 +270,6 @@ function buildRunMarkdown(summary, completed) {
 	)
 
 	appendContinueReasonsLink(lines, summary)
-	appendTriggerWarnings(lines, summary.triggerWarnings)
 
 	appendSection(lines, geti18n('fountConsole.test.report.section.failed'), completed.filter(s => s.status === 'failed'))
 	appendSection(lines, geti18n('fountConsole.test.state.sectionBlocked'), completed.filter(s => s.status === 'blocked'))
@@ -417,39 +411,6 @@ function appendContinueReasonEvidence(lines, reason, depth = 0) {
 function appendDependencyReasonDetail(lines, reason) {
 	if (reason.requiredBy)
 		lines.push(`- ${geti18n('fountConsole.test.report.label.directRequiredBy')}: \`${reason.requiredBy}\``)
-}
-
-/**
- * @param {TriggerWarning} warning trigger 警告
- * @returns {string} suite 展示名
- */
-function formatTriggerWarningScope(warning) {
-	const base = `${warning.manifestId}:${warning.suiteName}`
-	return warning.subtestName ? `${base}:${warning.subtestName}` : base
-}
-
-/**
- * @param {string[]} lines 行缓冲
- * @param {TriggerWarning[] | undefined} warnings trigger 警告
- */
-function appendTriggerWarnings(lines, warnings) {
-	if (!warnings?.length) return
-	lines.push(`## ${geti18n('fountConsole.test.report.section.deadTriggers')}`, '')
-	lines.push(geti18n('fountConsole.test.report.deadTriggersHint'), '')
-	/** @type {Map<string, TriggerWarning[]>} */
-	const byScope = new Map()
-	for (const warning of warnings) {
-		const scope = formatTriggerWarningScope(warning)
-		const group = byScope.get(scope) ?? []
-		group.push(warning)
-		byScope.set(scope, group)
-	}
-	for (const [scope, group] of byScope) {
-		lines.push(`### ${scope}`, '')
-		for (const warning of group)
-			lines.push(`- \`${warning.pattern}\``)
-		lines.push('')
-	}
 }
 
 /**

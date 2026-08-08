@@ -4,7 +4,7 @@
  * 【原理】`applyAvatarsTo`、`bindHoverCardAnchor`、`showHoverCardFor` 驱动消息行与成员列表头像/卡片。
  * 悬停卡走共享 `entityProfileHoverCard`（与点击弹层同一 `paintEntityProfileCard`）；消息区仅文档委托 `wireEntityProfileHover`，避免头像与作者名双重 bind 叠卡。`hydrateAuthorLabels` 在消息重绘后补齐作者展示名。
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../src/entityProfileApi、../src/lib/entityHash、core/avatarCover、core/domUtils、core/state、profilePopup、shared/entityProfileHoverCard
+ * 【关联】../src/endpoints/entities、../src/lib/entityHash、core/avatarCover、core/domUtils、core/state、profilePopup、shared/entityProfileHoverCard
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 

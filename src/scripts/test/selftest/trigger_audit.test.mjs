@@ -1,7 +1,7 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { findDeadTriggerWarnings, triggerPatternMatchesAny } from '../core/trigger_audit.mjs'
+import { findDeadTriggers, triggerPatternMatchesAny } from '../core/trigger_audit.mjs'
 
 import { makeSuite } from './fixtures.mjs'
 
@@ -16,19 +16,18 @@ Deno.test('triggerPatternMatchesAny matches exact path and glob', () => {
 	assertEquals(triggerPatternMatchesAny('src/missing/**', REPO_FILES), false)
 })
 
-Deno.test('findDeadTriggerWarnings reports suite-level dead triggers', () => {
+Deno.test('findDeadTriggers reports suite-level dead triggers', () => {
 	const suite = makeSuite('shells/chat', 'pure', {
 		triggers: ['src/public/parts/shells/chat/**', 'src/no/such/tree/**'],
 	})
-	const warnings = findDeadTriggerWarnings([suite], REPO_FILES)
-	assertEquals(warnings, [{
+	assertEquals(findDeadTriggers([suite], REPO_FILES), [{
 		manifestId: 'shells/chat',
 		suiteName: 'pure',
 		pattern: 'src/no/such/tree/**',
 	}])
 })
 
-Deno.test('findDeadTriggerWarnings reports subtest-level dead triggers', () => {
+Deno.test('findDeadTriggers reports subtest-level dead triggers', () => {
 	const suite = {
 		...makeSuite('shells/social', 'frontend', { triggers: [] }),
 		subtests: [{
@@ -37,8 +36,7 @@ Deno.test('findDeadTriggerWarnings reports subtest-level dead triggers', () => {
 			triggers: ['src/public/parts/shells/chat/src/foo.mjs', 'src/dead/feed.mjs'],
 		}],
 	}
-	const warnings = findDeadTriggerWarnings([suite], REPO_FILES)
-	assertEquals(warnings, [{
+	assertEquals(findDeadTriggers([suite], REPO_FILES), [{
 		manifestId: 'shells/social',
 		suiteName: 'frontend',
 		subtestName: 'feed',
@@ -46,9 +44,9 @@ Deno.test('findDeadTriggerWarnings reports subtest-level dead triggers', () => {
 	}])
 })
 
-Deno.test('findDeadTriggerWarnings skips patterns shared with a matching scope', () => {
+Deno.test('findDeadTriggers skips patterns shared with a matching scope', () => {
 	const suite = makeSuite('testkit', 'state', {
 		triggers: ['src/scripts/test/core/state.mjs'],
 	})
-	assertEquals(findDeadTriggerWarnings([suite], REPO_FILES), [])
+	assertEquals(findDeadTriggers([suite], REPO_FILES), [])
 })

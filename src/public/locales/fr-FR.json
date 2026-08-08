@@ -1994,7 +1994,9 @@
 				"unsavedHint": "Fermer la fenêtre annulera les modifications non enregistrées.",
 				"tagsLabel": "Étiquette",
 				"tagAdd": "Ajouter à",
-				"tagRemove": "Supprimer la balise",
+				"tagRemove": {
+					"aria-label": "Supprimer la balise"
+				},
 				"linksLabel": "Lien",
 				"handleLabel": "Identifiant personnalisé",
 				"handleHint": "Peut être recherché par d'autres nœuds du réseau ; l'unicité n'est pas garantie et les conflits seront levés selon la liste de confiance.",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "Afficher le texte"
 					},
-					"remove": "Supprimer le lien",
+					"remove": {
+						"aria-label": "Supprimer le lien"
+					},
 					"url": {
 						"placeholder": "https://… ou font://…"
 					}
@@ -2063,7 +2067,6 @@
 				"dm": {
 					"char": "Discutez en privé avec un personnage",
 					"failed": "Impossible d'ouvrir le message privé : ${error}",
-					"fed": "Message privé fédéral",
 					"user": "Envoyer un message privé"
 				}
 			},
@@ -4168,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "À quoi pensez-vous ? Markdown (dialecte fount) pris en charge — tapez @ pour mentionner",
-			"locale": "Langue du contenu",
+			"locale": {
+				"aria-label": "Langue du contenu"
+			},
 			"aria-label": "Écrire une publication",
 			"publish": "Publier",
 			"saveDraft": "Enregistrer le brouillon",
@@ -4332,7 +4337,9 @@
 			},
 			"createFolderPrompt": "Nom du dossier",
 			"pickFolderTitle": "Ajouter aux favoris",
-			"folderSelect": "Dossier de favoris",
+			"folderSelect": {
+				"aria-label": "Dossier de favoris"
+			},
 			"confirm": "Confirmer",
 			"cancel": "Annuler",
 			"remove": {
@@ -4495,7 +4502,9 @@
 				"aria-label": "Rechercher"
 			},
 			"submit": "Rechercher",
-			"clear": "Effacer",
+			"clear": {
+				"aria-label": "Effacer"
+			},
 			"empty": "Aucun message correspondant",
 			"tooShort": "Veuillez saisir au moins 2 caractères",
 			"usersTitle": "Utilisateurs",
@@ -4642,7 +4651,9 @@
 			"linking": "Connecter un groupe de discussion",
 			"clear": "Dissocier",
 			"pick": "Connecter un groupe/canal de discussion…",
-			"select": "Lier un groupe ou un canal de discussion"
+			"select": {
+				"aria-label": "Lier un groupe ou un canal de discussion"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {
