@@ -227,7 +227,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	attachmentElement
 		.querySelector('.delete-button')
 		?.addEventListener('click', () => {
-			const itemIndex = selectedFiles?.indexOf(file) ?? -1
+			const itemIndex = selectedFiles.indexOf(file)
 			if (itemIndex > -1)
 				selectedFiles.splice(itemIndex, 1)
 

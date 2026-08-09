@@ -47,7 +47,7 @@ async function GetSource(config, { username, SaveConfig }) {
 	})))
 	const failed = settled.find(entry => entry.status === 'rejected')
 	if (failed) {
-		await Promise.all(unnamedSources.map(source => source?.Unload?.()))
+		await Promise.allSettled(unnamedSources.map(source => source?.Unload?.()))
 		throw failed.reason
 	}
 	const sources = settled.map(entry => /** @type {PromiseFulfilledResult<SpeechRecognitionSource_t>} */entry.value)
@@ -71,11 +71,11 @@ async function GetSource(config, { username, SaveConfig }) {
 			let index = 0
 			while (true) try {
 				return await sources[index].Recognize(options)
-			} catch (e) {
-				if (options.signal?.aborted || e?.name === 'AbortError') throw e
+			} catch (error) {
+				if (options.signal?.aborted || error?.name === 'AbortError') throw error
 				index++
 				if (index >= config.sources.length) throw new Error('all sources failed')
-				console.error(e)
+				console.error(error)
 			}
 		},
 		interfaces: {}

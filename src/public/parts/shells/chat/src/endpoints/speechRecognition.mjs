@@ -102,7 +102,10 @@ export function registerSpeechRecognitionRoutes(router) {
 		 * @returns {void}
 		 */
 		const enqueueAudioTask = (task) => {
-			audioQueue = audioQueue.then(task).catch(error => {
+			audioQueue = audioQueue.then(async () => {
+				if (abort.signal.aborted) return
+				await task()
+			}).catch(error => {
 				push({ type: 'error', message: error?.message || String(error) })
 			})
 		}
