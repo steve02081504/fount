@@ -24,7 +24,7 @@ export function hmacSha1Base64(secret, data) {
 }
 
 /**
- * MD5 hex。
+ * 计算 MD5 十六进制摘要。
  * @param {string} data 原文
  * @returns {string} hex
  */
@@ -33,7 +33,7 @@ export function md5Hex(data) {
 }
 
 /**
- * SHA-256 Base64（body digest）。
+ * 计算正文的 SHA-256 Base64 摘要。
  * @param {string | Uint8Array} body 正文
  * @returns {string} digest
  */

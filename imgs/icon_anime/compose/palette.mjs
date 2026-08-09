@@ -2,25 +2,15 @@
  * ANSI 调色板、熔岩色阶与真彩 SGR 缓存。
  */
 
-/**
- *
- */
+/** ANSI 复位。 */
 export const RESET = '\x1b[0m'
-/**
- *
- */
+/** 主体 `@` 前景。 */
 export const FG_AT = '\x1b[30m'
-/**
- *
- */
+/** 水柱前景。 */
 export const FG_COL = '\x1b[96m'
-/**
- *
- */
+/** 水花前景。 */
 export const FG_SPLASH = '\x1b[36m'
-/**
- *
- */
+/** 地形轮廓前景。 */
 export const FG_TERRAIN = '\x1b[90m'
 
 /** 熔岩温度色阶（暗红 → 橙 → 亮黄），12 档。 */
@@ -38,9 +28,7 @@ const LAVA_RGB = [
 	[255, 210, 70],
 	[255, 230, 100],
 ]
-/**
- *
- */
+/** 气泡前景。 */
 export const FG_BUBBLE = '\x1b[38;2;40;20;15m'
 
 /** SGR 缓存键：null / 未知前景。 */

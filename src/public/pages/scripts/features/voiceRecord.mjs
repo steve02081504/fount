@@ -40,7 +40,7 @@ export async function startVoiceRecording() {
 	})
 
 	/**
-	 *
+	 * 停止时组装录音文件。
 	 */
 	mediaRecorder.onstop = () => {
 		try {

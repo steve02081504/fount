@@ -63,30 +63,18 @@ const mockTermuxLifecycle = () => {
 	let exitListener = null
 	const fakeChild = {
 		stdout: {
-			/**
-			 *
-			 */
+			/** 假 stdout 编码设置。 */
 			setEncoding() { /* noop */ },
-			/**
-			 *
-			 */
+			/** 假 stdout 事件注册。 */
 			on() { /* noop */ },
-			/**
-			 *
-			 */
+			/** 假 stdout 移除监听。 */
 			removeAllListeners() { /* noop */ },
 		},
-		/**
-		 *
-		 */
+		/** 假子进程事件注册。 */
 		on() { /* noop */ },
-		/**
-		 *
-		 */
+		/** 假子进程移除监听。 */
 		removeAllListeners() { /* noop */ },
-		/**
-		 *
-		 */
+		/** 假子进程 kill。 */
 		kill() { calls.push('kill') },
 	}
 	const stop = startTermuxAcquire(() => { /* noop */ }, {
@@ -134,9 +122,7 @@ const mockTermuxLifecycle = () => {
 	return {
 		calls,
 		stop,
-		/**
-		 *
-		 */
+		/** 触发注入的 process exit。 */
 		fireExit: () => {
 			exitListener?.()
 		},

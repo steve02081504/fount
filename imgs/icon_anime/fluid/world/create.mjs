@@ -265,7 +265,5 @@ export const clearMaterials = (world) => {
 	world.gasGeomDirty = true
 }
 
-/**
- *
- */
+/** 重算重力深度基线。 */
 export { recomputeGravityDepthBasis }

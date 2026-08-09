@@ -27,7 +27,7 @@ test.describe('GitHub Pages smoke', () => {
 	test('utm_source shows welcome dialog after hero intro', async ({ page, baseUrl }) => {
 		const dialog = page.locator('#utm-welcome-dialog')
 		/**
-		 *
+		 * 打开带 utm_source 的安装页并等待欢迎弹窗。
 		 */
 		const openWelcome = async () => {
 			await page.goto(`${baseUrl}/wait/install/?utm_source=linux.sb`, { waitUntil: 'domcontentloaded' })
