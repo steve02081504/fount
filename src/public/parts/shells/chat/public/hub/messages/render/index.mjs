@@ -29,7 +29,7 @@ import {
 } from './blocks.mjs'
 import { renderCallBlock } from './call.mjs'
 import { wireMessageEmbedGuards } from './embed.mjs'
-import { renderMessageFileIdsHtml, wireMessageMediaPlaceholders } from './file.mjs'
+import { renderMessageFileIdsHtml, scheduleRevealMessageAudioSpeechRecognitionItems, wireMessageMediaPlaceholders } from './file.mjs'
 import { hydrateMessageMarkdown, renderMessageMarkdownForPaint } from './markdown.mjs'
 import { renderMessageReactionsHtml } from './reactions.mjs'
 import {
@@ -351,6 +351,7 @@ export function localizeRenderedMessages(container) {
 	wireMessageRefBlocks(container)
 	wireMessageMediaPlaceholders(container)
 	bindContentReveal(container)
+	scheduleRevealMessageAudioSpeechRecognitionItems()
 	void hydrateMessageMarkdown(container)
 	void autoTranslateMessages(container)
 }

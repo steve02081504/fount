@@ -1,0 +1,519 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "OpenAI Realtime Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Streaming speech transcription via OpenAI Realtime WebSocket.",
+			"description_markdown": "Streaming speech transcription via OpenAI Realtime WebSocket.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"speech recognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "OpenAI Realtime 语音识别生成器",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime 流式语音转写 WebSocket。",
+			"description_markdown": "OpenAI Realtime 流式语音转写 WebSocket。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "تفريغ صوتي متدفق عبر WebSocket من OpenAI Realtime.",
+			"description_markdown": "تفريغ صوتي متدفق عبر WebSocket من OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "OpenAI Realtime-Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Streaming-Sprachtranskription per OpenAI Realtime WebSocket.",
+			"description_markdown": "Streaming-Sprachtranskription per OpenAI Realtime WebSocket.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 OpenAI",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "🎙️➡️📝 OpenAI",
+			"description_markdown": "🎙️➡️📝 OpenAI",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Transcripción de voz en streaming vía WebSocket de OpenAI Realtime.",
+			"description_markdown": "Transcripción de voz en streaming vía WebSocket de OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Transcription vocale en streaming via WebSocket OpenAI Realtime.",
+			"description_markdown": "Transcription vocale en streaming via WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "OpenAI Realtime आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime WebSocket पर स्ट्रीमिंग आवाज़ ट्रांसक्रिप्शन।",
+			"description_markdown": "OpenAI Realtime WebSocket पर स्ट्रीमिंग आवाज़ ट्रांसक्रिप्शन।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "OpenAI Realtime talgreiningarrafall",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Streymis talgerving með OpenAI Realtime WebSocket.",
+			"description_markdown": "Streymis talgerving með OpenAI Realtime WebSocket.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Trascrizione vocale in streaming tramite WebSocket OpenAI Realtime.",
+			"description_markdown": "Trascrizione vocale in streaming tramite WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "OpenAI Realtime 音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime WebSocket によるストリーミング音声転写。",
+			"description_markdown": "OpenAI Realtime WebSocket によるストリーミング音声転写。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "OpenAI Realtime 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime WebSocket 스트리밍 음성 전사.",
+			"description_markdown": "OpenAI Realtime WebSocket 스트리밍 음성 전사.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "OpenAI Realtime 語音識別生成器",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime 流式語音轉寫 WebSocket。",
+			"description_markdown": "OpenAI Realtime 流式語音轉寫 WebSocket。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "OpenAI Realtime-spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Streaming-spraaktranscriptie via OpenAI Realtime WebSocket.",
+			"description_markdown": "Streaming-spraaktranscriptie via OpenAI Realtime WebSocket.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Transcrição de fala em streaming via WebSocket OpenAI Realtime.",
+			"description_markdown": "Transcrição de fala em streaming via WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор распознавания речи OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Потоковая транскрипция речи через WebSocket OpenAI Realtime.",
+			"description_markdown": "Потоковая транскрипция речи через WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор розпізнавання мови OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Потокова транскрипція мови через WebSocket OpenAI Realtime.",
+			"description_markdown": "Потокова транскрипція мови через WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Chuyển giọng nói streaming qua WebSocket OpenAI Realtime.",
+			"description_markdown": "Chuyển giọng nói streaming qua WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "OpenAI Realtime 語音辨識產生器",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime 串流語音轉寫 WebSocket。",
+			"description_markdown": "OpenAI Realtime 串流語音轉寫 WebSocket。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "OpenAI Realtime Speech Recognition",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Streaming speech transcription via OpenAI Realtime WebSocket.",
+			"description_markdown": "Streaming speech transcription via OpenAI Realtime WebSocket.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"speech recognition",
+				"generator"
+			],
+			"provider": "openai"
+		},
+		"zh-CN": {
+			"name": "OpenAI Realtime 语音识别",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime 流式语音转写 WebSocket。",
+			"description_markdown": "OpenAI Realtime 流式语音转写 WebSocket。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "openai"
+		},
+		"ar-SA": {
+			"name": "التعرف على الكلام OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "تفريغ صوتي متدفق عبر WebSocket من OpenAI Realtime.",
+			"description_markdown": "تفريغ صوتي متدفق عبر WebSocket من OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "openai"
+		},
+		"de-DE": {
+			"name": "OpenAI Realtime-Spracherkennung",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Streaming-Sprachtranskription per OpenAI Realtime WebSocket.",
+			"description_markdown": "Streaming-Sprachtranskription per OpenAI Realtime WebSocket.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "openai"
+		},
+		"emoji": {
+			"name": "🎙️ OpenAI",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "🎙️➡️📝 OpenAI",
+			"description_markdown": "🎙️➡️📝 OpenAI",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "openai"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Transcripción de voz en streaming vía WebSocket de OpenAI Realtime.",
+			"description_markdown": "Transcripción de voz en streaming vía WebSocket de OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "openai"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Transcription vocale en streaming via WebSocket OpenAI Realtime.",
+			"description_markdown": "Transcription vocale en streaming via WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "openai"
+		},
+		"hi-IN": {
+			"name": "OpenAI Realtime आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime WebSocket पर स्ट्रीमिंग आवाज़ ट्रांसक्रिप्शन।",
+			"description_markdown": "OpenAI Realtime WebSocket पर स्ट्रीमिंग आवाज़ ट्रांसक्रिप्शन।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "openai"
+		},
+		"is-IS": {
+			"name": "OpenAI Realtime talgreining",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Streymis talgerving með OpenAI Realtime WebSocket.",
+			"description_markdown": "Streymis talgerving með OpenAI Realtime WebSocket.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "openai"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Trascrizione vocale in streaming tramite WebSocket OpenAI Realtime.",
+			"description_markdown": "Trascrizione vocale in streaming tramite WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "openai"
+		},
+		"ja-JP": {
+			"name": "OpenAI Realtime 音声認識",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime WebSocket によるストリーミング音声転写。",
+			"description_markdown": "OpenAI Realtime WebSocket によるストリーミング音声転写。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "openai"
+		},
+		"ko-KR": {
+			"name": "OpenAI Realtime 음성 인식",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime WebSocket 스트리밍 음성 전사.",
+			"description_markdown": "OpenAI Realtime WebSocket 스트리밍 음성 전사.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "openai"
+		},
+		"lzh": {
+			"name": "OpenAI Realtime 語音識別",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime 流式語音轉寫 WebSocket。",
+			"description_markdown": "OpenAI Realtime 流式語音轉寫 WebSocket。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "openai"
+		},
+		"nl-NL": {
+			"name": "OpenAI Realtime-spraakherkenning",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Streaming-spraaktranscriptie via OpenAI Realtime WebSocket.",
+			"description_markdown": "Streaming-spraaktranscriptie via OpenAI Realtime WebSocket.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "openai"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Transcrição de fala em streaming via WebSocket OpenAI Realtime.",
+			"description_markdown": "Transcrição de fala em streaming via WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "openai"
+		},
+		"ru-RU": {
+			"name": "Распознавание речи OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Потоковая транскрипция речи через WebSocket OpenAI Realtime.",
+			"description_markdown": "Потоковая транскрипция речи через WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "openai"
+		},
+		"uk-UA": {
+			"name": "Розпізнавання мови OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Потокова транскрипція мови через WebSocket OpenAI Realtime.",
+			"description_markdown": "Потокова транскрипція мови через WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "openai"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói OpenAI Realtime",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Chuyển giọng nói streaming qua WebSocket OpenAI Realtime.",
+			"description_markdown": "Chuyển giọng nói streaming qua WebSocket OpenAI Realtime.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "openai"
+		},
+		"zh-TW": {
+			"name": "OpenAI Realtime 語音辨識",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime 串流語音轉寫 WebSocket。",
+			"description_markdown": "OpenAI Realtime 串流語音轉寫 WebSocket。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			],
+			"provider": "openai"
+		}
+	}
+}

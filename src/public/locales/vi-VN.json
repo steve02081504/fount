@@ -960,6 +960,24 @@
 							"title": "Đặt làm nguồn dịch vụ dịch mặc định"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "Trình tạo dịch vụ nhận dạng giọng nói",
+					"subtitle": "Biến sóng âm thành chữ — nói một câu, chữ liền hiện ra.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Đặt làm trình tạo nhận dạng giọng nói mặc định"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "Nguồn dịch vụ nhận dạng giọng nói",
+					"subtitle": "Cửa sổ lắng nghe giọng nói, nơi ý nghĩa bắt đầu.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Đặt làm nguồn nhận dạng giọng nói mặc định"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Không thể truy cập micrô."
+			"errorAccessingMicrophone": "Không thể truy cập micrô.",
+			"confirmSpeechRecognition": "Tự động điền văn bản bằng nhận dạng giọng nói? Tệp ghi âm đính kèm sẽ được giữ lại.",
+			"speechRecognitionFailed": "Nhận dạng giọng nói không thành công: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "Biểu tượng xóa"
+				},
+				"more": {
+					"title": "Hơn"
+				},
+				"recognize": {
+					"title": "Giọng nói thành chữ"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "Người theo dõi trong hơn 7 ngày",
 					"label": "Ai có thể trả lời"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "Ghi âm",
+				"aria-label": "Ghi âm"
+			},
+			"voiceFailed": "Ghi âm không thành công: ${error}",
+			"audioTranscript": {
+				"placeholder": "Bản ghi hoặc ghi chú"
+			},
+			"confirmSpeechRecognition": "Tự động điền bài đăng bằng nhận dạng giọng nói? Tệp ghi âm đính kèm sẽ được giữ lại.",
+			"speechRecognitionFailed": "Nhận dạng giọng nói không thành công: ${error}"
 		},
 		"feed": {
 			"refresh": {

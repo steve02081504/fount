@@ -960,6 +960,24 @@
 							"title": "定為恆常譯語源流"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "語音識別服務生成器",
+					"subtitle": "化聲波為文，隨口一言，亦可落筆成文。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "設為默認語音識別服務生成器"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "語音識別服務源",
+					"subtitle": "聆聲色之窗，語意所自出也。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "設為默認語音識別服務源"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "耳目閉塞，難以傳聲"
+			"errorAccessingMicrophone": "耳目閉塞，難以傳聲",
+			"confirmSpeechRecognition": "欲以語音識別自動填入文乎？錄音附件仍存。",
+			"speechRecognitionFailed": "語音識別未果：${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "刪"
+				},
+				"more": {
+					"title": "更多"
+				},
+				"recognize": {
+					"title": "語音轉文"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "結交逾七日者",
 					"label": "誰可回覆"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "留聲",
+				"aria-label": "留聲"
+			},
+			"voiceFailed": "留聲未果：${error}",
+			"audioTranscript": {
+				"placeholder": "轉寫或備註"
+			},
+			"confirmSpeechRecognition": "欲以語音識別自動填入文案乎？錄音附件仍存。",
+			"speechRecognitionFailed": "語音識別未果：${error}"
 		},
 		"feed": {
 			"refresh": {

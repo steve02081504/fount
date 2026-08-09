@@ -7,11 +7,26 @@
  */
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { renderTemplate } from '/scripts/features/template.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
+import { hasSpeechRecognitionSource, recognizeBuffer } from '/scripts/features/speechRecognition.mjs'
+import { setCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
 import { entityFileUrl, fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 import { parseEvfsRef } from './lib/evfsRef.mjs'
 import { arrayBufferToBase64 } from './lib/federationUpload.mjs'
 import { processTimeStampForId } from './lib/timestampId.mjs'
 import { openModal } from './ui/modal.mjs'
+
+/** @type {boolean | null} */
+let speechRecognitionConfiguredCache = null
+
+/**
+ * @returns {Promise<boolean>} 是否配置语音识别
+ */
+async function speechRecognitionConfigured() {
+	if (speechRecognitionConfiguredCache != null) return speechRecognitionConfiguredCache
+	speechRecognitionConfiguredCache = await hasSpeechRecognitionSource()
+	return speechRecognitionConfiguredCache
+}
 
 /**
  * 将 base64 字符串转为 Blob。
@@ -27,44 +42,41 @@ function base64ToBlob(base64, mimeType) {
 }
 
 /**
- * 处理文件选择。
+ * 处理文件选择。按原始文件顺序依次读取与渲染，避免异步完成顺序打乱附件顺序。
  * @param {Event} event - 事件。
  * @param {Array<object>} selectedFiles - 已选择的文件。
  * @param {HTMLElement} attachmentPreviewContainer - 附件预览容器。
- * @returns {Promise<void>}
+ * @returns {Promise<{ file: object, element: HTMLElement }[]>} 新增附件及其预览元素
  */
 export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {
 	const files = event.target.files || event.dataTransfer.files
-	if (!files) return
+	if (!files) return []
 
+	/** @type {{ file: object, element: HTMLElement }[]} */
+	const added = []
 	for (const file of files) {
-		const reader = new FileReader()
-		/**
-		 * @param {ProgressEvent<FileReader>} e 读取完成事件
-		 */
-		reader.onload = async e => {
-			const newFile = {
-				name: file.name,
-				mime_type: file.type,
-				buffer: arrayBufferToBase64(e.target.result),
-				description: '',
-			}
-			selectedFiles.push(newFile)
-			const attachmentElement = await renderAttachmentPreview(
-				newFile,
-				selectedFiles.length - 1,
-				selectedFiles
-			)
-			if (attachmentElement) {
-				attachmentElement.classList.add('attachment-entering')
-				attachmentPreviewContainer.appendChild(attachmentElement)
-				requestAnimationFrame(() => {
-					attachmentElement.classList.remove('attachment-entering')
-				})
-			}
+		const newFile = {
+			name: file.name,
+			mime_type: file.type,
+			buffer: arrayBufferToBase64(await file.arrayBuffer()),
+			description: '',
 		}
-		reader.readAsArrayBuffer(file)
+		selectedFiles.push(newFile)
+		const attachmentElement = await renderAttachmentPreview(
+			newFile,
+			selectedFiles.length - 1,
+			selectedFiles
+		)
+		added.push({ file: newFile, element: attachmentElement })
+		if (attachmentElement) {
+			attachmentElement.classList.add('attachment-entering')
+			attachmentPreviewContainer.appendChild(attachmentElement)
+			requestAnimationFrame(() => {
+				attachmentElement.classList.remove('attachment-entering')
+			})
+		}
 	}
+	return added
 }
 
 /**
@@ -98,12 +110,15 @@ const PREVIEWABLE_MIME_TYPES = ['image/', 'video/', 'audio/']
  * @returns {Promise<HTMLElement>} - 附件元素。
  */
 export async function renderAttachmentPreview(file, index, selectedFiles) {
+	const isAudio = String(file.mime_type || '').startsWith('audio/')
+	const showSpeechRecognitionMenu = isAudio && await speechRecognitionConfigured()
 	let attachmentElement = await renderTemplate('attachment_preview', {
 		file,
 		index,
 		safeName: processTimeStampForId(file.name),
 		showDownloadButton: !selectedFiles,
 		showDeleteButton: !!selectedFiles,
+		showSpeechRecognitionMenu,
 	})
 
 	const isPreviewable = PREVIEWABLE_MIME_TYPES.some(type => file.mime_type.startsWith(type))
@@ -182,6 +197,33 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	attachmentElement
 		.querySelector('.download-button')
 		?.addEventListener('click', () => downloadFile(file))
+	attachmentElement
+		.querySelector('.speech-recognition-button')
+		?.addEventListener('click', async () => {
+			try {
+				const bytes = typeof file.buffer === 'string'
+					? Uint8Array.from(atob(file.buffer), c => c.charCodeAt(0))
+					: new Uint8Array(file.buffer)
+				const result = await recognizeBuffer({
+					audio: bytes,
+					mime_type: file.mime_type,
+					name: file.name,
+				})
+				file.description = result.text
+				setCachedSpeechRecognitionTranscript(file.contentHash || file.name, result.text)
+				let caption = attachmentElement.querySelector('.attachment-transcript')
+				if (!caption) {
+					caption = document.createElement('p')
+					caption.className = 'attachment-transcript text-xs opacity-70 mt-1'
+					caption.setAttribute('user-content', '')
+					attachmentElement.querySelector('.file-name')?.after(caption)
+				}
+				caption.textContent = result.text
+			}
+			catch (error) {
+				showToastI18n('error', 'chat.voiceRecording.speechRecognitionFailed', { error: error?.message || String(error) })
+			}
+		})
 	attachmentElement
 		.querySelector('.delete-button')
 		?.addEventListener('click', () => {

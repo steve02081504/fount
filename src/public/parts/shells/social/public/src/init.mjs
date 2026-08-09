@@ -21,7 +21,7 @@ import { getChatViewer } from './endpoints/chatBridge.mjs'
 import { SOCIAL_GATE } from './gate.mjs'
 import { renderAvatarHtml, rememberEntityHandle } from './lib/display.mjs'
 import { wireSocialProfileHover } from './lib/profileHover.mjs'
-import { bindMediaCarousel } from './mediaRender.mjs'
+import { bindAudioSpeechRecognition, bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal.mjs'
 import { primaryLocale } from '/scripts/i18n/index.mjs'
@@ -38,6 +38,56 @@ import { handleVideoKeydown } from './views/video.mjs'
 const socialGate = createReadyGate(SOCIAL_GATE)
 
 const FEED_WS_TIMEOUT_MS = 30_000
+
+/** @type {Awaited<ReturnType<typeof import('/scripts/features/voiceRecord.mjs').startVoiceRecording>> | null} */
+let socialVoiceSession = null
+
+/**
+ * 绑定 Social composer 录音按钮。
+ * @returns {void}
+ */
+function wireSocialVoiceButton() {
+	const button = document.getElementById('voiceButton')
+	if (!(button instanceof HTMLButtonElement)) return
+	button.addEventListener('click', async () => {
+		button.disabled = true
+		try {
+			const { startVoiceRecording } = await import('/scripts/features/voiceRecord.mjs')
+			if (socialVoiceSession) {
+				const session = socialVoiceSession
+				socialVoiceSession = null
+				button.classList.remove('btn-active')
+				const file = await session.stop()
+				await addComposerMedia([file])
+				const ref = state.pendingMediaRefs.at(-1)
+				const { hasSpeechRecognitionSource, recognizeBuffer, appendRecognizedText } = await import('/scripts/features/speechRecognition.mjs')
+				const { confirmAction } = await import('/scripts/features/promptDialog.mjs')
+				if (ref && await hasSpeechRecognitionSource() && await confirmAction('social.composer.confirmSpeechRecognition')) {
+					const result = await recognizeBuffer({
+						audio: file,
+						mime_type: file.type,
+						name: file.name,
+					})
+					ref.alt = result.text
+					appendRecognizedText(document.getElementById('postText'), result.text)
+					const { refreshMediaPreview } = await import('./composer.mjs')
+					refreshMediaPreview()
+				}
+				return
+			}
+			socialVoiceSession = await startVoiceRecording()
+			button.classList.add('btn-active')
+		}
+		catch (error) {
+			socialVoiceSession = null
+			button.classList.remove('btn-active')
+			showToastI18n('error', 'social.composer.voiceFailed', { error: error?.message || String(error) })
+		}
+		finally {
+			button.disabled = false
+		}
+	})
+}
 const FEED_WS_RECONNECT_MAX_MS = 30_000
 
 /**
@@ -178,6 +228,7 @@ export async function bootstrap() {
 			await addComposerMedia(input.files)
 			input.value = ''
 		})
+		wireSocialVoiceButton()
 		const shellRoot = document.getElementById('shell')
 		shellRoot?.addEventListener('click', event => { void handleMainClick(event) })
 		shellRoot?.addEventListener('toggle', event => {
@@ -187,6 +238,7 @@ export async function bootstrap() {
 		}, { capture: true })
 		bindContentReveal(shellRoot)
 		bindMediaCarousel(shellRoot)
+		bindAudioSpeechRecognition(shellRoot)
 		shellRoot?.addEventListener('click', event => {
 			const { target } = event
 			if (!(target instanceof HTMLElement)) return

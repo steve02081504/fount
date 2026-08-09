@@ -960,6 +960,24 @@
 							"title": "Definir como fount de serviço de tradução padrão"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "Gerador de serviço de reconhecimento de fala",
+					"subtitle": "Transforme o som em palavras: fale e veja-o escrito.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Definir como gerador de reconhecimento de fala predefinido"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "Fonte de serviço de reconhecimento de fala",
+					"subtitle": "A janela que ouve a voz, o ponto de partida do significado.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Definir como fonte de reconhecimento de fala predefinida"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Erro ao aceder ao microfone."
+			"errorAccessingMicrophone": "Erro ao aceder ao microfone.",
+			"confirmSpeechRecognition": "Preencher o texto automaticamente com reconhecimento de fala? O anexo de áudio será mantido.",
+			"speechRecognitionFailed": "Falha no reconhecimento de fala: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "Ícone de Eliminar"
+				},
+				"more": {
+					"title": "Mais"
+				},
+				"recognize": {
+					"title": "Voz para texto"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "Seguidores há mais de 7 dias",
 					"label": "Quem pode responder"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "Gravar",
+				"aria-label": "Gravar"
+			},
+			"voiceFailed": "Falha na gravação: ${error}",
+			"audioTranscript": {
+				"placeholder": "Transcrição ou notas"
+			},
+			"confirmSpeechRecognition": "Preencher a publicação automaticamente com reconhecimento de fala? O anexo de áudio será mantido.",
+			"speechRecognitionFailed": "Falha no reconhecimento de fala: ${error}"
 		},
 		"feed": {
 			"refresh": {

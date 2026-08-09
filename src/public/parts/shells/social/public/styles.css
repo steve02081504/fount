@@ -93,6 +93,10 @@
 	--icon: url("https://api.iconify.design/mdi/image-outline.svg");
 }
 
+.icon-mic {
+	--icon: url("https://api.iconify.design/mdi/microphone.svg");
+}
+
 .icon-search {
 	--icon: url("https://api.iconify.design/mdi/magnify.svg");
 }

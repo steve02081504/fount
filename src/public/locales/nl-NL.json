@@ -960,6 +960,24 @@
 							"title": "Instellen als standaardbron voor vertaalservices"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "Servicegenerator voor spraakherkenning",
+					"subtitle": "Maak van geluidsgolven woorden — spreek en zie het geschreven.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaardgenerator voor spraakherkenning"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "Bron van spraakherkenningsservice",
+					"subtitle": "Het venster dat naar stem en klank luistert, waar betekenis begint.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaardbron voor spraakherkenning"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Geen toegang tot microfoon"
+			"errorAccessingMicrophone": "Geen toegang tot microfoon",
+			"confirmSpeechRecognition": "Tekst automatisch invullen met spraakherkenning? De audio-bijlage blijft behouden.",
+			"speechRecognitionFailed": "Spraakherkenning mislukt: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "Verwijderpictogram"
+				},
+				"more": {
+					"title": "Meer"
+				},
+				"recognize": {
+					"title": "Spraak naar tekst"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "Volgers langer dan 7 dagen",
 					"label": "Wie kan antwoorden"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "Opnemen",
+				"aria-label": "Opnemen"
+			},
+			"voiceFailed": "Opname mislukt: ${error}",
+			"audioTranscript": {
+				"placeholder": "Transcript of notities"
+			},
+			"confirmSpeechRecognition": "Bericht automatisch invullen met spraakherkenning? De audio-bijlage blijft behouden.",
+			"speechRecognitionFailed": "Spraakherkenning mislukt: ${error}"
 		},
 		"feed": {
 			"refresh": {

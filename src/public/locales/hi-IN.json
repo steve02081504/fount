@@ -960,6 +960,24 @@
 							"title": "डिफ़ॉल्ट अनुवाद सेवा स्रोत के रूप में सेट करें"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "आवाज़ पहचान सेवा जनरेटर",
+					"subtitle": "आवाज़ को शब्दों में बदलें — बोलिए, और लिखा देखिए।",
+					"card": {
+						"defaultCheckbox": {
+							"title": "डिफ़ॉल्ट आवाज़ पहचान सेवा जनरेटर के रूप में सेट करें"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "आवाज़ पहचान सेवा स्रोत",
+					"subtitle": "जहाँ आवाज़ सुनी जाती है, वहीं अर्थ की शुरुआत।",
+					"card": {
+						"defaultCheckbox": {
+							"title": "डिफ़ॉल्ट आवाज़ पहचान सेवा स्रोत के रूप में सेट करें"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "माइक्रोफ़ोन तक पहुँचने में विफल।"
+			"errorAccessingMicrophone": "माइक्रोफ़ोन तक पहुँचने में विफल।",
+			"confirmSpeechRecognition": "क्या आवाज़ पहचान से पाठ स्वतः भरें? रिकॉर्डिंग अटैचमेंट रखी जाएगी।",
+			"speechRecognitionFailed": "आवाज़ पहचान विफल: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "हटाएँ आइकन"
+				},
+				"more": {
+					"title": "अधिक"
+				},
+				"recognize": {
+					"title": "आवाज़ से लेख"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "7 दिन से ज्यादा समय से फॉलोअर्स",
 					"label": "कौन जवाब दे सकता है"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "रिकॉर्ड",
+				"aria-label": "रिकॉर्ड"
+			},
+			"voiceFailed": "रिकॉर्डिंग विफल: ${error}",
+			"audioTranscript": {
+				"placeholder": "ट्रांसक्रिप्ट या नोट्स"
+			},
+			"confirmSpeechRecognition": "क्या आवाज़ पहचान से पोस्ट स्वतः भरें? रिकॉर्डिंग अटैचमेंट रखी जाएगी।",
+			"speechRecognitionFailed": "आवाज़ पहचान विफल: ${error}"
 		},
 		"feed": {
 			"refresh": {

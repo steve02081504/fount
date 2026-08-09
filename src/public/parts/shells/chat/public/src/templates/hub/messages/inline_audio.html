@@ -1,1 +1,11 @@
-<audio class="inline-audio w-full mt-1" controls preload="metadata" src="${src}"></audio>
+<div class="message-inline-audio flex flex-col gap-1" data-group-file-id="${fileId}">
+	<audio src="${src}" controls></audio>
+	${hasTranscript ? `<p class="attachment-transcript text-xs opacity-70" user-content>${transcript}</p>` : `<p class="attachment-transcript text-xs opacity-70 hidden" user-content></p>`}
+	<div class="dropdown dropdown-end">
+		<button type="button" tabindex="0" class="btn btn-ghost btn-xs message-audio-menu" data-i18n="chat.attachment.buttons.more"></button>
+		<ul tabindex="0" class="dropdown-content menu menu-sm bg-base-100 rounded-box z-30 shadow border border-base-300 w-36 p-1">
+			<li><button type="button" class="message-file-download" data-group-file-id="${fileId}" data-i18n="chat.attachment.buttons.download"></button></li>
+			<li class="message-audio-speech-recognition-item hidden"><button type="button" class="message-file-speech-recognition" data-group-file-id="${fileId}" data-i18n="chat.attachment.buttons.recognize"></button></li>
+		</ul>
+	</div>
+</div>

@@ -960,6 +960,24 @@
 							"title": "Establecer como fount de servicio de traducción predeterminada"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "Generador de servicios de reconocimiento de voz",
+					"subtitle": "Convierte el sonido en palabras: habla y míralo escrito.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Establecer como generador de reconocimiento de voz predeterminado"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "Fuente del servicio de reconocimiento de voz",
+					"subtitle": "La ventana que escucha la voz, el punto de partida del sentido.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Establecer como fuente de reconocimiento de voz predeterminada"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Error al acceder al micrófono"
+			"errorAccessingMicrophone": "Error al acceder al micrófono",
+			"confirmSpeechRecognition": "¿Rellenar el texto automáticamente con reconocimiento de voz? Se conservará el archivo de audio adjunto.",
+			"speechRecognitionFailed": "Error en el reconocimiento de voz: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "Icono de eliminar"
+				},
+				"more": {
+					"title": "Más"
+				},
+				"recognize": {
+					"title": "Voz a texto"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "Seguidores por más de 7 días.",
 					"label": "¿Quién puede responder?"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "Grabar",
+				"aria-label": "Grabar"
+			},
+			"voiceFailed": "Error de grabación: ${error}",
+			"audioTranscript": {
+				"placeholder": "Transcripción o notas"
+			},
+			"confirmSpeechRecognition": "¿Rellenar la publicación automáticamente con reconocimiento de voz? Se conservará el archivo de audio adjunto.",
+			"speechRecognitionFailed": "Error en el reconocimiento de voz: ${error}"
 		},
 		"feed": {
 			"refresh": {

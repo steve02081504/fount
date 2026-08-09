@@ -960,6 +960,24 @@
 							"title": "デフォルトの翻訳サービスソースとして設定"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "音声認識サービスジェネレーター",
+					"subtitle": "声の波を文字に。ひと声で、筆が走る。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトの音声認識サービスジェネレーターとして設定"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "音声認識サービスソース",
+					"subtitle": "声色を聴き届ける窓口、意味のはじまり。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトの音声認識サービスソースとして設定"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "マイクへのアクセスに失敗しました。"
+			"errorAccessingMicrophone": "マイクへのアクセスに失敗しました。",
+			"confirmSpeechRecognition": "音声認識でテキストを自動入力しますか？録音の添付ファイルは残ります。",
+			"speechRecognitionFailed": "音声認識に失敗しました: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "削除アイコン"
+				},
+				"more": {
+					"title": "もっと"
+				},
+				"recognize": {
+					"title": "音声を文字に"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "7日以上のフォロワー",
 					"label": "返信できる人"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "録音",
+				"aria-label": "録音"
+			},
+			"voiceFailed": "録音に失敗しました: ${error}",
+			"audioTranscript": {
+				"placeholder": "文字起こしまたはメモ"
+			},
+			"confirmSpeechRecognition": "音声認識で投稿文を自動入力しますか？録音の添付ファイルは残ります。",
+			"speechRecognitionFailed": "音声認識に失敗しました: ${error}"
 		},
 		"feed": {
 			"refresh": {

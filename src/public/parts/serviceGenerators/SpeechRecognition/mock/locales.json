@@ -1,0 +1,519 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Mock Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simulates streaming output from configured text for testing.",
+			"description_markdown": "Simulates streaming output from configured text for testing.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"speech recognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "模拟语音识别生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "按配置文本模拟流式输出，供测试使用。",
+			"description_markdown": "按配置文本模拟流式输出，供测试使用。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام المحاكي",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "يحاكي إخراجًا متدفقًا من نص مُكوَّن للاختبار.",
+			"description_markdown": "يحاكي إخراجًا متدفقًا من نص مُكوَّن للاختبار.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "Simulierter Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simuliert Streaming-Ausgabe aus konfiguriertem Text für Tests.",
+			"description_markdown": "Simuliert Streaming-Ausgabe aus konfiguriertem Text für Tests.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 🧪",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "📝➡️🎙️🧪",
+			"description_markdown": "📝➡️🎙️🧪",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz simulado",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simula salida en streaming desde texto configurado para pruebas.",
+			"description_markdown": "Simula salida en streaming desde texto configurado para pruebas.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale simulé",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simule une sortie en streaming depuis un texte configuré pour les tests.",
+			"description_markdown": "Simule une sortie en streaming depuis un texte configuré pour les tests.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "मॉक आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "परीक्षण के लिए कॉन्फ़िगर किए गए पाठ से स्ट्रीमिंग आउटपुट का अनुकरण करता है।",
+			"description_markdown": "परीक्षण के लिए कॉन्फ़िगर किए गए पाठ से स्ट्रीमिंग आउटपुट का अनुकरण करता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "Herm-talgreiningarrafall",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Hermir streymisúttak úr stilltu texti til prófunar.",
+			"description_markdown": "Hermir streymisúttak úr stilltu texti til prófunar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale simulato",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simula output in streaming da testo configurato per i test.",
+			"description_markdown": "Simula output in streaming da testo configurato per i test.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "モック音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "設定テキストからストリーミング出力をシミュレートし、テストに使用します。",
+			"description_markdown": "設定テキストからストリーミング出力をシミュレートし、テストに使用します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "모의 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "테스트용으로 구성된 텍스트에서 스트리밍 출력을 시뮬레이션합니다.",
+			"description_markdown": "테스트용으로 구성된 텍스트에서 스트리밍 출력을 시뮬레이션합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "模擬語音識別生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "依所設文句模擬流式輸出，以供測試。",
+			"description_markdown": "依所設文句模擬流式輸出，以供測試。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "Mock-spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simuleert streaming-output uit geconfigureerde tekst voor tests.",
+			"description_markdown": "Simuleert streaming-output uit geconfigureerde tekst voor tests.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala simulado",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simula saída em streaming a partir de texto configurado para testes.",
+			"description_markdown": "Simula saída em streaming a partir de texto configurado para testes.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Имитационный генератор распознавания речи",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Имитирует потоковый вывод из настроенного текста для тестирования.",
+			"description_markdown": "Имитирует потоковый вывод из настроенного текста для тестирования.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Імітований генератор розпізнавання мови",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Імітує потоковий вивід із налаштованого тексту для тестування.",
+			"description_markdown": "Імітує потоковий вивід із налаштованого тексту для тестування.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói giả lập",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Mô phỏng luồng xuất từ văn bản cấu hình để kiểm thử.",
+			"description_markdown": "Mô phỏng luồng xuất từ văn bản cấu hình để kiểm thử.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "模擬語音辨識產生器",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "依設定文字模擬串流輸出，供測試使用。",
+			"description_markdown": "依設定文字模擬串流輸出，供測試使用。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Mock Speech Recognition",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simulates streaming output from configured text for testing.",
+			"description_markdown": "Simulates streaming output from configured text for testing.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"speech recognition",
+				"generator"
+			],
+			"provider": "fount"
+		},
+		"zh-CN": {
+			"name": "模拟语音识别",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "按配置文本模拟流式输出，供测试使用。",
+			"description_markdown": "按配置文本模拟流式输出，供测试使用。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "fount"
+		},
+		"ar-SA": {
+			"name": "التعرف على الكلام المحاكي",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "يحاكي إخراجًا متدفقًا من نص مُكوَّن للاختبار.",
+			"description_markdown": "يحاكي إخراجًا متدفقًا من نص مُكوَّن للاختبار.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "fount"
+		},
+		"de-DE": {
+			"name": "Simulierte Spracherkennung",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simuliert Streaming-Ausgabe aus konfiguriertem Text für Tests.",
+			"description_markdown": "Simuliert Streaming-Ausgabe aus konfiguriertem Text für Tests.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "fount"
+		},
+		"emoji": {
+			"name": "🎙️ 🧪",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "📝➡️🎙️🧪",
+			"description_markdown": "📝➡️🎙️🧪",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "fount"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz simulado",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simula salida en streaming desde texto configurado para pruebas.",
+			"description_markdown": "Simula salida en streaming desde texto configurado para pruebas.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "fount"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale simulée",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simule une sortie en streaming depuis un texte configuré pour les tests.",
+			"description_markdown": "Simule une sortie en streaming depuis un texte configuré pour les tests.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "fount"
+		},
+		"hi-IN": {
+			"name": "मॉक आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "परीक्षण के लिए कॉन्फ़िगर किए गए पाठ से स्ट्रीमिंग आउटपुट का अनुकरण करता है।",
+			"description_markdown": "परीक्षण के लिए कॉन्फ़िगर किए गए पाठ से स्ट्रीमिंग आउटपुट का अनुकरण करता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "fount"
+		},
+		"is-IS": {
+			"name": "Herm-talgreining",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Hermir streymisúttak úr stilltu texti til prófunar.",
+			"description_markdown": "Hermir streymisúttak úr stilltu texti til prófunar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "fount"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale simulato",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simula output in streaming da testo configurato per i test.",
+			"description_markdown": "Simula output in streaming da testo configurato per i test.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "fount"
+		},
+		"ja-JP": {
+			"name": "モック音声認識",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "設定テキストからストリーミング出力をシミュレートし、テストに使用します。",
+			"description_markdown": "設定テキストからストリーミング出力をシミュレートし、テストに使用します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "fount"
+		},
+		"ko-KR": {
+			"name": "모의 음성 인식",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "테스트용으로 구성된 텍스트에서 스트리밍 출력을 시뮬레이션합니다.",
+			"description_markdown": "테스트용으로 구성된 텍스트에서 스트리밍 출력을 시뮬레이션합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "fount"
+		},
+		"lzh": {
+			"name": "模擬語音識別",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "依所設文句模擬流式輸出，以供測試。",
+			"description_markdown": "依所設文句模擬流式輸出，以供測試。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "fount"
+		},
+		"nl-NL": {
+			"name": "Mock-spraakherkenning",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simuleert streaming-output uit geconfigureerde tekst voor tests.",
+			"description_markdown": "Simuleert streaming-output uit geconfigureerde tekst voor tests.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "fount"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala simulado",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Simula saída em streaming a partir de texto configurado para testes.",
+			"description_markdown": "Simula saída em streaming a partir de texto configurado para testes.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "fount"
+		},
+		"ru-RU": {
+			"name": "Имитационное распознавание речи",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Имитирует потоковый вывод из настроенного текста для тестирования.",
+			"description_markdown": "Имитирует потоковый вывод из настроенного текста для тестирования.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"uk-UA": {
+			"name": "Імітоване розпізнавання мови",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Імітує потоковий вивід із налаштованого тексту для тестування.",
+			"description_markdown": "Імітує потоковий вивід із налаштованого тексту для тестування.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói giả lập",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Mô phỏng luồng xuất từ văn bản cấu hình để kiểm thử.",
+			"description_markdown": "Mô phỏng luồng xuất từ văn bản cấu hình để kiểm thử.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "fount"
+		},
+		"zh-TW": {
+			"name": "模擬語音辨識",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "依設定文字模擬串流輸出，供測試使用。",
+			"description_markdown": "依設定文字模擬串流輸出，供測試使用。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			],
+			"provider": "fount"
+		}
+	}
+}

@@ -960,6 +960,24 @@
 							"title": "📌🌐🚰"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "🎙️⚙️✨",
+					"subtitle": "🎙️➡️📝",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌🎙️⚙️✨"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "🎙️🚰",
+					"subtitle": "👂🎙️➡️💬",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌🎙️🚰"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "🚫🎤"
+			"errorAccessingMicrophone": "🚫🎤",
+			"confirmSpeechRecognition": "🎙️➡️📝❓🔊📎✅",
+			"speechRecognitionFailed": "🎙️❌：${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "🗑️"
+				},
+				"more": {
+					"title": "⋯"
+				},
+				"recognize": {
+					"title": "🎙️➡️📝"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "7️⃣📅➕👀",
 					"label": "💬🔐"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "🎤",
+				"aria-label": "🎤"
+			},
+			"voiceFailed": "🎤❌：${error}",
+			"audioTranscript": {
+				"placeholder": "📝💬"
+			},
+			"confirmSpeechRecognition": "🎙️➡️📝❓🔊📎✅",
+			"speechRecognitionFailed": "🎙️❌：${error}"
 		},
 		"feed": {
 			"refresh": {

@@ -960,6 +960,24 @@
 							"title": "Imposta come origine del servizio di traduzione predefinita"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "Generatore di servizi di riconoscimento vocale",
+					"subtitle": "Trasforma il suono in parole: parla e guardalo prendere forma scritta.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Imposta come generatore di riconoscimento vocale predefinito"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "Fonte del servizio di riconoscimento vocale",
+					"subtitle": "La finestra che ascolta la voce, il punto di partenza del significato.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Imposta come fonte di riconoscimento vocale predefinita"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Impossibile accedere al microfono."
+			"errorAccessingMicrophone": "Impossibile accedere al microfono.",
+			"confirmSpeechRecognition": "Compilare automaticamente il testo con il riconoscimento vocale? L'allegato audio verrà conservato.",
+			"speechRecognitionFailed": "Riconoscimento vocale non riuscito: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "Icona Elimina"
+				},
+				"more": {
+					"title": "Di più"
+				},
+				"recognize": {
+					"title": "Da voce a testo"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "Follower da più di 7 giorni",
 					"label": "Chi può rispondere"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "Registra",
+				"aria-label": "Registra"
+			},
+			"voiceFailed": "Registrazione non riuscita: ${error}",
+			"audioTranscript": {
+				"placeholder": "Trascrizione o note"
+			},
+			"confirmSpeechRecognition": "Compilare automaticamente il post con il riconoscimento vocale? L'allegato audio verrà conservato.",
+			"speechRecognitionFailed": "Riconoscimento vocale non riuscito: ${error}"
 		},
 		"feed": {
 			"refresh": {

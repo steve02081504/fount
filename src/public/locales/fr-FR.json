@@ -960,6 +960,24 @@
 							"title": "Définir comme source de service de traduction par défaut"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "Générateur de service de reconnaissance vocale",
+					"subtitle": "Transformez le son en mots : parlez, et voyez-le s'écrire.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Définir comme générateur de reconnaissance vocale par défaut"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "Source du service de reconnaissance vocale",
+					"subtitle": "La fenêtre qui écoute la voix, le point de départ du sens.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Définir comme source de reconnaissance vocale par défaut"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Échec de l'accès au microphone"
+			"errorAccessingMicrophone": "Échec de l'accès au microphone",
+			"confirmSpeechRecognition": "Remplir le texte automatiquement par reconnaissance vocale ? La pièce jointe audio sera conservée.",
+			"speechRecognitionFailed": "Échec de la reconnaissance vocale : ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "Icône Supprimer"
+				},
+				"more": {
+					"title": "Plus"
+				},
+				"recognize": {
+					"title": "Voix en texte"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "Abonnés depuis plus de 7 jours",
 					"label": "Qui peut répondre"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "Enregistrer",
+				"aria-label": "Enregistrer"
+			},
+			"voiceFailed": "Échec de l'enregistrement : ${error}",
+			"audioTranscript": {
+				"placeholder": "Transcription ou notes"
+			},
+			"confirmSpeechRecognition": "Remplir la publication automatiquement par reconnaissance vocale ? La pièce jointe audio sera conservée.",
+			"speechRecognitionFailed": "Échec de la reconnaissance vocale : ${error}"
 		},
 		"feed": {
 			"refresh": {

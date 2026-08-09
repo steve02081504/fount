@@ -13,7 +13,18 @@ import { groupEntityHash } from '../shared/groupEntityHash.mjs'
  * @returns {Promise<string>} Blob URL
  */
 export async function fetchGroupFileAsBlobUrl(groupId, fileId) {
+	const blob = await fetchGroupFileAsBlob(groupId, fileId)
+	return URL.createObjectURL(blob)
+}
+
+/**
+ * 获取并解密群文件为 Blob。
+ * @param {string} groupId 群 ID
+ * @param {string} fileId 文件 ID
+ * @returns {Promise<Blob>} 明文 Blob
+ */
+export async function fetchGroupFileAsBlob(groupId, fileId) {
 	const entityHash = groupEntityHash(groupId)
 	const { buffer, mimeType } = await fetchEvfsFile(entityHash, `chat/${fileId}`)
-	return URL.createObjectURL(new Blob([buffer], { type: mimeType }))
+	return new Blob([buffer], { type: mimeType || 'application/octet-stream' })
 }

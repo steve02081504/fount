@@ -1,0 +1,519 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Xiaomi MiMo Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Batch speech recognition via Xiaomi MiMo (configurable endpoint).",
+			"description_markdown": "Batch speech recognition via Xiaomi MiMo (configurable endpoint).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"speech recognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "小米 MiMo 语音识别生成器",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "小米 MiMo 批量语音识别（端点可配置）。",
+			"description_markdown": "小米 MiMo 批量语音识别（端点可配置）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "تعرف على كلام بالدُفعات عبر Xiaomi MiMo (نقطة نهاية قابلة للتكوين).",
+			"description_markdown": "تعرف على كلام بالدُفعات عبر Xiaomi MiMo (نقطة نهاية قابلة للتكوين).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "Xiaomi MiMo-Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Batch-Spracherkennung über Xiaomi MiMo (konfigurierbarer Endpunkt).",
+			"description_markdown": "Batch-Spracherkennung über Xiaomi MiMo (konfigurierbarer Endpunkt).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 Xiaomi",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "📦🎙️ MiMo",
+			"description_markdown": "📦🎙️ MiMo",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Reconocimiento de voz por lotes vía Xiaomi MiMo (endpoint configurable).",
+			"description_markdown": "Reconocimiento de voz por lotes vía Xiaomi MiMo (endpoint configurable).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Reconnaissance vocale par lots via Xiaomi MiMo (point de terminaison configurable).",
+			"description_markdown": "Reconnaissance vocale par lots via Xiaomi MiMo (point de terminaison configurable).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "Xiaomi MiMo आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Xiaomi MiMo पर बैच आवाज़ पहचान (कॉन्फ़िगर करने योग्य एंडपॉइंट)।",
+			"description_markdown": "Xiaomi MiMo पर बैच आवाज़ पहचान (कॉन्फ़िगर करने योग्य एंडपॉइंट)।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "Xiaomi MiMo talgreiningarrafall",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Runu-talgreining með Xiaomi MiMo (stillinganlegur endapunktur).",
+			"description_markdown": "Runu-talgreining með Xiaomi MiMo (stillinganlegur endapunktur).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Riconoscimento vocale in batch tramite Xiaomi MiMo (endpoint configurabile).",
+			"description_markdown": "Riconoscimento vocale in batch tramite Xiaomi MiMo (endpoint configurabile).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "Xiaomi MiMo 音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Xiaomi MiMo バッチ音声認識（エンドポイント設定可）。",
+			"description_markdown": "Xiaomi MiMo バッチ音声認識（エンドポイント設定可）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "Xiaomi MiMo 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Xiaomi MiMo 배치 음성 인식(엔드포인트 설정 가능).",
+			"description_markdown": "Xiaomi MiMo 배치 음성 인식(엔드포인트 설정 가능).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "小米 MiMo 語音識別生成器",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "小米 MiMo 批量語音識別（端點可設）。",
+			"description_markdown": "小米 MiMo 批量語音識別（端點可設）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "Xiaomi MiMo-spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Batch-spraakherkenning via Xiaomi MiMo (configureerbaar endpoint).",
+			"description_markdown": "Batch-spraakherkenning via Xiaomi MiMo (configureerbaar endpoint).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Reconhecimento de fala em lote via Xiaomi MiMo (endpoint configurável).",
+			"description_markdown": "Reconhecimento de fala em lote via Xiaomi MiMo (endpoint configurável).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор распознавания речи Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Пакетное распознавание речи через Xiaomi MiMo (настраиваемый эндпоинт).",
+			"description_markdown": "Пакетное распознавание речи через Xiaomi MiMo (настраиваемый эндпоинт).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор розпізнавання мови Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Пакетне розпізнавання мови через Xiaomi MiMo (налаштовуваний ендпоінт).",
+			"description_markdown": "Пакетне розпізнавання мови через Xiaomi MiMo (налаштовуваний ендпоінт).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Nhận dạng giọng nói theo lô qua Xiaomi MiMo (endpoint có thể cấu hình).",
+			"description_markdown": "Nhận dạng giọng nói theo lô qua Xiaomi MiMo (endpoint có thể cấu hình).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "小米 MiMo 語音辨識產生器",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "小米 MiMo 批次語音辨識（端點可設定）。",
+			"description_markdown": "小米 MiMo 批次語音辨識（端點可設定）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Xiaomi MiMo Speech Recognition",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Batch speech recognition via Xiaomi MiMo (configurable endpoint).",
+			"description_markdown": "Batch speech recognition via Xiaomi MiMo (configurable endpoint).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"speech recognition",
+				"generator"
+			],
+			"provider": "xiaomi"
+		},
+		"zh-CN": {
+			"name": "小米 MiMo 语音识别",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "小米 MiMo 批量语音识别（端点可配置）。",
+			"description_markdown": "小米 MiMo 批量语音识别（端点可配置）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "xiaomi"
+		},
+		"ar-SA": {
+			"name": "التعرف على الكلام Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "تعرف على كلام بالدُفعات عبر Xiaomi MiMo (نقطة نهاية قابلة للتكوين).",
+			"description_markdown": "تعرف على كلام بالدُفعات عبر Xiaomi MiMo (نقطة نهاية قابلة للتكوين).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "xiaomi"
+		},
+		"de-DE": {
+			"name": "Xiaomi MiMo-Spracherkennung",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Batch-Spracherkennung über Xiaomi MiMo (konfigurierbarer Endpunkt).",
+			"description_markdown": "Batch-Spracherkennung über Xiaomi MiMo (konfigurierbarer Endpunkt).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "xiaomi"
+		},
+		"emoji": {
+			"name": "🎙️ MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "📦🎙️ MiMo",
+			"description_markdown": "📦🎙️ MiMo",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "xiaomi"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Reconocimiento de voz por lotes vía Xiaomi MiMo (endpoint configurable).",
+			"description_markdown": "Reconocimiento de voz por lotes vía Xiaomi MiMo (endpoint configurable).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "xiaomi"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Reconnaissance vocale par lots via Xiaomi MiMo (point de terminaison configurable).",
+			"description_markdown": "Reconnaissance vocale par lots via Xiaomi MiMo (point de terminaison configurable).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "xiaomi"
+		},
+		"hi-IN": {
+			"name": "Xiaomi MiMo आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Xiaomi MiMo पर बैच आवाज़ पहचान (कॉन्फ़िगर करने योग्य एंडपॉइंट)।",
+			"description_markdown": "Xiaomi MiMo पर बैच आवाज़ पहचान (कॉन्फ़िगर करने योग्य एंडपॉइंट)।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "xiaomi"
+		},
+		"is-IS": {
+			"name": "Xiaomi MiMo talgreining",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Runu-talgreining með Xiaomi MiMo (stillinganlegur endapunktur).",
+			"description_markdown": "Runu-talgreining með Xiaomi MiMo (stillinganlegur endapunktur).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "xiaomi"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Riconoscimento vocale in batch tramite Xiaomi MiMo (endpoint configurabile).",
+			"description_markdown": "Riconoscimento vocale in batch tramite Xiaomi MiMo (endpoint configurabile).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "xiaomi"
+		},
+		"ja-JP": {
+			"name": "Xiaomi MiMo 音声認識",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Xiaomi MiMo バッチ音声認識（エンドポイント設定可）。",
+			"description_markdown": "Xiaomi MiMo バッチ音声認識（エンドポイント設定可）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "xiaomi"
+		},
+		"ko-KR": {
+			"name": "Xiaomi MiMo 음성 인식",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Xiaomi MiMo 배치 음성 인식(엔드포인트 설정 가능).",
+			"description_markdown": "Xiaomi MiMo 배치 음성 인식(엔드포인트 설정 가능).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "xiaomi"
+		},
+		"lzh": {
+			"name": "小米 MiMo 語音識別",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "小米 MiMo 批量語音識別（端點可設）。",
+			"description_markdown": "小米 MiMo 批量語音識別（端點可設）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "xiaomi"
+		},
+		"nl-NL": {
+			"name": "Xiaomi MiMo-spraakherkenning",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Batch-spraakherkenning via Xiaomi MiMo (configureerbaar endpoint).",
+			"description_markdown": "Batch-spraakherkenning via Xiaomi MiMo (configureerbaar endpoint).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "xiaomi"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Reconhecimento de fala em lote via Xiaomi MiMo (endpoint configurável).",
+			"description_markdown": "Reconhecimento de fala em lote via Xiaomi MiMo (endpoint configurável).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "xiaomi"
+		},
+		"ru-RU": {
+			"name": "Распознавание речи Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Пакетное распознавание речи через Xiaomi MiMo (настраиваемый эндпоинт).",
+			"description_markdown": "Пакетное распознавание речи через Xiaomi MiMo (настраиваемый эндпоинт).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "xiaomi"
+		},
+		"uk-UA": {
+			"name": "Розпізнавання мови Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Пакетне розпізнавання мови через Xiaomi MiMo (налаштовуваний ендпоінт).",
+			"description_markdown": "Пакетне розпізнавання мови через Xiaomi MiMo (налаштовуваний ендпоінт).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "xiaomi"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói Xiaomi MiMo",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Nhận dạng giọng nói theo lô qua Xiaomi MiMo (endpoint có thể cấu hình).",
+			"description_markdown": "Nhận dạng giọng nói theo lô qua Xiaomi MiMo (endpoint có thể cấu hình).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "xiaomi"
+		},
+		"zh-TW": {
+			"name": "小米 MiMo 語音辨識",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "小米 MiMo 批次語音辨識（端點可設定）。",
+			"description_markdown": "小米 MiMo 批次語音辨識（端點可設定）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			],
+			"provider": "xiaomi"
+		}
+	}
+}

@@ -15,6 +15,7 @@ import { registerMailboxRoutes } from './endpoints/mailbox.mjs'
 import { registerPrefsRoutes } from './endpoints/preferences.mjs'
 import { registerSessionRoutes } from './endpoints/sessions.mjs'
 import { registerTestSeedRoutes } from './endpoints/testSeed.mjs'
+import { registerSpeechRecognitionRoutes } from './endpoints/speechRecognition.mjs'
 import { registerTranslateRoutes } from './endpoints/translate.mjs'
 import { registerTranslationPrefsRoutes } from './endpoints/translationPrefs.mjs'
 import { registerTrustedAuthorsRoutes } from './endpoints/trustedAuthors.mjs'
@@ -33,6 +34,7 @@ export function setEndpoints(router) {
 
 	registerPrefsRoutes(router)
 	registerTranslateRoutes(router)
+	registerSpeechRecognitionRoutes(router)
 	registerTranslationPrefsRoutes(router)
 	registerBridgeRoutes(router)
 	registerDiscoveryRoutes(router)

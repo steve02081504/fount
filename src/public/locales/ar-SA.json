@@ -960,6 +960,24 @@
 							"title": "تعيين كمصدر افتراضي لخدمة الترجمة"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "مولّد خدمة التعرف على الكلام",
+					"subtitle": "حوّل الموجات الصوتية إلى كلمات — ما تلفظه يُكتب أمامك.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمولّد خدمة التعرف على الكلام الافتراضي"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "مصدر خدمة التعرف على الكلام",
+					"subtitle": "نافذة تسمع الأصوات، حيث يبدأ المعنى.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمصدر خدمة التعرف على الكلام الافتراضي"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "لا يمكن الوصول إلى الميكروفون"
+			"errorAccessingMicrophone": "لا يمكن الوصول إلى الميكروفون",
+			"confirmSpeechRecognition": "هل تريد ملء النص تلقائياً بالتعرف على الكلام؟ سيُحفظ مرفق التسجيل.",
+			"speechRecognitionFailed": "فشل التعرف على الكلام: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "أيقونة الحذف"
+				},
+				"more": {
+					"title": "أكثر"
+				},
+				"recognize": {
+					"title": "تحويل الصوت إلى نص"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "متابعون لأكثر من 7 أيام",
 					"label": "من يستطيع الرد"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "تسجيل",
+				"aria-label": "تسجيل"
+			},
+			"voiceFailed": "فشل التسجيل: ${error}",
+			"audioTranscript": {
+				"placeholder": "نص التفريغ أو ملاحظات"
+			},
+			"confirmSpeechRecognition": "هل تريد ملء المحتوى تلقائياً بالتعرف على الكلام؟ سيُحفظ مرفق التسجيل.",
+			"speechRecognitionFailed": "فشل التعرف على الكلام: ${error}"
 		},
 		"feed": {
 			"refresh": {

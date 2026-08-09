@@ -959,6 +959,24 @@
 							"title": "設為預設翻譯服務來源"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "語音辨識服務產生器",
+					"subtitle": "將聲波化作文字，隨口一說也能落筆成文。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "設為預設語音辨識服務產生器"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "語音辨識服務來源",
+					"subtitle": "聆聽聲色的窗口，語意的起點。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "設為預設語音辨識服務來源"
+						}
+					}
 				}
 			}
 		},
@@ -2848,7 +2866,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "無法存取麥克風"
+			"errorAccessingMicrophone": "無法存取麥克風",
+			"confirmSpeechRecognition": "要用語音辨識自動填入文字嗎？錄音附件會保留。",
+			"speechRecognitionFailed": "語音辨識失敗：${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2863,6 +2883,12 @@
 				},
 				"deleteIcon": {
 					"alt": "刪除圖示"
+				},
+				"more": {
+					"title": "更多"
+				},
+				"recognize": {
+					"title": "語音轉文字"
 				}
 			}
 		},
@@ -4278,7 +4304,17 @@
 					"followers7d": "7天以上關注者",
 					"label": "誰可以回覆"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "錄音",
+				"aria-label": "錄音"
+			},
+			"voiceFailed": "錄音失敗：${error}",
+			"audioTranscript": {
+				"placeholder": "轉寫文字或備註"
+			},
+			"confirmSpeechRecognition": "要用語音辨識自動填入文案嗎？錄音附件會保留。",
+			"speechRecognitionFailed": "語音辨識失敗：${error}"
 		},
 		"feed": {
 			"refresh": {

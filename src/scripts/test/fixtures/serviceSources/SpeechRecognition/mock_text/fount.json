@@ -1,0 +1,4 @@
+{
+	"type": "serviceSources/SpeechRecognition",
+	"dirname": "mock_text"
+}

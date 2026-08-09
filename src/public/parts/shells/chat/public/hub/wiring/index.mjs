@@ -6,7 +6,7 @@ import { showHubNavPane } from '../hubPane.mjs'
 import { wireHubSearchPanel } from '../search.mjs'
 
 import { wireComposerEvents } from './composerEvents.mjs'
-import { handleMessageFileDownloadClick, wireFileEvents } from './fileEvents.mjs'
+import { handleMessageFileAsrClick, handleMessageFileDownloadClick, wireFileEvents } from './fileEvents.mjs'
 import { wireHeaderEvents, wireShiftKeyHint } from './headerEvents.mjs'
 import { handleMessageBubbleClick } from './messageBubbleEvents.mjs'
 import { handleVoteOptionClick, wireVoteEvents } from './voteEvents.mjs'
@@ -35,6 +35,7 @@ export function wireEvents() {
 		}
 		if (await handleMessageBubbleClick(event)) return
 		if (await handleMessageFileDownloadClick(event)) return
+		if (await handleMessageFileAsrClick(event)) return
 		if (await handleVoteOptionClick(event)) return
 	})
 
