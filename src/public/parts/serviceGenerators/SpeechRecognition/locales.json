@@ -3,23 +3,20 @@
 		"en-UK": {
 			"name": "Speech Recognition Service Generators",
 			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
-			"description": "Factory hub for speech recognition service sources.",
-			"description_markdown": "Root component for speech recognition generators.",
+			"description": "Factory root for speech recognition service sources.",
+			"description_markdown": "Root node of the speech recognition generator module.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"system",
-				"root",
-				"speechRecognition",
-				"generator",
-				"fount"
+				"speech recognition",
+				"generator"
 			]
 		},
 		"zh-CN": {
 			"name": "语音识别服务生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
-			"description": "生产语音识别服务源的工厂根节点",
+			"description": "语音识别服务源的工厂根节点。",
 			"description_markdown": "语音识别生成器模块的根节点。",
 			"version": "0.0.0",
 			"author": "steve02081504",
@@ -32,18 +29,225 @@
 				"fount"
 			]
 		},
+		"ar-SA": {
+			"name": "مولّدات خدمات التعرف على الكلام",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "الجذر المصنعي لمصادر خدمات التعرف على الكلام.",
+			"description_markdown": "الجذر لمكوّن مولّدات التعرف على الكلام.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "Spracherkennungs-Service-Generatoren",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Wurzel-Fabrik für Spracherkennungs-Servicequellen.",
+			"description_markdown": "Wurzelknoten des Spracherkennungs-Generator-Moduls.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
 		"emoji": {
 			"name": "🎙️🏭",
 			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
-			"description": "🎙️➡️🏭",
-			"description_markdown": "🎙️➡️🏭",
+			"description": "🎙️🏭➡️💎",
+			"description_markdown": "🎙️🏭🌳",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
 				"🎙️",
-				"🏭",
-				"⛲"
+				"🏭"
+			]
+		},
+		"es-ES": {
+			"name": "Generadores de servicios de reconocimiento de voz",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Raíz de fábrica para fuentes de servicios de reconocimiento de voz.",
+			"description_markdown": "Nodo raíz del módulo de generadores de reconocimiento de voz.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateurs de services de reconnaissance vocale",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Racine d'usine pour les sources de services de reconnaissance vocale.",
+			"description_markdown": "Nœud racine du module de générateurs de reconnaissance vocale.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "आवाज़ पहचान सेवा जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "आवाज़ पहचान सेवा स्रोतों की फ़ैक्टरी जड़।",
+			"description_markdown": "आवाज़ पहचान जनरेटर मॉड्यूल की जड़ नोड।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "Talgreiningarþjónusturafall",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Verksmiðjurót fyrir talgreiningarþjónustuheimildir.",
+			"description_markdown": "Rótareining talgreiningarrafala.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatori di servizi di riconoscimento vocale",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Radice di fabbrica per le fonti di servizi di riconoscimento vocale.",
+			"description_markdown": "Nodo radice del modulo generatori di riconoscimento vocale.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "音声認識サービスジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "音声認識サービスソースのファクトリー根。",
+			"description_markdown": "音声認識ジェネレーターモジュールのルートノード。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "음성 인식 서비스 생성기",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "음성 인식 서비스 소스의 팩토리 루트.",
+			"description_markdown": "음성 인식 생성기 모듈의 루트 노드.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "語音識別服務生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "語音識別服務源之工場根柢。",
+			"description_markdown": "語音識別生成器模組之根柢。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "Spraakherkenningsservicegeneratoren",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Fabriekswortel voor spraakherkenningsservicebronnen.",
+			"description_markdown": "Hoofdknooppunt van het spraakherkenningsgenerator-module.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Geradores de serviços de reconhecimento de fala",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Raiz de fábrica para fontes de serviços de reconhecimento de fala.",
+			"description_markdown": "Nó raiz do módulo de geradores de reconhecimento de fala.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Генераторы сервисов распознавания речи",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Фабричный корень для источников сервисов распознавания речи.",
+			"description_markdown": "Корневой узел модуля генераторов распознавания речи.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератори сервісів розпізнавання мови",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Фабричний корінь для джерел сервісів розпізнавання мови.",
+			"description_markdown": "Кореневий вузол модуля генераторів розпізнавання мови.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo dịch vụ nhận dạng giọng nói",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Gốc nhà máy cho các nguồn dịch vụ nhận dạng giọng nói.",
+			"description_markdown": "Nút gốc của mô-đun trình tạo nhận dạng giọng nói.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "語音辨識服務產生器",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "語音辨識服務源的工廠根節點。",
+			"description_markdown": "語音辨識產生器模組的根節點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
 			]
 		}
 	}

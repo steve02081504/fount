@@ -3,21 +3,21 @@
 		"en-UK": {
 			"name": "Polling Speech Recognition Generator",
 			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
-			"description": "Round-robin across speech recognition sources.",
-			"description_markdown": "Round-robin across speech recognition sources.",
+			"description": "Rotates among speech recognition sources.",
+			"description_markdown": "Rotates among speech recognition sources.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			]
 		},
 		"zh-CN": {
 			"name": "轮询语音识别生成器",
 			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
-			"description": "在多个识别源间轮询。",
-			"description_markdown": "在多个识别源间轮询。",
+			"description": "在语音识别源之间轮询切换。",
+			"description_markdown": "在语音识别源之间轮询切换。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -26,11 +26,37 @@
 				"生成器"
 			]
 		},
-		"emoji": {
-			"name": "🎙️🏭",
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام بالتناوب",
 			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "يتناوب بين مصادر التعرف على الكلام.",
+			"description_markdown": "يتناوب بين مصادر التعرف على الكلام.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "Polling-Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Wechselt zwischen Spracherkennungsquellen im Round-Robin.",
+			"description_markdown": "Wechselt zwischen Spracherkennungsquellen im Round-Robin.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 🔁",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "🔁💎💎",
+			"description_markdown": "🔁💎💎",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -38,19 +64,201 @@
 				"🎙️",
 				"🏭"
 			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz por sondeo",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Rota entre fuentes de reconocimiento de voz.",
+			"description_markdown": "Rota entre fuentes de reconocimiento de voz.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale par rotation",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Alterne entre les sources de reconnaissance vocale.",
+			"description_markdown": "Alterne entre les sources de reconnaissance vocale.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "पोलिंग आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "आवाज़ पहचान स्रोतों के बीच रोटेट करता है।",
+			"description_markdown": "आवाज़ पहचान स्रोतों के बीच रोटेट करता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "Velti-talgreiningarrafall",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Skiptir á milli talgreiningarheimilda.",
+			"description_markdown": "Skiptir á milli talgreiningarheimilda.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale a rotazione",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Ruota tra le fonti di riconoscimento vocale.",
+			"description_markdown": "Ruota tra le fonti di riconoscimento vocale.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "ポーリング音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "音声認識ソース間をローテーションします。",
+			"description_markdown": "音声認識ソース間をローテーションします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "폴링 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "음성 인식 소스 간을 순환합니다.",
+			"description_markdown": "음성 인식 소스 간을 순환합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "輪詢語音識別生成器",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "於語音識別源間輪替切換。",
+			"description_markdown": "於語音識別源間輪替切換。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "Polling-spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Roteert tussen spraakherkenningsbronnen.",
+			"description_markdown": "Roteert tussen spraakherkenningsbronnen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala por rotação",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Alterna entre fontes de reconhecimento de fala.",
+			"description_markdown": "Alterna entre fontes de reconhecimento de fala.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор распознавания речи с ротацией",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Переключается между источниками распознавания речи.",
+			"description_markdown": "Переключается между источниками распознавания речи.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор розпізнавання мови з ротацією",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Перемикається між джерелами розпізнавання мови.",
+			"description_markdown": "Перемикається між джерелами розпізнавання мови.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói luân phiên",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Luân phiên giữa các nguồn nhận dạng giọng nói.",
+			"description_markdown": "Luân phiên giữa các nguồn nhận dạng giọng nói.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "輪詢語音辨識產生器",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "在語音辨識源之間輪詢切換。",
+			"description_markdown": "在語音辨識源之間輪詢切換。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
 		}
 	},
 	"product_info": {
 		"en-UK": {
 			"name": "Polling Speech Recognition",
 			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
-			"description": "Round-robin across speech recognition sources.",
-			"description_markdown": "Round-robin across speech recognition sources.",
+			"description": "Rotates among speech recognition sources.",
+			"description_markdown": "Rotates among speech recognition sources.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			],
 			"provider": "fount"
@@ -58,8 +266,8 @@
 		"zh-CN": {
 			"name": "轮询语音识别",
 			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
-			"description": "在多个识别源间轮询。",
-			"description_markdown": "在多个识别源间轮询。",
+			"description": "在语音识别源之间轮询切换。",
+			"description_markdown": "在语音识别源之间轮询切换。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -69,16 +277,241 @@
 			],
 			"provider": "fount"
 		},
-		"emoji": {
-			"name": "🎙️",
+		"ar-SA": {
+			"name": "التعرف على الكلام بالتناوب",
 			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "يتناوب بين مصادر التعرف على الكلام.",
+			"description_markdown": "يتناوب بين مصادر التعرف على الكلام.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"🎙️"
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "fount"
+		},
+		"de-DE": {
+			"name": "Polling-Spracherkennung",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Wechselt zwischen Spracherkennungsquellen im Round-Robin.",
+			"description_markdown": "Wechselt zwischen Spracherkennungsquellen im Round-Robin.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "fount"
+		},
+		"emoji": {
+			"name": "🎙️ 🔁",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "🔁💎💎",
+			"description_markdown": "🔁💎💎",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "fount"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz por sondeo",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Rota entre fuentes de reconocimiento de voz.",
+			"description_markdown": "Rota entre fuentes de reconocimiento de voz.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "fount"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale par rotation",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Alterne entre les sources de reconnaissance vocale.",
+			"description_markdown": "Alterne entre les sources de reconnaissance vocale.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "fount"
+		},
+		"hi-IN": {
+			"name": "पोलिंग आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "आवाज़ पहचान स्रोतों के बीच रोटेट करता है।",
+			"description_markdown": "आवाज़ पहचान स्रोतों के बीच रोटेट करता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "fount"
+		},
+		"is-IS": {
+			"name": "Velti-talgreining",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Skiptir á milli talgreiningarheimilda.",
+			"description_markdown": "Skiptir á milli talgreiningarheimilda.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "fount"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale a rotazione",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Ruota tra le fonti di riconoscimento vocale.",
+			"description_markdown": "Ruota tra le fonti di riconoscimento vocale.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "fount"
+		},
+		"ja-JP": {
+			"name": "ポーリング音声認識",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "音声認識ソース間をローテーションします。",
+			"description_markdown": "音声認識ソース間をローテーションします。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "fount"
+		},
+		"ko-KR": {
+			"name": "폴링 음성 인식",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "음성 인식 소스 간을 순환합니다.",
+			"description_markdown": "음성 인식 소스 간을 순환합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "fount"
+		},
+		"lzh": {
+			"name": "輪詢語音識別",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "於語音識別源間輪替切換。",
+			"description_markdown": "於語音識別源間輪替切換。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "fount"
+		},
+		"nl-NL": {
+			"name": "Polling-spraakherkenning",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Roteert tussen spraakherkenningsbronnen.",
+			"description_markdown": "Roteert tussen spraakherkenningsbronnen.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "fount"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala por rotação",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Alterna entre fontes de reconhecimento de fala.",
+			"description_markdown": "Alterna entre fontes de reconhecimento de fala.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "fount"
+		},
+		"ru-RU": {
+			"name": "Распознавание речи с ротацией",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Переключается между источниками распознавания речи.",
+			"description_markdown": "Переключается между источниками распознавания речи.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"uk-UA": {
+			"name": "Розпізнавання мови з ротацією",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Перемикається між джерелами розпізнавання мови.",
+			"description_markdown": "Перемикається між джерелами розпізнавання мови.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói luân phiên",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Luân phiên giữa các nguồn nhận dạng giọng nói.",
+			"description_markdown": "Luân phiên giữa các nguồn nhận dạng giọng nói.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "fount"
+		},
+		"zh-TW": {
+			"name": "輪詢語音辨識",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "在語音辨識源之間輪詢切換。",
+			"description_markdown": "在語音辨識源之間輪詢切換。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
 			],
 			"provider": "fount"
 		}

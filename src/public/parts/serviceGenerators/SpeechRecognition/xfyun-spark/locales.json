@@ -3,21 +3,21 @@
 		"en-UK": {
 			"name": "iFlytek Spark Speech Recognition Generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek Spark streaming IAT.",
-			"description_markdown": "iFlytek Spark streaming IAT.",
+			"description": "Streaming dictation powered by the iFlytek Spark large model.",
+			"description_markdown": "Streaming dictation powered by the iFlytek Spark large model.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			]
 		},
 		"zh-CN": {
 			"name": "讯飞星火语音识别生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞星火流式听写。",
-			"description_markdown": "讯飞星火流式听写。",
+			"description": "讯飞星火大模型流式听写。",
+			"description_markdown": "讯飞星火大模型流式听写。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -26,11 +26,37 @@
 				"生成器"
 			]
 		},
-		"emoji": {
-			"name": "🎙️🏭",
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "إملاء صوتي متدفق بنموذج iFlytek Spark الكبير.",
+			"description_markdown": "إملاء صوتي متدفق بنموذج iFlytek Spark الكبير.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "iFlytek Spark-Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streaming-Diktat mit dem iFlytek Spark-Großmodell.",
+			"description_markdown": "Streaming-Diktat mit dem iFlytek Spark-Großmodell.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️✨ Spark",
+			"description_markdown": "🎙️✨ Spark",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -38,19 +64,201 @@
 				"🎙️",
 				"🏭"
 			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Dictado en streaming con el gran modelo iFlytek Spark.",
+			"description_markdown": "Dictado en streaming con el gran modelo iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Dictée en streaming avec le grand modèle iFlytek Spark.",
+			"description_markdown": "Dictée en streaming avec le grand modèle iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "iFlytek Spark आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek Spark बड़े मॉडल पर स्ट्रीमिंग डिक्टेशन।",
+			"description_markdown": "iFlytek Spark बड़े मॉडल पर स्ट्रीमिंग डिक्टेशन।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "iFlytek Spark talgreiningarrafall",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streymisúrskrift með iFlytek Spark stóra líkani.",
+			"description_markdown": "Streymisúrskrift með iFlytek Spark stóra líkani.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Dettatura in streaming con il grande modello iFlytek Spark.",
+			"description_markdown": "Dettatura in streaming con il grande modello iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "iFlytek Spark 音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek Spark 大モデルによるストリーミング音声入力。",
+			"description_markdown": "iFlytek Spark 大モデルによるストリーミング音声入力。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "iFlytek Spark 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek Spark 대형 모델 스트리밍 받아쓰기.",
+			"description_markdown": "iFlytek Spark 대형 모델 스트리밍 받아쓰기.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "訊飛星火語音識別生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "訊飛星火大模型流式聽寫。",
+			"description_markdown": "訊飛星火大模型流式聽寫。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "iFlytek Spark-spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streamingdictee met het iFlytek Spark-grootmodel.",
+			"description_markdown": "Streamingdictee met het iFlytek Spark-grootmodel.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Ditado em streaming com o grande modelo iFlytek Spark.",
+			"description_markdown": "Ditado em streaming com o grande modelo iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор распознавания речи iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Потоковое диктант на большой модели iFlytek Spark.",
+			"description_markdown": "Потоковое диктант на большой модели iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор розпізнавання мови iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Потокове диктування на великій моделі iFlytek Spark.",
+			"description_markdown": "Потокове диктування на великій моделі iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Chép lời streaming với mô hình lớn iFlytek Spark.",
+			"description_markdown": "Chép lời streaming với mô hình lớn iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "訊飛星火語音辨識產生器",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "訊飛星火大模型串流聽寫。",
+			"description_markdown": "訊飛星火大模型串流聽寫。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
 		}
 	},
 	"product_info": {
 		"en-UK": {
 			"name": "iFlytek Spark Speech Recognition",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek Spark streaming IAT.",
-			"description_markdown": "iFlytek Spark streaming IAT.",
+			"description": "Streaming dictation powered by the iFlytek Spark large model.",
+			"description_markdown": "Streaming dictation powered by the iFlytek Spark large model.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			],
 			"provider": "xfyun"
@@ -58,8 +266,8 @@
 		"zh-CN": {
 			"name": "讯飞星火语音识别",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞星火流式听写。",
-			"description_markdown": "讯飞星火流式听写。",
+			"description": "讯飞星火大模型流式听写。",
+			"description_markdown": "讯飞星火大模型流式听写。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -69,16 +277,241 @@
 			],
 			"provider": "xfyun"
 		},
-		"emoji": {
-			"name": "🎙️",
+		"ar-SA": {
+			"name": "التعرف على الكلام iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "إملاء صوتي متدفق بنموذج iFlytek Spark الكبير.",
+			"description_markdown": "إملاء صوتي متدفق بنموذج iFlytek Spark الكبير.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
 			"tags": [
-				"🎙️"
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "xfyun"
+		},
+		"de-DE": {
+			"name": "iFlytek Spark-Spracherkennung",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streaming-Diktat mit dem iFlytek Spark-Großmodell.",
+			"description_markdown": "Streaming-Diktat mit dem iFlytek Spark-Großmodell.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "xfyun"
+		},
+		"emoji": {
+			"name": "🎙️ Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️✨ Spark",
+			"description_markdown": "🎙️✨ Spark",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "xfyun"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Dictado en streaming con el gran modelo iFlytek Spark.",
+			"description_markdown": "Dictado en streaming con el gran modelo iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "xfyun"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Dictée en streaming avec le grand modèle iFlytek Spark.",
+			"description_markdown": "Dictée en streaming avec le grand modèle iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "xfyun"
+		},
+		"hi-IN": {
+			"name": "iFlytek Spark आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek Spark बड़े मॉडल पर स्ट्रीमिंग डिक्टेशन।",
+			"description_markdown": "iFlytek Spark बड़े मॉडल पर स्ट्रीमिंग डिक्टेशन।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "xfyun"
+		},
+		"is-IS": {
+			"name": "iFlytek Spark talgreining",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streymisúrskrift með iFlytek Spark stóra líkani.",
+			"description_markdown": "Streymisúrskrift með iFlytek Spark stóra líkani.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "xfyun"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Dettatura in streaming con il grande modello iFlytek Spark.",
+			"description_markdown": "Dettatura in streaming con il grande modello iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "xfyun"
+		},
+		"ja-JP": {
+			"name": "iFlytek Spark 音声認識",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek Spark 大モデルによるストリーミング音声入力。",
+			"description_markdown": "iFlytek Spark 大モデルによるストリーミング音声入力。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "xfyun"
+		},
+		"ko-KR": {
+			"name": "iFlytek Spark 음성 인식",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek Spark 대형 모델 스트리밍 받아쓰기.",
+			"description_markdown": "iFlytek Spark 대형 모델 스트리밍 받아쓰기.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "xfyun"
+		},
+		"lzh": {
+			"name": "訊飛星火語音識別",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "訊飛星火大模型流式聽寫。",
+			"description_markdown": "訊飛星火大模型流式聽寫。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "xfyun"
+		},
+		"nl-NL": {
+			"name": "iFlytek Spark-spraakherkenning",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streamingdictee met het iFlytek Spark-grootmodel.",
+			"description_markdown": "Streamingdictee met het iFlytek Spark-grootmodel.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "xfyun"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Ditado em streaming com o grande modelo iFlytek Spark.",
+			"description_markdown": "Ditado em streaming com o grande modelo iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "xfyun"
+		},
+		"ru-RU": {
+			"name": "Распознавание речи iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Потоковое диктант на большой модели iFlytek Spark.",
+			"description_markdown": "Потоковое диктант на большой модели iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "xfyun"
+		},
+		"uk-UA": {
+			"name": "Розпізнавання мови iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Потокове диктування на великій моделі iFlytek Spark.",
+			"description_markdown": "Потокове диктування на великій моделі iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "xfyun"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói iFlytek Spark",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Chép lời streaming với mô hình lớn iFlytek Spark.",
+			"description_markdown": "Chép lời streaming với mô hình lớn iFlytek Spark.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "xfyun"
+		},
+		"zh-TW": {
+			"name": "訊飛星火語音辨識",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "訊飛星火大模型串流聽寫。",
+			"description_markdown": "訊飛星火大模型串流聽寫。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"語音辨識",
+				"產生器"
 			],
 			"provider": "xfyun"
 		}

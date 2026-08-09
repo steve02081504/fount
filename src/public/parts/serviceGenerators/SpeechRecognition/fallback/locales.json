@@ -3,21 +3,21 @@
 		"en-UK": {
 			"name": "Fallback Speech Recognition Generator",
 			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-			"description": "Try sources in order until one succeeds.",
-			"description_markdown": "Try sources in order until one succeeds.",
+			"description": "Tries sources in order until one succeeds.",
+			"description_markdown": "Tries sources in order until one succeeds.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			]
 		},
 		"zh-CN": {
-			"name": "故障转移语音识别生成器",
+			"name": "回退语音识别生成器",
 			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-			"description": "按序尝试多个源直至成功。",
-			"description_markdown": "按序尝试多个源直至成功。",
+			"description": "按顺序尝试各源，直至其中一个成功。",
+			"description_markdown": "按顺序尝试各源，直至其中一个成功。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -26,11 +26,37 @@
 				"生成器"
 			]
 		},
-		"emoji": {
-			"name": "🎙️🏭",
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام الاحتياطي",
 			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "يجرب المصادر بالترتيب حتى ينجح أحدها.",
+			"description_markdown": "يجرب المصادر بالترتيب حتى ينجح أحدها.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "Fallback-Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Probiert Quellen der Reihenfolge bis eine erfolgreich ist.",
+			"description_markdown": "Probiert Quellen der Reihenfolge bis eine erfolgreich ist.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 🔁",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "🔁💎✅",
+			"description_markdown": "🔁💎✅",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -38,28 +64,210 @@
 				"🎙️",
 				"🏭"
 			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz de respaldo",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Prueba fuentes en orden hasta que una tenga éxito.",
+			"description_markdown": "Prueba fuentes en orden hasta que una tenga éxito.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale de secours",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Essaie les sources dans l'ordre jusqu'à qu'une réussisse.",
+			"description_markdown": "Essaie les sources dans l'ordre jusqu'à qu'une réussisse.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "फ़ॉलबैक आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "क्रम से स्रोतों को आज़माता है जब तक एक सफल हो।",
+			"description_markdown": "क्रम से स्रोतों को आज़माता है जब तक एक सफल हो।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "Vara-talgreiningarrafall",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Reynir heimildir í röð þar til ein tekur.",
+			"description_markdown": "Reynir heimildir í röð þar til ein tekur.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale di riserva",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Prova le fonti in ordine finché una riesce.",
+			"description_markdown": "Prova le fonti in ordine finché una riesce.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "フォールバック音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "ソースを順に試し、成功するまで続けます。",
+			"description_markdown": "ソースを順に試し、成功するまで続けます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "폴백 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "소스를 순서대로 시도하여 하나가 성공할 때까지 진행합니다.",
+			"description_markdown": "소스를 순서대로 시도하여 하나가 성공할 때까지 진행합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "回退語音識別生成器",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "依次試諸源，直至其一成功。",
+			"description_markdown": "依次試諸源，直至其一成功。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "Fallback-spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Probeert bronnen op volgorde tot er één slaagt.",
+			"description_markdown": "Probeert bronnen op volgorde tot er één slaagt.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala de contingência",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Tenta fontes em ordem até uma ter sucesso.",
+			"description_markdown": "Tenta fontes em ordem até uma ter sucesso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Резервный генератор распознавания речи",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Перебирает источники по порядку, пока один не сработает.",
+			"description_markdown": "Перебирает источники по порядку, пока один не сработает.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Резервний генератор розпізнавання мови",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Перебирає джерела по порядку, доки одне не спрацює.",
+			"description_markdown": "Перебирає джерела по порядку, доки одне не спрацює.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói dự phòng",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Thử các nguồn theo thứ tự cho đến khi một nguồn thành công.",
+			"description_markdown": "Thử các nguồn theo thứ tự cho đến khi một nguồn thành công.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "回退語音辨識產生器",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "依序嘗試各源，直至其中一個成功。",
+			"description_markdown": "依序嘗試各源，直至其中一個成功。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
 		}
 	},
 	"product_info": {
 		"en-UK": {
 			"name": "Fallback Speech Recognition",
 			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-			"description": "Try sources in order until one succeeds.",
-			"description_markdown": "Try sources in order until one succeeds.",
+			"description": "Tries sources in order until one succeeds.",
+			"description_markdown": "Tries sources in order until one succeeds.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			],
 			"provider": "fount"
 		},
 		"zh-CN": {
-			"name": "故障转移语音识别",
+			"name": "回退语音识别",
 			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-			"description": "按序尝试多个源直至成功。",
-			"description_markdown": "按序尝试多个源直至成功。",
+			"description": "按顺序尝试各源，直至其中一个成功。",
+			"description_markdown": "按顺序尝试各源，直至其中一个成功。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -69,16 +277,241 @@
 			],
 			"provider": "fount"
 		},
-		"emoji": {
-			"name": "🎙️",
+		"ar-SA": {
+			"name": "التعرف على الكلام الاحتياطي",
 			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "يجرب المصادر بالترتيب حتى ينجح أحدها.",
+			"description_markdown": "يجرب المصادر بالترتيب حتى ينجح أحدها.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"🎙️"
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "fount"
+		},
+		"de-DE": {
+			"name": "Fallback-Spracherkennung",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Probiert Quellen der Reihenfolge bis eine erfolgreich ist.",
+			"description_markdown": "Probiert Quellen der Reihenfolge bis eine erfolgreich ist.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "fount"
+		},
+		"emoji": {
+			"name": "🎙️ 🔁",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "🔁💎✅",
+			"description_markdown": "🔁💎✅",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "fount"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz de respaldo",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Prueba fuentes en orden hasta que una tenga éxito.",
+			"description_markdown": "Prueba fuentes en orden hasta que una tenga éxito.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "fount"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale de secours",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Essaie les sources dans l'ordre jusqu'à qu'une réussisse.",
+			"description_markdown": "Essaie les sources dans l'ordre jusqu'à qu'une réussisse.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "fount"
+		},
+		"hi-IN": {
+			"name": "फ़ॉलबैक आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "क्रम से स्रोतों को आज़माता है जब तक एक सफल हो।",
+			"description_markdown": "क्रम से स्रोतों को आज़माता है जब तक एक सफल हो।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "fount"
+		},
+		"is-IS": {
+			"name": "Vara-talgreining",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Reynir heimildir í röð þar til ein tekur.",
+			"description_markdown": "Reynir heimildir í röð þar til ein tekur.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "fount"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale di riserva",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Prova le fonti in ordine finché una riesce.",
+			"description_markdown": "Prova le fonti in ordine finché una riesce.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "fount"
+		},
+		"ja-JP": {
+			"name": "フォールバック音声認識",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "ソースを順に試し、成功するまで続けます。",
+			"description_markdown": "ソースを順に試し、成功するまで続けます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "fount"
+		},
+		"ko-KR": {
+			"name": "폴백 음성 인식",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "소스를 순서대로 시도하여 하나가 성공할 때까지 진행합니다.",
+			"description_markdown": "소스를 순서대로 시도하여 하나가 성공할 때까지 진행합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "fount"
+		},
+		"lzh": {
+			"name": "回退語音識別",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "依次試諸源，直至其一成功。",
+			"description_markdown": "依次試諸源，直至其一成功。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "fount"
+		},
+		"nl-NL": {
+			"name": "Fallback-spraakherkenning",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Probeert bronnen op volgorde tot er één slaagt.",
+			"description_markdown": "Probeert bronnen op volgorde tot er één slaagt.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "fount"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala de contingência",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Tenta fontes em ordem até uma ter sucesso.",
+			"description_markdown": "Tenta fontes em ordem até uma ter sucesso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "fount"
+		},
+		"ru-RU": {
+			"name": "Резервное распознавание речи",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Перебирает источники по порядку, пока один не сработает.",
+			"description_markdown": "Перебирает источники по порядку, пока один не сработает.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"uk-UA": {
+			"name": "Резервне розпізнавання мови",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Перебирає джерела по порядку, доки одне не спрацює.",
+			"description_markdown": "Перебирає джерела по порядку, доки одне не спрацює.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói dự phòng",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "Thử các nguồn theo thứ tự cho đến khi một nguồn thành công.",
+			"description_markdown": "Thử các nguồn theo thứ tự cho đến khi một nguồn thành công.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "fount"
+		},
+		"zh-TW": {
+			"name": "回退語音辨識",
+			"avatar": "https://api.iconify.design/mdi/backup-restore.svg",
+			"description": "依序嘗試各源，直至其中一個成功。",
+			"description_markdown": "依序嘗試各源，直至其中一個成功。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
 			],
 			"provider": "fount"
 		}

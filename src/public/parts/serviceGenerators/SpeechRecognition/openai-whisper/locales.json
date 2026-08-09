@@ -3,21 +3,21 @@
 		"en-UK": {
 			"name": "OpenAI Whisper Speech Recognition Generator",
 			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
-			"description": "Batch Whisper / compatible endpoints.",
-			"description_markdown": "Batch Whisper / compatible endpoints.",
+			"description": "Batch Whisper and compatible endpoints.",
+			"description_markdown": "Batch Whisper and compatible endpoints.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://platform.openai.com/",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			]
 		},
 		"zh-CN": {
 			"name": "OpenAI Whisper 语音识别生成器",
 			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
-			"description": "批量 Whisper（兼容第三方端点）。",
-			"description_markdown": "批量 Whisper（兼容第三方端点）。",
+			"description": "批量 Whisper / 兼容端点。",
+			"description_markdown": "批量 Whisper / 兼容端点。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://platform.openai.com/",
@@ -26,11 +26,37 @@
 				"生成器"
 			]
 		},
-		"emoji": {
-			"name": "🎙️🏭",
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام OpenAI Whisper",
 			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "Whisper بالدُفعات ونقاط نهاية متوافقة.",
+			"description_markdown": "Whisper بالدُفعات ونقاط نهاية متوافقة.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "OpenAI Whisper-Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Batch-Whisper und kompatible Endpunkte.",
+			"description_markdown": "Batch-Whisper und kompatible Endpunkte.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "📦🎙️ Whisper",
+			"description_markdown": "📦🎙️ Whisper",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://platform.openai.com/",
@@ -38,19 +64,201 @@
 				"🎙️",
 				"🏭"
 			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper por lotes y endpoints compatibles.",
+			"description_markdown": "Whisper por lotes y endpoints compatibles.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper par lots et points de terminaison compatibles.",
+			"description_markdown": "Whisper par lots et points de terminaison compatibles.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "OpenAI Whisper आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "बैच Whisper और संगत एंडपॉइंट।",
+			"description_markdown": "बैच Whisper और संगत एंडपॉइंट।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "OpenAI Whisper talgreiningarrafall",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Runu-Whisper og samhæfðir endapunktar.",
+			"description_markdown": "Runu-Whisper og samhæfðir endapunktar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper in batch ed endpoint compatibili.",
+			"description_markdown": "Whisper in batch ed endpoint compatibili.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "OpenAI Whisper 音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "バッチ Whisper と互換エンドポイント。",
+			"description_markdown": "バッチ Whisper と互換エンドポイント。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "OpenAI Whisper 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "배치 Whisper 및 호환 엔드포인트.",
+			"description_markdown": "배치 Whisper 및 호환 엔드포인트.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "OpenAI Whisper 語音識別生成器",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "批量 Whisper 與相容端點。",
+			"description_markdown": "批量 Whisper 與相容端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "OpenAI Whisper-spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Batch-Whisper en compatibele endpoints.",
+			"description_markdown": "Batch-Whisper en compatibele endpoints.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper em lote e endpoints compatíveis.",
+			"description_markdown": "Whisper em lote e endpoints compatíveis.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор распознавания речи OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Пакетный Whisper и совместимые эндпоинты.",
+			"description_markdown": "Пакетный Whisper и совместимые эндпоинты.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор розпізнавання мови OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Пакетний Whisper і сумісні ендпоінти.",
+			"description_markdown": "Пакетний Whisper і сумісні ендпоінти.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper theo lô và các endpoint tương thích.",
+			"description_markdown": "Whisper theo lô và các endpoint tương thích.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "OpenAI Whisper 語音辨識產生器",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "批次 Whisper 與相容端點。",
+			"description_markdown": "批次 Whisper 與相容端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
 		}
 	},
 	"product_info": {
 		"en-UK": {
 			"name": "OpenAI Whisper Speech Recognition",
 			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
-			"description": "Batch Whisper / compatible endpoints.",
-			"description_markdown": "Batch Whisper / compatible endpoints.",
+			"description": "Batch Whisper and compatible endpoints.",
+			"description_markdown": "Batch Whisper and compatible endpoints.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://platform.openai.com/",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			],
 			"provider": "openai"
@@ -58,8 +266,8 @@
 		"zh-CN": {
 			"name": "OpenAI Whisper 语音识别",
 			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
-			"description": "批量 Whisper（兼容第三方端点）。",
-			"description_markdown": "批量 Whisper（兼容第三方端点）。",
+			"description": "批量 Whisper / 兼容端点。",
+			"description_markdown": "批量 Whisper / 兼容端点。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://platform.openai.com/",
@@ -69,16 +277,241 @@
 			],
 			"provider": "openai"
 		},
-		"emoji": {
-			"name": "🎙️",
+		"ar-SA": {
+			"name": "التعرف على الكلام OpenAI Whisper",
 			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "Whisper بالدُفعات ونقاط نهاية متوافقة.",
+			"description_markdown": "Whisper بالدُفعات ونقاط نهاية متوافقة.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://platform.openai.com/",
 			"tags": [
-				"🎙️"
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "openai"
+		},
+		"de-DE": {
+			"name": "OpenAI Whisper-Spracherkennung",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Batch-Whisper und kompatible Endpunkte.",
+			"description_markdown": "Batch-Whisper und kompatible Endpunkte.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "openai"
+		},
+		"emoji": {
+			"name": "🎙️ Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "📦🎙️ Whisper",
+			"description_markdown": "📦🎙️ Whisper",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "openai"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper por lotes y endpoints compatibles.",
+			"description_markdown": "Whisper por lotes y endpoints compatibles.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "openai"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper par lots et points de terminaison compatibles.",
+			"description_markdown": "Whisper par lots et points de terminaison compatibles.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "openai"
+		},
+		"hi-IN": {
+			"name": "OpenAI Whisper आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "बैच Whisper और संगत एंडपॉइंट।",
+			"description_markdown": "बैच Whisper और संगत एंडपॉइंट।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "openai"
+		},
+		"is-IS": {
+			"name": "OpenAI Whisper talgreining",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Runu-Whisper og samhæfðir endapunktar.",
+			"description_markdown": "Runu-Whisper og samhæfðir endapunktar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "openai"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper in batch ed endpoint compatibili.",
+			"description_markdown": "Whisper in batch ed endpoint compatibili.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "openai"
+		},
+		"ja-JP": {
+			"name": "OpenAI Whisper 音声認識",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "バッチ Whisper と互換エンドポイント。",
+			"description_markdown": "バッチ Whisper と互換エンドポイント。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "openai"
+		},
+		"ko-KR": {
+			"name": "OpenAI Whisper 음성 인식",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "배치 Whisper 및 호환 엔드포인트.",
+			"description_markdown": "배치 Whisper 및 호환 엔드포인트.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "openai"
+		},
+		"lzh": {
+			"name": "OpenAI Whisper 語音識別",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "批量 Whisper 與相容端點。",
+			"description_markdown": "批量 Whisper 與相容端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "openai"
+		},
+		"nl-NL": {
+			"name": "OpenAI Whisper-spraakherkenning",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Batch-Whisper en compatibele endpoints.",
+			"description_markdown": "Batch-Whisper en compatibele endpoints.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "openai"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper em lote e endpoints compatíveis.",
+			"description_markdown": "Whisper em lote e endpoints compatíveis.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "openai"
+		},
+		"ru-RU": {
+			"name": "Распознавание речи OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Пакетный Whisper и совместимые эндпоинты.",
+			"description_markdown": "Пакетный Whisper и совместимые эндпоинты.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "openai"
+		},
+		"uk-UA": {
+			"name": "Розпізнавання мови OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Пакетний Whisper і сумісні ендпоінти.",
+			"description_markdown": "Пакетний Whisper і сумісні ендпоінти.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "openai"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói OpenAI Whisper",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Whisper theo lô và các endpoint tương thích.",
+			"description_markdown": "Whisper theo lô và các endpoint tương thích.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "openai"
+		},
+		"zh-TW": {
+			"name": "OpenAI Whisper 語音辨識",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "批次 Whisper 與相容端點。",
+			"description_markdown": "批次 Whisper 與相容端點。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"語音辨識",
+				"產生器"
 			],
 			"provider": "openai"
 		}

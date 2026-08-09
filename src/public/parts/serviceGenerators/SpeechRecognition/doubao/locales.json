@@ -3,21 +3,21 @@
 		"en-UK": {
 			"name": "Doubao Speech Recognition Generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Volcengine SAUC streaming speech recognition.",
-			"description_markdown": "Volcengine SAUC streaming speech recognition.",
+			"description": "Streaming speech recognition powered by Volcengine SAUC.",
+			"description_markdown": "Streaming speech recognition powered by Volcengine SAUC.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.volcengine.com/",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			]
 		},
 		"zh-CN": {
 			"name": "豆包语音识别生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "火山引擎 SAUC 流式识别。",
-			"description_markdown": "火山引擎 SAUC 流式识别。",
+			"description": "基于火山引擎 SAUC 的流式语音识别。",
+			"description_markdown": "基于火山引擎 SAUC 的流式语音识别。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.volcengine.com/",
@@ -26,11 +26,37 @@
 				"生成器"
 			]
 		},
-		"emoji": {
-			"name": "🎙️🏭",
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام Doubao",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "تعرف على كلام متدفق عبر Volcengine SAUC.",
+			"description_markdown": "تعرف على كلام متدفق عبر Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "Doubao-Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streaming-Spracherkennung über Volcengine SAUC.",
+			"description_markdown": "Streaming-Spracherkennung über Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️➡️📝 Volcengine",
+			"description_markdown": "🎙️➡️📝 Volcengine",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.volcengine.com/",
@@ -38,19 +64,201 @@
 				"🎙️",
 				"🏭"
 			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconocimiento de voz en streaming con Volcengine SAUC.",
+			"description_markdown": "Reconocimiento de voz en streaming con Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconnaissance vocale en streaming via Volcengine SAUC.",
+			"description_markdown": "Reconnaissance vocale en streaming via Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "Doubao आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Volcengine SAUC पर स्ट्रीमिंग आवाज़ पहचान।",
+			"description_markdown": "Volcengine SAUC पर स्ट्रीमिंग आवाज़ पहचान।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "Doubao talgreiningarrafall",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streymis-talgreining með Volcengine SAUC.",
+			"description_markdown": "Streymis-talgreining með Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Riconoscimento vocale in streaming tramite Volcengine SAUC.",
+			"description_markdown": "Riconoscimento vocale in streaming tramite Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "Doubao 音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "火山エンジン SAUC によるストリーミング音声認識。",
+			"description_markdown": "火山エンジン SAUC によるストリーミング音声認識。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "Doubao 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Volcengine SAUC 스트리밍 음성 인식.",
+			"description_markdown": "Volcengine SAUC 스트리밍 음성 인식.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "豆包語音識別生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "藉火山引擎 SAUC 行流式語音識別。",
+			"description_markdown": "藉火山引擎 SAUC 行流式語音識別。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "Doubao-spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streaming-spraakherkenning via Volcengine SAUC.",
+			"description_markdown": "Streaming-spraakherkenning via Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconhecimento de fala em streaming via Volcengine SAUC.",
+			"description_markdown": "Reconhecimento de fala em streaming via Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор распознавания речи Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Потоковое распознавание речи через Volcengine SAUC.",
+			"description_markdown": "Потоковое распознавание речи через Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор розпізнавання мови Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Потокове розпізнавання мови через Volcengine SAUC.",
+			"description_markdown": "Потокове розпізнавання мови через Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Nhận dạng giọng nói streaming qua Volcengine SAUC.",
+			"description_markdown": "Nhận dạng giọng nói streaming qua Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "豆包語音辨識產生器",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "基於火山引擎 SAUC 的串流語音辨識。",
+			"description_markdown": "基於火山引擎 SAUC 的串流語音辨識。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
 		}
 	},
 	"product_info": {
 		"en-UK": {
 			"name": "Doubao Speech Recognition",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Volcengine SAUC streaming speech recognition.",
-			"description_markdown": "Volcengine SAUC streaming speech recognition.",
+			"description": "Streaming speech recognition powered by Volcengine SAUC.",
+			"description_markdown": "Streaming speech recognition powered by Volcengine SAUC.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.volcengine.com/",
 			"tags": [
-				"speechRecognition",
+				"speech recognition",
 				"generator"
 			],
 			"provider": "volcengine"
@@ -58,8 +266,8 @@
 		"zh-CN": {
 			"name": "豆包语音识别",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "火山引擎 SAUC 流式识别。",
-			"description_markdown": "火山引擎 SAUC 流式识别。",
+			"description": "基于火山引擎 SAUC 的流式语音识别。",
+			"description_markdown": "基于火山引擎 SAUC 的流式语音识别。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.volcengine.com/",
@@ -69,16 +277,241 @@
 			],
 			"provider": "volcengine"
 		},
-		"emoji": {
-			"name": "🎙️",
+		"ar-SA": {
+			"name": "التعرف على الكلام Doubao",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "🎙️➡️📝",
-			"description_markdown": "🎙️➡️📝",
+			"description": "تعرف على كلام متدفق عبر Volcengine SAUC.",
+			"description_markdown": "تعرف على كلام متدفق عبر Volcengine SAUC.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.volcengine.com/",
 			"tags": [
-				"🎙️"
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "volcengine"
+		},
+		"de-DE": {
+			"name": "Doubao-Spracherkennung",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streaming-Spracherkennung über Volcengine SAUC.",
+			"description_markdown": "Streaming-Spracherkennung über Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "volcengine"
+		},
+		"emoji": {
+			"name": "🎙️ Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️➡️📝 Volcengine",
+			"description_markdown": "🎙️➡️📝 Volcengine",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "volcengine"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconocimiento de voz en streaming con Volcengine SAUC.",
+			"description_markdown": "Reconocimiento de voz en streaming con Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "volcengine"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconnaissance vocale en streaming via Volcengine SAUC.",
+			"description_markdown": "Reconnaissance vocale en streaming via Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "volcengine"
+		},
+		"hi-IN": {
+			"name": "Doubao आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Volcengine SAUC पर स्ट्रीमिंग आवाज़ पहचान।",
+			"description_markdown": "Volcengine SAUC पर स्ट्रीमिंग आवाज़ पहचान।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "volcengine"
+		},
+		"is-IS": {
+			"name": "Doubao talgreining",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streymis-talgreining með Volcengine SAUC.",
+			"description_markdown": "Streymis-talgreining með Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "volcengine"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Riconoscimento vocale in streaming tramite Volcengine SAUC.",
+			"description_markdown": "Riconoscimento vocale in streaming tramite Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "volcengine"
+		},
+		"ja-JP": {
+			"name": "Doubao 音声認識",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "火山エンジン SAUC によるストリーミング音声認識。",
+			"description_markdown": "火山エンジン SAUC によるストリーミング音声認識。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "volcengine"
+		},
+		"ko-KR": {
+			"name": "Doubao 음성 인식",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Volcengine SAUC 스트리밍 음성 인식.",
+			"description_markdown": "Volcengine SAUC 스트리밍 음성 인식.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "volcengine"
+		},
+		"lzh": {
+			"name": "豆包語音識別",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "藉火山引擎 SAUC 行流式語音識別。",
+			"description_markdown": "藉火山引擎 SAUC 行流式語音識別。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "volcengine"
+		},
+		"nl-NL": {
+			"name": "Doubao-spraakherkenning",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streaming-spraakherkenning via Volcengine SAUC.",
+			"description_markdown": "Streaming-spraakherkenning via Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "volcengine"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconhecimento de fala em streaming via Volcengine SAUC.",
+			"description_markdown": "Reconhecimento de fala em streaming via Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "volcengine"
+		},
+		"ru-RU": {
+			"name": "Распознавание речи Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Потоковое распознавание речи через Volcengine SAUC.",
+			"description_markdown": "Потоковое распознавание речи через Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "volcengine"
+		},
+		"uk-UA": {
+			"name": "Розпізнавання мови Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Потокове розпізнавання мови через Volcengine SAUC.",
+			"description_markdown": "Потокове розпізнавання мови через Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "volcengine"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói Doubao",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Nhận dạng giọng nói streaming qua Volcengine SAUC.",
+			"description_markdown": "Nhận dạng giọng nói streaming qua Volcengine SAUC.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "volcengine"
+		},
+		"zh-TW": {
+			"name": "豆包語音辨識",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "基於火山引擎 SAUC 的串流語音辨識。",
+			"description_markdown": "基於火山引擎 SAUC 的串流語音辨識。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"語音辨識",
+				"產生器"
 			],
 			"provider": "volcengine"
 		}

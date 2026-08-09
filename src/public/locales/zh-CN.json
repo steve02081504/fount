@@ -963,7 +963,7 @@
 				},
 				"generators/SpeechRecognition": {
 					"title": "语音识别服务生成器",
-					"subtitle": "把声音织成文字，让口喷也能上屏。",
+					"subtitle": "将声波化作文字，随口一说也能落笔成文。",
 					"card": {
 						"defaultCheckbox": {
 							"title": "设为默认语音识别服务生成器"
@@ -972,7 +972,7 @@
 				},
 				"sources/SpeechRecognition": {
 					"title": "语音识别服务源",
-					"subtitle": "听得见你说话的那一侧。",
+					"subtitle": "聆听声色的窗口，语意的起点。",
 					"card": {
 						"defaultCheckbox": {
 							"title": "设为默认语音识别服务源"
@@ -2868,7 +2868,7 @@
 		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "无法访问麦克风",
-			"confirmSpeechRecognition": "是否用语音识别自动填写文本？音频附件会保留。",
+			"confirmSpeechRecognition": "要用语音识别自动填入文本吗？录音附件会保留。",
 			"speechRecognitionFailed": "语音识别失败：${error}"
 		},
 		"attachment": {
@@ -2889,7 +2889,7 @@
 					"title": "更多"
 				},
 				"recognize": {
-					"title": "文字识别"
+					"title": "语音转文字"
 				}
 			}
 		},
@@ -4312,9 +4312,9 @@
 			},
 			"voiceFailed": "录音失败：${error}",
 			"audioTranscript": {
-				"placeholder": "语音转写 / 注释"
+				"placeholder": "转写文本或备注"
 			},
-			"confirmSpeechRecognition": "是否用语音识别自动填写文案？音频附件会保留。",
+			"confirmSpeechRecognition": "要用语音识别自动填入文案吗？录音附件会保留。",
 			"speechRecognitionFailed": "语音识别失败：${error}"
 		},
 		"feed": {

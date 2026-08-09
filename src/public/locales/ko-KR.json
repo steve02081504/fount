@@ -960,6 +960,24 @@
 							"title": "기본 번역 서비스 소스로 설정"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "음성 인식 서비스 생성기",
+					"subtitle": "소리의 파동을 글자로—말한 대로 바로 글이 됩니다.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "기본 음성 인식 서비스 생성기로 설정"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "음성 인식 서비스 소스",
+					"subtitle": "목소리를 듣는 창, 의미가 시작되는 곳.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "기본 음성 인식 서비스 소스로 설정"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "마이크에 연결하지 못했습니다."
+			"errorAccessingMicrophone": "마이크에 연결하지 못했습니다.",
+			"confirmSpeechRecognition": "음성 인식으로 텍스트를 자동 입력할까요? 녹음 첨부 파일은 유지됩니다.",
+			"speechRecognitionFailed": "음성 인식 실패: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "삭제 아이콘"
+				},
+				"more": {
+					"title": "더"
+				},
+				"recognize": {
+					"title": "음성을 글로"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "7일 이상 팔로워 수",
 					"label": "답글을 달 수 있는 사람"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "녹음",
+				"aria-label": "녹음"
+			},
+			"voiceFailed": "녹음 실패: ${error}",
+			"audioTranscript": {
+				"placeholder": "전사 텍스트 또는 메모"
+			},
+			"confirmSpeechRecognition": "음성 인식으로 게시글을 자동 입력할까요? 녹음 첨부 파일은 유지됩니다.",
+			"speechRecognitionFailed": "음성 인식 실패: ${error}"
 		},
 		"feed": {
 			"refresh": {
