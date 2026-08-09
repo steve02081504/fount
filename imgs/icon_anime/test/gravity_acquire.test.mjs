@@ -91,18 +91,20 @@ const mockTermuxLifecycle = () => {
 	}
 	const stop = startTermuxAcquire(() => { /* noop */ }, {
 		/**
-		 *
-		 * @param cmd
-		 * @param args
+		 * 注入 spawn。
+		 * @param {string} cmd 命令
+		 * @param {string[]} args 参数
+		 * @returns {typeof fakeChild} 假子进程
 		 */
 		spawn: (cmd, args) => {
 			calls.push(['spawn', cmd, ...args])
 			return fakeChild
 		},
 		/**
-		 *
-		 * @param cmd
-		 * @param args
+		 * 注入 spawnSync。
+		 * @param {string} cmd 命令
+		 * @param {string[]} args 参数
+		 * @returns {{ status: number }} 退出状态
 		 */
 		spawnSync: (cmd, args) => {
 			calls.push(['spawnSync', cmd, ...args])
@@ -110,17 +112,19 @@ const mockTermuxLifecycle = () => {
 		},
 		process: {
 			/**
-			 *
-			 * @param event
-			 * @param listener
+			 * 注册进程事件。
+			 * @param {string} event 事件名
+			 * @param {() => void} listener 回调
+			 * @returns {void}
 			 */
 			on(event, listener) {
 				if (event === 'exit') exitListener = listener
 			},
 			/**
-			 *
-			 * @param event
-			 * @param listener
+			 * 注销进程事件。
+			 * @param {string} event 事件名
+			 * @param {() => void} listener 回调
+			 * @returns {void}
 			 */
 			off(event, listener) {
 				if (event === 'exit' && exitListener === listener) exitListener = null
