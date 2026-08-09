@@ -57,7 +57,7 @@ async function ensureShardDir(indexDir, shardKey) {
  * 落盘 I/O：leave/删群竞态下的 ENOENT / EEXIST 视为无操作。
  * @template T
  * @param {() => Promise<T>} fn 临界区
- * @returns {Promise<T | undefined>}
+ * @returns {Promise<T | undefined>} fn 的返回值；ENOENT/EEXIST 时为 undefined
  */
 async function withGoneParentOk(fn) {
 	try {
