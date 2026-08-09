@@ -960,6 +960,24 @@
 							"title": "设为默认翻译服务源"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "语音识别服务生成器",
+					"subtitle": "将声波化作文字，随口一说也能落笔成文。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "设为默认语音识别服务生成器"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "语音识别服务源",
+					"subtitle": "聆听声色的窗口，语意的起点。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "设为默认语音识别服务源"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "无法访问麦克风"
+			"errorAccessingMicrophone": "无法访问麦克风",
+			"confirmSpeechRecognition": "要用语音识别自动填入文本吗？录音附件会保留。",
+			"speechRecognitionFailed": "语音识别失败：${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "删除图标"
+				},
+				"more": {
+					"title": "更多"
+				},
+				"recognize": {
+					"title": "语音转文字"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "7天以上关注者",
 					"label": "谁可以回复"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "录音",
+				"aria-label": "录音"
+			},
+			"voiceFailed": "录音失败：${error}",
+			"audioTranscript": {
+				"placeholder": "转写文本或备注"
+			},
+			"confirmSpeechRecognition": "要用语音识别自动填入文案吗？录音附件会保留。",
+			"speechRecognitionFailed": "语音识别失败：${error}"
 		},
 		"feed": {
 			"refresh": {

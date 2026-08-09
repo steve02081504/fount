@@ -1,0 +1,519 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "iFlytek RTASR Standard Generator",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek standard RTASR streaming recognition.",
+			"description_markdown": "iFlytek standard RTASR streaming recognition.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"speech recognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "讯飞 RTASR Standard 生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "讯飞标准 RTASR 流式识别。",
+			"description_markdown": "讯飞标准 RTASR 流式识别。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"ar-SA": {
+			"name": "مولّد iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
+			"description_markdown": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "iFlytek RTASR Standard-Generator",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streaming-RTASR-Standarderkennung von iFlytek.",
+			"description_markdown": "Streaming-RTASR-Standarderkennung von iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 RTASR",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️➡️📝 RTASR",
+			"description_markdown": "🎙️➡️📝 RTASR",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		},
+		"es-ES": {
+			"name": "Generador iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconocimiento en streaming RTASR estándar de iFlytek.",
+			"description_markdown": "Reconocimiento en streaming RTASR estándar de iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconnaissance en streaming RTASR standard iFlytek.",
+			"description_markdown": "Reconnaissance en streaming RTASR standard iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "iFlytek RTASR Standard जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
+			"description_markdown": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "iFlytek RTASR Standard rafall",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek staðlað RTASR streymisgreining.",
+			"description_markdown": "iFlytek staðlað RTASR streymisgreining.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Riconoscimento in streaming RTASR standard iFlytek.",
+			"description_markdown": "Riconoscimento in streaming RTASR standard iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "iFlytek RTASR Standard ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek 標準 RTASR ストリーミング認識。",
+			"description_markdown": "iFlytek 標準 RTASR ストリーミング認識。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "iFlytek RTASR Standard 생성기",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek 표준 RTASR 스트리밍 인식.",
+			"description_markdown": "iFlytek 표준 RTASR 스트리밍 인식.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "訊飛 RTASR Standard 生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "訊飛標準 RTASR 流式識別。",
+			"description_markdown": "訊飛標準 RTASR 流式識別。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "iFlytek RTASR Standard-generator",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek standaard RTASR-streamingherkenning.",
+			"description_markdown": "iFlytek standaard RTASR-streamingherkenning.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconhecimento em streaming RTASR padrão iFlytek.",
+			"description_markdown": "Reconhecimento em streaming RTASR padrão iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Генератор iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Стандартное потоковое распознавание RTASR iFlytek.",
+			"description_markdown": "Стандартное потоковое распознавание RTASR iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Генератор iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Стандартне потокове розпізнавання RTASR iFlytek.",
+			"description_markdown": "Стандартне потокове розпізнавання RTASR iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Nhận dạng streaming RTASR chuẩn iFlytek.",
+			"description_markdown": "Nhận dạng streaming RTASR chuẩn iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "訊飛 RTASR Standard 產生器",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "訊飛標準 RTASR 串流辨識。",
+			"description_markdown": "訊飛標準 RTASR 串流辨識。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek standard RTASR streaming recognition.",
+			"description_markdown": "iFlytek standard RTASR streaming recognition.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"speech recognition",
+				"generator"
+			],
+			"provider": "xfyun"
+		},
+		"zh-CN": {
+			"name": "讯飞 RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "讯飞标准 RTASR 流式识别。",
+			"description_markdown": "讯飞标准 RTASR 流式识别。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "xfyun"
+		},
+		"ar-SA": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
+			"description_markdown": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "xfyun"
+		},
+		"de-DE": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Streaming-RTASR-Standarderkennung von iFlytek.",
+			"description_markdown": "Streaming-RTASR-Standarderkennung von iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "xfyun"
+		},
+		"emoji": {
+			"name": "🎙️ RTASR Std",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️➡️📝 RTASR",
+			"description_markdown": "🎙️➡️📝 RTASR",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "xfyun"
+		},
+		"es-ES": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconocimiento en streaming RTASR estándar de iFlytek.",
+			"description_markdown": "Reconocimiento en streaming RTASR estándar de iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "xfyun"
+		},
+		"fr-FR": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconnaissance en streaming RTASR standard iFlytek.",
+			"description_markdown": "Reconnaissance en streaming RTASR standard iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "xfyun"
+		},
+		"hi-IN": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
+			"description_markdown": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "xfyun"
+		},
+		"is-IS": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek staðlað RTASR streymisgreining.",
+			"description_markdown": "iFlytek staðlað RTASR streymisgreining.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "xfyun"
+		},
+		"it-IT": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Riconoscimento in streaming RTASR standard iFlytek.",
+			"description_markdown": "Riconoscimento in streaming RTASR standard iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "xfyun"
+		},
+		"ja-JP": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek 標準 RTASR ストリーミング認識。",
+			"description_markdown": "iFlytek 標準 RTASR ストリーミング認識。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "xfyun"
+		},
+		"ko-KR": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek 표준 RTASR 스트리밍 인식.",
+			"description_markdown": "iFlytek 표준 RTASR 스트리밍 인식.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "xfyun"
+		},
+		"lzh": {
+			"name": "訊飛 RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "訊飛標準 RTASR 流式識別。",
+			"description_markdown": "訊飛標準 RTASR 流式識別。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "xfyun"
+		},
+		"nl-NL": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek standaard RTASR-streamingherkenning.",
+			"description_markdown": "iFlytek standaard RTASR-streamingherkenning.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "xfyun"
+		},
+		"pt-PT": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Reconhecimento em streaming RTASR padrão iFlytek.",
+			"description_markdown": "Reconhecimento em streaming RTASR padrão iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "xfyun"
+		},
+		"ru-RU": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Стандартное потоковое распознавание RTASR iFlytek.",
+			"description_markdown": "Стандартное потоковое распознавание RTASR iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "xfyun"
+		},
+		"uk-UA": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Стандартне потокове розпізнавання RTASR iFlytek.",
+			"description_markdown": "Стандартне потокове розпізнавання RTASR iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "xfyun"
+		},
+		"vi-VN": {
+			"name": "iFlytek RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Nhận dạng streaming RTASR chuẩn iFlytek.",
+			"description_markdown": "Nhận dạng streaming RTASR chuẩn iFlytek.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "xfyun"
+		},
+		"zh-TW": {
+			"name": "訊飛 RTASR Standard",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "訊飛標準 RTASR 串流辨識。",
+			"description_markdown": "訊飛標準 RTASR 串流辨識。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			],
+			"provider": "xfyun"
+		}
+	}
+}

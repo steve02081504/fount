@@ -929,6 +929,24 @@ export type LocaleData = {
 						}
 					}
 				}
+				'generators/SpeechRecognition': {
+					title: string
+					subtitle: string
+					card: {
+						defaultCheckbox: {
+							title: string
+						}
+					}
+				}
+				'sources/SpeechRecognition': {
+					title: string
+					subtitle: string
+					card: {
+						defaultCheckbox: {
+							title: string
+						}
+					}
+				}
 			}
 		}
 		escapeConfirm: string
@@ -2818,6 +2836,8 @@ export type LocaleData = {
 		}
 		voiceRecording: {
 			errorAccessingMicrophone: string
+			confirmSpeechRecognition: string
+			speechRecognitionFailed: string
 		}
 		attachment: {
 			buttons: {
@@ -2832,6 +2852,12 @@ export type LocaleData = {
 				}
 				deleteIcon: {
 					alt: string
+				}
+				more: {
+					title: string
+				}
+				recognize: {
+					title: string
 				}
 			}
 		}
@@ -4248,6 +4274,16 @@ export type LocaleData = {
 					label: string
 				}
 			}
+			voiceButton: {
+				title: string
+				'aria-label': string
+			}
+			voiceFailed: string
+			audioTranscript: {
+				placeholder: string
+			}
+			confirmSpeechRecognition: string
+			speechRecognitionFailed: string
 		}
 		feed: {
 			refresh: {
@@ -6029,6 +6065,7 @@ export type LocaleKeyParams = {
 	'chat.stickers.authorLabel': { author: string | number }
 	'chat.stickers.sticker.count': { count: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
+	'chat.voiceRecording.speechRecognitionFailed': { error: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }
 	'deskpet.toasts.stop_failed': { charname: string | number; message: string | number }
@@ -6231,6 +6268,8 @@ export type LocaleKeyParams = {
 	'social.actions.repostFailed': { error: string | number }
 	'social.actions.saveFailed': { error: string | number }
 	'social.bootstrapFailed': { error: string | number }
+	'social.composer.speechRecognitionFailed': { error: string | number }
+	'social.composer.voiceFailed': { error: string | number }
 	'social.connectNodeFailed': { error: string | number }
 	'social.drafts.deleteFailed': { error: string | number }
 	'social.drafts.loadFailed': { error: string | number }

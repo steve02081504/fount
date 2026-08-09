@@ -960,6 +960,24 @@
 							"title": "Установить в качестве fount службы перевода по умолчанию"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "Генератор службы распознавания речи",
+					"subtitle": "Превратите звук в слова — скажите, и увидите это написанным.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Установить как генератор распознавания речи по умолчанию"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "Источник службы распознавания речи",
+					"subtitle": "Окно, что слышит голос, — начало смысла.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Установить как источник распознавания речи по умолчанию"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Не удалось получить доступ к микрофону."
+			"errorAccessingMicrophone": "Не удалось получить доступ к микрофону.",
+			"confirmSpeechRecognition": "Заполнить текст автоматически с помощью распознавания речи? Аудиовложение сохранится.",
+			"speechRecognitionFailed": "Ошибка распознавания речи: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "Значок удаления"
+				},
+				"more": {
+					"title": "Ещё"
+				},
+				"recognize": {
+					"title": "Речь в текст"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "Подписчики от 7 дней",
 					"label": "Кто может ответить"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "Запись",
+				"aria-label": "Запись"
+			},
+			"voiceFailed": "Запись не удалась: ${error}",
+			"audioTranscript": {
+				"placeholder": "Расшифровка или заметки"
+			},
+			"confirmSpeechRecognition": "Заполнить публикацию автоматически с помощью распознавания речи? Аудиовложение сохранится.",
+			"speechRecognitionFailed": "Ошибка распознавания речи: ${error}"
 		},
 		"feed": {
 			"refresh": {

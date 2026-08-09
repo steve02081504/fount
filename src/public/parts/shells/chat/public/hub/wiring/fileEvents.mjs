@@ -1,7 +1,10 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { hasSpeechRecognitionSource, recognizeBuffer } from '/scripts/features/speechRecognition.mjs'
+import { getCachedSpeechRecognitionTranscript, setCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
 import { store } from '../core/state.mjs'
 import { isFilesDrawerOpen, refreshFilesDrawer, setFilesDrawerOpen, wireFilesDrawerToggle } from '../files.mjs'
+import { speechRecognitionCacheKey } from '../messages/render/file.mjs'
 
 /** @returns {void} */
 export function wireFileEvents() {
@@ -52,5 +55,48 @@ export async function handleMessageFileDownloadClick(event) {
 	const fileId = fileDownloadButton.dataset.groupFileId
 	const fileRow = store.context.currentState?.files?.find(file => file.fileId === fileId)
 	await store.context.fileHandlers.downloadGroupFile(fileId, fileRow?.name || fileId)
+	return true
+}
+
+/**
+ * @param {Event} event 点击事件
+ * @returns {Promise<boolean>} 是否已处理
+ */
+export async function handleMessageFileAsrClick(event) {
+	const button = event.target.closest('.message-file-speech-recognition')
+	if (!button?.dataset?.groupFileId || !store.context.currentGroupId)
+		return false
+	if (!await hasSpeechRecognitionSource()) return true
+	const fileId = button.dataset.groupFileId
+	const cacheKey = speechRecognitionCacheKey(store.context.currentGroupId, fileId)
+	const block = button.closest('.message-inline-audio')
+	const caption = block?.querySelector('.attachment-transcript')
+	const cached = getCachedSpeechRecognitionTranscript(cacheKey)
+	if (cached && caption instanceof HTMLElement) {
+		caption.textContent = cached
+		caption.classList.remove('hidden')
+		return true
+	}
+	button.disabled = true
+	try {
+		const { fetchGroupFileAsBlob } = await import('../../src/groupFileBlob.mjs')
+		const blob = await fetchGroupFileAsBlob(store.context.currentGroupId, fileId)
+		const result = await recognizeBuffer({
+			audio: blob,
+			mime_type: blob.type,
+			name: fileId,
+		})
+		setCachedSpeechRecognitionTranscript(cacheKey, result.text)
+		if (caption instanceof HTMLElement) {
+			caption.textContent = result.text
+			caption.classList.remove('hidden')
+		}
+	}
+	catch (error) {
+		showToastI18n('error', 'chat.voiceRecording.speechRecognitionFailed', { error: error?.message || String(error) })
+	}
+	finally {
+		button.disabled = false
+	}
 	return true
 }

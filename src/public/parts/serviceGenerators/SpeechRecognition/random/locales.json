@@ -1,0 +1,519 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Random Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Randomly picks a speech recognition source by weight.",
+			"description_markdown": "Randomly picks a speech recognition source by weight.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"speech recognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "随机语音识别生成器",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "按权重随机选取语音识别源。",
+			"description_markdown": "按权重随机选取语音识别源。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام العشوائي",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "يختار مصدر التعرف على الكلام عشوائيًا حسب الأوزان.",
+			"description_markdown": "يختار مصدر التعرف على الكلام عشوائيًا حسب الأوزان.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "Zufälliger Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Wählt Spracherkennungsquellen gewichtet zufällig.",
+			"description_markdown": "Wählt Spracherkennungsquellen gewichtet zufällig.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 🎲",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "🎲💎",
+			"description_markdown": "🎲💎",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz aleatorio",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Selecciona aleatoriamente una fuente de reconocimiento de voz según pesos.",
+			"description_markdown": "Selecciona aleatoriamente una fuente de reconocimiento de voz según pesos.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale aléatoire",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Choisit aléatoirement une source de reconnaissance vocale selon les poids.",
+			"description_markdown": "Choisit aléatoirement une source de reconnaissance vocale selon les poids.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "यादृच्छिक आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "भार के अनुसार यादृच्छिक आवाज़ पहचान स्रोत चुनता है।",
+			"description_markdown": "भार के अनुसार यादृच्छिक आवाज़ पहचान स्रोत चुनता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "Handahófskennt talgreiningarrafall",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Velur talgreiningarheimild af handahófi eftir þyngd.",
+			"description_markdown": "Velur talgreiningarheimild af handahófi eftir þyngd.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale casuale",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Seleziona casualmente una fonte di riconoscimento vocale per peso.",
+			"description_markdown": "Seleziona casualmente una fonte di riconoscimento vocale per peso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "ランダム音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "重みに基づいて音声認識ソースをランダムに選択します。",
+			"description_markdown": "重みに基づいて音声認識ソースをランダムに選択します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "무작위 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "가중치에 따라 음성 인식 소스를 무작위로 선택합니다.",
+			"description_markdown": "가중치에 따라 음성 인식 소스를 무작위로 선택합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "隨機語音識別生成器",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "依權重隨機選取語音識別源。",
+			"description_markdown": "依權重隨機選取語音識別源。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "Willekeurige spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Kiest willekeurig een spraakherkenningsbron op gewicht.",
+			"description_markdown": "Kiest willekeurig een spraakherkenningsbron op gewicht.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala aleatório",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Escolhe aleatoriamente uma fonte de reconhecimento de fala por peso.",
+			"description_markdown": "Escolhe aleatoriamente uma fonte de reconhecimento de fala por peso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Случайный генератор распознавания речи",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Случайно выбирает источник распознавания речи по весам.",
+			"description_markdown": "Случайно выбирает источник распознавания речи по весам.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Випадковий генератор розпізнавання мови",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Випадково обирає джерело розпізнавання мови за вагами.",
+			"description_markdown": "Випадково обирає джерело розпізнавання мови за вагами.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói ngẫu nhiên",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Chọn ngẫu nhiên nguồn nhận dạng giọng nói theo trọng số.",
+			"description_markdown": "Chọn ngẫu nhiên nguồn nhận dạng giọng nói theo trọng số.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "隨機語音辨識產生器",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "依權重隨機選取語音辨識源。",
+			"description_markdown": "依權重隨機選取語音辨識源。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Random Speech Recognition",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Randomly picks a speech recognition source by weight.",
+			"description_markdown": "Randomly picks a speech recognition source by weight.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"speech recognition",
+				"generator"
+			],
+			"provider": "fount"
+		},
+		"zh-CN": {
+			"name": "随机语音识别",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "按权重随机选取语音识别源。",
+			"description_markdown": "按权重随机选取语音识别源。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "fount"
+		},
+		"ar-SA": {
+			"name": "التعرف على الكلام العشوائي",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "يختار مصدر التعرف على الكلام عشوائيًا حسب الأوزان.",
+			"description_markdown": "يختار مصدر التعرف على الكلام عشوائيًا حسب الأوزان.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "fount"
+		},
+		"de-DE": {
+			"name": "Zufällige Spracherkennung",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Wählt Spracherkennungsquellen gewichtet zufällig.",
+			"description_markdown": "Wählt Spracherkennungsquellen gewichtet zufällig.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "fount"
+		},
+		"emoji": {
+			"name": "🎙️ 🎲",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "🎲💎",
+			"description_markdown": "🎲💎",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "fount"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz aleatorio",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Selecciona aleatoriamente una fuente de reconocimiento de voz según pesos.",
+			"description_markdown": "Selecciona aleatoriamente una fuente de reconocimiento de voz según pesos.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "fount"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale aléatoire",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Choisit aléatoirement une source de reconnaissance vocale selon les poids.",
+			"description_markdown": "Choisit aléatoirement une source de reconnaissance vocale selon les poids.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "fount"
+		},
+		"hi-IN": {
+			"name": "यादृच्छिक आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "भार के अनुसार यादृच्छिक आवाज़ पहचान स्रोत चुनता है।",
+			"description_markdown": "भार के अनुसार यादृच्छिक आवाज़ पहचान स्रोत चुनता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "fount"
+		},
+		"is-IS": {
+			"name": "Handahófskennt talgreining",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Velur talgreiningarheimild af handahófi eftir þyngd.",
+			"description_markdown": "Velur talgreiningarheimild af handahófi eftir þyngd.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "fount"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale casuale",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Seleziona casualmente una fonte di riconoscimento vocale per peso.",
+			"description_markdown": "Seleziona casualmente una fonte di riconoscimento vocale per peso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "fount"
+		},
+		"ja-JP": {
+			"name": "ランダム音声認識",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "重みに基づいて音声認識ソースをランダムに選択します。",
+			"description_markdown": "重みに基づいて音声認識ソースをランダムに選択します。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "fount"
+		},
+		"ko-KR": {
+			"name": "무작위 음성 인식",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "가중치에 따라 음성 인식 소스를 무작위로 선택합니다.",
+			"description_markdown": "가중치에 따라 음성 인식 소스를 무작위로 선택합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "fount"
+		},
+		"lzh": {
+			"name": "隨機語音識別",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "依權重隨機選取語音識別源。",
+			"description_markdown": "依權重隨機選取語音識別源。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "fount"
+		},
+		"nl-NL": {
+			"name": "Willekeurige spraakherkenning",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Kiest willekeurig een spraakherkenningsbron op gewicht.",
+			"description_markdown": "Kiest willekeurig een spraakherkenningsbron op gewicht.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "fount"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala aleatório",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Escolhe aleatoriamente uma fonte de reconhecimento de fala por peso.",
+			"description_markdown": "Escolhe aleatoriamente uma fonte de reconhecimento de fala por peso.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "fount"
+		},
+		"ru-RU": {
+			"name": "Случайное распознавание речи",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Случайно выбирает источник распознавания речи по весам.",
+			"description_markdown": "Случайно выбирает источник распознавания речи по весам.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"uk-UA": {
+			"name": "Випадкове розпізнавання мови",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Випадково обирає джерело розпізнавання мови за вагами.",
+			"description_markdown": "Випадково обирає джерело розпізнавання мови за вагами.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói ngẫu nhiên",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "Chọn ngẫu nhiên nguồn nhận dạng giọng nói theo trọng số.",
+			"description_markdown": "Chọn ngẫu nhiên nguồn nhận dạng giọng nói theo trọng số.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "fount"
+		},
+		"zh-TW": {
+			"name": "隨機語音辨識",
+			"avatar": "https://api.iconify.design/mdi/dice-multiple.svg",
+			"description": "依權重隨機選取語音辨識源。",
+			"description_markdown": "依權重隨機選取語音辨識源。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			],
+			"provider": "fount"
+		}
+	}
+}

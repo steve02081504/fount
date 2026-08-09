@@ -960,6 +960,24 @@
 							"title": "Als Standard-Übersetzungsdienstquelle festlegen"
 						}
 					}
+				},
+				"generators/SpeechRecognition": {
+					"title": "Generator für Spracherkennungsdienste",
+					"subtitle": "Verwandle Schallwellen in Schrift — gesprochenes Wort, geschriebene Zeile.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standardgenerator für Spracherkennungsdienste festlegen"
+						}
+					}
+				},
+				"sources/SpeechRecognition": {
+					"title": "Quelle des Spracherkennungsdienstes",
+					"subtitle": "Ein Fenster zum Hören von Stimme und Klang — wo Bedeutung beginnt.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standardquelle für Spracherkennungsdienste festlegen"
+						}
+					}
 				}
 			}
 		},
@@ -2849,7 +2867,9 @@
 			}
 		},
 		"voiceRecording": {
-			"errorAccessingMicrophone": "Fehler beim Zugriff auf das Mikrofon."
+			"errorAccessingMicrophone": "Fehler beim Zugriff auf das Mikrofon.",
+			"confirmSpeechRecognition": "Text per Spracherkennung automatisch ausfüllen? Die Audioaufnahme bleibt als Anhang erhalten.",
+			"speechRecognitionFailed": "Spracherkennung fehlgeschlagen: ${error}"
 		},
 		"attachment": {
 			"buttons": {
@@ -2864,6 +2884,12 @@
 				},
 				"deleteIcon": {
 					"alt": "Löschen-Symbol"
+				},
+				"more": {
+					"title": "Mehr"
+				},
+				"recognize": {
+					"title": "Sprache in Text"
 				}
 			}
 		},
@@ -4279,7 +4305,17 @@
 					"followers7d": "Follower seit mehr als 7 Tagen",
 					"label": "Wer kann antworten?"
 				}
-			}
+			},
+			"voiceButton": {
+				"title": "Aufnehmen",
+				"aria-label": "Aufnehmen"
+			},
+			"voiceFailed": "Aufnahme fehlgeschlagen: ${error}",
+			"audioTranscript": {
+				"placeholder": "Transkript oder Notizen"
+			},
+			"confirmSpeechRecognition": "Beitrag per Spracherkennung automatisch ausfüllen? Die Audioaufnahme bleibt als Anhang erhalten.",
+			"speechRecognitionFailed": "Spracherkennung fehlgeschlagen: ${error}"
 		},
 		"feed": {
 			"refresh": {

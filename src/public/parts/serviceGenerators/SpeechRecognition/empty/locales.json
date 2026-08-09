@@ -1,0 +1,519 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Empty Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Placeholder when no generator is available.",
+			"description_markdown": "Placeholder when no generator is available.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"speech recognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "空语音识别生成器",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "生成器缺失时的占位。",
+			"description_markdown": "生成器缺失时的占位。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"ar-SA": {
+			"name": "مولّد التعرف على الكلام الفارغ",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "عنصر نائب عند غياب المولّد.",
+			"description_markdown": "عنصر نائب عند غياب المولّد.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			]
+		},
+		"de-DE": {
+			"name": "Leerer Spracherkennungsgenerator",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Platzhalter, wenn kein Generator verfügbar ist.",
+			"description_markdown": "Platzhalter, wenn kein Generator verfügbar ist.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭 🈳",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "🈳🎙️",
+			"description_markdown": "🈳🎙️",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		},
+		"es-ES": {
+			"name": "Generador de reconocimiento de voz vacío",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Marcador de posición cuando no hay generador disponible.",
+			"description_markdown": "Marcador de posición cuando no hay generador disponible.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			]
+		},
+		"fr-FR": {
+			"name": "Générateur de reconnaissance vocale vide",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Substitut lorsqu'aucun générateur est disponible.",
+			"description_markdown": "Substitut lorsqu'aucun générateur est disponible.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			]
+		},
+		"hi-IN": {
+			"name": "रिक्त आवाज़ पहचान जनरेटर",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "जनरेटर उपलब्ध न होने पर प्लेसहोल्डर।",
+			"description_markdown": "जनरेटर उपलब्ध न होने पर प्लेसहोल्डर।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			]
+		},
+		"is-IS": {
+			"name": "Tómt talgreiningarrafall",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Staðgengill þegar enginn rafall er til staðar.",
+			"description_markdown": "Staðgengill þegar enginn rafall er til staðar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			]
+		},
+		"it-IT": {
+			"name": "Generatore di riconoscimento vocale vuoto",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Segnaposto quando non è disponibile un generatore.",
+			"description_markdown": "Segnaposto quando non è disponibile un generatore.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			]
+		},
+		"ja-JP": {
+			"name": "空の音声認識ジェネレーター",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "ジェネレーターがない場合のプレースホルダー。",
+			"description_markdown": "ジェネレーターがない場合のプレースホルダー。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			]
+		},
+		"ko-KR": {
+			"name": "빈 음성 인식 생성기",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "생성기가 없을 때의 플레이스홀더.",
+			"description_markdown": "생성기가 없을 때의 플레이스홀더.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			]
+		},
+		"lzh": {
+			"name": "空語音識別生成器",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "生成器闕如時之占位。",
+			"description_markdown": "生成器闕如時之占位。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			]
+		},
+		"nl-NL": {
+			"name": "Lege spraakherkenningsgenerator",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Plaatshouder wanneer geen generator beschikbaar is.",
+			"description_markdown": "Plaatshouder wanneer geen generator beschikbaar is.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			]
+		},
+		"pt-PT": {
+			"name": "Gerador de reconhecimento de fala vazio",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Marcador quando não há gerador disponível.",
+			"description_markdown": "Marcador quando não há gerador disponível.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			]
+		},
+		"ru-RU": {
+			"name": "Пустой генератор распознавания речи",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Заполнитель, когда генератор недоступен.",
+			"description_markdown": "Заполнитель, когда генератор недоступен.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			]
+		},
+		"uk-UA": {
+			"name": "Порожній генератор розпізнавання мови",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Заповнювач, коли генератор недоступний.",
+			"description_markdown": "Заповнювач, коли генератор недоступний.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình tạo nhận dạng giọng nói trống",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Giữ chỗ khi không có trình tạo nào.",
+			"description_markdown": "Giữ chỗ khi không có trình tạo nào.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			]
+		},
+		"zh-TW": {
+			"name": "空語音辨識產生器",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "產生器缺失時的占位。",
+			"description_markdown": "產生器缺失時的占位。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Empty Speech Recognition",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Placeholder when no generator is available.",
+			"description_markdown": "Placeholder when no generator is available.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"speech recognition",
+				"generator"
+			],
+			"provider": "fount"
+		},
+		"zh-CN": {
+			"name": "空语音识别",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "生成器缺失时的占位。",
+			"description_markdown": "生成器缺失时的占位。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "fount"
+		},
+		"ar-SA": {
+			"name": "التعرف على الكلام الفارغ",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "عنصر نائب عند غياب المولّد.",
+			"description_markdown": "عنصر نائب عند غياب المولّد.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"التعرف على الكلام",
+				"مولد"
+			],
+			"provider": "fount"
+		},
+		"de-DE": {
+			"name": "Leere Spracherkennung",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Platzhalter, wenn kein Generator verfügbar ist.",
+			"description_markdown": "Platzhalter, wenn kein Generator verfügbar ist.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"Spracherkennung",
+				"Generator"
+			],
+			"provider": "fount"
+		},
+		"emoji": {
+			"name": "🎙️ 🈳",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "🈳🎙️",
+			"description_markdown": "🈳🎙️",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭"
+			],
+			"provider": "fount"
+		},
+		"es-ES": {
+			"name": "Reconocimiento de voz vacío",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Marcador de posición cuando no hay generador disponible.",
+			"description_markdown": "Marcador de posición cuando no hay generador disponible.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconocimiento de voz",
+				"generador"
+			],
+			"provider": "fount"
+		},
+		"fr-FR": {
+			"name": "Reconnaissance vocale vide",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Substitut lorsqu'aucun générateur est disponible.",
+			"description_markdown": "Substitut lorsqu'aucun générateur est disponible.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconnaissance vocale",
+				"générateur"
+			],
+			"provider": "fount"
+		},
+		"hi-IN": {
+			"name": "रिक्त आवाज़ पहचान",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "जनरेटर उपलब्ध न होने पर प्लेसहोल्डर।",
+			"description_markdown": "जनरेटर उपलब्ध न होने पर प्लेसहोल्डर।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"आवाज़ पहचान",
+				"जनरेटर"
+			],
+			"provider": "fount"
+		},
+		"is-IS": {
+			"name": "Tóm talgreining",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Staðgengill þegar enginn rafall er til staðar.",
+			"description_markdown": "Staðgengill þegar enginn rafall er til staðar.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"talgreining",
+				"rafall"
+			],
+			"provider": "fount"
+		},
+		"it-IT": {
+			"name": "Riconoscimento vocale vuoto",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Segnaposto quando non è disponibile un generatore.",
+			"description_markdown": "Segnaposto quando non è disponibile un generatore.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"riconoscimento vocale",
+				"generatore"
+			],
+			"provider": "fount"
+		},
+		"ja-JP": {
+			"name": "空の音声認識",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "ジェネレーターがない場合のプレースホルダー。",
+			"description_markdown": "ジェネレーターがない場合のプレースホルダー。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"音声認識",
+				"ジェネレーター"
+			],
+			"provider": "fount"
+		},
+		"ko-KR": {
+			"name": "빈 음성 인식",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "생성기가 없을 때의 플레이스홀더.",
+			"description_markdown": "생성기가 없을 때의 플레이스홀더.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"음성 인식",
+				"생성기"
+			],
+			"provider": "fount"
+		},
+		"lzh": {
+			"name": "空語音識別",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "生成器闕如時之占位。",
+			"description_markdown": "生成器闕如時之占位。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音識別",
+				"生成器"
+			],
+			"provider": "fount"
+		},
+		"nl-NL": {
+			"name": "Lege spraakherkenning",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Plaatshouder wanneer geen generator beschikbaar is.",
+			"description_markdown": "Plaatshouder wanneer geen generator beschikbaar is.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"spraakherkenning",
+				"generator"
+			],
+			"provider": "fount"
+		},
+		"pt-PT": {
+			"name": "Reconhecimento de fala vazio",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Marcador quando não há gerador disponível.",
+			"description_markdown": "Marcador quando não há gerador disponível.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"reconhecimento de fala",
+				"gerador"
+			],
+			"provider": "fount"
+		},
+		"ru-RU": {
+			"name": "Пустое распознавание речи",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Заполнитель, когда генератор недоступен.",
+			"description_markdown": "Заполнитель, когда генератор недоступен.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"распознавание речи",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"uk-UA": {
+			"name": "Порожнє розпізнавання мови",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Заповнювач, коли генератор недоступний.",
+			"description_markdown": "Заповнювач, коли генератор недоступний.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"розпізнавання мови",
+				"генератор"
+			],
+			"provider": "fount"
+		},
+		"vi-VN": {
+			"name": "Nhận dạng giọng nói trống",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "Giữ chỗ khi không có trình tạo nào.",
+			"description_markdown": "Giữ chỗ khi không có trình tạo nào.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"nhận dạng giọng nói",
+				"trình tạo"
+			],
+			"provider": "fount"
+		},
+		"zh-TW": {
+			"name": "空語音辨識",
+			"avatar": "https://api.iconify.design/mdi/file-remove.svg",
+			"description": "產生器缺失時的占位。",
+			"description_markdown": "產生器缺失時的占位。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"語音辨識",
+				"產生器"
+			],
+			"provider": "fount"
+		}
+	}
+}

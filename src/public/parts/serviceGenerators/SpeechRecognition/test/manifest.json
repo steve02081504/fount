@@ -1,0 +1,22 @@
+{
+	"id": "serviceGenerators/SpeechRecognition",
+	"suites": [
+		{
+			"name": "pure",
+			"triggers": [
+				"src/public/parts/serviceGenerators/SpeechRecognition/**",
+				"src/decl/SpeechRecognitionSource.ts",
+				"src/decl/SpeechRecognitionSourceGenerator.ts"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/SpeechRecognition/mock/test/pure/"
+			]
+		}
+	]
+}
