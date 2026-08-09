@@ -2,10 +2,25 @@
  * ANSI 调色板、熔岩色阶与真彩 SGR 缓存。
  */
 
+/**
+ *
+ */
 export const RESET = '\x1b[0m'
+/**
+ *
+ */
 export const FG_AT = '\x1b[30m'
+/**
+ *
+ */
 export const FG_COL = '\x1b[96m'
+/**
+ *
+ */
 export const FG_SPLASH = '\x1b[36m'
+/**
+ *
+ */
 export const FG_TERRAIN = '\x1b[90m'
 
 /** 熔岩温度色阶（暗红 → 橙 → 亮黄），12 档。 */
@@ -23,6 +38,9 @@ const LAVA_RGB = [
 	[255, 210, 70],
 	[255, 230, 100],
 ]
+/**
+ *
+ */
 export const FG_BUBBLE = '\x1b[38;2;40;20;15m'
 
 /** SGR 缓存键：null / 未知前景。 */
@@ -39,7 +57,7 @@ const FG_PALETTE = [
 ]
 
 /** 各调色板条目的基准 RGB（真彩提亮目标）。 */
-const FG_RGB = /** @type {Record<string, number[]>} */ ({})
+const FG_RGB = /** @type {Record<string, number[]>} */ {}
 /** SGR 缓存键的调色板 id。 */
 const FG_ID = new Map()
 for (const [sgr, rgb, id] of FG_PALETTE) {
@@ -143,7 +161,7 @@ export const litSgr = (f, lift, ambient) => {
 }
 
 /** 共用同一 SGR 段的字形——每段 join 一次。 */
-export const runGlyphs = /** @type {string[]} */([])
+export const runGlyphs = /** @type {string[]} */[]
 
 /**
  * 将同一 SGR 的字形段刷入 `parts`。

@@ -6,7 +6,7 @@
  */
 
 import { neighborCoord } from './edges.mjs'
-import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
+import { MAT, LIQ_DRAW, isLiquidBarrier } from './mat.mjs'
 import { pushParticle } from './particle_pool.mjs'
 import { markAirIfDrawCrossed, markAirIfFillCrossed, strongestUp, inWorld, impartLiquidMomentum, cellRoom, cellFill } from './world/index.mjs'
 

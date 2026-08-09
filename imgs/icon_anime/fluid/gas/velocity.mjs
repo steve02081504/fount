@@ -7,7 +7,6 @@
  */
 
 import { hash01, fbm1d } from '../../hash.mjs'
-
 import {
 	GAS_DP_DRIVE, T_AMB,
 } from '../mat.mjs'

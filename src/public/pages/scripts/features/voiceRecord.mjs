@@ -39,6 +39,9 @@ export async function startVoiceRecording() {
 		rejectStop = reject
 	})
 
+	/**
+	 *
+	 */
 	mediaRecorder.onstop = () => {
 		try {
 			const type = mediaRecorder.mimeType || chunks[0]?.type || 'audio/webm'

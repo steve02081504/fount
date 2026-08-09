@@ -2,21 +2,16 @@
  * 纯测试：水 / 熔岩字形。
  */
 /* global Deno */
-import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
+import { assert, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
 
 import {
-	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, stepGas, stepParticles,
-	stepFluid, labelAirRegions, pressureAt, liquidPressureAt, condensedPressureAt, totalSealedGas, totalGridWater,
-	totalWorldWater, P_ATM, ATM_HYDRO, CELL_ASPECT, gravityDepth, gravityDownWeights,
-	clearMaterials, idx, RHO_G, RHO_AIR, LIQ_FULL, cellFill, cellRoom, inertiaMove, WATER_VISC, meltVisc,
-	COND_DRIP, COND_DRAW, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
+	MAT, createWorld, setMat, addLiquid, stepLiquid,
+	stepFluid,
+	clearMaterials, idx, COND_DRAW, SOIL_CAP, LIQ_DRAW,
 	waterChar, liquidChar, lavaChar, pickWaterGlyph, FALL_HEAVY,
 	WATER_STILL, WATER_FALL, WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR,
-	addMelt, T_MAX, T_AMB, viscOf, rhoOf, SUBSTANCE, viscGain, stepBubbles, stepThermal,
-	globalWindAt, windShear, gasVelocityAt, dynamicPressure,
-	staticPressureAt, spawnParticle, liftLiquidByWind, verticalGasDrag, GAS_DRAG, GAS_DRAG_Y,
-	applyGravityToWorld, PARTICLE_GRAVITY, condenseDripSource, depositParticleMass,
-	gravitySettleWeights, ST_DRY_FRAC, fillBlocked, isAirCell,
+	addMelt, T_MAX, viscOf, rhoOf, SUBSTANCE, viscGain,
+	applyGravityToWorld, PARTICLE_GRAVITY, condenseDripSource,
 } from '../fluid/index.mjs'
 
 Deno.test('fluid: condense drip glyph follows gravity, not screen-down', () => {

@@ -3,7 +3,6 @@
  */
 
 import { NEIGH8_DX, NEIGH8_DY, NEIGH8_UX, NEIGH8_UY, ORTHO_DX, ORTHO_DY } from '../../hash.mjs'
-
 import { isLiquidBarrier } from '../mat.mjs'
 
 import { isCondensed } from './cells.mjs'
@@ -91,9 +90,8 @@ export const fillCellDepths = (world) => {
 	const { worldW: W, worldH: H, gravity: { gx, gy }, gravityDepth0 } = world
 	const n = W * H
 	const depth = scratch(world, 'cellDepth', n, Float32Array)
-	let basis = /** @type {{ gx: number, gy: number, depth0: number, W: number, H: number } | undefined} */ (
-		world.scratch.cellDepthBasis
-	)
+	let basis = /** @type {{ gx: number, gy: number, depth0: number, W: number, H: number } | undefined} */ world.scratch.cellDepthBasis
+
 	if (!basis) {
 		basis = { gx: NaN, gy: NaN, depth0: NaN, W: 0, H: 0 }
 		world.scratch.cellDepthBasis = basis
@@ -151,9 +149,8 @@ export const buildDepthOrders = (world, shallowKey, deepKey, countsKey, depth) =
 	const d = depth || fillCellDepths(world)
 	const shallow = scratch(world, shallowKey, n, Int32Array)
 	const deep = scratch(world, deepKey, n, Int32Array)
-	let basis = /** @type {{ gx: number, gy: number, depth0: number, W: number, H: number, shallowKey: string, deepKey: string } | undefined} */ (
-		world.scratch.depthOrderBasis
-	)
+	let basis = /** @type {{ gx: number, gy: number, depth0: number, W: number, H: number, shallowKey: string, deepKey: string } | undefined} */ world.scratch.depthOrderBasis
+
 	if (
 		basis
 		&& basis.gx === gx && basis.gy === gy && basis.depth0 === gravityDepth0

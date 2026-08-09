@@ -4,6 +4,10 @@
 
 import { MAT, createWorld, setMat, addLiquid, clearMaterials } from '../fluid/index.mjs'
 
+/**
+ *
+ * @param opts
+ */
 const sealedBox = (opts = {}) => {
 	const world = createWorld({ width: 20, height: 16, margin: 2, bottomExtra: 2 })
 	clearMaterials(world)
@@ -20,4 +24,7 @@ const sealedBox = (opts = {}) => {
 	return world
 }
 
+/**
+ *
+ */
 export { sealedBox }

@@ -4,17 +4,23 @@
  */
 
 import {
-	buildSurface, buildSurfaceChars, buildOutline, walkSurface,
-} from './surface.mjs'
-import {
 	carveNoiseCaves, cellularCleanup, injectConnectors, carveIconFootprint,
 	caveNoiseOpens,
 } from './caves.mjs'
+import {
+	buildSurface, buildSurfaceChars, buildOutline, walkSurface,
+} from './surface.mjs'
 
+/**
+ *
+ */
 export {
 	TERRAIN_CH, TALL_LAND_FRACTION, TALL_LAND_HEIGHT_FRAC,
 	outlineChar, refreshTerrainGeometry,
 } from './surface.mjs'
+/**
+ *
+ */
 export { labelCavities } from './caves.mjs'
 
 /**

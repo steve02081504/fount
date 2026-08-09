@@ -63,27 +63,65 @@ const mockTermuxLifecycle = () => {
 	let exitListener = null
 	const fakeChild = {
 		stdout: {
+			/**
+			 *
+			 */
 			setEncoding() { /* noop */ },
+			/**
+			 *
+			 */
 			on() { /* noop */ },
+			/**
+			 *
+			 */
 			removeAllListeners() { /* noop */ },
 		},
+		/**
+		 *
+		 */
 		on() { /* noop */ },
+		/**
+		 *
+		 */
 		removeAllListeners() { /* noop */ },
+		/**
+		 *
+		 */
 		kill() { calls.push('kill') },
 	}
 	const stop = startTermuxAcquire(() => { /* noop */ }, {
+		/**
+		 *
+		 * @param cmd
+		 * @param args
+		 */
 		spawn: (cmd, args) => {
 			calls.push(['spawn', cmd, ...args])
 			return fakeChild
 		},
+		/**
+		 *
+		 * @param cmd
+		 * @param args
+		 */
 		spawnSync: (cmd, args) => {
 			calls.push(['spawnSync', cmd, ...args])
 			return { status: 0 }
 		},
 		process: {
+			/**
+			 *
+			 * @param event
+			 * @param listener
+			 */
 			on(event, listener) {
 				if (event === 'exit') exitListener = listener
 			},
+			/**
+			 *
+			 * @param event
+			 * @param listener
+			 */
 			off(event, listener) {
 				if (event === 'exit' && exitListener === listener) exitListener = null
 			},
@@ -92,6 +130,9 @@ const mockTermuxLifecycle = () => {
 	return {
 		calls,
 		stop,
+		/**
+		 *
+		 */
 		fireExit: () => {
 			exitListener?.()
 		},
