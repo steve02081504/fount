@@ -1,0 +1,86 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Xiaomi MiMo Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Xiaomi MiMo batch speech recognition (endpoint configurable).",
+			"description_markdown": "Xiaomi MiMo batch speech recognition (endpoint configurable).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "小米 MiMo 语音识别生成器",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "小米 MiMo 批量识别（可改 endpoint）。",
+			"description_markdown": "小米 MiMo 批量识别（可改 endpoint）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Xiaomi MiMo Speech Recognition",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "Xiaomi MiMo batch speech recognition (endpoint configurable).",
+			"description_markdown": "Xiaomi MiMo batch speech recognition (endpoint configurable).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			],
+			"provider": "xiaomi"
+		},
+		"zh-CN": {
+			"name": "小米 MiMo 语音识别",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "小米 MiMo 批量识别（可改 endpoint）。",
+			"description_markdown": "小米 MiMo 批量识别（可改 endpoint）。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "xiaomi"
+		},
+		"emoji": {
+			"name": "🎙️",
+			"avatar": "https://api.iconify.design/simple-icons/xiaomi.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xiaomimimo.com/",
+			"tags": [
+				"🎙️"
+			],
+			"provider": "xiaomi"
+		}
+	}
+}

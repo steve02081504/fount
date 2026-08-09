@@ -5,8 +5,11 @@
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】../../../../scripts/template、../../../../scripts/toast、../src/composerAttachments
  */
+import { appendRecognizedText, hasSpeechRecognitionSource, recognizeBuffer } from '../../../../scripts/features/speechRecognition.mjs'
+import { confirmAction } from '../../../../scripts/features/promptDialog.mjs'
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { startVoiceRecording } from '../../../../scripts/features/voiceRecord.mjs'
 import { handleFilesSelect } from '../src/composerAttachments.mjs'
 
 import { setComposerExtrasVisible } from './composerExtras.mjs'
@@ -29,10 +32,8 @@ async function setVoiceBtnIcon(recording) {
 }
 
 let isRecording = false
-/** @type {MediaRecorder|null} */
-let mediaRecorder = null
-/** @type {Blob[]} */
-let audioChunks = []
+/** @type {Awaited<ReturnType<typeof startVoiceRecording>> | null} */
+let voiceSession = null
 
 /**
  * @returns {HTMLElement|null} 附件预览容器
@@ -54,13 +55,15 @@ export function clearSelectedFiles() {
 
 /**
  * @param {Event} event 文件选择或拖放事件
- * @returns {Promise<void>}
+ * @returns {Promise<object[]>} 新加入的附件对象
  */
 export async function addFilesFromEvent(event) {
 	const container = previewContainer()
-	if (!container) return
+	if (!container) return []
+	const before = selectedFiles.length
 	await handleFilesSelect(event, selectedFiles, container)
 	if (selectedFiles.length) setComposerExtrasVisible(true)
+	return selectedFiles.slice(before)
 }
 
 /**
@@ -79,6 +82,57 @@ export function pickPhoto() {
 }
 
 /**
+ * 录音结束后询问是否识别并填入输入框。
+ * @param {object} fileObj 附件对象
+ * @param {File} rawFile 原始文件
+ * @returns {Promise<void>}
+ */
+async function maybeRecognizeVoiceAttachment(fileObj, rawFile) {
+	if (!await hasSpeechRecognitionSource()) return
+	const ok = await confirmAction('chat.voiceRecording.confirmSpeechRecognition')
+	if (!ok) return
+	try {
+		const result = await recognizeBuffer({
+			audio: rawFile,
+			mime_type: rawFile.type,
+			name: rawFile.name,
+			/**
+			 * @param {{ text: string }} partial 增量
+			 * @returns {void}
+			 */
+			onPreview: (partial) => {
+				const input = document.getElementById('message-input')
+				if (input instanceof HTMLTextAreaElement) {
+					const base = input.dataset.speechRecognitionBase ?? input.value
+					input.dataset.speechRecognitionBase = base
+					input.value = base
+						? `${base}${/\s$/.test(base) ? '' : ' '}${partial.text}`
+						: partial.text
+				}
+			},
+		})
+		const input = document.getElementById('message-input')
+		if (input instanceof HTMLTextAreaElement) {
+			const base = input.dataset.speechRecognitionBase ?? ''
+			delete input.dataset.speechRecognitionBase
+			input.value = base
+			appendRecognizedText(input, result.text)
+		}
+		fileObj.description = result.text
+		const preview = document.getElementById(`attachment-${CSS.escape?.(fileObj.name) || fileObj.name}`)
+			|| document.querySelector(`[id^="attachment-"][id*="${CSS.escape?.(String(selectedFiles.indexOf(fileObj))) || ''}"]`)
+		preview?.querySelector('.attachment-transcript')?.remove()
+		const caption = document.createElement('p')
+		caption.className = 'attachment-transcript text-xs opacity-70 mt-1'
+		caption.textContent = result.text
+		preview?.appendChild(caption)
+	}
+	catch (error) {
+		showToastI18n('error', 'chat.voiceRecording.speechRecognitionFailed', { error: error?.message || String(error) })
+	}
+}
+
+/**
  * 切换语音录制。
  * @returns {Promise<void>}
  */
@@ -87,35 +141,20 @@ export async function toggleVoiceRecording() {
 	if (!voiceButton) return
 
 	if (isRecording) {
-		mediaRecorder?.stop()
+		const session = voiceSession
+		voiceSession = null
 		await setVoiceBtnIcon(false)
-		while (isRecording)
-			await new Promise(r => setTimeout(r, 100))
-
+		isRecording = false
+		const file = await session?.stop()
+		if (!file) return
+		const added = await addFilesFromEvent({ target: { files: [file] } })
+		const fileObj = added[0]
+		if (fileObj) await maybeRecognizeVoiceAttachment(fileObj, file)
 		return
 	}
 
 	try {
-		const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-		mediaRecorder = new MediaRecorder(stream)
-		audioChunks = []
-		/**
-		 * @param {BlobEvent} e 录音数据块事件
-		 * @returns {void}
-		 */
-		mediaRecorder.ondataavailable = e => { audioChunks.push(e.data) }
-		/**
-		 * 录音结束：组装 wav 文件并加入待发附件队列。
-		 * @returns {Promise<void>}
-		 */
-		mediaRecorder.onstop = async () => {
-			const audioBlob = new Blob(audioChunks, { type: 'audio/wav' })
-			const audioFile = new File([audioBlob], `voice_message_${Date.now()}.wav`, { type: 'audio/wav' })
-			stream.getTracks().forEach(t => t.stop())
-			isRecording = false
-			await addFilesFromEvent({ target: { files: [audioFile] } })
-		}
-		mediaRecorder.start()
+		voiceSession = await startVoiceRecording()
 		await setVoiceBtnIcon(true)
 		isRecording = true
 	}
@@ -129,9 +168,11 @@ export async function toggleVoiceRecording() {
  * @returns {Promise<void>}
  */
 export async function stopVoiceIfRecording() {
-	if (isRecording && mediaRecorder) {
-		mediaRecorder.stop()
-		while (isRecording)
-			await new Promise(r => setTimeout(r, 50))
+	if (isRecording && voiceSession) {
+		const session = voiceSession
+		voiceSession = null
+		isRecording = false
+		await setVoiceBtnIcon(false)
+		await session.stop().catch(() => null)
 	}
 }

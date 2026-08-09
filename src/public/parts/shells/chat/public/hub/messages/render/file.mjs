@@ -10,11 +10,38 @@ import { onElementRemoved } from '../../../../../../scripts/lib/onElementRemoved
 import { fetchGroupFileAsBlobUrl } from '../../../src/groupFileBlob.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { hasSpeechRecognitionSource } from '/scripts/features/speechRecognition.mjs'
+import { getCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
 import { store } from '../../core/state.mjs'
 
 import { getMessageText } from './text.mjs'
 
 const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
+
+/** @type {boolean | null} */
+let speechRecognitionMenuReady = null
+
+/**
+ * 若已配置语音识别，显示消息内音频菜单的识别项，并回填本地缓存转写。
+ * @param {ParentNode} root 根
+ * @returns {Promise<void>}
+ */
+export async function revealMessageAudioSpeechRecognitionItems(root) {
+	if (!root?.querySelectorAll) return
+	speechRecognitionMenuReady ??= await hasSpeechRecognitionSource()
+	if (!speechRecognitionMenuReady) return
+	for (const item of root.querySelectorAll('.message-audio-speech-recognition-item'))
+		item.classList.remove('hidden')
+	for (const block of root.querySelectorAll('.message-inline-audio[data-group-file-id]')) {
+		const fileId = block.getAttribute('data-group-file-id')
+		const caption = block.querySelector('.attachment-transcript')
+		if (!(caption instanceof HTMLElement) || caption.textContent?.trim()) continue
+		const cached = getCachedSpeechRecognitionTranscript(fileId)
+		if (!cached) continue
+		caption.textContent = cached
+		caption.classList.remove('hidden')
+	}
+}
 
 /** @type {Map<string, string>} blobUrl → `${groupId}:${channelId}` */
 const trackedBlobUrls = new Map()
@@ -124,7 +151,14 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 			return renderTemplateAsHtmlString('hub/messages/media_error', {})
 		if (mime.startsWith('video/'))
 			return renderTemplateAsHtmlString('hub/messages/inline_video', { src: escapeHtml(blobUrl) })
-		return renderTemplateAsHtmlString('hub/messages/inline_audio', { src: escapeHtml(blobUrl) })
+		const transcript = escapeHtml(meta.description || '')
+		return renderTemplateAsHtmlString('hub/messages/inline_audio', {
+			src: escapeHtml(blobUrl),
+			fileId: escapeHtml(id),
+			fileName,
+			transcript,
+			hasTranscript: transcript ? '1' : '',
+		})
 	}
 	if (lazy)
 		return renderTemplateAsHtmlString('hub/messages/media_placeholder', {
@@ -161,7 +195,12 @@ export async function renderMessageFileIdsHtml(message) {
 		rows.push(await renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt))
 	}
 	if (!rows.length) return ''
-	return `<div class="message-files flex flex-col gap-1 mt-1">${rows.join('')}</div>`
+	const html = `<div class="message-files flex flex-col gap-1 mt-1">${rows.join('')}</div>`
+	queueMicrotask(() => {
+		const host = document.getElementById('messages')
+		if (host) void revealMessageAudioSpeechRecognitionItems(host)
+	})
+	return html
 }
 
 /**
@@ -195,7 +234,13 @@ export function wireMessageMediaPlaceholders(container) {
 			const html = mime.startsWith('video/')
 				? await renderTemplateAsHtmlString('hub/messages/inline_video', { src })
 				: mime.startsWith('audio/')
-					? await renderTemplateAsHtmlString('hub/messages/inline_audio', { src })
+					? await renderTemplateAsHtmlString('hub/messages/inline_audio', {
+						src,
+						fileId: escapeHtml(fileId),
+						fileName: escapeHtml(placeholder.querySelector('.truncate')?.textContent || fileId),
+						transcript: '',
+						hasTranscript: '',
+					})
 					: await renderTemplateAsHtmlString('hub/messages/inline_image', {
 						fileName: escapeHtml(placeholder.querySelector('.truncate')?.textContent || fileId),
 						src,
@@ -208,6 +253,7 @@ export function wireMessageMediaPlaceholders(container) {
 			}
 			placeholder.replaceWith(node)
 			bindBlobUrlCleanup(node.parentElement)
+			if (mime.startsWith('audio/')) void revealMessageAudioSpeechRecognitionItems(node)
 		}
 		catch (error) {
 			revokeTrackedBlobUrl(blobUrl)

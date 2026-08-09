@@ -239,7 +239,9 @@ export async function addComposerMedia(files) {
 			? 'image'
 			: file.type.startsWith('video/')
 				? 'video'
-				: 'file'
+				: file.type.startsWith('audio/')
+					? 'audio'
+					: 'file'
 		state.pendingMediaRefs.push({
 			kind,
 			name: file.name,

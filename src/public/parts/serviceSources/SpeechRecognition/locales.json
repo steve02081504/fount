@@ -1,0 +1,50 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Speech Recognition Sources",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Mounting hub for speech recognition service instances.",
+			"description_markdown": "Root for instantiated speech recognition sources.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"system",
+				"root",
+				"speechRecognition",
+				"sources",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "语音识别服务源",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "已实例化的语音识别服务挂载点",
+			"description_markdown": "语音识别服务实例的根节点。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根节点",
+				"语音识别",
+				"服务源",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "🎙️💎",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "🎙️➡️📦",
+			"description_markdown": "🎙️➡️📦",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"💎",
+				"⛲"
+			]
+		}
+	}
+}

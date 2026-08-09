@@ -1,0 +1,86 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Polling Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Round-robin across speech recognition sources.",
+			"description_markdown": "Round-robin across speech recognition sources.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "轮询语音识别生成器",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "在多个识别源间轮询。",
+			"description_markdown": "在多个识别源间轮询。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Polling Speech Recognition",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "Round-robin across speech recognition sources.",
+			"description_markdown": "Round-robin across speech recognition sources.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			],
+			"provider": "fount"
+		},
+		"zh-CN": {
+			"name": "轮询语音识别",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "在多个识别源间轮询。",
+			"description_markdown": "在多个识别源间轮询。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "fount"
+		},
+		"emoji": {
+			"name": "🎙️",
+			"avatar": "https://api.iconify.design/mdi/rotate-orbit.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️"
+			],
+			"provider": "fount"
+		}
+	}
+}

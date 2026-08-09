@@ -1,0 +1,50 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Speech Recognition Service Generators",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "Factory hub for speech recognition service sources.",
+			"description_markdown": "Root component for speech recognition generators.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"system",
+				"root",
+				"speechRecognition",
+				"generator",
+				"fount"
+			]
+		},
+		"zh-CN": {
+			"name": "语音识别服务生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "生产语音识别服务源的工厂根节点",
+			"description_markdown": "语音识别生成器模块的根节点。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"系统",
+				"根节点",
+				"语音识别",
+				"生成器",
+				"fount"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭",
+			"avatar": "https://api.iconify.design/mdi/microphone-message.svg",
+			"description": "🎙️➡️🏭",
+			"description_markdown": "🎙️➡️🏭",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🎙️",
+				"🏭",
+				"⛲"
+			]
+		}
+	}
+}

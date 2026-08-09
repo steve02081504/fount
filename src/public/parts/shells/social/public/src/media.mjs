@@ -19,7 +19,9 @@ export async function uploadMedia(files) {
 			? 'image'
 			: file.type.startsWith('video/')
 				? 'video'
-				: 'file'
+				: file.type.startsWith('audio/')
+					? 'audio'
+					: 'file'
 		refs.push({
 			entityHash: uploaded.entityHash,
 			path: uploaded.path,

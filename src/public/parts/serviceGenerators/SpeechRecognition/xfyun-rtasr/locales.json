@@ -1,0 +1,86 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "iFlytek RTASR Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek office RTASR streaming.",
+			"description_markdown": "iFlytek office RTASR streaming.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "讯飞实时转写生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "讯飞办公实时转写流式。",
+			"description_markdown": "讯飞办公实时转写流式。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "iFlytek RTASR Speech Recognition",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "iFlytek office RTASR streaming.",
+			"description_markdown": "iFlytek office RTASR streaming.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			],
+			"provider": "xfyun"
+		},
+		"zh-CN": {
+			"name": "讯飞实时转写",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "讯飞办公实时转写流式。",
+			"description_markdown": "讯飞办公实时转写流式。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "xfyun"
+		},
+		"emoji": {
+			"name": "🎙️",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.xfyun.cn/",
+			"tags": [
+				"🎙️"
+			],
+			"provider": "xfyun"
+		}
+	}
+}

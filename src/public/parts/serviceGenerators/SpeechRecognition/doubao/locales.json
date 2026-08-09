@@ -1,0 +1,86 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Doubao Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Volcengine SAUC streaming speech recognition.",
+			"description_markdown": "Volcengine SAUC streaming speech recognition.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "豆包语音识别生成器",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "火山引擎 SAUC 流式识别。",
+			"description_markdown": "火山引擎 SAUC 流式识别。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "Doubao Speech Recognition",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "Volcengine SAUC streaming speech recognition.",
+			"description_markdown": "Volcengine SAUC streaming speech recognition.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			],
+			"provider": "volcengine"
+		},
+		"zh-CN": {
+			"name": "豆包语音识别",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "火山引擎 SAUC 流式识别。",
+			"description_markdown": "火山引擎 SAUC 流式识别。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "volcengine"
+		},
+		"emoji": {
+			"name": "🎙️",
+			"avatar": "https://api.iconify.design/mdi/microphone.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://www.volcengine.com/",
+			"tags": [
+				"🎙️"
+			],
+			"provider": "volcengine"
+		}
+	}
+}

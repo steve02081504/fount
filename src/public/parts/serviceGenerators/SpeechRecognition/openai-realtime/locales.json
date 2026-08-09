@@ -1,0 +1,86 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "OpenAI Realtime Speech Recognition Generator",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime transcription WS.",
+			"description_markdown": "OpenAI Realtime transcription WS.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			]
+		},
+		"zh-CN": {
+			"name": "OpenAI Realtime 语音识别生成器",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime 流式转写。",
+			"description_markdown": "OpenAI Realtime 流式转写。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			]
+		},
+		"emoji": {
+			"name": "🎙️🏭",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"🎙️",
+				"🏭"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"name": "OpenAI Realtime Speech Recognition",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime transcription WS.",
+			"description_markdown": "OpenAI Realtime transcription WS.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"speechRecognition",
+				"generator"
+			],
+			"provider": "openai"
+		},
+		"zh-CN": {
+			"name": "OpenAI Realtime 语音识别",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OpenAI Realtime 流式转写。",
+			"description_markdown": "OpenAI Realtime 流式转写。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"语音识别",
+				"生成器"
+			],
+			"provider": "openai"
+		},
+		"emoji": {
+			"name": "🎙️",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "🎙️➡️📝",
+			"description_markdown": "🎙️➡️📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://platform.openai.com/",
+			"tags": [
+				"🎙️"
+			],
+			"provider": "openai"
+		}
+	}
+}

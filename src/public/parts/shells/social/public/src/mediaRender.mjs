@@ -29,6 +29,18 @@ function renderMediaItem(ref, index) {
 		return `<div class="post-media-slide" data-media-index="${index}" data-media-video>
 			<video src="${escapeHtml(url)}" muted loop playsinline preload="metadata" class="post-media-item post-media-video"></video>
 		</div>`
+	if (kind === 'audio' || mimeType.startsWith('audio/'))
+		return `<div class="post-media-slide post-media-audio" data-media-index="${index}" data-media-audio>
+			<audio src="${escapeHtml(url)}" controls preload="metadata" class="post-media-item"></audio>
+			${alt ? `<p class="attachment-transcript text-xs opacity-70" user-content>${alt}</p>` : ''}
+			<details class="dropdown post-audio-menu">
+				<summary class="btn btn-ghost btn-xs" data-i18n="chat.attachment.buttons.more"></summary>
+				<ul class="menu menu-sm bg-base-100 rounded-box shadow border border-base-300 w-36 p-1">
+					<li><a href="${escapeHtml(url)}" download data-i18n="chat.attachment.buttons.download"></a></li>
+					<li><button type="button" class="post-audio-speech-recognition" data-media-url="${escapeHtml(url)}" data-media-alt-key="${index}" data-i18n="chat.attachment.buttons.recognize"></button></li>
+				</ul>
+			</details>
+		</div>`
 	return `<a href="${escapeHtml(url)}" class="post-media-slide post-media-file link-btn" download>${escapeHtml(ref.name || 'file')}</a>`
 }
 
@@ -225,6 +237,13 @@ export function renderMediaPreview(container, refs, onChange, options = {}) {
 			video.muted = true
 			chip.appendChild(video)
 		}
+		else if (ref.kind === 'audio') {
+			const audio = document.createElement('audio')
+			audio.src = url
+			audio.controls = true
+			audio.className = 'media-chip-audio'
+			chip.appendChild(audio)
+		}
 		else
 			chip.textContent = ref.name || ref.path?.split('/').pop() || 'file'
 
@@ -232,12 +251,39 @@ export function renderMediaPreview(container, refs, onChange, options = {}) {
 		altInput.type = 'text'
 		altInput.className = 'media-chip-alt input input-bordered input-xs'
 		altInput.maxLength = 1500
-		altInput.dataset.i18n = 'social.composer.media'
+		altInput.dataset.i18n = ref.kind === 'audio' ? 'social.composer.audioTranscript' : 'social.composer.media'
 		altInput.value = ref.alt || ''
 		altInput.addEventListener('input', () => {
 			ref.alt = altInput.value.trim()
 		})
 		chip.appendChild(altInput)
+
+		if (ref.kind === 'audio') {
+			const recognizeBtn = document.createElement('button')
+			recognizeBtn.type = 'button'
+			recognizeBtn.className = 'media-chip-speech-recognition btn btn-ghost btn-xs'
+			recognizeBtn.dataset.i18n = 'chat.attachment.buttons.recognize'
+			recognizeBtn.addEventListener('click', async () => {
+				try {
+					const { hasSpeechRecognitionSource, recognizeBuffer } = await import('/scripts/features/speechRecognition.mjs')
+					if (!await hasSpeechRecognitionSource()) return
+					const file = ref.file
+					if (!(file instanceof Blob)) return
+					const result = await recognizeBuffer({
+						audio: file,
+						mime_type: ref.mimeType,
+						name: ref.name,
+					})
+					ref.alt = result.text
+					altInput.value = result.text
+				}
+				catch (error) {
+					const { showToastI18n } = await import('/scripts/features/toast.mjs')
+					showToastI18n('error', 'social.composer.speechRecognitionFailed', { error: error?.message || String(error) })
+				}
+			})
+			chip.appendChild(recognizeBtn)
+		}
 
 		const remove = document.createElement('button')
 		remove.type = 'button'
