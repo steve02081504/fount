@@ -54,7 +54,11 @@ async function GetSource(config) {
 			const wav = pcmToWav(pcm)
 			const form = new FormData()
 			form.append('model', model)
-			form.append('language', normalizeLang(options.language, 'auto'))
+			const rawLang = String(options.language || '').trim().toLowerCase()
+			if (rawLang && rawLang !== 'auto') {
+				const language = normalizeLang(options.language, 'short')
+				if (/^[a-z]{2}$/.test(language)) form.append('language', language)
+			}
 			if (options.hotwords?.length)
 				form.append('prompt', options.hotwords.join(', '))
 			form.append('file', new Blob([wav], { type: 'audio/wav' }), 'audio.wav')

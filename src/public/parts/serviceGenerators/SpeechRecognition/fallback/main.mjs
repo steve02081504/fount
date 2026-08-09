@@ -42,15 +42,15 @@ const configTemplate = {
  */
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
-	let sources
-	try {
-		sources = await Promise.all(config.sources.map(source => loadSpeechRecognitionSourceFromNameOrConfigData(username, source, unnamedSources, {
-			SaveConfig
-		})))
-	} catch (e) {
+	const settled = await Promise.allSettled(config.sources.map(source => loadSpeechRecognitionSourceFromNameOrConfigData(username, source, unnamedSources, {
+		SaveConfig
+	})))
+	const failed = settled.find(entry => entry.status === 'rejected')
+	if (failed) {
 		await Promise.all(unnamedSources.map(source => source?.Unload?.()))
-		throw e
+		throw failed.reason
 	}
+	const sources = settled.map(entry => /** @type {PromiseFulfilledResult<SpeechRecognitionSource_t>} */entry.value)
 	return {
 		type: 'speech-recognition',
 		info: buildSourceInfo(product_info, { name: config.name, provider: config.provider || 'unknown' }),

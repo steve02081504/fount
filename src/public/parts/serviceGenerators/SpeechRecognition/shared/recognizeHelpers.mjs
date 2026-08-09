@@ -127,10 +127,10 @@ export function openWs(url, opts = {}) {
  * @returns {string} 文本
  */
 export function extractRtasrText(resultData) {
-	let out = ''
-	for (const rt of resultData?.cn?.st?.rt || [])
-		for (const ws of rt.ws || [])
-			for (const cw of ws.cw || [])
-				out += cw.w || ''
-	return out
+	let text = ''
+	for (const recognitionResult of resultData?.cn?.st?.rt || [])
+		for (const wordSegment of recognitionResult.ws || [])
+			for (const candidateWord of wordSegment.cw || [])
+				text += candidateWord.w || ''
+	return text
 }

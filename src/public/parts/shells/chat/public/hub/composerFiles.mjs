@@ -32,8 +32,8 @@ async function setVoiceBtnIcon(recording) {
 }
 
 let isRecording = false
-/** @type {Awaited<ReturnType<typeof startVoiceRecording>> | null} */
-let voiceSession = null
+/** @type {Promise<Awaited<ReturnType<typeof startVoiceRecording>>> | null} */
+let voiceSessionPromise = null
 
 /**
  * @returns {HTMLElement|null} 附件预览容器
@@ -151,24 +151,34 @@ export async function toggleVoiceRecording() {
 	if (!voiceButton) return
 
 	if (isRecording) {
-		const session = voiceSession
-		voiceSession = null
-		await setVoiceBtnIcon(false)
+		const sessionPromise = voiceSessionPromise
+		voiceSessionPromise = null
 		isRecording = false
-		const file = await session?.stop()
-		if (!file) return
-		const [added] = await addFilesFromEvent({ target: { files: [file] } })
-		if (added) await maybeRecognizeVoiceAttachment(added.file, added.element, file)
+		await setVoiceBtnIcon(false)
+		try {
+			const session = await sessionPromise
+			const file = await session?.stop()
+			if (!file) return
+			const [added] = await addFilesFromEvent({ target: { files: [file] } })
+			if (added) await maybeRecognizeVoiceAttachment(added.file, added.element, file)
+		}
+		catch { /* 启动失败或 stop 失败时忽略 */ }
 		return
 	}
 
+	isRecording = true
+	const starting = startVoiceRecording()
+	voiceSessionPromise = starting
 	try {
-		isRecording = true
-		voiceSession = await startVoiceRecording()
+		await starting
+		if (voiceSessionPromise !== starting) return
 		await setVoiceBtnIcon(true)
 	}
 	catch {
+		if (voiceSessionPromise !== starting) return
+		voiceSessionPromise = null
 		isRecording = false
+		await setVoiceBtnIcon(false)
 		showToastI18n('error', 'chat.voiceRecording.errorAccessingMicrophone')
 	}
 }
@@ -178,11 +188,14 @@ export async function toggleVoiceRecording() {
  * @returns {Promise<void>}
  */
 export async function stopVoiceIfRecording() {
-	if (isRecording && voiceSession) {
-		const session = voiceSession
-		voiceSession = null
-		isRecording = false
-		await setVoiceBtnIcon(false)
-		await session.stop().catch(() => null)
+	if (!isRecording) return
+	const sessionPromise = voiceSessionPromise
+	voiceSessionPromise = null
+	isRecording = false
+	await setVoiceBtnIcon(false)
+	try {
+		const session = await sessionPromise
+		await session?.stop()
 	}
+	catch { /* ignore */ }
 }

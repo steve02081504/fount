@@ -42,28 +42,7 @@ function base64ToBlob(base64, mimeType) {
 }
 
 /**
- * 将文件读取为 ArrayBuffer。
- * @param {File} file 文件
- * @returns {Promise<ArrayBuffer>} 字节
- */
-function readFileAsArrayBuffer(file) {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader()
-		/**
-		 * @param {ProgressEvent<FileReader>} e 读取完成事件
-		 * @returns {void}
-		 */
-		reader.onload = e => resolve(e.target.result)
-		/**
-		 * @returns {void}
-		 */
-		reader.onerror = () => reject(reader.error || new Error('read failed'))
-		reader.readAsArrayBuffer(file)
-	})
-}
-
-/**
- * 处理文件选择。按原始文件顺序依次读取与渲染，避免 FileReader 异步完成顺序打乱附件顺序。
+ * 处理文件选择。按原始文件顺序依次读取与渲染，避免异步完成顺序打乱附件顺序。
  * @param {Event} event - 事件。
  * @param {Array<object>} selectedFiles - 已选择的文件。
  * @param {HTMLElement} attachmentPreviewContainer - 附件预览容器。
@@ -79,7 +58,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 		const newFile = {
 			name: file.name,
 			mime_type: file.type,
-			buffer: arrayBufferToBase64(await readFileAsArrayBuffer(file)),
+			buffer: arrayBufferToBase64(await file.arrayBuffer()),
 			description: '',
 		}
 		selectedFiles.push(newFile)

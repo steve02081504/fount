@@ -43,11 +43,18 @@ const configTemplate = {
  */
 function sleep(ms, signal) {
 	return new Promise((resolve, reject) => {
-		const timer = setTimeout(resolve, ms)
-		signal?.addEventListener('abort', () => {
+		/**
+		 * @returns {void}
+		 */
+		const onAbort = () => {
 			clearTimeout(timer)
 			reject(signal.reason instanceof Error ? signal.reason : new Error('aborted'))
-		}, { once: true })
+		}
+		const timer = setTimeout(() => {
+			signal?.removeEventListener('abort', onAbort)
+			resolve()
+		}, ms)
+		signal?.addEventListener('abort', onAbort)
 	})
 }
 

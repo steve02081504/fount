@@ -132,7 +132,7 @@ let revealScheduled = false
  * 合并调度 `revealMessageAudioSpeechRecognitionItems(#messages)`：同一微任务队列内只执行一次。
  * @returns {void}
  */
-function scheduleRevealMessageAudioSpeechRecognitionItems() {
+export function scheduleRevealMessageAudioSpeechRecognitionItems() {
 	if (revealScheduled) return
 	revealScheduled = true
 	queueMicrotask(() => {
@@ -220,9 +220,7 @@ export async function renderMessageFileIdsHtml(message) {
 		rows.push(await renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt))
 	}
 	if (!rows.length) return ''
-	const html = `<div class="message-files flex flex-col gap-1 mt-1">${rows.join('')}</div>`
-	scheduleRevealMessageAudioSpeechRecognitionItems()
-	return html
+	return `<div class="message-files flex flex-col gap-1 mt-1">${rows.join('')}</div>`
 }
 
 /**

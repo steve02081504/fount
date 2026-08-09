@@ -169,6 +169,7 @@ export function registerSpeechRecognitionRoutes(router) {
 
 		ws.on('close', () => {
 			abort.abort()
+			resolveReady?.()
 			resolveEnded?.()
 		})
 	})

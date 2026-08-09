@@ -33,7 +33,7 @@ function renderMediaItem(ref, index) {
 		return `<div class="post-media-slide" data-media-index="${index}" data-media-video>
 			<video src="${escapeHtml(url)}" muted loop playsinline preload="metadata" class="post-media-item post-media-video"></video>
 		</div>`
-	if (kind === 'audio' || mimeType.startsWith('audio/')) {
+	if (kind === 'audio') {
 		const transcript = escapeHtml(String(ref.alt || ''))
 		return `<div class="post-media-slide post-media-audio" data-media-index="${index}" data-media-audio>
 			<audio src="${escapeHtml(url)}" controls preload="metadata" class="post-media-item"></audio>
@@ -157,10 +157,23 @@ async function recognizePostAudio(button) {
 	const url = button.dataset.mediaUrl
 	if (!url) return
 	const slide = button.closest('.post-media-audio')
-	let caption = slide?.querySelector('.attachment-transcript')
+	/**
+	 * @param {string} text 转写文本
+	 * @returns {void}
+	 */
+	const applyTranscript = (text) => {
+		let caption = slide?.querySelector('.attachment-transcript')
+		if (!caption) {
+			caption = document.createElement('p')
+			caption.className = 'attachment-transcript text-xs opacity-70'
+			caption.setAttribute('user-content', '')
+			slide?.querySelector('audio')?.after(caption)
+		}
+		caption.textContent = text
+	}
 	const cached = getCachedSpeechRecognitionTranscript(url)
 	if (cached) {
-		if (caption) caption.textContent = cached
+		applyTranscript(cached)
 		return
 	}
 	button.disabled = true
@@ -168,13 +181,7 @@ async function recognizePostAudio(button) {
 		const { buffer, mimeType } = await fetchMediaRef({ url })
 		const result = await recognizeBuffer({ audio: new Uint8Array(buffer), mime_type: mimeType })
 		setCachedSpeechRecognitionTranscript(url, result.text)
-		if (!caption) {
-			caption = document.createElement('p')
-			caption.className = 'attachment-transcript text-xs opacity-70'
-			caption.setAttribute('user-content', '')
-			slide?.querySelector('audio')?.after(caption)
-		}
-		caption.textContent = result.text
+		applyTranscript(result.text)
 	}
 	catch (error) {
 		showToastI18n('error', 'chat.voiceRecording.speechRecognitionFailed', { error: error?.message || String(error) })

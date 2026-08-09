@@ -58,16 +58,16 @@ function parseJsonField(value) {
 function parseFastResult(result) {
 	const parsed = parseJsonField(result)
 	if (!parsed) return typeof result === 'string' ? result : ''
-	let out = ''
+	let text = ''
 	for (const item of parsed.lattice || []) {
 		const best = parseJsonField(item.json_1best)
 		if (!best) continue
-		for (const rt of best.st?.rt || [])
-			for (const ws of rt.ws || [])
-				for (const cw of ws.cw || [])
-					out += cw.w || ''
+		for (const recognitionResult of best.st?.rt || [])
+			for (const wordSegment of recognitionResult.ws || [])
+				for (const candidateWord of wordSegment.cw || [])
+					text += candidateWord.w || ''
 	}
-	return out
+	return text
 }
 
 /**

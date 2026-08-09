@@ -77,7 +77,7 @@ function decodePayload(msg) {
 function applySegment(segments, decoded, lastText) {
 	const { piece, pgs, rg, sn } = decoded
 	if (pgs === 'rpl' && Array.isArray(rg) && rg.length >= 2) {
-		for (let i = rg[0]; i <= rg[1]; i++) segments.delete(i)
+		for (let segmentIndex = rg[0]; segmentIndex <= rg[1]; segmentIndex++) segments.delete(segmentIndex)
 		segments.set(sn, piece)
 		return buildSegmentText(segments)
 	}

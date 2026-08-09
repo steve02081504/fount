@@ -143,6 +143,7 @@ export async function openSpeechRecognitionSession({
 	ws.binaryType = 'arraybuffer'
 
 	let finalSettled = false
+	let closedIntentionally = false
 	/** @type {(value: any) => void} */
 	let resolveFinal
 	/** @type {(reason?: any) => void} */
@@ -181,7 +182,9 @@ export async function openSpeechRecognitionSession({
 	})
 
 	ws.addEventListener('close', () => {
-		if (!finalSettled) rejectFinal(new Error('SpeechRecognition websocket closed unexpectedly'))
+		if (finalSettled) return
+		if (closedIntentionally) resolveFinal({ text: '' })
+		else rejectFinal(new Error('SpeechRecognition websocket closed unexpectedly'))
 	})
 
 	ws.send(JSON.stringify({ type: 'start', language, hotwords }))
@@ -210,6 +213,8 @@ export async function openSpeechRecognitionSession({
 		 * @returns {void}
 		 */
 		close: () => {
+			closedIntentionally = true
+			if (!finalSettled) resolveFinal({ text: '' })
 			try { ws.close() } catch { /* ignore */ }
 		},
 	}
