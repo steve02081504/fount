@@ -77,6 +77,7 @@ export async function ensureArchiveIndexed(username, groupId, channelId) {
 
 	const indexDir = groupSearchIndexPath(username, groupId)
 	const meta = await patchShardMeta(indexDir, channelId, {})
+	if (!meta) return
 	const coverage = meta.coverage || {}
 	const pending = months.filter(month => !coverage[month])
 	if (!pending.length) return

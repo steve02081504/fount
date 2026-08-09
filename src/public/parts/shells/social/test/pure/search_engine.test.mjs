@@ -2,7 +2,8 @@
  * 共享搜索引擎纯测试。
  */
 /* global Deno */
-import { mkdtempSync, rmSync } from 'node:fs'
+import { existsSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs'
+import { rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -81,4 +82,65 @@ Deno.test('patchShardMeta stores coverage watermark', async () => {
 
 Deno.test('tokenizeForQuery matches index tokens', () => {
 	assertEquals(tokenizeForQuery('测试').sort().join(','), tokenizeForIndex('测试').sort().join(','))
+})
+
+Deno.test('indexDocument does not recreate a deleted index parent tree', async () => {
+	const root = mkdtempSync(join(tmpdir(), 'fount_search_gone_'))
+	const groupDir = join(root, 'group')
+	const indexDir = join(groupDir, 'search')
+	try {
+		mkdirSync(groupDir, { recursive: true })
+		await indexDocument(indexDir, 's1', {
+			id: 'seed',
+			text: 'hello world seed',
+			ts: 1,
+			fields: {},
+		})
+		assertEquals(existsSync(join(indexDir, 's1', 'meta.json')), true)
+		await rm(groupDir, { recursive: true, force: true })
+		await indexDocument(indexDir, 's1', {
+			id: 'after',
+			text: 'hello world after leave',
+			ts: 2,
+			fields: {},
+		})
+		assertEquals(existsSync(groupDir), false, 'must not resurrect deleted group/search tree')
+	}
+	finally {
+		rmSync(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('indexDocument concurrent parent removal does not reject', async () => {
+	let enoentRejects = 0
+	for (let round = 0; round < 20; round++) {
+		const root = mkdtempSync(join(tmpdir(), 'fount_search_race_'))
+		const groupDir = join(root, 'group')
+		const indexDir = join(groupDir, 'search')
+		try {
+			mkdirSync(groupDir, { recursive: true })
+			await indexDocument(indexDir, 's1', {
+				id: 'seed',
+				text: 'hello world seed',
+				ts: 1,
+				fields: {},
+			})
+			const ops = []
+			for (let i = 0; i < 12; i++)
+				ops.push(indexDocument(indexDir, 's1', {
+					id: `d${i}`,
+					text: `hello world document ${i} extra tokens`,
+					ts: i,
+					fields: {},
+				}).then(() => null, error => error))
+			ops.push(rm(groupDir, { recursive: true, force: true }).then(() => null, error => error))
+			const results = await Promise.all(ops)
+			for (const result of results)
+				if (result?.code === 'ENOENT' || result?.code === 'EEXIST') enoentRejects++
+		}
+		finally {
+			rmSync(root, { recursive: true, force: true })
+		}
+	}
+	assertEquals(enoentRejects, 0, 'leave/delete race must not surface ENOENT/EEXIST from index writes')
 })
