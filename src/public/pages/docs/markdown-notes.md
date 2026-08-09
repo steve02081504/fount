@@ -13,6 +13,10 @@ Both executor maps live in `convertor.mjs`. Do not wrap another shell-specific c
 
 `mermaid.render(id)` reuses/destroys any existing `#id` in the document. Never use a content-hash-only id (feed + detail / cache hits collide). Always `allocMermaidSvgId` on render, and `uniquifyMermaidSvgHtml` on cache hit before insert. If `render` returns a fragment without a root `<svg>`, wrap with `ensureMermaidSvgRoot` before `fromHtml` ([happy-dom#2182](https://github.com/capricorn86/happy-dom/issues/2182)).
 
+## Mermaid edgeLabel theming
+
+Flowchart edge labels use HTML (`foreignObject` → `.edgeLabel p` / `.labelBkg`), and Mermaid bakes `#id .edgeLabel p { background-color: <light> }` into the SVG. Overriding only `.edgeLabel rect` leaves a light label chip under theme text color — invisible in dark mode. `MERMAID_THEME_CSS` must set `background-color` + `color` on `.edgeLabel` / `p` / `span` / `.labelBkg` (and `fill` on any rect), with `!important`.
+
 ## Code block UI
 
 Copy / download / execute must be a rehype plugin **after** `rehype-pretty-code`, touching only `figure[data-rehype-pretty-code-figure] > pre`.
