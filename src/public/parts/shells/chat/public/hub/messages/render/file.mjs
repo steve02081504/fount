@@ -22,12 +22,20 @@ const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
 let speechRecognitionMenuReady = null
 
 /**
+ * @param {string} groupId 群 ID
+ * @param {string} fileId 文件 ID
+ * @returns {string} 缓存键（群 ID + 文件 ID 复合，避免跨群同 ID 冲突）
+ */
+export function speechRecognitionCacheKey(groupId, fileId) {
+	return `${groupId}:${fileId}`
+}
+
+/**
  * 若已配置语音识别，显示消息内音频菜单的识别项，并回填本地缓存转写。
  * @param {ParentNode} root 根
  * @returns {Promise<void>}
  */
 export async function revealMessageAudioSpeechRecognitionItems(root) {
-	if (!root?.querySelectorAll) return
 	speechRecognitionMenuReady ??= await hasSpeechRecognitionSource()
 	if (!speechRecognitionMenuReady) return
 	for (const item of root.querySelectorAll('.message-audio-speech-recognition-item'))
@@ -36,7 +44,7 @@ export async function revealMessageAudioSpeechRecognitionItems(root) {
 		const fileId = block.getAttribute('data-group-file-id')
 		const caption = block.querySelector('.attachment-transcript')
 		if (!(caption instanceof HTMLElement) || caption.textContent?.trim()) continue
-		const cached = getCachedSpeechRecognitionTranscript(fileId)
+		const cached = getCachedSpeechRecognitionTranscript(speechRecognitionCacheKey(store.context.currentGroupId, fileId))
 		if (!cached) continue
 		caption.textContent = cached
 		caption.classList.remove('hidden')
@@ -115,6 +123,23 @@ async function loadGroupFileBlobUrl(groupId, fileId) {
 		handleError('chat.hub.file.loadFailed')(error)
 		return null
 	}
+}
+
+/** 同一微任务队列内是否已调度过音频识别菜单揭示，避免批量渲染时重复扫描 `#messages`。 */
+let revealScheduled = false
+
+/**
+ * 合并调度 `revealMessageAudioSpeechRecognitionItems(#messages)`：同一微任务队列内只执行一次。
+ * @returns {void}
+ */
+function scheduleRevealMessageAudioSpeechRecognitionItems() {
+	if (revealScheduled) return
+	revealScheduled = true
+	queueMicrotask(() => {
+		revealScheduled = false
+		const host = document.getElementById('messages')
+		if (host) void revealMessageAudioSpeechRecognitionItems(host)
+	})
 }
 
 /**
@@ -196,10 +221,7 @@ export async function renderMessageFileIdsHtml(message) {
 	}
 	if (!rows.length) return ''
 	const html = `<div class="message-files flex flex-col gap-1 mt-1">${rows.join('')}</div>`
-	queueMicrotask(() => {
-		const host = document.getElementById('messages')
-		if (host) void revealMessageAudioSpeechRecognitionItems(host)
-	})
+	scheduleRevealMessageAudioSpeechRecognitionItems()
 	return html
 }
 

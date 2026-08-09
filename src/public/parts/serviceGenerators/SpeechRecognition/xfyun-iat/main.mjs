@@ -2,8 +2,8 @@
  * @typedef {import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionSource_t} SpeechRecognitionSource_t
  */
 
-import { bytesToBase64 } from '../shared/pcm.mjs'
-import { buildSourceInfo, runRecognizeInput } from '../shared/recognizeHelpers.mjs'
+import { bytesToBase64, normalizeLang } from '../shared/pcm.mjs'
+import { buildSourceInfo, openWs, runRecognizeInput } from '../shared/recognizeHelpers.mjs'
 import { buildXfyunHmacSha256WsUrl } from '../shared/xfyunAuth.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -35,36 +35,6 @@ const configTemplate = {
 	domain: 'iat',
 	accent: 'mandarin',
 	dwa: '',
-}
-
-/**
- * 降低音量避免削波。
- * @param {Uint8Array} pcm 输入
- * @returns {Uint8Array} 衰减后
- */
-function attenuate(pcm) {
-	if (pcm.byteLength < 2) return pcm
-	const out = new Uint8Array(pcm.byteLength)
-	for (let i = 0; i + 1 < pcm.byteLength; i += 2) {
-		let v = (pcm[i] | pcm[i + 1] << 8) << 16 >> 16
-		v = (v / 3) | 0
-		out[i] = v & 0xff
-		out[i + 1] = (v >> 8) & 0xff
-	}
-	return out
-}
-
-/**
- * 打开全局 WebSocket。
- * @param {string} url 地址
- * @returns {Promise<WebSocket>} 连接
- */
-function openWs(url) {
-	const ws = new WebSocket(url)
-	return new Promise((resolve, reject) => {
-		ws.addEventListener('open', () => resolve(ws), { once: true })
-		ws.addEventListener('error', () => reject(new Error('WebSocket error')), { once: true })
-	})
 }
 
 /**
@@ -169,17 +139,10 @@ async function GetSource(config) {
 					return
 				}
 				const { pgs, rg, sn } = msg.data.result
-				if (pgs === 'rpl' && Array.isArray(rg) && rg.length >= 2) {
+				if (pgs === 'rpl' && Array.isArray(rg) && rg.length >= 2)
 					for (let i = rg[0]; i <= rg[1]; i++) segments.delete(i)
-					segments.set(sn, piece)
-					lastText = buildSegmentText(segments)
-				}
-				else if (pgs === 'apd') {
-					segments.set(sn, piece)
-					lastText = buildSegmentText(segments)
-				}
-				else
-					lastText += piece
+				segments.set(sn, piece)
+				lastText = buildSegmentText(segments)
 				options.onResult?.({ text: lastText, isFinal })
 				if (isFinal) finish(lastText)
 			})
@@ -207,7 +170,7 @@ async function GetSource(config) {
 				if (seq === 1) {
 					frame.common = { app_id: appId }
 					const business = {
-						language: 'zh_cn',
+						language: normalizeLang(options.language, 'zh_cn'),
 						domain,
 						accent,
 						eos: 6000,
@@ -228,21 +191,31 @@ async function GetSource(config) {
 					 * @returns {Promise<void>}
 					 */
 					onSend: async (chunk, isLast) => {
-						const pcm = attenuate(chunk)
-						if (!pcm.byteLength && isLast) {
-							seq++
-							ws.send(JSON.stringify({ data: { status: 2 } }))
+						if (!chunk.byteLength) {
+							if (isLast) {
+								if (seq === 0) sendFrame(new Uint8Array(0), 0)
+								sendFrame(new Uint8Array(0), 2)
+							}
 							return
 						}
-						for (let offset = 0; offset < pcm.byteLength;) {
-							const end = Math.min(offset + FRAME_SIZE, pcm.byteLength)
-							const piece = pcm.subarray(offset, end)
+						let sentFinal = false
+						for (let offset = 0; offset < chunk.byteLength;) {
+							const end = Math.min(offset + FRAME_SIZE, chunk.byteLength)
+							const piece = chunk.subarray(offset, end)
 							offset = end
 							let status = 1
-							if (seq === 0) status = 0
-							if (isLast && offset >= pcm.byteLength) status = 2
+							if (isLast && offset >= chunk.byteLength) {
+								status = 2
+								sentFinal = true
+							}
+							// 首帧必须 status=0（带 session 字段），优先于末帧 status=2
+							if (seq === 0) {
+								status = 0
+								sentFinal = false
+							}
 							sendFrame(piece, status)
 						}
+						if (isLast && !sentFinal) sendFrame(new Uint8Array(0), 2)
 					},
 				})
 				const text = await finalPromise

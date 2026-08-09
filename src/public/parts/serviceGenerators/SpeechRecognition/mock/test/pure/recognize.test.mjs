@@ -41,13 +41,13 @@ Deno.test('mock Recognize feed 分片输入后假流式出字', async () => {
 	const partials = []
 	const result = await source.Recognize({
 		/**
-		 * @param {{ send: Function, end: Function }} ctl 控制面
+		 * @param {{ send: Function, end: Function }} control 控制面
 		 * @returns {Promise<void>}
 		 */
-		feed: async (ctl) => {
-			await ctl.send(new Uint8Array([9]))
-			await ctl.send(new Uint8Array([8]))
-			await ctl.end()
+		feed: async (control) => {
+			await control.send(new Uint8Array([9]))
+			await control.send(new Uint8Array([8]))
+			await control.end()
 		},
 		/**
 		 * @param {{ text: string }} partial 增量

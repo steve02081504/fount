@@ -2,8 +2,8 @@
  * @typedef {import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionSource_t} SpeechRecognitionSource_t
  */
 
-import { bytesToBase64 } from '../shared/pcm.mjs'
-import { buildSourceInfo, runRecognizeInput } from '../shared/recognizeHelpers.mjs'
+import { attenuatePcm16, bytesToBase64, normalizeLang } from '../shared/pcm.mjs'
+import { buildSourceInfo, openWs, runRecognizeInput } from '../shared/recognizeHelpers.mjs'
 import { buildXfyunHmacSha256WsUrl } from '../shared/xfyunAuth.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -36,36 +36,6 @@ const configTemplate = {
 }
 
 /**
- * 降低音量避免削波。
- * @param {Uint8Array} pcm 输入
- * @returns {Uint8Array} 衰减后
- */
-function attenuate(pcm) {
-	if (pcm.byteLength < 2) return pcm
-	const out = new Uint8Array(pcm.byteLength)
-	for (let i = 0; i + 1 < pcm.byteLength; i += 2) {
-		let v = (pcm[i] | pcm[i + 1] << 8) << 16 >> 16
-		v = (v / 3) | 0
-		out[i] = v & 0xff
-		out[i + 1] = (v >> 8) & 0xff
-	}
-	return out
-}
-
-/**
- * 打开全局 WebSocket。
- * @param {string} url 地址
- * @returns {Promise<WebSocket>} 连接
- */
-function openWs(url) {
-	const ws = new WebSocket(url)
-	return new Promise((resolve, reject) => {
-		ws.addEventListener('open', () => resolve(ws), { once: true })
-		ws.addEventListener('error', () => reject(new Error('WebSocket error')), { once: true })
-	})
-}
-
-/**
  * 从段落表拼全文。
  * @param {Map<number, string>} segments 段
  * @returns {string} 文本
@@ -76,6 +46,46 @@ function buildSegmentText(segments) {
 	let out = ''
 	for (let i = 1; i <= maxSn; i++) out += segments.get(i) || ''
 	return out
+}
+
+/**
+ * 解码星火 IAT 消息，抽取分段文本与终稿标记。
+ * @param {object} msg 消息
+ * @returns {{ piece: string, isFinal: boolean, pgs?: string, rg?: number[], sn?: number }} 解码结果
+ */
+function decodePayload(msg) {
+	const encoded = msg.payload?.result?.text
+	const isFinal = msg.header?.status === 2
+	if (!encoded) return { piece: '', isFinal }
+	let decoded
+	try { decoded = JSON.parse(atob(encoded)) }
+	catch { return { piece: '', isFinal } }
+	let piece = ''
+	for (const wsItem of decoded.ws || [])
+		for (const cw of wsItem.cw || [])
+			piece += cw.w || ''
+	return { piece, isFinal, pgs: decoded.pgs, rg: decoded.rg, sn: decoded.sn }
+}
+
+/**
+ * 按分段信息合并出最新全文。
+ * @param {Map<number, string>} segments 段落表
+ * @param {{ piece: string, pgs?: string, rg?: number[], sn?: number }} decoded 解码结果
+ * @param {string} lastText 当前全文
+ * @returns {string} 合并后的全文
+ */
+function applySegment(segments, decoded, lastText) {
+	const { piece, pgs, rg, sn } = decoded
+	if (pgs === 'rpl' && Array.isArray(rg) && rg.length >= 2) {
+		for (let i = rg[0]; i <= rg[1]; i++) segments.delete(i)
+		segments.set(sn, piece)
+		return buildSegmentText(segments)
+	}
+	if (pgs === 'apd') {
+		segments.set(sn, piece)
+		return buildSegmentText(segments)
+	}
+	return lastText + piece
 }
 
 /**
@@ -154,39 +164,14 @@ async function GetSource(config) {
 					fail(new Error(`讯飞错误 ${msg.header?.code}: ${msg.header?.message || ''}`))
 					return
 				}
-				const encoded = msg.payload?.result?.text
-				const isFinal = msg.header?.status === 2
-				if (!encoded) {
-					if (isFinal) finish(lastText)
+				const decoded = decodePayload(msg)
+				if (!decoded.piece) {
+					if (decoded.isFinal) finish(lastText)
 					return
 				}
-				let decoded
-				try { decoded = JSON.parse(atob(encoded)) }
-				catch {
-					if (isFinal) finish(lastText)
-					return
-				}
-				let piece = ''
-				for (const wsItem of decoded.ws || [])
-					for (const cw of wsItem.cw || [])
-						piece += cw.w || ''
-				if (!piece) {
-					if (isFinal) finish(lastText)
-					return
-				}
-				if (decoded.pgs === 'rpl' && Array.isArray(decoded.rg) && decoded.rg.length >= 2) {
-					for (let i = decoded.rg[0]; i <= decoded.rg[1]; i++) segments.delete(i)
-					segments.set(decoded.sn, piece)
-					lastText = buildSegmentText(segments)
-				}
-				else if (decoded.pgs === 'apd') {
-					segments.set(decoded.sn, piece)
-					lastText = buildSegmentText(segments)
-				}
-				else
-					lastText += piece
-				options.onResult?.({ text: lastText, isFinal })
-				if (isFinal) finish(lastText)
+				lastText = applySegment(segments, decoded, lastText)
+				options.onResult?.({ text: lastText, isFinal: decoded.isFinal })
+				if (decoded.isFinal) finish(lastText)
 			})
 			ws.addEventListener('error', () => fail(new Error('WebSocket error')))
 			ws.addEventListener('close', () => {
@@ -217,7 +202,7 @@ async function GetSource(config) {
 				if (seq === 1) {
 					const iat = {
 						domain: 'slm',
-						language: 'zh_cn',
+						language: normalizeLang(options.language, 'zh_cn'),
 						accent: 'mandarin',
 						eos: 6000,
 						result: { encoding: 'utf8', compress: 'raw', format: 'json' },
@@ -238,7 +223,7 @@ async function GetSource(config) {
 					 * @returns {Promise<void>}
 					 */
 					onSend: async (chunk, isLast) => {
-						const pcm = attenuate(chunk)
+						const pcm = attenuatePcm16(chunk)
 						if (!pcm.byteLength && isLast) {
 							sendFrame(null, 2)
 							return

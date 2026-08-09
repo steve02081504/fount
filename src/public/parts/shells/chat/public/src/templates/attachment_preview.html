@@ -14,10 +14,10 @@
 		</div>
 		` : `
 		${showDownloadButton ? `
-		<button class="download-button btn btn-xs btn-primary ${showDeleteButton ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.download"><img src="https://api.iconify.design/line-md/download.svg" data-i18n="chat.attachment.buttons.downloadIcon" /></button>
+		<button type="button" class="download-button btn btn-xs btn-primary ${showDeleteButton ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.download"><img src="https://api.iconify.design/line-md/download.svg" data-i18n="chat.attachment.buttons.downloadIcon" /></button>
 		`: ''}
 		${showDeleteButton ? `
-		<button class="delete-button btn btn-xs btn-error ${showDownloadButton ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.delete"><img src="https://api.iconify.design/line-md/document-delete.svg" data-i18n="chat.attachment.buttons.deleteIcon" /></button>
+		<button type="button" class="delete-button btn btn-xs btn-error ${showDownloadButton ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.delete"><img src="https://api.iconify.design/line-md/document-delete.svg" data-i18n="chat.attachment.buttons.deleteIcon" /></button>
 		`: ''}
 		`}
 	</span>

@@ -69,22 +69,17 @@ async function GetSource(config) {
 		 * @returns {Promise<import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionResult_t>} 结果
 		 */
 		Recognize: async (options) => {
-			let sawAudio = false
 			await runRecognizeInput(options, {
 				/**
-				 * @param {Uint8Array} chunk 音频
 				 * @returns {Promise<void>}
 				 */
-				onSend: async (chunk) => {
-					if (chunk.byteLength) sawAudio = true
-				},
+				onSend: async () => { },
 			})
-			void sawAudio
-			let emitted = ''
-			for (let i = 0; i < fullText.length; i += chunkSize) {
+			const codePoints = Array.from(fullText)
+			for (let index = 0; index < codePoints.length; index += chunkSize) {
 				if (options.signal?.aborted)
 					throw options.signal.reason instanceof Error ? options.signal.reason : new Error('aborted')
-				emitted = fullText.slice(0, i + chunkSize)
+				const emitted = codePoints.slice(0, index + chunkSize).join('')
 				const isFinal = emitted.length >= fullText.length
 				options.onResult?.({ text: emitted, isFinal })
 				if (!isFinal) await sleep(delay, options.signal)

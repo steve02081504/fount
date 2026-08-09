@@ -6,7 +6,7 @@ import { info_t, locale_t } from './basedefs.ts'
 
 /** 增量识别结果。 */
 export class SpeechRecognitionPartial_t {
-	/** 当前文本（通常为累计全文或可替换片段，由源约定） */
+	/** 当前累计全文（每次回调都是从头开始的完整文本，非增量片段） */
 	text!: string
 	/** 是否为最终结果片段 */
 	isFinal?: boolean

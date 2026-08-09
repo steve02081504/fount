@@ -2,6 +2,9 @@
  * PCM / WAV 与语言码小工具（语音识别生成器共用）。
  */
 
+/** 16 位 PCM 衰减除数（避免削波）。 */
+export const ATTENUATION_DIVISOR = 3
+
 /**
  * 规范化语言码供各厂商使用。
  * @param {string | undefined} lang 语言
@@ -111,8 +114,8 @@ export function concatUint8(parts) {
 export function bytesToBase64(bytes) {
 	let binary = ''
 	const chunk = 0x8000
-	for (let i = 0; i < bytes.length; i += chunk)
-		binary += String.fromCharCode(...bytes.subarray(i, i + chunk))
+	for (let offset = 0; offset < bytes.length; offset += chunk)
+		binary += String.fromCharCode(...bytes.subarray(offset, offset + chunk))
 	return btoa(binary)
 }
 
@@ -125,12 +128,29 @@ export function upsamplePcm16kTo24k(pcm16le) {
 	const samples = new Int16Array(pcm16le.buffer, pcm16le.byteOffset, pcm16le.byteLength / 2)
 	const outLen = Math.floor(samples.length * 24000 / 16000)
 	const out = new Int16Array(outLen)
-	for (let i = 0; i < outLen; i++) {
-		const src = i * 16000 / 24000
-		const i0 = Math.floor(src)
-		const i1 = Math.min(i0 + 1, samples.length - 1)
-		const frac = src - i0
-		out[i] = (samples[i0] * (1 - frac) + samples[i1] * frac) | 0
+	for (let outputSampleIndex = 0; outputSampleIndex < outLen; outputSampleIndex++) {
+		const src = outputSampleIndex * 16000 / 24000
+		const lowerSampleIndex = Math.floor(src)
+		const upperSampleIndex = Math.min(lowerSampleIndex + 1, samples.length - 1)
+		const frac = src - lowerSampleIndex
+		out[outputSampleIndex] = (samples[lowerSampleIndex] * (1 - frac) + samples[upperSampleIndex] * frac) | 0
 	}
 	return new Uint8Array(out.buffer)
+}
+
+/**
+ * 降低 16 位小端 PCM 音量，避免削波。
+ * @param {Uint8Array} pcm 输入
+ * @returns {Uint8Array} 衰减后
+ */
+export function attenuatePcm16(pcm) {
+	if (pcm.byteLength < 2) return pcm
+	const out = new Uint8Array(pcm.byteLength)
+	for (let offset = 0; offset + 1 < pcm.byteLength; offset += 2) {
+		let sample = (pcm[offset] | pcm[offset + 1] << 8) << 16 >> 16
+		sample = (sample / ATTENUATION_DIVISOR) | 0
+		out[offset] = sample & 0xff
+		out[offset + 1] = (sample >> 8) & 0xff
+	}
+	return out
 }

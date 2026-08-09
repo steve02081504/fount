@@ -18,7 +18,7 @@ export default {
 			/**
 			 * @returns {Promise<object>} 模板
 			 */
-			GetConfigTemplate: async () => configTemplate,
+			GetConfigTemplate: async () => structuredClone(configTemplate),
 			GetSource,
 		}
 	}
@@ -50,15 +50,15 @@ async function GetSource(config, { username, SaveConfig }) {
 	})))
 	const maxFailCount = Math.min(
 		config.sources.length,
-		config.max_fail_count || new Set(config.sources.map(source => source.generator)).size == 1 ? 3 : Infinity
+		config.max_fail_count || (new Set(config.sources.map(source => source.generator)).size == 1 ? 3 : Infinity)
 	)
 	return {
 		type: 'speech-recognition',
-		info: buildSourceInfo(product_info, { name: config.name }),
+		info: buildSourceInfo(product_info, { name: config.name, provider: config.provider || configTemplate.provider }),
 		is_paid: false,
 		extension: {},
 		/**
-		 * @returns {Promise<void[]>}
+		 * @returns {Promise<void[]>} 卸载所有子源
 		 */
 		Unload: () => Promise.all(unnamedSources.map(source => source?.Unload?.())),
 		/**

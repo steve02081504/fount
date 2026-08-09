@@ -42,58 +42,61 @@ function base64ToBlob(base64, mimeType) {
 }
 
 /**
- * 处理文件选择。
- * @param {Event} event - 事件。
- * @param {Array<object>} selectedFiles - 已选择的文件。
- * @param {HTMLElement} attachmentPreviewContainer - 附件预览容器。
- * @returns {Promise<void>}
+ * 将文件读取为 ArrayBuffer。
+ * @param {File} file 文件
+ * @returns {Promise<ArrayBuffer>} 字节
  */
-export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {
-	const files = event.target.files || event.dataTransfer.files
-	if (!files) return []
-
-	/** @type {object[]} */
-	const added = []
-	await Promise.all([...files].map(file => new Promise((resolve, reject) => {
+function readFileAsArrayBuffer(file) {
+	return new Promise((resolve, reject) => {
 		const reader = new FileReader()
 		/**
 		 * @param {ProgressEvent<FileReader>} e 读取完成事件
-		 * @returns {Promise<void>}
+		 * @returns {void}
 		 */
-		reader.onload = async e => {
-			try {
-				const newFile = {
-					name: file.name,
-					mime_type: file.type,
-					buffer: arrayBufferToBase64(e.target.result),
-					description: '',
-				}
-				selectedFiles.push(newFile)
-				added.push(newFile)
-				const attachmentElement = await renderAttachmentPreview(
-					newFile,
-					selectedFiles.length - 1,
-					selectedFiles
-				)
-				if (attachmentElement) {
-					attachmentElement.classList.add('attachment-entering')
-					attachmentPreviewContainer.appendChild(attachmentElement)
-					requestAnimationFrame(() => {
-						attachmentElement.classList.remove('attachment-entering')
-					})
-				}
-				resolve()
-			}
-			catch (error) {
-				reject(error)
-			}
-		}
+		reader.onload = e => resolve(e.target.result)
 		/**
 		 * @returns {void}
 		 */
 		reader.onerror = () => reject(reader.error || new Error('read failed'))
 		reader.readAsArrayBuffer(file)
-	})))
+	})
+}
+
+/**
+ * 处理文件选择。按原始文件顺序依次读取与渲染，避免 FileReader 异步完成顺序打乱附件顺序。
+ * @param {Event} event - 事件。
+ * @param {Array<object>} selectedFiles - 已选择的文件。
+ * @param {HTMLElement} attachmentPreviewContainer - 附件预览容器。
+ * @returns {Promise<{ file: object, element: HTMLElement }[]>} 新增附件及其预览元素
+ */
+export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {
+	const files = event.target.files || event.dataTransfer.files
+	if (!files) return []
+
+	/** @type {{ file: object, element: HTMLElement }[]} */
+	const added = []
+	for (const file of files) {
+		const newFile = {
+			name: file.name,
+			mime_type: file.type,
+			buffer: arrayBufferToBase64(await readFileAsArrayBuffer(file)),
+			description: '',
+		}
+		selectedFiles.push(newFile)
+		const attachmentElement = await renderAttachmentPreview(
+			newFile,
+			selectedFiles.length - 1,
+			selectedFiles
+		)
+		added.push({ file: newFile, element: attachmentElement })
+		if (attachmentElement) {
+			attachmentElement.classList.add('attachment-entering')
+			attachmentPreviewContainer.appendChild(attachmentElement)
+			requestAnimationFrame(() => {
+				attachmentElement.classList.remove('attachment-entering')
+			})
+		}
+	}
 	return added
 }
 

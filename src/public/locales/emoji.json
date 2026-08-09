@@ -962,20 +962,20 @@
 					}
 				},
 				"generators/SpeechRecognition": {
-					"title": "语音识别服务生成器",
+					"title": "🎙️⚙️✨",
 					"subtitle": "🎙️➡️📝",
 					"card": {
 						"defaultCheckbox": {
-							"title": "设为默认语音识别服务生成器"
+							"title": "📌🎙️⚙️✨"
 						}
 					}
 				},
 				"sources/SpeechRecognition": {
-					"title": "语音识别服务源",
+					"title": "🎙️🚰",
 					"subtitle": "👂🎙️➡️💬",
 					"card": {
 						"defaultCheckbox": {
-							"title": "设为默认语音识别服务源"
+							"title": "📌🎙️🚰"
 						}
 					}
 				}
@@ -2886,7 +2886,7 @@
 					"alt": "🗑️"
 				},
 				"more": {
-					"title": "更多"
+					"title": "⋯"
 				},
 				"recognize": {
 					"title": "🎙️➡️📝"

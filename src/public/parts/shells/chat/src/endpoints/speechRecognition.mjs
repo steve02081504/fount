@@ -33,9 +33,7 @@ export function registerSpeechRecognitionRoutes(router) {
 		const { username } = getUserByReq(req)
 		const source = await loadSpeechRecognitionSource(username)
 		const body = req.body || {}
-		const buffer = body.buffer instanceof Uint8Array
-			? body.buffer
-			: base64ToUint8Array(body.buffer)
+		const buffer = base64ToUint8Array(body.buffer)
 		const stream = String(req.query.stream || req.headers.accept || '').includes('ndjson')
 			|| body.stream === true
 		const options = {
@@ -54,18 +52,25 @@ export function registerSpeechRecognitionRoutes(router) {
 		res.setHeader('Content-Type', 'application/x-ndjson; charset=utf-8')
 		res.setHeader('Cache-Control', 'no-cache')
 		res.flushHeaders?.()
-		const result = await source.Recognize({
-			...options,
-			/**
-			 * @param {{ text: string, isFinal?: boolean }} partial 增量
-			 * @returns {void}
-			 */
-			onResult: (partial) => {
-				res.write(JSON.stringify({ type: 'partial', ...partial }) + '\n')
-			},
-		})
-		res.write(JSON.stringify({ type: 'final', ...result }) + '\n')
-		res.end()
+		try {
+			const result = await source.Recognize({
+				...options,
+				/**
+				 * @param {{ text: string, isFinal?: boolean }} partial 增量
+				 * @returns {void}
+				 */
+				onResult: (partial) => {
+					res.write(JSON.stringify({ type: 'partial', ...partial }) + '\n')
+				},
+			})
+			res.write(JSON.stringify({ type: 'final', ...result }) + '\n')
+		}
+		catch (error) {
+			res.write(JSON.stringify({ type: 'error', message: error?.message || String(error) }) + '\n')
+		}
+		finally {
+			res.end()
+		}
 	})
 
 	router.ws('/ws/parts/shells\\:chat/speechRecognition/session', authenticate, (ws, req) => {
@@ -90,18 +95,28 @@ export function registerSpeechRecognitionRoutes(router) {
 			if (ws.readyState === 1) ws.send(JSON.stringify(payload))
 		}
 
-		ws.on('message', async (raw, isBinary) => {
-			try {
-				if (isBinary) {
+		/** 音频帧串行队列：保证到达顺序执行，即便某帧在等待 ready/sendChunk。 */
+		let audioQueue = Promise.resolve()
+		/**
+		 * @param {() => Promise<void>} task 任务
+		 * @returns {void}
+		 */
+		const enqueueAudioTask = (task) => {
+			audioQueue = audioQueue.then(task).catch(error => {
+				push({ type: 'error', message: error?.message || String(error) })
+			})
+		}
+
+		ws.on('message', (raw, isBinary) => {
+			if (isBinary) {
+				enqueueAudioTask(async () => {
 					await ready
-					const bytes = raw instanceof ArrayBuffer
-						? new Uint8Array(raw)
-						: raw instanceof Uint8Array
-							? raw
-							: new Uint8Array(raw)
+					const bytes = raw instanceof Uint8Array ? raw : new Uint8Array(raw)
 					await sendChunk?.(bytes)
-					return
-				}
+				})
+				return
+			}
+			try {
 				const msg = JSON.parse(String(raw))
 				if (msg.type === 'start') {
 					loadSpeechRecognitionSource(username).then(source => source.Recognize({
@@ -133,16 +148,19 @@ export function registerSpeechRecognitionRoutes(router) {
 					return
 				}
 				if (msg.type === 'audio' && msg.buffer) {
-					await ready
-					await sendChunk?.(base64ToUint8Array(msg.buffer))
+					enqueueAudioTask(async () => {
+						await ready
+						await sendChunk?.(base64ToUint8Array(msg.buffer))
+					})
 					return
 				}
-				if (msg.type === 'end') {
-					await ready
-					await endFeed?.()
-					endFeed = null
-					resolveEnded?.()
-				}
+				if (msg.type === 'end')
+					enqueueAudioTask(async () => {
+						await ready
+						await endFeed?.()
+						endFeed = null
+						resolveEnded?.()
+					})
 			}
 			catch (error) {
 				push({ type: 'error', message: error?.message || String(error) })

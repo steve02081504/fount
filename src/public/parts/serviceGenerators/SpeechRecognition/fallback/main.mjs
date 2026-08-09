@@ -42,16 +42,22 @@ const configTemplate = {
  */
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
-	const sources = await Promise.all(config.sources.map(source => loadSpeechRecognitionSourceFromNameOrConfigData(username, source, unnamedSources, {
-		SaveConfig
-	})))
+	let sources
+	try {
+		sources = await Promise.all(config.sources.map(source => loadSpeechRecognitionSourceFromNameOrConfigData(username, source, unnamedSources, {
+			SaveConfig
+		})))
+	} catch (e) {
+		await Promise.all(unnamedSources.map(source => source?.Unload?.()))
+		throw e
+	}
 	return {
 		type: 'speech-recognition',
 		info: buildSourceInfo(product_info, { name: config.name, provider: config.provider || 'unknown' }),
 		is_paid: false,
 		extension: {},
 		/**
-		 * @returns {Promise<void[]>}
+		 * @returns {Promise<void[]>} 卸载所有子源
 		 */
 		Unload: () => Promise.all(unnamedSources.map(source => source?.Unload?.())),
 		/**
@@ -66,6 +72,7 @@ async function GetSource(config, { username, SaveConfig }) {
 			while (true) try {
 				return await sources[index].Recognize(options)
 			} catch (e) {
+				if (options.signal?.aborted || e?.name === 'AbortError') throw e
 				index++
 				if (index >= config.sources.length) throw new Error('all sources failed')
 				console.error(e)

@@ -3,6 +3,10 @@
  */
 import { wrapSensitiveMediaHtml } from '/scripts/features/contentReveal.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { fetchMediaRef } from '/scripts/endpoints/p2p/evfsMedia.mjs'
+import { hasSpeechRecognitionSource, recognizeBuffer } from '/scripts/features/speechRecognition.mjs'
+import { getCachedSpeechRecognitionTranscript, setCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 
 /**
@@ -19,7 +23,7 @@ function renderMediaItem(ref, index) {
 		return ''
 	}
 	const mimeType = ref.mimeType || ''
-	const kind = ref.kind || (mimeType.startsWith('video/') ? 'video' : 'image')
+	const kind = ref.kind || (mimeType.startsWith('video/') ? 'video' : mimeType.startsWith('audio/') ? 'audio' : 'image')
 	const alt = escapeHtml(String(ref.alt || ref.name || ''))
 	if (kind === 'image')
 		return `<button type="button" class="post-media-slide" data-media-index="${index}" data-media-lightbox="${escapeHtml(url)}" data-media-alt="${alt}">
@@ -29,18 +33,20 @@ function renderMediaItem(ref, index) {
 		return `<div class="post-media-slide" data-media-index="${index}" data-media-video>
 			<video src="${escapeHtml(url)}" muted loop playsinline preload="metadata" class="post-media-item post-media-video"></video>
 		</div>`
-	if (kind === 'audio' || mimeType.startsWith('audio/'))
+	if (kind === 'audio' || mimeType.startsWith('audio/')) {
+		const transcript = escapeHtml(String(ref.alt || ''))
 		return `<div class="post-media-slide post-media-audio" data-media-index="${index}" data-media-audio>
 			<audio src="${escapeHtml(url)}" controls preload="metadata" class="post-media-item"></audio>
-			${alt ? `<p class="attachment-transcript text-xs opacity-70" user-content>${alt}</p>` : ''}
+			${transcript ? `<p class="attachment-transcript text-xs opacity-70" user-content>${transcript}</p>` : ''}
 			<details class="dropdown post-audio-menu">
 				<summary class="btn btn-ghost btn-xs" data-i18n="chat.attachment.buttons.more"></summary>
 				<ul class="menu menu-sm bg-base-100 rounded-box shadow border border-base-300 w-36 p-1">
 					<li><a href="${escapeHtml(url)}" download data-i18n="chat.attachment.buttons.download"></a></li>
-					<li><button type="button" class="post-audio-speech-recognition" data-media-url="${escapeHtml(url)}" data-media-alt-key="${index}" data-i18n="chat.attachment.buttons.recognize"></button></li>
+					<li><button type="button" class="post-audio-speech-recognition" data-media-url="${escapeHtml(url)}" data-i18n="chat.attachment.buttons.recognize"></button></li>
 				</ul>
 			</details>
 		</div>`
+	}
 	return `<a href="${escapeHtml(url)}" class="post-media-slide post-media-file link-btn" download>${escapeHtml(ref.name || 'file')}</a>`
 }
 
@@ -125,6 +131,57 @@ export function bindMediaCarousel(root) {
 		for (const dot of carousel.querySelectorAll('.post-media-dot'))
 			dot.classList.toggle('active', Number(dot.dataset.mediaDot) === index)
 	}, true)
+}
+
+/**
+ * 绑定帖子内嵌音频的语音识别按钮（复用编写器识别逻辑；委托事件可重复绑定，幂等靠 dataset 标记）。
+ * @param {HTMLElement} root 帖子或 feed 根
+ * @returns {void}
+ */
+export function bindAudioSpeechRecognition(root) {
+	if (!(root instanceof HTMLElement) || root.dataset.audioSpeechRecognitionBound === '1') return
+	root.dataset.audioSpeechRecognitionBound = '1'
+	root.addEventListener('click', event => {
+		const button = event.target instanceof Element ? event.target.closest('.post-audio-speech-recognition') : null
+		if (!(button instanceof HTMLButtonElement) || button.disabled) return
+		void recognizePostAudio(button)
+	})
+}
+
+/**
+ * @param {HTMLButtonElement} button 识别按钮
+ * @returns {Promise<void>}
+ */
+async function recognizePostAudio(button) {
+	if (!await hasSpeechRecognitionSource()) return
+	const url = button.dataset.mediaUrl
+	if (!url) return
+	const slide = button.closest('.post-media-audio')
+	let caption = slide?.querySelector('.attachment-transcript')
+	const cached = getCachedSpeechRecognitionTranscript(url)
+	if (cached) {
+		if (caption) caption.textContent = cached
+		return
+	}
+	button.disabled = true
+	try {
+		const { buffer, mimeType } = await fetchMediaRef({ url })
+		const result = await recognizeBuffer({ audio: new Uint8Array(buffer), mime_type: mimeType })
+		setCachedSpeechRecognitionTranscript(url, result.text)
+		if (!caption) {
+			caption = document.createElement('p')
+			caption.className = 'attachment-transcript text-xs opacity-70'
+			caption.setAttribute('user-content', '')
+			slide?.querySelector('audio')?.after(caption)
+		}
+		caption.textContent = result.text
+	}
+	catch (error) {
+		showToastI18n('error', 'chat.voiceRecording.speechRecognitionFailed', { error: error?.message || String(error) })
+	}
+	finally {
+		button.disabled = false
+	}
 }
 
 /**

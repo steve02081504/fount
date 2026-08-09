@@ -43,7 +43,7 @@ const configTemplate = {
 async function GetSource(config, { username, SaveConfig }) {
 	const unnamedSources = []
 	const weightedSources = await Promise.all(config.sources.map(async item => {
-		if (Object(item.weight) instanceof Number || item.weight <= 0)
+		if (typeof item.weight !== 'number' || !(item.weight > 0))
 			throw new Error(`Source item must have a positive numerical 'weight'. Invalid item: ${JSON.stringify(item.source)}`)
 		const sourceInstance = await loadSpeechRecognitionSourceFromNameOrConfigData(username, item.source, unnamedSources, {
 			SaveConfig
@@ -67,11 +67,11 @@ async function GetSource(config, { username, SaveConfig }) {
 
 	return {
 		type: 'speech-recognition',
-		info: buildSourceInfo(product_info, { name: config.name }),
+		info: buildSourceInfo(product_info, { name: config.name, provider: config.provider || configTemplate.provider }),
 		is_paid: weightedSources.some(s => s.source.is_paid),
 		extension: {},
 		/**
-		 * @returns {Promise<void[]>}
+		 * @returns {Promise<void[]>} 卸载所有子源
 		 */
 		Unload: () => Promise.all(unnamedSources.map(source => source?.Unload?.())),
 		/**

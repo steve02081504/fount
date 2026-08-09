@@ -6,6 +6,8 @@ import { buildSourceInfo, runRecognizeInput } from '../shared/recognizeHelpers.m
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
+const FRAME_SIZE = 1280
+
 /**
  * 豆包 / 火山 SAUC 流式语音识别生成器。
  * @type {import('../../../../../decl/SpeechRecognitionSourceGenerator.ts').SpeechRecognitionSourceGenerator_t}
@@ -135,20 +137,21 @@ async function GetSource(config) {
 
 			ws.on('message', (raw) => {
 				const data = raw instanceof Uint8Array ? raw : new Uint8Array(raw)
-				if (data.byteLength < 12) return
+				if (data.byteLength < 4) return
 				const flags = data[1] & 0x0f
 				const msgType = (data[1] >> 4) & 0x0f
 				if (msgType !== 0x09) return
-				const payloadSize = new DataView(data.buffer, data.byteOffset, data.byteLength).getUint32(8)
-				if (12 + payloadSize > data.byteLength) return
-				const payload = data.subarray(12, 12 + payloadSize)
+				let payloadOffset = (data[0] & 0x0f) * 4
+				if (flags & 0x01) payloadOffset += 4
+				if (payloadOffset + 4 > data.byteLength) return
+				const payloadSize = new DataView(data.buffer, data.byteOffset, data.byteLength).getUint32(payloadOffset)
+				if (payloadOffset + 4 + payloadSize > data.byteLength) return
+				const payload = data.subarray(payloadOffset + 4, payloadOffset + 4 + payloadSize)
 				let resp
 				try { resp = JSON.parse(new TextDecoder().decode(payload)) }
 				catch { return }
 				const text = resp?.result?.text || ''
-				let isFinal = flags === 0x02 || flags === 0x03
-				for (const u of resp?.result?.utterances || [])
-					if (u.definite) isFinal = true
+				const isFinal = flags === 0x02 || flags === 0x03
 				if (!text && !isFinal) return
 				if (text) lastText = text
 				options.onResult?.({ text: lastText, isFinal })
@@ -190,7 +193,17 @@ async function GetSource(config) {
 					 * @returns {Promise<void>}
 					 */
 					onSend: async (chunk, isLast) => {
-						ws.send(buildFrame(0x20, isLast ? 0x02 : 0x00, 0x00, chunk))
+						if (!chunk.byteLength) {
+							if (isLast) ws.send(buildFrame(0x20, 0x02, 0x00, chunk))
+							return
+						}
+						for (let offset = 0; offset < chunk.byteLength;) {
+							const end = Math.min(offset + FRAME_SIZE, chunk.byteLength)
+							const piece = chunk.subarray(offset, end)
+							offset = end
+							const isLastFrame = isLast && offset >= chunk.byteLength
+							ws.send(buildFrame(0x20, isLastFrame ? 0x02 : 0x00, 0x00, piece))
+						}
 					},
 				})
 

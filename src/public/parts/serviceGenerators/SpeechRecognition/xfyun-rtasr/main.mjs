@@ -2,7 +2,8 @@
  * @typedef {import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionSource_t} SpeechRecognitionSource_t
  */
 
-import { buildSourceInfo, runRecognizeInput } from '../shared/recognizeHelpers.mjs'
+import { attenuatePcm16 } from '../shared/pcm.mjs'
+import { buildSourceInfo, extractRtasrText, openWs, runRecognizeInput } from '../shared/recognizeHelpers.mjs'
 import { formatUtcPlus8, signSortedParamsHmacSha1 } from '../shared/xfyunAuth.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -36,48 +37,18 @@ const configTemplate = {
 }
 
 /**
- * 降低音量避免削波。
- * @param {Uint8Array} pcm 输入
- * @returns {Uint8Array} 衰减后
+ * @param {number} ms 毫秒
+ * @param {AbortSignal} [signal] 中止
+ * @returns {Promise<void>}
  */
-function attenuate(pcm) {
-	if (pcm.byteLength < 2) return pcm
-	const out = new Uint8Array(pcm.byteLength)
-	for (let i = 0; i + 1 < pcm.byteLength; i += 2) {
-		let v = (pcm[i] | pcm[i + 1] << 8) << 16 >> 16
-		v = (v / 3) | 0
-		out[i] = v & 0xff
-		out[i + 1] = (v >> 8) & 0xff
-	}
-	return out
-}
-
-/**
- * 打开全局 WebSocket。
- * @param {string} url 地址
- * @returns {Promise<WebSocket>} 连接
- */
-function openWs(url) {
-	const ws = new WebSocket(url)
-	ws.binaryType = 'arraybuffer'
+function sleep(ms, signal) {
 	return new Promise((resolve, reject) => {
-		ws.addEventListener('open', () => resolve(ws), { once: true })
-		ws.addEventListener('error', () => reject(new Error('WebSocket error')), { once: true })
+		const timer = setTimeout(resolve, ms)
+		signal?.addEventListener('abort', () => {
+			clearTimeout(timer)
+			reject(signal.reason instanceof Error ? signal.reason : new Error('aborted'))
+		}, { once: true })
 	})
-}
-
-/**
- * 从 RTASR data 对象抽文本。
- * @param {object} resultData 结果
- * @returns {string} 文本
- */
-function extractRtasrText(resultData) {
-	let out = ''
-	for (const rt of resultData?.cn?.st?.rt || [])
-		for (const ws of rt.ws || [])
-			for (const cw of ws.cw || [])
-				out += cw.w || ''
-	return out
 }
 
 /**
@@ -112,8 +83,8 @@ async function GetSource(config) {
 			if (pd) params.pd = pd
 			const signature = signSortedParamsHmacSha1(params, secretKey)
 			const q = new URLSearchParams({ ...params, signature })
-			const ws = await openWs(`wss://office-api-ast-dx.iflyaisol.com/ast/communicate/v1?${q}`)
-			const sessionId = String(Date.now()) + String(Math.random()).slice(2)
+			const ws = await openWs(`wss://office-api-ast-dx.iflyaisol.com/ast/communicate/v1?${q}`, { binaryType: 'arraybuffer' })
+			let sid
 
 			let lastText = ''
 			/** @type {(v: string) => void} */
@@ -161,7 +132,10 @@ async function GetSource(config) {
 					fail(new Error(`讯飞RTASR错误 ${msg.code}: ${msg.desc || ''}`))
 					return
 				}
-				if (msg.action === 'started') return
+				if (msg.action === 'started') {
+					sid = msg.sid
+					return
+				}
 				const resultData = typeof msg.data === 'string' ? JSON.parse(msg.data || '{}') : msg.data
 				if (!resultData) return
 				const piece = extractRtasrText(resultData)
@@ -184,14 +158,15 @@ async function GetSource(config) {
 					 * @returns {Promise<void>}
 					 */
 					onSend: async (chunk, isLast) => {
-						const pcm = attenuate(chunk)
+						const pcm = attenuatePcm16(chunk)
 						for (let offset = 0; offset < pcm.byteLength;) {
 							const end = Math.min(offset + FRAME_SIZE, pcm.byteLength)
 							ws.send(pcm.subarray(offset, end))
 							offset = end
+							if (offset < pcm.byteLength) await sleep(40, options.signal)
 						}
 						if (isLast)
-							ws.send(JSON.stringify({ end: true, sessionId }))
+							ws.send(JSON.stringify(sid ? { end: true, sessionId: sid } : { end: true }))
 					},
 				})
 				const text = await finalPromise

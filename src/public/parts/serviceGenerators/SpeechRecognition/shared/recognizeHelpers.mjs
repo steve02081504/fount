@@ -12,8 +12,8 @@
  * @returns {Promise<void>}
  */
 export async function runRecognizeInput(options, handlers) {
-	const hasAudio = !!options?.audio?.buffer
-	const hasFeed = typeof options?.feed === 'function'
+	const hasAudio = !!options.audio?.buffer
+	const hasFeed = typeof options.feed === 'function'
 	if (hasAudio === hasFeed)
 		throw new Error('Recognize requires exactly one of audio or feed')
 
@@ -21,7 +21,7 @@ export async function runRecognizeInput(options, handlers) {
 		throw options.signal.reason instanceof Error ? options.signal.reason : new Error('aborted')
 
 	/**
-	 * @param {AbortSignal} signal 中止信号
+	 * @param {AbortSignal} [signal] 中止信号
 	 * @returns {void}
 	 */
 	const throwIfAborted = (signal) => {
@@ -30,11 +30,8 @@ export async function runRecognizeInput(options, handlers) {
 	}
 
 	if (hasAudio) {
-		const buffer = options.audio.buffer instanceof Uint8Array
-			? options.audio.buffer
-			: new Uint8Array(options.audio.buffer)
 		throwIfAborted(options.signal)
-		await handlers.onSend(buffer, true)
+		await handlers.onSend(options.audio.buffer, true)
 		await handlers.onEnd?.()
 		return
 	}
@@ -48,8 +45,7 @@ export async function runRecognizeInput(options, handlers) {
 		send: async (chunk) => {
 			throwIfAborted(options.signal)
 			if (ended) throw new Error('Recognize feed already ended')
-			const bytes = chunk instanceof Uint8Array ? chunk : new Uint8Array(chunk)
-			await handlers.onSend(bytes, false)
+			await handlers.onSend(chunk, false)
 		},
 		/**
 		 * @returns {Promise<void>}
@@ -78,22 +74,20 @@ export async function runRecognizeInput(options, handlers) {
 export async function recognizeByBuffering(options, transcribe) {
 	/** @type {Uint8Array[]} */
 	const chunks = []
-	let mime_type = options.audio?.mime_type
-	let name = options.audio?.name
 	await runRecognizeInput(options, {
 		/**
 		 * @param {Uint8Array} chunk 片段
-		 * @param {boolean} _isLast 是否最后
 		 * @returns {Promise<void>}
 		 */
-		onSend: async (chunk, _isLast) => {
+		onSend: async (chunk) => {
 			if (chunk.byteLength) chunks.push(chunk)
 		},
 	})
 	const { concatUint8 } = await import('./pcm.mjs')
-	const pcm = concatUint8(chunks)
-	const text = await transcribe(pcm, { mime_type, name })
-	const finalText = String(text || '')
+	const finalText = String(await transcribe(concatUint8(chunks), {
+		mime_type: options.audio?.mime_type,
+		name: options.audio?.name,
+	}) || '')
 	options.onResult?.({ text: finalText, isFinal: true })
 	return { text: finalText, language: options.language }
 }
@@ -105,9 +99,38 @@ export async function recognizeByBuffering(options, transcribe) {
  * @returns {Record<string, object>} info
  */
 export function buildSourceInfo(productInfo, config = {}) {
-	return Object.fromEntries(Object.entries(structuredClone(productInfo)).map(([k, v]) => {
-		v.name = config.name || v.name
-		if (config.provider) v.provider = config.provider
-		return [k, v]
+	return Object.fromEntries(Object.entries(structuredClone(productInfo)).map(([locale, localizedInfo]) => {
+		localizedInfo.name = config.name || localizedInfo.name
+		if (config.provider) localizedInfo.provider = config.provider
+		return [locale, localizedInfo]
 	}))
+}
+
+/**
+ * 打开全局 WebSocket。
+ * @param {string} url 地址
+ * @param {{ binaryType?: BinaryType }} [opts] 选项
+ * @returns {Promise<WebSocket>} 连接
+ */
+export function openWs(url, opts = {}) {
+	const ws = new WebSocket(url)
+	if (opts.binaryType) ws.binaryType = opts.binaryType
+	return new Promise((resolve, reject) => {
+		ws.addEventListener('open', () => resolve(ws), { once: true })
+		ws.addEventListener('error', () => reject(new Error('WebSocket error')), { once: true })
+	})
+}
+
+/**
+ * 从 RTASR data 对象抽文本。
+ * @param {object} resultData 结果
+ * @returns {string} 文本
+ */
+export function extractRtasrText(resultData) {
+	let out = ''
+	for (const rt of resultData?.cn?.st?.rt || [])
+		for (const ws of rt.ws || [])
+			for (const cw of ws.cw || [])
+				out += cw.w || ''
+	return out
 }

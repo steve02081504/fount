@@ -4,6 +4,7 @@ import { hasSpeechRecognitionSource, recognizeBuffer } from '/scripts/features/s
 import { getCachedSpeechRecognitionTranscript, setCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
 import { store } from '../core/state.mjs'
 import { isFilesDrawerOpen, refreshFilesDrawer, setFilesDrawerOpen, wireFilesDrawerToggle } from '../files.mjs'
+import { speechRecognitionCacheKey } from '../messages/render/file.mjs'
 
 /** @returns {void} */
 export function wireFileEvents() {
@@ -67,9 +68,10 @@ export async function handleMessageFileAsrClick(event) {
 		return false
 	if (!await hasSpeechRecognitionSource()) return true
 	const fileId = button.dataset.groupFileId
+	const cacheKey = speechRecognitionCacheKey(store.context.currentGroupId, fileId)
 	const block = button.closest('.message-inline-audio')
 	const caption = block?.querySelector('.attachment-transcript')
-	const cached = getCachedSpeechRecognitionTranscript(fileId)
+	const cached = getCachedSpeechRecognitionTranscript(cacheKey)
 	if (cached && caption instanceof HTMLElement) {
 		caption.textContent = cached
 		caption.classList.remove('hidden')
@@ -84,7 +86,7 @@ export async function handleMessageFileAsrClick(event) {
 			mime_type: blob.type,
 			name: fileId,
 		})
-		setCachedSpeechRecognitionTranscript(fileId, result.text)
+		setCachedSpeechRecognitionTranscript(cacheKey, result.text)
 		if (caption instanceof HTMLElement) {
 			caption.textContent = result.text
 			caption.classList.remove('hidden')

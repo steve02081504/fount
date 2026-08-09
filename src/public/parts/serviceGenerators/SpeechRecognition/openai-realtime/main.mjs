@@ -28,6 +28,7 @@ const configTemplate = {
 	name: 'openai-realtime',
 	api_key: '',
 	model: 'gpt-4o-mini-transcribe',
+	realtime_model: 'gpt-4o-realtime-preview',
 	base_url: 'wss://api.openai.com/v1/realtime',
 }
 
@@ -54,6 +55,7 @@ async function openHeaderWs(url, headers) {
 async function GetSource(config) {
 	const apiKey = config.api_key
 	const model = config.model || configTemplate.model
+	const realtimeModel = config.realtime_model || configTemplate.realtime_model
 	const baseUrl = config.base_url || configTemplate.base_url
 
 	return {
@@ -66,7 +68,8 @@ async function GetSource(config) {
 		 * @returns {Promise<import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionResult_t>} 结果
 		 */
 		Recognize: async (options) => {
-			const ws = await openHeaderWs(baseUrl, {
+			const wsUrl = `${baseUrl}?${new URLSearchParams({ model: realtimeModel })}`
+			const ws = await openHeaderWs(wsUrl, {
 				Authorization: `Bearer ${apiKey}`,
 				'OpenAI-Beta': 'realtime=v1',
 			})
@@ -91,13 +94,13 @@ async function GetSource(config) {
 				resolveFinal(text)
 			}
 			/**
-			 * @param {Error} err 错误
+			 * @param {Error} error 错误
 			 * @returns {void}
 			 */
-			const fail = (err) => {
+			const fail = (error) => {
 				if (settled) return
 				settled = true
-				rejectFinal(err)
+				rejectFinal(error)
 			}
 
 			/**
@@ -112,26 +115,26 @@ async function GetSource(config) {
 
 			ws.on('message', (raw) => {
 				const text = typeof raw === 'string' ? raw : new TextDecoder().decode(raw)
-				let msg
-				try { msg = JSON.parse(text) }
+				let message
+				try { message = JSON.parse(text) }
 				catch { return }
-				if (msg.type === 'conversation.item.input_audio_transcription.delta') {
-					if (msg.delta) {
-						lastText += msg.delta
+				if (message.type === 'conversation.item.input_audio_transcription.delta') {
+					if (message.delta) {
+						lastText += message.delta
 						options.onResult?.({ text: lastText, isFinal: false })
 					}
 				}
-				else if (msg.type === 'conversation.item.input_audio_transcription.completed') {
-					lastText = msg.transcript || lastText
+				else if (message.type === 'conversation.item.input_audio_transcription.completed') {
+					lastText = message.transcript || lastText
 					options.onResult?.({ text: lastText, isFinal: true })
 					finish(lastText)
 				}
-				else if (msg.type === 'error')
-					fail(new Error(`openai realtime: ${msg.error?.message || text}`))
+				else if (message.type === 'error')
+					fail(new Error(`openai realtime: ${message.error?.message || text}`))
 			})
-			ws.on('error', (err) => fail(err instanceof Error ? err : new Error(String(err))))
+			ws.on('error', (error) => fail(error instanceof Error ? error : new Error(String(error))))
 			ws.on('close', () => {
-				if (!settled) finish(lastText)
+				if (!settled) fail(new Error('openai realtime: connection closed before final transcript'))
 			})
 
 			try {

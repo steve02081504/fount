@@ -1,8 +1,8 @@
 /**
  * 前端语音识别：探测配置、整段识别、实时会话（端点由 chat shell 提供）。
  */
+import { getAllDefaultPartsByType } from '../endpoints/parts.mjs'
 import { arrayBufferToBase64 } from '../lib/base64.mjs'
-import { getAllDefaultPartsByType, getPartList } from '../endpoints/parts.mjs'
 
 const API_BASE = '/api/parts/shells:chat'
 const WS_BASE = '/ws/parts/shells:chat'
@@ -18,12 +18,8 @@ let statusCache = null
 export async function hasSpeechRecognitionSource() {
 	if (statusCache && Date.now() - statusCache.at < STATUS_CACHE_MS) return statusCache.configured
 	try {
-		const [defaults, list] = await Promise.all([
-			getAllDefaultPartsByType('serviceSources/SpeechRecognition'),
-			getPartList('serviceSources/SpeechRecognition'),
-		])
+		const defaults = await getAllDefaultPartsByType('serviceSources/SpeechRecognition')
 		const configured = (Array.isArray(defaults) ? defaults.length : 0) > 0
-			|| (Array.isArray(list) ? list.length : 0) > 0
 		statusCache = { at: Date.now(), configured }
 		return configured
 	}
@@ -105,20 +101,28 @@ export async function recognizeBuffer({
 		pending += decoder.decode(value, { stream: true })
 		const lines = pending.split('\n')
 		pending = lines.pop() || ''
-		for (const line of lines) {
-			if (!line.trim()) continue
-			const row = JSON.parse(line)
-			if (row.type === 'partial') onPreview?.({ text: row.text, isFinal: row.isFinal })
-			else if (row.type === 'final') finalResult = { text: row.text, language: row.language }
-		}
+		for (const line of lines)
+			if (line.trim()) finalResult = handleNdjsonLine(line, onPreview) ?? finalResult
 	}
-	if (pending.trim()) {
-		const row = JSON.parse(pending)
-		if (row.type === 'final') finalResult = { text: row.text, language: row.language }
-		else if (row.type === 'partial') onPreview?.({ text: row.text, isFinal: row.isFinal })
-	}
+	if (pending.trim()) finalResult = handleNdjsonLine(pending, onPreview) ?? finalResult
 	if (!finalResult) throw new Error('recognizeBuffer: missing final result')
 	return finalResult
+}
+
+/**
+ * 解析一行 NDJSON（`partial` 触发增量回调，`final` 作为最终结果返回）。
+ * @param {string} line NDJSON 行
+ * @param {(partial: { text: string, isFinal?: boolean }) => void} [onPreview] 增量回调
+ * @returns {{ text: string, language?: string } | null} `final` 行的结果；否则 `null`
+ */
+function handleNdjsonLine(line, onPreview) {
+	const row = JSON.parse(line)
+	if (row.type === 'partial') {
+		onPreview?.({ text: row.text, isFinal: row.isFinal })
+		return null
+	}
+	if (row.type === 'final') return { text: row.text, language: row.language }
+	return null
 }
 
 /**
@@ -138,13 +142,22 @@ export async function openSpeechRecognitionSession({
 	const ws = new WebSocket(wsUrl)
 	ws.binaryType = 'arraybuffer'
 
+	let finalSettled = false
 	/** @type {(value: any) => void} */
 	let resolveFinal
 	/** @type {(reason?: any) => void} */
 	let rejectFinal
 	const finalPromise = new Promise((resolve, reject) => {
-		resolveFinal = resolve
-		rejectFinal = reject
+		/**
+		 * @param {any} value 最终结果
+		 * @returns {void}
+		 */
+		resolveFinal = value => { finalSettled = true; resolve(value) }
+		/**
+		 * @param {any} reason 错误原因
+		 * @returns {void}
+		 */
+		rejectFinal = reason => { finalSettled = true; reject(reason) }
 	})
 
 	await new Promise((resolve, reject) => {
@@ -165,6 +178,10 @@ export async function openSpeechRecognitionSession({
 		catch (error) {
 			rejectFinal(error)
 		}
+	})
+
+	ws.addEventListener('close', () => {
+		if (!finalSettled) rejectFinal(new Error('SpeechRecognition websocket closed unexpectedly'))
 	})
 
 	ws.send(JSON.stringify({ type: 'start', language, hotwords }))
@@ -200,12 +217,11 @@ export async function openSpeechRecognitionSession({
 
 /**
  * 将识别文本追加到输入框（保留已有内容）。
- * @param {HTMLTextAreaElement|HTMLInputElement|null} input 输入框
+ * @param {HTMLTextAreaElement|HTMLInputElement} input 输入框
  * @param {string} text 识别文本
  * @returns {void}
  */
 export function appendRecognizedText(input, text) {
-	if (!(input instanceof HTMLTextAreaElement || input instanceof HTMLInputElement)) return
 	const next = String(text || '').trim()
 	if (!next) return
 	const cur = input.value

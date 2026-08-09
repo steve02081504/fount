@@ -53,7 +53,7 @@ async function loadSpeechRecognitionSourceFromConfigData(username, data, { SaveC
  * @returns {Promise<any>} 服务源
  */
 export async function loadSpeechRecognitionSourceFromNameOrConfigData(username, source, unnamedSources, options) {
-	if (Object(source) instanceof String) return loadPartBase(username, 'serviceSources/SpeechRecognition/' + source)
+	if (typeof source === 'string') return loadPartBase(username, 'serviceSources/SpeechRecognition/' + source)
 	const instance = await loadSpeechRecognitionSourceFromConfigData(username, source, options)
 	unnamedSources?.push(instance)
 	return instance
@@ -64,14 +64,6 @@ export async function loadSpeechRecognitionSourceFromNameOrConfigData(username, 
  */
 export default {
 	info,
-	/**
-	 * @returns {Promise<void>}
-	 */
-	Load: async () => { },
-	/**
-	 * @returns {Promise<void>}
-	 */
-	Unload: async () => { },
 	interfaces: {
 		parts: {
 			/**

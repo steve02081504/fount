@@ -39,11 +39,11 @@ async function GetSource(config) {
 	const error = new Error('This is an empty SpeechRecognition source, which is a placeholder for a previously used generator that error in loading or has been uninstalled or renamed. Please select a new generator.')
 	return {
 		type: 'speech-recognition',
-		info: buildSourceInfo(product_info, { name: config?.name || 'Empty' }),
+		info: buildSourceInfo(product_info, { name: config.name || 'Empty' }),
 		is_paid: false,
 		extension: {},
 		/**
-		 * @returns {Promise<never>}
+		 * @returns {Promise<never>} 始终抛出错误
 		 */
 		Recognize: async () => {
 			throw error

@@ -10,14 +10,6 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
  */
 export default {
 	info,
-	/**
-	 * @returns {Promise<void>}
-	 */
-	Load: async () => { },
-	/**
-	 * @returns {Promise<void>}
-	 */
-	Unload: async () => { },
 	interfaces: {
 		parts: {
 			/**
@@ -25,10 +17,10 @@ export default {
 			 * @returns {string[]} 子部件名
 			 */
 			getSubPartsList: (my_paths) => {
-				return [...new Set(my_paths.map(p => {
-					if (fs.existsSync(p))
-						return fs.readdirSync(p).filter(part =>
-							fs.existsSync(path.join(p, part, 'main.mjs'))
+				return [...new Set(my_paths.map(searchPath => {
+					if (fs.existsSync(searchPath))
+						return fs.readdirSync(searchPath).filter(part =>
+							fs.existsSync(path.join(searchPath, part, 'main.mjs'))
 						)
 					return []
 				}).flat())]

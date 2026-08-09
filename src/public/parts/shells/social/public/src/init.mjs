@@ -21,7 +21,7 @@ import { getChatViewer } from './endpoints/chatBridge.mjs'
 import { SOCIAL_GATE } from './gate.mjs'
 import { renderAvatarHtml, rememberEntityHandle } from './lib/display.mjs'
 import { wireSocialProfileHover } from './lib/profileHover.mjs'
-import { bindMediaCarousel } from './mediaRender.mjs'
+import { bindAudioSpeechRecognition, bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal.mjs'
 import { primaryLocale } from '/scripts/i18n/index.mjs'
@@ -50,6 +50,7 @@ function wireSocialVoiceButton() {
 	const button = document.getElementById('voiceButton')
 	if (!(button instanceof HTMLButtonElement)) return
 	button.addEventListener('click', async () => {
+		button.disabled = true
 		try {
 			const { startVoiceRecording } = await import('/scripts/features/voiceRecord.mjs')
 			if (socialVoiceSession) {
@@ -81,6 +82,9 @@ function wireSocialVoiceButton() {
 			socialVoiceSession = null
 			button.classList.remove('btn-active')
 			showToastI18n('error', 'social.composer.voiceFailed', { error: error?.message || String(error) })
+		}
+		finally {
+			button.disabled = false
 		}
 	})
 }
@@ -234,6 +238,7 @@ export async function bootstrap() {
 		}, { capture: true })
 		bindContentReveal(shellRoot)
 		bindMediaCarousel(shellRoot)
+		bindAudioSpeechRecognition(shellRoot)
 		shellRoot?.addEventListener('click', event => {
 			const { target } = event
 			if (!(target instanceof HTMLElement)) return

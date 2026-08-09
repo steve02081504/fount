@@ -70,11 +70,16 @@ export function signSortedParamsHmacSha1(params, secret) {
 }
 
 /**
- * RFC1123 / +0800 时间（RTASR 办公版）。
+ * 东八区墙钟时间串 YYYY-MM-DDTHH:mm:ss+0800（RTASR 办公版）。
  * @returns {string} 时间串
  */
 export function formatUtcPlus8() {
 	const d = new Date(Date.now() + 8 * 3600 * 1000)
+	/**
+	 * 补零到两位。
+	 * @param {number} n 数字
+	 * @returns {string} 两位数字串
+	 */
 	const pad = n => String(n).padStart(2, '0')
 	return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}+0800`
 }

@@ -30,7 +30,7 @@ const configTemplate = {
 	app_id: '',
 	api_key: '',
 	api_secret: '',
-	language: 'cn',
+	language: 'autodialect',
 	pd: '',
 }
 
@@ -118,6 +118,7 @@ async function GetSource(config) {
 		Recognize: async (options) => recognizeByBuffering(options, async (pcm) => {
 			const wav = pcmToWav(pcm)
 			const durationMs = Math.floor(pcm.byteLength / 32)
+			const signatureRandom = randomString(16)
 			const params = {
 				accessKeyId,
 				dateTime: formatUtcPlus8(),
@@ -125,7 +126,7 @@ async function GetSource(config) {
 				fileName: 'audio.wav',
 				fileSize: String(wav.byteLength),
 				language,
-				signatureRandom: randomString(16),
+				signatureRandom,
 				appId,
 			}
 			if (pd) params.pd = pd
@@ -157,7 +158,7 @@ async function GetSource(config) {
 					dateTime: formatUtcPlus8(),
 					orderId,
 					resultType: 'transfer',
-					signatureRandom: randomString(16),
+					signatureRandom,
 				}
 				const pollSig = largeModelSignature(pollParams, apiSecret)
 				pollParams.signature = pollSig
