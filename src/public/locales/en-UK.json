@@ -1926,8 +1926,8 @@
 				"title": "federated remote author"
 			},
 			"trustAuthor": {
-				"textContent": "trust",
-				"title": "Trust this author (allow dangerous HTML)"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "Stickers",
 			"markdownRenderFailed": "Message rendering failed",
@@ -2767,6 +2767,10 @@
 				"groups": "No groups yet",
 				"members": "No members yet",
 				"pins": "No pins yet"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

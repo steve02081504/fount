@@ -1926,8 +1926,8 @@
 				"title": "autor remoto federado"
 			},
 			"trustAuthor": {
-				"textContent": "confianza",
-				"title": "Confíe en este autor (permita HTML peligroso)"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "etiqueta engomada",
 			"markdownRenderFailed": "Falló la representación del mensaje",
@@ -2767,6 +2767,10 @@
 				"groups": "Ningún grupo todavía",
 				"members": "Aún no hay miembros",
 				"pins": "Aún no hay pines"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

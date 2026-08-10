@@ -1926,8 +1926,8 @@
 				"title": "フェデレーションリモート作成者"
 			},
 			"trustAuthor": {
-				"textContent": "信頼",
-				"title": "この作者を信頼します (危険な HTML を許可します)"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "ステッカー",
 			"markdownRenderFailed": "メッセージのレンダリングに失敗しました",
@@ -2767,6 +2767,10 @@
 				"groups": "まだグループがありません",
 				"members": "まだメンバーがいません",
 				"pins": "まだピンがありません"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

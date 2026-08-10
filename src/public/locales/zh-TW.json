@@ -1925,8 +1925,8 @@
 				"title": "聯邦遠端作者"
 			},
 			"trustAuthor": {
-				"textContent": "信任",
-				"title": "信任此作者（允許危險 HTML）"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "貼紙",
 			"markdownRenderFailed": "訊息渲染失敗",
@@ -2766,6 +2766,10 @@
 				"groups": "暫無群組",
 				"members": "暫無成員",
 				"pins": "暫無置頂"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

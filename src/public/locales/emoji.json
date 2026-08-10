@@ -1926,8 +1926,8 @@
 				"title": "🌐🔗✍️"
 			},
 			"trustAuthor": {
-				"textContent": "🤝",
-				"title": "🤝✍️⚠️🌐📄"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "🏷️",
 			"markdownRenderFailed": "💬🎨❌",
@@ -2767,6 +2767,10 @@
 				"groups": "📭👥",
 				"members": "👥📭",
 				"pins": "📌📭"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

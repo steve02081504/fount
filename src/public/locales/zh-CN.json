@@ -1926,8 +1926,8 @@
 				"title": "联邦远端作者"
 			},
 			"trustAuthor": {
-				"textContent": "信任",
-				"title": "信任此作者（允许危险 HTML）"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "贴纸",
 			"markdownRenderFailed": "消息渲染失败",
@@ -2767,6 +2767,10 @@
 				"groups": "暂无群组",
 				"members": "暂无成员",
 				"pins": "暂无置顶"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

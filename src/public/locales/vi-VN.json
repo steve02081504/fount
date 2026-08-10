@@ -1926,8 +1926,8 @@
 				"title": "liên tác giả từ xa"
 			},
 			"trustAuthor": {
-				"textContent": "lòng tin",
-				"title": "Tin tưởng tác giả này (cho phép HTML nguy hiểm)"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "nhãn dán",
 			"markdownRenderFailed": "Kết xuất tin nhắn không thành công",
@@ -2767,6 +2767,10 @@
 				"groups": "Chưa có nhóm nào",
 				"members": "Chưa có thành viên nào",
 				"pins": "Chưa có ghim"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

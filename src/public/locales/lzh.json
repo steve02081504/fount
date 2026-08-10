@@ -1926,8 +1926,8 @@
 				"title": "諸邦遠端作者"
 			},
 			"trustAuthor": {
-				"textContent": "信任",
-				"title": "信任此作者（聽許危險織文）"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "貼紙",
 			"markdownRenderFailed": "札敷彩未遂",
@@ -2767,6 +2767,10 @@
 				"groups": "暫無群組",
 				"members": "暫無成員",
 				"pins": "暫無高懸"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

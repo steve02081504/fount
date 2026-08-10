@@ -1926,8 +1926,8 @@
 				"title": "연합 원격 작성자"
 			},
 			"trustAuthor": {
-				"textContent": "신뢰",
-				"title": "이 작성자 신뢰하기(위험한 HTML 허용)"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "라벨",
 			"markdownRenderFailed": "메시지 렌더링 실패",
@@ -2767,6 +2767,10 @@
 				"groups": "아직 그룹이 없습니다.",
 				"members": "아직 멤버이 없습니다.",
 				"pins": "아직 핀이 없습니다."
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

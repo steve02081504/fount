@@ -1926,8 +1926,8 @@
 				"title": "फ़ेडरेटेड दूरस्थ लेखक"
 			},
 			"trustAuthor": {
-				"textContent": "विश्वास",
-				"title": "इस लेखक पर भरोसा करें (खतरनाक HTML की अनुमति दें)"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "कँटिया",
 			"markdownRenderFailed": "संदेश प्रतिपादन विफल रहा",
@@ -2767,6 +2767,10 @@
 				"groups": "अभी तक कोई समूह नहीं",
 				"members": "अभी तक कोई सदस्य नहीं",
 				"pins": "अभी तक कोई पिन नहीं"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

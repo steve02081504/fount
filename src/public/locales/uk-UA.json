@@ -1926,8 +1926,8 @@
 				"title": "Федеративний віддалений автор"
 			},
 			"trustAuthor": {
-				"textContent": "Довіра",
-				"title": "Довіряйте цьому автору (дозволити небезпечний HTML)"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "Стікер",
 			"markdownRenderFailed": "Помилка обробки повідомлення",
@@ -2767,6 +2767,10 @@
 				"groups": "Групи ще немає",
 				"members": "Ще немає учасників",
 				"pins": "Ще немає шпильок"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {

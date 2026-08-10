@@ -1926,8 +1926,8 @@
 				"title": "Federatieve externe auteur"
 			},
 			"trustAuthor": {
-				"textContent": "Vertrouwen",
-				"title": "Vertrouw deze auteur (sta gevaarlijke HTML toe)"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许危险 Markdown/HTML）"
 			},
 			"stickerInline": "Sticker",
 			"markdownRenderFailed": "Het weergeven van berichten is mislukt",
@@ -2767,6 +2767,10 @@
 				"groups": "Nog geen groep",
 				"members": "Nog geen leden",
 				"pins": "Nog geen pinnen"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者的 Markdown 渲染"
 			}
 		},
 		"sidebar": {
