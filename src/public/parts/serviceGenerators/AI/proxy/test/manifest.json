@@ -1,0 +1,48 @@
+{
+	"id": "serviceGenerators/AI/proxy",
+	"suites": [
+		{
+			"name": "pure",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/proxy/**",
+				"src/scripts/test/fixtures/openai_prompt_cache_mock.mjs"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/AI/proxy/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"dependsOn": [
+				"server:live"
+			],
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/proxy/**",
+				"default/templates/user/chars/ZL-31/**",
+				"src/public/parts/shells/chat/src/prompt_struct/**",
+				"src/public/parts/shells/chat/test/harness.mjs",
+				"src/scripts/test/fixtures/openai_prompt_cache_mock.mjs",
+				"src/scripts/test/fixtures/serviceSources/AI/proxy_openai_mock/**",
+				"src/scripts/test/{deno/serial.mjs,node/boot.mjs}",
+				"src/server/parts_loader.mjs",
+				"deno.json"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/serviceGenerators/AI/proxy/test/integration/"
+			]
+		}
+	]
+}

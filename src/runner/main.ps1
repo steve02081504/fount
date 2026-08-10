@@ -164,37 +164,39 @@ function Test-Winget {
 		}
 	} catch { <# ignore #> }
 }
-function Test-Browser {
-	$browser = try {
+
+function Get-Browser {
+	try {
 		$progId = (Get-ItemProperty -Path "Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" -Name "ProgId" -ErrorAction Stop).'ProgId'
 
 		if ($progId) {
 			(Get-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -Name "(default)" -ErrorAction Stop).'(default)'
 		}
 	} catch { <# ignore #> }
+}
+
+function Test-Browser {
+	if (Get-Browser) { return }
 	try {
-		if (!$browser) {
-			Test-Winget
-			winget install --id Google.Chrome -e --source winget
-			$Script:Installed_chrome = 1
-			RefreshPath
-		}
-	} catch { $Failed = 1 }
-	try {
-		if ($Failed) {
+		Test-Winget
+		winget install --id Google.Chrome -e --source winget
+	} catch { <# ignore #> }
+	if (!(Get-Browser)) {
+		try {
 			$ChromeSetup = "ChromeSetup.exe"
-			Invoke-WebRequest -Uri 'http://dl.google.com/chrome/install/chrome_installer.exe' -OutFile "$env:TEMP\$ChromeSetup"
-			& "$env:TEMP\$ChromeSetup" /install
-			$Process2Monitor = "ChromeSetup"
+			Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/chrome_installer.exe' -OutFile "$env:TEMP\$ChromeSetup"
+			$installer = Start-Process -FilePath "$env:TEMP\$ChromeSetup" -ArgumentList '/install' -PassThru
 			do {
 				Start-Sleep -Seconds 2
-			} while (Get-Process | Where-Object { $Process2Monitor -contains $_.Name } | Select-Object -ExpandProperty Name)
+			} while (-not $installer.HasExited)
 			Remove-Item "$env:TEMP\$ChromeSetup" -ErrorAction SilentlyContinue
+		} catch { <# ignore #> }
+	}
 
-			$Script:Installed_chrome = 1
-			RefreshPath
-		}
-	} catch { <# ignore #> }
+	if (Get-Browser) {
+		$Script:Installed_chrome = 1
+		RefreshPath
+	}
 }
 
 $statusServerJob = $null
