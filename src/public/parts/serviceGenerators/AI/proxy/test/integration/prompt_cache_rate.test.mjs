@@ -74,7 +74,8 @@ Deno.test(`proxy + ZL-31 ${ROUNDS} rounds prompt cache rate >= ${MIN_CACHE_RATE 
 	const dataDir = ensureSharedTestDataDir()
 	const boot = createIntegrationBoot({
 		username,
-		minP2pNode: false,
+		p2p: false,
+		minP2pNode: true,
 		loadParts: [],
 		/**
 		 * @param {string} user 用户
