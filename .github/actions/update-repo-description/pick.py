@@ -30,7 +30,7 @@ def lunar_month_day(today: date) -> str | None:
 	day = solar_day(today)
 	if day.isLunarLeap():
 		return None
-	return f'{day.getLunarMonth():02d}-{day.getLunarDay():02d}'
+	return f"{day.getLunarMonth():02d}-{day.getLunarDay():02d}"
 
 
 def solar_term_name(today: date) -> str | None:
@@ -41,24 +41,24 @@ def solar_term_name(today: date) -> str | None:
 
 
 def holiday_matches(holiday: dict, today: date) -> bool:
-	if any(date_value in (today.strftime('%m-%d'), today.isoformat()) for date_value in holiday.get('dates') or ()):
+	if any(date_value in (today.strftime("%m-%d"), today.isoformat()) for date_value in holiday.get("dates") or ()):
 		return True
-	lunar_dates = holiday.get('lunar') or ()
+	lunar_dates = holiday.get("lunar") or ()
 	if lunar_dates:
 		lunar_date = lunar_month_day(today)
 		if lunar_date and lunar_date in lunar_dates:
 			return True
-	terms = holiday.get('jieqi') or ()
+	terms = holiday.get("jieqi") or ()
 	if terms:
 		solar_term = solar_term_name(today)
 		if solar_term and solar_term in terms:
 			return True
-	yearday = holiday.get('yearday')
+	yearday = holiday.get("yearday")
 	return yearday is not None and today.timetuple().tm_yday == yearday
 
 
 def match_holiday(config: dict, today: date) -> dict | None:
-	for holiday in config.get('holidays') or ():
+	for holiday in config.get("holidays") or ():
 		if holiday_matches(holiday, today):
 			return holiday
 	return None
@@ -67,9 +67,9 @@ def match_holiday(config: dict, today: date) -> dict | None:
 def pick_pool(config: dict, today: date) -> tuple[list[str], str | None]:
 	holiday = match_holiday(config, today)
 	if holiday:
-		return list(holiday.get('descriptions') or ()), holiday.get('name') or 'holiday'
-	core = list(config.get('core') or ())
-	extras = config.get('extras')
+		return list(holiday.get("descriptions") or ()), holiday.get("name") or "holiday"
+	core = list(config.get("core") or ())
+	extras = config.get("extras")
 	extras = list(extras) if isinstance(extras, list) else []
 	if core and extras:
 		pool = core if random.random() < 0.7 else extras
@@ -87,46 +87,46 @@ def resolve_today(timezone: str, date_override: str) -> date:
 
 
 def write_github_output(description: str, holiday_name: str | None, today: date) -> None:
-	path = os.environ.get('GITHUB_OUTPUT')
+	path = os.environ.get("GITHUB_OUTPUT")
 	if not path:
 		return
-	with open(path, 'a', encoding='utf-8') as output_file:
-		output_file.write('description<<EOF\n')
-		output_file.write(f'{description}\n')
-		output_file.write('EOF\n')
-		output_file.write(f'holiday={holiday_name or ""}\n')
-		output_file.write(f'date={today.isoformat()}\n')
+	with open(path, "a", encoding="utf-8") as output_file:
+		output_file.write("description<<EOF\n")
+		output_file.write(f"{description}\n")
+		output_file.write("EOF\n")
+		output_file.write(f"holiday={holiday_name or ''}\n")
+		output_file.write(f"date={today.isoformat()}\n")
 
 
 def main(arguments: list[str] | None = None) -> int:
 	arguments = list(sys.argv[1:] if arguments is None else arguments)
 	if len(arguments) < 1:
-		print('usage: pick.py <config.json> [timezone] [YYYY-MM-DD]', file=sys.stderr)
+		print("usage: pick.py <config.json> [timezone] [YYYY-MM-DD]", file=sys.stderr)
 		return 2
 	config_path = arguments[0]
-	timezone = arguments[1] if len(arguments) > 1 and arguments[1] else 'Asia/Shanghai'
-	date_override = arguments[2] if len(arguments) > 2 else ''
+	timezone = arguments[1] if len(arguments) > 1 and arguments[1] else "Asia/Shanghai"
+	date_override = arguments[2] if len(arguments) > 2 else ""
 
-	with open(config_path, encoding='utf-8') as config_file:
+	with open(config_path, encoding="utf-8") as config_file:
 		config = json5.load(config_file)
 
 	today = resolve_today(timezone, date_override)
 	pool, holiday_name = pick_pool(config, today)
 	if not pool:
-		print(f'No descriptions available for today ({today.isoformat()})', file=sys.stderr)
+		print(f"No descriptions available for today ({today.isoformat()})", file=sys.stderr)
 		return 1
 	description = random.choice(pool)
 	if len(description) > 350:
-		print(f'Description exceeds 350 characters ({len(description)})', file=sys.stderr)
+		print(f"Description exceeds 350 characters ({len(description)})", file=sys.stderr)
 		return 1
 
 	write_github_output(description, holiday_name, today)
-	print(f'date={today.isoformat()}', file=sys.stderr)
+	print(f"date={today.isoformat()}", file=sys.stderr)
 	if holiday_name:
-		print(f'holiday={holiday_name}', file=sys.stderr)
-	print(f'description={description}', file=sys.stderr)
+		print(f"holiday={holiday_name}", file=sys.stderr)
+	print(f"description={description}", file=sys.stderr)
 	return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	raise SystemExit(main())

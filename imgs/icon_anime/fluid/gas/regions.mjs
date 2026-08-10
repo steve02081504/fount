@@ -186,7 +186,7 @@ export const labelAirRegions = (world) => {
 
 	if (hasSealed) {
 		/** @type {Map<number, number>} */
-		const overlap = /** @type {Map<number, number>} */ (world.scratch.sealedOverlapMap ??= new Map())
+		const overlap = /** @type {Map<number, number>} */ world.scratch.sealedOverlapMap ??= new Map()
 		overlap.clear()
 		const oldTotal = scratch(world, 'oldRegionTotal', Math.max(oldRegions.length, 1), Float32Array)
 		oldTotal.fill(0)
@@ -226,7 +226,7 @@ export const labelAirRegions = (world) => {
 	world.regions = nextRegions
 	world.airDirty = false
 	world.gasGeomDirty = true
-	world.scratch.airEpoch = (/** @type {number} */ (world.scratch.airEpoch) | 0) + 1
+	world.scratch.airEpoch = (/** @type {number} */ world.scratch.airEpoch | 0) + 1
 	world.scratch.thermoPEpoch = -1
 }
 

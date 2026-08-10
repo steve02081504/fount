@@ -6,8 +6,9 @@
  * 按住越久 → 越快；移动时跟随；停止后重组；释放时清除。
  */
 
-import { applyPointer } from './pointer.mjs'
 import { CELL_ASPECT } from '../hash.mjs'
+
+import { applyPointer } from './pointer.mjs'
 
 /** 低于此移动量（视图格 / tick）视为静止。 */
 export const STILL_EPS = 0.55

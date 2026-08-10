@@ -4,6 +4,11 @@
 
 import { MAT, createWorld, setMat, addLiquid, clearMaterials } from '../fluid/index.mjs'
 
+/**
+ * 创建带 SEAL 边界的流体测试世界。
+ * @param {{ fillBottom?: number }} [opts] 密封盒选项
+ * @returns {ReturnType<typeof createWorld>} 密封测试世界
+ */
 const sealedBox = (opts = {}) => {
 	const world = createWorld({ width: 20, height: 16, margin: 2, bottomExtra: 2 })
 	clearMaterials(world)
@@ -20,4 +25,5 @@ const sealedBox = (opts = {}) => {
 	return world
 }
 
+/** 密封盒夹具。 */
 export { sealedBox }

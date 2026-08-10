@@ -1,7 +1,7 @@
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
-import { computeEffectiveStatus, getProfile } from '../../../chat/src/entity/profile.mjs'
 import { resolveOperatorEntityHashForUser } from '../../../chat/src/entity/identity.mjs'
+import { computeEffectiveStatus, getProfile } from '../../../chat/src/entity/profile.mjs'
 
 /**
  * 读取并返回实体资料（含当前查看者可见的 effectiveStatus）。

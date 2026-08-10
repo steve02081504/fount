@@ -6,8 +6,9 @@
  * 更快释放（手电筒未激活前）→ 高亮环向外扩散。
  */
 
-import { applyPointer, trimCap } from './pointer.mjs'
 import { CELL_ASPECT } from '../hash.mjs'
+
+import { applyPointer, trimCap } from './pointer.mjs'
 
 /** 手电筒激活前的按住帧数。 */
 export const TORCH_DELAY = 5

@@ -240,14 +240,14 @@ function formatRunningSuiteMessage({ manifestId, name, heavy, expected, speculat
  */
 function logDeadTriggers(deadTriggers) {
 	if (!deadTriggers.length) return
-	for (const dead of deadTriggers) {
+	for (const dead of deadTriggers)
 		console.errorI18n('fountConsole.test.triggerNoMatch', {
 			scope: dead.subtestName
 				? `${dead.manifestId}:${dead.suiteName}:${dead.subtestName}`
 				: `${dead.manifestId}:${dead.suiteName}`,
 			pattern: dead.pattern,
 		})
-	}
+
 	console.errorI18n('fountConsole.test.triggerNoMatchSummary', { count: deadTriggers.length })
 }
 

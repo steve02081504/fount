@@ -128,7 +128,7 @@ export const prepareDripSources = (world, up = gravityUpWeights(world)) => {
 	const dripFrom = scratch(world, 'dripFrom', n, Int32Array)
 	const dripGen = scratch(world, 'dripGen', n, Int32Array)
 	const dripPri = scratch(world, 'dripPri', n, Uint8Array)
-	let epoch = (/** @type {number} */ (world.scratch.dripEpoch) | 0) + 1
+	let epoch = (/** @type {number} */ world.scratch.dripEpoch | 0) + 1
 	if (epoch >= 0x7fffffff) {
 		dripGen.fill(0)
 		epoch = 1

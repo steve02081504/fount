@@ -3,6 +3,7 @@
  */
 
 import { sampleLight, RIPPLE_SPEED, RIPPLE_WIDTH, torchEase, LIGHT_RADIUS, lightFalloff } from '../gesture/light.mjs'
+
 import {
 	RESET, emitCell, flushRun, litSgr, runGlyphs,
 } from './palette.mjs'
@@ -10,7 +11,7 @@ import {
 /** 复用的 sampleLight 输出（compose 热路径）。 */
 const sampleOut = { ambient: 0, lift: 0 }
 /** 复用的 ANSI 片段列表——每帧一次 join。 */
-const frameParts = /** @type {string[]} */([])
+const frameParts = /** @type {string[]} */[]
 
 /**
  * 将扁平 ch/fg 缓冲拼成无光照的 ANSI 帧字符串。

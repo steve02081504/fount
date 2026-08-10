@@ -57,7 +57,7 @@ export const ensureThermoPressure = (world) => {
 	const { worldW: W, worldH: H, regionId, regions, mat } = world
 	const n = W * H
 	const depth = fillCellDepths(world)
-	const airEpoch = /** @type {number} */ (world.scratch.airEpoch) | 0
+	const airEpoch = /** @type {number} */ world.scratch.airEpoch | 0
 	const thermoP = scratch(world, 'thermoP', n, Float32Array)
 	if (world.scratch.thermoPEpoch === airEpoch) return thermoP
 
@@ -120,9 +120,9 @@ export const pressureAt = (world, x, y) => {
 		return openHydroPressure(Math.max(0, depth))
 	}
 	const cell = idx(world, x, y)
-	const airEpoch = /** @type {number} */ (world.scratch.airEpoch) | 0
+	const airEpoch = /** @type {number} */ world.scratch.airEpoch | 0
 	if (world.scratch.thermoPEpoch === airEpoch) {
-		const thermoP = /** @type {Float32Array | undefined} */ (world.scratch.thermoP)
+		const thermoP = /** @type {Float32Array | undefined} */ world.scratch.thermoP
 		if (thermoP && thermoP.length === world.worldW * world.worldH)
 			return thermoP[cell]
 	}

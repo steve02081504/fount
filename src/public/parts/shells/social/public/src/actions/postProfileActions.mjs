@@ -88,18 +88,17 @@ export async function handlePostProfileActionsClick(target) {
 	const noteMoreButton = target.closest('[data-note-more]')
 	if (noteMoreButton instanceof HTMLElement && noteMoreButton.dataset.noteMore) {
 		const parsed = parseActionKey(noteMoreButton.dataset.noteMore)
-		if (parsed) 
-			try {
-				const data = await getPostNotes(parsed.entityHash, parsed.postId)
-				await showText((data.notes || []).map(note =>
-					`[${note.score >= 0 ? '+' : ''}${note.score}] ${note.text || ''}`).join('\n---\n')
-					|| geti18n('social.notes.empty'), 'social.notes.listTitle')
-			}
-			catch (error) {
-				handleError('social.post.loadFailed', {}, error)
-				return true
-			}
-		
+		if (parsed) try {
+			const data = await getPostNotes(parsed.entityHash, parsed.postId)
+			await showText((data.notes || []).map(note =>
+				`[${note.score >= 0 ? '+' : ''}${note.score}] ${note.text || ''}`).join('\n---\n')
+				|| geti18n('social.notes.empty'), 'social.notes.listTitle')
+		}
+		catch (error) {
+			handleError('social.post.loadFailed', {}, error)
+			return true
+		}
+
 		return true
 	}
 

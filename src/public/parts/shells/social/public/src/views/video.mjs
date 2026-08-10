@@ -384,19 +384,18 @@ async function setVideoRepliesOpen(slide, open, options = {}) {
 	}
 	panel.classList.remove('hidden')
 	ticker?.classList.add('is-dimmed')
-	if (!panel.dataset.loaded) 
-		try {
-			const replies = await loadSlideReplies(slide)
-			panel.dataset.loaded = '1'
-			await renderRepliesPanel(panel, replies)
-			renderCommentTicker(slide, replies)
-		}
-		catch (error) {
-			closeVideoReplies(slide)
-			handleError('social.replies.loadFailed', {}, error)
-			return
-		}
-	
+	if (!panel.dataset.loaded) try {
+		const replies = await loadSlideReplies(slide)
+		panel.dataset.loaded = '1'
+		await renderRepliesPanel(panel, replies)
+		renderCommentTicker(slide, replies)
+	}
+	catch (error) {
+		closeVideoReplies(slide)
+		handleError('social.replies.loadFailed', {}, error)
+		return
+	}
+
 	if (options.focusReplyId) focusReplyInPanel(panel, options.focusReplyId)
 }
 

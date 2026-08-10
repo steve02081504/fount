@@ -68,9 +68,9 @@ const PRESSURE_CTX = {
 			PRESSURE_CTX.fullRefill = true
 			return
 		}
-		let dirtyX = /** @type {Int32Array} */ (PRESSURE_CTX.dirtyX)
-		let dirtyY = /** @type {Int32Array} */ (PRESSURE_CTX.dirtyY)
-		const world = /** @type {FluidWorld} */ (PRESSURE_CTX.world)
+		let dirtyX = /** @type {Int32Array} */ PRESSURE_CTX.dirtyX
+		let dirtyY = /** @type {Int32Array} */ PRESSURE_CTX.dirtyY
+		const world = /** @type {FluidWorld} */ PRESSURE_CTX.world
 		if (PRESSURE_CTX.dirtyN >= dirtyX.length) {
 			dirtyX = growScratch(world, 'liqPDirtyX', PRESSURE_CTX.dirtyN + 1, Int32Array)
 			dirtyY = growScratch(world, 'liqPDirtyY', PRESSURE_CTX.dirtyN + 1, Int32Array)
@@ -90,8 +90,8 @@ const PRESSURE_CTX = {
 		if (PRESSURE_CTX.dirtyN || PRESSURE_CTX.fullRefill) flushPressure()
 		const { W, H } = PRESSURE_CTX
 		if (x < 0 || y < 0 || x >= W || y >= H)
-			return pressureAt(/** @type {FluidWorld} */ (PRESSURE_CTX.world), x, Math.max(0, y))
-		return /** @type {Float32Array} */ (PRESSURE_CTX.cache)[y * W + x]
+			return pressureAt(/** @type {FluidWorld} */ PRESSURE_CTX.world, x, Math.max(0, y))
+		return /** @type {Float32Array} */ PRESSURE_CTX.cache[y * W + x]
 	},
 }
 
@@ -101,19 +101,19 @@ const PRESSURE_CTX = {
  */
 const flushPressure = () => {
 	const ctx = PRESSURE_CTX
-	const world = /** @type {FluidWorld} */ (ctx.world)
-	const cache = /** @type {Float32Array} */ (ctx.cache)
-	const depth = /** @type {Float32Array} */ (ctx.depth)
-	const order = /** @type {Int32Array} */ (ctx.order)
-	const upWeights = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ (ctx.upWeights)
+	const world = /** @type {FluidWorld} */ ctx.world
+	const cache = /** @type {Float32Array} */ ctx.cache
+	const depth = /** @type {Float32Array} */ ctx.depth
+	const order = /** @type {Int32Array} */ ctx.order
+	const upWeights = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ ctx.upWeights
 	if (ctx.fullRefill) {
 		fillPressureByDepth(world, cache, depth, order, upWeights, UP_LINE)
 		ctx.fullRefill = false
 		ctx.dirtyN = 0
 		return
 	}
-	const dirtyX = /** @type {Int32Array} */ (ctx.dirtyX)
-	const dirtyY = /** @type {Int32Array} */ (ctx.dirtyY)
+	const dirtyX = /** @type {Int32Array} */ ctx.dirtyX
+	const dirtyY = /** @type {Int32Array} */ ctx.dirtyY
 	for (let i = 0; i < ctx.dirtyN; i++)
 		refreshGravityLine(world, dirtyX[i], dirtyY[i], cache, depth, UP_LINE, DOWN_LINE)
 	ctx.dirtyN = 0
@@ -230,9 +230,9 @@ export const liquidPressureAt = (world, x, y) => condensedPressureAt(world, x, y
 const fillPressureByDepth = (world, cache, depth, order, up, strongUp) => {
 	const { worldW: W, mat } = world
 	const n = order.length
-	const airEpoch = /** @type {number} */ (world.scratch.airEpoch) | 0
+	const airEpoch = /** @type {number} */ world.scratch.airEpoch | 0
 	const thermoP = world.scratch.thermoPEpoch === airEpoch
-		? /** @type {Float32Array | undefined} */ (world.scratch.thermoP)
+		? /** @type {Float32Array | undefined} */ world.scratch.thermoP
 		: undefined
 
 	for (let si = 0; si < n; si++) {

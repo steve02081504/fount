@@ -121,6 +121,6 @@ Deno.test('deleting a post drops its hashtags from trending', async () => {
 		content: { targetPostId: row.id },
 	}, { fanout: false })
 
-	;({ tags } = await searchIndex.readTrendingHashtagCounts(username, 32))
+	; ({ tags } = await searchIndex.readTrendingHashtagCounts(username, 32))
 	assert(!tags.some(entry => entry.tag === tag))
 })

@@ -107,7 +107,7 @@ export function concatUint8(parts) {
 }
 
 /**
- * Uint8Array → base64。
+ * 字节数组转 base64。
  * @param {Uint8Array} bytes 字节
  * @returns {string} base64
  */

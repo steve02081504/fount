@@ -132,7 +132,11 @@ export function registerEntityEndpoints(router) {
 		const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
 		res.status(200).json({
 			lastSeenAt,
-			effectiveStatus: computeEffectiveStatus(profile, operatorEntityHash, { isSelf: true }),
+			effectiveStatus: computeEffectiveStatus(
+				{ ...profile, lastSeenAt },
+				operatorEntityHash,
+				{ isSelf: true },
+			),
 		})
 	})
 

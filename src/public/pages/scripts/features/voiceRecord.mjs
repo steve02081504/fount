@@ -39,6 +39,9 @@ export async function startVoiceRecording() {
 		rejectStop = reject
 	})
 
+	/**
+	 * 停止时组装录音文件。
+	 */
 	mediaRecorder.onstop = () => {
 		try {
 			const type = mediaRecorder.mimeType || chunks[0]?.type || 'audio/webm'

@@ -63,27 +63,57 @@ const mockTermuxLifecycle = () => {
 	let exitListener = null
 	const fakeChild = {
 		stdout: {
+			/** 假 stdout 编码设置。 */
 			setEncoding() { /* noop */ },
+			/** 假 stdout 事件注册。 */
 			on() { /* noop */ },
+			/** 假 stdout 移除监听。 */
 			removeAllListeners() { /* noop */ },
 		},
+		/** 假子进程事件注册。 */
 		on() { /* noop */ },
+		/** 假子进程移除监听。 */
 		removeAllListeners() { /* noop */ },
+		/** 假子进程 kill。 */
 		kill() { calls.push('kill') },
 	}
 	const stop = startTermuxAcquire(() => { /* noop */ }, {
+		/**
+		 * 注入 spawn。
+		 * @param {string} cmd 命令
+		 * @param {string[]} args 参数
+		 * @returns {typeof fakeChild} 假子进程
+		 */
 		spawn: (cmd, args) => {
 			calls.push(['spawn', cmd, ...args])
 			return fakeChild
 		},
+		/**
+		 * 注入 spawnSync。
+		 * @param {string} cmd 命令
+		 * @param {string[]} args 参数
+		 * @returns {{ status: number }} 退出状态
+		 */
 		spawnSync: (cmd, args) => {
 			calls.push(['spawnSync', cmd, ...args])
 			return { status: 0 }
 		},
 		process: {
+			/**
+			 * 注册进程事件。
+			 * @param {string} event 事件名
+			 * @param {() => void} listener 回调
+			 * @returns {void}
+			 */
 			on(event, listener) {
 				if (event === 'exit') exitListener = listener
 			},
+			/**
+			 * 注销进程事件。
+			 * @param {string} event 事件名
+			 * @param {() => void} listener 回调
+			 * @returns {void}
+			 */
 			off(event, listener) {
 				if (event === 'exit' && exitListener === listener) exitListener = null
 			},
@@ -92,6 +122,7 @@ const mockTermuxLifecycle = () => {
 	return {
 		calls,
 		stop,
+		/** 触发注入的 process exit。 */
 		fireExit: () => {
 			exitListener?.()
 		},

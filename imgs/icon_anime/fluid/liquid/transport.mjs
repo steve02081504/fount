@@ -242,14 +242,14 @@ export const stepPhaseTransport = (world, phase, opts) => {
 					const room = cellRoom(world, target)
 					if (room <= 0) continue
 					const dry = mass[target] < LIQ_DRAW
-					let move = sheetMove(mass[cell], mass[target], room, visc) * (dry ? ST_DRY_FRAC : 1)
+					const move = sheetMove(mass[cell], mass[target], room, visc) * (dry ? ST_DRY_FRAC : 1)
 					if (move <= 0) continue
 					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, 0, 0)
 					markDirty(x, y)
 					markDirty(nbX, nbY)
 				}
 				else {
-					let move = sheetMove(mass[cell], 0, LIQ_FULL, visc) * ST_DRY_FRAC
+					const move = sheetMove(mass[cell], 0, LIQ_FULL, visc) * ST_DRY_FRAC
 					if (move <= 0) continue
 					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, wrappedFrac, outFrac)
 					markDirty(x, y)
