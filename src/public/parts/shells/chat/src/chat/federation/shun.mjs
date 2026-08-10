@@ -49,7 +49,8 @@ async function waitForRosterPeers(slot, maxWaitMs = SHUN_PROBE_ROSTER_WAIT_MS) {
 
 /**
  * 共识判定的已知对端 nodeHash：active 成员 home ∩ 信令房 roster（除己）。
- * roster 用来丢掉离线 stale home；切不可把非成员 roster peer 扩进共识分母，否则永远凑不齐 shun。
+ * roster 用来丢掉离线 stale home；null / 空数组均视为空 roster（不回退为全部 active home）。
+ * 切不可把非成员 roster peer 扩进共识分母，否则永远凑不齐 shun。
  * @param {object | null | undefined} state 物化群状态
  * @param {string} selfNodeHash 本机 nodeHash
  * @param {string[] | null | undefined} [rosterNodeHashes] 联邦房内可见 nodeHash
@@ -63,9 +64,8 @@ export function collectKnownPeerNodeHashes(state, selfNodeHash, rosterNodeHashes
 		const home = normalizeHex64(member.homeNodeHash)
 		if (isHex64(home) && home !== self) fromMembers.add(home)
 	}
-	if (!rosterNodeHashes?.length) return [...fromMembers]
 	const fromRoster = [...new Set(
-		rosterNodeHashes.map(id => normalizeHex64(id)).filter(isHex64),
+		(rosterNodeHashes || []).map(id => normalizeHex64(id)).filter(isHex64),
 	)].filter(h => h !== self)
 	return fromRoster.filter(h => fromMembers.has(h))
 }

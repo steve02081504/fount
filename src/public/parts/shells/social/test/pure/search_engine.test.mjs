@@ -112,7 +112,6 @@ Deno.test('indexDocument does not recreate a deleted index parent tree', async (
 })
 
 Deno.test('indexDocument concurrent parent removal does not reject', async () => {
-	let enoentRejects = 0
 	for (let round = 0; round < 20; round++) {
 		const root = mkdtempSync(join(tmpdir(), 'fount_search_race_'))
 		const groupDir = join(root, 'group')
@@ -125,22 +124,19 @@ Deno.test('indexDocument concurrent parent removal does not reject', async () =>
 				ts: 1,
 				fields: {},
 			})
-			const ops = []
-			for (let i = 0; i < 12; i++)
-				ops.push(indexDocument(indexDir, 's1', {
-					id: `d${i}`,
-					text: `hello world document ${i} extra tokens`,
-					ts: i,
+			const operations = []
+			for (let documentIndex = 0; documentIndex < 12; documentIndex++)
+				operations.push(indexDocument(indexDir, 's1', {
+					id: `d${documentIndex}`,
+					text: `hello world document ${documentIndex} extra tokens`,
+					ts: documentIndex,
 					fields: {},
-				}).then(() => null, error => error))
-			ops.push(rm(groupDir, { recursive: true, force: true }).then(() => null, error => error))
-			const results = await Promise.all(ops)
-			for (const result of results)
-				if (result?.code === 'ENOENT' || result?.code === 'EEXIST') enoentRejects++
+				}))
+			operations.push(rm(groupDir, { recursive: true, force: true }))
+			await Promise.all(operations)
 		}
 		finally {
 			rmSync(root, { recursive: true, force: true })
 		}
 	}
-	assertEquals(enoentRejects, 0, 'leave/delete race must not surface ENOENT/EEXIST from index writes')
 })

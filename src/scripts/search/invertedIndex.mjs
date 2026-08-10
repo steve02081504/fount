@@ -56,12 +56,12 @@ async function ensureShardDir(indexDir, shardKey) {
 /**
  * 落盘 I/O：leave/删群竞态下的 ENOENT / EEXIST 视为无操作。
  * @template T
- * @param {() => Promise<T>} fn 临界区
- * @returns {Promise<T | undefined>} fn 的返回值；ENOENT/EEXIST 时为 undefined
+ * @param {() => Promise<T>} operation 临界区
+ * @returns {Promise<T | undefined>} operation 的返回值；ENOENT/EEXIST 时为 undefined
  */
-async function withGoneParentOk(fn) {
+async function withGoneParentOk(operation) {
 	try {
-		return await fn()
+		return await operation()
 	}
 	catch (error) {
 		// ENOENT: leave/删群；EEXIST: Deno mkdir 竞态（含依赖里 recursive mkdir）
@@ -77,13 +77,13 @@ async function withGoneParentOk(fn) {
  * @returns {Promise<void>}
  */
 async function appendDocsLine(dir, record) {
-	const fh = await open(join(dir, 'docs.jsonl'), 'a')
+	const fileHandle = await open(join(dir, 'docs.jsonl'), 'a')
 	try {
-		await fh.appendFile(`${JSON.stringify(record)}\n`, 'utf8')
-		await fh.sync()
+		await fileHandle.appendFile(`${JSON.stringify(record)}\n`, 'utf8')
+		await fileHandle.sync()
 	}
 	finally {
-		await fh.close()
+		await fileHandle.close()
 	}
 }
 

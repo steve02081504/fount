@@ -24,6 +24,7 @@ import {
 import { resolveAgentCharPartName } from './member.mjs'
 import { getInfoDefaultsForEntity } from './presentation.mjs'
 
+/** 按资料与观众视角计算对外可见的在线状态。 */
 export { computeEffectiveStatus } from './presenceStatus.mjs'
 
 const MANUAL_STATUSES = new Set(['online', 'idle', 'dnd', 'invisible', 'away', 'busy'])
