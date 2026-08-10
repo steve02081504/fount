@@ -126,15 +126,14 @@ export async function updateNotificationBadge() {
 	let unread
 	if (Number.isFinite(badgeUnreadCount))
 		unread = badgeUnreadCount
-	else 
-		try {
-			unread = Number((await getNotifications({ limit: 1 })).unreadCount) || 0
-		}
-		catch (error) {
-			handleError('social.notifications.loadFailed', {}, error)
-			unread = 0
-		}
-	
+	else try {
+		unread = Number((await getNotifications({ limit: 1 })).unreadCount) || 0
+	}
+	catch (error) {
+		handleError('social.notifications.loadFailed', {}, error)
+		unread = 0
+	}
+
 	badgeUnreadCount = null
 	const label = unread > 99 ? '99+' : String(unread)
 	for (const badgeId of ['notificationsBadge', 'mobileNotificationsBadge']) {

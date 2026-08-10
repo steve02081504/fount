@@ -4,17 +4,19 @@
  */
 
 import {
-	buildSurface, buildSurfaceChars, buildOutline, walkSurface,
-} from './surface.mjs'
-import {
 	carveNoiseCaves, cellularCleanup, injectConnectors, carveIconFootprint,
 	caveNoiseOpens,
 } from './caves.mjs'
+import {
+	buildSurface, buildSurfaceChars, buildOutline, walkSurface,
+} from './surface.mjs'
 
+/** 地表字符与几何刷新。 */
 export {
 	TERRAIN_CH, TALL_LAND_FRACTION, TALL_LAND_HEIGHT_FRAC,
 	outlineChar, refreshTerrainGeometry,
 } from './surface.mjs'
+/** 洞穴腔体标记。 */
 export { labelCavities } from './caves.mjs'
 
 /**

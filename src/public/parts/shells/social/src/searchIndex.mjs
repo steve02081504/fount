@@ -273,20 +273,19 @@ export async function indexTimelineEventForSearch(username, entityHash, row) {
 		if (!postId) return
 		const docs = await loadActiveDocs(indexDir, owner)
 		const doc = docs.get(postId)
-		if (doc) {
-			await unindexDeletedPost(username, owner, {
-				id: postId,
-				content: {
-					text: doc.text,
-					replyTo: doc.fields?.replyToEntityHash && doc.fields?.replyToPostId
-						? {
-							entityHash: doc.fields.replyToEntityHash,
-							postId: doc.fields.replyToPostId,
-						}
-						: undefined,
-				},
-			})
-		}
+		if (doc) await unindexDeletedPost(username, owner, {
+			id: postId,
+			content: {
+				text: doc.text,
+				replyTo: doc.fields?.replyToEntityHash && doc.fields?.replyToPostId
+					? {
+						entityHash: doc.fields.replyToEntityHash,
+						postId: doc.fields.replyToPostId,
+					}
+					: undefined,
+			},
+		})
+
 		await removeDocument(indexDir, owner, postId)
 		return
 	}

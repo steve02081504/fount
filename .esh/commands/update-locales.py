@@ -496,7 +496,7 @@ def translate_value(value, source_lang, target_lang):
 
 
 # 与前端 translateSingularElement / i18n_refs.mjs 对齐的 DOM applicator 字段
-I18N_ELEMENT_APPLICATOR_KEYS = frozenset({
+I18N_ELEMENT_APPLICATOR_KEYS = {
 	"placeholder",
 	"title",
 	"label",
@@ -506,7 +506,7 @@ I18N_ELEMENT_APPLICATOR_KEYS = frozenset({
 	"textContent",
 	"innerHTML",
 	"dataset",
-})
+}
 
 # 同步过程中无法自动对齐的类型不匹配（脚本结束时 exit 1）
 type_mismatch_errors: list[str] = []

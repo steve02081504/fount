@@ -17,20 +17,19 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 async function resolveMediaRefAttachments(mediaRefs) {
 	if (!mediaRefs?.length) return []
 	const files = []
-	for (const ref of mediaRefs) 
-		try {
-			const { buffer, mimeType } = await fetchMediaRef(ref)
-			files.push({
-				name: ref.name || ref.path?.split('/').pop() || 'media',
-				mime_type: String(ref.mimeType || mimeType),
-				buffer: arrayBufferToBase64(buffer),
-			})
-		}
-		catch (error) {
-			handleError('social.post.exportMediaFailed', {}, error)
-			throw error
-		}
-	
+	for (const ref of mediaRefs) try {
+		const { buffer, mimeType } = await fetchMediaRef(ref)
+		files.push({
+			name: ref.name || ref.path?.split('/').pop() || 'media',
+			mime_type: String(ref.mimeType || mimeType),
+			buffer: arrayBufferToBase64(buffer),
+		})
+	}
+	catch (error) {
+		handleError('social.post.exportMediaFailed', {}, error)
+		throw error
+	}
+
 	return files
 }
 

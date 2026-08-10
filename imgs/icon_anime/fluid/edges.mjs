@@ -48,7 +48,7 @@ const ROLES = [
  */
 export const edgeRoles = (world) => {
 	const { gx, gy } = world.gravity
-	const cached = /** @type {{ gx: number, gy: number } | undefined} */ (world.scratch.edgeRolesAt)
+	const cached = /** @type {{ gx: number, gy: number } | undefined} */ world.scratch.edgeRolesAt
 	if (cached && cached.gx === gx && cached.gy === gy) return ROLES
 	for (let e = 0; e < 4; e++) {
 		const nx = EDGE_NX[e]

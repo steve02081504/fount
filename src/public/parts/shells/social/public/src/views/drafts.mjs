@@ -14,7 +14,7 @@ export async function loadDrafts() {
 	if (!panel) return
 	let drafts
 	try {
-		;({ drafts } = await getDrafts())
+		; ({ drafts } = await getDrafts())
 	}
 	catch (error) {
 		handleError('social.drafts.loadFailed', {}, error)

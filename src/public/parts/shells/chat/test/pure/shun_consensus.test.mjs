@@ -51,20 +51,35 @@ Deno.test('evaluateShunConsensusPure: no known peers => not suspected', () => {
 	assertEquals(suspected, false)
 })
 
-Deno.test('collectKnownPeerNodeHashes collects active member home nodes excluding self', () => {
+Deno.test('collectKnownPeerNodeHashes intersects roster with active member homes excluding self', () => {
 	const other = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+	const banned = 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd'
 	const state = {
 		members: {
 			[self]: { status: 'active', homeNodeHash: self, memberKind: 'user' },
 			ccc: { status: 'active', homeNodeHash: other, memberKind: 'user' },
 			ddd: {
 				status: 'banned',
-				homeNodeHash: 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd',
+				homeNodeHash: banned,
 				memberKind: 'user',
 			},
 		},
 	}
-	assertEquals(collectKnownPeerNodeHashes(state, self), [other])
+	assertEquals(collectKnownPeerNodeHashes(state, self, [self, other, banned]), [other])
+})
+
+Deno.test('collectKnownPeerNodeHashes uses empty roster for null or empty rosterNodeHashes', () => {
+	const other = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+	const state = {
+		members: {
+			[self]: { status: 'active', homeNodeHash: self, memberKind: 'user' },
+			ccc: { status: 'active', homeNodeHash: other, memberKind: 'user' },
+		},
+	}
+	assertEquals(collectKnownPeerNodeHashes(state, self, null), [])
+	assertEquals(collectKnownPeerNodeHashes(state, self, undefined), [])
+	assertEquals(collectKnownPeerNodeHashes(state, self), [])
+	assertEquals(collectKnownPeerNodeHashes(state, self, []), [])
 })
 
 Deno.test('collectKnownPeerNodeHashes prefers roster peers over stale member home nodes', () => {
@@ -78,6 +93,24 @@ Deno.test('collectKnownPeerNodeHashes prefers roster peers over stale member hom
 		},
 	}
 	assertEquals(collectKnownPeerNodeHashes(state, self, [self, online]), [online])
+})
+
+Deno.test('collectKnownPeerNodeHashes ignores roster peers that are not active members', () => {
+	const memberA = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+	const memberB = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+	const extra = 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+	const state = {
+		members: {
+			[self]: { status: 'active', homeNodeHash: self, memberKind: 'user' },
+			aaa: { status: 'active', homeNodeHash: memberA, memberKind: 'user' },
+			bbb: { status: 'active', homeNodeHash: memberB, memberKind: 'user' },
+		},
+	}
+	const known = collectKnownPeerNodeHashes(state, self, [self, memberA, memberB, extra])
+	assertEquals([...known].sort(), [memberA, memberB].sort())
+	const shuns = { [memberA]: now, [memberB]: now }
+	const { suspected } = evaluateShunConsensusPure(known, shuns, now, SHUN_CONSENSUS_WINDOW_MS)
+	assertEquals(suspected, true)
 })
 
 Deno.test('resolveShunForNodeHashRequester: active member home node => no shun', () => {

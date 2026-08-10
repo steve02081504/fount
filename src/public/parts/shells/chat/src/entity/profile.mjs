@@ -24,10 +24,10 @@ import {
 import { resolveAgentCharPartName } from './member.mjs'
 import { getInfoDefaultsForEntity } from './presentation.mjs'
 
-/** 超过该毫秒未心跳则视为离线 */
-const HEARTBEAT_STALE_MS = 120_000
+/** 按资料与观众视角计算对外可见的在线状态。 */
+export { computeEffectiveStatus } from './presenceStatus.mjs'
 
-const MANUAL_STATUSES = new Set(['online', 'idle', 'dnd', 'invisible', 'away', 'busy', 'offline'])
+const MANUAL_STATUSES = new Set(['online', 'idle', 'dnd', 'invisible', 'away', 'busy'])
 const PROFILE_JSON = 'profile.json'
 const PUBLIC_PROFILE_PATH = 'profile.json'
 /** handle：2–32 位小写 `[a-z0-9_.-]`；空串表示清除。不要求全局唯一。 */
@@ -138,7 +138,7 @@ function getDefaultProfile(entityHash, parsed) {
 		activePubKeyHex: '',
 		keyGeneration: 0,
 		localized: {},
-		status: 'offline',
+		status: 'online',
 		customStatus: '',
 		lastSeenAt: 0,
 		stats: {
@@ -250,28 +250,6 @@ async function publishStaticProfile(replicaUsername, entityHash, stored) {
 		entitySecretKey: Buffer.from(recoverySecretKeyHex, 'hex'),
 		entityPubKeyHex: recoveryPubKeyHex,
 	})
-}
-
-/**
- * @param {object} profile 用户资料
- * @param {string} [viewerEntityHash] 查看者 entityHash
- * @param {{ isSelf?: boolean }} [options] isSelf 为 true 时隐身对本人可见
- * @returns {string} 有效状态
- */
-export function computeEffectiveStatus(profile, viewerEntityHash, options = {}) {
-	const stored = String(profile?.status || 'offline')
-	const isSelf = options.isSelf
-		?? (viewerEntityHash && profile?.entityHash === viewerEntityHash)
-	const lastSeen = profile?.lastSeenAt || 0
-	const recentlySeen = lastSeen > 0 && Date.now() - lastSeen < HEARTBEAT_STALE_MS
-
-	if (stored === 'invisible')
-		return isSelf ? 'invisible' : 'offline'
-
-	if (!recentlySeen)
-		return 'offline'
-
-	return stored
 }
 
 /**

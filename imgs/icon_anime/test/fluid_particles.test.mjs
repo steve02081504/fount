@@ -5,18 +5,9 @@
 import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
 
 import {
-	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, stepGas, stepParticles,
-	stepFluid, labelAirRegions, pressureAt, liquidPressureAt, condensedPressureAt, totalSealedGas, totalGridWater,
-	totalWorldWater, P_ATM, ATM_HYDRO, CELL_ASPECT, gravityDepth, gravityDownWeights,
-	clearMaterials, idx, RHO_G, RHO_AIR, LIQ_FULL, cellFill, cellRoom, inertiaMove, WATER_VISC, meltVisc,
-	COND_DRIP, COND_DRAW, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
-	waterChar, liquidChar, lavaChar, pickWaterGlyph, FALL_HEAVY,
-	WATER_STILL, WATER_FALL, WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR,
-	addMelt, T_MAX, T_AMB, viscOf, rhoOf, SUBSTANCE, viscGain, stepBubbles, stepThermal,
-	globalWindAt, windShear, gasVelocityAt, dynamicPressure,
-	staticPressureAt, spawnParticle, liftLiquidByWind, verticalGasDrag, GAS_DRAG, GAS_DRAG_Y,
-	applyGravityToWorld, PARTICLE_GRAVITY, condenseDripSource, depositParticleMass,
-	gravitySettleWeights, ST_DRY_FRAC, fillBlocked, isAirCell,
+	MAT, createWorld, setMat, addLiquid, stepGas, stepParticles, labelAirRegions, totalGridWater,
+	totalWorldWater,
+	clearMaterials, idx, LIQ_DRAW, spawnParticle, liftLiquidByWind, verticalGasDrag, GAS_DRAG, GAS_DRAG_Y, depositParticleMass,
 } from '../fluid/index.mjs'
 
 Deno.test('fluid: rain particles are dragged by local gas velocity', () => {

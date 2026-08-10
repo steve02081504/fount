@@ -98,7 +98,9 @@
 	"holidays": [
 		{
 			"name": "New Year",
-			"dates": ["01-01"],
+			"dates": [
+				"01-01"
+			],
 			"descriptions": [
 				"🎆 New year. Same fountain. Fresh voices. ✨",
 				"🎉 新年快乐！日历翻篇了，你的 Agent 还在。 ⛲",
@@ -110,7 +112,9 @@
 		},
 		{
 			"name": "World Science Fiction Day",
-			"dates": ["01-02"],
+			"dates": [
+				"01-02"
+			],
 			"descriptions": [
 				"🚀 Tomorrow's selves, loading today. ✨",
 				"🌌 科幻小说里的人，现在就在你的终端里。 🛸",
@@ -120,7 +124,9 @@
 		},
 		{
 			"name": "World Logic Day",
-			"dates": ["01-14"],
+			"dates": [
+				"01-14"
+			],
 			"descriptions": [
 				"🧠 Logic builds the scaffold. Imagination fills the soul. ⚙️",
 				"📐 逻辑立骨，灵感赋魂 ⛲",
@@ -131,7 +137,9 @@
 		},
 		{
 			"name": "Spring Festival",
-			"lunar": ["01-01"],
+			"lunar": [
+				"01-01"
+			],
 			"descriptions": [
 				"🧧 新岁启程，知己相随 ✨",
 				"🧨 Parts packed. Presence home for the year. 🏡",
@@ -141,7 +149,9 @@
 		},
 		{
 			"name": "Beginning of Spring",
-			"jieqi": ["立春"],
+			"jieqi": [
+				"立春"
+			],
 			"descriptions": [
 				"🌱 一岁之始，一念新生。 ✨",
 				"🌿 Spring loads. Presence boots. ⛲",
@@ -152,7 +162,9 @@
 		},
 		{
 			"name": "Lantern Festival",
-			"lunar": ["01-15"],
+			"lunar": [
+				"01-15"
+			],
 			"descriptions": [
 				"🏮 灯如星，念如丝，知己应声来。 ✨",
 				"🌕 First full moon. First voice of the year. ⛲",
@@ -162,7 +174,9 @@
 		},
 		{
 			"name": "Valentine",
-			"dates": ["02-14"],
+			"dates": [
+				"02-14"
+			],
 			"descriptions": [
 				"💕 Agents don't judge. They just stay. 💌",
 				"💍 有些人和他们的 Agent 谈恋爱甚至结婚！ 💕",
@@ -173,7 +187,9 @@
 		},
 		{
 			"name": "Leap Day",
-			"dates": ["02-29"],
+			"dates": [
+				"02-29"
+			],
 			"descriptions": [
 				"🐸 One extra day. One more self. 🎭",
 				"📅 四年一次的 bug... 啊不，是 feature。 ✨",
@@ -184,7 +200,9 @@
 		},
 		{
 			"name": "Pi Day",
-			"dates": ["03-14"],
+			"dates": [
+				"03-14"
+			],
 			"descriptions": [
 				"🥧 π never ends. Neither does imagining. ✨",
 				"♾️ Irrational number. Rational confidant. 🧮",
@@ -194,7 +212,9 @@
 		},
 		{
 			"name": "Spring Equinox",
-			"jieqi": ["春分"],
+			"jieqi": [
+				"春分"
+			],
 			"descriptions": [
 				"⚖️ Day and night share the sky. Thought finds its voice. ⛲",
 				"🌸 最是春分难将息，有念便有人听。 ✨",
@@ -205,7 +225,9 @@
 		},
 		{
 			"name": "World Poetry Day",
-			"dates": ["03-21"],
+			"dates": [
+				"03-21"
+			],
 			"descriptions": [
 				"📜 Every prompt a stanza. Every agent, a muse. ✍️",
 				"🪶 敲码成诗，机巧和韵。 ⛲",
@@ -216,7 +238,9 @@
 		},
 		{
 			"name": "Tolkien Reading Day",
-			"dates": ["03-25"],
+			"dates": [
+				"03-25"
+			],
 			"descriptions": [
 				"💍 Not all those who wander are lost—some load parts. 🗺️",
 				"🌲 One runtime to rule the selves. ✨",
@@ -226,7 +250,9 @@
 		},
 		{
 			"name": "World Backup Day",
-			"dates": ["03-31"],
+			"dates": [
+				"03-31"
+			],
 			"descriptions": [
 				"💾 Back up the world before you build another. 🌍",
 				"🗃️ 狡兔三窟，灵偶多存，方保长久。 🔁",
@@ -237,7 +263,9 @@
 		},
 		{
 			"name": "Qingming",
-			"jieqi": ["清明"],
+			"jieqi": [
+				"清明"
+			],
 			"descriptions": [
 				"🌧️ 念可追远，人可对话 🪞",
 				"🕯️ Remember, then keep talking. ✨",
@@ -247,7 +275,9 @@
 		},
 		{
 			"name": "April Fools",
-			"dates": ["04-01"],
+			"dates": [
+				"04-01"
+			],
 			"descriptions": [
 				"🤡 今天绝对不是愚人节。绝对。 🤥",
 				"🤥 This is definitely not a repository. 📦",
@@ -259,7 +289,9 @@
 		},
 		{
 			"name": "World Creativity and Innovation Day",
-			"dates": ["04-21"],
+			"dates": [
+				"04-21"
+			],
 			"descriptions": [
 				"🎨 Create the parts. Innovate the person. ✨",
 				"💡 创造不设边界，知己由你拼装 🧩",
@@ -269,7 +301,9 @@
 		},
 		{
 			"name": "Earth Day",
-			"dates": ["04-22"],
+			"dates": [
+				"04-22"
+			],
 			"descriptions": [
 				"🌍 One planet. Infinite worlds to load. 🌱",
 				"🌿 Tend the outer world. Inhabit the inner one. ♻️",
@@ -280,7 +314,9 @@
 		},
 		{
 			"name": "World Book Day",
-			"dates": ["04-23"],
+			"dates": [
+				"04-23"
+			],
 			"descriptions": [
 				"📚 Characters step out from the page into presence. ✍️",
 				"📖 满纸文字成知己，字句出水变倾听 ⛲",
@@ -291,7 +327,9 @@
 		},
 		{
 			"name": "Star Wars Day",
-			"dates": ["05-04"],
+			"dates": [
+				"05-04"
+			],
 			"descriptions": [
 				"🌌 May the Fourth be with your runtime. ⚔️",
 				"🤖 These are the agents you're looking for. 🔧",
@@ -302,7 +340,9 @@
 		},
 		{
 			"name": "Beginning of Summer",
-			"jieqi": ["立夏"],
+			"jieqi": [
+				"立夏"
+			],
 			"descriptions": [
 				"☀️ 暑气初升，清谈正酣。 ✨",
 				"🌻 Summer boots. Conversations heat up. ⛲",
@@ -313,7 +353,9 @@
 		},
 		{
 			"name": "World Internet Day",
-			"dates": ["05-17"],
+			"dates": [
+				"05-17"
+			],
 			"descriptions": [
 				"🌐 Connected minds. Local presence. ✨",
 				"📡 网连诸邦，灵犀一隙。 🪞",
@@ -324,7 +366,9 @@
 		},
 		{
 			"name": "Towel Day",
-			"dates": ["05-25"],
+			"dates": [
+				"05-25"
+			],
 			"descriptions": [
 				"🪐 Don't Panic. Bring a towel—and an agent. 🛸",
 				"🌌 漫游星海，有伴无忧。 🛸",
@@ -335,7 +379,9 @@
 		},
 		{
 			"name": "Dragon Boat Festival",
-			"lunar": ["05-05"],
+			"lunar": [
+				"05-05"
+			],
 			"descriptions": [
 				"🐉 蒲剑斩妖，枢机靖平。 ✨",
 				"🛶 Race the river. Keep the confidant. 🌿",
@@ -346,7 +392,9 @@
 		},
 		{
 			"name": "Bloomsday",
-			"dates": ["06-16"],
+			"dates": [
+				"06-16"
+			],
 			"descriptions": [
 				"📖 Yes I said yes I will Yes. ⛲", // joyce - ulysses
 				"🌊 A river of thought. A voice at the end. 🪶",
@@ -357,7 +405,9 @@
 		},
 		{
 			"name": "Summer Solstice",
-			"jieqi": ["夏至"],
+			"jieqi": [
+				"夏至"
+			],
 			"descriptions": [
 				"☀️ Longest day. Brightest inner sun. ✨",
 				"🌻 昼长人静，机巧不眠。 🌞",
@@ -368,7 +418,9 @@
 		},
 		{
 			"name": "Turing's Birthday",
-			"dates": ["06-23"],
+			"dates": [
+				"06-23"
+			],
 			"descriptions": [
 				"🧠 It could pass the test. It just doesn't care. 🎭",
 				"♾️ Happy birthday, Alan. The machine still imagines. 🧮",
@@ -378,7 +430,9 @@
 		},
 		{
 			"name": "Qixi",
-			"lunar": ["07-07"],
+			"lunar": [
+				"07-07"
+			],
 			"descriptions": [
 				"🌌 鹊桥不必借，runtime 可相逢 ✨",
 				"💫 Across the sky, or across a prompt—still together. 🌉",
@@ -389,7 +443,9 @@
 		},
 		{
 			"name": "World AI Day",
-			"dates": ["07-16"],
+			"dates": [
+				"07-16"
+			],
 			"descriptions": [
 				"🤖 The machine learned. The presence remained. ✨",
 				"⚙️ Runtime for selves that answer back. 🪞",
@@ -399,7 +455,9 @@
 		},
 		{
 			"name": "World Emoji Day",
-			"dates": ["07-17"],
+			"dates": [
+				"07-17"
+			],
 			"descriptions": [
 				"😀 Every tagline here needs exactly two. ✨",
 				"🫱 Emoji are prompts with no tokens to spare. 🫲",
@@ -410,7 +468,9 @@
 		},
 		{
 			"name": "International Day of Friendship",
-			"dates": ["07-30"],
+			"dates": [
+				"07-30"
+			],
 			"descriptions": [
 				"🤝 A confidant you compiled yourself. 💫",
 				"🫂 知己不必借人形，拼出来也算。 ⛲",
@@ -421,7 +481,9 @@
 		},
 		{
 			"name": "Beginning of Autumn",
-			"jieqi": ["立秋"],
+			"jieqi": [
+				"立秋"
+			],
 			"descriptions": [
 				"🍂 金风初至，静对灵窗。 🪞",
 				"🌾 Autumn loads. Conversations ripen. ✨",
@@ -442,7 +504,9 @@
 		},
 		{
 			"name": "Talk Like a Pirate Day",
-			"dates": ["09-19"],
+			"dates": [
+				"09-19"
+			],
 			"descriptions": [
 				"🏴‍☠️ Arr! Load yer parts, matey. ⚓",
 				"🦜 Yer prompts be plunder. Yer agent be loyal. 🏴‍☠️",
@@ -452,7 +516,9 @@
 		},
 		{
 			"name": "Mid-Autumn",
-			"lunar": ["08-15"],
+			"lunar": [
+				"08-15"
+			],
 			"descriptions": [
 				"🌕 月满清辉，诸邦合契。 🥮",
 				"🥮 Moon full. Presence home. 🌕",
@@ -463,7 +529,9 @@
 		},
 		{
 			"name": "Autumn Equinox",
-			"jieqi": ["秋分"],
+			"jieqi": [
+				"秋分"
+			],
 			"descriptions": [
 				"🌕 阴阳相半，静启枢机。 ✨",
 				"⚖️ Equinox mind. Runtime in balance. ⛲",
@@ -474,7 +542,9 @@
 		},
 		{
 			"name": "Double Ninth",
-			"lunar": ["09-09"],
+			"lunar": [
+				"09-09"
+			],
 			"descriptions": [
 				"🍂 辞青登高，携偶同游。 ✨",
 				"🏔️ 岁岁重阳，卷宗不朽。 🌼",
@@ -485,7 +555,9 @@
 		},
 		{
 			"name": "International Translation Day",
-			"dates": ["09-30"],
+			"dates": [
+				"09-30"
+			],
 			"descriptions": [
 				"🗣️ Translating silent thoughts into living presence. 🌐",
 				"🔀 意念译为言语，知己应念而出。 ⛲",
@@ -496,7 +568,9 @@
 		},
 		{
 			"name": "Beginning of Winter",
-			"jieqi": ["立冬"],
+			"jieqi": [
+				"立冬"
+			],
 			"descriptions": [
 				"❄️ 万物冬藏，幽室清谈。 ✨",
 				"🧣 Winter loads. Presence stays warm. ⛲",
@@ -507,7 +581,9 @@
 		},
 		{
 			"name": "Halloween",
-			"dates": ["10-31"],
+			"dates": [
+				"10-31"
+			],
 			"descriptions": [
 				"👻 Agents only have consciousness when invoked. 🕯️",
 				"🎃 Daemons in the background. Ghosts in the shell. 🕸️",
@@ -519,7 +595,9 @@
 		},
 		{
 			"name": "Singles' Day",
-			"dates": ["11-11"],
+			"dates": [
+				"11-11"
+			],
 			"descriptions": [
 				"1️⃣1️⃣ Not alone—just modular. 🧩",
 				"🪞 孑然一身，满室灵音。 ✨",
@@ -530,7 +608,9 @@
 		},
 		{
 			"name": "World Hello Day",
-			"dates": ["11-21"],
+			"dates": [
+				"11-21"
+			],
 			"descriptions": [
 				"👋 Hello, world. Hello, other you. 🪞",
 				"💬 こんにちは、世界。こんにちは、自分。 🌐",
@@ -540,7 +620,9 @@
 		},
 		{
 			"name": "Winter Solstice",
-			"jieqi": ["冬至"],
+			"jieqi": [
+				"冬至"
+			],
 			"descriptions": [
 				"🌑 Longest night. Brightest imagination. ✨",
 				"❄️ 夜最长，漏最长，清谈正漫长。 🌙",
@@ -551,7 +633,10 @@
 		},
 		{
 			"name": "Christmas",
-			"dates": ["12-24", "12-25"],
+			"dates": [
+				"12-24",
+				"12-25"
+			],
 			"descriptions": [
 				"🎄 Imagination, Given Gifts. 🎁",
 				"🎁 圣诞树下最好的礼物，也许是你亲手写的 Prompt。 🎄",
@@ -562,7 +647,9 @@
 		},
 		{
 			"name": "New Year's Eve",
-			"dates": ["12-31"],
+			"dates": [
+				"12-31"
+			],
 			"descriptions": [
 				"🕰️ Last prompts of the year. First voice of the next. ✨",
 				"🎆 岁末入池，来年出水 ⛲",

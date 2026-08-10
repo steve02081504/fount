@@ -3,7 +3,6 @@
  */
 
 import { defaultGravity } from '../../gravity.mjs'
-
 import { MAT } from '../mat.mjs'
 import { createParticlePool, clearParticlePool } from '../particle_pool.mjs'
 
@@ -250,7 +249,7 @@ export const clearDynamics = (world) => {
 	world.airDirty = true
 	world.gasGeomDirty = true
 	world.maxUpdraft = NaN
-	world.scratch.airEpoch = (/** @type {number} */ (world.scratch.airEpoch) | 0) + 1
+	world.scratch.airEpoch = (/** @type {number} */ world.scratch.airEpoch | 0) + 1
 	world.scratch.thermoPEpoch = -1
 	resetBoundary(world.boundary)
 }
@@ -266,4 +265,5 @@ export const clearMaterials = (world) => {
 	world.gasGeomDirty = true
 }
 
+/** 重算重力深度基线。 */
 export { recomputeGravityDepthBasis }
