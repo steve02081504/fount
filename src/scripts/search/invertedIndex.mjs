@@ -24,6 +24,7 @@ export function shardDir(indexDir, shardKey) {
 }
 
 /**
+ * 检查路径是否不存在。
  * @param {string} path 路径
  * @returns {Promise<boolean>} 仅当 access 得到 ENOENT 时为 true
  */
