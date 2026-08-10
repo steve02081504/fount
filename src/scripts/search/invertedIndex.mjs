@@ -1,5 +1,5 @@
-import { mkdir, open, readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { access, mkdir, open, readFile, writeFile } from 'node:fs/promises'
+import { dirname, join } from 'node:path'
 
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
@@ -24,6 +24,20 @@ export function shardDir(indexDir, shardKey) {
 }
 
 /**
+ * @param {string} path 路径
+ * @returns {Promise<boolean>} 仅当 access 得到 ENOENT 时为 true
+ */
+async function pathMissing(path) {
+	try {
+		await access(path)
+		return false
+	}
+	catch (error) {
+		return error?.code === 'ENOENT'
+	}
+}
+
+/**
  * 非递归创建单层目录；父目录已不存在时返回 false（不复活上层树）。
  * @param {string} path 目录
  * @returns {Promise<boolean>} 已存在或创建成功
@@ -36,6 +50,8 @@ async function mkdirLeaf(path) {
 	catch (error) {
 		if (error?.code === 'EEXIST') return true
 		if (error?.code === 'ENOENT') return false
+		// Windows 并发删树：mkdir 可能报 EPERM；仅当父路径已确认不存在时视为 gone
+		if (error?.code === 'EPERM' && await pathMissing(dirname(path))) return false
 		throw error
 	}
 }
@@ -55,17 +71,20 @@ async function ensureShardDir(indexDir, shardKey) {
 
 /**
  * 落盘 I/O：leave/删群竞态下的 ENOENT / EEXIST 视为无操作。
+ * Windows 上并发删树时 open/write 可能先报 EPERM，仅在 indexDir 已确认消失时才吞掉。
  * @template T
+ * @param {string} indexDir 索引根（用于确认是否真的 gone）
  * @param {() => Promise<T>} operation 临界区
- * @returns {Promise<T | undefined>} operation 的返回值；ENOENT/EEXIST 时为 undefined
+ * @returns {Promise<T | undefined>} operation 的返回值；gone-parent 竞态时为 undefined
  */
-async function withGoneParentOk(operation) {
+async function withGoneParentOk(indexDir, operation) {
 	try {
 		return await operation()
 	}
 	catch (error) {
 		// ENOENT: leave/删群；EEXIST: Deno mkdir 竞态（含依赖里 recursive mkdir）
 		if (error?.code === 'ENOENT' || error?.code === 'EEXIST') return undefined
+		if (error?.code === 'EPERM' && await pathMissing(indexDir)) return undefined
 		throw error
 	}
 }
@@ -167,7 +186,7 @@ export async function getShardMeta(indexDir, shardKey) {
  * @returns {Promise<object | undefined>} 更新后 meta；父树已删时 undefined
  */
 export async function patchShardMeta(indexDir, shardKey, patch) {
-	return shardMutex(`${indexDir}:${shardKey}:meta`, () => withGoneParentOk(async () => {
+	return shardMutex(`${indexDir}:${shardKey}:meta`, () => withGoneParentOk(indexDir, async () => {
 		const dir = await ensureShardDir(indexDir, shardKey)
 		if (!dir) return undefined
 		const meta = { ...await readMeta(dir), ...patch }
@@ -192,7 +211,7 @@ export async function indexDocument(indexDir, shardKey, doc) {
 	const text = String(doc.text || '')
 	const tokens = tokenizeForQuery(text)
 
-	await shardMutex(`${indexDir}:${shardKey}`, () => withGoneParentOk(async () => {
+	await shardMutex(`${indexDir}:${shardKey}`, () => withGoneParentOk(indexDir, async () => {
 		const dir = await ensureShardDir(indexDir, shardKey)
 		if (!dir) return
 		const postings = await readPostings(dir)
@@ -238,7 +257,7 @@ export async function removeDocument(indexDir, shardKey, id) {
 	const docId = String(id || '')
 	if (!docId) return
 
-	await shardMutex(`${indexDir}:${shardKey}`, () => withGoneParentOk(async () => {
+	await shardMutex(`${indexDir}:${shardKey}`, () => withGoneParentOk(indexDir, async () => {
 		const dir = shardDir(indexDir, shardKey)
 		const rows = await readJsonl(join(dir, 'docs.jsonl'))
 		const prev = foldDocs(rows).get(docId)

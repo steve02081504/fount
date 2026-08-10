@@ -134,6 +134,7 @@ Deno.test('indexDocument concurrent parent removal does not reject', async () =>
 				}))
 			operations.push(rm(groupDir, { recursive: true, force: true }))
 			await Promise.all(operations)
+			assertEquals(existsSync(groupDir), false, 'must not resurrect deleted group/search tree')
 		}
 		finally {
 			rmSync(root, { recursive: true, force: true })
