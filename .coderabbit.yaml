@@ -129,16 +129,10 @@ reviews:
         - 信任本机文件与前后端约定；校验集中在网络边界。
         - 文案用既有 locale helper（如 `localesForUser`），不要引入浏览器 i18n API。
 
-    - path: 'src/server/p2p_server/**'
-      instructions: |
-        - 入站（discovery / link / WS federation / remoteIngest / part_query 等）必须在边界校验。
-        - 落盘后的本地数据不要重复过度清洗；边界校验别渗进纯本地路径。
-
     - path: 'src/public/parts/**'
       instructions: |
         - Part 自包含，有 `main.mjs`；仿现有结构。
         - 领域逻辑留在 part 内；不要把 part 特例塞进公共 `pages/scripts`。
-        - Emoji UI/排序在核心 `features/emoji/` + `emojiPicker`；chat/social 只供给 provider。
         - 别把 DOM 代码塞进 part 的 `src/`。
 
     # ── 测试 ────────────────────────────────────────────────────────────
@@ -150,8 +144,7 @@ reviews:
     # ── Shell 入口 ──────────────────────────────────────────────────────
     - path: 'path/**/*.ps1,path/**/*.sh'
       instructions: |
-        - `fount.ps1` / `fount.sh` 行为对齐。
-        - 避免无意义防御分支与一次性临时变量。
+        - `.ps1` / `.sh` 行为对齐。
 
     # ── 文档 ────────────────────────────────────────────────────────────
     - path: '**/AGENTS.md,docs/**/*.md'
