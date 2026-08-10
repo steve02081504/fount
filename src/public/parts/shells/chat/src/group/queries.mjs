@@ -12,6 +12,7 @@ import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
 import { mergeChannelMessagesForDisplay } from '../../public/shared/messageMerge.mjs'
+import { filterChannelMessageLinesByBranchTip } from '../../public/shared/branchMessageFilter.mjs'
 import { materializeFromCheckpoint } from '../chat/dag/groupMaterializedState.mjs'
 import { getState } from '../chat/dag/materialize.mjs'
 import { resolveContentRefsInMessageLines } from '../chat/files/contentRefResolve.mjs'
@@ -190,6 +191,23 @@ async function attachVoteSummaries(lines, voteCastEvents) {
 }
 
 /**
+ * 分叉时只展示当前主观/共识 tip 祖先闭包内的消息（messages.jsonl 会含各支事件）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {object} state 物化状态
+ * @param {object[]} lines 消息行
+ * @returns {Promise<object[]>} 过滤后的行
+ */
+async function filterLinesToDisplayBranch(username, groupId, state, lines) {
+	const tip = String(state.localViewBranchTip || state.consensusBranchTip || '').trim()
+	if (!tip || !lines.length) return lines
+	const tips = Array.isArray(state.dagTips) ? state.dagTips : []
+	if (tips.length < 2) return lines
+	const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
+	return filterChannelMessageLinesByBranchTip(lines, tip, events)
+}
+
+/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} state 物化状态
@@ -200,9 +218,10 @@ async function attachVoteSummaries(lines, voteCastEvents) {
 async function finalizeChannelMessagesForViewer(username, groupId, state, lines, channelId = 'default') {
 	const viewerPubKeyHash = await resolveActiveMemberKeyForLocalReplica(username, groupId, state)
 	if (!viewerPubKeyHash) throw new Error('Not a member')
+	const branchLines = await filterLinesToDisplayBranch(username, groupId, state, lines)
 	const streamGeneratingIdleMs = Number(state.groupSettings?.streamGeneratingIdleMs)
 	let work = markStaleGeneratingMessages(
-		lines,
+		branchLines,
 		Number.isFinite(streamGeneratingIdleMs) && streamGeneratingIdleMs > 0 ? streamGeneratingIdleMs : undefined,
 	)
 	if (work.some(line => Array.isArray(line.content?.options))) {

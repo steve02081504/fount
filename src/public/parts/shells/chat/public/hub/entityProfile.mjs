@@ -9,6 +9,7 @@ import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { promptText } from '../../../../scripts/features/promptDialog.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { i18nElement } from '../../../../scripts/i18n/index.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
@@ -20,6 +21,8 @@ import {
 } from '../shared/entityProfileCard.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { cachedProfileFromApi, getEntityProfile } from '../src/endpoints/entities.mjs'
+import { showTrustAuthorDialog } from '../src/trustAuthorDialog.mjs'
+import { isTrustedAuthor } from '../src/trustedAuthors.mjs'
 
 import { refreshAliasDependentUi } from './aliasUi.mjs'
 import { store } from './core/state.mjs'
@@ -126,7 +129,53 @@ export function wireProfileEditButton(root, entityHash, options = {}) {
 }
 
 /**
- * 绑定资料卡全套操作按钮（编辑 / 私聊 / Social / 别名 / 关心）。
+ * 解析信任作者用的成员 pubKeyHash（64 hex）。
+ * @param {object} entity 实体
+ * @param {object | null} profile 资料
+ * @returns {string} 小写 64 hex；无法解析为空串
+ */
+function resolveTrustAuthorPubKeyHash(entity, profile) {
+	const direct = String(entity?.pubKeyHash || '').trim().toLowerCase()
+	if (isHex64(direct)) return direct
+	const entityHash = String(entity?.entityHash || '').trim().toLowerCase()
+	for (const member of store.context.currentState?.members || []) {
+		const memberHash = String(member?.entityHash || '').trim().toLowerCase()
+		const memberKey = String(member?.pubKeyHash || member?.memberKey || '').trim().toLowerCase()
+		if (entityHash && memberHash === entityHash && isHex64(memberKey)) return memberKey
+	}
+	const fromProfile = String(profile?.activePubKeyHex || '').trim().toLowerCase()
+	return isHex64(fromProfile) ? fromProfile : ''
+}
+
+/**
+ * 信任作者后刷新当前频道中该作者消息的 Markdown 与「已信任」徽章。
+ * @param {string} authorPubKeyHash 作者成员键
+ * @returns {Promise<void>}
+ */
+async function refreshTrustedAuthorMessages(authorPubKeyHash) {
+	const key = String(authorPubKeyHash || '').trim().toLowerCase()
+	if (!isHex64(key)) return
+	const container = document.getElementById('messages')
+	if (!(container instanceof HTMLElement)) return
+	const { hydrateMessageMarkdown } = await import('./messages/render/markdown.mjs')
+	const { renderTemplateAsHtmlString } = await import('../../../../scripts/features/template.mjs')
+	const badgeHtml = await renderTemplateAsHtmlString('hub/messages/trusted_author_badge', {})
+	for (const row of container.querySelectorAll(`.message[data-author-pubkey-hash="${key}"]`)) {
+		if (!(row instanceof HTMLElement)) continue
+		const messageId = row.getAttribute('data-message-id')
+		if (messageId) await hydrateMessageMarkdown(container, messageId)
+		const header = row.querySelector('.message-author')?.parentElement
+		if (!(header instanceof HTMLElement)) continue
+		if (header.querySelector('.trusted-author-badge')) continue
+		const remote = header.querySelector('.remote-badge')
+		if (remote) remote.insertAdjacentHTML('afterend', badgeHtml)
+		else header.querySelector('.message-author')?.insertAdjacentHTML('afterend', badgeHtml)
+		i18nElement(header, { skip_report: true })
+	}
+}
+
+/**
+ * 绑定资料卡全套操作按钮（编辑 / 私聊 / Social / 信任 / 别名 / 关心）。
  * @param {HTMLElement} root 人物卡根节点
  * @param {object} entity 实体（含 `entityHash`）
  * @param {{
@@ -200,6 +249,35 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 		socialButton.onclick = () => {
 			if (!isEntityHash128(entityHash)) return
 			window.location.href = formatSocialProfileHref(entityHash)
+		}
+	}
+
+	const trustButton = root.querySelector('[data-profile-popup-trust]')
+	if (trustButton instanceof HTMLButtonElement) {
+		const isSelf = isViewerEntityHash(entityHash)
+		const authorPubKeyHash = resolveTrustAuthorPubKeyHash(entity, profile)
+		const alreadyTrusted = authorPubKeyHash ? await isTrustedAuthor(authorPubKeyHash) : false
+		const canTrust = !isSelf && !entity.charname && isHex64(authorPubKeyHash) && !alreadyTrusted
+		trustButton.hidden = !canTrust
+		if (canTrust) {
+			trustButton.dataset.authorPubKeyHash = authorPubKeyHash
+			/** 打开信任作者对话框。 */
+			trustButton.onclick = () => {
+				void (async () => {
+					const name = root.querySelector('[data-entity-profile-name]')?.textContent?.trim()
+						|| entity.displayName
+						|| profile?.name
+						|| ''
+					const trusted = await showTrustAuthorDialog(authorPubKeyHash, name)
+					if (!trusted) return
+					showToastI18n('success', 'chat.hub.trustOk')
+					trustButton.hidden = true
+					await refreshTrustedAuthorMessages(authorPubKeyHash)
+					await options.onRepaint?.()
+				})().catch(error => {
+					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+				})
+			}
 		}
 	}
 

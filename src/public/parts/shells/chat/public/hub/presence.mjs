@@ -44,13 +44,10 @@ const loadProfileCached = memoizePromise(
 		const sep = cacheKey.indexOf(':')
 		const entityHash = sep === -1 ? cacheKey : cacheKey.slice(0, sep)
 		const groupId = sep === -1 ? undefined : cacheKey.slice(sep + 1)
-		try {
-			const data = await getEntityProfile(entityHash, groupId)
-			return cachedProfileFromApi(data?.profile, entityHash)
-		}
-		catch {
-			return null
-		}
+		const data = await getEntityProfile(entityHash, groupId)
+		const profile = cachedProfileFromApi(data?.profile, entityHash)
+		if (!profile) throw new Error('entity profile unavailable')
+		return profile
 	},
 	{ max: 512 },
 )
@@ -116,7 +113,7 @@ export async function fetchUserProfile(entityHash, options = {}) {
 			return null
 		}
 
-	return loadProfileCached(cacheKey)
+	return loadProfileCached(cacheKey).catch(() => null)
 }
 
 /**
@@ -404,9 +401,9 @@ export function applyAvatarsTo(rootElement) {
 		if (!authorKey) return
 		const { profileKey } = authorPresentationKeys(authorKey)
 		if (av.dataset.avatarLoaded) return
-		av.dataset.avatarLoaded = '1'
 		void fetchAuthorProfile(profileKey, { groupId: store.context.currentGroupId || undefined }).then((profile) => {
 			if (!profile) return
+			av.dataset.avatarLoaded = '1'
 			const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
 			void applyProfileAvatarToHost(av, {
 				seed: profileKey,
@@ -480,7 +477,7 @@ function getAnchorUsername(target) {
 	return uname && uname !== '?' ? uname : null
 }
 
-const PROFILE_CLICK_SKIP = '.message-actions, .trust-author-button, .block-author-button, .save-emoji-button, .save-sticker-button, .vote-option, .reactions, #profile-popup-layer, .profile-popup, .profile-popup-dm-button, .profile-popup-close, button, a, input, textarea, select'
+const PROFILE_CLICK_SKIP = '.message-actions, .block-author-button, .save-emoji-button, .save-sticker-button, .vote-option, .reactions, #profile-popup-layer, .profile-popup, .profile-popup-dm-button, .profile-popup-close, button, a, input, textarea, select'
 
 /**
  * 注册头像悬停卡与点击资料弹层（由 wireEvents 显式调用）。

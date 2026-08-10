@@ -22,7 +22,7 @@ import {
 	resolveProfilePresentation,
 } from './localized.mjs'
 import { resolveAgentCharPartName } from './member.mjs'
-import { getInfoDefaultsForEntity } from './presentation.mjs'
+import { getInfoDefaultsForEntity, DEFAULT_USER_AVATAR } from './presentation.mjs'
 
 /** 按资料与观众视角计算对外可见的在线状态。 */
 export { computeEffectiveStatus } from './presenceStatus.mjs'
@@ -355,7 +355,18 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 	if (!infoDefaults && replicaUsername)
 		infoDefaults = await getInfoDefaultsForEntity(replicaUsername, parsed.entityHash, locales)
 	if (!infoDefaults)
-		infoDefaults = { name: `${parsed.subjectHash.slice(0, 8)}…${parsed.subjectHash.slice(-4)}`, avatar: '', description: '', description_markdown: '', version: '', author: '', home_page: '', issue_page: '', tags: [], links: [] }
+		infoDefaults = {
+			name: `${parsed.subjectHash.slice(0, 8)}…${parsed.subjectHash.slice(-4)}`,
+			avatar: DEFAULT_USER_AVATAR,
+			description: '',
+			description_markdown: '',
+			version: '',
+			author: '',
+			home_page: '',
+			issue_page: '',
+			tags: [],
+			links: [],
+		}
 
 	const sfw = viewerSfw(replicaUsername)
 	const resolved = resolveProfilePresentation(merged, locales, infoDefaults, { sfw })

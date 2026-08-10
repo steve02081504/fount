@@ -342,6 +342,15 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	catch (error) {
 		console.error('federation: catchup deferred ingest replay failed', error)
 	}
+	// 补洞后若仍多叶且本机有权，主动 merge（生产路径否则只在 member_join 时 converge）。
+	if (!stats.wantIdsStillMissing && !stats.wantIdsRateLimited)
+		try {
+			const { convergeDagTipsIfAuthorized } = await import('../dag/lifecycle.mjs')
+			await convergeDagTipsIfAuthorized(username, groupId)
+		}
+		catch (error) {
+			console.error('federation: catchup tip converge failed', error)
+		}
 	try {
 		const { maybeProbeAndEvaluateShunConsensus } = await import('./shun.mjs')
 		await maybeProbeAndEvaluateShunConsensus(username, groupId, slot, { waitMs })
