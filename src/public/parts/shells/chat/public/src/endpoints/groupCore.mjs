@@ -186,9 +186,9 @@ export async function deleteGroupFile(groupId, fileId) {
 
 /**
  * 创建好友绑定群（角色私聊 / 强制新建）。
- * @param {object} body POST body（含 friendBinding、可选 forceNew）
+ * @param {object} body POST body（含 friendBinding、可选 forceNew）；`friendBinding` 为 `{ entityHash }` 或 `{ charname }`
  * @param {AbortSignal} [signal] 取消信号
- * @returns {Promise<{ groupId: string }>} 新群
+ * @returns {Promise<{ groupId: string, friendBinding?: object, reused?: boolean }>} 新群（或复用）与规范化绑定
  */
 export async function createFriendGroup(body, signal) {
 	return groupFetch('', { method: 'POST', json: body, signal })

@@ -30,20 +30,30 @@ export function normalizeFriendBinding(raw) {
 }
 
 /**
- * @param {string} entityHash 后端已解析的 agent entityHash（禁止路径派生）
  * @param {string} charname 角色 part 名
  * @param {string} [displayName] 展示名
- * @returns {FriendBinding} 角色 agent 绑定
+ * @returns {{ charname: string, displayName?: string }} 建群输入：仅 charname（与 entityHash 互斥）
  */
-export function buildCharFriendBinding(entityHash, charname, displayName) {
-	const eh = String(entityHash || '').trim().toLowerCase()
-	if (!isEntityHash128(eh)) throw new Error('entityHash required')
+export function charFriendBindingInput(charname, displayName) {
 	const name = String(charname || '').trim()
 	if (!name) throw new Error('charname required')
 	return {
-		entityHash: eh,
 		charname: name,
-		...displayName ? { displayName } : {},
+		...displayName ? { displayName: String(displayName).trim() } : {},
+	}
+}
+
+/**
+ * @param {string} entityHash 128 位 entityHash
+ * @param {string} [displayName] 展示名
+ * @returns {{ entityHash: string, displayName?: string }} 建群输入：仅 entityHash（与 charname 互斥）
+ */
+export function entityFriendBindingInput(entityHash, displayName) {
+	const eh = String(entityHash || '').trim().toLowerCase()
+	if (!isEntityHash128(eh)) throw new Error('entityHash required')
+	return {
+		entityHash: eh,
+		...displayName ? { displayName: String(displayName).trim() } : {},
 	}
 }
 

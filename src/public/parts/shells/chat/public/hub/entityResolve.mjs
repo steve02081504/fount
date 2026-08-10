@@ -12,7 +12,7 @@ import { store } from './core/state.mjs'
 
 /**
  * @param {string} charname 角色 part 名
- * @returns {Promise<string | null>} 本地 agent entityHash（后端 identity，禁止路径派生）
+ * @returns {Promise<string | null>} 本地 agent entityHash（只读缓存：viewer.agents / 群成员；物化走建好友群）
  */
 export async function charAgentEntityHash(charname) {
 	const name = String(charname || '').trim()

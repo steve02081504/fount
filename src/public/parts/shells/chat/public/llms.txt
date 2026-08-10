@@ -108,7 +108,7 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | GET | `G/` | 已加入的群 / DM 摘要，按消息活动时间排序 |
-| POST | `G/` | 建群：`name`、`description`、`defaultChannelName`、`defaultChannelId` → `201 { groupId, defaultChannelId }`。建 DM：`{ template: 'dm', myPubKeyHex, peerPubKeyHex }`（各 64 hex），可选 `dmIntroNonce` + `dmIntroSignatureHex` 成对出现 |
+| POST | `G/` | 建群：`name`、`description`、`defaultChannelName`、`defaultChannelId` → `201 { groupId, defaultChannelId }`。好友私聊：`friendBinding` 为 `{ entityHash }` 或 `{ charname }`（互斥，可选 `displayName`；`charname` 时服务端 ensure 本地 agent）→ 响应含规范化 `friendBinding`。建 DM：`{ template: 'dm', myPubKeyHex, peerPubKeyHex }`（各 64 hex），可选 `dmIntroNonce` + `dmIntroSignatureHex` 成对出现 |
 | GET | `G/:groupId/preview` | 非成员群卡片预览（私密群隐藏加入入口） |
 | DELETE | `G/:groupId` | 删整群本地 DAG 数据；需 `ADMIN` 或 `MANAGE_ADMINS` |
 | GET | `G/:groupId/state` | 分层 DTO `{ meta, viewer, federation }`：`meta` 含 `channels`/`groupSettings`/`roles`/`members`/`pinsByChannel`/`cabinets`/`files`；`viewer` 是当前用户视角（`isMember`、`memberKey`、`entityHash`、`roles`）；`federation` 是同步与隔离状态 |

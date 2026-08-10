@@ -23,7 +23,7 @@ import { store } from './state.mjs'
 /** 重导出头像配色辅助函数。 */
 export { avatarColor, avatarInitial, avatarTextColor, hashAvatarStyle }
 
-/** @type {Map<string, string>} 角色 part 名 → agent entityHash */
+/** @type {Map<string, string>} 角色 part 名（小写）→ agent entityHash */
 const charEntityHashCache = new Map()
 
 /**
@@ -33,7 +33,7 @@ const charEntityHashCache = new Map()
  */
 export function ingestAgentEntityHashList(agents) {
 	for (const row of agents || []) {
-		const name = String(row?.charPartName || '').trim()
+		const name = String(row?.charPartName || '').trim().toLowerCase()
 		const hash = String(row?.entityHash || '').trim().toLowerCase()
 		if (name && isEntityHash128(hash))
 			charEntityHashCache.set(name, hash)
@@ -67,9 +67,9 @@ export async function warmCharEntityHashCache(charNames = activeCharPartNames())
 	}
 	ingestAgentEntityHashList(store.viewer.agents || [])
 	for (const raw of charNames) {
-		const name = String(raw || '').trim()
+		const name = String(raw || '').trim().toLowerCase()
 		if (!name || charEntityHashCache.has(name)) continue
-		const member = agentByChar.get(name.toLowerCase())
+		const member = agentByChar.get(name)
 		const cachedHash = member?.entityHash
 		if (cachedHash && isEntityHash128(String(cachedHash)))
 			charEntityHashCache.set(name, String(cachedHash).toLowerCase())
@@ -81,7 +81,7 @@ export async function warmCharEntityHashCache(charNames = activeCharPartNames())
  * @returns {string|null} 128 位 entityHash
  */
 export function charEntityHashFromCache(charname) {
-	const name = String(charname || '').trim()
+	const name = String(charname || '').trim().toLowerCase()
 	if (!name) return null
 	const cached = charEntityHashCache.get(name)
 	return cached && isEntityHash128(cached) ? cached.toLowerCase() : null

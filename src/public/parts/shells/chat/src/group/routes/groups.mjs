@@ -28,6 +28,41 @@ import { requireGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
 
 /**
+ * 将创建请求中的 friendBinding 物化为可持久化形态。
+ * 创建输入互斥：`{ entityHash }` 或 `{ charname }`（可选 displayName）；本地 agent 的 charname 由服务端补全。
+ * @param {string} username replica
+ * @param {unknown} raw 请求体 friendBinding
+ * @returns {Promise<import('../../../public/shared/friendBinding.mjs').FriendBinding | null>} 规范化绑定
+ */
+async function materializeFriendBinding(username, raw) {
+	if (!raw) return null
+	const { isEntityHash128 } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+	const { normalizeFriendBinding } = await import('../../../public/shared/friendBinding.mjs')
+	const displayName = raw.displayName != null && String(raw.displayName).trim()
+		? String(raw.displayName).trim()
+		: undefined
+	const entityHash = String(raw.entityHash ?? '').trim().toLowerCase()
+	if (isEntityHash128(entityHash)) {
+		const { resolveCharPartNameForEntity } = await import('../../entity/identity.mjs')
+		const charname = await resolveCharPartNameForEntity(username, entityHash) || undefined
+		return normalizeFriendBinding({
+			entityHash,
+			...charname ? { charname } : {},
+			...displayName ? { displayName } : {},
+		})
+	}
+	const charname = String(raw.charname ?? '').replace(/^chars\//u, '').trim()
+	if (!charname) return null
+	const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
+	const ensured = await ensureLocalAgentEntityHash(username, charname)
+	return normalizeFriendBinding({
+		entityHash: ensured,
+		charname,
+		...displayName ? { displayName } : {},
+	})
+}
+
+/**
  * 注册群列表、创建与删除路由。
  * @param {import('npm:websocket-express').Router} router Express 路由
  * @param {import('npm:express').RequestHandler} authenticate 鉴权中间件
@@ -75,21 +110,25 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			})
 		}
 
-		const { normalizeFriendBinding } = await import('../../../public/shared/friendBinding.mjs')
-		const friendBinding = normalizeFriendBinding(body.friendBinding)
+		const friendBinding = await materializeFriendBinding(username, body.friendBinding)
 		if (friendBinding && !body.forceNew) {
 			const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
 			const operatorEntityHash = await resolveOperatorEntityHashForUser(username)
 			const rows = await enumerateJoinedFederatedGroups(username, operatorEntityHash)
-			const existing = rows.find(row =>
-				row.friendBinding?.entityHash?.toLowerCase() === friendBinding.entityHash.toLowerCase(),
-			)
+			const charKey = friendBinding.charname?.toLowerCase()
+			const existing = rows.find(row => {
+				const bound = row.friendBinding
+				if (!bound) return false
+				if (bound.entityHash?.toLowerCase() === friendBinding.entityHash.toLowerCase()) return true
+				return !!(charKey && bound.charname?.toLowerCase() === charKey)
+			})
 			if (existing) {
 				registerGroupRuntime(existing.groupId, username)
 				return res.status(200).json({
 					groupId: existing.groupId,
 					defaultChannelId: 'default',
 					reused: true,
+					friendBinding,
 				})
 			}
 		}
@@ -129,6 +168,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		res.status(201).json({
 			groupId: result.groupId,
 			defaultChannelId: result.defaultChannelId,
+			...friendBinding ? { friendBinding } : {},
 		})
 	})
 

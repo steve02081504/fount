@@ -4,7 +4,7 @@
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
-import { buildCharFriendBinding, buildUserFriendBinding } from '../shared/friendBinding.mjs'
+import { entityFriendBindingInput, buildUserFriendBinding } from '../shared/friendBinding.mjs'
 import { cachedProfileFromApi, getEntityProfile } from '../src/endpoints/entities.mjs'
 
 import { store } from './core/state.mjs'
@@ -39,7 +39,7 @@ export async function applyHubContactQuery(contactRaw) {
 			if (hash !== entityHash) continue
 			await setMode('friends')
 			await enterFriendChat({
-				binding: buildCharFriendBinding(hash, friend.charname, friend.displayName),
+				binding: entityFriendBindingInput(hash, friend.displayName),
 			})
 			return true
 		}

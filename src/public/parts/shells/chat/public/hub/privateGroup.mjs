@@ -8,7 +8,7 @@
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
-import { buildCharFriendBinding } from '../shared/friendBinding.mjs'
+import { charFriendBindingInput } from '../shared/friendBinding.mjs'
 import { deleteSession } from '../src/endpoints/groupCore.mjs'
 import { setGroupFriendBinding, unbindFriendGroup } from '../src/endpoints/groupFriendBinding.mjs'
 
@@ -45,16 +45,10 @@ export async function restartPrivateGroup(charname, previousGroupId) {
 	}
 	if (store.privateGroup.groupId === previousGroupId)
 		clearPrivateGroupState()
-	const { charAgentEntityHash } = await import('./entityResolve.mjs')
-	const entityHash = await charAgentEntityHash(charname)
-	if (!entityHash) {
-		showToastI18n('error', 'chat.hub.no.username')
-		return
-	}
 	const { enterFriendChat } = await import('./friendChat.mjs')
 	await enterFriendChat({
 		forceNew: true,
-		binding: buildCharFriendBinding(entityHash, charname),
+		binding: charFriendBindingInput(charname),
 	})
 }
 
@@ -67,20 +61,10 @@ export async function restartPrivateGroup(charname, previousGroupId) {
 export async function enterPrivateGroup(charname, options = {}) {
 	if (!charname) return
 	const { enterFriendChat } = await import('./friendChat.mjs')
-	let binding = options.binding
-	if (!binding) {
-		const { charAgentEntityHash } = await import('./entityResolve.mjs')
-		const entityHash = await charAgentEntityHash(charname)
-		if (!entityHash) {
-			showToastI18n('error', 'chat.hub.no.username')
-			return
-		}
-		binding = buildCharFriendBinding(entityHash, charname)
-	}
 	await enterFriendChat({
 		groupId: options.groupId,
 		forceNew: options.forceNew,
-		binding,
+		binding: options.binding || charFriendBindingInput(charname),
 	})
 }
 

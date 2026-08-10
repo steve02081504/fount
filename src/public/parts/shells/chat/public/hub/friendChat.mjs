@@ -11,7 +11,7 @@ import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
-import { buildCharFriendBinding, buildUserFriendBinding, normalizeFriendBinding } from '../shared/friendBinding.mjs'
+import { buildUserFriendBinding, charFriendBindingInput, normalizeFriendBinding } from '../shared/friendBinding.mjs'
 import { getFederationSettings } from '../src/endpoints/federationSettings.mjs'
 import { addGroupChar, createFriendGroup, getGroupState, listGroupChars } from '../src/endpoints/groupCore.mjs'
 import { createDirectMessageByPubKeys } from '../src/endpoints/groupDm.mjs'
@@ -72,13 +72,20 @@ function enqueueResolveFriendGroup(fn, signal) {
 }
 
 /**
- * 查找已绑定该角色 entityHash 的好友群。
- * @param {import('../shared/friendBinding.mjs').FriendBinding} binding 绑定
+ * 查找已绑定该角色的好友群（entityHash 或本地 charname）。
+ * @param {{ entityHash?: string, charname?: string }} binding 绑定
  * @returns {Promise<string|null>} 群 ID
  */
 async function findExistingFriendGroup(binding) {
 	await loadGroups()
-	const matches = store.sidebar.groups.filter(g => g.friendBinding?.entityHash === binding.entityHash)
+	const entityHash = String(binding.entityHash || '').trim().toLowerCase()
+	const charKey = String(binding.charname || '').trim().toLowerCase()
+	const matches = store.sidebar.groups.filter(g => {
+		const fb = g.friendBinding
+		if (!fb) return false
+		if (entityHash && fb.entityHash === entityHash) return true
+		return !!(charKey && String(fb.charname || '').toLowerCase() === charKey)
+	})
 	if (!matches.length) return null
 	matches.sort((a, b) => new Date(b.lastMessageTime || 0) - new Date(a.lastMessageTime || 0))
 	return matches[0].groupId ?? null
@@ -101,18 +108,27 @@ async function ensureCharOnGroup(groupId, charname, signal) {
 }
 
 /**
- * 解析或新建好友群 ID（角色需 addchar；用户 DM 由调用方传入 groupId）。
- * @param {import('../shared/friendBinding.mjs').FriendBinding} binding 绑定
+ * 解析或新建好友群（角色需 addchar；用户 DM 由调用方传入 groupId）。
+ * @param {{ entityHash?: string, charname?: string, displayName?: string }} binding 绑定（可仅 charname，建群时后端物化）
  * @param {{ groupId?: string, forceNew?: boolean, signal?: AbortSignal }} options 选项
- * @returns {Promise<string|null>} 群 ID；失败为 null
+ * @returns {Promise<{ groupId: string, binding: import('../shared/friendBinding.mjs').FriendBinding } | null>} 群与规范化绑定
  */
 async function resolveFriendGroupId(binding, options) {
 	const { signal } = options
 	let groupId = options.forceNew ? undefined : options.groupId
+	let resolved = normalizeFriendBinding(binding)
 	if (groupId) {
-		if (binding.charname)
-			await ensureCharOnGroup(groupId, binding.charname, signal)
-		return groupId
+		if (!resolved) {
+			const existing = friendBindingForGroup(groupId)
+			resolved = normalizeFriendBinding(existing) || normalizeFriendBinding({
+				...binding,
+				entityHash: existing?.entityHash,
+			})
+		}
+		if (!resolved) return null
+		if (resolved.charname)
+			await ensureCharOnGroup(groupId, resolved.charname, signal)
+		return { groupId, binding: resolved }
 	}
 	if (!groupId && !options.forceNew) {
 		const fromHash = parseHash().groupId
@@ -129,12 +145,21 @@ async function resolveFriendGroupId(binding, options) {
 		}, signal)
 		throwIfAborted(signal)
 		groupId = payload.groupId
+		resolved = normalizeFriendBinding(payload.friendBinding) || resolved
 	}
+	else if (!resolved) {
+		const existing = friendBindingForGroup(groupId)
+		resolved = normalizeFriendBinding(existing) || normalizeFriendBinding({
+			...binding,
+			entityHash: existing?.entityHash,
+		})
+	}
+	if (!resolved?.entityHash) return null
 
-	if (binding.charname)
-		await ensureCharOnGroup(groupId, binding.charname, signal)
+	if (resolved.charname)
+		await ensureCharOnGroup(groupId, resolved.charname, signal)
 
-	return groupId
+	return { groupId, binding: resolved }
 }
 
 /**
@@ -235,14 +260,14 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 /**
  * @param {object} options 选项
  * @param {string} [options.groupId] 群 ID
- * @param {import('../shared/friendBinding.mjs').FriendBinding} [options.binding] 绑定
+ * @param {{ entityHash?: string, charname?: string, displayName?: string }} [options.binding] 绑定（角色可仅 charname）
  * @param {boolean} [options.forceNew] 强制新建群（仅角色）
  * @param {string} [options.channelId] 打开时选中的频道 ID
  * @returns {Promise<void>}
  */
 export async function enterFriendChat(options = {}) {
 	const binding = options.binding || (options.groupId ? friendBindingForGroup(options.groupId) : null)
-	if (!binding?.entityHash) return
+	if (!binding?.entityHash && !binding?.charname) return
 
 	enterFriendChatAbort?.abort()
 	const ac = new AbortController()
@@ -259,14 +284,14 @@ export async function enterFriendChat(options = {}) {
 		await mountTemplate(document.getElementById('messages'), 'hub/empty/loading', {})
 
 		throwIfAborted(signal)
-		const groupId = await enqueueResolveFriendGroup(
+		const resolved = await enqueueResolveFriendGroup(
 			() => resolveFriendGroupId(binding, { ...options, signal }),
 			signal,
 		)
-		if (!groupId) return
+		if (!resolved) return
 		throwIfAborted(signal)
 		const channelId = options.channelId || parseHash().channelId || undefined
-		await openFriendGroupChat(groupId, binding, signal, channelId)
+		await openFriendGroupChat(resolved.groupId, resolved.binding, signal, channelId)
 	}
 	catch (error) {
 		if (signal.aborted) return
@@ -290,15 +315,8 @@ export async function enterFriendChat(options = {}) {
  */
 export async function dispatchFriendChat(entity) {
 	if (entity.type === 'char' && entity.id) {
-		const entityHash = entity.entityHash && isEntityHash128(entity.entityHash)
-			? String(entity.entityHash).toLowerCase()
-			: await (await import('./entityResolve.mjs')).charAgentEntityHash(entity.id)
-		if (!entityHash) {
-			showToastI18n('error', 'chat.hub.no.username')
-			return
-		}
 		await enterFriendChat({
-			binding: buildCharFriendBinding(entityHash, entity.id, entity.displayName),
+			binding: charFriendBindingInput(entity.id, entity.displayName),
 		})
 		return
 	}
