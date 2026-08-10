@@ -2882,6 +2882,12 @@
 				"downloadIcon": {
 					"alt": "下载图标"
 				},
+				"edit": {
+					"title": "编辑图片"
+				},
+				"editIcon": {
+					"alt": "编辑图标"
+				},
 				"delete": {
 					"title": "删除"
 				},

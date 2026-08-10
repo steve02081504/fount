@@ -30,6 +30,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 - **`fount.user.send`**: Hub bootstrap registers `globalThis.fount.user.send(string | chatLogEntry)` → current channel. Normalize in `shared/fountUserSend.mjs` (Deno-pure — no `/scripts/*` imports there).
 - Errors: `handleError('chat.hub.…')` for fount faults; user mistakes: `showToastI18n`. Floating promises: call directly (no `void`); `return void sideEffect()` only when the side effect returns non-`undefined`.
 - Prefer `renderTemplate` / `mountTemplate` / `openDialogFromTemplate`; cross-shell shared modules use `withTemplates`. DaisyUI + shared `promptDialog` / `positionContextMenu`.
+- **Composer attachments**: `#attachment-preview` is a compact horizontal strip (64×64 thumbs); styles live in `components.css`. Paperclip (`#image-upload-input`) always enqueues message attachments via `addFilesFromEvent` — snapshot `FileList` with `[...files]` **before** clearing `input.value` (live FileList empties on clear).
 - **HTTP**: named functions in `../src/endpoints/*.mjs` only (`share.mjs` Litterbox is the sole non-endpoint exception). Global whoami/getdetails/EVFS → `/scripts/endpoints/`.
 - State: `core/state.mjs`. No hardcoded user-visible strings; `data-i18n` / `setElementI18n` + `zh-CN.json`.
 - **@-mention autocomplete**: on `<textarea>` use only `aria-controls` / `aria-activedescendant`; do not add `role="combobox"` / `aria-expanded`.

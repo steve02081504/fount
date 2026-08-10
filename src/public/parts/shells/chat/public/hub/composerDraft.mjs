@@ -5,6 +5,7 @@
  *   存 { text, content_warning, sensitive_media }（不存大体积 buffer）；
  *   debounce 500ms 写入；切频道时 load；发送成功后 clear。
  */
+import { setComposerExtrasVisible } from './composerExtras.mjs'
 
 const DRAFT_DEBOUNCE_MS = 500
 
@@ -60,8 +61,7 @@ export function loadDraft(groupId, channelId) {
 		if (contentWarningInput instanceof HTMLInputElement) contentWarningInput.value = ''
 		const sensitiveMediaInput = document.getElementById('sensitive-media')
 		if (sensitiveMediaInput instanceof HTMLInputElement) sensitiveMediaInput.checked = false
-		const composerExtras = document.getElementById('composer-extras')
-		if (composerExtras) composerExtras.hidden = true
+		setComposerExtrasVisible(false)
 
 		const raw = localStorage.getItem(draftKey(groupId, channelId))
 		if (!raw) return
@@ -75,7 +75,7 @@ export function loadDraft(groupId, channelId) {
 		if (sensitiveMediaInput instanceof HTMLInputElement && draft.sensitive_media)
 			sensitiveMediaInput.checked = true
 		if (draft.content_warning || draft.sensitive_media)
-			if (composerExtras) composerExtras.hidden = false
+			setComposerExtrasVisible(true)
 
 	}
 	catch { /* JSON 解析失败忽略 */ }

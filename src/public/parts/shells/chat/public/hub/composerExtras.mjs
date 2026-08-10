@@ -42,5 +42,7 @@ export function clearComposerExtras() {
  */
 export function setComposerExtrasVisible(visible) {
 	const el = document.getElementById('composer-extras')
-	if (el) el.hidden = !visible
+	if (!el) return
+	el.hidden = !visible
+	el.classList.toggle('hidden', !visible)
 }

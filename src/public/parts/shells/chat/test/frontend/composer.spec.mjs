@@ -1,3 +1,5 @@
+import { Buffer } from 'node:buffer'
+
 import {
 	test,
 	expect,
@@ -6,6 +8,12 @@ import {
 	messageTextFromPostResponse,
 	isChannelMessagePost,
 } from './fixtures.mjs'
+
+/** 1×1 PNG */
+const TINY_PNG_BUFFER = Buffer.from(
+	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+	'base64',
+)
 
 test.describe('Chat composer', () => {
 	test('publishes a message via composer', async ({ page, groupChannel }) => {
@@ -48,6 +56,34 @@ test.describe('Chat composer', () => {
 		const postJson = await (await postPromise).json()
 		expect(postJson.event?.type).toBe('message')
 		await expectMessageInChat(page, text)
+	})
+
+	test('pending image attachment stays compact in composer', async ({ page, groupChannel: _ }) => {
+		await page.locator('#image-upload-input').setInputFiles({
+			name: 'tiny.png',
+			mimeType: 'image/png',
+			buffer: TINY_PNG_BUFFER,
+		})
+
+		const preview = page.locator('#attachment-preview')
+		await expect(preview).toBeVisible()
+		const attachment = preview.locator('.attachment').first()
+		await expect(attachment).toBeVisible()
+		const img = attachment.locator('.preview-img')
+		await expect(img).toBeVisible()
+		const box = await img.boundingBox()
+		expect(box).toBeTruthy()
+		expect(box.width).toBeLessThanOrEqual(72)
+		expect(box.height).toBeLessThanOrEqual(72)
+
+		const attachBox = await attachment.boundingBox()
+		expect(attachBox).toBeTruthy()
+		expect(attachBox.width).toBeLessThanOrEqual(180)
+
+		await attachment.hover()
+		await expect(attachment.locator('.delete-button')).toBeVisible()
+		await attachment.locator('.delete-button').click()
+		await expect(preview.locator('.attachment')).toHaveCount(0)
 	})
 
 	test('emoji picker opens from composer', async ({ page, groupChannel: _ }) => {

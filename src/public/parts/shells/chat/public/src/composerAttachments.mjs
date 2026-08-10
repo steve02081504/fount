@@ -42,6 +42,41 @@ function base64ToBlob(base64, mimeType) {
 }
 
 /**
+ * 从预览容器同步 Hub composer extras 显隐（编辑区预览 id 不同则忽略）。
+ * @param {HTMLElement | null | undefined} container 附件预览容器
+ * @param {number} count 剩余附件数
+ * @returns {void}
+ */
+function syncComposerExtrasVisibility(container, count) {
+	if (container?.id !== 'attachment-preview') return
+	const extras = document.getElementById('composer-extras')
+	if (!extras) return
+	const visible = count > 0
+	extras.hidden = !visible
+	extras.classList.toggle('hidden', !visible)
+}
+
+/**
+ * 带动画移除附件预览节点；无 transition 时超时兜底。
+ * @param {HTMLElement} attachmentElement 附件元素
+ * @returns {void}
+ */
+function removeAttachmentElement(attachmentElement) {
+	attachmentElement.classList.add('attachment-removing')
+	let removed = false
+	/**
+	 * @returns {void}
+	 */
+	const remove = () => {
+		if (removed) return
+		removed = true
+		attachmentElement.remove()
+	}
+	attachmentElement.addEventListener('transitionend', remove, { once: true })
+	setTimeout(remove, 400)
+}
+
+/**
  * 处理文件选择。按原始文件顺序依次读取与渲染，避免异步完成顺序打乱附件顺序。
  * @param {Event} event - 事件。
  * @param {Array<object>} selectedFiles - 已选择的文件。
@@ -76,6 +111,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 			})
 		}
 	}
+	syncComposerExtrasVisibility(attachmentPreviewContainer, selectedFiles.length)
 	return added
 }
 
@@ -111,14 +147,22 @@ const PREVIEWABLE_MIME_TYPES = ['image/', 'video/', 'audio/']
  */
 export async function renderAttachmentPreview(file, index, selectedFiles) {
 	const isAudio = String(file.mime_type || '').startsWith('audio/')
-	const showSpeechRecognitionMenu = isAudio && await speechRecognitionConfigured()
+	const isImage = String(file.mime_type || '').startsWith('image/')
+	const composing = !!selectedFiles
+	const showSpeechRecognitionButton = isAudio && composing && await speechRecognitionConfigured()
+	const showDownloadButton = !composing
+	const showDeleteButton = composing
+	const showEditButton = isImage && composing
+	const buttonCount = [showDownloadButton, showSpeechRecognitionButton, showEditButton, showDeleteButton].filter(Boolean).length
 	let attachmentElement = await renderTemplate('attachment_preview', {
 		file,
 		index,
 		safeName: processTimeStampForId(file.name),
-		showDownloadButton: !selectedFiles,
-		showDeleteButton: !!selectedFiles,
-		showSpeechRecognitionMenu,
+		showDownloadButton,
+		showDeleteButton,
+		showSpeechRecognitionButton,
+		showEditButton,
+		buttonGroupJoin: buttonCount > 1,
 	})
 
 	const isPreviewable = PREVIEWABLE_MIME_TYPES.some(type => file.mime_type.startsWith(type))
@@ -141,20 +185,17 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		})
 		previewContainer.appendChild(previewImg)
 
-		const altInput = document.createElement('input')
-		altInput.type = 'text'
-		altInput.className = 'input input-bordered input-xs w-full mt-1 attachment-alt-input'
-		altInput.dataset.i18n = 'chat.hub.altImage'
-		altInput.value = file.description || ''
-		altInput.addEventListener('input', () => { file.description = altInput.value })
-		attachmentElement.appendChild(altInput)
+		if (composing) {
+			const altInput = document.createElement('input')
+			altInput.type = 'text'
+			altInput.className = 'input input-bordered input-xs attachment-alt-input'
+			altInput.dataset.i18n = 'chat.hub.altImage'
+			altInput.value = file.description || ''
+			altInput.addEventListener('input', () => { file.description = altInput.value })
+			attachmentElement.querySelector('.file-name')?.after(altInput)
+		}
 
-		const editButton = document.createElement('button')
-		editButton.type = 'button'
-		editButton.className = 'btn btn-ghost btn-xs attachment-edit-button mt-1'
-		editButton.dataset.i18n = 'chat.hub.editImage'
-		editButton.textContent = '✎'
-		editButton.addEventListener('click', async () => {
+		attachmentElement.querySelector('.attachment-edit-button')?.addEventListener('click', async () => {
 			try {
 				const { openImageEditor } = await import('/scripts/components/imageEditor.mjs')
 				const blob = base64ToBlob(file.buffer, file.mime_type)
@@ -167,10 +208,11 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 				file.mime_type = edited.type || file.mime_type
 				const img = previewContainer.querySelector('img')
 				if (img) img.src = `data:${file.mime_type};base64,${file.buffer}`
+				const nameEl = attachmentElement.querySelector('.file-name')
+				if (nameEl) nameEl.textContent = file.name
 			}
 			catch (err) { console.error('image edit failed:', err) }
 		})
-		attachmentElement.appendChild(editButton)
 	}
 	else if (file.mime_type.startsWith('video/')) {
 		const videoSrc = `data:${file.mime_type};base64,${file.buffer}`
@@ -231,11 +273,9 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			if (itemIndex > -1)
 				selectedFiles.splice(itemIndex, 1)
 
-			attachmentElement.classList.add('attachment-removing')
-			attachmentElement.addEventListener('transitionend', () => {
-				if (attachmentElement.parentNode)
-					attachmentElement.remove()
-			}, { once: true })
+			const container = attachmentElement.parentElement
+			removeAttachmentElement(attachmentElement)
+			syncComposerExtrasVisibility(container, selectedFiles.length)
 		})
 
 	return attachmentElement
