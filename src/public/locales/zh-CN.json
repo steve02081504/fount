@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "群文件使用收敛加密：若攻击者已知某文件明文，可推导密钥并解密对应密文块。请勿将高度敏感且唯一的私密文档仅依赖群加密保护。",
 			"reputationSlashAlert": "成员 ${target}… 的声誉受到扣减提醒",
 			"profileEdit": {
+				"close": {
+					"aria-label": "关闭"
+				},
 				"previewHint": "修改会立即显示在预览中，保存后同步用于 Chat 与 Social。",
 				"sfwMode": "安全内容",
 				"livePreview": "实时预览",
@@ -2457,6 +2460,9 @@
 				"created": "子线程已创建",
 				"drawer": {
 					"aria-label": "子线程"
+				},
+				"breadcrumb": {
+					"aria-label": "子线程路径"
 				}
 			},
 			"config": {
@@ -2775,6 +2781,9 @@
 			},
 			"attachment": {
 				"dropToUpload": "上传到 #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} 条未读"
 			}
 		},
 		"sidebar": {

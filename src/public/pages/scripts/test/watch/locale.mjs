@@ -1,7 +1,12 @@
 /**
- * 中日英语种轮换 + 错语脚本检查。
+ * 中日英语种轮换 + 错语脚本检查（可见文案 + aria-label）。
  */
 import { isLocaleHeld } from './locale_hold.mjs'
+import {
+	SCRIPT_FORBIDDEN,
+	ariaLabelLocaleProblem,
+	collectAriaLabelsForLocaleCheck,
+} from './locale_script.mjs'
 import { ignore, ignoreAsync } from './mutations.mjs'
 import { collectVisiblePageText } from './page_text.mjs'
 import { createReporter } from './reporter.mjs'
@@ -11,16 +16,6 @@ const LOCALE_MS = 1000
 
 /** 轮换顺序 */
 const LOCALE_CYCLE = ['zh-CN', 'ja-JP', 'en-UK']
-
-/**
- * 英语：不得出现汉字 / 假名
- * 中文：不得出现平假名 / 片假名
- * （简体相对日语：Unicode 无 `\p{Hans}`，见 jaForbidden 运行时差分）
- */
-const SCRIPT_FORBIDDEN = {
-	'en-UK': /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}/u,
-	'zh-CN': /\p{Script=Hiragana}|\p{Script=Katakana}/u,
-}
 
 const reporter = createReporter('[test:locale]')
 
@@ -175,7 +170,7 @@ function loadJaForbiddenRe() {
 }
 
 /**
- * 该语种下禁止出现的字符正则。
+ * 该语种下禁止出现的字符正则（可见文案）。
  * @param {string} locale 当前主 locale
  * @returns {Promise<RegExp | null | undefined>} 禁止正则
  */
@@ -187,25 +182,50 @@ async function forbiddenReFor(locale) {
 }
 
 /**
+ * @param {string} locale 当前主 locale
+ * @returns {Promise<string | null>} zh-CN / ja-JP / en-UK 或 null
+ */
+async function normalizeCycleLocale(locale) {
+	const i18n = await getI18n()
+	return i18n.matchLocale([locale], LOCALE_CYCLE) || null
+}
+
+/**
  * 对各任务执行脚本检查并记入 seen。
  * @param {string} locale 当前主 locale
  * @returns {Promise<void>} 检查完成
  */
 async function scriptCheck(locale) {
 	const re = await forbiddenReFor(locale)
+	const localeNorm = await normalizeCycleLocale(locale)
 	seen.add(locale)
-	if (!re) return
-	const text = ignore(() => collectVisiblePageText())
-	const match = text.match(re)
-	if (match) {
-		const at = Math.max(0, match.index - 12)
-		const snippet = text.slice(at, at + 32).replace(/\s+/g, ' ')
+	if (re) {
+		const text = ignore(() => collectVisiblePageText())
+		const match = text.match(re)
+		if (match) {
+			const at = Math.max(0, match.index - 12)
+			const snippet = text.slice(at, at + 32).replace(/\s+/g, ' ')
+			reporter.report(
+				`locale\t${locale}\t${match[0]}`,
+				locale,
+				'forbidden-script',
+				match[0],
+				snippet,
+			)
+		}
+	}
+	if (!localeNorm) return
+	const jaForbidden = localeNorm === 'ja-JP' ? await loadJaForbiddenRe() : null
+	for (const { label, where } of ignore(() => collectAriaLabelsForLocaleCheck())) {
+		const problem = ariaLabelLocaleProblem(localeNorm, label, jaForbidden)
+		if (!problem) continue
 		reporter.report(
-			`locale\t${locale}\t${match[0]}`,
-			locale,
-			'forbidden-script',
-			match[0],
-			snippet,
+			`aria-label\t${localeNorm}\t${problem}\t${where}\t${label}`,
+			localeNorm,
+			'aria-label',
+			problem,
+			where,
+			label,
 		)
 	}
 }

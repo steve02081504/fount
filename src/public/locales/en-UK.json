@@ -2772,6 +2772,9 @@
 			"trustedAuthorBadge": {
 				"textContent": "trusted",
 				"title": "This author's Markdown rendering is trusted"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} unread"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2881,30 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Download"
+					"title": "Download",
+					"aria-label": "Download"
 				},
 				"downloadIcon": {
 					"alt": "Download Icon"
 				},
+				"edit": {
+					"title": "Edit image",
+					"aria-label": "Edit image"
+				},
 				"delete": {
-					"title": "Delete"
+					"title": "Delete",
+					"aria-label": "Delete"
 				},
 				"deleteIcon": {
 					"alt": "Delete Icon"
 				},
 				"more": {
-					"title": "More"
+					"title": "More",
+					"aria-label": "More"
 				},
 				"recognize": {
-					"title": "Speech to text"
+					"title": "Speech to text",
+					"aria-label": "Speech to text"
 				}
 			}
 		},

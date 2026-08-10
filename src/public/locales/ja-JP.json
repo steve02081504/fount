@@ -2772,6 +2772,9 @@
 			"trustedAuthorBadge": {
 				"textContent": "信頼済み",
 				"title": "この作者の Markdown レンダリングを信頼中"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} 件の未読"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2881,30 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "ダウンロード"
+					"title": "ダウンロード",
+					"aria-label": "ダウンロード"
 				},
 				"downloadIcon": {
 					"alt": "ダウンロードアイコン"
 				},
+				"edit": {
+					"title": "画像を編集",
+					"aria-label": "画像を編集"
+				},
 				"delete": {
-					"title": "削除"
+					"title": "削除",
+					"aria-label": "削除"
 				},
 				"deleteIcon": {
 					"alt": "削除アイコン"
 				},
 				"more": {
-					"title": "もっと"
+					"title": "もっと",
+					"aria-label": "もっと"
 				},
 				"recognize": {
-					"title": "音声を文字に"
+					"title": "音声を文字に",
+					"aria-label": "音声を文字に"
 				}
 			}
 		},
