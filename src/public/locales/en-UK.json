@@ -5839,6 +5839,25 @@
 			"search": {
 				"placeholder": "Search..."
 			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "Media viewer"
+			},
+			"download": {
+				"textContent": "Download",
+				"aria-label": "Download"
+			},
+			"close": {
+				"textContent": "Close",
+				"aria-label": "Close"
+			},
+			"prev": {
+				"aria-label": "Previous"
+			},
+			"next": {
+				"aria-label": "Next"
+			}
 		}
 	}
 }

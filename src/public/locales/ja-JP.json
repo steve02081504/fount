@@ -5839,6 +5839,25 @@
 			"search": {
 				"placeholder": "検索..."
 			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "メディアビューア"
+			},
+			"download": {
+				"textContent": "ダウンロード",
+				"aria-label": "ダウンロード"
+			},
+			"close": {
+				"textContent": "閉じる",
+				"aria-label": "閉じる"
+			},
+			"prev": {
+				"aria-label": "前へ"
+			},
+			"next": {
+				"aria-label": "次へ"
+			}
 		}
 	}
 }

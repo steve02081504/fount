@@ -1,7 +1,7 @@
 /**
  * 全屏媒体查看器（图片 / 视频）：ESC 关闭、左右切换、滚轮缩放、拖拽平移、下载。
  */
-import { i18nElement } from '../i18n/index.mjs'
+import { geti18n_nowarn, setLocalizeLogic } from '../i18n/index.mjs'
 
 /** @typedef {{ src: string, name?: string, mimeType?: string }} MediaViewerItem */
 
@@ -15,6 +15,34 @@ let activeViewer = null
 function isVideoItem(item) {
 	return String(item.mimeType || '').startsWith('video/')
 		|| /\.(mp4|webm|ogg|mov)(\?|$)/i.test(item.src || '')
+}
+
+/**
+ * @param {Element | null} el 目标
+ * @param {string} key i18n 对象键（含 aria-label / textContent）
+ * @returns {void}
+ */
+function applyI18nObject(el, key) {
+	if (!(el instanceof Element)) return
+	el.setAttribute('data-i18n', key)
+	const value = geti18n_nowarn(key)
+	if (!value || typeof value !== 'object' || Array.isArray(value)) return
+	const aria = value['aria-label']
+	if (typeof aria === 'string' && aria) el.setAttribute('aria-label', aria)
+	if (typeof value.textContent === 'string' && value.textContent)
+		el.textContent = value.textContent
+}
+
+/**
+ * @param {HTMLElement} root 查看器根
+ * @returns {void}
+ */
+function localizeMediaViewer(root) {
+	applyI18nObject(root, 'util.mediaViewer.dialog')
+	applyI18nObject(root.querySelector('.media-viewer-download'), 'util.mediaViewer.download')
+	applyI18nObject(root.querySelector('.media-viewer-close'), 'util.mediaViewer.close')
+	applyI18nObject(root.querySelector('.media-viewer-prev'), 'util.mediaViewer.prev')
+	applyI18nObject(root.querySelector('.media-viewer-next'), 'util.mediaViewer.next')
 }
 
 /**
@@ -54,7 +82,6 @@ export function openMediaViewer(items, startIndex = 0) {
 	root.className = 'media-viewer'
 	root.setAttribute('role', 'dialog')
 	root.setAttribute('aria-modal', 'true')
-	root.dataset.i18n = 'util.mediaViewer.dialog'
 	root.tabIndex = -1
 
 	root.innerHTML = `
@@ -62,17 +89,18 @@ export function openMediaViewer(items, startIndex = 0) {
 			<span class="media-viewer-counter"></span>
 			<span class="media-viewer-name"></span>
 			<div class="media-viewer-actions">
-				<button type="button" class="media-viewer-btn media-viewer-download" data-i18n="util.mediaViewer.download"></button>
-				<button type="button" class="media-viewer-btn media-viewer-close" data-i18n="util.mediaViewer.close"></button>
+				<button type="button" class="media-viewer-btn media-viewer-download"></button>
+				<button type="button" class="media-viewer-btn media-viewer-close"></button>
 			</div>
 		</div>
-		<button type="button" class="media-viewer-nav media-viewer-prev" data-i18n="util.mediaViewer.prev">‹</button>
-		<button type="button" class="media-viewer-nav media-viewer-next" data-i18n="util.mediaViewer.next">›</button>
+		<button type="button" class="media-viewer-nav media-viewer-prev">‹</button>
+		<button type="button" class="media-viewer-nav media-viewer-next">›</button>
 		<div class="media-viewer-stage">
 			<div class="media-viewer-transform"></div>
 		</div>
 	`
-	i18nElement(root)
+	localizeMediaViewer(root)
+	setLocalizeLogic(root, () => localizeMediaViewer(root))
 
 	const stage = root.querySelector('.media-viewer-stage')
 	const transform = root.querySelector('.media-viewer-transform')
