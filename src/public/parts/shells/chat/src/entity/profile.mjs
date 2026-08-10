@@ -39,8 +39,12 @@ const REMOTE_PROFILE_NEGATIVE_CACHE_MAX = 2048
 const REMOTE_PROFILE_NEGATIVE_TTL_MS = 60_000
 /** @type {ReturnType<typeof createLruMap<string, number>>} */
 const remoteProfileNegativeCache = createLruMap(REMOTE_PROFILE_NEGATIVE_CACHE_MAX)
-/** 远端 EVFS profile 拉取上限；超时回落本地默认/磁盘资料，避免资料卡 HTTP 挂死 */
-export const REMOTE_PROFILE_FETCH_TIMEOUT_MS = 2500
+/**
+ * 远端 EVFS profile 拉取上限；须覆盖 manifest fanout（默认 8s）+ chunk fanout（默认 8s）的冷路径。
+ * 短于底层 EVFS 等待时，本地已有 manifest/chunk 也会被误判为失败并写入负缓存。
+ * 参见 fount-p2p#8（本地 public manifest 仍阻塞 fanout）。
+ */
+export const REMOTE_PROFILE_FETCH_TIMEOUT_MS = 18_000
 
 /**
  * 删除已过期的负缓存条目。
@@ -95,6 +99,22 @@ function raceTimeout(promise, timeoutMs, label) {
 }
 
 /**
+ * 仅用本地已缓存的 public manifest + chunk 组装明文（不发起 fanout）。
+ * @param {string} replicaUsername replica
+ * @param {string} entityHash 128 hex
+ * @param {string} logicalPath EVFS 逻辑路径
+ * @returns {Promise<Uint8Array | Buffer | null>} 明文或 null
+ */
+async function tryReadCachedPublicProfilePlain(replicaUsername, entityHash, logicalPath) {
+	const { loadFileManifest, readManifestPlaintext } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+	const manifest = await loadFileManifest(entityHash, logicalPath)
+	if (manifest?.transferKeyDescriptor?.type !== 'public' || !manifest?.meta?.publicSig) return null
+	return readManifestPlaintext(replicaUsername, manifest, {
+		fetchChunk: async () => null,
+	})
+}
+
+/**
  * @param {string} replicaUsername replica
  * @param {string} entityHash 128 hex
  * @param {string} logicalPath EVFS 逻辑路径
@@ -103,6 +123,8 @@ function raceTimeout(promise, timeoutMs, label) {
  */
 async function readRemoteProfilePlain(replicaUsername, entityHash, logicalPath, readPlain) {
 	if (readPlain) return readPlain(replicaUsername, entityHash, logicalPath)
+	const cached = await tryReadCachedPublicProfilePlain(replicaUsername, entityHash, logicalPath).catch(() => null)
+	if (cached) return cached
 	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
 	return readPublicFile(replicaUsername, entityHash, logicalPath)
 }

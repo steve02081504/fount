@@ -7,15 +7,12 @@
  */
 import { assertHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
-import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
-import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { isPubKeyHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 
 import {
 	shouldDeferInboundIngest,
 } from '../federation/acl.mjs'
 import { validateJoinPolicy } from '../governance/joinPolicy.mjs'
-import { eventsPath } from '../lib/paths.mjs'
 
 import { assertEventPermission } from './authorizeEvent.mjs'
 import { SESSION_EVENT_TYPES } from './eventTypes.mjs'
@@ -92,11 +89,12 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, optio
 		// 会互相「吞掉」对方所引用的 tip（A 的 merge 把 X 变为内部节点，B 的 merge 仍把 X 当 tip 引用），
 		// 导致两条 merge 永远互不可入站（no_fork / mismatch），下游事件随之连带 pending，跨节点补齐永久死锁。
 		// 改为：结构上要求 >= 2 个父；父事件齐备即可入站（多余的本地 tip 留待后续 merge 收敛）；缺父则可延迟等 catchup 补齐。
+		// 「齐备」含已从 events.jsonl 折叠但仍在归档/event_meta/checkpoint 见证过的 id——否则 tip 消息被 fold 后对端 tip_merge 永久 pending。
 		const prev = sortedPrevEventIds(event.prev_event_ids)
 		if (prev.length < 2)
 			throw new Error('dag_tip_merge: must reference >= 2 prev tips')
-		const rows = await readJsonl(eventsPath(replicaUsername, groupId), { sanitize: stripDagEventLocalExtensions })
-		const presentIds = new Set(rows.map(row => String(row.id).trim().toLowerCase()))
+		const { loadKnownLocalDagEventIds } = await import('./knownLocalEventIds.mjs')
+		const presentIds = await loadKnownLocalDagEventIds(replicaUsername, groupId)
 		const missing = prev.filter(id => !presentIds.has(String(id).trim().toLowerCase()))
 		if (missing.length) {
 			const error = new Error('dag_tip_merge: prev events not present yet')

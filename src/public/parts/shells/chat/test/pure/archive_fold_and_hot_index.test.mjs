@@ -26,6 +26,14 @@ Deno.test('shouldDropDagEvent keeps hot and unarchived messages', () => {
 	assertEquals(shouldDropDagEvent({ type: 'message', id: 'm1' }, archived, hot, true), true)
 })
 
+Deno.test('shouldDropDagEvent keeps current tip messages even when archived', () => {
+	const archived = new Set(['tip1', 'old1'])
+	const hot = new Set()
+	const tips = new Set(['tip1'])
+	assertEquals(shouldDropDagEvent({ type: 'message', id: 'tip1' }, archived, hot, true, tips), false)
+	assertEquals(shouldDropDagEvent({ type: 'message', id: 'old1' }, archived, hot, true, tips), true)
+})
+
 Deno.test('recomputeHotPostIndex latest window and pin context', () => {
 	const state = {
 		channels: { general: {} },
