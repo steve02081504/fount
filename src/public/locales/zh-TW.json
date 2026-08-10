@@ -2007,6 +2007,9 @@
 			"convergentEncryptWarn": "群檔案使用收斂加密：若攻擊者已知某檔案明文，可推導金鑰並解密對應密文塊。請勿將高度敏感且唯一的私密檔案僅依賴群加密保護。",
 			"reputationSlashAlert": "成員 ${target}… 的聲譽受到扣減提醒",
 			"profileEdit": {
+				"close": {
+					"aria-label": "關閉"
+				},
 				"previewHint": "修改會立即顯示在預覽中，儲存後同步用於 Chat 與 Social。",
 				"sfwMode": "安全內容",
 				"livePreview": "實時預覽",
@@ -2456,6 +2459,9 @@
 				"created": "子執行緒已建立",
 				"drawer": {
 					"aria-label": "子執行緒"
+				},
+				"breadcrumb": {
+					"aria-label": "子執行緒路徑"
 				}
 			},
 			"config": {
@@ -2771,6 +2777,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "已信任",
 				"title": "已信任此作者，將完整渲染訊息內容"
+			},
+			"attachment": {
+				"dropToUpload": "上傳到 #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} 條未讀"
 			}
 		},
 		"sidebar": {
@@ -2877,22 +2889,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "下載"
+					"title": "下載",
+					"aria-label": "下載"
 				},
 				"downloadIcon": {
 					"alt": "下載圖示"
 				},
+				"edit": {
+					"title": "編輯圖片",
+					"aria-label": "編輯圖片"
+				},
+				"editIcon": {
+					"alt": "編輯圖示"
+				},
 				"delete": {
-					"title": "刪除"
+					"title": "刪除",
+					"aria-label": "刪除"
 				},
 				"deleteIcon": {
 					"alt": "刪除圖示"
 				},
 				"more": {
-					"title": "更多"
+					"title": "更多",
+					"aria-label": "更多"
 				},
 				"recognize": {
-					"title": "語音轉文字"
+					"title": "語音轉文字",
+					"aria-label": "語音轉文字"
 				}
 			}
 		},
@@ -5826,6 +5849,25 @@
 			},
 			"search": {
 				"placeholder": "搜尋..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "媒體檢視器"
+			},
+			"download": {
+				"textContent": "下載",
+				"aria-label": "下載"
+			},
+			"close": {
+				"textContent": "關閉",
+				"aria-label": "關閉"
+			},
+			"prev": {
+				"aria-label": "上一張"
+			},
+			"next": {
+				"aria-label": "下一張"
 			}
 		}
 	}

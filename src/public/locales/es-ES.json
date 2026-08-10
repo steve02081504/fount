@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "Los archivos de grupo utilizan cifrado convergente: si el atacante conoce el texto sin formato de un archivo, puede derivar la clave y descifrar el bloque de texto cifrado correspondiente. No confíe únicamente en el cifrado de grupo para proteger documentos altamente confidenciales y exclusivamente privados.",
 			"reputationSlashAlert": "La reputación del miembro ${target}… se recuerda de la deducción.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "cierre"
+				},
 				"previewHint": "Los cambios aparecen inmediatamente en la vista previa y se guardan y sincronizan en Chat y Social.",
 				"sfwMode": "Contenido seguro",
 				"livePreview": "Vista previa en vivo",
@@ -2457,6 +2460,9 @@
 				"created": "Se ha creado el hilo secundario.",
 				"drawer": {
 					"aria-label": "hilo infantil"
+				},
+				"breadcrumb": {
+					"aria-label": "Ruta del subproceso"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "De confianza",
 				"title": "Renderizado Markdown de este autor permitido"
+			},
+			"attachment": {
+				"dropToUpload": "Subir a #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} elementos no leídos"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Descargar"
+					"title": "Descargar",
+					"aria-label": "descargar"
 				},
 				"downloadIcon": {
 					"alt": "Icono de descarga"
 				},
+				"edit": {
+					"title": "Editar imagen",
+					"aria-label": "Editar imagen"
+				},
+				"editIcon": {
+					"alt": "icono de edición"
+				},
 				"delete": {
-					"title": "Eliminar"
+					"title": "Eliminar",
+					"aria-label": "borrar"
 				},
 				"deleteIcon": {
 					"alt": "Icono de eliminar"
 				},
 				"more": {
-					"title": "Más"
+					"title": "Más",
+					"aria-label": "Más"
 				},
 				"recognize": {
-					"title": "Voz a texto"
+					"title": "Voz a texto",
+					"aria-label": "voz a texto"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "Buscar..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "visor de medios"
+			},
+			"download": {
+				"textContent": "descargar",
+				"aria-label": "descargar"
+			},
+			"close": {
+				"textContent": "cierre",
+				"aria-label": "cierre"
+			},
+			"prev": {
+				"aria-label": "Imagen anterior"
+			},
+			"next": {
+				"aria-label": "El siguiente"
 			}
 		}
 	}

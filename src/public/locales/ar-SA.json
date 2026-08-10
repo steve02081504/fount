@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "تستخدم ملفات المجموعة التشفير المتقارب: إذا كان المهاجم يعرف النص العادي للملف، فيمكنه استخلاص المفتاح وفك تشفير كتلة النص المشفر المقابلة. لا تعتمد فقط على تشفير المجموعة لحماية المستندات الحساسة للغاية والخاصة بشكل فريد.",
 			"reputationSlashAlert": "سمعة العضو ${target}... تذكرنا بالخصم.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "إنهاء"
+				},
 				"previewHint": "تظهر التغييرات على الفور في المعاينة ويتم حفظها ومزامنتها عبر الدردشة والتواصل الاجتماعي.",
 				"sfwMode": "محتوى آمن",
 				"livePreview": "معاينة حية",
@@ -2457,6 +2460,9 @@
 				"created": "تم إنشاء موضوع تابع",
 				"drawer": {
 					"aria-label": "خيط الطفل"
+				},
+				"breadcrumb": {
+					"aria-label": "مسار الموضوع الفرعي"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "موثوق",
 				"title": "عرض Markdown لهذا المؤلف مفعّل"
+			},
+			"attachment": {
+				"dropToUpload": "تحميل إلى #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} من العناصر غير المقروءة"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "تنزيل"
+					"title": "تنزيل",
+					"aria-label": "تحميل"
 				},
 				"downloadIcon": {
 					"alt": "أيقونة التنزيل"
 				},
+				"edit": {
+					"title": "تحرير الصورة",
+					"aria-label": "تحرير الصورة"
+				},
+				"editIcon": {
+					"alt": "رمز التحرير"
+				},
 				"delete": {
-					"title": "حذف"
+					"title": "حذف",
+					"aria-label": "يمسح"
 				},
 				"deleteIcon": {
 					"alt": "أيقونة الحذف"
 				},
 				"more": {
-					"title": "أكثر"
+					"title": "أكثر",
+					"aria-label": "أكثر"
 				},
 				"recognize": {
-					"title": "تحويل الصوت إلى نص"
+					"title": "تحويل الصوت إلى نص",
+					"aria-label": "الكلام إلى النص"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "بحث..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "عارض الوسائط"
+			},
+			"download": {
+				"textContent": "تحميل",
+				"aria-label": "تحميل"
+			},
+			"close": {
+				"textContent": "إنهاء",
+				"aria-label": "إنهاء"
+			},
+			"prev": {
+				"aria-label": "الصورة السابقة"
+			},
+			"next": {
+				"aria-label": "التالي"
 			}
 		}
 	}

@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "👥📁 🔐🔄：📝👀 ➡️ 🔑➡️🔓🚫🔐📄➡️👥🔒",
 			"reputationSlashAlert": "👤 ${target}… ⭐⬇️🔔",
 			"profileEdit": {
+				"close": {
+					"aria-label": "关闭"
+				},
 				"previewHint": "✏️ ➡️ 👀📍；💾 ➡️ 🔄 💬 ➕ 🏛️",
 				"sfwMode": "😇",
 				"livePreview": "⏱️👀",
@@ -2457,6 +2460,9 @@
 				"created": "🧵✅🎉",
 				"drawer": {
 					"aria-label": "🧵"
+				},
+				"breadcrumb": {
+					"aria-label": "子线程路径"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "✅🤝",
 				"title": "✅🤝✍️📝🎨"
+			},
+			"attachment": {
+				"dropToUpload": "上传到 #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} 条未读"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "💾"
+					"title": "💾",
+					"aria-label": "下载"
 				},
 				"downloadIcon": {
 					"alt": "💾"
 				},
+				"edit": {
+					"title": "编辑图片",
+					"aria-label": "编辑图片"
+				},
+				"editIcon": {
+					"alt": "编辑图标"
+				},
 				"delete": {
-					"title": "🗑️"
+					"title": "🗑️",
+					"aria-label": "删除"
 				},
 				"deleteIcon": {
 					"alt": "🗑️"
 				},
 				"more": {
-					"title": "⋯"
+					"title": "⋯",
+					"aria-label": "更多"
 				},
 				"recognize": {
-					"title": "🎙️➡️📝"
+					"title": "🎙️➡️📝",
+					"aria-label": "语音转文字"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "🔍…"
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "媒体查看器"
+			},
+			"download": {
+				"textContent": "下载",
+				"aria-label": "下载"
+			},
+			"close": {
+				"textContent": "关闭",
+				"aria-label": "关闭"
+			},
+			"prev": {
+				"aria-label": "上一张"
+			},
+			"next": {
+				"aria-label": "下一张"
 			}
 		}
 	}

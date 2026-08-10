@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "Gruppendateien nutzen konvergente Verschlüsselung: Wenn der Angreifer den Leerentext einer Datei kennt, kann er den Schlüssel ableiten und den entsprechenden Chiffretextblock entschlüsseln. Verlassen Sie sich zum Schutz hochsensibler und einzigartig privater Dokumente nicht ausschließlich auf die Gruppenverschlüsselung.",
 			"reputationSlashAlert": "Der Ruf des Mitglieds ${target}… wird an den Abzug erinnert.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "Schließung"
+				},
 				"previewHint": "Änderungen werden sofort in der Vorschau angezeigt und im Chat und in den sozialen Netzwerken gespeichert und synchronisiert.",
 				"sfwMode": "Sichere Inhalte",
 				"livePreview": "Live-Vorschau",
@@ -2457,6 +2460,9 @@
 				"created": "Untergeordneter Thread wurde erstellt",
 				"drawer": {
 					"aria-label": "Untergeordneter Thread"
+				},
+				"breadcrumb": {
+					"aria-label": "Subthread-Pfad"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "Vertraut",
 				"title": "Markdown-Rendering dieses Autors ist erlaubt"
+			},
+			"attachment": {
+				"dropToUpload": "Auf #${channel} hochladen"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} ungelesene Artikel"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Herunterladen"
+					"title": "Herunterladen",
+					"aria-label": "herunterladen"
 				},
 				"downloadIcon": {
 					"alt": "Herunterladen-Symbol"
 				},
+				"edit": {
+					"title": "Bild bearbeiten",
+					"aria-label": "Bild bearbeiten"
+				},
+				"editIcon": {
+					"alt": "Bearbeiten-Symbol"
+				},
 				"delete": {
-					"title": "Löschen"
+					"title": "Löschen",
+					"aria-label": "löschen"
 				},
 				"deleteIcon": {
 					"alt": "Löschen-Symbol"
 				},
 				"more": {
-					"title": "Mehr"
+					"title": "Mehr",
+					"aria-label": "Mehr"
 				},
 				"recognize": {
-					"title": "Sprache in Text"
+					"title": "Sprache in Text",
+					"aria-label": "Rede zum Text"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "Suchen..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "Medienbetrachter"
+			},
+			"download": {
+				"textContent": "herunterladen",
+				"aria-label": "herunterladen"
+			},
+			"close": {
+				"textContent": "Schließung",
+				"aria-label": "Schließung"
+			},
+			"prev": {
+				"aria-label": "Vorheriges Bild"
+			},
+			"next": {
+				"aria-label": "Nächster"
 			}
 		}
 	}

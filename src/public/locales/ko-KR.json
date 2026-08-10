@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "그룹 파일은 수렴 암호화를 사용합니다. 공격자가 파일 평문을 알고 있으면 키를 유도해 해당 암호문 블록을 복호화할 수 있습니다. 고도로 민감하고 유일한 비공개 문서를 그룹 암호화만으로 보호하지 마세요.",
 			"reputationSlashAlert": "${target} 멤버의 평판이 차감되었음을 상기시켜 드립니다.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "폐쇄"
+				},
 				"previewHint": "변경 사항은 미리보기에 즉시 표시되며 채팅과 소셜에 저장 및 동기화됩니다.",
 				"sfwMode": "일반 콘텐츠",
 				"livePreview": "실시간 미리보기",
@@ -2457,6 +2460,9 @@
 				"created": "하위 스레드가 생성되었습니다.",
 				"drawer": {
 					"aria-label": "하위 스레드"
+				},
+				"breadcrumb": {
+					"aria-label": "하위 스레드 경로"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "신뢰됨",
 				"title": "이 작성자의 Markdown 렌더링을 신뢰함"
+			},
+			"attachment": {
+				"dropToUpload": "#${channel}에 업로드"
+			},
+			"unreadBadge": {
+				"aria-label": "읽지 않은 항목 ${count}개"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "다운로드"
+					"title": "다운로드",
+					"aria-label": "다운로드"
 				},
 				"downloadIcon": {
 					"alt": "다운로드 아이콘"
 				},
+				"edit": {
+					"title": "사진 편집",
+					"aria-label": "사진 편집"
+				},
+				"editIcon": {
+					"alt": "편집 아이콘"
+				},
 				"delete": {
-					"title": "삭제"
+					"title": "삭제",
+					"aria-label": "삭제"
 				},
 				"deleteIcon": {
 					"alt": "삭제 아이콘"
 				},
 				"more": {
-					"title": "더"
+					"title": "더",
+					"aria-label": "더"
 				},
 				"recognize": {
-					"title": "음성을 글로"
+					"title": "음성을 글로",
+					"aria-label": "음성을 텍스트로"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "검색..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "미디어 뷰어"
+			},
+			"download": {
+				"textContent": "다운로드",
+				"aria-label": "다운로드"
+			},
+			"close": {
+				"textContent": "폐쇄",
+				"aria-label": "폐쇄"
+			},
+			"prev": {
+				"aria-label": "이전 사진"
+			},
+			"next": {
+				"aria-label": "다음 것"
 			}
 		}
 	}

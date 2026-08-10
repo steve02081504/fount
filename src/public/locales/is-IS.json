@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "Hópskrár nota samleita dulkóðun: ef árásarmaður þekkir látlausa texta skráar getur hann afklárað lykilinn og afkóðað samsvarandi dulkóðuð textublokk. Treystu ekki eingöngu hópdulkóðun til að vernda mjög viðkvæm og einstök einkaskjöl.",
 			"reputationSlashAlert": "Orðspor meðlims ${target}... er minnt á frádráttinn.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "lokun"
+				},
 				"previewHint": "Breytingar birtast strax í forskoðuninni og eru vistaðar og samstilltar í Chat og Social.",
 				"sfwMode": "Vinnustaðavænt",
 				"livePreview": "Forskoðun í beinni",
@@ -2457,6 +2460,9 @@
 				"created": "Undirþráður hefur verið búinn til",
 				"drawer": {
 					"aria-label": "Undirþráður"
+				},
+				"breadcrumb": {
+					"aria-label": "Slóð undirþráðs"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "Treyst",
 				"title": "Markdown-útgáfa þessa höfundar er leyfð"
+			},
+			"attachment": {
+				"dropToUpload": "Hladdu upp á #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} ólesin atriði"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Sækja"
+					"title": "Sækja",
+					"aria-label": "niðurhal"
 				},
 				"downloadIcon": {
 					"alt": "Sækja tákn"
 				},
+				"edit": {
+					"title": "Breyta mynd",
+					"aria-label": "Breyta mynd"
+				},
+				"editIcon": {
+					"alt": "breyta tákni"
+				},
 				"delete": {
-					"title": "Eyða"
+					"title": "Eyða",
+					"aria-label": "eyða"
 				},
 				"deleteIcon": {
 					"alt": "Eyða tákn"
 				},
 				"more": {
-					"title": "Meira"
+					"title": "Meira",
+					"aria-label": "Meira"
 				},
 				"recognize": {
-					"title": "Rödd í texta"
+					"title": "Rödd í texta",
+					"aria-label": "tal til texta"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "Leita..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "fjölmiðlaskoðari"
+			},
+			"download": {
+				"textContent": "niðurhal",
+				"aria-label": "niðurhal"
+			},
+			"close": {
+				"textContent": "lokun",
+				"aria-label": "lokun"
+			},
+			"prev": {
+				"aria-label": "Fyrri mynd"
+			},
+			"next": {
+				"aria-label": "Næsti"
 			}
 		}
 	}

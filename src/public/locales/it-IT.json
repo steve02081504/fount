@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "I file di gruppo utilizzano la crittografia convergente: se un utente malintenzionato conosce il testo in chiaro di un file, può derivare la chiave e decrittografare il blocco di testo cifrato corrispondente. Non fare affidamento esclusivamente sulla crittografia di gruppo per la protezione di documenti altamente sensibili e unicamente privati.",
 			"reputationSlashAlert": "La reputazione del membro ${target}… viene ricordata nella detrazione.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "chiusura"
+				},
 				"previewHint": "Le modifiche vengono visualizzate immediatamente nell'anteprima e vengono salvate e sincronizzate su Chat e Social.",
 				"sfwMode": "Contenuto sicuro",
 				"livePreview": "Anteprima dal vivo",
@@ -2457,6 +2460,9 @@
 				"created": "La discussione è stata creata",
 				"drawer": {
 					"aria-label": "filo"
+				},
+				"breadcrumb": {
+					"aria-label": "Percorso del sottothread"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "Fidato",
 				"title": "Il rendering Markdown di questo autore è consentito"
+			},
+			"attachment": {
+				"dropToUpload": "Carica su #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} elementi non letti"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Scarica"
+					"title": "Scarica",
+					"aria-label": "scaricamento"
 				},
 				"downloadIcon": {
 					"alt": "Icona Scarica"
 				},
+				"edit": {
+					"title": "Modifica immagine",
+					"aria-label": "Modifica immagine"
+				},
+				"editIcon": {
+					"alt": "icona modifica"
+				},
 				"delete": {
-					"title": "Elimina"
+					"title": "Elimina",
+					"aria-label": "eliminare"
 				},
 				"deleteIcon": {
 					"alt": "Icona Elimina"
 				},
 				"more": {
-					"title": "Di più"
+					"title": "Di più",
+					"aria-label": "Di più"
 				},
 				"recognize": {
-					"title": "Da voce a testo"
+					"title": "Da voce a testo",
+					"aria-label": "discorso al testo"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "Cerca..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "visualizzatore multimediale"
+			},
+			"download": {
+				"textContent": "scaricamento",
+				"aria-label": "scaricamento"
+			},
+			"close": {
+				"textContent": "chiusura",
+				"aria-label": "chiusura"
+			},
+			"prev": {
+				"aria-label": "Immagine precedente"
+			},
+			"next": {
+				"aria-label": "Il prossimo"
 			}
 		}
 	}

@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "グループ ファイルは収束暗号化を使用します。攻撃者がファイルの平文を知っている場合、キーを導出して、対応する暗号文ブロックを復号化できます。機密性の高い独自のプライベート文書を保護するために、グループ暗号化のみに依存しないでください。",
 			"reputationSlashAlert": "メンバー ${target}… の評判が減点を思い出させます。",
 			"profileEdit": {
+				"close": {
+					"aria-label": "閉鎖"
+				},
 				"previewHint": "変更はすぐにプレビューに表示され、保存され、チャットとソーシャル全体で同期されます。",
 				"sfwMode": "一般コンテンツ",
 				"livePreview": "ライブプレビュー",
@@ -2457,6 +2460,9 @@
 				"created": "子スレッドが作成されました",
 				"drawer": {
 					"aria-label": "子スレッド"
+				},
+				"breadcrumb": {
+					"aria-label": "サブスレッドパス"
 				}
 			},
 			"config": {
@@ -2773,6 +2779,9 @@
 				"textContent": "信頼済み",
 				"title": "この作者の Markdown レンダリングを信頼中"
 			},
+			"attachment": {
+				"dropToUpload": "#${channel} にアップロードする"
+			},
 			"unreadBadge": {
 				"aria-label": "${count} 件の未読"
 			}
@@ -2890,6 +2899,9 @@
 				"edit": {
 					"title": "画像を編集",
 					"aria-label": "画像を編集"
+				},
+				"editIcon": {
+					"alt": "編集アイコン"
 				},
 				"delete": {
 					"title": "削除",

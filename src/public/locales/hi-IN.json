@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "समूह फ़ाइलें अभिसरण एन्क्रिप्शन का उपयोग करती हैं: यदि हमलावर किसी फ़ाइल का प्लेनटेक्स्ट जानता है, तो वह कुंजी प्राप्त कर सकता है और संबंधित सिफरटेक्स्ट ब्लॉक को डिक्रिप्ट कर सकता है। अत्यधिक संवेदनशील और विशिष्ट निजी दस्तावेज़ों की सुरक्षा के लिए केवल समूह एन्क्रिप्शन पर निर्भर न रहें।",
 			"reputationSlashAlert": "सदस्य ${target}… की प्रतिष्ठा कटौती की याद दिलाती है।",
 			"profileEdit": {
+				"close": {
+					"aria-label": "बंद"
+				},
 				"previewHint": "परिवर्तन तुरंत पूर्वावलोकन में दिखाई देते हैं और चैट और सोशल में सहेजे और समन्वयित किए जाते हैं।",
 				"sfwMode": "सुरक्षित सामग्री",
 				"livePreview": "लाइव पूर्वावलोकन",
@@ -2457,6 +2460,9 @@
 				"created": "चाइल्ड थ्रेड बनाया गया है",
 				"drawer": {
 					"aria-label": "थ्रेड"
+				},
+				"breadcrumb": {
+					"aria-label": "सबथ्रेड पथ"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "विश्वसनीय",
 				"title": "इस लेखक का Markdown रेंडरिंग सक्षम है"
+			},
+			"attachment": {
+				"dropToUpload": "#${channel} पर अपलोड करें"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} अपठित आइटम"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "डाउनलोड करें"
+					"title": "डाउनलोड करें",
+					"aria-label": "डाउनलोड करना"
 				},
 				"downloadIcon": {
 					"alt": "डाउनलोड आइकन"
 				},
+				"edit": {
+					"title": "चित्र संपादित करें",
+					"aria-label": "चित्र संपादित करें"
+				},
+				"editIcon": {
+					"alt": "आइकन संपादित करें"
+				},
 				"delete": {
-					"title": "हटाएँ"
+					"title": "हटाएँ",
+					"aria-label": "मिटाना"
 				},
 				"deleteIcon": {
 					"alt": "हटाएँ आइकन"
 				},
 				"more": {
-					"title": "अधिक"
+					"title": "अधिक",
+					"aria-label": "अधिक"
 				},
 				"recognize": {
-					"title": "आवाज़ से लेख"
+					"title": "आवाज़ से लेख",
+					"aria-label": "पाठ से भाषण"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "खोजें..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "मीडिया दर्शक"
+			},
+			"download": {
+				"textContent": "डाउनलोड करना",
+				"aria-label": "डाउनलोड करना"
+			},
+			"close": {
+				"textContent": "बंद",
+				"aria-label": "बंद"
+			},
+			"prev": {
+				"aria-label": "पिछला चित्र"
+			},
+			"next": {
+				"aria-label": "अगला"
 			}
 		}
 	}

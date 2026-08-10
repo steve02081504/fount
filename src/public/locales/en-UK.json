@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "Group files use convergent encryption: if an attacker knows the plaintext of a file, they can derive the key and decrypt the corresponding ciphertext block. Do not rely solely on group encryption for protection of highly sensitive and uniquely private documents.",
 			"reputationSlashAlert": "The reputation of member ${target}… is reminded of the deduction.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "closure"
+				},
 				"previewHint": "Changes appear immediately in the preview and are saved and synced across Chat and Social.",
 				"sfwMode": "Safe for Work",
 				"livePreview": "Live preview",
@@ -2457,6 +2460,9 @@
 				"created": "Thread has been created",
 				"drawer": {
 					"aria-label": "thread"
+				},
+				"breadcrumb": {
+					"aria-label": "Subthread path"
 				}
 			},
 			"config": {
@@ -2773,6 +2779,9 @@
 				"textContent": "trusted",
 				"title": "This author's Markdown rendering is trusted"
 			},
+			"attachment": {
+				"dropToUpload": "Upload to #${channel}"
+			},
 			"unreadBadge": {
 				"aria-label": "${count} unread"
 			}
@@ -2890,6 +2899,9 @@
 				"edit": {
 					"title": "Edit image",
 					"aria-label": "Edit image"
+				},
+				"editIcon": {
+					"alt": "edit icon"
 				},
 				"delete": {
 					"title": "Delete",

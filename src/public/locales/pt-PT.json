@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "Os ficheiros de grupo usam encriptação convergente: se o invasor conhecer o texto simples de um ficheiro, ele poderá derivar a chave e desencriptar o bloco de texto cifrado correspondente. Não confie apenas na encriptação de grupo para proteção de documentos altamente confidenciais e exclusivamente privados.",
 			"reputationSlashAlert": "A reputação do membro ${target}… é lembrada da dedução.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "encerramento"
+				},
 				"previewHint": "As alterações aparecem imediatamente na visualização e são salvas e sincronizadas no Chat e nas redes sociais.",
 				"sfwMode": "Conteúdo Seguro",
 				"livePreview": "Visualização ao vivo",
@@ -2457,6 +2460,9 @@
 				"created": "O tópico filho foi criado",
 				"drawer": {
 					"aria-label": "Tópico filho"
+				},
+				"breadcrumb": {
+					"aria-label": "Caminho do subthread"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "Confiável",
 				"title": "Renderização Markdown deste autor permitida"
+			},
+			"attachment": {
+				"dropToUpload": "Enviar para #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} itens não lidos"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Transferir"
+					"title": "Transferir",
+					"aria-label": "download"
 				},
 				"downloadIcon": {
 					"alt": "Ícone de Transferência"
 				},
+				"edit": {
+					"title": "Editar imagem",
+					"aria-label": "Editar imagem"
+				},
+				"editIcon": {
+					"alt": "editar ícone"
+				},
 				"delete": {
-					"title": "Eliminar"
+					"title": "Eliminar",
+					"aria-label": "excluir"
 				},
 				"deleteIcon": {
 					"alt": "Ícone de Eliminar"
 				},
 				"more": {
-					"title": "Mais"
+					"title": "Mais",
+					"aria-label": "Mais"
 				},
 				"recognize": {
-					"title": "Voz para texto"
+					"title": "Voz para texto",
+					"aria-label": "fala para texto"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "Pesquisar..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "visualizador de mídia"
+			},
+			"download": {
+				"textContent": "download",
+				"aria-label": "download"
+			},
+			"close": {
+				"textContent": "encerramento",
+				"aria-label": "encerramento"
+			},
+			"prev": {
+				"aria-label": "Foto anterior"
+			},
+			"next": {
+				"aria-label": "Próximo"
 			}
 		}
 	}

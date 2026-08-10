@@ -1422,7 +1422,8 @@ export type LocaleData = {
 					loadFailed: string
 					saveSuccess: string
 					saveFailed: string
-					rolesTitle: string\n\t\t\t\t\trolesHint: string
+					rolesTitle: string
+					rolesHint: string
 					roleDefault: string
 					permissionUpdated: string
 					permissionUpdateFailed: string
@@ -1975,6 +1976,9 @@ export type LocaleData = {
 			convergentEncryptWarn: string
 			reputationSlashAlert: string
 			profileEdit: {
+				close: {
+					'aria-label': string
+				}
 				previewHint: string
 				sfwMode: string
 				livePreview: string
@@ -2425,6 +2429,9 @@ export type LocaleData = {
 				drawer: {
 					'aria-label': string
 				}
+				breadcrumb: {
+					'aria-label': string
+				}
 			}
 			config: {
 				loadFailed: string
@@ -2735,7 +2742,16 @@ export type LocaleData = {
 				groups: string
 				members: string
 				pins: string
-				username: string
+			}
+			trustedAuthorBadge: {
+				textContent: string
+				title: string
+			}
+			attachment: {
+				dropToUpload: string
+			}
+			unreadBadge: {
+				'aria-label': string
 			}
 		}
 		sidebar: {
@@ -2843,21 +2859,32 @@ export type LocaleData = {
 			buttons: {
 				download: {
 					title: string
+					'aria-label': string
 				}
 				downloadIcon: {
 					alt: string
 				}
+				edit: {
+					title: string
+					'aria-label': string
+				}
+				editIcon: {
+					alt: string
+				}
 				delete: {
 					title: string
+					'aria-label': string
 				}
 				deleteIcon: {
 					alt: string
 				}
 				more: {
 					title: string
+					'aria-label': string
 				}
 				recognize: {
 					title: string
+					'aria-label': string
 				}
 			}
 		}
@@ -5793,6 +5820,25 @@ export type LocaleData = {
 				placeholder: string
 			}
 		}
+		mediaViewer: {
+			dialog: {
+				'aria-label': string
+			}
+			download: {
+				textContent: string
+				'aria-label': string
+			}
+			close: {
+				textContent: string
+				'aria-label': string
+			}
+			prev: {
+				'aria-label': string
+			}
+			next: {
+				'aria-label': string
+			}
+		}
 	}
 }
 // 用于从嵌套对象生成点表示法键的实用类型。
@@ -5942,6 +5988,7 @@ export type LocaleKeyParams = {
 	'chat.group.vote.optionsPreviewTagged': { options: string | number }
 	'chat.group.vote.total': { n: string | number }
 	'chat.hub.applyBranchFailed': { error: string | number }
+	'chat.hub.attachment.dropToUpload': { channel: string | number }
 	'chat.hub.autoBranchFailed': { error: string | number }
 	'chat.hub.banners.fork.tipScore': { score: string | number; short: string | number }
 	'chat.hub.banners.fork.tips': { count: string | number }
@@ -6043,6 +6090,7 @@ export type LocaleKeyParams = {
 	'chat.hub.typing': { names: string | number }
 	'chat.hub.unbindFriend.confirm': { name: string | number }
 	'chat.hub.unbindFriend.failed': { error: string | number }
+	'chat.hub.unreadBadge.aria-label': { count: string | number }
 	'chat.hub.vote.count': { count: string | number; pct: string | number }
 	'chat.hub.vote.createFailed': { error: string | number }
 	'chat.hub.vote.deadline': { date: string | number }

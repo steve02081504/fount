@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "Groepsbestanden maken gebruik van convergente encryptie: als de aanvaller de leesbare tekst van een bestand kent, kan hij de sleutel afleiden en het bijbehorende cijfertekstblok decoderen. Vertrouw niet uitsluitend op groepsversleuteling voor de bescherming van zeer gevoelige en unieke privédocumenten.",
 			"reputationSlashAlert": "De reputatie van lid ${target}… wordt herinnerd aan de aftrek.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "sluiting"
+				},
 				"previewHint": "Wijzigingen verschijnen onmiddellijk in het voorbeeld en worden opgeslagen en gesynchroniseerd via Chat en Sociaal.",
 				"sfwMode": "Veilige inhoud",
 				"livePreview": "Live-voorbeeld",
@@ -2457,6 +2460,9 @@
 				"created": "Er is een onderliggende thread gemaakt",
 				"drawer": {
 					"aria-label": "kinder draad"
+				},
+				"breadcrumb": {
+					"aria-label": "Subthreadpad"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "Vertrouwd",
 				"title": "Markdown-rendering van deze auteur is toegestaan"
+			},
+			"attachment": {
+				"dropToUpload": "Uploaden naar #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} ongelezen items"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Downloaden"
+					"title": "Downloaden",
+					"aria-label": "downloaden"
 				},
 				"downloadIcon": {
 					"alt": "Downloadpictogram"
 				},
+				"edit": {
+					"title": "Afbeelding bewerken",
+					"aria-label": "Afbeelding bewerken"
+				},
+				"editIcon": {
+					"alt": "pictogram bewerken"
+				},
 				"delete": {
-					"title": "Verwijderen"
+					"title": "Verwijderen",
+					"aria-label": "verwijderen"
 				},
 				"deleteIcon": {
 					"alt": "Verwijderpictogram"
 				},
 				"more": {
-					"title": "Meer"
+					"title": "Meer",
+					"aria-label": "Meer"
 				},
 				"recognize": {
-					"title": "Spraak naar tekst"
+					"title": "Spraak naar tekst",
+					"aria-label": "spraak naar tekst"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "Zoeken..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "media-kijker"
+			},
+			"download": {
+				"textContent": "downloaden",
+				"aria-label": "downloaden"
+			},
+			"close": {
+				"textContent": "sluiting",
+				"aria-label": "sluiting"
+			},
+			"prev": {
+				"aria-label": "Vorige foto"
+			},
+			"next": {
+				"aria-label": "Volgende"
 			}
 		}
 	}

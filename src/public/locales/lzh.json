@@ -2008,6 +2008,9 @@
 			"convergentEncryptWarn": "群卷皆依「萬流歸宗」之法（Convergent Encryption）加密：若窺伺者早悉其本源（明文），便可循跡推演，破其符鑰。故切勿於群內獨藏身家性命之機密。",
 			"reputationSlashAlert": "成員 ${target}… 之聲譽受到扣減提醒",
 			"profileEdit": {
+				"close": {
+					"aria-label": "关闭"
+				},
 				"previewHint": "改動即現於預覽；存後同步用於 Chat 與 Social。",
 				"sfwMode": "淨域",
 				"livePreview": "實時預覽",
@@ -2457,6 +2460,9 @@
 				"created": "子苑已立",
 				"drawer": {
 					"aria-label": "子苑"
+				},
+				"breadcrumb": {
+					"aria-label": "子线程路径"
 				}
 			},
 			"config": {
@@ -2772,6 +2778,12 @@
 			"trustedAuthorBadge": {
 				"textContent": "已信任",
 				"title": "已信任此作者，將盡數渲染其文"
+			},
+			"attachment": {
+				"dropToUpload": "上传到 #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} 条未读"
 			}
 		},
 		"sidebar": {
@@ -2878,22 +2890,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "取"
+					"title": "取",
+					"aria-label": "下载"
 				},
 				"downloadIcon": {
 					"alt": "取"
 				},
+				"edit": {
+					"title": "编辑图片",
+					"aria-label": "编辑图片"
+				},
+				"editIcon": {
+					"alt": "编辑图标"
+				},
 				"delete": {
-					"title": "刪"
+					"title": "刪",
+					"aria-label": "删除"
 				},
 				"deleteIcon": {
 					"alt": "刪"
 				},
 				"more": {
-					"title": "更多"
+					"title": "更多",
+					"aria-label": "更多"
 				},
 				"recognize": {
-					"title": "語音轉文"
+					"title": "語音轉文",
+					"aria-label": "语音转文字"
 				}
 			}
 		},
@@ -5827,6 +5850,25 @@
 			},
 			"search": {
 				"placeholder": "搜..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "媒体查看器"
+			},
+			"download": {
+				"textContent": "下载",
+				"aria-label": "下载"
+			},
+			"close": {
+				"textContent": "关闭",
+				"aria-label": "关闭"
+			},
+			"prev": {
+				"aria-label": "上一张"
+			},
+			"next": {
+				"aria-label": "下一张"
 			}
 		}
 	}
