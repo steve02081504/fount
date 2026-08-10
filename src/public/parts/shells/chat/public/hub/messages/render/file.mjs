@@ -181,9 +181,9 @@ async function renderImageOrVideoHtml(groupId, file, mime, { gallery = false, pe
 	let src = local
 	if (!src && id) src = await loadGroupFileBlobUrl(groupId, id)
 	if (!src)
-		return renderTemplateAsHtmlString('hub/messages/media_error', {})
+		return '<div class="text-xs text-error opacity-80 mt-1 media-error" data-i18n="chat.hub.attachmentLoadFailed"></div>'
 
-	if (mime.startsWith('image/')) 
+	if (mime.startsWith('image/'))
 		return renderTemplateAsHtmlString('hub/messages/inline_image', {
 			fileName,
 			src: escapeHtml(src),
@@ -191,7 +191,6 @@ async function renderImageOrVideoHtml(groupId, file, mime, { gallery = false, pe
 			gallery: gallery ? '1' : '',
 			pending: pending || (!id && local) ? '1' : '',
 		})
-	
 
 	const size = Number(file.size) || 0
 	if (size > LAZY_MEDIA_BYTES && id && !local)
@@ -227,7 +226,7 @@ async function renderAudioHtml(groupId, file, mime) {
 		})
 	const blobUrl = local || (id ? await loadGroupFileBlobUrl(groupId, id) : null)
 	if (!blobUrl)
-		return renderTemplateAsHtmlString('hub/messages/media_error', {})
+		return '<div class="text-xs text-error opacity-80 mt-1 media-error" data-i18n="chat.hub.attachmentLoadFailed"></div>'
 	const transcript = escapeHtml(file.description || '')
 	return renderTemplateAsHtmlString('hub/messages/inline_audio', {
 		src: escapeHtml(blobUrl),
@@ -362,11 +361,10 @@ export function wireMessageMediaPlaceholders(container) {
 		const mime = String(placeholder.getAttribute('data-mime') || '')
 		const blobUrl = await loadGroupFileBlobUrl(groupId, fileId)
 		if (!blobUrl) {
-			placeholder.replaceWith(
-				await createDocumentFragmentFromHtmlStringNoScriptActivation(
-					await renderTemplateAsHtmlString('hub/messages/media_error', {}),
-				).firstElementChild || document.createElement('div'),
-			)
+			const err = document.createElement('div')
+			err.className = 'text-xs text-error opacity-80 mt-1 media-error'
+			err.dataset.i18n = 'chat.hub.attachmentLoadFailed'
+			placeholder.replaceWith(err)
 			return
 		}
 		try {

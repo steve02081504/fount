@@ -5844,11 +5844,23 @@
 			}
 		},
 		"mediaViewer": {
-			"dialog": "媒体查看器",
-			"download": "下载",
-			"close": "关闭",
-			"prev": "上一张",
-			"next": "下一张"
+			"dialog": {
+				"aria-label": "媒体查看器"
+			},
+			"download": {
+				"textContent": "下载",
+				"aria-label": "下载"
+			},
+			"close": {
+				"textContent": "关闭",
+				"aria-label": "关闭"
+			},
+			"prev": {
+				"aria-label": "上一张"
+			},
+			"next": {
+				"aria-label": "下一张"
+			}
 		}
 	}
 }

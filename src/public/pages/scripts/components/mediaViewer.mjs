@@ -54,6 +54,8 @@ export function openMediaViewer(items, startIndex = 0) {
 	root.className = 'media-viewer'
 	root.setAttribute('role', 'dialog')
 	root.setAttribute('aria-modal', 'true')
+	root.setAttribute('aria-label', 'Media viewer')
+	root.dataset.i18n = 'util.mediaViewer.dialog'
 	root.tabIndex = -1
 
 	root.innerHTML = `
@@ -61,12 +63,12 @@ export function openMediaViewer(items, startIndex = 0) {
 			<span class="media-viewer-counter"></span>
 			<span class="media-viewer-name"></span>
 			<div class="media-viewer-actions">
-				<button type="button" class="media-viewer-btn media-viewer-download" data-i18n="util.mediaViewer.download"></button>
-				<button type="button" class="media-viewer-btn media-viewer-close" data-i18n="util.mediaViewer.close"></button>
+				<button type="button" class="media-viewer-btn media-viewer-download" aria-label="Download" data-i18n="util.mediaViewer.download">Download</button>
+				<button type="button" class="media-viewer-btn media-viewer-close" aria-label="Close" data-i18n="util.mediaViewer.close">Close</button>
 			</div>
 		</div>
-		<button type="button" class="media-viewer-nav media-viewer-prev" data-i18n="util.mediaViewer.prev">‹</button>
-		<button type="button" class="media-viewer-nav media-viewer-next" data-i18n="util.mediaViewer.next">›</button>
+		<button type="button" class="media-viewer-nav media-viewer-prev" aria-label="Previous" data-i18n="util.mediaViewer.prev">‹</button>
+		<button type="button" class="media-viewer-nav media-viewer-next" aria-label="Next" data-i18n="util.mediaViewer.next">›</button>
 		<div class="media-viewer-stage">
 			<div class="media-viewer-transform"></div>
 		</div>

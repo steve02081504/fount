@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
 
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { assertSafeEvfsLogicalPath } from 'npm:@steve02081504/fount-p2p/core/evfs_logical_path'
@@ -81,7 +82,14 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 			filename: logicalPath.split('/').pop() || 'file',
 		})
 		res.setHeader('Content-Length', String(manifest.size || 0))
-		plain.pipe(res.status(200))
+		res.status(200)
+		try {
+			await pipeline(plain, res)
+		}
+		catch (error) {
+			// 客户端断开 / 中止时勿让未处理 stream error 打崩进程
+			if (!res.writableEnded) res.destroy(error)
+		}
 	})
 
 	router.head(filesPath, authenticate, async (req, res) => {

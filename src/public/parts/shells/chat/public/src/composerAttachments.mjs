@@ -3,7 +3,7 @@
  * 【职责】编写器附件：选文件、粘贴、预览与上传前 base64 缩略。图片附件支持 alt 文本输入与图片编辑器。
  * 【原理】handleFilesSelect/handlePaste 维护 selectedFiles 数组；renderAttachmentPreview 用模板；getFile 预览已上传 hash。
  * 【数据结构】selectedFiles(File[])、attachmentPreviewContainer DOM。
- * 【关联】files.mjs、ui/modal.mjs、dragAndDrop.mjs；Hub composer。
+ * 【关联】files.mjs、dragAndDrop.mjs、mediaViewer；Hub composer。
  */
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { renderTemplate } from '/scripts/features/template.mjs'

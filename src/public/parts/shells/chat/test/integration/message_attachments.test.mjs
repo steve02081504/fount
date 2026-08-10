@@ -53,7 +53,8 @@ Deno.test('postChannelMessage image attaches files without inline markers', asyn
 	}, 5000, 40)
 
 	const { groupEntityHash } = await import('../../public/shared/groupEntityHash.mjs')
-	const { loadFileManifest, readManifestPlaintext } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+	const { loadFileManifest, readManifestPlaintext, readManifestPlaintextStream } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+	const { buffer: consumeStream } = await import('node:stream/consumers')
 	const entityHash = groupEntityHash(groupId)
 	const fileId = row.content.files[0].fileId
 	const manifest = await loadFileManifest(entityHash, `chat/${fileId}`)
@@ -61,4 +62,10 @@ Deno.test('postChannelMessage image attaches files without inline markers', asyn
 	const plain = await readManifestPlaintext(username, manifest, { username })
 	assert(plain?.byteLength, 'EVFS plaintext unavailable')
 	assertEquals(Buffer.from(plain).equals(TINY_PNG), true, 'EVFS plaintext mismatch')
+
+	// HTTP GET 走 stream 路径；parts[].size 若误标明文长度会导致 decrypt 失败 → ERR_EMPTY_RESPONSE
+	const stream = await readManifestPlaintextStream(username, manifest, { username })
+	assert(stream, 'EVFS plaintext stream unavailable')
+	const streamed = await consumeStream(stream)
+	assertEquals(Buffer.from(streamed).equals(TINY_PNG), true, 'EVFS stream plaintext mismatch')
 })

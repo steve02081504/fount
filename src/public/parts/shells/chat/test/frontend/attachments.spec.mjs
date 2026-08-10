@@ -14,8 +14,8 @@ const TINY_PNG_BUFFER = Buffer.from(
 )
 
 /**
- * @param {import('npm:@playwright/test').Page} page
- * @param {string} name
+ * @param {import('npm:@playwright/test').Page} page Playwright 页面
+ * @param {string} [name='tiny.png'] 附件文件名
  * @returns {Promise<void>}
  */
 async function attachTinyPng(page, name = 'tiny.png') {
