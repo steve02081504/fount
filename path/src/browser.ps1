@@ -9,7 +9,7 @@
 }
 
 function script:Test-Browser {
-	if (Get-Browser) { return $true }
+	if (Get-Browser) { return }
 	try {
 		Test-Winget
 		winget install --id Google.Chrome -e --source winget
@@ -30,6 +30,5 @@ function script:Test-Browser {
 		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 		Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
 		RefreshPath
-		return $true
 	}
 }
