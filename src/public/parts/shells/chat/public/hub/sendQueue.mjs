@@ -1,62 +1,100 @@
 /**
  * 【文件】public/hub/sendQueue.mjs
- * 【职责】离线发送队列：网络不可用时将消息持久化到 localStorage，连线后自动重发。
- * 【原理】失败 pending 行写入 `fount.chat.sendQueue`（排除大体积 buffer）；
- *   online / WS open 时遍历队列依次调用 sendGroupMessage。
- *   气泡复用 pending 样式显示「排队中」状态。
+ * 【职责】离线发送队列：网络不可用时将消息（含附件 Blob）持久化到 IndexedDB，连线后自动重发。
  */
 import { sendGroupMessage } from '../src/endpoints/groupChannel.mjs'
 
 import { store } from './core/state.mjs'
 
-const QUEUE_KEY = 'fount.chat.sendQueue'
+const DB_NAME = 'fount.chat.sendQueue'
+const STORE_NAME = 'queue'
+const DB_VERSION = 1
 
 /**
- * @typedef {{ tempId: string, groupId: string, channelId: string, content: object, createdAt: number }} QueuedMessage
+ * @typedef {{
+ *   tempId: string,
+ *   groupId: string,
+ *   channelId: string,
+ *   content: object,
+ *   files?: Array<{ name?: string, mime_type?: string, buffer?: string, description?: string }>,
+ *   createdAt: number,
+ * }} QueuedMessage
  */
 
 /**
- * 读取持久化队列。
- * @returns {QueuedMessage[]} 当前队列数组
+ * @returns {Promise<IDBDatabase>} IndexedDB 句柄
  */
-function readQueue() {
-	try {
-		const raw = localStorage.getItem(QUEUE_KEY)
-		if (!raw) return []
-		const arr = JSON.parse(raw)
-		return Array.isArray(arr) ? arr : []
-	}
-	catch { return [] }
+function openDb() {
+	return new Promise((resolve, reject) => {
+		const req = indexedDB.open(DB_NAME, DB_VERSION)
+		req.addEventListener('upgradeneeded', () => {
+			const db = req.result
+			if (!db.objectStoreNames.contains(STORE_NAME))
+				db.createObjectStore(STORE_NAME, { keyPath: 'tempId' })
+		})
+		req.addEventListener('success', () => resolve(req.result))
+		req.addEventListener('error', () => reject(req.error))
+	})
 }
 
 /**
- * 写入持久化队列。
- * @param {QueuedMessage[]} queue 队列数组
- * @returns {void}
+ * @template T
+ * @param {(objectStore: IDBObjectStore) => IDBRequest} run 事务操作
+ * @param {IDBTransactionMode} [mode='readonly'] 模式
+ * @returns {Promise<T>} 请求结果
  */
-function writeQueue(queue) {
-	try {
-		localStorage.setItem(QUEUE_KEY, JSON.stringify(queue))
-	}
-	catch { /* localStorage 满了静默忽略 */ }
+async function withStore(run, mode = 'readonly') {
+	const db = await openDb()
+	return new Promise((resolve, reject) => {
+		const tx = db.transaction(STORE_NAME, mode)
+		const objectStore = tx.objectStore(STORE_NAME)
+		const req = run(objectStore)
+		req.addEventListener('success', () => resolve(req.result))
+		req.addEventListener('error', () => reject(req.error))
+	})
 }
 
 /**
- * 将失败消息加入离线队列（不含文件，仅文本内容）。
+ * @returns {Promise<QueuedMessage[]>} 队列快照
+ */
+async function readQueue() {
+	try {
+		const rows = await withStore(objectStore => objectStore.getAll())
+		return Array.isArray(rows) ? rows : []
+	}
+	catch {
+		return []
+	}
+}
+
+/**
+ * 将失败消息加入离线队列（附件以 base64 存 IndexedDB）。
  * @param {string} tempId 临时 pending eventId
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @param {object} content 富内容对象（不含 buffer）
+ * @param {object} content 富内容对象
+ * @param {object[]} [files] 附件
  * @returns {void}
  */
-export function enqueueOfflineMessage(tempId, groupId, channelId, content) {
-	const queue = readQueue()
-	// 已在队列中则跳过
-	if (queue.some(item => item.tempId === tempId)) return
-	// 只存文本内容，不存文件 buffer
-	const safeContent = { ...content }
-	queue.push({ tempId, groupId, channelId, content: safeContent, createdAt: Date.now() })
-	writeQueue(queue)
+export function enqueueOfflineMessage(tempId, groupId, channelId, content, files = []) {
+	void (async () => {
+		const queue = await readQueue()
+		if (queue.some(item => item.tempId === tempId)) return
+		const entry = {
+			tempId,
+			groupId,
+			channelId,
+			content: { ...content },
+			files: (files || []).map(file => ({
+				name: file.name,
+				mime_type: file.mime_type,
+				buffer: file.buffer,
+				...file.description ? { description: file.description } : {},
+			})),
+			createdAt: Date.now(),
+		}
+		await withStore(objectStore => objectStore.put(entry), 'readwrite')
+	})().catch(() => { /* IndexedDB 不可用时静默 */ })
 }
 
 /**
@@ -65,8 +103,7 @@ export function enqueueOfflineMessage(tempId, groupId, channelId, content) {
  * @returns {void}
  */
 export function dequeueOfflineMessage(tempId) {
-	const queue = readQueue().filter(item => item.tempId !== tempId)
-	writeQueue(queue)
+	void withStore(objectStore => objectStore.delete(tempId), 'readwrite').catch(() => { /* empty */ })
 }
 
 let draining = false
@@ -79,17 +116,20 @@ export async function drainSendQueue() {
 	if (draining) return
 	draining = true
 	try {
-		const queue = readQueue()
+		const queue = await readQueue()
 		for (const item of queue) {
-			const { tempId, groupId, channelId, content } = item
+			const { tempId, groupId, channelId, content, files } = item
 			try {
-				await sendGroupMessage(groupId, channelId, content)
+				await sendGroupMessage(
+					groupId,
+					channelId,
+					content,
+					files?.length ? files : undefined,
+				)
 				dequeueOfflineMessage(tempId)
-				// 若当前还在同一频道，触发增量刷新
 				if (store.context.currentGroupId === groupId
 					&& store.context.currentChannelId === channelId)
 					void import('./messages/messages.mjs').then(m => m.scheduleChannelIncrementalRefresh({ immediate: true }))
-
 			}
 			catch { /* 继续尝试下一条 */ }
 		}
@@ -103,6 +143,5 @@ export async function drainSendQueue() {
  */
 export function wireSendQueueDrain() {
 	window.addEventListener('online', () => { void drainSendQueue() })
-	// 启动时若已在线则立即尝试
 	if (navigator.onLine) void drainSendQueue()
 }

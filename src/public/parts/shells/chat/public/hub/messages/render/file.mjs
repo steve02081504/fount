@@ -1,22 +1,23 @@
 /**
  * 【文件】public/hub/messages/render/file.mjs
- * 【职责】`content.files` 附件区渲染与懒加载媒体占位点击。
+ * 【职责】`content.files` 附件区渲染（画廊 / 音视频 / 文件卡）与懒加载媒体占位点击。
  */
 import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
 } from '../../../../../../scripts/features/template.mjs'
 import { onElementRemoved } from '../../../../../../scripts/lib/onElementRemoved.mjs'
+import { formatBytes } from '/scripts/lib/formatBytes.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../../src/groupFileBlob.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { hasSpeechRecognitionSource } from '/scripts/features/speechRecognition.mjs'
 import { getCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
+import { openMediaViewer } from '/scripts/components/mediaViewer.mjs'
 import { store } from '../../core/state.mjs'
 
-import { getMessageText } from './text.mjs'
-
 const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
+const GALLERY_MAX_VISIBLE = 4
 
 /** @type {boolean | null} */
 let speechRecognitionMenuReady = null
@@ -143,55 +144,115 @@ export function scheduleRevealMessageAudioSpeechRecognitionItems() {
 }
 
 /**
- * @param {string} groupId 群 ID
- * @param {string} id 文件 ID
- * @param {object} meta 文件元数据
  * @param {string} mime MIME
- * @param {string} [alt] 图片 alt 文本
+ * @returns {'image' | 'video' | 'audio' | 'file'} 类别
+ */
+function fileKind(mime) {
+	if (mime.startsWith('image/')) return 'image'
+	if (mime.startsWith('video/')) return 'video'
+	if (mime.startsWith('audio/')) return 'audio'
+	return 'file'
+}
+
+/**
+ * @param {{ mime_type?: string, buffer?: string, fileId?: string }} file 描述符
+ * @returns {string | null} data URL 或 null
+ */
+function localDataUrl(file) {
+	const buf = file.buffer
+	if (typeof buf !== 'string' || !buf) return null
+	if (buf.startsWith('data:')) return buf
+	const mime = String(file.mime_type || 'application/octet-stream')
+	return `data:${mime};base64,${buf}`
+}
+
+/**
+ * @param {string} groupId 群 ID
+ * @param {object} file 文件描述符
+ * @param {string} mime MIME
+ * @param {{ gallery?: boolean, pending?: boolean }} [opts] 选项
  * @returns {Promise<string>} 单附件 HTML
  */
-async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
-	const fileName = escapeHtml(meta.name || id)
-	if (mime.startsWith('image/')) {
-		const blobUrl = await loadGroupFileBlobUrl(groupId, id)
-		if (!blobUrl)
-			return renderTemplateAsHtmlString('hub/messages/media_error', {})
+async function renderImageOrVideoHtml(groupId, file, mime, { gallery = false, pending = false } = {}) {
+	const id = String(file.fileId || '').trim()
+	const fileName = escapeHtml(file.name || id || 'file')
+	const alt = escapeHtml(file.description || '')
+	const local = localDataUrl(file)
+	let src = local
+	if (!src && id) src = await loadGroupFileBlobUrl(groupId, id)
+	if (!src)
+		return renderTemplateAsHtmlString('hub/messages/media_error', {})
+
+	if (mime.startsWith('image/')) 
 		return renderTemplateAsHtmlString('hub/messages/inline_image', {
 			fileName,
-			src: escapeHtml(blobUrl),
-			alt: escapeHtml(alt || meta.description || ''),
+			src: escapeHtml(src),
+			alt,
+			gallery: gallery ? '1' : '',
+			pending: pending || (!id && local) ? '1' : '',
 		})
-	}
-	const size = Number(meta.size) || 0
-	const lazy = size > LAZY_MEDIA_BYTES
-	if (mime.startsWith('video/') || mime.startsWith('audio/')) {
-		if (lazy)
-			return renderTemplateAsHtmlString('hub/messages/media_placeholder', {
-				fileId: escapeHtml(id),
-				fileName,
-				mimeType: escapeHtml(mime),
-			})
-		const blobUrl = await loadGroupFileBlobUrl(groupId, id)
-		if (!blobUrl)
-			return renderTemplateAsHtmlString('hub/messages/media_error', {})
-		if (mime.startsWith('video/'))
-			return renderTemplateAsHtmlString('hub/messages/inline_video', { src: escapeHtml(blobUrl) })
-		const transcript = escapeHtml(meta.description || '')
-		return renderTemplateAsHtmlString('hub/messages/inline_audio', {
-			src: escapeHtml(blobUrl),
-			fileId: escapeHtml(id),
-			fileName,
-			transcript,
-			hasTranscript: transcript ? '1' : '',
-		})
-	}
-	if (lazy)
+	
+
+	const size = Number(file.size) || 0
+	if (size > LAZY_MEDIA_BYTES && id && !local)
 		return renderTemplateAsHtmlString('hub/messages/media_placeholder', {
 			fileId: escapeHtml(id),
 			fileName,
-			mimeType: escapeHtml(mime || 'application/octet-stream'),
+			mimeType: escapeHtml(mime),
 		})
-	return `<button type="button" class="btn btn-xs btn-ghost message-file-download" data-group-file-id="${escapeHtml(id)}">${fileName}</button>`
+
+	return renderTemplateAsHtmlString('hub/messages/inline_video', {
+		src: escapeHtml(src),
+		gallery: gallery ? '1' : '',
+		fileName,
+	})
+}
+
+/**
+ * @param {string} groupId 群 ID
+ * @param {object} file 描述符
+ * @param {string} mime MIME
+ * @returns {Promise<string>} HTML
+ */
+async function renderAudioHtml(groupId, file, mime) {
+	const id = String(file.fileId || '').trim()
+	const fileName = escapeHtml(file.name || id || 'audio')
+	const size = Number(file.size) || 0
+	const local = localDataUrl(file)
+	if (size > LAZY_MEDIA_BYTES && id && !local)
+		return renderTemplateAsHtmlString('hub/messages/media_placeholder', {
+			fileId: escapeHtml(id),
+			fileName,
+			mimeType: escapeHtml(mime),
+		})
+	const blobUrl = local || (id ? await loadGroupFileBlobUrl(groupId, id) : null)
+	if (!blobUrl)
+		return renderTemplateAsHtmlString('hub/messages/media_error', {})
+	const transcript = escapeHtml(file.description || '')
+	return renderTemplateAsHtmlString('hub/messages/inline_audio', {
+		src: escapeHtml(blobUrl),
+		fileId: escapeHtml(id),
+		fileName,
+		transcript,
+		hasTranscript: transcript ? '1' : '',
+	})
+}
+
+/**
+ * @param {object} file 描述符
+ * @returns {Promise<string>} HTML
+ */
+async function renderFileCardHtml(file) {
+	const id = String(file.fileId || '').trim()
+	const fileName = escapeHtml(file.name || id || 'file')
+	const sizeLabel = formatBytes(Number(file.size) || 0)
+	return `<button type="button" class="message-file-card message-file-download" data-group-file-id="${escapeHtml(id)}">
+		<span class="message-file-card-icon" aria-hidden="true">📄</span>
+		<span class="message-file-card-meta">
+			<span class="message-file-card-name truncate">${fileName}</span>
+			<span class="message-file-card-size">${escapeHtml(sizeLabel)}</span>
+		</span>
+	</button>`
 }
 
 /**
@@ -202,25 +263,67 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 export async function renderMessageFileIdsHtml(message) {
 	const files = message.content?.files
 	const groupId = store.context.currentGroupId
-	if (!groupId || !Array.isArray(files) || !files.length) return ''
+	if (!Array.isArray(files) || !files.length) return ''
 
-	const text = getMessageText(message)
-	const rows = []
+	/** @type {object[]} */
+	const imagesAndVideos = []
+	/** @type {object[]} */
+	const audios = []
+	/** @type {object[]} */
+	const others = []
+
 	for (const file of files) {
 		const id = String(file?.fileId || '').trim()
-		if (!id) continue
-		const meta = {
-			name: file.name || id,
-			size: Number(file.size) || 0,
-			description: file.description || '',
-		}
+		const hasLocal = typeof file?.buffer === 'string' && file.buffer.length > 0
+		if (!id && !hasLocal) continue
 		const mime = String(file.mime_type || '')
-		if (mime.startsWith('image/') && text.includes('[image:')) continue
-		const alt = file.description || ''
-		rows.push(await renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt))
+		const kind = fileKind(mime)
+		if (kind === 'image' || kind === 'video') imagesAndVideos.push(file)
+		else if (kind === 'audio') audios.push(file)
+		else others.push(file)
 	}
-	if (!rows.length) return ''
-	return `<div class="message-files flex flex-col gap-1 mt-1">${rows.join('')}</div>`
+
+	const parts = []
+	const pending = !!(message.pending || message.deliveryStatus === 'pending')
+
+	if (imagesAndVideos.length === 1) {
+		const file = imagesAndVideos[0]
+		const mime = String(file.mime_type || '')
+		parts.push(await renderImageOrVideoHtml(groupId, file, mime, {
+			gallery: false,
+			pending: pending || !file.fileId,
+		}))
+	}
+	else if (imagesAndVideos.length > 1) {
+		const visible = imagesAndVideos.slice(0, GALLERY_MAX_VISIBLE)
+		const overflow = imagesAndVideos.length - visible.length
+		const cells = []
+		for (let i = 0; i < visible.length; i++) {
+			const file = visible[i]
+			const mime = String(file.mime_type || '')
+			let cell = await renderImageOrVideoHtml(groupId, file, mime, {
+				gallery: true,
+				pending: pending || !file.fileId,
+			})
+			if (overflow > 0 && i === visible.length - 1)
+				cell = `<div class="message-gallery-overflow-wrap">${cell}<span class="message-gallery-overflow">+${overflow}</span></div>`
+			cells.push(cell)
+		}
+		const countClass = imagesAndVideos.length === 2
+			? 'message-gallery--2'
+			: imagesAndVideos.length === 3
+				? 'message-gallery--3'
+				: 'message-gallery--4'
+		parts.push(`<div class="message-gallery ${countClass}">${cells.join('')}</div>`)
+	}
+
+	for (const file of audios)
+		parts.push(await renderAudioHtml(groupId, file, String(file.mime_type || '')))
+	for (const file of others)
+		parts.push(await renderFileCardHtml(file))
+
+	if (!parts.length) return ''
+	return `<div class="message-files">${parts.join('')}</div>`
 }
 
 /**
@@ -231,7 +334,24 @@ export function wireMessageMediaPlaceholders(container) {
 	bindBlobUrlCleanup(container)
 	if (container.dataset.mediaPlaceholdersWired === '1') return
 	container.dataset.mediaPlaceholdersWired = '1'
+
 	container.addEventListener('click', async event => {
+		const mediaEl = event.target.closest('[data-media-viewer-src]')
+		if (mediaEl && container.contains(mediaEl)) {
+			event.preventDefault()
+			event.stopPropagation()
+			const row = mediaEl.closest('.message, .chat')
+			const nodes = [...(row || container).querySelectorAll('[data-media-viewer-src]')]
+			const items = nodes.map(node => ({
+				src: node.getAttribute('data-media-viewer-src') || '',
+				name: node.getAttribute('data-media-viewer-name') || '',
+				mimeType: node.getAttribute('data-media-viewer-mime') || 'image/*',
+			})).filter(item => item.src)
+			const startIndex = Math.max(0, nodes.indexOf(mediaEl))
+			openMediaViewer(items, startIndex)
+			return
+		}
+
 		const placeholder = event.target.closest('[data-media-placeholder]')
 		if (!placeholder || placeholder.dataset.mediaLoaded === '1') return
 		const fileId = placeholder.getAttribute('data-group-file-id')
@@ -251,19 +371,23 @@ export function wireMessageMediaPlaceholders(container) {
 		}
 		try {
 			const src = escapeHtml(blobUrl)
+			const fileName = escapeHtml(placeholder.querySelector('.truncate')?.textContent || fileId)
 			const html = mime.startsWith('video/')
-				? await renderTemplateAsHtmlString('hub/messages/inline_video', { src })
+				? await renderTemplateAsHtmlString('hub/messages/inline_video', { src, fileName, gallery: '' })
 				: mime.startsWith('audio/')
 					? await renderTemplateAsHtmlString('hub/messages/inline_audio', {
 						src,
 						fileId: escapeHtml(fileId),
-						fileName: escapeHtml(placeholder.querySelector('.truncate')?.textContent || fileId),
+						fileName,
 						transcript: '',
 						hasTranscript: '',
 					})
 					: await renderTemplateAsHtmlString('hub/messages/inline_image', {
-						fileName: escapeHtml(placeholder.querySelector('.truncate')?.textContent || fileId),
+						fileName,
 						src,
+						alt: '',
+						gallery: '',
+						pending: '',
 					})
 			const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(html)
 			const node = frag.firstElementChild

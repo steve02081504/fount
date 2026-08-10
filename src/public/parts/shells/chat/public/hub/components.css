@@ -765,6 +765,30 @@ body[data-surface="discovery"] .main-header {
 	line-height: 1.45;
 }
 
+.chat-file-drop-overlay {
+	display: none;
+	position: absolute;
+	inset: 0;
+	z-index: 40;
+	align-items: center;
+	justify-content: center;
+	background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+	border: 2px dashed var(--color-primary);
+	pointer-events: none;
+}
+
+.chat-file-drop-overlay.show {
+	display: flex;
+}
+
+.chat-file-drop-card {
+	padding: 18px 28px;
+	border-radius: 12px;
+	background: var(--color-base-100);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+	font-weight: 600;
+}
+
 /* —— 空状态（#messages、线程抽屉、列表频道等共用） —— */
 .empty {
 	flex: 1;

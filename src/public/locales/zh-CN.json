@@ -2772,6 +2772,9 @@
 			"trustedAuthorBadge": {
 				"textContent": "已信任",
 				"title": "已信任此作者，将完整渲染消息内容"
+			},
+			"attachment": {
+				"dropToUpload": "上传到 #${channel}"
 			}
 		},
 		"sidebar": {
@@ -2878,28 +2881,33 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "下载"
+					"title": "下载",
+					"aria-label": "下载"
 				},
 				"downloadIcon": {
 					"alt": "下载图标"
 				},
 				"edit": {
-					"title": "编辑图片"
+					"title": "编辑图片",
+					"aria-label": "编辑图片"
 				},
 				"editIcon": {
 					"alt": "编辑图标"
 				},
 				"delete": {
-					"title": "删除"
+					"title": "删除",
+					"aria-label": "删除"
 				},
 				"deleteIcon": {
 					"alt": "删除图标"
 				},
 				"more": {
-					"title": "更多"
+					"title": "更多",
+					"aria-label": "更多"
 				},
 				"recognize": {
-					"title": "语音转文字"
+					"title": "语音转文字",
+					"aria-label": "语音转文字"
 				}
 			}
 		},
@@ -5834,6 +5842,13 @@
 			"search": {
 				"placeholder": "搜索..."
 			}
+		},
+		"mediaViewer": {
+			"dialog": "媒体查看器",
+			"download": "下载",
+			"close": "关闭",
+			"prev": "上一张",
+			"next": "下一张"
 		}
 	}
 }

@@ -33,6 +33,8 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 - **`promptDialog.mjs`**: shared DaisyUI `promptText` / `promptTextArea` / `confirmAction`. Prefer over `window.prompt` / `confirm` / shell-local copies. **First argument is always an i18n key**; optional third arg is interpolation params. Do not pass `geti18n(...)` strings. Modal title is **`h2`** (page already has `h1`; DaisyUI docs’ `h3` skips a level and trips axe `heading-order`).
 - **`components/jsonEditor.mjs`**: `createJsonEditor(container, options)` wraps `vanilla-jsoneditor` (≥3.13). **`options.ariaLabel` is required and must be an i18n key** (resolved + refreshed via `setLocalizeLogic`); do not pass `geti18n(...)` strings. Optional `onSave` is Ctrl+S only — not a library prop. Keep native `get()`/`set()` (`Content`); use **`getJson()`** for parsed values (`{ json }` as-is; `{ text }` → `jsonrepair` then `JSON.parse`).
 - **`components/imageEditor.mjs`**: `openImageEditor(file, labels?)` — crop / mosaic / brush modal; returns `File | null`. Defaults under `util.imageEditor.*` (+ `util.common.cancel`).
+- **`components/mediaViewer.mjs`**: `openMediaViewer(items, startIndex?)` — fullscreen image/video viewer (ESC / arrows / wheel zoom / drag / download). Defaults under `util.mediaViewer.*`.
+- **`lib/formatBytes.mjs`**: `formatBytes(bytes, decimals?)` — human-readable 1024-base sizes (`1.5 MB`).
 - **`components/positionContextMenu.mjs`** + **`components/contextMenuDismiss.mjs`**: shared floating-menu placement / dismiss.
 - **`contentReveal.mjs`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
 - **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang` (-> `primaryLocale()`).

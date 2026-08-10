@@ -192,12 +192,12 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `C/messages` | 发 DAG `message`（人类唯一入口，先过 persona `BeforeUserSend`）；需 `SEND_MESSAGES`。content 可带 `locale`、`content_warning`、`sensitive_media`、`forwardedFrom`、`replyTo`（`{ eventId, senderName?, preview? }`）、`fileAlts` |
+| POST | `C/messages` | 发 DAG `message`（人类唯一入口，先过 persona `BeforeUserSend`）；需 `SEND_MESSAGES`。content 可带 `locale`、`content_warning`、`sensitive_media`、`forwardedFrom`、`replyTo`（`{ eventId, senderName?, preview? }`）；附件走 body `files[]`（`name` / `mime_type` / `buffer` base64 / 可选 `description` alt），落盘为 `content.files[].fileId` |
 | GET | `C/messages?since=&before=&limit=` | raw 行 + `{ messages, reactions }`（治理 / 调试，无 world→persona 滤镜） |
 | GET | `C/view-log?since=&before=&limit=` | 观看者投影（Hub 主读口）：物化后经 world→persona 滤镜投影回行 DTO |
 | POST | `C/view-log/batch-get` | body `{ eventIds }`（≤500）：按 id 批量取投影行（被滤 id 不返回） |
 | POST | `C/messages/batch-get` | body `{ eventIds }`（≤500）：按 id 批量取 raw 行（治理 / 审计） |
-| PUT | `C/messages/:eventId` | DAG `message_edit`，body `{ content: object }` |
+| PUT | `C/messages/:eventId` | DAG `message_edit`，body `{ content: object, files?: 新增附件[] }`；`content.files` 为保留的已有描述符，可与 `files` 新增项合并 |
 | DELETE | `C/messages/:eventId` | DAG `message_delete` |
 | PUT | `C/messages/:eventId/feedback` | DAG `message_feedback`（`up` / `down`） |
 | POST / DELETE | `C/reactions` | 加反应 `{ targetEventId, emoji }` / 移除 `{ targetEventId, emoji, targetPubKeyHash? }` |

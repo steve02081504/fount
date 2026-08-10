@@ -695,6 +695,18 @@
 					]
 				},
 				{
+					"name": "attachments",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/attachments.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/render/**",
+						"src/public/parts/shells/chat/public/src/composerAttachments.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/messageSend.mjs",
+						"src/public/parts/shells/chat/src/chat/channel/postMessage.mjs",
+						"src/public/parts/shells/chat/public/shared/channelContent.mjs",
+						"src/public/pages/scripts/components/mediaViewer.mjs"
+					]
+				},
+				{
 					"name": "navigation",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/navigation.spec.mjs",

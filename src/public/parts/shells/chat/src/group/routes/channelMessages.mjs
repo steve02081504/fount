@@ -108,6 +108,23 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		catch (error) {
 			throw httpError(400, error.message)
 		}
+		const rawFiles = req.body?.files
+		const processedFiles = (Array.isArray(rawFiles) ? rawFiles : []).map(file => ({
+			...file,
+			buffer: file.buffer != null ? Buffer.from(file.buffer, 'base64') : undefined,
+		}))
+		if (processedFiles.length || Array.isArray(contentObj.files)) {
+			const { attachFilesToContent } = await import('../../chat/channel/postMessage.mjs')
+			const maxBytes = Number(state.groupSettings?.maxDagPayloadBytes) || 262_144
+			;({ content: contentObj } = await attachFilesToContent(
+				username,
+				groupId,
+				contentObj,
+				processedFiles,
+				maxBytes,
+				{ mergeExistingFiles: true },
+			))
+		}
 		const row = await findChannelMessageRow(username, groupId, channelId, eventId)
 		if (!row) throw httpError(404, 'message not found')
 		const finalContent = await applyChannelMessageEditHooks(

@@ -1,1 +1,10 @@
-<img src="${src}" alt="${fileName}" onclick="window.open('${src}','_blank')" style="cursor:pointer" />
+<img
+	class="message-inline-image${pending ? ' message-inline-image--pending' : ''}${gallery ? ' message-gallery-item' : ' message-inline-image--single'}"
+	src="${src}"
+	alt="${alt || fileName}"
+	data-media-viewer-src="${src}"
+	data-media-viewer-name="${fileName}"
+	data-media-viewer-mime="image/*"
+	loading="lazy"
+	${pending ? 'data-pending-media="1"' : ''}
+/>

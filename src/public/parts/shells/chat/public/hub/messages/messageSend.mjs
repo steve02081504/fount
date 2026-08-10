@@ -39,16 +39,30 @@ function channelRowFromPostedEvent(event) {
 /**
  * @param {object} contentObj 富内容对象
  * @param {string} tempId 临时 pending eventId
+ * @param {object[]} [files] 本地附件（含 base64 buffer）
  * @returns {object} 乐观 pending 行
  */
-function pendingRowFromComposer(contentObj, tempId) {
+function pendingRowFromComposer(contentObj, tempId, files = []) {
 	const viewerPubKeyHash = store.context.currentState?.viewerMemberPubKeyHash || null
+	const content = { ...contentObj }
+	if (files.length) 
+		content.files = files.map(file => ({
+			fileId: '',
+			name: file.name || 'file',
+			mime_type: file.mime_type || 'application/octet-stream',
+			size: typeof file.buffer === 'string'
+				? Math.floor(file.buffer.length * 0.75)
+				: Number(file.size) || 0,
+			buffer: file.buffer,
+			...file.description ? { description: file.description } : {},
+		}))
+	
 	return {
 		eventId: tempId,
 		pending: true,
 		deliveryStatus: 'pending',
 		type: 'message',
-		content: contentObj,
+		content,
 		sender: viewerPubKeyHash,
 		authorPubKeyHash: viewerPubKeyHash,
 		timestamp: Date.now(),
@@ -59,11 +73,12 @@ function pendingRowFromComposer(contentObj, tempId) {
 /**
  * @param {object} contentObj 富内容对象
  * @param {string} tempId 临时 pending eventId
+ * @param {object[]} [files] 本地附件
  * @returns {Promise<void>}
  */
-async function insertPendingRow(contentObj, tempId) {
+async function insertPendingRow(contentObj, tempId, files = []) {
 	store.messages.composerPendingId = tempId
-	const row = pendingRowFromComposer(contentObj, tempId)
+	const row = pendingRowFromComposer(contentObj, tempId, files)
 	const container = getMessagesContainer()
 	if (!container) return
 	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(store.messages.channelMessagesSource, [row])
@@ -187,7 +202,7 @@ export async function sendMessagePayload(contentObj, files = [], { clearComposer
 		throw new Error('no channel selected')
 	await waitForGroupWebSocketOpen(sendGroupId, sendChannelId)
 	const tempId = `pending:${crypto.randomUUID()}`
-	await insertPendingRow(contentObj, tempId)
+	await insertPendingRow(contentObj, tempId, files)
 	try {
 		const event = await sendGroupMessage(sendGroupId, sendChannelId, contentObj, files)
 		if (store.context.currentGroupId !== sendGroupId || store.context.currentChannelId !== sendChannelId) {
@@ -218,7 +233,7 @@ export async function sendMessagePayload(contentObj, files = [], { clearComposer
 		if (store.context.currentGroupId === sendGroupId && store.context.currentChannelId === sendChannelId) {
 			await failPendingRow(tempId, contentObj, files)
 			void import('../sendQueue.mjs').then(({ enqueueOfflineMessage }) => {
-				enqueueOfflineMessage(tempId, sendGroupId, sendChannelId, contentObj)
+				enqueueOfflineMessage(tempId, sendGroupId, sendChannelId, contentObj, files)
 			})
 		}
 		else {

@@ -44,7 +44,7 @@ Bind/unbind and `role_access` changes require `ADMIN`/`MANAGE_ADMINS` (`POST …
 
 ## Message extras
 
-Content may include `locale` / `content_warning` / `sensitive_media` / `forwardedFrom` / `replyTo` / `fileAlts` (`shared/messageFields.mjs`). Quote bubble only when semantic `replyTo` is present. Link embeds hydrate via `data-fount-embed` + `/api/no-cors`, not stored.
+Content may include `locale` / `content_warning` / `sensitive_media` / `forwardedFrom` / `replyTo` (`shared/messageFields.mjs`). Attachment alt text lives on `files[].description` — not `fileAlts`. Quote bubble only when semantic `replyTo` is present. Link embeds hydrate via `data-fount-embed` + `/api/no-cors`, not stored. Message images/videos render from `content.files` (gallery + `/scripts/components/mediaViewer.mjs`); never inject media markers into text.
 
 ## Message prefetch
 
