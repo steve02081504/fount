@@ -5,12 +5,19 @@ const RUN_PREFIX = `fount://run/${CHAT_RUN_PART}/`
 
 /**
  * @param {string} subcommand 子命令名
- * @param {string[]} segments 分号分段
+ * @param {string[]} segments 已各自 encode 的分号分段（join 的 `key=value` 除外，由调用方拼好）
  * @returns {string} `fount://run/…` URI
  */
 function buildRunUri(subcommand, segments) {
-	const body = [subcommand, ...segments.map(segment => encodeURIComponent(segment || ''))].join(';')
-	return `${RUN_PREFIX}${body}`
+	return `${RUN_PREFIX}${[subcommand, ...segments].join(';')}`
+}
+
+/**
+ * @param {string} value 原始段
+ * @returns {string} encodeURIComponent 结果
+ */
+function encodeRunSegment(value) {
+	return encodeURIComponent(value || '')
 }
 
 /**
@@ -23,24 +30,12 @@ function buildRunUri(subcommand, segments) {
  */
 export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, nodeUrl }) {
 	const segments = [
-		normalizeHex64(pubKeyHex),
-		nonceBase64Url,
-		String(introSignatureHex || '').trim().replace(/^0x/iu, ''),
+		encodeRunSegment(normalizeHex64(pubKeyHex)),
+		encodeRunSegment(nonceBase64Url),
+		encodeRunSegment(String(introSignatureHex || '').trim().replace(/^0x/iu, '')),
 	]
-	if (nodeUrl) segments.push(String(nodeUrl).trim())
+	if (nodeUrl) segments.push(encodeRunSegment(String(nodeUrl).trim()))
 	return buildRunUri('dm', segments)
-}
-
-/**
- * 可选联邦字段转 URI 槽（空则空串，避免跳槽挤掉后续字段）。
- * @param {string | undefined | null} value 原始值
- * @param {'plain' | 'hex64'} mode plain 原样 trim；hex64 规范化
- * @returns {string} 槽内容
- */
-function joinUriSlot(value, mode) {
-	const trimmed = String(value || '').trim()
-	if (!trimmed) return ''
-	return mode === 'hex64' ? normalizeHex64(trimmed) : trimmed
 }
 
 /**
@@ -53,14 +48,19 @@ function joinUriSlot(value, mode) {
  * @returns {string} canonical join run URI
  */
 export function formatJoinRunUri(groupId, inviteCode, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
-	const segments = [groupId.trim(), inviteCode.trim()]
-	const secret = joinUriSlot(roomSecret, 'plain')
-	const pub = joinUriSlot(introducerPubKeyHash, 'hex64')
-	const pow = joinUriSlot(powAnchorRef, 'plain')
-	const node = joinUriSlot(introducerNodeHash, 'hex64')
-	// 任一联邦字段出现则固定四槽，禁止「有值才 push」导致 node 挤进 pow。
-	if (secret || pub || pow || node)
-		segments.push(secret, pub, pow, node)
+	const segments = [encodeRunSegment(groupId.trim()), encodeRunSegment(inviteCode.trim())]
+	/** @type {Record<string, string>} */
+	const fields = {}
+	const secret = String(roomSecret || '').trim()
+	const pub = String(introducerPubKeyHash || '').trim()
+	const pow = String(powAnchorRef || '').trim()
+	const node = String(introducerNodeHash || '').trim()
+	if (secret) fields.roomSecret = secret
+	if (pub) fields.introducerPubKeyHash = normalizeHex64(pub)
+	if (pow) fields.powAnchorRef = pow
+	if (node) fields.introducerNodeHash = normalizeHex64(node)
+	for (const [key, value] of Object.entries(fields))
+		segments.push(`${encodeRunSegment(key)}=${encodeRunSegment(value)}`)
 	return buildRunUri('join', segments)
 }
 
@@ -111,7 +111,11 @@ export function parseDmRunUri(raw) {
  * @returns {string} canonical message run URI
  */
 export function formatMessageRunUri(groupId, channelId, eventId) {
-	return buildRunUri('message', [groupId, channelId, eventId])
+	return buildRunUri('message', [
+		encodeRunSegment(groupId),
+		encodeRunSegment(channelId),
+		encodeRunSegment(eventId),
+	])
 }
 
 /**
@@ -127,10 +131,10 @@ export function parseMessageRunUri(raw) {
 }
 
 /**
- * @param {string | undefined} value URI 槽
+ * @param {string | undefined} value 字段值
  * @returns {string | undefined} 非空 trim；空串视为缺省
  */
-function optionalJoinSlot(value) {
+function optionalJoinField(value) {
 	const trimmed = String(value || '').trim()
 	return trimmed || undefined
 }
@@ -142,14 +146,23 @@ function optionalJoinSlot(value) {
 export function parseJoinRunUri(raw) {
 	const parsed = parseChatRunUri(raw)
 	if (!parsed || parsed.subcommand !== 'join') return null
-	const [groupId, inviteCode, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash] = parsed.args
+	const [groupId, inviteCode, ...fieldSegments] = parsed.args
 	if (!groupId) return null
+	/** @type {Record<string, string>} */
+	const fields = {}
+	for (const segment of fieldSegments) {
+		const eq = segment.indexOf('=')
+		if (eq <= 0) continue
+		const key = segment.slice(0, eq).trim()
+		const value = segment.slice(eq + 1).trim()
+		if (key && value) fields[key] = value
+	}
 	return {
 		groupId,
 		inviteCode: inviteCode || '',
-		roomSecret: optionalJoinSlot(roomSecret),
-		introducerPubKeyHash: optionalJoinSlot(introducerPubKeyHash),
-		powAnchorRef: optionalJoinSlot(powAnchorRef),
-		introducerNodeHash: optionalJoinSlot(introducerNodeHash),
+		roomSecret: optionalJoinField(fields.roomSecret),
+		introducerPubKeyHash: optionalJoinField(fields.introducerPubKeyHash),
+		powAnchorRef: optionalJoinField(fields.powAnchorRef),
+		introducerNodeHash: optionalJoinField(fields.introducerNodeHash),
 	}
 }
