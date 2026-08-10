@@ -1926,8 +1926,8 @@
 				"title": "Fjarlægur höfundur"
 			},
 			"trustAuthor": {
-				"textContent": "信任作者",
-				"title": "信任此作者（允许危险 Markdown/HTML）"
+				"textContent": "Treysta höfundi",
+				"title": "Treystu þessum höfundi (leyfa hættulegt Markdown/HTML)"
 			},
 			"stickerInline": "Límmiða",
 			"markdownRenderFailed": "Skilaboð mistókst",
@@ -2769,8 +2769,8 @@
 				"pins": "Engir pinnar ennþá"
 			},
 			"trustedAuthorBadge": {
-				"textContent": "已信任",
-				"title": "已信任此作者的 Markdown 渲染"
+				"textContent": "Treyst",
+				"title": "Markdown-útgáfa þessa höfundar er leyfð"
 			}
 		},
 		"sidebar": {

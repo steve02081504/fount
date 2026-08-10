@@ -1927,7 +1927,7 @@
 			},
 			"trustAuthor": {
 				"textContent": "信任作者",
-				"title": "信任此作者（允许危险 Markdown/HTML）"
+				"title": "信任此作者（允许渲染危险的 Markdown/HTML）"
 			},
 			"stickerInline": "贴纸",
 			"markdownRenderFailed": "消息渲染失败",
@@ -2770,7 +2770,7 @@
 			},
 			"trustedAuthorBadge": {
 				"textContent": "已信任",
-				"title": "已信任此作者的 Markdown 渲染"
+				"title": "已信任此作者，将完整渲染消息内容"
 			}
 		},
 		"sidebar": {

@@ -1926,8 +1926,8 @@
 				"title": "Auteur distant fédéré"
 			},
 			"trustAuthor": {
-				"textContent": "信任作者",
-				"title": "信任此作者（允许危险 Markdown/HTML）"
+				"textContent": "Faire confiance",
+				"title": "Faire confiance à cet auteur (autoriser le Markdown/HTML dangereux)"
 			},
 			"stickerInline": "autocollant",
 			"markdownRenderFailed": "Échec du rendu du message",
@@ -2769,8 +2769,8 @@
 				"pins": "Pas encore d'épingles"
 			},
 			"trustedAuthorBadge": {
-				"textContent": "已信任",
-				"title": "已信任此作者的 Markdown 渲染"
+				"textContent": "Approuvé",
+				"title": "Le rendu Markdown de cet auteur est autorisé"
 			}
 		},
 		"sidebar": {

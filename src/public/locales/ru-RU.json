@@ -1926,8 +1926,8 @@
 				"title": "федеративный удаленный автор"
 			},
 			"trustAuthor": {
-				"textContent": "信任作者",
-				"title": "信任此作者（允许危险 Markdown/HTML）"
+				"textContent": "Доверять",
+				"title": "Доверять этому автору (разрешить опасный Markdown/HTML)"
 			},
 			"stickerInline": "наклейка",
 			"markdownRenderFailed": "Не удалось отобразить сообщение",
@@ -2769,8 +2769,8 @@
 				"pins": "Пин пока нет"
 			},
 			"trustedAuthorBadge": {
-				"textContent": "已信任",
-				"title": "已信任此作者的 Markdown 渲染"
+				"textContent": "Доверен",
+				"title": "Рендеринг Markdown этого автора разрешён"
 			}
 		},
 		"sidebar": {

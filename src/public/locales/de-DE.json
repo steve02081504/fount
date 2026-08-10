@@ -1926,8 +1926,8 @@
 				"title": "Föderierter Remote-Autor"
 			},
 			"trustAuthor": {
-				"textContent": "信任作者",
-				"title": "信任此作者（允许危险 Markdown/HTML）"
+				"textContent": "Autor vertrauen",
+				"title": "Diesem Autor vertrauen (gefährliches Markdown/HTML zulassen)"
 			},
 			"stickerInline": "Sticker",
 			"markdownRenderFailed": "Das Rendern der Nachricht ist fehlgeschlagen",
@@ -2769,8 +2769,8 @@
 				"pins": "Noch keine Pins"
 			},
 			"trustedAuthorBadge": {
-				"textContent": "已信任",
-				"title": "已信任此作者的 Markdown 渲染"
+				"textContent": "Vertraut",
+				"title": "Markdown-Rendering dieses Autors ist erlaubt"
 			}
 		},
 		"sidebar": {

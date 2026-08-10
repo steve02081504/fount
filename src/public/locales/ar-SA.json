@@ -1926,8 +1926,8 @@
 				"title": "المؤلف البعيد الموحد"
 			},
 			"trustAuthor": {
-				"textContent": "信任作者",
-				"title": "信任此作者（允许危险 Markdown/HTML）"
+				"textContent": "ثقة بالمؤلف",
+				"title": "الثقة بهذا المؤلف (السماح بعرض Markdown/HTML الخطير)"
 			},
 			"stickerInline": "ملصق",
 			"markdownRenderFailed": "فشل عرض الرسالة",
@@ -2769,8 +2769,8 @@
 				"pins": "لا دبابيس بعد"
 			},
 			"trustedAuthorBadge": {
-				"textContent": "已信任",
-				"title": "已信任此作者的 Markdown 渲染"
+				"textContent": "موثوق",
+				"title": "عرض Markdown لهذا المؤلف مفعّل"
 			}
 		},
 		"sidebar": {
