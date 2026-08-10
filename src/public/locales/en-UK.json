@@ -1455,7 +1455,7 @@
 					"saveSuccess": "Group settings saved",
 					"saveFailed": "Failed to save settings: ${error}",
 					"rolesTitle": "Roles and permissions",
-					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
+					"rolesHint": "Ticked permissions apply to all members with that role across the entire group. To let regular members attach files, enable Upload files for Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "default",
 					"permissionUpdated": "Permissions updated",
 					"permissionUpdateFailed": "Failed to update permissions: ${error}",
@@ -1490,7 +1490,7 @@
 					},
 					"channelPerms": {
 						"denied": "You do not have MANAGE_CHANNELS permission to edit channel permission overrides.",
-						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"hint": "Per-channel exceptions only: Inherit follows Role permissions; Allow/Deny override this channel. To enable attachments for everyone, open Role permissions and tick Upload files for Everyone — there is no “add override” button here.",
 						"overridden": "Overridden",
 						"clearOverride": "Reset all to inherit",
 						"noChannels": "There is currently no channel to configure",

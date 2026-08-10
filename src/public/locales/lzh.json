@@ -1455,7 +1455,7 @@
 					"saveSuccess": "群組樞機已存",
 					"saveFailed": "存樞機未遂: ${error}",
 					"rolesTitle": "角色與權限",
-					"rolesHint": "勾選權限後對該角色全體成員在全群生效。凡人傳附件請給 Everyone 勾「上傳檔案」。某頻道要單獨限制時，再到高階設定裡的「頻道權限」。",
+					"rolesHint": "勾選權限後，對該角色全體成員於全群生效。凡人傳附件，請為 Everyone 勾「上傳檔案」。某頻道須單獨限制者，再至高階設定之「頻道權限」。",
 					"roleDefault": "常制",
 					"permissionUpdated": "權限已更",
 					"permissionUpdateFailed": "更權限未遂: ${error}",
@@ -1490,7 +1490,7 @@
 					},
 					"channelPerms": {
 						"denied": "君無 MANAGE_CHANNELS 權限，難以編輯分苑權限覆蓋。",
-						"hint": "此處只改「某一頻道」相對角色權限之例外：繼承＝用角色權限頁結果，允許/拒絕＝本頻道強制覆蓋。日常開附件請至「角色權限」為 Everyone 勾上傳檔案，勿在此添加覆蓋。",
+						"hint": "此處唯設單一頻道相對角色權限之例外：繼承＝用角色權限頁之設，允許/拒絕＝於本頻道強制覆蓋。開附件於眾，請至「角色權限」為 Everyone 勾上傳檔案，勿於此添覆蓋。",
 						"overridden": "已覆蓋",
 						"clearOverride": "皆復為繼承",
 						"noChannels": "尚無可置分苑",
