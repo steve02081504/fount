@@ -3,7 +3,7 @@
  *
  * 设计目标：
  * - 作为后台服务器进程的“前台脸面”，始终能在交互终端中显示主进程输出。
- * - 交互 TTY 且支持 ANSI 时：启动 `intro`（入场后后台 hold）；等 server 时 `start`（已在播则 noop）/`dismiss`；退出时 `farewell`。非 TTY / 无 VT 时 icon 各入口为 nop，调用方无需分支。
+ * - 交互 TTY 且支持 ANSI 时：启动 `intro`（入场后后台 hold）；等 server 时 `start`（已在播则 noop，dismiss 后只续 hold）/`dismiss`；退出时 `farewell`。非 TTY / 无 VT 时 icon 各入口为 nop，调用方无需分支。
  * - 交互 TTY 且支持 ANSI 时：日志写入终端滚动区（可用自带滚动条），底部固定 REPL（`/ws/eval`）。
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
@@ -375,7 +375,7 @@ async function main() {
 	if (interactiveError) throw interactiveError
 
 	while (!exitSignal.aborted) {
-		// 等 server：intro 已在 hold 时 start 直接返回；断线后重新 start
+		// 等 server：intro 已在 hold 时 start 直接返回；dismiss 后 start 只续 hold
 		await pollUntilServerReady({ waitLogo: true })
 		if (exitSignal.aborted) break
 		const reason = await runOneConnection(exitContext)

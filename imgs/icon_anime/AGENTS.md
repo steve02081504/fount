@@ -17,7 +17,7 @@ Process-wide singleton used by `fount logo`, the CLI log viewer, and the foregro
 | API | Role |
 | --- | --- |
 | `intro` | Enter animation, then background `hold` (no park) |
-| `start` / `dismiss` | log_viewer while waiting for the server (`start` no-op if already running; `dismiss` when connected); server `dismiss`es when `init` returns `started` |
+| `start` / `dismiss` | log_viewer while waiting for the server (`start` no-op if already running; after `dismiss` resumes hold only — no re-enter; `dismiss` when connected); server `dismiss`es when `init` returns `started` |
 | `farewell` | On `on_shutdown` (safe mid-intro, e.g. `already_running`) |
 | `signal` / `abort` | User abort of this icon session (Ctrl+C or hold Esc ≥4s, one-shot). `dismiss` does not touch it. Further ESC repeats / Ctrl+C are ignored until the next `player.start` so farewell exit can finish. |
 
