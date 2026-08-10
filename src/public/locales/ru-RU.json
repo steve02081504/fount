@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "Репутация участника ${target}… напоминается о вычете.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "закрытие"
+					"aria-label": "Закрыть"
 				},
 				"previewHint": "Изменения немедленно отображаются в предварительном просмотре, сохраняются и синхронизируются в чате и социальных сетях.",
 				"sfwMode": "Безопасный контент",
@@ -2462,7 +2462,7 @@
 					"aria-label": "Ветка"
 				},
 				"breadcrumb": {
-					"aria-label": "Путь к подпотоку"
+					"aria-label": "Навигация по подтеме"
 				}
 			},
 			"config": {
@@ -2780,10 +2780,10 @@
 				"title": "Рендеринг Markdown этого автора разрешён"
 			},
 			"attachment": {
-				"dropToUpload": "Загрузить на #${channel}"
+				"dropToUpload": "Перетащите, чтобы загрузить в #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} непрочитанных элементов"
+				"aria-label": "${count} непрочитано"
 			}
 		},
 		"sidebar": {
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Скачать",
-					"aria-label": "скачать"
+					"aria-label": "Скачать"
 				},
 				"downloadIcon": {
 					"alt": "Значок скачивания"
@@ -2901,22 +2901,22 @@
 					"aria-label": "Редактировать изображение"
 				},
 				"editIcon": {
-					"alt": "значок редактирования"
+					"alt": "Значок редактирования"
 				},
 				"delete": {
 					"title": "Удалить",
-					"aria-label": "удалить"
+					"aria-label": "Удалить"
 				},
 				"deleteIcon": {
 					"alt": "Значок удаления"
 				},
 				"more": {
 					"title": "Ещё",
-					"aria-label": "Более"
+					"aria-label": "Ещё"
 				},
 				"recognize": {
 					"title": "Речь в текст",
-					"aria-label": "речь в текст"
+					"aria-label": "Речь в текст"
 				}
 			}
 		},
@@ -5854,21 +5854,21 @@
 		},
 		"mediaViewer": {
 			"dialog": {
-				"aria-label": "медиа-просмотрщик"
+				"aria-label": "Просмотр медиа"
 			},
 			"download": {
-				"textContent": "скачать",
-				"aria-label": "скачать"
+				"textContent": "Скачать",
+				"aria-label": "Скачать"
 			},
 			"close": {
-				"textContent": "закрытие",
-				"aria-label": "закрытие"
+				"textContent": "Закрыть",
+				"aria-label": "Закрыть"
 			},
 			"prev": {
 				"aria-label": "Предыдущее изображение"
 			},
 			"next": {
-				"aria-label": "Следующий"
+				"aria-label": "Следующее изображение"
 			}
 		}
 	}

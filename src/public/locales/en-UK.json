@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "The reputation of member ${target}… is reminded of the deduction.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "closure"
+					"aria-label": "Close"
 				},
 				"previewHint": "Changes appear immediately in the preview and are saved and synced across Chat and Social.",
 				"sfwMode": "Safe for Work",
@@ -2462,7 +2462,7 @@
 					"aria-label": "thread"
 				},
 				"breadcrumb": {
-					"aria-label": "Subthread path"
+					"aria-label": "Subthread breadcrumb"
 				}
 			},
 			"config": {
@@ -2780,7 +2780,7 @@
 				"title": "This author's Markdown rendering is trusted"
 			},
 			"attachment": {
-				"dropToUpload": "Upload to #${channel}"
+				"dropToUpload": "Drop to upload to #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} unread"
@@ -2901,7 +2901,7 @@
 					"aria-label": "Edit image"
 				},
 				"editIcon": {
-					"alt": "edit icon"
+					"alt": "Edit icon"
 				},
 				"delete": {
 					"title": "Delete",
@@ -5865,10 +5865,10 @@
 				"aria-label": "Close"
 			},
 			"prev": {
-				"aria-label": "Previous"
+				"aria-label": "Previous image"
 			},
 			"next": {
-				"aria-label": "Next"
+				"aria-label": "Next image"
 			}
 		}
 	}

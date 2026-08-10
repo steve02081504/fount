@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "Репутація учасника ${target}… нагадує про відрахування.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "закриття"
+					"aria-label": "Закрити"
 				},
 				"previewHint": "Зміни одразу з’являються у вікні попереднього перегляду, зберігаються та синхронізуються в чаті та соціальних мережах.",
 				"sfwMode": "Безпечний контент",
@@ -2462,7 +2462,7 @@
 					"aria-label": "Гілка"
 				},
 				"breadcrumb": {
-					"aria-label": "Шлях підпотоку"
+					"aria-label": "Навігація підтемою"
 				}
 			},
 			"config": {
@@ -2780,10 +2780,10 @@
 				"title": "Рендеринг Markdown цього автора дозволено"
 			},
 			"attachment": {
-				"dropToUpload": "Завантажити на #${channel}"
+				"dropToUpload": "Перетягніть, щоб завантажити в #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} непрочитаних елементів"
+				"aria-label": "${count} непрочитаних"
 			}
 		},
 		"sidebar": {
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Завантажити",
-					"aria-label": "завантажити"
+					"aria-label": "Завантажити"
 				},
 				"downloadIcon": {
 					"alt": "Іконка завантаження"
@@ -2901,22 +2901,22 @@
 					"aria-label": "Редагувати малюнок"
 				},
 				"editIcon": {
-					"alt": "значок редагування"
+					"alt": "Значок редагування"
 				},
 				"delete": {
 					"title": "Видалити",
-					"aria-label": "видалити"
+					"aria-label": "Видалити"
 				},
 				"deleteIcon": {
 					"alt": "Іконка видалення"
 				},
 				"more": {
-					"title": "більше",
-					"aria-label": "більше"
+					"title": "Більше",
+					"aria-label": "Більше"
 				},
 				"recognize": {
 					"title": "Мовлення в текст",
-					"aria-label": "мова в текст"
+					"aria-label": "Мовлення в текст"
 				}
 			}
 		},
@@ -5854,21 +5854,21 @@
 		},
 		"mediaViewer": {
 			"dialog": {
-				"aria-label": "медіапереглядач"
+				"aria-label": "Перегляд медіа"
 			},
 			"download": {
-				"textContent": "завантажити",
-				"aria-label": "завантажити"
+				"textContent": "Завантажити",
+				"aria-label": "Завантажити"
 			},
 			"close": {
-				"textContent": "закриття",
-				"aria-label": "закриття"
+				"textContent": "Закрити",
+				"aria-label": "Закрити"
 			},
 			"prev": {
 				"aria-label": "Попереднє зображення"
 			},
 			"next": {
-				"aria-label": "Наступний"
+				"aria-label": "Наступне зображення"
 			}
 		}
 	}

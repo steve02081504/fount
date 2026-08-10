@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "Der Ruf des Mitglieds ${target}… wird an den Abzug erinnert.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "Schließung"
+					"aria-label": "Schließen"
 				},
 				"previewHint": "Änderungen werden sofort in der Vorschau angezeigt und im Chat und in den sozialen Netzwerken gespeichert und synchronisiert.",
 				"sfwMode": "Sichere Inhalte",
@@ -2462,7 +2462,7 @@
 					"aria-label": "Untergeordneter Thread"
 				},
 				"breadcrumb": {
-					"aria-label": "Subthread-Pfad"
+					"aria-label": "Unterthread-Navigation"
 				}
 			},
 			"config": {
@@ -2780,10 +2780,10 @@
 				"title": "Markdown-Rendering dieses Autors ist erlaubt"
 			},
 			"attachment": {
-				"dropToUpload": "Auf #${channel} hochladen"
+				"dropToUpload": "Zum Hochladen in #${channel} ablegen"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} ungelesene Artikel"
+				"aria-label": "${count} ungelesen"
 			}
 		},
 		"sidebar": {
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Herunterladen",
-					"aria-label": "herunterladen"
+					"aria-label": "Herunterladen"
 				},
 				"downloadIcon": {
 					"alt": "Herunterladen-Symbol"
@@ -2905,7 +2905,7 @@
 				},
 				"delete": {
 					"title": "Löschen",
-					"aria-label": "löschen"
+					"aria-label": "Löschen"
 				},
 				"deleteIcon": {
 					"alt": "Löschen-Symbol"
@@ -2916,7 +2916,7 @@
 				},
 				"recognize": {
 					"title": "Sprache in Text",
-					"aria-label": "Rede zum Text"
+					"aria-label": "Sprache zu Text"
 				}
 			}
 		},
@@ -5857,18 +5857,18 @@
 				"aria-label": "Medienbetrachter"
 			},
 			"download": {
-				"textContent": "herunterladen",
-				"aria-label": "herunterladen"
+				"textContent": "Herunterladen",
+				"aria-label": "Herunterladen"
 			},
 			"close": {
-				"textContent": "Schließung",
-				"aria-label": "Schließung"
+				"textContent": "Schließen",
+				"aria-label": "Schließen"
 			},
 			"prev": {
 				"aria-label": "Vorheriges Bild"
 			},
 			"next": {
-				"aria-label": "Nächster"
+				"aria-label": "Nächstes Bild"
 			}
 		}
 	}

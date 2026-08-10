@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "La reputazione del membro ${target}… viene ricordata nella detrazione.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "chiusura"
+					"aria-label": "Chiudi"
 				},
 				"previewHint": "Le modifiche vengono visualizzate immediatamente nell'anteprima e vengono salvate e sincronizzate su Chat e Social.",
 				"sfwMode": "Contenuto sicuro",
@@ -2780,7 +2780,7 @@
 				"title": "Il rendering Markdown di questo autore è consentito"
 			},
 			"attachment": {
-				"dropToUpload": "Carica su #${channel}"
+				"dropToUpload": "Rilascia per caricare su #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} elementi non letti"
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Scarica",
-					"aria-label": "scaricamento"
+					"aria-label": "Scarica"
 				},
 				"downloadIcon": {
 					"alt": "Icona Scarica"
@@ -2901,22 +2901,22 @@
 					"aria-label": "Modifica immagine"
 				},
 				"editIcon": {
-					"alt": "icona modifica"
+					"alt": "Icona di modifica"
 				},
 				"delete": {
 					"title": "Elimina",
-					"aria-label": "eliminare"
+					"aria-label": "Elimina"
 				},
 				"deleteIcon": {
 					"alt": "Icona Elimina"
 				},
 				"more": {
-					"title": "Di più",
-					"aria-label": "Di più"
+					"title": "Altro",
+					"aria-label": "Altro"
 				},
 				"recognize": {
 					"title": "Da voce a testo",
-					"aria-label": "discorso al testo"
+					"aria-label": "Da voce a testo"
 				}
 			}
 		},
@@ -5857,18 +5857,18 @@
 				"aria-label": "visualizzatore multimediale"
 			},
 			"download": {
-				"textContent": "scaricamento",
-				"aria-label": "scaricamento"
+				"textContent": "Scarica",
+				"aria-label": "Scarica"
 			},
 			"close": {
-				"textContent": "chiusura",
-				"aria-label": "chiusura"
+				"textContent": "Chiudi",
+				"aria-label": "Chiudi"
 			},
 			"prev": {
 				"aria-label": "Immagine precedente"
 			},
 			"next": {
-				"aria-label": "Il prossimo"
+				"aria-label": "Successivo"
 			}
 		}
 	}

@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "La reputación del miembro ${target}… se recuerda de la deducción.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "cierre"
+					"aria-label": "Cerrar"
 				},
 				"previewHint": "Los cambios aparecen inmediatamente en la vista previa y se guardan y sincronizan en Chat y Social.",
 				"sfwMode": "Contenido seguro",
@@ -2462,7 +2462,7 @@
 					"aria-label": "hilo infantil"
 				},
 				"breadcrumb": {
-					"aria-label": "Ruta del subproceso"
+					"aria-label": "Ruta del subhilo"
 				}
 			},
 			"config": {
@@ -2780,7 +2780,7 @@
 				"title": "Renderizado Markdown de este autor permitido"
 			},
 			"attachment": {
-				"dropToUpload": "Subir a #${channel}"
+				"dropToUpload": "Suelta para subir a #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} elementos no leídos"
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Descargar",
-					"aria-label": "descargar"
+					"aria-label": "Descargar"
 				},
 				"downloadIcon": {
 					"alt": "Icono de descarga"
@@ -2901,11 +2901,11 @@
 					"aria-label": "Editar imagen"
 				},
 				"editIcon": {
-					"alt": "icono de edición"
+					"alt": "Icono de edición"
 				},
 				"delete": {
 					"title": "Eliminar",
-					"aria-label": "borrar"
+					"aria-label": "Eliminar"
 				},
 				"deleteIcon": {
 					"alt": "Icono de eliminar"
@@ -2916,7 +2916,7 @@
 				},
 				"recognize": {
 					"title": "Voz a texto",
-					"aria-label": "voz a texto"
+					"aria-label": "Voz a texto"
 				}
 			}
 		},
@@ -5854,21 +5854,21 @@
 		},
 		"mediaViewer": {
 			"dialog": {
-				"aria-label": "visor de medios"
+				"aria-label": "Visor de medios"
 			},
 			"download": {
-				"textContent": "descargar",
-				"aria-label": "descargar"
+				"textContent": "Descargar",
+				"aria-label": "Descargar"
 			},
 			"close": {
-				"textContent": "cierre",
-				"aria-label": "cierre"
+				"textContent": "Cerrar",
+				"aria-label": "Cerrar"
 			},
 			"prev": {
 				"aria-label": "Imagen anterior"
 			},
 			"next": {
-				"aria-label": "El siguiente"
+				"aria-label": "Siguiente"
 			}
 		}
 	}

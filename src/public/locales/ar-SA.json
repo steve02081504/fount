@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "سمعة العضو ${target}... تذكرنا بالخصم.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "إنهاء"
+					"aria-label": "إغلاق"
 				},
 				"previewHint": "تظهر التغييرات على الفور في المعاينة ويتم حفظها ومزامنتها عبر الدردشة والتواصل الاجتماعي.",
 				"sfwMode": "محتوى آمن",
@@ -2780,10 +2780,10 @@
 				"title": "عرض Markdown لهذا المؤلف مفعّل"
 			},
 			"attachment": {
-				"dropToUpload": "تحميل إلى #${channel}"
+				"dropToUpload": "أفلت للرفع إلى #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} من العناصر غير المقروءة"
+				"aria-label": "${count} غير مقروء"
 			}
 		},
 		"sidebar": {
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "تنزيل",
-					"aria-label": "تحميل"
+					"aria-label": "تنزيل"
 				},
 				"downloadIcon": {
 					"alt": "أيقونة التنزيل"
@@ -2905,7 +2905,7 @@
 				},
 				"delete": {
 					"title": "حذف",
-					"aria-label": "يمسح"
+					"aria-label": "حذف"
 				},
 				"deleteIcon": {
 					"alt": "أيقونة الحذف"
@@ -5861,8 +5861,8 @@
 				"aria-label": "تحميل"
 			},
 			"close": {
-				"textContent": "إنهاء",
-				"aria-label": "إنهاء"
+				"textContent": "إغلاق",
+				"aria-label": "إغلاق"
 			},
 			"prev": {
 				"aria-label": "الصورة السابقة"

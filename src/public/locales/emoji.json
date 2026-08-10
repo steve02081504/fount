@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "👤 ${target}… ⭐⬇️🔔",
 			"profileEdit": {
 				"close": {
-					"aria-label": "关闭"
+					"aria-label": "✖️"
 				},
 				"previewHint": "✏️ ➡️ 👀📍；💾 ➡️ 🔄 💬 ➕ 🏛️",
 				"sfwMode": "😇",
@@ -2462,7 +2462,7 @@
 					"aria-label": "🧵"
 				},
 				"breadcrumb": {
-					"aria-label": "子线程路径"
+					"aria-label": "🧵➡️"
 				}
 			},
 			"config": {
@@ -2780,7 +2780,7 @@
 				"title": "✅🤝✍️📝🎨"
 			},
 			"attachment": {
-				"dropToUpload": "上传到 #${channel}"
+				"dropToUpload": "⬆️ #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} 条未读"

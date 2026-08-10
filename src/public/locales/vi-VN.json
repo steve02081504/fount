@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "Danh tiếng của thành viên ${target}… bị nhắc nhở về việc khấu trừ.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "đóng cửa"
+					"aria-label": "Đóng"
 				},
 				"previewHint": "Các thay đổi sẽ xuất hiện ngay trong bản xem trước và được lưu cũng như đồng bộ hóa trên Trò chuyện và Mạng xã hội.",
 				"sfwMode": "Nội dung an toàn",
@@ -2780,7 +2780,7 @@
 				"title": "Đã cho phép kết xuất Markdown của tác giả này"
 			},
 			"attachment": {
-				"dropToUpload": "Tải lên #${channel}"
+				"dropToUpload": "Thả để tải lên #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} mục chưa đọc"
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Tải xuống",
-					"aria-label": "tải về"
+					"aria-label": "Tải xuống"
 				},
 				"downloadIcon": {
 					"alt": "Biểu tượng tải xuống"
@@ -2901,22 +2901,22 @@
 					"aria-label": "Chỉnh sửa ảnh"
 				},
 				"editIcon": {
-					"alt": "biểu tượng chỉnh sửa"
+					"alt": "Biểu tượng chỉnh sửa"
 				},
 				"delete": {
 					"title": "Xóa",
-					"aria-label": "xóa bỏ"
+					"aria-label": "Xóa"
 				},
 				"deleteIcon": {
 					"alt": "Biểu tượng xóa"
 				},
 				"more": {
-					"title": "Hơn",
-					"aria-label": "Hơn"
+					"title": "Thêm",
+					"aria-label": "Thêm"
 				},
 				"recognize": {
 					"title": "Giọng nói thành chữ",
-					"aria-label": "lời nói thành văn bản"
+					"aria-label": "Giọng nói thành chữ"
 				}
 			}
 		},
@@ -5854,15 +5854,15 @@
 		},
 		"mediaViewer": {
 			"dialog": {
-				"aria-label": "trình xem phương tiện"
+				"aria-label": "Trình xem phương tiện"
 			},
 			"download": {
-				"textContent": "tải về",
-				"aria-label": "tải về"
+				"textContent": "Tải xuống",
+				"aria-label": "Tải xuống"
 			},
 			"close": {
-				"textContent": "đóng cửa",
-				"aria-label": "đóng cửa"
+				"textContent": "Đóng",
+				"aria-label": "Đóng"
 			},
 			"prev": {
 				"aria-label": "Hình ảnh trước đó"

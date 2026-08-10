@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "${target} 멤버의 평판이 차감되었음을 상기시켜 드립니다.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "폐쇄"
+					"aria-label": "닫기"
 				},
 				"previewHint": "변경 사항은 미리보기에 즉시 표시되며 채팅과 소셜에 저장 및 동기화됩니다.",
 				"sfwMode": "일반 콘텐츠",
@@ -2911,8 +2911,8 @@
 					"alt": "삭제 아이콘"
 				},
 				"more": {
-					"title": "더",
-					"aria-label": "더"
+					"title": "더 보기",
+					"aria-label": "더 보기"
 				},
 				"recognize": {
 					"title": "음성을 글로",
@@ -5861,14 +5861,14 @@
 				"aria-label": "다운로드"
 			},
 			"close": {
-				"textContent": "폐쇄",
-				"aria-label": "폐쇄"
+				"textContent": "닫기",
+				"aria-label": "닫기"
 			},
 			"prev": {
 				"aria-label": "이전 사진"
 			},
 			"next": {
-				"aria-label": "다음 것"
+				"aria-label": "다음"
 			}
 		}
 	}

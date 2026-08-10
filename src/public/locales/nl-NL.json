@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "De reputatie van lid ${target}… wordt herinnerd aan de aftrek.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "sluiting"
+					"aria-label": "Sluiten"
 				},
 				"previewHint": "Wijzigingen verschijnen onmiddellijk in het voorbeeld en worden opgeslagen en gesynchroniseerd via Chat en Sociaal.",
 				"sfwMode": "Veilige inhoud",
@@ -2462,7 +2462,7 @@
 					"aria-label": "kinder draad"
 				},
 				"breadcrumb": {
-					"aria-label": "Subthreadpad"
+					"aria-label": "Subthread-navigatie"
 				}
 			},
 			"config": {
@@ -2780,7 +2780,7 @@
 				"title": "Markdown-rendering van deze auteur is toegestaan"
 			},
 			"attachment": {
-				"dropToUpload": "Uploaden naar #${channel}"
+				"dropToUpload": "Laat los om te uploaden naar #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} ongelezen items"
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Downloaden",
-					"aria-label": "downloaden"
+					"aria-label": "Downloaden"
 				},
 				"downloadIcon": {
 					"alt": "Downloadpictogram"
@@ -2901,11 +2901,11 @@
 					"aria-label": "Afbeelding bewerken"
 				},
 				"editIcon": {
-					"alt": "pictogram bewerken"
+					"alt": "Bewerkingspictogram"
 				},
 				"delete": {
 					"title": "Verwijderen",
-					"aria-label": "verwijderen"
+					"aria-label": "Verwijderen"
 				},
 				"deleteIcon": {
 					"alt": "Verwijderpictogram"
@@ -2916,7 +2916,7 @@
 				},
 				"recognize": {
 					"title": "Spraak naar tekst",
-					"aria-label": "spraak naar tekst"
+					"aria-label": "Spraak naar tekst"
 				}
 			}
 		},
@@ -5854,15 +5854,15 @@
 		},
 		"mediaViewer": {
 			"dialog": {
-				"aria-label": "media-kijker"
+				"aria-label": "Mediakijker"
 			},
 			"download": {
-				"textContent": "downloaden",
-				"aria-label": "downloaden"
+				"textContent": "Downloaden",
+				"aria-label": "Downloaden"
 			},
 			"close": {
-				"textContent": "sluiting",
-				"aria-label": "sluiting"
+				"textContent": "Sluiten",
+				"aria-label": "Sluiten"
 			},
 			"prev": {
 				"aria-label": "Vorige foto"

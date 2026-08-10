@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "メンバー ${target}… の評判が減点を思い出させます。",
 			"profileEdit": {
 				"close": {
-					"aria-label": "閉鎖"
+					"aria-label": "閉じる"
 				},
 				"previewHint": "変更はすぐにプレビューに表示され、保存され、チャットとソーシャル全体で同期されます。",
 				"sfwMode": "一般コンテンツ",
@@ -2462,7 +2462,7 @@
 					"aria-label": "子スレッド"
 				},
 				"breadcrumb": {
-					"aria-label": "サブスレッドパス"
+					"aria-label": "子スレッドのパンくずリスト"
 				}
 			},
 			"config": {
@@ -2780,7 +2780,7 @@
 				"title": "この作者の Markdown レンダリングを信頼中"
 			},
 			"attachment": {
-				"dropToUpload": "#${channel} にアップロードする"
+				"dropToUpload": "「#${channel}」にドロップしてアップロード"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} 件の未読"

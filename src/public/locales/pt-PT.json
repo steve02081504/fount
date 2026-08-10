@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "A reputação do membro ${target}… é lembrada da dedução.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "encerramento"
+					"aria-label": "Fechar"
 				},
 				"previewHint": "As alterações aparecem imediatamente na visualização e são salvas e sincronizadas no Chat e nas redes sociais.",
 				"sfwMode": "Conteúdo Seguro",
@@ -2462,7 +2462,7 @@
 					"aria-label": "Tópico filho"
 				},
 				"breadcrumb": {
-					"aria-label": "Caminho do subthread"
+					"aria-label": "Caminho do subtópico"
 				}
 			},
 			"config": {
@@ -2780,7 +2780,7 @@
 				"title": "Renderização Markdown deste autor permitida"
 			},
 			"attachment": {
-				"dropToUpload": "Enviar para #${channel}"
+				"dropToUpload": "Largue para enviar para #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} itens não lidos"
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Transferir",
-					"aria-label": "download"
+					"aria-label": "Transferir"
 				},
 				"downloadIcon": {
 					"alt": "Ícone de Transferência"
@@ -2901,11 +2901,11 @@
 					"aria-label": "Editar imagem"
 				},
 				"editIcon": {
-					"alt": "editar ícone"
+					"alt": "Ícone de edição"
 				},
 				"delete": {
 					"title": "Eliminar",
-					"aria-label": "excluir"
+					"aria-label": "Eliminar"
 				},
 				"deleteIcon": {
 					"alt": "Ícone de Eliminar"
@@ -2916,7 +2916,7 @@
 				},
 				"recognize": {
 					"title": "Voz para texto",
-					"aria-label": "fala para texto"
+					"aria-label": "Voz para texto"
 				}
 			}
 		},
@@ -5854,15 +5854,15 @@
 		},
 		"mediaViewer": {
 			"dialog": {
-				"aria-label": "visualizador de mídia"
+				"aria-label": "Visualizador de multimédia"
 			},
 			"download": {
-				"textContent": "download",
-				"aria-label": "download"
+				"textContent": "Transferir",
+				"aria-label": "Transferir"
 			},
 			"close": {
-				"textContent": "encerramento",
-				"aria-label": "encerramento"
+				"textContent": "Fechar",
+				"aria-label": "Fechar"
 			},
 			"prev": {
 				"aria-label": "Foto anterior"

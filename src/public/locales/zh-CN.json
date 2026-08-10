@@ -2462,7 +2462,7 @@
 					"aria-label": "子线程"
 				},
 				"breadcrumb": {
-					"aria-label": "子线程路径"
+					"aria-label": "子线程导航"
 				}
 			},
 			"config": {
@@ -2780,7 +2780,7 @@
 				"title": "已信任此作者，将完整渲染消息内容"
 			},
 			"attachment": {
-				"dropToUpload": "上传到 #${channel}"
+				"dropToUpload": "拖放以上传到 #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} 条未读"

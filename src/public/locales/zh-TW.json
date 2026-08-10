@@ -2461,7 +2461,7 @@
 					"aria-label": "子執行緒"
 				},
 				"breadcrumb": {
-					"aria-label": "子執行緒路徑"
+					"aria-label": "子執行緒導覽"
 				}
 			},
 			"config": {
@@ -2779,7 +2779,7 @@
 				"title": "已信任此作者，將完整渲染訊息內容"
 			},
 			"attachment": {
-				"dropToUpload": "上傳到 #${channel}"
+				"dropToUpload": "拖放以上傳至 #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} 條未讀"

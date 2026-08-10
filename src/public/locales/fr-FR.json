@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "La réputation du membre ${target}… est rappelée par la déduction.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "fermeture"
+					"aria-label": "Fermer"
 				},
 				"previewHint": "Les modifications apparaissent immédiatement dans l'aperçu et sont enregistrées et synchronisées dans Chat et Social.",
 				"sfwMode": "Contenu sûr",
@@ -2462,7 +2462,7 @@
 					"aria-label": "fil enfant"
 				},
 				"breadcrumb": {
-					"aria-label": "Chemin du sous-thread"
+					"aria-label": "Fil d'Ariane du sous-fil"
 				}
 			},
 			"config": {
@@ -2780,7 +2780,7 @@
 				"title": "Le rendu Markdown de cet auteur est autorisé"
 			},
 			"attachment": {
-				"dropToUpload": "Mettre en ligne sur #${channel}"
+				"dropToUpload": "Déposer pour envoyer dans #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} éléments non lus"
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Télécharger",
-					"aria-label": "télécharger"
+					"aria-label": "Télécharger"
 				},
 				"downloadIcon": {
 					"alt": "Icône Télécharger"
@@ -2901,11 +2901,11 @@
 					"aria-label": "Modifier l'image"
 				},
 				"editIcon": {
-					"alt": "icône de modification"
+					"alt": "Icône de modification"
 				},
 				"delete": {
 					"title": "Supprimer",
-					"aria-label": "supprimer"
+					"aria-label": "Supprimer"
 				},
 				"deleteIcon": {
 					"alt": "Icône Supprimer"
@@ -2916,7 +2916,7 @@
 				},
 				"recognize": {
 					"title": "Voix en texte",
-					"aria-label": "parole en texte"
+					"aria-label": "Voix en texte"
 				}
 			}
 		},
@@ -5854,21 +5854,21 @@
 		},
 		"mediaViewer": {
 			"dialog": {
-				"aria-label": "visionneuse de médias"
+				"aria-label": "Visionneuse de médias"
 			},
 			"download": {
-				"textContent": "télécharger",
-				"aria-label": "télécharger"
+				"textContent": "Télécharger",
+				"aria-label": "Télécharger"
 			},
 			"close": {
-				"textContent": "fermeture",
-				"aria-label": "fermeture"
+				"textContent": "Fermer",
+				"aria-label": "Fermer"
 			},
 			"prev": {
 				"aria-label": "Photo précédente"
 			},
 			"next": {
-				"aria-label": "Le suivant"
+				"aria-label": "Suivant"
 			}
 		}
 	}

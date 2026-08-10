@@ -2009,7 +2009,7 @@
 			"reputationSlashAlert": "Orðspor meðlims ${target}... er minnt á frádráttinn.",
 			"profileEdit": {
 				"close": {
-					"aria-label": "lokun"
+					"aria-label": "Loka"
 				},
 				"previewHint": "Breytingar birtast strax í forskoðuninni og eru vistaðar og samstilltar í Chat og Social.",
 				"sfwMode": "Vinnustaðavænt",
@@ -2780,7 +2780,7 @@
 				"title": "Markdown-útgáfa þessa höfundar er leyfð"
 			},
 			"attachment": {
-				"dropToUpload": "Hladdu upp á #${channel}"
+				"dropToUpload": "Slepptu til að hlaða upp í #${channel}"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} ólesin atriði"
@@ -2891,7 +2891,7 @@
 			"buttons": {
 				"download": {
 					"title": "Sækja",
-					"aria-label": "niðurhal"
+					"aria-label": "Sækja"
 				},
 				"downloadIcon": {
 					"alt": "Sækja tákn"
@@ -2901,7 +2901,7 @@
 					"aria-label": "Breyta mynd"
 				},
 				"editIcon": {
-					"alt": "breyta tákni"
+					"alt": "Breytingartákn"
 				},
 				"delete": {
 					"title": "Eyða",
@@ -2916,7 +2916,7 @@
 				},
 				"recognize": {
 					"title": "Rödd í texta",
-					"aria-label": "tal til texta"
+					"aria-label": "Rödd í texta"
 				}
 			}
 		},
@@ -5857,18 +5857,18 @@
 				"aria-label": "fjölmiðlaskoðari"
 			},
 			"download": {
-				"textContent": "niðurhal",
-				"aria-label": "niðurhal"
+				"textContent": "Sækja",
+				"aria-label": "Sækja"
 			},
 			"close": {
-				"textContent": "lokun",
-				"aria-label": "lokun"
+				"textContent": "Loka",
+				"aria-label": "Loka"
 			},
 			"prev": {
 				"aria-label": "Fyrri mynd"
 			},
 			"next": {
-				"aria-label": "Næsti"
+				"aria-label": "Næsta mynd"
 			}
 		}
 	}
