@@ -1455,6 +1455,7 @@
 					"saveSuccess": "グループ設定が保存されました",
 					"saveFailed": "設定を保存できませんでした: ${error}",
 					"rolesTitle": "役割と権限",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "デフォルト",
 					"permissionUpdated": "権限が更新されました",
 					"permissionUpdateFailed": "権限の更新に失敗しました: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "チャンネルアーカイブ"
 					},
 					"channelPerms": {
-						"addRole": "ロールオーバーライドを追加",
 						"denied": "チャンネル権限のオーバーライドを編集するための MANAGE_CHANNELS 権限がありません。",
-						"hint": "特定のチャンネルに対してロール権限のオーバーライドを設定します。検出されていないアイテムは、グループの役割の権限を継承します。",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "現在、設定するチャンネルがありません",
-						"removeRole": "この役割のオーバーライドを削除します",
 						"selectChannel": "チャンネル",
 						"stateAllow": "許可する",
 						"stateDeny": "拒否する",

@@ -1455,6 +1455,7 @@
 					"saveSuccess": "群组设置已保存",
 					"saveFailed": "保存设置失败: ${error}",
 					"rolesTitle": "角色与权限",
+					"rolesHint": "勾选权限后对该角色全体成员在全群生效。普通人发附件请给 Everyone 勾「上传文件」。某频道要单独限制时，再到高级设置里的「频道权限」。",
 					"roleDefault": "默认",
 					"permissionUpdated": "权限已更新",
 					"permissionUpdateFailed": "更新权限失败: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "频道归档"
 					},
 					"channelPerms": {
-						"addRole": "添加角色覆盖",
 						"denied": "你没有 MANAGE_CHANNELS 权限，无法编辑频道权限覆盖。",
-						"hint": "为特定频道设置角色权限覆盖。未覆盖项继承群组角色权限。",
+						"hint": "这里只改「某一个频道」相对角色权限的例外：继承＝用角色权限页的结果，允许/拒绝＝本频道强制覆盖。日常给大家开附件请去「角色权限」给 Everyone 勾上传文件，而不是在这里添加覆盖。",
+						"overridden": "已覆盖",
+						"clearOverride": "全部重置为继承",
 						"noChannels": "暂无可配置频道",
-						"removeRole": "移除该角色覆盖",
 						"selectChannel": "频道",
 						"stateAllow": "允许",
 						"stateDeny": "拒绝",

@@ -1455,6 +1455,7 @@
 					"saveSuccess": "Impostazioni del gruppo salvate",
 					"saveFailed": "Impossibile salvare le impostazioni: ${error}",
 					"rolesTitle": "Ruoli e autorizzazioni",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "predefinito",
 					"permissionUpdated": "Autorizzazioni aggiornate",
 					"permissionUpdateFailed": "Impossibile aggiornare le autorizzazioni: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "Archivio canali"
 					},
 					"channelPerms": {
-						"addRole": "Aggiungi la sostituzione del ruolo",
 						"denied": "Non disponi dell'autorizzazione MANAGE_CHANNELS per modificare le sostituzioni delle autorizzazioni del canale.",
-						"hint": "Imposta le sostituzioni delle autorizzazioni del ruolo per canali specifici. Gli elementi scoperti ereditano le autorizzazioni del ruolo del gruppo.",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "Al momento non ci sono canali da configurare",
-						"removeRole": "Rimuovi questa sostituzione del ruolo",
 						"selectChannel": "Canali",
 						"stateAllow": "permettere",
 						"stateDeny": "rifiutare",

@@ -1455,6 +1455,7 @@
 					"saveSuccess": "Налаштування групи збережено",
 					"saveFailed": "Не вдалося зберегти налаштування: ${error}",
 					"rolesTitle": "Ролі та дозволи",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "За замовчуванням",
 					"permissionUpdated": "Дозволи оновлено",
 					"permissionUpdateFailed": "Не вдалося оновити дозволи: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "Архів каналу"
 					},
 					"channelPerms": {
-						"addRole": "Додати заміну ролі",
 						"denied": "У вас немає дозволу MANAGE_CHANNELS для редагування перевизначень дозволів каналу.",
-						"hint": "Установіть перевизначення дозволів ролі для певних каналів. Нерозкриті елементи успадковують дозволи групової ролі.",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "Наразі немає каналу для налаштування",
-						"removeRole": "Видаліть цю заміну ролі",
 						"selectChannel": "Канал",
 						"stateAllow": "Дозволяють",
 						"stateDeny": "Відхилити",

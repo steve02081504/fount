@@ -1422,7 +1422,7 @@ export type LocaleData = {
 					loadFailed: string
 					saveSuccess: string
 					saveFailed: string
-					rolesTitle: string
+					rolesTitle: string\n\t\t\t\t\trolesHint: string
 					roleDefault: string
 					permissionUpdated: string
 					permissionUpdateFailed: string
@@ -1456,11 +1456,11 @@ export type LocaleData = {
 						title: string
 					}
 					channelPerms: {
-						addRole: string
 						denied: string
 						hint: string
+						overridden: string
+						clearOverride: string
 						noChannels: string
-						removeRole: string
 						selectChannel: string
 						stateAllow: string
 						stateDeny: string

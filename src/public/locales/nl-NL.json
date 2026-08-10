@@ -1455,6 +1455,7 @@
 					"saveSuccess": "Groepsinstellingen opgeslagen",
 					"saveFailed": "Kan instellingen niet opslaan: ${error}",
 					"rolesTitle": "Rollen en machtigingen",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "Standaard",
 					"permissionUpdated": "Machtigingen bijgewerkt",
 					"permissionUpdateFailed": "Kan rechten niet updaten: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "Kanaalarchief"
 					},
 					"channelPerms": {
-						"addRole": "Roloverschrijving toevoegen",
 						"denied": "Je heeft geen MANAGE_CHANNELS-rechten om overschrijvingen van kanaalrechten te bewerken.",
-						"hint": "Stel overschrijvingen van rolmachtigingen in voor specifieke kanalen. Niet-gedekte items nemen de machtigingen voor groepsrollen over.",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "Er is momenteel geen kanaal om te configureren",
-						"removeRole": "Verwijder deze roloverschrijving",
 						"selectChannel": "Kanaal",
 						"stateAllow": "Toestaan",
 						"stateDeny": "Afwijzen",

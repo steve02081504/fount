@@ -1455,6 +1455,7 @@
 					"saveSuccess": "Настройки группы сохранены.",
 					"saveFailed": "Не удалось сохранить настройки: ${error}",
 					"rolesTitle": "Роли и разрешения",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "по умолчанию",
 					"permissionUpdated": "Разрешения обновлены",
 					"permissionUpdateFailed": "Не удалось обновить разрешения: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "Архив канала"
 					},
 					"channelPerms": {
-						"addRole": "Добавить переопределение роли",
 						"denied": "У вас недостаточно прав MANAGE_CHANNELS для изменения переопределений разрешений канала.",
-						"hint": "Установите переопределение разрешений ролей для определенных каналов. Непокрытые элементы наследуют разрешения роли группы.",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "На данный момент нет канала для настройки",
-						"removeRole": "Удалить это переопределение роли",
 						"selectChannel": "Канал",
 						"stateAllow": "Разрешить",
 						"stateDeny": "Запретить",

@@ -1455,6 +1455,7 @@
 					"saveSuccess": "Hópstillingar vistaðar",
 					"saveFailed": "Mistókst að vista stillingar: ${error}",
 					"rolesTitle": "Hlutverk og heimildir",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "Sjálfgefið",
 					"permissionUpdated": "Heimildir uppfærðar",
 					"permissionUpdateFailed": "Mistókst að uppfæra heimildir: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "Rásasafn"
 					},
 					"channelPerms": {
-						"addRole": "Bæta við hlutverkshnekki",
 						"denied": "Þú hefur ekki MANAGE_CHANNELS heimild til að breyta hnekkingum á rásarheimildum.",
-						"hint": "Stilltu hnekkingar á hlutverkaheimildum fyrir tilteknar rásir. Óvarið atriði Erfa heimildir hóphlutverka.",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "Það er engin rás til að stilla",
-						"removeRole": "Fjarlægja þessa hlutverkshnekkingu",
 						"selectChannel": "Rás",
 						"stateAllow": "Leyfa",
 						"stateDeny": "Hafna",

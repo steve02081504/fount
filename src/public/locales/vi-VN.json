@@ -1455,6 +1455,7 @@
 					"saveSuccess": "Đã lưu cài đặt nhóm",
 					"saveFailed": "Không thể lưu cài đặt: ${error}",
 					"rolesTitle": "Vai trò và quyền",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "mặc định",
 					"permissionUpdated": "Đã cập nhật quyền",
 					"permissionUpdateFailed": "Không thể cập nhật quyền: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "Kho lưu trữ kênh"
 					},
 					"channelPerms": {
-						"addRole": "Thêm ghi đè vai trò",
 						"denied": "Bạn không có quyền MANAGE_CHANNELS để chỉnh sửa phần ghi đè quyền của kênh.",
-						"hint": "Đặt ghi đè quyền vai trò cho các kênh cụ thể. Các mục chưa được khám phá kế thừa quyền vai trò của nhóm.",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "Hiện tại không có kênh nào để định cấu hình",
-						"removeRole": "Xóa ghi đè vai trò này",
 						"selectChannel": "Kênh",
 						"stateAllow": "cho phép",
 						"stateDeny": "từ chối",

@@ -1455,6 +1455,7 @@
 					"saveSuccess": "تم حفظ إعدادات المجموعة",
 					"saveFailed": "فشل حفظ الإعدادات: ${error}",
 					"rolesTitle": "الأدوار والأذونات",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "تقصير",
 					"permissionUpdated": "تم تحديث الأذونات",
 					"permissionUpdateFailed": "فشل تحديث الأذونات: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "أرشيف القناة"
 					},
 					"channelPerms": {
-						"addRole": "إضافة تجاوز الدور",
 						"denied": "ليس لديك إذن MANAGE_CHANNELS لتعديل تجاوزات أذونات القناة.",
-						"hint": "قم بتعيين تجاوزات أذونات الدور لقنوات محددة. العناصر التي تم الكشف عنها ترث أذونات دور المجموعة.",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "لا يوجد حاليا أي قناة لتكوينها",
-						"removeRole": "قم بإزالة تجاوز هذا الدور",
 						"selectChannel": "القنوات",
 						"stateAllow": "سماح",
 						"stateDeny": "رفض",

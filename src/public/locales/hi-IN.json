@@ -1455,6 +1455,7 @@
 					"saveSuccess": "समूह सेटिंग सहेजी गईं",
 					"saveFailed": "सेटिंग सहेजने में विफल: ${error}",
 					"rolesTitle": "भूमिकाएँ और अनुमतियाँ",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "डिफ़ॉल्ट",
 					"permissionUpdated": "अनुमतियाँ अद्यतन की गईं",
 					"permissionUpdateFailed": "अनुमतियाँ अद्यतन करने में विफल: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "चैनल संग्रह"
 					},
 					"channelPerms": {
-						"addRole": "भूमिका ओवरराइड जोड़ें",
 						"denied": "आपके पास चैनल अनुमति ओवरराइड को संपादित करने के लिए MANAGE_CHANNELS अनुमति नहीं है।",
-						"hint": "विशिष्ट चैनलों के लिए भूमिका अनुमति ओवरराइड सेट करें। उजागर किए गए आइटम समूह भूमिका अनुमतियाँ प्राप्त करते हैं।",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "फ़िलहाल कॉन्फ़िगर करने के लिए कोई चैनल नहीं है",
-						"removeRole": "इस भूमिका ओवरराइड को हटाएँ",
 						"selectChannel": "चैनल",
 						"stateAllow": "अनुमति",
 						"stateDeny": "अस्वीकार",

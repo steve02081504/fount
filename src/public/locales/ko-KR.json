@@ -1455,6 +1455,7 @@
 					"saveSuccess": "그룹 설정이 저장되었습니다.",
 					"saveFailed": "설정을 저장하지 못했습니다: ${error}",
 					"rolesTitle": "역할 및 권한",
+					"rolesHint": "Checked permissions apply group-wide to that role. To let members attach files, enable Upload Files on Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "기본",
 					"permissionUpdated": "권한이 업데이트되었습니다.",
 					"permissionUpdateFailed": "권한 업데이트 실패: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "채널 아카이브"
 					},
 					"channelPerms": {
-						"addRole": "역할 재정의 추가",
 						"denied": "채널 권한 재정의를 수정할 수 있는 MANAGE_CHANNELS 권한이 없습니다.",
-						"hint": "특정 채널별 역할 권한 재정의를 설정합니다. 미설정 항목은 그룹 역할 권한을 따릅니다.",
+						"hint": "Per-channel exceptions only: Inherit uses Role permissions, Allow/Deny force this channel. To enable attachments for everyone, open Role permissions and check Upload Files on Everyone — do not look for an “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "현재 구성할 채널이 없습니다.",
-						"removeRole": "이 역할 재정의 삭제",
 						"selectChannel": "채널",
 						"stateAllow": "허용",
 						"stateDeny": "거부",

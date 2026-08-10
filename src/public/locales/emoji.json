@@ -1455,6 +1455,7 @@
 					"saveSuccess": "👥⚙️💾✅",
 					"saveFailed": "💾⚙️❌: ${error}",
 					"rolesTitle": "🎭🔐",
+					"rolesHint": "🎭✅ · 📎 Everyone · 📺⚙️",
 					"roleDefault": "⭐",
 					"permissionUpdated": "🔐🔄✅",
 					"permissionUpdateFailed": "🔐🔄❌: ${error}",
@@ -1488,11 +1489,11 @@
 						"title": "📺📦"
 					},
 					"channelPerms": {
-						"addRole": "➕🎭🔐",
 						"denied": "🫵🚫📺⚙️🔐，🚫✏️📺🔐",
-						"hint": "⭐📺 ➡️ 🎭🔐 🔁🚫✍️ ➡️ ↩️👥🎭🔐",
+						"hint": "📺≠🎭 · ↩️继承 · ✅允许 · ❌拒绝 · 📎→角色权限",
+						"overridden": "⚠️",
+						"clearOverride": "↩️",
 						"noChannels": "📭📺⚙️",
-						"removeRole": "🗑️🎭🔐",
 						"selectChannel": "📺",
 						"stateAllow": "✅",
 						"stateDeny": "❌",
