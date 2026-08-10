@@ -52,7 +52,7 @@ export async function updateSettingsTabsVisibility(context) {
 		item?.classList.toggle('hidden', !visible)
 	}
 
-	const advancedVisible = ['permissions', 'channel-perms', 'storage', 'audit']
+	const advancedVisible = ['channel-perms', 'storage', 'audit']
 		.some(id => sectionVisibility[id])
 	document.querySelector('[data-nav-group="advanced"]')?.classList.toggle('hidden', !advancedVisible)
 

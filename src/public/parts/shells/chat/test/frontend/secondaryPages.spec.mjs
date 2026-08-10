@@ -69,6 +69,19 @@ test.describe('Chat secondary pages', () => {
 		await page.locator('.settings-nav-item[data-section="channel-perms"]').click()
 		await expect(page.locator('#channel-perms-container [data-action="select-channel"]').first())
 			.toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#channel-perms-container [data-role-panel="@everyone"]')).toBeVisible()
+		await expect(page.locator('#channel-perms-container [data-action="add-role-override"]')).toHaveCount(0)
+		await expect(
+			page.locator('#channel-perms-container [data-role-id="@everyone"][data-perm="UPLOAD_FILES"]'),
+		).toBeVisible()
+
+		await page.locator('.settings-nav-item[data-section="permissions"]').click()
+		const everyone = page.locator('#permission-settings-container .settings-role').filter({ hasText: 'Everyone' }).first()
+		await expect(everyone).toBeVisible({ timeout: 30_000 })
+		await expect(everyone).toHaveJSProperty('open', true)
+		await expect(
+			everyone.locator('[data-action="update-permission"][data-role-id="@everyone"][data-perm="UPLOAD_FILES"]'),
+		).toBeVisible()
 
 		await page.locator('.settings-nav-item[data-section="emojis"]').click()
 		await expect(page.locator('#group-emojis-list')).toBeAttached({ timeout: 30_000 })
@@ -112,7 +125,7 @@ test.describe('Chat secondary pages', () => {
 		await page.locator('.settings-nav-item[data-section="permissions"]').click()
 		const role = page.locator('#permission-settings-container .settings-role').filter({ hasText: 'Everyone' }).first()
 		await expect(role).toBeVisible({ timeout: 30_000 })
-		await role.locator('summary').click()
+		await expect(role).toHaveJSProperty('open', true)
 		const checkbox = role.locator('[data-action="update-permission"][data-role-id="@everyone"][data-perm="SEND_MESSAGES"]')
 		await expect(checkbox).toBeVisible()
 		const nextChecked = !await checkbox.isChecked()

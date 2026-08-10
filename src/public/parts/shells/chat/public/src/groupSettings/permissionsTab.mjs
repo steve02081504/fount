@@ -30,13 +30,14 @@ export async function renderPermissionSettings(context) {
 				roleId,
 			})
 		))).join('')
-		const deleteRoleHtml = role.isDefault
+		const isDefault = roleId === '@everyone' || role.isDefault === true
+		const deleteRoleHtml = isDefault
 			? ''
 			: await renderTemplateAsHtmlString('group/settings/permission_role_action', { roleId })
 		return renderTemplateAsHtmlString('group/settings/permission_role', {
 			deleteRoleHtml,
 			permissionsHtml,
-			role,
+			role: { ...role, isDefault },
 		})
 	}))).join('')
 

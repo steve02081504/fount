@@ -1,4 +1,4 @@
-<details class="settings-role">
+<details class="settings-role" ${role.isDefault ? 'open' : ''}>
 	<summary>
 		<span class="settings-role-swatch" style="background-color: ${escapeHtml(role.color)}" aria-hidden="true"></span>
 		<span>${escapeHtml(role.name)}</span>

@@ -16,42 +16,33 @@
 					`).join('')}
 				</ul>
 			</div>
-			<div class="flex-1 min-w-0">
-				<div class="flex flex-wrap items-center gap-2 mb-4">
-					<label class="sr-only" for="channel-perms-add-role" data-i18n="chat.group.settings.page.channelPerms.addRole"></label>
-					<select id="channel-perms-add-role" class="select select-bordered select-sm">
-						<option value="">—</option>
-						${addableRoles.map(r => `
-						<option value="${escapeHtml(r.id)}">${escapeHtml(r.name)}</option>
-						`).join('')}
-					</select>
-					<button type="button" class="btn btn-sm btn-outline" data-action="add-role-override" data-i18n="chat.group.settings.page.channelPerms.addRole"></button>
-				</div>
-				<div class="space-y-3">
-					${rolePanels.length ? rolePanels.map(panel => `
-					<details class="settings-role" data-role-panel="${escapeHtml(panel.roleId)}" open>
-						<summary>
-							<span class="settings-role-swatch" style="background-color: ${escapeHtml(panel.color)}" aria-hidden="true"></span>
-							<span class="truncate">${escapeHtml(panel.name)}</span>
-						</summary>
-						<div class="settings-role-body">
-							<div class="settings-role-perms">
-								${panel.permRows.map(row => `
-								<div class="flex items-center justify-between gap-2 py-1">
-									<span class="text-sm" data-i18n="chat.group.settings.page.perm.${row.perm}"></span>
-									<div class="join join-horizontal" role="group" data-role-id="${escapeHtml(panel.roleId)}" data-perm="${row.perm}">
-										<button type="button" class="btn btn-xs join-item ${row.state === 'neutral' ? 'btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="neutral" data-i18n="chat.group.settings.page.channelPerms.stateNeutral"></button>
-										<button type="button" class="btn btn-xs join-item ${row.state === 'allow' ? 'btn-success btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="allow" data-i18n="chat.group.settings.page.channelPerms.stateAllow"></button>
-										<button type="button" class="btn btn-xs join-item ${row.state === 'deny' ? 'btn-error btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="deny" data-i18n="chat.group.settings.page.channelPerms.stateDeny"></button>
-									</div>
+			<div class="flex-1 min-w-0 space-y-3">
+				${rolePanels.map(panel => `
+				<details class="settings-role" data-role-panel="${escapeHtml(panel.roleId)}" ${panel.open ? 'open' : ''}>
+					<summary>
+						<span class="settings-role-swatch" style="background-color: ${escapeHtml(panel.color)}" aria-hidden="true"></span>
+						<span class="truncate">${escapeHtml(panel.name)}</span>
+						${panel.hasOverride ? '<span class="badge badge-sm badge-warning" data-i18n="chat.group.settings.page.channelPerms.overridden"></span>' : ''}
+					</summary>
+					<div class="settings-role-body">
+						<div class="settings-role-perms">
+							${panel.permRows.map(row => `
+							<div class="flex items-center justify-between gap-2 py-1">
+								<span class="text-sm" data-i18n="chat.group.settings.page.perm.${row.perm}"></span>
+								<div class="join join-horizontal" role="group" data-role-id="${escapeHtml(panel.roleId)}" data-perm="${row.perm}">
+									<button type="button" class="btn btn-xs join-item ${row.state === 'neutral' ? 'btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="neutral" data-i18n="chat.group.settings.page.channelPerms.stateNeutral"></button>
+									<button type="button" class="btn btn-xs join-item ${row.state === 'allow' ? 'btn-success btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="allow" data-i18n="chat.group.settings.page.channelPerms.stateAllow"></button>
+									<button type="button" class="btn btn-xs join-item ${row.state === 'deny' ? 'btn-error btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="deny" data-i18n="chat.group.settings.page.channelPerms.stateDeny"></button>
 								</div>
-								`).join('')}
 							</div>
-							<button type="button" class="btn btn-ghost btn-xs text-error w-fit" data-action="remove-role-override" data-role-id="${escapeHtml(panel.roleId)}" data-i18n="chat.group.settings.page.channelPerms.removeRole"></button>
+							`).join('')}
 						</div>
-					</details>
-					`).join('') : '<p class="text-sm opacity-60 py-4">—</p>'}
-				</div>
+						${panel.hasOverride ? `
+						<button type="button" class="btn btn-ghost btn-xs text-error w-fit" data-action="clear-role-override" data-role-id="${escapeHtml(panel.roleId)}" data-i18n="chat.group.settings.page.channelPerms.clearOverride"></button>
+						` : ''}
+					</div>
+				</details>
+				`).join('')}
 			</div>
 		</div>
 		` : `<p class="text-sm opacity-60" data-i18n="chat.group.settings.page.channelPerms.noChannels"></p>`}
