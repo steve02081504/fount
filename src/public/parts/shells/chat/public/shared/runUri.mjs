@@ -32,6 +32,18 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
 }
 
 /**
+ * 可选联邦字段转 URI 槽（空则空串，避免跳槽挤掉后续字段）。
+ * @param {string | undefined | null} value 原始值
+ * @param {'plain' | 'hex64'} mode plain 原样 trim；hex64 规范化
+ * @returns {string} 槽内容
+ */
+function joinUriSlot(value, mode) {
+	const trimmed = String(value || '').trim()
+	if (!trimmed) return ''
+	return mode === 'hex64' ? normalizeHex64(trimmed) : trimmed
+}
+
+/**
  * @param {string} groupId 群 ID
  * @param {string} inviteCode 邀请码
  * @param {string} [roomSecret] bootstrap 口令
@@ -42,10 +54,13 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
  */
 export function formatJoinRunUri(groupId, inviteCode, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
 	const segments = [groupId.trim(), inviteCode.trim()]
-	if (roomSecret?.trim()) segments.push(roomSecret.trim())
-	if (introducerPubKeyHash?.trim()) segments.push(normalizeHex64(introducerPubKeyHash))
-	if (powAnchorRef?.trim()) segments.push(String(powAnchorRef).trim())
-	if (introducerNodeHash?.trim()) segments.push(normalizeHex64(introducerNodeHash))
+	const secret = joinUriSlot(roomSecret, 'plain')
+	const pub = joinUriSlot(introducerPubKeyHash, 'hex64')
+	const pow = joinUriSlot(powAnchorRef, 'plain')
+	const node = joinUriSlot(introducerNodeHash, 'hex64')
+	// 任一联邦字段出现则固定四槽，禁止「有值才 push」导致 node 挤进 pow。
+	if (secret || pub || pow || node)
+		segments.push(secret, pub, pow, node)
 	return buildRunUri('join', segments)
 }
 
@@ -112,6 +127,15 @@ export function parseMessageRunUri(raw) {
 }
 
 /**
+ * @param {string | undefined} value URI 槽
+ * @returns {string | undefined} 非空 trim；空串视为缺省
+ */
+function optionalJoinSlot(value) {
+	const trimmed = String(value || '').trim()
+	return trimmed || undefined
+}
+
+/**
  * @param {string} raw URI
  * @returns {{ groupId: string, inviteCode: string, roomSecret?: string, introducerPubKeyHash?: string, powAnchorRef?: string, introducerNodeHash?: string } | null} join 载荷
  */
@@ -123,9 +147,9 @@ export function parseJoinRunUri(raw) {
 	return {
 		groupId,
 		inviteCode: inviteCode || '',
-		roomSecret: roomSecret?.trim() || undefined,
-		introducerPubKeyHash: introducerPubKeyHash?.trim() || undefined,
-		powAnchorRef: powAnchorRef?.trim() || undefined,
-		introducerNodeHash: introducerNodeHash?.trim() || undefined,
+		roomSecret: optionalJoinSlot(roomSecret),
+		introducerPubKeyHash: optionalJoinSlot(introducerPubKeyHash),
+		powAnchorRef: optionalJoinSlot(powAnchorRef),
+		introducerNodeHash: optionalJoinSlot(introducerNodeHash),
 	}
 }

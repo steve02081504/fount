@@ -5,6 +5,7 @@ import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { createActionRegistry } from 'npm:@steve02081504/fount-p2p/registries/action'
 import { createGroupLinkSet } from 'npm:@steve02081504/fount-p2p/transport/group_link_set'
+import { ensureLinkToNode } from 'npm:@steve02081504/fount-p2p/transport/link_registry'
 
 import { eventsPath } from '../lib/paths.mjs'
 import { onFederationRoomReadyForMailbox } from '../mailbox/ingest.mjs'
@@ -43,6 +44,27 @@ import { startTipHeartbeat } from './tipHeartbeat.mjs'
 
 /** 删群/退群拆除时 await slot leave 的上限（毫秒），避免 relay 慢导致拆除卡住。 */
 const DEFAULT_ROOM_LEAVE_TIMEOUT_MS = 4000
+/** 入群 bootstrap/peer-hint 锚点拨号等待上限；超时不阻断建房，交由后续 catch-up / autoconnect。 */
+const INTRODUCER_DIAL_TIMEOUT_MS = 8000
+
+/**
+ * 尽力等待与引导节点建链（对齐 live WarmupFedNodeLinks 的生产侧最小子集）。
+ * @param {string} targetNodeHash 目标 nodeHash
+ * @returns {Promise<void>}
+ */
+async function awaitIntroducerDial(targetNodeHash) {
+	const hash = normalizeHex64(targetNodeHash)
+	if (!hash) return
+	try {
+		await Promise.race([
+			ensureLinkToNode(hash).then(() => null),
+			new Promise(resolve => setTimeout(resolve, INTRODUCER_DIAL_TIMEOUT_MS)),
+		])
+	}
+	catch (error) {
+		console.warn('federation: introducer dial failed', error)
+	}
+}
 
 /**
  * @param {import('./federationSlot.mjs').FederationSlot | null | undefined} slot 已注册槽
@@ -334,6 +356,11 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			})
 
 			await room.start()
+			// start() 里 autoconnect 对锚点是 fire-and-forget；生产无 WarmupFedNodeLinks，
+			// 这里短等 bootstrap/peer-hint，让紧随其后的 catch-up 有机会看到 peer。
+			for (const anchor of [bootstrapNodeHash, peerHintNodeHash])
+				if (anchor && anchor !== nodeHash)
+					await awaitIntroducerDial(anchor)
 
 			if (getFederationPartitionRebindGen(username, groupId, partitionId) !== genAtJoin) {
 				unregisterChunkSwarm(username, groupId)

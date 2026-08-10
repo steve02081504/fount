@@ -221,6 +221,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 					ticket.code,
 					ticket.roomSecret,
 					ticket.introducerPubKeyHash,
+					ticket.introducerNodeHash,
 				)
 			await navigator.clipboard.writeText(url)
 			showToastI18n('success', 'chat.hub.group.context.inviteCopied')
