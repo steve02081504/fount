@@ -40,9 +40,8 @@ const REMOTE_PROFILE_NEGATIVE_TTL_MS = 60_000
 /** @type {ReturnType<typeof createLruMap<string, number>>} */
 const remoteProfileNegativeCache = createLruMap(REMOTE_PROFILE_NEGATIVE_CACHE_MAX)
 /**
- * 远端 EVFS profile 拉取上限；须覆盖 manifest fanout（默认 8s）+ chunk fanout（默认 8s）的冷路径。
- * 短于底层 EVFS 等待时，本地已有 manifest/chunk 也会被误判为失败并写入负缓存。
- * 参见 fount-p2p#8（本地 public manifest 仍阻塞 fanout）。
+ * 远端 EVFS profile 拉取上限；冷 miss 须覆盖 manifest fanout（默认 8s）+ chunk fanout（默认 8s）。
+ * 热缓存：fount-p2p≥0.0.22 对本地 publicSig 立刻返回；本文件仍优先 `tryReadCachedPublicProfilePlain`。
  */
 export const REMOTE_PROFILE_FETCH_TIMEOUT_MS = 18_000
 
