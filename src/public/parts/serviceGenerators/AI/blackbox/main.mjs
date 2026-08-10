@@ -37,6 +37,7 @@ const configTemplate = {
 	name: 'Blackbox',
 	model: 'claude-3-5-sonnet',
 	timeout: 10000,
+	system_prompt_at_depth: 10,
 	convert_config: {
 		roleReminding: true
 	}
@@ -97,8 +98,9 @@ ${chatLogEntry.content}
 			})
 
 			const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
-			if (config.system_prompt_at_depth ?? 10)
-				messages.splice(Math.max(messages.length - (config.system_prompt_at_depth ?? 10), 0), 0, {
+			const systemPromptAtDepth = config.system_prompt_at_depth ?? configTemplate.system_prompt_at_depth
+			if (systemPromptAtDepth)
+				messages.splice(Math.max(messages.length - systemPromptAtDepth, 0), 0, {
 					role: 'system',
 					content: system_prompt
 				})
