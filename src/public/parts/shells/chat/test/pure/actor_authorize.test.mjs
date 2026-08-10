@@ -79,3 +79,20 @@ Deno.test('stale actingAgentEntityHash field is ignored', async () => {
 	const denied = await checkEventPermission(state, event, sender)
 	assertEquals(denied.ok, false)
 })
+
+Deno.test('@everyone can file_upload by default', async () => {
+	const { state, sender } = stateWithTwoMembers()
+	const event = {
+		type: 'file_upload',
+		channelId: 'default',
+		content: {
+			fileId: 'd'.repeat(64),
+			name: 'a.png',
+			size: 1,
+			mimeType: 'image/png',
+			contentHash: 'e'.repeat(64),
+		},
+	}
+	const allowed = await checkEventPermission(state, event, sender)
+	assertEquals(allowed.ok, true)
+})

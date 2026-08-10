@@ -74,6 +74,7 @@ export function createDefaultRoles() {
 				SEND_MESSAGES: true,
 				SEND_STICKERS: true,
 				ADD_REACTIONS: true,
+				UPLOAD_FILES: true,
 				STREAM: true,
 			},
 			isDefault: true,
