@@ -82,7 +82,7 @@ async function GetSource(config) {
 
 			const messages = []
 			mergeStructPromptChatLog(prompt_struct).forEach(chatLogEntry => {
-				const uid = Math.random().toString(36).slice(2, 10)
+				const uid = chatLogEntry.id ||= Math.random().toString(36).slice(2, 10)
 				messages.push({
 					role: chatLogEntry.role === 'user' ? 'user' : chatLogEntry.role === 'system' ? 'system' : 'assistant',
 					content: `\

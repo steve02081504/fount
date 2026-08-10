@@ -152,7 +152,7 @@ async function GetSource(config) {
 				// 内容可以是文本和图片的混合数组
 				const content = []
 
-				const uid = Math.random().toString(36).slice(2, 10)
+				const uid = chatLogEntry.id ||= Math.random().toString(36).slice(2, 10)
 
 				// 添加文本内容
 				content.push({

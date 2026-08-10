@@ -11,7 +11,7 @@ export function buildMessagesFromPromptStruct(prompt_struct, config, configTempl
 	const ignoreFiles = config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles
 
 	let messages = mergeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
-		const uid = Math.random().toString(36).slice(2, 10)
+		const uid = chatLogEntry.id ||= Math.random().toString(36).slice(2, 10)
 		let textContent = `\
 <message "${uid}">
 <sender>${chatLogEntry.name}</sender>

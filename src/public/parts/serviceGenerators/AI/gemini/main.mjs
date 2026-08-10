@@ -395,7 +395,7 @@ system:
 					chatHistory[chatHistory.length - 1].extension.gemini_API_data ??= base_result.extension.gemini_API_data
 				}
 				chatHistory = await Promise.all(chatHistory.map(async chatLogEntry => {
-					const uid = Math.random().toString(36).slice(2, 10)
+					const uid = chatLogEntry.id ||= Math.random().toString(36).slice(2, 10)
 
 					const fileParts = await Promise.all((chatLogEntry.files || []).map(async file => {
 						try {

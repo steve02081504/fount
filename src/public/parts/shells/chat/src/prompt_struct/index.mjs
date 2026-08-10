@@ -6,12 +6,12 @@
  * 【数据结构】prompt_struct_t：char_prompt、user_prompt、world_prompt、other_chars_prompts、other_personas_prompts、plugin_prompts、chat_log、timelines、locales 等。
  * 【关联】session/generation、triggerReply 调用；依赖 visibility.mjs 与 char/world/user API。
  */
-/** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
-/** @typedef {import('../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
-/** @typedef {import('../../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
-/** @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
-/** @typedef {import('../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
-/** @typedef {import('../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
+/** @typedef {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
+/** @typedef {import('../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
+/** @typedef {import('../../../../../../decl/userAPI.ts').UserAPI_t} UserAPI_t */
+/** @typedef {import('../../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
+/** @typedef {import('../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
+/** @typedef {import('../../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 
 import { entryVisibleToViewer } from '../chat/lib/visibility.mjs'
 
@@ -65,7 +65,7 @@ function injectAttributionWarnings(promptStruct, args) {
  * @param {object | undefined} prompt GetPromptForOther 结果
  * @param {string} name 显示名键
  * @param {{ last_active?: number, count?: number } | undefined} activity 活跃统计
- * @returns {import('../../../../../decl/prompt_struct.ts').other_chars_prompts_t} 带 name/is_active/last_active 的片段
+ * @returns {import('../../../../../../decl/prompt_struct.ts').other_chars_prompts_t} 带 name/is_active/last_active 的片段
  */
 function withActivityMeta(prompt, name, activity) {
 	const base = prompt && typeof prompt === 'object' ? prompt : getSinglePartPrompt()
