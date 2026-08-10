@@ -1,9 +1,7 @@
 /**
  * WHIP SDP：解析 offer 媒体行，生成 answer。
+ * node-datachannel 仅在 acceptWhipOffer 时懒加载——静态 import 会在 Termux 等无 native prebuild 的平台上拖垮整个 chat shell。
  */
-import nodeDataChannel from 'npm:node-datachannel'
-
-const { PeerConnection, Video, Audio, RtcpReceivingSession } = nodeDataChannel
 
 /**
  * WHIP offer 媒体信息摘要。
@@ -49,6 +47,23 @@ export function parseOfferMedia(sdp) {
 }
 
 /**
+ * 加载 node-datachannel 默认导出。
+ * @returns {Promise<import('npm:node-datachannel').default>} 原生绑定
+ */
+async function loadNodeDataChannel() {
+	try {
+		const mod = await import('npm:node-datachannel')
+		return mod.default ?? mod
+	}
+	catch (error) {
+		const err = new Error('WHIP ingest requires node-datachannel native addon', { cause: error })
+		err.code = 'WHIP_NATIVE_UNAVAILABLE'
+		err.skip_report = true
+		throw err
+	}
+}
+
+/**
  * 接受 WHIP offer，创建仅接收方向的 PeerConnection 并生成 answer SDP。
  * @param {string} offerSdp WHIP offer SDP（如 OBS 推流）
  * @param {object} handlers 轨道回调
@@ -56,6 +71,7 @@ export function parseOfferMedia(sdp) {
  * @returns {Promise<{ answerSdp: string, pc: import('npm:node-datachannel').PeerConnection, info: WhipMediaInfo, close: () => void }>} answer SDP 与 PeerConnection 句柄
  */
 export async function acceptWhipOffer(offerSdp, handlers) {
+	const { PeerConnection, Video, Audio, RtcpReceivingSession } = await loadNodeDataChannel()
 	const info = parseOfferMedia(offerSdp)
 	const pc = new PeerConnection('whip-ingest', {
 		iceServers: ['stun:stun.l.google.com:19302'],
