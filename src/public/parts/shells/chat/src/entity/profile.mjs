@@ -41,7 +41,7 @@ const REMOTE_PROFILE_NEGATIVE_TTL_MS = 60_000
 const remoteProfileNegativeCache = createLruMap(REMOTE_PROFILE_NEGATIVE_CACHE_MAX)
 /**
  * 远端 EVFS profile 拉取上限；冷 miss 须覆盖 manifest fanout（默认 8s）+ chunk fanout（默认 8s）。
- * 热缓存：fount-p2p≥0.0.22 对本地 publicSig 立刻返回；本文件仍优先 `tryReadCachedPublicProfilePlain`。
+ * 热缓存由 fount-p2p `fetchPublicManifest` SWR（本地 publicSig 立刻返回）负责。
  */
 export const REMOTE_PROFILE_FETCH_TIMEOUT_MS = 18_000
 
@@ -98,22 +98,6 @@ function raceTimeout(promise, timeoutMs, label) {
 }
 
 /**
- * 仅用本地已缓存的 public manifest + chunk 组装明文（不发起 fanout）。
- * @param {string} replicaUsername replica
- * @param {string} entityHash 128 hex
- * @param {string} logicalPath EVFS 逻辑路径
- * @returns {Promise<Uint8Array | Buffer | null>} 明文或 null
- */
-async function tryReadCachedPublicProfilePlain(replicaUsername, entityHash, logicalPath) {
-	const { loadFileManifest, readManifestPlaintext } = await import('npm:@steve02081504/fount-p2p/files/evfs')
-	const manifest = await loadFileManifest(entityHash, logicalPath)
-	if (manifest?.transferKeyDescriptor?.type !== 'public' || !manifest?.meta?.publicSig) return null
-	return readManifestPlaintext(replicaUsername, manifest, {
-		fetchChunk: async () => null,
-	})
-}
-
-/**
  * @param {string} replicaUsername replica
  * @param {string} entityHash 128 hex
  * @param {string} logicalPath EVFS 逻辑路径
@@ -122,8 +106,6 @@ async function tryReadCachedPublicProfilePlain(replicaUsername, entityHash, logi
  */
 async function readRemoteProfilePlain(replicaUsername, entityHash, logicalPath, readPlain) {
 	if (readPlain) return readPlain(replicaUsername, entityHash, logicalPath)
-	const cached = await tryReadCachedPublicProfilePlain(replicaUsername, entityHash, logicalPath).catch(() => null)
-	if (cached) return cached
 	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
 	return readPublicFile(replicaUsername, entityHash, logicalPath)
 }

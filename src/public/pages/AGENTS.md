@@ -53,6 +53,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 
 ## Components & Utilities
 
+- **`lib/memo.mjs`**: `createLruMap` / `dedupeAsync` / `memoizePromise`. Cache hits still return `Promise.resolve(value)` — callers may `.catch` / `.then`; never return the bare cached value.
 - **`lib/virtualList.mjs`**: Virtual scrolling. Optional `getItemKey` enables keyed reconcile on `refresh()`.
 - **`lib/infiniteScroll.mjs`**: `ensureScrollSentinel` / `insertBeforeScrollSentinel` / `bindInfiniteScroll` / `disconnectInfiniteScroll`. Sentinel stays last via `insertBeforeScrollSentinel`. Rising-edge / replay traps: Social [ui-details.md](../parts/shells/social/public/docs/ui-details.md#feed-pagination--replay).
 - **`lib/base64.mjs`**: `arrayBufferToBase64` / `blobToBase64` — reuse for upload bodies; do not copy per shell.
