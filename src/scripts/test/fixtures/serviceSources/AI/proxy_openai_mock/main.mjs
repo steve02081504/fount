@@ -35,4 +35,7 @@ const source = await generator.interfaces.serviceGenerator.GetSource({
 
 source.filename = 'proxy_openai_mock'
 
+/**
+ *
+ */
 export default source

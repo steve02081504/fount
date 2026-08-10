@@ -36,7 +36,7 @@ export function addCheckpointKnownEventIds(checkpoint, out) {
 		if (isHex64(n)) out.add(n)
 	}
 	for (const ids of Object.values(checkpoint.hot_posts?.latestByChannel || {})) {
-		const list = Array.isArray(ids) ? ids : (ids ? [ids] : [])
+		const list = Array.isArray(ids) ? ids : ids ? [ids] : []
 		for (const id of list) {
 			const n = String(id || '').trim().toLowerCase()
 			if (isHex64(n)) out.add(n)

@@ -11,8 +11,8 @@ import { DEFAULT_STREAM_GENERATING_IDLE_MS } from 'npm:@steve02081504/fount-p2p/
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
-import { mergeChannelMessagesForDisplay } from '../../public/shared/messageMerge.mjs'
 import { filterChannelMessageLinesByBranchTip } from '../../public/shared/branchMessageFilter.mjs'
+import { mergeChannelMessagesForDisplay } from '../../public/shared/messageMerge.mjs'
 import { materializeFromCheckpoint } from '../chat/dag/groupMaterializedState.mjs'
 import { getState } from '../chat/dag/materialize.mjs'
 import { resolveContentRefsInMessageLines } from '../chat/files/contentRefResolve.mjs'
