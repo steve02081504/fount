@@ -1076,7 +1076,7 @@
 			"previewGroupMeta": "出自群組：${name}",
 			"previewAuthorMeta": "出自作者",
 			"previewActionFailed": "未果：${error}",
-			"loadFailed": "表情选择器加载失败：${error}",
+			"loadFailed": "表情擇器載入未遂：${error}",
 			"category": {
 				"animal": "動物",
 				"face": "表情",

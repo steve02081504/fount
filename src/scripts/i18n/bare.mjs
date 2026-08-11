@@ -100,7 +100,7 @@ export let localhostLocaleData = getLocaleData(localhostLocales)
 fs.watch(`${__dirname}/src/public/locales`, (event, filename) => {
 	if (!filename?.endsWith('.json')) return
 	const locale = filename.slice(0, -5)
-	console.log(`Detected change in ${filename}.`)
+	if (!process.env.FOUNT_TEST) console.log(`Detected change in ${filename}.`)
 
 	if (!fountLocaleCache[locale]) return
 	delete fountLocaleCache[locale]

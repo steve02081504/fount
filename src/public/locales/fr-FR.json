@@ -1076,7 +1076,7 @@
 			"previewGroupMeta": "Du groupe : ${name}",
 			"previewAuthorMeta": "De l'auteur",
 			"previewActionFailed": "Échec de l'action : ${error}",
-			"loadFailed": "表情选择器加载失败：${error}",
+			"loadFailed": "Impossible de charger le sélecteur d’émojis : ${error}",
 			"category": {
 				"animal": "animal",
 				"face": "Émojis",
