@@ -38,14 +38,14 @@ export async function handleEdit(button, actions) {
 	const saveCharEdit = async () => {
 		if (!charEditor) return
 		const text = charEditor.getText()
-		if (!text.trim()) {
+		if (!text.trim() && !charEditor.selectedFiles.length) {
 			showToastI18n('warning', 'chat.hub.message.edit.emptyText')
 			return
 		}
 		const saveButton = editWrap?.querySelector('.message-edit-save')
 		if (saveButton instanceof HTMLButtonElement) saveButton.disabled = true
 		try {
-			await editChannelMessage(groupId, channelId, eventId, text)
+			await editChannelMessage(groupId, channelId, eventId, text, charEditor.selectedFiles)
 			await removeWithFade(editWrap)
 			await reload?.()
 		}

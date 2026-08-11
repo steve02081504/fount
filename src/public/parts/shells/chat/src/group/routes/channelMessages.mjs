@@ -3,7 +3,6 @@
  * 【职责】频道 HTTP 路由（消息读写与线程）。
  * 【关联】被 channels.mjs 聚合注册。
  */
-import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
@@ -22,6 +21,7 @@ import {
 	CHANNEL_MESSAGE_EVENT_ID_RE,
 	findChannelMessageRow,
 } from '../../chat/channel/messageMutations.mjs'
+import { attachFilesToContent } from '../../chat/channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import {
@@ -110,10 +110,21 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		}
 		const row = await findChannelMessageRow(username, groupId, channelId, eventId)
 		if (!row) throw httpError(404, 'message not found')
-		const finalContent = await applyChannelMessageEditHooks(
+		let contentToWrite = await applyChannelMessageEditHooks(
 			username, groupId, channelId, eventId, row, contentObj,
 		)
-		const event = await appendChannelMessageEdit(username, groupId, channelId, eventId, finalContent)
+		const files = Array.isArray(req.body?.files) ? req.body.files : []
+		if (files.length || Array.isArray(contentToWrite.files)) {
+			;({ content: contentToWrite } = await attachFilesToContent(
+				username,
+				groupId,
+				contentToWrite,
+				files,
+				state.groupSettings.maxDagPayloadBytes,
+				{ mergeExistingFiles: true },
+			))
+		}
+		const event = await appendChannelMessageEdit(username, groupId, channelId, eventId, contentToWrite)
 		res.status(200).json({ event })
 	})
 
@@ -345,18 +356,14 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, channelId)
 
-		const processedFiles = (Array.isArray(rawFiles) ? rawFiles : []).map(file => ({
-			...file,
-			buffer: Buffer.from(file.buffer, 'base64'),
-		}))
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).channel(channelId)
 		const sent = await channel.send({
 			...generated
 				? { generated: { content: generated.content, isAutoTrigger: generated.isAutoTrigger } }
 				: { rawContent },
-			files: processedFiles.length ? processedFiles : undefined,
-			maxDagPayloadBytes: Number(state.groupSettings?.maxDagPayloadBytes) || 262_144,
+			files: Array.isArray(rawFiles) && rawFiles.length ? rawFiles : undefined,
+			maxDagPayloadBytes: state.groupSettings.maxDagPayloadBytes,
 		})
 		const event = sent.sourceEvent
 		const result = sent.decryptResult

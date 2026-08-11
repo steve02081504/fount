@@ -570,7 +570,15 @@
 			"open_fount": "fountを開く",
 			"open_or_install_fount": "fountを開く/インストール",
 			"error_message": "あらら…\n\nエラーが発生しました：\n${error}",
-			"star_thank_you": "fountにスターを付けていただきありがとうございます！"
+			"star_thank_you": "fountにスターを付けていただきありがとうございます！",
+			"telegram": {
+				"title": "Telegramを開く",
+				"aria-label": "Telegramを開く"
+			},
+			"github": {
+				"title": "GitHubを開く",
+				"aria-label": "GitHubを開く"
+			}
 		},
 		"error": {
 			"title": "インストールに失敗しました！",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "グループ：${name}",
 			"previewAuthorMeta": "作者より",
 			"previewActionFailed": "操作に失敗しました：${error}",
+			"loadFailed": "絵文字ピッカーの読み込みに失敗しました：${error}",
 			"category": {
 				"animal": "動物",
 				"face": "絵文字",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "グループ設定が保存されました",
 					"saveFailed": "設定を保存できませんでした: ${error}",
 					"rolesTitle": "役割と権限",
+					"rolesHint": "チェックした権限は、そのロールのメンバー全員にグループ全体で適用されます。一般メンバーがファイルを添付できるようにするには、Everyone の「ファイルをアップロード」を有効にしてください。特定チャンネルのみ制限する場合は、詳細設定の「チャンネル権限」を使います。",
 					"roleDefault": "デフォルト",
 					"permissionUpdated": "権限が更新されました",
 					"permissionUpdateFailed": "権限の更新に失敗しました: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "チャンネルアーカイブ"
 					},
 					"channelPerms": {
-						"addRole": "ロールオーバーライドを追加",
 						"denied": "チャンネル権限のオーバーライドを編集するための MANAGE_CHANNELS 権限がありません。",
-						"hint": "特定のチャンネルに対してロール権限のオーバーライドを設定します。検出されていないアイテムは、グループの役割の権限を継承します。",
+						"hint": "特定チャンネルの例外のみ設定できます。継承＝ロールの権限に従う、許可/拒否＝このチャンネルで強制上書き。全員に添付を許可するには「役割の権限」で Everyone のファイルをアップロードを有効にしてください。",
+						"overridden": "上書き済み",
+						"clearOverride": "すべて継承に戻す",
 						"noChannels": "現在、設定するチャンネルがありません",
-						"removeRole": "この役割のオーバーライドを削除します",
 						"selectChannel": "チャンネル",
 						"stateAllow": "許可する",
 						"stateDeny": "拒否する",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "受信箱",
-				"filtersLabel": "受信箱メッセージをフィルタリングする",
+				"panel": {
+					"aria-label": "受信箱"
+				},
+				"filtersLabel": {
+					"aria-label": "受信箱メッセージをフィルタリングする"
+				},
 				"rowLabel": {
 					"aria-label": "${author} は ${group} の ${channel} で次のように述べました: ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "フェデレーションリモート作成者"
 			},
 			"trustAuthor": {
-				"textContent": "信頼",
-				"title": "この作者を信頼します (危険な HTML を許可します)"
+				"textContent": "作者を信頼",
+				"title": "この作者を信頼する（危険な Markdown/HTML を許可）"
 			},
 			"stickerInline": "ステッカー",
-			"markdownRenderFailed": "メッセージのレンダリングに失敗しました",
+			"markdownRenderFailed": "Markdownのレンダリングに失敗しました",
+			"messageRenderFailed": "メッセージを表示できませんでした",
 			"retrySend": "再試行",
 			"mergeDagOk": "フォークがマージされました",
 			"mergeDagFailed": "マージに失敗しました: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "グループ ファイルは収束暗号化を使用します。攻撃者がファイルの平文を知っている場合、キーを導出して、対応する暗号文ブロックを復号化できます。機密性の高い独自のプライベート文書を保護するために、グループ暗号化のみに依存しないでください。",
 			"reputationSlashAlert": "メンバー ${target}… の評判が減点を思い出させます。",
 			"profileEdit": {
+				"close": {
+					"aria-label": "閉じる"
+				},
 				"previewHint": "変更はすぐにプレビューに表示され、保存され、チャットとソーシャル全体で同期されます。",
 				"sfwMode": "一般コンテンツ",
 				"livePreview": "ライブプレビュー",
@@ -2456,6 +2475,9 @@
 				"created": "子スレッドが作成されました",
 				"drawer": {
 					"aria-label": "子スレッド"
+				},
+				"breadcrumb": {
+					"aria-label": "子スレッドのパンくずリスト"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,17 @@
 				"friends": "プライベートチャットはまだありません",
 				"groups": "まだグループがありません",
 				"members": "まだメンバーがいません",
-				"pins": "まだピンがありません",
-				"username": "ユーザー名が取得できませんでした"
+				"pins": "まだピンがありません"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "信頼済み",
+				"title": "この作者の Markdown レンダリングを信頼中"
+			},
+			"attachment": {
+				"dropToUpload": "「#${channel}」にドロップしてアップロード"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} 件の未読"
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2905,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "ダウンロード"
+					"title": "ダウンロード",
+					"aria-label": "ダウンロード"
 				},
-				"downloadIcon": {
-					"alt": "ダウンロードアイコン"
+				"edit": {
+					"title": "画像を編集",
+					"aria-label": "画像を編集"
+				},
+				"editIcon": {
+					"alt": "編集アイコン"
 				},
 				"delete": {
-					"title": "削除"
-				},
-				"deleteIcon": {
-					"alt": "削除アイコン"
+					"title": "削除",
+					"aria-label": "削除"
 				},
 				"more": {
-					"title": "もっと"
+					"title": "もっと",
+					"aria-label": "もっと"
 				},
 				"recognize": {
-					"title": "音声を文字に"
+					"title": "音声を文字に",
+					"aria-label": "音声を文字に"
 				}
 			}
 		},
@@ -4764,6 +4800,9 @@
 			"title": "項目一覧",
 			"aria-label": "項目一覧"
 		},
+		"breadcrumb": {
+			"aria-label": "パンくずリスト"
+		},
 		"openCabinets": "ファイルキャビネットリストを開く",
 		"closeCabinets": "閉じる",
 		"bootstrapFailed": "ファイル キャビネットの初期化に失敗しました: ${error}",
@@ -5823,6 +5862,25 @@
 			},
 			"search": {
 				"placeholder": "検索..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "メディアビューア"
+			},
+			"download": {
+				"textContent": "ダウンロード",
+				"aria-label": "ダウンロード"
+			},
+			"close": {
+				"textContent": "閉じる",
+				"aria-label": "閉じる"
+			},
+			"prev": {
+				"aria-label": "前へ"
+			},
+			"next": {
+				"aria-label": "次へ"
 			}
 		}
 	}

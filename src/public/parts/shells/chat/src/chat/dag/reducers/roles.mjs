@@ -11,12 +11,13 @@ export const roleReducers = {
 	 */
 	role_create(state, event) {
 		withGroupId(state, event)
-		state.roles[event.content.roleId] = {
+		const roleId = event.content.roleId
+		state.roles[roleId] = {
 			name: event.content.name,
 			color: event.content.color,
 			position: event.content.position || 0,
 			permissions: event.content.permissions,
-			isDefault: false,
+			isDefault: roleId === '@everyone' || event.content.isDefault === true,
 			isHoisted: event.content.isHoisted || false,
 		}
 		return state

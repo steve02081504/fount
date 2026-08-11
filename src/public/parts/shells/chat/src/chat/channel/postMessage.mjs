@@ -9,19 +9,15 @@ import { Buffer } from 'node:buffer'
 import { createHash, randomUUID } from 'node:crypto'
 
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
-import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
 import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { unlockAchievement } from '../../../../achievements/src/api.mjs'
 import {
 	channelMessage,
-	inlineImageMarker,
-	mergeInlineImageMarkersIntoContent,
 	normalizeChannelMessage,
 } from '../../../public/shared/channelContent.mjs'
 import { ensureChatExtension, sanitizeAlt } from '../../../public/shared/messageFields.mjs'
-import { entityFileUrl } from '../../entity/filesUrl.mjs'
 import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
@@ -32,12 +28,23 @@ import { loadPlayerForReplica } from '../session/timeSliceParts.mjs'
 import { commitChannelMessageEvent } from './messageCommit.mjs'
 
 /**
- * 上传单个明文文件到群 DAG（`file_upload` + 可选 Hub 内联图附件 hash）。
+ * 上传附件缓冲规范化：已是 Buffer 原样；string 按 base64；其余交给 Buffer.from。
+ * @param {Buffer | string | Uint8Array | ArrayBuffer} buffer 原始缓冲
+ * @returns {Buffer} Node Buffer
+ */
+export function asUploadBuffer(buffer) {
+	if (Buffer.isBuffer(buffer)) return buffer
+	if (typeof buffer === 'string') return Buffer.from(buffer, 'base64')
+	return Buffer.from(buffer)
+}
+
+/**
+ * 上传单个明文文件到群 DAG（`file_upload` + 群 EVFS manifest）。
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
  * @param {Buffer} buffer 文件字节
  * @param {{ name?: string, mime_type?: string, description?: string }} file 元数据
- * @returns {Promise<{ fileId: string, uploadMeta: object, inlineImageUrl: string | null }>} 上传结果
+ * @returns {Promise<{ fileId: string, uploadMeta: object }>} 上传结果
  */
 async function uploadPlainFileToGroup(username, groupId, buffer, file) {
 	const fileId = randomUUID()
@@ -98,25 +105,7 @@ async function uploadPlainFileToGroup(username, groupId, buffer, file) {
 		console.error('[evfs] syncGroupFileManifest failed', error)
 	})
 
-	let inlineImageUrl = null
-	if (mimeType.startsWith('image/')) {
-		const operatorEntityHash = await resolveOperatorEntityHash(username)
-		if (operatorEntityHash) {
-			const attachId = randomUUID()
-			const logicalPath = `shells/chat/attachments/${attachId}`
-			await putFileManifest({
-				ownerEntityHash: operatorEntityHash,
-				logicalPath,
-				plaintext: buffer,
-				name,
-				mimeType,
-				ceMode: 'convergent',
-			})
-			inlineImageUrl = entityFileUrl(operatorEntityHash, logicalPath)
-		}
-	}
-
-	return { fileId, uploadMeta, inlineImageUrl }
+	return { fileId, uploadMeta }
 }
 
 /**
@@ -164,39 +153,65 @@ async function applyBeforeUserSend(username, groupId, channelId, content, files)
 }
 
 /**
+ * 规范化附件 wire 描述符（fileId / name / mime / size / description）。
+ * @param {object} file 已落盘或待上传文件描述符
+ * @returns {object} wire files[] 项
+ */
+function wireFileDescriptor(file) {
+	const description = sanitizeAlt(file.description)
+	return {
+		fileId: String(file.fileId || '').trim(),
+		name: String(file.name || 'file').slice(0, 255),
+		mime_type: String(file.mime_type || 'application/octet-stream'),
+		size: Math.max(0, Number(file.size) || 0),
+		...description ? { description } : {},
+	}
+}
+
+/**
  * 附件上传 + content 规范化（与 human 钩子解耦）。
+ * 已有 `fileId` 的描述符（编辑保留项）直接并入，不重新上传。
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
  * @param {object} content 消息内容
- * @param {Array<{ name?: string, mime_type?: string, buffer: Buffer }> | undefined} files 附件
+ * @param {Array<{ name?: string, mime_type?: string, buffer?: Buffer | string, fileId?: string, size?: number, description?: string }> | undefined} files 附件
  * @param {number} maxBytes payload 上限
+ * @param {{ mergeExistingFiles?: boolean }} [options] mergeExistingFiles：与 content.files 合并而非替换
  * @returns {Promise<{ content: object, fileIds: string[] }>} 合并后 content 与 fileIds
  */
-async function attachFilesToContent(username, groupId, content, files, maxBytes) {
+export async function attachFilesToContent(username, groupId, content, files, maxBytes, {
+	mergeExistingFiles = false,
+} = {}) {
 	const fileIds = []
 	/** @type {object[]} */
-	const fileDescriptors = []
-	const inlineMarkers = []
+	const fileDescriptors = mergeExistingFiles && Array.isArray(content?.files)
+		? content.files.map(wireFileDescriptor).filter(file => file.fileId)
+		: []
+	for (const file of fileDescriptors)
+		fileIds.push(file.fileId)
+
 	for (const file of files || []) {
+		const existingId = String(file.fileId || '').trim()
+		if (existingId && !file.buffer) {
+			if (fileDescriptors.some(d => d.fileId === existingId)) continue
+			fileDescriptors.push(wireFileDescriptor(file))
+			fileIds.push(existingId)
+			continue
+		}
 		if (parseEvfsRef(file.buffer))
 			continue
-		const buffer = Buffer.isBuffer(file.buffer) ? file.buffer : Buffer.from(file.buffer, 'base64')
+		const buffer = asUploadBuffer(file.buffer)
 		if (!buffer.byteLength) continue
-		const { fileId, uploadMeta, inlineImageUrl } = await uploadPlainFileToGroup(username, groupId, buffer, file)
+		const { fileId, uploadMeta } = await uploadPlainFileToGroup(username, groupId, buffer, file)
 		fileIds.push(fileId)
-		const description = sanitizeAlt(file.description)
-		fileDescriptors.push({
+		fileDescriptors.push(wireFileDescriptor({
 			fileId,
 			name: uploadMeta.name,
 			mime_type: uploadMeta.mimeType,
 			size: uploadMeta.size,
-			...description ? { description } : {},
-		})
-		if (inlineImageUrl)
-			inlineMarkers.push(inlineImageMarker(file.name, inlineImageUrl))
+			description: file.description,
+		}))
 	}
-
-	content = mergeInlineImageMarkersIntoContent(content, inlineMarkers, { preserveShowEdit: true })
 
 	const stickerBase64 = content?.type === 'sticker' ? String(content.stickerBase64 || '') : ''
 	if (stickerBase64 && approxStickerBytes(stickerBase64) > maxBytes)
@@ -204,8 +219,11 @@ async function attachFilesToContent(username, groupId, content, files, maxBytes)
 
 	if (fileDescriptors.length)
 		content = normalizeChannelMessage({ ...content, files: fileDescriptors })
-	else
-		content = normalizeChannelMessage(content)
+	else {
+		const cleaned = { ...content }
+		delete cleaned.files
+		content = normalizeChannelMessage(cleaned)
+	}
 
 	return { content, fileIds }
 }

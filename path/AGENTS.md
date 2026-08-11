@@ -36,12 +36,7 @@ Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/s
 
 ## CI smoke
 
-`test_running.yaml` job `path-cmd-smoke` (CI-only):
-
-1. `.github/path-ci/install-hooks.sh` stubs `src/server/index.mjs` / `src/log_viewer/index.mjs`.
-2. `run-smoke.{sh,ps1}` exercises `server` / `background` / `log` / `reboot` / `init`.
-3. `FOUNT_CLICK` via child `smoke-fount-click.ps1` (`function script:` stubs — not `global:`). Windows → `Start-WTfountCmd` (powershell 5.1); non-Windows → bash passthrough (`index.sh` unsets `FOUNT_CLICK`).
-4. `restore-hooks.sh` on exit. Same workflow also runs remote init → `remove` (`test-fount`).
+CI-only `path-cmd-smoke`: [docs/ci-smoke.md](docs/ci-smoke.md).
 
 ## ShellCheck
 

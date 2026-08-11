@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import { formatBytes } from '../../../../pages/scripts/lib/formatBytes.mjs'
 import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount, generateApiKey, revokeApiKeyByJti } from '../../../../server/auth/index.mjs'
 
 import { getEditorCommandConfig, openEditor, setEditorCommandConfig } from './editorCommand.mjs'
@@ -29,21 +30,6 @@ async function getDirectorySize(directoryPath) {
 		return 0
 	}
 	return totalSize
-}
-
-/**
- * 格式化字节大小。
- * @param {number} bytes - 字节数。
- * @param {number} [decimals=2] - 小数位数。
- * @returns {string} - 格式化后的大小字符串。
- */
-function formatBytes(bytes, decimals = 2) {
-	if (!bytes) return '0 Bytes'
-	const k = 1024
-	const dm = decimals < 0 ? 0 : decimals
-	const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-	const i = Math.floor(Math.log(bytes) / Math.log(k))
-	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
 /**

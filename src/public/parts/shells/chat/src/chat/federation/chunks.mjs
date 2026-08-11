@@ -2,14 +2,14 @@
  * 【文件】federation/chunks.mjs
  * 【职责】§10.2 群文件密文块 P2P 复制：经 P2P fed_chunk_put/get/data/ack 在在线邻居间传播与拉取分块，并注册 swarm API 供 groupFiles 存储插件回调。
  * 【原理】attachFedChunkHandlers 在 ensureFederationRoom 时挂载；本地 put 后 replicateChunkToRoster 广播，缺失时 fetchChunkFromRoster 广播 get 并等待 fed_chunk_data。replicateChunkToFederation 可等待 M_eff 个 ACK。createFederationSwarmStoragePlugin 在本地 miss 时回退联邦 fetch。
- * 【数据结构】载荷 { chunkHash, dataB64? }；swarmApis Map 键 username\0groupId；pending 等待见 chunk_fetch_pending.mjs。
- * 【关联】federation/chunks.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs；npm:@steve02081504/fount-p2p/node/reputation_store.mjs；npm:@steve02081504/fount-p2p/node/storage_plugins。
+ * 【数据结构】载荷 { chunkHash, dataB64? }；swarmApis Map 键 username\0groupId；pending 等待见 files/chunk/pending。
+ * 【关联】federation/chunks.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs；npm:@steve02081504/fount-p2p/node/reputation_store；npm:@steve02081504/fount-p2p/node/storage_plugins。
  */
 import { base64ToBytes, bytesToBase64 } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
 import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { registerChunkFetchWait, resolveChunkFetchWait } from 'npm:@steve02081504/fount-p2p/federation/chunk_fetch_pending'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import {
 	assignChunksToPeers,
 	markChunkDone,
@@ -17,12 +17,12 @@ import {
 	markChunkInflight,
 	planChunkFetches,
 } from 'npm:@steve02081504/fount-p2p/federation/chunk_fetch_scheduler'
-import { verifiedChunkBytes } from 'npm:@steve02081504/fount-p2p/files/chunk_fetch_verify'
-import { handleFedChunkGetIngress, handleFedChunkDataIngress } from 'npm:@steve02081504/fount-p2p/files/chunk_responder'
-import { getChunk, hasChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { registerChunkFetchWait, resolveChunkFetchWait } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
+import { handleFedChunkGetIngress, handleFedChunkDataIngress } from 'npm:@steve02081504/fount-p2p/files/chunk/responder'
+import { getChunk, hasChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
+import { verifiedChunkBytes } from 'npm:@steve02081504/fount-p2p/files/chunk/verify'
 import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 
 import { bumpChunkLocalRef } from '../files/chunkRefcount.mjs'
@@ -496,22 +496,24 @@ export function attachFedChunkHandlers(fedRoom) {
 
 /**
  * TrustGraph 全局 chunk miss：sync 分区处理带 requestId 的 fed_chunk_get/data。
- * @param {string} username 用户
  * @param {object} room federation room
  * @param {{ enqueue: (prio: number, fn: () => void) => void }} fedOut 出站队列
  * @param {object} [rtcLimits] RTC 限额
  * @param {string} [roomKey] 房间键
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function attachTrustGraphChunkHandlers(username, room, fedOut, rtcLimits = {}, roomKey = '') {
-	import('npm:@steve02081504/fount-p2p/files/chunk_responder').then(({ attachTrustGraphFedChunkResponder }) => {
+export async function attachTrustGraphChunkHandlers(room, fedOut, rtcLimits = {}, roomKey = '') {
+	try {
+		const { attachTrustGraphFedChunkResponder } = await import('npm:@steve02081504/fount-p2p/files/chunk/responder')
 		attachTrustGraphFedChunkResponder(
-			username,
 			room,
 			fedOut,
 			isFederationActionAllowedUnderLoad,
 			rtcLimits,
 			roomKey,
 		)
-	}).catch(error => console.warn('federation: failed to attach trust-graph chunk handlers', error))
+	}
+	catch (error) {
+		console.warn('federation: failed to attach trust-graph chunk handlers', error)
+	}
 }

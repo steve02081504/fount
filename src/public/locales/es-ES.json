@@ -570,7 +570,15 @@
 			"open_fount": "Abrir fount",
 			"open_or_install_fount": "Abrir/Instalar fount",
 			"error_message": "Ay ay ay :(\n\nOcurrió un error:\n${error}",
-			"star_thank_you": "¡Gracias por darle una estrella a fount!"
+			"star_thank_you": "¡Gracias por darle una estrella a fount!",
+			"telegram": {
+				"title": "Telegram",
+				"aria-label": "Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "¡Error en la instalación!",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "Del grupo: ${name}",
 			"previewAuthorMeta": "Del autor",
 			"previewActionFailed": "Acción fallida: ${error}",
+			"loadFailed": "No se pudo cargar el selector de emojis: ${error}",
 			"category": {
 				"animal": "Animales",
 				"face": "expresión",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "Configuración del grupo guardada",
 					"saveFailed": "No se pudo guardar la configuración: ${error}",
 					"rolesTitle": "Roles y permisos",
+					"rolesHint": "Los permisos marcados se aplican en todo el grupo a los miembros con ese rol. Para permitir archivos adjuntos, activa «Subir archivos» en Everyone. Usa Permisos del canal, en Avanzado, solo para excepciones por canal.",
 					"roleDefault": "por defecto",
 					"permissionUpdated": "Permisos actualizados",
 					"permissionUpdateFailed": "No se pudieron actualizar los permisos: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "Archivo de canales"
 					},
 					"channelPerms": {
-						"addRole": "Agregar anulación de rol",
 						"denied": "No tienes permiso MANAGE_CHANNELS para editar las anulaciones de permisos del canal.",
-						"hint": "Establezca anulaciones de permisos de funciones para canales específicos. Los elementos descubiertos heredan permisos de funciones de grupo.",
+						"hint": "Solo excepciones por canal: Heredar sigue los permisos de rol; Permitir/Denegar fuerzan este canal. Para adjuntos para todos, abre Permisos de rol y marca «Subir archivos» en Everyone; no busques aquí un botón para añadir una anulación.",
+						"overridden": "Anulado",
+						"clearOverride": "Restablecer todo a heredar",
 						"noChannels": "Actualmente no hay ningún canal para configurar",
-						"removeRole": "Eliminar esta anulación de rol",
 						"selectChannel": "canal",
 						"stateAllow": "permitir",
 						"stateDeny": "rechazar",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "Bandeja de entrada",
-				"filtersLabel": "Filtrar mensajes de la bandeja de entrada",
+				"panel": {
+					"aria-label": "Bandeja de entrada"
+				},
+				"filtersLabel": {
+					"aria-label": "Filtrar mensajes de la bandeja de entrada"
+				},
 				"rowLabel": {
 					"aria-label": "${author} dicho en ${group} de ${channel}: ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "autor remoto federado"
 			},
 			"trustAuthor": {
-				"textContent": "confianza",
-				"title": "Confíe en este autor (permita HTML peligroso)"
+				"textContent": "Confiar",
+				"title": "Confiar en este autor (permitir Markdown/HTML peligroso)"
 			},
 			"stickerInline": "etiqueta engomada",
 			"markdownRenderFailed": "Falló la representación del mensaje",
+			"messageRenderFailed": "No se pudo mostrar el mensaje",
 			"retrySend": "Intentar otra vez",
 			"mergeDagOk": "bifurcación fusionada",
 			"mergeDagFailed": "Fusión fallida: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "Los archivos de grupo utilizan cifrado convergente: si el atacante conoce el texto sin formato de un archivo, puede derivar la clave y descifrar el bloque de texto cifrado correspondiente. No confíe únicamente en el cifrado de grupo para proteger documentos altamente confidenciales y exclusivamente privados.",
 			"reputationSlashAlert": "La reputación del miembro ${target}… se recuerda de la deducción.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "Cerrar"
+				},
 				"previewHint": "Los cambios aparecen inmediatamente en la vista previa y se guardan y sincronizan en Chat y Social.",
 				"sfwMode": "Contenido seguro",
 				"livePreview": "Vista previa en vivo",
@@ -2456,6 +2475,9 @@
 				"created": "Se ha creado el hilo secundario.",
 				"drawer": {
 					"aria-label": "hilo infantil"
+				},
+				"breadcrumb": {
+					"aria-label": "Ruta del subhilo"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,23 @@
 				"friends": "Aún no hay chats privados",
 				"groups": "Ningún grupo todavía",
 				"members": "Aún no hay miembros",
-				"pins": "Aún no hay pines",
-				"username": "Nombre de usuario no obtenido"
+				"pins": "Aún no hay pines"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "De confianza",
+				"title": "Renderizado Markdown de este autor permitido"
+			},
+			"attachment": {
+				"dropToUpload": "Suelta para subir a #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": {
+					"switch": "count",
+					"default": "${count} mensajes sin leer",
+					"cases": {
+						"1": "1 mensaje sin leer"
+					}
+				}
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2911,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Descargar"
+					"title": "Descargar",
+					"aria-label": "Descargar"
 				},
-				"downloadIcon": {
-					"alt": "Icono de descarga"
+				"edit": {
+					"title": "Editar imagen",
+					"aria-label": "Editar imagen"
+				},
+				"editIcon": {
+					"alt": "Icono de edición"
 				},
 				"delete": {
-					"title": "Eliminar"
-				},
-				"deleteIcon": {
-					"alt": "Icono de eliminar"
+					"title": "Eliminar",
+					"aria-label": "Eliminar"
 				},
 				"more": {
-					"title": "Más"
+					"title": "Más",
+					"aria-label": "Más"
 				},
 				"recognize": {
-					"title": "Voz a texto"
+					"title": "Voz a texto",
+					"aria-label": "Voz a texto"
 				}
 			}
 		},
@@ -4764,6 +4806,9 @@
 			"title": "Lista de elementos",
 			"aria-label": "Lista de elementos"
 		},
+		"breadcrumb": {
+			"aria-label": "Migas de pan"
+		},
 		"openCabinets": "Abrir lista de archivadores",
 		"closeCabinets": "Cerrar",
 		"bootstrapFailed": "Error al inicializar el archivo: ${error}",
@@ -5823,6 +5868,25 @@
 			},
 			"search": {
 				"placeholder": "Buscar..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "Visor de medios"
+			},
+			"download": {
+				"textContent": "Descargar",
+				"aria-label": "Descargar"
+			},
+			"close": {
+				"textContent": "Cerrar",
+				"aria-label": "Cerrar"
+			},
+			"prev": {
+				"aria-label": "Medio anterior"
+			},
+			"next": {
+				"aria-label": "Medio siguiente"
 			}
 		}
 	}

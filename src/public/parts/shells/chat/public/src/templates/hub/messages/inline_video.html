@@ -1,1 +1,9 @@
-<video class="inline-video max-w-full rounded-lg mt-1" controls preload="metadata" src="${src}"></video>
+<video
+	class="message-inline-video${gallery ? ' message-gallery-item' : ' message-inline-video--single'}"
+	controls
+	preload="metadata"
+	src="${src}"
+	data-media-viewer-src="${src}"
+	data-media-viewer-name="${fileName || ''}"
+	data-media-viewer-mime="video/*"
+></video>

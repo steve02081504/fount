@@ -31,9 +31,8 @@ export async function setGroupFriendBinding(groupId, friendBinding) {
  * @returns {Promise<void>}
  */
 export async function unbindFriendGroup(groupId, { charname } = {}) {
-	const name = charname?.trim()
-	if (name)
-		await groupFetch(groupPath(groupId, 'char', name), { method: 'DELETE' })
+	if (charname)
+		await groupFetch(groupPath(groupId, 'char', charname), { method: 'DELETE' })
 	await setGroupFriendBinding(groupId, null)
 }
 

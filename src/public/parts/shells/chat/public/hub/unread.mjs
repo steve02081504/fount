@@ -37,7 +37,7 @@ export function formatUnreadBadgeHtml(count) {
 	const n = Number(count) || 0
 	if (n <= 0) return ''
 	const label = formatUnreadLabel(n)
-	return `<span class="unread-badge" aria-label="${label}">${label}</span>`
+	return `<span class="unread-badge" data-i18n="chat.hub.unreadBadge" data-count="${label}">${label}</span>`
 }
 
 /**

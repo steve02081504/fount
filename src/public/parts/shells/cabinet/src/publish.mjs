@@ -3,8 +3,8 @@ import { randomUUID } from 'node:crypto'
 
 import { buildFileManifestFromEnc, encryptPlaintextToParts, vaultWrapDescriptor } from 'npm:@steve02081504/fount-p2p/files/assemble'
 import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
-import { publicTransferKeyDescriptor } from 'npm:@steve02081504/fount-p2p/files/manifest'
-import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/public_manifest'
+import { publicTransferKeyDescriptor } from 'npm:@steve02081504/fount-p2p/files/manifest/normalize'
+import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/manifest/public'
 
 import { getEntityRecoverySecretKey, getRecoveryPubKeyHex } from '../../chat/src/entity/identity.mjs'
 import { vaultGroupId } from '../../social/src/federation/namespace.mjs'

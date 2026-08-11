@@ -1,10 +1,10 @@
+import { parsePartpath } from 'npm:@steve02081504/fount-p2p/core/partpath'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { registerDeliveryInboundHandler } from 'npm:@steve02081504/fount-p2p/registries/inbound'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { ensureUserRoom } from 'npm:@steve02081504/fount-p2p/transport/user_room'
 import { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } from 'npm:@steve02081504/fount-p2p/trust_graph/registry'
-import { collectPartInvokeResponses } from 'npm:@steve02081504/fount-p2p/wire/part_fanout'
-import { normalizePartpath } from 'npm:@steve02081504/fount-p2p/wire/part_invoke'
+import { collectPartInvokeResponses } from 'npm:@steve02081504/fount-p2p/wire/part/fanout'
 
 import { resolveUsernameForPartpath } from '../../../../../../server/p2p_server/inbound_handlers.mjs'
 
@@ -77,7 +77,8 @@ export async function exportMissingSharedOperations(username, cabinetId, haveOpe
  */
 export function registerCabinetOperationInbound() {
 	registerDeliveryInboundHandler('part_cabinet_operation_put', async (context, message) => {
-		const partpath = normalizePartpath(message.partpath) || getShellPartpath('cabinet')
+		const partpath = parsePartpath(message.partpath)
+		if (!partpath) return
 		const username = await resolveUsernameForPartpath(context.replicaUsername, partpath)
 		if (!username) return
 		await handleIncomingSharedOperation(username, {

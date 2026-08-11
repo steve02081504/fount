@@ -11,6 +11,7 @@ import { ms } from '../ms.mjs'
 import { escapeRegExp } from '../regex.mjs'
 
 import { FALLBACK_LOCALE, getBestLocale } from './locale_match.mjs'
+import { isSwitchValue, resolveSwitchCase } from './switch_value.mjs'
 
 /** 重导出 locale 匹配与回退常量。 */
 export {
@@ -99,7 +100,7 @@ export let localhostLocaleData = getLocaleData(localhostLocales)
 fs.watch(`${__dirname}/src/public/locales`, (event, filename) => {
 	if (!filename?.endsWith('.json')) return
 	const locale = filename.slice(0, -5)
-	console.log(`Detected change in ${filename}.`)
+	if (!process.env.FOUNT_TEST) console.log(`Detected change in ${filename}.`)
 
 	if (!fountLocaleCache[locale]) return
 	delete fountLocaleCache[locale]
@@ -179,6 +180,8 @@ function applyInterpolationToPlainSegment(segment, params, terminal) {
  * @returns {TTranslation} 替换后的翻译字符串或原对象。
  */
 function applyParamsToTranslation(translation, params, terminal = false) {
+	if (isSwitchValue(translation))
+		return applyParamsToTranslation(resolveSwitchCase(translation, params), params, terminal)
 	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params, terminal)
 	if (!translation || !(Object(translation) instanceof String)) return translation
 	const translationText = translation + ''

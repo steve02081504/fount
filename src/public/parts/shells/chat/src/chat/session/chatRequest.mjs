@@ -204,13 +204,11 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		 */
 		AddChatLogEntry: async entry => {
 			if (!charname) throw new Error('Char not in this chat')
-			const localChar = await resolveChar(groupId, charname, replicaUsername)
-			if (!localChar) throw new Error('Char not in this chat')
+			if (!await resolveChar(groupId, charname, replicaUsername)) throw new Error('Char not in this chat')
 			const { addChatLogEntry } = await import('./chatLogAppend.mjs')
 			return addChatLogEntry(groupId, await buildChatLogEntryFromCharReply(
 				entry,
 				chatMetadata.LastTimeSlice.copy(),
-				localChar,
 				charname,
 				replicaUsername,
 			))

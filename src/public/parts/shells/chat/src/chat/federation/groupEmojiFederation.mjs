@@ -3,7 +3,7 @@
  * 【职责】群表情经 P2P fed_emoji_want/data/manifest 在邻居间拉取与缓存。
  * 【原理】attachFedEmojiHandlers 在 room join 时注册；本地有二进制则响应 dataUrl。载荷含 packId（缺省回落 groupId）。
  */
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 
 import { isSafePackId } from '../../emojiPacks/packStore.mjs'

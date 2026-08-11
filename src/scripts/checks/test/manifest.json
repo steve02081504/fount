@@ -52,6 +52,8 @@
 			"triggers": [
 				"src/scripts/checks/i18n_keys.mjs",
 				"src/scripts/checks/test/i18n_keys.test.mjs",
+				"src/scripts/i18n/switch_value.mjs",
+				"src/public/pages/scripts/i18n/switch_value.mjs",
 				"src/public/locales/*.json"
 			]
 		},
@@ -115,6 +117,24 @@
 				"src/scripts/checks/agents_md_english.mjs",
 				"src/scripts/checks/test/agents_md_english.test.mjs",
 				"**/*.md"
+			]
+		},
+		{
+			"name": "json_lf",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/json_lf.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/{json_lf.mjs,walk.mjs}",
+				"src/scripts/checks/test/json_lf.test.mjs",
+				"**/*.json"
 			]
 		},
 		{

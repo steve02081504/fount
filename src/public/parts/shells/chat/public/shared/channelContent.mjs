@@ -188,6 +188,23 @@ export function normalizeChannelMessage(input) {
 	}
 }
 
+/** 历史发图注入的 `[image:name|url]` 标记（已废止，投影时剥离）。 */
+const INLINE_IMAGE_MARKER_RE = /\[image:[^\]|]+\|[^\]]+]/g
+
+/**
+ * 剥离历史 `[image:…]` 内联标记（DAG 已落盘消息兼容）。
+ * @param {string} text 原文
+ * @returns {string} 清洗后文本
+ */
+export function stripInlineImageMarkers(text) {
+	const source = String(text || '')
+	if (!INLINE_IMAGE_MARKER_RE.test(source)) return source
+	INLINE_IMAGE_MARKER_RE.lastIndex = 0
+	return source
+		.replace(/(\n)?\[image:[^\]|]+\|[^\]]+\](\n)?/g, (match, before, after) => before && after ? '\n' : '')
+		.replace(/^\n+|\n+$/g, '')
+}
+
 /**
  * 展示/agent 文本：未知 type（联邦垃圾）返回空串，不抛。
  * @param {object} content wire
@@ -200,7 +217,7 @@ export function messageAgentText(content) {
 	if (type === 'sticker') return String(content.emojiRef || content.stickerName || '')
 	if (type === 'group_invite') return String(content.groupName || content.groupId || '')
 	if (type && type !== 'text') return ''
-	return String(content?.content ?? '')
+	return stripInlineImageMarkers(String(content?.content ?? ''))
 }
 
 /**
@@ -212,7 +229,7 @@ export function messageShowText(content) {
 	if (type === 'sticker' || type === 'group_invite') return ''
 	if (type === 'vote' || type === 'call') return messageAgentText(content)
 	if (type && type !== 'text') return ''
-	return String(content?.content_for_show ?? content?.content ?? '')
+	return stripInlineImageMarkers(String(content?.content_for_show ?? content?.content ?? ''))
 }
 
 /**
@@ -221,7 +238,7 @@ export function messageShowText(content) {
  */
 export function messageEditText(content) {
 	if (content?.type && content.type !== 'text') return ''
-	return String(content?.content_for_edit ?? content?.content ?? '')
+	return stripInlineImageMarkers(String(content?.content_for_edit ?? content?.content ?? ''))
 }
 
 /**
@@ -237,51 +254,6 @@ export function messageLineShowText(messageLine, { onlyMessageTypes = false } = 
 		return messageShowText(messageLine.content?.newContent ?? messageLine.content)
 	if (onlyMessageTypes && type !== 'message') return ''
 	return messageShowText(messageLine.content)
-}
-
-/**
- * @param {string} fileName 文件名
- * @param {string} inlineImageUrl 内联图 URL
- * @returns {string} 标记
- */
-export function inlineImageMarker(fileName, inlineImageUrl) {
-	return `[image:${String(fileName || 'image').replace(/\|/g, '_')}|${inlineImageUrl}]`
-}
-
-/**
- * @param {object} content wire
- * @returns {Record<string, unknown>} 跨类型可保留的公共元数据
- */
-function commonWireMetadata(content) {
-	const out = {}
-	for (const key of ['name', 'avatar', 'locale', 'role', 'visibility', 'content_warning', 'extension'])
-		if (content[key] != null) out[key] = content[key]
-	if (content.sensitive_media) out.sensitive_media = true
-	if (content.charVisibility?.length) out.charVisibility = content.charVisibility
-	if (content.files?.length) out.files = content.files
-	return out
-}
-
-/**
- * @param {object} content wire
- * @param {string[]} inlineMarkers 标记
- * @param {{ preserveShowEdit?: boolean }} [options] 选项
- * @returns {object} 合并后 wire
- */
-export function mergeInlineImageMarkersIntoContent(content, inlineMarkers, { preserveShowEdit = false } = {}) {
-	if (!inlineMarkers?.length) return content
-	const isText = !content.type || content.type === 'text'
-	const baseText = isText ? messageAgentText(content) : messageShowText(content)
-	const mergedText = [baseText, ...inlineMarkers].filter(Boolean).join('\n')
-	if (!isText) return channelMessage(mergedText, commonWireMetadata(content))
-
-	const extra = { ...normalizeChannelMessage(content) }
-	delete extra.content
-	if (!preserveShowEdit) {
-		delete extra.content_for_show
-		delete extra.content_for_edit
-	}
-	return channelMessage(mergedText, extra)
 }
 
 /**

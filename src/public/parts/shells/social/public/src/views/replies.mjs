@@ -53,7 +53,7 @@ export async function buildReplyRow(reply) {
 	const authorName = authorLabel(entityHash, reply.authorProfile)
 	row.innerHTML = `
 		<div class="reply-header">
-			<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="reply-avatar-link" aria-label="${escapeHtml(authorName)}">
+			<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="reply-avatar-link" aria-label="${escapeHtml(authorName)}" user-content>
 				${renderAvatarHtml(entityHash, reply.authorProfile, 'reply-avatar')}
 			</a>
 			<div class="reply-header-text">

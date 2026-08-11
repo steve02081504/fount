@@ -41,18 +41,19 @@ Deno.test('evaluateWatchdog duration when over 2x baseline', () => {
 	const now = 1_000_000
 	assertEquals(evaluateWatchdog({
 		now,
-		startedAt: now - ms('21m') - 1,
+		startedAt: now - ms('41m') - 1,
 		lastActivityAt: now - ms('1s'),
 		lastTickAt: now - WATCH_INTERVAL_MS,
-		baselineDurationMs: ms('10m'),
+		baselineDurationMs: ms('20m'),
 	}), 'duration')
 })
 
-Deno.test('getDurationWatchdogLimitMs enforces 15 minute minimum', () => {
+Deno.test('getDurationWatchdogLimitMs enforces 30 minute minimum on short baseline', () => {
 	assertEquals(getDurationWatchdogLimitMs(ms('23s')), MIN_DURATION_TIMEOUT_MS)
+	assertEquals(MIN_DURATION_TIMEOUT_MS, DEFAULT_DURATION_TIMEOUT_MS)
 })
 
-Deno.test('evaluateWatchdog duration waits for 15 minute minimum on short baseline', () => {
+Deno.test('evaluateWatchdog duration waits for 30 minute minimum on short baseline', () => {
 	const now = 1_000_000
 	assertEquals(evaluateWatchdog({
 		now,
@@ -137,7 +138,7 @@ Deno.test('evaluateWatchdog uses default 30 minute limit without baseline', () =
 })
 
 Deno.test('getDurationWatchdogLimitMs keeps 2x baseline for long suites', () => {
-	assertEquals(getDurationWatchdogLimitMs(ms('10m')), ms('20m'))
+	assertEquals(getDurationWatchdogLimitMs(ms('20m')), ms('40m'))
 })
 
 Deno.test('getDurationWatchdogLimitMs falls back to default 30 minutes without baseline', () => {
@@ -233,6 +234,57 @@ Deno.test('partial subtest run updates overhead/subtest but not full baseline', 
 		assertEquals(entry.baselineDurationMs, 90_000)
 		assertEquals(entry.baselineOverheadMs, 7_000)
 		assertEquals(entry.subtests.feed.durationMs, 18_000)
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
+})
+
+Deno.test('partialFileRun does not update suite wall baseline', async () => {
+	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-state-partial-file-'))
+	try {
+		const suiteDef = {
+			manifestId: 'shells/chat',
+			name: 'integration',
+			id: 'integration',
+			run: [],
+			triggers: [],
+			manifestPath: '',
+			heavy: false,
+		}
+		const state = {
+			suites: {
+				[suiteKey('shells/chat', 'integration')]: {
+					status: 'passed',
+					commitHash: 'old',
+					uncommittedHash: null,
+					ranAt: '',
+					durationMs: 900_000,
+					baselineDurationMs: 900_000,
+					baselineOverheadMs: null,
+					failedFiles: [],
+					noiseHits: [],
+					logPath: null,
+				},
+			},
+		}
+		await upsertSuiteRun({
+			repoRoot,
+			state,
+			suite: suiteDef,
+			result: {
+				passed: true,
+				failedFiles: [],
+				output: '',
+				durationMs: 16_000,
+			},
+			commitHash: 'new',
+			uncommittedHash: null,
+			partialFileRun: true,
+		})
+		const entry = state.suites[suiteKey('shells/chat', 'integration')]
+		assertEquals(entry.baselineDurationMs, 900_000)
+		assertEquals(entry.durationMs, 16_000)
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })

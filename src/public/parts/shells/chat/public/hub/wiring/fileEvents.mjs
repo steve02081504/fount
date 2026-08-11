@@ -9,16 +9,13 @@ import { speechRecognitionCacheKey } from '../messages/render/file.mjs'
 /** @returns {void} */
 export function wireFileEvents() {
 	document.getElementById('image-upload-input').addEventListener('change', async (event) => {
-		const { files } = event.target
-		if (!files?.length) return
+		const input = event.currentTarget
+		const files = [...input.files || []]
+		if (!files.length) return
 		if (!store.privateGroup.groupId && (!store.context.currentGroupId || !store.context.currentChannelId)) return
-		event.target.value = ''
+		input.value = ''
 		try {
 			const { addFilesFromEvent } = await import('../composerFiles.mjs')
-			if (store.context.currentGroupId && store.context.currentChannelId && store.context.fileHandlers && files.length === 1) {
-				await store.context.fileHandlers.uploadGroupFile(files[0])
-				return
-			}
 			await addFilesFromEvent({ target: { files } })
 		}
 		catch (err) {

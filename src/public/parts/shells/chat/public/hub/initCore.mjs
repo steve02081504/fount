@@ -77,11 +77,8 @@ async function navigateHubFromLocation() {
 		const { setMode } = await import('./mode.mjs')
 		await setMode('friends')
 		const { enterFriendChat } = await import('./friendChat.mjs')
-		const { buildCharFriendBinding } = await import('../shared/friendBinding.mjs')
-		const { charAgentEntityHash } = await import('./entityResolve.mjs')
-		const entityHash = await charAgentEntityHash(charParam)
-		if (entityHash)
-			await enterFriendChat({ binding: buildCharFriendBinding(entityHash, charParam) })
+		const { charFriendBindingInput } = await import('../shared/friendBinding.mjs')
+		await enterFriendChat({ binding: charFriendBindingInput(charParam) })
 		return
 	}
 

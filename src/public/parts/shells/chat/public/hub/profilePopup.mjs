@@ -61,16 +61,15 @@ function userEntityFromMember(member) {
  * @returns {object | null} 实体描述
  */
 async function charEntityFromName(charname, label) {
-	const name = String(charname || '').trim()
-	if (!name) return null
-	const entityHash = await charAgentEntityHash(name)
+	if (!charname) return null
+	const entityHash = await charAgentEntityHash(charname)
 	if (!entityHash) return null
 	return {
 		entityHash,
-		charname: name,
+		charname,
 		pubKeyHash: null,
 		pubKeyHex: null,
-		displayName: String(label || '').trim() || name,
+		displayName: String(label || '').trim() || charname,
 	}
 }
 
@@ -86,12 +85,12 @@ export async function resolveEntityFromAnchor(anchor) {
 		return charEntityFromName(charRow.dataset.char, charRow.dataset.char)
 
 	const messageRow = anchor.closest('.message[data-message-id]')
-	const charId = messageRow?.dataset.charId?.trim()
+	const charId = messageRow?.dataset.charId
 	if (charId)
 		return charEntityFromName(charId, charId)
 
 	const memberItem = anchor.closest('.member-item')
-	const memberCharId = memberItem?.dataset.charId?.trim()
+	const memberCharId = memberItem?.dataset.charId
 	if (memberCharId) {
 		const label = memberItem?.querySelector('.member-name')?.textContent?.trim()
 		return charEntityFromName(memberCharId, label || memberCharId)

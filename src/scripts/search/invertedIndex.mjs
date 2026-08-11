@@ -61,7 +61,7 @@ async function mkdirLeaf(path) {
  * 确保分片目录可用；索引根的父目录已删除时返回 null（leave/删群竞态）。
  * @param {string} indexDir 索引根
  * @param {string} shardKey 分片键
- * @returns {Promise<string | null>} 分片目录或 null
+ * @returns {Promise<string | null>} 分片目录路径；父目录已不存在时为 null
  */
 async function ensureShardDir(indexDir, shardKey) {
 	if (!await mkdirLeaf(indexDir)) return null

@@ -323,17 +323,40 @@ export async function triggerChannelReply(groupId, channelId, charname) {
 }
 
 /**
- * 编辑频道消息正文。
+ * 编辑频道消息正文（可选增删附件）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} eventId 消息事件 ID
  * @param {string} content 新正文
+ * @param {Array<object>} [files] 编辑后附件列表（含 fileId 保留项与 buffer 新增项）
  * @returns {Promise<void>} 无
  */
-export async function editChannelMessage(groupId, channelId, eventId, content) {
+export async function editChannelMessage(groupId, channelId, eventId, content, files = []) {
+	/** @type {object[]} */
+	const retained = []
+	/** @type {object[]} */
+	const uploads = []
+	for (const file of files) {
+		if (file?.buffer) {
+			uploads.push(file)
+			continue
+		}
+		if (!file?.fileId) continue
+		retained.push({
+			fileId: file.fileId,
+			name: file.name || 'file',
+			mime_type: file.mime_type || 'application/octet-stream',
+			size: Number(file.size) || 0,
+			...file.description ? { description: file.description } : {},
+		})
+	}
+	const body = {
+		content: channelMessage(content, retained.length ? { files: retained } : {}),
+	}
+	if (uploads.length) body.files = uploads
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'messages', eventId), {
 		method: 'PUT',
-		json: { content: channelMessage(content) },
+		json: body,
 	})
 }
 

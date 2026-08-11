@@ -33,12 +33,16 @@ function rowIsFresh(row, nowMs) {
 /**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @returns {Promise<object[]>} 未过期的队列行
+ * @returns {Promise<object[]>} 未过期的队列行（并顺手丢掉磁盘上的过期行）
  */
 export async function readPendingIngestRows(username, groupId) {
 	const nowMs = Date.now()
-	const rows = await readJsonl(pendingIngestPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
-	return rows.filter(row => rowIsFresh(row, nowMs))
+	const path = pendingIngestPath(username, groupId)
+	const all = await readJsonl(path, { sanitize: stripDagEventLocalExtensions })
+	const rows = all.filter(row => rowIsFresh(row, nowMs))
+	if (all.length && rows.length !== all.length)
+		await writePendingIngestRows(username, groupId, rows)
+	return rows
 }
 
 /**

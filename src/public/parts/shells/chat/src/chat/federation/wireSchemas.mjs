@@ -1,7 +1,8 @@
 /** 联邦线入站解析：tip ping/pong、gossip_request、channel_history、fed_shun、partition bridge。 */
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { parsePullAttestation } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
-import { extractInboundSignedEvent, isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
 import { isChannelIdValid } from '../lib/channelId.mjs'
 

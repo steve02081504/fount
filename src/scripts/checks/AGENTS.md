@@ -15,8 +15,9 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN (below) |
 | `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
-| `update_locales` | `.esh/commands/update-locales.py --self-test` (string↔single-applicator normalize) |
+| `update_locales` | `.esh/commands/update-locales.py --self-test` (string↔single-applicator + string↔switch) |
 | `agents_md_english` | `AGENTS.md` + linked `.md` English-only; non-`AGENTS.md` under `docs/` |
+| `json_lf` | `*.json` LF line endings (no CRLF / lone CR). Under `fount test`, scopes to paths listed in the `FOUNT_TEST_TRIGGERED_FILES` temp file when that list includes `.json`; otherwise full-repo scan |
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
 
 ## i18n keys
@@ -24,7 +25,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 - No `Suffix` / `Prefix` affix keys.
 - No ≥4 flat camelCase siblings sharing a prefix.
 - No `xxx1`-style numbered keys.
-- Every non-`zh-CN` locale must match `zh-CN` **value kinds** on shared paths (`string` vs `{ "aria-label": … }` etc. fails — UI would bind wrong). Fix with `update_locale_data` (see [locale-edits.md](../../public/locales/docs/locale-edits.md)); `update-locales.py` auto-wraps string↔single DOM applicator and **exits 1** on remaining type mismatches.
+- Every non-`zh-CN` locale must match `zh-CN` **value kinds** on shared paths after sync (`string` vs `{ "aria-label": … }` etc. fails — UI would bind wrong). `update-locales.py` may normalize string↔single DOM applicator during sync and **exits 1** on remaining mismatches; leaf `string` ↔ switch (`{ switch, default, cases? }`) stays compatible without restructuring `cases`. Details: [locale-edits.md](../../public/locales/docs/locale-edits.md).
 - Prefix-nest **writeback** only via `.esh/commands/reshape_i18n_keys.py` (JS `JSON.stringify` reorders numeric keys like `404`). Root [AGENTS.md](../../../AGENTS.md) I18n covers day-to-day locale edits.
 
 ## i18n refs (`i18n_refs`)
@@ -35,9 +36,11 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 
 ## Agent docs language
 
+Enforced by this suite; writing rules: [docs/AGENTS.md](../../../docs/AGENTS.md).
+
 - `AGENTS.md` and `.md` files linked from them (transitive closure): English only (no CJK).
 - Exempt from CJK: human-facing `docs/design/`, `docs/review/`, `docs/issues/` (still walked for link resolution).
-- Non-`AGENTS.md` files in that closure must live under a directory named `docs` (path segment `docs`).
+- Non-`AGENTS.md` files in that closure must live under a directory named `docs`.
 - Transitive local `.md` links must resolve.
 
 ## JSDoc language (`jsdoc_no_english`)

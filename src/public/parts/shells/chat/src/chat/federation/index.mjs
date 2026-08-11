@@ -17,6 +17,7 @@ import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { syncMissingArchiveMonths } from '../archive/syncMonths.mjs'
 import { eventChannelId } from '../dag/authorizeEvent.mjs'
 import { computeFederatableDagTipIds } from '../dag/eventTypes.mjs'
+import { loadKnownLocalDagEventIds } from '../dag/knownLocalEventIds.mjs'
 import { readQuarantineRows } from '../events/quarantine.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
@@ -250,22 +251,29 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	 * @param {Map<string, object>} byId 本地 id→事件
 	 * @param {object[]} deferredRows pending/quarantine 桶内事件行
 	 * @param {boolean} includeExtra 是否并入显式 extraWantIds（仅首轮）
+	 * @param {Set<string>} locallyKnown 归档/meta/checkpoint 等已见证 id
 	 * @returns {string[]} 去重后的待补 id（祖先闭包）
 	 */
-	const computeWantSet = (byId, deferredRows, includeExtra) => {
+	const computeWantSet = (byId, deferredRows, includeExtra, locallyKnown) => {
 		const wantSet = new Set()
+		/**
+		 * @param {string} id 候选缺失 id
+		 * @returns {boolean} 是否仍需向邻居索要
+		 */
+		const stillNeed = id => !byId.has(id) && !locallyKnown.has(id)
 		for (const tipId of remoteTips)
-			if (!byId.has(tipId)) wantSet.add(tipId)
+			if (stillNeed(tipId)) wantSet.add(tipId)
 		for (const event of byId.values())
 			for (const parentId of sortedPrevEventIds(event.prev_event_ids))
-				if (!byId.has(parentId)) wantSet.add(parentId)
+				if (stillNeed(parentId)) wantSet.add(parentId)
 		for (const row of deferredRows)
 			for (const parentId of sortedPrevEventIds(row?.event?.prev_event_ids))
-				if (!byId.has(parentId)) wantSet.add(parentId)
+				if (stillNeed(parentId)) wantSet.add(parentId)
 		if (includeExtra)
-			for (const eventId of options.extraWantIds || [])
-				if (EVENT_ID_HEX.test(String(eventId)) && !byId.has(eventId))
-					wantSet.add(String(eventId).trim().toLowerCase())
+			for (const eventId of options.extraWantIds || []) {
+				const id = String(eventId).trim().toLowerCase()
+				if (EVENT_ID_HEX.test(id) && stillNeed(id)) wantSet.add(id)
+			}
 		return [...wantSet]
 	}
 	/** @returns {Promise<Map<string, object>>} 重新读盘构建 id→事件（每轮拉取落盘后调用） */
@@ -293,16 +301,17 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	}
 
 	// 迭代补洞：拉取→落盘→重扫新暴露的缺失父→再拉，直到 wantSet 空 / 达上限 / 无进展 / 命中退避。
-	const MAX_CATCHUP_ITERS = 8
+	const MAX_CATCHUP_ITERATIONS = 8
 	const wantedEver = new Set()
 	let currentById = eventsById
 	let currentDeferred = await readDeferredRows()
 	let knownIds = knownIdSet(currentById, currentDeferred)
+	let locallyKnown = await loadKnownLocalDagEventIds(username, groupId)
 	let eventsFilled = 0
 	let wantIdsStillMissing = 0
 	let wantIdsRateLimited = isWantIdsInBackoff(wantIdsGroupKey(groupId))
-	for (let iter = 0; iter < MAX_CATCHUP_ITERS; iter++) {
-		const wantIds = computeWantSet(currentById, currentDeferred, iter === 0)
+	for (let iteration = 0; iteration < MAX_CATCHUP_ITERATIONS; iteration++) {
+		const wantIds = computeWantSet(currentById, currentDeferred, iteration === 0, locallyKnown)
 		if (!wantIds.length) break
 		for (const id of wantIds) wantedEver.add(id)
 		const result = await requestMissingEventsGossip(username, groupId, { wantIds, awaitGossip: true })
@@ -310,6 +319,9 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 		wantIdsStillMissing = result.stillMissing.length
 		currentById = await reloadEventsById()
 		currentDeferred = await readDeferredRows()
+		locallyKnown = await loadKnownLocalDagEventIds(username, groupId)
+		// gossip 只认 events.jsonl；已折叠但仍本地已知的 id 不应继续计为 missing。
+		wantIdsStillMissing = result.stillMissing.filter(id => !currentById.has(id) && !locallyKnown.has(id)).length
 		const nextKnownIds = knownIdSet(currentById, currentDeferred)
 		eventsFilled += wantIds.reduce((n, id) => currentById.has(id) ? n + 1 : n, 0)
 		// 进展 = 本轮索要的 id 有任何一个新落地（events.jsonl 或延迟桶皆算）；仅落延迟桶也是真进展（其祖先下轮才会暴露）。
@@ -342,6 +354,15 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	catch (error) {
 		console.error('federation: catchup deferred ingest replay failed', error)
 	}
+	// 补洞后若仍多叶且本机有权，主动 merge（生产路径否则只在 member_join 时 converge）。
+	if (!stats.wantIdsStillMissing && !stats.wantIdsRateLimited)
+		try {
+			const { convergeDagTipsIfAuthorized } = await import('../dag/lifecycle.mjs')
+			await convergeDagTipsIfAuthorized(username, groupId)
+		}
+		catch (error) {
+			console.error('federation: catchup tip converge failed', error)
+		}
 	try {
 		const { maybeProbeAndEvaluateShunConsensus } = await import('./shun.mjs')
 		await maybeProbeAndEvaluateShunConsensus(username, groupId, slot, { waitMs })

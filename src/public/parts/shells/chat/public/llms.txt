@@ -108,7 +108,7 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | GET | `G/` | 已加入的群 / DM 摘要，按消息活动时间排序 |
-| POST | `G/` | 建群：`name`、`description`、`defaultChannelName`、`defaultChannelId` → `201 { groupId, defaultChannelId }`。建 DM：`{ template: 'dm', myPubKeyHex, peerPubKeyHex }`（各 64 hex），可选 `dmIntroNonce` + `dmIntroSignatureHex` 成对出现 |
+| POST | `G/` | 建群：`name`、`description`、`defaultChannelName`、`defaultChannelId` → `201 { groupId, defaultChannelId }`。好友私聊：`friendBinding` 为 `{ entityHash }` 或 `{ charname }`（互斥，可选 `displayName`；`charname` 时服务端 ensure 本地 agent）→ 响应含规范化 `friendBinding`。建 DM：`{ template: 'dm', myPubKeyHex, peerPubKeyHex }`（各 64 hex），可选 `dmIntroNonce` + `dmIntroSignatureHex` 成对出现 |
 | GET | `G/:groupId/preview` | 非成员群卡片预览（私密群隐藏加入入口） |
 | DELETE | `G/:groupId` | 删整群本地 DAG 数据；需 `ADMIN` 或 `MANAGE_ADMINS` |
 | GET | `G/:groupId/state` | 分层 DTO `{ meta, viewer, federation }`：`meta` 含 `channels`/`groupSettings`/`roles`/`members`/`pinsByChannel`/`cabinets`/`files`；`viewer` 是当前用户视角（`isMember`、`memberKey`、`entityHash`、`roles`）；`federation` 是同步与隔离状态 |
@@ -192,12 +192,12 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `C/messages` | 发 DAG `message`（人类唯一入口，先过 persona `BeforeUserSend`）；需 `SEND_MESSAGES`。content 可带 `locale`、`content_warning`、`sensitive_media`、`forwardedFrom`、`replyTo`（`{ eventId, senderName?, preview? }`）、`fileAlts` |
+| POST | `C/messages` | 发 DAG `message`（人类唯一入口，先过 persona `BeforeUserSend`）；需 `SEND_MESSAGES`。content 可带 `locale`、`content_warning`、`sensitive_media`、`forwardedFrom`、`replyTo`（`{ eventId, senderName?, preview? }`）；附件走 body `files[]`（`name` / `mime_type` / `buffer` base64 / 可选 `description` alt），落盘为 `content.files[].fileId` |
 | GET | `C/messages?since=&before=&limit=` | raw 行 + `{ messages, reactions }`（治理 / 调试，无 world→persona 滤镜） |
 | GET | `C/view-log?since=&before=&limit=` | 观看者投影（Hub 主读口）：物化后经 world→persona 滤镜投影回行 DTO |
 | POST | `C/view-log/batch-get` | body `{ eventIds }`（≤500）：按 id 批量取投影行（被滤 id 不返回） |
 | POST | `C/messages/batch-get` | body `{ eventIds }`（≤500）：按 id 批量取 raw 行（治理 / 审计） |
-| PUT | `C/messages/:eventId` | DAG `message_edit`，body `{ content: object }` |
+| PUT | `C/messages/:eventId` | DAG `message_edit`，body `{ content: object, files?: 新增附件[] }`；`content.files` 为保留的已有描述符，可与 `files` 新增项合并 |
 | DELETE | `C/messages/:eventId` | DAG `message_delete` |
 | PUT | `C/messages/:eventId/feedback` | DAG `message_feedback`（`up` / `down`） |
 | POST / DELETE | `C/reactions` | 加反应 `{ targetEventId, emoji }` / 移除 `{ targetEventId, emoji, targetPubKeyHash? }` |

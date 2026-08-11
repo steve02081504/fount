@@ -570,7 +570,15 @@
 			"open_fount": "Open fount",
 			"open_or_install_fount": "Open/Installeer fount",
 			"error_message": "Oeps :(\n\nEr is een fout opgetreden:\n${error}",
-			"star_thank_you": "Bedankt voor het geven van een ster aan fount!"
+			"star_thank_you": "Bedankt voor het geven van een ster aan fount!",
+			"telegram": {
+				"title": "Telegram",
+				"aria-label": "Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "Installatie mislukt!",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "Van groep: ${name}",
 			"previewAuthorMeta": "Van auteur",
 			"previewActionFailed": "Actie mislukt: ${error}",
+			"loadFailed": "Kan emoji-kiezer niet laden: ${error}",
 			"category": {
 				"animal": "Dier",
 				"face": "Emoji",
@@ -1424,7 +1433,7 @@
 					"overviewHint": "Alleen-lezen informatie. Als je over bestuursrechten beschikt, kunt je groepsinformatie en beleid bewerken in 'Basis'.",
 					"governanceHint": "Schrijf het beleid op groepsniveau van de DAG; beheerders- of MANAGE_ADMINS-machtigingen zijn vereist.",
 					"governanceDenied": "Je bent niet gemachtigd om instellingen voor groepsbeheer te wijzigen.",
-					"rolesDenied": "Je heeft geen MANAGE_ROLES toestemming om rollen te bewerken.",
+					"rolesDenied": "Je hebt geen MANAGE_ROLES toestemming om rollen te bewerken.",
 					"notMember": "Je bent geen lid meer van deze groep; de gegevens van deze groep zijn automatisch gewist na het verlaten van de groep.",
 					"basicTitle": "Groepsbestuur",
 					"profileSectionTitle": "Groepsinformatie",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "Groepsinstellingen opgeslagen",
 					"saveFailed": "Kan instellingen niet opslaan: ${error}",
 					"rolesTitle": "Rollen en machtigingen",
+					"rolesHint": "Aangevinkte machtigingen gelden groepsbreed voor alle leden met die rol. Om bijlagen toe te staan, schakel Bestanden uploaden in voor Everyone. Gebruik Kanaalmachtigingen onder Geavanceerd alleen voor uitzonderingen per kanaal.",
 					"roleDefault": "Standaard",
 					"permissionUpdated": "Machtigingen bijgewerkt",
 					"permissionUpdateFailed": "Kan rechten niet updaten: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "Kanaalarchief"
 					},
 					"channelPerms": {
-						"addRole": "Roloverschrijving toevoegen",
-						"denied": "Je heeft geen MANAGE_CHANNELS-rechten om overschrijvingen van kanaalrechten te bewerken.",
-						"hint": "Stel overschrijvingen van rolmachtigingen in voor specifieke kanalen. Niet-gedekte items nemen de machtigingen voor groepsrollen over.",
+						"denied": "Je hebt geen MANAGE_CHANNELS-rechten om overschrijvingen van kanaalrechten te bewerken.",
+						"hint": "Alleen uitzonderingen per kanaal: Overnemen volgt rolmachtigingen; Toestaan/Weigeren gelden voor dit kanaal. Voor bijlagen voor iedereen, open Rolmachtigingen en vink Bestanden uploaden aan voor Everyone — er is hier geen knop om een overschrijving toe te voegen.",
+						"overridden": "Overschreven",
+						"clearOverride": "Alles terugzetten naar overnemen",
 						"noChannels": "Er is momenteel geen kanaal om te configureren",
-						"removeRole": "Verwijder deze roloverschrijving",
 						"selectChannel": "Kanaal",
 						"stateAllow": "Toestaan",
 						"stateDeny": "Afwijzen",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "Postvak IN",
-				"filtersLabel": "Filter inbox-berichten",
+				"panel": {
+					"aria-label": "Postvak IN"
+				},
+				"filtersLabel": {
+					"aria-label": "Berichten in Postvak IN filteren"
+				},
 				"rowLabel": {
 					"aria-label": "${author} zei in ${group} van ${channel}: ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "Federatieve externe auteur"
 			},
 			"trustAuthor": {
-				"textContent": "Vertrouwen",
-				"title": "Vertrouw deze auteur (sta gevaarlijke HTML toe)"
+				"textContent": "Auteur vertrouwen",
+				"title": "Deze auteur vertrouwen (gevaarlijke Markdown/HTML toestaan)"
 			},
 			"stickerInline": "Sticker",
 			"markdownRenderFailed": "Het weergeven van berichten is mislukt",
+			"messageRenderFailed": "Bericht weergeven mislukt",
 			"retrySend": "Probeer het opnieuw",
 			"mergeDagOk": "Vork samengevoegd",
 			"mergeDagFailed": "Samenvoegen mislukt: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "Groepsbestanden maken gebruik van convergente encryptie: als de aanvaller de leesbare tekst van een bestand kent, kan hij de sleutel afleiden en het bijbehorende cijfertekstblok decoderen. Vertrouw niet uitsluitend op groepsversleuteling voor de bescherming van zeer gevoelige en unieke privédocumenten.",
 			"reputationSlashAlert": "De reputatie van lid ${target}… wordt herinnerd aan de aftrek.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "Sluiten"
+				},
 				"previewHint": "Wijzigingen verschijnen onmiddellijk in het voorbeeld en worden opgeslagen en gesynchroniseerd via Chat en Sociaal.",
 				"sfwMode": "Veilige inhoud",
 				"livePreview": "Live-voorbeeld",
@@ -2456,6 +2475,9 @@
 				"created": "Er is een onderliggende thread gemaakt",
 				"drawer": {
 					"aria-label": "kinder draad"
+				},
+				"breadcrumb": {
+					"aria-label": "Onderliggende thread"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,23 @@
 				"friends": "Nog geen privéchats",
 				"groups": "Nog geen groep",
 				"members": "Nog geen leden",
-				"pins": "Nog geen pinnen",
-				"username": "Gebruikersnaam niet verkregen"
+				"pins": "Nog geen pinnen"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "Vertrouwd",
+				"title": "Deze auteur vertrouwen (gevaarlijke Markdown/HTML toestaan)"
+			},
+			"attachment": {
+				"dropToUpload": "Laat los om te uploaden naar #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": {
+					"switch": "count",
+					"default": "${count} ongelezen items",
+					"cases": {
+						"1": "1 ongelezen item"
+					}
+				}
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2911,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Downloaden"
+					"title": "Downloaden",
+					"aria-label": "Downloaden"
 				},
-				"downloadIcon": {
-					"alt": "Downloadpictogram"
+				"edit": {
+					"title": "Afbeelding bewerken",
+					"aria-label": "Afbeelding bewerken"
+				},
+				"editIcon": {
+					"alt": "Bewerkingspictogram"
 				},
 				"delete": {
-					"title": "Verwijderen"
-				},
-				"deleteIcon": {
-					"alt": "Verwijderpictogram"
+					"title": "Verwijderen",
+					"aria-label": "Verwijderen"
 				},
 				"more": {
-					"title": "Meer"
+					"title": "Meer",
+					"aria-label": "Meer"
 				},
 				"recognize": {
-					"title": "Spraak naar tekst"
+					"title": "Spraak naar tekst",
+					"aria-label": "Spraak naar tekst"
 				}
 			}
 		},
@@ -4764,6 +4806,9 @@
 			"title": "Items",
 			"aria-label": "Items"
 		},
+		"breadcrumb": {
+			"aria-label": "Broodkruimelpad"
+		},
 		"openCabinets": "Archiefkastlijst openen",
 		"closeCabinets": "Sluiten",
 		"bootstrapFailed": "Initialisatie van Cabinet mislukt: ${error}",
@@ -5823,6 +5868,25 @@
 			},
 			"search": {
 				"placeholder": "Zoeken..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "Mediakijker"
+			},
+			"download": {
+				"textContent": "Downloaden",
+				"aria-label": "Downloaden"
+			},
+			"close": {
+				"textContent": "Sluiten",
+				"aria-label": "Sluiten"
+			},
+			"prev": {
+				"aria-label": "Vorig item"
+			},
+			"next": {
+				"aria-label": "Volgend item"
 			}
 		}
 	}

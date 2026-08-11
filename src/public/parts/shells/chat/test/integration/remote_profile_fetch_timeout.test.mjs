@@ -2,6 +2,8 @@
  * 远端 EVFS profile 拉取挂起时，fetchRemote 必须限时回落本地默认资料，不能拖死 HTTP/资料卡。
  */
 /* global Deno */
+import { Buffer } from 'node:buffer'
+
 import { assert, assertEquals } from 'jsr:@std/assert'
 import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
@@ -65,4 +67,25 @@ Deno.test('getProfile fetchRemote respects negative cache after hung miss', asyn
 	})
 	assert(Date.now() - started < 80, 'negative cache should skip second remote wait')
 	assertEquals(calls, 1)
+})
+
+Deno.test('getProfile fetchRemote uses injected local plain without waiting on network', async () => {
+	await ensureServer()
+	const { getProfile } = await import('../../src/entity/profile.mjs')
+	const foreign = encodeEntityHash('f'.repeat(64), 'a'.repeat(64))
+	const plain = Buffer.from(JSON.stringify({
+		entityHash: foreign,
+		handle: 'cached-peer',
+		localized: { 'en-UK': { name: 'Cached Peer', avatar: '', description: 'from cache' } },
+	}), 'utf8')
+
+	const profile = await getProfile(foreign, username, {
+		fetchRemote: true,
+		forceRemote: true,
+		/** @returns {Promise<Buffer>} 预置的 profile JSON 明文 */
+		readPlain: async () => plain,
+		remoteTimeoutMs: 100,
+	})
+	assertEquals(profile.handle, 'cached-peer')
+	assertEquals(profile.name, 'Cached Peer')
 })

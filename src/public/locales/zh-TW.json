@@ -569,7 +569,15 @@
 			"open_fount": "開啟 fount",
 			"open_or_install_fount": "開啟/安裝 fount",
 			"error_message": "哎呀 :(\n\n發生錯誤：\n${error}",
-			"star_thank_you": "感謝您為 fount 加上星號！"
+			"star_thank_you": "感謝您為 fount 加上星號！",
+			"telegram": {
+				"title": "開啟 Telegram",
+				"aria-label": "開啟 Telegram"
+			},
+			"github": {
+				"title": "開啟 GitHub",
+				"aria-label": "開啟 GitHub"
+			}
 		},
 		"error": {
 			"title": "安裝失敗！",
@@ -1067,6 +1075,7 @@
 			"previewGroupMeta": "來自群組：${name}",
 			"previewAuthorMeta": "來自作者",
 			"previewActionFailed": "操作失敗：${error}",
+			"loadFailed": "表情選擇器載入失敗：${error}",
 			"category": {
 				"animal": "動物",
 				"face": "表情",
@@ -1454,6 +1463,7 @@
 					"saveSuccess": "群組設定已儲存",
 					"saveFailed": "儲存設定失敗: ${error}",
 					"rolesTitle": "角色與許可權",
+					"rolesHint": "勾選的權限對該角色全體成員在全群生效。若要讓一般成員傳送附件，請為 Everyone 勾選「上傳檔案」。僅當某頻道需單獨限制時，再到進階設定中的「頻道權限」設定。",
 					"roleDefault": "預設",
 					"permissionUpdated": "許可權已更新",
 					"permissionUpdateFailed": "更新許可權失敗: ${error}",
@@ -1487,11 +1497,11 @@
 						"title": "頻道歸檔"
 					},
 					"channelPerms": {
-						"addRole": "新增角色覆蓋",
 						"denied": "你沒有 MANAGE_CHANNELS 許可權，無法編輯頻道許可權覆蓋。",
-						"hint": "為特定頻道設定角色許可權覆蓋。未覆蓋項繼承群組角色許可權。",
+						"hint": "此處僅用於設定單一頻道相對角色權限的例外：繼承＝沿用角色權限頁的設定，允許/拒絕＝在本頻道強制覆蓋。若要全員開放附件，請前往「角色權限」為 Everyone 勾選「上傳檔案」，而非在此新增覆蓋。",
+						"overridden": "已覆蓋",
+						"clearOverride": "全部重設為繼承",
 						"noChannels": "暫無可設定頻道",
-						"removeRole": "移除此角色覆蓋",
 						"selectChannel": "頻道",
 						"stateAllow": "允許",
 						"stateDeny": "拒絕",
@@ -1741,7 +1751,12 @@
 			},
 			"inbox": {
 				"title": "收件箱",
-				"filtersLabel": "篩選收件箱訊息",
+				"panel": {
+					"aria-label": "收件箱"
+				},
+				"filtersLabel": {
+					"aria-label": "篩選收件箱訊息"
+				},
 				"rowLabel": {
 					"aria-label": "${author} 在 ${group} 的 ${channel} 頻道中說：${preview}"
 				},
@@ -1925,11 +1940,12 @@
 				"title": "聯邦遠端作者"
 			},
 			"trustAuthor": {
-				"textContent": "信任",
-				"title": "信任此作者（允許危險 HTML）"
+				"textContent": "信任作者",
+				"title": "信任此作者（允許渲染危險的 Markdown/HTML）"
 			},
 			"stickerInline": "貼紙",
 			"markdownRenderFailed": "訊息渲染失敗",
+			"messageRenderFailed": "無法顯示訊息",
 			"retrySend": "重試",
 			"mergeDagOk": "分叉已合併",
 			"mergeDagFailed": "合併失敗：${error}",
@@ -2006,6 +2022,9 @@
 			"convergentEncryptWarn": "群檔案使用收斂加密：若攻擊者已知某檔案明文，可推導金鑰並解密對應密文塊。請勿將高度敏感且唯一的私密檔案僅依賴群加密保護。",
 			"reputationSlashAlert": "成員 ${target}… 的聲譽受到扣減提醒",
 			"profileEdit": {
+				"close": {
+					"aria-label": "關閉"
+				},
 				"previewHint": "修改會立即顯示在預覽中，儲存後同步用於 Chat 與 Social。",
 				"sfwMode": "安全內容",
 				"livePreview": "實時預覽",
@@ -2455,6 +2474,9 @@
 				"created": "子執行緒已建立",
 				"drawer": {
 					"aria-label": "子執行緒"
+				},
+				"breadcrumb": {
+					"aria-label": "子執行緒導覽"
 				}
 			},
 			"config": {
@@ -2765,8 +2787,17 @@
 				"friends": "暫無私聊",
 				"groups": "暫無群組",
 				"members": "暫無成員",
-				"pins": "暫無置頂",
-				"username": "未獲取使用者名稱"
+				"pins": "暫無置頂"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者，將完整渲染訊息內容"
+			},
+			"attachment": {
+				"dropToUpload": "拖放以上傳至 #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} 條未讀"
 			}
 		},
 		"sidebar": {
@@ -2873,22 +2904,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "下載"
+					"title": "下載",
+					"aria-label": "下載"
 				},
-				"downloadIcon": {
-					"alt": "下載圖示"
+				"edit": {
+					"title": "編輯圖片",
+					"aria-label": "編輯圖片"
+				},
+				"editIcon": {
+					"alt": "編輯圖示"
 				},
 				"delete": {
-					"title": "刪除"
-				},
-				"deleteIcon": {
-					"alt": "刪除圖示"
+					"title": "刪除",
+					"aria-label": "刪除"
 				},
 				"more": {
-					"title": "更多"
+					"title": "更多",
+					"aria-label": "更多"
 				},
 				"recognize": {
-					"title": "語音轉文字"
+					"title": "語音轉文字",
+					"aria-label": "語音轉文字"
 				}
 			}
 		},
@@ -4763,6 +4799,9 @@
 			"title": "內容列表",
 			"aria-label": "內容列表"
 		},
+		"breadcrumb": {
+			"aria-label": "麵包屑導航"
+		},
 		"openCabinets": "開啟文件櫃列表",
 		"closeCabinets": "關閉",
 		"bootstrapFailed": "文件櫃初始化失敗：${error}",
@@ -5822,6 +5861,25 @@
 			},
 			"search": {
 				"placeholder": "搜尋..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "媒體檢視器"
+			},
+			"download": {
+				"textContent": "下載",
+				"aria-label": "下載"
+			},
+			"close": {
+				"textContent": "關閉",
+				"aria-label": "關閉"
+			},
+			"prev": {
+				"aria-label": "上一張"
+			},
+			"next": {
+				"aria-label": "下一張"
 			}
 		}
 	}

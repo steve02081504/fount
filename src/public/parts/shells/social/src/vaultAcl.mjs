@@ -8,7 +8,7 @@ import { canViewByVisibility } from './lib/visibilitySpec.mjs'
  * Social vault 文件 ACL（EVFS manifest 读权限）。
  * @param {string} replicaUsername 观看者 replica
  * @param {string} ownerEntityHash vault owner
- * @param {import('npm:@steve02081504/fount-p2p/files/manifest').FileManifest} manifest manifest
+ * @param {import('npm:@steve02081504/fount-p2p/files/manifest/normalize').FileManifest} manifest manifest
  * @param {string} [viewerEntityHash] 观看实体；缺省为 operator
  * @returns {Promise<boolean>} 观看者是否可读该 vault 文件
  */

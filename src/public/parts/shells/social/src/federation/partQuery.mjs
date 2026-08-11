@@ -2,7 +2,7 @@
  * Social part_query 种类注册表：Load/Unload 各一次批量登记/清空。
  */
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
-import { registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part_query'
+import { registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
 /** @type {Map<string, (inboundContext: object, query: unknown) => Promise<object[]> | object[]>} */
 let registeredKinds = new Map()

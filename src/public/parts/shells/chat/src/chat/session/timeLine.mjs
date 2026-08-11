@@ -135,11 +135,12 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 				const newTimeSlice = timeSlice.copy()
 				newTimeSlice.greeting_type = greeting_type
 
-				let finalEntry
-				if (greeting_type.startsWith('world_'))
-					finalEntry = await buildChatLogEntryFromCharReply(result, newTimeSlice, null, undefined, chatMetadata.username)
-				else
-					finalEntry = await buildChatLogEntryFromCharReply(result, newTimeSlice, char, charname, chatMetadata.username)
+				const finalEntry = await buildChatLogEntryFromCharReply(
+					result,
+					newTimeSlice,
+					greeting_type.startsWith('world_') ? undefined : charname,
+					chatMetadata.username,
+				)
 
 				Object.assign(newEntry, finalEntry)
 				newEntry.is_generating = false

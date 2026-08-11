@@ -8,7 +8,7 @@ import { dirname } from 'node:path'
 import { assertEquals } from 'jsr:@std/assert'
 
 import { validateIngestAuthz } from '../../src/chat/dag/ingest.mjs'
-import { eventsPath } from '../../src/chat/lib/paths.mjs'
+import { archiveManifestPath, eventsPath } from '../../src/chat/lib/paths.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const SENDER = 'a'.repeat(64)
@@ -137,6 +137,29 @@ Deno.test('dag_tip_merge with a missing prev event is pendable', async () => {
 	assertEquals(thrown?.message, 'dag_tip_merge: prev events not present yet')
 })
 
+Deno.test('dag_tip_merge accepts prev known only via archive_manifest (folded tip)', async () => {
+	await ensureServer()
+	const groupId = 'g-merge-archived-prev'
+	const path = eventsPath(username, groupId)
+	await mkdir(dirname(path), { recursive: true })
+	await writeFile(path, `${JSON.stringify({ id: TIP_A, type: 'message', prev_event_ids: [], sender: SENDER })}\n`, 'utf8')
+	const manifestPath = archiveManifestPath(username, groupId)
+	await mkdir(dirname(manifestPath), { recursive: true })
+	await writeFile(manifestPath, JSON.stringify({
+		channels: { default: { months: ['2026-08'] } },
+		archivedEventIds: { default: { [TIP_B]: '2026-08' } },
+		monthDigests: {},
+		coverage: {},
+	}), 'utf8')
+
+	const event = {
+		type: 'dag_tip_merge',
+		sender: SENDER,
+		prev_event_ids: [TIP_A, TIP_B],
+	}
+	await validateIngestAuthz(username, groupId, event, { source: 'federation', state: activeMemberState() })
+})
+
 Deno.test('dag_tip_merge is accepted when all prev present, even with extra local tips', async () => {
 	await ensureServer()
 	const groupId = 'g-merge-extra-tips'
@@ -157,10 +180,5 @@ Deno.test('dag_tip_merge is accepted when all prev present, even with extra loca
 		sender: SENDER,
 		prev_event_ids: [TIP_A, TIP_B],
 	}
-	let thrown
-	try {
-		await validateIngestAuthz(username, groupId, event, { source: 'federation', state: activeMemberState() })
-	}
-	catch (error) { thrown = error }
-	assertEquals(thrown, undefined)
+	await validateIngestAuthz(username, groupId, event, { source: 'federation', state: activeMemberState() })
 })

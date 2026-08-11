@@ -3,12 +3,11 @@
  */
 /* global Deno */
 import { Buffer } from 'node:buffer'
-import fs from 'node:fs'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { randomSeed } from '../federation/remote_timeline.mjs'
-import { createTestSession } from '../harness.mjs'
+import { createTestSession, seedStubAgent } from '../harness.mjs'
 
 const getSession = createTestSession()
 
@@ -17,12 +16,10 @@ const append = await import('../../src/timeline/append.mjs')
 const { pubKeyHash, publicKeyFromSeed, keyPairFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
 const { encodeEntityHash, entityHashFromRecoveryPubKeyHex } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 const {
-	ensureAgentEntityIdentity,
 	getEntitySecretKey,
 	getOperatorSecretKey,
 	resolveOperatorEntityHashForUser,
 } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 
 Deno.test('operator may write own user timeline', async () => {
@@ -44,10 +41,7 @@ Deno.test('foreign sender cannot write operator timeline', async () => {
 
 Deno.test('local agent active key may write own timeline with key history', async () => {
 	const { username } = await getSession()
-	const charPartName = 'manifest-write-agent'
-	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const row = await ensureAgentEntityIdentity(username, charPartName)
-	await ensureEntitySocialReady(username, row.entityHash)
+	const row = await seedStubAgent(username, 'manifest-write-agent', { ensureSocialReady: true })
 	const priorEvents = await append.readTimelineEvents(username, row.entityHash)
 	const secret = new Uint8Array(Buffer.from(await getEntitySecretKey(username, row.entityHash), 'hex'))
 	const sender = pubKeyHash(publicKeyFromSeed(secret))
@@ -73,13 +67,10 @@ Deno.test('user-style owner accepts subjectHash sender only', async () => {
 
 Deno.test('owner active key may post_delete on owned agent timeline', async () => {
 	const { username } = await getSession()
-	const charPartName = 'manifest-owner-delete-agent'
-	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const row = await seedStubAgent(username, 'manifest-owner-delete-agent', { ensureSocialReady: true })
 	const operator = await resolveOperatorEntityHashForUser(username)
 	assert(operator)
 	await ensureEntitySocialReady(username, operator)
-	await ensureEntitySocialReady(username, row.entityHash)
 	const ownerSecret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
 	const ownerSender = pubKeyHash(publicKeyFromSeed(ownerSecret))
 	assertEquals(await isTimelineWriteAuthorized(row.entityHash, ownerSender, {
@@ -91,12 +82,9 @@ Deno.test('owner active key may post_delete on owned agent timeline', async () =
 
 Deno.test('stranger key cannot post_delete on agent timeline via owner branch', async () => {
 	const { username } = await getSession()
-	const charPartName = 'manifest-owner-delete-deny'
-	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const row = await seedStubAgent(username, 'manifest-owner-delete-deny', { ensureSocialReady: true })
 	const operator = await resolveOperatorEntityHashForUser(username)
 	await ensureEntitySocialReady(username, operator)
-	await ensureEntitySocialReady(username, row.entityHash)
 	const stranger = pubKeyHash(publicKeyFromSeed(randomSeed()))
 	assertEquals(await isTimelineWriteAuthorized(row.entityHash, stranger, {
 		eventType: 'post_delete',
@@ -106,13 +94,10 @@ Deno.test('stranger key cannot post_delete on agent timeline via owner branch', 
 
 Deno.test('owner active key may post_edit on owned agent timeline', async () => {
 	const { username } = await getSession()
-	const charPartName = 'manifest-owner-edit-agent'
-	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const row = await seedStubAgent(username, 'manifest-owner-edit-agent', { ensureSocialReady: true })
 	const operator = await resolveOperatorEntityHashForUser(username)
 	assert(operator)
 	await ensureEntitySocialReady(username, operator)
-	await ensureEntitySocialReady(username, row.entityHash)
 	const ownerSecret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
 	const ownerSender = pubKeyHash(publicKeyFromSeed(ownerSecret))
 	assertEquals(await isTimelineWriteAuthorized(row.entityHash, ownerSender, {

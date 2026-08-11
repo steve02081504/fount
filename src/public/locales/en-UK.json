@@ -570,7 +570,15 @@
 			"open_fount": "Open fount",
 			"open_or_install_fount": "Open/Install fount",
 			"error_message": "Oh dear :(\n\nAn error occurred:\n${error}",
-			"star_thank_you": "Thank you for starring fount!"
+			"star_thank_you": "Thank you for starring fount!",
+			"telegram": {
+				"title": "Telegram",
+				"aria-label": "Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "Installation failed!",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "From group: ${name}",
 			"previewAuthorMeta": "From author",
 			"previewActionFailed": "Action failed: ${error}",
+			"loadFailed": "Couldn't load emoji picker: ${error}",
 			"category": {
 				"animal": "animal",
 				"face": "Emoji",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "Group settings saved",
 					"saveFailed": "Failed to save settings: ${error}",
 					"rolesTitle": "Roles and permissions",
+					"rolesHint": "Ticked permissions apply to all members with that role across the entire group. To let regular members attach files, enable Upload files for Everyone. Use Channel permissions under Advanced only for per-channel exceptions.",
 					"roleDefault": "default",
 					"permissionUpdated": "Permissions updated",
 					"permissionUpdateFailed": "Failed to update permissions: ${error}",
@@ -1488,15 +1498,15 @@
 						"title": "Channel archive"
 					},
 					"channelPerms": {
-						"addRole": "Add role override",
 						"denied": "You do not have MANAGE_CHANNELS permission to edit channel permission overrides.",
-						"hint": "Set role permission overrides for specific channels. Uncovered items inherit group role permissions.",
+						"hint": "Per-channel exceptions only: Inherit follows Role permissions; Allow/Deny override this channel. To enable attachments for everyone, open Role permissions and tick Upload files for Everyone — there is no “add override” button here.",
+						"overridden": "Overridden",
+						"clearOverride": "Reset all to inherit",
 						"noChannels": "There is currently no channel to configure",
-						"removeRole": "Remove this role override",
 						"selectChannel": "Channels",
-						"stateAllow": "allow",
-						"stateDeny": "reject",
-						"stateNeutral": "inherit",
+						"stateAllow": "Allow",
+						"stateDeny": "Deny",
+						"stateNeutral": "Inherit",
 						"updateFailed": "Failed to update channel permissions: ${error}",
 						"updated": "Channel permissions updated"
 					},
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "Inbox",
-				"filtersLabel": "Filter inbox messages",
+				"panel": {
+					"aria-label": "Inbox"
+				},
+				"filtersLabel": {
+					"aria-label": "Filter inbox messages"
+				},
 				"rowLabel": {
 					"aria-label": "${author} said in ${group} of ${channel}: ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "federated remote author"
 			},
 			"trustAuthor": {
-				"textContent": "trust",
-				"title": "Trust this author (allow dangerous HTML)"
+				"textContent": "trust author",
+				"title": "Trust this author (allow dangerous Markdown/HTML)"
 			},
 			"stickerInline": "Stickers",
 			"markdownRenderFailed": "Message rendering failed",
+			"messageRenderFailed": "Message rendering failed",
 			"retrySend": "Try again",
 			"mergeDagOk": "Fork merged",
 			"mergeDagFailed": "Merge failed: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "Group files use convergent encryption: if an attacker knows the plaintext of a file, they can derive the key and decrypt the corresponding ciphertext block. Do not rely solely on group encryption for protection of highly sensitive and uniquely private documents.",
 			"reputationSlashAlert": "The reputation of member ${target}… is reminded of the deduction.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "Close"
+				},
 				"previewHint": "Changes appear immediately in the preview and are saved and synced across Chat and Social.",
 				"sfwMode": "Safe for Work",
 				"livePreview": "Live preview",
@@ -2456,6 +2475,9 @@
 				"created": "Thread has been created",
 				"drawer": {
 					"aria-label": "thread"
+				},
+				"breadcrumb": {
+					"aria-label": "Subthread breadcrumb"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,17 @@
 				"friends": "No private chats yet",
 				"groups": "No groups yet",
 				"members": "No members yet",
-				"pins": "No pins yet",
-				"username": "Username not obtained"
+				"pins": "No pins yet"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "trusted",
+				"title": "This author's Markdown rendering is trusted"
+			},
+			"attachment": {
+				"dropToUpload": "Drop to upload to #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} unread"
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2905,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Download"
+					"title": "Download",
+					"aria-label": "Download"
 				},
-				"downloadIcon": {
-					"alt": "Download Icon"
+				"edit": {
+					"title": "Edit image",
+					"aria-label": "Edit image"
+				},
+				"editIcon": {
+					"alt": "Edit icon"
 				},
 				"delete": {
-					"title": "Delete"
-				},
-				"deleteIcon": {
-					"alt": "Delete Icon"
+					"title": "Delete",
+					"aria-label": "Delete"
 				},
 				"more": {
-					"title": "More"
+					"title": "More",
+					"aria-label": "More"
 				},
 				"recognize": {
-					"title": "Speech to text"
+					"title": "Speech to text",
+					"aria-label": "Speech to text"
 				}
 			}
 		},
@@ -4764,6 +4800,9 @@
 			"title": "Items",
 			"aria-label": "Items"
 		},
+		"breadcrumb": {
+			"aria-label": "Breadcrumb"
+		},
 		"openCabinets": "Open file cabinet list",
 		"closeCabinets": "Close",
 		"bootstrapFailed": "File cabinet initialization failed: ${error}",
@@ -5823,6 +5862,25 @@
 			},
 			"search": {
 				"placeholder": "Search..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "Media viewer"
+			},
+			"download": {
+				"textContent": "Download",
+				"aria-label": "Download"
+			},
+			"close": {
+				"textContent": "Close",
+				"aria-label": "Close"
+			},
+			"prev": {
+				"aria-label": "Previous media"
+			},
+			"next": {
+				"aria-label": "Next media"
 			}
 		}
 	}

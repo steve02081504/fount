@@ -6,10 +6,12 @@ alwaysApply: false
 
 # Search Index Guide
 
+Shard I/O edges / trending fill: [docs/index-io.md](docs/index-io.md).
+
 ## Engine (`src/scripts/search/`)
 
 - **`tokenize.mjs`**: CJK → bigram; latin/digits → lowercased words; `#hashtag` kept whole. Bump `TOKENIZER_VERSION` on tokenization changes (triggers rebuild).
-- **`invertedIndex.mjs`**: Per-shard `{indexDir}/{shardKey}/` — `postings.json`, append-only `docs.jsonl`, `meta.json`. Writes use `withAsyncMutex` per shard. Shard dirs are created leaf-by-leaf (no recursive parent revive); docs append does not `mkdir` (avoids `appendJsonlSynced` resurrecting deleted trees). Gone parent / mid-write `ENOENT`/`EEXIST` → no-op; Windows `EPERM` only when `indexDir` is confirmed missing (not `EBUSY` — that is a live lock, not gone-parent).
+- **`invertedIndex.mjs`**: Per-shard `{indexDir}/{shardKey}/` — `postings.json`, append-only `docs.jsonl`, `meta.json`. Writes use `withAsyncMutex` per shard.
 - **Query**: token intersection → candidates → **`verify` callback** substring check (kills bigram false positives).
 
 ## Hook points
@@ -21,4 +23,4 @@ alwaysApply: false
 
 Chat cold archive: lazy `ensureArchiveIndexed()` on first query touching uncovered months.
 
-Social extras: `replies.json` reverse index + `trending.json` hashtag counts. Trending **display** (`readTrendingHashtagCounts`) drops empty tags then fills to `limit` from remaining live ranked entries; `buildTrendingHashtags` live-scans if still short.
+Social extras: `replies.json` reverse index + `trending.json` hashtag counts.

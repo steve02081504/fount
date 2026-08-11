@@ -353,16 +353,15 @@ async function searchLocalChars(q) {
 	/** @type {FriendsSearchHit[]} */
 	const hits = []
 	for (const charname of Array.isArray(names) ? names : []) {
-		const name = String(charname || '').trim()
-		if (!name) continue
-		const details = detailsMap[name] || null
+		if (!charname) continue
+		const details = detailsMap[charname] || null
 		const displayName = String(details?.info?.name || '').trim()
-		if (!name.toLowerCase().includes(nq) && !displayName.toLowerCase().includes(nq)) continue
+		if (!charname.toLowerCase().includes(nq) && !displayName.toLowerCase().includes(nq)) continue
 		hits.push({
 			kind: 'char',
-			charname: name,
-			label: displayName || name,
-			subtitle: displayName && displayName !== name ? name : geti18n('chat.hub.friends.search.localChar'),
+			charname,
+			label: displayName || charname,
+			subtitle: displayName && displayName !== charname ? charname : geti18n('chat.hub.friends.search.localChar'),
 			avatar: String(details?.info?.avatar || '').trim() || undefined,
 		})
 		if (hits.length >= 20) break
@@ -496,7 +495,7 @@ async function runFriendsEntitySearch(input, resultsHost) {
 	/** @type {FriendsSearchHit[]} */
 	const hits = [...localChars]
 	for (const entity of data.entities || []) {
-		const charPartName = String(entity.charPartName || '').trim()
+		const charPartName = entity.charPartName
 		if (charPartName) {
 			if (seenChars.has(charPartName)) continue
 			seenChars.add(charPartName)

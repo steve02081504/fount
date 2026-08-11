@@ -44,13 +44,10 @@ const loadProfileCached = memoizePromise(
 		const sep = cacheKey.indexOf(':')
 		const entityHash = sep === -1 ? cacheKey : cacheKey.slice(0, sep)
 		const groupId = sep === -1 ? undefined : cacheKey.slice(sep + 1)
-		try {
-			const data = await getEntityProfile(entityHash, groupId)
-			return cachedProfileFromApi(data?.profile, entityHash)
-		}
-		catch {
-			return null
-		}
+		const data = await getEntityProfile(entityHash, groupId)
+		const profile = cachedProfileFromApi(data?.profile, entityHash)
+		if (!profile) throw new Error('entity profile unavailable')
+		return profile
 	},
 	{ max: 512 },
 )
@@ -116,7 +113,7 @@ export async function fetchUserProfile(entityHash, options = {}) {
 			return null
 		}
 
-	return loadProfileCached(cacheKey)
+	return loadProfileCached(cacheKey).catch(() => null)
 }
 
 /**
@@ -179,14 +176,16 @@ export function invalidateAllUserProfileCaches() {
 /**
  * 清除容器内指定作者键的头像已加载标记。
  * @param {HTMLElement} root 容器
- * @param {Set<string>} authorKeys 小写作者键
+ * @param {Set<string>} authorKeys 作者键（hex 已小写；part 名为规范串）
  * @returns {void}
  */
 function clearAvatarLoadedForAuthorKeys(root, authorKeys) {
 	if (!authorKeys.size) return
 	root.querySelectorAll('[data-avatar-for]').forEach((av) => {
-		const key = av.dataset.avatarFor?.trim().toLowerCase()
-		if (key && authorKeys.has(key))
+		const raw = av.dataset.avatarFor?.trim()
+		if (!raw) return
+		const key = isHex64(raw) || isEntityHash128(raw) ? raw.toLowerCase() : raw
+		if (authorKeys.has(key))
 			delete av.dataset.avatarLoaded
 	})
 }
@@ -194,7 +193,7 @@ function clearAvatarLoadedForAuthorKeys(root, authorKeys) {
 /**
  * 收集与 entityHash 关联的 `data-avatar-for` 键。
  * @param {string} entityHash 128 位 entityHash
- * @returns {Promise<Set<string>>} 小写作者键
+ * @returns {Promise<Set<string>>} 作者键集合
  */
 async function authorKeysForEntityHash(entityHash) {
 	const key = String(entityHash || '').trim().toLowerCase()
@@ -207,28 +206,20 @@ async function authorKeysForEntityHash(entityHash) {
 		if (String(member.entityHash || '').toLowerCase() !== key) continue
 		if (member.memberKey) keys.add(String(member.memberKey).toLowerCase())
 		if (member.pubKeyHash) keys.add(String(member.pubKeyHash).toLowerCase())
-		if (member.charname) keys.add(String(member.charname).toLowerCase())
+		if (member.charname) keys.add(member.charname)
 	}
 
-	const { charAgentEntityHash } = await import('./entityResolve.mjs')
 	const { resolveFriendBinding } = await import('./friendBindings.mjs')
 
 	for (const agent of store.viewer.agents || []) {
 		if (String(agent.entityHash || '').toLowerCase() !== key) continue
-		const name = String(agent.charPartName || '').trim()
-		if (name) keys.add(name.toLowerCase())
+		if (agent.charPartName) keys.add(agent.charPartName)
 	}
 
 	for (const group of store.sidebar.groups) {
 		const binding = resolveFriendBinding(group)
 		if (String(binding?.entityHash || '').toLowerCase() !== key) continue
-		if (binding.charname) keys.add(String(binding.charname).toLowerCase())
-	}
-
-	const charname = store.privateGroup?.charname
-	if (charname) {
-		const eh = await charAgentEntityHash(charname)
-		if (eh === key) keys.add(String(charname).toLowerCase())
+		if (binding.charname) keys.add(binding.charname)
 	}
 
 	return keys
@@ -265,7 +256,8 @@ export async function refreshHubAfterProfileChange(entityHash) {
 		await refreshViewerHubPresentation()
 	}
 
-	const charname = store.privateGroup?.charname
+	const { activePrivateCharPartName, resolveFriendBinding } = await import('./friendBindings.mjs')
+	const charname = activePrivateCharPartName()
 	if (charname) {
 		const { charAgentEntityHash } = await import('./entityResolve.mjs')
 		if (await charAgentEntityHash(charname) === key) {
@@ -274,7 +266,6 @@ export async function refreshHubAfterProfileChange(entityHash) {
 		}
 	}
 
-	const { resolveFriendBinding } = await import('./friendBindings.mjs')
 	const inFriends = store.sidebar.groups.some((group) => {
 		const binding = resolveFriendBinding(group)
 		return String(binding?.entityHash || '').toLowerCase() === key
@@ -318,7 +309,8 @@ export async function refreshHubAfterSfwChange() {
 	const { refreshViewerHubPresentation } = await import('./init.mjs')
 	await refreshViewerHubPresentation()
 
-	const charname = store.privateGroup?.charname
+	const { activePrivateCharPartName } = await import('./friendBindings.mjs')
+	const charname = activePrivateCharPartName()
 	if (charname) {
 		const { getCharDetails, renderCharInfoCardActive } = await import('./charCard.mjs')
 		await renderCharInfoCardActive(charname, await getCharDetails(charname))
@@ -404,9 +396,9 @@ export function applyAvatarsTo(rootElement) {
 		if (!authorKey) return
 		const { profileKey } = authorPresentationKeys(authorKey)
 		if (av.dataset.avatarLoaded) return
-		av.dataset.avatarLoaded = '1'
 		void fetchAuthorProfile(profileKey, { groupId: store.context.currentGroupId || undefined }).then((profile) => {
 			if (!profile) return
+			av.dataset.avatarLoaded = '1'
 			const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
 			void applyProfileAvatarToHost(av, {
 				seed: profileKey,
@@ -480,7 +472,7 @@ function getAnchorUsername(target) {
 	return uname && uname !== '?' ? uname : null
 }
 
-const PROFILE_CLICK_SKIP = '.message-actions, .trust-author-button, .block-author-button, .save-emoji-button, .save-sticker-button, .vote-option, .reactions, #profile-popup-layer, .profile-popup, .profile-popup-dm-button, .profile-popup-close, button, a, input, textarea, select'
+const PROFILE_CLICK_SKIP = '.message-actions, .block-author-button, .save-emoji-button, .save-sticker-button, .vote-option, .reactions, #profile-popup-layer, .profile-popup, .profile-popup-dm-button, .profile-popup-close, button, a, input, textarea, select'
 
 /**
  * 注册头像悬停卡与点击资料弹层（由 wireEvents 显式调用）。

@@ -10,7 +10,6 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendStreamingSession } from '../../chat/dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { resolveIceServers } from '../../chat/lib/iceServers.mjs'
-import { startWhipIngest, stopWhipIngest } from '../../chat/whip/ingest.mjs'
 import { buildStreamingEmbedUrl, mintStreamingViewToken } from '../../chat/ws/auth.mjs'
 
 import {
@@ -101,13 +100,22 @@ export function registerChannelStreamingRoutes(router, authenticate) {
 		const offerSdp = typeof req.body === 'string' ? req.body : String(req.body?.sdp || req.body || '')
 		if (!offerSdp.includes('v=0')) throw httpError(400, 'sdp required')
 		const roomId = `${groupId}:${channelId}`
-		const { answerSdp } = await startWhipIngest(roomId, offerSdp)
-		res.status(201).type('application/sdp').send(answerSdp)
+		try {
+			const { startWhipIngest } = await import('../../chat/whip/ingest.mjs')
+			const { answerSdp } = await startWhipIngest(roomId, offerSdp)
+			res.status(201).type('application/sdp').send(answerSdp)
+		}
+		catch (error) {
+			if (error?.code === 'WHIP_NATIVE_UNAVAILABLE')
+				throw httpError(501, error.message, { skip_report: true })
+			throw error
+		}
 	})
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId/whip`, authenticate, requireGroupMember(), async (req, res) => {
 		const { groupId } = req.groupContext
 		const { channelId } = req.params
+		const { stopWhipIngest } = await import('../../chat/whip/ingest.mjs')
 		stopWhipIngest(`${groupId}:${channelId}`)
 		res.status(200).json({ ok: true })
 	})

@@ -3,6 +3,7 @@
  * 规则对齐 OpenAI 自动缓存：≥1024 token 起计，按 128 token 递增；
  * cached_tokens 取与「上一请求」的最长公共前缀（向下取整到 128）。
  */
+import { Buffer } from 'node:buffer'
 import { createServer } from 'node:http'
 
 /** 可缓存的最短前缀（OpenAI 文档下限）。 */

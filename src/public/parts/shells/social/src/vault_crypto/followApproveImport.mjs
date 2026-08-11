@@ -1,9 +1,9 @@
 import { Buffer } from 'node:buffer'
 
 import { normalizeHex64, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { unwrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
 import { getOperatorSecretKey } from '../../../chat/src/entity/identity.mjs'
 

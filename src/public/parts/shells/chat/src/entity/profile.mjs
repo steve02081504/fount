@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
 
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/public_manifest'
+import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/manifest/public'
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { createLruMap } from 'npm:@steve02081504/fount-p2p/utils/lru'
@@ -22,7 +22,7 @@ import {
 	resolveProfilePresentation,
 } from './localized.mjs'
 import { resolveAgentCharPartName } from './member.mjs'
-import { getInfoDefaultsForEntity } from './presentation.mjs'
+import { getInfoDefaultsForEntity, DEFAULT_USER_AVATAR } from './presentation.mjs'
 
 /** 按资料与观众视角计算对外可见的在线状态。 */
 export { computeEffectiveStatus } from './presenceStatus.mjs'
@@ -39,8 +39,11 @@ const REMOTE_PROFILE_NEGATIVE_CACHE_MAX = 2048
 const REMOTE_PROFILE_NEGATIVE_TTL_MS = 60_000
 /** @type {ReturnType<typeof createLruMap<string, number>>} */
 const remoteProfileNegativeCache = createLruMap(REMOTE_PROFILE_NEGATIVE_CACHE_MAX)
-/** 远端 EVFS profile 拉取上限；超时回落本地默认/磁盘资料，避免资料卡 HTTP 挂死 */
-export const REMOTE_PROFILE_FETCH_TIMEOUT_MS = 2500
+/**
+ * 远端 EVFS profile 拉取上限；冷 miss 须覆盖 manifest fanout（默认 8s）+ chunk fanout（默认 8s）。
+ * 热缓存由 fount-p2p `fetchPublicManifest` SWR（本地 publicSig 立刻返回）负责。
+ */
+export const REMOTE_PROFILE_FETCH_TIMEOUT_MS = 18_000
 
 /**
  * 删除已过期的负缓存条目。
@@ -355,7 +358,18 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 	if (!infoDefaults && replicaUsername)
 		infoDefaults = await getInfoDefaultsForEntity(replicaUsername, parsed.entityHash, locales)
 	if (!infoDefaults)
-		infoDefaults = { name: `${parsed.subjectHash.slice(0, 8)}…${parsed.subjectHash.slice(-4)}`, avatar: '', description: '', description_markdown: '', version: '', author: '', home_page: '', issue_page: '', tags: [], links: [] }
+		infoDefaults = {
+			name: `${parsed.subjectHash.slice(0, 8)}…${parsed.subjectHash.slice(-4)}`,
+			avatar: DEFAULT_USER_AVATAR,
+			description: '',
+			description_markdown: '',
+			version: '',
+			author: '',
+			home_page: '',
+			issue_page: '',
+			tags: [],
+			links: [],
+		}
 
 	const sfw = viewerSfw(replicaUsername)
 	const resolved = resolveProfilePresentation(merged, locales, infoDefaults, { sfw })

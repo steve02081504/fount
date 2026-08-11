@@ -72,6 +72,30 @@ Deno.test('checkStringI18nKey flags object parent used as toast/CLI string', () 
 	assertEquals(checkStringI18nKey(LEAVE_LIKE, 'chat.hub.send.failed'), null)
 })
 
+Deno.test('switch leaf is string-like for refs', () => {
+	const root = {
+		chat: {
+			hub: {
+				unread: {
+					switch: 'count',
+					default: '${count} items',
+					cases: { 1: '1 item' },
+				},
+				badge: {
+					'aria-label': {
+						switch: 'count',
+						default: '${count} unread',
+						cases: { 1: '1 unread' },
+					},
+				},
+			},
+		},
+	}
+	assertEquals(checkStringI18nKey(root, 'chat.hub.unread'), null)
+	assertEquals(checkElementI18nKey(root, 'chat.hub.unread'), null)
+	assertEquals(checkElementI18nKey(root, 'chat.hub.badge'), null)
+})
+
 Deno.test('extract + scan catches data-i18n leave parent and CLI stale keys', () => {
 	const html = '<button data-i18n="chat.hub.group.context.leave"></button>\n<button data-i18n="chat.hub.group.context.leave.main"></button>\n'
 	const htmlIssues = scanSourceI18nRefs(LEAVE_LIKE, html, 'leave.html')

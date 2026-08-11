@@ -50,6 +50,31 @@ Day-to-day map / hosting: [AGENTS.md](../AGENTS.md). Read this when changing flu
 - ≥30% of view columns have land thickness ≥ ¼ screen height (`TALL_LAND_FRACTION` / `TALL_LAND_HEIGHT_FRAC`).
 - Resize is pedestal-relative: retained cells + dynamics (incl. `melt`/`temp`) shift with the icon; shrink crops; expand generates only exposed cells from the persistent seed. New soil starts dry (wet fill would spring under inverted ĝ); temps BFS-decay from retained melt. `RESIZE_WEATHER_TICKS` includes thermal + liquid settle.
 
+## Material standard
+
+Icon + terrain write the material grid. Free liquid / lava glyphs share the rain motion alphabet (`waterChar` / `lavaChar`); lava is slower via higher `viscOf`, not a separate charset. Never from gas wind.
+
+| Glyph / mat | Behavior |
+| --- | --- |
+| `@` (`BODY`) | Impact shell: splash then vanish — no merge, no flood |
+| `:` | Compose-only pillars — **not** material; liquid/particles pass through |
+| `@` (`POOL`) | Absorb then leak to lower slab / ground |
+| `>` / `<` (`SLOPE_*`) | 45° splash faces |
+| `HORIZON` / `SOLID` | Soil moisture field; crust under icon may sit on caves |
+| `SEAL` | Impermeable test/vessel barrier (no moisture) |
+| `AIR` | Empty air; melt mass lives in `melt`/`temp` on AIR cells |
+| melt | Rock continuum; viscosity from `viscOf(rhoOf(ROCK,temp))`; bubbles = sealed air in melt |
+
+Open-stage: ungrown base columns do not splash. Compose priority (top wins): particles → soft edges → body/pool/`lava`/water → drip → pillars → terrain outline.
+
+## Invariants
+
+- **Volume exclusivity**: `cellFill = liq+melt`, `cellRoom = LIQ_FULL−fill`. Never stack phases past one cell.
+- Water mass = `liq + moisture + condense + particles` (`totalWorldWater`); melt is separate. Closed transfers conserve; intentional sinks are world-edge / down-edge wipe / BODY impact.
+- Gravity is a continuous unit vector everywhere. Terrain is **pedestal-anchored**; land occupancy is `world.land` (alias `terrain.solid`). New/expanded soil stays dry.
+- Four edges hold fractional `sink/source/wrap` from `n̂·ĝ`. Lava onset is exposure work (not instant flip). Condensed-phase edge sinks must not read OOB cells (ambient `P_ATM`) — otherwise melt goes `NaN` permanently.
+- Composition bottom never rains. Any ĝ into the bottom zeroes **all** rain weights — side rain alone would mint water forever under Infinity `rainUntil`.
+
 ## Pressure / density / viscosity ladder
 
 - Gas thermo `pressureAt`, condensed hydro `condensedPressureAt` / `liquidPressureAt` (alias), gas dynamic `staticPressureAt = P − ½ρu²`. Free liquid moves via Torricelli `pressureMove` / free-surface `sheetMove` (`flow.mjs`), scaled by `viscGain(visc)`; submerged lateral `inertiaMove` feeds Stokes flux from `liqV` (not free-surface sheet — that fights φ vessels).

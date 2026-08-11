@@ -2,6 +2,7 @@
  * 【文件】public/hub/composerExtras.mjs
  * 【职责】Hub composer 额外控件（内容警告、敏感媒体）的读写与清空。
  * 【原理】委托 shared/composerAttachmentFields；发送后清空并清引用目标。
+ * 【关联】composerFiles / composerDraft / composerEvents 经 `onFilesChange` 传入本模块的 `setComposerExtrasVisible`（truthy 即显示，可直接传附件数）。
  */
 import {
 	clearCwSensitive,
@@ -36,11 +37,12 @@ export function clearComposerExtras() {
 }
 
 /**
- * 有附件时显示 composer extras（CW/sensitive 控件）。
- * @param {boolean} visible 是否显示
+ * 显隐 composer extras（CW/sensitive）。可传 boolean 或附件数量（truthy = 显示）。
+ * @param {boolean | number} visible 是否显示 / 附件数
  * @returns {void}
  */
 export function setComposerExtrasVisible(visible) {
 	const el = document.getElementById('composer-extras')
-	if (el) el.hidden = !visible
+	el.hidden = !visible
+	el.classList.toggle('hidden', !visible)
 }

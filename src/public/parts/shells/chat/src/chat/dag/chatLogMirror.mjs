@@ -14,9 +14,9 @@ import { channelMessage, normalizeChannelMessage } from '../../../public/shared/
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
+import { charIdFromChatLogEntry } from '../lib/charIdFromEntry.mjs'
 import { isExpectedTeardownRace } from '../lib/expectedTeardownRace.mjs'
 import { getStorageForGroup } from '../storage.mjs'
-
 
 import { appendSignedLocalEvent } from './append.mjs'
 import { ensureGroup } from './lifecycle.mjs'
@@ -56,9 +56,7 @@ async function resolveMirrorContext(entry, username, groupId) {
 	let timestamp = entry.time_stamp ? +new Date(entry.time_stamp) : Date.now()
 	if (!Number.isFinite(timestamp)) timestamp = Date.now()
 	const { sender } = await resolveLocalEventSigner(username, groupId)
-	const charId = entry.role === 'char'
-		? entry.extension.timeSlice?.charname || entry.name || null
-		: null
+	const charId = charIdFromChatLogEntry(entry)
 	const channelId = entry.extension?.chat?.channelId
 	const channelIdForDag = await resolveGroupChannelId(username, groupId, channelId)
 	return {
@@ -257,7 +255,7 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 		const text = entry.content
 		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
 		if (!text.trim() && !hasFiles) return
-		const { channelIdForDag, sender, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
+		const { channelIdForDag, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
 		const content = await buildFinalMessageContent(username, groupId, entry, text)
 		const isGreeting = !!entry.extension?.chat?.isGreeting
 			|| !!entry.extension?.greetingType

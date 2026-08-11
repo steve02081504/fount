@@ -1,3 +1,4 @@
+import { hexToBytes } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
 import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
@@ -16,7 +17,7 @@ export function registerMailboxRoutes(router) {
 		const activePubKeyHex = String(fed?.activePubKeyHex || '').trim()
 		if (!activePubKeyHex)
 			return res.status(200).json({ pendingCount: 0 })
-		const pendingCount = await countMailboxPendingForRecipient(pubKeyHash(activePubKeyHex))
+		const pendingCount = await countMailboxPendingForRecipient(pubKeyHash(hexToBytes(activePubKeyHex)))
 		res.status(200).json({ pendingCount })
 	})
 }

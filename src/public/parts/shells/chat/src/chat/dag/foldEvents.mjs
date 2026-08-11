@@ -1,15 +1,17 @@
 /**
  * DAG 过程事件折叠：删除可折叠类型；已归档 message 可选删除。
  */
-import { rewriteJsonlKeeping } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { rewriteJsonlKeeping, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { invalidateTopologicalOrderMemo } from 'npm:@steve02081504/fount-p2p/federation/topo_order_memo'
+import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 
 import { allProtectedHotEventIds } from '../archive/hotPosts.mjs'
 import { archivedMessageIdSet, loadArchiveManifest } from '../archive/index.mjs'
 import { archiveSettingsFromGroup } from '../archive/settings.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
+import { isFederatableDagEvent } from './eventTypes.mjs'
 import { shouldDropDagEvent } from './foldPolicy.mjs'
 
 /**
@@ -25,8 +27,10 @@ export async function foldDagProcessEvents(username, groupId, hotPosts, groupSet
 	const archivedIds = archivedMessageIdSet(manifest)
 	const protectedHotIds = allProtectedHotEventIds(hotPosts)
 	const path = eventsPath(username, groupId)
+	const rows = await readJsonl(path, { sanitize: stripDagEventLocalExtensions })
+	const tipIds = new Set(computeDagTipIdsFromEvents(rows.filter(isFederatableDagEvent)))
 	const { kept, dropped } = await rewriteJsonlKeeping(path, row =>
-		!shouldDropDagEvent(row, archivedIds, protectedHotIds, settings.dagFoldAfterArchive),
+		!shouldDropDagEvent(row, archivedIds, protectedHotIds, settings.dagFoldAfterArchive, tipIds),
 	{ sanitize: stripDagEventLocalExtensions },
 	)
 	invalidateTopologicalOrderMemo(`${username}:${groupId}`)

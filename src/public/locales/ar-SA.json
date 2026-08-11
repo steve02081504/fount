@@ -570,7 +570,15 @@
 			"open_fount": "فتح fount",
 			"open_or_install_fount": "فتح/تثبيت fount",
 			"error_message": "يا للأسف :(\n\nحدث خطأ:\n${error}",
-			"star_thank_you": "شكرًا لك على تمييز fount بنجمة!"
+			"star_thank_you": "شكرًا لك على تمييز fount بنجمة!",
+			"telegram": {
+				"title": "Telegram",
+				"aria-label": "Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "فشل التثبيت!",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "من المجموعة: ${name}",
 			"previewAuthorMeta": "من المؤلف",
 			"previewActionFailed": "فشلت العملية: ${error}",
+			"loadFailed": "فشل تحميل منتقي الرموز التعبيرية: ${error}",
 			"category": {
 				"animal": "حيوان",
 				"face": "تعبير",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "تم حفظ إعدادات المجموعة",
 					"saveFailed": "فشل حفظ الإعدادات: ${error}",
 					"rolesTitle": "الأدوار والأذونات",
+					"rolesHint": "الأذونات المحددة تُطبَّق على جميع أعضاء ذلك الدور في المجموعة بأكملها. للسماح بإرفاق الملفات، فعِّل «رفع الملفات» لدور Everyone. استخدم أذونات القناة ضمن الإعدادات المتقدمة فقط لاستثناءات كل قناة.",
 					"roleDefault": "تقصير",
 					"permissionUpdated": "تم تحديث الأذونات",
 					"permissionUpdateFailed": "فشل تحديث الأذونات: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "أرشيف القناة"
 					},
 					"channelPerms": {
-						"addRole": "إضافة تجاوز الدور",
 						"denied": "ليس لديك إذن MANAGE_CHANNELS لتعديل تجاوزات أذونات القناة.",
-						"hint": "قم بتعيين تجاوزات أذونات الدور لقنوات محددة. العناصر التي تم الكشف عنها ترث أذونات دور المجموعة.",
+						"hint": "استثناءات قناة واحدة فقط: الوراثة تتبع أذونات الدور؛ السماح/الرفض يُطبَّقان على هذه القناة. لتمكين المرفقات للجميع، افتح أذونات الدور وفعِّل «رفع الملفات» لدور Everyone — لا يوجد هنا زر «إضافة تجاوز».",
+						"overridden": "مُتجاوَز",
+						"clearOverride": "إعادة الكل إلى الوراثة",
 						"noChannels": "لا يوجد حاليا أي قناة لتكوينها",
-						"removeRole": "قم بإزالة تجاوز هذا الدور",
 						"selectChannel": "القنوات",
 						"stateAllow": "سماح",
 						"stateDeny": "رفض",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "البريد الوارد",
-				"filtersLabel": "تصفية رسائل صندوق الوارد",
+				"panel": {
+					"aria-label": "البريد الوارد"
+				},
+				"filtersLabel": {
+					"aria-label": "تصفية رسائل صندوق الوارد"
+				},
 				"rowLabel": {
 					"aria-label": "قال ${author} في ${group} من ${channel}: ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "المؤلف البعيد الموحد"
 			},
 			"trustAuthor": {
-				"textContent": "وثوق",
-				"title": "ثق بهذا المؤلف (السماح بـ HTML الخطير)"
+				"textContent": "ثقة بالمؤلف",
+				"title": "الثقة بهذا المؤلف (السماح بعرض Markdown/HTML الخطير)"
 			},
 			"stickerInline": "ملصق",
 			"markdownRenderFailed": "فشل عرض الرسالة",
+			"messageRenderFailed": "فشل عرض الرسالة",
 			"retrySend": "حاول ثانية",
 			"mergeDagOk": "تم دمج الشوكة",
 			"mergeDagFailed": "فشل الدمج: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "تستخدم ملفات المجموعة التشفير المتقارب: إذا كان المهاجم يعرف النص العادي للملف، فيمكنه استخلاص المفتاح وفك تشفير كتلة النص المشفر المقابلة. لا تعتمد فقط على تشفير المجموعة لحماية المستندات الحساسة للغاية والخاصة بشكل فريد.",
 			"reputationSlashAlert": "سمعة العضو ${target}... تذكرنا بالخصم.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "إغلاق"
+				},
 				"previewHint": "تظهر التغييرات على الفور في المعاينة ويتم حفظها ومزامنتها عبر الدردشة والتواصل الاجتماعي.",
 				"sfwMode": "محتوى آمن",
 				"livePreview": "معاينة حية",
@@ -2456,6 +2475,9 @@
 				"created": "تم إنشاء موضوع تابع",
 				"drawer": {
 					"aria-label": "خيط الطفل"
+				},
+				"breadcrumb": {
+					"aria-label": "مسار الموضوع الفرعي"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,17 @@
 				"friends": "لا توجد محادثات خاصة حتى الآن",
 				"groups": "لا توجد مجموعة بعد",
 				"members": "لا يوجد أعضاء حتى الآن",
-				"pins": "لا دبابيس بعد",
-				"username": "لم يتم الحصول على اسم المستخدم"
+				"pins": "لا دبابيس بعد"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "موثوق",
+				"title": "عرض Markdown لهذا المؤلف مفعّل"
+			},
+			"attachment": {
+				"dropToUpload": "أفلت للرفع إلى #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} غير مقروء"
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2905,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "تنزيل"
+					"title": "تنزيل",
+					"aria-label": "تنزيل"
 				},
-				"downloadIcon": {
-					"alt": "أيقونة التنزيل"
+				"edit": {
+					"title": "تحرير الصورة",
+					"aria-label": "تحرير الصورة"
+				},
+				"editIcon": {
+					"alt": "رمز التحرير"
 				},
 				"delete": {
-					"title": "حذف"
-				},
-				"deleteIcon": {
-					"alt": "أيقونة الحذف"
+					"title": "حذف",
+					"aria-label": "حذف"
 				},
 				"more": {
-					"title": "أكثر"
+					"title": "أكثر",
+					"aria-label": "أكثر"
 				},
 				"recognize": {
-					"title": "تحويل الصوت إلى نص"
+					"title": "تحويل الصوت إلى نص",
+					"aria-label": "الكلام إلى النص"
 				}
 			}
 		},
@@ -4764,6 +4800,9 @@
 			"title": "قائمة العناصر",
 			"aria-label": "قائمة العناصر"
 		},
+		"breadcrumb": {
+			"aria-label": "مسار التنقل"
+		},
 		"openCabinets": "فتح قائمة خزانة الملفات",
 		"closeCabinets": "إغلاق",
 		"bootstrapFailed": "فشلت تهيئة خزانة الملفات: ${error}",
@@ -5823,6 +5862,25 @@
 			},
 			"search": {
 				"placeholder": "بحث..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "عارض الوسائط"
+			},
+			"download": {
+				"textContent": "تحميل",
+				"aria-label": "تحميل"
+			},
+			"close": {
+				"textContent": "إغلاق",
+				"aria-label": "إغلاق"
+			},
+			"prev": {
+				"aria-label": "الصورة السابقة"
+			},
+			"next": {
+				"aria-label": "التالي"
 			}
 		}
 	}

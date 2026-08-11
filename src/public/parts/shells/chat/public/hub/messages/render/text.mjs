@@ -76,7 +76,7 @@ export function getMessageEditText(message) {
 }
 
 /**
- * 将纯文本转为可插入消息区的 HTML（贴纸/图片占位等）。
+ * 将纯文本转为可插入消息区的 HTML（贴纸占位等）。
  * @param {string} text 原始消息文本
  * @returns {Promise<string>} 带内联标签的 HTML
  */
@@ -88,12 +88,5 @@ export async function renderMessageContent(text) {
 			src: escapeHtml(unescapeAttrUrl(stickerUrl)),
 		}),
 	)
-	html = await replaceAsync(html, /\[image:([^\]|]+)\|([^\]]+)]/g, async (...[, fileName, imageUrl]) => {
-		const safeUrl = escapeHtml(unescapeAttrUrl(imageUrl))
-		return renderTemplateAsHtmlString('hub/messages/inline_image', {
-			fileName: escapeHtml(fileName),
-			src: safeUrl,
-		})
-	})
 	return html
 }

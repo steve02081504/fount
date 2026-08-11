@@ -1,7 +1,7 @@
 /**
  * Chat 后端集成测试 harness：同进程共享 dataDir，每测试独立 username。
  */
-import { cp, mkdir } from 'node:fs/promises'
+import { cp, mkdir, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -59,6 +59,22 @@ export async function seedCharFixture(dataDir, username, charNames) {
 		const to = join(userRoot, 'chars', name)
 		await mkdir(dirname(to), { recursive: true })
 		await cp(from, to, { recursive: true })
+	}
+}
+
+/**
+ * 写入仅含 `main.mjs` 的占位角色，供 getPartList / resolveCharPartName 命中。
+ * @param {string} dataDir 数据根
+ * @param {string} username 用户
+ * @param {string | string[]} charNames 目录名
+ * @returns {Promise<void>}
+ */
+export async function seedStubCharPart(dataDir, username, charNames) {
+	const userRoot = join(dataDir, 'users', username)
+	for (const name of [charNames].flat()) {
+		const dir = join(userRoot, 'chars', name)
+		await mkdir(dir, { recursive: true })
+		await writeFile(join(dir, 'main.mjs'), 'export default {}\n')
 	}
 }
 

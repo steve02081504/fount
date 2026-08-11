@@ -136,7 +136,7 @@ function appendAction(actions, labelKey, className, onClick) {
  */
 async function resolveCollection(pack, provider) {
 	if (provider?.collection) return provider.collection
-	if (pack?._provider?.collection) return pack._provider.collection
+	if (pack?.sourceProvider?.collection) return pack.sourceProvider.collection
 	const providers = await listEmojiProviders()
 	return findCollectionCapability(providers)
 }
@@ -155,7 +155,7 @@ export async function showEmojiPackPreview(anchor, options) {
 	if (!(anchor instanceof HTMLElement) || !options?.pack) return
 	const card = ensureCard()
 	const pack = options.pack
-	const provider = options.provider || pack._provider || null
+	const provider = options.provider || pack.sourceProvider || null
 	const preferredLangs = loadPreferredLangs()
 	const locales = preferredLangs.length ? preferredLangs : [primaryLocale()]
 	const presentation = presentationOf(locales, pack)

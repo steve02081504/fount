@@ -3,7 +3,7 @@
  */
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
-import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part_query'
+import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
 /** 联邦表情包容器发现查询种类。 */
 export const EMOJI_PACK_OFFERS_KIND = 'emoji_pack_offers'
