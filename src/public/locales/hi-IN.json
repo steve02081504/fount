@@ -2782,10 +2782,10 @@
 			},
 			"trustedAuthorBadge": {
 				"textContent": "विश्वसनीय",
-				"title": "इस लेखक का Markdown रेंडरिंग सक्षम है"
+				"title": "इस लेखक पर भरोसा करें (खतरनाक Markdown/HTML की अनुमति)"
 			},
 			"attachment": {
-				"dropToUpload": "#${channel} पर अपलोड करें"
+				"dropToUpload": "अपलोड करने के लिए #${channel} पर छोड़ें"
 			},
 			"unreadBadge": {
 				"aria-label": "${count} अपठित आइटम"
@@ -2898,9 +2898,6 @@
 					"title": "डाउनलोड करें",
 					"aria-label": "डाउनलोड करें"
 				},
-				"downloadIcon": {
-					"alt": "डाउनलोड आइकन"
-				},
 				"edit": {
 					"title": "चित्र संपादित करें",
 					"aria-label": "चित्र संपादित करें"
@@ -2912,16 +2909,13 @@
 					"title": "हटाएँ",
 					"aria-label": "हटाएँ"
 				},
-				"deleteIcon": {
-					"alt": "हटाएँ आइकन"
-				},
 				"more": {
 					"title": "अधिक",
 					"aria-label": "अधिक"
 				},
 				"recognize": {
-					"title": "आवाज़ से लेख",
-					"aria-label": "आवाज़ से लेख"
+					"title": "भाषण से पाठ",
+					"aria-label": "भाषण से पाठ"
 				}
 			}
 		},
@@ -5870,10 +5864,10 @@
 				"aria-label": "बंद करें"
 			},
 			"prev": {
-				"aria-label": "पिछला चित्र"
+				"aria-label": "पिछला मीडिया"
 			},
 			"next": {
-				"aria-label": "अगला"
+				"aria-label": "अगला मीडिया"
 			}
 		}
 	}

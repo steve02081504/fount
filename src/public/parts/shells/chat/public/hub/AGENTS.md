@@ -45,4 +45,4 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 
 ## Search
 
-Hub `#friends` search: local `chars/` → `dispatchFriendChat({ type: 'char' })`（建群 `friendBinding` 为 `{ charname }` 或 `{ entityHash }`，互斥；`POST …/groups` 对 charname ensure agent）；entity search hits with `charPartName` are local agents — not remote-user DMs. Network handle search: `GET …/entities/search`.
+Hub `#friends` search: local `chars/` hits → `dispatchFriendChat({ type: 'char' })`. Group creation passes a `friendBinding` of either `{ charname }` or `{ entityHash }` — never both; `POST …/groups` ensures the agent entity for a `charname` binding. Entity search hits carrying `charPartName` are local agents, not remote-user DMs. Network handle search: `GET …/entities/search`.

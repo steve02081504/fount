@@ -2788,7 +2788,7 @@
 				"dropToUpload": "Suelta para subir a #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} elementos no leídos"
+				"aria-label": "${count} sin leer"
 			}
 		},
 		"sidebar": {
@@ -2898,9 +2898,6 @@
 					"title": "Descargar",
 					"aria-label": "Descargar"
 				},
-				"downloadIcon": {
-					"alt": "Icono de descarga"
-				},
 				"edit": {
 					"title": "Editar imagen",
 					"aria-label": "Editar imagen"
@@ -2911,9 +2908,6 @@
 				"delete": {
 					"title": "Eliminar",
 					"aria-label": "Eliminar"
-				},
-				"deleteIcon": {
-					"alt": "Icono de eliminar"
 				},
 				"more": {
 					"title": "Más",
@@ -5870,10 +5864,10 @@
 				"aria-label": "Cerrar"
 			},
 			"prev": {
-				"aria-label": "Imagen anterior"
+				"aria-label": "Medio anterior"
 			},
 			"next": {
-				"aria-label": "Siguiente"
+				"aria-label": "Medio siguiente"
 			}
 		}
 	}

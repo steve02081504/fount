@@ -128,7 +128,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 					groupId: existing.groupId,
 					defaultChannelId: 'default',
 					reused: true,
-					friendBinding,
+					friendBinding: existing.friendBinding || friendBinding,
 				})
 			}
 		}

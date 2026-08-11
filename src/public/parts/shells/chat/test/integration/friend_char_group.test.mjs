@@ -13,7 +13,7 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 const testDir = dirname(fileURLToPath(import.meta.url))
 const fixturesRoot = join(testDir, '../fixtures')
 const CHAT_PREFIX = '/api/parts/shells:chat'
-const CHAR = 'on_message_yes'
+const characterName = 'on_message_yes'
 
 /**
  * @param {object} node launchNode 句柄
@@ -23,8 +23,7 @@ const CHAR = 'on_message_yes'
  * @returns {Promise<Response>} fetch 响应
  */
 function chatFetch(node, method, path, body) {
-	const sep = path.includes('?') ? '&' : '?'
-	const url = `${node.baseUrl}${CHAT_PREFIX}${path}${sep}fount-apikey=${encodeURIComponent(node.apiKey)}`
+	const url = `${node.baseUrl}${CHAT_PREFIX}${path}${path.includes('?') ? '&' : '?'}fount-apikey=${encodeURIComponent(node.apiKey)}`
 	return fetch(url, {
 		method,
 		headers: body ? { 'content-type': 'application/json' } : undefined,
@@ -47,45 +46,59 @@ Deno.test({
 		minP2pNode: true,
 		p2p: false,
 		fixtureCopies: [
-			{ from: join(fixturesRoot, 'chars', CHAR), to: `chars/${CHAR}` },
+			{ from: join(fixturesRoot, 'chars', characterName), to: `chars/${characterName}` },
 		],
 	})
 	try {
-		const viewerRes = await chatFetch(node, 'GET', '/viewer')
-		assertEquals(viewerRes.status, 200)
-		const viewer = await viewerRes.json()
+		const viewerResponse = await chatFetch(node, 'GET', '/viewer')
+		assertEquals(viewerResponse.status, 200)
+		const viewer = await viewerResponse.json()
 		assert(viewer.viewerEntityHash, 'operator identity required')
 		assertEquals(
-			(viewer.agents || []).some(row => row.charPartName === CHAR),
+			(viewer.agents || []).some(row => row.charPartName === characterName),
 			false,
 			'fresh char must not appear in viewer.agents before friend group create',
 		)
 
-		const createRes = await chatFetch(node, 'POST', '/groups/', {
-			name: CHAR,
-			friendBinding: { charname: CHAR },
+		const createResponse = await chatFetch(node, 'POST', '/groups/', {
+			name: characterName,
+			friendBinding: { charname: characterName },
 		})
-		const created = await createRes.json().catch(() => ({}))
-		assertEquals(createRes.status, 201, JSON.stringify(created))
+		const created = await createResponse.json().catch(() => ({}))
+		assertEquals(createResponse.status, 201, JSON.stringify(created))
 		assert(created.groupId)
-		assertEquals(created.friendBinding?.charname, CHAR)
+		assertEquals(created.friendBinding?.charname, characterName)
 		assert(typeof created.friendBinding?.entityHash === 'string'
 			&& created.friendBinding.entityHash.length === 128)
 
 		const viewerAfter = await (await chatFetch(node, 'GET', '/viewer')).json()
 		assert(
 			(viewerAfter.agents || []).some(row =>
-				row.charPartName === CHAR
+				row.charPartName === characterName
 				&& row.entityHash === created.friendBinding.entityHash),
 			'viewer.agents must include agent materialized by friend group create',
 		)
 
-		const addCharRes = await chatFetch(node, 'POST', `/groups/${created.groupId}/char`, {
-			charname: CHAR,
+		const addCharResponse = await chatFetch(node, 'POST', `/groups/${created.groupId}/char`, {
+			charname: characterName,
 			deferGreeting: true,
 		})
-		const addCharBody = await addCharRes.json().catch(() => ({}))
-		assertEquals(addCharRes.status, 200, JSON.stringify(addCharBody))
+		const addCharBody = await addCharResponse.json().catch(() => ({}))
+		assertEquals(addCharResponse.status, 200, JSON.stringify(addCharBody))
+
+		const reuseResponse = await chatFetch(node, 'POST', '/groups/', {
+			name: `${characterName}-reuse`,
+			friendBinding: {
+				charname: characterName.toUpperCase(),
+				entityHash: 'f'.repeat(128),
+			},
+		})
+		const reused = await reuseResponse.json().catch(() => ({}))
+		assertEquals(reuseResponse.status, 200, JSON.stringify(reused))
+		assertEquals(reused.reused, true)
+		assertEquals(reused.groupId, created.groupId)
+		assertEquals(reused.friendBinding?.charname, characterName)
+		assertEquals(reused.friendBinding?.entityHash, created.friendBinding.entityHash)
 	}
 	finally {
 		await stopNode(node)

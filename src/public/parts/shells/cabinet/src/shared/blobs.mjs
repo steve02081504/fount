@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 
 import { wrapContentKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { buildFileManifestFromEnc, encryptPlaintextToParts } from 'npm:@steve02081504/fount-p2p/files/assemble'
-import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 import { loadFileManifest, readManifestPlaintext, saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
 
 import { evfsSharedBlobPath } from '../paths.mjs'
@@ -98,7 +98,7 @@ export async function tryDeleteSharedBlob(cabinetId, logicalPath) {
  */
 export async function ensureChunk(hash) {
 	if (await hasChunk(hash)) return getChunk(hash)
-	const { fetchChunk } = await import('npm:@steve02081504/fount-p2p/files/chunk_fetch')
+	const { fetchChunk } = await import('npm:@steve02081504/fount-p2p/files/chunk/fetch')
 	const bytes = await fetchChunk(hash)
 	await putChunk(hash, bytes)
 	return bytes

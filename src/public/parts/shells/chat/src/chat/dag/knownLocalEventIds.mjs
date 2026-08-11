@@ -15,32 +15,33 @@ import { eventsPath } from '../lib/paths.mjs'
 import { safeReadSnapshot } from './wal.mjs'
 
 /**
- * @param {object | null | undefined} checkpoint 群快照
- * @param {Set<string>} out 写入集合
+ * @param {Set<string>} knownSet 写入集合
+ * @param {unknown} id 事件 id
  * @returns {void}
  */
-export function addCheckpointKnownEventIds(checkpoint, out) {
+function addKnownEventId(knownSet, id) {
+	const eventIdNorm = String(id || '').trim().toLowerCase()
+	if (isHex64(eventIdNorm)) knownSet.add(eventIdNorm)
+}
+
+/**
+ * @param {object | null | undefined} checkpoint 群快照
+ * @param {Set<string>} knownSet 写入集合
+ * @returns {void}
+ */
+export function addCheckpointKnownEventIds(checkpoint, knownSet) {
 	if (!checkpoint) return
-	const tip = String(checkpoint.checkpoint_event_id || '').trim().toLowerCase()
-	if (isHex64(tip)) out.add(tip)
-	for (const id of checkpoint.dag_tip_ids || []) {
-		const n = String(id || '').trim().toLowerCase()
-		if (isHex64(n)) out.add(n)
-	}
-	for (const id of checkpoint.eventIdsInEpoch || []) {
-		const n = String(id || '').trim().toLowerCase()
-		if (isHex64(n)) out.add(n)
-	}
-	for (const entry of checkpoint.epoch_chain || []) {
-		const n = String(entry?.checkpoint_event_id || '').trim().toLowerCase()
-		if (isHex64(n)) out.add(n)
-	}
+	addKnownEventId(knownSet, checkpoint.checkpoint_event_id)
+	for (const id of checkpoint.dag_tip_ids || [])
+		addKnownEventId(knownSet, id)
+	for (const id of checkpoint.eventIdsInEpoch || [])
+		addKnownEventId(knownSet, id)
+	for (const entry of checkpoint.epoch_chain || [])
+		addKnownEventId(knownSet, entry?.checkpoint_event_id)
 	for (const ids of Object.values(checkpoint.hot_posts?.latestByChannel || {})) {
 		const list = Array.isArray(ids) ? ids : ids ? [ids] : []
-		for (const id of list) {
-			const n = String(id || '').trim().toLowerCase()
-			if (isHex64(n)) out.add(n)
-		}
+		for (const id of list)
+			addKnownEventId(knownSet, id)
 	}
 }
 
@@ -52,31 +53,26 @@ export function addCheckpointKnownEventIds(checkpoint, out) {
  */
 export async function loadKnownLocalDagEventIds(username, groupId) {
 	/** @type {Set<string>} */
-	const known = new Set()
+	const knownSet = new Set()
 	try {
-		for (const row of await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })) {
-			const id = String(row?.id || '').trim().toLowerCase()
-			if (isHex64(id)) known.add(id)
-		}
+		for (const row of await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })) 
+			addKnownEventId(knownSet, row?.id)
+		
 	}
 	catch { /* 无 events */ }
 
 	try {
-		for (const id of archivedMessageIdSet(await loadArchiveManifest(username, groupId))) {
-			const n = String(id || '').trim().toLowerCase()
-			if (isHex64(n)) known.add(n)
-		}
+		for (const id of archivedMessageIdSet(await loadArchiveManifest(username, groupId)))
+			addKnownEventId(knownSet, id)
 	}
 	catch { /* 无 archive */ }
 
 	try {
-		for (const id of Object.keys((await loadEventMeta(username, groupId)).receivedAt || {})) {
-			const n = String(id || '').trim().toLowerCase()
-			if (isHex64(n)) known.add(n)
-		}
+		for (const id of Object.keys((await loadEventMeta(username, groupId)).receivedAt || {}))
+			addKnownEventId(knownSet, id)
 	}
 	catch { /* 无 meta */ }
 
-	addCheckpointKnownEventIds(await safeReadSnapshot(username, groupId), known)
-	return known
+	addCheckpointKnownEventIds(await safeReadSnapshot(username, groupId), knownSet)
+	return knownSet
 }

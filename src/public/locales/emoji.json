@@ -1455,7 +1455,7 @@
 					"saveSuccess": "👥⚙️💾✅",
 					"saveFailed": "💾⚙️❌: ${error}",
 					"rolesTitle": "🎭🔐",
-					"rolesHint": "🎭✅ 全群 · 📎→Everyone · 📺⚙️ 例外",
+					"rolesHint": "🎭✅ · 📎→👥 · 📺⚙️",
 					"roleDefault": "⭐",
 					"permissionUpdated": "🔐🔄✅",
 					"permissionUpdateFailed": "🔐🔄❌: ${error}",
@@ -1477,7 +1477,7 @@
 					"ownerSuccessionFailed": "👑➡️❌：${error}",
 					"defaultEmojiPack": {
 						"failed": "⭐😀📦❌",
-						"hint": "➕👥➡️⭐；🔄➡️🔁旧⭐∈⭐",
+						"hint": "➕👥➡️⭐；🔄➡️🔁⭐∈⭐",
 						"label": "⭐😀📦",
 						"ok": "⭐😀📦✅"
 					},
@@ -1490,9 +1490,9 @@
 					},
 					"channelPerms": {
 						"denied": "🫵🚫📺⚙️🔐，🚫✏️📺🔐",
-						"hint": "📺例外のみ · ↩️继承🎭 · ✅允许 ❌拒绝 · 📎→角色权限",
+						"hint": "📺⚙️ · ↩️🎭 · ✅❌ · 📎→🎭🔐",
 						"overridden": "⚠️",
-						"clearOverride": "↩️全",
+						"clearOverride": "↩️🔄",
 						"noChannels": "📭📺⚙️",
 						"selectChannel": "📺",
 						"stateAllow": "✅",
@@ -1521,7 +1521,7 @@
 						"deleteOk": "😀🗑️✅",
 						"empty": "📭👥😀",
 						"hint": "👤✅💬📍／📤👥😀；🚫📥🖼️ ➡️ 🌐🔗📥⏳",
-						"packGroupOption": "${packId} (群)",
+						"packGroupOption": "${packId} 👥",
 						"title": "👥😀",
 						"upload": "⬆️😀",
 						"uploadFailed": "⬆️❌：${error}",
@@ -2788,7 +2788,7 @@
 				"dropToUpload": "⬆️ #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} 条未读"
+				"aria-label": "📬 ${count}"
 			}
 		},
 		"sidebar": {
@@ -2896,32 +2896,26 @@
 			"buttons": {
 				"download": {
 					"title": "💾",
-					"aria-label": "下载"
-				},
-				"downloadIcon": {
-					"alt": "💾"
+					"aria-label": "💾"
 				},
 				"edit": {
-					"title": "编辑图片",
-					"aria-label": "编辑图片"
+					"title": "✏️🖼️",
+					"aria-label": "✏️🖼️"
 				},
 				"editIcon": {
-					"alt": "编辑图标"
+					"alt": "✏️"
 				},
 				"delete": {
 					"title": "🗑️",
-					"aria-label": "删除"
-				},
-				"deleteIcon": {
-					"alt": "🗑️"
+					"aria-label": "🗑️"
 				},
 				"more": {
 					"title": "⋯",
-					"aria-label": "更多"
+					"aria-label": "⋯"
 				},
 				"recognize": {
 					"title": "🎙️➡️📝",
-					"aria-label": "语音转文字"
+					"aria-label": "🎙️➡️📝"
 				}
 			}
 		},
@@ -5859,21 +5853,21 @@
 		},
 		"mediaViewer": {
 			"dialog": {
-				"aria-label": "媒体查看器"
+				"aria-label": "🖼️👀"
 			},
 			"download": {
-				"textContent": "下载",
-				"aria-label": "下载"
+				"textContent": "💾",
+				"aria-label": "💾"
 			},
 			"close": {
-				"textContent": "关闭",
-				"aria-label": "关闭"
+				"textContent": "✖️",
+				"aria-label": "✖️"
 			},
 			"prev": {
-				"aria-label": "上一张"
+				"aria-label": "⬅️"
 			},
 			"next": {
-				"aria-label": "下一张"
+				"aria-label": "➡️"
 			}
 		}
 	}

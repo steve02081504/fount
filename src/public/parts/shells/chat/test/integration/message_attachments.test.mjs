@@ -8,7 +8,7 @@ import { assert, assertEquals, assertFalse } from 'jsr:@std/assert'
 
 import { createIntegrationBoot, waitUntil } from '../harness.mjs'
 
-/** 1×1 像素 PNG */
+/** 1×1 PNG 测试数据 */
 const TINY_PNG = Buffer.from(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 	'base64',
@@ -38,7 +38,7 @@ Deno.test('postChannelMessage image attaches files without inline markers', asyn
 	assertFalse(String(event.content?.content ?? '').includes('[image:'))
 
 	const rows = await readChannelMessagesForUser(username, groupId, channelId, { limit: 10 })
-	const row = rows.find(r => r.eventId === event.id)
+	const row = rows.find(candidate => candidate.eventId === event.id)
 	assert(row, 'view-log row missing')
 	assert((row.content?.files || []).length >= 1, 'files descriptor required')
 	assert(row.content.files[0].fileId, 'fileId required')
@@ -49,7 +49,8 @@ Deno.test('postChannelMessage image attaches files without inline markers', asyn
 	await waitUntil(async () => {
 		const found = await searchGroupMessages(username, groupId, { q: token, limit: 10 })
 		const hit = found.items.find(item => item.eventId === String(event.id).toLowerCase())
-		return !!hit && !String(hit.text || '').includes('[image:')
+		const text = String(hit?.text || '')
+		return !!hit && text.includes(token) && !text.includes('[image:')
 	}, 5000, 40)
 
 	const { groupEntityHash } = await import('../../public/shared/groupEntityHash.mjs')

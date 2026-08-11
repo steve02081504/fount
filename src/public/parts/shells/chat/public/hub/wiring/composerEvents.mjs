@@ -15,13 +15,11 @@ export function wireComposerEvents() {
 	attachHubMentionAutocomplete(messageInput)
 
 	const dropRoot = document.querySelector('.main-body')
-		|| document.getElementById('messages')?.parentElement
-	if (dropRoot instanceof HTMLElement)
-		addMessageAreaFileDrop(dropRoot, selectedFiles, preview, () => {
-			const channelId = store.context.currentChannelId
-			const channel = store.context.currentState?.channels?.[channelId]
-			return channel?.name || channelId || ''
-		})
+	addMessageAreaFileDrop(dropRoot, selectedFiles, preview, () => {
+		const channelId = store.context.currentChannelId
+		const channel = store.context.currentState?.channels?.[channelId]
+		return channel?.name || channelId || ''
+	})
 
 	document.getElementById('voice-button').addEventListener('click', () => {
 		void toggleVoiceRecording()

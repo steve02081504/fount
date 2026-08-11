@@ -2897,9 +2897,6 @@
 					"title": "下載",
 					"aria-label": "下載"
 				},
-				"downloadIcon": {
-					"alt": "下載圖示"
-				},
 				"edit": {
 					"title": "編輯圖片",
 					"aria-label": "編輯圖片"
@@ -2910,9 +2907,6 @@
 				"delete": {
 					"title": "刪除",
 					"aria-label": "刪除"
-				},
-				"deleteIcon": {
-					"alt": "刪除圖示"
 				},
 				"more": {
 					"title": "更多",

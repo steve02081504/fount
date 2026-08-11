@@ -1455,7 +1455,7 @@
 					"saveSuccess": "Paramètres de groupe enregistrés",
 					"saveFailed": "Échec de l'enregistrement des paramètres : ${error}",
 					"rolesTitle": "Rôles et autorisations",
-					"rolesHint": "Les autorisations cochées s’appliquent à tout le groupe pour les membres ayant ce rôle. Pour autoriser les pièces jointes, cochez « Télécharger des fichiers » pour Everyone. Utilisez Autorisations de chaîne, dans Avancé, uniquement pour des exceptions par canal.",
+					"rolesHint": "Les autorisations cochées s’appliquent à tout le groupe pour les membres ayant ce rôle. Pour autoriser les pièces jointes, cochez « Téléverser des fichiers » pour Everyone. Utilisez Autorisations de chaîne, dans Avancé, uniquement pour des exceptions par canal.",
 					"roleDefault": "Par défaut",
 					"permissionUpdated": "Autorisations mises à jour",
 					"permissionUpdateFailed": "Échec de la mise à jour des autorisations : ${error}",
@@ -1571,7 +1571,7 @@
 						"SEND_MESSAGES": "Envoyer un message",
 						"SEND_STICKERS": "Envoyer des autocollants",
 						"STREAM": "voix",
-						"UPLOAD_FILES": "Télécharger des fichiers",
+						"UPLOAD_FILES": "Téléverser des fichiers",
 						"VIEW_CHANNEL": "Voir la chaîne"
 					},
 					"kick": {
@@ -2782,7 +2782,7 @@
 			},
 			"trustedAuthorBadge": {
 				"textContent": "Approuvé",
-				"title": "Le rendu Markdown de cet auteur est autorisé"
+				"title": "Faire confiance à cet auteur (Markdown/HTML dangereux autorisés)"
 			},
 			"attachment": {
 				"dropToUpload": "Déposer pour envoyer dans #${channel}"
@@ -2898,9 +2898,6 @@
 					"title": "Télécharger",
 					"aria-label": "Télécharger"
 				},
-				"downloadIcon": {
-					"alt": "Icône Télécharger"
-				},
 				"edit": {
 					"title": "Modifier l'image",
 					"aria-label": "Modifier l'image"
@@ -2912,16 +2909,13 @@
 					"title": "Supprimer",
 					"aria-label": "Supprimer"
 				},
-				"deleteIcon": {
-					"alt": "Icône Supprimer"
-				},
 				"more": {
 					"title": "Plus",
 					"aria-label": "Plus"
 				},
 				"recognize": {
-					"title": "Voix en texte",
-					"aria-label": "Voix en texte"
+					"title": "Parole en texte",
+					"aria-label": "Parole en texte"
 				}
 			}
 		},
@@ -5870,10 +5864,10 @@
 				"aria-label": "Fermer"
 			},
 			"prev": {
-				"aria-label": "Photo précédente"
+				"aria-label": "Média précédent"
 			},
 			"next": {
-				"aria-label": "Suivant"
+				"aria-label": "Média suivant"
 			}
 		}
 	}

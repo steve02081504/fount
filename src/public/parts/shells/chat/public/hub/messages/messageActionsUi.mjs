@@ -15,6 +15,7 @@ import { hubActionMenuIcon } from '../../src/lib/emojiSvg.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { bindComposerEditKeys } from '../../src/ui/composerKeys.mjs'
 import { addDragAndDropSupport } from '../../src/ui/dragAndDrop.mjs'
+import { store } from '../core/state.mjs'
 /**
  * 消息编辑/反馈/删除动画时长常量。
  */
@@ -195,7 +196,12 @@ export function bindMessageEditArea(editWrap, { onSave, onCancel, initialFiles =
 		if (!(preview instanceof HTMLElement)) return
 		preview.replaceChildren()
 		for (let index = 0; index < selectedFiles.length; index++) {
-			const element = await renderAttachmentPreview(selectedFiles[index], index, selectedFiles)
+			const element = await renderAttachmentPreview(
+				selectedFiles[index],
+				index,
+				selectedFiles,
+				{ groupId: store.context.currentGroupId },
+			)
 			if (element) preview.appendChild(element)
 		}
 	}

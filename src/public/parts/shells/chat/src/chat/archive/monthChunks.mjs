@@ -11,7 +11,7 @@ import { join } from 'node:path'
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { encryptPlaintextToMultiParts } from 'npm:@steve02081504/fount-p2p/files/assemble'
-import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 
 import {
 	digestArchiveMonthBody,

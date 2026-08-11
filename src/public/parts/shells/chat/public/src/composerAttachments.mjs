@@ -11,6 +11,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { hasSpeechRecognitionSource, recognizeBuffer } from '/scripts/features/speechRecognition.mjs'
 import { setCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
 import { entityFileUrl, fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
+import { onElementRemoved } from '/scripts/lib/onElementRemoved.mjs'
 import { parseEvfsRef } from './lib/evfsRef.mjs'
 import { arrayBufferToBase64 } from './lib/federationUpload.mjs'
 import { processTimeStampForId } from './lib/timestampId.mjs'
@@ -152,26 +153,25 @@ const PREVIEWABLE_MIME_TYPES = ['image/', 'video/', 'audio/']
  * @param {object} file - 文件。
  * @param {number} index - 索引。
  * @param {Array<object>} selectedFiles - 已选择的文件。
+ * @param {{ groupId?: string | null }} [options] 群 ID（已上传文件预览）
  * @returns {Promise<HTMLElement>} - 附件元素。
  */
-export async function renderAttachmentPreview(file, index, selectedFiles) {
-	const isAudio = String(file.mime_type || '').startsWith('audio/')
-	const isImage = String(file.mime_type || '').startsWith('image/')
+export async function renderAttachmentPreview(file, index, selectedFiles, { groupId = null } = {}) {
+	const mime = String(file.mime_type || '')
+	const isImage = mime.startsWith('image/')
+	const isAudio = mime.startsWith('audio/')
 	const composing = !!selectedFiles
 	const showSpeechRecognitionButton = isAudio && composing && await speechRecognitionConfigured()
-	const showDownloadButton = !composing
-	const showDeleteButton = composing
-	const showEditButton = isImage && composing && !!(typeof file.buffer === 'string' && file.buffer.length)
-	const buttonCount = [showDownloadButton, showSpeechRecognitionButton, showEditButton, showDeleteButton].filter(Boolean).length
+	const showEditButton = isImage && composing && !!file.buffer
 	let attachmentElement = await renderTemplate('attachment_preview', {
 		file,
 		index,
 		safeName: processTimeStampForId(file.name),
-		showDownloadButton,
-		showDeleteButton,
+		showDownloadButton: !composing,
+		showDeleteButton: composing,
 		showSpeechRecognitionButton,
 		showEditButton,
-		buttonGroupJoin: buttonCount > 1,
+		buttonGroupJoin: [!composing, showSpeechRecognitionButton, showEditButton, composing].filter(Boolean).length > 1,
 	})
 
 	const isPreviewable = PREVIEWABLE_MIME_TYPES.some(type => String(file.mime_type || '').startsWith(type))
@@ -184,7 +184,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 
 	const previewContainer = attachmentElement.querySelector('.preview-container')
 	const localBuffer = typeof file.buffer === 'string' && file.buffer.length ? file.buffer : null
-	if (file.mime_type.startsWith('image/') && localBuffer) {
+	if (isImage && localBuffer) {
 		const base64Data = localBuffer.startsWith('data:') ? localBuffer : `data:${file.mime_type};base64,${localBuffer}`
 		const previewImg = await renderTemplate('hub/composer/preview_img', {
 			src: base64Data,
@@ -224,33 +224,26 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			catch (err) { console.error('image edit failed:', err) }
 		})
 	}
-	else if (file.mime_type.startsWith('image/') && file.fileId) 
+	else if (isImage && file.fileId && groupId) 
 		try {
 			const { fetchGroupFileAsBlobUrl } = await import('./groupFileBlob.mjs')
-			const { store } = await import('../hub/core/state.mjs')
-			const groupId = store.context.currentGroupId
-			if (groupId) {
-				const url = await fetchGroupFileAsBlobUrl(groupId, file.fileId)
-				const previewImg = await renderTemplate('hub/composer/preview_img', {
-					src: url,
-					alt: file.name,
-				})
-				previewImg.addEventListener('click', () => {
-					openMediaViewer([{ src: url, name: file.name, mimeType: file.mime_type }], 0)
-				})
-				previewContainer.appendChild(previewImg)
-			}
-			else {
-				const preview = await renderTemplate('hub/composer/preview_file_icon', { alt: file.name })
-				previewContainer.appendChild(preview)
-			}
+			const url = await fetchGroupFileAsBlobUrl(groupId, file.fileId)
+			const previewImg = await renderTemplate('hub/composer/preview_img', {
+				src: url,
+				alt: file.name,
+			})
+			onElementRemoved(previewImg, () => URL.revokeObjectURL(url))
+			previewImg.addEventListener('click', () => {
+				openMediaViewer([{ src: url, name: file.name, mimeType: mime }], 0)
+			})
+			previewContainer.appendChild(previewImg)
 		}
 		catch {
 			const preview = await renderTemplate('hub/composer/preview_file_icon', { alt: file.name })
 			previewContainer.appendChild(preview)
 		}
 	
-	else if (file.mime_type.startsWith('video/')) {
+	else if (mime.startsWith('video/')) {
 		const videoSrc = localBuffer
 			? localBuffer.startsWith('data:') ? localBuffer : `data:${file.mime_type};base64,${localBuffer}`
 			: null
@@ -266,7 +259,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			previewContainer.appendChild(preview)
 		}
 	}
-	else if (file.mime_type.startsWith('audio/') && localBuffer) {
+	else if (isAudio && localBuffer) {
 		const audio = await renderTemplate('hub/composer/preview_audio', {
 			src: localBuffer.startsWith('data:') ? localBuffer : `data:${file.mime_type};base64,${localBuffer}`,
 		})

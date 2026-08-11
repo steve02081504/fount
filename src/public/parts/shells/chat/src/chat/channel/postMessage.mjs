@@ -142,6 +142,21 @@ async function applyBeforeUserSend(username, groupId, channelId, content, files)
 }
 
 /**
+ * @param {object} file 已落盘或待上传文件描述符
+ * @returns {object} wire files[] 项
+ */
+function wireFileDescriptor(file) {
+	const description = sanitizeAlt(file.description)
+	return {
+		fileId: String(file.fileId || '').trim(),
+		name: String(file.name || 'file').slice(0, 255),
+		mime_type: String(file.mime_type || 'application/octet-stream'),
+		size: Math.max(0, Number(file.size) || 0),
+		...description ? { description } : {},
+	}
+}
+
+/**
  * 附件上传 + content 规范化（与 human 钩子解耦）。
  * 已有 `fileId` 的描述符（编辑保留项）直接并入，不重新上传。
  * @param {string} username 所有者
@@ -158,13 +173,7 @@ export async function attachFilesToContent(username, groupId, content, files, ma
 	const fileIds = []
 	/** @type {object[]} */
 	const fileDescriptors = mergeExistingFiles && Array.isArray(content?.files)
-		? content.files.map(file => ({
-			fileId: String(file.fileId || '').trim(),
-			name: String(file.name || 'file').slice(0, 255),
-			mime_type: String(file.mime_type || 'application/octet-stream'),
-			size: Math.max(0, Number(file.size) || 0),
-			...sanitizeAlt(file.description) ? { description: sanitizeAlt(file.description) } : {},
-		})).filter(file => file.fileId)
+		? content.files.map(wireFileDescriptor).filter(file => file.fileId)
 		: []
 	for (const file of fileDescriptors)
 		fileIds.push(file.fileId)
@@ -173,14 +182,7 @@ export async function attachFilesToContent(username, groupId, content, files, ma
 		const existingId = String(file.fileId || '').trim()
 		if (existingId && !file.buffer) {
 			if (fileDescriptors.some(d => d.fileId === existingId)) continue
-			const description = sanitizeAlt(file.description)
-			fileDescriptors.push({
-				fileId: existingId,
-				name: String(file.name || 'file').slice(0, 255),
-				mime_type: String(file.mime_type || 'application/octet-stream'),
-				size: Math.max(0, Number(file.size) || 0),
-				...description ? { description } : {},
-			})
+			fileDescriptors.push(wireFileDescriptor(file))
 			fileIds.push(existingId)
 			continue
 		}

@@ -8,6 +8,7 @@ import { clearReplyTarget, getReplyTarget } from '../composerReply.mjs'
 import { store } from '../core/state.mjs'
 import { waitForGroupWebSocketOpen } from '../stream/index.mjs'
 
+import { retainLocalAttachmentBuffers } from './channelMessageStore.mjs'
 import { syncChannelActionsContext } from './messageContext.mjs'
 import { getMessagesContainer } from './messageScroll.mjs'
 import { clearHubEmptyPlaceholder, mergeIncrementalChannelBatch, refreshChannelView, updateLastMessageId } from './messageShared.mjs'
@@ -18,26 +19,15 @@ import {
 
 /**
  * @param {object} event 已发送事件
- * @param {object[]} [pendingFiles] 乐观发送时的本地附件（保留 buffer 以便确认瞬间仍能出缩略图）
  * @returns {object} 频道消息行
  */
-function channelRowFromPostedEvent(event, pendingFiles = []) {
+function channelRowFromPostedEvent(event) {
 	const eventId = event?.id
 	const viewerPubKeyHash = String(store.context.currentState?.viewerMemberPubKeyHash || '').trim().toLowerCase()
 	const authorPubKeyHash = String(event.sender || '').trim().toLowerCase()
 	const content = event.content && typeof event.content === 'object'
 		? { ...event.content }
 		: event.content
-	if (content && Array.isArray(content.files) && pendingFiles.length) 
-		content.files = content.files.map(file => {
-			if (file?.buffer) return file
-			const local = pendingFiles.find(candidate =>
-				candidate?.buffer
-				&& String(candidate.name || '') === String(file?.name || '')
-				&& String(candidate.mime_type || '') === String(file?.mime_type || ''))
-			return local?.buffer ? { ...file, buffer: local.buffer } : file
-		})
-	
 	return {
 		eventId,
 		type: 'message',
@@ -114,8 +104,10 @@ async function insertPendingRow(contentObj, tempId, files = []) {
 async function confirmPendingRow(tempId, event) {
 	store.messages.composerPendingId = null
 	const pendingRow = store.messages.channelMessagesSource.find(row => String(row.eventId) === tempId)
-	const pendingFiles = Array.isArray(pendingRow?.content?.files) ? pendingRow.content.files : []
-	const realRow = { ...channelRowFromPostedEvent(event, pendingFiles), deliveryStatus: 'sent' }
+	const realRow = retainLocalAttachmentBuffers(
+		pendingRow,
+		{ ...channelRowFromPostedEvent(event), deliveryStatus: 'sent' },
+	)
 	const container = getMessagesContainer()
 	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(
 		store.messages.channelMessagesSource.filter(m => String(m.eventId) !== tempId),

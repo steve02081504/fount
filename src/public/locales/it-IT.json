@@ -1492,7 +1492,7 @@
 						"denied": "Non disponi dell'autorizzazione MANAGE_CHANNELS per modificare le sostituzioni delle autorizzazioni del canale.",
 						"hint": "Solo eccezioni per canale: Eredita segue le autorizzazioni di ruolo; Consenti/Nega forzano questo canale. Per allegati per tutti, apri Autorizzazioni ruolo e seleziona «Carica file» per Everyone — qui non c’è un pulsante per aggiungere una sostituzione.",
 						"overridden": "Sostituito",
-						"clearOverride": "Reimposta tutto su eredita",
+						"clearOverride": "Ripristina tutto alle autorizzazioni del ruolo",
 						"noChannels": "Al momento non ci sono canali da configurare",
 						"selectChannel": "Canali",
 						"stateAllow": "permettere",
@@ -1932,7 +1932,7 @@
 				"title": "autore remoto federato"
 			},
 			"trustAuthor": {
-				"textContent": "Fidati",
+				"textContent": "Fidati di questo autore",
 				"title": "Fidati di questo autore (consenti Markdown/HTML pericoloso)"
 			},
 			"stickerInline": "Adesivi",
@@ -2464,10 +2464,10 @@
 				"createFailed": "Impossibile creare la discussione, riprova più tardi",
 				"created": "La discussione è stata creata",
 				"drawer": {
-					"aria-label": "filo"
+					"aria-label": "Discussione"
 				},
 				"breadcrumb": {
-					"aria-label": "Percorso del sottothread"
+					"aria-label": "Discussione / Sottothread"
 				}
 			},
 			"config": {
@@ -2898,9 +2898,6 @@
 					"title": "Scarica",
 					"aria-label": "Scarica"
 				},
-				"downloadIcon": {
-					"alt": "Icona Scarica"
-				},
 				"edit": {
 					"title": "Modifica immagine",
 					"aria-label": "Modifica immagine"
@@ -2911,9 +2908,6 @@
 				"delete": {
 					"title": "Elimina",
 					"aria-label": "Elimina"
-				},
-				"deleteIcon": {
-					"alt": "Icona Elimina"
 				},
 				"more": {
 					"title": "Altro",
@@ -5870,10 +5864,10 @@
 				"aria-label": "Chiudi"
 			},
 			"prev": {
-				"aria-label": "Immagine precedente"
+				"aria-label": "Elemento multimediale precedente"
 			},
 			"next": {
-				"aria-label": "Successivo"
+				"aria-label": "Elemento multimediale successivo"
 			}
 		}
 	}

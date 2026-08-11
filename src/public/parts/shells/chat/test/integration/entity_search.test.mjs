@@ -34,7 +34,7 @@ Deno.test('searchEntitiesNetwork finds local handle without network peers', asyn
 		searchEntitiesNetwork,
 	} = await import('../../src/entity/entitySearch.mjs')
 	const { resetPartQueryStateForTests } = await import(
-		'npm:@steve02081504/fount-p2p/wire/part_query'
+		'npm:@steve02081504/fount-p2p/wire/part/query'
 	)
 
 	await ensureOperatorPubKey(username)
@@ -78,7 +78,7 @@ Deno.test('searchEntitiesNetwork finds local agent by charPartName', async () =>
 		searchEntitiesNetwork,
 	} = await import('../../src/entity/entitySearch.mjs')
 	const { resetPartQueryStateForTests } = await import(
-		'npm:@steve02081504/fount-p2p/wire/part_query'
+		'npm:@steve02081504/fount-p2p/wire/part/query'
 	)
 
 	await ensureOperatorPubKey(username)

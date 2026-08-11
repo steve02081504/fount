@@ -2906,9 +2906,6 @@
 					"title": "ダウンロード",
 					"aria-label": "ダウンロード"
 				},
-				"downloadIcon": {
-					"alt": "ダウンロードアイコン"
-				},
 				"edit": {
 					"title": "画像を編集",
 					"aria-label": "画像を編集"
@@ -2919,9 +2916,6 @@
 				"delete": {
 					"title": "削除",
 					"aria-label": "削除"
-				},
-				"deleteIcon": {
-					"alt": "削除アイコン"
 				},
 				"more": {
 					"title": "もっと",

@@ -332,14 +332,24 @@ export async function triggerChannelReply(groupId, channelId, charname) {
  * @returns {Promise<void>} 无
  */
 export async function editChannelMessage(groupId, channelId, eventId, content, files = []) {
-	const retained = (files || []).filter(file => file?.fileId && !file.buffer).map(file => ({
-		fileId: file.fileId,
-		name: file.name || 'file',
-		mime_type: file.mime_type || 'application/octet-stream',
-		size: Number(file.size) || 0,
-		...file.description ? { description: file.description } : {},
-	}))
-	const uploads = (files || []).filter(file => file?.buffer)
+	/** @type {object[]} */
+	const retained = []
+	/** @type {object[]} */
+	const uploads = []
+	for (const file of files) {
+		if (file?.buffer) {
+			uploads.push(file)
+			continue
+		}
+		if (!file?.fileId) continue
+		retained.push({
+			fileId: file.fileId,
+			name: file.name || 'file',
+			mime_type: file.mime_type || 'application/octet-stream',
+			size: Number(file.size) || 0,
+			...file.description ? { description: file.description } : {},
+		})
+	}
 	const body = {
 		content: channelMessage(content, retained.length ? { files: retained } : {}),
 	}

@@ -2785,10 +2785,10 @@
 				"title": "已信任此作者，將盡數渲染其文"
 			},
 			"attachment": {
-				"dropToUpload": "拖放以上传于 #${channel}"
+				"dropToUpload": "拖放以上傳於 #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} 条未读"
+				"aria-label": "${count} 條未讀"
 			}
 		},
 		"sidebar": {
@@ -2896,24 +2896,18 @@
 			"buttons": {
 				"download": {
 					"title": "取",
-					"aria-label": "下载"
-				},
-				"downloadIcon": {
-					"alt": "取"
+					"aria-label": "拓存"
 				},
 				"edit": {
-					"title": "编辑图片",
-					"aria-label": "编辑图片"
+					"title": "繪圖纂修",
+					"aria-label": "繪圖纂修"
 				},
 				"editIcon": {
-					"alt": "编辑图标"
+					"alt": "纂修"
 				},
 				"delete": {
 					"title": "刪",
-					"aria-label": "删除"
-				},
-				"deleteIcon": {
-					"alt": "刪"
+					"aria-label": "刪"
 				},
 				"more": {
 					"title": "更多",
@@ -2921,7 +2915,7 @@
 				},
 				"recognize": {
 					"title": "語音轉文",
-					"aria-label": "语音转文字"
+					"aria-label": "語音轉文"
 				}
 			}
 		},
@@ -5859,21 +5853,21 @@
 		},
 		"mediaViewer": {
 			"dialog": {
-				"aria-label": "媒体查看器"
+				"aria-label": "媒體觀器"
 			},
 			"download": {
-				"textContent": "下载",
-				"aria-label": "下载"
+				"textContent": "拓存",
+				"aria-label": "拓存"
 			},
 			"close": {
 				"textContent": "闔",
 				"aria-label": "闔"
 			},
 			"prev": {
-				"aria-label": "上一张"
+				"aria-label": "上一項"
 			},
 			"next": {
-				"aria-label": "下一张"
+				"aria-label": "下一項"
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { bumpReputationOnRelay } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 
 import { loadFederationGroupSettings } from '../dagDependencies.mjs'
 import {

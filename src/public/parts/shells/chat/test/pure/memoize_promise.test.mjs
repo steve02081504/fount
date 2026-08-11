@@ -21,8 +21,8 @@ Deno.test('memoizePromise cache hit returns a Promise with .catch', async () => 
 	assertEquals(calls, 1)
 
 	const second = load('a')
-	assert(typeof second?.then === 'function', 'cache hit must be thenable')
-	assert(typeof second?.catch === 'function', 'cache hit must expose .catch')
+	assert(typeof second.then === 'function', 'cache hit must be thenable')
+	assert(typeof second.catch === 'function', 'cache hit must expose .catch')
 	assertEquals(await second.catch(() => null), { key: 'a' })
 	assertEquals(calls, 1)
 })

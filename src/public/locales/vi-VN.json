@@ -2898,9 +2898,6 @@
 					"title": "Tải xuống",
 					"aria-label": "Tải xuống"
 				},
-				"downloadIcon": {
-					"alt": "Biểu tượng tải xuống"
-				},
 				"edit": {
 					"title": "Chỉnh sửa ảnh",
 					"aria-label": "Chỉnh sửa ảnh"
@@ -2911,9 +2908,6 @@
 				"delete": {
 					"title": "Xóa",
 					"aria-label": "Xóa"
-				},
-				"deleteIcon": {
-					"alt": "Biểu tượng xóa"
 				},
 				"more": {
 					"title": "Thêm",

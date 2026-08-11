@@ -10,6 +10,9 @@ const DB_NAME = 'fount.chat.sendQueue'
 const STORE_NAME = 'queue'
 const DB_VERSION = 1
 
+/** @type {Promise<IDBDatabase> | null} */
+let dbOpenPromise = null
+
 /**
  * @typedef {{
  *   tempId: string,
@@ -25,16 +28,20 @@ const DB_VERSION = 1
  * @returns {Promise<IDBDatabase>} IndexedDB 句柄
  */
 function openDb() {
-	return new Promise((resolve, reject) => {
-		const req = indexedDB.open(DB_NAME, DB_VERSION)
-		req.addEventListener('upgradeneeded', () => {
-			const db = req.result
+	dbOpenPromise ??= new Promise((resolve, reject) => {
+		const request = indexedDB.open(DB_NAME, DB_VERSION)
+		request.addEventListener('upgradeneeded', () => {
+			const db = request.result
 			if (!db.objectStoreNames.contains(STORE_NAME))
 				db.createObjectStore(STORE_NAME, { keyPath: 'tempId' })
 		})
-		req.addEventListener('success', () => resolve(req.result))
-		req.addEventListener('error', () => reject(req.error))
+		request.addEventListener('success', () => resolve(request.result))
+		request.addEventListener('error', () => {
+			dbOpenPromise = null
+			reject(request.error)
+		})
 	})
+	return dbOpenPromise
 }
 
 /**
@@ -46,11 +53,11 @@ function openDb() {
 async function withStore(run, mode = 'readonly') {
 	const db = await openDb()
 	return new Promise((resolve, reject) => {
-		const tx = db.transaction(STORE_NAME, mode)
-		const objectStore = tx.objectStore(STORE_NAME)
-		const req = run(objectStore)
-		req.addEventListener('success', () => resolve(req.result))
-		req.addEventListener('error', () => reject(req.error))
+		const transaction = db.transaction(STORE_NAME, mode)
+		const objectStore = transaction.objectStore(STORE_NAME)
+		const request = run(objectStore)
+		request.addEventListener('success', () => resolve(request.result))
+		request.addEventListener('error', () => reject(request.error))
 	})
 }
 
@@ -85,7 +92,7 @@ export function enqueueOfflineMessage(tempId, groupId, channelId, content, files
 			groupId,
 			channelId,
 			content: { ...content },
-			files: (files || []).map(file => ({
+			files: files.map(file => ({
 				name: file.name,
 				mime_type: file.mime_type,
 				buffer: file.buffer,
@@ -124,7 +131,7 @@ export async function drainSendQueue() {
 					groupId,
 					channelId,
 					content,
-					files?.length ? files : undefined,
+					files,
 				)
 				dequeueOfflineMessage(tempId)
 				if (store.context.currentGroupId === groupId

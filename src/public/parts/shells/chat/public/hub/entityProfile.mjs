@@ -129,22 +129,30 @@ export function wireProfileEditButton(root, entityHash, options = {}) {
 }
 
 /**
+ * @param {unknown} value 候选 hex
+ * @returns {string} 小写 64 hex；无效为空串
+ */
+function normHex(value) {
+	const normalized = String(value ?? '').trim().toLowerCase()
+	return isHex64(normalized) ? normalized : ''
+}
+
+/**
  * 解析信任作者用的成员 pubKeyHash（64 hex）。
  * @param {object} entity 实体
  * @param {object | null} profile 资料
  * @returns {string} 小写 64 hex；无法解析为空串
  */
 function resolveTrustAuthorPubKeyHash(entity, profile) {
-	const direct = String(entity?.pubKeyHash || '').trim().toLowerCase()
-	if (isHex64(direct)) return direct
+	const direct = normHex(entity?.pubKeyHash)
+	if (direct) return direct
 	const entityHash = String(entity?.entityHash || '').trim().toLowerCase()
 	for (const member of store.context.currentState?.members || []) {
 		const memberHash = String(member?.entityHash || '').trim().toLowerCase()
-		const memberKey = String(member?.pubKeyHash || member?.memberKey || '').trim().toLowerCase()
-		if (entityHash && memberHash === entityHash && isHex64(memberKey)) return memberKey
+		const memberKey = normHex(member?.pubKeyHash || member?.memberKey)
+		if (entityHash && memberHash === entityHash && memberKey) return memberKey
 	}
-	const fromProfile = String(profile?.activePubKeyHex || '').trim().toLowerCase()
-	return isHex64(fromProfile) ? fromProfile : ''
+	return normHex(profile?.activePubKeyHex)
 }
 
 /**
@@ -190,6 +198,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 	if (!(root instanceof HTMLElement) || !entity) return
 	const entityHash = String(entity.entityHash || '').trim().toLowerCase()
 	const profile = options.profile ?? null
+	const isSelf = isViewerEntityHash(entityHash)
 
 	const alias = entityHash ? aliasForEntity(entityHash) : ''
 	if (alias) {
@@ -209,10 +218,9 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 
 	const dmButton = root.querySelector('[data-profile-popup-dm]')
 	if (dmButton instanceof HTMLButtonElement) {
-		const isSelf = isViewerEntityHash(entityHash)
-		const pubKeyHex = String(entity.pubKeyHex || profile?.activePubKeyHex || '').trim().toLowerCase()
+		const pubKeyHex = normHex(entity.pubKeyHex || profile?.activePubKeyHex)
 		// Social「私信」只带 entityHash；有实体即可露出按钮，点下再解析活跃公钥
-		const canDm = !isSelf && (entity.charname || isHex64(pubKeyHex) || isEntityHash128(entityHash))
+		const canDm = !isSelf && (entity.charname || pubKeyHex || isEntityHash128(entityHash))
 		dmButton.hidden = !canDm
 		dmButton.dataset.i18n = entity.charname
 			? 'chat.hub.profilePopup.dm.char'
@@ -233,7 +241,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 				await dispatchFriendChat({
 					type: 'user',
 					displayName: entity.displayName || profile?.name,
-					pubKeyHex: isHex64(pubKeyHex) ? pubKeyHex : null,
+					pubKeyHex: pubKeyHex || null,
 					entityHash,
 				})
 			})().catch(error => {
@@ -254,10 +262,9 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 
 	const trustButton = root.querySelector('[data-profile-popup-trust]')
 	if (trustButton instanceof HTMLButtonElement) {
-		const isSelf = isViewerEntityHash(entityHash)
 		const authorPubKeyHash = resolveTrustAuthorPubKeyHash(entity, profile)
 		const alreadyTrusted = authorPubKeyHash ? await isTrustedAuthor(authorPubKeyHash) : false
-		const canTrust = !isSelf && !entity.charname && isHex64(authorPubKeyHash) && !alreadyTrusted
+		const canTrust = !isSelf && !entity.charname && authorPubKeyHash && !alreadyTrusted
 		trustButton.hidden = !canTrust
 		if (canTrust) {
 			trustButton.dataset.authorPubKeyHash = authorPubKeyHash
@@ -306,7 +313,6 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 
 	const careButton = root.querySelector('[data-profile-popup-care]')
 	if (careButton instanceof HTMLButtonElement) {
-		const isSelf = isViewerEntityHash(entityHash)
 		const canCare = !isSelf && isEntityHash128(entityHash) && !!store.viewer?.operatorEntityHash
 		careButton.hidden = !canCare
 		if (canCare) {

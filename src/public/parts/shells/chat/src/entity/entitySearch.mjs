@@ -6,7 +6,7 @@ import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identit
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
-import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part_query'
+import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
 import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
 

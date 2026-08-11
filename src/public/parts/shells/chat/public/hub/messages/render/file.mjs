@@ -183,7 +183,14 @@ async function renderImageOrVideoHtml(groupId, file, mime, { gallery = false, pe
 	if (!src)
 		return '<div class="text-xs text-error opacity-80 mt-1 media-error" data-i18n="chat.hub.attachmentLoadFailed"></div>'
 
-	if (mime.startsWith('image/'))
+	if (mime.startsWith('image/')) {
+		const size = Number(file.size) || 0
+		if (size > LAZY_MEDIA_BYTES && id && !local)
+			return renderTemplateAsHtmlString('hub/messages/media_placeholder', {
+				fileId: escapeHtml(id),
+				fileName,
+				mimeType: escapeHtml(mime),
+			})
 		return renderTemplateAsHtmlString('hub/messages/inline_image', {
 			fileName,
 			src: escapeHtml(src),
@@ -191,6 +198,7 @@ async function renderImageOrVideoHtml(groupId, file, mime, { gallery = false, pe
 			gallery: gallery ? '1' : '',
 			pending: pending || (!id && local) ? '1' : '',
 		})
+	}
 
 	const size = Number(file.size) || 0
 	if (size > LAZY_MEDIA_BYTES && id && !local)
@@ -297,14 +305,14 @@ export async function renderMessageFileIdsHtml(message) {
 		const visible = imagesAndVideos.slice(0, GALLERY_MAX_VISIBLE)
 		const overflow = imagesAndVideos.length - visible.length
 		const cells = []
-		for (let i = 0; i < visible.length; i++) {
-			const file = visible[i]
+		for (let visibleIndex = 0; visibleIndex < visible.length; visibleIndex++) {
+			const file = visible[visibleIndex]
 			const mime = String(file.mime_type || '')
 			let cell = await renderImageOrVideoHtml(groupId, file, mime, {
 				gallery: true,
 				pending: pending || !file.fileId,
 			})
-			if (overflow > 0 && i === visible.length - 1)
+			if (overflow > 0 && visibleIndex === visible.length - 1)
 				cell = `<div class="message-gallery-overflow-wrap">${cell}<span class="message-gallery-overflow">+${overflow}</span></div>`
 			cells.push(cell)
 		}

@@ -2898,9 +2898,6 @@
 					"title": "تنزيل",
 					"aria-label": "تنزيل"
 				},
-				"downloadIcon": {
-					"alt": "أيقونة التنزيل"
-				},
 				"edit": {
 					"title": "تحرير الصورة",
 					"aria-label": "تحرير الصورة"
@@ -2911,9 +2908,6 @@
 				"delete": {
 					"title": "حذف",
 					"aria-label": "حذف"
-				},
-				"deleteIcon": {
-					"alt": "أيقونة الحذف"
 				},
 				"more": {
 					"title": "أكثر",

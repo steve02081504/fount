@@ -1900,6 +1900,7 @@ export type LocaleData = {
 			}
 			stickerInline: string
 			markdownRenderFailed: string
+			messageRenderFailed: string
 			retrySend: string
 			mergeDagOk: string
 			mergeDagFailed: string
@@ -2861,9 +2862,6 @@ export type LocaleData = {
 					title: string
 					'aria-label': string
 				}
-				downloadIcon: {
-					alt: string
-				}
 				edit: {
 					title: string
 					'aria-label': string
@@ -2874,9 +2872,6 @@ export type LocaleData = {
 				delete: {
 					title: string
 					'aria-label': string
-				}
-				deleteIcon: {
-					alt: string
 				}
 				more: {
 					title: string

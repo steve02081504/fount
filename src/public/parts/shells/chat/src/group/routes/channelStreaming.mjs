@@ -100,8 +100,8 @@ export function registerChannelStreamingRoutes(router, authenticate) {
 		const offerSdp = typeof req.body === 'string' ? req.body : String(req.body?.sdp || req.body || '')
 		if (!offerSdp.includes('v=0')) throw httpError(400, 'sdp required')
 		const roomId = `${groupId}:${channelId}`
-		const { startWhipIngest } = await import('../../chat/whip/ingest.mjs')
 		try {
+			const { startWhipIngest } = await import('../../chat/whip/ingest.mjs')
 			const { answerSdp } = await startWhipIngest(roomId, offerSdp)
 			res.status(201).type('application/sdp').send(answerSdp)
 		}

@@ -52,8 +52,7 @@ export function parseOfferMedia(sdp) {
  */
 async function loadNodeDataChannel() {
 	try {
-		const mod = await import('npm:node-datachannel')
-		return mod.default ?? mod
+		return (await import('npm:node-datachannel')).default
 	}
 	catch (error) {
 		const err = new Error('WHIP ingest requires node-datachannel native addon', { cause: error })

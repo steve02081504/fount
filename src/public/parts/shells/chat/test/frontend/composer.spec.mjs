@@ -9,7 +9,7 @@ import {
 	isChannelMessagePost,
 } from './fixtures.mjs'
 
-/** 1×1 像素 PNG */
+/** 1×1 PNG 测试数据 */
 const TINY_PNG_BUFFER = Buffer.from(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 	'base64',
@@ -27,9 +27,9 @@ test.describe('Chat composer', () => {
 	test('does not submit empty composer', async ({ page, groupChannel: _ }) => {
 		await page.locator('#message-input').fill('')
 		const postPromise = page.waitForResponse(
-			res => res.request().method() === 'POST'
-				&& res.url().includes('/channels/')
-				&& res.url().includes('/messages'),
+			response => response.request().method() === 'POST'
+				&& response.url().includes('/channels/')
+				&& response.url().includes('/messages'),
 			{ timeout: 2_000 },
 		).catch(() => null)
 		await page.locator('#send-button').click()
@@ -48,7 +48,7 @@ test.describe('Chat composer', () => {
 		const { groupId, channelId } = groupChannel
 		const text = `ctrl-enter ${Date.now()}`
 		const postPromise = page.waitForResponse(
-			res => isChannelMessagePost(res, groupId, channelId),
+			response => isChannelMessagePost(response, groupId, channelId),
 			{ timeout: 20_000 },
 		)
 		await page.locator('#message-input').fill(text)
@@ -69,9 +69,9 @@ test.describe('Chat composer', () => {
 		await expect(preview).toBeVisible()
 		const attachment = preview.locator('.attachment').first()
 		await expect(attachment).toBeVisible()
-		const img = attachment.locator('.preview-img')
-		await expect(img).toBeVisible()
-		const box = await img.boundingBox()
+		const image = attachment.locator('.preview-img')
+		await expect(image).toBeVisible()
+		const box = await image.boundingBox()
 		expect(box).toBeTruthy()
 		expect(box.width).toBeLessThanOrEqual(72)
 		expect(box.height).toBeLessThanOrEqual(72)

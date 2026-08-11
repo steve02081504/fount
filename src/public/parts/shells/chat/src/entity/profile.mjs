@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
 
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/public_manifest'
+import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/manifest/public'
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { createLruMap } from 'npm:@steve02081504/fount-p2p/utils/lru'

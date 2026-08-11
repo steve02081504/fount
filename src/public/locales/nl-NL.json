@@ -2782,7 +2782,7 @@
 			},
 			"trustedAuthorBadge": {
 				"textContent": "Vertrouwd",
-				"title": "Markdown-rendering van deze auteur is toegestaan"
+				"title": "Deze auteur vertrouwen (gevaarlijke Markdown/HTML toestaan)"
 			},
 			"attachment": {
 				"dropToUpload": "Laat los om te uploaden naar #${channel}"
@@ -2898,9 +2898,6 @@
 					"title": "Downloaden",
 					"aria-label": "Downloaden"
 				},
-				"downloadIcon": {
-					"alt": "Downloadpictogram"
-				},
 				"edit": {
 					"title": "Afbeelding bewerken",
 					"aria-label": "Afbeelding bewerken"
@@ -2911,9 +2908,6 @@
 				"delete": {
 					"title": "Verwijderen",
 					"aria-label": "Verwijderen"
-				},
-				"deleteIcon": {
-					"alt": "Verwijderpictogram"
 				},
 				"more": {
 					"title": "Meer",
@@ -5870,10 +5864,10 @@
 				"aria-label": "Sluiten"
 			},
 			"prev": {
-				"aria-label": "Vorige foto"
+				"aria-label": "Vorig item"
 			},
 			"next": {
-				"aria-label": "Volgende"
+				"aria-label": "Volgend item"
 			}
 		}
 	}

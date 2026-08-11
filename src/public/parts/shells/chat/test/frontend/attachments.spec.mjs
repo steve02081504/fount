@@ -7,7 +7,7 @@ import {
 	expectMessageInChat,
 } from './fixtures.mjs'
 
-/** 1×1 像素 PNG */
+/** 1×1 PNG 测试数据 */
 const TINY_PNG_BUFFER = Buffer.from(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 	'base64',
@@ -33,7 +33,7 @@ test.describe('Chat message attachments', () => {
 		const caption = `attach-e2e ${Date.now()}`
 		await attachTinyPng(page)
 		const postPromise = page.waitForResponse(
-			res => isChannelMessagePost(res, groupId, channelId),
+			response => isChannelMessagePost(response, groupId, channelId),
 			{ timeout: 30_000 },
 		)
 		await page.locator('#message-input').fill(caption)
@@ -54,16 +54,16 @@ test.describe('Chat message attachments', () => {
 		const caption = `viewer-e2e ${Date.now()}`
 		await attachTinyPng(page, 'viewer.png')
 		const postPromise = page.waitForResponse(
-			res => isChannelMessagePost(res, groupId, channelId),
+			response => isChannelMessagePost(response, groupId, channelId),
 			{ timeout: 30_000 },
 		)
 		await page.locator('#message-input').fill(caption)
 		await page.locator('#send-button').click()
 		await postPromise
 		const row = await expectMessageInChat(page, caption)
-		const img = row.locator('.message-files img').first()
-		await expect(img).toBeVisible({ timeout: 30_000 })
-		await img.click()
+		const image = row.locator('.message-files img').first()
+		await expect(image).toBeVisible({ timeout: 30_000 })
+		await image.click()
 		const viewer = page.locator('.media-viewer')
 		await expect(viewer).toBeVisible({ timeout: 10_000 })
 		await page.keyboard.press('Escape')
@@ -79,7 +79,7 @@ test.describe('Chat message attachments', () => {
 		])
 		await expect(page.locator('#attachment-preview .attachment')).toHaveCount(2, { timeout: 10_000 })
 		const postPromise = page.waitForResponse(
-			res => isChannelMessagePost(res, groupId, channelId),
+			response => isChannelMessagePost(response, groupId, channelId),
 			{ timeout: 30_000 },
 		)
 		await page.locator('#message-input').fill(caption)

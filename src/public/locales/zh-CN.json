@@ -1945,6 +1945,7 @@
 			},
 			"stickerInline": "贴纸",
 			"markdownRenderFailed": "消息渲染失败",
+			"messageRenderFailed": "消息渲染失败",
 			"retrySend": "重试",
 			"mergeDagOk": "分叉已合并",
 			"mergeDagFailed": "合并失败：${error}",
@@ -2906,9 +2907,6 @@
 					"title": "下载",
 					"aria-label": "下载"
 				},
-				"downloadIcon": {
-					"alt": "下载图标"
-				},
 				"edit": {
 					"title": "编辑图片",
 					"aria-label": "编辑图片"
@@ -2919,9 +2917,6 @@
 				"delete": {
 					"title": "删除",
 					"aria-label": "删除"
-				},
-				"deleteIcon": {
-					"alt": "删除图标"
 				},
 				"more": {
 					"title": "更多",
@@ -5881,10 +5876,10 @@
 				"aria-label": "关闭"
 			},
 			"prev": {
-				"aria-label": "上一张"
+				"aria-label": "上一项"
 			},
 			"next": {
-				"aria-label": "下一张"
+				"aria-label": "下一项"
 			}
 		}
 	}

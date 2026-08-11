@@ -2898,9 +2898,6 @@
 					"title": "Sækja",
 					"aria-label": "Sækja"
 				},
-				"downloadIcon": {
-					"alt": "Sækja tákn"
-				},
 				"edit": {
 					"title": "Breyta mynd",
 					"aria-label": "Breyta mynd"
@@ -2911,9 +2908,6 @@
 				"delete": {
 					"title": "Eyða",
 					"aria-label": "eyða"
-				},
-				"deleteIcon": {
-					"alt": "Eyða tákn"
 				},
 				"more": {
 					"title": "Meira",
@@ -5870,10 +5864,10 @@
 				"aria-label": "Loka"
 			},
 			"prev": {
-				"aria-label": "Fyrri mynd"
+				"aria-label": "Fyrra miðill"
 			},
 			"next": {
-				"aria-label": "Næsta mynd"
+				"aria-label": "Næsti miðill"
 			}
 		}
 	}

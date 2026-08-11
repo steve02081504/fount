@@ -208,17 +208,52 @@ async function filterLinesToDisplayBranch(username, groupId, state, lines) {
 }
 
 /**
+ * @param {object} state 物化状态
+ * @returns {boolean} 是否应对频道消息行做分支 tip 过滤
+ */
+function branchFilterActive(state) {
+	const tip = String(state.localViewBranchTip || state.consensusBranchTip || '').trim()
+	if (!tip) return false
+	const tips = Array.isArray(state.dagTips) ? state.dagTips : []
+	return tips.length >= 2
+}
+
+/**
+ * @param {object[]} lines 消息行
+ * @param {{ since?: string, before?: string, limit?: string | number }} pagination 分页
+ * @param {number} pageLimit 默认条数上限
+ * @returns {object[]} 分页后行
+ */
+function paginateChannelLines(lines, pagination, pageLimit) {
+	let work = lines
+	if (pagination.since) {
+		const sinceIndex = work.findIndex(message => message.eventId === pagination.since)
+		if (sinceIndex !== -1) work = work.slice(sinceIndex)
+	}
+	if (pagination.before) {
+		const beforeIndex = work.findIndex(message => message.eventId === pagination.before)
+		if (beforeIndex !== -1) work = work.slice(0, beforeIndex)
+	}
+	const messageLimit = Number(pagination.limit ?? pageLimit)
+	if (Number.isFinite(messageLimit) && messageLimit > 0) work = work.slice(-messageLimit)
+	return work
+}
+
+/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} state 物化状态
  * @param {object[]} lines 消息行
  * @param {string} [channelId] 频道 ID
+ * @param {{ branchFiltered?: boolean }} [options] 已在分页前做过分支过滤
  * @returns {Promise<object[]>} enriched 消息行
  */
-async function finalizeChannelMessagesForViewer(username, groupId, state, lines, channelId = 'default') {
+async function finalizeChannelMessagesForViewer(username, groupId, state, lines, channelId = 'default', { branchFiltered = false } = {}) {
 	const viewerPubKeyHash = await resolveActiveMemberKeyForLocalReplica(username, groupId, state)
 	if (!viewerPubKeyHash) throw new Error('Not a member')
-	const branchLines = await filterLinesToDisplayBranch(username, groupId, state, lines)
+	const branchLines = branchFiltered
+		? lines
+		: await filterLinesToDisplayBranch(username, groupId, state, lines)
 	const streamGeneratingIdleMs = Number(state.groupSettings?.streamGeneratingIdleMs)
 	let work = markStaleGeneratingMessages(
 		branchLines,
@@ -261,6 +296,7 @@ export async function readChannelMessagesForUser(username, groupId, channelId, p
 	const scanLimit = pagination.since
 		? Math.min(500, JOIN_CHANNEL_HISTORY_LIMIT)
 		: pageLimit
+	const branchActive = branchFilterActive(state)
 
 	if (Array.isArray(pagination.eventIds) && pagination.eventIds.length) {
 		let lines = await listChannelMessages(username, groupId, channelId, {
@@ -284,7 +320,7 @@ export async function readChannelMessagesForUser(username, groupId, channelId, p
 	}
 
 	let lines
-	if (pagination.before && !pagination.since) {
+	if (pagination.before && !pagination.since && !branchActive) {
 		lines = await listChannelMessages(username, groupId, channelId, {
 			includeArchive: true,
 			decrypt: true,
@@ -299,20 +335,15 @@ export async function readChannelMessagesForUser(username, groupId, channelId, p
 	lines = await listChannelMessages(username, groupId, channelId, {
 		includeArchive: true,
 		decrypt: true,
-		limit: scanLimit,
+		limit: branchActive ? JOIN_CHANNEL_HISTORY_LIMIT : scanLimit,
+		limitCap: branchActive ? JOIN_CHANNEL_HISTORY_LIMIT : undefined,
 		fetchFromPeers: true,
 	})
 	lines = mergeChannelMessagesForDisplay(lines)
-	if (pagination.since) {
-		const sinceIndex = lines.findIndex(message => message.eventId === pagination.since)
-		if (sinceIndex !== -1) lines = lines.slice(sinceIndex)
-	}
-	if (pagination.before) {
-		const beforeIndex = lines.findIndex(message => message.eventId === pagination.before)
-		if (beforeIndex !== -1) lines = lines.slice(0, beforeIndex)
-	}
-	if (Number.isFinite(messageLimit) && messageLimit > 0) lines = lines.slice(-messageLimit)
-	return finalizeChannelMessagesForViewer(username, groupId, state, lines, channelId)
+	if (branchActive)
+		lines = await filterLinesToDisplayBranch(username, groupId, state, lines)
+	lines = paginateChannelLines(lines, pagination, pageLimit)
+	return finalizeChannelMessagesForViewer(username, groupId, state, lines, channelId, { branchFiltered: branchActive })
 }
 
 /**

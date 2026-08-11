@@ -18,10 +18,10 @@ async function staticNodeDatachannelImportsInFile(file) {
 	/** @type {string[]} */
 	const hits = []
 	const lines = text.split(/\r?\n/)
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i]
-		if (/^\s*import\s+/.test(line) && /node-datachannel/.test(line))
-			hits.push(`${i + 1}:${line.trim()}`)
+	for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+		const line = lines[lineIndex]
+		if (/^\s*(import|export)\s+/.test(line) && /node-datachannel/.test(line))
+			hits.push(`${lineIndex + 1}:${line.trim()}`)
 	}
 	return hits
 }
@@ -35,6 +35,11 @@ async function staticNodeDatachannelImports(dir) {
 	/** @type {string[]} */
 	const hits = []
 	for await (const entry of Deno.readDir(dir)) {
+		if (entry.isDirectory) {
+			for (const hit of await staticNodeDatachannelImports(new URL(`${entry.name}/`, dir)))
+				hits.push(`${entry.name}/${hit}`)
+			continue
+		}
 		if (!entry.isFile || !entry.name.endsWith('.mjs')) continue
 		for (const hit of await staticNodeDatachannelImportsInFile(new URL(entry.name, dir)))
 			hits.push(`${entry.name}:${hit}`)
@@ -49,7 +54,7 @@ Deno.test('whip modules must not statically import node-datachannel', async () =
 
 Deno.test('channelStreaming must not statically import whip ingest (native graph)', async () => {
 	const text = await Deno.readTextFile(channelStreamingUrl)
-	const staticWhip = [...text.matchAll(/^\s*import\s+.+whip\//gm)].map(m => m[0].trim())
+	const staticWhip = [...text.matchAll(/^\s*(?:import|export)\s+.+whip\//gm)].map(m => m[0].trim())
 	assertEquals(staticWhip, [], `static whip import pulls native into chat route load:\n${staticWhip.join('\n')}`)
 })
 

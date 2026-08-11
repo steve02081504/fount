@@ -1,7 +1,7 @@
 /**
  * 联邦群卡片拉取：fed_group_card_want / fed_group_card_data。
  */
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 
 import { getState } from '../../chat/dag/materialize.mjs'

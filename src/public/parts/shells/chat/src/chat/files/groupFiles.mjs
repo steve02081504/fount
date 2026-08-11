@@ -19,9 +19,9 @@ import {
 	unwrapContentKey,
 	wrapContentKey,
 } from 'npm:@steve02081504/fount-p2p/crypto/key'
-import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
-import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manifest'
+import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manifest/normalize'
 import { penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
 
@@ -603,7 +603,7 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 	const ceMode = normalizeCeMode(uploadMeta.ceMode)
 	const keyGen = uploadMeta.key_generation
 
-	/** @type {import('npm:@steve02081504/fount-p2p/files/manifest').FileManifest | null} */
+	/** @type {import('npm:@steve02081504/fount-p2p/files/manifest/normalize').FileManifest | null} */
 	let manifest = null
 
 	/** @type {object[] | null} */

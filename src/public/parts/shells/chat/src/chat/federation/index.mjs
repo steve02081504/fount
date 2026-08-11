@@ -301,7 +301,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	}
 
 	// 迭代补洞：拉取→落盘→重扫新暴露的缺失父→再拉，直到 wantSet 空 / 达上限 / 无进展 / 命中退避。
-	const MAX_CATCHUP_ITERS = 8
+	const MAX_CATCHUP_ITERATIONS = 8
 	const wantedEver = new Set()
 	let currentById = eventsById
 	let currentDeferred = await readDeferredRows()
@@ -310,8 +310,8 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	let eventsFilled = 0
 	let wantIdsStillMissing = 0
 	let wantIdsRateLimited = isWantIdsInBackoff(wantIdsGroupKey(groupId))
-	for (let iter = 0; iter < MAX_CATCHUP_ITERS; iter++) {
-		const wantIds = computeWantSet(currentById, currentDeferred, iter === 0, locallyKnown)
+	for (let iteration = 0; iteration < MAX_CATCHUP_ITERATIONS; iteration++) {
+		const wantIds = computeWantSet(currentById, currentDeferred, iteration === 0, locallyKnown)
 		if (!wantIds.length) break
 		for (const id of wantIds) wantedEver.add(id)
 		const result = await requestMissingEventsGossip(username, groupId, { wantIds, awaitGossip: true })

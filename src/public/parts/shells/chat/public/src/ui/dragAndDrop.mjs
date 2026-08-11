@@ -72,7 +72,6 @@ export function addMessageAreaFileDrop(dropRoot, selectedFiles, attachmentPrevie
 		if (label instanceof HTMLElement) {
 			const channel = getChannelLabel() || ''
 			label.textContent = geti18n('chat.hub.attachment.dropToUpload', { channel })
-				|| `Upload to #${channel}`
 		}
 		overlay?.classList.toggle('show', show)
 	}
@@ -96,7 +95,8 @@ export function addMessageAreaFileDrop(dropRoot, selectedFiles, attachmentPrevie
 		event.preventDefault()
 		event.dataTransfer.dropEffect = 'copy'
 	})
-	dropRoot.addEventListener('dragleave', () => {
+	dropRoot.addEventListener('dragleave', event => {
+		if (!hasFiles(event)) return
 		depth = Math.max(0, depth - 1)
 		if (!depth) setVisible(false)
 	})

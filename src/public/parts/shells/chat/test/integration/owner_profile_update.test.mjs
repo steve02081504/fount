@@ -140,7 +140,7 @@ Deno.test('pullOwnerProfileUpdate rejects mismatched owner / bad shape', async (
 	const { ensureAgentEntityIdentity, ensureOperatorIdentity, getEntityRecoverySecretKey, getRecoveryPubKeyHex } = await import(
 		'../../src/entity/identity.mjs'
 	)
-	const { publishPublicFile } = await import('npm:@steve02081504/fount-p2p/files/public_manifest')
+	const { publishPublicFile } = await import('npm:@steve02081504/fount-p2p/files/manifest/public')
 	const { Buffer } = await import('node:buffer')
 	const {
 		pullOwnerProfileUpdate,

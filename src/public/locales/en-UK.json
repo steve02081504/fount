@@ -2906,9 +2906,6 @@
 					"title": "Download",
 					"aria-label": "Download"
 				},
-				"downloadIcon": {
-					"alt": "Download Icon"
-				},
 				"edit": {
 					"title": "Edit image",
 					"aria-label": "Edit image"
@@ -2919,9 +2916,6 @@
 				"delete": {
 					"title": "Delete",
 					"aria-label": "Delete"
-				},
-				"deleteIcon": {
-					"alt": "Delete Icon"
 				},
 				"more": {
 					"title": "More",
@@ -5881,10 +5875,10 @@
 				"aria-label": "Close"
 			},
 			"prev": {
-				"aria-label": "Previous image"
+				"aria-label": "Previous media"
 			},
 			"next": {
-				"aria-label": "Next image"
+				"aria-label": "Next media"
 			}
 		}
 	}

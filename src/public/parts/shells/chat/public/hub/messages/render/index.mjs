@@ -188,7 +188,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		? await renderTemplateAsHtmlString('hub/messages/remote_badge', {})
 		: ''
 	const alreadyTrusted = message.isRemote && message.authorPubKeyHash
-		? await isTrustedAuthor(message.authorPubKeyHash)
+		? await isTrustedAuthor(message.authorPubKeyHash).catch(() => false)
 		: false
 	const trustedAuthorBadge = alreadyTrusted
 		? await renderTemplateAsHtmlString('hub/messages/trusted_author_badge', {})

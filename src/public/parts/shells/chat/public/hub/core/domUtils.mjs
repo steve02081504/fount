@@ -27,15 +27,24 @@ export { avatarColor, avatarInitial, avatarTextColor, hashAvatarStyle }
 const charEntityHashCache = new Map()
 
 /**
+ * @param {string} name 角色 part 名
+ * @returns {string} trim + 小写
+ */
+export function normalizeCharPartName(name) {
+	return String(name).trim().toLowerCase()
+}
+
+/**
  * 把 agents 列表灌入 char→entityHash 缓存。
  * @param {{ entityHash?: string, charPartName?: string }[]} agents viewer/agents
  * @returns {void}
  */
 export function ingestAgentEntityHashList(agents) {
 	for (const row of agents || []) {
-		const name = String(row?.charPartName || '').trim().toLowerCase()
+		const name = normalizeCharPartName(row?.charPartName)
+		if (!name) continue
 		const hash = String(row?.entityHash || '').trim().toLowerCase()
-		if (name && isEntityHash128(hash))
+		if (isEntityHash128(hash))
 			charEntityHashCache.set(name, hash)
 	}
 }
@@ -47,7 +56,7 @@ export function ingestAgentEntityHashList(agents) {
 export function activeCharPartNames() {
 	const names = new Set(store.context.currentState?.charPartNames || [])
 	if (store.privateGroup.charname)
-		names.add(String(store.privateGroup.charname))
+		names.add(normalizeCharPartName(store.privateGroup.charname))
 	return [...names]
 }
 
@@ -62,12 +71,12 @@ export async function warmCharEntityHashCache(charNames = activeCharPartNames())
 	const agentByChar = new Map()
 	for (const member of members) {
 		if (member?.kind !== 'agent' && member?.memberKind !== 'agent') continue
-		const charname = String(member.charname || '').trim().toLowerCase()
+		const charname = normalizeCharPartName(member.charname)
 		if (charname) agentByChar.set(charname, member)
 	}
 	ingestAgentEntityHashList(store.viewer.agents || [])
 	for (const raw of charNames) {
-		const name = String(raw || '').trim().toLowerCase()
+		const name = normalizeCharPartName(raw)
 		if (!name || charEntityHashCache.has(name)) continue
 		const member = agentByChar.get(name)
 		const cachedHash = member?.entityHash
@@ -81,7 +90,7 @@ export async function warmCharEntityHashCache(charNames = activeCharPartNames())
  * @returns {string|null} 128 位 entityHash
  */
 export function charEntityHashFromCache(charname) {
-	const name = String(charname || '').trim().toLowerCase()
+	const name = normalizeCharPartName(charname)
 	if (!name) return null
 	const cached = charEntityHashCache.get(name)
 	return cached && isEntityHash128(cached) ? cached.toLowerCase() : null

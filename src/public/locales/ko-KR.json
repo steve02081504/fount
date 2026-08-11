@@ -1490,7 +1490,7 @@
 					},
 					"channelPerms": {
 						"denied": "채널 권한 재정의를 수정할 수 있는 MANAGE_CHANNELS 권한이 없습니다.",
-						"hint": "특정 채널에 대한 예외만 설정합니다. 상속=역할 권한을 따름, 허용/거부=이 채널에서 강제 적용. 전원에게 첨부를 허용하려면 「역할 권한」에서 Everyone의 파일 업로드를 켜세요. 여기에는 「재정의 추가」 버튼이 없습니다.",
+						"hint": "특정 채널에 대한 예외만 설정합니다. 상속=역할 권한을 따름, 허용/거부=이 채널에서 강제 적용. 전원에게 첨부를 허용하려면 「역할 권한」에서 Everyone의 파일 업로드를 켜세요.",
 						"overridden": "재정의됨",
 						"clearOverride": "모두 상속으로 재설정",
 						"noChannels": "현재 구성할 채널이 없습니다.",
@@ -2778,11 +2778,11 @@
 				"friends": "아직 비공개 채팅이 없습니다.",
 				"groups": "아직 그룹이 없습니다.",
 				"members": "아직 멤버이 없습니다.",
-				"pins": "아직 핀이 없습니다."
+				"pins": "아직 고정된 메시지가 없습니다."
 			},
 			"trustedAuthorBadge": {
 				"textContent": "신뢰됨",
-				"title": "이 작성자의 Markdown 렌더링을 신뢰함"
+				"title": "이 작성자 신뢰하기(위험한 Markdown/HTML 허용)"
 			},
 			"attachment": {
 				"dropToUpload": "#${channel}에 업로드"
@@ -2898,9 +2898,6 @@
 					"title": "다운로드",
 					"aria-label": "다운로드"
 				},
-				"downloadIcon": {
-					"alt": "다운로드 아이콘"
-				},
 				"edit": {
 					"title": "사진 편집",
 					"aria-label": "사진 편집"
@@ -2911,9 +2908,6 @@
 				"delete": {
 					"title": "삭제",
 					"aria-label": "삭제"
-				},
-				"deleteIcon": {
-					"alt": "삭제 아이콘"
 				},
 				"more": {
 					"title": "더 보기",
@@ -5870,10 +5864,10 @@
 				"aria-label": "닫기"
 			},
 			"prev": {
-				"aria-label": "이전 사진"
+				"aria-label": "이전 미디어"
 			},
 			"next": {
-				"aria-label": "다음"
+				"aria-label": "다음 미디어"
 			}
 		}
 	}

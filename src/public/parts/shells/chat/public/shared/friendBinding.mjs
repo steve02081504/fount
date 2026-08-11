@@ -49,10 +49,10 @@ export function charFriendBindingInput(charname, displayName) {
  * @returns {{ entityHash: string, displayName?: string }} 建群输入：仅 entityHash（与 charname 互斥）
  */
 export function entityFriendBindingInput(entityHash, displayName) {
-	const eh = String(entityHash || '').trim().toLowerCase()
-	if (!isEntityHash128(eh)) throw new Error('entityHash required')
+	const normalizedEntityHash = String(entityHash || '').trim().toLowerCase()
+	if (!isEntityHash128(normalizedEntityHash)) throw new Error('entityHash required')
 	return {
-		entityHash: eh,
+		entityHash: normalizedEntityHash,
 		...displayName ? { displayName: String(displayName).trim() } : {},
 	}
 }

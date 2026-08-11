@@ -139,16 +139,14 @@ Deno.test('dag_tip_merge with a missing prev event is pendable', async () => {
 
 Deno.test('dag_tip_merge accepts prev known only via archive_manifest (folded tip)', async () => {
 	await ensureServer()
-	const { writeFile: writeF, mkdir: mk } = await import('node:fs/promises')
-	const { dirname: dirn } = await import('node:path')
 	const { archiveManifestPath } = await import('../../src/chat/lib/paths.mjs')
 	const groupId = 'g-merge-archived-prev'
 	const path = eventsPath(username, groupId)
 	await mkdir(dirname(path), { recursive: true })
 	await writeFile(path, `${JSON.stringify({ id: TIP_A, type: 'message', prev_event_ids: [], sender: SENDER })}\n`, 'utf8')
 	const manifestPath = archiveManifestPath(username, groupId)
-	await mk(dirn(manifestPath), { recursive: true })
-	await writeF(manifestPath, JSON.stringify({
+	await mkdir(dirname(manifestPath), { recursive: true })
+	await writeFile(manifestPath, JSON.stringify({
 		channels: { default: { months: ['2026-08'] } },
 		archivedEventIds: { default: { [TIP_B]: '2026-08' } },
 		monthDigests: {},
@@ -160,12 +158,7 @@ Deno.test('dag_tip_merge accepts prev known only via archive_manifest (folded ti
 		sender: SENDER,
 		prev_event_ids: [TIP_A, TIP_B],
 	}
-	let thrown
-	try {
-		await validateIngestAuthz(username, groupId, event, { source: 'federation', state: activeMemberState() })
-	}
-	catch (error) { thrown = error }
-	assertEquals(thrown, undefined)
+	await validateIngestAuthz(username, groupId, event, { source: 'federation', state: activeMemberState() })
 })
 
 Deno.test('dag_tip_merge is accepted when all prev present, even with extra local tips', async () => {
@@ -188,10 +181,5 @@ Deno.test('dag_tip_merge is accepted when all prev present, even with extra loca
 		sender: SENDER,
 		prev_event_ids: [TIP_A, TIP_B],
 	}
-	let thrown
-	try {
-		await validateIngestAuthz(username, groupId, event, { source: 'federation', state: activeMemberState() })
-	}
-	catch (error) { thrown = error }
-	assertEquals(thrown, undefined)
+	await validateIngestAuthz(username, groupId, event, { source: 'federation', state: activeMemberState() })
 })

@@ -22,6 +22,7 @@ import {
 	CHANNEL_MESSAGE_EVENT_ID_RE,
 	findChannelMessageRow,
 } from '../../chat/channel/messageMutations.mjs'
+import { attachFilesToContent } from '../../chat/channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import {
@@ -43,6 +44,17 @@ import {
 	resolveGroupMember,
 } from './middleware.mjs'
 import { GROUPS_PREFIX, EVENT_ID_PARAM } from './path.mjs'
+
+/**
+ * @param {object} file 上传附件（base64 buffer）
+ * @returns {object} 带 Node Buffer 的附件
+ */
+function decodeUploadFile(file) {
+	return {
+		...file,
+		buffer: file.buffer != null ? Buffer.from(file.buffer, 'base64') : undefined,
+	}
+}
 
 
 /**
@@ -109,12 +121,8 @@ export function registerChannelMessageRoutes(router, authenticate) {
 			throw httpError(400, error.message)
 		}
 		const rawFiles = req.body?.files
-		const processedFiles = (Array.isArray(rawFiles) ? rawFiles : []).map(file => ({
-			...file,
-			buffer: file.buffer != null ? Buffer.from(file.buffer, 'base64') : undefined,
-		}))
+		const processedFiles = (Array.isArray(rawFiles) ? rawFiles : []).map(decodeUploadFile)
 		if (processedFiles.length || Array.isArray(contentObj.files)) {
-			const { attachFilesToContent } = await import('../../chat/channel/postMessage.mjs')
 			const maxBytes = Number(state.groupSettings?.maxDagPayloadBytes) || 262_144
 			;({ content: contentObj } = await attachFilesToContent(
 				username,
@@ -362,10 +370,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, channelId)
 
-		const processedFiles = (Array.isArray(rawFiles) ? rawFiles : []).map(file => ({
-			...file,
-			buffer: Buffer.from(file.buffer, 'base64'),
-		}))
+		const processedFiles = (Array.isArray(rawFiles) ? rawFiles : []).map(decodeUploadFile)
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).channel(channelId)
 		const sent = await channel.send({

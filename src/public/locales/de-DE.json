@@ -2898,9 +2898,6 @@
 					"title": "Herunterladen",
 					"aria-label": "Herunterladen"
 				},
-				"downloadIcon": {
-					"alt": "Herunterladen-Symbol"
-				},
 				"edit": {
 					"title": "Bild bearbeiten",
 					"aria-label": "Bild bearbeiten"
@@ -2911,9 +2908,6 @@
 				"delete": {
 					"title": "Löschen",
 					"aria-label": "Löschen"
-				},
-				"deleteIcon": {
-					"alt": "Löschen-Symbol"
 				},
 				"more": {
 					"title": "Mehr",

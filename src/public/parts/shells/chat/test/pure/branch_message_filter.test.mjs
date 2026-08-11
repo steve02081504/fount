@@ -17,11 +17,12 @@ Deno.test('filterChannelMessageLinesByBranchTip drops off-branch message rows', 
 		{ id: tipB, prev_event_ids: [root] },
 	]
 	const lines = [
+		{ eventId: root, content: { text: '0' } },
 		{ eventId: tipA, content: { text: '1' } },
 		{ eventId: tipB, content: { text: '1' } },
 	]
 	const filtered = filterChannelMessageLinesByBranchTip(lines, tipA, events)
-	assertEquals(filtered.map(row => row.eventId), [tipA])
+	assertEquals(filtered.map(row => row.eventId), [root, tipA])
 })
 
 Deno.test('filterChannelMessageLinesByBranchTip returns all when tip missing', () => {

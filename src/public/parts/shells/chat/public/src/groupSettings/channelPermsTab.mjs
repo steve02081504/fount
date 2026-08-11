@@ -5,6 +5,17 @@ import { getChannelPermissions, putChannelPermissions } from '../endpoints/chann
 
 import { ALL_PERMISSIONS } from './constants.mjs'
 
+const ROLE_COLOR_RE = /^#[0-9a-f]{3}([0-9a-f]{3})?$/i
+
+/**
+ * @param {string | undefined} color CSS 颜色
+ * @returns {string} 白名单内 hex 或默认灰
+ */
+function safeRoleColor(color) {
+	const value = String(color || '').trim()
+	return ROLE_COLOR_RE.test(value) ? value : '#888888'
+}
+
 /**
  * @param {Record<string, boolean>} allow 允许位图
  * @param {Record<string, boolean>} deny 拒绝位图
@@ -15,16 +26,6 @@ function channelPermTriState(allow, deny, perm) {
 	if (deny?.[perm]) return 'deny'
 	if (allow?.[perm]) return 'allow'
 	return 'neutral'
-}
-
-/**
- * @param {{ allow?: Record<string, boolean>, deny?: Record<string, boolean> } | undefined} override 覆盖项
- * @returns {boolean} 是否存在任一显式 allow/deny
- */
-function roleHasOverride(override) {
-	const allow = override?.allow || {}
-	const deny = override?.deny || {}
-	return Object.keys(allow).length > 0 || Object.keys(deny).length > 0
 }
 
 /**
@@ -80,17 +81,18 @@ export async function renderChannelPermissionsPanel(context) {
 		const override = permissions[roleId]
 		const allow = override?.allow || {}
 		const deny = override?.deny || {}
-		const hasOverride = roleHasOverride(override)
+		const hasOverride = Object.keys(allow).length > 0 || Object.keys(deny).length > 0
+		const open = roleId === '@everyone' || role.isDefault || hasOverride
 		return {
 			roleId,
 			name: role.name || roleId,
-			color: role.color || '#888',
+			color: safeRoleColor(role.color),
 			hasOverride,
-			open: roleId === '@everyone' || role.isDefault || hasOverride,
-			permRows: ALL_PERMISSIONS.map(perm => ({
+			open,
+			permRows: open ? ALL_PERMISSIONS.map(perm => ({
 				perm,
 				state: channelPermTriState(allow, deny, perm),
-			})),
+			})) : [],
 		}
 	})
 

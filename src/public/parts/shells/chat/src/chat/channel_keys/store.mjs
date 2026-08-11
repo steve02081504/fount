@@ -4,7 +4,7 @@ import { dirname } from 'node:path'
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { unwrapChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 
 import { readLocalSignerSeed } from '../dag/localSigner.mjs'
 import { channelKeysPath } from '../lib/paths.mjs'

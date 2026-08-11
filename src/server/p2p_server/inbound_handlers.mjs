@@ -2,29 +2,28 @@ import {
 	registerDeliveryInboundHandler,
 	registerRpcInboundHandler,
 } from 'npm:@steve02081504/fount-p2p/registries/inbound'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
-import { isPartInvokeResponse, normalizePartpath } from 'npm:@steve02081504/fount-p2p/wire/part_invoke'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
+import { isPartInvokeResponse } from 'npm:@steve02081504/fount-p2p/wire/part/invoke'
 
 import { getAllUserNames } from '../auth/index.mjs'
 import { loadPart, hasPartMain } from '../parts_loader.mjs'
 
 /**
  * @param {string} username 目标用户
- * @param {string} partpath part 路径
+ * @param {string} partpath part 路径（wire 入站已校验）
  * @param {object} data 调用载荷
  * @param {{ requesterNodeHash?: string | null }} ingress 入站元数据
- * @returns {Promise<import('npm:@steve02081504/fount-p2p/wire/part_invoke').PartInvokeResponse | null>} 部件响应
+ * @returns {Promise<import('npm:@steve02081504/fount-p2p/wire/part/invoke').PartInvokeResponse | null>} 部件响应
  */
 async function invokePartForUser(username, partpath, data, ingress = {}) {
-	const path = normalizePartpath(partpath)
-	if (!path || !isPlainObject(data)) return null
-	if (!hasPartMain(username, path)) return null
+	if (!isPlainObject(data)) return null
+	if (!hasPartMain(username, partpath)) return null
 	let part
 	try {
-		part = await loadPart(username, path)
+		part = await loadPart(username, partpath)
 	}
 	catch (err) {
-		console.error('p2p: part_invoke loadPart failed', { partpath: path, err })
+		console.error('p2p: part_invoke loadPart failed', { partpath, err })
 		return { error: { message: 'load_failed', code: 'LOAD_FAILED' } }
 	}
 	const handler = part?.interfaces?.invokes?.P2PInvokeHandler
@@ -37,7 +36,7 @@ async function invokePartForUser(username, partpath, data, ingress = {}) {
 		return response
 	}
 	catch (err) {
-		console.error('p2p: P2PInvokeHandler failed', { partpath: path, err })
+		console.error('p2p: P2PInvokeHandler failed', { partpath, err })
 		return {
 			error: {
 				message: err instanceof Error ? err.message : 'handler_failed',
@@ -64,7 +63,8 @@ export async function resolveUsernameForPartpath(preferredUsername, partpath) {
  */
 export function registerP2PInboundHandlers() {
 	registerRpcInboundHandler('part_invoke', async (ctx, message) => {
-		const partpath = normalizePartpath(message.partpath)
+		// partpath 已在 wire/part ingress 校验
+		const partpath = message.partpath
 		if (!partpath || !isPlainObject(message.invoke)) return null
 		const username = await resolveUsernameForPartpath(ctx.replicaUsername, partpath)
 		if (!username) return null
@@ -74,7 +74,7 @@ export function registerP2PInboundHandlers() {
 	})
 
 	registerDeliveryInboundHandler('part_timeline_put', async (ctx, message) => {
-		const partpath = normalizePartpath(message.partpath)
+		const partpath = message.partpath
 		if (!partpath) return
 		const username = await resolveUsernameForPartpath(ctx.replicaUsername, partpath)
 		if (!username) return

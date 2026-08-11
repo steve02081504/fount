@@ -2898,9 +2898,6 @@
 					"title": "Transferir",
 					"aria-label": "Transferir"
 				},
-				"downloadIcon": {
-					"alt": "Ícone de Transferência"
-				},
 				"edit": {
 					"title": "Editar imagem",
 					"aria-label": "Editar imagem"
@@ -2911,9 +2908,6 @@
 				"delete": {
 					"title": "Eliminar",
 					"aria-label": "Eliminar"
-				},
-				"deleteIcon": {
-					"alt": "Ícone de Eliminar"
 				},
 				"more": {
 					"title": "Mais",

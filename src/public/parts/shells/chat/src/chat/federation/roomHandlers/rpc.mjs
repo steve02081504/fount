@@ -1,5 +1,5 @@
-import { attachGroupPartWire } from 'npm:@steve02081504/fount-p2p/wire/group_part'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { attachGroupPartWire } from 'npm:@steve02081504/fount-p2p/wire/part/group'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 
 import { encodeWireJson } from '../../lib/wireJson.mjs'
 import {
