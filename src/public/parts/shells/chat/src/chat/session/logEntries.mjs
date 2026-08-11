@@ -48,8 +48,8 @@ export function getChannelForCharStream(chatMetadata, placeholderEntry) {
  * @returns {Promise<chatLogEntry_t>} 新日志条目
  */
 export async function buildChatLogEntryFromCharReply(result, timeSlice, char, charname, username) {
-	timeSlice.charname = charname
-	const { info } = await getPartDetails(username, `chars/${charname}`) || {}
+	timeSlice.charname = charname || undefined
+	const { info } = charname && await getPartDetails(username, `chars/${charname}`) || {}
 	const { timeSlice: _drop, ...extensionRest } = result.extension || {}
 
 	const entry = new chatLogEntry_t()

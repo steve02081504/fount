@@ -1,6 +1,6 @@
 ---
-description: fount test framework — CLI, state DB, selection, dependencies, live driver, and operator diagnostics
-globs: src/scripts/test/**, **/test/manifest.json
+description: fount test framework — CLI, state DB, selection, dependencies, live driver, and operator diagnostics. Pull when changing the runner or diagnosing fount test behavior — not for ordinary product-suite cases under an existing manifest.
+globs: src/scripts/test/**
 alwaysApply: false
 ---
 

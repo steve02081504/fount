@@ -1,3 +1,9 @@
+---
+description: Docs writing for design/review/issues and AGENTS.md — gap entries, language, content policy, Cursor triggers
+globs: docs/design/**, docs/review/**, docs/issues/**, **/AGENTS.md
+alwaysApply: false
+---
+
 # Docs Writing Guide (Design / Review / Issues / Agent docs)
 
 For maintainers of `docs/design/`, `docs/review/`, `docs/issues/`, and every `AGENTS.md`.
@@ -14,6 +20,22 @@ For maintainers of `docs/design/`, `docs/review/`, `docs/issues/`, and every `AG
 **Language**: `docs/design/`, `docs/review/`, and `docs/issues/` are **human-facing Chinese** (keep Chinese). Every `AGENTS.md` and non-`AGENTS.md` file in its link closure stay **English** — enforced by `fount test checks:agents_md_english` (`docs/design|review|issues` exempt from CJK). Non-`AGENTS.md` files in that closure must live under a directory named `docs`.
 
 Milestone codes (`M1` / `G4` etc.) are fine in design/review while a batch is open; **never** leak them into source / test names / `llms.txt` (see root `AGENTS.md`).
+
+## Cursor triggers (frontmatter)
+
+Cursor honors YAML frontmatter on `AGENTS.md` the same way as `.cursor/rules/*.mdc`. Prefer this over relying on directory auto-scope alone — a parent `globs: …/**` will dump that guide into every child-area chat.
+
+| Mode | Frontmatter | Use when |
+| --- | --- | --- |
+| Always | `alwaysApply: true` | Repo-wide day-to-day only (root `AGENTS.md`) |
+| Auto-attach | `alwaysApply: false` + `globs:` | Domain files where the guide is usually needed |
+| Agent-requested | `alwaysApply: false` + `description:` (no `globs`) | Parent/overview guides that specialized children already cover |
+
+**Narrowing rules**:
+
+- Do not set a parent glob that subsumes a specialized child's tree (e.g. `shells/**` over `shells/chat/**`). Prefer scaffolding globs, agent-requested parents, or explicit subtrees.
+- `description` stays English, concrete, and names when *not* to pull the guide.
+- `globs` are comma-separated; keep them tight. Avoid repo-wide patterns like `**/test/manifest.json` unless every match truly needs that guide.
 
 ## What every gap entry must state
 
