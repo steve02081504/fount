@@ -167,7 +167,7 @@ export async function bindWorld(groupId, channelId, worldname, replicaUsername) 
 		}
 		if (!result) return null
 
-		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, null, undefined, username)
+		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, undefined, username)
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
 	}
@@ -204,7 +204,7 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 	try {
 		const result = await getGreeting(request, 0)
 		if (!result) return null
-		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
+		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, charname, username)
 		greetingEntry.extension = {
 			...greetingEntry.extension,
 			greetingType: timeSlice.greeting_type || greetingEntry.extension?.timeSlice?.greeting_type,

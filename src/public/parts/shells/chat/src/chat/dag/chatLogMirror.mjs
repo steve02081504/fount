@@ -255,7 +255,7 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 		const text = entry.content
 		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
 		if (!text.trim() && !hasFiles) return
-		const { channelIdForDag, sender, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
+		const { channelIdForDag, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
 		const content = await buildFinalMessageContent(username, groupId, entry, text)
 		const isGreeting = !!entry.extension?.chat?.isGreeting
 			|| !!entry.extension?.greetingType
