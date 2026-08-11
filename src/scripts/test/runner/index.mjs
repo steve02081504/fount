@@ -39,6 +39,7 @@ import {
 	readState,
 	refreshEntryFingerprint,
 	suiteKey,
+	suiteTriggeredFiles,
 	upsertSuiteRun,
 	writeState,
 	writeStateMarkdown,
@@ -280,6 +281,8 @@ async function executeWave(context) {
 		state,
 		commitHash,
 		uncommittedHash,
+		uncommittedFiles,
+		committedChangedByKey,
 		globalBudget,
 		options,
 		runId,
@@ -461,7 +464,12 @@ async function executeWave(context) {
 
 			const firstMap = failedFirstByManifest.get(suite.manifestId)
 			const firstFiles = firstMap?.has(suite.name) ? firstMap.get(suite.name) : undefined
-			const result = await runSuite(suite, { firstFiles, subtests, onlyFiles }, globalBudget, streamLive, {
+			const changedForSuite = [...new Set([
+				...(committedChangedByKey?.get(key) ?? []),
+				...(uncommittedFiles ?? []),
+			])]
+			const triggeredFiles = suiteTriggeredFiles(suite, changedForSuite)
+			const result = await runSuite(suite, { firstFiles, subtests, onlyFiles, triggeredFiles }, globalBudget, streamLive, {
 				label,
 				baselineDurationMs,
 				signal: ctx.signal,
@@ -672,6 +680,8 @@ export async function runTests(options = {}) {
 				state,
 				commitHash,
 				uncommittedHash,
+				uncommittedFiles,
+				committedChangedByKey,
 				globalBudget,
 				options,
 				runId,
@@ -709,6 +719,8 @@ export async function runTests(options = {}) {
 					state,
 					commitHash,
 					uncommittedHash,
+					uncommittedFiles,
+					committedChangedByKey,
 					globalBudget,
 					options,
 					runId,
@@ -742,6 +754,8 @@ export async function runTests(options = {}) {
 					state,
 					commitHash,
 					uncommittedHash,
+					uncommittedFiles,
+					committedChangedByKey,
 					globalBudget,
 					options,
 					runId,

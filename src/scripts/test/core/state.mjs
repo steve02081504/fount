@@ -230,6 +230,17 @@ export function collectStaleTriggerEvidence(suite, changedFiles, opts = {}) {
 }
 
 /**
+ * 解析本波次应交给子进程的 trigger 命中路径（已提交 since-record ∪ 未提交）。
+ * @param {SuiteDef} suite suite
+ * @param {string[]} changedFiles 变更文件
+ * @returns {string[]} 命中路径（正斜杠、去重）
+ */
+export function suiteTriggeredFiles(suite, changedFiles) {
+	if (!changedFiles.length) return []
+	return collectStaleTriggerEvidence(suite, changedFiles).matchedPaths
+}
+
+/**
  * 判定 suite 级 trigger 是否命中变更文件。
  * @param {SuiteDef} suite suite
  * @param {string[]} changedFiles 变更文件

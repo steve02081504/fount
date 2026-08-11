@@ -1,11 +1,12 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { orderFailedFirst, readTimingsOutFile, writeTimingsOutFile } from '../core/protocol.mjs'
+import { orderFailedFirst, readTestTriggeredFiles, readTimingsOutFile, writeTestTriggeredFiles, writeTimingsOutFile } from '../core/protocol.mjs'
+import { suiteTriggeredFiles } from '../core/state.mjs'
 import { aggregateSubtestVerdicts, judgeSubtest } from '../core/verdict.mjs'
 import { subtestMatchesSpec } from '../playwright/phases.mjs'
 import { collectSubtestFilterByKey } from '../runner/selection.mjs'
-import { mapTimingsToSubtests } from '../runner/suite_run.mjs'
+import { buildSuiteInvocation, mapTimingsToSubtests } from '../runner/suite_run.mjs'
 
 import { makeSuite } from './fixtures.mjs'
 
@@ -125,4 +126,49 @@ Deno.test('mapTimingsToSubtests matches by spec basename', () => {
 		'src/public/parts/shells/social/test/frontend/feed.spec.mjs': 2000,
 		'src/public/parts/shells/social/test/frontend/profile.spec.mjs': 3000,
 	}, ['feed']), { feed: 2000 })
+})
+
+Deno.test('suiteTriggeredFiles returns trigger-matched changed paths', () => {
+	const suite = makeSuite('checks', 'json_lf', {
+		triggers: ['src/scripts/checks/json_lf.mjs', '**/*.json'],
+	})
+	assertEquals(
+		suiteTriggeredFiles(suite, [
+			'src/public/locales/en-UK.json',
+			'src/scripts/checks/json_lf.mjs',
+			'README.md',
+		]),
+		['src/scripts/checks/json_lf.mjs', 'src/public/locales/en-UK.json'],
+	)
+	assertEquals(suiteTriggeredFiles(suite, []), [])
+})
+
+Deno.test('buildSuiteInvocation passes FOUNT_TEST_TRIGGERED_FILES as temp path', () => {
+	const suite = makeSuite('checks', 'json_lf', { run: ['deno', 'test', 'x.mjs'] })
+	const triggeredPath = '/tmp/fount-test-xyz/triggered.txt'
+	const { env } = buildSuiteInvocation(
+		suite,
+		{ triggeredFiles: ['a.json', 'b.json'] },
+		'/tmp/failures.json',
+		'/tmp/timings.json',
+		triggeredPath,
+		undefined,
+	)
+	assertEquals(env.FOUNT_TEST_TRIGGERED_FILES, triggeredPath)
+})
+
+Deno.test('writeTestTriggeredFiles / readTestTriggeredFiles round-trip', async () => {
+	const path = await Deno.makeTempFile({ prefix: 'fount-triggered-', suffix: '.txt' })
+	const previous = Deno.env.get('FOUNT_TEST_TRIGGERED_FILES')
+	try {
+		await writeTestTriggeredFiles(path, ['a.json', 'b.json', 'a.json'])
+		Deno.env.set('FOUNT_TEST_TRIGGERED_FILES', path)
+		assertEquals(await readTestTriggeredFiles(), ['a.json', 'b.json'])
+		assertEquals(await readTestTriggeredFiles(''), [])
+	}
+	finally {
+		await Deno.remove(path).catch(() => {})
+		if (previous === undefined) Deno.env.delete('FOUNT_TEST_TRIGGERED_FILES')
+		else Deno.env.set('FOUNT_TEST_TRIGGERED_FILES', previous)
+	}
 })

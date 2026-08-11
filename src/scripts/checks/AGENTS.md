@@ -17,7 +17,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
 | `update_locales` | `.esh/commands/update-locales.py --self-test` (string↔single-applicator + string↔switch) |
 | `agents_md_english` | `AGENTS.md` + linked `.md` English-only; non-`AGENTS.md` under `docs/` |
-| `json_lf` | All tracked `*.json` use LF line endings (no CRLF / lone CR) |
+| `json_lf` | `*.json` LF line endings (no CRLF / lone CR). Under `fount test`, scopes to paths listed in the `FOUNT_TEST_TRIGGERED_FILES` temp file when that list includes `.json`; otherwise full-repo scan |
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
 
 ## i18n keys
