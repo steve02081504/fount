@@ -69,11 +69,11 @@ function profileDisplayName(profile) {
  */
 function rowMatchesQuery(q, row) {
 	if (!q) return false
-	const handle = String(row.handle || '').trim().toLowerCase()
+	const handle = String(row.handle || '').toLowerCase()
 	if (handle && (handle === q || handle.includes(q))) return true
-	const charPartName = String(row.charPartName || '').trim().toLowerCase()
+	const charPartName = String(row.charPartName || '').toLowerCase()
 	if (charPartName && (charPartName === q || charPartName.includes(q))) return true
-	const name = String(row.name || '').trim().toLowerCase()
+	const name = String(row.name || '').toLowerCase()
 	return Boolean(name && name.includes(q))
 }
 
@@ -119,7 +119,7 @@ export async function localEntitySearchHandler(inboundContext, query) {
 			const profile = await getProfile(entityHash, username, { skipPresentation: true })
 			const handle = String(profile.handle || '').trim().toLowerCase()
 			const name = profileDisplayName(profile)
-			const charPartName = String(row.charPartName || '').trim() || undefined
+			const charPartName = row.charPartName || undefined
 			const candidate = { entityHash, handle, name, ...charPartName ? { charPartName } : {} }
 			if (!rowMatchesQuery(q, candidate)) continue
 			byHash.set(entityHash, candidate)
@@ -150,12 +150,12 @@ function normalizeClueRow(row) {
 	if (!row || typeof row !== 'object') return null
 	const entityHash = String(/** @type {{ entityHash?: unknown }} */row.entityHash || '').toLowerCase()
 	if (!isEntityHash128(entityHash)) return null
-	const charPartName = String(/** @type {{ charPartName?: unknown }} */row.charPartName || '').trim() || undefined
+	const charPartName = /** @type {{ charPartName?: unknown }} */row.charPartName || undefined
 	return {
 		entityHash,
 		handle: String(/** @type {{ handle?: unknown }} */row.handle || '').trim().toLowerCase(),
 		name: String(/** @type {{ name?: unknown }} */row.name || '').trim(),
-		...charPartName ? { charPartName } : {},
+		...charPartName ? { charPartName: String(charPartName) } : {},
 	}
 }
 

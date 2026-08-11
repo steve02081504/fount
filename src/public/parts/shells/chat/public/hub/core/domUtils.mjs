@@ -17,6 +17,7 @@ import { isHex64, normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p
 import { aliasForEntity, aliasForGroup } from '../../shared/aliases.mjs'
 import { isEntityHash128 } from '../../shared/entityHash.mjs'
 import { resolveDisplayName } from '../../shared/nameResolve.mjs'
+import { activePrivateCharPartName } from '../friendBindings.mjs'
 
 import { store } from './state.mjs'
 
@@ -44,7 +45,8 @@ export function ingestAgentEntityHashList(agents) {
  */
 export function activeCharPartNames() {
 	const names = new Set(store.context.currentState?.charPartNames || [])
-	if (store.privateGroup.charname) names.add(store.privateGroup.charname)
+	const privateChar = activePrivateCharPartName()
+	if (privateChar) names.add(privateChar)
 	return [...names]
 }
 

@@ -22,7 +22,7 @@ import { overlayPinsForChannel } from './hotPostsIndex.mjs'
  * @returns {Promise<{ name: string, avatar: string | null }>} 展示快照
  */
 async function resolveCharDisplaySnapshot(state, charId, username, groupId) {
-	const charname = String(charId).trim()
+	const charname = charId
 	const agentKey = resolveActiveAgentMemberKeyByCharname(state, charname)
 	const agent = agentKey ? state.members[agentKey] : null
 	let name = ''
@@ -58,7 +58,7 @@ async function resolveCharDisplaySnapshot(state, charId, username, groupId) {
  * @returns {Promise<{ name: string, avatar: string | null }>} 展示快照
  */
 export async function resolveDisplaySnapshot(state, row, username, groupId) {
-	const charId = row.charId ? String(row.charId).trim() : null
+	const charId = row.charId || null
 	if (charId)
 		return resolveCharDisplaySnapshot(state, charId, username, groupId)
 
@@ -122,7 +122,7 @@ export async function buildPostSnapshotFromRow(row, state, username, groupId) {
 	const sender = row.sender ? String(row.sender).trim().toLowerCase() : null
 	let sourceEntityHash = null
 	if (row.charId) {
-		const agentKey = resolveActiveAgentMemberKeyByCharname(state, String(row.charId).trim())
+		const agentKey = resolveActiveAgentMemberKeyByCharname(state, row.charId)
 		sourceEntityHash = agentKey ? memberEntityHash(state.members[agentKey]) : null
 	}
 	else if (sender && state.members?.[sender])

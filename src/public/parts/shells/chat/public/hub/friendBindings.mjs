@@ -1,6 +1,6 @@
 /**
  * 【文件】public/hub/friendBindings.mjs
- * 【职责】好友绑定群在侧栏的归类：从群元数据解析 `FriendBinding`，过滤好友 DM 与角色私聊群。
+ * 【职责】好友绑定群在侧栏的归类：从群元数据解析 `FriendBinding`，过滤好友 DM 与角色私聊群；派生当前私聊本地角色 part 名。
  * 【原理】`getSidebarGroups` 决定服务器栏展示顺序；`isActiveFriendChat` 影响主栏布局分支；好友群仍走频道消息管道。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】`hashNav` 通过 `friendBindingForGroup` 将 hash 中的 groupId 导向 `enterFriendChat`；core/state。
@@ -47,4 +47,31 @@ export function friendBindingForGroup(groupId) {
 /** @returns {boolean} 是否正在好友私聊会话中 */
 export function isActiveFriendChat() {
 	return !!store.privateGroup.groupId
+}
+
+/**
+ * 当前好友私聊的本地角色 part 名；用户 DM / 未进入为 null。
+ * @returns {string|null} 角色 part 名
+ */
+export function activePrivateCharPartName() {
+	const groupId = store.privateGroup.groupId
+	const fromBinding = friendBindingForGroup(groupId)?.charname
+	if (fromBinding) return fromBinding
+
+	const peer = String(store.privateGroup.peerEntityHash || '').trim().toLowerCase()
+	if (!peer) return null
+
+	for (const member of store.context.currentState?.members || []) {
+		if (String(member?.entityHash || '').toLowerCase() !== peer) continue
+		const name = String(member.charname || '').trim()
+		if (name) return name
+	}
+
+	for (const agent of store.viewer.agents || []) {
+		if (String(agent?.entityHash || '').toLowerCase() !== peer) continue
+		const name = String(agent.charPartName || '').trim()
+		if (name) return name
+	}
+
+	return null
 }

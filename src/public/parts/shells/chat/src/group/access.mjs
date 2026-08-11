@@ -14,14 +14,11 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
  * @returns {string | null} 成员在 state.members 中的键，无则 null
  */
 export function resolveMemberKey(state, identifier) {
-	const raw = String(identifier || '').trim()
-	if (!raw) return null
-	const lower = raw.toLowerCase()
-	if (state.members[lower]) return lower
-	if (state.members[raw]) return raw
+	if (!identifier) return null
+	if (state.members[identifier]) return identifier
 	for (const [key, member] of Object.entries(state.members)) {
-		if (member?.entityHash === lower) return key
-		if (member?.memberKind === 'agent' && member.charname === raw)
+		if (member?.entityHash === identifier) return key
+		if (member?.memberKind === 'agent' && member.charname === identifier)
 			return key
 	}
 	return null
@@ -43,12 +40,11 @@ export function resolveActiveMemberKey(state, memberKey) {
  * @returns {string | null} 活跃 agent 成员键
  */
 export function resolveActiveAgentMemberKeyByCharname(state, charname) {
-	const name = String(charname || '').trim()
-	if (!name) return null
+	if (!charname) return null
 	for (const [key, member] of Object.entries(state.members))
 		if (member?.memberKind === 'agent'
 			&& member.status === 'active'
-			&& member.charname === name)
+			&& member.charname === charname)
 			return key
 
 	return null

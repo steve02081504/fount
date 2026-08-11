@@ -24,7 +24,7 @@ export function normalizeFriendBinding(raw) {
 	if (!raw) return null
 	const entityHash = String(raw.entityHash ?? '').trim().toLowerCase()
 	if (!isEntityHash128(entityHash)) return null
-	const charname = String(raw.charname ?? '').trim() || undefined
+	const charname = raw.charname || undefined
 	const displayName = String(raw.displayName ?? '').trim() || undefined
 	return { entityHash, ...displayName ? { displayName } : {}, ...charname ? { charname } : {} }
 }
@@ -36,10 +36,9 @@ export function normalizeFriendBinding(raw) {
  * @returns {{ charname: string, displayName?: string }} 建群输入：仅 charname（与 entityHash 互斥）
  */
 export function charFriendBindingInput(charname, displayName) {
-	const name = String(charname || '').trim()
-	if (!name) throw new Error('charname required')
+	if (!charname) throw new Error('charname required')
 	return {
-		charname: name,
+		charname,
 		...displayName ? { displayName: String(displayName).trim() } : {},
 	}
 }

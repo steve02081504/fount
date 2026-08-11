@@ -15,12 +15,11 @@ import { store } from './core/state.mjs'
  * @returns {Promise<string | null>} 本地 agent entityHash（只读缓存：viewer.agents / 群成员；物化走建好友群）
  */
 export async function charAgentEntityHash(charname) {
-	const name = String(charname || '').trim()
-	if (!name) return null
-	const cached = charEntityHashFromCache(name)
+	if (!charname) return null
+	const cached = charEntityHashFromCache(charname)
 	if (cached) return cached
-	await warmCharEntityHashCache([name])
-	return charEntityHashFromCache(name)
+	await warmCharEntityHashCache([charname])
+	return charEntityHashFromCache(charname)
 }
 
 /**

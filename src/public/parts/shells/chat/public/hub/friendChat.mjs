@@ -78,13 +78,13 @@ function enqueueResolveFriendGroup(fn, signal) {
  */
 async function findExistingFriendGroup(binding) {
 	await loadGroups()
-	const entityHash = String(binding.entityHash || '').trim().toLowerCase()
-	const charKey = String(binding.charname || '').trim()
+	const entityHash = binding.entityHash || ''
+	const charKey = binding.charname || ''
 	const matches = store.sidebar.groups.filter(g => {
 		const fb = g.friendBinding
 		if (!fb) return false
 		if (entityHash && fb.entityHash === entityHash) return true
-		return !!(charKey && String(fb.charname || '').trim() === charKey)
+		return !!(charKey && fb.charname === charKey)
 	})
 	if (!matches.length) return null
 	matches.sort((a, b) => new Date(b.lastMessageTime || 0) - new Date(a.lastMessageTime || 0))
@@ -215,7 +215,6 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 		|| binding.displayName || binding.charname || state.groupMeta?.name || groupId
 
 	store.privateGroup.peerEntityHash = binding.entityHash
-	store.privateGroup.charname = binding.charname || null
 	store.privateGroup.groupId = groupId
 	store.context.currentGroupId = groupId
 	store.context.currentState = state
@@ -229,10 +228,11 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	const groupNameElement = document.getElementById('group-name-display')
 	delete groupNameElement.dataset.i18n
 	groupNameElement.textContent = displayName
-	if (binding.charname) {
-		const details = await getCharDetails(binding.charname)
+	const charname = binding.charname || null
+	if (charname) {
+		const details = await getCharDetails(charname)
 		throwIfAborted(signal)
-		renderCharInfoCardActive(binding.charname, details)
+		renderCharInfoCardActive(charname, details)
 	}
 	else
 		document.getElementById('info-card-host').innerHTML = ''
@@ -244,8 +244,8 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	await loadGroups()
 
 	const input = document.getElementById('message-input')
-	if (binding.charname) {
-		input.dataset.name = binding.charname
+	if (charname) {
+		input.dataset.name = charname
 		input.setAttribute('data-i18n', 'chat.hub.char.chat.composer')
 	}
 	else {

@@ -104,3 +104,57 @@ Deno.test({
 		await stopNode(node)
 	}
 })
+
+Deno.test({
+	name: 'PUT /groups/:id/meta with entityHash-only friendBinding fills local charname',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const dataPath = await mkdtemp(join(tmpdir(), 'fount_chat_friend_meta_'))
+	const apiKey = `fount-friend-meta-${Date.now().toString(36)}`
+	const node = await launchNode({
+		dataPath,
+		username: 'friend-meta',
+		apiKey,
+		loadParts: ['shells/chat'],
+		minP2pNode: true,
+		p2p: false,
+		fixtureCopies: [
+			{ from: join(fixturesRoot, 'chars', characterName), to: `chars/${characterName}` },
+		],
+	})
+	try {
+		const createResponse = await chatFetch(node, 'POST', '/groups/', {
+			name: characterName,
+			friendBinding: { charname: characterName },
+		})
+		const created = await createResponse.json().catch(() => ({}))
+		assertEquals(createResponse.status, 201, JSON.stringify(created))
+		const entityHash = created.friendBinding?.entityHash
+		assert(typeof entityHash === 'string' && entityHash.length === 128)
+
+		const clearResponse = await chatFetch(node, 'PUT', `/groups/${created.groupId}/meta`, {
+			friendBinding: null,
+		})
+		assertEquals(clearResponse.status, 200, await clearResponse.text())
+
+		const putResponse = await chatFetch(node, 'PUT', `/groups/${created.groupId}/meta`, {
+			friendBinding: { entityHash },
+		})
+		const putBody = await putResponse.json().catch(() => ({}))
+		assertEquals(putResponse.status, 200, JSON.stringify(putBody))
+		assertEquals(putBody.friendBinding?.entityHash, entityHash)
+		assertEquals(putBody.friendBinding?.charname, characterName)
+
+		const listResponse = await chatFetch(node, 'GET', '/groups/')
+		assertEquals(listResponse.status, 200)
+		const rows = await listResponse.json()
+		const row = rows.find(entry => entry.groupId === created.groupId)
+		assert(row, 'created group must appear in list')
+		assertEquals(row.friendBinding?.entityHash, entityHash)
+		assertEquals(row.friendBinding?.charname, characterName)
+	}
+	finally {
+		await stopNode(node)
+	}
+})

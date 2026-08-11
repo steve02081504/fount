@@ -29,7 +29,7 @@ export function registerChannelReactionRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/trigger-reply`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { groupId, channelId } = req.groupContext
 		const { charname } = req.body || {}
-		const resolvedCharname = String(charname || '').trim() || null
+		const resolvedCharname = charname || null
 
 		const { client } = await chatClientFromReq(req)
 		await (await (await client.group(groupId)).channel(channelId)).triggerReply(resolvedCharname)

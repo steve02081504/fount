@@ -206,30 +206,20 @@ async function authorKeysForEntityHash(entityHash) {
 		if (String(member.entityHash || '').toLowerCase() !== key) continue
 		if (member.memberKey) keys.add(String(member.memberKey).toLowerCase())
 		if (member.pubKeyHash) keys.add(String(member.pubKeyHash).toLowerCase())
-		const charname = String(member.charname || '').trim()
-		if (charname) keys.add(charname)
+		if (member.charname) keys.add(member.charname)
 	}
 
-	const { charAgentEntityHash } = await import('./entityResolve.mjs')
 	const { resolveFriendBinding } = await import('./friendBindings.mjs')
 
 	for (const agent of store.viewer.agents || []) {
 		if (String(agent.entityHash || '').toLowerCase() !== key) continue
-		const name = String(agent.charPartName || '').trim()
-		if (name) keys.add(name)
+		if (agent.charPartName) keys.add(agent.charPartName)
 	}
 
 	for (const group of store.sidebar.groups) {
 		const binding = resolveFriendBinding(group)
 		if (String(binding?.entityHash || '').toLowerCase() !== key) continue
-		const charname = String(binding.charname || '').trim()
-		if (charname) keys.add(charname)
-	}
-
-	const charname = store.privateGroup?.charname
-	if (charname) {
-		const eh = await charAgentEntityHash(charname)
-		if (eh === key) keys.add(String(charname).trim())
+		if (binding.charname) keys.add(binding.charname)
 	}
 
 	return keys
@@ -266,7 +256,8 @@ export async function refreshHubAfterProfileChange(entityHash) {
 		await refreshViewerHubPresentation()
 	}
 
-	const charname = store.privateGroup?.charname
+	const { activePrivateCharPartName, resolveFriendBinding } = await import('./friendBindings.mjs')
+	const charname = activePrivateCharPartName()
 	if (charname) {
 		const { charAgentEntityHash } = await import('./entityResolve.mjs')
 		if (await charAgentEntityHash(charname) === key) {
@@ -275,7 +266,6 @@ export async function refreshHubAfterProfileChange(entityHash) {
 		}
 	}
 
-	const { resolveFriendBinding } = await import('./friendBindings.mjs')
 	const inFriends = store.sidebar.groups.some((group) => {
 		const binding = resolveFriendBinding(group)
 		return String(binding?.entityHash || '').toLowerCase() === key
@@ -319,7 +309,8 @@ export async function refreshHubAfterSfwChange() {
 	const { refreshViewerHubPresentation } = await import('./init.mjs')
 	await refreshViewerHubPresentation()
 
-	const charname = store.privateGroup?.charname
+	const { activePrivateCharPartName } = await import('./friendBindings.mjs')
+	const charname = activePrivateCharPartName()
 	if (charname) {
 		const { getCharDetails, renderCharInfoCardActive } = await import('./charCard.mjs')
 		await renderCharInfoCardActive(charname, await getCharDetails(charname))

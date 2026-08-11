@@ -2,7 +2,7 @@
  * 【文件】public/hub/privateGroup.mjs
  * 【职责】角色好友私聊 Hub 流程：进入/重启私聊、清空状态与聊天设置浮层入口。
  * 【原理】`enterPrivateGroup` 委托 `enterFriendChat`；`openGroupSettingsModal` 挂载聊天配置浮层。
- * 【数据结构】store.privateGroup 当前私聊 charname / groupId。
+ * 【数据结构】store.privateGroup 当前私聊 groupId / peerEntityHash。
  * 【关联】charCard、chatConfig、friendBindings、messages/loadMessages、hashNav、friendChat。
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
@@ -15,7 +15,7 @@ import { setGroupFriendBinding, unbindFriendGroup } from '../src/endpoints/group
 import { mountChatConfigPanel } from './chatConfig.mjs'
 import { openOverlayModal, closeOverlayModal } from './core/overlayModal.mjs'
 import { store } from './core/state.mjs'
-import { friendBindingForGroup } from './friendBindings.mjs'
+import { activePrivateCharPartName, friendBindingForGroup } from './friendBindings.mjs'
 import { refreshStopGenerationButton } from './stream/index.mjs'
 
 /**
@@ -25,7 +25,6 @@ import { refreshStopGenerationButton } from './stream/index.mjs'
 export function clearPrivateGroupState() {
 	const { privateGroup } = store
 	privateGroup.groupId = null
-	privateGroup.charname = null
 	privateGroup.peerEntityHash = null
 	privateGroup.channelId = 'default'
 	refreshStopGenerationButton()
@@ -74,7 +73,7 @@ export async function enterPrivateGroup(charname, options = {}) {
  * @returns {Promise<void>}
  */
 export async function openGroupSettingsModal(groupId) {
-	const charname = store.privateGroup.charname || '?'
+	const charname = activePrivateCharPartName() || '?'
 	const friendBound = !!friendBindingForGroup(groupId)
 	const settingsRoot = await renderTemplate('hub/chat/char_settings', {
 		charname,

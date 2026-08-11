@@ -105,7 +105,7 @@ export function resolveAuthorFromSender(state, senderMemberKey) {
 	const key = String(senderMemberKey || '').trim().toLowerCase()
 	const member = state.members?.[key]
 	const authorEntityHash = member ? memberEntityHash(member) : null
-	const authorDisplayName = String(member?.displayName || member?.charname || '').trim()
+	const authorDisplayName = member?.displayName || member?.charname || ''
 		|| (key ? `${key.slice(0, 8)}…` : 'unknown')
 	return { authorEntityHash, authorDisplayName }
 }
