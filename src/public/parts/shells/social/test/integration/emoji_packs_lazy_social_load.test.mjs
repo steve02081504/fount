@@ -26,7 +26,7 @@ Deno.test({
 		apiKey: `fount-emoji-lazy-${Date.now().toString(36)}`,
 		loadParts: ['shells/chat'],
 		bootstrap: bootstrapPath,
-		p2p: true,
+		p2p: false,
 		minP2pNode: true,
 	})
 	try {

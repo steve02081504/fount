@@ -17,7 +17,7 @@ Shard I/O edges / trending fill: [docs/index-io.md](docs/index-io.md).
 ## Hook points
 
 | Shell | Incremental hook | Shard key |
-| --- | --- |
+| --- | --- | --- |
 | Chat | `eventPersist.mjs` after `messages.jsonl` append | `channelId` |
 | Social | `timeline/append.mjs` + `sync.mjs` ingest | `entityHash` |
 

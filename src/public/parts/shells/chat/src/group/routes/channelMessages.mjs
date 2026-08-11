@@ -120,7 +120,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 				groupId,
 				contentToWrite,
 				files,
-				Number(state.groupSettings?.maxDagPayloadBytes) || 262_144,
+				state.groupSettings.maxDagPayloadBytes,
 				{ mergeExistingFiles: true },
 			))
 		}
@@ -363,7 +363,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 				? { generated: { content: generated.content, isAutoTrigger: generated.isAutoTrigger } }
 				: { rawContent },
 			files: Array.isArray(rawFiles) && rawFiles.length ? rawFiles : undefined,
-			maxDagPayloadBytes: Number(state.groupSettings?.maxDagPayloadBytes) || 262_144,
+			maxDagPayloadBytes: state.groupSettings.maxDagPayloadBytes,
 		})
 		const event = sent.sourceEvent
 		const result = sent.decryptResult

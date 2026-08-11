@@ -431,10 +431,9 @@ export async function getOperatorEntityHash(username) {
  */
 export async function ensureAgentEntityIdentity(username, charPartName) {
 	const { resolveCharPartName } = await import('./charPartName.mjs')
-	const ownerEntityHash = await getOperatorEntityHash(username)
 	const row = await ensureEntityIdentity(username, {
 		charPartName: resolveCharPartName(username, charPartName),
-		ownerEntityHash,
+		ownerEntityHash: await getOperatorEntityHash(username),
 	})
 	try {
 		const { syncAgentProfileFromCharPart } = await import('../profile/syncFromCharPart.mjs')

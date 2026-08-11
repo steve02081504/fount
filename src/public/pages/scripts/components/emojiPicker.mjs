@@ -127,10 +127,7 @@ function appendEmojiGridItem(grid, item) {
  */
 async function buildSections(context = {}) {
 	const packsPromise = aggregateEmojiPacks(context)
-	const unicodePromise = loadUnicodeEmojiByGroup().catch(error => {
-		console.warn('[emoji] unicode data load failed', error)
-		return { byGroup: {}, order: [] }
-	})
+	const unicodePromise = loadUnicodeEmojiByGroup()
 	const { packs, usage, collection } = await packsPromise
 	const usagePayload = usage ? await usage.load() : { log: [], lastUsedAtByPack: {} }
 	const log = trimUsageLog(usagePayload.log || [], USAGE_WINDOW)
@@ -216,7 +213,14 @@ async function buildSections(context = {}) {
 		})
 	}
 
-	const { byGroup, order } = await unicodePromise
+	let byGroup = {}
+	let order = []
+	try {
+		({ byGroup, order } = await unicodePromise)
+	}
+	catch (error) {
+		console.warn('[emoji] unicode data load failed', error)
+	}
 	for (const groupName of order) {
 		const codes = byGroup[groupName] || []
 		if (!codes.length) continue
@@ -539,12 +543,16 @@ export async function mountDockedEmojiPicker(options) {
 		scrollElement = result.scrollElement
 	}
 
-	triggerButton.addEventListener('click', event => {
+	triggerButton.addEventListener('click', async event => {
 		event.stopPropagation()
 		closeWhenOpening?.classList.remove('show')
 		pickerElement.classList.toggle('show')
-		if (pickerElement.classList.contains('show'))
-			refresh().catch(handleError('chat.emoji.loadFailed'))
+		if (pickerElement.classList.contains('show')) try {
+			await refresh()
+		}
+		catch (error) {
+			handleError('chat.emoji.loadFailed', {}, error)
+		}
 	})
 
 	document.addEventListener('click', event => {
@@ -616,9 +624,14 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
  * @returns {void}
  */
 export function wireEmojiPickerButton(button, onInsert, pickerContext = {}) {
-	button.addEventListener('click', event => {
+	button.addEventListener('click', async event => {
 		event.preventDefault()
-		mountEmojiPicker(button, onInsert, pickerContext).catch(handleError('chat.emoji.loadFailed'))
+		try {
+			await mountEmojiPicker(button, onInsert, pickerContext)
+		}
+		catch (error) {
+			handleError('chat.emoji.loadFailed', {}, error)
+		}
 	})
 }
 

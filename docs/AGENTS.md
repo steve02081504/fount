@@ -1,6 +1,6 @@
 ---
 description: Docs writing for design/review/issues and AGENTS.md — gap entries, language, content policy, Cursor triggers
-globs: docs/design/**, docs/review/**, docs/issues/**, **/AGENTS.md
+globs: docs/design/**, docs/review/**, docs/issues/**
 alwaysApply: false
 ---
 

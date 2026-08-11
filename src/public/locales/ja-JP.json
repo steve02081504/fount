@@ -1945,7 +1945,7 @@
 				"title": "この作者を信頼する（危険な Markdown/HTML を許可）"
 			},
 			"stickerInline": "ステッカー",
-			"markdownRenderFailed": "メッセージのレンダリングに失敗しました",
+			"markdownRenderFailed": "Markdownのレンダリングに失敗しました",
 			"messageRenderFailed": "メッセージを表示できませんでした",
 			"retrySend": "再試行",
 			"mergeDagOk": "フォークがマージされました",

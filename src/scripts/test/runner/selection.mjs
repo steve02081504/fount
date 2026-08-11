@@ -26,7 +26,7 @@ import { collectStaleTriggerEvidence, suiteKey } from '../core/state.mjs'
  */
 export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = parseTestSubtestsEnv()) {
 	/** @type {Map<string, string[]>} */
-	const map = new Map()
+	const subtestFilterByKey = new Map()
 	for (const group of groups)
 		for (const [suiteName, subtests] of Object.entries(group.subtestSelectors ?? {})) {
 			if (!subtests.length) continue
@@ -34,12 +34,11 @@ export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = pa
 				if (!group.manifestIds.includes(suite.manifestId)) continue
 				if (suite.name !== suiteName && suite.id !== suiteName) continue
 				const key = suiteKey(suite.manifestId, suite.name)
-				const prev = map.get(key) ?? []
-				map.set(key, [...new Set([...prev, ...subtests])])
+				subtestFilterByKey.set(key, [...new Set([...(subtestFilterByKey.get(key) ?? []), ...subtests])])
 			}
 		}
 
-	if (!ambientSubtests.length) return map
+	if (!ambientSubtests.length) return subtestFilterByKey
 
 	for (const group of groups)
 		for (const suiteName of group.suiteSelectors ?? []) {
@@ -49,12 +48,12 @@ export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = pa
 				if (suite.name !== suiteName && suite.id !== suiteName) continue
 				if (!suite.subtests?.length) continue
 				const key = suiteKey(suite.manifestId, suite.name)
-				if (map.has(key)) continue
-				map.set(key, [...ambientSubtests])
+				if (subtestFilterByKey.has(key)) continue
+				subtestFilterByKey.set(key, [...ambientSubtests])
 			}
 		}
 
-	return map
+	return subtestFilterByKey
 }
 /**
  * 波次目标选择结果。

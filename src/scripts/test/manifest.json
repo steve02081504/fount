@@ -147,7 +147,8 @@
 				"src/scripts/test/core/verdict.mjs",
 				"src/scripts/test/core/plan.mjs",
 				"src/scripts/test/playwright/phases.mjs",
-				"src/scripts/test/runner/suite_run.mjs"
+				"src/scripts/test/runner/suite_run.mjs",
+				"src/scripts/test/runner/selection.mjs"
 			]
 		},
 		{

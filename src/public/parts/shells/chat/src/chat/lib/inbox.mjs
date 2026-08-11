@@ -107,8 +107,7 @@ export function resolveAuthorFromSender(state, senderMemberKey) {
 	const authorEntityHash = member ? memberEntityHash(member) : null
 	return {
 		authorEntityHash,
-		authorDisplayName: member?.displayName || member?.charname || ''
-			|| (key ? `${key.slice(0, 8)}…` : 'unknown'),
+		authorDisplayName: member?.displayName ?? member?.charname ?? (key ? `${key.slice(0, 8)}…` : 'unknown'),
 	}
 }
 

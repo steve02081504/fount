@@ -3,6 +3,10 @@ import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
 import { createEmptySessionState } from './reducers/state.mjs'
+import { materializeGroupSettings } from './groupSettings.mjs'
+
+/** 默认群设置与 `maxDagPayloadBytes` 物化规范化（见 `groupSettings.mjs`）。 */
+export { DEFAULT_GROUP_SETTINGS, materializeGroupSettings } from './groupSettings.mjs'
 
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').RuntimeGroupState} RuntimeGroupState */
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').Checkpoint} Checkpoint */
@@ -14,57 +18,6 @@ import { createEmptySessionState } from './reducers/state.mjs'
  */
 function normHex(value) {
 	return String(value ?? '').trim().toLowerCase()
-}
-
-/** §7.2 默认群设置（`defaultChannelId` 由建群时单独填入）。 */
-export const DEFAULT_GROUP_SETTINGS = {
-	joinPolicy: 'invite-only',
-	powDifficulty: 4,
-	fileSizeLimit: 10 * 1024 * 1024,
-	fileQuotaBytes: 2 * 1024 * 1024 * 1024,
-	fileUploadPolicy: 'all_members',
-	fileReplicationFactor: 2,
-	lateMessageFreezeMs: 30_000,
-	streamGeneratingIdleMs: 150_000,
-	hlcMaxSkewMs: 3_600_000,
-	streamingSfuWss: null,
-	maxDagPayloadBytes: 262_144,
-	maxPeers: 24,
-	trustedPeerSlots: 8,
-	explorePeerSlots: 4,
-	gossipTtl: 2,
-	wantIdsBudget: 16,
-	/** 静态信令频道分区数（含 sync 逻辑分区，至少 2） */
-	federationPartitionCount: 8,
-	rtcConnectionBudgetMax: 32,
-	rtcJoinRatePerMin: 12,
-	slashAlertTtl: 86_400_000,
-	batterySaver: false,
-	autoReplyFrequency: 0,
-	eventRetentionDepth: 200_000,
-	eventRetentionMs: 365 * 24 * 3600 * 1000,
-	/** 0 = 不自动删除消息正文；>0 时按毫秒裁 `messages/*.jsonl` */
-	messageContentRetentionMs: 0,
-	compactTriggerEventDepth: 100_000,
-	/** 热区：每频道保留时间最新的 N 帖 eventId */
-	hotLatestMessageCount: 50,
-	/** 每个 pin 保留 ±N 邻帖（按频道时间序） */
-	pinContextMessageCount: 30,
-	/** 仅当帖已冷归档后才允许从 DAG 删除 message */
-	dagFoldAfterArchive: true,
-	/** 关闭自动按时间裁 messages.jsonl */
-	autoPruneMessagesJsonl: false,
-	/** 关闭 retention 删除未归档 message */
-	autoPruneDagMessages: false,
-	messageRateLimitPerMin: 10,
-	messageRateLimitWindowMs: 60_000,
-	iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-	/** 是否在联邦发现 gossip 中公开此群（不含 roomSecret） */
-	discoveryPublic: false,
-	discoveryTitle: null,
-	discoveryBlurb: null,
-	/** 加群时自动进收藏的默认表情包；空则回落 packId===groupId */
-	defaultEmojiPackId: null,
 }
 
 /**
@@ -160,7 +113,7 @@ export function emptyMaterializedState() {
 		fileFolders: {},
 		cabinets: {},
 		groupMeta: { name: '', description: '', avatar: null },
-		groupSettings: { ...DEFAULT_GROUP_SETTINGS, defaultChannelId: null },
+		groupSettings: materializeGroupSettings({ defaultChannelId: null }),
 		reputationLedger: [],
 		inviteEdges: [],
 		fileMasterKeyRotations: [],
@@ -203,7 +156,7 @@ export function materializeFromCheckpoint(checkpoint) {
 		fileFolders: structuredClone(membersRecord.fileFolders),
 		cabinets: structuredClone(membersRecord.cabinets || {}),
 		groupMeta: structuredClone(membersRecord.groupMeta),
-		groupSettings: structuredClone(membersRecord.groupSettings),
+		groupSettings: materializeGroupSettings(structuredClone(membersRecord.groupSettings)),
 		messageOverlay: {
 			deletedIds: new Set(rawMo.deletedIds),
 			editHistory: new Map(Object.entries(rawMo.editHistory)),

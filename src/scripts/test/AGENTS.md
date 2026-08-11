@@ -20,8 +20,8 @@ alwaysApply: false
 
 ## Architecture
 
-- **Entry**: `fount test` → path CLI `deno upgrade canary` → `cli.mjs` → `runner/index.mjs`.
-- **i18n**: `fount/scripts/i18n/bare.mjs` only — never pull in the server module graph.
+- **Entry**: `fount test` → `cli.mjs` → `runner/index.mjs`.
+- **i18n**: `src/scripts/i18n/bare.mjs` only — never pull in the server module graph.
 - **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` renders a dependency-tree mermaid. Fingerprints update only after that suite's plan slot finishes — never batch-align at wave start.
 - **Run report**: `data/test/report.md` + `report.json` — last run only. Trigger reasons: `data/test/triggered-reasons.md`.
 - **Default loop** (bare `fount test`): imperfect wave → outdated wave → 0 when both empty; never full-repo unless `--all`. Details: [continue-report.md](docs/continue-report.md).

@@ -48,6 +48,20 @@ Deno.test('resolveJsonLfScanPaths scopes to triggered .json files', async () => 
 	)
 })
 
+Deno.test('resolveJsonLfScanPaths normalizes Windows separators before under filter', async () => {
+	assertEquals(
+		await resolveJsonLfScanPaths(REPO_ROOT, {
+			under: 'src/public/locales',
+			triggeredFiles: [
+				'src\\public\\locales\\en-UK.json',
+				'src\\scripts\\checks\\json_lf.mjs',
+				'src\\public\\locales\\zh-CN.json',
+			],
+		}),
+		['src/public/locales/en-UK.json', 'src/public/locales/zh-CN.json'],
+	)
+})
+
 Deno.test('resolveJsonLfScanPaths falls back to full scan when triggered has no json', async () => {
 	const paths = await resolveJsonLfScanPaths(REPO_ROOT, {
 		triggeredFiles: ['src/scripts/checks/json_lf.mjs'],

@@ -61,9 +61,9 @@ export async function resolveJsonLfScanPaths(repoRoot, options = {}) {
 	const under = options.under ? options.under.replaceAll('\\', '/').replace(/\/$/u, '') : ''
 	const triggered = options.triggeredFiles ?? await readTestTriggeredFiles()
 	const scoped = triggered
+		.map(path => path.replaceAll('\\', '/'))
 		.filter(path => JSON_LF_SUFFIXES.some(suffix => path.endsWith(suffix)))
 		.filter(path => !under || path === under || path.startsWith(`${under}/`))
-		.map(path => path.replaceAll('\\', '/'))
 	if (triggered.length && scoped.length)
 		return [...new Set(scoped)].sort()
 	return listRepoFiles(repoRoot, JSON_LF_SUFFIXES, { under: options.under })
