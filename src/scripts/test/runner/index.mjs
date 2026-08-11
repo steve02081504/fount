@@ -13,7 +13,12 @@ import {
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { reportDenoPanic } from '../core/deno_panic.mjs'
 import { topoSortSuites } from '../core/dependencies.mjs'
-import { buildEstimateTasksFromPlan, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
+import {
+	buildEstimateTasksFromPlan,
+	expectedRunDurationMs,
+	hasMeaningfulParallelSavings,
+	summarizeEstimate,
+} from '../core/estimate.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import {
 	filterSuites,
@@ -358,7 +363,7 @@ async function executeWave(context) {
 				console.logI18n('fountConsole.test.estimated.runSerial', {
 					eta: formatDuration(estimate.etaMs),
 				})
-				if (Math.abs(estimate.savingsMs) > 100)
+				if (hasMeaningfulParallelSavings(estimate))
 					console.logI18n('fountConsole.test.estimated.runSerialHint', {
 						eta: formatDuration(estimate.parallelEtaMs),
 						rate: formatParallelRatePct(estimate.parallelRatePct),

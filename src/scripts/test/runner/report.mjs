@@ -5,7 +5,7 @@ import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { geti18n } from '../../i18n/bare.mjs'
-import { summarizeEstimate } from '../core/estimate.mjs'
+import { hasMeaningfulParallelSavings, summarizeEstimate } from '../core/estimate.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL, TRIGGERED_REASONS_FILE, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { formatExpectedDuration, formatParallelRatePct, summarizeRunTiming } from '../core/run_timing.mjs'
@@ -257,11 +257,16 @@ function buildRunMarkdown(summary, completed) {
 	]
 
 	// 剩余全是复用/预计阻塞时 ETA≈0，无信息量，略去。
-	if (summary.estimate?.runCount)
+	if (summary.estimate?.runCount) {
 		lines.push(
 			`| ${geti18n('fountConsole.test.report.field.estimatedRemaining')} | ${formatEstimatePoint(summary.estimate.etaMs)} |`,
-			`| ${geti18n('fountConsole.test.report.field.estimatedParallelRate')} | ${formatParallelRatePct(summary.estimate.parallelRatePct)} |`,
 		)
+		// 串行且相对并行无实质节省时并行率≈0%，不重复写。
+		if (!summary.estimate.serial || hasMeaningfulParallelSavings(summary.estimate))
+			lines.push(
+				`| ${geti18n('fountConsole.test.report.field.estimatedParallelRate')} | ${formatParallelRatePct(summary.estimate.parallelRatePct)} |`,
+			)
+	}
 
 	lines.push(
 		'',
@@ -283,7 +288,8 @@ function buildRunMarkdown(summary, completed) {
 			lines.push(geti18n('fountConsole.test.report.pending.estimate', {
 				eta: formatDuration(summary.estimate.etaMs),
 			}))
-			if (summary.estimate.serial) {
+			// 与 console 一致：串行相对并行无实质节省时不重复写并行预估。
+			if (summary.estimate.serial && hasMeaningfulParallelSavings(summary.estimate)) {
 				lines.push(geti18n('fountConsole.test.report.pending.parallelEstimate', {
 					eta: formatDuration(summary.estimate.parallelEtaMs),
 					rate: formatParallelRatePct(summary.estimate.parallelRatePct),
