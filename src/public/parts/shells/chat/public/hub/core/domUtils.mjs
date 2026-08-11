@@ -17,7 +17,6 @@ import { isHex64, normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p
 import { aliasForEntity, aliasForGroup } from '../../shared/aliases.mjs'
 import { isEntityHash128 } from '../../shared/entityHash.mjs'
 import { resolveDisplayName } from '../../shared/nameResolve.mjs'
-import { activePrivateCharPartName } from '../friendBindings.mjs'
 
 import { store } from './state.mjs'
 
@@ -40,14 +39,12 @@ export function ingestAgentEntityHashList(agents) {
 }
 
 /**
- * 当前群/私聊涉及的角色 part 名。
+ * 当前群 session 角色 part 名（`state.charPartNames` ← `session.chars`）。
+ * 角色私聊与普通群同一管道：进群时 `ensureCharOnGroup` 已把角色写入 session，无需再叠 `friendBinding`。
  * @returns {string[]} 角色 part 名列表
  */
 export function activeCharPartNames() {
-	const names = new Set(store.context.currentState?.charPartNames || [])
-	const privateChar = activePrivateCharPartName()
-	if (privateChar) names.add(privateChar)
-	return [...names]
+	return [...(store.context.currentState?.charPartNames || [])]
 }
 
 /**
