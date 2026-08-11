@@ -23,8 +23,11 @@ export const WATCH_INTERVAL_MS = ms('30s')
  */
 export const SLEEP_DETECT_MULTIPLIER = 5
 
-/** 基于历史耗时的 watchdog 至少给 15 分钟；多阶段 Playwright frontend 常需 10m+。 */
-export const MIN_DURATION_TIMEOUT_MS = ms('15m')
+/**
+ * 有历史基线时的 watchdog 下限（与无基线默认相同）。
+ * 短污染基线（如 FOUNT_TEST_ONLY 单文件跑）不得把上限压到比无基线更狠。
+ */
+export const MIN_DURATION_TIMEOUT_MS = ms('30m')
 
 /** 无历史基线时的默认最长运行时长。 */
 export const DEFAULT_DURATION_TIMEOUT_MS = ms('30m')

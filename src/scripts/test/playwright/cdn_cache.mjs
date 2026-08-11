@@ -117,9 +117,12 @@ function headersForCachedBody(headers, body) {
  * @returns {Promise<void>}
  */
 async function fulfillFromCache(route, method, hit) {
+	const headers = method === 'HEAD'
+		? hit.headers
+		: headersForCachedBody(hit.headers, hit.body)
 	await route.fulfill({
 		status: hit.status,
-		headers: hit.headers,
+		headers,
 		body: method === 'HEAD' ? undefined : hit.body,
 	})
 }

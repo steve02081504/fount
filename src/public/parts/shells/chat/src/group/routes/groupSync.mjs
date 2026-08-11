@@ -168,7 +168,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			const entityHash = memberEntityHash(memberRow)
 			let displayName = ''
 			if (isAgent)
-				displayName = String(memberRow.charname || '').trim()
+				displayName = memberRow.charname || ''
 			if (entityHash && !displayName)
 				try {
 					const profile = await getProfile(entityHash, username, { groupId, locales: profileLocales })

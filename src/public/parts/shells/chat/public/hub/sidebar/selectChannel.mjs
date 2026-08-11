@@ -31,6 +31,21 @@ import { isPrivateChatActive } from './privateShell.mjs'
  */
 export async function selectChannel(channelId) {
 	const { disableComposer, enableComposer } = await import('../messages/composerController.mjs')
+	const prevGroupId = store.context.currentGroupId
+	const prevChannelId = store.context.currentChannelId
+	if (prevGroupId && prevChannelId && prevChannelId !== channelId) {
+		const { selectedFiles } = await import('../composerFiles.mjs')
+		const { stashDraftFiles, flushDraft } = await import('../composerDraft.mjs')
+		stashDraftFiles(prevGroupId, prevChannelId, selectedFiles)
+		const input = document.getElementById('message-input')
+		const contentWarningInput = document.getElementById('content-warning')
+		const sensitiveMediaInput = document.getElementById('sensitive-media')
+		flushDraft(prevGroupId, prevChannelId, {
+			text: input instanceof HTMLTextAreaElement ? input.value : '',
+			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
+			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
+		})
+	}
 	const channel = store.context.currentState?.channels?.[channelId]
 	if (!channel) {
 		setState('context.currentChannelId', null)
@@ -82,7 +97,7 @@ export async function selectChannel(channelId) {
 		/** @returns {object | null} 当前群 state（读取文件加密模式） */
 		getCurrentState: () => store.context.currentState,
 	})
-	loadDraft(store.context.currentGroupId, channelId)
+	await loadDraft(store.context.currentGroupId, channelId)
 	await loadMessages()
 	if (store.context.currentGroupId && store.context.currentChannelId && channelType === 'text')
 		connectGroupWebSocket(store.context.currentGroupId, store.context.currentChannelId)

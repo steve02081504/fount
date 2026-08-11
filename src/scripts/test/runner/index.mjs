@@ -13,7 +13,12 @@ import {
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { reportDenoPanic } from '../core/deno_panic.mjs'
 import { topoSortSuites } from '../core/dependencies.mjs'
-import { buildEstimateTasksFromPlan, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
+import {
+	buildEstimateTasksFromPlan,
+	expectedRunDurationMs,
+	hasMeaningfulParallelSavings,
+	summarizeEstimate,
+} from '../core/estimate.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import {
 	filterSuites,
@@ -34,6 +39,7 @@ import {
 	readState,
 	refreshEntryFingerprint,
 	suiteKey,
+	suiteTriggeredFiles,
 	upsertSuiteRun,
 	writeState,
 	writeStateMarkdown,
@@ -48,6 +54,7 @@ import { exitCodeFromSlots, RunReportWriter } from './report.mjs'
 import { ResourceRunGate } from './scheduler.mjs'
 import {
 	buildCommittedChangedByKey,
+	collectSubtestFilterByKey,
 	listFreshNoisyKeys,
 	selectExplicitOrAll,
 	selectImperfectWave,
@@ -58,7 +65,7 @@ import { runSuite } from './suite_run.mjs'
 /**
  * CLI 分组输入（manifest / suite / subtest 选择器）。
  * @typedef {{ manifestSelectors: string[], suiteSelectors: string[], subtestSelectors?: Record<string, string[]> }} GroupInput
- * @typedef {{ manifestIds: string[], suiteSelectors: string[], subtestSelectors: Record<string, string[]> }} ResolvedGroup
+ * @typedef {import('./selection.mjs').ResolvedGroup} ResolvedGroup
  * @typedef {object} RunTestsOptions
  * @property {boolean} [runAll] 是否 --all 全库
  * @property {GroupInput[]} [groups] CLI 分组
@@ -135,30 +142,6 @@ function unmatchedSuiteSelectors(allSuites, groups) {
 		}
 	}
 	return missing
-}
-
-/**
- * 从分组收集显式子测试过滤（suite 键 → 名列表）。
- * @param {ResolvedGroup[]} groups 已解析分组
- * @param {import('../core/manifest.mjs').SuiteDef[]} filtered 过滤后的 suite
- * @returns {Map<string, string[]>} 子测试过滤
- */
-function collectSubtestFilterByKey(groups, filtered) {
-	/** @type {Map<string, string[]>} */
-	const map = new Map()
-	for (const group of groups)
-		for (const [suiteName, subtests] of Object.entries(group.subtestSelectors ?? {})) {
-			if (!subtests.length) continue
-			for (const suite of filtered) {
-				if (!group.manifestIds.includes(suite.manifestId)) continue
-				if (suite.name !== suiteName && suite.id !== suiteName) continue
-				const key = suiteKey(suite.manifestId, suite.name)
-				const prev = map.get(key) ?? []
-				map.set(key, [...new Set([...prev, ...subtests])])
-			}
-		}
-
-	return map
 }
 
 /**
@@ -298,6 +281,8 @@ async function executeWave(context) {
 		state,
 		commitHash,
 		uncommittedHash,
+		uncommittedFiles,
+		committedChangedByKey,
 		globalBudget,
 		options,
 		runId,
@@ -358,7 +343,7 @@ async function executeWave(context) {
 				console.logI18n('fountConsole.test.estimated.runSerial', {
 					eta: formatDuration(estimate.etaMs),
 				})
-				if (Math.abs(estimate.savingsMs) > 100)
+				if (hasMeaningfulParallelSavings(estimate))
 					console.logI18n('fountConsole.test.estimated.runSerialHint', {
 						eta: formatDuration(estimate.parallelEtaMs),
 						rate: formatParallelRatePct(estimate.parallelRatePct),
@@ -479,7 +464,12 @@ async function executeWave(context) {
 
 			const firstMap = failedFirstByManifest.get(suite.manifestId)
 			const firstFiles = firstMap?.has(suite.name) ? firstMap.get(suite.name) : undefined
-			const result = await runSuite(suite, { firstFiles, subtests, onlyFiles }, globalBudget, streamLive, {
+			const changedForSuite = [...new Set([
+				...committedChangedByKey?.get(key) ?? [],
+				...uncommittedFiles ?? [],
+			])]
+			const triggeredFiles = suiteTriggeredFiles(suite, changedForSuite)
+			const result = await runSuite(suite, { firstFiles, subtests, onlyFiles, triggeredFiles }, globalBudget, streamLive, {
 				label,
 				baselineDurationMs,
 				signal: ctx.signal,
@@ -537,6 +527,7 @@ async function executeWave(context) {
 				triggerHash: verdict?.triggerHash ?? null,
 				ranSubtests: subtests,
 				subtestTriggerHashes,
+				partialFileRun: !!onlyFiles?.length,
 			})
 			await writeState(REPO_ROOT, state)
 			if (index != null) await recordSuiteResult(index, entry)
@@ -689,6 +680,8 @@ export async function runTests(options = {}) {
 				state,
 				commitHash,
 				uncommittedHash,
+				uncommittedFiles,
+				committedChangedByKey,
 				globalBudget,
 				options,
 				runId,
@@ -726,6 +719,8 @@ export async function runTests(options = {}) {
 					state,
 					commitHash,
 					uncommittedHash,
+					uncommittedFiles,
+					committedChangedByKey,
 					globalBudget,
 					options,
 					runId,
@@ -759,6 +754,8 @@ export async function runTests(options = {}) {
 					state,
 					commitHash,
 					uncommittedHash,
+					uncommittedFiles,
+					committedChangedByKey,
 					globalBudget,
 					options,
 					runId,

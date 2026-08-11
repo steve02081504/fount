@@ -84,13 +84,15 @@ const haltPlay = async () => {
 }
 
 /**
- * 入场 → 保持直至 Ctrl+C / 长按 ESC / dismiss。已在播则直接返回。
+ * 等待服务器：已在播则直接返回；`intro` 后或 `dismiss` 后保留的 state 则只续 hold（不重播入场）；否则入场 → hold。
  * @returns {Promise<void>}
  */
 export async function start() {
 	if (running) return running
+	const resumed = Boolean(state)
 	state ??= createAnimState()
 	openTui()
+	if (resumed) return running = player.loop(holdFrames)
 	return running = player.play(enterFrames).loop(holdFrames)
 }
 

@@ -3,7 +3,6 @@ import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { parseEmojiToken } from '../../shared/inlineTokenSyntax.mjs'
 import { addDenylistEntry } from '../../src/endpoints/p2p.mjs'
 import { addPackToCollection, saveStickerFromMessage } from '../../src/saveStickerFromMessage.mjs'
-import { showTrustAuthorDialog } from '../../src/trustAuthorDialog.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store } from '../core/state.mjs'
 
@@ -12,26 +11,6 @@ import { store } from '../core/state.mjs'
  * @returns {Promise<boolean>} 是否已处理
  */
 export async function handleMessageBubbleClick(event) {
-	const trustAuthorButton = event.target.closest('.trust-author-button')
-	if (trustAuthorButton?.dataset?.authorPubKeyHash) {
-		const authorDisplayName = trustAuthorButton.closest('.message')
-			?.querySelector('.message-author')?.textContent
-		const trusted = await showTrustAuthorDialog(
-			trustAuthorButton.dataset.authorPubKeyHash,
-			authorDisplayName,
-		)
-		if (trusted) {
-			showToastI18n('success', 'chat.hub.trustOk')
-			const messageRow = trustAuthorButton.closest('.message[data-message-id]')
-			const messageId = messageRow?.getAttribute('data-message-id')
-			const container = document.getElementById('messages')
-			if (messageId) {
-				const { hydrateMessageMarkdown } = await import('../messages/render/markdown.mjs')
-				await hydrateMessageMarkdown(container, messageId)
-			}
-		}
-		return true
-	}
 	const saveEmojiButton = event.target.closest('.save-emoji-button')
 	if (saveEmojiButton?.dataset?.emojiPack) {
 		try {

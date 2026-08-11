@@ -1,4 +1,4 @@
-import { registerNodeScopeWireHook } from 'npm:@steve02081504/fount-p2p/transport/node_scope'
+import { registerNodeScopeWireHook } from 'npm:@steve02081504/fount-p2p/transport/node_scope/wire'
 
 import { attachUserRoomEmojiHandlers } from './groupEmojiFederation.mjs'
 

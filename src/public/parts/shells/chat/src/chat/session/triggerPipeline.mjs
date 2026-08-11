@@ -21,10 +21,10 @@ import { isCharReplyInFlight, pickNextCharForReply, triggerCharReply } from './t
  * @returns {string | null} agent entityHash
  */
 function charAgentEntityHash(members, charname) {
-	const name = String(charname || '').trim().toLowerCase()
+	if (!charname) return null
 	for (const member of Object.values(members || {})) {
 		if (member?.memberKind !== 'agent' || member.status !== 'active') continue
-		if (String(member.charname || '').trim().toLowerCase() !== name) continue
+		if (member.charname !== charname) continue
 		return memberEntityHash(member)
 	}
 	return null

@@ -3,7 +3,7 @@
  */
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
-import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part_query'
+import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
 import { federatedPostQueryRow, federatedPostRowKey, sanitizeFederatedPostQueryRow } from '../federation/postQueryRow.mjs'
 import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'

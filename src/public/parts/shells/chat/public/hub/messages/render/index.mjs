@@ -14,6 +14,7 @@ import {
 } from '/parts/shells:chat/shared/attribution.mjs'
 import { renderAttributionWarningIconHtml } from '/parts/shells:chat/shared/entityProfileCard.mjs'
 import { hubDeliveryReadIcon, hubDeliverySentIcon } from '../../../src/lib/emojiSvg.mjs'
+import { isTrustedAuthor } from '../../../src/trustedAuthors.mjs'
 import { buildMessagesByEventId } from '../../../src/ui/channelDisplay.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, formatTimeAttrs, timeI18nAttrFragment } from '../../core/domUtils.mjs'
 import { store } from '../../core/state.mjs'
@@ -147,7 +148,7 @@ function renderForwardedFromHtml(forwardedFrom) {
 export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime, allMessages = [], renderOpts = {}) {
 	const generating = isChannelMessageGenerating(message)
 	const sender = message.sender ?? '?'
-	const time = message.hlc?.wall ?? 0
+	const time = Number(message.timestamp) || Number(message.hlc?.wall) || 0
 	const authorKey = message.charId ?? sender
 	const isFirst = isFirstMessageInAuthorGroup(authorKey, prevAuthorKey, time, prevTime)
 	const isOwn = isOwnViewerMessage(message, renderOpts)
@@ -186,8 +187,11 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 	const remoteBadge = message.isRemote
 		? await renderTemplateAsHtmlString('hub/messages/remote_badge', {})
 		: ''
-	const trustButton = message.isRemote && message.authorPubKeyHash
-		? await renderTemplateAsHtmlString('hub/messages/trust_author_button', { pubKeyHash: escapeHtml(message.authorPubKeyHash) })
+	const alreadyTrusted = message.isRemote && message.authorPubKeyHash
+		? await isTrustedAuthor(message.authorPubKeyHash).catch(() => false)
+		: false
+	const trustedAuthorBadge = alreadyTrusted
+		? await renderTemplateAsHtmlString('hub/messages/trusted_author_badge', {})
 		: ''
 	const blockButton = message.isRemote && message.authorPubKeyHash
 		? await renderTemplateAsHtmlString('hub/messages/block_author_button', { pubKeyHash: escapeHtml(message.authorPubKeyHash) })
@@ -210,7 +214,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		timeI18nAttr: timeI18nAttrFragment(timeAttrs),
 		timeText: escapeHtml(timeAttrs.timeText),
 		remoteBadge,
-		trustButton,
+		trustedAuthorBadge,
 		blockButton,
 		saveEmojiButton,
 		typingLabelHtml,

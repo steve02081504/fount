@@ -16,7 +16,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 - **Stream preview**: `StreamRenderer` defaults to `allowDangerousHtml: false`; elevate only via `data-author-pubkey-hash` + `isTrustedMarkdownAuthor` — never blanket `!isRemote` (federated `stream_chunk` is not bound to the message author). Every frame: `replaceChildren(scrubHtmlActivePayload(html))`. Final hydrate uses `renderMessageMarkdownForPaint` with the normal trust gate.
 - **`message_edit` delta**: WS with `content.newContent` → `applyMessageEditToRow` (do not drop `is_generating` on streaming error final). Backfill by eventId must include overlays via `linesIncludingOverlaysForTargets`. Pending MD: `registerPendingMessageMarkdown` + `data-md-pending` — **never** raw markdown in `data-md-raw` attributes.
 - **Profile bio**: `paintEntityProfileBio` → `shared/trustedMarkdown.mjs` (same entry as Social).
-- **`?contact=` / remote profile**: Hub `GET …/entities/:hash` uses `fetchRemote`; EVFS `readPublicFile` is raced with `REMOTE_PROFILE_FETCH_TIMEOUT_MS` + negative cache (`profile.mjs`). Popup paints a stub name/avatar before the fetch returns so a hung peer cannot leave an empty card. DM button shows for any non-self `entityHash`; click (and `dispatchFriendChat`) resolve `activePubKeyHex` via `forceRemote=1` when the contact link only carried the hash.
+- **`?contact=` / remote profile**: stub name/avatar before fetch returns; DM for any non-self `entityHash`; resolve `activePubKeyHex` via `forceRemote=1` when the link only carried the hash. Fetch/timeout/cache detail: [docs/ui-details.md](docs/ui-details.md#remote-profile--contact).
 
 ## Streaming AV
 
@@ -30,6 +30,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 - **`fount.user.send`**: Hub bootstrap registers `globalThis.fount.user.send(string | chatLogEntry)` → current channel. Normalize in `shared/fountUserSend.mjs` (Deno-pure — no `/scripts/*` imports there).
 - Errors: `handleError('chat.hub.…')` for fount faults; user mistakes: `showToastI18n`. Floating promises: call directly (no `void`); `return void sideEffect()` only when the side effect returns non-`undefined`.
 - Prefer `renderTemplate` / `mountTemplate` / `openDialogFromTemplate`; cross-shell shared modules use `withTemplates`. DaisyUI + shared `promptDialog` / `positionContextMenu`.
+- **Composer attachments**: `#attachment-preview` is a compact horizontal strip (64×64 thumbs); styles live in `components.css`. Paperclip (`#image-upload-input`) always enqueues message attachments via `addFilesFromEvent` — snapshot `FileList` with `[...files]` **before** clearing `input.value` (live FileList empties on clear). Message-bubble media comes only from `content.files[]` (DAG + group EVFS `chat/{fileId}`); **do not** inject `[image:…]` (or any media marker) into message text.
 - **HTTP**: named functions in `../src/endpoints/*.mjs` only (`share.mjs` Litterbox is the sole non-endpoint exception). Global whoami/getdetails/EVFS → `/scripts/endpoints/`.
 - State: `core/state.mjs`. No hardcoded user-visible strings; `data-i18n` / `setElementI18n` + `zh-CN.json`.
 - **@-mention autocomplete**: on `<textarea>` use only `aria-controls` / `aria-activedescendant`; do not add `role="combobox"` / `aria-expanded`.
@@ -37,10 +38,11 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 ## Files / messages / archive
 
 - Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind permission matrix: [docs/ui-details.md](docs/ui-details.md#files--cabinets). Attachments stay on chat DAG.
+- Message gallery / media viewer: `hub/messages/render/file.mjs` + shared `/scripts/components/mediaViewer.mjs` (ESC / arrows / zoom). Historical `[image:name|url]` markers are stripped in `shared/channelContent.mjs` projections.
 - Main read: `GET …/view-log` (`getChannelViewLog`); backfill `POST …/view-log/batch-get`. Raw `/messages` = moderation only. Decrypt failure: `decryptView: { failed: true }` with `content: null`.
 - Navigation: `messages/channelMessageStore.mjs` + `scrollToMessageEventId`.
 - Portable archive: [archive AGENTS](../../src/chat/archive/AGENTS.md). HTTP: `GET …/channels/:id/export`, `POST …/channels/import` (`MANAGE_CHANNELS`).
 
 ## Search
 
-Hub `#friends` search: local `chars/` → `dispatchFriendChat({ type: 'char' })`; entity search hits with `charPartName` are local agents — not remote-user DMs. Network handle search: `GET …/entities/search`.
+Hub `#friends` search: local `chars/` hits → `dispatchFriendChat({ type: 'char' })`. Group creation passes a `friendBinding` of either `{ charname }` or `{ entityHash }` — never both; `POST …/groups` ensures the agent entity for a `charname` binding. Entity search hits carrying `charPartName` are local agents, not remote-user DMs. Network handle search: `GET …/entities/search`.

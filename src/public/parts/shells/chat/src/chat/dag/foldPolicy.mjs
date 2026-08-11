@@ -10,14 +10,16 @@ export const FOLDABLE_PROCESS_EVENT_TYPES = new Set([
  * @param {Set<string>} archivedMessageIds 已归档 message id
  * @param {Set<string>} protectedHotIds 热区 message id
  * @param {boolean} dagFoldAfterArchive 是否删除已归档 message
+ * @param {Set<string>} [tipIds] 当前 DAG tip id；仍为 tip 的 message 不得折叠（否则对端 tip_merge 缺父死锁）
  * @returns {boolean} true = 从 DAG 删除
  */
-export function shouldDropDagEvent(event, archivedMessageIds, protectedHotIds, dagFoldAfterArchive) {
+export function shouldDropDagEvent(event, archivedMessageIds, protectedHotIds, dagFoldAfterArchive, tipIds = null) {
 	const type = event.type
 	if (FOLDABLE_PROCESS_EVENT_TYPES.has(type)) return true
 	if (type === 'message') {
 		const id = String(event.id).trim()
 		if (protectedHotIds.has(id)) return false
+		if (tipIds?.has(id) || tipIds?.has(id.toLowerCase())) return false
 		if (dagFoldAfterArchive && archivedMessageIds.has(id)) return true
 		return false
 	}

@@ -64,15 +64,25 @@ export async function renderMessageRowElement(message, index, allMessages, rende
 		return renderTemplate('hub/messages/unread_divider', {})
 	const prev = index > 0 ? allMessages[index - 1] : null
 	const lastId = allMessages.at(-1)?.eventId
-	const block = await renderChannelMessageBlock(
-		message,
-		prev?.type === 'unread_divider' ? null : prev?.charId ?? prev?.sender ?? null,
-		prev?.type === 'unread_divider' ? 0 : prev?.timestamp || prev?.hlc?.wall || 0,
-		allMessages,
-		{ ...renderOpts, lastMessageEventId: lastId },
-	)
-	const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(block.html)
-	return frag.firstElementChild
+	try {
+		const block = await renderChannelMessageBlock(
+			message,
+			prev?.type === 'unread_divider' ? null : prev?.charId ?? prev?.sender ?? null,
+			prev?.type === 'unread_divider' ? 0 : prev?.timestamp || prev?.hlc?.wall || 0,
+			allMessages,
+			{ ...renderOpts, lastMessageEventId: lastId },
+		)
+		const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(block.html)
+		return frag.firstElementChild
+	}
+	catch (error) {
+		console.error('[chat] renderMessageRowElement failed', error)
+		const fallback = document.createElement('div')
+		fallback.className = 'chat message message-row text-error text-xs opacity-80 p-2'
+		fallback.dataset.messageId = String(message.eventId || '')
+		fallback.dataset.i18n = 'chat.hub.messageRenderFailed'
+		return fallback
+	}
 }
 
 /**

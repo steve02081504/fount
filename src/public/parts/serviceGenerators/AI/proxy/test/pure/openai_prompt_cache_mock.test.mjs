@@ -2,8 +2,6 @@
  * OpenAI prompt-cache mock 的纯逻辑。
  */
 /* global Deno */
-import { assertEquals } from 'jsr:@std/assert'
-
 import {
 	CACHE_TOKEN_INCREMENT,
 	MIN_CACHE_TOKENS,
@@ -11,6 +9,8 @@ import {
 	longestCommonPrefixLength,
 	serializeMessages,
 } from 'fount/scripts/test/fixtures/openai_prompt_cache_mock.mjs'
+import { assertEquals } from 'jsr:@std/assert'
+
 
 Deno.test('serializeMessages is stable for identical payloads', () => {
 	const messages = [

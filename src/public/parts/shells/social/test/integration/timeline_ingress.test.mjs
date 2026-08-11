@@ -6,12 +6,11 @@
  */
 /* global Deno */
 import { Buffer } from 'node:buffer'
-import fs from 'node:fs'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { makeRemoteSignedEvent, randomSeed } from '../federation/remote_timeline.mjs'
-import { createTestSession } from '../harness.mjs'
+import { createTestSession, seedStubAgent } from '../harness.mjs'
 
 const getSession = createTestSession()
 
@@ -23,12 +22,10 @@ const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount
 const { encodeEntityHash, entityHashFromRecoveryPubKeyHex } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
 const {
-	ensureAgentEntityIdentity,
 	getEntitySecretKey,
 	getOperatorSecretKey,
 	resolveOperatorEntityHashForUser,
 } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 
 /**
@@ -201,9 +198,7 @@ Deno.test('legit user-owned write (sender === subjectHash) is accepted', async (
 Deno.test('agent-key-signed write to a local agent timeline is accepted', async () => {
 	const { username } = await getSession()
 	const charPartName = 'social-test-agent'
-	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const row = await ensureAgentEntityIdentity(username, charPartName)
-	await ensureEntitySocialReady(username, row.entityHash)
+	const row = await seedStubAgent(username, charPartName, { ensureSocialReady: true })
 	const agentSecret = new Uint8Array(Buffer.from(await getEntitySecretKey(username, row.entityHash), 'hex'))
 	const event = await makeRemoteSignedEvent(agentSecret, row.entityHash, {
 		type: 'post', charPartName, content: { text: 'agent post by agent key', visibility: 'public' },
@@ -215,9 +210,7 @@ Deno.test('agent-key-signed write to a local agent timeline is accepted', async 
 Deno.test('foreign-key injection into a locally-hosted agent timeline is rejected', async () => {
 	const { username } = await getSession()
 	const charPartName = 'social-test-agent'
-	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const row = await ensureAgentEntityIdentity(username, charPartName)
-	await ensureEntitySocialReady(username, row.entityHash)
+	const row = await seedStubAgent(username, charPartName, { ensureSocialReady: true })
 	const attackerSeed = randomSeed()
 	const event = await makeRemoteSignedEvent(attackerSeed, row.entityHash, {
 		type: 'post', charPartName, content: { text: 'INJECTED agent post', visibility: 'public' },
@@ -306,11 +299,9 @@ Deno.test('foreign-key injection into a bootstrapped remote agent timeline is re
 Deno.test('owner-signed post_delete on local agent timeline is accepted', async () => {
 	const { username } = await getSession()
 	const charPartName = 'social-owner-delete-agent'
-	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const row = await seedStubAgent(username, charPartName, { ensureSocialReady: true })
 	const operator = await resolveOperatorEntityHashForUser(username)
 	await ensureEntitySocialReady(username, operator)
-	await ensureEntitySocialReady(username, row.entityHash)
 	const post = await append.appendTimelineEvent(username, row.entityHash, {
 		type: 'post',
 		charPartName,
@@ -327,12 +318,9 @@ Deno.test('owner-signed post_delete on local agent timeline is accepted', async 
 // 陌生钥签 post_delete → 拒绝。
 Deno.test('stranger-signed post_delete on local agent timeline is rejected', async () => {
 	const { username } = await getSession()
-	const charPartName = 'social-owner-delete-deny'
-	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const row = await seedStubAgent(username, 'social-owner-delete-deny', { ensureSocialReady: true })
 	const operator = await resolveOperatorEntityHashForUser(username)
 	await ensureEntitySocialReady(username, operator)
-	await ensureEntitySocialReady(username, row.entityHash)
 	const event = await makeRemoteSignedEvent(randomSeed(), row.entityHash, {
 		type: 'post_delete',
 		content: { targetPostId: 'a'.repeat(64) },

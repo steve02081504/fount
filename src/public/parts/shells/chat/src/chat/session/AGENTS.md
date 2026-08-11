@@ -50,5 +50,6 @@ World shared state / `WorldChatHost`: [docs/world-host.md](docs/world-host.md).
 - Human entry: `postChannelMessage`. Persona `BeforeUserSend` before persist — resolve persona for **sender's** `username` via `getMaterializedSession` + `loadPlayerForReplica` (**not** `getActiveGroupRuntime`).
 - Persist: `channel/messageCommit.mjs` → world `AddChatLogEntry` → `appendSignedLocalEvent`. Sole `After` point: `broadcastAndPersist` for `message` and finalized `message_edit`.
 - Char display: `resolveDisplaySnapshot` with `charId` (not sender persona). Preserve `name`/`avatar` through streaming finalize / `message_edit`.
+- DAG `charId` = `extension.timeSlice.charname` only (`charIdFromChatLogEntry`); never fall back to display `name`. World greeting has no char — `getPartDetails('chars/…')` only when charname is set.
 - Edit/delete Hub path: `PUT/DELETE …/messages/:eventId` → `channel/channelUserHooks.mjs` → `messageMutations`. `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)`.
 - Pure projection tests: import `viewerLogProject.mjs` only (not the full session I/O graph).

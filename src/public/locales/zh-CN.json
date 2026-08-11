@@ -570,7 +570,15 @@
 			"open_fount": "打开 fount",
 			"open_or_install_fount": "打开/安装 fount",
 			"error_message": "哎呀 :(\n\n发生错误：\n${error}",
-			"star_thank_you": "感谢您为 fount 标星！"
+			"star_thank_you": "感谢您为 fount 标星！",
+			"telegram": {
+				"title": "打开 Telegram",
+				"aria-label": "打开 Telegram"
+			},
+			"github": {
+				"title": "打开 GitHub",
+				"aria-label": "打开 GitHub"
+			}
 		},
 		"error": {
 			"title": "安装失败！",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "来自群组：${name}",
 			"previewAuthorMeta": "来自作者",
 			"previewActionFailed": "操作失败：${error}",
+			"loadFailed": "表情选择器加载失败：${error}",
 			"category": {
 				"animal": "动物",
 				"face": "表情",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "群组设置已保存",
 					"saveFailed": "保存设置失败: ${error}",
 					"rolesTitle": "角色与权限",
+					"rolesHint": "勾选的权限对该角色全体成员在全群生效。若要让普通成员发送附件，请为 Everyone 勾选「上传文件」。仅当某频道需单独限制时，再到高级设置中的「频道权限」设置。",
 					"roleDefault": "默认",
 					"permissionUpdated": "权限已更新",
 					"permissionUpdateFailed": "更新权限失败: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "频道归档"
 					},
 					"channelPerms": {
-						"addRole": "添加角色覆盖",
 						"denied": "你没有 MANAGE_CHANNELS 权限，无法编辑频道权限覆盖。",
-						"hint": "为特定频道设置角色权限覆盖。未覆盖项继承群组角色权限。",
+						"hint": "此处仅用于设置单个频道相对角色权限的例外：继承＝沿用角色权限页的设置，允许/拒绝＝在本频道强制覆盖。若要全员开放附件，请前往「角色权限」为 Everyone 勾选「上传文件」，而非在此添加覆盖。",
+						"overridden": "已覆盖",
+						"clearOverride": "全部重置为继承",
 						"noChannels": "暂无可配置频道",
-						"removeRole": "移除该角色覆盖",
 						"selectChannel": "频道",
 						"stateAllow": "允许",
 						"stateDeny": "拒绝",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "收件箱",
-				"filtersLabel": "筛选收件箱消息",
+				"panel": {
+					"aria-label": "收件箱"
+				},
+				"filtersLabel": {
+					"aria-label": "筛选收件箱消息"
+				},
 				"rowLabel": {
 					"aria-label": "${author} 在 ${group} 的 ${channel} 频道中说：${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "联邦远端作者"
 			},
 			"trustAuthor": {
-				"textContent": "信任",
-				"title": "信任此作者（允许危险 HTML）"
+				"textContent": "信任作者",
+				"title": "信任此作者（允许渲染危险的 Markdown/HTML）"
 			},
 			"stickerInline": "贴纸",
 			"markdownRenderFailed": "消息渲染失败",
+			"messageRenderFailed": "消息渲染失败",
 			"retrySend": "重试",
 			"mergeDagOk": "分叉已合并",
 			"mergeDagFailed": "合并失败：${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "群文件使用收敛加密：若攻击者已知某文件明文，可推导密钥并解密对应密文块。请勿将高度敏感且唯一的私密文档仅依赖群加密保护。",
 			"reputationSlashAlert": "成员 ${target}… 的声誉受到扣减提醒",
 			"profileEdit": {
+				"close": {
+					"aria-label": "关闭"
+				},
 				"previewHint": "修改会立即显示在预览中，保存后同步用于 Chat 与 Social。",
 				"sfwMode": "安全内容",
 				"livePreview": "实时预览",
@@ -2456,6 +2475,9 @@
 				"created": "子线程已创建",
 				"drawer": {
 					"aria-label": "子线程"
+				},
+				"breadcrumb": {
+					"aria-label": "子线程导航"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,17 @@
 				"friends": "暂无私聊",
 				"groups": "暂无群组",
 				"members": "暂无成员",
-				"pins": "暂无置顶",
-				"username": "未获取用户名"
+				"pins": "暂无置顶"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者，将完整渲染消息内容"
+			},
+			"attachment": {
+				"dropToUpload": "拖放以上传到 #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} 条未读"
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2905,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "下载"
+					"title": "下载",
+					"aria-label": "下载"
 				},
-				"downloadIcon": {
-					"alt": "下载图标"
+				"edit": {
+					"title": "编辑图片",
+					"aria-label": "编辑图片"
+				},
+				"editIcon": {
+					"alt": "编辑图标"
 				},
 				"delete": {
-					"title": "删除"
-				},
-				"deleteIcon": {
-					"alt": "删除图标"
+					"title": "删除",
+					"aria-label": "删除"
 				},
 				"more": {
-					"title": "更多"
+					"title": "更多",
+					"aria-label": "更多"
 				},
 				"recognize": {
-					"title": "语音转文字"
+					"title": "语音转文字",
+					"aria-label": "语音转文字"
 				}
 			}
 		},
@@ -4764,6 +4800,9 @@
 			"title": "内容列表",
 			"aria-label": "内容列表"
 		},
+		"breadcrumb": {
+			"aria-label": "面包屑导航"
+		},
 		"openCabinets": "打开文件柜列表",
 		"closeCabinets": "关闭",
 		"bootstrapFailed": "文件柜初始化失败：${error}",
@@ -5823,6 +5862,25 @@
 			},
 			"search": {
 				"placeholder": "搜索..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "媒体查看器"
+			},
+			"download": {
+				"textContent": "下载",
+				"aria-label": "下载"
+			},
+			"close": {
+				"textContent": "关闭",
+				"aria-label": "关闭"
+			},
+			"prev": {
+				"aria-label": "上一项"
+			},
+			"next": {
+				"aria-label": "下一项"
 			}
 		}
 	}

@@ -570,7 +570,15 @@
 			"open_fount": "▶️ ⛲",
 			"open_or_install_fount": "▶️/📥 ⛲",
 			"error_message": "😢\n\n❌:\n${error}",
-			"star_thank_you": "🙏⭐"
+			"star_thank_you": "🙏⭐",
+			"telegram": {
+				"title": "✈️",
+				"aria-label": "✈️"
+			},
+			"github": {
+				"title": "🐙🐱",
+				"aria-label": "🐙🐱"
+			}
 		},
 		"error": {
 			"title": "📥❌❗️",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "👥：${name}",
 			"previewAuthorMeta": "👤➡️",
 			"previewActionFailed": "❌：${error}",
+			"loadFailed": "😀❌：${error}",
 			"category": {
 				"animal": "🐾",
 				"face": "😀",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "👥⚙️💾✅",
 					"saveFailed": "💾⚙️❌: ${error}",
 					"rolesTitle": "🎭🔐",
+					"rolesHint": "🎭✅ · 📎→👥 · 📺⚙️",
 					"roleDefault": "⭐",
 					"permissionUpdated": "🔐🔄✅",
 					"permissionUpdateFailed": "🔐🔄❌: ${error}",
@@ -1476,7 +1486,7 @@
 					"ownerSuccessionFailed": "👑➡️❌：${error}",
 					"defaultEmojiPack": {
 						"failed": "⭐😀📦❌",
-						"hint": "➕👥➡️⭐；🔄➡️🔁旧⭐∈⭐",
+						"hint": "➕👥➡️⭐；🔄➡️🔁⭐∈⭐",
 						"label": "⭐😀📦",
 						"ok": "⭐😀📦✅"
 					},
@@ -1488,11 +1498,11 @@
 						"title": "📺📦"
 					},
 					"channelPerms": {
-						"addRole": "➕🎭🔐",
 						"denied": "🫵🚫📺⚙️🔐，🚫✏️📺🔐",
-						"hint": "⭐📺 ➡️ 🎭🔐 🔁🚫✍️ ➡️ ↩️👥🎭🔐",
+						"hint": "📺⚙️ · ↩️🎭 · ✅❌ · 📎→🎭🔐",
+						"overridden": "⚠️",
+						"clearOverride": "↩️🔄",
 						"noChannels": "📭📺⚙️",
-						"removeRole": "🗑️🎭🔐",
 						"selectChannel": "📺",
 						"stateAllow": "✅",
 						"stateDeny": "❌",
@@ -1520,7 +1530,7 @@
 						"deleteOk": "😀🗑️✅",
 						"empty": "📭👥😀",
 						"hint": "👤✅💬📍／📤👥😀；🚫📥🖼️ ➡️ 🌐🔗📥⏳",
-						"packGroupOption": "${packId} (群)",
+						"packGroupOption": "${packId} 👥",
 						"title": "👥😀",
 						"upload": "⬆️😀",
 						"uploadFailed": "⬆️❌：${error}",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "📬",
-				"filtersLabel": "🔽📬💬",
+				"panel": {
+					"aria-label": "📬"
+				},
+				"filtersLabel": {
+					"aria-label": "🔽📬💬"
+				},
 				"rowLabel": {
 					"aria-label": "${author} 📍 ${group} #️⃣${channel} 💬：${preview}"
 				},
@@ -1927,10 +1942,11 @@
 			},
 			"trustAuthor": {
 				"textContent": "🤝",
-				"title": "🤝✍️⚠️🌐📄"
+				"title": "🤝✍️⚠️📝🌐"
 			},
 			"stickerInline": "🏷️",
 			"markdownRenderFailed": "💬🎨❌",
+			"messageRenderFailed": "💬🎨❌",
 			"retrySend": "🔄",
 			"mergeDagOk": "🔀✅🔗",
 			"mergeDagFailed": "🔀❌：${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "👥📁 🔐🔄：📝👀 ➡️ 🔑➡️🔓🚫🔐📄➡️👥🔒",
 			"reputationSlashAlert": "👤 ${target}… ⭐⬇️🔔",
 			"profileEdit": {
+				"close": {
+					"aria-label": "✖️"
+				},
 				"previewHint": "✏️ ➡️ 👀📍；💾 ➡️ 🔄 💬 ➕ 🏛️",
 				"sfwMode": "😇",
 				"livePreview": "⏱️👀",
@@ -2456,6 +2475,9 @@
 				"created": "🧵✅🎉",
 				"drawer": {
 					"aria-label": "🧵"
+				},
+				"breadcrumb": {
+					"aria-label": "🧵➡️"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,17 @@
 				"friends": "💬📭",
 				"groups": "📭👥",
 				"members": "👥📭",
-				"pins": "📌📭",
-				"username": "🏷️📭"
+				"pins": "📌📭"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "✅🤝",
+				"title": "✅🤝✍️📝🎨"
+			},
+			"attachment": {
+				"dropToUpload": "⬆️ #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "📬 ${count}"
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2905,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "💾"
+					"title": "💾",
+					"aria-label": "💾"
 				},
-				"downloadIcon": {
-					"alt": "💾"
+				"edit": {
+					"title": "✏️🖼️",
+					"aria-label": "✏️🖼️"
+				},
+				"editIcon": {
+					"alt": "✏️"
 				},
 				"delete": {
-					"title": "🗑️"
-				},
-				"deleteIcon": {
-					"alt": "🗑️"
+					"title": "🗑️",
+					"aria-label": "🗑️"
 				},
 				"more": {
-					"title": "⋯"
+					"title": "⋯",
+					"aria-label": "⋯"
 				},
 				"recognize": {
-					"title": "🎙️➡️📝"
+					"title": "🎙️➡️📝",
+					"aria-label": "🎙️➡️📝"
 				}
 			}
 		},
@@ -4764,6 +4800,9 @@
 			"title": "📄📋",
 			"aria-label": "📄📋"
 		},
+		"breadcrumb": {
+			"aria-label": "🍞➡️"
+		},
 		"openCabinets": "📂🗄️📋",
 		"closeCabinets": "✖️",
 		"bootstrapFailed": "🗄️🚀❌：${error}",
@@ -5823,6 +5862,25 @@
 			},
 			"search": {
 				"placeholder": "🔍…"
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "🖼️👀"
+			},
+			"download": {
+				"textContent": "💾",
+				"aria-label": "💾"
+			},
+			"close": {
+				"textContent": "✖️",
+				"aria-label": "✖️"
+			},
+			"prev": {
+				"aria-label": "⬅️"
+			},
+			"next": {
+				"aria-label": "➡️"
 			}
 		}
 	}

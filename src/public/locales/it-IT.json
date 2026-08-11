@@ -570,7 +570,15 @@
 			"open_fount": "Apri fount",
 			"open_or_install_fount": "Apri/Installa fount",
 			"error_message": "Uffa :(\n\nSi è verificato un errore:\n${error}",
-			"star_thank_you": "Grazie per aver aggiunto una stella a fount!"
+			"star_thank_you": "Grazie per aver aggiunto una stella a fount!",
+			"telegram": {
+				"title": "Apri Telegram",
+				"aria-label": "Apri Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "Installazione non riuscita!",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "Dal gruppo: ${name}",
 			"previewAuthorMeta": "Dall'autore",
 			"previewActionFailed": "Azione non riuscita: ${error}",
+			"loadFailed": "Impossibile caricare il selettore emoji: ${error}",
 			"category": {
 				"animal": "animale",
 				"face": "Emoji",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "Impostazioni del gruppo salvate",
 					"saveFailed": "Impossibile salvare le impostazioni: ${error}",
 					"rolesTitle": "Ruoli e autorizzazioni",
+					"rolesHint": "Le autorizzazioni selezionate si applicano a tutto il gruppo per i membri con quel ruolo. Per consentire gli allegati, abilita «Carica file» per Everyone. Usa Autorizzazioni canale, in Avanzate, solo per eccezioni per canale.",
 					"roleDefault": "predefinito",
 					"permissionUpdated": "Autorizzazioni aggiornate",
 					"permissionUpdateFailed": "Impossibile aggiornare le autorizzazioni: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "Archivio canali"
 					},
 					"channelPerms": {
-						"addRole": "Aggiungi la sostituzione del ruolo",
 						"denied": "Non disponi dell'autorizzazione MANAGE_CHANNELS per modificare le sostituzioni delle autorizzazioni del canale.",
-						"hint": "Imposta le sostituzioni delle autorizzazioni del ruolo per canali specifici. Gli elementi scoperti ereditano le autorizzazioni del ruolo del gruppo.",
+						"hint": "Solo eccezioni per canale: Eredita segue le autorizzazioni di ruolo; Consenti/Nega forzano questo canale. Per allegati per tutti, apri Autorizzazioni ruolo e seleziona «Carica file» per Everyone — qui non c’è un pulsante per aggiungere una sostituzione.",
+						"overridden": "Sostituito",
+						"clearOverride": "Ripristina tutto alle autorizzazioni del ruolo",
 						"noChannels": "Al momento non ci sono canali da configurare",
-						"removeRole": "Rimuovi questa sostituzione del ruolo",
 						"selectChannel": "Canali",
 						"stateAllow": "permettere",
 						"stateDeny": "rifiutare",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "Posta in arrivo",
-				"filtersLabel": "Filtra i messaggi di posta in arrivo",
+				"panel": {
+					"aria-label": "Posta in arrivo"
+				},
+				"filtersLabel": {
+					"aria-label": "Filtra i messaggi di posta in arrivo"
+				},
 				"rowLabel": {
 					"aria-label": "${author} ha detto in ${group} di ${channel}: ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "autore remoto federato"
 			},
 			"trustAuthor": {
-				"textContent": "Fiducia",
-				"title": "Fidati di questo autore (consenti HTML pericoloso)"
+				"textContent": "Fidati di questo autore",
+				"title": "Fidati di questo autore (consenti Markdown/HTML pericoloso)"
 			},
 			"stickerInline": "Adesivi",
 			"markdownRenderFailed": "Il rendering del messaggio non è riuscito",
+			"messageRenderFailed": "Impossibile visualizzare il messaggio",
 			"retrySend": "Riprova",
 			"mergeDagOk": "Forcella fusa",
 			"mergeDagFailed": "Unione non riuscita: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "I file di gruppo utilizzano la crittografia convergente: se un utente malintenzionato conosce il testo in chiaro di un file, può derivare la chiave e decrittografare il blocco di testo cifrato corrispondente. Non fare affidamento esclusivamente sulla crittografia di gruppo per la protezione di documenti altamente sensibili e unicamente privati.",
 			"reputationSlashAlert": "La reputazione del membro ${target}… viene ricordata nella detrazione.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "Chiudi"
+				},
 				"previewHint": "Le modifiche vengono visualizzate immediatamente nell'anteprima e vengono salvate e sincronizzate su Chat e Social.",
 				"sfwMode": "Contenuto sicuro",
 				"livePreview": "Anteprima dal vivo",
@@ -2455,7 +2474,10 @@
 				"createFailed": "Impossibile creare la discussione, riprova più tardi",
 				"created": "La discussione è stata creata",
 				"drawer": {
-					"aria-label": "filo"
+					"aria-label": "Discussione"
+				},
+				"breadcrumb": {
+					"aria-label": "Discussione / Sottothread"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,23 @@
 				"friends": "Nessuna chat privata ancora",
 				"groups": "Nessun gruppo ancora",
 				"members": "Nessun membro ancora",
-				"pins": "Ancora nessun pin",
-				"username": "Nome utente non ottenuto"
+				"pins": "Ancora nessun pin"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "Fidato",
+				"title": "Il rendering Markdown/HTML di questo autore è consentito"
+			},
+			"attachment": {
+				"dropToUpload": "Rilascia per caricare su #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": {
+					"switch": "count",
+					"default": "${count} elementi non letti",
+					"cases": {
+						"1": "1 elemento non letto"
+					}
+				}
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2911,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Scarica"
+					"title": "Scarica",
+					"aria-label": "Scarica"
 				},
-				"downloadIcon": {
-					"alt": "Icona Scarica"
+				"edit": {
+					"title": "Modifica immagine",
+					"aria-label": "Modifica immagine"
+				},
+				"editIcon": {
+					"alt": "Icona di modifica"
 				},
 				"delete": {
-					"title": "Elimina"
-				},
-				"deleteIcon": {
-					"alt": "Icona Elimina"
+					"title": "Elimina",
+					"aria-label": "Elimina"
 				},
 				"more": {
-					"title": "Di più"
+					"title": "Altro",
+					"aria-label": "Altro"
 				},
 				"recognize": {
-					"title": "Da voce a testo"
+					"title": "Da voce a testo",
+					"aria-label": "Da voce a testo"
 				}
 			}
 		},
@@ -4764,6 +4806,9 @@
 			"title": "Elenco elementi",
 			"aria-label": "Elenco elementi"
 		},
+		"breadcrumb": {
+			"aria-label": "Percorso di navigazione"
+		},
 		"openCabinets": "Apri l'elenco degli schedari",
 		"closeCabinets": "Chiudi",
 		"bootstrapFailed": "Inizializzazione schedario non riuscita: ${error}",
@@ -5823,6 +5868,25 @@
 			},
 			"search": {
 				"placeholder": "Cerca..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "visualizzatore multimediale"
+			},
+			"download": {
+				"textContent": "Scarica",
+				"aria-label": "Scarica"
+			},
+			"close": {
+				"textContent": "Chiudi",
+				"aria-label": "Chiudi"
+			},
+			"prev": {
+				"aria-label": "Elemento multimediale precedente"
+			},
+			"next": {
+				"aria-label": "Elemento multimediale successivo"
 			}
 		}
 	}

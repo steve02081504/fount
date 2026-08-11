@@ -1,5 +1,5 @@
-import { attachGroupPartWire } from 'npm:@steve02081504/fount-p2p/wire/group_part'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
+import { attachGroupPartWire } from 'npm:@steve02081504/fount-p2p/wire/part/group'
 
 import { encodeWireJson } from '../../lib/wireJson.mjs'
 import {
@@ -15,9 +15,9 @@ import { wireAction } from '../wireAction.mjs'
 /**
  * 角色 RPC、part_invoke、TrustGraph 分块处理器。
  * @param {import('./roomContext.mjs').FederationRpcContext} roomContext 房间上下文
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function registerRpcHandlers(roomContext) {
+export async function registerRpcHandlers(roomContext) {
 	const {
 		username,
 		groupId,
@@ -53,7 +53,7 @@ export function registerRpcHandlers(roomContext) {
 		allowPartInvoke: () => isFederationActionAllowedUnderLoad(key, 'part_invoke', rtcLimits),
 	})
 
-	attachTrustGraphChunkHandlers(username, room, fedOut, rtcLimits, key)
+	await attachTrustGraphChunkHandlers(room, fedOut, rtcLimits, key)
 
 	const charRpc = wireAction(roomContext, 'char_rpc')
 	const charRpcResponse = wireAction(roomContext, 'char_rpc_response')

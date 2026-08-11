@@ -289,3 +289,19 @@ Deno.test('releaseLocale wakes parked loop when hold reaches 0', async () => {
 	reset()
 	resetLocaleHold()
 })
+
+Deno.test('ariaLabelLocaleProblem requires zh/ja script and forbids cross-script', async () => {
+	const {
+		ariaLabelLocaleProblem,
+	} = await import('../../../public/pages/scripts/test/watch/locale_script.mjs')
+	assertEquals(ariaLabelLocaleProblem('zh-CN', 'Download'), 'missing-zh')
+	assertEquals(ariaLabelLocaleProblem('zh-CN', '下载'), null)
+	assertEquals(ariaLabelLocaleProblem('zh-CN', 'ダウンロード'), 'forbidden-script')
+	assertEquals(ariaLabelLocaleProblem('ja-JP', 'Close'), 'missing-ja')
+	assertEquals(ariaLabelLocaleProblem('ja-JP', '閉じる'), null)
+	assertEquals(ariaLabelLocaleProblem('ja-JP', '旗'), null)
+	assertEquals(ariaLabelLocaleProblem('ja-JP', '下载', /载/), 'forbidden-script')
+	assertEquals(ariaLabelLocaleProblem('en-UK', 'Download'), null)
+	assertEquals(ariaLabelLocaleProblem('en-UK', '下载'), 'forbidden-script')
+	assertEquals(ariaLabelLocaleProblem('zh-CN', '  '), null)
+})

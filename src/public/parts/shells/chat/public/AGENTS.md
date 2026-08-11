@@ -1,5 +1,5 @@
 ---
-description: Chat shell — unified entity model, ChatClient, private state, Hub pointers
+description: Chat shell — unified entity model, ChatClient, private state, HTTP boundaries. Hub/session/archive AGENTS.md add local detail on top; pull those when editing their trees.
 globs: src/public/parts/shells/chat/**
 alwaysApply: false
 ---

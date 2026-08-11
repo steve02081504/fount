@@ -87,10 +87,10 @@ function syncSessionCharsFromMembers(state) {
 	state.session.charFrequencies = {}
 	for (const member of Object.values(state.members)) {
 		if (member?.memberKind !== 'agent' || member.status !== 'active') continue
-		const charname = String(member.charname || '').trim()
+		const charname = member.charname
 		if (!charname) continue
 		state.session.chars[charname] = {
-			ownerUsername: String(member.ownerUsername || '').trim(),
+			ownerUsername: member.ownerUsername || '',
 			homeNodeHash: member.homeNodeHash || '',
 		}
 		if (Number.isFinite(member.replyFrequency))
@@ -155,8 +155,7 @@ export const memberReducers = {
 		// 已是活跃成员的重复 member_join（DAG 重放 / 检查点重建时对已折叠基态的再应用）必须幂等：
 		// 不得重算 extraRoles（此时 activeBefore 含成员自身，会算成 0 个 extraRole）从而回退 founder 等既有角色。
 		const isActiveReapply = existing?.status === 'active'
-		const charnameRaw = String(content.charname || existing?.charname || '').trim()
-		const charname = charnameRaw || undefined
+		const charname = content.charname || existing?.charname || undefined
 		const ownerFromContent = String(content.ownerEntityHash || '').trim().toLowerCase()
 		const ownerFallback = isActiveReapply ? String(existing?.ownerEntityHash || '').trim().toLowerCase() : ''
 		const ownerRaw = ownerFromContent || ownerFallback

@@ -76,7 +76,6 @@ export const store = {
 	/** 角色私聊或用户 DM；用户 DM 复用 `context.currentGroupId` 拉频道消息。 */
 	privateGroup: {
 		groupId: null,
-		charname: null,
 		/** 对端 128 位 entityHash（角色 agent / 用户统一） */
 		peerEntityHash: null,
 		channelId: 'default',

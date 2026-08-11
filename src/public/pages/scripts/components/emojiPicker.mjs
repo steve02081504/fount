@@ -18,6 +18,7 @@ import {
 	unicodeEmojiGroupI18nKey,
 	unicodeEmojiSectionKey,
 } from '../features/emoji/unicodeData.mjs'
+import { handleError } from '../features/errorHandlers.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 
 import { showEmojiPackPreview } from './emojiPackPreview.mjs'
@@ -125,7 +126,12 @@ function appendEmojiGridItem(grid, item) {
  * @returns {Promise<{ sections: object[], usage: object | null }>} 分区与 usage 能力
  */
 async function buildSections(context = {}) {
-	const { packs, usage, collection } = await aggregateEmojiPacks(context)
+	const packsPromise = aggregateEmojiPacks(context)
+	const unicodePromise = loadUnicodeEmojiByGroup().catch(error => {
+		console.warn('[emoji] unicode data load failed', error)
+		return { byGroup: {}, order: [] }
+	})
+	const { packs, usage, collection } = await packsPromise
 	const usagePayload = usage ? await usage.load() : { log: [], lastUsedAtByPack: {} }
 	const log = trimUsageLog(usagePayload.log || [], USAGE_WINDOW)
 	const collectionIds = new Set((await collection?.list())?.packIds || [])
@@ -170,7 +176,7 @@ async function buildSections(context = {}) {
 			if (item) items.push(enrichPackItem(parsed.packId, item))
 			else {
 				const previewUrl = await resolvePackEmojiUrl(parsed.packId, parsed.emojiId, {
-					providers: pack?._provider ? [pack._provider] : undefined,
+					providers: pack?.sourceProvider ? [pack.sourceProvider] : undefined,
 				})
 				items.push({
 					kind: 'pack',
@@ -210,15 +216,7 @@ async function buildSections(context = {}) {
 		})
 	}
 
-	let byGroup = {}
-	/** @type {string[]} */
-	let order = []
-	try {
-		({ byGroup, order } = await loadUnicodeEmojiByGroup())
-	}
-	catch (error) {
-		console.warn('[emoji] unicode data load failed', error)
-	}
+	const { byGroup, order } = await unicodePromise
 	for (const groupName of order) {
 		const codes = byGroup[groupName] || []
 		if (!codes.length) continue
@@ -300,7 +298,7 @@ function openSectionPackPreview(anchor, section) {
 	if (section?.kind !== 'pack' || !section.pack) return
 	void showEmojiPackPreview(anchor, {
 		pack: section.pack,
-		provider: section.pack._provider,
+		provider: section.pack.sourceProvider,
 		available: true,
 	})
 }
@@ -375,7 +373,9 @@ function renderContinuousPicker(host, sections, handlers) {
 		else if (packName) {
 			railBtn.title = packName
 			railBtn.setAttribute('aria-label', packName)
+			railBtn.setAttribute('user-content', '')
 			header.textContent = packName
+			header.setAttribute('user-content', '')
 		}
 		rail.appendChild(railBtn)
 		const grid = document.createElement('div')
@@ -539,12 +539,16 @@ export async function mountDockedEmojiPicker(options) {
 		scrollElement = result.scrollElement
 	}
 
-	triggerButton.addEventListener('click', event => {
+	triggerButton.addEventListener('click', async event => {
 		event.stopPropagation()
 		closeWhenOpening?.classList.remove('show')
 		pickerElement.classList.toggle('show')
-		if (pickerElement.classList.contains('show'))
-			void refresh()
+		if (pickerElement.classList.contains('show')) try {
+			await refresh()
+		}
+		catch (error) {
+			handleError('chat.emoji.loadFailed', {}, error)
+		}
 	})
 
 	document.addEventListener('click', event => {
@@ -590,17 +594,22 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 	panel.append(title, body)
 	document.body.appendChild(panel)
 
-	const { sections, usage } = await buildSections(pickerContext)
-	renderContinuousPicker(body, sections, {
-		usage,
-		/** @param {string} token 插入的文本或表情引用 */
-		onInsert: token => {
-			onInsert(token)
-			panel.remove()
-		},
-	})
-
-	wireOutsideClickClose(panel, () => panel.remove(), anchor)
+	try {
+		const { sections, usage } = await buildSections(pickerContext)
+		renderContinuousPicker(body, sections, {
+			usage,
+			/** @param {string} token 插入的文本或表情引用 */
+			onInsert: token => {
+				onInsert(token)
+				panel.remove()
+			},
+		})
+		wireOutsideClickClose(panel, () => panel.remove(), anchor)
+	}
+	catch (error) {
+		panel.remove()
+		throw error
+	}
 }
 
 /**
@@ -611,9 +620,14 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
  * @returns {void}
  */
 export function wireEmojiPickerButton(button, onInsert, pickerContext = {}) {
-	button.addEventListener('click', event => {
+	button.addEventListener('click', async event => {
 		event.preventDefault()
-		void mountEmojiPicker(button, onInsert, pickerContext)
+		try {
+			await mountEmojiPicker(button, onInsert, pickerContext)
+		}
+		catch (error) {
+			handleError('chat.emoji.loadFailed', {}, error)
+		}
 	})
 }
 

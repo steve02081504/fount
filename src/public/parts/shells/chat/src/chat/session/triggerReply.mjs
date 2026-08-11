@@ -275,7 +275,6 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		const finalEntry = await buildChatLogEntryFromCharReply(
 			charReply,
 			placeholderEntry.extension.timeSlice,
-			request.char,
 			request.char_id,
 			chatMetadata.username,
 		)

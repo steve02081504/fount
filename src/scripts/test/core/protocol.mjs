@@ -3,13 +3,16 @@
  *
  * 所有 manifest `run` 目标须支持：
  *
- *   FOUNT_TEST_ONLY          — 换行分隔的仓库相对路径；省略则跑 suite 默认全集（范围过滤）
- *   FOUNT_TEST_FIRST         — 换行分隔的仓库相对路径；这些先跑，失败组有复现则跑完失败组即退
- *   FOUNT_TEST_SUBTESTS      — 换行分隔的子测试名；省略则跑 suite 全部已注册子测试
- *   FOUNT_TEST_FAILURES_OUT  — 失败时写入 JSON 数组 string[]（仓库相对路径）
- *   FOUNT_TEST_TIMINGS_OUT   — 可选；写入 JSON 对象 Record<path, ms>（仓库相对 spec → 耗时）
- *   FOUNT_TEST_KEEP_GOING    — `1` 时失败后继续并汇总（失败组复现时仍中止）
- *   FOUNT_TEST_SCOPE         — Playwright 产物 scope（manifest id）
+ *   FOUNT_TEST_ONLY             — 换行分隔的仓库相对路径；省略则跑 suite 默认全集（范围过滤）
+ *   FOUNT_TEST_FIRST            — 换行分隔的仓库相对路径；这些先跑，失败组有复现则跑完失败组即退
+ *   FOUNT_TEST_SUBTESTS         — 换行分隔的子测试名；省略则跑 suite 全部已注册子测试
+ *   FOUNT_TEST_TRIGGERED_FILES  — 临时文件绝对路径：文件内换行分隔的本波次 trigger 命中路径
+ *                                 （已提交 since-record ∪ 未提交）；空 = 未限定，子测试自行全量。
+ *                                 由 runner 写入 tmp 并在 suite 结束后删除。
+ *   FOUNT_TEST_FAILURES_OUT     — 失败时写入 JSON 数组 string[]（仓库相对路径）
+ *   FOUNT_TEST_TIMINGS_OUT      — 可选；写入 JSON 对象 Record<path, ms>（仓库相对 spec → 耗时）
+ *   FOUNT_TEST_KEEP_GOING       — `1` 时失败后继续并汇总（失败组复现时仍中止）
+ *   FOUNT_TEST_SCOPE            — Playwright 产物 scope（manifest id）
  */
 import { realpathSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
@@ -75,6 +78,37 @@ export function parseTestFirstEnv() {
  */
 export function parseTestSubtestsEnv() {
 	return parseNewlineList(process.env.FOUNT_TEST_SUBTESTS)
+}
+
+/**
+ * 写入本波次 trigger 命中路径列表（换行分隔）。
+ * @param {string} outPath 临时文件绝对路径
+ * @param {string[]} files 仓库相对路径
+ * @returns {Promise<void>}
+ */
+export async function writeTestTriggeredFiles(outPath, files) {
+	await writeFile(
+		outPath,
+		files.length ? `${[...new Set(files.map(file => file.replace(/\\/g, '/')))].join('\n')}\n` : '',
+		'utf8',
+	)
+}
+
+/**
+ * 读取 FOUNT_TEST_TRIGGERED_FILES 指向的临时文件。
+ * @param {string} [path] 文件路径；默认读环境变量
+ * @returns {Promise<string[]>} 仓库相对路径（正斜杠）；空表示未限定
+ */
+export async function readTestTriggeredFiles(path = process.env.FOUNT_TEST_TRIGGERED_FILES) {
+	const filePath = path?.trim()
+	if (!filePath) return []
+	try {
+		return parseNewlineList(await readFile(filePath, 'utf8'))
+	}
+	catch (error) {
+		if (error?.code === 'ENOENT') return []
+		throw error
+	}
 }
 
 /**

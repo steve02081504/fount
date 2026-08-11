@@ -1,4 +1,5 @@
 import { store } from '../core/state.mjs'
+import { activePrivateCharPartName } from '../friendBindings.mjs'
 
 import {
 	mergeIncrementalSourceBatch,
@@ -58,9 +59,10 @@ export function mergeIncrementalChannelBatch(source, batch) {
 	return merged
 }
 
-/** @returns {boolean} 是否为双方角色对话 */
+/** @returns {boolean} 是否为双方角色对话（好友角色私聊，或单角色且活跃成员≤2） */
 export function isTwoPartyCharDialogue() {
-	if (store.privateGroup.charname) return true
+	// 私聊对端语义；charlist 是否含该角色另见 activeCharPartNames / session.chars
+	if (activePrivateCharPartName()) return true
 	const state = store.context.currentState
 	if (!state) return false
 	const charCount = state.charPartNames?.length ?? 0

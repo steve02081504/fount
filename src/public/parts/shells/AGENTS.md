@@ -1,6 +1,6 @@
 ---
-description: Creating or modifying Shell parts (URL mapping, Load, endpoints, registries)
-globs: src/public/parts/shells/**, src/decl/shellAPI.ts
+description: Shell part conventions — URL mapping, Load, endpoints, registries, llms.txt, relative imports. Pull when scaffolding a new shell or changing shell-wide patterns; skip routine edits inside chat/social/cabinet (own AGENTS.md).
+globs: src/public/parts/shells/*/main.mjs, src/public/parts/shells/*/fount.json, src/public/parts/shells/*/public/llms.txt, src/public/parts/shells/*/public/index.html, src/public/parts/shells/*/src/endpoints.mjs, src/decl/shellAPI.ts
 alwaysApply: false
 ---
 

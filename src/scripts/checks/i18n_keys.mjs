@@ -4,12 +4,15 @@
  * 1. 单段 key 不得以 Suffix/Prefix 开头或结尾（应用 ${param} 整句，勿碎片硬拼）
  * 2. 同级 ≥4 个键共享同一驼峰前缀 → 须嵌套
  * 3. 字母后纯数字结尾的 key（xxx1）禁用；用有意义名或数组
- * 4. 各语言与 zh-CN 在共有路径上类型须一致（string ↔ object 会导致 UI 空白 / aria 丢失）
+ * 4. 各语言与 zh-CN 在共有路径上类型须一致（string ↔ object 会导致 UI 空白 / aria 丢失）。
+ *    例外：string ↔ switch 叶子（`{ switch, default, cases? }`）兼容，允许仅部分语言使用单复数分支。
  *
  * 搬键请用 .esh/commands/update_locale_data.py（见 locale-edits.md）。
  * 批量前缀嵌套写回 locale：.esh/commands/reshape_i18n_keys.py（勿用 JS 写 locale JSON，会打乱如 404 的键序）。
  * string → `{ aria-label }` 等单 applicator 包装见 locale-edits.md；`update-locales.py` 同步时也会规范化并在残留类型不匹配时 exit 1。
  */
+
+import { areLocaleLeafKindsCompatible, isSwitchValue } from '../i18n/switch_value.mjs'
 
 /**
  * 搬键/改 locale 时的操作提示文案。
@@ -115,6 +118,7 @@ export function localeValueKind(value) {
 	if (value === null) return 'null'
 	if (value === undefined) return 'undefined'
 	if (Array.isArray(value)) return 'array'
+	if (isSwitchValue(value)) return 'switch'
 	const type = typeof value
 	if (type === 'object') return 'object'
 	return type
@@ -131,6 +135,8 @@ export function scanLocaleTreeShape(reference, other, path = '') {
 	/** @type {I18nKeyIssue[]} */
 	const issues = []
 	if (reference === undefined || other === undefined) return issues
+
+	if (areLocaleLeafKindsCompatible(reference, other)) return issues
 
 	const refKind = localeValueKind(reference)
 	const otherKind = localeValueKind(other)
@@ -208,6 +214,7 @@ export function scanI18nKeyStructure(data, path = '') {
 	for (const key of keys) {
 		const value = /** @type {Record<string, unknown>} */ data[key]
 		const full = path ? `${path}.${key}` : key
+		if (isSwitchValue(value)) continue
 		if (value && typeof value === 'object' && !Array.isArray(value))
 			issues.push(...scanI18nKeyStructure(value, full))
 	}

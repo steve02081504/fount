@@ -40,7 +40,7 @@ export function aggregateChannelActivity(lines) {
 	const humans = {}
 	for (const line of lines || []) {
 		const ts = lineActivityMs(line)
-		const charId = String(line?.charId || line?.extension?.timeSlice?.charname || '').trim()
+		const charId = line?.charId || line?.extension?.timeSlice?.charname || ''
 		if (charId) {
 			chars[charId] = bumpStat(chars[charId], ts)
 			continue

@@ -5,7 +5,7 @@
 import { Buffer } from 'node:buffer'
 
 import { assertEquals, assertExists } from 'jsr:@std/assert'
-import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 
 import { computeEmojiContentHash } from '../../src/group/groupEmojis.mjs'
 import { createIntegrationBoot } from '../harness.mjs'

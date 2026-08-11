@@ -7,7 +7,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
-import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 
 import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
 import { entityEmojiPackDir, entityEmojiPacksRoot } from '../../chat/src/chat/lib/paths.mjs'

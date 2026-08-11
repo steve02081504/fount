@@ -6,9 +6,9 @@
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { normalizeFriendBinding } from '../../../public/shared/friendBinding.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
+import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 
 import {
 	ensureChannel,
@@ -56,10 +56,10 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			if (friendBinding === null)
 				content.friendBinding = null
 			else {
-				const normalized = normalizeFriendBinding(friendBinding)
-				if (!normalized)
+				const materialized = await materializeFriendBinding(username, friendBinding)
+				if (!materialized)
 					throw httpError(400, 'invalid friendBinding')
-				content.friendBinding = normalized
+				content.friendBinding = materialized
 			}
 
 
@@ -67,7 +67,9 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			throw httpError(400, 'no meta fields to update')
 		const { client } = await chatClientFromReq(req)
 		await (await client.group(groupId)).setMeta(content)
-		res.status(200).json({})
+		res.status(200).json(
+			content.friendBinding !== undefined ? { friendBinding: content.friendBinding } : {},
+		)
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/settings`, authenticate, async (req, res) => {

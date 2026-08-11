@@ -570,7 +570,15 @@
 			"open_fount": "fount 열기",
 			"open_or_install_fount": "fount 열기/설치하기",
 			"error_message": "아이고…\n\n오류가 발생했습니다:\n${error}",
-			"star_thank_you": "fount에 스타를 눌러주셔서 감사합니다!"
+			"star_thank_you": "fount에 스타를 눌러주셔서 감사합니다!",
+			"telegram": {
+				"title": "텔레그램",
+				"aria-label": "텔레그램"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "설치 실패!",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "그룹: ${name}",
 			"previewAuthorMeta": "작성자",
 			"previewActionFailed": "작업 실패: ${error}",
+			"loadFailed": "이모지 선택기를 불러오지 못했습니다: ${error}",
 			"category": {
 				"animal": "동물",
 				"face": "표정",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "그룹 설정이 저장되었습니다.",
 					"saveFailed": "설정을 저장하지 못했습니다: ${error}",
 					"rolesTitle": "역할 및 권한",
+					"rolesHint": "선택한 권한은 해당 역할의 모든 멤버에게 그룹 전체에 적용됩니다. 일반 멤버가 파일을 첨부하려면 Everyone의 「파일 업로드」를 켜세요. 특정 채널만 제한하려면 고급 설정의 「채널 권한」을 사용하세요.",
 					"roleDefault": "기본",
 					"permissionUpdated": "권한이 업데이트되었습니다.",
 					"permissionUpdateFailed": "권한 업데이트 실패: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "채널 아카이브"
 					},
 					"channelPerms": {
-						"addRole": "역할 재정의 추가",
 						"denied": "채널 권한 재정의를 수정할 수 있는 MANAGE_CHANNELS 권한이 없습니다.",
-						"hint": "특정 채널별 역할 권한 재정의를 설정합니다. 미설정 항목은 그룹 역할 권한을 따릅니다.",
+						"hint": "특정 채널에 대한 예외만 설정합니다. 상속=역할 권한을 따름, 허용/거부=이 채널에서 강제 적용. 전원에게 첨부를 허용하려면 「역할 권한」에서 Everyone의 파일 업로드를 켜세요.",
+						"overridden": "재정의됨",
+						"clearOverride": "모두 상속으로 재설정",
 						"noChannels": "현재 구성할 채널이 없습니다.",
-						"removeRole": "이 역할 재정의 삭제",
 						"selectChannel": "채널",
 						"stateAllow": "허용",
 						"stateDeny": "거부",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "받은 편지함",
-				"filtersLabel": "받은 편지함 메시지 필터링",
+				"panel": {
+					"aria-label": "받은 편지함"
+				},
+				"filtersLabel": {
+					"aria-label": "받은 편지함 메시지 필터링"
+				},
 				"rowLabel": {
 					"aria-label": "${author}님이 ${group}의 ${channel}에서 다음과 같이 말했습니다: ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "연합 원격 작성자"
 			},
 			"trustAuthor": {
-				"textContent": "신뢰",
-				"title": "이 작성자 신뢰하기(위험한 HTML 허용)"
+				"textContent": "작성자 신뢰",
+				"title": "이 작성자 신뢰하기 (위험한 Markdown/HTML 허용)"
 			},
 			"stickerInline": "라벨",
 			"markdownRenderFailed": "메시지 렌더링 실패",
+			"messageRenderFailed": "메시지를 표시하지 못했습니다",
 			"retrySend": "다시 시도하세요",
 			"mergeDagOk": "포크 병합",
 			"mergeDagFailed": "병합 실패: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "그룹 파일은 수렴 암호화를 사용합니다. 공격자가 파일 평문을 알고 있으면 키를 유도해 해당 암호문 블록을 복호화할 수 있습니다. 고도로 민감하고 유일한 비공개 문서를 그룹 암호화만으로 보호하지 마세요.",
 			"reputationSlashAlert": "${target} 멤버의 평판이 차감되었음을 상기시켜 드립니다.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "닫기"
+				},
 				"previewHint": "변경 사항은 미리보기에 즉시 표시되며 채팅과 소셜에 저장 및 동기화됩니다.",
 				"sfwMode": "일반 콘텐츠",
 				"livePreview": "실시간 미리보기",
@@ -2456,6 +2475,9 @@
 				"created": "하위 스레드가 생성되었습니다.",
 				"drawer": {
 					"aria-label": "하위 스레드"
+				},
+				"breadcrumb": {
+					"aria-label": "하위 스레드 경로"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,17 @@
 				"friends": "아직 비공개 채팅이 없습니다.",
 				"groups": "아직 그룹이 없습니다.",
 				"members": "아직 멤버이 없습니다.",
-				"pins": "아직 핀이 없습니다.",
-				"username": "사용자 이름을 얻지 못했습니다."
+				"pins": "아직 고정된 메시지가 없습니다."
+			},
+			"trustedAuthorBadge": {
+				"textContent": "신뢰됨",
+				"title": "이 작성자 신뢰하기(위험한 Markdown/HTML 허용)"
+			},
+			"attachment": {
+				"dropToUpload": "#${channel}에 업로드"
+			},
+			"unreadBadge": {
+				"aria-label": "읽지 않은 항목 ${count}개"
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2905,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "다운로드"
+					"title": "다운로드",
+					"aria-label": "다운로드"
 				},
-				"downloadIcon": {
-					"alt": "다운로드 아이콘"
+				"edit": {
+					"title": "사진 편집",
+					"aria-label": "사진 편집"
+				},
+				"editIcon": {
+					"alt": "편집 아이콘"
 				},
 				"delete": {
-					"title": "삭제"
-				},
-				"deleteIcon": {
-					"alt": "삭제 아이콘"
+					"title": "삭제",
+					"aria-label": "삭제"
 				},
 				"more": {
-					"title": "더"
+					"title": "더 보기",
+					"aria-label": "더 보기"
 				},
 				"recognize": {
-					"title": "음성을 글로"
+					"title": "음성을 글로",
+					"aria-label": "음성을 텍스트로"
 				}
 			}
 		},
@@ -4764,6 +4800,9 @@
 			"title": "항목 목록",
 			"aria-label": "항목 목록"
 		},
+		"breadcrumb": {
+			"aria-label": "이동 경로"
+		},
 		"openCabinets": "파일 캐비닛 목록 열기",
 		"closeCabinets": "닫기",
 		"bootstrapFailed": "파일 캐비닛 초기화 실패: ${error}",
@@ -5823,6 +5862,25 @@
 			},
 			"search": {
 				"placeholder": "검색..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "미디어 뷰어"
+			},
+			"download": {
+				"textContent": "다운로드",
+				"aria-label": "다운로드"
+			},
+			"close": {
+				"textContent": "닫기",
+				"aria-label": "닫기"
+			},
+			"prev": {
+				"aria-label": "이전 미디어"
+			},
+			"next": {
+				"aria-label": "다음 미디어"
 			}
 		}
 	}

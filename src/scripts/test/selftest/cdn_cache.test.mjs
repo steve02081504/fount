@@ -219,7 +219,11 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 				method: 'GET',
 				url: diskUrl,
 				status: 200,
-				headers: { 'content-type': 'text/plain', 'content-length': '4' },
+				headers: {
+					'content-type': 'text/plain',
+					'content-encoding': 'br',
+					'content-length': '2',
+				},
 				bodyBase64: Buffer.from('disk').toString('base64'),
 			}))
 			clearCdnResponseMemoryCache()
@@ -228,6 +232,8 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 			assertEquals(fromDisk.state.fetchCalls, 0)
 			assertEquals(fromDisk.fulfilled.length, 1)
 			assertEquals(fromDisk.fulfilled[0].body.toString(), 'disk')
+			assertEquals(fromDisk.fulfilled[0].headers['content-encoding'], undefined)
+			assertEquals(fromDisk.fulfilled[0].headers['content-length'], '4')
 		}
 
 		{

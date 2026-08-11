@@ -13,12 +13,13 @@ Prefer smoke → e2e gates; do not jump straight to full e2e.
 
 **Triggers follow the same gate**: `shellBackend` only on `pure` / `integration` / `smoke_*`; deeper live suites watch infra + their own script (like fed suites).
 
-Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics under reuse. Federation live needs `node-datachannel`. Signaling: [signaling.md](../../p2p/docs/signaling.md).
+Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics under reuse. Federation live needs `node-datachannel`. Signaling: [signaling.md](../../p2p/docs/signaling.md). WHIP (`shells/chat/.../whip/`) must **lazy**-import `node-datachannel` — a static import breaks Termux chat shell load (`MODULE_NOT_FOUND` for `node_datachannel.node`; no android-arm64 prebuild yet — murat-dogan/node-datachannel#429). Same optional-degrade idea as BLE in fount-p2p.
 
 ## Live federation
 
 - Reuse `InitializeOpenGroupJoin` / `InitializeOpenGroupJoinMulti` from `live/federation/common.mjs` (`WarmupFedNodeLinks` → `rebind` → members gate → re-invite fallback). Bare create→invite→join without warmup hangs at `members>=2`.
 - A `members>=2` hang is usually link/handshake/ICE — inspect logs before rerunning ([signaling.md](../../p2p/docs/signaling.md)).
+- Join invite URI (`formatJoinRunUri` / `parseJoinRunUri`): after `groupId;inviteCode`, optional federation fields are **`key=value` segments** (`roomSecret`, `introducerPubKeyHash`, `powAnchorRef`, `introducerNodeHash`) — only emit present keys; never positional optional slots. Production room join awaits introducer dial briefly; live tests still warmup explicitly.
 - Prefer `TestFedHasMessage` / `TestFedHasReaction` over raw `GET /events?limit=…` (paged streams miss rows that already ingested).
 
 ## Chat integration

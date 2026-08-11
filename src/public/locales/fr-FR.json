@@ -570,7 +570,15 @@
 			"open_fount": "Ouvrir fount",
 			"open_or_install_fount": "Ouvrir/Installer fount",
 			"error_message": "Oh là là :(\n\nUne erreur s'est produite :\n${error}",
-			"star_thank_you": "Merci d'avoir donné une étoile à fount !"
+			"star_thank_you": "Merci d'avoir donné une étoile à fount !",
+			"telegram": {
+				"title": "Ouvrir Telegram",
+				"aria-label": "Ouvrir Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "Échec de l'installation !",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "Du groupe : ${name}",
 			"previewAuthorMeta": "De l'auteur",
 			"previewActionFailed": "Échec de l'action : ${error}",
+			"loadFailed": "Impossible de charger le sélecteur d’émojis : ${error}",
 			"category": {
 				"animal": "animal",
 				"face": "Émojis",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "Paramètres de groupe enregistrés",
 					"saveFailed": "Échec de l'enregistrement des paramètres : ${error}",
 					"rolesTitle": "Rôles et autorisations",
+					"rolesHint": "Les autorisations cochées s’appliquent à tout le groupe pour les membres ayant ce rôle. Pour autoriser les pièces jointes, cochez « Téléverser des fichiers » pour Everyone. Utilisez Autorisations de chaîne, dans Avancé, uniquement pour des exceptions par canal.",
 					"roleDefault": "Par défaut",
 					"permissionUpdated": "Autorisations mises à jour",
 					"permissionUpdateFailed": "Échec de la mise à jour des autorisations : ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "Archives des chaînes"
 					},
 					"channelPerms": {
-						"addRole": "Ajouter un remplacement de rôle",
 						"denied": "Vous ne disposez pas de l'autorisation MANAGE_CHANNELS pour modifier les remplacements d'autorisation de chaîne.",
-						"hint": "Définissez les remplacements d'autorisations de rôle pour des canaux spécifiques. Les éléments découverts héritent des autorisations de rôle de groupe.",
+						"hint": "Exceptions par canal uniquement : Hériter suit les autorisations de rôle ; Autoriser/Refuser forcent ce canal. Pour les pièces jointes pour tous, ouvrez Autorisations de rôle et cochez « Télécharger des fichiers » pour Everyone — il n’y a pas de bouton « ajouter une exception » ici.",
+						"overridden": "Remplacé",
+						"clearOverride": "Tout réinitialiser à hériter",
 						"noChannels": "Il n'y a actuellement aucun canal à configurer",
-						"removeRole": "Supprimer ce remplacement de rôle",
 						"selectChannel": "Canal",
 						"stateAllow": "permettre",
 						"stateDeny": "rejeter",
@@ -1570,7 +1580,7 @@
 						"SEND_MESSAGES": "Envoyer un message",
 						"SEND_STICKERS": "Envoyer des autocollants",
 						"STREAM": "voix",
-						"UPLOAD_FILES": "Télécharger des fichiers",
+						"UPLOAD_FILES": "Téléverser des fichiers",
 						"VIEW_CHANNEL": "Voir la chaîne"
 					},
 					"kick": {
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "Boîte de réception",
-				"filtersLabel": "Filtrer les messages de la boîte de réception",
+				"panel": {
+					"aria-label": "Boîte de réception"
+				},
+				"filtersLabel": {
+					"aria-label": "Filtrer les messages de la boîte de réception"
+				},
 				"rowLabel": {
 					"aria-label": "${author} a dit dans ${group} de ${channel} : ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "Auteur distant fédéré"
 			},
 			"trustAuthor": {
-				"textContent": "confiance",
-				"title": "Faites confiance à cet auteur (autorisez le HTML dangereux)"
+				"textContent": "Faire confiance",
+				"title": "Faire confiance à cet auteur (autoriser le Markdown/HTML dangereux)"
 			},
 			"stickerInline": "autocollant",
 			"markdownRenderFailed": "Échec du rendu du message",
+			"messageRenderFailed": "Échec du rendu du message",
 			"retrySend": "Essayer à nouveau",
 			"mergeDagOk": "Fourche fusionnée",
 			"mergeDagFailed": "Échec de la fusion : ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "Les fichiers de groupe utilisent le cryptage convergent : si l'attaquant connaît le texte en clair d'un fichier, il peut en dériver la clé et déchiffrer le bloc de texte chiffré correspondant. Ne comptez pas uniquement sur le chiffrement de groupe pour la protection de documents hautement sensibles et uniquement privés.",
 			"reputationSlashAlert": "La réputation du membre ${target}… est rappelée par la déduction.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "Fermer"
+				},
 				"previewHint": "Les modifications apparaissent immédiatement dans l'aperçu et sont enregistrées et synchronisées dans Chat et Social.",
 				"sfwMode": "Contenu sûr",
 				"livePreview": "Aperçu en direct",
@@ -2456,6 +2475,9 @@
 				"created": "Le fil de discussion enfant a été créé",
 				"drawer": {
 					"aria-label": "fil enfant"
+				},
+				"breadcrumb": {
+					"aria-label": "Fil d'Ariane du sous-fil"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,23 @@
 				"friends": "Pas encore de discussions privées",
 				"groups": "Aucun groupe",
 				"members": "Pas encore de membres",
-				"pins": "Pas encore d'épingles",
-				"username": "Nom d'utilisateur non obtenu"
+				"pins": "Pas encore d'épingles"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "Approuvé",
+				"title": "Faire confiance à cet auteur (Markdown/HTML dangereux autorisés)"
+			},
+			"attachment": {
+				"dropToUpload": "Déposer pour envoyer dans #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": {
+					"switch": "count",
+					"default": "${count} éléments non lus",
+					"cases": {
+						"1": "1 élément non lu"
+					}
+				}
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2911,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Télécharger"
+					"title": "Télécharger",
+					"aria-label": "Télécharger"
 				},
-				"downloadIcon": {
-					"alt": "Icône Télécharger"
+				"edit": {
+					"title": "Modifier l'image",
+					"aria-label": "Modifier l'image"
+				},
+				"editIcon": {
+					"alt": "Icône de modification"
 				},
 				"delete": {
-					"title": "Supprimer"
-				},
-				"deleteIcon": {
-					"alt": "Icône Supprimer"
+					"title": "Supprimer",
+					"aria-label": "Supprimer"
 				},
 				"more": {
-					"title": "Plus"
+					"title": "Plus",
+					"aria-label": "Plus"
 				},
 				"recognize": {
-					"title": "Voix en texte"
+					"title": "Parole en texte",
+					"aria-label": "Parole en texte"
 				}
 			}
 		},
@@ -4764,6 +4806,9 @@
 			"title": "Liste des éléments",
 			"aria-label": "Liste des éléments"
 		},
+		"breadcrumb": {
+			"aria-label": "Fil d'Ariane"
+		},
 		"openCabinets": "Ouvrir la liste des armoires",
 		"closeCabinets": "Fermer",
 		"bootstrapFailed": "Échec de l'initialisation de l'armoire : ${error}",
@@ -5823,6 +5868,25 @@
 			},
 			"search": {
 				"placeholder": "Rechercher..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "Visionneuse de médias"
+			},
+			"download": {
+				"textContent": "Télécharger",
+				"aria-label": "Télécharger"
+			},
+			"close": {
+				"textContent": "Fermer",
+				"aria-label": "Fermer"
+			},
+			"prev": {
+				"aria-label": "Média précédent"
+			},
+			"next": {
+				"aria-label": "Média suivant"
 			}
 		}
 	}

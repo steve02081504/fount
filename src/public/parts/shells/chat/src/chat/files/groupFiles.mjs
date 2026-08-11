@@ -19,9 +19,9 @@ import {
 	unwrapContentKey,
 	wrapContentKey,
 } from 'npm:@steve02081504/fount-p2p/crypto/key'
-import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
-import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manifest'
+import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manifest/normalize'
 import { penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
 
@@ -603,51 +603,48 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 	const ceMode = normalizeCeMode(uploadMeta.ceMode)
 	const keyGen = uploadMeta.key_generation
 
-	/** @type {import('npm:@steve02081504/fount-p2p/files/manifest').FileManifest | null} */
+	/** @type {import('npm:@steve02081504/fount-p2p/files/manifest/normalize').FileManifest | null} */
 	let manifest = null
 
-	if (Array.isArray(uploadMeta.parts) && uploadMeta.parts.length)
-		manifest = normalizeFileManifest({
-			ownerEntityHash,
-			logicalPath,
-			name: uploadMeta.name || fileId,
-			mimeType: uploadMeta.mimeType || 'application/octet-stream',
-			size: Number(uploadMeta.size) || 0,
-			contentHash: uploadMeta.contentHash,
-			ceMode,
-			parts: uploadMeta.parts.map(part => ({
-				hash: String(part.ciphertextHash || '').trim().toLowerCase(),
-				size: Number(part.partSize) || 0,
-			})),
-			transferKeyDescriptor: {
-				type: 'file-master-key-wrap',
-				groupId,
-				fileId,
-				keyGeneration: keyGen,
-				wrappedKey: uploadMeta.parts[0]?.wrappedKey,
-			},
-			meta: { groupId, fileId, dagParts: uploadMeta.parts },
-		})
-
-	else if (uploadMeta.ciphertextHash)
-		manifest = normalizeFileManifest({
-			ownerEntityHash,
-			logicalPath,
-			name: uploadMeta.name || fileId,
-			mimeType: uploadMeta.mimeType || 'application/octet-stream',
-			size: Number(uploadMeta.size) || 0,
-			contentHash: uploadMeta.contentHash,
-			ceMode,
-			parts: [{ hash: uploadMeta.ciphertextHash, size: Number(uploadMeta.size) || 0 }],
-			transferKeyDescriptor: {
-				type: 'file-master-key-wrap',
-				groupId,
-				fileId,
-				keyGeneration: keyGen,
+	/** @type {object[] | null} */
+	const dagParts = Array.isArray(uploadMeta.parts) && uploadMeta.parts.length
+		? uploadMeta.parts
+		: uploadMeta.ciphertextHash
+			? [{
+				index: 0,
+				partSize: Number(uploadMeta.size) || 0,
+				contentHash: uploadMeta.contentHash,
+				ciphertextHash: uploadMeta.ciphertextHash,
 				wrappedKey: uploadMeta.wrappedKey,
-			},
-			meta: { groupId, fileId },
-		})
+				storageLocator: uploadMeta.storageLocator,
+				key_generation: keyGen,
+			}]
+			: null
+	if (!dagParts?.length) return null
+
+	// parts[].size 必须是密文字节数（stream 解密按此截取）；先用占位，读出密文后再回填
+	manifest = normalizeFileManifest({
+		ownerEntityHash,
+		logicalPath,
+		name: uploadMeta.name || fileId,
+		mimeType: uploadMeta.mimeType || 'application/octet-stream',
+		size: Number(uploadMeta.size) || 0,
+		contentHash: uploadMeta.contentHash,
+		ceMode,
+		parts: dagParts.map(part => ({
+			hash: String(part.ciphertextHash || '').trim().toLowerCase(),
+			size: 1,
+			...part.contentHash ? { contentHash: part.contentHash } : {},
+		})),
+		transferKeyDescriptor: {
+			type: 'file-master-key-wrap',
+			groupId,
+			fileId,
+			keyGeneration: keyGen,
+			wrappedKey: dagParts[0]?.wrappedKey,
+		},
+		meta: { groupId, fileId, dagParts },
+	})
 
 	if (!manifest) return null
 
@@ -663,8 +660,15 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 		}
 		catch { /* skip */ }
 	}
-	if (partBytes.length === manifest.parts.length)
-		await storeManifestParts(manifest, partBytes)
+	if (partBytes.length !== manifest.parts.length) return null
+	manifest = {
+		...manifest,
+		parts: manifest.parts.map((part, i) => ({
+			...part,
+			size: partBytes[i].byteLength,
+		})),
+	}
+	await storeManifestParts(manifest, partBytes)
 	await saveFileManifest(manifest)
 	await updateGroupEntityIndex(username, groupId)
 	return manifest

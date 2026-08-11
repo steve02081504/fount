@@ -63,12 +63,12 @@ export async function suggestGroupMentions(username, groupId, query = '', limit 
 		if (viewerKey && memberKey.toLowerCase() === viewerKey.toLowerCase()) continue
 		const entityHash = memberEntityHash(member)
 		if (!entityHash || seen.has(entityHash)) continue
-		const displayName = String(member.displayName || member.charname || '').trim()
+		const displayName = member.displayName || member.charname
 			|| `${memberKey.slice(0, 8)}…`
 		if (normalizedQuery
 			&& !displayName.toLowerCase().includes(normalizedQuery)
 			&& !entityHash.includes(normalizedQuery)
-			&& !String(member.charname || '').toLowerCase().includes(normalizedQuery))
+			&& !(member.charname || '').toLowerCase().includes(normalizedQuery))
 			continue
 		seen.add(entityHash)
 		suggestions.push({

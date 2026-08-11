@@ -223,7 +223,7 @@ async function paintHoverCard(generation, anchor, options) {
 		})
 	}
 	else
-		for (const button of card.querySelectorAll('[data-profile-popup-*]'))
+		for (const button of card.querySelectorAll('[data-profile-popup-edit], [data-profile-popup-care], [data-profile-popup-alias], [data-profile-popup-dm], [data-profile-popup-social], [data-profile-popup-trust]'))
 			if (button instanceof HTMLElement) button.hidden = true
 
 

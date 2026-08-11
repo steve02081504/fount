@@ -5,7 +5,7 @@
  * 【数据结构】请求 { requestId, memberId, method, args[] }；响应 rpc_end | rpc_error + code。
  * 【关联】room.mjs、session.mjs、ws/groupWsRpc.mjs、lib/jsonBoundary.mjs、remoteProxy.mjs。
  */
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 
 /**
  * 统一映射 RPC 错误码。

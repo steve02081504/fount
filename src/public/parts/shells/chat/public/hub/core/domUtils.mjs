@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/core/domUtils.mjs
  * 【职责】Hub 消息与成员展示用的 DOM/文本工具：作者键解析、头像色、HTML 转义与时间 i18n 属性片段。
- * 【原理】为气泡头像、昵称与时间戳提供一致的视觉辅助函数；预热角色 entityHash 缓存。`authorPresentationKeys`、`escapeHtml`、`formatTimeAttrs` 等被 `messages/render` 与频道列表复用。
+ * 【原理】信任本机 API/store 已给出规范 part 名与小写 hex；本文件只做查找与展示，不再清扫字符串。
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】shared/entityHash、shared/nameResolve、fount-p2p/core/hexIds、state
  */
@@ -23,7 +23,7 @@ import { store } from './state.mjs'
 /** 重导出头像配色辅助函数。 */
 export { avatarColor, avatarInitial, avatarTextColor, hashAvatarStyle }
 
-/** @type {Map<string, string>} 角色 part 名 → agent entityHash */
+/** @type {Map<string, string>} 角色 part 名（规范目录名）→ agent entityHash */
 const charEntityHashCache = new Map()
 
 /**
@@ -33,22 +33,18 @@ const charEntityHashCache = new Map()
  */
 export function ingestAgentEntityHashList(agents) {
 	for (const row of agents || []) {
-		const name = String(row?.charPartName || '').trim()
-		const hash = String(row?.entityHash || '').trim().toLowerCase()
-		if (name && isEntityHash128(hash))
-			charEntityHashCache.set(name, hash)
+		if (!row.charPartName || !isEntityHash128(row.entityHash)) continue
+		charEntityHashCache.set(row.charPartName, row.entityHash)
 	}
 }
 
 /**
- * 当前群/私聊涉及的角色 part 名。
+ * 当前群 session 角色 part 名（`state.charPartNames` ← `session.chars`）。
+ * 角色私聊与普通群同一管道：进群时 `ensureCharOnGroup` 已把角色写入 session，无需再叠 `friendBinding`。
  * @returns {string[]} 角色 part 名列表
  */
 export function activeCharPartNames() {
-	const names = new Set(store.context.currentState?.charPartNames || [])
-	if (store.privateGroup.charname)
-		names.add(String(store.privateGroup.charname))
-	return [...names]
+	return [...store.context.currentState?.charPartNames || []]
 }
 
 /**
@@ -62,17 +58,15 @@ export async function warmCharEntityHashCache(charNames = activeCharPartNames())
 	const agentByChar = new Map()
 	for (const member of members) {
 		if (member?.kind !== 'agent' && member?.memberKind !== 'agent') continue
-		const charname = String(member.charname || '').trim().toLowerCase()
-		if (charname) agentByChar.set(charname, member)
+		if (!member.charname) continue
+		agentByChar.set(member.charname, member)
 	}
 	ingestAgentEntityHashList(store.viewer.agents || [])
-	for (const raw of charNames) {
-		const name = String(raw || '').trim()
+	for (const name of charNames) {
 		if (!name || charEntityHashCache.has(name)) continue
-		const member = agentByChar.get(name.toLowerCase())
-		const cachedHash = member?.entityHash
-		if (cachedHash && isEntityHash128(String(cachedHash)))
-			charEntityHashCache.set(name, String(cachedHash).toLowerCase())
+		const member = agentByChar.get(name)
+		if (member?.entityHash && isEntityHash128(member.entityHash))
+			charEntityHashCache.set(name, member.entityHash)
 	}
 }
 
@@ -81,10 +75,9 @@ export async function warmCharEntityHashCache(charNames = activeCharPartNames())
  * @returns {string|null} 128 位 entityHash
  */
 export function charEntityHashFromCache(charname) {
-	const name = String(charname || '').trim()
-	if (!name) return null
-	const cached = charEntityHashCache.get(name)
-	return cached && isEntityHash128(cached) ? cached.toLowerCase() : null
+	if (!charname) return null
+	const cached = charEntityHashCache.get(charname)
+	return cached && isEntityHash128(cached) ? cached : null
 }
 
 /**
@@ -93,26 +86,22 @@ export function charEntityHashFromCache(charname) {
  * @returns {string|null} 128 位 entityHash；无法解析时为 null
  */
 export function resolveEntityHashForAuthorKey(key) {
-	const raw = String(key ?? '').trim().toLowerCase()
-	if (!raw) return null
+	if (!key) return null
 	const members = store.context.currentState?.members || []
-	if (isEntityHash128(raw)) return raw
-	if (!isHex64(raw)) {
+	if (isEntityHash128(key)) return key
+	if (!isHex64(key)) {
 		const agent = members.find(member =>
-			member?.kind === 'agent'
-			&& String(member.charname || '').toLowerCase() === raw.toLowerCase())
+			(member?.kind === 'agent' || member?.memberKind === 'agent')
+			&& member.charname === key)
 		if (agent?.entityHash && isEntityHash128(agent.entityHash))
-			return String(agent.entityHash).toLowerCase()
-		const charHash = charEntityHashFromCache(raw)
-		if (charHash) return charHash
-		return null
+			return agent.entityHash
+		return charEntityHashFromCache(key)
 	}
-	const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw)
+	const member = members.find(m => m.memberKey === key)
 	if (member?.entityHash && isEntityHash128(member.entityHash))
-		return String(member.entityHash).toLowerCase()
-	const viewerPub = String(store.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
-	if (viewerPub === raw && store.viewer.viewerEntityHash)
-		return String(store.viewer.viewerEntityHash).toLowerCase()
+		return member.entityHash
+	if (store.context.currentState?.viewerMemberPubKeyHash === key && store.viewer.viewerEntityHash)
+		return store.viewer.viewerEntityHash
 	return null
 }
 
@@ -122,18 +111,17 @@ export function resolveEntityHashForAuthorKey(key) {
  * @returns {string|null} 展示名；无匹配时为 null
  */
 export function memberDisplayNameForAuthorKey(key) {
-	const raw = String(key ?? '').trim()
-	if (!raw) return null
+	if (!key) return null
 	const members = store.context.currentState?.members || []
-	if (isHex64(raw)) {
-		const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw.toLowerCase())
-		if (member?.displayName) return String(member.displayName).trim()
+	if (isHex64(key)) {
+		const member = members.find(m => m.memberKey === key)
+		if (member?.displayName) return member.displayName
 	}
 	const agent = members.find(member =>
-		member?.kind === 'agent'
-		&& String(member.charname || '').toLowerCase() === raw.toLowerCase())
-	if (agent?.displayName) return String(agent.displayName).trim()
-	if (agent?.charname) return String(agent.charname).trim()
+		(member?.kind === 'agent' || member?.memberKind === 'agent')
+		&& member.charname === key)
+	if (agent?.displayName) return agent.displayName
+	if (agent?.charname) return agent.charname
 	return null
 }
 
@@ -144,23 +132,22 @@ export function memberDisplayNameForAuthorKey(key) {
  * @returns {string} 可读展示名
  */
 export function authorDisplayLabel(key) {
-	const raw = String(key ?? '').trim()
-	if (!raw || raw === '?') return '?'
-	const entityHash = resolveEntityHashForAuthorKey(raw)
+	if (!key || key === '?') return '?'
+	const entityHash = resolveEntityHashForAuthorKey(key)
 	if (entityHash)
 		return resolveDisplayName({
 			entityHash,
 			alias: aliasForEntity(entityHash),
-			fallbackLabel: memberDisplayNameForAuthorKey(raw) || undefined,
+			fallbackLabel: memberDisplayNameForAuthorKey(key) || undefined,
 		})
-	const fromMember = memberDisplayNameForAuthorKey(raw)
+	const fromMember = memberDisplayNameForAuthorKey(key)
 	if (fromMember) return fromMember
-	if (isHex64(raw)) {
-		const hex = normalizeHex64(raw)
+	if (isHex64(key)) {
+		const hex = normalizeHex64(key)
 		return `${hex.slice(0, 8)}…${hex.slice(-4)}`
 	}
-	if (raw.length > 28) return `${raw.slice(0, 12)}…${raw.slice(-4)}`
-	return raw
+	if (key.length > 28) return `${key.slice(0, 12)}…${key.slice(-4)}`
+	return key
 }
 
 /**
@@ -172,8 +159,7 @@ export function authorDisplayLabel(key) {
 export async function groupDisplayName(groupId, name) {
 	const alias = aliasForGroup(groupId)
 	if (alias) return alias
-	const raw = String(name || '').trim()
-	if (raw && raw !== String(groupId || '')) return raw
+	if (name && name !== groupId) return name
 	const { geti18n } = await import('/scripts/i18n/index.mjs')
 	return geti18n('chat.hub.group.unnamed', { suffix: String(groupId || '').slice(-4) })
 }
@@ -184,9 +170,8 @@ export async function groupDisplayName(groupId, name) {
  * @returns {{ displayName: string, profileKey: string }} 展示名与资料 API 键
  */
 export function authorPresentationKeys(authorKey) {
-	const key = String(authorKey ?? '').trim()
-	const displayName = authorDisplayLabel(key)
-	const profileKey = resolveEntityHashForAuthorKey(key) || key
+	const displayName = authorDisplayLabel(authorKey)
+	const profileKey = resolveEntityHashForAuthorKey(authorKey) || authorKey
 	return { displayName, profileKey }
 }
 

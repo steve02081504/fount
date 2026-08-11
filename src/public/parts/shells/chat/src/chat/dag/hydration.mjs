@@ -48,7 +48,7 @@ import { buildTimeSliceFromSessionSnapshot } from '../session/runtime.mjs'
 export function resolveSpeakerUid(line, content, state = null) {
 	const bridgeHash = String(chatExtensionOf(content)?.bridge?.authorEntityHash || '').trim().toLowerCase()
 	if (bridgeHash) return bridgeHash
-	const charId = line?.charId ? String(line.charId).trim() : ''
+	const charId = line?.charId ? String(line.charId) : ''
 	if (charId && state) {
 		const agentKey = resolveActiveAgentMemberKeyByCharname(state, charId)
 		const hash = agentKey ? memberEntityHash(state.members[agentKey]) : null

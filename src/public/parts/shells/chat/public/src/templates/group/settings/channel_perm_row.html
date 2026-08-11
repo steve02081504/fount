@@ -1,0 +1,8 @@
+<div class="flex items-center justify-between gap-2 py-1">
+	<span class="text-sm" data-i18n="chat.group.settings.page.perm.${escapeHtml(perm)}"></span>
+	<div class="join join-horizontal" role="group" data-role-id="${escapeHtml(roleId)}" data-perm="${escapeHtml(perm)}">
+		<button type="button" class="btn btn-xs join-item ${state === 'neutral' ? 'btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="neutral" data-i18n="chat.group.settings.page.channelPerms.stateNeutral"></button>
+		<button type="button" class="btn btn-xs join-item ${state === 'allow' ? 'btn-success btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="allow" data-i18n="chat.group.settings.page.channelPerms.stateAllow"></button>
+		<button type="button" class="btn btn-xs join-item ${state === 'deny' ? 'btn-error btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="deny" data-i18n="chat.group.settings.page.channelPerms.stateDeny"></button>
+	</div>
+</div>

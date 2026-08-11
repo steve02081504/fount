@@ -2,7 +2,7 @@ import {
 	registerFederationChunkFetcher,
 	registerNodeHashProvider,
 	unregisterChunkProviders,
-} from 'npm:@steve02081504/fount-p2p/files/chunk_provider_registry'
+} from 'npm:@steve02081504/fount-p2p/files/chunk/provider_registry'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { fetchCiphertextFromFederation } from './federation/chunks.mjs'

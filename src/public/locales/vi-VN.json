@@ -570,7 +570,15 @@
 			"open_fount": "Mở fount",
 			"open_or_install_fount": "Mở/Cài đặt fount",
 			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}",
-			"star_thank_you": "Cảm ơn bạn đã gắn sao cho fount!"
+			"star_thank_you": "Cảm ơn bạn đã gắn sao cho fount!",
+			"telegram": {
+				"title": "Telegram",
+				"aria-label": "Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "Cài đặt thất bại!",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "Từ nhóm: ${name}",
 			"previewAuthorMeta": "Từ tác giả",
 			"previewActionFailed": "Thao tác thất bại: ${error}",
+			"loadFailed": "Không thể tải bộ chọn emoji: ${error}",
 			"category": {
 				"animal": "động vật",
 				"face": "sự biểu lộ",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "Đã lưu cài đặt nhóm",
 					"saveFailed": "Không thể lưu cài đặt: ${error}",
 					"rolesTitle": "Vai trò và quyền",
+					"rolesHint": "Quyền được chọn áp dụng cho mọi thành viên có vai trò đó trong toàn nhóm. Để cho phép đính kèm, bật «Tải tập tin lên» cho Everyone. Dùng Quyền kênh trong Cài đặt nâng cao chỉ khi cần ngoại lệ theo kênh.",
 					"roleDefault": "mặc định",
 					"permissionUpdated": "Đã cập nhật quyền",
 					"permissionUpdateFailed": "Không thể cập nhật quyền: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "Kho lưu trữ kênh"
 					},
 					"channelPerms": {
-						"addRole": "Thêm ghi đè vai trò",
 						"denied": "Bạn không có quyền MANAGE_CHANNELS để chỉnh sửa phần ghi đè quyền của kênh.",
-						"hint": "Đặt ghi đè quyền vai trò cho các kênh cụ thể. Các mục chưa được khám phá kế thừa quyền vai trò của nhóm.",
+						"hint": "Chỉ ngoại lệ theo kênh: Kế thừa theo quyền vai trò; Cho phép/Từ chối áp dụng bắt buộc cho kênh này. Để mọi người đính kèm, mở Quyền vai trò và bật «Tải tập tin lên» cho Everyone — không có nút «thêm ghi đè» ở đây.",
+						"overridden": "Đã ghi đè",
+						"clearOverride": "Đặt lại tất cả về kế thừa",
 						"noChannels": "Hiện tại không có kênh nào để định cấu hình",
-						"removeRole": "Xóa ghi đè vai trò này",
 						"selectChannel": "Kênh",
 						"stateAllow": "cho phép",
 						"stateDeny": "từ chối",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "Hộp thư",
-				"filtersLabel": "Lọc tin nhắn hộp thư đến",
+				"panel": {
+					"aria-label": "Hộp thư"
+				},
+				"filtersLabel": {
+					"aria-label": "Lọc tin nhắn hộp thư đến"
+				},
 				"rowLabel": {
 					"aria-label": "${author} đã nói trong ${group} của ${channel}: ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "liên tác giả từ xa"
 			},
 			"trustAuthor": {
-				"textContent": "lòng tin",
-				"title": "Tin tưởng tác giả này (cho phép HTML nguy hiểm)"
+				"textContent": "Tin tưởng",
+				"title": "Tin tưởng tác giả này (cho phép Markdown/HTML nguy hiểm)"
 			},
 			"stickerInline": "nhãn dán",
 			"markdownRenderFailed": "Kết xuất tin nhắn không thành công",
+			"messageRenderFailed": "Không thể hiển thị tin nhắn",
 			"retrySend": "Thử lại",
 			"mergeDagOk": "Ngã ba hợp nhất",
 			"mergeDagFailed": "Hợp nhất không thành công: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "Các tệp nhóm sử dụng mã hóa hội tụ: nếu kẻ tấn công biết bản rõ của tệp, hắn có thể lấy được khóa và giải mã khối bản mã tương ứng. Không chỉ dựa vào mã hóa nhóm để bảo vệ các tài liệu có độ nhạy cảm cao và riêng tư.",
 			"reputationSlashAlert": "Danh tiếng của thành viên ${target}… bị nhắc nhở về việc khấu trừ.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "Đóng"
+				},
 				"previewHint": "Các thay đổi sẽ xuất hiện ngay trong bản xem trước và được lưu cũng như đồng bộ hóa trên Trò chuyện và Mạng xã hội.",
 				"sfwMode": "Nội dung an toàn",
 				"livePreview": "Xem trước trực tiếp",
@@ -2456,6 +2475,9 @@
 				"created": "Chủ đề con đã được tạo",
 				"drawer": {
 					"aria-label": "chủ đề con"
+				},
+				"breadcrumb": {
+					"aria-label": "Đường dẫn luồng con"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,17 @@
 				"friends": "Chưa có cuộc trò chuyện riêng tư nào",
 				"groups": "Chưa có nhóm nào",
 				"members": "Chưa có thành viên nào",
-				"pins": "Chưa có ghim",
-				"username": "Tên người dùng không được lấy"
+				"pins": "Chưa có ghim"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "Đã tin cậy",
+				"title": "Đã cho phép kết xuất Markdown của tác giả này"
+			},
+			"attachment": {
+				"dropToUpload": "Thả để tải lên #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} mục chưa đọc"
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2905,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Tải xuống"
+					"title": "Tải xuống",
+					"aria-label": "Tải xuống"
 				},
-				"downloadIcon": {
-					"alt": "Biểu tượng tải xuống"
+				"edit": {
+					"title": "Chỉnh sửa ảnh",
+					"aria-label": "Chỉnh sửa ảnh"
+				},
+				"editIcon": {
+					"alt": "Biểu tượng chỉnh sửa"
 				},
 				"delete": {
-					"title": "Xóa"
-				},
-				"deleteIcon": {
-					"alt": "Biểu tượng xóa"
+					"title": "Xóa",
+					"aria-label": "Xóa"
 				},
 				"more": {
-					"title": "Hơn"
+					"title": "Thêm",
+					"aria-label": "Thêm"
 				},
 				"recognize": {
-					"title": "Giọng nói thành chữ"
+					"title": "Giọng nói thành chữ",
+					"aria-label": "Giọng nói thành chữ"
 				}
 			}
 		},
@@ -4764,6 +4800,9 @@
 			"title": "Danh sách mục",
 			"aria-label": "Danh sách mục"
 		},
+		"breadcrumb": {
+			"aria-label": "Đường dẫn điều hướng"
+		},
 		"openCabinets": "Mở danh sách tủ hồ sơ",
 		"closeCabinets": "Đóng",
 		"bootstrapFailed": "Khởi tạo nội dung tệp không thành công: ${error}",
@@ -5823,6 +5862,25 @@
 			},
 			"search": {
 				"placeholder": "Tìm kiếm..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "Trình xem phương tiện"
+			},
+			"download": {
+				"textContent": "Tải xuống",
+				"aria-label": "Tải xuống"
+			},
+			"close": {
+				"textContent": "Đóng",
+				"aria-label": "Đóng"
+			},
+			"prev": {
+				"aria-label": "Hình ảnh trước đó"
+			},
+			"next": {
+				"aria-label": "Tiếp theo"
 			}
 		}
 	}

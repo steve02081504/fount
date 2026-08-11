@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto'
 import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { readPublicFile } from 'npm:@steve02081504/fount-p2p/files/evfs'
-import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/public_manifest'
+import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/manifest/public'
 import {
 	registerMailboxConsumer,
 	unregisterMailboxConsumer,

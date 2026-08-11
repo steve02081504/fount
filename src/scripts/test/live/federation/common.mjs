@@ -356,6 +356,7 @@ export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 
 /**
  * 双端互拨 user-room，减少 join / CAS 路径冷启动失败。
+ * 校验 connect-node HTTP 成功；失败即抛，避免后续探针在空链路上空转。
  * @param {LiveNodeHandle[]} nodes 节点列表
  * @returns {Promise<void>} 无
  */
@@ -367,10 +368,18 @@ export async function WarmupFedNodeLinks(nodes) {
 		if (view.status === 200 && view.json.nodeHash)
 			identities.push({ node, nodeHash: String(view.json.nodeHash).trim().toLowerCase() })
 	}
+	if (identities.length < 2)
+		throw new Error(`WarmupFedNodeLinks: need ≥2 federation identities, got ${identities.length}`)
 	for (const { node, nodeHash } of identities)
-		for (const { node: peer, nodeHash: peerHash } of identities)
-			if (peer.name !== node.name)
-				await P2pApi(node, 'POST', '/federation/connect-node', { targetNodeHash: peerHash })
+		for (const { node: peer, nodeHash: peerHash } of identities) {
+			if (peer.name === node.name) continue
+			const connected = await P2pApi(node, 'POST', '/federation/connect-node', { targetNodeHash: peerHash })
+			if (connected.status !== 200)
+				throw new Error(
+					`WarmupFedNodeLinks: ${node.name}→${peer.name} connect-node HTTP ${connected.status}`
+					+ (connected.json?.message ? `: ${connected.json.message}` : ''),
+				)
+		}
 }
 
 /**

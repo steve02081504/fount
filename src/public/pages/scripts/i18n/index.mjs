@@ -8,6 +8,7 @@ import { onElementRemoved } from '../lib/onElementRemoved.mjs'
 import { escapeRegExp } from '../lib/regex.mjs'
 
 import { initTranslations, preferredLangsStorageKey } from './base.mjs'
+import { isSwitchValue, resolveSwitchCase } from './switch_value.mjs'
 
 /**
  * 本地化键
@@ -229,6 +230,8 @@ function applyInterpolationToPlainSegment(segment, params) {
  * @returns {TTranslation} 替换后的翻译字符串或原对象。
  */
 function applyParamsToTranslation(translation, params) {
+	if (isSwitchValue(translation))
+		return applyParamsToTranslation(resolveSwitchCase(translation, params), params)
 	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params)
 	if (!translation || !(Object(translation) instanceof String)) return translation
 	const translationText = translation + ''

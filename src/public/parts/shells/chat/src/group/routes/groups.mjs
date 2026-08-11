@@ -11,6 +11,7 @@ import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shel
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
+import { friendBindingMatches } from '../../../public/shared/friendBinding.mjs'
 import { createGroup, removeLocalGroupReplica } from '../../chat/dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../../chat/dag/localSigner.mjs'
 import { createEcdhDmGroup } from '../../chat/dm/index.mjs'
@@ -22,6 +23,7 @@ import { modifyTimeLine } from '../../chat/session/timeLine.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { governanceChannelId } from '../access.mjs'
 import { buildGroupPreview } from '../groupPreview.mjs'
+import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 import { enumerateJoinedFederatedGroups } from '../queries.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
@@ -75,21 +77,21 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			})
 		}
 
-		const { normalizeFriendBinding } = await import('../../../public/shared/friendBinding.mjs')
-		const friendBinding = normalizeFriendBinding(body.friendBinding)
+		const friendBinding = await materializeFriendBinding(username, body.friendBinding)
+		if (body.friendBinding != null && !friendBinding)
+			return res.status(400).json({ error: 'invalid friendBinding' })
 		if (friendBinding && !body.forceNew) {
 			const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
 			const operatorEntityHash = await resolveOperatorEntityHashForUser(username)
 			const rows = await enumerateJoinedFederatedGroups(username, operatorEntityHash)
-			const existing = rows.find(row =>
-				row.friendBinding?.entityHash?.toLowerCase() === friendBinding.entityHash.toLowerCase(),
-			)
+			const existing = rows.find(row => friendBindingMatches(row.friendBinding, friendBinding))
 			if (existing) {
 				registerGroupRuntime(existing.groupId, username)
 				return res.status(200).json({
 					groupId: existing.groupId,
 					defaultChannelId: 'default',
 					reused: true,
+					friendBinding: existing.friendBinding || friendBinding,
 				})
 			}
 		}
@@ -129,6 +131,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		res.status(201).json({
 			groupId: result.groupId,
 			defaultChannelId: result.defaultChannelId,
+			...friendBinding ? { friendBinding } : {},
 		})
 	})
 

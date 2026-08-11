@@ -1,5 +1,6 @@
 import { collectChangesSinceRecord } from '../core/changed.mjs'
 import { expandImperfectDependents } from '../core/dependencies.mjs'
+import { parseTestSubtestsEnv } from '../core/protocol.mjs'
 import { collectStaleTriggerEvidence, suiteKey } from '../core/state.mjs'
 
 /**
@@ -9,6 +10,51 @@ import { collectStaleTriggerEvidence, suiteKey } from '../core/state.mjs'
  * @typedef {import('./continue_reason.mjs').GoalEvidence} GoalEvidence
  */
 
+/**
+ * CLI 已解析的 manifest 分组（含 suite / subtest 选择器）。
+ * @typedef {{ manifestIds: string[], suiteSelectors: string[], subtestSelectors: Record<string, string[]> }} ResolvedGroup
+ */
+
+/**
+ * 从分组收集显式子测试过滤（suite 键 → 名列表）。
+ * CLI `manifest:suite:subtest` 优先；若 CLI 只选了 suite 未写子测试，则合并环境变量
+ * `FOUNT_TEST_SUBTESTS`（仅作用于显式 suiteSelectors，不影响 dependsOn 拉入的依赖套件）。
+ * @param {ResolvedGroup[]} groups 已解析分组
+ * @param {SuiteDef[]} filtered 过滤后的 suite
+ * @param {string[]} [ambientSubtests] 环境变量解析出的子测试名（默认读 `FOUNT_TEST_SUBTESTS`）
+ * @returns {Map<string, string[]>} 子测试过滤
+ */
+export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = parseTestSubtestsEnv()) {
+	/** @type {Map<string, string[]>} */
+	const subtestFilterByKey = new Map()
+	for (const group of groups)
+		for (const [suiteName, subtests] of Object.entries(group.subtestSelectors ?? {})) {
+			if (!subtests.length) continue
+			for (const suite of filtered) {
+				if (!group.manifestIds.includes(suite.manifestId)) continue
+				if (suite.name !== suiteName && suite.id !== suiteName) continue
+				const key = suiteKey(suite.manifestId, suite.name)
+				subtestFilterByKey.set(key, [...new Set([...(subtestFilterByKey.get(key) ?? []), ...subtests])])
+			}
+		}
+
+	if (!ambientSubtests.length) return subtestFilterByKey
+
+	for (const group of groups)
+		for (const suiteName of group.suiteSelectors ?? []) {
+			if (group.subtestSelectors?.[suiteName]?.length) continue
+			for (const suite of filtered) {
+				if (!group.manifestIds.includes(suite.manifestId)) continue
+				if (suite.name !== suiteName && suite.id !== suiteName) continue
+				if (!suite.subtests?.length) continue
+				const key = suiteKey(suite.manifestId, suite.name)
+				if (subtestFilterByKey.has(key)) continue
+				subtestFilterByKey.set(key, [...ambientSubtests])
+			}
+		}
+
+	return subtestFilterByKey
+}
 /**
  * 波次目标选择结果。
  * @typedef {object} GoalSelection

@@ -6,7 +6,12 @@ import process from 'node:process'
 import { console } from '../../i18n/bare.mjs'
 import { applyBudgetToEnv } from '../core/concurrency.mjs'
 import { filterTestOutput } from '../core/output_filter.mjs'
-import { readFailuresOutFile, readTimingsOutFile, toRepoRelative } from '../core/protocol.mjs'
+import {
+	readFailuresOutFile,
+	readTimingsOutFile,
+	toRepoRelative,
+	writeTestTriggeredFiles,
+} from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { suiteUsesSerialRunner } from '../core/resources.mjs'
 
@@ -35,6 +40,7 @@ export function applyTestHeapCapToDenoRun(command) {
  * @property {string[]} [firstFiles] FOUNT_TEST_FIRST：失败优先路径
  * @property {string[]} [subtests] FOUNT_TEST_SUBTESTS：子测试名
  * @property {string[]} [onlyFiles] FOUNT_TEST_ONLY：范围过滤（少用）
+ * @property {string[]} [triggeredFiles] 本波次命中 trigger 的变更路径（写入临时文件后经 env 传路径）
  */
 
 /**
@@ -43,10 +49,11 @@ export function applyTestHeapCapToDenoRun(command) {
  * @param {SuiteInvocationOptions} options 调用选项
  * @param {string} failuresOut 失败输出临时文件
  * @param {string} timingsOut 耗时输出临时文件
+ * @param {string} triggeredFilesPath trigger 列表临时文件；无列表时传空串
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @returns {{ command: string[], env: Record<string, string> }} 命令与环境
  */
-export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, globalBudget) {
+export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, triggeredFilesPath, globalBudget) {
 	const { firstFiles, subtests, onlyFiles } = options ?? {}
 	const env = {
 		FOUNT_TEST: '1',
@@ -57,6 +64,7 @@ export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, gl
 		FOUNT_TEST_ONLY: onlyFiles?.length ? onlyFiles.join('\n') : '',
 		FOUNT_TEST_FIRST: firstFiles?.length ? firstFiles.join('\n') : '',
 		FOUNT_TEST_SUBTESTS: subtests?.length ? subtests.join('\n') : '',
+		FOUNT_TEST_TRIGGERED_FILES: triggeredFilesPath || '',
 		RUST_BACKTRACE: 'full',
 	}
 	if (suiteUsesSerialRunner(suite) && globalBudget)
@@ -123,9 +131,16 @@ async function runSuiteOnce(suite, options, globalBudget, stream, watchdog) {
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
 	const failuresOut = join(tempDir, 'failures.json')
 	const timingsOut = join(tempDir, 'timings.json')
+	const triggeredFilesPath = join(tempDir, 'triggered.txt')
 	const started = Date.now()
 	try {
-		const { command, env } = buildSuiteInvocation(suite, options ?? {}, failuresOut, timingsOut, globalBudget)
+		const triggered = options?.triggeredFiles
+		const triggeredEnvPath = triggered?.length ? triggeredFilesPath : ''
+		if (triggeredEnvPath)
+			await writeTestTriggeredFiles(triggeredFilesPath, triggered)
+		const { command, env } = buildSuiteInvocation(
+			suite, options ?? {}, failuresOut, timingsOut, triggeredEnvPath, globalBudget,
+		)
 		const {
 			code, output, terminated, sleepInterrupted, terminateReason, peakMemMb, avgCpuPct,
 		} = await runCommand(command, env, {

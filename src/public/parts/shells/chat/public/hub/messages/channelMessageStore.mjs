@@ -4,6 +4,7 @@
 import { compareHex64Asc } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { mergeChannelMessagesForDisplay } from '../../shared/messageMerge.mjs'
+import { retainLocalAttachmentBuffers } from '../../shared/retainLocalAttachmentBuffers.mjs'
 import { getChannelViewLogByEventIds } from '../../src/endpoints/groupChannel.mjs'
 import { normalizeEventId } from '../../src/lib/eventId.mjs'
 import { applyChannelDisplayChain } from '../../src/ui/channelDisplay.mjs'
@@ -146,7 +147,7 @@ export async function ensureMessageLoaded(eventId) {
 }
 
 /**
- * 合并增量 batch 进 source（保留 pending 行）。
+ * 合并增量 batch 进 source（保留 pending 行与本地附件 buffer）。
  * @param {object[]} source 当前 source
  * @param {object[]} batch 新行
  * @param {string | null} composerPendingId 乐观 pending id
@@ -159,14 +160,15 @@ export function mergeIncrementalSourceBatch(source, batch, composerPendingId) {
 		const eventId = String(row.eventId)
 		if (eventId) byId.set(eventId, row)
 	}
-	if (composerPendingId) {
-		const pending = source.find(row => String(row.eventId) === composerPendingId)
-		if (pending) byId.set(composerPendingId, pending)
-	}
+	const pendingRow = composerPendingId
+		? source.find(row => String(row.eventId) === composerPendingId)
+		: null
+	if (pendingRow) byId.set(composerPendingId, pendingRow)
 	for (const row of batch) {
 		const eventId = String(row.eventId)
 		if (!eventId) continue
-		byId.set(eventId, row)
+		const previous = byId.get(eventId)
+		byId.set(eventId, retainLocalAttachmentBuffers(previous, row))
 		if (composerPendingId && eventId !== composerPendingId)
 			byId.delete(composerPendingId)
 	}

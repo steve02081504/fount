@@ -16,6 +16,18 @@ import {
  */
 
 /**
+ * 判断候选绑定是否匹配请求（按 entityHash 或 charname）。
+ * @param {{ entityHash?: string, charname?: string } | null | undefined} candidate 候选绑定
+ * @param {{ entityHash?: string, charname?: string } | null | undefined} requested 请求绑定
+ * @returns {boolean} 是否匹配
+ */
+export function friendBindingMatches(candidate, requested) {
+	if (!candidate || !requested) return false
+	if (requested.entityHash && candidate.entityHash === requested.entityHash) return true
+	return !!(requested.charname && candidate.charname === requested.charname)
+}
+
+/**
  * 规范化并校验好友绑定对象。
  * @param {unknown} raw 原始绑定
  * @returns {FriendBinding | null} 校验后的绑定；无效输入为 null
@@ -24,26 +36,37 @@ export function normalizeFriendBinding(raw) {
 	if (!raw) return null
 	const entityHash = String(raw.entityHash ?? '').trim().toLowerCase()
 	if (!isEntityHash128(entityHash)) return null
-	const charname = String(raw.charname ?? '').trim() || undefined
+	const charname = raw.charname || undefined
 	const displayName = String(raw.displayName ?? '').trim() || undefined
 	return { entityHash, ...displayName ? { displayName } : {}, ...charname ? { charname } : {} }
 }
 
 /**
- * @param {string} entityHash 后端已解析的 agent entityHash（禁止路径派生）
+ * 构造基于 charname 的建群好友绑定输入（与 entityHash 互斥）。
  * @param {string} charname 角色 part 名
  * @param {string} [displayName] 展示名
- * @returns {FriendBinding} 角色 agent 绑定
+ * @returns {{ charname: string, displayName?: string }} 建群输入：仅 charname（与 entityHash 互斥）
  */
-export function buildCharFriendBinding(entityHash, charname, displayName) {
-	const eh = String(entityHash || '').trim().toLowerCase()
-	if (!isEntityHash128(eh)) throw new Error('entityHash required')
-	const name = String(charname || '').trim()
-	if (!name) throw new Error('charname required')
+export function charFriendBindingInput(charname, displayName) {
+	if (!charname) throw new Error('charname required')
 	return {
-		entityHash: eh,
-		charname: name,
-		...displayName ? { displayName } : {},
+		charname,
+		...displayName ? { displayName: String(displayName).trim() } : {},
+	}
+}
+
+/**
+ * 构造基于 entityHash 的建群好友绑定输入（与 charname 互斥）。
+ * @param {string} entityHash 128 位 entityHash
+ * @param {string} [displayName] 展示名
+ * @returns {{ entityHash: string, displayName?: string }} 建群输入：仅 entityHash（与 charname 互斥）
+ */
+export function entityFriendBindingInput(entityHash, displayName) {
+	const normalizedEntityHash = String(entityHash || '').trim().toLowerCase()
+	if (!isEntityHash128(normalizedEntityHash)) throw new Error('entityHash required')
+	return {
+		entityHash: normalizedEntityHash,
+		...displayName ? { displayName: String(displayName).trim() } : {},
 	}
 }
 

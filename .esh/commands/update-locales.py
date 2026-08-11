@@ -477,24 +477,6 @@ def translate_text(text: str, source_lang: str, target_lang: str) -> str | None:
 	return None
 
 
-def translate_value(value, source_lang, target_lang):
-	"""递归地翻译值（字符串、列表或 OrderedDict）"""
-	if isinstance(value, str):
-		return translate_text(value, source_lang, target_lang)
-	elif isinstance(value, OrderedDict):
-		translated_dict = OrderedDict()
-		for k, v in value.items():
-			if k == "text" and isinstance(v, str):
-				translated_dict[k] = translate_text(v, source_lang, target_lang)
-			else:
-				translated_dict[k] = translate_value(v, source_lang, target_lang)
-		return translated_dict
-	elif isinstance(value, list):
-		return [translate_value(item, source_lang, target_lang) for item in value]
-	else:
-		return value
-
-
 # 与前端 translateSingularElement / i18n_refs.mjs 对齐的 DOM applicator 字段
 I18N_ELEMENT_APPLICATOR_KEYS = {
 	"placeholder",
@@ -512,8 +494,48 @@ I18N_ELEMENT_APPLICATOR_KEYS = {
 type_mismatch_errors: list[str] = []
 
 
+def is_switch_value(value):
+	"""是否为 i18n switch 叶子：{ switch, default, cases? }。"""
+	return isinstance(value, (OrderedDict, dict)) and value.get("switch") and value.get("default") is not None
+
+
+def locale_leaf_kinds_compatible(a, b):
+	"""string ↔ switch 视为同一种叶子（允许仅部分语言使用单复数分支）。"""
+	return (isinstance(a, str) or is_switch_value(a)) and (isinstance(b, str) or is_switch_value(b))
+
+
+def translate_value(value, source_lang, target_lang):
+	"""递归地翻译值（字符串、列表或 OrderedDict）"""
+	if isinstance(value, str):
+		return translate_text(value, source_lang, target_lang)
+	elif isinstance(value, OrderedDict):
+		if is_switch_value(value):
+			out = OrderedDict(
+				switch=value["switch"],
+				default=translate_value(value["default"], source_lang, target_lang),
+			)
+			if "cases" in value:
+				out["cases"] = OrderedDict(
+					(k, translate_value(v, source_lang, target_lang)) for k, v in value["cases"].items()
+				)
+			return out
+		translated_dict = OrderedDict()
+		for k, v in value.items():
+			if k == "text" and isinstance(v, str):
+				translated_dict[k] = translate_text(v, source_lang, target_lang)
+			else:
+				translated_dict[k] = translate_value(v, source_lang, target_lang)
+		return translated_dict
+	elif isinstance(value, list):
+		return [translate_value(item, source_lang, target_lang) for item in value]
+	else:
+		return value
+
+
 def single_applicator_key(value):
 	"""若 value 为仅含一个 DOM applicator 字段的对象，返回该字段名，否则 None。"""
+	if is_switch_value(value):
+		return None
 	if not isinstance(value, (OrderedDict, dict)) or len(value) != 1:
 		return None
 	only_key = next(iter(value))
@@ -607,6 +629,12 @@ def sync_common_key(dict_a, dict_b, key, lang_a, lang_b, reference_codes, path):
 	val_a, val_b, normalized_changed = normalize_string_vs_applicator_object(dict_a, dict_b, key, lang_a, lang_b, path)
 	if normalized_changed:
 		changed_here = True
+
+	# string ↔ switch：兼容叶子，不做结构同步（cases 可因语言而异）
+	if is_switch_value(val_a) or is_switch_value(val_b):
+		if not locale_leaf_kinds_compatible(val_a, val_b):
+			report_type_mismatch(path, lang_a, val_a, lang_b, val_b)
+		return changed_here
 
 	if isinstance(val_a, OrderedDict) and isinstance(val_b, OrderedDict):
 		if normalize_and_sync_dicts(val_a, val_b, lang_a, lang_b, reference_codes, path):
@@ -1494,6 +1522,8 @@ def generate_locale_data_ts(ref_data, output_path):
 			ts_key = sanitize_ts_key(key)
 			if isinstance(value, list):
 				parts.append(f"{indent}{ts_key}: {generate_ts_array_type(value, indent_level)}")
+			elif is_switch_value(value):
+				parts.append(f"{indent}{ts_key}: string")
 			elif isinstance(value, (OrderedDict, dict)):
 				parts.append(f"{indent}{ts_key}: {generate_ts_type_recursive(value, indent_level + 1)}")
 			elif isinstance(value, str):
@@ -1522,6 +1552,17 @@ def generate_locale_data_ts(ref_data, output_path):
 		for path, placeholders in source.items():
 			target[path] = sorted(set(target.get(path, [])) | set(placeholders))
 
+	def collect_placeholders_from_leaf(value):
+		"""从 string / switch 叶子收集插值占位符（含 switch 字段名）。"""
+		if isinstance(value, str):
+			return set(extract_placeholders(value))
+		if not is_switch_value(value):
+			return set()
+		names = {value["switch"]} | collect_placeholders_from_leaf(value.get("default"))
+		for case_val in (value.get("cases") or {}).values():
+			names |= collect_placeholders_from_leaf(case_val)
+		return names
+
 	def collect_placeholder_keys_recursive(data, prefix=""):
 		"""Recursively finds all keys that have string values with placeholders."""
 		keys = {}
@@ -1534,7 +1575,11 @@ def generate_locale_data_ts(ref_data, output_path):
 			path = f"{prefix}.{key}" if prefix else key
 			if isinstance(value, list):
 				continue
-			if isinstance(value, (OrderedDict, dict)):
+			if is_switch_value(value):
+				placeholders = collect_placeholders_from_leaf(value)
+				if placeholders:
+					keys[path] = sorted(placeholders)
+			elif isinstance(value, (OrderedDict, dict)):
 				merge_placeholder_maps(keys, collect_placeholder_keys_recursive(value, path))
 			elif isinstance(value, str):
 				placeholders = extract_placeholders(value)
@@ -1625,7 +1670,7 @@ export type LocaleKeyWithoutParams = Exclude<LocaleKey, LocaleKeyWithParams>
 
 
 def self_test_normalize_applicator() -> int:
-	"""CLI smoke：string ↔ 单 applicator 对象规范化。"""
+	"""CLI smoke：string ↔ 单 applicator 对象规范化；string ↔ switch 兼容。"""
 	import io
 	from contextlib import redirect_stdout
 
@@ -1647,7 +1692,32 @@ def self_test_normalize_applicator() -> int:
 	if changed2 or not isinstance(c["k"], str):
 		print(f"multi-key should not normalize: changed={changed2} c={c!r}", file=sys.stderr)
 		return 1
-	print(json.dumps({"ok": True, "aria-label": val_a["aria-label"]}, ensure_ascii=False))
+
+	switch_leaf = OrderedDict([
+		("switch", "count"),
+		("default", "${count} items"),
+		("cases", OrderedDict([("1", "1 item")])),
+	])
+	if not is_switch_value(switch_leaf):
+		print("is_switch_value failed", file=sys.stderr)
+		return 1
+	if not locale_leaf_kinds_compatible("${count} items", switch_leaf):
+		print("string↔switch should be compatible", file=sys.stderr)
+		return 1
+	type_mismatch_errors.clear()
+	sa = OrderedDict([("label", "${count} items")])
+	sb = OrderedDict([("label", switch_leaf)])
+	with redirect_stdout(io.StringIO()):
+		changed_switch = sync_common_key(sa, sb, "label", "zh-CN", "es-ES", REFERENCE_LANG_CODES, "demo.label")
+	if changed_switch or type_mismatch_errors:
+		print(f"string↔switch sync should be no-op: changed={changed_switch} errs={type_mismatch_errors!r}", file=sys.stderr)
+		return 1
+	translated = translate_value(copy.deepcopy(switch_leaf), "en-UK", "en-UK")
+	if translated.get("switch") != "count" or "cases" not in translated:
+		print(f"translate_value should preserve switch schema: {translated!r}", file=sys.stderr)
+		return 1
+
+	print(json.dumps({"ok": True, "aria-label": val_a["aria-label"], "switch": True}, ensure_ascii=False))
 	return 0
 
 

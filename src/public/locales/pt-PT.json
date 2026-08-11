@@ -570,7 +570,15 @@
 			"open_fount": "Abrir fount",
 			"open_or_install_fount": "Abrir/Instalar fount",
 			"error_message": "Puxa vida :(\n\nOcorreu um erro:\n${error}",
-			"star_thank_you": "Obrigado por dar uma estrela ao fount!"
+			"star_thank_you": "Obrigado por dar uma estrela ao fount!",
+			"telegram": {
+				"title": "Telegram",
+				"aria-label": "Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "A instalação falhou!",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "Do grupo: ${name}",
 			"previewAuthorMeta": "Do autor",
 			"previewActionFailed": "Ação falhou: ${error}",
+			"loadFailed": "Não foi possível carregar o seletor de emojis: ${error}",
 			"category": {
 				"animal": "Animal",
 				"face": "Expressão",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "Definições do grupo salvas",
 					"saveFailed": "Falha ao save settings: ${error}",
 					"rolesTitle": "Funções e permissões",
+					"rolesHint": "As permissões assinaladas aplicam-se a todo o grupo para membros com esse papel. Para permitir anexos, active «Carregar ficheiros» em Everyone. Use Permissões do canal, em Avançado, apenas para exceções por canal.",
 					"roleDefault": "Padrão",
 					"permissionUpdated": "Permissões atualizadas",
 					"permissionUpdateFailed": "Falha ao update permissions: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "Arquivo do canal"
 					},
 					"channelPerms": {
-						"addRole": "Adicionar role override",
-						"denied": "Pode não tem permissão de MANAGE_CHANNELS para editar substituições de permissão de canal.",
-						"hint": "Defina substituições de permissão de função para canais específicos. Os itens descobertos herdam permissões de função de grupo.",
+						"denied": "Não tem permissão de MANAGE_CHANNELS para editar substituições de permissão de canal.",
+						"hint": "Apenas exceções por canal: Herdar segue as permissões de papel; Permitir/Rejeitar forçam este canal. Para anexos para todos, abra Permissões de papel e assinale «Carregar ficheiros» em Everyone — não procure aqui um botão para adicionar uma substituição.",
+						"overridden": "Substituído",
+						"clearOverride": "Repor tudo para herdar",
 						"noChannels": "Atualmente não há canal para configurar",
-						"removeRole": "Remover this role override",
 						"selectChannel": "Canal",
 						"stateAllow": "Permitir",
 						"stateDeny": "Rejeitar",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "Caixa de entrada",
-				"filtersLabel": "Filtrar mensagens da caixa de entrada",
+				"panel": {
+					"aria-label": "Caixa de entrada"
+				},
+				"filtersLabel": {
+					"aria-label": "Filtrar mensagens da caixa de entrada"
+				},
 				"rowLabel": {
 					"aria-label": "${author} disse em ${group} de ${channel}: ${preview}"
 				},
@@ -1927,10 +1942,11 @@
 			},
 			"trustAuthor": {
 				"textContent": "Confiar",
-				"title": "Confie neste autor (permitir HTML perigoso)"
+				"title": "Confiar neste autor (permitir Markdown/HTML perigoso)"
 			},
 			"stickerInline": "Autocolante",
 			"markdownRenderFailed": "Falha em Message rendering",
+			"messageRenderFailed": "Não foi possível exibir a mensagem",
 			"retrySend": "Tente novamente",
 			"mergeDagOk": "Bifurcação mesclada",
 			"mergeDagFailed": "Falha na mesclagem: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "Os ficheiros de grupo usam encriptação convergente: se o invasor conhecer o texto simples de um ficheiro, ele poderá derivar a chave e desencriptar o bloco de texto cifrado correspondente. Não confie apenas na encriptação de grupo para proteção de documentos altamente confidenciais e exclusivamente privados.",
 			"reputationSlashAlert": "A reputação do membro ${target}… é lembrada da dedução.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "Fechar"
+				},
 				"previewHint": "As alterações aparecem imediatamente na visualização e são salvas e sincronizadas no Chat e nas redes sociais.",
 				"sfwMode": "Conteúdo Seguro",
 				"livePreview": "Visualização ao vivo",
@@ -2456,6 +2475,9 @@
 				"created": "O tópico filho foi criado",
 				"drawer": {
 					"aria-label": "Tópico filho"
+				},
+				"breadcrumb": {
+					"aria-label": "Caminho do subtópico"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,23 @@
 				"friends": "Ainda sem private chats",
 				"groups": "Ainda sem groups",
 				"members": "Ainda sem members",
-				"pins": "Ainda sem pins",
-				"username": "Nome de utilizador não obtido"
+				"pins": "Ainda não há mensagens fixadas"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "Confiável",
+				"title": "Renderização Markdown deste autor permitida"
+			},
+			"attachment": {
+				"dropToUpload": "Largue para enviar para #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": {
+					"switch": "count",
+					"default": "${count} itens não lidos",
+					"cases": {
+						"1": "1 item não lido"
+					}
+				}
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2911,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Transferir"
+					"title": "Transferir",
+					"aria-label": "Transferir"
 				},
-				"downloadIcon": {
-					"alt": "Ícone de Transferência"
+				"edit": {
+					"title": "Editar imagem",
+					"aria-label": "Editar imagem"
+				},
+				"editIcon": {
+					"alt": "Ícone de edição"
 				},
 				"delete": {
-					"title": "Eliminar"
-				},
-				"deleteIcon": {
-					"alt": "Ícone de Eliminar"
+					"title": "Eliminar",
+					"aria-label": "Eliminar"
 				},
 				"more": {
-					"title": "Mais"
+					"title": "Mais",
+					"aria-label": "Mais"
 				},
 				"recognize": {
-					"title": "Voz para texto"
+					"title": "Voz para texto",
+					"aria-label": "Voz para texto"
 				}
 			}
 		},
@@ -4764,6 +4806,9 @@
 			"title": "Lista de itens",
 			"aria-label": "Lista de itens"
 		},
+		"breadcrumb": {
+			"aria-label": "Navegação estrutural"
+		},
 		"openCabinets": "Abrir lista de armários",
 		"closeCabinets": "Fechar",
 		"bootstrapFailed": "Falha na inicialização do armário: ${error}",
@@ -5823,6 +5868,25 @@
 			},
 			"search": {
 				"placeholder": "Pesquisar..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "Visualizador de multimédia"
+			},
+			"download": {
+				"textContent": "Transferir",
+				"aria-label": "Transferir"
+			},
+			"close": {
+				"textContent": "Fechar",
+				"aria-label": "Fechar"
+			},
+			"prev": {
+				"aria-label": "Foto anterior"
+			},
+			"next": {
+				"aria-label": "Próximo"
 			}
 		}
 	}

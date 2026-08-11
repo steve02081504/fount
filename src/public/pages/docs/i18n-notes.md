@@ -8,6 +8,20 @@ Day-to-day API: [AGENTS.md](../AGENTS.md) (`i18n.mjs` / `setLanguage` / `primary
 
 Nested attr keys: `placeholder` / `title` / `label` / `value` / `alt` / `aria-label` / `textContent` / `innerHTML` / `dataset`.
 
+## Switch leaves (singular / plural)
+
+A leaf may be a plain string **or** a switch object resolved by `geti18n` / `data-i18n` before interpolation:
+
+```json
+"aria-label": {
+	"switch": "count",
+	"default": "${count} items",
+	"cases": { "1": "1 item" }
+}
+```
+
+`cases` keys are matched against `String(params[switch])` (so `data-count="1"` hits `"1"`). Miss → `default`. Nested switches are resolved recursively. Cross-locale: string ↔ switch is allowed (only some languages need cases).
+
 ## Placeholders
 
 **`input`/`textarea` placeholders must use an object key** (`{ "placeholder": "…" }`); a string key writes `innerHTML` and wipes the input.

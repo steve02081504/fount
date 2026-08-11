@@ -90,6 +90,7 @@ async function paintSharedPopup(popup, entity) {
 		'[data-profile-popup-care]',
 		'[data-profile-popup-alias]',
 		'[data-profile-popup-dm]',
+		'[data-profile-popup-trust]',
 	]) {
 		const button = popup.querySelector(sel)
 		if (button instanceof HTMLElement) button.hidden = true

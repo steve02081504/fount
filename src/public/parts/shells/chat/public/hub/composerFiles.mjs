@@ -60,9 +60,9 @@ export function clearSelectedFiles() {
 export async function addFilesFromEvent(event) {
 	const container = previewContainer()
 	if (!container) return []
-	const added = await handleFilesSelect(event, selectedFiles, container)
-	if (selectedFiles.length) setComposerExtrasVisible(true)
-	return added
+	return handleFilesSelect(event, selectedFiles, container, {
+		onFilesChange: setComposerExtrasVisible,
+	})
 }
 
 /**

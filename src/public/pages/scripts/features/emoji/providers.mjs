@@ -28,28 +28,28 @@ export async function listEmojiProviders() {
  */
 export async function aggregateEmojiPacks(context = {}) {
 	const providers = await listEmojiProviders()
-	/** @type {object[]} */
-	const packs = []
 	/** @type {object | null} */
 	let usage = null
 	/** @type {object | null} */
 	let collection = null
-
 	for (const provider of providers) {
 		if (provider.usage && !usage) usage = provider.usage
 		if (provider.collection && !collection) collection = provider.collection
-		if (!provider.listPacks) continue
+	}
+
+	const lists = await Promise.all(providers.map(async provider => {
+		if (!provider.listPacks) return []
 		try {
 			const list = await provider.listPacks(context)
-			for (const pack of list || [])
-				packs.push({ ...pack, _provider: provider })
+			return (list || []).map(pack => ({ ...pack, _provider: provider }))
 		}
 		catch (error) {
 			console.warn('[emoji] provider.listPacks failed', provider, error)
+			return []
 		}
-	}
+	}))
 
-	return { packs, providers, usage, collection }
+	return { packs: lists.flat(), providers, usage, collection }
 }
 
 /**

@@ -13,6 +13,6 @@ process.exit(await runShellFrontendTests({
 	configPath: join(testDir, 'playwright.config.mjs'),
 	testUsername: 'chat-fe-user',
 	apiKeyPrefix: 'fount-chat-fe-key',
-	loadParts: ['shells/chat'],
+	loadParts: ['shells/chat', 'shells/social'],
 	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
 }))

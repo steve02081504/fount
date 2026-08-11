@@ -221,6 +221,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 					ticket.code,
 					ticket.roomSecret,
 					ticket.introducerPubKeyHash,
+					ticket.introducerNodeHash,
 				)
 			await navigator.clipboard.writeText(url)
 			showToastI18n('success', 'chat.hub.group.context.inviteCopied')
@@ -330,7 +331,7 @@ async function showAddCharDialog(groupId) {
 			dialog.querySelector('.add-char-cancel')?.addEventListener('click', closeModal)
 			dialog.querySelector('.add-char-submit')?.addEventListener('click', async () => {
 				const sel = dialog.querySelector('#add-char-select')
-				const charname = sel instanceof HTMLSelectElement ? sel.value.trim() : ''
+				const charname = sel instanceof HTMLSelectElement ? sel.value : ''
 				if (!charname) return
 				try {
 					await addGroupChar(groupId, { charname })

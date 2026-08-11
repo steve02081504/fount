@@ -2,20 +2,20 @@
  * 【文件】public/hub/privateGroup.mjs
  * 【职责】角色好友私聊 Hub 流程：进入/重启私聊、清空状态与聊天设置浮层入口。
  * 【原理】`enterPrivateGroup` 委托 `enterFriendChat`；`openGroupSettingsModal` 挂载聊天配置浮层。
- * 【数据结构】store.privateGroup 当前私聊 charname / groupId。
+ * 【数据结构】store.privateGroup 当前私聊 groupId / peerEntityHash。
  * 【关联】charCard、chatConfig、friendBindings、messages/loadMessages、hashNav、friendChat。
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
-import { buildCharFriendBinding } from '../shared/friendBinding.mjs'
+import { charFriendBindingInput } from '../shared/friendBinding.mjs'
 import { deleteSession } from '../src/endpoints/groupCore.mjs'
 import { setGroupFriendBinding, unbindFriendGroup } from '../src/endpoints/groupFriendBinding.mjs'
 
 import { mountChatConfigPanel } from './chatConfig.mjs'
 import { openOverlayModal, closeOverlayModal } from './core/overlayModal.mjs'
 import { store } from './core/state.mjs'
-import { friendBindingForGroup } from './friendBindings.mjs'
+import { activePrivateCharPartName, friendBindingForGroup } from './friendBindings.mjs'
 import { refreshStopGenerationButton } from './stream/index.mjs'
 
 /**
@@ -25,7 +25,6 @@ import { refreshStopGenerationButton } from './stream/index.mjs'
 export function clearPrivateGroupState() {
 	const { privateGroup } = store
 	privateGroup.groupId = null
-	privateGroup.charname = null
 	privateGroup.peerEntityHash = null
 	privateGroup.channelId = 'default'
 	refreshStopGenerationButton()
@@ -45,16 +44,10 @@ export async function restartPrivateGroup(charname, previousGroupId) {
 	}
 	if (store.privateGroup.groupId === previousGroupId)
 		clearPrivateGroupState()
-	const { charAgentEntityHash } = await import('./entityResolve.mjs')
-	const entityHash = await charAgentEntityHash(charname)
-	if (!entityHash) {
-		showToastI18n('error', 'chat.hub.no.username')
-		return
-	}
 	const { enterFriendChat } = await import('./friendChat.mjs')
 	await enterFriendChat({
 		forceNew: true,
-		binding: buildCharFriendBinding(entityHash, charname),
+		binding: charFriendBindingInput(charname),
 	})
 }
 
@@ -67,20 +60,10 @@ export async function restartPrivateGroup(charname, previousGroupId) {
 export async function enterPrivateGroup(charname, options = {}) {
 	if (!charname) return
 	const { enterFriendChat } = await import('./friendChat.mjs')
-	let binding = options.binding
-	if (!binding) {
-		const { charAgentEntityHash } = await import('./entityResolve.mjs')
-		const entityHash = await charAgentEntityHash(charname)
-		if (!entityHash) {
-			showToastI18n('error', 'chat.hub.no.username')
-			return
-		}
-		binding = buildCharFriendBinding(entityHash, charname)
-	}
 	await enterFriendChat({
 		groupId: options.groupId,
 		forceNew: options.forceNew,
-		binding,
+		binding: options.binding || charFriendBindingInput(charname),
 	})
 }
 
@@ -90,7 +73,7 @@ export async function enterPrivateGroup(charname, options = {}) {
  * @returns {Promise<void>}
  */
 export async function openGroupSettingsModal(groupId) {
-	const charname = store.privateGroup.charname || '?'
+	const charname = activePrivateCharPartName() || '?'
 	const friendBound = !!friendBindingForGroup(groupId)
 	const settingsRoot = await renderTemplate('hub/chat/char_settings', {
 		charname,

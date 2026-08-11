@@ -624,9 +624,169 @@ body[data-surface="discovery"] .main-header {
 	position: relative;
 }
 
+/* 待发送附件：紧凑横向缩略图（对齐旧版 chat） */
+.attachment-preview,
+.message-edit-attach-preview {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 10px;
+	padding: 8px 16px 0;
+	max-width: calc(var(--message-max-width) + 32px);
+	margin: 0 auto;
+	width: 100%;
+	box-sizing: border-box;
+	overflow-x: auto;
+}
+
+.attachment-preview:empty,
+.message-edit-attach-preview:empty {
+	display: none;
+	padding: 0;
+}
+
+.attachment {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	min-width: 100px;
+	max-width: 160px;
+	min-height: 100px;
+	padding: 6px;
+	border: 1px dashed color-mix(in srgb, var(--text-muted, #888) 45%, transparent);
+	border-radius: 8px;
+	overflow: hidden;
+	transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.attachment.attachment-entering,
+.attachment.attachment-removing {
+	transform: scale(0.9);
+	opacity: 0;
+}
+
+.attachment .preview-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+}
+
+.attachment .preview,
+.attachment .preview-img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.attachment-preview .preview-img,
+.message-edit-attach-preview .preview-img {
+	width: 64px;
+	height: 64px;
+	object-fit: cover;
+	border-radius: 4px;
+	cursor: zoom-in;
+}
+
+.attachment-preview .preview,
+.message-edit-attach-preview .preview {
+	max-width: 120px;
+	max-height: 80px;
+	object-fit: contain;
+	cursor: zoom-in;
+}
+
+.attachment-preview audio,
+.message-edit-attach-preview audio {
+	width: 180px;
+	max-width: 100%;
+	height: 32px;
+}
+
+.attachment .file-name {
+	display: block;
+	width: 100%;
+	margin-top: 4px;
+	padding: 2px 4px;
+	font-size: 0.7em;
+	text-align: center;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	color: var(--text-normal, inherit);
+	background-color: color-mix(in srgb, var(--bg-main, #000) 55%, transparent);
+	border-radius: 2px;
+}
+
+.attachment .attachment-alt-input {
+	width: 100%;
+	margin-top: 4px;
+	font-size: 0.7rem;
+	min-height: 1.5rem;
+	padding-inline: 0.4rem;
+}
+
+.attachment .attachment-transcript {
+	width: 100%;
+	max-height: 2.4em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.attachment .attachment-button-group {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	z-index: 2;
+	display: flex;
+	gap: 2px;
+	opacity: 0;
+	transform: scale(0.95);
+	transition: opacity 0.15s ease, transform 0.15s ease;
+	pointer-events: none;
+}
+
+.attachment:hover .attachment-button-group,
+.attachment:focus-within .attachment-button-group {
+	opacity: 1;
+	transform: scale(1);
+	pointer-events: auto;
+}
+
+.attachment .attachment-button-group .btn img,
+.attachment .attachment-button-group .btn svg {
+	width: 14px;
+	height: 14px;
+}
+
 .input {
 	font-size: 15px;
 	line-height: 1.45;
+}
+
+.chat-file-drop-overlay {
+	display: none;
+	position: absolute;
+	inset: 0;
+	z-index: 40;
+	align-items: center;
+	justify-content: center;
+	background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+	border: 2px dashed var(--color-primary);
+	pointer-events: none;
+}
+
+.chat-file-drop-overlay.show {
+	display: flex;
+}
+
+.chat-file-drop-card {
+	padding: 18px 28px;
+	border-radius: 12px;
+	background: var(--color-base-100);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+	font-weight: 600;
 }
 
 /* —— 空状态（#messages、线程抽屉、列表频道等共用） —— */

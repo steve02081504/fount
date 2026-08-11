@@ -570,7 +570,15 @@
 			"open_fount": "啟 fount",
 			"open_or_install_fount": "啟/安 fount",
 			"error_message": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}",
-			"star_thank_you": "承蒙星標，不勝感激。"
+			"star_thank_you": "承蒙星標，不勝感激。",
+			"telegram": {
+				"title": "啟 Telegram",
+				"aria-label": "啟 Telegram"
+			},
+			"github": {
+				"title": "啟 GitHub",
+				"aria-label": "啟 GitHub"
+			}
 		},
 		"error": {
 			"title": "安置未遂。",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "出自群組：${name}",
 			"previewAuthorMeta": "出自作者",
 			"previewActionFailed": "未果：${error}",
+			"loadFailed": "表情擇器載入未遂：${error}",
 			"category": {
 				"animal": "動物",
 				"face": "表情",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "群組樞機已存",
 					"saveFailed": "存樞機未遂: ${error}",
 					"rolesTitle": "角色與權限",
+					"rolesHint": "勾選權限後，對該角色全體成員於全群生效。凡人傳附件，請為 Everyone 勾「上傳檔案」。某頻道須單獨限制者，再至高階設定之「頻道權限」。",
 					"roleDefault": "常制",
 					"permissionUpdated": "權限已更",
 					"permissionUpdateFailed": "更權限未遂: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "分苑歸檔"
 					},
 					"channelPerms": {
-						"addRole": "添角色覆蓋",
 						"denied": "君無 MANAGE_CHANNELS 權限，難以編輯分苑權限覆蓋。",
-						"hint": "為特定分苑定角色權限覆蓋。未覆蓋項繼承群組角色權限。",
+						"hint": "此處唯設單一頻道相對角色權限之例外：繼承＝用角色權限頁之設，允許/拒絕＝於本頻道強制覆蓋。開附件於眾，請至「角色權限」為 Everyone 勾上傳檔案，勿於此添覆蓋。",
+						"overridden": "已覆蓋",
+						"clearOverride": "皆復為繼承",
 						"noChannels": "尚無可置分苑",
-						"removeRole": "移除此角色覆蓋",
 						"selectChannel": "分苑",
 						"stateAllow": "允",
 						"stateDeny": "拒絕",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "收件箱",
-				"filtersLabel": "篩選收件箱之札",
+				"panel": {
+					"aria-label": "收件箱"
+				},
+				"filtersLabel": {
+					"aria-label": "篩選收件箱之札"
+				},
 				"rowLabel": {
 					"aria-label": "${author} 於 ${group} 之 ${channel} 分苑中言：${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "諸邦遠端作者"
 			},
 			"trustAuthor": {
-				"textContent": "信任",
-				"title": "信任此作者（聽許危險織文）"
+				"textContent": "信任作者",
+				"title": "信任此作者（聽許危險之 Markdown/HTML 渲染）"
 			},
 			"stickerInline": "貼紙",
 			"markdownRenderFailed": "札敷彩未遂",
+			"messageRenderFailed": "札顯未遂",
 			"retrySend": "建試",
 			"mergeDagOk": "分叉已合併",
 			"mergeDagFailed": "合併未遂：${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "群卷皆依「萬流歸宗」之法（Convergent Encryption）加密：若窺伺者早悉其本源（明文），便可循跡推演，破其符鑰。故切勿於群內獨藏身家性命之機密。",
 			"reputationSlashAlert": "成員 ${target}… 之聲譽受到扣減提醒",
 			"profileEdit": {
+				"close": {
+					"aria-label": "闔"
+				},
 				"previewHint": "改動即現於預覽；存後同步用於 Chat 與 Social。",
 				"sfwMode": "淨域",
 				"livePreview": "實時預覽",
@@ -2456,6 +2475,9 @@
 				"created": "子苑已立",
 				"drawer": {
 					"aria-label": "子苑"
+				},
+				"breadcrumb": {
+					"aria-label": "子苑之徑"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,17 @@
 				"friends": "暫無密談",
 				"groups": "暫無群組",
 				"members": "暫無成員",
-				"pins": "暫無高懸",
-				"username": "未獲名號"
+				"pins": "暫無高懸"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "已信任",
+				"title": "已信任此作者，聽許危險之 Markdown/HTML 渲染"
+			},
+			"attachment": {
+				"dropToUpload": "拖放以上傳於 #${channel}"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} 條未讀"
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2905,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "取"
+					"title": "拓存",
+					"aria-label": "拓存"
 				},
-				"downloadIcon": {
-					"alt": "取"
+				"edit": {
+					"title": "繪圖纂修",
+					"aria-label": "繪圖纂修"
+				},
+				"editIcon": {
+					"alt": "纂修"
 				},
 				"delete": {
-					"title": "刪"
-				},
-				"deleteIcon": {
-					"alt": "刪"
+					"title": "刪",
+					"aria-label": "刪"
 				},
 				"more": {
-					"title": "更多"
+					"title": "更多",
+					"aria-label": "更多"
 				},
 				"recognize": {
-					"title": "語音轉文"
+					"title": "語音轉文",
+					"aria-label": "語音轉文"
 				}
 			}
 		},
@@ -4764,6 +4800,9 @@
 			"title": "卷目",
 			"aria-label": "卷目"
 		},
+		"breadcrumb": {
+			"aria-label": "麵包屑導覽"
+		},
 		"openCabinets": "啟藏經閣名錄",
 		"closeCabinets": "闔",
 		"bootstrapFailed": "藏經閣初始化未遂：${error}",
@@ -5823,6 +5862,25 @@
 			},
 			"search": {
 				"placeholder": "搜..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "媒體觀器"
+			},
+			"download": {
+				"textContent": "拓存",
+				"aria-label": "拓存"
+			},
+			"close": {
+				"textContent": "闔",
+				"aria-label": "闔"
+			},
+			"prev": {
+				"aria-label": "上一項"
+			},
+			"next": {
+				"aria-label": "下一項"
 			}
 		}
 	}

@@ -1,10 +1,11 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { orderFailedFirst, readTimingsOutFile, writeTimingsOutFile } from '../core/protocol.mjs'
+import { orderFailedFirst, readTestTriggeredFiles, readTimingsOutFile, writeTestTriggeredFiles, writeTimingsOutFile } from '../core/protocol.mjs'
+import { suiteTriggeredFiles } from '../core/state.mjs'
 import { aggregateSubtestVerdicts, judgeSubtest } from '../core/verdict.mjs'
-import { subtestMatchesSpec } from '../playwright/phases.mjs'
-import { mapTimingsToSubtests } from '../runner/suite_run.mjs'
+import { collectSubtestFilterByKey } from '../runner/selection.mjs'
+import { buildSuiteInvocation, mapTimingsToSubtests } from '../runner/suite_run.mjs'
 
 import { makeSuite } from './fixtures.mjs'
 
@@ -21,10 +22,57 @@ Deno.test('orderFailedFirst with empty first list keeps original', () => {
 	assertEquals(orderFailedFirst(files, []).ordered, files)
 })
 
-Deno.test('subtestMatchesSpec accepts name or basename', () => {
-	assertEquals(subtestMatchesSpec('feed', 'feed.spec.mjs'), true)
-	assertEquals(subtestMatchesSpec('feed.spec.mjs', 'feed.spec.mjs'), true)
-	assertEquals(subtestMatchesSpec('profile', 'feed.spec.mjs'), false)
+Deno.test('collectSubtestFilterByKey merges ambient FOUNT_TEST_SUBTESTS for suite-only CLI', () => {
+	const filtered = [
+		makeSuite('shells/chat', 'frontend', {
+			subtests: [
+				{ name: 'composer', spec: 'composer.spec.mjs', triggers: [] },
+				{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [] },
+			],
+		}),
+		makeSuite('shells/chat', 'smoke_chat', { triggers: [] }),
+	]
+	const groups = [{
+		manifestIds: ['shells/chat'],
+		suiteSelectors: ['frontend'],
+		subtestSelectors: {},
+	}]
+	const map = collectSubtestFilterByKey(groups, filtered, ['composer'])
+	assertEquals(map.get('shells/chat:frontend'), ['composer'])
+	assertEquals(map.has('shells/chat:smoke_chat'), false)
+})
+
+Deno.test('collectSubtestFilterByKey keeps CLI :subtest over ambient', () => {
+	const filtered = [
+		makeSuite('shells/chat', 'frontend', {
+			subtests: [
+				{ name: 'composer', spec: 'composer.spec.mjs', triggers: [] },
+				{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [] },
+			],
+		}),
+	]
+	const groups = [{
+		manifestIds: ['shells/chat'],
+		suiteSelectors: ['frontend'],
+		subtestSelectors: { frontend: ['smoke'] },
+	}]
+	const map = collectSubtestFilterByKey(groups, filtered, ['composer'])
+	assertEquals(map.get('shells/chat:frontend'), ['smoke'])
+})
+
+Deno.test('collectSubtestFilterByKey ignores ambient when no suiteSelectors', () => {
+	const filtered = [
+		makeSuite('shells/chat', 'frontend', {
+			subtests: [{ name: 'composer', spec: 'composer.spec.mjs', triggers: [] }],
+		}),
+	]
+	const groups = [{
+		manifestIds: ['shells/chat'],
+		suiteSelectors: [],
+		subtestSelectors: {},
+	}]
+	const map = collectSubtestFilterByKey(groups, filtered, ['composer'])
+	assertEquals(map.size, 0)
 })
 
 Deno.test('aggregateSubtestVerdicts prioritizes unknown over red', () => {
@@ -77,4 +125,49 @@ Deno.test('mapTimingsToSubtests matches by spec basename', () => {
 		'src/public/parts/shells/social/test/frontend/feed.spec.mjs': 2000,
 		'src/public/parts/shells/social/test/frontend/profile.spec.mjs': 3000,
 	}, ['feed']), { feed: 2000 })
+})
+
+Deno.test('suiteTriggeredFiles returns trigger-matched changed paths', () => {
+	const suite = makeSuite('checks', 'json_lf', {
+		triggers: ['src/scripts/checks/json_lf.mjs', '**/*.json'],
+	})
+	assertEquals(
+		suiteTriggeredFiles(suite, [
+			'src/public/locales/en-UK.json',
+			'src/scripts/checks/json_lf.mjs',
+			'README.md',
+		]),
+		['src/scripts/checks/json_lf.mjs', 'src/public/locales/en-UK.json'],
+	)
+	assertEquals(suiteTriggeredFiles(suite, []), [])
+})
+
+Deno.test('buildSuiteInvocation passes FOUNT_TEST_TRIGGERED_FILES as temp path', () => {
+	const suite = makeSuite('checks', 'json_lf', { run: ['deno', 'test', 'x.mjs'] })
+	const triggeredPath = '/tmp/fount-test-xyz/triggered.txt'
+	const { env } = buildSuiteInvocation(
+		suite,
+		{ triggeredFiles: ['a.json', 'b.json'] },
+		'/tmp/failures.json',
+		'/tmp/timings.json',
+		triggeredPath,
+		undefined,
+	)
+	assertEquals(env.FOUNT_TEST_TRIGGERED_FILES, triggeredPath)
+})
+
+Deno.test('writeTestTriggeredFiles / readTestTriggeredFiles round-trip', async () => {
+	const path = await Deno.makeTempFile({ prefix: 'fount-triggered-', suffix: '.txt' })
+	const previous = Deno.env.get('FOUNT_TEST_TRIGGERED_FILES')
+	try {
+		await writeTestTriggeredFiles(path, ['a.json', 'b.json', 'a.json'])
+		Deno.env.set('FOUNT_TEST_TRIGGERED_FILES', path)
+		assertEquals(await readTestTriggeredFiles(), ['a.json', 'b.json'])
+		assertEquals(await readTestTriggeredFiles(''), [])
+	}
+	finally {
+		await Deno.remove(path).catch(() => {})
+		if (previous === undefined) Deno.env.delete('FOUNT_TEST_TRIGGERED_FILES')
+		else Deno.env.set('FOUNT_TEST_TRIGGERED_FILES', previous)
+	}
 })

@@ -8,6 +8,7 @@ import {
 	estimateEtaMs,
 	expectedRunDurationMs,
 	GAP_OVERHEAD_MS,
+	hasMeaningfulParallelSavings,
 	serialSumMs,
 	simulateParallelMakespanMs,
 	summarizeEstimate,
@@ -211,4 +212,11 @@ Deno.test('summarizeEstimate reports run/reused/blocked breakdown', () => {
 	assertEquals(summary.runCount, 1)
 	assertEquals(summary.reusedCount, 1)
 	assertEquals(summary.blockedCount, 1)
+})
+
+Deno.test('hasMeaningfulParallelSavings ignores noise-scale deltas', () => {
+	assertEquals(hasMeaningfulParallelSavings({ savingsMs: 0 }), false)
+	assertEquals(hasMeaningfulParallelSavings({ savingsMs: 100 }), false)
+	assertEquals(hasMeaningfulParallelSavings({ savingsMs: 101 }), true)
+	assertEquals(hasMeaningfulParallelSavings({}), false)
 })

@@ -2,7 +2,7 @@
  * 联邦房间凭证 bootstrap 线消息解析（入站）。
  */
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 
 /**
  * @param {unknown} payload 载荷

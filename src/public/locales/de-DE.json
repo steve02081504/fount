@@ -570,7 +570,15 @@
 			"open_fount": "fount öffnen",
 			"open_or_install_fount": "fount öffnen/installieren",
 			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}",
-			"star_thank_you": "Danke, dass du fount einen Stern gegeben hast!"
+			"star_thank_you": "Danke, dass du fount einen Stern gegeben hast!",
+			"telegram": {
+				"title": "Telegram",
+				"aria-label": "Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "Installation fehlgeschlagen!",
@@ -1068,6 +1076,7 @@
 			"previewGroupMeta": "Aus Gruppe: ${name}",
 			"previewAuthorMeta": "Vom Autor",
 			"previewActionFailed": "Aktion fehlgeschlagen: ${error}",
+			"loadFailed": "Emoji-Auswahl konnte nicht geladen werden: ${error}",
 			"category": {
 				"animal": "Tier",
 				"face": "Emoji",
@@ -1455,6 +1464,7 @@
 					"saveSuccess": "Gruppeneinstellungen gespeichert",
 					"saveFailed": "Einstellungen konnten nicht gespeichert werden: ${error}",
 					"rolesTitle": "Rollen und Berechtigungen",
+					"rolesHint": "Aktivierte Berechtigungen gelten gruppenweit für alle Mitglieder mit dieser Rolle. Damit Mitglieder Dateien anhängen können, aktivieren Sie bei Everyone „Dateien hochladen“. Kanalberechtigungen unter Erweitert nur für kanalspezifische Ausnahmen nutzen.",
 					"roleDefault": "Standard",
 					"permissionUpdated": "Berechtigungen aktualisiert",
 					"permissionUpdateFailed": "Berechtigungen konnten nicht aktualisiert werden: ${error}",
@@ -1488,11 +1498,11 @@
 						"title": "Kanalarchiv"
 					},
 					"channelPerms": {
-						"addRole": "Rollenüberschreibung hinzufügen",
 						"denied": "Sie verfügen nicht über die MANAGE_CHANNELS-Berechtigung zum Bearbeiten von Kanalberechtigungsüberschreibungen.",
-						"hint": "Legen Sie Rollenberechtigungsüberschreibungen für bestimmte Kanäle fest. Aufgedeckte Elemente erben Gruppenrollenberechtigungen.",
+						"hint": "Nur Ausnahmen für einen Kanal: Erben übernimmt die Rollenberechtigungen, Erlauben/Verweigern erzwingen diesen Kanal. Für Anhänge für alle öffnen Sie Rollenberechtigungen und aktivieren bei Everyone „Dateien hochladen“ — hier gibt es keine Schaltfläche zum Hinzufügen von Überschreibungen.",
+						"overridden": "Überschrieben",
+						"clearOverride": "Alle auf Erben zurücksetzen",
 						"noChannels": "Derzeit gibt es keinen zu konfigurierenden Kanal",
-						"removeRole": "Entfernen Sie diese Rollenüberschreibung",
 						"selectChannel": "Kanal",
 						"stateAllow": "Erlauben",
 						"stateDeny": "Ablehnen",
@@ -1742,7 +1752,12 @@
 			},
 			"inbox": {
 				"title": "Posteingang",
-				"filtersLabel": "Posteingangsnachrichten filtern",
+				"panel": {
+					"aria-label": "Posteingang"
+				},
+				"filtersLabel": {
+					"aria-label": "Posteingangsnachrichten filtern"
+				},
 				"rowLabel": {
 					"aria-label": "${author} sagte in ${group} von ${channel}: ${preview}"
 				},
@@ -1926,11 +1941,12 @@
 				"title": "Föderierter Remote-Autor"
 			},
 			"trustAuthor": {
-				"textContent": "Vertrauen",
-				"title": "Diesem Autor vertrauen (gefährliches HTML zulassen)"
+				"textContent": "Autor vertrauen",
+				"title": "Diesem Autor vertrauen (gefährliches Markdown/HTML zulassen)"
 			},
 			"stickerInline": "Sticker",
 			"markdownRenderFailed": "Das Rendern der Nachricht ist fehlgeschlagen",
+			"messageRenderFailed": "Nachricht konnte nicht angezeigt werden",
 			"retrySend": "Versuchen Sie es erneut",
 			"mergeDagOk": "Fork zusammengeführt",
 			"mergeDagFailed": "Zusammenführung fehlgeschlagen: ${error}",
@@ -2007,6 +2023,9 @@
 			"convergentEncryptWarn": "Gruppendateien nutzen konvergente Verschlüsselung: Wenn der Angreifer den Leerentext einer Datei kennt, kann er den Schlüssel ableiten und den entsprechenden Chiffretextblock entschlüsseln. Verlassen Sie sich zum Schutz hochsensibler und einzigartig privater Dokumente nicht ausschließlich auf die Gruppenverschlüsselung.",
 			"reputationSlashAlert": "Der Ruf des Mitglieds ${target}… wird an den Abzug erinnert.",
 			"profileEdit": {
+				"close": {
+					"aria-label": "Schließen"
+				},
 				"previewHint": "Änderungen werden sofort in der Vorschau angezeigt und im Chat und in den sozialen Netzwerken gespeichert und synchronisiert.",
 				"sfwMode": "Sichere Inhalte",
 				"livePreview": "Live-Vorschau",
@@ -2456,6 +2475,9 @@
 				"created": "Untergeordneter Thread wurde erstellt",
 				"drawer": {
 					"aria-label": "Untergeordneter Thread"
+				},
+				"breadcrumb": {
+					"aria-label": "Unterthread-Navigation"
 				}
 			},
 			"config": {
@@ -2766,8 +2788,17 @@
 				"friends": "Noch keine privaten Chats",
 				"groups": "Noch keine Gruppe",
 				"members": "Noch keine Mitglieder",
-				"pins": "Noch keine Pins",
-				"username": "Benutzername nicht erhalten"
+				"pins": "Noch keine Pins"
+			},
+			"trustedAuthorBadge": {
+				"textContent": "Vertraut",
+				"title": "Markdown-Rendering dieses Autors ist erlaubt"
+			},
+			"attachment": {
+				"dropToUpload": "Zum Hochladen in #${channel} ablegen"
+			},
+			"unreadBadge": {
+				"aria-label": "${count} ungelesen"
 			}
 		},
 		"sidebar": {
@@ -2874,22 +2905,27 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "Herunterladen"
+					"title": "Herunterladen",
+					"aria-label": "Herunterladen"
 				},
-				"downloadIcon": {
-					"alt": "Herunterladen-Symbol"
+				"edit": {
+					"title": "Bild bearbeiten",
+					"aria-label": "Bild bearbeiten"
+				},
+				"editIcon": {
+					"alt": "Bearbeiten-Symbol"
 				},
 				"delete": {
-					"title": "Löschen"
-				},
-				"deleteIcon": {
-					"alt": "Löschen-Symbol"
+					"title": "Löschen",
+					"aria-label": "Löschen"
 				},
 				"more": {
-					"title": "Mehr"
+					"title": "Mehr",
+					"aria-label": "Mehr"
 				},
 				"recognize": {
-					"title": "Sprache in Text"
+					"title": "Sprache in Text",
+					"aria-label": "Sprache zu Text"
 				}
 			}
 		},
@@ -4764,6 +4800,9 @@
 			"title": "Einträge",
 			"aria-label": "Einträge"
 		},
+		"breadcrumb": {
+			"aria-label": "Brotkrumen-Navigation"
+		},
 		"openCabinets": "Aktenschrankliste öffnen",
 		"closeCabinets": "Schließen",
 		"bootstrapFailed": "Die Initialisierung des Archivs ist fehlgeschlagen: ${error}",
@@ -5823,6 +5862,25 @@
 			},
 			"search": {
 				"placeholder": "Suchen..."
+			}
+		},
+		"mediaViewer": {
+			"dialog": {
+				"aria-label": "Medienbetrachter"
+			},
+			"download": {
+				"textContent": "Herunterladen",
+				"aria-label": "Herunterladen"
+			},
+			"close": {
+				"textContent": "Schließen",
+				"aria-label": "Schließen"
+			},
+			"prev": {
+				"aria-label": "Vorheriges Bild"
+			},
+			"next": {
+				"aria-label": "Nächstes Bild"
 			}
 		}
 	}

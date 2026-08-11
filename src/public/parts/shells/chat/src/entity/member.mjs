@@ -24,10 +24,8 @@ export function memberEntityHash(member) {
  * @returns {Promise<string>} 128 hex entityHash
  */
 export async function ensureLocalAgentEntityHash(username, charname) {
-	const name = String(charname || '').replace(/^chars\//u, '').trim()
 	const { ensureAgentEntityIdentity } = await import('./identity.mjs')
-	const row = await ensureAgentEntityIdentity(username, name)
-	return row.entityHash
+	return (await ensureAgentEntityIdentity(username, charname)).entityHash
 }
 
 /**
