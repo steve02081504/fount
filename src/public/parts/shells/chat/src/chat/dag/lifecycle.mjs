@@ -99,6 +99,8 @@ export async function convergeDagTipsIfAuthorized(username, groupId) {
  */
 export async function createGroup(username, body) {
 	const groupId = body.groupId || randomUUID()
+	const { clearGroupReplicaPurging } = await import('./replicaPurge.mjs')
+	clearGroupReplicaPurging(username, groupId)
 	await mkdir(groupDir(username, groupId), { recursive: true })
 	const owner = String(body.ownerPubKeyHash || '').trim().toLowerCase()
 	if (!owner) throw new Error('ownerPubKeyHash required')
@@ -308,6 +310,8 @@ export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
  * @returns {Promise<void>}
  */
 export async function removeLocalGroupReplica(username, groupId, options = {}) {
+	const { markGroupReplicaPurging } = await import('./replicaPurge.mjs')
+	markGroupReplicaPurging(username, groupId)
 	const state = options.state ?? (await getState(username, groupId, { skipLeftPurge: true })).state
 	const fileIndex = state.messageOverlay?.fileIndex
 	const fileMetas = fileIndex instanceof Map
