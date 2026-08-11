@@ -9,7 +9,7 @@ import { base64ToBytes, bytesToBase64 } from 'npm:@steve02081504/fount-p2p/core/
 import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { registerChunkFetchWait, resolveChunkFetchWait } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import {
 	assignChunksToPeers,
 	markChunkDone,
@@ -17,12 +17,12 @@ import {
 	markChunkInflight,
 	planChunkFetches,
 } from 'npm:@steve02081504/fount-p2p/federation/chunk_fetch_scheduler'
-import { verifiedChunkBytes } from 'npm:@steve02081504/fount-p2p/files/chunk/verify'
+import { registerChunkFetchWait, resolveChunkFetchWait } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
 import { handleFedChunkGetIngress, handleFedChunkDataIngress } from 'npm:@steve02081504/fount-p2p/files/chunk/responder'
 import { getChunk, hasChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
+import { verifiedChunkBytes } from 'npm:@steve02081504/fount-p2p/files/chunk/verify'
 import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 
 import { bumpChunkLocalRef } from '../files/chunkRefcount.mjs'

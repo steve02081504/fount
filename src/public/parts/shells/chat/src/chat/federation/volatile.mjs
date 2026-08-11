@@ -7,8 +7,8 @@
  */
 import { createHash } from 'node:crypto'
 
-import { applyVolatileSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
+import { applyVolatileSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
 import { localNodeHash, loadFederationGroupSettings } from './dagDependencies.mjs'
 import { groupFederationOwner } from './registry.mjs'

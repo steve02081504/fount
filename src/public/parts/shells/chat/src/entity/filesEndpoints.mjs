@@ -3,8 +3,8 @@ import { pipeline } from 'node:stream/promises'
 
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { assertSafeEvfsLogicalPath } from 'npm:@steve02081504/fount-p2p/core/evfs_logical_path'
-import { canReadManifest, canWriteManifestPath } from 'npm:@steve02081504/fount-p2p/files/manifest/acl'
 import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStream } from 'npm:@steve02081504/fount-p2p/files/evfs'
+import { canReadManifest, canWriteManifestPath } from 'npm:@steve02081504/fount-p2p/files/manifest/acl'
 
 import { applySafeContentHeaders } from '../../../../../../scripts/http_content.mjs'
 import { httpError } from '../../../../../../scripts/http_error.mjs'

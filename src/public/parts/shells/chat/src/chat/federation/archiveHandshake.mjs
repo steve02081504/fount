@@ -8,8 +8,8 @@
 import { readFile } from 'node:fs/promises'
 
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
+import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 
 import { computeArchiveSummary } from '../archive/summary.mjs'
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'

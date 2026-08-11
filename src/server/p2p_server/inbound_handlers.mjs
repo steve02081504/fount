@@ -1,8 +1,8 @@
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import {
 	registerDeliveryInboundHandler,
 	registerRpcInboundHandler,
 } from 'npm:@steve02081504/fount-p2p/registries/inbound'
-import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { isPartInvokeResponse } from 'npm:@steve02081504/fount-p2p/wire/part/invoke'
 
 import { getAllUserNames } from '../auth/index.mjs'
