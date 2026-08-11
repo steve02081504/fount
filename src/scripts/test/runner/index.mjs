@@ -64,7 +64,7 @@ import { runSuite } from './suite_run.mjs'
 /**
  * CLI 分组输入（manifest / suite / subtest 选择器）。
  * @typedef {{ manifestSelectors: string[], suiteSelectors: string[], subtestSelectors?: Record<string, string[]> }} GroupInput
- * @typedef {{ manifestIds: string[], suiteSelectors: string[], subtestSelectors: Record<string, string[]> }} ResolvedGroup
+ * @typedef {import('./selection.mjs').ResolvedGroup} ResolvedGroup
  * @typedef {object} RunTestsOptions
  * @property {boolean} [runAll] 是否 --all 全库
  * @property {GroupInput[]} [groups] CLI 分组
@@ -141,49 +141,6 @@ function unmatchedSuiteSelectors(allSuites, groups) {
 		}
 	}
 	return missing
-}
-
-/**
- * 从分组收集显式子测试过滤（suite 键 → 名列表）。
- * CLI `manifest:suite:subtest` 优先；若 CLI 只选了 suite 未写子测试，则合并环境变量
- * `FOUNT_TEST_SUBTESTS`（仅作用于显式 suiteSelectors，不影响 dependsOn 拉入的依赖套件）。
- * @param {ResolvedGroup[]} groups 已解析分组
- * @param {import('../core/manifest.mjs').SuiteDef[]} filtered 过滤后的 suite
- * @param {string[]} [ambientSubtests] 环境变量解析出的子测试名（默认读 `FOUNT_TEST_SUBTESTS`）
- * @returns {Map<string, string[]>} 子测试过滤
- */
-export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = parseTestSubtestsEnv()) {
-	/** @type {Map<string, string[]>} */
-	const map = new Map()
-	for (const group of groups)
-		for (const [suiteName, subtests] of Object.entries(group.subtestSelectors ?? {})) {
-			if (!subtests.length) continue
-			for (const suite of filtered) {
-				if (!group.manifestIds.includes(suite.manifestId)) continue
-				if (suite.name !== suiteName && suite.id !== suiteName) continue
-				const key = suiteKey(suite.manifestId, suite.name)
-				const prev = map.get(key) ?? []
-				map.set(key, [...new Set([...prev, ...subtests])])
-			}
-		}
-
-	if (!ambientSubtests.length) return map
-
-	for (const group of groups) {
-		for (const suiteName of group.suiteSelectors ?? []) {
-			if (group.subtestSelectors?.[suiteName]?.length) continue
-			for (const suite of filtered) {
-				if (!group.manifestIds.includes(suite.manifestId)) continue
-				if (suite.name !== suiteName && suite.id !== suiteName) continue
-				if (!suite.subtests?.length) continue
-				const key = suiteKey(suite.manifestId, suite.name)
-				if (map.has(key)) continue
-				map.set(key, [...ambientSubtests])
-			}
-		}
-	}
-
-	return map
 }
 
 /**
