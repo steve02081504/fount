@@ -1945,7 +1945,7 @@
 				"title": "Treystu þessum höfundi (leyfa hættulegt Markdown/HTML)"
 			},
 			"stickerInline": "Límmiða",
-			"markdownRenderFailed": "Skilaboð mistókst",
+			"markdownRenderFailed": "Ekki tókst að birta Markdown",
 			"messageRenderFailed": "Ekki tókst að birta skilaboðin",
 			"retrySend": "Reyndu aftur",
 			"mergeDagOk": "Fork sameinaðist",

@@ -4,7 +4,7 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { listRepoFiles } from './walk.mjs'
+import { exec } from 'npm:@steve02081504/exec'
 
 /** JSON 扫描后缀。 */
 export const JSON_LF_SUFFIXES = ['.json']
@@ -48,13 +48,32 @@ export function scanFileJsonLf(relativePath, bytes) {
 }
 
 /**
+ * 列出 Git 已跟踪且匹配后缀的相对路径。
+ * @param {string} repoRoot 仓库根
+ * @param {string[]} suffixes 后缀
+ * @param {{ under?: string }} [options] 选项
+ * @returns {Promise<string[]>} 相对路径（正斜杠、已排序）
+ */
+async function listTrackedFiles(repoRoot, suffixes, options = {}) {
+	const tracked = await exec('git ls-files', { cwd: repoRoot })
+	if (tracked.code !== 0) throw new Error(`git ls-files failed: ${tracked.stderr || tracked.stdout}`)
+	const under = options.under ? options.under.replaceAll('\\', '/').replace(/\/$/u, '') : ''
+	return tracked.stdout.trim().split('\n')
+		.map(path => path.trim().replaceAll('\\', '/'))
+		.filter(Boolean)
+		.filter(path => !under || path === under || path.startsWith(`${under}/`))
+		.filter(path => suffixes.some(suffix => path.endsWith(suffix)))
+		.sort()
+}
+
+/**
  * 扫描仓库中全部 JSON 文件。
  * @param {string} repoRoot 仓库根
  * @param {{ under?: string }} [options] 选项
  * @returns {Promise<{ files: string[], issues: JsonLfIssue[] }>} 扫描路径与问题列表
  */
 export async function scanJsonLf(repoRoot, options = {}) {
-	const paths = await listRepoFiles(repoRoot, JSON_LF_SUFFIXES, { under: options.under })
+	const paths = await listTrackedFiles(repoRoot, JSON_LF_SUFFIXES, { under: options.under })
 	/** @type {JsonLfIssue[]} */
 	const issues = []
 	for (const relativePath of paths) {

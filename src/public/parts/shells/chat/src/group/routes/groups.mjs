@@ -24,7 +24,7 @@ import { governanceChannelId } from '../access.mjs'
 import { buildGroupPreview } from '../groupPreview.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 import { enumerateJoinedFederatedGroups } from '../queries.mjs'
-
+import { friendBindingMatches } from '../../../public/shared/friendBinding.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
@@ -82,13 +82,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
 			const operatorEntityHash = await resolveOperatorEntityHashForUser(username)
 			const rows = await enumerateJoinedFederatedGroups(username, operatorEntityHash)
-			const charKey = friendBinding.charname || ''
-			const existing = rows.find(row => {
-				const bound = row.friendBinding
-				if (!bound) return false
-				if (bound.entityHash === friendBinding.entityHash) return true
-				return !!(charKey && bound.charname === charKey)
-			})
+			const existing = rows.find(row => friendBindingMatches(row.friendBinding, friendBinding))
 			if (existing) {
 				registerGroupRuntime(existing.groupId, username)
 				return res.status(200).json({

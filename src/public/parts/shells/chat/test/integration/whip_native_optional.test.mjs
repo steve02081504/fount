@@ -24,34 +24,34 @@ function isIdentContinue(text, index) {
 
 /**
  * @param {string} text 源码
- * @param {number} index 开引号位置
+ * @param {number} openIndex 开引号位置
  * @param {string} quote 引号字符
  * @returns {number} 引号结束后的下标
  */
-function skipString(text, index, quote) {
-	let i = index + 1
-	while (i < text.length) {
-		const c = text[i]
-		if (c === '\\') {
-			i += 2
+function skipString(text, openIndex, quote) {
+	let index = openIndex + 1
+	while (index < text.length) {
+		const character = text[index]
+		if (character === '\\') {
+			index += 2
 			continue
 		}
-		if (c === quote) return i + 1
-		if (quote === '`' && c === '$' && text[i + 1] === '{') {
-			i += 2
+		if (character === quote) return index + 1
+		if (quote === '`' && character === '$' && text[index + 1] === '{') {
+			index += 2
 			let depth = 1
-			while (i < text.length && depth) {
-				if (text[i] === '"' || text[i] === '\'' || text[i] === '`') {
-					i = skipString(text, i, text[i])
+			while (index < text.length && depth) {
+				if (text[index] === '"' || text[index] === '\'' || text[index] === '`') {
+					index = skipString(text, index, text[index])
 					continue
 				}
-				if (text[i] === '{') depth++
-				else if (text[i] === '}') depth--
-				i++
+				if (text[index] === '{') depth++
+				else if (text[index] === '}') depth--
+				index++
 			}
 			continue
 		}
-		i++
+		index++
 	}
 	return text.length
 }
@@ -78,28 +78,28 @@ function skipLineComment(text, index) {
 
 /**
  * @param {string} text 源码
- * @param {number} index 当前位置
+ * @param {number} fromIndex 当前位置
  * @returns {number} 跳过空白与注释后的下标
  */
-function skipSpaceAndComments(text, index) {
-	let i = index
-	while (i < text.length) {
-		const c = text[i]
-		if (c === ' ' || c === '\t' || c === '\n' || c === '\r') {
-			i++
+function skipSpaceAndComments(text, fromIndex) {
+	let index = fromIndex
+	while (index < text.length) {
+		const character = text[index]
+		if (character === ' ' || character === '\t' || character === '\n' || character === '\r') {
+			index++
 			continue
 		}
-		if (c === '/' && text[i + 1] === '*') {
-			i = skipBlockComment(text, i)
+		if (character === '/' && text[index + 1] === '*') {
+			index = skipBlockComment(text, index)
 			continue
 		}
-		if (c === '/' && text[i + 1] === '/') {
-			i = skipLineComment(text, i)
+		if (character === '/' && text[index + 1] === '/') {
+			index = skipLineComment(text, index)
 			continue
 		}
 		break
 	}
-	return i
+	return index
 }
 
 /**
@@ -109,10 +109,10 @@ function skipSpaceAndComments(text, index) {
  * @returns {number} 声明结束后的下标；失败为 -1
  */
 function scanFromModuleSpecifier(text, fromIndex) {
-	const i = skipSpaceAndComments(text, fromIndex + 4)
-	const quote = text[i]
+	const index = skipSpaceAndComments(text, fromIndex + 4)
+	const quote = text[index]
 	if (quote !== '"' && quote !== '\'') return -1
-	return skipString(text, i, quote)
+	return skipString(text, index, quote)
 }
 
 /**
@@ -121,30 +121,30 @@ function scanFromModuleSpecifier(text, fromIndex) {
  * @returns {number} 声明结束后的下标；非静态 import 为 -1
  */
 function scanImportDeclaration(text, importIndex) {
-	let i = skipSpaceAndComments(text, importIndex + 6)
-	const quote = text[i]
+	let index = skipSpaceAndComments(text, importIndex + 6)
+	const quote = text[index]
 	if (quote === '"' || quote === '\'')
-		return skipString(text, i, quote)
+		return skipString(text, index, quote)
 
-	while (i < text.length) {
-		i = skipSpaceAndComments(text, i)
-		if (text.startsWith('from', i) && !isIdentContinue(text, i + 4))
-			return scanFromModuleSpecifier(text, i)
-		const c = text[i]
-		if (c === '"' || c === '\'' || c === '`') {
-			i = skipString(text, i, c)
+	while (index < text.length) {
+		index = skipSpaceAndComments(text, index)
+		if (text.startsWith('from', index) && !isIdentContinue(text, index + 4))
+			return scanFromModuleSpecifier(text, index)
+		const character = text[index]
+		if (character === '"' || character === '\'' || character === '`') {
+			index = skipString(text, index, character)
 			continue
 		}
-		if (c === '/' && text[i + 1] === '*') {
-			i = skipBlockComment(text, i)
+		if (character === '/' && text[index + 1] === '*') {
+			index = skipBlockComment(text, index)
 			continue
 		}
-		if (c === '/' && text[i + 1] === '/') {
-			i = skipLineComment(text, i)
+		if (character === '/' && text[index + 1] === '/') {
+			index = skipLineComment(text, index)
 			continue
 		}
-		if (c === ';' || c === '\n') return -1
-		i++
+		if (character === ';' || character === '\n') return -1
+		index++
 	}
 	return -1
 }
@@ -155,27 +155,27 @@ function scanImportDeclaration(text, importIndex) {
  * @returns {number} 声明结束后的下标；非 `export … from` 为 -1
  */
 function scanExportNamedFromDeclaration(text, exportIndex) {
-	let i = skipSpaceAndComments(text, exportIndex + 6)
-	if (text[i] !== '{' && !text.startsWith('*', i)) return -1
-	while (i < text.length) {
-		i = skipSpaceAndComments(text, i)
-		if (text.startsWith('from', i) && !isIdentContinue(text, i + 4))
-			return scanFromModuleSpecifier(text, i)
-		const c = text[i]
-		if (c === '"' || c === '\'' || c === '`') {
-			i = skipString(text, i, c)
+	let index = skipSpaceAndComments(text, exportIndex + 6)
+	if (text[index] !== '{' && !text.startsWith('*', index)) return -1
+	while (index < text.length) {
+		index = skipSpaceAndComments(text, index)
+		if (text.startsWith('from', index) && !isIdentContinue(text, index + 4))
+			return scanFromModuleSpecifier(text, index)
+		const character = text[index]
+		if (character === '"' || character === '\'' || character === '`') {
+			index = skipString(text, index, character)
 			continue
 		}
-		if (c === '/' && text[i + 1] === '*') {
-			i = skipBlockComment(text, i)
+		if (character === '/' && text[index + 1] === '*') {
+			index = skipBlockComment(text, index)
 			continue
 		}
-		if (c === '/' && text[i + 1] === '/') {
-			i = skipLineComment(text, i)
+		if (character === '/' && text[index + 1] === '/') {
+			index = skipLineComment(text, index)
 			continue
 		}
-		if (c === ';' || c === '\n') return -1
-		i++
+		if (character === ';' || character === '\n') return -1
+		index++
 	}
 	return -1
 }
@@ -190,43 +190,43 @@ function scanExportNamedFromDeclaration(text, exportIndex) {
 function staticModuleDeclarations(text, modulePattern) {
 	/** @type {string[]} */
 	const hits = []
-	let i = 0
-	while (i < text.length) {
-		const c = text[i]
-		if (c === '"' || c === '\'' || c === '`') {
-			i = skipString(text, i, c)
+	let index = 0
+	while (index < text.length) {
+		const character = text[index]
+		if (character === '"' || character === '\'' || character === '`') {
+			index = skipString(text, index, character)
 			continue
 		}
-		if (c === '/' && text[i + 1] === '*') {
-			i = skipBlockComment(text, i)
+		if (character === '/' && text[index + 1] === '*') {
+			index = skipBlockComment(text, index)
 			continue
 		}
-		if (c === '/' && text[i + 1] === '/') {
-			i = skipLineComment(text, i)
+		if (character === '/' && text[index + 1] === '/') {
+			index = skipLineComment(text, index)
 			continue
 		}
 
-		if ((c === 'i' || c === 'e') && (i === 0 || !isIdentContinue(text, i - 1))) {
-			if (text.startsWith('import', i) && !isIdentContinue(text, i + 6)) {
-				const end = scanImportDeclaration(text, i)
-				if (end > i) {
-					const statement = text.slice(i, end).replace(/\s+/g, ' ').trim()
+		if ((character === 'i' || character === 'e') && (index === 0 || !isIdentContinue(text, index - 1))) {
+			if (text.startsWith('import', index) && !isIdentContinue(text, index + 6)) {
+				const end = scanImportDeclaration(text, index)
+				if (end > index) {
+					const statement = text.slice(index, end).replace(/\s+/g, ' ').trim()
 					if (modulePattern.test(statement)) hits.push(statement)
-					i = end
+					index = end
 					continue
 				}
 			}
-			if (text.startsWith('export', i) && !isIdentContinue(text, i + 6)) {
-				const end = scanExportNamedFromDeclaration(text, i)
-				if (end > i) {
-					const statement = text.slice(i, end).replace(/\s+/g, ' ').trim()
+			if (text.startsWith('export', index) && !isIdentContinue(text, index + 6)) {
+				const end = scanExportNamedFromDeclaration(text, index)
+				if (end > index) {
+					const statement = text.slice(index, end).replace(/\s+/g, ' ').trim()
 					if (modulePattern.test(statement)) hits.push(statement)
-					i = end
+					index = end
 					continue
 				}
 			}
 		}
-		i++
+		index++
 	}
 	return hits
 }
@@ -277,7 +277,7 @@ export { x } from './ok.mjs'
 
 Deno.test('staticModuleDeclarations ignores import text inside comments and strings', () => {
 	const fixture = `
-const s = "import x from 'npm:node-datachannel'"
+const source = "import x from 'npm:node-datachannel'"
 /* import y from 'npm:node-datachannel' */
 // import z from 'npm:node-datachannel'
 import { PeerConnection } from 'npm:node-datachannel'

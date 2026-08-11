@@ -115,13 +115,12 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		)
 		const files = Array.isArray(req.body?.files) ? req.body.files : []
 		if (files.length || Array.isArray(contentToWrite.files)) {
-			const maxBytes = Number(state.groupSettings?.maxDagPayloadBytes) || 262_144
 			;({ content: contentToWrite } = await attachFilesToContent(
 				username,
 				groupId,
 				contentToWrite,
 				files,
-				maxBytes,
+				Number(state.groupSettings?.maxDagPayloadBytes) || 262_144,
 				{ mergeExistingFiles: true },
 			))
 		}

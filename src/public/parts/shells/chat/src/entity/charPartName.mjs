@@ -15,7 +15,7 @@ export { resolveCharPartNameAgainstList } from './charPartNameMatch.mjs'
 /**
  * 解析为本机 chars/ 真实目录名。
  * @param {string} username fount 登录名
- * @param {unknown} raw 用户/API 输入
+ * @param {string} raw 用户/API 输入
  * @returns {string} 真实目录名
  */
 export function resolveCharPartName(username, raw) {

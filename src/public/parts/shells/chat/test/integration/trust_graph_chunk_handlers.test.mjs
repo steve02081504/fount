@@ -28,7 +28,7 @@ Deno.test('attachTrustGraphChunkHandlers registers fed_chunk actions on room', a
 		origWarn(...args)
 	}
 	try {
-		attachTrustGraphChunkHandlers(room, { enqueue() {} }, {}, 'room-key')
+		await attachTrustGraphChunkHandlers(room, { enqueue() {} }, {}, 'room-key')
 		await waitUntil(
 			() => actions.includes('fed_chunk_data') || warns.some(args => String(args[0]).includes('trust-graph')),
 			15_000,

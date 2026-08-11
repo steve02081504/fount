@@ -11,7 +11,7 @@ import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
-import { buildUserFriendBinding, charFriendBindingInput, normalizeFriendBinding } from '../shared/friendBinding.mjs'
+import { buildUserFriendBinding, charFriendBindingInput, friendBindingMatches, normalizeFriendBinding } from '../shared/friendBinding.mjs'
 import { getFederationSettings } from '../src/endpoints/federationSettings.mjs'
 import { addGroupChar, createFriendGroup, getGroupState, listGroupChars } from '../src/endpoints/groupCore.mjs'
 import { createDirectMessageByPubKeys } from '../src/endpoints/groupDm.mjs'
@@ -78,14 +78,7 @@ function enqueueResolveFriendGroup(fn, signal) {
  */
 async function findExistingFriendGroup(binding) {
 	await loadGroups()
-	const entityHash = binding.entityHash || ''
-	const charKey = binding.charname || ''
-	const matches = store.sidebar.groups.filter(g => {
-		const fb = g.friendBinding
-		if (!fb) return false
-		if (entityHash && fb.entityHash === entityHash) return true
-		return !!(charKey && fb.charname === charKey)
-	})
+	const matches = store.sidebar.groups.filter(group => friendBindingMatches(group.friendBinding, binding))
 	if (!matches.length) return null
 	matches.sort((a, b) => new Date(b.lastMessageTime || 0) - new Date(a.lastMessageTime || 0))
 	return matches[0].groupId ?? null

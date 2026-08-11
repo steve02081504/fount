@@ -277,6 +277,7 @@ function bindImageEditHandler(attachmentElement, file, previewContainer) {
 			file.buffer = arrayBufferToBase64(await edited.arrayBuffer())
 			file.name = edited.name
 			file.mime_type = edited.type || file.mime_type
+			file.size = edited.size
 			const img = previewContainer.querySelector('img')
 			if (img) {
 				const nextUrl = objectUrlFromLocalBuffer(file.buffer, file.mime_type, attachmentElement)

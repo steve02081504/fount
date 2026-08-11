@@ -500,10 +500,11 @@ export function attachFedChunkHandlers(fedRoom) {
  * @param {{ enqueue: (prio: number, fn: () => void) => void }} fedOut 出站队列
  * @param {object} [rtcLimits] RTC 限额
  * @param {string} [roomKey] 房间键
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function attachTrustGraphChunkHandlers(room, fedOut, rtcLimits = {}, roomKey = '') {
-	import('npm:@steve02081504/fount-p2p/files/chunk/responder').then(({ attachTrustGraphFedChunkResponder }) => {
+export async function attachTrustGraphChunkHandlers(room, fedOut, rtcLimits = {}, roomKey = '') {
+	try {
+		const { attachTrustGraphFedChunkResponder } = await import('npm:@steve02081504/fount-p2p/files/chunk/responder')
 		attachTrustGraphFedChunkResponder(
 			room,
 			fedOut,
@@ -511,5 +512,8 @@ export function attachTrustGraphChunkHandlers(room, fedOut, rtcLimits = {}, room
 			rtcLimits,
 			roomKey,
 		)
-	}).catch(error => console.warn('federation: failed to attach trust-graph chunk handlers', error))
+	}
+	catch (error) {
+		console.warn('federation: failed to attach trust-graph chunk handlers', error)
+	}
 }

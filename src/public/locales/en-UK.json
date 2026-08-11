@@ -1504,9 +1504,9 @@
 						"clearOverride": "Reset all to inherit",
 						"noChannels": "There is currently no channel to configure",
 						"selectChannel": "Channels",
-						"stateAllow": "allow",
-						"stateDeny": "reject",
-						"stateNeutral": "inherit",
+						"stateAllow": "Allow",
+						"stateDeny": "Deny",
+						"stateNeutral": "Inherit",
 						"updateFailed": "Failed to update channel permissions: ${error}",
 						"updated": "Channel permissions updated"
 					},

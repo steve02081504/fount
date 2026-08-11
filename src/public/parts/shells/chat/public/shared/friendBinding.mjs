@@ -16,6 +16,18 @@ import {
  */
 
 /**
+ * 判断候选绑定是否匹配请求（按 entityHash 或 charname）。
+ * @param {{ entityHash?: string, charname?: string } | null | undefined} candidate 候选绑定
+ * @param {{ entityHash?: string, charname?: string } | null | undefined} requested 请求绑定
+ * @returns {boolean} 是否匹配
+ */
+export function friendBindingMatches(candidate, requested) {
+	if (!candidate || !requested) return false
+	if (requested.entityHash && candidate.entityHash === requested.entityHash) return true
+	return !!(requested.charname && candidate.charname === requested.charname)
+}
+
+/**
  * 规范化并校验好友绑定对象。
  * @param {unknown} raw 原始绑定
  * @returns {FriendBinding | null} 校验后的绑定；无效输入为 null

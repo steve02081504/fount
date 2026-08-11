@@ -8,17 +8,15 @@
 
 /**
  * 对照已安装 chars 列表解析规范 part 名。
- * @param {unknown} raw 用户/API 输入（可带 `chars/` 前缀）
+ * @param {string} raw 用户/API 输入（可带 `chars/` 前缀）
  * @param {Iterable<string>} partNames 已安装目录名
  * @returns {string} 列表中的真实目录名
  */
 export function resolveCharPartNameAgainstList(raw, partNames) {
-	const name = String(raw || '').replace(/^chars\//u, '').trim()
+	const name = raw.replace(/^chars\//u, '').trim()
 	if (!name) throw new Error('charPartName required')
-	const lower = name.toLowerCase()
-	for (const part of partNames) {
-		const candidate = String(part)
-		if (candidate.toLowerCase() === lower) return candidate
-	}
+	const fullNameLower = name.toLowerCase()
+	for (const part of partNames)
+		if (part.toLowerCase() === fullNameLower) return part
 	throw new Error(`char part not found: ${name}`)
 }

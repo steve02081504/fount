@@ -59,11 +59,10 @@ export async function appendAgentMemberJoin(replicaUsername, groupId, charname, 
 	const { mintGroupInviteTicket } = await import('../lib/inviteTickets.mjs')
 	const bind = sessionOwnerBinding(replicaUsername)
 	const row = await ensureAgentEntityIdentity(replicaUsername, charname)
-	const canonicalName = row.charPartName
 	const ownerEntityHash = await getOperatorEntityHash(replicaUsername)
 	const { code: inviteCode } = await mintGroupInviteTicket(replicaUsername, groupId)
 	const content = {
-		charname: canonicalName,
+		charname: row.charPartName,
 		homeNodeHash: bind.homeNodeHash,
 		ownerEntityHash,
 		ownerUsername: bind.ownerUsername,

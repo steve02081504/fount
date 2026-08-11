@@ -52,7 +52,7 @@ function pendingRowFromComposer(contentObj, tempId, files = []) {
 			fileId: '',
 			name: file.name || 'file',
 			mime_type: file.mime_type || 'application/octet-stream',
-			size: Number(file.size) || 0,
+			size: file.size,
 			buffer: file.buffer,
 			...file.description ? { description: file.description } : {},
 		}))

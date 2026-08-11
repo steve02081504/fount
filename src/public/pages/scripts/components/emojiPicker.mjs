@@ -590,17 +590,22 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 	panel.append(title, body)
 	document.body.appendChild(panel)
 
-	const { sections, usage } = await buildSections(pickerContext)
-	renderContinuousPicker(body, sections, {
-		usage,
-		/** @param {string} token 插入的文本或表情引用 */
-		onInsert: token => {
-			onInsert(token)
-			panel.remove()
-		},
-	})
-
-	wireOutsideClickClose(panel, () => panel.remove(), anchor)
+	try {
+		const { sections, usage } = await buildSections(pickerContext)
+		renderContinuousPicker(body, sections, {
+			usage,
+			/** @param {string} token 插入的文本或表情引用 */
+			onInsert: token => {
+				onInsert(token)
+				panel.remove()
+			},
+		})
+		wireOutsideClickClose(panel, () => panel.remove(), anchor)
+	}
+	catch (error) {
+		panel.remove()
+		throw error
+	}
 }
 
 /**

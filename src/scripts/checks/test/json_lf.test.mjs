@@ -37,7 +37,7 @@ Deno.test('scanFileJsonLf', () => {
 Deno.test('repo: JSON files use LF line endings', async () => {
 	const { issues } = await scanJsonLf(REPO_ROOT)
 	if (issues.length) {
-		const sample = issues.slice(0, 12).map(i => `${i.path} (${i.kind})`).join('\n')
+		const sample = issues.slice(0, 12).map(issue => `${issue.path} (${issue.kind})`).join('\n')
 		assert(false, `JSON 须使用 LF 换行 (${issues.length}):\n${sample}`)
 	}
 })
