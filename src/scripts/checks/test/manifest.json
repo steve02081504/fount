@@ -120,6 +120,24 @@
 			]
 		},
 		{
+			"name": "json_lf",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/json_lf.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/{json_lf.mjs,walk.mjs}",
+				"src/scripts/checks/test/json_lf.test.mjs",
+				"**/*.json"
+			]
+		},
+		{
 			"name": "jsdoc_no_english",
 			"run": [
 				"deno",
