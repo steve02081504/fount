@@ -572,12 +572,12 @@
 			"error_message": "От халепа :(\n\nСталася помилка:\n${error}",
 			"star_thank_you": "Дякуємо, що позначили fount зіркою!",
 			"telegram": {
-				"title": "Відкрийте Telegram",
-				"aria-label": "Відкрийте Telegram"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "Відкрийте GitHub",
-				"aria-label": "Відкрийте GitHub"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "Стікер",
 			"markdownRenderFailed": "Помилка обробки повідомлення",
-			"messageRenderFailed": "Помилка обробки повідомлення",
+			"messageRenderFailed": "Не вдалося відобразити повідомлення",
 			"retrySend": "Спробуйте знову",
 			"mergeDagOk": "Вилка злита",
 			"mergeDagFailed": "Не вдалося об’єднати: ${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "Список елементів"
 		},
 		"breadcrumb": {
-			"aria-label": "Панірувальні сухарі"
+			"aria-label": "Навігаційний ланцюжок"
 		},
 		"openCabinets": "Відкрити список картотеки",
 		"closeCabinets": "Закрити",

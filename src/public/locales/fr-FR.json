@@ -572,12 +572,12 @@
 			"error_message": "Oh là là :(\n\nUne erreur s'est produite :\n${error}",
 			"star_thank_you": "Merci d'avoir donné une étoile à fount !",
 			"telegram": {
-				"title": "Télégramme ouvert",
-				"aria-label": "Télégramme ouvert"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "Ouvrez GitHub",
-				"aria-label": "Ouvrez GitHub"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {

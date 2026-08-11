@@ -572,12 +572,12 @@
 			"error_message": "あらら…\n\nエラーが発生しました：\n${error}",
 			"star_thank_you": "fountにスターを付けていただきありがとうございます！",
 			"telegram": {
-				"title": "Telegram を開く",
-				"aria-label": "Telegram を開く"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "GitHub を開く",
-				"aria-label": "GitHub を開く"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "ステッカー",
 			"markdownRenderFailed": "メッセージのレンダリングに失敗しました",
-			"messageRenderFailed": "メッセージのレンダリングに失敗しました",
+			"messageRenderFailed": "メッセージを表示できませんでした",
 			"retrySend": "再試行",
 			"mergeDagOk": "フォークがマージされました",
 			"mergeDagFailed": "マージに失敗しました: ${error}",

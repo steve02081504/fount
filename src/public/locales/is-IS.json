@@ -572,12 +572,12 @@
 			"error_message": "Æji :(\n\nVilla kom upp:\n${error}",
 			"star_thank_you": "Takk fyrir að gefa fount stjörnu!",
 			"telegram": {
-				"title": "Opnaðu Telegram",
-				"aria-label": "Opnaðu Telegram"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "Opnaðu GitHub",
-				"aria-label": "Opnaðu GitHub"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "Límmiða",
 			"markdownRenderFailed": "Skilaboð mistókst",
-			"messageRenderFailed": "Skilaboð mistókst",
+			"messageRenderFailed": "Ekki tókst að birta skilaboðin",
 			"retrySend": "Reyndu aftur",
 			"mergeDagOk": "Fork sameinaðist",
 			"mergeDagFailed": "Sameining mistókst: ${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "Atriðalisti"
 		},
 		"breadcrumb": {
-			"aria-label": "Brauðrasp"
+			"aria-label": "Brauðmola-leið"
 		},
 		"openCabinets": "Opnaðu skjalaskápalista",
 		"closeCabinets": "Loka",

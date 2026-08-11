@@ -572,12 +572,12 @@
 			"error_message": "😢\n\n❌:\n${error}",
 			"star_thank_you": "🙏⭐",
 			"telegram": {
-				"title": "打开 Telegram",
-				"aria-label": "打开 Telegram"
+				"title": "✈️",
+				"aria-label": "✈️"
 			},
 			"github": {
-				"title": "打开 GitHub",
-				"aria-label": "打开 GitHub"
+				"title": "🐙🐱",
+				"aria-label": "🐙🐱"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "🏷️",
 			"markdownRenderFailed": "💬🎨❌",
-			"messageRenderFailed": "消息渲染失败",
+			"messageRenderFailed": "💬🎨❌",
 			"retrySend": "🔄",
 			"mergeDagOk": "🔀✅🔗",
 			"mergeDagFailed": "🔀❌：${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "📄📋"
 		},
 		"breadcrumb": {
-			"aria-label": "面包屑导航"
+			"aria-label": "🍞➡️"
 		},
 		"openCabinets": "📂🗄️📋",
 		"closeCabinets": "✖️",

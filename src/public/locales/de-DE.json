@@ -572,12 +572,12 @@
 			"error_message": "Och nö :(\n\nEin Fehler ist aufgetreten:\n${error}",
 			"star_thank_you": "Danke, dass du fount einen Stern gegeben hast!",
 			"telegram": {
-				"title": "Öffnen Sie Telegram",
-				"aria-label": "Öffnen Sie Telegram"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "Öffnen Sie GitHub",
-				"aria-label": "Öffnen Sie GitHub"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "Sticker",
 			"markdownRenderFailed": "Das Rendern der Nachricht ist fehlgeschlagen",
-			"messageRenderFailed": "Das Rendern der Nachricht ist fehlgeschlagen",
+			"messageRenderFailed": "Nachricht konnte nicht angezeigt werden",
 			"retrySend": "Versuchen Sie es erneut",
 			"mergeDagOk": "Fork zusammengeführt",
 			"mergeDagFailed": "Zusammenführung fehlgeschlagen: ${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "Einträge"
 		},
 		"breadcrumb": {
-			"aria-label": "Paniermehl"
+			"aria-label": "Brotkrumen-Navigation"
 		},
 		"openCabinets": "Aktenschrankliste öffnen",
 		"closeCabinets": "Schließen",

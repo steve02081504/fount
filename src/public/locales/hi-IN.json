@@ -572,12 +572,12 @@
 			"error_message": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}",
 			"star_thank_you": "fount को स्टार देने के लिए धन्यवाद!",
 			"telegram": {
-				"title": "टेलीग्राम खोलें",
-				"aria-label": "टेलीग्राम खोलें"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "गिटहब खोलें",
-				"aria-label": "गिटहब खोलें"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "कँटिया",
 			"markdownRenderFailed": "संदेश प्रतिपादन विफल रहा",
-			"messageRenderFailed": "संदेश प्रतिपादन विफल रहा",
+			"messageRenderFailed": "संदेश प्रदर्शित नहीं हो सका",
 			"retrySend": "पुनः प्रयास करें",
 			"mergeDagOk": "कांटा विलीन हो गया",
 			"mergeDagFailed": "मर्ज विफल: ${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "आइटम सूची"
 		},
 		"breadcrumb": {
-			"aria-label": "ब्रेडक्रम्ब्स"
+			"aria-label": "ब्रेडक्रम नेविगेशन"
 		},
 		"openCabinets": "फ़ाइल कैबिनेट सूची खोलें",
 		"closeCabinets": "बंद करें",

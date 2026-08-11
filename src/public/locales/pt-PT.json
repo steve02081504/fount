@@ -572,12 +572,12 @@
 			"error_message": "Puxa vida :(\n\nOcorreu um erro:\n${error}",
 			"star_thank_you": "Obrigado por dar uma estrela ao fount!",
 			"telegram": {
-				"title": "Abra o telegrama",
-				"aria-label": "Abra o telegrama"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "Abra o GitHub",
-				"aria-label": "Abra o GitHub"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "Autocolante",
 			"markdownRenderFailed": "Falha em Message rendering",
-			"messageRenderFailed": "Falha na renderização da mensagem",
+			"messageRenderFailed": "Não foi possível exibir a mensagem",
 			"retrySend": "Tente novamente",
 			"mergeDagOk": "Bifurcação mesclada",
 			"mergeDagFailed": "Falha na mesclagem: ${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "Lista de itens"
 		},
 		"breadcrumb": {
-			"aria-label": "Pão ralado"
+			"aria-label": "Migalhas de pão"
 		},
 		"openCabinets": "Abrir lista de armários",
 		"closeCabinets": "Fechar",

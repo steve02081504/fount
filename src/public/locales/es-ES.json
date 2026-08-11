@@ -572,12 +572,12 @@
 			"error_message": "Ay ay ay :(\n\nOcurrió un error:\n${error}",
 			"star_thank_you": "¡Gracias por darle una estrella a fount!",
 			"telegram": {
-				"title": "Telegrama abierto",
-				"aria-label": "Telegrama abierto"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "Abrir GitHub",
-				"aria-label": "Abrir GitHub"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "etiqueta engomada",
 			"markdownRenderFailed": "Falló la representación del mensaje",
-			"messageRenderFailed": "Falló la representación del mensaje",
+			"messageRenderFailed": "No se pudo mostrar el mensaje",
 			"retrySend": "Intentar otra vez",
 			"mergeDagOk": "bifurcación fusionada",
 			"mergeDagFailed": "Fusión fallida: ${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "Lista de elementos"
 		},
 		"breadcrumb": {
-			"aria-label": "Pan rallado"
+			"aria-label": "Migas de pan"
 		},
 		"openCabinets": "Abrir lista de archivadores",
 		"closeCabinets": "Cerrar",

@@ -572,12 +572,12 @@
 			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}",
 			"star_thank_you": "Cảm ơn bạn đã gắn sao cho fount!",
 			"telegram": {
-				"title": "Mở Telegram",
-				"aria-label": "Mở Telegram"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "Mở GitHub",
-				"aria-label": "Mở GitHub"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "nhãn dán",
 			"markdownRenderFailed": "Kết xuất tin nhắn không thành công",
-			"messageRenderFailed": "Kết xuất tin nhắn không thành công",
+			"messageRenderFailed": "Không thể hiển thị tin nhắn",
 			"retrySend": "Thử lại",
 			"mergeDagOk": "Ngã ba hợp nhất",
 			"mergeDagFailed": "Hợp nhất không thành công: ${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "Danh sách mục"
 		},
 		"breadcrumb": {
-			"aria-label": "vụn bánh mì"
+			"aria-label": "Đường dẫn điều hướng"
 		},
 		"openCabinets": "Mở danh sách tủ hồ sơ",
 		"closeCabinets": "Đóng",

@@ -572,12 +572,12 @@
 			"error_message": "Эх... :(\n\nПроизошла ошибка:\n${error}",
 			"star_thank_you": "Спасибо, что поставили звезду fount!",
 			"telegram": {
-				"title": "Открыть Телеграм",
-				"aria-label": "Открыть Телеграм"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "Открыть GitHub",
-				"aria-label": "Открыть GitHub"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "наклейка",
 			"markdownRenderFailed": "Не удалось отобразить сообщение",
-			"messageRenderFailed": "Не удалось отобразить сообщение.",
+			"messageRenderFailed": "Не удалось отобразить сообщение",
 			"retrySend": "Попробуйте еще раз",
 			"mergeDagOk": "Разветвление объединено",
 			"mergeDagFailed": "Не удалось объединить: ${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "Список элементов"
 		},
 		"breadcrumb": {
-			"aria-label": "Панировочные сухари"
+			"aria-label": "Хлебные крошки"
 		},
 		"openCabinets": "Открыть список шкафов",
 		"closeCabinets": "Закрыть",

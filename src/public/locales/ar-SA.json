@@ -572,12 +572,12 @@
 			"error_message": "يا للأسف :(\n\nحدث خطأ:\n${error}",
 			"star_thank_you": "شكرًا لك على تمييز fount بنجمة!",
 			"telegram": {
-				"title": "افتح برقية",
-				"aria-label": "افتح برقية"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "افتح جيثب",
-				"aria-label": "افتح جيثب"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -4800,7 +4800,7 @@
 			"aria-label": "قائمة العناصر"
 		},
 		"breadcrumb": {
-			"aria-label": "فتات الخبز"
+			"aria-label": "مسار التنقل"
 		},
 		"openCabinets": "فتح قائمة خزانة الملفات",
 		"closeCabinets": "إغلاق",

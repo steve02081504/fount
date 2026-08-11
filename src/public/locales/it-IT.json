@@ -572,12 +572,12 @@
 			"error_message": "Uffa :(\n\nSi è verificato un errore:\n${error}",
 			"star_thank_you": "Grazie per aver aggiunto una stella a fount!",
 			"telegram": {
-				"title": "Apri Telegramma",
-				"aria-label": "Apri Telegramma"
+				"title": "Telegram",
+				"aria-label": "Telegram"
 			},
 			"github": {
-				"title": "Apri GitHub",
-				"aria-label": "Apri GitHub"
+				"title": "GitHub",
+				"aria-label": "GitHub"
 			}
 		},
 		"error": {
@@ -1945,7 +1945,7 @@
 			},
 			"stickerInline": "Adesivi",
 			"markdownRenderFailed": "Il rendering del messaggio non è riuscito",
-			"messageRenderFailed": "Il rendering del messaggio non è riuscito",
+			"messageRenderFailed": "Impossibile visualizzare il messaggio",
 			"retrySend": "Riprova",
 			"mergeDagOk": "Forcella fusa",
 			"mergeDagFailed": "Unione non riuscita: ${error}",
@@ -4800,7 +4800,7 @@
 			"aria-label": "Elenco elementi"
 		},
 		"breadcrumb": {
-			"aria-label": "Pangrattato"
+			"aria-label": "Briciole di pane"
 		},
 		"openCabinets": "Apri l'elenco degli schedari",
 		"closeCabinets": "Chiudi",
