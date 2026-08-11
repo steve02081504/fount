@@ -106,9 +106,7 @@ export async function createGroup(username, body) {
 	if (!owner) throw new Error('ownerPubKeyHash required')
 	const { getOperatorEntityHash, loadEntityIdentity } = await import('../../entity/identity.mjs')
 	const entityHash = body.entityHash || await getOperatorEntityHash(username)
-	const memberJoinSecretKey = body.secretKey
-	const genesisSecretKey = memberJoinSecretKey || (await getLocalSignerForNewGroup(username, groupId, entityHash)).secretKey
-	const genesisSender = owner
+	const genesisSecretKey = body.secretKey || (await getLocalSignerForNewGroup(username, groupId, entityHash)).secretKey
 	let declaredOwner = body.ownerEntityHash
 	if (declaredOwner === undefined)
 		try {
@@ -133,7 +131,7 @@ export async function createGroup(username, body) {
 
 	await genesisAppend({
 		type: 'group_meta_update',
-		sender: genesisSender,
+		sender: owner,
 		timestamp: Date.now(),
 		content: {
 			name: body.name || await geti18nForUser(username, 'chat.group.defaults.groupMetaName'),
@@ -145,7 +143,7 @@ export async function createGroup(username, body) {
 	const initialChannelId = body.defaultChannelId || 'default'
 	await genesisAppend({
 		type: 'channel_create',
-		sender: genesisSender,
+		sender: owner,
 		timestamp: Date.now(),
 		content: {
 			channelId: initialChannelId,
@@ -157,7 +155,7 @@ export async function createGroup(username, body) {
 
 	await genesisAppend({
 		type: 'group_settings_update',
-		sender: genesisSender,
+		sender: owner,
 		timestamp: Date.now(),
 		content: {
 			defaultChannelId: initialChannelId,
@@ -189,7 +187,7 @@ export async function createGroup(username, body) {
 	for (const [roleId, roleDef] of Object.entries(createDefaultRoles()))
 		await genesisAppend({
 			type: 'role_create',
-			sender: genesisSender,
+			sender: owner,
 			timestamp: Date.now(),
 			content: {
 				roleId,

@@ -78,7 +78,7 @@ export { messageIdSelector }
  * @returns {Promise<void>}
  */
 export async function scrollToMessageEventId(eventId) {
-	const norm = String(eventId || '').trim()
+	const norm = eventId.trim()
 	if (!norm) return
 	const container = getMessagesContainer()
 	if (!container) return

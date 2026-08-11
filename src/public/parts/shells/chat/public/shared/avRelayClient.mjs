@@ -517,7 +517,7 @@ export async function joinAvRelayRoom(options) {
 		 * @returns {number[]} 16 段电平
 		 */
 		getAudioLevels: (senderId = '') => {
-			const sid = String(senderId || remoteSender || 'default').toLowerCase()
+			const sid = (senderId || remoteSender || 'default').toLowerCase()
 			const entry = audioLevels.get(sid)
 			if (entry?.analyser) {
 				const data = new Uint8Array(entry.analyser.frequencyBinCount)

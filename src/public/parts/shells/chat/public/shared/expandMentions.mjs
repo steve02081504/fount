@@ -19,15 +19,15 @@ export function buildMentionLabelMap(members = [], viewer = {}) {
 	const items = []
 	const seen = new Set()
 	/**
-	 * @param {string} hash entityHash
-	 * @param {string} name 展示名
+	 * @param {string | undefined} hash entityHash
+	 * @param {string | undefined} name 展示名
 	 * @returns {void} 无
 	 */
 	const push = (hash, name) => {
-		const key = String(hash || '').trim().toLowerCase()
+		const key = hash || ''
 		if (!key || seen.has(key)) return
 		seen.add(key)
-		const label = aliasForEntity(key) || String(name || '').trim()
+		const label = aliasForEntity(key) || (name || '').trim()
 			|| formatHashShort(key, { headLen: 8, tailLen: 0, ellipsis: false })
 		items.push({ entityHash: key, label })
 	}
@@ -64,16 +64,15 @@ export function expandMentionsInMarkdown(text, labelMap, options = {}) {
 	const roleNames = options.roleNames instanceof Map
 		? options.roleNames
 		: new Map(Object.entries(options.roleNames || {}))
-	const source = String(text || '')
-	if (!source.includes('@[')) return source
+	if (!text.includes('@[')) return text
 	/** @type {string[]} */
 	const parts = []
 	let cursor = 0
-	for (const token of parseInlineTokens(source)) {
+	for (const token of parseInlineTokens(text)) {
 		if (!token.kind || token.kind === 'emoji' || token.kind === 'channel' || token.kind === 'group' || token.kind === 'message') continue
-		if (token.start > cursor) parts.push(source.slice(cursor, token.start))
+		if (token.start > cursor) parts.push(text.slice(cursor, token.start))
 		if (token.kind === 'entity') {
-			const hash = token.body.toLowerCase()
+			const hash = token.body
 			const label = labelMap.get(hash)
 				|| formatHashShort(hash, { headLen: 8, tailLen: 0, ellipsis: false })
 			parts.push(`[@${label}](${formatSocialProfileHref(hash)})`)
@@ -86,6 +85,6 @@ export function expandMentionsInMarkdown(text, labelMap, options = {}) {
 			parts.push(token.body === 'here' ? '@here' : '@everyone')
 		cursor = token.end
 	}
-	if (cursor < source.length) parts.push(source.slice(cursor))
+	if (cursor < text.length) parts.push(text.slice(cursor))
 	return parts.join('')
 }

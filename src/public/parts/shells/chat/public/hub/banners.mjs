@@ -116,7 +116,7 @@ export function setSyncBanner(on, options) {
  * @returns {string | undefined} 选中的 DAG tip id
  */
 export function selectedForkTipId() {
-	const value = document.getElementById('fork-tip-select')?.value?.trim().toLowerCase()
+	const value = document.getElementById('fork-tip-select')?.value?.trim()
 	if (isHex64(value)) return value
 	return store.federation.dagTips[0]
 }

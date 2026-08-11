@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "Gestisci file",
 						"MANAGE_MESSAGES": "Gestisci i messaggi",
 						"MANAGE_ROLES": "Gestire i ruoli",
+						"MANAGE_ADMINS": "Gestire amministratori",
 						"PIN_MESSAGES": "Appunta messaggi",
 						"SEND_MESSAGES": "Invia messaggi",
 						"SEND_STICKERS": "Invia adesivi",
@@ -2347,6 +2348,7 @@
 						"title": "Modifica messaggio"
 					},
 					"failed": "Operazione non riuscita: ${error}",
+					"noPermission": "Non hai l'autorizzazione per eseguire questa azione.",
 					"feedbackDown": {
 						"title": "Antipatia"
 					},

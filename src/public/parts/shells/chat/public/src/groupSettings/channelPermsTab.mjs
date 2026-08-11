@@ -3,8 +3,9 @@ import { i18nElement } from '/scripts/i18n/index.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { getChannelPermissions, putChannelPermissions } from '../endpoints/channelPerms.mjs'
+import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
 
-import { ALL_PERMISSIONS } from './constants.mjs'
+import { grantableChannelOverridePermissions } from './constants.mjs'
 
 const ROLE_COLOR_RE = /^#[0-9a-f]{3}([0-9a-f]{3})?$/i
 
@@ -13,7 +14,7 @@ const ROLE_COLOR_RE = /^#[0-9a-f]{3}([0-9a-f]{3})?$/i
  * @returns {string} 白名单内 hex 或默认灰
  */
 function safeRoleColor(color) {
-	const value = String(color || '').trim()
+	const value = (color || '').trim()
 	return ROLE_COLOR_RE.test(value) ? value : '#888888'
 }
 
@@ -48,10 +49,11 @@ function sortedRoleIds(roles) {
  * @param {string} roleId 角色 id
  * @param {Record<string, boolean> | undefined} allow 允许位图
  * @param {Record<string, boolean> | undefined} deny 拒绝位图
+ * @param {string[]} grantablePerms 授予者可配置位
  * @returns {Promise<string>} 权限行 HTML
  */
-async function permRowsHtml(roleId, allow, deny) {
-	return (await Promise.all(ALL_PERMISSIONS.map(perm =>
+async function permRowsHtml(roleId, allow, deny, grantablePerms) {
+	return (await Promise.all(grantablePerms.map(perm =>
 		renderTemplateAsHtmlString('group/settings/channel_perm_row', {
 			perm,
 			roleId,
@@ -65,12 +67,13 @@ async function permRowsHtml(roleId, allow, deny) {
  * @param {HTMLElement} permsEl `.settings-role-perms`
  * @param {string} roleId 角色 id
  * @param {Record<string, { allow?: object, deny?: object }>} permissions 频道覆写表
+ * @param {string[]} grantablePerms 授予者可配置位
  * @returns {Promise<void>}
  */
-async function fillRolePermsIfEmpty(permsEl, roleId, permissions) {
+async function fillRolePermsIfEmpty(permsEl, roleId, permissions, grantablePerms) {
 	if (permsEl.childElementCount) return
 	const override = permissions[roleId]
-	permsEl.innerHTML = await permRowsHtml(roleId, override?.allow, override?.deny)
+	permsEl.innerHTML = await permRowsHtml(roleId, override?.allow, override?.deny, grantablePerms)
 	i18nElement(permsEl, { skip_report: true })
 }
 
@@ -107,6 +110,9 @@ export async function renderChannelPermissionsPanel(context) {
 		handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
 	}
 
+	const grantorPerms = await fetchViewerChannelPermissions(context.state, context.groupId)
+	const grantablePerms = grantableChannelOverridePermissions(grantorPerms)
+
 	const rolePanels = sortedRoleIds(context.state.roles).map(roleId => {
 		const role = context.state.roles[roleId] || { name: roleId, color: '#888' }
 		const override = permissions[roleId]
@@ -129,7 +135,7 @@ export async function renderChannelPermissionsPanel(context) {
 	for (const details of container.querySelectorAll('details.settings-role[open]')) {
 		const permsEl = details.querySelector('.settings-role-perms')
 		if (permsEl instanceof HTMLElement)
-			await fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions)
+			await fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
 	}
 
 	container.addEventListener('toggle', event => {
@@ -137,7 +143,7 @@ export async function renderChannelPermissionsPanel(context) {
 		if (!(details instanceof HTMLDetailsElement) || !details.open) return
 		const permsEl = details.querySelector('.settings-role-perms')
 		if (!(permsEl instanceof HTMLElement)) return
-		void fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions)
+		void fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
 	}, { signal })
 
 	container.addEventListener('click', async event => {
@@ -167,6 +173,7 @@ export async function renderChannelPermissionsPanel(context) {
 		const perm = group.getAttribute('data-perm')
 		const nextState = channelPermStateButton.getAttribute('data-state')
 		if (!roleId || !perm || !nextState) return
+		if (!grantablePerms.includes(perm)) return
 		try {
 			const current = await getChannelPermissions(context.groupId, context.selectedChannelPermsId)
 			const allow = { ...current[roleId]?.allow }

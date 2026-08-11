@@ -9,6 +9,11 @@
  */
 import { messageShowText } from '../../shared/channelContent.mjs'
 import {
+	canDeleteMessage as sharedCanDeleteMessage,
+	canEditMessage as sharedCanEditMessage,
+	isOwnCharMessage as sharedIsOwnCharMessage,
+} from '../../shared/messagePermissions.mjs'
+import {
 	hubActionBookmarkIcon,
 	hubActionCopyHtmlIcon,
 	hubActionCopyIcon,
@@ -32,6 +37,7 @@ import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { resolveEntityHashForAuthorKey } from '../core/domUtils.mjs'
 
+
 import { actionButton, menuActionItem, menuSubmenu, renderActionsBar } from './messageActionsUi.mjs'
 import { isChannelMessageGenerating } from './render/text.mjs'
 
@@ -44,68 +50,35 @@ import { isChannelMessageGenerating } from './render/text.mjs'
 function authorOwnerEntityHash(message, options) {
 	const authorEntity = resolveEntityHashForAuthorKey(message.charId || message.authorPubKeyHash)
 		|| resolveEntityHashForAuthorKey(message.authorPubKeyHash)
-	const sender = String(message.authorPubKeyHash || '').trim().toLowerCase()
+	const sender = message.authorPubKeyHash
 	for (const member of options.groupMembers || []) {
-		const memberEntity = String(member?.entityHash || '').trim().toLowerCase()
-		const memberKey = String(member?.memberKey || member?.pubKeyHash || '').trim().toLowerCase()
+		const memberEntity = member?.entityHash
+		const memberKey = member?.memberKey || member?.pubKeyHash
 		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender)) {
-			const owner = String(member?.ownerEntityHash || '').trim().toLowerCase()
-			return owner || null
+			return member?.ownerEntityHash || null
 		}
 	}
 	return null
 }
 
 /**
- * 当前观看者是否为消息作者所属主人（人类与 agent 同构）。
  * @param {object} message 消息行
  * @param {object} options 查看者上下文
- * @returns {boolean} 是否可管理
+ * @returns {object} shared 门控选项
  */
-function isManagedByViewer(message, options) {
-	const owner = authorOwnerEntityHash(message, options)
-	const viewerEntity = String(options.viewerEntityHash || '').trim().toLowerCase()
-	return !!(owner && viewerEntity && owner === viewerEntity)
-}
-
-/**
- * 是否为本节点发出的角色消息（含所属 agent，哪怕 isRemote）。
- * @param {object} message 消息行
- * @param {object} options 查看者上下文
- * @returns {boolean} 是否己方角色
- */
-function isOwnCharMessage(message, options) {
-	if (!message?.charId) return false
-	if (isManagedByViewer(message, options)) return true
-	if (message.isRemote) return false
+function permissionOptions(message, options) {
 	const localCharIds = options.localCharIds?.length
 		? options.localCharIds
 		: options.localCharId
 			? [options.localCharId]
 			: []
-	if (localCharIds.includes(message.charId)) return true
-	const viewer = String(options.viewerPubKeyHash || '').trim().toLowerCase()
-	const sender = String(message.authorPubKeyHash || '').trim().toLowerCase()
-	return !!(viewer && sender && viewer === sender)
-}
-
-/**
- * 是否允许删除该消息。
- * @param {object} message 消息行
- * @param {object} options 权限上下文
- * @returns {boolean} 可删除
- */
-function canDeleteMessage(message, options) {
-	if (!message?.eventId) return false
-	if (isOwnCharMessage(message, options)) return true
-	if (isManagedByViewer(message, options)) return true
-	if (message.charId && options.canManageMessages) return true
-	if (!message.charId) {
-		const viewer = String(options.viewerPubKeyHash || '').toLowerCase()
-		const sender = String(message.authorPubKeyHash || '').toLowerCase()
-		if (viewer && sender && viewer === sender) return true
+	return {
+		viewerPubKeyHash: options.viewerPubKeyHash,
+		viewerEntityHash: options.viewerEntityHash,
+		canManageMessages: options.canManageMessages,
+		localCharIds,
+		authorOwnerEntityHash: authorOwnerEntityHash(message, options),
 	}
-	return false
 }
 
 /**
@@ -227,7 +200,8 @@ export async function renderMessageActionsHtml(message, options) {
 	const eventId = String(message.eventId)
 	if (!eventId || message.type !== 'message') return { hoverHtml: '', inlineHtml: '' }
 
-	const ownChar = isOwnCharMessage(message, options)
+	const permOpts = permissionOptions(message, options)
+	const ownChar = sharedIsOwnCharMessage(message, permOpts)
 	const generating = isChannelMessageGenerating(message)
 	if (generating) return { hoverHtml: '', inlineHtml: '' }
 
@@ -255,7 +229,7 @@ export async function renderMessageActionsHtml(message, options) {
 	// ===== 悬停浮动栏 =====
 	// 常驻图标：回复、子线程、书签、置顶、编辑、翻译；复制/分享/下载/删除收进二级菜单；Shift 层为下载/删除
 	const hoverInlineParts = []
-	const canDelete = dagReady && canDeleteMessage(message, options)
+	const canDelete = dagReady && sharedCanDeleteMessage(message, permOpts)
 
 	if (dagReady)
 		hoverInlineParts.push(actionButton({
@@ -273,13 +247,14 @@ export async function renderMessageActionsHtml(message, options) {
 			i18nKey: 'chat.hub.replyInThread',
 		}))
 
-	if (dagReady && !message.isRemote) {
-		hoverInlineParts.push(actionButton({
-			action: 'bookmark',
-			attrs: `data-event-id="${escapedEventId}"`,
-			icon: hubActionBookmarkIcon,
-			i18nKey: 'chat.hub.message.action.bookmark',
-		}))
+	if (dagReady) {
+		if (!message.isRemote)
+			hoverInlineParts.push(actionButton({
+				action: 'bookmark',
+				attrs: `data-event-id="${escapedEventId}"`,
+				icon: hubActionBookmarkIcon,
+				i18nKey: 'chat.hub.message.action.bookmark',
+			}))
 		if (options.canPinMessages)
 			hoverInlineParts.push(actionButton({
 				action: 'pin',
@@ -289,9 +264,10 @@ export async function renderMessageActionsHtml(message, options) {
 			}))
 	}
 
-	const canEdit = dagReady && (ownChar || isManagedByViewer(message, options)
-		|| (!message.isRemote && canDelete && !message.charId))
-		&& !!messageShowText(message.content)
+	const canEdit = dagReady && sharedCanEditMessage({
+		...message,
+		hasText: !!messageShowText(message.content),
+	}, permOpts)
 	if (canEdit)
 		hoverInlineParts.push(actionButton({
 			action: 'edit',

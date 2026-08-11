@@ -32,8 +32,8 @@ function mergeMessageContent(base, patch) {
  */
 function overlayTargetId(row) {
 	return row.type === 'message'
-		? String(row.eventId).trim()
-		: String(row.content?.targetId ?? '').trim()
+		? row.eventId
+		: row.content?.targetId ?? ''
 }
 
 /**
@@ -43,15 +43,13 @@ function overlayTargetId(row) {
  * @returns {object[]} 过滤后的行
  */
 export function linesIncludingOverlaysForTargets(lines, eventIds) {
-	const want = new Set(
-		[...eventIds].map(id => String(id || '').trim().toLowerCase()).filter(Boolean),
-	)
+	const want = new Set([...eventIds].filter(Boolean))
 	if (!want.size) return []
 	return lines.filter(row => {
-		const id = String(row?.eventId || '').trim().toLowerCase()
+		const id = row?.eventId
 		if (want.has(id)) return true
 		if (!OVERLAY_EVENT_TYPES.has(row?.type)) return false
-		return want.has(String(row?.content?.targetId || '').trim().toLowerCase())
+		return want.has(row?.content?.targetId)
 	})
 }
 
@@ -131,7 +129,7 @@ export function mergeChannelMessagesForDisplay(messages) {
 			merged.push(row)
 			continue
 		}
-		const messageIdKey = String(row.eventId).trim().toLowerCase()
+		const messageIdKey = row.eventId
 		if (messageIdKey) {
 			if (seenMessageIds.has(messageIdKey)) continue
 			seenMessageIds.add(messageIdKey)

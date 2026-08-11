@@ -25,8 +25,8 @@ import { viewerEntityHash } from './state.mjs'
  * @returns {Promise<string>} HTML
  */
 async function renderLiveRefHtml(liveRef) {
-	const entityHash = String(liveRef.entityHash || '').toLowerCase()
-	const liveId = String(liveRef.liveId || '').toLowerCase()
+	const entityHash = liveRef.entityHash || ''
+	const liveId = liveRef.liveId || ''
 	const ended = liveRef.status === 'ended'
 	const href = escapeHtml(`#live:${entityHash}:${liveId}`)
 	const avatarHtml = renderAvatarHtml(entityHash, null, 'live-ref-avatar')
@@ -123,17 +123,15 @@ export async function buildPostCard(item, options = {}) {
 
 	const viewer = viewerEntityHash()
 	const isOwn = viewer && item.entityHash === viewer && !isRepost
-	const itemOwner = String(item.ownerEntityHash || item.authorProfile?.ownerEntityHash || '').trim().toLowerCase()
+	const itemOwner = item.ownerEntityHash || item.authorProfile?.ownerEntityHash || ''
 	const isManagedPost = !isRepost && !isOwn
 		&& !!viewer
 		&& !!itemOwner
-		&& itemOwner === String(viewer).toLowerCase()
+		&& itemOwner === viewer
 	const canManage = isOwn || isManagedPost
-	const canDelete = canManage
 	const label = authorLabel(item.entityHash, item.authorProfile)
 	const { visibilityDisplay } = await import('./visibilityPicker.mjs')
 	const vis = visibilityDisplay(item.post?.content?.visibility, item.post?.content?.minFollowMs)
-	const visibilityCode = vis.code
 	const albumChips = (item.albums || []).length
 		? `<div class="post-album-chips">${item.albums.map(album =>
 			`<button type="button" class="post-album-chip" data-album-open="${escapeHtml(item.entityHash)}" data-album-id="${escapeHtml(album.albumId)}">${escapeHtml(album.name)}</button>`,
@@ -169,17 +167,16 @@ export async function buildPostCard(item, options = {}) {
 	const editedBadge = item.post?.edited
 		? '<span class="post-edited-badge" data-i18n="social.post.edited"></span>'
 		: ''
-	const treatAsOwn = canManage
-	const blockButton = treatAsOwn
+	const blockButton = canManage
 		? ''
 		: `<li><button type="button" class="text-error" data-block="${item.entityHash}"><span class="icon icon-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button></li>`
-	const hideButton = treatAsOwn
+	const hideButton = canManage
 		? ''
 		: `<li><button type="button" data-hide="${item.entityHash}"><span class="icon icon-hide" aria-hidden="true"></span><span data-i18n="social.actions.hide"></span></button></li>`
-	const muteButton = treatAsOwn
+	const muteButton = canManage
 		? ''
 		: `<li><button type="button" data-mute="${item.entityHash}"><span class="icon icon-mute" aria-hidden="true"></span><span data-i18n="social.actions.mute"></span></button></li>`
-	const deleteButton = canDelete
+	const deleteButton = canManage
 		? `<li><button type="button" class="text-error" data-delete="${item.postId}" data-delete-entity="${item.entityHash}"><span class="icon icon-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button></li>`
 		: ''
 	const editButton = canManage
@@ -209,7 +206,7 @@ export async function buildPostCard(item, options = {}) {
 	const card = await renderTemplate('post_card', {
 		postId: item.postId,
 		postTextEncoded: encodeURIComponent(decryptFailed ? '' : text),
-		visibilityCode,
+		visibilityCode: vis.code,
 		repostBanner,
 		repostCommentHtml,
 		embeddedWrapStart,
@@ -231,7 +228,7 @@ export async function buildPostCard(item, options = {}) {
 		engagementBarHtml,
 		actionKey,
 		postDetailHref,
-		entityHash: String(item.entityHash || '').toLowerCase(),
+		entityHash: item.entityHash || '',
 		blockButton,
 		hideButton,
 		muteButton,

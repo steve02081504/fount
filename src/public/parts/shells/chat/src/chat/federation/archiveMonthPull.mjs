@@ -326,14 +326,13 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 		return { applied: false, reason: picked.reason }
 	}
 
-	const winnerDigest = picked.digest
 	const { digestArchiveMonthFile } = await import('../archive/monthDigest.mjs')
 	for (const row of candidates) {
 		if (!row.peerNodeHash || !row.complete) continue
 		const { digest } = row.tmpPath
 			? await digestArchiveMonthFile(row.tmpPath)
 			: { digest: '' }
-		if (digest && digest !== winnerDigest)
+		if (digest && digest !== picked.digest)
 			penalizeArchiveServeMismatch(row.peerNodeHash)
 	}
 

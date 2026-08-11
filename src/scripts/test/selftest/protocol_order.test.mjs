@@ -128,22 +128,22 @@ Deno.test('mapTimingsToSubtests matches by spec basename', () => {
 })
 
 Deno.test('suiteTriggeredFiles returns trigger-matched changed paths', () => {
-	const suite = makeSuite('checks', 'json_lf', {
-		triggers: ['src/scripts/checks/json_lf.mjs', '**/*.json'],
+	const suite = makeSuite('checks', 'text_lf', {
+		triggers: ['src/scripts/checks/text_lf.mjs', '**/*.json'],
 	})
 	assertEquals(
 		suiteTriggeredFiles(suite, [
 			'src/public/locales/en-UK.json',
-			'src/scripts/checks/json_lf.mjs',
+			'src/scripts/checks/text_lf.mjs',
 			'README.md',
 		]),
-		['src/scripts/checks/json_lf.mjs', 'src/public/locales/en-UK.json'],
+		['src/scripts/checks/text_lf.mjs', 'src/public/locales/en-UK.json'],
 	)
 	assertEquals(suiteTriggeredFiles(suite, []), [])
 })
 
 Deno.test('buildSuiteInvocation passes FOUNT_TEST_TRIGGERED_FILES as temp path', () => {
-	const suite = makeSuite('checks', 'json_lf', { run: ['deno', 'test', 'x.mjs'] })
+	const suite = makeSuite('checks', 'text_lf', { run: ['deno', 'test', 'x.mjs'] })
 	const triggeredPath = '/tmp/fount-test-xyz/triggered.txt'
 	const { env } = buildSuiteInvocation(
 		suite,

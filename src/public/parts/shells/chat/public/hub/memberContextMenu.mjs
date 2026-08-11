@@ -46,23 +46,23 @@ export async function showMemberContextMenu(event, memberElement) {
 	const memberKey = memberElement.dataset.memberKey?.trim()
 	if (!memberKey || !store.context.currentGroupId) return
 	const displayName = memberElement.querySelector('.member-name')?.textContent?.trim() || memberKey
-	const viewer = String(store.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
-	const viewerEntity = String(store.viewer.viewerEntityHash || '').trim().toLowerCase()
+	const viewer = store.context.currentState?.viewerMemberPubKeyHash || ''
+	const viewerEntity = store.viewer.viewerEntityHash || ''
 	const defaultChannelId = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
 	const isAgent = memberElement.dataset.memberKind === 'agent'
-	const ownerEntityHash = memberElement.dataset.ownerEntityHash?.trim().toLowerCase() || ''
+	const ownerEntityHash = memberElement.dataset.ownerEntityHash || ''
 	const isOwnerOwnAgent = isAgent && !!(ownerEntityHash && ownerEntityHash === viewerEntity)
-	const perms = viewer && memberKey.toLowerCase() !== viewer
+	const perms = viewer && memberKey !== viewer
 		? await fetchViewerChannelPermissions(store.context.currentState, store.context.currentGroupId, defaultChannelId)
 		: {}
-	const showKick = memberKey.toLowerCase() !== viewer && (
+	const showKick = memberKey !== viewer && (
 		isAgent ? isOwnerOwnAgent || perms.ADMIN === true : perms.KICK_MEMBERS === true
 	)
-	const showBan = !!perms.BAN_MEMBERS && memberKey.toLowerCase() !== viewer
+	const showBan = !!perms.BAN_MEMBERS && memberKey !== viewer
 	const entityHash = memberElement.dataset.entityHash?.trim() || ''
-	const showPersonalBlock = memberKey.toLowerCase() !== viewer && !!entityHash
+	const showPersonalBlock = memberKey !== viewer && !!entityHash
 	const showCopyEntity = !!entityHash
-	const showMention = memberKey.toLowerCase() !== viewer && !!entityHash
+	const showMention = memberKey !== viewer && !!entityHash
 
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
@@ -126,7 +126,7 @@ export async function showMemberContextMenu(event, memberElement) {
 		closeOnce()
 	})
 	menu.querySelector('.member-menu-kick')?.addEventListener('click', async () => {
-		if (memberKey.toLowerCase() === viewer.toLowerCase())
+		if (memberKey === viewer)
 			if (!confirmI18n('chat.hub.member.context.kickSelfNodeWarning', { name: displayName })) return
 
 		if (!confirmI18n('chat.group.settings.page.kick.confirm', { name: displayName })) return

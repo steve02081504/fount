@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "Stjórna skrám",
 						"MANAGE_MESSAGES": "Skilaboð stjórnenda",
 						"MANAGE_ROLES": "Stjórnunarhlutverki",
+						"MANAGE_ADMINS": "Stjórna stjórnendum",
 						"PIN_MESSAGES": "Fest skilaboð",
 						"SEND_MESSAGES": "Sendu skilaboð",
 						"SEND_STICKERS": "Sendu límmiða",
@@ -2347,6 +2348,7 @@
 						"title": "Breyta skilaboðum"
 					},
 					"failed": "Aðgerð mistókst: ${error}",
+					"noPermission": "Þú hefur ekki heimild til að framkvæma þessa aðgerð.",
 					"feedbackDown": {
 						"title": "Smelltu til að mislíka"
 					},

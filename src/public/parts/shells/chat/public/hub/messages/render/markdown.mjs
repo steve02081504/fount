@@ -32,11 +32,10 @@ const pendingMarkdownByMessageId = new Map()
  * @returns {void}
  */
 export function registerPendingMessageMarkdown(messageId, raw, authorPubKeyHash = '') {
-	const id = String(messageId || '')
-	if (!id) return
-	pendingMarkdownByMessageId.set(id, {
-		raw: String(raw || ''),
-		authorPubKeyHash: String(authorPubKeyHash || ''),
+	if (!messageId) return
+	pendingMarkdownByMessageId.set(messageId, {
+		raw,
+		authorPubKeyHash,
 	})
 }
 
@@ -67,12 +66,10 @@ export async function renderMessageMarkdownForPaint(messageId, markdown, {
 	isRemote = false,
 	authorPubKeyHash = '',
 } = {}) {
-	const raw = String(markdown || '')
-	const author = String(authorPubKeyHash || '')
-	const authorAttr = escapeHtml(author)
+	const authorAttr = escapeHtml(authorPubKeyHash)
 	const labelMap = buildMentionLabelMapFromHubState(store.context.currentState, store.viewer)
-	const expanded = expandMentionsInMarkdown(raw, labelMap)
-	const trusted = await isMessageMarkdownTrusted(author, isRemote)
+	const expanded = expandMentionsInMarkdown(markdown, labelMap)
+	const trusted = await isMessageMarkdownTrusted(authorPubKeyHash, isRemote)
 
 	if (trusted) {
 		const html = await renderMarkdownAsString(expanded, undefined, { allowDangerousHtml: true })
@@ -89,7 +86,7 @@ export async function renderMessageMarkdownForPaint(messageId, markdown, {
 	const html = await renderMarkdownAsString(previewMd, undefined, { allowDangerousHtml: false })
 	if (canExpand) {
 		// 首帧已是预览 HTML；保留 pending 供 hydrate 挂「展开」按钮（勿标 hydrated，否则会被跳过）
-		registerPendingMessageMarkdown(messageId, raw, author)
+		registerPendingMessageMarkdown(messageId, markdown, authorPubKeyHash)
 		return {
 			html,
 			bubbleAttrs: ` data-md-pending="1" data-md-untrusted="1" data-md-author="${authorAttr}"`,
@@ -107,7 +104,7 @@ export async function renderMessageMarkdownForPaint(messageId, markdown, {
  * @returns {number} 近似可见字数
  */
 function visibleMarkdownLength(markdown) {
-	return String(markdown || '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').length
+	return markdown.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').length
 }
 
 /**
@@ -117,16 +114,15 @@ function visibleMarkdownLength(markdown) {
  * @returns {string} 截断后的 Markdown
  */
 function truncateVisibleMarkdown(markdown, maxLen) {
-	const source = String(markdown || '')
-	if (visibleMarkdownLength(source) <= maxLen) return source
+	if (visibleMarkdownLength(markdown) <= maxLen) return markdown
 	let visible = 0
 	let index = 0
-	while (index < source.length && visible < maxLen) {
-		if (source[index] === '[') {
-			const labelEnd = source.indexOf('](', index)
-			const urlEnd = labelEnd >= 0 ? source.indexOf(')', labelEnd + 2) : -1
+	while (index < markdown.length && visible < maxLen) {
+		if (markdown[index] === '[') {
+			const labelEnd = markdown.indexOf('](', index)
+			const urlEnd = labelEnd >= 0 ? markdown.indexOf(')', labelEnd + 2) : -1
 			if (labelEnd >= 0 && urlEnd >= 0) {
-				const label = source.slice(index + 1, labelEnd)
+				const label = markdown.slice(index + 1, labelEnd)
 				if (visible + label.length > maxLen) break
 				visible += label.length
 				index = urlEnd + 1
@@ -136,7 +132,7 @@ function truncateVisibleMarkdown(markdown, maxLen) {
 		visible += 1
 		index += 1
 	}
-	const cut = source.slice(0, index)
+	const cut = markdown.slice(0, index)
 	const lastSpace = cut.lastIndexOf(' ')
 	const body = lastSpace > index * 0.6 ? cut.slice(0, lastSpace) : cut
 	return `${body}…`

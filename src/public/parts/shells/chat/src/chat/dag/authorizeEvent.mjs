@@ -9,6 +9,7 @@ import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { governanceChannelId } from '../../group/access.mjs'
 import { isVoteBallotClosed } from '../lib/voteBallots.mjs'
 
@@ -216,7 +217,18 @@ export async function checkEventPermission(state, event, senderHash, options = {
 				return { ok: false, reason: 'role_assign ADMIN/MANAGE_ADMINS requires MANAGE_ADMINS' }
 			return { ok: true }
 		}
-		case 'channel_create':
+		case 'channel_create': {
+			const parentChannelId = String(event.content?.parentChannelId || '').trim()
+			if (parentChannelId) {
+				const parentPerms = memberChannelPermissions(state, sender, parentChannelId)
+				return parentPerms[PERMISSIONS.CREATE_THREADS] || parentPerms[PERMISSIONS.MANAGE_CHANNELS]
+					? { ok: true }
+					: { ok: false, reason: 'CREATE_THREADS or MANAGE_CHANNELS required' }
+			}
+			return channelPerms[PERMISSIONS.MANAGE_CHANNELS]
+				? { ok: true }
+				: { ok: false, reason: 'MANAGE_CHANNELS denied' }
+		}
 		case 'channel_update':
 		case 'channel_delete':
 			return channelPerms[PERMISSIONS.MANAGE_CHANNELS]
@@ -383,7 +395,8 @@ export async function checkEventPermission(state, event, senderHash, options = {
 export async function assertEventPermission(state, event, senderHash, options = {}) {
 	const { ok, reason, deferrable } = await checkEventPermission(state, event, senderHash, options)
 	if (ok) return
-	const error = new Error(reason || 'permission denied')
-	if (deferrable) error.deferrable = true
-	throw error
+	/** @type {Record<string, unknown>} */
+	const body = {}
+	if (deferrable) body.deferrable = true
+	throw httpError(403, reason || 'permission denied', body)
 }

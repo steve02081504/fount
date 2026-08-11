@@ -15,8 +15,7 @@ const SECOND_CONFIRM_TIMEOUT_MS = 3000
  * @returns {Promise<boolean>} 用户最终确认为 true；取消为 false
  */
 export function showOwnerConfirmDialog(ownerEntityHash) {
-	const ownerLabel = String(ownerEntityHash || '').trim().toLowerCase()
-	if (!ownerLabel) return Promise.resolve(false)
+	if (!ownerEntityHash) return Promise.resolve(false)
 
 	return new Promise((resolve, reject) => {
 		let cooldownRemaining = COOLDOWN_SECONDS
@@ -42,7 +41,7 @@ export function showOwnerConfirmDialog(ownerEntityHash) {
 			resolve(value)
 		}
 
-		openDialogFromTemplate('profile/owner_confirm', { ownerLabel }, {
+		openDialogFromTemplate('profile/owner_confirm', { ownerLabel: ownerEntityHash }, {
 			/**
 			 * @param {HTMLDialogElement} dialog 对话框
 			 * @returns {void}

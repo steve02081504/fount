@@ -25,11 +25,11 @@ function isTrustStillActive(expiresAt) {
 }
 
 /**
- * @param {string} pubKeyHash 作者公钥哈希
+ * @param {string | null | undefined} pubKeyHash 作者公钥哈希
  * @returns {string} 规范化小写 hex
  */
 function normalizePubKeyHash(pubKeyHash) {
-	return String(pubKeyHash || '').toLowerCase()
+	return (pubKeyHash || '').toLowerCase()
 }
 
 /**

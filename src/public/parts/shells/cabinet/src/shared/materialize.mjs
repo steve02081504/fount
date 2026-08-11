@@ -29,7 +29,7 @@ export function materializeSharedOperations(operations, keys, cabinetId) {
 	/** @type {Map<string, { hlc: object, deleted?: boolean, entry?: object, sealed?: boolean }>} */
 	const tips = new Map()
 	for (const operation of operations) {
-		const entryId = String(operation.entry_id || '')
+		const entryId = operation.entry_id || ''
 		if (!entryId) continue
 		const existing = tips.get(entryId)
 		if (compareHlcJson(operation.hlc, existing?.hlc) < 0) continue

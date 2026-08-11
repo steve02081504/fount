@@ -2,7 +2,6 @@
  * 【文件】public/hub/messages/messageContext.mjs
  * 【职责】主区消息操作上下文：重载、反应权限、渲染选项、反应绑定。
  */
-import { viewerCanAddReactions, viewerCanManageMessages, viewerCanPinMessages } from '../../src/groupViewerPermissions.mjs'
 import { store } from '../core/state.mjs'
 
 import { setChannelMessageActionsContext } from './messageActionsState.mjs'
@@ -18,19 +17,23 @@ export async function reloadChannel() {
 	return loadMessages()
 }
 
-/** @returns {Promise<void>} 刷新当前频道反应权限 */
-export async function refreshReactionPerms() {
+/**
+ * 从 state.channelCaps 读取当前频道反应/管理权限（不再另发 /permissions）。
+ * @returns {void}
+ */
+export function refreshReactionPerms() {
 	if (!store.context.currentState || !store.context.currentGroupId || !store.context.currentChannelId) {
 		store.messages.reactionRenderOpts = { viewerMemberId: 'local', canAddReactions: false, canManageMessages: false, canPinMessages: false }
 		return
 	}
 	const viewerMemberId = store.context.currentState.viewerMemberPubKeyHash || 'local'
-	const [canAddReactions, canManageMessages, canPinMessages] = await Promise.all([
-		viewerCanAddReactions(store.context.currentState, store.context.currentGroupId, store.context.currentChannelId),
-		viewerCanManageMessages(store.context.currentState, store.context.currentGroupId, store.context.currentChannelId),
-		viewerCanPinMessages(store.context.currentState, store.context.currentGroupId, store.context.currentChannelId),
-	])
-	store.messages.reactionRenderOpts = { viewerMemberId, canAddReactions, canManageMessages, canPinMessages }
+	const caps = store.context.currentState.channelCaps?.[store.context.currentChannelId] || {}
+	store.messages.reactionRenderOpts = {
+		viewerMemberId,
+		canAddReactions: !!caps.canAddReactions,
+		canManageMessages: !!caps.canManageMessages,
+		canPinMessages: !!caps.canPinMessages,
+	}
 }
 
 /** @returns {object} 消息渲染选项 */

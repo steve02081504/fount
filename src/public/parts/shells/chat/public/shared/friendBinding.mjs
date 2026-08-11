@@ -34,7 +34,7 @@ export function friendBindingMatches(candidate, requested) {
  */
 export function normalizeFriendBinding(raw) {
 	if (!raw) return null
-	const entityHash = String(raw.entityHash ?? '').trim().toLowerCase()
+	const entityHash = raw.entityHash ?? ''
 	if (!isEntityHash128(entityHash)) return null
 	const charname = raw.charname || undefined
 	const displayName = String(raw.displayName ?? '').trim() || undefined
@@ -51,7 +51,7 @@ export function charFriendBindingInput(charname, displayName) {
 	if (!charname) throw new Error('charname required')
 	return {
 		charname,
-		...displayName ? { displayName: String(displayName).trim() } : {},
+		...displayName ? { displayName: displayName.trim() } : {},
 	}
 }
 
@@ -62,11 +62,10 @@ export function charFriendBindingInput(charname, displayName) {
  * @returns {{ entityHash: string, displayName?: string }} 建群输入：仅 entityHash（与 charname 互斥）
  */
 export function entityFriendBindingInput(entityHash, displayName) {
-	const normalizedEntityHash = String(entityHash || '').trim().toLowerCase()
-	if (!isEntityHash128(normalizedEntityHash)) throw new Error('entityHash required')
+	if (!isEntityHash128(entityHash)) throw new Error('entityHash required')
 	return {
-		entityHash: normalizedEntityHash,
-		...displayName ? { displayName: String(displayName).trim() } : {},
+		entityHash,
+		...displayName ? { displayName: displayName.trim() } : {},
 	}
 }
 
@@ -75,7 +74,7 @@ export function entityFriendBindingInput(entityHash, displayName) {
  * @returns {Promise<FriendBinding>} 用户 federation 绑定
  */
 export async function buildUserFriendBinding(peer) {
-	const existing = String(peer?.entityHash ?? '').trim().toLowerCase()
+	const existing = peer?.entityHash ?? ''
 	if (isEntityHash128(existing))
 		return {
 			entityHash: existing,

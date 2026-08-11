@@ -63,7 +63,7 @@ async function mountSection(panel, footer, section) {
  */
 export async function openHubPrefsModal(options = {}) {
 	const section = options.section === 'federation' ? 'federation' : 'translation'
-	activeGetGroupId = typeof options.getGroupId === 'function' ? options.getGroupId : null
+	activeGetGroupId = options.getGroupId || null
 	usingTemplates('/parts/shells:chat/src/templates')
 	const shell = await renderTemplate('hub/prefs/shell', {})
 	openOverlayModal({

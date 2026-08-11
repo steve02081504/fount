@@ -8,7 +8,7 @@ import { wrapProtocolHttpsUrl } from './runUri.mjs'
  * @returns {string|null} 可写入 `<a href>` 的 URL
  */
 export function safeProfileLink(raw) {
-	const text = String(raw || '').trim()
+	const text = raw.trim()
 	if (!text) return null
 	if (/^fount:/i.test(text)) return wrapProtocolHttpsUrl(text)
 

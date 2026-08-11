@@ -8,12 +8,12 @@
  */
 export function isEditableTarget(target) {
 	if (!target || typeof target !== 'object') return false
-	const el = /** @type {{ tagName?: string, isContentEditable?: boolean, closest?: (s: string) => unknown }} */ target
-	if (typeof el.closest === 'function' && el.closest('dialog[open]')) return true
+	const el = /** @type {{ tagName?: string, isContentEditable?: boolean, closest: (s: string) => unknown }} */ target
+	if (el.closest('dialog[open]')) return true
 	const tag = el.tagName
 	if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true
 	if (el.isContentEditable) return true
-	if (typeof el.closest === 'function' && el.closest('[contenteditable="true"]')) return true
+	if (el.closest('[contenteditable="true"]')) return true
 	return false
 }
 

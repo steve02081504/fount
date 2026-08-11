@@ -19,7 +19,7 @@ function getChannel() {
  * @param {string} groupId 群组 id
  */
 export function broadcastHubGroupJoined(groupId) {
-	const id = String(groupId || '').trim()
+	const id = groupId.trim()
 	if (!id) return
 	getChannel().postMessage({ type: 'group-joined', groupId: id })
 }

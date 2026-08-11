@@ -2,11 +2,12 @@
  * 【文件】public/hub/messages/actions/pin.mjs
  * 【职责】频道消息置顶 / 取消置顶。
  */
-import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { pinMessage, unpinMessage } from '../../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../../src/endpoints/groupCore.mjs'
 import { isDagEventId } from '../../../src/lib/eventId.mjs'
 import { store } from '../../core/state.mjs'
+
+import { toastMessageActionFailed } from './actionError.mjs'
 
 /**
  * @param {HTMLElement} button 被点击按钮
@@ -27,7 +28,7 @@ export async function handlePin(button, actions) {
 		await reload?.()
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.hub.message.action.failed', { error: error?.message || String(error) })
+		toastMessageActionFailed(error)
 	}
 	finally { button.disabled = false }
 	return true

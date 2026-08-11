@@ -13,7 +13,7 @@ import {
 	uploadGroupEmoji,
 } from '../endpoints/emojiPacks.mjs'
 import { putGroupSettings } from '../endpoints/groupCore.mjs'
-import { viewerCanManageMessages } from '../groupViewerPermissions.mjs'
+import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
 
 /**
  * @param {object[]} packs 群 pack 列表
@@ -22,7 +22,7 @@ import { viewerCanManageMessages } from '../groupViewerPermissions.mjs'
  * @returns {string} select options HTML
  */
 function buildPackOptionsHtml(packs, selected, groupId) {
-	const current = String(selected || '').trim() || groupId
+	const current = (selected || '').trim() || groupId
 	const ids = packs.map(p => String(p.packId || '').trim()).filter(Boolean)
 	if (!ids.includes(groupId)) ids.unshift(groupId)
 	const unique = [...new Set(ids)]
@@ -55,13 +55,14 @@ async function renderGroupEmojis(context) {
 	const activePackId = resolveActivePackId(context, packIds, context.groupId)
 	context.activeEmojiPackId = activePackId
 
-	const [canManage, packDetail] = await Promise.all([
-		viewerCanManageMessages(context.state, context.groupId, channelId).catch(() => false),
+	const [permissions, packDetail] = await Promise.all([
+		fetchViewerChannelPermissions(context.state, context.groupId, channelId),
 		getGroupEmojiPack(context.groupId, activePackId).catch(error => {
 			handleError('chat.hub.group.emojisLoadFailed')(error)
 			return null
 		}),
 	])
+	const canManage = permissions.MANAGE_MESSAGES === true
 
 	const entries = Array.isArray(packDetail?.items) ? packDetail.items : []
 	const currentDefault = context.state?.groupSettings?.defaultEmojiPackId || null
@@ -126,7 +127,7 @@ ${del}
 				suggested,
 			)
 			if (packId == null) return
-			const id = String(packId || '').trim() || suggested
+			const id = packId.trim() || suggested
 			try {
 				const data = await createGroupEmojiPack(context.groupId, id)
 				showToastI18n('success', 'chat.group.settings.page.emojis.create.packOk')

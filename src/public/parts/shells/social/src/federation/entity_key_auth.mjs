@@ -1,9 +1,9 @@
 /**
  * Social 时间线实体写授权（含 social_meta 创世语义）。
  */
+import { hashFromPubKeyHex } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
-	activeSenderHashFromPubKeyHex,
 	foldEntityKeyHistoryFromEvents as foldRotateRevokeHistory,
 	isRecoverySender,
 	isValidActiveSender,
@@ -37,7 +37,6 @@ export function foldEntityKeyHistoryFromEvents(events) {
 
 /**
  * @param {object} params 授权参数
- * @param {string} params.entityHash 时间线 owner
  * @param {string} params.sender 事件 sender pubKeyHash
  * @param {string} params.eventType 事件 type
  * @param {object} [params.eventContent] 事件 content
@@ -46,14 +45,12 @@ export function foldEntityKeyHistoryFromEvents(events) {
  * @returns {boolean} 是否授权写入
  */
 export function isEntityTimelineWriteAuthorized({
-	entityHash,
 	sender,
 	eventType,
 	eventContent,
 	recoveryPubKeyHex,
 	entityKeyHistory,
 }) {
-	void entityHash
 	const normalizedSender = normalizeHex64(sender)
 	if (!isHex64(normalizedSender) || !recoveryPubKeyHex) return false
 
@@ -64,7 +61,7 @@ export function isEntityTimelineWriteAuthorized({
 		const prevGen = Number(eventContent?.prevGeneration ?? generation - 1)
 		const prevActive = resolveActiveKeyAtGeneration(entityKeyHistory, prevGen)
 		if (!prevActive || isActiveGenerationRevoked(entityKeyHistory, prevGen)) return false
-		return activeSenderHashFromPubKeyHex(prevActive) === normalizedSender
+		return hashFromPubKeyHex(prevActive) === normalizedSender
 	}
 
 	if (eventType === 'entity_key_revoke')
@@ -72,7 +69,7 @@ export function isEntityTimelineWriteAuthorized({
 
 	if (eventType === 'social_meta')
 		return isRecoverySender(recoveryPubKeyHex, normalizedSender)
-			|| isValidActiveSender(entityKeyHistory, recoveryPubKeyHex, normalizedSender)
+			|| isValidActiveSender(entityKeyHistory, normalizedSender)
 
-	return isValidActiveSender(entityKeyHistory, recoveryPubKeyHex, normalizedSender)
+	return isValidActiveSender(entityKeyHistory, normalizedSender)
 }

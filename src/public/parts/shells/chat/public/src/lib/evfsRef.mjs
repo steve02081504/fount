@@ -9,7 +9,7 @@ export const EVFS_SCHEME = 'evfs:'
  * @returns {string} 规范化后的相对路径
  */
 function assertSafeEvfsLogicalPath(logicalPath) {
-	const raw = String(logicalPath || '').trim()
+	const raw = logicalPath.trim()
 	if (!raw || raw.includes('\0'))
 		throw new Error('invalid EVFS path')
 	const segments = raw.split(/[/\\]+/).map(s => s.trim()).filter(Boolean)
@@ -29,7 +29,7 @@ export function parseEvfsRef(ref) {
 	try {
 		const url = new URL(ref)
 		if (url.protocol !== 'evfs:') return null
-		const entityHash = String(url.hostname || '').trim().toLowerCase()
+		const entityHash = url.hostname || ''
 		const logicalPath = String(url.pathname || '').replace(/^\/+/, '')
 		if (!isEntityHash128(entityHash)) return null
 		return { entityHash, logicalPath: assertSafeEvfsLogicalPath(logicalPath) }

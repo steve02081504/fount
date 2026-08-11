@@ -72,5 +72,5 @@ Deno.test('link entry shape', () => {
 	assertEquals(entry.kind, 'link')
 	assertEquals(entry.link.cabinet_id, 'default')
 	assertEquals(entry.link.entry_id, null)
-	assertEquals(entry.link.owner_entity_hash, 'aa')
+	assertEquals(entry.link.owner_entity_hash, 'AA')
 })

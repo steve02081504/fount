@@ -22,7 +22,6 @@ import {
 } from 'npm:@steve02081504/fount-p2p/governance/branch'
 import {
 	parseJoinSnapshotRequest,
-	parseJoinSnapshotResponse,
 	parsePullResponseEnvelope,
 } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
 
@@ -112,7 +111,7 @@ Deno.test('joinSnapshot wire parse', () => {
 	})
 	assertEquals(req?.groupId, 'g1')
 	assertEquals(req?.requesterPubKeyHash, sender)
-	assertEquals(parseJoinSnapshotResponse({
+	assertEquals(parsePullResponseEnvelope({
 		requestId: 'r1',
 		requesterPubKeyHash: sender,
 		requesterNodeHash: 'node-a',
@@ -121,7 +120,7 @@ Deno.test('joinSnapshot wire parse', () => {
 		ciphertext: 'z',
 		authTag: 'w',
 	}), null)
-	assertEquals(parseJoinSnapshotResponse({
+	assertEquals(parsePullResponseEnvelope({
 		requestId: 'r1',
 		requesterNodeHash: 'node-a',
 		requesterPubKeyHash: sender,

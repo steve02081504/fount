@@ -40,8 +40,8 @@ export function dismissProfilePopup() {
  * @returns {object} 统一实体描述
  */
 function userEntityFromMember(member) {
-	const entityHash = String(member?.entityHash || '').trim().toLowerCase()
-	const pubKeyHash = String(member?.pubKeyHash || '').trim().toLowerCase()
+	const entityHash = member?.entityHash || ''
+	const pubKeyHash = member?.pubKeyHash || ''
 	const displayName = aliasForEntity(entityHash)
 		|| String(member?.displayName || '').trim()
 		|| (entityHash ? entityHashLabel(entityHash) : '')
@@ -69,7 +69,7 @@ async function charEntityFromName(charname, label) {
 		charname,
 		pubKeyHash: null,
 		pubKeyHex: null,
-		displayName: String(label || '').trim() || charname,
+		displayName: (label || '').trim() || charname,
 	}
 }
 
@@ -100,7 +100,7 @@ export async function resolveEntityFromAnchor(anchor) {
 		|| anchor.closest('[data-avatar-for]')?.dataset.avatarFor
 		|| memberItem?.querySelector('[data-avatar-for]')?.dataset.avatarFor
 	const authorHash = messageRow?.dataset.authorPubkeyHash?.trim()
-	const displayKey = String(avatarFor || memberKey || authorHash || '').trim().toLowerCase()
+	const displayKey = avatarFor || memberKey || authorHash || ''
 	if (!displayKey || displayKey === '?') return null
 
 	const members = store.context.currentState?.members || []

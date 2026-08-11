@@ -3,6 +3,7 @@
  */
 import { getGroupState } from '../src/endpoints/groupCore.mjs'
 import { bindGroupCabinet } from '../src/endpoints/groupFiles.mjs'
+import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
@@ -56,7 +57,7 @@ export function wireFilesDrawerToggle() {
  * @returns {Array<{ cabinet_id: string, name: string, access: string }>} 可访问柜
  */
 function cabinetsForViewer(state, viewerKey) {
-	const member = state.members?.[viewerKey]
+	const member = (state.members || []).find(row => row.memberKey === viewerKey)
 	const roles = new Set(member?.roles || [])
 	/** @type {Array<{ cabinet_id: string, name: string, access: string }>} */
 	const out = []
@@ -85,9 +86,9 @@ export async function refreshFilesDrawer(drawer) {
 	const host = document.getElementById('files-list')
 	if (!host || !drawer.groupId) return
 	const state = drawer.state || await getGroupState(drawer.groupId)
-	const viewerKey = drawer.viewer?.memberKey || state.viewer?.memberKey || state.viewer?.pubKeyHash
+	const viewerKey = drawer.viewer?.memberKey || state.viewer?.memberKey || state.viewerMemberPubKeyHash
 	const cabinets = cabinetsForViewer(state, viewerKey)
-	const perms = state.viewer?.permissions || {}
+	const perms = await fetchViewerChannelPermissions(state, drawer.groupId)
 	const canManage = Boolean(perms.ADMIN || perms.MANAGE_ADMINS)
 
 	host.replaceChildren()

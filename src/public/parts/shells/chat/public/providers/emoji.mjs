@@ -17,8 +17,6 @@ import {
 	removeEmojiCollectionPack,
 } from '../src/endpoints/emoji.mjs'
 
-const CHAT_API = CHAT_API_CLIENT_PREFIX
-
 /**
  * 包表情内容 URL（经 chat API 代理）。
  * @param {string} packId 包 ID
@@ -26,7 +24,7 @@ const CHAT_API = CHAT_API_CLIENT_PREFIX
  * @returns {string} 可嵌入 img 的 URL
  */
 export function packEmojiContentUrl(packId, emojiId) {
-	return `${CHAT_API}/emoji-content/${encodeURIComponent(packId)}/${encodeURIComponent(emojiId)}`
+	return `${CHAT_API_CLIENT_PREFIX}/emoji-content/${encodeURIComponent(packId)}/${encodeURIComponent(emojiId)}`
 }
 
 /**

@@ -3,7 +3,7 @@ import { dirname } from 'node:path'
 
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
-import { unwrapChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
+import { unwrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
 import { readLocalSignerSeed } from '../dag/localSigner.mjs'
@@ -136,7 +136,7 @@ export async function applyChannelKeyRotateEvent(username, groupId, event, selfP
 	if (!wrap) return false
 	const seed = await readLocalSignerSeed(username, groupId)
 	if (!seed) return false
-	const keyHex = unwrapChannelKey(wrap, seed)
+	const keyHex = unwrapKeyEcies(wrap, seed)
 	if (!keyHex || String(keyHex).length !== 64) return false
 	await putChannelKeyGeneration(username, groupId, channelId, generation, keyHex)
 	return true

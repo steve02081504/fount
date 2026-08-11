@@ -40,7 +40,7 @@ export async function copyTextToClipboard(link) {
  */
 export async function shareOrCopyPostLink(entityHash, postId, title) {
 	const url = formatSocialShareHttpsUrl(entityHash, postId, state.viewerNodeHash || undefined)
-	if (typeof navigator.share === 'function')
+	if (navigator.share)
 		try {
 			await navigator.share({ title: title || 'fount', url })
 			return 'shared'

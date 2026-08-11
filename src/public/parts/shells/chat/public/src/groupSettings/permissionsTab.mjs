@@ -3,8 +3,9 @@ import { mountTemplate, renderTemplateAsHtmlString } from '../../../../../../scr
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n, promptI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { createRole, deleteRole as deleteRoleRequest, updateRolePermission as updateRolePermissionRequest } from '../endpoints/roles.mjs'
+import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
 
-import { ALL_PERMISSIONS } from './constants.mjs'
+import { grantableRolePermissions } from './constants.mjs'
 
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
 export async function renderPermissionSettings(context) {
@@ -21,11 +22,15 @@ export async function renderPermissionSettings(context) {
 	context.permissionsController = new AbortController()
 	const { signal } = context.permissionsController
 
+	const grantorPerms = await fetchViewerChannelPermissions(context.state, context.groupId)
+	const grantable = new Set(grantableRolePermissions(grantorPerms))
+
 	const rolesHtml = (await Promise.all(Object.entries(context.state.roles || {}).map(async ([roleId, role]) => {
 		const permissions = role.permissions || {}
-		const permissionsHtml = (await Promise.all(ALL_PERMISSIONS.map(perm =>
+		const permissionsHtml = (await Promise.all([...grantable].map(perm =>
 			renderTemplateAsHtmlString('group/settings/permission_row', {
 				checked: permissions[perm] ? 'checked' : '',
+				disabled: '',
 				perm,
 				roleId,
 			})

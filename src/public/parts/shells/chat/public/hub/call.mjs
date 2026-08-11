@@ -167,7 +167,7 @@ async function doJoinChannelCall(groupId, channelId, options = {}) {
 			 */
 			onRoster: peers => {
 				const unique = new Set(
-					peers.map(p => String(p.entityHash || '').toLowerCase()).filter(Boolean),
+					peers.map(p => p.entityHash).filter(Boolean),
 				)
 				const count = unique.size
 				setPeerCountLabel(peerLabel, count)

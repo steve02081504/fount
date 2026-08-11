@@ -80,7 +80,8 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 			return res.status(403).json({ error: 'Not a member' })
 		const member = state.members[memberKey]
 		const permChannelId = uploadPermissionChannelId(state, req.body.channelId)
-		if (!canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, permChannelId))
+		if (!canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, permChannelId)
+			&& !canInChannel(state, member, PERMISSIONS.MANAGE_FILES, permChannelId))
 			return res.status(403).json({ error: 'No permission to upload files' })
 
 		const ceMode = normalizeCeMode(req.body.ceMode)
@@ -117,7 +118,8 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 			return res.status(403).json({ error: 'Not a member' })
 		const member = state.members[memberKey]
 		const permChannelId = uploadPermissionChannelId(state, body.channelId)
-		if (!canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, permChannelId))
+		if (!canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, permChannelId)
+			&& !canInChannel(state, member, PERMISSIONS.MANAGE_FILES, permChannelId))
 			return res.status(403).json({ error: 'No permission to upload files' })
 
 		const keyEntry = await getCurrentFileMasterKey(username, groupId)
@@ -156,8 +158,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 			return res.status(403).json({ error: 'Not a member' })
 		const defaultChannelId = state.groupSettings?.defaultChannelId || 'default'
 		const member = state.members[memberKey]
-		if (!canInChannel(state, member, PERMISSIONS.MANAGE_FILES, defaultChannelId)
-			&& !canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, defaultChannelId))
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_FILES, defaultChannelId))
 			return res.status(403).json({ error: 'No permission to delete files' })
 		const meta = fileMetaFromState(state, fileId)
 		if (!meta || meta.deleted)

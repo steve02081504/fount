@@ -11,7 +11,7 @@ import { addEmojiCollectionPack } from './endpoints/emoji.mjs'
  * @returns {Promise<{ packId: string }>} 收藏的 packId
  */
 export async function addPackToCollection(packId) {
-	const id = String(packId || '').trim()
+	const id = packId.trim()
 	if (!id) throw new Error('packId required')
 	await addEmojiCollectionPack(id)
 	return { packId: id }

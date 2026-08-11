@@ -9,7 +9,7 @@ import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
  * @returns {Promise<void>}
  */
 export async function tryDeletePreviewByUrl(url) {
-	const match = String(url || '').match(/\/entities\/([^/]+)\/files\/(.+)$/)
+	const match = url.match(/\/entities\/([^/]+)\/files\/(.+)$/)
 	if (!match) return
 	const entityHash = decodeURIComponent(match[1])
 	const logicalPath = match[2].split('/').map(decodeURIComponent).join('/')
@@ -24,10 +24,8 @@ export async function tryDeletePreviewByUrl(url) {
 export async function deleteEvfsManifest(ownerEntityHash, logicalPath) {
 	try {
 		const store = getEntityStore()
-		if (typeof store.deleteManifest === 'function') {
-			await store.deleteManifest(ownerEntityHash, logicalPath)
-			return
-		}
+		if (store.deleteManifest)
+			return await store.deleteManifest(ownerEntityHash, logicalPath)
 		const manifest = await loadFileManifest(ownerEntityHash, logicalPath)
 		if (!manifest) return
 		// 无 delete API 时写空占位不可取；尝试直接删文件

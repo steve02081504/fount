@@ -35,9 +35,7 @@ export async function backfillPosts(username, options = {}) {
  * @returns {Promise<{ phase: string, imported: number }>} 结果
  */
 async function runBackfill(username, options) {
-	const enough = typeof options.enough === 'function'
-		? options.enough
-		: async () => false
+	const enough = options.enough || (async () => false)
 	let imported = 0
 
 	if (await enough()) return { phase: 'skip', imported: 0 }

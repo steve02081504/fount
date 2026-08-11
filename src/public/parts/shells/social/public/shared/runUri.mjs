@@ -109,7 +109,7 @@ export function formatSocialProfilePageUri(entityHash) {
  * @returns {string} 浏览器 hash 链接
  */
 export function formatSocialSearchHref(query) {
-	const q = String(query || '').trim()
+	const q = query.trim()
 	if (q.startsWith('#'))
 		return `${SOCIAL_SHELL_PATH}#search;${encodeURIComponent(q.slice(1))}`
 	return `${SOCIAL_SHELL_PATH}#search;${encodeURIComponent(q)}`
@@ -120,7 +120,7 @@ export function formatSocialSearchHref(query) {
  * @returns {string} 话题页浏览器 hash 链接
  */
 export function formatSocialTopicHref(tag) {
-	const t = String(tag || '').trim().replace(/^#/, '')
+	const t = tag.trim().replace(/^#/, '')
 	return `${SOCIAL_SHELL_PATH}#topic:${encodeURIComponent(t)}`
 }
 

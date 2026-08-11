@@ -17,7 +17,9 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
 | `update_locales` | `.esh/commands/update-locales.py --self-test` (string↔single-applicator + string↔switch) |
 | `agents_md_english` | `AGENTS.md` + linked `.md` English-only; non-`AGENTS.md` under `docs/` |
-| `json_lf` | `*.json` LF line endings (no CRLF / lone CR). Under `fount test`, scopes to paths listed in the `FOUNT_TEST_TRIGGERED_FILES` temp file when that list includes `.json`; otherwise full-repo scan |
+| `text_lf` | UTF-8 text files (fatal decode, no NUL) must use LF (no CRLF / lone CR). Under `fount test`, scopes to `FOUNT_TEST_TRIGGERED_FILES` when that list has paths beyond the checker itself; otherwise full-repo scan |
+
+`listRepoFiles` (`walk.mjs`): default listing is `git ls-files` (+ untracked, exclude-standard) so nested `.gitignore` applies; pass `ignore` to force a filesystem walk with that filter. Empty/omitted suffixes = all files.
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
 
 ## i18n keys

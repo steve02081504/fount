@@ -79,9 +79,9 @@ function friendHoverPaintOptions() {
  */
 function bindFriendProfileHover(el, target) {
 	bindEntityProfileHoverAnchor(el, async () => {
-		let entityHash = String(target.entityHash || '').trim().toLowerCase()
+		let entityHash = target.entityHash || ''
 		if (!isEntityHash128(entityHash) && target.charname)
-			entityHash = String(await charAgentEntityHash(target.charname) || '').toLowerCase()
+			entityHash = await charAgentEntityHash(target.charname) || ''
 		if (!isEntityHash128(entityHash)) return null
 		return {
 			cacheKey: entityHash,
@@ -442,7 +442,7 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 				})
 				return
 			}
-			const pubKeyHex = String(hit.activePubKeyHex || '').trim().toLowerCase()
+			const pubKeyHex = hit.activePubKeyHex || ''
 			if (!isHex64(pubKeyHex)) {
 				showToastI18n('warning', 'chat.hub.profilePopup.peerNoIdentity')
 				return

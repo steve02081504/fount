@@ -53,14 +53,13 @@ export async function restoreRecovery(cabinetId, recoveryToken, unlock) {
  */
 function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 	let recoveryToken = token
-	const unlockToken = unlock
 	return {
 		label,
 		/** 撤销：切换删除/还原并刷新列表。 */
 		async undo() {
-			if (create) recoveryToken = (await recoverableDelete(cabinetId, ids, unlockToken)).recovery_token
+			if (create) recoveryToken = (await recoverableDelete(cabinetId, ids, unlock)).recovery_token
 			else if (recoveryToken) {
-				await restoreRecovery(cabinetId, recoveryToken, unlockToken)
+				await restoreRecovery(cabinetId, recoveryToken, unlock)
 				recoveryToken = undefined
 			}
 			await refreshEntries()
@@ -69,10 +68,10 @@ function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 		async redo() {
 			if (create) {
 				if (!recoveryToken) return
-				await restoreRecovery(cabinetId, recoveryToken, unlockToken)
+				await restoreRecovery(cabinetId, recoveryToken, unlock)
 				recoveryToken = undefined
 			}
-			else recoveryToken = (await recoverableDelete(cabinetId, ids, unlockToken)).recovery_token
+			else recoveryToken = (await recoverableDelete(cabinetId, ids, unlock)).recovery_token
 			await refreshEntries()
 		},
 		/** 放弃撤销链时永久删除恢复令牌。 */
@@ -110,17 +109,16 @@ export function makeDeleteHistory(ids, initialToken, cabinetId, unlock = current
  * @returns {import('./commandHistory.mjs').HistoryEntry} 历史
  */
 export function makePatchHistory({ entryId, before, after, label = 'patch', cabinetId, unlock = currentUnlockToken() }) {
-	const unlockToken = unlock
 	return {
 		label,
 		/** 撤销 PATCH：写回修改前快照。 */
 		async undo() {
-			await patchEntry(entryId, before, { cabinetId, unlock: unlockToken })
+			await patchEntry(entryId, before, { cabinetId, unlock: unlock })
 			await refreshEntries()
 		},
 		/** 重做 PATCH：应用修改后快照。 */
 		async redo() {
-			await patchEntry(entryId, after, { cabinetId, unlock: unlockToken })
+			await patchEntry(entryId, after, { cabinetId, unlock: unlock })
 			await refreshEntries()
 		},
 	}
@@ -131,14 +129,13 @@ export function makePatchHistory({ entryId, before, after, label = 'patch', cabi
  * @returns {import('./commandHistory.mjs').HistoryEntry} 历史
  */
 export function makeMoveHistory({ entryIds, fromParent, toParent, label = 'cut', cabinetId, unlock = currentUnlockToken() }) {
-	const unlockToken = unlock
 	/**
 	 * @param {string | null} parentId 父
 	 * @returns {Promise<void>}
 	 */
 	async function moveAll(parentId) {
 		for (const entryId of entryIds)
-			await patchEntry(entryId, { parent_id: parentId }, { cabinetId, unlock: unlockToken })
+			await patchEntry(entryId, { parent_id: parentId }, { cabinetId, unlock: unlock })
 		await refreshEntries()
 	}
 	return {

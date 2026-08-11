@@ -23,6 +23,6 @@ export function normalizeThemeColor(value) {
 export function themeColorForEntity(profile, entityHash = '') {
 	const explicit = normalizeThemeColor(profile?.themeColor)
 	if (explicit) return explicit
-	const seed = String(entityHash || profile?.entityHash || '')
+	const seed = entityHash || profile?.entityHash || ''
 	return rgbCss(hashAvatarRgb(seed))
 }

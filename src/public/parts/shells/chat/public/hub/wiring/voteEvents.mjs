@@ -24,8 +24,7 @@ export function wireVoteEvents() {
 		if (!store.context.currentGroupId || !store.context.currentChannelId) return
 		const question = voteQuestion.value.trim()
 		if (!question) return
-		const optsRaw = voteOptions.value
-		const options = optsRaw.split(/[\n,，]/u).map(s => s.trim()).filter(Boolean)
+		const options = voteOptions.value.split(/[\n,，]/u).map(s => s.trim()).filter(Boolean)
 		if (options.length < 2) {
 			showToastI18n('error', 'chat.hub.vote.minOptions')
 			return

@@ -38,7 +38,7 @@ export function formatHashShort(hash, options = {}) {
 		return prefix(sub.slice(0, headLen))
 	}
 
-	const raw = String(hash ?? '').trim().toLowerCase()
+	const raw = hash != null ? String(hash) : ''
 	if (!raw) return prefix('?')
 	if (raw.length <= headLen + (tailLen > 0 ? tailLen : 0) && !ellipsis)
 		return prefix(raw)
@@ -64,7 +64,7 @@ export function entityHashLabel(entityHash) {
  * @returns {string} at-id 文案
  */
 export function formatEntityAtId(entityHash, options = {}) {
-	const handle = String(options.handle || '').trim().replace(/^@+/u, '').toLowerCase()
+	const handle = (options.handle || '').trim().replace(/^@+/u, '').toLowerCase()
 	const hashAt = formatHashShort(entityHash, {
 		withAt: true,
 		headLen: options.headLen ?? 8,

@@ -118,13 +118,12 @@ export function registerSyncHandlers(roomContext) {
 		if (!signedEvent) return
 		if (!tryMarkSeenFederationEvent(username, groupId, signedEvent.id)) return
 		void (async () => {
-			const eventId = signedEvent.id
 			const { ingestRemoteEvent } = requireDagDeps()
 			const result = await ingestRemoteEvent(username, groupId, signedEvent, { skipSeenDedup: true })
 			if (result?.status === 'applied') {
 				const remoteNodeHash = peerToNode.get(peerId)
 				if (remoteNodeHash)
-					await bumpReputationOnRelay(remoteNodeHash, `dag:${eventId}`)
+					await bumpReputationOnRelay(remoteNodeHash, `dag:${signedEvent.id}`)
 			}
 			if (result?.status === 'quarantined' || result?.status === 'pending')
 				scheduleCatchUp(username, groupId)

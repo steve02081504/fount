@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto'
  * @returns {string | null} 规范化父目录 id
  */
 export function normalizeParentId(value) {
-	return value ? String(value) : null
+	return value || null
 }
 
 /**
@@ -13,7 +13,7 @@ export function normalizeParentId(value) {
  * @returns {{ at: number, entity_hash: string }} 时间戳元数据
  */
 export function stampActor(entityHash) {
-	return { at: Date.now(), entity_hash: String(entityHash || '').toLowerCase() }
+	return { at: Date.now(), entity_hash: entityHash }
 }
 
 /**
@@ -24,7 +24,7 @@ export function stampActor(entityHash) {
  */
 function normalizeStamp(stamp, entityHash, fallback) {
 	return stamp?.at
-		? { at: Number(stamp.at), entity_hash: String(stamp.entity_hash || entityHash).toLowerCase() }
+		? { at: Number(stamp.at), entity_hash: stamp.entity_hash || entityHash }
 		: fallback
 }
 
@@ -58,9 +58,9 @@ export function normalizeEntry(draft, entityHash) {
 		encryption: draft?.encryption || null,
 		orphaned: Boolean(draft?.orphaned),
 		link: kind === 'link' && draft?.link ? {
-			owner_entity_hash: String(draft.link.owner_entity_hash || '').toLowerCase(),
-			cabinet_id: String(draft.link.cabinet_id || ''),
-			entry_id: draft.link.entry_id ? String(draft.link.entry_id) : null,
+			owner_entity_hash: draft.link.owner_entity_hash || '',
+			cabinet_id: draft.link.cabinet_id || '',
+			entry_id: draft.link.entry_id || null,
 		} : null,
 	}
 }

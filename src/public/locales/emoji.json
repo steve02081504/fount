@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "📁⚙️",
 						"MANAGE_MESSAGES": "💬⚙️",
 						"MANAGE_ROLES": "🎭⚙️",
+						"MANAGE_ADMINS": "👑⚙️",
 						"PIN_MESSAGES": "📌📨",
 						"SEND_MESSAGES": "📤📨",
 						"SEND_STICKERS": "📤🏷️😀",
@@ -2347,6 +2348,7 @@
 						"title": "✏️💬"
 					},
 					"failed": "⚙️❌：${error}",
+					"noPermission": "🫵🚫⚙️",
 					"feedbackDown": {
 						"title": "👎"
 					},

@@ -3,7 +3,7 @@
  * @returns {string} HTML 转义
  */
 function escapeHtml(text) {
-	return String(text ?? '')
+	return text
 		.replace(/&/g, '&amp;')
 		.replace(/</g, '&lt;')
 		.replace(/>/g, '&gt;')
@@ -25,7 +25,7 @@ function formatChatGroupHref(groupId, channelId = 'default') {
  */
 export function groupRefLabel(groupRef) {
 	if (groupRef?.label) return groupRef.label
-	const channelId = groupRef?.channelId?.trim() || 'default'
+	const channelId = groupRef?.channelId || 'default'
 	return `#${groupRef?.groupId || ''}/${channelId}`
 }
 
@@ -35,7 +35,7 @@ export function groupRefLabel(groupRef) {
  */
 export function renderGroupRefBlockHtml(groupRef) {
 	if (!groupRef?.groupId) return ''
-	const channelId = groupRef.channelId?.trim() || 'default'
+	const channelId = groupRef.channelId || 'default'
 	const href = formatChatGroupHref(groupRef.groupId, channelId)
 	const label = groupRefLabel(groupRef)
 	return `\

@@ -94,8 +94,8 @@ export async function loadVideoView(options = {}) {
 	currentVideoIndex = -1
 	videoFeed.reset()
 
-	const focusEntityHash = String(options.focusEntityHash || '').toLowerCase()
-	const focusPostId = String(options.focusPostId || '')
+	const focusEntityHash = options.focusEntityHash || ''
+	const focusPostId = options.focusPostId || ''
 
 	let data
 	try {
@@ -112,8 +112,8 @@ export async function loadVideoView(options = {}) {
 	if (focusEntityHash && focusPostId) {
 		const focusKey = `${focusEntityHash}:${focusPostId}`
 		const existingIndex = items.findIndex(item =>
-			`${String(item.entityHash || item.targetEntityHash || '').toLowerCase()}:${item.postId || item.targetPostId}` === focusKey
-			|| `${String(item.targetEntityHash || item.entityHash || '').toLowerCase()}:${item.targetPostId || item.postId}` === focusKey,
+			`${item.entityHash || item.targetEntityHash || ''}:${item.postId || item.targetPostId}` === focusKey
+			|| `${item.targetEntityHash || item.entityHash || ''}:${item.targetPostId || item.postId}` === focusKey,
 		)
 		if (existingIndex > 0) {
 			const [focused] = items.splice(existingIndex, 1)

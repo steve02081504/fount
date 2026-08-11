@@ -7,7 +7,7 @@ import { SOCIAL_BASE, socialRequest } from './client.mjs'
  * @returns {string} 包内容 URL（无 vaultPath 时的预览回退）
  */
 export function emojiPackItemUrl(entityHash, packId) {
-	return `${SOCIAL_BASE}/emoji-packs/${encodeURIComponent(entityHash)}/${encodeURIComponent(packId || '')}`
+	return `${SOCIAL_BASE}/emoji-packs/${encodeURIComponent(entityHash)}/${encodeURIComponent(packId)}`
 }
 
 /**

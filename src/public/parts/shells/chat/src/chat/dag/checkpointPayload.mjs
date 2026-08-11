@@ -45,8 +45,7 @@ export function buildCheckpointPayload({
 	local_tips_hash = null,
 	hot_posts = null,
 }) {
-	const materializedState = materialized
-	const messageOverlay = materializedState?.messageOverlay || {}
+	const messageOverlay = materialized?.messageOverlay || {}
 	const serialOverlay = {
 		deletedIds: overlay.deletedIds ?? [...messageOverlay.deletedIds || []],
 		editHistory: overlay.editHistory ?? Object.fromEntries(messageOverlay.editHistory || []),
@@ -58,38 +57,38 @@ export function buildCheckpointPayload({
 	}
 
 	const members_record = {
-		groupId: materializedState.groupId,
-		members: JSON.parse(JSON.stringify(materializedState.members || {})),
-		roles: JSON.parse(JSON.stringify(materializedState.roles || {})),
-		channelPermissions: JSON.parse(JSON.stringify(materializedState.channelPermissions || {})),
-		channelKeyGeneration: JSON.parse(JSON.stringify(materializedState.channelKeyGeneration || {})),
+		groupId: materialized.groupId,
+		members: JSON.parse(JSON.stringify(materialized.members || {})),
+		roles: JSON.parse(JSON.stringify(materialized.roles || {})),
+		channelPermissions: JSON.parse(JSON.stringify(materialized.channelPermissions || {})),
+		channelKeyGeneration: JSON.parse(JSON.stringify(materialized.channelKeyGeneration || {})),
 		channelKeyWraps: Object.fromEntries(
-			Object.entries(materializedState.channelKeyWraps || {}).map(([channelId, row]) => [
+			Object.entries(materialized.channelKeyWraps || {}).map(([channelId, row]) => [
 				channelId,
 				{ generation: Number(row?.generation) || 0 },
 			]),
 		),
-		channels: JSON.parse(JSON.stringify(materializedState.channels || {})),
-		fileFolders: JSON.parse(JSON.stringify(materializedState.fileFolders || {})),
-		cabinets: JSON.parse(JSON.stringify(materializedState.cabinets || {})),
-		groupMeta: JSON.parse(JSON.stringify(materializedState.groupMeta || {})),
-		groupSettings: JSON.parse(JSON.stringify(materializedState.groupSettings || {})),
+		channels: JSON.parse(JSON.stringify(materialized.channels || {})),
+		fileFolders: JSON.parse(JSON.stringify(materialized.fileFolders || {})),
+		cabinets: JSON.parse(JSON.stringify(materialized.cabinets || {})),
+		groupMeta: JSON.parse(JSON.stringify(materialized.groupMeta || {})),
+		groupSettings: JSON.parse(JSON.stringify(materialized.groupSettings || {})),
 		messageOverlay: serialOverlay,
-		bannedMembers: [...materializedState.bannedMembers || []],
-		bannedEntities: [...materializedState.bannedEntities || []],
-		bannedNodes: [...materializedState.bannedNodes || []],
-		delegatedOwnerPubKeyHash: materializedState.delegatedOwnerPubKeyHash ?? null,
-		ownerHeartbeats: JSON.parse(JSON.stringify(materializedState.ownerHeartbeats || {})),
-		membersRoot: materializedState.membersRoot ?? null,
-		membersPagesCount: materializedState.membersPagesCount ?? 1,
-		reputationLedger: JSON.parse(JSON.stringify(materializedState.reputationLedger || [])),
-		inviteEdges: JSON.parse(JSON.stringify(materializedState.inviteEdges || [])),
-		fileMasterKeyRotations: JSON.parse(JSON.stringify(materializedState.fileMasterKeyRotations || [])),
-		pexHints: [...materializedState.pexHints || []].filter(hint => String(hint).trim()),
-		messageSenderIndex: JSON.parse(JSON.stringify(materializedState.messageSenderIndex || {})),
-		voteBallots: JSON.parse(JSON.stringify(materializedState.voteBallots || {})),
-		session: JSON.parse(JSON.stringify(materializedState.session || {})),
-		worldStates: JSON.parse(JSON.stringify(materializedState.worldStates || {})),
+		bannedMembers: [...materialized.bannedMembers || []],
+		bannedEntities: [...materialized.bannedEntities || []],
+		bannedNodes: [...materialized.bannedNodes || []],
+		delegatedOwnerPubKeyHash: materialized.delegatedOwnerPubKeyHash ?? null,
+		ownerHeartbeats: JSON.parse(JSON.stringify(materialized.ownerHeartbeats || {})),
+		membersRoot: materialized.membersRoot ?? null,
+		membersPagesCount: materialized.membersPagesCount ?? 1,
+		reputationLedger: JSON.parse(JSON.stringify(materialized.reputationLedger || [])),
+		inviteEdges: JSON.parse(JSON.stringify(materialized.inviteEdges || [])),
+		fileMasterKeyRotations: JSON.parse(JSON.stringify(materialized.fileMasterKeyRotations || [])),
+		pexHints: [...materialized.pexHints || []].filter(hint => String(hint).trim()),
+		messageSenderIndex: JSON.parse(JSON.stringify(materialized.messageSenderIndex || {})),
+		voteBallots: JSON.parse(JSON.stringify(materialized.voteBallots || {})),
+		session: JSON.parse(JSON.stringify(materialized.session || {})),
+		worldStates: JSON.parse(JSON.stringify(materialized.worldStates || {})),
 	}
 
 	const tips = (Array.isArray(dag_tip_ids) ? dag_tip_ids : []).filter(isHex64)
@@ -97,7 +96,7 @@ export function buildCheckpointPayload({
 	const epochRoot = eventIdsInEpoch.length ? merkleRoot(eventIdsInEpoch) : null
 
 	// §2.1 低功耗节点权限锚：对成员+角色+频道权限计算 SHA-256，供 batterySaver 快速校验
-	const batterySaver = !!materializedState.groupSettings?.batterySaver
+	const batterySaver = !!materialized.groupSettings?.batterySaver
 	let permissionAnchorHash = null
 	if (batterySaver) {
 		const aclSlice = {
@@ -245,13 +244,11 @@ export async function verifyRemoteCheckpoint(checkpoint) {
 			if (!isPlainObject(entry))
 				return { valid: false, reason: 'epoch_chain entry invalid' }
 			const eid = entry.epoch_id
-			const erh = entry.epoch_root_hash
-			const cid = entry.checkpoint_event_id
 			if (typeof eid !== 'number' || !Number.isFinite(eid) || eid <= 0 || eid !== Math.floor(eid))
 				return { valid: false, reason: 'epoch_chain epoch_id invalid' }
-			if (!isHex64(erh))
+			if (!isHex64(entry.epoch_root_hash))
 				return { valid: false, reason: 'epoch_chain epoch_root_hash invalid' }
-			if (!isHex64(cid))
+			if (!isHex64(entry.checkpoint_event_id))
 				return { valid: false, reason: 'epoch_chain checkpoint_event_id invalid' }
 			if (eid <= prev) return { valid: false, reason: 'epoch_chain epoch_id not strictly increasing' }
 			prev = eid

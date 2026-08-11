@@ -285,9 +285,7 @@ async function mountProfileEntityCard(host, entityHash, profile) {
 		nodeHash: state.viewerNodeHash,
 		viewerOwnerEntityHash: state.viewerProfile?.ownerEntityHash,
 	})
-	const ownerEntityHash = profile?.ownerEntityHash
-		? String(profile.ownerEntityHash).toLowerCase()
-		: null
+	const ownerEntityHash = profile?.ownerEntityHash || null
 	if (ownerEntityHash) {
 		let ownerName = null
 		try {

@@ -224,7 +224,7 @@ async function doJoinCodecsAvRoom(options) {
 	 * @returns {void}
 	 */
 	const destroyPeersForSender = senderIdHex => {
-		const sid = String(senderIdHex || '').toLowerCase()
+		const sid = (senderIdHex || '').toLowerCase()
 		if (!sid) return
 		destroyPeer(sid)
 		destroyPeer(`${sid}:screen`)
@@ -445,8 +445,8 @@ async function doJoinCodecsAvRoom(options) {
 			onPeerCount?.(wireMessage.count)
 		if (wireMessage.type === 'roster' && Array.isArray(wireMessage.peers)) {
 			for (const peer of wireMessage.peers) {
-				const sid = String(peer.senderId || '').toLowerCase()
-				const eh = String(peer.entityHash || '').toLowerCase()
+				const sid = peer.senderId || ''
+				const eh = peer.entityHash || ''
 				if (sid && eh) senderToEntity.set(sid, eh)
 			}
 			pruneMissingPeers(wireMessage.peers)
@@ -637,7 +637,7 @@ async function doJoinCodecsAvRoom(options) {
 		 * @returns {number[]} 0–1 频段电平（16 路）
 		 */
 		getAudioLevels: (senderId = '') => {
-			const sid = String(senderId || '').toLowerCase()
+			const sid = (senderId || '').toLowerCase()
 			const entry = peerAudioLevels.get(sid)
 			if (entry?.analyser) {
 				const data = new Uint8Array(entry.analyser.frequencyBinCount)

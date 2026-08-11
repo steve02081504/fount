@@ -14,7 +14,7 @@ import { INLINE_TOKEN_RE } from './inlineTokenSyntax.mjs'
  * @returns {InlineToken | null} 解析后的 mention token；无法识别则为 null
  */
 function parseBracketMention(mentionBody, start, end) {
-	const body = String(mentionBody || '').trim()
+	const body = mentionBody.trim()
 	if (!body) return null
 	if (body.startsWith('role:')) {
 		const roleId = body.slice('role:'.length).trim()
@@ -24,7 +24,7 @@ function parseBracketMention(mentionBody, start, end) {
 		return { kind: 'role', body: roleId, start, end }
 	}
 	if (body.startsWith('entity:')) {
-		const hash = body.slice('entity:'.length).trim().toLowerCase()
+		const hash = body.slice('entity:'.length).trim()
 		if (isEntityHash128(hash))
 			return { kind: 'entity', body: hash, start, end }
 	}
@@ -36,12 +36,11 @@ function parseBracketMention(mentionBody, start, end) {
  * @returns {InlineToken[]} 按出现顺序的 token 列表
  */
 export function parseInlineTokens(text) {
-	const source = String(text || '')
 	/** @type {InlineToken[]} */
 	const tokens = []
 	let match
 	INLINE_TOKEN_RE.lastIndex = 0
-	while ((match = INLINE_TOKEN_RE.exec(source)) !== null) {
+	while ((match = INLINE_TOKEN_RE.exec(text)) !== null) {
 		const start = match.index
 		const end = start + match[0].length
 		if (match[1] !== undefined) {

@@ -1544,6 +1544,7 @@ export type LocaleData = {
 						MANAGE_FILES: string
 						MANAGE_MESSAGES: string
 						MANAGE_ROLES: string
+						MANAGE_ADMINS: string
 						PIN_MESSAGES: string
 						SEND_MESSAGES: string
 						SEND_STICKERS: string
@@ -2315,6 +2316,7 @@ export type LocaleData = {
 						title: string
 					}
 					failed: string
+					noPermission: string
 					feedbackDown: {
 						title: string
 					}

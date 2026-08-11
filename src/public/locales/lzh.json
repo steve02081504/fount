@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "管理文牘",
 						"MANAGE_MESSAGES": "掌札",
 						"MANAGE_ROLES": "管理角色",
+						"MANAGE_ADMINS": "酌掌事",
 						"PIN_MESSAGES": "高懸之札",
 						"SEND_MESSAGES": "發札",
 						"SEND_STICKERS": "發送貼紙",
@@ -2347,6 +2348,7 @@
 						"title": "修札"
 					},
 					"failed": "未竟其功：${error}",
+					"noPermission": "君無權行此舉",
 					"feedbackDown": {
 						"title": "惡"
 					},

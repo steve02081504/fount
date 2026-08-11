@@ -263,9 +263,9 @@ export function registerAvRelaySocket(roomId, ws, meta = {}) {
 	sendCachedPublishMeta(ws, roomId)
 	broadcastPeerCount(room)
 	if (entityHash) broadcastRoster(room)
-	if (wasEmpty && entityHash && typeof meta.onFirstPeer === 'function')
+	if (wasEmpty && entityHash && meta.onFirstPeer)
 		meta.onFirstPeer(entityHash)
-	else if (entityHash && typeof meta.onRosterChange === 'function')
+	else if (entityHash && meta.onRosterChange)
 		meta.onRosterChange(getAvRelayRoster(roomId))
 
 	ws.on('message', (data, isBinary) => {
@@ -301,13 +301,13 @@ export function registerAvRelaySocket(roomId, ws, meta = {}) {
 		if (!room.size) {
 			roomPublishMeta.delete(roomId)
 			rooms.delete(roomId)
-			if (typeof meta.onRoomEmpty === 'function') meta.onRoomEmpty()
+			if (meta.onRoomEmpty) meta.onRoomEmpty()
 			return
 		}
 		broadcastPeerCount(room)
 		if (entityHash) {
 			broadcastRoster(room)
-			if (typeof meta.onRosterChange === 'function')
+			if (meta.onRosterChange)
 				meta.onRosterChange(getAvRelayRoster(roomId))
 		}
 	})
@@ -399,7 +399,7 @@ function handleTextControl(roomId, room, ws, data, meta) {
 	state.senderId = senderId
 	if (state.entityHash) {
 		broadcastRoster(room)
-		if (typeof meta.onRosterChange === 'function')
+		if (meta.onRosterChange)
 			meta.onRosterChange(getAvRelayRoster(roomId))
 	}
 }

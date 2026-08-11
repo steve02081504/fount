@@ -81,7 +81,7 @@ export function syncGroupRefInComposer(ref) {
 	if (!(textarea instanceof HTMLTextAreaElement)) return
 	let text = stripChannelTokens(textarea.value)
 	if (ref?.groupId) {
-		const channel = ref.channelId?.trim() || 'default'
+		const channel = ref.channelId || 'default'
 		const token = formatChannelToken(ref.groupId, channel)
 		text = text ? `${text}\n\n${token}` : token
 	}
@@ -178,9 +178,9 @@ export async function loadGroupPickerOptions() {
 		}
 		field?.classList.remove('hidden')
 		for (const row of groups) {
-			const groupId = String(row.groupId || '').trim()
+			const groupId = row.groupId || ''
 			if (!groupId) continue
-			const channelId = String(row.defaultChannelId || 'default').trim() || 'default'
+			const channelId = row.defaultChannelId || 'default'
 			const title = String(row.name || groupId).trim()
 			const option = document.createElement('option')
 			option.value = `${groupId}\t${channelId}`
@@ -364,8 +364,8 @@ export async function loadDraftIntoComposer(row) {
 
 	if (body.quoteRef?.entityHash && body.quoteRef?.postId) {
 		state.pendingQuoteRef = {
-			entityHash: String(body.quoteRef.entityHash).toLowerCase(),
-			postId: String(body.quoteRef.postId),
+			entityHash: body.quoteRef.entityHash,
+			postId: body.quoteRef.postId,
 		}
 		await refreshQuotePreview()
 	}

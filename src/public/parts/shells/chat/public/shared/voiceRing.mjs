@@ -79,10 +79,9 @@ export function mountVoiceRing(options) {
 			const amp = Math.max(idle, Math.min(1, src))
 			const angle = (i / BAR_COUNT) * Math.PI * 2 - Math.PI / 2
 			const barLen = 8 + amp * size * 0.14
-			const inner = baseR
-			const outer = inner + barLen
-			const x0 = cx + Math.cos(angle) * inner
-			const y0 = cy + Math.sin(angle) * inner
+			const outer = baseR + barLen
+			const x0 = cx + Math.cos(angle) * baseR
+			const y0 = cy + Math.sin(angle) * baseR
 			const x1 = cx + Math.cos(angle) * outer
 			const y1 = cy + Math.sin(angle) * outer
 			canvasContext.strokeStyle = color

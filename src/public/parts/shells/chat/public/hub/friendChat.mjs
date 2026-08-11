@@ -316,17 +316,17 @@ export async function dispatchFriendChat(entity) {
 	if (entity.type !== 'user') return
 
 	const fed = await getFederationSettings()
-	const myPubKeyHex = String(fed?.activePubKeyHex || '').trim().toLowerCase()
+	const myPubKeyHex = fed?.activePubKeyHex || ''
 	if (!isHex64(myPubKeyHex)) {
 		showToastI18n('warning', 'chat.hub.profilePopup.noFedIdentity')
 		return
 	}
-	let peerHex = String(entity.pubKeyHex || '').trim().toLowerCase()
-	const entityHash = String(entity.entityHash || '').trim().toLowerCase()
+	let peerHex = entity.pubKeyHex || ''
+	const entityHash = entity.entityHash || ''
 	if (!isHex64(peerHex) && isEntityHash128(entityHash)) {
 		const { getEntityProfile } = await import('../src/endpoints/entities.mjs')
 		const data = await getEntityProfile(entityHash, undefined, { forceRemote: true }).catch(() => null)
-		peerHex = String(data?.profile?.activePubKeyHex || '').trim().toLowerCase()
+		peerHex = data?.profile?.activePubKeyHex || ''
 	}
 	if (!isHex64(peerHex)) {
 		showToastI18n('warning', 'chat.hub.profilePopup.peerNoIdentity')

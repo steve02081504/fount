@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "ファイルの管理",
 						"MANAGE_MESSAGES": "管理メッセージ",
 						"MANAGE_ROLES": "管理の役割",
+						"MANAGE_ADMINS": "管理者を管理",
 						"PIN_MESSAGES": "固定メッセージ",
 						"SEND_MESSAGES": "メッセージを送信する",
 						"SEND_STICKERS": "ステッカーを送信する",
@@ -2347,6 +2348,7 @@
 						"title": "メッセージを編集する"
 					},
 					"failed": "操作が失敗しました: ${error}",
+					"noPermission": "この操作を行う権限がありません。",
 					"feedbackDown": {
 						"title": "クリックして嫌いにします"
 					},

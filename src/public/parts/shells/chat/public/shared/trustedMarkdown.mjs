@@ -18,11 +18,10 @@ import { isTrustedMarkdownAuthor } from '../src/trustedAuthors.mjs'
  * @returns {Promise<string>} HTML
  */
 export async function renderTrustedMarkdownHtml(markdown, authorHash = '', trustCtx = {}) {
-	const text = String(markdown || '')
 	const trusted = authorHash
 		? await isTrustedMarkdownAuthor(authorHash, trustCtx)
 		: false
-	return renderMarkdownAsString(text, undefined, { allowDangerousHtml: trusted })
+	return renderMarkdownAsString(markdown, undefined, { allowDangerousHtml: trusted })
 }
 
 /**

@@ -11,7 +11,7 @@ export function bytesToHex(bytes) {
  * @returns {Uint8Array} 字节
  */
 export function hexToBytes(hex) {
-	const clean = String(hex || '').replace(/\s/g, '')
+	const clean = hex.replace(/\s/g, '')
 	const out = new Uint8Array(clean.length / 2)
 	for (let i = 0; i < out.length; i++)
 		out[i] = Number.parseInt(clean.slice(i * 2, i * 2 + 2), 16)
@@ -60,14 +60,6 @@ export async function sha256Hex(data) {
 		: new Uint8Array(data.buffer, data.byteOffset, data.byteLength)
 	hasher.update(input)
 	return bytesToHex(hasher.digest())
-}
-
-/**
- * @param {string} text UTF-8 文本
- * @returns {Promise<string>} 小写 hex SHA-256
- */
-export async function sha256TextHex(text) {
-	return sha256Hex(new TextEncoder().encode(String(text ?? '')))
 }
 
 /**

@@ -15,7 +15,7 @@ import { wireInvitePanel } from './inviteTab.mjs'
 export async function showOwnerSuccessionModal(context) {
 	if (!context.groupId) return
 	usingTemplates('/parts/shells:chat/src/templates')
-	const viewerPubKeyHash = String(context.stateJson?.viewerMemberPubKeyHash || '').trim().toLowerCase()
+	const viewerPubKeyHash = context.stateJson?.viewerMemberPubKeyHash || ''
 	await openDialogFromTemplate('group/modals/owner_succession', {
 		viewerPubKeyHash: escapeHtml(viewerPubKeyHash),
 	}, {

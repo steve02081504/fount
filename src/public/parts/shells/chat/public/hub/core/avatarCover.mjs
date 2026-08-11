@@ -18,8 +18,8 @@ export { isAvatarImageUrl }
  * @returns {HTMLSpanElement} 字母节点
  */
 export function paintHashAvatarHost(host, { seed, label, letterId, letterClass = 'avatar-letter' }) {
-	const avatarSeed = String(seed || label || '?')
-	const displayLabel = String(label || avatarSeed)
+	const avatarSeed = seed || label || '?'
+	const displayLabel = label || avatarSeed
 	host.dataset.avatarSeed = avatarSeed
 	host.replaceChildren()
 	const letter = document.createElement('span')
@@ -50,13 +50,13 @@ export async function applyProfileAvatarToHost(host, options) {
 		letterClass,
 	} = options
 	const letter = paintHashAvatarHost(host, { seed, label, letterId, letterClass })
-	const avatarVal = String(avatar || '').trim()
+	const avatarVal = (avatar || '').trim()
 	if (!avatarVal) return
 
 	if (isAvatarImageUrl(avatarVal)) {
 		const img = document.createElement('img')
 		img.src = avatarVal
-		img.alt = String(alt)
+		img.alt = alt
 		img.setAttribute('svg-inliner-ignore', '')
 		if (!img.alt) img.role = 'presentation'
 		img.style.cssText = 'width:100%;height:100%;object-fit:cover;'

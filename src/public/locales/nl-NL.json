@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "Beheer bestanden",
 						"MANAGE_MESSAGES": "Berichten beheren",
 						"MANAGE_ROLES": "Rollen beheren",
+						"MANAGE_ADMINS": "Beheerders beheren",
 						"PIN_MESSAGES": "Berichten vastzetten",
 						"SEND_MESSAGES": "Bericht verzenden",
 						"SEND_STICKERS": "Stuur stickers",
@@ -2347,6 +2348,7 @@
 						"title": "Bericht bewerken"
 					},
 					"failed": "Bewerking mislukt: ${error}",
+					"noPermission": "Je hebt geen toestemming om deze actie uit te voeren.",
 					"feedbackDown": {
 						"title": "Klik om niet leuk te vinden"
 					},

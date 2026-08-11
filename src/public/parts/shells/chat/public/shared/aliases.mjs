@@ -9,7 +9,7 @@ let loadPromise = null
  * @returns {string} 规范化 entity hash
  */
 function normEntity(entityHash) {
-	return String(entityHash || '').trim().toLowerCase()
+	return entityHash.trim().toLowerCase()
 }
 
 /**
@@ -45,7 +45,7 @@ export function aliasForEntity(entityHash) {
  * @returns {string} 群别名；未命中为空串
  */
 export function aliasForGroup(groupId) {
-	return cache?.groups[String(groupId || '')] || ''
+	return cache?.groups[groupId] || ''
 }
 
 /**
@@ -54,7 +54,7 @@ export function aliasForGroup(groupId) {
  * @returns {string} 匹配别名的群 ID；未命中为空串
  */
 export function groupIdForAlias(alias) {
-	const name = String(alias || '').trim()
+	const name = alias.trim()
 	if (!name || !cache) return ''
 	for (const [groupId, value] of Object.entries(cache.groups))
 		if (value === name) return groupId
@@ -71,7 +71,7 @@ export async function setEntityAlias(entityHash, name) {
 	const current = await loadAliases()
 	const entities = { ...current.entities }
 	const key = normEntity(entityHash)
-	const value = String(name || '').trim()
+	const value = name.trim()
 	if (value) entities[key] = value
 	else delete entities[key]
 	cache = await putAliasesApi({ entities, groups: current.groups })
@@ -86,9 +86,8 @@ export async function setEntityAlias(entityHash, name) {
 export async function setGroupAlias(groupId, name) {
 	const current = await loadAliases()
 	const groups = { ...current.groups }
-	const key = String(groupId || '')
-	const value = String(name || '').trim()
-	if (value) groups[key] = value
-	else delete groups[key]
+	const value = name.trim()
+	if (value) groups[groupId] = value
+	else delete groups[groupId]
 	cache = await putAliasesApi({ entities: current.entities, groups })
 }
