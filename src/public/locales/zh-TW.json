@@ -569,7 +569,15 @@
 			"open_fount": "開啟 fount",
 			"open_or_install_fount": "開啟/安裝 fount",
 			"error_message": "哎呀 :(\n\n發生錯誤：\n${error}",
-			"star_thank_you": "感謝您為 fount 加上星號！"
+			"star_thank_you": "感謝您為 fount 加上星號！",
+			"telegram": {
+				"title": "打開 Telegram",
+				"aria-label": "打開 Telegram"
+			},
+			"github": {
+				"title": "開啟 GitHub",
+				"aria-label": "開啟 GitHub"
+			}
 		},
 		"error": {
 			"title": "安裝失敗！",
@@ -1936,6 +1944,7 @@
 			},
 			"stickerInline": "貼紙",
 			"markdownRenderFailed": "訊息渲染失敗",
+			"messageRenderFailed": "訊息渲染失敗",
 			"retrySend": "重試",
 			"mergeDagOk": "分叉已合併",
 			"mergeDagFailed": "合併失敗：${error}",
@@ -4788,6 +4797,9 @@
 		"entries": {
 			"title": "內容列表",
 			"aria-label": "內容列表"
+		},
+		"breadcrumb": {
+			"aria-label": "麵包屑導航"
 		},
 		"openCabinets": "開啟文件櫃列表",
 		"closeCabinets": "關閉",

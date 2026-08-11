@@ -570,7 +570,15 @@
 			"open_fount": "Mở fount",
 			"open_or_install_fount": "Mở/Cài đặt fount",
 			"error_message": "Ối... :(\n\nĐã xảy ra lỗi:\n${error}",
-			"star_thank_you": "Cảm ơn bạn đã gắn sao cho fount!"
+			"star_thank_you": "Cảm ơn bạn đã gắn sao cho fount!",
+			"telegram": {
+				"title": "Mở Telegram",
+				"aria-label": "Mở Telegram"
+			},
+			"github": {
+				"title": "Mở GitHub",
+				"aria-label": "Mở GitHub"
+			}
 		},
 		"error": {
 			"title": "Cài đặt thất bại!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "nhãn dán",
 			"markdownRenderFailed": "Kết xuất tin nhắn không thành công",
+			"messageRenderFailed": "Kết xuất tin nhắn không thành công",
 			"retrySend": "Thử lại",
 			"mergeDagOk": "Ngã ba hợp nhất",
 			"mergeDagFailed": "Hợp nhất không thành công: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "Danh sách mục",
 			"aria-label": "Danh sách mục"
+		},
+		"breadcrumb": {
+			"aria-label": "vụn bánh mì"
 		},
 		"openCabinets": "Mở danh sách tủ hồ sơ",
 		"closeCabinets": "Đóng",

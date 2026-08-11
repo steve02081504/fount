@@ -570,7 +570,15 @@
 			"open_fount": "Abrir fount",
 			"open_or_install_fount": "Abrir/Instalar fount",
 			"error_message": "Puxa vida :(\n\nOcorreu um erro:\n${error}",
-			"star_thank_you": "Obrigado por dar uma estrela ao fount!"
+			"star_thank_you": "Obrigado por dar uma estrela ao fount!",
+			"telegram": {
+				"title": "Abra o telegrama",
+				"aria-label": "Abra o telegrama"
+			},
+			"github": {
+				"title": "Abra o GitHub",
+				"aria-label": "Abra o GitHub"
+			}
 		},
 		"error": {
 			"title": "A instalação falhou!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "Autocolante",
 			"markdownRenderFailed": "Falha em Message rendering",
+			"messageRenderFailed": "Falha na renderização da mensagem",
 			"retrySend": "Tente novamente",
 			"mergeDagOk": "Bifurcação mesclada",
 			"mergeDagFailed": "Falha na mesclagem: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "Lista de itens",
 			"aria-label": "Lista de itens"
+		},
+		"breadcrumb": {
+			"aria-label": "Pão ralado"
 		},
 		"openCabinets": "Abrir lista de armários",
 		"closeCabinets": "Fechar",

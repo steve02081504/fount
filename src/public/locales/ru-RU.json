@@ -570,7 +570,15 @@
 			"open_fount": "Открыть fount",
 			"open_or_install_fount": "Открыть/Установить fount",
 			"error_message": "Эх... :(\n\nПроизошла ошибка:\n${error}",
-			"star_thank_you": "Спасибо, что поставили звезду fount!"
+			"star_thank_you": "Спасибо, что поставили звезду fount!",
+			"telegram": {
+				"title": "Открыть Телеграм",
+				"aria-label": "Открыть Телеграм"
+			},
+			"github": {
+				"title": "Открыть GitHub",
+				"aria-label": "Открыть GitHub"
+			}
 		},
 		"error": {
 			"title": "Установка не удалась!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "наклейка",
 			"markdownRenderFailed": "Не удалось отобразить сообщение",
+			"messageRenderFailed": "Не удалось отобразить сообщение.",
 			"retrySend": "Попробуйте еще раз",
 			"mergeDagOk": "Разветвление объединено",
 			"mergeDagFailed": "Не удалось объединить: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "Список элементов",
 			"aria-label": "Список элементов"
+		},
+		"breadcrumb": {
+			"aria-label": "Панировочные сухари"
 		},
 		"openCabinets": "Открыть список шкафов",
 		"closeCabinets": "Закрыть",

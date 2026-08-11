@@ -570,7 +570,15 @@
 			"open_fount": "Open fount",
 			"open_or_install_fount": "Open/Installeer fount",
 			"error_message": "Oeps :(\n\nEr is een fout opgetreden:\n${error}",
-			"star_thank_you": "Bedankt voor het geven van een ster aan fount!"
+			"star_thank_you": "Bedankt voor het geven van een ster aan fount!",
+			"telegram": {
+				"title": "Telegram openen",
+				"aria-label": "Telegram openen"
+			},
+			"github": {
+				"title": "Open GitHub",
+				"aria-label": "Open GitHub"
+			}
 		},
 		"error": {
 			"title": "Installatie mislukt!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "Sticker",
 			"markdownRenderFailed": "Het weergeven van berichten is mislukt",
+			"messageRenderFailed": "Het weergeven van berichten is mislukt",
 			"retrySend": "Probeer het opnieuw",
 			"mergeDagOk": "Vork samengevoegd",
 			"mergeDagFailed": "Samenvoegen mislukt: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "Items",
 			"aria-label": "Items"
+		},
+		"breadcrumb": {
+			"aria-label": "Paneermeel"
 		},
 		"openCabinets": "Archiefkastlijst openen",
 		"closeCabinets": "Sluiten",

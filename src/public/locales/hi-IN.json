@@ -570,7 +570,15 @@
 			"open_fount": "fount खोलें",
 			"open_or_install_fount": "fount खोलें/इंस्टॉल करें",
 			"error_message": "ओह हो :(\n\nएक त्रुटि हुई:\n${error}",
-			"star_thank_you": "fount को स्टार देने के लिए धन्यवाद!"
+			"star_thank_you": "fount को स्टार देने के लिए धन्यवाद!",
+			"telegram": {
+				"title": "टेलीग्राम खोलें",
+				"aria-label": "टेलीग्राम खोलें"
+			},
+			"github": {
+				"title": "गिटहब खोलें",
+				"aria-label": "गिटहब खोलें"
+			}
 		},
 		"error": {
 			"title": "इंस्टॉलेशन विफल!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "कँटिया",
 			"markdownRenderFailed": "संदेश प्रतिपादन विफल रहा",
+			"messageRenderFailed": "संदेश प्रतिपादन विफल रहा",
 			"retrySend": "पुनः प्रयास करें",
 			"mergeDagOk": "कांटा विलीन हो गया",
 			"mergeDagFailed": "मर्ज विफल: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "आइटम सूची",
 			"aria-label": "आइटम सूची"
+		},
+		"breadcrumb": {
+			"aria-label": "ब्रेडक्रम्ब्स"
 		},
 		"openCabinets": "फ़ाइल कैबिनेट सूची खोलें",
 		"closeCabinets": "बंद करें",

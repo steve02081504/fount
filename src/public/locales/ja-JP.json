@@ -1945,6 +1945,7 @@
 			},
 			"stickerInline": "ステッカー",
 			"markdownRenderFailed": "メッセージのレンダリングに失敗しました",
+			"messageRenderFailed": "メッセージのレンダリングに失敗しました",
 			"retrySend": "再試行",
 			"mergeDagOk": "フォークがマージされました",
 			"mergeDagFailed": "マージに失敗しました: ${error}",

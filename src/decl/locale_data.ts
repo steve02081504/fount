@@ -539,6 +539,14 @@ export type LocaleData = {
 			open_or_install_fount: string
 			error_message: string
 			star_thank_you: string
+			telegram: {
+				title: string
+				'aria-label': string
+			}
+			github: {
+				title: string
+				'aria-label': string
+			}
 		}
 		error: {
 			title: string
@@ -1711,7 +1719,12 @@ export type LocaleData = {
 			}
 			inbox: {
 				title: string
-				filtersLabel: string
+				panel: {
+					'aria-label': string
+				}
+				filtersLabel: {
+					'aria-label': string
+				}
 				rowLabel: {
 					'aria-label': string
 				}
@@ -4752,6 +4765,9 @@ export type LocaleData = {
 		description: string
 		entries: {
 			title: string
+			'aria-label': string
+		}
+		breadcrumb: {
 			'aria-label': string
 		}
 		openCabinets: string

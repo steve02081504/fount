@@ -570,7 +570,15 @@
 			"open_fount": "啟 fount",
 			"open_or_install_fount": "啟/安 fount",
 			"error_message": "嗚呼哀哉 :(\n\n天有不測風雲：\n${error}",
-			"star_thank_you": "承蒙星標，不勝感激。"
+			"star_thank_you": "承蒙星標，不勝感激。",
+			"telegram": {
+				"title": "打开 Telegram",
+				"aria-label": "打开 Telegram"
+			},
+			"github": {
+				"title": "打开 GitHub",
+				"aria-label": "打开 GitHub"
+			}
 		},
 		"error": {
 			"title": "安置未遂。",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "貼紙",
 			"markdownRenderFailed": "札敷彩未遂",
+			"messageRenderFailed": "消息渲染失败",
 			"retrySend": "建試",
 			"mergeDagOk": "分叉已合併",
 			"mergeDagFailed": "合併未遂：${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "卷目",
 			"aria-label": "卷目"
+		},
+		"breadcrumb": {
+			"aria-label": "面包屑导航"
 		},
 		"openCabinets": "啟藏經閣名錄",
 		"closeCabinets": "闔",

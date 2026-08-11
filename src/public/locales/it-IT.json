@@ -570,7 +570,15 @@
 			"open_fount": "Apri fount",
 			"open_or_install_fount": "Apri/Installa fount",
 			"error_message": "Uffa :(\n\nSi è verificato un errore:\n${error}",
-			"star_thank_you": "Grazie per aver aggiunto una stella a fount!"
+			"star_thank_you": "Grazie per aver aggiunto una stella a fount!",
+			"telegram": {
+				"title": "Apri Telegramma",
+				"aria-label": "Apri Telegramma"
+			},
+			"github": {
+				"title": "Apri GitHub",
+				"aria-label": "Apri GitHub"
+			}
 		},
 		"error": {
 			"title": "Installazione non riuscita!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "Adesivi",
 			"markdownRenderFailed": "Il rendering del messaggio non è riuscito",
+			"messageRenderFailed": "Il rendering del messaggio non è riuscito",
 			"retrySend": "Riprova",
 			"mergeDagOk": "Forcella fusa",
 			"mergeDagFailed": "Unione non riuscita: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "Elenco elementi",
 			"aria-label": "Elenco elementi"
+		},
+		"breadcrumb": {
+			"aria-label": "Pangrattato"
 		},
 		"openCabinets": "Apri l'elenco degli schedari",
 		"closeCabinets": "Chiudi",

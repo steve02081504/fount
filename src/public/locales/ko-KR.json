@@ -570,7 +570,15 @@
 			"open_fount": "fount 열기",
 			"open_or_install_fount": "fount 열기/설치하기",
 			"error_message": "아이고…\n\n오류가 발생했습니다:\n${error}",
-			"star_thank_you": "fount에 스타를 눌러주셔서 감사합니다!"
+			"star_thank_you": "fount에 스타를 눌러주셔서 감사합니다!",
+			"telegram": {
+				"title": "오픈 텔레그램",
+				"aria-label": "오픈 텔레그램"
+			},
+			"github": {
+				"title": "GitHub 열기",
+				"aria-label": "GitHub 열기"
+			}
 		},
 		"error": {
 			"title": "설치 실패!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "라벨",
 			"markdownRenderFailed": "메시지 렌더링 실패",
+			"messageRenderFailed": "메시지 렌더링 실패",
 			"retrySend": "다시 시도하세요",
 			"mergeDagOk": "포크 병합",
 			"mergeDagFailed": "병합 실패: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "항목 목록",
 			"aria-label": "항목 목록"
+		},
+		"breadcrumb": {
+			"aria-label": "이동 경로"
 		},
 		"openCabinets": "파일 캐비닛 목록 열기",
 		"closeCabinets": "닫기",

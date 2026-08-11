@@ -570,7 +570,15 @@
 			"open_fount": "Abrir fount",
 			"open_or_install_fount": "Abrir/Instalar fount",
 			"error_message": "Ay ay ay :(\n\nOcurrió un error:\n${error}",
-			"star_thank_you": "¡Gracias por darle una estrella a fount!"
+			"star_thank_you": "¡Gracias por darle una estrella a fount!",
+			"telegram": {
+				"title": "Telegrama abierto",
+				"aria-label": "Telegrama abierto"
+			},
+			"github": {
+				"title": "Abrir GitHub",
+				"aria-label": "Abrir GitHub"
+			}
 		},
 		"error": {
 			"title": "¡Error en la instalación!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "etiqueta engomada",
 			"markdownRenderFailed": "Falló la representación del mensaje",
+			"messageRenderFailed": "Falló la representación del mensaje",
 			"retrySend": "Intentar otra vez",
 			"mergeDagOk": "bifurcación fusionada",
 			"mergeDagFailed": "Fusión fallida: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "Lista de elementos",
 			"aria-label": "Lista de elementos"
+		},
+		"breadcrumb": {
+			"aria-label": "Pan rallado"
 		},
 		"openCabinets": "Abrir lista de archivadores",
 		"closeCabinets": "Cerrar",

@@ -570,7 +570,15 @@
 			"open_fount": "Opna fount",
 			"open_or_install_fount": "Opna/setja upp fount",
 			"error_message": "Æji :(\n\nVilla kom upp:\n${error}",
-			"star_thank_you": "Takk fyrir að gefa fount stjörnu!"
+			"star_thank_you": "Takk fyrir að gefa fount stjörnu!",
+			"telegram": {
+				"title": "Opnaðu Telegram",
+				"aria-label": "Opnaðu Telegram"
+			},
+			"github": {
+				"title": "Opnaðu GitHub",
+				"aria-label": "Opnaðu GitHub"
+			}
 		},
 		"error": {
 			"title": "Uppsetning mistókst!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "Límmiða",
 			"markdownRenderFailed": "Skilaboð mistókst",
+			"messageRenderFailed": "Skilaboð mistókst",
 			"retrySend": "Reyndu aftur",
 			"mergeDagOk": "Fork sameinaðist",
 			"mergeDagFailed": "Sameining mistókst: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "Atriðalisti",
 			"aria-label": "Atriðalisti"
+		},
+		"breadcrumb": {
+			"aria-label": "Brauðrasp"
 		},
 		"openCabinets": "Opnaðu skjalaskápalista",
 		"closeCabinets": "Loka",

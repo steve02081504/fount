@@ -570,7 +570,15 @@
 			"open_fount": "فتح fount",
 			"open_or_install_fount": "فتح/تثبيت fount",
 			"error_message": "يا للأسف :(\n\nحدث خطأ:\n${error}",
-			"star_thank_you": "شكرًا لك على تمييز fount بنجمة!"
+			"star_thank_you": "شكرًا لك على تمييز fount بنجمة!",
+			"telegram": {
+				"title": "افتح برقية",
+				"aria-label": "افتح برقية"
+			},
+			"github": {
+				"title": "افتح جيثب",
+				"aria-label": "افتح جيثب"
+			}
 		},
 		"error": {
 			"title": "فشل التثبيت!",
@@ -1937,6 +1945,7 @@
 			},
 			"stickerInline": "ملصق",
 			"markdownRenderFailed": "فشل عرض الرسالة",
+			"messageRenderFailed": "فشل عرض الرسالة",
 			"retrySend": "حاول ثانية",
 			"mergeDagOk": "تم دمج الشوكة",
 			"mergeDagFailed": "فشل الدمج: ${error}",
@@ -4789,6 +4798,9 @@
 		"entries": {
 			"title": "قائمة العناصر",
 			"aria-label": "قائمة العناصر"
+		},
+		"breadcrumb": {
+			"aria-label": "فتات الخبز"
 		},
 		"openCabinets": "فتح قائمة خزانة الملفات",
 		"closeCabinets": "إغلاق",

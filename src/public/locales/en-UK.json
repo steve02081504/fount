@@ -1945,6 +1945,7 @@
 			},
 			"stickerInline": "Stickers",
 			"markdownRenderFailed": "Message rendering failed",
+			"messageRenderFailed": "Message rendering failed",
 			"retrySend": "Try again",
 			"mergeDagOk": "Fork merged",
 			"mergeDagFailed": "Merge failed: ${error}",
