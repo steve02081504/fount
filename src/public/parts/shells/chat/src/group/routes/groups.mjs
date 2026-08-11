@@ -11,6 +11,7 @@ import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shel
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
+import { friendBindingMatches } from '../../../public/shared/friendBinding.mjs'
 import { createGroup, removeLocalGroupReplica } from '../../chat/dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../../chat/dag/localSigner.mjs'
 import { createEcdhDmGroup } from '../../chat/dm/index.mjs'
@@ -24,7 +25,6 @@ import { governanceChannelId } from '../access.mjs'
 import { buildGroupPreview } from '../groupPreview.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 import { enumerateJoinedFederatedGroups } from '../queries.mjs'
-import { friendBindingMatches } from '../../../public/shared/friendBinding.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'

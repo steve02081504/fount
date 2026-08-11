@@ -41,7 +41,7 @@ export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = pa
 
 	if (!ambientSubtests.length) return map
 
-	for (const group of groups) {
+	for (const group of groups)
 		for (const suiteName of group.suiteSelectors ?? []) {
 			if (group.subtestSelectors?.[suiteName]?.length) continue
 			for (const suite of filtered) {
@@ -53,7 +53,6 @@ export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = pa
 				map.set(key, [...ambientSubtests])
 			}
 		}
-	}
 
 	return map
 }

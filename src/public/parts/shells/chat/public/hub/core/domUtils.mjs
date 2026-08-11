@@ -44,7 +44,7 @@ export function ingestAgentEntityHashList(agents) {
  * @returns {string[]} 角色 part 名列表
  */
 export function activeCharPartNames() {
-	return [...(store.context.currentState?.charPartNames || [])]
+	return [...store.context.currentState?.charPartNames || []]
 }
 
 /**

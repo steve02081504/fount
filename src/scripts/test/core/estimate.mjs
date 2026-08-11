@@ -443,7 +443,7 @@ export const PARALLEL_SAVINGS_NOISE_MS = 100
 /**
  * 串行相对并行是否有值得展示的节省（与 console / report 共用）。
  * @param {{ savingsMs?: number | null }} estimate 预估汇总
- * @returns {boolean}
+ * @returns {boolean} 节省是否超过噪声阈值
  */
 export function hasMeaningfulParallelSavings(estimate) {
 	return Math.abs(estimate?.savingsMs ?? 0) > PARALLEL_SAVINGS_NOISE_MS

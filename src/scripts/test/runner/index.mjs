@@ -465,8 +465,8 @@ async function executeWave(context) {
 			const firstMap = failedFirstByManifest.get(suite.manifestId)
 			const firstFiles = firstMap?.has(suite.name) ? firstMap.get(suite.name) : undefined
 			const changedForSuite = [...new Set([
-				...(committedChangedByKey?.get(key) ?? []),
-				...(uncommittedFiles ?? []),
+				...committedChangedByKey?.get(key) ?? [],
+				...uncommittedFiles ?? [],
 			])]
 			const triggeredFiles = suiteTriggeredFiles(suite, changedForSuite)
 			const result = await runSuite(suite, { firstFiles, subtests, onlyFiles, triggeredFiles }, globalBudget, streamLive, {

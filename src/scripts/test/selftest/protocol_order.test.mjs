@@ -4,7 +4,6 @@ import { assertEquals } from 'jsr:@std/assert'
 import { orderFailedFirst, readTestTriggeredFiles, readTimingsOutFile, writeTestTriggeredFiles, writeTimingsOutFile } from '../core/protocol.mjs'
 import { suiteTriggeredFiles } from '../core/state.mjs'
 import { aggregateSubtestVerdicts, judgeSubtest } from '../core/verdict.mjs'
-import { subtestMatchesSpec } from '../playwright/phases.mjs'
 import { collectSubtestFilterByKey } from '../runner/selection.mjs'
 import { buildSuiteInvocation, mapTimingsToSubtests } from '../runner/suite_run.mjs'
 
