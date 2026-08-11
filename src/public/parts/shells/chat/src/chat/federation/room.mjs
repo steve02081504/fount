@@ -120,7 +120,7 @@ export async function teardownFederationRoomForGroup(username, groupId, options 
 	/** @type {Promise<void>[]} */
 	const leaves = []
 	forEachFederationRoomSlotInGroup(username, groupId, slot => {
-		if (slot && typeof slot.leave === 'function')
+		if (slot?.leave)
 			leaves.push(Promise.resolve(slot.leave()).catch(error => console.error('federation: slot leave failed', error)))
 	})
 	if (leaves.length)
@@ -227,7 +227,6 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 		const genAtJoin = getFederationPartitionRebindGen(username, groupId, partitionId)
 		const { readJsonl } = requireDagDeps()
 		const nodeHash = localNodeHash()
-		const roomId = roomCreds.roomId
 		try {
 			const localEvents = await readJsonl(eventsPath(username, groupId))
 			warmSeenFromLocalEvents(username, groupId, localEvents)
@@ -307,7 +306,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 
 			const slot = buildFederationSlot({
 				partitionId,
-				roomId,
+				roomId: roomCreds.roomCreds.roomId,
 				room,
 				roomSecret: roomCreds.password,
 				groupId,

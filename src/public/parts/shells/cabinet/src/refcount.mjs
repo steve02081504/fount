@@ -10,10 +10,10 @@ import { loadSharedIndex } from './shared/materialize.mjs'
  * @returns {boolean} 是否匹配
  */
 function matchLink(link, owner, cabinetId, entryId) {
-	const linkOwner = String(link.owner_entity_hash || '').toLowerCase()
+	const linkOwner = link.owner_entity_hash || ''
 	if (linkOwner && linkOwner !== owner) return false
-	if (String(link.cabinet_id || '') !== cabinetId) return false
-	const linkEntry = link.entry_id ? String(link.entry_id) : null
+	if ((link.cabinet_id || '') !== cabinetId) return false
+	const linkEntry = link.entry_id || null
 	return linkEntry === entryId
 }
 
@@ -44,9 +44,9 @@ function countMatchingLinks(entries, owner, cabinetId, entryId, excludeIds) {
  * @returns {Promise<number>} 入链数
  */
 export async function countLocalInboundLinks(username, entityHash, target, opts = {}) {
-	const targetOwner = String(target.owner_entity_hash || entityHash).toLowerCase()
-	const targetCabinet = String(target.cabinet_id || '')
-	const targetEntry = target.entry_id ? String(target.entry_id) : null
+	const targetOwner = target.owner_entity_hash || entityHash
+	const targetCabinet = target.cabinet_id || ''
+	const targetEntry = target.entry_id || null
 	const excludeCabinet = opts.exclude_cabinet_id
 	const excludeIds = opts.exclude_entry_ids || new Set()
 
@@ -75,16 +75,16 @@ export async function countLocalInboundLinks(username, entityHash, target, opts 
  */
 export async function gcOrphanAfterUnlink(username, entityHash, linkEntry) {
 	if (linkEntry?.kind !== 'link' || !linkEntry.link) return
-	const targetOwner = String(linkEntry.link.owner_entity_hash || entityHash).toLowerCase()
-	if (targetOwner !== String(entityHash).toLowerCase()) return
-	const cabinetId = String(linkEntry.link.cabinet_id || '')
+	const targetOwner = linkEntry.link.owner_entity_hash || entityHash
+	if (targetOwner !== entityHash) return
+	const cabinetId = linkEntry.link.cabinet_id || ''
 	const entryId = linkEntry.link.entry_id
 	if (!cabinetId || !entryId) return
 
 	const inbound = await countLocalInboundLinks(username, entityHash, {
 		owner_entity_hash: targetOwner,
 		cabinet_id: cabinetId,
-		entry_id: String(entryId),
+		entry_id: entryId,
 	})
 	if (inbound > 0) return
 

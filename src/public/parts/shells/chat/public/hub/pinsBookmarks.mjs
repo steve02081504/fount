@@ -42,11 +42,11 @@ function setPopCount(countElId, count) {
 
 /**
  * 统一群 ID 键，避免大小写不一致导致名称解析失败。
- * @param {string} value 群 ID
+ * @param {string | null | undefined} value 群 ID
  * @returns {string} 规范化键
  */
 function normGroupId(value) {
-	return String(value || '').trim().toLowerCase()
+	return (value || '').trim().toLowerCase()
 }
 
 /**
@@ -56,7 +56,7 @@ function normGroupId(value) {
  * @returns {string} 截断后的文案
  */
 function compactSidebarText(value, max = SIDEBAR_LABEL_MAX) {
-	const text = String(value || '').replace(/\s+/g, ' ').trim()
+	const text = value.replace(/\s+/g, ' ').trim()
 	if (!text) return ''
 	return text.length > max ? `${text.slice(0, Math.max(1, max - 1))}…` : text
 }
@@ -146,8 +146,8 @@ export async function refreshPinsBookmarks() {
 
 	const rows = valid.map(bookmark => ({
 		bookmark,
-		eventId: String(bookmark.eventId || '').trim(),
-		channelId: String(bookmark.channelId || '').trim(),
+		eventId: bookmark.eventId || '',
+		channelId: bookmark.channelId || '',
 		targetGroup: bookmark.groupId || store.context.currentGroupId,
 	}))
 	const labels = await Promise.all(rows.map(async ({ bookmark, eventId, channelId, targetGroup }) => {

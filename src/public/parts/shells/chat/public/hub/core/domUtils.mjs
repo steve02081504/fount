@@ -161,7 +161,7 @@ export async function groupDisplayName(groupId, name) {
 	if (alias) return alias
 	if (name && name !== groupId) return name
 	const { geti18n } = await import('/scripts/i18n/index.mjs')
-	return geti18n('chat.hub.group.unnamed', { suffix: String(groupId || '').slice(-4) })
+	return geti18n('chat.hub.group.unnamed', { suffix: groupId.slice(-4) })
 }
 
 /**

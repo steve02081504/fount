@@ -9,9 +9,8 @@ import { escapeHtml } from './escapeHtml.mjs'
  */
 export function hashAvatarSeed(seed) {
 	let hash = 0
-	const label = String(seed || '')
-	for (let charIndex = 0; charIndex < label.length; charIndex++)
-		hash = label.charCodeAt(charIndex) + ((hash << 5) - hash)
+	for (let charIndex = 0; charIndex < seed.length; charIndex++)
+		hash = seed.charCodeAt(charIndex) + ((hash << 5) - hash)
 	return hash | 0
 }
 
@@ -74,7 +73,7 @@ export function hashAvatarStyle(seed) {
  * @returns {string} 单个大写字母
  */
 export function avatarInitial(name) {
-	return (String(name || '?').trim() || '?').charAt(0).toUpperCase()
+	return ((name || '?').trim() || '?').charAt(0).toUpperCase()
 }
 
 /**
@@ -86,7 +85,7 @@ export function avatarInitial(name) {
  * @returns {{ avatarBg: string, avatarTextColor: string, avatarInner: string }} 模板字段
  */
 export function listAvatarTemplateFields(seed, label, avatarUrl = '', imgClass = 'char-list-avatar-img') {
-	const url = String(avatarUrl || '').trim()
+	const url = avatarUrl.trim()
 	return {
 		avatarBg: avatarColor(seed),
 		avatarTextColor: avatarTextColor(seed),
@@ -101,7 +100,7 @@ export function listAvatarTemplateFields(seed, label, avatarUrl = '', imgClass =
  * @returns {boolean} 是否为可加载的图片 URL
  */
 export function isAvatarImageUrl(value) {
-	const raw = String(value || '').trim()
+	const raw = value.trim()
 	return raw.startsWith('http') || raw.startsWith('/') || raw.startsWith('data:')
 }
 
@@ -151,6 +150,6 @@ export const MESSAGE_AVATAR_GROUP_GAP_MS = 30 * 60 * 1000
  */
 export function isFirstMessageInAuthorGroup(authorKey, prevAuthorKey, time, prevTime) {
 	if (!prevAuthorKey) return true
-	if (String(authorKey) !== String(prevAuthorKey)) return true
+	if (authorKey !== prevAuthorKey) return true
 	return (time - prevTime) > MESSAGE_AVATAR_GROUP_GAP_MS
 }

@@ -152,12 +152,11 @@ export function bumpRepostCount(cardRoot, delta) {
  * @returns {object[]} 被剔除的条目（用于回滚）
  */
 export function purgeFeedShownPost(state, postId) {
-	const id = String(postId || '')
-	if (!state.feedShownItems?.length || !id) return []
+	if (!state.feedShownItems?.length || !postId) return []
 	const kept = []
 	const removed = []
 	for (const item of state.feedShownItems)
-		if (item.postId === id) removed.push(item)
+		if (item.postId === postId) removed.push(item)
 		else kept.push(item)
 	state.feedShownItems = kept.length ? kept : null
 	return removed
@@ -170,12 +169,11 @@ export function purgeFeedShownPost(state, postId) {
  * @returns {object[]} 被剔除的条目（用于回滚）
  */
 export function purgeFeedShownAuthor(state, entityHash) {
-	const norm = String(entityHash || '').trim().toLowerCase()
-	if (!state.feedShownItems?.length || !norm) return []
+	if (!state.feedShownItems?.length || !entityHash) return []
 	const kept = []
 	const removed = []
 	for (const item of state.feedShownItems)
-		if (String(item.entityHash || '').trim().toLowerCase() === norm) removed.push(item)
+		if (item.entityHash === entityHash) removed.push(item)
 		else kept.push(item)
 	state.feedShownItems = kept.length ? kept : null
 	return removed
@@ -218,12 +216,11 @@ export function removePostsById(postId) {
  * @returns {RemovedPostCard[]} 被移除的节点与原位置（用于回滚）
  */
 export function removePostsByAuthor(entityHash) {
-	const normalizedEntityHash = entityHash.trim().toLowerCase()
 	/** @type {RemovedPostCard[]} */
 	const removed = []
 	for (const card of document.querySelectorAll('.post-card[data-author-entity]')) {
 		if (!(card instanceof HTMLElement)) continue
-		if (card.dataset.authorEntity.trim().toLowerCase() !== normalizedEntityHash) continue
+		if (card.dataset.authorEntity !== entityHash) continue
 		removed.push({ card, parent: card.parentElement, nextSibling: card.nextSibling })
 		card.remove()
 	}

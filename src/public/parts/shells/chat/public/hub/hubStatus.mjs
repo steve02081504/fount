@@ -41,7 +41,7 @@ export async function applyMyStatusUI(status, customStatus = '') {
 	const text = document.getElementById('my-status-text')
 	applyStatusDot(dot, status)
 	if (text) {
-		const custom = String(customStatus || '').trim()
+		const custom = customStatus.trim()
 		if (custom) {
 			delete text.dataset.i18n
 			text.setAttribute('user-content', '')

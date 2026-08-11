@@ -17,7 +17,7 @@ const OK_ONLY = `
  * @returns {Promise<void>}
  */
 export function showText(text, titleI18nKey) {
-	const key = String(titleI18nKey || '').trim()
+	const key = titleI18nKey.trim()
 	if (!key) throw new Error('showText requires title i18n key')
 	return withTemplates(SHARED_TEMPLATES, () => pickFromDialog('text_prompt_modal', {
 		titleI18n: key,

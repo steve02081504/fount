@@ -28,9 +28,9 @@ export function filterSetsFromPersonalListEntries(entries) {
 	/** @type {Set<string>} */
 	const mutedSubjects = new Set()
 	for (const entry of entries || []) {
-		const kind = String(entry?.kind || '').trim().toLowerCase()
-		const scope = String(entry?.scope || '').trim().toLowerCase()
-		const value = String(entry?.value || '').trim().toLowerCase()
+		const kind = entry?.kind || ''
+		const scope = entry?.scope || ''
+		const value = entry?.value || ''
 		if (!value || (scope !== 'entity' && scope !== 'subject')) continue
 		if (kind === 'block')
 			if (scope === 'entity') blockedEntityHashes.add(value)
@@ -58,13 +58,12 @@ export function filterSetsFromPersonalListEntries(entries) {
  * @returns {boolean} 是否应过滤
  */
 export function isAuthorFilteredByPersonalSets(filterSets, authorEntityHash) {
-	const entity = String(authorEntityHash || '').trim().toLowerCase()
-	if (!entity) return false
-	if (filterSets.blockedEntityHashes.has(entity)
-		|| filterSets.hiddenEntityHashes.has(entity)
-		|| filterSets.mutedEntityHashes?.has(entity))
+	if (!authorEntityHash) return false
+	if (filterSets.blockedEntityHashes.has(authorEntityHash)
+		|| filterSets.hiddenEntityHashes.has(authorEntityHash)
+		|| filterSets.mutedEntityHashes?.has(authorEntityHash))
 		return true
-	const parsed = parseEntityHash(entity)
+	const parsed = parseEntityHash(authorEntityHash)
 	if (!parsed) return false
 	if (filterSets.blockedSubjects.has(parsed.subjectHash)
 		|| filterSets.hiddenSubjects.has(parsed.subjectHash)

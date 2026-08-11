@@ -2,13 +2,14 @@
  * 【文件】public/hub/messages/actions/feedback.mjs
  * 【职责】消息反馈（赞/踩）及原因提交。
  */
-import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { setChannelMessageFeedback } from '../../../src/endpoints/groupChannel.mjs'
 import {
 	activeFeedbackEdits,
 	showFeedbackReasonInput,
 } from '../messageActionsState.mjs'
 import { removeWithFade } from '../messageActionsUi.mjs'
+
+import { toastMessageActionFailed } from './actionError.mjs'
 
 /**
  * @param {HTMLElement} button 被点击按钮
@@ -36,7 +37,7 @@ export async function handleFeedbackSubmitCancel(button, actions) {
 		await reload?.()
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.hub.message.action.failed', { error: error?.message || String(error) })
+		toastMessageActionFailed(error)
 	}
 	finally { button.disabled = false }
 	return true

@@ -81,7 +81,7 @@ export function hasFederationPartitionSlot(username, groupId, partitionId) {
  * @returns {void}
  */
 function teardownFederationSlot(slot) {
-	if (slot && typeof slot.leave === 'function')
+	if (slot?.leave)
 		void Promise.resolve(slot.leave()).catch(error => console.error('federation: slot teardown failed', error))
 }
 

@@ -1575,6 +1575,7 @@
 						"MANAGE_FILES": "管理檔案",
 						"MANAGE_MESSAGES": "管理訊息",
 						"MANAGE_ROLES": "管理角色",
+						"MANAGE_ADMINS": "管理管理員",
 						"PIN_MESSAGES": "置頂訊息",
 						"SEND_MESSAGES": "傳送訊息",
 						"SEND_STICKERS": "傳送貼紙",
@@ -2346,6 +2347,7 @@
 						"title": "編輯訊息"
 					},
 					"failed": "操作失敗：${error}",
+					"noPermission": "你沒有權限執行此操作",
 					"feedbackDown": {
 						"title": "點踩"
 					},

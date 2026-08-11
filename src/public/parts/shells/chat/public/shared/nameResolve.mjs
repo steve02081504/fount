@@ -6,11 +6,11 @@ import { entityHashLabel } from './entityHash.mjs'
  * @returns {string} 展示名（别名 → 自声明名 → 兜底）
  */
 export function resolveDisplayName({ entityHash, alias, profileName, fallbackLabel } = {}) {
-	const aliasName = String(alias || '').trim()
+	const aliasName = (alias || '').trim()
 	if (aliasName) return aliasName
-	const profile = String(profileName || '').trim()
+	const profile = (profileName || '').trim()
 	if (profile) return profile
-	const fallback = String(fallbackLabel || '').trim()
+	const fallback = (fallbackLabel || '').trim()
 	if (fallback) return fallback
 	return entityHash ? entityHashLabel(entityHash) : '?'
 }
@@ -23,13 +23,13 @@ export function resolveDisplayName({ entityHash, alias, profileName, fallbackLab
 export function disambiguateLabels(items) {
 	const counts = new Map()
 	for (const item of items) {
-		const label = String(item?.label || '')
+		const label = item?.label || ''
 		counts.set(label, (counts.get(label) || 0) + 1)
 	}
 	return items.map(item => {
-		const label = String(item?.label || '')
+		const label = item?.label || ''
 		if ((counts.get(label) || 0) <= 1) return label
-		const hash = String(item?.entityHash || '')
+		const hash = item?.entityHash || ''
 		const suffix = hash.slice(64, 68)
 		return suffix ? `${label}·${suffix}` : label
 	})

@@ -223,18 +223,17 @@ export async function loadGroups() {
 	store.sidebar.groups = groupList.sort(
 		(left, right) => new Date(right.lastMessageTime || 0) - new Date(left.lastMessageTime || 0),
 	)
-	const knownGroupIds = new Set(groupList.map(g => String(g.groupId || '').trim().toLowerCase()).filter(Boolean))
+	const knownGroupIds = new Set(groupList.map(g => g.groupId).filter(Boolean))
 	if (knownGroupIds.size) {
 		const bookmarks = await getChatBookmarks().catch(() => [])
 		const liveBookmarks = bookmarks.filter(
-			b => b?.href || (b?.groupId && knownGroupIds.has(String(b.groupId).trim().toLowerCase())),
+			b => b?.href || (b?.groupId && knownGroupIds.has(b.groupId)),
 		)
 		if (liveBookmarks.length !== bookmarks.length) await saveChatBookmarks(liveBookmarks)
 	}
 	if (foldersPayload) {
-		const rawFolders = foldersPayload.folders
 		store.sidebar.groupFoldersState = {
-			folders: rawFolders.map((folder, folderIndex) => ({
+			folders: foldersPayload.folders.map((folder, folderIndex) => ({
 				id: String(folder.id || '').trim() || `folder-${folderIndex}`,
 				name: String(folder.name || '').trim(),
 				nameIsDefault: !String(folder.name || '').trim(),

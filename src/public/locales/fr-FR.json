@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "Gérer les fichiers",
 						"MANAGE_MESSAGES": "Messages de gestion",
 						"MANAGE_ROLES": "rôle de gestion",
+						"MANAGE_ADMINS": "Gérer les administrateurs",
 						"PIN_MESSAGES": "Message épinglé",
 						"SEND_MESSAGES": "Envoyer un message",
 						"SEND_STICKERS": "Envoyer des autocollants",
@@ -2347,6 +2348,7 @@
 						"title": "Modifier le message"
 					},
 					"failed": "Échec de l'opération : ${error}",
+					"noPermission": "Vous n'avez pas l'autorisation d'effectuer cette action.",
 					"feedbackDown": {
 						"title": "Cliquez pour ne pas aimer"
 					},

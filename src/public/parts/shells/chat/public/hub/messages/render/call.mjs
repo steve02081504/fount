@@ -18,7 +18,7 @@ export async function renderCallBlock(message) {
 	const source = status === 'ongoing' && Array.isArray(call.current) && call.current.length
 		? call.current
 		: Array.isArray(call.participants) ? call.participants : []
-	const hashes = [...new Set(source.map(h => String(h || '').toLowerCase()).filter(Boolean))]
+	const hashes = [...new Set(source.filter(Boolean))]
 	const avatarsHtml = hashes.slice(0, 12).map(hash => {
 		const letter = escapeHtml(avatarInitial(hash.slice(0, 8)))
 		const bg = escapeHtml(avatarColor(hash))

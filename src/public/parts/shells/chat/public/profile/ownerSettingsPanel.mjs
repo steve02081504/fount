@@ -17,7 +17,7 @@ import { showOwnerConfirmDialog } from './ownerConfirmDialog.mjs'
  * @returns {string | null} 规范化 128-hex 或 null（空）
  */
 function normalizeOwnerInput(raw) {
-	const value = String(raw || '').trim().toLowerCase()
+	const value = raw.trim().toLowerCase()
 	if (!value) return null
 	if (!/^[0-9a-f]{128}$/u.test(value)) throw new Error('invalid ownerEntityHash')
 	return value
@@ -39,10 +39,10 @@ export async function initProfileOwnerSettings() {
 		const viewer = await getViewer()
 		viewerEntityHash = viewer.viewerEntityHash || null
 		agents = Array.isArray(viewer.agents) ? viewer.agents : []
-		ownerEntityHash = String(viewer.profile?.ownerEntityHash || '').trim().toLowerCase()
+		ownerEntityHash = viewer.profile?.ownerEntityHash || ''
 		if (viewerEntityHash && !ownerEntityHash) {
 			const data = await getEntityProfile(viewerEntityHash)
-			ownerEntityHash = String(data.profile?.ownerEntityHash || '').trim().toLowerCase()
+			ownerEntityHash = data.profile?.ownerEntityHash || ''
 		}
 	}
 	catch (error) {
@@ -51,7 +51,7 @@ export async function initProfileOwnerSettings() {
 	}
 
 	const agentButtons = agents.map(row => {
-		const hash = String(row.entityHash || '').trim().toLowerCase()
+		const hash = row.entityHash || ''
 		const name = escapeHtml(String(row.charPartName || hash.slice(0, 8)))
 		return `<button type="button" class="btn btn-ghost btn-xs" data-owner-pick="${escapeHtml(hash)}">${name}</button>`
 	}).join('')

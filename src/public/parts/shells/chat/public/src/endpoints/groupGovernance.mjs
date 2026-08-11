@@ -73,7 +73,7 @@ export async function getGroupReputation() {
 export async function postReputationReset(groupId, targetPubKeyHash) {
 	return groupFetch(groupPath(groupId, 'reputation', 'reset'), {
 		method: 'POST',
-		json: { targetPubKeyHash: String(targetPubKeyHash || '').trim().toLowerCase() },
+		json: { targetPubKeyHash: targetPubKeyHash },
 	})
 }
 
@@ -85,12 +85,12 @@ export async function postReputationReset(groupId, targetPubKeyHash) {
  */
 export async function postReputationSlash(groupId, body) {
 	const payload = {
-		targetPubKeyHash: String(body.targetPubKeyHash || '').trim().toLowerCase(),
+		targetPubKeyHash: body.targetPubKeyHash || '',
 		claim: Number(body.claim ?? 0.25),
 	}
 	if (body.verified) {
 		payload.verified = true
-		if (body.proof?.eventId) payload.proof = { eventId: String(body.proof.eventId).trim().toLowerCase() }
+		if (body.proof?.eventId) payload.proof = { eventId: body.proof.eventId }
 	}
 	const data = await groupFetch(groupPath(groupId, 'reputation', 'slash'), {
 		method: 'POST',

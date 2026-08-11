@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "Quản lý tập tin",
 						"MANAGE_MESSAGES": "Quản lý tin nhắn",
 						"MANAGE_ROLES": "Quản lý vai trò",
+						"MANAGE_ADMINS": "Quản lý quản trị viên",
 						"PIN_MESSAGES": "Tin nhắn được ghim",
 						"SEND_MESSAGES": "Gửi tin nhắn",
 						"SEND_STICKERS": "Gửi nhãn dán",
@@ -2347,6 +2348,7 @@
 						"title": "Chỉnh sửa tin nhắn"
 					},
 					"failed": "Thao tác không thành công: ${error}",
+					"noPermission": "Bạn không có quyền thực hiện thao tác này.",
 					"feedbackDown": {
 						"title": "Bấm vào để không thích"
 					},

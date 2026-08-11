@@ -218,7 +218,7 @@ function activateLiveSlide(container, index) {
 function demoteLiveSlide(slide) {
 	const conn = slideConnections.get(slide)
 	if (!conn?.avSession) return
-	if (typeof conn.avSession.setMode === 'function')
+	if (conn.avSession.setMode)
 		conn.avSession.setMode('preview')
 }
 
@@ -234,7 +234,7 @@ function ensureLiveConnected(slide, mode) {
 	if (!conn.signalWs || conn.signalWs.readyState > 1)
 		conn.signalWs = openLiveSignalWs(slide, entityHash, liveId, slide.dataset)
 
-	if (conn.avSession && typeof conn.avSession.setMode === 'function') {
+	if (conn.avSession?.setMode) {
 		conn.avSession.setMode(mode)
 		if (mode === 'full')
 			slide.querySelector('.live-placeholder')?.classList.add('hidden')

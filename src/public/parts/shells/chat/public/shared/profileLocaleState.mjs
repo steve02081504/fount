@@ -9,7 +9,7 @@
  * @returns {Record<string, object>} 新表
  */
 export function ensureLocaleEntry(localized, activeKey, sourceKey) {
-	const key = String(activeKey || '').trim()
+	const key = activeKey.trim()
 	if (!key || localized[key]) return localized
 	const source = localized[sourceKey] || {}
 	return {
@@ -29,7 +29,7 @@ export function ensureLocaleEntry(localized, activeKey, sourceKey) {
  * @returns {Record<string, object>} 新表；目标键冲突时保持原表
  */
 export function renameLocaleEntry(localized, oldKey, newKey) {
-	const key = String(newKey || '').trim()
+	const key = newKey.trim()
 	if (!key || key === oldKey || !localized[oldKey] || localized[key]) return localized
 	return Object.fromEntries(
 		Object.entries(localized).map(([entryKey, value]) => [

@@ -81,7 +81,7 @@ export function channelMessage(agentText, extra = {}) {
 	delete rest.type
 	return normalizeChannelMessage({
 		...rest,
-		content: String(agentText ?? ''),
+		content: agentText,
 		...content_for_show != null ? { content_for_show: String(content_for_show) } : {},
 		...content_for_edit != null ? { content_for_edit: String(content_for_edit) } : {},
 	})
@@ -197,10 +197,9 @@ const INLINE_IMAGE_MARKER_RE = /\[image:[^\]|]+\|[^\]]+]/g
  * @returns {string} 清洗后文本
  */
 export function stripInlineImageMarkers(text) {
-	const source = String(text || '')
-	if (!INLINE_IMAGE_MARKER_RE.test(source)) return source
+	if (!INLINE_IMAGE_MARKER_RE.test(text)) return text
 	INLINE_IMAGE_MARKER_RE.lastIndex = 0
-	return source
+	return text
 		.replace(/(\n)?\[image:[^\]|]+\|[^\]]+\](\n)?/g, (match, before, after) => before && after ? '\n' : '')
 		.replace(/^\n+|\n+$/g, '')
 }

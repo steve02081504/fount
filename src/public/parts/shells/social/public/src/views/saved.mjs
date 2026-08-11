@@ -249,14 +249,13 @@ export function setSavedFilter(filter) {
  * @returns {Promise<void>}
  */
 export async function renderSavedPanel() {
-	const data = savedCache
 	const panel = document.getElementById('savedPanel')
-	if (!data || !panel) return
+	if (!savedCache || !panel) return
 
-	const folders = data.folders || {}
-	const unfiled = data.unfiled || []
+	const folders = savedCache.folders || {}
+	const unfiled = savedCache.unfiled || []
 	const folderEntries = Object.entries(folders)
-	const total = totalSavedCount(data)
+	const total = totalSavedCount(savedCache)
 	const hasFolders = folderEntries.length > 0
 
 	if (savedFilter !== 'all' && savedFilter !== 'unfiled' && !folders[savedFilter])
@@ -283,7 +282,7 @@ export async function renderSavedPanel() {
 		toolbar.innerHTML = `
 			<div class="feed-search-wrap saved-search-wrap">
 				<span class="icon icon-search search-icon" aria-hidden="true"></span>
-				<input type="search" id="savedSearchInput" class="feed-search-input input input-bordered input-sm w-full" value="${escapeHtml(savedQuery)}" data-i18n="social.saved.search" autocomplete="off" />
+				<input type="search" id="savedSearchInput" class="feed-search-input input input-bordered input-sm w-full" value="${escapeHtml(savedQuery)}" savedCache-i18n="social.saved.search" autocomplete="off" />
 			</div>
 		`
 		panel.appendChild(toolbar)

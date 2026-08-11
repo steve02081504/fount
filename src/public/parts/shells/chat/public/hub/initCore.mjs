@@ -24,7 +24,7 @@ async function loadViewerIdentity() {
 	store.viewer.nodeHash = viewer.nodeHash || null
 	store.viewer.operatorEntityHash = viewer.viewerEntityHash || null
 	store.viewer.viewerEntityHash = viewer.viewerEntityHash || null
-	store.viewer.ownerEntityHash = String(viewer.profile?.ownerEntityHash || '').trim().toLowerCase() || null
+	store.viewer.ownerEntityHash = viewer.profile?.ownerEntityHash || null
 	store.viewer.agents = viewer.agents || []
 	const { ingestAgentEntityHashList } = await import('./core/domUtils.mjs')
 	ingestAgentEntityHashList(store.viewer.agents)

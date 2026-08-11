@@ -224,9 +224,8 @@ export function attachHubMentionAutocomplete(textarea) {
 export function insertComposerMention(entityHash) {
 	const textarea = /** @type {HTMLTextAreaElement | null} */ document.getElementById('message-input')
 	if (!textarea || textarea.disabled) return
-	const hash = String(entityHash || '').trim().toLowerCase()
-	if (!hash) return
-	const mention = `${formatEntityMentionToken(hash)} `
+	if (!entityHash) return
+	const mention = `${formatEntityMentionToken(entityHash)} `
 	const start = textarea.selectionStart ?? textarea.value.length
 	const end = textarea.selectionEnd ?? start
 	textarea.value = textarea.value.slice(0, start) + mention + textarea.value.slice(end)

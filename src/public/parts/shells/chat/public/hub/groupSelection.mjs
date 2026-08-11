@@ -92,7 +92,7 @@ export function handleGroupItemModifierClick(groupId, mod = {}) {
  * @returns {string[]} 菜单作用的群 ID 列表
  */
 export function contextMenuTargetGroupIds(groupId) {
-	const id = String(groupId || '').trim()
+	const id = groupId.trim()
 	if (store.sidebar.selectedGroupIds.size > 1 && store.sidebar.selectedGroupIds.has(id))
 		return getSelectedGroupIds()
 	if (id) return [id]
@@ -105,7 +105,7 @@ export function contextMenuTargetGroupIds(groupId) {
  * @returns {void} 无返回值
  */
 export function primeContextMenuSelection(groupId) {
-	const id = String(groupId || '').trim()
+	const id = groupId.trim()
 	if (!id) return
 	if (store.sidebar.selectedGroupIds.has(id)) return
 	clearGroupSelection()

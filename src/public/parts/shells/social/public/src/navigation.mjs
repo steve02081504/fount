@@ -29,10 +29,10 @@ import { loadVideoView } from './views/video.mjs'
  */
 async function connectNodesFromShare(entityHash, sharerNodeHash) {
 	const targets = new Set()
-	if (isHex64(sharerNodeHash)) targets.add(String(sharerNodeHash).toLowerCase())
+	if (isHex64(sharerNodeHash)) targets.add(sharerNodeHash)
 	const parsed = parseEntityHash(entityHash)
-	if (parsed?.nodeHash) targets.add(String(parsed.nodeHash).toLowerCase())
-	const self = String(state.viewerNodeHash || '').toLowerCase()
+	if (parsed?.nodeHash) targets.add(parsed.nodeHash)
+	const self = state.viewerNodeHash || ''
 	for (const targetNodeHash of targets) {
 		if (!targetNodeHash || targetNodeHash === self) continue
 		try {
@@ -154,7 +154,7 @@ export async function applyIncomingNavigation() {
 	// 短视频深链：#videos;entityHash;postId
 	if (rawHash.startsWith('videos;')) {
 		const parts = rawHash.split(';')
-		const focusEntityHash = (parts[1] || '').toLowerCase()
+		const focusEntityHash = parts[1] || ''
 		const focusPostId = parts[2] || ''
 		activateView('videos')
 		await loadVideoView({ focusEntityHash, focusPostId })
@@ -182,13 +182,13 @@ export async function applyIncomingNavigation() {
 	}
 	if (hashParsed?.subcommand === 'post' && hashParsed.entityHash && hashParsed.postId) {
 		void connectNodesFromShare(hashParsed.entityHash, hashParsed.sharerNodeHash)
-		await loadPostDetail(hashParsed.entityHash.toLowerCase(), hashParsed.postId)
+		await loadPostDetail(hashParsed.entityHash, hashParsed.postId)
 		return true
 	}
 	if (hashParsed?.entityHash && hashParsed.subcommand === 'profile') {
 		activateView('profile')
 		document.getElementById('composer')?.classList.add('hidden')
-		await loadProfileFor(hashParsed.entityHash.toLowerCase(), hashParsed.postId || null)
+		await loadProfileFor(hashParsed.entityHash, hashParsed.postId || null)
 		return true
 	}
 	return false

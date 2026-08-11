@@ -63,7 +63,7 @@ export function buildMessagesByEventId(allMessages) {
 	const map = new Map()
 	for (const row of allMessages) {
 		if (!row?.eventId || !isHex64(row.eventId)) continue
-		map.set(String(row.eventId).trim().toLowerCase(), row)
+		map.set(row.eventId, row)
 	}
 	messagesByEventIdCache.set(allMessages, { length: allMessages.length, map })
 	return map
@@ -81,7 +81,7 @@ function buildDisplayChain(mergedMessages, activeBranches) {
 	if (!chainable.some(message => parentEventIds(message).length > 0))
 		return { messages: mergedMessages, branchInfo: new Map() }
 
-	const messagesByEventId = new Map(chainable.map(message => [String(message.eventId).toLowerCase(), message]))
+	const messagesByEventId = new Map(chainable.map(message => [message.eventId, message]))
 	const hasExternalParent = chainable.some(message =>
 		parentEventIds(message).length > 0
 		&& !parentEventIds(message).some(parentId => messagesByEventId.has(parentId)),
@@ -164,10 +164,9 @@ export function applyChannelDisplayChain(mergedMessages, activeBranches = new Ma
  */
 function replayReactions(channelMessages, targetEventId) {
 	const reactionsByVoter = new Map()
-	const target = String(targetEventId)
 	for (const message of channelMessages) {
 		if (message.type !== 'reaction_add' && message.type !== 'reaction_remove') continue
-		if (String(message.content?.targetId) !== target) continue
+		if (String(message.content?.targetId) !== targetEventId) continue
 		const emoji = message.content?.emoji
 		if (!emoji) continue
 		const actor = message.sender || message.eventId
@@ -188,7 +187,7 @@ function replayReactions(channelMessages, targetEventId) {
  */
 export function tallyReactionsFromMap(reactionsMap, targetEventId, viewerId = 'local') {
 	const emojiMap = reactionsMap?.[targetEventId]
-		|| reactionsMap?.[String(targetEventId).trim()]
+		|| reactionsMap?.[targetEventId.trim()]
 	const tallies = new Map()
 	if (!emojiMap) return tallies
 	for (const [emoji, detail] of Object.entries(emojiMap)) {
@@ -209,7 +208,7 @@ export function tallyReactionsFromMap(reactionsMap, targetEventId, viewerId = 'l
  */
 export function tallyReactionVotersFromMap(reactionsMap, targetEventId, viewerId = 'local') {
 	const emojiMap = reactionsMap?.[targetEventId]
-		|| reactionsMap?.[String(targetEventId).trim()]
+		|| reactionsMap?.[targetEventId.trim()]
 	const tallies = new Map()
 	if (!emojiMap) return tallies
 	for (const [emoji, detail] of Object.entries(emojiMap)) {

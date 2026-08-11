@@ -8,7 +8,6 @@ export const SHARED_CABINET_SUBJECT_PREFIX = 'fount:cabinet:shared:'
  * @returns {string} 128 位 logical entityHash（EVFS owner）
  */
 export function sharedCabinetEntityHash(cabinetId) {
-	const id = String(cabinetId || '').trim().toLowerCase()
-	if (!id) throw new Error('cabinetId required')
-	return logicalEntityHash(`${SHARED_CABINET_SUBJECT_PREFIX}${id}`)
+	if (!cabinetId) throw new Error('cabinetId required')
+	return logicalEntityHash(`${SHARED_CABINET_SUBJECT_PREFIX}${cabinetId}`)
 }

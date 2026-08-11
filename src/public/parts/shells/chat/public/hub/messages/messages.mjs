@@ -48,7 +48,7 @@ watchState('messages.focusedMessageEventId', eventId => {
 
 /** @param {string | null} eventId @returns {void} */
 export function focusMessageEventId(eventId) {
-	setState('messages.focusedMessageEventId', eventId ? String(eventId).trim() : null)
+	setState('messages.focusedMessageEventId', eventId ? eventId.trim() : null)
 }
 
 /** Hub 消息子模块重导出（刷新 / 滚动 / 发送等）。 */

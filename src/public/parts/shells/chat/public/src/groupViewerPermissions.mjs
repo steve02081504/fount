@@ -1,9 +1,9 @@
 /**
  * 【文件】public/src/groupViewerPermissions.mjs
  * 【职责】从 state JSON 解析当前观众在频道上的权限位（发消息、反应、管理等）。
- * 【原理】fetchViewerChannelPermissions 读 viewerMemberPubKeyHash 与 channel 权限表；导出 viewerCan* 便捷判断。
+ * 【原理】fetchViewerChannelPermissions 读 viewerMemberPubKeyHash 与 channel 权限表；设置页用 resolveViewerSettingsCapabilities。
  * 【数据结构】Record<string, boolean> 权限表；stateJson.viewerMemberPubKeyHash。
- * 【关联】Hub composer、reactionHandlers；后端 groups/:id/state。
+ * 【关联】Hub 群设置；后端 groups/:id/state / permissions。频道级消息操作门控走 state.channelCaps，不经本文件。
  */
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { getViewerPermissions } from './endpoints/groupCore.mjs'
@@ -94,7 +94,6 @@ export async function resolveViewerSettingsCapabilities(stateJson, groupId) {
 	const memberCount = Number(stateJson?.memberCount)
 		|| (Array.isArray(stateJson?.members) ? stateJson.members.length : 0)
 	const canKeyRotate = memberCount === 2 || permissions.ADMIN === true
-	const canFedTuning = canEditGroupSettings
 	const canOwnerSuccession = permissions.ADMIN === true
 	return {
 		isMember: true,
@@ -111,43 +110,10 @@ export async function resolveViewerSettingsCapabilities(stateJson, groupId) {
 		canEditDiscovery,
 		canDeleteGroup: canEditGroupSettings,
 		canKeyRotate,
-		canFedTuning,
+		canFedTuning: canEditGroupSettings,
 		canOwnerSuccession,
-		showGovernancePanel: canEditGroupSettings || canKeyRotate || canOwnerSuccession || canFedTuning,
+		showGovernancePanel: canEditGroupSettings || canKeyRotate || canOwnerSuccession,
 	}
-}
-
-/**
- * @param {object} stateJson state
- * @param {string} groupId 群
- * @param {string} channelId 频道
- * @returns {Promise<boolean>} 是否可添加/撤销自己的 reaction
- */
-export async function viewerCanAddReactions(stateJson, groupId, channelId) {
-	const permissions = await fetchViewerChannelPermissions(stateJson, groupId, channelId)
-	return permissions.ADD_REACTIONS === true
-}
-
-/**
- * @param {object} stateJson state
- * @param {string} groupId 群
- * @param {string} channelId 频道
- * @returns {Promise<boolean>} 是否可代删他人 reaction
- */
-export async function viewerCanManageMessages(stateJson, groupId, channelId) {
-	const permissions = await fetchViewerChannelPermissions(stateJson, groupId, channelId)
-	return permissions.MANAGE_MESSAGES === true
-}
-
-/**
- * @param {object} stateJson state
- * @param {string} groupId 群
- * @param {string} channelId 频道
- * @returns {Promise<boolean>} 是否可置顶消息
- */
-export async function viewerCanPinMessages(stateJson, groupId, channelId) {
-	const permissions = await fetchViewerChannelPermissions(stateJson, groupId, channelId)
-	return permissions.PIN_MESSAGES === true
 }
 
 /**

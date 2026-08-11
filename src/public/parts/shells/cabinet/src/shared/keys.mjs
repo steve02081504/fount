@@ -180,7 +180,7 @@ export async function rotateSharedReadKey(username, cabinetId) {
  */
 export async function importSharedCabinetGrant(username, cabinetId, grant) {
 	const existing = await loadSharedKeys(username, cabinetId) || {
-		write_pubkey: String(grant.write_pubkey || ''),
+		write_pubkey: grant.write_pubkey || '',
 		read_keys: [],
 		current_gen: 0,
 		last_hlc: null,

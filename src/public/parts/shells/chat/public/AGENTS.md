@@ -42,6 +42,12 @@ Root: `{userDict}/shells/chat/entities/{entityHash}/` — bookmarks, folders, al
 
 `GET …/groups/:id/state` → `{ meta, viewer, federation }`. Frontend flatten must **not** let `viewer.roles` (held role IDs) overwrite `meta.roles` (role definition map) — write held roles into `myRoles`.
 
+## Permission gates
+
+- **Authoritative**: `src/chat/dag/authorizeEvent.mjs` (`checkEventPermission` / `assertEventPermission` → `httpError(403)`).
+- **Message UI**: only `public/shared/messagePermissions.mjs` (`canDeleteMessage` / `canEditMessage`) — must match `message_delete` / `message_edit` cases. Hub resolves store fields then passes them in; do not reimplement in `messageActionsRender`.
+- **Channel caps**: read `GET …/state` → `channelCaps[channelId]` (`canManageMessages`, `canAddReactions`, `canPinMessages`, `canCreateThreads`, `canEditList`, …). Do not re-fetch `GET …/permissions` for Hub message chrome.
+
 ## Specialized guides
 
 | Area | Doc |

@@ -12,7 +12,7 @@ import { getMessageText } from '../render/text.mjs'
  * @returns {Promise<boolean>} 是否已处理
  */
 export async function handleReply(button, channelMessage) {
-	const eventId = String(button.dataset.eventId || channelMessage?.eventId || '').trim().toLowerCase()
+	const eventId = button.dataset.eventId || channelMessage?.eventId || ''
 	if (!/^[0-9a-f]{64}$/.test(eventId)) return true
 	const { displayName } = authorPresentationKeys(
 		channelMessage?.charId ?? channelMessage?.authorPubKeyHash ?? channelMessage?.sender ?? '?',

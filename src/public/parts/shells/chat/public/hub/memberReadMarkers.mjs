@@ -58,11 +58,11 @@ export function getCachedReadMarkers(groupId, channelId) {
  * @returns {void}
  */
 export function applyMemberReadMarkerWire(wireMessage) {
-	const groupId = String(wireMessage.groupId || '').trim()
-	const channelId = String(wireMessage.channelId || '').trim()
-	const entityHash = String(wireMessage.entityHash || '').trim().toLowerCase()
+	const groupId = wireMessage.groupId || ''
+	const channelId = wireMessage.channelId || ''
+	const entityHash = wireMessage.entityHash || ''
 	const seq = Number(wireMessage.readMarker?.seq)
-	const eventId = String(wireMessage.readMarker?.eventId || '').trim().toLowerCase()
+	const eventId = wireMessage.readMarker?.eventId || ''
 	if (!groupId || !channelId || !entityHash || !Number.isFinite(seq)) return
 	const key = cacheKey(groupId, channelId)
 	const markers = { ...getCachedReadMarkers(groupId, channelId) }
@@ -83,11 +83,11 @@ export function applyMemberReadMarkerWire(wireMessage) {
  */
 export function isMessageReadByPeer(groupId, channelId, msgSeq) {
 	const markers = getCachedReadMarkers(groupId, channelId)
-	const viewerKey = String(store.context.currentState?.viewerMemberPubKeyHash
+	const viewerKey = store.context.currentState?.viewerMemberPubKeyHash
 		|| store.context.currentState?.viewerEntityHash
-		|| '').trim().toLowerCase()
+		|| ''
 	for (const [entityHash, marker] of Object.entries(markers)) {
-		if (entityHash.toLowerCase() === viewerKey) continue
+		if (entityHash === viewerKey) continue
 		if (marker.seq >= msgSeq) return true
 	}
 	return false
@@ -109,7 +109,7 @@ export function paintOwnDeliveryStatuses() {
 		const seq = Number(msg.seq)
 		if (!Number.isFinite(seq) || seq <= 0) continue
 		if (!isMessageReadByPeer(groupId, channelId, seq)) continue
-		const eventId = String(msg.eventId || '')
+		const eventId = msg.eventId || ''
 		if (!eventId) continue
 		const domRow = container.querySelector(`[data-message-id="${CSS.escape(eventId)}"]`)
 		const existing = domRow?.querySelector('.delivery-status')

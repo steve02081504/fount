@@ -91,13 +91,12 @@ export async function materializeViewerChatLog(username, groupId, channelId, vie
 	const visibleEntries = channelEntries.filter(entry => entryVisibleToViewer(entry, aclViewer))
 
 	const world = await resolveWorld(groupId, channelId, username)
-	const player = timeSlice.player
 
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const arg = {
 		chat_log: visibleEntries,
 		world,
-		user: player,
+		user: timeSlice.player,
 		member_roles,
 		extension: {
 			groupId,

@@ -65,7 +65,7 @@ export async function loadSearchView(initialQuery = '') {
 	if (!view) return
 	const asideInput = document.getElementById('feedSearchInput')
 	const input = view.querySelector('#searchViewInput')
-	const q = String(initialQuery || '').trim()
+	const q = initialQuery.trim()
 		|| (asideInput instanceof HTMLInputElement ? asideInput.value.trim() : '')
 		|| (input instanceof HTMLInputElement ? input.value.trim() : '')
 	if (input instanceof HTMLInputElement)

@@ -209,11 +209,15 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (active)
 			for (const channelId of Object.keys(channels))
 				channelCaps[channelId] = {
-					canEditList: canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId),
+					canEditList: canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId)
+						|| canInChannel(state, member, PERMISSIONS.CREATE_THREADS, channelId),
 					canCreateThreads: canInChannel(state, member, PERMISSIONS.CREATE_THREADS, channelId)
-						|| canInChannel(state, member, PERMISSIONS.SEND_MESSAGES, channelId),
+						|| canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId),
 					canStream: canInChannel(state, member, PERMISSIONS.STREAM, channelId),
 					canManageMessages: canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId),
+					canAddReactions: canInChannel(state, member, PERMISSIONS.ADD_REACTIONS, channelId),
+					canPinMessages: canInChannel(state, member, PERMISSIONS.PIN_MESSAGES, channelId)
+						|| canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId),
 				}
 
 

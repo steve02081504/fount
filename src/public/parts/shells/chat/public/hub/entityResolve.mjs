@@ -41,9 +41,8 @@ export function isLocalWritableEntityHash(entityHash) {
  */
 export function canEditEntityProfile(entityHash, profile) {
 	if (isLocalWritableEntityHash(entityHash)) return true
-	const viewer = String(store.viewer?.viewerEntityHash || '').trim().toLowerCase()
-	const owner = String(profile?.ownerEntityHash || '').trim().toLowerCase()
-	return !!(viewer && owner && viewer === owner)
+	return !!(store.viewer?.viewerEntityHash && profile?.ownerEntityHash
+		&& store.viewer.viewerEntityHash === profile.ownerEntityHash)
 }
 
 /**
@@ -51,7 +50,6 @@ export function canEditEntityProfile(entityHash, profile) {
  * @returns {boolean} 是否为当前登录 viewer
  */
 export function isViewerEntityHash(entityHash) {
-	const viewer = String(store.viewer.viewerEntityHash || '').trim().toLowerCase()
-	const eh = String(entityHash || '').trim().toLowerCase()
-	return !!viewer && viewer === eh
+	return !!(store.viewer.viewerEntityHash && entityHash
+		&& store.viewer.viewerEntityHash === entityHash)
 }

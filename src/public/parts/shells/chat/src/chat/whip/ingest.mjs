@@ -101,7 +101,6 @@ export async function startWhipIngest(roomId, offerSdp, options = {}) {
 		},
 	})
 
-	const sessionId = senderHex
 	/**
 	 * 关闭 WHIP 入站会话并撤销 publish meta。
 	 * @returns {void}
@@ -113,7 +112,7 @@ export async function startWhipIngest(roomId, offerSdp, options = {}) {
 			injectAvRelayControl(roomId, { type: 'publish_meta_revoke', senderId: senderHex })
 	}
 	sessionsByRoom.set(roomId, { close })
-	return { answerSdp: whip.answerSdp, sessionId, close }
+	return { answerSdp: whip.answerSdp, senderHex, close }
 }
 
 /**

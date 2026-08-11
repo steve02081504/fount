@@ -65,7 +65,7 @@ function previewFromMessage(message) {
  * @returns {Promise<{ i18n?: string, params?: Record<string, string>, text?: string }>} 展示用摘要
  */
 export async function resolvePinMessagePreview(groupId, channelId, eventId) {
-	const normalizedEventId = String(eventId).trim()
+	const normalizedEventId = eventId.trim()
 	if (!normalizedEventId) return { text: '' }
 	const cacheKey = `${groupId}:${channelId}:${normalizedEventId}`
 	const cached = previewCache.get(cacheKey)

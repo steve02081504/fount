@@ -21,8 +21,8 @@ let flushTimer = null
  * @returns {{ author: string, postId: string, tags: string[] } | null} 元数据
  */
 function cardMeta(card) {
-	const author = String(card.dataset.authorEntity || '').trim().toLowerCase()
-	const postId = String(card.dataset.postId || '').trim().toLowerCase()
+	const author = card.dataset.authorEntity || ''
+	const postId = card.dataset.postId || ''
 	if (!author || !postId) return null
 	const text = (() => {
 		try {
@@ -151,7 +151,7 @@ export async function sendDwellBeacon(entries) {
 	if (!entries?.length) return
 	const body = JSON.stringify({ entries })
 	const url = '/api/parts/shells:social/signals/dwell'
-	if (typeof navigator.sendBeacon === 'function') {
+	if (navigator.sendBeacon) {
 		const blob = new Blob([body], { type: 'application/json' })
 		if (navigator.sendBeacon(url, blob)) return
 	}

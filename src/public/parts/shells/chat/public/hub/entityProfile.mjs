@@ -103,7 +103,7 @@ export async function paintBioMarkdown(descriptionElement, bio, entityHash = '')
 		nodeHash: store.viewer?.nodeHash,
 		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
 	})
-	if (descriptionElement instanceof HTMLElement && String(bio || '').trim())
+	if (descriptionElement instanceof HTMLElement && bio.trim())
 		descriptionElement.classList.add('char-description-md')
 }
 
@@ -134,7 +134,7 @@ export function wireProfileEditButton(root, entityHash, options = {}) {
  * @returns {string} 小写 64 hex；无效为空串
  */
 function normHex(value) {
-	const normalized = String(value ?? '').trim().toLowerCase()
+	const normalized = String(value ?? '')
 	return isHex64(normalized) ? normalized : ''
 }
 
@@ -147,9 +147,9 @@ function normHex(value) {
 function resolveTrustAuthorPubKeyHash(entity, profile) {
 	const direct = normHex(entity?.pubKeyHash)
 	if (direct) return direct
-	const entityHash = String(entity?.entityHash || '').trim().toLowerCase()
+	const entityHash = entity?.entityHash || ''
 	for (const member of store.context.currentState?.members || []) {
-		const memberHash = String(member?.entityHash || '').trim().toLowerCase()
+		const memberHash = member?.entityHash || ''
 		const memberKey = normHex(member?.pubKeyHash || member?.memberKey)
 		if (entityHash && memberHash === entityHash && memberKey) return memberKey
 	}
@@ -162,14 +162,13 @@ function resolveTrustAuthorPubKeyHash(entity, profile) {
  * @returns {Promise<void>}
  */
 async function refreshTrustedAuthorMessages(authorPubKeyHash) {
-	const key = String(authorPubKeyHash || '').trim().toLowerCase()
-	if (!isHex64(key)) return
+	if (!isHex64(authorPubKeyHash)) return
 	const container = document.getElementById('messages')
 	if (!(container instanceof HTMLElement)) return
 	const { hydrateMessageMarkdown } = await import('./messages/render/markdown.mjs')
 	const { renderTemplateAsHtmlString } = await import('../../../../scripts/features/template.mjs')
 	const badgeHtml = await renderTemplateAsHtmlString('hub/messages/trusted_author_badge', {})
-	for (const row of container.querySelectorAll(`.message[data-author-pubkey-hash="${key}"]`)) {
+	for (const row of container.querySelectorAll(`.message[data-author-pubkey-hash="${authorPubKeyHash}"]`)) {
 		if (!(row instanceof HTMLElement)) continue
 		const messageId = row.getAttribute('data-message-id')
 		if (messageId) await hydrateMessageMarkdown(container, messageId)
@@ -197,7 +196,7 @@ async function refreshTrustedAuthorMessages(authorPubKeyHash) {
  */
 export async function wireEntityProfileCardActions(root, entity, options = {}) {
 	if (!(root instanceof HTMLElement) || !entity) return
-	const entityHash = String(entity.entityHash || '').trim().toLowerCase()
+	const entityHash = entity.entityHash || ''
 	const profile = options.profile ?? null
 	const isSelf = isViewerEntityHash(entityHash)
 

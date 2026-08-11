@@ -1,13 +1,11 @@
 /**
  * Social 时间线写入授权（联邦入站 untrusted 边界）。
  */
-import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { hashFromPubKeyHex, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import {
-	activeSenderHashFromPubKeyHex,
 	createGenesisKeyHistory,
-	recoverySubjectHashFromPubKeyHex,
 } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 
 import { getEntityProfile } from '../lib/entityProfile.mjs'
@@ -32,19 +30,19 @@ function bootstrapKeyChainFromEvent(parsed, sender, options) {
 	if (type === 'social_meta') {
 		const recovery = normalizeHex64(content.recoveryPubKeyHex || '')
 		if (!isHex64(recovery)) return null
-		if (recoverySubjectHashFromPubKeyHex(recovery) !== parsed.subjectHash) return null
+		if (hashFromPubKeyHex(recovery) !== parsed.subjectHash) return null
 		return { recoveryPubKeyHex: recovery, entityKeyHistory: [] }
 	}
 
 	if (type === 'entity_key_rotate' && Number(content.generation) === 0) {
 		const recovery = normalizeHex64(options.senderPubKeyHex || '')
 		if (!isHex64(recovery)) return null
-		if (recoverySubjectHashFromPubKeyHex(recovery) !== parsed.subjectHash) return null
+		if (hashFromPubKeyHex(recovery) !== parsed.subjectHash) return null
 		if (normalizeHex64(sender) !== parsed.subjectHash) return null
 		const active = normalizeHex64(content.activePubKeyHex || '')
 		return {
 			recoveryPubKeyHex: recovery,
-			entityKeyHistory: isHex64(active) ? createGenesisKeyHistory(recovery, active) : [],
+			entityKeyHistory: isHex64(active) ? createGenesisKeyHistory(active) : [],
 		}
 	}
 
@@ -72,7 +70,7 @@ async function isAuthorizedByEvfsProfile(username, entityHash, sender) {
 	if (String(payload?.entityHash || '').toLowerCase() !== entityHash) return false
 	const active = normalizeHex64(payload.activePubKeyHex || '')
 	if (!isHex64(active)) return false
-	return activeSenderHashFromPubKeyHex(active) === sender
+	return hashFromPubKeyHex(active) === sender
 }
 
 /**
@@ -99,7 +97,6 @@ async function isOwnerContentEventAuthorized(entityHash, sender, options) {
 	const folded = foldEntityKeyHistoryFromEvents(ownerEvents)
 	if (!folded.recoveryPubKeyHex || !folded.entityKeyHistory?.length) return false
 	return isEntityTimelineWriteAuthorized({
-		entityHash: ownerEntityHash,
 		sender,
 		eventType: options.eventType || 'post_delete',
 		eventContent: options.eventContent || {},
@@ -138,7 +135,6 @@ export async function isTimelineWriteAuthorized(entityHash, sender, options = {}
 	}
 
 	if (recoveryPubKeyHex && isEntityTimelineWriteAuthorized({
-		entityHash: parsed.entityHash,
 		sender: normalizedSender,
 		eventType: options.eventType || '',
 		eventContent: options.eventContent || {},

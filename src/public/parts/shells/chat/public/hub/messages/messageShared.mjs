@@ -75,9 +75,8 @@ export function isTwoPartyCharDialogue() {
  * @returns {string} CSS 选择器
  */
 export function messageIdSelector(messageId) {
-	const eventId = String(messageId || '')
-	if (!eventId) return ''
-	const escaped = CSS.escape(eventId)
+	if (!messageId) return ''
+	const escaped = CSS.escape(messageId)
 	return `[data-message-id="${escaped}"]`
 }
 

@@ -35,7 +35,9 @@ export async function chatFetch(path, options = {}) {
 	})
 	if (!response.ok) {
 		const data = await response.json().catch(() => ({}))
-		throw new Error(data.error || `HTTP ${response.status}`)
+		const error = new Error(data.error || `HTTP ${response.status}`)
+		error.status = response.status
+		throw error
 	}
 	return response.json()
 }

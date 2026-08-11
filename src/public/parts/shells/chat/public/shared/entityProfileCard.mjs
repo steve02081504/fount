@@ -43,7 +43,7 @@ export function ensureEntityProfileCardStyles() {
  */
 export function paintEntityProfileBanner(host, bannerEl, options) {
 	if (!(host instanceof HTMLElement) || !(bannerEl instanceof HTMLElement)) return
-	const entityHash = String(options.entityHash || '')
+	const entityHash = options.entityHash || ''
 	const pattern = entityProfilePattern(entityHash)
 	host.dataset.profilePattern = pattern.variant
 	host.style.setProperty('--entity-card-accent', options.themeColor || '#5865f2')
@@ -51,7 +51,7 @@ export function paintEntityProfileBanner(host, bannerEl, options) {
 	host.style.setProperty('--entity-card-pattern-size', `${pattern.size}px`)
 	host.style.setProperty('--entity-card-pattern-x', `${pattern.offsetX}px`)
 	host.style.setProperty('--entity-card-pattern-y', `${pattern.offsetY}px`)
-	const bannerUrl = isAvatarImageUrl(options.banner) ? String(options.banner).trim() : ''
+	const bannerUrl = isAvatarImageUrl(options.banner) ? (options.banner || '').trim() : ''
 	bannerEl.classList.add('entity-profile-banner')
 	bannerEl.classList.toggle('entity-profile-banner--image', !!bannerUrl)
 	bannerEl.classList.toggle('profile-popup-banner--image', !!bannerUrl)
@@ -75,11 +75,10 @@ export function paintEntityProfileBanner(host, bannerEl, options) {
  */
 export function normalizeEntityProfile(profile, entityHash) {
 	if (!profile && !entityHash) return null
-	const key = String(entityHash || '').toLowerCase()
 	return {
-		entityHash: key,
+		entityHash: entityHash,
 		avatar: displayProfileAvatar(profile) || null,
-		name: profile?.name || (key ? entityHashLabel(key) : '?'),
+		name: profile?.name || (entityHash ? entityHashLabel(entityHash) : '?'),
 		handle: profile?.handle || null,
 		themeColor: profile?.themeColor || '',
 		banner: String(profile?.displayBanner || profile?.banner || '').trim(),
@@ -89,9 +88,7 @@ export function normalizeEntityProfile(profile, entityHash) {
 		links: Array.isArray(profile?.links) ? profile.links : [],
 		status: profile?.effectiveStatus || profile?.status || 'offline',
 		customStatus: profile?.customStatus || '',
-		ownerEntityHash: profile?.ownerEntityHash
-			? String(profile.ownerEntityHash).toLowerCase()
-			: null,
+		ownerEntityHash: profile?.ownerEntityHash || null,
 		activePubKeyHex: profile?.activePubKeyHex || null,
 		keyGeneration: profile?.keyGeneration ?? null,
 	}
@@ -142,7 +139,7 @@ export function configureEntityProfileCard(root, mode = 'popup') {
  */
 export async function paintEntityProfileCard(root, profile, options = {}) {
 	if (!(root instanceof HTMLElement)) return
-	const entityHash = String(options.entityHash || profile?.entityHash || root.dataset.entityHash || '')
+	const entityHash = options.entityHash || profile?.entityHash || root.dataset.entityHash || ''
 	const normalized = normalizeEntityProfile(profile, entityHash)
 	if (!normalized) return
 	const name = options.nameOverride || normalized.name
@@ -264,7 +261,7 @@ export function profileDescriptionText(profile) {
  */
 export async function paintEntityProfileBio(bioElement, markdown, entityHash = '', options = {}) {
 	if (!(bioElement instanceof HTMLElement)) return
-	const text = String(markdown || '').trim()
+	const text = markdown.trim()
 	const emptyI18n = options.emptyI18n || 'chat.hub.bioEmpty'
 	if (!text) {
 		bioElement.replaceChildren()
@@ -289,7 +286,7 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
  * @returns {HTMLElement | null} 节点；无主人时为 null
  */
 export function renderOwnedByBox(ownerEntityHash, options = {}) {
-	const owner = String(ownerEntityHash || '').trim().toLowerCase()
+	const owner = ownerEntityHash || ''
 	if (!isEntityHash128(owner)) return null
 	const label = options.ownerName
 		|| aliasForEntity(owner)

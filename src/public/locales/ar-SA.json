@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "إدارة الملفات",
 						"MANAGE_MESSAGES": "رسائل الإدارة",
 						"MANAGE_ROLES": "إدارة الأدوار",
+						"MANAGE_ADMINS": "إدارة المسؤولين",
 						"PIN_MESSAGES": "تثبيت الرسائل",
 						"SEND_MESSAGES": "أرسل رسالة",
 						"SEND_STICKERS": "إرسال الملصقات",
@@ -2347,6 +2348,7 @@
 						"title": "تحرير الرسالة"
 					},
 					"failed": "فشلت العملية: ${error}",
+					"noPermission": "ليس لديك إذنًا لتنفيذ هذا الإجراء",
 					"feedbackDown": {
 						"title": "انقر لعدم الإعجاب"
 					},

@@ -11,7 +11,7 @@ const MEMBER_KEY_RE = /^[\da-f]{64}$/u
  * @returns {boolean} 是否为合法成员键
  */
 function isMemberKey(value) {
-	return MEMBER_KEY_RE.test(String(value || '').trim().toLowerCase())
+	return MEMBER_KEY_RE.test(value || '')
 }
 
 /**
@@ -32,7 +32,6 @@ async function sha256Pair(left, right) {
  */
 export async function computeMembersMerkleRoot(ids) {
 	const sorted = [...new Set(ids
-		.map(id => String(id || '').trim().toLowerCase())
 		.filter(isMemberKey))]
 		.sort()
 	if (!sorted.length)
@@ -59,7 +58,7 @@ export async function computeMembersMerkleRoot(ids) {
  */
 export function collectActiveMemberHashes(state) {
 	return [...new Set((state.members || [])
-		.map(member => String(member.memberKey || member.pubKeyHash || '').trim().toLowerCase())
+		.map(member => member.memberKey || member.pubKeyHash || '')
 		.filter(isMemberKey))]
 		.sort()
 }

@@ -2,12 +2,13 @@
  * 【文件】public/hub/messages/actions/delete.mjs
  * 【职责】频道消息删除。
  */
-import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { deleteChannelMessage } from '../../../src/endpoints/groupChannel.mjs'
 import { enqueueDeletion } from '../messageActionsState.mjs'
 import { shouldConfirmDelete } from '../messageActionsUi.mjs'
 import { getMessageText } from '../render/text.mjs'
+
+import { toastMessageActionFailed } from './actionError.mjs'
 
 /**
  * @param {HTMLElement} button 被点击按钮
@@ -32,7 +33,7 @@ export async function handleDelete(button, row, channelMessage, actions) {
 			await reload?.()
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.message.action.failed', { error: error?.message || String(error) })
+			toastMessageActionFailed(error)
 			button.disabled = false
 		}
 	})

@@ -20,7 +20,7 @@ function gc() {
  */
 function getLiveToken(token) {
 	gc()
-	const row = tokens.get(String(token || ''))
+	const row = tokens.get(token)
 	if (!row || row.expires_at <= Date.now()) return null
 	return row
 }

@@ -140,7 +140,7 @@ function sameJsonValue(a, b) {
  * @returns {string | undefined} 应写入的值；undefined 表示删除键
  */
 function pruneSfwString(sfwVal, baseVal) {
-	const sfw = String(sfwVal ?? '').trim()
+	const sfw = sfwVal.trim()
 	if (!sfw || sameNormalizedText(sfw, baseVal)) return undefined
 	return sfw
 }
@@ -391,7 +391,7 @@ function loadActiveMediaFields() {
  * @returns {void}
  */
 function addLocale(key) {
-	const next = String(key || '').trim()
+	const next = key.trim()
 	if (!next) return
 	persistActiveLocaleForm()
 	if (editingLocalized[next])

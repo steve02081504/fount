@@ -17,13 +17,11 @@ import { renderRepliesPanel } from './replies.mjs'
  * @returns {Promise<void>}
  */
 export async function loadPostDetail(entityHash, postId) {
-	const owner = String(entityHash || '').toLowerCase()
-	const id = String(postId || '')
-	state.postDetailEntityHash = owner
-	state.postDetailPostId = id
+	state.postDetailEntityHash = entityHash
+	state.postDetailPostId = postId
 	activateView('postDetail')
 	document.getElementById('composer')?.classList.add('hidden')
-	const hash = `post;${owner};${id}`
+	const hash = `post;${entityHash};${postId}`
 	if (location.hash.replace(/^#/, '') !== hash)
 		history.replaceState(null, '', `${location.pathname}${location.search}#${hash}`)
 
@@ -33,7 +31,7 @@ export async function loadPostDetail(entityHash, postId) {
 
 	let data
 	try {
-		data = await getPost(owner, id)
+		data = await getPost(entityHash, postId)
 	}
 	catch (error) {
 		const msg = String(error?.message || '')
@@ -48,19 +46,19 @@ export async function loadPostDetail(entityHash, postId) {
 
 	let profileData
 	try {
-		profileData = await getProfile(owner)
+		profileData = await getProfile(entityHash)
 	}
 	catch (error) {
 		handleError('social.profile.loadFailed', {}, error)
 		profileData = null
 	}
-	rememberEntityHandle(owner, profileData?.profile || data.item.authorProfile)
+	rememberEntityHandle(entityHash, profileData?.profile || data.item.authorProfile)
 
 	const card = await buildPostCard(data.item, { openDetail: false })
 	card.classList.add('post-detail-card')
 	const repliesHost = document.createElement('div')
 	repliesHost.className = 'post-detail-replies'
-	const actionKey = formatActionKey(owner, id)
+	const actionKey = formatActionKey(entityHash, postId)
 	repliesHost.dataset.repliesFor = actionKey
 
 	container.replaceChildren()
@@ -81,7 +79,7 @@ export async function loadPostDetail(entityHash, postId) {
 	bindFeedVideoAutoplay(card)
 
 	try {
-		const repliesData = await getProfileReplies(owner, id)
+		const repliesData = await getProfileReplies(entityHash, postId)
 		await renderRepliesPanel(repliesHost, repliesData.replies || [])
 		repliesHost.dataset.loaded = '1'
 		repliesHost.classList.remove('hidden')

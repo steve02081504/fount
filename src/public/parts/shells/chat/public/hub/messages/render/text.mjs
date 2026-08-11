@@ -51,8 +51,8 @@ export function isChannelMessageGenerating(message) {
 export function isOwnViewerMessage(message, renderOpts) {
 	if (message.charId) return false
 	if (message.isRemote) return false
-	const viewer = String(renderOpts.viewerPubKeyHash || '').trim().toLowerCase()
-	const author = String(message.authorPubKeyHash || '').trim().toLowerCase()
+	const viewer = renderOpts.viewerPubKeyHash || ''
+	const author = message.authorPubKeyHash || ''
 	if (viewer && author) return viewer === author
 	return !message.charId
 }

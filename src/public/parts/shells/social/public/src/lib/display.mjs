@@ -31,13 +31,12 @@ const knownHandles = new Map()
  * @returns {void}
  */
 export function rememberEntityHandle(entityHash, profileOrHandle) {
-	const key = String(entityHash || '').trim().toLowerCase()
-	if (!key) return
+	if (!entityHash) return
 	const raw = typeof profileOrHandle === 'string'
 		? profileOrHandle
 		: profileOrHandle?.handle
-	const handle = String(raw || '').trim().replace(/^@+/u, '').toLowerCase()
-	if (handle) knownHandles.set(key, handle)
+	const handle = (raw || '').trim().replace(/^@+/u, '').toLowerCase()
+	if (handle) knownHandles.set(entityHash, handle)
 }
 
 /**
@@ -48,9 +47,8 @@ export function rememberEntityHandle(entityHash, profileOrHandle) {
  * @returns {string} at-id
  */
 export function entityHandle(entityHash, profile = null) {
-	const key = String(entityHash || '').trim().toLowerCase()
-	const handle = String(profile?.handle || '').trim() || knownHandles.get(key) || ''
-	if (handle) rememberEntityHandle(key, handle)
+	const handle = (profile?.handle || '').trim() || knownHandles.get(entityHash) || ''
+	if (handle) rememberEntityHandle(entityHash, handle)
 	return formatEntityAtId(entityHash, { handle })
 }
 
@@ -98,7 +96,7 @@ export async function isTrusted(pubKeyHash, _options = {}) {
  * @returns {Promise<string>} HTML
  */
 export async function renderTrustedPostMarkdown(markdown, pubKeyHash, _options = {}) {
-	return renderTrustedMarkdownHtml(markdown || '', pubKeyHash, socialTrustCtx())
+	return renderTrustedMarkdownHtml(markdown, pubKeyHash, socialTrustCtx())
 }
 
 /**
@@ -110,7 +108,7 @@ export async function renderTrustedPostMarkdown(markdown, pubKeyHash, _options =
  * @returns {Promise<void>}
  */
 export async function mountMarkdown(host, markdown, pubKeyHash, _options = {}) {
-	await mountTrustedMarkdown(host, markdown || '', pubKeyHash, socialTrustCtx())
+	await mountTrustedMarkdown(host, markdown, pubKeyHash, socialTrustCtx())
 }
 
 /**

@@ -71,7 +71,7 @@ function streamingMessageRowSelector(messageId) {
  * @returns {VolatileStreamSlot} 流式槽
  */
 function getOrCreateStreamSlot(streamId, charname = '') {
-	const id = String(streamId || '').trim()
+	const id = streamId.trim()
 	let slot = volatileStreams.get(id)
 	if (!slot) {
 		slot = {
@@ -181,7 +181,7 @@ async function afterStreamEnd() {
  * @returns {void}
  */
 export function dismissVolatileStreamPreview(streamId, { notifyEnd = true } = {}) {
-	const id = String(streamId || '').trim()
+	const id = streamId.trim()
 	if (!id || !volatileStreams.has(id)) return
 	removeVolatileStream(id)
 	if (notifyEnd)

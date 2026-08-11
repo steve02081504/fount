@@ -189,9 +189,8 @@ export function materializeFromCheckpoint(checkpoint) {
  */
 export function adminPubKeyHashes(state) {
 	const out = new Set()
-	for (const [key, member] of Object.entries(state.members)) {
+	for (const [hash, member] of Object.entries(state.members)) {
 		if (member?.status !== 'active') continue
-		const hash = key
 		for (const roleId of member.roles || [])
 			if (state.roles[roleId]?.permissions?.ADMIN) {
 				out.add(hash)
@@ -208,9 +207,8 @@ export function adminPubKeyHashes(state) {
  */
 export function manageAdminsPubKeyHashes(state) {
 	const out = new Set()
-	for (const [key, member] of Object.entries(state.members)) {
+	for (const [hash, member] of Object.entries(state.members)) {
 		if (member?.status !== 'active') continue
-		const hash = key
 		if (!isHex64(hash)) continue
 		for (const roleId of member.roles || [])
 			if (state.roles[roleId]?.permissions?.MANAGE_ADMINS) {

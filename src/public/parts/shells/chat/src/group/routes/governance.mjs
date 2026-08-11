@@ -266,13 +266,12 @@ export function registerGovernanceRoutes(router, authenticate) {
 			const resolvedTargetKey = resolveMemberKey(state, targetMemberKey)
 			if (!resolvedTargetKey)
 				throw httpError(404, 'Member not found')
-			const unbanMemberKey = resolvedTargetKey
 			await appendSignedLocalEvent(username, groupId, {
 				type: 'member_unban',
 				timestamp: Date.now(),
-				content: { targetMemberKey: unbanMemberKey },
+				content: { targetMemberKey: resolvedTargetKey },
 			})
-			const cleared = unbanTargetsFromMember(state, unbanMemberKey)
+			const cleared = unbanTargetsFromMember(state, resolvedTargetKey)
 			/** @type {Array<{ scope: 'subject' | 'entity' | 'node', value: string }>} */
 			const clearedEntries = []
 			if (cleared.pubKeyHash) clearedEntries.push({ scope: 'subject', value: cleared.pubKeyHash })
@@ -454,8 +453,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 				.map(hex => pubKeyHash(Buffer.from(hex, 'hex'))),
 		)
 
-		const callerAdminHash = callerKey
-		if (adminHashes.has(callerAdminHash) && !seenAdminHashes.has(callerAdminHash))
+		if (adminHashes.has(callerKey) && !seenAdminHashes.has(callerKey))
 			try {
 				const local = await signOwnerSuccessionAsLocalAdmin(username, groupId, ballot)
 				mergedSignatures.push(local)

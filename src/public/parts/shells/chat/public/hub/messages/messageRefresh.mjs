@@ -225,7 +225,7 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
  * @returns {Promise<void>}
  */
 async function replaceChannelMessageRow(eventId, row) {
-	const id = String(eventId).trim()
+	const id = eventId.trim()
 	const sourceIdx = store.messages.channelMessagesSource.findIndex(
 		message => eventIdsEqual(message?.eventId, id),
 	)
@@ -431,7 +431,7 @@ export function scheduleChannelIncrementalRefresh({ immediate = false } = {}) {
  * @returns {Promise<void>}
  */
 export async function applyChannelMessageEdit(targetId, editContent = null) {
-	const id = String(targetId || '').trim()
+	const id = targetId.trim()
 	if (!id || !store.context.currentGroupId || !store.context.currentChannelId) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
 
@@ -460,7 +460,7 @@ export async function applyChannelMessageEdit(targetId, editContent = null) {
  * @returns {Promise<void>}
  */
 export async function applyChannelMessageDelete(targetId) {
-	const id = String(targetId || '').trim()
+	const id = targetId.trim()
 	if (!id) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
 	const idx = store.messages.channelMessages.findIndex(m => String(m.eventId) === id)

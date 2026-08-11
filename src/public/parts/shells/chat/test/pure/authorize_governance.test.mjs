@@ -378,3 +378,87 @@ Deno.test('member_owner_update allowed for active member self', async () => {
 	const event = { type: 'member_owner_update', content: { ownerEntityHash: MOD_ENTITY } }
 	assertEquals((await checkEventPermission(state, event, VICTIM)).ok, true)
 })
+
+Deno.test('message_delete allowed with MANAGE_MESSAGES on human message', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: {
+				permissions: {
+					KICK_MEMBERS: true,
+					BAN_MEMBERS: true,
+					MANAGE_MESSAGES: true,
+					SEND_MESSAGES: true,
+					VIEW_CHANNEL: true,
+				},
+			},
+		},
+		messageSenderIndex: {
+			[HUMAN_MSG]: { sender: VICTIM, channelId: 'default' },
+		},
+	})
+	const event = { type: 'message_delete', channelId: 'default', content: { targetId: HUMAN_MSG } }
+	assertEquals((await checkEventPermission(state, event, MODERATOR)).ok, true)
+})
+
+Deno.test('thread channel_create allowed with CREATE_THREADS on parent channel', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: {
+				permissions: {
+					CREATE_THREADS: true,
+					SEND_MESSAGES: true,
+					VIEW_CHANNEL: true,
+				},
+			},
+		},
+		channels: {
+			default: { type: 'text' },
+			private: { type: 'text' },
+		},
+	})
+	const event = {
+		type: 'channel_create',
+		content: {
+			channelId: 'thread_1',
+			name: 'thread',
+			type: 'text',
+			parentChannelId: 'private',
+			parentEventId: HUMAN_MSG,
+		},
+	}
+	assertEquals((await checkEventPermission(state, event, MODERATOR)).ok, true)
+})
+
+Deno.test('thread channel_create denied without CREATE_THREADS', async () => {
+	const state = baseState()
+	const event = {
+		type: 'channel_create',
+		content: {
+			channelId: 'thread_1',
+			name: 'thread',
+			type: 'text',
+			parentChannelId: 'default',
+			parentEventId: HUMAN_MSG,
+		},
+	}
+	const result = await checkEventPermission(state, event, STRANGER)
+	assertEquals(result.ok, false)
+	assertEquals(result.reason, 'CREATE_THREADS or MANAGE_CHANNELS required')
+})
+
+Deno.test('assertEventPermission throws HttpError 403', async () => {
+	const { assertEventPermission } = await import('../../src/chat/dag/authorizeEvent.mjs')
+	const state = baseState()
+	const event = { type: 'member_kick', content: { targetMemberKey: VICTIM } }
+	try {
+		await assertEventPermission(state, event, STRANGER)
+		throw new Error('expected assertEventPermission to throw')
+	}
+	catch (error) {
+		assertEquals(error.http_code, 403)
+		assertEquals(error.skip_report, true)
+		assertEquals(error.message, 'KICK_MEMBERS denied')
+	}
+})

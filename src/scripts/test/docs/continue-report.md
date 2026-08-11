@@ -38,7 +38,7 @@ Default `fount test` loops imperfect → outdated until both empty or a wave exi
 
 ## Triggered file list
 
-Each true-run suite may get `FOUNT_TEST_TRIGGERED_FILES` set to a temp-file path whose contents are newline-separated paths that matched its triggers among (committed since last record ∪ uncommitted). Empty env means unconstrained — the child keeps its full default (e.g. `json_lf` full-repo scan). When the file is non-empty and the child cares about a suffix, it may scope to those paths; if the list has no matching suffix (checker-only change), fall back to full scan. The runner deletes the temp dir (including this file) after the suite finishes. See [protocol.mjs](../core/protocol.mjs).
+Each true-run suite may get `FOUNT_TEST_TRIGGERED_FILES` set to a temp-file path whose contents are newline-separated paths that matched its triggers among (committed since last record ∪ uncommitted). Empty env means unconstrained — the child keeps its full default (e.g. `text_lf` full-repo scan). When the file is non-empty and the child cares about a suffix / content class, it may scope to those paths; if the list has no matching paths (checker-only change), fall back to full scan. The runner deletes the temp dir (including this file) after the suite finishes. See [protocol.mjs](../core/protocol.mjs).
 
 ## Subtest timing
 

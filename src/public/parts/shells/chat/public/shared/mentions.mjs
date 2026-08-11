@@ -79,7 +79,6 @@ export function buildMentionsStructure(text, options = {}) {
  * @returns {boolean} 是否直接 @ 命中
  */
 export function mentionsEntity(mentions, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
-	if (!hash || !mentions?.entityHashes?.length) return false
-	return mentions.entityHashes.some(entry => String(entry).trim().toLowerCase() === hash)
+	if (!entityHash || !mentions?.entityHashes?.length) return false
+	return mentions.entityHashes.some(entry => entry === entityHash)
 }

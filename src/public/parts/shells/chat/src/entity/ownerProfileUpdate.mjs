@@ -489,7 +489,7 @@ async function consumePokeMailbox(username, records) {
 		const parsed = parsePokeOrAckEnvelope(row.envelope)
 		if (!parsed) continue
 		if (!isWritableLocalEntity(parsed.targetEntityHash)) continue
-		const hostUser = typeof store.findHostingUser === 'function'
+		const hostUser = store.findHostingUser
 			? await store.findHostingUser(parsed.targetEntityHash) || username
 			: username
 		await pullOwnerProfileUpdate(hostUser, parsed.targetEntityHash)

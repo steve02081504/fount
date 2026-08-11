@@ -33,7 +33,7 @@ export function toBase64Url(buffer) {
  */
 export function fromBase64Url(base64url) {
 	const pad = '='.repeat((4 - (base64url.length % 4)) % 4)
-	const base64 = String(base64url || '').replaceAll('-', '+').replaceAll('_', '/') + pad
+	const base64 = base64url.replaceAll('-', '+').replaceAll('_', '/') + pad
 	const binary = atob(base64)
 	const bytes = new Uint8Array(binary.length)
 	for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index)
@@ -69,7 +69,7 @@ export function getDmLinkNonce() {
  * @returns {Promise<void>}
  */
 export async function syncDmIntroNonceToNode(nonce) {
-	const normalized = String(nonce || '').trim()
+	const normalized = nonce.trim()
 	if (normalized.length < 16) throw new Error('dmIntro nonce too short')
 	await putFederationSettings({ dmIntroNonce: normalized })
 }

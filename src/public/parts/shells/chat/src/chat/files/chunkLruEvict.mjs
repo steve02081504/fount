@@ -61,7 +61,7 @@ export async function evictUnreferencedLocalChunks(username, groupId, options = 
 	for (const row of orphans.slice(0, maxEvict)) {
 		const locator = `local:${groupId}/chunks/${row.name}`
 		try {
-			if (typeof plugin.deleteChunk === 'function')
+			if (plugin.deleteChunk)
 				await plugin.deleteChunk(locator)
 			else
 				await unlink(join(dir, row.name))

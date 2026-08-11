@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "Gerir ficheiros",
 						"MANAGE_MESSAGES": "Mensagens de gestão",
 						"MANAGE_ROLES": "Função de gestão",
+						"MANAGE_ADMINS": "Gerir administradores",
 						"PIN_MESSAGES": "Mensagem fixada",
 						"SEND_MESSAGES": "Enviar mensagem",
 						"SEND_STICKERS": "Enviar autocolantes",
@@ -2347,6 +2348,7 @@
 						"title": "Editar message"
 					},
 					"failed": "Falha na operação: ${error}",
+					"noPermission": "Não tens permissão para executar esta ação.",
 					"feedbackDown": {
 						"title": "Pisar"
 					},

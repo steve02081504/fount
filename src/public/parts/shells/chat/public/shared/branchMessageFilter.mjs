@@ -11,16 +11,16 @@ import { ancestorClosureFromTip } from 'https://esm.sh/@steve02081504/fount-p2p/
  * @returns {object[]} 过滤后的行；无 tip / 空图时原样返回
  */
 export function filterChannelMessageLinesByBranchTip(lines, branchTip, eventsOrById) {
-	const tip = String(branchTip || '').trim().toLowerCase()
+	const tip = branchTip || ''
 	if (!tip || !lines?.length) return lines
 	const byId = eventsOrById instanceof Map
-		? new Map([...eventsOrById].map(([id, event]) => [String(id).trim().toLowerCase(), event]))
-		: new Map([...eventsOrById].map(event => [String(event.id).trim().toLowerCase(), event]))
+		? new Map([...eventsOrById].map(([id, event]) => [id, event]))
+		: new Map([...eventsOrById].map(event => [event.id, event]))
 	if (!byId.size) return lines
 	const closure = ancestorClosureFromTip(tip, byId)
 	if (!closure.size) return lines
 	return lines.filter(line => {
-		const id = String(line?.eventId || '').trim().toLowerCase()
+		const id = line?.eventId
 		return id && closure.has(id)
 	})
 }

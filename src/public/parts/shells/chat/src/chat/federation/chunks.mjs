@@ -18,7 +18,8 @@ import {
 	planChunkFetches,
 } from 'npm:@steve02081504/fount-p2p/federation/chunk_fetch_scheduler'
 import { registerChunkFetchWait, resolveChunkFetchWait } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
-import { handleFedChunkGetIngress, handleFedChunkDataIngress } from 'npm:@steve02081504/fount-p2p/files/chunk/responder'
+import { handleIncomingChunkGet } from 'npm:@steve02081504/fount-p2p/files/chunk/fetch'
+import { resolvePendingChunkFetch } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
 import { getChunk, hasChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 import { verifiedChunkBytes } from 'npm:@steve02081504/fount-p2p/files/chunk/verify'
 import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
@@ -33,7 +34,6 @@ import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
 
 const FETCH_TIMEOUT_MS = 14_000
 const DEFAULT_FETCH_CONCURRENCY = 6
-const CHUNK_HASH_RE = HEX_ID_64
 const CHUNK_REPLICATE_MAX_PER_MIN = 60
 const CHUNK_REPLICATE_BYTES_PER_MIN = 8 * 1024 * 1024
 
@@ -133,7 +133,7 @@ export async function replicateChunkToFederation(username, groupId, ciphertextHa
  */
 export async function fetchCiphertextFromFederation(username, groupId, ciphertextHash) {
 	const hash = String(ciphertextHash || '').trim().toLowerCase()
-	if (!CHUNK_HASH_RE.test(hash)) throw new Error('invalid ciphertextHash')
+	if (!HEX_ID_64.test(hash)) throw new Error('invalid ciphertextHash')
 	const api = swarmApis.get(registryKey(username, groupId))
 	if (!api?.fetch) throw new Error('federation chunk fetch unavailable')
 	return await api.fetch(hash)
@@ -375,7 +375,7 @@ export function attachFedChunkHandlers(fedRoom) {
 	getChunkAck((data, peerId) => {
 		if (!isPlainObject(data)) return
 		const hash = String(data.chunkHash || '').trim().toLowerCase()
-		if (!CHUNK_HASH_RE.test(hash)) return
+		if (!HEX_ID_64.test(hash)) return
 		const remoteNode = peerToNode.get(peerId) || peerId
 		recordChunkReplicationAck(username, groupId, hash, remoteNode)
 	})
@@ -387,7 +387,7 @@ export function attachFedChunkHandlers(fedRoom) {
 			const remoteNode = peerToNode.get(peerId)
 			if (remoteNode && isBlockedPeer(remoteNode)) return
 			const hash = String(data.chunkHash || '').trim().toLowerCase()
-			if (!CHUNK_HASH_RE.test(hash)) return
+			if (!HEX_ID_64.test(hash)) return
 			const b64 = String(data.dataB64 || '')
 			if (!b64) return
 			const bytes = base64ToBytes(b64)
@@ -416,17 +416,17 @@ export function attachFedChunkHandlers(fedRoom) {
 			const remoteNode = peerToNode.get(peerId)
 			if (remoteNode && isBlockedPeer(remoteNode)) return
 			const hash = String(data.chunkHash || '').trim().toLowerCase()
-			if (!CHUNK_HASH_RE.test(hash)) return
+			if (!HEX_ID_64.test(hash)) return
 			const requestId = String(data.requestId || '')
 			if (requestId) {
-				await handleFedChunkGetIngress(username, data, peerId, (resp, pid) => {
+				await handleIncomingChunkGet(data, (resp, pid) => {
 					try {
 						sendChunkData(resp, pid)
 					}
 					catch (error) {
 						console.warn('federation: fed_chunk_get response failed', error)
 					}
-				})
+				}, peerId)
 				return
 			}
 			const loc = `local:${groupId}/chunks/${hash}.bin`
@@ -456,11 +456,11 @@ export function attachFedChunkHandlers(fedRoom) {
 	getChunkData((data) => {
 		if (!isPlainObject(data)) return
 		const hash = String(data.chunkHash || '').trim().toLowerCase()
-		if (!CHUNK_HASH_RE.test(hash)) return
+		if (!HEX_ID_64.test(hash)) return
 		const b64 = String(data.dataB64 || '')
 		if (!b64) return
 		if (data.requestId) {
-			handleFedChunkDataIngress(data)
+			resolvePendingChunkFetch(data)
 			return
 		}
 		const waitKey = compositeKey(username, groupId, hash)

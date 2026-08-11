@@ -22,10 +22,10 @@ const PROFILE_HOVER_SELECTOR = [
  */
 export function entityHashFromProfileHref(href) {
 	try {
-		const url = new URL(String(href || ''), location.origin)
+		const url = new URL(href, location.origin)
 		const hash = url.hash.replace(/^#/, '')
 		const match = /^profile;([0-9a-f]{128})/i.exec(hash)
-		return match ? match[1].toLowerCase() : null
+		return match ? match[1] : null
 	}
 	catch {
 		return null

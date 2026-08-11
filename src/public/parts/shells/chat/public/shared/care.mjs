@@ -31,5 +31,5 @@ export async function setCared(targetEntityHash, cared) {
  */
 export async function isCared(targetEntityHash) {
 	const cared = await listCared()
-	return cared.includes(String(targetEntityHash || '').trim().toLowerCase())
+	return cared.includes(targetEntityHash)
 }

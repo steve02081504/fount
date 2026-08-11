@@ -85,11 +85,11 @@ async function refreshMemberDigestBar(state) {
 export async function renderMemberList(state) {
 	const container = document.getElementById('member-list')
 	await loadHubPersonalFilter()
-	const viewerHash = String(store.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+	const viewerHash = store.context.currentState?.viewerMemberPubKeyHash || ''
 	const members = (state.members || []).filter(member => {
-		const memberKey = String(member.memberKey || member.pubKeyHash || '').trim()
+		const memberKey = member.memberKey || member.pubKeyHash || ''
 		const entityHash = member.entityHash
-			|| (viewerHash === memberKey.toLowerCase() ? store.viewer.viewerEntityHash : '')
+			|| (viewerHash === memberKey ? store.viewer.viewerEntityHash : '')
 		return !isHubMemberPersonallyFiltered(entityHash, memberKey)
 	})
 	if (!members.length) {
@@ -98,10 +98,10 @@ export async function renderMemberList(state) {
 	}
 	const roleDefs = state.roles || {}
 	const prepared = members.map((member) => {
-		const memberKey = String(member.memberKey || member.pubKeyHash || '').trim()
+		const memberKey = member.memberKey || member.pubKeyHash || ''
 		const isAgent = member.memberKind === 'agent'
 		const entityHash = member.entityHash
-			|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? store.viewer.viewerEntityHash : '')
+			|| (viewerHash && member.pubKeyHash === viewerHash ? store.viewer.viewerEntityHash : '')
 			|| ''
 		const label = entityHash
 			? resolveDisplayName({
@@ -134,7 +134,6 @@ export async function renderMemberList(state) {
 		for (const member of list) {
 			const row = rowsByMember.get(member)
 			const { memberKey, isAgent, entityHash, displayName } = row
-			const avatarFor = entityHash
 			const isAdmin = memberDisplaysAsAdmin(member, roleDefs)
 			const ownerAttr = isAgent && member.ownerEntityHash
 				? ` data-owner-entity-hash="${escapeHtml(member.ownerEntityHash)}"`
@@ -146,7 +145,7 @@ export async function renderMemberList(state) {
 				charIdAttr: '',
 				memberKindAttr: ` data-member-kind="${isAgent ? 'agent' : 'user'}"${ownerAttr}`,
 				username: escapeHtml(displayName),
-				avatarFor: escapeHtml(avatarFor),
+				avatarFor: escapeHtml(entityHash),
 				memberKey: escapeHtml(memberKey),
 				entityHash: escapeHtml(entityHash),
 				avatarColor: avatarColor(avatarSeed),

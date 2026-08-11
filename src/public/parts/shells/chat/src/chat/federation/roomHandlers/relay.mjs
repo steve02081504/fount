@@ -3,7 +3,7 @@ import {
 	parseDiscoveryQuery,
 	parseDiscoveryQueryResponse,
 } from 'npm:@steve02081504/fount-p2p/schemas/discovery'
-import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
+import { parseJoinSnapshotRequest, parsePullResponseEnvelope } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
 
 
 import { applyRemoteDigestClaim } from '../archiveDigestClaims.mjs'
@@ -70,7 +70,7 @@ export function registerRelayHandlers(roomContext) {
 		}).catch(error => console.error('federation: fed_join_snapshot_request failed', error))
 	})
 	joinSnapshotResponse.on((data, peerId) => {
-		const response = parseJoinSnapshotResponse(data)
+		const response = parsePullResponseEnvelope(data)
 		if (!response) return
 		const remoteNodeHash = roomContext.peerToNode?.get(peerId) || ''
 		void noteJoinSnapshotResponse(username, groupId, response, remoteNodeHash)

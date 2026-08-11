@@ -49,7 +49,7 @@ export async function loadTopicView(tag) {
 	const view = document.getElementById('topicView')
 	if (!view) return
 
-	const normalizedTag = String(tag || '').replace(/^#/, '').trim()
+	const normalizedTag = tag.replace(/^#/, '').trim()
 	currentTopicTag = normalizedTag
 
 	const titleEl = view.querySelector('.topic-view-title')

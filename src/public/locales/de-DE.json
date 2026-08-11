@@ -1576,6 +1576,7 @@
 						"MANAGE_FILES": "Dateien verwalten",
 						"MANAGE_MESSAGES": "Managementnachrichten",
 						"MANAGE_ROLES": "Führungsrolle",
+						"MANAGE_ADMINS": "Administratoren verwalten",
 						"PIN_MESSAGES": "Angeheftete Nachricht",
 						"SEND_MESSAGES": "Nachricht senden",
 						"SEND_STICKERS": "Sticker verschicken",
@@ -2347,6 +2348,7 @@
 						"title": "Nachricht bearbeiten"
 					},
 					"failed": "Vorgang fehlgeschlagen: ${error}",
+					"noPermission": "Du hast keine Berechtigung für diese Aktion.",
 					"feedbackDown": {
 						"title": "Klicken Sie, um es nicht zu mögen"
 					},

@@ -86,7 +86,7 @@ export async function applyBioElement(bioElement, bio, entityHash = '', _options
  * @returns {Promise<string>} 展示用状态文案
  */
 export async function formatStatusLabel(status, customStatus = '') {
-	const custom = String(customStatus || '').trim()
+	const custom = customStatus.trim()
 	if (custom) return custom
 	const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
 	const key = `chat.hub.status.${status || 'offline'}`
@@ -102,12 +102,11 @@ export async function formatStatusLabel(status, customStatus = '') {
  */
 export async function fetchUserProfile(entityHash, options = {}) {
 	if (!entityHash || !isEntityHash128(entityHash)) return null
-	const key = String(entityHash).toLowerCase()
-	const cacheKey = options.groupId ? `${key}:${options.groupId}` : key
+	const cacheKey = options.groupId ? `${entityHash}:${options.groupId}` : entityHash
 	if (options.bypassCache)
 		try {
-			const data = await getEntityProfile(key, options.groupId)
-			return cachedProfileFromApi(data?.profile, key)
+			const data = await getEntityProfile(entityHash, options.groupId)
+			return cachedProfileFromApi(data?.profile, entityHash)
 		}
 		catch {
 			return null
@@ -123,7 +122,7 @@ export async function fetchUserProfile(entityHash, options = {}) {
  * @returns {Promise<CachedProfile|null>} 资料或 null
  */
 export async function fetchAuthorProfile(authorKey, options = {}) {
-	const key = String(authorKey || '').trim()
+	const key = authorKey.trim()
 	if (!key) return null
 	let profileKey = resolveEntityHashForAuthorKey(key)
 	if (!profileKey && !isEntityHash128(key)) {
@@ -144,9 +143,8 @@ export function applySelfStatusToMemberList(status) {
 	if (!viewerEh) return
 	const root = document.getElementById('member-list')
 	if (!root) return
-	const key = viewerEh.toLowerCase()
 	root.querySelectorAll('.member-avatar[data-avatar-for]').forEach((av) => {
-		if (av.dataset.avatarFor?.toLowerCase() !== key) return
+		if (av.dataset.avatarFor !== viewerEh) return
 		const dot = av.closest('.member-avatar-wrap')?.querySelector('.status-dot')
 		applyStatusDot(dot, status)
 	})
@@ -159,9 +157,8 @@ export function applySelfStatusToMemberList(status) {
  */
 export function invalidateUserProfileCache(entityHash) {
 	if (!entityHash) return
-	const key = String(entityHash).toLowerCase()
 	loadProfileCached.deleteMatching(cacheKey =>
-		cacheKey === key || cacheKey.startsWith(`${key}:`),
+		cacheKey === entityHash || cacheKey.startsWith(`${entityHash}:`),
 	)
 }
 
@@ -184,8 +181,7 @@ function clearAvatarLoadedForAuthorKeys(root, authorKeys) {
 	root.querySelectorAll('[data-avatar-for]').forEach((av) => {
 		const raw = av.dataset.avatarFor?.trim()
 		if (!raw) return
-		const key = isHex64(raw) || isEntityHash128(raw) ? raw.toLowerCase() : raw
-		if (authorKeys.has(key))
+		if (authorKeys.has(raw))
 			delete av.dataset.avatarLoaded
 	})
 }
@@ -196,29 +192,28 @@ function clearAvatarLoadedForAuthorKeys(root, authorKeys) {
  * @returns {Promise<Set<string>>} 作者键集合
  */
 async function authorKeysForEntityHash(entityHash) {
-	const key = String(entityHash || '').trim().toLowerCase()
 	/** @type {Set<string>} */
 	const keys = new Set()
-	if (!isEntityHash128(key)) return keys
-	keys.add(key)
+	if (!isEntityHash128(entityHash)) return keys
+	keys.add(entityHash)
 
 	for (const member of store.context.currentState?.members || []) {
-		if (String(member.entityHash || '').toLowerCase() !== key) continue
-		if (member.memberKey) keys.add(String(member.memberKey).toLowerCase())
-		if (member.pubKeyHash) keys.add(String(member.pubKeyHash).toLowerCase())
+		if (member.entityHash !== entityHash) continue
+		if (member.memberKey) keys.add(member.memberKey)
+		if (member.pubKeyHash) keys.add(member.pubKeyHash)
 		if (member.charname) keys.add(member.charname)
 	}
 
 	const { resolveFriendBinding } = await import('./friendBindings.mjs')
 
 	for (const agent of store.viewer.agents || []) {
-		if (String(agent.entityHash || '').toLowerCase() !== key) continue
+		if (agent.entityHash !== entityHash) continue
 		if (agent.charPartName) keys.add(agent.charPartName)
 	}
 
 	for (const group of store.sidebar.groups) {
 		const binding = resolveFriendBinding(group)
-		if (String(binding?.entityHash || '').toLowerCase() !== key) continue
+		if (binding?.entityHash !== entityHash) continue
 		if (binding.charname) keys.add(binding.charname)
 	}
 
@@ -231,12 +226,11 @@ async function authorKeysForEntityHash(entityHash) {
  * @returns {Promise<void>}
  */
 export async function refreshHubAfterProfileChange(entityHash) {
-	const key = String(entityHash || '').trim().toLowerCase()
-	if (!isEntityHash128(key)) return
+	if (!isEntityHash128(entityHash)) return
 
-	invalidateUserProfileCache(key)
+	invalidateUserProfileCache(entityHash)
 	hideEntityProfileHoverCard()
-	const authorKeys = await authorKeysForEntityHash(key)
+	const authorKeys = await authorKeysForEntityHash(entityHash)
 
 	const messageList = document.getElementById('messages')
 	const memberList = document.getElementById('member-list')
@@ -250,8 +244,8 @@ export async function refreshHubAfterProfileChange(entityHash) {
 		applyAvatarsTo(memberList)
 	}
 
-	const viewerEh = String(store.viewer?.viewerEntityHash || '').toLowerCase()
-	if (viewerEh === key) {
+	const viewerEh = store.viewer?.viewerEntityHash || ''
+	if (viewerEh === entityHash) {
 		const { refreshViewerHubPresentation } = await import('./init.mjs')
 		await refreshViewerHubPresentation()
 	}
@@ -260,7 +254,7 @@ export async function refreshHubAfterProfileChange(entityHash) {
 	const charname = activePrivateCharPartName()
 	if (charname) {
 		const { charAgentEntityHash } = await import('./entityResolve.mjs')
-		if (await charAgentEntityHash(charname) === key) {
+		if (await charAgentEntityHash(charname) === entityHash) {
 			const { getCharDetails, renderCharInfoCardActive } = await import('./charCard.mjs')
 			await renderCharInfoCardActive(charname, await getCharDetails(charname))
 		}
@@ -268,7 +262,7 @@ export async function refreshHubAfterProfileChange(entityHash) {
 
 	const inFriends = store.sidebar.groups.some((group) => {
 		const binding = resolveFriendBinding(group)
-		return String(binding?.entityHash || '').toLowerCase() === key
+		return binding?.entityHash === entityHash
 	})
 	if (store.context.currentMode === 'friends' || inFriends) {
 		const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
@@ -276,7 +270,7 @@ export async function refreshHubAfterProfileChange(entityHash) {
 	}
 
 	const inCurrentMembers = (store.context.currentState?.members || [])
-		.some(member => String(member.entityHash || '').toLowerCase() === key)
+		.some(member => member.entityHash === entityHash)
 	if (inCurrentMembers && store.context.currentState) {
 		const { renderMemberList } = await import('./sidebar/index.mjs')
 		await renderMemberList(store.context.currentState)
@@ -333,7 +327,7 @@ async function hoverOptionsForAuthor(authorKey, anchorElement) {
 		: null
 	const profileKey = entity?.entityHash
 		|| authorPresentationKeys(authorKey).profileKey
-		|| String(authorKey || '').trim()
+		|| authorKey.trim()
 	if (!profileKey) return null
 	const groupId = store.context.currentGroupId || undefined
 	const fallbackName = entity?.displayName

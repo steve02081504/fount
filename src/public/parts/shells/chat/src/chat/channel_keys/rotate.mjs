@@ -1,6 +1,7 @@
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { generateChannelKey, wrapChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
+import { generateChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
+import { wrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
 /**
  * @param {object} state 物化群状态
@@ -47,7 +48,7 @@ export function buildChannelKeyRotateContent(state, channelId, generation = null
 	for (const memberKey of listChannelViewerPubKeys(state, channelId)) {
 		const edPubHex = String(state.members[memberKey]?.pubKeyHex || '').trim().toLowerCase()
 		if (!PUB_KEY_HEX_64.test(edPubHex)) continue
-		wraps[memberKey] = wrapChannelKey(keyHex, edPubHex)
+		wraps[memberKey] = wrapKeyEcies(keyHex, edPubHex)
 	}
 	return { channelId, generation: gen, wraps }
 }

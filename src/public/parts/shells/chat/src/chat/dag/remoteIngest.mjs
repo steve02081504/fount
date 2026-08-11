@@ -153,13 +153,12 @@ export async function appendValidatedRemoteEvent(username, groupId, signPayload,
  */
 async function appendValidatedRemoteEventImpl(username, groupId, signPayload, options) {
 	const logFailures = options.logFailures !== false
-	const eventId = signPayload.id
 	/**
 	 * @param {RemoteIngestResult} ingestOutcome 入库结果
 	 * @returns {RemoteIngestResult} 结构化入库结果
 	 */
 	function finish(ingestOutcome) {
-		return finishIngestSeen(username, groupId, eventId, ingestOutcome, options.skipSeenDedup)
+		return finishIngestSeen(username, groupId, signPayload.id, ingestOutcome, options.skipSeenDedup)
 	}
 
 	let wirePayload

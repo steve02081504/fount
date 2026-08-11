@@ -118,8 +118,7 @@ export async function validateJoinPolicy(state, event, replicaUsername, options 
 		const floorBits = resolvePowFloorBits(state.groupSettings)
 		if (floorBits <= 0) throw new Error('pow joinPolicy requires powFloorBits >= 1')
 		const senderNodeHash = String(event.sender || '').trim().toLowerCase()
-		const powSolution = content.powSolution
-		const { ok } = verifyJoinPow(powSolution, {
+		const { ok } = verifyJoinPow(content.powSolution, {
 			groupId: state.groupId,
 			senderNodeHash,
 			knownAnchors: collectJoinPowAnchors(state),

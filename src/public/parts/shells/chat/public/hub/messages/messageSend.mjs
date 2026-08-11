@@ -23,8 +23,8 @@ import {
  */
 function channelRowFromPostedEvent(event) {
 	const eventId = event?.id
-	const viewerPubKeyHash = String(store.context.currentState?.viewerMemberPubKeyHash || '').trim().toLowerCase()
-	const authorPubKeyHash = String(event.sender || '').trim().toLowerCase()
+	const viewerPubKeyHash = store.context.currentState?.viewerMemberPubKeyHash || ''
+	const authorPubKeyHash = event.sender || ''
 	return {
 		eventId,
 		type: 'message',

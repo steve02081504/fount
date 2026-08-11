@@ -50,10 +50,9 @@ export function isThreadChannel(channel) {
  * @returns {string | null} 已存在的子线程频道 ID
  */
 function findThreadChannelId(channels, parentChannelId, parentEventId) {
-	const eventNorm = String(parentEventId).trim().toLowerCase()
 	for (const [id, ch] of Object.entries(channels)) {
 		if (ch?.parentChannelId !== parentChannelId) continue
-		if (ch?.parentEventId && String(ch.parentEventId).trim().toLowerCase() === eventNorm)
+		if (ch?.parentEventId && ch.parentEventId === parentEventId)
 			return id
 	}
 	return null

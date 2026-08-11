@@ -13,6 +13,8 @@ import {
 } from '../messageActionsUi.mjs'
 import { getMessageEditText } from '../render/text.mjs'
 
+import { toastMessageActionFailed } from './actionError.mjs'
+
 /**
  * @param {HTMLElement} button 被点击按钮
  * @param {object} actions 操作上下文
@@ -50,7 +52,7 @@ export async function handleEdit(button, actions) {
 			await reload?.()
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.message.action.failed', { error: error?.message || String(error) })
+			toastMessageActionFailed(error)
 		}
 		finally {
 			if (saveButton instanceof HTMLButtonElement) saveButton.disabled = false

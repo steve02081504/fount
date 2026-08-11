@@ -146,7 +146,7 @@ async function paintHoverCard(generation, anchor, options) {
 	}
 
 	const fallbackName = options.displayName || '?'
-	const entityHash = options.entityHash ? String(options.entityHash).toLowerCase() : ''
+	const entityHash = options.entityHash || ''
 	card.dataset.cacheKey = options.cacheKey
 	await paintEntityProfileCard(card, { name: fallbackName }, {
 		entityHash,

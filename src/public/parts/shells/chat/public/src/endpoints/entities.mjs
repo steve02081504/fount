@@ -69,7 +69,7 @@ export async function rebuildProfileFromPart(entityHash, groupId) {
 export async function uploadEntityFile(entityHash, logicalPath, file) {
 	const formData = new FormData()
 	formData.append('file', file)
-	const path = String(logicalPath || '').replace(/^\/+/, '')
+	const path = logicalPath.replace(/^\/+/, '')
 	return chatFetch(`/entities/${encodeURIComponent(entityHash)}/files/${path}`, {
 		method: 'POST',
 		body: formData,
@@ -128,12 +128,11 @@ export function setEntityStatus(entityHash, status, customStatus) {
  */
 export function cachedProfileFromApi(profile, entityHash) {
 	if (!profile) return null
-	const key = String(entityHash || '').toLowerCase()
 	return {
-		entityHash: key,
+		entityHash: entityHash,
 		avatar: profile.avatar || null,
 		infoDefaults: profile.infoDefaults || null,
-		name: profile.name || key.slice(64, 72),
+		name: profile.name || entityHash.slice(64, 72),
 		handle: profile.handle || null,
 		themeColor: profile.themeColor || '',
 		banner: profile.displayBanner || profile.banner || '',
@@ -146,9 +145,7 @@ export function cachedProfileFromApi(profile, entityHash) {
 		links: Array.isArray(profile.links) ? profile.links : [],
 		status: profile.effectiveStatus || profile.status || 'offline',
 		customStatus: profile.customStatus || '',
-		ownerEntityHash: profile.ownerEntityHash
-			? String(profile.ownerEntityHash).toLowerCase()
-			: null,
+		ownerEntityHash: profile.ownerEntityHash || null,
 		activePubKeyHex: profile.activePubKeyHex || null,
 		keyGeneration: profile.keyGeneration ?? null,
 	}

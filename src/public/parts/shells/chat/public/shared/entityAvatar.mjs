@@ -29,7 +29,7 @@ export function entityAvatarUrl(_entityHash, profile) {
  * @returns {string} 头像 HTML
  */
 export function renderAvatarHtml(entityHash, profile, sizeClass = '') {
-	const seed = String(entityHash || '').trim() || '?'
+	const seed = entityHash.trim() || '?'
 	const label = profile?.name || seed
 	const { background, color } = hashAvatarStyle(seed)
 	const initial = escapeHtml(avatarInitial(label))

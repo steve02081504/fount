@@ -22,8 +22,7 @@ import { overlayPinsForChannel } from './hotPostsIndex.mjs'
  * @returns {Promise<{ name: string, avatar: string | null }>} 展示快照
  */
 async function resolveCharDisplaySnapshot(state, charId, username, groupId) {
-	const charname = charId
-	const agentKey = resolveActiveAgentMemberKeyByCharname(state, charname)
+	const agentKey = resolveActiveAgentMemberKeyByCharname(state, charId)
 	const agent = agentKey ? state.members[agentKey] : null
 	let name = ''
 	let avatar = null
@@ -41,12 +40,12 @@ async function resolveCharDisplaySnapshot(state, charId, username, groupId) {
 
 	if (!name)
 		try {
-			const { info } = await getPartDetails(owner, `chars/${charname}`) || {}
+			const { info } = await getPartDetails(owner, `chars/${charId}`) || {}
 			if (info?.name) name = String(info.name).trim()
 		}
 		catch { /* part miss */ }
 
-	if (!name) name = charname
+	if (!name) name = charId
 	return { name, avatar }
 }
 

@@ -60,12 +60,12 @@ export function bumpInboxBadge() {
  * @returns {boolean} 是否 @ 本机 viewer
  */
 export function wireMessageMentionsViewer(wireMessage) {
-	const viewerHash = String(store.viewer.viewerEntityHash || store.viewer.operatorEntityHash || '').toLowerCase()
+	const viewerHash = store.viewer.viewerEntityHash || store.viewer.operatorEntityHash || ''
 	if (!viewerHash || !wireMessage) return false
 	const hashes = wireMessage.mentions?.entityHashes
-	if (!Array.isArray(hashes) || !hashes.map(hash => String(hash).toLowerCase()).includes(viewerHash)) return false
-	const sender = String(wireMessage.message?.sender || '').toLowerCase()
-	const viewerMember = String(store.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+	if (!Array.isArray(hashes) || !hashes.includes(viewerHash)) return false
+	const sender = wireMessage.message?.sender || ''
+	const viewerMember = store.context.currentState?.viewerMemberPubKeyHash || ''
 	return !(sender && viewerMember && sender === viewerMember)
 }
 

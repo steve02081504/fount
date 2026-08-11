@@ -39,8 +39,8 @@ async function buildReplyComposer(actionKey) {
 export async function buildReplyRow(reply) {
 	const row = document.createElement('div')
 	row.className = 'reply'
-	const replyId = String(reply.postId || reply.post?.id || '')
-	const entityHash = String(reply.entityHash || '')
+	const replyId = reply.postId || reply.post?.id || ''
+	const entityHash = reply.entityHash || ''
 	if (replyId) row.dataset.replyId = replyId
 	row.dataset.authorEntity = entityHash
 	const actionKey = formatActionKey(entityHash, replyId)

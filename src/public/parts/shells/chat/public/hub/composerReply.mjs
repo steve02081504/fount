@@ -29,7 +29,7 @@ export function clearReplyTarget() {
  * @returns {void}
  */
 export function setReplyTarget(target) {
-	const eventId = String(target?.eventId || '').trim().toLowerCase()
+	const eventId = target?.eventId || ''
 	if (!/^[0-9a-f]{64}$/.test(eventId)) return
 	replyTarget = {
 		eventId,

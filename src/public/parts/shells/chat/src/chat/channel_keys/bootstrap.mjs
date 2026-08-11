@@ -1,5 +1,5 @@
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { wrapChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
+import { wrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
 import { listChannelViewerPubKeys } from './rotate.mjs'
 import { loadChannelKeysFile } from './store.mjs'
@@ -27,7 +27,7 @@ export async function collectChannelKeyWrapsForRecipient(username, groupId, reci
 		if (recipient && state && !listChannelViewerPubKeys(state, channelId).includes(recipient)) continue
 		const row = ch.generations.find(g => g.gen === ch.current) || ch.generations.at(-1)
 		if (!row?.keyHex) continue
-		out[channelId] = [{ generation: row.gen, wrap: wrapChannelKey(row.keyHex, edPubHex) }]
+		out[channelId] = [{ generation: row.gen, wrap: wrapKeyEcies(row.keyHex, edPubHex) }]
 	}
 	return out
 }

@@ -22,7 +22,7 @@ export const REPLY_SENDER_NAME_MAX = 100
 export function resolveSensitiveMedia(value, contentWarning) {
 	if (value === true) return true
 	if (value === false) return false
-	return Boolean(String(contentWarning || '').trim())
+	return Boolean((contentWarning || '').trim())
 }
 
 /**
@@ -59,9 +59,9 @@ export function sanitizeAlt(raw) {
 export function sanitizeForwardedFrom(raw) {
 	if (!raw || typeof raw !== 'object') return undefined
 	const src = /** @type {Record<string, unknown>} */ raw
-	const groupId = String(src.groupId || '').trim()
-	const channelId = String(src.channelId || '').trim()
-	const eventId = String(src.eventId || '').trim().toLowerCase()
+	const groupId = src.groupId || ''
+	const channelId = src.channelId || ''
+	const eventId = src.eventId || ''
 	if (!groupId || !channelId || !eventId) return undefined
 	const out = {
 		groupId,
@@ -80,7 +80,7 @@ export function sanitizeForwardedFrom(raw) {
 export function sanitizeReplyTo(raw) {
 	if (!raw || typeof raw !== 'object') return undefined
 	const src = /** @type {Record<string, unknown>} */ raw
-	const eventId = String(src.eventId || '').trim().toLowerCase()
+	const eventId = src.eventId || ''
 	if (!/^[0-9a-f]{64}$/.test(eventId)) return undefined
 	const out = {
 		eventId,

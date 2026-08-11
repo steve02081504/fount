@@ -17,7 +17,7 @@ function buildRunUri(subcommand, segments) {
  * @returns {string} encodeURIComponent 结果
  */
 function encodeRunSegment(value) {
-	return encodeURIComponent(value || '')
+	return encodeURIComponent(value)
 }
 
 /**
@@ -32,9 +32,9 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
 	const segments = [
 		encodeRunSegment(normalizeHex64(pubKeyHex)),
 		encodeRunSegment(nonceBase64Url),
-		encodeRunSegment(String(introSignatureHex || '').trim().replace(/^0x/iu, '')),
+		encodeRunSegment((introSignatureHex || '').trim().replace(/^0x/iu, '')),
 	]
-	if (nodeUrl) segments.push(encodeRunSegment(String(nodeUrl).trim()))
+	if (nodeUrl) segments.push(encodeRunSegment(nodeUrl.trim()))
 	return buildRunUri('dm', segments)
 }
 
@@ -51,10 +51,10 @@ export function formatJoinRunUri(groupId, inviteCode, roomSecret, introducerPubK
 	const segments = [encodeRunSegment(groupId.trim()), encodeRunSegment(inviteCode.trim())]
 	/** @type {Record<string, string>} */
 	const fields = {}
-	const secret = String(roomSecret || '').trim()
-	const pub = String(introducerPubKeyHash || '').trim()
-	const pow = String(powAnchorRef || '').trim()
-	const node = String(introducerNodeHash || '').trim()
+	const secret = (roomSecret || '').trim()
+	const pub = (introducerPubKeyHash || '').trim()
+	const pow = (powAnchorRef || '').trim()
+	const node = (introducerNodeHash || '').trim()
 	if (secret) fields.roomSecret = secret
 	if (pub) fields.introducerPubKeyHash = normalizeHex64(pub)
 	if (pow) fields.powAnchorRef = pow
@@ -77,7 +77,7 @@ export function wrapProtocolHttpsUrl(fountRunUri) {
  * @returns {{ subcommand: string, args: string[] } | null} 解析结果
  */
 export function parseChatRunUri(raw) {
-	const input = String(raw || '').trim()
+	const input = raw.trim()
 	if (!input.startsWith('fount://run/')) return null
 	const rest = input.slice('fount://run/'.length)
 	if (!rest.startsWith(`${CHAT_RUN_PART}/`)) return null
@@ -135,7 +135,7 @@ export function parseMessageRunUri(raw) {
  * @returns {string | undefined} 非空 trim；空串视为缺省
  */
 function optionalJoinField(value) {
-	const trimmed = String(value || '').trim()
+	const trimmed = (value || '').trim()
 	return trimmed || undefined
 }
 

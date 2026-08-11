@@ -13,12 +13,11 @@ import { cabinetStore } from './state.mjs'
  * @returns {Promise<void>}
  */
 export async function openEntityProfileCard(entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
-	if (!/^[0-9a-f]{128}$/i.test(hash)) return
+	if (!/^[0-9a-f]{128}$/i.test(entityHash)) return
 	const { showEntityProfilePopup } = await import('/parts/shells:chat/shared/entityProfilePopup.mjs')
 	await showEntityProfilePopup({
-		entityHash: hash,
-		displayName: formatHashShort(hash, { headLen: 8, tailLen: 4 }),
+		entityHash,
+		displayName: formatHashShort(entityHash, { headLen: 8, tailLen: 4 }),
 	})
 }
 

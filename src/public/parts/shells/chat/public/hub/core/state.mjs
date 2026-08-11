@@ -90,7 +90,7 @@ const watchers = new Map()
  * @returns {{ parent: object, key: string } | null} 父对象与末段键，或解析失败时 null
  */
 function resolvePath(path) {
-	const parts = String(path).split('.')
+	const parts = path.split('.')
 	if (!parts.length) return null
 	let parent = store
 	for (const segment of parts.slice(0, -1)) {

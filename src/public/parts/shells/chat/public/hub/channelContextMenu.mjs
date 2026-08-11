@@ -71,7 +71,6 @@ export async function showChannelContextMenu(event, channelId) {
 	const defaultChannelId = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
 	const showRename = !!caps?.canEditList
 	const showSetDefault = showRename && channelId !== defaultChannelId
-	const showDelete = showRename
 
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
@@ -79,7 +78,7 @@ export async function showChannelContextMenu(event, channelId) {
 		channelId,
 		showRename,
 		showSetDefault,
-		showDelete,
+		showDelete: showRename,
 	}))
 	document.body.appendChild(menu)
 	positionContextMenu(menu, { x: event.clientX, y: event.clientY })

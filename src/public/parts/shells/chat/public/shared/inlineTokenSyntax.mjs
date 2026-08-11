@@ -26,7 +26,7 @@ export const INLINE_TOKEN_RE = new RegExp(
  * @returns {{ packId: string, emojiId: string } | null} 解析结果
  */
 export function parseEmojiToken(ref) {
-	const m = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`, 'iu').exec(String(ref || ''))
+	const m = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`, 'iu').exec(ref)
 	return m ? { packId: m[1], emojiId: m[2] } : null
 }
 
@@ -37,7 +37,7 @@ export function parseEmojiToken(ref) {
  */
 export function firstEmojiTokenInText(text) {
 	EMOJI_TOKEN_RE.lastIndex = 0
-	const m = EMOJI_TOKEN_RE.exec(String(text || ''))
+	const m = EMOJI_TOKEN_RE.exec(text)
 	return m ? { packId: m[1], emojiId: m[2] } : null
 }
 
@@ -68,9 +68,9 @@ export function tokenForSelection(item) {
  * @returns {string} 降级后正文
  */
 export function degradeEmojiTokensToAlt(text, resolveAlt) {
-	return String(text || '').replace(EMOJI_TOKEN_RE, (_m, packId, emojiId) => {
+	return text.replace(EMOJI_TOKEN_RE, (_m, packId, emojiId) => {
 		const alt = resolveAlt?.(packId, emojiId)
-		return alt != null && String(alt).trim() ? String(alt).trim() : emojiId
+		return alt != null && alt.trim() ? alt.trim() : emojiId
 	})
 }
 
@@ -81,7 +81,7 @@ export function degradeEmojiTokensToAlt(text, resolveAlt) {
  * @returns {string | null} emojiId
  */
 export function resolveEmojiIdFromAlias(aliasIndex, tokenOrAlias) {
-	const key = String(tokenOrAlias || '').trim()
+	const key = tokenOrAlias.trim()
 	if (!key) return null
 	if (aliasIndex instanceof Map) return aliasIndex.get(key) || null
 	return aliasIndex[key] || null
@@ -94,9 +94,9 @@ export function resolveEmojiIdFromAlias(aliasIndex, tokenOrAlias) {
  * @returns {string} 改写后正文
  */
 export function rewriteEmojiAliasesInText(text, resolveId) {
-	return String(text || '').replace(EMOJI_TOKEN_RE, (_m, packId, emojiOrAlias) => {
+	return text.replace(EMOJI_TOKEN_RE, (_m, packId, emojiOrAlias) => {
 		const resolved = resolveId?.(packId, emojiOrAlias)
-		const emojiId = resolved != null && String(resolved).trim() ? String(resolved).trim() : emojiOrAlias
+		const emojiId = resolved != null && resolved.trim() ? resolved.trim() : emojiOrAlias
 		return formatEmojiToken(packId, emojiId)
 	})
 }
@@ -172,7 +172,7 @@ export function formatRoleMentionToken(roleId) {
  * @returns {string} 清除后的正文
  */
 export function stripChannelTokens(text) {
-	return String(text || '')
+	return text
 		.replace(CHANNEL_TOKEN_RE, '')
 		.replace(/\n{3,}/g, '\n\n')
 		.trim()

@@ -25,7 +25,7 @@ export function setPendingScrollTarget(eventId, groupId = store.context.currentG
 	store.messages.pendingScrollTarget = {
 		groupId,
 		channelId,
-		eventId: String(eventId).trim(),
+		eventId,
 	}
 }
 
@@ -50,8 +50,8 @@ export function sortChannelRows(rows) {
 		const ta = Number(a.timestamp) || 0
 		const tb = Number(b.timestamp) || 0
 		if (ta !== tb) return ta - tb
-		const idA = String(a.eventId || '')
-		const idB = String(b.eventId || '')
+		const idA = a.eventId || ''
+		const idB = b.eventId || ''
 		// pending:* 不是 hex64，不能走 compareHex64Asc
 		if (idA.startsWith('pending:') || idB.startsWith('pending:'))
 			return idA.localeCompare(idB)
@@ -111,9 +111,8 @@ export function mergeRowsIntoSource(fetched) {
  * @returns {Promise<object[]>} 消息行
  */
 export async function fetchRowsForMessageEvent(groupId, channelId, eventId) {
-	const norm = String(eventId || '').trim()
-	if (!norm || !groupId || !channelId) return []
-	const { messages } = await getChannelViewLogByEventIds(groupId, channelId, [norm])
+	if (!eventId || !groupId || !channelId) return []
+	const { messages } = await getChannelViewLogByEventIds(groupId, channelId, [eventId])
 	return Array.isArray(messages) ? messages : []
 }
 
@@ -123,10 +122,9 @@ export async function fetchRowsForMessageEvent(groupId, channelId, eventId) {
  * @returns {Promise<{ ok: boolean, viewIndex: number, source: 'cache' | 'fetched' | 'missing' | 'no-channel' | 'fetch-error' | 'invalid' }>} 加载结果
  */
 export async function ensureMessageLoaded(eventId) {
-	const norm = String(eventId || '').trim()
-	if (!norm) return { ok: false, viewIndex: -1, source: 'invalid' }
+	if (!eventId) return { ok: false, viewIndex: -1, source: 'invalid' }
 
-	const viewIndex = findMessageViewIndex(norm)
+	const viewIndex = findMessageViewIndex(eventId)
 	if (viewIndex >= 0) return { ok: true, viewIndex, source: 'cache' }
 
 	const groupId = store.context.currentGroupId
@@ -135,7 +133,7 @@ export async function ensureMessageLoaded(eventId) {
 
 	let rows = []
 	try {
-		rows = await fetchRowsForMessageEvent(groupId, channelId, norm)
+		rows = await fetchRowsForMessageEvent(groupId, channelId, eventId)
 	}
 	catch {
 		return { ok: false, viewIndex: -1, source: 'fetch-error' }

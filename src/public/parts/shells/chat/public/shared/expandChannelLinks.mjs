@@ -31,7 +31,7 @@ export function formatChatMessageHref(groupId, channelId, messageId) {
 export function expandChannelLinksInText(text) {
 	return text
 		.replace(MESSAGE_TOKEN_RE, (...[, groupId, channelId, messageId]) =>
-			`[#${groupId}/${channelId}/${String(messageId).slice(0, 8)}…](${formatChatMessageHref(groupId, channelId, messageId)})`,
+			`[#${groupId}/${channelId}/${messageId.slice(0, 8)}…](${formatChatMessageHref(groupId, channelId, messageId)})`,
 		)
 		.replace(CHANNEL_TOKEN_RE, (...[, groupId, channelId]) =>
 			`[#${groupId}/${channelId}](${formatChatGroupHref(groupId, channelId)})`,
