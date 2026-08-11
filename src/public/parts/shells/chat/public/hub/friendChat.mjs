@@ -79,12 +79,12 @@ function enqueueResolveFriendGroup(fn, signal) {
 async function findExistingFriendGroup(binding) {
 	await loadGroups()
 	const entityHash = String(binding.entityHash || '').trim().toLowerCase()
-	const charKey = String(binding.charname || '').trim().toLowerCase()
+	const charKey = String(binding.charname || '').trim()
 	const matches = store.sidebar.groups.filter(g => {
 		const fb = g.friendBinding
 		if (!fb) return false
 		if (entityHash && fb.entityHash === entityHash) return true
-		return !!(charKey && String(fb.charname || '').toLowerCase() === charKey)
+		return !!(charKey && String(fb.charname || '').trim() === charKey)
 	})
 	if (!matches.length) return null
 	matches.sort((a, b) => new Date(b.lastMessageTime || 0) - new Date(a.lastMessageTime || 0))

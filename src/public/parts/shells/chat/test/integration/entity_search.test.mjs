@@ -66,7 +66,7 @@ Deno.test('searchEntitiesNetwork finds local handle without network peers', asyn
 })
 
 Deno.test('searchEntitiesNetwork finds local agent by charPartName', async () => {
-	const { username } = await getSession()
+	const { username, dataDir } = await getSession()
 	const {
 		ensureAgentEntityIdentity,
 		ensureOperatorPubKey,
@@ -80,10 +80,12 @@ Deno.test('searchEntitiesNetwork finds local agent by charPartName', async () =>
 	const { resetPartQueryStateForTests } = await import(
 		'npm:@steve02081504/fount-p2p/wire/part/query'
 	)
+	const { seedStubCharPart } = await import('../harness.mjs')
 
 	await ensureOperatorPubKey(username)
 	const operator = await resolveOperatorEntityHashForUser(username)
 	const charPartName = `zl-search-${crypto.randomUUID().slice(0, 8)}`
+	await seedStubCharPart(dataDir, username, charPartName)
 	const agent = await ensureAgentEntityIdentity(username, charPartName)
 	assert(agent?.entityHash)
 

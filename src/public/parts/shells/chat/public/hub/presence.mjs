@@ -176,14 +176,16 @@ export function invalidateAllUserProfileCaches() {
 /**
  * 清除容器内指定作者键的头像已加载标记。
  * @param {HTMLElement} root 容器
- * @param {Set<string>} authorKeys 小写作者键
+ * @param {Set<string>} authorKeys 作者键（hex 已小写；part 名为规范串）
  * @returns {void}
  */
 function clearAvatarLoadedForAuthorKeys(root, authorKeys) {
 	if (!authorKeys.size) return
 	root.querySelectorAll('[data-avatar-for]').forEach((av) => {
-		const key = av.dataset.avatarFor?.trim().toLowerCase()
-		if (key && authorKeys.has(key))
+		const raw = av.dataset.avatarFor?.trim()
+		if (!raw) return
+		const key = isHex64(raw) || isEntityHash128(raw) ? raw.toLowerCase() : raw
+		if (authorKeys.has(key))
 			delete av.dataset.avatarLoaded
 	})
 }
@@ -191,7 +193,7 @@ function clearAvatarLoadedForAuthorKeys(root, authorKeys) {
 /**
  * 收集与 entityHash 关联的 `data-avatar-for` 键。
  * @param {string} entityHash 128 位 entityHash
- * @returns {Promise<Set<string>>} 小写作者键
+ * @returns {Promise<Set<string>>} 作者键集合
  */
 async function authorKeysForEntityHash(entityHash) {
 	const key = String(entityHash || '').trim().toLowerCase()
@@ -204,7 +206,8 @@ async function authorKeysForEntityHash(entityHash) {
 		if (String(member.entityHash || '').toLowerCase() !== key) continue
 		if (member.memberKey) keys.add(String(member.memberKey).toLowerCase())
 		if (member.pubKeyHash) keys.add(String(member.pubKeyHash).toLowerCase())
-		if (member.charname) keys.add(String(member.charname).toLowerCase())
+		const charname = String(member.charname || '').trim()
+		if (charname) keys.add(charname)
 	}
 
 	const { charAgentEntityHash } = await import('./entityResolve.mjs')
@@ -213,19 +216,20 @@ async function authorKeysForEntityHash(entityHash) {
 	for (const agent of store.viewer.agents || []) {
 		if (String(agent.entityHash || '').toLowerCase() !== key) continue
 		const name = String(agent.charPartName || '').trim()
-		if (name) keys.add(name.toLowerCase())
+		if (name) keys.add(name)
 	}
 
 	for (const group of store.sidebar.groups) {
 		const binding = resolveFriendBinding(group)
 		if (String(binding?.entityHash || '').toLowerCase() !== key) continue
-		if (binding.charname) keys.add(String(binding.charname).toLowerCase())
+		const charname = String(binding.charname || '').trim()
+		if (charname) keys.add(charname)
 	}
 
 	const charname = store.privateGroup?.charname
 	if (charname) {
 		const eh = await charAgentEntityHash(charname)
-		if (eh === key) keys.add(String(charname).toLowerCase())
+		if (eh === key) keys.add(String(charname).trim())
 	}
 
 	return keys

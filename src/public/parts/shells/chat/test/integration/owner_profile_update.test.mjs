@@ -4,12 +4,21 @@
 /* global Deno */
 import { assertEquals, assertRejects } from 'jsr:@std/assert'
 
-import { createIntegrationBoot } from '../harness.mjs'
+import { createIntegrationBoot, seedStubCharPart } from '../harness.mjs'
 
-const { ensureServer, username } = createIntegrationBoot({
+const { ensureServer, username, dataDir } = createIntegrationBoot({
 	username: 'owner-profile-update-user',
 	minP2pNode: true,
 })
+
+/**
+ * @param {string} charPartName 占位角色名
+ * @returns {Promise<void>}
+ */
+async function ensureStubChar(charPartName) {
+	await ensureServer()
+	await seedStubCharPart(dataDir, username, charPartName)
+}
 
 Deno.test('sanitizeOwnerProfileUpdates drops unknown fields', async () => {
 	const { sanitizeOwnerProfileUpdates, hashOwnerProfileUpdateBody, ownedProfileUpdatePath } = await import(
@@ -32,7 +41,7 @@ Deno.test('sanitizeOwnerProfileUpdates drops unknown fields', async () => {
 })
 
 Deno.test('ensureAgentEntityIdentity backfills null ownerEntityHash', async () => {
-	await ensureServer()
+	await ensureStubChar('owner_backfill_char')
 	const {
 		ensureAgentEntityIdentity,
 		ensureOperatorIdentity,
@@ -57,7 +66,7 @@ Deno.test('ensureAgentEntityIdentity backfills null ownerEntityHash', async () =
 })
 
 Deno.test('isWritableLocalEntityForUser uses ownerEntityHash not charPartName alone', async () => {
-	await ensureServer()
+	await ensureStubChar('owner_writable_char')
 	const { ensureAgentEntityIdentity, ensureOperatorIdentity, setEntityOwner } = await import('../../src/entity/identity.mjs')
 	const { isWritableLocalEntityForUser } = await import('../../src/entity/http.mjs')
 
@@ -75,7 +84,7 @@ Deno.test('isWritableLocalEntityForUser uses ownerEntityHash not charPartName al
 })
 
 Deno.test('publishOwnerProfileUpdate → pullOwnerProfileUpdate → ack purge', async () => {
-	await ensureServer()
+	await ensureStubChar('owner_remote_profile_char')
 	const { ensureAgentEntityIdentity, ensureOperatorIdentity, getEntityActivePubKey } = await import(
 		'../../src/entity/identity.mjs'
 	)
@@ -136,7 +145,7 @@ Deno.test('publishOwnerProfileUpdate → pullOwnerProfileUpdate → ack purge', 
 })
 
 Deno.test('pullOwnerProfileUpdate rejects mismatched owner / bad shape', async () => {
-	await ensureServer()
+	await ensureStubChar('owner_reject_char')
 	const { ensureAgentEntityIdentity, ensureOperatorIdentity, getEntityRecoverySecretKey, getRecoveryPubKeyHex } = await import(
 		'../../src/entity/identity.mjs'
 	)

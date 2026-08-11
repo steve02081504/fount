@@ -426,12 +426,12 @@ export async function getOperatorEntityHash(username) {
 
 /**
  * @param {string} username fount 登录名
- * @param {string} charPartName chars/ 下目录名
+ * @param {string} charPartName chars/ 下目录名（大小写不敏感；落盘为真实目录名）
  * @returns {Promise<object>} agent 身份行（惰性创建）
  */
 export async function ensureAgentEntityIdentity(username, charPartName) {
-	const name = String(charPartName || '').trim()
-	if (!name) throw new Error('charPartName required')
+	const { resolveCharPartName } = await import('./charPartName.mjs')
+	const name = resolveCharPartName(username, charPartName)
 	const ownerEntityHash = await getOperatorEntityHash(username)
 	const row = await ensureEntityIdentity(username, { charPartName: name, ownerEntityHash })
 	try {

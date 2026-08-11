@@ -230,17 +230,18 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
  */
 export async function addchar(groupId, charname, replicaUsername, options = {}) {
 	const { username } = await resolveReplica(groupId, replicaUsername)
-	const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
-	await ensureLocalAgentEntityHash(username, charname)
+	const { ensureAgentEntityIdentity } = await import('../../entity/identity.mjs')
+	const agent = await ensureAgentEntityIdentity(username, charname)
+	const name = agent.charPartName
 	const session = await getMaterializedSession(username, groupId)
-	if (sessionHasChar(session, charname)) {
+	if (sessionHasChar(session, name)) {
 		const chatMetadata = await getGroupRuntime(groupId, username)
-		if (chatMetadata.LastTimeSlice.chars[charname]) return null
+		if (chatMetadata.LastTimeSlice.chars[name]) return null
 	}
 
 	const { state: groupState } = await getState(username, groupId)
 	const isCharFriendChat = !!groupState.groupMeta?.friendBinding?.charname
-	await appendAgentMemberJoin(username, groupId, charname, {
+	await appendAgentMemberJoin(username, groupId, name, {
 		roles: isCharFriendChat ? ['admin'] : undefined,
 		...options.appendOptions,
 	})
@@ -251,16 +252,16 @@ export async function addchar(groupId, charname, replicaUsername, options = {}) 
 	else
 		timeSlice.greeting_type = 'single'
 
-	const char = timeSlice.chars[charname]
+	const char = timeSlice.chars[name]
 	if (!char) return null
 
-	broadcastGroupEvent(groupId, { type: 'char_added', payload: { charname } })
+	broadcastGroupEvent(groupId, { type: 'char_added', payload: { charname: name } })
 
 	if (options.deferGreeting) {
-		void runDeferredCharGreeting(groupId, charname, username, timeSlice.greeting_type)
+		void runDeferredCharGreeting(groupId, name, username, timeSlice.greeting_type)
 		return null
 	}
-	return insertCharGreeting(groupId, charname, username, chatMetadata, timeSlice)
+	return insertCharGreeting(groupId, name, username, chatMetadata, timeSlice)
 }
 
 /**

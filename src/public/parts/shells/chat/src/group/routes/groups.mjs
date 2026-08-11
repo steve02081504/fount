@@ -41,6 +41,18 @@ async function materializeFriendBinding(username, raw) {
 	const displayName = raw.displayName != null && String(raw.displayName).trim()
 		? String(raw.displayName).trim()
 		: undefined
+	const charnameRaw = String(raw.charname ?? '').replace(/^chars\//u, '').trim()
+	if (charnameRaw) {
+		const { resolveCharPartName } = await import('../../entity/charPartName.mjs')
+		const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
+		const charname = resolveCharPartName(username, charnameRaw)
+		const ensured = await ensureLocalAgentEntityHash(username, charname)
+		return normalizeFriendBinding({
+			entityHash: ensured,
+			charname,
+			...displayName ? { displayName } : {},
+		})
+	}
 	const entityHash = String(raw.entityHash ?? '').trim().toLowerCase()
 	if (isEntityHash128(entityHash)) {
 		const { resolveCharPartNameForEntity } = await import('../../entity/identity.mjs')
@@ -51,15 +63,7 @@ async function materializeFriendBinding(username, raw) {
 			...displayName ? { displayName } : {},
 		})
 	}
-	const charname = String(raw.charname ?? '').replace(/^chars\//u, '').trim()
-	if (!charname) return null
-	const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
-	const ensured = await ensureLocalAgentEntityHash(username, charname)
-	return normalizeFriendBinding({
-		entityHash: ensured,
-		charname,
-		...displayName ? { displayName } : {},
-	})
+	return null
 }
 
 /**
@@ -115,12 +119,12 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
 			const operatorEntityHash = await resolveOperatorEntityHashForUser(username)
 			const rows = await enumerateJoinedFederatedGroups(username, operatorEntityHash)
-			const charKey = friendBinding.charname?.toLowerCase()
+			const charKey = friendBinding.charname || ''
 			const existing = rows.find(row => {
 				const bound = row.friendBinding
 				if (!bound) return false
 				if (bound.entityHash?.toLowerCase() === friendBinding.entityHash.toLowerCase()) return true
-				return !!(charKey && bound.charname?.toLowerCase() === charKey)
+				return !!(charKey && bound.charname === charKey)
 			})
 			if (existing) {
 				registerGroupRuntime(existing.groupId, username)
