@@ -78,6 +78,8 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		}
 
 		const friendBinding = await materializeFriendBinding(username, body.friendBinding)
+		if (body.friendBinding != null && !friendBinding)
+			return res.status(400).json({ error: 'invalid friendBinding' })
 		if (friendBinding && !body.forceNew) {
 			const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
 			const operatorEntityHash = await resolveOperatorEntityHashForUser(username)

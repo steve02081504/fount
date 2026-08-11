@@ -282,7 +282,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			 */
 			const isBlockedPeer = subject => isPeerPoolKeyBlocked(loadPeerPoolView(groupId), subject)
 
-			attachFederationRoomHandlers(createFederationRoomHandlerBundle({
+			await attachFederationRoomHandlers(createFederationRoomHandlerBundle({
 				username,
 				groupId,
 				key: rtcRoomKey,

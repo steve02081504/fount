@@ -127,7 +127,10 @@ function appendEmojiGridItem(grid, item) {
  */
 async function buildSections(context = {}) {
 	const packsPromise = aggregateEmojiPacks(context)
-	const unicodePromise = loadUnicodeEmojiByGroup()
+	const unicodePromise = loadUnicodeEmojiByGroup().catch(error => {
+		console.warn('[emoji] unicode data load failed', error)
+		return { byGroup: {}, order: [] }
+	})
 	const { packs, usage, collection } = await packsPromise
 	const usagePayload = usage ? await usage.load() : { log: [], lastUsedAtByPack: {} }
 	const log = trimUsageLog(usagePayload.log || [], USAGE_WINDOW)
@@ -173,7 +176,7 @@ async function buildSections(context = {}) {
 			if (item) items.push(enrichPackItem(parsed.packId, item))
 			else {
 				const previewUrl = await resolvePackEmojiUrl(parsed.packId, parsed.emojiId, {
-					providers: pack?._provider ? [pack._provider] : undefined,
+					providers: pack?.sourceProvider ? [pack.sourceProvider] : undefined,
 				})
 				items.push({
 					kind: 'pack',
@@ -213,14 +216,7 @@ async function buildSections(context = {}) {
 		})
 	}
 
-	let byGroup = {}
-	let order = []
-	try {
-		({ byGroup, order } = await unicodePromise)
-	}
-	catch (error) {
-		console.warn('[emoji] unicode data load failed', error)
-	}
+	const { byGroup, order } = await unicodePromise
 	for (const groupName of order) {
 		const codes = byGroup[groupName] || []
 		if (!codes.length) continue
@@ -302,7 +298,7 @@ function openSectionPackPreview(anchor, section) {
 	if (section?.kind !== 'pack' || !section.pack) return
 	void showEmojiPackPreview(anchor, {
 		pack: section.pack,
-		provider: section.pack._provider,
+		provider: section.pack.sourceProvider,
 		available: true,
 	})
 }

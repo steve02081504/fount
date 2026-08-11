@@ -1,15 +1,32 @@
 /**
- * materializeGroupSettings：缺省 / 非法 / 零值 maxDagPayloadBytes 回落默认。
+ * materializeGroupSettings 合并默认；非法 maxDagPayloadBytes 由入站校验拒绝。
  */
 /* global Deno */
-import { assertEquals } from 'jsr:@std/assert'
+import { assertEquals, assertThrows } from 'jsr:@std/assert'
 
-import { DEFAULT_GROUP_SETTINGS, materializeGroupSettings } from '../../src/chat/dag/groupSettings.mjs'
+import {
+	DEFAULT_GROUP_SETTINGS,
+	materializeGroupSettings,
+	validateGroupSettingsUpdateContent,
+} from '../../src/chat/dag/groupSettings.mjs'
 
-Deno.test('materializeGroupSettings fills defaults and coerces maxDagPayloadBytes', () => {
+Deno.test('materializeGroupSettings merges defaults without coercing maxDagPayloadBytes', () => {
 	assertEquals(materializeGroupSettings({}).maxDagPayloadBytes, DEFAULT_GROUP_SETTINGS.maxDagPayloadBytes)
-	assertEquals(materializeGroupSettings({ maxDagPayloadBytes: 0 }).maxDagPayloadBytes, DEFAULT_GROUP_SETTINGS.maxDagPayloadBytes)
-	assertEquals(materializeGroupSettings({ maxDagPayloadBytes: 'nope' }).maxDagPayloadBytes, DEFAULT_GROUP_SETTINGS.maxDagPayloadBytes)
 	assertEquals(materializeGroupSettings({ maxDagPayloadBytes: 512_000 }).maxDagPayloadBytes, 512_000)
 	assertEquals(materializeGroupSettings({ joinPolicy: 'open' }).joinPolicy, 'open')
+})
+
+Deno.test('validateGroupSettingsUpdateContent rejects invalid maxDagPayloadBytes', () => {
+	assertThrows(
+		() => validateGroupSettingsUpdateContent({ maxDagPayloadBytes: 0 }),
+		Error,
+		'invalid maxDagPayloadBytes',
+	)
+	assertThrows(
+		() => validateGroupSettingsUpdateContent({ maxDagPayloadBytes: 'nope' }),
+		Error,
+		'invalid maxDagPayloadBytes',
+	)
+	validateGroupSettingsUpdateContent({ maxDagPayloadBytes: 512_000 })
+	validateGroupSettingsUpdateContent({})
 })

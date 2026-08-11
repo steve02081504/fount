@@ -16,6 +16,7 @@ import { validateJoinPolicy } from '../governance/joinPolicy.mjs'
 
 import { assertEventPermission } from './authorizeEvent.mjs'
 import { SESSION_EVENT_TYPES } from './eventTypes.mjs'
+import { validateGroupSettingsUpdateContent } from './groupSettings.mjs'
 import { getState } from './materialize.mjs'
 import { validateSessionEventContent } from './sessionEventValidate.mjs'
 import { PUB_KEY_HASH_HEX } from './validator.mjs'
@@ -62,6 +63,9 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, optio
 
 	if (event.type === 'world_state')
 		validateWorldStateContent(event)
+
+	if (event.type === 'group_settings_update')
+		validateGroupSettingsUpdateContent(event.content)
 
 	if (event.type === 'member_join')
 		await validateJoinPolicy(state, event, replicaUsername, { source: options.source })

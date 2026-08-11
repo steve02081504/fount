@@ -50,15 +50,22 @@ export const DEFAULT_GROUP_SETTINGS = {
 }
 
 /**
- * 合并默认群设置并规范化数值字段（缺省 / 非法 / 零值回落默认）。
+ * 合并默认群设置（不做数值纠偏；非法字段由入站校验拒绝）。
  * @param {object} [raw] 原始群设置
  * @returns {object} 物化后的群设置
  */
 export function materializeGroupSettings(raw = {}) {
-	const settings = { ...DEFAULT_GROUP_SETTINGS, ...raw }
-	const maxDag = Number(settings.maxDagPayloadBytes)
-	settings.maxDagPayloadBytes = Number.isFinite(maxDag) && maxDag > 0
-		? maxDag
-		: DEFAULT_GROUP_SETTINGS.maxDagPayloadBytes
-	return settings
+	return { ...DEFAULT_GROUP_SETTINGS, ...raw }
+}
+
+/**
+ * 校验 `group_settings_update` 补丁数值字段（入站拒绝非法值）。
+ * @param {object} [content] 事件 content 补丁
+ * @returns {void}
+ */
+export function validateGroupSettingsUpdateContent(content = {}) {
+	if (content.maxDagPayloadBytes === undefined) return
+	const maxDag = Number(content.maxDagPayloadBytes)
+	if (!Number.isFinite(maxDag) || maxDag <= 0)
+		throw new Error('group_settings_update: invalid maxDagPayloadBytes')
 }

@@ -87,8 +87,11 @@ export function parseTestSubtestsEnv() {
  * @returns {Promise<void>}
  */
 export async function writeTestTriggeredFiles(outPath, files) {
-	const unique = [...new Set(files.map(file => file.replace(/\\/g, '/')).filter(Boolean))]
-	await writeFile(outPath, unique.length ? `${unique.join('\n')}\n` : '', 'utf8')
+	await writeFile(
+		outPath,
+		files.length ? `${[...new Set(files.map(file => file.replace(/\\/g, '/')))].join('\n')}\n` : '',
+		'utf8',
+	)
 }
 
 /**

@@ -5,9 +5,6 @@ import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
 import { createEmptySessionState } from './reducers/state.mjs'
 import { materializeGroupSettings } from './groupSettings.mjs'
 
-/** 默认群设置与 `maxDagPayloadBytes` 物化规范化（见 `groupSettings.mjs`）。 */
-export { DEFAULT_GROUP_SETTINGS, materializeGroupSettings } from './groupSettings.mjs'
-
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').RuntimeGroupState} RuntimeGroupState */
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').Checkpoint} Checkpoint */
 

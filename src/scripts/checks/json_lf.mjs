@@ -76,10 +76,9 @@ export async function resolveJsonLfScanPaths(repoRoot, options = {}) {
  * @returns {Promise<{ files: string[], issues: JsonLfIssue[] }>} 扫描路径与问题列表
  */
 export async function scanJsonLf(repoRoot, options = {}) {
-	const paths = await resolveJsonLfScanPaths(repoRoot, options)
 	/** @type {JsonLfIssue[]} */
 	const issues = []
-	for (const relativePath of paths) {
+	for (const relativePath of await resolveJsonLfScanPaths(repoRoot, options)) {
 		let bytes
 		try {
 			bytes = new Uint8Array(await readFile(join(repoRoot, relativePath)))
@@ -91,6 +90,5 @@ export async function scanJsonLf(repoRoot, options = {}) {
 		const issue = scanFileJsonLf(relativePath, bytes)
 		if (issue) issues.push(issue)
 	}
-	const hitFiles = [...new Set(issues.map(issue => issue.path))].sort()
-	return { files: hitFiles, issues }
+	return { files: [...new Set(issues.map(issue => issue.path))].sort(), issues }
 }
