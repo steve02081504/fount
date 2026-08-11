@@ -78,6 +78,9 @@ export async function loadGroupShunState(username, groupId) {
  */
 export async function updateGroupShunState(username, groupId, updater) {
 	return withAsyncMutex(shunStateLockKey(username, groupId), async () => {
+		const { isGroupReplicaPurging } = await import('../chat/dag/replicaPurge.mjs')
+		if (isGroupReplicaPurging(username, groupId))
+			return normalizeShunState(null)
 		const dir = groupDir(username, groupId)
 		await mkdir(dir, { recursive: true })
 		const prev = await loadGroupShunState(username, groupId)

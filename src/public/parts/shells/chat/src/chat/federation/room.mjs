@@ -199,6 +199,8 @@ export async function resolveFederationSlotForAction(username, groupId, options 
  * @returns {Promise<FederationSlot | null>} 房间句柄或 null
  */
 export async function ensureFederationPartitionRoom(username, groupId, partitionId = LOGIC_SYNC_PARTITION, options = {}) {
+	const { isGroupReplicaPurging } = await import('../dag/replicaPurge.mjs')
+	if (isGroupReplicaPurging(username, groupId)) return null
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	let roomCreds
 	try {

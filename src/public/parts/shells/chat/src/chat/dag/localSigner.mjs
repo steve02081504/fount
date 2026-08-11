@@ -62,6 +62,9 @@ function seedFromRaw(raw) {
  * @returns {Promise<Uint8Array>} 私钥种子
  */
 async function loadOrCreateLocalSignerSeed(username, groupId, entityHash) {
+	const { isGroupReplicaPurging } = await import('./replicaPurge.mjs')
+	if (isGroupReplicaPurging(username, groupId))
+		throw new Error('group replica is being purged')
 	const path = localSignerSeedPath(username, groupId, entityHash)
 	await mkdir(dirname(path), { recursive: true })
 	try {

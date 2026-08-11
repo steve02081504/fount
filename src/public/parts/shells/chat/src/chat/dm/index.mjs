@@ -249,6 +249,8 @@ async function bindJoinFederation(username, groupId) {
 export async function performMemberJoin(username, groupId, options = {}) {
 	if (!groupId?.trim()) throw new Error('groupId required')
 	const entityHash = options.entityHash || undefined
+	const { clearGroupReplicaPurging } = await import('../dag/replicaPurge.mjs')
+	clearGroupReplicaPurging(username, groupId)
 
 	// DAG 尚无 roomSecret 时靠邀请口令引导；bootstrapStore 会落盘，重启可恢复。
 	if (options.bootstrap?.roomSecret)

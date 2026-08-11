@@ -94,9 +94,11 @@ export async function appendEvent(username, groupId, event, secretKey, options =
 	}
 	if (shouldRebindFederationRoomForEvent(wirePayload)) {
 		invalidateFederationRoomCache(username, groupId)
-		void ensureFederationRoom(username, groupId).catch(error => {
-			console.error('federation: local rebind after roster event failed', error)
-		})
+		// leave / leaveFast 紧接着删盘，禁止 fire-and-forget join 把目录写回来。
+		if (options.federationExistingSlotOnly !== true && wirePayload.type !== 'member_leave')
+			void ensureFederationRoom(username, groupId).catch(error => {
+				console.error('federation: local rebind after roster event failed', error)
+			})
 	}
 
 	return wirePayload
