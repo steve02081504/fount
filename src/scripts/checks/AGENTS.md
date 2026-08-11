@@ -36,9 +36,11 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 
 ## Agent docs language
 
+Enforced by this suite; writing rules: [docs/AGENTS.md](../../../docs/AGENTS.md).
+
 - `AGENTS.md` and `.md` files linked from them (transitive closure): English only (no CJK).
 - Exempt from CJK: human-facing `docs/design/`, `docs/review/`, `docs/issues/` (still walked for link resolution).
-- Non-`AGENTS.md` files in that closure must live under a directory named `docs` (path segment `docs`).
+- Non-`AGENTS.md` files in that closure must live under a directory named `docs`.
 - Transitive local `.md` links must resolve.
 
 ## JSDoc language (`jsdoc_no_english`)

@@ -18,6 +18,13 @@ Day-to-day rules: [AGENTS.md](../AGENTS.md).
 - Agent "reset from char part" only when `profile.charPartName` is set. Banner: EVFS `profile/banner` (SFW: `profile/sfw_banner`) or hash texture. Locale/tag editing: `profileLocaleEditor.mjs`.
 - Entity files: `GET/HEAD/PUT/POST …/entities/:hash/files/*logicalPath` (POST = multipart any path; `profile/{sfw_,}avatar|banner` also rewrite profile fields).
 
+## Remote profile / contact
+
+- Hub `GET …/entities/:hash` uses `fetchRemote`.
+- Profile races `readPublicFile` with `REMOTE_PROFILE_FETCH_TIMEOUT_MS` (cold miss must cover EVFS manifest+chunk fanout; warm path is SWR in fount-p2p≥0.0.22) + negative cache (`profile.mjs`).
+- Popup paints a stub name/avatar before the fetch returns so a hung peer cannot leave an empty card.
+- DM button shows for any non-self `entityHash`; click (and `dispatchFriendChat`) resolve `activePubKeyHex` via `forceRemote=1` when the contact link only carried the hash.
+
 ## Message module layout
 
 - Render: `messages/render/`. Surface: `messages/messageSurface.mjs`. Reactions: `messages/reactionWire.mjs`. Actions: `messages/actions/handlers.mjs`.

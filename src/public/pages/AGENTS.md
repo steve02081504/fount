@@ -30,7 +30,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
 - **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `withTemplates` or direct DOM.
 - **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
-- **`promptDialog.mjs`**: shared DaisyUI `promptText` / `promptTextArea` / `confirmAction`. Prefer over `window.prompt` / `confirm` / shell-local copies. **First argument is always an i18n key**; optional third arg is interpolation params. Do not pass `geti18n(...)` strings. Modal title is **`h2`** (page already has `h1`; DaisyUI docs’ `h3` skips a level and trips axe `heading-order`).
+- **`promptDialog.mjs`**: shared DaisyUI `promptText` / `promptTextArea` / `confirmAction`. Prefer over `window.prompt` / `confirm` / shell-local copies. **First argument is always an i18n key**; optional third arg is interpolation params. Do not pass `geti18n(...)` strings. Modal title is **`h2`** (page already has `h1`).
 - **`components/jsonEditor.mjs`**: `createJsonEditor(container, options)` wraps `vanilla-jsoneditor` (≥3.13). **`options.ariaLabel` is required and must be an i18n key** (resolved + refreshed via `setLocalizeLogic`); do not pass `geti18n(...)` strings. Optional `onSave` is Ctrl+S only — not a library prop. Keep native `get()`/`set()` (`Content`); use **`getJson()`** for parsed values (`{ json }` as-is; `{ text }` → `jsonrepair` then `JSON.parse`).
 - **`components/imageEditor.mjs`**: `openImageEditor(file, labels?)` — crop / mosaic / brush modal; returns `File | null`. Defaults under `util.imageEditor.*` (+ `util.common.cancel`).
 - **`components/mediaViewer.mjs`**: `openMediaViewer(items, startIndex?)` — fullscreen image/video viewer (ESC / arrows / wheel zoom / drag / download). Defaults under `util.mediaViewer.*`.
@@ -61,7 +61,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 - **`lib/base64.mjs`**: `arrayBufferToBase64` / `blobToBase64` — reuse for upload bodies; do not copy per shell.
 - **`lib/svgInliner.mjs`**: Inline `.svg` `<img>` for `currentColor`. Put `svg-inliner-ignore` on user/media avatars so they stay `<img>` (inlining untrusted SVG activates scripts).
 - **`user-content`**: boolean attr on user/dynamic text & inputs (post/reply bodies, message bubbles, composer fields, …). Page `watch` locale-script scan hides `[user-content]` — same opt-out style as `svg-inliner-ignore`.
-- **`aria-ignore`**: value **must** be a GitHub issue URL. Policy + closed-issue hard-fail: [test AGENTS](../../scripts/test/AGENTS.md) Operator tools. JSON editor: [svelte-jsoneditor#584](https://github.com/josdejong/svelte-jsoneditor/issues/584).
+- **`aria-ignore`**: value **must** be a GitHub issue URL. Policy + closed-issue hard-fail: [test AGENTS](../../scripts/test/AGENTS.md) Operator tools.
 - **Transitional a11y**: page `watch` reports axe hits immediately. Incomplete UI must use `aria-hidden` / `inert` / `hidden` (not bare `opacity: 0`). Fix the product — do not soften the watcher.
 - **`credentialManager.mjs`** / **`host/urlDataTransfer.mjs`**: Secure credential encryption/transfer; Catbox upload/download via `host/catbox.mjs`.
 

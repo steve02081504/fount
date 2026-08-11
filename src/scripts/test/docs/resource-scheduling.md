@@ -38,7 +38,7 @@ Effective demand = max(manifest `resources`, measured baseline if present else n
 - Wall runtime over 2× baseline (floor 30m, same as no-baseline default) → kill as failed. Short polluted baselines must not shrink the floor below 30m.
 - Watchdog poll gap ≥ `5 × WATCH_INTERVAL_MS` (5×30s) → treat as **system sleep**: abort the suite process and **re-run** from `runSuite` (not recorded as failure). Sleep wins over idle/duration because frozen timers make those clocks meaningless.
 
-**Keep-awake** (proactive, complements sleep retry): `path/fount.ps1` / `path/fount.sh` wrap Deno. Windows: `SetThreadExecutionState` on the **shell** + AC lid→Do nothing, refcounted in `data/test/state/keep_awake.json` (`lidAc` + live PID `holders`; mutex `Local\FountTestKeepAwake`). Last live holder restores; hard-kill leaves the file so the next `fount test` finally (even with `FOUNT_TEST_ALLOW_SLEEP=1`) or `fount clean` restores. Unix: `caffeinate -dims -w $$` / `systemd-inhibit` wrapping deno (no global power settings). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
+**Keep-awake** (proactive, complements sleep retry): [host-keep-awake.md](host-keep-awake.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
 
 When `run` includes `serial.mjs`, `suite_run.mjs` injects `FOUNT_TEST_BUDGET_CORES` / `FOUNT_TEST_BUDGET_MEM`. Silent passes emit `[serial] ok …` for idle watchdog liveness.
 

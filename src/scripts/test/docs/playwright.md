@@ -1,6 +1,6 @@
 # Playwright frontend notes
 
-Day-to-day: [AGENTS.md](../AGENTS.md) Taxonomy → Frontend.
+Day-to-day selectors / taxonomy: [AGENTS.md](../AGENTS.md). This file is fixtures, browser binary, CDN cache, network diagnostics, and page-watch traps.
 
 ## CLI args
 

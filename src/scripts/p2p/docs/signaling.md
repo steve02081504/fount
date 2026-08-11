@@ -1,38 +1,38 @@
 # P2P signaling notes
 
-## connId dual-PC pick-one (glare elimination)
+Standing conclusions for live federation. Package: `@steve02081504/fount-p2p`.
 
-`link.mjs` is a stateless dumb pipe — it does not do WebRTC perfect-negotiation/rollback (the `node-datachannel` polyfill's `setLocalDescription` is a no-op for anything but an offer, and `rollback` is unavailable). The root cause of glare errors is an offer/answer state-machine conflict on a **single PeerConnection**: both sides enter `have-local-offer` at nearly the same time and `setRemoteDescription(offer)` throws `InvalidStateError`.
+## connId dual-PC glare elimination
 
-So link setup is "both sides dial directly; on a true simultaneous dial build two PCs, then deterministically drop one". The logic all lives in `link_registry.mjs`:
+`link.mjs` is a dumb pipe — no WebRTC perfect-negotiation/rollback (`node-datachannel` polyfill). Glare = both sides in `have-local-offer` on one PeerConnection → `setRemoteDescription(offer)` throws `InvalidStateError`.
 
-- **Dial directly when you want to connect — zero extra cost for a one-way dial.** `ensureDirectLinkToNode` generates a random `connId`, then builds `createConnSession(remote, connId)` + `createLink({ initiator: true })`. Every outbound signal frame looks like `{ type: 'signal', from, connId, body }`, and `signalSessions` is indexed by `connId`.
-- **Inbound `handleIncomingSignal` routes by connId**:
-  - Session already exists for that `connId` → deliver the body (follow-up answer/ice for a connection we initiated or are answering).
-  - No session for that `connId` and body is an offer → build a **new independent answer PC**: `createConnSession` + `createLink({ initiator: false })`. The answer PC is created independently per `connId` and is **not blocked by the per-nodeHash `inflights` dedupe** — this is the key that allows simultaneous bidirectional setup.
-  - No session for that `connId` and not an offer (a late ice/answer) → drop it.
-- **Deterministic pick-one** `registerResolvedLink`: keep the link "initiated by the smaller nodeHash" (`linkIsPreferred`: `initiator ? local<remote : remote<local`), so both ends reach the same conclusion for any given link. The winner is set as the canonical link before the old link is closed (so on the old link's `onDown`, `links.get` already points at the winner and no spurious linkDown fires); the loser is closed silently with `close('glare-loser')`. **Only the final canonical link fires `linkUp`.**
-- **`onDown` only emits `linkDown` when the link being closed is the current canonical one**, avoiding a spurious peer-leave when the loser is closed while both PCs coexist.
-- On link close, its session is cleaned from `signalSessions` by `connId`.
+**Rule**: both sides dial directly; on true simultaneous dial build two PCs, then deterministically drop one. Logic in `link_registry.mjs`:
 
-In the normal case (one side online, the other just booting a one-way dial) no second PC is created; only a rare true-simultaneous dial briefly builds two PCs and then drops one. `trickleIceOff` stretches the `have-local-offer` window across ICE gathering and raises glare hit rate. Regression: `test/live/link_glare_two_pc.test.mjs`.
+- One-way dial: `ensureDirectLinkToNode` → random `connId` → `createConnSession` + `createLink({ initiator: true })`. Frames `{ type: 'signal', from, connId, body }`; `signalSessions` keyed by `connId`.
+- Inbound `handleIncomingSignal`: existing `connId` → deliver; new `connId` + offer → independent answer PC (not blocked by per-nodeHash `inflights`); late ice/answer with no session → drop.
+- Pick-one in `registerResolvedLink`: keep link initiated by the smaller nodeHash (`linkIsPreferred`). Winner becomes canonical before loser closes (`close('glare-loser')`). Only the canonical link fires `linkUp`. `onDown` emits `linkDown` only for the current canonical link.
+- Session cleaned from `signalSessions` on close.
+
+Normal one-way dial never builds a second PC. `trickleIceOff` stretches `have-local-offer` and raises glare rate. Regression: `test/live/link_glare_two_pc.test.mjs`.
 
 ## hello/auth handshake frame ordering
 
-The link handshake rides two control-channel frames: each side sends `hello` (`{ v, nodeHash, nodePubKey, nonce }`), then replies `auth` (`sign(peerNonce + localFingerprint + localNodeHash)`) once it has seen the peer's `hello`. On a simultaneous bidirectional dial these frames can arrive out of order: the initiator's `localDescription` is ready early, so it replies `auth` as soon as it receives our `hello` — before it emits its own `hello` (which waits for the data channel to open). An `auth` that lands before the peer's `hello` **must be buffered and verified once `hello` arrives, never dropped** — dropping it leaves the responder's `remoteAuthVerified` permanently false, so the handshake times out, the link collapses, and federation never reaches `members>=2`. Fixed in `link/link.mjs` (`pendingAuth` buffer); regression guard: `test/pure/link_handshake_reorder.test.mjs`.
+Handshake: each side sends `hello` (`{ v, nodeHash, nodePubKey, nonce }`), then `auth` (`sign(peerNonce + localFingerprint + localNodeHash)`) after seeing peer `hello`.
+
+On simultaneous dial, initiator may reply `auth` before emitting its own `hello`. **Buffer early `auth` and verify once `hello` arrives — never drop** (`pendingAuth` in `link/link.mjs`). Dropping leaves `remoteAuthVerified` false → handshake timeout → no federation `members>=2`. Regression: `test/pure/link_handshake_reorder.test.mjs`.
 
 ## Sparse group linking (peer_pool)
 
-Large groups no longer full-mesh `autoconnect`. `group_link_set.mjs` uses `selectLinkTargetsFromMembers` (`peer_pool.mjs`) to pick link targets within the `resolveFederationPoolLimits` budget: top-K trusted (by reputation, reusing `mergeTrustedWithAnchors`) + M random explore (`selectExploreWithSourceQuota`), filtered by `isQuarantinedPure`/denylist, and **forcibly including the initial anchors** (introducer/bootstrap/peer-hint, i.e. the initial `members` of `createGroupLinkSet`) to guarantee connectivity during bootstrap. `start()` selects once and dials; membership changes (advert/envelope) trigger a debounced recompute via `notePeerCandidate` that only dials newly-selected, not-yet-connected peers; it never proactively cuts (over-budget is handled by the registry's `trimToBudget` backstop).
+Large groups do not full-mesh. `group_link_set.mjs` uses `selectLinkTargetsFromMembers` (`peer_pool.mjs`) within `resolveFederationPoolLimits`: top-K trusted + M random explore, filtered by quarantine/denylist, **forcibly including initial anchors**. `start()` selects once; membership changes debounce via `notePeerCandidate` (dial newly selected only; never proactively cut — over-budget via registry `trimToBudget`).
 
 ## dag_event first-seen multi-hop relay
 
-On a sparse mesh, DAG convergence cannot rely on gossip pull + tip heartbeats alone. In `roomHandlers/sync.mjs`, `dag.on` forwards `stripDagEventLocalExtensions(event)` to `pickFederationTargetPeerIds` (minus the sender) when the event is **first seen** (gated by `tryMarkSeenFederationEvent`, so each node forwards each event exactly once and never loops) and `ingestRemoteEvent` deems the **signature valid** (`applied`/`pending`/`quarantined`; `invalid` is not forwarded, to avoid amplifying forged events). Relaying carries no reputation penalty (the positive `bumpReputationOnRelay` stays as-is).
+Sparse mesh cannot rely on gossip pull alone. In `roomHandlers/sync.mjs`, on first seen (`tryMarkSeenFederationEvent`) and signature valid (`applied`/`pending`/`quarantined`; not `invalid`), forward `stripDagEventLocalExtensions(event)` to `pickFederationTargetPeerIds` (minus sender). Relaying carries no reputation penalty.
 
 ## Windows / libdatachannel
 
-When `getSignalingRuntimeConfig().trickleIceOff === true`, send the final offer/answer only after ICE gathering completes, dedupe duplicate remote signal frames, and queue remote ICE until both local/remote descriptions are ready. Otherwise `node-datachannel` commonly fails with `Got a remote candidate without ICE transport` / duplicate-answer state errors.
+When `trickleIceOff === true`: send final offer/answer only after ICE gathering completes; dedupe duplicate remote frames; queue remote ICE until both descriptions ready. Otherwise common failures: `Got a remote candidate without ICE transport` / duplicate-answer state errors.
 
 ## Live-test relay override
 
-Live tests inject shared loopback relays via `init({ P2P: { signaling: { relayOverride, mdnsPolicy, trickleIceOff } } })` → `initP2PServer` → `initNode` (`src/scripts/test/node/p2p_signaling.mjs` + `--p2p-relay-url` on the node worker). Honor `getSignalingRuntimeConfig().relayOverride` in all discovery paths.
+Live tests inject shared loopback relays via `init({ P2P: { signaling: { relayOverride, mdnsPolicy, trickleIceOff } } })` → `initP2PServer` → `initNode` (`src/scripts/test/node/p2p_signaling.mjs` + `--p2p-relay-url`). Honor `getSignalingRuntimeConfig().relayOverride` in all discovery paths.

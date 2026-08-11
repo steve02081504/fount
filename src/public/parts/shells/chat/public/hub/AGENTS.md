@@ -16,7 +16,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 - **Stream preview**: `StreamRenderer` defaults to `allowDangerousHtml: false`; elevate only via `data-author-pubkey-hash` + `isTrustedMarkdownAuthor` — never blanket `!isRemote` (federated `stream_chunk` is not bound to the message author). Every frame: `replaceChildren(scrubHtmlActivePayload(html))`. Final hydrate uses `renderMessageMarkdownForPaint` with the normal trust gate.
 - **`message_edit` delta**: WS with `content.newContent` → `applyMessageEditToRow` (do not drop `is_generating` on streaming error final). Backfill by eventId must include overlays via `linesIncludingOverlaysForTargets`. Pending MD: `registerPendingMessageMarkdown` + `data-md-pending` — **never** raw markdown in `data-md-raw` attributes.
 - **Profile bio**: `paintEntityProfileBio` → `shared/trustedMarkdown.mjs` (same entry as Social).
-- **`?contact=` / remote profile**: Hub `GET …/entities/:hash` uses `fetchRemote`; profile races `readPublicFile` with `REMOTE_PROFILE_FETCH_TIMEOUT_MS` (cold miss must cover EVFS manifest+chunk fanout; warm path is SWR in fount-p2p≥0.0.22) + negative cache (`profile.mjs`). Popup paints a stub name/avatar before the fetch returns so a hung peer cannot leave an empty card. DM button shows for any non-self `entityHash`; click (and `dispatchFriendChat`) resolve `activePubKeyHex` via `forceRemote=1` when the contact link only carried the hash.
+- **`?contact=` / remote profile**: stub name/avatar before fetch returns; DM for any non-self `entityHash`; resolve `activePubKeyHex` via `forceRemote=1` when the link only carried the hash. Fetch/timeout/cache detail: [docs/ui-details.md](docs/ui-details.md#remote-profile--contact).
 
 ## Streaming AV
 
