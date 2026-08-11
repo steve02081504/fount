@@ -11,6 +11,7 @@ import { ms } from '../ms.mjs'
 import { escapeRegExp } from '../regex.mjs'
 
 import { FALLBACK_LOCALE, getBestLocale } from './locale_match.mjs'
+import { isSwitchValue, resolveSwitchCase } from './switch_value.mjs'
 
 /** 重导出 locale 匹配与回退常量。 */
 export {
@@ -179,6 +180,8 @@ function applyInterpolationToPlainSegment(segment, params, terminal) {
  * @returns {TTranslation} 替换后的翻译字符串或原对象。
  */
 function applyParamsToTranslation(translation, params, terminal = false) {
+	if (isSwitchValue(translation))
+		return applyParamsToTranslation(resolveSwitchCase(translation, params), params, terminal)
 	if (Array.isArray(translation)) return createI18nArrayProxy(translation, params, terminal)
 	if (!translation || !(Object(translation) instanceof String)) return translation
 	const translationText = translation + ''

@@ -152,23 +152,26 @@ export async function applyDraft(groupId, channelId) {
 export async function restoreDraftFiles(groupId, channelId) {
 	if (!groupId || !channelId) return
 	const { clearSelectedFiles, selectedFiles } = await import('./composerFiles.mjs')
-	const { renderAttachmentPreview } = await import('../src/composerAttachments.mjs')
 	clearSelectedFiles()
 
 	const files = peekDraftFiles(groupId, channelId)
 	const preview = document.getElementById('attachment-preview')
 	if (!files.length || !(preview instanceof HTMLElement)) return
+	const { renderAttachmentPreview } = await import('../src/composerAttachments.mjs')
 	for (const file of files) {
 		selectedFiles.push(file)
 		const el = await renderAttachmentPreview(
 			file,
 			selectedFiles.length - 1,
 			selectedFiles,
-			{ groupId },
+			{
+				groupId,
+				onFilesChange: setComposerExtrasVisible,
+			},
 		)
 		if (el) preview.appendChild(el)
 	}
-	setComposerExtrasVisible(true)
+	setComposerExtrasVisible(selectedFiles.length)
 }
 
 /**

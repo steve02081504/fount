@@ -43,18 +43,19 @@ function base64ToBlob(base64, mimeType) {
 }
 
 /**
- * 从预览容器同步 Hub composer extras 显隐（编辑区预览 id 不同则忽略）。
- * @param {HTMLElement | null | undefined} container 附件预览容器
- * @param {number} count 剩余附件数
- * @returns {void}
+ * 本地 base64 / data URI → object URL，并在节点移除时 revoke。
+ * @param {string} localBuffer base64 或 data URI
+ * @param {string} mime MIME
+ * @param {HTMLElement} owner 绑定生命周期的预览节点
+ * @returns {string} object URL
  */
-function syncComposerExtrasVisibility(container, count) {
-	if (container?.id !== 'attachment-preview') return
-	const extras = document.getElementById('composer-extras')
-	if (!extras) return
-	const visible = count > 0
-	extras.hidden = !visible
-	extras.classList.toggle('hidden', !visible)
+function objectUrlFromLocalBuffer(localBuffer, mime, owner) {
+	const url = URL.createObjectURL(base64ToBlob(
+		localBuffer.replace(/^data:[^;]+;base64,/, ''),
+		mime,
+	))
+	onElementRemoved(owner, () => URL.revokeObjectURL(url))
+	return url
 }
 
 /**
@@ -82,9 +83,13 @@ function removeAttachmentElement(attachmentElement) {
  * @param {Event} event - 事件。
  * @param {Array<object>} selectedFiles - 已选择的文件。
  * @param {HTMLElement} attachmentPreviewContainer - 附件预览容器。
+ * @param {{ groupId?: string | null, onFilesChange?: (count: number) => void }} [options] 群 ID 与附件数变化回调
  * @returns {Promise<{ file: object, element: HTMLElement }[]>} 新增附件及其预览元素
  */
-export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer) {
+export async function handleFilesSelect(event, selectedFiles, attachmentPreviewContainer, {
+	groupId = null,
+	onFilesChange = null,
+} = {}) {
 	const files = event.target.files || event.dataTransfer.files
 	if (!files) return []
 
@@ -101,7 +106,8 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 		const attachmentElement = await renderAttachmentPreview(
 			newFile,
 			selectedFiles.length - 1,
-			selectedFiles
+			selectedFiles,
+			{ groupId, onFilesChange },
 		)
 		added.push({ file: newFile, element: attachmentElement })
 		if (attachmentElement) {
@@ -112,7 +118,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 			})
 		}
 	}
-	syncComposerExtrasVisibility(attachmentPreviewContainer, selectedFiles.length)
+	onFilesChange?.(selectedFiles.length)
 	return added
 }
 
@@ -122,8 +128,9 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
  * @param {ClipboardEvent} event - 粘贴事件对象。
  * @param {Array} selectedFiles - 已选择的文件数组，用于存储新添加的文件。
  * @param {HTMLElement} attachmentPreviewContainer - 附件预览区域的 DOM 元素，用于显示新添加的附件。
+ * @param {{ groupId?: string | null, onFilesChange?: (count: number) => void }} [options] 群 ID 与附件数变化回调
  */
-export async function handlePaste(event, selectedFiles, attachmentPreviewContainer) {
+export async function handlePaste(event, selectedFiles, attachmentPreviewContainer, options = {}) {
 	const { items } = event.clipboardData || window.clipboardData
 	/** @type {File[]} */
 	const files = []
@@ -143,6 +150,7 @@ export async function handlePaste(event, selectedFiles, attachmentPreviewContain
 		{ target: { files } },
 		selectedFiles,
 		attachmentPreviewContainer,
+		options,
 	)
 }
 
@@ -153,13 +161,17 @@ const PREVIEWABLE_MIME_TYPES = ['image/', 'video/', 'audio/']
  * @param {object} file - 文件。
  * @param {number} index - 索引。
  * @param {Array<object>} selectedFiles - 已选择的文件。
- * @param {{ groupId?: string | null }} [options] 群 ID（已上传文件预览）
+ * @param {{ groupId?: string | null, onFilesChange?: (count: number) => void }} [options] 群 ID 与附件数变化回调
  * @returns {Promise<HTMLElement>} - 附件元素。
  */
-export async function renderAttachmentPreview(file, index, selectedFiles, { groupId = null } = {}) {
+export async function renderAttachmentPreview(file, index, selectedFiles, {
+	groupId = null,
+	onFilesChange = null,
+} = {}) {
 	const mime = String(file.mime_type || '')
 	const isImage = mime.startsWith('image/')
 	const isAudio = mime.startsWith('audio/')
+	const isVideo = mime.startsWith('video/')
 	const composing = !!selectedFiles
 	const showSpeechRecognitionButton = isAudio && composing && await speechRecognitionConfigured()
 	const showEditButton = isImage && composing && !!file.buffer
@@ -174,7 +186,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles, { grou
 		buttonGroupJoin: [!composing, showSpeechRecognitionButton, showEditButton, composing].filter(Boolean).length > 1,
 	})
 
-	const isPreviewable = PREVIEWABLE_MIME_TYPES.some(type => String(file.mime_type || '').startsWith(type))
+	const isPreviewable = PREVIEWABLE_MIME_TYPES.some(type => mime.startsWith(type))
 
 	const evfsRef = typeof file.buffer === 'string' ? parseEvfsRef(file.buffer) : null
 	if (evfsRef && isPreviewable) {
@@ -185,13 +197,13 @@ export async function renderAttachmentPreview(file, index, selectedFiles, { grou
 	const previewContainer = attachmentElement.querySelector('.preview-container')
 	const localBuffer = typeof file.buffer === 'string' && file.buffer.length ? file.buffer : null
 	if (isImage && localBuffer) {
-		const base64Data = localBuffer.startsWith('data:') ? localBuffer : `data:${file.mime_type};base64,${localBuffer}`
+		const previewUrl = objectUrlFromLocalBuffer(localBuffer, mime || 'image/*', attachmentElement)
 		const previewImg = await renderTemplate('hub/composer/preview_img', {
-			src: base64Data,
+			src: previewUrl,
 			alt: file.name,
 		})
 		previewImg.addEventListener('click', () => {
-			openMediaViewer([{ src: base64Data, name: file.name, mimeType: file.mime_type }], 0)
+			openMediaViewer([{ src: previewUrl, name: file.name, mimeType: mime }], 0)
 		})
 		previewContainer.appendChild(previewImg)
 
@@ -217,14 +229,18 @@ export async function renderAttachmentPreview(file, index, selectedFiles, { grou
 				file.name = edited.name
 				file.mime_type = edited.type || file.mime_type
 				const img = previewContainer.querySelector('img')
-				if (img) img.src = `data:${file.mime_type};base64,${file.buffer}`
+				if (img) {
+					const nextUrl = objectUrlFromLocalBuffer(file.buffer, file.mime_type, attachmentElement)
+					URL.revokeObjectURL(img.src)
+					img.src = nextUrl
+				}
 				const nameEl = attachmentElement.querySelector('.file-name')
 				if (nameEl) nameEl.textContent = file.name
 			}
 			catch (err) { console.error('image edit failed:', err) }
 		})
 	}
-	else if (isImage && file.fileId && groupId) 
+	else if (isImage && file.fileId && groupId)
 		try {
 			const { fetchGroupFileAsBlobUrl } = await import('./groupFileBlob.mjs')
 			const url = await fetchGroupFileAsBlobUrl(groupId, file.fileId)
@@ -242,15 +258,13 @@ export async function renderAttachmentPreview(file, index, selectedFiles, { grou
 			const preview = await renderTemplate('hub/composer/preview_file_icon', { alt: file.name })
 			previewContainer.appendChild(preview)
 		}
-	
-	else if (mime.startsWith('video/')) {
-		const videoSrc = localBuffer
-			? localBuffer.startsWith('data:') ? localBuffer : `data:${file.mime_type};base64,${localBuffer}`
-			: null
-		if (videoSrc) {
+
+	else if (isVideo)
+		if (localBuffer) {
+			const videoSrc = objectUrlFromLocalBuffer(localBuffer, mime || 'video/*', attachmentElement)
 			const preview = await renderTemplate('hub/composer/preview_video', { src: videoSrc })
 			preview.addEventListener('click', () => {
-				openMediaViewer([{ src: videoSrc, name: file.name, mimeType: file.mime_type }], 0)
+				openMediaViewer([{ src: videoSrc, name: file.name, mimeType: mime }], 0)
 			})
 			previewContainer.appendChild(preview)
 		}
@@ -258,11 +272,10 @@ export async function renderAttachmentPreview(file, index, selectedFiles, { grou
 			const preview = await renderTemplate('hub/composer/preview_file_icon', { alt: file.name })
 			previewContainer.appendChild(preview)
 		}
-	}
+
 	else if (isAudio && localBuffer) {
-		const audio = await renderTemplate('hub/composer/preview_audio', {
-			src: localBuffer.startsWith('data:') ? localBuffer : `data:${file.mime_type};base64,${localBuffer}`,
-		})
+		const audioSrc = objectUrlFromLocalBuffer(localBuffer, mime || 'audio/*', attachmentElement)
+		const audio = await renderTemplate('hub/composer/preview_audio', { src: audioSrc })
 		previewContainer.appendChild(audio)
 	}
 	else {
@@ -310,9 +323,8 @@ export async function renderAttachmentPreview(file, index, selectedFiles, { grou
 			if (itemIndex > -1)
 				selectedFiles.splice(itemIndex, 1)
 
-			const container = attachmentElement.parentElement
 			removeAttachmentElement(attachmentElement)
-			syncComposerExtrasVisibility(container, selectedFiles.length)
+			onFilesChange?.(selectedFiles.length)
 		})
 
 	return attachmentElement

@@ -2797,7 +2797,13 @@
 				"dropToUpload": "Largue para enviar para #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} itens não lidos"
+				"aria-label": {
+					"switch": "count",
+					"default": "${count} itens não lidos",
+					"cases": {
+						"1": "1 item não lido"
+					}
+				}
 			}
 		},
 		"sidebar": {

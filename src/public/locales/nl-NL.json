@@ -2797,7 +2797,13 @@
 				"dropToUpload": "Laat los om te uploaden naar #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} ongelezen items"
+				"aria-label": {
+					"switch": "count",
+					"default": "${count} ongelezen items",
+					"cases": {
+						"1": "1 ongelezen item"
+					}
+				}
 			}
 		},
 		"sidebar": {

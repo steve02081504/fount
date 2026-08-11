@@ -2797,7 +2797,13 @@
 				"dropToUpload": "Rilascia per caricare su #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} elementi non letti"
+				"aria-label": {
+					"switch": "count",
+					"default": "${count} elementi non letti",
+					"cases": {
+						"1": "1 elemento non letto"
+					}
+				}
 			}
 		},
 		"sidebar": {

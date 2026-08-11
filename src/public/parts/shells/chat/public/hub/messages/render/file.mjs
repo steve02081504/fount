@@ -178,34 +178,26 @@ async function renderImageOrVideoHtml(groupId, file, mime, { gallery = false, pe
 	const fileName = escapeHtml(file.name || id || 'file')
 	const alt = escapeHtml(file.description || '')
 	const local = localDataUrl(file)
-	let src = local
-	if (!src && id) src = await loadGroupFileBlobUrl(groupId, id)
-	if (!src)
-		return '<div class="text-xs text-error opacity-80 mt-1 media-error" data-i18n="chat.hub.attachmentLoadFailed"></div>'
-
-	if (mime.startsWith('image/')) {
-		const size = Number(file.size) || 0
-		if (size > LAZY_MEDIA_BYTES && id && !local)
-			return renderTemplateAsHtmlString('hub/messages/media_placeholder', {
-				fileId: escapeHtml(id),
-				fileName,
-				mimeType: escapeHtml(mime),
-			})
-		return renderTemplateAsHtmlString('hub/messages/inline_image', {
-			fileName,
-			src: escapeHtml(src),
-			alt,
-			gallery: gallery ? '1' : '',
-			pending: pending || (!id && local) ? '1' : '',
-		})
-	}
-
 	const size = Number(file.size) || 0
 	if (size > LAZY_MEDIA_BYTES && id && !local)
 		return renderTemplateAsHtmlString('hub/messages/media_placeholder', {
 			fileId: escapeHtml(id),
 			fileName,
 			mimeType: escapeHtml(mime),
+		})
+
+	let src = local
+	if (!src && id) src = await loadGroupFileBlobUrl(groupId, id)
+	if (!src)
+		return '<div class="text-xs text-error opacity-80 mt-1 media-error" data-i18n="chat.hub.attachmentLoadFailed"></div>'
+
+	if (mime.startsWith('image/'))
+		return renderTemplateAsHtmlString('hub/messages/inline_image', {
+			fileName,
+			src: escapeHtml(src),
+			alt,
+			gallery: gallery ? '1' : '',
+			pending: pending || (!id && local) ? '1' : '',
 		})
 
 	return renderTemplateAsHtmlString('hub/messages/inline_video', {

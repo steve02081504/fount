@@ -1,4 +1,5 @@
 import { addDragAndDropSupport, addMessageAreaFileDrop } from '../../src/ui/dragAndDrop.mjs'
+import { setComposerExtrasVisible } from '../composerExtras.mjs'
 import {
 	pickPhoto,
 	selectedFiles,
@@ -11,7 +12,8 @@ import { attachHubMentionAutocomplete } from '../mentionAutocomplete.mjs'
 export function wireComposerEvents() {
 	const messageInput = /** @type {HTMLTextAreaElement} */ document.getElementById('message-input')
 	const preview = document.getElementById('attachment-preview')
-	addDragAndDropSupport(messageInput, selectedFiles, preview)
+	const fileOpts = { onFilesChange: setComposerExtrasVisible }
+	addDragAndDropSupport(messageInput, selectedFiles, preview, fileOpts)
 	attachHubMentionAutocomplete(messageInput)
 
 	const dropRoot = document.querySelector('.main-body')
@@ -19,7 +21,7 @@ export function wireComposerEvents() {
 		const channelId = store.context.currentChannelId
 		const channel = store.context.currentState?.channels?.[channelId]
 		return channel?.name || channelId || ''
-	})
+	}, fileOpts)
 
 	document.getElementById('voice-button').addEventListener('click', () => {
 		void toggleVoiceRecording()

@@ -5,6 +5,8 @@
  * 【关联】walk.mjs、pages/scripts/i18n translateSingularElement、path/fount.{ps1,sh} Get-I18n/get_i18n。
  */
 
+import { isSwitchValue } from '../i18n/switch_value.mjs'
+
 /** data-i18n 对象模式可写入元素的字段（与前端 translateSingularElement 对齐）。 */
 export const I18N_ELEMENT_APPLICATOR_KEYS = [
 	'placeholder',
@@ -70,7 +72,7 @@ export function checkElementI18nKey(root, key) {
 	const value = getLocaleValue(root, key)
 	if (value === undefined)
 		return { kind: 'missing', key, message: `element i18n key missing: ${key}` }
-	if (typeof value === 'string' || Array.isArray(value)) return null
+	if (typeof value === 'string' || Array.isArray(value) || isSwitchValue(value)) return null
 	if (typeof value === 'object') {
 		if (isI18nElementObject(value)) return null
 		const hint = Object.hasOwn(value, 'main')
@@ -94,6 +96,7 @@ export function checkStringI18nKey(root, key) {
 		return { kind: 'missing', key, message: `string i18n key missing: ${key}` }
 	if (typeof value === 'string') return null
 	if (Array.isArray(value)) return null
+	if (isSwitchValue(value)) return null
 	if (value && typeof value === 'object') {
 		const hint = Object.hasOwn(value, 'main')
 			? ` resolves to object — use ${key}.main (or a string leaf)`

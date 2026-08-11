@@ -158,9 +158,8 @@ export function retainLocalAttachmentBuffers(previous, next) {
 	const byId = new Map()
 	const byNameMime = new Map()
 	for (const file of prevFiles) {
-		if (typeof file.buffer !== 'string' || !file.buffer) continue
-		const id = String(file.fileId || '').trim()
-		if (id) byId.set(id, file.buffer)
+		if (!file.buffer) continue
+		if (file.fileId) byId.set(file.fileId, file.buffer)
 		byNameMime.set(`${file.name || ''}\0${file.mime_type || ''}`, file.buffer)
 	}
 	return {
@@ -168,9 +167,8 @@ export function retainLocalAttachmentBuffers(previous, next) {
 		content: {
 			...next.content,
 			files: nextFiles.map(file => {
-				if (typeof file.buffer === 'string' && file.buffer) return file
-				const id = String(file.fileId || '').trim()
-				const buffer = (id && byId.get(id))
+				if (file.buffer) return file
+				const buffer = (file.fileId && byId.get(file.fileId))
 					|| byNameMime.get(`${file.name || ''}\0${file.mime_type || ''}`)
 				return buffer ? { ...file, buffer } : file
 			}),

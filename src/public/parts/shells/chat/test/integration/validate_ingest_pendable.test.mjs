@@ -8,7 +8,7 @@ import { dirname } from 'node:path'
 import { assertEquals } from 'jsr:@std/assert'
 
 import { validateIngestAuthz } from '../../src/chat/dag/ingest.mjs'
-import { eventsPath } from '../../src/chat/lib/paths.mjs'
+import { archiveManifestPath, eventsPath } from '../../src/chat/lib/paths.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const SENDER = 'a'.repeat(64)
@@ -139,7 +139,6 @@ Deno.test('dag_tip_merge with a missing prev event is pendable', async () => {
 
 Deno.test('dag_tip_merge accepts prev known only via archive_manifest (folded tip)', async () => {
 	await ensureServer()
-	const { archiveManifestPath } = await import('../../src/chat/lib/paths.mjs')
 	const groupId = 'g-merge-archived-prev'
 	const path = eventsPath(username, groupId)
 	await mkdir(dirname(path), { recursive: true })

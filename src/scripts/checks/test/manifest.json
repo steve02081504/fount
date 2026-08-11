@@ -52,6 +52,8 @@
 			"triggers": [
 				"src/scripts/checks/i18n_keys.mjs",
 				"src/scripts/checks/test/i18n_keys.test.mjs",
+				"src/scripts/i18n/switch_value.mjs",
+				"src/public/pages/scripts/i18n/switch_value.mjs",
 				"src/public/locales/*.json"
 			]
 		},

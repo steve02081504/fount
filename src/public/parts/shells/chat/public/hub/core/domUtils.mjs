@@ -31,7 +31,7 @@ const charEntityHashCache = new Map()
  * @returns {string} trim + 小写
  */
 export function normalizeCharPartName(name) {
-	return String(name).trim().toLowerCase()
+	return String(name || '').trim().toLowerCase()
 }
 
 /**

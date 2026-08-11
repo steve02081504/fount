@@ -3,7 +3,6 @@
  * 【职责】频道 HTTP 路由（消息读写与线程）。
  * 【关联】被 channels.mjs 聚合注册。
  */
-import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
@@ -44,17 +43,6 @@ import {
 	resolveGroupMember,
 } from './middleware.mjs'
 import { GROUPS_PREFIX, EVENT_ID_PARAM } from './path.mjs'
-
-/**
- * @param {object} file 上传附件（base64 buffer）
- * @returns {object} 带 Node Buffer 的附件
- */
-function decodeUploadFile(file) {
-	return {
-		...file,
-		buffer: file.buffer != null ? Buffer.from(file.buffer, 'base64') : undefined,
-	}
-}
 
 
 /**
@@ -120,15 +108,14 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		catch (error) {
 			throw httpError(400, error.message)
 		}
-		const rawFiles = req.body?.files
-		const processedFiles = (Array.isArray(rawFiles) ? rawFiles : []).map(decodeUploadFile)
-		if (processedFiles.length || Array.isArray(contentObj.files)) {
+		const files = Array.isArray(req.body?.files) ? req.body.files : []
+		if (files.length || Array.isArray(contentObj.files)) {
 			const maxBytes = Number(state.groupSettings?.maxDagPayloadBytes) || 262_144
 			;({ content: contentObj } = await attachFilesToContent(
 				username,
 				groupId,
 				contentObj,
-				processedFiles,
+				files,
 				maxBytes,
 				{ mergeExistingFiles: true },
 			))
@@ -370,14 +357,13 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, channelId)
 
-		const processedFiles = (Array.isArray(rawFiles) ? rawFiles : []).map(decodeUploadFile)
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).channel(channelId)
 		const sent = await channel.send({
 			...generated
 				? { generated: { content: generated.content, isAutoTrigger: generated.isAutoTrigger } }
 				: { rawContent },
-			files: processedFiles.length ? processedFiles : undefined,
+			files: Array.isArray(rawFiles) && rawFiles.length ? rawFiles : undefined,
 			maxDagPayloadBytes: Number(state.groupSettings?.maxDagPayloadBytes) || 262_144,
 		})
 		const event = sent.sourceEvent

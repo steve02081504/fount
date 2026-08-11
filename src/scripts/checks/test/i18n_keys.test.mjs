@@ -7,6 +7,7 @@ import { join } from 'node:path'
 
 import { assertEquals, assert } from 'https://deno.land/std/assert/mod.ts'
 
+import { resolveSwitchCase } from '../../i18n/switch_value.mjs'
 import { REPO_ROOT } from '../../test/core/repo_root.mjs'
 import {
 	AFFIX_HINT,
@@ -20,6 +21,20 @@ import {
 	scanI18nKeyStructure,
 	scanLocaleTreeShape,
 } from '../i18n_keys.mjs'
+
+Deno.test('resolveSwitchCase picks cases then default', () => {
+	const leaf = {
+		switch: 'count',
+		default: '${count} items',
+		cases: { 1: '1 item', '99+': 'many' },
+	}
+	assertEquals(resolveSwitchCase(leaf, { count: 1 }), '1 item')
+	assertEquals(resolveSwitchCase(leaf, { count: '1' }), '1 item')
+	assertEquals(resolveSwitchCase(leaf, { count: '99+' }), 'many')
+	assertEquals(resolveSwitchCase(leaf, { count: 2 }), '${count} items')
+	assertEquals(resolveSwitchCase(leaf, {}), '${count} items')
+	assertEquals(resolveSwitchCase('plain', { count: 1 }), 'plain')
+})
 
 Deno.test('camelPrefixes / decapitalize / findPrefixClusters', () => {
 	assertEquals(camelPrefixes('channelPermsHint'), ['channel', 'channelPerms'])
@@ -205,6 +220,36 @@ Deno.test('scanLocaleTreeShape flags string vs object', () => {
 	assertEquals(issues[0]?.kind, 'type_mismatch')
 	assertEquals(issues[0]?.path, 'a')
 	assert(issues[0]?.message.includes(UPDATE_LOCALE_DATA_HINT))
+})
+
+Deno.test('scanLocaleTreeShape allows string ↔ switch leaves', () => {
+	const switchLeaf = {
+		switch: 'count',
+		default: '${count} items',
+		cases: { 1: '1 item' },
+	}
+	assertEquals(localeValueKind(switchLeaf), 'switch')
+	assertEquals(
+		scanLocaleTreeShape(
+			{ label: '${count} 条' },
+			{ label: switchLeaf },
+		),
+		[],
+	)
+	assertEquals(
+		scanLocaleTreeShape(
+			{ label: switchLeaf },
+			{ label: '${count} items' },
+		),
+		[],
+	)
+	assertEquals(
+		scanLocaleTreeShape(
+			{ label: switchLeaf },
+			{ label: { title: 'x' } },
+		).map(issue => issue.kind),
+		['type_mismatch'],
+	)
 })
 
 Deno.test('all locale JSON trees match zh-CN value kinds on shared paths', async () => {

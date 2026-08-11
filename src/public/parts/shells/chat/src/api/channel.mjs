@@ -1,10 +1,8 @@
-import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
-
 
 import { normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
 import { listVirtualBridgeTyping, recordVirtualBridgeTyping } from '../chat/bridge/typing.mjs'
-import { postChannelMessage } from '../chat/channel/postMessage.mjs'
+import { asUploadBuffer, postChannelMessage } from '../chat/channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
 import { scheduleVoteDeadlines } from '../chat/lib/voteDeadlineWatcher.mjs'
@@ -51,7 +49,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 			 */
 			const mapFiles = files => files?.map(file => ({
 				...file,
-				buffer: Buffer.isBuffer(file.buffer) ? file.buffer : Buffer.from(file.buffer),
+				buffer: asUploadBuffer(file.buffer),
 			}))
 			const objectReply = typeof reply === 'object' && reply ? reply : null
 			/** @type {object} */

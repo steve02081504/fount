@@ -28,6 +28,17 @@ import { loadPlayerForReplica } from '../session/timeSliceParts.mjs'
 import { commitChannelMessageEvent } from './messageCommit.mjs'
 
 /**
+ * 上传附件缓冲规范化：已是 Buffer 原样；string 按 base64；其余交给 Buffer.from。
+ * @param {Buffer | string | Uint8Array | ArrayBuffer} buffer 原始缓冲
+ * @returns {Buffer} Node Buffer
+ */
+export function asUploadBuffer(buffer) {
+	if (Buffer.isBuffer(buffer)) return buffer
+	if (typeof buffer === 'string') return Buffer.from(buffer, 'base64')
+	return Buffer.from(buffer)
+}
+
+/**
  * 上传单个明文文件到群 DAG（`file_upload` + 群 EVFS manifest）。
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
@@ -188,18 +199,17 @@ export async function attachFilesToContent(username, groupId, content, files, ma
 		}
 		if (parseEvfsRef(file.buffer))
 			continue
-		const buffer = Buffer.isBuffer(file.buffer) ? file.buffer : Buffer.from(file.buffer, 'base64')
+		const buffer = asUploadBuffer(file.buffer)
 		if (!buffer.byteLength) continue
 		const { fileId, uploadMeta } = await uploadPlainFileToGroup(username, groupId, buffer, file)
 		fileIds.push(fileId)
-		const description = sanitizeAlt(file.description)
-		fileDescriptors.push({
+		fileDescriptors.push(wireFileDescriptor({
 			fileId,
 			name: uploadMeta.name,
 			mime_type: uploadMeta.mimeType,
 			size: uploadMeta.size,
-			...description ? { description } : {},
-		})
+			description: file.description,
+		}))
 	}
 
 	const stickerBase64 = content?.type === 'sticker' ? String(content.stickerBase64 || '') : ''

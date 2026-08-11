@@ -2797,7 +2797,13 @@
 				"dropToUpload": "Suelta para subir a #${channel}"
 			},
 			"unreadBadge": {
-				"aria-label": "${count} sin leer"
+				"aria-label": {
+					"switch": "count",
+					"default": "${count} elementos no leídos",
+					"cases": {
+						"1": "1 elemento no leído"
+					}
+				}
 			}
 		},
 		"sidebar": {

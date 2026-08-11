@@ -1,5 +1,6 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
+import { i18nElement } from '/scripts/i18n/index.mjs'
+import { mountTemplate, renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { getChannelPermissions, putChannelPermissions } from '../endpoints/channelPerms.mjs'
 
@@ -43,6 +44,36 @@ function sortedRoleIds(roles) {
 		.map(([roleId]) => roleId)
 }
 
+/**
+ * @param {string} roleId 角色 id
+ * @param {Record<string, boolean> | undefined} allow 允许位图
+ * @param {Record<string, boolean> | undefined} deny 拒绝位图
+ * @returns {Promise<string>} 权限行 HTML
+ */
+async function permRowsHtml(roleId, allow, deny) {
+	return (await Promise.all(ALL_PERMISSIONS.map(perm =>
+		renderTemplateAsHtmlString('group/settings/channel_perm_row', {
+			perm,
+			roleId,
+			state: channelPermTriState(allow, deny, perm),
+		})
+	))).join('')
+}
+
+/**
+ * 懒填已打开（或刚打开）的角色权限行。
+ * @param {HTMLElement} permsEl `.settings-role-perms`
+ * @param {string} roleId 角色 id
+ * @param {Record<string, { allow?: object, deny?: object }>} permissions 频道覆写表
+ * @returns {Promise<void>}
+ */
+async function fillRolePermsIfEmpty(permsEl, roleId, permissions) {
+	if (permsEl.childElementCount) return
+	const override = permissions[roleId]
+	permsEl.innerHTML = await permRowsHtml(roleId, override?.allow, override?.deny)
+	i18nElement(permsEl, { skip_report: true })
+}
+
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
 export async function renderChannelPermissionsPanel(context) {
 	const container = document.getElementById('channel-perms-container')
@@ -79,20 +110,13 @@ export async function renderChannelPermissionsPanel(context) {
 	const rolePanels = sortedRoleIds(context.state.roles).map(roleId => {
 		const role = context.state.roles[roleId] || { name: roleId, color: '#888' }
 		const override = permissions[roleId]
-		const allow = override?.allow || {}
-		const deny = override?.deny || {}
-		const hasOverride = Object.keys(allow).length > 0 || Object.keys(deny).length > 0
-		const open = roleId === '@everyone' || role.isDefault || hasOverride
+		const hasOverride = !!(Object.keys(override?.allow || {}).length || Object.keys(override?.deny || {}).length)
 		return {
 			roleId,
 			name: role.name || roleId,
 			color: safeRoleColor(role.color),
 			hasOverride,
-			open,
-			permRows: open ? ALL_PERMISSIONS.map(perm => ({
-				perm,
-				state: channelPermTriState(allow, deny, perm),
-			})) : [],
+			open: roleId === '@everyone' || role.isDefault || hasOverride,
 		}
 	})
 
@@ -101,6 +125,20 @@ export async function renderChannelPermissionsPanel(context) {
 		selectedChannelId: context.selectedChannelPermsId,
 		rolePanels,
 	})
+
+	for (const details of container.querySelectorAll('details.settings-role[open]')) {
+		const permsEl = details.querySelector('.settings-role-perms')
+		if (permsEl instanceof HTMLElement)
+			await fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions)
+	}
+
+	container.addEventListener('toggle', event => {
+		const details = event.target
+		if (!(details instanceof HTMLDetailsElement) || !details.open) return
+		const permsEl = details.querySelector('.settings-role-perms')
+		if (!(permsEl instanceof HTMLElement)) return
+		void fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions)
+	}, { signal })
 
 	container.addEventListener('click', async event => {
 		const selectCh = event.target.closest('[data-action="select-channel"]')

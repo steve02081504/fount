@@ -11,8 +11,9 @@ import { handleFilesSelect, handlePaste } from '../composerAttachments.mjs'
  * @param {HTMLElement} element - 监听拖拽事件的 DOM 元素。
  * @param {Array<File>} selectedFiles - 存储选定文件的数组。
  * @param {HTMLElement} attachmentPreviewContainer - 附件预览容器的 DOM 元素。
+ * @param {{ groupId?: string | null, onFilesChange?: (count: number) => void }} [options] 附件选项
  */
-export function addDragAndDropSupport(element, selectedFiles, attachmentPreviewContainer) {
+export function addDragAndDropSupport(element, selectedFiles, attachmentPreviewContainer, options = {}) {
 	element.addEventListener('dragover', event => {
 		event.preventDefault()
 		event.stopPropagation()
@@ -27,11 +28,11 @@ export function addDragAndDropSupport(element, selectedFiles, attachmentPreviewC
 		event.preventDefault()
 		event.stopPropagation()
 		element.classList.remove('dragover')
-		handleFilesSelect(event, selectedFiles, attachmentPreviewContainer)
+		handleFilesSelect(event, selectedFiles, attachmentPreviewContainer, options)
 	})
 
 	element.addEventListener('paste', event => {
-		handlePaste(event, selectedFiles, attachmentPreviewContainer)
+		handlePaste(event, selectedFiles, attachmentPreviewContainer, options)
 	})
 }
 
@@ -41,9 +42,10 @@ export function addDragAndDropSupport(element, selectedFiles, attachmentPreviewC
  * @param {Array<object>} selectedFiles 附件队列
  * @param {HTMLElement | null} attachmentPreviewContainer 预览容器
  * @param {() => string} getChannelLabel 当前频道名
+ * @param {{ groupId?: string | null, onFilesChange?: (count: number) => void }} [options] 附件选项
  * @returns {void}
  */
-export function addMessageAreaFileDrop(dropRoot, selectedFiles, attachmentPreviewContainer, getChannelLabel) {
+export function addMessageAreaFileDrop(dropRoot, selectedFiles, attachmentPreviewContainer, getChannelLabel, options = {}) {
 	if (!dropRoot || dropRoot.dataset.fileDropWired === '1') return
 	dropRoot.dataset.fileDropWired = '1'
 
@@ -107,6 +109,6 @@ export function addMessageAreaFileDrop(dropRoot, selectedFiles, attachmentPrevie
 		depth = 0
 		setVisible(false)
 		if (attachmentPreviewContainer)
-			void handleFilesSelect(event, selectedFiles, attachmentPreviewContainer)
+			void handleFilesSelect(event, selectedFiles, attachmentPreviewContainer, options)
 	})
 }

@@ -30,6 +30,7 @@ export function normalizeFriendBinding(raw) {
 }
 
 /**
+ * 构造基于 charname 的建群好友绑定输入（与 entityHash 互斥）。
  * @param {string} charname 角色 part 名
  * @param {string} [displayName] 展示名
  * @returns {{ charname: string, displayName?: string }} 建群输入：仅 charname（与 entityHash 互斥）
@@ -44,6 +45,7 @@ export function charFriendBindingInput(charname, displayName) {
 }
 
 /**
+ * 构造基于 entityHash 的建群好友绑定输入（与 charname 互斥）。
  * @param {string} entityHash 128 位 entityHash
  * @param {string} [displayName] 展示名
  * @returns {{ entityHash: string, displayName?: string }} 建群输入：仅 entityHash（与 charname 互斥）

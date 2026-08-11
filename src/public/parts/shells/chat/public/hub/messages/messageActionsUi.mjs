@@ -211,11 +211,15 @@ export function bindMessageEditArea(editWrap, { onSave, onCancel, initialFiles =
 		if (fileInput instanceof HTMLInputElement) fileInput.click()
 	})
 	fileInput?.addEventListener('change', async event => {
-		await handleFilesSelect(event, selectedFiles, preview)
+		await handleFilesSelect(event, selectedFiles, preview, {
+			groupId: store.context.currentGroupId,
+		})
 	})
 
 	if (textarea instanceof HTMLTextAreaElement) {
-		addDragAndDropSupport(textarea, selectedFiles, preview)
+		addDragAndDropSupport(textarea, selectedFiles, preview, {
+			groupId: store.context.currentGroupId,
+		})
 		bindComposerEditKeys(textarea, { onSave, onCancel })
 	}
 

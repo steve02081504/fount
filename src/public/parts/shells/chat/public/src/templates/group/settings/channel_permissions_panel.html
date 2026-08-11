@@ -25,18 +25,7 @@
 						${panel.hasOverride ? '<span class="badge badge-sm badge-warning" data-i18n="chat.group.settings.page.channelPerms.overridden"></span>' : ''}
 					</summary>
 					<div class="settings-role-body">
-						<div class="settings-role-perms">
-							${panel.permRows.map(row => `
-							<div class="flex items-center justify-between gap-2 py-1">
-								<span class="text-sm" data-i18n="chat.group.settings.page.perm.${row.perm}"></span>
-								<div class="join join-horizontal" role="group" data-role-id="${escapeHtml(panel.roleId)}" data-perm="${row.perm}">
-									<button type="button" class="btn btn-xs join-item ${row.state === 'neutral' ? 'btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="neutral" data-i18n="chat.group.settings.page.channelPerms.stateNeutral"></button>
-									<button type="button" class="btn btn-xs join-item ${row.state === 'allow' ? 'btn-success btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="allow" data-i18n="chat.group.settings.page.channelPerms.stateAllow"></button>
-									<button type="button" class="btn btn-xs join-item ${row.state === 'deny' ? 'btn-error btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="deny" data-i18n="chat.group.settings.page.channelPerms.stateDeny"></button>
-								</div>
-							</div>
-							`).join('')}
-						</div>
+						<div class="settings-role-perms"></div>
 						${panel.hasOverride ? `
 						<button type="button" class="btn btn-ghost btn-xs text-error w-fit" data-action="clear-role-override" data-role-id="${escapeHtml(panel.roleId)}" data-i18n="chat.group.settings.page.channelPerms.clearOverride"></button>
 						` : ''}
