@@ -572,12 +572,12 @@
 			"error_message": "あらら…\n\nエラーが発生しました：\n${error}",
 			"star_thank_you": "fountにスターを付けていただきありがとうございます！",
 			"telegram": {
-				"title": "Telegram",
-				"aria-label": "Telegram"
+				"title": "Telegramを開く",
+				"aria-label": "Telegramを開く"
 			},
 			"github": {
-				"title": "GitHub",
-				"aria-label": "GitHub"
+				"title": "GitHubを開く",
+				"aria-label": "GitHubを開く"
 			}
 		},
 		"error": {

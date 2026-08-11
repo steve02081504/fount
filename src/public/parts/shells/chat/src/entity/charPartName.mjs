@@ -9,9 +9,7 @@ import { getPartList } from '../../../../../../server/parts_loader.mjs'
 
 import { resolveCharPartNameAgainstList } from './charPartNameMatch.mjs'
 
-/**
- *
- */
+/** 纯函数：相对已知 chars 名列表解析目录名。 */
 export { resolveCharPartNameAgainstList } from './charPartNameMatch.mjs'
 
 /**

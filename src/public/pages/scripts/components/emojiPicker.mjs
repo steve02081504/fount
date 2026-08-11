@@ -126,7 +126,12 @@ function appendEmojiGridItem(grid, item) {
  * @returns {Promise<{ sections: object[], usage: object | null }>} 分区与 usage 能力
  */
 async function buildSections(context = {}) {
-	const { packs, usage, collection } = await aggregateEmojiPacks(context)
+	const packsPromise = aggregateEmojiPacks(context)
+	const unicodePromise = loadUnicodeEmojiByGroup().catch(error => {
+		console.warn('[emoji] unicode data load failed', error)
+		return { byGroup: {}, order: [] }
+	})
+	const { packs, usage, collection } = await packsPromise
 	const usagePayload = usage ? await usage.load() : { log: [], lastUsedAtByPack: {} }
 	const log = trimUsageLog(usagePayload.log || [], USAGE_WINDOW)
 	const collectionIds = new Set((await collection?.list())?.packIds || [])
@@ -211,15 +216,7 @@ async function buildSections(context = {}) {
 		})
 	}
 
-	let byGroup = {}
-	/** @type {string[]} */
-	let order = []
-	try {
-		({ byGroup, order } = await loadUnicodeEmojiByGroup())
-	}
-	catch (error) {
-		console.warn('[emoji] unicode data load failed', error)
-	}
+	const { byGroup, order } = await unicodePromise
 	for (const groupName of order) {
 		const codes = byGroup[groupName] || []
 		if (!codes.length) continue

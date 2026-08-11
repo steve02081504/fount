@@ -4,6 +4,7 @@ import { assertEquals } from 'jsr:@std/assert'
 import { orderFailedFirst, readTimingsOutFile, writeTimingsOutFile } from '../core/protocol.mjs'
 import { aggregateSubtestVerdicts, judgeSubtest } from '../core/verdict.mjs'
 import { subtestMatchesSpec } from '../playwright/phases.mjs'
+import { collectSubtestFilterByKey } from '../runner/selection.mjs'
 import { mapTimingsToSubtests } from '../runner/suite_run.mjs'
 
 import { makeSuite } from './fixtures.mjs'
@@ -21,10 +22,57 @@ Deno.test('orderFailedFirst with empty first list keeps original', () => {
 	assertEquals(orderFailedFirst(files, []).ordered, files)
 })
 
-Deno.test('subtestMatchesSpec accepts name or basename', () => {
-	assertEquals(subtestMatchesSpec('feed', 'feed.spec.mjs'), true)
-	assertEquals(subtestMatchesSpec('feed.spec.mjs', 'feed.spec.mjs'), true)
-	assertEquals(subtestMatchesSpec('profile', 'feed.spec.mjs'), false)
+Deno.test('collectSubtestFilterByKey merges ambient FOUNT_TEST_SUBTESTS for suite-only CLI', () => {
+	const filtered = [
+		makeSuite('shells/chat', 'frontend', {
+			subtests: [
+				{ name: 'composer', spec: 'composer.spec.mjs', triggers: [] },
+				{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [] },
+			],
+		}),
+		makeSuite('shells/chat', 'smoke_chat', { triggers: [] }),
+	]
+	const groups = [{
+		manifestIds: ['shells/chat'],
+		suiteSelectors: ['frontend'],
+		subtestSelectors: {},
+	}]
+	const map = collectSubtestFilterByKey(groups, filtered, ['composer'])
+	assertEquals(map.get('shells/chat:frontend'), ['composer'])
+	assertEquals(map.has('shells/chat:smoke_chat'), false)
+})
+
+Deno.test('collectSubtestFilterByKey keeps CLI :subtest over ambient', () => {
+	const filtered = [
+		makeSuite('shells/chat', 'frontend', {
+			subtests: [
+				{ name: 'composer', spec: 'composer.spec.mjs', triggers: [] },
+				{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [] },
+			],
+		}),
+	]
+	const groups = [{
+		manifestIds: ['shells/chat'],
+		suiteSelectors: ['frontend'],
+		subtestSelectors: { frontend: ['smoke'] },
+	}]
+	const map = collectSubtestFilterByKey(groups, filtered, ['composer'])
+	assertEquals(map.get('shells/chat:frontend'), ['smoke'])
+})
+
+Deno.test('collectSubtestFilterByKey ignores ambient when no suiteSelectors', () => {
+	const filtered = [
+		makeSuite('shells/chat', 'frontend', {
+			subtests: [{ name: 'composer', spec: 'composer.spec.mjs', triggers: [] }],
+		}),
+	]
+	const groups = [{
+		manifestIds: ['shells/chat'],
+		suiteSelectors: [],
+		subtestSelectors: {},
+	}]
+	const map = collectSubtestFilterByKey(groups, filtered, ['composer'])
+	assertEquals(map.size, 0)
 })
 
 Deno.test('aggregateSubtestVerdicts prioritizes unknown over red', () => {

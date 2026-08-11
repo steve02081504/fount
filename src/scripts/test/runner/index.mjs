@@ -53,6 +53,7 @@ import { exitCodeFromSlots, RunReportWriter } from './report.mjs'
 import { ResourceRunGate } from './scheduler.mjs'
 import {
 	buildCommittedChangedByKey,
+	collectSubtestFilterByKey,
 	listFreshNoisyKeys,
 	selectExplicitOrAll,
 	selectImperfectWave,
@@ -144,11 +145,14 @@ function unmatchedSuiteSelectors(allSuites, groups) {
 
 /**
  * 从分组收集显式子测试过滤（suite 键 → 名列表）。
+ * CLI `manifest:suite:subtest` 优先；若 CLI 只选了 suite 未写子测试，则合并环境变量
+ * `FOUNT_TEST_SUBTESTS`（仅作用于显式 suiteSelectors，不影响 dependsOn 拉入的依赖套件）。
  * @param {ResolvedGroup[]} groups 已解析分组
  * @param {import('../core/manifest.mjs').SuiteDef[]} filtered 过滤后的 suite
+ * @param {string[]} [ambientSubtests] 环境变量解析出的子测试名（默认读 `FOUNT_TEST_SUBTESTS`）
  * @returns {Map<string, string[]>} 子测试过滤
  */
-function collectSubtestFilterByKey(groups, filtered) {
+export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = parseTestSubtestsEnv()) {
 	/** @type {Map<string, string[]>} */
 	const map = new Map()
 	for (const group of groups)
@@ -162,6 +166,22 @@ function collectSubtestFilterByKey(groups, filtered) {
 				map.set(key, [...new Set([...prev, ...subtests])])
 			}
 		}
+
+	if (!ambientSubtests.length) return map
+
+	for (const group of groups) {
+		for (const suiteName of group.suiteSelectors ?? []) {
+			if (group.subtestSelectors?.[suiteName]?.length) continue
+			for (const suite of filtered) {
+				if (!group.manifestIds.includes(suite.manifestId)) continue
+				if (suite.name !== suiteName && suite.id !== suiteName) continue
+				if (!suite.subtests?.length) continue
+				const key = suiteKey(suite.manifestId, suite.name)
+				if (map.has(key)) continue
+				map.set(key, [...ambientSubtests])
+			}
+		}
+	}
 
 	return map
 }

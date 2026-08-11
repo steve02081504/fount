@@ -81,15 +81,11 @@ function bindStageTransform(stage, transform) {
 	let originX = 0
 	let originY = 0
 
-	/**
-	 *
-	 */
+	/** 把拖拽/缩放写回 transform。 */
 	const applyTransform = () => {
 		transform.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
 	}
-	/**
-	 *
-	 */
+	/** 重置缩放与位移。 */
 	const resetTransform = () => {
 		scale = 1
 		offsetX = 0
