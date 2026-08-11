@@ -477,7 +477,7 @@ self.addEventListener('message', event => {
 		console.log('[SW] Entered cold boot mode.')
 	}
 	else if (event.data?.type === 'GET_FOUNT_VERSION')
-		event.ports[0]?.postMessage?.({ fountVersion: fountVersion || 'unknown' })
+		event.ports[0]?.postMessage?.({ fountVersion })
 })
 
 /**
@@ -621,7 +621,8 @@ const routes = [
 let ws = null
 let reconnectTimeout = null
 /** @type {string | null} */
-let fountVersion = await getConfig('fountVersion')
+let fountVersion = 'unknown'
+getConfig('fountVersion').then(version => fountVersion = version)
 
 const RECONNECT_DELAY = 5000 // 5 seconds
 
