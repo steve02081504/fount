@@ -54,23 +54,20 @@ export function isActiveFriendChat() {
  * @returns {string|null} 角色 part 名
  */
 export function activePrivateCharPartName() {
-	const groupId = store.privateGroup.groupId
-	const fromBinding = friendBindingForGroup(groupId)?.charname
+	const fromBinding = friendBindingForGroup(store.privateGroup.groupId)?.charname
 	if (fromBinding) return fromBinding
 
-	const peer = String(store.privateGroup.peerEntityHash || '').trim().toLowerCase()
+	const peer = store.privateGroup.peerEntityHash
 	if (!peer) return null
 
 	for (const member of store.context.currentState?.members || []) {
-		if (String(member?.entityHash || '').toLowerCase() !== peer) continue
-		const name = String(member.charname || '').trim()
-		if (name) return name
+		if (member?.entityHash !== peer) continue
+		if (member.charname) return member.charname
 	}
 
 	for (const agent of store.viewer.agents || []) {
-		if (String(agent?.entityHash || '').toLowerCase() !== peer) continue
-		const name = String(agent.charPartName || '').trim()
-		if (name) return name
+		if (agent?.entityHash !== peer) continue
+		if (agent.charPartName) return agent.charPartName
 	}
 
 	return null

@@ -1,7 +1,7 @@
 /**
  * 【文件】group/lib/friendBinding.mjs
  * 【职责】将请求体 friendBinding 物化为可持久化形态（本地 agent 补全 charname / entityHash）。
- * 【原理】创建输入互斥 `{ entityHash }` 或 `{ charname }`；POST /groups 与 PUT meta 共用。
+ * 【原理】创建输入互斥 `{ entityHash }` 或 `{ charname }`；POST /groups 与 PUT meta 共用。charname 经 resolveCharPartName。
  * 【关联】entity/charPartName、entity/identity、entity/member、public/shared/friendBinding
  */
 
@@ -14,31 +14,29 @@
  */
 export async function materializeFriendBinding(username, raw) {
 	if (!raw) return null
-	const { isEntityHash128 } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 	const { normalizeFriendBinding } = await import('../../../public/shared/friendBinding.mjs')
-	const displayName = raw.displayName != null && String(raw.displayName).trim()
-		? String(raw.displayName).trim()
-		: undefined
+	const displayName = String(raw.displayName ?? '').trim() || undefined
+
 	if (raw.charname) {
 		const { resolveCharPartName } = await import('../../entity/charPartName.mjs')
 		const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
 		const charname = resolveCharPartName(username, raw.charname)
-		const ensured = await ensureLocalAgentEntityHash(username, charname)
+		const entityHash = await ensureLocalAgentEntityHash(username, charname)
 		return normalizeFriendBinding({
-			entityHash: ensured,
+			entityHash,
 			charname,
 			...displayName ? { displayName } : {},
 		})
 	}
+
+	const { isEntityHash128 } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 	const entityHash = String(raw.entityHash ?? '').trim().toLowerCase()
-	if (isEntityHash128(entityHash)) {
-		const { resolveCharPartNameForEntity } = await import('../../entity/identity.mjs')
-		const charname = await resolveCharPartNameForEntity(username, entityHash) || undefined
-		return normalizeFriendBinding({
-			entityHash,
-			...charname ? { charname } : {},
-			...displayName ? { displayName } : {},
-		})
-	}
-	return null
+	if (!isEntityHash128(entityHash)) return null
+	const { resolveCharPartNameForEntity } = await import('../../entity/identity.mjs')
+	const charname = await resolveCharPartNameForEntity(username, entityHash) || undefined
+	return normalizeFriendBinding({
+		entityHash,
+		...charname ? { charname } : {},
+		...displayName ? { displayName } : {},
+	})
 }

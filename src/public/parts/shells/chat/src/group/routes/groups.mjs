@@ -86,7 +86,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			const existing = rows.find(row => {
 				const bound = row.friendBinding
 				if (!bound) return false
-				if (bound.entityHash?.toLowerCase() === friendBinding.entityHash.toLowerCase()) return true
+				if (bound.entityHash === friendBinding.entityHash) return true
 				return !!(charKey && bound.charname === charKey)
 			})
 			if (existing) {
