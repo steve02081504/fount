@@ -25,11 +25,10 @@ function channelRowFromPostedEvent(event) {
 	const eventId = event?.id
 	const viewerPubKeyHash = String(store.context.currentState?.viewerMemberPubKeyHash || '').trim().toLowerCase()
 	const authorPubKeyHash = String(event.sender || '').trim().toLowerCase()
-	const content = { ...event.content }
 	return {
 		eventId,
 		type: 'message',
-		content,
+		content: { ...event.content },
 		sender: event.sender,
 		charId: event.charId || null,
 		timestamp: event.hlc?.wall ?? Date.now(),
@@ -53,9 +52,7 @@ function pendingRowFromComposer(contentObj, tempId, files = []) {
 			fileId: '',
 			name: file.name || 'file',
 			mime_type: file.mime_type || 'application/octet-stream',
-			size: typeof file.buffer === 'string'
-				? Math.floor(file.buffer.length * 0.75)
-				: Number(file.size) || 0,
+			size: Number(file.size) || 0,
 			buffer: file.buffer,
 			...file.description ? { description: file.description } : {},
 		}))

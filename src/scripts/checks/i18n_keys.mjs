@@ -214,6 +214,7 @@ export function scanI18nKeyStructure(data, path = '') {
 	for (const key of keys) {
 		const value = /** @type {Record<string, unknown>} */ data[key]
 		const full = path ? `${path}.${key}` : key
+		if (isSwitchValue(value)) continue
 		if (value && typeof value === 'object' && !Array.isArray(value))
 			issues.push(...scanI18nKeyStructure(value, full))
 	}

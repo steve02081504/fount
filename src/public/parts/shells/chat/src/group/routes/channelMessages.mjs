@@ -110,22 +110,22 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		}
 		const row = await findChannelMessageRow(username, groupId, channelId, eventId)
 		if (!row) throw httpError(404, 'message not found')
+		let contentToWrite = await applyChannelMessageEditHooks(
+			username, groupId, channelId, eventId, row, contentObj,
+		)
 		const files = Array.isArray(req.body?.files) ? req.body.files : []
-		if (files.length || Array.isArray(contentObj.files)) {
+		if (files.length || Array.isArray(contentToWrite.files)) {
 			const maxBytes = Number(state.groupSettings?.maxDagPayloadBytes) || 262_144
-			;({ content: contentObj } = await attachFilesToContent(
+			;({ content: contentToWrite } = await attachFilesToContent(
 				username,
 				groupId,
-				contentObj,
+				contentToWrite,
 				files,
 				maxBytes,
 				{ mergeExistingFiles: true },
 			))
 		}
-		const finalContent = await applyChannelMessageEditHooks(
-			username, groupId, channelId, eventId, row, contentObj,
-		)
-		const event = await appendChannelMessageEdit(username, groupId, channelId, eventId, finalContent)
+		const event = await appendChannelMessageEdit(username, groupId, channelId, eventId, contentToWrite)
 		res.status(200).json({ event })
 	})
 

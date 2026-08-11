@@ -31,7 +31,7 @@ const charEntityHashCache = new Map()
  * @returns {string} trim + 小写
  */
 export function normalizeCharPartName(name) {
-	return String(name || '').trim().toLowerCase()
+	return name.trim().toLowerCase()
 }
 
 /**
@@ -41,7 +41,7 @@ export function normalizeCharPartName(name) {
  */
 export function ingestAgentEntityHashList(agents) {
 	for (const row of agents || []) {
-		const name = normalizeCharPartName(row?.charPartName)
+		const name = normalizeCharPartName(row.charPartName)
 		if (!name) continue
 		const hash = String(row?.entityHash || '').trim().toLowerCase()
 		if (isEntityHash128(hash))
@@ -55,8 +55,7 @@ export function ingestAgentEntityHashList(agents) {
  */
 export function activeCharPartNames() {
 	const names = new Set(store.context.currentState?.charPartNames || [])
-	if (store.privateGroup.charname)
-		names.add(normalizeCharPartName(store.privateGroup.charname))
+	names.add(normalizeCharPartName(store.privateGroup.charname))
 	return [...names]
 }
 

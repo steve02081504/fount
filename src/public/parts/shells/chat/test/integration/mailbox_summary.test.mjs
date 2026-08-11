@@ -22,8 +22,8 @@ Deno.test({
 	const { CHAT_API_PREFIX } = await import('../../src/group/routes/path.mjs')
 	const { registerMailboxRoutes } = await import('../../src/endpoints/mailbox.mjs')
 
-	const fed = await getFederationSettings(username)
-	const activePubKeyHex = String(fed?.activePubKeyHex || '').trim()
+	const federationSettings = await getFederationSettings(username)
+	const activePubKeyHex = String(federationSettings?.activePubKeyHex || '').trim()
 	assertEquals(activePubKeyHex.length > 0, true, 'operator activePubKeyHex required')
 
 	// 回归：把 hex 字符串直接喂给 pubKeyHash 会炸（旧 mailbox.mjs 行为）
@@ -58,8 +58,8 @@ Deno.test({
 
 	/** @type {{ statusCode: number, body: unknown }} */
 	const result = { statusCode: 0, body: null }
-	const req = { user: { username } }
-	const res = {
+	const request = { user: { username } }
+	const response = {
 		/**
 		 * @param {number} code 状态码
 		 * @returns {object} 链式 res
@@ -76,7 +76,7 @@ Deno.test({
 			result.body = body
 		},
 	}
-	await handler(req, res)
+	await handler(request, response)
 	assertEquals(result.statusCode, 200)
 	assertEquals(result.body, { pendingCount: 1 })
 })

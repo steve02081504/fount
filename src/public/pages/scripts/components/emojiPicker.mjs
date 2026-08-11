@@ -18,6 +18,7 @@ import {
 	unicodeEmojiGroupI18nKey,
 	unicodeEmojiSectionKey,
 } from '../features/emoji/unicodeData.mjs'
+import { handleError } from '../features/errorHandlers.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 
 import { showEmojiPackPreview } from './emojiPackPreview.mjs'
@@ -546,7 +547,7 @@ export async function mountDockedEmojiPicker(options) {
 		closeWhenOpening?.classList.remove('show')
 		pickerElement.classList.toggle('show')
 		if (pickerElement.classList.contains('show'))
-			void refresh()
+			refresh().catch(handleError('chat.emoji.loadFailed'))
 	})
 
 	document.addEventListener('click', event => {
@@ -615,7 +616,7 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 export function wireEmojiPickerButton(button, onInsert, pickerContext = {}) {
 	button.addEventListener('click', event => {
 		event.preventDefault()
-		void mountEmojiPicker(button, onInsert, pickerContext)
+		mountEmojiPicker(button, onInsert, pickerContext).catch(handleError('chat.emoji.loadFailed'))
 	})
 }
 

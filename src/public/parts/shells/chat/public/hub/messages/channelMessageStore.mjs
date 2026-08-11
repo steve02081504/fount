@@ -146,41 +146,6 @@ export async function ensureMessageLoaded(eventId) {
 }
 
 /**
- * 把已有行上的本地 `content.files[].buffer` 合并进新行（按 fileId，其次 name+mime）。
- * @param {object | undefined} previous 已有行
- * @param {object} next 入站行
- * @returns {object} 可能带本地 buffer 的行
- */
-export function retainLocalAttachmentBuffers(previous, next) {
-	const prevFiles = previous?.content?.files
-	const nextFiles = next?.content?.files
-	if (!prevFiles?.length || !nextFiles?.length) return next
-	const byId = new Map()
-	/** @type {Map<string, unknown[]>} */
-	const byNameMime = new Map()
-	for (const file of prevFiles) {
-		if (!file.buffer) continue
-		if (file.fileId) byId.set(file.fileId, file.buffer)
-		const key = `${file.name || ''}\0${file.mime_type || ''}`
-		const queue = byNameMime.get(key)
-		if (queue) queue.push(file.buffer)
-		else byNameMime.set(key, [file.buffer])
-	}
-	return {
-		...next,
-		content: {
-			...next.content,
-			files: nextFiles.map(file => {
-				if (file.buffer) return file
-				const buffer = (file.fileId && byId.get(file.fileId))
-					|| byNameMime.get(`${file.name || ''}\0${file.mime_type || ''}`)?.shift()
-				return buffer ? { ...file, buffer } : file
-			}),
-		},
-	}
-}
-
-/**
  * 合并增量 batch 进 source（保留 pending 行与本地附件 buffer）。
  * @param {object[]} source 当前 source
  * @param {object[]} batch 新行

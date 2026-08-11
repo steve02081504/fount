@@ -53,7 +53,7 @@ export function registerRpcHandlers(roomContext) {
 		allowPartInvoke: () => isFederationActionAllowedUnderLoad(key, 'part_invoke', rtcLimits),
 	})
 
-	attachTrustGraphChunkHandlers(username, room, fedOut, rtcLimits, key)
+	attachTrustGraphChunkHandlers(room, fedOut, rtcLimits, key)
 
 	const charRpc = wireAction(roomContext, 'char_rpc')
 	const charRpcResponse = wireAction(roomContext, 'char_rpc_response')

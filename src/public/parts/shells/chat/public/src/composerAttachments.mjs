@@ -99,6 +99,7 @@ export async function handleFilesSelect(event, selectedFiles, attachmentPreviewC
 		const newFile = {
 			name: file.name,
 			mime_type: file.type,
+			size: file.size,
 			buffer: arrayBufferToBase64(await file.arrayBuffer()),
 			description: '',
 		}
@@ -184,7 +185,7 @@ async function appendLocalImagePreview(attachmentElement, file, mime, composing,
 		alt: file.name,
 	})
 	previewImg.addEventListener('click', () => {
-		openMediaViewer([{ src: previewUrl, name: file.name, mimeType: mime }], 0)
+		openMediaViewer([{ src: previewImg.src, name: file.name, mimeType: mime }], 0)
 	})
 	previewContainer.appendChild(previewImg)
 

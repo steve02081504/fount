@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
+import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
+
 import { normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
 import { listVirtualBridgeTyping, recordVirtualBridgeTyping } from '../chat/bridge/typing.mjs'
 import { asUploadBuffer, postChannelMessage } from '../chat/channel/postMessage.mjs'
@@ -49,7 +51,9 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 			 */
 			const mapFiles = files => files?.map(file => ({
 				...file,
-				buffer: asUploadBuffer(file.buffer),
+				buffer: typeof file.buffer === 'string' && parseEvfsRef(file.buffer)
+					? file.buffer
+					: asUploadBuffer(file.buffer),
 			}))
 			const objectReply = typeof reply === 'object' && reply ? reply : null
 			/** @type {object} */

@@ -209,6 +209,16 @@ Deno.test('zh-CN.json passes i18n key structure rules', async () => {
 	)
 })
 
+Deno.test('scanI18nKeyStructure treats switch leaves as terminals', () => {
+	const switchLeaf = {
+		switch: 'count',
+		default: '${count} items',
+		cases: { 1: '1 item' },
+	}
+	assert(Object.hasOwn(switchLeaf.cases, 1), 'cases must include key 1')
+	assertEquals(scanI18nKeyStructure({ label: switchLeaf }), [])
+})
+
 Deno.test('scanLocaleTreeShape flags string vs object', () => {
 	assertEquals(localeValueKind({ 'aria-label': 'x' }), 'object')
 	assertEquals(localeValueKind('x'), 'string')

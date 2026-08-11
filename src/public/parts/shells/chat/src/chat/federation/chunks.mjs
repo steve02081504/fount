@@ -496,17 +496,15 @@ export function attachFedChunkHandlers(fedRoom) {
 
 /**
  * TrustGraph 全局 chunk miss：sync 分区处理带 requestId 的 fed_chunk_get/data。
- * @param {string} username 用户
  * @param {object} room federation room
  * @param {{ enqueue: (prio: number, fn: () => void) => void }} fedOut 出站队列
  * @param {object} [rtcLimits] RTC 限额
  * @param {string} [roomKey] 房间键
  * @returns {void}
  */
-export function attachTrustGraphChunkHandlers(username, room, fedOut, rtcLimits = {}, roomKey = '') {
+export function attachTrustGraphChunkHandlers(room, fedOut, rtcLimits = {}, roomKey = '') {
 	import('npm:@steve02081504/fount-p2p/files/chunk/responder').then(({ attachTrustGraphFedChunkResponder }) => {
 		attachTrustGraphFedChunkResponder(
-			username,
 			room,
 			fedOut,
 			isFederationActionAllowedUnderLoad,
