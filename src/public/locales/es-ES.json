@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "Bandeja de entrada",
-				"filtersLabel": "Filtrar mensajes de la bandeja de entrada",
+				"panel": {
+					"aria-label": "Bandeja de entrada"
+				},
+				"filtersLabel": {
+					"aria-label": "Filtrar mensajes de la bandeja de entrada"
+				},
 				"rowLabel": {
 					"aria-label": "${author} dicho en ${group} de ${channel}: ${preview}"
 				},

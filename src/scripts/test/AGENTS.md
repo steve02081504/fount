@@ -68,7 +68,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 ## Operator tools
 
 - **CI `data/test` cache**: per-branch `fount-test-data-<branch>`. PR merge may promote head→base via `promote_test_data_cache.yaml` (git eligibility + `cache/restore`/`save` — do not treat `gh cache list` as success). Branch-delete and default-branch Run Tests wait for promote before dropping/restoring keys.
-- **Hung run**: `data/test/state/logs/`; rerun the probe with env from the log. Idle watchdog (10m no stdall) fails the suite. Host sleep aborts and retries — [host-keep-awake.md](docs/host-keep-awake.md).
+- **Hung run**: `data/test/state/logs/`; rerun the probe with env from the log. Idle watchdog (10m no stdall) fails the suite. Duration watchdog floor is 30m (same as no-baseline default) so a polluted short `baselineDurationMs` cannot shrink the cap; `FOUNT_TEST_ONLY` partial serial runs do not update suite wall baseline. Host sleep aborts and retries — [host-keep-awake.md](docs/host-keep-awake.md).
 - **Upstream blockers** (do not filter/silence in product or tests): [upstream-blockers.md](docs/upstream-blockers.md).
 - **Keep-awake**: [host-keep-awake.md](docs/host-keep-awake.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
 - **OOM / heap**: [heap-snapshots.md](docs/heap-snapshots.md).

@@ -9,7 +9,7 @@ import {
 	isChannelMessagePost,
 } from './fixtures.mjs'
 
-/** 1×1 PNG */
+/** 1×1 像素 PNG */
 const TINY_PNG_BUFFER = Buffer.from(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 	'base64',
@@ -103,9 +103,13 @@ test.describe('Chat composer', () => {
 		const unicodeJump = picker.locator('.emoji-rail-jump-unicode')
 		await unicodeJump.click()
 		await expect(unicodeJump).toBeHidden({ timeout: 5_000 })
-		await expect(picker.locator('.emoji-rail-jump-start')).toBeVisible()
-		await picker.locator('.emoji-rail-jump-start').click()
-		await expect(picker.locator('.emoji-rail-jump-start')).toBeHidden({ timeout: 5_000 })
+		// unicode 若靠近顶部，scrollTop 可能仍 < 8，回顶按钮按设计保持 hidden
+		const scroll = picker.locator('.emoji-scroll')
+		await scroll.evaluate(el => { el.scrollTop = Math.max(el.scrollTop, 40) })
+		const jumpStart = picker.locator('.emoji-rail-jump-start')
+		await expect(jumpStart).toBeVisible({ timeout: 5_000 })
+		await jumpStart.click()
+		await expect(jumpStart).toBeHidden({ timeout: 5_000 })
 		await expect(unicodeJump).toBeVisible()
 	})
 

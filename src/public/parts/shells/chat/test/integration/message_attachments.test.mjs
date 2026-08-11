@@ -8,7 +8,7 @@ import { assert, assertEquals, assertFalse } from 'jsr:@std/assert'
 
 import { createIntegrationBoot, waitUntil } from '../harness.mjs'
 
-/** 1×1 PNG */
+/** 1×1 像素 PNG */
 const TINY_PNG = Buffer.from(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 	'base64',

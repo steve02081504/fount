@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "📬",
-				"filtersLabel": "🔽📬💬",
+				"panel": {
+					"aria-label": "📬"
+				},
+				"filtersLabel": {
+					"aria-label": "🔽📬💬"
+				},
 				"rowLabel": {
 					"aria-label": "${author} 📍 ${group} #️⃣${channel} 💬：${preview}"
 				},

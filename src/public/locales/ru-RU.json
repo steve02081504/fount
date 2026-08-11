@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "Входящие",
-				"filtersLabel": "Фильтрация входящих сообщений",
+				"panel": {
+					"aria-label": "Входящие"
+				},
+				"filtersLabel": {
+					"aria-label": "Фильтрация входящих сообщений"
+				},
 				"rowLabel": {
 					"aria-label": "${author} сказал в ${group} группы ${channel}: ${preview}"
 				},

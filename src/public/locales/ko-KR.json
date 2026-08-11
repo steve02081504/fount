@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "받은 편지함",
-				"filtersLabel": "받은 편지함 메시지 필터링",
+				"panel": {
+					"aria-label": "받은 편지함"
+				},
+				"filtersLabel": {
+					"aria-label": "받은 편지함 메시지 필터링"
+				},
 				"rowLabel": {
 					"aria-label": "${author}님이 ${group}의 ${channel}에서 다음과 같이 말했습니다: ${preview}"
 				},

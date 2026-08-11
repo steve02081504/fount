@@ -570,7 +570,15 @@
 			"open_fount": "打开 fount",
 			"open_or_install_fount": "打开/安装 fount",
 			"error_message": "哎呀 :(\n\n发生错误：\n${error}",
-			"star_thank_you": "感谢您为 fount 标星！"
+			"star_thank_you": "感谢您为 fount 标星！",
+			"telegram": {
+				"title": "打开 Telegram",
+				"aria-label": "打开 Telegram"
+			},
+			"github": {
+				"title": "打开 GitHub",
+				"aria-label": "打开 GitHub"
+			}
 		},
 		"error": {
 			"title": "安装失败！",
@@ -1743,7 +1751,12 @@
 			},
 			"inbox": {
 				"title": "收件箱",
-				"filtersLabel": "筛选收件箱消息",
+				"panel": {
+					"aria-label": "收件箱"
+				},
+				"filtersLabel": {
+					"aria-label": "筛选收件箱消息"
+				},
 				"rowLabel": {
 					"aria-label": "${author} 在 ${group} 的 ${channel} 频道中说：${preview}"
 				},
@@ -4790,6 +4803,9 @@
 		"entries": {
 			"title": "内容列表",
 			"aria-label": "内容列表"
+		},
+		"breadcrumb": {
+			"aria-label": "面包屑导航"
 		},
 		"openCabinets": "打开文件柜列表",
 		"closeCabinets": "关闭",

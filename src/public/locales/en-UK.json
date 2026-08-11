@@ -570,7 +570,15 @@
 			"open_fount": "Open fount",
 			"open_or_install_fount": "Open/Install fount",
 			"error_message": "Oh dear :(\n\nAn error occurred:\n${error}",
-			"star_thank_you": "Thank you for starring fount!"
+			"star_thank_you": "Thank you for starring fount!",
+			"telegram": {
+				"title": "Telegram",
+				"aria-label": "Telegram"
+			},
+			"github": {
+				"title": "GitHub",
+				"aria-label": "GitHub"
+			}
 		},
 		"error": {
 			"title": "Installation failed!",
@@ -1743,7 +1751,12 @@
 			},
 			"inbox": {
 				"title": "Inbox",
-				"filtersLabel": "Filter inbox messages",
+				"panel": {
+					"aria-label": "Inbox"
+				},
+				"filtersLabel": {
+					"aria-label": "Filter inbox messages"
+				},
 				"rowLabel": {
 					"aria-label": "${author} said in ${group} of ${channel}: ${preview}"
 				},
@@ -4790,6 +4803,9 @@
 		"entries": {
 			"title": "Items",
 			"aria-label": "Items"
+		},
+		"breadcrumb": {
+			"aria-label": "Breadcrumb"
 		},
 		"openCabinets": "Open file cabinet list",
 		"closeCabinets": "Close",

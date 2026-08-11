@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "收件箱",
-				"filtersLabel": "篩選收件箱之札",
+				"panel": {
+					"aria-label": "收件箱"
+				},
+				"filtersLabel": {
+					"aria-label": "篩選收件箱之札"
+				},
 				"rowLabel": {
 					"aria-label": "${author} 於 ${group} 之 ${channel} 分苑中言：${preview}"
 				},

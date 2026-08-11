@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "Posteingang",
-				"filtersLabel": "Posteingangsnachrichten filtern",
+				"panel": {
+					"aria-label": "Posteingang"
+				},
+				"filtersLabel": {
+					"aria-label": "Posteingangsnachrichten filtern"
+				},
 				"rowLabel": {
 					"aria-label": "${author} sagte in ${group} von ${channel}: ${preview}"
 				},

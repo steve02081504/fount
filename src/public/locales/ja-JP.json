@@ -570,7 +570,15 @@
 			"open_fount": "fountを開く",
 			"open_or_install_fount": "fountを開く/インストール",
 			"error_message": "あらら…\n\nエラーが発生しました：\n${error}",
-			"star_thank_you": "fountにスターを付けていただきありがとうございます！"
+			"star_thank_you": "fountにスターを付けていただきありがとうございます！",
+			"telegram": {
+				"title": "Telegram を開く",
+				"aria-label": "Telegram を開く"
+			},
+			"github": {
+				"title": "GitHub を開く",
+				"aria-label": "GitHub を開く"
+			}
 		},
 		"error": {
 			"title": "インストールに失敗しました！",
@@ -1743,7 +1751,12 @@
 			},
 			"inbox": {
 				"title": "受信箱",
-				"filtersLabel": "受信箱メッセージをフィルタリングする",
+				"panel": {
+					"aria-label": "受信箱"
+				},
+				"filtersLabel": {
+					"aria-label": "受信箱メッセージをフィルタリングする"
+				},
 				"rowLabel": {
 					"aria-label": "${author} は ${group} の ${channel} で次のように述べました: ${preview}"
 				},
@@ -4790,6 +4803,9 @@
 		"entries": {
 			"title": "項目一覧",
 			"aria-label": "項目一覧"
+		},
+		"breadcrumb": {
+			"aria-label": "パンくずリスト"
 		},
 		"openCabinets": "ファイルキャビネットリストを開く",
 		"closeCabinets": "閉じる",

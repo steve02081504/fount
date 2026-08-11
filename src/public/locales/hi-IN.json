@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "इनबॉक्स",
-				"filtersLabel": "इनबॉक्स संदेशों को फ़िल्टर करें",
+				"panel": {
+					"aria-label": "इनबॉक्स"
+				},
+				"filtersLabel": {
+					"aria-label": "इनबॉक्स संदेशों को फ़िल्टर करें"
+				},
 				"rowLabel": {
 					"aria-label": "${author} ने ${group} के ${channel} में कहा: ${preview}"
 				},

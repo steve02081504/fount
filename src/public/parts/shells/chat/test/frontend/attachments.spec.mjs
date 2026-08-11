@@ -7,7 +7,7 @@ import {
 	expectMessageInChat,
 } from './fixtures.mjs'
 
-/** 1×1 PNG */
+/** 1×1 像素 PNG */
 const TINY_PNG_BUFFER = Buffer.from(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 	'base64',

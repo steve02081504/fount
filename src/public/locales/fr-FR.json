@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "Boîte de réception",
-				"filtersLabel": "Filtrer les messages de la boîte de réception",
+				"panel": {
+					"aria-label": "Boîte de réception"
+				},
+				"filtersLabel": {
+					"aria-label": "Filtrer les messages de la boîte de réception"
+				},
 				"rowLabel": {
 					"aria-label": "${author} a dit dans ${group} de ${channel} : ${preview}"
 				},

@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "Posta in arrivo",
-				"filtersLabel": "Filtra i messaggi di posta in arrivo",
+				"panel": {
+					"aria-label": "Posta in arrivo"
+				},
+				"filtersLabel": {
+					"aria-label": "Filtra i messaggi di posta in arrivo"
+				},
 				"rowLabel": {
 					"aria-label": "${author} ha detto in ${group} di ${channel}: ${preview}"
 				},

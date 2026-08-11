@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "Hộp thư",
-				"filtersLabel": "Lọc tin nhắn hộp thư đến",
+				"panel": {
+					"aria-label": "Hộp thư"
+				},
+				"filtersLabel": {
+					"aria-label": "Lọc tin nhắn hộp thư đến"
+				},
 				"rowLabel": {
 					"aria-label": "${author} đã nói trong ${group} của ${channel}: ${preview}"
 				},

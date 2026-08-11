@@ -537,6 +537,7 @@ async function executeWave(context) {
 				triggerHash: verdict?.triggerHash ?? null,
 				ranSubtests: subtests,
 				subtestTriggerHashes,
+				partialFileRun: !!onlyFiles?.length,
 			})
 			await writeState(REPO_ROOT, state)
 			if (index != null) await recordSuiteResult(index, entry)

@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "Postvak IN",
-				"filtersLabel": "Filter inbox-berichten",
+				"panel": {
+					"aria-label": "Postvak IN"
+				},
+				"filtersLabel": {
+					"aria-label": "Filter inbox-berichten"
+				},
 				"rowLabel": {
 					"aria-label": "${author} zei in ${group} van ${channel}: ${preview}"
 				},

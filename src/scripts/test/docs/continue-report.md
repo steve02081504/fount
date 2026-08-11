@@ -38,4 +38,4 @@ Default `fount test` loops imperfect → outdated until both empty or a wave exi
 
 ## Subtest timing
 
-Playwright writes per-spec ms to `FOUNT_TEST_TIMINGS_OUT`. State stores per-subtest `durationMs`, suite `baselineOverheadMs`, and `baselineDurationMs` only on full runs. ETA uses `expectedRunDurationMs` = overhead + selected subtest baselines.
+Playwright writes per-spec ms to `FOUNT_TEST_TIMINGS_OUT`. State stores per-subtest `durationMs`, suite `baselineOverheadMs`, and `baselineDurationMs` only on full runs (`FOUNT_TEST_ONLY` / `partialFileRun` skips suite wall baseline). ETA uses `expectedRunDurationMs` = overhead + selected subtest baselines.

@@ -375,7 +375,9 @@ function renderContinuousPicker(host, sections, handlers) {
 		else if (packName) {
 			railBtn.title = packName
 			railBtn.setAttribute('aria-label', packName)
+			railBtn.setAttribute('user-content', '')
 			header.textContent = packName
+			header.setAttribute('user-content', '')
 		}
 		rail.appendChild(railBtn)
 		const grid = document.createElement('div')

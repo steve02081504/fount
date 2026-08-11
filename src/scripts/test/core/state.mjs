@@ -439,6 +439,7 @@ function aggregateSuiteStatus(suite, subtests, runStatus) {
  * @param {string | null} [params.triggerHash] 本次运行的 trigger 内容指纹；缺省沿用 prev
  * @param {string[]} [params.ranSubtests] 本次实际跑过的子测试名
  * @param {Record<string, string | null>} [params.subtestTriggerHashes] 子测试 triggerHash
+ * @param {boolean} [params.partialFileRun] FOUNT_TEST_ONLY 等文件子集跑；不写 suite 墙钟基线
  * @returns {Promise<SuiteStateEntry>} 新条目
  */
 export async function upsertSuiteRun({
@@ -452,6 +453,7 @@ export async function upsertSuiteRun({
 	triggerHash,
 	ranSubtests,
 	subtestTriggerHashes,
+	partialFileRun = false,
 }) {
 	const key = suiteKey(suite.manifestId, suite.name)
 	const prev = state.suites[key]
@@ -519,7 +521,7 @@ export async function upsertSuiteRun({
 	else if (result.output)
 		logPath = await persistFailureLog(repoRoot, suite, result.output)
 
-	const baselineDurationMs = recordTiming && ranAllSubtests
+	const baselineDurationMs = recordTiming && ranAllSubtests && !partialFileRun
 		? updateBaselineDurationMs(prev?.baselineDurationMs, result.durationMs)
 		: prev?.baselineDurationMs ?? null
 

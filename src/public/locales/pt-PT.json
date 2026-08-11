@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "Caixa de entrada",
-				"filtersLabel": "Filtrar mensagens da caixa de entrada",
+				"panel": {
+					"aria-label": "Caixa de entrada"
+				},
+				"filtersLabel": {
+					"aria-label": "Filtrar mensagens da caixa de entrada"
+				},
 				"rowLabel": {
 					"aria-label": "${author} disse em ${group} de ${channel}: ${preview}"
 				},

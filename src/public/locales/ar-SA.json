@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "البريد الوارد",
-				"filtersLabel": "تصفية رسائل صندوق الوارد",
+				"panel": {
+					"aria-label": "البريد الوارد"
+				},
+				"filtersLabel": {
+					"aria-label": "تصفية رسائل صندوق الوارد"
+				},
 				"rowLabel": {
 					"aria-label": "قال ${author} في ${group} من ${channel}: ${preview}"
 				},

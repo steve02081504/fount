@@ -1743,7 +1743,12 @@
 			},
 			"inbox": {
 				"title": "Innhólf",
-				"filtersLabel": "Sía innhólfsskilaboð",
+				"panel": {
+					"aria-label": "Innhólf"
+				},
+				"filtersLabel": {
+					"aria-label": "Sía innhólfsskilaboð"
+				},
 				"rowLabel": {
 					"aria-label": "${author} sagði í ${group} af ${channel}: ${preview}"
 				},
