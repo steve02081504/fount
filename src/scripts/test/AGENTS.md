@@ -64,7 +64,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - Deno `.mjs` via `denoLiveRun(path)` or part-local `run.mjs` — no PowerShell probes.
 - **Live WS probes**: `createLiveShellHttp({ shell? })` from `wsHarness.mjs` — end with `finishLiveWs` / `failLiveWsPrecondition`; frames via `waitForWsFrame`.
 - **Polling**: `pollUntil` (live/fed, seconds, soft) / `waitUntil` (integration & selftest, ms, throws) — `core/wait.mjs`.
-- **Chat / Social fixtures**: `createCharBoot` / `seedCharFixture` / `seedStubCharPart` / `waitUntil` from `shells/chat/test/harness.mjs`; Social agents: `seedAgentChar` in `shells/social/test/harness.mjs`. Char part names via `resolveCharPartName` at write boundaries; Hub compares with exact `===`.
+- **Chat / Social fixtures**: `createCharBoot` / `seedCharFixture` / `seedStubCharPart` / `waitUntil` from `shells/chat/test/harness.mjs`; Social agents: `seedAgentChar` (fixture copy) / `seedStubAgent` (stub `main.mjs` for `getPartList` / `resolveCharPartName`) in `shells/social/test/harness.mjs`. Char part names via `resolveCharPartName` at write boundaries; Hub compares with exact `===`.
 - **ImportHandlers / easynew / OpenAI prompt-cache mock**: [fixtures-mocks.md](docs/fixtures-mocks.md).
 - **Platform bot / OnMessage contract**: [domain-harness.md](docs/domain-harness.md#platform-bot--onmessage-contract).
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.
