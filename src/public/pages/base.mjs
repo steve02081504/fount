@@ -110,7 +110,7 @@ async function ensureWebPushSubscription() {
 ; (async () => {
 	if (!navigator.serviceWorker) return
 	try {
-		await navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', module: true })
+		await navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', type: 'module' })
 		await navigator.serviceWorker.ready
 		await Promise.all([ensureWebPushSubscription(), queryFountVersion()])
 	} catch (error) {
