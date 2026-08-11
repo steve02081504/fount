@@ -9,9 +9,9 @@ import {
 	isChannelMessagePost,
 } from './fixtures.mjs'
 
-/** 1×1 PNG 测试数据 */
+/** ≥128×128 PNG，用于验证预览尺寸上限 */
 const TINY_PNG_BUFFER = Buffer.from(
-	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+	'iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAIAAABMXPacAAAAxElEQVR42u3RMQ0AAAjAsPk3DTLgaDIFa1M6zAIAAAQAgAAAEAAAAgBAAAAIAAABACAAAAQAgAAAEAAAAgBAAAAIAAABACAAAAQAgAAAEAAAAgBAAAAIAAABACAAAAQAgAAAEAAAAgBAAAAIAAABAADAAgAABACAAAAQAAACAEAAAAgAAAEAIAAABACAAAAQAAACAEAAAAgAAAEAIAAABACAAAAQAAACAEAAAAgAAAEAIAAABACAAAAQAAACAEAAAAjAixYgaMOy89oM6gAAAABJRU5ErkJggg==',
 	'base64',
 )
 
@@ -105,7 +105,7 @@ test.describe('Chat composer', () => {
 		await expect(unicodeJump).toBeHidden({ timeout: 5_000 })
 		// unicode 若靠近顶部，scrollTop 可能仍 < 8，回顶按钮按设计保持 hidden
 		const scroll = picker.locator('.emoji-scroll')
-		await scroll.evaluate(el => { el.scrollTop = Math.max(el.scrollTop, 40) })
+		await scroll.evaluate(element => { element.scrollTop = Math.max(element.scrollTop, 40) })
 		const jumpStart = picker.locator('.emoji-rail-jump-start')
 		await expect(jumpStart).toBeVisible({ timeout: 5_000 })
 		await jumpStart.click()

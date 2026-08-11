@@ -2791,7 +2791,7 @@
 			},
 			"trustedAuthorBadge": {
 				"textContent": "विश्वसनीय",
-				"title": "इस लेखक पर भरोसा करें (खतरनाक Markdown/HTML की अनुमति)"
+				"title": "इस लेखक पर भरोसा करें (खतरनाक Markdown/HTML की अनुमति दें)"
 			},
 			"attachment": {
 				"dropToUpload": "अपलोड करने के लिए #${channel} पर छोड़ें"

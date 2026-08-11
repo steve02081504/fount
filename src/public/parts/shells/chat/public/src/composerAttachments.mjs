@@ -157,6 +157,194 @@ export async function handlePaste(event, selectedFiles, attachmentPreviewContain
 const PREVIEWABLE_MIME_TYPES = ['image/', 'video/', 'audio/']
 
 /**
+ * 追加通用文件图标预览。
+ * @param {HTMLElement} previewContainer 预览容器
+ * @param {object} file 文件描述
+ * @returns {Promise<void>}
+ */
+async function appendFileIconPreview(previewContainer, file) {
+	const preview = await renderTemplate('hub/composer/preview_file_icon', { alt: file.name })
+	previewContainer.appendChild(preview)
+}
+
+/**
+ * 本地图片预览：缩略图与编写态 alt 输入。
+ * @param {HTMLElement} attachmentElement 附件根节点
+ * @param {object} file 文件描述
+ * @param {string} mime MIME
+ * @param {boolean} composing 是否编写态
+ * @param {HTMLElement} previewContainer 预览容器
+ * @param {string} localBuffer 本地 base64 缓冲
+ * @returns {Promise<void>}
+ */
+async function appendLocalImagePreview(attachmentElement, file, mime, composing, previewContainer, localBuffer) {
+	const previewUrl = objectUrlFromLocalBuffer(localBuffer, mime || 'image/*', attachmentElement)
+	const previewImg = await renderTemplate('hub/composer/preview_img', {
+		src: previewUrl,
+		alt: file.name,
+	})
+	previewImg.addEventListener('click', () => {
+		openMediaViewer([{ src: previewUrl, name: file.name, mimeType: mime }], 0)
+	})
+	previewContainer.appendChild(previewImg)
+
+	if (composing) {
+		const altInput = document.createElement('input')
+		altInput.type = 'text'
+		altInput.className = 'input input-bordered input-xs attachment-alt-input'
+		altInput.dataset.i18n = 'chat.hub.altImage'
+		altInput.value = file.description || ''
+		altInput.addEventListener('input', () => { file.description = altInput.value })
+		attachmentElement.querySelector('.file-name')?.after(altInput)
+	}
+}
+
+/**
+ * 本地视频预览。
+ * @param {HTMLElement} attachmentElement 附件根节点
+ * @param {object} file 文件描述
+ * @param {string} mime MIME
+ * @param {HTMLElement} previewContainer 预览容器
+ * @param {string} localBuffer 本地 base64 缓冲
+ * @returns {Promise<void>}
+ */
+async function appendLocalVideoPreview(attachmentElement, file, mime, previewContainer, localBuffer) {
+	const videoSrc = objectUrlFromLocalBuffer(localBuffer, mime || 'video/*', attachmentElement)
+	const preview = await renderTemplate('hub/composer/preview_video', { src: videoSrc })
+	preview.addEventListener('click', () => {
+		openMediaViewer([{ src: videoSrc, name: file.name, mimeType: mime }], 0)
+	})
+	previewContainer.appendChild(preview)
+}
+
+/**
+ * 本地音频预览。
+ * @param {HTMLElement} attachmentElement 附件根节点
+ * @param {string} mime MIME
+ * @param {HTMLElement} previewContainer 预览容器
+ * @param {string} localBuffer 本地 base64 缓冲
+ * @returns {Promise<void>}
+ */
+async function appendLocalAudioPreview(attachmentElement, mime, previewContainer, localBuffer) {
+	const audioSrc = objectUrlFromLocalBuffer(localBuffer, mime || 'audio/*', attachmentElement)
+	const audio = await renderTemplate('hub/composer/preview_audio', { src: audioSrc })
+	previewContainer.appendChild(audio)
+}
+
+/**
+ * 群文件图片预览：拉取 blob URL，失败时回退为文件图标。
+ * @param {HTMLElement} previewContainer 预览容器
+ * @param {object} file 文件描述
+ * @param {string} mime MIME
+ * @param {string} groupId 群 ID
+ * @returns {Promise<void>}
+ */
+async function appendGroupFileImagePreview(previewContainer, file, mime, groupId) {
+	try {
+		const { fetchGroupFileAsBlobUrl } = await import('./groupFileBlob.mjs')
+		const url = await fetchGroupFileAsBlobUrl(groupId, file.fileId)
+		const previewImg = await renderTemplate('hub/composer/preview_img', {
+			src: url,
+			alt: file.name,
+		})
+		onElementRemoved(previewImg, () => URL.revokeObjectURL(url))
+		previewImg.addEventListener('click', () => {
+			openMediaViewer([{ src: url, name: file.name, mimeType: mime }], 0)
+		})
+		previewContainer.appendChild(previewImg)
+	}
+	catch {
+		await appendFileIconPreview(previewContainer, file)
+	}
+}
+
+/**
+ * 绑定图片编辑按钮：打开编辑器并刷新预览。
+ * @param {HTMLElement} attachmentElement 附件根节点
+ * @param {object} file 文件描述
+ * @param {HTMLElement} previewContainer 预览容器
+ */
+function bindImageEditHandler(attachmentElement, file, previewContainer) {
+	attachmentElement.querySelector('.attachment-edit-button')?.addEventListener('click', async () => {
+		try {
+			const { openImageEditor } = await import('/scripts/components/imageEditor.mjs')
+			const blob = base64ToBlob(file.buffer.replace(/^data:[^;]+;base64,/, ''), file.mime_type)
+			const edited = await openImageEditor(new File([blob], file.name, { type: file.mime_type }), {
+				titleI18n: 'chat.hub.editImage',
+			})
+			if (!edited) return
+			file.buffer = arrayBufferToBase64(await edited.arrayBuffer())
+			file.name = edited.name
+			file.mime_type = edited.type || file.mime_type
+			const img = previewContainer.querySelector('img')
+			if (img) {
+				const nextUrl = objectUrlFromLocalBuffer(file.buffer, file.mime_type, attachmentElement)
+				URL.revokeObjectURL(img.src)
+				img.src = nextUrl
+			}
+			const nameEl = attachmentElement.querySelector('.file-name')
+			if (nameEl) nameEl.textContent = file.name
+		}
+		catch (err) { console.error('image edit failed:', err) }
+	})
+}
+
+/**
+ * 绑定语音识别按钮：转写音频并展示字幕。
+ * @param {HTMLElement} attachmentElement 附件根节点
+ * @param {object} file 文件描述
+ */
+function bindSpeechRecognitionHandler(attachmentElement, file) {
+	attachmentElement
+		.querySelector('.speech-recognition-button')
+		?.addEventListener('click', async () => {
+			try {
+				const bytes = typeof file.buffer === 'string'
+					? Uint8Array.from(atob(file.buffer), c => c.charCodeAt(0))
+					: new Uint8Array(file.buffer)
+				const result = await recognizeBuffer({
+					audio: bytes,
+					mime_type: file.mime_type,
+					name: file.name,
+				})
+				file.description = result.text
+				setCachedSpeechRecognitionTranscript(file.contentHash || file.name, result.text)
+				let caption = attachmentElement.querySelector('.attachment-transcript')
+				if (!caption) {
+					caption = document.createElement('p')
+					caption.className = 'attachment-transcript text-xs opacity-70 mt-1'
+					caption.setAttribute('user-content', '')
+					attachmentElement.querySelector('.file-name')?.after(caption)
+				}
+				caption.textContent = result.text
+			}
+			catch (error) {
+				showToastI18n('error', 'chat.voiceRecording.speechRecognitionFailed', { error: error?.message || String(error) })
+			}
+		})
+}
+
+/**
+ * 绑定删除按钮：从列表移除并播放退出动画。
+ * @param {HTMLElement} attachmentElement 附件根节点
+ * @param {object} file 文件描述
+ * @param {Array<object>} selectedFiles 已选文件列表
+ * @param {(count: number) => void | null} onFilesChange 数量变化回调
+ */
+function bindDeleteHandler(attachmentElement, file, selectedFiles, onFilesChange) {
+	attachmentElement
+		.querySelector('.delete-button')
+		?.addEventListener('click', () => {
+			const itemIndex = selectedFiles.indexOf(file)
+			if (itemIndex > -1)
+				selectedFiles.splice(itemIndex, 1)
+
+			removeAttachmentElement(attachmentElement)
+			onFilesChange?.(selectedFiles.length)
+		})
+}
+
+/**
  * 渲染附件预览。
  * @param {object} file - 文件。
  * @param {number} index - 索引。
@@ -197,135 +385,28 @@ export async function renderAttachmentPreview(file, index, selectedFiles, {
 	const previewContainer = attachmentElement.querySelector('.preview-container')
 	const localBuffer = typeof file.buffer === 'string' && file.buffer.length ? file.buffer : null
 	if (isImage && localBuffer) {
-		const previewUrl = objectUrlFromLocalBuffer(localBuffer, mime || 'image/*', attachmentElement)
-		const previewImg = await renderTemplate('hub/composer/preview_img', {
-			src: previewUrl,
-			alt: file.name,
-		})
-		previewImg.addEventListener('click', () => {
-			openMediaViewer([{ src: previewUrl, name: file.name, mimeType: mime }], 0)
-		})
-		previewContainer.appendChild(previewImg)
-
-		if (composing) {
-			const altInput = document.createElement('input')
-			altInput.type = 'text'
-			altInput.className = 'input input-bordered input-xs attachment-alt-input'
-			altInput.dataset.i18n = 'chat.hub.altImage'
-			altInput.value = file.description || ''
-			altInput.addEventListener('input', () => { file.description = altInput.value })
-			attachmentElement.querySelector('.file-name')?.after(altInput)
-		}
-
-		attachmentElement.querySelector('.attachment-edit-button')?.addEventListener('click', async () => {
-			try {
-				const { openImageEditor } = await import('/scripts/components/imageEditor.mjs')
-				const blob = base64ToBlob(file.buffer.replace(/^data:[^;]+;base64,/, ''), file.mime_type)
-				const edited = await openImageEditor(new File([blob], file.name, { type: file.mime_type }), {
-					titleI18n: 'chat.hub.editImage',
-				})
-				if (!edited) return
-				file.buffer = arrayBufferToBase64(await edited.arrayBuffer())
-				file.name = edited.name
-				file.mime_type = edited.type || file.mime_type
-				const img = previewContainer.querySelector('img')
-				if (img) {
-					const nextUrl = objectUrlFromLocalBuffer(file.buffer, file.mime_type, attachmentElement)
-					URL.revokeObjectURL(img.src)
-					img.src = nextUrl
-				}
-				const nameEl = attachmentElement.querySelector('.file-name')
-				if (nameEl) nameEl.textContent = file.name
-			}
-			catch (err) { console.error('image edit failed:', err) }
-		})
+		await appendLocalImagePreview(attachmentElement, file, mime, composing, previewContainer, localBuffer)
+		bindImageEditHandler(attachmentElement, file, previewContainer)
 	}
 	else if (isImage && file.fileId && groupId)
-		try {
-			const { fetchGroupFileAsBlobUrl } = await import('./groupFileBlob.mjs')
-			const url = await fetchGroupFileAsBlobUrl(groupId, file.fileId)
-			const previewImg = await renderTemplate('hub/composer/preview_img', {
-				src: url,
-				alt: file.name,
-			})
-			onElementRemoved(previewImg, () => URL.revokeObjectURL(url))
-			previewImg.addEventListener('click', () => {
-				openMediaViewer([{ src: url, name: file.name, mimeType: mime }], 0)
-			})
-			previewContainer.appendChild(previewImg)
-		}
-		catch {
-			const preview = await renderTemplate('hub/composer/preview_file_icon', { alt: file.name })
-			previewContainer.appendChild(preview)
-		}
-
+		await appendGroupFileImagePreview(previewContainer, file, mime, groupId)
 	else if (isVideo)
-		if (localBuffer) {
-			const videoSrc = objectUrlFromLocalBuffer(localBuffer, mime || 'video/*', attachmentElement)
-			const preview = await renderTemplate('hub/composer/preview_video', { src: videoSrc })
-			preview.addEventListener('click', () => {
-				openMediaViewer([{ src: videoSrc, name: file.name, mimeType: mime }], 0)
-			})
-			previewContainer.appendChild(preview)
-		}
-		else {
-			const preview = await renderTemplate('hub/composer/preview_file_icon', { alt: file.name })
-			previewContainer.appendChild(preview)
-		}
+		if (localBuffer)
+			await appendLocalVideoPreview(attachmentElement, file, mime, previewContainer, localBuffer)
+		else
+			await appendFileIconPreview(previewContainer, file)
+	else if (isAudio && localBuffer)
+		await appendLocalAudioPreview(attachmentElement, mime, previewContainer, localBuffer)
+	else
+		await appendFileIconPreview(previewContainer, file)
 
-	else if (isAudio && localBuffer) {
-		const audioSrc = objectUrlFromLocalBuffer(localBuffer, mime || 'audio/*', attachmentElement)
-		const audio = await renderTemplate('hub/composer/preview_audio', { src: audioSrc })
-		previewContainer.appendChild(audio)
-	}
-	else {
-		const preview = await renderTemplate('hub/composer/preview_file_icon', {
-			alt: file.name,
-		})
-		previewContainer.appendChild(preview)
-	}
 	attachmentElement = await svgInliner(attachmentElement)
 
 	attachmentElement
 		.querySelector('.download-button')
 		?.addEventListener('click', () => downloadFile(file))
-	attachmentElement
-		.querySelector('.speech-recognition-button')
-		?.addEventListener('click', async () => {
-			try {
-				const bytes = typeof file.buffer === 'string'
-					? Uint8Array.from(atob(file.buffer), c => c.charCodeAt(0))
-					: new Uint8Array(file.buffer)
-				const result = await recognizeBuffer({
-					audio: bytes,
-					mime_type: file.mime_type,
-					name: file.name,
-				})
-				file.description = result.text
-				setCachedSpeechRecognitionTranscript(file.contentHash || file.name, result.text)
-				let caption = attachmentElement.querySelector('.attachment-transcript')
-				if (!caption) {
-					caption = document.createElement('p')
-					caption.className = 'attachment-transcript text-xs opacity-70 mt-1'
-					caption.setAttribute('user-content', '')
-					attachmentElement.querySelector('.file-name')?.after(caption)
-				}
-				caption.textContent = result.text
-			}
-			catch (error) {
-				showToastI18n('error', 'chat.voiceRecording.speechRecognitionFailed', { error: error?.message || String(error) })
-			}
-		})
-	attachmentElement
-		.querySelector('.delete-button')
-		?.addEventListener('click', () => {
-			const itemIndex = selectedFiles.indexOf(file)
-			if (itemIndex > -1)
-				selectedFiles.splice(itemIndex, 1)
-
-			removeAttachmentElement(attachmentElement)
-			onFilesChange?.(selectedFiles.length)
-		})
+	bindSpeechRecognitionHandler(attachmentElement, file)
+	bindDeleteHandler(attachmentElement, file, selectedFiles, onFilesChange)
 
 	return attachmentElement
 }

@@ -1497,7 +1497,7 @@
 						"title": "Arquivo do canal"
 					},
 					"channelPerms": {
-						"denied": "Pode não tem permissão de MANAGE_CHANNELS para editar substituições de permissão de canal.",
+						"denied": "Não tem permissão de MANAGE_CHANNELS para editar substituições de permissão de canal.",
 						"hint": "Apenas exceções por canal: Herdar segue as permissões de papel; Permitir/Rejeitar forçam este canal. Para anexos para todos, abra Permissões de papel e assinale «Carregar ficheiros» em Everyone — não procure aqui um botão para adicionar uma substituição.",
 						"overridden": "Substituído",
 						"clearOverride": "Repor tudo para herdar",
@@ -2787,7 +2787,7 @@
 				"friends": "Ainda sem private chats",
 				"groups": "Ainda sem groups",
 				"members": "Ainda sem members",
-				"pins": "Ainda sem pins"
+				"pins": "Ainda não há mensagens fixadas"
 			},
 			"trustedAuthorBadge": {
 				"textContent": "Confiável",
@@ -4806,7 +4806,7 @@
 			"aria-label": "Lista de itens"
 		},
 		"breadcrumb": {
-			"aria-label": "Migalhas de pão"
+			"aria-label": "Navegação estrutural"
 		},
 		"openCabinets": "Abrir lista de armários",
 		"closeCabinets": "Fechar",

@@ -2791,7 +2791,7 @@
 			},
 			"trustedAuthorBadge": {
 				"textContent": "Довірено",
-				"title": "Довіряти цьому автору (дозволити небезпечний Markdown/HTML)"
+				"title": "Цього автора довірено; дозволено небезпечний Markdown/HTML"
 			},
 			"attachment": {
 				"dropToUpload": "Перетягніть, щоб завантажити в #${channel}"
@@ -4800,7 +4800,7 @@
 			"aria-label": "Список елементів"
 		},
 		"breadcrumb": {
-			"aria-label": "Навігаційний ланцюжок"
+			"aria-label": "Навігаційна стежка"
 		},
 		"openCabinets": "Відкрити список картотеки",
 		"closeCabinets": "Закрити",

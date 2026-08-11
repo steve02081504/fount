@@ -156,11 +156,15 @@ export function retainLocalAttachmentBuffers(previous, next) {
 	const nextFiles = next?.content?.files
 	if (!prevFiles?.length || !nextFiles?.length) return next
 	const byId = new Map()
+	/** @type {Map<string, unknown[]>} */
 	const byNameMime = new Map()
 	for (const file of prevFiles) {
 		if (!file.buffer) continue
 		if (file.fileId) byId.set(file.fileId, file.buffer)
-		byNameMime.set(`${file.name || ''}\0${file.mime_type || ''}`, file.buffer)
+		const key = `${file.name || ''}\0${file.mime_type || ''}`
+		const queue = byNameMime.get(key)
+		if (queue) queue.push(file.buffer)
+		else byNameMime.set(key, [file.buffer])
 	}
 	return {
 		...next,
@@ -169,7 +173,7 @@ export function retainLocalAttachmentBuffers(previous, next) {
 			files: nextFiles.map(file => {
 				if (file.buffer) return file
 				const buffer = (file.fileId && byId.get(file.fileId))
-					|| byNameMime.get(`${file.name || ''}\0${file.mime_type || ''}`)
+					|| byNameMime.get(`${file.name || ''}\0${file.mime_type || ''}`)?.shift()
 				return buffer ? { ...file, buffer } : file
 			}),
 		},

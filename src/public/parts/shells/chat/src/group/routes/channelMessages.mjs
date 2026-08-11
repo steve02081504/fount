@@ -108,6 +108,8 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		catch (error) {
 			throw httpError(400, error.message)
 		}
+		const row = await findChannelMessageRow(username, groupId, channelId, eventId)
+		if (!row) throw httpError(404, 'message not found')
 		const files = Array.isArray(req.body?.files) ? req.body.files : []
 		if (files.length || Array.isArray(contentObj.files)) {
 			const maxBytes = Number(state.groupSettings?.maxDagPayloadBytes) || 262_144
@@ -120,8 +122,6 @@ export function registerChannelMessageRoutes(router, authenticate) {
 				{ mergeExistingFiles: true },
 			))
 		}
-		const row = await findChannelMessageRow(username, groupId, channelId, eventId)
-		if (!row) throw httpError(404, 'message not found')
 		const finalContent = await applyChannelMessageEditHooks(
 			username, groupId, channelId, eventId, row, contentObj,
 		)

@@ -129,6 +129,7 @@ export function wireProfileEditButton(root, entityHash, options = {}) {
 }
 
 /**
+ * 将候选值规范为小写 64 hex；无效则返回空串。
  * @param {unknown} value 候选 hex
  * @returns {string} 小写 64 hex；无效为空串
  */

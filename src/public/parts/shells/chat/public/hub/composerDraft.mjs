@@ -113,9 +113,9 @@ export function saveDraft(groupId, channelId, draft) {
  * 将 localStorage 草稿应用到 composer DOM。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @returns {Promise<void>}
+ * @returns {void}
  */
-export async function applyDraft(groupId, channelId) {
+export function applyDraft(groupId, channelId) {
 	if (!groupId || !channelId) return
 	const input = document.getElementById('message-input')
 	if (input instanceof HTMLTextAreaElement) input.value = ''
@@ -181,7 +181,7 @@ export async function restoreDraftFiles(groupId, channelId) {
  * @returns {Promise<void>}
  */
 export async function loadDraft(groupId, channelId) {
-	await applyDraft(groupId, channelId)
+	applyDraft(groupId, channelId)
 	await restoreDraftFiles(groupId, channelId)
 }
 

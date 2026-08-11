@@ -153,6 +153,7 @@ async function applyBeforeUserSend(username, groupId, channelId, content, files)
 }
 
 /**
+ * 规范化附件 wire 描述符（fileId / name / mime / size / description）。
  * @param {object} file 已落盘或待上传文件描述符
  * @returns {object} wire files[] 项
  */

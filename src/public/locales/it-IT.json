@@ -572,8 +572,8 @@
 			"error_message": "Uffa :(\n\nSi è verificato un errore:\n${error}",
 			"star_thank_you": "Grazie per aver aggiunto una stella a fount!",
 			"telegram": {
-				"title": "Telegram",
-				"aria-label": "Telegram"
+				"title": "Apri Telegram",
+				"aria-label": "Apri Telegram"
 			},
 			"github": {
 				"title": "GitHub",
@@ -2791,7 +2791,7 @@
 			},
 			"trustedAuthorBadge": {
 				"textContent": "Fidato",
-				"title": "Il rendering Markdown di questo autore è consentito"
+				"title": "Il rendering Markdown/HTML di questo autore è consentito"
 			},
 			"attachment": {
 				"dropToUpload": "Rilascia per caricare su #${channel}"
@@ -4806,7 +4806,7 @@
 			"aria-label": "Elenco elementi"
 		},
 		"breadcrumb": {
-			"aria-label": "Briciole di pane"
+			"aria-label": "Percorso di navigazione"
 		},
 		"openCabinets": "Apri l'elenco degli schedari",
 		"closeCabinets": "Chiudi",

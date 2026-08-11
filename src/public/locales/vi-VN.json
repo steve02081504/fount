@@ -2790,7 +2790,7 @@
 				"pins": "Chưa có ghim"
 			},
 			"trustedAuthorBadge": {
-				"textContent": "Đã tin",
+				"textContent": "Đã tin cậy",
 				"title": "Đã cho phép kết xuất Markdown của tác giả này"
 			},
 			"attachment": {

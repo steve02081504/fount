@@ -25,9 +25,7 @@ function channelRowFromPostedEvent(event) {
 	const eventId = event?.id
 	const viewerPubKeyHash = String(store.context.currentState?.viewerMemberPubKeyHash || '').trim().toLowerCase()
 	const authorPubKeyHash = String(event.sender || '').trim().toLowerCase()
-	const content = event.content && typeof event.content === 'object'
-		? { ...event.content }
-		: event.content
+	const content = { ...event.content }
 	return {
 		eventId,
 		type: 'message',

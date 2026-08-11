@@ -15,6 +15,7 @@ import { eventsPath } from '../lib/paths.mjs'
 import { safeReadSnapshot } from './wal.mjs'
 
 /**
+ * 将规范化事件 id 写入已知集合。
  * @param {Set<string>} knownSet 写入集合
  * @param {unknown} id 事件 id
  * @returns {void}
@@ -25,6 +26,7 @@ function addKnownEventId(knownSet, id) {
 }
 
 /**
+ * 从群快照提取并写入已知事件 id。
  * @param {object | null | undefined} checkpoint 群快照
  * @param {Set<string>} knownSet 写入集合
  * @returns {void}
@@ -38,11 +40,9 @@ export function addCheckpointKnownEventIds(checkpoint, knownSet) {
 		addKnownEventId(knownSet, id)
 	for (const entry of checkpoint.epoch_chain || [])
 		addKnownEventId(knownSet, entry?.checkpoint_event_id)
-	for (const ids of Object.values(checkpoint.hot_posts?.latestByChannel || {})) {
-		const list = Array.isArray(ids) ? ids : ids ? [ids] : []
-		for (const id of list)
+	for (const ids of Object.values(checkpoint.hot_posts?.latestByChannel || {}))
+		for (const id of Array.isArray(ids) ? ids : ids ? [ids] : [])
 			addKnownEventId(knownSet, id)
-	}
 }
 
 /**

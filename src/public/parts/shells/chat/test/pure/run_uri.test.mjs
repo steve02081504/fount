@@ -19,32 +19,31 @@ Deno.test('formatJoinRunUri uses shells:chat prefix', () => {
 })
 
 Deno.test('parseJoinRunUri round-trips join payload', () => {
-	const uri = formatJoinRunUri('gid', 'code', 'secret', 'a'.repeat(64))
-	assertEquals(parseJoinRunUri(uri)?.groupId, 'gid')
-	assertEquals(parseJoinRunUri(uri)?.roomSecret, 'secret')
+	const parsed = parseJoinRunUri(formatJoinRunUri('gid', 'code', 'secret', 'a'.repeat(64)))
+	assert(parsed)
+	assertEquals(parsed.groupId, 'gid')
+	assertEquals(parsed.roomSecret, 'secret')
 })
 
 Deno.test('parseJoinRunUri keeps introducerNodeHash when powAnchorRef omitted', () => {
 	const introducerPubKeyHash = 'a'.repeat(64)
 	const introducerNodeHash = 'b'.repeat(64)
-	const uri = formatJoinRunUri('gid', 'code', 'secret', introducerPubKeyHash, undefined, introducerNodeHash)
-	assert(uri.includes('introducerNodeHash='))
-	assert(!uri.includes('powAnchorRef='))
-	const parsed = parseJoinRunUri(uri)
-	assertEquals(parsed?.introducerPubKeyHash, introducerPubKeyHash)
-	assertEquals(parsed?.powAnchorRef, undefined)
-	assertEquals(parsed?.introducerNodeHash, introducerNodeHash)
+	const parsed = parseJoinRunUri(formatJoinRunUri('gid', 'code', 'secret', introducerPubKeyHash, undefined, introducerNodeHash))
+	assert(parsed)
+	assertEquals(parsed.introducerPubKeyHash, introducerPubKeyHash)
+	assertEquals(parsed.powAnchorRef, undefined)
+	assertEquals(parsed.introducerNodeHash, introducerNodeHash)
 })
 
 Deno.test('parseJoinRunUri round-trips powAnchorRef and introducerNodeHash', () => {
 	const introducerPubKeyHash = 'a'.repeat(64)
 	const powAnchorRef = 'c'.repeat(64)
 	const introducerNodeHash = 'b'.repeat(64)
-	const uri = formatJoinRunUri('gid', 'code', 'secret', introducerPubKeyHash, powAnchorRef, introducerNodeHash)
-	const parsed = parseJoinRunUri(uri)
-	assertEquals(parsed?.roomSecret, 'secret')
-	assertEquals(parsed?.powAnchorRef, powAnchorRef)
-	assertEquals(parsed?.introducerNodeHash, introducerNodeHash)
+	const parsed = parseJoinRunUri(formatJoinRunUri('gid', 'code', 'secret', introducerPubKeyHash, powAnchorRef, introducerNodeHash))
+	assert(parsed)
+	assertEquals(parsed.roomSecret, 'secret')
+	assertEquals(parsed.powAnchorRef, powAnchorRef)
+	assertEquals(parsed.introducerNodeHash, introducerNodeHash)
 })
 
 Deno.test('parseJoinRunUri reads key=value fields regardless of order', () => {

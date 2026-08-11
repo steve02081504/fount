@@ -214,8 +214,7 @@ async function filterLinesToDisplayBranch(username, groupId, state, lines) {
 function branchFilterActive(state) {
 	const tip = String(state.localViewBranchTip || state.consensusBranchTip || '').trim()
 	if (!tip) return false
-	const tips = Array.isArray(state.dagTips) ? state.dagTips : []
-	return tips.length >= 2
+	return state.dagTips.length >= 2
 }
 
 /**
@@ -251,12 +250,11 @@ function paginateChannelLines(lines, pagination, pageLimit) {
 async function finalizeChannelMessagesForViewer(username, groupId, state, lines, channelId = 'default', { branchFiltered = false } = {}) {
 	const viewerPubKeyHash = await resolveActiveMemberKeyForLocalReplica(username, groupId, state)
 	if (!viewerPubKeyHash) throw new Error('Not a member')
-	const branchLines = branchFiltered
-		? lines
-		: await filterLinesToDisplayBranch(username, groupId, state, lines)
 	const streamGeneratingIdleMs = Number(state.groupSettings?.streamGeneratingIdleMs)
 	let work = markStaleGeneratingMessages(
-		branchLines,
+		branchFiltered
+			? lines
+			: await filterLinesToDisplayBranch(username, groupId, state, lines),
 		Number.isFinite(streamGeneratingIdleMs) && streamGeneratingIdleMs > 0 ? streamGeneratingIdleMs : undefined,
 	)
 	if (work.some(line => Array.isArray(line.content?.options))) {

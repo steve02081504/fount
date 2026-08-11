@@ -1,12 +1,13 @@
 /**
  * 全屏媒体查看器（图片 / 视频）：ESC 关闭、左右切换、滚轮缩放、拖拽平移、下载。
+ * 使用原生 `<dialog>` + `showModal()` 以获得焦点约束。
  */
 import { setElementI18n, setLocalizeLogic } from '../i18n/index.mjs'
 import { onElementRemoved } from '../lib/onElementRemoved.mjs'
 
 /** @typedef {{ src: string, name?: string, mimeType?: string }} MediaViewerItem */
 
-/** @type {HTMLElement | null} */
+/** @type {HTMLDialogElement | null} */
 let activeViewer = null
 /** @type {(() => void) | null} */
 let detachActiveViewer = null
@@ -34,18 +35,15 @@ function localizeMediaViewer(root) {
 }
 
 /**
- * 构建查看器骨架（DaisyUI modal 语义）。
- * @returns {HTMLElement} 查看器根
+ * 构建查看器骨架（原生 dialog + DaisyUI modal 语义）。
+ * @returns {HTMLDialogElement} 查看器根
  */
 function createViewerRoot() {
-	const root = document.createElement('div')
-	root.className = 'media-viewer modal modal-open'
-	root.setAttribute('role', 'dialog')
+	const root = document.createElement('dialog')
+	root.className = 'media-viewer modal'
 	root.setAttribute('aria-modal', 'true')
-	root.tabIndex = -1
 	root.innerHTML = `
-		<button type="button" class="modal-backdrop media-viewer-backdrop"></button>
-		<div class="media-viewer-panel">
+		<div class="modal-box media-viewer-panel p-0 max-w-none w-screen h-screen max-h-screen rounded-none">
 			<div class="media-viewer-toolbar">
 				<span class="media-viewer-counter"></span>
 				<span class="media-viewer-name"></span>
@@ -60,6 +58,7 @@ function createViewerRoot() {
 				<div class="media-viewer-transform"></div>
 			</div>
 		</div>
+		<form method="dialog" class="modal-backdrop media-viewer-backdrop"><button type="submit"></button></form>
 	`
 	localizeMediaViewer(root)
 	setLocalizeLogic(root, () => localizeMediaViewer(root))
@@ -132,8 +131,8 @@ function bindStageTransform(stage, transform) {
 export function closeMediaViewer() {
 	if (!activeViewer) return
 	activeViewer.querySelector('video')?.pause()
-	activeViewer.remove()
-	detachActiveViewer()
+	if (activeViewer.open) activeViewer.close()
+	else activeViewer.remove()
 }
 
 /**
@@ -205,8 +204,13 @@ export function openMediaViewer(items, startIndex = 0) {
 		if (event.key === 'Escape') {
 			event.preventDefault()
 			closeMediaViewer()
+			return
 		}
-		else if (event.key === 'ArrowLeft') {
+		const inVideoControls = event.target instanceof Element
+			&& !!event.target.closest('video')
+		if (inVideoControls && (event.key === 'ArrowLeft' || event.key === 'ArrowRight'))
+			return
+		if (event.key === 'ArrowLeft') {
 			event.preventDefault()
 			step(-1)
 		}
@@ -228,7 +232,6 @@ export function openMediaViewer(items, startIndex = 0) {
 		event.stopPropagation()
 		closeMediaViewer()
 	})
-	root.querySelector('.media-viewer-backdrop').addEventListener('click', () => closeMediaViewer())
 	root.querySelector('.media-viewer-download').addEventListener('click', event => {
 		event.stopPropagation()
 		const item = list[index]
@@ -244,6 +247,7 @@ export function openMediaViewer(items, startIndex = 0) {
 
 	document.addEventListener('keydown', onKey)
 	document.body.appendChild(root)
+	root.showModal()
 	activeViewer = root
 	detachActiveViewer = onElementRemoved(root, () => {
 		document.removeEventListener('keydown', onKey)
@@ -251,6 +255,10 @@ export function openMediaViewer(items, startIndex = 0) {
 		activeViewer = null
 		detachActiveViewer = null
 	})
+	root.addEventListener('close', () => {
+		root.remove()
+		detachActiveViewer?.()
+	}, { once: true })
 	paint()
 	root.focus()
 }
@@ -260,10 +268,10 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 .media-viewer.modal {
 	z-index: 10000;
 	outline: none;
+	max-width: 100vw;
+	max-height: 100dvh;
 }
 .media-viewer-panel {
-	grid-column-start: 1;
-	grid-row-start: 1;
 	position: relative;
 	width: 100%;
 	height: 100%;

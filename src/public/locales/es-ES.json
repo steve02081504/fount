@@ -2799,9 +2799,9 @@
 			"unreadBadge": {
 				"aria-label": {
 					"switch": "count",
-					"default": "${count} elementos no leídos",
+					"default": "${count} mensajes sin leer",
 					"cases": {
-						"1": "1 elemento no leído"
+						"1": "1 mensaje sin leer"
 					}
 				}
 			}

@@ -16,11 +16,9 @@ export function wireComposerEvents() {
 	addDragAndDropSupport(messageInput, selectedFiles, preview, fileOpts)
 	attachHubMentionAutocomplete(messageInput)
 
-	const dropRoot = document.querySelector('.main-body')
-	addMessageAreaFileDrop(dropRoot, selectedFiles, preview, () => {
+	addMessageAreaFileDrop(document.querySelector('.main-body'), selectedFiles, preview, () => {
 		const channelId = store.context.currentChannelId
-		const channel = store.context.currentState?.channels?.[channelId]
-		return channel?.name || channelId || ''
+		return store.context.currentState?.channels?.[channelId]?.name || channelId || ''
 	}, fileOpts)
 
 	document.getElementById('voice-button').addEventListener('click', () => {

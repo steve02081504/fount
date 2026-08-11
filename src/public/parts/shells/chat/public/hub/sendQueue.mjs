@@ -35,7 +35,14 @@ function openDb() {
 			if (!db.objectStoreNames.contains(STORE_NAME))
 				db.createObjectStore(STORE_NAME, { keyPath: 'tempId' })
 		})
-		request.addEventListener('success', () => resolve(request.result))
+		request.addEventListener('success', () => {
+			const db = request.result
+			db.addEventListener('versionchange', () => {
+				db.close()
+				dbOpenPromise = null
+			})
+			resolve(db)
+		})
 		request.addEventListener('error', () => {
 			dbOpenPromise = null
 			reject(request.error)

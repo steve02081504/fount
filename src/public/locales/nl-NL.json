@@ -1432,7 +1432,7 @@
 					"overviewHint": "Alleen-lezen informatie. Als je over bestuursrechten beschikt, kunt je groepsinformatie en beleid bewerken in 'Basis'.",
 					"governanceHint": "Schrijf het beleid op groepsniveau van de DAG; beheerders- of MANAGE_ADMINS-machtigingen zijn vereist.",
 					"governanceDenied": "Je bent niet gemachtigd om instellingen voor groepsbeheer te wijzigen.",
-					"rolesDenied": "Je heeft geen MANAGE_ROLES toestemming om rollen te bewerken.",
+					"rolesDenied": "Je hebt geen MANAGE_ROLES toestemming om rollen te bewerken.",
 					"notMember": "Je bent geen lid meer van deze groep; de gegevens van deze groep zijn automatisch gewist na het verlaten van de groep.",
 					"basicTitle": "Groepsbestuur",
 					"profileSectionTitle": "Groepsinformatie",
@@ -1497,7 +1497,7 @@
 						"title": "Kanaalarchief"
 					},
 					"channelPerms": {
-						"denied": "Je heeft geen MANAGE_CHANNELS-rechten om overschrijvingen van kanaalrechten te bewerken.",
+						"denied": "Je hebt geen MANAGE_CHANNELS-rechten om overschrijvingen van kanaalrechten te bewerken.",
 						"hint": "Alleen uitzonderingen per kanaal: Overnemen volgt rolmachtigingen; Toestaan/Weigeren gelden voor dit kanaal. Voor bijlagen voor iedereen, open Rolmachtigingen en vink Bestanden uploaden aan voor Everyone — er is hier geen knop om een overschrijving toe te voegen.",
 						"overridden": "Overschreven",
 						"clearOverride": "Alles terugzetten naar overnemen",
@@ -1755,7 +1755,7 @@
 					"aria-label": "Postvak IN"
 				},
 				"filtersLabel": {
-					"aria-label": "Filter inbox-berichten"
+					"aria-label": "Berichten in Postvak IN filteren"
 				},
 				"rowLabel": {
 					"aria-label": "${author} zei in ${group} van ${channel}: ${preview}"
@@ -2476,7 +2476,7 @@
 					"aria-label": "kinder draad"
 				},
 				"breadcrumb": {
-					"aria-label": "Subthread-navigatie"
+					"aria-label": "Onderliggende thread"
 				}
 			},
 			"config": {
@@ -4806,7 +4806,7 @@
 			"aria-label": "Items"
 		},
 		"breadcrumb": {
-			"aria-label": "Broodkruimelnavigatie"
+			"aria-label": "Broodkruimelpad"
 		},
 		"openCabinets": "Archiefkastlijst openen",
 		"closeCabinets": "Sluiten",
