@@ -1076,6 +1076,7 @@
 			"previewGroupMeta": "그룹: ${name}",
 			"previewAuthorMeta": "작성자",
 			"previewActionFailed": "작업 실패: ${error}",
+			"loadFailed": "表情选择器加载失败：${error}",
 			"category": {
 				"animal": "동물",
 				"face": "표정",

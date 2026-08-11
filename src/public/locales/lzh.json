@@ -1076,6 +1076,7 @@
 			"previewGroupMeta": "出自群組：${name}",
 			"previewAuthorMeta": "出自作者",
 			"previewActionFailed": "未果：${error}",
+			"loadFailed": "表情选择器加载失败：${error}",
 			"category": {
 				"animal": "動物",
 				"face": "表情",
@@ -1945,7 +1946,7 @@
 			},
 			"stickerInline": "貼紙",
 			"markdownRenderFailed": "札敷彩未遂",
-			"messageRenderFailed": "札敷彩未遂",
+			"messageRenderFailed": "札顯未遂",
 			"retrySend": "建試",
 			"mergeDagOk": "分叉已合併",
 			"mergeDagFailed": "合併未遂：${error}",
@@ -2791,7 +2792,7 @@
 			},
 			"trustedAuthorBadge": {
 				"textContent": "已信任",
-				"title": "已信任此作者，將盡數渲染其文"
+				"title": "已信任此作者，聽許危險之 Markdown/HTML 渲染"
 			},
 			"attachment": {
 				"dropToUpload": "拖放以上傳於 #${channel}"
@@ -2904,7 +2905,7 @@
 		"attachment": {
 			"buttons": {
 				"download": {
-					"title": "取",
+					"title": "拓存",
 					"aria-label": "拓存"
 				},
 				"edit": {
@@ -4800,7 +4801,7 @@
 			"aria-label": "卷目"
 		},
 		"breadcrumb": {
-			"aria-label": "麵屑導航"
+			"aria-label": "麵包屑導覽"
 		},
 		"openCabinets": "啟藏經閣名錄",
 		"closeCabinets": "闔",

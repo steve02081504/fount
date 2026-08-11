@@ -1076,6 +1076,7 @@
 			"previewGroupMeta": "Dal gruppo: ${name}",
 			"previewAuthorMeta": "Dall'autore",
 			"previewActionFailed": "Azione non riuscita: ${error}",
+			"loadFailed": "表情选择器加载失败：${error}",
 			"category": {
 				"animal": "animale",
 				"face": "Emoji",

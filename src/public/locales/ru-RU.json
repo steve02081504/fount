@@ -1076,6 +1076,7 @@
 			"previewGroupMeta": "Из группы: ${name}",
 			"previewAuthorMeta": "От автора",
 			"previewActionFailed": "Не удалось: ${error}",
+			"loadFailed": "表情选择器加载失败：${error}",
 			"category": {
 				"animal": "Животные",
 				"face": "Эмодзи",

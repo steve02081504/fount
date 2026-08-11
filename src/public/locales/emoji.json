@@ -1076,6 +1076,7 @@
 			"previewGroupMeta": "👥：${name}",
 			"previewAuthorMeta": "👤➡️",
 			"previewActionFailed": "❌：${error}",
+			"loadFailed": "表情选择器加载失败：${error}",
 			"category": {
 				"animal": "🐾",
 				"face": "😀",

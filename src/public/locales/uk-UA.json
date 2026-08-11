@@ -1076,6 +1076,7 @@
 			"previewGroupMeta": "З групи: ${name}",
 			"previewAuthorMeta": "Від автора",
 			"previewActionFailed": "Не вдалося: ${error}",
+			"loadFailed": "表情选择器加载失败：${error}",
 			"category": {
 				"animal": "Тварина",
 				"face": "Емодзі",
