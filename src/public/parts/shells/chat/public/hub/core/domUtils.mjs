@@ -55,7 +55,7 @@ export function ingestAgentEntityHashList(agents) {
  */
 export function activeCharPartNames() {
 	const names = new Set(store.context.currentState?.charPartNames || [])
-	names.add(normalizeCharPartName(store.privateGroup.charname))
+	if (store.privateGroup.charname) names.add(normalizeCharPartName(store.privateGroup.charname))
 	return [...names]
 }
 
