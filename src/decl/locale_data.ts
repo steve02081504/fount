@@ -1044,6 +1044,7 @@ export type LocaleData = {
 			previewGroupMeta: string
 			previewAuthorMeta: string
 			previewActionFailed: string
+			loadFailed: string
 			category: {
 				animal: string
 				face: string
@@ -5912,6 +5913,7 @@ export type LocaleKeyParams = {
 	'chat.dragAndDrop.pluginAdded': { partName: string | number }
 	'chat.dragAndDrop.unsupportedPartType': { partType: string | number }
 	'chat.dragAndDrop.worldSet': { partName: string | number }
+	'chat.emoji.loadFailed': { error: string | number }
 	'chat.emoji.previewActionFailed': { error: string | number }
 	'chat.emoji.previewGroupMeta': { name: string | number }
 	'chat.emojiPacks.itemCount': { count: string | number }
