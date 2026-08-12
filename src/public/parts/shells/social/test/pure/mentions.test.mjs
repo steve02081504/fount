@@ -22,6 +22,8 @@ Deno.test('extractMentionEntityHashes ignores bare @128hex', () => {
 })
 
 Deno.test('extractMentionEntityHashes dedupes', () => {
-	const text = `@[entity:${SAMPLE_HASH}] @[entity:${SAMPLE_HASH.toUpperCase()}]`
+	const text = `@[entity:${SAMPLE_HASH}] @[entity:${SAMPLE_HASH}]`
 	assertEquals(extractMentionEntityHashes(text).length, 1)
+	const mixedCase = `@[entity:${SAMPLE_HASH}] @[entity:${SAMPLE_HASH.toUpperCase()}]`
+	assertEquals(extractMentionEntityHashes(mixedCase).length, 2)
 })

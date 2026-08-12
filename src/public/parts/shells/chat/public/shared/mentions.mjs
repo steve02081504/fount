@@ -5,7 +5,7 @@ import { parseInlineTokens } from './inlineTokens.mjs'
 
 /**
  * @param {string} text 正文
- * @returns {string[]} 去重后的 entityHash（小写）
+ * @returns {string[]} 去重后的 entityHash（原样保留大小写）
  */
 export function extractMentionEntityHashes(text) {
 	const hashes = []
