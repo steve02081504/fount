@@ -22,5 +22,11 @@ export function inviteJoinQrImageUrl(url, size = 200) {
  * @returns {string} `https://steve02081504.github.io/fount/protocol?url=…`
  */
 export function buildInviteJoinShareUrl(groupId, inviteCode, roomSecret, introducerPubKeyHash, introducerNodeHash) {
-	return wrapProtocolHttpsUrl(formatJoinRunUri(groupId, inviteCode, roomSecret, introducerPubKeyHash, undefined, introducerNodeHash))
+	return wrapProtocolHttpsUrl(formatJoinRunUri({
+		groupId,
+		inviteCode,
+		roomSecret,
+		introducerPubKeyHash,
+		introducerNodeHash,
+	}))
 }

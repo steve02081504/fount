@@ -57,7 +57,14 @@ function groupHasBootstrapGenesis(state) {
  * @returns {Promise<string>} 本地化剪贴板文本
  */
 async function buildInviteClipboardText(username, groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
-	const url = wrapProtocolHttpsUrl(formatJoinRunUri(groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash))
+	const url = wrapProtocolHttpsUrl(formatJoinRunUri({
+		groupId,
+		inviteCode: code,
+		roomSecret,
+		introducerPubKeyHash,
+		powAnchorRef,
+		introducerNodeHash,
+	}))
 	return geti18nForUser(username, 'chat.group.settings.page.invite.clipboard', {
 		groupId,
 		code,

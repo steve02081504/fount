@@ -306,7 +306,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 
 			const slot = buildFederationSlot({
 				partitionId,
-				roomId: roomCreds.roomCreds.roomId,
+				roomId: roomCreds.roomId,
 				room,
 				roomSecret: roomCreds.password,
 				groupId,

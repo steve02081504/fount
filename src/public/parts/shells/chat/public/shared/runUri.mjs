@@ -5,7 +5,7 @@ const RUN_PREFIX = `fount://run/${CHAT_RUN_PART}/`
 
 /**
  * @param {string} subcommand 子命令名
- * @param {string[]} segments 已各自 encode 的分号分段（join 的 `key=value` 除外，由调用方拼好）
+ * @param {string[]} segments 已各自 encode 的分号分段
  * @returns {string} `fount://run/…` URI
  */
 function buildRunUri(subcommand, segments) {
@@ -39,29 +39,75 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
 }
 
 /**
- * @param {string} groupId 群 ID
- * @param {string} inviteCode 邀请码
- * @param {string} [roomSecret] bootstrap 口令
- * @param {string} [introducerPubKeyHash] 邀请人公钥 hex
- * @param {string} [powAnchorRef] PoW 锚点
- * @param {string} [introducerNodeHash] 邀请人 nodeHash
+ * @typedef {{
+ *   groupId: string
+ *   inviteCode?: string
+ *   roomSecret?: string
+ *   introducerPubKeyHash?: string
+ *   powAnchorRef?: string
+ *   introducerNodeHash?: string
+ * }} JoinRunPayload
+ */
+
+/**
+ * @param {string | undefined} value 字段值
+ * @returns {string | undefined} 非空 trim；空串视为缺省
+ */
+function optionalJoinField(value) {
+	const trimmed = (value || '').trim()
+	return trimmed || undefined
+}
+
+/**
+ * 规范化 join 载荷（只保留有值字段；hex 字段规范化）。
+ * @param {JoinRunPayload} input 入参
+ * @returns {JoinRunPayload | null} 规范化结果；缺 groupId 时 null
+ */
+export function normalizeJoinRunPayload(input) {
+	const groupId = optionalJoinField(input?.groupId)
+	if (!groupId) return null
+	/** @type {JoinRunPayload} */
+	const payload = {
+		groupId,
+		inviteCode: optionalJoinField(input.inviteCode) || '',
+	}
+	const secret = optionalJoinField(input.roomSecret)
+	const pub = optionalJoinField(input.introducerPubKeyHash)
+	const pow = optionalJoinField(input.powAnchorRef)
+	const node = optionalJoinField(input.introducerNodeHash)
+	if (secret) payload.roomSecret = secret
+	if (pub) payload.introducerPubKeyHash = normalizeHex64(pub)
+	if (pow) payload.powAnchorRef = pow
+	if (node) payload.introducerNodeHash = normalizeHex64(node)
+	return payload
+}
+
+/**
+ * join 深链：单段 JSON 载荷再 URI 编码。
+ * `fount://run/shells:chat/join;<encodeURIComponent(JSON)>`
+ * @param {JoinRunPayload} input 入群载荷
  * @returns {string} canonical join run URI
  */
-export function formatJoinRunUri(groupId, inviteCode, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
-	const segments = [encodeRunSegment(groupId.trim()), encodeRunSegment(inviteCode.trim())]
-	/** @type {Record<string, string>} */
-	const fields = {}
-	const secret = (roomSecret || '').trim()
-	const pub = (introducerPubKeyHash || '').trim()
-	const pow = (powAnchorRef || '').trim()
-	const node = (introducerNodeHash || '').trim()
-	if (secret) fields.roomSecret = secret
-	if (pub) fields.introducerPubKeyHash = normalizeHex64(pub)
-	if (pow) fields.powAnchorRef = pow
-	if (node) fields.introducerNodeHash = normalizeHex64(node)
-	for (const [key, value] of Object.entries(fields))
-		segments.push(`${encodeRunSegment(key)}=${encodeRunSegment(value)}`)
-	return buildRunUri('join', segments)
+export function formatJoinRunUri(input) {
+	const payload = normalizeJoinRunPayload(input)
+	if (!payload) throw new Error('groupId required for join URI')
+	return buildRunUri('join', [encodeRunSegment(JSON.stringify(payload))])
+}
+
+/**
+ * 解析 IPC / URI 分号段里的 join JSON 载荷（已 decode）。
+ * @param {string | object | undefined} raw JSON 字符串或对象
+ * @returns {JoinRunPayload | null} join 载荷
+ */
+export function parseJoinRunPayload(raw) {
+	if (raw == null || raw === '') return null
+	let data = raw
+	if (typeof raw === 'string') {
+		try { data = JSON.parse(raw) }
+		catch { return null }
+	}
+	if (!data || typeof data !== 'object') return null
+	return normalizeJoinRunPayload(/** @type {JoinRunPayload} */(data))
 }
 
 /**
@@ -131,38 +177,11 @@ export function parseMessageRunUri(raw) {
 }
 
 /**
- * @param {string | undefined} value 字段值
- * @returns {string | undefined} 非空 trim；空串视为缺省
- */
-function optionalJoinField(value) {
-	const trimmed = (value || '').trim()
-	return trimmed || undefined
-}
-
-/**
  * @param {string} raw URI
- * @returns {{ groupId: string, inviteCode: string, roomSecret?: string, introducerPubKeyHash?: string, powAnchorRef?: string, introducerNodeHash?: string } | null} join 载荷
+ * @returns {JoinRunPayload | null} join 载荷
  */
 export function parseJoinRunUri(raw) {
 	const parsed = parseChatRunUri(raw)
 	if (!parsed || parsed.subcommand !== 'join') return null
-	const [groupId, inviteCode, ...fieldSegments] = parsed.args
-	if (!groupId) return null
-	/** @type {Record<string, string>} */
-	const fields = {}
-	for (const segment of fieldSegments) {
-		const eq = segment.indexOf('=')
-		if (eq <= 0) continue
-		const key = segment.slice(0, eq).trim()
-		const value = segment.slice(eq + 1).trim()
-		if (key && value) fields[key] = value
-	}
-	return {
-		groupId,
-		inviteCode: inviteCode || '',
-		roomSecret: optionalJoinField(fields.roomSecret),
-		introducerPubKeyHash: optionalJoinField(fields.introducerPubKeyHash),
-		powAnchorRef: optionalJoinField(fields.powAnchorRef),
-		introducerNodeHash: optionalJoinField(fields.introducerNodeHash),
-	}
+	return parseJoinRunPayload(parsed.args[0])
 }

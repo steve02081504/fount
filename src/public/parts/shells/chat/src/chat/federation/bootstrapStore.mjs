@@ -25,6 +25,41 @@ export function federationBootstrapKey(username, groupId) {
 }
 
 /**
+ * 纠正 IPC 曾把整段 `key=value` 写入 bootstrap 的历史脏数据。
+ * @param {string | undefined} value 字段值
+ * @param {string[]} keys 可能被误拼进值前缀的 key 名
+ * @returns {string | undefined} 去掉 `key=` 前缀后的值
+ */
+function stripMistakenFieldPrefix(value, keys) {
+	const raw = String(value || '').trim()
+	if (!raw) return undefined
+	for (const key of keys) {
+		const prefix = `${key}=`
+		if (raw.startsWith(prefix)) return raw.slice(prefix.length).trim() || undefined
+	}
+	return raw
+}
+
+/**
+ * @param {object | null} row 磁盘/内存 bootstrap 行
+ * @returns {object | null} 清洗后的行（无脏前缀则原样返回）
+ */
+function sanitizeBootstrapRow(row) {
+	if (!row) return row
+	const roomSecret = stripMistakenFieldPrefix(row.roomSecret, ['roomSecret'])
+	const fromNodeId = stripMistakenFieldPrefix(row.fromNodeId, ['introducerNodeHash', 'fromNodeId'])
+	const powAnchorRef = stripMistakenFieldPrefix(row.powAnchorRef, ['powAnchorRef'])
+	if (roomSecret === row.roomSecret && fromNodeId === row.fromNodeId && powAnchorRef === row.powAnchorRef)
+		return row
+	return {
+		...row,
+		...roomSecret !== undefined ? { roomSecret } : {},
+		...fromNodeId !== undefined ? { fromNodeId } : {},
+		...powAnchorRef !== undefined ? { powAnchorRef } : {},
+	}
+}
+
+/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} row bootstrap 行
@@ -39,11 +74,15 @@ function persistBootstrapRow(username, groupId, row) {
 /**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @returns {object | null} 磁盘行
+ * @returns {object | null} 磁盘行（若含历史 `key=` 前缀脏数据则清洗并回写）
  */
 function loadBootstrapRow(username, groupId) {
 	try {
-		return loadJsonFileIfExists(federationBootstrapPath(username, groupId), null)
+		const raw = loadJsonFileIfExists(federationBootstrapPath(username, groupId), null)
+		if (!raw) return null
+		const cleaned = sanitizeBootstrapRow(raw)
+		if (cleaned !== raw) persistBootstrapRow(username, groupId, cleaned)
+		return cleaned
 	}
 	catch {
 		return null
@@ -58,7 +97,7 @@ function loadBootstrapRow(username, groupId) {
  */
 export function setFederationBootstrap(username, groupId, creds) {
 	if (!creds.roomSecret) return
-	const row = {
+	const row = sanitizeBootstrapRow({
 		signalingAppId: creds.signalingAppId || 'fount-group-fed',
 		roomSecret: creds.roomSecret,
 		dmSessionTag: String(creds.dmSessionTag || '').trim().toLowerCase() || undefined,
@@ -67,7 +106,7 @@ export function setFederationBootstrap(username, groupId, creds) {
 		settingsEventId: creds.settingsEventId?.trim() || undefined,
 		powAnchorRef: creds.powAnchorRef?.trim() || undefined,
 		powAnchors: Array.isArray(creds.powAnchors) ? creds.powAnchors.map(String) : undefined,
-	}
+	})
 	persistBootstrapRow(username, groupId, row)
 	bootstrapByKey.set(federationBootstrapKey(username, groupId), row)
 	peerHintByKey.delete(federationBootstrapKey(username, groupId))
@@ -99,7 +138,14 @@ export function setPeerRoomHint(username, groupId, hint) {
 export function peekFederationBootstrap(username, groupId) {
 	const key = federationBootstrapKey(username, groupId)
 	const cached = bootstrapByKey.get(key)
-	if (cached) return cached
+	if (cached) {
+		const cleaned = sanitizeBootstrapRow(cached)
+		if (cleaned !== cached && cleaned?.roomSecret) {
+			bootstrapByKey.set(key, cleaned)
+			persistBootstrapRow(username, groupId, cleaned)
+		}
+		return cleaned
+	}
 	const disk = loadBootstrapRow(username, groupId)
 	if (!disk?.roomSecret) return undefined
 	bootstrapByKey.set(key, disk)

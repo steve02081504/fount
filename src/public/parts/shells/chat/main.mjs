@@ -16,6 +16,7 @@ import {
 
 import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
 
+import { parseJoinRunPayload } from './public/shared/runUri.mjs'
 import { registerChatChunkProviders, unregisterChatChunkProviders } from './src/chat/chunkProviders.mjs'
 import { registerChatEventTypeDefs, unregisterChatEventTypeDefs } from './src/chat/dag/eventTypes.mjs'
 import { registerChatFederationRoomProvider, unregisterChatFederationRoomProvider } from './src/chat/federation/trustGraphRooms.mjs'
@@ -148,16 +149,18 @@ export default {
 						return result
 					}
 					case 'join': {
+						const join = parseJoinRunPayload(args[1])
+						if (!join) throw new Error('groupId is required for join')
 						params = {
-							groupId: args[1],
-							inviteCode: args[2] || '',
-							roomSecret: args[3] || '',
-							introducerPubKeyHash: args[4] || '',
-							powAnchorRef: args[5] || '',
-							introducerNodeHash: args[6] || '',
+							groupId: join.groupId,
+							inviteCode: join.inviteCode,
+							roomSecret: join.roomSecret || '',
+							introducerPubKeyHash: join.introducerPubKeyHash || '',
+							powAnchorRef: join.powAnchorRef || '',
+							introducerNodeHash: join.introducerNodeHash || '',
 						}
 						result = await handleAction(user, command, params)
-						const groupId = result?.groupId || args[1]
+						const groupId = result?.groupId || join.groupId
 						if (groupId)
 							sendEventToUser(user, 'chat-group-joined', { groupId: String(groupId) })
 						if (result?.groupId) console.log(JSON.stringify(result))

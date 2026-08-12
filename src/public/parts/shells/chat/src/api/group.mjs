@@ -168,14 +168,14 @@ export function createGroup(apiContext, groupId, projection) {
 				: await activateGroupFederation(apiContext.username, groupId, apiContext.entityHash)
 			const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(apiContext.username, groupId, apiContext.entityHash)
 			const powAnchorRef = collectJoinPowAnchors(state)[0] ?? null
-			const url = wrapProtocolHttpsUrl(formatJoinRunUri(
+			const url = wrapProtocolHttpsUrl(formatJoinRunUri({
 				groupId,
-				ticket.code,
-				roomCreds.roomSecret,
+				inviteCode: ticket.code,
+				roomSecret: roomCreds.roomSecret,
 				introducerPubKeyHash,
 				powAnchorRef,
-				getLocalNodeHash(),
-			))
+				introducerNodeHash: getLocalNodeHash(),
+			}))
 			return url
 		},
 		/**
