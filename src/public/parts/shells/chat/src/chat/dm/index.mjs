@@ -188,7 +188,7 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
 		}
 	}
 
-	if (normalizePubKeyHex(myPubKey) !== low)
+	if (myPubKey !== low)
 		throw new Error('DM group not created yet; ask the other party (lower pubKey) to open the link first')
 
 	const created = await createEcdhDmGroup(username, myPubKey, introPubKeyHex)

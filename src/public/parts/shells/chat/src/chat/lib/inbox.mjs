@@ -3,8 +3,6 @@
  */
 import { join } from 'node:path'
 
-import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-
 import { messageLineShowText, chatExtensionOf } from '../../../public/shared/channelContent.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 
@@ -146,7 +144,7 @@ export async function listLocalRecipientsInGroup(username, state) {
 	const nodeHash = getLocalNodeHash()
 	for (const member of Object.values(state.members || {})) {
 		if (member?.status !== 'active' || member?.memberKind !== 'agent') continue
-		if (normalizeHex64(member.homeNodeHash) !== nodeHash) continue
+		if (member.homeNodeHash !== nodeHash) continue
 		const hash = memberEntityHash(member)
 		if (hash) recipients.push(hash)
 	}

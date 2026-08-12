@@ -6,7 +6,6 @@
  * 【关联】npm:@steve02081504/fount-p2p/governance/join_pow.mjs、joinPowAnchors.mjs、inviteTickets、dag/append、room ingest。
  */
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { JOIN_POW_DEFAULT_EPOCH_MS, powVoluntaryBonus, verifyJoinPow } from 'npm:@steve02081504/fount-p2p/governance/join_pow'
 
 import { verifyGroupInviteTicket } from '../lib/inviteTickets.mjs'
@@ -102,7 +101,6 @@ export async function validateJoinPolicy(state, event, replicaUsername, options 
 		&& /^[\da-f]{128}$/iu.test(String(content.dmIntroSignatureHex || '').trim().replace(/^0x/iu, ''))
 	const dmMeta = state.groupMeta || {}
 	const dmKnownPeer = dmMeta.dmKind === 'ecdh' && [dmMeta.dmPeerPubKeyHex, dmMeta.dmMyPubKeyHex, dmMeta.dmPubKeyLow, dmMeta.dmPubKeyHigh]
-		.map(v => normalizePubKeyHex(v))
 		.filter(Boolean)
 		.includes(senderKey)
 	if (joinPolicy === 'invite-only' && !hasDmIntroProof && activeBefore > 0 && !senderAlreadyActive && !dmKnownPeer) {

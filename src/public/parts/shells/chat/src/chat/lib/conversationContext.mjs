@@ -1,5 +1,5 @@
 import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sha256Hex } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import { memberEntityHash } from '../../entity/member.mjs'
@@ -25,9 +25,9 @@ async function resolveBoundPeerEntityHash(username, groupId, state) {
 		const hash = memberEntityHash(member)
 		if (hash) return hash.toLowerCase()
 	}
-	const peerPub = normalizeHex64(state.groupMeta?.dmPeerPubKeyHex)
+	const peerPub = state.groupMeta?.dmPeerPubKeyHex
 	const dmSessionTag = String(state.groupMeta?.dmSessionTag || '').trim().toLowerCase()
-	if (!peerPub || !dmSessionTag) return undefined
+	if (!isHex64(peerPub) || !dmSessionTag) return undefined
 	const { hashFromPubKeyHex } = await import('../../../public/shared/entityId.mjs')
 	const subjectHash = await hashFromPubKeyHex(peerPub)
 	const anchorNode = sha256Hex(`fount:chat:dm-peer-anchor:${dmSessionTag}`)

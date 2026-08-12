@@ -4,7 +4,7 @@
  * 【原理】`mountFederationPrefsPanel` 写入偏好壳 panel/footer；`openFederationSettingsModal` 打开统一偏好壳并切到联邦分区。
  * 【关联】hubPrefs.mjs、core/overlayModal.mjs、src/endpoints/group*.mjs、src/dmLink.mjs。
  */
-import { isHex64, normalizeHex64, HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { renderTemplate, usingTemplates } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
@@ -22,10 +22,9 @@ import { closeOverlayModal } from '../core/overlayModal.mjs'
  * @returns {Uint8Array} 32 字节
  */
 function hexSeedToBytes(hex) {
-	const normalized = normalizeHex64(hex)
-	if (!HEX_ID_64.test(normalized))
+	if (!HEX_ID_64.test(hex))
 		throw new Error('invalid hex seed')
-	return new Uint8Array(normalized.match(/.{2}/g).map(byte => Number.parseInt(byte, 16)))
+	return new Uint8Array(hex.match(/.{2}/g).map(byte => Number.parseInt(byte, 16)))
 }
 
 /**
@@ -192,9 +191,9 @@ function wireFederationModalEvents(root, groupId) {
 	})
 
 	root.querySelector('#federation-dm-issue')?.addEventListener('click', async () => {
-		const pubKeyHex = normalizeHex64(root.querySelector('#federation-dm-pubkey')?.value || '')
-		const secretHex = normalizeHex64(root.querySelector('#federation-dm-secret')?.value || '')
-		const nodeUrl = String(root.querySelector('#federation-dm-node')?.value || '').trim()
+		const pubKeyHex = root.querySelector('#federation-dm-pubkey')?.value || ''
+		const secretHex = root.querySelector('#federation-dm-secret')?.value || ''
+		const nodeUrl = root.querySelector('#federation-dm-node')?.value || ''
 		if (!HEX_ID_64.test(pubKeyHex)) {
 			showToastI18n('error', 'chat.hub.fed.dm.needPubKey')
 			return

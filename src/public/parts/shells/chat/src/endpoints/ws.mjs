@@ -1,4 +1,3 @@
-import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { parseInboundJson } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
 import { authenticate } from '../../../../../../server/auth/index.mjs'
@@ -92,7 +91,7 @@ export function registerWsRoutes(router) {
 		runAuthenticatedWs(ws, req, async ({ username }) => {
 			const { getLocalNodeHash } = await import('../chat/lib/replica.mjs')
 			const localNodeHash = getLocalNodeHash()
-			if (normalizeHex64(ownerNodeHash) !== localNodeHash) return void ws.close()
+			if (ownerNodeHash !== localNodeHash) return void ws.close()
 			const { getState } = await import('../chat/dag/materialize.mjs')
 			const { resolveActiveMemberKeyForLocalUser } = await import('../group/access.mjs')
 			const { groupWsRoomKey } = await import('../chat/ws/groupWsRooms.mjs')

@@ -300,7 +300,7 @@ export async function publishOwnerProfileUpdate(username, publisherEntityHash, t
 	const targetActivePub = normalizeHex64(remote?.activePubKeyHex || '')
 		|| await (async () => {
 			try {
-				return normalizeHex64(await getEntityActivePubKey(username, target))
+				return await getEntityActivePubKey(username, target)
 			}
 			catch {
 				return ''

@@ -5,7 +5,7 @@
  * 【数据结构】DAG tips/tipScores、events 数组、governance-branch tipId、applied/skipped 计数。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag/*、chat/governance、localAuthz.mjs、access.mjs。
  */
-import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
@@ -100,7 +100,7 @@ async function appendLocalEvents(username, groupId, events) {
 		}
 
 		if (event.type === 'peer_invite' && !content.fileKeyWraps) {
-			const peerPubKeyHex = normalizePubKeyHex(content.to || '')
+			const peerPubKeyHex = content.to || ''
 			if (PUB_KEY_HEX_64.test(peerPubKeyHex)) {
 				const keyEntry = await getCurrentFileMasterKey(username, groupId)
 				if (keyEntry)

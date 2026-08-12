@@ -6,7 +6,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
@@ -249,9 +249,8 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		/** @type {string[]} */
 		const eventIds = []
 		for (const raw of rawIds) {
-			const id = normalizeHex64(raw)
-			if (!isHex64(id)) throw httpError(400, 'invalid eventId')
-			eventIds.push(id)
+			if (!isHex64(raw)) throw httpError(400, 'invalid eventId')
+			eventIds.push(raw)
 		}
 
 		const { messages, visibleEventIds } = await readViewerChannelMessages(
@@ -323,9 +322,8 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		/** @type {string[]} */
 		const eventIds = []
 		for (const raw of rawIds) {
-			const id = normalizeHex64(raw)
-			if (!isHex64(id)) throw httpError(400, 'invalid eventId')
-			eventIds.push(id)
+			if (!isHex64(raw)) throw httpError(400, 'invalid eventId')
+			eventIds.push(raw)
 		}
 
 		const messages = await readChannelMessagesForUser(username, groupId, channelId, { eventIds })

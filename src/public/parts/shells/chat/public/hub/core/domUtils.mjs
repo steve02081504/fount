@@ -12,7 +12,7 @@ import {
 	avatarTextColor,
 	hashAvatarStyle,
 } from '/parts/shells:chat/shared/hashAvatar.mjs'
-import { isHex64, normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { aliasForEntity, aliasForGroup } from '../../shared/aliases.mjs'
 import { isEntityHash128 } from '../../shared/entityHash.mjs'
@@ -142,10 +142,7 @@ export function authorDisplayLabel(key) {
 		})
 	const fromMember = memberDisplayNameForAuthorKey(key)
 	if (fromMember) return fromMember
-	if (isHex64(key)) {
-		const hex = normalizeHex64(key)
-		return `${hex.slice(0, 8)}…${hex.slice(-4)}`
-	}
+	if (isHex64(key)) return `${key.slice(0, 8)}…${key.slice(-4)}`
 	if (key.length > 28) return `${key.slice(0, 12)}…${key.slice(-4)}`
 	return key
 }

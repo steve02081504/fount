@@ -1,5 +1,5 @@
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { noteHelpfulScore } from '../../lib/noteScore.mjs'
 import { createPostScopedJsonStore, normalizePostTarget } from '../postScopedJsonStore.mjs'
@@ -56,7 +56,7 @@ export async function readNoteIndex(username, targetEntityHash, postId) {
  */
 export async function upsertNote(username, targetEntityHash, postId, noteEventId, entry) {
 	const ids = normalizePostTarget(targetEntityHash, postId)
-	const noteId = normalizeHex64(String(noteEventId || '').trim())
+	const noteId = String(noteEventId || '')
 	if (!ids || !isHex64(noteId)) return
 	await store.withMutex(ids.target, ids.postId, async () => {
 		const current = await store.read(username, ids.target, ids.postId)
@@ -87,7 +87,7 @@ export async function upsertNote(username, targetEntityHash, postId, noteEventId
  */
 export async function upsertNoteVote(username, targetEntityHash, postId, noteEventId, voterEntityHash, helpful) {
 	const ids = normalizePostTarget(targetEntityHash, postId)
-	const noteId = normalizeHex64(String(noteEventId || '').trim())
+	const noteId = String(noteEventId || '')
 	const voter = String(voterEntityHash || '').trim().toLowerCase()
 	if (!ids || !isHex64(noteId) || !parseEntityHash(voter)) return
 	await store.withMutex(ids.target, ids.postId, async () => {

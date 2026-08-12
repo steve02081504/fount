@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto'
 
 import { MEMBERS_PAGE_SIZE } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { recordFileMasterKeyRotation } from './files.mjs'
 import { clampRepEdge } from './governance.mjs'
@@ -111,7 +111,7 @@ export function applyBanContent(state, content) {
 	const entityHash = String(content.targetEntityHash || member?.entityHash || '').trim().toLowerCase()
 	if (isEntityHash128(entityHash)) state.bannedEntities.add(entityHash)
 	if (isHex64(content.targetNodeHash)) state.bannedNodes.add(content.targetNodeHash)
-	const homeNode = normalizeHex64(member?.homeNodeHash)
+	const homeNode = member?.homeNodeHash
 	if (isHex64(homeNode)) state.bannedNodes.add(homeNode)
 }
 

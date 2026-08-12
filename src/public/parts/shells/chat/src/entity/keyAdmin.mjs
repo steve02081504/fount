@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
 import { entityKeyRevokeSignBytes } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 
@@ -41,7 +41,7 @@ export async function rotateEntityActiveKey(username, entityHash) {
  * @returns {Promise<object>} federation 视图
  */
 export async function revokeEntityActiveKey(username, body) {
-	const recoverySecretKeyHex = normalizeHex64(body.recoverySecretKeyHex || '')
+	const recoverySecretKeyHex = body.recoverySecretKeyHex || ''
 	if (!isHex64(recoverySecretKeyHex)) throw new Error('recoverySecretKeyHex required')
 
 	const entityHash = body.entityHash

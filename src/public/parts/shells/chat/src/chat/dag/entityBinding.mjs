@@ -70,7 +70,7 @@ export async function verifyEntityActivePubKeyBelongs(username, entityHash, enti
 	try {
 		const { findLocalEntityActivePubKey, getEntityActivePubKey } = await import('../../entity/identity.mjs')
 		try {
-			const localActive = normalizeHex64(await getEntityActivePubKey(user, eh))
+			const localActive = await getEntityActivePubKey(user, eh)
 			if (localActive === pub) return { ok: true }
 			return { ok: false, reason: 'entityActivePubKeyHex mismatch local identity' }
 		}
@@ -126,7 +126,7 @@ export async function buildMemberJoinBindingFields(username, entityHash, memberP
 		getEntitySecretKey,
 	} = await import('../../entity/identity.mjs')
 	const eh = String(entityHash || '').trim().toLowerCase()
-	const entityActivePubKeyHex = normalizeHex64(await getEntityActivePubKey(username, eh))
+	const entityActivePubKeyHex = await getEntityActivePubKey(username, eh)
 	const secretHex = await getEntitySecretKey(username, eh)
 	const entityActiveSecretKey = new Uint8Array(Buffer.from(secretHex, 'hex'))
 	const { bindingSig } = await buildMemberJoinBinding({

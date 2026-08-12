@@ -93,7 +93,7 @@ export function isHistoricalPullMember(state, requesterPubKeyHash) {
 export function resolveMemberEdPubKeyHex(state, requesterPubKeyHash) {
 	const key = normalizeHex64(requesterPubKeyHash)
 	if (!isHex64(key)) return null
-	const hex = normalizeHex64(state?.members?.[key]?.pubKeyHex)
+	const hex = state?.members?.[key]?.pubKeyHex
 	if (!hex || Buffer.from(hex, 'hex').length !== 32) return null
 	return hex
 }

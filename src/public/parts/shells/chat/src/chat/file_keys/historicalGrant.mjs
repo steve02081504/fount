@@ -3,7 +3,7 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { unwrapKeyEcies, wrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
@@ -18,13 +18,12 @@ import { appendFileMasterKey, loadFileMasterKeys } from './store.mjs'
  * @returns {Promise<{ generations: Array<{ gen: number, encryptedKey: object }> }>} grant bundle
  */
 export async function buildFileKeyGrant(username, groupId, recipientEdPubKeyHex) {
-	const recipient = normalizeHex64(recipientEdPubKeyHex)
-	if (!recipient || Buffer.from(recipient, 'hex').length !== 32)
+	if (!recipientEdPubKeyHex || Buffer.from(recipientEdPubKeyHex, 'hex').length !== 32)
 		throw new Error('invalid recipient Ed25519 pub key')
 	const data = await loadFileMasterKeys(username, groupId)
 	const generations = (data.generations || []).map(entry => ({
 		gen: entry.gen,
-		encryptedKey: wrapKeyEcies(entry.fileMasterKey, recipient),
+		encryptedKey: wrapKeyEcies(entry.fileMasterKey, recipientEdPubKeyHex),
 	}))
 	return { generations }
 }

@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { randomUUID, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	deriveSocialPostKey,
 	generateFileMasterKey,
@@ -102,14 +102,14 @@ async function resolveEntityPubKeyHex(username, entityHash) {
 	try {
 		const { getEntityActivePubKey } = await import('../../../chat/src/entity/identity.mjs')
 		const pub = await getEntityActivePubKey(username, hash)
-		if (isHex64(normalizeHex64(pub))) return normalizeHex64(pub)
+		if (isHex64(pub)) return pub
 	}
 	catch { /* 非本机实体 */ }
 	try {
 		const { createFsEntityStore } = await import('npm:@steve02081504/fount-p2p/node/entity_store')
 		const { entitiesRoot } = await import('../../../chat/src/entity/store.mjs')
 		const profile = await createFsEntityStore(entitiesRoot(username)).readEntityJson(hash, 'profile.json')
-		const pub = normalizeHex64(profile?.activePubKeyHex || '')
+		const pub = profile?.activePubKeyHex || ''
 		if (isHex64(pub)) return pub
 	}
 	catch { /* 无缓存 profile */ }
@@ -196,13 +196,13 @@ async function tryUnwrapPkw(username, entityHash, wraps) {
 	if (!entityHash || !wraps) return null
 	try {
 		const { getEntitySecretKey, getEntityActivePubKey } = await import('../../../chat/src/entity/identity.mjs')
-		const pub = normalizeHex64(await getEntityActivePubKey(username, entityHash))
+		const pub = await getEntityActivePubKey(username, entityHash)
 		const wrapped = wraps[pub]
 		if (!wrapped) return null
 		const secretHex = await getEntitySecretKey(username, entityHash)
 		if (!secretHex || secretHex.length !== 64) return null
 		const keyHex = unwrapKeyEcies(wrapped, new Uint8Array(Buffer.from(secretHex, 'hex')))
-		return isHex64(normalizeHex64(keyHex || '')) ? normalizeHex64(keyHex) : null
+		return isHex64(keyHex) ? keyHex : null
 	}
 	catch {
 		return null

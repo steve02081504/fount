@@ -1,4 +1,4 @@
-import { isHex64, normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { isEntityHash128 } from './entityHash.mjs'
 import {
@@ -81,17 +81,17 @@ export async function buildUserFriendBinding(peer) {
 			...peer.displayName ? { displayName: String(peer.displayName).trim() } : {},
 		}
 
-	const nodeHash = normalizeHex64(peer?.nodeHash || '')
-	const recoveryPubKeyHex = normalizeHex64(peer?.recoveryPubKeyHex || '')
+	const nodeHash = peer?.nodeHash || ''
+	const recoveryPubKeyHex = peer?.recoveryPubKeyHex || ''
 	if (isHex64(nodeHash) && isHex64(recoveryPubKeyHex))
 		return {
 			entityHash: await entityHashFromRecoveryPubKeyHex(nodeHash, recoveryPubKeyHex),
 			...peer.displayName ? { displayName: String(peer.displayName).trim() } : {},
 		}
 
-	let subjectHash = normalizeHex64(peer?.subjectHash || peer?.pubKeyHash || '')
+	let subjectHash = peer?.subjectHash || peer?.pubKeyHash || ''
 	if (!isHex64(subjectHash)) {
-		const pubKeyHex = normalizeHex64(peer?.pubKeyHex || '')
+		const pubKeyHex = peer?.pubKeyHex || ''
 		if (isHex64(pubKeyHex)) subjectHash = await hashFromPubKeyHex(pubKeyHex)
 	}
 	if (isHex64(nodeHash) && isHex64(subjectHash))

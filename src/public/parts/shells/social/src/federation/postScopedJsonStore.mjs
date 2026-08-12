@@ -4,7 +4,7 @@
 import path from 'node:path'
 
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { writeJsonAtomic } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 import { createLruMap } from 'npm:@steve02081504/fount-p2p/utils/lru'
@@ -19,10 +19,9 @@ import { socialPostKey } from './post_key.mjs'
  * @returns {{ target: string, postId: string } | null} 规范化键
  */
 export function normalizePostTarget(targetEntityHash, postId) {
-	const target = String(targetEntityHash || '').trim().toLowerCase()
-	const id = normalizeHex64(String(postId || '').trim())
-	if (!parseEntityHash(target) || !isHex64(id)) return null
-	return { target, postId: id }
+	const target = String(targetEntityHash || '').toLowerCase()
+	if (!parseEntityHash(target) || !isHex64(postId)) return null
+	return { target, postId }
 }
 
 /**

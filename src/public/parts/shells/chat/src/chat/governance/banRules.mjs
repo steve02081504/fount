@@ -32,12 +32,12 @@ export function isBanScope(scope) {
  * @returns {object} DAG content
  */
 export function buildMemberBanContent(banScope, memberRow) {
-	const targetMemberKey = normalizeHex64(memberRow?.pubKeyHash || '')
+	const targetMemberKey = memberRow?.pubKeyHash || ''
 	if (!isHex64(targetMemberKey))
 		throw new Error('invalid member pubKeyHash')
 	/** @type {Record<string, string>} */
 	const content = { banScope, targetMemberKey }
-	const homeNodeHash = normalizeHex64(memberRow?.homeNodeHash || '')
+	const homeNodeHash = memberRow?.homeNodeHash || ''
 
 	if (banScope === 'entity') {
 		const targetEntityHash = memberEntityHash(memberRow)
@@ -87,8 +87,8 @@ export function blockEntriesFromBanContent(content) {
 export function unbanTargetsFromMember(state, targetMemberKey) {
 	const key = String(targetMemberKey || '').trim().toLowerCase()
 	const member = state.members?.[key]
-	const pubKeyHash = normalizeHex64(member?.pubKeyHash || key)
-	const homeNodeHash = normalizeHex64(member?.homeNodeHash)
+	const pubKeyHash = member?.pubKeyHash || key
+	const homeNodeHash = member?.homeNodeHash
 	const declaredEntity = memberEntityHash(member)
 	return {
 		pubKeyHash: isHex64(pubKeyHash) ? pubKeyHash : null,

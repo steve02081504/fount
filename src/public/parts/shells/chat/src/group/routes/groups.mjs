@@ -8,7 +8,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { friendBindingMatches } from '../../../public/shared/friendBinding.mjs'
@@ -48,8 +48,8 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		const body = req.body
 		const template = String(body.template || '').trim().toLowerCase()
 		if (template === 'dm') {
-			const myPubKeyHex = normalizePubKeyHex(body.myPubKeyHex || '')
-			const peerPubKeyHex = normalizePubKeyHex(body.peerPubKeyHex || '')
+			const myPubKeyHex = body.myPubKeyHex || ''
+			const peerPubKeyHex = body.peerPubKeyHex || ''
 			if (!PUB_KEY_HEX_64.test(myPubKeyHex) || !PUB_KEY_HEX_64.test(peerPubKeyHex))
 				return res.status(400).json({ error: 'myPubKeyHex and peerPubKeyHex must be 64 hex chars' })
 			if (myPubKeyHex === peerPubKeyHex)

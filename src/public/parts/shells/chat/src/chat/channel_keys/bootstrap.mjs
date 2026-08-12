@@ -1,4 +1,4 @@
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { wrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
 import { listChannelViewerPubKeys } from './rotate.mjs'
@@ -18,13 +18,12 @@ import { loadChannelKeysFile } from './store.mjs'
 export async function collectChannelKeyWrapsForRecipient(username, groupId, recipientEdPubKeyHex, recipientPubKeyHash, state) {
 	const edPubHex = String(recipientEdPubKeyHex || '').trim().toLowerCase()
 	if (!PUB_KEY_HEX_64.test(edPubHex)) return {}
-	const recipient = normalizeHex64(recipientPubKeyHash)
 	const file = await loadChannelKeysFile(username, groupId)
 	/** @type {Record<string, Array<{ generation: number, wrap: object }>>} */
 	const out = {}
 	for (const [channelId, ch] of Object.entries(file.channels)) {
 		if (!ch?.generations?.length) continue
-		if (recipient && state && !listChannelViewerPubKeys(state, channelId).includes(recipient)) continue
+		if (recipientPubKeyHash && state && !listChannelViewerPubKeys(state, channelId).includes(recipientPubKeyHash)) continue
 		const row = ch.generations.find(g => g.gen === ch.current) || ch.generations.at(-1)
 		if (!row?.keyHex) continue
 		out[channelId] = [{ generation: row.gen, wrap: wrapKeyEcies(row.keyHex, edPubHex) }]

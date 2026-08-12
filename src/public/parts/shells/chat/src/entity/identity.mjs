@@ -6,7 +6,7 @@ import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
 
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { createGenesisKeyHistory } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 import {
@@ -71,9 +71,9 @@ events.on('federation-settings-changed', ({ username }) => {
  * @returns {boolean} 是否为有效双钥结构
  */
 function isDualKeyIdentity(row) {
-	return isHex64(normalizeHex64(row?.recoveryPubKeyHex || ''))
-		&& isHex64(normalizeHex64(row?.activePubKeyHex || ''))
-		&& isHex64(normalizeHex64(row?.activeSecretKeyHex || ''))
+	return isHex64(row?.recoveryPubKeyHex || '')
+		&& isHex64(row?.activePubKeyHex || '')
+		&& isHex64(row?.activeSecretKeyHex || '')
 }
 
 /**
@@ -87,11 +87,11 @@ function cacheFromRow(username, row) {
 	const ownerEntityHash = ownerRaw ? String(ownerRaw).toLowerCase() : null
 	const charPartName = row.charPartName ? String(row.charPartName) : null
 	identityCache.set(cacheKey(username, entityHash), {
-		recoveryPub: normalizeHex64(row.recoveryPubKeyHex),
-		activePub: normalizeHex64(row.activePubKeyHex),
-		activeSecret: normalizeHex64(row.activeSecretKeyHex),
-		recoverySecret: isHex64(normalizeHex64(row.recoverySecretKeyHex || ''))
-			? normalizeHex64(row.recoverySecretKeyHex)
+		recoveryPub: row.recoveryPubKeyHex,
+		activePub: row.activePubKeyHex,
+		activeSecret: row.activeSecretKeyHex,
+		recoverySecret: isHex64(row.recoverySecretKeyHex || '')
+			? row.recoverySecretKeyHex
 			: '',
 		entityHash,
 		keyGeneration: Number(row.keyGeneration ?? 0),
@@ -310,7 +310,7 @@ export function findLocalEntityActivePubKey(entityHash) {
  */
 export async function getEntityActivePubKey(username, entityHash) {
 	const row = await loadEntityIdentity(username, entityHash)
-	return normalizeHex64(row.activePubKeyHex)
+	return row.activePubKeyHex
 }
 
 /**
@@ -319,7 +319,7 @@ export async function getEntityActivePubKey(username, entityHash) {
  */
 export async function ensureOperatorPubKey(username) {
 	const row = await ensureOperatorIdentity(username)
-	return normalizeHex64(row.activePubKeyHex)
+	return row.activePubKeyHex
 }
 
 /**
@@ -380,10 +380,10 @@ export function getOperatorSecretKeySync(username) {
 export async function getRecoveryPubKeyHex(username, entityHash) {
 	if (entityHash) {
 		const row = await loadEntityIdentity(username, entityHash)
-		return normalizeHex64(row.recoveryPubKeyHex)
+		return row.recoveryPubKeyHex
 	}
 	const row = await ensureOperatorIdentity(username)
-	return normalizeHex64(row.recoveryPubKeyHex)
+	return row.recoveryPubKeyHex
 }
 
 /**
@@ -458,7 +458,7 @@ export async function generateNextActiveKeyPair(username, entityHash) {
 		keyGeneration: nextGen,
 		activePubKeyHex: Buffer.from(publicKey).toString('hex'),
 		activeSecretKeyHex: Buffer.from(secretKey).toString('hex'),
-		recoveryPubKeyHex: normalizeHex64(row.recoveryPubKeyHex),
+		recoveryPubKeyHex: row.recoveryPubKeyHex,
 	}
 }
 
@@ -470,8 +470,8 @@ export async function generateNextActiveKeyPair(username, entityHash) {
  */
 export async function commitEntityKeyRotation(username, entityHash, patch) {
 	const prev = await loadEntityIdentity(username, entityHash)
-	const activePubKeyHex = normalizeHex64(patch.activePubKeyHex || '')
-	const activeSecretKeyHex = normalizeHex64(patch.activeSecretKeyHex || '')
+	const activePubKeyHex = patch.activePubKeyHex || ''
+	const activeSecretKeyHex = patch.activeSecretKeyHex || ''
 	const keyGeneration = Number(patch.keyGeneration)
 	if (!isHex64(activePubKeyHex) || !isHex64(activeSecretKeyHex) || !Number.isFinite(keyGeneration))
 		throw new Error('invalid active key rotation patch')
@@ -523,8 +523,8 @@ export async function getFederationViewForUser(username) {
 		relayUrls: transport.relayUrls,
 		batterySaver: transport.batterySaver,
 		mailbox: transport.mailbox,
-		recoveryPubKeyHex: normalizeHex64(row.recoveryPubKeyHex),
-		activePubKeyHex: normalizeHex64(row.activePubKeyHex),
+		recoveryPubKeyHex: row.recoveryPubKeyHex,
+		activePubKeyHex: row.activePubKeyHex,
 		keyGeneration: Number(row.keyGeneration ?? 0),
 		entityHash: row.entityHash,
 	}

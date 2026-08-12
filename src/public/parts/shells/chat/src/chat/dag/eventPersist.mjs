@@ -5,7 +5,7 @@
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
  * 【关联】`materialize.mjs`、`events/meta.mjs`、`../ws/groupWsRpc.mjs`、`./messageFanout.mjs`、`../session/chatRequest.mjs`。
  */
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
@@ -110,7 +110,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 			const state = await materializedState()
 			const entries = blockEntriesFromBanContent(signPayload.content)
 			const targetKey = resolveTargetMemberKey(signPayload.content)
-			const home = normalizeHex64(state.members?.[targetKey]?.homeNodeHash)
+			const home = state.members?.[targetKey]?.homeNodeHash
 			if (isHex64(home) && !entries.some(entry => entry.scope === 'node' && entry.value === home))
 				entries.push({ scope: 'node', value: home })
 			addGroupBlockedPeers(groupId, entries)
