@@ -1813,6 +1813,18 @@
 			},
 			"pinsTitle": "置顶",
 			"bookmarksTitle": "书签",
+			"overflow": {
+				"pins": "置顶",
+				"bookmarks": "书签",
+				"search": "搜索",
+				"files": "群文件"
+			},
+			"composerMoreItems": {
+				"voice": "录音",
+				"photo": "照片",
+				"upload": "上传文件",
+				"vote": "发起投票"
+			},
 			"pinsButton": {
 				"title": "置顶消息"
 			},

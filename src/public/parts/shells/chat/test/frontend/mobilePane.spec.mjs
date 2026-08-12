@@ -80,7 +80,9 @@ test.describe('Chat hub mobile pane', () => {
 		const overflow = page.locator('details.header-overflow')
 		await expect(overflow).toHaveAttribute('open', '')
 		await expect(page.locator('#overflow-search')).toBeVisible()
-		await expect(page.locator('#overflow-pins')).toBeVisible()
+		await expect(page.locator('#overflow-search')).toContainText('搜索')
+		await expect(page.locator('#overflow-pins')).toContainText('置顶')
+		await expect(page.locator('#overflow-pins img')).toBeVisible()
 	})
 
 	test('composer more menu opens on tap', async ({ page, baseUrl, apiKey }) => {
@@ -92,5 +94,7 @@ test.describe('Chat hub mobile pane', () => {
 		const overflow = page.locator('details.composer-more')
 		await expect(overflow).toHaveAttribute('open', '')
 		await expect(page.locator('#composer-more-upload')).toBeVisible()
+		await expect(page.locator('#composer-more-upload')).toContainText('上传文件')
+		await expect(page.locator('#composer-more-upload img')).toBeVisible()
 	})
 })
