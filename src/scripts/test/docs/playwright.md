@@ -18,7 +18,7 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 
 ## CDN response cache
 
-`cdn_cache.mjs` (wired into `createFountFixtures` / Pages fixtures `context`): memory + `data/test/cdn_cache` disk reuse for GET/HEAD to `esm.sh` / `api.iconify.design` / `cdn.jsdelivr.net`, cutting cross-case network flakiness. Cache keys include method so GET and HEAD never share an entry. Cached GET fulfill headers drop `content-encoding` and set `content-length` to the plaintext body size; HEAD fulfills keep the upstream headers (empty body must not rewrite `content-length`). Requests with `Range` bypass the cache. Only 2xx/3xx are cached; 4xx stay live (bad Iconify names still count as noise). `FOUNT_TEST_CDN_CACHE=0` disables. After bumping a browser-facing package served via unversioned `esm.sh` URLs (e.g. `@steve02081504/fount-p2p`), delete matching files under `data/test/cdn_cache` (or set `FOUNT_TEST_CDN_CACHE=0` once) so tests do not keep serving a stale transpile. `route.fetch` is fine for CDN URLs; do not fetch same-origin local URLs that way (see Social EVFS stub).
+`cdn_cache.mjs` (wired into `createFountFixtures` / Pages fixtures `context`): memory + `data/test/cdn_cache` disk reuse for GET/HEAD to `esm.sh` / `api.iconify.design` / `cdn.jsdelivr.net`, cutting cross-case network flakiness. Cache keys include method so GET and HEAD never share an entry. Cached GET fulfill headers drop `content-encoding` and set `content-length` to the plaintext body size; HEAD fulfills keep the upstream headers (empty body must not rewrite `content-length`). Requests with `Range` bypass the cache. Only 2xx/3xx are cached; 4xx stay live (bad Iconify names still count as noise). If `route.fetch` succeeds but `response.body()` throws disposed/closed (page teardown), abort the route instead of failing the test. `FOUNT_TEST_CDN_CACHE=0` disables. After bumping a browser-facing package served via unversioned `esm.sh` URLs (e.g. `@steve02081504/fount-p2p`), delete matching files under `data/test/cdn_cache` (or set `FOUNT_TEST_CDN_CACHE=0` once) so tests do not keep serving a stale transpile. `route.fetch` is fine for CDN URLs; do not fetch same-origin local URLs that way (see Social EVFS stub).
 
 ## JSON editor a11y
 
@@ -35,6 +35,7 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 - Pages fixtures ignore `/api/ping` and `:8930` installer probe failures only.
 - Do not gate product code on `fount.test.enabled` to paper over these. **URLs are logged as-is** — fixtures must not put durable secrets in URLs.
 - Locale load goes through i18n `loadLocaleData` / `setLanguage` — do not fetch `/api/getlocaledata` from test code.
+- `loadLocaleData` / `initTranslations` use an epoch cache (`lib/epochCache.mjs`): `locale-updated` bumps the epoch so stale fetches never refill the cache, but **the in-flight result is still applied**. Do not re-read only `cache.get` after `await load` — that drops the bundle when the epoch moved and leaves `preferred` ≠ `main_locale` (page watch then reports `aria-label missing-zh` on English chrome).
 - `pages_server.close` calls `closeAllConnections()` before `close()` — otherwise keep-alive sockets can hang the driver past the idle watchdog.
 
 ## Page watch

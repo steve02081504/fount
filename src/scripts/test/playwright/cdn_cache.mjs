@@ -170,7 +170,19 @@ async function fetchCacheAndFulfill(route, dir, method, url) {
 		return
 	}
 	const status = response.status()
-	const body = Buffer.from(await response.body())
+	let body
+	try {
+		body = Buffer.from(await response.body())
+	}
+	catch (error) {
+		// 页面收尾 / context 关闭时 APIResponse 可能已 disposed
+		if (!/disposed|Target closed|has been closed/i.test(String(error?.message || error))) throw error
+		try {
+			await route.abort('failed')
+		}
+		catch { /* route 也可能已死 */ }
+		return
+	}
 	const headers = method === 'HEAD'
 		? response.headers()
 		: headersForCachedBody(response.headers(), body)

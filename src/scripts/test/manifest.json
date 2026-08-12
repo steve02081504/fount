@@ -483,6 +483,24 @@
 				"src/scripts/i18n/locale_match.mjs",
 				"src/public/pages/scripts/i18n/locale_match.mjs"
 			]
+		},
+		{
+			"name": "epoch_cache",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/epoch_cache.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/epoch_cache.test.mjs",
+				"src/public/pages/scripts/lib/epochCache.mjs",
+				"src/public/pages/scripts/i18n/base.mjs"
+			]
 		}
 	]
 }

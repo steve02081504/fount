@@ -57,7 +57,7 @@ function fakeContext() {
 function fakeRoute({ method = 'GET', url, headers = {}, fetchImpl } = {}) {
 	/** @type {object[]} */
 	const fulfilled = []
-	const state = { continued: 0, fetchCalls: 0 }
+	const state = { continued: 0, fetchCalls: 0, aborted: 0 }
 	const route = {
 		/**
 		 * @returns {{ method: () => string, url: () => string, headers: () => Record<string, string> }} 桩 request
@@ -90,6 +90,13 @@ function fakeRoute({ method = 'GET', url, headers = {}, fetchImpl } = {}) {
 		 */
 		continue: async () => {
 			state.continued++
+		},
+		/**
+		 * 中止请求。
+		 * @returns {Promise<void>}
+		 */
+		abort: async () => {
+			state.aborted++
 		},
 		/**
 		 * 拉取上游并返回响应给处理器。
@@ -259,6 +266,37 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 			assertEquals(ranged.state.fetchCalls, 0)
 			assertEquals(ranged.fulfilled.length, 0)
 			assertEquals(ranged.state.continued, 1)
+		}
+
+		{
+			const disposedUrl = `https://esm.sh/${stamp}/disposed.js`
+			const disposed = fakeRoute({
+				url: disposedUrl,
+				/**
+				 * @returns {object} body() 已 disposed 的桩响应
+				 */
+				fetchImpl: () => ({
+					/**
+					 * @returns {number} 状态码
+					 */
+					status: () => 200,
+					/**
+					 * @returns {Record<string, string>} 头
+					 */
+					headers: () => ({ 'content-type': 'text/plain' }),
+					/**
+					 * @returns {Promise<Buffer>} 抛 disposed
+					 */
+					body: async () => {
+						throw new Error('apiResponse.body: Response has been disposed')
+					},
+				}),
+			})
+			await handler(disposed.route)
+			assertEquals(disposed.state.fetchCalls, 1)
+			assertEquals(disposed.fulfilled.length, 0)
+			assertEquals(disposed.state.aborted, 1)
+			assertEquals(disposed.state.continued, 0)
 		}
 	}
 	finally {
