@@ -4,12 +4,12 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
+import { partPublicRelToBrowserPath } from '../../../scripts/part_paths.mjs'
 import {
 	dedupeAndSortRegistryEntries,
 	partpathToUrlPrefix,
 	resolveRegistryPathToUrl,
 } from '../../registries.mjs'
-import { partPublicRelToBrowserPath } from '../../../scripts/part_paths.mjs'
 
 Deno.test('partpathToUrlPrefix maps shells/chat', () => {
 	assertEquals(partpathToUrlPrefix('shells/chat'), '/parts/shells:chat')
