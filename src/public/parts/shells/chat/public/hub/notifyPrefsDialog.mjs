@@ -1,6 +1,6 @@
-import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { loadNotificationPreferences, saveNotificationPreferences } from '../shared/notificationPreferences.mjs'
+import { openDialogFromTemplate } from '../src/templates.mjs'
 
 /**
  * @param {Record<string, object>} prefs 整档偏好

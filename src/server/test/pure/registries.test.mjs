@@ -9,6 +9,7 @@ import {
 	partpathToUrlPrefix,
 	resolveRegistryPathToUrl,
 } from '../../registries.mjs'
+import { partPublicRelToBrowserPath } from '../../../scripts/part_paths.mjs'
 
 Deno.test('partpathToUrlPrefix maps shells/chat', () => {
 	assertEquals(partpathToUrlPrefix('shells/chat'), '/parts/shells:chat')
@@ -18,6 +19,13 @@ Deno.test('resolveRegistryPathToUrl joins part-relative path', () => {
 	assertEquals(
 		resolveRegistryPathToUrl('shells/chat', 'markdown_extensions/index.mjs'),
 		'/parts/shells:chat/markdown_extensions/index.mjs',
+	)
+})
+
+Deno.test('partPublicRelToBrowserPath roundtrips with registries prefix', () => {
+	assertEquals(
+		partPublicRelToBrowserPath('shells/chat/public/hub/x.mjs'),
+		'/parts/shells:chat/hub/x.mjs',
 	)
 })
 

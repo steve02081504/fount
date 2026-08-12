@@ -4,9 +4,7 @@
  */
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 
-import { pickFromDialog } from './dialog.mjs'
-
-const TEMPLATES = '/scripts/features/templates'
+import { pickFromDialog } from './templates.mjs'
 
 const CANCEL_OK = `
 		<button type="button" class="btn" data-dialog-cancel data-i18n="util.common.cancel"></button>
@@ -38,7 +36,6 @@ export function promptText(i18nKey, value = '', params = {}) {
 		bodyHtml: `<input type="text" class="input input-bordered w-full" id="promptInput" aria-labelledby="promptDialogTitle" value="${escapeHtml(value)}" autofocus user-content />`,
 		actionsHtml: CANCEL_OK,
 	}, {
-		templatesRoot: TEMPLATES,
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框
 		 * @returns {string | null} 输入值或 null
@@ -66,7 +63,6 @@ export function promptTextArea(i18nKey, value = '', params = {}) {
 		bodyHtml: `<textarea class="textarea textarea-bordered w-full min-h-32" id="promptInput" aria-labelledby="promptDialogTitle" maxlength="2000" rows="6" autofocus user-content>${escapeHtml(value)}</textarea>`,
 		actionsHtml: CANCEL_OK,
 	}, {
-		templatesRoot: TEMPLATES,
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框
 		 * @returns {string | null} 文本或 null
@@ -89,5 +85,5 @@ export async function confirmAction(i18nKey, params = {}) {
 	return await pickFromDialog('confirm_modal', {
 		messageI18n: key,
 		messageParamsAttrs: i18nParamAttrs(params),
-	}, { templatesRoot: TEMPLATES }) === 'ok'
+	}) === 'ok'
 }

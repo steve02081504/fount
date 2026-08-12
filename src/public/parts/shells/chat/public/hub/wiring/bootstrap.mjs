@@ -4,9 +4,8 @@
  * 【关联】groupModals、dialog、wireEvents（其余绑定延后加载）
  */
 import { onServerEvent } from '../../../../../scripts/endpoints/server_events.mjs'
-import { openDialogFromTemplate } from '../../../../../scripts/features/dialog.mjs'
-import { withTemplates } from '../../../../../scripts/features/template.mjs'
 import { iconifyImg } from '../../src/lib/emojiSvg.mjs'
+import { openDialogFromTemplate } from '../../src/templates.mjs'
 import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'
 import { store } from '../core/state.mjs'
@@ -109,25 +108,23 @@ function wireExternalJoinRefresh() {
 
 /** 弹出「创建 / 加入群组」选择对话框。 @returns {Promise<void>} */
 async function showServerActionPicker() {
-	await withTemplates('/parts/shells:chat/src/templates', async () => {
-		await openDialogFromTemplate('hub/modals/server_action_picker', {
-			createIconHtml: iconifyImg('mdi/sparkles', { width: 28, height: 28 }),
-			joinIconHtml: iconifyImg('mdi/link-variant', { width: 28, height: 28 }),
-		}, {
-			/**
-			 * @param {HTMLDialogElement} dialog 对话框
-			 * @returns {void}
-			 */
-			onReady: dialog => {
-				dialog.querySelector('[data-action="create"]')?.addEventListener('click', () => {
-					void showCreateGroupModal(dialog)
-				})
-				dialog.querySelector('[data-action="join"]')?.addEventListener('click', () => {
-					void joinGroupById(dialog)
-				})
-				dialog.querySelector('[data-cancel]')?.addEventListener('click', () => dialog.close())
-			},
-		})
+	await openDialogFromTemplate('hub/modals/server_action_picker', {
+		createIconHtml: iconifyImg('mdi/sparkles', { width: 28, height: 28 }),
+		joinIconHtml: iconifyImg('mdi/link-variant', { width: 28, height: 28 }),
+	}, {
+		/**
+		 * @param {HTMLDialogElement} dialog 对话框
+		 * @returns {void}
+		 */
+		onReady: dialog => {
+			dialog.querySelector('[data-action="create"]')?.addEventListener('click', () => {
+				void showCreateGroupModal(dialog)
+			})
+			dialog.querySelector('[data-action="join"]')?.addEventListener('click', () => {
+				void joinGroupById(dialog)
+			})
+			dialog.querySelector('[data-cancel]')?.addEventListener('click', () => dialog.close())
+		},
 	})
 }
 

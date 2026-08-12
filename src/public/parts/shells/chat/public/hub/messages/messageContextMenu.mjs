@@ -5,14 +5,11 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/i18n、../../../../../scripts/markdown、../../../../../scripts/template、../../../../../scripts/toast、../../src/share、../core/state、../threadDrawer、messageActionsState。
  */
-import {
-	renderTemplate,
-	usingTemplates,
-} from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { createShareLink } from '../../src/share.mjs'
+import { renderTemplate } from '../../src/templates.mjs'
 import { setReplyTarget } from '../composerReply.mjs'
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { authorPresentationKeys } from '../core/domUtils.mjs'
@@ -80,7 +77,6 @@ export async function showMessageContextMenu(event, row) {
 	const showDelete = !!row.querySelector('.message-action[data-action="delete"]')
 	const showCopyIdRow = !!eventId
 
-	usingTemplates('/parts/shells:chat/src/templates')
 	const menu = await renderTemplate('hub/messages/message_context_menu', {
 		showTextActions,
 		showReplyRow,

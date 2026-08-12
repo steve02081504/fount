@@ -5,14 +5,10 @@
  * 【数据结构】群摘要 { id, name }、模板 DOM。
  * 【关联】api/groupCore.mjs；Hub 入口与侧栏。
  */
-import { openDialogFromTemplate, pushDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
-import {
-	mountTemplate,
-	usingTemplates,
-} from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { createGroup, getGroupList } from '../endpoints/groupCore.mjs'
 import { PENDING_INVITE_STORAGE_KEY } from '../pendingInviteStorage.mjs'
+import { mountTemplate, openDialogFromTemplate, pushDialogFromTemplate } from '../templates.mjs'
 
 /** 按需注入群组 UI 样式表（幂等）。 */
 function ensureGroupUiCssLink() {
@@ -30,7 +26,6 @@ function ensureGroupUiCssLink() {
  * @returns {Promise<void>}
  */
 export async function renderGroupList(container) {
-	usingTemplates('/parts/shells:chat/src/templates')
 	await mountTemplate(container, 'group/list_view', { view: 'loading' })
 
 	try {
@@ -67,7 +62,6 @@ export async function renderGroupList(container) {
  */
 export async function showCreateGroupModal(parentDialog) {
 	ensureGroupUiCssLink()
-	usingTemplates('/parts/shells:chat/src/templates')
 	const open = parentDialog ? pushDialogFromTemplate.bind(null, parentDialog) : openDialogFromTemplate
 	await open('hub/modals/group_create', {}, {
 		activateScripts: false,
@@ -113,7 +107,6 @@ export function openGroup(groupId) {
  */
 export async function joinGroupById(parentDialog) {
 	ensureGroupUiCssLink()
-	usingTemplates('/parts/shells:chat/src/templates')
 	const open = parentDialog ? pushDialogFromTemplate.bind(null, parentDialog) : openDialogFromTemplate
 	await open('hub/modals/group_join', {}, {
 		activateScripts: false,

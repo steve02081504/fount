@@ -2,13 +2,11 @@
  * 【文件】public/hub/messages/render/file.mjs
  * 【职责】`content.files` 附件区渲染（画廊 / 音视频 / 文件卡）与懒加载媒体占位点击。
  */
-import {
-	createDocumentFragmentFromHtmlStringNoScriptActivation,
-	renderTemplateAsHtmlString,
-} from '../../../../../../scripts/features/template.mjs'
+import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '../../../../../../scripts/features/template.mjs'
 import { onElementRemoved } from '../../../../../../scripts/lib/onElementRemoved.mjs'
 import { formatBytes } from '/scripts/lib/formatBytes.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../../src/groupFileBlob.mjs'
+import { renderTemplateAsHtmlString } from '../../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { hasSpeechRecognitionSource } from '/scripts/features/speechRecognition.mjs'

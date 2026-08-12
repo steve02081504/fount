@@ -8,7 +8,6 @@
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { getAllCachedPartDetails, getPartList } from '/scripts/endpoints/parts.mjs'
-import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -20,6 +19,7 @@ import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAv
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { searchEntities } from '../src/endpoints/entities.mjs'
 import { deleteSession } from '../src/endpoints/groupCore.mjs'
+import { mountTemplate, renderTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
 

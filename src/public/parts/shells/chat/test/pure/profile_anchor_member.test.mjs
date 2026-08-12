@@ -1,8 +1,8 @@
 /**
- * 资料卡锚点成员匹配：悬停本机头像不得因 pubKeyHash 空值误命中首位远端成员。
+ * 资料卡锚点成员匹配：按 entityHash 主键命中本机，不得误命中首位远端。
  */
 /* global Deno */
-import { findMemberForProfileAnchor } from 'fount/public/parts/shells/chat/public/shared/profileAnchorMember.mjs'
+import { findMemberByEntityHash } from 'fount/public/parts/shells/chat/public/shared/memberByEntityHash.mjs'
 import { assertEquals } from 'jsr:@std/assert'
 
 const REMOTE = {
@@ -17,59 +17,27 @@ const LOCAL = {
 }
 const MEMBERS = [REMOTE, LOCAL]
 
-Deno.test('消息头像悬停：displayKey=本机 entityHash 且无 memberItem 时命中本机，不误命中首位远端', () => {
-	// 复现：成员无 pubKeyHash、消息锚点无 memberKey → 旧逻辑 `undefined === undefined` 命中首位
-	const hit = findMemberForProfileAnchor(MEMBERS, {
-		displayKey: LOCAL.entityHash,
-		memberKey: undefined,
-		authorHash: LOCAL.memberKey,
-	})
+Deno.test('消息头像：displayKey=本机 entityHash 命中 LOCAL 不误命中首位 REMOTE', () => {
+	const hit = findMemberByEntityHash(MEMBERS, LOCAL.entityHash)
 	assertEquals(hit?.entityHash, LOCAL.entityHash)
+	assertEquals(hit?.entityHash === REMOTE.entityHash, false)
 })
 
-Deno.test('成员列表悬停：本机 entityHash 命中本机（authorHash 亦空）', () => {
-	const hit = findMemberForProfileAnchor(MEMBERS, {
-		displayKey: LOCAL.entityHash,
-		memberKey: LOCAL.memberKey,
-		authorHash: undefined,
-	})
-	assertEquals(hit?.entityHash, LOCAL.entityHash)
+Deno.test('成员列表：本机 entityHash 命中 LOCAL', () => {
+	assertEquals(findMemberByEntityHash(MEMBERS, LOCAL.entityHash)?.entityHash, LOCAL.entityHash)
 })
 
-Deno.test('pubKeyHash 为 null 时同样不得靠空右侧键误匹配', () => {
-	const withNullPk = [
-		{ ...REMOTE, pubKeyHash: null },
-		{ ...LOCAL, pubKeyHash: null },
-	]
-	assertEquals(
-		findMemberForProfileAnchor(withNullPk, {
-			displayKey: LOCAL.entityHash,
-			memberKey: undefined,
-			authorHash: LOCAL.memberKey,
-		})?.entityHash,
-		LOCAL.entityHash,
-	)
+Deno.test('远端 entityHash 命中 REMOTE', () => {
+	assertEquals(findMemberByEntityHash(MEMBERS, REMOTE.entityHash)?.entityHash, REMOTE.entityHash)
 })
 
-Deno.test('仍可用 memberKey / pubKeyHash 解析', () => {
-	const withPk = [
-		{ ...REMOTE, pubKeyHash: REMOTE.memberKey },
-		{ ...LOCAL, pubKeyHash: LOCAL.memberKey },
-	]
-	assertEquals(
-		findMemberForProfileAnchor(withPk, {
-			displayKey: LOCAL.entityHash,
-			memberKey: undefined,
-			authorHash: LOCAL.memberKey,
-		})?.entityHash,
-		LOCAL.entityHash,
-	)
-	assertEquals(
-		findMemberForProfileAnchor(withPk, {
-			displayKey: LOCAL.memberKey,
-			memberKey: undefined,
-			authorHash: undefined,
-		})?.entityHash,
-		LOCAL.entityHash,
-	)
+Deno.test('空 / 未知 entityHash 返回 undefined', () => {
+	assertEquals(findMemberByEntityHash(MEMBERS, ''), undefined)
+	assertEquals(findMemberByEntityHash(MEMBERS, undefined), undefined)
+	assertEquals(findMemberByEntityHash(MEMBERS, '0'.repeat(128)), undefined)
+})
+
+Deno.test('不得用 memberKey 当 entityHash 误匹配', () => {
+	assertEquals(findMemberByEntityHash(MEMBERS, LOCAL.memberKey), undefined)
+	assertEquals(findMemberByEntityHash(MEMBERS, REMOTE.memberKey), undefined)
 })

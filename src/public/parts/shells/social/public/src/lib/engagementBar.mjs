@@ -1,4 +1,4 @@
-import { renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
+import { renderTemplateAsHtmlString } from '../templates.mjs'
 
 /**
  * 从 feed item / reply 组装互动栏模板数据。

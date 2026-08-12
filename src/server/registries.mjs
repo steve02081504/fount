@@ -1,24 +1,18 @@
 import path from 'node:path'
 
 import { loadJsonFile } from '../scripts/json_loader.mjs'
+import { partpathToUrlPrefix } from '../scripts/part_paths.mjs'
 
 import { GetPartPath, getPartRegistriesRaw } from './parts_loader.mjs'
 
 /**
- * @typedef {{ id: string, level: number, path: string, partpath?: string, format?: string, dataField?: string }} RegistryEntry
+ *
  */
+export { partpathToUrlPrefix }
 
 /**
- * 将 partpath 转为前端 URL 前缀（`/parts/shells:chat`）。
- * @param {string} partpath - 部件路径。
- * @returns {string} 前端 URL 前缀。
+ * @typedef {{ id: string, level: number, path: string, partpath?: string, format?: string, dataField?: string }} RegistryEntry
  */
-export function partpathToUrlPrefix(partpath) {
-	const segments = partpath.split('/').filter(Boolean)
-	if (!segments.length) return '/parts'
-	const [head, ...rest] = segments
-	return `/parts/${head}:${rest.join('/')}`
-}
 
 /**
  * 将 registry 相对 path 解析为前端 URL。

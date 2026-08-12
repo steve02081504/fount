@@ -7,7 +7,6 @@
  */
 import { getPartList } from '../../../../scripts/endpoints/parts.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { mountTemplate, renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
 import { triggerChannelReply } from '../src/endpoints/groupChannel.mjs'
 import {
 	addGroupPlugin,
@@ -19,6 +18,7 @@ import {
 	setGroupPersona,
 	setGroupWorld,
 } from '../src/endpoints/groupCore.mjs'
+import { mountTemplate, renderTemplateAsHtmlString } from '../src/templates.mjs'
 
 import { showOverlayNotice } from './core/overlayModal.mjs'
 import { store } from './core/state.mjs'

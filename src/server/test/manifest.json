@@ -18,6 +18,8 @@
 				"src/server/registries.mjs",
 				"src/server/no_cors.mjs",
 				"src/scripts/net_listen.mjs",
+				"src/scripts/part_paths.mjs",
+				"src/public/pages/scripts/lib/partPaths.mjs",
 				"src/public/pages/scripts/endpoints/registries.mjs"
 			]
 		},

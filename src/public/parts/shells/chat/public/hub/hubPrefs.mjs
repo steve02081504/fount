@@ -1,7 +1,7 @@
 /**
  * Hub 偏好设置壳：左侧导航切换翻译 / 联邦 P2P，共用 `#settings-modal`。
  */
-import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 
 import { closeOverlayModal, openOverlayModal } from './core/overlayModal.mjs'
 
@@ -64,7 +64,6 @@ async function mountSection(panel, footer, section) {
 export async function openHubPrefsModal(options = {}) {
 	const section = options.section === 'federation' ? 'federation' : 'translation'
 	activeGetGroupId = options.getGroupId || null
-	usingTemplates('/parts/shells:chat/src/templates')
 	const shell = await renderTemplate('hub/prefs/shell', {})
 	openOverlayModal({
 		titleKey: 'chat.hub.settingsModalTitle',

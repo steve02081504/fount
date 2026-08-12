@@ -5,7 +5,6 @@ import { initTranslations } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { createSearchableDropdown } from '/scripts/components/search.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 import { getPartList } from '/scripts/endpoints/parts.mjs'
 
@@ -14,6 +13,7 @@ import {
 	startPet,
 	stopPet
 } from './src/endpoints.mjs'
+import { renderTemplate } from './templates.mjs'
 
 const charSelectDropdown = document.getElementById('char-select-dropdown')
 const startPetButton = document.getElementById('start-pet-button')
@@ -149,7 +149,6 @@ async function initializeFromURLParams() {
 async function init() {
 	await applyTheme()
 	await initTranslations('deskpet')
-	usingTemplates('/parts/shells:deskpet/templates')
 
 	charList = await getPartList('chars')
 	await renderCharDropdown()

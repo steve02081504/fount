@@ -4,11 +4,9 @@
  * 【原理】渲染单行与交互绑定与 MessagePipeline 解耦；主区 virtual list 的 onRenderComplete
  *   与线程抽屉的 pipeline 都走同一套 bind。
  */
-import {
-	createDocumentFragmentFromHtmlStringNoScriptActivation,
-	renderTemplate,
-} from '../../../../../scripts/features/template.mjs'
+import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '../../../../../scripts/features/template.mjs'
 import { createMessagePipeline } from '../../src/MessagePipeline.mjs'
+import { renderTemplate } from '../../src/templates.mjs'
 import { activeCharPartNames } from '../core/domUtils.mjs'
 import { store } from '../core/state.mjs'
 import { applyAvatarsTo } from '../presence.mjs'

@@ -6,7 +6,6 @@
  */
 import { HEX_ID_64, isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
-import { renderTemplate, usingTemplates } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { createDmLinkAndSync, rotateDmLinkAndSync } from '../../src/dmLink.mjs'
@@ -14,6 +13,7 @@ import { getFederationSettings, putFederationSettings } from '../../src/endpoint
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { repairJoinSnapshot, rotateFederationRoomSecret } from '../../src/endpoints/groupFederation.mjs'
 import { getGroupReputation, postReputationReset, postReputationSlash } from '../../src/endpoints/groupGovernance.mjs'
+import { renderTemplate } from '../../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { closeOverlayModal } from '../core/overlayModal.mjs'
 
@@ -231,7 +231,6 @@ function wireFederationModalEvents(root, groupId) {
  * @returns {Promise<void>}
  */
 export async function mountFederationPrefsPanel(panel, footer, groupId) {
-	usingTemplates('/parts/shells:chat/src/templates')
 	const tooltipText = Object.fromEntries(Object.entries({
 		fedRelayUrlsTip: 'chat.hub.fed.relayUrlsTip',
 		fedBatterySaverTip: 'chat.hub.fed.batterySaverTip',

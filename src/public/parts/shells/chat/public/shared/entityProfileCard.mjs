@@ -5,7 +5,7 @@
  * bio 只吃 markdown 源，本机安全/可信两档渲染后挂载，不信任对端 HTML、也不对源做 escapeHtml。
  * 悬停 / 点击弹层 / 嵌入页共用 `hub/profile_popup` 模板与 `paintEntityProfileCard`，勿另起视觉壳。
  */
-import { renderTemplate } from '/scripts/features/template.mjs'
+import { renderTemplate } from '/parts/shells:chat/src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
@@ -95,13 +95,13 @@ export function normalizeEntityProfile(profile, entityHash) {
 }
 
 /**
- * 克隆共享人物卡 DOM（`hub/profile_popup`）；显式 chat 模板根，跨壳安全。
+ * 克隆共享人物卡 DOM（`hub/profile_popup`）；经 chat bound templates API，跨壳安全。
  * @param {'popup'|'embedded'|'preview'|'hover'|'sidebar'} [mode='popup'] 使用场景
  * @returns {Promise<HTMLElement>} 人物卡根节点
  */
 export async function createEntityProfileCardElement(mode = 'popup') {
 	ensureEntityProfileCardStyles()
-	const root = await renderTemplate('hub/profile_popup', {}, '/parts/shells:chat/src/templates')
+	const root = await renderTemplate('hub/profile_popup', {})
 	if (!(root instanceof HTMLElement)) throw new Error('profile_popup template root missing')
 	configureEntityProfileCard(root, mode)
 	return root
@@ -162,7 +162,6 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 			themeColor: normalized.themeColor || '#5865f2',
 		})
 
-
 	const nameElement = root.querySelector('[data-entity-profile-name]')
 	if (nameElement) nameElement.textContent = name
 	const handleElement = root.querySelector('[data-entity-profile-handle]')
@@ -196,7 +195,6 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 			statusText.textContent = ''
 			statusText.dataset.i18n = `chat.profile.statusOptions.${normalized.status}`
 		}
-
 
 	const bioElement = root.querySelector('[data-entity-profile-bio]')
 	if (bioElement instanceof HTMLElement)

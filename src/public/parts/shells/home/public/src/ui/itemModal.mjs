@@ -1,9 +1,10 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { geti18n } from '../../../../../scripts/i18n/index.mjs'
+import { partpathToUrlPartKey } from '/scripts/lib/partPaths.mjs'
 import { svgInliner } from '../../../../../scripts/lib/svgInliner.mjs'
 import { defaultIcons, genericDefaultIcon } from '../constants.mjs'
+import { renderTemplate } from '../templates.mjs'
 
 const itemModal = document.getElementById('item-modal')
 const itemModalContent = document.getElementById('item-modal-content')
@@ -40,7 +41,7 @@ export function createActionButtons(part, interfacesRegistry) {
 							.replaceAll('${name}', partname)
 							.replaceAll('${type}', parttype)
 							.replaceAll('${path}', normalizedPartpath)
-							.replaceAll('${access_path}', normalizedPartpath.replaceAll('/', ':')),
+							.replaceAll('${access_path}', partpathToUrlPartKey(normalizedPartpath)),
 						{ geti18n }
 					)
 				})
@@ -49,7 +50,7 @@ export function createActionButtons(part, interfacesRegistry) {
 					.replaceAll('${name}', partname)
 					.replaceAll('${type}', parttype)
 					.replaceAll('${path}', normalizedPartpath)
-					.replaceAll('${access_path}', normalizedPartpath.replaceAll('/', ':'))
+					.replaceAll('${access_path}', partpathToUrlPartKey(normalizedPartpath))
 				button.addEventListener('click', e => e.stopPropagation())
 			}
 			buttons.push(button)

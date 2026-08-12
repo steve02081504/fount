@@ -21,15 +21,15 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 - **`endpoints/registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`.
 - **`endpoints/p2p/evfsMedia.mjs`**: EVFS GET/PUT (`fetchEvfsFile`, `fetchMediaRef`, `uploadEvfsFile`, `uploadEvfsAttachment`). Pure URL helpers stay Deno-pure in chat `shared/evfsMedia.mjs` (`entityFileUrl`, `mediaRefUrl`).
 - **`debug_log.mjs`**: `debugLog(name, data)` → `debug_logs/`.
-- **HTML templates**: use `renderTemplate` / `mountTemplate` / `withTemplates` — never `fetch(…html)`.
+- **HTML templates**: import bound helpers from the shell’s `templates.mjs` (or `templatesFor(root)` / `dialogsFor(root)`) — never `fetch(…html)`.
 
 ## UI & Theming
 
 - **`base.css`**: shared page chrome. `.hidden { display: none !important }` — do not re-declare in shells; page-local `display: flex|grid` must not un-hide toggled UI.
 - **Component CSS**: inject at module import (`document.head.prepend`) — do not lazy-`ensure*` stylesheet links on first use. Registry-driven CSS (e.g. markdown extensions) stays async-load.
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
-- **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — pass explicit `templatesRoot`, or use `withTemplates` only for single-threaded blocks. Fetch cache keyed by full URL; failed fetches are not cached.
-- **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
+- **`template.mjs`**: `templatesFor(root)` returns bound `renderTemplate` / `mountTemplate` / `appendTemplate` / `renderTemplateAsHtmlString` / …. Shells expose a local `templates.mjs` that calls `templatesFor` (+ `dialogsFor` when needed); call sites import from that module — do **not** use global `usingTemplates` / `withTemplates` (removed). HTML helpers (`createDocumentFragment*`, `createDOM*`, `activateScripts`) stay on `template.mjs`. Fetch cache keyed by full URL; failed fetches are not cached.
+- **`dialog.mjs`**: `dialogsFor(root)` → `openDialogFromTemplate` / `pickFromDialog` / …. Shared prompt/confirm templates: `/scripts/features/templates.mjs`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
 - **`promptDialog.mjs`**: shared DaisyUI `promptText` / `promptTextArea` / `confirmAction`. Prefer over `window.prompt` / `confirm` / shell-local copies. **First argument is always an i18n key**; optional third arg is interpolation params. Do not pass `geti18n(...)` strings. Modal title is **`h2`** (page already has `h1`).
 - **`components/jsonEditor.mjs`**: `createJsonEditor(container, options)` wraps `vanilla-jsoneditor` (≥3.13). **`options.ariaLabel` is required and must be an i18n key** (via `setLocalizeLogic`); do not pass `geti18n(...)` strings. Optional `onSave` is Ctrl+S only. Keep native `get()`/`set()` (`Content`); use **`getJson()`** for parsed values (`{ json }` as-is; `{ text }` → `jsonrepair` then `JSON.parse`).
 - **`components/imageEditor.mjs`**: `openImageEditor(file, labels?)` — crop / mosaic / brush; returns `File | null`. Defaults under `util.imageEditor.*`.

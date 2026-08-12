@@ -1,9 +1,9 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { i18nElement } from '/scripts/i18n/index.mjs'
-import { mountTemplate, renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { getChannelPermissions, putChannelPermissions } from '../endpoints/channelPerms.mjs'
 import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
+import { mountTemplate, renderTemplateAsHtmlString } from '../templates.mjs'
 
 import { grantableChannelOverridePermissions } from './constants.mjs'
 

@@ -1,11 +1,11 @@
 /**
  * 远端柜浏览：实体条、人物卡入口。
  */
-import { renderTemplate } from '/scripts/features/template.mjs'
+import { cabinetStore } from './state.mjs'
+import { renderTemplate } from './templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
-import { cabinetStore } from './state.mjs'
 
 /**
  * 打开统一人物卡（Chat Hub 同源弹层）。

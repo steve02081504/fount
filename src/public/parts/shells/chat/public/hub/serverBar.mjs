@@ -5,12 +5,12 @@
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/template、../src/endpoints/groupBookmarks、groupCore、core/domUtils、core/state、friendBindings、groupContextMenu、sidebar
  */
-import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { aliasForGroup } from '../shared/aliases.mjs'
 import { isGroupMutedInSidebar, loadNotificationPreferences } from '../shared/notificationPreferences.mjs'
 import { getGroupFolders, putGroupFolders } from '../src/endpoints/folders.mjs'
 import { getChatBookmarks, saveChatBookmarks } from '../src/endpoints/groupBookmarks.mjs'
 import { getGroupList } from '../src/endpoints/groupCore.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
@@ -171,7 +171,6 @@ export async function renderServerBar() {
 	else
 		for (const group of sidebarGroups)
 			await appendHubServerItem(list, group, notifyPrefs)
-
 
 	list.querySelectorAll('.server-item[data-group-id]').forEach(el => {
 		el.addEventListener('click', (event) => {

@@ -6,18 +6,13 @@
  * 【关联】../../../../scripts/i18n、../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/endpoints/groupCore、../src/inviteQr、chat、core/domUtils。
  */
 import { getPartList } from '../../../../scripts/endpoints/parts.mjs'
-import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
-import {
-	renderTemplate,
-	renderTemplateAsHtmlString,
-	usingTemplates,
-} from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForGroup, setGroupAlias } from '../shared/aliases.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
 import { addGroupChar, createGroupInvite, leaveGroups } from '../src/endpoints/groupCore.mjs'
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
+import { openDialogFromTemplate, renderTemplate, renderTemplateAsHtmlString } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
@@ -316,7 +311,6 @@ async function showAddCharDialog(groupId) {
 		showToastI18n('warning', 'chat.hub.group.context.noChars')
 		return
 	}
-	usingTemplates('/parts/shells:chat/src/templates')
 	await openDialogFromTemplate('hub/modals/add_char', {}, {
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框

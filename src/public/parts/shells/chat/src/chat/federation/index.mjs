@@ -171,20 +171,26 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 }
 
 /**
- * @param {boolean} federationActive 是否已激活联邦
- * @returns {{ federationActive: boolean, tipsCollected: number, peerRosterSize: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }} 空统计
+ * @typedef {{ federationActive: boolean, tipsCollected: number, peerRosterSize: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }} CatchUpStats
  */
-function emptyCatchUpStats(federationActive = false) {
-	return {
-		federationActive,
-		tipsCollected: 0,
-		peerRosterSize: 0,
-		wantIds: 0,
-		eventsFilled: 0,
-		wantIdsStillMissing: 0,
-		wantIdsRateLimited: false,
-		stalePeersPruned: 0,
-	}
+
+const CATCH_UP_STATS_DEFAULTS = {
+	federationActive: false,
+	tipsCollected: 0,
+	peerRosterSize: 0,
+	wantIds: 0,
+	eventsFilled: 0,
+	wantIdsStillMissing: 0,
+	wantIdsRateLimited: false,
+	stalePeersPruned: 0,
+}
+
+/**
+ * @param {Partial<CatchUpStats>} [fields] 覆盖字段
+ * @returns {CatchUpStats} 可序列化补洞统计
+ */
+function catchUpStats(fields = {}) {
+	return { ...CATCH_UP_STATS_DEFAULTS, ...fields }
 }
 
 /**
@@ -192,7 +198,7 @@ function emptyCatchUpStats(federationActive = false) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {{ waitMs?: number, extraWantIds?: string[] }} [options] 等待邻居 pong 毫秒数、额外索要 id
- * @returns {Promise<{ federationActive: boolean, tipsCollected: number, peerRosterSize: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
+ * @returns {Promise<CatchUpStats>} 补洞统计
  */
 export async function catchUpGroupFromPeers(username, groupId, options = {}) {
 	const key = `${username}\0${groupId}`
@@ -209,11 +215,11 @@ export async function catchUpGroupFromPeers(username, groupId, options = {}) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {{ waitMs?: number, extraWantIds?: string[] }} [options] 等待邻居 pong 毫秒数、额外索要 id
- * @returns {Promise<{ federationActive: boolean, tipsCollected: number, peerRosterSize: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
+ * @returns {Promise<CatchUpStats>} 补洞统计
  */
 async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	const slot = await ensureFederationPartitionRoom(username, groupId, LOGIC_SYNC_PARTITION)
-	if (!slot) return emptyCatchUpStats(false)
+	if (!slot) return catchUpStats()
 
 	const { readJsonl } = requireDagDeps()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
@@ -354,7 +360,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	// 本端领先或已同步时 wantIdsStillMissing===0，跳过昂贵的快照仲裁，避免活跃 DAG 下每轮 catchup 空转死等。
 	if (wantIdsStillMissing > 0 && !wantIdsRateLimited && localArchive.checkpoint?.checkpoint_event_id)
 		await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries })
-	const stats = {
+	const stats = catchUpStats({
 		federationActive: true,
 		tipsCollected: remoteTips.size,
 		peerRosterSize: slot.getRoster().length,
@@ -363,7 +369,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 		wantIdsStillMissing,
 		wantIdsRateLimited,
 		stalePeersPruned: getStalePeerPruneCount(groupId) - stalePeersAtStart,
-	}
+	})
 	maybeRequestBootstrapAfterCatchup(username, groupId, stats, slot).catch(handleError)
 	if (localArchive.checkpoint?.local_tips_hash)
 		markGroupOnlineSynced(username, groupId, localArchive.checkpoint.local_tips_hash).catch(handleError)

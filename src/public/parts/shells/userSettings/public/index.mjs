@@ -5,7 +5,6 @@ import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/en
 import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme/index.mjs'
-import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
 
 import {
 	isPasswordConfirmationDialogDismissed,
@@ -29,8 +28,7 @@ import {
 	requestPasswordConfirmation,
 } from './src/passwordConfirmationRequest.mjs'
 import { escapeAttr } from './src/uiEscape.mjs'
-
-usingTemplates('/parts/shells:userSettings/templates')
+import { mountTemplate, renderTemplate } from './templates.mjs'
 
 const REFRESH_TOKEN_EXPIRY_DURATION_STRING = 30 * 24 * 60 * 60 * 1000 // '30d'
 

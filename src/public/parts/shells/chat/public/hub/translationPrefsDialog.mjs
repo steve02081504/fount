@@ -2,9 +2,9 @@
  * Chat Hub 用户级翻译偏好面板（挂入偏好壳内容区）。
  */
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { getTranslationPrefs, putTranslationPrefs } from '../src/endpoints/prefs.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 
 import { closeOverlayModal } from './core/overlayModal.mjs'
 
@@ -15,7 +15,6 @@ import { closeOverlayModal } from './core/overlayModal.mjs'
  * @returns {Promise<void>}
  */
 export async function mountTranslationPrefsPanel(panel, footer) {
-	usingTemplates('/parts/shells:chat/src/templates')
 	let prefs = { autoTranslate: false }
 	try {
 		prefs = (await getTranslationPrefs()).prefs || prefs

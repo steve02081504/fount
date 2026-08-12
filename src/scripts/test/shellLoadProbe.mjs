@@ -6,6 +6,12 @@ import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
+import {
+	parsePartsUrlPath,
+	partPublicRelToBrowserPath,
+	urlPartKeyToPartpath,
+} from '../part_paths.mjs'
+
 const IMPORT_RE = /\b(?:import|export)\s+(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]/gu
 const DYNAMIC_IMPORT_RE = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/gu
 const NAMED_IMPORT_RE = /\bimport\s+(?:type\s+)?(?:[A-Za-z_$][\w$]*\s*,\s*)?\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/gu
@@ -24,11 +30,11 @@ function pagesScriptsRoot(repoRoot) {
 
 /**
  * @param {string} repoRoot 仓库根目录
- * @param {string} partPath 如 shells/chat
+ * @param {string} partPath 如 shells/chat 或 shells:chat
  * @returns {string} part public 根路径
  */
 function partPublicRoot(repoRoot, partPath) {
-	return path.join(repoRoot, 'src/public/parts', partPath.replace(/:/g, '/'), 'public')
+	return path.join(repoRoot, 'src/public/parts', urlPartKeyToPartpath(partPath), 'public')
 }
 
 /**
@@ -76,9 +82,7 @@ export function partPublicBrowserPath(repoRoot, importerFile) {
 	const partsRoot = path.join(repoRoot, 'src/public/parts')
 	const rel = path.relative(partsRoot, path.resolve(importerFile)).replace(/\\/g, '/')
 	if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) return null
-	const match = /^(.+?)\/public\/(.+)$/u.exec(rel)
-	if (!match) return null
-	return `/parts/${match[1].replaceAll('/', ':')}/${match[2]}`
+	return partPublicRelToBrowserPath(rel)
 }
 
 /**
@@ -93,10 +97,9 @@ function mapBrowserPathnameToFile(repoRoot, pathname) {
 		return existsSync(candidate) ? candidate : null
 	}
 	if (pathname.startsWith('/parts/')) {
-		const body = pathname.slice('/parts/'.length)
-		const slash = body.indexOf('/')
-		if (slash < 0) return null
-		const candidate = path.join(partPublicRoot(repoRoot, body.slice(0, slash)), body.slice(slash + 1))
+		const parsed = parsePartsUrlPath(pathname)
+		if (!parsed) return null
+		const candidate = path.join(partPublicRoot(repoRoot, parsed.partpath), parsed.filepath)
 		return existsSync(candidate) ? candidate : null
 	}
 	return null
@@ -252,7 +255,7 @@ export async function collectModuleExports(repoRoot, file, cache = new Map()) {
  * @returns {Promise<{ backendMissing: string[], publicMissing: string[], crossBoundary: string[], missingNamed: string[] }>} 探针结果
  */
 export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
-	const partDir = path.join(repoRoot, 'src/public/parts', partPath.replace(/:/g, '/'))
+	const partDir = path.join(repoRoot, 'src/public/parts', urlPartKeyToPartpath(partPath))
 	const publicDir = path.join(partDir, 'public')
 	const srcDir = path.join(partDir, 'src')
 

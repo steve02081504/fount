@@ -87,7 +87,7 @@ function canAutoJoinGroup(state, pendingJoin, inviteCode) {
  */
 async function showGroupJoinRequiredState() {
 	const { disableComposer } = await import('../messages/composerController.mjs')
-	const { mountTemplate } = await import('../../../../../scripts/features/template.mjs')
+	const { mountTemplate } = await import('../../src/templates.mjs')
 	setState('context.currentChannelId', null)
 	updateHash(store.context.currentGroupId, null)
 	disableComposer()

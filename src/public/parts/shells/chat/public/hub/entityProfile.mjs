@@ -166,7 +166,7 @@ async function refreshTrustedAuthorMessages(authorPubKeyHash) {
 	const container = document.getElementById('messages')
 	if (!(container instanceof HTMLElement)) return
 	const { hydrateMessageMarkdown } = await import('./messages/render/markdown.mjs')
-	const { renderTemplateAsHtmlString } = await import('../../../../scripts/features/template.mjs')
+	const { renderTemplateAsHtmlString } = await import('../src/templates.mjs')
 	const badgeHtml = await renderTemplateAsHtmlString('hub/messages/trusted_author_badge', {})
 	for (const row of container.querySelectorAll(`.message[data-author-pubkey-hash="${authorPubKeyHash}"]`)) {
 		if (!(row instanceof HTMLElement)) continue

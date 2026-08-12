@@ -1,11 +1,10 @@
-import { openDialogFromTemplate } from '../../../../../../scripts/features/dialog.mjs'
-import { usingTemplates } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { putGroupMeta, putGroupSettings, removeGroup } from '../endpoints/groupCore.mjs'
 import { postFederationTuning } from '../endpoints/groupFederation.mjs'
 import { rotateGroupKey, submitOwnerSuccession } from '../endpoints/groupGovernance.mjs'
+import { openDialogFromTemplate } from '../templates.mjs'
 
 import { collectFederationTuningPatch } from './federationTab.mjs'
 import { collectIceServersFromDom, wireIceServersEditor } from './iceTab.mjs'
@@ -14,7 +13,6 @@ import { wireInvitePanel } from './inviteTab.mjs'
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
 export async function showOwnerSuccessionModal(context) {
 	if (!context.groupId) return
-	usingTemplates('/parts/shells:chat/src/templates')
 	const viewerPubKeyHash = context.stateJson?.viewerMemberPubKeyHash || ''
 	await openDialogFromTemplate('group/modals/owner_succession', {
 		viewerPubKeyHash: escapeHtml(viewerPubKeyHash),
@@ -144,7 +142,7 @@ export async function deleteGroup(context) {
 
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
 export async function renderGroupSettings(context) {
-	const { appendTemplate } = await import('../../../../../../scripts/features/template.mjs')
+	const { appendTemplate } = await import('../templates.mjs')
 	const container = document.getElementById('group-settings-container')
 	if (!container || !context.settingsCaps) return
 

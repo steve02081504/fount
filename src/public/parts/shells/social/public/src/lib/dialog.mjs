@@ -2,10 +2,8 @@
  * Social 对话框包装 — 委托共享 DaisyUI prompt/confirm。
  */
 export { promptText, promptTextArea, confirmAction } from '/scripts/features/promptDialog.mjs'
-import { pickFromDialog } from '/scripts/features/dialog.mjs'
+import { pickFromDialog } from '/scripts/features/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-
-const SHARED_TEMPLATES = '/scripts/features/templates'
 
 const OK_ONLY = `
 		<button type="button" class="btn btn-primary" data-dialog-resolve="ok" data-i18n="util.common.confirm"></button>`
@@ -24,5 +22,5 @@ export function showText(text, titleI18nKey) {
 		boxClass: ' max-w-lg',
 		bodyHtml: `<pre class="whitespace-pre-wrap text-sm max-h-96 overflow-auto" user-content>${escapeHtml(text)}</pre>`,
 		actionsHtml: OK_ONLY,
-	}, { templatesRoot: SHARED_TEMPLATES })
+	})
 }

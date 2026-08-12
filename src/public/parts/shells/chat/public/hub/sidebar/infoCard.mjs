@@ -2,7 +2,7 @@
  * 【文件】public/hub/sidebar/infoCard.mjs
  * 【职责】右侧群组信息卡渲染。
  */
-import { mountTemplate } from '../../../../../scripts/features/template.mjs'
+import { mountTemplate } from '../../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { avatarColor, avatarInitial, avatarTextColor, groupDisplayName } from '../core/domUtils.mjs'
 import { store } from '../core/state.mjs'

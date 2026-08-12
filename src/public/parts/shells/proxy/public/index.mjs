@@ -4,11 +4,11 @@
 import { verifyApiKey, createApiKey } from '/scripts/endpoints/base.mjs'
 import { initTranslations, console } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
-import { mountTemplate, usingTemplates } from '/scripts/features/template.mjs'
 import { showToast, showToastI18n } from '/scripts/features/toast.mjs'
 
+import { mountTemplate } from './templates.mjs'
+
 applyTheme()
-usingTemplates('/parts/shells:proxy/templates')
 await initTranslations('proxy')
 
 const fountHost = window.location.origin

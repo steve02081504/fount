@@ -6,7 +6,6 @@
  * 【关联】files.mjs、dragAndDrop.mjs、mediaViewer；Hub composer。
  */
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
-import { renderTemplate } from '/scripts/features/template.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { hasSpeechRecognitionSource, recognizeBuffer } from '/scripts/features/speechRecognition.mjs'
 import { setCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
@@ -15,6 +14,7 @@ import { onElementRemoved } from '/scripts/lib/onElementRemoved.mjs'
 import { parseEvfsRef } from './lib/evfsRef.mjs'
 import { arrayBufferToBase64 } from './lib/federationUpload.mjs'
 import { processTimeStampForId } from './lib/timestampId.mjs'
+import { renderTemplate } from './templates.mjs'
 import { openMediaViewer } from '/scripts/components/mediaViewer.mjs'
 
 /** @type {boolean | null} */

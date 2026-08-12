@@ -1,11 +1,9 @@
-import {
-	createDocumentFragmentFromHtmlStringNoScriptActivation,
-	mountTemplate,
-} from '../../../../../scripts/features/template.mjs'
+import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '../../../../../scripts/features/template.mjs'
 import { applyMessageEditToRow } from '../../shared/messageMerge.mjs'
 import { getChannelViewLog } from '../../src/endpoints/groupChannel.mjs'
 import { hubEmptyWaveIcon } from '../../src/lib/emojiSvg.mjs'
 import { eventIdsEqual } from '../../src/lib/eventId.mjs'
+import { mountTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
 import { store } from '../core/state.mjs'

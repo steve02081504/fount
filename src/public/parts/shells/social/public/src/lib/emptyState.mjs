@@ -1,4 +1,4 @@
-import { renderTemplate } from '/scripts/features/template.mjs'
+import { renderTemplate } from '../templates.mjs'
 
 /**
  * 构建带图标的空态节点。
