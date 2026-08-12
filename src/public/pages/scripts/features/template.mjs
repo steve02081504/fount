@@ -7,6 +7,38 @@ import { svgInliner } from '../lib/svgInliner.mjs'
 
 const template_cache = {}
 
+/** 模板根切换 / 渲染互斥：避免 prompt 的 withTemplates 与侧栏 renderTemplate 并发串台。 */
+let templateGate = Promise.resolve()
+let templateDepth = 0
+
+/**
+ * 在模板互斥闸下执行；同调用栈内可重入（withTemplates → renderTemplate）。
+ * @template T
+ * @param {() => T | Promise<T>} fn 回调
+ * @returns {Promise<T>} 回调结果
+ */
+function withTemplateGate(fn) {
+	if (templateDepth > 0) {
+		templateDepth++
+		return Promise.resolve()
+			.then(fn)
+			.finally(() => { templateDepth-- })
+	}
+	const previous = templateGate
+	let release
+	templateGate = new Promise(resolve => { release = resolve })
+	return previous.then(async () => {
+		templateDepth++
+		try {
+			return await fn()
+		}
+		finally {
+			templateDepth--
+			release()
+		}
+	})
+}
+
 // 不需要闭合的空元素 (Void Elements)
 const VOID_TAGS = new Set([
 	'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'
@@ -184,14 +216,16 @@ export function usingTemplates(path) {
  * @returns {Promise<T>} 回调结果
  */
 export async function withTemplates(path, fn) {
-	const previous = templatePath
-	usingTemplates(path)
-	try {
-		return await fn()
-	}
-	finally {
-		templatePath = previous
-	}
+	return withTemplateGate(async () => {
+		const previous = templatePath
+		usingTemplates(path)
+		try {
+			return await fn()
+		}
+		finally {
+			templatePath = previous
+		}
+	})
 }
 
 /**
@@ -201,56 +235,68 @@ export async function withTemplates(path, fn) {
  * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素(脚本未激活)。
  */
 export async function renderTemplateNoScriptActivation(template, data = {}) {
-	data.geti18n ??= geti18n
-	data.renderTemplate ??= renderTemplateAsHtmlString
-	/**
-	 * 在模板渲染上下文中设置一个值。
-	 * @template T - 要设置的变量类型。
-	 * @param {string} name - 要设置的变量名。
-	 * @param {T} value - 要设置的变量值。
-	 * @returns {T} - 设置的值。
-	 */
-	data.setValue ??= (name, value) => data[name] = value
-	data.escapeHtml ??= escapeHtml
-	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => {
-		if (!response.ok) throw new Error(`HTTP error, status: ${response.status}`)
-		return response.text()
-	})
-	let html = template_cache[template] = await template_cache[template]
+	return withTemplateGate(async () => {
+		data.geti18n ??= geti18n
+		data.renderTemplate ??= renderTemplateAsHtmlString
+		/**
+		 * 在模板渲染上下文中设置一个值。
+		 * @template T - 要设置的变量类型。
+		 * @param {string} name - 要设置的变量名。
+		 * @param {T} value - 要设置的变量值。
+		 * @returns {T} - 设置的值。
+		 */
+		data.setValue ??= (name, value) => data[name] = value
+		data.escapeHtml ??= escapeHtml
+		// 按完整 URL 缓存：不同 withTemplates 根互不覆盖；失败勿留下 rejected Promise。
+		const url = `${templatePath}/${template}.html`
+		const cacheKey = url
+		if (!Object.hasOwn(template_cache, cacheKey))
+			template_cache[cacheKey] = fetch(url).then(response => {
+				if (!response.ok) {
+					delete template_cache[cacheKey]
+					throw new Error(`HTTP error, status: ${response.status}`)
+				}
+				return response.text()
+			}, error => {
+				delete template_cache[cacheKey]
+				throw error
+			})
+		let html = template_cache[cacheKey] = await template_cache[cacheKey]
 
-	// 使用循环匹配所有 ${...} 表达式
-	let result = ''
-	const errors = []
-	while (html.indexOf('${') != -1) {
-		const length = html.indexOf('${')
-		result += html.slice(0, length)
-		html = html.slice(length + 2)
-		let end_index = 0
-		let matched = false
-		find: while (html.indexOf('}', end_index) != -1) { // 我们需要遍历所有的结束符直到表达式跑通
-			end_index = html.indexOf('}', end_index) + 1
-			const expression = html.slice(0, end_index - 1)
-			try {
-				const eval_result = await async_eval(expression, data)
-				if (eval_result.error) throw eval_result.error
-				result += escapeUnclosedTags(String(eval_result.result))
-				html = html.slice(end_index)
+		// 使用循环匹配所有 ${...} 表达式
+		let result = ''
+		const errors = []
+		while (html.indexOf('${') != -1) {
+			const length = html.indexOf('${')
+			result += html.slice(0, length)
+			html = html.slice(length + 2)
+			let end_index = 0
+			let matched = false
+			find: while (html.indexOf('}', end_index) != -1) { // 我们需要遍历所有的结束符直到表达式跑通
+				end_index = html.indexOf('}', end_index) + 1
+				const expression = html.slice(0, end_index - 1)
+				try {
+					const eval_result = await async_eval(expression, data)
+					if (eval_result.error) throw eval_result.error
+					result += escapeUnclosedTags(String(eval_result.result))
+					html = html.slice(end_index)
+					errors.length = 0
+					matched = true
+					break find
+				} catch (error) {
+					errors.push(error)
+				}
+			}
+			if (!matched) {
+				errors.forEach(console.error)
 				errors.length = 0
-				matched = true
-				break find
-			} catch (error) {
-				errors.push(error)
+				result += `\${${html.slice(0, end_index || html.length)}`
+				html = html.slice(end_index || html.length)
 			}
 		}
-		if (!matched) {
-			errors.forEach(console.error)
-			errors.length = 0
-			result += `\${${html.slice(0, end_index || html.length)}`
-			html = html.slice(end_index || html.length)
-		}
-	}
-	result += html
-	return i18nElement(await svgInliner(createDOMFromHtmlStringNoScriptActivation(result)), { skip_report: true })
+		result += html
+		return i18nElement(await svgInliner(createDOMFromHtmlStringNoScriptActivation(result)), { skip_report: true })
+	})
 }
 
 /**
