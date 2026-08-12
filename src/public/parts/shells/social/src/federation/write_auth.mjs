@@ -42,7 +42,7 @@ function bootstrapKeyChainFromEvent(parsed, sender, options) {
 		const active = normalizeHex64(content.activePubKeyHex || '')
 		return {
 			recoveryPubKeyHex: recovery,
-			entityKeyHistory: isHex64(active) ? createGenesisKeyHistory(recovery, active) : [],
+			entityKeyHistory: isHex64(active) ? createGenesisKeyHistory(active) : [],
 		}
 	}
 

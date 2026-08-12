@@ -69,7 +69,7 @@ export function isEntityTimelineWriteAuthorized({
 
 	if (eventType === 'social_meta')
 		return isRecoverySender(recoveryPubKeyHex, normalizedSender)
-			|| isValidActiveSender(entityKeyHistory, recoveryPubKeyHex, normalizedSender)
+			|| isValidActiveSender(entityKeyHistory, normalizedSender)
 
-	return isValidActiveSender(entityKeyHistory, recoveryPubKeyHex, normalizedSender)
+	return isValidActiveSender(entityKeyHistory, normalizedSender)
 }

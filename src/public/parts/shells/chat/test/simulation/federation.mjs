@@ -109,10 +109,10 @@ export async function createChatFederationSim(options = {}) {
 			const sourceEvents = await readEvents(sourceNode, groupId)
 			for (const targetNode of targetNodes) {
 				if (targetNode === sourceNode) continue
-				const knownIds = new Set((await readEvents(targetNode, groupId)).map(event => String(event.id).toLowerCase()))
+				const knownIds = new Set((await readEvents(targetNode, groupId)).map(event => event.id))
 				for (const event of sourceEvents) {
 					if (!isFederatableDagEvent(event)) continue
-					if (knownIds.has(String(event.id).toLowerCase())) continue
+					if (knownIds.has(event.id)) continue
 					const status = await modules.remoteIngest.appendValidatedRemoteEvent(targetNode, groupId, event, { logFailures })
 					if (status.status === 'applied') {
 						progressed = true
