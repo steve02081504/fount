@@ -83,14 +83,7 @@ export async function applyChatRunUri(raw) {
 			handleError('chat.hub.operationFailed')(error)
 		}
 		const pow = await resolvePowForJoin(join.groupId, groupState, viewer.nodeHash || '')
-		await joinGroup(join.groupId, join.inviteCode, null, pow,
-			join.roomSecret || join.introducerPubKeyHash || join.introducerNodeHash
-				? {
-					...join.roomSecret && { roomSecret: join.roomSecret },
-					...join.introducerPubKeyHash && { introducerPubKeyHash: join.introducerPubKeyHash },
-					...join.introducerNodeHash && { introducerNodeHash: join.introducerNodeHash },
-				}
-				: null)
+		await joinGroup(join.groupId, join.inviteCode, null, pow, join)
 		sessionStorage.removeItem(PENDING_INVITE_STORAGE_KEY)
 		broadcastHubGroupJoined(join.groupId)
 		return { kind: 'join', groupId: join.groupId, channelId: 'default' }

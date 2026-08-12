@@ -252,13 +252,15 @@ export const actions = {
 	 * @param {string} [root0.powAnchorRef] 入群 PoW anchor 提示
 	 * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群结果
 	 */
-	join: async ({ user, groupId, inviteCode, roomSecret, signalingAppId, introducerPubKeyHash, introducerNodeHash, powAnchorRef }) => {
-		if (!groupId) throw new Error('groupId is required for join action')
-		const bootstrap = {}
-		if (roomSecret?.trim()) bootstrap.roomSecret = roomSecret.trim()
-		if (signalingAppId?.trim()) bootstrap.signalingAppId = signalingAppId.trim()
-		if (introducerNodeHash?.trim()) bootstrap.fromNodeId = introducerNodeHash.trim()
-		if (powAnchorRef?.trim()) bootstrap.powAnchorRef = powAnchorRef.trim()
-		return performMemberJoin(user, groupId, { inviteCode, introducerPubKeyHash, bootstrap })
-	},
+	join: async ({ user, groupId, inviteCode, roomSecret, signalingAppId, introducerPubKeyHash, introducerNodeHash, powAnchorRef }) =>
+		performMemberJoin(user, groupId, {
+			inviteCode,
+			introducerPubKeyHash,
+			bootstrap: {
+				roomSecret,
+				signalingAppId,
+				fromNodeId: introducerNodeHash,
+				powAnchorRef,
+			},
+		}),
 }

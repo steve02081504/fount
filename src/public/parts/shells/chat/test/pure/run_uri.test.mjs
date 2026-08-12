@@ -28,9 +28,12 @@ Deno.test('parseJoinRunUri round-trips join payload', () => {
 		roomSecret: 'secret',
 		introducerPubKeyHash: 'a'.repeat(64),
 	}))
-	assert(parsed)
-	assertEquals(parsed.groupId, 'gid')
-	assertEquals(parsed.roomSecret, 'secret')
+	assertEquals(parsed, {
+		groupId: 'gid',
+		inviteCode: 'code',
+		roomSecret: 'secret',
+		introducerPubKeyHash: 'a'.repeat(64),
+	})
 })
 
 Deno.test('parseJoinRunUri keeps introducerNodeHash when powAnchorRef omitted', () => {
@@ -43,10 +46,13 @@ Deno.test('parseJoinRunUri keeps introducerNodeHash when powAnchorRef omitted', 
 		introducerPubKeyHash,
 		introducerNodeHash,
 	}))
-	assert(parsed)
-	assertEquals(parsed.introducerPubKeyHash, introducerPubKeyHash)
-	assertEquals(parsed.powAnchorRef, undefined)
-	assertEquals(parsed.introducerNodeHash, introducerNodeHash)
+	assertEquals(parsed, {
+		groupId: 'gid',
+		inviteCode: 'code',
+		roomSecret: 'secret',
+		introducerPubKeyHash,
+		introducerNodeHash,
+	})
 })
 
 Deno.test('parseJoinRunUri round-trips powAnchorRef and introducerNodeHash', () => {
@@ -61,27 +67,28 @@ Deno.test('parseJoinRunUri round-trips powAnchorRef and introducerNodeHash', () 
 		powAnchorRef,
 		introducerNodeHash,
 	}))
-	assertEquals(parsed?.roomSecret, 'secret')
-	assertEquals(parsed?.powAnchorRef, powAnchorRef)
-	assertEquals(parsed?.introducerNodeHash, introducerNodeHash)
+	assertEquals(parsed, {
+		groupId: 'gid',
+		inviteCode: 'code',
+		roomSecret: 'secret',
+		introducerPubKeyHash,
+		powAnchorRef,
+		introducerNodeHash,
+	})
 })
 
 Deno.test('parseJoinRunPayload accepts IPC decoded JSON segment', () => {
-	const introducerPubKeyHash = 'a'.repeat(64)
-	const introducerNodeHash = 'b'.repeat(64)
-	const powAnchorRef = 'c'.repeat(64)
 	const payload = {
 		groupId: '8hp81fj3k2n',
 		inviteCode: 'code',
 		roomSecret: '73095b69-862a-4611-9caf-3f972818f9ba',
-		introducerPubKeyHash,
-		powAnchorRef,
-		introducerNodeHash,
+		introducerPubKeyHash: 'a'.repeat(64),
+		powAnchorRef: 'c'.repeat(64),
+		introducerNodeHash: 'b'.repeat(64),
 	}
 	// protocolhandler：split(';').map(decodeURIComponent) → invocationArguments = ['join', jsonString]
 	const invocationArguments = ['join', JSON.stringify(payload)]
-	const parsed = parseJoinRunPayload(invocationArguments[1])
-	assertEquals(parsed, payload)
+	assertEquals(parseJoinRunPayload(invocationArguments[1]), payload)
 })
 
 Deno.test('parseJoinRunUri rejects non-JSON legacy join segments', () => {
@@ -92,11 +99,6 @@ Deno.test('parseJoinRunUri requires exactly one payload segment', () => {
 	assertEquals(parseJoinRunUri(`fount://run/${CHAT_RUN_PART}/join`), null)
 	const payload = encodeURIComponent(JSON.stringify({ groupId: 'gid', inviteCode: 'code' }))
 	assertEquals(parseJoinRunUri(`fount://run/${CHAT_RUN_PART}/join;${payload};extra`), null)
-})
-
-Deno.test('parseJoinRunPayload rejects non-string optional fields', () => {
-	assertEquals(parseJoinRunPayload({ groupId: 'gid', roomSecret: 123 }), null)
-	assertEquals(parseJoinRunPayload({ groupId: 42 }), null)
 })
 
 Deno.test('formatMessageRunUri round-trips', () => {

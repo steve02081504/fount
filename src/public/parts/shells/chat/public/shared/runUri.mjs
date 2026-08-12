@@ -1,4 +1,3 @@
-import { normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 /** @type {string} */
 export const CHAT_RUN_PART = 'shells:chat'
 const RUN_PREFIX = `fount://run/${CHAT_RUN_PART}/`
@@ -13,28 +12,20 @@ function buildRunUri(subcommand, segments) {
 }
 
 /**
- * @param {string} value 原始段
- * @returns {string} encodeURIComponent 结果
- */
-function encodeRunSegment(value) {
-	return encodeURIComponent(value)
-}
-
-/**
  * @param {object} options 参数
  * @param {string} options.pubKeyHex 介绍者公钥
  * @param {string} options.nonceBase64Url nonce
  * @param {string} options.introSignatureHex 签名
  * @param {string} [options.nodeUrl] 可选节点 URL
- * @returns {string} canonical DM run URI
+ * @returns {string} DM run URI
  */
 export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, nodeUrl }) {
 	const segments = [
-		encodeRunSegment(normalizeHex64(pubKeyHex)),
-		encodeRunSegment(nonceBase64Url),
-		encodeRunSegment((introSignatureHex || '').trim().replace(/^0x/iu, '')),
+		encodeURIComponent(pubKeyHex),
+		encodeURIComponent(nonceBase64Url),
+		encodeURIComponent(introSignatureHex),
 	]
-	if (nodeUrl) segments.push(encodeRunSegment(nodeUrl.trim()))
+	if (nodeUrl) segments.push(encodeURIComponent(nodeUrl))
 	return buildRunUri('dm', segments)
 }
 
@@ -50,39 +41,22 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
  */
 
 /**
- * 规范化 join 载荷（只保留有值字段；hex 字段规范化）。
- * @param {JoinRunPayload} input 入参
- * @returns {JoinRunPayload | null} 规范化结果；缺 groupId 或字段类型非法时 null
- */
-export function normalizeJoinRunPayload(input) {
-	for (const key of Object.keys(input))
-		input[key] = input[key]?.trim?.()
-	return input
-}
-
-/**
  * join 深链：单段 JSON 载荷再 URI 编码。
  * `fount://run/shells:chat/join;<encodeURIComponent(JSON)>`
  * @param {JoinRunPayload} input 入群载荷
- * @returns {string} canonical join run URI
+ * @returns {string} join run URI
  */
 export function formatJoinRunUri(input) {
-	const payload = normalizeJoinRunPayload(input)
-	if (!payload) throw new Error('groupId required for join URI')
-	return buildRunUri('join', [encodeRunSegment(JSON.stringify(payload))])
+	return buildRunUri('join', [encodeURIComponent(JSON.stringify(input))])
 }
 
 /**
  * 解析 IPC / URI 分号段里的 join JSON 载荷（已 decode）。
- * @param {string | object | undefined} raw JSON 字符串或对象
- * @returns {JoinRunPayload | null} join 载荷
+ * @param {string} raw JSON 字符串
+ * @returns {JoinRunPayload} join 载荷
  */
 export function parseJoinRunPayload(raw) {
-	let data = raw
-	try { data = JSON.parse(raw) }
-	catch { return null }
-
-	return normalizeJoinRunPayload(/** @type {JoinRunPayload} */data)
+	return JSON.parse(raw)
 }
 
 /**
@@ -98,19 +72,14 @@ export function wrapProtocolHttpsUrl(fountRunUri) {
  * @returns {{ subcommand: string, args: string[] } | null} 解析结果
  */
 export function parseChatRunUri(raw) {
-	const input = raw.trim()
-	if (!input.startsWith('fount://run/')) return null
-	const rest = input.slice('fount://run/'.length)
+	if (!raw.startsWith('fount://run/')) return null
+	const rest = raw.slice('fount://run/'.length)
 	if (!rest.startsWith(`${CHAT_RUN_PART}/`)) return null
 	const body = rest.slice(CHAT_RUN_PART.length + 1)
-
-	const parts = body.split(';').map(segment => {
-		try { return decodeURIComponent(segment) }
-		catch { return segment }
-	})
-	const subcommand = parts[0]?.trim()
+	const parts = body.split(';').map(segment => decodeURIComponent(segment))
+	const [subcommand, ...args] = parts
 	if (!subcommand) return null
-	return { subcommand, args: parts.slice(1) }
+	return { subcommand, args }
 }
 
 /**
@@ -121,21 +90,20 @@ export function parseDmRunUri(raw) {
 	const parsed = parseChatRunUri(raw)
 	if (!parsed || parsed.subcommand !== 'dm') return null
 	const [pubKeyHex, nonce, introSignatureHex, nodeUrl] = parsed.args
-	if (!pubKeyHex || !nonce || !introSignatureHex) return null
-	return { pubKeyHex, nonce, introSignatureHex, nodeUrl: nodeUrl || undefined }
+	return { pubKeyHex, nonce, introSignatureHex, nodeUrl }
 }
 
 /**
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} eventId 消息 eventId
- * @returns {string} canonical message run URI
+ * @returns {string} message run URI
  */
 export function formatMessageRunUri(groupId, channelId, eventId) {
 	return buildRunUri('message', [
-		encodeRunSegment(groupId),
-		encodeRunSegment(channelId),
-		encodeRunSegment(eventId),
+		encodeURIComponent(groupId),
+		encodeURIComponent(channelId),
+		encodeURIComponent(eventId),
 	])
 }
 
@@ -147,7 +115,6 @@ export function parseMessageRunUri(raw) {
 	const parsed = parseChatRunUri(raw)
 	if (!parsed || parsed.subcommand !== 'message') return null
 	const [groupId, channelId, eventId] = parsed.args
-	if (!groupId || !channelId || !eventId) return null
 	return { groupId, channelId, eventId }
 }
 
@@ -158,5 +125,5 @@ export function parseMessageRunUri(raw) {
 export function parseJoinRunUri(raw) {
 	const parsed = parseChatRunUri(raw)
 	if (!parsed || parsed.subcommand !== 'join' || parsed.args.length !== 1) return null
-	return parseJoinRunPayload(parsed.args[0])
+	return JSON.parse(parsed.args[0])
 }

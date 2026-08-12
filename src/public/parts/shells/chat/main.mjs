@@ -139,27 +139,17 @@ export default {
 
 				switch (command) {
 					case 'dm': {
-						params = {
+						result = await handleAction(user, command, {
 							introPubKeyHex: args[1],
 							dmIntroNonce: args[2],
 							dmIntroSignatureHex: args[3],
-						}
-						result = await handleAction(user, command, params)
+						})
 						if (result?.groupId) console.log(JSON.stringify(result))
 						return result
 					}
 					case 'join': {
 						const join = parseJoinRunPayload(args[1])
-						if (!join) throw new Error('groupId is required for join')
-						params = {
-							groupId: join.groupId,
-							inviteCode: join.inviteCode,
-							roomSecret: join.roomSecret || '',
-							introducerPubKeyHash: join.introducerPubKeyHash || '',
-							powAnchorRef: join.powAnchorRef || '',
-							introducerNodeHash: join.introducerNodeHash || '',
-						}
-						result = await handleAction(user, command, params)
+						result = await handleAction(user, command, join)
 						const groupId = result?.groupId || join.groupId
 						if (groupId)
 							sendEventToUser(user, 'chat-group-joined', { groupId: String(groupId) })
