@@ -49,8 +49,8 @@ async function stubMissingSocialFileGet(route) {
 }
 
 /**
- * Social 前端测前置：clipboard stub；缺失的 profile avatar 用 1×1 png 顶上，
- * 避免探索/资料页对无文件头像 URL 刷 `[browser:network]` 404 噪声。
+ * Social 前端测前置：clipboard stub。
+ * EVFS 头像/附件 stub 挂在 context fixture（见下方 extend），早于任何 page 请求。
  * @param {object} args fixture 参数
  * @param {import('npm:@playwright/test').Page} args.page Playwright 页面
  * @returns {Promise<void>}
@@ -69,11 +69,6 @@ async function installSocialTestHooks({ page }) {
 			/** 模拟异步剪贴板写入。 */
 			navigator.clipboard.writeText = async () => { }
 	})
-	// glob 比函数谓词更稳（Deno Playwright 下带 `shells:chat` 的 pathname 偶发漏匹配）
-	const context = page.context()
-	await context.route('**/files/profile/avatar*', stubMissingSocialFileGet)
-	await context.route('**/files/profile/sfw_avatar*', stubMissingSocialFileGet)
-	await context.route('**/files/shells/social/attachments/**', stubMissingSocialFileGet)
 }
 
 /**
@@ -90,8 +85,20 @@ export const { test: baseTest, expect } = createFountFixtures({
 
 /**
  * 扩展 publishPost 的 Social 测试套件。
+ * context 级 RegExp route：`shells:chat` 路径含冒号，glob 偶发漏匹配。
  */
 export const test = baseTest.extend({
+	/**
+	 * 挂缺失 EVFS 媒体 stub 后再交出 context。
+	 * @param {object} args fixture 依赖
+	 * @param {import('npm:@playwright/test').BrowserContext} args.context 父级已登录 context
+	 * @param {(context: import('npm:@playwright/test').BrowserContext) => Promise<void>} use Playwright use
+	 */
+	context: async ({ context }, use) => {
+		await context.route(/\/files\/profile\/(?:sfw_)?avatar(?:\?|$)/, stubMissingSocialFileGet)
+		await context.route(/\/files\/shells\/social\/attachments\//, stubMissingSocialFileGet)
+		await use(context)
+	},
 	/**
 	 * 通过 composer 发帖的 fixture。
 	 * @param {(text: string) => Promise<{ postJson: object, postId: string, text: string }>} use - Playwright fixture use 回调。
