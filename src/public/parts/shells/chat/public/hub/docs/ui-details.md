@@ -25,13 +25,6 @@ Day-to-day rules: [AGENTS.md](../AGENTS.md).
 - Popup paints a stub name/avatar before the fetch returns so a hung peer cannot leave an empty card.
 - DM button shows for any non-self `entityHash`; click (and `dispatchFriendChat`) resolve `activePubKeyHex` via `forceRemote=1` when the contact link only carried the hash.
 
-## Message module layout
-
-- Render: `messages/render/`. Surface: `messages/messageSurface.mjs`. Reactions: `messages/reactionWire.mjs`. Actions: `messages/actions/handlers.mjs`.
-- Wiring: `hub/wiring/`. Sidebar: `hub/sidebar/`. Group WS: `hub/stream/`.
-- Channel reload: `messages/messageContext.reloadChannel` (do not thread `loadMessages` through every layer).
-- Relative imports: from `public/hub/*.mjs` use `../src/...` for `public/src` (`../../src` → `/parts/src` 404).
-
 ## Message shortcuts / composer
 
 - Shift → action bar download/delete. Drag non-body → `messageDragExport.mjs`. Char timeline: bubble swipe/arrow (`chatGestures.mjs`).

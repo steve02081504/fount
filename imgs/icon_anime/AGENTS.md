@@ -21,7 +21,7 @@ Process-wide singleton used by `fount logo`, the CLI log viewer, and the foregro
 | `farewell` | On `on_shutdown` (safe mid-intro, e.g. `already_running`) |
 | `signal` / `abort` | User abort of this icon session (Ctrl+C or hold Esc ≥4s, one-shot). `dismiss` does not touch it. Further ESC repeats / Ctrl+C are ignored until the next `player.start` so farewell exit can finish. |
 
-Hosts own process-exit signaling and must wire `icon.signal` into it (log_viewer and server do). Non-TTY / no VT is gated only in `player.mjs` — session APIs stay callable (play paths no-op). On the alternate screen, `player` `block`/`unblock`s the global virtual console so console output is deferred; frame paint writes the native `targetStream` so the animation itself is not deferred.
+Hosts own process-exit signaling and must wire `icon.signal` into it (log_viewer and server do). Non-TTY / no VT is gated only in `player.mjs` — session APIs stay callable (play paths no-op). Alt-screen: `player` blocks the global virtual console; frame paint uses the native `targetStream`.
 
 ## Run
 
@@ -58,5 +58,5 @@ Production deep-links `fluid/**`; `fluid/index.mjs` is the test/public barrel. L
 ## Do not break
 
 - **One pressure language / one density language / viscosity ladder** — see [physics-notes.md](docs/physics-notes.md). Do not invent parallel hydro models.
-- Gravity acquire: `document` → browser APIs; Termux → `termux-sensor`; else no-op. path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing. Termux stop **must** `termux-sensor -c` *before* killing the stream CLI — kill-first leaves listeners stuck ([termux-api#902](https://github.com/termux/termux-api/issues/902)).
-- Sensors only while the icon TUI is actually up (`canUseTui` + `openTui`). `dismiss` stops acquire **before** tearing down play/alt-screen; `abort` / `farewell` teardown also stop. No sampling while the log/server main screen is showing.
+- Gravity acquire: `document` → browser APIs; Termux → `termux-sensor`; else no-op. path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing. Termux stop **must** `termux-sensor -c` *before* killing the stream CLI ([termux-api#902](https://github.com/termux/termux-api/issues/902)).
+- Sensors only while the icon TUI is up (`canUseTui` + `openTui`). `dismiss` stops acquire **before** tearing down play/alt-screen; `abort` / `farewell` also stop.

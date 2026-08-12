@@ -42,7 +42,7 @@ Nests all locales, writes `data/test/i18n_key_rename_map.json`, and rewrites quo
 Icon / tooltip-only controls: keep each locale's existing string, wrap in place — do **not** retranslate via `update-locales.py`.
 
 ```text
-update_locale_data "for key in ('chat.emoji.jumpToStart', 'chat.emoji.jumpToUnicode', 'chat.emoji.recent'):
+update_locale_data "for key in (...):
   value = get(key)
   if isinstance(value, str) and value:
     set(key, {'title': value, 'aria-label': value})
@@ -53,6 +53,6 @@ update_locale_data "for key in ('chat.emoji.jumpToStart', 'chat.emoji.jumpToUnic
 "
 ```
 
-Same pattern for unicode group labels (`chat.unicodeEmojiGroups.*`). Rail uses the object key (`title` / `aria-label`); section header uses `` `${key}.title` `` as a string leaf so visible text fills without wiping rail glyphs.
+Rail uses the object key (`title` / `aria-label`); section header uses `` `${key}.title` `` as a string leaf so visible text fills without wiping rail glyphs.
 
 Frontend: `data-i18n` on the key; put the icon in `innerHTML` / children — object locales only set `title` / `aria-label`, they do not wipe markup. Do **not** add `textContent`/`innerHTML` to icon-button locales.

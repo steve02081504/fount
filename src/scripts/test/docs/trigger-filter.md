@@ -32,3 +32,7 @@ Set on manifest root or individual suite. Suite layer merges on top of manifest.
 | `ignoreDefaults: false` | drop the default ignore table; only custom `ignore` / `unignore` apply |
 | `ignore` | extra globs to exclude (manifest + suite lists concatenated) |
 | `unignore` | globs that must participate; checked first, wins over both defaults and `ignore` |
+
+## Locale triggers
+
+Put `src/public/locales/**` on **jsonEditor subtests** (aria-label asserts), not suite-level `frontendShared`. Locale-only waves also hit `checks:i18n_*` — do not hang locales on Pages / chat / social / cabinet frontends unless a subtest asserts copy.
