@@ -4651,7 +4651,10 @@
 				"title": "Lưu",
 				"aria-label": "Lưu"
 			},
-			"saved": "Đã sưu tầm",
+			"saved": {
+				"title": "Đã sưu tầm",
+				"aria-label": "Đã sưu tầm"
+			},
 			"translate": "Dịch",
 			"dm": "Gửi tin nhắn riêng tư",
 			"block": "Khối",

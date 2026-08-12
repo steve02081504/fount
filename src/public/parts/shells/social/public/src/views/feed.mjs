@@ -178,6 +178,22 @@ export async function loadSuggestedAccounts() {
 }
 
 /**
+ * 合并多路热门话题：同 tag 取较大 count，再按 count 降序。
+ * @param {...{ tag: string, count: number }[]} lists 话题列表
+ * @returns {{ tag: string, count: number }[]} 合并结果
+ */
+function mergeTrendingTags(...lists) {
+	const byTag = new Map()
+	for (const list of lists)
+		for (const row of list || []) {
+			const prev = byTag.get(row.tag)
+			if (!prev || row.count > prev.count)
+				byTag.set(row.tag, { tag: row.tag, count: row.count })
+		}
+	return [...byTag.values()].sort((a, b) => b.count - a.count)
+}
+
+/**
  * 加载并渲染热门话题（附近聚合；缓存/本机即时回退）。
  * @param {string} [containerId='feedTrending'] 容器 id
  * @returns {Promise<void>}
@@ -221,37 +237,29 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 		trendingInFlight = (async () => {
 			try {
 				const data = await getTrendingHashtags({ scope: 'nearby' })
-				trendingCache = data.tags || []
-				return trendingCache
+				return data.tags || []
 			}
 			catch {
-				return trendingCache
+				return trendingCache || []
 			}
 			finally {
 				trendingInFlight = null
 			}
 		})()
-	const localPromise = !trendingCache?.length
-		? (async () => {
-			try {
-				return await getTrendingHashtags({ scope: 'local' })
-			}
-			catch {
-				return { tags: [] }
-			}
-		})()
-		: null
 
-	const nearbyTags = await trendingInFlight
-	if (nearbyTags?.length) {
-		await paint(nearbyTags)
-		return
-	}
+	const localPromise = (async () => {
+		try {
+			return await getTrendingHashtags({ scope: 'local' })
+		}
+		catch {
+			return { tags: [] }
+		}
+	})()
 
-	if (localPromise) {
-		const local = await localPromise
-		await paint(local.tags || [])
-	}
+	const [nearbyTags, local] = await Promise.all([trendingInFlight, localPromise])
+	const merged = mergeTrendingTags(local.tags || [], nearbyTags || [])
+	trendingCache = merged
+	await paint(merged)
 }
 
 /**

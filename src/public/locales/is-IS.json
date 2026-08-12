@@ -4651,7 +4651,10 @@
 				"title": "Vista",
 				"aria-label": "Vista"
 			},
-			"saved": "Safnað",
+			"saved": {
+				"title": "Safnað",
+				"aria-label": "Safnað"
+			},
 			"translate": "Þýða",
 			"dm": "Sendið einkaskilaboð",
 			"block": "Banna",

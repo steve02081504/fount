@@ -4657,7 +4657,10 @@
 				"title": "Guardar",
 				"aria-label": "Guardar"
 			},
-			"saved": "Guardados",
+			"saved": {
+				"title": "Guardados",
+				"aria-label": "Guardados"
+			},
 			"translate": "Traduzir",
 			"dm": "Enviar mensagem privada",
 			"block": "Bloquear",

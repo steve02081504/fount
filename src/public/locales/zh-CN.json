@@ -4652,7 +4652,10 @@
 				"title": "收藏",
 				"aria-label": "收藏"
 			},
-			"saved": "已收藏",
+			"saved": {
+				"title": "已收藏",
+				"aria-label": "已收藏"
+			},
 			"translate": "翻译",
 			"dm": "发私信",
 			"block": "拉黑",

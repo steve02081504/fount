@@ -4657,7 +4657,10 @@
 				"title": "Enregistrer",
 				"aria-label": "Enregistrer"
 			},
-			"saved": "Enregistré",
+			"saved": {
+				"title": "Enregistré",
+				"aria-label": "Enregistré"
+			},
 			"translate": "Traduire",
 			"dm": "Envoyer un message privé",
 			"block": "Bloquer",

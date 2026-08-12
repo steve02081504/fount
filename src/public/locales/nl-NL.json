@@ -4657,7 +4657,10 @@
 				"title": "Opslaan",
 				"aria-label": "Opslaan"
 			},
-			"saved": "Verzameld",
+			"saved": {
+				"title": "Verzameld",
+				"aria-label": "Verzameld"
+			},
 			"translate": "Vertalen",
 			"dm": "Stuur een privébericht",
 			"block": "Blokkeren",

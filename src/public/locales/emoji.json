@@ -4651,7 +4651,10 @@
 				"title": "⭐",
 				"aria-label": "⭐"
 			},
-			"saved": "⭐✅",
+			"saved": {
+				"title": "⭐✅",
+				"aria-label": "⭐✅"
+			},
 			"translate": "🌐",
 			"dm": "📤🤫💬",
 			"block": "🚫👤",

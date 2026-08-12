@@ -4657,7 +4657,10 @@
 				"title": "Salva",
 				"aria-label": "Salva"
 			},
-			"saved": "Salvato",
+			"saved": {
+				"title": "Salvato",
+				"aria-label": "Salvato"
+			},
 			"translate": "Tradurre",
 			"dm": "Invia messaggio",
 			"block": "Bloccare",

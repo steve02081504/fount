@@ -4650,7 +4650,10 @@
 				"title": "收藏",
 				"aria-label": "收藏"
 			},
-			"saved": "已收藏",
+			"saved": {
+				"title": "已收藏",
+				"aria-label": "已收藏"
+			},
 			"translate": "翻譯",
 			"dm": "發私信",
 			"block": "拉黑",

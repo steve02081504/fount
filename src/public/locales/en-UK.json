@@ -4651,7 +4651,10 @@
 				"title": "Bookmark",
 				"aria-label": "Bookmark"
 			},
-			"saved": "Saved",
+			"saved": {
+				"title": "Saved",
+				"aria-label": "Saved"
+			},
 			"translate": "Translate",
 			"dm": "Send DM",
 			"block": "Block",

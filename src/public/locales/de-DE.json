@@ -4651,7 +4651,10 @@
 				"title": "Merken",
 				"aria-label": "Merken"
 			},
-			"saved": "Gesammelt",
+			"saved": {
+				"title": "Gesammelt",
+				"aria-label": "Gesammelt"
+			},
 			"translate": "Übersetzen",
 			"dm": "Private Nachricht senden",
 			"block": "Blockieren",

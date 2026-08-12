@@ -4651,7 +4651,10 @@
 				"title": "북마크",
 				"aria-label": "북마크"
 			},
-			"saved": "모은",
+			"saved": {
+				"title": "모은",
+				"aria-label": "모은"
+			},
 			"translate": "번역",
 			"dm": "비공개 메시지 보내기",
 			"block": "차단",
