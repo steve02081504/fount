@@ -137,7 +137,7 @@ async function checkFrontendConnectivity() {
 	}
 }
 
-const UPDATE_ICON = 'https://api.iconify.design/line-md/update.svg'
+const UPDATE_ICON = 'https://api.iconify.design/mdi/update.svg'
 const LOADING_ICON = 'https://api.iconify.design/line-md/loading-twotone-loop.svg'
 const UPTODATE_ICON = 'https://api.iconify.design/line-md/confirm.svg'
 
