@@ -139,10 +139,12 @@ export const startGravity = (deps = {}) => {
  * @returns {void}
  */
 export const stopGravity = () => {
-	if (activeController) {
-		activeController.abort()
-		activeController = null
-	}
+	if (!activeController) return
+	// 先清空引用再 abort：abort 同步触发的 stop 回调若重入 startGravity，
+	// 不得覆盖或清除新创建的控制器。
+	const controller = activeController
+	activeController = null
+	controller.abort()
 }
 
 /**

@@ -51,7 +51,6 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 		return
 	}
 	const stillMissing = Number(catchup.wantIdsStillMissing) || 0
-	const peerRosterSize = catchup.peerRosterSize
 	if (catchup.wantIdsRateLimited)
 		setSyncBanner(true, { i18nKey: 'chat.hub.sync.rateLimited' })
 	else if (stillMissing > 0)
@@ -61,7 +60,7 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 		})
 	// 勿用 tipsCollected===0 代替「无邻居」：邻居在线但 tip 已对齐 / ping 窗口内未回 pong 时 tips 也可为 0，
 	// 而 live 发信仍走当时 roster——否则会出现「能互发却钉死无邻居横幅」。
-	else if (peerRosterSize === 0)
+	else if (catchup.peerRosterSize === 0)
 		setSyncBanner(true, { i18nKey: 'chat.hub.sync.noPeers' })
 	else
 		setSyncBanner(false)

@@ -22,8 +22,7 @@
 						"src/public/parts/shells/themeManage/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/themeManage/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/themeManage/public/index.{html,mjs}",
-						"src/public/parts/shells/themeManage/public/templates.mjs",
-						"src/public/locales/**"
+						"src/public/parts/shells/themeManage/public/templates.mjs"
 					]
 				}
 			],

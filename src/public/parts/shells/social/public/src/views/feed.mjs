@@ -15,11 +15,11 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 /** @type {(() => void) | null} */
 let unbindDwell = null
 
-/** 会话内附近趋势缓存 */
-/** @type {{ tag: string, count: number }[] | null} */
-let trendingCache = null
+/** 会话内按 scope 分别缓存的原始趋势列表（失败时回退，勿用合并结果） */
+/** @type {{ nearby: { tag: string, count: number }[] | null, local: { tag: string, count: number }[] | null }} */
+const trendingCacheByScope = { nearby: null, local: null }
 
-/** 在途附近趋势请求（去重） */
+/** 在途趋势请求（去重） */
 /** @type {Promise<{ tag: string, count: number }[] | null> | null} */
 let trendingInFlight = null
 
@@ -230,25 +230,32 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 		aside.appendChild(list)
 	}
 
-	if (trendingCache?.length)
-		await paint(trendingCache)
+	const cached = mergeTrendingTags(trendingCacheByScope.local || [], trendingCacheByScope.nearby || [])
+	if (cached.length)
+		await paint(cached)
 
 	if (!trendingInFlight)
 		trendingInFlight = (async () => {
 			try {
 				const nearbyPromise = getTrendingHashtags({ scope: 'nearby' })
-					.then(data => data.tags || [])
-					.catch(() => trendingCache || [])
+					.then(data => {
+						const tags = data.tags || []
+						trendingCacheByScope.nearby = tags
+						return tags
+					})
+					.catch(() => trendingCacheByScope.nearby || [])
 				const localPromise = getTrendingHashtags({ scope: 'local' })
-					.then(data => data.tags || [])
-					.catch(() => [])
+					.then(data => {
+						const tags = data.tags || []
+						trendingCacheByScope.local = tags
+						return tags
+					})
+					.catch(() => trendingCacheByScope.local || [])
 				const local = await localPromise
-				const early = mergeTrendingTags(trendingCache || [], local)
+				const early = mergeTrendingTags(trendingCacheByScope.nearby || [], local)
 				if (early.length) await paint(early)
 				const nearby = await nearbyPromise
-				const merged = mergeTrendingTags(local, nearby)
-				trendingCache = merged
-				return merged
+				return mergeTrendingTags(local, nearby)
 			}
 			finally {
 				trendingInFlight = null

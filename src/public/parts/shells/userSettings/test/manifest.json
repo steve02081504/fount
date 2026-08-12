@@ -22,8 +22,7 @@
 						"src/public/parts/shells/userSettings/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/userSettings/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/userSettings/public/index.{html,mjs}",
-						"src/public/parts/shells/userSettings/public/templates.mjs",
-						"src/public/locales/**"
+						"src/public/parts/shells/userSettings/public/templates.mjs"
 					]
 				}
 			],

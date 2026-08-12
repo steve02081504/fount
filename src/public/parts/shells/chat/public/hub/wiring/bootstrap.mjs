@@ -210,13 +210,6 @@ function wireMobileHeaderOverflow() {
 
 /** 移动端 composer「+」菜单：转发到桌面工具按钮。 @returns {void} */
 function wireComposerMoreMenu() {
-	const more = document.getElementById('composer-more-button')
-	const details = more?.closest('details')
-	if (details instanceof HTMLDetailsElement)
-		details.addEventListener('toggle', () => {
-			if (details.open && more?.getAttribute('aria-disabled') === 'true')
-				details.open = false
-		})
 	const map = [
 		['composer-more-voice', 'voice-button'],
 		['composer-more-photo', 'photo-button'],

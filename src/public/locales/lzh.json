@@ -5413,10 +5413,10 @@
 				"pathRequired": "宜先填試用之卷徑。",
 				"success": "已試行外在編輯器啟卷。",
 				"lineInput": {
-					"aria-label": "行數"
+					"aria-label": "行號"
 				},
 				"columnInput": {
-					"aria-label": "列數"
+					"aria-label": "列號"
 				}
 			}
 		},

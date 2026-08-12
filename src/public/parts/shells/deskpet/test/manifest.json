@@ -22,8 +22,7 @@
 						"src/public/parts/shells/deskpet/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/deskpet/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/deskpet/public/index.{html,mjs}",
-						"src/public/parts/shells/deskpet/public/templates.mjs",
-						"src/public/locales/**"
+						"src/public/parts/shells/deskpet/public/templates.mjs"
 					]
 				}
 			],

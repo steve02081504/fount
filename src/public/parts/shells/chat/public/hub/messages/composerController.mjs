@@ -18,7 +18,7 @@ const COMPOSER_TOOL_IDS = [
 ]
 
 /**
- * 启用/禁用 composer 工具控件（button 用 disabled；summary 用 aria-disabled + btn-disabled）。
+ * 启用/禁用 composer 工具控件（button 用 disabled；details/summary 用 inert + aria-disabled）。
  * @param {HTMLElement} el 控件
  * @param {boolean} enabled 是否可用
  * @returns {void}
@@ -32,7 +32,12 @@ function setComposerToolEnabled(el, enabled) {
 	el.toggleAttribute('aria-disabled', !enabled)
 	el.classList.toggle('btn-disabled', !enabled)
 	const details = el.closest('details')
-	if (!enabled && details instanceof HTMLDetailsElement) details.open = false
+	if (!(details instanceof HTMLDetailsElement)) return
+	if (enabled) details.removeAttribute('inert')
+	else {
+		details.open = false
+		details.setAttribute('inert', '')
+	}
 }
 
 /** @returns {void} */

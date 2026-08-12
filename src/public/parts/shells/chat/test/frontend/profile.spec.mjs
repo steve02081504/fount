@@ -129,14 +129,19 @@ test.describe('Chat profile edit mobile', () => {
 					&& saveRect.right <= boxRect.right + tolerance,
 				fullyInViewport:
 					saveRect.top >= -tolerance
-					&& saveRect.bottom <= window.innerHeight + tolerance,
+					&& saveRect.bottom <= window.innerHeight + tolerance
+					&& saveRect.left >= -tolerance
+					&& saveRect.right <= window.innerWidth + tolerance,
 				boxBottom: boxRect.bottom,
 				saveBottom: saveRect.bottom,
 				viewportHeight: window.innerHeight,
+				viewportWidth: window.innerWidth,
+				saveLeft: saveRect.left,
+				saveRight: saveRect.right,
 			}
 		})
 		expect(geometry.fullyInsideBox, `save clipped by modal-box (boxBottom=${geometry.boxBottom}, saveBottom=${geometry.saveBottom})`).toBe(true)
-		expect(geometry.fullyInViewport, `save outside viewport (vh=${geometry.viewportHeight}, saveBottom=${geometry.saveBottom})`).toBe(true)
+		expect(geometry.fullyInViewport, `save outside viewport (vh=${geometry.viewportHeight}, vw=${geometry.viewportWidth}, saveLeft=${geometry.saveLeft}, saveRight=${geometry.saveRight}, saveBottom=${geometry.saveBottom})`).toBe(true)
 
 		const nextName = `mobile-save-${Date.now()}`
 		await page.locator('#profile-edit-sfw-mode').uncheck()

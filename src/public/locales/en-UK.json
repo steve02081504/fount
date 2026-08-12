@@ -173,7 +173,7 @@
 				"expected": "expected ${expected}"
 			},
 			"reusedSuite": ">>> Reusing ${manifestId}:${name} (trigger unchanged — using last ${status})",
-			"prunedAbsentState": "Pruned stale state for removed suites: ${suites} suite(s), ${subtests} subtest(s)",
+			"prunedAbsentState": "Pruned stale state for removed or renamed suites/subtests: ${suites} suite(s), ${subtests} subtest(s)",
 			"noisyOnlyRemain": "${count} suite(s) still passing with noise: ${suites}",
 			"noRealRunPlanned": "No real run this time: ${reused} reused, ${blocked} expected blocked (trigger unchanged)",
 			"allReusedHint": "No suite actually ran: failure is inherited from the last run; blocks remain unresolved (files unchanged). Fix the files and rerun, or use `fount test --force`.",
