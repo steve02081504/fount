@@ -76,6 +76,6 @@ export function renderMarkdownCodeBlock(code, options = {}) {
  * @returns {string} 内联代码
  */
 export function renderMarkdownInlineCode(code, lang = '') {
-	const escaped = (code ?? '').replace(/`/g, '\\`')
+	const escaped = (code ?? '').replace(/\\/g, '\\\\').replace(/`/g, '\\`')
 	return `\`${escaped}${lang ? `{:${lang}}` : ''}\``
 }
