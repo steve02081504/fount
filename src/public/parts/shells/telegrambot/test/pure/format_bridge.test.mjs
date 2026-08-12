@@ -477,10 +477,9 @@ Deno.test('telegramMessageToBridgeDto remaps nested text_mention under text_link
 
 Deno.test('rewriteTelegramMentionsToFount rewrites @BotUsername mention entity', async () => {
 	const username = `tg-mention-${crypto.randomUUID().slice(0, 8)}`
-	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_mention_'))
-	await createTestServerBoot({
+	const { dataDir } = await createTestServerBoot({
 		username,
-		dataDir,
+		dataDir: mkdtempSync(join(tmpdir(), 'fount_tg_mention_')),
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()
