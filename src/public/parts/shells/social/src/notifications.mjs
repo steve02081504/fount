@@ -18,7 +18,7 @@ export { notificationCursor }
  */
 export async function buildNotifications(username, options = {}) {
 	const viewerEntityHash = options.viewerEntityHash
-		|| (await resolveOperatorEntityHash(username))
+		|| await resolveOperatorEntityHash(username)
 		|| null
 	if (!viewerEntityHash)
 		return { notifications: [], nextCursor: null, unreadCount: 0, viewerEntityHash: null }
