@@ -23,7 +23,7 @@ const response = await fetch('https://godbolt.org/api/compiler/\${compilerId}/co
 
 Deno.test('extractFromJs picks literal fetch URL', () => {
 	const urls = extractFromJs('await fetch(\'https://api.iconify.design/line-md/play.svg\')')
-	assertEquals(urls.map(r => r.url), ['https://api.iconify.design/line-md/play.svg'])
+	assertEquals(urls.map(resource => resource.url), ['https://api.iconify.design/line-md/play.svg'])
 })
 
 Deno.test('extractFromJs picks const/let/var single-quoted URL assignments', () => {
@@ -33,7 +33,7 @@ let loading = 'https://api.iconify.design/line-md/loading-twotone-loop.svg'
 var skipDouble = "https://example.com/ignored.svg"
 const templatey = \`https://example.com/\${id}.svg\`
 `)
-	assertEquals(urls.map(r => r.url), [
+	assertEquals(urls.map(resource => resource.url), [
 		'https://api.iconify.design/mdi/update.svg',
 		'https://api.iconify.design/line-md/loading-twotone-loop.svg',
 	])
@@ -42,13 +42,13 @@ const templatey = \`https://example.com/\${id}.svg\`
 Deno.test('mergeAndDedupe drops unresolved ${…} preload URLs (godbolt executor body)', () => {
 	const extracted = extractFromJs(GODBOLT_TEMPLATE)
 	assertEquals(
-		extracted.some(r => r.url.includes('${')),
+		extracted.some(resource => resource.url.includes('${')),
 		true,
 		'fixture must still surface the unresolved URL at extract time',
 	)
 	const merged = mergeAndDedupe([extracted])
 	assertEquals(
-		merged.filter(r => r.url.includes('godbolt.org') || r.url.includes('${')),
+		merged.filter(resource => resource.url.includes('godbolt.org') || resource.url.includes('${')),
 		[],
 	)
 	assertEquals(isConcreteExternalUrl('https://godbolt.org/api/compiler/${compilerId}/compile'), false)

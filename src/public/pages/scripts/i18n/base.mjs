@@ -6,6 +6,7 @@ import { createEpochCache } from '../lib/epochCache.mjs'
 
 import {
 	loadPreferredLangs,
+	primaryLocale,
 	runInitTranslations,
 	saved_pageid,
 } from './index.mjs'
@@ -51,7 +52,7 @@ async function loadLocaleEntry(preferredLangs) {
 			throw new Error(`Failed to fetch translations: ${response.status} ${response.statusText}`)
 		return {
 			locale: getBestLocale(
-				[...preferredLangs, navigator.language, ...navigator.languages || []],
+				[...preferredLangs, primaryLocale()],
 				available,
 			),
 			bundle: await response.json(),
