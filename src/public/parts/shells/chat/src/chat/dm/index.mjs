@@ -226,6 +226,10 @@ async function bindJoinFederation(username, groupId) {
 	await ensureFederationRoom(username, groupId).catch(error => {
 		console.error('performMemberJoin ensureFederationRoom:', error)
 	})
+	const { flushBootstrapEventsToRoster } = await import('../federation/bootstrapFlush.mjs')
+	await flushBootstrapEventsToRoster(username, groupId).catch(error => {
+		console.error('performMemberJoin bootstrap flush:', error)
+	})
 	const { scheduleCatchUp } = await import('../federation/catchUpScheduler.mjs')
 	void catchUpGroupFromPeers(username, groupId, { waitMs: 8000 }).catch(console.error)
 	scheduleCatchUp(username, groupId)

@@ -57,6 +57,7 @@ export function shouldDeferInboundIngest(state, event) {
 
 /**
  * 低功耗 / 无物化快照时：授权类事件拒绝权限门控路径；有快照则按权限门控（§2.1）。
+ * `member_join` 与 shouldDefer 对齐：无快照时仍放行，否则冷启动 live 出站被吃掉，对端无法应答 join-snapshot。
  * @param {object | null | undefined} state 物化群状态
  * @param {{ type?: string, sender?: string }} event DAG 事件
  * @param {{ username?: string }} [options] replica（member_join 活跃钥归属）
@@ -67,7 +68,8 @@ export async function canRelayFederatedEvent(state, event, options = {}) {
 	if (!type || !isAuthzGatedEventType(type)) return true
 	if (state?.groupSettings?.batterySaver && !hasMaterializedAclSnapshot(state))
 		return false
-	if (!hasMaterializedAclSnapshot(state)) return false
+	if (!hasMaterializedAclSnapshot(state))
+		return type === 'member_join'
 
 	const sender = String(event.sender || '').trim().toLowerCase()
 	if (!PUB_KEY_HASH_HEX.test(sender)) return false

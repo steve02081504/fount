@@ -112,8 +112,7 @@ export async function handleJoinSnapshotRequest(username, groupId, request, peer
 	if (!await verifyPullAttestationSignatureForMember(fedState, groupId, request.attestation)) return
 	const recipientEdPubKeyHex = resolveMemberEdPubKeyHex(fedState, request.requesterPubKeyHash)
 	if (!recipientEdPubKeyHex) {
-		if (shunCtx.fedOut && shunCtx.fedShunSend && shunCtx.localNodeHash)
-			sendFedShun(shunCtx.fedOut, shunCtx.fedShunSend, groupId, shunCtx.localNodeHash, requesterNodeHash, peerId, 'not_a_member')
+		// 未知成员：引导期对端可能尚未 ingest 我方 member_join；静默丢弃，勿 shun 自锁。
 		return
 	}
 
