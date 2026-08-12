@@ -54,7 +54,7 @@ export async function publishDiscoveryAnnounceAllGroups(username, nodeHash) {
 export async function ingestDiscoveryAnnounce(username, announce) {
 	for (const advertisement of announce.advertisements)
 		await mergeDiscoveryAdvertisement(username, advertisement, {
-			fromNodeHash: String(announce.nodeHash || '').trim(),
+			fromNodeHash: (announce.nodeHash || ''),
 		})
 }
 

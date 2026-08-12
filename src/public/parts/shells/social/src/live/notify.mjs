@@ -24,13 +24,13 @@ import { pushFeedUpdate } from '../ws/feedHub.mjs'
  * @returns {Promise<void>}
  */
 export async function notifyFollowersLiveStarted(username, authorEntityHash, session) {
-	const author = authorEntityHash.toLowerCase()
+	const author = authorEntityHash
 	const followers = await listLocalFollowersOf(author)
 	const at = Date.now()
 	const snippet = notificationSnippet(session.title || 'live')
 	for (const row of followers) {
 		if (row.replicaUsername !== username) continue
-		const recipient = String(row.entityHash || '').toLowerCase()
+		const recipient = row.entityHash
 		if (!recipient || recipient === author) continue
 		if (!await canWriteTimeline(username, recipient)) continue
 		const notification = {

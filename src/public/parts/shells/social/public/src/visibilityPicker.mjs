@@ -49,11 +49,11 @@ export function readVisibilityPicker(root = document) {
 	if (visibility === 'selected') {
 		const allowInput = root.querySelector('[data-visibility-allow]')
 		const raw = allowInput instanceof HTMLInputElement ? allowInput.value : ''
-		draft.allow = raw.split(/[\s,]+/u).map(s => s.trim().toLowerCase()).filter(Boolean)
+		draft.allow = raw.split(/[\s,]+/u).map(s => s.trim()).filter(Boolean)
 	}
 	const exceptInput = root.querySelector('[data-visibility-except]')
 	if (exceptInput instanceof HTMLInputElement && exceptInput.value.trim())
-		draft.except = exceptInput.value.split(/[\s,]+/u).map(s => s.trim().toLowerCase()).filter(Boolean)
+		draft.except = exceptInput.value.split(/[\s,]+/u).map(s => s.trim()).filter(Boolean)
 	return draft
 }
 

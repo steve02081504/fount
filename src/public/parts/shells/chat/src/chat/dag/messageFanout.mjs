@@ -43,7 +43,7 @@ function hubMessageUrl(groupId, channelId, eventId) {
 export function buildMentionsFromMessageLine(channelId, messageLine, state, options = {}) {
 	const text = mentionTextFromMessageLine(messageLine)
 	if (!text) return { entityHashes: [], roleIds: [], everyone: false }
-	const senderKey = String(messageLine?.sender || '').trim().toLowerCase()
+	const senderKey = String(messageLine?.sender || '').trim()
 	const sender = state?.members?.[senderKey]
 	const canMentionEveryone = sender?.status === 'active'
 		&& hasPermission(sender, PERMISSIONS.MENTION_EVERYONE, state.roles, channelId, state.channelPermissions)
@@ -74,7 +74,7 @@ export async function dispatchMessageFanout(username, groupId, channelId, messag
 	const { state } = await getState(username, groupId)
 	const mentions = buildMentionsFromMessageLine(channelId, messageLine, state, options)
 	const recipients = await listLocalRecipientsInGroup(username, state)
-	const operator = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
+	const operator = (await resolveOperatorEntityHash(username)) || null
 	const { authorEntityHash, authorDisplayName } = resolveAuthorFromMessageLine(state, messageLine)
 	const groupName = state.groupMeta?.name || groupId
 	const channelName = state.channels?.[channelId]?.name || channelId

@@ -46,15 +46,15 @@ export function createPostsMethods(apiContext) {
 		 * @returns {Promise<object>} Post
 		 */
 		async getPost(entityHash, id) {
-			const owner = String(entityHash).toLowerCase()
+			const owner = entityHash
 			const view = await getTimelineMaterialized(apiContext.username, owner)
-			const row = view.postById[String(id)]
+			const row = view.postById[id]
 			const content = row
 				? await maybeDecryptPostContent(apiContext.username, owner, row.content, apiContext.entityHash) || row.content
 				: null
 			if (row) {
 				const { pullPostReactions } = await import('../../federation/reaction/pull.mjs')
-				pullPostReactions(apiContext.username, owner, String(id)).catch(handleError)
+				pullPostReactions(apiContext.username, owner, id).catch(handleError)
 			}
 			return createPost(apiContext, owner, id, { content, event: row || null })
 		},
@@ -104,7 +104,6 @@ async function createTimelinePost(apiContext, draft) {
 
 	const albumIds = [...new Set(
 		(Array.isArray(draft.albumIds) ? draft.albumIds : [])
-			.map(id => String(id || '').trim())
 			.filter(id => id && id !== 'default'),
 	)]
 	let visibilitySpec = normalizeVisibilitySpec(draft)
@@ -123,10 +122,10 @@ async function createTimelinePost(apiContext, draft) {
 	const replyDisplay = normalizeReplyDisplay(draft.replyDisplay)
 
 	if (draft.replyTo?.entityHash && draft.replyTo?.postId) {
-		const targetOwner = String(draft.replyTo.entityHash).toLowerCase()
+		const targetOwner = draft.replyTo.entityHash
 		if (!await isKnownSocialTarget(apiContext.username, targetOwner))
 			throw httpError(400, 'unknown entity')
-		const gate = await loadPostReplyGate(apiContext.username, targetOwner, String(draft.replyTo.postId))
+		const gate = await loadPostReplyGate(apiContext.username, targetOwner, draft.replyTo.postId)
 		if (!gate) throw httpError(404, 'reply target not found')
 		const allowed = await canReplyUnderPolicy({
 			username: apiContext.username,
@@ -158,7 +157,7 @@ async function createTimelinePost(apiContext, draft) {
 		...resolveSensitiveMedia(draft.sensitiveMedia, draft.contentWarning) ? { sensitiveMedia: true } : {},
 	}
 	if (Array.isArray(draft.tags)) {
-		const tags = [...new Set(draft.tags.map(t => String(t).trim().toLowerCase()).filter(Boolean))].slice(0, 16)
+		const tags = [...new Set(draft.tags.map(t => t.trim()).filter(Boolean))].slice(0, 16)
 		if (tags.length) draftContent.tags = tags
 	}
 	if (draft.poll)

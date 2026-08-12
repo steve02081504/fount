@@ -44,17 +44,17 @@ export async function inviteLiveLink(username, entityHash, liveId, target) {
 	const session = loadLiveSession(username, entityHash, liveId)
 	if (!session || session.status !== 'live') throw httpError(404, 'not live')
 	if (session.link) throw httpError(409, 'already linked')
-	const peerEntityHash = String(target.peerEntityHash || '').toLowerCase()
-	const peerLiveId = String(target.peerLiveId || '').toLowerCase()
+	const peerEntityHash = target.peerEntityHash
+	const peerLiveId = target.peerLiveId
 	if (!peerEntityHash || !peerLiveId) throw httpError(400, 'peer required')
-	if (peerEntityHash === entityHash.toLowerCase() && peerLiveId === liveId.toLowerCase())
+	if (peerEntityHash === entityHash && peerLiveId === liveId)
 		throw httpError(400, 'cannot link self')
 
 	const bridgeOrigin = String(target.bridgeOrigin || session.bridgeOrigin || '').trim().replace(/\/$/, '')
 	const { data, errors } = await collectSocialRpcMerged(username, {
 		type: 'live_link_invite',
-		fromEntityHash: entityHash.toLowerCase(),
-		fromLiveId: liveId.toLowerCase(),
+		fromEntityHash: entityHash,
+		fromLiveId: liveId,
 		fromNodeHash: getNodeHash(),
 		fromAvRoomId: session.avRoomId,
 		fromBridgeOrigin: bridgeOrigin || null,
@@ -94,8 +94,8 @@ export async function inviteLiveLink(username, entityHash, liveId, target) {
  * @returns {Promise<object>} accept / reject
  */
 export async function handleLiveLinkInviteRpc(username, rpc) {
-	const peerEntityHash = String(rpc.peerEntityHash || '').toLowerCase()
-	const peerLiveId = String(rpc.peerLiveId || '').toLowerCase()
+	const peerEntityHash = rpc.peerEntityHash
+	const peerLiveId = rpc.peerLiveId
 	const session = loadLiveSession(username, peerEntityHash, peerLiveId)
 	if (!session || session.status !== 'live')
 		return { type: 'live_link_accept', ok: false, reason: 'not_live' }
@@ -103,8 +103,8 @@ export async function handleLiveLinkInviteRpc(username, rpc) {
 		return { type: 'live_link_accept', ok: false, reason: 'already_linked' }
 
 	const linkSecret = createLinkSecret()
-	const fromEntityHash = String(rpc.fromEntityHash || '').toLowerCase()
-	const fromLiveId = String(rpc.fromLiveId || '').toLowerCase()
+	const fromEntityHash = rpc.fromEntityHash
+	const fromLiveId = rpc.fromLiveId
 
 	pushFeedUpdate(username, {
 		type: 'live_link_invite',
@@ -167,8 +167,8 @@ async function applyLinkPair(username, entityHash, liveId, link) {
 			teardowns.push(bridgeLiveSignalRooms(key, peerKey))
 			if (!peerSession.link) {
 				peerSession.link = {
-					peerEntityHash: entityHash.toLowerCase(),
-					peerLiveId: liveId.toLowerCase(),
+					peerEntityHash: entityHash,
+					peerLiveId: liveId,
 					peerNodeHash: getNodeHash(),
 					peerAvRoomId: session.avRoomId,
 					peerBridgeOrigin: session.bridgeOrigin,
@@ -205,8 +205,8 @@ async function applyLinkPair(username, entityHash, liveId, link) {
 	})
 	pushFeedUpdate(username, {
 		type: 'live_link_started',
-		entityHash: entityHash.toLowerCase(),
-		liveId: liveId.toLowerCase(),
+		entityHash: entityHash,
+		liveId: liveId,
 		link,
 	})
 }
@@ -240,8 +240,8 @@ export async function tearDownLiveLink(username, entityHash, liveId) {
 	broadcastLiveSignal(key, { type: 'link_ended' })
 	pushFeedUpdate(username, {
 		type: 'live_link_ended',
-		entityHash: entityHash.toLowerCase(),
-		liveId: String(liveId).toLowerCase(),
+		entityHash: entityHash,
+		liveId: liveId,
 	})
 
 	const peerSession = loadLiveSession(username, peer.peerEntityHash, peer.peerLiveId)

@@ -35,7 +35,7 @@ export function registerTestSeedRoutes(router, authenticate) {
 	router.post('/api/parts/shells\\:social/test/foreign-like', authenticate, async (req, res) => {
 		assertTestMode()
 		const { username } = getUserByReq(req)
-		const targetEntityHash = String(req.body?.targetEntityHash || '').trim().toLowerCase()
+		const targetEntityHash = String(req.body?.targetEntityHash || '').trim()
 		const targetPostId = String(req.body?.targetPostId || '').trim()
 		if (!targetEntityHash || !targetPostId)
 			throw httpError(400, 'targetEntityHash and targetPostId required')
@@ -48,7 +48,7 @@ export function registerTestSeedRoutes(router, authenticate) {
 	router.post('/api/parts/shells\\:social/test/inbox-likes', authenticate, async (req, res) => {
 		assertTestMode()
 		const { username } = getUserByReq(req)
-		const targetEntityHash = String(req.body?.targetEntityHash || '').trim().toLowerCase()
+		const targetEntityHash = String(req.body?.targetEntityHash || '').trim()
 		const targetPostId = String(req.body?.targetPostId || '').trim()
 		const count = Math.min(Math.max(Number(req.body?.count) || 2, 1), 200)
 		if (!targetEntityHash || !targetPostId)
@@ -74,7 +74,7 @@ export function registerTestSeedRoutes(router, authenticate) {
 		assertTestMode()
 		const { username } = getUserByReq(req)
 		const count = Math.min(Math.max(Number(req.body?.count) || 41, 1), 200)
-		const viewerEntityHash = (await resolveOperatorEntityHashForUser(username))?.toLowerCase()
+		const viewerEntityHash = (await resolveOperatorEntityHashForUser(username))?
 		if (!viewerEntityHash)
 			throw httpError(400, 'identity required')
 		const eventsPath = inboxEventsPath(username, viewerEntityHash)
@@ -110,7 +110,7 @@ export function registerTestSeedRoutes(router, authenticate) {
 	router.post('/api/parts/shells\\:social/test/inbox-mention-for', authenticate, async (req, res) => {
 		assertTestMode()
 		const { username } = getUserByReq(req)
-		const recipientEntityHash = String(req.body?.recipientEntityHash || '').trim().toLowerCase()
+		const recipientEntityHash = String(req.body?.recipientEntityHash || '').trim()
 		if (!recipientEntityHash)
 			throw httpError(400, 'recipientEntityHash required')
 		const seed = randomSeed()

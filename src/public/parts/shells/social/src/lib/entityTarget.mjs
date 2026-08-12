@@ -27,7 +27,7 @@ function isKnownNetworkNode(nodeHash) {
  * @returns {Promise<boolean>} 是否可解析/可发现
  */
 export async function isKnownSocialTarget(username, entityHash) {
-	const target = String(entityHash || '').trim().toLowerCase()
+	const target = entityHash
 	if (!isEntityHash128(target)) return false
 
 	const resolved = await resolveSocialEntity(target, username)

@@ -71,7 +71,7 @@ export async function canRelayFederatedEvent(state, event, options = {}) {
 	if (!hasMaterializedAclSnapshot(state))
 		return type === 'member_join'
 
-	const sender = String(event.sender || '').trim().toLowerCase()
+	const sender = (event.sender || '')
 	if (!PUB_KEY_HASH_HEX.test(sender)) return false
 
 	return (await checkEventPermission(state, event, sender, { username: options.username })).ok

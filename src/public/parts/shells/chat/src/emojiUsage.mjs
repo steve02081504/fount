@@ -83,7 +83,7 @@ export function saveEmojiUsage(username, data) {
  * @returns {object} 返回值
  */
 export function appendUsageLog(state, usageId, at = Date.now()) {
-	const id = String(usageId || '').trim()
+	const id = (usageId || '')
 	if (!id) return state
 	const log = [...state.log || [], { id, at }]
 	const trimmed = log.length > USAGE_WINDOW ? log.slice(-USAGE_WINDOW) : log
@@ -100,11 +100,11 @@ export function appendUsageLog(state, usageId, at = Date.now()) {
  */
 function usageIdFromItem(item) {
 	if (item.kind === 'unicode') {
-		const unicode = String(item.unicode || '').trim()
+		const unicode = (item.unicode || '')
 		return unicode ? unicodeUsageId(unicode) : ''
 	}
-	const packId = String(item.packId || '').trim()
-	const emojiId = String(item.emojiId || '').trim()
+	const packId = (item.packId || '')
+	const emojiId = (item.emojiId || '')
 	return packId && emojiId ? packEmojiUsageId(packId, emojiId) : ''
 }
 
@@ -141,7 +141,7 @@ export function recordEmojiUsage(username, item) {
 export function recordEmojiUsageFromMessageContent(username, content) {
 	if (!content || typeof content !== 'object') return
 	if (channelMessageKind(content) === 'sticker') {
-		const parsed = parseEmojiToken(String(content.emojiRef || '').trim())
+		const parsed = parseEmojiToken(content.emojiRef || '')
 		if (parsed)
 			recordEmojiUsage(username, { kind: 'pack', packId: parsed.packId, emojiId: parsed.emojiId })
 		return
@@ -198,7 +198,7 @@ export function listCollection(username) {
  * @returns {void} 返回值
  */
 export function addPackToCollection(username, packId) {
-	const id = String(packId || '').trim()
+	const id = (packId || '')
 	if (!id) return
 	const state = loadEmojiUsage(username)
 	if (state.collection.packIds.includes(id)) return
@@ -212,7 +212,7 @@ export function addPackToCollection(username, packId) {
  * @returns {void} 返回值
  */
 export function removePackFromCollection(username, packId) {
-	const id = String(packId || '').trim()
+	const id = (packId || '')
 	if (!id) return
 	const state = loadEmojiUsage(username)
 	state.collection.packIds = state.collection.packIds.filter(p => p !== id)
@@ -247,8 +247,8 @@ export function convergeDefaultPack(username, oldDefaultPackId, newDefaultPackId
  * @returns {void}
  */
 export function convergeLinkedDefault(username, linkKey, newDefaultPackId) {
-	const key = String(linkKey || '').trim()
-	const next = String(newDefaultPackId || '').trim()
+	const key = (linkKey || '')
+	const next = (newDefaultPackId || '')
 	if (!key || !next) return
 	const state = loadEmojiUsage(username)
 	const old = String(state.linkedDefaults[key] || '').trim()

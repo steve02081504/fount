@@ -31,7 +31,7 @@ export function federationBootstrapKey(username, groupId) {
  * @returns {string | undefined} 去掉 `key=` 前缀后的值
  */
 function stripMistakenFieldPrefix(value, keys) {
-	const raw = String(value || '').trim()
+	const raw = (value || '')
 	if (!raw) return undefined
 	for (const key of keys) {
 		const prefix = `${key}=`

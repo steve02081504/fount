@@ -298,8 +298,8 @@ const HANDLERS = {
 	vote_post: (request) => {
 		const id = getPostId(request.attributes)
 		if (!id) return Promise.resolve('vote_post 需要 id 或 post_id，以及 direction="up" 或 direction="down"。')
-		const direction = (request.attributes.direction ?? 'up').toLowerCase()
-		const path = direction === 'down' ? 'downvote' : 'upvote'
+		const direction = request.attributes.direction ?? 'up'
+		const path = /^down$/i.test(direction) ? 'downvote' : 'upvote'
 		return moltbookJson(request.apiKey, `posts/${encodeURIComponent(id)}/${path}`, { method: 'POST' }).then(formatResult)
 	},
 
@@ -311,7 +311,8 @@ const HANDLERS = {
 	vote_comment: (request) => {
 		const commentId = request.attributes.id ?? request.attributes.comment_id ?? ''
 		if (!commentId) return Promise.resolve('vote_comment 需要 id 或 comment_id，direction 为 up。')
-		if ((request.attributes.direction ?? 'up').toLowerCase() !== 'up') return Promise.resolve('评论仅支持 direction="up"。')
+		if (!/^up$/i.test(request.attributes.direction ?? 'up'))
+			return Promise.resolve('评论仅支持 direction="up"。')
 		return moltbookJson(request.apiKey, `comments/${encodeURIComponent(commentId)}/upvote`, { method: 'POST' }).then(formatResult)
 	},
 

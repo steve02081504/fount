@@ -19,10 +19,10 @@ import { collapseTasteWeights, loadTaste, resolveTasteAlias } from './store.mjs'
  * @returns {Promise<object>} 签名事件
  */
 export async function publishTagName(username, entityHash, input) {
-	const tagHash = String(input.tagHash || '').trim().toLowerCase()
+	const tagHash = input.tagHash
 	const locale = String(input.locale || '').trim()
 	const label = String(input.label || '').trim().slice(0, 64)
-	const actor = String(entityHash).toLowerCase()
+	const actor = entityHash
 	if (!tagHash || !locale || !label || !parseEntityHash(actor))
 		throw new Error('invalid tag name claim')
 	const taste = await loadTaste(username, actor)
@@ -42,14 +42,14 @@ export async function publishTagName(username, entityHash, input) {
  * @returns {Promise<string | null>} 显示名
  */
 export async function resolveTagDisplayName(username, viewerEntityHash, tagHash, locale = FALLBACK_LOCALE) {
-	const viewer = String(viewerEntityHash).toLowerCase()
+	const viewer = viewerEntityHash
 	const taste = await loadTaste(username, viewer)
 	const canon = resolveTasteAlias(tagHash, taste.aliases)
 	const ownView = await getTimelineMaterialized(username, viewer)
 	const ownNames = ownView.tagNames || {}
 	if (ownNames[canon]?.[locale]) return ownNames[canon][locale]
-	if (ownNames[String(tagHash).toLowerCase()]?.[locale])
-		return ownNames[String(tagHash).toLowerCase()][locale]
+	if (ownNames[tagHash]?.[locale])
+		return ownNames[tagHash][locale]
 
 	const { following } = await loadFollowingForActor(username, viewer)
 	/** @type {{ label: string, weight: number }[]} */

@@ -11,6 +11,6 @@ export function registerVideosRoutes(router) {
 	router.get('/api/parts/shells\\:social/videos/feed', authenticate, socialJson((req, { client }) =>
 		client.videosFeed({
 			limit: Number(req.query.limit) || 20,
-			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
+			cursor: req.query.cursor ? req.query.cursor : undefined,
 		})))
 }

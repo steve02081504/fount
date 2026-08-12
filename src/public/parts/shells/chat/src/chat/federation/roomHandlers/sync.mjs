@@ -58,7 +58,7 @@ export function registerSyncHandlers(roomContext) {
 	const remoteTipsRevealLocalGap = tips => {
 		if (!Array.isArray(tips)) return false
 		for (const tipId of tips) {
-			const id = String(tipId).trim().toLowerCase()
+			const id = tipId
 			if (isHex64(id) && !hasSeenFederationEvent(username, groupId, id)) return true
 		}
 		return false
@@ -75,12 +75,12 @@ export function registerSyncHandlers(roomContext) {
 		if (!Array.isArray(remoteTips)) return false
 		const local = new Set()
 		for (const id of localTips) {
-			const norm = String(id).trim().toLowerCase()
+			const norm = id
 			if (isHex64(norm)) local.add(norm)
 		}
 		const remote = new Set()
 		for (const id of remoteTips) {
-			const norm = String(id).trim().toLowerCase()
+			const norm = id
 			if (isHex64(norm)) remote.add(norm)
 		}
 		if (remote.size !== local.size) return true

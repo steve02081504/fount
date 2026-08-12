@@ -22,7 +22,7 @@ import { createVaultMethods } from './vault.mjs'
  * @returns {Promise<{ entityHash: string, charPartName?: string }>} 绑定实体
  */
 export async function resolveSocialClientEntity(username, entityHash) {
-	const requested = String(entityHash || '').trim().toLowerCase()
+	const requested = entityHash
 	if (requested) {
 		const resolved = await resolveSocialEntity(requested, username)
 		if (!resolved?.local || resolved.replicaUsername !== username)

@@ -7,11 +7,11 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
  * @returns {Promise<HTMLElement>} 可编辑的 ICE 配置行
  */
 async function buildIceServerRow(entry = {}) {
-	const urls = Array.isArray(entry.urls) ? entry.urls.join(', ') : String(entry.urls || '')
+	const urls = Array.isArray(entry.urls) ? entry.urls.join(', ') : (entry.urls || '')
 	const row = await renderTemplate('group/settings/ice_server_row', {
 		urls: escapeHtml(urls),
-		username: escapeHtml(String(entry.username || '')),
-		credential: escapeHtml(String(entry.credential || '')),
+		username: escapeHtml(entry.username || ''),
+		credential: escapeHtml(entry.credential || ''),
 	})
 	row.querySelector('[data-ice-remove]')?.addEventListener('click', () => row.remove())
 	return row

@@ -20,10 +20,10 @@ import { memberEntityHash } from './member.mjs'
  * @returns {Promise<string | null>} 主人 hash；无则 null
  */
 export async function resolveDeclaredOwnerEntityHash(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = (entityHash || '')
 	if (!isEntityHash128(hash)) return null
 	const row = await loadEntityIdentity(username, hash)
-	const owner = row?.ownerEntityHash ? String(row.ownerEntityHash).toLowerCase() : null
+	const owner = row?.ownerEntityHash ? String(row.ownerEntityHash) : null
 	return owner && isEntityHash128(owner) ? owner : null
 }
 
@@ -57,9 +57,9 @@ export function resolveCryptographicAuthorEntityHash(eventOrLine, state = null) 
 	const bridge = chat.bridge
 		|| eventOrLine?.chatReplyRequest?.extension?.chat?.bridge
 	if (bridge?.authorEntityHash && isEntityHash128(String(bridge.authorEntityHash)))
-		return String(bridge.authorEntityHash).toLowerCase()
+		return String(bridge.authorEntityHash)
 
-	const sender = String(message?.sender || eventOrLine?.sender || '').trim().toLowerCase()
+	const sender = String(message?.sender || eventOrLine?.sender || '').trim()
 	if (state?.members && sender) {
 		const member = state.members[sender]
 		const hash = memberEntityHash(member)
@@ -76,7 +76,7 @@ export function resolveCryptographicAuthorEntityHash(eventOrLine, state = null) 
 		}
 	}
 
-	const uid = String(message?.uid || '').trim().toLowerCase()
+	const uid = String(message?.uid || '').trim()
 	if (uid && isEntityHash128(uid) && message?.role !== 'char')
 		return uid
 

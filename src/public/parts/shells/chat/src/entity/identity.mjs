@@ -41,7 +41,7 @@ const operatorHashCache = new Map()
  * @returns {string} cache key
  */
 function cacheKey(username, entityHash) {
-	return `${username}\u0000${String(entityHash).toLowerCase()}`
+	return `${username}\u0000${String(entityHash)}`
 }
 
 /**
@@ -51,7 +51,7 @@ function cacheKey(username, entityHash) {
  */
 export function consumePendingRecoverySecret(username, entityHash) {
 	const hash = entityHash
-		? String(entityHash).toLowerCase()
+		? String(entityHash)
 		: operatorHashCache.get(username)
 	if (!hash) return null
 	const key = cacheKey(username, hash)
@@ -82,9 +82,9 @@ function isDualKeyIdentity(row) {
  * @returns {void}
  */
 function cacheFromRow(username, row) {
-	const entityHash = String(row.entityHash).toLowerCase()
+	const entityHash = String(row.entityHash)
 	const ownerRaw = row.ownerEntityHash
-	const ownerEntityHash = ownerRaw ? String(ownerRaw).toLowerCase() : null
+	const ownerEntityHash = ownerRaw ? String(ownerRaw) : null
 	const charPartName = row.charPartName ? String(row.charPartName) : null
 	identityCache.set(cacheKey(username, entityHash), {
 		recoveryPub: row.recoveryPubKeyHex,
@@ -123,7 +123,7 @@ async function findOperatorEntityHash(username) {
  */
 export async function ensureEntityIdentity(username, options = {}) {
 	const charPartName = options.charPartName ? String(options.charPartName) : null
-	const ownerEntityHash = options.ownerEntityHash ? String(options.ownerEntityHash).toLowerCase() : null
+	const ownerEntityHash = options.ownerEntityHash ? String(options.ownerEntityHash) : null
 
 	if (charPartName === null && ownerEntityHash === null) {
 		const opHash = await findOperatorEntityHash(username)
@@ -141,8 +141,8 @@ export async function ensureEntityIdentity(username, options = {}) {
 	else if (charPartName)
 		for (const row of await listEntityIdentities(username)) {
 			if (row.charPartName !== charPartName) continue
-			const hash = String(row.entityHash).toLowerCase()
-			const diskOwner = row.ownerEntityHash ? String(row.ownerEntityHash).toLowerCase() : null
+			const hash = String(row.entityHash)
+			const diskOwner = row.ownerEntityHash ? String(row.ownerEntityHash) : null
 			// 既有 agent 未声明主人：回填为 operator（显式指向他人则保留）。
 			if (!diskOwner) {
 				const operatorHash = await getOperatorEntityHash(username)
@@ -217,9 +217,9 @@ async function syncProfileOwnerField(username, entityHash, ownerEntityHash) {
  * @returns {Promise<object>} 更新后的身份行（含 entityHash）
  */
 export async function setEntityOwner(username, entityHash, ownerEntityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = (entityHash || '')
 	if (!isEntityHash128(hash)) throw new Error('invalid entityHash')
-	const nextOwner = ownerEntityHash ? String(ownerEntityHash).trim().toLowerCase() : null
+	const nextOwner = ownerEntityHash ? ownerEntityHash : null
 	if (nextOwner && !isEntityHash128(nextOwner)) throw new Error('invalid ownerEntityHash')
 	if (nextOwner === hash) throw new Error('cannot set self as owner')
 
@@ -252,7 +252,7 @@ export async function setEntityOwner(username, entityHash, ownerEntityHash) {
 			const { state } = await getState(username, groupId, { skipLeftPurge: true })
 			const sender = await peekLocalSignerPubKeyHash(username, groupId, hash)
 			if (!sender || state.members?.[sender]?.status !== 'active') continue
-			if (String(state.members[sender]?.entityHash || '').toLowerCase() !== hash) continue
+			if (String(state.members[sender]?.entityHash || '') !== hash) continue
 			await appendSignedLocalEvent(username, groupId, {
 				type: 'member_owner_update',
 				timestamp: Date.now(),
@@ -278,7 +278,7 @@ export async function ensureOperatorIdentity(username) {
  * @returns {Promise<object>} 身份行
  */
 export async function loadEntityIdentity(username, entityHash) {
-	const hash = String(entityHash).toLowerCase()
+	const hash = String(entityHash)
 	const disk = await readEntityIdentity(username, hash)
 	if (!isDualKeyIdentity(disk)) {
 		// 缓存可能残留已删除数据根的身份：以磁盘为准作废。
@@ -296,7 +296,7 @@ export async function loadEntityIdentity(username, entityHash) {
  * @returns {string | null} 64 hex 活跃公钥，未托管则为 null
  */
 export function findLocalEntityActivePubKey(entityHash) {
-	const eh = String(entityHash || '').trim().toLowerCase()
+	const eh = (entityHash || '')
 	if (!isEntityHash128(eh)) return null
 	for (const cached of identityCache.values())
 		if (cached.entityHash === eh) return cached.activePub
@@ -495,9 +495,9 @@ export async function commitEntityKeyRotation(username, entityHash, patch) {
 		createdAt: prev.createdAt,
 	}
 	await writeEntityIdentity(username, entityHash, row)
-	cacheFromRow(username, { ...row, entityHash: String(entityHash).toLowerCase() })
+	cacheFromRow(username, { ...row, entityHash: String(entityHash) })
 	events.emit('federation-settings-changed', { username })
-	return { ...row, entityHash: String(entityHash).toLowerCase() }
+	return { ...row, entityHash: String(entityHash) }
 }
 
 /**
@@ -543,7 +543,7 @@ export async function saveFederationViewForUser(username, patch) {
 			...patch.mailbox ? { mailbox: patch.mailbox } : {},
 		})
 	if (patch.dmIntroNonce != null) {
-		const normalized = String(patch.dmIntroNonce || '').trim()
+		const normalized = (patch.dmIntroNonce || '')
 		if (normalized.length >= 16)
 			assignShellData(username, 'chat', 'dmIntro', { nonce: normalized, rotatedAt: Date.now() })
 	}
@@ -557,7 +557,7 @@ export async function saveFederationViewForUser(username, patch) {
  * @returns {{ nonce: string, rotatedAt: number }} 写入后的 nonce 行
  */
 export function setDmIntroNonce(username, nonce) {
-	const normalized = String(nonce || '').trim()
+	const normalized = (nonce || '')
 	if (normalized.length < 16) throw new Error('dmIntro nonce too short')
 	const row = { nonce: normalized, rotatedAt: Date.now() }
 	assignShellData(username, 'chat', 'dmIntro', row)
@@ -573,7 +573,7 @@ export async function listLocalAgentIdentities(username) {
 	return rows
 		.filter(row => row.charPartName)
 		.map(row => ({
-			entityHash: String(row.entityHash).toLowerCase(),
+			entityHash: String(row.entityHash),
 			charPartName: String(row.charPartName),
 		}))
 }
@@ -584,7 +584,7 @@ export async function listLocalAgentIdentities(username) {
  * @returns {Promise<string | null>} charPartName
  */
 export async function resolveCharPartNameForEntity(username, entityHash) {
-	const hash = String(entityHash).toLowerCase()
+	const hash = String(entityHash)
 	const cached = identityCache.get(cacheKey(username, hash))
 	if (cached) return cached.charPartName
 	const disk = await readEntityIdentity(username, hash)

@@ -23,7 +23,7 @@ export function virtualBridgeGroupId(platform, platformChatId) {
  * @returns {boolean} 是否虚拟桥接群
  */
 export function isVirtualBridgeGroupId(groupId) {
-	return String(groupId || '').startsWith('bridge:')
+	return (groupId || '').startsWith('bridge:')
 }
 
 /**
@@ -31,7 +31,7 @@ export function isVirtualBridgeGroupId(groupId) {
  * @returns {{ platform: string, platformChatId: string } | null} 解析结果
  */
 export function parseVirtualBridgeGroupId(groupId) {
-	const raw = String(groupId || '')
+	const raw = (groupId || '')
 	if (!raw.startsWith('bridge:')) return null
 	const rest = raw.slice('bridge:'.length)
 	const colon = rest.indexOf(':')
@@ -56,7 +56,7 @@ function sessionKey(username, groupId) {
  * @returns {string} 虚拟频道 ID
  */
 export function virtualBridgeChannelId(platformThreadId) {
-	const thread = platformThreadId != null && String(platformThreadId).trim()
+	const thread = platformThreadId != null && platformThreadId
 	return thread || 'default'
 }
 
@@ -179,7 +179,7 @@ function pushLog(channel, entry) {
  */
 export function recordVirtualBridgeMessagePair(channel, eventId, platformMessageId) {
 	channel.messageMap.push({
-		eventId: String(eventId).toLowerCase(),
+		eventId: String(eventId),
 		platformMessageId: String(platformMessageId),
 	})
 	if (channel.messageMap.length > MESSAGE_MAP_MAX)
@@ -208,7 +208,7 @@ export async function appendVirtualBridgeMessage(username, dto) {
 		dto.author.platformUserId,
 		dto.author.displayName,
 	)
-	let authorDisplayName = String(dto.author.displayName || '').trim() || `User_${dto.author.platformUserId}`
+	let authorDisplayName = (dto.author.displayName || '') || `User_${dto.author.platformUserId}`
 	let displayAvatar = dto.author.avatarUrl
 	const { isBoundBridgeIdentity } = await import('./identity.mjs')
 	if (isBoundBridgeIdentity(username, dto.platform, dto.author.platformUserId))
@@ -221,13 +221,13 @@ export async function appendVirtualBridgeMessage(username, dto) {
 		catch { /* profile optional */ }
 
 	const eventId = `vmsg_${dto.platform}_${dto.platformMessageId}_${Date.now().toString(36)}`
-	const text = String(dto.text || '')
+	const text = (dto.text || '')
 	/** @type {{ eventId: string, senderName?: string, preview?: string, senderEntityHash?: string } | undefined} */
 	let replyTo
 	if (dto.replyToPlatformMessageId != null) {
 		const parentEventId = lookupVirtualBridgeEventId(channel, dto.replyToPlatformMessageId)
 		if (parentEventId) {
-			const parent = channel.logs.find(row => String(row.extension?.chat?.virtualEventId || '').toLowerCase() === parentEventId)
+			const parent = channel.logs.find(row => String(row.extension?.chat?.virtualEventId || '') === parentEventId)
 			replyTo = {
 				eventId: parentEventId,
 				...parent?.name ? { senderName: parent.name } : {},
@@ -261,7 +261,7 @@ export async function appendVirtualBridgeMessage(username, dto) {
 					platformMessageId: String(dto.platformMessageId),
 					platformUserId: String(dto.author.platformUserId),
 					authorEntityHash,
-					authorDisplayName: String(dto.author.displayName || '').trim(),
+					authorDisplayName: (dto.author.displayName || ''),
 					...dto.platformThreadId != null ? { platformThreadId: String(dto.platformThreadId) } : {},
 					...dto.replyToPlatformMessageId != null
 						? { replyToPlatformMessageId: String(dto.replyToPlatformMessageId) }
@@ -289,7 +289,7 @@ export function lookupVirtualBridgeEventId(channel, platformMessageId) {
 	for (let i = channel.messageMap.length - 1; i >= 0; i--) {
 		const row = channel.messageMap[i]
 		if (String(row.platformMessageId) === needle)
-			return String(row.eventId).toLowerCase()
+			return String(row.eventId)
 	}
 	return null
 }
@@ -300,11 +300,11 @@ export function lookupVirtualBridgeEventId(channel, platformMessageId) {
  * @returns {string | null} platformMessageId
  */
 export function lookupVirtualBridgePlatformMessageId(channel, eventId) {
-	const needle = String(eventId || '').trim().toLowerCase()
+	const needle = (eventId || '')
 	if (!needle) return null
 	for (let i = channel.messageMap.length - 1; i >= 0; i--) {
 		const row = channel.messageMap[i]
-		if (String(row.eventId).toLowerCase() === needle)
+		if (String(row.eventId) === needle)
 			return String(row.platformMessageId)
 	}
 	return null
@@ -322,9 +322,9 @@ export async function editVirtualBridgeMessage(username, dto) {
 	const channel = ensureVirtualBridgeChannel(username, groupId, virtualBridgeChannelId(dto.platformThreadId))
 	const eventId = lookupVirtualBridgeEventId(channel, dto.platformMessageId)
 	if (!eventId) return null
-	const entry = channel.logs.find(row => String(row.extension?.chat?.virtualEventId || '').toLowerCase() === eventId)
+	const entry = channel.logs.find(row => String(row.extension?.chat?.virtualEventId || '') === eventId)
 	if (!entry) return null
-	const text = String(dto.text || '')
+	const text = (dto.text || '')
 	entry.content = text
 	entry.content_for_show = text
 	if (dto.files)
@@ -350,10 +350,10 @@ export async function deleteVirtualBridgeMessage(username, dto) {
 	const channel = ensureVirtualBridgeChannel(username, groupId, virtualBridgeChannelId(dto.platformThreadId))
 	const eventId = lookupVirtualBridgeEventId(channel, dto.platformMessageId)
 	if (!eventId) return false
-	const index = channel.logs.findIndex(row => String(row.extension?.chat?.virtualEventId || '').toLowerCase() === eventId)
+	const index = channel.logs.findIndex(row => String(row.extension?.chat?.virtualEventId || '') === eventId)
 	if (index < 0) return false
 	channel.logs.splice(index, 1)
-	channel.messageMap = channel.messageMap.filter(row => String(row.eventId).toLowerCase() !== eventId)
+	channel.messageMap = channel.messageMap.filter(row => String(row.eventId) !== eventId)
 	return true
 }
 
@@ -409,7 +409,7 @@ export function listVirtualBridgeSessions(username, platform, botname) {
 	for (const [key, session] of sessions.entries()) {
 		if (!key.startsWith(prefix)) continue
 		if (platform && session.platform !== platform) continue
-		if (botname != null && String(session.botname || '') !== String(botname)) continue
+		if (botname != null && (session.botname || '') !== String(botname)) continue
 		rows.push(session)
 	}
 	return rows

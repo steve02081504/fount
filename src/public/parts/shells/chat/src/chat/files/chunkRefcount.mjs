@@ -81,7 +81,7 @@ async function saveChunkRefcountStore(username, groupId, store) {
  * @returns {Promise<void>}
  */
 export async function bumpChunkLocalRef(username, groupId, storageLocator) {
-	const locator = String(storageLocator || '').trim()
+	const locator = (storageLocator || '')
 	if (!locator) return
 	const store = await loadChunkRefcountStore(username, groupId)
 	store.refs[locator] = (store.refs[locator] || 0) + 1
@@ -97,7 +97,7 @@ export async function bumpChunkLocalRef(username, groupId, storageLocator) {
  * @returns {Promise<void>}
  */
 export async function touchChunkLocalAccess(username, groupId, storageLocator) {
-	const locator = String(storageLocator || '').trim()
+	const locator = (storageLocator || '')
 	if (!locator) return
 	const store = await loadChunkRefcountStore(username, groupId)
 	if (!store.refs[locator]) return
@@ -113,7 +113,7 @@ export async function touchChunkLocalAccess(username, groupId, storageLocator) {
  * @returns {Promise<boolean>} 归零则为 true
  */
 export async function releaseChunkLocalRef(username, groupId, storageLocator) {
-	const locator = String(storageLocator || '').trim()
+	const locator = (storageLocator || '')
 	if (!locator) return false
 	const store = await loadChunkRefcountStore(username, groupId)
 	const nextCount = (store.refs[locator] || 0) - 1

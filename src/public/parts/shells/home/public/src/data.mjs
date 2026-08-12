@@ -53,7 +53,7 @@ export async function getAllpartNames(partRoot) {
 		...uncachedNames,
 	].map(name => [partRoot, name].filter(Boolean).join('/'))
 
-	return allNames.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+	return allNames.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
 }
 
 /**

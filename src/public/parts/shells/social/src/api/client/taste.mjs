@@ -39,7 +39,7 @@ export function createTasteMethods(apiContext) {
 						}
 					if (patch.tags && typeof patch.tags === 'object')
 						for (const [tag, weight] of Object.entries(patch.tags)) {
-							const key = String(tag).trim().toLowerCase()
+							const key = tag
 							if (!key) continue
 							const value = Number(weight)
 							if (!Number.isFinite(value)) continue

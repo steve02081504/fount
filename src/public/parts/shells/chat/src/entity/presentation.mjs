@@ -92,7 +92,7 @@ function infoLiToDefaults(li) {
 		author: String(li?.author || '').trim(),
 		home_page: String(li?.home_page || '').trim(),
 		issue_page: String(li?.issue_page || '').trim(),
-		tags: Array.isArray(li?.tags) ? li.tags.map(t => String(t).trim()).filter(Boolean) : [],
+		tags: Array.isArray(li?.tags) ? li.tags.map(t => t).filter(Boolean) : [],
 		links: [],
 	}
 }

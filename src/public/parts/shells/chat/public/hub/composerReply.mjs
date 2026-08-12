@@ -33,8 +33,8 @@ export function setReplyTarget(target) {
 	if (!/^[0-9a-f]{64}$/.test(eventId)) return
 	replyTarget = {
 		eventId,
-		senderName: String(target.senderName || '').trim().slice(0, 100) || '…',
-		preview: String(target.preview || '').replace(/\s+/g, ' ').trim().slice(0, 120) || '…',
+		senderName: (target.senderName || '').slice(0, 100) || '…',
+		preview: (target.preview || '').replace(/\s+/g, ' ').trim().slice(0, 120) || '…',
 	}
 	renderReplyBanner()
 	const input = document.getElementById('message-input')

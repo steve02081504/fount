@@ -31,7 +31,7 @@ import { createFeedItemBuildContext } from './iterate.mjs'
  */
 function bumpEngagementCount(counts, entityHash, postId) {
 	if (!entityHash || postId == null) return
-	const key = socialPostKey(entityHash.toLowerCase(), postId)
+	const key = socialPostKey(entityHash, postId)
 	counts.set(key, (counts.get(key) || 0) + 1)
 }
 
@@ -76,7 +76,7 @@ export async function buildEngagementIndex(username, owners = null) {
  */
 export async function buildViewerLikedSet(username, viewerEntityHash) {
 	const self = viewerEntityHash
-		? String(viewerEntityHash).trim().toLowerCase()
+		? viewerEntityHash
 		: await resolveOperatorEntityHash(username)
 	if (!self) return new Set()
 	const view = await getTimelineMaterialized(username, self)
@@ -93,7 +93,7 @@ export async function buildViewerLikedSet(username, viewerEntityHash) {
  */
 export async function buildViewerDislikedSet(username, viewerEntityHash) {
 	const self = viewerEntityHash
-		? String(viewerEntityHash).trim().toLowerCase()
+		? viewerEntityHash
 		: await resolveOperatorEntityHash(username)
 	if (!self) return new Set()
 	const view = await getTimelineMaterialized(username, self)
@@ -111,7 +111,7 @@ export async function loadViewerContext(username, viewerEntityHash = null) {
 	const viewer = viewerEntityHash || await resolveOperatorEntityHash(username)
 	const following = new Set(
 		viewer
-			? (await loadFollowingForActor(username, viewer)).following.map(id => id.toLowerCase())
+			? (await loadFollowingForActor(username, viewer)).following
 			: [],
 	)
 	/** @type {Map<string, number>} */
@@ -122,7 +122,7 @@ export async function loadViewerContext(username, viewerEntityHash = null) {
 		for (const author of following) {
 			const wall = latestFollowWallForAuthor(viewerView, author)
 			if (wall != null) followSince.set(author, wall)
-			else if (author === viewer.toLowerCase()) followSince.set(author, 0)
+			else if (author === viewer) followSince.set(author, 0)
 		}
 	}
 	const personalFilter = viewer
@@ -221,7 +221,7 @@ export async function buildHomeFeed(username, options = {}) {
 			})
 		}
 		for (const repost of view.reposts) {
-			const originalEntityHash = (repost.content?.targetEntityHash || '').toLowerCase()
+			const originalEntityHash = (repost.content?.targetEntityHash || '')
 			const originalPostId = repost.content?.targetPostId || ''
 			if (!isEntityHash128(originalEntityHash) || !originalPostId) continue
 			candidates.push({
@@ -242,7 +242,7 @@ export async function buildHomeFeed(username, options = {}) {
 	// 订阅话题源：从已知时间线注入含标签的公开帖
 	if (viewer) {
 		const viewerView = await getTimelineMaterialized(username, viewer)
-		const followedTags = new Set((viewerView.followedTags || []).map(t => String(t).toLowerCase()))
+		const followedTags = new Set(viewerView.followedTags || [])
 		if (followedTags.size) {
 			const { extractHashtagsFromText } = await import('../lib/hashtags.mjs')
 			/** @type {object[]} */
@@ -255,7 +255,7 @@ export async function buildHomeFeed(username, options = {}) {
 					if (!isPublicDiscoverable(post.content)) continue
 					const tags = [
 						...extractHashtagsFromText(post.content?.text || ''),
-						...Array.isArray(post.content?.tags) ? post.content.tags.map(t => String(t).toLowerCase()) : [],
+						...Array.isArray(post.content?.tags) ? post.content.tags : [],
 					]
 					if (!tags.some(tag => followedTags.has(tag))) continue
 					const key = `${entityHash}:${post.id}`
@@ -332,7 +332,7 @@ export async function buildHomeFeed(username, options = {}) {
  */
 export async function buildProfileFeedItems(username, entityHash, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
-	entityHash = entityHash.trim().toLowerCase()
+	entityHash = entityHash
 	if (!isEntityHash128(entityHash))
 		return { entityHash, items: [], nextCursor: null }
 
@@ -354,8 +354,8 @@ export async function buildProfileFeedItems(username, entityHash, options = {}) 
 
 	let start = 0
 	if (options.cursor) {
-		const cursor = String(options.cursor).trim().toLowerCase()
-		const index = items.findIndex(item => String(item.postId || '').toLowerCase() === cursor)
+		const cursor = options.cursor
+		const index = items.findIndex(item => item.postId === cursor)
 		start = index >= 0 ? index + 1 : 0
 	}
 	const page = items.slice(start, start + limit)
@@ -373,7 +373,7 @@ export async function buildProfileFeedItems(username, entityHash, options = {}) 
  * @returns {Promise<{ entityHash: string, items: object[] }>} 点赞过的帖子列表
  */
 export async function buildLikedFeedItems(username, entityHash, options = {}) {
-	entityHash = entityHash.trim().toLowerCase()
+	entityHash = entityHash
 	if (!isEntityHash128(entityHash))
 		return { entityHash, items: [] }
 
@@ -387,10 +387,10 @@ export async function buildLikedFeedItems(username, entityHash, options = {}) {
 	const items = []
 
 	for (const like of view.likes) {
-		const targetEntityHash = (like.content?.targetEntityHash || '').toLowerCase()
+		const targetEntityHash = (like.content?.targetEntityHash || '')
 		const targetPostId = like.content?.targetPostId
 		if (!isEntityHash128(targetEntityHash) || targetPostId == null) continue
-		const post = await resolveVisiblePost(username, targetEntityHash, String(targetPostId), viewerContext)
+		const post = await resolveVisiblePost(username, targetEntityHash, targetPostId, viewerContext)
 		if (!post) continue
 		items.push(await buildPostFeedItem(username, targetEntityHash, post, itemContext))
 	}
@@ -448,7 +448,7 @@ export async function listReplies(username, entityHash, postId, options = {}) {
 			for (const post of view.posts) {
 				const replyTo = post.content?.replyTo
 				if (!replyTo) continue
-				if (replyTo.entityHash?.toLowerCase() !== entityHash.toLowerCase()) continue
+				if (replyTo.entityHash !== entityHash) continue
 				if (replyTo.postId !== postId) continue
 				if (!canViewPost({ ...post, entityHash: author }, viewerContext))
 					continue
@@ -496,8 +496,8 @@ export async function listReplies(username, entityHash, postId, options = {}) {
  * @returns {Promise<object | null>} feed item；不可见或不存在时 null
  */
 export async function buildSinglePostFeedItem(username, entityHash, postId, options = {}) {
-	const owner = String(entityHash).toLowerCase()
-	const id = String(postId)
+	const owner = entityHash
+	const id = postId
 	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
 	const view = await getTimelineMaterialized(username, owner)
 	const post = view.postById?.[id] || view.posts?.find(row => row.id === id)

@@ -28,7 +28,7 @@ const signerCache = new Map()
  * @returns {void}
  */
 export function invalidateStreamSignerCache(username) {
-	if (username) signerCache.delete(String(username).trim())
+	if (username) signerCache.delete(username)
 	else signerCache.clear()
 }
 
@@ -38,7 +38,7 @@ export function invalidateStreamSignerCache(username) {
  * @returns {{ pubKeyHex: string, pubKeyHash: string, signChunk: (pendingStreamId: string, chunkSeq: number, text: string) => Promise<string> }} 签名器
  */
 export async function resolveStreamSigner(username) {
-	const u = String(username || '').trim()
+	const u = (username || '')
 	if (!u) throw new Error('stream signer: username required')
 	let cached = signerCache.get(u)
 	if (cached) return cached
@@ -103,9 +103,9 @@ export async function verifyStreamChunkVolatile(payload) {
 	const type = payload?.type
 	if (UNSIGNED_FED_VOLATILE_TYPES.has(type)) return true
 	if (type !== 'stream_chunk') return false
-	const pendingStreamId = String(payload.pendingStreamId || '')
-	const senderPubKey = String(payload.senderPubKey || '').trim().toLowerCase()
-	const signatureHex = String(payload.signature || '').trim().toLowerCase()
+	const pendingStreamId = (payload.pendingStreamId || '')
+	const senderPubKey = (payload.senderPubKey || '')
+	const signatureHex = (payload.signature || '')
 	if (!pendingStreamId || !senderPubKey || !signatureHex) return false
 	const slices = boundStreamSlices(payload.slices ?? [])
 	if (!slices) return false

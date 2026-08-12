@@ -358,7 +358,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles, {
 	groupId = null,
 	onFilesChange = null,
 } = {}) {
-	const mime = String(file.mime_type || '')
+	const mime = (file.mime_type || '')
 	const isImage = mime.startsWith('image/')
 	const isAudio = mime.startsWith('audio/')
 	const isVideo = mime.startsWith('video/')

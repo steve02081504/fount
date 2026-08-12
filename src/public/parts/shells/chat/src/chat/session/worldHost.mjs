@@ -107,18 +107,18 @@ export function createWorldChatHost(replicaUsername, groupId, worldname) {
 		const rows = await readJsonl(eventsPath(replicaUsername, groupId), {
 			sanitize: stripDagEventLocalExtensions,
 		})
-		const since = sinceEventId ? String(sinceEventId).trim().toLowerCase() : ''
+		const since = sinceEventId ? sinceEventId : ''
 		let pastSince = !since
 		const writes = []
 		for (const row of rows) {
 			if (!pastSince) {
-				if (String(row.id).trim().toLowerCase() === since)
+				if (String(row.id).trim() === since)
 					pastSince = true
 				continue
 			}
 			if (row.type !== 'world_state') continue
 			const content = row.content || {}
-			if (String(content.worldname || '').trim() !== worldname) continue
+			if ((content.worldname || '') !== worldname) continue
 			writes.push({
 				eventId: row.id,
 				hlc: row.hlc,

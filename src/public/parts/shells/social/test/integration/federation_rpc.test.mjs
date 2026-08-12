@@ -50,7 +50,7 @@ Deno.test('handleSocialRpc: timeline_pull returns events for owner', async () =>
 		type: 'social_timeline_pull_request', entityHash: operator, afterEventId: null,
 	}, { requesterNodeHash: null })
 	assertEquals(resp.type, 'social_timeline_pull_response')
-	assertEquals(resp.entityHash, operator.toLowerCase())
+	assertEquals(resp.entityHash, operator)
 	assert(resp.events.length >= 1)
 })
 
@@ -134,16 +134,16 @@ Deno.test('discoverFollowGraph: public foreign timeline exposes following', asyn
 	])
 
 	const visible = await discoverLocal.discoverFollowGraph(username, foreignOwner, { requesterNodeHash: 'b'.repeat(64) })
-	assert(visible.includes(TARGET.toLowerCase()), 'public timeline following visible to anyone')
+	assert(visible.includes(TARGET), 'public timeline following visible to anyone')
 })
 
 Deno.test('discoverAccounts skips protected timelines', async () => {
 	const { username, operator } = await getSession()
 	const before = await discoverLocal.discoverAccounts(username, { n: 50 })
-	assert(before.accounts.some(a => a.entityHash === operator.toLowerCase()), 'operator listed when public')
+	assert(before.accounts.some(a => a.entityHash === operator), 'operator listed when public')
 	await socialMeta.updateSocialMeta(username, operator, { hideFromDiscovery: true })
 	const after = await discoverLocal.discoverAccounts(username, { n: 50 })
-	assert(!after.accounts.some(a => a.entityHash === operator.toLowerCase()), 'protected operator hidden')
+	assert(!after.accounts.some(a => a.entityHash === operator), 'protected operator hidden')
 	await socialMeta.updateSocialMeta(username, operator, { hideFromDiscovery: false })
 })
 
@@ -151,7 +151,7 @@ Deno.test('buildProfileFeedItems returns own posts', async () => {
 	const { username, operator } = await getSession()
 	const { items } = await feed.buildProfileFeedItems(username, operator)
 	assert(items.length >= 1)
-	assert(items.every(item => item.entityHash === operator.toLowerCase()))
+	assert(items.every(item => item.entityHash === operator))
 })
 
 Deno.test('buildHomeFeed includes own public posts', async () => {
@@ -193,10 +193,10 @@ Deno.test('remote author profile + posts do not break feed/discover', async () =
 
 	await following.setFollow(username, operator, remoteOwner, true)
 	const { items } = await feed.buildHomeFeed(username, { limit: 50 })
-	assert(items.some(item => item.entityHash === remoteOwner.toLowerCase()), 'remote post visible in home feed')
+	assert(items.some(item => item.entityHash === remoteOwner), 'remote post visible in home feed')
 
 	const discovered = await discoverLocal.discoverAccounts(username, { n: 50 })
-	assert(discovered.accounts.some(a => a.entityHash === remoteOwner.toLowerCase()), 'remote public account discoverable')
+	assert(discovered.accounts.some(a => a.entityHash === remoteOwner), 'remote public account discoverable')
 	await following.setFollow(username, operator, remoteOwner, false)
 })
 
@@ -210,12 +210,12 @@ Deno.test('discoverAccounts: ingress RPC lists only self-hosted entities', async
 	])
 
 	const localView = await discoverLocal.discoverAccounts(username, { n: 50 })
-	assert(localView.accounts.some(a => a.entityHash === remoteOwner.toLowerCase()), 'local explore sees synced remote owner')
+	assert(localView.accounts.some(a => a.entityHash === remoteOwner), 'local explore sees synced remote owner')
 
 	const rpcResp = await discoverRpc.handleSocialRpc(username, {
 		type: 'social_discover_request', n: 50,
 	}, { requesterNodeHash: 'b'.repeat(64) })
-	assert(!rpcResp.accounts.some(a => a.entityHash === remoteOwner.toLowerCase()), 'ingress RPC hides foreign synced timeline')
+	assert(!rpcResp.accounts.some(a => a.entityHash === remoteOwner), 'ingress RPC hides foreign synced timeline')
 })
 
 Deno.test('remote entity profile uses subjectHash placeholder not local persona', async () => {

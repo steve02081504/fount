@@ -48,7 +48,7 @@ export function setGroupMemberReadMarker(username, groupId, channelId, entityHas
 	const nextSeq = Number(marker.seq)
 	if (prev && Number(prev.seq) >= nextSeq) return
 	ch[entityHash] = {
-		eventId: String(marker.eventId).trim().toLowerCase(),
+		eventId: String(marker.eventId).trim(),
 		seq: nextSeq,
 		updatedAt: Date.now(),
 	}

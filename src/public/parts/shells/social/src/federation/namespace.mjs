@@ -8,7 +8,7 @@ const ENTITY_HASH_RE = /^[\da-f]{128}$/u
  * @returns {string} 规范化 entityHash
  */
 function normalizeEntityHash(entityHash) {
-	const normalized = String(entityHash).trim().toLowerCase()
+	const normalized = entityHash
 	if (!ENTITY_HASH_RE.test(normalized)) throw new Error('invalid entityHash')
 	return normalized
 }

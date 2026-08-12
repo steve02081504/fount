@@ -32,7 +32,7 @@ export async function localPostSearchHandler(apiContext, query) {
 		tag,
 		scope: 'local',
 	})
-	const nodeHash = String(getNodeHash() || '').toLowerCase()
+	const nodeHash = String(getNodeHash() || '')
 	return result.items
 		.map(item => federatedPostQueryRow(item.post, item.entityHash, nodeHash, { visibilityMode: 'preserve' }))
 		.filter(Boolean)

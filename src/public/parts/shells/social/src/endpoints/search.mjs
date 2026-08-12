@@ -16,10 +16,10 @@ export function registerSearchRoutes(router) {
 			throw httpError(400, 'query must be at least 2 characters')
 		return client.search(searchQuery || String(req.query.tag || req.query.media || 'media'), {
 			limit: Number(req.query.limit) || 30,
-			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
-			author: req.query.author ? String(req.query.author) : undefined,
+			cursor: req.query.cursor ? req.query.cursor : undefined,
+			author: req.query.author ? req.query.author : undefined,
 			media: req.query.media ? String(req.query.media) : undefined,
-			tag: req.query.tag ? String(req.query.tag) : undefined,
+			tag: req.query.tag ? req.query.tag : undefined,
 			before: req.query.before ? Number(req.query.before) : undefined,
 			after: req.query.after ? Number(req.query.after) : undefined,
 			sort: req.query.sort ? String(req.query.sort) : undefined,

@@ -72,7 +72,7 @@ export function buildCabinetKeyWraps(state, cabinetId, keys, opts = {}) {
 	 * @returns {void}
 	 */
 	function addMember(memberKey, withWrite) {
-		const edPubHex = String(state.members[memberKey]?.pubKeyHex || '').trim().toLowerCase()
+		const edPubHex = String(state.members[memberKey]?.pubKeyHex || '').trim()
 		if (!PUB_KEY_HEX_64.test(edPubHex)) return
 		/** @type {{ read: object[], write?: object }} */
 		const packet = { read: [] }
@@ -180,7 +180,7 @@ export async function rotateBoundCabinetKeys(username, groupId) {
  */
 export async function tryImportCabinetKeyWraps(username, groupId, event) {
 	if (!['cabinet_bind', 'cabinet_key_update'].includes(event?.type)) return
-	const cabinetId = String(event.content?.cabinet_id || '').trim().toLowerCase()
+	const cabinetId = String(event.content?.cabinet_id || '').trim()
 	if (!cabinetId) return
 	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
 	const packet = event.content?.keyWraps?.[sender]

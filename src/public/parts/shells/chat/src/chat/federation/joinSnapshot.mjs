@@ -104,7 +104,7 @@ export async function handleJoinSnapshotRequest(username, groupId, request, peer
 	if (request.groupId !== groupId || !peerId) return
 	const fedState = await loadFederationMaterializedState(username, groupId)
 	if (!fedState) return
-	const requesterNodeHash = String(request.requesterNodeHash || '').trim()
+	const requesterNodeHash = (request.requesterNodeHash || '')
 	const shunDecision = resolveShunForPubKeyRequester(fedState, isBlockedPeer, request.requesterPubKeyHash)
 	if (shunDecision.shun && shunDecision.reason && shunCtx.fedOut && shunCtx.fedShunSend && shunCtx.localNodeHash)
 		sendFedShun(shunCtx.fedOut, shunCtx.fedShunSend, groupId, shunCtx.localNodeHash, requesterNodeHash, peerId, shunDecision.reason)

@@ -218,7 +218,7 @@ export async function renderMessageActionsHtml(message, options) {
 	if (dagReady && alwaysVisible && ownChar) {
 		const feedbackHtml = renderOwnCharFeedbackInline(
 			escapedEventId,
-			escapeHtml(String(message.charId || '')),
+			escapeHtml(message.charId || ''),
 			feedbackType === 'up' ? 'text-success' : '',
 			feedbackType === 'down' ? 'text-error' : '',
 			!!options.isLastMessage,

@@ -123,7 +123,7 @@ export function renderDeliveryStatusHtml(status, peerRead = false) {
  * @returns {string} HTML 片段
  */
 function renderForwardedFromHtml(forwardedFrom) {
-	const name = escapeHtml(String(forwardedFrom.senderName || ''))
+	const name = escapeHtml(forwardedFrom.senderName || '')
 	const label = geti18n('chat.hub.forwardedFrom') || 'Forwarded from'
 	let href = ''
 	if (forwardedFrom.shareUrl)
@@ -256,7 +256,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		else if (usePlainMd) {
 			const rendered = await renderMessageMarkdownForPaint(String(message.eventId), plainText, {
 				isRemote: !!message.isRemote,
-				authorPubKeyHash: String(message.authorPubKeyHash || ''),
+				authorPubKeyHash: (message.authorPubKeyHash || ''),
 			})
 			bodyCore = rendered.html
 			bubbleAttrs = rendered.bubbleAttrs

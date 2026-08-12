@@ -26,7 +26,7 @@ export function registerAuditLogRoutes(router, authenticate) {
 		if (!canInChannel(state, member, PERMISSIONS.ADMIN, governanceChannelId(state)))
 			throw httpError(403, 'ADMIN required')
 
-		const typesRaw = String(req.query.types || '').trim()
+		const typesRaw = (req.query.types || '')
 		const types = typesRaw ? typesRaw.split(',').map(t => t.trim()).filter(Boolean) : undefined
 		if (types?.some(t => !AUDIT_LOG_EVENT_TYPES.has(t)))
 			throw httpError(400, 'invalid audit log type filter')

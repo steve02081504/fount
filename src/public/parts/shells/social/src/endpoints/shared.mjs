@@ -8,7 +8,7 @@ import { getUserByReq } from '../../../../../../server/auth/index.mjs'
  * @returns {string} 小写 entityHash
  */
 export function routeEntityHash(params) {
-	const hash = String(params.entityHash).toLowerCase()
+	const hash = params.entityHash
 	if (!isEntityHash128(hash))
 		throw httpError(400, 'invalid entityHash')
 	return hash

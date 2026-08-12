@@ -109,7 +109,7 @@ export function registerMembershipRoutes(router, authenticate) {
 	router.get(`${GROUPS_PREFIX}/:groupId/mentions/suggest`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.groupContext
-		res.status(200).json(await suggestGroupMentions(username, groupId, String(req.query.q || ''), Number(req.query.limit) || 20))
+		res.status(200).json(await suggestGroupMentions(username, groupId, (req.query.q || ''), Number(req.query.limit) || 20))
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/invite-ticket`, authenticate, async (req, res) => {

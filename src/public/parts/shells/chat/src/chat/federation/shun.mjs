@@ -79,7 +79,7 @@ export function collectKnownPeerNodeHashes(state, selfNodeHash, rosterNodeHashes
  * @returns {{ suspected: boolean, shunnedBy: string[] }} 是否疑似出局与窗口内 shun 来源
  */
 export function evaluateShunConsensusPure(knownPeerNodeHashes, shunsByNode, nowMs = Date.now(), windowMs = SHUN_CONSENSUS_WINDOW_MS) {
-	const peers = [...new Set((knownPeerNodeHashes || []).map(id => String(id).trim().toLowerCase()).filter(isHex64))]
+	const peers = [...new Set((knownPeerNodeHashes || []).map(id => id).filter(isHex64))]
 	if (!peers.length) return { suspected: false, shunnedBy: [] }
 	const shunnedBy = peers.filter(nodeHash => {
 		const at = shunsByNode[nodeHash]

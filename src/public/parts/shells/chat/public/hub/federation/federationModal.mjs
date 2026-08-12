@@ -139,14 +139,14 @@ function wireFederationModalEvents(root, groupId) {
 
 	root.querySelector('#federation-slash-submit')?.addEventListener('click', async () => {
 		if (!groupId) return
-		const targetPubKeyHash = String(root.querySelector('#federation-slash-target')?.value || '').trim().toLowerCase()
+		const targetPubKeyHash = String(root.querySelector('#federation-slash-target')?.value || '').trim()
 		if (!isHex64(targetPubKeyHash)) {
 			showToastI18n('error', 'chat.hub.fed.slash.needHash')
 			return
 		}
 		const claim = Number(root.querySelector('#federation-slash-claim')?.value ?? 0.25)
 		const verified = !!root.querySelector('#federation-slash-verified')?.checked
-		const proofEventId = String(root.querySelector('#federation-slash-proof')?.value || '').trim().toLowerCase()
+		const proofEventId = String(root.querySelector('#federation-slash-proof')?.value || '').trim()
 		try {
 			await postReputationSlash(groupId, {
 				targetPubKeyHash,
@@ -164,7 +164,7 @@ function wireFederationModalEvents(root, groupId) {
 
 	root.querySelector('#federation-reset-submit')?.addEventListener('click', async () => {
 		if (!groupId) return
-		const targetPubKeyHash = String(root.querySelector('#federation-slash-target')?.value || '').trim().toLowerCase()
+		const targetPubKeyHash = String(root.querySelector('#federation-slash-target')?.value || '').trim()
 		if (!isHex64(targetPubKeyHash)) {
 			showToastI18n('error', 'chat.hub.fed.slash.needHash')
 			return

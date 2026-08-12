@@ -87,7 +87,7 @@ Deno.test('dwell signals accumulate author and tag boosts', async () => {
 		{ author, postId: 'f'.repeat(64), tags: ['dogs'], dwellMs: 1000 },
 	])
 	const authors = await dwell.loadDwellAuthorBoosts(username, operator)
-	assertEquals(authors.get(author.toLowerCase()), dwell.AUTHOR_BOOST_PER_DWELL * 2)
+	assertEquals(authors.get(author), dwell.AUTHOR_BOOST_PER_DWELL * 2)
 	const tags = await dwell.loadDwellTagBoosts(username, operator)
 	assertEquals(tags.get('cats'), dwell.TAG_WEIGHT_PER_DWELL * 2)
 	assertEquals(tags.has('dogs'), false)

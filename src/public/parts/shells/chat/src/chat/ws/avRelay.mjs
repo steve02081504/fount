@@ -124,7 +124,7 @@ export function getAvRelayPublishMetaList(roomId) {
 function applyPublishMeta(roomId, frame) {
 	if (!frame || typeof frame !== 'object') return
 	if (frame.type === 'publish_meta') {
-		const senderId = String(frame.senderId || '').toLowerCase()
+		const senderId = (frame.senderId || '')
 		if (!/^[0-9a-f]{32}$/.test(senderId)) return
 		const map = roomPublishMeta.get(roomId) ?? new Map()
 		map.set(senderId, frame)
@@ -132,7 +132,7 @@ function applyPublishMeta(roomId, frame) {
 		return
 	}
 	if (frame.type === 'publish_meta_revoke') {
-		const senderId = String(frame.senderId || '').toLowerCase()
+		const senderId = (frame.senderId || '')
 		roomPublishMeta.get(roomId)?.delete(senderId)
 	}
 }
@@ -247,7 +247,7 @@ export function getAvRelayPeerCount(roomId) {
  * @returns {void}
  */
 export function registerAvRelaySocket(roomId, ws, meta = {}) {
-	const entityHash = String(meta.entityHash || '').trim().toLowerCase()
+	const entityHash = (meta.entityHash || '')
 	const wasEmpty = !rooms.has(roomId) || rooms.get(roomId).size === 0
 	if (!rooms.has(roomId)) rooms.set(roomId, new Map())
 	const room = rooms.get(roomId)
@@ -376,7 +376,7 @@ function handleTextControl(roomId, room, ws, data, meta) {
 	if (!state) return
 
 	if (controlFrame.type === 'subscribe') {
-		const mode = String(controlFrame.mode || '').trim().toLowerCase()
+		const mode = (controlFrame.mode || '')
 		if (mode === 'preview' || mode === 'full') {
 			state.mode = mode
 			if (mode === 'full') state.lastPreviewAt = 0
@@ -385,7 +385,7 @@ function handleTextControl(roomId, room, ws, data, meta) {
 	}
 
 	if (controlFrame.type === 'publish_meta' || controlFrame.type === 'publish_meta_revoke') {
-		const senderId = String(controlFrame.senderId || '').trim().toLowerCase()
+		const senderId = (controlFrame.senderId || '')
 		if (!/^[0-9a-f]{32}$/.test(senderId)) return
 		if (controlFrame.type === 'publish_meta' && state.senderId && senderId !== state.senderId) return
 		applyPublishMeta(roomId, controlFrame)
@@ -394,7 +394,7 @@ function handleTextControl(roomId, room, ws, data, meta) {
 	}
 
 	if (controlFrame.type !== 'hello') return
-	const senderId = String(controlFrame.senderId || '').trim().toLowerCase()
+	const senderId = (controlFrame.senderId || '')
 	if (!/^[0-9a-f]{32}$/.test(senderId)) return
 	state.senderId = senderId
 	if (state.entityHash) {

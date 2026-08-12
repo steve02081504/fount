@@ -71,7 +71,7 @@ export function blockEntriesFromBanContent(content) {
 	}
 	const targetMemberKey = resolveTargetMemberKey(content)
 	if (isHex64(targetMemberKey)) add('subject', targetMemberKey)
-	const entityHash = String(content?.targetEntityHash || '').trim().toLowerCase()
+	const entityHash = String(content?.targetEntityHash || '').trim()
 	if (isEntityHash128(entityHash)) add('entity', entityHash)
 	const nodeHash = normalizeHex64(content?.targetNodeHash)
 	if (isHex64(nodeHash)) add('node', nodeHash)
@@ -85,7 +85,7 @@ export function blockEntriesFromBanContent(content) {
  * @returns {{ pubKeyHash: string | null, entityHash: string|null, nodeHash: string|null }} 应清除的 ban 键
  */
 export function unbanTargetsFromMember(state, targetMemberKey) {
-	const key = String(targetMemberKey || '').trim().toLowerCase()
+	const key = (targetMemberKey || '')
 	const member = state.members?.[key]
 	const pubKeyHash = member?.pubKeyHash || key
 	const homeNodeHash = member?.homeNodeHash

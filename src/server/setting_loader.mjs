@@ -105,14 +105,6 @@ on_shutdown(() => {
 const userEntityShellDataSet = {}
 
 /**
- * @param {string} entityHash 实体 hash
- * @returns {string} 规范化小写 hash
- */
-function normalizeEntityHashKey(entityHash) {
-	return String(entityHash || '').trim().toLowerCase()
-}
-
-/**
  * 实体私有 shell 数据路径（不含文件名）。
  * @param {string} username 用户
  * @param {string} shellname shell 名
@@ -120,7 +112,7 @@ function normalizeEntityHashKey(entityHash) {
  * @returns {string} 目录路径
  */
 function entityShellDir(username, shellname, entityHash) {
-	return `${getUserDictionary(username)}/shells/${shellname}/entities/${normalizeEntityHashKey(entityHash)}`
+	return `${getUserDictionary(username)}/shells/${shellname}/entities/${entityHash}`
 }
 
 /**
@@ -132,17 +124,16 @@ function entityShellDir(username, shellname, entityHash) {
  * @returns {object} 加载的数据
  */
 export function loadEntityShellData(username, shellname, entityHash, dataname) {
-	const hash = normalizeEntityHashKey(entityHash)
 	userEntityShellDataSet[username] ??= {}
 	userEntityShellDataSet[username][shellname] ??= {}
-	userEntityShellDataSet[username][shellname][hash] ??= {}
+	userEntityShellDataSet[username][shellname][entityHash] ??= {}
 	try {
-		return userEntityShellDataSet[username][shellname][hash][dataname]
-			??= loadJsonFileIfExists(`${entityShellDir(username, shellname, hash)}/${dataname}.json`)
+		return userEntityShellDataSet[username][shellname][entityHash][dataname]
+			??= loadJsonFileIfExists(`${entityShellDir(username, shellname, entityHash)}/${dataname}.json`)
 	}
 	catch (error) {
 		console.error(error)
-		return userEntityShellDataSet[username][shellname][hash][dataname] = {}
+		return userEntityShellDataSet[username][shellname][entityHash][dataname] = {}
 	}
 }
 
@@ -155,10 +146,9 @@ export function loadEntityShellData(username, shellname, entityHash, dataname) {
  * @returns {void}
  */
 export function saveEntityShellData(username, shellname, entityHash, dataname) {
-	const hash = normalizeEntityHashKey(entityHash)
-	const dir = entityShellDir(username, shellname, hash)
+	const dir = entityShellDir(username, shellname, entityHash)
 	fs.mkdirSync(dir, { recursive: true })
-	saveJsonFile(`${dir}/${dataname}.json`, userEntityShellDataSet[username][shellname][hash][dataname])
+	saveJsonFile(`${dir}/${dataname}.json`, userEntityShellDataSet[username][shellname][entityHash][dataname])
 }
 
 /**
@@ -171,12 +161,11 @@ export function saveEntityShellData(username, shellname, entityHash, dataname) {
  * @returns {void}
  */
 export function assignEntityShellData(username, shellname, entityHash, dataname, value) {
-	const hash = normalizeEntityHashKey(entityHash)
 	userEntityShellDataSet[username] ??= {}
 	userEntityShellDataSet[username][shellname] ??= {}
-	userEntityShellDataSet[username][shellname][hash] ??= {}
-	userEntityShellDataSet[username][shellname][hash][dataname] = value
-	saveEntityShellData(username, shellname, hash, dataname)
+	userEntityShellDataSet[username][shellname][entityHash] ??= {}
+	userEntityShellDataSet[username][shellname][entityHash][dataname] = value
+	saveEntityShellData(username, shellname, entityHash, dataname)
 }
 on_shutdown(() => {
 	for (const username in userEntityShellDataSet)

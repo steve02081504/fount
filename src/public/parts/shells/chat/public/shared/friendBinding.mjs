@@ -37,7 +37,7 @@ export function normalizeFriendBinding(raw) {
 	const entityHash = raw.entityHash ?? ''
 	if (!isEntityHash128(entityHash)) return null
 	const charname = raw.charname || undefined
-	const displayName = String(raw.displayName ?? '').trim() || undefined
+	const displayName = (raw.displayName ?? '') || undefined
 	return { entityHash, ...displayName ? { displayName } : {}, ...charname ? { charname } : {} }
 }
 

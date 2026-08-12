@@ -46,7 +46,7 @@ import { buildTimeSliceFromSessionSnapshot } from '../session/runtime.mjs'
  * @returns {string} 说话人 uid
  */
 export function resolveSpeakerUid(line, content, state = null) {
-	const bridgeHash = String(chatExtensionOf(content)?.bridge?.authorEntityHash || '').trim().toLowerCase()
+	const bridgeHash = String(chatExtensionOf(content)?.bridge?.authorEntityHash || '').trim()
 	if (bridgeHash) return bridgeHash
 	const charId = line?.charId ? String(line.charId) : ''
 	if (charId && state) {
@@ -54,7 +54,7 @@ export function resolveSpeakerUid(line, content, state = null) {
 		const hash = agentKey ? memberEntityHash(state.members[agentKey]) : null
 		if (hash) return hash
 	}
-	const sender = String(line?.sender || '').trim().toLowerCase()
+	const sender = String(line?.sender || '').trim()
 	if (sender && state?.members?.[sender]) {
 		const hash = memberEntityHash(state.members[sender])
 		if (hash) return hash
@@ -156,7 +156,7 @@ export async function reconcileContextSidecarsWithChatLog(username, groupId, cha
  * @returns {Buffer | null} 本地明文缓存
  */
 function tryReadPlaintextCache(username, contentHashHex) {
-	const h = String(contentHashHex || '').trim().toLowerCase()
+	const h = (contentHashHex || '')
 	if (!isHex64(h)) return null
 	const path = join(shellChatRoot(username), 'files', h)
 	if (!existsSync(path)) return null
@@ -180,7 +180,7 @@ export function hydrateWireFiles(username, groupId, state, wireFiles) {
 	if (!wireFiles?.length) return undefined
 	const out = []
 	for (const wire of wireFiles) {
-		const fileId = String(wire.fileId || '').trim()
+		const fileId = (wire.fileId || '')
 		if (!fileId) continue
 		const name = String(wire.name || 'file').slice(0, 255)
 		const mime_type = String(wire.mime_type || 'application/octet-stream')

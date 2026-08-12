@@ -140,7 +140,7 @@ export function registerDagRoutes(router, authenticate) {
 		const reputation = loadReputation()
 		const reputationBySender = {}
 		for (const [nodeId, row] of Object.entries(reputation?.byNodeHash || {}))
-			reputationBySender[String(nodeId).toLowerCase()] = Number(row?.score ?? 0)
+			reputationBySender[String(nodeId)] = Number(row?.score ?? 0)
 		const tipScores = computeTipAuthzScores(tips, eventsById, reputationBySender)
 		const tipConsensusScores = computeTipConsensusScores(tips, eventsById)
 		res.status(200).json({
@@ -171,7 +171,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/fork/block-opposing`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		const acceptedTipId = String(req.body.acceptedTipId || '')
+		const acceptedTipId = (req.body.acceptedTipId || '')
 		const { sender: selfPubKeyHash } = await resolveLocalEventSigner(username, groupId)
 		const result = await blockOpposingForkBranch(username, groupId, acceptedTipId, selfPubKeyHash)
 		res.status(200).json({ ...result })
@@ -179,7 +179,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.put(`${GROUPS_PREFIX}/:groupId/governance-branch`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, groupId } = req.groupContext
-		const tipId = req.body.tipId != null ? String(req.body.tipId).trim().toLowerCase() : null
+		const tipId = req.body.tipId != null ? String(req.body.tipId).trim() : null
 		if (tipId && !isHex64(tipId))
 			throw httpError(400, 'invalid tipId')
 		const tips = state.dagTips || computeFederatableDagTipIds(
@@ -213,7 +213,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.get(`${GROUPS_PREFIX}/:groupId/events`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		const channelId = String(req.query.channelId || '').trim() || undefined
+		const channelId = (req.query.channelId || '') || undefined
 		const { events, truncated } = await syncEvents(username, groupId, {
 			since: req.query.since ? String(req.query.since) : undefined,
 			limit: req.query.limit,

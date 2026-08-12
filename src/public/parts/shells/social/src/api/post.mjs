@@ -48,8 +48,8 @@ async function commitReaction(apiContext, type, owner, id) {
  * @returns {object} Post
  */
 export function createPost(apiContext, entityHash, postId, snapshot = null) {
-	const owner = String(entityHash).toLowerCase()
-	const id = String(postId)
+	const owner = entityHash
+	const id = postId
 
 	return {
 		entityHash: owner,
@@ -200,7 +200,7 @@ export function createPost(apiContext, entityHash, postId, snapshot = null) {
 		 */
 		async voteNote(noteEventId, helpful) {
 			await assertKnownPostTarget(apiContext, owner)
-			const noteId = String(noteEventId || '').trim().toLowerCase()
+			const noteId = noteEventId
 			if (!noteId) throw httpError(400, 'noteEventId required')
 			return commitTimelineEvent(apiContext.username, apiContext.entityHash, {
 				type: 'note_vote',
@@ -228,8 +228,8 @@ export function createPost(apiContext, entityHash, postId, snapshot = null) {
 		 */
 		async featureReply(options = {}) {
 			const signerOpts = await resolveOwnerContentSigner(apiContext, owner)
-			const replierEntityHash = String(options.replierEntityHash || '').trim().toLowerCase()
-			const replyPostId = String(options.replyPostId || '').trim()
+			const replierEntityHash = options.replierEntityHash
+			const replyPostId = options.replyPostId
 			if (!replierEntityHash || !replyPostId) throw httpError(400, 'replierEntityHash and replyPostId required')
 			return commitTimelineEvent(apiContext.username, owner, {
 				type: options.feature === false ? 'reply_unfeature' : 'reply_feature',
@@ -258,7 +258,7 @@ async function assertKnownPostTarget(apiContext, owner) {
 async function resolveOwnerContentSigner(apiContext, postOwner) {
 	if (apiContext.entityHash === postOwner) return {}
 	const profile = await getEntityProfile(apiContext.username, postOwner)
-	const ownerEntity = String(profile?.ownerEntityHash || '').trim().toLowerCase()
+	const ownerEntity = String(profile?.ownerEntityHash || '').trim()
 	if (!ownerEntity || ownerEntity !== apiContext.entityHash)
 		throw httpError(403, 'can only manage own posts or owned entity posts')
 	return { signerEntityHash: apiContext.entityHash }

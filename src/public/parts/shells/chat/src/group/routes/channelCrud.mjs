@@ -90,7 +90,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			groupContext: { username, groupId },
 			body: { type, name, description, isPrivate }
 		} = req
-		const channelName = String(name || '').trim()
+		const channelName = (name || '')
 		if (!channelName)
 			throw httpError(400, 'Channel name is required')
 
@@ -115,7 +115,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 
 		const updates = {}
 		if (name !== undefined) {
-			const trimmed = String(name).trim()
+			const trimmed = name
 			if (!trimmed)
 				throw httpError(400, 'Channel name cannot be empty')
 			updates.name = trimmed

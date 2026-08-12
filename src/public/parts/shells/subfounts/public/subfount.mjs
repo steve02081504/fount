@@ -88,7 +88,7 @@ let hostNodeHashHint = null
 if (args.length >= 2) {
 	hostRoomId = args[0]
 	password = args[1]
-	hostNodeHashHint = args[2]?.trim().toLowerCase() || null
+	hostNodeHashHint = args[2]?.trim() || null
 }
 else if (args.length === 1 && (args[0] === '--help' || args[0] === '-h')) {
 	console.log(`Usage:
@@ -133,7 +133,7 @@ else if (args.length === 0 && process.stdin.isTTY) {
 	])
 	hostRoomId = result.hostRoomId?.trim() || null
 	password = result.password?.trim() || null
-	hostNodeHashHint = result.hostNodeHash?.trim().toLowerCase() || null
+	hostNodeHashHint = result.hostNodeHash?.trim() || null
 }
 else if (args.length === 1) {
 	console.error('Usage: subfount.mjs [<host-room-id> <password> [host-node-hash]]')

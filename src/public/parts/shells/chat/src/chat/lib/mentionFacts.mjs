@@ -11,10 +11,10 @@ import { getState } from '../dag/materialize.mjs'
  * @returns {boolean} 是否群内 active 成员
  */
 function isActiveGroupMember(state, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = (entityHash || '')
 	for (const member of Object.values(state.members || {})) {
 		if (member?.status !== 'active') continue
-		if (memberEntityHash(member)?.toLowerCase() === hash) return true
+		if (memberEntityHash(member) === hash) return true
 	}
 	return false
 }
@@ -26,10 +26,10 @@ function isActiveGroupMember(state, entityHash) {
  * @returns {boolean} 成员是否持有任一角色
  */
 function memberHasAnyRole(state, entityHash, roleIds) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = (entityHash || '')
 	for (const member of Object.values(state.members || {})) {
 		if (member?.status !== 'active') continue
-		if (memberEntityHash(member)?.toLowerCase() !== hash) continue
+		if (memberEntityHash(member) !== hash) continue
 		const roles = member.roles || []
 		return roleIds.some(roleId => roles.includes(roleId))
 	}
@@ -43,7 +43,7 @@ function memberHasAnyRole(state, entityHash, roleIds) {
  * @returns {Promise<boolean>} 是否命中
  */
 export async function messageMentionsEntity(event, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = (entityHash || '')
 	if (!isEntityHash128(hash)) return false
 	const mentions = event?.mentions
 	if (!mentions) return false

@@ -18,7 +18,7 @@ import { getTimelineMaterialized } from './timeline/materialize.mjs'
  * @returns {string} 规范化 tag
  */
 export function normalizeTopicTag(tag) {
-	return String(tag || '').trim().replace(/^#/u, '').toLowerCase()
+	return tag.trim().replace(/^#/u, '')
 }
 
 /**
@@ -97,7 +97,7 @@ export async function buildTopicFeed(username, tag, options = {}) {
 			const text = post.content?.text || ''
 			const tags = [
 				...extractHashtagsFromText(text),
-				...Array.isArray(post.content?.tags) ? post.content.tags.map(t => String(t).toLowerCase()) : [],
+				...Array.isArray(post.content?.tags) ? post.content.tags : [],
 			]
 			if (!tags.includes(cleaned)) continue
 			seen.add(key)

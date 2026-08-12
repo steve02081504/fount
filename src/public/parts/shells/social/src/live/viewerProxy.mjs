@@ -25,7 +25,7 @@ const proxies = new Map()
  * @returns {string} key
  */
 function proxyKey(entityHash, liveId) {
-	return `${entityHash.toLowerCase()}:${String(liveId).toLowerCase()}`
+	return `${entityHash}:${liveId}`
 }
 
 /**
@@ -50,8 +50,8 @@ export async function ensureFederatedLiveProxy(username, entityHash, liveId, hin
 
 	const avRoomId = `social-proxy:${entityHash}:${liveId}`
 	const session = {
-		liveId: String(liveId).toLowerCase(),
-		entityHash: entityHash.toLowerCase(),
+		liveId: liveId,
+		entityHash: entityHash,
 		title: hint.title || 'Live',
 		visibility: 'public',
 		status: 'live',

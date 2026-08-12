@@ -22,9 +22,9 @@ const MEMBERS_PAGE_SIZE = 500
  * @returns {string | null} 成员键
  */
 export function resolveMemberKeyByEntityHash(state, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = (entityHash || '')
 	for (const [key, member] of Object.entries(state.members || {}))
-		if (memberEntityHash(member)?.toLowerCase() === hash) return key
+		if (memberEntityHash(member) === hash) return key
 
 	return resolveMemberKey(state, hash)
 }

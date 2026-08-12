@@ -46,7 +46,7 @@ function setPopCount(countElId, count) {
  * @returns {string} 规范化键
  */
 function normGroupId(value) {
-	return (value || '').trim().toLowerCase()
+	return (value || '').trim()
 }
 
 /**

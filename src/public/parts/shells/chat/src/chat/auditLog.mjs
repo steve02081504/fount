@@ -43,7 +43,7 @@ function auditEventParams(event, state) {
 		|| content.targetEntityHash
 		|| content.targetId
 		|| ''
-	).toLowerCase()
+	)
 	const targetEventId = content.targetId || ''
 	const claim = content.claim
 	return {
@@ -71,7 +71,7 @@ function toAuditEntry(event, state) {
 	return {
 		id: event.id,
 		type: event.type,
-		sender: (event.sender || '').toLowerCase(),
+		sender: (event.sender || ''),
 		at: event.hlc?.wall ?? 0,
 		channelId: event.channelId || null,
 		params: auditEventParams(event, state),
@@ -133,9 +133,9 @@ export async function listAuditLogEntries(username, groupId, q = {}) {
 	}
 
 	let work = rows
-	const before = (q.before || '').toLowerCase()
+	const before = (q.before || '')
 	if (before) {
-		const index = work.findIndex(event => event.id.toLowerCase() === before)
+		const index = work.findIndex(event => event.id === before)
 		work = index === -1 ? [] : work.slice(index + 1)
 	}
 

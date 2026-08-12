@@ -71,7 +71,7 @@ async function dispatchToSessionChar(username, session, event) {
  * @returns {Promise<void>}
  */
 export async function postBridgeGroupEvent(username, dto) {
-	const platform = String(dto.platform || '').trim()
+	const platform = (dto.platform || '')
 	const platformChatId = dto.platformChatId
 	if (!platform || platformChatId == null) throw new Error('platform and platformChatId required')
 
@@ -95,7 +95,7 @@ export async function postBridgeGroupEvent(username, dto) {
 		member = {
 			entityHash,
 			platformUserId: String(dto.member.platformUserId),
-			displayName: String(dto.member.displayName || '').trim() || undefined,
+			displayName: (dto.member.displayName || '') || undefined,
 		}
 	}
 

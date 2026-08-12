@@ -14,7 +14,7 @@ import { BLOCKED_HTML_TAGS, isSafeHtmlUrl, URL_HTML_ATTRIBUTES } from '../../lib
 export function rehypeSanitizeUntrustedContent() {
 	return () => tree => {
 		visit(tree, 'element', (node, index, parent) => {
-			const tagName = node.tagName.toLowerCase()
+			const tagName = node.tagName
 			if (BLOCKED_HTML_TAGS.has(tagName)) {
 				parent.children.splice(index, 1)
 				return index

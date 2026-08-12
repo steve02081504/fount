@@ -58,7 +58,7 @@ const UPDATE_FIELD_WHITELIST = new Set([
  * @returns {string} EVFS logicalPath
  */
 export function ownedProfileUpdatePath(targetEntityHash, leaf) {
-	return `owned/${String(targetEntityHash).toLowerCase()}/profile_update/${leaf}`
+	return `owned/${String(targetEntityHash)}/profile_update/${leaf}`
 }
 
 /**
@@ -66,7 +66,7 @@ export function ownedProfileUpdatePath(targetEntityHash, leaf) {
  * @returns {string} 前缀
  */
 export function ownedProfilePrefix(targetEntityHash) {
-	return `owned/${String(targetEntityHash).toLowerCase()}/`
+	return `owned/${String(targetEntityHash)}/`
 }
 
 /**
@@ -99,9 +99,9 @@ export function sanitizeOwnerProfileUpdates(raw) {
  */
 function parsePokeOrAckEnvelope(envelope) {
 	if (!envelope || typeof envelope !== 'object') return null
-	const targetEntityHash = String(envelope.targetEntityHash || '').trim().toLowerCase()
-	const ownerEntityHash = String(envelope.ownerEntityHash || '').trim().toLowerCase()
-	const contentHash = String(envelope.contentHash || '').trim().toLowerCase()
+	const targetEntityHash = (envelope.targetEntityHash || '')
+	const ownerEntityHash = (envelope.ownerEntityHash || '')
+	const contentHash = (envelope.contentHash || '')
 	const ts = Number(envelope.ts)
 	if (!isEntityHash128(targetEntityHash)) return null
 	if (ownerEntityHash && !isEntityHash128(ownerEntityHash)) return null
@@ -194,7 +194,7 @@ function loadPendingMap(username, ownerEntityHash) {
  */
 function savePending(username, ownerEntityHash, targetEntityHash, entry) {
 	const map = loadPendingMap(username, ownerEntityHash)
-	map[String(targetEntityHash).toLowerCase()] = entry
+	map[String(targetEntityHash)] = entry
 	assignEntityShellData(username, 'chat', ownerEntityHash, PENDING_DATANAME, map)
 }
 
@@ -206,7 +206,7 @@ function savePending(username, ownerEntityHash, targetEntityHash, entry) {
  */
 function clearPending(username, ownerEntityHash, targetEntityHash) {
 	const map = loadPendingMap(username, ownerEntityHash)
-	const key = String(targetEntityHash).toLowerCase()
+	const key = String(targetEntityHash)
 	if (!(key in map)) return
 	delete map[key]
 	assignEntityShellData(username, 'chat', ownerEntityHash, PENDING_DATANAME, map)
@@ -240,14 +240,14 @@ async function writeLastAppliedTs(entityHash, ts) {
  * @returns {Promise<{ queued: true, contentHash: string, ts: number }>} 已入队发布结果
  */
 export async function publishOwnerProfileUpdate(username, publisherEntityHash, targetEntityHash, updates, files = {}) {
-	const publisher = String(publisherEntityHash).toLowerCase()
-	const target = String(targetEntityHash).toLowerCase()
+	const publisher = String(publisherEntityHash)
+	const target = String(targetEntityHash)
 	if (!isEntityHash128(publisher) || !isEntityHash128(target))
 		throw new Error('invalid entityHash')
 
 	const remote = await fetchAndCacheRemoteProfile(username, target)
 		|| await getProfile(target, username, { skipPresentation: true, fetchRemote: true })
-	const declaredOwner = String(remote?.ownerEntityHash || '').toLowerCase()
+	const declaredOwner = String(remote?.ownerEntityHash || '')
 	if (declaredOwner !== publisher) {
 		if (isWritableLocalEntity(publisher))
 			await purgeOwnedProfilePublish(username, publisher, target)
@@ -358,12 +358,12 @@ async function resolveAllowedOwnerImage(plain, basename) {
  * @returns {Promise<{ applied: boolean, contentHash?: string }>} 是否应用及 contentHash
  */
 export async function pullOwnerProfileUpdate(username, targetEntityHash) {
-	const target = String(targetEntityHash).toLowerCase()
+	const target = String(targetEntityHash)
 	if (!isWritableLocalEntity(target)) return { applied: false }
 
 	let ownerEntityHash
 	try {
-		ownerEntityHash = String((await loadEntityIdentity(username, target)).ownerEntityHash || '').toLowerCase()
+		ownerEntityHash = String((await loadEntityIdentity(username, target)).ownerEntityHash || '')
 	}
 	catch {
 		return { applied: false }
@@ -381,10 +381,10 @@ export async function pullOwnerProfileUpdate(username, targetEntityHash) {
 		return { applied: false }
 	}
 
-	const payloadTarget = String(payload?.targetEntityHash || '').toLowerCase()
-	const payloadOwner = String(payload?.ownerEntityHash || '').toLowerCase()
+	const payloadTarget = String(payload?.targetEntityHash || '')
+	const payloadOwner = String(payload?.ownerEntityHash || '')
 	const ts = Number(payload?.ts)
-	const contentHash = String(payload?.contentHash || '').toLowerCase()
+	const contentHash = String(payload?.contentHash || '')
 	if (payloadTarget !== target) return { applied: false }
 	if (payloadOwner !== ownerEntityHash) return { applied: false }
 	if (!Number.isFinite(ts) || ts <= 0) return { applied: false }
@@ -455,9 +455,9 @@ export async function pollOwnedEntityProfileUpdates(username) {
 	const { listEntityIdentities } = await import('./store.mjs')
 	let applied = 0
 	for (const row of await listEntityIdentities(username)) {
-		const hash = String(row.entityHash).toLowerCase()
+		const hash = String(row.entityHash)
 		if (!isWritableLocalEntity(hash)) continue
-		const owner = row.ownerEntityHash ? String(row.ownerEntityHash).toLowerCase() : null
+		const owner = row.ownerEntityHash ? String(row.ownerEntityHash) : null
 		if (!owner || !isEntityHash128(owner)) continue
 		if (isWritableLocalEntity(owner)) {
 			// 主人也在本机：仍可走直写；轮询可选跳过，但拉取无害
@@ -485,7 +485,7 @@ async function consumePokeMailbox(username, records) {
 	const delivered = []
 	const store = getEntityStore()
 	for (const row of records) {
-		if (!row?.envelope || String(row.app || '') !== MAILBOX_APP_POKE) continue
+		if (!row?.envelope || (row.app || '') !== MAILBOX_APP_POKE) continue
 		const parsed = parsePokeOrAckEnvelope(row.envelope)
 		if (!parsed) continue
 		if (!isWritableLocalEntity(parsed.targetEntityHash)) continue
@@ -508,7 +508,7 @@ async function consumeAckMailbox(username, records) {
 	/** @type {string[]} */
 	const delivered = []
 	for (const row of records) {
-		if (!row?.envelope || String(row.app || '') !== MAILBOX_APP_ACK) continue
+		if (!row?.envelope || (row.app || '') !== MAILBOX_APP_ACK) continue
 		const parsed = parsePokeOrAckEnvelope(row.envelope)
 		if (!parsed?.contentHash || !parsed.ownerEntityHash) continue
 		if (!isWritableLocalEntity(parsed.ownerEntityHash)) continue
@@ -523,7 +523,7 @@ async function consumeAckMailbox(username, records) {
 			skipPresentation: true,
 			fetchRemote: true,
 		}).catch(() => null)
-		const declared = String(remote?.ownerEntityHash || '').toLowerCase()
+		const declared = String(remote?.ownerEntityHash || '')
 		if (declared !== parsed.ownerEntityHash) {
 			await purgeOwnedProfilePublish(username, parsed.ownerEntityHash, parsed.targetEntityHash)
 			delivered.push(row.id)
@@ -564,8 +564,8 @@ export function unregisterOwnerProfileUpdateMailbox() {
 export async function updateEntityProfileAsActor(username, actorEntityHash, targetEntityHash, updates, options = {}) {
 	const { isWritableLocalEntityForUser } = await import('./http.mjs')
 	const { avatar, banner, ...fields } = updates
-	const target = String(targetEntityHash).toLowerCase()
-	const actor = String(actorEntityHash).toLowerCase()
+	const target = String(targetEntityHash)
+	const actor = String(actorEntityHash)
 	const operatorHash = await resolveOperatorEntityHashForUser(username)
 
 	let canLocalWrite = false
@@ -577,7 +577,7 @@ export async function updateEntityProfileAsActor(username, actorEntityHash, targ
 		else
 			try {
 				const row = await loadEntityIdentity(username, target)
-				canLocalWrite = String(row.ownerEntityHash || '').toLowerCase() === actor
+				canLocalWrite = (row.ownerEntityHash || '') === actor
 			}
 			catch { /* 非本用户托管 */ }
 
@@ -596,7 +596,7 @@ export async function updateEntityProfileAsActor(username, actorEntityHash, targ
 	}
 
 	const profile = await getProfile(target, username, { skipPresentation: true, fetchRemote: true })
-	if (String(profile?.ownerEntityHash || '').toLowerCase() !== actor)
+	if (String(profile?.ownerEntityHash || '') !== actor)
 		throw Object.assign(new Error('Permission denied'), { status: 403 })
 
 	return publishOwnerProfileUpdate(username, actor, target, fields, {

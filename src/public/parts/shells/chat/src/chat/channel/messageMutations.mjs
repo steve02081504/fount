@@ -41,12 +41,12 @@ export function channelMessageTargetId(line) {
  * @returns {Promise<object | null>} 消息行或 null
  */
 export async function findChannelMessageRow(username, groupId, channelId, eventId) {
-	const eventIdNorm = String(eventId).trim().toLowerCase()
+	const eventIdNorm = eventId
 	if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventIdNorm)) return null
 
 	const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: stripDagEventLocalExtensions })
 	const hot = lines.find(row =>
-		row.type === 'message' && String(row.eventId).toLowerCase() === eventIdNorm,
+		row.type === 'message' && String(row.eventId) === eventIdNorm,
 	)
 	if (hot) return hot
 
@@ -66,7 +66,7 @@ export async function findChannelMessageRow(username, groupId, channelId, eventI
 	const month = manifest.archivedEventIds[channelId]?.[eventIdNorm]
 	if (!month) return null
 	const snaps = await readArchiveMonth(username, groupId, channelId, month)
-	const snap = snaps.find(s => String(s.eventId).trim().toLowerCase() === eventIdNorm)
+	const snap = snaps.find(s => String(s.eventId).trim() === eventIdNorm)
 	if (!snap) return null
 	return postSnapshotToMessageLine(snap)
 }
@@ -161,7 +161,7 @@ export async function appendChannelMessageFeedback(username, groupId, channelId,
 			targetId,
 			charOwner: sender,
 			feedbackType: type,
-			feedbackContent: String(reason || '').slice(0, 4000),
+			feedbackContent: (reason || '').slice(0, 4000),
 			...entryId ? { extension: { chat: { entryId } } } : {},
 		},
 	})

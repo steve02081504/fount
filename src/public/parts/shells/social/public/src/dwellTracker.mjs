@@ -32,7 +32,7 @@ function cardMeta(card) {
 			return card.dataset.postText || ''
 		}
 	})()
-	const tags = [...String(text).matchAll(/#([\p{L}\p{N}_-]{2,32})/gu)].map(match => match[1].toLowerCase())
+	const tags = [...String(text).matchAll(/#([\p{L}\p{N}_-]{2,32})/gu)].map(match => match[1])
 	return { author, postId, tags }
 }
 

@@ -174,7 +174,7 @@ function localDataUrl(file) {
  * @returns {Promise<string>} 单附件 HTML
  */
 async function renderImageOrVideoHtml(groupId, file, mime, { gallery = false, pending = false } = {}) {
-	const id = String(file.fileId || '').trim()
+	const id = (file.fileId || '')
 	const fileName = escapeHtml(file.name || id || 'file')
 	const alt = escapeHtml(file.description || '')
 	const local = localDataUrl(file)
@@ -214,7 +214,7 @@ async function renderImageOrVideoHtml(groupId, file, mime, { gallery = false, pe
  * @returns {Promise<string>} HTML
  */
 async function renderAudioHtml(groupId, file, mime) {
-	const id = String(file.fileId || '').trim()
+	const id = (file.fileId || '')
 	const fileName = escapeHtml(file.name || id || 'audio')
 	const size = Number(file.size) || 0
 	const local = localDataUrl(file)
@@ -242,7 +242,7 @@ async function renderAudioHtml(groupId, file, mime) {
  * @returns {Promise<string>} HTML
  */
 async function renderFileCardHtml(file) {
-	const id = String(file.fileId || '').trim()
+	const id = (file.fileId || '')
 	const fileName = escapeHtml(file.name || id || 'file')
 	const sizeLabel = formatBytes(Number(file.size) || 0)
 	return `<button type="button" class="message-file-card message-file-download" data-group-file-id="${escapeHtml(id)}">
@@ -275,7 +275,7 @@ export async function renderMessageFileIdsHtml(message) {
 		const id = String(file?.fileId || '').trim()
 		const hasLocal = typeof file?.buffer === 'string' && file.buffer.length > 0
 		if (!id && !hasLocal) continue
-		const mime = String(file.mime_type || '')
+		const mime = (file.mime_type || '')
 		const kind = fileKind(mime)
 		if (kind === 'image' || kind === 'video') imagesAndVideos.push(file)
 		else if (kind === 'audio') audios.push(file)
@@ -287,7 +287,7 @@ export async function renderMessageFileIdsHtml(message) {
 
 	if (imagesAndVideos.length === 1) {
 		const file = imagesAndVideos[0]
-		const mime = String(file.mime_type || '')
+		const mime = (file.mime_type || '')
 		parts.push(await renderImageOrVideoHtml(groupId, file, mime, {
 			gallery: false,
 			pending: pending || !file.fileId,
@@ -299,7 +299,7 @@ export async function renderMessageFileIdsHtml(message) {
 		const cells = []
 		for (let visibleIndex = 0; visibleIndex < visible.length; visibleIndex++) {
 			const file = visible[visibleIndex]
-			const mime = String(file.mime_type || '')
+			const mime = (file.mime_type || '')
 			let cell = await renderImageOrVideoHtml(groupId, file, mime, {
 				gallery: true,
 				pending: pending || !file.fileId,
@@ -317,7 +317,7 @@ export async function renderMessageFileIdsHtml(message) {
 	}
 
 	for (const file of audios)
-		parts.push(await renderAudioHtml(groupId, file, String(file.mime_type || '')))
+		parts.push(await renderAudioHtml(groupId, file, (file.mime_type || '')))
 	for (const file of others)
 		parts.push(await renderFileCardHtml(file))
 

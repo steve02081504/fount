@@ -5,7 +5,7 @@
  * @returns {string} HTTP 地址
  */
 export function entityFileUrl(entityHash, logicalPath) {
-	const pathSeg = String(logicalPath || '').trim().replace(/^\/+/, '')
+	const pathSeg = (logicalPath || '').replace(/^\/+/, '')
 	return `/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/files/${pathSeg.split('/').map(encodeURIComponent).join('/')}`
 }
 

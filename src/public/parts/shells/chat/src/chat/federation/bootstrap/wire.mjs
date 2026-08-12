@@ -10,9 +10,9 @@ import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
  */
 export function parseFedBootstrapRequest(payload) {
 	if (!isPlainObject(payload)) return null
-	const requestId = String(payload.requestId || '').trim()
-	const nodeHash = String(payload.nodeHash || '').trim()
-	const groupId = String(payload.groupId || '').trim()
+	const requestId = (payload.requestId || '')
+	const nodeHash = (payload.nodeHash || '')
+	const groupId = (payload.groupId || '')
 	const requesterPubKeyHash = normalizeHex64(payload.requesterPubKeyHash)
 	if (!requestId || !nodeHash || !groupId || !isHex64(requesterPubKeyHash)) return null
 	return {
@@ -20,7 +20,7 @@ export function parseFedBootstrapRequest(payload) {
 		nodeHash,
 		groupId,
 		requesterPubKeyHash,
-		localTipsHash: String(payload.localTipsHash || '').trim() || undefined,
+		localTipsHash: (payload.localTipsHash || '') || undefined,
 	}
 }
 
@@ -30,13 +30,13 @@ export function parseFedBootstrapRequest(payload) {
  */
 export function parseFedBootstrapResponse(payload) {
 	if (!isPlainObject(payload)) return null
-	const requestId = String(payload.requestId || '').trim()
-	const responderNodeHash = String(payload.responderNodeHash || '').trim()
+	const requestId = (payload.requestId || '')
+	const responderNodeHash = (payload.responderNodeHash || '')
 	if (!requestId || !responderNodeHash || !isPlainObject(payload.encryptedRoomSecret)) return null
 	return {
 		requestId,
 		responderNodeHash,
 		encryptedRoomSecret: payload.encryptedRoomSecret,
-		settingsEventId: String(payload.settingsEventId || '').trim() || undefined,
+		settingsEventId: (payload.settingsEventId || '') || undefined,
 	}
 }

@@ -34,10 +34,10 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 			return {
 				type: 'social_follow_graph_response',
 				entityHash: rpc.entityHash,
-				following: await discoverFollowGraph(username, String(rpc.entityHash), ingress),
+				following: await discoverFollowGraph(username, rpc.entityHash, ingress),
 			}
 		case 'social_timeline_pull_request': {
-			const entityHash = (rpc.entityHash || '').toLowerCase()
+			const entityHash = (rpc.entityHash || '')
 			const events = await buildFederatedTimelinePullResponse(
 				username,
 				entityHash,
@@ -55,13 +55,13 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 			if (!ids)
 				return {
 					type: 'social_reaction_pull_response',
-					targetEntityHash: String(rpc.targetEntityHash || '').toLowerCase(),
-					postId: String(rpc.postId || '').trim(),
+					targetEntityHash: rpc.targetEntityHash,
+					postId: rpc.postId,
 					events: [],
 				}
 
 			const afterReactor = rpc.afterReactor
-				? String(rpc.afterReactor).trim().toLowerCase()
+				? rpc.afterReactor
 				: null
 			if (afterReactor && !parseEntityHash(afterReactor))
 				return {
@@ -86,10 +86,10 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 			}
 		}
 		case 'social_note_pull_request': {
-			const target = String(rpc.targetEntityHash || '').toLowerCase()
-			const postId = String(rpc.postId || '').trim()
+			const target = rpc.targetEntityHash
+			const postId = rpc.postId
 			const afterAuthor = rpc.afterAuthor
-				? String(rpc.afterAuthor).trim().toLowerCase()
+				? rpc.afterAuthor
 				: null
 			if (!parseEntityHash(target) || (afterAuthor && !parseEntityHash(afterAuthor)))
 				return {

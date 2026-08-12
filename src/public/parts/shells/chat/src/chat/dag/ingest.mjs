@@ -75,14 +75,14 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, optio
 
 	if (MESSAGE_MUTATION_TYPES.has(event.type)) {
 		assertHex64(event.content?.targetId, 'targetId')
-		const senderHash = event.sender.trim().toLowerCase()
+		const senderHash = event.sender.trim()
 		if (!PUB_KEY_HASH_HEX.test(senderHash)) throw new Error(`${event.type} requires pubKeyHash sender`)
 		await assertEventPermission(state, event, senderHash, { username: replicaUsername })
 		return
 	}
 
 	if (event.type === 'reputation_reset') {
-		const targetPubKeyHash = event.content?.targetPubKeyHash?.trim().toLowerCase() || ''
+		const targetPubKeyHash = event.content?.targetPubKeyHash?.trim() || ''
 		if (targetPubKeyHash && isPubKeyHashBlocked(targetPubKeyHash))
 			throw new Error('reputation_reset ignored for locally blocked target')
 	}
@@ -99,7 +99,7 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, optio
 			throw new Error('dag_tip_merge: must reference >= 2 prev tips')
 		const { loadKnownLocalDagEventIds } = await import('./knownLocalEventIds.mjs')
 		const presentIds = await loadKnownLocalDagEventIds(replicaUsername, groupId)
-		const missing = prev.filter(id => !presentIds.has(String(id).trim().toLowerCase()))
+		const missing = prev.filter(id => !presentIds.has(id))
 		if (missing.length) {
 			const error = new Error('dag_tip_merge: prev events not present yet')
 			error.pendable = true
@@ -107,7 +107,7 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, optio
 		}
 	}
 
-	const senderHash = event.sender.trim().toLowerCase()
+	const senderHash = event.sender.trim()
 	if (!PUB_KEY_HASH_HEX.test(senderHash)) throw new Error('events require pubKeyHash sender')
 
 	const bootstrapTypes = new Set(['group_meta_update', 'channel_create', 'group_settings_update', 'role_create', 'member_join'])

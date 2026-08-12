@@ -21,7 +21,7 @@ export function registerEntityPackAvailabilityChecker(checker) {
  * @returns {Promise<boolean>} 是否可用
  */
 export async function isPackAvailableToUser(username, packId) {
-	const pid = String(packId || '').trim()
+	const pid = (packId || '')
 	if (!pid) return false
 	if (await findPackAcrossGroups(username, pid)) return true
 	const entityHost = await findPackAcrossEntities(pid)

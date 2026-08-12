@@ -24,8 +24,8 @@ const DEFAULT_REF_TEXT_MAX = 512_000
 export async function resolveMessageContentRef(username, content, options = {}) {
 	const ref = chatExtensionOf(content)?.contentRef
 	if (!ref) return null
-	const loc = String(ref.storageLocator || '').trim()
-	const wantHash = String(ref.contentHash || '').trim().toLowerCase()
+	const loc = (ref.storageLocator || '')
+	const wantHash = (ref.contentHash || '')
 	if (!loc || !isHex64(wantHash)) return null
 	if (String(ref.alg || 'sha256').trim().toLowerCase() !== 'sha256') return { status: 'unavailable' }
 
@@ -40,7 +40,7 @@ export async function resolveMessageContentRef(username, content, options = {}) 
 		return { status: 'unavailable' }
 	}
 
-	const got = createHash('sha256').update(raw).digest('hex').toLowerCase()
+	const got = createHash('sha256').update(raw).digest('hex')
 	if (got !== wantHash) return { status: 'hash_mismatch' }
 
 	const dec = new TextDecoder('utf8', { fatal: false })

@@ -16,7 +16,7 @@ export async function chatClientFromReq(req) {
  * @returns {string | undefined} 去空白后的频道 id
  */
 export function optionalChannelId(raw) {
-	const id = String(raw || '').trim()
+	const id = (raw || '')
 	return id || undefined
 }
 

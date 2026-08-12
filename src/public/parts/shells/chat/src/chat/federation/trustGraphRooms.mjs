@@ -60,7 +60,7 @@ function isPrememberBootstrapEnvelope(envelope) {
 export function registerChatFederationRoomProvider() {
 	unregisterGroupScopeAuthorizer?.()
 	unregisterGroupScopeAuthorizer = registerScopeAuthorizer('group:', async (scope, senderNodeHash, envelope) => {
-		const groupId = String(scope || '').slice('group:'.length).trim()
+		const groupId = (scope || '').slice('group:'.length).trim()
 		if (!groupId) return false
 		const owner = groupFederationOwner.get(groupId)
 		if (!owner) return false

@@ -11,7 +11,7 @@ import { buildNearbyTrendingHashtags } from '../trending/network.mjs'
 export function registerDiscoverRoutes(router) {
 	router.get('/api/parts/shells\\:social/hashtags/trending', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const scope = String(req.query.scope || 'local').toLowerCase()
+		const scope = String(req.query.scope || 'local')
 		const options = { limit: Number(req.query.limit) || 12 }
 		if (scope === 'nearby')
 			res.status(200).json(await buildNearbyTrendingHashtags(username, options))

@@ -35,7 +35,7 @@ export async function performLocalGroupLeave(username, groupId, entityHash) {
 export async function leaveManyGroupsForUser(username, groupIds, options = {}) {
 	const ids = [...new Set(
 		(Array.isArray(groupIds) ? groupIds : [])
-			.map(id => String(id ?? '').trim())
+			.map(id => (id ?? ''))
 			.filter(Boolean),
 	)]
 	if (ids.length > CHAT_LEAVE_BATCH_MAX) {

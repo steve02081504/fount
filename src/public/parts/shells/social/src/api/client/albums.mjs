@@ -29,7 +29,7 @@ import { maybeDecryptPostContent } from '../../vault_crypto/vault.mjs'
  * @returns {Promise<void>}
  */
 export async function reconcileAlbumPostVisibility(username, entityHash, postIds) {
-	const owner = String(entityHash).toLowerCase()
+	const owner = entityHash
 	const view = await getTimelineMaterialized(username, owner)
 	const unique = [...new Set([...postIds].map(String))]
 	for (const postId of unique) {
@@ -85,7 +85,7 @@ export function createAlbumsMethods(apiContext) {
 			 * @returns {Promise<object>} 结果
 			 */
 			async update(albumId, patch = {}) {
-				const id = String(albumId || '').trim()
+				const id = albumId
 				if (!id || id === DEFAULT_ALBUM_ID) throw httpError(400, 'cannot update default album')
 				const view = await getTimelineMaterialized(apiContext.username, apiContext.entityHash)
 				const album = view.albums?.[id]
@@ -119,7 +119,7 @@ export function createAlbumsMethods(apiContext) {
 			 * @returns {Promise<object>} 结果
 			 */
 			async delete(albumId, options = {}) {
-				const id = String(albumId || '').trim()
+				const id = albumId
 				if (!id || id === DEFAULT_ALBUM_ID) throw httpError(400, 'cannot delete default album')
 				const view = await getTimelineMaterialized(apiContext.username, apiContext.entityHash)
 				const album = view.albums?.[id]
@@ -147,8 +147,8 @@ export function createAlbumsMethods(apiContext) {
 			 * @returns {Promise<object>} 结果
 			 */
 			async addPost(albumId, postId) {
-				const id = String(albumId || '').trim()
-				const pid = String(postId || '').trim()
+				const id = albumId
+				const pid = postId
 				if (!id || id === DEFAULT_ALBUM_ID || !pid) throw httpError(400, 'invalid album/post')
 				const view = await getTimelineMaterialized(apiContext.username, apiContext.entityHash)
 				if (!view.albums?.[id] || view.albums[id].virtual) throw httpError(404, 'album not found')
@@ -167,8 +167,8 @@ export function createAlbumsMethods(apiContext) {
 			 * @returns {Promise<object>} 结果
 			 */
 			async removePost(albumId, postId) {
-				const id = String(albumId || '').trim()
-				const pid = String(postId || '').trim()
+				const id = albumId
+				const pid = postId
 				if (!id || id === DEFAULT_ALBUM_ID || !pid) throw httpError(400, 'invalid album/post')
 				const event = await commitTimelineEvent(apiContext.username, apiContext.entityHash, {
 					type: 'album_post_remove',
@@ -185,7 +185,7 @@ export function createAlbumsMethods(apiContext) {
 			 * @returns {Promise<object>} 结果
 			 */
 			async movePost(postId, fromAlbumId, toAlbumId) {
-				const pid = String(postId || '').trim()
+				const pid = postId
 				const from = String(fromAlbumId || '').trim()
 				const to = String(toAlbumId || '').trim()
 				if (!pid || !to || to === DEFAULT_ALBUM_ID) throw httpError(400, 'invalid move')
@@ -207,7 +207,7 @@ export function createAlbumsMethods(apiContext) {
 			 * @returns {Promise<object[]>} 相册列表
 			 */
 			async list(entityHash) {
-				const owner = String(entityHash || apiContext.entityHash).toLowerCase()
+				const owner = String(entityHash || apiContext.entityHash)
 				const viewerContext = await loadViewerContext(apiContext.username, apiContext.entityHash)
 				const view = await getTimelineMaterialized(apiContext.username, owner)
 				const albums = []
@@ -224,8 +224,8 @@ export function createAlbumsMethods(apiContext) {
 			 * @returns {Promise<object>} 相册详情 + 成员帖
 			 */
 			async get(entityHash, albumId) {
-				const owner = String(entityHash || apiContext.entityHash).toLowerCase()
-				const id = String(albumId || '').trim() || DEFAULT_ALBUM_ID
+				const owner = String(entityHash || apiContext.entityHash)
+				const id = albumId || DEFAULT_ALBUM_ID
 				const viewerContext = await loadViewerContext(apiContext.username, apiContext.entityHash)
 				const view = await getTimelineMaterialized(apiContext.username, owner)
 				const album = view.albums?.[id]

@@ -16,7 +16,7 @@ import { tallyVoteChoices } from '../../../src/lib/voteTally.mjs'
 export async function renderVoteBlock(message, allMessages) {
 	const content = message?.content || {}
 	const vote = channelMessageKind(content) === 'vote' ? content : {}
-	const question = escapeHtml(String(vote.question || ''))
+	const question = escapeHtml(vote.question || '')
 	const options = Array.isArray(vote.options) ? vote.options : []
 	const ballotId = escapeHtml(String(message.eventId))
 	const counts = tallyVoteChoices(allMessages, message.eventId)

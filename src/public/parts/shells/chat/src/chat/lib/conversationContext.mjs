@@ -17,22 +17,22 @@ import { groupKindFromState } from './notificationPreferences.mjs'
  */
 async function resolveBoundPeerEntityHash(username, groupId, state) {
 	if (state.groupMeta?.dmKind !== 'ecdh') return undefined
-	const localKey = (await resolveActiveMemberKeyForLocalUser(username, groupId, state))?.toLowerCase()
+	const localKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 	for (const [memberKey, member] of Object.entries(state.members || {})) {
 		if (member?.status !== 'active' || member.memberKind === 'agent') continue
-		const key = String(memberKey).trim().toLowerCase()
+		const key = memberKey
 		if (localKey && key === localKey) continue
 		const hash = memberEntityHash(member)
-		if (hash) return hash.toLowerCase()
+		if (hash) return hash
 	}
 	const peerPub = state.groupMeta?.dmPeerPubKeyHex
-	const dmSessionTag = String(state.groupMeta?.dmSessionTag || '').trim().toLowerCase()
+	const dmSessionTag = String(state.groupMeta?.dmSessionTag || '').trim()
 	if (!isHex64(peerPub) || !dmSessionTag) return undefined
 	const { hashFromPubKeyHex } = await import('../../../public/shared/entityId.mjs')
 	const subjectHash = await hashFromPubKeyHex(peerPub)
 	const anchorNode = sha256Hex(`fount:chat:dm-peer-anchor:${dmSessionTag}`)
 	if (!isHex64(anchorNode) || !isHex64(subjectHash)) return undefined
-	return encodeEntityHash(anchorNode, subjectHash).toLowerCase()
+	return encodeEntityHash(anchorNode, subjectHash)
 }
 
 /**

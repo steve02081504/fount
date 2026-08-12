@@ -48,7 +48,7 @@ export async function findHostingReplicaUsername(entityHash) {
 	for (const username of listReplicas()) {
 		if (parsed.nodeHash !== getNodeHash()) continue
 		const operator = await resolveOperator(username)
-		if (operator?.toLowerCase() === parsed.entityHash) return username
+		if (operator === parsed.entityHash) return username
 		if (resolveAgentCharPartName(username, parsed.entityHash)) return username
 	}
 	return null
@@ -61,7 +61,7 @@ export async function findHostingReplicaUsername(entityHash) {
  * @returns {Promise<ResolvedSocialEntity | null>} 解析结果
  */
 export async function resolveSocialEntity(entityHash, hintReplicaUsername = null) {
-	const raw = String(entityHash || '').trim().toLowerCase()
+	const raw = entityHash
 	if (!isEntityHash128(raw)) return null
 	const parsed = parseEntityHash(raw)
 	if (!parsed) return null
@@ -79,7 +79,7 @@ export async function resolveSocialEntity(entityHash, hintReplicaUsername = null
 
 	const resolveOperator = getOperatorEntityHashProvider()
 	const operator = resolveOperator ? await resolveOperator(replicaUsername) : null
-	if (operator?.toLowerCase() === parsed.entityHash)
+	if (operator === parsed.entityHash)
 		return {
 			entityHash: parsed.entityHash,
 			kind: 'user',

@@ -16,12 +16,11 @@ import { socialPostKey } from './post_key.mjs'
 /**
  * @param {string} targetEntityHash 帖作者
  * @param {string} postId 帖 id
- * @returns {{ target: string, postId: string } | null} 规范化键
+ * @returns {{ target: string, postId: string } | null} 合法键；非法则 null
  */
 export function normalizePostTarget(targetEntityHash, postId) {
-	const target = String(targetEntityHash || '').toLowerCase()
-	if (!parseEntityHash(target) || !isHex64(postId)) return null
-	return { target, postId }
+	if (!parseEntityHash(targetEntityHash) || !isHex64(postId)) return null
+	return { target: targetEntityHash, postId }
 }
 
 /**

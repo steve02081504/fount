@@ -20,7 +20,7 @@ export function sanitizeEmojiPackOffer(raw) {
 	const sourceKind = String(/** @type {{ sourceKind?: unknown }} */raw.sourceKind || 'group').trim() || 'group'
 	const itemCount = Math.min(Math.max(Number(/** @type {{ itemCount?: unknown }} */raw.itemCount) || 0, 0), 10_000)
 	const localized = /** @type {{ localized?: unknown }} */raw.localized
-	const nodeHashRaw = String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').trim().toLowerCase().slice(0, 128)
+	const nodeHashRaw = String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').trim().slice(0, 128)
 	const nodeHash = /^[\da-f]+$/u.test(nodeHashRaw) ? nodeHashRaw : ''
 	return {
 		packId,
@@ -43,12 +43,12 @@ export function sanitizeEmojiPackOffer(raw) {
  * @returns {Promise<object[]>} offers
  */
 export async function localGroupPackOffersHandler(inboundContext, query) {
-	const username = String(inboundContext.replicaUsername || '').trim()
+	const username = (inboundContext.replicaUsername || '')
 	if (!username) return []
 	const limit = Math.min(Math.max(Number(
 		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */query.limit : 32,
 	) || 32, 1), 64)
-	const nodeHash = String(getNodeHash() || '').toLowerCase()
+	const nodeHash = String(getNodeHash() || '')
 	const { listUserGroups } = await import('../chat/lib/userGroups.mjs')
 	const { getState } = await import('../chat/dag/materialize.mjs')
 	const { resolveActiveMemberKeyForLocalReplica } = await import('../group/access.mjs')

@@ -25,9 +25,9 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 	const chat_log = [...channel?.logs || []]
 	const locales = localesForUser(username)
 	const charInfo = pickLocalizedSlice(charAPI.info, locales) || {}
-	const operatorUid = (await resolveOperatorEntityHash(username))?.toLowerCase() || 'user'
-	const charUid = (await ensureLocalAgentEntityHash(username, charname)).toLowerCase()
-	const declaredOwnerEntityHash = (await resolveDeclaredOwnerEntityHash(username, charUid))?.toLowerCase()
+	const operatorUid = (await resolveOperatorEntityHash(username)) || 'user'
+	const charUid = (await ensureLocalAgentEntityHash(username, charname))
+	const declaredOwnerEntityHash = (await resolveDeclaredOwnerEntityHash(username, charUid))
 		|| operatorUid
 
 	let operatorName = username
@@ -130,7 +130,7 @@ export async function buildVirtualBridgeOnMessageEvent(username, session, channe
 	const chatReplyRequest = await buildVirtualBridgeChatRequest(
 		username, session.groupId, channelId, charname, charAPI, entry,
 	)
-	const mentions = extractMentionsFromText(String(entry.content || ''))
+	const mentions = extractMentionsFromText(entry.content || '')
 	return {
 		message: {
 			...entry,
@@ -171,6 +171,6 @@ function extractMentionsFromText(text) {
 	const re = /@\[entity:([0-9a-f]{128})\]/gi
 	let match
 	while (match = re.exec(text))
-		entityHashes.push(match[1].toLowerCase())
+		entityHashes.push(match[1])
 	return { entityHashes, roleIds: [], everyone: false }
 }

@@ -14,7 +14,7 @@ import { materializeGroupSettings } from './groupSettings.mjs'
  * @returns {string} 规范化后的 hex 键
  */
 function normHex(value) {
-	return String(value ?? '').trim().toLowerCase()
+	return (value ?? '')
 }
 
 /**
@@ -225,7 +225,7 @@ export function manageAdminsPubKeyHashes(state) {
  * @returns {Set<string>} 允许签名的 pubKeyHash
  */
 export function checkpointSignerPubKeyHashes(state) {
-	const delegated = String(state.delegatedOwnerPubKeyHash || '').trim().toLowerCase()
+	const delegated = (state.delegatedOwnerPubKeyHash || '')
 	if (isHex64(delegated)) return new Set([delegated])
 	const manage = manageAdminsPubKeyHashes(state)
 	if (manage.size) return manage
@@ -240,7 +240,7 @@ export function checkpointSignerPubKeyHashes(state) {
  * @returns {Record<string, boolean>} 权限键 → 是否允许
  */
 export function memberChannelPermissions(state, senderPubKeyHash, channelId) {
-	const memberKey = String(senderPubKeyHash).toLowerCase()
+	const memberKey = String(senderPubKeyHash)
 	if (state.members[memberKey]?.status !== 'active')
 		return Object.fromEntries(Object.values(PERMISSIONS).map(permission => [permission, false]))
 

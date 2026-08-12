@@ -85,7 +85,7 @@ export function mergeArchiveMonthHintsFromRemote(local, remote) {
 		if (!merged.channels[channelId]) merged.channels[channelId] = { months: [] }
 		const set = new Set(merged.channels[channelId].months || [])
 		for (const month of months) {
-			const m = String(month).trim()
+			const m = month
 			if (/^\d{4}-\d{2}$/u.test(m)) set.add(m)
 		}
 		merged.channels[channelId].months = [...set].sort((a, b) => a.localeCompare(b, 'en'))

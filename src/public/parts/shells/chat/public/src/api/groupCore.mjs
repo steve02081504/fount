@@ -88,7 +88,7 @@ export async function joinGroup(groupId, inviteCode = null, dmLinkProof = null, 
  */
 export async function leaveGroups(groupIds) {
 	const ids = [...new Set(
-		(Array.isArray(groupIds) ? groupIds : [groupIds]).map(id => String(id ?? '').trim()).filter(Boolean),
+		(Array.isArray(groupIds) ? groupIds : [groupIds]).map(id => (id ?? '')).filter(Boolean),
 	)]
 	/** @type {string[]} */
 	const ok = []

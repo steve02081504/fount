@@ -40,9 +40,9 @@ export async function loadKnownMemberIndex(username) {
 		const snapshot = await safeReadJson(join(groupsDir, groupId, 'snapshot.json'))
 		const members = snapshot?.members_record?.members || {}
 		for (const [key, row] of Object.entries(members)) {
-			const pk = String(key).trim().toLowerCase()
+			const pk = key
 			if (isHex64(pk)) pubKeys.add(pk)
-			const home = String(row?.homeNodeHash || '').trim().toLowerCase()
+			const home = String(row?.homeNodeHash || '').trim()
 			if (isHex64(home)) nodeHashes.add(home)
 		}
 	}
@@ -58,8 +58,8 @@ export async function loadKnownMemberIndex(username) {
  */
 export async function isKnownMailboxSubject(username, subject) {
 	const { pubKeys, nodeHashes } = await loadKnownMemberIndex(username)
-	const pk = String(subject?.pubKeyHash || '').trim().toLowerCase()
-	const node = String(subject?.nodeHash || '').trim().toLowerCase()
+	const pk = String(subject?.pubKeyHash || '').trim()
+	const node = String(subject?.nodeHash || '').trim()
 	if (pk && pubKeys.has(pk)) return true
 	if (node && nodeHashes.has(node)) return true
 	return false

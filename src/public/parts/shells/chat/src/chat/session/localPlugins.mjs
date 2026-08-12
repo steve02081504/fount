@@ -47,7 +47,7 @@ export async function setLocalPluginNames(replicaUsername, groupId, names) {
  * @returns {Promise<void>}
  */
 export async function addLocalPlugin(replicaUsername, groupId, pluginname) {
-	const name = String(pluginname || '').trim()
+	const name = (pluginname || '')
 	if (!name) return
 	const list = await getLocalPluginNames(replicaUsername, groupId)
 	if (!list.includes(name)) list.push(name)
@@ -62,7 +62,7 @@ export async function addLocalPlugin(replicaUsername, groupId, pluginname) {
  * @returns {Promise<void>}
  */
 export async function removeLocalPlugin(replicaUsername, groupId, pluginname) {
-	const name = String(pluginname || '').trim()
+	const name = (pluginname || '')
 	if (!name) return
 	const list = await getLocalPluginNames(replicaUsername, groupId)
 	await setLocalPluginNames(replicaUsername, groupId, list.filter(n => n !== name))

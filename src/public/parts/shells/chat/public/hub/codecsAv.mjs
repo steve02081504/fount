@@ -224,7 +224,7 @@ async function doJoinCodecsAvRoom(options) {
 	 * @returns {void}
 	 */
 	const destroyPeersForSender = senderIdHex => {
-		const sid = (senderIdHex || '').toLowerCase()
+		const sid = (senderIdHex || '')
 		if (!sid) return
 		destroyPeer(sid)
 		destroyPeer(`${sid}:screen`)
@@ -422,7 +422,7 @@ async function doJoinCodecsAvRoom(options) {
 	 */
 	const pruneMissingPeers = rosterPeers => {
 		const live = new Set(
-			rosterPeers.map(p => String(p.senderId || '').toLowerCase()).filter(Boolean),
+			rosterPeers.map(p => (p.senderId || '')).filter(Boolean),
 		)
 		if (!live.size) return
 		for (const key of [...peers.keys()]) {
@@ -453,9 +453,9 @@ async function doJoinCodecsAvRoom(options) {
 			onRoster?.(wireMessage.peers)
 		}
 		if (wireMessage.type === 'publish_meta')
-			remoteMeta.set(String(wireMessage.senderId || '').toLowerCase(), wireMessage)
+			remoteMeta.set((wireMessage.senderId || ''), wireMessage)
 		if (wireMessage.type === 'publish_meta_revoke') {
-			const sid = String(wireMessage.senderId || '').toLowerCase()
+			const sid = (wireMessage.senderId || '')
 			remoteMeta.delete(sid)
 			destroyPeersForSender(sid)
 		}
@@ -637,7 +637,7 @@ async function doJoinCodecsAvRoom(options) {
 		 * @returns {number[]} 0–1 频段电平（16 路）
 		 */
 		getAudioLevels: (senderId = '') => {
-			const sid = (senderId || '').toLowerCase()
+			const sid = (senderId || '')
 			const entry = peerAudioLevels.get(sid)
 			if (entry?.analyser) {
 				const data = new Uint8Array(entry.analyser.frequencyBinCount)

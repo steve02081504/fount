@@ -9,6 +9,7 @@ import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_p
 import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
 import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
+import { escapeRegExp } from '../../../../../../scripts/regex.mjs'
 
 import { resolveOperatorEntityHashForUser } from './identity.mjs'
 import {
@@ -46,7 +47,7 @@ export function normalizeEntitySearchQuery(queryHandlerQuery) {
 		: queryHandlerQuery && typeof queryHandlerQuery === 'object'
 			? String(/** @type {{ q?: unknown }} */queryHandlerQuery.q || '')
 			: ''
-	return raw.trim().toLowerCase()
+	return raw.trim()
 }
 
 /**
@@ -63,18 +64,20 @@ function profileDisplayName(profile) {
 }
 
 /**
- * @param {string} q 已小写的 query
+ * @param {string} q 搜索词
  * @param {{ entityHash: string, handle?: string, name?: string, charPartName?: string }} row 候选
  * @returns {boolean} 是否匹配
  */
 function rowMatchesQuery(q, row) {
 	if (!q) return false
-	const handle = String(row.handle || '').toLowerCase()
-	if (handle && (handle === q || handle.includes(q))) return true
-	const charPartName = String(row.charPartName || '').toLowerCase()
-	if (charPartName && (charPartName === q || charPartName.includes(q))) return true
-	const name = String(row.name || '').toLowerCase()
-	return Boolean(name && name.includes(q))
+	const re = new RegExp(escapeRegExp(q), 'iu')
+	const exact = new RegExp(`^${escapeRegExp(q)}$`, 'iu')
+	const handle = row.handle || ''
+	if (handle && (exact.test(handle) || re.test(handle))) return true
+	const charPartName = row.charPartName || ''
+	if (charPartName && (exact.test(charPartName) || re.test(charPartName))) return true
+	const name = row.name || ''
+	return Boolean(name && re.test(name))
 }
 
 /**
@@ -113,11 +116,11 @@ export async function localEntitySearchHandler(inboundContext, query) {
 
 	for (const username of usernames)
 		for (const row of await listEntityIdentities(username)) {
-			const entityHash = String(row.entityHash || '').toLowerCase()
+			const entityHash = (row.entityHash || '')
 			if (!isEntityHash128(entityHash) || byHash.has(entityHash)) continue
 			if (await isHiddenFromDiscovery(username, entityHash)) continue
 			const profile = await getProfile(entityHash, username, { skipPresentation: true })
-			const handle = String(profile.handle || '').trim().toLowerCase()
+			const handle = (profile.handle || '')
 			const name = profileDisplayName(profile)
 			const charPartName = row.charPartName || undefined
 			const candidate = { entityHash, handle, name, ...charPartName ? { charPartName } : {} }
@@ -131,7 +134,7 @@ export async function localEntitySearchHandler(inboundContext, query) {
 		if (byHash.has(entityHash) || !isEntityHash128(entityHash)) continue
 		const onDisk = await store.readEntityJson(entityHash, 'profile.json')
 		if (!onDisk) continue
-		const handle = String(onDisk.handle || '').trim().toLowerCase()
+		const handle = (onDisk.handle || '')
 		const name = profileDisplayName(onDisk)
 		const candidate = { entityHash, handle, name }
 		if (!rowMatchesQuery(q, candidate)) continue
@@ -148,12 +151,12 @@ export async function localEntitySearchHandler(inboundContext, query) {
  */
 function normalizeClueRow(row) {
 	if (!row || typeof row !== 'object') return null
-	const entityHash = String(/** @type {{ entityHash?: unknown }} */row.entityHash || '').toLowerCase()
+	const entityHash = String(/** @type {{ entityHash?: unknown }} */row.entityHash || '')
 	if (!isEntityHash128(entityHash)) return null
 	const charPartName = /** @type {{ charPartName?: unknown }} */row.charPartName || undefined
 	return {
 		entityHash,
-		handle: String(/** @type {{ handle?: unknown }} */row.handle || '').trim().toLowerCase(),
+		handle: String(/** @type {{ handle?: unknown }} */row.handle || '').trim(),
 		name: String(/** @type {{ name?: unknown }} */row.name || '').trim(),
 		...charPartName ? { charPartName: String(charPartName) } : {},
 	}
@@ -206,7 +209,7 @@ async function loadInteractionFlags(username, viewerEntityHash, entityHash) {
 		const groups = await enumerateJoinedFederatedGroups(username, viewerEntityHash)
 		hasDm = groups.some(g => {
 			const binding = g.friendBinding
-			return binding && String(binding.entityHash || '').toLowerCase() === entityHash
+			return binding && (binding.entityHash || '') === entityHash
 		})
 	}
 	catch { /* */ }
@@ -221,8 +224,8 @@ async function loadInteractionFlags(username, viewerEntityHash, entityHash) {
  * @returns {Promise<{ query: string, entities: object[] }>} 排序后的实体列表
  */
 export async function searchEntitiesNetwork(username, q, options = {}) {
-	const query = String(q || '').trim()
-	const normalized = query.toLowerCase()
+	const query = (q || '').trim()
+	const normalized = query
 	if (normalized.length < 2)
 		return { query, entities: [] }
 
@@ -235,7 +238,7 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 		 * @param {unknown} row 行
 		 * @returns {string} 去重键
 		 */
-		rowKey: row => String(/** @type {{ entityHash?: unknown }} */row?.entityHash || '').toLowerCase(),
+		rowKey: row => String(/** @type {{ entityHash?: unknown }} */row?.entityHash || ''),
 	})
 
 	/** @type {Map<string, { entityHash: string, handle: string, name: string, charPartName?: string }>} */
@@ -286,7 +289,7 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 			charPartName = '' // 远端声称的 charPartName 不可信
 		}
 
-		const handle = String(profile.handle || '').trim().toLowerCase()
+		const handle = (profile.handle || '')
 		const name = profileDisplayName(profile) || unique.get(entityHash)?.name || ''
 		const candidate = { entityHash, handle, name, ...charPartName ? { charPartName } : {} }
 		if (!rowMatchesQuery(normalized, candidate)) return null
@@ -310,21 +313,21 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 	}), 8)
 
 	const entities = /** @type {object[]} */ verified.filter(Boolean)
+	const exactRe = new RegExp(`^${escapeRegExp(normalized)}$`, 'iu')
+	const fuzzyRe = new RegExp(escapeRegExp(normalized), 'iu')
 	entities.sort((a, b) => {
 		const aAlias = a.alias ? 1 : 0
 		const bAlias = b.alias ? 1 : 0
 		if (aAlias !== bAlias) return bAlias - aAlias
-		const aExact = a.handle === normalized || String(a.charPartName || '').toLowerCase() === normalized ? 1 : 0
-		const bExact = b.handle === normalized || String(b.charPartName || '').toLowerCase() === normalized ? 1 : 0
+		const aExact = exactRe.test(a.handle) || exactRe.test(a.charPartName || '') ? 1 : 0
+		const bExact = exactRe.test(b.handle) || exactRe.test(b.charPartName || '') ? 1 : 0
 		if (aExact !== bExact) return bExact - aExact
 		const aIx = (a.following ? 4 : 0) + (a.care ? 2 : 0) + (a.hasDm ? 1 : 0)
 		const bIx = (b.following ? 4 : 0) + (b.care ? 2 : 0) + (b.hasDm ? 1 : 0)
 		if (aIx !== bIx) return bIx - aIx
 		if (a.nodeScore !== b.nodeScore) return b.nodeScore - a.nodeScore
-		const aFuzzy = String(a.name).toLowerCase().includes(normalized)
-			|| String(a.charPartName || '').toLowerCase().includes(normalized) ? 1 : 0
-		const bFuzzy = String(b.name).toLowerCase().includes(normalized)
-			|| String(b.charPartName || '').toLowerCase().includes(normalized) ? 1 : 0
+		const aFuzzy = fuzzyRe.test(String(a.name)) || fuzzyRe.test(a.charPartName || '') ? 1 : 0
+		const bFuzzy = fuzzyRe.test(String(b.name)) || fuzzyRe.test(b.charPartName || '') ? 1 : 0
 		if (aFuzzy !== bFuzzy) return bFuzzy - aFuzzy
 		return a.entityHash.localeCompare(b.entityHash)
 	})

@@ -236,12 +236,12 @@ export function createGroup(apiContext, groupId, projection) {
 					const { groupWsRoomKeyForReplica } = await import('../chat/ws/groupWsRooms.mjs')
 					const { canGovSlash, resolveActiveMemberKeyForLocalUser } = await import('../group/access.mjs')
 					const content = {
-						targetPubKeyHash: String(args.targetPubKeyHash || '').trim().toLowerCase(),
+						targetPubKeyHash: (args.targetPubKeyHash || ''),
 						claim: Number(args.claim ?? 0.25),
 					}
 					if (args.verified) {
 						content.verified = true
-						if (args.proof?.eventId) content.proof = { eventId: String(args.proof.eventId).trim().toLowerCase() }
+						if (args.proof?.eventId) content.proof = { eventId: String(args.proof.eventId).trim() }
 					}
 					if (!content.targetPubKeyHash)
 						throw new Error('targetPubKeyHash required')
@@ -270,7 +270,7 @@ export function createGroup(apiContext, groupId, projection) {
 				 * @returns {Promise<{ applied: number }>} 应用条数
 				 */
 				async reset(targetPubKeyHash) {
-					const hash = String(targetPubKeyHash || '').trim().toLowerCase()
+					const hash = (targetPubKeyHash || '')
 					if (!hash) throw new Error('targetPubKeyHash required')
 					await appendSignedLocalEvent(apiContext.username, groupId, {
 						type: 'reputation_reset',

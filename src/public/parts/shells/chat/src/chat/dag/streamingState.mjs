@@ -27,7 +27,7 @@ export function setStreamingSession(groupId, channelId, session) {
 	sessions.set(sessionKey(groupId, channelId), {
 		sessionId: session.sessionId,
 		expiresAt: session.expiresAt,
-		by: String(session.by || '').trim(),
+		by: (session.by || ''),
 	})
 }
 

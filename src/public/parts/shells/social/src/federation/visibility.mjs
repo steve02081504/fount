@@ -83,8 +83,8 @@ export function isTimelineEventVisibleForFederation(event, ownerEntityHash, requ
 
 	if (type === 'poll_vote') {
 		if (requesterContext.isOwner) return true
-		const target = String(event.content?.targetEntityHash || '').toLowerCase()
-		return target === String(requesterContext.requesterEntityHash || '').toLowerCase()
+		const target = String(event.content?.targetEntityHash || '')
+		return target === String(requesterContext.requesterEntityHash || '')
 	}
 
 	if (type === 'tag_name')
@@ -101,6 +101,6 @@ export function isTimelineEventVisibleForFederation(event, ownerEntityHash, requ
  * @returns {object[]} 过滤后的事件
  */
 export function filterTimelineEventsForFederation(events, ownerEntityHash, requesterContext, canViewPost) {
-	const owner = String(ownerEntityHash).toLowerCase()
+	const owner = ownerEntityHash
 	return events.filter(event => isTimelineEventVisibleForFederation(event, owner, requesterContext, canViewPost))
 }

@@ -102,7 +102,7 @@ export async function createGroup(username, body) {
 	const { clearGroupReplicaPurging } = await import('./replicaPurge.mjs')
 	clearGroupReplicaPurging(username, groupId)
 	await mkdir(groupDir(username, groupId), { recursive: true })
-	const owner = String(body.ownerPubKeyHash || '').trim().toLowerCase()
+	const owner = (body.ownerPubKeyHash || '')
 	if (!owner) throw new Error('ownerPubKeyHash required')
 	const { getOperatorEntityHash, loadEntityIdentity } = await import('../../entity/identity.mjs')
 	const entityHash = body.entityHash || await getOperatorEntityHash(username)

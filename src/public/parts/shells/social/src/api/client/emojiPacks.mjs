@@ -25,7 +25,7 @@ export function createEmojiPackMethods(apiContext) {
 			 * @returns {Promise<object[]>} pack 列表
 			 */
 			async list(entityHash) {
-				const owner = String(entityHash || apiContext.entityHash).toLowerCase()
+				const owner = String(entityHash || apiContext.entityHash)
 				if (owner === apiContext.entityHash) {
 					await ensureEntitySocialReady(apiContext.username, apiContext.entityHash)
 					return listLocalEntityPacks(apiContext.username, owner)
@@ -51,8 +51,8 @@ export function createEmojiPackMethods(apiContext) {
 			 * @returns {Promise<object>} pack
 			 */
 			async get(entityHash, packId) {
-				const owner = String(entityHash || apiContext.entityHash).toLowerCase()
-				const pid = String(packId || '').trim()
+				const owner = String(entityHash || apiContext.entityHash)
+				const pid = packId
 				const local = await loadLocalEntityPack(apiContext.username, owner, pid)
 				if (local) return local
 				const fromTl = (await listTimelineEntityPacks(apiContext.username, owner))

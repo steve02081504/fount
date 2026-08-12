@@ -192,8 +192,8 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 		return finish(ingestResult('invalid', 'hlc_skew'))
 	}
 
-	const senderKey = wirePayload.sender.trim().toLowerCase()
-	const homeNodeHash = state.members?.[senderKey]?.homeNodeHash?.trim().toLowerCase() || ''
+	const senderKey = wirePayload.sender.trim()
+	const homeNodeHash = state.members?.[senderKey]?.homeNodeHash?.trim() || ''
 	const subject = {
 		pubKeyHash: senderKey,
 		nodeHash: isHex64(homeNodeHash) ? homeNodeHash : undefined,
@@ -238,7 +238,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	if (wirePayload.type === 'message') {
 		const rateCheck = await checkMessageRateLimit(username, groupId, state, wirePayload)
 		if (!rateCheck.ok) {
-			const remoteNode = String(wirePayload.node_id || '').trim()
+			const remoteNode = (wirePayload.node_id || '')
 			if (remoteNode)
 				recordMessageRateViolation(remoteNode, rateCheck.excessRatio ?? 1)
 			if (logFailures) console.error('federation: drop remote event (rate limit)')

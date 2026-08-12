@@ -89,7 +89,7 @@ async function renderAuditRow(entry) {
 		senderTitle: escapeHtml(entry.sender || ''),
 		sender: escapeHtml(entry.sender || '—'),
 	})
-	const type = String(entry.type || '')
+	const type = (entry.type || '')
 	const typeElement = row.querySelector('[data-audit-type]')
 	const summaryElement = row.querySelector('[data-audit-summary]')
 	applyDatasetI18n(typeElement, `chat.group.auditLog.type.${type}`)

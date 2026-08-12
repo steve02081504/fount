@@ -45,7 +45,7 @@ export async function revokeEntityActiveKey(username, body) {
 	if (!isHex64(recoverySecretKeyHex)) throw new Error('recoverySecretKeyHex required')
 
 	const entityHash = body.entityHash
-		? String(body.entityHash).toLowerCase()
+		? String(body.entityHash)
 		: await getOperatorEntityHash(username)
 	const currentGen = await getEntityKeyGeneration(username, entityHash)
 	const rotation = await generateNextActiveKeyPair(username, entityHash)

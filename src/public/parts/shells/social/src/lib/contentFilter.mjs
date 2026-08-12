@@ -1,3 +1,5 @@
+import { escapeRegExp } from '../../../../../../scripts/regex.mjs'
+
 import { extractHashtagsFromText } from './hashtags.mjs'
 
 const MAX_ENTRIES = 200
@@ -9,7 +11,7 @@ const MAX_PATTERN_LEN = 64
  */
 export function normalizeMutedKeywordEntry(raw) {
 	if (!raw || typeof raw !== 'object') return null
-	const pattern = String(/** @type {{ pattern?: unknown }} */raw.pattern || '').trim().toLowerCase()
+	const pattern = String(/** @type {{ pattern?: unknown }} */raw.pattern || '').trim()
 	if (!pattern || pattern.length > MAX_PATTERN_LEN) return null
 	const matchTags = /** @type {{ matchTags?: unknown }} */raw.matchTags !== false
 	const expiresRaw = /** @type {{ expiresAt?: unknown }} */raw.expiresAt
@@ -53,20 +55,20 @@ export function pruneMutedKeywordEntries(entries) {
 export function postMatchesMutedKeywords(post, mutedKeywords) {
 	const entries = mutedKeywords?.entries
 	if (!entries?.length) return false
-	const text = String(post?.content?.text || '').toLowerCase()
-	const warning = String(post?.content?.contentWarning || '').toLowerCase()
+	const text = post?.content?.text || ''
+	const warning = post?.content?.contentWarning || ''
 	const haystack = `${text}\n${warning}`
 	const tagSet = new Set([
 		...extractHashtagsFromText(post?.content?.text || ''),
-		...(Array.isArray(post?.content?.tags) ? post.content.tags : []).map(tag => String(tag).trim().toLowerCase()).filter(Boolean),
+		...(Array.isArray(post?.content?.tags) ? post.content.tags : []).filter(Boolean),
 	])
 	const now = Date.now()
 	for (const entry of entries) {
 		const expiresAt = entry.expiresAt
 		if (expiresAt != null && Number(expiresAt) > 0 && Number(expiresAt) <= now) continue
-		const pattern = String(entry.pattern || '').trim().toLowerCase()
+		const pattern = entry.pattern || ''
 		if (!pattern) continue
-		if (haystack.includes(pattern)) return true
+		if (new RegExp(escapeRegExp(pattern), 'iu').test(haystack)) return true
 		if (entry.matchTags !== false) {
 			const bare = pattern.startsWith('#') ? pattern.slice(1) : pattern
 			if (bare && tagSet.has(bare)) return true

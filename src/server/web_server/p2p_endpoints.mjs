@@ -28,13 +28,13 @@ export function registerP2pEndpoints(router) {
 		if (body.batterySaver != null) patch.batterySaver = !!body.batterySaver
 		if (Array.isArray(body.relayUrls)) patch.relayUrls = body.relayUrls
 		if (body.mailbox) patch.mailbox = body.mailbox
-		const dmIntroNonce = String(body.dmIntroNonce || '').trim()
+		const dmIntroNonce = String(body.dmIntroNonce ?? '').trim()
 		if (dmIntroNonce.length >= 16) patch.dmIntroNonce = dmIntroNonce
 		res.status(200).json(await saveFederationViewForUser(username, patch))
 	})
 
 	router.post('/api/p2p/federation/connect-node', authenticate, async (req, res) => {
-		const targetNodeHash = String(req.body?.targetNodeHash || '').trim().toLowerCase()
+		const targetNodeHash = String(req.body?.targetNodeHash ?? '').trim()
 		if (!isHex64(targetNodeHash))
 			return res.status(400).json({ error: 'invalid targetNodeHash' })
 		const { ensureRemoteUserRoom } = await import('npm:@steve02081504/fount-p2p/transport/remote_user_room')
@@ -52,8 +52,8 @@ export function registerP2pEndpoints(router) {
 
 	router.post('/api/p2p/denylist', authenticate, async (req, res) => {
 		const body = req.body || {}
-		const scope = String(body.scope || '').trim().toLowerCase()
-		const value = String(body.value || '').trim()
+		const scope = String(body.scope ?? '').trim()
+		const value = String(body.value ?? '').trim()
 		if (!scope || !value)
 			return res.status(400).json({ error: 'scope and value required' })
 		await addDenylistEntry({

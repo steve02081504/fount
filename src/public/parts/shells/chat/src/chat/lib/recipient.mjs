@@ -10,8 +10,8 @@ import { resolveOperatorEntityHash } from './replica.mjs'
  * @returns {Promise<string>} recipient entityHash（小写）
  */
 export async function resolveChatRecipient(username, requestedRecipient) {
-	const operator = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
-	const requested = String(requestedRecipient || '').trim().toLowerCase()
+	const operator = (await resolveOperatorEntityHash(username)) || null
+	const requested = (requestedRecipient || '')
 	if (!requested) {
 		if (!operator) throw httpError(403, 'configure federation identity first')
 		return operator

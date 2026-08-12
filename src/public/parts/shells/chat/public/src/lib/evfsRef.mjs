@@ -30,7 +30,7 @@ export function parseEvfsRef(ref) {
 		const url = new URL(ref)
 		if (url.protocol !== 'evfs:') return null
 		const entityHash = url.hostname || ''
-		const logicalPath = String(url.pathname || '').replace(/^\/+/, '')
+		const logicalPath = (url.pathname || '').replace(/^\/+/, '')
 		if (!isEntityHash128(entityHash)) return null
 		return { entityHash, logicalPath: assertSafeEvfsLogicalPath(logicalPath) }
 	}

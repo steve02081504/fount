@@ -44,7 +44,7 @@ async function isLocalActiveGroupMember(username, groupId) {
  * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object, packId?: string } | null>} 表情二进制
  */
 export async function resolveGroupEmojiContent(username, groupId, emojiId, options = {}) {
-	const packId = String(options.packId || '').trim() || undefined
+	const packId = (options.packId || '') || undefined
 	let local = await readGroupEmojiBinary(username, groupId, emojiId, packId)
 	if (local) {
 		if (!local.entry.contentHash) {
@@ -55,7 +55,7 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 	}
 
 	const entry = await getGroupEmojiEntry(username, groupId, emojiId, packId)
-	const hintedHash = String(options.contentHash || '').trim().toLowerCase()
+	const hintedHash = (options.contentHash || '')
 	const contentHash = entry?.contentHash || (isHex64(hintedHash) ? hintedHash : null)
 	const mimeType = entry?.mimeType || 'image/png'
 	const resolvedPackId = packId || local?.packId || groupId
@@ -154,7 +154,7 @@ export async function resolvePackEmojiContent(username, packId, emojiId, options
 	if (local) return local
 
 	const entry = (entityLocated.manifest?.items || []).find(row => row?.emojiId === emojiId)
-	const hintedHash = String(options.contentHash || '').trim().toLowerCase()
+	const hintedHash = (options.contentHash || '')
 	const contentHash = entry?.contentHash || (isHex64(hintedHash) ? hintedHash : null)
 	if (!contentHash) return null
 

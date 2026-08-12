@@ -56,7 +56,7 @@ export function listActiveLiveSessions(username, entityHash) {
  * @returns {Promise<object>} 会话
  */
 export async function startLiveSession(username, entityHash, draft = {}) {
-	const owner = entityHash.toLowerCase()
+	const owner = entityHash
 	const existing = listActiveLiveSessions(username, owner)
 	if (existing.length)
 		throw httpError(409, 'already live')
@@ -64,7 +64,7 @@ export async function startLiveSession(username, entityHash, draft = {}) {
 	const liveId = randomUUID()
 	const visibility = draft.visibility === 'followers' ? 'followers' : 'public'
 	const chatMount = draft.groupId && draft.channelId
-		? { groupId: String(draft.groupId), channelId: String(draft.channelId || 'default') }
+		? { groupId: draft.groupId, channelId: String(draft.channelId || 'default') }
 		: null
 	const bridgeOrigin = String(draft.bridgeOrigin || '').trim().replace(/\/$/, '')
 	const publicWatchSecret = visibility === 'public' ? createLinkSecret() : null
@@ -140,8 +140,8 @@ export async function startLiveSession(username, entityHash, draft = {}) {
  * @returns {Promise<object>} 结束结果
  */
 export async function stopLiveSession(username, entityHash, liveId) {
-	const owner = entityHash.toLowerCase()
-	const id = String(liveId || '').trim().toLowerCase()
+	const owner = entityHash
+	const id = liveId
 	const session = loadLiveSession(username, owner, id)
 	if (!session) throw httpError(404, 'live not found')
 
@@ -203,7 +203,7 @@ export function patchLiveStats(username, entityHash, liveId, patch = {}) {
 		session.viewerCount = Math.max(0, patch.viewerCount)
 		session.stats.peakViewers = Math.max(session.stats.peakViewers || 0, session.viewerCount)
 	}
-	const viewer = String(patch.viewerEntityHash || '').toLowerCase()
+	const viewer = patch.viewerEntityHash
 	if (viewer) {
 		const set = new Set(session.stats.viewerHashes || [])
 		set.add(viewer)
@@ -224,7 +224,7 @@ export function patchLiveStats(username, entityHash, liveId, patch = {}) {
  */
 export function mintLiveBridgeToken(linkSecret, entityHash, liveId) {
 	return createHmac('sha256', Buffer.from(String(linkSecret), 'utf8'))
-		.update(`${entityHash.toLowerCase()}\0${String(liveId).toLowerCase()}`)
+		.update(`${entityHash}\0${liveId}`)
 		.digest('base64url')
 }
 
@@ -276,6 +276,6 @@ export async function getActiveLiveForEntity(username, entityHash, liveId = null
 	const lives = Object.values(view.activeLives || {})
 	if (!lives.length) return listActiveLiveSessions(username, entityHash)[0] || null
 	const event = lives[lives.length - 1]
-	const id = String(event.content?.liveId || event.id || '').toLowerCase()
+	const id = String(event.content?.liveId || event.id || '')
 	return loadLiveSession(username, entityHash, id)
 }

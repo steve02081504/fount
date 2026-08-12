@@ -59,7 +59,7 @@ import {
  * @returns {string} 用于 `UPLOAD_FILES` 权限检查的频道 ID
  */
 export function uploadPermissionChannelId(state, channelId) {
-	const trimmed = String(channelId || '').trim()
+	const trimmed = (channelId || '')
 	if (trimmed && state.channels?.[trimmed]) return trimmed
 	return state.groupSettings?.defaultChannelId || 'default'
 }
@@ -69,7 +69,7 @@ export function uploadPermissionChannelId(state, channelId) {
  * @returns {boolean} 是否为 `blob:{ciphertextHash}`
  */
 function isBlobLocator(locator) {
-	return BLOB_STORAGE_LOCATOR_RE.test(String(locator || '').trim())
+	return BLOB_STORAGE_LOCATOR_RE.test(locator || '')
 }
 
 /**
@@ -89,7 +89,7 @@ export function parseChunkBody(body) {
  * @returns {'convergent'|'random'} 规范模式
  */
 export function normalizeCeMode(value) {
-	return String(value || '').trim().toLowerCase() === 'random' ? 'random' : 'convergent'
+	return (value || '') === 'random' ? 'random' : 'convergent'
 }
 
 /**
@@ -98,8 +98,8 @@ export function normalizeCeMode(value) {
  * @returns {string | null} 小写 hex 或 null
  */
 function ciphertextHashFromLocator(storageLocator) {
-	const m = String(storageLocator || '').match(BLOB_STORAGE_LOCATOR_RE)
-	return m ? m[1].toLowerCase() : null
+	const m = (storageLocator || '').match(BLOB_STORAGE_LOCATOR_RE)
+	return m ? m[1] : null
 }
 
 /**
@@ -112,7 +112,7 @@ function ciphertextHashFromLocator(storageLocator) {
  * @returns {Promise<void>}
  */
 async function mirrorCiphertextToStorageBackends(username, groupId, ciphertextHash, raw, groupSettings = {}) {
-	const hash = String(ciphertextHash || '').trim().toLowerCase()
+	const hash = (ciphertextHash || '')
 	const local = createLocalStoragePlugin(shellChatRoot(username))
 	await local.putChunk(groupId, hash, raw).catch(() => { })
 	await putChunk(hash, raw).catch(() => { })
@@ -196,9 +196,9 @@ function assertFilePartManifest(part) {
 	if (!['convergent', 'random'].includes(ceMode))
 		throw new Error('invalid part ceMode')
 	if (!isBlobLocator(part.storageLocator)) throw new Error('part storageLocator must be blob:{hash}')
-	if (!isHex64(String(part.contentHash).trim().toLowerCase()))
+	if (!isHex64(String(part.contentHash).trim()))
 		throw new Error('invalid part contentHash')
-	if (!isHex64(String(part.ciphertextHash).trim().toLowerCase()))
+	if (!isHex64(String(part.ciphertextHash).trim()))
 		throw new Error('invalid part ciphertextHash')
 }
 
@@ -212,7 +212,7 @@ export function assertFileUploadBody(body) {
 	if (!['convergent', 'random'].includes(ceMode))
 		throw new Error('invalid ceMode')
 	if (Array.isArray(body.parts) && body.parts.length) {
-		if (!isHex64(String(body.contentHash || '').trim().toLowerCase()))
+		if (!isHex64(body.contentHash || ''))
 			throw new Error('invalid contentHash')
 		for (const part of body.parts) assertFilePartManifest(part)
 		return
@@ -221,9 +221,9 @@ export function assertFileUploadBody(body) {
 		if (!body[key]) throw new Error(`${key} required`)
 
 	if (!isBlobLocator(body.storageLocator)) throw new Error('storageLocator must be blob:{hash}')
-	if (!isHex64(String(body.contentHash).trim().toLowerCase()))
+	if (!isHex64(String(body.contentHash).trim()))
 		throw new Error('invalid contentHash')
-	if (!isHex64(String(body.ciphertextHash).trim().toLowerCase()))
+	if (!isHex64(String(body.ciphertextHash).trim()))
 		throw new Error('invalid ciphertextHash')
 }
 
@@ -264,7 +264,7 @@ export async function putEncryptedChunk(username, groupId, options) {
 		const wantFed = storage.storagePeerId === 'federation_swarm' || requiredAcks > 0
 		if (wantFed) {
 			await ensureFederationRoom(username, groupId, {
-				channelId: String(options.channelId || '').trim() || undefined,
+				channelId: (options.channelId || '') || undefined,
 			}).catch(() => { })
 			await replicateChunkToFederation(username, groupId, ciphertextHash, raw, {
 				requiredAcks: storage.storagePeerId === 'federation_swarm' ? requiredAcks : 0,
@@ -341,11 +341,11 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 		const sorted = [...parts].sort((a, b) => Number(a.index ?? 0) - Number(b.index ?? 0))
 		const fileId = String(meta?.fileId || '').trim()
 		const chunkHashes = sorted
-			.map(part => String(part?.ciphertextHash || '').trim().toLowerCase())
+			.map(part => String(part?.ciphertextHash || '').trim())
 			.filter(isHex64)
 		if (fileId && chunkHashes.length)
 			await ensureDownloadTask(username, groupId, fileId, chunkHashes, {
-				contentHash: String(meta?.contentHash || '').trim().toLowerCase(),
+				contentHash: String(meta?.contentHash || '').trim(),
 				totalSize: Number(meta?.size) || 0,
 			}).catch(() => { })
 
@@ -392,7 +392,7 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 
 		const slices = []
 		for (const part of sorted) {
-			const chunkHash = String(part?.ciphertextHash || '').trim().toLowerCase()
+			const chunkHash = String(part?.ciphertextHash || '').trim()
 			try {
 				slices.push(await getDecryptedChunk(
 					username,
@@ -429,11 +429,11 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 		throw new Error('file metadata incomplete')
 	// 单块文件也维护下载任务，使 download-status 能反映真实完成状态（本地命中或经联邦拉取后标记 done）。
 	const fileId = String(meta?.fileId || '').trim()
-	const chunkHash = String(meta?.ciphertextHash || '').trim().toLowerCase()
+	const chunkHash = String(meta?.ciphertextHash || '').trim()
 	const singleHash = isHex64(chunkHash) ? chunkHash : ciphertextHashFromLocator(meta.storageLocator)
 	if (fileId && singleHash)
 		await ensureDownloadTask(username, groupId, fileId, [singleHash], {
-			contentHash: String(meta?.contentHash || '').trim().toLowerCase(),
+			contentHash: String(meta?.contentHash || '').trim(),
 			totalSize: Number(meta?.size) || 0,
 		}).catch(() => { })
 	try {
@@ -474,7 +474,7 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
  * @returns {Promise<Uint8Array>} 明文
  */
 export async function getDecryptedChunk(username, groupId, storageLocator, contentHashHex, options = {}, blamePeerKey) {
-	const contentHash = String(contentHashHex || '').trim().toLowerCase()
+	const contentHash = (contentHashHex || '')
 	const ceMode = normalizeCeMode(options?.ceMode)
 	if (!isBlobLocator(storageLocator)) throw new Error('locator must be blob:{hash}')
 	if (!isHex64(contentHash)) throw new Error('content_hash required')
@@ -579,7 +579,7 @@ export async function releaseFileStorageRefs(username, meta) {
 
 	const blobLocs = new Set()
 	if (meta.storageLocator && isBlobLocator(meta.storageLocator)) blobLocs.add(meta.storageLocator.trim())
-	if (meta.ciphertextHash) blobLocs.add(`blob:${String(meta.ciphertextHash).trim().toLowerCase()}`)
+	if (meta.ciphertextHash) blobLocs.add(`blob:${String(meta.ciphertextHash).trim()}`)
 
 	for (const loc of blobLocs) {
 		released++
@@ -632,7 +632,7 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 		contentHash: uploadMeta.contentHash,
 		ceMode,
 		parts: dagParts.map(part => ({
-			hash: String(part.ciphertextHash || '').trim().toLowerCase(),
+			hash: (part.ciphertextHash || ''),
 			size: 1,
 			...part.contentHash ? { contentHash: part.contentHash } : {},
 		})),

@@ -94,7 +94,7 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
  * @returns {Promise<number>} 导入条数
  */
 export async function syncTimelineForEntity(username, entityHash) {
-	const timelineOwner = entityHash.toLowerCase()
+	const timelineOwner = entityHash
 	const { readTimelineEvents } = await import('./append.mjs')
 
 	let imported = 0
@@ -141,9 +141,9 @@ async function unionFollowingTargetsForLocalEntities(username) {
 	const targets = new Set()
 	const operator = await resolveOperatorEntityHash(username)
 	const actors = []
-	if (operator) actors.push(operator.toLowerCase())
+	if (operator) actors.push(operator)
 	for (const { entityHash } of listLocalAgentEntities(username))
-		actors.push(entityHash.toLowerCase())
+		actors.push(entityHash)
 	for (const actor of actors) {
 		const { following } = await loadFollowingForActor(username, actor)
 		for (const hash of following)
@@ -183,7 +183,7 @@ export async function syncFollowingTimelines(username, options = {}) {
  * @returns {Promise<object[]>} 可见事件切片
  */
 export async function buildFederatedTimelinePullResponse(username, entityHash, afterEventId, requesterNodeHash) {
-	const timelineOwner = entityHash.toLowerCase()
+	const timelineOwner = entityHash
 	const { readTimelineEvents } = await import('./append.mjs')
 	const events = await readTimelineEvents(username, timelineOwner)
 	const start = afterEventId

@@ -120,7 +120,7 @@ export function formatSocialSearchHref(query) {
  * @returns {string} 话题页浏览器 hash 链接
  */
 export function formatSocialTopicHref(tag) {
-	const t = tag.trim().replace(/^#/, '')
+	const t = tag.replace(/^#/, '')
 	return `${SOCIAL_SHELL_PATH}#topic:${encodeURIComponent(t)}`
 }
 

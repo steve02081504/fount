@@ -79,7 +79,7 @@ export async function renderMessageRowElement(message, index, allMessages, rende
 		console.error('[chat] renderMessageRowElement failed', error)
 		const fallback = document.createElement('div')
 		fallback.className = 'chat message message-row text-error text-xs opacity-80 p-2'
-		fallback.dataset.messageId = String(message.eventId || '')
+		fallback.dataset.messageId = (message.eventId || '')
 		fallback.dataset.i18n = 'chat.hub.messageRenderFailed'
 		return fallback
 	}

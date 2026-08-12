@@ -23,7 +23,7 @@ export function wireHeaderEvents() {
 
 	document.getElementById('header-search').addEventListener('input', (event) => {
 		const query = event.target.value.trim()
-		const queryLower = query.toLowerCase()
+		const queryLower = query
 		const chType = store.context.currentState?.channels?.[store.context.currentChannelId]?.type || 'text'
 		if (store.context.currentGroupId && store.context.currentChannelId && chType === 'text') {
 			if (query.length >= 2) scheduleHubMessageSearch(query)
@@ -36,7 +36,7 @@ export function wireHeaderEvents() {
 			return
 		}
 		document.querySelectorAll('#messages .message, #messages .char-entry, #messages .system-message').forEach((element) => {
-			element.style.display = !queryLower || (element.textContent || '').toLowerCase().includes(queryLower) ? '' : 'none'
+			element.style.display = !queryLower || (element.textContent || '').includes(queryLower) ? '' : 'none'
 		})
 	})
 	document.getElementById('header-search').addEventListener('focus', (event) => {

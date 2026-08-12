@@ -35,7 +35,7 @@ export async function showOwnerSuccessionModal(context) {
 			})
 			dialog.querySelector('[data-owner-succ-cancel]')?.addEventListener('click', closeModal)
 			dialog.querySelector('[data-owner-succ-submit]')?.addEventListener('click', async () => {
-				const proposedOwnerPubKeyHash = input instanceof HTMLInputElement ? input.value.trim().toLowerCase() : ''
+				const proposedOwnerPubKeyHash = input instanceof HTMLInputElement ? input.value.trim() : ''
 				if (!proposedOwnerPubKeyHash) {
 					showToastI18n('warning', 'chat.group.ownerSuccession.needHash')
 					return

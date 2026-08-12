@@ -13,8 +13,8 @@ function normalizeLink(linkItem) {
 	const url = String(linkItem?.url || '').trim()
 	if (!url) return null
 	return {
-		icon: String(linkItem.icon || '').trim(),
-		name: String(linkItem.name || '').trim(),
+		icon: (linkItem.icon || ''),
+		name: (linkItem.name || ''),
 		url,
 	}
 }
@@ -25,7 +25,7 @@ function normalizeLink(linkItem) {
  */
 function normalizeTags(tags) {
 	if (!Array.isArray(tags)) return undefined
-	return tags.map(t => String(t).trim().replace(/^#+/, '')).filter(Boolean)
+	return tags.map(t => t.replace(/^#+/, '')).filter(Boolean)
 }
 
 /**
@@ -79,7 +79,7 @@ export function normalizeLocalizedMap(localizedInput) {
 	/** @type {Record<string, object>} */
 	const out = {}
 	for (const [key, value] of Object.entries(localizedInput)) {
-		const localeKey = String(key || '').trim()
+		const localeKey = (key || '')
 		if (!localeKey || !value) continue
 		/** @type {Record<string, unknown>} */
 		const slice = {}
@@ -95,9 +95,9 @@ export function normalizeLocalizedMap(localizedInput) {
  * @returns {boolean} 是否为占位展示名
  */
 export function isPlaceholderDisplayName(displayName, profile) {
-	const name = String(displayName || '').trim()
+	const name = (displayName || '')
 	if (!name) return true
-	const subjectHash = String(profile?.subjectHash || '').trim().toLowerCase()
+	const subjectHash = String(profile?.subjectHash || '').trim()
 	if (!subjectHash || subjectHash.length < 12) return false
 	const placeholder = `${subjectHash.slice(0, 8)}…${subjectHash.slice(-4)}`
 	return name === placeholder

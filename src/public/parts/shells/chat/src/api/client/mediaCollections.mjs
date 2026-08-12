@@ -30,7 +30,7 @@ export function createMediaCollectionsMethods(apiContext) {
 				 */
 				async save({ packId, emojiId }) {
 					const { addPackToCollection } = await import('../../emojiUsage.mjs')
-					const pid = String(packId || '').trim()
+					const pid = (packId || '')
 					if (!pid) throw new Error('emojis.save requires packId')
 					addPackToCollection(apiContext.username, pid)
 					return {

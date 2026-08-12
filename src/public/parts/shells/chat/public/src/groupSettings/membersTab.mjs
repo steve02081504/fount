@@ -17,8 +17,8 @@ import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
  * @returns {Promise<void>}
  */
 async function kickMember(context, username) {
-	const viewerKey = String(context.state?.viewerMemberPubKeyHash || '').toLowerCase()
-	if (viewerKey && username.toLowerCase() === viewerKey)
+	const viewerKey = String(context.state?.viewerMemberPubKeyHash || '')
+	if (viewerKey && username === viewerKey)
 		if (!confirmI18n('chat.group.settings.page.kick.selfNodeWarning', { name: username })) return
 
 	if (!confirmI18n('chat.group.settings.page.kick.confirm', { name: username })) return
@@ -87,14 +87,14 @@ export async function renderMembers(context) {
 	const memberRows = Array.isArray(context.state.members) ? context.state.members : []
 	const labelItems = memberRows.map(member => {
 		const memberKey = member.memberKey || member.pubKeyHash || ''
-		const entityHash = String(member.entityHash || '').trim()
+		const entityHash = (member.entityHash || '')
 		const label = entityHash
 			? resolveDisplayName({
 				entityHash,
 				alias: aliasForEntity(entityHash),
 				profileName: member.displayName,
 			})
-			: String(member.displayName || '').trim()
+			: (member.displayName || '')
 			|| authorDisplayLabel(memberKey)
 		return { member, memberKey, entityHash, label }
 	})

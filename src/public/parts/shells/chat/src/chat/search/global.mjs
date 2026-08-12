@@ -1,5 +1,6 @@
 import { loadPersonalFilterSets, matchesPersonalListEntries } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
+import { escapeRegExp } from '../../../../../../../scripts/regex.mjs'
 import { queryIndex } from '../../../../../../../scripts/search/invertedIndex.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { groupSearchIndexPath } from '../lib/paths.mjs'
@@ -21,7 +22,7 @@ export function globalSearchCursorKey(hit) {
  * @returns {Promise<{ query: string, items: object[], nextCursor: string | null }>} 跨群搜索结果
  */
 export async function searchAllGroups(username, options = {}) {
-	const query = String(options.q || '').trim()
+	const query = (options.q || '').trim()
 	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
 	if (query.length < 2) return { query, items: [], nextCursor: null }
 
@@ -48,9 +49,9 @@ export async function searchAllGroups(username, options = {}) {
 			 * @returns {boolean} 是否通过个人过滤
 			 */
 			verify: doc => {
-				if (!String(doc.text || '').toLowerCase().includes(query.toLowerCase())) return false
+				if (!new RegExp(escapeRegExp(query), 'iu').test(doc.text || '')) return false
 				if (!personalFilter) return true
-				const sender = String(doc.fields?.sender || '').trim().toLowerCase()
+				const sender = String(doc.fields?.sender || '').trim()
 				return !matchesPersonalListEntries([
 					...[...personalFilter.blockedSubjects].map(value => ({ scope: 'subject', value })),
 					...[...personalFilter.hiddenSubjects].map(value => ({ scope: 'subject', value })),

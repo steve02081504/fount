@@ -100,8 +100,8 @@ export async function buildPostFeedItem(username, entityHash, post, feedContext)
  * @returns {Promise<object>} replyContext
  */
 async function buildReplyContext(username, replyTo, feedContext) {
-	const targetEntityHash = String(replyTo.entityHash).toLowerCase()
-	const targetPostId = String(replyTo.postId)
+	const targetEntityHash = replyTo.entityHash
+	const targetPostId = replyTo.postId
 	const authorProfile = await feedContext.authorProfile(targetEntityHash)
 	let text = ''
 	try {

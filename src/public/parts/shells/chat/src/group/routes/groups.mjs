@@ -46,7 +46,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const body = req.body
-		const template = String(body.template || '').trim().toLowerCase()
+		const template = (body.template || '')
 		if (template === 'dm') {
 			const myPubKeyHex = body.myPubKeyHex || ''
 			const peerPubKeyHex = body.peerPubKeyHex || ''
@@ -54,8 +54,8 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 				return res.status(400).json({ error: 'myPubKeyHex and peerPubKeyHex must be 64 hex chars' })
 			if (myPubKeyHex === peerPubKeyHex)
 				return res.status(400).json({ error: 'peerPubKeyHex must differ from myPubKeyHex' })
-			const dmNonce = String(body.dmIntroNonce || '').trim()
-			const dmIntroSignatureHex = String(body.dmIntroSignatureHex || '').trim().replace(/^0x/iu, '')
+			const dmNonce = (body.dmIntroNonce || '')
+			const dmIntroSignatureHex = (body.dmIntroSignatureHex || '').replace(/^0x/iu, '')
 			const hasDmNonce = dmNonce.length > 0
 			const hasDmSignature = dmIntroSignatureHex.length > 0
 			if (hasDmNonce !== hasDmSignature)

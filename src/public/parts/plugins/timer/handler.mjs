@@ -105,7 +105,7 @@ export async function timerReplyHandler(result, args) {
 			const time = c.match(/<time>(.*?)<\/time>/is)?.[1]?.trim()
 			const trigger = c.match(/<trigger>(.*?)<\/trigger>/is)?.[1]?.trim()
 			const reason = c.match(/<reason>(.*?)<\/reason>/is)?.[1]?.trim()
-			const repeat = c.match(/<repeat>(.*?)<\/repeat>/is)?.[1]?.trim().toLowerCase() === 'true'
+			const repeat = /^true$/i.test(c.match(/<repeat>(.*?)<\/repeat>/is)?.[1]?.trim() ?? '')
 
 			if (!reason) {
 				systemLog += '跳过无效条目：缺少 <reason>。\n'

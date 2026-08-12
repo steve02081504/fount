@@ -15,11 +15,11 @@ import { createMember } from './member.mjs'
  * @returns {object} Message 鸭子类型
  */
 export function createMessage(apiContext, groupId, line, mentions) {
-	const eventId = String(line.eventId || line.id || '').trim().toLowerCase()
+	const eventId = String(line.eventId || line.id || '').trim()
 	const wire = line.content != null && typeof line.content === 'object' ? line.content : null
 	const chat = wire ? chatExtensionOf(wire) : line.extension?.chat
 	const channelId = line.channelId || chat?.channelId || 'default'
-	const content = wire ? messageAgentText(wire) : String(line.content ?? '')
+	const content = wire ? messageAgentText(wire) : (line.content ?? '')
 	const messageMentions = mentions || line.mentions
 	const signOptions = { entityHash: apiContext.entityHash }
 	const chatLogEntryId = chat?.entryId || wire?.extension?.chat?.entryId
@@ -38,7 +38,7 @@ export function createMessage(apiContext, groupId, line, mentions) {
 		async author() {
 			const { loadGroupState } = await import('./internal.mjs')
 			const state = await loadGroupState(apiContext, groupId)
-			const senderKey = String(line.sender || '').trim().toLowerCase()
+			const senderKey = (line.sender || '')
 			const member = state.members[senderKey]
 			if (line.charId) {
 				const agentKey = Object.keys(state.members).find(key => {
@@ -58,7 +58,7 @@ export function createMessage(apiContext, groupId, line, mentions) {
 				line.uid
 				|| chat?.bridge?.authorEntityHash
 				|| '',
-			).toLowerCase()
+			)
 			if (uid)
 				return createMember(apiContext, groupId, uid, {
 					memberKind: line.role === 'char' || line.charId ? 'agent' : 'user',

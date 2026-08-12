@@ -98,7 +98,7 @@ function decryptAesGcm(envelope, key) {
  * @returns {Promise<string | null>} 64 hex pubKey
  */
 async function resolveEntityPubKeyHex(username, entityHash) {
-	const hash = String(entityHash).toLowerCase()
+	const hash = entityHash
 	try {
 		const { getEntityActivePubKey } = await import('../../../chat/src/entity/identity.mjs')
 		const pub = await getEntityActivePubKey(username, hash)
@@ -162,11 +162,11 @@ export async function maybeEncryptPostContent(username, entityHash, postKeyId, c
 		/** @type {Record<string, object>} */
 		const wraps = {}
 		const recipients = new Set(spec.allow || [])
-		recipients.add(String(entityHash).toLowerCase())
+		recipients.add(entityHash)
 		for (const recipient of recipients) {
 			const pub = await resolveEntityPubKeyHex(username, recipient)
 			if (!pub) {
-				if (recipient === String(entityHash).toLowerCase())
+				if (recipient === entityHash)
 					throw new Error(`cannot resolve author pubkey for pkw: ${recipient}`)
 				continue
 			}
@@ -233,8 +233,8 @@ export async function maybeDecryptPostContent(username, entityHash, content, vie
 	}
 
 	const candidates = [
-		viewerEntityHash && String(viewerEntityHash).toLowerCase(),
-		String(entityHash).toLowerCase(),
+		viewerEntityHash && viewerEntityHash,
+		entityHash,
 	].filter(Boolean)
 	const seen = new Set()
 	for (const candidate of candidates) {

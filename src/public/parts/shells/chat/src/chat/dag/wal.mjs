@@ -27,15 +27,15 @@ import { isFederatableDagEvent } from './eventTypes.mjs'
 export async function verifyEventsSnapshotWAL(username, groupId, checkpoint, events) {
 	const rows = events ?? await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	if (!checkpoint) return { ok: true }
-	const tipId = String(checkpoint.checkpoint_event_id || '').trim().toLowerCase()
+	const tipId = (checkpoint.checkpoint_event_id || '')
 	if (!tipId) return { ok: true }
 	if (!isHex64(tipId))
 		return { ok: false, reason: 'checkpoint_event_id invalid', forceFullReplay: true }
 	if (!rows.length)
 		return { ok: false, reason: 'checkpoint without events', forceFullReplay: true }
 	const federatableRows = rows.filter(isFederatableDagEvent)
-	const anchorInEvents = rows.some(row => String(row.id || '').trim().toLowerCase() === tipId)
-	const tips = computeDagTipIdsFromEvents(federatableRows).map(t => String(t).trim().toLowerCase())
+	const anchorInEvents = rows.some(row => (row.id || '') === tipId)
+	const tips = computeDagTipIdsFromEvents(federatableRows).map(t => t)
 	// 采纳的 owner 签名基态 checkpoint 在联邦 catch-up 全周期内保持权威，不得 forceFullReplay：
 	//   · 锚点尚未被 gossip 拉回 events
 	//   · DAG 仍有悬挂父（有叶无链）
@@ -62,7 +62,7 @@ export async function verifyEventsSnapshotWAL(username, groupId, checkpoint, eve
 		}
 
 	const snapshotTips = (Array.isArray(checkpoint.dag_tip_ids) ? checkpoint.dag_tip_ids : [])
-		.map(t => String(t).trim().toLowerCase())
+		.map(t => t)
 		.filter(isHex64)
 	if (snapshotTips.length && tips.length) {
 		const tipSet = new Set(tips)

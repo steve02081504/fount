@@ -42,7 +42,7 @@ export function packsRoot(replicaUsername, entityHash) {
  * @returns {Promise<{ replicaUsername: string, authorEntityHash: string } | null>} 托管位置
  */
 export async function findEntityPackHost(packId) {
-	const pid = String(packId || '').trim()
+	const pid = (packId || '')
 	if (!pid || !store.isSafePackId(pid)) return null
 	if (packHostCache.has(pid)) {
 		const hit = packHostCache.get(pid)
@@ -121,7 +121,7 @@ export async function loadEntityPackManifest(replicaUsername, authorEntityHash, 
  * @returns {Promise<object>} manifest
  */
 export async function createEntityPack(replicaUsername, authorEntityHash, fields = {}) {
-	const packId = String(fields.packId || '').trim() || prefixedRandomId('epack_')
+	const packId = (fields.packId || '') || prefixedRandomId('epack_')
 	const manifest = await store.createPack(
 		packsRoot(replicaUsername, authorEntityHash),
 		entitySource(authorEntityHash),
@@ -145,7 +145,7 @@ export async function updateEntityPack(replicaUsername, authorEntityHash, packId
 		packId,
 		patch,
 	)
-	packHostCache.delete(String(packId || '').trim())
+	packHostCache.delete(packId || '')
 	return manifest
 }
 
@@ -157,7 +157,7 @@ export async function updateEntityPack(replicaUsername, authorEntityHash, packId
  */
 export async function deleteEntityPack(replicaUsername, authorEntityHash, packId) {
 	const ok = await store.deletePack(packsRoot(replicaUsername, authorEntityHash), packId)
-	packHostCache.delete(String(packId || '').trim())
+	packHostCache.delete(packId || '')
 	return ok
 }
 

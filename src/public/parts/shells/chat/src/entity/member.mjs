@@ -13,7 +13,7 @@ import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
  * @returns {string | null} entityHash；无法派生时为 null
  */
 export function memberEntityHash(member) {
-	const declared = String(member?.entityHash || '').trim().toLowerCase()
+	const declared = String(member?.entityHash || '').trim()
 	return isEntityHash128(declared) ? declared : null
 }
 
@@ -35,7 +35,7 @@ export async function ensureLocalAgentEntityHash(username, charname) {
  * @returns {string | null} 角色 part 名
  */
 export function resolveAgentCharPartName(replicaUsername, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = (entityHash || '')
 	if (!isEntityHash128(hash)) return null
 	const identityPath = path.join(getUserDictionary(replicaUsername), 'entities', hash, 'identity.json')
 	if (!fs.existsSync(identityPath)) return null
@@ -66,7 +66,7 @@ export function scanLocalAgentEntitiesFromChars(replicaUsername) {
 			const row = JSON.parse(fs.readFileSync(identityPath, 'utf8'))
 			if (row?.charPartName && row?.ownerEntityHash)
 				agents.push({
-					entityHash: String(ent.name).toLowerCase(),
+					entityHash: String(ent.name),
 					charPartName: String(row.charPartName),
 				})
 		}

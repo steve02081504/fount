@@ -43,7 +43,7 @@ async function loadStateForChannelKeys(username, groupId) {
  * @returns {Promise<void>}
  */
 export async function ensureChannelKey(username, groupId, channelId) {
-	const id = String(channelId || '').trim()
+	const id = (channelId || '')
 	if (!id) return
 	const file = await loadChannelKeysFile(username, groupId)
 	const row = file.channels[id]
@@ -76,7 +76,7 @@ export async function ensureChannelKey(username, groupId, channelId) {
  * @returns {Promise<object | null>} 签名事件
  */
 export async function appendChannelKeyRotate(username, groupId, channelId) {
-	const id = String(channelId || '').trim()
+	const id = (channelId || '')
 	if (!id) return null
 	const state = await loadStateForChannelKeys(username, groupId)
 	if (!state.channels[id]) return null
