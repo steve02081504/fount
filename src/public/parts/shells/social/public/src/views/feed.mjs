@@ -239,14 +239,14 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 			try {
 				const nearbyPromise = getTrendingHashtags({ scope: 'nearby' })
 					.then(data => {
-						const tags = data.tags || []
+						const tags = data.tags
 						trendingCacheByScope.nearby = tags
 						return tags
 					})
 					.catch(() => trendingCacheByScope.nearby || [])
 				const localPromise = getTrendingHashtags({ scope: 'local' })
 					.then(data => {
-						const tags = data.tags || []
+						const tags = data.tags
 						trendingCacheByScope.local = tags
 						return tags
 					})

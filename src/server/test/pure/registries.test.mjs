@@ -24,8 +24,7 @@ Deno.test('resolveRegistryPathToUrl joins part-relative path', () => {
 
 Deno.test('resolveRegistryPathToUrl matches partPublicRelToBrowserPath for public files', () => {
 	const viaRegistry = resolveRegistryPathToUrl('shells/chat', 'hub/x.mjs')
-	const viaPartPublic = partPublicRelToBrowserPath('shells/chat/public/hub/x.mjs')
-	assertEquals(viaRegistry, viaPartPublic)
+	assertEquals(viaRegistry, partPublicRelToBrowserPath('shells/chat/public/hub/x.mjs'))
 	assertEquals(viaRegistry, '/parts/shells:chat/hub/x.mjs')
 })
 
