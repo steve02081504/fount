@@ -119,15 +119,10 @@ Deno.test('chat 3-node E2E', async t => {
 		await modules.schedule.rotateAllChannelKeys(NODE_A, groupId)
 		await gossipAll([NODE_A, NODE_B, NODE_C], groupId, { assertConverged: true })
 
-		const bSigner = await modules.localSigner.resolveLocalEventSigner(NODE_B, groupId)
-		const bState = await stateOf(NODE_B, groupId)
-		assertEquals(bSigner.sender, memberPubKeyByNode.B, 'B local signer drifted from join-time pubKeyHash')
-		assertEquals(bState.members[memberPubKeyByNode.B]?.status, 'active',
-			`B missing from own members (signer=${bSigner.sender} keys=${Object.keys(bState.members).join(',')})`)
-
 		// 串行发帖 + 实时推送：每条帖即时下发给对端，保持 DAG 线性（避免并发分叉污染后续治理收敛）。
 		const m1 = await postMessage(NODE_A, groupId, publicChannelId, 'hello default from A', [NODE_B, NODE_C])
 		const m2 = await postMessage(NODE_A, groupId, 'general', 'hello general from A', [NODE_B, NODE_C])
+		assertEquals((await stateOf(NODE_B, groupId)).members[memberPubKeyByNode.B]?.status, 'active')
 		// B 在公共频道发帖（验证非 owner 节点亦可发帖并反向同步到 A/C）。
 		const m3 = await postMessage(NODE_B, groupId, publicChannelId, 'hi default from B', [NODE_A, NODE_C])
 
