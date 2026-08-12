@@ -5410,7 +5410,13 @@
 					"placeholder": "供測試用的檔案路徑，例如 C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "請先填寫測試檔案路徑。",
-				"success": "已嘗試在外部編輯器中開啟。"
+				"success": "已嘗試在外部編輯器中開啟。",
+				"lineInput": {
+					"aria-label": "行號"
+				},
+				"columnInput": {
+					"aria-label": "列號"
+				}
 			}
 		},
 		"logout": {

@@ -5411,7 +5411,13 @@
 					"placeholder": "Pfad zu einer Datei zum Ausprobieren, z. B. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Bitte zuerst einen Pfad zur Testdatei angeben.",
-				"success": "Befehl zum Öffnen im Editor wurde ausgeführt."
+				"success": "Befehl zum Öffnen im Editor wurde ausgeführt.",
+				"lineInput": {
+					"aria-label": "Zeilennummer"
+				},
+				"columnInput": {
+					"aria-label": "Spaltennummer"
+				}
 			}
 		},
 		"logout": {

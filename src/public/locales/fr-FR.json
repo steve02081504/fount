@@ -5417,7 +5417,13 @@
 					"placeholder": "Chemin d’un fichier à essayer, ex. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Indiquez d’abord le chemin du fichier de test.",
-				"success": "La commande d’ouverture dans l’éditeur a été exécutée."
+				"success": "La commande d’ouverture dans l’éditeur a été exécutée.",
+				"lineInput": {
+					"aria-label": "Numéro de ligne"
+				},
+				"columnInput": {
+					"aria-label": "Numéro de colonne"
+				}
 			}
 		},
 		"logout": {

@@ -5411,7 +5411,13 @@
 					"placeholder": "مسار ملف لتجربة الفتح، مثلًا C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "يرجى إدخال مسار ملف الاختبار أولاً.",
-				"success": "تم تنفيذ أمر الفتح في المحرر الخارجي."
+				"success": "تم تنفيذ أمر الفتح في المحرر الخارجي.",
+				"lineInput": {
+					"aria-label": "رقم السطر"
+				},
+				"columnInput": {
+					"aria-label": "رقم العمود"
+				}
 			}
 		},
 		"logout": {

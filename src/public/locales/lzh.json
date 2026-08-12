@@ -5411,7 +5411,13 @@
 					"placeholder": "試用之卷徑，例：C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "宜先填試用之卷徑。",
-				"success": "已行外在編輯器啟卷之試。"
+				"success": "已行外在編輯器啟卷之試。",
+				"lineInput": {
+					"aria-label": "行号"
+				},
+				"columnInput": {
+					"aria-label": "列号"
+				}
 			}
 		},
 		"logout": {

@@ -5380,6 +5380,12 @@ export type LocaleData = {
 				}
 				pathRequired: string
 				success: string
+				lineInput: {
+					'aria-label': string
+				}
+				columnInput: {
+					'aria-label': string
+				}
 			}
 		}
 		logout: {

@@ -5411,7 +5411,13 @@
 					"placeholder": "📂 C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "⚠️📂❓",
-				"success": "✅▶️🖥️📂"
+				"success": "✅▶️🖥️📂",
+				"lineInput": {
+					"aria-label": "行号"
+				},
+				"columnInput": {
+					"aria-label": "列号"
+				}
 			}
 		},
 		"logout": {

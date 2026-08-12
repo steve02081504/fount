@@ -5411,7 +5411,13 @@
 					"placeholder": "Slóð að skrá til að prófa, t.d. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Sláðu fyrst inn prófunarslóð.",
-				"success": "Keyrði skipun til að opna skrána í ytri ritstjóra."
+				"success": "Keyrði skipun til að opna skrána í ytri ritstjóra.",
+				"lineInput": {
+					"aria-label": "Línunúmer"
+				},
+				"columnInput": {
+					"aria-label": "Dálknúmer"
+				}
 			}
 		},
 		"logout": {

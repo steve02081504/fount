@@ -5417,7 +5417,13 @@
 					"placeholder": "Pad naar een bestand om te proberen, bijv. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Vul eerst het pad naar het testbestand in.",
-				"success": "De opdracht om in de editor te openen is uitgevoerd."
+				"success": "De opdracht om in de editor te openen is uitgevoerd.",
+				"lineInput": {
+					"aria-label": "Lijnnummer"
+				},
+				"columnInput": {
+					"aria-label": "Kolomnummer"
+				}
 			}
 		},
 		"logout": {
