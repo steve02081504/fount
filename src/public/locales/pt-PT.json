@@ -173,7 +173,7 @@
 				"expected": "esperado ${expected}"
 			},
 			"reusedSuite": ">>> Reutilizar ${manifestId}:${name} (o gatilho permanece inalterado, o último ${status} é usado)",
-			"prunedAbsentState": "Status limpo de suítes inexistentes: ${suites} suítes, ${subtests} subtestes",
+			"prunedAbsentState": "Estado de suites removidas limpo: ${suites} suites, ${subtests} subtestes",
 			"noisyOnlyRemain": "Ainda há ${count} suítes passando mas com ruído: ${suites}",
 			"noRealRunPlanned": "Não há necessidade de executar desta vez: ${reused} são reutilizados e espera-se que ${blocked} sejam bloqueados (o gatilho permanece inalterado)",
 			"allReusedHint": "Nenhum suite é realmente executado desta vez: a falha é o último resultado herdado e o bloqueio não é resolvido (os ficheiros relevantes permanecem inalterados). Repare os ficheiros relevantes e execute novamente ou use fount test --force para forçar uma execução real.",

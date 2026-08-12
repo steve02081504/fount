@@ -173,7 +173,7 @@
 				"expected": "previsto ${expected}"
 			},
 			"reusedSuite": ">>> Riutilizza ${manifestId}:${name} (il trigger rimane invariato, viene utilizzato l'ultimo ${status})",
-			"prunedAbsentState": "Stato ripulito delle suite inesistenti: suite ${suites}, sottotest ${subtests}",
+			"prunedAbsentState": "Rimosso lo stato di suite non più presenti: ${suites} suite, ${subtests} sottotest",
 			"noisyOnlyRemain": "Ci sono ancora ${count} suite che passano ma con rumore: ${suites}",
 			"noRealRunPlanned": "Non è necessario eseguire questa volta: ${reused} vengono riutilizzati e ${blocked} dovrebbero essere bloccati (il trigger rimane invariato)",
 			"allReusedHint": "Questa volta non viene effettivamente eseguito alcun pacchetto: l'errore è l'ultimo risultato ereditato e il blocco non viene risolto (i file rilevanti rimangono invariati). Riparare i file rilevanti ed eseguirli nuovamente oppure utilizzare fount test --force per forzare un'esecuzione reale.",

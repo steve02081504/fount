@@ -173,7 +173,7 @@
 				"expected": "attendu ${expected}"
 			},
 			"reusedSuite": ">>> Réutilisation de ${manifestId}:${name} (déclencheur inchangé, dernier ${status})",
-			"prunedAbsentState": "Statut nettoyé des suites inexistantes : suites ${suites}, sous-tests ${subtests}",
+			"prunedAbsentState": "État obsolète des suites supprimées nettoyé : ${suites} suite(s), ${subtests} sous-test(s)",
 			"noisyOnlyRemain": "Encore ${count} suites réussies avec bruit : ${suites}",
 			"noRealRunPlanned": "Aucune exécution nécessaire : ${reused} réutilisées, ${blocked} bloquées prévues (trigger inchangé)",
 			"allReusedHint": "Aucune suite réellement exécutée : les échecs sont hérités, les blocages non résolus (fichiers inchangés). Corrigez puis relancez, ou fount test --force pour forcer.",

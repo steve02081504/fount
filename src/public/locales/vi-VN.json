@@ -173,7 +173,7 @@
 				"expected": "dự kiến ${expected}"
 			},
 			"reusedSuite": "\n>>> Tái sử dụng ${manifestId}:${name} (trigger không đổi, dùng ${status} lần trước)",
-			"prunedAbsentState": "Đã xóa trạng thái của các bộ không tồn tại: bộ ${suites}, bài kiểm tra phụ ${subtests}",
+			"prunedAbsentState": "Đã xóa trạng thái các suite không còn tồn tại: ${suites} suite, ${subtests} subtest",
 			"noisyOnlyRemain": "Vẫn còn ${count} suite đạt nhưng có nhiễu: ${suites}",
 			"noRealRunPlanned": "Lần này không cần chạy thật: tái sử dụng ${reused}, dự kiến chặn ${blocked} (trigger không đổi)",
 			"allReusedHint": "Lần này không chạy thật suite nào: lỗi là kết quả lần trước, chặn chưa giải (tệp liên quan không đổi). Sửa tệp rồi chạy lại, hoặc dùng `fount test --force` để ép chạy thật.",

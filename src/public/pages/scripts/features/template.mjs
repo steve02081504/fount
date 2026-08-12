@@ -7,38 +7,6 @@ import { svgInliner } from '../lib/svgInliner.mjs'
 
 const template_cache = {}
 
-/** 模板根切换 / 渲染互斥：避免 prompt 的 withTemplates 与侧栏 renderTemplate 并发串台。 */
-let templateGate = Promise.resolve()
-let templateDepth = 0
-
-/**
- * 在模板互斥闸下执行；同调用栈内可重入（withTemplates → renderTemplate）。
- * @template T
- * @param {() => T | Promise<T>} fn 回调
- * @returns {Promise<T>} 回调结果
- */
-function withTemplateGate(fn) {
-	if (templateDepth > 0) {
-		templateDepth++
-		return Promise.resolve()
-			.then(fn)
-			.finally(() => { templateDepth-- })
-	}
-	const previous = templateGate
-	let release
-	templateGate = new Promise(resolve => { release = resolve })
-	return previous.then(async () => {
-		templateDepth++
-		try {
-			return await fn()
-		}
-		finally {
-			templateDepth--
-			release()
-		}
-	})
-}
-
 // 不需要闭合的空元素 (Void Elements)
 const VOID_TAGS = new Set([
 	'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'
@@ -200,113 +168,121 @@ export function createDOMFromHtmlString(htmlString) {
 let templatePath
 
 /**
- * 设置模板路径。
+ * 将 usingTemplates / 显式根解析为可 fetch 的绝对路径。
+ * @param {string} path 模板根（如 `/parts/shells:social/src/templates`）
+ * @returns {string} 绝对模板根
+ */
+export function resolveTemplateRoot(path) {
+	return (base_dir + '/' + path).replace(/\/+/g, '/').replace(/\/$/g, '')
+}
+
+/**
+ * 设置默认模板路径（页面入口调用；跨壳并发渲染请传显式 `templatesRoot`）。
  * @param {string} path - 模板路径。
  * @returns {void}
  */
 export function usingTemplates(path) {
-	templatePath = (base_dir + '/' + path).replace(/\/+/g, '/').replace(/\/$/g, '')
+	templatePath = resolveTemplateRoot(path)
 }
 
 /**
  * 在指定模板根下执行回调，结束后恢复先前路径（跨壳共享模块勿裸调 usingTemplates）。
+ * 并发不安全——跨壳 / 与侧栏同时渲染时请给 `renderTemplate` 传 `templatesRoot`。
  * @template T
  * @param {string} path 模板根（同 usingTemplates）
  * @param {() => T | Promise<T>} fn 回调
  * @returns {Promise<T>} 回调结果
  */
 export async function withTemplates(path, fn) {
-	return withTemplateGate(async () => {
-		const previous = templatePath
-		usingTemplates(path)
-		try {
-			return await fn()
-		}
-		finally {
-			templatePath = previous
-		}
-	})
+	const previous = templatePath
+	usingTemplates(path)
+	try {
+		return await fn()
+	}
+	finally {
+		templatePath = previous
+	}
 }
 
 /**
  * 渲染模板(不激活脚本)。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
+ * @param {string} [templatesRoot] - 显式模板根（跳过全局 templatePath，跨壳安全）
  * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素(脚本未激活)。
  */
-export async function renderTemplateNoScriptActivation(template, data = {}) {
-	return withTemplateGate(async () => {
-		data.geti18n ??= geti18n
-		data.renderTemplate ??= renderTemplateAsHtmlString
-		/**
-		 * 在模板渲染上下文中设置一个值。
-		 * @template T - 要设置的变量类型。
-		 * @param {string} name - 要设置的变量名。
-		 * @param {T} value - 要设置的变量值。
-		 * @returns {T} - 设置的值。
-		 */
-		data.setValue ??= (name, value) => data[name] = value
-		data.escapeHtml ??= escapeHtml
-		// 按完整 URL 缓存：不同 withTemplates 根互不覆盖；失败勿留下 rejected Promise。
-		const url = `${templatePath}/${template}.html`
-		const cacheKey = url
-		if (!Object.hasOwn(template_cache, cacheKey))
-			template_cache[cacheKey] = fetch(url).then(response => {
-				if (!response.ok) {
-					delete template_cache[cacheKey]
-					throw new Error(`HTTP error, status: ${response.status}`)
-				}
-				return response.text()
-			}, error => {
+export async function renderTemplateNoScriptActivation(template, data = {}, templatesRoot) {
+	data.geti18n ??= geti18n
+	data.renderTemplate ??= renderTemplateAsHtmlString
+	/**
+	 * 在模板渲染上下文中设置一个值。
+	 * @template T - 要设置的变量类型。
+	 * @param {string} name - 要设置的变量名。
+	 * @param {T} value - 要设置的变量值。
+	 * @returns {T} - 设置的值。
+	 */
+	data.setValue ??= (name, value) => data[name] = value
+	data.escapeHtml ??= escapeHtml
+	const root = templatesRoot != null ? resolveTemplateRoot(templatesRoot) : templatePath
+	const url = `${root}/${template}.html`
+	const cacheKey = url
+	if (!Object.hasOwn(template_cache, cacheKey))
+		template_cache[cacheKey] = fetch(url).then(response => {
+			if (!response.ok) {
 				delete template_cache[cacheKey]
-				throw error
-			})
-		let html = template_cache[cacheKey] = await template_cache[cacheKey]
-
-		// 使用循环匹配所有 ${...} 表达式
-		let result = ''
-		const errors = []
-		while (html.indexOf('${') != -1) {
-			const length = html.indexOf('${')
-			result += html.slice(0, length)
-			html = html.slice(length + 2)
-			let end_index = 0
-			let matched = false
-			find: while (html.indexOf('}', end_index) != -1) { // 我们需要遍历所有的结束符直到表达式跑通
-				end_index = html.indexOf('}', end_index) + 1
-				const expression = html.slice(0, end_index - 1)
-				try {
-					const eval_result = await async_eval(expression, data)
-					if (eval_result.error) throw eval_result.error
-					result += escapeUnclosedTags(String(eval_result.result))
-					html = html.slice(end_index)
-					errors.length = 0
-					matched = true
-					break find
-				} catch (error) {
-					errors.push(error)
-				}
+				throw new Error(`HTTP error, status: ${response.status}`)
 			}
-			if (!matched) {
-				errors.forEach(console.error)
+			return response.text()
+		}, error => {
+			delete template_cache[cacheKey]
+			throw error
+		})
+	let html = template_cache[cacheKey] = await template_cache[cacheKey]
+
+	// 使用循环匹配所有 ${...} 表达式
+	let result = ''
+	const errors = []
+	while (html.indexOf('${') != -1) {
+		const length = html.indexOf('${')
+		result += html.slice(0, length)
+		html = html.slice(length + 2)
+		let end_index = 0
+		let matched = false
+		find: while (html.indexOf('}', end_index) != -1) { // 我们需要遍历所有的结束符直到表达式跑通
+			end_index = html.indexOf('}', end_index) + 1
+			const expression = html.slice(0, end_index - 1)
+			try {
+				const eval_result = await async_eval(expression, data)
+				if (eval_result.error) throw eval_result.error
+				result += escapeUnclosedTags(String(eval_result.result))
+				html = html.slice(end_index)
 				errors.length = 0
-				result += `\${${html.slice(0, end_index || html.length)}`
-				html = html.slice(end_index || html.length)
+				matched = true
+				break find
+			} catch (error) {
+				errors.push(error)
 			}
 		}
-		result += html
-		return i18nElement(await svgInliner(createDOMFromHtmlStringNoScriptActivation(result)), { skip_report: true })
-	})
+		if (!matched) {
+			errors.forEach(console.error)
+			errors.length = 0
+			result += `\${${html.slice(0, end_index || html.length)}`
+			html = html.slice(end_index || html.length)
+		}
+	}
+	result += html
+	return i18nElement(await svgInliner(createDOMFromHtmlStringNoScriptActivation(result)), { skip_report: true })
 }
 
 /**
  * 渲染模板。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
+ * @param {string} [templatesRoot] - 显式模板根（跨壳安全）
  * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素。
  */
-export async function renderTemplate(template, data = {}) {
-	const node = await renderTemplateNoScriptActivation(template, data)
+export async function renderTemplate(template, data = {}, templatesRoot) {
+	const node = await renderTemplateNoScriptActivation(template, data, templatesRoot)
 	return activateScripts(node)
 }
 
@@ -314,10 +290,11 @@ export async function renderTemplate(template, data = {}) {
  * 将模板渲染为 HTML 字符串。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
+ * @param {string} [templatesRoot] - 显式模板根（跨壳安全）
  * @returns {Promise<string>} - 渲染后的 HTML 字符串。
  */
-export async function renderTemplateAsHtmlString(template, data = {}) {
-	let node = await renderTemplateNoScriptActivation(template, data)
+export async function renderTemplateAsHtmlString(template, data = {}, templatesRoot) {
+	let node = await renderTemplateNoScriptActivation(template, data, templatesRoot)
 	if (node.nodeType === Node.DOCUMENT_NODE) {
 		node = node.documentElement.outerHTML
 		node = node.replace(/\s*<\/body>\s*<\/html>$/i, '\n</body>\n\n</html>\n')
@@ -356,10 +333,11 @@ function mountRenderedNode(parent, node) {
  * @param {Element} parent 父节点
  * @param {string} template 模板路径（相对 templates 根）
  * @param {object} [data] 模板数据
+ * @param {string} [templatesRoot] 显式模板根（跨壳安全）
  * @returns {Promise<Element>} 挂载后的父节点（内容已移入 parent）
  */
-export async function mountTemplate(parent, template, data = {}) {
-	const node = await renderTemplate(template, data)
+export async function mountTemplate(parent, template, data = {}, templatesRoot) {
+	const node = await renderTemplate(template, data, templatesRoot)
 	parent.replaceChildren()
 	mountRenderedNode(parent, node)
 	return parent
@@ -370,10 +348,11 @@ export async function mountTemplate(parent, template, data = {}) {
  * @param {Element} parent 父节点
  * @param {string} template 模板路径（相对 templates 根）
  * @param {object} [data] 模板数据
+ * @param {string} [templatesRoot] 显式模板根（跨壳安全）
  * @returns {Promise<Element>} 父节点
  */
-export async function appendTemplate(parent, template, data = {}) {
-	const node = await renderTemplate(template, data)
+export async function appendTemplate(parent, template, data = {}, templatesRoot) {
+	const node = await renderTemplate(template, data, templatesRoot)
 	mountRenderedNode(parent, node)
 	return parent
 }

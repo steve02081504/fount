@@ -5,22 +5,12 @@
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 
 import { pickFromDialog } from './dialog.mjs'
-import { withTemplates } from './template.mjs'
 
 const TEMPLATES = '/scripts/features/templates'
 
 const CANCEL_OK = `
 		<button type="button" class="btn" data-dialog-cancel data-i18n="util.common.cancel"></button>
 		<button type="button" class="btn btn-primary" data-dialog-resolve="ok" data-i18n="util.common.confirm"></button>`
-
-/**
- * @template T
- * @param {() => Promise<T>} fn 在共享模板根下执行
- * @returns {Promise<T>} 回调结果
- */
-function withSharedTemplates(fn) {
-	return withTemplates(TEMPLATES, fn)
-}
 
 /**
  * @param {Record<string, string | number>} [params] i18n 插值（写入 data-*）
@@ -41,13 +31,14 @@ function i18nParamAttrs(params = {}) {
 export function promptText(i18nKey, value = '', params = {}) {
 	const key = i18nKey.trim()
 	if (!key) throw new Error('promptText requires i18n key')
-	return withSharedTemplates(() => pickFromDialog('text_prompt_modal', {
+	return pickFromDialog('text_prompt_modal', {
 		titleI18n: key,
 		titleParamsAttrs: i18nParamAttrs(params),
 		boxClass: '',
 		bodyHtml: `<input type="text" class="input input-bordered w-full" id="promptInput" aria-labelledby="promptDialogTitle" value="${escapeHtml(value)}" autofocus user-content />`,
 		actionsHtml: CANCEL_OK,
 	}, {
+		templatesRoot: TEMPLATES,
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框
 		 * @returns {string | null} 输入值或 null
@@ -56,7 +47,7 @@ export function promptText(i18nKey, value = '', params = {}) {
 			const input = dialog.querySelector('#promptInput')
 			return input instanceof HTMLInputElement ? input.value.trim() : null
 		},
-	}))
+	})
 }
 
 /**
@@ -68,13 +59,14 @@ export function promptText(i18nKey, value = '', params = {}) {
 export function promptTextArea(i18nKey, value = '', params = {}) {
 	const key = i18nKey.trim()
 	if (!key) throw new Error('promptTextArea requires i18n key')
-	return withSharedTemplates(() => pickFromDialog('text_prompt_modal', {
+	return pickFromDialog('text_prompt_modal', {
 		titleI18n: key,
 		titleParamsAttrs: i18nParamAttrs(params),
 		boxClass: '',
 		bodyHtml: `<textarea class="textarea textarea-bordered w-full min-h-32" id="promptInput" aria-labelledby="promptDialogTitle" maxlength="2000" rows="6" autofocus user-content>${escapeHtml(value)}</textarea>`,
 		actionsHtml: CANCEL_OK,
 	}, {
+		templatesRoot: TEMPLATES,
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框
 		 * @returns {string | null} 文本或 null
@@ -83,7 +75,7 @@ export function promptTextArea(i18nKey, value = '', params = {}) {
 			const input = dialog.querySelector('#promptInput')
 			return input instanceof HTMLTextAreaElement ? input.value.trim() : null
 		},
-	}))
+	})
 }
 
 /**
@@ -94,8 +86,8 @@ export function promptTextArea(i18nKey, value = '', params = {}) {
 export async function confirmAction(i18nKey, params = {}) {
 	const key = i18nKey.trim()
 	if (!key) throw new Error('confirmAction requires i18n key')
-	return await withSharedTemplates(() => pickFromDialog('confirm_modal', {
+	return await pickFromDialog('confirm_modal', {
 		messageI18n: key,
 		messageParamsAttrs: i18nParamAttrs(params),
-	})) === 'ok'
+	}, { templatesRoot: TEMPLATES }) === 'ok'
 }

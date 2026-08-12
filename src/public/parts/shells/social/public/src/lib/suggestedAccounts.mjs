@@ -4,6 +4,9 @@ import { entityHandle, renderAvatarHtml } from './display.mjs'
 import { appendTemplate } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
+/** Social 壳模板根（显式传入，避免与 chat withTemplates 并发串台）。 */
+const SOCIAL_TEMPLATES = '/parts/shells:social/src/templates'
+
 /**
  * 渲染推荐关注行到容器（feed / explore 侧栏共用）。
  * @param {HTMLElement} list 列表容器
@@ -19,5 +22,5 @@ export async function renderSuggestedAccountRows(list, accounts) {
 			name: escapeHtml(account.name),
 			handle: escapeHtml(entityHandle(account.entityHash, account)),
 			avatarHtml: renderAvatarHtml(account.entityHash, { name: account.name }),
-		})
+		}, SOCIAL_TEMPLATES)
 }

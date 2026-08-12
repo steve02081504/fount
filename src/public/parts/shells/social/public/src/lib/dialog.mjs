@@ -3,7 +3,6 @@
  */
 export { promptText, promptTextArea, confirmAction } from '/scripts/features/promptDialog.mjs'
 import { pickFromDialog } from '/scripts/features/dialog.mjs'
-import { withTemplates } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 const SHARED_TEMPLATES = '/scripts/features/templates'
@@ -19,11 +18,11 @@ const OK_ONLY = `
 export function showText(text, titleI18nKey) {
 	const key = titleI18nKey.trim()
 	if (!key) throw new Error('showText requires title i18n key')
-	return withTemplates(SHARED_TEMPLATES, () => pickFromDialog('text_prompt_modal', {
+	return pickFromDialog('text_prompt_modal', {
 		titleI18n: key,
 		titleParamsAttrs: '',
 		boxClass: ' max-w-lg',
 		bodyHtml: `<pre class="whitespace-pre-wrap text-sm max-h-96 overflow-auto" user-content>${escapeHtml(text)}</pre>`,
 		actionsHtml: OK_ONLY,
-	}))
+	}, { templatesRoot: SHARED_TEMPLATES })
 }

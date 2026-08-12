@@ -172,7 +172,7 @@
 				"expected": "預期 ${expected}"
 			},
 			"reusedSuite": "\n>>> 複用 ${manifestId}:${name}（trigger 未變，沿用上次 ${status}）",
-			"prunedAbsentState": "已清理不存在的套件現況：${suites} 個套件、${subtests} 個子測試",
+			"prunedAbsentState": "已清除不存在套件的狀態記錄：${suites} 個套件、${subtests} 個子測試",
 			"noisyOnlyRemain": "仍有 ${count} 個套件透過但含噪聲：${suites}",
 			"noRealRunPlanned": "本次無需真跑：複用 ${reused} 個、預計阻塞 ${blocked} 個（trigger 未變）",
 			"allReusedHint": "本次未真跑任何套件：失敗為沿用的上次結果，阻塞隨之未解（相關檔案未變）。修複相關檔案後重跑，或用 fount test --force 強制真跑。",

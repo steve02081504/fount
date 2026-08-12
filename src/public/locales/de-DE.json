@@ -173,7 +173,7 @@
 				"expected": "erwartet ${expected}"
 			},
 			"reusedSuite": "\n>>> Wiederverwendung ${manifestId}:${name} (trigger unverändert, letzter ${status})",
-			"prunedAbsentState": "Status nicht vorhandener Suiten bereinigt: ${suites} suites, ${subtests} subtests",
+			"prunedAbsentState": "Veralteter Status entfernter Suiten bereinigt: ${suites} Suites, ${subtests} Subtests",
 			"noisyOnlyRemain": "Noch ${count} Suites bestanden mit Rauschen: ${suites}",
 			"noRealRunPlanned": "Kein echter Lauf nötig: ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (trigger unverändert)",
 			"allReusedHint": "Kein echter Lauf: Fehler stammen vom letzten Ergebnis, Blockierung bleibt (Dateien unverändert). Nach Fix erneut ausführen oder fount test --force für echten Lauf.",

@@ -42,7 +42,7 @@ export async function pushDialogFromTemplate(dialog, templateName, data = {}, op
 	content.append(...dialog.childNodes)
 	previousPage.content = content
 
-	appendTemplateContent(dialog, await (options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate)(templateName, data))
+	appendTemplateContent(dialog, await (options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate)(templateName, data, options.templatesRoot))
 	stack.push({ content: null })
 	if (options.onReady) await options.onReady(dialog)
 	dialog.querySelector('[autofocus]')?.focus()
@@ -75,13 +75,15 @@ export function backDialog(dialog) {
  *   onReady?: (dialog: HTMLDialogElement) => void | Promise<void>
  *   className?: string
  *   activateScripts?: boolean
- * }} [options] 对话框选项；`activateScripts: false` 用于含表单的模态
+ *   templatesRoot?: string
+ * }} [options] 对话框选项；`activateScripts: false` 用于含表单的模态；`templatesRoot` 跨壳显式根
  * @returns {Promise<HTMLDialogElement>} 已打开的 dialog 元素
  */
 export async function openDialogFromTemplate(templateName, data = {}, options = {}) {
 	const dialog = document.createElement('dialog')
 	dialog.className = options.className ?? 'modal'
-	appendTemplateContent(dialog, await (options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate)(templateName, data))
+	const render = options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate
+	appendTemplateContent(dialog, await render(templateName, data, options.templatesRoot))
 	dialogNavigationStacks.set(dialog, [{ content: null }])
 	dialog.addEventListener('click', event => {
 		if (event.target.closest('[data-dialog-back]')) backDialog(dialog)
@@ -103,6 +105,7 @@ export async function openDialogFromTemplate(templateName, data = {}, options = 
  *   resolveOn?: string
  *   cancelOn?: string | string[]
  *   mapResult?: (dialog: HTMLDialogElement, action: string) => unknown
+ *   templatesRoot?: string
  * }} [options] 选择器与结果映射
  * @returns {Promise<unknown>} 用户选择结果；取消为 null
  */
@@ -114,6 +117,7 @@ export function pickFromDialog(templateName, data = {}, options = {}) {
 
 	return new Promise((resolve, reject) => {
 		openDialogFromTemplate(templateName, data, {
+			templatesRoot: options.templatesRoot,
 			/** @param {HTMLDialogElement} dialogElement 对话框 */
 			onReady: dialogElement => {
 				let settled = false

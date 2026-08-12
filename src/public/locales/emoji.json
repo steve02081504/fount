@@ -173,7 +173,7 @@
 				"expected": "🔮 ${expected}"
 			},
 			"reusedSuite": "\n>>> ♻️ ${manifestId}:${name}（⚡⌀Δ，⏮ ${status}）",
-			"prunedAbsentState": "已清理不存在的套件现状：${suites} 个套件、${subtests} 个子测试",
+			"prunedAbsentState": "🧹 ⌀📦 狀態：${suites} 📦、${subtests} 🧪",
 			"noisyOnlyRemain": "＋ ${count} 📦 ✅＋🔊：${suites}",
 			"noRealRunPlanned": "🚫🏃：♻️ ${reused}、🚫⏸️ ${blocked}（⚡⌀Δ）",
 			"allReusedHint": "🚫🏃：❌＝⏮♻️，🚫⏸️⌀Δ（📁⌀Δ）🔧📁→🔁，／ `fount test --force`→💥🏃",
