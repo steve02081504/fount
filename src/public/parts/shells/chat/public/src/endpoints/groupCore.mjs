@@ -68,20 +68,18 @@ export async function getGroupList() {
  * @returns {Promise<void>}
  */
 export async function joinGroup(groupId, inviteCode = null, dmLinkProof = null, pow = null, fedBootstrap = null) {
-	const json = {
-		inviteCode: inviteCode || undefined,
-		pow: pow || undefined,
-		...dmLinkProof,
-	}
-	if (fedBootstrap?.roomSecret) {
-		json.roomSecret = fedBootstrap.roomSecret
-		if (fedBootstrap.signalingAppId) json.signalingAppId = fedBootstrap.signalingAppId
-	}
-	if (fedBootstrap?.introducerPubKeyHash)
-		json.introducerPubKeyHash = fedBootstrap.introducerPubKeyHash
-	if (fedBootstrap?.introducerNodeHash)
-		json.introducerNodeHash = fedBootstrap.introducerNodeHash
-	await groupFetch(groupPath(groupId, 'join'), { method: 'POST', json })
+	await groupFetch(groupPath(groupId, 'join'), {
+		method: 'POST',
+		json: {
+			inviteCode,
+			pow,
+			...dmLinkProof,
+			roomSecret: fedBootstrap?.roomSecret,
+			signalingAppId: fedBootstrap?.signalingAppId,
+			introducerPubKeyHash: fedBootstrap?.introducerPubKeyHash,
+			introducerNodeHash: fedBootstrap?.introducerNodeHash,
+		},
+	})
 }
 
 /**

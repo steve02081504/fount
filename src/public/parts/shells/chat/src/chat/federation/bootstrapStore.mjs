@@ -101,12 +101,12 @@ export function setFederationBootstrap(username, groupId, creds) {
 	const row = sanitizeBootstrapRow({
 		signalingAppId: creds.signalingAppId || 'fount-group-fed',
 		roomSecret: creds.roomSecret,
-		dmSessionTag: String(creds.dmSessionTag || '').trim().toLowerCase() || undefined,
-		fromNodeId: String(creds.fromNodeId || '').trim() || undefined,
+		dmSessionTag: creds.dmSessionTag || undefined,
+		fromNodeId: creds.fromNodeId || undefined,
 		setAt: Date.now(),
-		settingsEventId: creds.settingsEventId?.trim() || undefined,
-		powAnchorRef: creds.powAnchorRef?.trim() || undefined,
-		powAnchors: Array.isArray(creds.powAnchors) ? creds.powAnchors.map(String) : undefined,
+		settingsEventId: creds.settingsEventId || undefined,
+		powAnchorRef: creds.powAnchorRef || undefined,
+		powAnchors: Array.isArray(creds.powAnchors) ? creds.powAnchors : undefined,
 	})
 	if (!row?.roomSecret) return
 	persistBootstrapRow(username, groupId, row)
@@ -125,10 +125,10 @@ export function setPeerRoomHint(username, groupId, hint) {
 	peerHintByKey.set(federationBootstrapKey(username, groupId), {
 		signalingAppId: hint.signalingAppId || 'fount-group-fed',
 		roomSecret: hint.roomSecret,
-		dmSessionTag: String(hint.dmSessionTag || '').trim().toLowerCase() || undefined,
-		fromNodeId: String(hint.fromNodeId || '').trim(),
+		dmSessionTag: hint.dmSessionTag || undefined,
+		fromNodeId: hint.fromNodeId,
 		setAt: Date.now(),
-		settingsEventId: hint.settingsEventId?.trim() || undefined,
+		settingsEventId: hint.settingsEventId || undefined,
 	})
 }
 

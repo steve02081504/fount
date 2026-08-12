@@ -234,11 +234,8 @@ export const actions = {
 	 * @param {string} root0.dmIntroSignatureHex 签名 hex
 	 * @returns {Promise<{ groupId: string, defaultChannelId: string, created: boolean }>} DM 群信息
 	 */
-	dm: async ({ user, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex }) => {
-		if (!introPubKeyHex || !dmIntroNonce || !dmIntroSignatureHex)
-			throw new Error('introPubKeyHex, dmIntroNonce and dmIntroSignatureHex are required for dm action')
-		return orchestrateDmFirstContact(user, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex)
-	},
+	dm: async ({ user, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex }) =>
+		orchestrateDmFirstContact(user, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex),
 	/**
 	 * §16：消费 `fount://run/shells:chat/join;…` 深链入群。
 	 * @param {object} root0 参数

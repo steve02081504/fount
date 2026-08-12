@@ -35,10 +35,10 @@ export async function resolveFedRoomName(username, groupId) {
 	const { state } = await loadGroupState(username, groupId)
 	const { groupMeta } = state
 	if (groupMeta?.dmKind === 'ecdh' && groupMeta.dmSessionTag)
-		return `dm:${groupMeta.dmSessionTag.trim().toLowerCase()}`
+		return `dm:${groupMeta.dmSessionTag}`
 	const override = peekPreferredRoomOverride(username, groupId)
 	if (override?.dmSessionTag)
-		return `dm:${String(override.dmSessionTag).trim().toLowerCase()}`
+		return `dm:${override.dmSessionTag}`
 	return `fount-fed-${groupId}`
 }
 

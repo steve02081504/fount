@@ -25,8 +25,8 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
  * @returns {string | null} 规范化后的 run URI，无则 `null`
  */
 export function runUriFromPageLocation(search = window.location.search) {
-	const runUri = new URLSearchParams(search).get('run')?.trim()
-		|| new URLSearchParams(search).get('url')?.trim()
+	const runUri = new URLSearchParams(search).get('run')
+		|| new URLSearchParams(search).get('url')
 	return runUri?.startsWith('fount://') ? runUri : null
 }
 

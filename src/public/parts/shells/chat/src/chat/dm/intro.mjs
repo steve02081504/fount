@@ -23,7 +23,7 @@ const STORE_KEY = 'dmIntro'
  */
 function loadDmIntro(username) {
 	const raw = loadShellData(username, 'chat', STORE_KEY)
-	const nonce = String(raw?.nonce || '').trim()
+	const nonce = raw?.nonce || ''
 	if (nonce.length >= 16)
 		return { nonce, rotatedAt: Number(raw?.rotatedAt) || 0 }
 	return rotateDmIntroNonce(username)
@@ -54,9 +54,8 @@ export function getDmIntroNonce(username) {
  * @returns {{ nonce: string, rotatedAt: number }} 持久化行
  */
 export function setDmIntroNonce(username, nonce) {
-	const normalized = String(nonce || '').trim()
-	if (normalized.length < 16) throw new Error('dmIntro nonce too short')
-	const row = { nonce: normalized, rotatedAt: Date.now() }
+	if (nonce.length < 16) throw new Error('dmIntro nonce too short')
+	const row = { nonce, rotatedAt: Date.now() }
 	assignShellData(username, 'chat', STORE_KEY, row)
 	return row
 }
@@ -67,8 +66,7 @@ export function setDmIntroNonce(username, nonce) {
  * @returns {boolean} 是否与当前有效 nonce 一致
  */
 export function dmIntroNonceMatches(username, nonceBase64Url) {
-	const normalized = String(nonceBase64Url || '').trim()
-	return normalized.length > 0 && getDmIntroNonce(username).nonce === normalized
+	return Boolean(nonceBase64Url) && getDmIntroNonce(username).nonce === nonceBase64Url
 }
 
 /**
@@ -89,7 +87,7 @@ export async function buildDmIntroLink(username, pubKeyHex, secretKey32, nodeUrl
 		pubKeyHex: pubKey,
 		nonceBase64Url: nonce,
 		introSignatureHex,
-		nodeUrl: nodeUrl ? String(nodeUrl).trim() : undefined,
+		nodeUrl,
 	})
 	return { url, nonce, pubKeyHex: pubKey, introSignatureHex }
 }

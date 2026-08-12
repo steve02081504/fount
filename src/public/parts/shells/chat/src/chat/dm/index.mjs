@@ -7,7 +7,7 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { resolveActiveMemberKey, resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
@@ -34,12 +34,11 @@ import { validateDmIntroLinkProof } from './linkValidate.mjs'
  * @returns {Promise<{ groupId: string, defaultChannelId: string } | null>} 已有群或 null
  */
 export async function findDmGroupBySessionTag(username, dmSessionTag) {
-	const tag = dmSessionTag?.trim().toLowerCase()
-	if (!tag) return null
+	if (!dmSessionTag) return null
 	for (const groupId of await listUserGroups(username)) {
 		const { state } = await getState(username, groupId)
 		const meta = state.groupMeta
-		if (meta.dmKind === 'ecdh' && meta.dmSessionTag?.toLowerCase() === tag)
+		if (meta.dmKind === 'ecdh' && meta.dmSessionTag === dmSessionTag)
 			return {
 				groupId,
 				defaultChannelId: state.groupSettings?.defaultChannelId || 'default',
@@ -59,13 +58,10 @@ export async function findDmGroupBySessionTag(username, dmSessionTag) {
  */
 export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, options = {}) {
 	const entityHash = options.entityHash || undefined
+	const { low, high, dmSessionTag, dmRoomLabelPrefix } = computeDmRoomLabelFromPubKeys(myPubKeyHex, peerPubKeyHex)
+	if (low === high) throw new Error('peer pub key must differ from mine')
 	const myPubKey = normalizePubKeyHex(myPubKeyHex)
 	const peerPubKey = normalizePubKeyHex(peerPubKeyHex)
-	if (!PUB_KEY_HEX_64.test(myPubKey) || !PUB_KEY_HEX_64.test(peerPubKey))
-		throw new Error('invalid pub keys for DM')
-	if (myPubKey === peerPubKey) throw new Error('peer pub key must differ from mine')
-
-	const { low, high, dmSessionTag, dmRoomLabelPrefix } = computeDmRoomLabelFromPubKeys(myPubKey, peerPubKey)
 	const existing = await findDmGroupBySessionTag(username, dmSessionTag)
 	if (existing) return { ...existing, dmSessionTag }
 
@@ -164,22 +160,11 @@ export async function maybeAssignEcdhDmAdmin(username, groupId, state) {
  * @returns {Promise<{ groupId: string, defaultChannelId: string, created: boolean }>} 打开/新建的 DM
  */
 export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex) {
-	const introPubKey = normalizePubKeyHex(introPubKeyHex)
-	const nonce = dmIntroNonce?.trim()
-	const signatureHex = dmIntroSignatureHex?.trim().replace(/^0x/iu, '')
-	if (!PUB_KEY_HEX_64.test(introPubKey)) throw new Error('invalid intro pubKeyHex')
-	if (nonce.length < 16) throw new Error('invalid dmIntro nonce')
-	if (!/^[\da-f]{128}$/iu.test(signatureHex)) throw new Error('invalid dmIntro signature')
-
-	const dmCheck = await validateDmIntroLinkProof(username, { members: {} }, introPubKey, nonce, signatureHex)
+	const dmCheck = await validateDmIntroLinkProof(username, { members: {} }, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex)
 	if (!dmCheck.ok) throw new Error(dmCheck.error)
 
 	const { activePubKeyHex: myPubKey } = await getFederationSettings(username)
-	if (!PUB_KEY_HEX_64.test(myPubKey))
-		throw new Error('configure activePubKeyHex in federation settings before opening DM links')
-
-	const myPubKeyNormalized = normalizePubKeyHex(myPubKey)
-	const { dmSessionTag } = computeDmRoomLabelFromPubKeys(myPubKeyNormalized, introPubKey)
+	const { low, dmSessionTag } = computeDmRoomLabelFromPubKeys(myPubKey, introPubKeyHex)
 	const existing = await findDmGroupBySessionTag(username, dmSessionTag)
 	if (existing) {
 		const { state } = await getState(username, existing.groupId)
@@ -188,9 +173,9 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
 				type: 'member_join',
 				timestamp: Date.now(),
 				content: {
-					dmIntroNonce: nonce,
-					dmIntroSignatureHex: signatureHex,
-					pubKeyHex: myPubKeyNormalized,
+					dmIntroNonce,
+					dmIntroSignatureHex,
+					pubKeyHex: myPubKey,
 				},
 			})
 		const { state: afterJoin } = await getState(username, existing.groupId)
@@ -203,10 +188,10 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
 		}
 	}
 
-	if (myPubKeyNormalized >= introPubKey)
+	if (normalizePubKeyHex(myPubKey) !== low)
 		throw new Error('DM group not created yet; ask the other party (lower pubKey) to open the link first')
 
-	const created = await createEcdhDmGroup(username, myPubKeyNormalized, introPubKey)
+	const created = await createEcdhDmGroup(username, myPubKey, introPubKeyHex)
 	return {
 		groupId: created.groupId,
 		defaultChannelId: created.defaultChannelId,
@@ -251,7 +236,6 @@ async function bindJoinFederation(username, groupId) {
  * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群后的群信息
  */
 export async function performMemberJoin(username, groupId, options = {}) {
-	if (!groupId?.trim()) throw new Error('groupId required')
 	const entityHash = options.entityHash || undefined
 	const { clearGroupReplicaPurging } = await import('../dag/replicaPurge.mjs')
 	clearGroupReplicaPurging(username, groupId)
@@ -269,10 +253,9 @@ export async function performMemberJoin(username, groupId, options = {}) {
 	let defaultChannelId = state.groupSettings?.defaultChannelId || 'default'
 	if (!alreadyMember) {
 		const content = { homeNodeHash: getLocalNodeHash() }
-		if (options.inviteCode?.trim()) content.inviteCode = options.inviteCode.trim()
+		if (options.inviteCode) content.inviteCode = options.inviteCode
 		if (options.powSolution) content.powSolution = options.powSolution
-		const introducer = normalizePubKeyHex(options.introducerPubKeyHash || '')
-		if (PUB_KEY_HEX_64.test(introducer)) content.introducerPubKeyHash = introducer
+		if (options.introducerPubKeyHash) content.introducerPubKeyHash = options.introducerPubKeyHash
 		if (options.dmIntroNonce && options.dmIntroSignatureHex) {
 			content.dmIntroNonce = options.dmIntroNonce
 			content.dmIntroSignatureHex = options.dmIntroSignatureHex
