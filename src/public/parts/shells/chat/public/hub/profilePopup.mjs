@@ -83,9 +83,9 @@ async function entityFromEntityHash(entityHash, members) {
 		return charEntityFromName(memberRow.charname, memberRow.displayName || memberRow.charname)
 	if (memberRow) return userEntityFromMember(memberRow)
 	if (!isEntityHash128(entityHash)) return null
-	const bound = store.sidebar.groups.find(g => g.friendBinding?.entityHash === entityHash)?.friendBinding
+	const bound = store.sidebar.groups.find(group => group.friendBinding?.entityHash === entityHash)?.friendBinding
 	if (bound?.charname)
-		return await charEntityFromName(bound.charname, bound.displayName || bound.charname)
+		return charEntityFromName(bound.charname, bound.displayName || bound.charname)
 	return {
 		entityHash,
 		charname: null,

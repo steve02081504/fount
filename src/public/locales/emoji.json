@@ -5413,10 +5413,10 @@
 				"pathRequired": "⚠️📂❓",
 				"success": "✅▶️🖥️📂",
 				"lineInput": {
-					"aria-label": "行号"
+					"aria-label": "#️⃣行"
 				},
 				"columnInput": {
-					"aria-label": "列号"
+					"aria-label": "#️⃣列"
 				}
 			}
 		},

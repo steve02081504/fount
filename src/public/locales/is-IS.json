@@ -5410,8 +5410,8 @@
 				"pathInput": {
 					"placeholder": "Slóð að skrá til að prófa, t.d. C:/work/project/src/main.mjs"
 				},
-				"pathRequired": "Sláðu fyrst inn prófunarslóð.",
-				"success": "Keyrði skipun til að opna skrána í ytri ritstjóra.",
+				"pathRequired": "Sláðu fyrst inn slóð að prófunarskrá.",
+				"success": "Reyndi að opna í ytri ritstjóra.",
 				"lineInput": {
 					"aria-label": "Línunúmer"
 				},

@@ -5396,7 +5396,7 @@
 		},
 		"editorCommand": {
 			"title": "外在編輯器啟卷之敕",
-			"description": "設外在編輯器啟卷所用之敕令與參數模板。",
+			"description": "設外在編輯器啟卷所用之敕令與參數模板；可藉預留符傳入卷徑、行數與列數。",
 			"editorPresetLabel": "編輯器預製項",
 			"commandLabel": "敕令",
 			"argsTemplateLabel": "參數模板",
@@ -5411,12 +5411,12 @@
 					"placeholder": "試用之卷徑，例：C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "宜先填試用之卷徑。",
-				"success": "已行外在編輯器啟卷之試。",
+				"success": "已試行外在編輯器啟卷。",
 				"lineInput": {
-					"aria-label": "行号"
+					"aria-label": "行數"
 				},
 				"columnInput": {
-					"aria-label": "列号"
+					"aria-label": "列數"
 				}
 			}
 		},

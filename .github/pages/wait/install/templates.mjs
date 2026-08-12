@@ -4,10 +4,8 @@
 import { dialogsFor } from '../../scripts/features/dialog.mjs'
 import { templatesFor } from '../../scripts/features/template.mjs'
 
-const ROOT = 'wait/install/templates'
-
 /**
- *
+ * wait/install 页模板渲染 / 挂载 API。
  */
 export const {
 	renderTemplate,
@@ -15,14 +13,14 @@ export const {
 	renderTemplateAsHtmlString,
 	mountTemplate,
 	appendTemplate,
-} = templatesFor(ROOT)
+} = templatesFor('wait/install/templates')
 
 /**
- *
+ * wait/install 页模板对话框 API。
  */
 export const {
 	openDialogFromTemplate,
 	pushDialogFromTemplate,
 	pickFromDialog,
 	backDialog,
-} = dialogsFor(ROOT)
+} = dialogsFor('wait/install/templates')

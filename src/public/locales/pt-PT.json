@@ -5417,7 +5417,7 @@
 					"placeholder": "Caminho para um ficheiro de teste, por exemplo C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Indique primeiro o caminho do ficheiro de teste.",
-				"success": "Foi executado o comando para abrir o ficheiro no editor.",
+				"success": "Foi feita uma tentativa de abrir no editor externo.",
 				"lineInput": {
 					"aria-label": "Número da linha"
 				},

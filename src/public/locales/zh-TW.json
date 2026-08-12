@@ -5415,7 +5415,7 @@
 					"aria-label": "行號"
 				},
 				"columnInput": {
-					"aria-label": "列號"
+					"aria-label": "欄號"
 				}
 			}
 		},

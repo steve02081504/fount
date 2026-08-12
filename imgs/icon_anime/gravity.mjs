@@ -68,11 +68,11 @@ let activeController = null
  * @returns {void}
  */
 const resetGravityState = () => {
-	const d = defaultGravity()
-	live.gx = d.gx
-	live.gy = d.gy
-	live.mag = d.mag
-	rawTarget = { ...d }
+	const defaultState = defaultGravity()
+	live.gx = defaultState.gx
+	live.gy = defaultState.gy
+	live.mag = defaultState.mag
+	rawTarget = { ...defaultState }
 }
 
 /**
@@ -124,13 +124,14 @@ export const startGravity = (deps = {}) => {
 	stopGravity()
 	resetGravityState()
 	const { signal } = activeController = new AbortController()
-	void (deps.loadAcquire ?? loadAcquire)().then((acquireModule) => {
+	void (async () => {
+		const acquireModule = await (deps.loadAcquire ?? loadAcquire)()
 		if (signal.aborted) return
 		const stop = acquireModule.start(applySample)
 		// stopGravity 可能在 start() 同步路径里发生：立刻释放，勿留下孤儿采集。
 		if (signal.aborted) return stop()
 		signal.addEventListener('abort', stop, { once: true })
-	})
+	})()
 }
 
 /**

@@ -5408,10 +5408,10 @@
 			"test": {
 				"button": "تجربة الفتح",
 				"pathInput": {
-					"placeholder": "مسار ملف لتجربة الفتح، مثلًا C:/work/project/src/main.mjs"
+					"placeholder": "مسار ملف للاختبار، مثل C:/work/project/src/main.mjs"
 				},
-				"pathRequired": "يرجى إدخال مسار ملف الاختبار أولاً.",
-				"success": "تم تنفيذ أمر الفتح في المحرر الخارجي.",
+				"pathRequired": "يُرجى إدخال مسار ملف الاختبار أولاً.",
+				"success": "تمت محاولة الفتح في المحرر الخارجي.",
 				"lineInput": {
 					"aria-label": "رقم السطر"
 				},

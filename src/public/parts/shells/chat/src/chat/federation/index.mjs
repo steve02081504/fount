@@ -61,7 +61,7 @@ const PEER_ROSTER_POLL_MS = 400
  * @returns {Promise<boolean>} roster 非空则为 true
  */
 async function waitForFederationPeers(slot, options = {}) {
-	const maxWaitMs = clampNumber(options.maxWaitMs ?? PEER_ROSTER_WAIT_MS, 500, 60_000)
+	const maxWaitMs = clampNumber(options.maxWaitMs ?? PEER_ROSTER_WAIT_MS, 400, 60_000)
 	const start = Date.now()
 	while (Date.now() - start < maxWaitMs) {
 		if (slot.getRoster().length > 0) return true

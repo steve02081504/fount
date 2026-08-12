@@ -140,7 +140,8 @@ function sameJsonValue(a, b) {
  * @returns {string | undefined} 应写入的值；undefined 表示删除键
  */
 function pruneSfwString(sfwVal, baseVal) {
-	const sfw = (sfwVal ?? '').trim()
+	if (sfwVal === undefined) return undefined
+	const sfw = sfwVal.trim()
 	if (!sfw || sameNormalizedText(sfw, baseVal)) return undefined
 	return sfw
 }

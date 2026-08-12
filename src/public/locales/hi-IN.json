@@ -5406,17 +5406,17 @@
 			"saveButton": "कॉन्फ़िगरेशन सहेजें",
 			"saveSuccess": "बाहरी संपादक का आदेश सहेज लिया गया।",
 			"test": {
-				"button": "खोलकर देखें",
+				"button": "खोलकर परखें",
 				"pathInput": {
-					"placeholder": "जाँच के लिए फ़ाइल का पथ, उदा. C:/work/project/src/main.mjs"
+					"placeholder": "परीक्षण के लिए फ़ाइल का पथ, उदा. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "पहले परीक्षण फ़ाइल का पथ भरें।",
-				"success": "संपादक में फ़ाइल खोलने का आदेश चला दिया गया।",
+				"success": "बाहरी संपादक में खोलने का प्रयास किया गया।",
 				"lineInput": {
-					"aria-label": "लाइन नंबर"
+					"aria-label": "पंक्ति संख्या"
 				},
 				"columnInput": {
-					"aria-label": "स्तम्भ संख्या"
+					"aria-label": "स्तंभ संख्या"
 				}
 			}
 		},

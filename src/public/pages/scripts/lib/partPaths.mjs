@@ -7,7 +7,7 @@
 export const PART_PUBLIC_DIR = 'public'
 
 /**
- * partpath → URL part key：`shells/chat` → `shells:chat`。
+ * 将部件路径转为 URL 中的部件键。
  * @param {string} partpath 部件路径
  * @returns {string} URL 中的 part key
  */
@@ -19,7 +19,7 @@ export function partpathToUrlPartKey(partpath) {
 }
 
 /**
- * partpath → URL 前缀：`shells/chat` → `/parts/shells:chat`。
+ * 将部件路径转为前端 URL 前缀。
  * @param {string} partpath 部件路径
  * @returns {string} 前端 URL 前缀
  */
@@ -29,7 +29,7 @@ export function partpathToUrlPrefix(partpath) {
 }
 
 /**
- * URL part key → partpath：`shells:chat` → `shells/chat`。
+ * 将 URL 中的部件键转回部件路径。
  * @param {string} partKey URL 中的 part key
  * @returns {string} 文件系统部件路径
  */

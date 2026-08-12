@@ -5417,7 +5417,7 @@
 					"placeholder": "Ruta de un archivo de prueba, p. ej. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Introduce primero la ruta del archivo de prueba.",
-				"success": "Se ejecutó el comando para abrir el archivo en el editor.",
+				"success": "Se intentó abrir en el editor externo.",
 				"lineInput": {
 					"aria-label": "Número de línea"
 				},

@@ -5396,7 +5396,7 @@
 		},
 		"editorCommand": {
 			"title": "外部エディタの起動コマンド",
-			"description": "外部エディタでファイルを開くためのコマンドと引数テンプレートを設定します。",
+			"description": "外部エディタでファイルを開くコマンドと引数テンプレートを設定します。プレースホルダーでファイルパス、行番号、列番号を指定できます。",
 			"editorPresetLabel": "エディタのプリセット",
 			"commandLabel": "コマンド",
 			"argsTemplateLabel": "引数テンプレート",
@@ -5406,12 +5406,12 @@
 			"saveButton": "設定を保存",
 			"saveSuccess": "外部エディタのコマンド設定を保存しました。",
 			"test": {
-				"button": "試し開く",
+				"button": "テストで開く",
 				"pathInput": {
-					"placeholder": "試すファイルのパス（例: C:/work/project/src/main.mjs）"
+					"placeholder": "テスト用のファイルパス（例: C:/work/project/src/main.mjs）"
 				},
 				"pathRequired": "先にテスト用のファイルパスを入力してください。",
-				"success": "外部エディタで開くコマンドを実行しました。",
+				"success": "外部エディタで開く処理を試みました。",
 				"lineInput": {
 					"aria-label": "行番号"
 				},

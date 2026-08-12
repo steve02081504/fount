@@ -5396,7 +5396,7 @@
 		},
 		"editorCommand": {
 			"title": "외부 편집기 명령",
-			"description": "외부 편집기에서 파일을 열 때 사용할 명령과 인수 템플릿을 설정합니다.",
+			"description": "외부 편집기에서 파일을 열 때 사용할 명령과 인수 템플릿을 설정합니다. 플레이스홀더로 파일 경로, 줄 번호, 열 번호를 지정할 수 있습니다.",
 			"editorPresetLabel": "편집기 사전 설정",
 			"commandLabel": "명령",
 			"argsTemplateLabel": "인수 템플릿",
@@ -5406,12 +5406,12 @@
 			"saveButton": "설정 저장",
 			"saveSuccess": "외부 편집기 명령 설정을 저장했습니다.",
 			"test": {
-				"button": "열어 보기",
+				"button": "테스트로 열기",
 				"pathInput": {
-					"placeholder": "시험해 볼 파일 경로(예: C:/work/project/src/main.mjs)"
+					"placeholder": "테스트할 파일 경로(예: C:/work/project/src/main.mjs)"
 				},
 				"pathRequired": "먼저 테스트할 파일 경로를 입력하세요.",
-				"success": "외부 편집기에서 파일을 여는 명령을 실행했습니다.",
+				"success": "외부 편집기에서 열기를 시도했습니다.",
 				"lineInput": {
 					"aria-label": "줄 번호"
 				},

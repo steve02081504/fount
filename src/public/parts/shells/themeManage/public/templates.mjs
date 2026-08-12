@@ -3,10 +3,8 @@
  */
 import { templatesFor } from '/scripts/features/template.mjs'
 
-const ROOT = '/parts/shells:themeManage/templates'
-
 /**
- *
+ * ThemeManage 页模板渲染 / 挂载 API。
  */
 export const {
 	renderTemplate,
@@ -14,4 +12,4 @@ export const {
 	renderTemplateAsHtmlString,
 	mountTemplate,
 	appendTemplate,
-} = templatesFor(ROOT)
+} = templatesFor('/parts/shells:themeManage/templates')

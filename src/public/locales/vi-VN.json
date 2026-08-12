@@ -5411,7 +5411,7 @@
 					"placeholder": "Đường dẫn tệp để thử, ví dụ C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Hãy nhập đường dẫn tệp thử trước.",
-				"success": "Đã chạy lệnh mở tệp trong trình soạn thảo.",
+				"success": "Đã thử mở trong trình soạn thảo bên ngoài.",
 				"lineInput": {
 					"aria-label": "Số dòng"
 				},

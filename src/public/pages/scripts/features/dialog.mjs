@@ -11,8 +11,8 @@ import { templatesFor } from './template.mjs'
 /** @type {WeakMap<HTMLDialogElement, Array<{ content: DocumentFragment | null }>>} */
 const dialogNavigationStacks = new WeakMap()
 
-/** @type {Map<string, ReturnType<typeof createDialogsApi>>} */
-const dialogsByRoot = new Map()
+/** @type {WeakMap<ReturnType<typeof templatesFor>, ReturnType<typeof createDialogsApi>>} */
+const dialogsByRoot = new WeakMap()
 
 /**
  * @param {HTMLDialogElement} dialog 托管 dialog
@@ -44,6 +44,31 @@ export function backDialog(dialog) {
 	dialog.appendChild(previousPage.content)
 	previousPage.content = null
 	dialog.querySelector('[autofocus]')?.focus()
+}
+
+/**
+ * 规范化取消按钮选择器列表。
+ * @param {string | string[] | undefined} cancelOn 选项中的 cancelOn
+ * @returns {string[]} 选择器列表
+ */
+function normalizeCancelSelectors(cancelOn) {
+	return Array.isArray(cancelOn)
+		? cancelOn
+		: [cancelOn ?? '[data-dialog-cancel]', '[data-action="cancel"]']
+}
+
+/**
+ * 从 resolve 按钮映射用户选择结果。
+ * @param {HTMLDialogElement} dialog 对话框
+ * @param {Element} button resolve 按钮
+ * @param {((dialog: HTMLDialogElement, action: string) => unknown) | undefined} mapResult 可选结果映射
+ * @returns {unknown} 用户选择结果
+ */
+function resolveButtonResult(dialog, button, mapResult) {
+	const action = button.getAttribute('data-dialog-resolve')
+		|| button.getAttribute('data-action')
+		|| 'ok'
+	return mapResult ? mapResult(dialog, action) : action
 }
 
 /**
@@ -127,9 +152,7 @@ function createDialogsApi(templates) {
 	 */
 	function pickFromDialog(templateName, data = {}, options = {}) {
 		const resolveOn = options.resolveOn ?? '[data-dialog-resolve]'
-		const cancelSelectors = Array.isArray(options.cancelOn)
-			? options.cancelOn
-			: [options.cancelOn ?? '[data-dialog-cancel]', '[data-action="cancel"]']
+		const cancelSelectors = normalizeCancelSelectors(options.cancelOn)
 
 		return new Promise((resolve, reject) => {
 			openDialogFromTemplate(templateName, data, {
@@ -149,13 +172,7 @@ function createDialogsApi(templates) {
 						dialogElement.querySelector(sel)?.addEventListener('click', () => finish(null), { once: true })
 					for (const button of dialogElement.querySelectorAll(resolveOn))
 						button.addEventListener('click', () => {
-							finish(options.mapResult
-								? options.mapResult(dialogElement, button.getAttribute('data-dialog-resolve')
-									|| button.getAttribute('data-action')
-									|| 'ok')
-								: button.getAttribute('data-dialog-resolve')
-								|| button.getAttribute('data-action')
-								|| 'ok')
+							finish(resolveButtonResult(dialogElement, button, options.mapResult))
 						}, { once: true })
 				},
 			}).catch(reject)
@@ -176,11 +193,11 @@ function createDialogsApi(templates) {
  * @returns {ReturnType<typeof createDialogsApi>} 绑定 API
  */
 export function dialogsFor(path) {
-	const resolved = path
-	let api = dialogsByRoot.get(resolved)
+	const templates = templatesFor(path)
+	let api = dialogsByRoot.get(templates)
 	if (!api) {
-		api = createDialogsApi(templatesFor(path))
-		dialogsByRoot.set(resolved, api)
+		api = createDialogsApi(templates)
+		dialogsByRoot.set(templates, api)
 	}
 	return api
 }

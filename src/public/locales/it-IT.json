@@ -5417,7 +5417,7 @@
 					"placeholder": "Percorso di un file di prova, es. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Inserisci prima il percorso del file di prova.",
-				"success": "Eseguito il comando per aprire il file nell’editor.",
+				"success": "Tentativo di apertura nell’editor esterno eseguito.",
 				"lineInput": {
 					"aria-label": "Numero di riga"
 				},

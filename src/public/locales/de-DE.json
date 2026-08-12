@@ -5408,10 +5408,10 @@
 			"test": {
 				"button": "Testweise öffnen",
 				"pathInput": {
-					"placeholder": "Pfad zu einer Datei zum Ausprobieren, z. B. C:/work/project/src/main.mjs"
+					"placeholder": "Pfad zu einer Testdatei, z. B. C:/work/project/src/main.mjs"
 				},
-				"pathRequired": "Bitte zuerst einen Pfad zur Testdatei angeben.",
-				"success": "Befehl zum Öffnen im Editor wurde ausgeführt.",
+				"pathRequired": "Bitte geben Sie zuerst einen Pfad zur Testdatei an.",
+				"success": "Öffnen im externen Editor wurde versucht.",
 				"lineInput": {
 					"aria-label": "Zeilennummer"
 				},

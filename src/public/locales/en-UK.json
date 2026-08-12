@@ -5406,17 +5406,17 @@
 			"saveButton": "Save configuration",
 			"saveSuccess": "External editor command saved.",
 			"test": {
-				"button": "Try opening",
+				"button": "Test open",
 				"pathInput": {
-					"placeholder": "Path to a file to try, e.g. C:/work/project/src/main.mjs"
+					"placeholder": "Path to a file for testing, e.g. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Enter a test file path first.",
-				"success": "Ran the command to open your editor.",
+				"success": "Attempted to open in external editor.",
 				"lineInput": {
-					"aria-label": "Line"
+					"aria-label": "Line number"
 				},
 				"columnInput": {
-					"aria-label": "Column"
+					"aria-label": "Column number"
 				}
 			}
 		},

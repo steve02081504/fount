@@ -236,10 +236,16 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 	if (!trendingInFlight)
 		trendingInFlight = (async () => {
 			try {
-				const [nearby, local] = await Promise.all([
-					getTrendingHashtags({ scope: 'nearby' }).then(data => data.tags || []).catch(() => trendingCache || []),
-					getTrendingHashtags({ scope: 'local' }).then(data => data.tags || []).catch(() => []),
-				])
+				const nearbyPromise = getTrendingHashtags({ scope: 'nearby' })
+					.then(data => data.tags || [])
+					.catch(() => trendingCache || [])
+				const localPromise = getTrendingHashtags({ scope: 'local' })
+					.then(data => data.tags || [])
+					.catch(() => [])
+				const local = await localPromise
+				const early = mergeTrendingTags(trendingCache || [], local)
+				if (early.length) await paint(early)
+				const nearby = await nearbyPromise
 				const merged = mergeTrendingTags(local, nearby)
 				trendingCache = merged
 				return merged

@@ -6,7 +6,7 @@ import { partpathToUrlPrefix } from '../scripts/part_paths.mjs'
 import { GetPartPath, getPartRegistriesRaw } from './parts_loader.mjs'
 
 /**
- *
+ * 重导出部件路径到 URL 前缀的转换，供注册表路径解析复用。
  */
 export { partpathToUrlPrefix }
 

@@ -22,11 +22,11 @@ Deno.test('resolveRegistryPathToUrl joins part-relative path', () => {
 	)
 })
 
-Deno.test('partPublicRelToBrowserPath roundtrips with registries prefix', () => {
-	assertEquals(
-		partPublicRelToBrowserPath('shells/chat/public/hub/x.mjs'),
-		'/parts/shells:chat/hub/x.mjs',
-	)
+Deno.test('resolveRegistryPathToUrl matches partPublicRelToBrowserPath for public files', () => {
+	const viaRegistry = resolveRegistryPathToUrl('shells/chat', 'hub/x.mjs')
+	const viaPartPublic = partPublicRelToBrowserPath('shells/chat/public/hub/x.mjs')
+	assertEquals(viaRegistry, viaPartPublic)
+	assertEquals(viaRegistry, '/parts/shells:chat/hub/x.mjs')
 })
 
 Deno.test('dedupeAndSortRegistryEntries keeps later id and sorts by level', () => {
