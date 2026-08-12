@@ -28,7 +28,7 @@ alwaysApply: false
 - **Selectors**: `manifest:suite` / `manifest:suite:subtest`. Exact name wins; prefix only when no exact match; `*`/`?` always globs. Third CLI segment on serial suites = `*.test.mjs` stem → `FOUNT_TEST_ONLY`.
 - **`FOUNT_TEST_SUBTESTS`**: ambient env merges when CLI selects a suite without `:subtest` (CLI wins; not for dependsOn-only or wave goals without suiteSelectors).
 - **`FOUNT_TEST_TRIGGERED_FILES`**: temp file of repo-relative paths that matched this wave's triggers (empty = unconstrained). Protocol: [protocol.mjs](core/protocol.mjs).
-- **`--no-parallel`**: serial dispatch **and** inner concurrency = 1. **Default for agents on Windows** / local ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)).
+- **`--no-parallel`**: serial dispatch **and** inner concurrency = 1. **Default for agents on Windows** / local ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). Hand-running `serial.mjs` needs `FOUNT_TEST_BUDGET_CORES=1` for the same inner collapse.
 - **`dependsOn`**: downstream `blocked(by)` when a dependency is not green-capable. Optimistic overlap: [resource-scheduling.md](docs/resource-scheduling.md).
 - **Live driver**: `live/runner.mjs` — ephemeral nodes, `FOUNT_TEST_NODE_*`, teardown after. Launch/ping failures → exit 1. Non-worker `env.mjs` sets `process.exitCode = 1` on unhandled rejection/exception — else a logged rejection exits 0 (**passed with noise**).
 - **Test hub**: parent binds Express on `http://127.0.0.1:8903` (`hub/index.mjs`), sets `FOUNT_TEST_HUB_URL`. Playwright injects `fount.test.hubUrl`. No hub → issue still open / store miss.

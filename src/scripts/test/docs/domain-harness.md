@@ -25,6 +25,7 @@ Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics unde
 ## Chat integration
 
 - After `postChannelMessage`, wire `event.content` is often channel-key encrypted (`scheme: 'channel-key'`). Assert extras (`locale` / `content_warning`) via `readChannelMessagesForUser` decrypted rows.
+- Local concurrent appends (fire-and-forget auto-reply vs `role_assign`, or `Promise.all` of two `appendSignedLocalEvent`) must compute tips **inside** the group write lock. Signing against a stale tip set forks the DAG; `authzFold` keeps one branch and drops the other.
 - `message_edit` is folded out of `events.jsonl` during checkpoint rebuild. Assert edits with `readChannelMessagesForUser` + `mergeChannelMessagesForDisplay`.
 - Agent hashes: `ensureLocalAgentEntityHash` / `ensureAgentEntityIdentity` (or `keyPairFromSeed` + `entityHashFromRecoveryPubKeyHex`). Never path-derive from `chars/`.
 - Social inbound may call `rebuildSignedTimelineSnapshot` with no local identity — that path must not throw through `getEntitySecretKey`.
