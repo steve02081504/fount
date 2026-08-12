@@ -10,5 +10,5 @@
  */
 export function findMemberByEntityHash(members, entityHash) {
 	if (!entityHash) return undefined
-	return members.find(m => m.entityHash === entityHash)
+	return members.find(member => member.entityHash === entityHash)
 }

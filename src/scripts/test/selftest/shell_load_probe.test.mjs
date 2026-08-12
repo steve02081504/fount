@@ -51,7 +51,7 @@ Deno.test('part public relative climbs resolve like browser /scripts URLs', asyn
 		const scripts = path.join(root, 'src/public/pages/scripts/lib')
 		await mkdir(hub, { recursive: true })
 		await mkdir(scripts, { recursive: true })
-		await writeFile(path.join(scripts, 'regex.mjs'), 'export function escapeRegExp(s) { return s }\n')
+		await writeFile(path.join(scripts, 'regex.mjs'), 'export function escapeRegExp(value) { return value }\n')
 		const importer = path.join(hub, 'friendsList.mjs')
 		await writeFile(importer, 'export const x = 1\n')
 

@@ -80,9 +80,9 @@ export function parseBindingNames(clause, mode = 'import') {
  */
 export function partPublicBrowserPath(repoRoot, importerFile) {
 	const partsRoot = path.join(repoRoot, 'src/public/parts')
-	const rel = path.relative(partsRoot, path.resolve(importerFile)).replace(/\\/g, '/')
-	if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) return null
-	return partPublicRelToBrowserPath(rel)
+	const relativePath = path.relative(partsRoot, path.resolve(importerFile)).replace(/\\/g, '/')
+	if (!relativePath || relativePath.startsWith('..') || path.isAbsolute(relativePath)) return null
+	return partPublicRelToBrowserPath(relativePath)
 }
 
 /**

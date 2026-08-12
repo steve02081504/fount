@@ -4653,8 +4653,8 @@
 				"aria-label": "حفظ"
 			},
 			"saved": {
-				"title": "تم جمعها",
-				"aria-label": "تم جمعها"
+				"title": "تم الحفظ",
+				"aria-label": "تم الحفظ"
 			},
 			"translate": "ترجمة",
 			"dm": "إرسال رسالة خاصة",

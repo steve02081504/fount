@@ -116,30 +116,25 @@ test.describe('Chat profile edit mobile', () => {
 		await expect(page.locator('#profile-edit-modal')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator('#profile-edit-save')).toBeVisible()
 
-		const geometry = await page.evaluate(() => {
-			const box = document.querySelector('.profile-edit-box')
-			const save = document.querySelector('#profile-edit-save')
-			if (!(box instanceof HTMLElement) || !(save instanceof HTMLElement))
-				return { ok: false, reason: 'missing' }
+		const geometry = await page.locator('.profile-edit-box').evaluate((box) => {
+			const save = box.querySelector('#profile-edit-save')
 			const boxRect = box.getBoundingClientRect()
 			const saveRect = save.getBoundingClientRect()
-			const pad = 0.5
+			const tolerance = 0.5
 			return {
-				ok: true,
 				fullyInsideBox:
-					saveRect.top >= boxRect.top - pad
-					&& saveRect.bottom <= boxRect.bottom + pad
-					&& saveRect.left >= boxRect.left - pad
-					&& saveRect.right <= boxRect.right + pad,
+					saveRect.top >= boxRect.top - tolerance
+					&& saveRect.bottom <= boxRect.bottom + tolerance
+					&& saveRect.left >= boxRect.left - tolerance
+					&& saveRect.right <= boxRect.right + tolerance,
 				fullyInViewport:
-					saveRect.top >= -pad
-					&& saveRect.bottom <= window.innerHeight + pad,
+					saveRect.top >= -tolerance
+					&& saveRect.bottom <= window.innerHeight + tolerance,
 				boxBottom: boxRect.bottom,
 				saveBottom: saveRect.bottom,
 				viewportHeight: window.innerHeight,
 			}
 		})
-		expect(geometry.ok).toBe(true)
 		expect(geometry.fullyInsideBox, `save clipped by modal-box (boxBottom=${geometry.boxBottom}, saveBottom=${geometry.saveBottom})`).toBe(true)
 		expect(geometry.fullyInViewport, `save outside viewport (vh=${geometry.viewportHeight}, saveBottom=${geometry.saveBottom})`).toBe(true)
 

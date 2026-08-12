@@ -4659,8 +4659,8 @@
 				"aria-label": "Guardar"
 			},
 			"saved": {
-				"title": "Coleccionado",
-				"aria-label": "Coleccionado"
+				"title": "Guardado",
+				"aria-label": "Guardado"
 			},
 			"translate": "traducir",
 			"dm": "enviar mensaje privado",

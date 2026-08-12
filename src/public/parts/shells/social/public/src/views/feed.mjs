@@ -185,7 +185,7 @@ export async function loadSuggestedAccounts() {
 function mergeTrendingTags(...lists) {
 	const byTag = new Map()
 	for (const list of lists)
-		for (const row of list || []) {
+		for (const row of list) {
 			const prev = byTag.get(row.tag)
 			if (!prev || row.count > prev.count)
 				byTag.set(row.tag, { tag: row.tag, count: row.count })
@@ -236,30 +236,20 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 	if (!trendingInFlight)
 		trendingInFlight = (async () => {
 			try {
-				const data = await getTrendingHashtags({ scope: 'nearby' })
-				return data.tags || []
-			}
-			catch {
-				return trendingCache || []
+				const [nearby, local] = await Promise.all([
+					getTrendingHashtags({ scope: 'nearby' }).then(data => data.tags || []).catch(() => trendingCache || []),
+					getTrendingHashtags({ scope: 'local' }).then(data => data.tags || []).catch(() => []),
+				])
+				const merged = mergeTrendingTags(local, nearby)
+				trendingCache = merged
+				return merged
 			}
 			finally {
 				trendingInFlight = null
 			}
 		})()
 
-	const localPromise = (async () => {
-		try {
-			return await getTrendingHashtags({ scope: 'local' })
-		}
-		catch {
-			return { tags: [] }
-		}
-	})()
-
-	const [nearbyTags, local] = await Promise.all([trendingInFlight, localPromise])
-	const merged = mergeTrendingTags(local.tags || [], nearbyTags || [])
-	trendingCache = merged
-	await paint(merged)
+	await paint(await trendingInFlight)
 }
 
 /**

@@ -228,12 +228,10 @@ function createTemplatesApi(resolvedRoot) {
 		const cacheKey = url
 		if (!Object.hasOwn(template_cache, cacheKey))
 			template_cache[cacheKey] = fetch(url).then(response => {
-				if (!response.ok) {
-					delete template_cache[cacheKey]
+				if (!response.ok)
 					throw new Error(`HTTP error, status: ${response.status}`)
-				}
 				return response.text()
-			}, error => {
+			}).catch(error => {
 				delete template_cache[cacheKey]
 				throw error
 			})

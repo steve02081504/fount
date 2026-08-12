@@ -32,6 +32,7 @@ alwaysApply: false
 3. Shared scripts: `@src/public/pages/scripts/`.
 4. **GetReply identity**: when building `chatReplyRequest` yourself, `User*` must be the local operator; message authors go only in `ReplyTo*` / `chat_log[].uid`. Details: [chat/session/AGENTS.md](chat/src/chat/session/AGENTS.md) Speaker identity. Platform bots use virtual bridge sessions — never `newGroup` for Discord/Telegram/WeChat chats.
 5. Add `public/llms.txt`.
+6. Ship `test/frontend` smoke (Playwright) — page boot + key UI / template render path; mimic `config` / `serviceSourceManage` / peer `smoke.spec.mjs`.
 
 **Example**: `shells/shellassist/`. **Chat**: [entity / ChatClient](chat/public/AGENTS.md), [Hub](chat/public/hub/AGENTS.md). **Social**: [social/public/AGENTS.md](social/public/AGENTS.md).
 

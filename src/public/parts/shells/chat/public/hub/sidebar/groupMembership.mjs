@@ -30,7 +30,7 @@ import { renderMemberList } from './members.mjs'
  */
 export async function syncGroupFromNetwork(groupId, options = {}) {
 	setSyncBanner(true)
-	/** @type {{ federationActive?: boolean, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, tipsCollected?: number, peerRosterSize?: number }} */
+	/** @type {{ federationActive?: boolean, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, tipsCollected?: number, peerRosterSize: number }} */
 	let catchup
 	try {
 		catchup = await federationCatchUp(groupId, { waitMs: options.waitMs ?? 1400 })
@@ -51,7 +51,7 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 		return
 	}
 	const stillMissing = Number(catchup.wantIdsStillMissing) || 0
-	const peerRosterSize = Number(catchup.peerRosterSize) || 0
+	const peerRosterSize = catchup.peerRosterSize
 	if (catchup.wantIdsRateLimited)
 		setSyncBanner(true, { i18nKey: 'chat.hub.sync.rateLimited' })
 	else if (stillMissing > 0)

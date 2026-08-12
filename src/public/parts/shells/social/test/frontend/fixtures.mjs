@@ -30,7 +30,7 @@ export const TINY_PNG_BUFFER = Buffer.from(
 )
 
 /**
- * 缺失头像/附件的 GET stub（PUT/POST 上传 continue 到真实 API）。
+ * 缺失头像/附件的 GET stub：上游 404 时回填占位图，已有媒体原样放行。
  * @param {import('npm:@playwright/test').Route} route Playwright 路由
  * @returns {Promise<void>}
  */
@@ -40,7 +40,11 @@ async function stubMissingSocialFileGet(route) {
 		await route.continue()
 		return
 	}
-	// 不要 route.fetch / page.request.fetch 同 URL——易缠死或把上游 404 泄进诊断。
+	const response = await route.fetch()
+	if (response.status() !== 404) {
+		await route.fulfill({ response })
+		return
+	}
 	await route.fulfill({
 		status: 200,
 		headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-store' },

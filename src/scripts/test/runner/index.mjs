@@ -579,7 +579,7 @@ export async function runTests(options = {}) {
 		readState(REPO_ROOT),
 	])
 	const pruned = await pruneAbsentState(REPO_ROOT, allSuites, state)
-	if (pruned.removedSuiteKeys.length || pruned.removedSubtests.length) {
+	if (pruned.changed) {
 		await writeState(REPO_ROOT, state)
 		console.logI18n('fountConsole.test.prunedAbsentState', {
 			suites: String(pruned.removedSuiteKeys.length),

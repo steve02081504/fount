@@ -173,7 +173,7 @@
 				"expected": "attendu ${expected}"
 			},
 			"reusedSuite": ">>> Réutilisation de ${manifestId}:${name} (déclencheur inchangé, dernier ${status})",
-			"prunedAbsentState": "État obsolète des suites supprimées nettoyé : ${suites} suite(s), ${subtests} sous-test(s)",
+			"prunedAbsentState": "État obsolète des suites supprimées nettoyé : ${suites} suites, ${subtests} sous-tests",
 			"noisyOnlyRemain": "Encore ${count} suites réussies avec bruit : ${suites}",
 			"noRealRunPlanned": "Aucune exécution nécessaire : ${reused} réutilisées, ${blocked} bloquées prévues (trigger inchangé)",
 			"allReusedHint": "Aucune suite réellement exécutée : les échecs sont hérités, les blocages non résolus (fichiers inchangés). Corrigez puis relancez, ou fount test --force pour forcer.",
@@ -2694,7 +2694,7 @@
 			"sync": {
 				"failed": "Échec de la synchronisation de la fédération : ${error}",
 				"incomplete": "Les événements ${missing}/${total} ne sont pas synchronisés",
-				"noPeers": "Non connecté au voisin fédéré, les messages historiques ne peuvent pas être synchronisés temporairement",
+				"noPeers": "Aucun pair fédéré disponible ; la synchronisation des messages historiques est temporairement indisponible",
 				"rateLimited": "La limite de vitesse de synchronisation fédérale est en cours, veuillez réessayer plus tard.",
 				"truncated": "L'incrément DAG n'est pas plein. Vous pouvez réessayer plus tard ou augmenter la limite.",
 				"truncatedHint": "L'historique du DAG est trop long. Vous pouvez réessayer plus tard ou augmenter la limite."

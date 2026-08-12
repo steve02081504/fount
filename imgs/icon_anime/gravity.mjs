@@ -124,9 +124,9 @@ export const startGravity = (deps = {}) => {
 	stopGravity()
 	resetGravityState()
 	const { signal } = activeController = new AbortController()
-	void (deps.loadAcquire ?? loadAcquire)().then((mod) => {
+	void (deps.loadAcquire ?? loadAcquire)().then((acquireModule) => {
 		if (signal.aborted) return
-		const stop = mod.start(applySample)
+		const stop = acquireModule.start(applySample)
 		// stopGravity 可能在 start() 同步路径里发生：立刻释放，勿留下孤儿采集。
 		if (signal.aborted) return stop()
 		signal.addEventListener('abort', stop, { once: true })

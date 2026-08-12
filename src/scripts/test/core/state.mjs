@@ -151,7 +151,7 @@ export async function writeState(repoRoot, state) {
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 当前全部 suite
  * @param {TestState} state 现状库（就地修改）
- * @returns {Promise<{ removedSuiteKeys: string[], removedSubtests: string[] }>} 裁剪摘要
+ * @returns {Promise<{ changed: boolean, removedSuiteKeys: string[], removedSubtests: string[] }>} 裁剪摘要
  */
 export async function pruneAbsentState(repoRoot, allSuites, state) {
 	const knownKeys = new Set(allSuites.map(s => suiteKey(s.manifestId, s.name)))
@@ -168,9 +168,12 @@ export async function pruneAbsentState(repoRoot, allSuites, state) {
 
 	/** @type {string[]} */
 	const removedSubtests = []
+	let blockedByChanged = false
 	for (const [key, entry] of Object.entries(state.suites)) {
 		if (entry.blockedBy?.length) {
-			entry.blockedBy = entry.blockedBy.filter(dep => knownKeys.has(dep))
+			const next = entry.blockedBy.filter(dep => knownKeys.has(dep))
+			if (next.length !== entry.blockedBy.length) blockedByChanged = true
+			entry.blockedBy = next
 			if (!entry.blockedBy.length) delete entry.blockedBy
 		}
 		if (!entry.subtests) continue
@@ -187,7 +190,11 @@ export async function pruneAbsentState(repoRoot, allSuites, state) {
 	await pruneOrphanLogs(repoRoot, allSuites, knownSafeManifests)
 	await pruneOrphanPlaywrightDirs(repoRoot, knownSafeManifests)
 
-	return { removedSuiteKeys, removedSubtests }
+	return {
+		changed: !!(removedSuiteKeys.length || removedSubtests.length || blockedByChanged),
+		removedSuiteKeys,
+		removedSubtests,
+	}
 }
 
 /**
@@ -218,20 +225,20 @@ async function pruneOrphanLogs(repoRoot, allSuites, knownSafeManifests) {
 		knownLogFilesByDir.set(dir, set)
 	}
 
-	for (const ent of dirs) {
-		if (!ent.isDirectory()) continue
-		const abs = join(logsRoot, ent.name)
-		if (!knownSafeManifests.has(ent.name)) {
-			await rm(abs, { recursive: true, force: true })
+	for (const directoryEntry of dirs) {
+		if (!directoryEntry.isDirectory()) continue
+		const directoryPath = join(logsRoot, directoryEntry.name)
+		if (!knownSafeManifests.has(directoryEntry.name)) {
+			await rm(directoryPath, { recursive: true, force: true })
 			continue
 		}
-		const knownFiles = knownLogFilesByDir.get(ent.name) ?? new Set()
-		for (const name of await readdir(abs)) {
+		const knownFiles = knownLogFilesByDir.get(directoryEntry.name) ?? new Set()
+		for (const name of await readdir(directoryPath)) {
 			if (!name.endsWith('.log') || knownFiles.has(name)) continue
-			await rm(join(abs, name), { force: true })
+			await rm(join(directoryPath, name), { force: true })
 		}
-		if (!(await readdir(abs)).length)
-			await rm(abs, { recursive: true, force: true })
+		if (!(await readdir(directoryPath)).length)
+			await rm(directoryPath, { recursive: true, force: true })
 	}
 }
 
@@ -242,20 +249,20 @@ async function pruneOrphanLogs(repoRoot, allSuites, knownSafeManifests) {
  * @returns {Promise<void>}
  */
 async function pruneOrphanPlaywrightDirs(repoRoot, knownSafeManifests) {
-	const pwRoot = join(testDataRoot(repoRoot), 'playwright')
+	const playwrightRoot = join(testDataRoot(repoRoot), 'playwright')
 	/** @type {import('node:fs').Dirent[]} */
 	let dirs
 	try {
-		dirs = await readdir(pwRoot, { withFileTypes: true })
+		dirs = await readdir(playwrightRoot, { withFileTypes: true })
 	}
 	catch (error) {
 		if (error?.code === 'ENOENT') return
 		throw error
 	}
-	for (const ent of dirs) {
-		if (!ent.isDirectory() || ent.name === 'default') continue
-		if (knownSafeManifests.has(ent.name)) continue
-		await rm(join(pwRoot, ent.name), { recursive: true, force: true })
+	for (const directoryEntry of dirs) {
+		if (!directoryEntry.isDirectory() || directoryEntry.name === 'default') continue
+		if (knownSafeManifests.has(directoryEntry.name)) continue
+		await rm(join(playwrightRoot, directoryEntry.name), { recursive: true, force: true })
 	}
 }
 
