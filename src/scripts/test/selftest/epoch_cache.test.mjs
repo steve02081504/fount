@@ -37,9 +37,9 @@ Deno.test('inflight dedupes concurrent gets for the same key', async () => {
 	/** @type {(value: { bundle: object, locale: string }) => void} */
 	let resolveLoad
 	const loadPromise = new Promise(resolve => { resolveLoad = resolve })
-	const a = cache.get('ja-JP', () => { loads++; return loadPromise })
-	const b = cache.get('ja-JP', () => { loads++; return loadPromise })
+	const firstRequest = cache.get('ja-JP', () => { loads++; return loadPromise })
+	const secondRequest = cache.get('ja-JP', () => { loads++; return loadPromise })
 	resolveLoad({ bundle: { hello: 'こんにちは' }, locale: 'ja-JP' })
-	assertEquals(await a, await b)
+	assertEquals(await firstRequest, await secondRequest)
 	assertEquals(loads, 1)
 })

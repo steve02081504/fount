@@ -39,10 +39,8 @@ export function createEpochCache() {
 		 * @returns {Promise<T>} 条目
 		 */
 		async get(key, load) {
-			const cached = cache.get(key)
-			if (cached !== undefined) return cached
-			const existing = inflight.get(key)
-			if (existing) return existing
+			if (cache.get(key) !== undefined) return cache.get(key)
+			if (inflight.get(key)) return inflight.get(key)
 
 			const captured = epoch
 			const request = (async () => {

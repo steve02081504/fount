@@ -40,8 +40,7 @@ const localeBundleCache = createEpochCache()
  * @returns {Promise<{ bundle: object, locale: string }>} bundle 与主 locale
  */
 async function loadLocaleEntry(preferredLangs) {
-	const cacheKey = preferredLangs.join(',')
-	return localeBundleCache.get(cacheKey, async () => {
+	return localeBundleCache.get(preferredLangs.join(','), async () => {
 		const url = new URL('/api/getlocaledata', location.origin)
 		url.searchParams.set('preferred', preferredLangs.join(','))
 		const [response, available] = await Promise.all([
@@ -50,11 +49,13 @@ async function loadLocaleEntry(preferredLangs) {
 		])
 		if (!response.ok)
 			throw new Error(`Failed to fetch translations: ${response.status} ${response.statusText}`)
-		const locale = getBestLocale(
-			[...preferredLangs, navigator.language, ...navigator.languages || []],
-			available,
-		)
-		return { bundle: await response.json(), locale }
+		return {
+			locale: getBestLocale(
+				[...preferredLangs, navigator.language, ...navigator.languages || []],
+				available,
+			),
+			bundle: await response.json(),
+		}
 	})
 }
 
