@@ -3,7 +3,7 @@
  * 【职责】点击头像/作者链接触发的轻量资料弹层：解析锚点实体并展示只读资料摘要。
  * 【原理】`showProfilePopup` / `dismissProfilePopup` 管理单例 popup DOM 定位与关闭；从消息行 `data-author` 等属性解析实体；不修改频道列表 HTML 结构。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/template、../../../../scripts/toast、shared/entityHash、fount-p2p/core/hexIds、core/state、entityProfile、entityResolve、friendChat。
+ * 【关联】../../../../scripts/template、../../../../scripts/toast、shared/entityHash、shared/profileAnchorMember、fount-p2p/core/hexIds、core/state、entityProfile、entityResolve、friendChat。
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
@@ -18,6 +18,7 @@ import {
 	openProfilePopupLayer,
 } from '../shared/entityProfilePopup.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { findMemberForProfileAnchor } from '../shared/profileAnchorMember.mjs'
 
 import { store } from './core/state.mjs'
 import {
@@ -104,13 +105,7 @@ export async function resolveEntityFromAnchor(anchor) {
 	if (!displayKey || displayKey === '?') return null
 
 	const members = store.context.currentState?.members || []
-	const memberRow = members.find(m =>
-		m.entityHash === displayKey
-		|| m.memberKey === displayKey
-		|| m.pubKeyHash === displayKey
-		|| m.pubKeyHash === memberKey
-		|| m.pubKeyHash === authorHash,
-	)
+	const memberRow = findMemberForProfileAnchor(members, { displayKey, memberKey, authorHash })
 
 	if (memberRow?.charname)
 		return charEntityFromName(memberRow.charname, memberRow.displayName || memberRow.charname)

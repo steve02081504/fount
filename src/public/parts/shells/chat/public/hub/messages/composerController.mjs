@@ -17,6 +17,24 @@ const COMPOSER_TOOL_IDS = [
 	'composer-more-button',
 ]
 
+/**
+ * 启用/禁用 composer 工具控件（button 用 disabled；summary 用 aria-disabled + btn-disabled）。
+ * @param {HTMLElement} el 控件
+ * @param {boolean} enabled 是否可用
+ * @returns {void}
+ */
+function setComposerToolEnabled(el, enabled) {
+	if (el instanceof HTMLButtonElement || el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) {
+		el.disabled = !enabled
+		return
+	}
+	if (el.tagName !== 'SUMMARY') return
+	el.toggleAttribute('aria-disabled', !enabled)
+	el.classList.toggle('btn-disabled', !enabled)
+	const details = el.closest('details')
+	if (!enabled && details instanceof HTMLDetailsElement) details.open = false
+}
+
 /** @returns {void} */
 export function refreshHubHeaderButtons() {
 	const hasConversation = !!(store.context.currentGroupId && store.context.currentChannelId)
@@ -56,7 +74,7 @@ export function enableComposer() {
 	input.dataset.i18n = 'chat.hub.composer'
 	for (const id of COMPOSER_TOOL_IDS) {
 		const el = document.getElementById(id)
-		if (el) el.disabled = false
+		if (el) setComposerToolEnabled(el, true)
 	}
 	refreshHubHeaderButtons()
 }
@@ -78,7 +96,7 @@ export function disableComposer(placeholderI18nKey) {
 	}
 	for (const id of COMPOSER_TOOL_IDS) {
 		const el = document.getElementById(id)
-		if (el) el.disabled = true
+		if (el) setComposerToolEnabled(el, false)
 	}
 	refreshHubHeaderButtons()
 }

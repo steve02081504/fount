@@ -3,7 +3,7 @@ import { createChatTestGroup } from 'fount/scripts/test/playwright/api.mjs'
 import { test, expect, openFreshGroupChannel, waitForHub } from './fixtures.mjs'
 
 test.describe('Chat hub mobile pane', () => {
-	test.use({ viewport: { width: 390, height: 844 } })
+	test.use({ viewport: { width: 390, height: 844 }, hasTouch: true })
 
 	test('nav and main panes swap without horizontal overflow', async ({ page, baseUrl, apiKey }) => {
 		const { groupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey)
@@ -70,5 +70,27 @@ test.describe('Chat hub mobile pane', () => {
 		// 成员栏盖住右侧；点左侧露出的 backdrop
 		await page.locator('#member-backdrop').click({ position: { x: 16, y: 200 } })
 		await expect(page.locator('#member-bar')).not.toHaveClass(/member-bar--open/)
+	})
+
+	test('header overflow menu opens on tap', async ({ page, baseUrl, apiKey }) => {
+		await openFreshGroupChannel(page, baseUrl, apiKey)
+		const more = page.locator('#header-more-button')
+		await expect(more).toBeVisible()
+		await more.tap()
+		const overflow = page.locator('details.header-overflow')
+		await expect(overflow).toHaveAttribute('open', '')
+		await expect(page.locator('#overflow-search')).toBeVisible()
+		await expect(page.locator('#overflow-pins')).toBeVisible()
+	})
+
+	test('composer more menu opens on tap', async ({ page, baseUrl, apiKey }) => {
+		await openFreshGroupChannel(page, baseUrl, apiKey)
+		const more = page.locator('#composer-more-button')
+		await expect(more).toBeVisible()
+		await expect(more).not.toHaveAttribute('aria-disabled', 'true')
+		await more.tap()
+		const overflow = page.locator('details.composer-more')
+		await expect(overflow).toHaveAttribute('open', '')
+		await expect(page.locator('#composer-more-upload')).toBeVisible()
 	})
 })
