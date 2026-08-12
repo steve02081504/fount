@@ -49,16 +49,6 @@ async function stubMissingSocialFileGet(route) {
 }
 
 /**
- * @param {string | URL} url 请求 URL
- * @returns {boolean} 是否为需 stub 的缺失 EVFS 媒体路径
- */
-function isStubSocialEvfsFileUrl(url) {
-	const path = typeof url === 'string' ? new URL(url).pathname : url.pathname
-	return path.endsWith('/files/profile/avatar')
-		|| /\/files\/shells\/social\/attachments\/[^/]+$/.test(path)
-}
-
-/**
  * Social 前端测前置：clipboard stub；缺失的 profile avatar 用 1×1 png 顶上，
  * 避免探索/资料页对无文件头像 URL 刷 `[browser:network]` 404 噪声。
  * @param {object} args fixture 参数
@@ -79,8 +69,11 @@ async function installSocialTestHooks({ page }) {
 			/** 模拟异步剪贴板写入。 */
 			navigator.clipboard.writeText = async () => { }
 	})
-	// 谓词匹配 pathname（比 glob/regex 全 URL 更稳）；挂 context 覆盖 popup / 多 page。
-	await page.context().route(isStubSocialEvfsFileUrl, stubMissingSocialFileGet)
+	// glob 比函数谓词更稳（Deno Playwright 下带 `shells:chat` 的 pathname 偶发漏匹配）
+	const context = page.context()
+	await context.route('**/files/profile/avatar*', stubMissingSocialFileGet)
+	await context.route('**/files/profile/sfw_avatar*', stubMissingSocialFileGet)
+	await context.route('**/files/shells/social/attachments/**', stubMissingSocialFileGet)
 }
 
 /**
