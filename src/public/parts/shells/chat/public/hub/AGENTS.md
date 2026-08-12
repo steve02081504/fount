@@ -26,7 +26,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 
 ## UI conventions
 
-- CSS: page-local, no `hub-` prefix. Ready-gate: `HUB_GATE` / `fount:hub-*`. Layout: `body[data-layout-pane]` / `body[data-surface]`. Mobile (`≤768px`): `body[data-layout-pane=nav|main]` via `hubPane.mjs`.
+- CSS: page-local, no `hub-` prefix. Ready-gate: `HUB_GATE` / `fount:hub-*`. Layout: `body[data-layout-pane]` / `body[data-surface]`. Mobile (`≤768px`): `body[data-layout-pane=nav|main]` via `hubPane.mjs`. Idle surfaces (`groups`/`friends`/…) hide `.input-area`; `selectChannel` must `enableComposer`/`disableComposer` (→ `surface=conversation`) **before** `showHubMainPane`, or mobile opens the chat chrome with no composer. Do not assign `dataset.surface` ad hoc — only `refreshHubHeaderButtons`.
 - **`fount.user.send`**: Hub bootstrap registers `globalThis.fount.user.send(string | chatLogEntry)` → current channel. Normalize in `shared/fountUserSend.mjs` (Deno-pure — no `/scripts/*` imports there).
 - Errors: `handleError('chat.hub.…')` for fount faults; user mistakes: `showToastI18n`. Floating promises: call directly (no `void`); `return void sideEffect()` only when the side effect returns non-`undefined`.
 - Prefer `renderTemplate` / `mountTemplate` / `openDialogFromTemplate`; cross-shell shared modules use `withTemplates`. DaisyUI + shared `promptDialog` / `positionContextMenu`.

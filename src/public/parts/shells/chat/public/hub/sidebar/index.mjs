@@ -67,12 +67,12 @@ async function paintGroupHubChrome(state) {
 	await renderChannelList(state)
 	await renderMemberList(state)
 	store.context.currentMode = 'groups'
-	document.body.dataset.surface = 'groups'
 	document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 		el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 	})
 	await renderGroupInfoCard(state)
-	void import('../messages/composerController.mjs').then(({ refreshHubHeaderButtons }) => refreshHubHeaderButtons())
+	const { refreshHubHeaderButtons } = await import('../messages/composerController.mjs')
+	refreshHubHeaderButtons()
 	updateStatusBanners()
 }
 
