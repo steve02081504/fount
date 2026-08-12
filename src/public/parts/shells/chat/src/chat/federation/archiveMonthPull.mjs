@@ -2,7 +2,7 @@
  * 冷归档按月联邦拉取：PullAttestation + chunk meta + 多 peer 信誉 digest 仲裁。
  */
 import { randomUUID } from 'node:crypto'
-import { mkdir, unlink } from 'node:fs/promises'
+import { access, mkdir, unlink } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
@@ -39,7 +39,7 @@ import {
 	signPullAttestation,
 	validateActivePullAttestationForGroup,
 } from './pullAttestation.mjs'
-import { loadGroupSyncState } from './syncState.mjs'
+import { loadGroupSyncState, saveGroupSyncState } from './syncState.mjs'
 
 const WAIT_MS = 5000
 
@@ -367,7 +367,6 @@ export async function pullOfflineStartUtcMonthArchives(username, groupId, slot) 
 	let pulled = 0
 	let incomplete = 0
 	for (const channelId of channels) {
-		const { access } = await import('node:fs/promises')
 		try {
 			await access(channelArchivePath(username, groupId, channelId, utcMonth))
 			continue
@@ -378,5 +377,7 @@ export async function pullOfflineStartUtcMonthArchives(username, groupId, slot) 
 		if (applied) pulled++
 		else incomplete++
 	}
+	if (!incomplete)
+		await saveGroupSyncState(username, groupId, { offlineStartUtcMonth: '' })
 	return { pulled, incomplete }
 }

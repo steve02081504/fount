@@ -47,15 +47,16 @@ export async function markGroupOfflineStarted(username, groupId, wallMs = Date.n
 }
 
 /**
- * 上线同步成功后更新末帧 tipsHash。
+ * 上线 DAG 同步成功后更新末帧 tipsHash。
+ * 不清除 `offlineStartUtcMonth`：冷归档补拉与 DAG catchup 不是同一件事，
+ * 标记由 `pullOfflineStartUtcMonthArchives` 在该月文件齐了之后清掉。
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} tipsHash 本地 `local_tips_hash`
- * @returns {Promise<object>} 更新后的 syncState
+ * @returns {Promise<object>} 更新后的状态
  */
 export async function markGroupOnlineSynced(username, groupId, tipsHash) {
 	return saveGroupSyncState(username, groupId, {
 		tipsHashAtLastSync: tipsHash.trim(),
-		offlineStartUtcMonth: '',
 	})
 }

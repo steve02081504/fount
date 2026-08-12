@@ -26,6 +26,7 @@ import {
 	shouldDeferFederatedRelay,
 } from './acl.mjs'
 import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandshake.mjs'
+import { pullOfflineStartUtcMonthArchives } from './archiveMonthPull.mjs'
 import { maybeRequestBootstrapAfterCatchup } from './bootstrapRelay.mjs'
 import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { requestMissingEventsGossip } from './gossip.mjs'
@@ -268,7 +269,9 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 		pickTargetPeerIds,
 	})
 
-	syncMissingArchiveMonths(username, groupId, slot).catch(handleError)
+	pullOfflineStartUtcMonthArchives(username, groupId, slot)
+		.then(() => syncMissingArchiveMonths(username, groupId, slot))
+		.catch(handleError)
 
 	// 补齐要把 DAG 缺口补到“无悬挂父引用”为止：远端 tip 本地缺失 ∪ 本地事件 prev_event_ids 指向的本地缺失父（有叶无链）。
 	// 关键：延迟桶（pending_ingest / quarantine）里的事件同样引用尚缺的父，但它们并不在 events.jsonl 中，
