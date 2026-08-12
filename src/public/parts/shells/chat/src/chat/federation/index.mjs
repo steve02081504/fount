@@ -2,7 +2,7 @@
  * 【文件】federation/index.mjs
  * 【职责】联邦对外门面：已签名 DAG 事件出站中继、与邻居交换 DAG 叶并触发 wantIds 补洞、gossip 拉取缺失事件，以及列出当前联邦房内对等端。
  * 【原理】出站经 ensureFederationRoom 取得联邦房间槽，由 peerPool 稀疏选取目标 peer（无邻居时房内广播）；入站补洞先发 fed_tip_ping/pong 收集远端 tips，再 requestMissingEventsGossip。ACL 门控事件在物化快照未就绪时入 pendingRelay 队列而非立即中继。
- * 【数据结构】signPayload 为已验签 DAG 行；catchUp 返回 tipsCollected、wantIds、eventsFilled 等统计；listFederationPeers 返回 selfNodeHash、peers 名册。
+ * 【数据结构】signPayload 为已验签 DAG 行；catchUp 返回 tipsCollected、peerRosterSize、wantIds、eventsFilled 等统计；listFederationPeers 返回 selfNodeHash、peers 名册。
  * 【关联】room.mjs、acl.mjs、pendingRelay.mjs、gossip.mjs、archiveHandshake.mjs、peerPool.mjs、dagDependencies.mjs、registry.mjs；DAG 读写在 scripts/p2p 与 dag/ 层。
  */
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
@@ -171,11 +171,28 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 }
 
 /**
+ * @param {boolean} federationActive 是否已激活联邦
+ * @returns {{ federationActive: boolean, tipsCollected: number, peerRosterSize: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }} 空统计
+ */
+function emptyCatchUpStats(federationActive = false) {
+	return {
+		federationActive,
+		tipsCollected: 0,
+		peerRosterSize: 0,
+		wantIds: 0,
+		eventsFilled: 0,
+		wantIdsStillMissing: 0,
+		wantIdsRateLimited: false,
+		stalePeersPruned: 0,
+	}
+}
+
+/**
  * 与在线邻居交换 DAG 叶 id，并对缺失叶发起 wantIds 补洞（§9）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {{ waitMs?: number, extraWantIds?: string[] }} [options] 等待邻居 pong 毫秒数、额外索要 id
- * @returns {Promise<{ federationActive: boolean, tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
+ * @returns {Promise<{ federationActive: boolean, tipsCollected: number, peerRosterSize: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
  */
 export async function catchUpGroupFromPeers(username, groupId, options = {}) {
 	const key = `${username}\0${groupId}`
@@ -192,11 +209,11 @@ export async function catchUpGroupFromPeers(username, groupId, options = {}) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {{ waitMs?: number, extraWantIds?: string[] }} [options] 等待邻居 pong 毫秒数、额外索要 id
- * @returns {Promise<{ federationActive: boolean, tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
+ * @returns {Promise<{ federationActive: boolean, tipsCollected: number, peerRosterSize: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
  */
 async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	const slot = await ensureFederationPartitionRoom(username, groupId, LOGIC_SYNC_PARTITION)
-	if (!slot) return { federationActive: false, tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false, stalePeersPruned: 0 }
+	if (!slot) return emptyCatchUpStats(false)
 
 	const { readJsonl } = requireDagDeps()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
@@ -220,6 +237,9 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 		await waitForFederationPeers(slot, { maxWaitMs: PEER_ROSTER_WAIT_MS })
 		await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries: [] })
 	}
+	else if (!slot.getRoster().length)
+		// 已有 checkpoint 的日常 catchup：仍等一小段 roster，避免进群瞬间 tip ping 打空、Hub 误报「无邻居」。
+		await waitForFederationPeers(slot, { maxWaitMs: Math.min(waitMs, PEER_ROSTER_WAIT_MS) })
 
 	/** @returns {Promise<string[]>} 目标 peer id 列表 */
 	const pickTargetPeerIds = () => pickFederationTargetPeerIds(groupId,
@@ -337,6 +357,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	const stats = {
 		federationActive: true,
 		tipsCollected: remoteTips.size,
+		peerRosterSize: slot.getRoster().length,
 		wantIds: wantedEver.size,
 		eventsFilled,
 		wantIdsStillMissing,

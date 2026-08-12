@@ -30,7 +30,7 @@ import { renderMemberList } from './members.mjs'
  */
 export async function syncGroupFromNetwork(groupId, options = {}) {
 	setSyncBanner(true)
-	/** @type {{ federationActive?: boolean, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, tipsCollected?: number }} */
+	/** @type {{ federationActive?: boolean, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, tipsCollected?: number, peerRosterSize?: number }} */
 	let catchup
 	try {
 		catchup = await federationCatchUp(groupId, { waitMs: options.waitMs ?? 1400 })
@@ -51,7 +51,7 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 		return
 	}
 	const stillMissing = Number(catchup.wantIdsStillMissing) || 0
-	const tipsCollected = Number(catchup.tipsCollected) || 0
+	const peerRosterSize = Number(catchup.peerRosterSize) || 0
 	if (catchup.wantIdsRateLimited)
 		setSyncBanner(true, { i18nKey: 'chat.hub.sync.rateLimited' })
 	else if (stillMissing > 0)
@@ -59,7 +59,9 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 			i18nKey: 'chat.hub.sync.incomplete',
 			params: { missing: stillMissing, total: catchup.wantIds },
 		})
-	else if (tipsCollected === 0 && !catchup.wantIds && !catchup.eventsFilled)
+	// 勿用 tipsCollected===0 代替「无邻居」：邻居在线但 tip 已对齐 / ping 窗口内未回 pong 时 tips 也可为 0，
+	// 而 live 发信仍走当时 roster——否则会出现「能互发却钉死无邻居横幅」。
+	else if (peerRosterSize === 0)
 		setSyncBanner(true, { i18nKey: 'chat.hub.sync.noPeers' })
 	else
 		setSyncBanner(false)
@@ -141,7 +143,8 @@ export async function ensureGroupMembership(groupId, state) {
  */
 export async function syncGroupStateForHub(groupId, state, presetChannelId) {
 	setState('context.currentState', state)
-	rebindFederationRoomQuiet(groupId, {
+	// 先等分区房间重绑，再 catch-up；否则 tip ping 打在空 roster 上，横幅误报无邻居。
+	await rebindFederationRoomQuiet(groupId, {
 		channelId: presetChannelId || state.groupSettings?.defaultChannelId || null,
 	})
 	void warmCharEntityHashCache()
