@@ -119,9 +119,9 @@ export async function ensureGroupMembership(groupId, state) {
 		await renderChannelList(state)
 		await renderMemberList(state)
 		await renderGroupInfoCard(state)
+		await showGroupJoinRequiredState()
 		const { refreshHubHeaderButtons } = await import('../messages/composerController.mjs')
 		refreshHubHeaderButtons()
-		await showGroupJoinRequiredState()
 		return null
 	}
 	const pow = await resolvePowForJoin(groupId, state, store.viewer.nodeHash || '')

@@ -50,36 +50,14 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
  */
 
 /**
- * @param {string | undefined} value 字段值
- * @returns {string | undefined} 非空 trim；空串视为缺省
- */
-function optionalJoinField(value) {
-	const trimmed = (value || '').trim()
-	return trimmed || undefined
-}
-
-/**
  * 规范化 join 载荷（只保留有值字段；hex 字段规范化）。
  * @param {JoinRunPayload} input 入参
- * @returns {JoinRunPayload | null} 规范化结果；缺 groupId 时 null
+ * @returns {JoinRunPayload | null} 规范化结果；缺 groupId 或字段类型非法时 null
  */
 export function normalizeJoinRunPayload(input) {
-	const groupId = optionalJoinField(input?.groupId)
-	if (!groupId) return null
-	/** @type {JoinRunPayload} */
-	const payload = {
-		groupId,
-		inviteCode: optionalJoinField(input.inviteCode) || '',
-	}
-	const secret = optionalJoinField(input.roomSecret)
-	const pub = optionalJoinField(input.introducerPubKeyHash)
-	const pow = optionalJoinField(input.powAnchorRef)
-	const node = optionalJoinField(input.introducerNodeHash)
-	if (secret) payload.roomSecret = secret
-	if (pub) payload.introducerPubKeyHash = normalizeHex64(pub)
-	if (pow) payload.powAnchorRef = pow
-	if (node) payload.introducerNodeHash = normalizeHex64(node)
-	return payload
+	for (const key of Object.keys(input))
+		input[key] = input[key]?.trim?.()
+	return input
 }
 
 /**
@@ -100,14 +78,11 @@ export function formatJoinRunUri(input) {
  * @returns {JoinRunPayload | null} join 载荷
  */
 export function parseJoinRunPayload(raw) {
-	if (raw == null || raw === '') return null
 	let data = raw
-	if (typeof raw === 'string') {
-		try { data = JSON.parse(raw) }
-		catch { return null }
-	}
-	if (!data || typeof data !== 'object') return null
-	return normalizeJoinRunPayload(/** @type {JoinRunPayload} */(data))
+	try { data = JSON.parse(raw) }
+	catch { return null }
+
+	return normalizeJoinRunPayload(/** @type {JoinRunPayload} */data)
 }
 
 /**
@@ -182,6 +157,6 @@ export function parseMessageRunUri(raw) {
  */
 export function parseJoinRunUri(raw) {
 	const parsed = parseChatRunUri(raw)
-	if (!parsed || parsed.subcommand !== 'join') return null
+	if (!parsed || parsed.subcommand !== 'join' || parsed.args.length !== 1) return null
 	return parseJoinRunPayload(parsed.args[0])
 }

@@ -64,6 +64,18 @@ function credsEqual(a, b) {
 }
 
 /**
+ * resolveGroupRoomCredentials 扁平结果 → buildFederationSlot 凭证字段。
+ * @param {{ roomId: string, password: string }} roomCreds 已解析房间凭证
+ * @returns {{ roomId: string, roomSecret: string }} slot 入参
+ */
+export function federationSlotCredParams(roomCreds) {
+	return {
+		roomId: roomCreds.roomId,
+		roomSecret: roomCreds.password,
+	}
+}
+
+/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} [partitionId] 分区 id（默认 sync）

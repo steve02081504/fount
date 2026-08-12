@@ -124,6 +124,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	closeGroupWebSocket()
 	cancelScheduledChannelRefresh()
 	setState('context.currentGroupId', groupId)
+	setState('context.currentChannelId', null)
 	setState('context.currentState', null)
 	updateHash(groupId, channelId)
 	const { setMode } = await import('../mode.mjs')

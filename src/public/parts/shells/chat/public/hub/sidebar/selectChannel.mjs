@@ -82,10 +82,11 @@ export async function selectChannel(channelId) {
 	titleEl.setAttribute('user-content', '')
 	const headerIcon = document.querySelector('.main-header-icon')
 	const { renderHubChannelSidebar } = await import('./index.mjs')
-	await Promise.all([
+	const [, iconHtml] = await Promise.all([
 		renderHubChannelSidebar(store.context.currentState),
-		channelTypeIconHtml(channelType).then(html => { headerIcon.innerHTML = html }),
+		channelTypeIconHtml(channelType),
 	])
+	headerIcon.innerHTML = iconHtml
 	if (store.context.currentGroupId)
 		rebindFederationRoomQuiet(store.context.currentGroupId, { channelId })
 	const { loadMessages } = await import('../messages/messages.mjs')

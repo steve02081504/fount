@@ -34,7 +34,7 @@ import {
 	setFederationPartitionInflight,
 	setFederationPartitionSlot,
 } from './registry.mjs'
-import { resolveGroupRoomCredentials } from './roomCredentials.mjs'
+import { federationSlotCredParams, resolveGroupRoomCredentials } from './roomCredentials.mjs'
 import { attachFederationRoomHandlers } from './roomHandlers/index.mjs'
 import { createFederationRoomHandlerBundle } from './roomHandlers/roomContext.mjs'
 import { warmSeenFromLocalEvents } from './seen.mjs'
@@ -72,7 +72,8 @@ async function awaitIntroducerDial(targetNodeHash) {
  * @returns {boolean} slot 是否仍绑定同一 room
  */
 function partitionSlotMatchesCredentials(slot, roomCreds) {
-	return slot?.roomId === roomCreds.roomId && slot?.roomSecret === roomCreds.password
+	const { roomId, roomSecret } = federationSlotCredParams(roomCreds)
+	return slot?.roomId === roomId && slot?.roomSecret === roomSecret
 }
 
 /**
@@ -304,11 +305,12 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				getSlot: () => slotRef,
 			}))
 
+			const slotCreds = federationSlotCredParams(roomCreds)
 			const slot = buildFederationSlot({
 				partitionId,
-				roomId: roomCreds.roomId,
+				roomId: slotCreds.roomId,
 				room,
-				roomSecret: roomCreds.password,
+				roomSecret: slotCreds.roomSecret,
 				groupId,
 				roomKey: rtcRoomKey,
 				rtcLimits,

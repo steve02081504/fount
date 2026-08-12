@@ -41,6 +41,7 @@ function stripMistakenFieldPrefix(value, keys) {
 }
 
 /**
+ * 清洗 bootstrap 记录（去掉历史 `key=` 脏前缀；清洗结果始终覆盖原字段）。
  * @param {object | null} row 磁盘/内存 bootstrap 行
  * @returns {object | null} 清洗后的行（无脏前缀则原样返回）
  */
@@ -53,9 +54,9 @@ function sanitizeBootstrapRow(row) {
 		return row
 	return {
 		...row,
-		...roomSecret !== undefined ? { roomSecret } : {},
-		...fromNodeId !== undefined ? { fromNodeId } : {},
-		...powAnchorRef !== undefined ? { powAnchorRef } : {},
+		roomSecret,
+		fromNodeId,
+		powAnchorRef,
 	}
 }
 
@@ -107,6 +108,7 @@ export function setFederationBootstrap(username, groupId, creds) {
 		powAnchorRef: creds.powAnchorRef?.trim() || undefined,
 		powAnchors: Array.isArray(creds.powAnchors) ? creds.powAnchors.map(String) : undefined,
 	})
+	if (!row?.roomSecret) return
 	persistBootstrapRow(username, groupId, row)
 	bootstrapByKey.set(federationBootstrapKey(username, groupId), row)
 	peerHintByKey.delete(federationBootstrapKey(username, groupId))

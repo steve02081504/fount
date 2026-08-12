@@ -44,26 +44,18 @@ test.describe('Chat hub mobile pane', () => {
 		await waitForHub(page, baseUrl)
 		await expect(page.locator('body')).toHaveAttribute('data-layout-pane', 'nav')
 
-		await page.evaluate(() => {
-			window.__composerAtMainPane = new Promise(resolve => {
-				const obs = new MutationObserver(() => {
-					if (document.body.dataset.layoutPane !== 'main') return
-					const area = document.querySelector('.input-area')
-					resolve({
-						surface: document.body.dataset.surface,
-						display: area ? getComputedStyle(area).display : 'missing',
-					})
-					obs.disconnect()
-				})
-				obs.observe(document.body, { attributes: true, attributeFilter: ['data-layout-pane'] })
-			})
-		})
-
 		await page.evaluate(
 			({ gid, cid }) => { location.hash = `group:${encodeURIComponent(gid)}:${cid}` },
 			{ gid: groupId, cid: defaultChannelId },
 		)
-		const atMain = await page.evaluate(() => window.__composerAtMainPane)
+		await page.waitForFunction(() => document.body.dataset.layoutPane === 'main')
+		const atMain = await page.evaluate(() => {
+			const area = document.querySelector('.input-area')
+			return {
+				surface: document.body.dataset.surface,
+				display: area ? getComputedStyle(area).display : 'missing',
+			}
+		})
 		expect(atMain.surface, `composer hidden at main-pane open: ${JSON.stringify(atMain)}`).toBe('conversation')
 		expect(atMain.display).not.toBe('none')
 		await expect(page.locator('.input-area')).toBeVisible()
