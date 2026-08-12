@@ -56,7 +56,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **`dependsOn`**: plan pulls transitive deps. Imperfect wave = hard fails + one-level dependents (noisy re-runs but does not expand dependents); stale `unknown` → outdated wave.
 - **`subtests`**: `{ name, triggers|trigger, spec? }`. When splitting a frontend god-file, update that subtest's `triggers`. Runtime filter: `FOUNT_TEST_SUBTESTS`. Suite-level `noisy` only marks subtests when **no** file failed.
 - **Live layering**: smoke → e2e gates; do not jump straight to full e2e. Details: [domain-harness.md](docs/domain-harness.md#live-layering).
-- **Browser scripts**: `/scripts/*` → `src/public/pages/scripts/` (browser absolute URLs only). Cross-runtime pure+browser: `shells/*/public/shared/`. Do not import `/scripts/test/*` from Deno trees; pure tests use relative paths, not `/parts/` URLs. Relative climbs from part `public/` to `pages/scripts` resolve as `/pages/scripts/…` (404) — use `/scripts/…`. Split: pure → `shared/`, UI → `public/src/`.
+- **Browser scripts**: `/scripts/*` → `src/public/pages/scripts/` (browser absolute URLs only). Cross-runtime pure+browser: `shells/*/public/shared/`. Do not import `/scripts/test/*` from Deno trees; pure tests use relative paths, not `/parts/` URLs. Relative climbs from part `public/` are URL-resolved (`/parts/<partKey>/…` → may land on `/scripts/…`); prefer absolute `/scripts/…`. `shellLoadProbe` uses the same URL rules. Split: pure → `shared/`, UI → `public/src/`.
 - **`heavy`** / **`resources`**: [resource-scheduling.md](docs/resource-scheduling.md). Invariant: waiters + idle machine → admit ≥1.
 
 ## Writing new tests

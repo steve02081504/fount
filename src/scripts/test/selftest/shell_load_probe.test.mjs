@@ -11,7 +11,9 @@ import { assertEquals } from 'jsr:@std/assert'
 import {
 	collectModuleExports,
 	parseBindingNames,
+	partPublicBrowserPath,
 	probeShellPart,
+	resolveBrowserImportSpec,
 } from '../shellLoadProbe.mjs'
 
 Deno.test('parseBindingNames distinguishes import source vs export public names', () => {
@@ -36,6 +38,35 @@ Deno.test('collectModuleExports follows export-star and local decls', async () =
 		assertEquals([...nsNames], ['bundle'])
 		const remoteNames = await collectModuleExports(root, remote)
 		assertEquals([...remoteNames], ['localName'])
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('part public relative climbs resolve like browser /scripts URLs', async () => {
+	const root = await mkdtemp(path.join(tmpdir(), 'fount-shell-probe-url-'))
+	try {
+		const hub = path.join(root, 'src/public/parts/shells/probe_fixture/public/hub')
+		const scripts = path.join(root, 'src/public/pages/scripts/lib')
+		await mkdir(hub, { recursive: true })
+		await mkdir(scripts, { recursive: true })
+		await writeFile(path.join(scripts, 'regex.mjs'), 'export function escapeRegExp(s) { return s }\n')
+		const importer = path.join(hub, 'friendsList.mjs')
+		await writeFile(importer, 'export const x = 1\n')
+
+		assertEquals(
+			partPublicBrowserPath(root, importer),
+			'/parts/shells:probe_fixture/hub/friendsList.mjs',
+		)
+		assertEquals(
+			resolveBrowserImportSpec(root, importer, '../../../../scripts/lib/regex.mjs'),
+			path.join(scripts, 'regex.mjs'),
+		)
+		assertEquals(
+			resolveBrowserImportSpec(root, importer, '../../../../scripts/regex.mjs'),
+			null,
+		)
 	}
 	finally {
 		await rm(root, { recursive: true, force: true })

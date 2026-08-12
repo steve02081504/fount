@@ -67,6 +67,42 @@ export function parseBindingNames(clause, mode = 'import') {
 }
 
 /**
+ * part `public/` 文件对应的浏览器 URL path（`/parts/<partKey>/…`）。
+ * @param {string} repoRoot 仓库根
+ * @param {string} importerFile 当前模块绝对路径
+ * @returns {string | null} 如 `/parts/shells:chat/hub/friendsList.mjs`
+ */
+export function partPublicBrowserPath(repoRoot, importerFile) {
+	const partsRoot = path.join(repoRoot, 'src/public/parts')
+	const rel = path.relative(partsRoot, path.resolve(importerFile)).replace(/\\/g, '/')
+	if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) return null
+	const match = /^(.+?)\/public\/(.+)$/u.exec(rel)
+	if (!match) return null
+	return `/parts/${match[1].replaceAll('/', ':')}/${match[2]}`
+}
+
+/**
+ * 把浏览器绝对 path 映射到仓库文件。
+ * @param {string} repoRoot 仓库根
+ * @param {string} pathname URL pathname
+ * @returns {string | null} 存在则返回绝对路径
+ */
+function mapBrowserPathnameToFile(repoRoot, pathname) {
+	if (pathname.startsWith('/scripts/')) {
+		const candidate = path.join(pagesScriptsRoot(repoRoot), pathname.slice('/scripts/'.length))
+		return existsSync(candidate) ? candidate : null
+	}
+	if (pathname.startsWith('/parts/')) {
+		const body = pathname.slice('/parts/'.length)
+		const slash = body.indexOf('/')
+		if (slash < 0) return null
+		const candidate = path.join(partPublicRoot(repoRoot, body.slice(0, slash)), body.slice(slash + 1))
+		return existsSync(candidate) ? candidate : null
+	}
+	return null
+}
+
+/**
  * @param {string} repoRoot 仓库根
  * @param {string} importerFile 当前模块绝对路径
  * @param {string} spec import 说明符
@@ -76,26 +112,20 @@ export function resolveBrowserImportSpec(repoRoot, importerFile, spec) {
 	if (spec.startsWith('https://') || spec.startsWith('http://') || spec.startsWith('npm:') || spec.startsWith('node:'))
 		return null
 
-	if (spec.startsWith('/scripts/')) {
-		const rel = spec.slice('/scripts/'.length)
-		const candidate = path.join(pagesScriptsRoot(repoRoot), rel)
-		return existsSync(candidate) ? candidate : null
-	}
-
-	if (spec.startsWith('/parts/')) {
-		const body = spec.slice('/parts/'.length)
-		const slash = body.indexOf('/')
-		if (slash < 0) return null
-		const partKey = body.slice(0, slash)
-		const within = body.slice(slash + 1)
-		const candidate = path.join(partPublicRoot(repoRoot, partKey), within)
-		return existsSync(candidate) ? candidate : null
-	}
+	if (spec.startsWith('/scripts/') || spec.startsWith('/parts/'))
+		return mapBrowserPathnameToFile(repoRoot, spec)
 
 	if (spec.startsWith('/')) return null
 
-	if (!spec.startsWith('.') && !spec.startsWith('/'))
+	if (!spec.startsWith('.'))
 		return null
+
+	// part public：按浏览器 URL 解析（`../` 爬出 public 会落到 `/scripts/…`，不是 FS 相对路径）
+	const browserBase = partPublicBrowserPath(repoRoot, importerFile)
+	if (browserBase) {
+		const pathname = new URL(spec, `https://fount.local${browserBase}`).pathname
+		return mapBrowserPathnameToFile(repoRoot, pathname)
+	}
 
 	const base = path.resolve(path.dirname(importerFile), spec)
 	const candidates = [base, `${base}.mjs`, `${base}.js`, `${base}.ts`, path.join(base, 'index.mjs')]
@@ -276,8 +306,7 @@ export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 
 			const resolved = resolveBrowserImportSpec(repoRoot, file, spec)
 			if (!resolved) {
-				if (spec.includes('/shared/') || spec.includes('public/shared'))
-					publicMissing.push(`${path.relative(repoRoot, file)} -> ${spec}`)
+				publicMissing.push(`${path.relative(repoRoot, file)} -> ${spec}`)
 				continue
 			}
 

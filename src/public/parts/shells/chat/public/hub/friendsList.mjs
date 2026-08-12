@@ -3,16 +3,16 @@
  * 【职责】好友模式侧栏：拉取好友列表 API、渲染好友列与角色/用户会话入口。
  * 【原理】`renderFriendsColumn` 填充 `#friends-list`；支持删除好友、重启私聊等行内操作；点击好友后由 `friendChat`/`chat.enterPrivateGroup` 加载消息。搜索同时覆盖本地角色 part 与网络实体。悬停走共享 `entityProfileHoverCard`（与消息一致），不用 native `title` tip / 主栏 `renderCharInfoCard` 预览。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】好友模式对应 `#friends`，由 `mode.setMode('friends')` 写入；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、chat、core/domUtils、core/state、friendBindings、friendChat。
+ * 【关联】好友模式对应 `#friends`，由 `mode.setMode('friends')` 写入；/scripts/i18n、/scripts/features/template、/scripts/features/toast、chat、core/domUtils、core/state、friendBindings、friendChat。
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
-import { getAllCachedPartDetails, getPartList } from '../../../../scripts/endpoints/parts.mjs'
-import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
-import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
-import { escapeRegExp } from '/scripts/lib/regex.mjs'
+import { getAllCachedPartDetails, getPartList } from '/scripts/endpoints/parts.mjs'
+import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
+import { confirmI18n, geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { escapeRegExp } from '/scripts/lib/regex.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
 import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
