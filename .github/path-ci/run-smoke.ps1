@@ -42,7 +42,7 @@ foreach ($flag in '.noupdate', '.noautoboot') {
 
 if (-not (Test-Path -LiteralPath node_modules)) {
 	Write-Host 'path smoke: seeding node_modules via deno install (hooked entrypoint)'
-	deno install --prod --allow-scripts --allow-all -c (Join-Path $Root 'deno.json') --entrypoint (Join-Path $Root 'src/server/index.mjs')
+	deno install --prod --allow-scripts -c (Join-Path $Root 'deno.json') --entrypoint (Join-Path $Root 'src/server/index.mjs')
 	if ($LastExitCode -ne 0) { exit $LastExitCode }
 }
 
