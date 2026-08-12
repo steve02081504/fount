@@ -173,6 +173,7 @@
 				"expected": "${expected} 예상"
 			},
 			"reusedSuite": ">>> ${manifestId}:${name} 재사용(트리거는 변경되지 않고 마지막 ${status}가 사용됨)",
+			"prunedAbsentState": "존재하지 않는 제품군의 정리된 상태: ${suites} 제품군, ${subtests} 하위 테스트",
 			"noisyOnlyRemain": "여전히 ${count}개의 스위트가 지나가지만 소음이 있습니다. ${suites}",
 			"noRealRunPlanned": "이번에는 실행할 필요가 없습니다. ${reused}는 재사용되고 ${blocked}는 차단될 것으로 예상됩니다(트리거는 변경되지 않은 상태로 유지됨).",
 			"allReusedHint": "이번에는 실제로 실행된 스위트가 없습니다: 실패는 이전 결과를 재사용한 것이며, 관련 파일이 변경되지 않아 차단이 해소되지 않았습니다. 관련 파일을 수정한 뒤 다시 실행하거나 `fount test --force`로 강제 실행하세요.",

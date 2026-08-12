@@ -173,6 +173,7 @@
 				"expected": "esperado ${expected}"
 			},
 			"reusedSuite": "\n>>> Reutilizando ${manifestId}:${name} (trigger sin cambios, último ${status})",
+			"prunedAbsentState": "Estado limpio de suites inexistentes: ${suites} suites, ${subtests} subpruebas",
 			"noisyOnlyRemain": "Aún quedan ${count} suites aprobando pero con ruido: ${suites}",
 			"noRealRunPlanned": "No hace falta ejecución real: ${reused} reutilizadas, ${blocked} previstas como bloqueadas (trigger sin cambios)",
 			"allReusedHint": "Esta vez no se ejecutó ninguna suite: los fallos son del último resultado heredado y el bloqueo no se resolvió (archivos relevantes sin cambios). Corrige los archivos y vuelve a ejecutar, o usa fount test --force para forzar ejecución real.",
