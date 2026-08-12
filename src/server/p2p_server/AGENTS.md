@@ -21,7 +21,7 @@ Core: [@steve02081504/fount-p2p](https://www.npmjs.com/package/@steve02081504/fo
 | --- | --- |
 | Node startup / entity store | `src/server/p2p_server/index.mjs`, `shells/chat/src/entity/store.mjs` (`findHostingUser` matches profile **or** existing entity dir). `initNode({ nodeDir, entityStore })`; signaling via `setSignalingRuntimeConfig`. `ensureUserRoom({ replicaUsername, attachDefaultWires: true })` for mailbox / part / part_query / chunks |
 | Public-good infra | optional `startInfra` / `stopInfra` / `setInfraPriority` / `pullReputationFromNode` / `lockReputationMax` (package `docs/infra.md`). Subfount always runs infra; with a host it pulls host reputation and prioritizes that node |
-| HTTP `/api/p2p/*` | `src/server/web_server/p2p_endpoints.mjs` |
+| HTTP `/api/p2p/*` | `src/server/web_server/p2p_endpoints.mjs`（`connect-node` → `ensureRemoteUserRoom(targetNodeHash)`，无 username 参数） |
 | Entity / profile / EVFS HTTP | `shells/chat/src/entity/endpoints.mjs`, `filesEndpoints.mjs` |
 | Chat federation / DAG / encryption | `shells/chat/src/chat/` |
 | Social timeline federation | `shells/social/src/federation/`, `timeline/` |

@@ -16,6 +16,7 @@ import { groupDir, eventsPath } from '../lib/paths.mjs'
 import { commitSignedChatEvent } from './commitSignedEvent.mjs'
 import { buildMemberJoinBindingFields } from './entityBinding.mjs'
 import { isFederatableDagEvent } from './eventTypes.mjs'
+import { withGroupWriteLock } from './groupLock.mjs'
 import { validateIngestAuthz } from './ingest.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
@@ -50,7 +51,7 @@ function commitOptsFromAppend(secretKey, state, options) {
 }
 
 /**
- * 追加一条 DAG 事件：校验 → 签名 → 落盘；联邦发布与 quarantine 释放由选项控制。
+ * 追加一条 DAG 事件：校验 → 写锁内（读 tip → 签名 → 落盘）；联邦发布与 quarantine 释放由选项控制。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} event 待追加事件体
@@ -71,23 +72,26 @@ export async function appendEvent(username, groupId, event, secretKey, options =
 	if (!options.skipValidateIngestAuthz)
 		await validateIngestAuthz(username, groupId, event, { source: 'local', state })
 	await mkdir(groupDir(username, groupId), { recursive: true })
-	const previous = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
-	// session_* 为本机元数据：仍落 events.jsonl，但不得占据联邦 tip frontier，
-	// 否则后续世界/消息事件会挂上对端没有的 session 父节点，物化折叠会丢成员。
-	const previousForTips = previous.filter(isFederatableDagEvent)
-	const { hlc, prev_event_ids: prevFromCaller } = computeAppendHlcAndPrev(previousForTips, event, { multiTip: true })
-
-	const { signPayload, wirePayload } = await signLocalChatEvent({
-		username,
-		groupId,
-		event,
-		secretKey,
-		state,
-		hlc,
-		prev_event_ids: prevFromCaller,
+	// 读 tip → 签名 → 落盘必须在同一把写锁内：否则并发本机 append（含 fire-and-forget
+	// auto-reply）会挂上同一组父节点，authzFold 只留一支，role_assign 等治理事件被丢掉。
+	const wirePayload = await withGroupWriteLock(username, groupId, async () => {
+		const previous = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
+		// session_* 为本机元数据：仍落 events.jsonl，但不得占据联邦 tip frontier，
+		// 否则后续世界/消息事件会挂上对端没有的 session 父节点，物化折叠会丢成员。
+		const previousForTips = previous.filter(isFederatableDagEvent)
+		const { hlc, prev_event_ids: prevFromCaller } = computeAppendHlcAndPrev(previousForTips, event, { multiTip: true })
+		const signed = await signLocalChatEvent({
+			username,
+			groupId,
+			event,
+			secretKey,
+			state,
+			hlc,
+			prev_event_ids: prevFromCaller,
+		})
+		await commitSignedChatEvent(username, groupId, signed.wirePayload, commitOptsFromAppend(secretKey, state, options))
+		return signed.wirePayload
 	})
-
-	await commitSignedChatEvent(username, groupId, wirePayload, commitOptsFromAppend(secretKey, state, options))
 	if (options.skipReleaseQuarantined !== true) {
 		await releaseQuarantinedEvents(username, groupId)
 		await releasePendingIngestEvents(username, groupId)

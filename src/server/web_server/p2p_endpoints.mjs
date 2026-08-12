@@ -34,12 +34,11 @@ export function registerP2pEndpoints(router) {
 	})
 
 	router.post('/api/p2p/federation/connect-node', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
 		const targetNodeHash = String(req.body?.targetNodeHash ?? '').trim()
 		if (!isHex64(targetNodeHash))
 			return res.status(400).json({ error: 'invalid targetNodeHash' })
 		const { ensureRemoteUserRoom } = await import('npm:@steve02081504/fount-p2p/transport/remote_user_room')
-		const slot = await ensureRemoteUserRoom(username, targetNodeHash)
+		const slot = await ensureRemoteUserRoom(targetNodeHash)
 		res.status(200).json({ targetNodeHash, connected: !!slot })
 	})
 
