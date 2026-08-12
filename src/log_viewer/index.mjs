@@ -374,8 +374,7 @@ function fetchLogSnapshotOnce() {
 		try {
 			conn = connectLogWire(WS_URL, {
 				/**
-				 *
-				 * @param entries
+				 * @param {unknown[]} entries - 快照日志条目。
 				 */
 				onSnapshot: (entries) => {
 					settle(() => resolve(entries))
@@ -391,8 +390,7 @@ function fetchLogSnapshotOnce() {
 				 */
 				onError: () => { /* onClose 收尾 */ },
 				/**
-				 *
-				 * @param err
+				 * @param {unknown} err - 不可恢复的连接错误。
 				 */
 				onFatal: (err) => {
 					settle(() => reject(err instanceof Error ? err : new Error(String(err))))

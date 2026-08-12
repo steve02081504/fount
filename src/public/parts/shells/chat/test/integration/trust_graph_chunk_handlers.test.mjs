@@ -33,7 +33,7 @@ Deno.test('attachTrustGraphChunkHandlers registers fed_chunk actions on room', a
 	try {
 		await attachTrustGraphChunkHandlers(room, {
 			/**
-			 * @param {unknown} data
+			 * @param {unknown} data - Chunk payload passed to the enqueue hook.
 			 */
 			enqueue() {}
 		}, {}, 'room-key')
