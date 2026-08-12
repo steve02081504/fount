@@ -498,9 +498,9 @@ function mergeSubtestStates(
 	const known = new Set(suite.subtests.map(st => st.name))
 	/** @type {Record<string, SubtestStateEntry>} */
 	const merged = {}
-	for (const [name, entry] of Object.entries(prev ?? {})) {
+	for (const [name, entry] of Object.entries(prev ?? {}))
 		if (known.has(name)) merged[name] = entry
-	}
+
 	const ranAt = new Date().toISOString()
 	const byName = new Map(suite.subtests.map(st => [st.name, st]))
 	for (const name of ranSubtests) {

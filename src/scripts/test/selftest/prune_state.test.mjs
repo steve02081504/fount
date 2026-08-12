@@ -11,7 +11,6 @@ import { assertEquals, assertRejects } from 'jsr:@std/assert'
 import {
 	playwrightOutputDir,
 	stateDir,
-	stateFilePath,
 	stateLogPath,
 } from '../core/paths.mjs'
 import {

@@ -1,5 +1,6 @@
 import { Buffer } from 'node:buffer'
 
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
@@ -25,7 +26,6 @@ import { canonicalizeLocalTimelineEvent } from './canonicalizeEvent.mjs'
 import { publishTimelineEvent } from './fanout.mjs'
 import { invalidateTimelineMaterializedCache, maintainSocialTimeline } from './materialize.mjs'
 import { invalidateTimelineOwnerIndex } from './ownerIndex.mjs'
-import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 const NODE_ID = 'social-local'
 
