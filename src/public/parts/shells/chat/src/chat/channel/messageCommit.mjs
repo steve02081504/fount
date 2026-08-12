@@ -36,7 +36,7 @@ function entryForWorldHook(content) {
 		files: [],
 		extension: {},
 	}
-	const channelId = (content.groupChannelId || '')
+	const channelId = content.groupChannelId || ''
 	if (channelId) ensureChatExtension(entry).channelId = channelId
 	return entry
 }

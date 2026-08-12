@@ -48,7 +48,7 @@ export async function indexChannelMessageLine(username, groupId, channelId, mess
 	}
 
 	if (type !== 'message') return
-	const eventId = (messageLine.eventId || '')
+	const eventId = messageLine.eventId || ''
 	if (!eventId) return
 	const text = searchTextFromMessageLine(messageLine)
 	if (!text) return

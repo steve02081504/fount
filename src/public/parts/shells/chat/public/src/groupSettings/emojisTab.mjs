@@ -23,7 +23,7 @@ import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
  */
 function buildPackOptionsHtml(packs, selected, groupId) {
 	const current = (selected || '').trim() || groupId
-	const ids = packs.map(p => (p.packId || '')).filter(Boolean)
+	const ids = packs.map(p => p.packId || '').filter(Boolean)
 	if (!ids.includes(groupId)) ids.unshift(groupId)
 	const unique = [...new Set(ids)]
 	return unique.map(packId => {
@@ -104,7 +104,7 @@ ${del}
 		if (canManage)
 			defaultSelect.addEventListener('change', async () => {
 				const previousValue = String(context.state?.groupSettings?.defaultEmojiPackId || '').trim() || context.groupId
-				const packId = (defaultSelect.value || '')
+				const packId = defaultSelect.value || ''
 				try {
 					await putGroupSettings(context.groupId, { defaultEmojiPackId: packId || null })
 					showToastI18n('success', 'chat.group.settings.page.defaultEmojiPack.ok')

@@ -151,7 +151,7 @@ export async function loadFriendsList() {
  * @returns {Promise<object>} `chars_column` 单项模板数据
  */
 async function friendRowTemplateData(friend, details) {
-	const rawDesc = (friend.session.lastMessageContent || '')
+	const rawDesc = friend.session.lastMessageContent || ''
 	const subtitle = rawDesc.length > 52 ? `${rawDesc.slice(0, 52)}…` : rawDesc
 	const active = store.privateGroup.groupId === friend.groupId
 	const displayName = resolveDisplayName({

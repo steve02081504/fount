@@ -23,8 +23,8 @@ export function pullAttestationSignBytes(attestation) {
 		: ''
 	return Buffer.from(JSON.stringify({
 		requesterPubKeyHash: normalizeHex64(attestation.requesterPubKeyHash),
-		groupId: (attestation.groupId || ''),
-		requestId: (attestation.requestId || ''),
+		groupId: attestation.groupId || '',
+		requestId: attestation.requestId || '',
 		timestamp: Math.floor(Number(attestation.timestamp)),
 		wantIds: wantPart,
 	}), 'utf8')
@@ -43,7 +43,7 @@ export async function signPullAttestation(username, groupId, fields = {}) {
 	const body = {
 		requesterPubKeyHash: sender,
 		groupId,
-		requestId: (fields.requestId || ''),
+		requestId: fields.requestId || '',
 		timestamp,
 		wantIds: fields.wantIds,
 		signature: '',

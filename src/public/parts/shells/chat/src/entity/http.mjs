@@ -41,7 +41,7 @@ export async function getReplicaFromReq(req) {
 export async function isWritableLocalEntityForUser(replicaUsername, entityHash) {
 	const { isWritableLocalEntity } = await import('npm:@steve02081504/fount-p2p/node/identity')
 	if (!isWritableLocalEntity(entityHash)) return false
-	const target = (entityHash || '')
+	const target = entityHash || ''
 	const operatorHash = await resolveOperatorEntityHashForUser(replicaUsername)
 	if (!operatorHash) return false
 	if (target === operatorHash) return true

@@ -52,7 +52,7 @@ export function parseGossipRequest(payload) {
 		: []
 	if (!wantIds.length) return null
 	const ttl = Number(payload.ttl)
-	const requesterNodeHash = (payload.requesterNodeHash || '')
+	const requesterNodeHash = payload.requesterNodeHash || ''
 	const attestation = parsePullAttestation(payload.attestation)
 	if (!Number.isFinite(ttl) || !requesterNodeHash || !attestation) return null
 	if (attestation.wantIds?.length) {
@@ -70,8 +70,8 @@ export function parseGossipRequest(payload) {
 export function parseFedShun(payload, groupId) {
 	if (!isPlainObject(payload)) return null
 	if ((payload.groupId || '') !== groupId) return null
-	const nodeHash = (payload.nodeHash || '')
-	const reason = (payload.reason || '')
+	const nodeHash = payload.nodeHash || ''
+	const reason = payload.reason || ''
 	if (!isHex64(nodeHash) || !FED_SHUN_REASONS.has(reason)) return null
 	return { groupId, nodeHash, reason }
 }
@@ -84,15 +84,15 @@ export function parseFedShun(payload, groupId) {
  */
 export function parseChannelHistoryWant(payload, localNodeHash, groupId) {
 	if (!isPlainObject(payload)) return null
-	const requesterNodeHash = (payload.requesterNodeHash || '')
-	const requestId = (payload.requestId || '')
-	const channelId = (payload.channelId || '')
+	const requesterNodeHash = payload.requesterNodeHash || ''
+	const requestId = payload.requestId || ''
+	const channelId = payload.channelId || ''
 	const attestation = parsePullAttestation(payload.attestation)
 	if (!requesterNodeHash || !requestId || !isChannelIdValid(channelId) || requesterNodeHash === localNodeHash)
 		return null
 	if (!attestation || attestation.groupId !== groupId || attestation.requestId !== requestId)
 		return null
-	const before = (payload.before || '')
+	const before = payload.before || ''
 	return {
 		requesterNodeHash,
 		requestId,
@@ -109,9 +109,9 @@ export function parseChannelHistoryWant(payload, localNodeHash, groupId) {
  */
 function parseChannelHistoryRow(row) {
 	if (!isPlainObject(row)) return null
-	const eventId = (row.eventId || '')
+	const eventId = row.eventId || ''
 	if (!EVENT_ID_HEX.test(eventId)) return null
-	const type = (row.type || '')
+	const type = row.type || ''
 	if (!CHANNEL_HISTORY_ROW_TYPES.has(type)) return null
 	if (!isHex64(row.sender)) return null
 	if (row.content == null) return null
@@ -139,8 +139,8 @@ export function parseChannelHistoryRows(rows) {
 export function parseChannelHistoryResponse(payload, localNodeHash) {
 	if (!isPlainObject(payload)) return null
 	if ((payload.requesterNodeHash || '') !== localNodeHash) return null
-	const requestId = (payload.requestId || '')
-	const channelId = (payload.channelId || '')
+	const requestId = payload.requestId || ''
+	const channelId = payload.channelId || ''
 	if (!requestId || !isChannelIdValid(channelId)) return null
 	return {
 		requestId,

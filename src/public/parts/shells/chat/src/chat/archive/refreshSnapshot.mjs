@@ -22,7 +22,7 @@ import { buildPostSnapshotsFromLines } from './postSnapshot.mjs'
  * @returns {Promise<boolean>} 是否已更新归档行
  */
 export async function refreshArchivedSnapshotIfPresent(username, groupId, channelId, eventId, options = {}) {
-	const id = (eventId || '')
+	const id = eventId || ''
 	if (!id) return false
 	const manifest = await loadArchiveManifest(username, groupId)
 	if (!isEventArchivedInManifest(manifest, channelId, id)) return false

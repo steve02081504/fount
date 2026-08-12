@@ -10,10 +10,10 @@ import { searchAllGroups } from '../chat/search/global.mjs'
 export function registerGlobalSearchRoutes(router) {
 	router.get('/api/parts/shells\\:chat/search', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const query = (req.query.q || '')
+		const query = req.query.q || ''
 		if (query.length < 2)
 			throw httpError(400, 'query must be at least 2 characters')
-		const viewerEntityHash = (await resolveOperatorEntityHash(username)) || null
+		const viewerEntityHash = await resolveOperatorEntityHash(username) || null
 		res.status(200).json(await searchAllGroups(username, {
 			q: query,
 			limit: Number(req.query.limit) || 30,

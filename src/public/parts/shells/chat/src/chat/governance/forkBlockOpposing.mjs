@@ -24,7 +24,7 @@ import { eventsPath } from '../lib/paths.mjs'
  * @returns {string[]} 应拉黑的 pubKeyHash 列表（去重、已排除自身）
  */
 export function computeOpposingForkBlockTargets(events, acceptedTipId, selfPubKeyHash) {
-	const tip = (acceptedTipId || '')
+	const tip = acceptedTipId || ''
 	if (!isHex64(tip)) throw new Error('acceptedTipId must be 64 hex chars')
 
 	const federatable = events.filter(isFederatableDagEvent)
@@ -35,7 +35,7 @@ export function computeOpposingForkBlockTargets(events, acceptedTipId, selfPubKe
 
 	// 被采纳分支的因果闭包属于共享/已认可历史，不应拉黑（含创世治理事件、共同祖先）。
 	const acceptedClosure = ancestorClosureFromTip(tip, byId)
-	const self = (selfPubKeyHash || '')
+	const self = selfPubKeyHash || ''
 	const targets = new Set()
 
 	for (const otherTip of tips) {
@@ -44,7 +44,7 @@ export function computeOpposingForkBlockTargets(events, acceptedTipId, selfPubKe
 			if (acceptedClosure.has(eventId)) continue
 			const event = byId.get(eventId)
 			if (!event || !GOVERNANCE_AUTHZ_TYPES.has(event.type)) continue
-			const sender = (event.sender || '')
+			const sender = event.sender || ''
 			if (isHex64(sender) && sender !== self) targets.add(sender)
 			const targetHash = String(event.content?.targetPubKeyHash || '').trim()
 			if (isHex64(targetHash) && targetHash !== self) targets.add(targetHash)

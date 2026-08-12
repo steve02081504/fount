@@ -18,7 +18,7 @@ export function resolveGroupDefaultPackId(groupSettings, groupId) {
  * @returns {string} linkedDefaults 键
  */
 export function groupDefaultLinkKey(groupId) {
-	return `group:${(groupId || '')}`
+	return `group:${groupId || ''}`
 }
 
 /**
@@ -26,7 +26,7 @@ export function groupDefaultLinkKey(groupId) {
  * @returns {string} linkedDefaults 键
  */
 export function entityDefaultLinkKey(entityHash) {
-	return `entity:${(entityHash || '')}`
+	return `entity:${entityHash || ''}`
 }
 
 /**
@@ -37,9 +37,9 @@ export function entityDefaultLinkKey(entityHash) {
  * @returns {string[]} 更新后的收藏
  */
 export function applyDefaultPackConverge(packIds, oldDefaultPackId, newDefaultPackId) {
-	const next = (newDefaultPackId || '')
+	const next = newDefaultPackId || ''
 	if (!next) return [...packIds]
-	const old = (oldDefaultPackId || '')
+	const old = oldDefaultPackId || ''
 	if (old === next) return [...packIds]
 	const packs = [...packIds]
 	const oldIdx = old ? packs.indexOf(old) : -1

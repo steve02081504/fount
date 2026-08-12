@@ -81,7 +81,7 @@ export async function getStateForFederation(username, groupId) {
  */
 function coveredIdsFromAnchor(byId, anchorId) {
 	const covered = new Set()
-	const start = (anchorId || '')
+	const start = anchorId || ''
 	if (!start || !byId.has(start)) return covered
 	const stack = [start]
 	while (stack.length) {
@@ -91,7 +91,7 @@ function coveredIdsFromAnchor(byId, anchorId) {
 		const event = byId.get(id)
 		const parents = Array.isArray(event?.prev_event_ids) ? event.prev_event_ids : []
 		for (const parentId of parents) {
-			const pid = (parentId || '')
+			const pid = parentId || ''
 			if (pid && byId.has(pid) && !covered.has(pid)) stack.push(pid)
 		}
 	}

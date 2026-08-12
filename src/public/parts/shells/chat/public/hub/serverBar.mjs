@@ -175,7 +175,7 @@ export async function renderServerBar() {
 
 	list.querySelectorAll('.server-item[data-group-id]').forEach(el => {
 		el.addEventListener('click', (event) => {
-			const groupId = (el.dataset.groupId || '')
+			const groupId = el.dataset.groupId || ''
 			if (!groupId) return
 			if (event.shiftKey || event.ctrlKey || event.metaKey) {
 				event.preventDefault()
@@ -189,7 +189,7 @@ export async function renderServerBar() {
 			void selectGroup(groupId)
 		})
 		el.addEventListener('contextmenu', (event) => {
-			const groupId = (el.dataset.groupId || '')
+			const groupId = el.dataset.groupId || ''
 			if (!groupId) return
 			primeContextMenuSelection(groupId)
 			void showGroupContextMenu(event, groupId)
@@ -231,17 +231,17 @@ export async function loadGroups() {
 		)
 		if (liveBookmarks.length !== bookmarks.length) await saveChatBookmarks(liveBookmarks)
 	}
-	if (foldersPayload) {
+	if (foldersPayload) 
 		store.sidebar.groupFoldersState = {
 			folders: foldersPayload.folders.map((folder, folderIndex) => ({
 				id: (folder.id || '') || `folder-${folderIndex}`,
-				name: (folder.name || ''),
+				name: folder.name || '',
 				nameIsDefault: !(folder.name || ''),
 				groupIds: Array.isArray(folder.groupIds) ? folder.groupIds.map(id => id).filter(Boolean) : [],
 				collapsed: !!folder.collapsed,
 			})),
 		}
-	}
+	
 	else store.sidebar.groupFoldersState = { folders: [] }
 	await renderServerBar()
 }

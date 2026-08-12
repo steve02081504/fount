@@ -228,7 +228,7 @@ export function createFileHandlers(hub) {
 			const img = wrap.querySelector('.pending-thumb-img')
 			const reader = new FileReader()
 			reader.addEventListener('load', () => {
-				if (img instanceof HTMLImageElement) img.src = (reader.result || '')
+				if (img instanceof HTMLImageElement) img.src = reader.result || ''
 			})
 			reader.readAsDataURL(file)
 		}

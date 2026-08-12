@@ -116,7 +116,7 @@ async function readRemoteProfilePlain(replicaUsername, entityHash, logicalPath, 
  * @returns {string} 小写 handle 或 ''
  */
 export function normalizeEntityHandle(value) {
-	const handle = (value ?? '')
+	const handle = value ?? ''
 	if (!handle) return ''
 	if (!HANDLE_RE.test(handle)) throw new Error('invalid handle')
 	return handle
@@ -164,12 +164,12 @@ function toStoredProfile(profileData) {
 		handle = normalizeEntityHandle(profileData.handle)
 	}
 	catch { handle = '' }
-	const themeRaw = (profileData.themeColor ?? '')
+	const themeRaw = profileData.themeColor ?? ''
 	const themeColor = THEME_COLOR_RE.test(themeRaw) ? themeRaw : ''
-	const banner = (profileData.banner ?? '')
-	const sfw_banner = (profileData.sfw_banner ?? '')
-	const defaultEmojiPackId = (profileData.defaultEmojiPackId ?? '')
-	const activePub = (profileData.activePubKeyHex || '')
+	const banner = profileData.banner ?? ''
+	const sfw_banner = profileData.sfw_banner ?? ''
+	const defaultEmojiPackId = profileData.defaultEmojiPackId ?? ''
+	const activePub = profileData.activePubKeyHex || ''
 	return {
 		entityHash: profileData.entityHash,
 		nodeHash: profileData.nodeHash,
@@ -184,7 +184,7 @@ function toStoredProfile(profileData) {
 		keyGeneration: Number(profileData.keyGeneration ?? 0) || 0,
 		localized: normalizeLocalizedMap(profileData.localized),
 		status: profileData.status || 'online',
-		customStatus: (profileData.customStatus || ''),
+		customStatus: profileData.customStatus || '',
 		lastSeenAt: profileData.lastSeenAt || 0,
 		stats: {
 			joinedAt: profileData.stats?.joinedAt || Date.now(),
@@ -478,13 +478,13 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 				: ''
 			: profile.themeColor || '',
 		banner: updates.banner !== undefined
-			? (updates.banner || '')
+			? updates.banner || ''
 			: profile.banner || '',
 		sfw_banner: updates.sfw_banner !== undefined
-			? (updates.sfw_banner || '')
+			? updates.sfw_banner || ''
 			: profile.sfw_banner || '',
 		defaultEmojiPackId: updates.defaultEmojiPackId !== undefined
-			? (updates.defaultEmojiPackId || '')
+			? updates.defaultEmojiPackId || ''
 			: profile.defaultEmojiPackId || '',
 		activePubKeyHex,
 		keyGeneration,

@@ -120,11 +120,11 @@ function localizedSlicesFromPartInfo(info) {
 	/** @type {Record<string, object>} */
 	const out = {}
 	for (const [locale, raw] of Object.entries(info || {})) {
-		const localeKey = (locale || '')
+		const localeKey = locale || ''
 		if (!localeKey || !raw || typeof raw !== 'object') continue
 		/** @type {Record<string, unknown>} */
 		const slice = {}
-		const name = (raw.name || '')
+		const name = raw.name || ''
 		if (name) slice.name = name
 		if (raw.description != null) slice.description = String(raw.description)
 		const md = raw.description_markdown != null
@@ -138,7 +138,7 @@ function localizedSlicesFromPartInfo(info) {
 		if (raw.home_page) slice.home_page = String(raw.home_page).trim()
 		if (raw.issue_page) slice.issue_page = String(raw.issue_page).trim()
 
-		const sfwName = (raw.sfw_name || '')
+		const sfwName = raw.sfw_name || ''
 		if (sfwName) slice.sfw_name = sfwName
 		if (raw.sfw_description != null) slice.sfw_description = String(raw.sfw_description)
 		const sfwMd = raw.sfw_description_markdown != null
@@ -189,7 +189,7 @@ function pickPartSfwAvatar(info) {
  * @returns {Promise<{ kind: 'emoji', value: string } | { kind: 'file', buffer: Buffer, mimeType: string, filename: string } | null>} emoji 文本或待上传的图片字节
  */
 async function materializePartAvatar(username, charname, avatarRaw) {
-	const raw = (avatarRaw || '')
+	const raw = avatarRaw || ''
 	if (!raw) return null
 	if (!isAvatarImageUrl(raw)) return { kind: 'emoji', value: raw }
 
@@ -280,7 +280,7 @@ async function applyMaterializedAvatar(localized, materialized, username, hash, 
  * @returns {Promise<object | null>} 更新后的 profile；非 agent / 不可写 / 跳过时为 null
  */
 export async function syncAgentProfileFromCharPart(username, entityHash, options = {}) {
-	const hash = (entityHash || '')
+	const hash = entityHash || ''
 	if (!hash || !isWritableLocalEntity(hash)) return null
 	const charname = resolveAgentCharPartName(username, hash)
 	if (!charname) return null

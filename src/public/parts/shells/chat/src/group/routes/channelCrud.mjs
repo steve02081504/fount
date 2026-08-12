@@ -90,7 +90,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			groupContext: { username, groupId },
 			body: { type, name, description, isPrivate }
 		} = req
-		const channelName = (name || '')
+		const channelName = name || ''
 		if (!channelName)
 			throw httpError(400, 'Channel name is required')
 

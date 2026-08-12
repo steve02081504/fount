@@ -25,9 +25,9 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 	const chat_log = [...channel?.logs || []]
 	const locales = localesForUser(username)
 	const charInfo = pickLocalizedSlice(charAPI.info, locales) || {}
-	const operatorUid = (await resolveOperatorEntityHash(username)) || 'user'
-	const charUid = (await ensureLocalAgentEntityHash(username, charname))
-	const declaredOwnerEntityHash = (await resolveDeclaredOwnerEntityHash(username, charUid))
+	const operatorUid = await resolveOperatorEntityHash(username) || 'user'
+	const charUid = await ensureLocalAgentEntityHash(username, charname)
+	const declaredOwnerEntityHash = await resolveDeclaredOwnerEntityHash(username, charUid)
 		|| operatorUid
 
 	let operatorName = username

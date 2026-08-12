@@ -85,7 +85,7 @@ export function blockEntriesFromBanContent(content) {
  * @returns {{ pubKeyHash: string | null, entityHash: string|null, nodeHash: string|null }} 应清除的 ban 键
  */
 export function unbanTargetsFromMember(state, targetMemberKey) {
-	const key = (targetMemberKey || '')
+	const key = targetMemberKey || ''
 	const member = state.members?.[key]
 	const pubKeyHash = member?.pubKeyHash || key
 	const homeNodeHash = member?.homeNodeHash

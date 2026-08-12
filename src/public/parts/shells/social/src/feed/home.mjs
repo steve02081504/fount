@@ -221,7 +221,7 @@ export async function buildHomeFeed(username, options = {}) {
 			})
 		}
 		for (const repost of view.reposts) {
-			const originalEntityHash = (repost.content?.targetEntityHash || '')
+			const originalEntityHash = repost.content?.targetEntityHash || ''
 			const originalPostId = repost.content?.targetPostId || ''
 			if (!isEntityHash128(originalEntityHash) || !originalPostId) continue
 			candidates.push({
@@ -387,7 +387,7 @@ export async function buildLikedFeedItems(username, entityHash, options = {}) {
 	const items = []
 
 	for (const like of view.likes) {
-		const targetEntityHash = (like.content?.targetEntityHash || '')
+		const targetEntityHash = like.content?.targetEntityHash || ''
 		const targetPostId = like.content?.targetPostId
 		if (!isEntityHash128(targetEntityHash) || targetPostId == null) continue
 		const post = await resolveVisiblePost(username, targetEntityHash, targetPostId, viewerContext)

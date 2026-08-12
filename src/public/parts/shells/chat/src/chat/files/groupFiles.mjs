@@ -59,7 +59,7 @@ import {
  * @returns {string} 用于 `UPLOAD_FILES` 权限检查的频道 ID
  */
 export function uploadPermissionChannelId(state, channelId) {
-	const trimmed = (channelId || '')
+	const trimmed = channelId || ''
 	if (trimmed && state.channels?.[trimmed]) return trimmed
 	return state.groupSettings?.defaultChannelId || 'default'
 }
@@ -112,7 +112,7 @@ function ciphertextHashFromLocator(storageLocator) {
  * @returns {Promise<void>}
  */
 async function mirrorCiphertextToStorageBackends(username, groupId, ciphertextHash, raw, groupSettings = {}) {
-	const hash = (ciphertextHash || '')
+	const hash = ciphertextHash || ''
 	const local = createLocalStoragePlugin(shellChatRoot(username))
 	await local.putChunk(groupId, hash, raw).catch(() => { })
 	await putChunk(hash, raw).catch(() => { })
@@ -474,7 +474,7 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
  * @returns {Promise<Uint8Array>} 明文
  */
 export async function getDecryptedChunk(username, groupId, storageLocator, contentHashHex, options = {}, blamePeerKey) {
-	const contentHash = (contentHashHex || '')
+	const contentHash = contentHashHex || ''
 	const ceMode = normalizeCeMode(options?.ceMode)
 	if (!isBlobLocator(storageLocator)) throw new Error('locator must be blob:{hash}')
 	if (!isHex64(contentHash)) throw new Error('content_hash required')
@@ -632,7 +632,7 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 		contentHash: uploadMeta.contentHash,
 		ceMode,
 		parts: dagParts.map(part => ({
-			hash: (part.ciphertextHash || ''),
+			hash: part.ciphertextHash || '',
 			size: 1,
 			...part.contentHash ? { contentHash: part.contentHash } : {},
 		})),

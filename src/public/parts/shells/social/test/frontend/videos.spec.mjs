@@ -256,7 +256,7 @@ test.describe('Social short videos', () => {
 	test('post detail double-tap media likes', async ({ page, baseUrl, apiKey }) => {
 		const text = `detail-dbl-like ${Date.now()}`
 		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
-		const entityHash = (await fetchViewerEntityHash(baseUrl, apiKey))
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 		await page.goto(`${baseUrl}/parts/shells:social/#post;${entityHash};${postId}`)
 		const card = page.locator('#postDetailView .post-detail-card')

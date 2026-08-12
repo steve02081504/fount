@@ -43,7 +43,7 @@ export function registerChannelVoteRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/votes`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
 		const { question: rawQuestion, options: rawOptions, deadline, deadlineMs } = req.body || {}
-		const question = (rawQuestion || '')
+		const question = rawQuestion || ''
 		const options = Array.isArray(rawOptions)
 			? rawOptions.map(optionLabel => optionLabel).filter(Boolean).slice(0, 12)
 			: []
@@ -54,7 +54,7 @@ export function registerChannelVoteRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, channelId)
 		let voteDeadline = null
-		const deadlineText = (deadline || '')
+		const deadlineText = deadline || ''
 		if (deadlineText)
 			voteDeadline = deadlineText
 		else if (Number.isFinite(Number(deadlineMs)) && Number(deadlineMs) > 0)

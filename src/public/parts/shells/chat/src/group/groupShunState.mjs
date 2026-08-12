@@ -36,7 +36,7 @@ function shunStateLockKey(username, groupId) {
 export function normalizeShunState(raw) {
 	const shunsByNode = {}
 	for (const [nodeHash, ts] of Object.entries(raw?.shunsByNode || {})) {
-		const key = (nodeHash || '')
+		const key = nodeHash || ''
 		const at = Number(ts)
 		if (key && Number.isFinite(at)) shunsByNode[key] = at
 	}

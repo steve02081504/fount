@@ -511,7 +511,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const revocations = []
 		for (const [key, member] of Object.entries(state.members)) {
 			if (member?.status !== 'active') continue
-			const hash = (key || '')
+			const hash = key || ''
 			if (!hash || hash === targetHash) continue
 			for (const roleId of member.roles || [])
 				if (state.roles[roleId]?.permissions?.MANAGE_ADMINS)
@@ -564,7 +564,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, state.channelPermissions)
 			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, state.channelPermissions)
 		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
-		const cabinetId = (req.body.cabinet_id || '')
+		const cabinetId = req.body.cabinet_id || ''
 		if (!cabinetId) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetUnbind } = await import('../../chat/cabinets/keys.mjs')
 		const event = await appendCabinetUnbind(username, req.params.groupId, cabinetId)

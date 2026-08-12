@@ -56,12 +56,12 @@ export async function noteJoinSnapshotResponse(username, groupId, envelope, peer
 	const checkpointResult = await verifyRemoteCheckpoint(inner.checkpoint)
 	if (!checkpointResult.valid) return
 	pending.candidates.push({
-		peerNodeHash: peerNodeHash,
+		peerNodeHash,
 		envelope,
 		inner,
 		bucketKey,
-		tipsHash: (inner.checkpoint.local_tips_hash || ''),
-		epochRootHash: (inner.checkpoint.epoch_root_hash || ''),
+		tipsHash: inner.checkpoint.local_tips_hash || '',
+		epochRootHash: inner.checkpoint.epoch_root_hash || '',
 		epochId: Number(inner.checkpoint.epoch_id) || 0,
 	})
 	tryFinishFederationCollect(pending, joinSnapshotQuorumSatisfied)
@@ -82,8 +82,8 @@ export function pickJoinSnapshotByReputation(candidates, options = {}) {
 	/** @type {Map<string, { peers: string[], envelope: object }>} */
 	const byBucket = new Map()
 	for (const row of candidates) {
-		const peer = (row.peerNodeHash || '')
-		const key = (row.bucketKey || '')
+		const peer = row.peerNodeHash || ''
+		const key = row.bucketKey || ''
 		if (!peer || !key) continue
 		const bucket = byBucket.get(key) || { peers: [], envelope: row.envelope }
 		bucket.peers.push(peer)

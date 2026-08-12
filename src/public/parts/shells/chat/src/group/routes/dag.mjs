@@ -171,7 +171,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/fork/block-opposing`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		const acceptedTipId = (req.body.acceptedTipId || '')
+		const acceptedTipId = req.body.acceptedTipId || ''
 		const { sender: selfPubKeyHash } = await resolveLocalEventSigner(username, groupId)
 		const result = await blockOpposingForkBranch(username, groupId, acceptedTipId, selfPubKeyHash)
 		res.status(200).json({ ...result })

@@ -37,7 +37,7 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 				following: await discoverFollowGraph(username, rpc.entityHash, ingress),
 			}
 		case 'social_timeline_pull_request': {
-			const entityHash = (rpc.entityHash || '')
+			const entityHash = rpc.entityHash || ''
 			const events = await buildFederatedTimelinePullResponse(
 				username,
 				entityHash,

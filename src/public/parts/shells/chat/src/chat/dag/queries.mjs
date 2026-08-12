@@ -36,7 +36,7 @@ import { eventMatchesLazyChannelScope } from './syncScope.mjs'
 export async function syncEvents(username, groupId, q) {
 	const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	let work = events
-	const channelId = (q.channelId || '')
+	const channelId = q.channelId || ''
 	if (channelId) {
 		const { state } = await getState(username, groupId)
 		const scope = state.channels?.[channelId]?.syncScope

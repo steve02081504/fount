@@ -25,7 +25,7 @@ import { resolveTargetMemberKey } from './reducers/members.mjs'
  * @returns {{ sender: string, charId: string | null, channelId: string } | null} 索引条目；已删或不存在时为 null
  */
 function resolveIndexedMessage(state, targetId) {
-	const id = (targetId || '')
+	const id = targetId || ''
 	if (!id) return null
 	if (state.messageOverlay?.deletedIds?.has?.(id)) return null
 	return state.messageSenderIndex?.[id] || null
@@ -52,7 +52,7 @@ function isOwnerOfAuthor(state, senderHash, authorPubKeyHash) {
  * @returns {boolean} 已删除为 true
  */
 function isMessageDeleted(state, targetId) {
-	const id = (targetId || '')
+	const id = targetId || ''
 	return Boolean(id && state.messageOverlay?.deletedIds?.has?.(id))
 }
 
@@ -121,16 +121,16 @@ export async function checkEventPermission(state, event, senderHash, options = {
 	if (!type) return { ok: false, reason: 'missing event type' }
 	if (!FEDERATION_ACL_GATED_EVENT_TYPES.has(type)) return { ok: true }
 
-	const sender = (senderHash || '')
+	const sender = senderHash || ''
 	if (!['member_join', 'member_leave'].includes(type) && state.members[sender]?.status !== 'active')
 		return { ok: false, reason: 'requires active member sender', deferrable: true }
 
 	// member_join / leave 不依赖频道权限位；先处理以免空 state.channels 炸 governanceChannelId
 	if (type === 'member_join') {
 		const content = event.content || {}
-		const entityHash = (content.entityHash || '')
-		const entityActivePubKeyHex = (content.entityActivePubKeyHex || '')
-		const bindingSig = (content.bindingSig || '')
+		const entityHash = content.entityHash || ''
+		const entityActivePubKeyHex = content.entityActivePubKeyHex || ''
+		const bindingSig = content.bindingSig || ''
 		if (!isEntityHash128(entityHash) || !isHex64(entityActivePubKeyHex) || !/^[\da-f]{128}$/u.test(bindingSig))
 			return { ok: false, reason: 'invalid member_join binding' }
 		const bindOk = await verifyMemberJoinBinding({
@@ -263,7 +263,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 			const ownerOnly = content.delegatedOwnerPubKeyHash !== undefined
 				&& changedKeys.every(key => key === 'delegatedOwnerPubKeyHash')
 			if (ownerOnly) {
-				const target = (content.delegatedOwnerPubKeyHash || '')
+				const target = content.delegatedOwnerPubKeyHash || ''
 				if (isHex64(target) && manageAdminsPubKeyHashes(state).has(target))
 					return { ok: true }
 				const deferrable = isHex64(target) && state.members[target]?.status === 'active'

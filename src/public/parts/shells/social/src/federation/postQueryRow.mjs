@@ -25,7 +25,7 @@ export function federatedPostQueryRow(post, entityHash, nodeHash, options = {}) 
 		text: String(post.content?.text || '').slice(0, 500),
 		hlc: post.hlc || null,
 		mediaRefs: (post.content?.mediaRefs || []).slice(0, 4),
-		nodeHash: nodeHash,
+		nodeHash,
 		event: {
 			id: post.id,
 			type: 'post',

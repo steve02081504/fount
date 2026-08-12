@@ -23,7 +23,7 @@ import { PUB_KEY_HASH_HEX } from './validator.mjs'
  * @returns {Promise<string>} 小写 128-hex entityHash
  */
 async function resolveSignerEntityHash(username, entityHash) {
-	const declared = (entityHash || '')
+	const declared = entityHash || ''
 	if (declared) return declared
 	const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
 	const hash = await resolveOperatorEntityHashForUser(username)

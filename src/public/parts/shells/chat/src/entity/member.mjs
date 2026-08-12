@@ -35,7 +35,7 @@ export async function ensureLocalAgentEntityHash(username, charname) {
  * @returns {string | null} 角色 part 名
  */
 export function resolveAgentCharPartName(replicaUsername, entityHash) {
-	const hash = (entityHash || '')
+	const hash = entityHash || ''
 	if (!isEntityHash128(hash)) return null
 	const identityPath = path.join(getUserDictionary(replicaUsername), 'entities', hash, 'identity.json')
 	if (!fs.existsSync(identityPath)) return null

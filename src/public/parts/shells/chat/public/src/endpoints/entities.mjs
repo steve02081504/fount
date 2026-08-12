@@ -129,7 +129,7 @@ export function setEntityStatus(entityHash, status, customStatus) {
 export function cachedProfileFromApi(profile, entityHash) {
 	if (!profile) return null
 	return {
-		entityHash: entityHash,
+		entityHash,
 		avatar: profile.avatar || null,
 		infoDefaults: profile.infoDefaults || null,
 		name: profile.name || entityHash.slice(64, 72),

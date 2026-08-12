@@ -25,7 +25,7 @@ const SAFE_EMOJI_EXT = new Set(['.png', '.gif', '.webp', '.jpg', '.jpeg'])
  * @returns {boolean} 是否为规范、路径安全的 packId
  */
 export function isSafePackId(packId) {
-	const id = (packId || '')
+	const id = packId || ''
 	return !!id && id !== '.' && id !== '..' && !id.includes('/') && !id.includes('\\') && SAFE_PACK_ID_RE.test(id)
 }
 
@@ -34,7 +34,7 @@ export function isSafePackId(packId) {
  * @returns {string} 规范 packId
  */
 export function assertSafePackId(packId) {
-	const id = (packId || '')
+	const id = packId || ''
 	if (!isSafePackId(id)) throw new Error('invalid packId')
 	return id
 }
@@ -44,7 +44,7 @@ export function assertSafePackId(packId) {
  * @returns {string} 规范 emojiId
  */
 export function assertSafeEmojiId(emojiId) {
-	const id = (emojiId || '')
+	const id = emojiId || ''
 	if (!id || id === '.' || id === '..' || id.includes('/') || id.includes('\\') || id.includes('\0'))
 		throw new Error('invalid emojiId')
 	return id
@@ -55,7 +55,7 @@ export function assertSafeEmojiId(emojiId) {
  * @returns {string} 白名单扩展名
  */
 function assertSafeExt(ext) {
-	const value = (ext || '')
+	const value = ext || ''
 	const normalized = value.startsWith('.') ? value : `.${value}`
 	if (!SAFE_EMOJI_EXT.has(normalized)) throw new Error('invalid emoji ext')
 	return normalized
@@ -116,7 +116,7 @@ export function extFromMime(mimeType) {
  * @returns {Record<string, { name: string, alt?: string }>} locale 切片
  */
 export function localizedFromName(name) {
-	const n = (name || '')
+	const n = name || ''
 	if (!n) return {}
 	return { 'en-UK': { name: n } }
 }
@@ -170,7 +170,7 @@ export function packBinariesDir(packsRoot, packId) {
  */
 export function emptyPackManifest(source, packId, localized = {}) {
 	return {
-		packId: (packId || ''),
+		packId: packId || '',
 		source: source && typeof source === 'object' ? source : { kind: 'unknown', id: '' },
 		localized: localized && typeof localized === 'object' ? localized : {},
 		items: [],
@@ -195,7 +195,7 @@ export async function listPackIds(packsRoot) {
  */
 export async function loadPackManifest(packsRoot, packId, defaultSource) {
 	if (!isSafePackId(packId)) return null
-	const pid = (packId || '')
+	const pid = packId || ''
 	const p = packManifestPath(packsRoot, pid)
 	if (!await fileExists(p)) return null
 	const raw = await loadJsonFile(p)
@@ -217,7 +217,7 @@ export async function loadPackManifest(packsRoot, packId, defaultSource) {
  * @returns {Promise<void>}
  */
 export async function savePackManifest(packsRoot, manifest) {
-	const packId = (manifest.packId || '')
+	const packId = manifest.packId || ''
 	const root = packDir(packsRoot, packId)
 	const binDir = packBinariesDir(packsRoot, packId)
 	if (!await fileExists(root)) await fs.mkdir(root, { recursive: true })

@@ -205,8 +205,8 @@ async function applyLinkPair(username, entityHash, liveId, link) {
 	})
 	pushFeedUpdate(username, {
 		type: 'live_link_started',
-		entityHash: entityHash,
-		liveId: liveId,
+		entityHash,
+		liveId,
 		link,
 	})
 }
@@ -240,8 +240,8 @@ export async function tearDownLiveLink(username, entityHash, liveId) {
 	broadcastLiveSignal(key, { type: 'link_ended' })
 	pushFeedUpdate(username, {
 		type: 'live_link_ended',
-		entityHash: entityHash,
-		liveId: liveId,
+		entityHash,
+		liveId,
 	})
 
 	const peerSession = loadLiveSession(username, peer.peerEntityHash, peer.peerLiveId)

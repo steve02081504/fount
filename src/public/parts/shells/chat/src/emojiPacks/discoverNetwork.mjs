@@ -43,7 +43,7 @@ export function sanitizeEmojiPackOffer(raw) {
  * @returns {Promise<object[]>} offers
  */
 export async function localGroupPackOffersHandler(inboundContext, query) {
-	const username = (inboundContext.replicaUsername || '')
+	const username = inboundContext.replicaUsername || ''
 	if (!username) return []
 	const limit = Math.min(Math.max(Number(
 		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */query.limit : 32,

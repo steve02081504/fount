@@ -86,7 +86,7 @@ export function lookupBridgeEventId(username, groupId, platformMessageId) {
 export function lookupBridgePlatformMessageId(username, groupId, eventId) {
 	const session = getVirtualBridgeSession(username, groupId)
 	if (!session) return null
-	const needle = (eventId || '')
+	const needle = eventId || ''
 	for (const channel of Object.values(session.channels))
 		for (let i = channel.messageMap.length - 1; i >= 0; i--) {
 			const row = channel.messageMap[i]
@@ -109,7 +109,7 @@ export async function recordBridgeMessagePair(username, groupId, { eventId, plat
 	const channel = session.channels.default
 	if (!channel) return
 	channel.messageMap.push({
-		eventId: eventId,
+		eventId,
 		platformMessageId: String(platformMessageId),
 	})
 }

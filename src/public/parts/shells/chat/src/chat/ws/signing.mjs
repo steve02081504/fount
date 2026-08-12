@@ -38,7 +38,7 @@ export function invalidateStreamSignerCache(username) {
  * @returns {{ pubKeyHex: string, pubKeyHash: string, signChunk: (pendingStreamId: string, chunkSeq: number, text: string) => Promise<string> }} 签名器
  */
 export async function resolveStreamSigner(username) {
-	const u = (username || '')
+	const u = username || ''
 	if (!u) throw new Error('stream signer: username required')
 	let cached = signerCache.get(u)
 	if (cached) return cached
@@ -103,9 +103,9 @@ export async function verifyStreamChunkVolatile(payload) {
 	const type = payload?.type
 	if (UNSIGNED_FED_VOLATILE_TYPES.has(type)) return true
 	if (type !== 'stream_chunk') return false
-	const pendingStreamId = (payload.pendingStreamId || '')
-	const senderPubKey = (payload.senderPubKey || '')
-	const signatureHex = (payload.signature || '')
+	const pendingStreamId = payload.pendingStreamId || ''
+	const senderPubKey = payload.senderPubKey || ''
+	const signatureHex = payload.signature || ''
 	if (!pendingStreamId || !senderPubKey || !signatureHex) return false
 	const slices = boundStreamSlices(payload.slices ?? [])
 	if (!slices) return false

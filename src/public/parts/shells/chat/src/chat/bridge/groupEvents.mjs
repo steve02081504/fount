@@ -71,7 +71,7 @@ async function dispatchToSessionChar(username, session, event) {
  * @returns {Promise<void>}
  */
 export async function postBridgeGroupEvent(username, dto) {
-	const platform = (dto.platform || '')
+	const platform = dto.platform || ''
 	const platformChatId = dto.platformChatId
 	if (!platform || platformChatId == null) throw new Error('platform and platformChatId required')
 

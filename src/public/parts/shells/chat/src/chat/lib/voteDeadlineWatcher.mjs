@@ -45,7 +45,7 @@ export async function fireVoteClosed(username, groupId, channelId, ballotId) {
 	const recipients = new Set(await listLocalRecipientsInGroup(username, state))
 	const operator = await resolveOperatorEntityHash(username)
 	if (operator) recipients.add(operator)
-	const ballotSender = (ballot.sender || '')
+	const ballotSender = ballot.sender || ''
 	const { authorEntityHash } = resolveAuthorFromSender(state, ballotSender)
 	if (authorEntityHash) recipients.add(authorEntityHash)
 	const voterKeys = state.messageOverlay?.votes?.get?.(ballotId)

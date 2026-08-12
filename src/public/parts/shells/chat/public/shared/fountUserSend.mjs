@@ -29,7 +29,7 @@ function normalizeSendFiles(files) {
 			name: String(name || 'file'),
 			mime_type: String(mime_type || 'application/octet-stream'),
 			buffer: arrayBufferToBase64(buffer),
-			description: (description || ''),
+			description: description || '',
 		}
 	})
 }
@@ -55,7 +55,7 @@ export function normalizeUserSendPayload(input, defaults = {}) {
 		throw new Error('fount.user.send expects string or chatLogEntry')
 
 	const content = {
-		content: (input.content ?? ''),
+		content: input.content ?? '',
 		locale: input.locale != null ? String(input.locale) : fallbackLocale,
 	}
 	if (input.content_for_show != null) content.content_for_show = String(input.content_for_show)

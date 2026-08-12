@@ -222,7 +222,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 		 * @returns {Promise<object>} ballot Message
 		 */
 		async startVote(ballot) {
-			const question = (ballot.question || '')
+			const question = ballot.question || ''
 			const options = Array.isArray(ballot.options)
 				? ballot.options.map(option => option).filter(Boolean).slice(0, 12)
 				: []

@@ -37,7 +37,7 @@ function pruneBucket(bucket, now) {
  * @returns {void}
  */
 export function recordVirtualBridgeTyping(username, groupId, channelId, entityHash) {
-	const hash = (entityHash || '')
+	const hash = entityHash || ''
 	if (!hash) return
 	const key = channelKey(username, groupId, channelId)
 	let bucket = typingByChannel.get(key)

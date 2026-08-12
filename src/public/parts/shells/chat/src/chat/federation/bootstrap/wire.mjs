@@ -10,9 +10,9 @@ import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
  */
 export function parseFedBootstrapRequest(payload) {
 	if (!isPlainObject(payload)) return null
-	const requestId = (payload.requestId || '')
-	const nodeHash = (payload.nodeHash || '')
-	const groupId = (payload.groupId || '')
+	const requestId = payload.requestId || ''
+	const nodeHash = payload.nodeHash || ''
+	const groupId = payload.groupId || ''
 	const requesterPubKeyHash = normalizeHex64(payload.requesterPubKeyHash)
 	if (!requestId || !nodeHash || !groupId || !isHex64(requesterPubKeyHash)) return null
 	return {
@@ -30,8 +30,8 @@ export function parseFedBootstrapRequest(payload) {
  */
 export function parseFedBootstrapResponse(payload) {
 	if (!isPlainObject(payload)) return null
-	const requestId = (payload.requestId || '')
-	const responderNodeHash = (payload.responderNodeHash || '')
+	const requestId = payload.requestId || ''
+	const responderNodeHash = payload.responderNodeHash || ''
 	if (!requestId || !responderNodeHash || !isPlainObject(payload.encryptedRoomSecret)) return null
 	return {
 		requestId,

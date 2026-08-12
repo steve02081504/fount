@@ -8,8 +8,8 @@ import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_stor
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part/query'
 
-import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
 import { escapeRegExp } from '../../../../../../scripts/regex.mjs'
+import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
 
 import { resolveOperatorEntityHashForUser } from './identity.mjs'
 import {
@@ -116,11 +116,11 @@ export async function localEntitySearchHandler(inboundContext, query) {
 
 	for (const username of usernames)
 		for (const row of await listEntityIdentities(username)) {
-			const entityHash = (row.entityHash || '')
+			const entityHash = row.entityHash || ''
 			if (!isEntityHash128(entityHash) || byHash.has(entityHash)) continue
 			if (await isHiddenFromDiscovery(username, entityHash)) continue
 			const profile = await getProfile(entityHash, username, { skipPresentation: true })
-			const handle = (profile.handle || '')
+			const handle = profile.handle || ''
 			const name = profileDisplayName(profile)
 			const charPartName = row.charPartName || undefined
 			const candidate = { entityHash, handle, name, ...charPartName ? { charPartName } : {} }
@@ -134,7 +134,7 @@ export async function localEntitySearchHandler(inboundContext, query) {
 		if (byHash.has(entityHash) || !isEntityHash128(entityHash)) continue
 		const onDisk = await store.readEntityJson(entityHash, 'profile.json')
 		if (!onDisk) continue
-		const handle = (onDisk.handle || '')
+		const handle = onDisk.handle || ''
 		const name = profileDisplayName(onDisk)
 		const candidate = { entityHash, handle, name }
 		if (!rowMatchesQuery(q, candidate)) continue
@@ -289,7 +289,7 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 			charPartName = '' // 远端声称的 charPartName 不可信
 		}
 
-		const handle = (profile.handle || '')
+		const handle = profile.handle || ''
 		const name = profileDisplayName(profile) || unique.get(entityHash)?.name || ''
 		const candidate = { entityHash, handle, name, ...charPartName ? { charPartName } : {} }
 		if (!rowMatchesQuery(normalized, candidate)) return null

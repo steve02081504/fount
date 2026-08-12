@@ -13,7 +13,7 @@ export function archiveMonthQuorumSatisfied(candidates, peerMin = 2) {
 	const byDigest = new Map()
 	for (const row of candidates) {
 		if (!row.complete || row.verified !== true) continue
-		const digest = (row.digest || '')
+		const digest = row.digest || ''
 		if (!isHex64(digest)) continue
 		byDigest.set(digest, (byDigest.get(digest) || 0) + 1)
 	}
@@ -32,7 +32,7 @@ export function joinSnapshotQuorumSatisfied(candidates, peerMin = 2) {
 	/** @type {Map<string, number>} */
 	const byBucket = new Map()
 	for (const row of candidates) {
-		const key = (row.bucketKey || '')
+		const key = row.bucketKey || ''
 		if (!key) continue
 		byBucket.set(key, (byBucket.get(key) || 0) + 1)
 	}

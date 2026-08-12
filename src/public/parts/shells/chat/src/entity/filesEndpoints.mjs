@@ -47,7 +47,7 @@ function parseEvfsLogicalPath(rawPath) {
 function readWildcardPath(wildcardParam) {
 	if (Array.isArray(wildcardParam))
 		return wildcardParam.join('/')
-	return (wildcardParam || '')
+	return wildcardParam || ''
 }
 
 /**
@@ -60,7 +60,7 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 	const filesPath = `${CHAT_PREFIX}/entities/:entityHash/files/*logicalPath`
 
 	router.get(filesPath, authenticate, async (req, res) => {
-		const entityHash = (req.params.entityHash || '')
+		const entityHash = req.params.entityHash || ''
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
 			throw httpError(400, 'invalid path')
@@ -93,7 +93,7 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 	})
 
 	router.head(filesPath, authenticate, async (req, res) => {
-		const entityHash = (req.params.entityHash || '')
+		const entityHash = req.params.entityHash || ''
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
 			throw httpError(400, 'invalid path')
@@ -110,7 +110,7 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 	})
 
 	router.put(filesPath, authenticate, async (req, res) => {
-		const entityHash = (req.params.entityHash || '')
+		const entityHash = req.params.entityHash || ''
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
 			throw httpError(400, 'invalid path')
@@ -145,7 +145,7 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 
 	/** multipart 写任意 EVFS 路径；`profile/{sfw_,}avatar|banner` 额外回写 profile 字段 */
 	router.post(filesPath, authenticate, async (req, res) => {
-		const entityHash = (req.params.entityHash || '')
+		const entityHash = req.params.entityHash || ''
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
 			throw httpError(400, 'invalid path')

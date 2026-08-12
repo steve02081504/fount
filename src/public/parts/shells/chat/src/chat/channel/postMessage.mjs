@@ -160,7 +160,7 @@ async function applyBeforeUserSend(username, groupId, channelId, content, files)
 function wireFileDescriptor(file) {
 	const description = sanitizeAlt(file.description)
 	return {
-		fileId: (file.fileId || ''),
+		fileId: file.fileId || '',
 		name: String(file.name || 'file').slice(0, 255),
 		mime_type: String(file.mime_type || 'application/octet-stream'),
 		size: Math.max(0, Number(file.size) || 0),
@@ -191,7 +191,7 @@ export async function attachFilesToContent(username, groupId, content, files, ma
 		fileIds.push(file.fileId)
 
 	for (const file of files || []) {
-		const existingId = (file.fileId || '')
+		const existingId = file.fileId || ''
 		if (existingId && !file.buffer) {
 			if (fileDescriptors.some(d => d.fileId === existingId)) continue
 			fileDescriptors.push(wireFileDescriptor(file))
@@ -213,7 +213,7 @@ export async function attachFilesToContent(username, groupId, content, files, ma
 		}))
 	}
 
-	const stickerBase64 = content?.type === 'sticker' ? (content.stickerBase64 || '') : ''
+	const stickerBase64 = content?.type === 'sticker' ? content.stickerBase64 || '' : ''
 	if (stickerBase64 && approxStickerBytes(stickerBase64) > maxBytes)
 		throw new Error(`sticker exceeds maxDagPayloadBytes (~${maxBytes})`)
 
@@ -306,7 +306,7 @@ async function maybeDispatchMailboxForOfflinePeer(username, groupId, signedEvent
 	const { state } = await getState(username, groupId)
 	const meta = state.groupMeta
 	if (meta.dmKind !== 'ecdh') return
-	const peerPub = (meta.dmPeerPubKeyHex || '')
+	const peerPub = meta.dmPeerPubKeyHex || ''
 	if (!peerPub) return
 	const { listFederationPeersForGroup } = await import('../federation/index.mjs')
 	const { peers } = await listFederationPeersForGroup(username, groupId)

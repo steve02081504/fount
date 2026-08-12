@@ -51,7 +51,7 @@ export function createGenerationStream(groupId, messageId, dagEventId = null) {
 
 /** @param {string} messageId 流式消息 UUID 或 DAG event id */
 export function abortGenerationByMessageId(messageId) {
-	const id = (messageId || '')
+	const id = messageId || ''
 	if (!id) return
 	const generationKey = idToGenerationKey.get(id)
 	if (!generationKey) return

@@ -42,7 +42,7 @@ export function packsRoot(replicaUsername, entityHash) {
  * @returns {Promise<{ replicaUsername: string, authorEntityHash: string } | null>} 托管位置
  */
 export async function findEntityPackHost(packId) {
-	const pid = (packId || '')
+	const pid = packId || ''
 	if (!pid || !store.isSafePackId(pid)) return null
 	if (packHostCache.has(pid)) {
 		const hit = packHostCache.get(pid)

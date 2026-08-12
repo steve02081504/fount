@@ -156,7 +156,7 @@ export async function reconcileContextSidecarsWithChatLog(username, groupId, cha
  * @returns {Buffer | null} 本地明文缓存
  */
 function tryReadPlaintextCache(username, contentHashHex) {
-	const h = (contentHashHex || '')
+	const h = contentHashHex || ''
 	if (!isHex64(h)) return null
 	const path = join(shellChatRoot(username), 'files', h)
 	if (!existsSync(path)) return null
@@ -180,7 +180,7 @@ export function hydrateWireFiles(username, groupId, state, wireFiles) {
 	if (!wireFiles?.length) return undefined
 	const out = []
 	for (const wire of wireFiles) {
-		const fileId = (wire.fileId || '')
+		const fileId = wire.fileId || ''
 		if (!fileId) continue
 		const name = String(wire.name || 'file').slice(0, 255)
 		const mime_type = String(wire.mime_type || 'application/octet-stream')

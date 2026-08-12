@@ -29,7 +29,7 @@ function normalizeIceEntry(raw) {
 	const urlsRaw = raw.urls
 	const urlsList = Array.isArray(urlsRaw)
 		? urlsRaw.map(u => u).filter(Boolean)
-		: [(urlsRaw || '')].filter(Boolean)
+		: [urlsRaw || ''].filter(Boolean)
 	if (!urlsList.length) return null
 	for (const u of urlsList)
 		if (!ICE_URL_RE.test(u)) return null

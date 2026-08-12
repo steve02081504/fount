@@ -10,7 +10,7 @@ const THEME_RE = /^#[\da-f]{6}$/i
  * @returns {string} 规范化 `#rrggbb` 或空串
  */
 export function normalizeThemeColor(value) {
-	const raw = (value ?? '')
+	const raw = value ?? ''
 	if (!raw) return ''
 	return THEME_RE.test(raw) ? raw : ''
 }

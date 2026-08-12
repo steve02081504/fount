@@ -43,8 +43,8 @@ export function registerWsRoutes(router) {
 	})
 
 	router.ws('/ws/parts/shells\\:chat/call/:groupId/:channelId', authenticate, (ws, req) => {
-		const groupId = (req.params.groupId || '')
-		const channelId = (req.params.channelId || '')
+		const groupId = req.params.groupId || ''
+		const channelId = req.params.channelId || ''
 		if (!groupId || !channelId) return void ws.close()
 		runAuthenticatedWs(ws, req, async ({ username }) => {
 			const { getState } = await import('../chat/dag/materialize.mjs')

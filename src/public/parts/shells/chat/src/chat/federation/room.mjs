@@ -175,8 +175,8 @@ export async function isFederationRoomAlreadyBound(username, groupId, options = 
  */
 export async function resolveFederationSlotForAction(username, groupId, options = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	const action = (options.actionName || '')
-	const eventType = (options.eventType || '')
+	const action = options.actionName || ''
+	const eventType = options.eventType || ''
 	const channelId = (options.channelId || '') || undefined
 	if (action === 'dag_event' || eventType)
 		return await ensureFederationPartitionRoom(

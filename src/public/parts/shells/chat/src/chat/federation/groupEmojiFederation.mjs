@@ -73,7 +73,7 @@ export async function handleFedEmojiWant(username, groupId, data, peerId, sendEm
 	if (!consumeEmojiWant(waitKey(username, groupId, EMOJI_WANT_BUCKET_KEY))) return
 	const remoteNode = peerToNode.get(peerId)
 	if (remoteNode && isBlockedPeer(remoteNode)) return
-	const emojiId = (data.emojiId || '')
+	const emojiId = data.emojiId || ''
 	if (!emojiId) return
 	const packId = resolvePayloadPackId(data, groupId)
 	const local = await readGroupEmojiBinary(username, groupId, emojiId, packId)
@@ -96,8 +96,8 @@ export async function handleFedEmojiWant(username, groupId, data, peerId, sendEm
  */
 export async function handleFedEmojiData(username, groupId, data) {
 	if (!isPlainObject(data)) return
-	const emojiId = (data.emojiId || '')
-	const dataUrl = (data.dataUrl || '')
+	const emojiId = data.emojiId || ''
+	const dataUrl = data.dataUrl || ''
 	const mimeType = String(data.mimeType || 'image/png')
 	const packId = resolvePayloadPackId(data, groupId)
 	if (!emojiId || !/^data:[^;]+;base64,.+$/u.test(dataUrl)) return
@@ -121,7 +121,7 @@ export async function handleFedEmojiData(username, groupId, data) {
  */
 export async function handleFedEmojiManifest(username, groupId, data) {
 	if (!isPlainObject(data)) return
-	const emojiId = (data.emojiId || '')
+	const emojiId = data.emojiId || ''
 	if (!emojiId) return
 	const packId = resolvePayloadPackId(data, groupId)
 	await upsertGroupEmojiManifestEntry(username, groupId, {
@@ -173,7 +173,7 @@ export async function requestGroupEmojiFromUserRoom(username, groupId, emojiId, 
 export function attachUserRoomEmojiHandlers(username, wire) {
 	wire.on('fed_emoji_want', (data, peerId) => {
 		if (!isPlainObject(data)) return
-		const groupId = (data.groupId || '')
+		const groupId = data.groupId || ''
 		if (!groupId) return
 		void handleFedEmojiWant(
 			username,
@@ -187,14 +187,14 @@ export function attachUserRoomEmojiHandlers(username, wire) {
 	})
 	wire.on('fed_emoji_data', data => {
 		if (!isPlainObject(data)) return
-		const groupId = (data.groupId || '')
+		const groupId = data.groupId || ''
 		if (!groupId) return
 		void handleFedEmojiData(username, groupId, data)
 			.catch(error => console.warn('federation: user-room fed_emoji_data failed', error))
 	})
 	wire.on('fed_emoji_manifest', data => {
 		if (!isPlainObject(data)) return
-		const groupId = (data.groupId || '')
+		const groupId = data.groupId || ''
 		if (!groupId) return
 		void handleFedEmojiManifest(username, groupId, data)
 			.catch(error => console.warn('federation: user-room fed_emoji_manifest failed', error))

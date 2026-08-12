@@ -21,7 +21,7 @@ import { safeReadSnapshot } from './wal.mjs'
  * @returns {void}
  */
 function addKnownEventId(knownSet, id) {
-	const eventIdNorm = (id || '')
+	const eventIdNorm = id || ''
 	if (isHex64(eventIdNorm)) knownSet.add(eventIdNorm)
 }
 

@@ -16,7 +16,7 @@ import { getLocalNodeHash, resolveOperatorEntityHash } from './replica.mjs'
  * @returns {string} inbox 目录
  */
 export function chatInboxDir(username, recipientEntityHash) {
-	const hash = (recipientEntityHash || '')
+	const hash = recipientEntityHash || ''
 	return join(shellChatRoot(username), 'inbox', hash)
 }
 
@@ -100,7 +100,7 @@ export function mentionTargetEventId(messageLine) {
  * @returns {{ authorEntityHash: string | null, authorDisplayName: string }} 作者展示信息
  */
 export function resolveAuthorFromSender(state, senderMemberKey) {
-	const key = (senderMemberKey || '')
+	const key = senderMemberKey || ''
 	const member = state.members?.[key]
 	const authorEntityHash = member ? memberEntityHash(member) : null
 	return {
@@ -161,13 +161,13 @@ export async function listLocalRecipientsInGroup(username, state) {
  * @returns {object | null} inbox 行；无正文时为 null
  */
 function deriveChatInboxRowFromMessage(recipientEntityHash, kind, groupId, channelId, messageLine, state) {
-	const recipient = (recipientEntityHash || '')
+	const recipient = recipientEntityHash || ''
 	if (!recipient) return null
 	const eventId = mentionTargetEventId(messageLine)
 	if (!eventId) return null
 	const text = mentionTextFromMessageLine(messageLine)
 	if (!text) return null
-	const senderKey = (messageLine.sender || '')
+	const senderKey = messageLine.sender || ''
 	const { authorEntityHash, authorDisplayName } = resolveAuthorFromMessageLine(state, messageLine)
 	if (authorEntityHash === recipient) return null
 	const at = Number(messageLine.hlc?.wall || messageLine.timestamp || messageLine.receivedAt || Date.now())
@@ -232,7 +232,7 @@ export function deriveChatInboxVoteClosedRow(recipientEntityHash, groupId, chann
 		kind: 'vote_closed',
 		groupId,
 		channelId,
-		eventId: (ballotId || ''),
+		eventId: ballotId || '',
 		authorEntityHash: (extra.authorEntityHash || '') || 'system',
 		authorDisplayName: extra.authorDisplayName || 'vote',
 		textPreview: (extra.textPreview || '').slice(0, 120),

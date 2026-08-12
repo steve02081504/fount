@@ -20,7 +20,7 @@ export async function handleVolatileStreamWire(wireMessage, channelId) {
 	if (wireMessage.channelId && wireMessage.channelId !== channelId) return false
 	if (wireMessage.type !== 'stream_chunk') return false
 
-	const streamId = (wireMessage.pendingStreamId || '')
+	const streamId = wireMessage.pendingStreamId || ''
 	const { slices } = wireMessage
 	if (!streamId || !Array.isArray(slices) || !slices.length) return true
 

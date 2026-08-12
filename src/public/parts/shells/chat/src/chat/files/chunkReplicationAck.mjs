@@ -56,7 +56,7 @@ export function beginChunkReplicationWait(username, groupId, ciphertextHash, req
 
 	const expected = new Set(
 		(Array.isArray(expectedPeerKeys) ? expectedPeerKeys : [])
-			.map(id => (id || ''))
+			.map(id => id || '')
 			.filter(Boolean),
 	)
 
@@ -101,7 +101,7 @@ export function recordChunkReplicationAck(username, groupId, ciphertextHash, pee
 	const key = chunkReplicationWaitKey(username, groupId, ciphertextHash)
 	const pending = pendingWaits.get(key)
 	if (!pending) return
-	const pk = (peerKey || '')
+	const pk = peerKey || ''
 	if (!pk) return
 	pending.ackPeers.add(pk)
 	if (pending.ackPeers.size >= pending.requiredAcks)
@@ -126,7 +126,7 @@ export function registerChunkReplicationTargets(username, groupId, ciphertextHas
 	const pending = pendingWaits.get(key)
 	if (!pending) return
 	for (const peerKey of peerKeys) {
-		const id = (peerKey || '')
+		const id = peerKey || ''
 		if (id) pending.expectedPeerKeys.add(id)
 	}
 }

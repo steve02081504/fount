@@ -20,7 +20,7 @@ const POSTS_PER_OWNER = 20
  */
 export async function discoverAccounts(username, options = {}) {
 	const accountLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
-	const cursor = (options.cursor || '')
+	const cursor = options.cursor || ''
 	const nodeHashPrefix = (options.nodeHashPrefix || '').trim() || null
 	const owners = await listLocalTimelineDirs(username, { nodeHashPrefix })
 	const start = cursor ? Math.max(0, owners.indexOf(cursor) + 1) : 0

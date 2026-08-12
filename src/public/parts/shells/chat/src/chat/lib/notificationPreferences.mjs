@@ -69,7 +69,7 @@ export function resolveEffectiveNotificationPreferences(username, entityHash, gr
  * @returns {Promise<'entity' | 'role' | 'everyone' | null>} 命中方式
  */
 export async function describeMentionHit(event, entityHash, state) {
-	const hash = (entityHash || '')
+	const hash = entityHash || ''
 	const mentions = event?.mentions
 	if (!mentions) return null
 	if (mentionsEntity(mentions, hash)) return 'entity'
@@ -97,7 +97,7 @@ export async function describeMentionHit(event, entityHash, state) {
  */
 export async function shouldNotifyHumanForMessage(username, recipientEntityHash, options = {}) {
 	if (options.ingress === 'backfill') return false
-	const authorEntityHash = (options.authorEntityHash || '')
+	const authorEntityHash = options.authorEntityHash || ''
 	if (authorEntityHash && await isCaredBy(username, recipientEntityHash, authorEntityHash))
 		return true
 	const prefs = resolveEffectiveNotificationPreferences(

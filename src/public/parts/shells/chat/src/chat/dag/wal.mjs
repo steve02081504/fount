@@ -27,7 +27,7 @@ import { isFederatableDagEvent } from './eventTypes.mjs'
 export async function verifyEventsSnapshotWAL(username, groupId, checkpoint, events) {
 	const rows = events ?? await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	if (!checkpoint) return { ok: true }
-	const tipId = (checkpoint.checkpoint_event_id || '')
+	const tipId = checkpoint.checkpoint_event_id || ''
 	if (!tipId) return { ok: true }
 	if (!isHex64(tipId))
 		return { ok: false, reason: 'checkpoint_event_id invalid', forceFullReplay: true }

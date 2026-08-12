@@ -29,7 +29,7 @@ function isTrustStillActive(expiresAt) {
  * @returns {string} 规范化小写 hex
  */
 function normalizePubKeyHash(pubKeyHash) {
-	return (pubKeyHash || '')
+	return pubKeyHash || ''
 }
 
 /**

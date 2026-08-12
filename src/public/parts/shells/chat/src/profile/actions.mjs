@@ -35,7 +35,7 @@ export const actions = {
 		const entityHash = await getOperatorEntityHash(user)
 		const profile = await getProfile(entityHash, user, { skipPresentation: true })
 		const localized = normalizeLocalizedMap(profile.localized)
-		localized[locale] = { ...localized[locale], name: (name || '') }
+		localized[locale] = { ...localized[locale], name: name || '' }
 		await updateProfile(user, entityHash, { localized })
 		return `Display name updated to: ${name}`
 	},
@@ -52,7 +52,7 @@ export const actions = {
 		const entityHash = await getOperatorEntityHash(user)
 		const profile = await getProfile(entityHash, user, { skipPresentation: true })
 		const localized = normalizeLocalizedMap(profile.localized)
-		localized[locale] = { ...localized[locale], description: (description || '') }
+		localized[locale] = { ...localized[locale], description: description || '' }
 		await updateProfile(user, entityHash, { localized })
 		return 'Description updated'
 	},

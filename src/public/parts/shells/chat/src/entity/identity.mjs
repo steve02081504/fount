@@ -217,7 +217,7 @@ async function syncProfileOwnerField(username, entityHash, ownerEntityHash) {
  * @returns {Promise<object>} 更新后的身份行（含 entityHash）
  */
 export async function setEntityOwner(username, entityHash, ownerEntityHash) {
-	const hash = (entityHash || '')
+	const hash = entityHash || ''
 	if (!isEntityHash128(hash)) throw new Error('invalid entityHash')
 	const nextOwner = ownerEntityHash ? ownerEntityHash : null
 	if (nextOwner && !isEntityHash128(nextOwner)) throw new Error('invalid ownerEntityHash')
@@ -296,7 +296,7 @@ export async function loadEntityIdentity(username, entityHash) {
  * @returns {string | null} 64 hex 活跃公钥，未托管则为 null
  */
 export function findLocalEntityActivePubKey(entityHash) {
-	const eh = (entityHash || '')
+	const eh = entityHash || ''
 	if (!isEntityHash128(eh)) return null
 	for (const cached of identityCache.values())
 		if (cached.entityHash === eh) return cached.activePub
@@ -543,7 +543,7 @@ export async function saveFederationViewForUser(username, patch) {
 			...patch.mailbox ? { mailbox: patch.mailbox } : {},
 		})
 	if (patch.dmIntroNonce != null) {
-		const normalized = (patch.dmIntroNonce || '')
+		const normalized = patch.dmIntroNonce || ''
 		if (normalized.length >= 16)
 			assignShellData(username, 'chat', 'dmIntro', { nonce: normalized, rotatedAt: Date.now() })
 	}
@@ -557,7 +557,7 @@ export async function saveFederationViewForUser(username, patch) {
  * @returns {{ nonce: string, rotatedAt: number }} 写入后的 nonce 行
  */
 export function setDmIntroNonce(username, nonce) {
-	const normalized = (nonce || '')
+	const normalized = nonce || ''
 	if (normalized.length < 16) throw new Error('dmIntro nonce too short')
 	const row = { nonce: normalized, rotatedAt: Date.now() }
 	assignShellData(username, 'chat', 'dmIntro', row)

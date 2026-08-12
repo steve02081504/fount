@@ -14,7 +14,7 @@ const BODY_ARCHIVE_TYPES = new Set(['message', 'message_edit'])
  */
 function eventViewForArchive(event, blockedSenders) {
 	if (!blockedSenders.size || !BODY_ARCHIVE_TYPES.has(event.type)) return event
-	const sender = (event.sender || '')
+	const sender = event.sender || ''
 	if (!blockedSenders.has(sender)) return event
 	return { ...event, content: { archiveBodyRedacted: true, type: event.type } }
 }

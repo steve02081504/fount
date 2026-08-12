@@ -9,6 +9,6 @@ export { collectJoinPowAnchors } from '../../../public/shared/joinPowAnchors.mjs
  * @returns {boolean} 是否为 checkpoint/历史成员 replay（跳过 PoW）
  */
 export function joinPowExemptAsHistoricalReplay(state, event) {
-	const senderKey = (event.sender || '')
+	const senderKey = event.sender || ''
 	return state.members?.[senderKey]?.status === 'active'
 }

@@ -60,7 +60,7 @@ export function inferCodeLanguageFromPath(filepath) {
  * @returns {string} Markdown 代码块
  */
 export function renderMarkdownCodeBlock(code, options = {}) {
-	const content = (code ?? '')
+	const content = code ?? ''
 	const fence = getSafeFence(content)
 	const { lang = '', title = '' } = options
 	const info = [

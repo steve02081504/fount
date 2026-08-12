@@ -164,7 +164,7 @@ export async function exportChannelArchive(username, groupId, channelId) {
 	for (const month of months) {
 		const snaps = await readArchiveMonth(username, groupId, channelId, month)
 		for (const snap of snaps) {
-			const id = (snap.eventId || '')
+			const id = snap.eventId || ''
 			if (!id) continue
 			const portable = portableMessageFromSnapshot(snap)
 			attachArchiveAttachments(
@@ -185,7 +185,7 @@ export async function exportChannelArchive(username, groupId, channelId) {
 	const merged = mergeChannelMessagesForDisplay(hotLines)
 	for (const row of merged) {
 		if (row.type !== 'message') continue
-		const id = (row.eventId || '')
+		const id = row.eventId || ''
 		if (!id) continue
 		byId.set(id, await portableFromHotRow(username, groupId, channelId, row, state, {
 			wasEdited: !!row.wasEdited,
@@ -223,7 +223,7 @@ export async function exportChannelArchive(username, groupId, channelId) {
 			groupId,
 			channelId,
 			channelName: String(channel.name || channelId),
-			channelDescription: (channel.description || ''),
+			channelDescription: channel.description || '',
 		},
 		messages,
 	}
@@ -293,7 +293,7 @@ export async function importChannelArchive(username, groupId, archive, options =
 	const baseName = String(options.name || source.channelName || 'imported').trim() || 'imported'
 	const description = options.description != null
 		? String(options.description)
-		: (source.channelDescription || '')
+		: source.channelDescription || ''
 
 	const { state } = await getState(username, groupId)
 	const existingNames = new Set(

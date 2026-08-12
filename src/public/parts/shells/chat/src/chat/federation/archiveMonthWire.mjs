@@ -12,10 +12,10 @@ import { parseArchiveMonthWireParts } from '../archive/monthChunks.mjs'
  */
 export function parseFedArchiveMonthWant(payload) {
 	if (!isPlainObject(payload)) return null
-	const groupId = (payload.groupId || '')
-	const channelId = (payload.channelId || '')
-	const utcMonth = (payload.utcMonth || '')
-	const requestId = (payload.requestId || '')
+	const groupId = payload.groupId || ''
+	const channelId = payload.channelId || ''
+	const utcMonth = payload.utcMonth || ''
+	const requestId = payload.requestId || ''
 	const attestation = isPlainObject(payload.attestation) ? payload.attestation : null
 	if (!groupId || !channelId || !/^\d{4}-\d{2}$/u.test(utcMonth) || !requestId || !attestation)
 		return null
@@ -24,7 +24,7 @@ export function parseFedArchiveMonthWant(payload) {
 		channelId,
 		utcMonth,
 		requestId,
-		requesterNodeHash: (payload.requesterNodeHash || ''),
+		requesterNodeHash: payload.requesterNodeHash || '',
 		attestation,
 	}
 }
@@ -35,14 +35,14 @@ export function parseFedArchiveMonthWant(payload) {
  */
 export function parseFedArchiveMonthResponse(payload) {
 	if (!isPlainObject(payload)) return null
-	const requestId = (payload.requestId || '')
-	const channelId = (payload.channelId || '')
-	const utcMonth = (payload.utcMonth || '')
+	const requestId = payload.requestId || ''
+	const channelId = payload.channelId || ''
+	const utcMonth = payload.utcMonth || ''
 	if (!requestId || !channelId || !/^\d{4}-\d{2}$/u.test(utcMonth)) return null
 	if ('body' in payload) return null
 	if (payload.complete !== true && payload.complete !== false) return null
 	const complete = payload.complete === true
-	const digest = (payload.digest || '')
+	const digest = payload.digest || ''
 	const parts = complete
 		? parseArchiveMonthWireParts(payload.parts) ?? null
 		: []
@@ -54,6 +54,6 @@ export function parseFedArchiveMonthResponse(payload) {
 		digest: complete ? digest : '',
 		parts: complete ? parts : [],
 		complete,
-		reason: (payload.reason || ''),
+		reason: payload.reason || '',
 	}
 }

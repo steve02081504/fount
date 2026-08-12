@@ -32,7 +32,7 @@ function prevTipIdsFromCheckpoint(checkpoint) {
 		.map(t => t)
 		.filter(isHex64)
 	if (tips.length) return sortedPrevEventIds(tips)
-	const anchor = (checkpoint.checkpoint_event_id || '')
+	const anchor = checkpoint.checkpoint_event_id || ''
 	return isHex64(anchor) ? [anchor] : []
 }
 

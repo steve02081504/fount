@@ -78,7 +78,7 @@ async function saveBlobRefcounts(username, table) {
  * @returns {Promise<boolean>} 本节点是否已有该密文文件
  */
 export async function hasCiphertextBlob(username, ciphertextHashHex) {
-	const h = (ciphertextHashHex || '')
+	const h = ciphertextHashHex || ''
 	if (!isHex64(h)) return false
 	try {
 		await readFile(blobPath(username, h))
@@ -96,7 +96,7 @@ export async function hasCiphertextBlob(username, ciphertextHashHex) {
  * @returns {Promise<string>} storageLocator `blob:{hash}`
  */
 export async function bumpCiphertextBlobRef(username, ciphertextHashHex) {
-	const h = (ciphertextHashHex || '')
+	const h = ciphertextHashHex || ''
 	if (!isHex64(h)) throw new Error('invalid ciphertextHash')
 	const refs = await loadBlobRefcounts(username)
 	refs[h] = (refs[h] || 0) + 1
@@ -112,7 +112,7 @@ export async function bumpCiphertextBlobRef(username, ciphertextHashHex) {
  * @returns {Promise<string>} storageLocator `blob:{hash}`
  */
 export async function putCiphertextBlob(username, ciphertextHashHex, raw) {
-	const h = (ciphertextHashHex || '')
+	const h = ciphertextHashHex || ''
 	if (!isHex64(h)) throw new Error('invalid ciphertextHash')
 	const path = blobPath(username, h)
 	await mkdir(join(shellChatRoot(username), 'blobs'), { recursive: true })
@@ -144,7 +144,7 @@ export async function getCiphertextBlob(username, locator) {
  * @returns {Promise<void>}
  */
 export async function cachePlaintextFile(username, contentHashHex, plaintext) {
-	const h = (contentHashHex || '')
+	const h = contentHashHex || ''
 	if (!isHex64(h)) throw new Error('invalid contentHash')
 	await mkdir(join(shellChatRoot(username), 'files'), { recursive: true })
 	await writeFile(plainCachePath(username, h), Buffer.from(plaintext))
@@ -157,7 +157,7 @@ export async function cachePlaintextFile(username, contentHashHex, plaintext) {
  * @returns {Promise<Buffer | null>} 明文或 null
  */
 export async function getPlaintextCache(username, contentHashHex) {
-	const h = (contentHashHex || '')
+	const h = contentHashHex || ''
 	if (!isHex64(h)) return null
 	try {
 		return Buffer.from(await readFile(plainCachePath(username, h)))

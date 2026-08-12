@@ -373,13 +373,27 @@ function fetchLogSnapshotOnce() {
 		}
 		try {
 			conn = connectLogWire(WS_URL, {
+				/**
+				 *
+				 * @param entries
+				 */
 				onSnapshot: (entries) => {
 					settle(() => resolve(entries))
 				},
+				/**
+				 *
+				 */
 				onClose: () => {
 					settle(() => reject(new Error('log_wire_closed_before_snapshot')))
 				},
+				/**
+				 *
+				 */
 				onError: () => { /* onClose 收尾 */ },
+				/**
+				 *
+				 * @param err
+				 */
 				onFatal: (err) => {
 					settle(() => reject(err instanceof Error ? err : new Error(String(err))))
 				},

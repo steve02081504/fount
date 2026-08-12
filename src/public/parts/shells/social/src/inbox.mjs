@@ -80,7 +80,7 @@ export function notificationCursor(row) {
 export function computeAggregateKey(row, viewerEntityHash) {
 	const type = row.type
 	if (type === 'like' || type === 'repost') {
-		const target = (row.targetEntityHash || viewerEntityHash || '')
+		const target = row.targetEntityHash || viewerEntityHash || ''
 		return `${type}:${target}:${row.targetPostId ?? ''}`
 	}
 	if (type === 'follow') {
@@ -195,7 +195,7 @@ function socialInboxStore(username, entityHash) {
 export function normalizeNotificationRow(type, actorEntityHash, at, postId, targetPostId, targetEntityHash = null, snippet = null) {
 	return {
 		type,
-		actorEntityHash: actorEntityHash,
+		actorEntityHash,
 		postId: postId ?? null,
 		targetPostId: targetPostId ?? null,
 		targetEntityHash: targetEntityHash ?? null,
@@ -215,7 +215,7 @@ async function resolveNotificationSnippet(username, timelineOwner, event, row) {
 	if (event.type === 'post')
 		return notificationSnippet(event.content?.text || '')
 	if (event.type === 'like' || event.type === 'repost') {
-		const targetOwner = (event.content?.targetEntityHash || '')
+		const targetOwner = event.content?.targetEntityHash || ''
 		const targetPostId = event.content?.targetPostId
 		if (!targetOwner || !targetPostId) return null
 		const { getTimelineMaterialized } = await import('./timeline/materialize.mjs')
@@ -259,7 +259,7 @@ export function deriveInboxNotifications(timelineOwner, event) {
 		}
 	}
 	if (event.type === 'like') {
-		const target = (event.content?.targetEntityHash || '')
+		const target = event.content?.targetEntityHash || ''
 		if (target)
 			rows.push({
 				recipient: target,
@@ -267,7 +267,7 @@ export function deriveInboxNotifications(timelineOwner, event) {
 			})
 	}
 	if (event.type === 'repost') {
-		const target = (event.content?.targetEntityHash || '')
+		const target = event.content?.targetEntityHash || ''
 		if (target)
 			rows.push({
 				recipient: target,
@@ -275,12 +275,12 @@ export function deriveInboxNotifications(timelineOwner, event) {
 			})
 	}
 	if (event.type === 'follow') {
-		const target = (event.content?.targetEntityHash || '')
+		const target = event.content?.targetEntityHash || ''
 		if (target && target !== owner)
 			rows.push({ recipient: target, ...normalizeNotificationRow('follow', owner, at, null, null) })
 	}
 	if (event.type === 'post_note') {
-		const target = (event.content?.targetEntityHash || '')
+		const target = event.content?.targetEntityHash || ''
 		if (target && target !== owner)
 			rows.push({
 				recipient: target,

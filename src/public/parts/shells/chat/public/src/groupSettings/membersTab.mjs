@@ -87,7 +87,7 @@ export async function renderMembers(context) {
 	const memberRows = Array.isArray(context.state.members) ? context.state.members : []
 	const labelItems = memberRows.map(member => {
 		const memberKey = member.memberKey || member.pubKeyHash || ''
-		const entityHash = (member.entityHash || '')
+		const entityHash = member.entityHash || ''
 		const label = entityHash
 			? resolveDisplayName({
 				entityHash,

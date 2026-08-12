@@ -90,7 +90,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages/${EVENT_ID_PARAM}`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
-		const eventId = (req.params.eventId || '')
+		const eventId = req.params.eventId || ''
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
 		const rawContent = req.body?.content
@@ -130,7 +130,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages/${EVENT_ID_PARAM}`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
-		const eventId = (req.params.eventId || '')
+		const eventId = req.params.eventId || ''
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
 
@@ -147,7 +147,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages/${EVENT_ID_PARAM}/feedback`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
-		const eventId = (req.params.eventId || '')
+		const eventId = req.params.eventId || ''
 		const { type, content } = req.body || {}
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
@@ -263,7 +263,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/read-marker`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
 		const { eventId: rawEventId, seq: rawSeq } = req.body || {}
-		const eventId = (rawEventId || '')
+		const eventId = rawEventId || ''
 		const seq = Number(rawSeq)
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
@@ -333,7 +333,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 
 	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/pin-context/${EVENT_ID_PARAM}`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
-		const pinEventId = (req.params.eventId || '')
+		const pinEventId = req.params.eventId || ''
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(pinEventId))
 			throw httpError(400, 'invalid eventId')
 
@@ -386,10 +386,10 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username } = membership
-		const query = (req.query.q || '')
+		const query = req.query.q || ''
 		if (query.length < 2)
 			throw httpError(400, 'query must be at least 2 characters')
-		const viewerEntityHash = (await resolveOperatorEntityHash(username)) || null
+		const viewerEntityHash = await resolveOperatorEntityHash(username) || null
 		res.status(200).json(await searchGroupMessages(username, groupId, {
 			q: query,
 			channelId: req.query.channelId ? String(req.query.channelId) : undefined,

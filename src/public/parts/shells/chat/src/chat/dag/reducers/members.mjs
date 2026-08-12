@@ -18,7 +18,7 @@ const MEMBER_KEY_RE = /^[\da-f]{64}$/u
  */
 function memberKeysMerkleRoot(ids) {
 	const sorted = [...new Set(ids
-		.map(id => (id || ''))
+		.map(id => id || '')
 		.filter(id => MEMBER_KEY_RE.test(id)))]
 		.sort()
 	if (!sorted.length)
@@ -58,7 +58,7 @@ function refreshMembersDigest(state) {
  * @returns {boolean} 是否应拒绝该成员加入
  */
 function isJoinBanned(state, sender, joinContent = {}) {
-	const entityHash = (joinContent.entityHash || '')
+	const entityHash = joinContent.entityHash || ''
 	if (isEntityHash128(entityHash) && state.bannedEntities.has(entityHash))
 		return true
 	if (state.bannedMembers.has(sender)) return true
@@ -121,7 +121,7 @@ export function applyBanContent(state, content) {
  * @returns {void}
  */
 export function clearBanForMember(state, targetMemberKey) {
-	const key = (targetMemberKey || '')
+	const key = targetMemberKey || ''
 	const member = state.members[key]
 	state.bannedMembers.delete(key)
 	const entityHash = String(member?.entityHash || '').trim()
@@ -147,7 +147,7 @@ export const memberReducers = {
 		if (isJoinBanned(state, event.sender, content))
 			return state
 
-		const entityHash = (content.entityHash || '')
+		const entityHash = content.entityHash || ''
 		if (!isEntityHash128(entityHash))
 			return state
 
@@ -156,7 +156,7 @@ export const memberReducers = {
 		// 不得重算 extraRoles（此时 activeBefore 含成员自身，会算成 0 个 extraRole）从而回退 founder 等既有角色。
 		const isActiveReapply = existing?.status === 'active'
 		const charname = content.charname || existing?.charname || undefined
-		const ownerFromContent = (content.ownerEntityHash || '')
+		const ownerFromContent = content.ownerEntityHash || ''
 		const ownerFallback = isActiveReapply ? String(existing?.ownerEntityHash || '').trim() : ''
 		const ownerRaw = ownerFromContent || ownerFallback
 		const ownerEntityHash = ownerRaw && isEntityHash128(ownerRaw) ? ownerRaw : null

@@ -120,7 +120,7 @@ export function noteFedArchiveMonthResponse(username, groupId, response, peerNod
 	const pending = pendingMonthPulls.get(key)
 	if (!pending) return
 	pending.candidates.push({
-		peerNodeHash: peerNodeHash,
+		peerNodeHash,
 		digest: response.digest,
 		parts: response.parts,
 		complete: response.complete,
@@ -187,7 +187,7 @@ async function resolveArchiveMonthCandidates(username, groupId, slot, candidates
 		let verified = Boolean(row.verified)
 		try {
 			const parsed = await digestArchiveMonthFile(tmpPath)
-			const wireDigest = (row.digest || '')
+			const wireDigest = row.digest || ''
 			if (wireDigest && parsed.digest && wireDigest !== parsed.digest) {
 				verified = false
 				if (row.peerNodeHash)
@@ -218,15 +218,15 @@ async function noteArchiveDigestObservations(username, groupId, candidates, chan
 	/** @type {Array<{ peer: string, digest: string }>} */
 	const observations = []
 	for (const row of candidates) {
-		const peer = (row.peerNodeHash || '')
+		const peer = row.peerNodeHash || ''
 		if (!peer) continue
 		let digest = ''
 		if (row.tmpPath) {
 			const parsed = await digestArchiveMonthFile(row.tmpPath)
-			digest = (parsed.digest || '')
+			digest = parsed.digest || ''
 		}
 		else
-			digest = (row.digest || '')
+			digest = row.digest || ''
 		if (!isHex64(digest)) continue
 		observations.push({ peer, digest })
 	}

@@ -83,7 +83,7 @@ export function saveEmojiUsage(username, data) {
  * @returns {object} 返回值
  */
 export function appendUsageLog(state, usageId, at = Date.now()) {
-	const id = (usageId || '')
+	const id = usageId || ''
 	if (!id) return state
 	const log = [...state.log || [], { id, at }]
 	const trimmed = log.length > USAGE_WINDOW ? log.slice(-USAGE_WINDOW) : log
@@ -100,11 +100,11 @@ export function appendUsageLog(state, usageId, at = Date.now()) {
  */
 function usageIdFromItem(item) {
 	if (item.kind === 'unicode') {
-		const unicode = (item.unicode || '')
+		const unicode = item.unicode || ''
 		return unicode ? unicodeUsageId(unicode) : ''
 	}
-	const packId = (item.packId || '')
-	const emojiId = (item.emojiId || '')
+	const packId = item.packId || ''
+	const emojiId = item.emojiId || ''
 	return packId && emojiId ? packEmojiUsageId(packId, emojiId) : ''
 }
 
@@ -198,7 +198,7 @@ export function listCollection(username) {
  * @returns {void} 返回值
  */
 export function addPackToCollection(username, packId) {
-	const id = (packId || '')
+	const id = packId || ''
 	if (!id) return
 	const state = loadEmojiUsage(username)
 	if (state.collection.packIds.includes(id)) return
@@ -212,7 +212,7 @@ export function addPackToCollection(username, packId) {
  * @returns {void} 返回值
  */
 export function removePackFromCollection(username, packId) {
-	const id = (packId || '')
+	const id = packId || ''
 	if (!id) return
 	const state = loadEmojiUsage(username)
 	state.collection.packIds = state.collection.packIds.filter(p => p !== id)
@@ -247,8 +247,8 @@ export function convergeDefaultPack(username, oldDefaultPackId, newDefaultPackId
  * @returns {void}
  */
 export function convergeLinkedDefault(username, linkKey, newDefaultPackId) {
-	const key = (linkKey || '')
-	const next = (newDefaultPackId || '')
+	const key = linkKey || ''
+	const next = newDefaultPackId || ''
 	if (!key || !next) return
 	const state = loadEmojiUsage(username)
 	const old = String(state.linkedDefaults[key] || '').trim()

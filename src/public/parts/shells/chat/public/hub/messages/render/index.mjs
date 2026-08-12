@@ -256,7 +256,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		else if (usePlainMd) {
 			const rendered = await renderMessageMarkdownForPaint(String(message.eventId), plainText, {
 				isRemote: !!message.isRemote,
-				authorPubKeyHash: (message.authorPubKeyHash || ''),
+				authorPubKeyHash: message.authorPubKeyHash || '',
 			})
 			bodyCore = rendered.html
 			bubbleAttrs = rendered.bubbleAttrs

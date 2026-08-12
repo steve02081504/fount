@@ -15,7 +15,7 @@ import { requestJoinSnapshotFromPeers } from './joinSnapshot.mjs'
  * @returns {boolean} 是否应优先 snapshot
  */
 export function shouldPreferJoinSnapshot(localTipsHash, remoteSummaries) {
-	const local = (localTipsHash || '')
+	const local = localTipsHash || ''
 	if (!isHex64(local)) return true
 	return remoteSummaries.some(summary => {
 		const remote = String(summary?.tipsHash || '').trim()

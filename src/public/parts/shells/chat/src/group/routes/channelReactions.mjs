@@ -80,7 +80,7 @@ export function registerChannelReactionRoutes(router, authenticate) {
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId/pins/${EVENT_ID_PARAM}`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { username, groupId, channelId, state, member } = req.groupContext
-		const targetEventId = (req.params.eventId || '')
+		const targetEventId = req.params.eventId || ''
 		ensurePinPermission(state, member, channelId)
 
 		await appendUnpinEvent(username, groupId, channelId, targetEventId)

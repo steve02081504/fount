@@ -278,7 +278,7 @@ export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions)
 		attribution() {
 			const contentObj = typeof content === 'object' && content
 				? content
-				: { content: (content ?? ''), extension: entry.extension }
+				: { content: content ?? '', extension: entry.extension }
 			return deriveMessageAttribution(contentObj, {
 				sender: authorHash,
 				signerEntityHash: authorHash,

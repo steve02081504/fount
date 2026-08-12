@@ -1,9 +1,9 @@
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
+import { materializeGroupSettings } from './groupSettings.mjs'
 import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
 import { createEmptySessionState } from './reducers/state.mjs'
-import { materializeGroupSettings } from './groupSettings.mjs'
 
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').RuntimeGroupState} RuntimeGroupState */
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').Checkpoint} Checkpoint */
@@ -14,7 +14,7 @@ import { materializeGroupSettings } from './groupSettings.mjs'
  * @returns {string} 规范化后的 hex 键
  */
 function normHex(value) {
-	return (value ?? '')
+	return value ?? ''
 }
 
 /**
@@ -225,7 +225,7 @@ export function manageAdminsPubKeyHashes(state) {
  * @returns {Set<string>} 允许签名的 pubKeyHash
  */
 export function checkpointSignerPubKeyHashes(state) {
-	const delegated = (state.delegatedOwnerPubKeyHash || '')
+	const delegated = state.delegatedOwnerPubKeyHash || ''
 	if (isHex64(delegated)) return new Set([delegated])
 	const manage = manageAdminsPubKeyHashes(state)
 	if (manage.size) return manage

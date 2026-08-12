@@ -20,7 +20,7 @@ import { memberEntityHash } from './member.mjs'
  * @returns {Promise<string | null>} 主人 hash；无则 null
  */
 export async function resolveDeclaredOwnerEntityHash(username, entityHash) {
-	const hash = (entityHash || '')
+	const hash = entityHash || ''
 	if (!isEntityHash128(hash)) return null
 	const row = await loadEntityIdentity(username, hash)
 	const owner = row?.ownerEntityHash ? String(row.ownerEntityHash) : null

@@ -61,7 +61,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.params
 		const content = {
-			targetPubKeyHash: (req.body.targetPubKeyHash || ''),
+			targetPubKeyHash: req.body.targetPubKeyHash || '',
 			claim: Number(req.body.claim ?? 0.25),
 		}
 		if (req.body.verified) {
@@ -103,7 +103,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/reputation/reset`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.params
-		const targetPubKeyHash = (req.body.targetPubKeyHash || '')
+		const targetPubKeyHash = req.body.targetPubKeyHash || ''
 		if (!targetPubKeyHash)
 			throw httpError(400, 'targetPubKeyHash required')
 		await appendSignedLocalEvent(username, groupId, {
@@ -172,7 +172,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			if (entityHash && !displayName)
 				try {
 					const profile = await getProfile(entityHash, username, { groupId, locales: profileLocales })
-					displayName = (profile.name || '')
+					displayName = profile.name || ''
 				}
 				catch {
 					// 远端或未托管资料时忽略
@@ -400,7 +400,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { username } = getUserByReq(req)
 		if (!await userHasLocalGroupReplica(username, groupId))
 			throw httpError(404, 'No local group replica')
-		const beforeMonth = (req.query.before || '')
+		const beforeMonth = req.query.before || ''
 		if (!/^\d{4}-\d{2}$/.test(beforeMonth))
 			throw httpError(400, 'before must be YYYY-MM')
 		res.status(200).json(await deleteArchivesBeforeMonth(username, groupId, beforeMonth))

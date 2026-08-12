@@ -31,7 +31,7 @@ export function isVirtualBridgeGroupId(groupId) {
  * @returns {{ platform: string, platformChatId: string } | null} 解析结果
  */
 export function parseVirtualBridgeGroupId(groupId) {
-	const raw = (groupId || '')
+	const raw = groupId || ''
 	if (!raw.startsWith('bridge:')) return null
 	const rest = raw.slice('bridge:'.length)
 	const colon = rest.indexOf(':')
@@ -221,7 +221,7 @@ export async function appendVirtualBridgeMessage(username, dto) {
 		catch { /* profile optional */ }
 
 	const eventId = `vmsg_${dto.platform}_${dto.platformMessageId}_${Date.now().toString(36)}`
-	const text = (dto.text || '')
+	const text = dto.text || ''
 	/** @type {{ eventId: string, senderName?: string, preview?: string, senderEntityHash?: string } | undefined} */
 	let replyTo
 	if (dto.replyToPlatformMessageId != null) {
@@ -261,7 +261,7 @@ export async function appendVirtualBridgeMessage(username, dto) {
 					platformMessageId: String(dto.platformMessageId),
 					platformUserId: String(dto.author.platformUserId),
 					authorEntityHash,
-					authorDisplayName: (dto.author.displayName || ''),
+					authorDisplayName: dto.author.displayName || '',
 					...dto.platformThreadId != null ? { platformThreadId: String(dto.platformThreadId) } : {},
 					...dto.replyToPlatformMessageId != null
 						? { replyToPlatformMessageId: String(dto.replyToPlatformMessageId) }
@@ -300,7 +300,7 @@ export function lookupVirtualBridgeEventId(channel, platformMessageId) {
  * @returns {string | null} platformMessageId
  */
 export function lookupVirtualBridgePlatformMessageId(channel, eventId) {
-	const needle = (eventId || '')
+	const needle = eventId || ''
 	if (!needle) return null
 	for (let i = channel.messageMap.length - 1; i >= 0; i--) {
 		const row = channel.messageMap[i]
@@ -324,7 +324,7 @@ export async function editVirtualBridgeMessage(username, dto) {
 	if (!eventId) return null
 	const entry = channel.logs.find(row => String(row.extension?.chat?.virtualEventId || '') === eventId)
 	if (!entry) return null
-	const text = (dto.text || '')
+	const text = dto.text || ''
 	entry.content = text
 	entry.content_for_show = text
 	if (dto.files)

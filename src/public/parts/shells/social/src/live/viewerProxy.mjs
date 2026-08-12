@@ -50,8 +50,8 @@ export async function ensureFederatedLiveProxy(username, entityHash, liveId, hin
 
 	const avRoomId = `social-proxy:${entityHash}:${liveId}`
 	const session = {
-		liveId: liveId,
-		entityHash: entityHash,
+		liveId,
+		entityHash,
 		title: hint.title || 'Live',
 		visibility: 'public',
 		status: 'live',

@@ -23,7 +23,7 @@ function saveCareMap(username, map) {
  * @returns {Promise<string[]>} cared entityHashes（小写）
  */
 export async function listCared(username, ownerEntityHash) {
-	const owner = (ownerEntityHash || '')
+	const owner = ownerEntityHash || ''
 	const map = loadCareMap(username)
 	return [...new Set((map[owner] || []).map(entry => entry).filter(Boolean))]
 }
@@ -36,8 +36,8 @@ export async function listCared(username, ownerEntityHash) {
  * @returns {Promise<void>}
  */
 export async function setCared(username, ownerEntityHash, targetEntityHash, cared) {
-	const owner = (ownerEntityHash || '')
-	const target = (targetEntityHash || '')
+	const owner = ownerEntityHash || ''
+	const target = targetEntityHash || ''
 	if (!owner || !target) return
 	const map = { ...loadCareMap(username) }
 	const list = new Set((map[owner] || []).map(entry => entry).filter(Boolean))
@@ -54,8 +54,8 @@ export async function setCared(username, ownerEntityHash, targetEntityHash, care
  * @returns {Promise<boolean>} 是否关心
  */
 export async function isCaredBy(username, ownerEntityHash, targetEntityHash) {
-	const owner = (ownerEntityHash || '')
-	const target = (targetEntityHash || '')
+	const owner = ownerEntityHash || ''
+	const target = targetEntityHash || ''
 	if (!owner || !target) return false
 	return (await listCared(username, owner)).includes(target)
 }

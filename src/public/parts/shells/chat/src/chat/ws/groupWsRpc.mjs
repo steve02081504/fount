@@ -191,7 +191,7 @@ async function handleRpcCall(senderWs, groupId, roomKey, wireMessage) {
 		return void sendRpcError(senderWs, requestId, String(error?.message || error), code)
 	}
 	try {
-		const id = (memberId || '')
+		const id = memberId || ''
 		const local = id.includes(':world:')
 			? await tryInvokeLocalWorldRpc(groupId, memberId, method, list)
 			: id.includes(':persona:')

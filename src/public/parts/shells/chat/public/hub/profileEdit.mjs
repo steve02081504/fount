@@ -110,9 +110,9 @@ function firstLocalizedAvatar(localized, field) {
  * @returns {string} 展示用字符串
  */
 function coalesceSfwString(sfwVal, baseVal) {
-	const sfw = (sfwVal ?? '')
+	const sfw = sfwVal ?? ''
 	if (sfw) return sfw
-	return (baseVal ?? '')
+	return baseVal ?? ''
 }
 
 /**
@@ -644,8 +644,8 @@ function initEditState(entityHash, profile, { initialSfwMode = false } = {}) {
 	editingLocalized = { ...profile.localized }
 	editingAvatarPreview = firstLocalizedAvatar(editingLocalized, 'avatar') || (profile.avatar || '')
 	editingSfwAvatarPreview = firstLocalizedAvatar(editingLocalized, 'sfw_avatar')
-	editingBannerPreview = (profile.banner || '')
-	editingSfwBannerPreview = (profile.sfw_banner || '')
+	editingBannerPreview = profile.banner || ''
+	editingSfwBannerPreview = profile.sfw_banner || ''
 	editingBannerCleared = false
 	pendingNormalMedia = { avatar: null, banner: null }
 	pendingSfwMedia = { avatar: null, banner: null }

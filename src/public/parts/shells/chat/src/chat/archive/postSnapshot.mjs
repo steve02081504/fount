@@ -61,7 +61,7 @@ export async function resolveDisplaySnapshot(state, row, username, groupId) {
 	if (charId)
 		return resolveCharDisplaySnapshot(state, charId, username, groupId)
 
-	const sender = (row.sender || '')
+	const sender = row.sender || ''
 	const member = sender ? state.members?.[sender] : null
 	let name = member?.displayName?.trim() || ''
 	let avatar = null

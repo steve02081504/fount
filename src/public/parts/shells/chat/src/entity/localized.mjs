@@ -13,8 +13,8 @@ function normalizeLink(linkItem) {
 	const url = String(linkItem?.url || '').trim()
 	if (!url) return null
 	return {
-		icon: (linkItem.icon || ''),
-		name: (linkItem.name || ''),
+		icon: linkItem.icon || '',
+		name: linkItem.name || '',
 		url,
 	}
 }
@@ -79,7 +79,7 @@ export function normalizeLocalizedMap(localizedInput) {
 	/** @type {Record<string, object>} */
 	const out = {}
 	for (const [key, value] of Object.entries(localizedInput)) {
-		const localeKey = (key || '')
+		const localeKey = key || ''
 		if (!localeKey || !value) continue
 		/** @type {Record<string, unknown>} */
 		const slice = {}
@@ -95,7 +95,7 @@ export function normalizeLocalizedMap(localizedInput) {
  * @returns {boolean} 是否为占位展示名
  */
 export function isPlaceholderDisplayName(displayName, profile) {
-	const name = (displayName || '')
+	const name = displayName || ''
 	if (!name) return true
 	const subjectHash = String(profile?.subjectHash || '').trim()
 	if (!subjectHash || subjectHash.length < 12) return false

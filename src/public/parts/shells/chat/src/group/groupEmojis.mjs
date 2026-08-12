@@ -126,7 +126,7 @@ export async function getPackEmojiEntry(username, groupId, packId, emojiId) {
  * @returns {Promise<{ packId: string, entry: object } | null>} 命中
  */
 export async function findEmojiInGroupPacks(username, groupId, emojiId) {
-	const eid = (emojiId || '')
+	const eid = emojiId || ''
 	if (!eid) return null
 	for (const packId of await listGroupPackIds(username, groupId)) {
 		const entry = await getPackEmojiEntry(username, groupId, packId, eid)
@@ -141,7 +141,7 @@ export async function findEmojiInGroupPacks(username, groupId, emojiId) {
  * @returns {Promise<{ groupId: string, packId: string, manifest: object } | null>} 定位结果
  */
 export async function findPackAcrossGroups(username, packId) {
-	const pid = (packId || '')
+	const pid = packId || ''
 	if (!pid) return null
 	const direct = await loadPackManifest(username, pid, pid)
 	if (direct) return { groupId: pid, packId: pid, manifest: direct }
@@ -189,7 +189,7 @@ export async function readPackEmojiBinary(username, groupId, packId, emojiId) {
  * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object, packId: string } | null>} 二进制
  */
 export async function readGroupEmojiBinary(username, groupId, emojiId, packId) {
-	const pid = (packId || '')
+	const pid = packId || ''
 	if (pid) return readPackEmojiBinary(username, groupId, pid, emojiId)
 	const direct = await readPackEmojiBinary(username, groupId, groupId, emojiId)
 	if (direct) return direct
@@ -206,7 +206,7 @@ export async function readGroupEmojiBinary(username, groupId, emojiId, packId) {
  * @returns {Promise<object | null>} 条目
  */
 export async function getGroupEmojiEntry(username, groupId, emojiId, packId) {
-	const pid = (packId || '')
+	const pid = packId || ''
 	if (pid) return getPackEmojiEntry(username, groupId, pid, emojiId)
 	const direct = await getPackEmojiEntry(username, groupId, groupId, emojiId)
 	if (direct) return direct
@@ -222,7 +222,7 @@ export async function getGroupEmojiEntry(username, groupId, emojiId, packId) {
  * @returns {Promise<string | null>} 文件路径
  */
 export async function resolveGroupEmojiBinaryPath(username, groupId, emojiId, packId) {
-	const pid = (packId || '')
+	const pid = packId || ''
 	if (pid) return resolvePackEmojiBinaryPath(username, groupId, pid, emojiId)
 	const direct = await resolvePackEmojiBinaryPath(username, groupId, groupId, emojiId)
 	if (direct) return direct
@@ -288,7 +288,7 @@ export async function upsertGroupEmojiManifestEntry(username, groupId, entry) {
 	const mimeType = String(entry.mimeType || existing?.mimeType || 'image/png')
 	const ext = String(entry.ext || existing?.ext || store.extFromMime(mimeType))
 	const animated = entry.animated != null ? Boolean(entry.animated) : Boolean(existing?.animated ?? mimeType.includes('gif'))
-	const contentHashRaw = (entry.contentHash || '')
+	const contentHashRaw = entry.contentHash || ''
 	const contentHash = /^[\da-f]{64}$/u.test(contentHashRaw) ? contentHashRaw : undefined
 	const merged = {
 		...existing || {

@@ -28,7 +28,7 @@ function normalizeWireFiles(files) {
 	if (!files?.length) return undefined
 	const out = []
 	for (const file of files) {
-		const fileId = (file.fileId || '')
+		const fileId = file.fileId || ''
 		if (!fileId) continue
 		const description = sanitizeAlt(file.description)
 		out.push({
@@ -106,16 +106,16 @@ function normalizeTextContent(input) {
  * @returns {Record<string, unknown>} sticker wire
  */
 function normalizeStickerContent(input) {
-	const emojiRef = (input.emojiRef || '')
-	const stickerBase64 = (input.stickerBase64 || '')
+	const emojiRef = input.emojiRef || ''
+	const stickerBase64 = input.stickerBase64 || ''
 	if (!emojiRef && !stickerBase64) throw new Error('sticker requires emojiRef or stickerBase64')
 	const compactEmoji = !!parseEmojiToken(emojiRef)
 	return withDisplayFields(input, {
 		type: 'sticker',
 		...compactEmoji || emojiRef ? { emojiRef } : {},
 		...!compactEmoji && stickerBase64 ? { stickerBase64 } : {},
-		stickerId: (input.stickerId || ''),
-		stickerName: (input.stickerName || ''),
+		stickerId: input.stickerId || '',
+		stickerName: input.stickerName || '',
 		...!compactEmoji && input.mimeType ? { mimeType: String(input.mimeType) } : {},
 	})
 }
@@ -160,7 +160,7 @@ function normalizeGroupInviteContent(input) {
 function normalizeCallContent(input) {
 	return withDisplayFields(input, {
 		type: 'call',
-		callId: (input.callId || ''),
+		callId: input.callId || '',
 		status: String(input.status || 'ongoing'),
 		...input.startedAt != null ? { startedAt: Number(input.startedAt) } : {},
 		...input.endedAt != null ? { endedAt: Number(input.endedAt) } : {},
@@ -211,7 +211,7 @@ export function stripInlineImageMarkers(text) {
  */
 export function messageAgentText(content) {
 	const type = content?.type
-	if (type === 'vote') return (content.question || '')
+	if (type === 'vote') return content.question || ''
 	if (type === 'call') return content.status === 'ended' ? 'Call ended' : 'Call in progress'
 	if (type === 'sticker') return String(content.emojiRef || content.stickerName || '')
 	if (type === 'group_invite') return String(content.groupName || content.groupId || '')

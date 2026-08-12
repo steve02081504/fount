@@ -16,7 +16,7 @@ import { loadChannelKeysFile } from './store.mjs'
  * @returns {Promise<Record<string, Array<{ generation: number, wrap: object }>>>} 频道 → 当前密钥 wrap 数组
  */
 export async function collectChannelKeyWrapsForRecipient(username, groupId, recipientEdPubKeyHex, recipientPubKeyHash, state) {
-	const edPubHex = (recipientEdPubKeyHex || '')
+	const edPubHex = recipientEdPubKeyHex || ''
 	if (!PUB_KEY_HEX_64.test(edPubHex)) return {}
 	const file = await loadChannelKeysFile(username, groupId)
 	/** @type {Record<string, Array<{ generation: number, wrap: object }>>} */

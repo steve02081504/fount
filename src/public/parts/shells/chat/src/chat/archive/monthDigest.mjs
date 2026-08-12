@@ -33,10 +33,10 @@ export { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin, resolve
 export function canonicalSnapshotForDigest(snap) {
 	/** @type {Record<string, unknown>} */
 	const body = {
-		eventId: (snap.eventId || ''),
+		eventId: snap.eventId || '',
 		channelId: String(snap.channelId || 'default').trim(),
 		timestamp: snap.timestamp,
-		sender: (snap.sender || ''),
+		sender: snap.sender || '',
 		charId: snap.charId ?? null,
 		content: snap.content,
 		pinned: !!snap.pinned,
@@ -49,7 +49,7 @@ export function canonicalSnapshotForDigest(snap) {
 			.sort((a, b) => a.localeCompare(b, 'en'))
 	if (snap.display)
 		body.display = {
-			name: (snap.display.name ?? ''),
+			name: snap.display.name ?? '',
 			avatar: snap.display.avatar != null ? String(snap.display.avatar) : null,
 		}
 
@@ -82,11 +82,11 @@ export function rollingMonthDigestStep(prevDigest, canonicalPart) {
  * @returns {string} 更新后的 digest hex
  */
 export function extendRollingMonthDigest(prevDigest, newSnapshots) {
-	if (!newSnapshots.length) return (prevDigest || '')
+	if (!newSnapshots.length) return prevDigest || ''
 	const sorted = [...newSnapshots].sort((a, b) =>
 		String(a.eventId).localeCompare(String(b.eventId), 'en'),
 	)
-	let digest = (prevDigest || '')
+	let digest = prevDigest || ''
 	for (const snap of sorted)
 		digest = rollingMonthDigestStep(digest, canonicalStringify(canonicalSnapshotForDigest(snap)))
 	return digest
@@ -229,7 +229,7 @@ export async function readArchiveMonthMaxEventId(filePath) {
 			if (!trimmed) continue
 			try {
 				const snap = JSON.parse(trimmed)
-				const id = (snap.eventId || '')
+				const id = snap.eventId || ''
 				if (!isHex64(id)) continue
 				if (!max || id.localeCompare(max, 'en') > 0) max = id
 			}
@@ -281,7 +281,7 @@ export async function collectChannelMonthDigestsFromDisk(username, groupId, chan
  */
 export function expectedMonthDigest(manifest, channelId, month) {
 	const digest = manifest.monthDigests?.[channelId]?.[month]
-	const normalized = (digest || '')
+	const normalized = digest || ''
 	return isHex64(normalized) ? normalized : null
 }
 
@@ -317,7 +317,7 @@ export function syncArchivedEventIdsFromMonthBody(manifest, channelId, month, sn
 	const idMap = manifest.archivedEventIds[channelId]
 	let added = 0
 	for (const snap of snapshots) {
-		const eventId = (snap.eventId || '')
+		const eventId = snap.eventId || ''
 		if (!isHex64(eventId)) continue
 		const wall = Number(snap.hlc?.wall)
 		const snapMonth = Number.isFinite(wall) ? archiveMonthKey(wall) : month
@@ -347,7 +347,7 @@ export async function pickArchiveMonthByReputation(candidates, manifest, channel
 	const byDigest = new Map()
 	for (const row of candidates) {
 		if (!row.complete) continue
-		const peer = (row.peerNodeHash || '')
+		const peer = row.peerNodeHash || ''
 		if (!peer) continue
 		if (!row.tmpPath) continue
 		/** @type {{ digest: string, snapshots: object[] }} */

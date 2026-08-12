@@ -42,7 +42,7 @@ export async function checkMessageRateLimit(username, groupId, state, event) {
 	const entityKey = messageRateEntityKey(event)
 	if (!entityKey) return { ok: false, reason: 'missing sender' }
 	const channelId = event.channelId || 'default'
-	const senderHash = (event.sender || '')
+	const senderHash = event.sender || ''
 	if (hasBypassRateLimit(state, senderHash, channelId)) return { ok: true }
 
 	if (!isRateLimitBucketRebuilt(username, groupId)) {

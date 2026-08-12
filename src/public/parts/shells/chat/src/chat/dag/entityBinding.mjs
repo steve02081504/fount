@@ -26,8 +26,8 @@ export function memberBindMessage(entityHash, memberPubKeyHash) {
  * @returns {Promise<{ entityHash: string, bindingSig: string }>} 声明字段
  */
 export async function buildMemberJoinBinding({ entityHash, memberPubKeyHash, entityActiveSecretKey }) {
-	const eh = (entityHash || '')
-	const mh = (memberPubKeyHash || '')
+	const eh = entityHash || ''
+	const mh = memberPubKeyHash || ''
 	if (!isEntityHash128(eh) || !isHex64(mh))
 		throw new Error('buildMemberJoinBinding: invalid entityHash or memberPubKeyHash')
 	const signature = await sign(memberBindMessage(eh, mh), entityActiveSecretKey)
@@ -39,8 +39,8 @@ export async function buildMemberJoinBinding({ entityHash, memberPubKeyHash, ent
  * @returns {Promise<boolean>} 合法为 true
  */
 export async function verifyMemberJoinBinding({ entityHash, memberPubKeyHash, bindingSig, entityActivePubKeyHex }) {
-	const eh = (entityHash || '')
-	const mh = (memberPubKeyHash || '')
+	const eh = entityHash || ''
+	const mh = memberPubKeyHash || ''
 	const sig = (bindingSig || '').replace(/^0x/iu, '')
 	const pub = normalizeHex64(entityActivePubKeyHex || '')
 	if (!isEntityHash128(eh) || !isHex64(mh) || !SIG_HEX_RE.test(sig) || !isHex64(pub))
@@ -61,9 +61,9 @@ export async function verifyMemberJoinBinding({ entityHash, memberPubKeyHash, bi
  * @returns {Promise<{ ok: boolean, deferrable?: boolean, reason?: string }>} 归属结果
  */
 export async function verifyEntityActivePubKeyBelongs(username, entityHash, entityActivePubKeyHex) {
-	const eh = (entityHash || '')
+	const eh = entityHash || ''
 	const pub = normalizeHex64(entityActivePubKeyHex || '')
-	const user = (username || '')
+	const user = username || ''
 	if (!user || !isEntityHash128(eh) || !isHex64(pub))
 		return { ok: false, reason: 'invalid entity active key ownership args' }
 
@@ -125,7 +125,7 @@ export async function buildMemberJoinBindingFields(username, entityHash, memberP
 		getEntityActivePubKey,
 		getEntitySecretKey,
 	} = await import('../../entity/identity.mjs')
-	const eh = (entityHash || '')
+	const eh = entityHash || ''
 	const entityActivePubKeyHex = await getEntityActivePubKey(username, eh)
 	const secretHex = await getEntitySecretKey(username, eh)
 	const entityActiveSecretKey = new Uint8Array(Buffer.from(secretHex, 'hex'))

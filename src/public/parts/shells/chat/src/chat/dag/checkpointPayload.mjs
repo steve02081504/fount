@@ -159,7 +159,7 @@ export function isSignedBaseCheckpoint(checkpoint) {
  */
 export function isAdoptedBaseAuthoritative(checkpoint, localTipIds) {
 	if (!isSignedBaseCheckpoint(checkpoint)) return false
-	const anchor = (checkpoint.checkpoint_event_id || '')
+	const anchor = checkpoint.checkpoint_event_id || ''
 	const localTips = (Array.isArray(localTipIds) ? localTipIds : [])
 		.map(t => t)
 		.filter(isHex64)

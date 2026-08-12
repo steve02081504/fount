@@ -238,7 +238,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	if (wirePayload.type === 'message') {
 		const rateCheck = await checkMessageRateLimit(username, groupId, state, wirePayload)
 		if (!rateCheck.ok) {
-			const remoteNode = (wirePayload.node_id || '')
+			const remoteNode = wirePayload.node_id || ''
 			if (remoteNode)
 				recordMessageRateViolation(remoteNode, rateCheck.excessRatio ?? 1)
 			if (logFailures) console.error('federation: drop remote event (rate limit)')

@@ -99,9 +99,9 @@ export function sanitizeOwnerProfileUpdates(raw) {
  */
 function parsePokeOrAckEnvelope(envelope) {
 	if (!envelope || typeof envelope !== 'object') return null
-	const targetEntityHash = (envelope.targetEntityHash || '')
-	const ownerEntityHash = (envelope.ownerEntityHash || '')
-	const contentHash = (envelope.contentHash || '')
+	const targetEntityHash = envelope.targetEntityHash || ''
+	const ownerEntityHash = envelope.ownerEntityHash || ''
+	const contentHash = envelope.contentHash || ''
 	const ts = Number(envelope.ts)
 	if (!isEntityHash128(targetEntityHash)) return null
 	if (ownerEntityHash && !isEntityHash128(ownerEntityHash)) return null
