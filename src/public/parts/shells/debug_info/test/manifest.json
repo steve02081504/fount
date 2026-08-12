@@ -22,8 +22,7 @@
 						"src/public/parts/shells/debug_info/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/debug_info/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/debug_info/public/index.{html,mjs}",
-						"src/public/parts/shells/debug_info/public/templates.mjs",
-						"src/public/locales/**"
+						"src/public/parts/shells/debug_info/public/templates.mjs"
 					]
 				}
 			],

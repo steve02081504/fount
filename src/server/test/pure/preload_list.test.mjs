@@ -4,12 +4,6 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import {
-	extractFromJs,
-	isConcreteExternalUrl,
-	mergeAndDedupe,
-} from '../../web_server/preload_list.mjs'
-
 const GODBOLT_TEMPLATE = `\
 const createGodboltExecutor = (compilerId, lang) => {
 	const functionBody = \`\\
@@ -21,12 +15,14 @@ const response = await fetch('https://godbolt.org/api/compiler/\${compilerId}/co
 }
 `
 
-Deno.test('extractFromJs picks literal fetch URL', () => {
+Deno.test('extractFromJs picks literal fetch URL', async () => {
+	const { extractFromJs } = await import('../../web_server/preload_list.mjs')
 	const urls = extractFromJs('await fetch(\'https://api.iconify.design/line-md/play.svg\')')
 	assertEquals(urls.map(resource => resource.url), ['https://api.iconify.design/line-md/play.svg'])
 })
 
-Deno.test('extractFromJs picks const/let/var single-quoted URL assignments', () => {
+Deno.test('extractFromJs picks const/let/var single-quoted URL assignments', async () => {
+	const { extractFromJs } = await import('../../web_server/preload_list.mjs')
 	const urls = extractFromJs(`\
 const UPDATE_ICON = 'https://api.iconify.design/mdi/update.svg'
 let loading = 'https://api.iconify.design/line-md/loading-twotone-loop.svg'
@@ -39,7 +35,8 @@ const templatey = \`https://example.com/\${id}.svg\`
 	])
 })
 
-Deno.test('mergeAndDedupe drops unresolved ${…} preload URLs (godbolt executor body)', () => {
+Deno.test('mergeAndDedupe drops unresolved ${…} preload URLs (godbolt executor body)', async () => {
+	const { extractFromJs, isConcreteExternalUrl, mergeAndDedupe } = await import('../../web_server/preload_list.mjs')
 	const extracted = extractFromJs(GODBOLT_TEMPLATE)
 	assertEquals(
 		extracted.some(resource => resource.url.includes('${')),
