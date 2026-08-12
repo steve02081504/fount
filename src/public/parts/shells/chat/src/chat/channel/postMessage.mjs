@@ -160,7 +160,7 @@ async function applyBeforeUserSend(username, groupId, channelId, content, files)
 function wireFileDescriptor(file) {
 	const description = sanitizeAlt(file.description)
 	return {
-		fileId: String(file.fileId || '').trim(),
+		fileId: file.fileId || '',
 		name: String(file.name || 'file').slice(0, 255),
 		mime_type: String(file.mime_type || 'application/octet-stream'),
 		size: Math.max(0, Number(file.size) || 0),
@@ -191,7 +191,7 @@ export async function attachFilesToContent(username, groupId, content, files, ma
 		fileIds.push(file.fileId)
 
 	for (const file of files || []) {
-		const existingId = String(file.fileId || '').trim()
+		const existingId = file.fileId || ''
 		if (existingId && !file.buffer) {
 			if (fileDescriptors.some(d => d.fileId === existingId)) continue
 			fileDescriptors.push(wireFileDescriptor(file))
@@ -213,7 +213,7 @@ export async function attachFilesToContent(username, groupId, content, files, ma
 		}))
 	}
 
-	const stickerBase64 = content?.type === 'sticker' ? String(content.stickerBase64 || '') : ''
+	const stickerBase64 = content?.type === 'sticker' ? content.stickerBase64 || '' : ''
 	if (stickerBase64 && approxStickerBytes(stickerBase64) > maxBytes)
 		throw new Error(`sticker exceeds maxDagPayloadBytes (~${maxBytes})`)
 
@@ -257,7 +257,7 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 		const generated = payload.generated.content
 		content = generated?.type || generated?.content != null
 			? normalizeChannelMessage(generated)
-			: channelMessage(String(generated ?? ''))
+			: channelMessage(generated ?? '')
 		if (payload.generated.isAutoTrigger)
 			ensureChatExtension(content).isAutoTrigger = true
 	}
@@ -274,7 +274,7 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 
 	if (origin === 'human') {
 		void unlockAchievement(username, 'shells/chat', 'first_chat')
-		if ((files || []).some(file => String(file.mime_type || '').startsWith('image/')))
+		if ((files || []).some(file => (file.mime_type || '').startsWith('image/')))
 			void unlockAchievement(username, 'shells/chat', 'photo_chat')
 	}
 
@@ -306,7 +306,7 @@ async function maybeDispatchMailboxForOfflinePeer(username, groupId, signedEvent
 	const { state } = await getState(username, groupId)
 	const meta = state.groupMeta
 	if (meta.dmKind !== 'ecdh') return
-	const peerPub = String(meta.dmPeerPubKeyHex || '').trim().toLowerCase()
+	const peerPub = meta.dmPeerPubKeyHex || ''
 	if (!peerPub) return
 	const { listFederationPeersForGroup } = await import('../federation/index.mjs')
 	const { peers } = await listFederationPeersForGroup(username, groupId)

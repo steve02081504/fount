@@ -113,12 +113,12 @@ export function makePatchHistory({ entryId, before, after, label = 'patch', cabi
 		label,
 		/** 撤销 PATCH：写回修改前快照。 */
 		async undo() {
-			await patchEntry(entryId, before, { cabinetId, unlock: unlock })
+			await patchEntry(entryId, before, { cabinetId, unlock })
 			await refreshEntries()
 		},
 		/** 重做 PATCH：应用修改后快照。 */
 		async redo() {
-			await patchEntry(entryId, after, { cabinetId, unlock: unlock })
+			await patchEntry(entryId, after, { cabinetId, unlock })
 			await refreshEntries()
 		},
 	}
@@ -135,7 +135,7 @@ export function makeMoveHistory({ entryIds, fromParent, toParent, label = 'cut',
 	 */
 	async function moveAll(parentId) {
 		for (const entryId of entryIds)
-			await patchEntry(entryId, { parent_id: parentId }, { cabinetId, unlock: unlock })
+			await patchEntry(entryId, { parent_id: parentId }, { cabinetId, unlock })
 		await refreshEntries()
 	}
 	return {

@@ -12,7 +12,7 @@ export const ATTENUATION_DIVISOR = 3
  * @returns {string} 规范化结果
  */
 export function normalizeLang(lang, style = 'short') {
-	const lower = String(lang || '').trim().toLowerCase()
+	const lower = (lang ?? '').trim().toLowerCase()
 	if (!lower || lower === 'auto') {
 		if (style === 'auto') return 'auto'
 		if (style === 'zh_cn') return 'zh_cn'

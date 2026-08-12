@@ -54,8 +54,8 @@ async function GetSource(config) {
 			const wav = pcmToWav(pcm)
 			const form = new FormData()
 			form.append('model', model)
-			const rawLanguage = String(options.language || '').trim().toLowerCase()
-			if (rawLanguage && rawLanguage !== 'auto') {
+			const rawLanguage = (options.language ?? '').trim()
+			if (rawLanguage && !/^auto$/i.test(rawLanguage)) {
 				const language = normalizeLang(options.language, 'short')
 				if (/^[a-z]{2}$/.test(language)) form.append('language', language)
 			}

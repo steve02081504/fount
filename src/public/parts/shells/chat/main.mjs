@@ -16,6 +16,7 @@ import {
 
 import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
 
+import { parseJoinRunPayload } from './public/shared/runUri.mjs'
 import { registerChatChunkProviders, unregisterChatChunkProviders } from './src/chat/chunkProviders.mjs'
 import { registerChatEventTypeDefs, unregisterChatEventTypeDefs } from './src/chat/dag/eventTypes.mjs'
 import { registerChatFederationRoomProvider, unregisterChatFederationRoomProvider } from './src/chat/federation/trustGraphRooms.mjs'
@@ -138,26 +139,18 @@ export default {
 
 				switch (command) {
 					case 'dm': {
-						params = {
+						result = await handleAction(user, command, {
 							introPubKeyHex: args[1],
 							dmIntroNonce: args[2],
 							dmIntroSignatureHex: args[3],
-						}
-						result = await handleAction(user, command, params)
+						})
 						if (result?.groupId) console.log(JSON.stringify(result))
 						return result
 					}
 					case 'join': {
-						params = {
-							groupId: args[1],
-							inviteCode: args[2] || '',
-							roomSecret: args[3] || '',
-							introducerPubKeyHash: args[4] || '',
-							powAnchorRef: args[5] || '',
-							introducerNodeHash: args[6] || '',
-						}
-						result = await handleAction(user, command, params)
-						const groupId = result?.groupId || args[1]
+						const join = parseJoinRunPayload(args[1])
+						result = await handleAction(user, command, join)
+						const groupId = result?.groupId || join.groupId
 						if (groupId)
 							sendEventToUser(user, 'chat-group-joined', { groupId: String(groupId) })
 						if (result?.groupId) console.log(JSON.stringify(result))

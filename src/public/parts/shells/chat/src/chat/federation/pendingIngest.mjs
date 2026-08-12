@@ -78,7 +78,7 @@ export async function enqueuePendingIngest(username, groupId, signPayload, reaso
 		rows = rows.slice(rows.length - MAX_PENDING_INGEST_ROWS + 1)
 	rows.push({
 		event: stripDagEventLocalExtensions(signPayload),
-		reason: String(reason || ''),
+		reason: reason || '',
 		pendedAt: nowMs,
 	})
 	await writePendingIngestRows(username, groupId, rows)

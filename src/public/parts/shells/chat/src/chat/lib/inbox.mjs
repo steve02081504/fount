@@ -3,8 +3,6 @@
  */
 import { join } from 'node:path'
 
-import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-
 import { messageLineShowText, chatExtensionOf } from '../../../public/shared/channelContent.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 
@@ -18,7 +16,7 @@ import { getLocalNodeHash, resolveOperatorEntityHash } from './replica.mjs'
  * @returns {string} inbox 目录
  */
 export function chatInboxDir(username, recipientEntityHash) {
-	const hash = String(recipientEntityHash || '').trim().toLowerCase()
+	const hash = recipientEntityHash || ''
 	return join(shellChatRoot(username), 'inbox', hash)
 }
 
@@ -90,9 +88,9 @@ export function mentionTextFromMessageLine(messageLine) {
  */
 export function mentionTargetEventId(messageLine) {
 	if (messageLine?.type === 'message_edit')
-		return String(messageLine.content?.targetId || '').trim().toLowerCase() || null
+		return String(messageLine.content?.targetId || '').trim() || null
 	if (messageLine?.type === 'message')
-		return String(messageLine.eventId || '').trim().toLowerCase() || null
+		return (messageLine.eventId || '') || null
 	return null
 }
 
@@ -102,7 +100,7 @@ export function mentionTargetEventId(messageLine) {
  * @returns {{ authorEntityHash: string | null, authorDisplayName: string }} 作者展示信息
  */
 export function resolveAuthorFromSender(state, senderMemberKey) {
-	const key = String(senderMemberKey || '').trim().toLowerCase()
+	const key = senderMemberKey || ''
 	const member = state.members?.[key]
 	const authorEntityHash = member ? memberEntityHash(member) : null
 	return {
@@ -124,11 +122,11 @@ export function resolveAuthorFromMessageLine(state, messageLine) {
 	const bridge = chatExtensionOf(wire)?.bridge
 	if (bridge?.authorEntityHash)
 		return {
-			authorEntityHash: String(bridge.authorEntityHash).trim().toLowerCase(),
-			authorDisplayName: String(bridge.authorDisplayName || '').trim() || 'unknown',
+			authorEntityHash: String(bridge.authorEntityHash).trim(),
+			authorDisplayName: (bridge.authorDisplayName || '') || 'unknown',
 		}
 
-	const senderKey = String(messageLine?.sender || '').trim().toLowerCase()
+	const senderKey = String(messageLine?.sender || '').trim()
 	return resolveAuthorFromSender(state, senderKey)
 }
 
@@ -141,12 +139,12 @@ export function resolveAuthorFromMessageLine(state, messageLine) {
 export async function listLocalRecipientsInGroup(username, state) {
 	/** @type {string[]} */
 	const recipients = []
-	const operator = (await resolveOperatorEntityHash(username))?.toLowerCase()
+	const operator = await resolveOperatorEntityHash(username)
 	if (operator) recipients.push(operator)
 	const nodeHash = getLocalNodeHash()
 	for (const member of Object.values(state.members || {})) {
 		if (member?.status !== 'active' || member?.memberKind !== 'agent') continue
-		if (normalizeHex64(member.homeNodeHash) !== nodeHash) continue
+		if (member.homeNodeHash !== nodeHash) continue
 		const hash = memberEntityHash(member)
 		if (hash) recipients.push(hash)
 	}
@@ -163,13 +161,13 @@ export async function listLocalRecipientsInGroup(username, state) {
  * @returns {object | null} inbox 行；无正文时为 null
  */
 function deriveChatInboxRowFromMessage(recipientEntityHash, kind, groupId, channelId, messageLine, state) {
-	const recipient = String(recipientEntityHash || '').trim().toLowerCase()
+	const recipient = recipientEntityHash || ''
 	if (!recipient) return null
 	const eventId = mentionTargetEventId(messageLine)
 	if (!eventId) return null
 	const text = mentionTextFromMessageLine(messageLine)
 	if (!text) return null
-	const senderKey = String(messageLine.sender || '').trim().toLowerCase()
+	const senderKey = messageLine.sender || ''
 	const { authorEntityHash, authorDisplayName } = resolveAuthorFromMessageLine(state, messageLine)
 	if (authorEntityHash === recipient) return null
 	const at = Number(messageLine.hlc?.wall || messageLine.timestamp || messageLine.receivedAt || Date.now())
@@ -178,7 +176,7 @@ function deriveChatInboxRowFromMessage(recipientEntityHash, kind, groupId, chann
 		groupId,
 		channelId,
 		eventId,
-		authorEntityHash: authorEntityHash?.toLowerCase() || senderKey,
+		authorEntityHash: authorEntityHash || senderKey,
 		authorDisplayName,
 		textPreview: text.slice(0, 120),
 		at,
@@ -234,10 +232,10 @@ export function deriveChatInboxVoteClosedRow(recipientEntityHash, groupId, chann
 		kind: 'vote_closed',
 		groupId,
 		channelId,
-		eventId: String(ballotId || '').trim().toLowerCase(),
-		authorEntityHash: String(extra.authorEntityHash || '').trim().toLowerCase() || 'system',
+		eventId: ballotId || '',
+		authorEntityHash: (extra.authorEntityHash || '') || 'system',
 		authorDisplayName: extra.authorDisplayName || 'vote',
-		textPreview: String(extra.textPreview || '').slice(0, 120),
+		textPreview: (extra.textPreview || '').slice(0, 120),
 		at: Number(extra.at) || Date.now(),
 		...extra.ballotId ? { ballotId: extra.ballotId } : {},
 	}

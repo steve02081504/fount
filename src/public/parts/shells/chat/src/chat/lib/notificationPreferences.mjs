@@ -69,7 +69,7 @@ export function resolveEffectiveNotificationPreferences(username, entityHash, gr
  * @returns {Promise<'entity' | 'role' | 'everyone' | null>} 命中方式
  */
 export async function describeMentionHit(event, entityHash, state) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = entityHash || ''
 	const mentions = event?.mentions
 	if (!mentions) return null
 	if (mentionsEntity(mentions, hash)) return 'entity'
@@ -78,7 +78,7 @@ export async function describeMentionHit(event, entityHash, state) {
 	let hasRole = false
 	for (const member of Object.values(state.members || {})) {
 		if (member?.status !== 'active') continue
-		if (memberEntityHash(member)?.toLowerCase() !== hash) continue
+		if (memberEntityHash(member) !== hash) continue
 		isMember = true
 		if (mentions.roleIds?.length && (member.roles || []).some(roleId => mentions.roleIds.includes(roleId)))
 			hasRole = true
@@ -97,7 +97,7 @@ export async function describeMentionHit(event, entityHash, state) {
  */
 export async function shouldNotifyHumanForMessage(username, recipientEntityHash, options = {}) {
 	if (options.ingress === 'backfill') return false
-	const authorEntityHash = String(options.authorEntityHash || '').trim().toLowerCase()
+	const authorEntityHash = options.authorEntityHash || ''
 	if (authorEntityHash && await isCaredBy(username, recipientEntityHash, authorEntityHash))
 		return true
 	const prefs = resolveEffectiveNotificationPreferences(

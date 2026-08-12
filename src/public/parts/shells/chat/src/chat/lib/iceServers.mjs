@@ -28,8 +28,8 @@ function normalizeIceEntry(raw) {
 	if (!raw || typeof raw !== 'object') return null
 	const urlsRaw = raw.urls
 	const urlsList = Array.isArray(urlsRaw)
-		? urlsRaw.map(u => String(u).trim()).filter(Boolean)
-		: [String(urlsRaw || '').trim()].filter(Boolean)
+		? urlsRaw.map(u => u).filter(Boolean)
+		: [urlsRaw || ''].filter(Boolean)
 	if (!urlsList.length) return null
 	for (const u of urlsList)
 		if (!ICE_URL_RE.test(u)) return null

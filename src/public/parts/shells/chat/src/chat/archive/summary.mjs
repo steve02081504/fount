@@ -14,7 +14,7 @@ const BODY_ARCHIVE_TYPES = new Set(['message', 'message_edit'])
  */
 function eventViewForArchive(event, blockedSenders) {
 	if (!blockedSenders.size || !BODY_ARCHIVE_TYPES.has(event.type)) return event
-	const sender = String(event.sender || '').trim().toLowerCase()
+	const sender = event.sender || ''
 	if (!blockedSenders.has(sender)) return event
 	return { ...event, content: { archiveBodyRedacted: true, type: event.type } }
 }
@@ -29,7 +29,7 @@ function eventViewForArchive(event, blockedSenders) {
 export function computeArchiveSummary(events, checkpoint, options = {}) {
 	const deniedSubjects = options.deniedSubjects ?? options.blockedPeers ?? []
 	const blockedSenders = new Set(
-		deniedSubjects.map(id => String(id).trim().toLowerCase()).filter(Boolean),
+		deniedSubjects.map(id => id).filter(Boolean),
 	)
 	const view = blockedSenders.size
 		? events.map(event => eventViewForArchive(event, blockedSenders))

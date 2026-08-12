@@ -69,7 +69,7 @@ function saveActiveCalls(username, data) {
  * @returns {void}
  */
 export function dropActiveCallsForGroup(username, groupId) {
-	const gid = String(groupId || '').trim()
+	const gid = groupId || ''
 	if (!gid) return
 	const data = loadActiveCalls(username)
 	let dirty = false
@@ -86,7 +86,7 @@ export function dropActiveCallsForGroup(username, groupId) {
  * @returns {string[]} 去重小写
  */
 function uniqHashes(participants) {
-	return [...new Set(participants.map(h => String(h || '').toLowerCase()).filter(Boolean))]
+	return [...new Set(participants.map(h => h || '').filter(Boolean))]
 }
 
 /**
@@ -187,7 +187,7 @@ export async function beginCallSession(username, groupId, channelId, initiatorEn
 	const key = callKey(groupId, channelId)
 	const existing = liveCalls.get(key)
 	if (existing?.status === 'ongoing') return existing
-	const initiator = String(initiatorEntityHash || '').toLowerCase()
+	const initiator = initiatorEntityHash || ''
 	const session = {
 		callId: randomUUID(),
 		username,

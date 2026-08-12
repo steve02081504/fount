@@ -43,8 +43,8 @@ export async function lookupEmojiAlt(username, packId, emojiId, locales) {
 	const item = (manifest?.items || []).find(e => e.emojiId === emojiId)
 	if (!item) return emojiId
 	const slice = pickLocalizedSlice(item.localized, loc) || {}
-	const name = String(slice.name || '').trim() || emojiId
-	return String(slice.alt || '').trim() || name
+	const name = (slice.name || '') || emojiId
+	return (slice.alt || '') || name
 }
 
 /**
@@ -56,7 +56,7 @@ export async function lookupEmojiAlt(username, packId, emojiId, locales) {
  */
 export async function degradeTextEmojisAsync(username, text, locales) {
 	const loc = locales || localesForUser(username)
-	const raw = String(text || '')
+	const raw = text || ''
 	const re = new RegExp(EMOJI_TOKEN_RE.source, 'giu')
 	/** @type {Map<string, string>} */
 	const cache = new Map()
@@ -81,7 +81,7 @@ export async function degradeTextEmojisAsync(username, text, locales) {
  * @returns {Promise<string>} 改写后正文
  */
 export async function canonicalizeEmojiTokensInText(username, text) {
-	const raw = String(text || '')
+	const raw = text || ''
 	if (!raw.includes(':[emoji:')) return raw
 	const re = new RegExp(EMOJI_TOKEN_RE.source, 'giu')
 	/** @type {Map<string, Map<string, string>>} */

@@ -120,14 +120,14 @@ export function noteFedArchiveMonthResponse(username, groupId, response, peerNod
 	const pending = pendingMonthPulls.get(key)
 	if (!pending) return
 	pending.candidates.push({
-		peerNodeHash: String(peerNodeHash).trim(),
+		peerNodeHash,
 		digest: response.digest,
 		parts: response.parts,
 		complete: response.complete,
 		reason: response.reason,
 		verified: Boolean(
 			response.complete
-			&& isHex64(String(response.digest || '').trim().replace(/^0x/iu, '')),
+			&& isHex64((response.digest || '').replace(/^0x/iu, '')),
 		),
 	})
 	tryFinishFederationCollect(pending, archiveMonthQuorumSatisfied)
@@ -187,7 +187,7 @@ async function resolveArchiveMonthCandidates(username, groupId, slot, candidates
 		let verified = Boolean(row.verified)
 		try {
 			const parsed = await digestArchiveMonthFile(tmpPath)
-			const wireDigest = String(row.digest || '').trim().toLowerCase()
+			const wireDigest = row.digest || ''
 			if (wireDigest && parsed.digest && wireDigest !== parsed.digest) {
 				verified = false
 				if (row.peerNodeHash)
@@ -218,15 +218,15 @@ async function noteArchiveDigestObservations(username, groupId, candidates, chan
 	/** @type {Array<{ peer: string, digest: string }>} */
 	const observations = []
 	for (const row of candidates) {
-		const peer = String(row.peerNodeHash || '').trim()
+		const peer = row.peerNodeHash || ''
 		if (!peer) continue
 		let digest = ''
 		if (row.tmpPath) {
 			const parsed = await digestArchiveMonthFile(row.tmpPath)
-			digest = String(parsed.digest || '').trim().toLowerCase()
+			digest = parsed.digest || ''
 		}
 		else
-			digest = String(row.digest || '').trim().toLowerCase()
+			digest = row.digest || ''
 		if (!isHex64(digest)) continue
 		observations.push({ peer, digest })
 	}

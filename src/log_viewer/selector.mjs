@@ -47,10 +47,9 @@ export function parseLogSelector(raw) {
 	let levelsPart = ''
 	let countPart = ''
 	const colon = text.indexOf(':')
-	if (colon === -1) {
+	if (colon === -1)
 		if (/^\d+$/.test(text)) countPart = text
 		else levelsPart = text
-	}
 	else {
 		levelsPart = text.slice(0, colon)
 		countPart = text.slice(colon + 1)

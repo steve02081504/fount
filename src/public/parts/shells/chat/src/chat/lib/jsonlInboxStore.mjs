@@ -22,7 +22,7 @@ import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../../scripts
  * }} store
  */
 export function createJsonlInboxStore(rootDir) {
-	const dir = String(rootDir || '')
+	const dir = rootDir || ''
 	const eventsPath = join(dir, 'events.jsonl')
 	const readPath = join(dir, 'read.json')
 

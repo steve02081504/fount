@@ -42,9 +42,9 @@ export function canonicalizeChatContent(content) {
 	if (!content) return content
 	const out = canonicalizeRowContent(content, CHAT_CONTENT_HEX_KEYS, CHAT_CONTENT_ENTITY_HASH_KEYS)
 	if (out?.bindingSig)
-		out.bindingSig = String(out.bindingSig).trim().toLowerCase().replace(/^0x/iu, '')
+		out.bindingSig = String(out.bindingSig).trim().replace(/^0x/iu, '')
 	if (out?.targetMemberKey) {
-		const key = String(out.targetMemberKey).trim().toLowerCase()
+		const key = String(out.targetMemberKey).trim()
 		if (!MEMBER_KEY_RE.test(key))
 			throw new Error('targetMemberKey must be 64 hex characters')
 		out.targetMemberKey = key

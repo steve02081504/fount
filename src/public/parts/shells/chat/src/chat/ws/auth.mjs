@@ -65,7 +65,7 @@ export function verifyStreamingViewToken(token, username, groupId, channelId, H 
  * @returns {string} 可嵌入 iframe 的基址
  */
 export function normalizeStreamingBaseUrl(baseUrl) {
-	const u = String(baseUrl || '').trim()
+	const u = baseUrl || ''
 	if (!u) return ''
 	if (u.startsWith('wss://')) return `https://${u.slice(6)}`
 	if (u.startsWith('ws://')) return `http://${u.slice(5)}`

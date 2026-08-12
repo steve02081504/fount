@@ -26,7 +26,7 @@ import {
  */
 export function wirePartsFromEncParts(parts) {
 	return parts.map((part, index) => ({
-		hash: String(part.hash).trim().toLowerCase(),
+		hash: String(part.hash).trim(),
 		size: Number(part.size) || 0,
 		index,
 	}))
@@ -42,7 +42,7 @@ export function parseArchiveMonthWireParts(raw) {
 	/** @type {Array<{ hash: string, size: number, index: number }>} */
 	const out = []
 	for (const row of raw) {
-		const hash = String(row?.hash ?? '').trim().toLowerCase()
+		const hash = String(row?.hash ?? '').trim()
 		if (!isHex64(hash)) return null
 		const index = Number(row.index)
 		if (!Number.isInteger(index) || index < 0) return null
@@ -112,7 +112,7 @@ export async function prepareArchiveMonthChunkMetaFromPath(username, filePath, d
  * @returns {Promise<{ digest: string, parts: Array<{ hash: string, size: number, index: number }> }>} 联邦 meta
  */
 export async function prepareArchiveMonthChunkMeta(username, bodyUtf8) {
-	const body = String(bodyUtf8 ?? '')
+	const body = bodyUtf8 ?? ''
 	const { digest } = digestArchiveMonthBody(body)
 	const enc = encryptPlaintextToMultiParts(Buffer.from(body, 'utf8'), 'plain')
 	for (const part of enc.parts)
@@ -186,7 +186,7 @@ export async function materializeArchiveMonthToTempFile(parts, fetched, expected
  */
 export async function resolveArchiveMonthCandidateBody(username, groupId, slot, candidate) {
 	if (candidate.complete !== true) return null
-	const digest = String(candidate.digest ?? '').trim().toLowerCase()
+	const digest = candidate.digest ?? ''
 	if (!isHex64(digest)) return null
 	const parts = candidate.parts ?? []
 	if (!parts.length) {

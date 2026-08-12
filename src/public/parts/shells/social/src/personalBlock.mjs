@@ -15,8 +15,8 @@ import { getTimelineMaterialized } from './timeline/materialize.mjs'
  * @returns {Promise<string[]>} 物化后的公开拉黑名单
  */
 export async function setPersonalBlock(username, entityHash, targetEntityHash, block) {
-	const actor = String(entityHash || '').trim().toLowerCase()
-	const target = String(targetEntityHash || '').trim().toLowerCase()
+	const actor = entityHash
+	const target = targetEntityHash
 	await commitTimelineEvent(username, actor, {
 		type: block ? 'block' : 'unblock',
 		content: { targetEntityHash: target },
@@ -24,7 +24,7 @@ export async function setPersonalBlock(username, entityHash, targetEntityHash, b
 	const view = await getTimelineMaterialized(username, actor)
 	await rebuildPersonalBlockIndex(actor, view.blocked || [])
 	const operator = await resolveOperatorEntityHash(username)
-	const selfTrust = operator?.toLowerCase() === actor
+	const selfTrust = operator === actor
 	await applyBlockReputationSignal({
 		followerEntityHash: actor,
 		targetEntityHash: target,
@@ -43,9 +43,9 @@ export async function setPersonalBlock(username, entityHash, targetEntityHash, b
  * @returns {Promise<void>}
  */
 export async function handleInboundPersonalBlockEvent(username, ownerEntityHash, event, followedEntities) {
-	const owner = String(ownerEntityHash || '').trim().toLowerCase()
+	const owner = ownerEntityHash
 	if (!followedEntities.has(owner)) return
-	const target = String(event?.content?.targetEntityHash || '').trim().toLowerCase()
+	const target = String(event?.content?.targetEntityHash || '').trim()
 	if (!target) return
 	const view = await getTimelineMaterialized(username, owner)
 	await rebuildPersonalBlockIndex(owner, view.blocked || [])

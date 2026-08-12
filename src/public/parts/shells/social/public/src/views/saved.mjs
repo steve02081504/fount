@@ -1,12 +1,14 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { escapeRegExp } from '/scripts/lib/regex.mjs'
+
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { addSavedPost, getSavedPosts } from '../endpoints/saved.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { renderAvatarHtml } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
-import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { state } from '../state.mjs'
 
 /** @type {'all' | 'unfiled' | string} */
@@ -208,13 +210,13 @@ function totalSavedCount(data) {
 
 /**
  * @param {object} ref 引用
- * @param {string} query 小写查询
+ * @param {string} query 查询原文
  * @returns {boolean} 是否匹配
  */
 function matchesSavedQuery(ref, query) {
 	if (!query) return true
-	const haystack = [ref.preview, ref.authorName, ref.entityHash].filter(Boolean).join('\n').toLowerCase()
-	return haystack.includes(query)
+	const haystack = [ref.preview, ref.authorName, ref.entityHash].filter(Boolean).join('\n')
+	return new RegExp(escapeRegExp(query), 'iu').test(haystack)
 }
 
 /**
@@ -274,7 +276,7 @@ export async function renderSavedPanel() {
 		return
 	}
 
-	const query = savedQuery.toLowerCase()
+	const query = savedQuery
 
 	if (total) {
 		const toolbar = document.createElement('div')

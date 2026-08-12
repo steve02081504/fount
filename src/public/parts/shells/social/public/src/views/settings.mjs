@@ -73,7 +73,7 @@ async function renderMutedKeywordsSection(panel, entries) {
 			try {
 				const input = section.querySelector('#mutedKeywordInput')
 				const matchTags = section.querySelector('#mutedKeywordMatchTags')
-				const pattern = input instanceof HTMLInputElement ? input.value.trim().toLowerCase() : ''
+				const pattern = input instanceof HTMLInputElement ? input.value.trim() : ''
 				if (!pattern) return
 				const next = [
 					...entries.filter(entry => entry.pattern !== pattern),

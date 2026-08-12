@@ -43,9 +43,9 @@ export function registerChannelVoteRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/votes`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
 		const { question: rawQuestion, options: rawOptions, deadline, deadlineMs } = req.body || {}
-		const question = String(rawQuestion || '').trim()
+		const question = rawQuestion || ''
 		const options = Array.isArray(rawOptions)
-			? rawOptions.map(optionLabel => String(optionLabel).trim()).filter(Boolean).slice(0, 12)
+			? rawOptions.map(optionLabel => optionLabel).filter(Boolean).slice(0, 12)
 			: []
 		if (!question) throw httpError(400, 'question required')
 		if (options.length < 2) throw httpError(400, 'at least 2 options required')
@@ -54,7 +54,7 @@ export function registerChannelVoteRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, channelId)
 		let voteDeadline = null
-		const deadlineText = String(deadline || '').trim()
+		const deadlineText = deadline || ''
 		if (deadlineText)
 			voteDeadline = deadlineText
 		else if (Number.isFinite(Number(deadlineMs)) && Number(deadlineMs) > 0)

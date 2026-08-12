@@ -60,7 +60,7 @@ async function saveEventMeta(username, groupId, data) {
  * @returns {Promise<void>}
  */
 export async function recordEventReceivedAt(username, groupId, eventId, t = Date.now()) {
-	const id = String(eventId).trim().toLowerCase()
+	const id = eventId
 	if (!id) return
 	const meta = await loadEventMeta(username, groupId)
 	meta.receivedAt[id] = Math.floor(t)
@@ -79,7 +79,7 @@ export async function recordEventReceivedAt(username, groupId, eventId, t = Date
  * @returns {Promise<number | undefined>} 本地验收时间
  */
 export async function getEventReceivedAt(username, groupId, eventId) {
-	const id = String(eventId).trim().toLowerCase()
+	const id = eventId
 	if (!id) return undefined
 	const meta = await loadEventMeta(username, groupId)
 	const n = meta.receivedAt[id]

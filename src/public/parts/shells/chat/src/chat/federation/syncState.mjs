@@ -55,7 +55,7 @@ export async function markGroupOfflineStarted(username, groupId, wallMs = Date.n
  */
 export async function markGroupOnlineSynced(username, groupId, tipsHash) {
 	return saveGroupSyncState(username, groupId, {
-		tipsHashAtLastSync: tipsHash.trim().toLowerCase(),
+		tipsHashAtLastSync: tipsHash.trim(),
 		offlineStartUtcMonth: '',
 	})
 }

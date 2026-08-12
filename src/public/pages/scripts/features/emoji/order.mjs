@@ -23,8 +23,8 @@ const PACK_USAGE_ID_RE = /^([\w.-]+)\/([^\r\n/]+)$/u
  * @returns {string} 日志 id
  */
 export function packEmojiUsageId(packId, emojiId) {
-	const pid = String(packId || '').trim()
-	const eid = String(emojiId || '').trim()
+	const pid = packId.trim()
+	const eid = emojiId.trim()
 	return pid && eid ? `${pid}/${eid}` : ''
 }
 
@@ -33,7 +33,7 @@ export function packEmojiUsageId(packId, emojiId) {
  * @returns {string} 日志 id
  */
 export function unicodeUsageId(unicode) {
-	return String(unicode || '').trim()
+	return unicode.trim()
 }
 
 /**
@@ -55,7 +55,7 @@ export function countUsageInWindow(log) {
 	/** @type {Map<string, number>} */
 	const counts = new Map()
 	for (const entry of log || []) {
-		const id = String(entry?.id || '')
+		const id = entry?.id || ''
 		if (!id) continue
 		counts.set(id, (counts.get(id) || 0) + 1)
 	}
@@ -67,7 +67,7 @@ export function countUsageInWindow(log) {
  * @returns {{ kind: 'pack', packId: string, emojiId: string } | { kind: 'unicode', unicode: string } | null} 解析结果
  */
 export function parseUsageId(usageId) {
-	const id = String(usageId || '').trim()
+	const id = usageId.trim()
 	if (!id) return null
 	const pack = PACK_USAGE_ID_RE.exec(id)
 	if (pack) return { kind: 'pack', packId: pack[1], emojiId: pack[2] }

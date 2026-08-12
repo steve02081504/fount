@@ -28,5 +28,5 @@ export function registerTasteRoutes(router) {
 	}))
 
 	router.delete('/api/parts/shells\\:social/taste/aliases/:fromTag', authenticate, socialJson((req, { client }) =>
-		client.taste.revokeAlias(String(req.params.fromTag || ''))))
+		client.taste.revokeAlias(req.params.fromTag)))
 }

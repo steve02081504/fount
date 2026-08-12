@@ -12,7 +12,7 @@ export function registerNotificationRoutes(router) {
 	router.get('/api/parts/shells\\:social/notifications', authenticate, socialJson((req, { client }) =>
 		client.notifications({
 			limit: Number(req.query.limit) || 30,
-			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
+			cursor: req.query.cursor ? req.query.cursor : undefined,
 			types: req.query.types,
 		})))
 

@@ -71,7 +71,7 @@ export function lookupBridgeEventId(username, groupId, platformMessageId) {
 		for (let i = channel.messageMap.length - 1; i >= 0; i--) {
 			const row = channel.messageMap[i]
 			if (String(row.platformMessageId) === needle)
-				return String(row.eventId).toLowerCase()
+				return String(row.eventId)
 		}
 
 	return null
@@ -86,11 +86,11 @@ export function lookupBridgeEventId(username, groupId, platformMessageId) {
 export function lookupBridgePlatformMessageId(username, groupId, eventId) {
 	const session = getVirtualBridgeSession(username, groupId)
 	if (!session) return null
-	const needle = String(eventId || '').trim().toLowerCase()
+	const needle = eventId || ''
 	for (const channel of Object.values(session.channels))
 		for (let i = channel.messageMap.length - 1; i >= 0; i--) {
 			const row = channel.messageMap[i]
-			if (String(row.eventId).toLowerCase() === needle)
+			if (String(row.eventId) === needle)
 				return String(row.platformMessageId)
 		}
 
@@ -109,7 +109,7 @@ export async function recordBridgeMessagePair(username, groupId, { eventId, plat
 	const channel = session.channels.default
 	if (!channel) return
 	channel.messageMap.push({
-		eventId: String(eventId).trim().toLowerCase(),
+		eventId,
 		platformMessageId: String(platformMessageId),
 	})
 }

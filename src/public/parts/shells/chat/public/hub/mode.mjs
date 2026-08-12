@@ -47,7 +47,6 @@ export async function setMode(mode) {
 	}
 
 	store.context.currentMode = mode
-	document.body.dataset.surface = mode
 	setActiveModeTab(mode)
 	const { showHubNavPane } = await import('./hubPane.mjs')
 	showHubNavPane()

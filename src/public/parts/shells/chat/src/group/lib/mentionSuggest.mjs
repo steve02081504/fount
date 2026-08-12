@@ -1,3 +1,4 @@
+import { escapeRegExp } from '../../../../../../../scripts/regex.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../access.mjs'
@@ -18,6 +19,17 @@ function countRoleMembers(state) {
 }
 
 /**
+ * @param {string} query 过滤词
+ * @param {...string} haystacks 候选文本
+ * @returns {boolean} 是否命中任一 haystack
+ */
+function matchesQuery(query, ...haystacks) {
+	if (!query) return true
+	const re = new RegExp(escapeRegExp(query), 'iu')
+	return haystacks.some(text => text && re.test(text))
+}
+
+/**
  * 群内 @ 提及 autocomplete 候选。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
@@ -26,7 +38,7 @@ function countRoleMembers(state) {
  * @returns {Promise<{ suggestions: object[] }>} autocomplete 候选
  */
 export async function suggestGroupMentions(username, groupId, query = '', limit = 20) {
-	const normalizedQuery = query.trim().toLowerCase()
+	const needle = query.trim()
 	const { state } = await getState(username, groupId)
 	const viewerKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 	const roleCounts = countRoleMembers(state)
@@ -39,17 +51,14 @@ export async function suggestGroupMentions(username, groupId, query = '', limit 
 		{ kind: 'here', roleId: 'here', displayName: '@here', memberCount: roleCounts.get('@everyone') || 0 },
 	]
 	for (const role of roleCandidates) {
-		if (normalizedQuery && !role.displayName.toLowerCase().includes(normalizedQuery)) continue
+		if (!matchesQuery(needle, role.displayName)) continue
 		suggestions.push(role)
 	}
 
 	for (const [roleId, role] of Object.entries(state.roles || {})) {
 		if (roleId === '@everyone') continue
 		const displayName = `@${role?.name || roleId}`
-		if (normalizedQuery
-			&& !displayName.toLowerCase().includes(normalizedQuery)
-			&& !roleId.toLowerCase().includes(normalizedQuery))
-			continue
+		if (!matchesQuery(needle, displayName, roleId)) continue
 		suggestions.push({
 			kind: 'role',
 			roleId,
@@ -60,16 +69,12 @@ export async function suggestGroupMentions(username, groupId, query = '', limit 
 
 	for (const [memberKey, member] of Object.entries(state.members || {})) {
 		if (member?.status !== 'active') continue
-		if (viewerKey && memberKey.toLowerCase() === viewerKey.toLowerCase()) continue
+		if (viewerKey && memberKey === viewerKey) continue
 		const entityHash = memberEntityHash(member)
 		if (!entityHash || seen.has(entityHash)) continue
 		const displayName = member.displayName || member.charname
 			|| `${memberKey.slice(0, 8)}…`
-		if (normalizedQuery
-			&& !displayName.toLowerCase().includes(normalizedQuery)
-			&& !entityHash.includes(normalizedQuery)
-			&& !(member.charname || '').toLowerCase().includes(normalizedQuery))
-			continue
+		if (!matchesQuery(needle, displayName, entityHash, member.charname || '')) continue
 		seen.add(entityHash)
 		suggestions.push({
 			entityHash,

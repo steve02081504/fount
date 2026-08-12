@@ -12,7 +12,7 @@ import { appendStreamSlices } from '../volatileSlots.mjs'
  */
 export async function handleVolatileStreamWire(wireMessage, channelId) {
 	if (wireMessage.type === 'reputation_slash_alert') {
-		const target = String(wireMessage.targetPubKeyHash || '').slice(0, 16)
+		const target = (wireMessage.targetPubKeyHash || '').slice(0, 16)
 		showToastI18n('warning', 'chat.hub.reputationSlashAlert', { target })
 		return true
 	}
@@ -20,7 +20,7 @@ export async function handleVolatileStreamWire(wireMessage, channelId) {
 	if (wireMessage.channelId && wireMessage.channelId !== channelId) return false
 	if (wireMessage.type !== 'stream_chunk') return false
 
-	const streamId = String(wireMessage.pendingStreamId || '')
+	const streamId = wireMessage.pendingStreamId || ''
 	const { slices } = wireMessage
 	if (!streamId || !Array.isArray(slices) || !slices.length) return true
 

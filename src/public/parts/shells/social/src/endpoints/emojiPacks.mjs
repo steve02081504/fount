@@ -25,13 +25,13 @@ export function registerEmojiPackRoutes(router) {
 
 	router.get(base, authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		const entityHash = String(req.query.entityHash || client.entityHash).trim().toLowerCase()
+		const entityHash = String(req.query.entityHash || client.entityHash).trim()
 		res.status(200).json({ packs: await client.emojiPacks.list(entityHash) })
 	})
 
 	router.get(`${base}/:entityHash/:packId`, authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		const pack = await client.emojiPacks.get(routeEntityHash(req.params), String(req.params.packId || ''))
+		const pack = await client.emojiPacks.get(routeEntityHash(req.params), req.params.packId)
 		res.status(200).json({ pack })
 	})
 
@@ -42,23 +42,23 @@ export function registerEmojiPackRoutes(router) {
 
 	router.put(`${base}/:packId`, authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		res.status(200).json({ pack: await client.emojiPacks.update(String(req.params.packId || ''), req.body || {}) })
+		res.status(200).json({ pack: await client.emojiPacks.update(req.params.packId, req.body || {}) })
 	})
 
 	router.delete(`${base}/:packId`, authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		res.status(200).json(await client.emojiPacks.delete(String(req.params.packId || '')))
+		res.status(200).json(await client.emojiPacks.delete(req.params.packId))
 	})
 
 	router.post(`${base}/:packId/emojis`, authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		res.status(201).json(await client.emojiPacks.uploadEmoji(String(req.params.packId || ''), req))
+		res.status(201).json(await client.emojiPacks.uploadEmoji(req.params.packId, req))
 	})
 
 	router.delete(`${base}/:packId/emojis/:emojiId`, authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		res.status(200).json(await client.emojiPacks.deleteEmoji(
-			String(req.params.packId || ''),
+			req.params.packId,
 			String(req.params.emojiId || ''),
 		))
 	})

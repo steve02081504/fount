@@ -256,7 +256,7 @@ test.describe('Social short videos', () => {
 	test('post detail double-tap media likes', async ({ page, baseUrl, apiKey }) => {
 		const text = `detail-dbl-like ${Date.now()}`
 		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
-		const entityHash = (await fetchViewerEntityHash(baseUrl, apiKey)).toLowerCase()
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 		await page.goto(`${baseUrl}/parts/shells:social/#post;${entityHash};${postId}`)
 		const card = page.locator('#postDetailView .post-detail-card')
@@ -266,7 +266,7 @@ test.describe('Social short videos', () => {
 		const media = card.locator('.post-media')
 		await Promise.all([
 			page.waitForResponse(res =>
-				res.url().toLowerCase().includes(`/api/parts/shells:social/posts/${entityHash}/${postId}/like`.toLowerCase())
+				res.url().includes(`/api/parts/shells:social/posts/${entityHash}/${postId}/like`)
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),

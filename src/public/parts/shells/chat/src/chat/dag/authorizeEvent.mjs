@@ -25,7 +25,7 @@ import { resolveTargetMemberKey } from './reducers/members.mjs'
  * @returns {{ sender: string, charId: string | null, channelId: string } | null} 索引条目；已删或不存在时为 null
  */
 function resolveIndexedMessage(state, targetId) {
-	const id = String(targetId || '').trim().toLowerCase()
+	const id = targetId || ''
 	if (!id) return null
 	if (state.messageOverlay?.deletedIds?.has?.(id)) return null
 	return state.messageSenderIndex?.[id] || null
@@ -40,8 +40,8 @@ function resolveIndexedMessage(state, targetId) {
  */
 function isOwnerOfAuthor(state, senderHash, authorPubKeyHash) {
 	const author = state.members?.[authorPubKeyHash]
-	const senderEntity = String(state.members?.[senderHash]?.entityHash || '').trim().toLowerCase()
-	const ownerEntity = String(author?.ownerEntityHash || '').trim().toLowerCase()
+	const senderEntity = String(state.members?.[senderHash]?.entityHash || '').trim()
+	const ownerEntity = String(author?.ownerEntityHash || '').trim()
 	return !!(ownerEntity && senderEntity && senderEntity === ownerEntity)
 }
 
@@ -52,7 +52,7 @@ function isOwnerOfAuthor(state, senderHash, authorPubKeyHash) {
  * @returns {boolean} 已删除为 true
  */
 function isMessageDeleted(state, targetId) {
-	const id = String(targetId || '').trim().toLowerCase()
+	const id = targetId || ''
 	return Boolean(id && state.messageOverlay?.deletedIds?.has?.(id))
 }
 
@@ -121,16 +121,16 @@ export async function checkEventPermission(state, event, senderHash, options = {
 	if (!type) return { ok: false, reason: 'missing event type' }
 	if (!FEDERATION_ACL_GATED_EVENT_TYPES.has(type)) return { ok: true }
 
-	const sender = String(senderHash || '').trim().toLowerCase()
+	const sender = senderHash || ''
 	if (!['member_join', 'member_leave'].includes(type) && state.members[sender]?.status !== 'active')
 		return { ok: false, reason: 'requires active member sender', deferrable: true }
 
 	// member_join / leave 不依赖频道权限位；先处理以免空 state.channels 炸 governanceChannelId
 	if (type === 'member_join') {
 		const content = event.content || {}
-		const entityHash = String(content.entityHash || '').trim().toLowerCase()
-		const entityActivePubKeyHex = String(content.entityActivePubKeyHex || '').trim().toLowerCase()
-		const bindingSig = String(content.bindingSig || '').trim().toLowerCase()
+		const entityHash = content.entityHash || ''
+		const entityActivePubKeyHex = content.entityActivePubKeyHex || ''
+		const bindingSig = content.bindingSig || ''
 		if (!isEntityHash128(entityHash) || !isHex64(entityActivePubKeyHex) || !/^[\da-f]{128}$/u.test(bindingSig))
 			return { ok: false, reason: 'invalid member_join binding' }
 		const bindOk = await verifyMemberJoinBinding({
@@ -169,8 +169,8 @@ export async function checkEventPermission(state, event, senderHash, options = {
 		case 'member_kick': {
 			const targetKey = resolveTargetMemberKey(event.content)
 			const target = targetKey ? state.members[targetKey] : null
-			const senderEntity = String(state.members[sender]?.entityHash || '').trim().toLowerCase()
-			const ownerEntity = String(target?.ownerEntityHash || '').trim().toLowerCase()
+			const senderEntity = String(state.members[sender]?.entityHash || '').trim()
+			const ownerEntity = String(target?.ownerEntityHash || '').trim()
 			if (ownerEntity && senderEntity === ownerEntity)
 				return { ok: true }
 			if (target?.memberKind === 'agent') {
@@ -263,7 +263,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 			const ownerOnly = content.delegatedOwnerPubKeyHash !== undefined
 				&& changedKeys.every(key => key === 'delegatedOwnerPubKeyHash')
 			if (ownerOnly) {
-				const target = String(content.delegatedOwnerPubKeyHash || '').trim().toLowerCase()
+				const target = content.delegatedOwnerPubKeyHash || ''
 				if (isHex64(target) && manageAdminsPubKeyHashes(state).has(target))
 					return { ok: true }
 				const deferrable = isHex64(target) && state.members[target]?.status === 'active'
@@ -339,7 +339,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 				? { ok: true }
 				: { ok: false, reason: 'SEND_MESSAGES denied' }
 		case 'message_edit': {
-			const targetId = String(event.content?.targetId || '').trim().toLowerCase()
+			const targetId = String(event.content?.targetId || '').trim()
 			const entry = resolveIndexedMessage(state, targetId)
 			if (!entry) return { ok: false, reason: 'message not found', deferrable: !isMessageDeleted(state, targetId) }
 			if (entry.sender === sender) return { ok: true }
@@ -351,7 +351,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 		case 'dag_tip_merge':
 			return { ok: true }
 		case 'message_delete': {
-			const targetId = String(event.content?.targetId || '').trim().toLowerCase()
+			const targetId = String(event.content?.targetId || '').trim()
 			const entry = resolveIndexedMessage(state, targetId)
 			if (!entry) return { ok: false, reason: 'message not found', deferrable: !isMessageDeleted(state, targetId) }
 			if (entry.sender === sender) return { ok: true }
@@ -361,7 +361,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 				: { ok: false, reason: 'MANAGE_MESSAGES required' }
 		}
 		case 'message_feedback': {
-			const charOwner = String(event.content?.charOwner || '').trim().toLowerCase()
+			const charOwner = String(event.content?.charOwner || '').trim()
 			return charOwner && charOwner === sender
 				? { ok: true }
 				: { ok: false, reason: 'message_feedback denied' }
@@ -371,7 +371,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 				? { ok: true }
 				: { ok: false, reason: 'ADD_REACTIONS denied' }
 		case 'reaction_remove': {
-			const reactionActorHash = String(event.content?.targetPubKeyHash || '').trim().toLowerCase()
+			const reactionActorHash = String(event.content?.targetPubKeyHash || '').trim()
 			if (reactionActorHash && reactionActorHash !== sender)
 				return channelPerms[PERMISSIONS.MANAGE_MESSAGES]
 					? { ok: true }

@@ -20,8 +20,8 @@ const POSTS_PER_OWNER = 20
  */
 export async function discoverAccounts(username, options = {}) {
 	const accountLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
-	const cursor = (options.cursor || '').toLowerCase()
-	const nodeHashPrefix = (options.nodeHashPrefix || '').trim().toLowerCase() || null
+	const cursor = options.cursor || ''
+	const nodeHashPrefix = (options.nodeHashPrefix || '').trim() || null
 	const owners = await listLocalTimelineDirs(username, { nodeHashPrefix })
 	const start = cursor ? Math.max(0, owners.indexOf(cursor) + 1) : 0
 	const slice = owners.slice(start, start + accountLimit)
@@ -61,7 +61,7 @@ export async function discoverAccounts(username, options = {}) {
 export async function discoverPosts(username, options = {}) {
 	const postLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
 	const mediaOnly = Boolean(options.mediaOnly)
-	const nodeHashPrefix = (options.nodeHashPrefix || '').trim().toLowerCase() || null
+	const nodeHashPrefix = (options.nodeHashPrefix || '').trim() || null
 	const owners = await listLocalTimelineDirs(username, { nodeHashPrefix })
 	/** @type {object[]} */
 	const posts = []
@@ -95,7 +95,7 @@ export async function discoverPosts(username, options = {}) {
 		const earlierWall = earlier.hlc?.wall || 0
 		const laterWall = later.hlc?.wall || 0
 		if (earlierWall !== laterWall) return laterWall - earlierWall
-		return String(later.postId).localeCompare(String(earlier.postId))
+		return later.postId.localeCompare(earlier.postId)
 	})
 
 	return { posts: posts.slice(0, postLimit) }
@@ -109,14 +109,14 @@ export async function discoverPosts(username, options = {}) {
  * @returns {Promise<string[]>} 本地可见 following 列表
  */
 export async function discoverFollowGraph(username, entityHash, ingress = {}) {
-	const id = entityHash.toLowerCase()
+	const id = entityHash
 	const view = await getTimelineMaterialized(username, id)
 	if (view.socialMeta?.hideFromDiscovery) {
 		const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
 		const { resolveOperatorEntityHashForUser } = await import('../../../chat/src/entity/identity.mjs')
-		const requesterNode = (ingress.requesterNodeHash || '').trim().toLowerCase()
+		const requesterNode = (ingress.requesterNodeHash || '').trim()
 		const operator = await resolveOperatorEntityHashForUser(username)
-		const isOwnerRequest = requesterNode === getNodeHash() || operator?.toLowerCase() === id
+		const isOwnerRequest = requesterNode === getNodeHash() || operator === id
 		if (!isOwnerRequest) return []
 	}
 	return view.following

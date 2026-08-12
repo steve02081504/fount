@@ -65,27 +65,30 @@ export async function selectChannel(channelId) {
 		store.privateGroup.channelId = channelId
 	updateHash(store.context.currentGroupId, channelId)
 	clearReplyTarget()
-	const { showHubMainPane } = await import('../hubPane.mjs')
-	showHubMainPane()
-	warmCharEntityHashCache().catch(handleError('chat.hub.warmCharCacheFailed'))
-	const { renderHubChannelSidebar } = await import('./index.mjs')
-	await renderHubChannelSidebar(store.context.currentState)
-	if (store.context.currentGroupId)
-		rebindFederationRoomQuiet(store.context.currentGroupId, { channelId })
 	const channelType = channel.type || 'text'
-	const titleEl = document.getElementById('channel-name-display')
-	delete titleEl.dataset.i18n
-	titleEl.textContent = channel.name || channelId
-	titleEl.setAttribute('user-content', '')
-	const headerIcon = document.querySelector('.main-header-icon')
-	headerIcon.innerHTML = await channelTypeIconHtml(channelType)
-
+	// surface/composer 必须在 showHubMainPane 之前落好：mobile 主屏一开，groups surface 会把 .input-area display:none
 	if (channelType === 'list' || channelType === 'streaming')
 		disableComposer(channelType === 'list' ? 'chat.hub.channel.readonlyList' : 'chat.hub.channel.readonlyStream')
 	else if (store.context.currentState?.suspectedRemoved)
 		disableComposer('chat.hub.composerSuspectedRemoved')
 	else
 		enableComposer()
+	const { showHubMainPane } = await import('../hubPane.mjs')
+	showHubMainPane()
+	warmCharEntityHashCache().catch(handleError('chat.hub.warmCharCacheFailed'))
+	const titleEl = document.getElementById('channel-name-display')
+	delete titleEl.dataset.i18n
+	titleEl.textContent = channel.name || channelId
+	titleEl.setAttribute('user-content', '')
+	const headerIcon = document.querySelector('.main-header-icon')
+	const { renderHubChannelSidebar } = await import('./index.mjs')
+	const [, iconHtml] = await Promise.all([
+		renderHubChannelSidebar(store.context.currentState),
+		channelTypeIconHtml(channelType),
+	])
+	headerIcon.innerHTML = iconHtml
+	if (store.context.currentGroupId)
+		rebindFederationRoomQuiet(store.context.currentGroupId, { channelId })
 	const { loadMessages } = await import('../messages/messages.mjs')
 	store.context.fileHandlers = createFileHandlers({
 		groupId: store.context.currentGroupId,

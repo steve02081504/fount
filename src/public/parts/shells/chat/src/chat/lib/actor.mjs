@@ -12,7 +12,7 @@ import { resolveOperatorEntityHash } from './replica.mjs'
  */
 export async function resolveChatEntity(username, entityHash) {
 	const resolved = await resolveChatRecipient(username, entityHash)
-	const operator = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
+	const operator = await resolveOperatorEntityHash(username) || null
 	if (operator && resolved === operator)
 		return { entityHash: resolved }
 

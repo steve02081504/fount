@@ -104,18 +104,17 @@ export async function handleJoinSnapshotRequest(username, groupId, request, peer
 	if (request.groupId !== groupId || !peerId) return
 	const fedState = await loadFederationMaterializedState(username, groupId)
 	if (!fedState) return
-	const requesterNodeHash = String(request.requesterNodeHash || '').trim()
+	const requesterNodeHash = request.requesterNodeHash || ''
 	const shunDecision = resolveShunForPubKeyRequester(fedState, isBlockedPeer, request.requesterPubKeyHash)
 	if (shunDecision.shun && shunDecision.reason && shunCtx.fedOut && shunCtx.fedShunSend && shunCtx.localNodeHash)
 		sendFedShun(shunCtx.fedOut, shunCtx.fedShunSend, groupId, shunCtx.localNodeHash, requesterNodeHash, peerId, shunDecision.reason)
 	if (shunDecision.shun) return
 	if (!await verifyPullAttestationSignatureForMember(fedState, groupId, request.attestation)) return
 	const recipientEdPubKeyHex = resolveMemberEdPubKeyHex(fedState, request.requesterPubKeyHash)
-	if (!recipientEdPubKeyHex) {
-		if (shunCtx.fedOut && shunCtx.fedShunSend && shunCtx.localNodeHash)
-			sendFedShun(shunCtx.fedOut, shunCtx.fedShunSend, groupId, shunCtx.localNodeHash, requesterNodeHash, peerId, 'not_a_member')
+	if (!recipientEdPubKeyHex) 
+		// 未知成员：引导期对端可能尚未 ingest 我方 member_join；静默丢弃，勿 shun 自锁。
 		return
-	}
+	
 
 	const { readJsonl } = requireDagDeps()
 	const checkpoint = await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })

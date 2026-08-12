@@ -132,7 +132,7 @@ async function applyIncomingMessage(message, { scroll = false } = {}) {
 	const container = getMessagesContainer()
 	if (!container) return
 
-	const eventId = String(message.eventId || '')
+	const eventId = message.eventId || ''
 	if (!eventId) return
 
 	if (getActiveVolatileStreamIds().some(streamId => eventIdsEqual(streamId, eventId)) && !isChannelMessageGenerating(message))
@@ -176,7 +176,7 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 	}
 
 	const pendingId = store.messages.composerPendingId
-	const oldIds = new Set(store.messages.channelMessagesSource.map(row => String(row.eventId || '')))
+	const oldIds = new Set(store.messages.channelMessagesSource.map(row => row.eventId || ''))
 	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(store.messages.channelMessagesSource, batch)
 	const pendingReplaced = !!pendingId
 		&& !store.messages.channelMessagesSource.some(m => String(m.eventId) === pendingId)

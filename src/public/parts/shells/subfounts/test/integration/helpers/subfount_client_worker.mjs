@@ -35,7 +35,7 @@ import { ensureLinkToNode, getLink, getLinkRegistry } from 'npm:@steve02081504/f
 
 const relayUrl = process.env.FOUNT_TEST_P2P_RELAY_URL?.trim()
 const hostPeerId = process.env.FOUNT_TEST_SUBFOUNT_HOST_PEER_ID?.trim()
-const hostNodeHashHint = process.env.FOUNT_TEST_SUBFOUNT_HOST_NODE_HASH?.trim().toLowerCase()
+const hostNodeHashHint = process.env.FOUNT_TEST_SUBFOUNT_HOST_NODE_HASH?.trim()
 const password = process.env.FOUNT_TEST_SUBFOUNT_PASSWORD?.trim()
 const nodeDir = process.env.FOUNT_TEST_SUBFOUNT_NODE_DIR?.trim()
 const infoFile = process.env.FOUNT_TEST_SUBFOUNT_INFO_FILE?.trim()

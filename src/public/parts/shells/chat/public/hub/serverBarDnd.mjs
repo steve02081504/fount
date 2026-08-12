@@ -132,7 +132,7 @@ export function attachServerBarDnd(list) {
 		item.setAttribute('draggable', 'true')
 
 		item.addEventListener('dragstart', event => {
-			draggedGroupId = String(item.dataset.groupId || '').trim()
+			draggedGroupId = item.dataset.groupId || ''
 			item.classList.add('dragging')
 			if (event.dataTransfer) {
 				event.dataTransfer.effectAllowed = 'move'
@@ -156,7 +156,7 @@ export function attachServerBarDnd(list) {
 		item.addEventListener('dragleave', () => item.classList.remove('drop-into'))
 
 		item.addEventListener('drop', async event => {
-			const targetGroupId = String(item.dataset.groupId || '').trim()
+			const targetGroupId = item.dataset.groupId || ''
 			const sourceGroupId = draggedGroupId || event.dataTransfer?.getData('text/plain') || ''
 			event.preventDefault()
 			event.stopPropagation()

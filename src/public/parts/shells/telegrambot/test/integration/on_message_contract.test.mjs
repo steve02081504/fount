@@ -200,7 +200,7 @@ async function bootContract(username) {
 	const char = await loadPart(username, `chars/${CHAR}`)
 	const iface = await createSimpleTelegramInterface(char, username, CHAR)
 	const fake = createFakeTelegraf()
-	const charUid = (await ensureLocalAgentEntityHash(username, CHAR)).toLowerCase()
+	const charUid = await ensureLocalAgentEntityHash(username, CHAR)
 	return { char, iface, fake, probe: onMessageProbe, charUid }
 }
 

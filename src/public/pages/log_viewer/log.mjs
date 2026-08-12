@@ -5,6 +5,8 @@
 
 import { ansiToHtml } from 'https://esm.sh/@steve02081504/ansi2html'
 
+import { escapeRegExp } from '/scripts/lib/regex.mjs'
+
 /** 折叠行「单行预览」中复合类型最多再向下展开几层 */
 const SNAPSHOT_PREVIEW_NEST_MAX = 5
 
@@ -616,9 +618,8 @@ export function entryMatchesFilter(entry, filterText, levelFilter) {
 		return false
 
 	if (filterText) {
-		const needle = filterText.toLowerCase()
-		const haystack = (entry.plainText || '').toLowerCase()
-		if (!haystack.includes(needle)) return false
+		const re = new RegExp(escapeRegExp(filterText), 'i')
+		if (!re.test(entry.plainText || '')) return false
 	}
 
 	return true

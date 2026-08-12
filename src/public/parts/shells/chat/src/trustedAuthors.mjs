@@ -14,7 +14,7 @@ const DATANAME = 'trustedAuthors'
 export function loadTrustedAuthorHashes(username) {
 	const raw = loadData(username, DATANAME)
 	const hashes = Array.isArray(raw?.hashes) ? raw.hashes : []
-	return [...new Set(hashes.map(hash => String(hash).trim().toLowerCase()).filter(isHex64))]
+	return [...new Set(hashes.map(hash => hash).filter(isHex64))]
 }
 
 /**
@@ -25,7 +25,7 @@ export function loadTrustedAuthorHashes(username) {
 export function saveTrustedAuthorHashes(username, hashes) {
 	const normalized = [...new Set(
 		(Array.isArray(hashes) ? hashes : [])
-			.map(hash => String(hash).trim().toLowerCase())
+			.map(hash => hash)
 			.filter(isHex64),
 	)]
 	const store = loadData(username, DATANAME)

@@ -87,7 +87,7 @@ export async function verifyGroupInviteTicket(username, groupId, code) {
 	const key = await loadInviteSecret(username, groupId)
 	if (!key) return 'unverifiable'
 
-	const [expiresPart, nonce, inviteSignatureHex] = String(code || '').trim().split('.')
+	const [expiresPart, nonce, inviteSignatureHex] = (code || '').split('.')
 	if (!expiresPart || !nonce || !inviteSignatureHex) return 'invalid'
 	const expiresAt = Number.parseInt(expiresPart, 36)
 	if (!Number.isFinite(expiresAt) || Date.now() > expiresAt) return 'invalid'

@@ -23,7 +23,7 @@ import { getTimelineMaterialized } from './timeline/materialize.mjs'
  */
 function postHasVideo(post) {
 	const refs = Array.isArray(post.content?.mediaRefs) ? post.content.mediaRefs : []
-	return refs.some(ref => String(ref?.kind || '').toLowerCase() === 'video')
+	return refs.some(ref => ref?.kind === 'video')
 }
 
 /**
@@ -64,8 +64,8 @@ export async function buildVideosFeed(username, options = {}) {
 	try {
 		const explore = await discoverPosts(username, { n: 40, mediaOnly: true })
 		for (const row of explore.posts || []) {
-			const entityHash = String(row.entityHash || '').toLowerCase()
-			const postId = String(row.postId || '')
+			const entityHash = row.entityHash
+			const postId = row.postId
 			if (!entityHash || !postId) continue
 			const key = `${entityHash}:${postId}`
 			if (scored.has(key)) continue
@@ -80,7 +80,7 @@ export async function buildVideosFeed(username, options = {}) {
 	}
 	catch { /* explore 可选 */ }
 
-	const ranked = [...scored.values()].sort((a, b) => b.score - a.score || String(b.post.id).localeCompare(String(a.post.id)))
+	const ranked = [...scored.values()].sort((a, b) => b.score - a.score || b.post.id.localeCompare(a.post.id))
 	let start = 0
 	if (options.cursor) {
 		const idx = ranked.findIndex(row => `${row.entityHash}:${row.post.id}` === options.cursor)

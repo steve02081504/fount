@@ -24,7 +24,7 @@ const TAIL_SCAN_MAX = 200
  * @returns {boolean} 是否可绕过限速
  */
 export function hasBypassRateLimit(state, senderPubKeyHash, channelId) {
-	const sender = senderPubKeyHash.trim().toLowerCase()
+	const sender = senderPubKeyHash.trim()
 	if (!sender) return false
 	const perms = memberChannelPermissions(state, sender, channelId)
 	return !!perms[PERMISSIONS.BYPASS_RATE_LIMIT]
@@ -42,7 +42,7 @@ export async function checkMessageRateLimit(username, groupId, state, event) {
 	const entityKey = messageRateEntityKey(event)
 	if (!entityKey) return { ok: false, reason: 'missing sender' }
 	const channelId = event.channelId || 'default'
-	const senderHash = String(event.sender || '').trim().toLowerCase()
+	const senderHash = event.sender || ''
 	if (hasBypassRateLimit(state, senderHash, channelId)) return { ok: true }
 
 	if (!isRateLimitBucketRebuilt(username, groupId)) {

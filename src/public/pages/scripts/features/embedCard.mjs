@@ -12,7 +12,7 @@ const ATTR = 'data-fount-embed'
  * @returns {string} 截断后的文本
  */
 function truncateText(text, maxLen) {
-	const value = String(text || '').trim()
+	const value = text.trim()
 	if (!value) return ''
 	if (value.length <= maxLen) return value
 	return `${value.slice(0, maxLen - 1)}…`

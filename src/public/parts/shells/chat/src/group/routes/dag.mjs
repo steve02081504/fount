@@ -5,7 +5,7 @@
  * 【数据结构】DAG tips/tipScores、events 数组、governance-branch tipId、applied/skipped 计数。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag/*、chat/governance、localAuthz.mjs、access.mjs。
  */
-import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
@@ -100,7 +100,7 @@ async function appendLocalEvents(username, groupId, events) {
 		}
 
 		if (event.type === 'peer_invite' && !content.fileKeyWraps) {
-			const peerPubKeyHex = normalizePubKeyHex(content.to || '')
+			const peerPubKeyHex = content.to || ''
 			if (PUB_KEY_HEX_64.test(peerPubKeyHex)) {
 				const keyEntry = await getCurrentFileMasterKey(username, groupId)
 				if (keyEntry)
@@ -140,7 +140,7 @@ export function registerDagRoutes(router, authenticate) {
 		const reputation = loadReputation()
 		const reputationBySender = {}
 		for (const [nodeId, row] of Object.entries(reputation?.byNodeHash || {}))
-			reputationBySender[String(nodeId).toLowerCase()] = Number(row?.score ?? 0)
+			reputationBySender[String(nodeId)] = Number(row?.score ?? 0)
 		const tipScores = computeTipAuthzScores(tips, eventsById, reputationBySender)
 		const tipConsensusScores = computeTipConsensusScores(tips, eventsById)
 		res.status(200).json({
@@ -171,7 +171,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/fork/block-opposing`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		const acceptedTipId = String(req.body.acceptedTipId || '')
+		const acceptedTipId = req.body.acceptedTipId || ''
 		const { sender: selfPubKeyHash } = await resolveLocalEventSigner(username, groupId)
 		const result = await blockOpposingForkBranch(username, groupId, acceptedTipId, selfPubKeyHash)
 		res.status(200).json({ ...result })
@@ -179,7 +179,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.put(`${GROUPS_PREFIX}/:groupId/governance-branch`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, groupId } = req.groupContext
-		const tipId = req.body.tipId != null ? String(req.body.tipId).trim().toLowerCase() : null
+		const tipId = req.body.tipId != null ? String(req.body.tipId).trim() : null
 		if (tipId && !isHex64(tipId))
 			throw httpError(400, 'invalid tipId')
 		const tips = state.dagTips || computeFederatableDagTipIds(
@@ -213,7 +213,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.get(`${GROUPS_PREFIX}/:groupId/events`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		const channelId = String(req.query.channelId || '').trim() || undefined
+		const channelId = (req.query.channelId || '') || undefined
 		const { events, truncated } = await syncEvents(username, groupId, {
 			since: req.query.since ? String(req.query.since) : undefined,
 			limit: req.query.limit,

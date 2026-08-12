@@ -22,7 +22,7 @@ import { buildPostSnapshotsFromLines } from './postSnapshot.mjs'
  * @returns {Promise<boolean>} 是否已更新归档行
  */
 export async function refreshArchivedSnapshotIfPresent(username, groupId, channelId, eventId, options = {}) {
-	const id = String(eventId || '').trim().toLowerCase()
+	const id = eventId || ''
 	if (!id) return false
 	const manifest = await loadArchiveManifest(username, groupId)
 	if (!isEventArchivedInManifest(manifest, channelId, id)) return false
@@ -53,7 +53,7 @@ export async function refreshArchivedSnapshotIfPresent(username, groupId, channe
 	const rows = []
 	let replaced = false
 	for await (const line of readJsonlStream(path))
-		if (String(line.eventId).trim().toLowerCase() === id) {
+		if (String(line.eventId).trim() === id) {
 			rows.push(snap)
 			replaced = true
 		}

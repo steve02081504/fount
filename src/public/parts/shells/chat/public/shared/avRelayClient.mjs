@@ -365,7 +365,7 @@ export async function joinAvRelayRoom(options) {
 		const controlFrame = JSON.parse(event.data)
 		if (controlFrame.type === 'peer_count') onPeerCount?.(controlFrame.count)
 		if (controlFrame.type === 'publish_meta') {
-			const sid = String(controlFrame.senderId || '').toLowerCase()
+			const sid = controlFrame.senderId || ''
 			remoteMeta.set(sid, controlFrame)
 			onPublishMeta?.(controlFrame)
 			if (!asPublisher && !videoDecoder && canvas && controlFrame.video)
@@ -374,7 +374,7 @@ export async function joinAvRelayRoom(options) {
 				ensureAudioDecoder()
 		}
 		if (controlFrame.type === 'publish_meta_revoke') {
-			const sid = String(controlFrame.senderId || '').toLowerCase()
+			const sid = controlFrame.senderId || ''
 			remoteMeta.delete(sid)
 			audioLevels.delete(sid)
 		}
@@ -517,7 +517,7 @@ export async function joinAvRelayRoom(options) {
 		 * @returns {number[]} 16 段电平
 		 */
 		getAudioLevels: (senderId = '') => {
-			const sid = (senderId || remoteSender || 'default').toLowerCase()
+			const sid = senderId || remoteSender || 'default'
 			const entry = audioLevels.get(sid)
 			if (entry?.analyser) {
 				const data = new Uint8Array(entry.analyser.frequencyBinCount)

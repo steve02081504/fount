@@ -45,7 +45,7 @@ export function aggregateChannelActivity(lines) {
 			chars[charId] = bumpStat(chars[charId], ts)
 			continue
 		}
-		const sender = String(line?.sender || '').trim().toLowerCase()
+		const sender = String(line?.sender || '').trim()
 		if (sender) humans[sender] = bumpStat(humans[sender], ts)
 	}
 	return { chars, humans }
@@ -101,18 +101,18 @@ export function selectOtherCharNames(charNames, excludeCharname, charFrequencies
  * @returns {string | null} ownerUsername
  */
 export function ownerUsernameForMember(state, memberKey, replicaUsername, localMemberKey) {
-	const key = String(memberKey || '').trim().toLowerCase()
+	const key = memberKey || ''
 	if (!key) return null
 	if (localMemberKey && key === localMemberKey) return replicaUsername
 	const member = state?.members?.[key]
 	if (!member || member.status !== 'active') return null
 	if (member.memberKind === 'agent')
-		return String(member.ownerUsername || '').trim() || null
-	const entityHash = String(member.entityHash || '').trim().toLowerCase()
+		return (member.ownerUsername || '') || null
+	const entityHash = member.entityHash || ''
 	if (!entityHash) return null
 	for (const other of Object.values(state.members || {})) {
 		if (other?.memberKind !== 'agent' || other.status !== 'active') continue
-		if (String(other.ownerEntityHash || '').trim().toLowerCase() === entityHash && other.ownerUsername)
+		if ((other.ownerEntityHash || '') === entityHash && other.ownerUsername)
 			return String(other.ownerUsername).trim()
 	}
 	return null

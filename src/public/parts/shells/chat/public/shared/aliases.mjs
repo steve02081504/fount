@@ -5,14 +5,6 @@ let cache = null
 let loadPromise = null
 
 /**
- * @param {string} entityHash 实体 hash
- * @returns {string} 规范化 entity hash
- */
-function normEntity(entityHash) {
-	return entityHash.trim().toLowerCase()
-}
-
-/**
  * 拉取整档别名并填充内存缓存（幂等，并发共享同一请求）。
  * @returns {Promise<{ entities: Record<string, string>, groups: Record<string, string> }>} 别名档
  */
@@ -36,7 +28,7 @@ export async function loadAliases() {
  * @returns {string} 实体别名；未命中为空串
  */
 export function aliasForEntity(entityHash) {
-	return cache?.entities[normEntity(entityHash)] || ''
+	return cache?.entities[entityHash] || ''
 }
 
 /**
@@ -70,10 +62,9 @@ export function groupIdForAlias(alias) {
 export async function setEntityAlias(entityHash, name) {
 	const current = await loadAliases()
 	const entities = { ...current.entities }
-	const key = normEntity(entityHash)
 	const value = name.trim()
-	if (value) entities[key] = value
-	else delete entities[key]
+	if (value) entities[entityHash] = value
+	else delete entities[entityHash]
 	cache = await putAliasesApi({ entities, groups: current.groups })
 }
 

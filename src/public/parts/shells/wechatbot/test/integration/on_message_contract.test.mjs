@@ -134,7 +134,7 @@ Deno.test('wechat OnMessage contract: owner DM replies and char row uses role/ui
 	const char = await loadPart(username, `chars/${CHAR}`)
 	const iface = await createSimpleWechatInterface(char, username, CHAR)
 	const fake = createFakeWechatRuntime()
-	const charUid = (await ensureLocalAgentEntityHash(username, CHAR)).toLowerCase()
+	const charUid = await ensureLocalAgentEntityHash(username, CHAR)
 
 	const readyPromise = iface.OnceClientReady(fake.context, {
 		OwnerWeChatId: OWNER_WECHAT_ID,

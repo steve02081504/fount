@@ -31,9 +31,9 @@ export const pendingSnapshotPulls = new Map()
  * @returns {string} 分桶键
  */
 function snapshotBucketKey(envelope, inner) {
-	const tips = String(inner?.checkpoint?.local_tips_hash || '').trim().toLowerCase()
+	const tips = String(inner?.checkpoint?.local_tips_hash || '').trim()
 	if (isHex64(tips)) return `tips:${tips}`
-	const root = String(inner?.checkpoint?.epoch_root_hash || '').trim().toLowerCase()
+	const root = String(inner?.checkpoint?.epoch_root_hash || '').trim()
 	if (isHex64(root)) return `root:${root}`
 	return ''
 }
@@ -56,12 +56,12 @@ export async function noteJoinSnapshotResponse(username, groupId, envelope, peer
 	const checkpointResult = await verifyRemoteCheckpoint(inner.checkpoint)
 	if (!checkpointResult.valid) return
 	pending.candidates.push({
-		peerNodeHash: String(peerNodeHash).trim(),
+		peerNodeHash,
 		envelope,
 		inner,
 		bucketKey,
-		tipsHash: String(inner.checkpoint.local_tips_hash || '').trim().toLowerCase(),
-		epochRootHash: String(inner.checkpoint.epoch_root_hash || '').trim().toLowerCase(),
+		tipsHash: inner.checkpoint.local_tips_hash || '',
+		epochRootHash: inner.checkpoint.epoch_root_hash || '',
 		epochId: Number(inner.checkpoint.epoch_id) || 0,
 	})
 	tryFinishFederationCollect(pending, joinSnapshotQuorumSatisfied)
@@ -82,8 +82,8 @@ export function pickJoinSnapshotByReputation(candidates, options = {}) {
 	/** @type {Map<string, { peers: string[], envelope: object }>} */
 	const byBucket = new Map()
 	for (const row of candidates) {
-		const peer = String(row.peerNodeHash || '').trim()
-		const key = String(row.bucketKey || '').trim()
+		const peer = row.peerNodeHash || ''
+		const key = row.bucketKey || ''
 		if (!peer || !key) continue
 		const bucket = byBucket.get(key) || { peers: [], envelope: row.envelope }
 		bucket.peers.push(peer)

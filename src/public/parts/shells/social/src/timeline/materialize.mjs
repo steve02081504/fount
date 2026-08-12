@@ -38,7 +38,7 @@ function timelineCacheBucket(username) {
  * @returns {void}
  */
 export function invalidateTimelineMaterializedCache(username, entityHash) {
-	const target = String(entityHash).toLowerCase()
+	const target = entityHash
 	const inner = timelineViewCache.get(username)
 	if (!inner) return
 	inner.delete(target)
@@ -89,7 +89,7 @@ function snapshotMatchesTip(cached, tipId) {
 export async function getTimelineMaterialized(username, entityHash) {
 	if (!parseEntityHash(entityHash)) throw new Error('invalid entityHash')
 	const eventsPath = timelineEventsPath(username, entityHash)
-	const entityKey = String(entityHash).toLowerCase()
+	const entityKey = entityHash
 	const tipId = await readJsonlTipId(eventsPath)
 
 	const bucket = timelineCacheBucket(username)
@@ -132,7 +132,7 @@ function ensureTimelineViewDefaults(view) {
  * @returns {Promise<object>} 落盘后的 signed snapshot
  */
 export async function maintainSocialTimeline(username, entityHash) {
-	const entityKey = String(entityHash).toLowerCase()
+	const entityKey = entityHash
 	const eventsPath = timelineEventsPath(username, entityHash)
 	const tipId = await readJsonlTipId(eventsPath)
 	const view = await getTimelineMaterialized(username, entityKey)

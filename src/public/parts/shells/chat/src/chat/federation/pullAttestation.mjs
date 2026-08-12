@@ -23,8 +23,8 @@ export function pullAttestationSignBytes(attestation) {
 		: ''
 	return Buffer.from(JSON.stringify({
 		requesterPubKeyHash: normalizeHex64(attestation.requesterPubKeyHash),
-		groupId: String(attestation.groupId || '').trim(),
-		requestId: String(attestation.requestId || '').trim(),
+		groupId: attestation.groupId || '',
+		requestId: attestation.requestId || '',
 		timestamp: Math.floor(Number(attestation.timestamp)),
 		wantIds: wantPart,
 	}), 'utf8')
@@ -43,7 +43,7 @@ export async function signPullAttestation(username, groupId, fields = {}) {
 	const body = {
 		requesterPubKeyHash: sender,
 		groupId,
-		requestId: String(fields.requestId || '').trim(),
+		requestId: fields.requestId || '',
 		timestamp,
 		wantIds: fields.wantIds,
 		signature: '',
@@ -93,7 +93,7 @@ export function isHistoricalPullMember(state, requesterPubKeyHash) {
 export function resolveMemberEdPubKeyHex(state, requesterPubKeyHash) {
 	const key = normalizeHex64(requesterPubKeyHash)
 	if (!isHex64(key)) return null
-	const hex = normalizeHex64(state?.members?.[key]?.pubKeyHex)
+	const hex = state?.members?.[key]?.pubKeyHex
 	if (!hex || Buffer.from(hex, 'hex').length !== 32) return null
 	return hex
 }

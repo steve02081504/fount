@@ -91,16 +91,15 @@ export function splitWechatText(text, maxBytes = WECHAT_TEXT_MAX_BYTES) {
  * @returns {string} 推断的 MIME 类型
  */
 function guessMimeFromFileName(name) {
-	const lowerFileName = String(name).toLowerCase()
 	return [
-		[/\.(jpe?g)$/, 'image/jpeg'],
-		[/\.png$/, 'image/png'],
-		[/\.gif$/, 'image/gif'],
-		[/\.webp$/, 'image/webp'],
-		[/\.(mp4|m4v)$/, 'video/mp4'],
-		[/\.(mp3|m4a)$/, 'audio/mpeg'],
-		[/\.wav$/, 'audio/wav'],
-	].find(([pattern]) => pattern.test(lowerFileName))?.[1] ?? 'application/octet-stream'
+		[/\.(jpe?g)$/i, 'image/jpeg'],
+		[/\.png$/i, 'image/png'],
+		[/\.gif$/i, 'image/gif'],
+		[/\.webp$/i, 'image/webp'],
+		[/\.(mp4|m4v)$/i, 'video/mp4'],
+		[/\.(mp3|m4a)$/i, 'audio/mpeg'],
+		[/\.wav$/i, 'audio/wav'],
+	].find(([pattern]) => pattern.test(name))?.[1] ?? 'application/octet-stream'
 }
 
 /**
@@ -361,7 +360,7 @@ export async function wechatMessageToBridgeDto(wechatMessage, ownerUsername, cdn
  */
 export function detectWechatUploadMediaType(fileLike) {
 	const mimeType = String(fileLike?.mime_type || '').toLowerCase()
-	const fileName = String(fileLike?.name || '').toLowerCase()
+	const fileName = String(fileLike?.name || '')
 	if (WECHAT_SUPPORTED_IMAGE_MIMES.has(mimeType) || IMAGE_NAME_REGEXP.test(fileName))
 		return UploadMediaType.IMAGE
 	if (mimeType.startsWith('video/') || VIDEO_NAME_REGEXP.test(fileName))

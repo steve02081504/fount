@@ -45,7 +45,7 @@ export function deriveMessageAttribution(content, line = {}) {
 			claimedEntityHash: null,
 			claimedSenderPubKeyHash: null,
 			signerEntityHash: line.signerEntityHash || null,
-			signerPubKeyHash: line.sender ? String(line.sender).toLowerCase() : null,
+			signerPubKeyHash: line.sender ? String(line.sender) : null,
 			importedFrom: null,
 		}
 
@@ -55,17 +55,17 @@ export function deriveMessageAttribution(content, line = {}) {
 		reason: 'imported_resign',
 		claimedDisplayName,
 		claimedEntityHash: importedFrom.sourceEntityHash
-			? String(importedFrom.sourceEntityHash).toLowerCase()
+			? String(importedFrom.sourceEntityHash)
 			: null,
 		claimedSenderPubKeyHash: importedFrom.sourceSenderPubKeyHash
-			? String(importedFrom.sourceSenderPubKeyHash).toLowerCase()
+			? String(importedFrom.sourceSenderPubKeyHash)
 			: null,
 		signerEntityHash: importedFrom.signerEntityHash
-			? String(importedFrom.signerEntityHash).toLowerCase()
+			? String(importedFrom.signerEntityHash)
 			: line.signerEntityHash || null,
 		signerPubKeyHash: importedFrom.signerPubKeyHash
-			? String(importedFrom.signerPubKeyHash).toLowerCase()
-			: line.sender ? String(line.sender).toLowerCase() : null,
+			? String(importedFrom.signerPubKeyHash)
+			: line.sender ? String(line.sender) : null,
 		importedFrom,
 	}
 }

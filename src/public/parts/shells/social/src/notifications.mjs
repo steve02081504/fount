@@ -17,8 +17,8 @@ export { notificationCursor }
  * @returns {Promise<{ notifications: object[], nextCursor: string | null, unreadCount: number, viewerEntityHash: string | null }>} 通知列表
  */
 export async function buildNotifications(username, options = {}) {
-	const viewerEntityHash = String(options.viewerEntityHash || '').trim().toLowerCase()
-		|| (await resolveOperatorEntityHash(username))?.toLowerCase()
+	const viewerEntityHash = options.viewerEntityHash
+		|| await resolveOperatorEntityHash(username)
 		|| null
 	if (!viewerEntityHash)
 		return { notifications: [], nextCursor: null, unreadCount: 0, viewerEntityHash: null }

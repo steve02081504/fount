@@ -297,7 +297,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			if (resolvedMember?.status !== 'active')
 				throw httpError(404, 'Member not found')
 
-			const banScope = req.body?.banScope?.trim().toLowerCase()
+			const banScope = req.body?.banScope?.trim()
 			if (!isBanScope(banScope))
 				throw httpError(400, 'banScope must be entity or node')
 			let banContent
@@ -343,8 +343,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (!resolvedTargetKey)
 			throw httpError(404, 'Member not found')
 		const resolvedMember = state.members[resolvedTargetKey]
-		const callerEntity = String(member?.entityHash || '').trim().toLowerCase()
-		const ownerEntity = String(resolvedMember?.ownerEntityHash || '').trim().toLowerCase()
+		const callerEntity = String(member?.entityHash || '').trim()
+		const ownerEntity = String(resolvedMember?.ownerEntityHash || '').trim()
 		const isOwnerKickOwnAgent = resolvedMember?.memberKind === 'agent'
 			&& !!(ownerEntity && callerEntity === ownerEntity)
 		const isAdminKickAgent = resolvedMember?.memberKind === 'agent'
@@ -436,7 +436,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (!ballotId?.trim())
 			throw httpError(400, 'ballotId required')
 
-		const targetHash = proposedOwnerPubKeyHash.trim().toLowerCase()
+		const targetHash = proposedOwnerPubKeyHash.trim()
 		if (!resolveActiveMemberKey(state, targetHash))
 			throw httpError(400, 'proposed owner is not an active member')
 
@@ -448,7 +448,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const mergedSignatures = Array.isArray(adminSignatures) ? [...adminSignatures] : []
 		const seenAdminHashes = new Set(
 			mergedSignatures
-				.map(entry => entry?.pubKeyHex?.trim().toLowerCase())
+				.map(entry => entry?.pubKeyHex?.trim())
 				.filter(isHex64)
 				.map(hex => pubKeyHash(Buffer.from(hex, 'hex'))),
 		)
@@ -511,7 +511,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const revocations = []
 		for (const [key, member] of Object.entries(state.members)) {
 			if (member?.status !== 'active') continue
-			const hash = String(key || '').trim().toLowerCase()
+			const hash = key || ''
 			if (!hash || hash === targetHash) continue
 			for (const roleId of member.roles || [])
 				if (state.roles[roleId]?.permissions?.MANAGE_ADMINS)
@@ -549,7 +549,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (!body.cabinet_id) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetBind } = await import('../../chat/cabinets/keys.mjs')
 		const event = await appendCabinetBind(username, req.params.groupId, {
-			cabinet_id: String(body.cabinet_id).toLowerCase(),
+			cabinet_id: String(body.cabinet_id),
 			name: body.name,
 			write_pubkey: body.write_pubkey,
 			role_access: body.role_access,
@@ -564,7 +564,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, state.channelPermissions)
 			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, state.channelPermissions)
 		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
-		const cabinetId = String(req.body.cabinet_id || '').toLowerCase()
+		const cabinetId = req.body.cabinet_id || ''
 		if (!cabinetId) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetUnbind } = await import('../../chat/cabinets/keys.mjs')
 		const event = await appendCabinetUnbind(username, req.params.groupId, cabinetId)

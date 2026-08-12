@@ -36,7 +36,7 @@ function entryForWorldHook(content) {
 		files: [],
 		extension: {},
 	}
-	const channelId = String(content.groupChannelId || '').trim()
+	const channelId = content.groupChannelId || ''
 	if (channelId) ensureChatExtension(entry).channelId = channelId
 	return entry
 }
@@ -48,7 +48,7 @@ function entryForWorldHook(content) {
  */
 function applyEntryRewriteToContent(content, entry) {
 	const base = normalizeChannelMessage(content)
-	if (channelMessageKind(base) !== 'text' && String(entry.content ?? '') === messageAgentText(base))
+	if (channelMessageKind(base) !== 'text' && (entry.content ?? '') === messageAgentText(base))
 		return {
 			...base,
 			...entry.role ? { role: entry.role } : {},

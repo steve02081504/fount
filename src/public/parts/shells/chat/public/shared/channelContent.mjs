@@ -28,7 +28,7 @@ function normalizeWireFiles(files) {
 	if (!files?.length) return undefined
 	const out = []
 	for (const file of files) {
-		const fileId = String(file.fileId || '').trim()
+		const fileId = file.fileId || ''
 		if (!fileId) continue
 		const description = sanitizeAlt(file.description)
 		out.push({
@@ -48,8 +48,8 @@ function normalizeWireFiles(files) {
  */
 function trimCommon(out) {
 	const cleaned = sanitizeMessageExtras(out)
-	if (!String(cleaned.name || '').trim()) delete cleaned.name
-	if (!String(cleaned.avatar || '').trim()) delete cleaned.avatar
+	if (!(cleaned.name || '')) delete cleaned.name
+	if (!(cleaned.avatar || '')) delete cleaned.avatar
 	const files = normalizeWireFiles(cleaned.files)
 	if (files) cleaned.files = files
 	else delete cleaned.files
@@ -106,16 +106,16 @@ function normalizeTextContent(input) {
  * @returns {Record<string, unknown>} sticker wire
  */
 function normalizeStickerContent(input) {
-	const emojiRef = String(input.emojiRef || '').trim()
-	const stickerBase64 = String(input.stickerBase64 || '')
+	const emojiRef = input.emojiRef || ''
+	const stickerBase64 = input.stickerBase64 || ''
 	if (!emojiRef && !stickerBase64) throw new Error('sticker requires emojiRef or stickerBase64')
 	const compactEmoji = !!parseEmojiToken(emojiRef)
 	return withDisplayFields(input, {
 		type: 'sticker',
 		...compactEmoji || emojiRef ? { emojiRef } : {},
 		...!compactEmoji && stickerBase64 ? { stickerBase64 } : {},
-		stickerId: String(input.stickerId || ''),
-		stickerName: String(input.stickerName || ''),
+		stickerId: input.stickerId || '',
+		stickerName: input.stickerName || '',
 		...!compactEmoji && input.mimeType ? { mimeType: String(input.mimeType) } : {},
 	})
 }
@@ -125,7 +125,7 @@ function normalizeStickerContent(input) {
  * @returns {Record<string, unknown>} vote wire
  */
 function normalizeVoteContent(input) {
-	if (!String(input.question || '').trim()) throw new Error('vote requires question')
+	if (!(input.question || '')) throw new Error('vote requires question')
 	if (!input.options?.length) throw new Error('vote requires options')
 	return withDisplayFields(input, {
 		type: 'vote',
@@ -145,8 +145,8 @@ function normalizeGroupInviteContent(input) {
 		type: 'group_invite',
 		groupId: input.groupId,
 		inviteCode: input.inviteCode || '',
-		groupName: String(input.groupName || '').slice(0, 100),
-		description: String(input.description ?? '').slice(0, 200),
+		groupName: (input.groupName || '').slice(0, 100),
+		description: (input.description ?? '').slice(0, 200),
 		...input.memberCount != null
 			? { memberCount: Math.max(0, Math.floor(Number(input.memberCount))) }
 			: {},
@@ -160,7 +160,7 @@ function normalizeGroupInviteContent(input) {
 function normalizeCallContent(input) {
 	return withDisplayFields(input, {
 		type: 'call',
-		callId: String(input.callId || ''),
+		callId: input.callId || '',
 		status: String(input.status || 'ongoing'),
 		...input.startedAt != null ? { startedAt: Number(input.startedAt) } : {},
 		...input.endedAt != null ? { endedAt: Number(input.endedAt) } : {},
@@ -211,7 +211,7 @@ export function stripInlineImageMarkers(text) {
  */
 export function messageAgentText(content) {
 	const type = content?.type
-	if (type === 'vote') return String(content.question || '').trim()
+	if (type === 'vote') return content.question || ''
 	if (type === 'call') return content.status === 'ended' ? 'Call ended' : 'Call in progress'
 	if (type === 'sticker') return String(content.emojiRef || content.stickerName || '')
 	if (type === 'group_invite') return String(content.groupName || content.groupId || '')

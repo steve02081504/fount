@@ -124,9 +124,9 @@ export function takeRtcJoinSlot(roomKey, peerId, limits = {}, sourceId = 'peer')
 export function annotateRtcPeerNodeHash(roomKey, peerId, nodeHash, limits = {}) {
 	const bucket = budgets.get(roomKey)
 	if (!bucket || !peerId || !nodeHash) return
-	bucket.peerNodeHash.set(peerId, String(nodeHash).trim())
+	bucket.peerNodeHash.set(peerId, nodeHash)
 	for (const trusted of resolveRtcBudgetLimits(limits).trustedPeers || [])
-		if (String(trusted).trim() === String(nodeHash).trim())
+		if (trusted === nodeHash)
 			bucket.trustedPeers.add(peerId)
 
 }

@@ -1,5 +1,6 @@
 import { loadPersonalFilterSets, matchesPersonalListEntries } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
+import { escapeRegExp } from '../../../../../../../scripts/regex.mjs'
 import { indexDocument, patchShardMeta, queryIndex, removeDocument } from '../../../../../../../scripts/search/invertedIndex.mjs'
 import { messageLineShowText, messageShowText } from '../../../public/shared/channelContent.mjs'
 import { loadArchiveManifest } from '../archive/index.mjs'
@@ -26,13 +27,13 @@ export async function indexChannelMessageLine(username, groupId, channelId, mess
 	const type = messageLine?.type
 
 	if (type === 'message_delete') {
-		const targetId = String(messageLine.content?.targetId || '').trim().toLowerCase()
+		const targetId = String(messageLine.content?.targetId || '').trim()
 		if (targetId) await removeDocument(indexDir, channelId, targetId)
 		return
 	}
 
 	if (type === 'message_edit') {
-		const targetId = String(messageLine.content?.targetId || '').trim().toLowerCase()
+		const targetId = String(messageLine.content?.targetId || '').trim()
 		const newContent = messageLine.content?.newContent
 		if (!targetId || newContent?.is_generating) return
 		const text = messageShowText(newContent)
@@ -47,7 +48,7 @@ export async function indexChannelMessageLine(username, groupId, channelId, mess
 	}
 
 	if (type !== 'message') return
-	const eventId = String(messageLine.eventId || '').trim().toLowerCase()
+	const eventId = messageLine.eventId || ''
 	if (!eventId) return
 	const text = searchTextFromMessageLine(messageLine)
 	if (!text) return
@@ -99,9 +100,9 @@ export async function ensureArchiveIndexed(username, groupId, channelId) {
  * @returns {boolean} 是否匹配
  */
 function messageMatchesQuery(query, text) {
-	const q = String(query || '').trim().toLowerCase()
+	const q = query.trim()
 	if (q.length < 2) return false
-	return String(text || '').toLowerCase().includes(q)
+	return new RegExp(escapeRegExp(q), 'iu').test(text)
 }
 
 /**
@@ -115,7 +116,7 @@ function messageMatchesQuery(query, text) {
  * @returns {Promise<{ query: string, items: object[] }>} 规范化查询串与命中消息列表
  */
 export async function searchGroupMessages(username, groupId, options = {}) {
-	const query = String(options.q || '').trim()
+	const query = (options.q || '').trim()
 	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
 	if (query.length < 2) return { query, items: [] }
 
@@ -146,7 +147,7 @@ export async function searchGroupMessages(username, groupId, options = {}) {
 		verify: doc => {
 			if (!messageMatchesQuery(query, doc.text)) return false
 			if (!personalFilter) return true
-			const sender = String(doc.fields?.sender || '').trim().toLowerCase()
+			const sender = String(doc.fields?.sender || '').trim()
 			return !matchesPersonalListEntries([
 				...[...personalFilter.blockedSubjects].map(value => ({ scope: 'subject', value })),
 				...[...personalFilter.hiddenSubjects].map(value => ({ scope: 'subject', value })),

@@ -80,9 +80,9 @@ function renderSearchResults(items, scope = 'group') {
 	const channels = store.context.currentState?.channels || {}
 	host.innerHTML = items.map(item => {
 		const channelName = scope === 'all'
-			? escapeHtml(String(item.groupId || ''))
+			? escapeHtml(item.groupId || '')
 			: escapeHtml(channels[item.channelId]?.name || item.channelId || '')
-		const text = escapeHtml(String(item.text || '').slice(0, 160))
+		const text = escapeHtml((item.text || '').slice(0, 160))
 		return `<button type="button" class="search-result" data-group-id="${escapeHtml(item.groupId || store.context.currentGroupId || '')}" data-channel-id="${escapeHtml(item.channelId)}" data-event-id="${escapeHtml(item.eventId)}">
 			<div class="search-result-meta">${channelName}</div>
 			<div class="search-result-text">${text}</div>

@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { randomUUID, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	deriveSocialPostKey,
 	generateFileMasterKey,
@@ -98,18 +98,18 @@ function decryptAesGcm(envelope, key) {
  * @returns {Promise<string | null>} 64 hex pubKey
  */
 async function resolveEntityPubKeyHex(username, entityHash) {
-	const hash = String(entityHash).toLowerCase()
+	const hash = entityHash
 	try {
 		const { getEntityActivePubKey } = await import('../../../chat/src/entity/identity.mjs')
 		const pub = await getEntityActivePubKey(username, hash)
-		if (isHex64(normalizeHex64(pub))) return normalizeHex64(pub)
+		if (isHex64(pub)) return pub
 	}
 	catch { /* 非本机实体 */ }
 	try {
 		const { createFsEntityStore } = await import('npm:@steve02081504/fount-p2p/node/entity_store')
 		const { entitiesRoot } = await import('../../../chat/src/entity/store.mjs')
 		const profile = await createFsEntityStore(entitiesRoot(username)).readEntityJson(hash, 'profile.json')
-		const pub = normalizeHex64(profile?.activePubKeyHex || '')
+		const pub = profile?.activePubKeyHex || ''
 		if (isHex64(pub)) return pub
 	}
 	catch { /* 无缓存 profile */ }
@@ -162,11 +162,11 @@ export async function maybeEncryptPostContent(username, entityHash, postKeyId, c
 		/** @type {Record<string, object>} */
 		const wraps = {}
 		const recipients = new Set(spec.allow || [])
-		recipients.add(String(entityHash).toLowerCase())
+		recipients.add(entityHash)
 		for (const recipient of recipients) {
 			const pub = await resolveEntityPubKeyHex(username, recipient)
 			if (!pub) {
-				if (recipient === String(entityHash).toLowerCase())
+				if (recipient === entityHash)
 					throw new Error(`cannot resolve author pubkey for pkw: ${recipient}`)
 				continue
 			}
@@ -196,13 +196,13 @@ async function tryUnwrapPkw(username, entityHash, wraps) {
 	if (!entityHash || !wraps) return null
 	try {
 		const { getEntitySecretKey, getEntityActivePubKey } = await import('../../../chat/src/entity/identity.mjs')
-		const pub = normalizeHex64(await getEntityActivePubKey(username, entityHash))
+		const pub = await getEntityActivePubKey(username, entityHash)
 		const wrapped = wraps[pub]
 		if (!wrapped) return null
 		const secretHex = await getEntitySecretKey(username, entityHash)
 		if (!secretHex || secretHex.length !== 64) return null
 		const keyHex = unwrapKeyEcies(wrapped, new Uint8Array(Buffer.from(secretHex, 'hex')))
-		return isHex64(normalizeHex64(keyHex || '')) ? normalizeHex64(keyHex) : null
+		return isHex64(keyHex) ? keyHex : null
 	}
 	catch {
 		return null
@@ -233,8 +233,8 @@ export async function maybeDecryptPostContent(username, entityHash, content, vie
 	}
 
 	const candidates = [
-		viewerEntityHash && String(viewerEntityHash).toLowerCase(),
-		String(entityHash).toLowerCase(),
+		viewerEntityHash && viewerEntityHash,
+		entityHash,
 	].filter(Boolean)
 	const seen = new Set()
 	for (const candidate of candidates) {

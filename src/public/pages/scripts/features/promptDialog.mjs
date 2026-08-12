@@ -39,7 +39,7 @@ function i18nParamAttrs(params = {}) {
  * @returns {Promise<string | null>} 用户输入；取消为 null
  */
 export function promptText(i18nKey, value = '', params = {}) {
-	const key = String(i18nKey || '').trim()
+	const key = i18nKey.trim()
 	if (!key) throw new Error('promptText requires i18n key')
 	return withSharedTemplates(() => pickFromDialog('text_prompt_modal', {
 		titleI18n: key,
@@ -66,7 +66,7 @@ export function promptText(i18nKey, value = '', params = {}) {
  * @returns {Promise<string | null>} 输入或取消
  */
 export function promptTextArea(i18nKey, value = '', params = {}) {
-	const key = String(i18nKey || '').trim()
+	const key = i18nKey.trim()
 	if (!key) throw new Error('promptTextArea requires i18n key')
 	return withSharedTemplates(() => pickFromDialog('text_prompt_modal', {
 		titleI18n: key,
@@ -92,7 +92,7 @@ export function promptTextArea(i18nKey, value = '', params = {}) {
  * @returns {Promise<boolean>} 用户确认
  */
 export async function confirmAction(i18nKey, params = {}) {
-	const key = String(i18nKey || '').trim()
+	const key = i18nKey.trim()
 	if (!key) throw new Error('confirmAction requires i18n key')
 	return await withSharedTemplates(() => pickFromDialog('confirm_modal', {
 		messageI18n: key,

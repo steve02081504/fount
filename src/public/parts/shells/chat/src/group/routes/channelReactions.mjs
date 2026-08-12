@@ -56,13 +56,13 @@ export function registerChannelReactionRoutes(router, authenticate) {
 		if (!targetEventId || !emoji)
 			throw httpError(400, 'targetEventId and emoji required')
 
-		const myPubKeyHash = memberKey.toLowerCase()
+		const myPubKeyHash = memberKey
 		await appendReactionEvent(username, groupId, {
 			type: 'reaction_remove',
 			channelId,
 			targetEventId,
 			emoji,
-			targetPubKeyHash: String(targetPubKeyHash || '').trim() || undefined,
+			targetPubKeyHash: (targetPubKeyHash || '') || undefined,
 		})
 		res.status(200).json({})
 	})
@@ -80,7 +80,7 @@ export function registerChannelReactionRoutes(router, authenticate) {
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId/pins/${EVENT_ID_PARAM}`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { username, groupId, channelId, state, member } = req.groupContext
-		const targetEventId = String(req.params.eventId || '').toLowerCase()
+		const targetEventId = req.params.eventId || ''
 		ensurePinPermission(state, member, channelId)
 
 		await appendUnpinEvent(username, groupId, channelId, targetEventId)
@@ -103,7 +103,7 @@ export function registerChannelReactionRoutes(router, authenticate) {
 		const normalized = items.map(item => {
 			const row = item || {}
 			return {
-				title: String(row.title || '').slice(0, 200),
+				title: (row.title || '').slice(0, 200),
 				description: row.description ? String(row.description).slice(0, 2000) : undefined,
 				targetChannelId: row.targetChannelId ? String(row.targetChannelId).slice(0, 128) : undefined,
 				url: row.url ? String(row.url).slice(0, 2048) : undefined,

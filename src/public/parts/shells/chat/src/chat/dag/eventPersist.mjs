@@ -5,7 +5,7 @@
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
  * 【关联】`materialize.mjs`、`events/meta.mjs`、`../ws/groupWsRpc.mjs`、`./messageFanout.mjs`、`../session/chatRequest.mjs`。
  */
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
@@ -77,7 +77,7 @@ async function invokeAfterAddChatLogEntry(username, groupId, channelId, signPayl
  * @returns {string} 目标成员 pubKeyHash（小写 hex），无效时为空串
  */
 function slashTargetPubKeyHash(signPayload) {
-	return signPayload.content?.targetPubKeyHash?.trim().toLowerCase() || ''
+	return signPayload.content?.targetPubKeyHash?.trim() || ''
 }
 
 /**
@@ -110,7 +110,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 			const state = await materializedState()
 			const entries = blockEntriesFromBanContent(signPayload.content)
 			const targetKey = resolveTargetMemberKey(signPayload.content)
-			const home = normalizeHex64(state.members?.[targetKey]?.homeNodeHash)
+			const home = state.members?.[targetKey]?.homeNodeHash
 			if (isHex64(home) && !entries.some(entry => entry.scope === 'node' && entry.value === home))
 				entries.push({ scope: 'node', value: home })
 			addGroupBlockedPeers(groupId, entries)
@@ -125,11 +125,11 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 		if (target) await applyReputationResetToScores(target)
 	}
 	if (signPayload.type === 'member_join') {
-		const sender = signPayload.sender.trim().toLowerCase()
+		const sender = signPayload.sender.trim()
 		const state = await materializedState()
 		const inviteEdge = [...state.inviteEdges].reverse()
-			.find(edge => edge.to.trim().toLowerCase() === sender)
-		const introducer = signPayload.content?.introducerPubKeyHash?.trim().toLowerCase() || ''
+			.find(edge => edge.to.trim() === sender)
+		const introducer = signPayload.content?.introducerPubKeyHash?.trim() || ''
 		const repEdge = Number.isFinite(inviteEdge?.reputationEdge) ? inviteEdge.reputationEdge : 1
 		const edgeFromJoin = state.members[sender]?.repEdgeFromIntroducer ?? repEdge
 		const powBonus = joinPowBonusFromMemberJoin(state, signPayload)
@@ -137,10 +137,10 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 		if (introducer) {
 			const introNodeHash = state.members[introducer]?.homeNodeHash
 				|| state.members[introducer]?.nodeHash
-			if (introNodeHash && isHex64(String(introNodeHash).trim())) {
-				mergeNetworkPeerPools({ explorePeers: [String(introNodeHash).trim()] })
+			if (introNodeHash && isHex64(introNodeHash)) {
+				mergeNetworkPeerPools({ explorePeers: [introNodeHash] })
 				applyNetworkHint({
-					nodeHash: String(introNodeHash).trim(),
+					nodeHash: introNodeHash,
 					source: `introducer:${introducer.slice(0, 8)}`,
 					kind: 'member_join_introducer',
 					weight: 0.35,
@@ -236,8 +236,8 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 	}
 	const channelMessagesPath = messagesPath(username, groupId, channelId)
 	const existingMessageLines = await readJsonl(channelMessagesPath, { sanitize: stripDagEventLocalExtensions })
-	const messageIdNorm = String(signPayload.id).trim().toLowerCase()
-	const isNewLine = !existingMessageLines.some(row => String(row.eventId).trim().toLowerCase() === messageIdNorm)
+	const messageIdNorm = String(signPayload.id).trim()
+	const isNewLine = !existingMessageLines.some(row => String(row.eventId).trim() === messageIdNorm)
 	const messageLine = {
 		eventId: signPayload.id,
 		type: signPayload.type,

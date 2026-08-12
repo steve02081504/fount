@@ -23,7 +23,7 @@ import { PUB_KEY_HASH_HEX } from './validator.mjs'
  * @returns {Promise<string>} 小写 128-hex entityHash
  */
 async function resolveSignerEntityHash(username, entityHash) {
-	const declared = String(entityHash || '').trim().toLowerCase()
+	const declared = entityHash || ''
 	if (declared) return declared
 	const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
 	const hash = await resolveOperatorEntityHashForUser(username)
@@ -155,7 +155,7 @@ export async function resolveLocalEventSigner(username, groupId, entityHash) {
 	const { state } = await getState(username, groupId)
 	const memberKey = resolveActiveMemberKey(state, derivedHash)
 	const member = memberKey ? state.members[memberKey] : null
-	const memberHash = String(member?.pubKeyHash || '').trim().toLowerCase()
+	const memberHash = String(member?.pubKeyHash || '').trim()
 
 	if (PUB_KEY_HASH_HEX.test(memberHash)) {
 		if (memberHash !== derivedHash)

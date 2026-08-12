@@ -33,7 +33,7 @@ export function createVaultMethods(apiContext) {
 			 * @returns {Promise<object | null>} vault 索引项
 			 */
 			async getFile(shareId, ownerEntityHash) {
-				const owner = String(ownerEntityHash || apiContext.entityHash).toLowerCase()
+				const owner = String(ownerEntityHash || apiContext.entityHash)
 				return getVaultFileByShareId(apiContext.username, owner, String(shareId))
 			},
 		},

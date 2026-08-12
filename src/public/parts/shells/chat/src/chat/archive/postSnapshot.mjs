@@ -61,7 +61,7 @@ export async function resolveDisplaySnapshot(state, row, username, groupId) {
 	if (charId)
 		return resolveCharDisplaySnapshot(state, charId, username, groupId)
 
-	const sender = String(row.sender || '').trim().toLowerCase()
+	const sender = row.sender || ''
 	const member = sender ? state.members?.[sender] : null
 	let name = member?.displayName?.trim() || ''
 	let avatar = null
@@ -96,7 +96,7 @@ export function reactionsForMessage(overlay, eventId) {
 		if (targetId !== eventId || !emoji) continue
 		const row = byEmoji.get(emoji) || { emoji, voters: [] }
 		for (const pubKeyHash of voters)
-			row.voters.push({ pubKeyHash: String(pubKeyHash).toLowerCase(), at: null })
+			row.voters.push({ pubKeyHash: String(pubKeyHash), at: null })
 		byEmoji.set(emoji, row)
 	}
 	return [...byEmoji.values()]
@@ -116,9 +116,9 @@ export async function buildPostSnapshotFromRow(row, state, username, groupId) {
 	const content = row.content ? normalizeChannelMessage(row.content) : null
 	const pins = overlayPinsForChannel(state.messageOverlay, channelId)
 	const prevIds = Array.isArray(row.prev_event_ids)
-		? [...row.prev_event_ids].map(id => String(id).trim().toLowerCase()).filter(isHex64)
+		? [...row.prev_event_ids].map(id => id).filter(isHex64)
 		: undefined
-	const sender = row.sender ? String(row.sender).trim().toLowerCase() : null
+	const sender = row.sender ? String(row.sender).trim() : null
 	let sourceEntityHash = null
 	if (row.charId) {
 		const agentKey = resolveActiveAgentMemberKeyByCharname(state, row.charId)

@@ -24,7 +24,7 @@ function emptySaved() {
  * @returns {Promise<object>} 带 preview / authorName 的引用
  */
 async function enrichPostRef(username, ref) {
-	const entityHash = ref.entityHash.toLowerCase()
+	const entityHash = ref.entityHash
 	const postId = ref.postId
 	const base = { entityHash, postId }
 	const view = await getTimelineMaterialized(username, entityHash)
@@ -101,7 +101,7 @@ export async function saveSavedPosts(username, entityHash, data) {
 export async function addSavedPost(username, entityHash, postRef, folderId = null) {
 	const data = await loadSavedPosts(username, entityHash)
 	const ref = {
-		entityHash: postRef.entityHash.toLowerCase(),
+		entityHash: postRef.entityHash,
 		postId: postRef.postId,
 	}
 	if (folderId) {
@@ -140,7 +140,7 @@ export async function createSavedFolder(username, entityHash, name) {
  */
 export async function removeSavedPost(username, entityHash, postRef, folderId = undefined) {
 	const data = await loadSavedPosts(username, entityHash)
-	const postEntityHash = postRef.entityHash.toLowerCase()
+	const postEntityHash = postRef.entityHash
 	const postId = postRef.postId
 
 	if (folderId) {
@@ -204,7 +204,7 @@ export async function deleteSavedFolder(username, entityHash, folderId) {
  * @returns {Promise<{ posts: object[], query: string }>} 匹配的收藏（含 folderId）
  */
 export async function searchSavedPosts(username, entityHash, query, options = {}) {
-	const q = String(query || '').trim().toLowerCase()
+	const q = String(query || '').trim()
 	const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
 	const enriched = await enrichSavedPosts(username, await loadSavedPosts(username, entityHash))
 	/** @type {object[]} */
@@ -218,7 +218,7 @@ export async function searchSavedPosts(username, entityHash, query, options = {}
 			ref.preview,
 			ref.authorName,
 			ref.entityHash,
-		].filter(Boolean).join('\n').toLowerCase()
+		].filter(Boolean).join('\n')
 		if (q && !haystack.includes(q)) return
 		posts.push({ ...ref, folderId })
 	}

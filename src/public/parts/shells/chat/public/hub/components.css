@@ -613,15 +613,25 @@ body[data-surface="discovery"] .main-header {
 
 /* —— 输入区 —— */
 .input-area {
-	padding: 0 16px 20px;
+	padding: 0 16px calc(20px + env(safe-area-inset-bottom, 0px));
 	max-width: calc(var(--message-max-width) + 32px);
 	margin: 0 auto;
 	width: 100%;
 	box-sizing: border-box;
+	flex-shrink: 0;
+	min-width: 0;
 }
 
 .composer-wrap {
 	position: relative;
+}
+
+.composer-wrap > fieldset {
+	min-width: 0;
+}
+
+#message-input {
+	min-width: 0;
 }
 
 /* 待发送附件：紧凑横向缩略图（对齐旧版 chat） */

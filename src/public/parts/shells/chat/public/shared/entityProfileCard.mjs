@@ -76,7 +76,7 @@ export function paintEntityProfileBanner(host, bannerEl, options) {
 export function normalizeEntityProfile(profile, entityHash) {
 	if (!profile && !entityHash) return null
 	return {
-		entityHash: entityHash,
+		entityHash,
 		avatar: displayProfileAvatar(profile) || null,
 		name: profile?.name || (entityHash ? entityHashLabel(entityHash) : '?'),
 		handle: profile?.handle || null,

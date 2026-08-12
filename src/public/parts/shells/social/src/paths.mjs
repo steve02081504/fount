@@ -9,7 +9,7 @@ import { timelineGroupId } from './federation/namespace.mjs'
  * @returns {string} 时间线目录
  */
 export function timelineDir(username, entityHash) {
-	return `${getUserDictionary(username)}/shells/social/timelines/${entityHash.toLowerCase()}`
+	return `${getUserDictionary(username)}/shells/social/timelines/${entityHash}`
 }
 
 /**
@@ -49,8 +49,7 @@ export function vaultStatePath(username, entityHash) {
  * @returns {string} savedPosts.json
  */
 export function savedPostsPath(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
-	return `${getUserDictionary(username)}/shells/social/entities/${hash}/savedPosts.json`
+	return `${getUserDictionary(username)}/shells/social/entities/${entityHash}/savedPosts.json`
 }
 
 /**
@@ -60,8 +59,7 @@ export function savedPostsPath(username, entityHash) {
  * @returns {string} drafts.json
  */
 export function draftsPath(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
-	return `${getUserDictionary(username)}/shells/social/entities/${hash}/drafts.json`
+	return `${getUserDictionary(username)}/shells/social/entities/${entityHash}/drafts.json`
 }
 
 /**
@@ -71,8 +69,7 @@ export function draftsPath(username, entityHash) {
  * @returns {string} muted_keywords.json
  */
 export function mutedKeywordsPath(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
-	return `${getUserDictionary(username)}/shells/social/entities/${hash}/muted_keywords.json`
+	return `${getUserDictionary(username)}/shells/social/entities/${entityHash}/muted_keywords.json`
 }
 
 /**
@@ -109,8 +106,7 @@ export function socialTrendingIndexPath(username) {
  * @returns {string} scheduled.json
  */
 export function scheduledPostsPath(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
-	return `${getUserDictionary(username)}/shells/social/scheduled/${hash}.json`
+	return `${getUserDictionary(username)}/shells/social/scheduled/${entityHash}.json`
 }
 
 /**
@@ -120,8 +116,7 @@ export function scheduledPostsPath(username, entityHash) {
  * @returns {string} live 目录
  */
 export function liveDir(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
-	return `${getUserDictionary(username)}/shells/social/live/${hash}`
+	return `${getUserDictionary(username)}/shells/social/live/${entityHash}`
 }
 
 /**
@@ -132,7 +127,7 @@ export function liveDir(username, entityHash) {
  * @returns {string} live.json
  */
 export function liveSessionPath(username, entityHash, liveId) {
-	return `${liveDir(username, entityHash)}/${String(liveId).trim().toLowerCase()}.json`
+	return `${liveDir(username, entityHash)}/${liveId}.json`
 }
 
 /**
@@ -143,7 +138,7 @@ export function liveSessionPath(username, entityHash, liveId) {
  * @returns {string} danmaku.jsonl
  */
 export function liveDanmakuPath(username, entityHash, liveId) {
-	return `${liveDir(username, entityHash)}/${String(liveId).trim().toLowerCase()}.danmaku.jsonl`
+	return `${liveDir(username, entityHash)}/${liveId}.danmaku.jsonl`
 }
 
 /**

@@ -48,8 +48,8 @@ function escapeMarkdownInfoStringValue(value) {
  * @returns {string} 高亮语言标识
  */
 export function inferCodeLanguageFromPath(filepath) {
-	const normalized = String(filepath || '').replace(/\\/g, '/')
-	const filename = normalized.split('/').pop()?.toLowerCase() || ''
+	const normalized = (filepath || '').replace(/\\/g, '/')
+	const filename = (normalized.split('/').pop() || '').toLowerCase()
 	const extension = filename.match(/\.(?<ext>[^.]+)$/)?.groups.ext || 'txt'
 	return languageMap.languages(extension)?.[0]
 }
@@ -60,7 +60,7 @@ export function inferCodeLanguageFromPath(filepath) {
  * @returns {string} Markdown 代码块
  */
 export function renderMarkdownCodeBlock(code, options = {}) {
-	const content = String(code ?? '')
+	const content = code ?? ''
 	const fence = getSafeFence(content)
 	const { lang = '', title = '' } = options
 	const info = [
@@ -76,6 +76,6 @@ export function renderMarkdownCodeBlock(code, options = {}) {
  * @returns {string} 内联代码
  */
 export function renderMarkdownInlineCode(code, lang = '') {
-	const escaped = String(code ?? '').replace(/`/g, '\\`')
+	const escaped = (code ?? '').replace(/\\/g, '\\\\').replace(/`/g, '\\`')
 	return `\`${escaped}${lang ? `{:${lang}}` : ''}\``
 }

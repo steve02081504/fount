@@ -30,7 +30,7 @@ function sanitizeRemoteStamp(stamp) {
 	const row = /** @type {{ at?: unknown, entity_hash?: unknown }} */ stamp
 	return {
 		at: Number(row.at) || 0,
-		entity_hash: String(row.entity_hash || '').toLowerCase().slice(0, 128),
+		entity_hash: String(row.entity_hash || '').slice(0, 128),
 	}
 }
 
@@ -43,7 +43,7 @@ function sanitizeRemoteLink(link) {
 	const row = /** @type {{ owner_entity_hash?: unknown, cabinet_id?: unknown, entry_id?: unknown }} */ link
 	const entryId = row.entry_id ? String(row.entry_id).slice(0, 128) : null
 	return {
-		owner_entity_hash: String(row.owner_entity_hash || '').toLowerCase().slice(0, 128),
+		owner_entity_hash: String(row.owner_entity_hash || '').slice(0, 128),
 		cabinet_id: String(row.cabinet_id || '').slice(0, 128),
 		entry_id: entryId,
 	}

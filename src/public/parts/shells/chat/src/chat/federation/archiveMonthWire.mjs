@@ -12,10 +12,10 @@ import { parseArchiveMonthWireParts } from '../archive/monthChunks.mjs'
  */
 export function parseFedArchiveMonthWant(payload) {
 	if (!isPlainObject(payload)) return null
-	const groupId = String(payload.groupId || '').trim()
-	const channelId = String(payload.channelId || '').trim()
-	const utcMonth = String(payload.utcMonth || '').trim()
-	const requestId = String(payload.requestId || '').trim()
+	const groupId = payload.groupId || ''
+	const channelId = payload.channelId || ''
+	const utcMonth = payload.utcMonth || ''
+	const requestId = payload.requestId || ''
 	const attestation = isPlainObject(payload.attestation) ? payload.attestation : null
 	if (!groupId || !channelId || !/^\d{4}-\d{2}$/u.test(utcMonth) || !requestId || !attestation)
 		return null
@@ -24,7 +24,7 @@ export function parseFedArchiveMonthWant(payload) {
 		channelId,
 		utcMonth,
 		requestId,
-		requesterNodeHash: String(payload.requesterNodeHash || '').trim(),
+		requesterNodeHash: payload.requesterNodeHash || '',
 		attestation,
 	}
 }
@@ -35,14 +35,14 @@ export function parseFedArchiveMonthWant(payload) {
  */
 export function parseFedArchiveMonthResponse(payload) {
 	if (!isPlainObject(payload)) return null
-	const requestId = String(payload.requestId || '').trim()
-	const channelId = String(payload.channelId || '').trim()
-	const utcMonth = String(payload.utcMonth || '').trim()
+	const requestId = payload.requestId || ''
+	const channelId = payload.channelId || ''
+	const utcMonth = payload.utcMonth || ''
 	if (!requestId || !channelId || !/^\d{4}-\d{2}$/u.test(utcMonth)) return null
 	if ('body' in payload) return null
 	if (payload.complete !== true && payload.complete !== false) return null
 	const complete = payload.complete === true
-	const digest = String(payload.digest || '').trim().toLowerCase()
+	const digest = payload.digest || ''
 	const parts = complete
 		? parseArchiveMonthWireParts(payload.parts) ?? null
 		: []
@@ -54,6 +54,6 @@ export function parseFedArchiveMonthResponse(payload) {
 		digest: complete ? digest : '',
 		parts: complete ? parts : [],
 		complete,
-		reason: String(payload.reason || '').trim(),
+		reason: payload.reason || '',
 	}
 }

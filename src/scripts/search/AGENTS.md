@@ -10,7 +10,7 @@ Shard I/O edges / trending fill: [docs/index-io.md](docs/index-io.md).
 
 ## Engine (`src/scripts/search/`)
 
-- **`tokenize.mjs`**: CJK → bigram; latin/digits → lowercased words; `#hashtag` kept whole. Bump `TOKENIZER_VERSION` on tokenization changes (triggers rebuild).
+- **`tokenize.mjs`**: CJK → bigram; latin/digits / `#hashtag` → **lowercase posting keys** (inverted-index map keys need one canonical form; `/i` cannot replace key lookup). UI substring filters elsewhere use `RegExp(..., 'i')` instead of pre-lowering haystacks. Bump `TOKENIZER_VERSION` on tokenization changes (triggers rebuild).
 - **`invertedIndex.mjs`**: Per-shard `{indexDir}/{shardKey}/` — `postings.json`, append-only `docs.jsonl`, `meta.json`. Writes use `withAsyncMutex` per shard.
 - **Query**: token intersection → candidates → **`verify` callback** substring check (kills bigram false positives).
 

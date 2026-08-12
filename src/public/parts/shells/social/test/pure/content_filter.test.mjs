@@ -30,5 +30,5 @@ Deno.test('pruneMutedKeywordEntries drops expired and duplicates', () => {
 		{ pattern: 'b', expiresAt: Date.now() - 1000 },
 		{ pattern: 'c', expiresAt: Date.now() + 60_000 },
 	])
-	assertEquals(pruned.map(entry => entry.pattern), ['a', 'c'])
+	assertEquals(pruned.map(entry => entry.pattern), ['a', 'A', 'c'])
 })

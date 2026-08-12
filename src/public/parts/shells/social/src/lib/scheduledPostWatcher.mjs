@@ -15,7 +15,7 @@ const deadlines = createDeadlineScheduler()
  * @returns {string} 调度键
  */
 function scheduleKey(entityHash, scheduledId) {
-	return `${entityHash.toLowerCase()}:${scheduledId}`
+	return `${entityHash}:${scheduledId}`
 }
 
 /**
@@ -25,7 +25,7 @@ function scheduleKey(entityHash, scheduledId) {
  * @returns {Promise<void>}
  */
 export async function fireScheduledPost(username, entityHash, scheduledId) {
-	const owner = entityHash.toLowerCase()
+	const owner = entityHash
 	const row = takeScheduledPost(username, owner, scheduledId)
 	if (!row) return
 	const resolved = await resolveSocialEntity(owner, username)
@@ -44,7 +44,7 @@ export async function fireScheduledPost(username, entityHash, scheduledId) {
  * @returns {void}
  */
 export function scheduleOneScheduledPost(username, entityHash, row) {
-	const owner = entityHash.toLowerCase()
+	const owner = entityHash
 	const publishAt = Number(row.publishAt)
 	if (!Number.isFinite(publishAt)) return
 	void deadlines.schedule(scheduleKey(owner, row.scheduledId), publishAt, () =>
@@ -67,7 +67,7 @@ export function cancelScheduledPostTimer(username, entityHash, scheduledId) {
  * @returns {void}
  */
 export function scheduleEntityScheduledPosts(username, entityHash) {
-	const owner = entityHash.toLowerCase()
+	const owner = entityHash
 	for (const row of listScheduledPosts(username, owner))
 		scheduleOneScheduledPost(username, owner, row)
 }

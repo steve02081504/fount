@@ -37,7 +37,7 @@ export async function renderDecryptBodyHtml(message) {
 export async function renderStickerBlock(message) {
 	const content = message?.content
 	if (!content || channelMessageKind(content) !== 'sticker') return null
-	let src = String(content.stickerBase64 || '')
+	let src = content.stickerBase64 || ''
 	const refMatch = parseEmojiToken(content.emojiRef)
 	if (!src && refMatch)
 		src = await resolvePackEmojiUrl(refMatch.packId, refMatch.emojiId) || ''
@@ -97,8 +97,8 @@ export async function renderMessageRefBlockHtml(message, messagesByEventId) {
 	if (!replyTo?.eventId) return ''
 	const eventId = replyTo.eventId
 	const parent = messagesByEventId?.get(eventId)
-	let author = String(replyTo.senderName || '').trim()
-	let previewText = String(replyTo.preview || '').trim()
+	let author = replyTo.senderName || ''
+	let previewText = replyTo.preview || ''
 	if (parent) {
 		if (!author) {
 			const keys = authorPresentationKeys(parent.charId ?? parent.sender ?? '?')

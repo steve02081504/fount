@@ -57,15 +57,15 @@ async function waitForRosterPeers(slot, maxWaitMs = SHUN_PROBE_ROSTER_WAIT_MS) {
  * @returns {string[]} 去重 nodeHash 列表
  */
 export function collectKnownPeerNodeHashes(state, selfNodeHash, rosterNodeHashes = null) {
-	const self = normalizeHex64(selfNodeHash) || ''
+	const self = selfNodeHash || ''
 	const fromMembers = new Set()
 	for (const member of Object.values(state?.members || {})) {
 		if (member?.status !== 'active') continue
-		const home = normalizeHex64(member.homeNodeHash)
+		const home = member.homeNodeHash
 		if (isHex64(home) && home !== self) fromMembers.add(home)
 	}
 	const fromRoster = [...new Set(
-		(rosterNodeHashes || []).map(id => normalizeHex64(id)).filter(isHex64),
+		(rosterNodeHashes || []).filter(isHex64),
 	)].filter(h => h !== self)
 	return fromRoster.filter(h => fromMembers.has(h))
 }
@@ -79,7 +79,7 @@ export function collectKnownPeerNodeHashes(state, selfNodeHash, rosterNodeHashes
  * @returns {{ suspected: boolean, shunnedBy: string[] }} 是否疑似出局与窗口内 shun 来源
  */
 export function evaluateShunConsensusPure(knownPeerNodeHashes, shunsByNode, nowMs = Date.now(), windowMs = SHUN_CONSENSUS_WINDOW_MS) {
-	const peers = [...new Set((knownPeerNodeHashes || []).map(id => String(id).trim().toLowerCase()).filter(isHex64))]
+	const peers = [...new Set((knownPeerNodeHashes || []).map(id => id).filter(isHex64))]
 	if (!peers.length) return { suspected: false, shunnedBy: [] }
 	const shunnedBy = peers.filter(nodeHash => {
 		const at = shunsByNode[nodeHash]
@@ -125,7 +125,7 @@ export function resolveShunForNodeHashRequester(fedState, isBlockedPeer, request
 	if (fedState?.bannedNodes?.has?.(node)) return { shun: true, reason: 'not_a_member' }
 	let matched = false
 	for (const member of Object.values(fedState?.members || {})) {
-		if (normalizeHex64(member?.homeNodeHash) !== node) continue
+		if (member?.homeNodeHash !== node) continue
 		matched = true
 		if (member.status === 'active') return { shun: false, reason: null }
 	}
@@ -168,14 +168,14 @@ export function sendFedShun(fedOut, fedShunSend, groupId, localNodeHash, request
  * @returns {Promise<void>}
  */
 export async function pushFedShunToHomeNode(username, groupId, targetHomeNodeHash, reason = 'not_a_member') {
-	const home = normalizeHex64(targetHomeNodeHash)
+	const home = targetHomeNodeHash
 	if (!isHex64(home)) return
 	const { getFederationPartitionSlot } = await import('./registry.mjs')
 	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
 	const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
 	if (!slot?.sendToPeer || !slot.fedOut) return
 	const peerId = slot.getPeerIdByNodeHash?.(home)
-		|| slot.getRoster().find(peer => normalizeHex64(peer?.remoteNodeHash) === home)?.peerId
+		|| slot.getRoster().find(peer => peer?.remoteNodeHash === home)?.peerId
 	if (!peerId) return
 	sendFedShun(
 		slot.fedOut,
@@ -228,7 +228,7 @@ export async function recordInboundShun(username, groupId, fromNodeHash, reason)
  */
 export function rosterNodeHashesFromSlot(slot) {
 	if (!slot?.getRoster) return null
-	return slot.getRoster().map(peer => normalizeHex64(peer?.remoteNodeHash)).filter(isHex64)
+	return slot.getRoster().map(peer => peer?.remoteNodeHash).filter(isHex64)
 }
 
 /**

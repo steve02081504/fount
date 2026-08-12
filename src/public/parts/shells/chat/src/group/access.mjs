@@ -80,7 +80,7 @@ export async function resolveActiveMemberKeyForLocalReplica(replicaUsername, gro
 	const { peekLocalSignerPubKeyHash } = await import('../chat/dag/localSigner.mjs')
 	for (const [key, member] of Object.entries(state.members || {})) {
 		if (member?.status !== 'active') continue
-		const entityHash = String(member.entityHash || '').trim().toLowerCase()
+		const entityHash = member.entityHash || ''
 		if (!entityHash) continue
 		const sender = await peekLocalSignerPubKeyHash(replicaUsername, groupId, entityHash)
 		if (sender && resolveActiveMemberKey(state, sender) === key) return key

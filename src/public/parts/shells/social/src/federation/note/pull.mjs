@@ -17,7 +17,7 @@ function authorFromNoteEvent(event) {
 	const expectedPrefix = 'social-timeline:'
 	const groupId = String(event?.groupId || '')
 	if (!groupId.startsWith(expectedPrefix)) return null
-	const hash = groupId.slice(expectedPrefix.length).toLowerCase()
+	const hash = groupId.slice(expectedPrefix.length)
 	return hash.length === 128 ? hash : null
 }
 
@@ -28,8 +28,8 @@ function authorFromNoteEvent(event) {
  * @returns {Promise<{ attempted: number, imported: number }>} 同步统计
  */
 export async function pullPostNotes(username, targetEntityHash, postId) {
-	const target = String(targetEntityHash).toLowerCase()
-	const id = String(postId).trim()
+	const target = targetEntityHash
+	const id = postId
 	let afterAuthor = null
 	let imported = 0
 	let attempted = 0

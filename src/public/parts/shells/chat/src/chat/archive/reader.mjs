@@ -17,7 +17,7 @@ async function readJsonlFile(filePath) {
 	const input = createReadStream(filePath, { encoding: 'utf8' })
 	const lines = createInterface({ input, crlfDelay: Infinity })
 	for await (const line of lines) {
-		const trimmed = String(line).trim()
+		const trimmed = line
 		if (!trimmed) continue
 		rows.push(JSON.parse(trimmed))
 	}

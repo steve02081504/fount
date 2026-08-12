@@ -43,7 +43,7 @@ export function setChannelReadMarker(username, entityHash, groupId, channelId, m
 	const nextSeq = Number(marker.seq)
 	if (prev && Number(prev.seq) >= nextSeq) return
 	markers[groupId][channelId] = {
-		eventId: String(marker.eventId).trim().toLowerCase(),
+		eventId: String(marker.eventId).trim(),
 		seq: nextSeq,
 	}
 	assignEntityShellData(username, 'chat', entityHash, DATANAME, markers)

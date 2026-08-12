@@ -21,10 +21,10 @@
 	<link href="./index.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 </head>
 
-<body class="m-0 h-screen w-screen overflow-hidden bg-[var(--bg-main)] text-[var(--text-normal)] font-['gg_sans','Noto_Sans',system-ui,sans-serif]">
+<body class="m-0 h-dvh w-screen overflow-hidden bg-[var(--bg-main)] text-[var(--text-normal)] font-['gg_sans','Noto_Sans',system-ui,sans-serif]">
 	<div class="drawer drawer-end">
 		<input id="files-drawer-toggle" type="checkbox" class="drawer-toggle" aria-hidden="true" tabindex="-1" />
-		<div class="drawer-content flex h-screen w-screen bg-[var(--bg-main)] text-[var(--text-normal)]">
+		<div class="drawer-content flex h-dvh w-screen bg-[var(--bg-main)] text-[var(--text-normal)]">
 			<aside class="server-bar w-[72px] shrink-0 overflow-y-auto bg-[var(--bg-server)] py-3 flex flex-col items-center gap-2" id="server-bar" data-i18n="chat.hub.serverBar">
 				<button type="button" class="server-item" data-mode="friends" data-i18n="chat.hub.friends.tooltip">
 					<img src="https://api.iconify.design/line-md/person.svg" width="24" height="24" alt="" aria-hidden="true" />
@@ -190,7 +190,7 @@
 					</div>
 					<div id="channel-pins-bar" class="channel-pins-bar" hidden></div>
 					<div class="main-body flex flex-1 min-h-0 min-w-0 relative">
-						<div class="messages flex-1 overflow-y-auto flex flex-col min-w-0" id="messages">
+						<div class="messages flex-1 overflow-y-auto flex flex-col min-h-0 min-w-0" id="messages">
 							<div class="empty" aria-hidden="true">
 								<div class="empty-icon"><img src="https://api.iconify.design/line-md/chat-round.svg" class="empty-icon-img" width="48" height="48" alt="" aria-hidden="true" /></div>
 							</div>

@@ -69,9 +69,8 @@ export function getDmLinkNonce() {
  * @returns {Promise<void>}
  */
 export async function syncDmIntroNonceToNode(nonce) {
-	const normalized = nonce.trim()
-	if (normalized.length < 16) throw new Error('dmIntro nonce too short')
-	await putFederationSettings({ dmIntroNonce: normalized })
+	if (nonce.length < 16) throw new Error('dmIntro nonce too short')
+	await putFederationSettings({ dmIntroNonce: nonce })
 }
 
 /**
@@ -91,7 +90,6 @@ export async function rotateDmLinkAndSync(options = {}) {
  * @returns {Promise<string>} `fount://run/…/dm;…`
  */
 export async function createDmLinkAndSync(options) {
-	const pubKey = normalizeHex64(options.pubKeyHex)
 	const nonce = options.nonce || getDmLinkNonce()
 	const signFn = options.signFn || sign
 	const url = await createDmLink({ ...options, nonce, signFn })

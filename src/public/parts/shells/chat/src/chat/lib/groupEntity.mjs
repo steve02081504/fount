@@ -22,7 +22,7 @@ export function isGroupEntityHash(entityHash) {
 export async function groupIdFromGroupEntity(entityHash, username) {
 	if (!isGroupEntityHash(entityHash)) return null
 	if (!username) return null
-	return resolveLogicalEntityId(username, String(entityHash).trim().toLowerCase())
+	return resolveLogicalEntityId(username, entityHash)
 }
 
 /**

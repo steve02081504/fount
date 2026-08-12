@@ -1,7 +1,6 @@
 /**
  * 联邦房间生命周期：按需 join 信令分区、注册 handler、暴露 FederationSlot。
  */
-import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { createActionRegistry } from 'npm:@steve02081504/fount-p2p/registries/action'
 import { createGroupLinkSet } from 'npm:@steve02081504/fount-p2p/transport/group_link_set'
@@ -34,7 +33,7 @@ import {
 	setFederationPartitionInflight,
 	setFederationPartitionSlot,
 } from './registry.mjs'
-import { resolveGroupRoomCredentials } from './roomCredentials.mjs'
+import { federationSlotCredParams, resolveGroupRoomCredentials } from './roomCredentials.mjs'
 import { attachFederationRoomHandlers } from './roomHandlers/index.mjs'
 import { createFederationRoomHandlerBundle } from './roomHandlers/roomContext.mjs'
 import { warmSeenFromLocalEvents } from './seen.mjs'
@@ -53,11 +52,10 @@ const INTRODUCER_DIAL_TIMEOUT_MS = 8000
  * @returns {Promise<void>}
  */
 async function awaitIntroducerDial(targetNodeHash) {
-	const hash = normalizeHex64(targetNodeHash)
-	if (!hash) return
+	if (!targetNodeHash) return
 	try {
 		await Promise.race([
-			ensureLinkToNode(hash).then(() => null),
+			ensureLinkToNode(targetNodeHash).then(() => null),
 			new Promise(resolve => setTimeout(resolve, INTRODUCER_DIAL_TIMEOUT_MS)),
 		])
 	}
@@ -72,7 +70,8 @@ async function awaitIntroducerDial(targetNodeHash) {
  * @returns {boolean} slot 是否仍绑定同一 room
  */
 function partitionSlotMatchesCredentials(slot, roomCreds) {
-	return slot?.roomId === roomCreds.roomId && slot?.roomSecret === roomCreds.password
+	const { roomId, roomSecret } = federationSlotCredParams(roomCreds)
+	return slot?.roomId === roomId && slot?.roomSecret === roomSecret
 }
 
 /**
@@ -176,9 +175,9 @@ export async function isFederationRoomAlreadyBound(username, groupId, options = 
  */
 export async function resolveFederationSlotForAction(username, groupId, options = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	const action = String(options.actionName || '').trim().toLowerCase()
-	const eventType = String(options.eventType || '').trim().toLowerCase()
-	const channelId = String(options.channelId || '').trim() || undefined
+	const action = options.actionName || ''
+	const eventType = options.eventType || ''
+	const channelId = (options.channelId || '') || undefined
 	if (action === 'dag_event' || eventType)
 		return await ensureFederationPartitionRoom(
 			username,
@@ -231,10 +230,10 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			const localEvents = await readJsonl(eventsPath(username, groupId))
 			warmSeenFromLocalEvents(username, groupId, localEvents)
 			const members = Object.values((await loadFederationMaterializedState(username, groupId))?.members || {})
-				.map(member => normalizeHex64(member?.homeNodeHash || member?.nodeHash))
+				.map(member => member?.homeNodeHash || member?.nodeHash)
 				.filter(Boolean)
-			const bootstrapNodeHash = normalizeHex64(peekFederationBootstrap(username, groupId)?.fromNodeId)
-			const peerHintNodeHash = normalizeHex64(peekPeerRoomHint(username, groupId)?.fromNodeId)
+			const bootstrapNodeHash = peekFederationBootstrap(username, groupId)?.fromNodeId
+			const peerHintNodeHash = peekPeerRoomHint(username, groupId)?.fromNodeId
 			if (bootstrapNodeHash) members.push(bootstrapNodeHash)
 			if (peerHintNodeHash) members.push(peerHintNodeHash)
 			const room = createGroupLinkSet({
@@ -304,11 +303,12 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				getSlot: () => slotRef,
 			}))
 
+			const slotCreds = federationSlotCredParams(roomCreds)
 			const slot = buildFederationSlot({
 				partitionId,
-				roomId: roomCreds.roomCreds.roomId,
+				roomId: slotCreds.roomId,
 				room,
-				roomSecret: roomCreds.password,
+				roomSecret: slotCreds.roomSecret,
 				groupId,
 				roomKey: rtcRoomKey,
 				rtcLimits,

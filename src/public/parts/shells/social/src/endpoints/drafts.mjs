@@ -12,7 +12,7 @@ export function registerDraftsRoutes(router) {
 	router.get('/api/parts/shells\\:social/drafts', authenticate, socialJson((req, { client }) => client.drafts.list()))
 
 	router.get('/api/parts/shells\\:social/drafts/:draftId', authenticate, socialJson(async (req, { client }) => {
-		const draftId = String(req.params.draftId || '').trim()
+		const draftId = req.params.draftId
 		if (!draftId) throw httpError(400, 'draftId required')
 		return client.drafts.get(draftId)
 	}))
@@ -21,7 +21,7 @@ export function registerDraftsRoutes(router) {
 		client.drafts.upsert(req.body || {})))
 
 	router.delete('/api/parts/shells\\:social/drafts/:draftId', authenticate, socialJson(async (req, { client }) => {
-		const draftId = String(req.params.draftId || '').trim()
+		const draftId = req.params.draftId
 		if (!draftId) throw httpError(400, 'draftId required')
 		return client.drafts.delete(draftId)
 	}))
