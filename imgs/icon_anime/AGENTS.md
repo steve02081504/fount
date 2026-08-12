@@ -59,3 +59,4 @@ Production deep-links `fluid/**`; `fluid/index.mjs` is the test/public barrel. L
 
 - **One pressure language / one density language / viscosity ladder** — see [physics-notes.md](docs/physics-notes.md). Do not invent parallel hydro models.
 - Gravity acquire: `document` → browser APIs; Termux → `termux-sensor`; else no-op. path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing. Termux stop **must** `termux-sensor -c` *before* killing the stream CLI — kill-first leaves listeners stuck ([termux-api#902](https://github.com/termux/termux-api/issues/902)).
+- Sensors only while the icon TUI is actually up (`canUseTui` + `openTui`). `dismiss` stops acquire **before** tearing down play/alt-screen; `abort` / `farewell` teardown also stop. No sampling while the log/server main screen is showing.

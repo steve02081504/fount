@@ -13,6 +13,7 @@ import * as player from './player.mjs'
 import {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene/index.mjs'
+import { canUseTui } from './terminal.mjs'
 
 /** 用户中止本会话：一旦 abort 保持到进程结束。 */
 const userAc = new AbortController()
@@ -40,10 +41,10 @@ const holdFrames = () => hold(state)
 
 /**
  * 接线 player 回调并进入备用屏。
+ * 传感器只在真正进入 TUI 播放时采集（dismiss / abort / farewell 收尾停采）。
  * @returns {void}
  */
 const openTui = () => {
-	startGravity()
 	player.start({
 		onUserAbort: abort,
 		/**
@@ -71,6 +72,7 @@ const openTui = () => {
 				windPointer(state.wind, { x, y, right: pointerEvent.right })
 		},
 	})
+	if (canUseTui) startGravity()
 }
 
 /**
@@ -126,13 +128,14 @@ export async function sleep(milliseconds) {
 
 /**
  * 停止保持、离开备用屏；保留状态以待 farewell。
+ * 立刻停传感器，再拆播放 / 备用屏（切回主屏期间不再采）。
  * @returns {Promise<void>}
  */
 export async function dismiss() {
 	if (!state) return
+	stopGravity()
 	await haltPlay()
 	player.stop()
-	stopGravity()
 }
 
 /**

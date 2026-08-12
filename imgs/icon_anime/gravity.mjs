@@ -107,16 +107,24 @@ const applySample = (ax, ay, az) => {
 
 /**
  * 开始读取设备重力（无采集后端时保持默认）。
+ * @param {{ loadAcquire?: typeof loadAcquire }} [deps] 可注入采集加载（测试）
  * @returns {void}
  */
-export const startGravity = () => {
+export const startGravity = (deps = {}) => {
+	const loader = deps.loadAcquire ?? loadAcquire
 	live = defaultGravity()
 	rawTarget = defaultGravity()
 	stopGravity()
 	const gen = ++acquireGen
-	void loadAcquire().then((mod) => {
+	void loader().then((mod) => {
 		if (gen !== acquireGen) return
-		stopAcquire = mod.start(applySample)
+		const stop = mod.start(applySample)
+		// stopGravity 可能在 start() 同步路径里发生：立刻释放，勿留下孤儿采集。
+		if (gen !== acquireGen) {
+			stop()
+			return
+		}
+		stopAcquire = stop
 	})
 }
 
