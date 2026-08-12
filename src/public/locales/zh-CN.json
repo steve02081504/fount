@@ -5411,7 +5411,13 @@
 					"placeholder": "用于测试的文件路径，例如 C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "请先填写测试文件路径。",
-				"success": "已尝试在外部编辑器中打开。"
+				"success": "已尝试在外部编辑器中打开。",
+				"lineInput": {
+					"aria-label": "行号"
+				},
+				"columnInput": {
+					"aria-label": "列号"
+				}
 			}
 		},
 		"logout": {
