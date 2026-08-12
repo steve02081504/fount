@@ -485,10 +485,13 @@ Deno.test('rewriteTelegramMentionsToFount rewrites @BotUsername mention entity',
 		loadParts: ['shells/chat'],
 	})()
 
+	const { seedStubCharPart } = await import('../../../chat/test/harness.mjs')
 	const { claimAgentBridgeIdentity, bridgeEntityHash } = await import('../../../chat/src/chat/bridge/identity.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../../chat/src/entity/member.mjs')
 	const botId = 900001
 	const botUsername = 'MockTgBot'
+	const charPartName = 'on_message_yes'
+	await seedStubCharPart(dataDir, username, charPartName)
 	// 未绑定前为伪 hash；绑定后为 char hash
 	const unbound = bridgeEntityHash('telegram', botId)
 	const { rewriteTelegramMentionsToFount } = await import('../../src/format.mjs')
@@ -500,8 +503,8 @@ Deno.test('rewriteTelegramMentionsToFount rewrites @BotUsername mention entity',
 	})
 	assert(before.includes(`@[entity:${unbound}]`))
 
-	await claimAgentBridgeIdentity(username, 'telegram', botId, 'on_message_yes', botUsername)
-	const charHash = await ensureLocalAgentEntityHash(username, 'on_message_yes')
+	await claimAgentBridgeIdentity(username, 'telegram', botId, charPartName, botUsername)
+	const charHash = await ensureLocalAgentEntityHash(username, charPartName)
 	const after = await rewriteTelegramMentionsToFount(username, text, entities, {
 		id: botId, username: botUsername,
 	})
