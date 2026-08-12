@@ -1,0 +1,22 @@
+{
+	"id": "log_viewer",
+	"suites": [
+		{
+			"name": "pure",
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/log_viewer/test/"
+			],
+			"triggers": [
+				"src/log_viewer/**",
+				"src/scripts/test/deno/serial.mjs"
+			]
+		}
+	]
+}

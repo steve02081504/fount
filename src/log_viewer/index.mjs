@@ -9,8 +9,9 @@
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
  * - WebSocket 异常断开（无 `fount_exit`）按指数退避重连，等服务器再次起来。
  * - 进程退出只认本模块 `exitSignal`（on_shutdown / 主动 abort）；`icon.signal`（logo 内 Ctrl+C）接到此信号。
+ * - 选择器模式（`fount log error:5`）：无进退场动画、取快照过滤后直接输出并退出，不保持长连接。
  *
- * 直接执行：`deno run -c deno.json --allow-net=localhost src/log_viewer/index.mjs`
+ * 直接执行：`deno run -c deno.json --allow-net=localhost src/log_viewer/index.mjs [selector]`
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -28,12 +29,11 @@ import { setWindowTitle } from '../scripts/title.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
 import { ANSI_RESET, LEVEL_PREFIX_COLORS } from './render.mjs'
-
-setWindowTitle('𝓯𝓸𝓾')
-SetTaskbarProgress(50)
+import { logSelectorUsage, parseLogSelector, selectLogEntries } from './selector.mjs'
 
 const FOUNT_DIR = path.resolve(import.meta.dirname + '/../../')
 const INTERACTIVE = process.stdout.isTTY && process.stdout.writable && supportsAnsi
+const CLI_ARGS = process.argv.slice(2)
 
 /** 本进程退出意图（唯一权威）。 */
 const exitAbortController = new AbortController()
@@ -181,14 +181,18 @@ async function ensureInteractiveLogSink() {
 	})
 }
 
-on_shutdown(async () => {
-	if (!exitAbortController.signal.aborted) exitAbortController.abort()
-	logSink.tearDown?.()
-	ClearTaskbarProgress()
-	await icon.farewell()
-})
-// logo 内 Ctrl+C → process.exit 会先跑上面的 on_shutdown
-icon.signal.addEventListener('abort', () => process.exit(0), { once: true })
+/**
+ * 探测服务器是否已在监听；失败即返回 false（选择器模式用，不重试）。
+ * @returns {Promise<boolean>} 就绪为 true。
+ */
+async function isServerReady() {
+	try {
+		const response = await fetch(PING_URL, { signal: AbortSignal.timeout(2000) })
+		return response.ok
+	} catch {
+		return false
+	}
+}
 
 /**
  * 阻塞至 `/api/ping` 返回 200；`waitLogo` 时 `start`（已在播则 noop）叠加等待动画，连上 `dismiss`。
@@ -201,7 +205,7 @@ async function pollUntilServerReady({ waitLogo = false } = {}) {
 		logSink.suspend?.()
 		icon.start()
 	}
-	let delay = 200
+	let delayMs = 200
 	try {
 		while (!exitSignal.aborted)
 			try {
@@ -212,8 +216,8 @@ async function pollUntilServerReady({ waitLogo = false } = {}) {
 				throw new Error(String(response.status))
 			} catch {
 				if (exitSignal.aborted) break
-				await sleep(delay)
-				delay = Math.min(delay * 2, 5000)
+				await sleep(delayMs)
+				delayMs = Math.min(delayMs * 2, 5000)
 			}
 
 	} finally {
@@ -347,10 +351,90 @@ function runOneConnection(exitContext) {
 }
 
 /**
+ * 连接 `/ws/logs`，取首帧快照后立即断开（忽略 tip / append / 进退场）。
+ * @returns {Promise<import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry[]>} 快照条目。
+ */
+function fetchLogSnapshotOnce() {
+	return new Promise((resolve, reject) => {
+		let settled = false
+		/** @type {ReturnType<typeof connectLogWire> | null} */
+		let conn = null
+		/**
+		 * 幂等收尾。
+		 * @param {() => void} finish - 兑现或拒绝。
+		 * @returns {void}
+		 */
+		const settle = (finish) => {
+			if (settled) return
+			settled = true
+			try { conn?.detach?.() } catch { /* ignore */ }
+			try { conn?.close?.() } catch { /* ignore */ }
+			finish()
+		}
+		try {
+			conn = connectLogWire(WS_URL, {
+				onSnapshot: (entries) => {
+					settle(() => resolve(entries))
+				},
+				onClose: () => {
+					settle(() => reject(new Error('log_wire_closed_before_snapshot')))
+				},
+				onError: () => { /* onClose 收尾 */ },
+				onFatal: (err) => {
+					settle(() => reject(err instanceof Error ? err : new Error(String(err))))
+				},
+			})
+		} catch (error) {
+			settle(() => reject(error instanceof Error ? error : new Error(String(error))))
+		}
+	})
+}
+
+/**
+ * 选择器模式：探测服务器 → 拉快照 → 过滤输出 → 退出。无动画、不长连。
+ * @param {string} rawSelector - CLI 选择器原文。
+ * @returns {Promise<void>}
+ */
+async function mainSelector(rawSelector) {
+	let selector
+	try {
+		selector = parseLogSelector(rawSelector)
+	} catch (error) {
+		process.stderr.write(
+			`log_viewer: bad selector ${JSON.stringify(rawSelector)} (${error?.message ?? error})\n${logSelectorUsage()}\n`,
+		)
+		process.exit(1)
+	}
+
+	if (!await isServerReady()) {
+		process.stderr.write('log_viewer: fount server is not running\n')
+		process.exit(1)
+	}
+
+	const entries = await fetchLogSnapshotOnce()
+	const selected = selectLogEntries(entries, selector)
+	for (const entry of selected)
+		await plainWriteEntry(entry)
+	process.exit(0)
+}
+
+/**
  * 进入运行循环：等待服务器就绪 → 建立连接 → 处理终止原因（重连/退出/退避）。
  * @returns {Promise<void>} 仅在 `process.exit` 被调用时实际终止。
  */
-async function main() {
+async function mainInteractive() {
+	setWindowTitle('𝓯𝓸𝓾')
+	SetTaskbarProgress(50)
+
+	on_shutdown(async () => {
+		if (!exitAbortController.signal.aborted) exitAbortController.abort()
+		logSink.tearDown?.()
+		ClearTaskbarProgress()
+		await icon.farewell()
+	})
+	// logo 内 Ctrl+C → process.exit 会先跑上面的 on_shutdown
+	icon.signal.addEventListener('abort', () => process.exit(0), { once: true })
+
 	/**
 	 * 进程退出码槽位。
 	 * @type {{ value: number | null }}
@@ -396,4 +480,11 @@ async function main() {
 	process.exit(0)
 }
 
-main().catch(onFatal)
+if (CLI_ARGS.length > 1) {
+	process.stderr.write(`log_viewer: expected at most one selector\n${logSelectorUsage()}\n`)
+	process.exit(1)
+}
+else if (CLI_ARGS.length === 1)
+	mainSelector(CLI_ARGS[0]).catch(onFatal)
+else
+	mainInteractive().catch(onFatal)
