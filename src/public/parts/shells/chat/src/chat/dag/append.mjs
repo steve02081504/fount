@@ -16,7 +16,6 @@ import { groupDir, eventsPath } from '../lib/paths.mjs'
 import { commitSignedChatEvent } from './commitSignedEvent.mjs'
 import { buildMemberJoinBindingFields } from './entityBinding.mjs'
 import { isFederatableDagEvent } from './eventTypes.mjs'
-import { withGroupWriteLock } from './groupLock.mjs'
 import { validateIngestAuthz } from './ingest.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
@@ -46,6 +45,7 @@ function commitOptsFromAppend(secretKey, state, options) {
 		skipCheckpointRebuild: options.skipCheckpointRebuild,
 		skipGenesisSideEffects: options.skipGenesisSideEffects,
 		federationExistingSlotOnly: options.federationExistingSlotOnly,
+		federationJoinTimeoutMs: options.federationJoinTimeoutMs,
 		ingress: options.ingress,
 	}
 }
@@ -74,7 +74,10 @@ export async function appendEvent(username, groupId, event, secretKey, options =
 	await mkdir(groupDir(username, groupId), { recursive: true })
 	// 读 tip → 签名 → 落盘必须在同一把写锁内：否则并发本机 append（含 fire-and-forget
 	// auto-reply）会挂上同一组父节点，authzFold 只留一支，role_assign 等治理事件被丢掉。
-	const wirePayload = await withGroupWriteLock(username, groupId, async () => {
+	// 签名回调在 commitSignedChatEvent 的写锁内执行；联邦发布在该锁释放之后。
+	/** @type {object} */
+	let wirePayload
+	await commitSignedChatEvent(username, groupId, async () => {
 		const previous = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 		// session_* 为本机元数据：仍落 events.jsonl，但不得占据联邦 tip frontier，
 		// 否则后续世界/消息事件会挂上对端没有的 session 父节点，物化折叠会丢成员。
@@ -89,9 +92,9 @@ export async function appendEvent(username, groupId, event, secretKey, options =
 			hlc,
 			prev_event_ids: prevFromCaller,
 		})
-		await commitSignedChatEvent(username, groupId, signed.wirePayload, commitOptsFromAppend(secretKey, state, options))
-		return signed.wirePayload
-	})
+		wirePayload = signed.wirePayload
+		return wirePayload
+	}, commitOptsFromAppend(secretKey, state, options))
 	if (options.skipReleaseQuarantined !== true) {
 		await releaseQuarantinedEvents(username, groupId)
 		await releasePendingIngestEvents(username, groupId)

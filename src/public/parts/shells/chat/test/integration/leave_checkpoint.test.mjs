@@ -86,12 +86,18 @@ Deno.test('joiner keeps signed checkpoint and can post after ingesting a message
 	await modules.schedule.rotateAllChannelKeys(NODE_A, groupId)
 	await federate(NODE_A, [NODE_B], groupId)
 
+	const snapBBefore = JSON.parse(await readFile(modules.paths.snapshotPath(NODE_B, groupId), 'utf8'))
+	const originalCheckpointEventId = snapBBefore.checkpoint_event_id
+	const originalCheckpointSignature = snapBBefore.checkpoint_signature
+
 	const defaultChannelId = (await stateOf(NODE_A, groupId)).groupSettings.defaultChannelId
 	await postMessage(NODE_A, groupId, defaultChannelId, 'hello from A', [NODE_B])
 	await postMessage(NODE_A, groupId, defaultChannelId, 'hello again from A', [NODE_B])
 
 	const snapB = JSON.parse(await readFile(modules.paths.snapshotPath(NODE_B, groupId), 'utf8'))
 	assert(isSignedBaseCheckpoint(snapB), 'joiner must keep owner-signed checkpoint after ingesting messages')
+	assertEquals(snapB.checkpoint_event_id, originalCheckpointEventId)
+	assertEquals(snapB.checkpoint_signature, originalCheckpointSignature)
 	assertEquals((await stateOf(NODE_B, groupId)).members[memberB]?.status, 'active')
 	await postMessage(NODE_B, groupId, defaultChannelId, 'hello from B', [NODE_A])
 })

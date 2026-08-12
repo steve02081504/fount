@@ -11,6 +11,7 @@ import { assertEquals } from 'jsr:@std/assert'
 import {
 	collectModuleExports,
 	parseBindingNames,
+	parseObjectPatternBindings,
 	partPublicBrowserPath,
 	probeShellPart,
 	resolveBrowserImportSpec,
@@ -19,6 +20,13 @@ import {
 Deno.test('parseBindingNames distinguishes import source vs export public names', () => {
 	assertEquals(parseBindingNames('a, b as c, type D', 'import'), ['a', 'b', 'D'])
 	assertEquals(parseBindingNames('a, b as c', 'export'), ['a', 'c'])
+})
+
+Deno.test('parseObjectPatternBindings uses object rename / default / rest', () => {
+	assertEquals(
+		parseObjectPatternBindings('test: baseTest, expect, foo = 1, bar: baz = 2, ...rest'),
+		['baseTest', 'expect', 'foo', 'baz', 'rest'],
+	)
 })
 
 Deno.test('collectModuleExports follows export-star and local decls', async () => {
@@ -51,11 +59,15 @@ Deno.test('collectModuleExports reads export const destructuring', async () => {
 		await writeFile(file, `export const {
 	renderTemplate,
 	mountTemplate,
-	appendTemplate as append,
+	appendTemplate: append,
+	test: baseTest,
+	expect,
+	foo = 1,
+	...rest
 } = templatesFor('/x')
 `)
 		const names = await collectModuleExports(root, file)
-		assertEquals([...names].sort(), ['append', 'mountTemplate', 'renderTemplate'])
+		assertEquals([...names].sort(), ['append', 'baseTest', 'expect', 'foo', 'mountTemplate', 'renderTemplate', 'rest'])
 	}
 	finally {
 		await rm(root, { recursive: true, force: true })

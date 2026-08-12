@@ -73,10 +73,10 @@ Deno.test('concurrent local appends share one tip and both apply', async () => {
 
 	const groupId = await newGroup(username, { name: 'concurrent-tips' })
 	const channelId = await getDefaultChannelId(username, groupId)
-	const opts = { publishFederation: false }
+	const appendOptions = { publishFederation: false }
 
-	for (let i = 0; i < 8; i++) {
-		const roleId = `r${i}`
+	for (let roundIndex = 0; roundIndex < 8; roundIndex++) {
+		const roleId = `r${roundIndex}`
 		await Promise.all([
 			appendSignedLocalEvent(username, groupId, {
 				type: 'role_create',
@@ -85,27 +85,27 @@ Deno.test('concurrent local appends share one tip and both apply', async () => {
 					roleId,
 					name: roleId,
 					color: '#3498db',
-					position: 10 + i,
+					position: 10 + roundIndex,
 					permissions: { VIEW_CHANNEL: true },
 					isDefault: false,
 					isHoisted: false,
 				},
-			}, opts),
+			}, appendOptions),
 			appendSignedLocalEvent(username, groupId, {
 				type: 'message',
 				channelId,
 				timestamp: Date.now(),
-				content: { content: `concurrent ${i}` },
-			}, opts),
+				content: { content: `concurrent ${roundIndex}` },
+			}, appendOptions),
 		])
 		const { state, events } = await getState(username, groupId)
 		assert(state.roles?.[roleId], `role_create ${roleId} dropped by concurrent append`)
 		assertEquals(
 			events.filter(event => event.type === 'message').length,
-			i + 1,
-			`message ${i} missing after concurrent append`,
+			roundIndex + 1,
+			`message ${roundIndex} missing after concurrent append`,
 		)
 		const tips = computeFederatableDagTipIds(events)
-		assertEquals(tips.length, 1, `round ${i} forked; tips=${JSON.stringify(tips)}`)
+		assertEquals(tips.length, 1, `round ${roundIndex} forked; tips=${JSON.stringify(tips)}`)
 	}
 })

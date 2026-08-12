@@ -49,6 +49,38 @@ function stripComments(source) {
 }
 
 /**
+ * @param {string} text 源文本
+ * @param {string} sep 顶层分隔符（单字符）
+ * @returns {string[]} 分段
+ */
+function splitTopLevel(text, sep) {
+	const parts = []
+	let start = 0
+	let depth = 0
+	let quote = ''
+	for (let i = 0; i < text.length; i++) {
+		const ch = text[i]
+		if (quote) {
+			if (ch === '\\') { i++; continue }
+			if (ch === quote) quote = ''
+			continue
+		}
+		if (ch === '"' || ch === '\'' || ch === '`') {
+			quote = ch
+			continue
+		}
+		if (ch === '{' || ch === '(' || ch === '[') { depth++; continue }
+		if (ch === '}' || ch === ')' || ch === ']') { depth--; continue }
+		if (depth !== 0 || ch !== sep) continue
+		if (sep === '=' && (text[i + 1] === '=' || text[i + 1] === '>')) continue
+		parts.push(text.slice(start, i))
+		start = i + 1
+	}
+	parts.push(text.slice(start))
+	return parts
+}
+
+/**
  * @param {string} clause `{ a, b as c, type D }` 内的片段
  * @param {'import' | 'export'} mode import 取源名，export 取对外名
  * @returns {string[]} 绑定名
@@ -71,6 +103,32 @@ export function parseBindingNames(clause, mode = 'import') {
 		names.push(asIdx >= 0 ? tokens[asIdx + 1] : tokens[0])
 	}
 	return names.filter(Boolean)
+}
+
+/**
+ * 对象解构模式中的绑定名（`{ a, b: c, d = 1, e: f = 2, ...rest }`）。
+ * rest 记其标识符，不把 `...` 写进导出名。
+ * @param {string} clause `{ … }` 内的片段
+ * @returns {string[]} 绑定名
+ */
+export function parseObjectPatternBindings(clause) {
+	/** @type {string[]} */
+	const names = []
+	for (const raw of splitTopLevel(clause, ',')) {
+		const part = raw.trim()
+		if (!part) continue
+		if (part.startsWith('...')) {
+			const rest = part.slice(3).trim().match(/^[A-Za-z_$][\w$]*/u)?.[0]
+			if (rest) names.push(rest)
+			continue
+		}
+		const beforeDefault = splitTopLevel(part, '=')[0].trim()
+		const colonParts = splitTopLevel(beforeDefault, ':')
+		const binding = (colonParts.length > 1 ? colonParts.slice(1).join(':') : colonParts[0]).trim()
+		const ident = binding.match(/^[A-Za-z_$][\w$]*/u)?.[0]
+		if (ident) names.push(ident)
+	}
+	return names
 }
 
 /**
@@ -221,7 +279,7 @@ export async function collectModuleExports(repoRoot, file, cache = new Map()) {
 
 	EXPORT_DESTRUCTURE_RE.lastIndex = 0
 	while ((match = EXPORT_DESTRUCTURE_RE.exec(text)) !== null)
-		for (const name of parseBindingNames(match[1], 'export'))
+		for (const name of parseObjectPatternBindings(match[1]))
 			names.add(name)
 
 	if (EXPORT_DEFAULT_RE.test(text))
