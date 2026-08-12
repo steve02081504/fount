@@ -65,7 +65,7 @@ Deno.test('buildTrendingHashtags counts visible hashtag posts', async () => {
 	}, { fanout: false })
 
 	const { tags } = await trending.buildTrendingHashtags(username, { limit: 20 })
-	assert(tags.some(row => row.tag === 'trendtagsearch' && row.count >= 1))
+	assert(tags.some(row => row.tag === 'TrendTagSearch' && row.count >= 1))
 })
 
 Deno.test('buildTrendingHashtags skips hashtags inside code fences', async () => {
@@ -79,7 +79,7 @@ Deno.test('buildTrendingHashtags skips hashtags inside code fences', async () =>
 	}, { fanout: false })
 
 	const { tags } = await trending.buildTrendingHashtags(username, { limit: 32 })
-	assert(tags.some(row => row.tag === 'trendoutsidecode' && row.count >= 1))
+	assert(tags.some(row => row.tag === 'TrendOutsideCode' && row.count >= 1))
 	assert(!tags.some(row => row.tag === 'feedlist' || row.tag === 'plug'))
 })
 
@@ -97,11 +97,11 @@ Deno.test('trending display prunes phantoms and keeps live tags', async () => {
 	await writeFile(paths.socialTrendingIndexPath(username), `${JSON.stringify({
 		phantomfeedlist: 9,
 		phantomplug: 7,
-		trendkeepreal: 1,
+		TrendKeepReal: 1,
 	})}\n`, 'utf8')
 
 	const { tags } = await trending.buildTrendingHashtags(username, { limit: 12 })
-	assert(tags.some(row => row.tag === 'trendkeepreal' && row.count >= 1))
+	assert(tags.some(row => row.tag === 'TrendKeepReal' && row.count >= 1))
 	assert(!tags.some(row => row.tag === 'phantomfeedlist' || row.tag === 'phantomplug'))
 })
 

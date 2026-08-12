@@ -44,6 +44,24 @@ Deno.test('collectModuleExports follows export-star and local decls', async () =
 	}
 })
 
+Deno.test('collectModuleExports reads export const destructuring', async () => {
+	const root = await mkdtemp(path.join(tmpdir(), 'fount-shell-probe-destructure-'))
+	try {
+		const file = path.join(root, 'templates.mjs')
+		await writeFile(file, `export const {
+	renderTemplate,
+	mountTemplate,
+	appendTemplate as append,
+} = templatesFor('/x')
+`)
+		const names = await collectModuleExports(root, file)
+		assertEquals([...names].sort(), ['append', 'mountTemplate', 'renderTemplate'])
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
 Deno.test('part public relative climbs resolve like browser /scripts URLs', async () => {
 	const root = await mkdtemp(path.join(tmpdir(), 'fount-shell-probe-url-'))
 	try {

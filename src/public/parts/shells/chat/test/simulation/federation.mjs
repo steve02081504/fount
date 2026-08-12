@@ -68,12 +68,12 @@ export async function createChatFederationSim(options = {}) {
 	/**
 	 * @param {string} node 节点用户名
 	 * @param {string} groupId 群组 ID
-	 * @returns {Promise<Set<string>>} 事件 id 集合（小写；不含本地 session 事件）
+	 * @returns {Promise<Set<string>>} 事件 id 集合（不含本地 session 事件）
 	 */
 	async function eventIdsOf(node, groupId) {
 		return new Set((await readEvents(node, groupId))
 			.filter(isFederatableDagEvent)
-			.map(event => String(event.id).trim().toLowerCase()))
+			.map(event => event.id))
 	}
 
 	/**
@@ -202,7 +202,7 @@ export async function createChatFederationSim(options = {}) {
 			eventIds: [eventId],
 			decrypt: true,
 		})
-		return rows.find(row => String(row.eventId).toLowerCase() === String(eventId).toLowerCase())
+		return rows.find(row => row.eventId === eventId)
 	}
 
 	/**

@@ -16,6 +16,7 @@ const IMPORT_RE = /\b(?:import|export)\s+(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]
 const DYNAMIC_IMPORT_RE = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/gu
 const NAMED_IMPORT_RE = /\bimport\s+(?:type\s+)?(?:[A-Za-z_$][\w$]*\s*,\s*)?\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/gu
 const EXPORT_DECL_RE = /\bexport\s+(?:async\s+)?(?:function\*?|class|const|let|var)\s+([A-Za-z_$][\w$]*)/gu
+const EXPORT_DESTRUCTURE_RE = /\bexport\s+(?:const|let|var)\s*\{([^}]+)\}/gu
 const EXPORT_LIST_RE = /\bexport\s*\{([^}]+)\}\s*(?:from\s*['"]([^'"]+)['"])?/gu
 const EXPORT_STAR_RE = /\bexport\s*\*\s*(?:as\s+([A-Za-z_$][\w$]*)\s+)?from\s*['"]([^'"]+)['"]/gu
 const EXPORT_DEFAULT_RE = /\bexport\s+default\b/u
@@ -217,6 +218,11 @@ export async function collectModuleExports(repoRoot, file, cache = new Map()) {
 	let match
 	while ((match = EXPORT_DECL_RE.exec(text)) !== null)
 		names.add(match[1])
+
+	EXPORT_DESTRUCTURE_RE.lastIndex = 0
+	while ((match = EXPORT_DESTRUCTURE_RE.exec(text)) !== null)
+		for (const name of parseBindingNames(match[1], 'export'))
+			names.add(name)
 
 	if (EXPORT_DEFAULT_RE.test(text))
 		names.add('default')

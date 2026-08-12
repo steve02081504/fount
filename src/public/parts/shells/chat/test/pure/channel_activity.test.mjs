@@ -12,7 +12,7 @@ Deno.test('aggregateChannelActivity splits char and human senders', () => {
 		{ charId: 'alice', hlc: { wall: 100 }, sender: 'aa' },
 		{ charId: 'bob', timestamp: 200, sender: 'bb' },
 		{ charId: 'alice', time_stamp: 150, sender: 'aa' },
-		{ sender: 'CcCc', hlc: { wall: 300 } },
+		{ sender: 'cccc', hlc: { wall: 300 } },
 		{ sender: 'cccc', timestamp: 250 },
 	])
 	assertEquals(chars.alice, { last_active: 150, count: 2 })

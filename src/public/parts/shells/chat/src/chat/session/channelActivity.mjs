@@ -45,7 +45,7 @@ export function aggregateChannelActivity(lines) {
 			chars[charId] = bumpStat(chars[charId], ts)
 			continue
 		}
-		const sender = String(line?.sender || '').trim()
+		const sender = line?.sender || ''
 		if (sender) humans[sender] = bumpStat(humans[sender], ts)
 	}
 	return { chars, humans }

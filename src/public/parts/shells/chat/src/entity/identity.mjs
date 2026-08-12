@@ -170,7 +170,7 @@ export async function ensureEntityIdentity(username, options = {}) {
 		return row
 	}
 
-	const keyHistory = createGenesisKeyHistory(activePubKeyHex)
+	const keyHistory = createGenesisKeyHistory(recoveryPubKeyHex, activePubKeyHex)
 	const row = {
 		recoveryPubKeyHex,
 		recoverySecretKeyHex,

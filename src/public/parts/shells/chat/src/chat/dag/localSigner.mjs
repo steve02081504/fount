@@ -20,7 +20,7 @@ import { PUB_KEY_HASH_HEX } from './validator.mjs'
 /**
  * @param {string} username replica
  * @param {string} [entityHash] 缺省则解析 operator
- * @returns {Promise<string>} 小写 128-hex entityHash
+ * @returns {Promise<string>} 128-hex entityHash
  */
 async function resolveSignerEntityHash(username, entityHash) {
 	const declared = entityHash || ''
