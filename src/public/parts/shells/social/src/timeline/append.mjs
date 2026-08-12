@@ -25,6 +25,7 @@ import { canonicalizeLocalTimelineEvent } from './canonicalizeEvent.mjs'
 import { publishTimelineEvent } from './fanout.mjs'
 import { invalidateTimelineMaterializedCache, maintainSocialTimeline } from './materialize.mjs'
 import { invalidateTimelineOwnerIndex } from './ownerIndex.mjs'
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 const NODE_ID = 'social-local'
 
@@ -232,13 +233,13 @@ export async function commitTimelineEvent(username, entityHash, event, options =
 		signerEntityHash: options.signerEntityHash,
 	})
 	if (options.fanout !== false)
-		void publishTimelineEvent(username, entityHash, signed)
+		void publishTimelineEvent(username, entityHash, signed).catch(handleError)
 	if (signed.type === 'post') {
 		const { dispatchSocialMessage } = await import('../dispatch.mjs')
 		await dispatchSocialMessage(username, entityHash, signed)
 		if (signed.content?.poll) {
 			const { schedulePollDeadlineForPost } = await import('../lib/pollDeadlineWatcher.mjs')
-			void schedulePollDeadlineForPost(username, entityHash, signed)
+			void schedulePollDeadlineForPost(username, entityHash, signed).catch(handleError)
 		}
 	}
 	return signed
