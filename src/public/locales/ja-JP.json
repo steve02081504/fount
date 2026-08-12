@@ -5411,7 +5411,13 @@
 					"placeholder": "試すファイルのパス（例: C:/work/project/src/main.mjs）"
 				},
 				"pathRequired": "先にテスト用のファイルパスを入力してください。",
-				"success": "外部エディタで開くコマンドを実行しました。"
+				"success": "外部エディタで開くコマンドを実行しました。",
+				"lineInput": {
+					"aria-label": "行番号"
+				},
+				"columnInput": {
+					"aria-label": "列番号"
+				}
 			}
 		},
 		"logout": {

@@ -5411,7 +5411,13 @@
 					"placeholder": "Path to a file to try, e.g. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Enter a test file path first.",
-				"success": "Ran the command to open your editor."
+				"success": "Ran the command to open your editor.",
+				"lineInput": {
+					"aria-label": "Line"
+				},
+				"columnInput": {
+					"aria-label": "Column"
+				}
 			}
 		},
 		"logout": {
