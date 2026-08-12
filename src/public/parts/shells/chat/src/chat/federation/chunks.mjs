@@ -18,8 +18,7 @@ import {
 	planChunkFetches,
 } from 'npm:@steve02081504/fount-p2p/federation/chunk_fetch_scheduler'
 import { handleIncomingChunkGet } from 'npm:@steve02081504/fount-p2p/files/chunk/fetch'
-import { registerChunkFetchWait, resolveChunkFetchWait } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
-import { resolvePendingChunkFetch } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
+import { registerChunkFetchWait, resolveChunkFetchWait, resolvePendingChunkFetch } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
 import { getChunk, hasChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 import { verifiedChunkBytes } from 'npm:@steve02081504/fount-p2p/files/chunk/verify'
 import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'

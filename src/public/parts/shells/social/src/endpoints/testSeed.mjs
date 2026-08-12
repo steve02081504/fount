@@ -74,7 +74,7 @@ export function registerTestSeedRoutes(router, authenticate) {
 		assertTestMode()
 		const { username } = getUserByReq(req)
 		const count = Math.min(Math.max(Number(req.body?.count) || 41, 1), 200)
-		const viewerEntityHash = (await resolveOperatorEntityHashForUser(username))?
+		const viewerEntityHash = await resolveOperatorEntityHashForUser(username)
 		if (!viewerEntityHash)
 			throw httpError(400, 'identity required')
 		const eventsPath = inboxEventsPath(username, viewerEntityHash)

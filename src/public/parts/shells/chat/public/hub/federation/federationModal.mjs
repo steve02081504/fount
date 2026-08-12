@@ -4,7 +4,7 @@
  * 【原理】`mountFederationPrefsPanel` 写入偏好壳 panel/footer；`openFederationSettingsModal` 打开统一偏好壳并切到联邦分区。
  * 【关联】hubPrefs.mjs、core/overlayModal.mjs、src/endpoints/group*.mjs、src/dmLink.mjs。
  */
-import { HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64, isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { renderTemplate, usingTemplates } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
