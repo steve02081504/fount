@@ -372,7 +372,7 @@ export async function loadDraftIntoComposer(row) {
 
 	if (body.groupRef?.groupId) {
 		await loadGroupPickerOptions()
-		const groupId = String(body.groupRef.groupId)
+		const groupId = body.groupRef.groupId
 		const channelId = String(body.groupRef.channelId || 'default')
 		setPendingGroupRef(groupId, channelId, groupRefLabel({ groupId, channelId }))
 		const groupSelect = document.getElementById('linkGroupSelect')

@@ -1,5 +1,5 @@
 import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getEntityStore, isNodeInitialized } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { loadNetwork } from 'npm:@steve02081504/fount-p2p/node/network'
@@ -13,12 +13,11 @@ import { findHostingReplicaUsername, resolveSocialEntity } from '../federation/h
  */
 function isKnownNetworkNode(nodeHash) {
 	const net = loadNetwork()
-	const id = normalizeHex64(nodeHash)
-	if (!isHex64(id)) return false
-	if (id === getNodeHash()) return true
-	if (net.trustedPeers.some(peer => normalizeHex64(peer) === id)) return true
-	if (net.explorePeers.some(peer => normalizeHex64(peer) === id)) return true
-	return net.hints.some(hint => normalizeHex64(hint.nodeHash) === id)
+	if (!isHex64(nodeHash)) return false
+	if (nodeHash === getNodeHash()) return true
+	if (net.trustedPeers.some(peer => peer === nodeHash)) return true
+	if (net.explorePeers.some(peer => peer === nodeHash)) return true
+	return net.hints.some(hint => hint.nodeHash === nodeHash)
 }
 
 /**
@@ -28,7 +27,7 @@ function isKnownNetworkNode(nodeHash) {
  * @returns {Promise<boolean>} 是否可解析/可发现
  */
 export async function isKnownSocialTarget(username, entityHash) {
-	const target = String(entityHash || '').trim().toLowerCase()
+	const target = entityHash
 	if (!isEntityHash128(target)) return false
 
 	const resolved = await resolveSocialEntity(target, username)

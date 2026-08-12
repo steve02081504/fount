@@ -22,8 +22,8 @@ import { makeViewerOptions } from './helpers.mjs'
  * @returns {number} 计数
  */
 function countFollowing(following, entityHash) {
-	const self = entityHash.toLowerCase()
-	return (following || []).filter(hash => String(hash).toLowerCase() !== self).length
+	const self = entityHash
+	return (following || []).filter(hash => hash !== self).length
 }
 
 /**
@@ -34,11 +34,11 @@ function countFollowing(following, entityHash) {
  */
 async function entitiesWithProfiles(username, hashes, skip = '') {
 	const loadProfile = createAuthorProfileLoader(username)
-	const self = String(skip || '').toLowerCase()
+	const self = String(skip || '')
 	const seen = new Set()
 	const rows = []
 	for (const hash of hashes) {
-		const id = String(hash || '').toLowerCase()
+		const id = hash
 		if (!id || id === self || seen.has(id)) continue
 		seen.add(id)
 		rows.push({ entityHash: id, profile: await loadProfile(id) })
@@ -66,7 +66,7 @@ export function createProfileMethods(apiContext) {
 		 * @returns {Promise<object>} 资料卡
 		 */
 		async profile(entityHash) {
-			const hash = String(entityHash).toLowerCase()
+			const hash = entityHash
 			const profile = await getEntityProfile(apiContext.username, hash)
 			const view = await getTimelineMaterialized(apiContext.username, hash)
 			const { following } = await loadFollowingForActor(apiContext.username, apiContext.entityHash)
@@ -87,21 +87,21 @@ export function createProfileMethods(apiContext) {
 		 * @returns {Promise<object>} 时间线帖
 		 */
 		async profilePosts(entityHash, options = {}) {
-			return buildProfileFeedItems(apiContext.username, String(entityHash).toLowerCase(), { ...options, ...viewerOptions() })
+			return buildProfileFeedItems(apiContext.username, entityHash, { ...options, ...viewerOptions() })
 		},
 		/**
 		 * @param {string} entityHash 目标实体
 		 * @returns {Promise<object>} 点赞流
 		 */
 		async profileLikes(entityHash) {
-			return buildLikedFeedItems(apiContext.username, String(entityHash).toLowerCase(), viewerOptions())
+			return buildLikedFeedItems(apiContext.username, entityHash, viewerOptions())
 		},
 		/**
 		 * @param {string} entityHash 目标实体
 		 * @returns {Promise<{ following: object[] }>} 关注列表（含资料摘要）
 		 */
 		async profileFollowing(entityHash) {
-			const owner = String(entityHash).toLowerCase()
+			const owner = entityHash
 			const view = await getTimelineMaterialized(apiContext.username, owner)
 			return { following: await entitiesWithProfiles(apiContext.username, view.following || [], owner) }
 		},
@@ -110,7 +110,7 @@ export function createProfileMethods(apiContext) {
 		 * @returns {Promise<{ followers: object[] }>} 已知粉丝列表（含资料摘要）
 		 */
 		async profileFollowers(entityHash) {
-			const owner = String(entityHash).toLowerCase()
+			const owner = entityHash
 			const known = await listKnownFollowersOf(owner)
 			return {
 				followers: await entitiesWithProfiles(
@@ -128,8 +128,8 @@ export function createProfileMethods(apiContext) {
 		async postFeedItem(entityHash, postId) {
 			return buildSinglePostFeedItem(
 				apiContext.username,
-				String(entityHash).toLowerCase(),
-				String(postId),
+				entityHash,
+				postId,
 				viewerOptions(),
 			)
 		},
@@ -140,7 +140,7 @@ export function createProfileMethods(apiContext) {
 		 */
 		async profileReplies(entityHash, postId) {
 			return {
-				replies: await listReplies(apiContext.username, String(entityHash).toLowerCase(), String(postId), viewerOptions()),
+				replies: await listReplies(apiContext.username, entityHash, postId, viewerOptions()),
 			}
 		},
 		/**

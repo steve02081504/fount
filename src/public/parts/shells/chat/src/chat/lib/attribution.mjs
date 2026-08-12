@@ -13,8 +13,8 @@ export { deriveMessageAttribution } from '../../../public/shared/attribution.mjs
  * @returns {boolean} 是否可信主人消息
  */
 export function isTrustedOwnerAttribution(attribution, authorEntityHash, declaredOwnerEntityHash) {
-	const owner = String(declaredOwnerEntityHash || '').trim().toLowerCase()
-	const author = String(authorEntityHash || '').trim().toLowerCase()
+	const owner = declaredOwnerEntityHash || ''
+	const author = authorEntityHash || ''
 	if (!owner || !author) return false
 	if (!attribution?.trusted || attribution.mismatch) return false
 	return author === owner

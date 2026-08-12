@@ -1,6 +1,8 @@
 /**
  * 帖子正文匹配（搜索 / 过滤用纯函数）。
  */
+import { escapeRegExp } from '../../../../../../scripts/regex.mjs'
+
 import { extractHashtagsFromText } from './hashtags.mjs'
 
 /**
@@ -9,15 +11,15 @@ import { extractHashtagsFromText } from './hashtags.mjs'
  * @returns {{ kind: 'none' | 'text' | 'hashtag', value: string, display: string }} 规范化查询
  */
 export function normalizeSearchQuery(query) {
-	const raw = (query || '').trim()
+	const raw = query.trim()
 	if (!raw) return { kind: 'none', value: '', display: '' }
 	if (raw.startsWith('#')) {
-		const tag = raw.slice(1).trim().toLowerCase()
+		const tag = raw.slice(1).trim()
 		if (tag.length >= 2)
 			return { kind: 'hashtag', value: tag, display: `#${tag}` }
 		return { kind: 'none', value: '', display: raw }
 	}
-	return { kind: 'text', value: raw.toLowerCase(), display: raw }
+	return { kind: 'text', value: raw, display: raw }
 }
 
 
@@ -31,11 +33,11 @@ export function postMatchesQuery(post, query) {
 	const norm = normalizeSearchQuery(query)
 	if (norm.kind === 'none' || norm.value.length < 2) return false
 	if (!post?.content?.text) return false
-	const text = (post.content?.text || '').toLowerCase()
+	const text = post.content.text
 	if (norm.kind === 'hashtag')
 		return extractHashtagsFromText(text).includes(norm.value)
-	if (text.includes(norm.value)) return true
-	const author = (post.entityHash || '').toLowerCase()
+	if (new RegExp(escapeRegExp(norm.value), 'iu').test(text)) return true
+	const author = post.entityHash || ''
 	if (norm.value.length >= 8 && author.includes(norm.value)) return true
 	return false
 }

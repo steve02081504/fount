@@ -1,7 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { unwrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
@@ -131,8 +130,7 @@ export async function applyChannelKeyRotateEvent(username, groupId, event, selfP
 	const generation = Number(event.content?.generation)
 	const wraps = event.content?.wraps
 	if (!channelId || !Number.isFinite(generation) || !wraps) return false
-	const self = normalizeHex64(selfPubKeyHash)
-	const wrap = wraps[self]
+	const wrap = wraps[selfPubKeyHash]
 	if (!wrap) return false
 	const seed = await readLocalSignerSeed(username, groupId)
 	if (!seed) return false
@@ -160,7 +158,7 @@ export async function applyChannelKeyWrapsFromPull(username, groupId, wrapsByCha
 			const wrap = entry?.wrap
 			if (!channelId || !Number.isFinite(generation) || !wrap) continue
 			const ok = await applyChannelKeyRotateEvent(username, groupId, {
-				content: { channelId, generation, wraps: { [normalizeHex64(selfPubKeyHash)]: wrap } },
+				content: { channelId, generation, wraps: { [selfPubKeyHash]: wrap } },
 			}, selfPubKeyHash)
 			if (ok) imported++
 		}

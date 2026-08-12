@@ -19,7 +19,7 @@ export function shouldDropDagEvent(event, archivedMessageIds, protectedHotIds, d
 	if (type === 'message') {
 		const id = String(event.id).trim()
 		if (protectedHotIds.has(id)) return false
-		if (tipIds?.has(id) || tipIds?.has(id.toLowerCase())) return false
+		if (tipIds?.has(id) || tipIds?.has(id)) return false
 		if (dagFoldAfterArchive && archivedMessageIds.has(id)) return true
 		return false
 	}

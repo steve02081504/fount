@@ -203,7 +203,7 @@ export function entitiesRoot(username) {
  * @returns {string} identity.json 绝对路径
  */
 export function entityIdentityPath(username, entityHash) {
-	return path.join(entitiesRoot(username), String(entityHash).toLowerCase(), 'identity.json')
+	return path.join(entitiesRoot(username), String(entityHash), 'identity.json')
 }
 
 /**
@@ -246,7 +246,7 @@ export async function listEntityIdentities(username) {
 	for (const ent of dirs) {
 		if (!ent.isDirectory()) continue
 		const row = await readEntityIdentity(username, ent.name)
-		if (row) rows.push({ ...row, entityHash: String(ent.name).toLowerCase() })
+		if (row) rows.push({ ...row, entityHash: String(ent.name) })
 	}
 	return rows
 }

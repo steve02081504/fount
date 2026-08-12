@@ -15,12 +15,8 @@ import { groupFetch } from './groupClient.mjs'
  * @returns {Promise<any>} 建群 API 响应
  */
 export async function createDirectMessageByPubKeys(myPubKeyHex, peerPubKeyHex, dmLinkProof) {
-	const body = { template: 'dm', myPubKeyHex, peerPubKeyHex }
-	const nonce = String(dmLinkProof?.dmIntroNonce || '').trim()
-	const signatureHex = String(dmLinkProof?.dmIntroSignatureHex || '').trim().replace(/^0x/iu, '')
-	if (nonce.length > 0) {
-		body.dmIntroNonce = nonce
-		body.dmIntroSignatureHex = signatureHex
-	}
-	return groupFetch('', { method: 'POST', json: body })
+	return groupFetch('', {
+		method: 'POST',
+		json: { template: 'dm', myPubKeyHex, peerPubKeyHex, ...dmLinkProof },
+	})
 }

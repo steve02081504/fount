@@ -46,7 +46,7 @@ export function patchSubfountSettings(username, patch = {}) {
  * @returns {void}
  */
 function allowReputationExportTo(nodeHash) {
-	const id = String(nodeHash || '').trim().toLowerCase()
+	const id = nodeHash.trim()
 	if (!id) return
 	const allowlist = getReputationExportAllowlist()
 	if (allowlist.includes(id)) return
@@ -59,7 +59,7 @@ function allowReputationExportTo(nodeHash) {
  * @returns {void}
  */
 function revokeReputationExportFrom(nodeHash) {
-	const id = String(nodeHash || '').trim().toLowerCase()
+	const id = nodeHash.trim()
 	if (!id) return
 	const allowlist = getReputationExportAllowlist()
 	const next = allowlist.filter(entry => entry !== id)

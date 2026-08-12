@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { normalizeHex64, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { unwrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
@@ -19,14 +19,14 @@ import { saveVaultMasterKey } from './vault.mjs'
 export async function tryImportFollowApproveVault(username, entityHash, event) {
 	if (event?.type !== 'follow_approve') return false
 	const encrypted = event.content?.encrypted_H
-	const targetPubKeyHex = normalizeHex64(event.content?.targetPubKeyHex)
-	if (!isPlainObject(encrypted) || !targetPubKeyHex) return false
+	const targetPubKeyHex = event.content?.targetPubKeyHex
+	if (!isPlainObject(encrypted) || !isHex64(targetPubKeyHex)) return false
 
 	const secretHex = await getOperatorSecretKey(username)
 	if (!secretHex || secretHex.length !== 64) return false
 	const secretKey = new Uint8Array(Buffer.from(secretHex, 'hex'))
 
-	const myPubHex = normalizeHex64(Buffer.from(publicKeyFromSeed(secretKey)).toString('hex'))
+	const myPubHex = Buffer.from(publicKeyFromSeed(secretKey)).toString('hex')
 	if (myPubHex !== targetPubKeyHex) return false
 
 	const masterKeyHex = unwrapKeyEcies(encrypted, secretKey)

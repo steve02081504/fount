@@ -131,13 +131,13 @@ async function appendSignedTimelineEvent(username, entityHash, event, secretKey)
  * @returns {Promise<string>} 规范化 signer entityHash
  */
 async function resolveTimelineEventSigner(username, entityHash, event, signerEntityHash) {
-	const timelineOwner = String(entityHash || '').trim().toLowerCase()
-	const signer = String(signerEntityHash || timelineOwner).trim().toLowerCase()
+	const timelineOwner = entityHash
+	const signer = String(signerEntityHash || timelineOwner).trim()
 	if (signer === timelineOwner) return signer
 	if (event?.type !== 'post_delete' && event?.type !== 'post_edit')
 		throw new Error('foreign signer only allowed for post_delete or post_edit')
 	const profile = await getEntityProfile(username, timelineOwner)
-	const owner = String(profile?.ownerEntityHash || '').trim().toLowerCase()
+	const owner = String(profile?.ownerEntityHash || '').trim()
 	if (!owner || owner !== signer)
 		throw new Error('signer is not owner of timeline entity')
 	return signer

@@ -15,8 +15,8 @@ import { mutateArchiveManifest } from '../archive/index.mjs'
  * @returns {boolean} 是否与已有观测冲突
  */
 export function mergeDigestObservation(manifest, channelId, utcMonth, peerNodeHash, digest) {
-	const peer = String(peerNodeHash || '').trim()
-	const dig = String(digest || '').trim().toLowerCase()
+	const peer = peerNodeHash || ''
+	const dig = digest || ''
 	if (!isHex64(peer) || !isHex64(dig)) return false
 	if (!manifest.peerDigestObservations) manifest.peerDigestObservations = {}
 	const key = `${channelId}:${utcMonth}:${peer}`
@@ -33,10 +33,10 @@ export function mergeDigestObservation(manifest, channelId, utcMonth, peerNodeHa
  * @returns {Promise<boolean>} 是否检测到冲突并已惩罚
  */
 export async function applyRemoteDigestClaim(username, groupId, claim) {
-	const channelId = String(claim.channelId || '').trim()
-	const utcMonth = String(claim.utcMonth || '').trim()
-	const peer = String(claim.peerNodeHash || '').trim()
-	const digest = String(claim.digest || '').trim().toLowerCase()
+	const channelId = claim.channelId || ''
+	const utcMonth = claim.utcMonth || ''
+	const peer = claim.peerNodeHash || ''
+	const digest = claim.digest || ''
 	if (!channelId || !utcMonth || !isHex64(peer) || !isHex64(digest)) return false
 
 	let conflict = false

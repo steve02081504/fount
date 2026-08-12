@@ -19,7 +19,7 @@ export const cabinetReducers = {
 	 */
 	cabinet_bind(state, event) {
 		withGroupId(state, event)
-		const cabinetId = String(event.content?.cabinet_id || '').trim().toLowerCase()
+		const cabinetId = String(event.content?.cabinet_id || '').trim()
 		if (!cabinetId) return state
 		const cabinets = ensureCabinets(state)
 		cabinets[cabinetId] = {
@@ -44,7 +44,7 @@ export const cabinetReducers = {
 	 */
 	cabinet_key_update(state, event) {
 		withGroupId(state, event)
-		const cabinetId = String(event.content?.cabinet_id || '').trim().toLowerCase()
+		const cabinetId = String(event.content?.cabinet_id || '').trim()
 		if (!cabinetId) return state
 		const cabinets = ensureCabinets(state)
 		const row = cabinets[cabinetId]
@@ -68,7 +68,7 @@ export const cabinetReducers = {
 	 */
 	cabinet_unbind(state, event) {
 		withGroupId(state, event)
-		const cabinetId = String(event.content?.cabinet_id || '').trim().toLowerCase()
+		const cabinetId = String(event.content?.cabinet_id || '').trim()
 		if (!cabinetId) return state
 		delete ensureCabinets(state)[cabinetId]
 		return state

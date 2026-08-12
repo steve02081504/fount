@@ -50,7 +50,7 @@ async function handleEntityKeyRotated(payload) {
  * @returns {Promise<{ ok: boolean }>} ingest 成功
  */
 async function handleTimelinePut(username, data) {
-	const entityHash = data.timelineEntityHash.toLowerCase()
+	const entityHash = data.timelineEntityHash
 	if (!parseEntityHash(entityHash)) throw new Error('invalid_timeline_put')
 	if (!await isRemoteTimelinePushAdmitted(username, entityHash, data.event))
 		return { result: { ok: false } }

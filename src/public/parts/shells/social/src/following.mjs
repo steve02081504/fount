@@ -11,10 +11,10 @@ import { getTimelineMaterialized } from './timeline/materialize.mjs'
  * @returns {Promise<{ following: string[] }>} 关注列表
  */
 export async function loadFollowingForActor(username, entityHash) {
-	const actor = String(entityHash || '').trim().toLowerCase()
+	const actor = entityHash
 	if (!actor) return { following: [] }
 	const view = await getTimelineMaterialized(username, actor)
-	const following = new Set(view.following.map(id => id.toLowerCase()))
+	const following = new Set(view.following)
 	following.add(actor)
 	return { following: [...following] }
 }
@@ -39,9 +39,9 @@ export async function loadFollowing(username) {
  * @returns {Promise<string[]>} 规范化后的关注列表
  */
 export async function setFollow(username, entityHash, targetEntityHash, follow) {
-	const self = String(entityHash || '').trim().toLowerCase()
+	const self = entityHash
 	if (!self) throw new Error('configure federation identity before following')
-	const id = String(targetEntityHash).toLowerCase()
+	const id = targetEntityHash
 	const { following } = await loadFollowingForActor(username, self)
 	const already = following.includes(id)
 	if (follow === already) return following
@@ -65,7 +65,7 @@ export async function setFollow(username, entityHash, targetEntityHash, follow) 
  */
 export async function listFollowedTimelineOwners(username, viewerEntityHash) {
 	const viewer = viewerEntityHash
-		? String(viewerEntityHash).trim().toLowerCase()
+		? viewerEntityHash
 		: await resolveOperatorEntityHash(username)
 	if (!viewer) return []
 	const { following } = await loadFollowingForActor(username, viewer)

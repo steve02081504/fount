@@ -67,7 +67,7 @@ export async function runVirtualBridgeTrigger(username, groupId, channelId, entr
 	else {
 		const isDm = session.chatKind === 'dm'
 		const agentHash = event.chatReplyRequest.CharUid
-		const mentioned = (event.mentions?.entityHashes || []).includes(String(agentHash).toLowerCase())
+		const mentioned = (event.mentions?.entityHashes || []).includes(String(agentHash))
 		wantsReply = mentioned || isDm
 	}
 

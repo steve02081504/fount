@@ -47,7 +47,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		if (ceMode === 'random')
 			return res.status(200).json({ ciphertextHash: null, have: false, storageLocator: null })
 
-		const ciphertextHash = String(req.body.ciphertextHash || '').trim().toLowerCase()
+		const ciphertextHash = req.body.ciphertextHash || ''
 		if (!isHex64(ciphertextHash))
 			return res.status(400).json({ error: 'ciphertextHash required' })
 
@@ -98,7 +98,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 			...await putEncryptedChunk(username, groupId, {
 				fileId,
 				data,
-				channelId: String(req.body.channelId || '').trim() || undefined,
+				channelId: (req.body.channelId || '') || undefined,
 				ceMode,
 			})
 		})

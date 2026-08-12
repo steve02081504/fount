@@ -34,7 +34,7 @@ export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = pa
 				if (!group.manifestIds.includes(suite.manifestId)) continue
 				if (suite.name !== suiteName && suite.id !== suiteName) continue
 				const key = suiteKey(suite.manifestId, suite.name)
-				subtestFilterByKey.set(key, [...new Set([...(subtestFilterByKey.get(key) ?? []), ...subtests])])
+				subtestFilterByKey.set(key, [...new Set([...subtestFilterByKey.get(key) ?? [], ...subtests])])
 			}
 		}
 

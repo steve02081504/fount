@@ -38,7 +38,7 @@ function entityEmojiPath(tail) {
  * @returns {void}
  */
 function sendEmojiBinary(req, res, local, emojiId) {
-	const wantJson = req.query?.json === '1' || String(req.headers.accept || '').includes('application/json')
+	const wantJson = req.query?.json === '1' || (req.headers.accept || '').includes('application/json')
 	if (wantJson) {
 		res.status(200).json({
 			dataUrl: bufferToDataUrl(local.buffer, local.mimeType),

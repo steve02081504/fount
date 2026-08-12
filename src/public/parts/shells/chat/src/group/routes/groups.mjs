@@ -8,7 +8,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { friendBindingMatches } from '../../../public/shared/friendBinding.mjs'
@@ -46,16 +46,16 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const body = req.body
-		const template = String(body.template || '').trim().toLowerCase()
+		const template = body.template || ''
 		if (template === 'dm') {
-			const myPubKeyHex = normalizePubKeyHex(body.myPubKeyHex || '')
-			const peerPubKeyHex = normalizePubKeyHex(body.peerPubKeyHex || '')
+			const myPubKeyHex = body.myPubKeyHex || ''
+			const peerPubKeyHex = body.peerPubKeyHex || ''
 			if (!PUB_KEY_HEX_64.test(myPubKeyHex) || !PUB_KEY_HEX_64.test(peerPubKeyHex))
 				return res.status(400).json({ error: 'myPubKeyHex and peerPubKeyHex must be 64 hex chars' })
 			if (myPubKeyHex === peerPubKeyHex)
 				return res.status(400).json({ error: 'peerPubKeyHex must differ from myPubKeyHex' })
-			const dmNonce = String(body.dmIntroNonce || '').trim()
-			const dmIntroSignatureHex = String(body.dmIntroSignatureHex || '').trim().replace(/^0x/iu, '')
+			const dmNonce = body.dmIntroNonce || ''
+			const dmIntroSignatureHex = (body.dmIntroSignatureHex || '').replace(/^0x/iu, '')
 			const hasDmNonce = dmNonce.length > 0
 			const hasDmSignature = dmIntroSignatureHex.length > 0
 			if (hasDmNonce !== hasDmSignature)

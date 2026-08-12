@@ -54,14 +54,14 @@ async function buildAffinityIndex(username, following, viewerEntityHash = null) 
 		const view = await getTimelineMaterialized(username, entityHash)
 		for (const like of view.likes || [])
 			if (like.content?.targetEntityHash)
-				affinity.set(String(like.content.targetEntityHash).toLowerCase(), (affinity.get(String(like.content.targetEntityHash).toLowerCase()) || 0) + 1)
+				affinity.set(like.content.targetEntityHash, (affinity.get(like.content.targetEntityHash) || 0) + 1)
 		for (const repost of view.reposts || [])
 			if (repost.content?.targetEntityHash)
-				affinity.set(String(repost.content.targetEntityHash).toLowerCase(), (affinity.get(String(repost.content.targetEntityHash).toLowerCase()) || 0) + 2)
+				affinity.set(repost.content.targetEntityHash, (affinity.get(repost.content.targetEntityHash) || 0) + 2)
 		for (const post of view.posts || []) {
 			const replyTo = post.content?.replyTo
 			if (replyTo?.entityHash)
-				affinity.set(String(replyTo.entityHash).toLowerCase(), (affinity.get(String(replyTo.entityHash).toLowerCase()) || 0) + 1)
+				affinity.set(replyTo.entityHash, (affinity.get(replyTo.entityHash) || 0) + 1)
 		}
 	}
 	if (viewerEntityHash) {
@@ -93,7 +93,7 @@ async function* iterateForYouCandidates(username, following, viewerContext, tast
 	function scoreOf(entityHash, post, discount = 1) {
 		const enriched = { ...post, entityHash }
 		const match = taste ? computeTasteMatch(enriched, entityHash, taste) : 0
-		const base = scorePostForYou(enriched, engagement, affinity.get(entityHash.toLowerCase()) || 0, match)
+		const base = scorePostForYou(enriched, engagement, affinity.get(entityHash) || 0, match)
 		const repPenalty = reputationSortPenalty(entityHash, pickNodeScore)
 		const demoted = base / (1 + repPenalty)
 		return demoted * discount
@@ -117,7 +117,7 @@ async function* iterateForYouCandidates(username, following, viewerContext, tast
 		if (!isEntityHash128(entityHash)) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		for (const like of view.likes || []) {
-			const targetEntity = String(like.content?.targetEntityHash || '').toLowerCase()
+			const targetEntity = String(like.content?.targetEntityHash || '')
 			const targetPostId = String(like.content?.targetPostId || '')
 			if (!isEntityHash128(targetEntity) || !targetPostId) continue
 			const key = `${targetEntity}:${targetPostId}`
@@ -132,7 +132,7 @@ async function* iterateForYouCandidates(username, following, viewerContext, tast
 			yield { entityHash: targetEntity, post, score: scoreOf(targetEntity, post, 0.85) }
 		}
 		for (const repost of view.reposts || []) {
-			const targetEntity = String(repost.content?.targetEntityHash || '').toLowerCase()
+			const targetEntity = String(repost.content?.targetEntityHash || '')
 			const targetPostId = String(repost.content?.targetPostId || '')
 			if (!isEntityHash128(targetEntity) || !targetPostId) continue
 			const key = `${targetEntity}:${targetPostId}`
@@ -179,7 +179,7 @@ export async function buildForYouFeed(username, options = {}) {
 
 	let start = 0
 	if (options.cursor) {
-		const cursor = String(options.cursor)
+		const cursor = options.cursor
 		const index = candidates.findIndex(row => forYouCursorKey({ score: row.score, postId: row.post.id }) === cursor)
 		start = index >= 0 ? index + 1 : 0
 	}

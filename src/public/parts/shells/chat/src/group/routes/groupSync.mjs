@@ -61,12 +61,12 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.params
 		const content = {
-			targetPubKeyHash: String(req.body.targetPubKeyHash || '').trim().toLowerCase(),
+			targetPubKeyHash: req.body.targetPubKeyHash || '',
 			claim: Number(req.body.claim ?? 0.25),
 		}
 		if (req.body.verified) {
 			content.verified = true
-			if (req.body.proof?.eventId) content.proof = { eventId: String(req.body.proof.eventId).trim().toLowerCase() }
+			if (req.body.proof?.eventId) content.proof = { eventId: String(req.body.proof.eventId).trim() }
 		}
 		if (!content.targetPubKeyHash)
 			throw httpError(400, 'targetPubKeyHash required')
@@ -103,7 +103,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/reputation/reset`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.params
-		const targetPubKeyHash = String(req.body.targetPubKeyHash || '').trim().toLowerCase()
+		const targetPubKeyHash = req.body.targetPubKeyHash || ''
 		if (!targetPubKeyHash)
 			throw httpError(400, 'targetPubKeyHash required')
 		await appendSignedLocalEvent(username, groupId, {
@@ -172,7 +172,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			if (entityHash && !displayName)
 				try {
 					const profile = await getProfile(entityHash, username, { groupId, locales: profileLocales })
-					displayName = String(profile.name || '').trim()
+					displayName = profile.name || ''
 				}
 				catch {
 					// 远端或未托管资料时忽略
@@ -400,7 +400,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { username } = getUserByReq(req)
 		if (!await userHasLocalGroupReplica(username, groupId))
 			throw httpError(404, 'No local group replica')
-		const beforeMonth = String(req.query.before || '').trim()
+		const beforeMonth = req.query.before || ''
 		if (!/^\d{4}-\d{2}$/.test(beforeMonth))
 			throw httpError(400, 'before must be YYYY-MM')
 		res.status(200).json(await deleteArchivesBeforeMonth(username, groupId, beforeMonth))
@@ -410,7 +410,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username } = membership
-		const channelId = String(req.body.channelId || '').trim() || null
+		const channelId = (req.body.channelId || '') || null
 		if (await isFederationRoomAlreadyBound(username, groupId, { channelId: channelId || undefined }))
 			return res.status(200).json({ ok: true, skipped: true, channelId })
 		const slot = await ensureFederationRoom(username, groupId, { channelId: channelId || undefined })

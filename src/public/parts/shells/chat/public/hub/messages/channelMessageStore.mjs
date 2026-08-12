@@ -69,7 +69,7 @@ export function refreshChannelMessagesView(messageTextFn = null) {
 	work = work.filter(row => !isHubMemberPersonallyFiltered('', row.authorPubKeyHash || row.sender))
 	const q = store.messages.channelSearchQuery
 	if (q && messageTextFn)
-		work = work.filter(row => messageTextFn(row).toLowerCase().includes(q))
+		work = work.filter(row => messageTextFn(row).includes(q))
 	store.messages.channelMessages = mergeChannelMessagesForDisplay(work)
 }
 

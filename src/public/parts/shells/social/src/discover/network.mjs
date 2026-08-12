@@ -23,7 +23,7 @@ export async function discoverWithNetwork(username, rpc, options = {}) {
 				accountMap.set(account.entityHash, account)
 		const { following } = await loadViewerContext(username, options.viewerEntityHash || null)
 		merged.accounts = [...accountMap.values()]
-			.filter(account => !following.has(String(account.entityHash).toLowerCase()))
+			.filter(account => !following.has(account.entityHash))
 			.slice(0, rpc.n || 20)
 	}
 	if (rpc.type === 'social_post_discover_request') {

@@ -24,7 +24,7 @@ export const LOCAL_APPEND_AUTHZ_TYPES = new Set(['peer_invite', 'reputation_slas
  */
 export function validateLocalAuthzPayload(type, content, callerPubKeyHash, state) {
 	if (type === 'reputation_slash' || type === 'reputation_reset') {
-		const targetPubKeyHash = content.targetPubKeyHash?.trim().toLowerCase()
+		const targetPubKeyHash = content.targetPubKeyHash?.trim()
 		if (!targetPubKeyHash) throw new Error('targetPubKeyHash required')
 		if (state.members[targetPubKeyHash]?.status !== 'active')
 			throw new Error('target must be active member')
@@ -33,8 +33,8 @@ export function validateLocalAuthzPayload(type, content, callerPubKeyHash, state
 		return
 	}
 	if (type === 'peer_invite') {
-		const from = content.from?.trim().toLowerCase()
-		const to = content.to?.trim().toLowerCase()
+		const from = content.from?.trim()
+		const to = content.to?.trim()
 		if (from !== callerPubKeyHash) throw new Error('peer_invite from must match caller')
 		if (!to || to === callerPubKeyHash) throw new Error('peer_invite requires distinct to')
 		if (!resolveActiveMemberKey(state, from)) throw new Error('peer_invite from must be active member')
@@ -63,7 +63,7 @@ export async function validateLocalAuthzBatch(username, groupId, events) {
 			throw new Error(`local unsigned append only for: ${[...LOCAL_APPEND_AUTHZ_TYPES].join(', ')} (or pass full signed remote events with id+signature)`)
 		validateLocalAuthzPayload(eventType, event.content, memberKey, state)
 		if (eventType === 'reputation_reset') {
-			const targetPubKeyHash = event.content?.targetPubKeyHash?.trim().toLowerCase() || ''
+			const targetPubKeyHash = event.content?.targetPubKeyHash?.trim() || ''
 			if (targetPubKeyHash && isPubKeyHashBlocked(targetPubKeyHash))
 				throw new Error('reputation_reset ignored for locally blocked target')
 		}

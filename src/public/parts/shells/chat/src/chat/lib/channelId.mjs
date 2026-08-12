@@ -15,7 +15,7 @@ export const CHANNEL_ID_RE = /^[\w.-]{1,127}$/u
  * @returns {boolean} 合法时为 true（`null` / `undefined` 为 false）
  */
 export function isChannelIdValid(value) {
-	return value != null && CHANNEL_ID_RE.test(String(value).trim())
+	return value != null && CHANNEL_ID_RE.test(value)
 }
 
 /**
@@ -25,7 +25,7 @@ export function isChannelIdValid(value) {
  * @returns {string} 合法频道 id 或 defaultChannelId
  */
 export function resolveChannelId(value, defaultChannelId = 'default') {
-	return isChannelIdValid(value) ? String(value).trim() : defaultChannelId
+	return isChannelIdValid(value) ? value : defaultChannelId
 }
 
 /**
@@ -36,7 +36,7 @@ export function resolveChannelId(value, defaultChannelId = 'default') {
  * @returns {Promise<string>} 合法频道 id
  */
 export async function resolveGroupChannelId(username, groupId, hint) {
-	if (isChannelIdValid(hint)) return String(hint).trim()
+	if (isChannelIdValid(hint)) return hint
 	const { state } = await getState(username, groupId)
 	const fromSettings = state.groupSettings?.defaultChannelId
 	const fromChannels = Object.keys(state.channels || {})[0]

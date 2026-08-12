@@ -36,7 +36,7 @@ import { eventMatchesLazyChannelScope } from './syncScope.mjs'
 export async function syncEvents(username, groupId, q) {
 	const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	let work = events
-	const channelId = String(q.channelId || '').trim()
+	const channelId = q.channelId || ''
 	if (channelId) {
 		const { state } = await getState(username, groupId)
 		const scope = state.channels?.[channelId]?.syncScope
@@ -57,8 +57,8 @@ export async function syncEvents(username, groupId, q) {
 		const slice = work.slice(-limit)
 		return { events: slice, truncated: work.length > limit }
 	}
-	const sinceNorm = String(q.since).trim().toLowerCase()
-	const sinceIndex = work.findIndex(dagEvent => String(dagEvent.id).trim().toLowerCase() === sinceNorm)
+	const sinceNorm = String(q.since).trim()
+	const sinceIndex = work.findIndex(dagEvent => String(dagEvent.id).trim() === sinceNorm)
 	const slice = sinceIndex === -1 ? work : work.slice(sinceIndex + 1)
 	return { events: slice.slice(0, limit), truncated: slice.length > limit }
 }
@@ -117,9 +117,9 @@ export async function listChannelMessages(username, groupId, channelId, q = {}) 
 	let slice
 	if (!q.before) slice = lines.slice(-limit)
 	else {
-		const beforeNorm = String(q.before).trim().toLowerCase()
+		const beforeNorm = String(q.before).trim()
 		const beforeIndex = lines.findIndex(line =>
-			String(line.eventId).trim().toLowerCase() === beforeNorm,
+			String(line.eventId).trim() === beforeNorm,
 		)
 		slice = beforeIndex <= 0 ? [] : lines.slice(Math.max(0, beforeIndex - limit), beforeIndex)
 	}
@@ -156,11 +156,11 @@ export async function mergeChannelHistoryRows(username, groupId, channelId, inco
 	return withGroupWriteLock(username, groupId, async () => {
 		const existing = await readJsonl(path, { sanitize: stripDagEventLocalExtensions })
 		const known = new Set(
-			existing.map(row => String(row.eventId).trim().toLowerCase()).filter(Boolean),
+			existing.map(row => String(row.eventId).trim()).filter(Boolean),
 		)
 		const toAdd = []
 		for (const row of incomingRows) {
-			const eventId = String(row.eventId).trim().toLowerCase()
+			const eventId = String(row.eventId).trim()
 			if (!eventId || known.has(eventId)) continue
 			known.add(eventId)
 			toAdd.push(row)

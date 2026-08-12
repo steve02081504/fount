@@ -32,9 +32,9 @@ export function portableMessageFromSnapshot(snap) {
 	const content = snap.content && typeof snap.content === 'object'
 		? normalizeChannelMessage(snap.content)
 		: snap.content ?? null
-	const sender = snap.sender ? String(snap.sender).trim().toLowerCase() : null
+	const sender = snap.sender ? String(snap.sender).trim() : null
 	const sourceEntityHash = snap.sourceEntityHash
-		? String(snap.sourceEntityHash).trim().toLowerCase()
+		? String(snap.sourceEntityHash).trim()
 		: null
 	return {
 		sourceEventId: String(snap.eventId).trim(),

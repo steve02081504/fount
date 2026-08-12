@@ -67,9 +67,9 @@ async function lastGroupListActivityMs(username, groupId) {
  * @returns {object[]} 带展示元数据的消息行
  */
 function enrichChannelMessagesForViewer(lines, viewerPubKeyHash) {
-	const localMemberKey = viewerPubKeyHash.trim().toLowerCase()
+	const localMemberKey = viewerPubKeyHash.trim()
 	return lines.map(line => {
-		const authorPubKeyHash = line.sender.trim().toLowerCase()
+		const authorPubKeyHash = line.sender.trim()
 		return {
 			...line,
 			charId: line.charId || null,
@@ -139,7 +139,7 @@ export function aggregateReactionsForMessages(state, channelId, messageEventIds)
 	const reactions = state?.messageOverlay?.reactions
 	if (!(reactions instanceof Map) || !reactions.size || !messageEventIds?.length) return {}
 	const senderIndex = state.messageSenderIndex || {}
-	const targetSet = new Set(messageEventIds.map(id => String(id).trim()).filter(Boolean))
+	const targetSet = new Set(messageEventIds.map(id => id).filter(Boolean))
 	/** @type {Record<string, Record<string, { voters: string[] }>>} */
 	const out = {}
 	for (const [key, voters] of reactions) {
@@ -148,7 +148,7 @@ export function aggregateReactionsForMessages(state, channelId, messageEventIds)
 		const targetId = key.slice(0, sepIdx)
 		const emoji = key.slice(sepIdx + 1)
 		if (!emoji || !voters?.size || !targetSet.has(targetId)) continue
-		const indexed = senderIndex[targetId] || senderIndex[targetId.toLowerCase()]
+		const indexed = senderIndex[targetId] || senderIndex[targetId]
 		if ((indexed?.channelId || 'default') !== channelId) continue
 		if (!out[targetId]) out[targetId] = {}
 		out[targetId][emoji] = { voters: [...voters] }
@@ -354,7 +354,7 @@ export async function readChannelMessagesForUser(username, groupId, channelId, p
  */
 export async function readPinNeighborhoodForUser(username, groupId, channelId, pinEventId) {
 	const checkpoint = await safeReadJson(snapshotPath(username, groupId))
-	const pinNorm = String(pinEventId).trim().toLowerCase()
+	const pinNorm = pinEventId
 	let eventIds = checkpoint?.hot_posts?.pinContexts?.[channelId]?.[pinNorm]
 	if (!eventIds || eventIds.length <= 1) {
 		const { state } = await getState(username, groupId)
@@ -368,7 +368,7 @@ export async function readPinNeighborhoodForUser(username, groupId, channelId, p
 			limitCap: 50_000,
 			limit: 50_000,
 		})
-		const idx = all.findIndex(row => String(row.eventId).trim().toLowerCase() === pinNorm)
+		const idx = all.findIndex(row => String(row.eventId).trim() === pinNorm)
 		if (idx >= 0) {
 			const start = Math.max(0, idx - pinContext)
 			const end = Math.min(all.length, idx + pinContext + 1)

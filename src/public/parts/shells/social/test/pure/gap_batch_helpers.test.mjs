@@ -68,5 +68,5 @@ Deno.test('postMatchesFilters media and tag', () => {
 
 Deno.test('normalizeTopicTag strips hash', () => {
 	// typos:ignore-next-line
-	assertEquals(normalizeTopicTag('#FoUnt'), 'fount')
+	assertEquals(normalizeTopicTag('#FoUnt'), 'FoUnt')
 })

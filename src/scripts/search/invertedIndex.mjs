@@ -207,9 +207,9 @@ export async function patchShardMeta(indexDir, shardKey, patch) {
  * @returns {Promise<void>}
  */
 export async function indexDocument(indexDir, shardKey, doc) {
-	const id = String(doc.id || '')
+	const id = doc.id
 	if (!id) return
-	const text = String(doc.text || '')
+	const text = doc.text
 	const tokens = tokenizeForQuery(text)
 
 	await shardMutex(`${indexDir}:${shardKey}`, () => withGoneParentOk(indexDir, async () => {
@@ -219,7 +219,7 @@ export async function indexDocument(indexDir, shardKey, doc) {
 		const rows = await readJsonl(join(dir, 'docs.jsonl'))
 		const prev = foldDocs(rows).get(id)
 		if (prev && !prev.deleted)
-			for (const token of tokenizeForQuery(String(prev.text || ''))) {
+			for (const token of tokenizeForQuery(prev.text || '')) {
 				const list = postings[token]
 				if (!list) continue
 				postings[token] = list.filter(entry => entry !== id)
@@ -255,25 +255,24 @@ export async function indexDocument(indexDir, shardKey, doc) {
  * @returns {Promise<void>}
  */
 export async function removeDocument(indexDir, shardKey, id) {
-	const docId = String(id || '')
-	if (!docId) return
+	if (!id) return
 
 	await shardMutex(`${indexDir}:${shardKey}`, () => withGoneParentOk(indexDir, async () => {
 		const dir = shardDir(indexDir, shardKey)
 		const rows = await readJsonl(join(dir, 'docs.jsonl'))
-		const prev = foldDocs(rows).get(docId)
+		const prev = foldDocs(rows).get(id)
 		if (!prev || prev.deleted) return
 
 		const postings = await readPostings(dir)
-		for (const token of tokenizeForQuery(String(prev.text || ''))) {
+		for (const token of tokenizeForQuery(prev.text || '')) {
 			const list = postings[token]
 			if (!list) continue
-			postings[token] = list.filter(entry => entry !== docId)
+			postings[token] = list.filter(entry => entry !== id)
 			if (!postings[token].length) delete postings[token]
 		}
 
 		await appendDocsLine(dir, {
-			id: docId,
+			id,
 			text: prev.text || '',
 			ts: prev.ts || Date.now(),
 			fields: prev.fields || {},

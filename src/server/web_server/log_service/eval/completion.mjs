@@ -91,7 +91,7 @@ export function parseCompletionContext(code, cursor) {
 export function sharedCompletionPrefixLength(typed, candidate) {
 	let i = 0
 	while (i < typed.length && i < candidate.length
-		&& typed[i].toLowerCase() === candidate[i].toLowerCase())
+		&& typed[i].localeCompare(candidate[i], undefined, { sensitivity: 'accent' }) === 0)
 		i++
 	return i
 }

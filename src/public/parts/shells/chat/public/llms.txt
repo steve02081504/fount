@@ -241,6 +241,6 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 ## 深链
 
 - DM：`fount://run/shells:chat/dm;<pubKeyHex>;<nonce>;<introSignatureHex>[;nodeUrl]`
-- 入群：`fount://run/shells:chat/join;<groupId>;<inviteCode>[;<roomSecret>[;<introducerPubKeyHash>]]`
+- 入群：`fount://run/shells:chat/join;<encodeURIComponent(JSON.stringify({groupId,inviteCode,…}))>`（单段 JSON 载荷，旧分号/key=value 格式不兼容）
 
 解析与生成在 `public/shared/runUri.mjs`；站外分享包一层 `https://steve02081504.github.io/fount/protocol?url=` + `encodeURIComponent(runUri)`。

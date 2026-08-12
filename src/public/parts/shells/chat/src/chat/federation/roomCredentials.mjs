@@ -35,10 +35,10 @@ export async function resolveFedRoomName(username, groupId) {
 	const { state } = await loadGroupState(username, groupId)
 	const { groupMeta } = state
 	if (groupMeta?.dmKind === 'ecdh' && groupMeta.dmSessionTag)
-		return `dm:${groupMeta.dmSessionTag.trim().toLowerCase()}`
+		return `dm:${groupMeta.dmSessionTag}`
 	const override = peekPreferredRoomOverride(username, groupId)
 	if (override?.dmSessionTag)
-		return `dm:${String(override.dmSessionTag).trim().toLowerCase()}`
+		return `dm:${override.dmSessionTag}`
 	return `fount-fed-${groupId}`
 }
 
@@ -61,6 +61,18 @@ export function roomCredentialsFromGroupSettings(settings) {
  */
 function credsEqual(a, b) {
 	return a.roomSecret === b.roomSecret && a.signalingAppId === b.signalingAppId
+}
+
+/**
+ * resolveGroupRoomCredentials 扁平结果 → buildFederationSlot 凭证字段。
+ * @param {{ roomId: string, password: string }} roomCreds 已解析房间凭证
+ * @returns {{ roomId: string, roomSecret: string }} slot 入参
+ */
+export function federationSlotCredParams(roomCreds) {
+	return {
+		roomId: roomCreds.roomId,
+		roomSecret: roomCreds.password,
+	}
 }
 
 /**

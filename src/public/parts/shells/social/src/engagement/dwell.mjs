@@ -26,7 +26,7 @@ const DWELL_MAX_LINES = 5000
  * @returns {string} dwell.jsonl 路径
  */
 export function dwellLogPath(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = entityHash
 	return path.join(getUserDictionary(username), 'shells/social/taste/dwell', `${hash}.jsonl`)
 }
 

@@ -10,12 +10,12 @@ import { socialJson } from './shared.mjs'
  */
 export function registerFeedRoutes(router) {
 	router.get('/api/parts/shells\\:social/feed', authenticate, socialJson((req, { client }) => {
-		const ranking = String(req.query.ranking || 'latest').toLowerCase()
+		const ranking = String(req.query.ranking || 'latest')
 		return client.feed({
 			mode: ranking === 'for_you' ? 'forYou' : 'home',
 			ranking,
 			limit: Number(req.query.limit) || 50,
-			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
+			cursor: req.query.cursor ? req.query.cursor : undefined,
 		})
 	}))
 

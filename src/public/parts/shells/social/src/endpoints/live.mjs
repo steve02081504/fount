@@ -46,15 +46,15 @@ export function registerLiveRoutes(router) {
 		const { client } = await socialClientFromReq(req)
 		res.status(200).json(await client.liveFeed({
 			limit: Number(req.query.limit) || 20,
-			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
+			cursor: req.query.cursor ? req.query.cursor : undefined,
 			scope: req.query.scope ? String(req.query.scope) : 'local',
 		}))
 	})
 
 	router.get('/api/parts/shells\\:social/live/:entityHash/:liveId', authenticate, async (req, res) => {
 		const { username } = await socialClientFromReq(req)
-		const entityHash = String(req.params.entityHash).toLowerCase()
-		const liveId = String(req.params.liveId).toLowerCase()
+		const entityHash = req.params.entityHash
+		const liveId = req.params.liveId
 		const session = loadLiveSession(username, entityHash, liveId)
 		if (!session) throw httpError(404, 'live not found')
 		res.status(200).json({ live: session })
@@ -62,7 +62,7 @@ export function registerLiveRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/live/:liveId/whip', authenticate, async (req, res) => {
 		const { client, username } = await socialClientFromReq(req)
-		const liveId = String(req.params.liveId).toLowerCase()
+		const liveId = req.params.liveId
 		const session = loadLiveSession(username, client.entityHash, liveId)
 		if (!session || session.status !== 'live') throw httpError(404, 'live not found')
 		const auth = String(req.headers.authorization || '')
@@ -79,7 +79,7 @@ export function registerLiveRoutes(router) {
 
 	router.delete('/api/parts/shells\\:social/live/:liveId/whip', authenticate, async (req, res) => {
 		const { client, username } = await socialClientFromReq(req)
-		const liveId = String(req.params.liveId).toLowerCase()
+		const liveId = req.params.liveId
 		const session = loadLiveSession(username, client.entityHash, liveId)
 		if (!session) throw httpError(404, 'live not found')
 		const avRoomId = session.avRoomId || `social:${client.entityHash}:${liveId}`
@@ -89,14 +89,14 @@ export function registerLiveRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/live/:liveId/link/invite', authenticate, async (req, res) => {
 		const { client, username } = await socialClientFromReq(req)
-		const liveId = String(req.params.liveId).toLowerCase()
+		const liveId = req.params.liveId
 		const { inviteLiveLink } = await import('../live/link.mjs')
 		res.status(200).json(await inviteLiveLink(username, client.entityHash, liveId, req.body))
 	})
 
 	router.post('/api/parts/shells\\:social/live/:liveId/link/stop', authenticate, async (req, res) => {
 		const { client, username } = await socialClientFromReq(req)
-		const liveId = String(req.params.liveId).toLowerCase()
+		const liveId = req.params.liveId
 		const { tearDownLiveLink } = await import('../live/link.mjs')
 		await tearDownLiveLink(username, client.entityHash, liveId)
 		res.status(200).json({ ok: true })
@@ -104,15 +104,15 @@ export function registerLiveRoutes(router) {
 
 	router.ws('/ws/parts/shells\\:social/live/:entityHash/:liveId', authenticate, async (ws, req) => {
 		const { client, username } = await socialClientFromReq(req)
-		const entityHash = String(req.params.entityHash).toLowerCase()
-		const liveId = String(req.params.liveId).toLowerCase()
+		const entityHash = req.params.entityHash
+		const liveId = req.params.liveId
 		let session = loadLiveSession(username, entityHash, liveId)
 		if ((!session || session.status !== 'live') && req.query?.proxy === '1') {
 			const { ensureFederatedLiveProxy } = await import('../live/viewerProxy.mjs')
 			session = await ensureFederatedLiveProxy(username, entityHash, liveId, {
 				bridgeOrigin: String(req.query.bridgeOrigin || ''),
 				watchSecret: String(req.query.watchSecret || ''),
-				nodeHash: String(req.query.nodeHash || ''),
+				nodeHash: req.query.nodeHash,
 			})
 		}
 		if (!session || session.status !== 'live') {
@@ -145,15 +145,15 @@ export function registerLiveRoutes(router) {
 
 	router.ws('/ws/parts/shells\\:social/live-av/:entityHash/:liveId', authenticate, async (ws, req) => {
 		const { client, username } = await socialClientFromReq(req)
-		const entityHash = String(req.params.entityHash).toLowerCase()
-		const liveId = String(req.params.liveId).toLowerCase()
+		const entityHash = req.params.entityHash
+		const liveId = req.params.liveId
 		let session = loadLiveSession(username, entityHash, liveId)
 		if ((!session || session.status !== 'live') && req.query?.proxy === '1') {
 			const { ensureFederatedLiveProxy } = await import('../live/viewerProxy.mjs')
 			session = await ensureFederatedLiveProxy(username, entityHash, liveId, {
 				bridgeOrigin: String(req.query.bridgeOrigin || ''),
 				watchSecret: String(req.query.watchSecret || ''),
-				nodeHash: String(req.query.nodeHash || ''),
+				nodeHash: req.query.nodeHash,
 			})
 		}
 		if (!session || session.status !== 'live') {
@@ -172,8 +172,8 @@ export function registerLiveRoutes(router) {
 
 	// 跨节点连线 / 观众代理：token = HMAC(linkSecret)；公开观看代理用 session.publicWatchSecret
 	router.ws('/ws/parts/shells\\:social/live-bridge/:entityHash/:liveId', async (ws, req) => {
-		const entityHash = String(req.params.entityHash).toLowerCase()
-		const liveId = String(req.params.liveId).toLowerCase()
+		const entityHash = req.params.entityHash
+		const liveId = req.params.liveId
 		const token = String(req.query.token || '')
 		const { getAllUserNames } = await import('../../../../../../server/auth/index.mjs')
 		let matched = null

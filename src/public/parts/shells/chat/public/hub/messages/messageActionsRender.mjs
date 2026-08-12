@@ -54,9 +54,9 @@ function authorOwnerEntityHash(message, options) {
 	for (const member of options.groupMembers || []) {
 		const memberEntity = member?.entityHash
 		const memberKey = member?.memberKey || member?.pubKeyHash
-		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender)) {
+		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender)) 
 			return member?.ownerEntityHash || null
-		}
+		
 	}
 	return null
 }
@@ -218,7 +218,7 @@ export async function renderMessageActionsHtml(message, options) {
 	if (dagReady && alwaysVisible && ownChar) {
 		const feedbackHtml = renderOwnCharFeedbackInline(
 			escapedEventId,
-			escapeHtml(String(message.charId || '')),
+			escapeHtml(message.charId || ''),
 			feedbackType === 'up' ? 'text-success' : '',
 			feedbackType === 'down' ? 'text-error' : '',
 			!!options.isLastMessage,

@@ -64,7 +64,7 @@ function packManifestPath(username, entityHash, packId) {
  */
 function emptyPackManifest(username, entityHash, packId, localized = {}) {
 	void username
-	const id = assertSafePackId(String(packId || '').trim() || prefixedRandomId('epack_'))
+	const id = assertSafePackId(packId || prefixedRandomId('epack_'))
 	return {
 		packId: id,
 		source: { kind: 'entity', id: entityHash },
@@ -103,7 +103,7 @@ function manifestEventContent(manifest) {
  * @returns {Promise<void>} 无返回
  */
 async function saveLocalManifest(username, entityHash, manifest) {
-	const packId = assertSafePackId(String(manifest.packId || '').trim())
+	const packId = assertSafePackId(manifest.packId)
 	const dir = entityEmojiPackDir(username, entityHash, packId)
 	if (!await fileExists(dir)) await fs.mkdir(dir, { recursive: true })
 	await saveJsonFile(packManifestPath(username, entityHash, packId), {
@@ -122,7 +122,7 @@ async function saveLocalManifest(username, entityHash, manifest) {
  * @returns {Promise<object | null>} pack 或 null
  */
 export async function loadLocalEntityPack(username, entityHash, packId) {
-	const pid = String(packId || '').trim()
+	const pid = packId
 	if (!isSafePackId(pid)) return null
 	const p = packManifestPath(username, entityHash, pid)
 	if (!await fileExists(p)) return null
@@ -176,7 +176,7 @@ export async function listTimelineEntityPacks(username, entityHash) {
  * @returns {Promise<object>} 结果
  */
 export async function createEntityPack(username, entityHash, fields = {}) {
-	const packId = assertSafePackId(String(fields.packId || '').trim() || prefixedRandomId('epack_'))
+	const packId = assertSafePackId(fields.packId || prefixedRandomId('epack_'))
 	const existing = await loadLocalEntityPack(username, entityHash, packId)
 	if (existing) throw new Error('pack already exists')
 	const manifest = emptyPackManifest(username, entityHash, packId, fields.localized)
@@ -217,7 +217,7 @@ export async function updateEntityPack(username, entityHash, packId, patch = {})
  * @returns {Promise<boolean>} 是否成功
  */
 export async function deleteEntityPack(username, entityHash, packId) {
-	const pid = String(packId || '').trim()
+	const pid = packId
 	if (!isSafePackId(pid)) return false
 	const dir = entityEmojiPackDir(username, entityHash, pid)
 	if (!await fileExists(dir)) return false
@@ -383,7 +383,7 @@ async function syncOwnersForPackDiscovery(username, owners) {
  * @returns {Promise<string | null>} 默认 packId
  */
 async function peekAuthorDefaultPackId(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = entityHash
 	if (!hash) return null
 	const view = await getTimelineMaterialized(username, hash)
 	return String(view?.socialMeta?.defaultEmojiPackId || '').trim() || null
@@ -395,7 +395,7 @@ async function peekAuthorDefaultPackId(username, entityHash) {
  * @returns {Promise<{ entityHash: string, pack: object } | null>} 定位结果
  */
 export async function findEntityPackForUser(username, packId) {
-	const pid = String(packId || '').trim()
+	const pid = packId
 	if (!pid) return null
 	const owners = await listFollowedTimelineOwners(username)
 	for (const owner of owners) {
@@ -424,7 +424,7 @@ export async function isEntityPackAvailableToUser(username, packId) {
  * @returns {Promise<string | null>} 默认 packId
  */
 async function resolveAuthorDefaultPackId(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = entityHash
 	if (!hash) return null
 	const view = await getTimelineMaterialized(username, hash)
 	const fromMeta = String(view?.socialMeta?.defaultEmojiPackId || '').trim()
@@ -443,7 +443,7 @@ async function resolveAuthorDefaultPackId(username, entityHash) {
  * @returns {Promise<void>}
  */
 export async function linkFollowedAuthorDefaultPack(username, targetEntityHash) {
-	const hash = String(targetEntityHash || '').trim().toLowerCase()
+	const hash = targetEntityHash
 	if (!hash) return
 	const packId = await resolveAuthorDefaultPackId(username, hash)
 	if (!packId) return

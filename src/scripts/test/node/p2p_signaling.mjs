@@ -8,7 +8,7 @@ function isLoopbackRelayUrl(url) {
 	try {
 		const parsed = new URL(String(url || '').trim())
 		if (parsed.protocol !== 'ws:' && parsed.protocol !== 'wss:') return false
-		const host = parsed.hostname.toLowerCase()
+		const host = parsed.hostname
 		return host === '127.0.0.1' || host === 'localhost' || host === '[::1]' || host === '::1'
 	}
 	catch {

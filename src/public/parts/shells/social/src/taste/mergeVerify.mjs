@@ -70,7 +70,7 @@ export async function localTagStats(username, entityHash, tasteHint = null) {
 		}
 		for (const post of view.posts || []) {
 			const tags = Array.isArray(post.content?.tags) ? post.content.tags : []
-			for (const tag of tags) bump(String(tag).toLowerCase(), actor, w * 0.5)
+			for (const tag of tags) bump(tag, actor, w * 0.5)
 		}
 	}
 	return { usage, audiences }
@@ -82,8 +82,8 @@ export async function localTagStats(username, entityHash, tasteHint = null) {
  * @returns {{ ok: boolean, confidence: number, reason?: string }} 验证结果
  */
 export function verifyTagMergeClaimWithStats(stats, claim) {
-	const from = String(claim.from || '').trim().toLowerCase()
-	const to = String(claim.to || '').trim().toLowerCase()
+	const from = claim.from
+	const to = claim.to
 	if (!from || !to || from === to) return { ok: false, confidence: 0, reason: 'malformed' }
 
 	const { usage, audiences } = stats

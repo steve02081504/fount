@@ -31,7 +31,7 @@ export function registerTestSeedRoutes(router, authenticate) {
 		const channelId = String(req.body?.channelId || 'default').trim()
 		const previewText = String(req.body?.text || `mention-e2e ${Date.now()}`)
 		if (!groupId) throw httpError(400, 'groupId required')
-		const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
+		const viewerEntityHash = await resolveOperatorEntityHash(username)
 		if (!viewerEntityHash) throw httpError(400, 'identity required')
 
 		const eventId = randomBytes(32).toString('hex')

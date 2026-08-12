@@ -14,7 +14,7 @@ import { dmLinkSignableBytes } from 'fount/public/parts/shells/chat/public/share
 import { formatDmRunUri } from 'fount/public/parts/shells/chat/public/shared/runUri.mjs'
 import { loadJsonFileIfExists, saveJsonFile } from 'fount/scripts/json_loader.mjs'
 import { parseArgsOrExit } from 'fount/scripts/test/core/parse_args_or_exit.mjs'
-import { HEX_ID_64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
 
 
@@ -57,8 +57,8 @@ function loadFederationIdentity(userDir) {
 	for (const name of fs.readdirSync(entitiesDir)) {
 		const row = loadJsonFileIfExists(path.join(entitiesDir, name, 'identity.json'), null)
 		if (!row || row.charPartName) continue
-		const activePub = normalizeHex64(row.activePubKeyHex)
-		const activeSecret = normalizeHex64(row.activeSecretKeyHex)
+		const activePub = row.activePubKeyHex
+		const activeSecret = row.activeSecretKeyHex
 		if (HEX_ID_64.test(activePub) && activeSecret.length >= 64)
 			return { activePubKeyHex: activePub, secretHex: activeSecret }
 	}

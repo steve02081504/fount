@@ -17,7 +17,7 @@ import { isSerializableRequest } from '../session/serializableRequest.mjs'
  * @returns {Function | null} 路径命中的可调用对象，否则 null
  */
 function resolveNestedCallable(root, path) {
-	if (!root || !String(path || '').trim()) return null
+	if (!root || !(path || '')) return null
 	let current = root
 	for (const segment of String(path).split('.').map(part => part.trim()).filter(Boolean)) {
 		if (current == null) return null

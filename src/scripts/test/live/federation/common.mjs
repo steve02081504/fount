@@ -366,7 +366,7 @@ export async function WarmupFedNodeLinks(nodes) {
 	for (const node of nodes) {
 		const view = await P2pApi(node, 'GET', '/federation')
 		if (view.status === 200 && view.json.nodeHash)
-			identities.push({ node, nodeHash: String(view.json.nodeHash).trim().toLowerCase() })
+			identities.push({ node, nodeHash: String(view.json.nodeHash).trim() })
 	}
 	if (identities.length < 2)
 		throw new Error(`WarmupFedNodeLinks: need ≥2 federation identities, got ${identities.length}`)

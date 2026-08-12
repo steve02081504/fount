@@ -50,7 +50,7 @@ export async function forkGroupFromBranch(username, sourceGroupId, options = {})
 	if (!events.length)
 		throw new Error('source group has no events')
 
-	const branchTip = options.tipId?.trim().toLowerCase()
+	const branchTip = options.tipId?.trim()
 		|| state.consensusBranchTip
 		|| order[order.length - 1]
 	if (!isHex64(branchTip))

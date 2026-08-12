@@ -227,7 +227,7 @@ export async function openSpeechRecognitionSession({
  * @returns {void}
  */
 export function appendRecognizedText(input, text) {
-	const next = String(text || '').trim()
+	const next = text.trim()
 	if (!next) return
 	const cur = input.value
 	input.value = cur ? `${cur}${/\s$/.test(cur) ? '' : ' '}${next}` : next

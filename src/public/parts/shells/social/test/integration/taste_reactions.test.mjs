@@ -62,8 +62,8 @@ Deno.test('reaction_index projection after like', async () => {
 	}, { fanout: false })
 
 	const summary = await reactionIndex.summarizeReactions(username, TARGET, POST_ID)
-	assert(summary.likes.includes(operator.toLowerCase()))
-	assert(!summary.dislikes.includes(operator.toLowerCase()))
+	assert(summary.likes.includes(operator))
+	assert(!summary.dislikes.includes(operator))
 
 	const events = await reactionIndex.listReactionEvents(username, TARGET, POST_ID)
 	assertEquals(events.length, 1)
@@ -72,7 +72,7 @@ Deno.test('reaction_index projection after like', async () => {
 
 Deno.test('listReactionEvents paginates by afterReactor', async () => {
 	const { username, operator } = await getSession()
-	const reactors = [operator, REACTOR_B, REACTOR_C].map(h => h.toLowerCase()).sort()
+	const reactors = [operator, REACTOR_B, REACTOR_C].sort()
 	for (const reactor of reactors)
 		await reactionIndex.upsertReaction(username, TARGET, POST_ID, reactor, {
 			kind: 'like',
@@ -101,7 +101,7 @@ Deno.test('private publishReactions skips reaction_index projection', async () =
 		content: { targetEntityHash: TARGET, targetPostId: POST_ID },
 	}, { fanout: false })
 	const summary = await reactionIndex.summarizeReactions(username, TARGET, POST_ID)
-	assert(!summary.likes.includes(operator.toLowerCase()))
+	assert(!summary.likes.includes(operator))
 })
 
 Deno.test('tag_name event materializes into view.tagNames', async () => {
@@ -112,7 +112,7 @@ Deno.test('tag_name event materializes into view.tagNames', async () => {
 		content: { tagHash, locale: 'zh-CN', label: '测试标签' },
 	}, { fanout: false })
 	const view = await materialize.getTimelineMaterialized(username, operator)
-	assertEquals(view.tagNames?.[tagHash.toLowerCase()]?.['zh-CN'], '测试标签')
+	assertEquals(view.tagNames?.[tagHash]?.['zh-CN'], '测试标签')
 })
 
 Deno.test('normalizeReactionTarget rejects path traversal postId', () => {

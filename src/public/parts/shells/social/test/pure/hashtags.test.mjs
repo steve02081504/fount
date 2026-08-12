@@ -13,8 +13,8 @@ Deno.test('extractHashtagsFromText skips group refs', () => {
 	assertEquals(tags.includes('mygroup'), false)
 })
 
-Deno.test('extractHashtagsFromText dedupes case', () => {
-	assertEquals(extractHashtagsFromText('#Foo #foo'), ['foo'])
+Deno.test('extractHashtagsFromText preserves case', () => {
+	assertEquals(extractHashtagsFromText('#Foo #foo'), ['Foo', 'foo'])
 })
 
 Deno.test('extractHashtagsFromText skips fenced code blocks', () => {

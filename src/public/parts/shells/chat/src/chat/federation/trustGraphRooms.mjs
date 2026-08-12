@@ -1,4 +1,3 @@
-import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { registerFederationRoomProvider, unregisterFederationRoomProvider } from 'npm:@steve02081504/fount-p2p/registries/room_provider'
@@ -30,11 +29,10 @@ const PREMEMBER_GROUP_ACTIONS = new Set([
  * @returns {boolean} 是否为活跃成员的 home 节点
  */
 function isActiveMemberNodeHash(state, nodeHash) {
-	const normalizedNodeHash = normalizeHex64(nodeHash)
-	if (!normalizedNodeHash) return false
+	if (!nodeHash) return false
 	return Object.values(state?.members || {}).some(member =>
 		member?.status === 'active'
-		&& normalizeHex64(member?.homeNodeHash || member?.nodeHash) === normalizedNodeHash)
+		&& (member?.homeNodeHash || member?.nodeHash) === nodeHash)
 }
 
 /**
@@ -62,7 +60,7 @@ function isPrememberBootstrapEnvelope(envelope) {
 export function registerChatFederationRoomProvider() {
 	unregisterGroupScopeAuthorizer?.()
 	unregisterGroupScopeAuthorizer = registerScopeAuthorizer('group:', async (scope, senderNodeHash, envelope) => {
-		const groupId = String(scope || '').slice('group:'.length).trim()
+		const groupId = (scope || '').slice('group:'.length).trim()
 		if (!groupId) return false
 		const owner = groupFederationOwner.get(groupId)
 		if (!owner) return false

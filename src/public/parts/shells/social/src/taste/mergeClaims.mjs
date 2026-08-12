@@ -30,8 +30,8 @@ function tagClaimsPath() {
  * @returns {boolean} 结构是否可用
  */
 function isWellFormedClaim(claim) {
-	const from = String(claim?.from || '').trim().toLowerCase()
-	const to = String(claim?.to || '').trim().toLowerCase()
+	const from = String(claim?.from || '').trim()
+	const to = String(claim?.to || '').trim()
 	return Boolean(from && to && from !== to && from.length <= 128 && to.length <= 128)
 }
 
@@ -113,8 +113,8 @@ export async function ingestTagMergeClaim(_username, claim, ingress = {}) {
 				at: Date.now(),
 				sourceNodeHash: ingress.requesterNodeHash || null,
 				claim: {
-					from: String(claim.from).trim().toLowerCase(),
-					to: String(claim.to).trim().toLowerCase(),
+					from: claim.from,
+					to: claim.to,
 					evidence: claim.evidence || {},
 				},
 			},
@@ -181,8 +181,8 @@ export async function gossipTagMergeClaim(username, claim) {
 	await collectSocialRpcMerged(username, {
 		type: 'social_tag_merge_claim',
 		claim: {
-			from: String(claim.from).trim().toLowerCase(),
-			to: String(claim.to).trim().toLowerCase(),
+			from: claim.from,
+			to: claim.to,
 			evidence: claim.evidence || {},
 		},
 	}, 2000, 6)
@@ -196,7 +196,7 @@ export async function gossipTagMergeClaim(username, claim) {
  * @returns {Promise<import('./store.mjs').TasteStore>} 更新后偏好
  */
 export async function revokeTasteAlias(username, entityHash, fromTag) {
-	const from = String(fromTag).trim().toLowerCase()
+	const from = fromTag
 	return mutateTaste(username, entityHash, store => {
 		delete store.aliases[from]
 		return store

@@ -105,7 +105,7 @@ export async function buildSignedDiscoveryAdvertisement(username, groupId, nodeH
  */
 export async function verifyDiscoveryAdvertisement(advertisement) {
 	const advertiserPubKeyHash = normalizeHex64(advertisement.advertiserPubKeyHash)
-	const signatureHex = String(advertisement.signature || '').trim()
+	const signatureHex = advertisement.signature || ''
 	if (!isHex64(advertiserPubKeyHash) || !signatureHex) return false
 	const body = { ...advertisement }
 	delete body.signature
@@ -124,7 +124,7 @@ export async function verifyDiscoveryAdvertisement(advertisement) {
  */
 export async function mergeDiscoveryAdvertisement(username, advertisement, source) {
 	if (!await verifyDiscoveryAdvertisement(advertisement)) return
-	const fromNodeHash = String(source.fromNodeHash || '').trim()
+	const fromNodeHash = source.fromNodeHash || ''
 	const nodeScore = fromNodeHash ? pickNodeScore(fromNodeHash) : 0
 	const index = await loadDiscoveryIndex(username)
 	const key = entryKey({

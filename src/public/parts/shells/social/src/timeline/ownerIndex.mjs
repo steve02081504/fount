@@ -35,7 +35,7 @@ async function rebuildTimelineOwnerIndex(username) {
 		const entries = await readdir(timelinesRoot(username), { withFileTypes: true })
 		for (const entry of entries) {
 			if (!entry.isDirectory()) continue
-			const entityHash = entry.name.toLowerCase()
+			const entityHash = entry.name
 			if (!isEntityHash128(entityHash)) continue
 			const parsed = parseEntityHash(entityHash)
 			if (!parsed) continue
@@ -83,7 +83,7 @@ export async function getTimelineOwnerIndex(username) {
  * @returns {Promise<string[]>} 该节点在本 replica 托管的 entityHash
  */
 export async function listLocalEntitiesForNode(username, nodeHash) {
-	const key = nodeHash?.toLowerCase()
+	const key = nodeHash
 	if (!key) return []
 	return [...(await getTimelineOwnerIndex(username)).byNode.get(key) || []]
 }
@@ -95,7 +95,7 @@ export async function listLocalEntitiesForNode(username, nodeHash) {
  * @returns {Promise<string[]>} 本地 timelines 目录下的 entityHash
  */
 export async function listLocalTimelineDirs(username, options = {}) {
-	const prefix = (options.nodeHashPrefix || '').trim().toLowerCase() || null
+	const prefix = (options.nodeHashPrefix || '').trim() || null
 	if (prefix) return listLocalEntitiesForNode(username, prefix)
 	return [...(await getTimelineOwnerIndex(username)).all]
 }

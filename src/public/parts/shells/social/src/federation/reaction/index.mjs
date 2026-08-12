@@ -65,7 +65,7 @@ export async function readReactionIndex(username, targetEntityHash, postId) {
 export async function upsertReaction(username, targetEntityHash, postId, reactorEntityHash, entry) {
 	const ids = normalizePostTarget(targetEntityHash, postId)
 	if (!ids) return
-	const reactor = String(reactorEntityHash || '').trim().toLowerCase()
+	const reactor = reactorEntityHash
 	if (!parseEntityHash(reactor)) return
 	await store.withMutex(ids.target, ids.postId, async () => {
 		const current = await store.read(username, ids.target, ids.postId)
@@ -88,7 +88,7 @@ export async function projectReactionFromTimelineEvent(replicaUsername, timeline
 	if (!['like', 'unlike', 'dislike', 'undislike'].includes(type)) return
 	const ids = normalizePostTarget(event.content?.targetEntityHash, event.content?.targetPostId)
 	if (!ids) return
-	const reactor = String(timelineOwnerEntityHash || '').trim().toLowerCase()
+	const reactor = timelineOwnerEntityHash
 	if (!parseEntityHash(reactor)) return
 	const { loadTaste } = await import('../../taste/store.mjs')
 	const taste = await loadTaste(replicaUsername, reactor)
@@ -120,7 +120,7 @@ export async function listReactionEvents(username, targetEntityHash, postId, aft
 	const keys = Object.keys(reactors).sort()
 	let start = 0
 	if (afterReactor) {
-		const cursor = String(afterReactor).trim().toLowerCase()
+		const cursor = afterReactor
 		if (!parseEntityHash(cursor)) return []
 		const idx = keys.findIndex(key => key === cursor)
 		start = idx >= 0 ? idx + 1 : 0

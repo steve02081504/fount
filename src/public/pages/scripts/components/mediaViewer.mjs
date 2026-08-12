@@ -17,7 +17,7 @@ let detachActiveViewer = null
  * @returns {boolean} 是否视频
  */
 function isVideoItem(item) {
-	return String(item.mimeType || '').startsWith('video/')
+	return (item.mimeType || '').startsWith('video/')
 		|| /\.(mp4|webm|ogg|mov)(\?|$)/i.test(item.src || '')
 }
 

@@ -22,7 +22,7 @@ export async function localLiveFeedHandler(inboundContext, query) {
 		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */query.limit : 20,
 	) || 20, 1), 32)
 	const { items } = await buildLiveFeed(username, { limit, scope: 'local' })
-	const nodeHash = String(getNodeHash() || '').toLowerCase()
+	const nodeHash = String(getNodeHash() || '')
 	return items
 		.filter(row => row.visibility === 'public' || !row.visibility)
 		.map(row => ({
@@ -54,16 +54,16 @@ export async function buildNearbyLiveFeed(username, options = {}) {
 		 */
 		rowKey: row => {
 			if (!row || typeof row !== 'object') return ''
-			const entityHash = String(/** @type {{ entityHash?: unknown }} */row.entityHash || '').toLowerCase()
-			const liveId = String(/** @type {{ liveId?: unknown }} */row.liveId || '').toLowerCase()
+			const entityHash = String(/** @type {{ entityHash?: unknown }} */row.entityHash || '')
+			const liveId = String(/** @type {{ liveId?: unknown }} */row.liveId || '')
 			return entityHash && liveId ? `${entityHash}:${liveId}` : ''
 		},
 	})
 	const items = []
 	for (const raw of rows) {
 		if (!raw || typeof raw !== 'object') continue
-		const entityHash = String(/** @type {{ entityHash?: unknown }} */raw.entityHash || '').trim().toLowerCase()
-		const liveId = String(/** @type {{ liveId?: unknown }} */raw.liveId || '').trim().toLowerCase()
+		const entityHash = String(/** @type {{ entityHash?: unknown }} */raw.entityHash || '').trim()
+		const liveId = String(/** @type {{ liveId?: unknown }} */raw.liveId || '').trim()
 		if (!entityHash || !liveId) continue
 		items.push({
 			liveId,
@@ -78,7 +78,7 @@ export async function buildNearbyLiveFeed(username, options = {}) {
 			visibility: 'public',
 			status: 'live',
 			federated: true,
-			nodeHash: String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').toLowerCase(),
+			nodeHash: String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || ''),
 		})
 		if (items.length >= limit) break
 	}

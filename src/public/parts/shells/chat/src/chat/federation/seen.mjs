@@ -109,5 +109,5 @@ export function ingestRemoteTipsForExchange(username, groupId, tips) {
 	if (!pending || !Array.isArray(tips)) return
 	for (const tipId of tips)
 		if (EVENT_ID_HEX.test(String(tipId)))
-			pending.collected.add(String(tipId).trim().toLowerCase())
+			pending.collected.add(tipId)
 }

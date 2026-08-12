@@ -53,7 +53,7 @@ export function createSocialTimelineState() {
 function reduceSocialMeta(state, event) {
 	Object.assign(state.socialMeta, event.content)
 	if (event.content?.recoveryPubKeyHex)
-		state.recoveryPubKeyHex = String(event.content.recoveryPubKeyHex).trim().toLowerCase()
+		state.recoveryPubKeyHex = String(event.content.recoveryPubKeyHex).trim()
 	return state
 }
 
@@ -289,7 +289,7 @@ function reduceUndislike(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceTagName(state, event) {
-	const tagHash = String(event.content?.tagHash || '').trim().toLowerCase()
+	const tagHash = String(event.content?.tagHash || '').trim()
 	const locale = String(event.content?.locale || '').trim()
 	const label = String(event.content?.label || '').trim().slice(0, 64)
 	if (!tagHash || !locale || !label) return state
@@ -314,7 +314,7 @@ function reduceRepost(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceFollow(state, event) {
-	state.following.add(event.content.targetEntityHash.toLowerCase())
+	state.following.add(event.content.targetEntityHash)
 	state.followEvents.push(event)
 	return state
 }
@@ -325,7 +325,7 @@ function reduceFollow(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceUnfollow(state, event) {
-	state.following.delete(event.content.targetEntityHash.toLowerCase())
+	state.following.delete(event.content.targetEntityHash)
 	return state
 }
 
@@ -335,7 +335,7 @@ function reduceUnfollow(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceTagFollow(state, event) {
-	const tag = String(event.content?.tag || '').trim().toLowerCase()
+	const tag = String(event.content?.tag || '').trim()
 	if (tag) state.followedTags.add(tag)
 	return state
 }
@@ -346,7 +346,7 @@ function reduceTagFollow(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceTagUnfollow(state, event) {
-	const tag = String(event.content?.tag || '').trim().toLowerCase()
+	const tag = String(event.content?.tag || '').trim()
 	if (tag) state.followedTags.delete(tag)
 	return state
 }
@@ -358,7 +358,7 @@ function reduceTagUnfollow(state, event) {
  */
 function reduceReplyFeature(state, event) {
 	const targetPostId = String(event.content?.targetPostId || '').trim()
-	const replier = String(event.content?.replierEntityHash || '').trim().toLowerCase()
+	const replier = String(event.content?.replierEntityHash || '').trim()
 	const replyPostId = String(event.content?.replyPostId || '').trim()
 	if (!targetPostId || !replier || !replyPostId) return state
 	const key = `${replier}:${replyPostId}`
@@ -375,7 +375,7 @@ function reduceReplyFeature(state, event) {
  */
 function reduceReplyUnfeature(state, event) {
 	const targetPostId = String(event.content?.targetPostId || '').trim()
-	const replier = String(event.content?.replierEntityHash || '').trim().toLowerCase()
+	const replier = String(event.content?.replierEntityHash || '').trim()
 	const replyPostId = String(event.content?.replyPostId || '').trim()
 	if (!targetPostId || !replier || !replyPostId) return state
 	const set = state.featuredReplies.get(targetPostId)
@@ -391,7 +391,7 @@ function reduceReplyUnfeature(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceLiveStart(state, event) {
-	const liveId = String(event.content?.liveId || event.id || '').trim().toLowerCase()
+	const liveId = String(event.content?.liveId || event.id || '').trim()
 	if (liveId) state.activeLives.set(liveId, event)
 	return state
 }
@@ -402,7 +402,7 @@ function reduceLiveStart(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceLiveEnd(state, event) {
-	const liveId = String(event.content?.liveId || '').trim().toLowerCase()
+	const liveId = String(event.content?.liveId || '').trim()
 	if (liveId) state.activeLives.delete(liveId)
 	return state
 }
@@ -413,7 +413,7 @@ function reduceLiveEnd(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceBlock(state, event) {
-	state.blocked.add(event.content.targetEntityHash.toLowerCase())
+	state.blocked.add(event.content.targetEntityHash)
 	return state
 }
 
@@ -423,7 +423,7 @@ function reduceBlock(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceUnblock(state, event) {
-	state.blocked.delete(event.content.targetEntityHash.toLowerCase())
+	state.blocked.delete(event.content.targetEntityHash)
 	return state
 }
 

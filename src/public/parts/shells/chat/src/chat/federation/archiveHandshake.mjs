@@ -27,13 +27,13 @@ export function evaluateArchiveHandshake(remoteSummary, localSummary, localEvent
 		return { allow: true, strictAligned: false }
 	if (!isPlainObject(remoteSummary))
 		return { allow: false, strictAligned: false }
-	const remoteHash = String(remoteSummary.hash || '').trim().toLowerCase()
+	const remoteHash = remoteSummary.hash || ''
 	if (!isHex64(remoteHash)) return { allow: false, strictAligned: false }
 	const remoteEventCount = Number(remoteSummary.eventCount)
 	if (!Number.isFinite(remoteEventCount) || remoteEventCount < 0) return { allow: false, strictAligned: false }
 
-	const remoteTipsHash = String(remoteSummary.tipsHash || '').trim().toLowerCase()
-	const localTipsHash = String(localSummary.tipsHash || '').trim().toLowerCase()
+	const remoteTipsHash = remoteSummary.tipsHash || ''
+	const localTipsHash = localSummary.tipsHash || ''
 	if (isHex64(remoteTipsHash) && remoteTipsHash === localTipsHash)
 		return { allow: true, strictAligned: true }
 
@@ -42,13 +42,13 @@ export function evaluateArchiveHandshake(remoteSummary, localSummary, localEvent
 	const eventsById = new Map(localEvents.map(event => [event.id, event]))
 	const anyWantHit = wantIds.some(id => eventsById.has(id))
 
-	const localHash = String(localSummary.hash || '').trim().toLowerCase()
+	const localHash = localSummary.hash || ''
 	if (isHex64(remoteHash) && remoteHash === localHash)
 		return { allow: true, strictAligned: true }
 
-	const remoteLastEventId = String(remoteSummary.lastEventId || '').trim().toLowerCase()
+	const remoteLastEventId = remoteSummary.lastEventId || ''
 	const localLastEventId = isHex64(localSummary.lastEventId)
-		? String(localSummary.lastEventId).trim().toLowerCase()
+		? String(localSummary.lastEventId).trim()
 		: ''
 	if (isHex64(remoteLastEventId) && eventsById.has(remoteLastEventId))
 		return { allow: true, strictAligned: false }

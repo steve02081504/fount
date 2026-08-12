@@ -373,13 +373,31 @@ function fetchLogSnapshotOnce() {
 		}
 		try {
 			conn = connectLogWire(WS_URL, {
+				/**
+				 * 收到快照后兑现 Promise。
+				 * @param {import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry[]} entries - 快照日志条目。
+				 * @returns {void}
+				 */
 				onSnapshot: (entries) => {
 					settle(() => resolve(entries))
 				},
+				/**
+				 * 连接在快照到达前关闭。
+				 * @returns {void}
+				 */
 				onClose: () => {
 					settle(() => reject(new Error('log_wire_closed_before_snapshot')))
 				},
+				/**
+				 * 可恢复连接错误；由 onClose 收尾。
+				 * @returns {void}
+				 */
 				onError: () => { /* onClose 收尾 */ },
+				/**
+				 * 不可恢复的连接错误。
+				 * @param {unknown} err - 底层错误对象。
+				 * @returns {void}
+				 */
 				onFatal: (err) => {
 					settle(() => reject(err instanceof Error ? err : new Error(String(err))))
 				},

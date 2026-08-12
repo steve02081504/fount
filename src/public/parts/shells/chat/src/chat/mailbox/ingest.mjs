@@ -20,8 +20,8 @@ async function consumeChatDagMailbox(username, records) {
 	/** @type {string[]} */
 	const delivered = []
 	for (const row of records) {
-		if (!row?.envelope || String(row.app || '') !== MAILBOX_APP_CHAT) continue
-		const groupId = String(row.groupId || '').trim()
+		if (!row?.envelope || (row.app || '') !== MAILBOX_APP_CHAT) continue
+		const groupId = row.groupId || ''
 		if (!groupId) continue
 		const status = await appendValidatedRemoteEvent(username, groupId, row.envelope, { logFailures: false })
 		if (isRemoteIngestAccepted(status)) delivered.push(row.id)

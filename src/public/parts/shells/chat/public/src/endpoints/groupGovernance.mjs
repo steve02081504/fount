@@ -73,7 +73,7 @@ export async function getGroupReputation() {
 export async function postReputationReset(groupId, targetPubKeyHash) {
 	return groupFetch(groupPath(groupId, 'reputation', 'reset'), {
 		method: 'POST',
-		json: { targetPubKeyHash: targetPubKeyHash },
+		json: { targetPubKeyHash },
 	})
 }
 

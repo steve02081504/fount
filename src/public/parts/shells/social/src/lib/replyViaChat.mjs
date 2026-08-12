@@ -37,9 +37,9 @@ export async function replyViaChat(username, charPartName, char, messageEvent) {
 	if (!getReply) return null
 
 	const now = new Date()
-	const authorUid = String(messageEvent.authorEntityHash || '').trim().toLowerCase() || 'user'
+	const authorUid = messageEvent.authorEntityHash || 'user'
 	const authorName = messageEvent.authorDisplayName || await displayNameForEntity(username, authorUid)
-	const charUid = String(messageEvent.viewerEntityHash || '').trim().toLowerCase() || 'char'
+	const charUid = messageEvent.viewerEntityHash || 'char'
 	const operatorUid = await resolveOperatorEntityHashForUser(username) || 'user'
 	const operatorName = await displayNameForEntity(username, operatorUid)
 

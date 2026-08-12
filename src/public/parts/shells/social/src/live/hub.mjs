@@ -15,7 +15,7 @@ const signalBridges = new Map()
  * @returns {string} room key
  */
 export function liveSignalRoomKey(entityHash, liveId) {
-	return `${entityHash.toLowerCase()}:${String(liveId).toLowerCase()}`
+	return `${entityHash}:${liveId}`
 }
 
 /**

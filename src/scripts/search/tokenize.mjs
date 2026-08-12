@@ -24,16 +24,15 @@ function cjkBigrams(segment) {
  * @returns {string[]} 去重词元（小写）
  */
 export function tokenizeForIndex(text) {
-	const raw = String(text || '')
-	if (!raw) return []
+	if (!text) return []
 	/** @type {Set<string>} */
 	const tokens = new Set()
 
-	for (const match of raw.matchAll(HASHTAG_RE))
-		tokens.add(String(match[0]).toLowerCase())
+	for (const match of text.matchAll(HASHTAG_RE))
+		tokens.add(match[0].toLowerCase())
 
-	let stripped = raw
-	for (const match of raw.matchAll(HASHTAG_RE))
+	let stripped = text
+	for (const match of text.matchAll(HASHTAG_RE))
 		stripped = stripped.replace(match[0], ' ')
 
 	for (const match of stripped.matchAll(CJK_RE))
@@ -43,7 +42,7 @@ export function tokenizeForIndex(text) {
 
 	const latinOnly = stripped.replace(CJK_RE, ' ')
 	for (const match of latinOnly.matchAll(WORD_RE))
-		tokens.add(String(match[0]).toLowerCase())
+		tokens.add(match[0].toLowerCase())
 
 	return [...tokens]
 }

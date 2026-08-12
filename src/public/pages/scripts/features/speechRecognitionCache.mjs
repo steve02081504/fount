@@ -48,6 +48,6 @@ export function getCachedSpeechRecognitionTranscript(key) {
 export function setCachedSpeechRecognitionTranscript(key, text) {
 	if (!key) return
 	const store = readStore()
-	store[key] = String(text || '')
+	store[key] = text
 	writeStore(store)
 }

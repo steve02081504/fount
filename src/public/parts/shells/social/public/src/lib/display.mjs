@@ -35,7 +35,7 @@ export function rememberEntityHandle(entityHash, profileOrHandle) {
 	const raw = typeof profileOrHandle === 'string'
 		? profileOrHandle
 		: profileOrHandle?.handle
-	const handle = (raw || '').trim().replace(/^@+/u, '').toLowerCase()
+	const handle = (raw || '').trim().replace(/^@+/u, '')
 	if (handle) knownHandles.set(entityHash, handle)
 }
 

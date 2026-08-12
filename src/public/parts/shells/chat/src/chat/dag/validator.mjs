@@ -65,7 +65,7 @@ function publicKeyBytesFromHex(hex) {
  * @returns {Promise<void>} 校验通过则正常返回；失败抛出 `Error`
  */
 export async function validateSignature(body, signPayload, eventLike, secretKey, materializedState) {
-	const sender = body.sender?.trim().toLowerCase() || ''
+	const sender = body.sender?.trim() || ''
 	const signatureHex = signPayload.signature?.trim() || ''
 	const signatureBytes = signatureHex ? Buffer.from(signatureHex, 'hex') : null
 
@@ -82,7 +82,7 @@ export async function validateSignature(body, signPayload, eventLike, secretKey,
 
 	if (!publicKeyBytes) throw new Error('cannot verify: missing public key for sender hash')
 
-	if (pubKeyHash(publicKeyBytes).toLowerCase() !== sender.toLowerCase())
+	if (pubKeyHash(publicKeyBytes) !== sender)
 		throw new Error('sender public key does not match sender hash')
 
 	if (!await verify(new Uint8Array(signatureBytes), signPayloadBytes(body), publicKeyBytes))

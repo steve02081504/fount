@@ -85,7 +85,7 @@ async function publishEntityReply(username, authorEntityHash, content, charPartN
 async function dispatchCarePostIfNeeded(username, authorEntityHash, post, authorLabel) {
 	const operator = await resolveOperatorEntityHash(username)
 	if (!operator) return
-	const author = authorEntityHash.toLowerCase()
+	const author = authorEntityHash
 	if (author === operator) return
 	const careKey = `care:${operator}:${post.id}`
 	if (dispatchedPostKeys.has(careKey)) return
@@ -106,11 +106,11 @@ async function dispatchCarePostIfNeeded(username, authorEntityHash, post, author
  * @returns {Promise<void>}
  */
 async function dispatchLocalAgents(username, authorEntityHash, post, mentions, authorLabel, locale) {
-	const author = authorEntityHash.toLowerCase()
+	const author = authorEntityHash
 	const replyTo = post.content?.replyTo
 
 	for (const { entityHash: agentHash, charPartName } of listLocalAgentEntities(username)) {
-		const viewerHash = agentHash.toLowerCase()
+		const viewerHash = agentHash
 		if (viewerHash === author) continue
 
 		const dedupeKey = `agent:${viewerHash}:${post.id}`
@@ -173,7 +173,7 @@ async function dispatchLocalAgents(username, authorEntityHash, post, mentions, a
  * @returns {Promise<void>}
  */
 async function dispatchRemoteMentionPush(username, authorEntityHash, post, mentionHashes) {
-	const author = authorEntityHash.toLowerCase()
+	const author = authorEntityHash
 	const authorRep = pickNodeScore(author.slice(0, 64))
 	if (authorRep < SOCIAL_REP_HIDE_THRESHOLD) return
 
@@ -202,7 +202,7 @@ async function dispatchRemoteMentionPush(username, authorEntityHash, post, menti
  */
 export async function dispatchSocialMessage(username, authorEntityHash, post) {
 	if (post.type !== 'post') return
-	const author = String(authorEntityHash).trim().toLowerCase()
+	const author = authorEntityHash
 	const mentionHashes = extractMentionEntityHashes(mentionSourceText(post))
 	const mentions = { entityHashes: mentionHashes }
 	const authorLabel = await displayNameForEntity(author, username)
@@ -221,7 +221,7 @@ export async function dispatchSocialMessage(username, authorEntityHash, post) {
  */
 export async function processSocialPostNotifyRpc(hostingUsername, rpc) {
 	const post = rpc.post
-	const authorEntityHash = String(rpc.authorEntityHash || '').trim().toLowerCase()
+	const authorEntityHash = rpc.authorEntityHash
 	if (post?.type !== 'post' || !authorEntityHash) return { ok: false }
 
 	const { isRemoteTimelinePushAdmitted } = await import('./federation/push_admission.mjs')

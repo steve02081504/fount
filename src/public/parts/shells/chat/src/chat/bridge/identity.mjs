@@ -15,9 +15,9 @@ import {
  * @returns {boolean} 是否为空或配置模板占位符
  */
 export function isPlaceholderPlatformUserId(platformUserId) {
-	const value = String(platformUserId ?? '').trim()
+	const value = platformUserId ?? ''
 	if (!value) return true
-	return value.toLowerCase().includes('your_')
+	return value.includes('your_')
 }
 
 /**
@@ -84,7 +84,7 @@ export function bridgeEntityHash(platform, platformUserId) {
 	return createHash('sha512')
 		.update(`fount-bridge:${String(platform)}:${String(platformUserId)}`)
 		.digest('hex')
-		.toLowerCase()
+		
 }
 
 /**
@@ -94,14 +94,14 @@ export function bridgeEntityHash(platform, platformUserId) {
  * @returns {Promise<void>}
  */
 export async function bindBridgeIdentity(username, { platform, platformUserId, entityHash, displayName }) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = entityHash || ''
 	if (!isEntityHash128(hash)) throw new Error('invalid entityHash')
 	const doc = loadBridgesDoc(username)
 	doc.identityMap[bridgeIdentityKey(platform, platformUserId)] = hash
 	doc.entityReverse[hash] = {
 		platform: String(platform),
 		platformUserId: String(platformUserId),
-		displayName: String(displayName || '').trim(),
+		displayName: displayName || '',
 	}
 	saveBridgesDoc(username, doc)
 }
@@ -118,7 +118,7 @@ export async function resolveBridgeIdentity(username, platform, platformUserId, 
 	const doc = loadBridgesDoc(username)
 	const key = bridgeIdentityKey(platform, platformUserId)
 	const bound = doc.identityMap[key]
-	const hash = (bound || bridgeEntityHash(platform, platformUserId)).toLowerCase()
+	const hash = bound || bridgeEntityHash(platform, platformUserId)
 	const next = {
 		platform: String(platform),
 		platformUserId: String(platformUserId),
@@ -143,7 +143,7 @@ export async function resolveBridgeIdentity(username, platform, platformUserId, 
  * @returns {{ platform: string, platformUserId: string, displayName?: string } | null} 平台用户反查信息或 null
  */
 export function lookupBridgeEntityReverse(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = entityHash || ''
 	const row = loadBridgesDoc(username).entityReverse[hash]
 	if (!row?.platform || row.platformUserId == null) return null
 	return {

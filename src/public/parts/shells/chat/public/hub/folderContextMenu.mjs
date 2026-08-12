@@ -75,7 +75,7 @@ export function showFolderContextMenu(event, folderIndex) {
 		dismissFolderContextMenu()
 		const next = promptI18n('chat.hub.folder.renamePrompt', { name: folder.name || '' })
 		if (next == null) return
-		folder.name = String(next).trim()
+		folder.name = next
 		folder.nameIsDefault = !folder.name
 		await commit()
 	}))

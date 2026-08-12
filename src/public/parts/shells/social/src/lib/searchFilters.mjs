@@ -10,11 +10,11 @@ import { normalizeSearchQuery, postMatchesQuery } from './postQuery.mjs'
  */
 export function parseSearchFilters(options = {}) {
 	let q = String(options.q || '').trim()
-	let author = options.author ? String(options.author).trim().toLowerCase() : null
+	let author = options.author || null
 	let media = null
-	const mediaRaw = String(options.media || '').trim().toLowerCase()
+	const mediaRaw = String(options.media || '').trim()
 	if (mediaRaw === 'image' || mediaRaw === 'video') media = mediaRaw
-	let tag = options.tag ? String(options.tag).trim().replace(/^#/u, '').toLowerCase() : null
+	let tag = options.tag ? String(options.tag).trim().replace(/^#/u, '') : null
 	const before = options.before != null && Number.isFinite(Number(options.before)) ? Number(options.before) : null
 	const after = options.after != null && Number.isFinite(Number(options.after)) ? Number(options.after) : null
 	const sort = String(options.sort || 'latest').trim() === 'top' ? 'top' : 'latest'
@@ -23,18 +23,17 @@ export function parseSearchFilters(options = {}) {
 	const tokens = q.split(/\s+/u).filter(Boolean)
 	const leftover = []
 	for (const token of tokens) {
-		const lower = token.toLowerCase()
-		if (lower.startsWith('author:') && !author) {
-			author = token.slice(7).trim().toLowerCase() || null
+		if (token.startsWith('author:') && !author) {
+			author = token.slice(7).trim() || null
 			continue
 		}
-		if (lower.startsWith('media:') && !media) {
-			const value = token.slice(6).trim().toLowerCase()
+		if (token.startsWith('media:') && !media) {
+			const value = token.slice(6).trim()
 			if (value === 'image' || value === 'video') media = value
 			continue
 		}
-		if (lower.startsWith('tag:') && !tag) {
-			tag = token.slice(4).trim().replace(/^#/u, '').toLowerCase() || null
+		if (token.startsWith('tag:') && !tag) {
+			tag = token.slice(4).trim().replace(/^#/u, '') || null
 			continue
 		}
 		leftover.push(token)
@@ -57,20 +56,20 @@ export function parseSearchFilters(options = {}) {
  */
 export function postMatchesFilters(post, filters) {
 	if (filters.author) {
-		const author = String(post.entityHash || '').toLowerCase()
+		const author = post.entityHash || ''
 		if (!author.includes(filters.author)) return false
 	}
 	if (filters.tag) {
-		const text = String(post.content?.text || '')
+		const text = post.content?.text || ''
 		const tags = [
 			...extractHashtagsFromText(text),
-			...Array.isArray(post.content?.tags) ? post.content.tags.map(t => String(t).toLowerCase()) : [],
+			...Array.isArray(post.content?.tags) ? post.content.tags : [],
 		]
 		if (!tags.includes(filters.tag)) return false
 	}
 	if (filters.media) {
 		const refs = Array.isArray(post.content?.mediaRefs) ? post.content.mediaRefs : []
-		if (!refs.some(ref => String(ref?.kind || '').toLowerCase() === filters.media)) return false
+		if (!refs.some(ref => ref?.kind === filters.media)) return false
 	}
 	const wall = Number(post.hlc?.wall) || Number(post.timestamp) || 0
 	if (filters.before != null && wall >= filters.before) return false

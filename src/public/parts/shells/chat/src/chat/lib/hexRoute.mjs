@@ -1,7 +1,7 @@
 /**
  * 【文件】src/chat/lib/hexRoute.mjs
  * 【职责】十六进制路由段解析：事件 ID、hash 路径在 URL/API 间的编解码。
- * 【原理】normalizeHex64/128，校验长度，供 endpoints 与 WS RPC 共用。
+ * 【原理】校验 64/128 hex 路由段长度，供 endpoints 与 WS RPC 共用。
  * 【数据结构】HexRouteParams：id、channelId、optionalBranch。
  * 【关联】lib/paths、endpoints、ws/groupWsRpc。
  */

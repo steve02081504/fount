@@ -112,7 +112,7 @@ export function registerEntityEndpoints(router) {
 	})
 
 	router.get(entityPathRegex('/stats$'), authenticate, async (req, res) => {
-		const entityHash = req.params[0].toLowerCase()
+		const entityHash = req.params[0]
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!isEntityHash128(entityHash))
 			throw httpError(400, 'invalid entityHash')
@@ -123,7 +123,7 @@ export function registerEntityEndpoints(router) {
 	})
 
 	router.post(entityPathRegex('/heartbeat$'), authenticate, async (req, res) => {
-		const entityHash = req.params[0].toLowerCase()
+		const entityHash = req.params[0]
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
 			throw httpError(403, 'Permission denied')
@@ -141,7 +141,7 @@ export function registerEntityEndpoints(router) {
 	})
 
 	router.post(entityPathRegex('/status$'), authenticate, async (req, res) => {
-		const entityHash = req.params[0].toLowerCase()
+		const entityHash = req.params[0]
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
 			throw httpError(403, 'Permission denied')
@@ -155,7 +155,7 @@ export function registerEntityEndpoints(router) {
 	})
 
 	router.get(entityPathRegex('$'), authenticate, async (req, res) => {
-		const entityHash = req.params[0].toLowerCase()
+		const entityHash = req.params[0]
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		const groupId = String(req.query?.groupId || '').trim() || undefined
 		const locales = localesFromRequest(req, replicaUsername)
@@ -179,7 +179,7 @@ export function registerEntityEndpoints(router) {
 	})
 
 	router.put(entityPathRegex('$'), authenticate, async (req, res) => {
-		const entityHash = req.params[0].toLowerCase()
+		const entityHash = req.params[0]
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!operatorEntityHash)
 			throw httpError(400, 'operator identity not configured')
@@ -205,7 +205,7 @@ export function registerEntityEndpoints(router) {
 	})
 
 	router.post(entityPathRegex('/rebuild-from-part$'), authenticate, async (req, res) => {
-		const entityHash = req.params[0].toLowerCase()
+		const entityHash = req.params[0]
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!operatorEntityHash)
 			throw httpError(400, 'operator identity not configured')
@@ -227,7 +227,7 @@ export function registerEntityEndpoints(router) {
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!operatorEntityHash)
 			throw httpError(400, 'operator identity not configured')
-		const ownerEntityHash = req.body?.ownerEntityHash ? String(req.body.ownerEntityHash).trim().toLowerCase() : null
+		const ownerEntityHash = req.body?.ownerEntityHash ? String(req.body.ownerEntityHash).trim() : null
 		if (ownerEntityHash && !isEntityHash128(ownerEntityHash))
 			throw httpError(400, 'invalid ownerEntityHash')
 		const row = await setEntityOwner(replicaUsername, operatorEntityHash, ownerEntityHash)

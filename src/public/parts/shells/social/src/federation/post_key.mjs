@@ -7,5 +7,5 @@ import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
  * @returns {string} 复合键
  */
 export function socialPostKey(entityHash, postId) {
-	return compositeKey(String(entityHash).toLowerCase(), String(postId))
+	return compositeKey(entityHash, postId)
 }

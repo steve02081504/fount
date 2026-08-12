@@ -17,7 +17,7 @@ import { isTimelineWriteAuthorized } from '../write_auth.mjs'
 export async function validateRemoteTimelineEvent(event, entityHash, { canonicalize, priorEvents = [], username } = {}) {
 	if (!SOCIAL_TIMELINE_EVENT_TYPES.has(event.type)) return { accepted: false }
 	if (event.groupId !== timelineGroupId(entityHash)) return { accepted: false }
-	const sender = event.sender.trim().toLowerCase()
+	const sender = event.sender.trim()
 	if (isPubKeyHashBlocked(sender)) return { accepted: false }
 	const body = eventBodyForSign(event)
 	if (computeEventId(body) !== event.id) return { accepted: false }

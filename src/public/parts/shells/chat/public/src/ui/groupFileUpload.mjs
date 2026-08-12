@@ -138,7 +138,7 @@ export function createFileHandlers(hub) {
 		const progress = await createUploadProgress(file.name)
 		const uploadChannelId = getUploadChannelId?.() || undefined
 		try {
-			const modeRaw = String(getCurrentState?.()?.groupSettings?.fileCeMode || 'convergent').trim().toLowerCase()
+			const modeRaw = String(getCurrentState?.()?.groupSettings?.fileCeMode || 'convergent').trim()
 			const ceMode = modeRaw === 'random' ? 'random' : 'convergent'
 			progress.set(3, 'chat.hub.file.uploadChecking')
 			const fileId = crypto.randomUUID()
@@ -228,7 +228,7 @@ export function createFileHandlers(hub) {
 			const img = wrap.querySelector('.pending-thumb-img')
 			const reader = new FileReader()
 			reader.addEventListener('load', () => {
-				if (img instanceof HTMLImageElement) img.src = String(reader.result || '')
+				if (img instanceof HTMLImageElement) img.src = reader.result || ''
 			})
 			reader.readAsDataURL(file)
 		}

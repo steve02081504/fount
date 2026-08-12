@@ -4,7 +4,7 @@ import { ChannelType } from 'npm:discord.js'
 
 import { formatEntityMentionToken } from '../../chat/public/shared/inlineTokenSyntax.mjs'
 
-const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/gi
+const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/g
 
 /**
  * @param {Function} func 异步函数
@@ -291,13 +291,13 @@ export async function rewriteDiscordMentionsToFount(username, text) {
 export async function restoreFountMentionsForDiscord(username, text) {
 	if (!text) return ''
 	const { lookupBridgeEntityReverse } = await import('../../chat/src/chat/bridge/identity.mjs')
-	const re = new RegExp(FOUNT_ENTITY_MENTION_RE.source, 'gi')
+	const re = new RegExp(FOUNT_ENTITY_MENTION_RE.source, 'g')
 	let result = ''
 	let lastIndex = 0
 	for (const match of text.matchAll(re)) {
 		const start = match.index ?? 0
 		result += text.slice(lastIndex, start)
-		const hash = String(match[1]).toLowerCase()
+		const hash = match[1]
 		const rev = lookupBridgeEntityReverse(username, hash)
 		if (rev?.platform === 'discord')
 			result += `<@${rev.platformUserId}>`

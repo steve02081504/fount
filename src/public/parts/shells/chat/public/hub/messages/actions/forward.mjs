@@ -97,7 +97,7 @@ export async function handleForward(button, channelMessage, actions) {
 		try {
 			const original = channelMessage.content
 			const senderName = original.name
-				|| String(channelMessage.sender || '').slice(0, 8)
+				|| (channelMessage.sender || '').slice(0, 8)
 				|| '?'
 			const { formatMessageRunUri, wrapProtocolHttpsUrl } = await import('../../../shared/runUri.mjs')
 			const shareUrl = groupId && channelId && eventId

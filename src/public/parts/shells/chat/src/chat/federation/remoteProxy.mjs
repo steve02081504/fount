@@ -31,9 +31,9 @@ const UUID_V4_RE = /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{
 export function resolveTargetNodeIdFromSourceHost(sourceHost) {
 	const trimmed = sourceHost?.trim()
 	if (!trimmed) return undefined
-	if (UUID_V4_RE.test(trimmed)) return trimmed.toLowerCase()
+	if (UUID_V4_RE.test(trimmed)) return trimmed
 	const nodePref = /^node:([\da-f-]{36})$/iu.exec(trimmed)
-	if (nodePref?.[1] && UUID_V4_RE.test(nodePref[1])) return nodePref[1].toLowerCase()
+	if (nodePref?.[1] && UUID_V4_RE.test(nodePref[1])) return nodePref[1]
 	return undefined
 }
 
@@ -56,7 +56,7 @@ export function withDirectedGroupRpcTarget(rpcPayload, sourceHost) {
 export function shouldAcceptDirectedGroupRpc(wireMessage, localClientNodeId) {
 	const targetNodeId = wireMessage?.[GROUP_RPC_TARGET_NODE_ID_KEY]
 	if (!targetNodeId) return true
-	const normalizedTargetNodeId = String(targetNodeId).trim().toLowerCase()
+	const normalizedTargetNodeId = targetNodeId
 	return UUID_V4_RE.test(normalizedTargetNodeId) && normalizedTargetNodeId === localClientNodeId
 }
 
@@ -65,7 +65,7 @@ export function shouldAcceptDirectedGroupRpc(wireMessage, localClientNodeId) {
  * @returns {boolean} 合法 UUID v4 时为 true
  */
 export function isValidGroupRpcClientNodeId(clientNodeId) {
-	return UUID_V4_RE.test(String(clientNodeId).trim().toLowerCase())
+	return UUID_V4_RE.test(clientNodeId)
 }
 
 /**

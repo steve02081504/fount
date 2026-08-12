@@ -110,7 +110,7 @@ export async function renderMemberList(state) {
 				profileName: member.displayName,
 				fallbackLabel: isAgent ? member.charname : undefined,
 			})
-			: String(member.displayName || '').trim()
+			: (member.displayName || '')
 			|| (isAgent ? member.charname : '')
 			|| authorDisplayLabel(memberKey)
 		return { member, memberKey, isAgent, entityHash, label }

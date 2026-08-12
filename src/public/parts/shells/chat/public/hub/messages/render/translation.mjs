@@ -26,7 +26,7 @@ export async function autoTranslateMessages(container) {
 			if (!(row instanceof HTMLElement)) continue
 			const locale = row.getAttribute('data-message-locale') || ''
 			if (!locale || excludeLocales.has(locale)) continue
-			if (locale.toLowerCase().startsWith(targetLang.toLowerCase().split('-')[0])) continue
+			if (locale.startsWith(targetLang.split('-')[0])) continue
 			const bubble = row.querySelector('.message-content')
 			if (!(bubble instanceof HTMLElement)) continue
 			if (bubble.querySelector('.translation-block')) continue

@@ -52,7 +52,7 @@ async function runBackfill(username, options) {
 
 	const entityHashes = [...new Set(
 		(discovered.posts || [])
-			.map(row => String(row.entityHash || '').toLowerCase())
+			.map(row => row.entityHash)
 			.filter(Boolean),
 	)].slice(0, 16)
 

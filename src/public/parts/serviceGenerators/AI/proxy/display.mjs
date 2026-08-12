@@ -1,3 +1,5 @@
+import { escapeRegExp } from '../../../../../scripts/regex.mjs'
+
 /* global cache */
 const MODELS_DEV_API = 'https://models.dev/api.json'
 const SEARCH_RESULT_LIMIT = 60
@@ -35,10 +37,10 @@ function normalizeApiBase(url) {
 		let path = urlObj.pathname.replace(/\/$/, '')
 		path = path.replace(/\/chat\/completions(?:\/.*)?$/, '')
 		path = path.replace(/\/models(?:\/.*)?$/, '')
-		return `${urlObj.origin}${path}`.toLowerCase()
+		return `${urlObj.origin}${path}`
 	}
 	catch {
-		return url.trim().toLowerCase()
+		return url.trim()
 	}
 }
 
@@ -100,8 +102,9 @@ function findCatalogEntry(catalog, config) {
  * @returns {object[]} 匹配的候选条目。
  */
 function searchCatalog(catalog, query, limit = SEARCH_RESULT_LIMIT) {
-	const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+	const terms = query.trim().split(/\s+/).filter(Boolean)
 	if (!terms.length) return []
+	const matchers = terms.map(term => new RegExp(escapeRegExp(term), 'i'))
 
 	return catalog.filter(entry => {
 		const haystack = [
@@ -112,8 +115,8 @@ function searchCatalog(catalog, query, limit = SEARCH_RESULT_LIMIT) {
 			entry.family,
 			...entry.modalities?.input || [],
 			...entry.modalities?.output || [],
-		].filter(Boolean).join(' ').toLowerCase()
-		return terms.every(term => haystack.includes(term))
+		].filter(Boolean).join(' ')
+		return matchers.every(re => re.test(haystack))
 	}).slice(0, limit)
 }
 

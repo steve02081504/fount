@@ -55,7 +55,7 @@ export function normalizePollChoices(poll, choices) {
  */
 export async function loadPollTargetPost(username, targetEntityHash, targetPostId) {
 	const { getTimelineMaterialized } = await import('../timeline/materialize.mjs')
-	const owner = targetEntityHash.toLowerCase()
+	const owner = targetEntityHash
 	const view = await getTimelineMaterialized(username, owner)
 	const post = view.postById[targetPostId]
 	if (!post) throw new Error('post not found')

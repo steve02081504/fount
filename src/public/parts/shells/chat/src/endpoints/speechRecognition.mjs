@@ -17,7 +17,7 @@ async function loadSpeechRecognitionSource(username) {
  * @returns {Uint8Array} 字节
  */
 function base64ToUint8Array(base64) {
-	const bin = atob(String(base64 || ''))
+	const bin = atob(base64 || '')
 	const out = new Uint8Array(bin.length)
 	for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i)
 	return out

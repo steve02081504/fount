@@ -31,7 +31,7 @@ export function pickUploadedFile(req, field) {
 export async function isAllowedImageUpload(file) {
 	if (!file?.buffer?.length) return false
 	const fromExt = mimeFromFilename(file.originalname)
-	const declared = String(file.mimetype || '').toLowerCase().split(';')[0].trim()
+	const declared = (file.mimetype ?? '').toLowerCase().split(';')[0].trim()
 	if (!fromExt?.startsWith('image/') || declared !== fromExt) return false
 	const sniffed = await sniffMimeFromBuffer(file.buffer)
 	// SVG 等 XML 图魔数常空：扩展名与声明已对齐时放行

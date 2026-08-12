@@ -15,7 +15,7 @@ export const EMOJI_PACK_OFFERS_KIND = 'emoji_pack_offers'
 export function sanitizeAuthorPackOffer(raw) {
 	if (!raw || typeof raw !== 'object') return null
 	const packId = String(/** @type {{ packId?: unknown }} */raw.packId || '').trim()
-	const sourceId = String(/** @type {{ sourceId?: unknown }} */raw.sourceId || '').trim().toLowerCase()
+	const sourceId = String(/** @type {{ sourceId?: unknown }} */raw.sourceId || '').trim()
 	if (!packId || !sourceId) return null
 	const localized = /** @type {{ localized?: unknown }} */raw.localized
 	return {
@@ -27,7 +27,7 @@ export function sanitizeAuthorPackOffer(raw) {
 		infoDefaults: /** @type {{ infoDefaults?: object }} */raw.infoDefaults && typeof raw.infoDefaults === 'object'
 			? raw.infoDefaults
 			: {},
-		nodeHash: String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').trim().toLowerCase().slice(0, 128),
+		nodeHash: String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').trim().slice(0, 128),
 	}
 }
 
@@ -43,7 +43,7 @@ export async function localAuthorPackOffersHandler(inboundContext, query) {
 	const limit = Math.min(Math.max(Number(
 		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */query.limit : 32,
 	) || 32, 1), 64)
-	const nodeHash = String(getNodeHash() || '').toLowerCase()
+	const nodeHash = String(getNodeHash() || '')
 	const { userEntitiesRoot } = await import('../../../chat/src/chat/lib/paths.mjs')
 	const { getProfile } = await import('../../../chat/src/entity/profile.mjs')
 	const { listLocalEntityPacks } = await import('../emojiPacks.mjs')

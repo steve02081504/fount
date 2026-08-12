@@ -15,7 +15,7 @@ export function registerVaultRoutes(router) {
 		client.vault.registerFile(req.body)))
 
 	router.get('/api/parts/shells\\:social/files/:shareId', authenticate, socialJson(async (req, { client }) => {
-		const owner = String(req.query.owner || client.entityHash || '').toLowerCase()
+		const owner = String(req.query.owner || client.entityHash || '')
 		if (!isEntityHash128(owner)) throw httpError(400, 'invalid owner')
 		const entry = await client.vault.getFile(String(req.params.shareId), owner)
 		if (!entry) throw httpError(404, 'not found')

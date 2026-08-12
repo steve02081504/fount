@@ -14,7 +14,7 @@ export async function publishTimelineEvent(username, entityHash, signedEvent) {
 	return requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'part_timeline_put', {
 		nodeHash: getNodeHash(),
 		partpath: getShellPartpath('social'),
-		timelineEntityHash: entityHash.toLowerCase(),
+		timelineEntityHash: entityHash,
 		event: signedEvent,
 	}, TIMELINE_FANOUT_LIMIT)
 }

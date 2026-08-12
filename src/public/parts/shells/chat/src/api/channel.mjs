@@ -222,9 +222,9 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 		 * @returns {Promise<object>} ballot Message
 		 */
 		async startVote(ballot) {
-			const question = String(ballot.question || '').trim()
+			const question = ballot.question || ''
 			const options = Array.isArray(ballot.options)
-				? ballot.options.map(option => String(option).trim()).filter(Boolean).slice(0, 12)
+				? ballot.options.map(option => option).filter(Boolean).slice(0, 12)
 				: []
 			let voteDeadline = ballot.deadline || null
 			if (!voteDeadline && Number.isFinite(Number(ballot.deadlineMs)) && Number(ballot.deadlineMs) > 0)

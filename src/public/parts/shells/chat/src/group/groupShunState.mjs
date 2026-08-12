@@ -36,13 +36,13 @@ function shunStateLockKey(username, groupId) {
 export function normalizeShunState(raw) {
 	const shunsByNode = {}
 	for (const [nodeHash, ts] of Object.entries(raw?.shunsByNode || {})) {
-		const key = String(nodeHash || '').trim().toLowerCase()
+		const key = nodeHash || ''
 		const at = Number(ts)
 		if (key && Number.isFinite(at)) shunsByNode[key] = at
 	}
 
 	const shunnedBy = Array.isArray(raw?.shunnedBy)
-		? [...new Set(raw.shunnedBy.map(id => String(id).trim().toLowerCase()).filter(Boolean))]
+		? [...new Set(raw.shunnedBy.map(id => id).filter(Boolean))]
 		: []
 	return {
 		shunsByNode,

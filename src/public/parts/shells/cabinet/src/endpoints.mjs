@@ -289,7 +289,7 @@ export function setEndpoints(router) {
 
 	router.get(`${PREFIX}/remote/:entityHash/cabinets`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		const owner = String(req.params.entityHash).toLowerCase()
+		const owner = req.params.entityHash
 		res.status(200).json({
 			cabinets: await fetchRemoteCabinets(username, owner, await remoteViewerContext(username, entityHash)),
 		})
@@ -297,7 +297,7 @@ export function setEndpoints(router) {
 
 	router.get(`${PREFIX}/remote/:entityHash/cabinets/:cabinetId/index`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		const owner = String(req.params.entityHash).toLowerCase()
+		const owner = req.params.entityHash
 		const viewerContext = await remoteViewerContext(username, entityHash)
 		const cabinets = await fetchRemoteCabinets(username, owner, viewerContext)
 		const meta = cabinets.find(row => row.cabinet_id === req.params.cabinetId) || {

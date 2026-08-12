@@ -25,13 +25,13 @@ function groupEntityIndexPath(username) {
  * @returns {Promise<void>}
  */
 export async function updateGroupEntityIndex(username, groupId) {
-	const id = String(groupId || '').trim()
+	const id = groupId || ''
 	if (!id) return
 	const filePath = groupEntityIndexPath(username)
 	await fs.mkdir(path.dirname(filePath), { recursive: true })
 	const data = loadJsonFileIfExists(filePath, { byEntityHash: {} })
 	const entityHash = groupEntityHash(id)
-	data.byEntityHash[String(entityHash).trim().toLowerCase()] = id
+	data.byEntityHash[entityHash] = id
 	await saveJsonFile(filePath, data)
 }
 
@@ -41,7 +41,7 @@ export async function updateGroupEntityIndex(username, groupId) {
  * @returns {Promise<string | null>} groupId
  */
 export async function resolveGroupIdFromIndex(username, entityHash) {
-	const want = String(entityHash || '').trim().toLowerCase()
+	const want = entityHash || ''
 	if (!want) return null
 	const data = loadJsonFileIfExists(groupEntityIndexPath(username), null)
 	return data?.byEntityHash?.[want] || null

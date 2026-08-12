@@ -43,7 +43,7 @@ export async function requestChannelHistoryFromPeers(username, groupId, channelI
 	const { promise } = registerWireWait(pendingChannelHistory, key, CHANNEL_HISTORY_WAIT_MS, () => [])
 
 	const limit = Math.min(500, Math.max(1, Number(options.limit) || 50))
-	const before = EVENT_ID_HEX.test(String(options.before || '')) ? options.before : null
+	const before = EVENT_ID_HEX.test(options.before || '') ? options.before : null
 	const attestation = await signPullAttestation(username, groupId, { requestId })
 	try {
 		slot.send('channel_history_want', {

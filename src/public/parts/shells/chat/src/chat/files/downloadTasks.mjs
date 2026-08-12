@@ -30,7 +30,7 @@ function normalizeTask(task) {
 	/** @type {Record<string, string>} */
 	const normalizedChunks = {}
 	for (const [hash, state] of Object.entries(chunks)) {
-		const h = String(hash).trim().toLowerCase()
+		const h = hash
 		if (!isHex64(h)) continue
 		const s = String(state || 'pending')
 		if (['pending', 'inflight', 'done', 'failed'].includes(s))
@@ -38,7 +38,7 @@ function normalizeTask(task) {
 	}
 	return {
 		fileId: String(task?.fileId || ''),
-		contentHash: String(task?.contentHash || '').trim().toLowerCase(),
+		contentHash: String(task?.contentHash || '').trim(),
 		totalSize: Number(task?.totalSize) || 0,
 		chunks: normalizedChunks,
 		updatedAt: Number(task?.updatedAt) || Date.now(),
@@ -91,7 +91,7 @@ export async function ensureDownloadTask(username, groupId, fileId, chunkHashes,
 	/** @type {Record<string, string>} */
 	const chunks = { ...existing?.chunks || {} }
 	for (const hash of chunkHashes) {
-		const h = String(hash).trim().toLowerCase()
+		const h = hash
 		if (!isHex64(h)) continue
 		if (!chunks[h] || chunks[h] === 'failed') chunks[h] = 'pending'
 	}
@@ -115,7 +115,7 @@ export async function ensureDownloadTask(username, groupId, fileId, chunkHashes,
 export async function updateDownloadChunkState(username, groupId, fileId, chunkHash, state) {
 	const task = await loadDownloadTask(username, groupId, fileId)
 	if (!task) return null
-	const h = String(chunkHash).trim().toLowerCase()
+	const h = chunkHash
 	if (!isHex64(h)) return task
 	task.chunks[h] = state
 	const table = new Map(Object.entries(task.chunks).map(([k, v]) => [k, { state: v, attempts: 0 }]))

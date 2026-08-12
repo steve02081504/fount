@@ -134,7 +134,7 @@ export function wireProfileEditButton(root, entityHash, options = {}) {
  * @returns {string} 小写 64 hex；无效为空串
  */
 function normHex(value) {
-	const normalized = String(value ?? '')
+	const normalized = value ?? ''
 	return isHex64(normalized) ? normalized : ''
 }
 

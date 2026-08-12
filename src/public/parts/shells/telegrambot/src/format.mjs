@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import { formatEntityMentionToken } from '../../chat/public/shared/inlineTokenSyntax.mjs'
 
-const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/gi
+const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/g
 
 /**
  * Telegram bot 信息类型
@@ -735,11 +735,11 @@ export async function buildTelegramTextAndEntities(username, text) {
 	const entities = []
 	let output = ''
 	let lastIndex = 0
-	const re = new RegExp(FOUNT_ENTITY_MENTION_RE.source, 'gi')
+	const re = new RegExp(FOUNT_ENTITY_MENTION_RE.source, 'g')
 	for (const match of text.matchAll(re)) {
 		const start = match.index ?? 0
 		output += text.slice(lastIndex, start)
-		const hash = String(match[1]).toLowerCase()
+		const hash = match[1]
 		const rev = lookupBridgeEntityReverse(username, hash)
 		if (rev?.platform === 'telegram') {
 			const mentionText = rev.displayName || `User_${rev.platformUserId}`
@@ -774,13 +774,13 @@ export async function buildTelegramTextAndEntities(username, text) {
 export async function restoreFountMentionsInText(username, text) {
 	if (!text) return ''
 	const { lookupBridgeEntityReverse } = await import('../../chat/src/chat/bridge/identity.mjs')
-	const re = new RegExp(FOUNT_ENTITY_MENTION_RE.source, 'gi')
+	const re = new RegExp(FOUNT_ENTITY_MENTION_RE.source, 'g')
 	let result = ''
 	let lastIndex = 0
 	for (const match of text.matchAll(re)) {
 		const start = match.index ?? 0
 		result += text.slice(lastIndex, start)
-		const hash = String(match[1]).toLowerCase()
+		const hash = match[1]
 		const rev = lookupBridgeEntityReverse(username, hash)
 		if (rev?.platform === 'telegram')
 			result += `@${rev.displayName || rev.platformUserId}`

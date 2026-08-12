@@ -10,7 +10,7 @@ import { canViewByVisibility } from './lib/visibilitySpec.mjs'
  * @returns {boolean} 是否可见
  */
 export function canViewPost(post, viewerContext) {
-	const authorEntity = String(post.entityHash || '').toLowerCase()
+	const authorEntity = post.entityHash
 	if (isAuthorFilteredByPersonalSets(viewerContext.personalFilter, authorEntity))
 		return false
 	if (postMatchesMutedKeywords(post, viewerContext.mutedKeywords))

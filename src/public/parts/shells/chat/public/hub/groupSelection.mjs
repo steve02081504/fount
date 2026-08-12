@@ -39,7 +39,7 @@ export function clearGroupSelection() {
 /** @returns {void} */
 export function syncGroupSelectionStyles() {
 	document.querySelectorAll('#server-list .server-item[data-group-id]').forEach(el => {
-		const id = String(el.dataset.groupId || '').trim()
+		const id = el.dataset.groupId || ''
 		el.classList.toggle('is-multi-selected', store.sidebar.selectedGroupIds.has(id))
 	})
 }

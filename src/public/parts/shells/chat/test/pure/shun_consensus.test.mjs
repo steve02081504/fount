@@ -1,10 +1,12 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
+import { verifyPullAttestationSignatureForMember } from '../../src/chat/federation/pullAttestation.mjs'
 import {
 	collectKnownPeerNodeHashes,
 	evaluateShunConsensusPure,
 	resolveShunForNodeHashRequester,
+	resolveShunForPubKeyRequester,
 } from '../../src/chat/federation/shun.mjs'
 import { SHUN_CONSENSUS_WINDOW_MS } from '../../src/group/groupShunState.mjs'
 
@@ -144,4 +146,26 @@ Deno.test('resolveShunForNodeHashRequester: bannedNodes set => shun not_a_member
 Deno.test('resolveShunForNodeHashRequester: unknown node => no shun', () => {
 	const nodeA = peers[0]
 	assertEquals(resolveShunForNodeHashRequester({ members: {} }, () => false, nodeA), { shun: false, reason: null })
+})
+
+Deno.test('resolveShunForPubKeyRequester: unknown unblocked key => no shun', () => {
+	const unknownPk = 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+	assertEquals(
+		resolveShunForPubKeyRequester({ members: {}, bannedMembers: new Set() }, () => false, unknownPk),
+		{ shun: false, reason: null },
+	)
+})
+
+Deno.test('verifyPullAttestationSignatureForMember: missing member key fails without shun path', async () => {
+	const unknownPk = 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+	const fedState = { members: {}, bannedMembers: new Set() }
+	assertEquals(resolveShunForPubKeyRequester(fedState, () => false, unknownPk), { shun: false, reason: null })
+	assertEquals(await verifyPullAttestationSignatureForMember(fedState, 'g1', {
+		requesterPubKeyHash: unknownPk,
+		groupId: 'g1',
+		requestId: 'req-missing-key',
+		timestamp: Date.now(),
+		wantIds: [],
+		signature: '00',
+	}), false)
 })

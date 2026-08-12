@@ -9,7 +9,7 @@ import { routeEntityHash, socialJson } from './shared.mjs'
  * @returns {Promise<object>} post handle
  */
 function postFromParams(req, client) {
-	return client.post(routeEntityHash(req.params), String(req.params.postId))
+	return client.post(routeEntityHash(req.params), req.params.postId)
 }
 
 /**
@@ -19,7 +19,7 @@ function postFromParams(req, client) {
  */
 export function registerPostsRoutes(router) {
 	router.get('/api/parts/shells\\:social/posts/:entityHash/:postId', authenticate, socialJson(async (req, { client }) => {
-		const item = await client.postFeedItem(routeEntityHash(req.params), String(req.params.postId))
+		const item = await client.postFeedItem(routeEntityHash(req.params), req.params.postId)
 		if (!item) throw httpError(404, 'post not found')
 		return { item }
 	}))
@@ -36,7 +36,7 @@ export function registerPostsRoutes(router) {
 	})))
 
 	router.delete('/api/parts/shells\\:social/posts/scheduled/:scheduledId', authenticate, socialJson(async (req, { client }) => {
-		const removed = await client.cancelScheduledPost(String(req.params.scheduledId || ''))
+		const removed = await client.cancelScheduledPost(req.params.scheduledId)
 		if (!removed) throw httpError(404, 'scheduled post not found')
 		return { cancelled: true, scheduledId: removed.scheduledId }
 	}))
@@ -55,7 +55,7 @@ export function registerPostsRoutes(router) {
 	router.delete('/api/parts/shells\\:social/posts', authenticate, socialJson(async (req, { client }) => {
 		const postId = String(req.body?.postId || '')
 		if (!postId) throw httpError(400, 'postId required')
-		const entityHash = String(req.body?.entityHash || client.entityHash).trim().toLowerCase()
+		const entityHash = String(req.body?.entityHash || client.entityHash).trim()
 		const post = await client.post(entityHash, postId)
 		return { event: await post.delete() }
 	}))
@@ -111,7 +111,7 @@ export function registerPostsRoutes(router) {
 	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/notes/:noteEventId/vote', authenticate, socialJson(async (req, { client }) => {
 		const post = await postFromParams(req, client)
 		return {
-			event: await post.voteNote(String(req.params.noteEventId), req.body?.helpful !== false),
+			event: await post.voteNote(req.params.noteEventId, req.body?.helpful !== false),
 		}
 	}))
 }

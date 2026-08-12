@@ -3,7 +3,6 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
@@ -28,8 +27,7 @@ export async function tryImportFileKeyGrantFromPeerInvite(username, groupId, eve
 	catch { return }
 
 	const myEdPubHex = Buffer.from(publicKeyFromSeed(signer.secretKey)).toString('hex')
-	const toHex = normalizeHex64(event.content?.to)
-	if (!toHex || toHex !== normalizeHex64(myEdPubHex)) return
+	if (event.content?.to !== myEdPubHex) return
 
 	await applyFileKeyGrant(username, groupId, grant)
 }

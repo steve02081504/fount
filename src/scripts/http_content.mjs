@@ -29,7 +29,7 @@ export const INLINE_SAFE_MIME_TYPES = new Set([
  * @returns {string} 规范化 type/subtype（小写，无参数）
  */
 export function normalizeMimeType(mimeType) {
-	return String(mimeType || '').split(';')[0].trim().toLowerCase()
+	return (mimeType ?? '').split(';')[0].trim().toLowerCase()
 }
 
 /**

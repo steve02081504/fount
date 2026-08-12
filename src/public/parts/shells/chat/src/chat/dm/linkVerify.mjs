@@ -22,10 +22,10 @@ import { dmLinkSignableBytes } from '../../../public/shared/dmLinkSignature.mjs'
  */
 export async function verifyDmLinkSignature(introPubKeyHex, nonceBase64Url, introSignatureHex) {
 	const pubKeyHex = normalizePubKeyHex(introPubKeyHex)
-	const signatureHex = String(introSignatureHex || '').trim().replace(/^0x/iu, '')
-	if (!PUB_KEY_HEX_64.test(pubKeyHex) || !/^[\da-f]{128}$/iu.test(signatureHex)) return false
+	if (!PUB_KEY_HEX_64.test(pubKeyHex) || !/^[\da-f]{128}$/iu.test(introSignatureHex) || !(nonceBase64Url?.length >= 16))
+		return false
 	return verify(
-		new Uint8Array(Buffer.from(signatureHex, 'hex')),
+		new Uint8Array(Buffer.from(introSignatureHex, 'hex')),
 		dmLinkSignableBytes(pubKeyHex, nonceBase64Url),
 		new Uint8Array(Buffer.from(pubKeyHex, 'hex')),
 	)

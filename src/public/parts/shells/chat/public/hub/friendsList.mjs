@@ -11,6 +11,7 @@ import { getAllCachedPartDetails, getPartList } from '../../../../scripts/endpoi
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
+import { escapeRegExp } from '/scripts/lib/regex.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
@@ -150,7 +151,7 @@ export async function loadFriendsList() {
  * @returns {Promise<object>} `chars_column` 单项模板数据
  */
 async function friendRowTemplateData(friend, details) {
-	const rawDesc = String(friend.session.lastMessageContent || '').trim()
+	const rawDesc = friend.session.lastMessageContent || ''
 	const subtitle = rawDesc.length > 52 ? `${rawDesc.slice(0, 52)}…` : rawDesc
 	const active = store.privateGroup.groupId === friend.groupId
 	const displayName = resolveDisplayName({
@@ -343,8 +344,9 @@ export async function renderFriendsColumn(friends) {
  * @returns {Promise<FriendsSearchHit[]>} 本地角色命中
  */
 async function searchLocalChars(q) {
-	const nq = q.trim().toLowerCase()
+	const nq = q.trim()
 	if (nq.length < 2) return []
+	const re = new RegExp(escapeRegExp(nq), 'iu')
 	const [names, cached] = await Promise.all([
 		getPartList('chars').catch(() => []),
 		getAllCachedPartDetails('chars').catch(() => ({})),
@@ -356,7 +358,7 @@ async function searchLocalChars(q) {
 		if (!charname) continue
 		const details = detailsMap[charname] || null
 		const displayName = String(details?.info?.name || '').trim()
-		if (!charname.toLowerCase().includes(nq) && !displayName.toLowerCase().includes(nq)) continue
+		if (!re.test(charname) && !re.test(displayName)) continue
 		hits.push({
 			kind: 'char',
 			charname,

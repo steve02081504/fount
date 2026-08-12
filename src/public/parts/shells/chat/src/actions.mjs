@@ -234,11 +234,8 @@ export const actions = {
 	 * @param {string} root0.dmIntroSignatureHex 签名 hex
 	 * @returns {Promise<{ groupId: string, defaultChannelId: string, created: boolean }>} DM 群信息
 	 */
-	dm: async ({ user, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex }) => {
-		if (!introPubKeyHex || !dmIntroNonce || !dmIntroSignatureHex)
-			throw new Error('introPubKeyHex, dmIntroNonce and dmIntroSignatureHex are required for dm action')
-		return orchestrateDmFirstContact(user, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex)
-	},
+	dm: async ({ user, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex }) =>
+		orchestrateDmFirstContact(user, introPubKeyHex, dmIntroNonce, dmIntroSignatureHex),
 	/**
 	 * §16：消费 `fount://run/shells:chat/join;…` 深链入群。
 	 * @param {object} root0 参数
@@ -252,13 +249,15 @@ export const actions = {
 	 * @param {string} [root0.powAnchorRef] 入群 PoW anchor 提示
 	 * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群结果
 	 */
-	join: async ({ user, groupId, inviteCode, roomSecret, signalingAppId, introducerPubKeyHash, introducerNodeHash, powAnchorRef }) => {
-		if (!groupId) throw new Error('groupId is required for join action')
-		const bootstrap = {}
-		if (roomSecret?.trim()) bootstrap.roomSecret = roomSecret.trim()
-		if (signalingAppId?.trim()) bootstrap.signalingAppId = signalingAppId.trim()
-		if (introducerNodeHash?.trim()) bootstrap.fromNodeId = introducerNodeHash.trim()
-		if (powAnchorRef?.trim()) bootstrap.powAnchorRef = powAnchorRef.trim()
-		return performMemberJoin(user, groupId, { inviteCode, introducerPubKeyHash, bootstrap })
-	},
+	join: async ({ user, groupId, inviteCode, roomSecret, signalingAppId, introducerPubKeyHash, introducerNodeHash, powAnchorRef }) =>
+		performMemberJoin(user, groupId, {
+			inviteCode,
+			introducerPubKeyHash,
+			bootstrap: {
+				roomSecret,
+				signalingAppId,
+				fromNodeId: introducerNodeHash,
+				powAnchorRef,
+			},
+		}),
 }

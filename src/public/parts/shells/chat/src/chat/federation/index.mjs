@@ -113,7 +113,7 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 	const materializedState = options.state ?? await loadFederationMaterializedState(username, groupId)
 	if (!materializedState) return
 	const { groupSettings } = materializedState
-	const eventType = String(signPayload.type).trim().toLowerCase()
+	const eventType = String(signPayload.type).trim()
 	const channelId = eventChannelId(signPayload)
 	const targetPartition = partitionForOutboundEvent(eventType, channelId, groupSettings)
 	if (!await canRelayFederatedEvent(materializedState, signPayload, { username })) return
@@ -271,7 +271,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 				if (stillNeed(parentId)) wantSet.add(parentId)
 		if (includeExtra)
 			for (const eventId of options.extraWantIds || []) {
-				const id = String(eventId).trim().toLowerCase()
+				const id = eventId
 				if (EVENT_ID_HEX.test(id) && stillNeed(id)) wantSet.add(id)
 			}
 		return [...wantSet]

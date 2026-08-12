@@ -54,7 +54,7 @@ function compareArchiveMessages(a, b) {
 	const wa = Number(a.hlc?.wall ?? a.timestamp ?? 0)
 	const wb = Number(b.hlc?.wall ?? b.timestamp ?? 0)
 	if (wa !== wb) return wa - wb
-	return String(a.sourceEventId || '').localeCompare(String(b.sourceEventId || ''))
+	return (a.sourceEventId || '').localeCompare(b.sourceEventId || '')
 }
 
 /**
@@ -164,7 +164,7 @@ export async function exportChannelArchive(username, groupId, channelId) {
 	for (const month of months) {
 		const snaps = await readArchiveMonth(username, groupId, channelId, month)
 		for (const snap of snaps) {
-			const id = String(snap.eventId || '').trim()
+			const id = snap.eventId || ''
 			if (!id) continue
 			const portable = portableMessageFromSnapshot(snap)
 			attachArchiveAttachments(
@@ -180,12 +180,12 @@ export async function exportChannelArchive(username, groupId, channelId) {
 		sanitize: stripDagEventLocalExtensions,
 	})
 	const deletedIds = new Set(
-		[...state.messageOverlay?.deletedIds || []].map(id => String(id).trim()),
+		[...state.messageOverlay?.deletedIds || []].map(id => id),
 	)
 	const merged = mergeChannelMessagesForDisplay(hotLines)
 	for (const row of merged) {
 		if (row.type !== 'message') continue
-		const id = String(row.eventId || '').trim()
+		const id = row.eventId || ''
 		if (!id) continue
 		byId.set(id, await portableFromHotRow(username, groupId, channelId, row, state, {
 			wasEdited: !!row.wasEdited,
@@ -211,7 +211,7 @@ export async function exportChannelArchive(username, groupId, channelId) {
 		? pins.get(channelId) || []
 		: pins?.[channelId] || []
 	for (const pinId of pinList) {
-		const row = byId.get(String(pinId).trim())
+		const row = byId.get(pinId)
 		if (row) row.pinned = true
 	}
 
@@ -223,7 +223,7 @@ export async function exportChannelArchive(username, groupId, channelId) {
 			groupId,
 			channelId,
 			channelName: String(channel.name || channelId),
-			channelDescription: String(channel.description || ''),
+			channelDescription: channel.description || '',
 		},
 		messages,
 	}
@@ -240,13 +240,13 @@ function buildImportContent(msg, source, signer = {}) {
 	const avatar = msg.display?.avatar ? String(msg.display.avatar).trim() : null
 	const base = msg.content?.constructor === Object
 		? normalizeChannelMessage(msg.content)
-		: channelMessage(String(msg.content ?? ''))
+		: channelMessage(msg.content ?? '')
 
 	const sourceSenderPubKeyHash = msg.sourceSenderPubKeyHash
-		? String(msg.sourceSenderPubKeyHash).trim().toLowerCase()
+		? String(msg.sourceSenderPubKeyHash).trim()
 		: null
 	const sourceEntityHash = msg.sourceEntityHash
-		? String(msg.sourceEntityHash).trim().toLowerCase()
+		? String(msg.sourceEntityHash).trim()
 		: null
 	const importedFrom = {
 		groupId: source.groupId,
@@ -255,8 +255,8 @@ function buildImportContent(msg, source, signer = {}) {
 		...source.channelName ? { channelName: source.channelName } : {},
 		...sourceSenderPubKeyHash ? { sourceSenderPubKeyHash } : {},
 		...sourceEntityHash ? { sourceEntityHash } : {},
-		...signer.signerEntityHash ? { signerEntityHash: String(signer.signerEntityHash).toLowerCase() } : {},
-		...signer.signerPubKeyHash ? { signerPubKeyHash: String(signer.signerPubKeyHash).toLowerCase() } : {},
+		...signer.signerEntityHash ? { signerEntityHash: String(signer.signerEntityHash) } : {},
+		...signer.signerPubKeyHash ? { signerPubKeyHash: String(signer.signerPubKeyHash) } : {},
 		attributionMismatch: true,
 	}
 
@@ -293,14 +293,14 @@ export async function importChannelArchive(username, groupId, archive, options =
 	const baseName = String(options.name || source.channelName || 'imported').trim() || 'imported'
 	const description = options.description != null
 		? String(options.description)
-		: String(source.channelDescription || '')
+		: source.channelDescription || ''
 
 	const { state } = await getState(username, groupId)
 	const existingNames = new Set(
-		Object.values(state.channels || {}).map(ch => String(ch?.name || '').trim().toLowerCase()),
+		Object.values(state.channels || {}).map(ch => String(ch?.name || '').trim()),
 	)
 	let channelName = baseName
-	if (existingNames.has(channelName.toLowerCase())) {
+	if (existingNames.has(channelName)) {
 		const stamp = new Date().toISOString().slice(0, 19).replace('T', ' ')
 		channelName = `${baseName} (${stamp})`
 	}
@@ -315,7 +315,7 @@ export async function importChannelArchive(username, groupId, archive, options =
 
 	const signerEntityHash = await getOperatorEntityHash(username)
 	const signer = await resolveLocalEventSigner(username, groupId, signerEntityHash || undefined)
-	const signerPubKeyHash = signer?.sender ? String(signer.sender).toLowerCase() : null
+	const signerPubKeyHash = signer?.sender ? String(signer.sender) : null
 	const signerInfo = {
 		...signerEntityHash ? { signerEntityHash } : {},
 		...signerPubKeyHash ? { signerPubKeyHash } : {},
@@ -338,10 +338,10 @@ export async function importChannelArchive(username, groupId, archive, options =
 							attributionMismatch: true,
 							...signerInfo,
 							...msg.sourceSenderPubKeyHash
-								? { sourceSenderPubKeyHash: String(msg.sourceSenderPubKeyHash).toLowerCase() }
+								? { sourceSenderPubKeyHash: String(msg.sourceSenderPubKeyHash) }
 								: {},
 							...msg.sourceEntityHash
-								? { sourceEntityHash: String(msg.sourceEntityHash).toLowerCase() }
+								? { sourceEntityHash: String(msg.sourceEntityHash) }
 								: {},
 						},
 					},

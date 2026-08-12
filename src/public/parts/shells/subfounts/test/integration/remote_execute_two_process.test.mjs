@@ -149,7 +149,7 @@ Deno.test({
 		const fedRes = await p2pFetch(host, 'GET', '/federation')
 		const fedRaw = await fedRes.text()
 		assertEquals(fedRes.status, 200, fedRaw)
-		const hostNodeHash = String(JSON.parse(fedRaw).nodeHash || '').trim().toLowerCase()
+		const hostNodeHash = String(JSON.parse(fedRaw).nodeHash || '').trim()
 		assert(hostNodeHash, 'host nodeHash missing')
 
 		const codeRes = await subfountFetch(host, 'GET', '/connection-code')
@@ -178,7 +178,7 @@ Deno.test({
 		let clientNodeHash = null
 		await waitFor(60_000, async () => {
 			const info = await readJsonFile(infoFile)
-			clientNodeHash = info?.nodeHash ? String(info.nodeHash).trim().toLowerCase() : null
+			clientNodeHash = info?.nodeHash ? String(info.nodeHash).trim() : null
 			return !!clientNodeHash
 		})
 

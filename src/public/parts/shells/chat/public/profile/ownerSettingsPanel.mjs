@@ -17,7 +17,7 @@ import { showOwnerConfirmDialog } from './ownerConfirmDialog.mjs'
  * @returns {string | null} 规范化 128-hex 或 null（空）
  */
 function normalizeOwnerInput(raw) {
-	const value = raw.trim().toLowerCase()
+	const value = raw.trim()
 	if (!value) return null
 	if (!/^[0-9a-f]{128}$/u.test(value)) throw new Error('invalid ownerEntityHash')
 	return value

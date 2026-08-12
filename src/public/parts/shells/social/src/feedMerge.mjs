@@ -8,7 +8,7 @@ export function compareFeedItems(left, right) {
 	const leftWall = Number(left.hlc?.wall || 0) - Number(left.repPenalty || 0)
 	const rightWall = Number(right.hlc?.wall || 0) - Number(right.repPenalty || 0)
 	if (leftWall !== rightWall) return leftWall - rightWall
-	return String(left.postId).localeCompare(String(right.postId))
+	return left.postId.localeCompare(right.postId)
 }
 
 /**

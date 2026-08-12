@@ -210,7 +210,7 @@ async function buildVideoEmptySlide() {
  */
 function resolveVideoSrc(item) {
 	const refs = item.post?.content?.mediaRefs || item.mediaRefs || []
-	const mediaRef = refs.find(m => String(m?.kind || '').toLowerCase() === 'video')
+	const mediaRef = refs.find(m => m?.kind === 'video')
 	if (!mediaRef) return ''
 	try { return mediaRefUrl(mediaRef) }
 	catch { return '' }

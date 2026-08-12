@@ -296,7 +296,7 @@ async function bootContract(username) {
 	const char = await loadPart(username, `chars/${CHAR}`)
 	const iface = await createSimpleDiscordInterface(char, username, CHAR)
 	const fake = createFakeDiscordClient()
-	const charUid = (await ensureLocalAgentEntityHash(username, CHAR)).toLowerCase()
+	const charUid = await ensureLocalAgentEntityHash(username, CHAR)
 	return { char, iface, fake, probe: onMessageProbe, charUid }
 }
 

@@ -102,7 +102,7 @@ export function createVirtualBridgeGroup(apiContext, groupId) {
 		 */
 		async member(entityHash) {
 			const { members } = await this.members()
-			return members.find(row => row.entityHash === String(entityHash).toLowerCase()) || null
+			return members.find(row => row.entityHash === String(entityHash)) || null
 		},
 		/**
 		 * @returns {Promise<object[]>} 空角色列表
@@ -240,14 +240,14 @@ export function createVirtualBridgeChannel(apiContext, groupId, channelId) {
  * @returns {object} Message
  */
 export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions) {
-	const eventId = String(entry.extension?.chat?.virtualEventId || entry.eventId || '').toLowerCase()
+	const eventId = String(entry.extension?.chat?.virtualEventId || entry.eventId || '')
 	const channelId = entry.extension?.chat?.channelId || entry.channelId || 'default'
 	const content = entry.content
 	const authorHash = String(
 		entry.uid
 		|| entry.extension?.chat?.bridge?.authorEntityHash
 		|| '',
-	).toLowerCase() || null
+	) || null
 
 	return {
 		eventId,
@@ -278,7 +278,7 @@ export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions)
 		attribution() {
 			const contentObj = typeof content === 'object' && content
 				? content
-				: { content: String(content ?? ''), extension: entry.extension }
+				: { content: content ?? '', extension: entry.extension }
 			return deriveMessageAttribution(contentObj, {
 				sender: authorHash,
 				signerEntityHash: authorHash,

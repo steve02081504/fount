@@ -31,22 +31,22 @@ export function sanitizeDraftBody(raw = {}) {
 	if (mediaRefs.length) body.mediaRefs = mediaRefs
 	if (raw.visibility) body.visibility = String(raw.visibility)
 	if (Array.isArray(raw.allow) && raw.allow.length)
-		body.allow = raw.allow.map(v => String(v).trim().toLowerCase()).filter(Boolean)
+		body.allow = raw.allow.map(v => String(v).trim()).filter(Boolean)
 	if (Array.isArray(raw.except) && raw.except.length)
-		body.except = raw.except.map(v => String(v).trim().toLowerCase()).filter(Boolean)
+		body.except = raw.except.map(v => String(v).trim()).filter(Boolean)
 	if (Array.isArray(raw.albumIds) && raw.albumIds.length)
-		body.albumIds = [...new Set(raw.albumIds.map(id => String(id).trim()).filter(Boolean))]
+		body.albumIds = [...new Set(raw.albumIds.filter(Boolean))]
 	if (raw.locale) body.locale = String(raw.locale).trim().slice(0, 32)
 	if (raw.contentWarning) body.contentWarning = String(raw.contentWarning).trim().slice(0, 200)
 	if (raw.sensitiveMedia) body.sensitiveMedia = true
 	if (raw.quoteRef?.entityHash && raw.quoteRef?.postId)
 		body.quoteRef = {
-			entityHash: String(raw.quoteRef.entityHash).toLowerCase(),
-			postId: String(raw.quoteRef.postId),
+			entityHash: raw.quoteRef.entityHash,
+			postId: raw.quoteRef.postId,
 		}
 	if (raw.groupRef?.groupId)
 		body.groupRef = {
-			groupId: String(raw.groupRef.groupId),
+			groupId: raw.groupRef.groupId,
 			channelId: String(raw.groupRef.channelId || 'default'),
 		}
 	if (raw.poll && typeof raw.poll === 'object') body.poll = structuredClone(raw.poll)
@@ -57,7 +57,7 @@ export function sanitizeDraftBody(raw = {}) {
 		if (Number.isFinite(ms) && ms > Date.now()) body.publishAt = ms
 	}
 	if (Array.isArray(raw.tags) && raw.tags.length) {
-		const tags = [...new Set(raw.tags.map(t => String(t).trim().toLowerCase()).filter(Boolean))].slice(0, 16)
+		const tags = [...new Set(raw.tags.map(t => String(t).trim()).filter(Boolean))].slice(0, 16)
 		if (tags.length) body.tags = tags
 	}
 	return body
@@ -148,7 +148,7 @@ export async function listDrafts(username, entityHash) {
  * @returns {Promise<object>} 草稿行
  */
 export async function getDraft(username, entityHash, draftId) {
-	const id = String(draftId || '').trim()
+	const id = draftId
 	const data = await loadDrafts(username, entityHash)
 	const row = data.drafts.find(item => item.draftId === id)
 	if (!row) throw httpError(404, 'draft not found')
@@ -168,7 +168,7 @@ export async function upsertDraft(username, entityHash, raw = {}) {
 		throw httpError(400, 'draft is empty')
 	const data = await loadDrafts(username, entityHash)
 	const now = Date.now()
-	const draftId = String(raw.draftId || '').trim()
+	const draftId = raw.draftId
 	if (draftId) {
 		const idx = data.drafts.findIndex(row => row.draftId === draftId)
 		if (idx < 0) throw httpError(404, 'draft not found')
@@ -201,7 +201,7 @@ export async function upsertDraft(username, entityHash, raw = {}) {
  * @returns {Promise<{ drafts: object[] }>} 删除后列表
  */
 export async function deleteDraft(username, entityHash, draftId) {
-	const id = String(draftId || '').trim()
+	const id = draftId
 	const data = await loadDrafts(username, entityHash)
 	const next = data.drafts.filter(row => row.draftId !== id)
 	if (next.length === data.drafts.length)

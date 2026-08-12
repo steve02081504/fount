@@ -28,12 +28,12 @@ export async function localPostDiscoverHandler(inboundContext, query) {
 	const mediaOnly = query && typeof query === 'object'
 		&& /** @type {{ mediaOnly?: unknown }} */query.mediaOnly === true
 	const { posts } = await discoverPosts(username, { n: limit, mediaOnly })
-	const nodeHash = String(getNodeHash() || '').toLowerCase()
+	const nodeHash = String(getNodeHash() || '')
 	/** @type {object[]} */
 	const rows = []
 	for (const row of posts) {
-		const entityHash = String(row.entityHash || '').toLowerCase()
-		const postId = String(row.postId || '')
+		const entityHash = row.entityHash
+		const postId = row.postId
 		if (!entityHash || !postId) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		const post = view.postById?.[postId]

@@ -26,7 +26,7 @@ Deno.test('postMatchesQuery is case insensitive', () => {
 
 Deno.test('normalizeSearchQuery detects hashtag', () => {
 	assertEquals(normalizeSearchQuery('#Fount').kind, 'hashtag')
-	assertEquals(normalizeSearchQuery('#Fount').value, 'fount')
+	assertEquals(normalizeSearchQuery('#Fount').value, 'Fount')
 })
 
 Deno.test('postMatchesQuery hashtag does not match unrelated text', () => {

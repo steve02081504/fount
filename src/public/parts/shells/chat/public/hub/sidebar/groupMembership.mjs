@@ -110,7 +110,6 @@ export async function ensureGroupMembership(groupId, state) {
 	if (!canAutoJoinGroup(state, pendingJoin, inviteCode)) {
 		setState('context.currentState', state)
 		store.context.currentMode = 'groups'
-		document.body.dataset.surface = 'groups'
 		document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 			el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 		})
@@ -121,6 +120,8 @@ export async function ensureGroupMembership(groupId, state) {
 		await renderMemberList(state)
 		await renderGroupInfoCard(state)
 		await showGroupJoinRequiredState()
+		const { refreshHubHeaderButtons } = await import('../messages/composerController.mjs')
+		refreshHubHeaderButtons()
 		return null
 	}
 	const pow = await resolvePowForJoin(groupId, state, store.viewer.nodeHash || '')

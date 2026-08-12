@@ -17,9 +17,8 @@ import {
 	markChunkInflight,
 	planChunkFetches,
 } from 'npm:@steve02081504/fount-p2p/federation/chunk_fetch_scheduler'
-import { registerChunkFetchWait, resolveChunkFetchWait } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
 import { handleIncomingChunkGet } from 'npm:@steve02081504/fount-p2p/files/chunk/fetch'
-import { resolvePendingChunkFetch } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
+import { registerChunkFetchWait, resolveChunkFetchWait, resolvePendingChunkFetch } from 'npm:@steve02081504/fount-p2p/files/chunk/pending'
 import { getChunk, hasChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 import { verifiedChunkBytes } from 'npm:@steve02081504/fount-p2p/files/chunk/verify'
 import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
@@ -132,7 +131,7 @@ export async function replicateChunkToFederation(username, groupId, ciphertextHa
  * @returns {Promise<Uint8Array>} 密文字节
  */
 export async function fetchCiphertextFromFederation(username, groupId, ciphertextHash) {
-	const hash = String(ciphertextHash || '').trim().toLowerCase()
+	const hash = ciphertextHash || ''
 	if (!HEX_ID_64.test(hash)) throw new Error('invalid ciphertextHash')
 	const api = swarmApis.get(registryKey(username, groupId))
 	if (!api?.fetch) throw new Error('federation chunk fetch unavailable')
@@ -178,7 +177,7 @@ export function createFederationSwarmStoragePlugin(baseDir, username, groupId) {
 			}
 			catch (firstErr) {
 				const match = String(locator).match(LOCAL_CHUNK_FILE_RE)
-				const hash = match?.[1]?.toLowerCase()
+				const hash = match?.[1]
 				const api = swarmApis.get(key)
 				if (!hash || !api?.fetch) throw firstErr
 				return await api.fetch(hash)
@@ -244,7 +243,7 @@ function replicateChunkToRoster(slot, chunkHash, data, bucketKey, options = {}) 
  */
 function fetchChunkFromPeer(slot, username, groupId, chunkHash, peerId) {
 	const waitKey = compositeKey(username, groupId, chunkHash)
-	const hash = String(chunkHash || '').trim().toLowerCase()
+	const hash = chunkHash || ''
 	const { done } = registerChunkFetchWait(waitKey, hash, FETCH_TIMEOUT_MS, { rejectOnTimeout: true })
 	const payload = { chunkHash: hash }
 	if (peerId) {
@@ -374,7 +373,7 @@ export function attachFedChunkHandlers(fedRoom) {
 
 	getChunkAck((data, peerId) => {
 		if (!isPlainObject(data)) return
-		const hash = String(data.chunkHash || '').trim().toLowerCase()
+		const hash = data.chunkHash || ''
 		if (!HEX_ID_64.test(hash)) return
 		const remoteNode = peerToNode.get(peerId) || peerId
 		recordChunkReplicationAck(username, groupId, hash, remoteNode)
@@ -386,9 +385,9 @@ export function attachFedChunkHandlers(fedRoom) {
 			if (!isPlainObject(data)) return
 			const remoteNode = peerToNode.get(peerId)
 			if (remoteNode && isBlockedPeer(remoteNode)) return
-			const hash = String(data.chunkHash || '').trim().toLowerCase()
+			const hash = data.chunkHash || ''
 			if (!HEX_ID_64.test(hash)) return
-			const b64 = String(data.dataB64 || '')
+			const b64 = data.dataB64 || ''
 			if (!b64) return
 			const bytes = base64ToBytes(b64)
 			if (bytes.byteLength > FEDERATION_CHUNK_MAX_BYTES) return
@@ -415,9 +414,9 @@ export function attachFedChunkHandlers(fedRoom) {
 			if (!isPlainObject(data)) return
 			const remoteNode = peerToNode.get(peerId)
 			if (remoteNode && isBlockedPeer(remoteNode)) return
-			const hash = String(data.chunkHash || '').trim().toLowerCase()
+			const hash = data.chunkHash || ''
 			if (!HEX_ID_64.test(hash)) return
-			const requestId = String(data.requestId || '')
+			const requestId = data.requestId || ''
 			if (requestId) {
 				await handleIncomingChunkGet(data, (resp, pid) => {
 					try {
@@ -455,9 +454,9 @@ export function attachFedChunkHandlers(fedRoom) {
 
 	getChunkData((data) => {
 		if (!isPlainObject(data)) return
-		const hash = String(data.chunkHash || '').trim().toLowerCase()
+		const hash = data.chunkHash || ''
 		if (!HEX_ID_64.test(hash)) return
-		const b64 = String(data.dataB64 || '')
+		const b64 = data.dataB64 || ''
 		if (!b64) return
 		if (data.requestId) {
 			resolvePendingChunkFetch(data)

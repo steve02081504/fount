@@ -21,12 +21,12 @@ import { listLocalAgentEntities, resolveSocialEntity } from './hosting.mjs'
  * @returns {Promise<boolean>} 是否在关注并集中
  */
 async function isFollowedByLocalEntities(username, entityHash) {
-	const target = entityHash.toLowerCase()
+	const target = entityHash
 	const actors = []
 	const operator = await resolveOperatorEntityHash(username)
-	if (operator) actors.push(operator.toLowerCase())
+	if (operator) actors.push(operator)
 	for (const { entityHash: agent } of listLocalAgentEntities(username))
-		actors.push(agent.toLowerCase())
+		actors.push(agent)
 	for (const actor of actors) {
 		const { following } = await loadFollowingForActor(username, actor)
 		if (following.some(hash => hash === target)) return true
@@ -41,13 +41,13 @@ async function isFollowedByLocalEntities(username, entityHash) {
  * @returns {Promise<boolean>} 是否共群
  */
 async function isCoGroupMember(username, entityHash) {
-	const target = entityHash.toLowerCase()
+	const target = entityHash
 	const root = shellChatRoot(username)
 	for (const groupId of await listUserGroups(username)) {
 		const snapshot = await safeReadJson(join(root, 'groups', groupId, 'snapshot.json'))
 		const members = snapshot?.members_record?.members || {}
 		for (const row of Object.values(members)) {
-			if (String(row?.entityHash || '').toLowerCase() !== target) continue
+			if (String(row?.entityHash || '') !== target) continue
 			if (row?.status === 'active') return true
 		}
 	}
@@ -63,7 +63,7 @@ async function isCoGroupMember(username, entityHash) {
 async function isFollowTargetingLocalEntity(username, event) {
 	const type = event?.type
 	if (type !== 'follow' && type !== 'unfollow') return false
-	const target = String(event?.content?.targetEntityHash || '').trim().toLowerCase()
+	const target = String(event?.content?.targetEntityHash || '').trim()
 	if (!parseEntityHash(target)) return false
 	const resolved = await resolveSocialEntity(target)
 	return Boolean(resolved?.local && resolved.replicaUsername === username)

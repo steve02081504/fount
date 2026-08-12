@@ -75,7 +75,7 @@ function normalizeFollowerEntry(row) {
 	if (!row?.replicaUsername) return null
 	return {
 		replicaUsername: String(row.replicaUsername),
-		entityHash: String(row.entityHash || '').trim().toLowerCase(),
+		entityHash: row.entityHash,
 	}
 }
 
@@ -182,8 +182,8 @@ async function writeFollowerEntry(target, followers) {
  * @returns {Promise<void>}
  */
 export async function updateFollowerIndex(username, targetEntityHash, follow, followerEntityHash) {
-	const target = targetEntityHash.toLowerCase()
-	const follower = String(followerEntityHash || '').trim().toLowerCase()
+	const target = targetEntityHash
+	const follower = followerEntityHash
 	if (!follower) return
 	await queueFollowerIndexMutation(target, async () => {
 		const list = dedupeFollowerEntries(await readFollowerEntry(target))
@@ -210,9 +210,9 @@ export async function updateFollowerIndex(username, targetEntityHash, follow, fo
  */
 export async function projectFollowerIndexFromTimelineEvent(replicaUsername, timelineOwnerEntityHash, event) {
 	if (!['follow', 'unfollow'].includes(event.type)) return
-	const owner = timelineOwnerEntityHash.toLowerCase()
+	const owner = timelineOwnerEntityHash
 	if (!parseEntityHash(owner)) return
-	const target = String(event.content?.targetEntityHash || '').trim().toLowerCase()
+	const target = String(event.content?.targetEntityHash || '').trim()
 	if (!parseEntityHash(target) || target === owner) return
 	await updateFollowerIndex(
 		replicaUsername,
@@ -228,7 +228,7 @@ export async function projectFollowerIndexFromTimelineEvent(replicaUsername, tim
  * @returns {Promise<FollowerIndexEntry[]>} replica + follower entityHash
  */
 export async function listKnownFollowersOf(entityHash) {
-	const target = entityHash.toLowerCase()
+	const target = entityHash
 	if (!parseEntityHash(target)) return []
 	return dedupeFollowerEntries(await readFollowerEntry(target))
 }
@@ -263,11 +263,11 @@ export async function rebuildFollowerIndex() {
 	const scratch = {}
 	for (const username of listUsers())
 		for (const owner of (await getTimelineOwnerIndex(username)).all) {
-			const ownerKey = String(owner || '').toLowerCase()
+			const ownerKey = owner
 			if (!parseEntityHash(ownerKey)) continue
 			const view = await getTimelineMaterialized(username, ownerKey)
 			for (const rawTarget of view.following || []) {
-				const target = rawTarget.toLowerCase()
+				const target = rawTarget
 				if (!parseEntityHash(target) || target === ownerKey) continue
 				const bucketId = followerBucketId(target)
 				scratch[bucketId] ??= {}

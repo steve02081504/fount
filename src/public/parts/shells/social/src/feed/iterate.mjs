@@ -43,7 +43,7 @@ export async function createFeedItemBuildContext(username, owners, viewerEntityH
 	 * @returns {{ albumId: string, name: string }[]} 可见相册
 	 */
 	function albumsForPost(authorEntityHash, postId) {
-		const owner = String(authorEntityHash).toLowerCase()
+		const owner = authorEntityHash
 		const view = albumViewCache.get(owner)
 		if (!view)
 			// 同步缓存：物化视图通常已在内存；首次 miss 时用空（异步预热由调用方保证）
@@ -56,7 +56,7 @@ export async function createFeedItemBuildContext(username, owners, viewerEntityH
 	 * @returns {Promise<void>}
 	 */
 	async function warmAlbumView(authorEntityHash) {
-		const owner = String(authorEntityHash).toLowerCase()
+		const owner = authorEntityHash
 		if (albumViewCache.has(owner)) return
 		albumViewCache.set(owner, await getTimelineMaterialized(username, owner))
 	}

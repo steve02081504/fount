@@ -55,9 +55,9 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opti
 
 	const committed = await withGroupWriteLock(username, groupId, async () => {
 		const path = eventsPath(username, groupId)
-		const idNorm = String(wirePayload.id).trim().toLowerCase()
+		const idNorm = String(wirePayload.id).trim()
 		const previous = await readJsonl(path, { sanitize: stripDagEventLocalExtensions })
-		if (previous.some(existing => String(existing.id).trim().toLowerCase() === idNorm)) return false
+		if (previous.some(existing => String(existing.id).trim() === idNorm)) return false
 		await appendJsonlSynced(path, wirePayload)
 		await recordEventReceivedAt(username, groupId, wirePayload.id, Date.now())
 		if (!publishLeaveBeforeRebuild)

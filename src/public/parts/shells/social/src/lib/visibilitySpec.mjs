@@ -41,7 +41,7 @@ function normalizeEntityHashList(raw) {
 	const out = []
 	const seen = new Set()
 	for (const item of raw) {
-		const hash = String(item || '').trim().toLowerCase()
+		const hash = String(item || '').trim()
 		if (!isEntityHash128(hash) || seen.has(hash)) continue
 		seen.add(hash)
 		out.push(hash)
@@ -154,9 +154,8 @@ export function isPublicDiscoverable(contentOrSpec) {
  * @returns {boolean} 是否可见
  */
 export function canViewByVisibility(content, viewerContext, ownerEntityHash) {
-	const owner = String(ownerEntityHash || '').toLowerCase()
-	const viewer = String(viewerContext?.viewerEntityHash || '').toLowerCase() || null
-	if (viewer && viewer === owner) return true
+	const viewer = viewerContext?.viewerEntityHash || null
+	if (viewer && viewer === ownerEntityHash) return true
 
 	const spec = visibilitySpecFromContent(content)
 	if (viewer && spec.except?.includes(viewer)) return false
@@ -166,10 +165,10 @@ export function canViewByVisibility(content, viewerContext, ownerEntityHash) {
 		case 'unlisted':
 			return true
 		case 'followers':
-			return Boolean(viewer && viewerContext.following?.has(owner))
+			return Boolean(viewer && viewerContext.following?.has(ownerEntityHash))
 		case 'followers_since': {
-			if (!viewer || !viewerContext.following?.has(owner)) return false
-			const followWall = viewerContext.followSince?.get(owner)
+			if (!viewer || !viewerContext.following?.has(ownerEntityHash)) return false
+			const followWall = viewerContext.followSince?.get(ownerEntityHash)
 			if (followWall == null) return false
 			const at = Number(viewerContext.at) || Date.now()
 			return at - followWall >= (spec.minFollowMs || 0)

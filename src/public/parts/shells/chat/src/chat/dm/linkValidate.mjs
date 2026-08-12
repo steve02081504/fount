@@ -17,10 +17,9 @@ import { verifyDmLinkSignature } from './linkVerify.mjs'
  * @returns {string | null} 成员 id
  */
 export function findMemberIdByPubKeyHex(state, pubKeyHex) {
-	const want = normalizePubKeyHex(pubKeyHex)
-	if (!PUB_KEY_HEX_64.test(want)) return null
+	if (!PUB_KEY_HEX_64.test(normalizePubKeyHex(pubKeyHex))) return null
 	for (const [memberId, row] of Object.entries(state.members))
-		if (normalizePubKeyHex(row?.pubKeyHex) === want) return memberId
+		if (normalizePubKeyHex(row?.pubKeyHex) === normalizePubKeyHex(pubKeyHex)) return memberId
 
 	return null
 }
@@ -35,25 +34,17 @@ export function findMemberIdByPubKeyHex(state, pubKeyHex) {
  * @returns {Promise<{ ok: boolean, error?: string }>} 校验结果
  */
 export async function validateDmIntroLinkProof(nodeUsername, state, introPubKeyHex, nonceBase64Url, introSignatureHex) {
-	const introPk = normalizePubKeyHex(introPubKeyHex)
-	const nonce = String(nonceBase64Url || '').trim()
-	const signatureHex = String(introSignatureHex || '').trim().replace(/^0x/iu, '')
-	if (!PUB_KEY_HEX_64.test(introPk))
-		return { ok: false, error: 'invalid intro pubKeyHex' }
-	if (nonce.length < 16)
-		return { ok: false, error: 'invalid dmIntro nonce' }
-	if (!/^[\da-f]{128}$/iu.test(signatureHex))
-		return { ok: false, error: 'invalid dmIntro signature' }
-	if (!await verifyDmLinkSignature(introPk, nonce, signatureHex))
+	if (!await verifyDmLinkSignature(introPubKeyHex, nonceBase64Url, introSignatureHex))
 		return { ok: false, error: 'invalid dm intro link signature' }
 
+	const introPk = normalizePubKeyHex(introPubKeyHex)
 	const introMemberId = findMemberIdByPubKeyHex(state, introPk)
-	if (introMemberId && !dmIntroNonceMatches(introMemberId, nonce))
+	if (introMemberId && !dmIntroNonceMatches(introMemberId, nonceBase64Url))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }
 
 	const { getFederationViewForUser } = await import('../../entity/identity.mjs')
 	const fed = await getFederationViewForUser(nodeUsername)
-	if (normalizePubKeyHex(fed.activePubKeyHex) === introPk && !dmIntroNonceMatches(nodeUsername, nonce))
+	if (fed.activePubKeyHex === introPk && !dmIntroNonceMatches(nodeUsername, nonceBase64Url))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }
 
 	return { ok: true }

@@ -19,11 +19,11 @@ const TAG_RE = /^[\p{L}\p{N}_-]{2,32}$/u
  */
 function sanitizeTrendingRow(raw) {
 	if (!raw || typeof raw !== 'object') return null
-	const tag = String(/** @type {{ tag?: unknown }} */raw.tag || '').trim().toLowerCase().slice(0, TAG_MAX_LEN)
+	const tag = String(/** @type {{ tag?: unknown }} */raw.tag || '').trim().slice(0, TAG_MAX_LEN)
 	if (!TAG_RE.test(tag)) return null
 	const count = Math.min(Math.max(Number(/** @type {{ count?: unknown }} */raw.count) || 0, 0), 1_000_000)
 	if (!count) return null
-	const nodeHash = String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').trim().toLowerCase().slice(0, 128)
+	const nodeHash = String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').trim().slice(0, 128)
 	return { tag, count, nodeHash }
 }
 
@@ -40,7 +40,7 @@ export async function localTrendingHashtagsHandler(inboundContext, query) {
 		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */query.limit : 12,
 	) || 12, 1), 32)
 	const { tags } = await buildTrendingHashtags(username, { limit })
-	const nodeHash = String(getNodeHash() || '').toLowerCase()
+	const nodeHash = String(getNodeHash() || '')
 	return tags.map(row => ({
 		tag: row.tag,
 		count: row.count,

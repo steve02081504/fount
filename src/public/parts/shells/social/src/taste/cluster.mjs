@@ -85,14 +85,14 @@ async function collectPostAudiences(username, entityHash, following) {
 		const view = await getTimelineMaterialized(username, actor)
 		const weight = actor === entityHash ? 1 : trustWeightOfEntity(actor) * (following.has(actor) ? 1 : 0.5)
 		for (const like of view.likes || []) {
-			const target = String(like.content?.targetEntityHash || '').toLowerCase()
+			const target = String(like.content?.targetEntityHash || '')
 			const postId = String(like.content?.targetPostId || '')
 			if (!parseEntityHash(target) || !postId) continue
 			const row = ensure(target, postId)
 			row.likes.set(actor, (row.likes.get(actor) || 0) + weight)
 		}
 		for (const dislike of view.dislikes || []) {
-			const target = String(dislike.content?.targetEntityHash || '').toLowerCase()
+			const target = String(dislike.content?.targetEntityHash || '')
 			const postId = String(dislike.content?.targetPostId || '')
 			if (!parseEntityHash(target) || !postId) continue
 			const row = ensure(target, postId)
@@ -100,7 +100,7 @@ async function collectPostAudiences(username, entityHash, following) {
 		}
 		for (const post of view.posts || []) {
 			const tags = Array.isArray(post.content?.tags)
-				? post.content.tags.map(t => String(t).trim().toLowerCase()).filter(Boolean)
+				? post.content.tags.map(t => t.trim()).filter(Boolean)
 				: []
 			if (tags.length) ensure(actor, post.id).selfTags = tags
 		}
@@ -213,7 +213,7 @@ async function pullRecentReactionPosts(username, actor) {
 	/** @type {{ key: string, at: number, author: string, postId: string }[]} */
 	const targets = []
 	for (const like of view.likes || []) {
-		const author = String(like.content?.targetEntityHash || '').toLowerCase()
+		const author = String(like.content?.targetEntityHash || '')
 		const postId = String(like.content?.targetPostId || '')
 		if (!parseEntityHash(author) || !postId) continue
 		targets.push({
@@ -224,7 +224,7 @@ async function pullRecentReactionPosts(username, actor) {
 		})
 	}
 	for (const dislike of view.dislikes || []) {
-		const author = String(dislike.content?.targetEntityHash || '').toLowerCase()
+		const author = String(dislike.content?.targetEntityHash || '')
 		const postId = String(dislike.content?.targetPostId || '')
 		if (!parseEntityHash(author) || !postId) continue
 		targets.push({
@@ -287,11 +287,11 @@ async function discoverAndGossipMerges(username, actor, store, stats) {
  * @returns {Promise<import('./store.mjs').TasteStore>} 更新后偏好
  */
 export async function rebuildTaste(username, entityHash) {
-	const actor = String(entityHash).toLowerCase()
+	const actor = entityHash
 	await pullRecentReactionPosts(username, actor)
 
 	const { following } = await loadFollowingForActor(username, actor)
-	const followingSet = new Set([...following].map(h => h.toLowerCase()))
+	const followingSet = new Set(following)
 	const raw = await collectPostAudiences(username, actor, followingSet)
 
 	/** @type {Map<string, Map<string, number>>} */
@@ -391,14 +391,14 @@ export function computeTasteMatch(post, authorEntityHash, taste) {
 	const self = Array.isArray(post.content?.tags) ? post.content.tags : []
 	const selfWeight = inferred?.selfWeight ?? 1
 	for (const t of self) {
-		const s = String(t).trim().toLowerCase()
+		const s = t.trim()
 		if (s && !tags.includes(s)) tags.push(s)
 	}
 
 	let match = 0
 	for (const t of tags) {
 		const w = tasteWeightOf(taste, t)
-		const isSelfOnly = self.map(x => String(x).toLowerCase()).includes(t) && !inferred?.tags?.includes(t)
+		const isSelfOnly = self.includes(t) && !inferred?.tags?.includes(t)
 		match += w * (isSelfOnly ? selfWeight : 1)
 	}
 	return match

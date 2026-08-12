@@ -41,7 +41,7 @@ export function projectViewerEntriesToRows(rawLines, entries) {
 			continue
 		}
 
-		const nextAgent = String(entry.content ?? '')
+		const nextAgent = entry.content ?? ''
 		const nextShow = String(entry.content_for_show ?? entry.content ?? '')
 		if (nextAgent === messageAgentText(content) && nextShow === messageShowText(content)) {
 			out.push(line)

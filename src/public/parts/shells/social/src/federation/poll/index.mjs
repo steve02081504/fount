@@ -74,7 +74,7 @@ async function writePollTally(username, targetEntityHash, postId, votes) {
 export async function upsertPollVote(username, targetEntityHash, postId, voterEntityHash, choices) {
 	const ids = normalizePostTarget(targetEntityHash, postId)
 	if (!ids) return
-	const voter = String(voterEntityHash || '').trim().toLowerCase()
+	const voter = voterEntityHash
 	if (!parseEntityHash(voter)) return
 	await store.withMutex(ids.target, ids.postId, async () => {
 		const current = await store.read(username, ids.target, ids.postId)

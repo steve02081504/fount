@@ -24,7 +24,7 @@ export async function buildLiveFeed(username, options = {}) {
 	const { following } = viewer
 		? await loadFollowingForActor(username, viewer)
 		: { following: [] }
-	const followingSet = new Set(following.map(id => id.toLowerCase()))
+	const followingSet = new Set(following)
 	const owners = (await getTimelineOwnerIndex(username)).all
 
 	/** @type {object[]} */

@@ -30,7 +30,7 @@ export const MAX_DISPLAY_ACTORS = 3
 export function parseNotificationTypesFilter(typesParam) {
 	if (!typesParam) return null
 	const types = String(typesParam).split(',')
-		.map(type => type.trim().toLowerCase())
+		.map(type => type.trim())
 		.filter(type => VALID_NOTIFICATION_TYPES.has(type))
 	return types.length ? types : null
 }
@@ -80,7 +80,7 @@ export function notificationCursor(row) {
 export function computeAggregateKey(row, viewerEntityHash) {
 	const type = row.type
 	if (type === 'like' || type === 'repost') {
-		const target = (row.targetEntityHash || viewerEntityHash || '').toLowerCase()
+		const target = row.targetEntityHash || viewerEntityHash || ''
 		return `${type}:${target}:${row.targetPostId ?? ''}`
 	}
 	if (type === 'follow') {
@@ -152,7 +152,7 @@ export function aggregateNotificationRows(rows, viewerEntityHash) {
  * @returns {string} inbox 目录
  */
 export function inboxDir(username, entityHash) {
-	return `${getUserDictionary(username)}/shells/social/inbox/${entityHash.toLowerCase()}`
+	return `${getUserDictionary(username)}/shells/social/inbox/${entityHash}`
 }
 
 /**
@@ -195,10 +195,10 @@ function socialInboxStore(username, entityHash) {
 export function normalizeNotificationRow(type, actorEntityHash, at, postId, targetPostId, targetEntityHash = null, snippet = null) {
 	return {
 		type,
-		actorEntityHash: actorEntityHash.toLowerCase(),
+		actorEntityHash,
 		postId: postId ?? null,
 		targetPostId: targetPostId ?? null,
-		targetEntityHash: targetEntityHash?.toLowerCase() ?? null,
+		targetEntityHash: targetEntityHash ?? null,
 		snippet: snippet ?? null,
 		at,
 	}
@@ -215,7 +215,7 @@ async function resolveNotificationSnippet(username, timelineOwner, event, row) {
 	if (event.type === 'post')
 		return notificationSnippet(event.content?.text || '')
 	if (event.type === 'like' || event.type === 'repost') {
-		const targetOwner = (event.content?.targetEntityHash || '').toLowerCase()
+		const targetOwner = event.content?.targetEntityHash || ''
 		const targetPostId = event.content?.targetPostId
 		if (!targetOwner || !targetPostId) return null
 		const { getTimelineMaterialized } = await import('./timeline/materialize.mjs')
@@ -239,15 +239,15 @@ async function resolveNotificationSnippet(username, timelineOwner, event, row) {
  * @returns {Array<{ recipient: string } & object>} 收件人 + 通知体
  */
 export function deriveInboxNotifications(timelineOwner, event) {
-	const owner = timelineOwner.toLowerCase()
+	const owner = timelineOwner
 	const at = Number(event.hlc?.wall) || Number(event.timestamp) || Date.now()
 	/** @type {Array<{ recipient: string, type: string, actorEntityHash: string, postId: string | null, targetPostId: string | null, targetEntityHash: string | null, snippet: string | null, at: number }>} */
 	const rows = []
 
 	if (event.type === 'post') {
 		const replyTo = event.content?.replyTo
-		if (replyTo?.entityHash?.toLowerCase()) {
-			const recipient = replyTo.entityHash.toLowerCase()
+		if (replyTo?.entityHash) {
+			const recipient = replyTo.entityHash
 			rows.push({
 				recipient,
 				...normalizeNotificationRow('reply', owner, at, event.id, replyTo.postId, recipient),
@@ -259,7 +259,7 @@ export function deriveInboxNotifications(timelineOwner, event) {
 		}
 	}
 	if (event.type === 'like') {
-		const target = (event.content?.targetEntityHash || '').toLowerCase()
+		const target = event.content?.targetEntityHash || ''
 		if (target)
 			rows.push({
 				recipient: target,
@@ -267,7 +267,7 @@ export function deriveInboxNotifications(timelineOwner, event) {
 			})
 	}
 	if (event.type === 'repost') {
-		const target = (event.content?.targetEntityHash || '').toLowerCase()
+		const target = event.content?.targetEntityHash || ''
 		if (target)
 			rows.push({
 				recipient: target,
@@ -275,12 +275,12 @@ export function deriveInboxNotifications(timelineOwner, event) {
 			})
 	}
 	if (event.type === 'follow') {
-		const target = (event.content?.targetEntityHash || '').toLowerCase()
+		const target = event.content?.targetEntityHash || ''
 		if (target && target !== owner)
 			rows.push({ recipient: target, ...normalizeNotificationRow('follow', owner, at, null, null) })
 	}
 	if (event.type === 'post_note') {
-		const target = (event.content?.targetEntityHash || '').toLowerCase()
+		const target = event.content?.targetEntityHash || ''
 		if (target && target !== owner)
 			rows.push({
 				recipient: target,
@@ -338,8 +338,8 @@ function scheduleNotifyUser(username, payload) {
  * @returns {Promise<void>}
  */
 export async function appendCarePostInboxRow(username, recipientEntityHash, authorEntityHash, post, snippet = null) {
-	const recipient = String(recipientEntityHash || '').trim().toLowerCase()
-	const author = String(authorEntityHash || '').trim().toLowerCase()
+	const recipient = recipientEntityHash
+	const author = authorEntityHash
 	if (!recipient || !author || recipient === author) return
 	if (!await canWriteTimeline(username, recipient)) return
 	const at = Number(post.hlc?.wall) || Number(post.timestamp) || Date.now()
@@ -376,8 +376,8 @@ export async function appendCarePostInboxRow(username, recipientEntityHash, auth
  * @returns {Promise<void>}
  */
 export async function appendPollClosedInboxRow(username, recipientEntityHash, authorEntityHash, postId, poll, tally) {
-	const recipient = String(recipientEntityHash || '').trim().toLowerCase()
-	const author = String(authorEntityHash || '').trim().toLowerCase()
+	const recipient = recipientEntityHash
+	const author = authorEntityHash
 	if (!recipient || !author || !postId) return
 	if (!await canWriteTimeline(username, recipient)) return
 	const at = Date.now()
@@ -414,12 +414,12 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 			const { canReplyUnderPolicy, loadPostReplyGate } = await import('./lib/replyPolicy.mjs')
 			const gate = await loadPostReplyGate(
 				username,
-				String(event.content.replyTo.entityHash),
-				String(event.content.replyTo.postId || ''),
+				event.content.replyTo.entityHash,
+				event.content.replyTo.postId,
 			)
 			const allowed = await canReplyUnderPolicy({
 				username,
-				authorEntityHash: String(event.content.replyTo.entityHash),
+				authorEntityHash: event.content.replyTo.entityHash,
 				replierEntityHash: timelineOwner,
 				replyPolicy: gate?.replyPolicy || 'everyone',
 				at: Number(event.hlc?.wall) || Number(event.timestamp) || Date.now(),

@@ -1,4 +1,6 @@
-import { test, expect, openFreshGroupChannel } from './fixtures.mjs'
+import { createChatTestGroup } from 'fount/scripts/test/playwright/api.mjs'
+
+import { test, expect, openFreshGroupChannel, waitForHub } from './fixtures.mjs'
 
 test.describe('Chat hub mobile pane', () => {
 	test.use({ viewport: { width: 390, height: 844 } })
@@ -35,6 +37,29 @@ test.describe('Chat hub mobile pane', () => {
 		await expect(page.locator('body')).toHaveAttribute('data-layout-pane', 'main')
 		await expect(page.locator('.main')).toBeVisible()
 		await expect(page).toHaveURL(new RegExp(`group:${groupId}:${channelId}`))
+	})
+
+	test('first enter via selectGroup shows composer when main pane opens', async ({ page, baseUrl, apiKey }) => {
+		const { groupId, defaultChannelId } = await createChatTestGroup(baseUrl, apiKey)
+		await waitForHub(page, baseUrl)
+		await expect(page.locator('body')).toHaveAttribute('data-layout-pane', 'nav')
+
+		await page.evaluate(
+			({ gid, cid }) => { location.hash = `group:${encodeURIComponent(gid)}:${cid}` },
+			{ gid: groupId, cid: defaultChannelId },
+		)
+		await page.waitForFunction(() => document.body.dataset.layoutPane === 'main')
+		const atMain = await page.evaluate(() => {
+			const area = document.querySelector('.input-area')
+			return {
+				surface: document.body.dataset.surface,
+				display: area ? getComputedStyle(area).display : 'missing',
+			}
+		})
+		expect(atMain.surface, `composer hidden at main-pane open: ${JSON.stringify(atMain)}`).toBe('conversation')
+		expect(atMain.display).not.toBe('none')
+		await expect(page.locator('.input-area')).toBeVisible()
+		await expect(page.locator('#message-input')).toBeEnabled()
 	})
 
 	test('member backdrop closes member overlay', async ({ page, baseUrl, apiKey }) => {

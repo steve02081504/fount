@@ -84,7 +84,7 @@ export function buildCheckpointPayload({
 		reputationLedger: JSON.parse(JSON.stringify(materialized.reputationLedger || [])),
 		inviteEdges: JSON.parse(JSON.stringify(materialized.inviteEdges || [])),
 		fileMasterKeyRotations: JSON.parse(JSON.stringify(materialized.fileMasterKeyRotations || [])),
-		pexHints: [...materialized.pexHints || []].filter(hint => String(hint).trim()),
+		pexHints: [...materialized.pexHints || []].filter(hint => hint),
 		messageSenderIndex: JSON.parse(JSON.stringify(materialized.messageSenderIndex || {})),
 		voteBallots: JSON.parse(JSON.stringify(materialized.voteBallots || {})),
 		session: JSON.parse(JSON.stringify(materialized.session || {})),
@@ -137,7 +137,7 @@ export function buildCheckpointPayload({
 export function isSignedBaseCheckpoint(checkpoint) {
 	if (!checkpoint || typeof checkpoint !== 'object') return false
 	if (!checkpoint.members_record || typeof checkpoint.members_record !== 'object') return false
-	return /^[\da-f]{128}$/iu.test(String(checkpoint.checkpoint_signature || '').trim())
+	return /^[\da-f]{128}$/iu.test(checkpoint.checkpoint_signature || '')
 }
 
 /**
@@ -159,12 +159,12 @@ export function isSignedBaseCheckpoint(checkpoint) {
  */
 export function isAdoptedBaseAuthoritative(checkpoint, localTipIds) {
 	if (!isSignedBaseCheckpoint(checkpoint)) return false
-	const anchor = String(checkpoint.checkpoint_event_id || '').trim().toLowerCase()
+	const anchor = checkpoint.checkpoint_event_id || ''
 	const localTips = (Array.isArray(localTipIds) ? localTipIds : [])
-		.map(t => String(t).trim().toLowerCase())
+		.map(t => t)
 		.filter(isHex64)
 	const snapshotTips = (Array.isArray(checkpoint.dag_tip_ids) ? checkpoint.dag_tip_ids : [])
-		.map(t => String(t).trim().toLowerCase())
+		.map(t => t)
 		.filter(isHex64)
 	const localSet = new Set(localTips)
 	const aligned = localTips.length > 0
@@ -214,7 +214,7 @@ export async function verifyRemoteCheckpoint(checkpoint) {
 	if (checkpoint.epoch_root_hash !== expectedRoot)
 		return { valid: false, reason: 'epoch_root_hash does not match Merkle root of eventIdsInEpoch' }
 
-	if (!/^[\da-f]{128}$/iu.test(String(checkpoint.checkpoint_signature || '').trim()))
+	if (!/^[\da-f]{128}$/iu.test(checkpoint.checkpoint_signature || ''))
 		return { valid: false, reason: 'checkpoint_signature required' }
 
 	const pubKeys = checkpointSignerPubKeys(checkpoint)

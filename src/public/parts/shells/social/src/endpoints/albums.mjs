@@ -11,7 +11,7 @@ import { routeEntityHash, socialClientFromReq } from './shared.mjs'
 export function registerAlbumsRoutes(router) {
 	router.get('/api/parts/shells\\:social/albums', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		const entityHash = String(req.query.entityHash || client.entityHash).trim().toLowerCase()
+		const entityHash = String(req.query.entityHash || client.entityHash).trim()
 		res.status(200).json({ albums: await client.albums.list(entityHash) })
 	})
 
@@ -22,7 +22,7 @@ export function registerAlbumsRoutes(router) {
 
 	router.get('/api/parts/shells\\:social/albums/:entityHash/:albumId', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		const detail = await client.albums.get(routeEntityHash(req.params), String(req.params.albumId || ''))
+		const detail = await client.albums.get(routeEntityHash(req.params), req.params.albumId)
 		res.status(200).json(detail)
 	})
 
@@ -33,27 +33,27 @@ export function registerAlbumsRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/albums/:albumId/update', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		res.status(200).json(await client.albums.update(String(req.params.albumId || ''), req.body || {}))
+		res.status(200).json(await client.albums.update(req.params.albumId, req.body || {}))
 	})
 
 	router.delete('/api/parts/shells\\:social/albums/:albumId', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		const deletePosts = req.body?.deletePosts === true || req.query.deletePosts === '1'
-		res.status(200).json(await client.albums.delete(String(req.params.albumId || ''), { deletePosts }))
+		res.status(200).json(await client.albums.delete(req.params.albumId, { deletePosts }))
 	})
 
 	router.post('/api/parts/shells\\:social/albums/:albumId/posts', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		const postId = String(req.body?.postId || '')
 		if (!postId) throw httpError(400, 'postId required')
-		res.status(200).json(await client.albums.addPost(String(req.params.albumId || ''), postId))
+		res.status(200).json(await client.albums.addPost(req.params.albumId, postId))
 	})
 
 	router.delete('/api/parts/shells\\:social/albums/:albumId/posts/:postId', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		res.status(200).json(await client.albums.removePost(
-			String(req.params.albumId || ''),
-			String(req.params.postId || ''),
+			req.params.albumId,
+			req.params.postId,
 		))
 	})
 

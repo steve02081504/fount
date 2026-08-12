@@ -43,16 +43,16 @@ export async function fireVoteClosed(username, groupId, channelId, ballotId) {
 	const tallyMap = tallyVoteChoices(lines, ballotId)
 	const tally = Object.fromEntries(tallyMap.entries())
 	const recipients = new Set(await listLocalRecipientsInGroup(username, state))
-	const operator = (await resolveOperatorEntityHash(username))?.toLowerCase()
+	const operator = await resolveOperatorEntityHash(username)
 	if (operator) recipients.add(operator)
-	const ballotSender = String(ballot.sender || '').trim().toLowerCase()
+	const ballotSender = ballot.sender || ''
 	const { authorEntityHash } = resolveAuthorFromSender(state, ballotSender)
-	if (authorEntityHash) recipients.add(authorEntityHash.toLowerCase())
+	if (authorEntityHash) recipients.add(authorEntityHash)
 	const voterKeys = state.messageOverlay?.votes?.get?.(ballotId)
 	if (voterKeys)
 		for (const voterKey of voterKeys.keys()) {
 			const { authorEntityHash: voterHash } = resolveAuthorFromSender(state, voterKey)
-			if (voterHash) recipients.add(voterHash.toLowerCase())
+			if (voterHash) recipients.add(voterHash)
 		}
 	const preview = String(ballot.question || 'vote closed').slice(0, 120)
 	const url = `/parts/shells:chat/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(channelId)};${encodeURIComponent(ballotId)}`

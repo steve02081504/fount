@@ -43,7 +43,7 @@ export function tasteStorePath(username, entityHash) {
 	return path.join(
 		getUserDictionary(username),
 		'shells/social/taste',
-		`${String(entityHash).toLowerCase()}.json`,
+		`${entityHash}.json`,
 	)
 }
 
@@ -81,7 +81,7 @@ export function normalizeTasteStore(raw) {
  * @returns {Promise<TasteStore>} 偏好表
  */
 export async function loadTaste(username, entityHash) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = entityHash
 	if (!parseEntityHash(hash)) return emptyTasteStore()
 	const { readFile } = await import('node:fs/promises')
 	try {
@@ -100,7 +100,7 @@ export async function loadTaste(username, entityHash) {
  * @returns {Promise<TasteStore>} 落盘后规范化结果
  */
 export async function saveTaste(username, entityHash, store) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = entityHash
 	if (!parseEntityHash(hash)) throw new Error('invalid entityHash')
 	const normalized = normalizeTasteStore(store)
 	await withAsyncMutex(`taste-store:${username}:${hash}`, async () => {
@@ -119,7 +119,7 @@ export async function saveTaste(username, entityHash, store) {
  * @returns {Promise<TasteStore>} 写入后偏好
  */
 export async function mutateTaste(username, entityHash, mutator) {
-	const hash = String(entityHash || '').trim().toLowerCase()
+	const hash = entityHash
 	return withAsyncMutex(`taste-store:${username}:${hash}`, async () => {
 		const current = await loadTaste(username, hash)
 		const next = await mutator(current) || current
@@ -139,11 +139,11 @@ export async function mutateTaste(username, entityHash, mutator) {
  * @returns {string} canonical
  */
 export function resolveTasteAlias(tagHash, aliases) {
-	let current = String(tagHash || '').trim().toLowerCase()
+	let current = tagHash
 	const seen = new Set()
 	while (aliases[current]?.to && !seen.has(current)) {
 		seen.add(current)
-		current = String(aliases[current].to).trim().toLowerCase()
+		current = String(aliases[current].to).trim()
 	}
 	return current
 }

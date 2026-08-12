@@ -11,7 +11,7 @@ const purging = new Set()
  * @returns {string} 键
  */
 function key(username, groupId) {
-	return `${username}\0${String(groupId).trim().toLowerCase()}`
+	return `${username}\0${groupId}`
 }
 
 /**

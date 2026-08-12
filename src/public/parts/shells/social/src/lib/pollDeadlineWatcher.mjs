@@ -21,7 +21,7 @@ const deadlines = createDeadlineScheduler()
  * @returns {string} 调度键
  */
 function scheduleKey(entityHash, postId) {
-	return `${entityHash.toLowerCase()}:${postId}`
+	return `${entityHash}:${postId}`
 }
 
 /**
@@ -31,7 +31,7 @@ function scheduleKey(entityHash, postId) {
  * @returns {Promise<void>}
  */
 export async function firePollClosed(username, entityHash, postId) {
-	const owner = entityHash.toLowerCase()
+	const owner = entityHash
 	const view = await getTimelineMaterialized(username, owner)
 	const post = view.postById[postId]
 	if (!post) return
@@ -64,7 +64,7 @@ export async function firePollClosed(username, entityHash, postId) {
  * @returns {Promise<void>}
  */
 export async function schedulePollDeadlineForPost(username, entityHash, post) {
-	const owner = entityHash.toLowerCase()
+	const owner = entityHash
 	const content = await maybeDecryptPostContent(username, owner, post.content)
 	const poll = content?.poll
 	if (!poll?.deadline) return
@@ -80,7 +80,7 @@ export async function schedulePollDeadlineForPost(username, entityHash, post) {
  * @returns {Promise<void>}
  */
 export async function schedulePollDeadlines(username, entityHash) {
-	const owner = entityHash.toLowerCase()
+	const owner = entityHash
 	const view = await getTimelineMaterialized(username, owner)
 	for (const post of view.posts || [])
 		await schedulePollDeadlineForPost(username, owner, post)

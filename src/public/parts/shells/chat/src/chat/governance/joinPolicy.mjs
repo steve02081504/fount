@@ -6,7 +6,6 @@
  * 【关联】npm:@steve02081504/fount-p2p/governance/join_pow.mjs、joinPowAnchors.mjs、inviteTickets、dag/append、room ingest。
  */
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { JOIN_POW_DEFAULT_EPOCH_MS, powVoluntaryBonus, verifyJoinPow } from 'npm:@steve02081504/fount-p2p/governance/join_pow'
 
 import { verifyGroupInviteTicket } from '../lib/inviteTickets.mjs'
@@ -35,7 +34,7 @@ export function joinPowBonusFromMemberJoin(state, event) {
 	if (!powSolution) return 0
 	const floorBits = resolvePowFloorBits(state.groupSettings)
 	if (floorBits <= 0) return 0
-	const senderNodeHash = String(event.sender || '').trim().toLowerCase()
+	const senderNodeHash = event.sender || ''
 	const { ok, achievedBits } = verifyJoinPow(powSolution, {
 		groupId: state.groupId,
 		senderNodeHash,
@@ -83,10 +82,10 @@ export async function validateJoinPolicy(state, event, replicaUsername, options 
 	const fromFederation = options.source === 'federation'
 	const joinPolicy = state.groupSettings?.joinPolicy || 'invite-only'
 	const activeBefore = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
-	const senderKey = String(event.sender || '').trim().toLowerCase()
+	const senderKey = event.sender || ''
 	const senderAlreadyActive = state.members?.[senderKey]?.status === 'active'
 	if (Array.isArray(content.roles)) {
-		const ownerEh = String(content.ownerEntityHash || '').trim().toLowerCase()
+		const ownerEh = content.ownerEntityHash || ''
 		const ownerActive = isEntityHash128(ownerEh)
 			&& Object.values(state.members).some(member => member?.status === 'active' && member.entityHash === ownerEh)
 		const allowExtraRoles = activeBefore === 0 || senderAlreadyActive || ownerActive
@@ -98,11 +97,10 @@ export async function validateJoinPolicy(state, event, replicaUsername, options 
 				throw joinPolicyError(`member_join unknown role: ${roleId}`, { pendable: fromFederation })
 		}
 	}
-	const hasDmIntroProof = String(content.dmIntroNonce || '').trim().length >= 16
-		&& /^[\da-f]{128}$/iu.test(String(content.dmIntroSignatureHex || '').trim().replace(/^0x/iu, ''))
+	const hasDmIntroProof = (content.dmIntroNonce || '').length >= 16
+		&& /^[\da-f]{128}$/iu.test((content.dmIntroSignatureHex || '').replace(/^0x/iu, ''))
 	const dmMeta = state.groupMeta || {}
 	const dmKnownPeer = dmMeta.dmKind === 'ecdh' && [dmMeta.dmPeerPubKeyHex, dmMeta.dmMyPubKeyHex, dmMeta.dmPubKeyLow, dmMeta.dmPubKeyHigh]
-		.map(v => normalizePubKeyHex(v))
 		.filter(Boolean)
 		.includes(senderKey)
 	if (joinPolicy === 'invite-only' && !hasDmIntroProof && activeBefore > 0 && !senderAlreadyActive && !dmKnownPeer) {
@@ -117,7 +115,7 @@ export async function validateJoinPolicy(state, event, replicaUsername, options 
 		if (joinPowExemptAsHistoricalReplay(state, event)) return
 		const floorBits = resolvePowFloorBits(state.groupSettings)
 		if (floorBits <= 0) throw new Error('pow joinPolicy requires powFloorBits >= 1')
-		const senderNodeHash = String(event.sender || '').trim().toLowerCase()
+		const senderNodeHash = event.sender || ''
 		const { ok } = verifyJoinPow(content.powSolution, {
 			groupId: state.groupId,
 			senderNodeHash,

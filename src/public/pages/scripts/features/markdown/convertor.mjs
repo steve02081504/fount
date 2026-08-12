@@ -66,7 +66,8 @@ function rehypeSpoiler() {
 			if (!node.value || !(Object(node.value) instanceof String)) return
 
 			// 跳过代码块中的文本（代码块应该保持原样）
-			if (parent?.tagName?.toLowerCase() === 'code' || parent?.tagName?.toLowerCase() === 'pre') return
+			// hast tagName 恒为小写
+			if (parent?.tagName === 'code' || parent?.tagName === 'pre') return
 
 			// 匹配 ||文本|| 模式（至少包含一个非 | 字符）
 			const spoilerRegex = /\|\|([^|]+)\|\|/g
@@ -723,7 +724,7 @@ $stderr = StringIO.new
  * @returns {LanguageExecutor | undefined} 匹配到的语言执行器；未命中时为 `undefined`。
  */
 function resolveLanguageExecutor(langOrExt, allowUnsafeExecutors) {
-	const key = String(langOrExt || '').toLowerCase()
+	const key = langOrExt.toLowerCase()
 	if (allowUnsafeExecutors && languageExecutors[key]) return languageExecutors[key]
 	return safeLanguageExecutors[key]
 }

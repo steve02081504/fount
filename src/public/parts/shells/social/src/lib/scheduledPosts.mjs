@@ -63,7 +63,7 @@ export function enqueueScheduledPost(username, entityHash, draft, publishAt) {
  * @returns {object | null} 被移除项
  */
 export function cancelScheduledPost(username, entityHash, scheduledId) {
-	const id = String(scheduledId || '').trim()
+	const id = scheduledId
 	const rows = listScheduledPosts(username, entityHash)
 	const idx = rows.findIndex(row => row.scheduledId === id)
 	if (idx < 0) return null

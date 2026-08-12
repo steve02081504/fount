@@ -99,7 +99,7 @@ export function awaitServerRpcResponse(requestId, timeoutMs = 30_000) {
  */
 export function registerRpcClientIdentity(ws, clientNodeId) {
 	if (!isValidGroupRpcClientNodeId(clientNodeId)) return
-	rpcClientIdentities.set(ws, clientNodeId.trim().toLowerCase())
+	rpcClientIdentities.set(ws, clientNodeId.trim())
 }
 
 /**
@@ -191,7 +191,7 @@ async function handleRpcCall(senderWs, groupId, roomKey, wireMessage) {
 		return void sendRpcError(senderWs, requestId, String(error?.message || error), code)
 	}
 	try {
-		const id = String(memberId || '')
+		const id = memberId || ''
 		const local = id.includes(':world:')
 			? await tryInvokeLocalWorldRpc(groupId, memberId, method, list)
 			: id.includes(':persona:')
@@ -215,7 +215,7 @@ async function handleRpcCall(senderWs, groupId, roomKey, wireMessage) {
 				ttl: ttl - 1,
 			}
 			const targetNodeId = String(wireMessage[GROUP_RPC_TARGET_NODE_ID_KEY] || '').trim()
-			if (targetNodeId) forwardPayload[GROUP_RPC_TARGET_NODE_ID_KEY] = targetNodeId.toLowerCase()
+			if (targetNodeId) forwardPayload[GROUP_RPC_TARGET_NODE_ID_KEY] = targetNodeId
 			if (forwardRpcCall(senderWs, roomKey, forwardPayload)) return
 		}
 
@@ -240,8 +240,8 @@ function forwardRpcCall(senderWs, roomKey, payload) {
 	if (!requestId) return false
 
 	const targetRaw = payload[GROUP_RPC_TARGET_NODE_ID_KEY]
-	const wantDirected = !!String(targetRaw || '').trim()
-	const targetNorm = wantDirected ? String(targetRaw).trim().toLowerCase() : ''
+	const wantDirected = !!(targetRaw || '')
+	const targetNorm = wantDirected ? targetRaw : ''
 
 	/**
 	 * @param {boolean} directedOnly 仅向登记 id 匹配的连接发送

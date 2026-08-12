@@ -6,7 +6,6 @@
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag、chat/lib/inviteTickets、access.mjs、groupSync 无关。
  */
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
@@ -40,7 +39,7 @@ const MEMBERS_PAGE_SIZE = 500
  */
 function groupHasBootstrapGenesis(state) {
 	if (Object.keys(state.channels || {}).length > 0) return true
-	if (String(state.groupMeta?.name || '').trim()) return true
+	if (state.groupMeta?.name) return true
 	if (Object.keys(state.roles || {}).length > 0) return true
 	return false
 }
@@ -57,7 +56,14 @@ function groupHasBootstrapGenesis(state) {
  * @returns {Promise<string>} 本地化剪贴板文本
  */
 async function buildInviteClipboardText(username, groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
-	const url = wrapProtocolHttpsUrl(formatJoinRunUri(groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash))
+	const url = wrapProtocolHttpsUrl(formatJoinRunUri({
+		groupId,
+		inviteCode: code,
+		roomSecret,
+		introducerPubKeyHash,
+		powAnchorRef,
+		introducerNodeHash,
+	}))
 	return geti18nForUser(username, 'chat.group.settings.page.invite.clipboard', {
 		groupId,
 		code,
@@ -103,7 +109,7 @@ export function registerMembershipRoutes(router, authenticate) {
 	router.get(`${GROUPS_PREFIX}/:groupId/mentions/suggest`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.groupContext
-		res.status(200).json(await suggestGroupMentions(username, groupId, String(req.query.q || ''), Number(req.query.limit) || 20))
+		res.status(200).json(await suggestGroupMentions(username, groupId, req.query.q || '', Number(req.query.limit) || 20))
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/invite-ticket`, authenticate, async (req, res) => {
@@ -143,7 +149,7 @@ export function registerMembershipRoutes(router, authenticate) {
 			powAnchors,
 			powAnchorRef,
 			dmSessionTag: state.groupMeta?.dmKind === 'ecdh'
-				? String(state.groupMeta.dmSessionTag || '').trim().toLowerCase() || null
+				? state.groupMeta.dmSessionTag || null
 				: null,
 		})
 	})
@@ -152,36 +158,31 @@ export function registerMembershipRoutes(router, authenticate) {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.params
 		const { inviteCode, pow, introducerPubKeyHash, introducerNodeHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
-		const dmNonce = dmIntroNonce?.trim()
-		const dmSignatureHex = dmIntroSignatureHex?.trim().replace(/^0x/iu, '')
-		if (!!dmNonce !== !!dmSignatureHex)
+		if (!!dmIntroNonce !== !!dmIntroSignatureHex)
 			throw httpError(400, 'provide both dmIntroNonce and dmIntroSignatureHex for DM link proof or omit both')
 		const { state } = await getState(username, groupId)
-		if (dmNonce) {
-			const dmCheck = await validateDmIntroLinkProof(username, state, normalizePubKeyHex(introducerPubKeyHash), dmNonce, dmSignatureHex)
+		if (dmIntroNonce) {
+			const dmCheck = await validateDmIntroLinkProof(username, state, introducerPubKeyHash, dmIntroNonce, dmIntroSignatureHex)
 			if (!dmCheck.ok)
 				throw httpError(400, dmCheck.error)
 		}
-		const hasJoinAuthorization = Boolean(inviteCode) || Boolean(dmNonce) || Boolean(String(roomSecret || '').trim())
+		const hasJoinAuthorization = Boolean(inviteCode) || Boolean(dmIntroNonce) || Boolean(roomSecret)
 		if (!groupHasBootstrapGenesis(state) && !hasJoinAuthorization)
 			throw httpError(404, 'Group not found; join with invite or federation bootstrap')
 
 		let bootstrap
 		if (roomSecret) {
-			bootstrap = { signalingAppId, roomSecret }
-			const hintedNodeHash = normalizePubKeyHex(introducerNodeHash)
-			if (PUB_KEY_HEX_64.test(hintedNodeHash))
-				bootstrap.fromNodeId = hintedNodeHash
-			if (powAnchorRef?.trim()) bootstrap.powAnchorRef = String(powAnchorRef).trim()
-			if (Array.isArray(powAnchors) && powAnchors.length) bootstrap.powAnchors = powAnchors.map(String)
-			const hintedSessionTag = String(dmSessionTag || '').trim().toLowerCase()
-			if (PUB_KEY_HEX_64.test(hintedSessionTag))
-				bootstrap.dmSessionTag = hintedSessionTag
-			else if (dmNonce) {
-				const introPubKeyHex = normalizePubKeyHex(introducerPubKeyHash)
-				const myPubKeyHex = normalizePubKeyHex((await getFederationSettings(username)).activePubKeyHex)
-				if (PUB_KEY_HEX_64.test(introPubKeyHex) && PUB_KEY_HEX_64.test(myPubKeyHex) && introPubKeyHex !== myPubKeyHex)
-					bootstrap.dmSessionTag = computeDmRoomLabelFromPubKeys(introPubKeyHex, myPubKeyHex).dmSessionTag
+			bootstrap = {
+				signalingAppId,
+				roomSecret,
+				fromNodeId: introducerNodeHash,
+				powAnchorRef,
+				powAnchors,
+				dmSessionTag,
+			}
+			if (!dmSessionTag && dmIntroNonce) {
+				const myPubKeyHex = (await getFederationSettings(username)).activePubKeyHex
+				bootstrap.dmSessionTag = computeDmRoomLabelFromPubKeys(introducerPubKeyHash, myPubKeyHex).dmSessionTag
 			}
 		}
 
@@ -190,8 +191,8 @@ export function registerMembershipRoutes(router, authenticate) {
 			inviteCode,
 			powSolution: pow,
 			introducerPubKeyHash,
-			dmIntroNonce: dmNonce,
-			dmIntroSignatureHex: dmSignatureHex,
+			dmIntroNonce,
+			dmIntroSignatureHex,
 			reputationEdge,
 			bootstrap,
 		})

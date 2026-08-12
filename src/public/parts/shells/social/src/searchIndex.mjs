@@ -231,7 +231,7 @@ async function indexReplyRef(username, replyEntityHash, replyPostId, targetEntit
 	await withAsyncMutex(`social-reply-index:${username}`, async () => {
 		const index = await readReplyIndex(username)
 		const list = index[key] || []
-		const ref = { entityHash: replyEntityHash.toLowerCase(), postId: replyPostId, ts }
+		const ref = { entityHash: replyEntityHash, postId: replyPostId, ts }
 		if (!list.some(row => row.entityHash === ref.entityHash && row.postId === ref.postId))
 			index[key] = [...list, ref]
 		await writeReplyIndex(username, index)
@@ -251,7 +251,7 @@ async function removeReplyRef(username, targetEntityHash, targetPostId, replyEnt
 	await withAsyncMutex(`social-reply-index:${username}`, async () => {
 		const index = await readReplyIndex(username)
 		const list = index[key] || []
-		index[key] = list.filter(row => !(row.entityHash === replyEntityHash.toLowerCase() && row.postId === replyPostId))
+		index[key] = list.filter(row => !(row.entityHash === replyEntityHash && row.postId === replyPostId))
 		if (!index[key].length) delete index[key]
 		await writeReplyIndex(username, index)
 	})
@@ -265,7 +265,7 @@ async function removeReplyRef(username, targetEntityHash, targetPostId, replyEnt
  * @returns {Promise<void>}
  */
 export async function indexTimelineEventForSearch(username, entityHash, row) {
-	const owner = entityHash.toLowerCase()
+	const owner = entityHash
 	const indexDir = socialSearchIndexPath(username)
 
 	if (row.type === 'post_delete') {
@@ -308,7 +308,7 @@ export async function indexTimelineEventForSearch(username, entityHash, row) {
 	}
 
 	if (row.type !== 'post') return
-	const postId = String(row.id || '').trim()
+	const postId = row.id
 	if (!postId) return
 
 	const content = await maybeDecryptPostContent(username, owner, row.content)

@@ -58,8 +58,8 @@ export function recomputeHotPostIndex(state, events, groupSettings = {}) {
 		const pins = overlayPinsForChannel(state.messageOverlay, channelId)
 		if (!pinContexts[channelId]) pinContexts[channelId] = {}
 		for (const pinId of pins) {
-			const pinNorm = String(pinId).trim().toLowerCase()
-			const idx = ids.findIndex(id => String(id).trim().toLowerCase() === pinNorm)
+			const pinNorm = pinId
+			const idx = ids.findIndex(id => id === pinNorm)
 			if (idx < 0) continue
 			const start = Math.max(0, idx - pinContext)
 			const end = Math.min(ids.length, idx + pinContext + 1)

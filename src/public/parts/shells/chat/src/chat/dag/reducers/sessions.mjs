@@ -71,7 +71,7 @@ export const sessionReducers = {
 			if (!personaname)
 				delete state.session.personas[ownerUsername]
 			else
-				state.session.personas[ownerUsername] = String(personaname).trim()
+				state.session.personas[ownerUsername] = personaname
 		}
 		return state
 	},

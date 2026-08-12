@@ -7,6 +7,7 @@ import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ing
 
 import { computeFederatableDagTipIds } from '../../dag/eventTypes.mjs'
 import { evaluateArchiveHandshake, loadLocalFederationArchive, wireArchiveSummary } from '../archiveHandshake.mjs'
+import { selectBootstrapFlushEvents } from '../bootstrapFlush.mjs'
 import { scheduleCatchUp } from '../catchUpScheduler.mjs'
 import { handleChannelHistoryResponse } from '../channelHistory.mjs'
 import { loadFederationMaterializedState, requireDagDeps } from '../dagDependencies.mjs'
@@ -57,7 +58,7 @@ export function registerSyncHandlers(roomContext) {
 	const remoteTipsRevealLocalGap = tips => {
 		if (!Array.isArray(tips)) return false
 		for (const tipId of tips) {
-			const id = String(tipId).trim().toLowerCase()
+			const id = tipId
 			if (isHex64(id) && !hasSeenFederationEvent(username, groupId, id)) return true
 		}
 		return false
@@ -74,12 +75,12 @@ export function registerSyncHandlers(roomContext) {
 		if (!Array.isArray(remoteTips)) return false
 		const local = new Set()
 		for (const id of localTips) {
-			const norm = String(id).trim().toLowerCase()
+			const norm = id
 			if (isHex64(norm)) local.add(norm)
 		}
 		const remote = new Set()
 		for (const id of remoteTips) {
-			const norm = String(id).trim().toLowerCase()
+			const norm = id
 			if (isHex64(norm)) remote.add(norm)
 		}
 		if (remote.size !== local.size) return true
@@ -142,15 +143,9 @@ export function registerSyncHandlers(roomContext) {
 			void (async () => {
 				const { readJsonl } = requireDagDeps()
 				const { events } = await loadLocalFederationArchive(username, groupId, readJsonl)
-				if (!events.length) return
-				const flushIds = new Set(computeFederatableDagTipIds(events))
-				for (const event of events)
-					if (event.type === 'member_join' && event.node_id === nodeHash)
-						flushIds.add(event.id)
-				for (const event of events)
-					if (flushIds.has(event.id))
-						try { dag.send(stripDagEventLocalExtensions(event), peerId) }
-						catch (error) { console.error('federation: bootstrap flush failed', error) }
+				for (const event of selectBootstrapFlushEvents(events, nodeHash))
+					try { dag.send(stripDagEventLocalExtensions(event), peerId) }
+					catch (error) { console.error('federation: bootstrap flush failed', error) }
 			})().catch(console.error)
 		})
 	})

@@ -11,7 +11,7 @@ import { unlockAchievement } from '../../../scripts/endpoints/parts.mjs'
 export async function initializeAchievements() {
 	// Listener for code execution achievement
 	window.addEventListener('markdown-codeblock-execution-result', (event) => {
-		if (event.detail?.output?.toLowerCase().includes('hello fount'))
+		if (event.detail?.output?.includes('hello fount'))
 			unlockAchievement('shells/chat', 'code_greeting')
 	})
 }

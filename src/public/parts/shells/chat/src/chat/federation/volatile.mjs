@@ -110,7 +110,7 @@ export async function handleIncomingFedVolatile(username, groupId, data, peerId,
 	if (remoteNodeHash && isBlockedPeer(remoteNodeHash)) return
 	if (envelopeNode && isBlockedPeer(envelopeNode)) return
 
-	const dedupeKey = `${String(envelopeNode || remoteNodeHash)}:${String(data.dedupeId || '')}`
+	const dedupeKey = `${String(envelopeNode || remoteNodeHash)}:${data.dedupeId || ''}`
 	if (!takeFedVolatileDedupe(dedupeKey)) return
 
 	const { verifyStreamChunkVolatile } = await import('../ws/signing.mjs')

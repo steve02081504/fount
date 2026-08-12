@@ -57,7 +57,7 @@ async function renderInboxRow(row) {
 	})
 	const groupLabel = await groupDisplayName(row.groupId, row.groupName)
 	const channelLabel = String(row.channelName || row.channelId)
-	const previewLabel = String(row.textPreview || '')
+	const previewLabel = row.textPreview || ''
 	const date = new Date(Number(row.at) || Date.now())
 	return renderTemplate('hub/inbox/row', {
 		groupId: String(row.groupId),

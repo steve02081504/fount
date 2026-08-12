@@ -24,8 +24,8 @@ import {
  * @returns {Promise<object | null>} 签名事件；跳过则为 null
  */
 export async function setPostVisibility(username, entityHash, postId, targetSpec) {
-	const owner = String(entityHash).toLowerCase()
-	const id = String(postId)
+	const owner = entityHash
+	const id = postId
 	const view = await getTimelineMaterialized(username, owner)
 	const row = view.postById?.[id]
 	if (!row) throw httpError(404, 'post not found')

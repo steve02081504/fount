@@ -19,7 +19,7 @@ export function listChannelViewerPubKeys(state, channelId) {
 			channelId,
 			state.channelPermissions || {},
 		)
-		if (perms[PERMISSIONS.VIEW_CHANNEL]) viewers.push(pubKeyHash.trim().toLowerCase())
+		if (perms[PERMISSIONS.VIEW_CHANNEL]) viewers.push(pubKeyHash.trim())
 	}
 	return viewers
 }
@@ -46,7 +46,7 @@ export function buildChannelKeyRotateContent(state, channelId, generation = null
 	/** @type {Record<string, object>} */
 	const wraps = {}
 	for (const memberKey of listChannelViewerPubKeys(state, channelId)) {
-		const edPubHex = String(state.members[memberKey]?.pubKeyHex || '').trim().toLowerCase()
+		const edPubHex = String(state.members[memberKey]?.pubKeyHex || '').trim()
 		if (!PUB_KEY_HEX_64.test(edPubHex)) continue
 		wraps[memberKey] = wrapKeyEcies(keyHex, edPubHex)
 	}

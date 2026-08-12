@@ -186,7 +186,7 @@ export function createFeedMethods(apiContext) {
 		 * @returns {Promise<{ checkpointEventId: string | null }>} 维护结果
 		 */
 		async maintainTimeline(entityHash) {
-			const snapshot = await maintainSocialTimeline(apiContext.username, String(entityHash).toLowerCase())
+			const snapshot = await maintainSocialTimeline(apiContext.username, entityHash)
 			return { checkpointEventId: snapshot.checkpoint_event_id }
 		},
 	}

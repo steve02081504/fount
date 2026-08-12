@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto'
 
 import { MEMBERS_PAGE_SIZE } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { recordFileMasterKeyRotation } from './files.mjs'
 import { clampRepEdge } from './governance.mjs'
@@ -18,7 +18,7 @@ const MEMBER_KEY_RE = /^[\da-f]{64}$/u
  */
 function memberKeysMerkleRoot(ids) {
 	const sorted = [...new Set(ids
-		.map(id => String(id || '').trim().toLowerCase())
+		.map(id => id || '')
 		.filter(id => MEMBER_KEY_RE.test(id)))]
 		.sort()
 	if (!sorted.length)
@@ -58,7 +58,7 @@ function refreshMembersDigest(state) {
  * @returns {boolean} 是否应拒绝该成员加入
  */
 function isJoinBanned(state, sender, joinContent = {}) {
-	const entityHash = String(joinContent.entityHash || '').trim().toLowerCase()
+	const entityHash = joinContent.entityHash || ''
 	if (isEntityHash128(entityHash) && state.bannedEntities.has(entityHash))
 		return true
 	if (state.bannedMembers.has(sender)) return true
@@ -72,7 +72,7 @@ function isJoinBanned(state, sender, joinContent = {}) {
  * @returns {string | null} 目标成员键（64 hex）
  */
 export function resolveTargetMemberKey(content = {}) {
-	const key = String(content.targetMemberKey || content.targetPubKeyHash || '').trim().toLowerCase()
+	const key = String(content.targetMemberKey || content.targetPubKeyHash || '').trim()
 	return MEMBER_KEY_RE.test(key) ? key : null
 }
 
@@ -108,10 +108,10 @@ export function applyBanContent(state, content) {
 	const member = targetMemberKey ? state.members[targetMemberKey] : null
 	if (targetMemberKey)
 		state.bannedMembers.add(targetMemberKey)
-	const entityHash = String(content.targetEntityHash || member?.entityHash || '').trim().toLowerCase()
+	const entityHash = String(content.targetEntityHash || member?.entityHash || '').trim()
 	if (isEntityHash128(entityHash)) state.bannedEntities.add(entityHash)
 	if (isHex64(content.targetNodeHash)) state.bannedNodes.add(content.targetNodeHash)
-	const homeNode = normalizeHex64(member?.homeNodeHash)
+	const homeNode = member?.homeNodeHash
 	if (isHex64(homeNode)) state.bannedNodes.add(homeNode)
 }
 
@@ -121,10 +121,10 @@ export function applyBanContent(state, content) {
  * @returns {void}
  */
 export function clearBanForMember(state, targetMemberKey) {
-	const key = String(targetMemberKey || '').trim().toLowerCase()
+	const key = targetMemberKey || ''
 	const member = state.members[key]
 	state.bannedMembers.delete(key)
-	const entityHash = String(member?.entityHash || '').trim().toLowerCase()
+	const entityHash = String(member?.entityHash || '').trim()
 	if (isEntityHash128(entityHash)) state.bannedEntities.delete(entityHash)
 	const home = member?.homeNodeHash
 	if (isHex64(home)) {
@@ -147,7 +147,7 @@ export const memberReducers = {
 		if (isJoinBanned(state, event.sender, content))
 			return state
 
-		const entityHash = String(content.entityHash || '').trim().toLowerCase()
+		const entityHash = content.entityHash || ''
 		if (!isEntityHash128(entityHash))
 			return state
 
@@ -156,8 +156,8 @@ export const memberReducers = {
 		// 不得重算 extraRoles（此时 activeBefore 含成员自身，会算成 0 个 extraRole）从而回退 founder 等既有角色。
 		const isActiveReapply = existing?.status === 'active'
 		const charname = content.charname || existing?.charname || undefined
-		const ownerFromContent = String(content.ownerEntityHash || '').trim().toLowerCase()
-		const ownerFallback = isActiveReapply ? String(existing?.ownerEntityHash || '').trim().toLowerCase() : ''
+		const ownerFromContent = content.ownerEntityHash || ''
+		const ownerFallback = isActiveReapply ? String(existing?.ownerEntityHash || '').trim() : ''
 		const ownerRaw = ownerFromContent || ownerFallback
 		const ownerEntityHash = ownerRaw && isEntityHash128(ownerRaw) ? ownerRaw : null
 		const memberKind = charname ? 'agent' : 'user'
@@ -213,7 +213,7 @@ export const memberReducers = {
 		withGroupId(state, event)
 		const member = state.members[event.sender]
 		if (!member || member.status !== 'active') return state
-		const ownerRaw = String(event.content?.ownerEntityHash ?? '').trim().toLowerCase()
+		const ownerRaw = String(event.content?.ownerEntityHash ?? '').trim()
 		member.ownerEntityHash = ownerRaw && isEntityHash128(ownerRaw) ? ownerRaw : null
 		refreshMembersDigest(state)
 		return state

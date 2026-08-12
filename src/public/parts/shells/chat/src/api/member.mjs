@@ -12,7 +12,7 @@ import { resolveActiveMemberKeyByEntityHash, resolveMemberKeyByEntityHash } from
 export function createMember(apiContext, groupId, entityHash, memberRow) {
 	const signOptions = { entityHash: apiContext.entityHash }
 	return {
-		entityHash: String(entityHash).toLowerCase(),
+		entityHash: String(entityHash),
 		memberKind: memberRow?.memberKind || 'user',
 		displayName: memberRow?.displayName || memberRow?.charname || entityHash.slice(64, 72),
 		roles: [...memberRow?.roles || []],

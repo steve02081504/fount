@@ -26,7 +26,7 @@ export function registerProfileRoutes(router) {
 	router.get('/api/parts/shells\\:social/profile/:entityHash/posts', authenticate, socialJson((req, { client }) =>
 		client.profilePosts(routeEntityHash(req.params), {
 			limit: Number(req.query.limit) || 30,
-			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
+			cursor: req.query.cursor ? req.query.cursor : undefined,
 		})))
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/likes', authenticate, socialJson((req, { client }) =>
@@ -39,7 +39,7 @@ export function registerProfileRoutes(router) {
 		client.profileFollowers(routeEntityHash(req.params))))
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/replies/:postId', authenticate, socialJson(async (req, { client }) => {
-		const postId = String(req.params.postId)
+		const postId = req.params.postId
 		if (!postId) throw httpError(400, 'invalid params')
 		return client.profileReplies(routeEntityHash(req.params), postId)
 	}))

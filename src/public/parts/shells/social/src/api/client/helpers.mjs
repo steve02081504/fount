@@ -20,7 +20,7 @@ export function makeViewerOptions(apiContext) {
  * @returns {string} 规范化 entityHash
  */
 export function normalizeTarget(target) {
-	const hash = String(target || '').toLowerCase()
+	const hash = target
 	if (!isEntityHash128(hash)) throw httpError(400, 'invalid entityHash')
 	return hash
 }

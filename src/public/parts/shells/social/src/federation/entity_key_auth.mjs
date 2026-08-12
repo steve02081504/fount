@@ -19,7 +19,7 @@ import {
 export function foldEntityKeyHistoryFromEvents(events) {
 	let recoveryPubKeyHex = null
 	for (const event of events || []) {
-		if (event.type === 'social_meta' && isHex64(normalizeHex64(event.content?.recoveryPubKeyHex || '')))
+		if (event.type === 'social_meta' && isHex64(event.content?.recoveryPubKeyHex || ''))
 			recoveryPubKeyHex = normalizeHex64(event.content.recoveryPubKeyHex)
 		// gen0 rotate 的 senderPubKey 即 recovery 公钥（无 social_meta 时的引导落点）
 		if (!recoveryPubKeyHex && event.type === 'entity_key_rotate' && Number(event.content?.generation) === 0) {

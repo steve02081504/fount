@@ -67,7 +67,7 @@ async function isAuthorizedByEvfsProfile(username, entityHash, sender) {
 	catch {
 		return false
 	}
-	if (String(payload?.entityHash || '').toLowerCase() !== entityHash) return false
+	if (String(payload?.entityHash || '') !== entityHash) return false
 	const active = normalizeHex64(payload.activePubKeyHex || '')
 	if (!isHex64(active)) return false
 	return hashFromPubKeyHex(active) === sender
@@ -84,7 +84,7 @@ async function isOwnerContentEventAuthorized(entityHash, sender, options) {
 	const username = String(options.username || '').trim()
 	if (!username) return false
 	const profile = await getEntityProfile(username, entityHash)
-	const ownerEntityHash = String(profile?.ownerEntityHash || '').trim().toLowerCase()
+	const ownerEntityHash = String(profile?.ownerEntityHash || '').trim()
 	if (!parseEntityHash(ownerEntityHash)) return false
 	let ownerEvents
 	try {

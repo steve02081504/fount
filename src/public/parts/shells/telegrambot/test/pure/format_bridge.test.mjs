@@ -501,7 +501,7 @@ Deno.test('rewriteTelegramMentionsToFount rewrites @BotUsername mention entity',
 	assert(before.includes(`@[entity:${unbound}]`))
 
 	await claimAgentBridgeIdentity(username, 'telegram', botId, 'on_message_yes', botUsername)
-	const charHash = (await ensureLocalAgentEntityHash(username, 'on_message_yes')).toLowerCase()
+	const charHash = await ensureLocalAgentEntityHash(username, 'on_message_yes')
 	const after = await rewriteTelegramMentionsToFount(username, text, entities, {
 		id: botId, username: botUsername,
 	})

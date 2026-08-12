@@ -5,7 +5,6 @@
 import { Buffer } from 'node:buffer'
 
 import { assertEquals } from 'jsr:@std/assert'
-import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import { checkEventPermission } from '../../src/chat/dag/authorizeEvent.mjs'
@@ -36,14 +35,14 @@ Deno.test('verifyMemberJoinBinding accepts self-signed claim without ownership p
 
 Deno.test('verifyEntityActivePubKeyBelongs rejects empty username', async () => {
 	const attacker = keyPairFromSeed(new Uint8Array(32).fill(9))
-	const pub = normalizeHex64(Buffer.from(attacker.publicKey).toString('hex'))
+	const pub = Buffer.from(attacker.publicKey).toString('hex')
 	const result = await verifyEntityActivePubKeyBelongs('', ENTITY, pub)
 	assertEquals(result.ok, false)
 })
 
 Deno.test('checkEventPermission member_join rejects spoofed entity without ownership', async () => {
 	const attacker = keyPairFromSeed(new Uint8Array(32).fill(3))
-	const pub = normalizeHex64(Buffer.from(attacker.publicKey).toString('hex'))
+	const pub = Buffer.from(attacker.publicKey).toString('hex')
 	const { bindingSig } = await buildMemberJoinBinding({
 		entityHash: ENTITY,
 		memberPubKeyHash: MEMBER,

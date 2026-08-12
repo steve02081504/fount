@@ -1,5 +1,6 @@
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 
+import { escapeRegExp } from '../../../../../../scripts/regex.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../chat/src/entity/identity.mjs'
 import { listLocalAgentEntities } from '../federation/hosting.mjs'
 import { loadFollowingForActor } from '../following.mjs'
@@ -16,7 +17,8 @@ import { getEntityProfile } from './entityProfile.mjs'
  * @returns {Promise<{ suggestions: object[] }>} @ 提及候选
  */
 export async function suggestMentions(username, query = '', limit = 20, viewerEntityHash) {
-	const normalizedQuery = query.trim().toLowerCase()
+	const needle = query.trim()
+	const textRe = needle ? new RegExp(escapeRegExp(needle), 'iu') : null
 	/** @type {object[]} */
 	const suggestions = []
 	const seen = new Set()
@@ -27,19 +29,17 @@ export async function suggestMentions(username, query = '', limit = 20, viewerEn
 	 * @returns {void}
 	 */
 	function pushSuggestion(suggestion) {
-		const entityHash = suggestion.entityHash.toLowerCase()
+		const entityHash = suggestion.entityHash
 		if (!entityHash || seen.has(entityHash)) return
-		if (normalizedQuery && !entityHash.includes(normalizedQuery)
-			&& !String(suggestion.displayName || '').toLowerCase().includes(normalizedQuery)
-			&& !String(suggestion.charPartName || '').toLowerCase().includes(normalizedQuery))
+		if (textRe && !entityHash.includes(needle)
+			&& !textRe.test(suggestion.displayName || '')
+			&& !textRe.test(suggestion.charPartName || ''))
 			return
 		seen.add(entityHash)
 		suggestions.push(suggestion)
 	}
 
-	const selfEntityHash = viewerEntityHash
-		? String(viewerEntityHash).trim().toLowerCase()
-		: await resolveOperatorEntityHash(username)
+	const selfEntityHash = viewerEntityHash || await resolveOperatorEntityHash(username)
 	if (selfEntityHash) {
 		const profile = await getEntityProfile(username, selfEntityHash)
 		pushSuggestion({

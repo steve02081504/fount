@@ -41,9 +41,9 @@ function canViewPostForFederationExport(post, requesterEntityHash, blocked, foll
  * @returns {Promise<object>} 请求者上下文
  */
 async function resolveFederationRequesterContext(username, requesterNodeHash, ownerEntityHash) {
-	const owner = String(ownerEntityHash).toLowerCase()
+	const owner = ownerEntityHash
 	const localNode = getNodeHash()
-	const requesterNode = requesterNodeHash?.trim().toLowerCase() || null
+	const requesterNode = requesterNodeHash?.trim() || null
 	const ownerView = await getTimelineMaterialized(username, owner)
 	const hideFromDiscovery = Boolean(ownerView.socialMeta?.hideFromDiscovery)
 	const { loadTaste } = await import('../taste/store.mjs')
@@ -85,9 +85,9 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 		if (followsOwner && operatorView) {
 			const wall = latestFollowWallForAuthor(operatorView, owner)
 			if (wall != null) followSince.set(owner, wall)
-			else if (operator?.toLowerCase() === owner) followSince.set(owner, 0)
+			else if (operator === owner) followSince.set(owner, 0)
 		}
-		return base(operator, followsOwner, operator?.toLowerCase() === owner, followSince)
+		return base(operator, followsOwner, operator === owner, followSince)
 	}
 
 	/** @type {ReturnType<typeof base> | null} */
@@ -127,7 +127,7 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
  * @returns {Promise<object[]>} 过滤后的事件
  */
 export async function filterEventsForFederatedPull(username, ownerEntityHash, events, requesterNodeHash) {
-	const owner = String(ownerEntityHash).toLowerCase()
+	const owner = ownerEntityHash
 	const requesterContext = await resolveFederationRequesterContext(username, requesterNodeHash, owner)
 	return filterTimelineEventsForFederation(events, owner, requesterContext, canViewPostForFederationExport)
 }

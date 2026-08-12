@@ -1,5 +1,5 @@
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { noteHelpfulScore } from '../../lib/noteScore.mjs'
 import { createPostScopedJsonStore, normalizePostTarget } from '../postScopedJsonStore.mjs'
@@ -56,7 +56,7 @@ export async function readNoteIndex(username, targetEntityHash, postId) {
  */
 export async function upsertNote(username, targetEntityHash, postId, noteEventId, entry) {
 	const ids = normalizePostTarget(targetEntityHash, postId)
-	const noteId = normalizeHex64(String(noteEventId || '').trim())
+	const noteId = noteEventId
 	if (!ids || !isHex64(noteId)) return
 	await store.withMutex(ids.target, ids.postId, async () => {
 		const current = await store.read(username, ids.target, ids.postId)
@@ -65,7 +65,7 @@ export async function upsertNote(username, targetEntityHash, postId, noteEventId
 				...current.notes,
 				[noteId]: {
 					noteEventId: noteId,
-					authorEntityHash: String(entry.authorEntityHash || '').toLowerCase(),
+					authorEntityHash: entry.authorEntityHash,
 					text: String(entry.text || '').trim().slice(0, NOTE_TEXT_MAX),
 					at: Number(entry.at) || Date.now(),
 					...entry.event ? { event: entry.event } : {},
@@ -87,8 +87,8 @@ export async function upsertNote(username, targetEntityHash, postId, noteEventId
  */
 export async function upsertNoteVote(username, targetEntityHash, postId, noteEventId, voterEntityHash, helpful) {
 	const ids = normalizePostTarget(targetEntityHash, postId)
-	const noteId = normalizeHex64(String(noteEventId || '').trim())
-	const voter = String(voterEntityHash || '').trim().toLowerCase()
+	const noteId = noteEventId
+	const voter = voterEntityHash
 	if (!ids || !isHex64(noteId) || !parseEntityHash(voter)) return
 	await store.withMutex(ids.target, ids.postId, async () => {
 		const current = await store.read(username, ids.target, ids.postId)
@@ -146,7 +146,7 @@ export async function listNoteEvents(username, targetEntityHash, postId, afterAu
 	const index = await readNoteIndex(username, targetEntityHash, postId)
 	const rows = Object.values(index.notes)
 		.filter(note => note?.event && note.authorEntityHash)
-		.sort((a, b) => String(a.authorEntityHash).localeCompare(String(b.authorEntityHash)))
+		.sort((a, b) => a.authorEntityHash.localeCompare(b.authorEntityHash))
 	const filtered = afterAuthor
 		? rows.filter(note => note.authorEntityHash > afterAuthor)
 		: rows

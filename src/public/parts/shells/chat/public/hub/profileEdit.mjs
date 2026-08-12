@@ -110,9 +110,9 @@ function firstLocalizedAvatar(localized, field) {
  * @returns {string} 展示用字符串
  */
 function coalesceSfwString(sfwVal, baseVal) {
-	const sfw = String(sfwVal ?? '').trim()
+	const sfw = sfwVal ?? ''
 	if (sfw) return sfw
-	return String(baseVal ?? '').trim()
+	return baseVal ?? ''
 }
 
 /**
@@ -121,7 +121,7 @@ function coalesceSfwString(sfwVal, baseVal) {
  * @returns {boolean} 规范化后相等
  */
 function sameNormalizedText(a, b) {
-	return String(a ?? '').trim() === String(b ?? '').trim()
+	return (a ?? '') === (b ?? '')
 }
 
 /**
@@ -642,10 +642,10 @@ function initEditState(entityHash, profile, { initialSfwMode = false } = {}) {
 	editingInfoDefaults = profile.infoDefaults || null
 	editingSfwMode = initialSfwMode
 	editingLocalized = { ...profile.localized }
-	editingAvatarPreview = firstLocalizedAvatar(editingLocalized, 'avatar') || String(profile.avatar || '').trim()
+	editingAvatarPreview = firstLocalizedAvatar(editingLocalized, 'avatar') || (profile.avatar || '')
 	editingSfwAvatarPreview = firstLocalizedAvatar(editingLocalized, 'sfw_avatar')
-	editingBannerPreview = String(profile.banner || '').trim()
-	editingSfwBannerPreview = String(profile.sfw_banner || '').trim()
+	editingBannerPreview = profile.banner || ''
+	editingSfwBannerPreview = profile.sfw_banner || ''
 	editingBannerCleared = false
 	pendingNormalMedia = { avatar: null, banner: null }
 	pendingSfwMedia = { avatar: null, banner: null }

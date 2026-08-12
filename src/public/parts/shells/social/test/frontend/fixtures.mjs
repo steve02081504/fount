@@ -225,7 +225,7 @@ export async function submitReplyViaPanel(page, panel) {
 export function postIdFromResponse(postJson) {
 	const id = postJson?.event?.id || postJson?.event?.postId
 	if (!id) throw new Error('post response missing event.id')
-	return String(id)
+	return id
 }
 
 /**

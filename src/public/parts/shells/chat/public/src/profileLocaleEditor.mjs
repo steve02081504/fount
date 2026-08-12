@@ -140,7 +140,7 @@ function beginLocaleRename(tab, selectButton, key, onRename) {
  * @returns {string} 规范化标签；空串表示无效
  */
 export function normalizeProfileTag(value) {
-	return String(value || '').trim().replace(/^#+/, '')
+	return (value || '').replace(/^#+/, '')
 }
 
 /**

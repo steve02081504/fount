@@ -33,12 +33,12 @@ export function normalizeReplyDisplay(raw) {
  * @returns {number | null} follow 时刻 wall ms
  */
 export function latestFollowWallForAuthor(replierView, authorEntityHash) {
-	const target = authorEntityHash.toLowerCase()
-	if (!(replierView.following || []).map(id => id.toLowerCase()).includes(target))
+	const target = authorEntityHash
+	if (!(replierView.following || []).includes(target))
 		return null
 	let latest = null
 	for (const event of replierView.followEvents || []) {
-		if (String(event.content?.targetEntityHash || '').toLowerCase() !== target) continue
+		if (String(event.content?.targetEntityHash || '') !== target) continue
 		const wall = Number(event.hlc?.wall) || Number(event.timestamp) || 0
 		if (!latest || wall > latest) latest = wall
 	}
@@ -55,15 +55,15 @@ export function latestFollowWallForAuthor(replierView, authorEntityHash) {
  * @returns {Promise<boolean>} 是否允许
  */
 export async function canReplyUnderPolicy({ username, authorEntityHash, replierEntityHash, replyPolicy, at = Date.now() }) {
-	const author = authorEntityHash.toLowerCase()
-	const replier = replierEntityHash.toLowerCase()
+	const author = authorEntityHash
+	const replier = replierEntityHash
 	const policy = normalizeReplyPolicy(replyPolicy)
 	if (replier === author) return true
 	if (policy === 'everyone') return true
 
 	if (policy === 'author_follows') {
 		const authorView = await getTimelineMaterialized(username, author)
-		return (authorView.following || []).map(id => id.toLowerCase()).includes(replier)
+		return (authorView.following || []).includes(replier)
 	}
 
 	if (policy === 'followers_7d') {
@@ -84,7 +84,7 @@ export async function canReplyUnderPolicy({ username, authorEntityHash, replierE
  * @returns {Promise<{ post: object, content: object, replyPolicy: string, replyDisplay: string } | null>} 门控信息；帖不存在则为 null
  */
 export async function loadPostReplyGate(username, authorEntityHash, postId) {
-	const author = authorEntityHash.toLowerCase()
+	const author = authorEntityHash
 	const view = await getTimelineMaterialized(username, author)
 	const post = view.postById?.[postId] || view.posts?.find(row => row.id === postId)
 	if (!post) return null
@@ -104,5 +104,5 @@ export async function loadPostReplyGate(username, authorEntityHash, postId) {
  * @returns {string} 键
  */
 export function featuredReplyKey(replierEntityHash, replyPostId) {
-	return `${String(replierEntityHash).toLowerCase()}:${String(replyPostId)}`
+	return `${replierEntityHash}:${replyPostId}`
 }
