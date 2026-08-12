@@ -1,7 +1,7 @@
 /**
  * 综合测试现状库：data/test/state/main.json + main.md + logs/
  */
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
 import { geti18n } from '../../i18n/bare.mjs'
@@ -15,11 +15,14 @@ import { digestFileHashes } from './changed.mjs'
 import { formatDuration } from './format_duration.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from './output_filter.mjs'
 import {
+	safeManifestDirName,
+	safeSuiteFileName,
 	stateDir,
 	stateFilePath,
 	stateLogPath,
 	stateMarkdownPath,
 	TEST_DATA_REL,
+	testDataRoot,
 } from './paths.mjs'
 import { filterTriggerRelevantFiles, matchGlob } from './trigger_filter.mjs'
 
@@ -141,6 +144,119 @@ export async function readState(repoRoot) {
 export async function writeState(repoRoot, state) {
 	await mkdir(stateDir(repoRoot), { recursive: true })
 	await writeFile(stateFilePath(repoRoot), `${JSON.stringify(state, null, '\t')}\n`, 'utf8')
+}
+
+/**
+ * 按当前 manifest 裁掉已移除/重命名的 suite、子测试，并删除对应 log / playwright 残留。
+ * @param {string} repoRoot 仓库根
+ * @param {SuiteDef[]} allSuites 当前全部 suite
+ * @param {TestState} state 现状库（就地修改）
+ * @returns {Promise<{ removedSuiteKeys: string[], removedSubtests: string[] }>} 裁剪摘要
+ */
+export async function pruneAbsentState(repoRoot, allSuites, state) {
+	const knownKeys = new Set(allSuites.map(s => suiteKey(s.manifestId, s.name)))
+	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
+	const knownSafeManifests = new Set(allSuites.map(s => safeManifestDirName(s.manifestId)))
+
+	/** @type {string[]} */
+	const removedSuiteKeys = []
+	for (const key of Object.keys(state.suites)) {
+		if (knownKeys.has(key)) continue
+		removedSuiteKeys.push(key)
+		delete state.suites[key]
+	}
+
+	/** @type {string[]} */
+	const removedSubtests = []
+	for (const [key, entry] of Object.entries(state.suites)) {
+		if (entry.blockedBy?.length) {
+			entry.blockedBy = entry.blockedBy.filter(dep => knownKeys.has(dep))
+			if (!entry.blockedBy.length) delete entry.blockedBy
+		}
+		if (!entry.subtests) continue
+		const suite = byKey.get(key)
+		const knownNames = new Set((suite?.subtests ?? []).map(st => st.name))
+		for (const name of Object.keys(entry.subtests)) {
+			if (knownNames.has(name)) continue
+			removedSubtests.push(`${key}:${name}`)
+			delete entry.subtests[name]
+		}
+		if (!Object.keys(entry.subtests).length) delete entry.subtests
+	}
+
+	await pruneOrphanLogs(repoRoot, allSuites, knownSafeManifests)
+	await pruneOrphanPlaywrightDirs(repoRoot, knownSafeManifests)
+
+	return { removedSuiteKeys, removedSubtests }
+}
+
+/**
+ * 删除未知 manifest / 已移除 suite 的 state log。
+ * @param {string} repoRoot 仓库根
+ * @param {SuiteDef[]} allSuites 当前 suite
+ * @param {Set<string>} knownSafeManifests 已知 manifest 目录名
+ * @returns {Promise<void>}
+ */
+async function pruneOrphanLogs(repoRoot, allSuites, knownSafeManifests) {
+	const logsRoot = join(stateDir(repoRoot), 'logs')
+	/** @type {import('node:fs').Dirent[]} */
+	let dirs
+	try {
+		dirs = await readdir(logsRoot, { withFileTypes: true })
+	}
+	catch (error) {
+		if (error?.code === 'ENOENT') return
+		throw error
+	}
+
+	const knownLogFilesByDir = new Map()
+	for (const suite of allSuites) {
+		const dir = safeManifestDirName(suite.manifestId)
+		const file = `${safeSuiteFileName(suite.name)}.log`
+		const set = knownLogFilesByDir.get(dir) ?? new Set()
+		set.add(file)
+		knownLogFilesByDir.set(dir, set)
+	}
+
+	for (const ent of dirs) {
+		if (!ent.isDirectory()) continue
+		const abs = join(logsRoot, ent.name)
+		if (!knownSafeManifests.has(ent.name)) {
+			await rm(abs, { recursive: true, force: true })
+			continue
+		}
+		const knownFiles = knownLogFilesByDir.get(ent.name) ?? new Set()
+		for (const name of await readdir(abs)) {
+			if (!name.endsWith('.log') || knownFiles.has(name)) continue
+			await rm(join(abs, name), { force: true })
+		}
+		if (!(await readdir(abs)).length)
+			await rm(abs, { recursive: true, force: true })
+	}
+}
+
+/**
+ * 删除未知 manifest 的 Playwright 产物目录（保留 `default` 回退桶）。
+ * @param {string} repoRoot 仓库根
+ * @param {Set<string>} knownSafeManifests 已知 manifest 目录名
+ * @returns {Promise<void>}
+ */
+async function pruneOrphanPlaywrightDirs(repoRoot, knownSafeManifests) {
+	const pwRoot = join(testDataRoot(repoRoot), 'playwright')
+	/** @type {import('node:fs').Dirent[]} */
+	let dirs
+	try {
+		dirs = await readdir(pwRoot, { withFileTypes: true })
+	}
+	catch (error) {
+		if (error?.code === 'ENOENT') return
+		throw error
+	}
+	for (const ent of dirs) {
+		if (!ent.isDirectory() || ent.name === 'default') continue
+		if (knownSafeManifests.has(ent.name)) continue
+		await rm(join(pwRoot, ent.name), { recursive: true, force: true })
+	}
 }
 
 /**
@@ -378,9 +494,13 @@ function mergeSubtestStates(
 	subtestDurations,
 	recordTiming,
 ) {
-	if (!suite.subtests?.length) return prev
+	if (!suite.subtests?.length) return undefined
+	const known = new Set(suite.subtests.map(st => st.name))
 	/** @type {Record<string, SubtestStateEntry>} */
-	const merged = { ...prev }
+	const merged = {}
+	for (const [name, entry] of Object.entries(prev ?? {})) {
+		if (known.has(name)) merged[name] = entry
+	}
 	const ranAt = new Date().toISOString()
 	const byName = new Map(suite.subtests.map(st => [st.name, st]))
 	for (const name of ranSubtests) {
@@ -670,10 +790,7 @@ export function buildStateMarkdown(allSuites, state, staleKeys) {
 		'| --- | --- | --- | --- | --- | --- |',
 	]
 
-	const keys = [...new Set([
-		...allSuites.map(s => suiteKey(s.manifestId, s.name)),
-		...Object.keys(state.suites),
-	])].sort()
+	const keys = allSuites.map(s => suiteKey(s.manifestId, s.name)).sort()
 
 	for (const key of keys) {
 		const entry = state.suites[key]

@@ -61,6 +61,24 @@
 			]
 		},
 		{
+			"name": "prune_state",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/prune_state.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/prune_state.test.mjs",
+				"src/scripts/test/core/state.mjs",
+				"src/scripts/test/core/paths.mjs"
+			]
+		},
+		{
 			"name": "continue_reason",
 			"run": [
 				"deno",

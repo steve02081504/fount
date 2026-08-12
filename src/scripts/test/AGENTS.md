@@ -22,7 +22,7 @@ alwaysApply: false
 
 - **Entry**: `fount test` → `cli.mjs` → `runner/index.mjs`.
 - **i18n**: `src/scripts/i18n/bare.mjs` only — never pull in the server module graph.
-- **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` renders a dependency-tree mermaid. Fingerprints update only after that suite's plan slot finishes — never batch-align at wave start.
+- **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` renders a dependency-tree mermaid. Fingerprints update only after that suite's plan slot finishes — never batch-align at wave start. Each `fount test` prunes suite/subtest entries (and logs / Playwright dirs) that no longer exist in manifests — rename/remove does not leave orphans.
 - **Run report**: `data/test/report.md` + `report.json` — last run only. Trigger reasons: `data/test/triggered-reasons.md`.
 - **Default loop** (bare `fount test`): imperfect wave → outdated wave → 0 when both empty; never full-repo unless `--all`. Details: [continue-report.md](docs/continue-report.md).
 - **Selectors**: `manifest:suite` / `manifest:suite:subtest`. Exact suite name wins; prefix expansion only when no exact match; explicit `*`/`?` always globs. Third CLI segment on serial suites = `*.test.mjs` stem → `FOUNT_TEST_ONLY`.
