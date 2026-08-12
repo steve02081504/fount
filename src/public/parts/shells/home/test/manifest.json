@@ -7,6 +7,7 @@
 			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/**",
 			"src/public/pages/scripts/features/template.mjs",
+			"src/public/pages/base.mjs",
 			"src/scripts/ms.mjs"
 		]
 	},
@@ -26,6 +27,7 @@
 						"src/public/parts/shells/home/public/index.{html,mjs}",
 						"src/public/parts/shells/home/public/src/templates.mjs",
 						"src/public/pages/scripts/features/template.mjs",
+						"src/public/pages/base.mjs",
 						"src/public/locales/**",
 						"src/scripts/ms.mjs"
 					]

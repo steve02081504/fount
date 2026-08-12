@@ -242,15 +242,13 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 						const tags = data.tags
 						trendingCacheByScope.nearby = tags
 						return tags
-					})
-					.catch(() => trendingCacheByScope.nearby || [])
+					}, () => trendingCacheByScope.nearby || [])
 				const localPromise = getTrendingHashtags({ scope: 'local' })
 					.then(data => {
 						const tags = data.tags
 						trendingCacheByScope.local = tags
 						return tags
-					})
-					.catch(() => trendingCacheByScope.local || [])
+					}, () => trendingCacheByScope.local || [])
 				const local = await localPromise
 				const early = mergeTrendingTags(trendingCacheByScope.nearby || [], local)
 				if (early.length) await paint(early)
