@@ -2693,7 +2693,7 @@
 			"sync": {
 				"failed": "Federatiesynchronisatie mislukt: ${error}",
 				"incomplete": "${missing}/${total} evenementen blijven niet gesynchroniseerd",
-				"noPeers": "Niet verbonden met de federatieve buur, kunnen historische berichten tijdelijk niet worden gesynchroniseerd; Gebruik de volledige uitnodigingslink en probeer het later opnieuw",
+				"noPeers": "Niet verbonden met de federatieve buur, kunnen historische berichten tijdelijk niet worden gesynchroniseerd",
 				"rateLimited": "Snelheidslimiet voor federale synchronisatie is in uitvoering. Probeer het later opnieuw.",
 				"truncated": "De DAG-verhoging is niet volledig. Je kunt het later opnieuw proberen of de limiet verhogen.",
 				"truncatedHint": "De DAG-geschiedenis is te lang. Je kunt het later opnieuw proberen of de limiet verhogen."

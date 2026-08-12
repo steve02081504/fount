@@ -2693,7 +2693,7 @@
 			"sync": {
 				"failed": "Föderationssynchronisierung fehlgeschlagen: ${error}",
 				"incomplete": "${missing}/${total} Ereignisse bleiben unsynchronisiert",
-				"noPeers": "Da keine Verbindung zum Verbundnachbarn besteht, können historische Nachrichten nicht vorübergehend synchronisiert werden. Bitte verwenden Sie den vollständigen Einladungslink und versuchen Sie es später erneut",
+				"noPeers": "Da keine Verbindung zum Verbundnachbarn besteht, können historische Nachrichten nicht vorübergehend synchronisiert werden",
 				"rateLimited": "Die Geschwindigkeitsbegrenzung für die Bundessynchronisierung läuft, bitte versuchen Sie es später noch einmal.",
 				"truncated": "Das DAG-Inkrement ist nicht voll. Sie können es später noch einmal versuchen oder das Limit erhöhen.",
 				"truncatedHint": "Die DAG-Geschichte ist zu lang. Sie können es später noch einmal versuchen oder das Limit erhöhen."

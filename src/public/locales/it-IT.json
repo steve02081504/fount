@@ -2693,7 +2693,7 @@
 			"sync": {
 				"failed": "Sincronizzazione della federazione non riuscita: ${error}",
 				"incomplete": "Gli eventi ${missing}/${total} rimangono non sincronizzati",
-				"noPeers": "Non connessi al vicino federato, i messaggi storici non possono essere sincronizzati temporaneamente; utilizza il collegamento di invito completo e riprova più tardi",
+				"noPeers": "Non connessi al vicino federato, i messaggi storici non possono essere sincronizzati temporaneamente",
 				"rateLimited": "È in corso il limite di velocità della sincronizzazione federata. Riprova più tardi.",
 				"truncated": "L'incremento DAG non è pieno. Puoi riprovare più tardi o aumentare il limite.",
 				"truncatedHint": "La storia del DAG è troppo lunga. Puoi riprovare più tardi o aumentare il limite."

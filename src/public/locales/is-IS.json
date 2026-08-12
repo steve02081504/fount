@@ -2693,7 +2693,7 @@
 			"sync": {
 				"failed": "Samstilling samtaka mistókst: ${error}",
 				"incomplete": "${missing}/${total} viðburðir eru ósamstilltir",
-				"noPeers": "Ekki er tengt við sambandsaðan nágranna, ekki er hægt að samstilla söguleg skilaboð tímabundið; vinsamlegast notaðu boðstengilinn í heild sinni og reyndu aftur síðar",
+				"noPeers": "Ekki er tengt við sambandsaðan nágranna, ekki er hægt að samstilla söguleg skilaboð tímabundið",
 				"rateLimited": "Hraðatakmörkun alStaðassamstillingar er í gangi, vinsamlegast reyndu aftur síðar.",
 				"truncated": "DAG hækkunin er ekki full. Þú getur reynt aftur síðar eða hækkað mörkin.",
 				"truncatedHint": "Saga DAG er of löng. Þú getur reynt aftur síðar eða hækkað mörkin."

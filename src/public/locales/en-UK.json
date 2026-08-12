@@ -2693,7 +2693,7 @@
 			"sync": {
 				"failed": "Federation synchronisation failed: ${error}",
 				"incomplete": "${missing}/${total} events remain unsynced",
-				"noPeers": "Not connected to the federated neighbor, historical messages cannot be synchronized temporarily; please use the full invitation link and try again later",
+				"noPeers": "Not connected to the federated neighbor, historical messages cannot be synchronized temporarily",
 				"rateLimited": "Federated synchronisation speed limit is in progress, please try again later.",
 				"truncated": "The DAG increment is not full. You can try again later or increase the limit.",
 				"truncatedHint": "The DAG history is too long. You can try again later or increase the limit."

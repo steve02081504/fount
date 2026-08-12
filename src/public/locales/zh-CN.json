@@ -2693,7 +2693,7 @@
 			"sync": {
 				"failed": "联邦同步失败：${error}",
 				"incomplete": "尚有 ${missing}/${total} 个事件未同步",
-				"noPeers": "未连接到联邦邻居，历史消息暂无法同步；请使用完整邀请链接并稍后重试",
+				"noPeers": "未连接到联邦邻居，历史消息暂无法同步",
 				"rateLimited": "联邦同步限速中，请稍后再试",
 				"truncated": "DAG 增量未拉全，可稍后重试或提高 limit",
 				"truncatedHint": "DAG 历史过长，可稍后重试或提高 limit"

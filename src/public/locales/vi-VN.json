@@ -2693,7 +2693,7 @@
 			"sync": {
 				"failed": "Đồng bộ hóa liên kết không thành công: ${error}",
 				"incomplete": "sự kiện ${missing}/${total} vẫn chưa được đồng bộ hóa",
-				"noPeers": "Không được kết nối với hàng xóm liên kết, các tin nhắn lịch sử tạm thời không thể được đồng bộ hóa; vui lòng sử dụng liên kết lời mời đầy đủ và thử lại sau",
+				"noPeers": "Không được kết nối với hàng xóm liên kết, các tin nhắn lịch sử tạm thời không thể được đồng bộ hóa",
 				"rateLimited": "Đang tiến hành giới hạn tốc độ đồng bộ hóa liên bang, vui lòng thử lại sau.",
 				"truncated": "Mức tăng DAG chưa đầy. Bạn có thể thử lại sau hoặc tăng giới hạn.",
 				"truncatedHint": "Lịch sử DAG quá dài. Bạn có thể thử lại sau hoặc tăng giới hạn."

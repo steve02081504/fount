@@ -2693,7 +2693,7 @@
 			"sync": {
 				"failed": "🌐🔄❌：${error}",
 				"incomplete": "⏳${missing}/${total} 📅🚫🔄",
-				"noPeers": "🚫🤝🌐 · 📨🔗🔁",
+				"noPeers": "🚫🤝🌐 · 📨🔁",
 				"rateLimited": "🌐🔄🐢⏳",
 				"truncated": "🌳📥⏳ 🔁⬆️ 🔢",
 				"truncatedHint": "🌳📜↔️ 🔁⬆️ 🔢"

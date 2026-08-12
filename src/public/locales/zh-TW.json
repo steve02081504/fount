@@ -2692,7 +2692,7 @@
 			"sync": {
 				"failed": "聯邦同步失敗：${error}",
 				"incomplete": "尚有 ${missing}/${total} 個事件未同步",
-				"noPeers": "未連線到聯邦鄰居，歷史訊息暫無法同步；請使用完整邀請連結並稍後重試",
+				"noPeers": "未連線到聯邦鄰居，歷史訊息暫無法同步",
 				"rateLimited": "聯邦同步限速中，請稍後再試",
 				"truncated": "DAG 增量未拉全，可稍後重試或提高 limit",
 				"truncatedHint": "DAG 歷史過長，可稍後重試或提高 limit"

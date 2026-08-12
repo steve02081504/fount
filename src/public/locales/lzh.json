@@ -2693,7 +2693,7 @@
 			"sync": {
 				"failed": "諸邦合契未遂：${error}",
 				"incomplete": "尚有 ${missing}/${total} 個事件未同步",
-				"noPeers": "未通諸邦鄰居，歷史札暫未可同步；宜以完整邀請鏈接並稍後建試",
+				"noPeers": "未通諸邦鄰居，歷史札暫未可同步",
 				"rateLimited": "諸邦合契限速中，祈少候復試",
 				"truncated": "DAG 增量未拉全，可稍後建試或提高 limit",
 				"truncatedHint": "DAG 歷史過長，可稍後建試或提高 limit"
