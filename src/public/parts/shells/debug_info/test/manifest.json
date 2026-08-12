@@ -1,0 +1,41 @@
+{
+	"id": "shells/debug_info",
+	"triggerSets": {
+		"frontendShared": [
+			"src/public/parts/shells/debug_info/public/**",
+			"src/public/parts/shells/debug_info/test/frontend/**",
+			"src/scripts/test/playwright/**",
+			"src/public/pages/scripts/test/**"
+		]
+	},
+	"suites": [
+		{
+			"name": "frontend",
+			"dependsOn": [
+				"server:live"
+			],
+			"trigger": "frontendShared",
+			"subtests": [
+				{
+					"name": "smoke",
+					"triggers": [
+						"src/public/parts/shells/debug_info/test/frontend/smoke.spec.mjs",
+						"src/public/parts/shells/debug_info/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/debug_info/public/index.{html,mjs}",
+						"src/public/parts/shells/debug_info/public/templates.mjs",
+						"src/public/locales/**"
+					]
+				}
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/debug_info/test/frontend/run.mjs"
+			]
+		}
+	]
+}
