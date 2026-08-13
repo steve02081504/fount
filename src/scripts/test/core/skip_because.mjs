@@ -243,14 +243,26 @@ export function skipTreeDescendantKeys(allSuites) {
 }
 
 /**
- * blocked 记录是否仅被 pass 模式 skip 挡住（阻塞已作废，当绿）。
+ * blocked 记录是否仅被仍生效的 pass 模式 skip 挡住（阻塞已作废，当绿）。
+ * 已探测且关闭超过 delay 的 issue 仍作阻塞，不把下游从 imperfect 里摘掉。
  * @param {import('./state.mjs').SuiteStateEntry | undefined} entry 现状
  * @param {Map<string, import('./manifest.mjs').SuiteDef>} byKey suite 表
+ * @param {Map<string, IssueClosedState>} [issueStates] 已探测的 issue 状态
  * @returns {boolean} 是否作废阻塞
  */
-export function isPassSkipBlock(entry, byKey) {
+export function isPassSkipBlock(entry, byKey, issueStates) {
 	if (entry?.status !== 'blocked' || !entry.blockedBy?.length) return false
-	return entry.blockedBy.every(key => isSkipBecausePass(byKey.get(key)))
+	return entry.blockedBy.every(key => {
+		const suite = byKey.get(key)
+		if (!isSkipBecausePass(suite)) return false
+		const skipEntries = suiteSkipBecauseUrls(suite)
+		if (!skipEntries?.length) return false
+		return skipEntries.every(skipEntry => {
+			const state = issueStates?.get(skipEntry.url)
+			if (!state) return true
+			return !isSkipBecauseBlocking(state, skipEntry.delayMs)
+		})
+	})
 }
 
 /**

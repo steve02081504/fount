@@ -28,7 +28,7 @@ import {
 } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { childEnv } from '../env.mjs'
-import { ModuleCheckMissedReadyError, withDenoModuleCheckPreload, withModuleCheckTicket } from '../hub/clients/module_check.mjs'
+import { ModuleCheckMissedReadyError, moduleCheckTicketEnv, withDenoModuleCheckPreload, withModuleCheckTicket } from '../hub/clients/module_check.mjs'
 
 const args = process.argv.slice(2)
 
@@ -182,7 +182,7 @@ async function runPool(files, { stopOnFailure }) {
 				({ code, output, signal } = await withModuleCheckTicket(ticket =>
 					runCaptured(withDenoModuleCheckPreload(['deno', ...denoBase, file], ticket), {
 						DENO_JOBS: '1',
-						...ticket ? { FOUNT_TEST_MODULE_CHECK_TICKET: ticket } : {},
+						...moduleCheckTicketEnv(ticket),
 					})))
 			}
 			catch (error) {
@@ -192,7 +192,7 @@ async function runPool(files, { stopOnFailure }) {
 				failed.push(rel)
 				stopped = true
 				await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)
-				process.exit(1)
+				return
 			}
 			const isFail = recordResult(file, code, output, signal)
 			if (isFail && stopOnFailure) {

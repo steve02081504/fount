@@ -26,6 +26,5 @@ Deno.test('extractMentionEntityHashes dedupes', () => {
 
 Deno.test('extractMentionEntityHashes rejects mixed-case hex', () => {
 	assertEquals(extractMentionEntityHashes(`@[entity:${SAMPLE_HASH.toUpperCase()}]`), [])
-	const mixedCase = `@[entity:${SAMPLE_HASH}] @[entity:${SAMPLE_HASH.toUpperCase()}]`
-	assertEquals(extractMentionEntityHashes(mixedCase), [SAMPLE_HASH])
+	assertEquals(extractMentionEntityHashes(`@[entity:${SAMPLE_HASH}] @[entity:${SAMPLE_HASH.toUpperCase()}]`), [SAMPLE_HASH])
 })

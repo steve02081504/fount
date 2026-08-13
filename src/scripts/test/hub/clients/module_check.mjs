@@ -22,8 +22,12 @@ export class ModuleCheckMissedReadyError extends Error {
 /** 子进程 `--preload`：模块图物化后、用户代码前发 ready。 */
 export const MODULE_CHECK_PRELOAD = fileURLToPath(new URL('../../module_check_ready.mjs', import.meta.url))
 
+/** ready 请求有界超时（毫秒）。 */
+const MODULE_CHECK_READY_TIMEOUT_MS = 15_000
+
 /**
  * 给 deno run/test/bench 插入 `--preload`（有 ticket 时）。
+ * 已有 `--preload` / `--import` 时仍插入模组检查 preload。
  * @param {string[]} command `deno …` 或已去掉可执行文件的 argv
  * @param {string | null | undefined} ticket 租约
  * @returns {string[]} 可能插入 preload 后的命令
@@ -33,11 +37,18 @@ export function withDenoModuleCheckPreload(command, ticket) {
 	const start = command[0] === 'deno' ? 1 : 0
 	const sub = command[start]
 	if (sub !== 'run' && sub !== 'test' && sub !== 'bench') return command
-	if (command.some(arg => arg === '--preload' || String(arg).startsWith('--preload=')))
-		return command
 	const out = [...command]
 	out.splice(start + 1, 0, `--preload=${MODULE_CHECK_PRELOAD}`)
 	return out
+}
+
+/**
+ * 子进程 ticket 环境：无 ticket 时显式清空以覆盖父进程。
+ * @param {string | null | undefined} ticket 租约
+ * @returns {{ FOUNT_TEST_MODULE_CHECK_TICKET: string }} env 片段
+ */
+export function moduleCheckTicketEnv(ticket) {
+	return { FOUNT_TEST_MODULE_CHECK_TICKET: ticket || '' }
 }
 
 /**
@@ -61,11 +72,14 @@ export async function acquireModuleCheckTicket() {
 export async function signalModuleCheckReady(ticket) {
 	const base = getTestHubBaseUrl()
 	if (!base || !ticket) return
-	await fetch(`${base}/module-check/ready`, {
+	const res = await fetch(`${base}/module-check/ready`, {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify({ ticket }),
-	}).catch(() => {})
+		signal: AbortSignal.timeout(MODULE_CHECK_READY_TIMEOUT_MS),
+	})
+	if (!res.ok)
+		throw new Error(`module-check ready failed: ${res.status}`)
 }
 
 /**

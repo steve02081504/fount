@@ -371,7 +371,7 @@
 				"remaining": "Estimated remaining ≈ ${eta} (${completed}/${total} suites)",
 				"run": "Estimated run time ≈ ${eta} (parallel rate ${rate})",
 				"runSerial": "Estimated run time ≈ ${eta} (serial)",
-				"runSerialHint": "With parallelism ≈ ${eta} (rate ${rate}), savings ≈ ${savings} (drop --no-parallel)",
+				"runSerialHint": "With parallelism ≈ ${eta} (rate ${rate}), savings ≈ ${savings}",
 				"runSkipped": "Also ${reused} reused, ${blocked} expected blocked (not counted)"
 			},
 			"unknown": {

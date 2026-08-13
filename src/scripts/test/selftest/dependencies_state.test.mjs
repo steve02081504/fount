@@ -158,6 +158,44 @@ Deno.test('blocked-only-by-skip_because stays fresh green, not unknown', () => {
 	assertEquals(verdicts.get('shells/chat:integration')?.kind, 'green')
 })
 
+Deno.test('pass skip suite with subtests is green without aggregating leftover subtests', () => {
+	const suite = makeSuite('server', 'live', {
+		skipBecause: SKIP_BECAUSE,
+		subtests: [
+			{ name: 'smoke', triggers: ['src/a.spec.mjs'] },
+			{ name: 'hub', triggers: ['src/b.spec.mjs'] },
+		],
+	})
+	const entry = makeStateEntry({
+		status: 'failed',
+		subtests: {
+			smoke: {
+				status: 'failed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				triggerHash: null,
+				durationMs: 1,
+				baselineDurationMs: 1,
+				failedFiles: ['src/a.spec.mjs'],
+				noiseHits: [],
+			},
+			hub: {
+				status: 'unknown',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				triggerHash: null,
+				durationMs: 1,
+				baselineDurationMs: 1,
+				failedFiles: [],
+				noiseHits: [],
+			},
+		},
+	})
+	const verdict = judgeSuite(suite, entry, [], new Map())
+	assertEquals(verdict.kind, 'green')
+	assertEquals(verdict.subtestsToRun ?? [], [])
+})
+
 Deno.test('skip_tree explicit descendant is skipped not blocked', () => {
 	const all = [
 		makeSuite('server', 'live', {

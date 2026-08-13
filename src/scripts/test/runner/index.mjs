@@ -597,7 +597,7 @@ export async function runTests(options = {}) {
 			return 2
 		}
 		manifestIds = [...new Set(resolved.flatMap(group => group.manifestIds))]
-		explicitSuites = resolved.some(group => group.suiteSelectors.length)
+		explicitSuites = true
 		const unknownSuites = unmatchedSuiteSelectors(allSuites, resolved)
 		if (unknownSuites.length) {
 			console.errorI18n('fountConsole.test.unknown.suiteSelector', { ids: unknownSuites.join(', ') })

@@ -371,7 +371,7 @@
 				"remaining": "Осталось ≈ ${eta} (${completed}/${total} suite)",
 				"run": "Ожидаемое время ≈ ${eta} (параллелизм ${rate})",
 				"runSerial": "Ожидаемое время ≈ ${eta} (последовательно)",
-				"runSerialHint": "При параллелизме ≈ ${eta} (коэфф. ${rate}), экономия ≈ ${savings} (уберите --no-parallel)",
+				"runSerialHint": "При параллелизме ≈ ${eta} (коэфф. ${rate}), экономия ≈ ${savings}",
 				"runSkipped": "Повтор ${reused}, ожидаемая блокировка ${blocked} (не в оценке)"
 			},
 			"unknown": {

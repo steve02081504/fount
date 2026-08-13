@@ -22,7 +22,7 @@ import { releasePortLease, tryAcquirePortLease } from '../core/port_lease.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { buildV8FlagsArg, collectHeapSnapshots } from '../heap_snapshot.mjs'
-import { abandonModuleCheckTicket, acquireModuleCheckTicket, withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
+import { abandonModuleCheckTicket, acquireModuleCheckTicket, moduleCheckTicketEnv, withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
 import { startTestNostrRelay, stopTestNostrRelay } from '../live/nostr_relay.mjs'
 import { appendBoundedTail } from '../runner/run_command.mjs'
 
@@ -547,8 +547,6 @@ async function launchNodeOnce(options = {}) {
 		if (p2pRelayUrl)
 			workerArgs.push('--p2p-relay-url', p2pRelayUrl)
 
-		await finishListenHold()
-
 		let captureEnabled = false
 		let startupOutput = ''
 		let capturedOutput = ''
@@ -569,6 +567,7 @@ async function launchNodeOnce(options = {}) {
 
 		// stderr 始终 pipe：否则 EADDRINUSE 走 inherit 进不了 startupOutput，换口重试无法识别。
 		const ticket = await acquireModuleCheckTicket()
+		await finishListenHold()
 		const spawnArgs = withDenoModuleCheckPreload(workerArgs, ticket)
 		try {
 			child = spawn(Deno.execPath(), spawnArgs, {
@@ -580,7 +579,7 @@ async function launchNodeOnce(options = {}) {
 					FOUNT_TEST_NODE_WORKER: '1',
 					FOUNT_DENO_START_TIME: new Date().toISOString(),
 					RUST_BACKTRACE: 'full',
-					...ticket ? { FOUNT_TEST_MODULE_CHECK_TICKET: ticket } : {},
+					...moduleCheckTicketEnv(ticket),
 					...extraEnv,
 				},
 			})

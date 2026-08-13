@@ -138,7 +138,7 @@ export async function expandJobWave(params) {
 		if (unmatched.length)
 			return { error: 'unknownManifest', unmatched, knownIds, code: 2, empty: true }
 		manifestIds = [...new Set(resolved.flatMap(group => group.manifestIds))]
-		explicitSuites = resolved.some(group => group.suiteSelectors.length)
+		explicitSuites = true
 		const unknownSuites = unmatchedSuiteSelectors(allSuites, resolved)
 		if (unknownSuites.length)
 			return { error: 'unknownSuite', unknownSuites, available: availableSuiteIds(allSuites, manifestIds), code: 2, empty: true }
@@ -174,7 +174,8 @@ export async function expandJobWave(params) {
 	}
 
 	const committedChangedByKey = await buildCommittedChangedByKey(repoRoot, allSuites, state)
-	const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes)
+	const issueStates = options.issueStates
+	const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes, issueStates)
 
 	const fingerprints = { commitHash, uncommittedHash, uncommittedFiles, uncommittedHashes, committedChangedByKey, nested }
 
@@ -205,6 +206,7 @@ export async function expandJobWave(params) {
 		uncommittedFiles,
 		commitHash,
 		uncommittedHash,
+		issueStates,
 	})
 	if (selection.action === 'run')
 		return finishWave(selection, verdicts, byKey, allSuites, options.force, subtestFilterByKey, fingerprints, filtered)
@@ -354,13 +356,11 @@ export function jobCommand(spec = {}) {
 	if (spec.groups?.length)
 		for (const group of spec.groups) {
 			const manifest = group.manifestSelectors?.[0]
-			if (group.suiteSelectors?.length) {
-				const bits = group.suiteSelectors.map(suite => {
+			if (group.suiteSelectors?.length)
+				parts.push(`${manifest}:${group.suiteSelectors.map(suite => {
 					const subs = group.subtestSelectors?.[suite]
 					return subs?.length ? `${suite}:${subs.join(',')}` : suite
-				})
-				parts.push(`${manifest}:${bits.join(',')}`)
-			}
+				}).join(',')}`)
 			else if (manifest)
 				parts.push(manifest)
 		}

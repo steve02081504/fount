@@ -128,36 +128,38 @@ export class TestQueues {
 	/**
 	 * 取下一个可调度项：CLI 中最早的 ready，否则 FS 中最新的 ready。不做出队。
 	 * @param {(item: QueueItem) => boolean} isReady 是否可开工
-	 * @returns {{ queue: 'cli' | 'fs', index: number, item: QueueItem } | null} 选中项
+	 * @returns {{ queue: 'cli' | 'fs', item: QueueItem } | null} 选中项
 	 */
 	peekReady(isReady) {
-		this.promotePrep()
-		let cliIdx = -1
+		let best
 		let bestPriority = Infinity
-		for (let i = 0; i < this.cli.length; i++) {
-			if (!isReady(this.cli[i])) continue
-			const priority = this.cli[i].priority ?? 1
+		for (const item of this.cli) {
+			if (!isReady(item)) continue
+			const priority = item.priority ?? 1
 			if (priority < bestPriority) {
 				bestPriority = priority
-				cliIdx = i
+				best = item
 			}
 		}
-		if (cliIdx >= 0)
-			return { queue: 'cli', index: cliIdx, item: this.cli[cliIdx] }
-		const fsIdx = this.fs.findIndex(isReady)
-		if (fsIdx >= 0)
-			return { queue: 'fs', index: fsIdx, item: this.fs[fsIdx] }
+		if (best)
+			return { queue: 'cli', item: best }
+		const item = this.fs.find(isReady)
+		if (item)
+			return { queue: 'fs', item }
 		return null
 	}
 
 	/**
-	 * 出队 peekReady 的结果。
-	 * @param {{ queue: 'cli' | 'fs', index: number }} picked peek 结果
-	 * @returns {QueueItem} 出队项
+	 * 按项身份出队 peekReady 的结果；项已不在队列则无返回。
+	 * @param {{ queue: 'cli' | 'fs', item: QueueItem }} picked peek 结果
+	 * @returns {QueueItem | undefined} 出队项
 	 */
 	dequeue(picked) {
+		if (!picked?.item) return undefined
 		const list = picked.queue === 'cli' ? this.cli : this.fs
-		return list.splice(picked.index, 1)[0]
+		const index = list.indexOf(picked.item)
+		if (index < 0) return undefined
+		return list.splice(index, 1)[0]
 	}
 
 	/**

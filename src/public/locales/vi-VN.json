@@ -371,7 +371,7 @@
 				"remaining": "Thời gian còn lại ước tính ≈ ${eta} (${completed}/${total} suite)",
 				"run": "Ước tính thời gian chạy ≈ ${eta} (tỷ lệ song song ước tính ${rate})",
 				"runSerial": "Ước tính thời gian chạy ≈ ${eta} (tuần tự)",
-				"runSerialHint": "Nếu song song dự kiến ≈ ${eta} (tỷ lệ song song ${rate}), tiết kiệm ≈ ${savings} (bỏ --no-parallel)",
+				"runSerialHint": "Nếu song song dự kiến ≈ ${eta} (tỷ lệ song song ${rate}), tiết kiệm ≈ ${savings}",
 				"runSkipped": "Ngoài ra tái sử dụng ${reused}, dự kiến chặn ${blocked} (không tính vào ước tính)"
 			},
 			"unknown": {

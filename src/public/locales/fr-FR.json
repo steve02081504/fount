@@ -371,7 +371,7 @@
 				"remaining": "Temps restant ≈ ${eta} (${completed}/${total} suites)",
 				"run": "Durée estimée ≈ ${eta} (taux parallèle ${rate})",
 				"runSerial": "Durée estimée ≈ ${eta} (série)",
-				"runSerialHint": "En parallèle ≈ ${eta} (taux ${rate}), gain ≈ ${savings} (retirez --no-parallel)",
+				"runSerialHint": "En parallèle ≈ ${eta} (taux ${rate}), gain ≈ ${savings}",
 				"runSkipped": "De plus ${reused} réutilisées et ${blocked} bloquées prévues (hors estimation)."
 			},
 			"unknown": {

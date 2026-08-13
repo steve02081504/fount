@@ -8,7 +8,7 @@ import { execFile } from 'npm:@steve02081504/exec'
 
 import { console } from '../../i18n/bare.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
-import { withDenoModuleCheckPreload, withModuleCheckTicket } from '../hub/clients/module_check.mjs'
+import { moduleCheckTicketEnv, withDenoModuleCheckPreload, withModuleCheckTicket } from '../hub/clients/module_check.mjs'
 import { launchNode, resolveLiveNodeFleet, stopNode } from '../node/launch.mjs'
 import { appendBoundedTail } from '../runner/run_command.mjs'
 
@@ -68,7 +68,7 @@ async function runCommand(repoRoot, command, env, options = {}) {
 		return invoke(command)
 	return withModuleCheckTicket(ticket => invoke(
 		withDenoModuleCheckPreload(command, ticket),
-		ticket ? { FOUNT_TEST_MODULE_CHECK_TICKET: ticket } : {},
+		moduleCheckTicketEnv(ticket),
 	))
 }
 

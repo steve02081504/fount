@@ -371,7 +371,7 @@
 				"remaining": "Tiempo restante estimado ≈ ${eta} (${completed}/${total} suites)",
 				"run": "Duración estimada de esta ejecución ≈ ${eta} (tasa paralela ${rate})",
 				"runSerial": "Duración estimada de esta ejecución ≈ ${eta} (en serie)",
-				"runSerialHint": "Si el paralelismo esperado ≈ ${eta} (tasa ${rate}), ahorro ≈ ${savings} (quitar --no-parallel)",
+				"runSerialHint": "Si el paralelismo esperado ≈ ${eta} (tasa ${rate}), ahorro ≈ ${savings}",
 				"runSkipped": "Además, ${reused} reutilizadas y ${blocked} previstas como bloqueadas (no incluidas en la estimación)"
 			},
 			"unknown": {

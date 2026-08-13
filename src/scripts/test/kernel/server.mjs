@@ -38,11 +38,11 @@ export async function startTestKernel({
 	await kernel.start()
 
 	const app = express()
-	app.use((req, res, next) => {
-		res.setHeader('Access-Control-Allow-Origin', '*')
-		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-		res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-		if (req.method === 'OPTIONS') return res.sendStatus(204)
+	app.use((request, response, next) => {
+		response.setHeader('Access-Control-Allow-Origin', '*')
+		response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+		response.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+		if (request.method === 'OPTIONS') return response.sendStatus(204)
 		next()
 	})
 	app.use(express.json({ limit: '4mb' }))
@@ -50,18 +50,18 @@ export async function startTestKernel({
 	app.use(createGithubIssueRouter(kernel.issueCache))
 	app.use(createSharedStoreRouter())
 
-	app.post('/module-check/acquire', async (req, res) => {
+	app.post('/module-check/acquire', async (request, response) => {
 		const ticket = await kernel.moduleCheck.acquire()
-		res.json({ ticket })
+		response.json({ ticket })
 	})
-	app.post('/module-check/ready', (req, res) => {
-		const ticket = String(req.body?.ticket || '')
+	app.post('/module-check/ready', (request, response) => {
+		const ticket = String(request.body?.ticket || '')
 		const durationMs = kernel.moduleCheck.ready(ticket)
-		res.json({ ok: durationMs != null, durationMs })
+		response.json({ ok: durationMs != null, durationMs })
 	})
-	app.post('/module-check/abandon', (req, res) => {
-		const ticket = String(req.body?.ticket || '')
-		res.json({ missed: kernel.moduleCheck.abandon(ticket) })
+	app.post('/module-check/abandon', (request, response) => {
+		const ticket = String(request.body?.ticket || '')
+		response.json({ missed: kernel.moduleCheck.abandon(ticket) })
 	})
 
 	let server
@@ -83,13 +83,13 @@ export async function startTestKernel({
 		throw error
 	}
 
-	const wss = new WebSocketServer({ server, path: '/ws/viewer' })
-	wss.on('connection', (ws) => {
-		const viewer = kernel.viewers.add(ws, { watch: false, mode: 'overview' })
-		ws.on('message', raw => {
-			void onViewerMessage(kernel, viewer, raw)
+	const webSocketServer = new WebSocketServer({ server, path: '/ws/viewer' })
+	webSocketServer.on('connection', (socket) => {
+		const viewer = kernel.viewers.add(socket, { watch: false, mode: 'overview' })
+		socket.on('message', rawMessage => {
+			void onViewerMessage(kernel, viewer, rawMessage)
 		})
-		ws.on('close', () => {
+		socket.on('close', () => {
 			kernel.viewers.remove(viewer.id)
 			kernel.dropViewer(viewer.id)
 		})
@@ -105,9 +105,9 @@ export async function startTestKernel({
 	const close = async () => {
 		if (closed) return
 		closed = true
-		for (const client of wss.clients)
+		for (const client of webSocketServer.clients)
 			client.close()
-		wss.close()
+		webSocketServer.close()
 		await kernel.close()
 		await new Promise((resolve, reject) => {
 			server.close(err => err ? reject(err) : resolve())
@@ -131,23 +131,23 @@ export async function startTestKernel({
 /**
  * @param {TestKernel} kernel 内核
  * @param {import('./viewers.mjs').Viewer} viewer viewer
- * @param {import('node:buffer').Buffer | string} raw 消息
+ * @param {import('node:buffer').Buffer | string} rawMessage 消息
  * @returns {Promise<void>}
  */
-async function onViewerMessage(kernel, viewer, raw) {
-	let msg
+async function onViewerMessage(kernel, viewer, rawMessage) {
+	let message
 	try {
-		msg = JSON.parse(String(raw))
+		message = JSON.parse(String(rawMessage))
 	}
 	catch {
 		return
 	}
-	if (msg.type && msg.type !== 'hello') return
-	viewer.watch = msg.watch === true
-	viewer.mode = resolveDisplayMode({ watch: viewer.watch, job: msg.job })
+	if (message.type && message.type !== 'hello') return
+	viewer.watch = message.watch === true
+	viewer.mode = resolveDisplayMode({ watch: viewer.watch, job: message.job })
 	kernel.seenViewer = true
-	if (msg.watch || !msg.job) {
-		viewer.mode = resolveDisplayMode({ watch: msg.watch === true, job: msg.job })
+	if (message.watch || !message.job) {
+		viewer.mode = resolveDisplayMode({ watch: message.watch === true, job: message.job })
 		kernel.viewers.send(viewer.id, {
 			type: 'accepted',
 			viewerId: viewer.id,
@@ -158,9 +158,9 @@ async function onViewerMessage(kernel, viewer, raw) {
 		kernel.wake()
 		return
 	}
-	const submitted = await kernel.submitJob(msg.job, viewer.id)
+	const submitted = await kernel.submitJob(message.job, viewer.id)
 	viewer.jobId = submitted.jobId
-	viewer.mode = resolveDisplayMode({ watch: false, job: msg.job, runCount: submitted.runCount })
+	viewer.mode = resolveDisplayMode({ watch: false, job: message.job, runCount: submitted.runCount })
 	kernel.viewers.send(viewer.id, {
 		type: 'accepted',
 		viewerId: viewer.id,
@@ -169,7 +169,6 @@ async function onViewerMessage(kernel, viewer, raw) {
 		runCount: submitted.runCount,
 		reuseCount: submitted.reuseCount,
 		blockedCount: submitted.blockedCount,
-		skippedCount: submitted.skippedCount,
 		skippedCount: submitted.skippedCount,
 		code: submitted.code,
 		empty: submitted.empty,

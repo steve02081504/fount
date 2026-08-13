@@ -371,7 +371,7 @@
 				"remaining": "Geschätzte Restzeit ≈ ${eta} (${completed}/${total} Suites)",
 				"run": "Geschätzte Laufzeit ≈ ${eta} (Parallelrate ${rate})",
 				"runSerial": "Geschätzte Laufzeit ≈ ${eta} (seriell)",
-				"runSerialHint": "Bei Parallelität ≈ ${eta} (Rate ${rate}), Ersparnis ≈ ${savings} (--no-parallel entfernen)",
+				"runSerialHint": "Bei Parallelität ≈ ${eta} (Rate ${rate}), Ersparnis ≈ ${savings}",
 				"runSkipped": "Zusätzlich ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (nicht in Schätzung)"
 			},
 			"unknown": {

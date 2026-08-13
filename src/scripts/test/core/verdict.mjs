@@ -149,18 +149,21 @@ export function aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash) {
  * @param {Map<string, string>} uncommittedHashes 未提交内容 digest 表
  * @param {Map<string, string[]>} [committedChangedByKey] 含 `key#subtest` 的变更表
  * @param {Map<string, SuiteDef>} [byKey] 全部 suite（判定 pass skip / 作废 blocked）
+ * @param {Map<string, import('./skip_because.mjs').IssueClosedState>} [issueStates] 已探测的 issue 状态
  * @returns {Verdict} 裁决
  */
-export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey, byKey) {
+export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey, byKey, issueStates) {
 	const sharedTriggerHash = digestFileHashes(
 		uncommittedHashes,
 		collectTriggerEvidence(suite, [...uncommittedHashes.keys()]).matchedPaths,
 	)
 	const passSkip = skipBecauseAsForSuite(suite) === 'pass'
-	const skipBlock = isPassSkipBlock(entry, byKey ?? new Map())
+	const skipBlock = isPassSkipBlock(entry, byKey ?? new Map(), issueStates)
 	const treatPassed = passSkip || skipBlock
 
 	if (suite.subtests?.length) {
+		if (treatPassed)
+			return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash, subtestsToRun: [] }
 		const sharedStale = !entry
 			|| (entry.status === 'blocked' && !skipBlock)
 			|| suiteTriggersHit(suite, committedChanged)
@@ -202,9 +205,10 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
  * @param {TestState} state 现状库
  * @param {Map<string, string[]>} committedChangedByKey 各 suite（及 key#subtest）自记录 commit 以来的变更
  * @param {Map<string, string>} uncommittedHashes 未提交内容 digest 表
+ * @param {Map<string, import('./skip_because.mjs').IssueClosedState>} [issueStates] 已探测的 issue 状态
  * @returns {Map<string, Verdict>} suite 键 -> 裁决
  */
-export function buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes) {
+export function buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes, issueStates) {
 	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
 	return new Map(allSuites.map(suite => {
 		const key = suiteKey(suite.manifestId, suite.name)
@@ -215,6 +219,7 @@ export function buildVerdicts(allSuites, state, committedChangedByKey, uncommitt
 			uncommittedHashes,
 			committedChangedByKey,
 			byKey,
+			issueStates,
 		)]
 	}))
 }

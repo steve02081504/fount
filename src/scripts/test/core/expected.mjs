@@ -47,7 +47,7 @@ export function parseExpectedMs(raw) {
  * @returns {number | null} 收成后的毫秒
  */
 export function roundExpectedMs(msVal) {
-	if (msVal == null || !Number.isFinite(msVal) || msVal <= 0) return null
+	if (!Number.isFinite(msVal) || msVal <= 0) return null
 	if (msVal < 1000)
 		return Math.max(SUBSECOND_GRID_MS, Math.round(msVal / SUBSECOND_GRID_MS) * SUBSECOND_GRID_MS)
 	return Math.round(msVal / 1000) * 1000
@@ -80,7 +80,7 @@ export function declaredOverheadMs(suite) {
 	if (suite.expectedMs == null || !suite.subtests?.length) return null
 	let sum = 0
 	for (const subtest of suite.subtests) {
-		if (subtest.expectedMs == null || !Number.isFinite(subtest.expectedMs)) return null
+		if (!Number.isFinite(subtest.expectedMs)) return null
 		sum += subtest.expectedMs
 	}
 	return Math.max(0, suite.expectedMs - sum)

@@ -9,19 +9,19 @@ let held = false
 /** @type {{ symbols: { SetThreadExecutionState: (flags: number) => number } } | null} */
 let kernel32 = null
 /** @type {import('node:child_process').ChildProcess | null} */
-let unixProc = null
+let unixProcess = null
 
 /**
- * @param {boolean} on 是否持有
+ * @param {boolean} shouldKeepAwake 是否持有
  * @returns {void}
  */
-export function setTestKeepAwake(on) {
+export function setTestKeepAwake(shouldKeepAwake) {
 	if (process.env.FOUNT_TEST_ALLOW_SLEEP) {
 		if (held) release()
 		return
 	}
-	if (on === held) return
-	if (on) acquire()
+	if (shouldKeepAwake === held) return
+	if (shouldKeepAwake) acquire()
 	else release()
 }
 
@@ -39,7 +39,7 @@ function acquire() {
 		return
 	}
 	try {
-		unixProc = process.platform === 'darwin'
+		unixProcess = process.platform === 'darwin'
 			? spawn('caffeinate', ['-dims', '-w', String(process.pid)], { stdio: 'ignore' })
 			: spawn('systemd-inhibit', [
 				'--what=idle:sleep:handle-lid-switch',
@@ -62,6 +62,6 @@ function release() {
 		catch { /* ignore */ }
 		return
 	}
-	unixProc?.kill()
-	unixProc = null
+	unixProcess?.kill()
+	unixProcess = null
 }

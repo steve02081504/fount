@@ -60,7 +60,7 @@ function taskId(task) {
  */
 export function remainingDurationMs(task) {
 	if (task.reused || task.blocked) return 0
-	if (task.durationMs == null || !Number.isFinite(task.durationMs)) return null
+	if (!Number.isFinite(task.durationMs)) return null
 	return Math.max(0, task.durationMs - (task.elapsedMs ?? 0))
 }
 

@@ -43,61 +43,107 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 
 	beginTestProgress()
 
-	ws.addEventListener('message', event => {
-		const msg = JSON.parse(String(event.data))
-		if (msg.type === 'accepted') {
-			runCount = msg.runCount ?? 0
-			displayMode = msg.mode || displayMode
-			paintAccepted(msg)
-			if (msg.reportPath)
-				console.logI18n('fountConsole.test.reportPath', { path: msg.reportPath })
-			return
-		}
-		if (msg.type === 'log' && displayMode === 'stream') {
-			if (msg.stream === 'stderr') process.stderr.write(msg.chunk ?? '')
-			else process.stdout.write(msg.chunk ?? '')
-			return
-		}
-		if (msg.type === 'suite-start') {
-			const expected = formatMs(msg.expectedMs)
-			const remaining = formatRemainingLabel(msg)
-			const { manifestId, name } = splitSuiteKey(msg.key)
-			console.logI18n('fountConsole.test.runningSuite.base', { manifestId, name })
-			if ((msg.unknownCount ?? 0) > 0 && (msg.remainingMs == null || !Number.isFinite(msg.remainingMs)))
-				console.logI18n('fountConsole.test.display.etaUnknown', {
-					expected,
-					count: msg.unknownCount,
-				})
-			else
-				console.logI18n('fountConsole.test.display.eta', { expected, remaining })
-			return
-		}
-		if (msg.type === 'suite-end') {
-			finished++
-			if (runCount) SetTaskbarProgress(Math.min(100, Math.floor((finished / runCount) * 100)))
-			if (suiteEndHasFailureOutput(msg))
-				failureLogs.push({ key: msg.key, output: msg.output })
-			paintSuiteEnd(msg, { stream: displayMode === 'stream' })
-			return
-		}
-		if ((msg.type === 'queue-append' || msg.type === 'queue-remove') && displayMode === 'overview') {
-			console.logI18n(
-				msg.type === 'queue-append' ? 'fountConsole.test.queue.append' : 'fountConsole.test.queue.remove',
-				{ label: msg.key, reason: msg.reason || '', remaining: formatRemainingLabel(msg) },
-			)
-			return
-		}
-		if (msg.type === 'job-done') {
-			exitCode = msg.exitCode ?? 0
-			paintJobDone({
-				...msg,
-				failureLogs: displayMode === 'stream' ? [] : failureLogs,
-			})
-			if (displayShouldResolve(msg, { watch, displayMode, job, runCount }))
+	/**
+	 * @param {object} message accepted
+	 * @returns {void}
+	 */
+	function onAccepted(message) {
+		runCount = message.runCount ?? 0
+		displayMode = message.mode || displayMode
+		paintAccepted(message)
+		if (message.reportPath)
+			console.logI18n('fountConsole.test.reportPath', { path: message.reportPath })
+	}
+
+	/**
+	 * @param {object} message log
+	 * @returns {void}
+	 */
+	function onLog(message) {
+		if (displayMode !== 'stream') {
+			if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
 				done.resolve()
 			return
 		}
-		if (displayShouldResolve(msg, { watch, displayMode, job, runCount }))
+		if (message.stream === 'stderr') process.stderr.write(message.chunk ?? '')
+		else process.stdout.write(message.chunk ?? '')
+	}
+
+	/**
+	 * @param {object} message suite-start
+	 * @returns {void}
+	 */
+	function onSuiteStart(message) {
+		const expected = formatMs(message.expectedMs)
+		const remaining = formatRemainingLabel(message)
+		const { manifestId, name } = splitSuiteKey(message.key)
+		console.logI18n('fountConsole.test.runningSuite.base', { manifestId, name })
+		if ((message.unknownCount ?? 0) > 0 && (message.remainingMs == null || !Number.isFinite(message.remainingMs)))
+			console.logI18n('fountConsole.test.display.etaUnknown', {
+				expected,
+				count: message.unknownCount,
+			})
+		else
+			console.logI18n('fountConsole.test.display.eta', { expected, remaining })
+	}
+
+	/**
+	 * @param {object} message suite-end
+	 * @returns {void}
+	 */
+	function onSuiteEnd(message) {
+		finished++
+		if (runCount) SetTaskbarProgress(Math.min(100, Math.floor((finished / runCount) * 100)))
+		if (suiteEndHasFailureOutput(message))
+			failureLogs.push({ key: message.key, output: message.output })
+		paintSuiteEnd(message, { stream: displayMode === 'stream' })
+	}
+
+	/**
+	 * @param {object} message queue-append / queue-remove
+	 * @returns {void}
+	 */
+	function onQueue(message) {
+		if (displayMode !== 'overview') {
+			if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
+				done.resolve()
+			return
+		}
+		console.logI18n(
+			message.type === 'queue-append' ? 'fountConsole.test.queue.append' : 'fountConsole.test.queue.remove',
+			{ label: message.key, reason: message.reason || '', remaining: formatRemainingLabel(message) },
+		)
+	}
+
+	/**
+	 * @param {object} message job-done
+	 * @returns {void}
+	 */
+	function onJobDone(message) {
+		exitCode = message.exitCode ?? 0
+		paintJobDone({
+			...message,
+			failureLogs: displayMode === 'stream' ? [] : failureLogs,
+		})
+		if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
+			done.resolve()
+	}
+
+	const handlers = {
+		accepted: onAccepted,
+		log: onLog,
+		'suite-start': onSuiteStart,
+		'suite-end': onSuiteEnd,
+		'queue-append': onQueue,
+		'queue-remove': onQueue,
+		'job-done': onJobDone,
+	}
+
+	ws.addEventListener('message', event => {
+		const message = JSON.parse(String(event.data))
+		const handler = handlers[message.type]
+		if (handler) handler(message)
+		else if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
 			done.resolve()
 	})
 

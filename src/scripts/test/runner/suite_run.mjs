@@ -14,7 +14,7 @@ import {
 } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { suiteUsesSerialRunner } from '../core/resources.mjs'
-import { withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
+import { moduleCheckTicketEnv, withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
 
 import { runCommand } from './run_command.mjs'
 
@@ -68,8 +68,8 @@ export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, tr
 		FOUNT_TEST_SUBTESTS: subtests?.length ? subtests.join('\n') : '',
 		FOUNT_TEST_TRIGGERED_FILES: triggeredFilesPath || '',
 		RUST_BACKTRACE: 'full',
+		...moduleCheckTicketEnv(moduleCheckTicket),
 	}
-	if (moduleCheckTicket) env.FOUNT_TEST_MODULE_CHECK_TICKET = moduleCheckTicket
 	if (suiteUsesSerialRunner(suite) && globalBudget)
 		applyBudgetToEnv(env, globalBudget)
 	return {

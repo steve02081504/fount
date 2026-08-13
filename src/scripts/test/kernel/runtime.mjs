@@ -162,32 +162,29 @@ export class TestKernel {
 	 * @returns {void}
 	 */
 	noteFileChange(rel) {
-		const path = rel.replace(/\\/g, '/')
-		if (ignoreWatchPath(path)) return
-		if (path.endsWith('/test/manifest.json') || path === 'test/manifest.json') {
-			void this.#onManifestChange(path)
+		if (ignoreWatchPath(rel)) return
+		if (rel.endsWith('/test/manifest.json') || rel === 'test/manifest.json') {
+			void this.#onManifestChange(rel)
 			return
 		}
 		if (!this.catalog) return
-		for (const suite of this.catalog.allSuites) {
-			const files = [path]
-			if (suiteTriggeredFiles(suite, files).length)
-				this.queues.hitPrep(suiteKey(suite.manifestId, suite.name), `fs:${path}`)
-		}
+		for (const suite of this.catalog.allSuites)
+			if (suiteTriggeredFiles(suite, [rel]).length)
+				this.queues.hitPrep(suiteKey(suite.manifestId, suite.name), `fs:${rel}`)
 		this.wake()
 	}
 
 	/**
-	 * @param {string} _path 变更的 manifest 路径
+	 * @param {string} manifestPath 变更的 manifest 路径
 	 * @returns {Promise<void>}
 	 */
-	async #onManifestChange(_path) {
+	async #onManifestChange(manifestPath) {
 		const before = new Map(this.catalog.allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
 		try {
 			await this.reloadCatalog()
 		}
 		catch (error) {
-			this.viewers.broadcast({ type: 'error', reason: 'manifest', path: _path, message: String(error?.message ?? error) })
+			this.viewers.broadcast({ type: 'error', reason: 'manifest', path: manifestPath, message: String(error?.message ?? error) })
 			return
 		}
 		await attachGitRoots(this.catalog.allSuites, this.repoRoot)
@@ -264,7 +261,7 @@ export class TestKernel {
 	async #prepareWave(job) {
 		const wave = await expandJobWave({
 			repoRoot: this.repoRoot,
-			options: { ...job.spec, probedSkip: job.probedSkip },
+			options: { ...job.spec, probedSkip: job.probedSkip, issueStates: this.issueCache.entries },
 			catalog: this.catalog,
 		})
 		if (wave.error || wave.empty) {
@@ -379,7 +376,7 @@ export class TestKernel {
 		if (suite.gitRoot === null)
 			return { commitHash: null, uncommittedHash: null }
 		if (suite.gitRoot) {
-			const snap = fingerprints?.nested?.get?.(suite.gitRoot) ?? fingerprints?.nested?.[suite.gitRoot]
+			const snap = fingerprints?.nested?.get(suite.gitRoot)
 			return {
 				commitHash: snap?.commitHash ?? null,
 				uncommittedHash: snap?.uncommittedHash ?? null,
@@ -529,7 +526,7 @@ export class TestKernel {
 	 */
 	#depInFlight(depKey) {
 		if (this.running.has(depKey) && !this.sessionPassed.has(depKey)) return true
-		return this.queues.cli.some(q => q.key === depKey) || this.queues.fs.some(q => q.key === depKey)
+		return this.queues.cli.some(item => item.key === depKey) || this.queues.fs.some(item => item.key === depKey)
 	}
 
 	/**
@@ -558,8 +555,8 @@ export class TestKernel {
 				continue
 			}
 			if (isSkipBecausePass(depSuite)) continue
-			const st = this.state.suites[depKey]
-			if (st && (st.status === 'failed' || st.status === 'blocked'))
+			const entry = this.state.suites[depKey]
+			if (entry && (entry.status === 'failed' || entry.status === 'blocked'))
 				failed.push(depKey)
 		}
 		return { failed, skipped }
@@ -597,9 +594,18 @@ export class TestKernel {
 	 */
 	async #discardBlocked() {
 		for (; ;) {
-			const item = [...this.queues.cli, ...this.queues.fs].find(queued => this.#failedDeps(queued).length)
+			const queued = [...this.queues.cli, ...this.queues.fs]
+			let item
+			/** @type {string[] | undefined} */
+			let blockedBy
+			for (const candidate of queued) {
+				const failed = this.#failedDeps(candidate)
+				if (!failed.length) continue
+				item = candidate
+				blockedBy = failed
+				break
+			}
 			if (!item) return
-			const blockedBy = this.#failedDeps(item)
 			const removed = this.queues.removeKey(item.key)
 			const suite = this.catalog.byKey.get(item.key)
 			const job = item.jobId ? this.jobs.get(item.jobId) : undefined
@@ -628,12 +634,18 @@ export class TestKernel {
 	 */
 	async #discardSkipped() {
 		for (; ;) {
-			const item = [...this.queues.cli, ...this.queues.fs].find(queued => {
-				const unmet = this.#unmetDeps(queued)
-				return !unmet.failed.length && unmet.skipped.length
-			})
+			const queued = [...this.queues.cli, ...this.queues.fs]
+			let item
+			/** @type {string[] | undefined} */
+			let skippedBy
+			for (const candidate of queued) {
+				const unmet = this.#unmetDeps(candidate)
+				if (unmet.failed.length || !unmet.skipped.length) continue
+				item = candidate
+				skippedBy = unmet.skipped
+				break
+			}
 			if (!item) return
-			const skippedBy = this.#unmetDeps(item).skipped
 			const removed = this.queues.removeKey(item.key)
 			const suite = this.catalog.byKey.get(item.key)
 			if (suite)
@@ -713,6 +725,10 @@ export class TestKernel {
 				release = await this.gate.acquire(suite)
 			}
 			const item = this.queues.dequeue(picked)
+			if (!item) {
+				release()
+				continue
+			}
 			void this.#runItem(item, suite, release)
 		}
 	}
@@ -802,6 +818,18 @@ export class TestKernel {
 				passed: result.passed,
 				durationMs: result.durationMs,
 			}, result, this.state.suites[key])
+		}
+		catch (error) {
+			const job = item.jobId ? this.jobs.get(item.jobId) : undefined
+			if (job) job.exitCode = 1
+			this.sessionPassed.set(key, false)
+			endEvent = {
+				type: 'suite-end',
+				key,
+				jobId: item.jobId,
+				passed: false,
+				output: String(error?.stack ?? error),
+			}
 		}
 		finally {
 			if (ticket) this.moduleCheck.abandon(ticket)
@@ -1089,7 +1117,7 @@ export class TestKernel {
 		}
 		for (const [, running] of this.running)
 			if (running.item.viewerId === viewerId) {
-				const stillWanted = this.queues.cli.some(q => q.key === running.item.key)
+				const stillWanted = this.queues.cli.some(item => item.key === running.item.key)
 				if (!stillWanted) running.abort.abort('viewer_gone')
 			}
 		for (const job of [...this.jobs.values()])

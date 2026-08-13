@@ -19,7 +19,7 @@ export function resolveDisplayMode({ watch = false, job, runCount = 0 } = {}) {
 
 /**
  * 显示层是否该结束：指名 job 看 job-done；裸总览等 idle（双队列空），空波次仍跟 job-done。
- * @param {object} msg 内核事件
+ * @param {object} message 内核事件
  * @param {object} state 当前显示状态
  * @param {boolean} [state.watch] watch 挂起
  * @param {'stream' | 'multi' | 'overview'} state.displayMode 模式
@@ -27,10 +27,10 @@ export function resolveDisplayMode({ watch = false, job, runCount = 0 } = {}) {
  * @param {number} [state.runCount] 真跑套件数
  * @returns {boolean} 是否 resolve
  */
-export function displayShouldResolve(msg, { watch, displayMode, job, runCount = 0 }) {
+export function displayShouldResolve(message, { watch, displayMode, job, runCount = 0 }) {
 	if (watch) return false
-	if (msg.type === 'idle') return displayMode === 'overview'
-	if (msg.type !== 'job-done' || !job) return false
+	if (message.type === 'idle') return displayMode === 'overview'
+	if (message.type !== 'job-done' || !job) return false
 	if (displayMode !== 'overview') return true
 	return !runCount
 }

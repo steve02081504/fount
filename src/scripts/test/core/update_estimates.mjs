@@ -31,7 +31,7 @@ function setFieldAfter(obj, afterKey, field, value) {
 	let inserted = false
 	for (const [key, current] of Object.entries(obj)) {
 		next[key] = current
-		if (key === afterKey && !inserted) {
+		if (key === afterKey) {
 			next[field] = value
 			inserted = true
 		}
@@ -130,9 +130,7 @@ export async function updateManifestEstimates({ repoRoot, suites, state }) {
 				skipped++
 		}
 		if (!fileChanged) continue
-		const next = `${JSON.stringify(manifest, null, '\t')}\n`
-		if (next === raw) continue
-		await writeFile(abs, next, 'utf8')
+		await writeFile(abs, `${JSON.stringify(manifest, null, '\t')}\n`, 'utf8')
 		filesChanged++
 	}
 

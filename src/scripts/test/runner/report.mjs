@@ -146,6 +146,7 @@ export class RunReportWriter {
 					continueReason: continueReason ?? this.slots[index].continueReason,
 					skipBecause: undefined,
 					skipBecauseClosed: undefined,
+					skippedBy: undefined,
 					reused: false,
 				}
 			await this.#writeFiles()

@@ -151,8 +151,8 @@
 				"summary": "已回寫 ${suitesUpdated} 個套件的預計時長（${filesChanged} 個 manifest），跳過 ${skipped} 個無基線或已是最新"
 			},
 			"skipBecause": {
-				"pass": "跳過（issue 仍開或關閉未滿延缓）：${label} — ${url}",
-				"fail": "失敗（以下 issue 已關且已過延缓，請跟進並更新 skip_because 後再驗）：${label} — ${url}"
+				"pass": "跳過（issue 仍開或關閉未滿延緩）：${label} — ${url}",
+				"fail": "失敗（以下 issue 已關且已過延緩，請跟進並更新 skip_because 後再驗）：${label} — ${url}"
 			},
 			"moduleCheck": {
 				"missedReady": "模組檢查未發 ready，程序已結束：${label}"
@@ -370,7 +370,7 @@
 				"remaining": "預估剩餘耗時 ≈ ${eta}（${completed}/${total} 個套件）",
 				"run": "預計本次執行耗時 ≈ ${eta}（預估並行率 ${rate}）",
 				"runSerial": "預計本次執行耗時 ≈ ${eta}（序列）",
-				"runSerialHint": "若並行預期 ≈ ${eta}（並行率 ${rate}），節省 ≈ ${savings}（去掉 --no-parallel）",
+				"runSerialHint": "若並行預期 ≈ ${eta}（並行率 ${rate}），節省 ≈ ${savings}",
 				"runSkipped": "另有複用 ${reused} 個、預計阻塞 ${blocked} 個（不計入預估）"
 			},
 			"unknown": {

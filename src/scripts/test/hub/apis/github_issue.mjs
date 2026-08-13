@@ -24,24 +24,6 @@ function parseClosedAt(value) {
 }
 
 /**
- * 把探测结果收成 `{ closed, closedAt }`。
- * @param {unknown} raw 布尔或状态对象
- * @returns {import('../../core/skip_because.mjs').IssueClosedState} 状态
- */
-export function normalizeIssueState(raw) {
-	if (typeof raw === 'boolean')
-		return { closed: raw, closedAt: raw ? 0 : null }
-	if (!raw || typeof raw !== 'object')
-		return { closed: false, closedAt: null }
-	const rec = /** @type {{ closed?: unknown, closedAt?: unknown }} */ raw
-	const closed = rec.closed === true
-	return {
-		closed,
-		closedAt: closed ? parseClosedAt(rec.closedAt) : null,
-	}
-}
-
-/**
  * issue 关闭态缓存（时间戳；队列空时 prune）。
  */
 export class GithubIssueCache {
@@ -53,26 +35,16 @@ export class GithubIssueCache {
 
 	/**
 	 * @param {string} url issue URL
-	 * @param {() => Promise<unknown>} probe 探测（布尔或 `{ closed, closedAt }`）
+	 * @param {() => Promise<import('../../core/skip_because.mjs').IssueClosedState>} probe 探测
 	 * @param {() => number} [now] 当前时间
 	 * @returns {Promise<import('../../core/skip_because.mjs').IssueClosedState>} 关闭态
 	 */
 	async getState(url, probe, now = Date.now) {
 		const hit = this.entries.get(url)
 		if (hit) return { closed: hit.closed, closedAt: hit.closedAt }
-		const state = normalizeIssueState(await probe())
+		const state = await probe()
 		this.entries.set(url, { closed: state.closed, closedAt: state.closedAt, at: now() })
-		return state
-	}
-
-	/**
-	 * @param {string} url issue URL
-	 * @param {() => Promise<unknown>} probe 探测
-	 * @param {() => number} [now] 当前时间
-	 * @returns {Promise<boolean>} 已关闭
-	 */
-	async getClosed(url, probe, now = Date.now) {
-		return (await this.getState(url, probe, now)).closed
+		return { closed: state.closed, closedAt: state.closedAt }
 	}
 
 	/**
@@ -83,13 +55,13 @@ export class GithubIssueCache {
 	 */
 	pruneOlderThan(maxAgeMs = ISSUE_CACHE_PRUNE_MS, now = Date.now) {
 		const cutoff = now() - maxAgeMs
-		let n = 0
+		let count = 0
 		for (const [url, entry] of this.entries)
 			if (entry.at < cutoff) {
 				this.entries.delete(url)
-				n++
+				count++
 			}
-		return n
+		return count
 	}
 }
 

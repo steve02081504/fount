@@ -15,8 +15,10 @@ export class ModuleCheckGate {
 		this.heldAt = 0
 		/** @type {((ticket: string) => void)[]} */
 		this.#waiters = []
-		/** @type {number[]} */
-		this.durations = []
+		/** @type {number} */
+		this.durationTotalMs = 0
+		/** @type {number} */
+		this.durationCount = 0
 	}
 
 	#waiters
@@ -45,7 +47,10 @@ export class ModuleCheckGate {
 	#release(ticket, recordDuration) {
 		if (!ticket || ticket !== this.heldTicket) return null
 		const duration = Date.now() - this.heldAt
-		if (recordDuration) this.durations.push(duration)
+		if (recordDuration) {
+			this.durationTotalMs += duration
+			this.durationCount++
+		}
 		this.heldTicket = null
 		const next = this.#waiters.shift()
 		if (next) {
@@ -80,7 +85,7 @@ export class ModuleCheckGate {
 	 * @returns {number} 毫秒
 	 */
 	meanDurationMs() {
-		if (!this.durations.length) return 0
-		return Math.round(this.durations.reduce((a, b) => a + b, 0) / this.durations.length)
+		if (!this.durationCount) return 0
+		return Math.round(this.durationTotalMs / this.durationCount)
 	}
 }

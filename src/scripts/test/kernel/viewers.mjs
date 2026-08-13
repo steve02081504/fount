@@ -2,6 +2,7 @@
  * 测试内核 viewer：WS 扇出。
  */
 import { randomUUID } from 'node:crypto'
+import { WebSocket } from 'npm:ws'
 
 /**
  * @typedef {object} Viewer
@@ -56,10 +57,10 @@ export class ViewerHub {
 	 * @returns {number} watch 连接数
 	 */
 	watchCount() {
-		let n = 0
+		let count = 0
 		for (const viewer of this.viewers.values())
-			if (viewer.watch) n++
-		return n
+			if (viewer.watch) count++
+		return count
 	}
 
 	/**
@@ -69,7 +70,7 @@ export class ViewerHub {
 	 */
 	send(id, event) {
 		const viewer = this.viewers.get(id)
-		if (!viewer || viewer.ws.readyState !== 1) return
+		if (!viewer || viewer.ws.readyState !== WebSocket.OPEN) return
 		viewer.ws.send(JSON.stringify(event))
 	}
 
@@ -81,7 +82,7 @@ export class ViewerHub {
 	broadcast(event) {
 		const raw = JSON.stringify(event)
 		for (const viewer of this.viewers.values()) {
-			if (viewer.ws.readyState !== 1) continue
+			if (viewer.ws.readyState !== WebSocket.OPEN) continue
 			if (viewer.mode === 'overview' || viewer.watch) {
 				viewer.ws.send(raw)
 				continue

@@ -99,10 +99,10 @@ achievementsContainer.addEventListener('click', async (event) => {
  * @returns {void}
  */
 function localizeUnlockedDates(root) {
-	for (const el of root.querySelectorAll('[data-unlocked-at]'))
-		setLocalizeLogic(el, () => {
-			el.textContent = geti18n('achievements.unlocked_on', {
-				date: new Date(el.dataset.unlockedAt).toLocaleString(primaryLocale()),
+	for (const element of root.querySelectorAll('[data-unlocked-at]'))
+		setLocalizeLogic(element, () => {
+			element.textContent = geti18n('achievements.unlocked_on', {
+				date: new Date(element.dataset.unlockedAt).toLocaleString(primaryLocale()),
 			})
 		})
 }

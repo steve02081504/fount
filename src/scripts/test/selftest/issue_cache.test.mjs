@@ -11,11 +11,11 @@ Deno.test('GithubIssueCache stores probe once then reuses', async () => {
 	let probes = 0
 	/**
 	 * 计数并视为已关。
-	 * @returns {Promise<boolean>} 已关闭
+	 * @returns {Promise<{ closed: boolean, closedAt: number | null }>} 已关闭
 	 */
-	const probe = async () => { probes++; return true }
-	assertEquals(await cache.getClosed('https://github.com/a/b/issues/1', probe, () => 0), true)
-	assertEquals(await cache.getClosed('https://github.com/a/b/issues/1', probe, () => 0), true)
+	const probe = async () => { probes++; return { closed: true, closedAt: 0 } }
+	assertEquals((await cache.getState('https://github.com/a/b/issues/1', probe, () => 0)).closed, true)
+	assertEquals((await cache.getState('https://github.com/a/b/issues/1', probe, () => 0)).closed, true)
 	assertEquals(probes, 1)
 })
 
@@ -34,8 +34,8 @@ Deno.test('GithubIssueCache getState keeps closedAt', async () => {
 
 Deno.test('GithubIssueCache pruneOlderThan drops stale entries', async () => {
 	const cache = new GithubIssueCache()
-	await cache.getClosed('https://github.com/a/b/issues/1', async () => false, () => 0)
-	await cache.getClosed('https://github.com/a/b/issues/2', async () => true, () => ISSUE_CACHE_PRUNE_MS + 10)
+	await cache.getState('https://github.com/a/b/issues/1', async () => ({ closed: false, closedAt: null }), () => 0)
+	await cache.getState('https://github.com/a/b/issues/2', async () => ({ closed: true, closedAt: 0 }), () => ISSUE_CACHE_PRUNE_MS + 10)
 	assertEquals(cache.pruneOlderThan(ISSUE_CACHE_PRUNE_MS, () => ISSUE_CACHE_PRUNE_MS + 20), 1)
 	assertEquals(cache.entries.has('https://github.com/a/b/issues/1'), false)
 	assertEquals(cache.entries.has('https://github.com/a/b/issues/2'), true)

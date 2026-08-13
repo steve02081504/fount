@@ -50,14 +50,17 @@ export async function snapshotNestedGit(repoRoot, gitRoot) {
 	const abs = resolve(repoRoot, gitRoot)
 	const commitHash = await getHeadCommitHash(abs)
 	const rawFiles = await getUncommittedFiles(abs)
-	const prefixed = rawFiles.map(file => `${gitRoot}/${file}`.replace(/\\/g, '/'))
 	const nestedHashes = await hashUncommittedFiles(abs, rawFiles)
 	/** @type {Map<string, string>} */
 	const uncommittedHashes = new Map()
 	for (const [rel, digest] of nestedHashes)
 		uncommittedHashes.set(`${gitRoot}/${rel}`.replace(/\\/g, '/'), digest)
-	const uncommittedHash = digestFileHashes(nestedHashes, rawFiles)
-	return { commitHash, uncommittedHash, uncommittedFiles: prefixed, uncommittedHashes }
+	return {
+		commitHash,
+		uncommittedHash: digestFileHashes(nestedHashes, rawFiles),
+		uncommittedFiles: rawFiles.map(file => `${gitRoot}/${file}`.replace(/\\/g, '/')),
+		uncommittedHashes,
+	}
 }
 
 /**

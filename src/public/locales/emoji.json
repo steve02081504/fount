@@ -371,7 +371,7 @@
 				"remaining": "⏱️⏳ ≈ ${eta}（${completed}/${total} 📦）",
 				"run": "⏱️ ≈ ${eta}（🔀 ${rate}）",
 				"runSerial": "⏱️ ≈ ${eta}（📦→→）",
-				"runSerialHint": "🔀≈ ${eta}（${rate}），💰 ≈ ${savings}（➖ `--no-parallel`）",
+				"runSerialHint": "🔀≈ ${eta}（${rate}），💰 ≈ ${savings}",
 				"runSkipped": "＋♻️ ${reused}，🚫⏸️ ${blocked}（∉⏱️）"
 			},
 			"unknown": {

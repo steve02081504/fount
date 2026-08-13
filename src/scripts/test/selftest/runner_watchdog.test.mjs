@@ -368,6 +368,44 @@ Deno.test('RunReportWriter lists skip_because separately', async () => {
 	}
 })
 
+Deno.test('RunReportWriter re-enqueue after skip_tree clears skippedBy', async () => {
+	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-report-skip-tree-'))
+	try {
+		const writer = new RunReportWriter({
+			repoRoot,
+			planSlots: [],
+			runId: 'run-skip-tree',
+			command: 'fount test',
+			commitHash: 'abc',
+			uncommittedHash: null,
+		})
+		await writer.init()
+		await writer.recordByKey('testkit', 'child', {
+			status: 'passed',
+			durationMs: 0,
+			failedFiles: [],
+			noiseHits: [],
+			logPath: null,
+		}, { skippedBy: ['testkit:dep'] })
+		const skipped = JSON.parse(await readFile(reportJsonPath(repoRoot), 'utf8'))
+		assertEquals(skipped.slots[0].skippedBy, ['testkit:dep'])
+		await writer.ensureSlot({ manifestId: 'testkit', name: 'child' })
+		await writer.recordByKey('testkit', 'child', {
+			status: 'passed',
+			durationMs: 1,
+			failedFiles: [],
+			noiseHits: [],
+			logPath: null,
+		})
+		const done = JSON.parse(await readFile(reportJsonPath(repoRoot), 'utf8'))
+		assertEquals(done.slots[0].skippedBy, undefined)
+		assertEquals(done.slots[0].status, 'passed')
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
+})
+
 Deno.test('exitCodeFromSlots fails on noisy/pending/failed/blocked', () => {
 	assertEquals(exitCodeFromSlots([
 		{ state: 'done', status: 'passed' },

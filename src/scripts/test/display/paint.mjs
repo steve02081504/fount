@@ -58,11 +58,11 @@ export function formatRemainingLabel(msg) {
 }
 
 /**
- * 打印空波次 / 选择错误 / 波次头。
+ * 打印 accepted 的错误分支。
  * @param {object} msg 内核 accepted 载荷
- * @returns {void}
+ * @returns {boolean} 是否已处理
  */
-export function paintAccepted(msg) {
+function paintAcceptedError(msg) {
 	if (msg.error === 'deadTriggers') {
 		for (const dead of msg.deadTriggers ?? [])
 			console.errorI18n('fountConsole.test.triggerNoMatch', {
@@ -72,17 +72,17 @@ export function paintAccepted(msg) {
 				pattern: dead.pattern,
 			})
 		console.errorI18n('fountConsole.test.triggerNoMatchSummary', { count: (msg.deadTriggers ?? []).length })
-		return
+		return true
 	}
 	if (msg.error === 'unknownManifest') {
 		console.errorI18n('fountConsole.test.unknown.manifestId', { ids: (msg.unmatched ?? []).join(', ') })
 		console.errorI18n('fountConsole.test.available', { ids: (msg.knownIds ?? []).join(', ') })
-		return
+		return true
 	}
 	if (msg.error === 'unknownSuite') {
 		console.errorI18n('fountConsole.test.unknown.suiteSelector', { ids: (msg.unknownSuites ?? []).join(', ') })
 		console.errorI18n('fountConsole.test.available', { ids: (msg.available ?? []).join(', ') })
-		return
+		return true
 	}
 	if (msg.error === 'subtestFilter') {
 		for (const err of msg.filterErrors ?? []) {
@@ -94,20 +94,29 @@ export function paintAccepted(msg) {
 			else
 				console.errorI18n('fountConsole.test.unsupportedSubtestFilter', { suite: err.suiteId, names })
 		}
-		return
+		return true
 	}
 	if (msg.error === 'noMatchingSuites') {
 		console.logI18n('fountConsole.test.noMatchingSuites')
 		console.errorI18n('fountConsole.test.available', { ids: (msg.available ?? []).join(', ') })
-		return
+		return true
 	}
 	if (msg.error === 'noisyOnly') {
 		console.logI18n('fountConsole.test.noisyOnlyRemain', {
 			count: (msg.noisyKeys ?? []).length,
 			suites: (msg.noisyKeys ?? []).join(', '),
 		})
-		return
+		return true
 	}
+	return false
+}
+
+/**
+ * 打印空波次 / 选择摘要 / 续跑原因 / ETA。
+ * @param {object} msg 内核 accepted 载荷
+ * @returns {void}
+ */
+function paintAcceptedWave(msg) {
 	if (msg.empty || (msg.empty == null && !msg.error && !msg.runCount && !msg.selectionMode && (msg.code ?? 0) === 0)) {
 		console.logI18n('fountConsole.test.nothingToContinue')
 		return
@@ -144,6 +153,16 @@ export function paintAccepted(msg) {
 			blocked: msg.blockedCount,
 			skipped: msg.skippedCount ?? 0,
 		})
+}
+
+/**
+ * 打印空波次 / 选择错误 / 波次头。
+ * @param {object} msg 内核 accepted 载荷
+ * @returns {void}
+ */
+export function paintAccepted(msg) {
+	if (paintAcceptedError(msg)) return
+	paintAcceptedWave(msg)
 }
 
 /**
