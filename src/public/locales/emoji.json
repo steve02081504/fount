@@ -145,18 +145,18 @@
 			"replHint": "↩️ ▶️ · ⇧↩️ ↩️"
 		},
 		"test": {
-			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n       `fount test --update-estimates` [<groups>…]\n\n🎯（␣＝📦×N；`,`＝同📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：一次规画❌/⏳与⏰并跑；❌只挡依赖槽，收口非零；🚫∞（→ `--all`）\n\n`--watch`      👁️♾️，📭也不🚪（Ctrl+C）；🚫`--all`／`--force`／`--update-estimates`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n`--update-estimates`  按🗄️均⏱️回写 manifest `expected`；可🎯；不🏃🧪\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n  `fount test --update-estimates`\n  `fount test --update-estimates shells/chat`",
-			"watchNoGroups": "📖：`fount test --watch`（🚫他⚙️）",
+			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n       `fount test --update-estimates` [<groups>…]\n\n🎯（␣＝📦×N；`,`＝1📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：1📋 ❌/⏳+⏰ ▶️；❌→🔗🚫 only；exit≠0；🚫∞（→ `--all`）\n\n`--watch`      👁️♾️，📭≠🚪（Ctrl+C）；🚫`--all`／`--force`／`--update-estimates`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n`--update-estimates`  🗄️avg⏱️→ manifest `expected`；🎯OK；🚫🏃🧪\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n  `fount test --update-estimates`\n  `fount test --update-estimates shells/chat`",
+			"watchNoGroups": "📖：`fount test --watch`（🚫+⚙️）",
 			"updateEstimates": {
-				"incompatible": "📖：`fount test --update-estimates` [<groups>…]（🚫他🚩）",
-				"summary": "✍️ ${suitesUpdated} 📦⏱️（manifest ${filesChanged}）；⏭️ ${skipped} 无基线／已新"
+				"incompatible": "📖：`fount test --update-estimates` [<groups>…]（🚫+🚩）",
+				"summary": "✍️ ${suitesUpdated} 📦⏱️（manifest ${filesChanged}）；⏭️ ${skipped} 🚫📏／✅🆕"
 			},
 			"skipBecause": {
-				"pass": "⏭️（🐙🔓／🔒未过⏳）：${label} — ${url}",
-				"fail": "❌（🐙🔒且⏳已过→👣＋🔄`skip_because`→🔁）：${label} — ${url}"
+				"pass": "⏭️（🐙🔓／🔒⏳❌）：${label} — ${url}",
+				"fail": "❌（🐙🔒⏳✅→👣＋🔄`skip_because`→🔁）：${label} — ${url}"
 			},
 			"moduleCheck": {
-				"missedReady": "🔍未✅已退：${label}"
+				"missedReady": "🔍🚫✅🚪：${label}"
 			},
 			"queue": {
 				"append": "📥：${label}（${reason}）⏳≈ ${remaining}",
@@ -164,11 +164,11 @@
 			},
 			"display": {
 				"eta": "🔮 ${expected}，Σ⏳≈ ${remaining}",
-				"etaUnknown": "🔮 ${expected}，Σ⏳含 ${count} 个❓时长",
+				"etaUnknown": "🔮 ${expected}，Σ⏳ ${count}×❓⏱️",
 				"reason": "${label}：${reason}",
 				"remaining": "Σ⏳≈ ${remaining}",
-				"remainingUnknown": "Σ⏳≈ ${remaining}（另有 ${count} 个❓时长）",
-				"remainingOnlyUnknown": "Σ⏳：${count} 个❓时长"
+				"remainingUnknown": "Σ⏳≈ ${remaining}（+ ${count}×❓⏱️）",
+				"remainingOnlyUnknown": "Σ⏳：${count}×❓⏱️"
 			},
 			"passed": "✅: ${label}",
 			"passedWithNoise": "✅: ${label} (🔊)",
@@ -188,7 +188,7 @@
 			"statePathFinal": "📊: ${path}",
 			"blocked": "🚫⏸️：${label}（🔗🚫：${deps}）",
 			"speculativeDiscard": "🗑️🔮：${label}（🔗🚫：${deps}）",
-			"continueDefault": "续跑 ${count} 📦（❌/⏳ ${imperfect}，📅 ${outdated}）",
+			"continueDefault": "▶️ ${count} 📦（❌/⏳ ${imperfect}，📅 ${outdated}）",
 			"continueImperfect": "❌／🔊／⏳🌊：${count} 📦",
 			"outdatedSelected": "⏰🌊：${count} ⏰／🚫🏃 📦🧪",
 			"runningSuite": {
@@ -5442,10 +5442,10 @@
 				"pathRequired": "⚠️📂❓",
 				"success": "✅▶️🖥️📂",
 				"lineInput": {
-					"aria-label": "#️⃣行"
+					"aria-label": "↕#"
 				},
 				"columnInput": {
-					"aria-label": "#️⃣列"
+					"aria-label": "↔#"
 				}
 			}
 		},

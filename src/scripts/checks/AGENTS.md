@@ -12,7 +12,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | --- | --- |
 | `html_meta` | HTML meta / landmarks / `drawer-toggle` / aside ARIA |
 | `info` | parts `locales.json` / `achievements_registry.json` info + remote icon URL |
-| `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN (below) |
+| `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN + emoji.json must not carry Han/kana/Cyrillic |
 | `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
 | `update_locales` | `.esh/commands/update-locales.py --self-test` (string↔single-applicator + string↔switch) |
@@ -28,6 +28,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 - No ≥4 flat camelCase siblings sharing a prefix.
 - No `xxx1`-style numbered keys.
 - Every non-`zh-CN` locale must match `zh-CN` **value kinds** on shared paths after sync (`string` vs `{ "aria-label": … }` etc. fails). `update-locales.py` may normalize string↔single DOM applicator and **exits 1** on remaining mismatches; leaf `string` ↔ switch stays compatible. Details: [locale-edits.md](../../public/locales/docs/locale-edits.md).
+- `emoji.json` strings must not contain Han / kana / Cyrillic (latin is fine for commands, shortcuts, interpolations). `update-locales.py` copies zh-CN into Google-unsupported langs — this check is the net.
 - Prefix-nest **writeback** only via `.esh/commands/reshape_i18n_keys.py` (JS `JSON.stringify` reorders numeric keys like `404`). Day-to-day locale edits: root [AGENTS.md](../../../AGENTS.md) I18n.
 
 ## i18n refs (`i18n_refs`)

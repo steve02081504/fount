@@ -18,6 +18,7 @@ import {
 	localeValueKind,
 	nestAllPrefixClusters,
 	nestAllPrefixClustersWithMap,
+	scanEmojiLocaleForbiddenScript,
 	scanI18nKeyStructure,
 	scanLocaleTreeShape,
 } from '../i18n_keys.mjs'
@@ -275,4 +276,27 @@ Deno.test('all locale JSON trees match zh-CN value kinds on shared paths', async
 			failures.push(`${fileName}: [${issue.kind}] ${issue.path}: ${issue.message}`)
 
 	assertEquals(failures, [], failures.join('\n'))
+})
+
+Deno.test('scanEmojiLocaleForbiddenScript flags Han and allows latin+emoji', () => {
+	assertEquals(scanEmojiLocaleForbiddenScript({
+		ok: '▶️ ${count} 📦',
+		cmd: '`fount test --watch`',
+	}), [])
+	const issues = scanEmojiLocaleForbiddenScript({
+		help: '续跑 ${count} 📦',
+		nested: { label: '行号' },
+	})
+	assertEquals(issues.map(issue => issue.path).sort(), ['help', 'nested.label'])
+	assert(issues.every(issue => issue.kind === 'forbidden_script'))
+})
+
+Deno.test('emoji.json has no Han / kana / Cyrillic', async () => {
+	const data = JSON.parse(await readFile(join(REPO_ROOT, 'src/public/locales/emoji.json'), 'utf8'))
+	const issues = scanEmojiLocaleForbiddenScript(data)
+	assertEquals(
+		issues.map(issue => `[${issue.kind}] ${issue.path}: ${issue.message}`),
+		[],
+		issues.map(issue => `[${issue.kind}] ${issue.path}: ${issue.message}`).join('\n'),
+	)
 })
