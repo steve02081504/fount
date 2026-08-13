@@ -145,7 +145,20 @@
 			"replHint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति"
 		},
 		"test": {
-			"help": "उपयोग: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nसमूह सिंटैक्स (स्पेस से अलग कई समूह):\n  manifest                    उस manifest की सभी suite\n  manifest:suite              निर्दिष्ट suite (कॉमा से अलग; manifest/suite भी)\n  manifest:suite:subtest      उप-परीक्षण (frontend आदि पंजीकृत subtests; manifest/suite/subtest भी)\n  manifest:suite:file         pure/integration (serial.mjs) में *.test.mjs stem से फ़िल्टर\n  PowerShell में टोकन टूटने पर बाद के टोकन वर्तमान समूह में जुड़ जाते हैं\n\nmanifest id प्रत्येक test/manifest.json के शीर्ष \"id\" से।\nसटीक मिलान न होने पर स्वतः \"<नाम>/*\" विस्तार (जैसे shells → shells/chat,shells/social); glob (*, ?, **) भी।\nsuite नाम suite की id या name से मिलान; न होने पर \"<नाम>*\"/\"<नाम>_*\" विस्तार; glob भी।\n\nडिफ़ॉल्ट (नंगा fount test): पहले विफल/अधूरे (suite में विफल फ़ाइलें प्राथमिक; विफल समूह पूरा चलाकर बाहर), सब हरा होने पर stale; कोई राउंड विफल → exit 1, एक कॉल में दोबारा नहीं। कभी पूर्ण नहीं (--all से)।\nस्थिति data/test/state/main.json; विफलता लॉग हरा होने तक। प्रत्येक रन data/test/report.md और report.json अपडेट।\nfrontend आदि subtests पंजीकृत कर सकते हैं (अलग trigger); एक व्यू फ़ाइल बदलने से केवल वह subtest stale।\npure/integration में subtests न हों तो तीसरा खंड *.test.mjs stem (जैसे shells/chat:pure:channel_archive)।\nनिर्भरता (manifest.json dependsOn) विफल → ऊपरी स्तर blocked।\n\n--all         सीमा में सभी suite लक्ष्य (--force के बिना हरे पुन: उपयोग)\n--no-parallel suite क्रमिक, stdout/stderr स्ट्रीम; डिफ़ॉल्ट संसाधन गेट से समानांतर\n--force       पुन: उपयोग बंद; --force वास्तविक रन\n\nउदाहरण:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "उपयोग: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\nचयनकर्ता (समूह रिक्त स्थान से अलग; एक समूह में suite अल्पविराम से; / और : समान):\n  नाम              उस समूह की सभी suite (जैसे shells/chat)\n  नाम:suite        कोई विशिष्ट suite\n  नाम:suite:आइटम   कोई उप-परीक्षण या परीक्षण फ़ाइल\n\nसटीक मिलान न होने पर उपसर्ग से विस्तार (shells → shells/chat, shells/social); glob (*, ?, **) भी समर्थित।\n\nडिफ़ॉल्ट (केवल fount test): पहले विफल/अधूरे, सब हरा होने पर पुराने; किसी भी राउंड में विफलता पर बाहर। पूरा रिपो नहीं — --all उपयोग करें।\n\n--watch      निरंतर निगरानी; कतार खाली होने पर भी नहीं रुकता (Ctrl+C से बाहर); --all, --force या चयनकर्ताओं के साथ नहीं\n--all        दायरे की सभी suite\n--force      ज़बरदस्ती चलाएँ; पिछला परिणाम पुनः उपयोग न करें\n\nउदाहरण:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "उपयोग: fount test --watch (--all, --force या चयनकर्ताओं के साथ उपयोग नहीं कर सकते)",
+			"skipBecause": {
+				"pass": "छोड़ा गया (issue अभी खुला है): ${label} — ${url}",
+				"fail": "विफल (issue बंद — कार्रवाई करें और पुनः जाँच से पहले skip_because अपडेट करें): ${label} — ${url}"
+			},
+			"queue": {
+				"append": "कतार में: ${label} (${reason}) शेष ≈ ${remaining}",
+				"remove": "कतार से हटाया: ${label} (${reason}) शेष ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "अनुमानित ${expected}, कुल शेष ≈ ${remaining}",
+				"remaining": "कुल शेष ≈ ${remaining}"
+			},
 			"passed": "पास: ${label}",
 			"passedWithNoise": "उत्तीर्ण: ${label} (शोर शामिल है)",
 			"failed": "विफल: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "चलाया जाना है",
 					"replay": "विफल आइटम पुनः चलाएँ",
 					"replayImperfect": "अपूर्ण पुन:प्रदर्शन",
-					"silentPassed": "पास"
+					"silentPassed": "पास",
+					"skipped": "छोड़ा गया (skip_because)"
 				},
 				"pending": {
 					"estimate": "अनुमानित शेष समय ≈ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "अपस्ट्रीम पुल: ${requiredBy} की निर्भरता हरी नहीं है",
 					"reused": "(पुन: उपयोग)",
 					"rootCause": "मूल कारण",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "अनुवर्ती कार्रवाई चाहिए (बंद)",
 					"terminateReason": "समाप्ति का कारण",
 					"triggerHashDrift": "ट्रिगर फ़िंगरप्रिंट वर्तमान कार्यस्थान के साथ असंगत है (गंदे→नेट पर ध्यान नहीं दिया गया)",
 					"uncommittedHashRange": "डाइजेस्ट प्रस्तुत नहीं किया गया"

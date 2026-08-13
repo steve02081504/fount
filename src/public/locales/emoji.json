@@ -145,7 +145,20 @@
 			"replHint": "↩️ ▶️ · ⇧↩️ ↩️"
 		},
 		"test": {
-			"help": "📖：`fount test` [--all] [--no-parallel] [--force] [<groups>…]\n\n🗂️（␣＝📦×N）：\n  `manifest`                         👉 📋→📦∞\n  `manifest:suite`                   👉 📦（`,`＝×N；`/` OK）\n  `manifest:suite:subtest`           👉 🔬（`frontend`…⚡✅；`/` OK）\n  `manifest:suite:file`              👉 `pure`/`integration`（`serial.mjs`）→ `*.test.mjs` `stem`🔽\n  💙🐚 ✂️ → 📥📦⌀\n\n📋 id ← `test/manifest.json` 🔝 `\"id\"`\n🚫🎯 → `<name>/*`（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n📦 🎯＝`id`／`name`；🚫🎯 → `<name>*`／`<name>_*`；🌐 OK\n\n⭐（⌀ `fount test`）：\n  1️⃣ ❌／⏳（📦❌📁↑；❌📦♻️→✅🚪）\n  2️⃣ 💚→⏰\n  ❌🌊 → `exit 1`；🚫⌀📞🔁；🚫∞（→ `--all`）\n💾 `data/test/state/main.json`；❌📜→💚①🏃→ `data/test/report.md`＋`report.json`\n`frontend`… 🔬✅（⚡×N）；✏️①👁️📁 → 🔬⏰⌀\n`pure`/`integration` 🚫🔬 → ③＝`*.test.mjs` `stem`🔽（`shells/chat:pure:channel_archive`）\n🔗 `dependsOn` 🚫 → ⬆️🚫⏸️\n\n`--all`         🎯📦∞（💚♻️OK，🚫`--force`）\n`--no-parallel` 📦→→＋📡 `stdout`/`stderr`；⭐＝`RAM`／`CPU` 🚪🔀\n`--force`       🚫♻️；⭐＝⏮✅；💥＝🏃\n\n💡：\n  `fount test`\n  `fount test --all`\n  `fount test --no-parallel`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n",
+			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n\n🎯（␣＝📦×N；`,`＝同📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：❌／⏳→💚→⏰；❌🌊→🚪；🚫∞（→ `--all`）\n\n`--watch`      👁️♾️，📭也不🚪（Ctrl+C）；🚫`--all`／`--force`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`",
+			"watchNoGroups": "📖：`fount test --watch`（🚫`--all`／`--force`／🎯）",
+			"skipBecause": {
+				"pass": "⏭️（🐙🔓）：${label} — ${url}",
+				"fail": "❌（🐙🔒→👣＋🔄`skip_because`→🔁）：${label} — ${url}"
+			},
+			"queue": {
+				"append": "📥：${label}（${reason}）⏳≈ ${remaining}",
+				"remove": "📤：${label}（${reason}）⏳≈ ${remaining}"
+			},
+			"display": {
+				"eta": "🔮 ${expected}，Σ⏳≈ ${remaining}",
+				"remaining": "Σ⏳≈ ${remaining}"
+			},
 			"passed": "✅: ${label}",
 			"passedWithNoise": "✅: ${label} (🔊)",
 			"failed": "❌: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "⏳",
 					"replay": "🔁 ❌",
 					"replayImperfect": "🔁⌀💚",
-					"silentPassed": "✅"
+					"silentPassed": "✅",
+					"skipped": "⏭️（`skip_because`）"
 				},
 				"pending": {
 					"estimate": "⏱️⏳≈ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "⬆️：${requiredBy} 🔗⌀💚",
 					"reused": "(♻️)",
 					"rootCause": "🌱",
+					"skipBecause": "🐙",
+					"skipBecauseClosed": "👣（🔒）",
 					"terminateReason": "⏹️❔",
 					"triggerHashDrift": "⚡🔢≠🗂️（💩→✨ 🙈）",
 					"uncommittedHashRange": "🚫📤 `digest`"

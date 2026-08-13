@@ -145,7 +145,20 @@
 			"replHint": "Enter to run · Shift+Enter for a new line"
 		},
 		"test": {
-			"help": "usage: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nGroup syntax (space-separated groups):\n  manifest                    all suites in that manifest\n  manifest:suite              specific suite(s) (comma-separated; manifest/suite also works)\n  manifest:suite:subtest      specific subtest (frontend etc. with registered subtests; manifest/suite/subtest also works)\n  manifest:suite:file         filter by *.test.mjs stem under pure/integration (serial.mjs)\n  When PowerShell splits tokens, following tokens merge into the current group\n\nmanifest id comes from the top-level \"id\" field in each test/manifest.json.\nWith no exact match, expands as \"<name>/*\" (e.g. shells → shells/chat,shells/social); globs (*, ?, **) also supported.\nSuite names match each suite's id or name; with no exact match, expands as \"<name>*\", \"<name>_*\"; globs also supported.\n\nDefault (bare fount test): run failed/incomplete items first (failed files within a suite take priority; if a failed group reproduces, finish that group then exit), then outdated content after all green; any failed wave exits 1 with no retries in the same invocation. Never full-repo unless --all.\nTest state persists in data/test/state/main.json (removed/renamed suites are pruned automatically); failure logs kept until green. Each run updates data/test/report.md and report.json.\nfrontend etc. can register subtests (each with its own trigger); changing one view file only expires the matching subtest.\nWithout registered subtests on pure/integration, the third segment filters by *.test.mjs stem in the directory (e.g. shells/chat:pure:channel_archive).\nWhen a dependency (manifest.json dependsOn) is not green, upstream suites are blocked automatically.\n\n--all         all suites in scope as targets (green ones may still be reused unless --force)\n--no-parallel run suites serially with streaming stdout/stderr; default parallelises via resource gates on memory and CPU.\n--force       disable reuse: default keeps last real results, --force forces a real run.\n\nexamples:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "usage: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\nSelectors (space-separated groups; comma-separated suites within a group; / and : are equivalent):\n  name              all suites in that group (e.g. shells/chat)\n  name:suite        a specific suite\n  name:suite:item   a specific subtest or test file\n\nWith no exact match, expands by prefix (shells → shells/chat, shells/social); globs (*, ?, **) also supported.\n\nDefault (bare fount test): rerun failures/incomplete first, then stale after all green; exits on any failed wave. Never full-repo — use --all for that.\n\n--watch      keep watching; stays up even when the queue is empty (Ctrl+C to quit); cannot combine with --all, --force, or selectors\n--all        all suites in scope\n--force      force a real run; do not reuse last results\n\nexamples:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "usage: fount test --watch (cannot be used with --all, --force, or selectors)",
+			"skipBecause": {
+				"pass": "Skipped (issue still open): ${label} — ${url}",
+				"fail": "Failed (issue closed — follow up and update skip_because before re-checking): ${label} — ${url}"
+			},
+			"queue": {
+				"append": "Queued: ${label} (${reason}) ≈ ${remaining} left",
+				"remove": "Dequeued: ${label} (${reason}) ≈ ${remaining} left"
+			},
+			"display": {
+				"eta": "Expected ${expected}, ≈ ${remaining} left overall",
+				"remaining": "≈ ${remaining} left overall"
+			},
 			"passed": "PASSED: ${label}",
 			"passedWithNoise": "PASSED: ${label} (with noise)",
 			"failed": "FAILED: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "Pending",
 					"replay": "Rerun failures",
 					"replayImperfect": "Rerun imperfect",
-					"silentPassed": "Passed (silent)"
+					"silentPassed": "Passed (silent)",
+					"skipped": "Skipped (skip_because)"
 				},
 				"pending": {
 					"estimate": "Estimated remaining time ≈ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "upstream pull: ${requiredBy}'s dependency not green",
 					"reused": "(reused)",
 					"rootCause": "root cause",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "needs follow-up (closed)",
 					"terminateReason": "Termination reason",
 					"triggerHashDrift": "trigger fingerprint differs from workspace (dirty→clean ignored)",
 					"uncommittedHashRange": "uncommitted digest"

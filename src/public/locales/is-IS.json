@@ -145,7 +145,20 @@
 			"replHint": "Enter til að keyra · Shift+Enter fyrir nýja línu"
 		},
 		"test": {
-			"help": "Notkun: fount test [--all] [--no-parallel] [--force] [<hópar>...]\n\nHópasetning (mörg hópar aðskildir með bili):\n  manifest                    öll suite í þessu manifest\n  manifest:suite              tiltekið suite (mörg með kommu; einnig manifest/suite)\n  manifest:suite:subtest      undirpróf (frontend o.fl. skrá subtests; einnig manifest/suite/subtest)\n  manifest:suite:file         pure/integration (serial.mjs): sía eftir stem *.test.mjs\n  Í PowerShell fylgja síðari token sjálfkrafa núverandi hópi\n\nmanifest id kemur úr „id\" reit á efsta stigi hvers test/manifest.json.\nÁn nákvæms samsvarar víkkað sjálfkrafa sem „<nafn>/*\" (t.d. shells → shells/chat,shells/social); glob (*, ?, **) stutt.\nsuite samsvarar id eða nafni hvers suite; án nákvæms samsvarar víkkað sem „<nafn>*\", „<nafn>_*\"; einnig glob.\n\nSjálfgefið (fount test án args): keyra fyrst misheppnuð/ókláruð (í suite forgangur biluðra skráa; ef biluður hópur endurtekst — hætta eftir honum), síðan úrelt efni eftir allt grænt; hver biluð bylgja → exit 1, engar endurtekningar í sama kalli. Full keyrsla aðeins með --all.\nPrófastaða í data/test/state/main.json; bilunarskrár geymdar þar til grænt. Hver keyrsla uppfærir data/test/report.md og report.json.\nfrontend o.fl. geta skráð subtests (sérstakur trigger); breyting á einni view-skrá gerir aðeins viðeigandi subtest úrelt.\nEf pure/integration án subtests — þriðji hluti síaður eftir stem *.test.mjs (t.d. shells/chat:pure:channel_archive).\nÓuppfyllt háð (manifest.json dependsOn) → læst á hærri stig.\n\n--all         öll suite í umfangi sem markmið (græn endurnýtanleg nema --force)\n--no-parallel raðkeyrsla suite með straum stdout/stderr; sjálfgefið samhliða eftir auðlindahliði.\n--force       án endurnýtingar: sjálfgefið síðasta raunverulega niðurstaða, --force þvingar keyrslu.\n\nDæmi:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Notkun: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\nVal (hópar aðskildir með bilum; suite í sama hópi með kommum; / og : jafngild):\n  nafn              öll suite í hópnum (t.d. shells/chat)\n  nafn:suite        tiltekið suite\n  nafn:suite:atriði  tiltekinn undirpróf eða prófskrá\n\nÁn nákvæms samsvörunar víkkað eftir forskeyti (shells → shells/chat, shells/social); glob (*, ?, **) studd.\n\nSjálfgefið (bara fount test): fyrst bilun/óklárað, síðan úrelt þegar allt er grænt; hættir við bilun í einni bylgju. Aldrei allt — notaðu --all.\n\n--watch      áframhaldandi eftirlit; hættir ekki þó biðröð sé tóm (Ctrl+C til að hætta); ekki með --all, --force eða vali\n--all        öll suite innan umfangs\n--force      þvinga keyrslu; endurnýtir ekki síðasta niðurstöðu\n\nDæmi:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "Notkun: fount test --watch (ekki hægt með --all, --force eða vali)",
+			"skipBecause": {
+				"pass": "Sleppt (mál enn opið): ${label} — ${url}",
+				"fail": "Mistókst (mál lokað — fylgdu eftir og uppfærðu skip_because áður en endurprófað): ${label} — ${url}"
+			},
+			"queue": {
+				"append": "Í biðröð: ${label} (${reason}) ≈ ${remaining} eftir",
+				"remove": "Úr biðröð: ${label} (${reason}) ≈ ${remaining} eftir"
+			},
+			"display": {
+				"eta": "Áætlað ${expected}, samtals ≈ ${remaining} eftir",
+				"remaining": "Samtals ≈ ${remaining} eftir"
+			},
 			"passed": "Staðið: ${label}",
 			"passedWithNoise": "Staðið: ${label} (með hávaða)",
 			"failed": "Mistókst: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "Í bið",
 					"replay": "Endurkeyra biluð",
 					"replayImperfect": "Endurkeyra ófullkomið",
-					"silentPassed": "Staðið"
+					"silentPassed": "Staðið",
+					"skipped": "Sleppt (skip_because)"
 				},
 				"pending": {
 					"estimate": "Áætlaður tími sem eftir er ≈ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "Upstream pull: Ósjálfstæði ${requiredBy} er ekki grænt",
 					"reused": "(endurnýtt)",
 					"rootCause": "Undirrót",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "þarf eftirfylgni (lokað)",
 					"terminateReason": "Ástæða uppsagnar",
 					"triggerHashDrift": "Kveikjufingrafarið er ekki í samræmi við núverandi vinnusvæði (óhreint→net hunsað)",
 					"uncommittedHashRange": "Óinnsendur digest"

@@ -145,7 +145,20 @@
 			"replHint": "Enter للتشغيل · Shift+Enter لسطر جديد"
 		},
 		"test": {
-			"help": "الاستخدام: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nصيغة التجميع (مجموعات متعددة مفصولة بمسافة):\n  manifest                    كل suite في هذا الـ manifest\n  manifest:suite              suite محدد (عدة قيم مفصولة بفاصلة؛ أو manifest/suite)\n  manifest:suite:subtest      اختبار فرعي محدد (frontend وغيرها تسجّل subtests؛ أو manifest/suite/subtest)\n  manifest:suite:file         تصفية حسب stem ملف *.test.mjs في pure/integration (serial.mjs)\n  في PowerShell، تُدمَج الرموز اللاحقة تلقائياً في المجموعة الحالية\n\nمعرّف manifest يُؤخَذ من حقل \"id\" في أعلى كل test/manifest.json.\nعند عدم وجود تطابق تام يُوسَّع تلقائياً كـ «<اسم>/*» (مثلاً shells → shells/chat,shells/social)؛ ويدعم glob (* و ? و **).\nتسمية suite تطابق id أو name لكل suite؛ عند عدم التطابق التام يُوسَّع كـ «<اسم>*» أو «<اسم>_*»؛ ويدعم glob.\n\nالافتراضي (fount test بدون خيارات): يشغّل أولاً الفاشل/غير المكتمل (ملفات الفشل أولوية داخل الـ suite؛ إن تكرّر فشل المجموعة يخرج بعدها)، ثم العناصر منتهية الصلاحية عند اكتمال الكل؛ أي فشل يخرج برمز 1 دون إعادة محاولة في نفس الاستدعاء. لا يشغّل الكل أبداً (استخدم --all).\nحالة الاختبارات تُحفَظ في data/test/state/main.json؛ سجلات الفشل تبقى حتى تصبح خضراء. كل تشغيل يحدّث data/test/report.md و report.json.\nحزم مثل frontend يمكنها تسجيل subtests (كل منها بمحفّز مستقل)؛ تعديل ملف عرض واحد يجعل الاختبار الفرعي المقابل منتهي الصلاحية فقط.\nعندما لا تسجّل pure/integration subtests، يُصفّي الجزء الثالث حسب stem ملف *.test.mjs في المجلد (مثلاً shells/chat:pure:channel_archive).\nعند فشل التبعيات (dependsOn في manifest.json) يُحظَر المستوى الأعلى تلقائياً.\n\n--all         كل suite في النطاق كهدف (الخضراء تُعاد استخدامها ما لم تُستخدم --force)\n--no-parallel تشغيل متسلسل للـ suites مع بث stdout/stderr؛ الافتراضي: توازٍ تلقائي حسب الذاكرة ووحدة المعالجة.\n--force       تعطيل إعادة الاستخدام: الافتراضي يعتمد آخر نتيجة حقيقية؛ --force يفرض تشغيلاً فعلياً.\n\nأمثلة:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "الاستخدام: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\nالمحددات (مجموعات مفصولة بمسافات؛ suites في المجموعة نفسها بفواصل؛ / و : متكافئان):\n  الاسم             كل suites في تلك المجموعة (مثل shells/chat)\n  الاسم:suite       suite محددة\n  الاسم:suite:عنصر  اختبار فرعي أو ملف اختبار\n\nعند عدم وجود تطابق تام، يُوسَّع حسب البادئة (shells → shells/chat, shells/social)؛ كما يُدعم glob (*, ?, **).\n\nالافتراضي (fount test فقط): الفشل/غير المكتمل أولاً، ثم المنتهي الصلاحية بعد اكتمال النجاح؛ يخرج عند فشل أي موجة. ليس التشغيل الكامل — استخدم --all.\n\n--watch      مراقبة مستمرة؛ لا يتوقف حتى لو كانت الطابور فارغة (Ctrl+C للخروج)؛ لا يُجمع مع --all أو --force أو محددات\n--all        كل suites في النطاق\n--force      تشغيل إجباري؛ لا يعيد استخدام آخر نتيجة\n\nأمثلة:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "الاستخدام: fount test --watch (لا يمكن استخدامه مع --all أو --force أو محددات)",
+			"skipBecause": {
+				"pass": "تم التخطي (المسألة ما زالت مفتوحة): ${label} — ${url}",
+				"fail": "فشل (المسألة مُغلقة — تابع وحدّث skip_because قبل إعادة التحقق): ${label} — ${url}"
+			},
+			"queue": {
+				"append": "أُضيف للطابور: ${label} (${reason}) متبقٍ ≈ ${remaining}",
+				"remove": "أُزيل من الطابور: ${label} (${reason}) متبقٍ ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "متوقع ${expected}، الإجمالي المتبقي ≈ ${remaining}",
+				"remaining": "الإجمالي المتبقي ≈ ${remaining}"
+			},
 			"passed": "نجح: ${label}",
 			"passedWithNoise": "نجح: ${label} (يحتوي ضوضاء)",
 			"failed": "فشل: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "ليتم تشغيلها",
 					"replay": "أعد تشغيل العناصر الفاشلة",
 					"replayImperfect": "عمليات إعادة غير مثالية",
-					"silentPassed": "نجح"
+					"silentPassed": "نجح",
+					"skipped": "تم التخطي (skip_because)"
 				},
 				"pending": {
 					"estimate": "الوقت المتبقي المقدر ≈ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "السحب من المنبع: تبعية ${requiredBy} ليست باللون الأخضر",
 					"reused": "(إعادة الاستخدام)",
 					"rootCause": "السبب الجذري",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "يتطلب متابعة (مُغلقة)",
 					"terminateReason": "سبب الإنهاء",
 					"triggerHashDrift": "بصمة التشغيل غير متوافقة مع مساحة العمل الحالية (تم تجاهل القذرة → net)",
 					"uncommittedHashRange": "لم يتم تقديم الملخص"

@@ -145,7 +145,20 @@
 			"replHint": "Enter para executar · Shift+Enter para nova linha"
 		},
 		"test": {
-			"help": "Utilização: fount test [--all] [--no-parallel] [--force] [<grupos>...]\n\nSintaxe de agrupamento (vários grupos separados por espaço):\n manifest todas as suites do manifest\n manifest:suite suite específica (várias separadas por vírgula; também manifest/suite)\n manifest:suite:subtest subteste específico (frontend, etc. regista subtests; também manifest/suite/subtest)\n manifest:suite:file filtrar por stem de *.test.mjs em pure/integration (serial.mjs)\n No PowerShell, tokens seguintes são automaticamente fundidos no grupo atual\n\nO id do manifest vem do campo \"id\" de topo em cada test/manifest.json.\nSem correspondência exata, expande automaticamente como «<nome>/*» (ex.: shells → shells/chat,shells/social); também suporta glob (*, ?, **).\nA seleção de suite corresponde ao id ou nome de cada suite; sem correspondência exata expande como «<nome>*» ou «<nome>_*»; também suporta glob.\n\nPredefinição (fount test simples): executa primeiro falhas/itens incompletos (ficheiros falhados têm prioridade na suite; se o grupo falhado reproduz, termina após esse grupo), depois itens desatualizados quando tudo estiver verde; qualquer falha termina com código 1, sem repetição na mesma chamada. Nunca executa tudo (use --all).\nEstado dos testes persistido em data/test/state/main.json; logs de falha mantidos até ficar verde. Cada execução atualiza data/test/report.md e report.json.\nSuites como frontend podem registar subtests (cada um com trigger independente); alterar um ficheiro de vista só desatualiza o subteste correspondente.\nQuando pure/integration não regista subtests, o terceiro segmento filtra pelo stem de *.test.mjs no diretório (ex.: shells/chat:pure:channel_archive).\nDependências (manifest.json dependsOn) não satisfeitas bloqueiam automaticamente o nível superior.\n\n--all todas as suites no âmbito como alvo (verdes podem ser reutilizadas, exceto com --force)\n--no-parallel executa suites em série com stdout/stderr em fluxo; por predefinição, paralelismo automático por memória/CPU.\n--force desativa reutilização: por predefinição usa o último resultado real; --force força execução real.\n\nExemplos:\n fount test\n fount test --all\n fount test --no-parallel\n fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n fount test server/live\n fount test shells/chat\n fount test shells/social:frontend\n fount test shells/social:frontend:feed\n fount test shells/chat:pure:channel_archive\n fount test --force shells/social:frontend",
+			"help": "Utilização: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\nSeletores (grupos separados por espaços; suites no mesmo grupo por vírgulas; / e : equivalentes):\n  nome              todas as suites do grupo (ex.: shells/chat)\n  nome:suite        uma suite específica\n  nome:suite:item   um subteste ou ficheiro de teste\n\nSem correspondência exata, expande por prefixo (shells → shells/chat, shells/social); globs (*, ?, **) também suportados.\n\nPadrão (só fount test): primeiro falhas/incompletos, depois obsoletos quando tudo estiver verde; termina se alguma ronda falhar. Nunca o repositório inteiro — use --all.\n\n--watch      vigilância contínua; não termina mesmo com fila vazia (Ctrl+C para sair); não combinável com --all, --force ou seletores\n--all        todas as suites no âmbito\n--force      execução forçada; não reutiliza o último resultado\n\nExemplos:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "Utilização: fount test --watch (não pode ser usado com --all, --force ou seletores)",
+			"skipBecause": {
+				"pass": "Ignorado (issue ainda aberta): ${label} — ${url}",
+				"fail": "Falhou (issue fechada — tratar e atualizar skip_because antes de voltar a verificar): ${label} — ${url}"
+			},
+			"queue": {
+				"append": "Na fila: ${label} (${reason}) ≈ ${remaining} restantes",
+				"remove": "Removido da fila: ${label} (${reason}) ≈ ${remaining} restantes"
+			},
+			"display": {
+				"eta": "Previsto ${expected}, total ≈ ${remaining} restantes",
+				"remaining": "Total ≈ ${remaining} restantes"
+			},
 			"passed": "APROVADO: ${label}",
 			"passedWithNoise": "APROVADO: ${label} (com ruído)",
 			"failed": "FALHOU: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "Pendentes",
 					"replay": "Executar novamente itens com falha",
 					"replayImperfect": "Reprises imperfeitas",
-					"silentPassed": "Aprovadas (silenciosas)"
+					"silentPassed": "Aprovadas (silenciosas)",
+					"skipped": "Ignorado (skip_because)"
 				},
 				"pending": {
 					"estimate": "Tempo restante estimado ≈ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "Pull upstream: a dependência de ${requiredBy} não é verde",
 					"reused": "(reutilizar)",
 					"rootCause": "Causa raiz",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "requer seguimento (fechada)",
 					"terminateReason": "Motivo da rescisão",
 					"triggerHashDrift": "A impressão digital do gatilho é inconsistente com o espaço de trabalho atual (dirty→net ignorado)",
 					"uncommittedHashRange": "Resumo não enviado"

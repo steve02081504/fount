@@ -145,7 +145,20 @@
 			"replHint": "Enter zum Ausführen · Shift+Enter für Zeilenumbruch"
 		},
 		"test": {
-			"help": "Verwendung: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nGruppierungssyntax (mehrere Gruppen durch Leerzeichen getrennt):\n  manifest                    alle Suites dieses Manifests\n  manifest:suite              bestimmte Suite (mehrere per Komma; auch manifest/suite)\n  manifest:suite:subtest      bestimmter Subtest (frontend usw. mit registrierten Subtests; auch manifest/suite/subtest)\n  manifest:suite:file         nach *.test.mjs-Stamm filtern unter pure/integration (serial.mjs)\n  Bei PowerShell-Aufspaltung werden nachfolgende Tokens automatisch der aktuellen Gruppe zugeordnet\n\nmanifest id stammt aus dem Feld \"id\" auf oberster Ebene in test/manifest.json.\nOhne exakte Übereinstimmung automatische Erweiterung zu «<name>/*» (z. B. shells → shells/chat, shells/social); glob (*, ?, **) ebenfalls unterstützt.\nSuite-Name matcht id oder name jeder Suite; ohne exakte Übereinstimmung Erweiterung zu «<name>*», «<name>_*»; glob ebenfalls unterstützt.\n\nStandard (bloßes fount test): zuerst fehlgeschlagene/unvollendete Einträge (fehlgeschlagene Dateien in Suite zuerst; wenn Fehlergruppe reproduzierbar, Gruppe ausführen und beenden), dann abgelaufene Inhalte nach allem Grün; jeder fehlgeschlagene Durchlauf endet mit Exit 1, keine Wiederholung im selben Aufruf. Nie vollständig (dafür --all).\nTeststatus in data/test/state/main.json (entfernte/umbenannte Suiten werden automatisch bereinigt); Fehlerlogs bis Grün. Jeder Lauf aktualisiert data/test/report.md und report.json.\nfrontend o. ä. kann Subtests registrieren (jeweils mit eigenem trigger); Änderung einer View-Datei macht nur den entsprechenden Subtest veraltet.\nOhne registrierte Subtests bei pure/integration filtert das dritte Segment nach Stamm von *.test.mjs im Verzeichnis (z. B. shells/chat:pure:channel_archive).\nBei fehlgeschlagener Abhängigkeit (manifest.json dependsOn) übergeordnete Ebene automatisch blocked.\n\n--all         alle Suites im Bereich als Ziele (grüne weiter verwendbar, außer mit --force)\n--no-parallel Suites seriell mit Streaming nach stdout/stderr; Standard: automatische Parallelisierung per Ressourcen-Gate nach Speicher und CPU.\n--force       Wiederverwendung deaktivieren: Standard nutzt letztes echtes Ergebnis, --force erzwingt echten Lauf.\n\nBeispiele:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Verwendung: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\nSelektoren (Gruppen durch Leerzeichen getrennt; Suites in einer Gruppe durch Komma; / und : gleichwertig):\n  Name              alle Suites der Gruppe (z. B. shells/chat)\n  Name:suite        bestimmte Suite\n  Name:suite:Eintrag bestimmter Subtest oder Testdatei\n\nOhne exakte Übereinstimmung per Präfix erweitern (shells → shells/chat, shells/social); Globs (*, ?, **) unterstützt.\n\nStandard (nur fount test): zuerst Fehler/Unvollständiges, nach Grün veraltete Einträge; bei Fehlschlag in einer Runde Abbruch. Nie vollständig — dafür --all.\n\n--watch      dauerhaft beobachten; bleibt aktiv, auch wenn die Warteschlange leer ist (Ctrl+C beendet); nicht mit --all, --force oder Selektoren kombinierbar\n--all        alle Suites im Umfang\n--force      erzwingt echten Lauf; letzte Ergebnisse nicht wiederverwenden\n\nBeispiele:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "Verwendung: fount test --watch (nicht mit --all, --force oder Selektoren kombinierbar)",
+			"skipBecause": {
+				"pass": "Übersprungen (Issue noch offen): ${label} — ${url}",
+				"fail": "Fehlgeschlagen (Issue geschlossen — nachverfolgen und skip_because aktualisieren, dann erneut prüfen): ${label} — ${url}"
+			},
+			"queue": {
+				"append": "Eingereiht: ${label} (${reason}) ≈ ${remaining} verbleibend",
+				"remove": "Entfernt: ${label} (${reason}) ≈ ${remaining} verbleibend"
+			},
+			"display": {
+				"eta": "Voraussichtlich ${expected}, gesamt ≈ ${remaining} verbleibend",
+				"remaining": "Gesamt ≈ ${remaining} verbleibend"
+			},
 			"passed": "Bestanden: ${label}",
 			"passedWithNoise": "Bestanden: ${label} (mit Rauschen)",
 			"failed": "Fehlgeschlagen: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "Ausstehend",
 					"replay": "Fehlgeschlagene wiederholen",
 					"replayImperfect": "Unvollkommene wiederholen",
-					"silentPassed": "Bestanden"
+					"silentPassed": "Bestanden",
+					"skipped": "Übersprungen (skip_because)"
 				},
 				"pending": {
 					"estimate": "Geschätzte Restzeit ≈ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "Upstream-Zug: Abhängigkeit von ${requiredBy} nicht grün",
 					"reused": "(wiederverwendet)",
 					"rootCause": "Ursache",
+					"skipBecause": "Issue",
+					"skipBecauseClosed": "Nachverfolgung nötig (geschlossen)",
 					"terminateReason": "Abbruchgrund",
 					"triggerHashDrift": "Trigger-Fingerabdruck weicht vom Arbeitsbereich ab (dirty→clean ignoriert)",
 					"uncommittedHashRange": "Uncommitteter Digest"

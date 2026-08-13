@@ -145,7 +145,20 @@
 			"replHint": "Enter om uit te voeren · Shift+Enter voor nieuwe regel"
 		},
 		"test": {
-			"help": "Gebruik: fount test [--all] [--no-parallel] [--force] [<groepen>...]\n\nGroepssyntaxis (meerdere groepen gescheiden door spaties):\n  manifest                    alle suites van dit manifest\n  manifest:suite              specifieke suite (meerdere met komma; ook manifest/suite)\n  manifest:suite:subtest      specifieke subtest (frontend enz. met geregistreerde subtests; ook manifest/suite/subtest)\n  manifest:suite:file         filter op *.test.mjs-bestandsnaam onder pure/integration (serial.mjs)\n  Bij PowerShell worden losse tokens automatisch aan de huidige groep toegevoegd\n\nmanifest-id komt uit het veld \"id\" bovenaan elke test/manifest.json.\nZonder exacte match wordt automatisch uitgebreid als «<naam>/*» (bv. shells → shells/chat,shells/social); glob (*, ?, **) wordt ook ondersteund.\nSuite-selectors matchen id of naam van elke suite; zonder exacte match «<naam>*» of «<naam>_*»; ook glob.\n\nStandaard (fount test zonder opties): eerst mislukte/onvoltooide items (mislukte bestanden in suite eerst; bij reproduceerbare fouten stopt na die groep), daarna verouderde items als alles groen is; bij falen in een ronde exit 1, geen herhaalde retries in één aanroep. Nooit volledig (gebruik --all).\nTeststatus in data/test/state/main.json; faillog tot groen. Bij elke run data/test/report.md en report.json bijwerken.\nSuites zoals frontend kunnen subtests registreren (elk met eigen trigger); één viewbestand wijzigen veroudert alleen die subtest.\nZonder geregistreerde subtests bij pure/integration filtert het derde segment op *.test.mjs-stem (bv. shells/chat:pure:channel_archive).\nBij onvoldoende dependsOn (manifest.json) wordt hoger niveau automatisch geblokkeerd.\n\n--all         alle suites in bereik als doel (groene kunnen hergebruikt tenzij --force)\n--no-parallel suites serieel met streaming stdout/stderr; standaard parallel via resource gate op geheugen/CPU\n--force       hergebruik uit: standaard laatste echte resultaat; --force forceert echte run\n\nVoorbeelden:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Gebruik: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\nSelectors (groepen gescheiden door spaties; suites binnen een groep door komma’s; / en : equivalent):\n  naam              alle suites in die groep (bijv. shells/chat)\n  naam:suite        een specifieke suite\n  naam:suite:item   een specifieke subtest of testbestand\n\nZonder exacte match uitbreiden op prefix (shells → shells/chat, shells/social); globs (*, ?, **) ondersteund.\n\nStandaard (alleen fount test): eerst mislukkingen/onvolledig, daarna verouderd zodra alles groen is; stopt bij een mislukte ronde. Nooit volledig — gebruik --all.\n\n--watch      blijft kijken; stopt niet als de wachtrij leeg is (Ctrl+C om te stoppen); niet combineerbaar met --all, --force of selectors\n--all        alle suites in bereik\n--force      geforceerde run; hergebruikt laatste resultaat niet\n\nVoorbeelden:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "Gebruik: fount test --watch (niet te combineren met --all, --force of selectors)",
+			"skipBecause": {
+				"pass": "Overgeslagen (issue nog open): ${label} — ${url}",
+				"fail": "Mislukt (issue gesloten — opvolgen en skip_because bijwerken vóór hercontrole): ${label} — ${url}"
+			},
+			"queue": {
+				"append": "In wachtrij: ${label} (${reason}) ≈ ${remaining} resterend",
+				"remove": "Uit wachtrij: ${label} (${reason}) ≈ ${remaining} resterend"
+			},
+			"display": {
+				"eta": "Verwacht ${expected}, totaal ≈ ${remaining} resterend",
+				"remaining": "Totaal ≈ ${remaining} resterend"
+			},
 			"passed": "Geslaagd: ${label}",
 			"passedWithNoise": "Geslaagd: ${label} (met ruis)",
 			"failed": "Mislukt: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "Nog uit te voeren",
 					"replay": "Mislukte items opnieuw",
 					"replayImperfect": "Onvolmaakte herhalingen",
-					"silentPassed": "Geslaagd"
+					"silentPassed": "Geslaagd",
+					"skipped": "Overgeslagen (skip_because)"
 				},
 				"pending": {
 					"estimate": "Geschatte resterende tijd ≈ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "Upstream-pull: afhankelijkheid van ${requiredBy} niet groen",
 					"reused": "(hergebruikt)",
 					"rootCause": "hoofdoorzaak",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "opvolging nodig (gesloten)",
 					"terminateReason": "afbraakreden",
 					"triggerHashDrift": "trigger-vingerafdruk wijkt af van werkmap (dirty→clean genegeerd)",
 					"uncommittedHashRange": "niet-gecommitte digest"

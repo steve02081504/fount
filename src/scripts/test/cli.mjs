@@ -4,7 +4,7 @@
  *   fount test [--watch]
  *   fount test [--all] [--force] [<groups>...]
  *
- * 分组语法：manifest、manifest:suite、manifest:suite:subtest、manifest/suite/subtest（空格分隔多组）
+ * 选择器：名称 / 名称:suite / 名称:suite:子项（空格多组，逗号多 suite；/ 与 : 等价）
  */
 import process from 'node:process'
 

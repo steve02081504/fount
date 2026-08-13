@@ -145,7 +145,20 @@
 			"replHint": "Enter로 실행 · Shift+Enter 줄바꿈"
 		},
 		"test": {
-			"help": "사용법: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n그룹 구문(공백으로 여러 그룹 구분):\n  manifest                    해당 manifest의 모든 suite\n  manifest:suite              지정 suite(쉼표로 여러 개; manifest/suite도 가능)\n  manifest:suite:subtest      지정 하위 테스트(frontend 등 등록된 subtests; manifest/suite/subtest도 가능)\n  manifest:suite:file         pure/integration(serial.mjs)에서 *.test.mjs 파일 stem으로 필터\n  PowerShell에서 토큰이 분리되면 이후 토큰이 현재 그룹에 자동 병합\n\nmanifest id는 각 test/manifest.json 최상위 \"id\" 필드에서 가져옵니다.\n정확히 일치하지 않으면 \"<지정>/*\"로 자동 확장(예: shells → shells/chat,shells/social); glob(*, ?, **)도 지원.\nsuite는 각 suite의 id 또는 name으로 지정; 정확히 일치하지 않으면 \"<지정>*\", \"<지정>_*\"로 확장; glob도 지원.\n\n기본(빈 fount test): 실패/미완료 항목 먼저 실행(suite 내 실패 파일 우선; 실패 그룹 재현 시 해당 그룹만 실행 후 종료), 모두 통과하면 내용 만료 항목 실행; 어느 라운드든 실패 시 1로 종료, 같은 호출에서 반복 재시도 없음. 전체 실행 안 함(--all 사용).\n테스트 상태는 data/test/state/main.json에 영속화; 실패 로그는 통과할 때까지 보존. 매 실행마다 data/test/report.md와 report.json 갱신.\nfrontend 등 스위트는 subtests 등록 가능(각각 독립 trigger); 뷰 파일 하나만 바뀌면 해당 하위 테스트만 만료.\npure/integration에 subtests 미등록 시 세 번째 세그먼트로 디렉터리 내 *.test.mjs stem 필터(예: shells/chat:pure:channel_archive).\n의존성(manifest.json dependsOn)은 선행 manifest 통과 후 실행.",
+			"help": "사용법: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\n선택자(그룹은 공백으로 구분, 같은 그룹의 suite는 쉼표로 구분, / 와 : 동일):\n  이름              해당 그룹의 모든 suite(예: shells/chat)\n  이름:suite        suite 지정\n  이름:suite:항목   하위 테스트 또는 테스트 파일 지정\n\n정확히 일치하지 않으면 접두사로 확장(shells → shells/chat, shells/social). glob(*, ?, **)도 지원.\n\n기본(인자 없는 fount test): 실패/미완료를 먼저, 모두 통과 후 만료 항목 실행. 한 라운드라도 실패하면 종료. 전체 실행은 하지 않음(전체는 --all).\n\n--watch      계속 감시. 큐가 비어도 종료하지 않음(Ctrl+C로 종료). --all / --force / 선택자와 함께 사용 불가\n--all        범위 내 모든 suite\n--force      강제 실행(이전 결과 재사용 안 함)\n\n예:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "사용법: fount test --watch (--all, --force 또는 선택자와 함께 사용할 수 없음)",
+			"skipBecause": {
+				"pass": "건너뜀(issue 열림): ${label} — ${url}",
+				"fail": "실패(다음 issue가 닫힘 — 조치 후 skip_because를 갱신하고 다시 확인): ${label} — ${url}"
+			},
+			"queue": {
+				"append": "대기열 추가: ${label}(${reason}) 남음 ≈ ${remaining}",
+				"remove": "대기열 제거: ${label}(${reason}) 남음 ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "예상 ${expected}, 전체 남음 ≈ ${remaining}",
+				"remaining": "전체 남음 ≈ ${remaining}"
+			},
 			"passed": "경로: ${label}",
 			"passedWithNoise": "통과: ${label}(노이즈 포함)",
 			"failed": "실패: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "실행 예정",
 					"replay": "실패 항목 재실행",
 					"replayImperfect": "불완전한 재방송",
-					"silentPassed": "통과"
+					"silentPassed": "통과",
+					"skipped": "skip_because로 건너뜀"
 				},
 				"pending": {
 					"estimate": "남은 예상 시간 ≒ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "업스트림 가져오기: ${requiredBy}의 종속성이 녹색이 ​​아닙니다.",
 					"reused": "(재사용)",
 					"rootCause": "근본 원인",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "후속 조치 필요(닫힘)",
 					"terminateReason": "종료 이유",
 					"triggerHashDrift": "트리거 지문이 현재 작업 공간과 일치하지 않습니다(dirty→net 무시).",
 					"uncommittedHashRange": "다이제스트가 제출되지 않았습니다."

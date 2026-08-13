@@ -145,7 +145,20 @@
 			"replHint": "Enter — виконати · Shift+Enter — новий рядок"
 		},
 		"test": {
-			"help": "Використання: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nСинтаксис груп (кілька груп через пробіл):\n  manifest                    усі suite цього manifest\n  manifest:suite              вказаний suite (кілька через кому; також manifest/suite)\n  manifest:suite:subtest      підтест (frontend тощо мають зареєстровані subtests; також manifest/suite/subtest)\n  manifest:suite:file         pure/integration (serial.mjs): фільтр за stem файлу *.test.mjs\n  У PowerShell наступні токени автоматично додаються до поточної групи\n\nmanifest id береться з поля \"id\" у test/manifest.json.\nБез точного збігу автоматично розгортається як «<ім'я>/*» (наприклад shells → shells/chat,shells/social); підтримуються glob (*, ?, **).\nsuite збігається з id або name кожного suite; без точного збігу розгортається як «<ім'я>*», «<ім'я>_*»; також glob.\n\nЗа замовчуванням (fount test без аргументів): спочатку невдалі/незавершені (у suite пріоритет невдалих файлів; якщо невдала група відтворюється — вихід після неї), потім застарілі; будь-яка невдала хвиля → вихід 1, без повторів у тому ж виклику. Повний прогін лише з --all.\nСтан тестів у data/test/state/main.json; логи помилок зберігаються до зеленого. Кожен запуск оновлює data/test/report.md і report.json.\nfrontend тощо можуть реєструвати subtests (окремий trigger); зміна одного view-файлу застарює лише відповідний subtest.\nЯкщо pure/integration без subtests — третій сегмент фільтрує за stem *.test.mjs (наприклад shells/chat:pure:channel_archive).\nЗалежність (manifest.json dependsOn) не пройдена → вищий рівень blocked.\n\n--all         усі suite в області як цілі (зелені можна перевикористати, якщо не --force)\n--no-parallel послідовний запуск suite з потоковим stdout/stderr; за замовчуванням паралелізм через ресурсний шлюз.\n--force       без перевикористання: за замовчуванням береться останній реальний результат, --force примусово запускає.\n\nПриклади:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Використання: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\nСелектори (групи через пробіл; suite в одній групі через кому; / і : еквівалентні):\n  ім’я              усі suite групи (напр. shells/chat)\n  ім’я:suite        конкретна suite\n  ім’я:suite:елемент конкретний підтест або тестовий файл\n\nБез точного збігу — розгортання за префіксом (shells → shells/chat, shells/social); підтримуються glob (*, ?, **).\n\nЗа замовчуванням (лише fount test): спочатку збої/незавершені, після повного зеленого — застарілі; вихід при провалі будь-якої хвилі. Ніколи весь репозиторій — для цього --all.\n\n--watch      безперервне спостереження; не завершується при порожній черзі (Ctrl+C для виходу); несумісно з --all, --force і селекторами\n--all        усі suite в області\n--force      примусовий запуск; не перевикористовує минулий результат\n\nПриклади:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "Використання: fount test --watch (не можна поєднувати з --all, --force або селекторами)",
+			"skipBecause": {
+				"pass": "Пропущено (issue відкритий): ${label} — ${url}",
+				"fail": "Збій (issue закритий — опрацюйте й оновіть skip_because перед повторною перевіркою): ${label} — ${url}"
+			},
+			"queue": {
+				"append": "У черзі: ${label} (${reason}) залишилось ≈ ${remaining}",
+				"remove": "Прибрано з черги: ${label} (${reason}) залишилось ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "Очікується ${expected}, загалом залишилось ≈ ${remaining}",
+				"remaining": "Загалом залишилось ≈ ${remaining}"
+			},
 			"passed": "Пройдено: ${label}",
 			"passedWithNoise": "Пройдено: ${label} (з шумом)",
 			"failed": "Невдача: ${label}",
@@ -247,7 +260,8 @@
 					"pending": "Для запуску",
 					"replay": "Повторно запустити невдалі елементи",
 					"replayImperfect": "Неідеальні повтори",
-					"silentPassed": "Пройдено (без виводу)"
+					"silentPassed": "Пройдено (без виводу)",
+					"skipped": "Пропущено (skip_because)"
 				},
 				"pending": {
 					"estimate": "Приблизний час, що залишився ≈ ${eta}",
@@ -286,6 +300,8 @@
 					"pullUpstream": "Upstream: залежність ${requiredBy} не зелена",
 					"reused": "(повторне використання)",
 					"rootCause": "коренева причина",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "потребує уваги (закритий)",
 					"terminateReason": "Причина розірвання",
 					"triggerHashDrift": "Відбиток trigger не збігається з робочою копією (dirty→clean ігнорується)",
 					"uncommittedHashRange": "Незакомічений digest"

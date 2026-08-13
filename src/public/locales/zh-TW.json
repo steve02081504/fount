@@ -144,7 +144,20 @@
 			"replHint": "Enter 執行 · Shift+Enter 換行"
 		},
 		"test": {
-			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分組語法（空格分隔多組）：\n  manifest                    此 manifest 全部 suite\n  manifest:suite              指定 suite（逗號分隔多個；亦可用 manifest/suite）\n  manifest:suite:subtest      指定子測試（frontend 等已註冊 subtests；亦可用 manifest/suite/subtest）\n  manifest:suite:file         pure/integration（serial.mjs）下按 *.test.mjs 檔案 stem 過濾\n  PowerShell 拆散時後續 token 自動歸併到目前組\n\nmanifest id 取自各 test/manifest.json 頂層的 \"id\" 欄位。\n無精確匹配時自動按「<指名>/*」展開（如 shells → shells/chat,shells/social）；亦支援 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；無精確匹配時按「<指名>*」「<指名>_*」展開；亦支援 glob。\n\n預設（裸 fount test）：先跑失敗/未完成項（suite 內失敗檔案優先；失敗組有復現則跑完失敗組即退），全綠後再跑內容過期項；任一輪失敗即以 1 結束，不會在同一次呼叫內反覆重試。永不全量（用 --all）。\n測試現況持久化於 data/test/state/main.json（已移除/重新命名的套件會自動清理）；失敗 log 保留至轉綠。每次執行更新 data/test/report.md 與 report.json。\nfrontend 等套件可註冊 subtests（各帶獨立 trigger）；改一個視圖檔案只會使對應子測試過期。\npure/integration 未註冊 subtests 時，第三段按目錄內 *.test.mjs 的 stem 過濾（如 shells/chat:pure:channel_archive）。\n相依項（manifest.json dependsOn）未通過時高層自動 blocked。\n\n--all         範圍內全部 suite 作為目標（綠的仍可複用，除非 --force）\n--no-parallel 序列執行 suite 並串流輸出 stdout/stderr；預設由資源閘門按記憶體與 CPU 自動並行。\n--force       停用複用：預設沿用上次真實結果，--force 強制真跑目標。\n\n範例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\n選擇器（空格分隔多組；逗號分隔同組多個 suite；/ 與 : 等價）：\n  名稱              該組全部 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測試或測試檔案\n\n無精確匹配時按前綴展開（shells → shells/chat、shells/social），並支援 glob（*、?、**）。\n\n預設（裸 fount test）先補失敗/未完成，全綠後再補過期項；任一輪失敗即退出。不會全量，全量用 --all。\n\n--watch      持續監視，佇列空也不退出（Ctrl+C 結束）；不能同時帶 --all / --force 或選擇器\n--all        範圍內全部 suite\n--force      強制重跑，不沿用上次結果\n\n範例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"watchNoGroups": "用法：fount test --watch（不能同時使用 --all、--force 或選擇器）",
+			"skipBecause": {
+				"pass": "跳過（issue 仍開）：${label} — ${url}",
+				"fail": "失敗（以下 issue 已關，請跟進並更新 skip_because 後再驗）：${label} — ${url}"
+			},
+			"queue": {
+				"append": "入隊：${label}（${reason}）剩餘 ≈ ${remaining}",
+				"remove": "移出：${label}（${reason}）剩餘 ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "預計佔用 ${expected}，總剩餘 ≈ ${remaining}",
+				"remaining": "總剩餘 ≈ ${remaining}"
+			},
 			"passed": "透過：${label}",
 			"passedWithNoise": "透過：${label}（含有噪聲）",
 			"failed": "失敗：${label}",
@@ -246,7 +259,8 @@
 					"pending": "待執行",
 					"replay": "重跑失敗項",
 					"replayImperfect": "重跑不完美項",
-					"silentPassed": "透過"
+					"silentPassed": "透過",
+					"skipped": "因 skip_because 跳過"
 				},
 				"pending": {
 					"estimate": "預估剩餘耗時 ≈ ${eta}",
@@ -285,6 +299,8 @@
 					"pullUpstream": "上游拉取：${requiredBy} 的依賴未綠",
 					"reused": "（複用）",
 					"rootCause": "根因",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "需跟進（已關）",
 					"terminateReason": "終止原因",
 					"triggerHashDrift": "觸發指紋與當前工作區不一致（髒→淨已忽略）",
 					"uncommittedHashRange": "未提交 digest"
