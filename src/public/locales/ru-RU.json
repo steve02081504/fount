@@ -145,7 +145,32 @@
 			"replHint": "Enter — выполнить · Shift+Enter — новая строка"
 		},
 		"test": {
-			"help": "Использование: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nСинтаксис групп (несколько групп через пробел):\n  manifest                    все suite этого manifest\n  manifest:suite              указать suite (несколько через запятую; также manifest/suite)\n  manifest:suite:subtest      указать подтест (frontend и др. с зарегистрированными subtests; также manifest/suite/subtest)\n  manifest:suite:file         фильтр по stem файлов *.test.mjs в pure/integration (serial.mjs)\n  При разбиении токенов в PowerShell последующие токены объединяются с текущей группой\n\nID manifest берётся из поля \"id\" верхнего уровня в test/manifest.json.\nБез точного совпадения автоматически раскрывается как «<имя>/*» (напр. shells → shells/chat,shells/social); поддерживаются glob (*, ?, **).\nИмя suite сопоставляется с id или name каждого suite; без точного совпадения раскрывается как «<имя>*», «<имя>_*»; glob также поддерживается.\n\nПо умолчанию (просто fount test): сначала запускаются упавшие/незавершённые (внутри suite приоритет у упавших файлов; если группа с ошибками воспроизводится — выполнить её и выйти), затем устаревшие после полного зелёного; любая неудачная волна завершается с кодом 1, без повторов в одном вызове. Никогда полный прогон (используйте --all).\nСостояние тестов сохраняется в data/test/state/main.json (удалённые/переименованные suite очищаются автоматически); логи ошибок хранятся до зелёного. Каждый запуск обновляет data/test/report.md и report.json.\nfrontend и др. могут регистрировать subtests (каждый со своим trigger); изменение одного view-файла устаревает только соответствующий subtest.\nБез зарегистрированных subtests в pure/integration третий сегмент фильтрует по stem *.test.mjs в каталоге (напр. shells/chat:pure:channel_archive).\nПри непройденной зависимости (manifest.json dependsOn) верхние уровни автоматически blocked.\n\n--all         все suite в области как цели (зелёные могут переиспользоваться, кроме --force)\n--no-parallel последовательный запуск suite с потоковым stdout/stderr; по умолчанию параллелизм через ресурсные ворота по памяти и CPU.\n--force       отключить переиспользование: по умолчанию берётся последний реальный результат, --force принудительно запускает.\n\nПримеры:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Использование: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nСелекторы (группы через пробел; наборы в группе через запятую; / и : эквивалентны):\n  имя               все наборы группы (напр. shells/chat)\n  имя:suite         конкретный набор\n  имя:suite:элемент конкретный подтест или файл теста\n\nБез точного совпадения — расширение по префиксу (shells → shells/chat, shells/social); поддерживаются glob (*, ?, **).\n\nПо умолчанию (просто fount test): планирует сбои/незавершённые и устаревшие за один проход и выполняет; сбои блокируют только зависимые слоты — ненулевой выход в конце. Не весь репозиторий — для этого --all.\n\n--watch      непрерывное наблюдение; не завершается даже при пустой очереди (Ctrl+C для выхода); нельзя сочетать с --all, --force, --update-estimates или селекторами\n--all        все наборы в области\n--force      принудительный запуск; не переиспользует прошлые результаты\n--update-estimates  перезаписывает expected в каждом manifest по текущим средним из БД; селекторы опциональны; тесты не запускает\n\nпримеры:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "Использование: fount test --watch (нельзя использовать с другими параметрами)",
+			"updateEstimates": {
+				"incompatible": "Использование: fount test --update-estimates [<groups>...] (нельзя использовать с другими флагами)",
+				"summary": "Обновлены ожидаемые длительности для ${suitesUpdated} набор(ов) (${filesChanged} manifest); пропущено ${skipped} без базовой линии или уже актуально"
+			},
+			"skipBecause": {
+				"pass": "Пропущено (issue открыт или закрыт, но льготный период ещё не истёк): ${label} — ${url}",
+				"fail": "Ошибка (issue закрыт и льготный период истёк — разберитесь и обновите skip_because перед повторной проверкой): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Проверка модулей: процесс завершился без сигнала ready: ${label}"
+			},
+			"queue": {
+				"append": "В очереди: ${label} (${reason}) осталось ≈ ${remaining}",
+				"remove": "Убрано из очереди: ${label} (${reason}) осталось ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "Ожидается ${expected}, всего осталось ≈ ${remaining}",
+				"etaUnknown": "Ожидается ${expected}; всего осталось ${count} с неизвестной длительностью",
+				"reason": "${label}: ${reason}",
+				"remaining": "Всего осталось ≈ ${remaining}",
+				"remainingUnknown": "≈ ${remaining} осталось всего (ещё ${count} с неизвестной длительностью)",
+				"remainingOnlyUnknown": "≈ ${count} с неизвестной длительностью осталось всего",
+				"failureLog": "\n—— Журнал сбоев: ${label} ——"
+			},
 			"passed": "ПРОЙДЕНО: ${label}",
 			"passedWithNoise": "ПРОЙДЕНО: ${label} (с шумом)",
 			"failed": "ПРОВАЛ: ${label}",
@@ -157,13 +182,15 @@
 			"available": "доступно: ${ids}",
 			"manifestMatched": "совпадения манифеста: ${ids}",
 			"selectedSuites": "выбрано ${selected}/${total} тестовых suite",
-			"planSlotSummary": "Слоты плана: запуск ${run}, повтор ${reuse}, блокировка ${blocked}",
+			"planSlotSummary": "Слоты плана: запуск ${run}, повтор ${reuse}, блокировка ${blocked}, пропуск ${skipped}",
 			"noMatchingSuites": "нет подходящих тестовых suite.",
 			"reportPath": "отчёт: ${path}",
 			"reportPathFinal": "\nотчёт: ${path}",
 			"statePathFinal": "состояние: ${path}",
 			"blocked": "Блокировка: ${label} (зависимость не пройдена: ${deps})",
+			"skippedTree": "Пропущено: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Отброшен спекулятивный результат: ${label} (зависимость не пройдена: ${deps})",
+			"continueDefault": "Продолжение: ${count} suite (сбой/незавершено ${imperfect}, устарело ${outdated})",
 			"continueImperfect": "Провал/шум/незавершённые волны: ${count} suite",
 			"outdatedSelected": "Устаревшие волны: ${count} устаревших/не запускавшихся suite",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": "\n>>> Повтор ${manifestId}:${name} (триггер не изменился, используется прошлый ${status})",
 			"prunedAbsentState": "Удалено состояние несуществующих suite: ${suites} suite, ${subtests} подтестов",
 			"noisyOnlyRemain": "Ещё ${count} suite прошли с шумом: ${suites}",
-			"noRealRunPlanned": "Запуск не требуется: повтор ${reused}, ожидаемая блокировка ${blocked} (триггер не изменился)",
+			"noRealRunPlanned": "Запуск не требуется: повтор ${reused}, ожидаемая блокировка ${blocked}, пропуск ${skipped} (триггер не изменился)",
 			"allReusedHint": "Ни один suite не запускался: провалы — унаследованные результаты, блокировки не сняты (файлы не менялись). Исправьте файлы и перезапустите или используйте fount test --force.",
 			"failuresSaved": "Список ошибок сохранён: ${path} (${count} suite)",
 			"failuresCleared": "manifest ${manifestId} — все пройдены, список ошибок очищен.",
@@ -247,7 +274,9 @@
 					"pending": "Ожидают запуска",
 					"replay": "Перезапустить упавшие",
 					"replayImperfect": "Перезапустить неидеальные",
-					"silentPassed": "Пройдено (без вывода)"
+					"silentPassed": "Пройдено (без вывода)",
+					"skipped": "Пропущено (skip_because)",
+					"skipTree": "Пропущено (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "Осталось ≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "нет записи в state, автодозапуск",
 					"staleContent": "контент изменился, нужен перезапуск",
+					"skipBecause": "повторная проверка skip_because",
 					"triggerHashDrift": "дрейф отпечатка триггера (нет совпадений путей)"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "подтягивание upstream: зависимость ${requiredBy} не зелёная",
 					"reused": "(повтор)",
 					"rootCause": "корневая причина",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "требует внимания (закрыт)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Причина прерывания",
 					"triggerHashDrift": "отпечаток триггера не совпадает с рабочей копией (грязное→чистое игнорировано)",
 					"uncommittedHashRange": "digest незакоммиченных"
@@ -338,7 +371,7 @@
 				"remaining": "Осталось ≈ ${eta} (${completed}/${total} suite)",
 				"run": "Ожидаемое время ≈ ${eta} (параллелизм ${rate})",
 				"runSerial": "Ожидаемое время ≈ ${eta} (последовательно)",
-				"runSerialHint": "При параллелизме ≈ ${eta} (коэфф. ${rate}), экономия ≈ ${savings} (уберите --no-parallel)",
+				"runSerialHint": "При параллелизме ≈ ${eta} (коэфф. ${rate}), экономия ≈ ${savings}",
 				"runSkipped": "Повтор ${reused}, ожидаемая блокировка ${blocked} (не в оценке)"
 			},
 			"unknown": {

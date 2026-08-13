@@ -145,7 +145,32 @@
 			"replHint": "↩️ ▶️ · ⇧↩️ ↩️"
 		},
 		"test": {
-			"help": "📖：`fount test` [--all] [--no-parallel] [--force] [<groups>…]\n\n🗂️（␣＝📦×N）：\n  `manifest`                         👉 📋→📦∞\n  `manifest:suite`                   👉 📦（`,`＝×N；`/` OK）\n  `manifest:suite:subtest`           👉 🔬（`frontend`…⚡✅；`/` OK）\n  `manifest:suite:file`              👉 `pure`/`integration`（`serial.mjs`）→ `*.test.mjs` `stem`🔽\n  💙🐚 ✂️ → 📥📦⌀\n\n📋 id ← `test/manifest.json` 🔝 `\"id\"`\n🚫🎯 → `<name>/*`（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n📦 🎯＝`id`／`name`；🚫🎯 → `<name>*`／`<name>_*`；🌐 OK\n\n⭐（⌀ `fount test`）：\n  1️⃣ ❌／⏳（📦❌📁↑；❌📦♻️→✅🚪）\n  2️⃣ 💚→⏰\n  ❌🌊 → `exit 1`；🚫⌀📞🔁；🚫∞（→ `--all`）\n💾 `data/test/state/main.json`；❌📜→💚①🏃→ `data/test/report.md`＋`report.json`\n`frontend`… 🔬✅（⚡×N）；✏️①👁️📁 → 🔬⏰⌀\n`pure`/`integration` 🚫🔬 → ③＝`*.test.mjs` `stem`🔽（`shells/chat:pure:channel_archive`）\n🔗 `dependsOn` 🚫 → ⬆️🚫⏸️\n\n`--all`         🎯📦∞（💚♻️OK，🚫`--force`）\n`--no-parallel` 📦→→＋📡 `stdout`/`stderr`；⭐＝`RAM`／`CPU` 🚪🔀\n`--force`       🚫♻️；⭐＝⏮✅；💥＝🏃\n\n💡：\n  `fount test`\n  `fount test --all`\n  `fount test --no-parallel`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n",
+			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n       `fount test --update-estimates` [<groups>…]\n\n🎯（␣＝📦×N；`,`＝1📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：1📋 ❌/⏳+⏰ ▶️；❌→🔗🚫 only；exit≠0；🚫∞（→ `--all`）\n\n`--watch`      👁️♾️，📭≠🚪（Ctrl+C）；🚫`--all`／`--force`／`--update-estimates`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n`--update-estimates`  🗄️avg⏱️→ manifest `expected`；🎯OK；🚫🏃🧪\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n  `fount test --update-estimates`\n  `fount test --update-estimates shells/chat`",
+			"watchNoGroups": "📖：`fount test --watch`（🚫+⚙️）",
+			"updateEstimates": {
+				"incompatible": "📖：`fount test --update-estimates` [<groups>…]（🚫+🚩）",
+				"summary": "✍️ ${suitesUpdated} 📦⏱️（manifest ${filesChanged}）；⏭️ ${skipped} 🚫📏／✅🆕"
+			},
+			"skipBecause": {
+				"pass": "⏭️（🐙🔓／🔒⏳❌）：${label} — ${url}",
+				"fail": "❌（🐙🔒⏳✅→👣＋🔄`skip_because`→🔁）：${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "🔍🚫✅🚪：${label}"
+			},
+			"queue": {
+				"append": "📥：${label}（${reason}）⏳≈ ${remaining}",
+				"remove": "📤：${label}（${reason}）⏳≈ ${remaining}"
+			},
+			"display": {
+				"eta": "🔮 ${expected}，Σ⏳≈ ${remaining}",
+				"etaUnknown": "🔮 ${expected}，Σ⏳ ${count}×❓⏱️",
+				"reason": "${label}：${reason}",
+				"remaining": "Σ⏳≈ ${remaining}",
+				"remainingUnknown": "Σ⏳≈ ${remaining}（+ ${count}×❓⏱️）",
+				"remainingOnlyUnknown": "Σ⏳：${count}×❓⏱️",
+				"failureLog": "\n—— ❌📋 ${label} ——"
+			},
 			"passed": "✅: ${label}",
 			"passedWithNoise": "✅: ${label} (🔊)",
 			"failed": "❌: ${label}",
@@ -157,13 +182,15 @@
 			"available": "✅📋：${ids}",
 			"manifestMatched": "📋🎯：${ids}",
 			"selectedSuites": "👆 ${selected}/${total} 📦🧪",
-			"planSlotSummary": "📊：🏃 ${run}、♻️ ${reuse}、🚫⏸️ ${blocked}",
+			"planSlotSummary": "📊：🏃 ${run}、♻️ ${reuse}、🚫⏸️ ${blocked}、⏭️ ${skipped}",
 			"noMatchingSuites": "🚫📦🧪🎯",
 			"reportPath": "📊📄: ${path}",
 			"reportPathFinal": "\n📊📄: ${path}",
 			"statePathFinal": "📊: ${path}",
 			"blocked": "🚫⏸️：${label}（🔗🚫：${deps}）",
+			"skippedTree": "⏭️：${label}（`skip_tree`：${deps}）",
 			"speculativeDiscard": "🗑️🔮：${label}（🔗🚫：${deps}）",
+			"continueDefault": "▶️ ${count} 📦（❌/⏳ ${imperfect}，📅 ${outdated}）",
 			"continueImperfect": "❌／🔊／⏳🌊：${count} 📦",
 			"outdatedSelected": "⏰🌊：${count} ⏰／🚫🏃 📦🧪",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": "\n>>> ♻️ ${manifestId}:${name}（⚡⌀Δ，⏮ ${status}）",
 			"prunedAbsentState": "🧹 ⌀📦：${suites} 📦、${subtests} 🧪",
 			"noisyOnlyRemain": "＋ ${count} 📦 ✅＋🔊：${suites}",
-			"noRealRunPlanned": "🚫🏃：♻️ ${reused}、🚫⏸️ ${blocked}（⚡⌀Δ）",
+			"noRealRunPlanned": "🚫🏃：♻️ ${reused}、🚫⏸️ ${blocked}、⏭️ ${skipped}（⚡⌀Δ）",
 			"allReusedHint": "🚫🏃：❌＝⏮♻️，🚫⏸️⌀Δ（📁⌀Δ）🔧📁→🔁，／ `fount test --force`→💥🏃",
 			"failuresSaved": "💾 ❌📋：${path}（${count} 📦）",
 			"failuresCleared": "📋 ${manifestId} 💚∞，❌📋🗑️",
@@ -247,7 +274,9 @@
 					"pending": "⏳",
 					"replay": "🔁 ❌",
 					"replayImperfect": "🔁⌀💚",
-					"silentPassed": "✅"
+					"silentPassed": "✅",
+					"skipped": "⏭️（`skip_because`）",
+					"skipTree": "⏭️（⬆️ `skip_tree`）"
 				},
 				"pending": {
 					"estimate": "⏱️⏳≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "`state` ∅ → 🏃",
 					"staleContent": "📄✏️ → 🔁",
+					"skipBecause": "skip_because 🔁",
 					"triggerHashDrift": "⚡🔢🌊（🚫📁🎯）"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "⬆️：${requiredBy} 🔗⌀💚",
 					"reused": "(♻️)",
 					"rootCause": "🌱",
+					"skipBecause": "🐙",
+					"skipBecauseClosed": "👣（🔒）",
+					"skipTree": "`skip_tree`",
 					"terminateReason": "⏹️❔",
 					"triggerHashDrift": "⚡🔢≠🗂️（💩→✨ 🙈）",
 					"uncommittedHashRange": "🚫📤 `digest`"
@@ -338,7 +371,7 @@
 				"remaining": "⏱️⏳ ≈ ${eta}（${completed}/${total} 📦）",
 				"run": "⏱️ ≈ ${eta}（🔀 ${rate}）",
 				"runSerial": "⏱️ ≈ ${eta}（📦→→）",
-				"runSerialHint": "🔀≈ ${eta}（${rate}），💰 ≈ ${savings}（➖ `--no-parallel`）",
+				"runSerialHint": "🔀≈ ${eta}（${rate}），💰 ≈ ${savings}",
 				"runSkipped": "＋♻️ ${reused}，🚫⏸️ ${blocked}（∉⏱️）"
 			},
 			"unknown": {
@@ -5413,10 +5446,10 @@
 				"pathRequired": "⚠️📂❓",
 				"success": "✅▶️🖥️📂",
 				"lineInput": {
-					"aria-label": "#️⃣行"
+					"aria-label": "↕#"
 				},
 				"columnInput": {
-					"aria-label": "#️⃣列"
+					"aria-label": "↔#"
 				}
 			}
 		},

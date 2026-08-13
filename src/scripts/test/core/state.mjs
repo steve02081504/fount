@@ -578,6 +578,7 @@ function aggregateSuiteStatus(suite, subtests, runStatus) {
  * @param {string[]} [params.ranSubtests] 本次实际跑过的子测试名
  * @param {Record<string, string | null>} [params.subtestTriggerHashes] 子测试 triggerHash
  * @param {boolean} [params.partialFileRun] FOUNT_TEST_ONLY 等文件子集跑；不写 suite 墙钟基线
+ * @param {boolean} [params.recordBaseline] 是否更新耗时/资源基线；skip_because 不写
  * @returns {Promise<SuiteStateEntry>} 新条目
  */
 export async function upsertSuiteRun({
@@ -592,6 +593,7 @@ export async function upsertSuiteRun({
 	ranSubtests,
 	subtestTriggerHashes,
 	partialFileRun = false,
+	recordBaseline = true,
 }) {
 	const key = suiteKey(suite.manifestId, suite.name)
 	const prev = state.suites[key]
@@ -631,7 +633,7 @@ export async function upsertSuiteRun({
 	else if (noisy) runStatus = 'noisy'
 
 	const effectiveRan = ranSubtests ?? suite.subtests?.map(st => st.name) ?? []
-	const recordTiming = shouldRecordTimingBaseline(result)
+	const recordTiming = recordBaseline && shouldRecordTimingBaseline(result)
 	const ranAllSubtests = !suite.subtests?.length
 		|| suite.subtests.every(st => effectiveRan.includes(st.name))
 

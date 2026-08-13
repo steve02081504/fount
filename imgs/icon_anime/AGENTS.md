@@ -28,7 +28,7 @@ Hosts own process-exit signaling and must wire `icon.signal` into it (log_viewer
 ```bash
 fount logo
 fount logo watch   # deno run --watch
-fount test icon_anime --no-parallel
+fount test icon_anime
 ```
 
 Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then quit). Left quick-click → ripple; left hold/drag → cool spotlight. Right-drag → stroke wind; right long-still → tornado vortex. Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.

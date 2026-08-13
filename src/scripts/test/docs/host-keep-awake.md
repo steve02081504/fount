@@ -2,7 +2,7 @@
 
 Day-to-day pointer: [AGENTS.md](../AGENTS.md) Operator tools.
 
-`path/fount.ps1` / `fount.sh` wrap Deno so long runs do not sleep the host.
+`path/fount.ps1` / `fount.sh` wrap one-shot `fount test` so long runs do not sleep the host. The detached test kernel also holds keep-awake while a suite is running. `fount test --watch` idle does neither.
 
 ## Windows
 

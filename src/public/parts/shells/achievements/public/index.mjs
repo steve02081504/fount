@@ -3,7 +3,7 @@
  */
 import { unlockAchievement, loadPart } from '../../../scripts/endpoints/parts.mjs'
 import { onServerEvent } from '../../../scripts/endpoints/server_events.mjs'
-import { geti18n, geti18n_nowarn, initTranslations } from '../../../scripts/i18n/index.mjs'
+import { geti18n, geti18n_nowarn, initTranslations, primaryLocale, setLocalizeLogic } from '../../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../../scripts/theme/index.mjs'
 
 import * as api from './src/endpoints.mjs'
@@ -94,6 +94,20 @@ achievementsContainer.addEventListener('click', async (event) => {
 })
 
 /**
+ * 解锁时间随界面语言重写（toLocaleString + i18n 模板）。
+ * @param {ParentNode} root 刚挂上的区块
+ * @returns {void}
+ */
+function localizeUnlockedDates(root) {
+	for (const element of root.querySelectorAll('[data-unlocked-at]'))
+		setLocalizeLogic(element, () => {
+			element.textContent = geti18n('achievements.unlocked_on', {
+				date: new Date(element.dataset.unlockedAt).toLocaleString(primaryLocale()),
+			})
+		})
+}
+
+/**
  * 从服务器获取所有成就数据并将其渲染到页面上。
  * 它会处理加载状态、错误，并根据需要异步加载 i18n 数据。
  * @returns {Promise<void>}
@@ -130,6 +144,7 @@ async function renderAchievements() {
 						unlockedAchievements,
 					})
 					section.id = sectionId
+					localizeUnlockedDates(section)
 					document.getElementById(sectionId)?.replaceWith(section)
 				})()
 			}
@@ -145,6 +160,7 @@ async function renderAchievements() {
 					unlockedAchievements,
 				})
 				section.id = sectionId
+				localizeUnlockedDates(section)
 				achievementsContainer.appendChild(section)
 			}
 		}

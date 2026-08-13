@@ -1,6 +1,4 @@
 /** 提及解析（chat/social 共用；浏览器 / Deno / Node 均可加载）。 */
-import { isEntityHash128 } from 'https://esm.sh/@steve02081504/fount-p2p/core/entity_id_parse'
-
 import { parseInlineTokens } from './inlineTokens.mjs'
 
 /**
@@ -10,7 +8,7 @@ import { parseInlineTokens } from './inlineTokens.mjs'
 export function extractMentionEntityHashes(text) {
 	const hashes = []
 	for (const token of parseInlineTokens(text))
-		if (token.kind === 'entity' && isEntityHash128(token.body))
+		if (token.kind === 'entity')
 			hashes.push(token.body)
 
 	return [...new Set(hashes)]
@@ -57,7 +55,7 @@ export function buildMentionsStructure(text, options = {}) {
 	const roleIds = []
 	let everyone = false
 	for (const token of parseInlineTokens(text))
-		if (token.kind === 'entity' && isEntityHash128(token.body))
+		if (token.kind === 'entity')
 			entityHashes.push(token.body)
 		else if (token.kind === 'role' && canMentionEveryone && token.body)
 			roleIds.push(token.body)

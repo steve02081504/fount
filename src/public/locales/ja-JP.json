@@ -145,7 +145,32 @@
 			"replHint": "Enter で実行 · Shift+Enter で改行"
 		},
 		"test": {
-			"help": "使い方: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nグループ構文（スペース区切りで複数指定可）:\n  manifest                    その manifest の全 suite\n  manifest:suite              suite を指定（複数はカンマ区切り。manifest/suite も可）\n  manifest:suite:subtest      サブテストを指定（frontend 等は subtests 登録済み。manifest/suite/subtest も可）\n  manifest:suite:file         pure/integration（serial.mjs）配下の *.test.mjs の stem でフィルタ\n  PowerShell でトークンが分割された場合、後続トークンは現在のグループに自動結合\n\nmanifest id は各 test/manifest.json 最上位の \"id\" フィールドから取得。\n完全一致がない場合は「<指名>/*」で自動展開（例: shells → shells/chat,shells/social）。glob（*、?、**）も可。\nsuite 指名は各 suite の id または name に一致。完全一致がない場合は「<指名>*」「<指名>_*」で展開。glob も可。\n\nデフォルト（fount test のみ）: 失敗/未完了を先に実行（suite 内は失敗ファイル優先。失敗グループが再現すればそのグループ完了後に終了）、全緑後に内容期限切れを実行。いずれかのラウンドで失敗したら exit 1。同一呼び出し内で再試行しない。常に全量は走らない（--all を使用）。\nテスト状態は data/test/state/main.json に永続化（削除/改名されたスイートは自動整理）。失敗 log は緑になるまで保持。毎回 data/test/report.md と report.json を更新。\nfrontend 等の suite は subtests を登録可能（各々独立 trigger）。ビューファイルを変えると対応 subtest のみ期限切れ。\npure/integration で subtests 未登録の場合、第三段はディレクトリ内 *.test.mjs の stem でフィルタ（例: shells/chat:pure:channel_archive）。\n依存（manifest.json dependsOn）が未通過なら上位は自動 blocked。\n\n--all         範囲内の全 suite を対象（緑は --force 以外は再利用可）\n--no-parallel suite を直列実行し stdout/stderr をストリーム。デフォルトはリソースゲートがメモリ/CPU に応じて自動並列。\n--force       再利用を無効化。デフォルトは前回の実結果を使用、--force で強制実行。\n\n例:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "使い方: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nセレクタ（グループはスペース区切り、同一グループ内の suite はカンマ区切り。/ と : は同義）:\n  名前              そのグループの全 suite（例: shells/chat）\n  名前:suite        suite を指定\n  名前:suite:項目   サブテストまたはテストファイルを指定\n\n完全一致がない場合はプレフィックスで展開（shells → shells/chat, shells/social）。glob（*, ?, **）も可。\n\nデフォルト（fount test のみ）: 失敗/未完了/ノイズありと期限切れを一括で計画して実行。失敗は依存先のスロットのみブロックし、最後に非ゼロで終了。全量は走らない（全量は --all）。\n\n--watch      監視を継続。キューが空でも終了しない（Ctrl+C で終了）。--all / --force / --update-estimates / セレクタとは併用不可\n--all        範囲内の全 suite\n--force      強制実行（前回結果を再利用しない）\n--update-estimates  現行 DB の平均所要時間から各 manifest の expected を書き戻す。セレクタ任意。テストは実行しない\n\n例:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "使い方: fount test --watch（他のオプションとは併用できません）",
+			"updateEstimates": {
+				"incompatible": "使い方: fount test --update-estimates [<groups>...]（他のフラグとは併用できません）",
+				"summary": "${suitesUpdated} 件の suite の予想時間を更新（manifest ${filesChanged} 件）。ベースラインなしまたは最新のため ${skipped} 件をスキップ"
+			},
+			"skipBecause": {
+				"pass": "スキップ（issue 未クローズ、またはクローズ後の猶予期間内）: ${label} — ${url}",
+				"fail": "失敗（以下の issue はクローズ済みで猶予期間経過 — 対応して skip_because を更新してから再確認してください）: ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "モジュールチェック: ready シグナルなしでプロセス終了: ${label}"
+			},
+			"queue": {
+				"append": "キュー追加: ${label}（${reason}）残り ≈ ${remaining}",
+				"remove": "キュー削除: ${label}（${reason}）残り ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "見込み ${expected}、全体残り ≈ ${remaining}",
+				"etaUnknown": "見込み ${expected}、全体残りに未知の所要時間 ${count} 件",
+				"reason": "${label}: ${reason}",
+				"remaining": "全体残り ≈ ${remaining}",
+				"remainingUnknown": "全体残り ≈ ${remaining}（別途未知の所要時間 ${count} 件）",
+				"remainingOnlyUnknown": "全体残り：未知の所要時間 ${count} 件",
+				"failureLog": "\n—— ${label} の失敗ログ ——"
+			},
 			"passed": "合格: ${label}",
 			"passedWithNoise": "合格: ${label}（ノイズあり）",
 			"failed": "失敗: ${label}",
@@ -157,13 +182,15 @@
 			"available": "利用可能なアイテム: ${ids}",
 			"manifestMatched": "マニフェストの一致結果: ${ids}",
 			"selectedSuites": "${selected}/${total} 個のテスト スイートが選択されました",
-			"planSlotSummary": "プランスロット: 実際の実行 ${run}、再利用 ${reuse}、ブロックされた ${blocked}",
+			"planSlotSummary": "プランスロット: 実実行 ${run}、再利用 ${reuse}、ブロック ${blocked}、スキップ ${skipped}",
 			"noMatchingSuites": "一致するテスト スイートがありません。",
 			"reportPath": "レポート: ${path}",
 			"reportPathFinal": "レポート: ${path}",
 			"statePathFinal": "現在のステータス: ${path}",
 			"blocked": "ブロック: ${label}（依存未通過: ${deps}）",
+			"skippedTree": "スキップ: ${label}（skip_tree: ${deps}）",
 			"speculativeDiscard": "予測結果を破棄します: ${label} (依存関係が渡されません: ${deps})",
+			"continueDefault": "続行: スイート ${count} 件（失敗/未完了 ${imperfect}、期限切れ ${outdated}）",
 			"continueImperfect": "失敗/ノイズ/未完了: スイート ${count} 件",
 			"outdatedSelected": "期限切れ: 古い/未実行のスイート ${count} 件",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": ">>> ${manifestId}:${name} を再利用 (トリガーは変更されず、最後の ${status} が使用されます)",
 			"prunedAbsentState": "存在しないスイートの状態を削除しました：スイート ${suites} 件、サブテスト ${subtests} 件",
 			"noisyOnlyRemain": "まだ ${count} 個のスイートが通過していますが、ノイズが発生しています: ${suites}",
-			"noRealRunPlanned": "今回は実行不要: 再利用 ${reused} 件、ブロック予定 ${blocked} 件（trigger 不変）",
+			"noRealRunPlanned": "今回は実行不要: 再利用 ${reused} 件、ブロック予定 ${blocked} 件、スキップ ${skipped} 件（trigger 不変）",
 			"allReusedHint": "今回は実際にスイートを実行していません。失敗は前回結果の引き継ぎ、ブロックも未解消（関連ファイル不変）です。修正後に再実行するか、fount test --force で強制実行してください。",
 			"failuresSaved": "失敗リストを保存: ${path}（スイート ${count} 件）",
 			"failuresCleared": "マニフェスト ${manifestId} はすべて合格し、失敗リストはクリアされました。",
@@ -247,7 +274,9 @@
 					"pending": "未実行",
 					"replay": "失敗したアイテムを再実行する",
 					"replayImperfect": "不完全な再実行",
-					"silentPassed": "合格"
+					"silentPassed": "合格",
+					"skipped": "skip_because によりスキップ",
+					"skipTree": "上流 skip_tree によりスキップ"
 				},
 				"pending": {
 					"estimate": "推定残り時間 ≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "state に記録なし、自動実行",
 					"staleContent": "内容変更のため再実行が必要",
+					"skipBecause": "skip_because 再確認",
 					"triggerHashDrift": "指紋ドリフトのトリガー (パスがヒットしない)"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "アップストリーム プル: ${requiredBy} の依存関係は緑色ではありません",
 					"reused": "（再利用）",
 					"rootCause": "根本的な原因",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "要フォロー（クローズ済み）",
+					"skipTree": "skip_tree",
 					"terminateReason": "終了理由",
 					"triggerHashDrift": "トリガーのフィンガープリントが現在のワークスペースと一致しません (ダーティ→ネットは無視されます)",
 					"uncommittedHashRange": "ダイジェストは提出されていません"
@@ -338,7 +371,7 @@
 				"remaining": "推定残り時間 ≈ ${eta} (${completed}/${total} スイート)",
 				"run": "この実行には ≈ ${eta} (推定並列速度 ${rate}) かかると推定されます",
 				"runSerial": "この実行には ≈ ${eta} (シリアル) かかると予想されます",
-				"runSerialHint": "並列処理が期待される場合 ≈ ${eta} (並列レート ${rate})、節約額 ≈ ${savings} (--no-parallel を削除)",
+				"runSerialHint": "並列処理が期待される場合 ≈ ${eta} (並列レート ${rate})、節約額 ≈ ${savings}",
 				"runSkipped": "ほかに再利用 ${reused} 件、ブロック予定 ${blocked} 件（見積もり外）"
 			},
 			"unknown": {

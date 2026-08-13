@@ -1,6 +1,13 @@
+import { join } from 'node:path'
+
 import { collectChangesSinceRecord } from '../core/changed.mjs'
 import { expandImperfectDependents } from '../core/dependencies.mjs'
 import { parseTestSubtestsEnv } from '../core/protocol.mjs'
+import {
+	isPassSkipBlock,
+	skipBecauseAsForSuite,
+	skipTreeDescendantKeys,
+} from '../core/skip_because.mjs'
 import { collectStaleTriggerEvidence, suiteKey } from '../core/state.mjs'
 
 /**
@@ -64,7 +71,8 @@ export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = pa
  * @property {Map<string, GoalEvidence>} [goalEvidenceByKey] 目标证据
  * @property {Map<string, Map<string, string[] | undefined>>} [failedFirstByManifest] manifest → suite → 失败文件（FOUNT_TEST_FIRST）
  * @property {Map<string, string[]>} [subtestFilterByKey] suite 键 → 显式子测试过滤
- * @property {'imperfect' | 'outdated' | 'explicit' | 'all'} [mode] 波次模式
+ * @property {'imperfect' | 'outdated' | 'explicit' | 'all' | 'continue' | 'skip_because'} [mode] 波次模式
+ * @property {Set<string>} [imperfectKeys] 默认波次中的 imperfect 目标
  */
 
 /**
@@ -103,11 +111,27 @@ export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
 	await Promise.all(allSuites.map(async suite => {
 		const key = suiteKey(suite.manifestId, suite.name)
 		const entry = state.suites[key]
-		map.set(key, await collectChangesSinceRecord(repoRoot, entry?.commitHash ?? null, []))
+		if (suite.gitRoot) {
+			const abs = join(repoRoot, suite.gitRoot)
+			const files = await collectChangesSinceRecord(abs, entry?.commitHash ?? null, [])
+			map.set(key, files.map(file => `${suite.gitRoot}/${file}`.replace(/\\/g, '/')))
+		}
+		else if (suite.gitRoot === null)
+			map.set(key, [])
+		else
+			map.set(key, await collectChangesSinceRecord(repoRoot, entry?.commitHash ?? null, []))
 		if (!suite.subtests?.length) return
 		await Promise.all(suite.subtests.map(async subtest => {
 			const stCommit = entry?.subtests?.[subtest.name]?.commitHash ?? entry?.commitHash ?? null
-			map.set(`${key}#${subtest.name}`, await collectChangesSinceRecord(repoRoot, stCommit, []))
+			if (suite.gitRoot) {
+				const abs = join(repoRoot, suite.gitRoot)
+				const files = await collectChangesSinceRecord(abs, stCommit, [])
+				map.set(`${key}#${subtest.name}`, files.map(file => `${suite.gitRoot}/${file}`.replace(/\\/g, '/')))
+			}
+			else if (suite.gitRoot === null)
+				map.set(`${key}#${subtest.name}`, [])
+			else
+				map.set(`${key}#${subtest.name}`, await collectChangesSinceRecord(repoRoot, stCommit, []))
 		}))
 	}))
 	return map
@@ -118,9 +142,14 @@ export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
  * fresh noisy 进 imperfect 真跑，但不拖下游（noisy 已放行下游且下游多半已绿）。
  * @param {Verdict | undefined} verdict 裁决
  * @param {import('../core/state.mjs').SuiteStateEntry | undefined} entry 现状
+ * @param {import('../core/manifest.mjs').SuiteDef | undefined} suite suite
+ * @param {Map<string, import('../core/manifest.mjs').SuiteDef>} byKey suite 表
+ * @param {Map<string, import('../core/skip_because.mjs').IssueClosedState>} [issueStates] 已探测的 issue 状态
  * @returns {boolean} 是否展开下游
  */
-function isHardImperfectRoot(verdict, entry) {
+function isHardImperfectRoot(verdict, entry, suite, byKey, issueStates) {
+	if (skipBecauseAsForSuite(suite)) return false
+	if (isPassSkipBlock(entry, byKey, issueStates)) return false
 	if (!entry) return true
 	if (entry.status === 'failed' || entry.status === 'blocked') return true
 	return verdict?.kind === 'red'
@@ -130,17 +159,25 @@ function isHardImperfectRoot(verdict, entry) {
  * 收集 imperfect 波次根目标键（不含下游扩展）。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
+ * @param {SuiteDef[]} [allSuites] 全部 suite（skip_because 判定）
+ * @param {Map<string, import('../core/skip_because.mjs').IssueClosedState>} [issueStates] 已探测的 issue 状态
  * @returns {Set<string>} imperfect 目标键（含 fresh noisy；不含 stale passed / outdated unknown）
  */
-export function goalImperfectKeys(verdicts, state) {
+export function goalImperfectKeys(verdicts, state, allSuites = [], issueStates) {
+	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
+	const skipTree = skipTreeDescendantKeys(allSuites)
 	/** @type {Set<string>} */
 	const keys = new Set()
 	for (const [key, verdict] of verdicts) {
+		if (skipTree.has(key)) continue
+		const suite = byKey.get(key)
 		const entry = state.suites[key]
 		if (!entry) {
 			keys.add(key)
 			continue
 		}
+		if (skipBecauseAsForSuite(suite)) continue
+		if (isPassSkipBlock(entry, byKey, issueStates)) continue
 		// hard fail 一律进 imperfect（即使裁决误判 green/noisy 也不能漏）
 		if (entry.status === 'failed' || entry.status === 'blocked') {
 			keys.add(key)
@@ -156,17 +193,38 @@ export function goalImperfectKeys(verdicts, state) {
 }
 
 /**
+ * 由 imperfect 根键展开一层下游，并剔除 skip_tree。
+ * @param {Set<string>} imperfectKeys imperfect 根
+ * @param {Map<string, Verdict>} verdicts 裁决表
+ * @param {TestState} state 现状库
+ * @param {SuiteDef[]} allSuites 全部 suite
+ * @param {Map<string, import('../core/skip_because.mjs').IssueClosedState>} [issueStates] 已探测的 issue 状态
+ * @returns {{ byKey: Map<string, SuiteDef>, expandRoots: Set<string>, skipTree: Set<string>, goalKeys: Set<string> }} 展开结果
+ */
+function expandImperfectGoalKeys(imperfectKeys, verdicts, state, allSuites, issueStates) {
+	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
+	const expandRoots = new Set([...imperfectKeys].filter(key =>
+		isHardImperfectRoot(verdicts.get(key), state.suites[key], byKey.get(key), byKey, issueStates)))
+	const skipTree = skipTreeDescendantKeys(allSuites)
+	return {
+		byKey,
+		expandRoots,
+		skipTree,
+		goalKeys: new Set([...imperfectKeys, ...expandImperfectDependents(expandRoots, allSuites)].filter(key => !skipTree.has(key))),
+	}
+}
+
+/**
  * imperfect 目标 + hard-fail 根的一层下游（noisy 不拖下游）。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
  * @param {SuiteDef[]} allSuites 全部 suite
+ * @param {Map<string, import('../core/skip_because.mjs').IssueClosedState>} [issueStates] 已探测的 issue 状态
  * @returns {Set<string>} 扩展后的目标键
  */
-export function expandImperfectGoals(verdicts, state, allSuites) {
-	const imperfectKeys = goalImperfectKeys(verdicts, state)
-	const expandRoots = new Set([...imperfectKeys].filter(key =>
-		isHardImperfectRoot(verdicts.get(key), state.suites[key])))
-	return new Set([...imperfectKeys, ...expandImperfectDependents(expandRoots, allSuites)])
+export function expandImperfectGoals(verdicts, state, allSuites, issueStates) {
+	const imperfectKeys = goalImperfectKeys(verdicts, state, allSuites, issueStates)
+	return expandImperfectGoalKeys(imperfectKeys, verdicts, state, allSuites, issueStates).goalKeys
 }
 
 /**
@@ -201,12 +259,14 @@ export function goalContinue(verdicts, state, allSuites) {
  * 计算 outdated（内容过期）波次目标键。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {SuiteDef[]} scope 过滤范围
+ * @param {SuiteDef[]} [allSuites] 全部 suite（skip_tree 下游剔除）
  * @returns {Set<string>} outdated 目标键
  */
-export function goalOutdated(verdicts, scope) {
+export function goalOutdated(verdicts, scope, allSuites = []) {
 	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
+	const skipTree = skipTreeDescendantKeys(allSuites.length ? allSuites : scope)
 	return new Set([...verdicts.entries()]
-		.filter(([key, verdict]) => scopeKeys.has(key) && verdict.kind === 'unknown')
+		.filter(([key, verdict]) => scopeKeys.has(key) && verdict.kind === 'unknown' && !skipTree.has(key))
 		.map(([key]) => key))
 }
 
@@ -230,6 +290,7 @@ export function goalExplicit(suites) {
  * @param {SuiteDef[]} params.scope 范围
  * @param {string} params.commitHash HEAD
  * @param {string | null} params.uncommittedHash 未提交 digest
+ * @param {Map<string, import('../core/skip_because.mjs').IssueClosedState>} [params.issueStates] 已探测的 issue 状态
  * @returns {GoalSelection} 选择结果
  */
 export function selectImperfectWave({
@@ -239,16 +300,11 @@ export function selectImperfectWave({
 	scope,
 	commitHash,
 	uncommittedHash,
+	issueStates,
 }) {
 	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
-	const imperfectKeys = new Set([...goalImperfectKeys(verdicts, state)].filter(k => scopeKeys.has(k)))
-	// hard-fail 拖一层下游（可超 scope）；noisy 只重跑自身
-	const expandRoots = new Set([...imperfectKeys].filter(key =>
-		isHardImperfectRoot(verdicts.get(key), state.suites[key])))
-	const goalKeys = new Set([
-		...imperfectKeys,
-		...expandImperfectDependents(expandRoots, allSuites),
-	])
+	const imperfectKeys = new Set([...goalImperfectKeys(verdicts, state, allSuites, issueStates)].filter(k => scopeKeys.has(k)))
+	const { goalKeys } = expandImperfectGoalKeys(imperfectKeys, verdicts, state, allSuites, issueStates)
 	if (!goalKeys.size)
 		return { action: 'exit', code: 0, mode: 'imperfect' }
 
@@ -305,6 +361,7 @@ export function selectImperfectWave({
  * @param {SuiteDef[]} params.scope 范围
  * @param {SuiteDef[]} [params.allSuites] 全部 suite
  * @param {Map<string, string[]>} [params.committedChangedByKey] commit 变更
+ * @param {string[]} [params.uncommittedFiles] 未提交路径
  * @param {string} [params.commitHash] HEAD
  * @param {string | null} [params.uncommittedHash] 未提交 digest
  * @param {TestState} [params.state] 现状库
@@ -315,11 +372,12 @@ export function selectOutdatedWave({
 	scope,
 	allSuites = [],
 	committedChangedByKey = new Map(),
+	uncommittedFiles = [],
 	commitHash,
 	uncommittedHash,
 	state,
 }) {
-	const goalKeys = goalOutdated(verdicts, scope)
+	const goalKeys = goalOutdated(verdicts, scope, allSuites)
 	if (!goalKeys.size)
 		return { action: 'exit', code: 0, mode: 'outdated' }
 
@@ -329,7 +387,10 @@ export function selectOutdatedWave({
 	for (const key of goalKeys) {
 		const suite = byKey.get(key)
 		const entry = state?.suites[key]
-		const changed = committedChangedByKey.get(key) ?? []
+		const changed = [...new Set([
+			...committedChangedByKey.get(key) ?? [],
+			...uncommittedFiles,
+		])]
 		const triggerEvidence = suite
 			? collectStaleTriggerEvidence(suite, changed, {
 				entry,
@@ -387,5 +448,83 @@ export function selectExplicitOrAll({
 		goalEvidenceByKey,
 		failedFirstByManifest: buildFailedFirstByManifest(state, manifestIds),
 		subtestFilterByKey,
+	}
+}
+
+/**
+ * 默认续跑：imperfect ∪ outdated，每个 suite 只规划一次。
+ * @param {object} params 参数
+ * @param {Map<string, Verdict>} params.verdicts 裁决表
+ * @param {TestState} params.state 现状库
+ * @param {SuiteDef[]} params.allSuites 全部 suite
+ * @param {SuiteDef[]} params.scope 范围
+ * @param {Map<string, string[]>} [params.committedChangedByKey] commit 变更
+ * @param {string[]} [params.uncommittedFiles] 未提交路径
+ * @param {string} params.commitHash HEAD
+ * @param {string | null} params.uncommittedHash 未提交 digest
+ * @param {Map<string, import('../core/skip_because.mjs').IssueClosedState>} [params.issueStates] 已探测的 issue 状态
+ * @returns {GoalSelection} 选择结果
+ */
+export function selectDefaultWave({
+	verdicts,
+	state,
+	allSuites,
+	scope,
+	committedChangedByKey = new Map(),
+	uncommittedFiles = [],
+	commitHash,
+	uncommittedHash,
+	issueStates,
+}) {
+	const imperfect = selectImperfectWave({
+		verdicts,
+		state,
+		allSuites,
+		scope,
+		commitHash,
+		uncommittedHash,
+		issueStates,
+	})
+	const outdated = selectOutdatedWave({
+		verdicts,
+		scope,
+		allSuites,
+		committedChangedByKey,
+		uncommittedFiles,
+		commitHash,
+		uncommittedHash,
+		state,
+	})
+	const goalKeys = new Set([
+		...imperfect.action === 'run' ? imperfect.goalKeys : [],
+		...outdated.action === 'run' ? outdated.goalKeys : [],
+	])
+	if (!goalKeys.size)
+		return { action: 'exit', code: 0, mode: 'continue' }
+
+	/** @type {Map<string, GoalEvidence>} */
+	const goalEvidenceByKey = new Map()
+	if (imperfect.action === 'run')
+		for (const [key, evidence] of imperfect.goalEvidenceByKey ?? [])
+			goalEvidenceByKey.set(key, evidence)
+	if (outdated.action === 'run')
+		for (const [key, evidence] of outdated.goalEvidenceByKey ?? [])
+			if (!goalEvidenceByKey.has(key))
+				goalEvidenceByKey.set(key, evidence)
+
+	const hasImperfect = imperfect.action === 'run'
+	const hasOutdated = outdated.action === 'run'
+	/** @type {GoalSelection['mode']} */
+	const mode = hasImperfect && hasOutdated
+		? 'continue'
+		: hasImperfect ? 'imperfect' : 'outdated'
+
+	return {
+		action: 'run',
+		mode,
+		goalKeys,
+		goalEvidenceByKey,
+		failedFirstByManifest: buildFailedFirstByManifest(state),
+		imperfectKeys: hasImperfect ? imperfect.goalKeys : new Set(),
 	}
 }

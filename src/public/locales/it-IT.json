@@ -145,7 +145,32 @@
 			"replHint": "Invio per eseguire · Maiusc+Invio per nuova riga"
 		},
 		"test": {
-			"help": "utilizzo: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nSintassi dei gruppi (più gruppi separati da spazi):\n  manifest                    tutte le suite di quel manifest\n  manifest:suite              suite specifiche (più valori separati da virgola; anche manifest/suite)\n  manifest:suite:subtest      subtest specifico (frontend ecc. con subtests registrati; anche manifest/suite/subtest)\n  manifest:suite:file         filtra per stem di *.test.mjs in pure/integration (serial.mjs)\n  Se PowerShell spezza i token, quelli successivi si uniscono al gruppo corrente\n\nL'ID manifest proviene dal campo \"id\" di primo livello in test/manifest.json.\nSenza corrispondenza esatta, si espande come \"<nome>/*\" (es. shells → shells/chat,shells/social); supportati anche i glob (*, ?, **).\nI nomi suite corrispondono all'id o al name di ogni suite; senza corrispondenza esatta, si espande come \"<nome>*\", \"<nome>_*\"; supportati anche i glob.\n\nPredefinito (fount test senza argomenti): prima le voci fallite/incomplete (priorità ai file falliti nella suite; se un gruppo fallito si riproduce, termina quel gruppo e esci), poi il contenuto obsoleto dopo tutto verde; ogni onda fallita esce con codice 1, senza ripetizioni nella stessa invocazione. Mai l'intero repo (usa --all).\nLo stato dei test persiste in data/test/state/main.json (le suite rimosse/rinominate vengono eliminate automaticamente); i log di errore restano finché non torna tutto verde. Ogni esecuzione aggiorna data/test/report.md e report.json.\nfrontend ecc. possono registrare subtests (ciascuno con trigger proprio); modificare un file di vista fa scadere solo il subtest corrispondente.\nSenza subtests registrati in pure/integration, il terzo segmento filtra per stem di *.test.mjs nella directory (es. shells/chat:pure:channel_archive).\nSe una dipendenza (manifest.json dependsOn) non è verde, i livelli superiori restano blocked automaticamente.\n\n--all         tutte le suite nell'ambito come obiettivi (quelle verdi possono essere riusate salvo --force)\n--no-parallel esegue le suite in serie con stdout/stderr in streaming; predefinito: parallelismo via gate sulle risorse in base a memoria e CPU.\n--force       disabilita il riuso: predefinito mantiene l'ultimo risultato reale, --force forza l'esecuzione.\n\nEsempi:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Uso: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nSelettori (gruppi separati da spazi; suite nello stesso gruppo separate da virgole; / e : equivalenti):\n  nome              tutte le suite del gruppo (es. shells/chat)\n  nome:suite        una suite specifica\n  nome:suite:voce   un sottotest o file di test specifico\n\nSenza corrispondenza esatta, espansione per prefisso (shells → shells/chat, shells/social); supportati anche i glob (*, ?, **).\n\nPredefinito (solo fount test): pianifica errori/incompleti/rumorosi e obsoleti in un'unica passata ed esegue; gli errori bloccano solo i dipendenti — uscita non zero alla fine. Mai l'intero repo — usa --all per quello.\n\n--watch      monitoraggio continuo; resta attivo anche con coda vuota (Ctrl+C per uscire); non combinabile con --all, --force, --update-estimates o selettori\n--all        tutte le suite nell'ambito\n--force      esecuzione forzata; non riusa gli ultimi risultati\n--update-estimates  riscrive expected in ogni manifest dalle medie attuali del DB; selettori opzionali; non esegue i test\n\nesempi:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "Uso: fount test --watch (non utilizzabile con altre opzioni)",
+			"updateEstimates": {
+				"incompatible": "Uso: fount test --update-estimates [<groups>...] (non utilizzabile con altri flag)",
+				"summary": "Durate previste aggiornate per ${suitesUpdated} suite (${filesChanged} manifest); saltate ${skipped} senza baseline o già aggiornate"
+			},
+			"skipBecause": {
+				"pass": "Saltato (issue ancora aperta o chiusa ma periodo di grazia non scaduto): ${label} — ${url}",
+				"fail": "Non superato (issue chiusa e periodo di grazia scaduto — dar seguito e aggiornare skip_because prima di riverificare): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Controllo moduli: processo terminato senza segnale ready: ${label}"
+			},
+			"queue": {
+				"append": "In coda: ${label} (${reason}) ≈ ${remaining} rimanenti",
+				"remove": "Rimosso dalla coda: ${label} (${reason}) ≈ ${remaining} rimanenti"
+			},
+			"display": {
+				"eta": "Previsto ${expected}, totale ≈ ${remaining} rimanenti",
+				"etaUnknown": "Previsto ${expected}; ${count} con durata sconosciuta rimanenti in totale",
+				"reason": "${label}: ${reason}",
+				"remaining": "Totale ≈ ${remaining} rimanenti",
+				"remainingUnknown": "≈ ${remaining} rimanenti in totale (${count} con durata sconosciuta in più)",
+				"remainingOnlyUnknown": "≈ ${count} con durata sconosciuta rimanenti in totale",
+				"failureLog": "\n—— Registro errori di ${label} ——"
+			},
 			"passed": "Superato: ${label}",
 			"passedWithNoise": "SUPERATO: ${label} (con rumore)",
 			"failed": "Fallito: ${label}",
@@ -157,13 +182,15 @@
 			"available": "disponibile: ${ids}",
 			"manifestMatched": "manifest corrispondente: ${ids}",
 			"selectedSuites": "suite di test ${selected}/${total} selezionate",
-			"planSlotSummary": "Slot del piano: esecuzione reale ${run}, riutilizzo ${reuse}, bloccato ${blocked}",
+			"planSlotSummary": "Slot del piano: esecuzione reale ${run}, riutilizzo ${reuse}, bloccato ${blocked}, saltato ${skipped}",
 			"noMatchingSuites": "nessuna suite di test corrispondente.",
 			"reportPath": "rapporto: ${path}",
 			"reportPathFinal": "rapporto: ${path}",
 			"statePathFinal": "Stato attuale: ${path}",
 			"blocked": "Blocco: ${label} (dipendenza non superata: ${deps})",
+			"skippedTree": "Saltato: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Scarta risultati della previsione: ${label} (dipendenza non superata: ${deps})",
+			"continueDefault": "Ripresa di ${count} suite (fallite/incomplete ${imperfect}, obsolete ${outdated})",
 			"continueImperfect": "Guasto/rumore/onde incomplete: kit ${count}",
 			"outdatedSelected": "Ondate scadute: ${count} pacchetti obsoleti/non eseguiti",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": ">>> Riutilizza ${manifestId}:${name} (il trigger rimane invariato, viene utilizzato l'ultimo ${status})",
 			"prunedAbsentState": "Rimosso lo stato di suite non più presenti: ${suites} suite, ${subtests} sottotest",
 			"noisyOnlyRemain": "Ci sono ancora ${count} suite che passano ma con rumore: ${suites}",
-			"noRealRunPlanned": "Non è necessario eseguire questa volta: ${reused} vengono riutilizzati e ${blocked} dovrebbero essere bloccati (il trigger rimane invariato)",
+			"noRealRunPlanned": "Nessuna esecuzione necessaria: ${reused} riutilizzate, ${blocked} previste come bloccate, ${skipped} saltate (trigger invariato)",
 			"allReusedHint": "Questa volta non viene effettivamente eseguito alcun pacchetto: l'errore è l'ultimo risultato ereditato e il blocco non viene risolto (i file rilevanti rimangono invariati). Riparare i file rilevanti ed eseguirli nuovamente oppure utilizzare fount test --force per forzare un'esecuzione reale.",
 			"failuresSaved": "elenco errori salvati: ${path} (${count} suite)",
 			"failuresCleared": "manifest ${manifestId} tutto superato; elenco degli errori cancellato.",
@@ -247,7 +274,9 @@
 					"pending": "In attesa di",
 					"replay": "Rieseguire gli elementi non riusciti",
 					"replayImperfect": "Repliche imperfette",
-					"silentPassed": "Superato (silenzioso)"
+					"silentPassed": "Superato (silenzioso)",
+					"skipped": "Saltato (skip_because)",
+					"skipTree": "Saltato (skip_tree a monte)"
 				},
 				"pending": {
 					"estimate": "Tempo rimanente stimato ≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "stato senza registrazione, reintegro automatico",
 					"staleContent": "Il contenuto è cambiato e deve essere rieseguito.",
+					"skipBecause": "ricontrollo skip_because",
 					"triggerHashDrift": "Attiva la deriva dell'impronta digitale (nessun percorso raggiunto)"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "Pull upstream: la dipendenza di ${requiredBy} non è verde",
 					"reused": "(riutilizzo)",
 					"rootCause": "causa ultima",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "da seguire (chiusa)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Motivo della risoluzione",
 					"triggerHashDrift": "L'impronta digitale del trigger non è coerente con l'area di lavoro corrente (sporca → rete ignorata)",
 					"uncommittedHashRange": "digest non inviato"
@@ -338,7 +371,7 @@
 				"remaining": "Tempo rimanente stimato ≈ ${eta} (pacchetti ${completed}/${total})",
 				"run": "Si stima che questa corsa richiederà ≈ ${eta} (velocità parallela stimata ${rate})",
 				"runSerial": "Si prevede che questa corsa durerà ≈ ${eta} (seriale)",
-				"runSerialHint": "Se è previsto il parallelismo ≈ ${eta} (velocità di parallelo ${rate}), risparmio ≈ ${savings} (rimuovi --no-parallel)",
+				"runSerialHint": "Se è previsto il parallelismo ≈ ${eta} (velocità di parallelo ${rate}), risparmio ≈ ${savings}",
 				"runSkipped": "Ci sono anche pezzi ${reused} che vengono riutilizzati e pezzi ${blocked} che si prevede verranno bloccati (non compresi nel preventivo)"
 			},
 			"unknown": {

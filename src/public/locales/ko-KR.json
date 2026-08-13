@@ -145,7 +145,32 @@
 			"replHint": "Enter로 실행 · Shift+Enter 줄바꿈"
 		},
 		"test": {
-			"help": "사용법: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n그룹 구문(공백으로 여러 그룹 구분):\n  manifest                    해당 manifest의 모든 suite\n  manifest:suite              지정 suite(쉼표로 여러 개; manifest/suite도 가능)\n  manifest:suite:subtest      지정 하위 테스트(frontend 등 등록된 subtests; manifest/suite/subtest도 가능)\n  manifest:suite:file         pure/integration(serial.mjs)에서 *.test.mjs 파일 stem으로 필터\n  PowerShell에서 토큰이 분리되면 이후 토큰이 현재 그룹에 자동 병합\n\nmanifest id는 각 test/manifest.json 최상위 \"id\" 필드에서 가져옵니다.\n정확히 일치하지 않으면 \"<지정>/*\"로 자동 확장(예: shells → shells/chat,shells/social); glob(*, ?, **)도 지원.\nsuite는 각 suite의 id 또는 name으로 지정; 정확히 일치하지 않으면 \"<지정>*\", \"<지정>_*\"로 확장; glob도 지원.\n\n기본(빈 fount test): 실패/미완료 항목 먼저 실행(suite 내 실패 파일 우선; 실패 그룹 재현 시 해당 그룹만 실행 후 종료), 모두 통과하면 내용 만료 항목 실행; 어느 라운드든 실패 시 1로 종료, 같은 호출에서 반복 재시도 없음. 전체 실행 안 함(--all 사용).\n테스트 상태는 data/test/state/main.json에 영속화; 실패 로그는 통과할 때까지 보존. 매 실행마다 data/test/report.md와 report.json 갱신.\nfrontend 등 스위트는 subtests 등록 가능(각각 독립 trigger); 뷰 파일 하나만 바뀌면 해당 하위 테스트만 만료.\npure/integration에 subtests 미등록 시 세 번째 세그먼트로 디렉터리 내 *.test.mjs stem 필터(예: shells/chat:pure:channel_archive).\n의존성(manifest.json dependsOn)은 선행 manifest 통과 후 실행.",
+			"help": "사용법: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\n선택자(그룹은 공백으로 구분, 같은 그룹 내 suite는 쉼표로 구분. / 와 : 는 동일):\n  이름              해당 그룹의 모든 suite(예: shells/chat)\n  이름:suite        특정 suite\n  이름:suite:항목   특정 하위 테스트 또는 테스트 파일\n\n정확히 일치하지 않으면 접두사로 확장(shells → shells/chat, shells/social). glob(*, ?, **)도 지원.\n\n기본(옵션 없는 fount test): 실패/미완료/소음과 만료 항목을 한 번에 계획해 실행. 실패는 의존 슬롯만 막고, 마지막에 0이 아닌 종료 코드. 전체 실행은 하지 않음 — 전체는 --all.\n\n--watch      계속 감시. 큐가 비어도 종료하지 않음(Ctrl+C로 종료). --all / --force / --update-estimates / 선택자와 함께 사용 불가\n--all        범위 내 모든 suite\n--force      강제 실행, 이전 결과 재사용 안 함\n--update-estimates  현재 DB 평균 소요 시간으로 각 manifest의 expected를 다시 기록. 선택자 선택 가능. 테스트는 실행하지 않음\n\n예:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "사용법: fount test --watch (다른 옵션과 함께 사용할 수 없음)",
+			"updateEstimates": {
+				"incompatible": "사용법: fount test --update-estimates [<groups>...] (다른 플래그와 함께 사용할 수 없음)",
+				"summary": "${suitesUpdated}개 suite의 예상 시간을 갱신함(manifest ${filesChanged}개). 기준선 없음 또는 이미 최신이라 ${skipped}개 건너뜀"
+			},
+			"skipBecause": {
+				"pass": "건너뜀(issue 열림 또는 닫힘 후 유예 기간 미경과): ${label} — ${url}",
+				"fail": "실패(다음 issue가 닫혔고 유예 기간 경과 — 조치 후 skip_because를 갱신하고 다시 확인): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "모듈 검사: ready 신호 없이 프로세스 종료: ${label}"
+			},
+			"queue": {
+				"append": "대기열 추가: ${label}(${reason}) 남음 ≈ ${remaining}",
+				"remove": "대기열 제거: ${label}(${reason}) 남음 ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "예상 ${expected}, 전체 남음 ≈ ${remaining}",
+				"etaUnknown": "예상 ${expected}, 전체 남음에 미지 소요 ${count}건",
+				"reason": "${label}: ${reason}",
+				"remaining": "전체 남음 ≈ ${remaining}",
+				"remainingUnknown": "전체 남음 ≈ ${remaining} (미지 소요 ${count}건 추가)",
+				"remainingOnlyUnknown": "전체 남음: 미지 소요 ${count}건",
+				"failureLog": "\n—— ${label} 실패 로그 ——"
+			},
 			"passed": "경로: ${label}",
 			"passedWithNoise": "통과: ${label}(노이즈 포함)",
 			"failed": "실패: ${label}",
@@ -157,13 +182,15 @@
 			"available": "사용 가능: ${ids}",
 			"manifestMatched": "매니페스트 일치 결과: ${ids}",
 			"selectedSuites": "${selected}/${total} 테스트 스위트 선택됨",
-			"planSlotSummary": "계획 슬롯: 실제 실행 ${run}, 재사용 ${reuse}, 차단 ${blocked}",
+			"planSlotSummary": "계획 슬롯: 실제 실행 ${run}, 재사용 ${reuse}, 차단 ${blocked}, 건너뜀 ${skipped}",
 			"noMatchingSuites": "일치하는 테스트 도구 모음이 없습니다.",
 			"reportPath": "보고서: ${path}",
 			"reportPathFinal": "보고서: ${path}",
 			"statePathFinal": "현재 상태: ${path}",
 			"blocked": "차단: ${label}(종속성이 전달되지 않음: ${deps})",
+			"skippedTree": "건너뜀: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "예측 결과 삭제: ${label}(종속성 전달되지 않음: ${deps})",
+			"continueDefault": "이어서 실행: 스위트 ${count}개 (실패/미완료 ${imperfect}, 만료 ${outdated})",
 			"continueImperfect": "고장/소음/불완전한 웨이브: ${count} 키트",
 			"outdatedSelected": "만료된 웨이브: ${count}개의 오래된/실행 취소된 스위트",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": ">>> ${manifestId}:${name} 재사용(트리거는 변경되지 않고 마지막 ${status}가 사용됨)",
 			"prunedAbsentState": "존재하지 않는 스위트 상태를 정리했습니다: 스위트 ${suites}개, 하위 테스트 ${subtests}개",
 			"noisyOnlyRemain": "여전히 ${count}개의 스위트가 지나가지만 소음이 있습니다. ${suites}",
-			"noRealRunPlanned": "이번에는 실행할 필요가 없습니다. ${reused}는 재사용되고 ${blocked}는 차단될 것으로 예상됩니다(트리거는 변경되지 않은 상태로 유지됨).",
+			"noRealRunPlanned": "이번에는 실행 불필요: 재사용 ${reused}개, 차단 예정 ${blocked}개, 건너뜀 ${skipped}개 (trigger 변경 없음)",
 			"allReusedHint": "이번에는 실제로 실행된 스위트가 없습니다: 실패는 이전 결과를 재사용한 것이며, 관련 파일이 변경되지 않아 차단이 해소되지 않았습니다. 관련 파일을 수정한 뒤 다시 실행하거나 `fount test --force`로 강제 실행하세요.",
 			"failuresSaved": "저장된 실패 목록: ${path}(${count}개 스위트)",
 			"failuresCleared": "manifest ${manifestId} 모두 통과, 실패 목록 삭제됨.",
@@ -247,7 +274,9 @@
 					"pending": "실행 예정",
 					"replay": "실패 항목 재실행",
 					"replayImperfect": "불완전한 재방송",
-					"silentPassed": "통과"
+					"silentPassed": "통과",
+					"skipped": "skip_because로 건너뜀",
+					"skipTree": "상위 skip_tree로 건너뜀"
 				},
 				"pending": {
 					"estimate": "남은 예상 시간 ≒ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "기록 없음 상태, 자동 화장",
 					"staleContent": "내용이 변경되어 다시 실행해야 합니다.",
+					"skipBecause": "skip_because 재확인",
 					"triggerHashDrift": "지문 드리프트 트리거(경로 적중 없음)"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "업스트림 가져오기: ${requiredBy}의 종속성이 녹색이 ​​아닙니다.",
 					"reused": "(재사용)",
 					"rootCause": "근본 원인",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "후속 조치 필요(닫힘)",
+					"skipTree": "skip_tree",
 					"terminateReason": "종료 이유",
 					"triggerHashDrift": "트리거 지문이 현재 작업 공간과 일치하지 않습니다(dirty→net 무시).",
 					"uncommittedHashRange": "다이제스트가 제출되지 않았습니다."
@@ -338,7 +371,7 @@
 				"remaining": "남은 예상 시간 ≒ ${eta} (${completed}/${total} 스위트)",
 				"run": "이 실행에는 약 ${eta}(예상 병렬 속도 ${rate})이 소요될 것으로 예상됩니다.",
 				"runSerial": "이 실행에는 약 ${eta}(연속)가 소요될 것으로 예상됩니다.",
-				"runSerialHint": "병렬 처리가 예상되는 경우 ≒ ${eta}(병렬 비율 ${rate}), 절감액 ≒ ${savings}(--no-parallel 제거)",
+				"runSerialHint": "병렬 처리가 예상되는 경우 ≒ ${eta}(병렬 비율 ${rate}), 절감액 ≒ ${savings}",
 				"runSkipped": "또한 재사용되는 ${reused}개 조각과 차단될 것으로 예상되는 ${blocked}개 조각도 있습니다(추정치에는 포함되지 않음)."
 			},
 			"unknown": {

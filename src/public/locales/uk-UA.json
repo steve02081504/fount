@@ -145,7 +145,32 @@
 			"replHint": "Enter — виконати · Shift+Enter — новий рядок"
 		},
 		"test": {
-			"help": "Використання: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nСинтаксис груп (кілька груп через пробіл):\n  manifest                    усі suite цього manifest\n  manifest:suite              вказаний suite (кілька через кому; також manifest/suite)\n  manifest:suite:subtest      підтест (frontend тощо мають зареєстровані subtests; також manifest/suite/subtest)\n  manifest:suite:file         pure/integration (serial.mjs): фільтр за stem файлу *.test.mjs\n  У PowerShell наступні токени автоматично додаються до поточної групи\n\nmanifest id береться з поля \"id\" у test/manifest.json.\nБез точного збігу автоматично розгортається як «<ім'я>/*» (наприклад shells → shells/chat,shells/social); підтримуються glob (*, ?, **).\nsuite збігається з id або name кожного suite; без точного збігу розгортається як «<ім'я>*», «<ім'я>_*»; також glob.\n\nЗа замовчуванням (fount test без аргументів): спочатку невдалі/незавершені (у suite пріоритет невдалих файлів; якщо невдала група відтворюється — вихід після неї), потім застарілі; будь-яка невдала хвиля → вихід 1, без повторів у тому ж виклику. Повний прогін лише з --all.\nСтан тестів у data/test/state/main.json; логи помилок зберігаються до зеленого. Кожен запуск оновлює data/test/report.md і report.json.\nfrontend тощо можуть реєструвати subtests (окремий trigger); зміна одного view-файлу застарює лише відповідний subtest.\nЯкщо pure/integration без subtests — третій сегмент фільтрує за stem *.test.mjs (наприклад shells/chat:pure:channel_archive).\nЗалежність (manifest.json dependsOn) не пройдена → вищий рівень blocked.\n\n--all         усі suite в області як цілі (зелені можна перевикористати, якщо не --force)\n--no-parallel послідовний запуск suite з потоковим stdout/stderr; за замовчуванням паралелізм через ресурсний шлюз.\n--force       без перевикористання: за замовчуванням береться останній реальний результат, --force примусово запускає.\n\nПриклади:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Використання: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nСелектори (групи через пробіл; набори в групі через кому; / і : еквівалентні):\n  ім'я              усі набори групи (напр. shells/chat)\n  ім'я:suite        конкретний набір\n  ім'я:suite:елемент конкретний підтест або файл тесту\n\nБез точного збігу — розширення за префіксом (shells → shells/chat, shells/social); підтримуються glob (*, ?, **).\n\nЗа замовчуванням (лише fount test): планує збої/незавершені та застарілі за один прохід і виконує; збої блокують лише залежні слоти — ненульовий вихід наприкінці. Не весь репозиторій — для цього --all.\n\n--watch      безперервне спостереження; не завершується навіть при порожній черзі (Ctrl+C для виходу); не можна поєднувати з --all, --force, --update-estimates або селекторами\n--all        усі набори в області\n--force      примусовий запуск; не перевикористовує минулі результати\n--update-estimates  перезаписує expected у кожному manifest за поточними середніми з БД; селектори необов'язкові; тести не запускає\n\nприклади:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "Використання: fount test --watch (не можна використовувати з іншими параметрами)",
+			"updateEstimates": {
+				"incompatible": "Використання: fount test --update-estimates [<groups>...] (не можна використовувати з іншими прапорцями)",
+				"summary": "Оновлено очікувані тривалості для ${suitesUpdated} набор(ів) (${filesChanged} manifest); пропущено ${skipped} без базової лінії або вже актуально"
+			},
+			"skipBecause": {
+				"pass": "Пропущено (issue відкритий або закритий, але пільговий період ще не минув): ${label} — ${url}",
+				"fail": "Помилка (issue закритий і пільговий період минув — розберіться та оновіть skip_because перед повторною перевіркою): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Перевірка модулів: процес завершився без сигналу ready: ${label}"
+			},
+			"queue": {
+				"append": "У черзі: ${label} (${reason}) залишилось ≈ ${remaining}",
+				"remove": "Прибрано з черги: ${label} (${reason}) залишилось ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "Очікується ${expected}, загалом залишилось ≈ ${remaining}",
+				"etaUnknown": "Очікується ${expected}; загалом залишилось ${count} з невідомою тривалістю",
+				"reason": "${label}: ${reason}",
+				"remaining": "Загалом залишилось ≈ ${remaining}",
+				"remainingUnknown": "≈ ${remaining} залишилось загалом (ще ${count} з невідомою тривалістю)",
+				"remainingOnlyUnknown": "≈ ${count} з невідомою тривалістю залишилось загалом",
+				"failureLog": "\n—— Журнал збоїв: ${label} ——"
+			},
 			"passed": "Пройдено: ${label}",
 			"passedWithNoise": "Пройдено: ${label} (з шумом)",
 			"failed": "Невдача: ${label}",
@@ -157,13 +182,15 @@
 			"available": "Доступні елементи: ${ids}",
 			"manifestMatched": "Збіг manifest: ${ids}",
 			"selectedSuites": "Вибрано ${selected}/${total} наборів тестів",
-			"planSlotSummary": "Слот плану: реальний запуск ${run}, повторне використання ${reuse}, заблокований ${blocked}",
+			"planSlotSummary": "Слот плану: реальний запуск ${run}, повторне використання ${reuse}, заблоковано ${blocked}, пропущено ${skipped}",
 			"noMatchingSuites": "Немає відповідного набору тестів.",
 			"reportPath": "Звіт: ${path}",
 			"reportPathFinal": "Звіт: ${path}",
 			"statePathFinal": "Поточний статус: ${path}",
 			"blocked": "Блокування: ${label} (залежність не передана: ${deps})",
+			"skippedTree": "Пропущено: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Відкинути результати передбачення: ${label} (залежність не передана: ${deps})",
+			"continueDefault": "Продовження: ${count} комплектів (збій/незавершено ${imperfect}, застаріло ${outdated})",
 			"continueImperfect": "Збій/шум/неповні хвилі: ${count} комплектів",
 			"outdatedSelected": "Прострочені хвилі: ${count} застарілих/незапущених пакетів",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": ">>> Повторне використання ${manifestId}:${name} (тригер залишається без змін, використовується останній ${status})",
 			"prunedAbsentState": "Очищено стан видалених suite: ${suites} suite, ${subtests} субтестів",
 			"noisyOnlyRemain": "Є ще ${count} комплектів, але з шумом: ${suites}",
-			"noRealRunPlanned": "Цього разу запускати не потрібно: ${reused} використовуються повторно, а ${blocked} очікується блокування (тригер залишається незмінним)",
+			"noRealRunPlanned": "Цього разу запуск не потрібен: повторно використано ${reused}, очікуване блокування ${blocked}, пропущено ${skipped} (тригер незмінний)",
 			"allReusedHint": "Цього разу жоден suite не запускався: невдача — успадкований минулий результат, блокування не знято (файли не змінювались). Виправте файли й перезапустіть або fount test --force для примусового запуску.",
 			"failuresSaved": "Збережений список помилок: ${path} (${count} пакетів)",
 			"failuresCleared": "маніфест ${manifestId} пройдено, і список помилок очищено.",
@@ -247,7 +274,9 @@
 					"pending": "Для запуску",
 					"replay": "Повторно запустити невдалі елементи",
 					"replayImperfect": "Неідеальні повтори",
-					"silentPassed": "Пройдено (без виводу)"
+					"silentPassed": "Пройдено (без виводу)",
+					"skipped": "Пропущено (skip_because)",
+					"skipTree": "Пропущено (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "Приблизний час, що залишився ≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "немає запису в state, автоматичний допуск",
 					"staleContent": "Вміст змінився, і його потрібно повторити.",
+					"skipBecause": "повторна перевірка skip_because",
 					"triggerHashDrift": "Запуск дрейфу відбитків пальців (без попадання траєкторії)"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "Upstream: залежність ${requiredBy} не зелена",
 					"reused": "(повторне використання)",
 					"rootCause": "коренева причина",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "потребує уваги (закритий)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Причина розірвання",
 					"triggerHashDrift": "Відбиток trigger не збігається з робочою копією (dirty→clean ігнорується)",
 					"uncommittedHashRange": "Незакомічений digest"
@@ -338,7 +371,7 @@
 				"remaining": "Приблизний час, що залишився ≈ ${eta} (${completed}/${total} packages)",
 				"run": "За оцінками, цей запуск займе ≈ ${eta} (орієнтовна паралельна швидкість ${rate})",
 				"runSerial": "Очікується, що цей запуск триватиме ≈ ${eta} (серійний)",
-				"runSerialHint": "Якщо очікуваний паралелізм ≈ ${eta} (паралельна ставка ${rate}), заощадження ≈ ${savings} (видалити --no-parallel)",
+				"runSerialHint": "Якщо очікуваний паралелізм ≈ ${eta} (паралельна ставка ${rate}), заощадження ≈ ${savings}",
 				"runSkipped": "Є також ${reused} штук, які використовуються повторно, і ${blocked} частин, які очікується, що будуть заблоковані (не включено в оцінку)"
 			},
 			"unknown": {

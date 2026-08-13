@@ -5,16 +5,20 @@ import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
 import { attachDependencies, sortManifestIds } from './dependencies.mjs'
+import { parseExpectedMs } from './expected.mjs'
 import { parseManifestResources } from './resources.mjs'
+import { parseSkipBecause } from './skip_because.mjs'
 import { matchGlob, mergeTriggerFilter } from './trigger_filter.mjs'
 /**
  * suite 内注册的子测试。
  * @typedef {object} SubtestDef
  * @property {string} name 子测试名（CLI 第三级选择器）
  * @property {string} spec spec 文件名（默认 `${name}.spec.mjs`）
+ * @property {number | null} [expectedMs] manifest `expected` 解析出的预估耗时（毫秒）
  * @property {string[]} triggers 子测试专属触发 glob（不含 suite 共享 triggers）
  * @property {string[]} [triggerRefs] trigger set 引用名
  * @property {Record<string, string[]>} [triggerSetPatterns] triggerRefs 展开的模式表
+ * @property {import('./skip_because.mjs').SkipBecauseEntry[]} [skipBecause] skip_because 条目；`as` 默认 pass（当绿），skip_tree 连下游跳过；关闭已过 delay 则失败
  */
 
 /**
@@ -23,6 +27,7 @@ import { matchGlob, mergeTriggerFilter } from './trigger_filter.mjs'
  * @property {string} manifestId manifest 顶层 id
  * @property {string} name suite 显示名
  * @property {string} id suite 指名 id（默认同 name）
+ * @property {number | null} [expectedMs] manifest `expected` 解析出的全量预估耗时（毫秒）
  * @property {string[]} run 执行命令
  * @property {string[]} triggers 触发 glob（suite 共享；命中则全部子测试过期）
  * @property {string[]} [triggerRefs] manifest trigger set 引用名
@@ -34,6 +39,8 @@ import { matchGlob, mergeTriggerFilter } from './trigger_filter.mjs'
  * @property {string[]} [dependsOn] manifest 中的依赖指名
  * @property {{ manifestId: string, name: string }[]} [dependencies] 解析后的依赖
  * @property {import('./trigger_filter.mjs').TriggerFilter} [triggerFilter] 忽略规则覆写
+ * @property {import('./skip_because.mjs').SkipBecauseEntry[]} [skipBecause] skip_because 条目
+ * @property {string | null} [gitRoot] data/users 嵌套 git 根（相对仓库）；无则为 null，fount 树内 suite 为 undefined
  */
 
 /**
@@ -110,9 +117,11 @@ function resolveSubtests(suite, triggerSets) {
 		out.push({
 			name,
 			spec: raw.spec?.trim() || `${name}.spec.mjs`,
+			expectedMs: parseExpectedMs(raw.expected),
 			triggers: patterns,
 			triggerRefs: refs.length ? refs : undefined,
 			triggerSetPatterns: refs.length ? setPatterns : undefined,
+			skipBecause: parseSkipBecause(raw.skip_because, `subtest "${suite.name}/${name}"`),
 		})
 	}
 	return out
@@ -201,6 +210,7 @@ export async function loadAllSuites(repoRoot) {
 				manifestId,
 				name: suite.name,
 				id: suite.id?.trim() || suite.name,
+				expectedMs: parseExpectedMs(suite.expected),
 				run: suite.run,
 				triggers: resolveSuiteTriggers(suite, triggerSets),
 				triggerRefs,
@@ -213,6 +223,7 @@ export async function loadAllSuites(repoRoot) {
 					? Array.isArray(suite.dependsOn) ? suite.dependsOn : [suite.dependsOn]
 					: undefined,
 				triggerFilter: mergeTriggerFilter(manifestTriggerFilter, suite.triggerFilter),
+				skipBecause: parseSkipBecause(suite.skip_because, `suite "${suite.name}"`),
 			})
 		}
 	}

@@ -145,7 +145,32 @@
 			"replHint": "Enter zum Ausführen · Shift+Enter für Zeilenumbruch"
 		},
 		"test": {
-			"help": "Verwendung: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nGruppierungssyntax (mehrere Gruppen durch Leerzeichen getrennt):\n  manifest                    alle Suites dieses Manifests\n  manifest:suite              bestimmte Suite (mehrere per Komma; auch manifest/suite)\n  manifest:suite:subtest      bestimmter Subtest (frontend usw. mit registrierten Subtests; auch manifest/suite/subtest)\n  manifest:suite:file         nach *.test.mjs-Stamm filtern unter pure/integration (serial.mjs)\n  Bei PowerShell-Aufspaltung werden nachfolgende Tokens automatisch der aktuellen Gruppe zugeordnet\n\nmanifest id stammt aus dem Feld \"id\" auf oberster Ebene in test/manifest.json.\nOhne exakte Übereinstimmung automatische Erweiterung zu «<name>/*» (z. B. shells → shells/chat, shells/social); glob (*, ?, **) ebenfalls unterstützt.\nSuite-Name matcht id oder name jeder Suite; ohne exakte Übereinstimmung Erweiterung zu «<name>*», «<name>_*»; glob ebenfalls unterstützt.\n\nStandard (bloßes fount test): zuerst fehlgeschlagene/unvollendete Einträge (fehlgeschlagene Dateien in Suite zuerst; wenn Fehlergruppe reproduzierbar, Gruppe ausführen und beenden), dann abgelaufene Inhalte nach allem Grün; jeder fehlgeschlagene Durchlauf endet mit Exit 1, keine Wiederholung im selben Aufruf. Nie vollständig (dafür --all).\nTeststatus in data/test/state/main.json (entfernte/umbenannte Suiten werden automatisch bereinigt); Fehlerlogs bis Grün. Jeder Lauf aktualisiert data/test/report.md und report.json.\nfrontend o. ä. kann Subtests registrieren (jeweils mit eigenem trigger); Änderung einer View-Datei macht nur den entsprechenden Subtest veraltet.\nOhne registrierte Subtests bei pure/integration filtert das dritte Segment nach Stamm von *.test.mjs im Verzeichnis (z. B. shells/chat:pure:channel_archive).\nBei fehlgeschlagener Abhängigkeit (manifest.json dependsOn) übergeordnete Ebene automatisch blocked.\n\n--all         alle Suites im Bereich als Ziele (grüne weiter verwendbar, außer mit --force)\n--no-parallel Suites seriell mit Streaming nach stdout/stderr; Standard: automatische Parallelisierung per Ressourcen-Gate nach Speicher und CPU.\n--force       Wiederverwendung deaktivieren: Standard nutzt letztes echtes Ergebnis, --force erzwingt echten Lauf.\n\nBeispiele:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Verwendung: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nSelektoren (Gruppen durch Leerzeichen getrennt; Suites in einer Gruppe durch Komma; / und : gleichwertig):\n  Name              alle Suites der Gruppe (z. B. shells/chat)\n  Name:suite        bestimmte Suite\n  Name:suite:Eintrag bestimmter Subtest oder Testdatei\n\nOhne exakte Übereinstimmung per Präfix erweitern (shells → shells/chat, shells/social); Globs (*, ?, **) unterstützt.\n\nStandard (nur fount test): plant Fehler/Unvollständiges und Veraltetes in einem Durchlauf und führt sie aus; Fehler blockieren nur abhängige Slots — am Ende nicht-null Exit. Nie vollständig — dafür --all.\n\n--watch      dauerhaft beobachten; bleibt aktiv, auch wenn die Warteschlange leer ist (Ctrl+C beendet); nicht mit --all, --force, --update-estimates oder Selektoren kombinierbar\n--all        alle Suites im Umfang\n--force      erzwingt echten Lauf; letzte Ergebnisse nicht wiederverwenden\n--update-estimates  schreibt expected in jedem Manifest aus aktuellen DB-Durchschnittszeiten zurück; optionale Selektoren; führt keine Tests aus\n\nBeispiele:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "Verwendung: fount test --watch (nicht mit anderen Optionen kombinierbar)",
+			"updateEstimates": {
+				"incompatible": "Verwendung: fount test --update-estimates [<groups>...] (nicht mit anderen Schaltern kombinierbar)",
+				"summary": "Erwartete Laufzeiten für ${suitesUpdated} Suite(s) aktualisiert (${filesChanged} Manifest(e)); ${skipped} ohne Baseline oder bereits aktuell übersprungen"
+			},
+			"skipBecause": {
+				"pass": "Übersprungen (Issue noch offen oder geschlossen, Karenzzeit noch nicht abgelaufen): ${label} — ${url}",
+				"fail": "Fehlgeschlagen (Issue geschlossen und Karenzzeit abgelaufen — nachverfolgen und skip_because aktualisieren, dann erneut prüfen): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Modulprüfung: Prozess beendet ohne Ready-Signal: ${label}"
+			},
+			"queue": {
+				"append": "Eingereiht: ${label} (${reason}) ≈ ${remaining} verbleibend",
+				"remove": "Entfernt: ${label} (${reason}) ≈ ${remaining} verbleibend"
+			},
+			"display": {
+				"eta": "Voraussichtlich ${expected}, gesamt ≈ ${remaining} verbleibend",
+				"etaUnknown": "Voraussichtlich ${expected}, gesamt ${count} mit unbekannter Dauer verbleibend",
+				"reason": "${label}: ${reason}",
+				"remaining": "Gesamt ≈ ${remaining} verbleibend",
+				"remainingUnknown": "Gesamt ≈ ${remaining} verbleibend (${count} mit unbekannter Dauer)",
+				"remainingOnlyUnknown": "Gesamt: ${count} mit unbekannter Dauer verbleibend",
+				"failureLog": "\n—— Fehlerprotokoll: ${label} ——"
+			},
 			"passed": "Bestanden: ${label}",
 			"passedWithNoise": "Bestanden: ${label} (mit Rauschen)",
 			"failed": "Fehlgeschlagen: ${label}",
@@ -157,13 +182,15 @@
 			"available": "Verfügbar: ${ids}",
 			"manifestMatched": "Manifest-Treffer: ${ids}",
 			"selectedSuites": "${selected}/${total} Testsuites ausgewählt",
-			"planSlotSummary": "Plan: echter Lauf ${run}, Wiederverwendung ${reuse}, blockiert ${blocked}",
+			"planSlotSummary": "Plan: echter Lauf ${run}, Wiederverwendung ${reuse}, blockiert ${blocked}, übersprungen ${skipped}",
 			"noMatchingSuites": "Keine passende Testsuite.",
 			"reportPath": "Bericht: ${path}",
 			"reportPathFinal": "\nBericht: ${path}",
 			"statePathFinal": "Status: ${path}",
 			"blocked": "Blockiert: ${label} (Abhängigkeit nicht bestanden: ${deps})",
+			"skippedTree": "Übersprungen: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Spekulatives Ergebnis verworfen: ${label} (Abhängigkeit nicht bestanden: ${deps})",
+			"continueDefault": "Fortsetzung: ${count} Suite(s) (fehlgeschlagen/unvollständig ${imperfect}, veraltet ${outdated})",
 			"continueImperfect": "Fehler/Rauschen/unvollständige Welle: ${count} Suites",
 			"outdatedSelected": "Veraltete Welle: ${count} veraltete/nicht gelaufene Suites",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": "\n>>> Wiederverwendung ${manifestId}:${name} (trigger unverändert, letzter ${status})",
 			"prunedAbsentState": "Veralteter Status entfernter Suiten bereinigt: ${suites} Suites, ${subtests} Subtests",
 			"noisyOnlyRemain": "Noch ${count} Suites bestanden mit Rauschen: ${suites}",
-			"noRealRunPlanned": "Kein echter Lauf nötig: ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (trigger unverändert)",
+			"noRealRunPlanned": "Kein echter Lauf nötig: ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert, ${skipped} übersprungen (trigger unverändert)",
 			"allReusedHint": "Kein echter Lauf: Fehler stammen vom letzten Ergebnis, Blockierung bleibt (Dateien unverändert). Nach Fix erneut ausführen oder fount test --force für echten Lauf.",
 			"failuresSaved": "Fehlerliste gespeichert: ${path} (${count} Suites)",
 			"failuresCleared": "manifest ${manifestId} vollständig bestanden, Fehlerliste gelöscht.",
@@ -247,7 +274,9 @@
 					"pending": "Ausstehend",
 					"replay": "Fehlgeschlagene wiederholen",
 					"replayImperfect": "Unvollkommene wiederholen",
-					"silentPassed": "Bestanden"
+					"silentPassed": "Bestanden",
+					"skipped": "Übersprungen (skip_because)",
+					"skipTree": "Übersprungen (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "Geschätzte Restzeit ≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "Kein state-Eintrag, automatisch nachlaufen",
 					"staleContent": "Inhalt geändert, Neulauf nötig",
+					"skipBecause": "skip_because-Nachprüfung",
 					"triggerHashDrift": "Trigger-Fingerabdruck driftet (kein Pfadtreffer)"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "Upstream-Zug: Abhängigkeit von ${requiredBy} nicht grün",
 					"reused": "(wiederverwendet)",
 					"rootCause": "Ursache",
+					"skipBecause": "Issue",
+					"skipBecauseClosed": "Nachverfolgung nötig (geschlossen)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Abbruchgrund",
 					"triggerHashDrift": "Trigger-Fingerabdruck weicht vom Arbeitsbereich ab (dirty→clean ignoriert)",
 					"uncommittedHashRange": "Uncommitteter Digest"
@@ -338,7 +371,7 @@
 				"remaining": "Geschätzte Restzeit ≈ ${eta} (${completed}/${total} Suites)",
 				"run": "Geschätzte Laufzeit ≈ ${eta} (Parallelrate ${rate})",
 				"runSerial": "Geschätzte Laufzeit ≈ ${eta} (seriell)",
-				"runSerialHint": "Bei Parallelität ≈ ${eta} (Rate ${rate}), Ersparnis ≈ ${savings} (--no-parallel entfernen)",
+				"runSerialHint": "Bei Parallelität ≈ ${eta} (Rate ${rate}), Ersparnis ≈ ${savings}",
 				"runSkipped": "Zusätzlich ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (nicht in Schätzung)"
 			},
 			"unknown": {

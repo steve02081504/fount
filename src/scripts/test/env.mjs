@@ -1,4 +1,6 @@
 /** 测试进程标记：须在导入 server/i18n 之前 side-effect import。 */
+import './module_check_ready.mjs'
+
 import process from 'node:process'
 
 import { unset_shutdown_listener } from 'npm:on-shutdown'

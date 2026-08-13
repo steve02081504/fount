@@ -36,6 +36,12 @@ Deno.test('extractMentionEntityHashes ignores bare @128hex', () => {
 	assertEquals(extractMentionEntityHashes(`@[${HASH}]`), [])
 })
 
+Deno.test('parseInlineTokens rejects mixed-case entity hashes', () => {
+	const upper = HASH.toUpperCase()
+	assertEquals(parseInlineTokens(`@[entity:${upper}]`).map(token => token.body), [])
+	assertEquals(extractMentionEntityHashes(`@[entity:${HASH}] @[entity:${upper}]`), [HASH])
+})
+
 Deno.test('buildMentionsStructure respects permission and ingress', () => {
 	const text = `${formatRoleMentionToken('admin')} ${formatRoleMentionToken('everyone')} ${formatRoleMentionToken('here')}`
 	assertEquals(buildMentionsStructure(text, { canMentionEveryone: false, ingress: 'live' }), {

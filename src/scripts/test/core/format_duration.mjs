@@ -34,7 +34,7 @@ function unit(n, key) {
  */
 export function formatDuration(ms) {
 	if (ms == null) return '—'
-	if (ms < 1000) return geti18n(`${I18N}.durationMs`, { ms })
+	if (ms < 1000) return geti18n(`${I18N}.durationMs`, { ms: Math.round(ms) })
 
 	const sec = Math.round(ms / 1000)
 	if (sec < SEC_PER_MIN) return unit(sec, 'durationUnit.sec')

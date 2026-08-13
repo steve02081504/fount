@@ -47,7 +47,9 @@ export const OUTPUT_TAIL_BYTES = 2 * 1024 * 1024
  * runCommand 执行选项。
  * @typedef {object} RunCommandOptions
  * @property {string} cwd 工作目录
- * @property {boolean} [stream=false] 是否实时转发 stdout/stderr
+ * @property {boolean} [stream=false] 是否实时转发 stdout/stderr 到本进程
+ * @property {(chunk: string) => void} [onStdout] stdout 回调
+ * @property {(chunk: string) => void} [onStderr] stderr 回调
  * @property {string} [label] suite 标签（用于终止日志）
  * @property {number} [baselineDurationMs] 最近一次可用基线耗时（毫秒）
  * @property {AbortSignal} [signal] 外部取消（投机依赖失败早停）
@@ -185,7 +187,7 @@ export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt
  * @returns {Promise<RunCommandResult>} 子进程结果
  */
 export async function runCommand(command, extraEnv = {}, options) {
-	const { stream = false, label = '', baselineDurationMs, cwd, signal: externalSignal } = options
+	const { stream = false, label = '', baselineDurationMs, cwd, signal: externalSignal, onStdout, onStderr } = options
 	const [executable, ...args] = command
 	const abortController = new AbortController()
 	const startedAt = Date.now()
@@ -282,7 +284,9 @@ export async function runCommand(command, extraEnv = {}, options) {
 		 * @returns {void}
 		 */
 		on_stdout: data => {
-			appendOutput(decodeChunk(data))
+			const text = decodeChunk(data)
+			appendOutput(text)
+			onStdout?.(text)
 			if (stream) process.stdout.write(data)
 		},
 		/**
@@ -290,7 +294,9 @@ export async function runCommand(command, extraEnv = {}, options) {
 		 * @returns {void}
 		 */
 		on_stderr: data => {
-			appendOutput(decodeChunk(data))
+			const text = decodeChunk(data)
+			appendOutput(text)
+			onStderr?.(text)
 			if (stream) process.stderr.write(data)
 		},
 	}
