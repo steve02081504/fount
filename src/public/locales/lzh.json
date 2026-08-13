@@ -145,7 +145,7 @@
 			"replHint": "Enter 行 · Shift+Enter 換行"
 		},
 		"test": {
-			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\n擇器（空格分多組；逗號分同組多 suite；/ 與 : 同）：\n  名稱              該組諸 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測或測試檔\n\n無精配則按前綴展（shells → shells/chat、shells/social），glob（*、?、**）亦可。\n\n預設（裸 fount test）先補敗/未成，全綠後補過期；任一輪敗即退。不全量，全量用 --all。\n\n--watch      持續監視，隊空亦不退出（Ctrl+C 止）；不可同帶 --all / --force / --update-estimates 或擇器\n--all        範圍內諸 suite\n--force      強制重跑，不沿上次果\n--update-estimates  按現庫均耗回寫諸 manifest 之 expected；可帶擇器；不跑測\n\n例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\n擇器（空格分多組；逗號分同組多 suite；/ 與 : 同）：\n  名稱              該組諸 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測或測試檔\n\n無精配則按前綴展（shells → shells/chat、shells/social），glob（*、?、**）亦可。\n\n預設（裸 fount test）一次規畫失利／未竟與過期項並行之；失利惟阻其依賴之槽，收口統一非零。非全量，全量用 --all。\n\n--watch      持續監視，隊空亦不退出（Ctrl+C 止）；不可同帶 --all / --force / --update-estimates 或擇器\n--all        範圍內諸 suite\n--force      強制重跑，不沿上次果\n--update-estimates  按現庫均耗回寫諸 manifest 之 expected；可帶擇器；不跑測\n\n例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
 			"watchNoGroups": "用法：fount test --watch（不可同用他參）",
 			"updateEstimates": {
 				"incompatible": "用法：fount test --update-estimates [<groups>...]（不可同用他開關）",
@@ -161,7 +161,11 @@
 			},
 			"display": {
 				"eta": "預佔 ${expected}，總餘 ≈ ${remaining}",
-				"remaining": "總餘 ≈ ${remaining}"
+				"etaUnknown": "預佔 ${expected}，總餘含 ${count} 個未知時長",
+				"reason": "${label}：${reason}",
+				"remaining": "總餘 ≈ ${remaining}",
+				"remainingUnknown": "總餘 ≈ ${remaining}（另有 ${count} 個未知時長）",
+				"remainingOnlyUnknown": "總餘：${count} 個未知時長"
 			},
 			"passed": "通過：${label}",
 			"passedWithNoise": "通過：${label}（含有噪聲）",
@@ -181,6 +185,7 @@
 			"statePathFinal": "現狀：${path}",
 			"blocked": "阻塞：${label}（依賴未過：${deps}）",
 			"speculativeDiscard": "丟棄預測結果：${label}（依賴未過：${deps}）",
+			"continueDefault": "續跑 ${count} 個套件（失利／未竟 ${imperfect}，過期 ${outdated}）",
 			"continueImperfect": "失利/噪聲/未完成波次：${count} 個套件",
 			"outdatedSelected": "過期波次：${count} 個陳舊/未跑之套件",
 			"runningSuite": {
@@ -284,6 +289,7 @@
 					},
 					"missingRecord": "state 無記錄，自行補跑",
 					"staleContent": "內容已變，需重跑",
+					"skipBecause": "skip_because 複檢",
 					"triggerHashDrift": "觸發指紋漂移（無路徑命中）"
 				},
 				"label": {

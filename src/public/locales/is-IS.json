@@ -145,7 +145,7 @@
 			"replHint": "Enter til að keyra · Shift+Enter fyrir nýja línu"
 		},
 		"test": {
-			"help": "Notkun: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nVal (hópar aðskildir með bilum; suite innan hóps með kommum; / og : jafngild):\n  nafn              öll suite í hópnum (t.d. shells/chat)\n  nafn:suite        ákveðið suite\n  nafn:suite:atriði ákveðið undirpróf eða prófskrá\n\nÁn nákvæms samsvarar, stækkar eftir forskeyti (shells → shells/chat, shells/social); glob (*, ?, **) líka stutt.\n\nSjálfgefið (bara fount test): fyrst mistök/ókláruð, síðan úrelt þegar allt er grænt; hættir við mistök í hverri bylgju. Aldrei allt repo — notaðu --all fyrir það.\n\n--watch      fylgist áfram; hættir ekki þó biðröð sé tóm (Ctrl+C til að hætta); ekki með --all, --force, --update-estimates eða vali\n--all        öll suite innan umfangs\n--force      þvinga keyrslu; endurnýtir ekki fyrri niðurstöður\n--update-estimates  skrifar expected í hverju manifest út frá núverandi meðaltölum í gagnagrunni; val valfrjálst; keyrir ekki próf\n\ndæmi:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "Notkun: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nVal (hópar aðskildir með bilum; suite innan hóps með kommum; / og : jafngild):\n  nafn              öll suite í hópnum (t.d. shells/chat)\n  nafn:suite        ákveðið suite\n  nafn:suite:atriði ákveðið undirpróf eða prófskrá\n\nÁn nákvæms samsvarar, stækkar eftir forskeyti (shells → shells/chat, shells/social); glob (*, ?, **) líka stutt.\n\nSjálfgefið (bara fount test): skipuleggur mistök/ókláruð og úrelt í einu lagi og keyrir; mistök stöðva aðeins háðar raufir — ekki-núll útganga að lokum. Aldrei allt repo — notaðu --all fyrir það.\n\n--watch      fylgist áfram; hættir ekki þó biðröð sé tóm (Ctrl+C til að hætta); ekki með --all, --force, --update-estimates eða vali\n--all        öll suite innan umfangs\n--force      þvinga keyrslu; endurnýtir ekki fyrri niðurstöður\n--update-estimates  skrifar expected í hverju manifest út frá núverandi meðaltölum í gagnagrunni; val valfrjálst; keyrir ekki próf\n\ndæmi:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
 			"watchNoGroups": "Notkun: fount test --watch (ekki hægt með öðrum valkostum)",
 			"updateEstimates": {
 				"incompatible": "Notkun: fount test --update-estimates [<groups>...] (ekki hægt með öðrum rofum)",
@@ -161,7 +161,11 @@
 			},
 			"display": {
 				"eta": "Áætlað ${expected}, samtals ≈ ${remaining} eftir",
-				"remaining": "Samtals ≈ ${remaining} eftir"
+				"etaUnknown": "Áætlað ${expected}; ${count} með óþekktri lengd eftir samtals",
+				"reason": "${label}: ${reason}",
+				"remaining": "Samtals ≈ ${remaining} eftir",
+				"remainingUnknown": "≈ ${remaining} eftir samtals (${count} með óþekktri lengd aukalega)",
+				"remainingOnlyUnknown": "≈ ${count} með óþekktri lengd eftir samtals"
 			},
 			"passed": "Staðið: ${label}",
 			"passedWithNoise": "Staðið: ${label} (með hávaða)",
@@ -181,6 +185,7 @@
 			"statePathFinal": "Núverandi staða: ${path}",
 			"blocked": "Lokað: ${label} (háð ekki staðið: ${deps})",
 			"speculativeDiscard": "Henda spániðurstöðum: ${label} (háð ekki staðið: ${deps})",
+			"continueDefault": "Held áfram með ${count} sett (bilun/ófullnægt ${imperfect}, úrelt ${outdated})",
 			"continueImperfect": "Bilun/hávaði/ófullkomnar bylgjur: ${count} sett",
 			"outdatedSelected": "Úreltar bylgjur: ${count} úreltir/ókeyrðir pakkar",
 			"runningSuite": {
@@ -284,6 +289,7 @@
 					},
 					"missingRecord": "Engin færsla í state, sjálfvirkur farði",
 					"staleContent": "Efni breytt — þarf endurkeyrslu.",
+					"skipBecause": "endurathugun skip_because",
 					"triggerHashDrift": "Trigger-fingrafar drift (engin slóð snert)"
 				},
 				"label": {

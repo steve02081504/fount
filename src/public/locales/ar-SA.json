@@ -145,7 +145,7 @@
 			"replHint": "Enter للتشغيل · Shift+Enter لسطر جديد"
 		},
 		"test": {
-			"help": "الاستخدام: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nالمحددات (المجموعات مفصولة بمسافات؛ الحزم في المجموعة نفسها بفواصل؛ / و : متكافئان):\n  الاسم             كل حزم المجموعة (مثل shells/chat)\n  الاسم:suite       حزمة محددة\n  الاسم:suite:عنصر اختبار فرعي أو ملف اختبار محدد\n\nعند عدم وجود تطابق تام، يتم التوسيع حسب البادئة (shells → shells/chat، shells/social)؛ كما يدعم glob (*، ?، **).\n\nالافتراضي (fount test فقط): إعادة الفشل/غير المكتمل أولاً، ثم القديم بعد اكتمال النجاح؛ يخرج عند فشل أي موجة. لا يشغّل المستودع كاملاً — استخدم --all لذلك.\n\n--watch      مراقبة مستمرة؛ يبقى نشطاً حتى مع طابور فارغ (Ctrl+C للخروج)؛ لا يُجمع مع --all أو --force أو --update-estimates أو المحددات\n--all        كل الحزم ضمن النطاق\n--force      تشغيل إجباري؛ لا يعيد استخدام النتائج السابقة\n--update-estimates  يعيد كتابة expected في كل manifest من متوسطات قاعدة البيانات الحالية؛ محددات اختيارية؛ لا يشغّل الاختبارات\n\nأمثلة:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "الاستخدام: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nالمحددات (المجموعات مفصولة بمسافات؛ الحزم في المجموعة نفسها بفواصل؛ / و : متكافئان):\n  الاسم             كل حزم المجموعة (مثل shells/chat)\n  الاسم:suite       حزمة محددة\n  الاسم:suite:عنصر اختبار فرعي أو ملف اختبار محدد\n\nعند عدم وجود تطابق تام، يتم التوسيع حسب البادئة (shells → shells/chat، shells/social)؛ كما يدعم glob (*، ?، **).\n\nالافتراضي (fount test فقط): يخطط للفشل/غير المكتمل والقديم في مرور واحد وينفذه؛ الفشل يحجب التبعيات فقط — خروج غير صفري في النهاية. لا يشغّل المستودع كاملاً — استخدم --all لذلك.\n\n--watch      مراقبة مستمرة؛ يبقى نشطاً حتى مع طابور فارغ (Ctrl+C للخروج)؛ لا يُجمع مع --all أو --force أو --update-estimates أو المحددات\n--all        كل الحزم ضمن النطاق\n--force      تشغيل إجباري؛ لا يعيد استخدام النتائج السابقة\n--update-estimates  يعيد كتابة expected في كل manifest من متوسطات قاعدة البيانات الحالية؛ محددات اختيارية؛ لا يشغّل الاختبارات\n\nأمثلة:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
 			"watchNoGroups": "الاستخدام: fount test --watch (لا يمكن استخدامه مع أي خيارات أخرى)",
 			"updateEstimates": {
 				"incompatible": "الاستخدام: fount test --update-estimates [<groups>...] (لا يمكن استخدامه مع أي مفاتيح أخرى)",
@@ -161,7 +161,11 @@
 			},
 			"display": {
 				"eta": "متوقع ${expected}، الإجمالي المتبقي ≈ ${remaining}",
-				"remaining": "الإجمالي المتبقي ≈ ${remaining}"
+				"etaUnknown": "متوقع ${expected}؛ يتبقى ${count} بمدة غير معروفة إجمالًا",
+				"reason": "${label}: ${reason}",
+				"remaining": "الإجمالي المتبقي ≈ ${remaining}",
+				"remainingUnknown": "≈ ${remaining} متبقي إجمالًا (${count} بمدة غير معروفة إضافية)",
+				"remainingOnlyUnknown": "≈ ${count} بمدة غير معروفة متبقية إجمالًا"
 			},
 			"passed": "نجح: ${label}",
 			"passedWithNoise": "نجح: ${label} (يحتوي ضوضاء)",
@@ -181,6 +185,7 @@
 			"statePathFinal": "الوضع الحالي: ${path}",
 			"blocked": "الحظر: ${label} (لم يتم تمرير التبعية: ${deps})",
 			"speculativeDiscard": "تجاهل نتائج التنبؤ: ${label} (لم يتم تمرير التبعية: ${deps})",
+			"continueDefault": "متابعة ${count} مجموعة (فشل/غير مكتمل ${imperfect}، قديم ${outdated})",
 			"continueImperfect": "الفشل/الضوضاء/موجات غير مكتملة: ${count} مجموعات",
 			"outdatedSelected": "الموجات منتهية الصلاحية: ${count} حزم قديمة/غير مشغلة",
 			"runningSuite": {
@@ -284,6 +289,7 @@
 					},
 					"missingRecord": "لم إشارات أي سجل، والمكياج التلقائي",
 					"staleContent": "لقد تغير المحتوى ويجب إعادة تشغيله.",
+					"skipBecause": "إعادة فحص skip_because",
 					"triggerHashDrift": "تحريك بصمة الإصبع (لا يوجد مسار محدد)"
 				},
 				"label": {

@@ -145,7 +145,7 @@
 			"replHint": "Enter to run · Shift+Enter for a new line"
 		},
 		"test": {
-			"help": "usage: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nSelectors (space-separated groups; comma-separated suites within a group; / and : are equivalent):\n  name              all suites in that group (e.g. shells/chat)\n  name:suite        a specific suite\n  name:suite:item   a specific subtest or test file\n\nWith no exact match, expands by prefix (shells → shells/chat, shells/social); globs (*, ?, **) also supported.\n\nDefault (bare fount test): rerun failures/incomplete first, then stale after all green; exits on any failed wave. Never full-repo — use --all for that.\n\n--watch      keep watching; stays up even when the queue is empty (Ctrl+C to quit); cannot combine with --all, --force, --update-estimates, or selectors\n--all        all suites in scope\n--force      force a real run; do not reuse last results\n--update-estimates  rewrite each manifest's expected duration from current DB averages; optional selectors; does not run tests\n\nexamples:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "usage: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nSelectors (space-separated groups; comma-separated suites within a group; / and : are equivalent):\n  name              all suites in that group (e.g. shells/chat)\n  name:suite        a specific suite\n  name:suite:item   a specific subtest or test file\n\nWith no exact match, expands by prefix (shells → shells/chat, shells/social); globs (*, ?, **) also supported.\n\nDefault (bare fount test): plans failures/incomplete and stale items in one pass and runs them; failures only block their dependents — non-zero exit at the end. Never full-repo — use --all for that.\n\n--watch      keep watching; stays up even when the queue is empty (Ctrl+C to quit); cannot combine with --all, --force, --update-estimates, or selectors\n--all        all suites in scope\n--force      force a real run; do not reuse last results\n--update-estimates  rewrite each manifest's expected duration from current DB averages; optional selectors; does not run tests\n\nexamples:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
 			"watchNoGroups": "usage: fount test --watch (cannot be used with any other options)",
 			"updateEstimates": {
 				"incompatible": "usage: fount test --update-estimates [<groups>...] (cannot be used with any other flags)",
@@ -161,7 +161,11 @@
 			},
 			"display": {
 				"eta": "Expected ${expected}, ≈ ${remaining} left overall",
-				"remaining": "≈ ${remaining} left overall"
+				"etaUnknown": "Expected ${expected}; ${count} with unknown duration left overall",
+				"reason": "${label}: ${reason}",
+				"remaining": "≈ ${remaining} left overall",
+				"remainingUnknown": "≈ ${remaining} left overall (${count} with unknown duration)",
+				"remainingOnlyUnknown": "${count} with unknown duration left overall"
 			},
 			"passed": "PASSED: ${label}",
 			"passedWithNoise": "PASSED: ${label} (with noise)",
@@ -181,6 +185,7 @@
 			"statePathFinal": "State: ${path}",
 			"blocked": "Blocked: ${label} (dependency not passed: ${deps})",
 			"speculativeDiscard": "Discarding speculative result: ${label} (dependency not passed: ${deps})",
+			"continueDefault": "Continuing ${count} suite(s) (failed/incomplete ${imperfect}, stale ${outdated})",
 			"continueImperfect": "Failed/noisy/incomplete waves: ${count} suite(s)",
 			"outdatedSelected": "Stale waves: ${count} outdated/unrun suite(s)",
 			"runningSuite": {
@@ -284,6 +289,7 @@
 					},
 					"missingRecord": "no state record — auto rerun",
 					"staleContent": "content changed — rerun needed",
+					"skipBecause": "skip_because re-check",
 					"triggerHashDrift": "trigger fingerprint drift (no path hit)"
 				},
 				"label": {

@@ -145,7 +145,7 @@
 			"replHint": "Enter — выполнить · Shift+Enter — новая строка"
 		},
 		"test": {
-			"help": "Использование: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nСелекторы (группы через пробел; наборы в группе через запятую; / и : эквивалентны):\n  имя               все наборы группы (напр. shells/chat)\n  имя:suite         конкретный набор\n  имя:suite:элемент конкретный подтест или файл теста\n\nБез точного совпадения — расширение по префиксу (shells → shells/chat, shells/social); поддерживаются glob (*, ?, **).\n\nПо умолчанию (просто fount test): сначала сбои/незавершённые, затем устаревшие после полного зелёного; выход при провале любой волны. Никогда весь репозиторий — для этого --all.\n\n--watch      непрерывное наблюдение; не завершается даже при пустой очереди (Ctrl+C для выхода); нельзя сочетать с --all, --force, --update-estimates или селекторами\n--all        все наборы в области\n--force      принудительный запуск; не переиспользует прошлые результаты\n--update-estimates  перезаписывает expected в каждом manifest по текущим средним из БД; селекторы опциональны; тесты не запускает\n\nпримеры:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "Использование: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nСелекторы (группы через пробел; наборы в группе через запятую; / и : эквивалентны):\n  имя               все наборы группы (напр. shells/chat)\n  имя:suite         конкретный набор\n  имя:suite:элемент конкретный подтест или файл теста\n\nБез точного совпадения — расширение по префиксу (shells → shells/chat, shells/social); поддерживаются glob (*, ?, **).\n\nПо умолчанию (просто fount test): планирует сбои/незавершённые и устаревшие за один проход и выполняет; сбои блокируют только зависимые слоты — ненулевой выход в конце. Не весь репозиторий — для этого --all.\n\n--watch      непрерывное наблюдение; не завершается даже при пустой очереди (Ctrl+C для выхода); нельзя сочетать с --all, --force, --update-estimates или селекторами\n--all        все наборы в области\n--force      принудительный запуск; не переиспользует прошлые результаты\n--update-estimates  перезаписывает expected в каждом manifest по текущим средним из БД; селекторы опциональны; тесты не запускает\n\nпримеры:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
 			"watchNoGroups": "Использование: fount test --watch (нельзя использовать с другими параметрами)",
 			"updateEstimates": {
 				"incompatible": "Использование: fount test --update-estimates [<groups>...] (нельзя использовать с другими флагами)",
@@ -161,7 +161,11 @@
 			},
 			"display": {
 				"eta": "Ожидается ${expected}, всего осталось ≈ ${remaining}",
-				"remaining": "Всего осталось ≈ ${remaining}"
+				"etaUnknown": "Ожидается ${expected}; всего осталось ${count} с неизвестной длительностью",
+				"reason": "${label}: ${reason}",
+				"remaining": "Всего осталось ≈ ${remaining}",
+				"remainingUnknown": "≈ ${remaining} осталось всего (ещё ${count} с неизвестной длительностью)",
+				"remainingOnlyUnknown": "≈ ${count} с неизвестной длительностью осталось всего"
 			},
 			"passed": "ПРОЙДЕНО: ${label}",
 			"passedWithNoise": "ПРОЙДЕНО: ${label} (с шумом)",
@@ -181,6 +185,7 @@
 			"statePathFinal": "состояние: ${path}",
 			"blocked": "Блокировка: ${label} (зависимость не пройдена: ${deps})",
 			"speculativeDiscard": "Отброшен спекулятивный результат: ${label} (зависимость не пройдена: ${deps})",
+			"continueDefault": "Продолжение: ${count} suite (сбой/незавершено ${imperfect}, устарело ${outdated})",
 			"continueImperfect": "Провал/шум/незавершённые волны: ${count} suite",
 			"outdatedSelected": "Устаревшие волны: ${count} устаревших/не запускавшихся suite",
 			"runningSuite": {
@@ -284,6 +289,7 @@
 					},
 					"missingRecord": "нет записи в state, автодозапуск",
 					"staleContent": "контент изменился, нужен перезапуск",
+					"skipBecause": "повторная проверка skip_because",
 					"triggerHashDrift": "дрейф отпечатка триггера (нет совпадений путей)"
 				},
 				"label": {

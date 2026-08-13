@@ -145,7 +145,7 @@
 			"replHint": "Invio per eseguire · Maiusc+Invio per nuova riga"
 		},
 		"test": {
-			"help": "Uso: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nSelettori (gruppi separati da spazi; suite nello stesso gruppo separate da virgole; / e : equivalenti):\n  nome              tutte le suite del gruppo (es. shells/chat)\n  nome:suite        una suite specifica\n  nome:suite:voce   un sottotest o file di test specifico\n\nSenza corrispondenza esatta, espansione per prefisso (shells → shells/chat, shells/social); supportati anche i glob (*, ?, **).\n\nPredefinito (solo fount test): prima errori/incompleti, poi obsoleti dopo il tutto verde; esce al primo fallimento in un'ondata. Mai l'intero repo — usa --all per quello.\n\n--watch      monitoraggio continuo; resta attivo anche con coda vuota (Ctrl+C per uscire); non combinabile con --all, --force, --update-estimates o selettori\n--all        tutte le suite nell'ambito\n--force      esecuzione forzata; non riusa gli ultimi risultati\n--update-estimates  riscrive expected in ogni manifest dalle medie attuali del DB; selettori opzionali; non esegue i test\n\nesempi:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "Uso: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nSelettori (gruppi separati da spazi; suite nello stesso gruppo separate da virgole; / e : equivalenti):\n  nome              tutte le suite del gruppo (es. shells/chat)\n  nome:suite        una suite specifica\n  nome:suite:voce   un sottotest o file di test specifico\n\nSenza corrispondenza esatta, espansione per prefisso (shells → shells/chat, shells/social); supportati anche i glob (*, ?, **).\n\nPredefinito (solo fount test): pianifica errori/incompleti e obsoleti in un'unica passata ed esegue; gli errori bloccano solo i dipendenti — uscita non zero alla fine. Mai l'intero repo — usa --all per quello.\n\n--watch      monitoraggio continuo; resta attivo anche con coda vuota (Ctrl+C per uscire); non combinabile con --all, --force, --update-estimates o selettori\n--all        tutte le suite nell'ambito\n--force      esecuzione forzata; non riusa gli ultimi risultati\n--update-estimates  riscrive expected in ogni manifest dalle medie attuali del DB; selettori opzionali; non esegue i test\n\nesempi:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
 			"watchNoGroups": "Uso: fount test --watch (non utilizzabile con altre opzioni)",
 			"updateEstimates": {
 				"incompatible": "Uso: fount test --update-estimates [<groups>...] (non utilizzabile con altri flag)",
@@ -161,7 +161,11 @@
 			},
 			"display": {
 				"eta": "Previsto ${expected}, totale ≈ ${remaining} rimanenti",
-				"remaining": "Totale ≈ ${remaining} rimanenti"
+				"etaUnknown": "Previsto ${expected}; ${count} con durata sconosciuta rimanenti in totale",
+				"reason": "${label}: ${reason}",
+				"remaining": "Totale ≈ ${remaining} rimanenti",
+				"remainingUnknown": "≈ ${remaining} rimanenti in totale (${count} con durata sconosciuta in più)",
+				"remainingOnlyUnknown": "≈ ${count} con durata sconosciuta rimanenti in totale"
 			},
 			"passed": "Superato: ${label}",
 			"passedWithNoise": "SUPERATO: ${label} (con rumore)",
@@ -181,6 +185,7 @@
 			"statePathFinal": "Stato attuale: ${path}",
 			"blocked": "Blocco: ${label} (dipendenza non superata: ${deps})",
 			"speculativeDiscard": "Scarta risultati della previsione: ${label} (dipendenza non superata: ${deps})",
+			"continueDefault": "Ripresa di ${count} suite (fallite/incomplete ${imperfect}, obsolete ${outdated})",
 			"continueImperfect": "Guasto/rumore/onde incomplete: kit ${count}",
 			"outdatedSelected": "Ondate scadute: ${count} pacchetti obsoleti/non eseguiti",
 			"runningSuite": {
@@ -284,6 +289,7 @@
 					},
 					"missingRecord": "stato senza registrazione, reintegro automatico",
 					"staleContent": "Il contenuto è cambiato e deve essere rieseguito.",
+					"skipBecause": "ricontrollo skip_because",
 					"triggerHashDrift": "Attiva la deriva dell'impronta digitale (nessun percorso raggiunto)"
 				},
 				"label": {

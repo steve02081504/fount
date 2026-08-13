@@ -145,7 +145,7 @@
 			"replHint": "↩️ ▶️ · ⇧↩️ ↩️"
 		},
 		"test": {
-			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n       `fount test --update-estimates` [<groups>…]\n\n🎯（␣＝📦×N；`,`＝同📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：❌／⏳→💚→⏰；❌🌊→🚪；🚫∞（→ `--all`）\n\n`--watch`      👁️♾️，📭也不🚪（Ctrl+C）；🚫`--all`／`--force`／`--update-estimates`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n`--update-estimates`  按🗄️均⏱️回写 manifest `expected`；可🎯；不🏃🧪\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n  `fount test --update-estimates`\n  `fount test --update-estimates shells/chat`",
+			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n       `fount test --update-estimates` [<groups>…]\n\n🎯（␣＝📦×N；`,`＝同📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：一次规画❌/⏳与⏰并跑；❌只挡依赖槽，收口非零；🚫∞（→ `--all`）\n\n`--watch`      👁️♾️，📭也不🚪（Ctrl+C）；🚫`--all`／`--force`／`--update-estimates`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n`--update-estimates`  按🗄️均⏱️回写 manifest `expected`；可🎯；不🏃🧪\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n  `fount test --update-estimates`\n  `fount test --update-estimates shells/chat`",
 			"watchNoGroups": "📖：`fount test --watch`（🚫他⚙️）",
 			"updateEstimates": {
 				"incompatible": "📖：`fount test --update-estimates` [<groups>…]（🚫他🚩）",
@@ -161,7 +161,11 @@
 			},
 			"display": {
 				"eta": "🔮 ${expected}，Σ⏳≈ ${remaining}",
-				"remaining": "Σ⏳≈ ${remaining}"
+				"etaUnknown": "🔮 ${expected}，Σ⏳含 ${count} 个❓时长",
+				"reason": "${label}：${reason}",
+				"remaining": "Σ⏳≈ ${remaining}",
+				"remainingUnknown": "Σ⏳≈ ${remaining}（另有 ${count} 个❓时长）",
+				"remainingOnlyUnknown": "Σ⏳：${count} 个❓时长"
 			},
 			"passed": "✅: ${label}",
 			"passedWithNoise": "✅: ${label} (🔊)",
@@ -181,6 +185,7 @@
 			"statePathFinal": "📊: ${path}",
 			"blocked": "🚫⏸️：${label}（🔗🚫：${deps}）",
 			"speculativeDiscard": "🗑️🔮：${label}（🔗🚫：${deps}）",
+			"continueDefault": "续跑 ${count} 📦（❌/⏳ ${imperfect}，📅 ${outdated}）",
 			"continueImperfect": "❌／🔊／⏳🌊：${count} 📦",
 			"outdatedSelected": "⏰🌊：${count} ⏰／🚫🏃 📦🧪",
 			"runningSuite": {
@@ -284,6 +289,7 @@
 					},
 					"missingRecord": "`state` ∅ → 🏃",
 					"staleContent": "📄✏️ → 🔁",
+					"skipBecause": "skip_because 🔁",
 					"triggerHashDrift": "⚡🔢🌊（🚫📁🎯）"
 				},
 				"label": {

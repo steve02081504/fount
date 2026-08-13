@@ -145,7 +145,7 @@
 			"replHint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति"
 		},
 		"test": {
-			"help": "उपयोग: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nचयनकर्ता (समूह रिक्त स्थान से अलग; एक समूह में suite कॉमा से अलग; / और : समान):\n  नाम              उस समूह की सभी suite (जैसे shells/chat)\n  नाम:suite        कोई विशिष्ट suite\n  नाम:suite:आइटम   कोई विशिष्ट उप-परीक्षण या परीक्षण फ़ाइल\n\nसटीक मिलान न होने पर उपसर्ग से विस्तार (shells → shells/chat, shells/social); glob (*, ?, **) भी समर्थित।\n\nडिफ़ॉल्ट (सिर्फ fount test): पहले विफल/अधूरे, सब हरे होने के बाद पुराने; किसी भी राउंड में विफलता पर बाहर। पूरा रिपो नहीं — उसके लिए --all।\n\n--watch      लगातार निगरानी; कतार खाली होने पर भी नहीं बंद होता (Ctrl+C से बाहर); --all / --force / --update-estimates / चयनकर्ताओं के साथ नहीं\n--all        दायरे की सभी suite\n--force      ज़बरदस्ती चलाएँ; पिछले परिणाम दोबारा नहीं\n--update-estimates  वर्तमान DB औसत से प्रत्येक manifest का expected फिर लिखता है; चयनकर्ता वैकल्पिक; परीक्षण नहीं चलाता\n\nउदाहरण:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "उपयोग: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nचयनकर्ता (समूह रिक्त स्थान से अलग; एक समूह में suite कॉमा से अलग; / और : समान):\n  नाम              उस समूह की सभी suite (जैसे shells/chat)\n  नाम:suite        कोई विशिष्ट suite\n  नाम:suite:आइटम   कोई विशिष्ट उप-परीक्षण या परीक्षण फ़ाइल\n\nसटीक मिलान न होने पर उपसर्ग से विस्तार (shells → shells/chat, shells/social); glob (*, ?, **) भी समर्थित।\n\nडिफ़ॉल्ट (सिर्फ fount test): विफल/अधूरे और पुराने को एक ही पास में योजना बनाकर चलाता है; विफलता केवल निर्भर स्लॉट रोकती है — अंत में गैर-शून्य निकास। पूरा रिपो नहीं — उसके लिए --all।\n\n--watch      लगातार निगरानी; कतार खाली होने पर भी नहीं बंद होता (Ctrl+C से बाहर); --all / --force / --update-estimates / चयनकर्ताओं के साथ नहीं\n--all        दायरे की सभी suite\n--force      ज़बरदस्ती चलाएँ; पिछले परिणाम दोबारा नहीं\n--update-estimates  वर्तमान DB औसत से प्रत्येक manifest का expected फिर लिखता है; चयनकर्ता वैकल्पिक; परीक्षण नहीं चलाता\n\nउदाहरण:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
 			"watchNoGroups": "उपयोग: fount test --watch (अन्य विकल्पों के साथ उपयोग नहीं कर सकते)",
 			"updateEstimates": {
 				"incompatible": "उपयोग: fount test --update-estimates [<groups>...] (अन्य फ़्लैग के साथ उपयोग नहीं कर सकते)",
@@ -161,7 +161,11 @@
 			},
 			"display": {
 				"eta": "अनुमानित ${expected}, कुल शेष ≈ ${remaining}",
-				"remaining": "कुल शेष ≈ ${remaining}"
+				"etaUnknown": "अनुमानित ${expected}; कुल ${count} अज्ञात अवधि शेष",
+				"reason": "${label}: ${reason}",
+				"remaining": "कुल शेष ≈ ${remaining}",
+				"remainingUnknown": "≈ ${remaining} कुल शेष (${count} अतिरिक्त अज्ञात अवधि)",
+				"remainingOnlyUnknown": "≈ ${count} अज्ञात अवधि कुल शेष"
 			},
 			"passed": "पास: ${label}",
 			"passedWithNoise": "उत्तीर्ण: ${label} (शोर शामिल है)",
@@ -181,6 +185,7 @@
 			"statePathFinal": "वर्तमान स्थिति: ${path}",
 			"blocked": "अवरुद्ध: ${label} (निर्भरता पारित नहीं हुई: ${deps})",
 			"speculativeDiscard": "पूर्वानुमान परिणाम खारिज करें: ${label} (निर्भरता पारित नहीं हुई: ${deps})",
+			"continueDefault": "जारी: ${count} सुइट (विफल/अपूर्ण ${imperfect}, पुराना ${outdated})",
 			"continueImperfect": "विफलता/शोर/अपूर्ण तरंगें: ${count} सुइट",
 			"outdatedSelected": "समाप्त तरंगें: ${count} पुरानी/न चली सुइट",
 			"runningSuite": {
@@ -284,6 +289,7 @@
 					},
 					"missingRecord": "स्थिति कोई रिकॉर्ड नहीं, स्वचालित मेक-अप",
 					"staleContent": "सामग्री बदल गई है और इसे फिर से चलाने की आवश्यकता है।",
+					"skipBecause": "skip_because पुनः जाँच",
 					"triggerHashDrift": "ट्रिगर फ़िंगरप्रिंट बहाव (कोई पथ हिट नहीं)"
 				},
 				"label": {
