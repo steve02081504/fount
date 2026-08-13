@@ -1,7 +1,8 @@
 /**
- * 目标集 + 裁决表 → 拓扑单遍运行计划（reuse / run / blocked）。
+ * 目标集 + 裁决表 → 拓扑单遍运行计划（reuse / run / blocked / skipped）。
  */
 import { detectDependencyCycle, topoSortSuites } from './dependencies.mjs'
+import { isSkipBecausePass, isSkipBecauseSkipTree } from './skip_because.mjs'
 import { suiteKey } from './state.mjs'
 import { verdictAllowsDownstream, verdictReusable } from './verdict.mjs'
 
@@ -12,8 +13,8 @@ import { verdictAllowsDownstream, verdictReusable } from './verdict.mjs'
  */
 
 /**
- * 计划动作：复用上次结果 / 真跑 / 因依赖阻塞。
- * @typedef {'reuse' | 'run' | 'blocked'} PlanAction
+ * 计划动作：复用上次结果 / 真跑 / 因依赖阻塞 / skip_tree 跳过。
+ * @typedef {'reuse' | 'run' | 'blocked' | 'skipped'} PlanAction
  */
 
 /**
@@ -23,6 +24,7 @@ import { verdictAllowsDownstream, verdictReusable } from './verdict.mjs'
  * @property {SuiteDef} suite suite 定义
  * @property {PlanAction} action 计划动作
  * @property {string[]} [blockedBy] 阻塞来源 suite 键
+ * @property {string[]} [skippedBy] skip_tree 跳过来源 suite 键
  * @property {string | null} [requiredBy] 直接纳入方（依赖拉入）
  * @property {boolean} goal 是否为用户目标
  * @property {GoalEvidence} [goalEvidence] 目标证据
@@ -40,11 +42,14 @@ import { verdictAllowsDownstream, verdictReusable } from './verdict.mjs'
 /**
  * @param {PlanSlot | undefined} slot 计划槽位
  * @param {Verdict | undefined} verdict 计划外依赖裁决
+ * @param {SuiteDef | undefined} depSuite 依赖 suite
  * @returns {boolean} 是否放行下游
  */
-function dependencyGreen(slot, verdict) {
+function dependencyGreen(slot, verdict, depSuite) {
+	if (isSkipBecauseSkipTree(depSuite)) return false
+	if (isSkipBecausePass(depSuite)) return true
 	if (slot) {
-		if (slot.action === 'blocked') return false
+		if (slot.action === 'blocked' || slot.action === 'skipped') return false
 		if (slot.action === 'reuse') return verdictAllowsDownstream(verdict)
 		return true
 	}
@@ -64,7 +69,7 @@ function listBlockingDeps(key, planned, verdicts, byKey) {
 	const missing = []
 	for (const dep of byKey.get(key)?.dependencies ?? []) {
 		const depKey = suiteKey(dep.manifestId, dep.name)
-		if (!dependencyGreen(planned.get(depKey), verdicts.get(depKey)))
+		if (!dependencyGreen(planned.get(depKey), verdicts.get(depKey), byKey.get(depKey)))
 			missing.push(depKey)
 	}
 	return missing
@@ -117,7 +122,7 @@ export function buildPlan(
 		const key = queue.shift()
 		for (const dep of byKey.get(key)?.dependencies ?? []) {
 			const depKey = suiteKey(dep.manifestId, dep.name)
-			if (verdictAllowsDownstream(verdicts.get(depKey)) || needed.has(depKey)) continue
+			if (verdictAllowsDownstream(verdicts.get(depKey)) || isSkipBecausePass(byKey.get(depKey)) || needed.has(depKey)) continue
 			needed.add(depKey)
 			provenance.set(depKey, key)
 			queue.push(depKey)
@@ -170,7 +175,10 @@ export function buildPlan(
 
 		const blockedBy = listBlockingDeps(key, planned, verdicts, byKey)
 		if (blockedBy.length) {
-			planned.set(key, { ...base, action: 'blocked', blockedBy })
+			if (blockedBy.every(depKey => isSkipBecauseSkipTree(byKey.get(depKey)) || planned.get(depKey)?.action === 'skipped'))
+				planned.set(key, { ...base, action: 'skipped', skippedBy: blockedBy })
+			else
+				planned.set(key, { ...base, action: 'blocked', blockedBy })
 			continue
 		}
 

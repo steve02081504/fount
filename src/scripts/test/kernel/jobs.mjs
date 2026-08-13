@@ -276,6 +276,7 @@ function finishWave(selection, verdicts, byKey, allSuites, force, subtestFilterB
  * @param {number} [counts.runCount=0] 真跑
  * @param {number} [counts.reuseCount=0] 复用
  * @param {number} [counts.blockedCount=0] 阻塞
+ * @param {number} [counts.skippedCount=0] skip_tree 跳过
  * @returns {object} accepted 字段
  */
 export function acceptedFromWave(wave, counts = {}) {
@@ -292,6 +293,7 @@ export function acceptedFromWave(wave, counts = {}) {
 		runCount: counts.runCount ?? 0,
 		reuseCount: counts.reuseCount ?? 0,
 		blockedCount: counts.blockedCount ?? 0,
+		skippedCount: counts.skippedCount ?? 0,
 		code: wave.code ?? 0,
 		empty: wave.empty === true,
 		error: wave.error ?? null,

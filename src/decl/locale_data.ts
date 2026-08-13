@@ -170,6 +170,7 @@ export type LocaleData = {
 			reportPathFinal: string
 			statePathFinal: string
 			blocked: string
+			skippedTree: string
 			speculativeDiscard: string
 			continueDefault: string
 			continueImperfect: string
@@ -257,6 +258,7 @@ export type LocaleData = {
 					replayImperfect: string
 					silentPassed: string
 					skipped: string
+					skipTree: string
 				}
 				pending: {
 					estimate: string
@@ -298,6 +300,7 @@ export type LocaleData = {
 					rootCause: string
 					skipBecause: string
 					skipBecauseClosed: string
+					skipTree: string
 					terminateReason: string
 					triggerHashDrift: string
 					uncommittedHashRange: string
@@ -6235,6 +6238,7 @@ export type LocaleKeyParams = {
 	'fountConsole.server.showUrl.https': { url: string | number }
 	'fountConsole.test.available': { ids: string | number }
 	'fountConsole.test.blocked': { deps: string | number; label: string | number }
+	'fountConsole.test.skippedTree': { deps: string | number; label: string | number }
 	'fountConsole.test.continueDefault': { count: string | number; imperfect: string | number; outdated: string | number }
 	'fountConsole.test.continueImperfect': { count: string | number }
 	'fountConsole.test.denoPanic.alreadyReported': { signature: string | number }
@@ -6263,14 +6267,14 @@ export type LocaleKeyParams = {
 	'fountConsole.test.heapSnapshotSaved': { path: string | number }
 	'fountConsole.test.manifestMatched': { ids: string | number }
 	'fountConsole.test.moduleCheck.missedReady': { label: string | number }
-	'fountConsole.test.noRealRunPlanned': { blocked: string | number; reused: string | number }
+	'fountConsole.test.noRealRunPlanned': { blocked: string | number; reused: string | number; skipped: string | number }
 	'fountConsole.test.nodeWorker.error': { error: string | number }
 	'fountConsole.test.noiseHits': { hits: string | number }
 	'fountConsole.test.noisyOnlyRemain': { count: string | number; suites: string | number }
 	'fountConsole.test.outdatedSelected': { count: string | number }
 	'fountConsole.test.passed': { label: string | number }
 	'fountConsole.test.passedWithNoise': { label: string | number }
-	'fountConsole.test.planSlotSummary': { blocked: string | number; reuse: string | number; run: string | number }
+	'fountConsole.test.planSlotSummary': { blocked: string | number; reuse: string | number; run: string | number; skipped: string | number }
 	'fountConsole.test.prunedAbsentState': { subtests: string | number; suites: string | number }
 	'fountConsole.test.queue.append': { label: string | number; reason: string | number; remaining: string | number }
 	'fountConsole.test.queue.remove': { label: string | number; reason: string | number; remaining: string | number }

@@ -452,7 +452,7 @@ Deno.test('accepted precedes suite-start and remaining drops the finished suite'
 			assertEquals(lastEnd?.remainingMs, 0)
 
 			const reasonsText = await readFile(triggeredReasonsMarkdownPath(root), 'utf8')
-			assertEquals(reasonsText.includes('历史失败'), true)
+			assertEquals(reasonsText.includes('skip_because 复检'), true)
 			const report = JSON.parse(await readFile(reportJsonPath(root), 'utf8'))
 			assertEquals(report.slots.every(slot => slot.continueReason?.kind), true)
 		}
@@ -588,6 +588,141 @@ Deno.test('failed dep discards queued dependents as blocked', async () => {
 		assertEquals(end?.blockedBy, [depKey])
 		assertEquals(job.exitCode, 1)
 		assertEquals(handle.kernel.queues.pendingEmpty(), true)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('skip_because leftover failed does not block dependents without re-probe', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 17,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		const dep = dummySkipSuite('__skip_stale_dep__', SKIP_URL)
+		const depKey = 'testkit:__skip_stale_dep__'
+		const childKey = 'testkit:__skip_stale_child__'
+		const child = {
+			manifestId: 'testkit',
+			name: '__skip_stale_child__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [{ manifestId: 'testkit', name: '__skip_stale_dep__' }],
+			heavy: false,
+		}
+		handle.kernel.catalog.allSuites.push(dep, child)
+		handle.kernel.catalog.byKey.set(depKey, dep)
+		handle.kernel.catalog.byKey.set(childKey, child)
+		handle.kernel.state.suites[depKey] = {
+			status: 'failed',
+			durationMs: 0,
+			failedFiles: [],
+			noiseHits: [],
+			logPath: null,
+		}
+		/** @type {object | null} */
+		let childEnd = null
+		handle.kernel.viewers.add({
+			readyState: 1,
+			/**
+			 * @param {string} raw 事件 JSON
+			 * @returns {void}
+			 */
+			send: raw => {
+				const msg = JSON.parse(raw)
+				if (msg.type === 'suite-end' && msg.key === childKey) childEnd = msg
+			},
+		}, { mode: 'overview' })
+		const item = handle.kernel.queues.enqueueCli({ key: childKey, viewerId: 'v', jobId: 'skip-stale-child' })
+		const job = {
+			id: 'skip-stale-child',
+			viewerId: 'v',
+			spec: {},
+			pending: new Set([item.id]),
+			continueLoop: false,
+			exitCode: 0,
+			done: Promise.withResolvers(),
+			fingerprints: { commitHash: null, uncommittedHash: null },
+		}
+		handle.kernel.jobs.set(job.id, job)
+		handle.kernel.wake()
+		await Promise.race([
+			job.done.promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('child stayed queued on leftover skip fail')), 8000)),
+		])
+		assertEquals(childEnd?.blockedBy ?? [], [])
+		assertEquals(childEnd?.passed, true)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('skip_tree leftover failed skips dependents without failing the job', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 18,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		const dep = dummySkipSuite('__skip_tree_dep__', { url: SKIP_URL, as: 'skip_tree' })
+		const depKey = 'testkit:__skip_tree_dep__'
+		const childKey = 'testkit:__skip_tree_child__'
+		const child = {
+			manifestId: 'testkit',
+			name: '__skip_tree_child__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [{ manifestId: 'testkit', name: '__skip_tree_dep__' }],
+			heavy: false,
+		}
+		handle.kernel.catalog.allSuites.push(dep, child)
+		handle.kernel.catalog.byKey.set(depKey, dep)
+		handle.kernel.catalog.byKey.set(childKey, child)
+		handle.kernel.state.suites[depKey] = {
+			status: 'failed',
+			durationMs: 0,
+			failedFiles: [],
+			noiseHits: [],
+			logPath: null,
+		}
+		/** @type {object | null} */
+		let childEnd = null
+		handle.kernel.viewers.add({
+			readyState: 1,
+			/**
+			 * @param {string} raw 事件 JSON
+			 * @returns {void}
+			 */
+			send: raw => {
+				const msg = JSON.parse(raw)
+				if (msg.type === 'suite-end' && msg.key === childKey) childEnd = msg
+			},
+		}, { mode: 'overview' })
+		const item = handle.kernel.queues.enqueueCli({ key: childKey, viewerId: 'v', jobId: 'skip-tree-child' })
+		const job = {
+			id: 'skip-tree-child',
+			viewerId: 'v',
+			spec: {},
+			pending: new Set([item.id]),
+			continueLoop: false,
+			exitCode: 0,
+			done: Promise.withResolvers(),
+			fingerprints: { commitHash: null, uncommittedHash: null },
+		}
+		handle.kernel.jobs.set(job.id, job)
+		handle.kernel.wake()
+		await Promise.race([
+			job.done.promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('child stayed queued on skip_tree leftover'))), 8000),
+		])
+		assertEquals(childEnd?.skippedBy, [depKey])
+		assertEquals(childEnd?.blockedBy ?? [], [])
+		assertEquals(job.exitCode, 0)
 	}
 	finally {
 		await handle.close()

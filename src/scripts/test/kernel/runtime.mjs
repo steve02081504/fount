@@ -13,6 +13,8 @@ import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
 import {
 	formatSkipBecauseUrls,
 	isSkipBecauseBlocking,
+	isSkipBecausePass,
+	isSkipBecauseSkipTree,
 	skipBecauseAction,
 	skipBecauseEntriesForRun,
 } from '../core/skip_because.mjs'
@@ -94,6 +96,8 @@ export class TestKernel {
 		this.running = new Map()
 		/** @type {Map<string, boolean>} */
 		this.sessionPassed = new Map()
+		/** @type {Set<string>} */
+		this.sessionSkipped = new Set()
 		this.closed = false
 		this.seenViewer = false
 		this.catalog = null
@@ -278,9 +282,11 @@ export class TestKernel {
 		let runCount = 0
 		let reuseCount = 0
 		let blockedCount = 0
+		let skippedCount = 0
 		for (const slot of wave.plan.slots)
 			if (slot.action === 'reuse') reuseCount++
 			else if (slot.action === 'blocked') blockedCount++
+			else if (slot.action === 'skipped') skippedCount++
 			else runCount++
 		const remaining = this.#remainingFromPlan(wave.plan)
 		return {
@@ -291,6 +297,7 @@ export class TestKernel {
 				runCount,
 				reuseCount,
 				blockedCount,
+				skippedCount,
 				remainingMs: remaining.remainingMs,
 				unknownCount: remaining.unknownCount,
 			}),
@@ -355,6 +362,8 @@ export class TestKernel {
 					...this.#remainingState(),
 				})
 			}
+			else if (slot.action === 'skipped')
+				await this.#recordSkipped(slot, job.id)
 		
 		await this.#flushReportEstimate()
 		if (!job.pending.size)
@@ -401,6 +410,33 @@ export class TestKernel {
 		await writeState(this.repoRoot, this.state)
 		this.sessionPassed.set(slot.key, false)
 		await this.#reportResult(slot.suite, this.state.suites[slot.key])
+	}
+
+	/**
+	 * skip_tree 下游：不写 blocked、不失败。
+	 * @param {object} slot 槽
+	 * @param {string | undefined} jobId job
+	 * @returns {Promise<void>}
+	 */
+	async #recordSkipped(slot, jobId) {
+		const skippedBy = slot.skippedBy ?? []
+		this.sessionSkipped.add(slot.key)
+		this.sessionPassed.set(slot.key, true)
+		await this.#reportResult(slot.suite, this.state.suites[slot.key] ?? {
+			status: 'passed',
+			durationMs: 0,
+			failedFiles: [],
+			noiseHits: [],
+			logPath: null,
+		}, { skippedBy })
+		this.viewers.broadcast({
+			type: 'suite-end',
+			key: slot.key,
+			jobId,
+			passed: true,
+			skippedBy,
+			...this.#remainingState(),
+		})
 	}
 
 	/**
@@ -498,26 +534,43 @@ export class TestKernel {
 
 	/**
 	 * @param {import('./queues.mjs').QueueItem} item 项
-	 * @returns {string[]} 已失败/已阻塞且不在飞行中的依赖
+	 * @returns {{ failed: string[], skipped: string[] }} 未满足的依赖
 	 */
-	#failedDeps(item) {
+	#unmetDeps(item) {
 		const suite = this.catalog.byKey.get(item.key)
-		if (!suite) return []
+		if (!suite) return { failed: [], skipped: [] }
+		/** @type {string[]} */
 		const failed = []
+		/** @type {string[]} */
+		const skipped = []
 		for (const dep of suite.dependencies ?? []) {
 			const depKey = suiteKey(dep.manifestId, dep.name)
 			if (this.#depInFlight(depKey)) continue
+			const depSuite = this.catalog.byKey.get(depKey)
 			const passed = this.sessionPassed.get(depKey)
+			if (this.sessionSkipped.has(depKey) || (isSkipBecauseSkipTree(depSuite) && passed !== false)) {
+				skipped.push(depKey)
+				continue
+			}
 			if (passed === true) continue
 			if (passed === false) {
 				failed.push(depKey)
 				continue
 			}
+			if (isSkipBecausePass(depSuite)) continue
 			const st = this.state.suites[depKey]
 			if (st && (st.status === 'failed' || st.status === 'blocked'))
 				failed.push(depKey)
 		}
-		return failed
+		return { failed, skipped }
+	}
+
+	/**
+	 * @param {import('./queues.mjs').QueueItem} item 项
+	 * @returns {string[]} 已失败/已阻塞且不在飞行中的依赖
+	 */
+	#failedDeps(item) {
+		return this.#unmetDeps(item).failed
 	}
 
 	/**
@@ -528,7 +581,8 @@ export class TestKernel {
 		const suite = this.catalog.byKey.get(item.key)
 		if (!suite) return false
 		if (this.running.has(item.key)) return false
-		if (this.#failedDeps(item).length) return false
+		const unmet = this.#unmetDeps(item)
+		if (unmet.failed.length || unmet.skipped.length) return false
 		for (const dep of suite.dependencies ?? []) {
 			const depKey = suiteKey(dep.manifestId, dep.name)
 			if (this.#depInFlight(depKey) && this.sessionPassed.get(depKey) !== true)
@@ -569,6 +623,32 @@ export class TestKernel {
 	}
 
 	/**
+	 * skip_tree 未满足的排队项记为 skipped，不失败。
+	 * @returns {Promise<void>}
+	 */
+	async #discardSkipped() {
+		for (; ;) {
+			const item = [...this.queues.cli, ...this.queues.fs].find(queued => {
+				const unmet = this.#unmetDeps(queued)
+				return !unmet.failed.length && unmet.skipped.length
+			})
+			if (!item) return
+			const skippedBy = this.#unmetDeps(item).skipped
+			const removed = this.queues.removeKey(item.key)
+			const suite = this.catalog.byKey.get(item.key)
+			if (suite)
+				await this.#recordSkipped({ suite, key: item.key, skippedBy }, item.jobId)
+			else {
+				this.sessionSkipped.add(item.key)
+				this.sessionPassed.set(item.key, true)
+			}
+			for (const gone of removed)
+				if (gone.jobId)
+					await this.#onJobItemDone(gone)
+		}
+	}
+
+	/**
 	 * @returns {Promise<void>}
 	 */
 	async #runLoop() {
@@ -582,6 +662,7 @@ export class TestKernel {
 					...this.#remainingState(),
 				})
 			await this.#discardBlocked()
+			await this.#discardSkipped()
 			await this.#admitReady()
 			if (this.queues.pendingEmpty() && !this.running.size) {
 				this.issueCache.pruneOlderThan()

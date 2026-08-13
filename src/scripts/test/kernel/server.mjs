@@ -169,6 +169,8 @@ async function onViewerMessage(kernel, viewer, raw) {
 		runCount: submitted.runCount,
 		reuseCount: submitted.reuseCount,
 		blockedCount: submitted.blockedCount,
+		skippedCount: submitted.skippedCount,
+		skippedCount: submitted.skippedCount,
 		code: submitted.code,
 		empty: submitted.empty,
 		error: submitted.error,

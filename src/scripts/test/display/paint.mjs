@@ -128,6 +128,7 @@ export function paintAccepted(msg) {
 			run: msg.runCount,
 			reuse: msg.reuseCount,
 			blocked: msg.blockedCount,
+			skipped: msg.skippedCount ?? 0,
 		})
 	}
 	for (const row of msg.continueReasons ?? [])
@@ -137,10 +138,11 @@ export function paintAccepted(msg) {
 		})
 	if (msg.runCount || msg.unknownCount || msg.remainingMs != null)
 		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(msg) })
-	if (!msg.runCount && (msg.reuseCount || msg.blockedCount))
+	if (!msg.runCount && (msg.reuseCount || msg.blockedCount || msg.skippedCount))
 		console.logI18n('fountConsole.test.noRealRunPlanned', {
 			reused: msg.reuseCount,
 			blocked: msg.blockedCount,
+			skipped: msg.skippedCount ?? 0,
 		})
 }
 
@@ -154,6 +156,8 @@ export function paintAccepted(msg) {
 export function paintSuiteEnd(msg, { stream = false } = {}) {
 	if (msg.blockedBy?.length)
 		console.logI18n('fountConsole.test.blocked', { label: msg.key, deps: msg.blockedBy.join(', ') })
+	else if (msg.skippedBy?.length)
+		console.logI18n('fountConsole.test.skippedTree', { label: msg.key, deps: msg.skippedBy.join(', ') })
 	else if (msg.reused) {
 		const { manifestId, name } = splitSuiteKey(msg.key)
 		console.logI18n('fountConsole.test.reusedSuite', { manifestId, name, status: msg.status })
@@ -173,7 +177,7 @@ export function paintSuiteEnd(msg, { stream = false } = {}) {
 		console.logI18n('fountConsole.test.passed', { label: msg.key })
 	if (!stream && suiteEndHasFailureOutput(msg))
 		writeFailureOutput(msg.output)
-	if (!stream && !msg.reused && !msg.blockedBy?.length)
+	if (!stream && !msg.reused && !msg.blockedBy?.length && !msg.skippedBy?.length)
 		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(msg) })
 }
 

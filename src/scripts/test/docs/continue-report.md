@@ -7,8 +7,8 @@ Per-slot `continueReason` in `data/test/report.json` and `data/test/triggered-re
 ## Verdict + plan
 
 - `core/verdict.mjs` → `green` / `noisy` / `red` / `unknown`.
-- `core/plan.mjs` → `reuse` / `run` / `blocked` + `subtestsToRun`.
-- Fresh green/noisy/red → `reuse`. Goal red/noisy/unknown always **run**. Suite-level `failed` (e.g. watchdog) with all subtests still green/noisy elevates to **red** and full re-run. `--force` forces goals. `skip_because` (URL / `{url, delay}` / array) never reuses via fingerprint; skip-pass does not stamp a fresh green record, but this session's skip-pass still unblocks dependents (`sessionPassed`). Closed issues still within `delay` stay skip-pass; closed and past delay fails the slot.
+- `core/plan.mjs` → `reuse` / `run` / `blocked` / `skipped` + `subtestsToRun`.
+- Fresh green/noisy/red → `reuse`. Goal red/noisy/unknown always **run**. Suite-level `failed` (e.g. watchdog) with all subtests still green/noisy elevates to **red** and full re-run. `--force` forces goals. `skip_because` (URL / `{url, delay, as}` / array) never reuses via fingerprint; skip-pass does not stamp a fresh green record. Default `as: "pass"` counts as green for planning (leftover failed is not imperfect and does not block dependents; this session still unblocks via `sessionPassed`). `as: "skip_tree"` omits transitive dependents (`skipped`, not blocked / not a job failure). Closed issues still within `delay` stay skip-pass; closed and past delay fails the slot.
 - Failed transitive dep with unchanged triggers stays `reuse(red)` and still **blocks**.
 - Fingerprints (`commitHash` / `uncommittedHash` / `triggerHash`) update only after that suite's plan slot finishes (`upsertSuiteRun` on run, `refreshEntryFingerprint` on reuse) — never batch-align at wave start.
 
@@ -16,7 +16,7 @@ Per-slot `continueReason` in `data/test/report.json` and `data/test/triggered-re
 
 1. **`buildVerdicts`** — from state + git freshness. Suites with `subtests` aggregate and expose `subtestsToRun`. Dirty→clean `triggerHash` alone is not stale (`isTriggerHashStale`).
 2. **Goals** — imperfect (`failed`/`blocked`/missing/fresh `noisy` + one-level dependents of hard fails only) ∪ outdated (`unknown`), or explicit / `--all`. Each suite is planned once; imperfect evidence wins when both apply.
-3. **`buildPlan`** — topo scan → each slot `reuse` | `run` | `blocked` with provenance.
+3. **`buildPlan`** — topo scan → each slot `reuse` | `run` | `blocked` | `skipped` with provenance.
 
 Default `fount test` builds one plan covering imperfect ∪ outdated. Imperfect slots queue first. A failure only blocks dependents of that slot; the job still runs the rest and exits non-zero at the end. Fresh noisy is included with imperfect; if still noisy after the job, exit 1 (no same-invocation retry). Report `sectionNoisyPassed` lists them with log paths.
 

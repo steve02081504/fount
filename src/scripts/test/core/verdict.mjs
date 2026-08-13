@@ -3,6 +3,7 @@
  * 有子测试时逐子测试裁决后聚合。
  */
 import { digestFileHashes } from './changed.mjs'
+import { isPassSkipBlock, skipBecauseAsForSuite } from './skip_because.mjs'
 import { collectTriggerEvidence, suiteKey, suiteTriggersHit } from './state.mjs'
 import { filterTriggerRelevantFiles, matchGlob } from './trigger_filter.mjs'
 
@@ -71,10 +72,11 @@ export function isTriggerHashStale(entryHash, currentHash) {
  * @param {SuiteStateEntry | undefined} entry 现状条目
  * @param {string[]} committedChanged 自 entry.commitHash 的 commit 变更
  * @param {string | null} sharedTriggerHash 预计算的 suite 共享 triggerHash
+ * @param {{ ignoreBlocked?: boolean }} [opts] ignoreBlocked：pass 模式 skip 造成的作废 blocked
  * @returns {boolean} 内容是否新鲜
  */
-export function isContentFresh(suite, entry, committedChanged, sharedTriggerHash) {
-	if (!entry || entry.status === 'blocked') return false
+export function isContentFresh(suite, entry, committedChanged, sharedTriggerHash, { ignoreBlocked = false } = {}) {
+	if (!entry || (entry.status === 'blocked' && !ignoreBlocked)) return false
 	if (suiteTriggersHit(suite, committedChanged)) return false
 	return !isTriggerHashStale(entry.triggerHash, sharedTriggerHash)
 }
@@ -146,17 +148,21 @@ export function aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash) {
  * @param {string[]} committedChanged 自 entry.commitHash 的 commit 变更
  * @param {Map<string, string>} uncommittedHashes 未提交内容 digest 表
  * @param {Map<string, string[]>} [committedChangedByKey] 含 `key#subtest` 的变更表
+ * @param {Map<string, SuiteDef>} [byKey] 全部 suite（判定 pass skip / 作废 blocked）
  * @returns {Verdict} 裁决
  */
-export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey) {
+export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey, byKey) {
 	const sharedTriggerHash = digestFileHashes(
 		uncommittedHashes,
 		collectTriggerEvidence(suite, [...uncommittedHashes.keys()]).matchedPaths,
 	)
+	const passSkip = skipBecauseAsForSuite(suite) === 'pass'
+	const skipBlock = isPassSkipBlock(entry, byKey ?? new Map())
+	const treatPassed = passSkip || skipBlock
 
 	if (suite.subtests?.length) {
 		const sharedStale = !entry
-			|| entry.status === 'blocked'
+			|| (entry.status === 'blocked' && !skipBlock)
 			|| suiteTriggersHit(suite, committedChanged)
 			|| isTriggerHashStale(entry.triggerHash, sharedTriggerHash)
 		/** @type {Record<string, Verdict>} */
@@ -176,16 +182,16 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
 		const aggregate = aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash)
 		// suite 级失败（如 watchdog 终止）无法归因到任何子测试时，聚合会得出 green/noisy
 		// 而掩盖失败；此时整套判 red（subtestsToRun 留空 → plan 全量重跑）。
-		if (aggregate.fresh && entry.status === 'failed'
+		if (aggregate.fresh && entry.status === 'failed' && !passSkip
 			&& (aggregate.kind === 'green' || aggregate.kind === 'noisy'))
 			return { ...aggregate, kind: 'red', subtestsToRun: [] }
 		return aggregate
 	}
 
-	const fresh = isContentFresh(suite, entry, committedChanged, sharedTriggerHash)
-	if (!entry || entry.status === 'blocked' || !fresh)
+	const fresh = isContentFresh(suite, entry, committedChanged, sharedTriggerHash, { ignoreBlocked: skipBlock })
+	if (!entry || (entry.status === 'blocked' && !skipBlock) || !fresh)
 		return { kind: 'unknown', fresh: false, triggerHash: sharedTriggerHash }
-	if (entry.status === 'passed') return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash }
+	if (entry.status === 'passed' || treatPassed) return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash }
 	if (entry.status === 'noisy') return { kind: 'noisy', fresh: true, triggerHash: sharedTriggerHash }
 	return { kind: 'red', fresh: true, triggerHash: sharedTriggerHash }
 }
@@ -199,6 +205,7 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
  * @returns {Map<string, Verdict>} suite 键 -> 裁决
  */
 export function buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes) {
+	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
 	return new Map(allSuites.map(suite => {
 		const key = suiteKey(suite.manifestId, suite.name)
 		return [key, judgeSuite(
@@ -207,6 +214,7 @@ export function buildVerdicts(allSuites, state, committedChangedByKey, uncommitt
 			committedChangedByKey.get(key) ?? [],
 			uncommittedHashes,
 			committedChangedByKey,
+			byKey,
 		)]
 	}))
 }

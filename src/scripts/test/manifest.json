@@ -52,7 +52,10 @@
 			"triggers": [
 				"src/scripts/test/selftest/dependencies_state.test.mjs",
 				"src/scripts/test/core/dependencies.mjs",
+				"src/scripts/test/core/skip_because.mjs",
 				"src/scripts/test/core/state.mjs",
+				"src/scripts/test/core/verdict.mjs",
+				"src/scripts/test/core/plan.mjs",
 				"src/scripts/test/core/manifest.mjs",
 				"src/scripts/test/core/concurrency.mjs",
 				"src/scripts/test/core/repo_root.mjs",
@@ -102,7 +105,8 @@
 				"src/scripts/test/core/paths.mjs",
 				"src/scripts/test/core/plan.mjs",
 				"src/scripts/test/core/selector.mjs",
-				"src/scripts/test/core/verdict.mjs"
+				"src/scripts/test/core/verdict.mjs",
+				"src/scripts/test/core/skip_because.mjs"
 			]
 		},
 		{
@@ -144,9 +148,11 @@
 				"src/scripts/test/runner/selection.mjs",
 				"src/scripts/test/runner/continue_reason.mjs",
 				"src/scripts/test/core/dependencies.mjs",
+				"src/scripts/test/core/skip_because.mjs",
 				"src/scripts/test/core/state.mjs",
 				"src/scripts/test/core/manifest.mjs",
-				"src/scripts/test/core/selector.mjs"
+				"src/scripts/test/core/selector.mjs",
+				"src/scripts/test/core/verdict.mjs"
 			]
 		},
 		{

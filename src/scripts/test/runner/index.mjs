@@ -305,6 +305,7 @@ async function executeWave(context) {
 			run: runSlotCount,
 			reuse: reuseSlotCount,
 			blocked: plan.slots.filter(slot => slot.action === 'blocked').length,
+			skipped: plan.slots.filter(slot => slot.action === 'skipped').length,
 		})
 
 	const reportWriter = new RunReportWriter({
@@ -347,7 +348,8 @@ async function executeWave(context) {
 		else
 			console.logI18n('fountConsole.test.noRealRunPlanned', {
 				reused: estimate.reusedCount,
-				blocked: estimate.blockedCount,
+				blocked: plan.slots.filter(slot => slot.action === 'blocked').length,
+				skipped: plan.slots.filter(slot => slot.action === 'skipped').length,
 			})
 	}
 

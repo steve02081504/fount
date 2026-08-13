@@ -3,6 +3,11 @@ import { join } from 'node:path'
 import { collectChangesSinceRecord } from '../core/changed.mjs'
 import { expandImperfectDependents } from '../core/dependencies.mjs'
 import { parseTestSubtestsEnv } from '../core/protocol.mjs'
+import {
+	isPassSkipBlock,
+	skipBecauseAsForSuite,
+	skipTreeDescendantKeys,
+} from '../core/skip_because.mjs'
 import { collectStaleTriggerEvidence, suiteKey } from '../core/state.mjs'
 
 /**
@@ -137,9 +142,13 @@ export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
  * fresh noisy 进 imperfect 真跑，但不拖下游（noisy 已放行下游且下游多半已绿）。
  * @param {Verdict | undefined} verdict 裁决
  * @param {import('../core/state.mjs').SuiteStateEntry | undefined} entry 现状
+ * @param {import('../core/manifest.mjs').SuiteDef | undefined} suite suite
+ * @param {Map<string, import('../core/manifest.mjs').SuiteDef>} byKey suite 表
  * @returns {boolean} 是否展开下游
  */
-function isHardImperfectRoot(verdict, entry) {
+function isHardImperfectRoot(verdict, entry, suite, byKey) {
+	if (skipBecauseAsForSuite(suite)) return false
+	if (isPassSkipBlock(entry, byKey)) return false
 	if (!entry) return true
 	if (entry.status === 'failed' || entry.status === 'blocked') return true
 	return verdict?.kind === 'red'
@@ -149,17 +158,24 @@ function isHardImperfectRoot(verdict, entry) {
  * 收集 imperfect 波次根目标键（不含下游扩展）。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
+ * @param {SuiteDef[]} [allSuites] 全部 suite（skip_because 判定）
  * @returns {Set<string>} imperfect 目标键（含 fresh noisy；不含 stale passed / outdated unknown）
  */
-export function goalImperfectKeys(verdicts, state) {
+export function goalImperfectKeys(verdicts, state, allSuites = []) {
+	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
+	const skipTree = skipTreeDescendantKeys(allSuites)
 	/** @type {Set<string>} */
 	const keys = new Set()
 	for (const [key, verdict] of verdicts) {
+		if (skipTree.has(key)) continue
+		const suite = byKey.get(key)
 		const entry = state.suites[key]
 		if (!entry) {
 			keys.add(key)
 			continue
 		}
+		if (skipBecauseAsForSuite(suite)) continue
+		if (isPassSkipBlock(entry, byKey)) continue
 		// hard fail 一律进 imperfect（即使裁决误判 green/noisy 也不能漏）
 		if (entry.status === 'failed' || entry.status === 'blocked') {
 			keys.add(key)
@@ -182,10 +198,12 @@ export function goalImperfectKeys(verdicts, state) {
  * @returns {Set<string>} 扩展后的目标键
  */
 export function expandImperfectGoals(verdicts, state, allSuites) {
-	const imperfectKeys = goalImperfectKeys(verdicts, state)
+	const imperfectKeys = goalImperfectKeys(verdicts, state, allSuites)
+	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
 	const expandRoots = new Set([...imperfectKeys].filter(key =>
-		isHardImperfectRoot(verdicts.get(key), state.suites[key])))
-	return new Set([...imperfectKeys, ...expandImperfectDependents(expandRoots, allSuites)])
+		isHardImperfectRoot(verdicts.get(key), state.suites[key], byKey.get(key), byKey)))
+	const skipTree = skipTreeDescendantKeys(allSuites)
+	return new Set([...imperfectKeys, ...expandImperfectDependents(expandRoots, allSuites)].filter(key => !skipTree.has(key)))
 }
 
 /**
@@ -220,12 +238,14 @@ export function goalContinue(verdicts, state, allSuites) {
  * 计算 outdated（内容过期）波次目标键。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {SuiteDef[]} scope 过滤范围
+ * @param {SuiteDef[]} [allSuites] 全部 suite（skip_tree 下游剔除）
  * @returns {Set<string>} outdated 目标键
  */
-export function goalOutdated(verdicts, scope) {
+export function goalOutdated(verdicts, scope, allSuites = []) {
 	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
+	const skipTree = skipTreeDescendantKeys(allSuites.length ? allSuites : scope)
 	return new Set([...verdicts.entries()]
-		.filter(([key, verdict]) => scopeKeys.has(key) && verdict.kind === 'unknown')
+		.filter(([key, verdict]) => scopeKeys.has(key) && verdict.kind === 'unknown' && !skipTree.has(key))
 		.map(([key]) => key))
 }
 
@@ -260,14 +280,16 @@ export function selectImperfectWave({
 	uncommittedHash,
 }) {
 	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
-	const imperfectKeys = new Set([...goalImperfectKeys(verdicts, state)].filter(k => scopeKeys.has(k)))
+	const imperfectKeys = new Set([...goalImperfectKeys(verdicts, state, allSuites)].filter(k => scopeKeys.has(k)))
+	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
 	// hard-fail 拖一层下游（可超 scope）；noisy 只重跑自身
 	const expandRoots = new Set([...imperfectKeys].filter(key =>
-		isHardImperfectRoot(verdicts.get(key), state.suites[key])))
+		isHardImperfectRoot(verdicts.get(key), state.suites[key], byKey.get(key), byKey)))
+	const skipTree = skipTreeDescendantKeys(allSuites)
 	const goalKeys = new Set([
 		...imperfectKeys,
 		...expandImperfectDependents(expandRoots, allSuites),
-	])
+	].filter(key => !skipTree.has(key)))
 	if (!goalKeys.size)
 		return { action: 'exit', code: 0, mode: 'imperfect' }
 
@@ -340,7 +362,7 @@ export function selectOutdatedWave({
 	uncommittedHash,
 	state,
 }) {
-	const goalKeys = goalOutdated(verdicts, scope)
+	const goalKeys = goalOutdated(verdicts, scope, allSuites)
 	if (!goalKeys.size)
 		return { action: 'exit', code: 0, mode: 'outdated' }
 

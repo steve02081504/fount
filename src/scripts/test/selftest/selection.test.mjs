@@ -6,6 +6,7 @@ import { resolveSelector } from '../core/selector.mjs'
 import { collectStaleTriggerEvidence, migrateLegacySuiteKey, migrateLegacyStateSuites, suiteKey } from '../core/state.mjs'
 import { buildVerdicts, judgeSuite } from '../core/verdict.mjs'
 import {
+	goalContinue,
 	goalExplicit,
 	goalImperfectKeys,
 	goalOutdated,
@@ -277,4 +278,71 @@ Deno.test('goalImperfectKeys keeps failed even if verdict misclassified green', 
 		['shells/chat:pure', { kind: 'green', fresh: true, triggerHash: null }],
 	])
 	assertEquals([...goalImperfectKeys(verdicts, state)], ['shells/chat:frontend'])
+})
+
+const SKIP_BECAUSE = [{ url: 'https://github.com/homebridge/ciao/issues/72', delayMs: 0 }]
+
+Deno.test('skip_because leftover failed is not imperfect and does not expand dependents', () => {
+	const all = [
+		makeSuite('server', 'live', { skipBecause: SKIP_BECAUSE }),
+		makeSuite('shells/home', 'frontend', { dependsOn: ['server:live'] }),
+		makeSuite('shells/chat', 'integration', { dependsOn: ['server:live'] }),
+	]
+	const state = {
+		suites: {
+			'server:live': makeStateEntry({ status: 'failed' }),
+			'shells/home:frontend': makeStateEntry({ status: 'passed' }),
+			'shells/chat:integration': makeStateEntry({
+				status: 'blocked',
+				blockedBy: ['server:live'],
+			}),
+		},
+	}
+	const committedChangedByKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), []]))
+	const verdicts = buildVerdicts(all, state, committedChangedByKey, new Map())
+	assertEquals([...goalImperfectKeys(verdicts, state, all)], [])
+	assertEquals([...goalContinue(verdicts, state, all)], [])
+	const selection = selectDefaultWave({
+		verdicts,
+		state,
+		allSuites: all,
+		scope: all,
+		committedChangedByKey,
+		commitHash: 'abc',
+		uncommittedHash: null,
+	})
+	assertEquals(selection.action, 'exit')
+})
+
+Deno.test('skip_tree leftover failed omits stale and blocked descendants', () => {
+	const skipTree = [{ url: 'https://github.com/homebridge/ciao/issues/72', delayMs: 0, as: 'skip_tree' }]
+	const all = [
+		makeSuite('server', 'live', { skipBecause: skipTree }),
+		makeSuite('shells/home', 'frontend', { dependsOn: ['server:live'] }),
+		makeSuite('shells/chat', 'integration', { dependsOn: ['server:live'] }),
+	]
+	const state = {
+		suites: {
+			'server:live': makeStateEntry({ status: 'failed' }),
+			'shells/home:frontend': makeStateEntry({ status: 'passed' }),
+			'shells/chat:integration': makeStateEntry({
+				status: 'blocked',
+				blockedBy: ['server:live'],
+			}),
+		},
+	}
+	const committedChangedByKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), []]))
+	const verdicts = buildVerdicts(all, state, committedChangedByKey, new Map())
+	assertEquals([...goalImperfectKeys(verdicts, state, all)], [])
+	assertEquals([...goalContinue(verdicts, state, all)], [])
+	const selection = selectDefaultWave({
+		verdicts,
+		state,
+		allSuites: all,
+		scope: all,
+		committedChangedByKey,
+		commitHash: 'abc',
+		uncommittedHash: null,
+	})
+	assertEquals(selection.action, 'exit')
 })

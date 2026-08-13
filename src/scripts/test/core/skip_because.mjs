@@ -1,14 +1,22 @@
 /**
- * manifest `skip_because`：GitHub issue URL / `{ url, delay }` 或其数组。
- * 仍开或关闭未满 delay → 跳过当成功；关闭且已过 delay → 失败。
+ * manifest `skip_because`：GitHub issue URL / `{ url, delay, as }` 或其数组。
+ * 仍开或关闭未满 delay → 跳过；`as` 默认 `pass`（当绿，下游照常），`skip_tree` 连下游一起跳过。
+ * 关闭且已过 delay → 失败。
  */
 import { parseExpectedMs } from './expected.mjs'
 import { parseGithubIssueUrl } from './github_issue.mjs'
+import { suiteKey } from './state.mjs'
+
+/**
+ * skip 当绿（下游放行）或连同依赖树一起跳过。
+ * @typedef {'pass' | 'skip_tree'} SkipBecauseAs
+ */
 
 /**
  * @typedef {object} SkipBecauseEntry
  * @property {string} url GitHub issue URL
  * @property {number} delayMs 关闭后的延缓（毫秒）；0 表示关闭即失败
+ * @property {SkipBecauseAs} as 跳过方式
  */
 
 /**
@@ -18,7 +26,7 @@ import { parseGithubIssueUrl } from './github_issue.mjs'
  */
 
 /**
- * 按 URL 去重，同 URL 取较大 delay。
+ * 按 URL 去重：同 URL 取较大 delay，`skip_tree` 盖过 `pass`。
  * @param {SkipBecauseEntry[][]} lists 条目列表
  * @returns {SkipBecauseEntry[]} 去重后的条目
  */
@@ -28,8 +36,11 @@ function mergeEntries(lists) {
 	for (const list of lists)
 		for (const entry of list) {
 			const prev = byUrl.get(entry.url)
-			if (!prev || entry.delayMs > prev.delayMs)
-				byUrl.set(entry.url, entry)
+			byUrl.set(entry.url, {
+				url: entry.url,
+				delayMs: Math.max(prev?.delayMs ?? 0, entry.delayMs),
+				as: prev?.as === 'skip_tree' || entry.as === 'skip_tree' ? 'skip_tree' : 'pass',
+			})
 		}
 	return [...byUrl.values()]
 }
@@ -54,8 +65,20 @@ function parseDelayMs(raw, label) {
 }
 
 /**
+ * 解析 as 字段（缺省 pass）。
+ * @param {unknown} raw 原始 as
+ * @param {string} label 错误标签
+ * @returns {SkipBecauseAs} 跳过方式
+ */
+function parseAs(raw, label) {
+	if (raw == null || raw === '') return 'pass'
+	if (raw === 'pass' || raw === 'skip_tree') return raw
+	throw new Error(`invalid skip_because as in ${label}: ${raw}`)
+}
+
+/**
  * 解析单条 skip_because 项。
- * @param {unknown} item URL 或 { url, delay }
+ * @param {unknown} item URL 或 { url, delay, as }
  * @param {string} label 错误标签
  * @returns {SkipBecauseEntry | null} 条目；空字符串为 null
  */
@@ -65,15 +88,15 @@ function parseItem(item, label) {
 		if (!url) return null
 		if (!parseGithubIssueUrl(url))
 			throw new Error(`invalid skip_because URL in ${label}: ${url}`)
-		return { url, delayMs: 0 }
+		return { url, delayMs: 0, as: 'pass' }
 	}
 	if (!item || typeof item !== 'object' || Array.isArray(item))
-		throw new Error(`skip_because in ${label} must be a URL, {url, delay}, or an array of them`)
-	const rec = /** @type {{ url?: unknown, delay?: unknown }} */ item
+		throw new Error(`skip_because in ${label} must be a URL, {url, delay, as}, or an array of them`)
+	const rec = /** @type {{ url?: unknown, delay?: unknown, as?: unknown }} */ item
 	const url = String(rec.url ?? '').trim()
 	if (!parseGithubIssueUrl(url))
 		throw new Error(`invalid skip_because URL in ${label}: ${url}`)
-	return { url, delayMs: parseDelayMs(rec.delay, label) }
+	return { url, delayMs: parseDelayMs(rec.delay, label), as: parseAs(rec.as, label) }
 }
 
 /**
@@ -119,6 +142,16 @@ export function skipBecauseAction(blocking) {
 }
 
 /**
+ * 条目汇总后的跳过方式。
+ * @param {SkipBecauseEntry[] | undefined} entries 条目
+ * @returns {SkipBecauseAs | undefined} 有 skip 时的 as
+ */
+export function skipBecauseAs(entries) {
+	if (!entries?.length) return undefined
+	return entries.some(entry => entry.as === 'skip_tree') ? 'skip_tree' : 'pass'
+}
+
+/**
  * 本次调度要探测的 skip 条目。
  * @param {import('./manifest.mjs').SuiteDef} suite suite
  * @param {string[]} [subtests] 本次子测试
@@ -147,11 +180,77 @@ export function skipBecauseUrlsForRun(suite, subtests) {
 
 /**
  * suite 级或「全部子测试都标了」时的 skip 条目。
- * @param {import('./manifest.mjs').SuiteDef} suite suite
+ * @param {import('./manifest.mjs').SuiteDef | undefined} suite suite
  * @returns {SkipBecauseEntry[] | undefined} 条目
  */
 export function suiteSkipBecauseUrls(suite) {
+	if (!suite) return undefined
 	return skipBecauseEntriesForRun(suite)
+}
+
+/**
+ * suite 整场 skip 的 as；无 skip 为 undefined。
+ * @param {import('./manifest.mjs').SuiteDef | undefined} suite suite
+ * @returns {SkipBecauseAs | undefined} as
+ */
+export function skipBecauseAsForSuite(suite) {
+	return skipBecauseAs(suiteSkipBecauseUrls(suite))
+}
+
+/**
+ * skip 当绿（下游放行）。
+ * @param {import('./manifest.mjs').SuiteDef | undefined} suite suite
+ * @returns {boolean} 是否 pass 模式
+ */
+export function isSkipBecausePass(suite) {
+	return skipBecauseAsForSuite(suite) === 'pass'
+}
+
+/**
+ * skip 连同依赖树一起跳过。
+ * @param {import('./manifest.mjs').SuiteDef | undefined} suite suite
+ * @returns {boolean} 是否 skip_tree
+ */
+export function isSkipBecauseSkipTree(suite) {
+	return skipBecauseAsForSuite(suite) === 'skip_tree'
+}
+
+/**
+ * 被 skip_tree 根挡住的全部下游（不含根自身）。
+ * @param {import('./manifest.mjs').SuiteDef[]} allSuites 全部 suite
+ * @returns {Set<string>} 下游 suite 键
+ */
+export function skipTreeDescendantKeys(allSuites) {
+	const roots = new Set(
+		allSuites.filter(isSkipBecauseSkipTree).map(suite => suiteKey(suite.manifestId, suite.name)),
+	)
+	if (!roots.size) return new Set()
+	const under = new Set(roots)
+	let grew = true
+	while (grew) {
+		grew = false
+		for (const suite of allSuites) {
+			const key = suiteKey(suite.manifestId, suite.name)
+			if (under.has(key)) continue
+			if (suite.dependencies?.some(dep => under.has(suiteKey(dep.manifestId, dep.name)))) {
+				under.add(key)
+				grew = true
+			}
+		}
+	}
+	for (const root of roots) under.delete(root)
+	return under
+}
+
+/**
+ * blocked 记录是否仅被 pass 模式 skip 挡住（阻塞已作废，当绿）。
+ * @param {import('./state.mjs').SuiteStateEntry | undefined} entry 现状
+ * @param {Map<string, import('./manifest.mjs').SuiteDef>} byKey suite 表
+ * @returns {boolean} 是否作废阻塞
+ */
+export function isPassSkipBlock(entry, byKey) {
+	if (entry?.status !== 'blocked' || !entry.blockedBy?.length) return false
+	return entry.blockedBy.every(key => isSkipBecausePass(byKey.get(key)))
 }
 
 /**

@@ -18,7 +18,7 @@ import { matchGlob, mergeTriggerFilter } from './trigger_filter.mjs'
  * @property {string[]} triggers 子测试专属触发 glob（不含 suite 共享 triggers）
  * @property {string[]} [triggerRefs] trigger set 引用名
  * @property {Record<string, string[]>} [triggerSetPatterns] triggerRefs 展开的模式表
- * @property {import('./skip_because.mjs').SkipBecauseEntry[]} [skipBecause] skip_because 条目；全开或关闭未满 delay 则跳过当成功，任一已过 delay 则失败
+ * @property {import('./skip_because.mjs').SkipBecauseEntry[]} [skipBecause] skip_because 条目；`as` 默认 pass（当绿），skip_tree 连下游跳过；关闭已过 delay 则失败
  */
 
 /**

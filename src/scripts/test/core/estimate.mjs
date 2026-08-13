@@ -199,7 +199,7 @@ export function buildEstimateTasksFromPlan(slots, state) {
 				? 0
 				: expectedRunDurationMs(slot.suite, entry, slot.subtestsToRun),
 			reused: slot.action === 'reuse',
-			blocked: slot.action === 'blocked',
+			blocked: slot.action === 'blocked' || slot.action === 'skipped',
 			memMb: resources.memMb,
 			cpuPct: resources.cpuPct,
 			heavy: !!slot.suite.heavy,

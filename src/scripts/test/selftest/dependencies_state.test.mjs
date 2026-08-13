@@ -118,6 +118,68 @@ Deno.test('buildPlan blocks downstream when reused upstream failed', () => {
 	assertEquals(plan.slots.find(s => s.key === 'shells/chat:frontend')?.action, 'blocked')
 })
 
+const SKIP_BECAUSE = [{ url: 'https://github.com/homebridge/ciao/issues/72', delayMs: 0 }]
+
+Deno.test('skip_because leftover failed is green-capable and does not block downstream', () => {
+	const all = [
+		makeSuite('server', 'live', { skipBecause: SKIP_BECAUSE }),
+		makeSuite('shells/chat', 'frontend', { dependsOn: ['server:live'] }),
+	]
+	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
+	const state = {
+		suites: {
+			'server:live': makeStateEntry({ status: 'failed' }),
+			'shells/chat:frontend': makeStateEntry({ status: 'passed' }),
+		},
+	}
+	const verdicts = buildVerdicts(all, state, new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])), new Map())
+	assertEquals(verdicts.get('server:live')?.kind, 'green')
+	assertEquals(verdictAllowsDownstream(verdicts.get('server:live')), true)
+	const plan = buildPlan(new Set(['shells/chat:frontend']), verdicts, byKey, all)
+	assertEquals(plan.slots.find(s => s.key === 'shells/chat:frontend')?.action, 'reuse')
+	assertEquals(plan.slots.find(s => s.key === 'shells/chat:frontend')?.blockedBy, undefined)
+})
+
+Deno.test('blocked-only-by-skip_because stays fresh green, not unknown', () => {
+	const all = [
+		makeSuite('server', 'live', { skipBecause: SKIP_BECAUSE }),
+		makeSuite('shells/chat', 'integration', { dependsOn: ['server:live'] }),
+	]
+	const state = {
+		suites: {
+			'server:live': makeStateEntry({ status: 'failed' }),
+			'shells/chat:integration': makeStateEntry({
+				status: 'blocked',
+				blockedBy: ['server:live'],
+			}),
+		},
+	}
+	const verdicts = buildVerdicts(all, state, new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])), new Map())
+	assertEquals(verdicts.get('shells/chat:integration')?.kind, 'green')
+})
+
+Deno.test('skip_tree explicit descendant is skipped not blocked', () => {
+	const all = [
+		makeSuite('server', 'live', {
+			skipBecause: [{ url: 'https://github.com/homebridge/ciao/issues/72', delayMs: 0, as: 'skip_tree' }],
+		}),
+		makeSuite('shells/chat', 'frontend', { dependsOn: ['server:live'] }),
+	]
+	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
+	const state = {
+		suites: {
+			'server:live': makeStateEntry({ status: 'failed' }),
+			'shells/chat:frontend': makeStateEntry({ status: 'passed' }),
+		},
+	}
+	const verdicts = buildVerdicts(all, state, new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])), new Map())
+	const plan = buildPlan(new Set(['shells/chat:frontend']), verdicts, byKey, all)
+	assertEquals(plan.slots.find(s => s.key === 'server:live')?.action, 'run')
+	assertEquals(plan.slots.find(s => s.key === 'shells/chat:frontend')?.action, 'skipped')
+	assertEquals(plan.slots.find(s => s.key === 'shells/chat:frontend')?.skippedBy, ['server:live'])
+	assertEquals(plan.slots.find(s => s.key === 'shells/chat:frontend')?.blockedBy, undefined)
+})
+
 Deno.test('buildPlan pulls unsatisfied upstream into plan', () => {
 	const all = [
 		makeSuite('shells/chat', 'pure'),

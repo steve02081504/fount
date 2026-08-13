@@ -31,6 +31,7 @@ import { formatContinueReasonLabel } from './continue_reason.mjs'
  * @property {string[]} [noiseHits] 噪声命中
  * @property {string | null} [logPath] 失败日志相对路径
  * @property {string[]} [blockedBy] 阻塞来源
+ * @property {string[]} [skippedBy] skip_tree 跳过来源
  * @property {boolean} [terminated] 是否被 watchdog 终止
  * @property {string | null} [terminateReason] 终止原因
  * @property {ContinueReason} [continueReason] 纳入本波的原因
@@ -91,20 +92,22 @@ export class RunReportWriter {
 	 * @param {boolean} [options.reused] 是否复用上次结果
 	 * @param {string[]} [options.skipBecause] skip_because URL 列表
 	 * @param {string[]} [options.skipBecauseClosed] 已关闭需跟进的 URL
+	 * @param {string[]} [options.skippedBy] skip_tree 跳过来源
 	 * @returns {Promise<void>}
 	 */
-	recordResult(index, entry, { reused = false, skipBecause, skipBecauseClosed } = {}) {
+	recordResult(index, entry, { reused = false, skipBecause, skipBecauseClosed, skippedBy } = {}) {
 		return this.#enqueue(async () => {
 			const slot = this.slots[index]
 			this.slots[index] = {
 				...slot,
 				state: 'done',
-				status: entry.status,
+				status: skippedBy?.length ? 'passed' : entry.status,
 				durationMs: entry.durationMs,
 				failedFiles: entry.failedFiles,
 				noiseHits: entry.noiseHits,
 				logPath: entry.logPath,
 				blockedBy: entry.blockedBy,
+				skippedBy: skippedBy ?? slot.skippedBy,
 				terminated: entry.terminated,
 				terminateReason: entry.terminateReason,
 				reused,
@@ -336,10 +339,11 @@ function buildRunMarkdown(summary, completed) {
 
 	const skipped = completed.filter(s => s.skipBecause?.length)
 	appendSkipSection(lines, skipped)
+	appendSkipTreeSection(lines, completed.filter(s => s.skippedBy?.length))
 	appendSection(lines, geti18n('fountConsole.test.report.section.failed'), completed.filter(s => s.status === 'failed' && !s.skipBecause?.length))
 	appendSection(lines, geti18n('fountConsole.test.state.sectionBlocked'), completed.filter(s => s.status === 'blocked'))
 	appendSection(lines, geti18n('fountConsole.test.report.section.noisyPassed'), completed.filter(s => s.status === 'noisy'))
-	appendSilentPassed(lines, completed.filter(s => s.status === 'passed' && !s.skipBecause?.length))
+	appendSilentPassed(lines, completed.filter(s => s.status === 'passed' && !s.skipBecause?.length && !s.skippedBy?.length))
 
 	const pending = summary.slots.filter(slot => slot.state === 'pending')
 	if (pending.length) {
@@ -485,6 +489,18 @@ function appendSkipSection(lines, entries) {
 		if (entry.skipBecauseClosed?.length)
 			lines.push(`  - ${geti18n('fountConsole.test.report.label.skipBecauseClosed')}: ${entry.skipBecauseClosed.join(' ')}`)
 	}
+	lines.push('')
+}
+
+/**
+ * @param {string[]} lines 行缓冲
+ * @param {ReportSlot[]} entries skip_tree 下游
+ */
+function appendSkipTreeSection(lines, entries) {
+	if (!entries.length) return
+	lines.push(`## ${geti18n('fountConsole.test.report.section.skipTree')}`, '')
+	for (const entry of entries)
+		lines.push(`- ${entry.manifestId}:${entry.name} — ${geti18n('fountConsole.test.report.label.skipTree')}: ${(entry.skippedBy ?? []).join(', ')}`)
 	lines.push('')
 }
 
