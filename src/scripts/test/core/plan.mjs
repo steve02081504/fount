@@ -180,7 +180,7 @@ export function buildPlan(
 			continue
 		}
 
-		if (!goalMustRun(isGoal, verdict, force, hasExplicitFilter) && verdictReusable(verdict, false)) {
+		if (!goalMustRun(isGoal, verdict, force, hasExplicitFilter) && !suite.skipBecause?.length && !suite.subtests?.some(st => st.skipBecause?.length) && verdictReusable(verdict, false)) {
 			planned.set(key, { ...base, action: 'reuse' })
 			continue
 		}

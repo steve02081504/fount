@@ -6,6 +6,7 @@ import { join, relative } from 'node:path'
 
 import { attachDependencies, sortManifestIds } from './dependencies.mjs'
 import { parseManifestResources } from './resources.mjs'
+import { parseSkipBecause } from './skip_because.mjs'
 import { matchGlob, mergeTriggerFilter } from './trigger_filter.mjs'
 /**
  * suite 内注册的子测试。
@@ -15,6 +16,7 @@ import { matchGlob, mergeTriggerFilter } from './trigger_filter.mjs'
  * @property {string[]} triggers 子测试专属触发 glob（不含 suite 共享 triggers）
  * @property {string[]} [triggerRefs] trigger set 引用名
  * @property {Record<string, string[]>} [triggerSetPatterns] triggerRefs 展开的模式表
+ * @property {string[]} [skipBecause] GitHub issue URL 数组；全开则跳过当成功，任一已关则失败
  */
 
 /**
@@ -34,6 +36,8 @@ import { matchGlob, mergeTriggerFilter } from './trigger_filter.mjs'
  * @property {string[]} [dependsOn] manifest 中的依赖指名
  * @property {{ manifestId: string, name: string }[]} [dependencies] 解析后的依赖
  * @property {import('./trigger_filter.mjs').TriggerFilter} [triggerFilter] 忽略规则覆写
+ * @property {string[]} [skipBecause] GitHub issue URL 数组
+ * @property {string | null} [gitRoot] data/users 嵌套 git 根（相对仓库）；无则为 null，fount 树内 suite 为 undefined
  */
 
 /**
@@ -113,6 +117,7 @@ function resolveSubtests(suite, triggerSets) {
 			triggers: patterns,
 			triggerRefs: refs.length ? refs : undefined,
 			triggerSetPatterns: refs.length ? setPatterns : undefined,
+			skipBecause: parseSkipBecause(raw.skip_because, `subtest "${suite.name}/${name}"`),
 		})
 	}
 	return out
@@ -213,6 +218,7 @@ export async function loadAllSuites(repoRoot) {
 					? Array.isArray(suite.dependsOn) ? suite.dependsOn : [suite.dependsOn]
 					: undefined,
 				triggerFilter: mergeTriggerFilter(manifestTriggerFilter, suite.triggerFilter),
+				skipBecause: parseSkipBecause(suite.skip_because, `suite "${suite.name}"`),
 			})
 		}
 	}

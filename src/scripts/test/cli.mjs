@@ -1,15 +1,14 @@
 /**
  * fount test CLI
  *
- *   fount test [--all] [--no-parallel] [--force] [<groups>...]
+ *   fount test [--watch]
+ *   fount test [--all] [--force] [<groups>...]
  *
  * 分组语法：manifest、manifest:suite、manifest:suite:subtest、manifest/suite/subtest（空格分隔多组）
  */
-import 'fount/scripts/test/env.mjs'
-
 import process from 'node:process'
 
-import { geti18n } from '../i18n/bare.mjs'
+import { console, geti18n } from '../i18n/bare.mjs'
 
 import {
 	listManifestIds,
@@ -17,18 +16,18 @@ import {
 	resolveManifestSelectors,
 } from './core/manifest.mjs'
 import { parseArgsOrExit } from './core/parse_args_or_exit.mjs'
-import { finishTestProgress } from './core/progress.mjs'
 import { REPO_ROOT } from './core/repo_root.mjs'
 import { isBareSuiteContinuation, resolveSelector } from './core/selector.mjs'
-import { runTests } from './runner/index.mjs'
+import { runTestDisplay } from './display/index.mjs'
+import { ensureTestKernel } from './kernel/ensure.mjs'
 
 const { positionals, values } = parseArgsOrExit({
 	args: process.argv.slice(2),
 	allowPositionals: true,
 	options: {
 		all: { type: 'boolean', default: false },
-		'no-parallel': { type: 'boolean', default: false },
 		force: { type: 'boolean', default: false },
+		watch: { type: 'boolean', default: false },
 		help: { type: 'boolean', short: 'h', default: false },
 	},
 })
@@ -36,6 +35,11 @@ const { positionals, values } = parseArgsOrExit({
 if (values.help || positionals.includes('help')) {
 	console.log(geti18n('fountConsole.test.help'))
 	process.exit(0)
+}
+
+if (values.watch && (values.all || values.force || positionals.length)) {
+	console.error(geti18n('fountConsole.test.watchNoGroups'))
+	process.exit(2)
 }
 
 /**
@@ -111,6 +115,10 @@ function parseGroupSelectors(args, knownIds, allSuites) {
 }
 
 process.exit(await (async () => {
+	await ensureTestKernel()
+	if (values.watch)
+		return runTestDisplay({ watch: true })
+
 	const allSuites = await loadAllSuites(REPO_ROOT)
 	const knownIds = listManifestIds(allSuites)
 	const parsed = parseGroupSelectors(positionals, knownIds, allSuites)
@@ -121,17 +129,11 @@ process.exit(await (async () => {
 		process.exit(2)
 	}
 
-	let exitCode = 1
-	try {
-		exitCode = await runTests({
+	return runTestDisplay({
+		job: {
 			runAll: values.all,
-			noParallel: values['no-parallel'],
 			force: values.force,
 			groups: parsed.groups,
-		})
-	}
-	finally {
-		finishTestProgress(exitCode)
-	}
-	return exitCode
+		},
+	})
 })())

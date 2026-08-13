@@ -114,8 +114,7 @@ export class PlanRunCoordinator {
 				})
 
 			const ready = this.#listReady(inFlight)
-			if (!this.gate.serial)
-				ready.sort((a, b) => this.#hardDispatchPriority(b) - this.#hardDispatchPriority(a))
+			ready.sort((a, b) => this.#hardDispatchPriority(b) - this.#hardDispatchPriority(a))
 
 			for (const slot of ready)
 				if (slot.action === 'run') {
@@ -148,38 +147,35 @@ export class PlanRunCoordinator {
 						this.depPassed.set(slot.key, result.passed)
 					})
 
-			if (!this.gate.serial) {
-				// 硬跑（含已占坑/排队）之外：余量能装下就投机，不因另有硬就绪在跑而停
-				const speculative = this.#listSpeculative(inFlight)
-				speculative.sort((a, b) =>
-					this.#speculativePriority(b, inFlight) - this.#speculativePriority(a, inFlight))
-				for (const slot of speculative) {
-					const release = this.gate.tryAcquire(slot.suite)
-					if (!release) continue
-					const abortController = new AbortController()
-					const stopArm = this.#armSpeculative(slot, abortController)
-					startTask(slot, async () => {
-						try {
-							const result = await handler(slot, {
-								speculative: true,
-								signal: abortController.signal,
-								/** @returns {Promise<CommitGate>} 提交闸门 */
-								awaitCommitGate: async () => {
-									await this.#waitDepsResolved(slot)
-									const failedDeps = this.#failedDeps(slot)
-									return failedDeps.length
-										? { ok: false, failedDeps }
-										: { ok: true, failedDeps: [] }
-								},
-							})
-							this.depPassed.set(slot.key, result.passed)
-						}
-						finally {
-							stopArm()
-							release()
-						}
-					}, { speculative: true })
-				}
+			const speculative = this.#listSpeculative(inFlight)
+			speculative.sort((a, b) =>
+				this.#speculativePriority(b, inFlight) - this.#speculativePriority(a, inFlight))
+			for (const slot of speculative) {
+				const release = this.gate.tryAcquire(slot.suite)
+				if (!release) continue
+				const abortController = new AbortController()
+				const stopArm = this.#armSpeculative(slot, abortController)
+				startTask(slot, async () => {
+					try {
+						const result = await handler(slot, {
+							speculative: true,
+							signal: abortController.signal,
+							/** @returns {Promise<CommitGate>} 提交闸门 */
+							awaitCommitGate: async () => {
+								await this.#waitDepsResolved(slot)
+								const failedDeps = this.#failedDeps(slot)
+								return failedDeps.length
+									? { ok: false, failedDeps }
+									: { ok: true, failedDeps: [] }
+							},
+						})
+						this.depPassed.set(slot.key, result.passed)
+					}
+					finally {
+						stopArm()
+						release()
+					}
+				}, { speculative: true })
 			}
 
 			const flying = Object.values(inFlight)

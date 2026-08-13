@@ -16,7 +16,6 @@ import { topoSortSuites } from '../core/dependencies.mjs'
 import {
 	buildEstimateTasksFromPlan,
 	expectedRunDurationMs,
-	hasMeaningfulParallelSavings,
 	summarizeEstimate,
 } from '../core/estimate.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
@@ -70,7 +69,6 @@ import { runSuite } from './suite_run.mjs'
  * @typedef {object} RunTestsOptions
  * @property {boolean} [runAll] 是否 --all 全库
  * @property {GroupInput[]} [groups] CLI 分组
- * @property {boolean} [noParallel] 是否串行调度
  * @property {boolean} [force] 是否强制真跑目标
  */
 
@@ -153,7 +151,6 @@ function unmatchedSuiteSelectors(allSuites, groups) {
 function buildTestCommand(options) {
 	const parts = ['fount test']
 	if (options.runAll) parts.push('--all')
-	if (options.noParallel) parts.push('--no-parallel')
 	if (options.force) parts.push('--force')
 	if (options.groups?.length)
 		for (const group of options.groups) {
@@ -327,11 +324,9 @@ async function executeWave(context) {
 	})
 
 	const reportIndexByKey = new Map(plan.slots.map((slot, index) => [slot.key, index]))
-	const estimateSerial = options.noParallel === true
 	const estimateTasks = buildEstimateTasksFromPlan(plan.slots, state)
 	const estimatePlan = new Map(estimateTasks.map(task => [task.key, task]))
 	const estimateOptions = {
-		serial: estimateSerial,
 		memBudgetBytes: globalBudget.memBytes,
 		cpuBudgetPct: CPU_BUDGET_PCT,
 	}
@@ -340,22 +335,10 @@ async function executeWave(context) {
 	if (estimateTasks.length) {
 		const estimate = summarizeEstimate(estimateTasks, estimateOptions)
 		if (estimate.runCount) {
-			if (estimateSerial) {
-				console.logI18n('fountConsole.test.estimated.runSerial', {
-					eta: formatDuration(estimate.etaMs),
-				})
-				if (hasMeaningfulParallelSavings(estimate))
-					console.logI18n('fountConsole.test.estimated.runSerialHint', {
-						eta: formatDuration(estimate.parallelEtaMs),
-						rate: formatParallelRatePct(estimate.parallelRatePct),
-						savings: formatDuration(estimate.savingsMs),
-					})
-			}
-			else
-				console.logI18n('fountConsole.test.estimated.run', {
-					eta: formatDuration(estimate.etaMs),
-					rate: formatParallelRatePct(estimate.parallelRatePct),
-				})
+			console.logI18n('fountConsole.test.estimated.run', {
+				eta: formatDuration(estimate.etaMs),
+				rate: formatParallelRatePct(estimate.parallelRatePct),
+			})
 			if (estimate.reusedCount || estimate.blockedCount)
 				console.logI18n('fountConsole.test.estimated.runSkipped', {
 					reused: estimate.reusedCount,
@@ -387,7 +370,6 @@ async function executeWave(context) {
 	const gate = new ResourceRunGate(
 		globalBudget.memBytes,
 		suite => state.suites[suiteKey(suite.manifestId, suite.name)],
-		{ serial: options.noParallel === true },
 	)
 	const coordinator = new PlanRunCoordinator({
 		slots: plan.slots,
@@ -396,7 +378,7 @@ async function executeWave(context) {
 	})
 
 	const failedFirstByManifest = selection.failedFirstByManifest ?? new Map()
-	const streamLive = options.noParallel === true
+	const streamLive = false
 
 	/** @type {number} */
 	let exitCode = 1
@@ -568,7 +550,6 @@ async function executeWave(context) {
  */
 export async function runTests(options = {}) {
 	const globalBudget = computeGlobalBudget()
-	if (options.noParallel) globalBudget.cores = 1
 	const runId = new Date().toISOString().replace(/[.:]/g, '-')
 	const command = buildTestCommand(options)
 

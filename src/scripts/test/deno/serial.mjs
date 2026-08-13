@@ -28,6 +28,7 @@ import {
 } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { childEnv } from '../env.mjs'
+import { withModuleCheckTicket } from '../hub/clients/module_check.mjs'
 
 const args = process.argv.slice(2)
 
@@ -176,9 +177,11 @@ async function runPool(files, { stopOnFailure }) {
 			if (index >= files.length) break
 			const file = files[index]
 			// DENO_JOBS=1：单文件内 Deno.test 默认并行会叠多个 launchNode，与 hold→release→spawn TOCTOU 互抢端口。
-			const { code, output, signal } = await runCaptured(['deno', ...denoBase, file], {
-				DENO_JOBS: '1',
-			})
+			const { code, output, signal } = await withModuleCheckTicket(ticket =>
+				runCaptured(['deno', ...denoBase, file], {
+					DENO_JOBS: '1',
+					...ticket ? { FOUNT_TEST_MODULE_CHECK_TICKET: ticket } : {},
+				}))
 			const isFail = recordResult(file, code, output, signal)
 			if (isFail && stopOnFailure) {
 				stopped = true

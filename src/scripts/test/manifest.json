@@ -501,6 +501,31 @@
 				"src/public/pages/scripts/lib/epochCache.mjs",
 				"src/public/pages/scripts/i18n/base.mjs"
 			]
+		},
+		{
+			"name": "kernel",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/skip_because.test.mjs",
+				"./src/scripts/test/selftest/queues.test.mjs",
+				"./src/scripts/test/selftest/module_check.test.mjs",
+				"./src/scripts/test/selftest/nested_git.test.mjs",
+				"./src/scripts/test/selftest/issue_cache.test.mjs",
+				"./src/scripts/test/selftest/kernel_lifecycle.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs}",
+				"src/scripts/test/core/skip_because.mjs",
+				"src/scripts/test/kernel/**",
+				"src/scripts/test/hub/**",
+				"src/scripts/test/display/**"
+			]
 		}
 	]
 }

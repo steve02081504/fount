@@ -22,6 +22,7 @@ import { releasePortLease, tryAcquirePortLease } from '../core/port_lease.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { buildV8FlagsArg, collectHeapSnapshots } from '../heap_snapshot.mjs'
+import { acquireModuleCheckTicket, signalModuleCheckReady } from '../hub/clients/module_check.mjs'
 import { startTestNostrRelay, stopTestNostrRelay } from '../live/nostr_relay.mjs'
 import { appendBoundedTail } from '../runner/run_command.mjs'
 
@@ -567,18 +568,28 @@ async function launchNodeOnce(options = {}) {
 		}
 
 		// stderr 始终 pipe：否则 EADDRINUSE 走 inherit 进不了 startupOutput，换口重试无法识别。
-		child = spawn(Deno.execPath(), workerArgs, {
-			cwd: REPO_ROOT,
-			stdio: ['ignore', 'pipe', 'pipe'],
-			env: {
-				...process.env,
-				FOUNT_TEST: '1',
-				FOUNT_TEST_NODE_WORKER: '1',
-				FOUNT_DENO_START_TIME: new Date().toISOString(),
-				RUST_BACKTRACE: 'full',
-				...extraEnv,
-			},
-		})
+		const ticket = await acquireModuleCheckTicket()
+		try {
+			child = spawn(Deno.execPath(), workerArgs, {
+				cwd: REPO_ROOT,
+				stdio: ['ignore', 'pipe', 'pipe'],
+				env: {
+					...process.env,
+					FOUNT_TEST: '1',
+					FOUNT_TEST_NODE_WORKER: '1',
+					FOUNT_DENO_START_TIME: new Date().toISOString(),
+					RUST_BACKTRACE: 'full',
+					...ticket ? { FOUNT_TEST_MODULE_CHECK_TICKET: ticket } : {},
+					...extraEnv,
+				},
+			})
+		}
+		catch (error) {
+			if (ticket) await signalModuleCheckReady(ticket)
+			throw error
+		}
+		if (ticket)
+			child.once('exit', () => { void signalModuleCheckReady(ticket) })
 		child.stderr.on('data', onOutput)
 
 		/** worker 提前退出时 resolve 退出码（就绪后仍挂着也无害：仅用于 race，不 reject）。 */

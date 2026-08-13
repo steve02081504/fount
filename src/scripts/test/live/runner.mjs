@@ -8,6 +8,7 @@ import { execFile } from 'npm:@steve02081504/exec'
 
 import { console } from '../../i18n/bare.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
+import { withModuleCheckTicket } from '../hub/clients/module_check.mjs'
 import { launchNode, resolveLiveNodeFleet, stopNode } from '../node/launch.mjs'
 import { appendBoundedTail } from '../runner/run_command.mjs'
 
@@ -27,34 +28,44 @@ const FEDERATION_CLEANUP = join('src', 'scripts', 'test', 'live', 'federation', 
 async function runCommand(repoRoot, command, env, options = {}) {
 	const { stream = false } = options
 	const [executable, ...args] = command
-	let outputTail = ''
-	/** @type {import('npm:@steve02081504/exec').ExecOptions & object} */
-	const execOptions = {
-		cwd: repoRoot,
-		env: { ...process.env, ...env },
-		no_output_record: true,
-		/**
-		 * @param {string | Uint8Array} data stdout 片段
-		 * @returns {void}
-		 */
-		on_stdout: data => {
-			const text = typeof data === 'string' ? data : new TextDecoder().decode(data)
-			outputTail = appendBoundedTail(outputTail, text)
-			if (stream) process.stdout.write(data)
-		},
-		/**
-		 * @param {string | Uint8Array} data stderr 片段
-		 * @returns {void}
-		 */
-		on_stderr: data => {
-			const text = typeof data === 'string' ? data : new TextDecoder().decode(data)
-			outputTail = appendBoundedTail(outputTail, text)
-			if (stream) process.stderr.write(data)
-		},
+	/**
+	 * @param {Record<string, string>} extra 额外 env
+	 * @returns {Promise<{ code: number, output: string }>} 结果
+	 */
+	const invoke = extra => {
+		let outputTail = ''
+		/** @type {import('npm:@steve02081504/exec').ExecOptions & object} */
+		const execOptions = {
+			cwd: repoRoot,
+			env: { ...process.env, ...env, ...extra },
+			no_output_record: true,
+			/**
+			 * @param {string | Uint8Array} data stdout 片段
+			 * @returns {void}
+			 */
+			on_stdout: data => {
+				const text = typeof data === 'string' ? data : new TextDecoder().decode(data)
+				outputTail = appendBoundedTail(outputTail, text)
+				if (stream) process.stdout.write(data)
+			},
+			/**
+			 * @param {string | Uint8Array} data stderr 片段
+			 * @returns {void}
+			 */
+			on_stderr: data => {
+				const text = typeof data === 'string' ? data : new TextDecoder().decode(data)
+				outputTail = appendBoundedTail(outputTail, text)
+				if (stream) process.stderr.write(data)
+			},
+		}
+		return execFile(executable, args, execOptions).then(result => ({
+			code: result.code ?? 1,
+			output: outputTail,
+		}))
 	}
-
-	const result = await execFile(executable, args, execOptions)
-	return { code: result.code ?? 1, output: outputTail }
+	if (executable !== 'deno')
+		return invoke({})
+	return withModuleCheckTicket(ticket => invoke(ticket ? { FOUNT_TEST_MODULE_CHECK_TICKET: ticket } : {}))
 }
 
 /**

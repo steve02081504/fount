@@ -1,3 +1,5 @@
+import { join } from 'node:path'
+
 import { collectChangesSinceRecord } from '../core/changed.mjs'
 import { expandImperfectDependents } from '../core/dependencies.mjs'
 import { parseTestSubtestsEnv } from '../core/protocol.mjs'
@@ -103,11 +105,27 @@ export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
 	await Promise.all(allSuites.map(async suite => {
 		const key = suiteKey(suite.manifestId, suite.name)
 		const entry = state.suites[key]
-		map.set(key, await collectChangesSinceRecord(repoRoot, entry?.commitHash ?? null, []))
+		if (suite.gitRoot) {
+			const abs = join(repoRoot, suite.gitRoot)
+			const files = await collectChangesSinceRecord(abs, entry?.commitHash ?? null, [])
+			map.set(key, files.map(file => `${suite.gitRoot}/${file}`.replace(/\\/g, '/')))
+		}
+		else if (suite.gitRoot === null)
+			map.set(key, [])
+		else
+			map.set(key, await collectChangesSinceRecord(repoRoot, entry?.commitHash ?? null, []))
 		if (!suite.subtests?.length) return
 		await Promise.all(suite.subtests.map(async subtest => {
 			const stCommit = entry?.subtests?.[subtest.name]?.commitHash ?? entry?.commitHash ?? null
-			map.set(`${key}#${subtest.name}`, await collectChangesSinceRecord(repoRoot, stCommit, []))
+			if (suite.gitRoot) {
+				const abs = join(repoRoot, suite.gitRoot)
+				const files = await collectChangesSinceRecord(abs, stCommit, [])
+				map.set(`${key}#${subtest.name}`, files.map(file => `${suite.gitRoot}/${file}`.replace(/\\/g, '/')))
+			}
+			else if (suite.gitRoot === null)
+				map.set(`${key}#${subtest.name}`, [])
+			else
+				map.set(`${key}#${subtest.name}`, await collectChangesSinceRecord(repoRoot, stCommit, []))
 		}))
 	}))
 	return map

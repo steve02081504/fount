@@ -193,7 +193,7 @@ Deno.test('simulateParallelMakespanMs never leaves ready work at makespan 0', ()
 	assertEquals(result.makespanMs, 12_000)
 	const summary = summarizeEstimate([
 		task({ durationMs: 12_000, memMb: 1800, cpuPct: 25 }),
-	], { serial: false, memBudgetBytes: 500 * MiB, cpuBudgetPct: 85 })
+	], { memBudgetBytes: 500 * MiB, cpuBudgetPct: 85 })
 	assertEquals(summary.etaMs > 0, true)
 	assertEquals(summary.runCount, 1)
 })
@@ -205,7 +205,6 @@ Deno.test('summarizeEstimate reports run/reused/blocked breakdown', () => {
 		task({ key: 'shells/chat:c', name: 'c', durationMs: 3000, blocked: true }),
 	]
 	const summary = summarizeEstimate(tasks, {
-		serial: true,
 		memBudgetBytes: 8000 * MiB,
 		cpuBudgetPct: 85,
 	})
@@ -219,4 +218,12 @@ Deno.test('hasMeaningfulParallelSavings ignores noise-scale deltas', () => {
 	assertEquals(hasMeaningfulParallelSavings({ savingsMs: 100 }), false)
 	assertEquals(hasMeaningfulParallelSavings({ savingsMs: 101 }), true)
 	assertEquals(hasMeaningfulParallelSavings({}), false)
+})
+
+Deno.test('simulateParallelMakespanMs serializes module-check windows', () => {
+	const result = simulateParallelMakespanMs([
+		task({ durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
+		task({ key: 'shells/chat:b', name: 'b', durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	assertEquals(result.makespanMs, 1200)
 })

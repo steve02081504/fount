@@ -129,6 +129,19 @@ export type LocaleData = {
 		}
 		test: {
 			help: string
+			watchNoGroups: string
+			skipBecause: {
+				pass: string
+				fail: string
+			}
+			queue: {
+				append: string
+				remove: string
+			}
+			display: {
+				eta: string
+				remaining: string
+			}
 			passed: string
 			passedWithNoise: string
 			failed: string
@@ -231,6 +244,7 @@ export type LocaleData = {
 					replay: string
 					replayImperfect: string
 					silentPassed: string
+					skipped: string
 				}
 				pending: {
 					estimate: string
@@ -269,6 +283,8 @@ export type LocaleData = {
 					pullUpstream: string
 					reused: string
 					rootCause: string
+					skipBecause: string
+					skipBecauseClosed: string
 					terminateReason: string
 					triggerHashDrift: string
 					uncommittedHashRange: string
@@ -6213,6 +6229,8 @@ export type LocaleKeyParams = {
 	'fountConsole.test.denoPanic.ghUnavailable': { signature: string | number }
 	'fountConsole.test.denoPanic.publishFailed': { signature: string | number }
 	'fountConsole.test.denoPanic.published': { url: string | number }
+	'fountConsole.test.display.eta': { expected: string | number; remaining: string | number }
+	'fountConsole.test.display.remaining': { remaining: string | number }
 	'fountConsole.test.estimated.remaining': { completed: string | number; eta: string | number; total: string | number }
 	'fountConsole.test.estimated.run': { eta: string | number; rate: string | number }
 	'fountConsole.test.estimated.runSerial': { eta: string | number }
@@ -6235,6 +6253,8 @@ export type LocaleKeyParams = {
 	'fountConsole.test.passedWithNoise': { label: string | number }
 	'fountConsole.test.planSlotSummary': { blocked: string | number; reuse: string | number; run: string | number }
 	'fountConsole.test.prunedAbsentState': { subtests: string | number; suites: string | number }
+	'fountConsole.test.queue.append': { label: string | number; reason: string | number; remaining: string | number }
+	'fountConsole.test.queue.remove': { label: string | number; reason: string | number; remaining: string | number }
 	'fountConsole.test.report.artifacts': { path: string | number }
 	'fountConsole.test.report.continueReasonsLink': { path: string | number }
 	'fountConsole.test.report.durationMs': { ms: string | number }
@@ -6259,6 +6279,8 @@ export type LocaleKeyParams = {
 	'fountConsole.test.runningSuite.expected': { expected: string | number }
 	'fountConsole.test.selectedSuites': { selected: string | number; total: string | number }
 	'fountConsole.test.silentPassedMany': { count: string | number }
+	'fountConsole.test.skipBecause.fail': { label: string | number; url: string | number }
+	'fountConsole.test.skipBecause.pass': { label: string | number; url: string | number }
 	'fountConsole.test.sleepDetected': { elapsed: string | number; gap: string | number; label: string | number; limit: string | number }
 	'fountConsole.test.sleepRetry': { attempt: string | number; label: string | number }
 	'fountConsole.test.speculativeDiscard': { deps: string | number; label: string | number }

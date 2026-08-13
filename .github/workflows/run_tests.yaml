@@ -7,11 +7,6 @@ on:
     branches:
       - '**'
   workflow_dispatch:
-    inputs:
-      parallel:
-        description: 'Parallel suite dispatch'
-        type: boolean
-        default: true
 
 permissions:
   contents: read
@@ -62,7 +57,7 @@ jobs:
       - uses: ./.github/actions/fount-ci
         with:
           run-step-name: Run tests
-          run-command: deno run --allow-scripts --allow-all -c "./deno.json" ./src/scripts/test/cli.mjs${{ (github.event_name == 'workflow_dispatch' && !inputs.parallel) && ' --no-parallel' || '' }}
+          run-command: deno run --allow-scripts --allow-all -c "./deno.json" ./src/scripts/test/cli.mjs
           deno-clean-entrypoints: ./src/scripts/test/cli.mjs
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}

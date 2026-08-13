@@ -339,6 +339,35 @@ Deno.test('RunReportWriter tracks pending slots until finalize', async () => {
 	}
 })
 
+Deno.test('RunReportWriter lists skip_because separately', async () => {
+	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-report-skip-'))
+	try {
+		const writer = new RunReportWriter({
+			repoRoot,
+			planSlots: [],
+			runId: 'run-skip',
+			command: 'fount test',
+			commitHash: 'abc',
+			uncommittedHash: null,
+		})
+		await writer.init()
+		await writer.recordByKey('testkit', 'skipped', {
+			status: 'passed',
+			durationMs: 0,
+			failedFiles: [],
+			noiseHits: [],
+			logPath: null,
+		}, { skipBecause: ['https://github.com/denoland/deno/issues/35804'] })
+		const raw = JSON.parse(await readFile(reportJsonPath(repoRoot), 'utf8'))
+		assertEquals(raw.slots[0].skipBecause, ['https://github.com/denoland/deno/issues/35804'])
+		const markdown = await readFile(join(repoRoot, 'data/test/report.md'), 'utf8')
+		assertEquals(markdown.includes('https://github.com/denoland/deno/issues/35804'), true)
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
+})
+
 Deno.test('exitCodeFromSlots fails on noisy/pending/failed/blocked', () => {
 	assertEquals(exitCodeFromSlots([
 		{ state: 'done', status: 'passed' },

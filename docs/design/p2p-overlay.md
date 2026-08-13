@@ -243,7 +243,7 @@ now - 10min <= ts <= now + 10min
 - `fount test shells/chat:integration`（含 `fed_*`）
 - `fount test server:live`（live probe 用 Deno `.mjs`，显式 close DataChannel 与 PeerConnection）
 
-Windows 本地验证优先 `fount test --no-parallel`，避免 `node_modules` 并发争用。
+Windows 本地验证直接 `fount test`。
 
 ## 技术选型备忘
 

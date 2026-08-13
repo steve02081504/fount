@@ -58,3 +58,9 @@ else {
 		label: 'orchestrator',
 	})
 }
+
+const moduleCheckTicket = process.env.FOUNT_TEST_MODULE_CHECK_TICKET
+if (moduleCheckTicket) {
+	const { signalModuleCheckReady } = await import('./hub/clients/module_check.mjs')
+	await signalModuleCheckReady(moduleCheckTicket)
+}

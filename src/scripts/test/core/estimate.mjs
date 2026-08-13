@@ -29,6 +29,7 @@ export const GAP_OVERHEAD_MS = 130
  * @property {number} memMb 内存预算（MB）
  * @property {number} cpuPct CPU 预算（%）
  * @property {boolean} heavy 是否 heavy 独占
+ * @property {number} [moduleCheckMs] 模组检查互斥时长（不可与其它检查重叠）
  * @property {string[]} deps 依赖 suite 键列表
  */
 
@@ -104,7 +105,7 @@ export function expectedRunDurationMs(suite, entry, subtestsToRun) {
  * @param {{ reused?: boolean, subtestsToRun?: string[] }} [options] 选项
  * @returns {EstimateTask} 预估任务
  */
-export function buildEstimateTask(suite, entry, { reused = false, subtestsToRun } = {}) {
+export function buildEstimateTask(suite, entry, { reused = false, subtestsToRun, moduleCheckMs = 0 } = {}) {
 	const key = suiteKey(suite.manifestId, suite.name)
 	const resources = resolveSuiteResources(suite, entry)
 	return {
@@ -117,6 +118,7 @@ export function buildEstimateTask(suite, entry, { reused = false, subtestsToRun 
 		memMb: resources.memMb,
 		cpuPct: resources.cpuPct,
 		heavy: !!suite.heavy,
+		moduleCheckMs: reused ? 0 : moduleCheckMs,
 		deps: (suite.dependencies ?? []).map(dep => suiteKey(dep.manifestId, dep.name)),
 	}
 }
@@ -143,6 +145,7 @@ export function buildEstimateTasksFromPlan(slots, state) {
 			memMb: resources.memMb,
 			cpuPct: resources.cpuPct,
 			heavy: !!slot.suite.heavy,
+			moduleCheckMs: 0,
 			deps: (slot.suite.dependencies ?? []).map(dep => suiteKey(dep.manifestId, dep.name)),
 		}
 	})
@@ -188,6 +191,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	let usedMemBytes = 0
 	let usedCpuPct = 0
 	let exclusiveRunning = false
+	let checkFreeAt = 0
 	/** @type {{ key: string, endTime: number, memMb: number, cpuPct: number, heavy: boolean, speculative: boolean }[]} */
 	let running = []
 
@@ -285,10 +289,13 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	function admit(task, speculative) {
 		depthByKey.set(task.key, maxCompletedDepth() + 1)
 		const duration = taskDurationMs(task)
+		const spawnAt = Math.max(time, checkFreeAt)
+		checkFreeAt = spawnAt + (task.moduleCheckMs ?? 0)
+		const endTime = spawnAt + duration
 		if (task.heavy) {
 			exclusiveRunning = true
 			running.push({
-				key: task.key, endTime: time + duration, memMb: 0, cpuPct: 0, heavy: true, speculative: false,
+				key: task.key, endTime, memMb: 0, cpuPct: 0, heavy: true, speculative: false,
 			})
 			return
 		}
@@ -296,7 +303,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 		usedCpuPct += task.cpuPct
 		running.push({
 			key: task.key,
-			endTime: time + duration,
+			endTime,
 			memMb: task.memMb,
 			cpuPct: task.cpuPct,
 			heavy: false,
@@ -404,32 +411,26 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
  * 汇总预估：串行累加 vs 并行模拟墙钟与 ETA。
  * @param {EstimateTask[]} tasks 任务列表
  * @param {object} options 选项
- * @param {boolean} options.serial 是否串行模式
  * @param {number} options.memBudgetBytes 内存预算（字节）
  * @param {number} options.cpuBudgetPct CPU 预算（%）
  * @returns {object} 预估汇总
  */
-export function summarizeEstimate(tasks, { serial, memBudgetBytes, cpuBudgetPct }) {
+export function summarizeEstimate(tasks, { memBudgetBytes, cpuBudgetPct }) {
 	const serialSum = serialSumMs(tasks)
 	const { makespanMs: parallelMakespanMs, criticalPathCount: parallelGapCount } =
 		simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct })
-	const serialGapCount = tasks.filter(task => taskDurationMs(task) > 0).length
-	const chosenMakespanMs = serial ? serialSum : parallelMakespanMs
-	const gapCount = serial ? serialGapCount : parallelGapCount
-	const etaMs = estimateEtaMs(chosenMakespanMs, gapCount)
-	const parallelEtaMs = estimateEtaMs(parallelMakespanMs, parallelGapCount)
+	const etaMs = estimateEtaMs(parallelMakespanMs, parallelGapCount)
 	const savingsMs = Math.max(0, serialSum - parallelMakespanMs)
 
 	return {
-		serial,
 		serialSumMs: serialSum,
 		parallelMakespanMs,
-		chosenMakespanMs,
+		chosenMakespanMs: parallelMakespanMs,
 		etaMs,
-		parallelEtaMs,
+		parallelEtaMs: etaMs,
 		parallelRatePct: calcParallelRatePct(serialSum, parallelMakespanMs),
 		savingsMs,
-		gapCount,
+		gapCount: parallelGapCount,
 		parallelGapCount,
 		runCount: tasks.filter(task => !task.reused && !task.blocked).length,
 		reusedCount: tasks.filter(task => task.reused).length,

@@ -16,7 +16,14 @@ cmd_test() {
 	}
 	trap 'test_cleanup' EXIT
 	deno_upgrade canary
-	if [ -z "${FOUNT_TEST_ALLOW_SLEEP:-}" ]; then
+	local is_watch=0
+	for arg in "$@"; do
+		if [ "$arg" = --watch ]; then
+			is_watch=1
+			break
+		fi
+	done
+	if [ "$is_watch" -eq 0 ] && [ -z "${FOUNT_TEST_ALLOW_SLEEP:-}" ]; then
 		if command -v caffeinate >/dev/null 2>&1; then
 			caffeinate -dims -w $$ &
 		elif command -v systemd-inhibit >/dev/null 2>&1; then
