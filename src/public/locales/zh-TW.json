@@ -144,8 +144,12 @@
 			"replHint": "Enter 執行 · Shift+Enter 換行"
 		},
 		"test": {
-			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\n選擇器（空格分隔多組；逗號分隔同組多個 suite；/ 與 : 等價）：\n  名稱              該組全部 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測試或測試檔案\n\n無精確匹配時按前綴展開（shells → shells/chat、shells/social），並支援 glob（*、?、**）。\n\n預設（裸 fount test）先補失敗/未完成，全綠後再補過期項；任一輪失敗即退出。不會全量，全量用 --all。\n\n--watch      持續監視，佇列空也不退出（Ctrl+C 結束）；不能同時帶 --all / --force 或選擇器\n--all        範圍內全部 suite\n--force      強制重跑，不沿用上次結果\n\n範例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
-			"watchNoGroups": "用法：fount test --watch（不能同時使用 --all、--force 或選擇器）",
+			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\n選擇器（空格分隔多組；逗號分隔同組多個 suite；/ 與 : 等價）：\n  名稱              該組全部 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測試或測試檔案\n\n無精確匹配時按前綴展開（shells → shells/chat、shells/social），並支援 glob（*、?、**）。\n\n預設（裸 fount test）先補失敗/未完成，全綠後再補過期項；任一輪失敗即退出。不會全量，全量用 --all。\n\n--watch      持續監視，佇列空也不退出（Ctrl+C 結束）；不能同時帶 --all / --force / --update-estimates 或選擇器\n--all        範圍內全部 suite\n--force      強制重跑，不沿用上次結果\n--update-estimates  依現況資料庫平均耗時回寫各 manifest 的 expected；可帶選擇器；不跑測試\n\n範例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "用法：fount test --watch（不能同時使用其他參數）",
+			"updateEstimates": {
+				"incompatible": "用法：fount test --update-estimates [<groups>...]（不能同時使用其他開關）",
+				"summary": "已回寫 ${suitesUpdated} 個套件的預計時長（${filesChanged} 個 manifest），跳過 ${skipped} 個無基線或已是最新"
+			},
 			"skipBecause": {
 				"pass": "跳過（issue 仍開）：${label} — ${url}",
 				"fail": "失敗（以下 issue 已關，請跟進並更新 skip_because 後再驗）：${label} — ${url}"

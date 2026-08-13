@@ -145,8 +145,12 @@
 			"replHint": "Enter で実行 · Shift+Enter で改行"
 		},
 		"test": {
-			"help": "使い方: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n\nセレクタ（グループはスペース区切り、同一グループ内の suite はカンマ区切り。/ と : は同義）:\n  名前              そのグループの全 suite（例: shells/chat）\n  名前:suite        suite を指定\n  名前:suite:項目   サブテストまたはテストファイルを指定\n\n完全一致がない場合はプレフィックスで展開（shells → shells/chat, shells/social）。glob（*, ?, **）も可。\n\nデフォルト（fount test のみ）: 失敗/未完了を先に、全緑後に期限切れを実行。いずれかのラウンドで失敗したら終了。全量は走らない（全量は --all）。\n\n--watch      監視を継続。キューが空でも終了しない（Ctrl+C で終了）。--all / --force / セレクタとは併用不可\n--all        範囲内の全 suite\n--force      強制実行（前回結果を再利用しない）\n\n例:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
-			"watchNoGroups": "使い方: fount test --watch（--all、--force、セレクタとは併用できません）",
+			"help": "使い方: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nセレクタ（グループはスペース区切り、同一グループ内の suite はカンマ区切り。/ と : は同義）:\n  名前              そのグループの全 suite（例: shells/chat）\n  名前:suite        suite を指定\n  名前:suite:項目   サブテストまたはテストファイルを指定\n\n完全一致がない場合はプレフィックスで展開（shells → shells/chat, shells/social）。glob（*, ?, **）も可。\n\nデフォルト（fount test のみ）: 失敗/未完了を先に、全緑後に期限切れを実行。いずれかのラウンドで失敗したら終了。全量は走らない（全量は --all）。\n\n--watch      監視を継続。キューが空でも終了しない（Ctrl+C で終了）。--all / --force / --update-estimates / セレクタとは併用不可\n--all        範囲内の全 suite\n--force      強制実行（前回結果を再利用しない）\n--update-estimates  現行 DB の平均所要時間から各 manifest の expected を書き戻す。セレクタ任意。テストは実行しない\n\n例:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "使い方: fount test --watch（他のオプションとは併用できません）",
+			"updateEstimates": {
+				"incompatible": "使い方: fount test --update-estimates [<groups>...]（他のフラグとは併用できません）",
+				"summary": "${suitesUpdated} 件の suite の予想時間を更新（manifest ${filesChanged} 件）。ベースラインなしまたは最新のため ${skipped} 件をスキップ"
+			},
 			"skipBecause": {
 				"pass": "スキップ（issue 未クローズ）: ${label} — ${url}",
 				"fail": "失敗（以下の issue はクローズ済み。対応して skip_because を更新してから再確認してください）: ${label} — ${url}"
