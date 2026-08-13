@@ -21,3 +21,5 @@ Display must not import `env.mjs` (orchestrator heap-snapshot path). Heap snapsh
 Bare `fount test` is always overview (reasons + remaining), even when several suites run. Explicit selectors: 1 true-run → stream, 2+ → multi. `accepted` is sent before any `suite-start`. Per-suite `continueReasons` and snapshot remaining (running leftover, not a replay of full durations) travel on `accepted` / queue / end events.
 
 A default job with nothing imperfect or outdated is `accepted.empty` — print `nothingToContinue`, do not stay silent. Report files are per job/wave, not written when the kernel starts; an empty wave leaves the previous report on disk.
+
+Bare `fount test` (overview) stays until the kernel sends `idle` (both run queues empty). Explicit selector jobs exit on `job-done`. `--watch` ignores both.

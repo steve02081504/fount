@@ -7,7 +7,7 @@ import { assertEquals } from 'jsr:@std/assert'
 import { TestQueues } from '../kernel/queues.mjs'
 
 Deno.test('CLI queue is FIFO', () => {
-	const q = new TestQueues({ now: () => 0 })
+	const q = new TestQueues()
 	q.enqueueCli({ key: 'a', viewerId: 'v1' })
 	q.enqueueCli({ key: 'b', viewerId: 'v1' })
 	const first = q.peekReady(() => true)
@@ -16,9 +16,25 @@ Deno.test('CLI queue is FIFO', () => {
 	assertEquals(q.peekReady(() => true)?.item.key, 'b')
 })
 
+Deno.test('FS fills when no CLI item is ready', () => {
+	const q = new TestQueues()
+	q.enqueueCli({ key: 'blocked', viewerId: 'v' })
+	q.fs.unshift({
+		id: 'f1',
+		key: 'hot',
+		source: 'fs',
+		enqueuedAt: 0,
+	})
+	assertEquals(q.peekReady(item => item.key === 'hot')?.item.key, 'hot')
+})
+
 Deno.test('FS queue is LIFO and CLI is preferred', () => {
 	let t = 0
-	const q = new TestQueues({ prepSettleMs: 10, now: () => t })
+	/**
+	 * @returns {number} 测试时钟
+	 */
+	const now = () => t
+	const q = new TestQueues({ prepSettleMs: 10, now })
 	q.hitPrep('old')
 	t = 10
 	q.promotePrep()
@@ -34,7 +50,11 @@ Deno.test('FS queue is LIFO and CLI is preferred', () => {
 
 Deno.test('CLI and FS duplicates are kept until CLI completes', () => {
 	let t = 0
-	const q = new TestQueues({ prepSettleMs: 1, now: () => t })
+	/**
+	 * @returns {number} 测试时钟
+	 */
+	const now = () => t
+	const q = new TestQueues({ prepSettleMs: 1, now })
 	q.enqueueCli({ key: 'same', viewerId: 'v' })
 	q.hitPrep('same')
 	t = 1
@@ -47,7 +67,7 @@ Deno.test('CLI and FS duplicates are kept until CLI completes', () => {
 })
 
 Deno.test('viewer disconnect removes its CLI items only', () => {
-	const q = new TestQueues({ now: () => 0 })
+	const q = new TestQueues()
 	q.enqueueCli({ key: 'a', viewerId: 'v1' })
 	q.enqueueCli({ key: 'b', viewerId: 'v2' })
 	q.enqueueCli({ key: 'a', viewerId: 'v2' })
@@ -58,7 +78,11 @@ Deno.test('viewer disconnect removes its CLI items only', () => {
 
 Deno.test('prep hit resets settle and pulls back from FS', () => {
 	let t = 0
-	const q = new TestQueues({ prepSettleMs: 10, now: () => t })
+	/**
+	 * @returns {number} 测试时钟
+	 */
+	const now = () => t
+	const q = new TestQueues({ prepSettleMs: 10, now })
 	q.hitPrep('x')
 	t = 10
 	q.promotePrep()
@@ -76,7 +100,11 @@ Deno.test('prep hit resets settle and pulls back from FS', () => {
 
 Deno.test('removeKey drops prep and both queues', () => {
 	let t = 0
-	const q = new TestQueues({ prepSettleMs: 1, now: () => t })
+	/**
+	 * @returns {number} 测试时钟
+	 */
+	const now = () => t
+	const q = new TestQueues({ prepSettleMs: 1, now })
 	q.enqueueCli({ key: 'gone', viewerId: 'v' })
 	q.hitPrep('gone')
 	t = 1

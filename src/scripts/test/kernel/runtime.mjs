@@ -10,7 +10,12 @@ import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { buildEstimateTask, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
 import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
-import { formatSkipBecauseUrls, skipBecauseAction, skipBecauseUrlsForRun } from '../core/skip_because.mjs'
+import {
+	formatSkipBecauseUrls,
+	isSkipBecauseBlocking,
+	skipBecauseAction,
+	skipBecauseEntriesForRun,
+} from '../core/skip_because.mjs'
 import {
 	refreshEntryFingerprint,
 	suiteKey,
@@ -18,7 +23,7 @@ import {
 	upsertSuiteRun,
 	writeState,
 } from '../core/state.mjs'
-import { GithubIssueCache, probeGithubIssueClosed } from '../hub/apis/github_issue.mjs'
+import { GithubIssueCache, probeGithubIssue } from '../hub/apis/github_issue.mjs'
 import { formatContinueReasonLabel } from '../runner/continue_reason.mjs'
 import { RunReportWriter } from '../runner/report.mjs'
 import { ResourceRunGate } from '../runner/scheduler.mjs'
@@ -483,6 +488,37 @@ export class TestKernel {
 	}
 
 	/**
+	 * @param {string} depKey 依赖 suite 键
+	 * @returns {boolean} 仍在跑或仍在队列
+	 */
+	#depInFlight(depKey) {
+		if (this.running.has(depKey) && !this.sessionPassed.has(depKey)) return true
+		return this.queues.cli.some(q => q.key === depKey) || this.queues.fs.some(q => q.key === depKey)
+	}
+
+	/**
+	 * @param {import('./queues.mjs').QueueItem} item 项
+	 * @returns {string[]} 已失败/已阻塞且不在飞行中的依赖
+	 */
+	#failedDeps(item) {
+		const suite = this.catalog.byKey.get(item.key)
+		if (!suite) return []
+		const failed = []
+		for (const dep of suite.dependencies ?? []) {
+			const depKey = suiteKey(dep.manifestId, dep.name)
+			if (this.#depInFlight(depKey)) continue
+			if (this.sessionPassed.has(depKey) && this.sessionPassed.get(depKey) !== true) {
+				failed.push(depKey)
+				continue
+			}
+			const st = this.state.suites[depKey]
+			if (st && (st.status === 'failed' || st.status === 'blocked'))
+				failed.push(depKey)
+		}
+		return failed
+	}
+
+	/**
 	 * @param {import('./queues.mjs').QueueItem} item 项
 	 * @returns {boolean} 硬就绪
 	 */
@@ -490,19 +526,44 @@ export class TestKernel {
 		const suite = this.catalog.byKey.get(item.key)
 		if (!suite) return false
 		if (this.running.has(item.key)) return false
+		if (this.#failedDeps(item).length) return false
 		for (const dep of suite.dependencies ?? []) {
 			const depKey = suiteKey(dep.manifestId, dep.name)
-			const inSession = this.running.has(depKey)
-				|| this.queues.cli.some(q => q.key === depKey)
-				|| this.queues.fs.some(q => q.key === depKey)
-			if (inSession)
-				if (this.sessionPassed.get(depKey) !== true) return false
-				else continue
-			const st = this.state.suites[depKey]
-			if (st && (st.status === 'failed' || st.status === 'blocked'))
+			if (this.#depInFlight(depKey) && this.sessionPassed.get(depKey) !== true)
 				return false
 		}
 		return true
+	}
+
+	/**
+	 * 依赖已失败的排队项记为 blocked，避免永远占着 job.pending。
+	 * @returns {Promise<void>}
+	 */
+	async #discardBlocked() {
+		for (; ;) {
+			const item = [...this.queues.cli, ...this.queues.fs].find(queued => this.#failedDeps(queued).length)
+			if (!item) return
+			const blockedBy = this.#failedDeps(item)
+			const removed = this.queues.removeKey(item.key)
+			const suite = this.catalog.byKey.get(item.key)
+			const job = item.jobId ? this.jobs.get(item.jobId) : undefined
+			if (suite)
+				await this.#recordBlocked({ suite, key: item.key, blockedBy }, job?.fingerprints ?? { commitHash: null, uncommittedHash: null })
+			else
+				this.sessionPassed.set(item.key, false)
+			if (job) job.exitCode = 1
+			this.viewers.broadcast({
+				type: 'suite-end',
+				key: item.key,
+				jobId: item.jobId,
+				passed: false,
+				blockedBy,
+				...this.#remainingState(),
+			})
+			for (const gone of removed)
+				if (gone.jobId)
+					await this.#onJobItemDone(gone)
+		}
 	}
 
 	/**
@@ -518,14 +579,18 @@ export class TestKernel {
 					reason: item.reason,
 					...this.#remainingState(),
 				})
+			await this.#discardBlocked()
 			await this.#admitReady()
+			if (this.queues.pendingEmpty() && !this.running.size) {
+				this.issueCache.pruneOlderThan()
+				if (this.jobs.size === 0)
+					this.viewers.broadcast({ type: 'idle', remainingMs: 0, unknownCount: 0 })
+			}
 			if (this.#shouldExit()) {
 				this.issueCache.pruneOlderThan()
 				await this.close()
 				return
 			}
-			if (this.queues.pendingEmpty() && !this.running.size)
-				this.issueCache.pruneOlderThan()
 			const waitPrep = this.queues.nextPrepWaitMs()
 			const waiters = [this.#wake.promise]
 			if (waitPrep != null)
@@ -590,6 +655,8 @@ export class TestKernel {
 		})
 		/** @type {object | null} */
 		let endEvent = null
+		/** @type {string | null} */
+		let ticket = null
 		try {
 			const skip = await this.#evalSkip(suite, item.subtests)
 			if (skip) {
@@ -602,7 +669,7 @@ export class TestKernel {
 				uncommittedHash: null,
 			}
 			const fp = this.#fingerprintFor(suite, fingerprints)
-			const ticket = await this.moduleCheck.acquire()
+			ticket = suite.run[0] === 'deno' ? await this.moduleCheck.acquire() : null
 			const result = await runSuite(
 				suite,
 				{
@@ -623,8 +690,10 @@ export class TestKernel {
 					onStderr: this.#broadcastLog.bind(this, key, item.jobId, 'stderr'),
 				},
 			)
-			if (this.moduleCheck.heldTicket === ticket)
-				this.moduleCheck.ready(ticket)
+			if (ticket && this.moduleCheck.abandon(ticket)) {
+				endEvent = await this.#finishMissedReady(item, suite)
+				return
+			}
 			const running = this.running.get(key)
 			if (running) running.checkDone = true
 			const hashes = triggerHashesFromVerdict(job?.verdicts?.get(key))
@@ -652,6 +721,7 @@ export class TestKernel {
 			}
 		}
 		finally {
+			if (ticket) this.moduleCheck.abandon(ticket)
 			this.running.delete(key)
 			this.#syncKeepAwake()
 			release()
@@ -679,17 +749,19 @@ export class TestKernel {
 	 * @returns {Promise<{ action: 'pass' | 'fail', urls: string[], closed: string[] } | null>} skip
 	 */
 	async #evalSkip(suite, subtests) {
-		const urls = skipBecauseUrlsForRun(suite, subtests)
-		if (!urls?.length) return null
+		const entries = skipBecauseEntriesForRun(suite, subtests)
+		if (!entries?.length) return null
+		const urls = entries.map(entry => entry.url)
 		/** @type {string[]} */
 		const closed = []
-		for (const url of urls) {
-			const parsed = parseGithubIssueUrl(url)
-			if (await this.issueCache.getClosed(
-				url,
-				() => parsed ? probeGithubIssueClosed(parsed) : Promise.resolve(false),
-			))
-				closed.push(url)
+		for (const entry of entries) {
+			const parsed = parseGithubIssueUrl(entry.url)
+			const state = await this.issueCache.getState(
+				entry.url,
+				() => parsed ? probeGithubIssue(parsed) : Promise.resolve({ closed: false, closedAt: null }),
+			)
+			if (isSkipBecauseBlocking(state, entry.delayMs))
+				closed.push(entry.url)
 		}
 		return { action: skipBecauseAction(closed), urls, closed }
 	}
@@ -743,6 +815,43 @@ export class TestKernel {
 	}
 
 	/**
+	 * 子进程未发 ready 就退出：记失败并释放闸（调用方已 abandon）。
+	 * @param {object} item 项
+	 * @param {import('../core/manifest.mjs').SuiteDef} suite suite
+	 * @returns {Promise<object>} suite-end 事件
+	 */
+	async #finishMissedReady(item, suite) {
+		const prev = this.state.suites[item.key]
+		const job = item.jobId ? this.jobs.get(item.jobId) : undefined
+		await upsertSuiteRun({
+			repoRoot: this.repoRoot,
+			state: this.state,
+			suite,
+			result: {
+				passed: false,
+				failedFiles: [],
+				output: 'module-check missed ready',
+				durationMs: 0,
+			},
+			commitHash: prev?.commitHash ?? null,
+			uncommittedHash: prev?.uncommittedHash ?? null,
+			recordBaseline: false,
+		})
+		await writeState(this.repoRoot, this.state)
+		if (job) job.exitCode = 1
+		this.sessionPassed.set(item.key, false)
+		await this.#reportResult(suite, this.state.suites[item.key])
+		return {
+			type: 'suite-end',
+			key: item.key,
+			jobId: item.jobId,
+			passed: false,
+			missedReady: true,
+			durationMs: 0,
+		}
+	}
+
+	/**
 	 * @param {object} item 项
 	 * @returns {Promise<void>}
 	 */
@@ -768,8 +877,7 @@ export class TestKernel {
 			...finished,
 		})
 		this.jobs.delete(job.id)
-		if (this.queues.pendingEmpty() && !this.running.size)
-			this.viewers.broadcast({ type: 'idle', remainingMs: 0, unknownCount: 0 })
+		this.wake()
 	}
 
 	/**

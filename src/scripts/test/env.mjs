@@ -1,4 +1,6 @@
 /** 测试进程标记：须在导入 server/i18n 之前 side-effect import。 */
+import './module_check_ready.mjs'
+
 import process from 'node:process'
 
 import { unset_shutdown_listener } from 'npm:on-shutdown'
@@ -57,10 +59,4 @@ else {
 		destDir: heapSnapshotDir(REPO_ROOT),
 		label: 'orchestrator',
 	})
-}
-
-const moduleCheckTicket = process.env.FOUNT_TEST_MODULE_CHECK_TICKET
-if (moduleCheckTicket) {
-	const { signalModuleCheckReady } = await import('./hub/clients/module_check.mjs')
-	await signalModuleCheckReady(moduleCheckTicket)
 }

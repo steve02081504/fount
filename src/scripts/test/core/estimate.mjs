@@ -303,7 +303,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	}
 
 	/**
-	 *
+	 * 依赖已齐的投机占用升为硬占用。
 	 */
 	function promoteSpeculative() {
 		for (const slot of running) {
@@ -419,7 +419,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	}
 
 	/**
-	 *
+	 * 在预算内尽量接纳硬就绪与投机任务。
 	 */
 	function tryAdmit() {
 		if (exclusiveRunning) return
@@ -456,7 +456,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	}
 
 	/**
-	 *
+	 * 将耗时为 0 且依赖已齐的任务记为完成。
 	 */
 	function completeInstant() {
 		for (const task of tasksById.values()) {

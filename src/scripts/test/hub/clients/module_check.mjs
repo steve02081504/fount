@@ -1,7 +1,44 @@
 /**
- * 模组检查租约客户端（hub HTTP）。
+ * 模组检查租约客户端（hub HTTP）与 deno `--preload` 注入。
  */
+import { fileURLToPath } from 'node:url'
+
 import { getTestHubBaseUrl } from '../base_url.mjs'
+
+/**
+ * 子进程未发 ready 就退出。
+ */
+export class ModuleCheckMissedReadyError extends Error {
+	/**
+	 * @param {string} [label] suite / 文件
+	 */
+	constructor(label = '') {
+		super(label ? `module-check missed ready: ${label}` : 'module-check missed ready')
+		this.name = 'ModuleCheckMissedReadyError'
+		this.label = label
+	}
+}
+
+/** 子进程 `--preload`：模块图物化后、用户代码前发 ready。 */
+export const MODULE_CHECK_PRELOAD = fileURLToPath(new URL('../../module_check_ready.mjs', import.meta.url))
+
+/**
+ * 给 deno run/test/bench 插入 `--preload`（有 ticket 时）。
+ * @param {string[]} command `deno …` 或已去掉可执行文件的 argv
+ * @param {string | null | undefined} ticket 租约
+ * @returns {string[]} 可能插入 preload 后的命令
+ */
+export function withDenoModuleCheckPreload(command, ticket) {
+	if (!ticket || !command.length) return command
+	const start = command[0] === 'deno' ? 1 : 0
+	const sub = command[start]
+	if (sub !== 'run' && sub !== 'test' && sub !== 'bench') return command
+	if (command.some(arg => arg === '--preload' || String(arg).startsWith('--preload=')))
+		return command
+	const out = [...command]
+	out.splice(start + 1, 0, `--preload=${MODULE_CHECK_PRELOAD}`)
+	return out
+}
 
 /**
  * 向内核申请模组检查租约；无 hub 则跳过。
@@ -32,7 +69,31 @@ export async function signalModuleCheckReady(ticket) {
 }
 
 /**
- * 父进程 spawn 前占闸；子进程 env.mjs 会 ready。若子进程未 ready 则父进程补发。
+ * 子进程未 ready 就结束时释放闸；已 ready 则为 no-op。
+ * @param {string} ticket 租约
+ * @returns {Promise<boolean>} 仍持有（missed ready）
+ */
+export async function abandonModuleCheckTicket(ticket) {
+	const base = getTestHubBaseUrl()
+	if (!base || !ticket) return false
+	try {
+		const res = await fetch(`${base}/module-check/abandon`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ ticket }),
+		})
+		if (!res.ok) return false
+		const data = await res.json()
+		return data?.missed === true
+	}
+	catch {
+		return false
+	}
+}
+
+/**
+ * 父进程 spawn 前占闸；子进程 env.mjs / preload 会 ready。未 ready 就结束则报错。
+ * spawn 失败只释放闸，不伪装成 missed-ready。
  * @template T
  * @param {(ticket: string | null) => Promise<T>} run 持有 ticket 的工作
  * @returns {Promise<T>} 结果
@@ -40,9 +101,16 @@ export async function signalModuleCheckReady(ticket) {
 export async function withModuleCheckTicket(run) {
 	const ticket = await acquireModuleCheckTicket()
 	try {
-		return await run(ticket)
+		const result = await run(ticket)
+		if (ticket) {
+			const missed = await abandonModuleCheckTicket(ticket)
+			if (missed) throw new ModuleCheckMissedReadyError()
+		}
+		return result
 	}
-	finally {
-		if (ticket) await signalModuleCheckReady(ticket)
+	catch (error) {
+		if (ticket && !(error instanceof ModuleCheckMissedReadyError))
+			await abandonModuleCheckTicket(ticket)
+		throw error
 	}
 }

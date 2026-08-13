@@ -59,6 +59,10 @@ export async function startTestKernel({
 		const durationMs = kernel.moduleCheck.ready(ticket)
 		res.json({ ok: durationMs != null, durationMs })
 	})
+	app.post('/module-check/abandon', (req, res) => {
+		const ticket = String(req.body?.ticket || '')
+		res.json({ missed: kernel.moduleCheck.abandon(ticket) })
+	})
 
 	let server
 	try {

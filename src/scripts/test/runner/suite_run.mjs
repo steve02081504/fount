@@ -14,6 +14,7 @@ import {
 } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { suiteUsesSerialRunner } from '../core/resources.mjs'
+import { withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
 
 import { runCommand } from './run_command.mjs'
 
@@ -71,7 +72,10 @@ export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, tr
 	if (moduleCheckTicket) env.FOUNT_TEST_MODULE_CHECK_TICKET = moduleCheckTicket
 	if (suiteUsesSerialRunner(suite) && globalBudget)
 		applyBudgetToEnv(env, globalBudget)
-	return { command: applyTestHeapCapToDenoRun([...suite.run]), env }
+	return {
+		command: withDenoModuleCheckPreload(applyTestHeapCapToDenoRun([...suite.run]), moduleCheckTicket),
+		env,
+	}
 }
 
 /**

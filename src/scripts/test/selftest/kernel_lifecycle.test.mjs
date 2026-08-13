@@ -2,7 +2,8 @@
  * 内核单例、退出、skip_because 不 spawn、模组检查 HTTP。
  */
 /* global Deno */
-import { mkdir, readFile, rm } from 'node:fs/promises'
+import { spawn } from 'node:child_process'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -11,7 +12,16 @@ import { assertEquals, assertRejects } from 'jsr:@std/assert'
 import { execFile } from 'npm:@steve02081504/exec'
 
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
-import { acquireModuleCheckTicket, signalModuleCheckReady } from '../hub/clients/module_check.mjs'
+import { REPO_ROOT } from '../core/repo_root.mjs'
+import { parseSkipBecause } from '../core/skip_because.mjs'
+import {
+	abandonModuleCheckTicket,
+	acquireModuleCheckTicket,
+	ModuleCheckMissedReadyError,
+	signalModuleCheckReady,
+	withDenoModuleCheckPreload,
+	withModuleCheckTicket,
+} from '../hub/clients/module_check.mjs'
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
 
@@ -20,29 +30,29 @@ const KERNEL_PORT = 18904
 const SKIP_URL = 'https://github.com/denoland/deno/issues/35804'
 
 /**
- * @returns {Promise<boolean>} 视为未关
+ * @returns {Promise<{ closed: boolean, closedAt: number | null }>} 视为未关
  */
 async function issueStillOpen() {
-	return false
+	return { closed: false, closedAt: null }
 }
 
 /**
- * @returns {Promise<boolean>} 视为已关
+ * @returns {Promise<{ closed: boolean, closedAt: number | null }>} 视为已关（epoch，delay 0 立即过期）
  */
 async function issueClosed() {
-	return true
+	return { closed: true, closedAt: 0 }
 }
 
 /**
  * @param {string} name dummy suite 名
- * @param {string | string[]} urls issue URL
+ * @param {unknown} skipBecause skip_because 原始字段
  * @returns {object} suite
  */
-function dummySkipSuite(name, urls) {
+function dummySkipSuite(name, skipBecause) {
 	return {
 		manifestId: 'testkit',
 		name,
-		skipBecause: Array.isArray(urls) ? urls : [urls],
+		skipBecause: parseSkipBecause(skipBecause, `suite "${name}"`),
 		run: ['true'],
 		triggers: [],
 		dependencies: [],
@@ -178,7 +188,7 @@ Deno.test('skip_because open does not spawn and counts as pass', async () => {
 		writeReport: false,
 	})
 	try {
-		handle.kernel.issueCache.getClosed = issueStillOpen
+		handle.kernel.issueCache.getState = issueStillOpen
 		const { end } = await enqueueAndAwaitSkip(
 			handle.kernel,
 			dummySkipSuite('__skip_probe_open__', SKIP_URL),
@@ -201,7 +211,7 @@ Deno.test('skip_because closed fails without spawn', async () => {
 		writeReport: false,
 	})
 	try {
-		handle.kernel.issueCache.getClosed = issueClosed
+		handle.kernel.issueCache.getState = issueClosed
 		const { end, job } = await enqueueAndAwaitSkip(
 			handle.kernel,
 			dummySkipSuite('__skip_probe_closed__', SKIP_URL),
@@ -228,12 +238,14 @@ Deno.test('skip_because any closed URL fails and lists follow-up', async () => {
 	try {
 		/**
 		 * @param {string} url issue URL
-		 * @returns {Promise<boolean>} 仅第二号已关
+		 * @returns {Promise<{ closed: boolean, closedAt: number | null }>} 仅第二号已关
 		 */
 		async function onlySecondClosed(url) {
 			return url === urlB
+				? { closed: true, closedAt: 0 }
+				: { closed: false, closedAt: null }
 		}
-		handle.kernel.issueCache.getClosed = onlySecondClosed
+		handle.kernel.issueCache.getState = onlySecondClosed
 		const { end, job } = await enqueueAndAwaitSkip(
 			handle.kernel,
 			dummySkipSuite('__skip_probe_mixed__', [SKIP_URL, urlB]),
@@ -268,6 +280,37 @@ Deno.test('module-check HTTP: second acquire waits for ready', async () => {
 		await pending
 		assertEquals(Boolean(second), true)
 		await signalModuleCheckReady(second)
+
+		const held = await acquireModuleCheckTicket()
+		let unblocked
+		const waiting = acquireModuleCheckTicket().then(ticket => { unblocked = ticket })
+		await new Promise(resolve => setTimeout(resolve, 30))
+		assertEquals(unblocked, undefined)
+		assertEquals(await abandonModuleCheckTicket(held), true)
+		await waiting
+		assertEquals(Boolean(unblocked), true)
+		assertEquals(await abandonModuleCheckTicket(unblocked), true)
+
+		const afterReady = await acquireModuleCheckTicket()
+		await signalModuleCheckReady(afterReady)
+		assertEquals(await abandonModuleCheckTicket(afterReady), false)
+
+		await assertRejects(() => withModuleCheckTicket(async () => {}), ModuleCheckMissedReadyError)
+		const afterMissed = await acquireModuleCheckTicket()
+		assertEquals(Boolean(afterMissed), true)
+		await signalModuleCheckReady(afterMissed)
+
+		try {
+			await withModuleCheckTicket(async () => { throw new Error('spawn failed') })
+			throw new Error('expected throw')
+		}
+		catch (error) {
+			assertEquals(error instanceof ModuleCheckMissedReadyError, false)
+			assertEquals(error.message, 'spawn failed')
+		}
+		const afterSpawnFail = await acquireModuleCheckTicket()
+		assertEquals(Boolean(afterSpawnFail), true)
+		await signalModuleCheckReady(afterSpawnFail)
 	}
 	finally {
 		await handle.close()
@@ -339,7 +382,7 @@ Deno.test('accepted precedes suite-start and remaining drops the finished suite'
 			writeReport: true,
 		})
 		try {
-			handle.kernel.issueCache.getClosed = issueStillOpen
+			handle.kernel.issueCache.getState = issueStillOpen
 			const short = dummySkipSuite('__eta_short__', SKIP_URL)
 			const long = dummySkipSuite('__eta_long__', SKIP_URL)
 			short.heavy = true
@@ -419,5 +462,199 @@ Deno.test('accepted precedes suite-start and remaining drops the finished suite'
 	}
 	finally {
 		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('module-check preload releases before deno test body', async () => {
+	const previous = process.env.FOUNT_TEST_HUB_URL
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 12,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	process.env.FOUNT_TEST_HUB_URL = handle.url
+	const dir = join(tmpdir(), `fount-mc-preload-${Date.now()}`)
+	await mkdir(dir, { recursive: true })
+	const file = join(dir, 'hold.test.mjs')
+	await writeFile(file, 'await new Promise(resolve => setTimeout(resolve, 1500))\nDeno.test("n", () => {})\n')
+	/** @type {import('node:child_process').ChildProcess | undefined} */
+	let child
+	try {
+		const ticket = await acquireModuleCheckTicket()
+		child = spawn(Deno.execPath(), withDenoModuleCheckPreload([
+			'test', '--no-check', '--allow-scripts', '--allow-all',
+			'-c', join(REPO_ROOT, 'deno.json'),
+			file,
+		], ticket), {
+			cwd: REPO_ROOT,
+			stdio: 'ignore',
+			env: {
+				...process.env,
+				FOUNT_TEST_HUB_URL: handle.url,
+				FOUNT_TEST_MODULE_CHECK_TICKET: ticket,
+			},
+		})
+		const second = await Promise.race([
+			acquireModuleCheckTicket(),
+			new Promise((_, reject) => setTimeout(() => reject(new Error('second acquire hung')), 8000)),
+		])
+		assertEquals(Boolean(second), true)
+		assertEquals(child.exitCode, null)
+		await signalModuleCheckReady(second)
+		await new Promise((resolve, reject) => {
+			child.once('exit', resolve)
+			child.once('error', reject)
+		})
+	}
+	finally {
+		child?.kill()
+		await handle.close()
+		await rm(dir, { recursive: true, force: true })
+		if (previous === undefined) delete process.env.FOUNT_TEST_HUB_URL
+		else process.env.FOUNT_TEST_HUB_URL = previous
+	}
+})
+
+Deno.test('failed dep discards queued dependents as blocked', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 13,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		const depKey = 'testkit:__dep_failed__'
+		const childKey = 'testkit:__dep_child__'
+		const dep = {
+			manifestId: 'testkit',
+			name: '__dep_failed__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [],
+			heavy: false,
+		}
+		const child = {
+			manifestId: 'testkit',
+			name: '__dep_child__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [{ manifestId: 'testkit', name: '__dep_failed__' }],
+			heavy: false,
+		}
+		handle.kernel.catalog.allSuites.push(dep, child)
+		handle.kernel.catalog.byKey.set(depKey, dep)
+		handle.kernel.catalog.byKey.set(childKey, child)
+		handle.kernel.sessionPassed.set(depKey, false)
+		handle.kernel.state.suites[depKey] = {
+			status: 'failed',
+			durationMs: 0,
+			failedFiles: [],
+			noiseHits: [],
+			logPath: null,
+		}
+		/** @type {object | null} */
+		let end = null
+		handle.kernel.viewers.add({
+			readyState: 1,
+			/**
+			 * @param {string} raw 事件 JSON
+			 * @returns {void}
+			 */
+			send: raw => {
+				const msg = JSON.parse(raw)
+				if (msg.type === 'suite-end' && msg.key === childKey) end = msg
+			},
+		}, { mode: 'overview' })
+		const item = handle.kernel.queues.enqueueCli({ key: childKey, viewerId: 'v', jobId: 'dep-block' })
+		const job = {
+			id: 'dep-block',
+			viewerId: 'v',
+			spec: {},
+			pending: new Set([item.id]),
+			probedSkip: new Set(),
+			continueLoop: false,
+			exitCode: 0,
+			done: Promise.withResolvers(),
+			fingerprints: { commitHash: null, uncommittedHash: null },
+		}
+		handle.kernel.jobs.set(job.id, job)
+		handle.kernel.wake()
+		await Promise.race([
+			job.done.promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('dependent stayed queued after dep failed')), 5000)),
+		])
+		assertEquals(end?.passed, false)
+		assertEquals(end?.blockedBy, [depKey])
+		assertEquals(job.exitCode, 1)
+		assertEquals(handle.kernel.queues.pendingEmpty(), true)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('skip_because delay: closed within delay passes; expired fails', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 14,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		/**
+		 * @returns {Promise<{ closed: boolean, closedAt: number | null }>} 刚关闭
+		 */
+		handle.kernel.issueCache.getState = async () => ({ closed: true, closedAt: Date.now() - 1000 })
+		const { end: within } = await enqueueAndAwaitSkip(
+			handle.kernel,
+			dummySkipSuite('__skip_delay_within__', { url: SKIP_URL, delay: '14d' }),
+			'skip-delay-within',
+		)
+		assertEquals(within?.passed, true)
+		assertEquals(within?.skipBecause, [SKIP_URL])
+		assertEquals(within?.skipBecauseClosed ?? [], [])
+
+		/**
+		 * @returns {Promise<{ closed: boolean, closedAt: number | null }>} 关闭已超过 14 天
+		 */
+		handle.kernel.issueCache.getState = async () => ({ closed: true, closedAt: Date.now() - 20 * 86_400_000 })
+		const { end: expired, job } = await enqueueAndAwaitSkip(
+			handle.kernel,
+			dummySkipSuite('__skip_delay_expired__', { url: SKIP_URL, delay: '14d' }),
+			'skip-delay-expired',
+		)
+		assertEquals(expired?.passed, false)
+		assertEquals(expired?.skipBecauseClosed, [SKIP_URL])
+		assertEquals(job.exitCode, 1)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('module-check missed ready fails the deno suite', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 15,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		const suite = {
+			manifestId: 'testkit',
+			name: '__missed_ready__',
+			run: ['deno', 'eval', 'undefined'],
+			triggers: [],
+			dependencies: [],
+			heavy: false,
+		}
+		const { end, job } = await enqueueAndAwaitSkip(handle.kernel, suite, 'missed-ready')
+		assertEquals(end?.passed, false)
+		assertEquals(end?.missedReady, true)
+		assertEquals(job.exitCode, 1)
+	}
+	finally {
+		await handle.close()
 	}
 })

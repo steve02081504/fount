@@ -5,7 +5,7 @@
 import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
-import { resolveDisplayMode } from '../display/mode.mjs'
+import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
 import { paintAccepted, paintJobDone } from '../display/paint.mjs'
 import { acceptedFromWave } from '../kernel/jobs.mjs'
 
@@ -93,6 +93,20 @@ Deno.test('bare continue job is overview regardless of runCount', () => {
 		job: { groups: [{ manifestSelectors: ['shells/chat'], suiteSelectors: ['pure', 'integration'] }] },
 		runCount: 2,
 	}), 'multi')
+})
+
+Deno.test('displayShouldResolve: overview waits for idle unless empty job', () => {
+	const overview = { watch: false, displayMode: 'overview', job: {}, runCount: 2 }
+	assertEquals(displayShouldResolve({ type: 'job-done' }, overview), false)
+	assertEquals(displayShouldResolve({ type: 'idle' }, overview), true)
+	assertEquals(displayShouldResolve({ type: 'job-done' }, { ...overview, runCount: 0 }), true)
+	assertEquals(displayShouldResolve({ type: 'idle' }, { ...overview, watch: true }), false)
+	assertEquals(displayShouldResolve({ type: 'job-done' }, {
+		watch: false,
+		displayMode: 'stream',
+		job: { groups: [{}] },
+		runCount: 1,
+	}), true)
 })
 
 Deno.test('paintAccepted lists per-suite continue reasons before the wave body', () => {

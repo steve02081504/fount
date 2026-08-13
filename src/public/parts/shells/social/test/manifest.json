@@ -10,6 +10,7 @@
 			"src/scripts/test/shellLoadProbe.mjs"
 		],
 		"shellPureExtra": [
+			"src/public/parts/shells/chat/public/shared/**",
 			"src/public/parts/shells/chat/public/markdown_extensions/**",
 			"deno.json",
 			"src/server/p2p_server/**",

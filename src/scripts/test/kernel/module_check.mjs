@@ -38,14 +38,14 @@ export class ModuleCheckGate {
 	}
 
 	/**
-	 * 子进程 ready：释放闸门并记录时长。
 	 * @param {string} ticket 租约
-	 * @returns {number | null} 本次检查时长；ticket 不匹配则为 null
+	 * @param {boolean} recordDuration 是否记入均值
+	 * @returns {number | null} 本次时长；ticket 不匹配则为 null
 	 */
-	ready(ticket) {
+	#release(ticket, recordDuration) {
 		if (!ticket || ticket !== this.heldTicket) return null
 		const duration = Date.now() - this.heldAt
-		this.durations.push(duration)
+		if (recordDuration) this.durations.push(duration)
 		this.heldTicket = null
 		const next = this.#waiters.shift()
 		if (next) {
@@ -55,6 +55,24 @@ export class ModuleCheckGate {
 			next(nextTicket)
 		}
 		return duration
+	}
+
+	/**
+	 * 子进程 ready：释放闸门并记录时长。
+	 * @param {string} ticket 租约
+	 * @returns {number | null} 本次检查时长；ticket 不匹配则为 null
+	 */
+	ready(ticket) {
+		return this.#release(ticket, true)
+	}
+
+	/**
+	 * 子进程未 ready 就结束：释放等待者，不记时长。
+	 * @param {string} ticket 租约
+	 * @returns {boolean} 仍持有该 ticket（missed）
+	 */
+	abandon(ticket) {
+		return this.#release(ticket, false) != null
 	}
 
 	/**

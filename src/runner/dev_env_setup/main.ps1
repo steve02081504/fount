@@ -64,7 +64,7 @@ else {
 
 if (-not (Test-Path './data/test/report.md')) {
 	Write-Host '🔥 Creating test cache...'
-	& fount test --no-parallel
+	& fount test
 	Write-Host '🥳 Test cache created successfully'
 }
 

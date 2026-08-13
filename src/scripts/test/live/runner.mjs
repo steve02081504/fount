@@ -8,7 +8,7 @@ import { execFile } from 'npm:@steve02081504/exec'
 
 import { console } from '../../i18n/bare.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
-import { withModuleCheckTicket } from '../hub/clients/module_check.mjs'
+import { withDenoModuleCheckPreload, withModuleCheckTicket } from '../hub/clients/module_check.mjs'
 import { launchNode, resolveLiveNodeFleet, stopNode } from '../node/launch.mjs'
 import { appendBoundedTail } from '../runner/run_command.mjs'
 
@@ -27,12 +27,13 @@ const FEDERATION_CLEANUP = join('src', 'scripts', 'test', 'live', 'federation', 
  */
 async function runCommand(repoRoot, command, env, options = {}) {
 	const { stream = false } = options
-	const [executable, ...args] = command
 	/**
+	 * @param {string[]} argv 可执行文件 + 参数
 	 * @param {Record<string, string>} extra 额外 env
 	 * @returns {Promise<{ code: number, output: string }>} 结果
 	 */
-	const invoke = extra => {
+	const invoke = (argv, extra = {}) => {
+		const [executable, ...args] = argv
 		let outputTail = ''
 		/** @type {import('npm:@steve02081504/exec').ExecOptions & object} */
 		const execOptions = {
@@ -63,9 +64,12 @@ async function runCommand(repoRoot, command, env, options = {}) {
 			output: outputTail,
 		}))
 	}
-	if (executable !== 'deno')
-		return invoke({})
-	return withModuleCheckTicket(ticket => invoke(ticket ? { FOUNT_TEST_MODULE_CHECK_TICKET: ticket } : {}))
+	if (command[0] !== 'deno')
+		return invoke(command)
+	return withModuleCheckTicket(ticket => invoke(
+		withDenoModuleCheckPreload(command, ticket),
+		ticket ? { FOUNT_TEST_MODULE_CHECK_TICKET: ticket } : {},
+	))
 }
 
 /**

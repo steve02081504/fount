@@ -10,7 +10,7 @@ import { formatDuration } from '../core/format_duration.mjs'
 import { beginTestProgress, finishTestProgress } from '../core/progress.mjs'
 import { testHubUrl } from '../hub/index.mjs'
 
-import { resolveDisplayMode } from './mode.mjs'
+import { displayShouldResolve, resolveDisplayMode } from './mode.mjs'
 import { formatRemainingLabel, paintAccepted, paintJobDone } from './paint.mjs'
 
 /**
@@ -79,6 +79,8 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 				const { manifestId, name } = splitKey(msg.key)
 				console.logI18n('fountConsole.test.reusedSuite', { manifestId, name, status: msg.status })
 			}
+			else if (msg.missedReady)
+				console.logI18n('fountConsole.test.moduleCheck.missedReady', { label: msg.key })
 			else if (msg.skipBecause?.length)
 				console.logI18n(msg.passed ? 'fountConsole.test.skipBecause.pass' : 'fountConsole.test.skipBecause.fail', {
 					label: msg.key,
@@ -100,10 +102,11 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		if (msg.type === 'job-done') {
 			exitCode = msg.exitCode ?? 0
 			paintJobDone(msg)
-			if (!watch && job) done.resolve()
+			if (displayShouldResolve(msg, { watch, displayMode, job, runCount }))
+				done.resolve()
 			return
 		}
-		if (msg.type === 'idle' && !watch && displayMode === 'overview')
+		if (displayShouldResolve(msg, { watch, displayMode, job, runCount }))
 			done.resolve()
 	})
 
