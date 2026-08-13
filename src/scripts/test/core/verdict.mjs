@@ -154,31 +154,28 @@ export function aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash) {
  * @returns {Verdict} 裁决
  */
 function judgeSuiteWithSubtests(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey, sharedTriggerHash, skipBlock, passSkip) {
-	const treatPassed = passSkip || skipBlock
-	if (treatPassed)
+	if (passSkip || skipBlock)
 		return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash, subtestsToRun: [] }
 	const sharedStale = !entry
-		|| (entry.status === 'blocked' && !skipBlock)
+		|| entry.status === 'blocked'
 		|| suiteTriggersHit(suite, committedChanged)
 		|| isTriggerHashStale(entry.triggerHash, sharedTriggerHash)
 	/** @type {Record<string, Verdict>} */
 	const subVerdicts = {}
-	const key = suiteKey(suite.manifestId, suite.name)
-	for (const subtest of suite.subtests) {
-		const stChanged = committedChangedByKey?.get(`${key}#${subtest.name}`) ?? committedChanged
+	for (const subtest of suite.subtests) 
 		subVerdicts[subtest.name] = judgeSubtest(
 			suite,
 			subtest,
 			entry?.subtests?.[subtest.name],
 			sharedStale,
-			stChanged,
+			committedChangedByKey?.get(`${suiteKey(suite.manifestId, suite.name)}#${subtest.name}`) ?? committedChanged,
 			uncommittedHashes,
 		)
-	}
+	
 	const aggregate = aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash)
 	// suite 级失败（如 watchdog 终止）无法归因到任何子测试时，聚合会得出 green/noisy
 	// 而掩盖失败；此时整套判 red（subtestsToRun 留空 → plan 全量重跑）。
-	if (aggregate.fresh && entry.status === 'failed' && !passSkip
+	if (aggregate.fresh && entry.status === 'failed'
 		&& (aggregate.kind === 'green' || aggregate.kind === 'noisy'))
 		return { ...aggregate, kind: 'red', subtestsToRun: [] }
 	return aggregate
@@ -202,7 +199,6 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
 	)
 	const passSkip = skipBecauseAsForSuite(suite) === 'pass'
 	const skipBlock = isPassSkipBlock(entry, byKey, issueStates)
-	const treatPassed = passSkip || skipBlock
 
 	if (suite.subtests?.length)
 		return judgeSuiteWithSubtests(
@@ -219,7 +215,7 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
 	const fresh = isContentFresh(suite, entry, committedChanged, sharedTriggerHash, { ignoreBlocked: skipBlock })
 	if (!entry || (entry.status === 'blocked' && !skipBlock) || !fresh)
 		return { kind: 'unknown', fresh: false, triggerHash: sharedTriggerHash }
-	if (entry.status === 'passed' || treatPassed) return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash }
+	if (entry.status === 'passed' || passSkip || skipBlock) return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash }
 	if (entry.status === 'noisy') return { kind: 'noisy', fresh: true, triggerHash: sharedTriggerHash }
 	return { kind: 'red', fresh: true, triggerHash: sharedTriggerHash }
 }

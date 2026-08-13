@@ -92,7 +92,7 @@ function isUnknownRunDuration(task) {
 function subtestDurationMs(suite, entry, name) {
 	const sample = entry?.subtests?.[name]?.durationMs
 	if (sample != null && Number.isFinite(sample) && sample > 0) return sample
-	const declared = suite.subtests?.find(st => st.name === name)?.expectedMs
+	const declared = suite.subtests?.find(subtest => subtest.name === name)?.expectedMs
 	return declared != null && Number.isFinite(declared) && declared > 0 ? declared : null
 }
 
@@ -111,11 +111,11 @@ export function expectedRunDurationMs(suite, entry, subtestsToRun) {
 
 	const names = subtestsToRun?.length
 		? subtestsToRun
-		: suite.subtests.map(st => st.name)
+		: suite.subtests.map(subtest => subtest.name)
 	if (!names.length) return 0
 
 	const known = suite.subtests
-		.map(st => subtestDurationMs(suite, entry, st.name))
+		.map(subtest => subtestDurationMs(suite, entry, subtest.name))
 		.filter(ms => ms != null && Number.isFinite(ms) && ms > 0)
 	const knownMean = known.length
 		? known.reduce((a, b) => a + b, 0) / known.length
@@ -250,6 +250,8 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	}
 	/** @type {Set<string>} */
 	const completed = new Set()
+	/** @type {Set<string>} 执行已结束、资源已释放，但依赖尚未硬完成（不可满足下游） */
+	const executed = new Set()
 	/** @type {Map<string, number>} */
 	const depthById = new Map()
 
@@ -341,6 +343,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 		const runningIds = new Set(running.map(slot => slot.id))
 		return [...tasksById.values()].filter(task =>
 			!completed.has(taskId(task))
+			&& !executed.has(taskId(task))
 			&& !runningIds.has(taskId(task))
 			&& !task.running
 			&& depsComplete(task)
@@ -354,6 +357,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 		const runningById = new Map(running.map(slot => [slot.id, slot]))
 		return [...tasksById.values()].filter(task =>
 			!completed.has(taskId(task))
+			&& !executed.has(taskId(task))
 			&& !runningById.has(taskId(task))
 			&& !task.running
 			&& !depsComplete(task)
@@ -395,10 +399,10 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	 * @param {boolean} asSpeculative 是否投机开工
 	 */
 	function admit(task, asSpeculative) {
-		const duration = taskDurationMs(task)
 		const spawnAt = Math.max(time, checkFreeAt)
-		checkFreeAt = spawnAt + (task.moduleCheckMs ?? 0)
-		occupy(task, asSpeculative, spawnAt + duration)
+		const checkEnd = spawnAt + (task.moduleCheckMs ?? 0)
+		checkFreeAt = checkEnd
+		occupy(task, asSpeculative, checkEnd + taskDurationMs(task))
 	}
 
 	/**
@@ -459,13 +463,15 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	}
 
 	/**
-	 * 将耗时为 0 且依赖已齐的任务记为完成。
+	 * 将耗时为 0、或已执行完毕且依赖已齐的任务记为完成。
 	 */
 	function completeInstant() {
 		for (const task of tasksById.values()) {
 			if (task.running || isUnknownRunDuration(task)) continue
-			if (!completed.has(taskId(task)) && depsComplete(task) && taskDurationMs(task) === 0)
-				completed.add(taskId(task))
+			const id = taskId(task)
+			if (completed.has(id) || !depsComplete(task)) continue
+			if (taskDurationMs(task) === 0 || executed.has(id))
+				completed.add(id)
 		}
 	}
 
@@ -507,15 +513,19 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 
 		for (const slot of [...running]) {
 			if (slot.endTime !== nextEnd) continue
-			completed.add(slot.id)
+			executed.add(slot.id)
 			if (slot.heavy)
 				exclusiveRunning = false
 			else {
 				usedMemBytes -= slot.memMb * MiB
 				usedCpuPct -= slot.cpuPct
 			}
+			const task = tasksById.get(slot.id)
+			if (!slot.speculative || (task && depsComplete(task)))
+				completed.add(slot.id)
 		}
 		running = running.filter(slot => slot.endTime !== nextEnd)
+		completeInstant()
 		tryAdmit()
 	}
 

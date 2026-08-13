@@ -172,7 +172,7 @@ Deno.test('simulateParallelMakespanMs overlaps dependent with running dep', () =
 	assertEquals(result.makespanMs, 30_000)
 })
 
-Deno.test('simulateParallelMakespanMs does not stack speculative chain', () => {
+Deno.test('simulateParallelMakespanMs does not let speculative finish satisfy dependents', () => {
 	const result = simulateParallelMakespanMs([
 		task({ key: 'server:a', name: 'a', durationMs: 30_000, memMb: 100, cpuPct: 10 }),
 		task({
@@ -184,8 +184,9 @@ Deno.test('simulateParallelMakespanMs does not stack speculative chain', () => {
 			deps: ['server:b'],
 		}),
 	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
-	// A||B 后 B 完成即 C 硬就绪（B 已落盘），墙钟 40s；禁止 A||B||C 三层叠成 30s
-	assertEquals(result.makespanMs, 40_000)
+	// A 硬跑、B 投机；B 先结束只释放资源，须等 A 硬完成才算 B 完成，C 才能开工。
+	// 墙钟 50s；禁止把 B 投机收尾当成 C 的硬就绪（40s）或三层叠成 30s。
+	assertEquals(result.makespanMs, 50_000)
 })
 
 Deno.test('simulateParallelMakespanMs promotes speculative so next layer can overlap', () => {
@@ -336,10 +337,18 @@ Deno.test('hard-ready remaining does not overlap dependents', () => {
 	assertEquals(result.makespanMs, 50_000)
 })
 
-Deno.test('simulateParallelMakespanMs serializes module-check windows', () => {
+Deno.test('simulateParallelMakespanMs adds module-check then execution', () => {
+	const result = simulateParallelMakespanMs([
+		task({ durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	assertEquals(result.makespanMs, 1200)
+})
+
+Deno.test('simulateParallelMakespanMs serializes module-check before execution start', () => {
 	const result = simulateParallelMakespanMs([
 		task({ durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
 		task({ key: 'shells/chat:b', name: 'b', durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
 	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
-	assertEquals(result.makespanMs, 1200)
+	// A: 检查 0-200、执行 200-1200；B 检查从 200 开始、执行从 400 开始 → 1400
+	assertEquals(result.makespanMs, 1400)
 })
