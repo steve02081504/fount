@@ -1078,7 +1078,7 @@ export class TestKernel {
 		const report = job.report
 		if (!report) return { reportPath: null, allReusedHint: false }
 		const slots = report.slots.filter(slot => slot.state === 'done')
-		const allReusedHint = job.exitCode !== 0 && slots.length
+		const allReusedHint = job.exitCode !== 0 && slots.length > 0
 			&& slots.every(slot => slot.reused || slot.status === 'blocked')
 		const reportPath = (await report.finalize(job.exitCode)).replace(/\\/g, '/')
 		job.report = null
@@ -1135,7 +1135,7 @@ export class TestKernel {
 				if (!stillWanted) running.abort.abort('viewer_gone')
 			}
 		for (const job of [...this.jobs.values()])
-			if (job.viewerId === viewerId && job.pending.size === 0 && ![...this.running.values()].some(r => r.item.jobId === job.id))
+			if (job.viewerId === viewerId && job.pending.size === 0 && ![...this.running.values()].some(running => running.item.jobId === job.id))
 				void this.#finishJob(job)
 		this.wake()
 	}

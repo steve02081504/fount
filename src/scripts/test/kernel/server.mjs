@@ -146,7 +146,7 @@ async function onViewerMessage(kernel, viewer, rawMessage) {
 	viewer.watch = message.watch === true
 	kernel.seenViewer = true
 	if (viewer.watch || !message.job) {
-		viewer.mode = resolveDisplayMode({ watch: viewer.watch, job: message.job })
+		viewer.mode = 'overview'
 		kernel.viewers.send(viewer.id, {
 			type: 'accepted',
 			viewerId: viewer.id,

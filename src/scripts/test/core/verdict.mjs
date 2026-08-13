@@ -150,11 +150,11 @@ export function aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash) {
  * @param {Map<string, string[]>} [committedChangedByKey] 含 `key#subtest` 的变更表
  * @param {string | null} sharedTriggerHash suite 共享 trigger digest
  * @param {boolean} skipBlock pass-skip 阻塞是否视为通过
- * @param {boolean} treatPassed 是否按通过处理
  * @param {boolean} passSkip skip_because 是否 as pass
  * @returns {Verdict} 裁决
  */
-function judgeSuiteWithSubtests(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey, sharedTriggerHash, skipBlock, treatPassed, passSkip) {
+function judgeSuiteWithSubtests(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey, sharedTriggerHash, skipBlock, passSkip) {
+	const treatPassed = passSkip || skipBlock
 	if (treatPassed)
 		return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash, subtestsToRun: [] }
 	const sharedStale = !entry
@@ -213,7 +213,6 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
 			committedChangedByKey,
 			sharedTriggerHash,
 			skipBlock,
-			treatPassed,
 			passSkip,
 		)
 

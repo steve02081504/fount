@@ -285,15 +285,16 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 
 	/**
 	 * @param {EstimateTask} task 任务
+	 * @param {Map<string, { id: string, speculative: boolean }>} runningById 在跑槽位
 	 * @returns {boolean} 是否可投机开工
 	 */
-	function canSpeculate(task) {
+	function canSpeculate(task, runningById) {
 		if (!speculative) return false
-		const runningById = new Map(running.map(slot => [slot.id, slot]))
 		let anchoredToHard = false
 		for (const depKey of task.deps) {
-			if (!instancesByKey.has(depKey)) continue
-			const unfinished = instancesByKey.get(depKey).filter(dep => !completed.has(taskId(dep)))
+			const deps = instancesByKey.get(depKey)
+			if (!deps) continue
+			const unfinished = deps.filter(dep => !completed.has(taskId(dep)))
 			if (!unfinished.length) continue
 			for (const dep of unfinished) {
 				const slot = runningById.get(taskId(dep))
@@ -350,13 +351,13 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	/** @returns {EstimateTask[]} 可投机 */
 	function listSpeculativeReady() {
 		if (!speculative) return []
-		const runningIds = new Set(running.map(slot => slot.id))
+		const runningById = new Map(running.map(slot => [slot.id, slot]))
 		return [...tasksById.values()].filter(task =>
 			!completed.has(taskId(task))
-			&& !runningIds.has(taskId(task))
+			&& !runningById.has(taskId(task))
 			&& !task.running
 			&& !depsComplete(task)
-			&& canSpeculate(task)
+			&& canSpeculate(task, runningById)
 			&& taskDurationMs(task) > 0
 			&& !isUnknownRunDuration(task))
 	}
