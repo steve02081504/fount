@@ -6,9 +6,9 @@ import { getExploreAccounts } from '../endpoints/feed.mjs'
 import { authorLabel, entityHandle, formatTimeHtml, mountMarkdown, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
-import { renderTemplate } from '/scripts/features/template.mjs'
-import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { state } from '../state.mjs'
+import { renderTemplate } from '../templates.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 let exploreToolbarBound = false
 

@@ -1,8 +1,8 @@
-import { appendTemplate, mountTemplate } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { deleteArchiveBefore, getArchiveSummary, importChannelArchiveFile } from '../endpoints/channelArchive.mjs'
+import { appendTemplate, mountTemplate } from '../templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { formatArchiveBytes } from './shared.mjs'

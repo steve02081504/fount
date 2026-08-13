@@ -1,10 +1,10 @@
-import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { authorLabel, entityHandle, formatTimeHtml, rememberEntityHandle, renderAvatarHtml, renderTrustedPostMarkdown } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
 import { renderEngagementBarHtml } from '../lib/engagementBar.mjs'
 import { state } from '../state.mjs'
+import { renderTemplate } from '../templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /**

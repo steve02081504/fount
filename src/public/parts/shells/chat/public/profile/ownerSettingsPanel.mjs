@@ -4,10 +4,10 @@
  * 【原理】读 viewer + profile；PUT /entities/owner；本地 agent 列表作快捷选择；保存前高风险确认。
  */
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { mountTemplate } from '../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
 import { getEntityProfile, setEntityOwner } from '../src/endpoints/entities.mjs'
 import { getViewer } from '../src/endpoints/viewer.mjs'
+import { mountTemplate } from '../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { showOwnerConfirmDialog } from './ownerConfirmDialog.mjs'

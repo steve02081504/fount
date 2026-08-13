@@ -104,3 +104,51 @@ test.describe('Chat profile page', () => {
 		await expect(page.locator('#profile-card-host [data-entity-profile-links] a')).toHaveAttribute('href', 'https://example.com/')
 	})
 })
+
+test.describe('Chat profile edit mobile', () => {
+	test.use({ viewport: { width: 390, height: 844 }, hasTouch: true })
+
+	test('save button stays fully inside modal and commits', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:chat/profile`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('#profile-edit-button')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#profile-card-host [data-entity-profile-name]')).not.toBeEmpty({ timeout: 30_000 })
+		await page.locator('#profile-edit-button').click()
+		await expect(page.locator('#profile-edit-modal')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#profile-edit-save')).toBeVisible()
+
+		const geometry = await page.locator('.profile-edit-box').evaluate((box) => {
+			const save = box.querySelector('#profile-edit-save')
+			const boxRect = box.getBoundingClientRect()
+			const saveRect = save.getBoundingClientRect()
+			const tolerance = 0.5
+			return {
+				fullyInsideBox:
+					saveRect.top >= boxRect.top - tolerance
+					&& saveRect.bottom <= boxRect.bottom + tolerance
+					&& saveRect.left >= boxRect.left - tolerance
+					&& saveRect.right <= boxRect.right + tolerance,
+				fullyInViewport:
+					saveRect.top >= -tolerance
+					&& saveRect.bottom <= window.innerHeight + tolerance
+					&& saveRect.left >= -tolerance
+					&& saveRect.right <= window.innerWidth + tolerance,
+				boxBottom: boxRect.bottom,
+				saveBottom: saveRect.bottom,
+				viewportHeight: window.innerHeight,
+				viewportWidth: window.innerWidth,
+				saveLeft: saveRect.left,
+				saveRight: saveRect.right,
+			}
+		})
+		expect(geometry.fullyInsideBox, `save clipped by modal-box (boxBottom=${geometry.boxBottom}, saveBottom=${geometry.saveBottom})`).toBe(true)
+		expect(geometry.fullyInViewport, `save outside viewport (vh=${geometry.viewportHeight}, vw=${geometry.viewportWidth}, saveLeft=${geometry.saveLeft}, saveRight=${geometry.saveRight}, saveBottom=${geometry.saveBottom})`).toBe(true)
+
+		const nextName = `mobile-save-${Date.now()}`
+		await page.locator('#profile-edit-sfw-mode').uncheck()
+		await page.locator('#profile-edit-name').fill(nextName)
+		await page.locator('#profile-edit-save').click({ trial: true })
+		await page.locator('#profile-edit-save').click()
+		await expect(page.locator('#profile-edit-modal')).toBeHidden({ timeout: 20_000 })
+		await expect(page.locator('#profile-card-host [data-entity-profile-name]')).toHaveText(nextName, { timeout: 20_000 })
+	})
+})

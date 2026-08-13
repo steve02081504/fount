@@ -3,8 +3,8 @@
  * 【职责】设置主人前的高风险二次确认（冷却 + 两次点击）。
  * 【原理】openDialogFromTemplate；确认后由调用方 PUT entities/owner。
  */
-import { openDialogFromTemplate } from '../../../scripts/features/dialog.mjs'
 import { setElementI18n } from '../../../scripts/i18n/index.mjs'
+import { openDialogFromTemplate } from '../src/templates.mjs'
 
 const COOLDOWN_SECONDS = 5
 const SECOND_CONFIRM_TIMEOUT_MS = 3000

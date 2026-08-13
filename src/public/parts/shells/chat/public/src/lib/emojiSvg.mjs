@@ -3,7 +3,7 @@
  * 【职责】Iconify CDN SVG 表情/图标 URL 与 img 标签辅助、Hub 空状态图标。
  * 【原理】iconifyUrl 拼 api.iconify.design；iconifyImg 生成带 class 的 <img> 字符串。
  * 【数据结构】icon id 如 line-md/chat-round；options { class, alt }。
- * 【关联】Hub UI 模板；unicodeEmojiData 互补。
+ * 【关联】Hub UI 模板。
  */
 const ICONIFY_CDN = 'https://api.iconify.design'
 

@@ -173,6 +173,7 @@
 				"expected": "verwacht ${expected}"
 			},
 			"reusedSuite": "\n>>> ${manifestId}:${name} hergebruiken (trigger ongewijzigd, laatste ${status} behouden)",
+			"prunedAbsentState": "Verouderde status van verwijderde suites opgeschoond: ${suites} suites, ${subtests} subtests",
 			"noisyOnlyRemain": "Nog ${count} suites geslaagd maar met ruis: ${suites}",
 			"noRealRunPlanned": "Geen echte run nodig: ${reused} hergebruikt, ${blocked} naar verwachting geblokkeerd (trigger ongewijzigd)",
 			"allReusedHint": "Geen suite echt uitgevoerd: fouten zijn van de vorige run, blokkades daardoor onopgelost (bestanden ongewijzigd). Los de bestanden op en draai opnieuw, of gebruik fount test --force.",
@@ -2693,7 +2694,7 @@
 			"sync": {
 				"failed": "Federatiesynchronisatie mislukt: ${error}",
 				"incomplete": "${missing}/${total} evenementen blijven niet gesynchroniseerd",
-				"noPeers": "Niet verbonden met de federatieve buur, kunnen historische berichten tijdelijk niet worden gesynchroniseerd; Gebruik de volledige uitnodigingslink en probeer het later opnieuw",
+				"noPeers": "Niet verbonden met federatieve buren; historische berichten kunnen tijdelijk niet worden gesynchroniseerd",
 				"rateLimited": "Snelheidslimiet voor federale synchronisatie is in uitvoering. Probeer het later opnieuw.",
 				"truncated": "De DAG-verhoging is niet volledig. Je kunt het later opnieuw proberen of de limiet verhogen.",
 				"truncatedHint": "De DAG-geschiedenis is te lang. Je kunt het later opnieuw proberen of de limiet verhogen."
@@ -4657,7 +4658,10 @@
 				"title": "Opslaan",
 				"aria-label": "Opslaan"
 			},
-			"saved": "Verzameld",
+			"saved": {
+				"title": "Opgeslagen",
+				"aria-label": "Opgeslagen"
+			},
 			"translate": "Vertalen",
 			"dm": "Stuur een privébericht",
 			"block": "Blokkeren",
@@ -5408,12 +5412,18 @@
 			"saveButton": "Configuratie opslaan",
 			"saveSuccess": "Opdracht voor externe editor opgeslagen.",
 			"test": {
-				"button": "Test: openen",
+				"button": "Openen testen",
 				"pathInput": {
-					"placeholder": "Pad naar een bestand om te proberen, bijv. C:/work/project/src/main.mjs"
+					"placeholder": "Pad naar een testbestand, bijv. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Vul eerst het pad naar het testbestand in.",
-				"success": "De opdracht om in de editor te openen is uitgevoerd."
+				"success": "Poging om in de externe editor te openen is uitgevoerd.",
+				"lineInput": {
+					"aria-label": "Regelnummer"
+				},
+				"columnInput": {
+					"aria-label": "Kolomnummer"
+				}
 			}
 		},
 		"logout": {

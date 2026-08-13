@@ -7,7 +7,6 @@
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
-import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
@@ -16,6 +15,7 @@ import { getFederationSettings } from '../src/endpoints/federationSettings.mjs'
 import { addGroupChar, createFriendGroup, getGroupState, listGroupChars } from '../src/endpoints/groupCore.mjs'
 import { createDirectMessageByPubKeys } from '../src/endpoints/groupDm.mjs'
 import { setGroupFriendBinding } from '../src/endpoints/groupFriendBinding.mjs'
+import { mountTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'

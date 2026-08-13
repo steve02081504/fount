@@ -3,7 +3,6 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { setPreRender, setTheme, theme_now } from '../../base.mjs'
 import { makeSearchable } from '../../scripts/components/search.mjs'
-import { renderTemplate, usingTemplates } from '../../scripts/features/template.mjs'
 import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange, setElementI18n } from '../../scripts/i18n/index.mjs'
@@ -14,7 +13,8 @@ import {
 	createAutoPreview,
 } from '../../scripts/theme/viewTransition.mjs'
 
-usingTemplates('wait/install/templates')
+import { renderTemplate } from './templates.mjs'
+
 const hostUrl = 'http://localhost:8931'
 
 // --- DOM 元素引用 ---
@@ -198,7 +198,7 @@ async function renderThemePreviews() {
 		customStyleTag.textContent = customThemeCss
 	}
 
-	const autoPreview = await createAutoPreview()
+	const autoPreview = await createAutoPreview(renderTemplate)
 	autoPreview.addEventListener('click', (e) => handleThemeClick(e, autoPreview, 'auto'))
 	if (!theme_now) autoPreview.classList.add('selected-theme')
 	allPreviews.push({ element: autoPreview, name: 'auto' })

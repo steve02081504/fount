@@ -2,9 +2,9 @@
  * 【文件】public/hub/messages/render/reactions.mjs
  * 【职责】消息行内表情反应条 HTML。
  */
-import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isDagEventId } from '../../../src/lib/eventId.mjs'
+import { renderTemplateAsHtmlString } from '../../../src/templates.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { tallyReactionsFromMap } from '../../../src/ui/channelDisplay.mjs'
 
 /**

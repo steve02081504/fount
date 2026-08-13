@@ -1,9 +1,9 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { mountTemplate, renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n, promptI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { createRole, deleteRole as deleteRoleRequest, updateRolePermission as updateRolePermissionRequest } from '../endpoints/roles.mjs'
 import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
+import { mountTemplate, renderTemplateAsHtmlString } from '../templates.mjs'
 
 import { grantableRolePermissions } from './constants.mjs'
 

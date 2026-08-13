@@ -1,7 +1,12 @@
+/**
+ * 本机 fount 的 i18n bundle 加载（localStorage 首选语言 + /api/getlocaledata）。
+ */
 import { onServerEvent } from '../endpoints/server_events.mjs'
+import { createEpochCache } from '../lib/epochCache.mjs'
 
 import {
 	loadPreferredLangs,
+	primaryLocale,
 	runInitTranslations,
 	saved_pageid,
 } from './index.mjs'
@@ -28,27 +33,15 @@ export function getLocaleNames() {
 	return new Map()
 }
 
-/** preferred → { bundle, locale }；语种轮换时免重复拉包 */
-const localeBundleCache = new Map()
-/** preferred → 进行中的拉取 Promise；并发同 key 去重 */
-const localeBundleInflight = new Map()
-/** locale-updated 递增；过期请求不得回填 cache / 误删新 inflight */
-let localeBundleEpoch = 0
+/** preferred → { bundle, locale }；locale-updated 时 bump 作废 */
+const localeBundleCache = createEpochCache()
 
 /**
- * 按首选链拉取一份 locale bundle（不写 DOM / 不改偏好）。
  * @param {string[]} preferredLangs 首选语言列表
- * @returns {Promise<object>} locale JSON
+ * @returns {Promise<{ bundle: object, locale: string }>} bundle 与主 locale
  */
-export async function loadLocaleData(preferredLangs) {
-	const cacheKey = preferredLangs.join(',')
-	const cached = localeBundleCache.get(cacheKey)
-	if (cached) return cached.bundle
-	const inflight = localeBundleInflight.get(cacheKey)
-	if (inflight) return inflight
-
-	const epoch = localeBundleEpoch
-	const request = (async () => {
+async function loadLocaleEntry(preferredLangs) {
+	return localeBundleCache.get(preferredLangs.join(','), async () => {
 		const url = new URL('/api/getlocaledata', location.origin)
 		url.searchParams.set('preferred', preferredLangs.join(','))
 		const [response, available] = await Promise.all([
@@ -57,23 +50,23 @@ export async function loadLocaleData(preferredLangs) {
 		])
 		if (!response.ok)
 			throw new Error(`Failed to fetch translations: ${response.status} ${response.statusText}`)
-		const locale = getBestLocale(
-			[...preferredLangs, navigator.language, ...navigator.languages || []],
-			available,
-		)
-		const result = { bundle: await response.json(), locale }
-		if (epoch === localeBundleEpoch)
-			localeBundleCache.set(cacheKey, result)
-		return result.bundle
-	})()
-	localeBundleInflight.set(cacheKey, request)
-	try {
-		return await request
-	}
-	finally {
-		if (localeBundleInflight.get(cacheKey) === request)
-			localeBundleInflight.delete(cacheKey)
-	}
+		return {
+			locale: getBestLocale(
+				[...preferredLangs, primaryLocale()],
+				available,
+			),
+			bundle: await response.json(),
+		}
+	})
+}
+
+/**
+ * 按首选链拉取一份 locale bundle（不写 DOM / 不改偏好）。
+ * @param {string[]} preferredLangs 首选语言列表
+ * @returns {Promise<object>} locale JSON
+ */
+export async function loadLocaleData(preferredLangs) {
+	return (await loadLocaleEntry(preferredLangs)).bundle
 }
 
 /**
@@ -83,16 +76,10 @@ export async function loadLocaleData(preferredLangs) {
  * @returns {Promise<void>}
  */
 export async function initTranslations(pageid = saved_pageid, preferredLangs = loadPreferredLangs()) {
-	await runInitTranslations(pageid, preferredLangs, async () => {
-		const cacheKey = preferredLangs.join(',')
-		await loadLocaleData(preferredLangs)
-		return localeBundleCache.get(cacheKey)
-	})
+	await runInitTranslations(pageid, preferredLangs, () => loadLocaleEntry(preferredLangs))
 }
 
 onServerEvent('locale-updated', async () => {
-	localeBundleEpoch++
-	localeBundleCache.clear()
-	localeBundleInflight.clear()
+	localeBundleCache.bump()
 	await initTranslations()
 })

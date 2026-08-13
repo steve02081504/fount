@@ -2,7 +2,6 @@
  * 条目网格渲染与选择。
  */
 import { setElementI18n } from '/scripts/i18n/index.mjs'
-import { renderTemplate } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isSafeHtmlUrl } from '/scripts/lib/sanitizeHtml.mjs'
 import { formatEntityAtId } from '/parts/shells:chat/shared/entityHash.mjs'
@@ -10,6 +9,7 @@ import { formatEntityAtId } from '/parts/shells:chat/shared/entityHash.mjs'
 import { showContextMenu } from './contextMenu.mjs'
 import { onEntryOpen } from './entryActions.mjs'
 import { cabinetStore } from './state.mjs'
+import { renderTemplate } from './templates.mjs'
 
 /**
  * @param {{ at?: number, entity_hash?: string } | null} stamp 戳

@@ -5,15 +5,11 @@
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/template、core/domUtils、core/state、entityProfile、entityResolve、presence
  */
-import {
-	mountTemplate,
-	renderTemplateAsHtmlString,
-	usingTemplates,
-} from '../../../../scripts/features/template.mjs'
 import { getPartDetails } from '/scripts/endpoints/parts.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { createEntityProfileCardElement } from '../shared/entityProfileCard.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
+import { mountTemplate, renderTemplateAsHtmlString } from '../src/templates.mjs'
 
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { store } from './core/state.mjs'
@@ -64,7 +60,6 @@ async function charAvatarHtml(name, avatarUrl) {
  */
 async function renderCharInfoCardInner(name, details, { active }) {
 	const generation = ++charInfoCardRenderGeneration
-	usingTemplates('/parts/shells:chat/src/templates')
 	const entityHash = await charAgentEntityHash(name)
 	if (generation !== charInfoCardRenderGeneration) return
 	const groupId = store.context.currentGroupId || undefined

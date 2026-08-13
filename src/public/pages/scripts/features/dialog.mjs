@@ -3,11 +3,16 @@
  *
  * 模板应只含 `modal-box` + 可选 `modal-backdrop`，不要再包一层 `<dialog>`——
  * 本模块会创建托管 dialog；若模板根仍是 dialog，会解包子节点，避免嵌套 modal 锁死页面。
+ *
+ * 用 `dialogsFor(root)` 绑定模板根；勿依赖全局路径。
  */
-import { renderTemplate, renderTemplateNoScriptActivation } from './template.mjs'
+import { templatesFor } from './template.mjs'
 
 /** @type {WeakMap<HTMLDialogElement, Array<{ content: DocumentFragment | null }>>} */
 const dialogNavigationStacks = new WeakMap()
+
+/** @type {WeakMap<ReturnType<typeof templatesFor>, ReturnType<typeof createDialogsApi>>} */
+const dialogsByRoot = new WeakMap()
 
 /**
  * @param {HTMLDialogElement} dialog 托管 dialog
@@ -20,33 +25,6 @@ function appendTemplateContent(dialog, node) {
 		return
 	}
 	dialog.appendChild(node)
-}
-
-/**
- * 将当前页收起并渲染新的对话框页；`[data-dialog-back]` 会恢复原 DOM 与表单状态。
- * @param {HTMLDialogElement} dialog 对话框
- * @param {string} templateName 模板路径（相对 usingTemplates 根）
- * @param {object} [data={}] 模板数据
- * @param {{
- *   onReady?: (dialog: HTMLDialogElement) => void | Promise<void>
- *   activateScripts?: boolean
- * }} [options] 对话框页选项
- * @returns {Promise<HTMLDialogElement>} 对话框
- */
-export async function pushDialogFromTemplate(dialog, templateName, data = {}, options = {}) {
-	const stack = dialogNavigationStacks.get(dialog)
-	if (!stack) throw new Error('Dialog is not managed by openDialogFromTemplate')
-
-	const previousPage = stack.at(-1)
-	const content = document.createDocumentFragment()
-	content.append(...dialog.childNodes)
-	previousPage.content = content
-
-	appendTemplateContent(dialog, await (options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate)(templateName, data))
-	stack.push({ content: null })
-	if (options.onReady) await options.onReady(dialog)
-	dialog.querySelector('[autofocus]')?.focus()
-	return dialog
 }
 
 /**
@@ -69,76 +47,157 @@ export function backDialog(dialog) {
 }
 
 /**
- * @param {string} templateName 模板路径（相对 usingTemplates 根）
- * @param {object} [data={}] 模板数据
- * @param {{
- *   onReady?: (dialog: HTMLDialogElement) => void | Promise<void>
- *   className?: string
- *   activateScripts?: boolean
- * }} [options] 对话框选项；`activateScripts: false` 用于含表单的模态
- * @returns {Promise<HTMLDialogElement>} 已打开的 dialog 元素
+ * 规范化取消按钮选择器列表。
+ * @param {string | string[] | undefined} cancelOn 选项中的 cancelOn
+ * @returns {string[]} 选择器列表
  */
-export async function openDialogFromTemplate(templateName, data = {}, options = {}) {
-	const dialog = document.createElement('dialog')
-	dialog.className = options.className ?? 'modal'
-	appendTemplateContent(dialog, await (options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate)(templateName, data))
-	dialogNavigationStacks.set(dialog, [{ content: null }])
-	dialog.addEventListener('click', event => {
-		if (event.target.closest('[data-dialog-back]')) backDialog(dialog)
-	})
-	document.body.appendChild(dialog)
-	if (options.onReady) await options.onReady(dialog)
-	dialog.showModal()
-	dialog.addEventListener('close', () => {
-		dialogNavigationStacks.delete(dialog)
-		dialog.remove()
-	}, { once: true })
-	return dialog
+function normalizeCancelSelectors(cancelOn) {
+	return Array.isArray(cancelOn)
+		? cancelOn
+		: [cancelOn ?? '[data-dialog-cancel]', '[data-action="cancel"]']
 }
 
 /**
- * @param {string} templateName 模板名
- * @param {object} [data={}] 模板数据
- * @param {{
- *   resolveOn?: string
- *   cancelOn?: string | string[]
- *   mapResult?: (dialog: HTMLDialogElement, action: string) => unknown
- * }} [options] 选择器与结果映射
- * @returns {Promise<unknown>} 用户选择结果；取消为 null
+ * 从 resolve 按钮映射用户选择结果。
+ * @param {HTMLDialogElement} dialog 对话框
+ * @param {Element} button resolve 按钮
+ * @param {((dialog: HTMLDialogElement, action: string) => unknown) | undefined} mapResult 可选结果映射
+ * @returns {unknown} 用户选择结果
  */
-export function pickFromDialog(templateName, data = {}, options = {}) {
-	const resolveOn = options.resolveOn ?? '[data-dialog-resolve]'
-	const cancelSelectors = Array.isArray(options.cancelOn)
-		? options.cancelOn
-		: [options.cancelOn ?? '[data-dialog-cancel]', '[data-action="cancel"]']
+function resolveButtonResult(dialog, button, mapResult) {
+	const action = button.getAttribute('data-dialog-resolve')
+		|| button.getAttribute('data-action')
+		|| 'ok'
+	return mapResult ? mapResult(dialog, action) : action
+}
 
-	return new Promise((resolve, reject) => {
-		openDialogFromTemplate(templateName, data, {
-			/** @param {HTMLDialogElement} dialogElement 对话框 */
-			onReady: dialogElement => {
-				let settled = false
-				/** @param {unknown} value 用户选择结果 */
-				const finish = value => {
-					if (settled) return
-					settled = true
-					if (dialogElement.open) dialogElement.close()
-					resolve(value)
-				}
-				dialogElement.addEventListener('cancel', () => finish(null), { once: true })
-				dialogElement.addEventListener('close', () => finish(null), { once: true })
-				for (const sel of cancelSelectors)
-					dialogElement.querySelector(sel)?.addEventListener('click', () => finish(null), { once: true })
-				for (const button of dialogElement.querySelectorAll(resolveOn))
-					button.addEventListener('click', () => {
-						finish(options.mapResult
-							? options.mapResult(dialogElement, button.getAttribute('data-dialog-resolve')
-								|| button.getAttribute('data-action')
-								|| 'ok')
-							: button.getAttribute('data-dialog-resolve')
-							|| button.getAttribute('data-action')
-							|| 'ok')
-					}, { once: true })
-			},
-		}).catch(reject)
-	})
+/**
+ * @param {ReturnType<typeof templatesFor>} templates 绑定模板 API
+ * @returns {{
+ *   pushDialogFromTemplate: (dialog: HTMLDialogElement, templateName: string, data?: object, options?: object) => Promise<HTMLDialogElement>,
+ *   openDialogFromTemplate: (templateName: string, data?: object, options?: object) => Promise<HTMLDialogElement>,
+ *   pickFromDialog: (templateName: string, data?: object, options?: object) => Promise<unknown>,
+ *   backDialog: typeof backDialog,
+ * }} 绑定对话框 API
+ */
+function createDialogsApi(templates) {
+	const { renderTemplate, renderTemplateNoScriptActivation } = templates
+
+	/**
+	 * 将当前页收起并渲染新的对话框页；`[data-dialog-back]` 会恢复原 DOM 与表单状态。
+	 * @param {HTMLDialogElement} dialog 对话框
+	 * @param {string} templateName 模板路径（相对 templates 根）
+	 * @param {object} [data={}] 模板数据
+	 * @param {{
+	 *   onReady?: (dialog: HTMLDialogElement) => void | Promise<void>
+	 *   activateScripts?: boolean
+	 * }} [options] 对话框页选项
+	 * @returns {Promise<HTMLDialogElement>} 对话框
+	 */
+	async function pushDialogFromTemplate(dialog, templateName, data = {}, options = {}) {
+		const stack = dialogNavigationStacks.get(dialog)
+		if (!stack) throw new Error('Dialog is not managed by openDialogFromTemplate')
+
+		const previousPage = stack.at(-1)
+		const content = document.createDocumentFragment()
+		content.append(...dialog.childNodes)
+		previousPage.content = content
+
+		const render = options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate
+		appendTemplateContent(dialog, await render(templateName, data))
+		stack.push({ content: null })
+		if (options.onReady) await options.onReady(dialog)
+		dialog.querySelector('[autofocus]')?.focus()
+		return dialog
+	}
+
+	/**
+	 * @param {string} templateName 模板路径（相对 templates 根）
+	 * @param {object} [data={}] 模板数据
+	 * @param {{
+	 *   onReady?: (dialog: HTMLDialogElement) => void | Promise<void>
+	 *   className?: string
+	 *   activateScripts?: boolean
+	 * }} [options] 对话框选项；`activateScripts: false` 用于含表单的模态
+	 * @returns {Promise<HTMLDialogElement>} 已打开的 dialog 元素
+	 */
+	async function openDialogFromTemplate(templateName, data = {}, options = {}) {
+		const dialog = document.createElement('dialog')
+		dialog.className = options.className ?? 'modal'
+		const render = options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate
+		appendTemplateContent(dialog, await render(templateName, data))
+		dialogNavigationStacks.set(dialog, [{ content: null }])
+		dialog.addEventListener('click', event => {
+			if (event.target.closest('[data-dialog-back]')) backDialog(dialog)
+		})
+		document.body.appendChild(dialog)
+		if (options.onReady) await options.onReady(dialog)
+		dialog.showModal()
+		dialog.addEventListener('close', () => {
+			dialogNavigationStacks.delete(dialog)
+			dialog.remove()
+		}, { once: true })
+		return dialog
+	}
+
+	/**
+	 * @param {string} templateName 模板名
+	 * @param {object} [data={}] 模板数据
+	 * @param {{
+	 *   resolveOn?: string
+	 *   cancelOn?: string | string[]
+	 *   mapResult?: (dialog: HTMLDialogElement, action: string) => unknown
+	 * }} [options] 选择器与结果映射
+	 * @returns {Promise<unknown>} 用户选择结果；取消为 null
+	 */
+	function pickFromDialog(templateName, data = {}, options = {}) {
+		const resolveOn = options.resolveOn ?? '[data-dialog-resolve]'
+		const cancelSelectors = normalizeCancelSelectors(options.cancelOn)
+
+		return new Promise((resolve, reject) => {
+			openDialogFromTemplate(templateName, data, {
+				/** @param {HTMLDialogElement} dialogElement 对话框 */
+				onReady: dialogElement => {
+					let settled = false
+					/** @param {unknown} value 用户选择结果 */
+					const finish = value => {
+						if (settled) return
+						settled = true
+						if (dialogElement.open) dialogElement.close()
+						resolve(value)
+					}
+					dialogElement.addEventListener('cancel', () => finish(null), { once: true })
+					dialogElement.addEventListener('close', () => finish(null), { once: true })
+					for (const sel of cancelSelectors)
+						dialogElement.querySelector(sel)?.addEventListener('click', () => finish(null), { once: true })
+					for (const button of dialogElement.querySelectorAll(resolveOn))
+						button.addEventListener('click', () => {
+							finish(resolveButtonResult(dialogElement, button, options.mapResult))
+						}, { once: true })
+				},
+			}).catch(reject)
+		})
+	}
+
+	return {
+		pushDialogFromTemplate,
+		openDialogFromTemplate,
+		pickFromDialog,
+		backDialog,
+	}
+}
+
+/**
+ * 绑定到指定模板根的对话框 API（按根记忆化）。
+ * @param {string} path 模板根（同 templatesFor）
+ * @returns {ReturnType<typeof createDialogsApi>} 绑定 API
+ */
+export function dialogsFor(path) {
+	const templates = templatesFor(path)
+	let api = dialogsByRoot.get(templates)
+	if (!api) {
+		api = createDialogsApi(templates)
+		dialogsByRoot.set(templates, api)
+	}
+	return api
 }

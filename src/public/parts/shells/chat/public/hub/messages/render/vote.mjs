@@ -2,10 +2,10 @@
  * 【文件】public/hub/messages/render/vote.mjs
  * 【职责】投票卡片 HTML。
  */
-import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { channelMessageKind } from '../../../shared/channelContent.mjs'
 import { tallyVoteChoices } from '../../../src/lib/voteTally.mjs'
+import { renderTemplateAsHtmlString } from '../../../src/templates.mjs'
 
 /**
  * 渲染投票消息块。

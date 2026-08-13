@@ -1,5 +1,5 @@
 /**
- * 预加载 URL 列表：扫描 public/pages、public/parts 及用户目录下的 public，提取外部 URL 并分类；
+ * 预加载 URL 列表：从 JS/HTML/JSON/CSS 静态提取外部 URL，扫描 public 树并缓存；
  * 在 src/public 变动或部件安装/卸载时清空对应缓存。
  * @module preload_list
  */
@@ -27,6 +27,15 @@ const BLOCK_COMMENT_REG = /\/\*[\S\s]*?\*\//g
  */
 
 /**
+ * 是否为可预取的具体外部 URL（排除未插值的 `${…}` 等占位）。
+ * @param {string} url - 候选 URL
+ * @returns {boolean} 是否可预取
+ */
+export function isConcreteExternalUrl(url) {
+	return EXTERNAL_URL_REG.test(url) && !url.includes('${')
+}
+
+/**
  * 判断文件内容是否包含仅后端可用的导入（node:/npm:/jsr:），用于整文件排除
  * @param {string} content - 文件内容
  * @returns {boolean} 是否包含仅后端可用的导入
@@ -51,11 +60,11 @@ function typeFromUrlSuffix(url) {
 }
 
 /**
- * 提取 JS/MJS 中的外部 URL（支持 import, import(), fetch, // @fetch-resource）
+ * 提取 JS/MJS 中的外部 URL（import / import() / fetch / const|let|var 单引号字面量 / // @fetch-resource）
  * @param {string} content - 文件内容
  * @returns {PreloadResource[]} 提取的资源列表
  */
-function extractFromJs(content) {
+export function extractFromJs(content) {
 	const out = []
 	const lines = content.replace(BLOCK_COMMENT_REG, '').split(/\r?\n/)
 
@@ -75,17 +84,16 @@ function extractFromJs(content) {
 				if (inlineMatch)
 					out.push({ url: inlineMatch[1], type: typeFromUrlSuffix(inlineMatch[1]) })
 				else if (lines[i + 1]) {
-					// 匹配下一行的 URL
 					const nextMatch = lines[i + 1].match(/(https?:\/\/[^\s"']+)/)
 					if (nextMatch) out.push({ url: nextMatch[1], type: typeFromUrlSuffix(nextMatch[1]) })
-					i++ // 跳过已处理的下一行
+					i++
 				}
 			}
 			continue
 		}
 
-		// 匹配 import, import(), fetch()
 		const urlMatch = line.match(/(?:import\s+(?:[^"']+\s+from\s+)?|import\s*\(\s*|fetch\s*\(\s*)["'](https?:\/\/[^"']+)["']/)
+			|| line.match(/(?:const|let|var)\s+\w+\s*=\s*'(https?:\/\/[^']+)'/)
 		if (urlMatch) {
 			const url = urlMatch[1]
 			const type = line.includes('import') ? 'mjs' : typeFromUrlSuffix(url)
@@ -138,13 +146,33 @@ function extractFromCss(content) {
 	return out
 }
 
-// 提取器映射表，提升扩展性与可读性
+/** @type {Record<string, (content: string) => PreloadResource[]>} */
 const EXTRACTORS = {
 	'.mjs': extractFromJs,
 	'.js': extractFromJs,
 	'.html': extractFromHtml,
 	'.json': extractFromJson,
-	'.css': extractFromCss
+	'.css': extractFromCss,
+}
+
+/**
+ * 合并多条结果并去重，累加出现次数，按次数降序排列；丢弃非具体外部 URL。
+ * @param {PreloadResource[][]} lists - 多条结果的二维数组（支持携带基础 count）
+ * @returns {PreloadResource[]} 合并后的资源列表
+ */
+export function mergeAndDedupe(lists) {
+	const map = new Map()
+
+	for (const list of lists) for (const { url, type, count = 1 } of list) {
+		if (!isConcreteExternalUrl(url)) continue
+
+		const cur = map.get(url) || { type, count: 0 }
+		cur.count += count
+		map.set(url, cur)
+	}
+
+	return Array.from(map.entries(), ([url, { type, count }]) => ({ url, type, count }))
+		.sort((a, b) => b.count - a.count)
 }
 
 /**
@@ -159,30 +187,6 @@ function extractTypedUrls(filePath, content) {
 }
 
 /**
- * 合并多条结果并去重，累加出现次数，按次数降序排列
- * @param {PreloadResource[][]} lists - 多条结果的二维数组（支持携带基础 count）
- * @returns {PreloadResource[]} 合并后的资源列表
- */
-function mergeAndDedupe(lists) {
-	const map = new Map()
-
-	for (const list of lists) for (const { url, type, count = 1 } of list) {
-		if (!EXTERNAL_URL_REG.test(url)) continue
-
-		const cur = map.get(url) || { type, count: 0 }
-		cur.count += count
-		map.set(url, cur)
-	}
-
-	return Array.from(map.entries(), ([url, { type, count }]) => ({ url, type, count }))
-		.sort((a, b) => b.count - a.count)
-}
-
-// =======================
-// 文件扫描与目录遍历
-// =======================
-
-/**
  * 递归收集目录下指定的扩展名文件
  * @param {string} dir - 根目录
  * @param {string[]} exts - 扩展名列表 (包含点，如 ['.mjs'])
@@ -191,7 +195,6 @@ function mergeAndDedupe(lists) {
 function collectFiles(dir, exts) {
 	const out = []
 	/**
-	 * 递归收集目录下指定的扩展名文件
 	 * @param {string} dir - 目录路径
 	 * @returns {void}
 	 */
@@ -216,7 +219,6 @@ function collectFiles(dir, exts) {
 function collectPublicDirs(root) {
 	const out = []
 	/**
-	 * 递归寻找名为 public 的目录 (一旦找到就不再进入其内部寻找)
 	 * @param {string} dir - 目录路径
 	 * @returns {void}
 	 */
@@ -251,10 +253,6 @@ function scanDirectoryForTypedUrls(rootDir) {
 	return mergeAndDedupe(all)
 }
 
-// =======================
-// 缓存与核心业务逻辑
-// =======================
-
 const PUBLIC_ROOT = path.join(__dirname, 'src', 'public')
 
 /**
@@ -268,6 +266,28 @@ let commonCache = null
  * @type {Map<string, PreloadResource[]>}
  */
 const userCaches = new Map()
+
+/** @type {boolean} */
+let cacheInvalidationInstalled = false
+
+/**
+ * 首次真正取列表时再挂 watch / events，避免纯测试仅用提取器时拖住进程。
+ * @returns {void}
+ */
+function ensureCacheInvalidation() {
+	if (cacheInvalidationInstalled) return
+	cacheInvalidationInstalled = true
+
+	fs.watch(PUBLIC_ROOT, { recursive: true }, () => { commonCache = null })
+
+	events.on('part-installed', ({ username }) => userCaches.delete(username))
+	events.on('part-uninstalled', ({ username }) => userCaches.delete(username))
+	events.on('AfterUserDeleted', ({ username }) => userCaches.delete(username))
+	events.on('AfterUserRenamed', ({ oldUsername, newUsername }) => {
+		if (userCaches.has(oldUsername)) userCaches.set(newUsername, userCaches.get(oldUsername))
+		userCaches.delete(oldUsername)
+	})
+}
 
 /**
  * 获取或构建全局共用预加载列表
@@ -314,24 +334,10 @@ function getCachedUserPreloadUrls(username) {
  * @returns {PreloadResource[]} 指定用户的预加载列表
  */
 export function getUserPreloadUrls(username) {
+	ensureCacheInvalidation()
 	const common = getCommonPreloadUrls()
 	if (!username) return common
 
 	const user = getCachedUserPreloadUrls(username)
 	return mergeAndDedupe([common, user])
 }
-
-// =======================
-// 缓存清理与监听
-// =======================
-
-fs.watch(PUBLIC_ROOT, { recursive: true }, () => { commonCache = null })
-
-events.on('part-installed', ({ username }) => userCaches.delete(username))
-events.on('part-uninstalled', ({ username }) => userCaches.delete(username))
-
-events.on('AfterUserDeleted', ({ username }) => userCaches.delete(username))
-events.on('AfterUserRenamed', ({ oldUsername, newUsername }) => {
-	if (userCaches.has(oldUsername)) userCaches.set(newUsername, userCaches.get(oldUsername))
-	userCaches.delete(oldUsername)
-})

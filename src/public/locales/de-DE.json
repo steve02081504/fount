@@ -145,7 +145,7 @@
 			"replHint": "Enter zum Ausführen · Shift+Enter für Zeilenumbruch"
 		},
 		"test": {
-			"help": "Verwendung: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nGruppierungssyntax (mehrere Gruppen durch Leerzeichen getrennt):\n  manifest                    alle Suites dieses Manifests\n  manifest:suite              bestimmte Suite (mehrere per Komma; auch manifest/suite)\n  manifest:suite:subtest      bestimmter Subtest (frontend usw. mit registrierten Subtests; auch manifest/suite/subtest)\n  manifest:suite:file         nach *.test.mjs-Stamm filtern unter pure/integration (serial.mjs)\n  Bei PowerShell-Aufspaltung werden nachfolgende Tokens automatisch der aktuellen Gruppe zugeordnet\n\nmanifest id stammt aus dem Feld \"id\" auf oberster Ebene in test/manifest.json.\nOhne exakte Übereinstimmung automatische Erweiterung zu «<name>/*» (z. B. shells → shells/chat, shells/social); glob (*, ?, **) ebenfalls unterstützt.\nSuite-Name matcht id oder name jeder Suite; ohne exakte Übereinstimmung Erweiterung zu «<name>*», «<name>_*»; glob ebenfalls unterstützt.\n\nStandard (bloßes fount test): zuerst fehlgeschlagene/unvollendete Einträge (fehlgeschlagene Dateien in Suite zuerst; wenn Fehlergruppe reproduzierbar, Gruppe ausführen und beenden), dann abgelaufene Inhalte nach allem Grün; jeder fehlgeschlagene Durchlauf endet mit Exit 1, keine Wiederholung im selben Aufruf. Nie vollständig (dafür --all).\nTeststatus in data/test/state/main.json; Fehlerlogs bis Grün. Jeder Lauf aktualisiert data/test/report.md und report.json.\nfrontend o. ä. kann Subtests registrieren (jeweils mit eigenem trigger); Änderung einer View-Datei macht nur den entsprechenden Subtest veraltet.\nOhne registrierte Subtests bei pure/integration filtert das dritte Segment nach Stamm von *.test.mjs im Verzeichnis (z. B. shells/chat:pure:channel_archive).\nBei fehlgeschlagener Abhängigkeit (manifest.json dependsOn) übergeordnete Ebene automatisch blocked.\n\n--all         alle Suites im Bereich als Ziele (grüne weiter verwendbar, außer mit --force)\n--no-parallel Suites seriell mit Streaming nach stdout/stderr; Standard: automatische Parallelisierung per Ressourcen-Gate nach Speicher und CPU.\n--force       Wiederverwendung deaktivieren: Standard nutzt letztes echtes Ergebnis, --force erzwingt echten Lauf.\n\nBeispiele:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Verwendung: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nGruppierungssyntax (mehrere Gruppen durch Leerzeichen getrennt):\n  manifest                    alle Suites dieses Manifests\n  manifest:suite              bestimmte Suite (mehrere per Komma; auch manifest/suite)\n  manifest:suite:subtest      bestimmter Subtest (frontend usw. mit registrierten Subtests; auch manifest/suite/subtest)\n  manifest:suite:file         nach *.test.mjs-Stamm filtern unter pure/integration (serial.mjs)\n  Bei PowerShell-Aufspaltung werden nachfolgende Tokens automatisch der aktuellen Gruppe zugeordnet\n\nmanifest id stammt aus dem Feld \"id\" auf oberster Ebene in test/manifest.json.\nOhne exakte Übereinstimmung automatische Erweiterung zu «<name>/*» (z. B. shells → shells/chat, shells/social); glob (*, ?, **) ebenfalls unterstützt.\nSuite-Name matcht id oder name jeder Suite; ohne exakte Übereinstimmung Erweiterung zu «<name>*», «<name>_*»; glob ebenfalls unterstützt.\n\nStandard (bloßes fount test): zuerst fehlgeschlagene/unvollendete Einträge (fehlgeschlagene Dateien in Suite zuerst; wenn Fehlergruppe reproduzierbar, Gruppe ausführen und beenden), dann abgelaufene Inhalte nach allem Grün; jeder fehlgeschlagene Durchlauf endet mit Exit 1, keine Wiederholung im selben Aufruf. Nie vollständig (dafür --all).\nTeststatus in data/test/state/main.json (entfernte/umbenannte Suiten werden automatisch bereinigt); Fehlerlogs bis Grün. Jeder Lauf aktualisiert data/test/report.md und report.json.\nfrontend o. ä. kann Subtests registrieren (jeweils mit eigenem trigger); Änderung einer View-Datei macht nur den entsprechenden Subtest veraltet.\nOhne registrierte Subtests bei pure/integration filtert das dritte Segment nach Stamm von *.test.mjs im Verzeichnis (z. B. shells/chat:pure:channel_archive).\nBei fehlgeschlagener Abhängigkeit (manifest.json dependsOn) übergeordnete Ebene automatisch blocked.\n\n--all         alle Suites im Bereich als Ziele (grüne weiter verwendbar, außer mit --force)\n--no-parallel Suites seriell mit Streaming nach stdout/stderr; Standard: automatische Parallelisierung per Ressourcen-Gate nach Speicher und CPU.\n--force       Wiederverwendung deaktivieren: Standard nutzt letztes echtes Ergebnis, --force erzwingt echten Lauf.\n\nBeispiele:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
 			"passed": "Bestanden: ${label}",
 			"passedWithNoise": "Bestanden: ${label} (mit Rauschen)",
 			"failed": "Fehlgeschlagen: ${label}",
@@ -173,6 +173,7 @@
 				"expected": "erwartet ${expected}"
 			},
 			"reusedSuite": "\n>>> Wiederverwendung ${manifestId}:${name} (trigger unverändert, letzter ${status})",
+			"prunedAbsentState": "Veralteter Status entfernter Suiten bereinigt: ${suites} Suites, ${subtests} Subtests",
 			"noisyOnlyRemain": "Noch ${count} Suites bestanden mit Rauschen: ${suites}",
 			"noRealRunPlanned": "Kein echter Lauf nötig: ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (trigger unverändert)",
 			"allReusedHint": "Kein echter Lauf: Fehler stammen vom letzten Ergebnis, Blockierung bleibt (Dateien unverändert). Nach Fix erneut ausführen oder fount test --force für echten Lauf.",
@@ -2693,7 +2694,7 @@
 			"sync": {
 				"failed": "Föderationssynchronisierung fehlgeschlagen: ${error}",
 				"incomplete": "${missing}/${total} Ereignisse bleiben unsynchronisiert",
-				"noPeers": "Da keine Verbindung zum Verbundnachbarn besteht, können historische Nachrichten nicht vorübergehend synchronisiert werden. Bitte verwenden Sie den vollständigen Einladungslink und versuchen Sie es später erneut",
+				"noPeers": "Keine Verbundnachbarn verfügbar; historische Nachrichten können derzeit nicht synchronisiert werden",
 				"rateLimited": "Die Geschwindigkeitsbegrenzung für die Bundessynchronisierung läuft, bitte versuchen Sie es später noch einmal.",
 				"truncated": "Das DAG-Inkrement ist nicht voll. Sie können es später noch einmal versuchen oder das Limit erhöhen.",
 				"truncatedHint": "Die DAG-Geschichte ist zu lang. Sie können es später noch einmal versuchen oder das Limit erhöhen."
@@ -4651,7 +4652,10 @@
 				"title": "Merken",
 				"aria-label": "Merken"
 			},
-			"saved": "Gesammelt",
+			"saved": {
+				"title": "Gespeichert",
+				"aria-label": "Gespeichert"
+			},
 			"translate": "Übersetzen",
 			"dm": "Private Nachricht senden",
 			"block": "Blockieren",
@@ -5404,10 +5408,16 @@
 			"test": {
 				"button": "Testweise öffnen",
 				"pathInput": {
-					"placeholder": "Pfad zu einer Datei zum Ausprobieren, z. B. C:/work/project/src/main.mjs"
+					"placeholder": "Pfad zu einer Testdatei, z. B. C:/work/project/src/main.mjs"
 				},
-				"pathRequired": "Bitte zuerst einen Pfad zur Testdatei angeben.",
-				"success": "Befehl zum Öffnen im Editor wurde ausgeführt."
+				"pathRequired": "Bitte geben Sie zuerst einen Pfad zur Testdatei an.",
+				"success": "Öffnen im externen Editor wurde versucht.",
+				"lineInput": {
+					"aria-label": "Zeilennummer"
+				},
+				"columnInput": {
+					"aria-label": "Spaltennummer"
+				}
 			}
 		},
 		"logout": {

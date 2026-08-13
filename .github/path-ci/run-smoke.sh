@@ -38,7 +38,7 @@ fi
 
 if [ ! -d node_modules ]; then
 	echo "path smoke: seeding node_modules via deno install (hooked entrypoint)"
-	deno install --prod --allow-scripts --allow-all -c "$ROOT/deno.json" --entrypoint "$ROOT/src/server/index.mjs"
+	deno install --prod --allow-scripts -c "$ROOT/deno.json" --entrypoint "$ROOT/src/server/index.mjs"
 fi
 
 echo "== server =="

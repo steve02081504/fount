@@ -18,6 +18,4 @@ Day-to-day pointer: [AGENTS.md](../AGENTS.md) Operator tools.
 
 `FOUNT_TEST_ALLOW_SLEEP=1` — still clears an orphan lid archive on exit.
 
-## Sleep interrupts
-
-Wall-clock jump ≥ 5× the 30s poll interval is treated as host sleep: abort the suite and re-run up to 5 attempts (`MAX_SLEEP_INTERRUPT_ATTEMPTS` in `suite_run.mjs`), then `terminated` (not a silent hang).
+Sleep-interrupt detect + retry lives in [resource-scheduling.md](resource-scheduling.md) (idle / duration / sleep watchdog).

@@ -5,6 +5,7 @@ import cors from 'npm:cors'
 import { debugLog } from '../../scripts/debug_log.mjs'
 import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i18n/index.mjs'
 import { ms } from '../../scripts/ms.mjs'
+import { PART_PUBLIC_DIR, urlPartKeyToPartpath } from '../../scripts/part_paths.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
 import { login, loginWithApiKey, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth/index.mjs'
@@ -324,7 +325,7 @@ export function registerEndpoints(router) {
 		const { username } = getUserByReq(req)
 		const { partpath } = req.body
 		if (!partpath) return res.status(400).json({ i18nKey: 'fountConsole.ipc.partPathRequired' })
-		await loadPart(username, String(partpath).replace(/:/g, '/'))
+		await loadPart(username, urlPartKeyToPartpath(String(partpath)))
 		res.status(200).json({ message: `Part ${partpath} loaded successfully.` })
 	})
 
@@ -332,23 +333,23 @@ export function registerEndpoints(router) {
 	// Capture remaining path as request param 0.
 	router.get(/^\/api\/getlist\/(.*)/, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const path = req.params[0].replace(/:/g, '/')
+		const path = urlPartKeyToPartpath(req.params[0])
 		res.status(200).json(getPartList(username, path))
 	})
 	router.get(/^\/api\/getloadedlist\/(.*)/, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const path = req.params[0].replace(/:/g, '/')
+		const path = urlPartKeyToPartpath(req.params[0])
 		res.status(200).json(getLoadedPartList(username, path))
 	})
 	router.get(/^\/api\/getallcacheddetails\/(.*)/, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const path = req.params[0].replace(/:/g, '/')
+		const path = urlPartKeyToPartpath(req.params[0])
 		const details = await getAllCachedPartDetails(username, path)
 		res.status(200).json(details)
 	})
 	router.get(/^\/api\/getdetails\/(.*)/, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const path = req.params[0].replace(/:/g, '/')
+		const path = urlPartKeyToPartpath(req.params[0])
 		// name param from query is optional override? Or should invalid?
 		// Usually details are for a specific part path.
 		// But previously it was /api/getdetails/SHELLS?name=CHAT
@@ -375,10 +376,9 @@ export function registerEndpoints(router) {
 	// Static files handler: /parts/partpath/filepath (partpath may contain colons)
 	router.get(/^\/parts\/([^/]+)(.*)$/, authenticate, async (req, res, next) => {
 		const { username } = getUserByReq(req)
-		const partpath = req.params[0]
+		const partKey = req.params[0]
 		const filepath = req.params[1].split('?')[0]
-		// Convert partpath colons to slashes for filesystem access
-		const realPath = partpath.replace(/:/g, '/') + '/public'
+		const realPath = `${urlPartKeyToPartpath(partKey)}/${PART_PUBLIC_DIR}`
 		let finalPath
 		for (const directory of [
 			getUserDictionary(username) + '/' + realPath,
@@ -396,7 +396,7 @@ export function registerEndpoints(router) {
 					else
 						return res.redirect(301, req.url.replace(req.path, req.path + '/'))
 
-				watchFrontendChanges(`/parts/${partpath}/`, directory)
+				watchFrontendChanges(`/parts/${partKey}/`, directory)
 				break
 			}
 		}

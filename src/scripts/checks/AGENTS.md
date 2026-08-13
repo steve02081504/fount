@@ -17,36 +17,31 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
 | `update_locales` | `.esh/commands/update-locales.py --self-test` (string↔single-applicator + string↔switch) |
 | `agents_md_english` | `AGENTS.md` + linked `.md` English-only; non-`AGENTS.md` under `docs/` |
-| `text_lf` | UTF-8 text files (fatal decode, no NUL) must use LF (no CRLF / lone CR). Under `fount test`, scopes to `FOUNT_TEST_TRIGGERED_FILES` when that list has paths beyond the checker itself; otherwise full-repo scan |
-
-`listRepoFiles` (`walk.mjs`): default listing is `git ls-files` (+ untracked, exclude-standard) so nested `.gitignore` applies; pass `ignore` to force a filesystem walk with that filter. Empty/omitted suffixes = all files.
+| `text_lf` | UTF-8 text (fatal decode, no NUL) must be LF; under `fount test` scopes to triggered files when set |
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
+
+`listRepoFiles` (`walk.mjs`): default is `git ls-files` (+ untracked, exclude-standard); pass `ignore` to force a filesystem walk. Empty/omitted suffixes = all files.
 
 ## i18n keys
 
 - No `Suffix` / `Prefix` affix keys.
 - No ≥4 flat camelCase siblings sharing a prefix.
 - No `xxx1`-style numbered keys.
-- Every non-`zh-CN` locale must match `zh-CN` **value kinds** on shared paths after sync (`string` vs `{ "aria-label": … }` etc. fails — UI would bind wrong). `update-locales.py` may normalize string↔single DOM applicator during sync and **exits 1** on remaining mismatches; leaf `string` ↔ switch (`{ switch, default, cases? }`) stays compatible without restructuring `cases`. Details: [locale-edits.md](../../public/locales/docs/locale-edits.md).
-- Prefix-nest **writeback** only via `.esh/commands/reshape_i18n_keys.py` (JS `JSON.stringify` reorders numeric keys like `404`). Root [AGENTS.md](../../../AGENTS.md) I18n covers day-to-day locale edits.
+- Every non-`zh-CN` locale must match `zh-CN` **value kinds** on shared paths after sync (`string` vs `{ "aria-label": … }` etc. fails). `update-locales.py` may normalize string↔single DOM applicator and **exits 1** on remaining mismatches; leaf `string` ↔ switch stays compatible. Details: [locale-edits.md](../../public/locales/docs/locale-edits.md).
+- Prefix-nest **writeback** only via `.esh/commands/reshape_i18n_keys.py` (JS `JSON.stringify` reorders numeric keys like `404`). Day-to-day locale edits: root [AGENTS.md](../../../AGENTS.md) I18n.
 
 ## i18n refs (`i18n_refs`)
 
-- Element binding (`data-i18n`, `setElementI18n`): the key must exist; objects need ≥1 applicator (`placeholder`, `title`, `label`, `value`, `alt`, `aria-label`, `textContent`, `innerHTML`, `dataset`). Prefer `.main` for “string plus sibling messages” clusters — binding an object key without an applicator leaves the control empty (Playwright `[i18n:missing]` does not catch this).
-- String binding (`showToastI18n`, `confirmI18n`, …) and `path/fount.{ps1,sh}` `Get-I18n` / `get_i18n`: must resolve to a string (or tip array). Raw `geti18n` may return objects (e.g. `util.zxcvbn`); only missing keys fail. `handleError('key')` is scanned only when imported from frontend `features/errorHandlers.mjs` (first arg is the i18n key) — not backend `scripts/errorHandlers.mjs` (first arg is the error).
-- Static keys only (`a.b.c`); skip template interpolations. Rewrite suffixes include `.sh` (shared `walk.mjs` / `reshape_i18n_keys.py`).
+- Element binding (`data-i18n`, `setElementI18n`): key must exist; objects need ≥1 applicator (`placeholder`, `title`, `label`, `value`, `alt`, `aria-label`, `textContent`, `innerHTML`, `dataset`). Prefer `.main` for “string plus sibling messages” — object key without applicator leaves the control empty (Playwright `[i18n:missing]` does not catch this).
+- String binding (`showToastI18n`, `confirmI18n`, …) and `path/fount.{ps1,sh}` `Get-I18n` / `get_i18n`: must resolve to a string (or tip array). Raw `geti18n` may return objects; only missing keys fail. `handleError('key')` scanned only from frontend `features/errorHandlers.mjs` (not backend `scripts/errorHandlers.mjs`).
+- Static keys only (`a.b.c`); skip template interpolations. Rewrite suffixes include `.sh`.
 
 ## Agent docs language
 
-Enforced by this suite; writing rules: [docs/AGENTS.md](../../../docs/AGENTS.md).
-
-- `AGENTS.md` and `.md` files linked from them (transitive closure): English only (no CJK).
-- Exempt from CJK: human-facing `docs/design/`, `docs/review/`, `docs/issues/` (still walked for link resolution).
-- Non-`AGENTS.md` files in that closure must live under a directory named `docs`.
-- Transitive local `.md` links must resolve.
+Enforced by `agents_md_english`; writing rules: [docs/AGENTS.md](../../../docs/AGENTS.md).
 
 ## JSDoc language (`jsdoc_no_english`)
 
-- Summaries must be Chinese (contain CJK). Pure-English summaries (Latin letters, no CJK) fail.
+- Summaries must be Chinese (contain CJK). Pure-English summaries fail.
 - Tag-only blocks (`@param` / `@typedef` / … without a prose summary) are fine; empty `/** */` stubs are not a substitute for a real one-liner on re-exports.
-- List leftovers: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg to narrow).
+- List leftovers: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg).

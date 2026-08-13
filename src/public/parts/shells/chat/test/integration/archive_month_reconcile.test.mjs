@@ -123,7 +123,7 @@ Deno.test('pickArchiveMonthByReputation requires reputation or strict peer count
 		manifest,
 		'general',
 		'2024-01',
-		{ pickScore: zeroPickScore, expectedTargetCount: 1 },
+		{ pickScore: zeroPickScore, expectedTargetCount: 1, activeMemberCount: 2 },
 	)
 	assertEquals(loneTarget.reason, 'ok')
 
@@ -200,4 +200,55 @@ Deno.test('pickArchiveMonthByReputation rejects sole high-rep dictator', async (
 		{ pickScore: positivePickScore },
 	)
 	assertEquals(sole.reason, 'quorum_failed')
+})
+
+Deno.test('pickArchiveMonthByReputation accepts sole high-rep peer when all targets responded', async () => {
+	const body = canonicalArchiveMonthLine({
+		eventId: A,
+		channelId: 'general',
+		timestamp: 1,
+		content: { content: 'a' },
+	}) + '\n'
+	const manifest = { archivedEventIds: {}, monthDigests: {} }
+	const picked = await pickArchiveMonthByReputation(
+		[await archiveMonthCandidate(body, 'c'.repeat(64))],
+		manifest,
+		'general',
+		'2024-01',
+		{ pickScore: positivePickScore, expectedTargetCount: 1, activeMemberCount: 2 },
+	)
+	assertEquals(picked.reason, 'ok')
+	assertEquals(picked.digest, digestArchiveMonthBody(body).digest)
+})
+
+Deno.test('pickArchiveMonthByReputation rejects sole high-rep peer in three-node conflict', async () => {
+	const bodyA = canonicalArchiveMonthLine({
+		eventId: A,
+		channelId: 'general',
+		timestamp: 1,
+		content: { content: 'a' },
+	}) + '\n'
+	const bodyB = canonicalArchiveMonthLine({
+		eventId: B,
+		channelId: 'general',
+		timestamp: 1,
+		content: { content: 'b' },
+	}) + '\n'
+	const highPeer = 'c'.repeat(64)
+	/**
+	 * @param {string} peer peer node hash
+	 * @returns {number} 高信誉对端为 1，否则 0
+	 */
+	const pickScore = peer => peer === highPeer ? 1 : 0
+	const picked = await pickArchiveMonthByReputation(
+		[
+			await archiveMonthCandidate(bodyA, highPeer),
+			await archiveMonthCandidate(bodyB, 'd'.repeat(64)),
+		],
+		{ archivedEventIds: {}, monthDigests: {} },
+		'general',
+		'2024-01',
+		{ pickScore, expectedTargetCount: 2, activeMemberCount: 3 },
+	)
+	assertEquals(picked.reason, 'quorum_failed')
 })

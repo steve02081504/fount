@@ -1,5 +1,4 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -10,6 +9,7 @@ import { disambiguateLabels, resolveDisplayName } from '../../shared/nameResolve
 import { unbanMember } from '../endpoints/groupGovernance.mjs'
 import { kickMember as kickMemberRequest } from '../endpoints/members.mjs'
 import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
+import { mountTemplate } from '../templates.mjs'
 
 /**
  * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文

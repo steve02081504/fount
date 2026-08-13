@@ -11,12 +11,22 @@ import { assertEquals } from 'jsr:@std/assert'
 import {
 	collectModuleExports,
 	parseBindingNames,
+	parseObjectPatternBindings,
+	partPublicBrowserPath,
 	probeShellPart,
+	resolveBrowserImportSpec,
 } from '../shellLoadProbe.mjs'
 
 Deno.test('parseBindingNames distinguishes import source vs export public names', () => {
 	assertEquals(parseBindingNames('a, b as c, type D', 'import'), ['a', 'b', 'D'])
 	assertEquals(parseBindingNames('a, b as c', 'export'), ['a', 'c'])
+})
+
+Deno.test('parseObjectPatternBindings uses object rename / default / rest', () => {
+	assertEquals(
+		parseObjectPatternBindings('test: baseTest, expect, foo = 1, bar: baz = 2, ...rest'),
+		['baseTest', 'expect', 'foo', 'baz', 'rest'],
+	)
 })
 
 Deno.test('collectModuleExports follows export-star and local decls', async () => {
@@ -36,6 +46,57 @@ Deno.test('collectModuleExports follows export-star and local decls', async () =
 		assertEquals([...nsNames], ['bundle'])
 		const remoteNames = await collectModuleExports(root, remote)
 		assertEquals([...remoteNames], ['localName'])
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('collectModuleExports reads export const destructuring', async () => {
+	const root = await mkdtemp(path.join(tmpdir(), 'fount-shell-probe-destructure-'))
+	try {
+		const file = path.join(root, 'templates.mjs')
+		await writeFile(file, `export const {
+	renderTemplate,
+	mountTemplate,
+	appendTemplate: append,
+	test: baseTest,
+	expect,
+	foo = 1,
+	...rest
+} = templatesFor('/x')
+`)
+		const names = await collectModuleExports(root, file)
+		assertEquals([...names].sort(), ['append', 'baseTest', 'expect', 'foo', 'mountTemplate', 'renderTemplate', 'rest'])
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('part public relative climbs resolve like browser /scripts URLs', async () => {
+	const root = await mkdtemp(path.join(tmpdir(), 'fount-shell-probe-url-'))
+	try {
+		const hub = path.join(root, 'src/public/parts/shells/probe_fixture/public/hub')
+		const scripts = path.join(root, 'src/public/pages/scripts/lib')
+		await mkdir(hub, { recursive: true })
+		await mkdir(scripts, { recursive: true })
+		await writeFile(path.join(scripts, 'regex.mjs'), 'export function escapeRegExp(value) { return value }\n')
+		const importer = path.join(hub, 'friendsList.mjs')
+		await writeFile(importer, 'export const x = 1\n')
+
+		assertEquals(
+			partPublicBrowserPath(root, importer),
+			'/parts/shells:probe_fixture/hub/friendsList.mjs',
+		)
+		assertEquals(
+			resolveBrowserImportSpec(root, importer, '../../../../scripts/lib/regex.mjs'),
+			path.join(scripts, 'regex.mjs'),
+		)
+		assertEquals(
+			resolveBrowserImportSpec(root, importer, '../../../../scripts/regex.mjs'),
+			null,
+		)
 	}
 	finally {
 		await rm(root, { recursive: true, force: true })

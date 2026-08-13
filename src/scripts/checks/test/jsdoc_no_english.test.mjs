@@ -34,6 +34,7 @@ Deno.test('isTagOnlyJsdoc: empty stub is not tag-only', () => {
 	assertEquals(isTagOnlyJsdoc('/** */'), false)
 	assertEquals(isTagOnlyJsdoc('/**\n *\n */'), false)
 	assertEquals(isTagOnlyJsdoc('/**\n * @typedef {{ x: number }}\n */'), true)
+	assertEquals(isTagOnlyJsdoc('/**\n * @typedef {object} Foo\n * @property {number} x\n */'), true)
 	assertEquals(isTagOnlyJsdoc('/**\n * @param {number} x\n * @returns {void}\n */'), true)
 })
 

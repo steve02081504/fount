@@ -1,3 +1,5 @@
+import { escapeRegExp } from '../../../../../../scripts/regex.mjs'
+
 /** 话题标签（不含 Chat `#[channel:…]` 等 typed hash token）。 */
 export const HASHTAG_TOKEN_RE = /#([\p{L}\p{N}_-]{2,32})/gu
 
@@ -93,4 +95,14 @@ export function extractHashtagsFromText(text) {
 		tags.add(match[1])
 	}
 	return [...tags]
+}
+
+/**
+ * 话题是否匹配查询（大小写不敏感，不预小写正文）。
+ * @param {string} tag 提取出的话题
+ * @param {string} query 查询话题（不含 #）
+ * @returns {boolean} 是否同一话题
+ */
+export function hashtagEquals(tag, query) {
+	return new RegExp(`^${escapeRegExp(query)}$`, 'iu').test(tag)
 }

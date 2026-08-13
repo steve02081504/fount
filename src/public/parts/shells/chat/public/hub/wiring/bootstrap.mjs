@@ -4,9 +4,8 @@
  * 【关联】groupModals、dialog、wireEvents（其余绑定延后加载）
  */
 import { onServerEvent } from '../../../../../scripts/endpoints/server_events.mjs'
-import { openDialogFromTemplate } from '../../../../../scripts/features/dialog.mjs'
-import { withTemplates } from '../../../../../scripts/features/template.mjs'
 import { iconifyImg } from '../../src/lib/emojiSvg.mjs'
+import { openDialogFromTemplate } from '../../src/templates.mjs'
 import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'
 import { store } from '../core/state.mjs'
@@ -109,25 +108,23 @@ function wireExternalJoinRefresh() {
 
 /** 弹出「创建 / 加入群组」选择对话框。 @returns {Promise<void>} */
 async function showServerActionPicker() {
-	await withTemplates('/parts/shells:chat/src/templates', async () => {
-		await openDialogFromTemplate('hub/modals/server_action_picker', {
-			createIconHtml: iconifyImg('mdi/sparkles', { width: 28, height: 28 }),
-			joinIconHtml: iconifyImg('mdi/link-variant', { width: 28, height: 28 }),
-		}, {
-			/**
-			 * @param {HTMLDialogElement} dialog 对话框
-			 * @returns {void}
-			 */
-			onReady: dialog => {
-				dialog.querySelector('[data-action="create"]')?.addEventListener('click', () => {
-					void showCreateGroupModal(dialog)
-				})
-				dialog.querySelector('[data-action="join"]')?.addEventListener('click', () => {
-					void joinGroupById(dialog)
-				})
-				dialog.querySelector('[data-cancel]')?.addEventListener('click', () => dialog.close())
-			},
-		})
+	await openDialogFromTemplate('hub/modals/server_action_picker', {
+		createIconHtml: iconifyImg('mdi/sparkles', { width: 28, height: 28 }),
+		joinIconHtml: iconifyImg('mdi/link-variant', { width: 28, height: 28 }),
+	}, {
+		/**
+		 * @param {HTMLDialogElement} dialog 对话框
+		 * @returns {void}
+		 */
+		onReady: dialog => {
+			dialog.querySelector('[data-action="create"]')?.addEventListener('click', () => {
+				void showCreateGroupModal(dialog)
+			})
+			dialog.querySelector('[data-action="join"]')?.addEventListener('click', () => {
+				void joinGroupById(dialog)
+			})
+			dialog.querySelector('[data-cancel]')?.addEventListener('click', () => dialog.close())
+		},
 	})
 }
 
@@ -161,6 +158,16 @@ export function wireBootstrap() {
 	void import('../sendQueue.mjs').then(({ wireSendQueueDrain }) => { wireSendQueueDrain() })
 }
 
+/**
+ * 关闭最近的 details 下拉（移动端 ⋯ / composer +）。
+ * @param {EventTarget | null} target 事件目标
+ * @returns {void}
+ */
+function closeNearestDetailsDropdown(target) {
+	const details = target instanceof Element ? target.closest('details.dropdown') : null
+	if (details instanceof HTMLDetailsElement) details.open = false
+}
+
 /** 移动端顶栏 ⋯ 菜单与全宽搜索条。 @returns {void} */
 function wireMobileHeaderOverflow() {
 	/**
@@ -169,9 +176,9 @@ function wireMobileHeaderOverflow() {
 	 * @returns {void}
 	 */
 	const clickThrough = (overflowId, desktopId) => {
-		document.getElementById(overflowId)?.addEventListener('click', () => {
+		document.getElementById(overflowId)?.addEventListener('click', event => {
+			closeNearestDetailsDropdown(event.currentTarget)
 			document.getElementById(desktopId)?.click()
-			document.activeElement instanceof HTMLElement && document.activeElement.blur()
 		})
 	}
 	clickThrough('overflow-pins', 'pins-button')
@@ -182,9 +189,8 @@ function wireMobileHeaderOverflow() {
 	const mobileInput = /** @type {HTMLInputElement | null} */ document.getElementById('mobile-search-input')
 	const desktopInput = /** @type {HTMLInputElement | null} */ document.getElementById('header-search')
 
-	document.getElementById('overflow-search')?.addEventListener('click', () => {
-		const moreBtn = document.getElementById('header-more-button')
-		if (moreBtn instanceof HTMLElement) moreBtn.blur()
+	document.getElementById('overflow-search')?.addEventListener('click', event => {
+		closeNearestDetailsDropdown(event.currentTarget)
 		mobileBar?.classList.add('mobile-search-bar--open')
 		if (mobileInput && desktopInput) mobileInput.value = desktopInput.value
 		const desktopScope = document.getElementById('search-scope')?.dataset?.value
@@ -211,8 +217,8 @@ function wireComposerMoreMenu() {
 		['composer-more-vote', 'vote-button'],
 	]
 	for (const [moreId, desktopId] of map)
-		document.getElementById(moreId)?.addEventListener('click', () => {
+		document.getElementById(moreId)?.addEventListener('click', event => {
+			closeNearestDetailsDropdown(event.currentTarget)
 			document.getElementById(desktopId)?.click()
-			document.activeElement instanceof HTMLElement && document.activeElement.blur()
 		})
 }

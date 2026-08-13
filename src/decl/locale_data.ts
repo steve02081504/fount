@@ -156,6 +156,7 @@ export type LocaleData = {
 				expected: string
 			}
 			reusedSuite: string
+			prunedAbsentState: string
 			noisyOnlyRemain: string
 			noRealRunPlanned: string
 			allReusedHint: string
@@ -4619,7 +4620,10 @@ export type LocaleData = {
 				title: string
 				'aria-label': string
 			}
-			saved: string
+			saved: {
+				title: string
+				'aria-label': string
+			}
 			translate: string
 			dm: string
 			block: string
@@ -5376,6 +5380,12 @@ export type LocaleData = {
 				}
 				pathRequired: string
 				success: string
+				lineInput: {
+					'aria-label': string
+				}
+				columnInput: {
+					'aria-label': string
+				}
 			}
 		}
 		logout: {
@@ -6224,6 +6234,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.passed': { label: string | number }
 	'fountConsole.test.passedWithNoise': { label: string | number }
 	'fountConsole.test.planSlotSummary': { blocked: string | number; reuse: string | number; run: string | number }
+	'fountConsole.test.prunedAbsentState': { subtests: string | number; suites: string | number }
 	'fountConsole.test.report.artifacts': { path: string | number }
 	'fountConsole.test.report.continueReasonsLink': { path: string | number }
 	'fountConsole.test.report.durationMs': { ms: string | number }

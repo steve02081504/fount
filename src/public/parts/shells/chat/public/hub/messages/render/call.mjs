@@ -2,9 +2,9 @@
  * 【文件】public/hub/messages/render/call.mjs
  * 【职责】通话卡片 HTML。
  */
-import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { channelMessageKind } from '../../../shared/channelContent.mjs'
+import { renderTemplateAsHtmlString } from '../../../src/templates.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from '/parts/shells:chat/shared/hashAvatar.mjs'
 
 /**

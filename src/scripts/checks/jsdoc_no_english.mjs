@@ -11,7 +11,7 @@ import { listRepoFiles } from './walk.mjs'
 export const JSDOC_SCAN_SUFFIXES = ['.mjs', '.js', '.ts']
 
 /** 摘要行视为「无描述」的 @ 标签前缀。 */
-const TAG_ONLY_PREFIX = /^@(typedef|type|template|augments|extends|implements|memberof|see|link|example|default|deprecated|ignore|internal|private|protected|public|readonly|override|inheritdoc|satisfies|import)\b/
+const TAG_ONLY_PREFIX = /^@(typedef|type|template|property|augments|extends|implements|memberof|see|link|example|default|deprecated|ignore|internal|private|protected|public|readonly|override|inheritdoc|satisfies|import)\b/
 
 const ASCII_LETTER_RE = /[a-zA-Z]/
 

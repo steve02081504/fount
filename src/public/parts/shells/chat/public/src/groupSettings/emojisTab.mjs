@@ -1,6 +1,5 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { promptText } from '../../../../../../scripts/features/promptDialog.mjs'
-import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -14,6 +13,7 @@ import {
 } from '../endpoints/emojiPacks.mjs'
 import { putGroupSettings } from '../endpoints/groupCore.mjs'
 import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
+import { mountTemplate } from '../templates.mjs'
 
 /**
  * @param {object[]} packs 群 pack 列表

@@ -57,6 +57,8 @@ jobs:
         with:
           path: ./data/test
           key: ${{ steps.pick-cache.outputs.restore_key }}
+      - name: Install Python locale tooling
+        run: pip install deep_translator json5 pathspec
       - uses: ./.github/actions/fount-ci
         with:
           run-step-name: Run tests

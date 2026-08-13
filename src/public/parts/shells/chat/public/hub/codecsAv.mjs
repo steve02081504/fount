@@ -7,7 +7,6 @@
  */
 /* global VideoEncoder VideoDecoder EncodedVideoChunk VideoFrame MediaStreamTrackProcessor AudioEncoder AudioDecoder EncodedAudioChunk AudioData */
 
-import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { createAudioGate } from '../shared/audioGate.mjs'
 import {
 	AUDIO_BPS,
@@ -26,6 +25,7 @@ import {
 import { CODECS_PRESETS } from '../shared/avRelayPresets.mjs'
 import { avatarColor } from '../shared/hashAvatar.mjs'
 import { mountVoiceRing } from '../shared/voiceRing.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 
 /**
  * Hub 流媒体频道：WebCodecs + av-relay 二进制帧中继。

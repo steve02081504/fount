@@ -14,23 +14,11 @@ Day-to-day map / hosting: [AGENTS.md](../AGENTS.md). Read this when changing flu
 
 `labelAirRegions` runs only when `world.airDirty` (mat change or condensed fill crossing `LIQ_DRAW`). Occupancy is `cellFill = liq+melt`; `isCondensed` / `cellRoom` enforce volume exclusivity. `stepLiquid` re-labels at entry if particles/lift dirtied topology again (not inside `water.mjs`). Set `airDirty` / `gasGeomDirty` together on occupancy flips — not on every liquid mass move. Skip Boyle overlap when there are no sealed regions.
 
-## Layout / allocation
+## Hot-path allocation
 
-- Terrain `solid`/`outline` and fluid grids: flat `y * W + x` (no row arrays). Outline glyphs are precomputed; compose only blits.
-- World scratch on `world.scratch` (typed arrays reused). BFS: `floodQ` is `Int32Array` + `floodLen` (`floodClear` / `floodPush`) via shared `components.mjs`.
-- Hot-path geometry returns module-local reused shells (`neighborCoord`, `cellStepUnit`, `gasVelocityAt`, weight buffers) — copy fields if holding across another call. Eight-neighbor physical unit vectors are precomputed (`NEIGH8_UX`/`UY`).
-- Gas nozzle spans / blocked mask / 4-bit `openMask` rebuild only when `gasGeomDirty`; velocity buffers swap with scratch (no per-tick `.set`). Blocked cells zeroed in the velocity pass — no `nextU*.fill(0)`. Nozzle spans are O(WH) column/row runs — do not re-walk per cell. Pass1 writes `staticP` + `gasShear`; pass2 reuses shear + `openMask` (no second depth walk). Jacobi φ buffers swap each iter (no WH `.set`). Border seeds are packed `Int32Array` pairs.
-- Air labels double-buffer `regionId` via `scratch.prevRegionId`; regions pooled + id-indexed; Boyle overlap = packed-key Map (sealed only).
-- Liquid settle orders cells deep→shallow by projected depth (counting-sort buckets). Shared `fillCellDepths` / `buildDepthOrders` (one count → shallow+deep) across pressure fill, water settle, melt transport, buoyancy. `fillCellDepths` and depth orders cache on gravity basis (gx/gy/depth0/size) so tick-internal callers reuse; `beginLiquidPressure` writes `liqDeepOrder` once for water settle + lava/buoyancy. `ensureThermoPressure` fills a `thermoP` table after air label (invalidated on re-label / sealed steam / depth change) by shallow→deep propagation along −ĝ (no per-cell up-walk); `pressureAt` and melt transport hit the table. Non-condensed `fillPressureByDepth` cells copy `thermoP` when warm. Pressure cache: dirty seeds coalesce and flush lazily on next `pAt` (DDA lines, or full `fillPressureByDepth` past a seed threshold).
-- Hydraulic equalize: SoA scratch with precomputed surface φ; generation stamp on `liqHydroVisit` (no whole-grid `dist.fill`); surfaces contiguous by component (no `Map`); skip when `<2` surface samples. Free-surface test is shared `isLiquidFreeSurface`.
-- Melt transport reuses one `PhaseDesc` shell; visc filled on occupied settle cells (side sheet on demand); bubble rise tracks per-region extrema in typed scratch (no per-region JS cell lists).
-- Material rebuild keyed by packed `matKey`; hold frames skip it. Rebuild clears only icon mats (`BODY`/`POOL`/`SLOPE_*`), then paints soil mats from `world.land`. `BODY` cells are parallel `Uint8Array`s (`x`/`y`/`d`). Particles are SoA pools.
-- Land occupancy is one buffer: `world.land` ≡ `terrain.solid`. Melt↔soil writes it directly; `soilGeomDirty` only refreshes derived `surface`/`outline`.
-- Soil drip + hanging reabsorb share underside air weight helpers (`undersideAirWeightSum` / `distributeToUndersideAir`).
-- Thermal: conduction writes `thermNextT`; advection reuses `temp` as output (`temp.set(nextT)` then patch air) — no third `thermAdvT`. Flash/evap/melt share one WH pass; horizon refresh stays after (needs final mats). `strongestUp/Down` accept optional precomputed weights.
-- Compose: one pass over view cells; ANSI joins same-SGR runs; torch quantizes lift + caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads. Drip glyphs via `prepareDripSources` (soil-sparse gen stamp → O(1) `dripFrom`). Player `paint` homes cursor only (`\x1b[H`) — full viewport, no Erase display.
-- Hot-path shells: `RAIN_EDGES`, `PRESSURE_CTX` (`pAt`/`markDirty` stable), melt/liquid `SURF_SOA`, `buildDepthOrders` out-pair, per-`poolKey` component lists, sealed-gas `overlapMap.clear()`.
-- Pointer wind: fill `driveUx`/`driveUy` only while right button down; clear previous dirty rect only; stroke segments pooled.
+- Terrain `solid`/`outline` and fluid grids: flat `y * W + x` (no row arrays).
+- Hot-path geometry returns module-local reused shells — copy fields if holding across another call.
+- Set `airDirty` / `gasGeomDirty` together on occupancy flips. Pointer wind: fill `driveUx`/`driveUy` only while right button down; clear previous dirty rect only.
 
 ## Gravity & boundaries
 

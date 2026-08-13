@@ -2,7 +2,6 @@
  * 主题切换的 View Transition 动画逻辑（圆圈扩散）与主题选择器「自动」预览创建。
  */
 
-import { renderTemplate } from '../features/template.mjs'
 import { viewTransition } from '../lib/viewTransition.mjs'
 
 {
@@ -57,9 +56,10 @@ export async function applyThemeWithViewTransition(clickEvent, update) {
 
 /**
  * 创建「自动」主题预览卡片（亮/暗各占一半）。
+ * @param {(name: string, data?: object) => Promise<Element>} renderTemplate 绑定到本页模板根的渲染函数
  * @returns {Promise<HTMLElement>} 自动主题预览卡片的 DOM 元素。
  */
-export async function createAutoPreview() {
+export async function createAutoPreview(renderTemplate) {
 	const container = document.createElement('div')
 	container.classList.add('theme-preview-card', 'cursor-pointer', 'auto-theme-container')
 	container.dataset.theme = 'auto'

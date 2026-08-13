@@ -5,17 +5,12 @@
  * 【数据结构】groupId、审计行 { action, actor, timestamp, ... }。
  * 【关联】groupSettings.mjs、groupCore.mjs、virtualList.mjs。
  */
-import {
-	renderTemplate,
-	renderTemplateAsHtmlString,
-	usingTemplates,
-} from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { createVirtualList } from '../../../../scripts/lib/virtualList.mjs'
 
 import { fetchGroupAuditLog } from './endpoints/groupCore.mjs'
+import { renderTemplate, renderTemplateAsHtmlString } from './templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-
 
 /** @type {string | null} */
 let auditGroupId = null
@@ -155,7 +150,6 @@ function refreshAuditVirtualList() {
  * @returns {Promise<void>}
  */
 export async function initAuditLogPanel(groupId) {
-	usingTemplates('/parts/shells:chat/src/templates')
 	auditGroupId = groupId
 	auditTypeFilter = readTypeFilter()
 	auditController?.abort()

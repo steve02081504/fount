@@ -1,14 +1,13 @@
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { initTranslations } from '/scripts/i18n/index.mjs'
-import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { ping } from '/scripts/endpoints/base.mjs'
 import { getAutoUpdateEnabled, getSystemInfo, postRestart } from './src/endpoints.mjs'
+import { mountTemplate, renderTemplate } from './templates.mjs'
 
 applyTheme()
-usingTemplates('/parts/shells:debug_info/templates')
 await initTranslations('debug_info')
 
 const versionIndicator = document.getElementById('version-indicator'),
@@ -138,7 +137,7 @@ async function checkFrontendConnectivity() {
 	}
 }
 
-const UPDATE_ICON = 'https://api.iconify.design/line-md/update.svg'
+const UPDATE_ICON = 'https://api.iconify.design/mdi/update.svg'
 const LOADING_ICON = 'https://api.iconify.design/line-md/loading-twotone-loop.svg'
 const UPTODATE_ICON = 'https://api.iconify.design/line-md/confirm.svg'
 

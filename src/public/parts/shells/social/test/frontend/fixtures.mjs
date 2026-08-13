@@ -30,7 +30,7 @@ export const TINY_PNG_BUFFER = Buffer.from(
 )
 
 /**
- * 缺失头像/附件的 GET stub（PUT/POST 上传 continue 到真实 API）。
+ * 缺失头像/附件的 GET stub：上游 404 时回填占位图，已有媒体原样放行。
  * @param {import('npm:@playwright/test').Route} route Playwright 路由
  * @returns {Promise<void>}
  */
@@ -40,7 +40,11 @@ async function stubMissingSocialFileGet(route) {
 		await route.continue()
 		return
 	}
-	// 不要 route.fetch / page.request.fetch 同 URL——易缠死或把上游 404 泄进诊断。
+	const response = await route.fetch()
+	if (response.status() !== 404) {
+		await route.fulfill({ response })
+		return
+	}
 	await route.fulfill({
 		status: 200,
 		headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-store' },
@@ -49,18 +53,8 @@ async function stubMissingSocialFileGet(route) {
 }
 
 /**
- * @param {string | URL} url 请求 URL
- * @returns {boolean} 是否为需 stub 的缺失 EVFS 媒体路径
- */
-function isStubSocialEvfsFileUrl(url) {
-	const path = typeof url === 'string' ? new URL(url).pathname : url.pathname
-	return path.endsWith('/files/profile/avatar')
-		|| /\/files\/shells\/social\/attachments\/[^/]+$/.test(path)
-}
-
-/**
- * Social 前端测前置：clipboard stub；缺失的 profile avatar 用 1×1 png 顶上，
- * 避免探索/资料页对无文件头像 URL 刷 `[browser:network]` 404 噪声。
+ * Social 前端测前置：clipboard stub。
+ * EVFS 头像/附件 stub 挂在 context fixture（见下方 extend），早于任何 page 请求。
  * @param {object} args fixture 参数
  * @param {import('npm:@playwright/test').Page} args.page Playwright 页面
  * @returns {Promise<void>}
@@ -79,8 +73,6 @@ async function installSocialTestHooks({ page }) {
 			/** 模拟异步剪贴板写入。 */
 			navigator.clipboard.writeText = async () => { }
 	})
-	// 谓词匹配 pathname（比 glob/regex 全 URL 更稳）；挂 context 覆盖 popup / 多 page。
-	await page.context().route(isStubSocialEvfsFileUrl, stubMissingSocialFileGet)
 }
 
 /**
@@ -97,8 +89,20 @@ export const { test: baseTest, expect } = createFountFixtures({
 
 /**
  * 扩展 publishPost 的 Social 测试套件。
+ * context 级 RegExp route：`shells:chat` 路径含冒号，glob 偶发漏匹配。
  */
 export const test = baseTest.extend({
+	/**
+	 * 挂缺失 EVFS 媒体 stub 后再交出 context。
+	 * @param {object} args fixture 依赖
+	 * @param {import('npm:@playwright/test').BrowserContext} args.context 父级已登录 context
+	 * @param {(context: import('npm:@playwright/test').BrowserContext) => Promise<void>} use Playwright use
+	 */
+	context: async ({ context }, use) => {
+		await context.route(/\/files\/profile\/(?:sfw_)?avatar(?:\?|$)/, stubMissingSocialFileGet)
+		await context.route(/\/files\/shells\/social\/attachments\//, stubMissingSocialFileGet)
+		await use(context)
+	},
 	/**
 	 * 通过 composer 发帖的 fixture。
 	 * @param {(text: string) => Promise<{ postJson: object, postId: string, text: string }>} use - Playwright fixture use 回调。

@@ -2,8 +2,8 @@
  * 【文件】public/hub/sidebar/index.mjs
  * 【职责】群侧栏协调入口：组装频道树 / 成员 / 信息卡，驱动 selectGroup / selectChannel。
  */
-import { mountTemplate } from '../../../../../scripts/features/template.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
+import { mountTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import {
 	setPinsBookmarksWrapVisible,

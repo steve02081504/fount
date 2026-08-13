@@ -30,4 +30,4 @@ Char `Load` → `ensureLocalAgentEntityHash` → `syncAgentProfileFromCharPart` 
 
 - Disk shape `groups/{id}/signers/` only (no `events.jsonl`) is a crash/half-deleted husk — not a healthy wait-for-network state. `ensureGroup` must not mint a second genesis under the same id. Delete the husk or re-join with invite.
 - Invite `roomSecret` lives in `federation_bootstrap.json` (+ memory cache) until DAG gains `roomSecret`. `performMemberJoin` always ends in bind+catch-up — already-a-member only skips another `member_join`.
-- Catch-up with `federationActive:true` + `tipsCollected:0` → alone in the signaling room (wait for a peer). `federationActive:false` → no usable `roomSecret`.
+- Catch-up with `federationActive:true` + `peerRosterSize:0` → alone in the signaling room (wait for a peer). Do not treat `tipsCollected:0` as alone — peers may already be aligned. `federationActive:false` → no usable `roomSecret`.

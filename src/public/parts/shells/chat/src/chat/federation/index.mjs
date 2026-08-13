@@ -2,7 +2,7 @@
  * 【文件】federation/index.mjs
  * 【职责】联邦对外门面：已签名 DAG 事件出站中继、与邻居交换 DAG 叶并触发 wantIds 补洞、gossip 拉取缺失事件，以及列出当前联邦房内对等端。
  * 【原理】出站经 ensureFederationRoom 取得联邦房间槽，由 peerPool 稀疏选取目标 peer（无邻居时房内广播）；入站补洞先发 fed_tip_ping/pong 收集远端 tips，再 requestMissingEventsGossip。ACL 门控事件在物化快照未就绪时入 pendingRelay 队列而非立即中继。
- * 【数据结构】signPayload 为已验签 DAG 行；catchUp 返回 tipsCollected、wantIds、eventsFilled 等统计；listFederationPeers 返回 selfNodeHash、peers 名册。
+ * 【数据结构】signPayload 为已验签 DAG 行；catchUp 返回 tipsCollected、peerRosterSize、wantIds、eventsFilled 等统计；listFederationPeers 返回 selfNodeHash、peers 名册。
  * 【关联】room.mjs、acl.mjs、pendingRelay.mjs、gossip.mjs、archiveHandshake.mjs、peerPool.mjs、dagDependencies.mjs、registry.mjs；DAG 读写在 scripts/p2p 与 dag/ 层。
  */
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
@@ -26,6 +26,7 @@ import {
 	shouldDeferFederatedRelay,
 } from './acl.mjs'
 import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandshake.mjs'
+import { pullOfflineStartUtcMonthArchives } from './archiveMonthPull.mjs'
 import { maybeRequestBootstrapAfterCatchup } from './bootstrapRelay.mjs'
 import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { requestMissingEventsGossip } from './gossip.mjs'
@@ -61,7 +62,7 @@ const PEER_ROSTER_POLL_MS = 400
  * @returns {Promise<boolean>} roster 非空则为 true
  */
 async function waitForFederationPeers(slot, options = {}) {
-	const maxWaitMs = clampNumber(options.maxWaitMs ?? PEER_ROSTER_WAIT_MS, 500, 60_000)
+	const maxWaitMs = clampNumber(options.maxWaitMs ?? PEER_ROSTER_WAIT_MS, 400, 60_000)
 	const start = Date.now()
 	while (Date.now() - start < maxWaitMs) {
 		if (slot.getRoster().length > 0) return true
@@ -171,11 +172,34 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 }
 
 /**
+ * @typedef {{ federationActive: boolean, tipsCollected: number, peerRosterSize: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }} CatchUpStats
+ */
+
+const CATCH_UP_STATS_DEFAULTS = {
+	federationActive: false,
+	tipsCollected: 0,
+	peerRosterSize: 0,
+	wantIds: 0,
+	eventsFilled: 0,
+	wantIdsStillMissing: 0,
+	wantIdsRateLimited: false,
+	stalePeersPruned: 0,
+}
+
+/**
+ * @param {Partial<CatchUpStats>} [fields] 覆盖字段
+ * @returns {CatchUpStats} 可序列化补洞统计
+ */
+function catchUpStats(fields = {}) {
+	return { ...CATCH_UP_STATS_DEFAULTS, ...fields }
+}
+
+/**
  * 与在线邻居交换 DAG 叶 id，并对缺失叶发起 wantIds 补洞（§9）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {{ waitMs?: number, extraWantIds?: string[] }} [options] 等待邻居 pong 毫秒数、额外索要 id
- * @returns {Promise<{ federationActive: boolean, tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
+ * @returns {Promise<CatchUpStats>} 补洞统计
  */
 export async function catchUpGroupFromPeers(username, groupId, options = {}) {
 	const key = `${username}\0${groupId}`
@@ -192,11 +216,11 @@ export async function catchUpGroupFromPeers(username, groupId, options = {}) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {{ waitMs?: number, extraWantIds?: string[] }} [options] 等待邻居 pong 毫秒数、额外索要 id
- * @returns {Promise<{ federationActive: boolean, tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
+ * @returns {Promise<CatchUpStats>} 补洞统计
  */
 async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	const slot = await ensureFederationPartitionRoom(username, groupId, LOGIC_SYNC_PARTITION)
-	if (!slot) return { federationActive: false, tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false, stalePeersPruned: 0 }
+	if (!slot) return catchUpStats()
 
 	const { readJsonl } = requireDagDeps()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
@@ -220,6 +244,9 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 		await waitForFederationPeers(slot, { maxWaitMs: PEER_ROSTER_WAIT_MS })
 		await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries: [] })
 	}
+	else if (!slot.getRoster().length)
+		// 已有 checkpoint 的日常 catchup：仍等一小段 roster，避免进群瞬间 tip ping 打空、Hub 误报「无邻居」。
+		await waitForFederationPeers(slot, { maxWaitMs: Math.min(waitMs, PEER_ROSTER_WAIT_MS) })
 
 	/** @returns {Promise<string[]>} 目标 peer id 列表 */
 	const pickTargetPeerIds = () => pickFederationTargetPeerIds(groupId,
@@ -242,7 +269,9 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 		pickTargetPeerIds,
 	})
 
-	syncMissingArchiveMonths(username, groupId, slot).catch(handleError)
+	pullOfflineStartUtcMonthArchives(username, groupId, slot)
+		.then(() => syncMissingArchiveMonths(username, groupId, slot))
+		.catch(handleError)
 
 	// 补齐要把 DAG 缺口补到“无悬挂父引用”为止：远端 tip 本地缺失 ∪ 本地事件 prev_event_ids 指向的本地缺失父（有叶无链）。
 	// 关键：延迟桶（pending_ingest / quarantine）里的事件同样引用尚缺的父，但它们并不在 events.jsonl 中，
@@ -334,15 +363,16 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	// 本端领先或已同步时 wantIdsStillMissing===0，跳过昂贵的快照仲裁，避免活跃 DAG 下每轮 catchup 空转死等。
 	if (wantIdsStillMissing > 0 && !wantIdsRateLimited && localArchive.checkpoint?.checkpoint_event_id)
 		await maybeJoinSnapshotOnStaleTips(username, groupId, slot, { remoteSummaries })
-	const stats = {
+	const stats = catchUpStats({
 		federationActive: true,
 		tipsCollected: remoteTips.size,
+		peerRosterSize: slot.getRoster().length,
 		wantIds: wantedEver.size,
 		eventsFilled,
 		wantIdsStillMissing,
 		wantIdsRateLimited,
 		stalePeersPruned: getStalePeerPruneCount(groupId) - stalePeersAtStart,
-	}
+	})
 	maybeRequestBootstrapAfterCatchup(username, groupId, stats, slot).catch(handleError)
 	if (localArchive.checkpoint?.local_tips_hash)
 		markGroupOnlineSynced(username, groupId, localArchive.checkpoint.local_tips_hash).catch(handleError)

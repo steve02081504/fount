@@ -13,11 +13,11 @@ Deno.test('aggregateChannelActivity splits char and human senders', () => {
 		{ charId: 'bob', timestamp: 200, sender: 'bb' },
 		{ charId: 'alice', time_stamp: 150, sender: 'aa' },
 		{ sender: 'CcCc', hlc: { wall: 300 } },
-		{ sender: 'cccc', timestamp: 250 },
+		{ sender: 'CcCc', timestamp: 250 },
 	])
 	assertEquals(chars.alice, { last_active: 150, count: 2 })
 	assertEquals(chars.bob, { last_active: 200, count: 1 })
-	assertEquals(humans.cccc, { last_active: 300, count: 2 })
+	assertEquals(humans.CcCc, { last_active: 300, count: 2 })
 })
 
 Deno.test('selectOtherCharNames keeps permanent and active Top-N', () => {

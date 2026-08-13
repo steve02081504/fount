@@ -53,7 +53,7 @@ export async function selectChannel(channelId) {
 		disableComposer()
 		const { renderHubChannelSidebar } = await import('./index.mjs')
 		await renderHubChannelSidebar(store.context.currentState)
-		const { mountTemplate } = await import('../../../../../scripts/features/template.mjs')
+		const { mountTemplate } = await import('../../src/templates.mjs')
 		await mountTemplate(document.getElementById('messages'), 'hub/nav/side_muted', {
 			i18nKey: 'chat.hub.no.channels',
 		})

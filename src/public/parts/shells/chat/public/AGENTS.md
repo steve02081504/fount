@@ -38,7 +38,7 @@ Root: `{userDict}/shells/chat/entities/{entityHash}/` — bookmarks, folders, al
 ## HTTP
 
 - **Backend**: thin wrappers `src/endpoints/shared.mjs` → `chatClientFromReq` → operator client. Shapes: `public/llms.txt`.
-- **Frontend**: named functions only in `public/src/endpoints/*.mjs`. Private `chatFetch` / `groupFetch` stay inside `endpoints/` — UI must not import `groupClient`. UI / shared / providers must not `fetch` shell REST — only `endpoints/**` and Litterbox in `share.mjs` may call raw `fetch`. Global whoami / getdetails / EVFS → `/scripts/endpoints/`. HTML templates → `renderTemplate` / `mountTemplate` / `withTemplates`.
+- **Frontend**: named functions only in `public/src/endpoints/*.mjs`. Private `chatFetch` / `groupFetch` stay inside `endpoints/` — UI must not import `groupClient`. UI / shared / providers must not `fetch` shell REST — only `endpoints/**` and Litterbox in `share.mjs` may call raw `fetch`. Global whoami / getdetails / EVFS → `/scripts/endpoints/`. HTML templates → `public/src/templates.mjs` (`templatesFor` / `dialogsFor`).
 
 `GET …/groups/:id/state` → `{ meta, viewer, federation }`. Frontend flatten must **not** let `viewer.roles` (held role IDs) overwrite `meta.roles` (role definition map) — write held roles into `myRoles`.
 

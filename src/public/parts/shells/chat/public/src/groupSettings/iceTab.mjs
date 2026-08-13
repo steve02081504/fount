@@ -1,4 +1,4 @@
-import { renderTemplate } from '../../../../../../scripts/features/template.mjs'
+import { renderTemplate } from '../templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /**

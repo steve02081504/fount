@@ -15,7 +15,7 @@ import {
  * @returns {boolean} 是否为空或配置模板占位符
  */
 export function isPlaceholderPlatformUserId(platformUserId) {
-	const value = platformUserId ?? ''
+	const value = String(platformUserId ?? '')
 	if (!value) return true
 	return value.includes('your_')
 }

@@ -3,11 +3,11 @@
  */
 import { unlockAchievement, loadPart } from '../../../scripts/endpoints/parts.mjs'
 import { onServerEvent } from '../../../scripts/endpoints/server_events.mjs'
-import { renderTemplate, usingTemplates } from '../../../scripts/features/template.mjs'
 import { geti18n, geti18n_nowarn, initTranslations } from '../../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../../scripts/theme/index.mjs'
 
 import * as api from './src/endpoints.mjs'
+import { renderTemplate } from './templates.mjs'
 
 const achievementsContainer = document.getElementById('achievements-container')
 
@@ -162,7 +162,6 @@ async function renderAchievements() {
  */
 async function main() {
 	applyTheme()
-	usingTemplates('/parts/shells:achievements/templates')
 	await initTranslations('achievements')
 	await renderAchievements()
 

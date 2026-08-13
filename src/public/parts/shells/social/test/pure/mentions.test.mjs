@@ -10,9 +10,7 @@ const SAMPLE_HASH = 'a'.repeat(128)
 
 Deno.test('extractMentionEntityHashes finds bracketed 128-hex mentions', () => {
 	const text = `hi @[entity:${SAMPLE_HASH}] and @[entity:${'b'.repeat(128)}]`
-	const found = extractMentionEntityHashes(text)
-	assertEquals(found.length, 2)
-	assertEquals(found[0], SAMPLE_HASH)
+	assertEquals(extractMentionEntityHashes(text), [SAMPLE_HASH, 'b'.repeat(128)])
 })
 
 Deno.test('extractMentionEntityHashes ignores bare @128hex', () => {
@@ -22,6 +20,8 @@ Deno.test('extractMentionEntityHashes ignores bare @128hex', () => {
 })
 
 Deno.test('extractMentionEntityHashes dedupes', () => {
-	const text = `@[entity:${SAMPLE_HASH}] @[entity:${SAMPLE_HASH.toUpperCase()}]`
-	assertEquals(extractMentionEntityHashes(text).length, 1)
+	const text = `@[entity:${SAMPLE_HASH}] @[entity:${SAMPLE_HASH}]`
+	assertEquals(extractMentionEntityHashes(text), [SAMPLE_HASH])
+	const mixedCase = `@[entity:${SAMPLE_HASH}] @[entity:${SAMPLE_HASH.toUpperCase()}]`
+	assertEquals(extractMentionEntityHashes(mixedCase), [SAMPLE_HASH, SAMPLE_HASH.toUpperCase()])
 })

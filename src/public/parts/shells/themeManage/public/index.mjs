@@ -1,7 +1,6 @@
 import { confirmI18n, initTranslations, promptI18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { makeSearchable } from '/scripts/components/search.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
 import { unlockAchievement } from '/scripts/endpoints/parts.mjs'
 import {
 	applyTheme,
@@ -17,10 +16,10 @@ import {
 
 import { extractColorsFromImage } from './colorUtils.mjs'
 import { deleteCustomTheme, getCustomTheme, listCustomThemes, saveCustomTheme } from './src/endpoints.mjs'
+import { renderTemplate } from './templates.mjs'
 
 applyTheme()
 await initTranslations('themeManage')
-usingTemplates('/parts/shells:themeManage/templates')
 
 const themeListContainer = document.getElementById('theme-list')
 const listPanel = themeListContainer.parentElement // 右侧面板容器
@@ -119,7 +118,7 @@ async function renderList() {
 			const previews = await Promise.all(filtered.map(async (item) => {
 				const isCustom = item.type === 'custom'
 
-				const preview = item.id === 'auto' ? await createAutoPreview() : await renderTemplate('theme_preview', {
+				const preview = item.id === 'auto' ? await createAutoPreview(renderTemplate) : await renderTemplate('theme_preview', {
 					theme: item.id,
 					name: item.id,
 					isCustom,
