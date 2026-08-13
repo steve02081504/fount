@@ -11,7 +11,7 @@ import { beginTestProgress, finishTestProgress } from '../core/progress.mjs'
 import { testHubUrl } from '../hub/index.mjs'
 
 import { displayShouldResolve, resolveDisplayMode } from './mode.mjs'
-import { formatRemainingLabel, paintAccepted, paintJobDone } from './paint.mjs'
+import { formatRemainingLabel, paintAccepted, paintJobDone, paintSuiteEnd, splitSuiteKey, suiteEndHasFailureOutput } from './paint.mjs'
 
 /**
  * @typedef {object} DisplayOptions
@@ -38,6 +38,8 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	let displayMode = resolveDisplayMode({ watch, job })
 	const done = Promise.withResolvers()
 	let finished = 0
+	/** @type {{ key: string, output: string }[]} */
+	const failureLogs = []
 
 	beginTestProgress()
 
@@ -59,7 +61,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		if (msg.type === 'suite-start') {
 			const expected = formatMs(msg.expectedMs)
 			const remaining = formatRemainingLabel(msg)
-			const { manifestId, name } = splitKey(msg.key)
+			const { manifestId, name } = splitSuiteKey(msg.key)
 			console.logI18n('fountConsole.test.runningSuite.base', { manifestId, name })
 			if ((msg.unknownCount ?? 0) > 0 && (msg.remainingMs == null || !Number.isFinite(msg.remainingMs)))
 				console.logI18n('fountConsole.test.display.etaUnknown', {
@@ -73,23 +75,9 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		if (msg.type === 'suite-end') {
 			finished++
 			if (runCount) SetTaskbarProgress(Math.min(100, Math.floor((finished / runCount) * 100)))
-			if (msg.blockedBy?.length)
-				console.logI18n('fountConsole.test.blocked', { label: msg.key, deps: msg.blockedBy.join(', ') })
-			else if (msg.reused) {
-				const { manifestId, name } = splitKey(msg.key)
-				console.logI18n('fountConsole.test.reusedSuite', { manifestId, name, status: msg.status })
-			}
-			else if (msg.missedReady)
-				console.logI18n('fountConsole.test.moduleCheck.missedReady', { label: msg.key })
-			else if (msg.skipBecause?.length)
-				console.logI18n(msg.passed ? 'fountConsole.test.skipBecause.pass' : 'fountConsole.test.skipBecause.fail', {
-					label: msg.key,
-					url: (msg.passed ? msg.skipBecause : msg.skipBecauseClosed ?? msg.skipBecause).join(' '),
-				})
-			else
-				console.logI18n(msg.passed ? 'fountConsole.test.passed' : 'fountConsole.test.failed', { label: msg.key })
-			if (displayMode !== 'stream' && !msg.reused && !msg.blockedBy?.length)
-				console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(msg) })
+			if (suiteEndHasFailureOutput(msg))
+				failureLogs.push({ key: msg.key, output: msg.output })
+			paintSuiteEnd(msg, { stream: displayMode === 'stream' })
 			return
 		}
 		if ((msg.type === 'queue-append' || msg.type === 'queue-remove') && displayMode === 'overview') {
@@ -101,7 +89,10 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		}
 		if (msg.type === 'job-done') {
 			exitCode = msg.exitCode ?? 0
-			paintJobDone(msg)
+			paintJobDone({
+				...msg,
+				failureLogs: displayMode === 'stream' ? [] : failureLogs,
+			})
 			if (displayShouldResolve(msg, { watch, displayMode, job, runCount }))
 				done.resolve()
 			return
@@ -126,16 +117,6 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	if (ws.readyState === WebSocket.OPEN) ws.close()
 	finishTestProgress(exitCode)
 	return exitCode
-}
-
-/**
- * @param {string} key suite 键
- * @returns {{ manifestId: string, name: string }} 拆分
- */
-function splitKey(key) {
-	const colon = String(key).indexOf(':')
-	if (colon < 0) return { manifestId: key, name: key }
-	return { manifestId: key.slice(0, colon), name: key.slice(colon + 1) }
 }
 
 /**

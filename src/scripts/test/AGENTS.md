@@ -21,7 +21,7 @@ alwaysApply: false
 
 ## Architecture
 
-- **Entry**: `fount test` → `cli.mjs` ensures a detached kernel then `display/` paints. `--watch` is a flag, not a selector. `--update-estimates` rewrites manifests and skips the kernel. Internals: [kernel.md](docs/kernel.md).
+- **Entry**: `fount test` → `cli.mjs` ensures a detached kernel then `display/` paints. `--watch` is a flag, not a selector. `--update-estimates` rewrites manifests and skips the kernel. Internals: [kernel.md](docs/kernel.md). Overview/multi print failed/noisy suite tails on `suite-end` and replay them at `job-done` (CI last-lines); stream mode already live-prints.
 - **CLI `--help`**: `fountConsole.test.help` is a usage tutorial (invocation, selectors, flags, examples). Kernel bind, state paths, manifest fields, and scheduler internals belong in this guide / `docs/` — not `--help`.
 - **`--update-estimates`**: rewrite suite/subtest `expected` from state EMA baselines (`baselineDurationMs` / subtest `durationMs`); skip the kernel; selectors narrow the set. Does not run tests. Combine with `--watch` / `--all` / `--force` is an error.
 - **i18n**: `src/scripts/i18n/bare.mjs` only — never pull in the server module graph. Display/CLI sets `FOUNT_TEST` via `mark.mjs` (not `env.mjs`).

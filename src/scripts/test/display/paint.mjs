@@ -1,9 +1,43 @@
 /**
  * 把内核 accepted / job-done 事件画成终端文案（旧 runner 的操作员输出）。
  */
+import process from 'node:process'
+
 import { console, geti18n } from '../../i18n/bare.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
+import { stripNoiseMarkers } from '../core/output_filter.mjs'
 import { formatContinueReasonLabel } from '../runner/continue_reason.mjs'
+
+/**
+ * @param {string} key suite 键
+ * @returns {{ manifestId: string, name: string }} 拆分
+ */
+export function splitSuiteKey(key) {
+	const colon = String(key).indexOf(':')
+	if (colon < 0) return { manifestId: key, name: key }
+	return { manifestId: key.slice(0, colon), name: key.slice(colon + 1) }
+}
+
+/**
+ * 失败/噪声输出是否该打到终端。
+ * @param {object} msg suite-end
+ * @returns {boolean} 是否该打印
+ */
+export function suiteEndHasFailureOutput(msg) {
+	if (msg.reused || msg.blockedBy?.length) return false
+	if (!msg.output) return false
+	return !msg.passed || (msg.noiseHits?.length ?? 0) > 0
+}
+
+/**
+ * @param {string} output 套件输出尾部
+ * @returns {void}
+ */
+function writeFailureOutput(output) {
+	const text = stripNoiseMarkers(output)
+	if (!text) return
+	process.stdout.write(text.endsWith('\n') ? text : `${text}\n`)
+}
 
 /**
  * @param {object} msg 含 remainingMs / unknownCount 的事件
@@ -111,7 +145,40 @@ export function paintAccepted(msg) {
 }
 
 /**
- * 打印 job 收尾（报告路径、全复用提示）。
+ * 打印 suite-end（含 overview 下的失败/噪声输出）。
+ * @param {object} msg 内核 suite-end 载荷
+ * @param {object} [options] 选项
+ * @param {boolean} [options.stream=false] 是否已实时打过子进程输出
+ * @returns {void}
+ */
+export function paintSuiteEnd(msg, { stream = false } = {}) {
+	if (msg.blockedBy?.length)
+		console.logI18n('fountConsole.test.blocked', { label: msg.key, deps: msg.blockedBy.join(', ') })
+	else if (msg.reused) {
+		const { manifestId, name } = splitSuiteKey(msg.key)
+		console.logI18n('fountConsole.test.reusedSuite', { manifestId, name, status: msg.status })
+	}
+	else if (msg.missedReady)
+		console.logI18n('fountConsole.test.moduleCheck.missedReady', { label: msg.key })
+	else if (msg.skipBecause?.length)
+		console.logI18n(msg.passed ? 'fountConsole.test.skipBecause.pass' : 'fountConsole.test.skipBecause.fail', {
+			label: msg.key,
+			url: (msg.passed ? msg.skipBecause : msg.skipBecauseClosed ?? msg.skipBecause).join(' '),
+		})
+	else if (!msg.passed)
+		console.logI18n('fountConsole.test.failed', { label: msg.key })
+	else if (msg.noiseHits?.length)
+		console.logI18n('fountConsole.test.passedWithNoise', { label: msg.key })
+	else
+		console.logI18n('fountConsole.test.passed', { label: msg.key })
+	if (!stream && suiteEndHasFailureOutput(msg))
+		writeFailureOutput(msg.output)
+	if (!stream && !msg.reused && !msg.blockedBy?.length)
+		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(msg) })
+}
+
+/**
+ * 打印 job 收尾（报告路径、全复用提示、失败日志回放）。
  * @param {object} msg 内核 job-done 载荷
  * @returns {void}
  */
@@ -123,5 +190,9 @@ export function paintJobDone(msg) {
 	if (msg.reportPath) {
 		console.logI18n('fountConsole.test.reportPathFinal', { path: msg.reportPath })
 		console.logI18n('fountConsole.test.statePathFinal', { path: 'data/test/state/main.md' })
+	}
+	for (const row of msg.failureLogs ?? []) {
+		console.logI18n('fountConsole.test.display.failureLog', { label: row.key })
+		writeFailureOutput(row.output)
 	}
 }

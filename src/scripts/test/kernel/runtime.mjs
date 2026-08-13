@@ -507,7 +507,9 @@ export class TestKernel {
 		for (const dep of suite.dependencies ?? []) {
 			const depKey = suiteKey(dep.manifestId, dep.name)
 			if (this.#depInFlight(depKey)) continue
-			if (this.sessionPassed.has(depKey) && this.sessionPassed.get(depKey) !== true) {
+			const passed = this.sessionPassed.get(depKey)
+			if (passed === true) continue
+			if (passed === false) {
 				failed.push(depKey)
 				continue
 			}
@@ -712,13 +714,13 @@ export class TestKernel {
 			this.sessionPassed.set(key, result.passed)
 			await this.#reportResult(suite, this.state.suites[key])
 			if (!result.passed && job) job.exitCode = 1
-			endEvent = {
+			endEvent = this.#withSuiteLog({
 				type: 'suite-end',
 				key,
 				jobId: item.jobId,
 				passed: result.passed,
 				durationMs: result.durationMs,
-			}
+			}, result, this.state.suites[key])
 		}
 		finally {
 			if (ticket) this.moduleCheck.abandon(ticket)
@@ -803,7 +805,7 @@ export class TestKernel {
 			noiseHits: [],
 			logPath: null,
 		}, { skipBecause: skip.urls, skipBecauseClosed: skip.closed })
-		return {
+		return this.#withSuiteLog({
 			type: 'suite-end',
 			key: item.key,
 			jobId: item.jobId,
@@ -811,7 +813,7 @@ export class TestKernel {
 			skipBecause: skip.urls,
 			skipBecauseClosed: skip.closed,
 			durationMs: 0,
-		}
+		}, passed ? null : { output: `skip_because closed ${formatSkipBecauseUrls(skip.closed)}` }, this.state.suites[item.key])
 	}
 
 	/**
@@ -841,14 +843,14 @@ export class TestKernel {
 		if (job) job.exitCode = 1
 		this.sessionPassed.set(item.key, false)
 		await this.#reportResult(suite, this.state.suites[item.key])
-		return {
+		return this.#withSuiteLog({
 			type: 'suite-end',
 			key: item.key,
 			jobId: item.jobId,
 			passed: false,
 			missedReady: true,
 			durationMs: 0,
-		}
+		}, { output: 'module-check missed ready' }, this.state.suites[item.key])
 	}
 
 	/**
@@ -896,6 +898,21 @@ export class TestKernel {
 	 */
 	waitClosed() {
 		return this.#loop ?? Promise.resolve()
+	}
+
+	/**
+	 * 把失败/噪声输出挂到 suite-end，供 overview 回放。
+	 * @param {object} event suite-end
+	 * @param {{ output?: string } | null | undefined} result 子进程结果
+	 * @param {{ noiseHits?: string[] } | null | undefined} entry state 条目
+	 * @returns {object} event
+	 */
+	#withSuiteLog(event, result, entry) {
+		const noiseHits = entry?.noiseHits ?? []
+		if (noiseHits.length) event.noiseHits = noiseHits
+		if (!event.passed || noiseHits.length)
+			event.output = result?.output ?? ''
+		return event
 	}
 
 	/**

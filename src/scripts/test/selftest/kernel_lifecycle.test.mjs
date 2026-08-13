@@ -594,6 +594,76 @@ Deno.test('failed dep discards queued dependents as blocked', async () => {
 	}
 })
 
+Deno.test('skip_because pass unblocks dependents despite stale failed state', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 16,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		handle.kernel.issueCache.getState = issueStillOpen
+		const dep = dummySkipSuite('__skip_pass_dep__', SKIP_URL)
+		const depKey = 'testkit:__skip_pass_dep__'
+		const childKey = 'testkit:__skip_pass_child__'
+		const child = {
+			manifestId: 'testkit',
+			name: '__skip_pass_child__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [{ manifestId: 'testkit', name: '__skip_pass_dep__' }],
+			heavy: false,
+		}
+		handle.kernel.catalog.allSuites.push(child)
+		handle.kernel.catalog.byKey.set(childKey, child)
+		handle.kernel.state.suites[depKey] = {
+			status: 'failed',
+			durationMs: 0,
+			failedFiles: [],
+			noiseHits: [],
+			logPath: null,
+		}
+		const { end: skipEnd } = await enqueueAndAwaitSkip(handle.kernel, dep, 'skip-pass-dep')
+		assertEquals(skipEnd?.passed, true)
+
+		/** @type {object | null} */
+		let childEnd = null
+		handle.kernel.viewers.add({
+			readyState: 1,
+			/**
+			 * @param {string} raw 事件 JSON
+			 * @returns {void}
+			 */
+			send: raw => {
+				const msg = JSON.parse(raw)
+				if (msg.type === 'suite-end' && msg.key === childKey) childEnd = msg
+			},
+		}, { mode: 'overview' })
+		const item = handle.kernel.queues.enqueueCli({ key: childKey, viewerId: 'v', jobId: 'skip-pass-child' })
+		const job = {
+			id: 'skip-pass-child',
+			viewerId: 'v',
+			spec: {},
+			pending: new Set([item.id]),
+			probedSkip: new Set(),
+			continueLoop: false,
+			exitCode: 0,
+			done: Promise.withResolvers(),
+			fingerprints: { commitHash: null, uncommittedHash: null },
+		}
+		handle.kernel.jobs.set(job.id, job)
+		handle.kernel.wake()
+		await Promise.race([
+			job.done.promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('child stayed queued after skip-pass dep')), 8000)),
+		])
+		assertEquals(childEnd?.blockedBy ?? [], [])
+	}
+	finally {
+		await handle.close()
+	}
+})
+
 Deno.test('skip_because delay: closed within delay passes; expired fails', async () => {
 	const handle = await startTestKernel({
 		port: KERNEL_PORT + 14,
@@ -626,6 +696,7 @@ Deno.test('skip_because delay: closed within delay passes; expired fails', async
 		)
 		assertEquals(expired?.passed, false)
 		assertEquals(expired?.skipBecauseClosed, [SKIP_URL])
+		assertEquals(Boolean(expired?.output), true)
 		assertEquals(job.exitCode, 1)
 	}
 	finally {

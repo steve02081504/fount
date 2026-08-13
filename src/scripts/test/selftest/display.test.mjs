@@ -2,11 +2,13 @@
  * 显示层：空默认波次必须说出「无需再跑」，不能静默 exit 0。
  */
 /* global Deno */
+import process from 'node:process'
+
 import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
 import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
-import { paintAccepted, paintJobDone } from '../display/paint.mjs'
+import { paintAccepted, paintJobDone, paintSuiteEnd } from '../display/paint.mjs'
 import { acceptedFromWave } from '../kernel/jobs.mjs'
 
 /**
@@ -142,4 +144,74 @@ Deno.test('paintJobDone nothingToContinue after a finished wave', () => {
 		'fountConsole.test.reportPathFinal',
 		'fountConsole.test.statePathFinal',
 	])
+})
+
+/**
+ * 截获 stdout.write 文本。
+ * @param {() => void} fn 回调
+ * @returns {string} 写出的文本
+ */
+function captureStdout(fn) {
+	const chunks = []
+	const orig = process.stdout.write
+	/**
+	 * @param {string | Uint8Array} chunk 片段
+	 * @returns {boolean} 兼容 write
+	 */
+	function spy(chunk) {
+		chunks.push(typeof chunk === 'string' ? chunk : new TextDecoder().decode(chunk))
+		return true
+	}
+	process.stdout.write = spy
+	try {
+		fn()
+		return chunks.join('')
+	}
+	finally {
+		process.stdout.write = orig
+	}
+}
+
+Deno.test('paintSuiteEnd overview prints failed suite output after FAILED', () => {
+	const output = 'Error: achievements page watch locale\n    at smoke.spec.mjs'
+	let written = ''
+	const { logs } = captureI18n(() => {
+		written = captureStdout(() => paintSuiteEnd({
+			key: 'shells/achievements:frontend',
+			passed: false,
+			output,
+			remainingMs: 12_000,
+		}, { stream: false }))
+	})
+	assertEquals(logs[0]?.key, 'fountConsole.test.failed')
+	assertEquals(logs[0]?.params.label, 'shells/achievements:frontend')
+	assertEquals(written.includes(output), true)
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
+})
+
+Deno.test('paintSuiteEnd stream mode does not replay live output', () => {
+	let written = ''
+	captureI18n(() => {
+		written = captureStdout(() => paintSuiteEnd({
+			key: 'checks:text_lf',
+			passed: false,
+			output: 'already streamed\n',
+		}, { stream: true }))
+	})
+	assertEquals(written, '')
+})
+
+Deno.test('paintJobDone reprints failed suite logs after the report path', () => {
+	const output = 'Error: still failing\n'
+	let written = ''
+	const { logs } = captureI18n(() => {
+		written = captureStdout(() => paintJobDone({
+			reportPath: 'data/test/report.md',
+			exitCode: 1,
+			failureLogs: [{ key: 'shells/achievements:frontend', output }],
+		}))
+	})
+	assertEquals(logs.at(-1)?.key, 'fountConsole.test.display.failureLog')
+	assertEquals(logs.at(-1)?.params.label, 'shells/achievements:frontend')
+	assertEquals(written.includes('Error: still failing'), true)
 })
