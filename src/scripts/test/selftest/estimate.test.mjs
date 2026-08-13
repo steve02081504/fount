@@ -84,6 +84,12 @@ Deno.test('expectedRunDurationMs without subtests uses suite baseline', () => {
 	assertEquals(expectedRunDurationMs(suite, undefined), null)
 })
 
+Deno.test('expectedRunDurationMs without subtests falls back to manifest expected', () => {
+	const suite = makeSuite('shells/chat', 'ws', { expectedMs: 16_000 })
+	assertEquals(expectedRunDurationMs(suite, undefined), 16_000)
+	assertEquals(expectedRunDurationMs(suite, makeStateEntry({ baselineDurationMs: 12_000 })), 12_000)
+})
+
 Deno.test('expectedRunDurationMs sums overhead and selected subtests', () => {
 	const suite = makeSuite('shells/social', 'frontend', {
 		subtests: [
@@ -121,6 +127,19 @@ Deno.test('expectedRunDurationMs falls back to known mean for missing subtest', 
 	})
 	// profile missing → use known mean (20_000) + overhead
 	assertEquals(expectedRunDurationMs(suite, entry, ['feed', 'profile']), 45_000)
+})
+
+Deno.test('expectedRunDurationMs uses manifest expected when state has no timings', () => {
+	const suite = makeSuite('shells/social', 'frontend', {
+		expectedMs: 75_000,
+		subtests: [
+			{ name: 'feed', spec: 'feed.spec.mjs', triggers: [], expectedMs: 20_000 },
+			{ name: 'profile', spec: 'profile.spec.mjs', triggers: [], expectedMs: 30_000 },
+			{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [], expectedMs: 15_000 },
+		],
+	})
+	assertEquals(expectedRunDurationMs(suite, undefined, ['feed']), 30_000)
+	assertEquals(expectedRunDurationMs(suite, undefined), 75_000)
 })
 
 Deno.test('estimateEtaMs adds gap overhead per critical path slot', () => {

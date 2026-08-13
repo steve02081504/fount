@@ -2,6 +2,7 @@
  * 待运行套件耗时预估：串行累加 + 虚拟并行调度模拟。
  */
 import { MiB } from './concurrency.mjs'
+import { declaredOverheadMs } from './expected.mjs'
 import { resolveSuiteResources } from './resources.mjs'
 import { parallelRatePct as calcParallelRatePct } from './run_timing.mjs'
 import {
@@ -59,9 +60,23 @@ function isUnknownRunDuration(task) {
 }
 
 /**
+ * 子测试耗时：现状 EMA 优先，否则 manifest `expected`。
+ * @param {SuiteDef} suite suite
+ * @param {SuiteStateEntry | undefined} entry 现状条目
+ * @param {string} name 子测试名
+ * @returns {number | null} 毫秒
+ */
+function subtestDurationMs(suite, entry, name) {
+	const sample = entry?.subtests?.[name]?.durationMs
+	if (sample != null && Number.isFinite(sample) && sample > 0) return sample
+	const declared = suite.subtests?.find(st => st.name === name)?.expectedMs
+	return declared != null && Number.isFinite(declared) && declared > 0 ? declared : null
+}
+
+/**
  * 估算本次将跑的墙钟耗时（毫秒）。
- * 无子测试 → baselineDurationMs；
- * 有子测试 → overhead + Σ(子测试 baseline；缺失时用已知均值或全量均摊)。
+ * 无子测试 → 现状 baselineDurationMs，缺则 manifest `expected`；
+ * 有子测试 → overhead + Σ(子测试 baseline / expected；缺失时用已知均值或全量均摊)。
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
  * @param {string[] | undefined} subtestsToRun 本次子测试；省略 = 全部
@@ -69,7 +84,7 @@ function isUnknownRunDuration(task) {
  */
 export function expectedRunDurationMs(suite, entry, subtestsToRun) {
 	if (!suite.subtests?.length)
-		return getSuiteBaselineDurationMs(entry) ?? null
+		return getSuiteBaselineDurationMs(entry) ?? suite.expectedMs ?? null
 
 	const names = subtestsToRun?.length
 		? subtestsToRun
@@ -77,14 +92,14 @@ export function expectedRunDurationMs(suite, entry, subtestsToRun) {
 	if (!names.length) return 0
 
 	const known = suite.subtests
-		.map(st => entry?.subtests?.[st.name]?.durationMs)
+		.map(st => subtestDurationMs(suite, entry, st.name))
 		.filter(ms => ms != null && Number.isFinite(ms) && ms > 0)
 	const knownMean = known.length
 		? known.reduce((a, b) => a + b, 0) / known.length
 		: null
 
-	const fullBaseline = getSuiteBaselineDurationMs(entry)
-	const overhead = entry?.baselineOverheadMs
+	const fullBaseline = getSuiteBaselineDurationMs(entry) ?? suite.expectedMs ?? null
+	const overhead = entry?.baselineOverheadMs ?? declaredOverheadMs(suite)
 	const perFallback = knownMean
 		?? (fullBaseline != null
 			? Math.max(0, fullBaseline - (overhead ?? 0)) / suite.subtests.length
@@ -93,7 +108,7 @@ export function expectedRunDurationMs(suite, entry, subtestsToRun) {
 	let sum = 0
 	let any = false
 	for (const name of names) {
-		const ms = entry?.subtests?.[name]?.durationMs
+		const ms = subtestDurationMs(suite, entry, name)
 		if (ms != null && Number.isFinite(ms) && ms > 0) {
 			sum += ms
 			any = true

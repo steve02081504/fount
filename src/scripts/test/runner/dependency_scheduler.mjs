@@ -5,8 +5,9 @@
  * 按就近（同 manifest / 挂靠数）与便宜（丢弃损失小）排序。
  * 硬跑占用机器时，余量仍可 tryAcquire 投机——不因另有硬就绪/排队而停投机。
  */
+import { expectedRunDurationMs } from '../core/estimate.mjs'
 import { resolveSuiteResources, suiteSchedulePriority } from '../core/resources.mjs'
-import { getSuiteBaselineDurationMs, suiteKey } from '../core/state.mjs'
+import { suiteKey } from '../core/state.mjs'
 
 import { ResourceRunGate } from './scheduler.mjs'
 
@@ -362,7 +363,7 @@ export class PlanRunCoordinator {
 		}
 		const entry = this.state.suites[slot.key]
 		const resources = resolveSuiteResources(slot.suite, entry)
-		const durationMs = getSuiteBaselineDurationMs(entry) ?? 60_000
+		const durationMs = expectedRunDurationMs(slot.suite, entry) ?? 60_000
 		// 便宜优先：与硬跑「大包优先」相反，预测错时损失小
 		const cheap = 1_000_000 / (1 + resources.memMb + resources.cpuPct + durationMs / 1000)
 		return near + cheap
