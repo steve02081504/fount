@@ -6,6 +6,8 @@
  *
  * 选择器：名称 / 名称:suite / 名称:suite:子项（空格多组，逗号多 suite；/ 与 : 等价）
  */
+import './mark.mjs'
+
 import process from 'node:process'
 
 import { console, geti18n } from '../i18n/bare.mjs'

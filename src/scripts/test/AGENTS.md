@@ -23,7 +23,7 @@ alwaysApply: false
 
 - **Entry**: `fount test` → `cli.mjs` ensures a detached kernel then `display/` paints. `--watch` is a flag, not a selector. Internals: [kernel.md](docs/kernel.md).
 - **CLI `--help`**: `fountConsole.test.help` is a usage tutorial (invocation, selectors, flags, examples). Kernel bind, state paths, manifest fields, and scheduler internals belong in this guide / `docs/` — not `--help`.
-- **i18n**: `src/scripts/i18n/bare.mjs` only — never pull in the server module graph.
+- **i18n**: `src/scripts/i18n/bare.mjs` only — never pull in the server module graph. Display/CLI sets `FOUNT_TEST` via `mark.mjs` (not `env.mjs`).
 - **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` = dependency-tree mermaid. Fingerprints update only after that suite's plan slot finishes — never batch-align at wave start. Each run prunes orphan suite/subtest entries (and logs / Playwright dirs) missing from manifests.
 - **Run report**: `data/test/report.md` + `report.json` — last job/wave only; empty default wave does not overwrite. Trigger reasons: `data/test/triggered-reasons.md`.
 - **Default loop** (bare `fount test`): imperfect → outdated → 0 when both empty (prints `nothingToContinue`); never full-repo unless `--all`. Details: [continue-report.md](docs/continue-report.md).
