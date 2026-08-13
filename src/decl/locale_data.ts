@@ -152,6 +152,7 @@ export type LocaleData = {
 				remaining: string
 				remainingUnknown: string
 				remainingOnlyUnknown: string
+				failureLog: string
 			}
 			passed: string
 			passedWithNoise: string
@@ -6238,7 +6239,6 @@ export type LocaleKeyParams = {
 	'fountConsole.server.showUrl.https': { url: string | number }
 	'fountConsole.test.available': { ids: string | number }
 	'fountConsole.test.blocked': { deps: string | number; label: string | number }
-	'fountConsole.test.skippedTree': { deps: string | number; label: string | number }
 	'fountConsole.test.continueDefault': { count: string | number; imperfect: string | number; outdated: string | number }
 	'fountConsole.test.continueImperfect': { count: string | number }
 	'fountConsole.test.denoPanic.alreadyReported': { signature: string | number }
@@ -6249,6 +6249,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.denoPanic.published': { url: string | number }
 	'fountConsole.test.display.eta': { expected: string | number; remaining: string | number }
 	'fountConsole.test.display.etaUnknown': { count: string | number; expected: string | number }
+	'fountConsole.test.display.failureLog': { label: string | number }
 	'fountConsole.test.display.reason': { label: string | number; reason: string | number }
 	'fountConsole.test.display.remaining': { remaining: string | number }
 	'fountConsole.test.display.remainingOnlyUnknown': { count: string | number }
@@ -6304,6 +6305,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.silentPassedMany': { count: string | number }
 	'fountConsole.test.skipBecause.fail': { label: string | number; url: string | number }
 	'fountConsole.test.skipBecause.pass': { label: string | number; url: string | number }
+	'fountConsole.test.skippedTree': { deps: string | number; label: string | number }
 	'fountConsole.test.sleepDetected': { elapsed: string | number; gap: string | number; label: string | number; limit: string | number }
 	'fountConsole.test.sleepRetry': { attempt: string | number; label: string | number }
 	'fountConsole.test.speculativeDiscard': { deps: string | number; label: string | number }

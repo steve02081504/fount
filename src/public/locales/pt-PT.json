@@ -168,7 +168,8 @@
 				"reason": "${label}: ${reason}",
 				"remaining": "Total ≈ ${remaining} restantes",
 				"remainingUnknown": "≈ ${remaining} restante no total (${count} com duração desconhecida adicional)",
-				"remainingOnlyUnknown": "≈ ${count} com duração desconhecida restante no total"
+				"remainingOnlyUnknown": "≈ ${count} com duração desconhecida restante no total",
+				"failureLog": "—— Registro de falha de ${label} ——"
 			},
 			"passed": "APROVADO: ${label}",
 			"passedWithNoise": "APROVADO: ${label} (com ruído)",

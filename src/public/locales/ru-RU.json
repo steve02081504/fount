@@ -168,7 +168,8 @@
 				"reason": "${label}: ${reason}",
 				"remaining": "Всего осталось ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} осталось всего (ещё ${count} с неизвестной длительностью)",
-				"remainingOnlyUnknown": "≈ ${count} с неизвестной длительностью осталось всего"
+				"remainingOnlyUnknown": "≈ ${count} с неизвестной длительностью осталось всего",
+				"failureLog": "—— Журнал ошибок ${label} ——"
 			},
 			"passed": "ПРОЙДЕНО: ${label}",
 			"passedWithNoise": "ПРОЙДЕНО: ${label} (с шумом)",

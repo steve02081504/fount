@@ -168,7 +168,8 @@
 				"reason": "${label}: ${reason}",
 				"remaining": "الإجمالي المتبقي ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} متبقي إجمالًا (${count} بمدة غير معروفة إضافية)",
-				"remainingOnlyUnknown": "≈ ${count} بمدة غير معروفة متبقية إجمالًا"
+				"remainingOnlyUnknown": "≈ ${count} بمدة غير معروفة متبقية إجمالًا",
+				"failureLog": "—— سجل فشل ${label} ——"
 			},
 			"passed": "نجح: ${label}",
 			"passedWithNoise": "نجح: ${label} (يحتوي ضوضاء)",

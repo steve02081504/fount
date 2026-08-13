@@ -168,7 +168,8 @@
 				"reason": "${label}: ${reason}",
 				"remaining": "Gesamt ≈ ${remaining} verbleibend",
 				"remainingUnknown": "Gesamt ≈ ${remaining} verbleibend (${count} mit unbekannter Dauer)",
-				"remainingOnlyUnknown": "Gesamt: ${count} mit unbekannter Dauer verbleibend"
+				"remainingOnlyUnknown": "Gesamt: ${count} mit unbekannter Dauer verbleibend",
+				"failureLog": "—— ${label} Fehlerprotokoll ——"
 			},
 			"passed": "Bestanden: ${label}",
 			"passedWithNoise": "Bestanden: ${label} (mit Rauschen)",

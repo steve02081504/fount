@@ -168,7 +168,8 @@
 				"reason": "${label}: ${reason}",
 				"remaining": "Totaal ≈ ${remaining} resterend",
 				"remainingUnknown": "≈ ${remaining} resterend in totaal (${count} met onbekende duur extra)",
-				"remainingOnlyUnknown": "≈ ${count} met onbekende duur resterend in totaal"
+				"remainingOnlyUnknown": "≈ ${count} met onbekende duur resterend in totaal",
+				"failureLog": "—— ${label} foutlogboek ——"
 			},
 			"passed": "Geslaagd: ${label}",
 			"passedWithNoise": "Geslaagd: ${label} (met ruis)",

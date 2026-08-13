@@ -168,7 +168,8 @@
 				"reason": "${label}：${reason}",
 				"remaining": "總餘 ≈ ${remaining}",
 				"remainingUnknown": "總餘 ≈ ${remaining}（另有 ${count} 個未知時長）",
-				"remainingOnlyUnknown": "總餘：${count} 個未知時長"
+				"remainingOnlyUnknown": "總餘：${count} 個未知時長",
+				"failureLog": "\n—— ${label} 失败日志 ——"
 			},
 			"passed": "通過：${label}",
 			"passedWithNoise": "通過：${label}（含有噪聲）",

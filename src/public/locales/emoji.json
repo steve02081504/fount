@@ -168,7 +168,8 @@
 				"reason": "${label}：${reason}",
 				"remaining": "Σ⏳≈ ${remaining}",
 				"remainingUnknown": "Σ⏳≈ ${remaining}（+ ${count}×❓⏱️）",
-				"remainingOnlyUnknown": "Σ⏳：${count}×❓⏱️"
+				"remainingOnlyUnknown": "Σ⏳：${count}×❓⏱️",
+				"failureLog": "\n—— ${label} 失败日志 ——"
 			},
 			"passed": "✅: ${label}",
 			"passedWithNoise": "✅: ${label} (🔊)",

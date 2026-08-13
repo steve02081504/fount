@@ -168,7 +168,8 @@
 				"reason": "${label}: ${reason}",
 				"remaining": "Samtals ≈ ${remaining} eftir",
 				"remainingUnknown": "≈ ${remaining} eftir samtals (${count} með óþekktri lengd aukalega)",
-				"remainingOnlyUnknown": "≈ ${count} með óþekktri lengd eftir samtals"
+				"remainingOnlyUnknown": "≈ ${count} með óþekktri lengd eftir samtals",
+				"failureLog": "—— ${label} bilanaskrá ——"
 			},
 			"passed": "Staðið: ${label}",
 			"passedWithNoise": "Staðið: ${label} (með hávaða)",
