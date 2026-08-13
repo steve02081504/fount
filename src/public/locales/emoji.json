@@ -152,8 +152,11 @@
 				"summary": "✍️ ${suitesUpdated} 📦⏱️（manifest ${filesChanged}）；⏭️ ${skipped} 无基线／已新"
 			},
 			"skipBecause": {
-				"pass": "⏭️（🐙🔓）：${label} — ${url}",
-				"fail": "❌（🐙🔒→👣＋🔄`skip_because`→🔁）：${label} — ${url}"
+				"pass": "⏭️（🐙🔓／🔒未过⏳）：${label} — ${url}",
+				"fail": "❌（🐙🔒且⏳已过→👣＋🔄`skip_because`→🔁）：${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "🔍未✅已退：${label}"
 			},
 			"queue": {
 				"append": "📥：${label}（${reason}）⏳≈ ${remaining}",

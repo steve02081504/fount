@@ -152,8 +152,11 @@
 				"summary": "Durate previste aggiornate per ${suitesUpdated} suite (${filesChanged} manifest); saltate ${skipped} senza baseline o già aggiornate"
 			},
 			"skipBecause": {
-				"pass": "Saltato (issue ancora aperta): ${label} — ${url}",
-				"fail": "Fallito (issue chiusa — intervenire e aggiornare skip_because prima di riverificare): ${label} — ${url}"
+				"pass": "Saltato (issue ancora aperta o chiusa ma periodo di grazia non scaduto): ${label} — ${url}",
+				"fail": "Non superato (issue chiusa e periodo di grazia scaduto — dar seguito e aggiornare skip_because prima di riverificare): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Controllo moduli: processo terminato senza segnale ready: ${label}"
 			},
 			"queue": {
 				"append": "In coda: ${label} (${reason}) ≈ ${remaining} rimanenti",

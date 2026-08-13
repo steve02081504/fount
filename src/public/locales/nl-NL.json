@@ -152,8 +152,11 @@
 				"summary": "Verwachte duur bijgewerkt voor ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ${skipped} overgeslagen zonder baseline of al actueel"
 			},
 			"skipBecause": {
-				"pass": "Overgeslagen (issue nog open): ${label} — ${url}",
-				"fail": "Mislukt (issue gesloten — opvolgen en skip_because bijwerken vóór hercontrole): ${label} — ${url}"
+				"pass": "Overgeslagen (issue nog open of gesloten maar respijtperiode nog niet verstreken): ${label} — ${url}",
+				"fail": "Mislukt (issue gesloten en respijtperiode verstreken — opvolgen en skip_because bijwerken vóór hercontrole): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Modulecontrole: proces beëindigd zonder ready-signaal: ${label}"
 			},
 			"queue": {
 				"append": "In wachtrij: ${label} (${reason}) ≈ ${remaining} resterend",

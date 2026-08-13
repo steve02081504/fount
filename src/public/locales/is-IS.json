@@ -152,8 +152,11 @@
 				"summary": "Uppfærði áætlaðan tíma fyrir ${suitesUpdated} suite (${filesChanged} manifest); sleppti ${skipped} án grunnlínu eða þegar uppfært"
 			},
 			"skipBecause": {
-				"pass": "Sleppt (mál enn opið): ${label} — ${url}",
-				"fail": "Mistókst (mál lokað — fylgdu eftir og uppfærðu skip_because áður en endurprófað): ${label} — ${url}"
+				"pass": "Sleppt (issue enn opið eða lokað en biðtími ekki liðinn): ${label} — ${url}",
+				"fail": "Mistókst (issue lokað og biðtími liðinn — fylgja eftir og uppfæra skip_because áður en endurathugað): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Einingapróf: ferli lauk án ready-merkis: ${label}"
 			},
 			"queue": {
 				"append": "Í biðröð: ${label} (${reason}) ≈ ${remaining} eftir",

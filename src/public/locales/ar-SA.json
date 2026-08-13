@@ -152,8 +152,11 @@
 				"summary": "تم تحديث المدد المتوقعة لـ ${suitesUpdated} حزمة (${filesChanged} manifest)؛ تم تخطي ${skipped} بلا خط أساس أو محدّثة مسبقاً"
 			},
 			"skipBecause": {
-				"pass": "تم التخطي (المسألة ما زالت مفتوحة): ${label} — ${url}",
-				"fail": "فشل (المسألة مُغلقة — تابع وحدّث skip_because قبل إعادة التحقق): ${label} — ${url}"
+				"pass": "تم التخطي (المسألة ما زالت مفتوحة أو مُغلقة ولم تنتهِ فترة السماح): ${label} — ${url}",
+				"fail": "فشل (المسألة مُغلقة وانتهت فترة السماح — عالج الأمر وحدّث skip_because قبل إعادة التحقق): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "فحص الوحدات: انتهت العملية دون إرسال إشارة ready: ${label}"
 			},
 			"queue": {
 				"append": "أُضيف للطابور: ${label} (${reason}) متبقٍ ≈ ${remaining}",

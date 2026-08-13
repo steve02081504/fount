@@ -152,8 +152,11 @@
 				"summary": "Đã cập nhật thời lượng dự kiến cho ${suitesUpdated} suite (${filesChanged} manifest); bỏ qua ${skipped} không có baseline hoặc đã mới nhất"
 			},
 			"skipBecause": {
-				"pass": "Bỏ qua (issue còn mở): ${label} — ${url}",
-				"fail": "Thất bại (issue đã đóng — xử lý và cập nhật skip_because trước khi kiểm tra lại): ${label} — ${url}"
+				"pass": "Bỏ qua (issue vẫn mở hoặc đã đóng nhưng chưa hết thời gian ân hạn): ${label} — ${url}",
+				"fail": "Thất bại (issue đã đóng và đã hết thời gian ân hạn — xử lý và cập nhật skip_because trước khi kiểm tra lại): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Kiểm tra module: tiến trình thoát mà chưa gửi tín hiệu ready: ${label}"
 			},
 			"queue": {
 				"append": "Vào hàng đợi: ${label} (${reason}) còn ≈ ${remaining}",

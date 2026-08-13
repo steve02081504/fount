@@ -152,8 +152,11 @@
 				"summary": "Erwartete Laufzeiten für ${suitesUpdated} Suite(s) aktualisiert (${filesChanged} Manifest(e)); ${skipped} ohne Baseline oder bereits aktuell übersprungen"
 			},
 			"skipBecause": {
-				"pass": "Übersprungen (Issue noch offen): ${label} — ${url}",
-				"fail": "Fehlgeschlagen (Issue geschlossen — nachverfolgen und skip_because aktualisieren, dann erneut prüfen): ${label} — ${url}"
+				"pass": "Übersprungen (Issue noch offen oder geschlossen, Karenzzeit noch nicht abgelaufen): ${label} — ${url}",
+				"fail": "Fehlgeschlagen (Issue geschlossen und Karenzzeit abgelaufen — nachverfolgen und skip_because aktualisieren, dann erneut prüfen): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Modulprüfung: Prozess beendet ohne Ready-Signal: ${label}"
 			},
 			"queue": {
 				"append": "Eingereiht: ${label} (${reason}) ≈ ${remaining} verbleibend",

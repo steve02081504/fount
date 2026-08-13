@@ -152,8 +152,11 @@
 				"summary": "Обновлены ожидаемые длительности для ${suitesUpdated} набор(ов) (${filesChanged} manifest); пропущено ${skipped} без базовой линии или уже актуально"
 			},
 			"skipBecause": {
-				"pass": "Пропущено (issue открыт): ${label} — ${url}",
-				"fail": "Сбой (issue закрыт — разберитесь и обновите skip_because перед повторной проверкой): ${label} — ${url}"
+				"pass": "Пропущено (issue открыт или закрыт, но льготный период ещё не истёк): ${label} — ${url}",
+				"fail": "Ошибка (issue закрыт и льготный период истёк — разберитесь и обновите skip_because перед повторной проверкой): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Проверка модулей: процесс завершился без сигнала ready: ${label}"
 			},
 			"queue": {
 				"append": "В очереди: ${label} (${reason}) осталось ≈ ${remaining}",

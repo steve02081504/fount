@@ -152,8 +152,11 @@
 				"summary": "${suitesUpdated}개 suite의 예상 시간을 갱신함(manifest ${filesChanged}개). 기준선 없음 또는 이미 최신이라 ${skipped}개 건너뜀"
 			},
 			"skipBecause": {
-				"pass": "건너뜀(issue 열림): ${label} — ${url}",
-				"fail": "실패(다음 issue가 닫힘 — 조치 후 skip_because를 갱신하고 다시 확인): ${label} — ${url}"
+				"pass": "건너뜀(issue 열림 또는 닫힘 후 유예 기간 미경과): ${label} — ${url}",
+				"fail": "실패(다음 issue가 닫혔고 유예 기간 경과 — 조치 후 skip_because를 갱신하고 다시 확인): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "모듈 검사: ready 신호 없이 프로세스 종료: ${label}"
 			},
 			"queue": {
 				"append": "대기열 추가: ${label}(${reason}) 남음 ≈ ${remaining}",

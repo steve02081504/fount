@@ -152,8 +152,11 @@
 				"summary": "已回写 ${suitesUpdated} 个套件的预计时长（${filesChanged} 个 manifest），跳过 ${skipped} 个无基线或已是最新"
 			},
 			"skipBecause": {
-				"pass": "跳过（issue 仍开）：${label} — ${url}",
-				"fail": "失败（以下 issue 已关，请跟进并更新 skip_because 后再验）：${label} — ${url}"
+				"pass": "跳过（issue 仍开或关闭未满延缓）：${label} — ${url}",
+				"fail": "失败（以下 issue 已关且已过延缓，请跟进并更新 skip_because 后再验）：${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "模组检查未发 ready 进程已退出：${label}"
 			},
 			"queue": {
 				"append": "入队：${label}（${reason}）剩余 ≈ ${remaining}",

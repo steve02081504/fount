@@ -152,8 +152,11 @@
 				"summary": "${suitesUpdated} 件の suite の予想時間を更新（manifest ${filesChanged} 件）。ベースラインなしまたは最新のため ${skipped} 件をスキップ"
 			},
 			"skipBecause": {
-				"pass": "スキップ（issue 未クローズ）: ${label} — ${url}",
-				"fail": "失敗（以下の issue はクローズ済み。対応して skip_because を更新してから再確認してください）: ${label} — ${url}"
+				"pass": "スキップ（issue 未クローズ、またはクローズ後の猶予期間内）: ${label} — ${url}",
+				"fail": "失敗（以下の issue はクローズ済みで猶予期間経過 — 対応して skip_because を更新してから再確認してください）: ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "モジュールチェック: ready シグナルなしでプロセス終了: ${label}"
 			},
 			"queue": {
 				"append": "キュー追加: ${label}（${reason}）残り ≈ ${remaining}",

@@ -152,8 +152,11 @@
 				"summary": "Duraciones previstas actualizadas en ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); omitidas ${skipped} sin baseline o ya actualizadas"
 			},
 			"skipBecause": {
-				"pass": "Omitido (issue aún abierta): ${label} — ${url}",
-				"fail": "Fallo (issue cerrada — actúa y actualiza skip_because antes de volver a comprobar): ${label} — ${url}"
+				"pass": "Omitido (issue aún abierta o cerrada pero sin cumplir el periodo de gracia): ${label} — ${url}",
+				"fail": "Error (issue cerrada y periodo de gracia cumplido — dar seguimiento y actualizar skip_because antes de volver a comprobar): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Comprobación de módulos: proceso terminado sin señal ready: ${label}"
 			},
 			"queue": {
 				"append": "En cola: ${label} (${reason}) ≈ ${remaining} restante",

@@ -152,8 +152,11 @@
 				"summary": "Durações previstas atualizadas em ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ignoradas ${skipped} sem baseline ou já atualizadas"
 			},
 			"skipBecause": {
-				"pass": "Ignorado (issue ainda aberta): ${label} — ${url}",
-				"fail": "Falhou (issue fechada — tratar e atualizar skip_because antes de voltar a verificar): ${label} — ${url}"
+				"pass": "Ignorado (issue ainda aberta ou fechada mas período de carência não decorrido): ${label} — ${url}",
+				"fail": "Falhou (issue fechada e período de carência decorrido — acompanhar e atualizar skip_because antes de reverificar): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Verificação de módulos: processo terminou sem sinal ready: ${label}"
 			},
 			"queue": {
 				"append": "Na fila: ${label} (${reason}) ≈ ${remaining} restantes",

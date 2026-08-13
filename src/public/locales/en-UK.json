@@ -152,8 +152,11 @@
 				"summary": "Updated expected durations for ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); skipped ${skipped} with no baseline or already up to date"
 			},
 			"skipBecause": {
-				"pass": "Skipped (issue still open): ${label} — ${url}",
-				"fail": "Failed (issue closed — follow up and update skip_because before re-checking): ${label} — ${url}"
+				"pass": "Skipped (issue still open, or closed but grace period not elapsed): ${label} — ${url}",
+				"fail": "Failed (issue closed and grace period elapsed — follow up and update skip_because before re-checking): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Module check: process exited without ready signal: ${label}"
 			},
 			"queue": {
 				"append": "Queued: ${label} (${reason}) ≈ ${remaining} left",
