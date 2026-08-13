@@ -181,12 +181,13 @@
 			"available": "Éléments disponibles : ${ids}",
 			"manifestMatched": "Manifests correspondants : ${ids}",
 			"selectedSuites": "${selected}/${total} suites sélectionnées",
-			"planSlotSummary": "Plan : exécution ${run}, réutilisation ${reuse}, bloqué ${blocked}",
+			"planSlotSummary": "Plan : exécution ${run}, réutilisation ${reuse}, bloqué ${blocked}, ignoré ${skipped}",
 			"noMatchingSuites": "Aucune suite correspondante.",
 			"reportPath": "Rapport : ${path}",
 			"reportPathFinal": "Rapport : ${path}",
 			"statePathFinal": "État : ${path}",
 			"blocked": "Bloqué : ${label} (dépendance non validée : ${deps})",
+			"skippedTree": "Ignoré : ${label} (skip_tree : ${deps})",
 			"speculativeDiscard": "Résultat spéculatif ignoré : ${label} (dépendance non validée : ${deps})",
 			"continueDefault": "Reprise de ${count} suite(s) (échec/incomplet ${imperfect}, obsolète ${outdated})",
 			"continueImperfect": "Échecs/bruit/vagues incomplètes : ${count} suites",
@@ -200,7 +201,7 @@
 			"reusedSuite": ">>> Réutilisation de ${manifestId}:${name} (déclencheur inchangé, dernier ${status})",
 			"prunedAbsentState": "État obsolète des suites supprimées nettoyé : ${suites} suites, ${subtests} sous-tests",
 			"noisyOnlyRemain": "Encore ${count} suites réussies avec bruit : ${suites}",
-			"noRealRunPlanned": "Aucune exécution nécessaire : ${reused} réutilisées, ${blocked} bloquées prévues (trigger inchangé)",
+			"noRealRunPlanned": "Aucune exécution nécessaire : ${reused} réutilisées, ${blocked} bloquées prévues, ${skipped} ignorées (trigger inchangé)",
 			"allReusedHint": "Aucune suite réellement exécutée : les échecs sont hérités, les blocages non résolus (fichiers inchangés). Corrigez puis relancez, ou fount test --force pour forcer.",
 			"failuresSaved": "Liste d'échecs : ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} tout vert, liste d'échecs effacée.",
@@ -273,7 +274,8 @@
 					"replay": "Réexécuter les échecs",
 					"replayImperfect": "Rejeu imparfait",
 					"silentPassed": "Réussies",
-					"skipped": "Ignoré (skip_because)"
+					"skipped": "Ignoré (skip_because)",
+					"skipTree": "Ignoré (skip_tree en amont)"
 				},
 				"pending": {
 					"estimate": "Temps restant ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "cause racine",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "à suivre (fermée)",
+					"skipTree": "skip_tree",
 					"terminateReason": "motif d'arrêt",
 					"triggerHashDrift": "empreinte trigger incohérente avec l'espace de travail (dirty → net ignoré)",
 					"uncommittedHashRange": "résumé non commité"

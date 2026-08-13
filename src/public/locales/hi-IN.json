@@ -181,12 +181,13 @@
 			"available": "उपलब्ध आइटम: ${ids}",
 			"manifestMatched": "प्रकट मिलान परिणाम: ${ids}",
 			"selectedSuites": "${selected}/${total} परीक्षण सुइट चयनित",
-			"planSlotSummary": "योजना: वास्तविक रन ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}",
+			"planSlotSummary": "योजना: वास्तविक रन ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}, छोड़ा गया ${skipped}",
 			"noMatchingSuites": "कोई मिलान वाली परीक्षण सूट नहीं.",
 			"reportPath": "रिपोर्ट: ${path}",
 			"reportPathFinal": "रिपोर्ट: ${path}",
 			"statePathFinal": "वर्तमान स्थिति: ${path}",
 			"blocked": "अवरुद्ध: ${label} (निर्भरता पारित नहीं हुई: ${deps})",
+			"skippedTree": "छोड़ा गया: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "पूर्वानुमान परिणाम खारिज करें: ${label} (निर्भरता पारित नहीं हुई: ${deps})",
 			"continueDefault": "जारी: ${count} सुइट (विफल/अपूर्ण ${imperfect}, पुराना ${outdated})",
 			"continueImperfect": "विफलता/शोर/अपूर्ण तरंगें: ${count} सुइट",
@@ -200,7 +201,7 @@
 			"reusedSuite": ">>> पुन: उपयोग करें ${manifestId}:${name} (ट्रिगर अपरिवर्तित रहता है, अंतिम ${status} का उपयोग किया जाता है)",
 			"prunedAbsentState": "हटाए गए सुइट्स की स्थिति साफ़ की: ${suites} सुइट्स, ${subtests} उप-परीक्षण",
 			"noisyOnlyRemain": "वहाँ अभी भी ${count} सुइट्स गुजर रहे हैं लेकिन शोर के साथ: ${suites}",
-			"noRealRunPlanned": "इस बार चलाने की कोई आवश्यकता नहीं है: ${reused} का पुन: उपयोग किया जाता है और ${blocked} के अवरुद्ध होने की उम्मीद है (ट्रिगर अपरिवर्तित रहता है)",
+			"noRealRunPlanned": "इस बार चलाने की आवश्यकता नहीं: ${reused} पुन: उपयोग, ${blocked} अवरुद्ध अपेक्षित, ${skipped} छोड़ा गया (ट्रिगर अपरिवर्तित)",
 			"allReusedHint": "इस बार वास्तव में कोई सुइट नहीं चलाया गया है: विफलता विरासत में मिला अंतिम परिणाम है, और रुकावट का समाधान नहीं हुआ है (संबंधित फ़ाइलें अपरिवर्तित रहती हैं)। प्रासंगिक फ़ाइलों की मरम्मत करें और पुनः चलाएँ, या वास्तविक रन को बाध्य करने के लिए fount test --force का उपयोग करें।",
 			"failuresSaved": "सहेजी गई विफलता सूची: ${path} (${count} सुइट)",
 			"failuresCleared": "मैनिफ़ेस्ट ${manifestId} सभी पास हो गए हैं और विफलता सूची साफ़ कर दी गई है।",
@@ -273,7 +274,8 @@
 					"replay": "विफल आइटम पुनः चलाएँ",
 					"replayImperfect": "अपूर्ण पुन:प्रदर्शन",
 					"silentPassed": "पास",
-					"skipped": "छोड़ा गया (skip_because)"
+					"skipped": "छोड़ा गया (skip_because)",
+					"skipTree": "छोड़ा गया (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "अनुमानित शेष समय ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "मूल कारण",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "अनुवर्ती कार्रवाई चाहिए (बंद)",
+					"skipTree": "skip_tree",
 					"terminateReason": "समाप्ति का कारण",
 					"triggerHashDrift": "ट्रिगर फ़िंगरप्रिंट वर्तमान कार्यस्थान के साथ असंगत है (गंदे→नेट पर ध्यान नहीं दिया गया)",
 					"uncommittedHashRange": "डाइजेस्ट प्रस्तुत नहीं किया गया"

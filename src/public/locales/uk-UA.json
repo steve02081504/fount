@@ -181,12 +181,13 @@
 			"available": "Доступні елементи: ${ids}",
 			"manifestMatched": "Збіг manifest: ${ids}",
 			"selectedSuites": "Вибрано ${selected}/${total} наборів тестів",
-			"planSlotSummary": "Слот плану: реальний запуск ${run}, повторне використання ${reuse}, заблокований ${blocked}",
+			"planSlotSummary": "Слот плану: реальний запуск ${run}, повторне використання ${reuse}, заблоковано ${blocked}, пропущено ${skipped}",
 			"noMatchingSuites": "Немає відповідного набору тестів.",
 			"reportPath": "Звіт: ${path}",
 			"reportPathFinal": "Звіт: ${path}",
 			"statePathFinal": "Поточний статус: ${path}",
 			"blocked": "Блокування: ${label} (залежність не передана: ${deps})",
+			"skippedTree": "Пропущено: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Відкинути результати передбачення: ${label} (залежність не передана: ${deps})",
 			"continueDefault": "Продовження: ${count} комплектів (збій/незавершено ${imperfect}, застаріло ${outdated})",
 			"continueImperfect": "Збій/шум/неповні хвилі: ${count} комплектів",
@@ -200,7 +201,7 @@
 			"reusedSuite": ">>> Повторне використання ${manifestId}:${name} (тригер залишається без змін, використовується останній ${status})",
 			"prunedAbsentState": "Очищено стан видалених suite: ${suites} suite, ${subtests} субтестів",
 			"noisyOnlyRemain": "Є ще ${count} комплектів, але з шумом: ${suites}",
-			"noRealRunPlanned": "Цього разу запускати не потрібно: ${reused} використовуються повторно, а ${blocked} очікується блокування (тригер залишається незмінним)",
+			"noRealRunPlanned": "Цього разу запуск не потрібен: повторно використано ${reused}, очікуване блокування ${blocked}, пропущено ${skipped} (тригер незмінний)",
 			"allReusedHint": "Цього разу жоден suite не запускався: невдача — успадкований минулий результат, блокування не знято (файли не змінювались). Виправте файли й перезапустіть або fount test --force для примусового запуску.",
 			"failuresSaved": "Збережений список помилок: ${path} (${count} пакетів)",
 			"failuresCleared": "маніфест ${manifestId} пройдено, і список помилок очищено.",
@@ -273,7 +274,8 @@
 					"replay": "Повторно запустити невдалі елементи",
 					"replayImperfect": "Неідеальні повтори",
 					"silentPassed": "Пройдено (без виводу)",
-					"skipped": "Пропущено (skip_because)"
+					"skipped": "Пропущено (skip_because)",
+					"skipTree": "Пропущено (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "Приблизний час, що залишився ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "коренева причина",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "потребує уваги (закритий)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Причина розірвання",
 					"triggerHashDrift": "Відбиток trigger не збігається з робочою копією (dirty→clean ігнорується)",
 					"uncommittedHashRange": "Незакомічений digest"

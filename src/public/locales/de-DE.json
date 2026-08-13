@@ -181,12 +181,13 @@
 			"available": "Verfügbar: ${ids}",
 			"manifestMatched": "Manifest-Treffer: ${ids}",
 			"selectedSuites": "${selected}/${total} Testsuites ausgewählt",
-			"planSlotSummary": "Plan: echter Lauf ${run}, Wiederverwendung ${reuse}, blockiert ${blocked}",
+			"planSlotSummary": "Plan: echter Lauf ${run}, Wiederverwendung ${reuse}, blockiert ${blocked}, übersprungen ${skipped}",
 			"noMatchingSuites": "Keine passende Testsuite.",
 			"reportPath": "Bericht: ${path}",
 			"reportPathFinal": "\nBericht: ${path}",
 			"statePathFinal": "Status: ${path}",
 			"blocked": "Blockiert: ${label} (Abhängigkeit nicht bestanden: ${deps})",
+			"skippedTree": "Übersprungen: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Spekulatives Ergebnis verworfen: ${label} (Abhängigkeit nicht bestanden: ${deps})",
 			"continueDefault": "Fortsetzung: ${count} Suite(s) (fehlgeschlagen/unvollständig ${imperfect}, veraltet ${outdated})",
 			"continueImperfect": "Fehler/Rauschen/unvollständige Welle: ${count} Suites",
@@ -200,7 +201,7 @@
 			"reusedSuite": "\n>>> Wiederverwendung ${manifestId}:${name} (trigger unverändert, letzter ${status})",
 			"prunedAbsentState": "Veralteter Status entfernter Suiten bereinigt: ${suites} Suites, ${subtests} Subtests",
 			"noisyOnlyRemain": "Noch ${count} Suites bestanden mit Rauschen: ${suites}",
-			"noRealRunPlanned": "Kein echter Lauf nötig: ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (trigger unverändert)",
+			"noRealRunPlanned": "Kein echter Lauf nötig: ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert, ${skipped} übersprungen (trigger unverändert)",
 			"allReusedHint": "Kein echter Lauf: Fehler stammen vom letzten Ergebnis, Blockierung bleibt (Dateien unverändert). Nach Fix erneut ausführen oder fount test --force für echten Lauf.",
 			"failuresSaved": "Fehlerliste gespeichert: ${path} (${count} Suites)",
 			"failuresCleared": "manifest ${manifestId} vollständig bestanden, Fehlerliste gelöscht.",
@@ -273,7 +274,8 @@
 					"replay": "Fehlgeschlagene wiederholen",
 					"replayImperfect": "Unvollkommene wiederholen",
 					"silentPassed": "Bestanden",
-					"skipped": "Übersprungen (skip_because)"
+					"skipped": "Übersprungen (skip_because)",
+					"skipTree": "Übersprungen (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "Geschätzte Restzeit ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "Ursache",
 					"skipBecause": "Issue",
 					"skipBecauseClosed": "Nachverfolgung nötig (geschlossen)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Abbruchgrund",
 					"triggerHashDrift": "Trigger-Fingerabdruck weicht vom Arbeitsbereich ab (dirty→clean ignoriert)",
 					"uncommittedHashRange": "Uncommitteter Digest"

@@ -181,12 +181,13 @@
 			"available": "العناصر المتوفرة: ${ids}",
 			"manifestMatched": "نتيجة مطابقة البيان: ${ids}",
 			"selectedSuites": "تم تحديد مجموعات الاختبار ${selected}/${total}.",
-			"planSlotSummary": "فتحة الخطة: التشغيل الحقيقي ${run}، إعادة استخدام ${reuse}، حظر ${blocked}",
+			"planSlotSummary": "فتحات الخطة: تشغيل ${run}، إعادة استخدام ${reuse}، حظر ${blocked}، تخطي ${skipped}",
 			"noMatchingSuites": "لا توجد مجموعة اختبار مطابقة.",
 			"reportPath": "التقرير: ${path}",
 			"reportPathFinal": "التقرير: ${path}",
 			"statePathFinal": "الوضع الحالي: ${path}",
 			"blocked": "الحظر: ${label} (لم يتم تمرير التبعية: ${deps})",
+			"skippedTree": "تخطي: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "تجاهل نتائج التنبؤ: ${label} (لم يتم تمرير التبعية: ${deps})",
 			"continueDefault": "متابعة ${count} مجموعة (فشل/غير مكتمل ${imperfect}، قديم ${outdated})",
 			"continueImperfect": "الفشل/الضوضاء/موجات غير مكتملة: ${count} مجموعات",
@@ -200,7 +201,7 @@
 			"reusedSuite": ">>> أعد استخدام ${manifestId}:${name} (يظل المشغل بدون تغيير، ويتم استخدام آخر ${status})",
 			"prunedAbsentState": "تم تنظيف حالة مجموعات الاختبار المحذوفة: ${suites} مجموعة، ${subtests} اختبار فرعي",
 			"noisyOnlyRemain": "لا تزال هناك أجنحة ${count} تمر ولكن مع وجود ضجيج: ${suites}",
-			"noRealRunPlanned": "ليست هناك حاجة للتشغيل هذه المرة: تمت إعادة استخدام ${reused} ومن المتوقع أن يتم حظر ${blocked} (يظل المشغل بدون تغيير)",
+			"noRealRunPlanned": "لا حاجة للتشغيل هذه المرة: إعادة استخدام ${reused}، حظر متوقع ${blocked}، تخطي ${skipped} (المشغّل دون تغيير)",
 			"allReusedHint": "لم يتم تشغيل أي حزمة فعليًا هذه المرة: الفشل هو النتيجة الأخيرة الموروثة، ولم يتم حل الانسداد (تظل الملفات ذات الصلة دون تغيير). أصلح الملفات ذات الصلة وأعد تشغيلها، أو استخدم Fount test --force لفرض تشغيل حقيقي.",
 			"failuresSaved": "قائمة الفشل المحفوظة: ${path} (حزمة ${count})",
 			"failuresCleared": "لقد مر البيان ${manifestId} بالكامل وتم مسح قائمة الفشل.",
@@ -273,7 +274,8 @@
 					"replay": "أعد تشغيل العناصر الفاشلة",
 					"replayImperfect": "عمليات إعادة غير مثالية",
 					"silentPassed": "نجح",
-					"skipped": "تم التخطي (skip_because)"
+					"skipped": "تم التخطي (skip_because)",
+					"skipTree": "تخطي (skip_tree من أعلى)"
 				},
 				"pending": {
 					"estimate": "الوقت المتبقي المقدر ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "السبب الجذري",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "يتطلب متابعة (مُغلقة)",
+					"skipTree": "skip_tree",
 					"terminateReason": "سبب الإنهاء",
 					"triggerHashDrift": "بصمة التشغيل غير متوافقة مع مساحة العمل الحالية (تم تجاهل القذرة → net)",
 					"uncommittedHashRange": "لم يتم تقديم الملخص"

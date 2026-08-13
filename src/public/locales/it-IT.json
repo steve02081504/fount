@@ -181,12 +181,13 @@
 			"available": "disponibile: ${ids}",
 			"manifestMatched": "manifest corrispondente: ${ids}",
 			"selectedSuites": "suite di test ${selected}/${total} selezionate",
-			"planSlotSummary": "Slot del piano: esecuzione reale ${run}, riutilizzo ${reuse}, bloccato ${blocked}",
+			"planSlotSummary": "Slot del piano: esecuzione reale ${run}, riutilizzo ${reuse}, bloccato ${blocked}, saltato ${skipped}",
 			"noMatchingSuites": "nessuna suite di test corrispondente.",
 			"reportPath": "rapporto: ${path}",
 			"reportPathFinal": "rapporto: ${path}",
 			"statePathFinal": "Stato attuale: ${path}",
 			"blocked": "Blocco: ${label} (dipendenza non superata: ${deps})",
+			"skippedTree": "Saltato: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Scarta risultati della previsione: ${label} (dipendenza non superata: ${deps})",
 			"continueDefault": "Ripresa di ${count} suite (fallite/incomplete ${imperfect}, obsolete ${outdated})",
 			"continueImperfect": "Guasto/rumore/onde incomplete: kit ${count}",
@@ -200,7 +201,7 @@
 			"reusedSuite": ">>> Riutilizza ${manifestId}:${name} (il trigger rimane invariato, viene utilizzato l'ultimo ${status})",
 			"prunedAbsentState": "Rimosso lo stato di suite non più presenti: ${suites} suite, ${subtests} sottotest",
 			"noisyOnlyRemain": "Ci sono ancora ${count} suite che passano ma con rumore: ${suites}",
-			"noRealRunPlanned": "Non è necessario eseguire questa volta: ${reused} vengono riutilizzati e ${blocked} dovrebbero essere bloccati (il trigger rimane invariato)",
+			"noRealRunPlanned": "Nessuna esecuzione necessaria: ${reused} riutilizzate, ${blocked} previste come bloccate, ${skipped} saltate (trigger invariato)",
 			"allReusedHint": "Questa volta non viene effettivamente eseguito alcun pacchetto: l'errore è l'ultimo risultato ereditato e il blocco non viene risolto (i file rilevanti rimangono invariati). Riparare i file rilevanti ed eseguirli nuovamente oppure utilizzare fount test --force per forzare un'esecuzione reale.",
 			"failuresSaved": "elenco errori salvati: ${path} (${count} suite)",
 			"failuresCleared": "manifest ${manifestId} tutto superato; elenco degli errori cancellato.",
@@ -273,7 +274,8 @@
 					"replay": "Rieseguire gli elementi non riusciti",
 					"replayImperfect": "Repliche imperfette",
 					"silentPassed": "Superato (silenzioso)",
-					"skipped": "Saltato (skip_because)"
+					"skipped": "Saltato (skip_because)",
+					"skipTree": "Saltato (skip_tree a monte)"
 				},
 				"pending": {
 					"estimate": "Tempo rimanente stimato ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "causa ultima",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "da seguire (chiusa)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Motivo della risoluzione",
 					"triggerHashDrift": "L'impronta digitale del trigger non è coerente con l'area di lavoro corrente (sporca → rete ignorata)",
 					"uncommittedHashRange": "digest non inviato"

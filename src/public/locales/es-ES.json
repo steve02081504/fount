@@ -181,12 +181,13 @@
 			"available": "Disponibles: ${ids}",
 			"manifestMatched": "manifests coincidentes: ${ids}",
 			"selectedSuites": "${selected}/${total} suites seleccionadas",
-			"planSlotSummary": "Plan: ejecución real ${run}, reutilización ${reuse}, bloqueado ${blocked}",
+			"planSlotSummary": "Plan: ejecución real ${run}, reutilización ${reuse}, bloqueado ${blocked}, omitido ${skipped}",
 			"noMatchingSuites": "Ninguna suite coincidente.",
 			"reportPath": "Informe: ${path}",
 			"reportPathFinal": "\nInforme: ${path}",
 			"statePathFinal": "Estado: ${path}",
 			"blocked": "Bloqueado: ${label} (dependencia no superada: ${deps})",
+			"skippedTree": "Omitido: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Resultado especulativo descartado: ${label} (dependencia no superada: ${deps})",
 			"continueDefault": "Continuando ${count} suite(s) (fallo/incompleto ${imperfect}, obsoleto ${outdated})",
 			"continueImperfect": "Fallos/ruido/olas incompletas: ${count} suites",
@@ -200,7 +201,7 @@
 			"reusedSuite": "\n>>> Reutilizando ${manifestId}:${name} (trigger sin cambios, último ${status})",
 			"prunedAbsentState": "Eliminado el estado de suites ya inexistentes: ${suites} suites, ${subtests} subpruebas",
 			"noisyOnlyRemain": "Aún quedan ${count} suites aprobando pero con ruido: ${suites}",
-			"noRealRunPlanned": "No hace falta ejecución real: ${reused} reutilizadas, ${blocked} previstas como bloqueadas (trigger sin cambios)",
+			"noRealRunPlanned": "No hace falta ejecución real: ${reused} reutilizadas, ${blocked} previstas como bloqueadas, ${skipped} omitidas (trigger sin cambios)",
 			"allReusedHint": "Esta vez no se ejecutó ninguna suite: los fallos son del último resultado heredado y el bloqueo no se resolvió (archivos relevantes sin cambios). Corrige los archivos y vuelve a ejecutar, o usa fount test --force para forzar ejecución real.",
 			"failuresSaved": "Lista de fallos guardada: ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} todo aprobado; lista de fallos borrada.",
@@ -273,7 +274,8 @@
 					"replay": "Repetir fallos",
 					"replayImperfect": "Repetir imperfectas",
 					"silentPassed": "Aprobadas",
-					"skipped": "Omitido (skip_because)"
+					"skipped": "Omitido (skip_because)",
+					"skipTree": "Omitido (skip_tree aguas arriba)"
 				},
 				"pending": {
 					"estimate": "Tiempo restante estimado ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "causa raíz",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "requiere seguimiento (cerrada)",
+					"skipTree": "skip_tree",
 					"terminateReason": "motivo de terminación",
 					"triggerHashDrift": "huella de trigger incoherente con el workspace (dirty→clean ignorado)",
 					"uncommittedHashRange": "resumen sin commit"

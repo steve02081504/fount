@@ -181,12 +181,13 @@
 			"available": "доступно: ${ids}",
 			"manifestMatched": "совпадения манифеста: ${ids}",
 			"selectedSuites": "выбрано ${selected}/${total} тестовых suite",
-			"planSlotSummary": "Слоты плана: запуск ${run}, повтор ${reuse}, блокировка ${blocked}",
+			"planSlotSummary": "Слоты плана: запуск ${run}, повтор ${reuse}, блокировка ${blocked}, пропуск ${skipped}",
 			"noMatchingSuites": "нет подходящих тестовых suite.",
 			"reportPath": "отчёт: ${path}",
 			"reportPathFinal": "\nотчёт: ${path}",
 			"statePathFinal": "состояние: ${path}",
 			"blocked": "Блокировка: ${label} (зависимость не пройдена: ${deps})",
+			"skippedTree": "Пропущено: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Отброшен спекулятивный результат: ${label} (зависимость не пройдена: ${deps})",
 			"continueDefault": "Продолжение: ${count} suite (сбой/незавершено ${imperfect}, устарело ${outdated})",
 			"continueImperfect": "Провал/шум/незавершённые волны: ${count} suite",
@@ -200,7 +201,7 @@
 			"reusedSuite": "\n>>> Повтор ${manifestId}:${name} (триггер не изменился, используется прошлый ${status})",
 			"prunedAbsentState": "Удалено состояние несуществующих suite: ${suites} suite, ${subtests} подтестов",
 			"noisyOnlyRemain": "Ещё ${count} suite прошли с шумом: ${suites}",
-			"noRealRunPlanned": "Запуск не требуется: повтор ${reused}, ожидаемая блокировка ${blocked} (триггер не изменился)",
+			"noRealRunPlanned": "Запуск не требуется: повтор ${reused}, ожидаемая блокировка ${blocked}, пропуск ${skipped} (триггер не изменился)",
 			"allReusedHint": "Ни один suite не запускался: провалы — унаследованные результаты, блокировки не сняты (файлы не менялись). Исправьте файлы и перезапустите или используйте fount test --force.",
 			"failuresSaved": "Список ошибок сохранён: ${path} (${count} suite)",
 			"failuresCleared": "manifest ${manifestId} — все пройдены, список ошибок очищен.",
@@ -273,7 +274,8 @@
 					"replay": "Перезапустить упавшие",
 					"replayImperfect": "Перезапустить неидеальные",
 					"silentPassed": "Пройдено (без вывода)",
-					"skipped": "Пропущено (skip_because)"
+					"skipped": "Пропущено (skip_because)",
+					"skipTree": "Пропущено (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "Осталось ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "корневая причина",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "требует внимания (закрыт)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Причина прерывания",
 					"triggerHashDrift": "отпечаток триггера не совпадает с рабочей копией (грязное→чистое игнорировано)",
 					"uncommittedHashRange": "digest незакоммиченных"

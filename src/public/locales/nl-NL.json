@@ -181,12 +181,13 @@
 			"available": "Beschikbaar: ${ids}",
 			"manifestMatched": "manifest gevonden: ${ids}",
 			"selectedSuites": "${selected}/${total} testsuites geselecteerd",
-			"planSlotSummary": "Planningslots: echte run ${run}, hergebruik ${reuse}, geblokkeerd ${blocked}",
+			"planSlotSummary": "Planningslots: echte run ${run}, hergebruik ${reuse}, geblokkeerd ${blocked}, overgeslagen ${skipped}",
 			"noMatchingSuites": "Geen overeenkomende testsuites.",
 			"reportPath": "Rapport: ${path}",
 			"reportPathFinal": "\nRapport: ${path}",
 			"statePathFinal": "Status: ${path}",
 			"blocked": "Geblokkeerd: ${label} (afhankelijkheid niet geslaagd: ${deps})",
+			"skippedTree": "Overgeslagen: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Voorspellingsresultaat genegeerd: ${label} (afhankelijkheid niet geslaagd: ${deps})",
 			"continueDefault": "Voortzetting: ${count} suite(s) (mislukt/onvoltooid ${imperfect}, verouderd ${outdated})",
 			"continueImperfect": "Mislukte/ruis/onvoltooide golven: ${count} suites",
@@ -200,7 +201,7 @@
 			"reusedSuite": "\n>>> ${manifestId}:${name} hergebruiken (trigger ongewijzigd, laatste ${status} behouden)",
 			"prunedAbsentState": "Verouderde status van verwijderde suites opgeschoond: ${suites} suites, ${subtests} subtests",
 			"noisyOnlyRemain": "Nog ${count} suites geslaagd maar met ruis: ${suites}",
-			"noRealRunPlanned": "Geen echte run nodig: ${reused} hergebruikt, ${blocked} naar verwachting geblokkeerd (trigger ongewijzigd)",
+			"noRealRunPlanned": "Geen echte run nodig: ${reused} hergebruikt, ${blocked} naar verwachting geblokkeerd, ${skipped} overgeslagen (trigger ongewijzigd)",
 			"allReusedHint": "Geen suite echt uitgevoerd: fouten zijn van de vorige run, blokkades daardoor onopgelost (bestanden ongewijzigd). Los de bestanden op en draai opnieuw, of gebruik fount test --force.",
 			"failuresSaved": "Foutenlijst opgeslagen: ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} volledig geslaagd; foutenlijst gewist.",
@@ -273,7 +274,8 @@
 					"replay": "Mislukte items opnieuw",
 					"replayImperfect": "Onvolmaakte herhalingen",
 					"silentPassed": "Geslaagd",
-					"skipped": "Overgeslagen (skip_because)"
+					"skipped": "Overgeslagen (skip_because)",
+					"skipTree": "Overgeslagen (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "Geschatte resterende tijd ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "hoofdoorzaak",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "opvolging nodig (gesloten)",
+					"skipTree": "skip_tree",
 					"terminateReason": "afbraakreden",
 					"triggerHashDrift": "trigger-vingerafdruk wijkt af van werkmap (dirty→clean genegeerd)",
 					"uncommittedHashRange": "niet-gecommitte digest"

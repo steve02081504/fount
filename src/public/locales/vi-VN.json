@@ -181,12 +181,13 @@
 			"available": "Có sẵn: ${ids}",
 			"manifestMatched": "manifest khớp: ${ids}",
 			"selectedSuites": "Đã chọn ${selected}/${total} suite",
-			"planSlotSummary": "Khe kế hoạch: chạy thật ${run}, tái sử dụng ${reuse}, chặn ${blocked}",
+			"planSlotSummary": "Khe kế hoạch: chạy thật ${run}, tái sử dụng ${reuse}, chặn ${blocked}, bỏ qua ${skipped}",
 			"noMatchingSuites": "Không có suite khớp.",
 			"reportPath": "Báo cáo: ${path}",
 			"reportPathFinal": "\nBáo cáo: ${path}",
 			"statePathFinal": "Trạng thái: ${path}",
 			"blocked": "Chặn: ${label} (phụ thuộc chưa đạt: ${deps})",
+			"skippedTree": "Bỏ qua: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Bỏ kết quả dự đoán: ${label} (phụ thuộc chưa đạt: ${deps})",
 			"continueDefault": "Tiếp tục ${count} suite (thất bại/chưa xong ${imperfect}, cũ ${outdated})",
 			"continueImperfect": "Đợt thất bại/nhiễu/chưa hoàn tất: ${count} suite",
@@ -200,7 +201,7 @@
 			"reusedSuite": "\n>>> Tái sử dụng ${manifestId}:${name} (trigger không đổi, dùng ${status} lần trước)",
 			"prunedAbsentState": "Đã xóa trạng thái các suite không còn tồn tại: ${suites} suite, ${subtests} subtest",
 			"noisyOnlyRemain": "Vẫn còn ${count} suite đạt nhưng có nhiễu: ${suites}",
-			"noRealRunPlanned": "Lần này không cần chạy thật: tái sử dụng ${reused}, dự kiến chặn ${blocked} (trigger không đổi)",
+			"noRealRunPlanned": "Lần này không cần chạy thật: tái sử dụng ${reused}, dự kiến chặn ${blocked}, bỏ qua ${skipped} (trigger không đổi)",
 			"allReusedHint": "Lần này không chạy thật suite nào: lỗi là kết quả lần trước, chặn chưa giải (tệp liên quan không đổi). Sửa tệp rồi chạy lại, hoặc dùng `fount test --force` để ép chạy thật.",
 			"failuresSaved": "Đã lưu danh sách thất bại: ${path} (${count} suite)",
 			"failuresCleared": "manifest ${manifestId} đều đã đạt, danh sách thất bại đã xóa.",
@@ -273,7 +274,8 @@
 					"replay": "Chạy lại mục thất bại",
 					"replayImperfect": "Chạy lại mục chưa hoàn hảo",
 					"silentPassed": "Đạt",
-					"skipped": "Bỏ qua (skip_because)"
+					"skipped": "Bỏ qua (skip_because)",
+					"skipTree": "Bỏ qua (skip_tree upstream)"
 				},
 				"pending": {
 					"estimate": "Thời gian còn lại ước tính ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "Nguyên nhân gốc",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "cần theo dõi (đã đóng)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Lý do dừng",
 					"triggerHashDrift": "Dấu vân tay trigger không khớp workspace hiện tại (dirty→clean đã bỏ qua)",
 					"uncommittedHashRange": "digest chưa commit"

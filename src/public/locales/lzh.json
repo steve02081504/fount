@@ -181,12 +181,13 @@
 			"available": "可用項：${ids}",
 			"manifestMatched": "manifest 相契結果：${ids}",
 			"selectedSuites": "已擇 ${selected}/${total} 個測試套件",
-			"planSlotSummary": "計劃槽位：真跑 ${run}、復用 ${reuse}、阻塞 ${blocked}",
+			"planSlotSummary": "計劃槽位：真跑 ${run}、復用 ${reuse}、阻塞 ${blocked}、跳過 ${skipped}",
 			"noMatchingSuites": "無所契合之測試套件。",
 			"reportPath": "報告：${path}",
 			"reportPathFinal": "\n報告：${path}",
 			"statePathFinal": "現狀：${path}",
 			"blocked": "阻塞：${label}（依賴未過：${deps}）",
+			"skippedTree": "跳過：${label}（skip_tree：${deps}）",
 			"speculativeDiscard": "丟棄預測結果：${label}（依賴未過：${deps}）",
 			"continueDefault": "續跑 ${count} 個套件（失利／未竟 ${imperfect}，過期 ${outdated}）",
 			"continueImperfect": "失利/噪聲/未完成波次：${count} 個套件",
@@ -200,7 +201,7 @@
 			"reusedSuite": "\n>>> 復用 ${manifestId}:${name}（trigger 未變，沿用上次 ${status}）",
 			"prunedAbsentState": "已芟不存在套件之狀錄：${suites} 套件、${subtests} 子試",
 			"noisyOnlyRemain": "仍有 ${count} 個套件通過但含噪聲：${suites}",
-			"noRealRunPlanned": "本次無需真跑：復用 ${reused} 個、預計阻塞 ${blocked} 個（trigger 未變）",
+			"noRealRunPlanned": "本次無需真跑：復用 ${reused} 個、預計阻塞 ${blocked} 個、跳過 ${skipped} 個（trigger 未變）",
 			"allReusedHint": "本次未真跑任何套件：失利為沿用上番結果，阻塞隨之未解（相關卷未變）。修繕相關卷後重跑，或以 fount test --force 強制真跑。",
 			"failuresSaved": "已存失利名錄：${path}（${count} 個套件）",
 			"failuresCleared": "manifest ${manifestId} 已全部通過，失利名錄已清除。",
@@ -273,7 +274,8 @@
 					"replay": "重跑失利項",
 					"replayImperfect": "重跑不完美項",
 					"silentPassed": "通過",
-					"skipped": "因 skip_because 跳過"
+					"skipped": "因 skip_because 跳過",
+					"skipTree": "因上游 skip_tree 跳過"
 				},
 				"pending": {
 					"estimate": "預估剩餘耗時 ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "根因",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "需跟進（已關）",
+					"skipTree": "skip_tree",
 					"terminateReason": "終止原因",
 					"triggerHashDrift": "觸發指紋與當前工作區不一致（髒→淨已忽略）",
 					"uncommittedHashRange": "未提交 digest"

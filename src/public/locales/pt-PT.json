@@ -181,12 +181,13 @@
 			"available": "Disponível: ${ids}",
 			"manifestMatched": "Manifest correspondido: ${ids}",
 			"selectedSuites": "${selected}/${total} suites de teste selecionadas",
-			"planSlotSummary": "Slot do plano: execução real ${run}, reutilização ${reuse}, bloqueada ${blocked}",
+			"planSlotSummary": "Slots do plano: execução real ${run}, reutilização ${reuse}, bloqueada ${blocked}, ignorada ${skipped}",
 			"noMatchingSuites": "Nenhuma suite de teste correspondente.",
 			"reportPath": "Relatório: ${path}",
 			"reportPathFinal": "relatório: ${path}",
 			"statePathFinal": "Status atual: ${path}",
 			"blocked": "Bloqueio: ${label} (dependência não passada: ${deps})",
+			"skippedTree": "Ignorado: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Descarte os resultados da previsão: ${label} (dependência não aprovada: ${deps})",
 			"continueDefault": "A continuar ${count} suite(s) (falha/incompleto ${imperfect}, obsoleto ${outdated})",
 			"continueImperfect": "Falha/ruído/ondas incompletas: ${count} kits",
@@ -200,7 +201,7 @@
 			"reusedSuite": ">>> Reutilizar ${manifestId}:${name} (o gatilho permanece inalterado, o último ${status} é usado)",
 			"prunedAbsentState": "Estado de suites removidas limpo: ${suites} suites, ${subtests} subtestes",
 			"noisyOnlyRemain": "Ainda há ${count} suítes passando mas com ruído: ${suites}",
-			"noRealRunPlanned": "Não há necessidade de executar desta vez: ${reused} são reutilizados e espera-se que ${blocked} sejam bloqueados (o gatilho permanece inalterado)",
+			"noRealRunPlanned": "Não é necessário executar: ${reused} reutilizadas, ${blocked} previstas como bloqueadas, ${skipped} ignoradas (trigger inalterado)",
 			"allReusedHint": "Nenhum suite é realmente executado desta vez: a falha é o último resultado herdado e o bloqueio não é resolvido (os ficheiros relevantes permanecem inalterados). Repare os ficheiros relevantes e execute novamente ou use fount test --force para forçar uma execução real.",
 			"failuresSaved": "lista de falhas guardada: ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} tudo aprovado; lista de falhas limpa.",
@@ -273,7 +274,8 @@
 					"replay": "Executar novamente itens com falha",
 					"replayImperfect": "Reprises imperfeitas",
 					"silentPassed": "Aprovadas (silenciosas)",
-					"skipped": "Ignorado (skip_because)"
+					"skipped": "Ignorado (skip_because)",
+					"skipTree": "Ignorado (skip_tree a montante)"
 				},
 				"pending": {
 					"estimate": "Tempo restante estimado ≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "Causa raiz",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "requer seguimento (fechada)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Motivo da rescisão",
 					"triggerHashDrift": "A impressão digital do gatilho é inconsistente com o espaço de trabalho atual (dirty→net ignorado)",
 					"uncommittedHashRange": "Resumo não enviado"

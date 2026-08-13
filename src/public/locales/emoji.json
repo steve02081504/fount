@@ -181,12 +181,13 @@
 			"available": "✅📋：${ids}",
 			"manifestMatched": "📋🎯：${ids}",
 			"selectedSuites": "👆 ${selected}/${total} 📦🧪",
-			"planSlotSummary": "📊：🏃 ${run}、♻️ ${reuse}、🚫⏸️ ${blocked}",
+			"planSlotSummary": "📊：🏃 ${run}、♻️ ${reuse}、🚫⏸️ ${blocked}、⏭️ ${skipped}",
 			"noMatchingSuites": "🚫📦🧪🎯",
 			"reportPath": "📊📄: ${path}",
 			"reportPathFinal": "\n📊📄: ${path}",
 			"statePathFinal": "📊: ${path}",
 			"blocked": "🚫⏸️：${label}（🔗🚫：${deps}）",
+			"skippedTree": "⏭️：${label}（`skip_tree`：${deps}）",
 			"speculativeDiscard": "🗑️🔮：${label}（🔗🚫：${deps}）",
 			"continueDefault": "▶️ ${count} 📦（❌/⏳ ${imperfect}，📅 ${outdated}）",
 			"continueImperfect": "❌／🔊／⏳🌊：${count} 📦",
@@ -200,7 +201,7 @@
 			"reusedSuite": "\n>>> ♻️ ${manifestId}:${name}（⚡⌀Δ，⏮ ${status}）",
 			"prunedAbsentState": "🧹 ⌀📦：${suites} 📦、${subtests} 🧪",
 			"noisyOnlyRemain": "＋ ${count} 📦 ✅＋🔊：${suites}",
-			"noRealRunPlanned": "🚫🏃：♻️ ${reused}、🚫⏸️ ${blocked}（⚡⌀Δ）",
+			"noRealRunPlanned": "🚫🏃：♻️ ${reused}、🚫⏸️ ${blocked}、⏭️ ${skipped}（⚡⌀Δ）",
 			"allReusedHint": "🚫🏃：❌＝⏮♻️，🚫⏸️⌀Δ（📁⌀Δ）🔧📁→🔁，／ `fount test --force`→💥🏃",
 			"failuresSaved": "💾 ❌📋：${path}（${count} 📦）",
 			"failuresCleared": "📋 ${manifestId} 💚∞，❌📋🗑️",
@@ -273,7 +274,8 @@
 					"replay": "🔁 ❌",
 					"replayImperfect": "🔁⌀💚",
 					"silentPassed": "✅",
-					"skipped": "⏭️（`skip_because`）"
+					"skipped": "⏭️（`skip_because`）",
+					"skipTree": "⏭️（⬆️ `skip_tree`）"
 				},
 				"pending": {
 					"estimate": "⏱️⏳≈ ${eta}",
@@ -315,6 +317,7 @@
 					"rootCause": "🌱",
 					"skipBecause": "🐙",
 					"skipBecauseClosed": "👣（🔒）",
+					"skipTree": "`skip_tree`",
 					"terminateReason": "⏹️❔",
 					"triggerHashDrift": "⚡🔢≠🗂️（💩→✨ 🙈）",
 					"uncommittedHashRange": "🚫📤 `digest`"

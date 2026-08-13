@@ -182,12 +182,13 @@
 			"available": "available: ${ids}",
 			"manifestMatched": "manifest matched: ${ids}",
 			"selectedSuites": "selected ${selected}/${total} test suites",
-			"planSlotSummary": "Plan slots: ${run} to run, ${reuse} reused, ${blocked} blocked",
+			"planSlotSummary": "Plan slots: ${run} to run, ${reuse} reused, ${blocked} blocked, ${skipped} skipped",
 			"noMatchingSuites": "no matching test suites.",
 			"reportPath": "report: ${path}",
 			"reportPathFinal": "\nreport: ${path}",
 			"statePathFinal": "State: ${path}",
 			"blocked": "Blocked: ${label} (dependency not passed: ${deps})",
+			"skippedTree": "Skipped: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Discarding speculative result: ${label} (dependency not passed: ${deps})",
 			"continueDefault": "Continuing ${count} suite(s) (failed/incomplete ${imperfect}, stale ${outdated})",
 			"continueImperfect": "Failed/noisy/incomplete waves: ${count} suite(s)",
@@ -201,7 +202,7 @@
 			"reusedSuite": ">>> Reusing ${manifestId}:${name} (trigger unchanged — using last ${status})",
 			"prunedAbsentState": "Pruned stale state for removed or renamed suites/subtests: ${suites} suite(s), ${subtests} subtest(s)",
 			"noisyOnlyRemain": "${count} suite(s) still passing with noise: ${suites}",
-			"noRealRunPlanned": "No real run this time: ${reused} reused, ${blocked} expected blocked (trigger unchanged)",
+			"noRealRunPlanned": "No real run this time: ${reused} reused, ${blocked} expected blocked, ${skipped} skipped (trigger unchanged)",
 			"allReusedHint": "No suite actually ran: failure is inherited from the last run; blocks remain unresolved (files unchanged). Fix the files and rerun, or use `fount test --force`.",
 			"failuresSaved": "saved failure list: ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} all passed; failure list cleared.",
@@ -274,7 +275,8 @@
 					"replay": "Rerun failures",
 					"replayImperfect": "Rerun imperfect",
 					"silentPassed": "Passed (silent)",
-					"skipped": "Skipped (skip_because)"
+					"skipped": "Skipped (skip_because)",
+					"skipTree": "Skipped (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "Estimated remaining time ≈ ${eta}",
@@ -316,6 +318,7 @@
 					"rootCause": "root cause",
 					"skipBecause": "issue",
 					"skipBecauseClosed": "needs follow-up (closed)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Termination reason",
 					"triggerHashDrift": "trigger fingerprint differs from workspace (dirty→clean ignored)",
 					"uncommittedHashRange": "uncommitted digest"
