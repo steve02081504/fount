@@ -198,6 +198,29 @@ Deno.test('simulateParallelMakespanMs never leaves ready work at makespan 0', ()
 	assertEquals(summary.runCount, 1)
 })
 
+Deno.test('never-run suite does not claim zero remaining', () => {
+	const tasks = [buildEstimateTask(makeSuite('testkit', 'kernel'), undefined)]
+	assertEquals(tasks[0].durationMs, null)
+	const summary = summarizeEstimate(tasks, { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	assertEquals(summary.runCount, 1)
+	assertEquals(summary.etaMs, null)
+})
+
+Deno.test('summarizeEstimate keeps known remaining when mixed with unknown duration', () => {
+	const summary = summarizeEstimate([
+		task({ durationMs: null }),
+		task({ key: 'shells/chat:b', name: 'b', durationMs: 5000 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	assertEquals(summary.etaMs > 0, true)
+})
+
+Deno.test('summarizeEstimate reused-only remaining stays 0', () => {
+	const summary = summarizeEstimate([
+		task({ durationMs: null, reused: true }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	assertEquals(summary.etaMs, 0)
+})
+
 Deno.test('summarizeEstimate reports run/reused/blocked breakdown', () => {
 	const tasks = [
 		task({ durationMs: 1000 }),

@@ -50,6 +50,15 @@ function taskDurationMs(task) {
 }
 
 /**
+ * 真跑但无基线：模拟里会当成 0，但不能把剩余显示成 0 毫秒。
+ * @param {EstimateTask} task 任务
+ * @returns {boolean} 是否未知耗时
+ */
+function isUnknownRunDuration(task) {
+	return !task.reused && !task.blocked && (task.durationMs == null || !Number.isFinite(task.durationMs))
+}
+
+/**
  * 估算本次将跑的墙钟耗时（毫秒）。
  * 无子测试 → baselineDurationMs；
  * 有子测试 → overhead + Σ(子测试 baseline；缺失时用已知均值或全量均摊)。
@@ -413,13 +422,14 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
  * @param {object} options 选项
  * @param {number} options.memBudgetBytes 内存预算（字节）
  * @param {number} options.cpuBudgetPct CPU 预算（%）
- * @returns {object} 预估汇总
+ * @returns {object} 预估汇总（etaMs 在仅有未知耗时的真跑时为 null）
  */
 export function summarizeEstimate(tasks, { memBudgetBytes, cpuBudgetPct }) {
 	const serialSum = serialSumMs(tasks)
 	const { makespanMs: parallelMakespanMs, criticalPathCount: parallelGapCount } =
 		simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct })
-	const etaMs = estimateEtaMs(parallelMakespanMs, parallelGapCount)
+	const rawEtaMs = estimateEtaMs(parallelMakespanMs, parallelGapCount)
+	const etaMs = serialSum === 0 && tasks.some(isUnknownRunDuration) ? null : rawEtaMs
 	const savingsMs = Math.max(0, serialSum - parallelMakespanMs)
 
 	return {

@@ -378,7 +378,7 @@ function buildRunMarkdown(summary, completed) {
 }
 
 /**
- * @param {number} etaMs 预估耗时（毫秒）
+ * @param {number | null | undefined} etaMs 预估耗时（毫秒）
  * @returns {string} 可读单点 ETA
  */
 function formatEstimatePoint(etaMs) {

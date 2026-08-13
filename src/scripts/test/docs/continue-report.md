@@ -42,4 +42,4 @@ Each true-run suite may get `FOUNT_TEST_TRIGGERED_FILES` set to a temp-file path
 
 ## Subtest timing
 
-Playwright writes per-spec ms to `FOUNT_TEST_TIMINGS_OUT`. State stores per-subtest `durationMs`, suite `baselineOverheadMs`, and `baselineDurationMs` only on full runs (`FOUNT_TEST_ONLY` / `partialFileRun` skips suite wall baseline). ETA uses `expectedRunDurationMs` = overhead + selected subtest baselines.
+Playwright writes per-spec ms to `FOUNT_TEST_TIMINGS_OUT`. State stores per-subtest `durationMs`, suite `baselineOverheadMs`, and `baselineDurationMs` only on full runs (`FOUNT_TEST_ONLY` / `partialFileRun` skips suite wall baseline). ETA uses `expectedRunDurationMs` = overhead + selected subtest baselines. A true-run with no baseline is unknown (`?`), never remaining `0 毫秒`.

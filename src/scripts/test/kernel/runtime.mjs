@@ -378,7 +378,7 @@ export class TestKernel {
 	}
 
 	/**
-	 * @returns {number} 剩余预估
+	 * @returns {number | null} 剩余预估；仅有未知耗时的真跑时为 null
 	 */
 	#remainingMs() {
 		const tasks = this.#estimateTasks()
