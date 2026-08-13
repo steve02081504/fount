@@ -2,10 +2,15 @@
  * 内核单例、退出、skip_because 不 spawn、模组检查 HTTP。
  */
 /* global Deno */
+import { mkdir, readFile, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import process from 'node:process'
 
 import { assertEquals, assertRejects } from 'jsr:@std/assert'
+import { execFile } from 'npm:@steve02081504/exec'
 
+import { reportMarkdownPath } from '../core/paths.mjs'
 import { acquireModuleCheckTicket, signalModuleCheckReady } from '../hub/clients/module_check.mjs'
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
@@ -268,5 +273,49 @@ Deno.test('module-check HTTP: second acquire waits for ready', async () => {
 		await handle.close()
 		if (previous === undefined) delete process.env.FOUNT_TEST_HUB_URL
 		else process.env.FOUNT_TEST_HUB_URL = previous
+	}
+})
+
+Deno.test('empty default job announces empty, does not write in-progress report, auto-exits after viewer leaves', async () => {
+	const root = join(tmpdir(), `fount-kernel-empty-${Date.now()}`)
+	await mkdir(root, { recursive: true })
+	try {
+		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
+		assertEquals(init.code, 0)
+		const commit = await execFile('git', [
+			'-c', 'user.email=t@t', '-c', 'user.name=t',
+			'commit', '--allow-empty', '-m', 'init',
+		], { cwd: root })
+		assertEquals(commit.code, 0)
+		const handle = await startTestKernel({
+			port: KERNEL_PORT + 10,
+			repoRoot: root,
+			autoExit: true,
+			watchFs: false,
+			writeReport: true,
+		})
+		const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		await new Promise((resolve, reject) => {
+			ws.addEventListener('open', resolve, { once: true })
+			ws.addEventListener('error', reject, { once: true })
+		})
+		const accepted = new Promise(resolve => {
+			ws.addEventListener('message', event => {
+				const msg = JSON.parse(String(event.data))
+				if (msg.type === 'accepted') resolve(msg)
+			})
+		})
+		ws.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
+		const msg = await accepted
+		assertEquals(msg.empty, true)
+		assertEquals(msg.runCount, 0)
+		assertEquals(msg.code, 0)
+		assertEquals(msg.error, null)
+		await assertRejects(() => readFile(reportMarkdownPath(root), 'utf8'))
+		ws.close()
+		await handle.closed
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
 	}
 })

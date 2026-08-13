@@ -46,6 +46,13 @@ export class ViewerHub {
 	}
 
 	/**
+	 * @returns {number} 当前 viewer 数
+	 */
+	size() {
+		return this.viewers.size
+	}
+
+	/**
 	 * @returns {number} watch 连接数
 	 */
 	watchCount() {

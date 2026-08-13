@@ -9,6 +9,7 @@ import { getHeadCommitHash } from '../core/changed.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { buildEstimateTask, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
+import { reportMarkdownPath } from '../core/paths.mjs'
 import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
 import { formatSkipBecauseUrls, skipBecauseAction, skipBecauseUrlsForRun } from '../core/skip_because.mjs'
 import {
@@ -23,7 +24,7 @@ import { RunReportWriter } from '../runner/report.mjs'
 import { ResourceRunGate } from '../runner/scheduler.mjs'
 import { runSuite } from '../runner/suite_run.mjs'
 
-import { expandJobWave, loadKernelCatalog } from './jobs.mjs'
+import { acceptedFromWave, expandJobWave, jobCommand, loadKernelCatalog } from './jobs.mjs'
 import { ModuleCheckGate } from './module_check.mjs'
 import { attachGitRoots } from './nested_git.mjs'
 import { DEFAULT_PREP_SETTLE_MS, TestQueues } from './queues.mjs'
@@ -120,17 +121,6 @@ export class TestKernel {
 	 */
 	async start() {
 		await this.reloadCatalog()
-		if (this.writeReport) {
-			this.report = new RunReportWriter({
-				repoRoot: this.repoRoot,
-				planSlots: [],
-				runId: randomUUID(),
-				command: 'fount test',
-				commitHash: await getHeadCommitHash(this.repoRoot),
-				uncommittedHash: null,
-			})
-			await this.report.init()
-		}
 		if (this.watchFsEnabled)
 			this.#watcher = watch(this.repoRoot, { recursive: true }, (_event, filename) => {
 				if (!filename) return
@@ -206,7 +196,7 @@ export class TestKernel {
 	 * 提交 CLI job。
 	 * @param {object} spec job
 	 * @param {string} viewerId viewer
-	 * @returns {Promise<{ jobId: string, runCount: number, code?: number }>} 结果
+	 * @returns {Promise<object>} accepted 字段 + jobId
 	 */
 	async submitJob(spec, viewerId) {
 		const jobId = randomUUID()
@@ -221,18 +211,25 @@ export class TestKernel {
 			done: Promise.withResolvers(),
 		}
 		this.jobs.set(jobId, job)
-		const runCount = await this.#enqueueWave(job)
-		if (runCount === 0 && job.pending.size === 0) {
+		const queued = await this.#enqueueWave(job)
+		let finished = { reportPath: null, allReusedHint: false }
+		if (queued.runCount === 0 && job.pending.size === 0) {
+			finished = await this.#finishReport(job.exitCode)
 			job.done.resolve(job.exitCode)
 			this.jobs.delete(jobId)
 		}
 		this.wake()
-		return { jobId, runCount, code: runCount === 0 ? job.exitCode : undefined }
+		return {
+			jobId,
+			...queued.accepted,
+			...finished,
+			code: queued.runCount === 0 ? job.exitCode : queued.accepted.code,
+		}
 	}
 
 	/**
 	 * @param {object} job job
-	 * @returns {Promise<number>} 真跑槽位数
+	 * @returns {Promise<{ runCount: number, accepted: object }>} 真跑数与 accepted
 	 */
 	async #enqueueWave(job) {
 		const wave = await expandJobWave({
@@ -242,15 +239,19 @@ export class TestKernel {
 		})
 		if (wave.error || wave.empty) {
 			job.exitCode = wave.code ?? 0
-			return 0
+			return { runCount: 0, accepted: acceptedFromWave(wave, { runCount: 0, reuseCount: 0, blockedCount: 0 }) }
 		}
 		job.fingerprints = wave.fingerprints
 		job.verdicts = wave.verdicts
 		job.selection = wave.selection
 		job.continueLoop = wave.continueLoop === true
+		await this.#beginReport(job, wave)
 		let runCount = 0
+		let reuseCount = 0
+		let blockedCount = 0
 		for (const slot of wave.plan.slots) {
 			if (slot.action === 'reuse') {
+				reuseCount++
 				const prev = this.state.suites[slot.key]
 				const verdict = wave.verdicts.get(slot.key)
 				const fp = this.#fingerprintFor(slot.suite, wave.fingerprints)
@@ -261,11 +262,29 @@ export class TestKernel {
 				await writeState(this.repoRoot, this.state)
 				this.sessionPassed.set(slot.key, prev?.status !== 'failed')
 				await this.#reportResult(slot.suite, this.state.suites[slot.key], { reused: true })
+				this.viewers.broadcast({
+					type: 'suite-end',
+					key: slot.key,
+					jobId: job.id,
+					passed: prev?.status !== 'failed',
+					reused: true,
+					status: prev?.status,
+					remainingMs: this.#remainingMs(),
+				})
 				continue
 			}
 			if (slot.action === 'blocked') {
+				blockedCount++
 				await this.#recordBlocked(slot, wave.fingerprints)
 				job.exitCode = 1
+				this.viewers.broadcast({
+					type: 'suite-end',
+					key: slot.key,
+					jobId: job.id,
+					passed: false,
+					blockedBy: slot.blockedBy ?? [],
+					remainingMs: this.#remainingMs(),
+				})
 				continue
 			}
 			const item = this.queues.enqueueCli({
@@ -290,7 +309,7 @@ export class TestKernel {
 			})
 		}
 		await this.#flushReportEstimate()
-		return runCount
+		return { runCount, accepted: acceptedFromWave(wave, { runCount, reuseCount, blockedCount }) }
 	}
 
 	/**
@@ -436,8 +455,8 @@ export class TestKernel {
 			&& this.seenViewer
 			&& this.queues.pendingEmpty()
 			&& this.running.size === 0
-			&& this.viewers.watchCount() === 0
-			&& ![...this.jobs.values()].some(job => job.pending.size)
+			&& this.viewers.size() === 0
+			&& this.jobs.size === 0
 	}
 
 	/**
@@ -641,10 +660,26 @@ export class TestKernel {
 		if (job.pending.size) return
 		if (job.continueLoop && job.exitCode === 0) {
 			const more = await this.#enqueueWave(job)
-			if (more > 0) return
+			if (more.runCount > 0) {
+				this.viewers.send(job.viewerId, {
+					type: 'accepted',
+					viewerId: job.viewerId,
+					jobId: job.id,
+					...more.accepted,
+					reportPath: this.report ? reportMarkdownPath(this.repoRoot).replace(/\\/g, '/') : null,
+				})
+				return
+			}
 		}
+		const finished = await this.#finishReport(job.exitCode)
 		job.done.resolve(job.exitCode)
-		this.viewers.broadcast({ type: 'job-done', jobId: job.id, exitCode: job.exitCode })
+		this.viewers.broadcast({
+			type: 'job-done',
+			jobId: job.id,
+			exitCode: job.exitCode,
+			...finished,
+			nothingToContinue: job.continueLoop && job.exitCode === 0,
+		})
 		this.jobs.delete(job.id)
 		if (this.queues.pendingEmpty() && !this.running.size)
 			this.viewers.broadcast({ type: 'idle', remainingMs: 0 })
@@ -678,6 +713,42 @@ export class TestKernel {
 	 */
 	#broadcastLog(key, jobId, stream, chunk) {
 		this.viewers.broadcast({ type: 'log', key, jobId, stream, chunk })
+	}
+
+	/**
+	 * 有真跑/复用/阻塞槽时开一份活报告（覆盖上次波次）。
+	 * @param {object} job job
+	 * @param {object} wave 波次
+	 * @returns {Promise<void>}
+	 */
+	async #beginReport(job, wave) {
+		if (!this.writeReport) return
+		if (this.report)
+			await this.report.finalize(job.exitCode)
+		this.report = new RunReportWriter({
+			repoRoot: this.repoRoot,
+			planSlots: wave.plan.slots,
+			runId: randomUUID(),
+			command: jobCommand(job.spec),
+			commitHash: wave.fingerprints?.commitHash ?? await getHeadCommitHash(this.repoRoot),
+			uncommittedHash: wave.fingerprints?.uncommittedHash ?? null,
+		})
+		await this.report.init()
+	}
+
+	/**
+	 * 收口报告；空波次未开报告则不动磁盘。
+	 * @param {number} exitCode 退出码
+	 * @returns {Promise<{ reportPath: string | null, allReusedHint: boolean }>} 收口信息
+	 */
+	async #finishReport(exitCode) {
+		if (!this.report) return { reportPath: null, allReusedHint: false }
+		const slots = this.report.slots.filter(slot => slot.state === 'done')
+		const allReusedHint = exitCode !== 0 && slots.length
+			&& slots.every(slot => slot.reused || slot.status === 'blocked')
+		const reportPath = (await this.report.finalize(exitCode)).replace(/\\/g, '/')
+		this.report = null
+		return { reportPath, allReusedHint }
 	}
 
 	/**

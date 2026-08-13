@@ -136,17 +136,17 @@ export async function expandJobWave(params) {
 	if (options.groups?.length) {
 		const { groups: resolved, unmatched } = resolveGroups(options.groups, knownIds, allSuites)
 		if (unmatched.length)
-			return { error: 'unknownManifest', unmatched, knownIds, code: 2 }
+			return { error: 'unknownManifest', unmatched, knownIds, code: 2, empty: true }
 		manifestIds = [...new Set(resolved.flatMap(group => group.manifestIds))]
 		explicitSuites = resolved.some(group => group.suiteSelectors.length)
 		const unknownSuites = unmatchedSuiteSelectors(allSuites, resolved)
 		if (unknownSuites.length)
-			return { error: 'unknownSuite', unknownSuites, manifestIds, code: 2 }
+			return { error: 'unknownSuite', unknownSuites, available: availableSuiteIds(allSuites, manifestIds), code: 2, empty: true }
 		filtered = filterFromGroups(allSuites, resolved)
 		subtestFilterByKey = collectSubtestFilterByKey(resolved, filtered)
 		const filterErrors = validateSubtestFilters(subtestFilterByKey, byKey, repoRoot)
 		if (filterErrors.length)
-			return { error: 'subtestFilter', filterErrors, code: 2 }
+			return { error: 'subtestFilter', filterErrors, code: 2, empty: true }
 	}
 
 	if (probedSkip.size)
@@ -187,7 +187,12 @@ export async function expandJobWave(params) {
 			subtestFilterByKey,
 		})
 		if (selection.action === 'exit')
-			return { error: explicitSuites ? 'noMatchingSuites' : null, code: explicitSuites ? 2 : 0, empty: true }
+			return {
+				error: explicitSuites ? 'noMatchingSuites' : null,
+				available: explicitSuites ? availableSuiteIds(allSuites, manifestIds) : [],
+				code: explicitSuites ? 2 : 0,
+				empty: true,
+			}
 		const plan = buildPlan(
 			selection.goalKeys,
 			verdicts,
@@ -269,6 +274,61 @@ export async function expandJobWave(params) {
 	}
 
 	return { empty: true, code: 0, continueLoop: true, filtered, verdicts, fingerprints }
+}
+
+/**
+ * 把波次结果收成 display 用的 accepted 字段（不含 WS 的 mode / viewerId）。
+ * @param {object} wave expandJobWave 结果
+ * @param {object} [counts] 槽位计数
+ * @param {number} [counts.runCount=0] 真跑
+ * @param {number} [counts.reuseCount=0] 复用
+ * @param {number} [counts.blockedCount=0] 阻塞
+ * @returns {object} accepted 字段
+ */
+export function acceptedFromWave(wave, counts = {}) {
+	return {
+		runCount: counts.runCount ?? 0,
+		reuseCount: counts.reuseCount ?? 0,
+		blockedCount: counts.blockedCount ?? 0,
+		code: wave.code ?? 0,
+		empty: wave.empty === true,
+		error: wave.error ?? null,
+		selectionMode: wave.selection?.mode ?? null,
+		goalCount: wave.selection?.goalKeys?.size ?? 0,
+		total: wave.filtered?.length ?? 0,
+		noisyKeys: wave.noisyKeys ?? [],
+		deadTriggers: wave.deadTriggers ?? [],
+		unmatched: wave.unmatched ?? [],
+		unknownSuites: wave.unknownSuites ?? [],
+		filterErrors: wave.filterErrors ?? [],
+		knownIds: wave.knownIds ?? [],
+		available: wave.available ?? [],
+	}
+}
+
+/**
+ * 按 job spec 拼等效 CLI 串（报告用）。
+ * @param {object} [spec] job
+ * @returns {string} 如 `fount test --force shells/chat`
+ */
+export function jobCommand(spec = {}) {
+	const parts = ['fount test']
+	if (spec.runAll) parts.push('--all')
+	if (spec.force) parts.push('--force')
+	if (spec.groups?.length)
+		for (const group of spec.groups) {
+			const manifest = group.manifestSelectors?.[0]
+			if (group.suiteSelectors?.length) {
+				const bits = group.suiteSelectors.map(suite => {
+					const subs = group.subtestSelectors?.[suite]
+					return subs?.length ? `${suite}:${subs.join(',')}` : suite
+				})
+				parts.push(`${manifest}:${bits.join(',')}`)
+			}
+			else if (manifest)
+				parts.push(manifest)
+		}
+	return parts.join(' ')
 }
 
 /**

@@ -10,6 +10,8 @@ import { formatDuration } from '../core/format_duration.mjs'
 import { beginTestProgress, finishTestProgress } from '../core/progress.mjs'
 import { testHubUrl } from '../hub/index.mjs'
 
+import { paintAccepted, paintJobDone } from './paint.mjs'
+
 /**
  * @typedef {object} DisplayOptions
  * @property {boolean} [watch] 是否 watch 挂起
@@ -43,10 +45,9 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		if (msg.type === 'accepted') {
 			runCount = msg.runCount ?? 0
 			displayMode = msg.mode || displayMode
-			if (!watch && runCount === 0 && job) {
-				exitCode = msg.code ?? 0
-				done.resolve()
-			}
+			paintAccepted(msg)
+			if (msg.reportPath)
+				console.logI18n('fountConsole.test.reportPath', { path: msg.reportPath })
 			return
 		}
 		if (msg.type === 'log' && displayMode === 'stream') {
@@ -65,14 +66,20 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		if (msg.type === 'suite-end') {
 			finished++
 			if (runCount) SetTaskbarProgress(Math.min(100, Math.floor((finished / runCount) * 100)))
-			if (msg.skipBecause?.length)
+			if (msg.blockedBy?.length)
+				console.logI18n('fountConsole.test.blocked', { label: msg.key, deps: msg.blockedBy.join(', ') })
+			else if (msg.reused) {
+				const { manifestId, name } = splitKey(msg.key)
+				console.logI18n('fountConsole.test.reusedSuite', { manifestId, name, status: msg.status })
+			}
+			else if (msg.skipBecause?.length)
 				console.logI18n(msg.passed ? 'fountConsole.test.skipBecause.pass' : 'fountConsole.test.skipBecause.fail', {
 					label: msg.key,
 					url: (msg.passed ? msg.skipBecause : msg.skipBecauseClosed ?? msg.skipBecause).join(' '),
 				})
 			else
 				console.logI18n(msg.passed ? 'fountConsole.test.passed' : 'fountConsole.test.failed', { label: msg.key })
-			if (displayMode !== 'stream')
+			if (displayMode !== 'stream' && !msg.reused && !msg.blockedBy?.length)
 				console.logI18n('fountConsole.test.display.remaining', { remaining: formatMs(msg.remainingMs) })
 			return
 		}
@@ -85,7 +92,8 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		}
 		if (msg.type === 'job-done') {
 			exitCode = msg.exitCode ?? 0
-			if (!watch && displayMode !== 'overview') done.resolve()
+			paintJobDone(msg)
+			if (!watch && job) done.resolve()
 			return
 		}
 		if (msg.type === 'idle' && !watch && displayMode === 'overview')

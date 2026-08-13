@@ -161,14 +161,31 @@ async function onViewerMessage(kernel, viewer, raw) {
 		type: 'accepted',
 		viewerId: viewer.id,
 		jobId: submitted.jobId,
-		runCount: submitted.runCount,
-		code: submitted.code,
 		mode: viewer.mode,
+		runCount: submitted.runCount,
+		reuseCount: submitted.reuseCount,
+		blockedCount: submitted.blockedCount,
+		code: submitted.code,
+		empty: submitted.empty,
+		error: submitted.error,
+		selectionMode: submitted.selectionMode,
+		goalCount: submitted.goalCount,
+		total: submitted.total,
+		noisyKeys: submitted.noisyKeys,
+		deadTriggers: submitted.deadTriggers,
+		unmatched: submitted.unmatched,
+		unknownSuites: submitted.unknownSuites,
+		filterErrors: submitted.filterErrors,
+		knownIds: submitted.knownIds,
+		available: submitted.available,
+		reportPath: submitted.reportPath,
 	})
 	if (submitted.runCount === 0)
 		kernel.viewers.send(viewer.id, {
 			type: 'job-done',
 			jobId: submitted.jobId,
 			exitCode: submitted.code ?? 0,
+			reportPath: submitted.reportPath,
+			allReusedHint: submitted.allReusedHint,
 		})
 }

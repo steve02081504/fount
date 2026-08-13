@@ -25,8 +25,8 @@ alwaysApply: false
 - **CLI `--help`**: `fountConsole.test.help` is a usage tutorial (invocation, selectors, flags, examples). Kernel bind, state paths, manifest fields, and scheduler internals belong in this guide / `docs/` — not `--help`.
 - **i18n**: `src/scripts/i18n/bare.mjs` only — never pull in the server module graph.
 - **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` = dependency-tree mermaid. Fingerprints update only after that suite's plan slot finishes — never batch-align at wave start. Each run prunes orphan suite/subtest entries (and logs / Playwright dirs) missing from manifests.
-- **Run report**: `data/test/report.md` + `report.json` — last run only. Trigger reasons: `data/test/triggered-reasons.md`.
-- **Default loop** (bare `fount test`): imperfect → outdated → 0 when both empty; never full-repo unless `--all`. Details: [continue-report.md](docs/continue-report.md).
+- **Run report**: `data/test/report.md` + `report.json` — last job/wave only; empty default wave does not overwrite. Trigger reasons: `data/test/triggered-reasons.md`.
+- **Default loop** (bare `fount test`): imperfect → outdated → 0 when both empty (prints `nothingToContinue`); never full-repo unless `--all`. Details: [continue-report.md](docs/continue-report.md).
 - **Selectors**: `manifest:suite` / `manifest:suite:subtest`. Exact name wins; prefix only when no exact match; `*`/`?` always globs. Third CLI segment on serial suites = `*.test.mjs` stem → `FOUNT_TEST_ONLY`.
 - **`FOUNT_TEST_SUBTESTS`**: ambient env merges when CLI selects a suite without `:subtest` (CLI wins; not for dependsOn-only or wave goals without suiteSelectors).
 - **`FOUNT_TEST_TRIGGERED_FILES`**: temp file of repo-relative paths that matched this wave's triggers (empty = unconstrained). Protocol: [protocol.mjs](core/protocol.mjs).
