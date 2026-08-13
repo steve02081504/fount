@@ -14,6 +14,8 @@ Thin entries `path/fount.{ps1,sh}` dispatch to `path/src/cmd/<name>.*` via inlin
 | `bootstrap_server` | Server path (uses background updates) |
 | `require_mid` + `source_uninstall_hooks` | `remove` |
 
+Windows `bootstrap_full` writes `$FOUNT_DIR/fount.exe` when missing (gitignored) — Steam requires an exe to add a game; a bat file does not work. `fount geneexe [path]` still defaults to `./fount.exe` (cwd); pass a path to write elsewhere (`ps12exe` from `src/runner/main.ps1`).
+
 Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/src/win/` or `unix/`. Shared helpers: `in_container`, `run_with_updates`, `trap_terminal_teardown`, `handle_docker_passthrough`, `check_temp_guard`, `sed_escape`.
 
 `remove` scans `**/*.uninstall.<level>.*` under `path/src`, highest level first; level `0` deletes the install tree.

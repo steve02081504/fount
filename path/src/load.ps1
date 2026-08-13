@@ -20,7 +20,7 @@ function script:require_mid {
 	require env win/refresh_path win/winget win/installer_dir
 	require packages browser passthrough profile
 	require git deno fs init_force update run debug boot
-	require win/file_attrs win/wt win/protocol_reg keybindings desktop
+	require win/file_attrs win/wt win/protocol_reg keybindings desktop win/fount_exe
 	require win/app_restart win/explorer_refresh win/keep_awake first_install
 	install_deno
 }
@@ -28,6 +28,7 @@ function script:require_mid {
 function script:bootstrap_full {
 	require_mid
 	fount_first_install_if_needed @args
+	Install-FountRootExe # Steam 必须 exe 才能进游戏库，bat 不行
 }
 
 function script:bootstrap_server {
