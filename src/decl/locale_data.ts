@@ -138,6 +138,9 @@ export type LocaleData = {
 				pass: string
 				fail: string
 			}
+			moduleCheck: {
+				missedReady: string
+			}
 			queue: {
 				append: string
 				remove: string
@@ -6259,6 +6262,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.federationCleanupPre': { output: string | number }
 	'fountConsole.test.heapSnapshotSaved': { path: string | number }
 	'fountConsole.test.manifestMatched': { ids: string | number }
+	'fountConsole.test.moduleCheck.missedReady': { label: string | number }
 	'fountConsole.test.noRealRunPlanned': { blocked: string | number; reused: string | number }
 	'fountConsole.test.nodeWorker.error': { error: string | number }
 	'fountConsole.test.noiseHits': { hits: string | number }
