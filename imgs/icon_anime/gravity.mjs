@@ -59,11 +59,21 @@ export const mapSensorToScreen = (ax, ay, az) => {
 /** @type {{ gx: number, gy: number, mag: number }} */
 let rawTarget = { gx: 0, gy: 1, mag: BASE_PARTICLE_G }
 /** @type {GravityState} */
-let live = defaultGravity()
-/** @type {(() => void) | null} */
-let stopAcquire = null
-/** 防止异步 load 与 stop 竞态。 */
-let acquireGen = 0
+const live = defaultGravity()
+/** @type {AbortController | null} */
+let activeController = null
+
+/**
+ * 原地重置 live / rawTarget（保持 currentGravity() 引用稳定）。
+ * @returns {void}
+ */
+const resetGravityState = () => {
+	const defaultState = defaultGravity()
+	live.gx = defaultState.gx
+	live.gy = defaultState.gy
+	live.mag = defaultState.mag
+	rawTarget = { ...defaultState }
+}
 
 /**
  * 当前平滑后的重力（供动画每帧读取）。
@@ -107,17 +117,21 @@ const applySample = (ax, ay, az) => {
 
 /**
  * 开始读取设备重力（无采集后端时保持默认）。
+ * @param {{ loadAcquire?: typeof loadAcquire }} [deps] 可注入采集加载（测试）
  * @returns {void}
  */
-export const startGravity = () => {
-	live = defaultGravity()
-	rawTarget = defaultGravity()
+export const startGravity = (deps = {}) => {
 	stopGravity()
-	const gen = ++acquireGen
-	void loadAcquire().then((mod) => {
-		if (gen !== acquireGen) return
-		stopAcquire = mod.start(applySample)
-	})
+	resetGravityState()
+	const { signal } = activeController = new AbortController()
+	void (async () => {
+		const acquireModule = await (deps.loadAcquire ?? loadAcquire)()
+		if (signal.aborted) return
+		const stop = acquireModule.start(applySample)
+		// stopGravity 可能在 start() 同步路径里发生：立刻释放，勿留下孤儿采集。
+		if (signal.aborted) return stop()
+		signal.addEventListener('abort', stop, { once: true })
+	})()
 }
 
 /**
@@ -125,9 +139,12 @@ export const startGravity = () => {
  * @returns {void}
  */
 export const stopGravity = () => {
-	acquireGen++
-	stopAcquire?.()
-	stopAcquire = null
+	if (!activeController) return
+	// 先清空引用再 abort：abort 同步触发的 stop 回调若重入 startGravity，
+	// 不得覆盖或清除新创建的控制器。
+	const controller = activeController
+	activeController = null
+	controller.abort()
 }
 
 /**

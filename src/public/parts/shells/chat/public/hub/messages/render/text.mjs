@@ -2,8 +2,8 @@
  * 【文件】public/hub/messages/render/text.mjs
  * 【职责】消息正文文本提取、内联贴纸/图片标记展开、生成中判定。
  */
-import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { messageEditText, messageShowText } from '../../../shared/channelContent.mjs'
+import { renderTemplateAsHtmlString } from '../../../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /**

@@ -10,7 +10,7 @@ alwaysApply: false
 - **Two axes**: admin = DAG/HTTP governance; small-circle = federation + `monthDigests` reputation arbitration (body truth = digest). Local `archive/*.jsonl` cleanup = replica disk hygiene.
 - **Not in DAG**: `archive_manifest.json` (`monthDigests`, `archivedEventIds`, `channels[].months`). Hot/checkpoint in `snapshot.json`.
 - **Local read**: verify digests against month JSONL. Federation streams encrypted chunks — never whole-file `readFile`.
-- **Federation**: `syncMissingArchiveMonths`; `fed_archive_month_want` needs PullAttestation + active membership; peers pick via `pickArchiveMonthByReputation`; quorum `ARCHIVE_QUORUM_PEER_MIN`.
+- **Federation**: `syncMissingArchiveMonths`; `fed_archive_month_want` needs PullAttestation + active membership; peers pick via `pickArchiveMonthByReputation`; quorum `ARCHIVE_QUORUM_PEER_MIN`. Two-node: all asked peers responding is not a sole-high-rep dictator. `offlineStartUtcMonth` survives DAG catchup; cleared after that month's files are present.
 - **Digest**: lines must be `canonicalArchiveMonthLine`; hash in eventId order; `mutateArchiveManifest` mutually-exclusive R-M-W; reassembly = temp file + `rename` (never `Buffer.concat`).
 - **Hot zone**: `hot_posts.latestByChannel` in `snapshot.json`.
 

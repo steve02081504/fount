@@ -3,7 +3,7 @@
  */
 import { escapeRegExp } from '../../../../../../scripts/regex.mjs'
 
-import { extractHashtagsFromText } from './hashtags.mjs'
+import { extractHashtagsFromText, hashtagEquals } from './hashtags.mjs'
 
 /**
  * 规范化用户搜索查询（文本或 #话题）。
@@ -35,7 +35,7 @@ export function postMatchesQuery(post, query) {
 	if (!post?.content?.text) return false
 	const text = post.content.text
 	if (norm.kind === 'hashtag')
-		return extractHashtagsFromText(text).includes(norm.value)
+		return extractHashtagsFromText(text).some(tag => hashtagEquals(tag, norm.value))
 	if (new RegExp(escapeRegExp(norm.value), 'iu').test(text)) return true
 	const author = post.entityHash || ''
 	if (norm.value.length >= 8 && author.includes(norm.value)) return true

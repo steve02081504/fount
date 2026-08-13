@@ -38,6 +38,7 @@ import {
 import {
 	readState,
 	refreshEntryFingerprint,
+	pruneAbsentState,
 	suiteKey,
 	suiteTriggeredFiles,
 	upsertSuiteRun,
@@ -572,6 +573,20 @@ export async function runTests(options = {}) {
 	const command = buildTestCommand(options)
 
 	const allSuites = await loadAllSuites(REPO_ROOT)
+	const [commitHash, uncommittedFiles, state] = await Promise.all([
+		getHeadCommitHash(REPO_ROOT),
+		getUncommittedFiles(REPO_ROOT),
+		readState(REPO_ROOT),
+	])
+	const pruned = await pruneAbsentState(REPO_ROOT, allSuites, state)
+	if (pruned.changed) {
+		await writeState(REPO_ROOT, state)
+		console.logI18n('fountConsole.test.prunedAbsentState', {
+			suites: String(pruned.removedSuiteKeys.length),
+			subtests: String(pruned.removedSubtests.length),
+		})
+	}
+
 	const deadTriggers = await auditTriggerCoverage(REPO_ROOT, allSuites)
 	if (deadTriggers.length) {
 		logDeadTriggers(deadTriggers)
@@ -580,11 +595,6 @@ export async function runTests(options = {}) {
 	const knownIds = listManifestIds(allSuites)
 	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
 
-	const [commitHash, uncommittedFiles, state] = await Promise.all([
-		getHeadCommitHash(REPO_ROOT),
-		getUncommittedFiles(REPO_ROOT),
-		readState(REPO_ROOT),
-	])
 	const uncommittedHashes = await hashUncommittedFiles(REPO_ROOT, uncommittedFiles)
 	const uncommittedHash = digestFileHashes(uncommittedHashes, uncommittedFiles)
 

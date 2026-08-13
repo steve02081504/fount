@@ -3,7 +3,6 @@
  * 【职责】成员列表项右键菜单：查看资料、私信、踢出、封禁（含 `banScopePicker`）等成员操作。
  */
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
@@ -12,6 +11,7 @@ import { promptText } from '/scripts/features/promptDialog.mjs'
 import { getGroupState } from '../src/endpoints/groupCore.mjs'
 import { kickMember } from '../src/endpoints/members.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 
 import { refreshAliasDependentUi } from './aliasUi.mjs'
 import { pickBanScope } from './banScopePicker.mjs'

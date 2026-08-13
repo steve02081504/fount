@@ -1,6 +1,6 @@
 /** Hub 群发现主内容页。 */
-import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
 import { fetchDiscoveryIndex, refreshDiscoveryGossip } from '../src/endpoints/discovery.mjs'
+import { mountTemplate, renderTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 

@@ -3,14 +3,11 @@
  * 【职责】消息线程侧抽屉：打开/关闭子频道线程视图，并在主频道 WS 事件时刷新活跃线程。
  * 【原理】线程消息面复用 `messageSurface` 的 MessagePipeline + bind；主 hash 仍描述父群/父频道。
  */
-import {
-	mountTemplate,
-	usingTemplates,
-} from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { createChannelThread, getChannelViewLog, sendGroupMessage } from '../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../src/endpoints/groupCore.mjs'
 import { hubEmptyWaveIcon } from '../src/lib/emojiSvg.mjs'
+import { mountTemplate } from '../src/templates.mjs'
 import { applyChannelDisplayChain } from '../src/ui/channelDisplay.mjs'
 
 import { store } from './core/state.mjs'
@@ -245,7 +242,6 @@ function wireThreadComposer(drawer, messageContainer) {
 export async function openThread(groupId, parentChannelId, parentEventId, title = '') {
 	const wrap = document.getElementById('thread-drawer-wrap')
 	if (!wrap) return
-	usingTemplates('/parts/shells:chat/src/templates')
 	try {
 		const channels = store.context.currentState?.channels || {}
 		let threadChannelId = findThreadChannelId(channels, parentChannelId, parentEventId)

@@ -116,7 +116,7 @@ async function readRemoteProfilePlain(replicaUsername, entityHash, logicalPath, 
  * @returns {string} 小写 handle 或 ''
  */
 export function normalizeEntityHandle(value) {
-	const handle = value ?? ''
+	const handle = (value ?? '').trim().replace(/^@+/u, '').toLowerCase()
 	if (!handle) return ''
 	if (!HANDLE_RE.test(handle)) throw new Error('invalid handle')
 	return handle

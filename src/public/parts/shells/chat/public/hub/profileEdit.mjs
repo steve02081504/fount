@@ -6,7 +6,6 @@
  * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/endpoints/entities、../src/profileLocaleEditor、core/state、presence。
  */
 import { getUserSetting } from '/scripts/endpoints/base.mjs'
-import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, primaryLocale } from '../../../../scripts/i18n/index.mjs'
 import {
@@ -29,6 +28,7 @@ import {
 	renderLocaleTabs,
 	renderTagsEditor,
 } from '../src/profileLocaleEditor.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
@@ -140,6 +140,7 @@ function sameJsonValue(a, b) {
  * @returns {string | undefined} 应写入的值；undefined 表示删除键
  */
 function pruneSfwString(sfwVal, baseVal) {
+	if (sfwVal === undefined) return undefined
 	const sfw = sfwVal.trim()
 	if (!sfw || sameNormalizedText(sfw, baseVal)) return undefined
 	return sfw
@@ -215,7 +216,6 @@ async function ensureEditDialog() {
 		editDialog.remove()
 		editDialog = null
 	}
-	usingTemplates('/parts/shells:chat/src/templates')
 	const node = await renderTemplate('hub/profile_edit_modal', {})
 	editDialog = node instanceof HTMLDialogElement && node.id === 'profile-edit-modal'
 		? node

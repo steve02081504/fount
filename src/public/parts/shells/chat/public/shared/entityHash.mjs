@@ -64,7 +64,7 @@ export function entityHashLabel(entityHash) {
  * @returns {string} at-id 文案
  */
 export function formatEntityAtId(entityHash, options = {}) {
-	const handle = (options.handle || '').trim().replace(/^@+/u, '')
+	const handle = (options.handle || '').trim().replace(/^@+/u, '').toLowerCase()
 	const hashAt = formatHashShort(entityHash, {
 		withAt: true,
 		headLen: options.headLen ?? 8,

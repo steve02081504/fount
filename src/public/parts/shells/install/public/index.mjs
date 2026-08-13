@@ -1,14 +1,13 @@
 /**
  * 安装 shell 的客户端逻辑。
  */
-import { renderTemplate, usingTemplates } from '../../scripts/features/template.mjs'
 import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme/index.mjs'
 
 import { importFiles, importText } from './src/endpoints.mjs'
+import { renderTemplate } from './src/templates.mjs'
 
-usingTemplates('/parts/shells:install/src/templates')
 applyTheme()
 
 const fileImportTab = document.getElementById('file-import-tab')

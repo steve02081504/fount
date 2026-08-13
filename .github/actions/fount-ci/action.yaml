@@ -26,7 +26,7 @@ runs:
       shell: bash
       run: |
         for i in $(seq 1 13); do
-          deno install --prod --allow-scripts --allow-all -c "./deno.json" --entrypoint "./src/server/index.mjs" && break
+          deno install --prod --allow-scripts -c "./deno.json" --entrypoint "./src/server/index.mjs" && break
           echo "Attempt $i/13 failed, retrying..."
         done
         [ -d ./node_modules ] || exit 1

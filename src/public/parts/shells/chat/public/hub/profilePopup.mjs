@@ -1,23 +1,21 @@
 /**
  * 【文件】public/hub/profilePopup.mjs
  * 【职责】点击头像/作者链接触发的轻量资料弹层：解析锚点实体并展示只读资料摘要。
- * 【原理】`showProfilePopup` / `dismissProfilePopup` 管理单例 popup DOM 定位与关闭；从消息行 `data-author` 等属性解析实体；不修改频道列表 HTML 结构。
+ * 【原理】`showProfilePopup` / `dismissProfilePopup` 管理单例 popup DOM 定位与关闭；优先 `data-entity-hash`，再回退 avatarFor / memberKey；不修改频道列表 HTML 结构。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/template、../../../../scripts/toast、shared/entityHash、fount-p2p/core/hexIds、core/state、entityProfile、entityResolve、friendChat。
+ * 【关联】../../../../scripts/template、shared/entityHash、shared/memberByEntityHash、fount-p2p/core/hexIds、core/state、entityProfile、entityResolve。
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
-import {
-	renderTemplate,
-	usingTemplates,
-} from '../../../../scripts/features/template.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
 import {
 	dismissProfilePopupLayer,
 	openProfilePopupLayer,
 } from '../shared/entityProfilePopup.mjs'
+import { findMemberByEntityHash } from '../shared/memberByEntityHash.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 
 import { store } from './core/state.mjs'
 import {
@@ -74,6 +72,30 @@ async function charEntityFromName(charname, label) {
 }
 
 /**
+ * 已知 entityHash 时解析成员行 / 好友绑定 / stub。
+ * @param {string} entityHash 实体哈希
+ * @param {object[]} members 群成员
+ * @returns {Promise<object | null>} 实体描述
+ */
+async function entityFromEntityHash(entityHash, members) {
+	const memberRow = findMemberByEntityHash(members, entityHash)
+	if (memberRow?.charname)
+		return charEntityFromName(memberRow.charname, memberRow.displayName || memberRow.charname)
+	if (memberRow) return userEntityFromMember(memberRow)
+	if (!isEntityHash128(entityHash)) return null
+	const bound = store.sidebar.groups.find(group => group.friendBinding?.entityHash === entityHash)?.friendBinding
+	if (bound?.charname)
+		return charEntityFromName(bound.charname, bound.displayName || bound.charname)
+	return {
+		entityHash,
+		charname: null,
+		pubKeyHash: null,
+		pubKeyHex: null,
+		displayName: resolveDisplayName({ entityHash, alias: aliasForEntity(entityHash) }),
+	}
+}
+
+/**
  * @param {HTMLElement} anchor 点击锚点
  * @returns {object | null} 实体描述（含 `entityHash`）
  */
@@ -95,6 +117,13 @@ export async function resolveEntityFromAnchor(anchor) {
 		const label = memberItem?.querySelector('.member-name')?.textContent?.trim()
 		return charEntityFromName(memberCharId, label || memberCharId)
 	}
+
+	const members = store.context.currentState?.members || []
+	const entityHash = anchor.closest('[data-entity-hash]')?.dataset.entityHash?.trim()
+	if (entityHash)
+		return entityFromEntityHash(entityHash, members)
+
+	// 无 data-entity-hash 的遗留锚点：仅用展示键做 entityHash / pubKeyHash 直通，不再跨字段猜成员
 	const memberKey = memberItem?.dataset.memberKey?.trim()
 	const avatarFor = anchor.dataset.avatarFor
 		|| anchor.closest('[data-avatar-for]')?.dataset.avatarFor
@@ -103,30 +132,8 @@ export async function resolveEntityFromAnchor(anchor) {
 	const displayKey = avatarFor || memberKey || authorHash || ''
 	if (!displayKey || displayKey === '?') return null
 
-	const members = store.context.currentState?.members || []
-	const memberRow = members.find(m =>
-		m.entityHash === displayKey
-		|| m.memberKey === displayKey
-		|| m.pubKeyHash === displayKey
-		|| m.pubKeyHash === memberKey
-		|| m.pubKeyHash === authorHash,
-	)
-
-	if (memberRow?.charname)
-		return charEntityFromName(memberRow.charname, memberRow.displayName || memberRow.charname)
-	if (memberRow) return userEntityFromMember(memberRow)
-	if (isEntityHash128(displayKey)) {
-		const bound = store.sidebar.groups.find(g => g.friendBinding?.entityHash === displayKey)?.friendBinding
-		if (bound?.charname)
-			return await charEntityFromName(bound.charname, bound.displayName || bound.charname)
-		return {
-			entityHash: displayKey,
-			charname: null,
-			pubKeyHash: null,
-			pubKeyHex: null,
-			displayName: resolveDisplayName({ entityHash: displayKey, alias: aliasForEntity(displayKey) }),
-		}
-	}
+	if (isEntityHash128(displayKey))
+		return entityFromEntityHash(displayKey, members)
 	if (isHex64(displayKey))
 		return {
 			entityHash: null,
@@ -178,7 +185,6 @@ export async function showProfilePopup(entity) {
 	if (!entity?.entityHash && !entity?.displayName) return
 	dismissProfilePopup()
 	hideHoverCard()
-	usingTemplates('/parts/shells:chat/src/templates')
 
 	const popup = await renderTemplate('hub/profile_popup', {})
 	openProfilePopupLayer(LAYER_ID, popup)

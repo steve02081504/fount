@@ -2,7 +2,6 @@
  * 【文件】public/hub/call.mjs
  * 【职责】文本频道群组通话 dock：加入/离开、静音/视频/屏幕共享、人数徽标。
  */
-import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { geti18n, setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { buildChatCallWsUrl } from '../shared/avRelayClient.mjs'
@@ -10,6 +9,7 @@ import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { getCallStatus } from '../src/endpoints/groupChannel.mjs'
 import { iconifyImg, iconifyUrl } from '../src/lib/emojiSvg.mjs'
+import { mountTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { joinCodecsAvRoom, leaveCodecsAvRoom } from './codecsAv.mjs'

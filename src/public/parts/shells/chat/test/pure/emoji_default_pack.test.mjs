@@ -19,7 +19,7 @@ Deno.test('resolveGroupDefaultPackId prefers explicit then groupId', () => {
 
 Deno.test('link keys', () => {
 	assertEquals(groupDefaultLinkKey('g1'), 'group:g1')
-	assertEquals(entityDefaultLinkKey('AbC'), 'entity:abc')
+	assertEquals(entityDefaultLinkKey('AbC'), 'entity:AbC')
 })
 
 Deno.test('applyDefaultPackConverge first link adds', () => {

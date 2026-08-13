@@ -1,7 +1,7 @@
 /**
  * 帖文搜索结构化过滤解析。
  */
-import { extractHashtagsFromText } from './hashtags.mjs'
+import { extractHashtagsFromText, hashtagEquals } from './hashtags.mjs'
 import { normalizeSearchQuery, postMatchesQuery } from './postQuery.mjs'
 
 /**
@@ -65,7 +65,7 @@ export function postMatchesFilters(post, filters) {
 			...extractHashtagsFromText(text),
 			...Array.isArray(post.content?.tags) ? post.content.tags : [],
 		]
-		if (!tags.includes(filters.tag)) return false
+		if (!tags.some(tag => hashtagEquals(tag, filters.tag))) return false
 	}
 	if (filters.media) {
 		const refs = Array.isArray(post.content?.mediaRefs) ? post.content.mediaRefs : []

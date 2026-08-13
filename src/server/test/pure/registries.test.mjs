@@ -4,6 +4,7 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
+import { partPublicRelToBrowserPath } from '../../../scripts/part_paths.mjs'
 import {
 	dedupeAndSortRegistryEntries,
 	partpathToUrlPrefix,
@@ -19,6 +20,12 @@ Deno.test('resolveRegistryPathToUrl joins part-relative path', () => {
 		resolveRegistryPathToUrl('shells/chat', 'markdown_extensions/index.mjs'),
 		'/parts/shells:chat/markdown_extensions/index.mjs',
 	)
+})
+
+Deno.test('resolveRegistryPathToUrl matches partPublicRelToBrowserPath for public files', () => {
+	const viaRegistry = resolveRegistryPathToUrl('shells/chat', 'hub/x.mjs')
+	assertEquals(viaRegistry, partPublicRelToBrowserPath('shells/chat/public/hub/x.mjs'))
+	assertEquals(viaRegistry, '/parts/shells:chat/hub/x.mjs')
 })
 
 Deno.test('dedupeAndSortRegistryEntries keeps later id and sorts by level', () => {

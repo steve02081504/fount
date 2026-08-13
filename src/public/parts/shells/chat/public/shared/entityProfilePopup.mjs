@@ -2,7 +2,7 @@
  * 【文件】public/shared/entityProfilePopup.mjs
  * 【职责】跨壳轻量人物卡弹层：仅依赖 entityHash + profile API，不依赖 Hub store。
  * 【原理】Chat Hub / Cabinet / Social 均可调用；Hub 专属按钮（DM/care）仍走 hub/profilePopup。
- * 模板经 `createEntityProfileCardElement` 加载，不污染全局 `usingTemplates`。
+ * 模板经 `createEntityProfileCardElement`（chat bound templates）加载。
  */
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { cachedProfileFromApi, getEntityProfile } from '../src/endpoints/entities.mjs'

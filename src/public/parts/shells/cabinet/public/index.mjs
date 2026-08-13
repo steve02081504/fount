@@ -1,10 +1,7 @@
 import { initTranslations, console } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
-import { usingTemplates } from '/scripts/features/template.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
-
-usingTemplates('/parts/shells:cabinet/src/templates')
 
 import { CABINET_APP_GATE } from './src/gate.mjs'
 import { bootFromHash, refreshCabinets } from './src/navigation.mjs'

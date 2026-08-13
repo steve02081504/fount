@@ -7,8 +7,8 @@
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
-import { renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
 import { getDagTips } from '../src/endpoints/groupCore.mjs'
+import { renderTemplateAsHtmlString } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'

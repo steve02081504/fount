@@ -1,7 +1,9 @@
 /**
  * 群联邦同步水位：离线起始 UTC 月、末帧 tipsHash。
  */
+import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
 import { archiveMonthKey } from '../archive/settings.mjs'
 import { safeReadJson } from '../lib/fsSafe.mjs'
@@ -28,9 +30,11 @@ export async function loadGroupSyncState(username, groupId) {
  * @returns {Promise<object>} 写入后的状态
  */
 export async function saveGroupSyncState(username, groupId, patch) {
-	const next = { ...await loadGroupSyncState(username, groupId), ...patch }
-	await writeJsonAtomicSynced(groupSyncStatePath(username, groupId), next)
-	return next
+	return withAsyncMutex(`group-sync:${compositeKey(username, groupId)}`, async () => {
+		const next = { ...await loadGroupSyncState(username, groupId), ...patch }
+		await writeJsonAtomicSynced(groupSyncStatePath(username, groupId), next)
+		return next
+	})
 }
 
 /**
@@ -47,15 +51,16 @@ export async function markGroupOfflineStarted(username, groupId, wallMs = Date.n
 }
 
 /**
- * 上线同步成功后更新末帧 tipsHash。
+ * 上线 DAG 同步成功后更新末帧 tipsHash。
+ * 不清除 `offlineStartUtcMonth`：冷归档补拉与 DAG catchup 不是同一件事，
+ * 标记由 `pullOfflineStartUtcMonthArchives` 在该月文件齐了之后清掉。
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} tipsHash 本地 `local_tips_hash`
- * @returns {Promise<object>} 更新后的 syncState
+ * @returns {Promise<object>} 更新后的状态
  */
 export async function markGroupOnlineSynced(username, groupId, tipsHash) {
 	return saveGroupSyncState(username, groupId, {
 		tipsHashAtLastSync: tipsHash.trim(),
-		offlineStartUtcMonth: '',
 	})
 }

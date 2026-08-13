@@ -145,7 +145,7 @@
 			"replHint": "Enter 行 · Shift+Enter 換行"
 		},
 		"test": {
-			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分組語法（空格分隔多組）：\n  manifest                    該 manifest 之 suite 悉數\n  manifest:suite              指名 suite（逗號分隔；亦可用 manifest/suite）\n  manifest:suite:subtest      指名子試（frontend 等已註冊 subtests；亦可用 manifest/suite/subtest）\n  manifest:suite:file         pure/integration（serial.mjs）下按 *.test.mjs 試卷 stem 過濾\n  PowerShell 拆散時，後續 token 自行歸併於當前組\n\nmanifest id 取自各 test/manifest.json 頂層「id」。\n無精契時，自行按「<指名>/*」展開（如 shells → shells/chat,shells/social）；亦容 glob（*、?、**）。\nsuite 指名相契各 suite 之 id 或 name；無精契時按「<指名>*」「<指名>_*」展開；亦容 glob。\n\n常制（裸 fount test）：先跑失利/未竟項（suite 內失利試卷優先；失利組有復現則跑畢失利組即退），全綠後再跑內容過期項；任一輪失利即以 1 退出，不於同次調用內反復重試。永不全量（用 --all）。\n試程現狀持久化於 data/test/state/main.json；失利 log 保留至轉綠。每番運行修 data/test/report.md 與 report.json。\nfrontend 等套件可註冊 subtests（各帶獨立 trigger）；改一視圖卷，唯使對應子試過期。\npure/integration 未註冊 subtests 時，第三段按目錄內 *.test.mjs 之 stem 過濾（如 shells/chat:pure:channel_archive）。\n依賴項（manifest.json dependsOn）未過時，高層自行 blocked。\n\n--all         範圍內全部 suite 為目標（綠者仍可復用，除非 --force）\n--no-parallel 串行運行 suite 並流式輸出 stdout/stderr；常制由資源閘門按內存與 CPU 自行並行。\n--force       禁復用：常制沿用上次真實結果，--force 強制真跑目標。\n\n示例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分組語法（空格分隔多組）：\n  manifest                    該 manifest 之 suite 悉數\n  manifest:suite              指名 suite（逗號分隔；亦可用 manifest/suite）\n  manifest:suite:subtest      指名子試（frontend 等已註冊 subtests；亦可用 manifest/suite/subtest）\n  manifest:suite:file         pure/integration（serial.mjs）下按 *.test.mjs 試卷 stem 過濾\n  PowerShell 拆散時，後續 token 自行歸併於當前組\n\nmanifest id 取自各 test/manifest.json 頂層「id」。\n無精契時，自行按「<指名>/*」展開（如 shells → shells/chat,shells/social）；亦容 glob（*、?、**）。\nsuite 指名相契各 suite 之 id 或 name；無精契時按「<指名>*」「<指名>_*」展開；亦容 glob。\n\n常制（裸 fount test）：先跑失利/未竟項（suite 內失利試卷優先；失利組有復現則跑畢失利組即退），全綠後再跑內容過期項；任一輪失利即以 1 退出，不於同次調用內反復重試。永不全量（用 --all）。\n試程現狀持久化於 data/test/state/main.json（已芟除/更名之套件自行清理）；失利 log 保留至轉綠。每番運行修 data/test/report.md 與 report.json。\nfrontend 等套件可註冊 subtests（各帶獨立 trigger）；改一視圖卷，唯使對應子試過期。\npure/integration 未註冊 subtests 時，第三段按目錄內 *.test.mjs 之 stem 過濾（如 shells/chat:pure:channel_archive）。\n依賴項（manifest.json dependsOn）未過時，高層自行 blocked。\n\n--all         範圍內全部 suite 為目標（綠者仍可復用，除非 --force）\n--no-parallel 串行運行 suite 並流式輸出 stdout/stderr；常制由資源閘門按內存與 CPU 自行並行。\n--force       禁復用：常制沿用上次真實結果，--force 強制真跑目標。\n\n示例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
 			"passed": "通過：${label}",
 			"passedWithNoise": "通過：${label}（含有噪聲）",
 			"failed": "失利：${label}",
@@ -173,6 +173,7 @@
 				"expected": "預期 ${expected}"
 			},
 			"reusedSuite": "\n>>> 復用 ${manifestId}:${name}（trigger 未變，沿用上次 ${status}）",
+			"prunedAbsentState": "已芟不存在套件之狀錄：${suites} 套件、${subtests} 子試",
 			"noisyOnlyRemain": "仍有 ${count} 個套件通過但含噪聲：${suites}",
 			"noRealRunPlanned": "本次無需真跑：復用 ${reused} 個、預計阻塞 ${blocked} 個（trigger 未變）",
 			"allReusedHint": "本次未真跑任何套件：失利為沿用上番結果，阻塞隨之未解（相關卷未變）。修繕相關卷後重跑，或以 fount test --force 強制真跑。",
@@ -2693,7 +2694,7 @@
 			"sync": {
 				"failed": "諸邦合契未遂：${error}",
 				"incomplete": "尚有 ${missing}/${total} 個事件未同步",
-				"noPeers": "未通諸邦鄰居，歷史札暫未可同步；宜以完整邀請鏈接並稍後建試",
+				"noPeers": "未通諸邦鄰居，歷史札暫未可同步",
 				"rateLimited": "諸邦合契限速中，祈少候復試",
 				"truncated": "DAG 增量未拉全，可稍後建試或提高 limit",
 				"truncatedHint": "DAG 歷史過長，可稍後建試或提高 limit"
@@ -4651,7 +4652,10 @@
 				"title": "收藏",
 				"aria-label": "收藏"
 			},
-			"saved": "已收藏",
+			"saved": {
+				"title": "已收藏",
+				"aria-label": "已收藏"
+			},
 			"translate": "翻譯",
 			"dm": "發密信",
 			"block": "屏絕",
@@ -5392,7 +5396,7 @@
 		},
 		"editorCommand": {
 			"title": "外在編輯器啟卷之敕",
-			"description": "設外在編輯器啟卷所用之敕令與參數模板。",
+			"description": "設外在編輯器啟卷所用之敕令與參數模板；可藉預留符傳入卷徑、行數與列數。",
 			"editorPresetLabel": "編輯器預製項",
 			"commandLabel": "敕令",
 			"argsTemplateLabel": "參數模板",
@@ -5407,7 +5411,13 @@
 					"placeholder": "試用之卷徑，例：C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "宜先填試用之卷徑。",
-				"success": "已行外在編輯器啟卷之試。"
+				"success": "已試行外在編輯器啟卷。",
+				"lineInput": {
+					"aria-label": "行號"
+				},
+				"columnInput": {
+					"aria-label": "列號"
+				}
 			}
 		},
 		"logout": {

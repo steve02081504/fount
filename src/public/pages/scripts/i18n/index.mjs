@@ -8,6 +8,7 @@ import { onElementRemoved } from '../lib/onElementRemoved.mjs'
 import { escapeRegExp } from '../lib/regex.mjs'
 
 import { initTranslations, preferredLangsStorageKey } from './base.mjs'
+import { matchLocale } from './locale_match.mjs'
 import { isSwitchValue, resolveSwitchCase } from './switch_value.mjs'
 
 /**
@@ -113,7 +114,9 @@ export function primaryLocale() {
  */
 export async function setLanguage(preferredLangs) {
 	const oldLangs = loadPreferredLangs()
-	if (JSON.stringify(preferredLangs) === JSON.stringify(oldLangs)) return
+	const samePreferred = JSON.stringify(preferredLangs) === JSON.stringify(oldLangs)
+	// preferred 未变但 main_locale 已漂移（例如 locale-updated epoch 竞态丢包）时仍需重载
+	if (samePreferred && matchLocale([main_locale], preferredLangs)) return
 	localStorage.setItem(preferredLangsStorageKey, JSON.stringify(preferredLangs))
 	await initTranslations()
 }

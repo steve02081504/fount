@@ -7,7 +7,7 @@ import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
-import { renderTemplate } from '/scripts/features/template.mjs'
+import { renderTemplate } from '../templates.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
@@ -15,11 +15,11 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 /** @type {(() => void) | null} */
 let unbindDwell = null
 
-/** 会话内附近趋势缓存 */
-/** @type {{ tag: string, count: number }[] | null} */
-let trendingCache = null
+/** 会话内按 scope 分别缓存的原始趋势列表（失败时回退，勿用合并结果） */
+/** @type {{ nearby: { tag: string, count: number }[] | null, local: { tag: string, count: number }[] | null }} */
+const trendingCacheByScope = { nearby: null, local: null }
 
-/** 在途附近趋势请求（去重） */
+/** 在途趋势请求（去重） */
 /** @type {Promise<{ tag: string, count: number }[] | null> | null} */
 let trendingInFlight = null
 
@@ -178,6 +178,22 @@ export async function loadSuggestedAccounts() {
 }
 
 /**
+ * 合并多路热门话题：同 tag 取较大 count，再按 count 降序。
+ * @param {...{ tag: string, count: number }[]} lists 话题列表
+ * @returns {{ tag: string, count: number }[]} 合并结果
+ */
+function mergeTrendingTags(...lists) {
+	const byTag = new Map()
+	for (const list of lists)
+		for (const row of list) {
+			const prev = byTag.get(row.tag)
+			if (!prev || row.count > prev.count)
+				byTag.set(row.tag, { tag: row.tag, count: row.count })
+		}
+	return [...byTag.values()].sort((a, b) => b.count - a.count)
+}
+
+/**
  * 加载并渲染热门话题（附近聚合；缓存/本机即时回退）。
  * @param {string} [containerId='feedTrending'] 容器 id
  * @returns {Promise<void>}
@@ -214,44 +230,37 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 		aside.appendChild(list)
 	}
 
-	if (trendingCache?.length)
-		await paint(trendingCache)
+	const cached = mergeTrendingTags(trendingCacheByScope.local || [], trendingCacheByScope.nearby || [])
+	if (cached.length)
+		await paint(cached)
 
 	if (!trendingInFlight)
 		trendingInFlight = (async () => {
 			try {
-				const data = await getTrendingHashtags({ scope: 'nearby' })
-				trendingCache = data.tags || []
-				return trendingCache
-			}
-			catch {
-				return trendingCache
+				const nearbyPromise = getTrendingHashtags({ scope: 'nearby' })
+					.then(data => {
+						const tags = data.tags
+						trendingCacheByScope.nearby = tags
+						return tags
+					}, () => trendingCacheByScope.nearby || [])
+				const localPromise = getTrendingHashtags({ scope: 'local' })
+					.then(data => {
+						const tags = data.tags
+						trendingCacheByScope.local = tags
+						return tags
+					}, () => trendingCacheByScope.local || [])
+				const local = await localPromise
+				const early = mergeTrendingTags(trendingCacheByScope.nearby || [], local)
+				if (early.length) await paint(early)
+				const nearby = await nearbyPromise
+				return mergeTrendingTags(local, nearby)
 			}
 			finally {
 				trendingInFlight = null
 			}
 		})()
-	const localPromise = !trendingCache?.length
-		? (async () => {
-			try {
-				return await getTrendingHashtags({ scope: 'local' })
-			}
-			catch {
-				return { tags: [] }
-			}
-		})()
-		: null
 
-	const nearbyTags = await trendingInFlight
-	if (nearbyTags?.length) {
-		await paint(nearbyTags)
-		return
-	}
-
-	if (localPromise) {
-		const local = await localPromise
-		await paint(local.tags || [])
-	}
+	await paint(await trendingInFlight)
 }
 
 /**

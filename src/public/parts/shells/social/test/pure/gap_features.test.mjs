@@ -67,8 +67,8 @@ Deno.test('normalizeDwellEntry rejects short dwells', () => {
 		dwellMs: 5000,
 		tags: ['Foo', 'foo'],
 	})
-	assertEquals(ok?.author, 'aa')
-	assertEquals(ok?.tags, ['foo'])
+	assertEquals(ok?.author, 'Aa')
+	assertEquals(ok?.tags, ['Foo', 'foo'])
 	assertEquals(AUTHOR_BOOST_PER_DWELL, 0.25)
 })
 

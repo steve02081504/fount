@@ -46,6 +46,24 @@ export function stateMarkdownPath(repoRoot) {
 }
 
 /**
+ * manifest id → 磁盘目录名（`/` `\` → `_`）。
+ * @param {string} manifestId manifest id
+ * @returns {string} 安全目录名
+ */
+export function safeManifestDirName(manifestId) {
+	return manifestId.replace(/[/\\]/g, '_')
+}
+
+/**
+ * suite 名 → 日志文件名 stem（剔除路径分隔与 `:`）。
+ * @param {string} suiteName suite 名
+ * @returns {string} 安全文件名 stem
+ */
+export function safeSuiteFileName(suiteName) {
+	return suiteName.replace(/[/:\\]/g, '_')
+}
+
+/**
  * 返回 suite 失败日志绝对路径。
  * @param {string} repoRoot 仓库根
  * @param {string} manifestId manifest id
@@ -53,9 +71,12 @@ export function stateMarkdownPath(repoRoot) {
  * @returns {string} data/test/state/logs/<manifestId>/<suite>.log
  */
 export function stateLogPath(repoRoot, manifestId, suiteName) {
-	const safeManifest = manifestId.replace(/[/\\]/g, '_')
-	const safeSuite = suiteName.replace(/[/:\\]/g, '_')
-	return join(stateDir(repoRoot), 'logs', safeManifest, `${safeSuite}.log`)
+	return join(
+		stateDir(repoRoot),
+		'logs',
+		safeManifestDirName(manifestId),
+		`${safeSuiteFileName(suiteName)}.log`,
+	)
 }
 
 /**
@@ -65,8 +86,7 @@ export function stateLogPath(repoRoot, manifestId, suiteName) {
  * @returns {string} Playwright 产物目录
  */
 export function playwrightOutputDir(repoRoot, manifestId = 'default') {
-	const safe = manifestId.replace(/[/\\]/g, '_')
-	return join(testDataRoot(repoRoot), 'playwright', safe)
+	return join(testDataRoot(repoRoot), 'playwright', safeManifestDirName(manifestId))
 }
 
 /**

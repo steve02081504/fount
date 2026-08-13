@@ -145,7 +145,7 @@
 			"replHint": "Enter — выполнить · Shift+Enter — новая строка"
 		},
 		"test": {
-			"help": "Использование: fount test [--all] [--gen-report] [-j <n>] [--since <commit>] [<manifest-ids> [<suite-selectors>]]\n\nID манифеста берётся из поля \"id\" верхнего уровня в каждом test/manifest.json.\nНесколько ID манифестов разделяются запятой (без пробелов): shells/chat,shells/social\nПри отсутствии точного совпадения раскрывается как \"<имя>/*\" (напр. shells → shells/chat,shells/social);\nтакже поддерживаются glob (*, ?, **), напр. shells/*, **.\n\nСелекторы suite соответствуют id или name каждого suite, также через запятую.\n\nПри незакоммиченных изменениях запускаются только тесты по diff; при чистом дереве используйте --since для сравнения с коммитом.\nПри указании ID манифестов включаются записи об ошибках (data/test/failures/); без явных селекторов suite повторяются упавшие suite; явные селекторы запускаются как указано (без пересечения с записями об ошибках).\n\n--gen-report  Записать вывод упавших/шумных suite на диск и сгенерировать data/test/report/report.md + report.json (обновляется после каждого suite).\n-j, --jobs    Глобальный лимит параллелизма (по умолчанию — число потоков CPU).\n\nПримеры:\n  fount test\n  fount test --all\n  fount test --all --gen-report\n  fount test p2p,shells/chat,shells/social --all --gen-report -j 16\n  fount test shells/chat\n  fount test shells\n  fount test shells/*\n  fount test shells/chat,shells/social\n  fount test shells/chat frontend\n  fount test shells/chat unit,fed_test\n  fount test p2p\n  fount test --since abc1234",
+			"help": "Использование: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nСинтаксис групп (несколько групп через пробел):\n  manifest                    все suite этого manifest\n  manifest:suite              указать suite (несколько через запятую; также manifest/suite)\n  manifest:suite:subtest      указать подтест (frontend и др. с зарегистрированными subtests; также manifest/suite/subtest)\n  manifest:suite:file         фильтр по stem файлов *.test.mjs в pure/integration (serial.mjs)\n  При разбиении токенов в PowerShell последующие токены объединяются с текущей группой\n\nID manifest берётся из поля \"id\" верхнего уровня в test/manifest.json.\nБез точного совпадения автоматически раскрывается как «<имя>/*» (напр. shells → shells/chat,shells/social); поддерживаются glob (*, ?, **).\nИмя suite сопоставляется с id или name каждого suite; без точного совпадения раскрывается как «<имя>*», «<имя>_*»; glob также поддерживается.\n\nПо умолчанию (просто fount test): сначала запускаются упавшие/незавершённые (внутри suite приоритет у упавших файлов; если группа с ошибками воспроизводится — выполнить её и выйти), затем устаревшие после полного зелёного; любая неудачная волна завершается с кодом 1, без повторов в одном вызове. Никогда полный прогон (используйте --all).\nСостояние тестов сохраняется в data/test/state/main.json (удалённые/переименованные suite очищаются автоматически); логи ошибок хранятся до зелёного. Каждый запуск обновляет data/test/report.md и report.json.\nfrontend и др. могут регистрировать subtests (каждый со своим trigger); изменение одного view-файла устаревает только соответствующий subtest.\nБез зарегистрированных subtests в pure/integration третий сегмент фильтрует по stem *.test.mjs в каталоге (напр. shells/chat:pure:channel_archive).\nПри непройденной зависимости (manifest.json dependsOn) верхние уровни автоматически blocked.\n\n--all         все suite в области как цели (зелёные могут переиспользоваться, кроме --force)\n--no-parallel последовательный запуск suite с потоковым stdout/stderr; по умолчанию параллелизм через ресурсные ворота по памяти и CPU.\n--force       отключить переиспользование: по умолчанию берётся последний реальный результат, --force принудительно запускает.\n\nПримеры:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
 			"passed": "ПРОЙДЕНО: ${label}",
 			"passedWithNoise": "ПРОЙДЕНО: ${label} (с шумом)",
 			"failed": "ПРОВАЛ: ${label}",
@@ -173,6 +173,7 @@
 				"expected": "ожидается ${expected}"
 			},
 			"reusedSuite": "\n>>> Повтор ${manifestId}:${name} (триггер не изменился, используется прошлый ${status})",
+			"prunedAbsentState": "Удалено состояние несуществующих suite: ${suites} suite, ${subtests} подтестов",
 			"noisyOnlyRemain": "Ещё ${count} suite прошли с шумом: ${suites}",
 			"noRealRunPlanned": "Запуск не требуется: повтор ${reused}, ожидаемая блокировка ${blocked} (триггер не изменился)",
 			"allReusedHint": "Ни один suite не запускался: провалы — унаследованные результаты, блокировки не сняты (файлы не менялись). Исправьте файлы и перезапустите или используйте fount test --force.",
@@ -2693,7 +2694,7 @@
 			"sync": {
 				"failed": "Ошибка синхронизации федерации: ${error}",
 				"incomplete": "События ${missing}/${total} остаются несинхронизированными",
-				"noPeers": "При отсутствии подключения к федеративному соседу исторические сообщения не могут быть временно синхронизированы; пожалуйста, используйте полную ссылку на приглашение и повторите попытку позже.",
+				"noPeers": "Нет подключения к федеративным соседям; исторические сообщения пока не могут быть синхронизированы",
 				"rateLimited": "Действует ограничение скорости федеральной синхронизации. Повторите попытку позже.",
 				"truncated": "Приращение DAG не заполнено. Вы можете повторить попытку позже или увеличить лимит.",
 				"truncatedHint": "История DAG слишком длинная. Вы можете повторить попытку позже или увеличить лимит."
@@ -4651,7 +4652,10 @@
 				"title": "В избранное",
 				"aria-label": "В избранное"
 			},
-			"saved": "В избранном",
+			"saved": {
+				"title": "В избранном",
+				"aria-label": "В избранном"
+			},
 			"translate": "Перевести",
 			"dm": "Написать в ЛС",
 			"block": "Заблокировать",
@@ -5407,7 +5411,13 @@
 					"placeholder": "Путь к файлу для проверки, напр. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Сначала укажите путь к тестовому файлу.",
-				"success": "Команда открытия во внешнем редакторе выполнена."
+				"success": "Попытка открыть во внешнем редакторе выполнена.",
+				"lineInput": {
+					"aria-label": "Номер строки"
+				},
+				"columnInput": {
+					"aria-label": "Номер столбца"
+				}
 			}
 		},
 		"logout": {

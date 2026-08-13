@@ -1,5 +1,6 @@
 import express from 'npm:express'
 
+import { urlPartKeyToPartpath } from '../../scripts/part_paths.mjs'
 import { WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
 import { auth_request, getUserByReq, respondUnauthorized } from '../auth/index.mjs'
 import { events } from '../events.mjs'
@@ -22,7 +23,7 @@ PartsRouter.use(async (req, res, next) => {
 	const { username } = getUserByReq(req)
 	if (!username) return next()
 
-	const partpath = match[2].replace(/:/g, '/')
+	const partpath = urlPartKeyToPartpath(match[2])
 
 	// Load the part
 	await loadPart(username, partpath).catch(e => {

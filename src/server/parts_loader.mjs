@@ -3,7 +3,7 @@ import path from 'node:path'
 import { setTimeout } from 'node:timers'
 import url from 'node:url'
 
-import { mapDelete, mapGet, mapSet } from 'npm:@steve02081504/fount-p2p/core/composite_key'
+import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 
 import { backupGitUncommittedChanges, run_git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n/index.mjs'
@@ -94,11 +94,11 @@ export function getAllDefaultParts(user, parent) {
  * @returns {string | undefined} 一个随机的子部件名称，如果没有任何可用部件则为 undefined。
  */
 export function getAnyPreferredDefaultPart(user, parent) {
-	if (Object(user) instanceof String) user = getUserByUsername(user)
+	const username = user.username ?? user
 	const defaultPartNames = getAllDefaultParts(user, parent)
 	if (defaultPartNames.length)
 		return defaultPartNames[Math.floor(Math.random() * defaultPartNames.length)]
-	const allPartNames = getPartList(user.username, parent)
+	const allPartNames = getPartList(username, parent)
 	return allPartNames[Math.floor(Math.random() * allPartNames.length)]
 }
 
@@ -109,10 +109,10 @@ export function getAnyPreferredDefaultPart(user, parent) {
  * @returns {Promise<any | undefined>} 一个解析为已加载部件的承诺，如果没有任何可用部件则为 undefined。
  */
 export async function loadAnyPreferredDefaultPart(user, parent) {
-	if (Object(user) instanceof String) user = getUserByUsername(user)
+	const username = user.username ?? user
 	const partname = getAnyPreferredDefaultPart(user, parent)
 	if (!partname) return
-	return loadPart(user.username, parent + '/' + partname, { username: user.username })
+	return loadPart(username, parent + '/' + partname, { username })
 }
 
 /**
@@ -384,7 +384,7 @@ export function GetPartPath(username, partpath) {
 	return __dirname + '/src/public/parts/' + partpath
 }
 
-/** @type {Map<string, Map<string, boolean>>} */
+/** @type {Map<string, boolean>} */
 const partMainExistsCache = new Map()
 
 /**
@@ -394,10 +394,11 @@ const partMainExistsCache = new Map()
  * @returns {boolean} 是否存在 main.mjs
  */
 export function hasPartMain(username, partpath) {
-	const cached = mapGet(partMainExistsCache, username, partpath)
+	const key = compositeKey(username, partpath)
+	const cached = partMainExistsCache.get(key)
 	if (cached !== undefined) return cached
 	const exists = fs.existsSync(GetPartPath(username, partpath) + '/main.mjs')
-	mapSet(partMainExistsCache, username, partpath, exists)
+	partMainExistsCache.set(key, exists)
 	return exists
 }
 
@@ -407,7 +408,7 @@ export function hasPartMain(username, partpath) {
  * @returns {void}
  */
 export function invalidatePartMainCache(username, partpath) {
-	mapDelete(partMainExistsCache, username, partpath)
+	partMainExistsCache.delete(compositeKey(username, partpath))
 }
 
 /**

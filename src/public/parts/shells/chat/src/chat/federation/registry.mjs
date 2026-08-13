@@ -3,18 +3,35 @@
  * 【职责】进程内联邦运行时注册表：P2P 房间实例缓存、join 防重入、tip/gossip/频道历史等待槽，以及群→当前 join 用户的 owner 映射。
  * 【原理】分区槽按 username→groupId→partitionId 嵌套 Map 缓存；inflight 合并并发 join；rebindGeneration 使进行中的 join 作废。
  */
-import {
-	compositeKey,
-	mapDelete,
-	mapDeleteByPrefix,
-	mapForEachUnder,
-	mapGet,
-	mapHas,
-	mapSet,
-} from 'npm:@steve02081504/fount-p2p/core/composite_key'
+import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 import { EVENT_ID_HEX } from 'npm:@steve02081504/fount-p2p/dag/index'
 
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
+
+const KEY_SEP = '\0'
+
+/**
+ * @param {Map<string, unknown>} map 扁平复合键表
+ * @param {string[]} prefixParts 前缀段
+ * @param {(tail: string[], value: unknown, key: string) => void} fn 回调
+ * @returns {void}
+ */
+function forEachUnder(map, prefixParts, fn) {
+	const prefix = compositeKey(...prefixParts) + KEY_SEP
+	for (const [key, value] of map)
+		if (key.startsWith(prefix)) fn(key.slice(prefix.length).split(KEY_SEP), value, key)
+}
+
+/**
+ * @param {Map<string, unknown>} map 扁平复合键表
+ * @param {string[]} prefixParts 前缀段
+ * @returns {void}
+ */
+function deleteUnder(map, prefixParts) {
+	const prefix = compositeKey(...prefixParts) + KEY_SEP
+	for (const key of [...map.keys()])
+		if (key.startsWith(prefix)) map.delete(key)
+}
 
 /**
  * DAG 事件 ID 的 64 位小写 hex 正则（自 `p2p/dag` 再导出）。
@@ -50,7 +67,7 @@ export const pendingChannelHistory = new Map()
  * @returns {object | null | undefined} 已 join 的分区槽
  */
 export function getFederationPartitionSlot(username, groupId, partitionId = LOGIC_SYNC_PARTITION) {
-	return mapGet(federationPartitionSlots, username, groupId, partitionId)
+	return federationPartitionSlots.get(compositeKey(username, groupId, partitionId))
 }
 
 /**
@@ -61,7 +78,7 @@ export function getFederationPartitionSlot(username, groupId, partitionId = LOGI
  * @returns {void}
  */
 export function setFederationPartitionSlot(username, groupId, partitionId, slot) {
-	mapSet(federationPartitionSlots, username, groupId, partitionId, slot)
+	federationPartitionSlots.set(compositeKey(username, groupId, partitionId), slot)
 }
 
 /**
@@ -71,7 +88,7 @@ export function setFederationPartitionSlot(username, groupId, partitionId, slot)
  * @returns {boolean} 是否已有缓存槽
  */
 export function hasFederationPartitionSlot(username, groupId, partitionId) {
-	return mapHas(federationPartitionSlots, username, groupId, partitionId)
+	return federationPartitionSlots.has(compositeKey(username, groupId, partitionId))
 }
 
 /**
@@ -93,8 +110,9 @@ function teardownFederationSlot(slot) {
  * @returns {object | null | undefined} 被移除的 slot
  */
 export function detachFederationPartitionSlot(username, groupId, partitionId) {
-	const slot = mapGet(federationPartitionSlots, username, groupId, partitionId)
-	mapDelete(federationPartitionSlots, username, groupId, partitionId)
+	const key = compositeKey(username, groupId, partitionId)
+	const slot = federationPartitionSlots.get(key)
+	federationPartitionSlots.delete(key)
 	return slot
 }
 
@@ -105,8 +123,9 @@ export function detachFederationPartitionSlot(username, groupId, partitionId) {
  * @returns {void}
  */
 export function deleteFederationPartitionSlot(username, groupId, partitionId) {
-	teardownFederationSlot(mapGet(federationPartitionSlots, username, groupId, partitionId))
-	mapDelete(federationPartitionSlots, username, groupId, partitionId)
+	const key = compositeKey(username, groupId, partitionId)
+	teardownFederationSlot(federationPartitionSlots.get(key))
+	federationPartitionSlots.delete(key)
 }
 
 /**
@@ -116,7 +135,7 @@ export function deleteFederationPartitionSlot(username, groupId, partitionId) {
  * @returns {Promise<object | null> | undefined} 进行中的 join Promise
  */
 export function getFederationPartitionInflight(username, groupId, partitionId) {
-	return mapGet(federationPartitionInflight, username, groupId, partitionId)
+	return federationPartitionInflight.get(compositeKey(username, groupId, partitionId))
 }
 
 /**
@@ -127,7 +146,7 @@ export function getFederationPartitionInflight(username, groupId, partitionId) {
  * @returns {void}
  */
 export function setFederationPartitionInflight(username, groupId, partitionId, task) {
-	mapSet(federationPartitionInflight, username, groupId, partitionId, task)
+	federationPartitionInflight.set(compositeKey(username, groupId, partitionId), task)
 }
 
 /**
@@ -137,7 +156,7 @@ export function setFederationPartitionInflight(username, groupId, partitionId, t
  * @returns {void}
  */
 export function deleteFederationPartitionInflight(username, groupId, partitionId) {
-	mapDelete(federationPartitionInflight, username, groupId, partitionId)
+	federationPartitionInflight.delete(compositeKey(username, groupId, partitionId))
 }
 
 /**
@@ -147,7 +166,7 @@ export function deleteFederationPartitionInflight(username, groupId, partitionId
  * @returns {number} 当前 rebind 代数
  */
 export function getFederationPartitionRebindGen(username, groupId, partitionId) {
-	return mapGet(federationPartitionRebindGen, username, groupId, partitionId) || 0
+	return federationPartitionRebindGen.get(compositeKey(username, groupId, partitionId)) || 0
 }
 
 /**
@@ -157,11 +176,8 @@ export function getFederationPartitionRebindGen(username, groupId, partitionId) 
  * @returns {void}
  */
 export function bumpFederationPartitionRebindGen(username, groupId, partitionId) {
-	mapSet(
-		federationPartitionRebindGen,
-		username,
-		groupId,
-		partitionId,
+	federationPartitionRebindGen.set(
+		compositeKey(username, groupId, partitionId),
 		getFederationPartitionRebindGen(username, groupId, partitionId) + 1,
 	)
 }
@@ -176,12 +192,12 @@ export function invalidateFederationPartitionsForGroup(username, groupId) {
 	// 任何在本次 invalidate 之前读取 genAtJoin、之后才完成的 inflight join 都会因 gen 不匹配而放弃回填 slot，
 	// 杜绝删群/换房后孤儿 werift 持连泄漏。（若删 gen 回 0，则 genAtJoin===0 的进行中 join 会再次匹配而回填。）
 	const partitionIds = new Set()
-	mapForEachUnder(federationPartitionSlots, username, groupId, tail => partitionIds.add(tail[0]))
-	mapForEachUnder(federationPartitionInflight, username, groupId, tail => partitionIds.add(tail[0]))
-	mapForEachUnder(federationPartitionRebindGen, username, groupId, tail => partitionIds.add(tail[0]))
-	mapForEachUnder(federationPartitionSlots, username, groupId, (_tail, slot) => teardownFederationSlot(slot))
-	mapDeleteByPrefix(federationPartitionSlots, username, groupId)
-	mapDeleteByPrefix(federationPartitionInflight, username, groupId)
+	forEachUnder(federationPartitionSlots, [username, groupId], tail => partitionIds.add(tail[0]))
+	forEachUnder(federationPartitionInflight, [username, groupId], tail => partitionIds.add(tail[0]))
+	forEachUnder(federationPartitionRebindGen, [username, groupId], tail => partitionIds.add(tail[0]))
+	forEachUnder(federationPartitionSlots, [username, groupId], (_tail, slot) => teardownFederationSlot(slot))
+	deleteUnder(federationPartitionSlots, [username, groupId])
+	deleteUnder(federationPartitionInflight, [username, groupId])
 	for (const partitionId of partitionIds)
 		bumpFederationPartitionRebindGen(username, groupId, partitionId)
 	groupFederationOwner.delete(groupId)
@@ -192,10 +208,10 @@ export function invalidateFederationPartitionsForGroup(username, groupId) {
  * @returns {void}
  */
 export function invalidateAllFederationPartitionsForUser(username) {
-	mapForEachUnder(federationPartitionSlots, username, (_tail, slot) => teardownFederationSlot(slot))
-	mapDeleteByPrefix(federationPartitionSlots, username)
-	mapDeleteByPrefix(federationPartitionInflight, username)
-	mapDeleteByPrefix(federationPartitionRebindGen, username)
+	forEachUnder(federationPartitionSlots, [username], (_tail, slot) => teardownFederationSlot(slot))
+	deleteUnder(federationPartitionSlots, [username])
+	deleteUnder(federationPartitionInflight, [username])
+	deleteUnder(federationPartitionRebindGen, [username])
 	for (const [groupId, owner] of groupFederationOwner)
 		if (owner === username) groupFederationOwner.delete(groupId)
 }
@@ -206,7 +222,7 @@ export function invalidateAllFederationPartitionsForUser(username) {
  * @returns {void}
  */
 export function forEachFederationPartitionSlot(username, fn) {
-	mapForEachUnder(federationPartitionSlots, username, ([groupId, partitionId], slot) => {
+	forEachUnder(federationPartitionSlots, [username], ([groupId, partitionId], slot) => {
 		fn(groupId, partitionId, slot)
 	})
 }
@@ -230,7 +246,7 @@ export function forEachFederationRoomSlotInGroup(username, groupId, fn) {
  * @returns {{ collected: Set<string>, timer: ReturnType<typeof setTimeout>, resolve: () => void } | undefined} tip 交换等待项
  */
 export function getPendingTipExchange(username, groupId) {
-	return mapGet(pendingTipExchanges, username, groupId)
+	return pendingTipExchanges.get(compositeKey(username, groupId))
 }
 
 /**
@@ -240,7 +256,7 @@ export function getPendingTipExchange(username, groupId) {
  * @returns {void}
  */
 export function setPendingTipExchange(username, groupId, entry) {
-	mapSet(pendingTipExchanges, username, groupId, entry)
+	pendingTipExchanges.set(compositeKey(username, groupId), entry)
 }
 
 /**
@@ -249,7 +265,7 @@ export function setPendingTipExchange(username, groupId, entry) {
  * @returns {void}
  */
 export function deletePendingTipExchange(username, groupId) {
-	mapDelete(pendingTipExchanges, username, groupId)
+	pendingTipExchanges.delete(compositeKey(username, groupId))
 }
 
 /**

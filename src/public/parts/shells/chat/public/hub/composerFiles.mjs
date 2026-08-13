@@ -7,10 +7,10 @@
  */
 import { confirmAction } from '../../../../scripts/features/promptDialog.mjs'
 import { appendRecognizedText, hasSpeechRecognitionSource, recognizeBuffer } from '../../../../scripts/features/speechRecognition.mjs'
-import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { startVoiceRecording } from '../../../../scripts/features/voiceRecord.mjs'
 import { handleFilesSelect } from '../src/composerAttachments.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 
 import { setComposerExtrasVisible } from './composerExtras.mjs'
 

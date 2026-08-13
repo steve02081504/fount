@@ -30,8 +30,7 @@ export function resolveSensitiveMedia(value, contentWarning) {
  * @returns {string | undefined} 清洗后
  */
 export function sanitizeLocale(raw) {
-	const locale = (raw || '').slice(0, LOCALE_MAX)
-	return locale || undefined
+	return (raw || '').trim().slice(0, LOCALE_MAX) || undefined
 }
 
 /**
@@ -39,8 +38,7 @@ export function sanitizeLocale(raw) {
  * @returns {string | undefined} 清洗后
  */
 export function sanitizeContentWarning(raw) {
-	const warning = (raw || '').slice(0, CONTENT_WARNING_MAX)
-	return warning || undefined
+	return (raw || '').trim().slice(0, CONTENT_WARNING_MAX) || undefined
 }
 
 /**
@@ -48,8 +46,7 @@ export function sanitizeContentWarning(raw) {
  * @returns {string | undefined} 清洗后
  */
 export function sanitizeAlt(raw) {
-	const alt = (raw || '').slice(0, ALT_MAX)
-	return alt || undefined
+	return (raw || '').trim().slice(0, ALT_MAX) || undefined
 }
 
 /**

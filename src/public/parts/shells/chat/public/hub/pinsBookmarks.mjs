@@ -5,10 +5,10 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/template、../src/endpoints/groupBookmarks、banners、core/domUtils、core/state、sidebar、messages/messages、messages/pinPreview。
  */
-import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { getChatBookmarks, removeChatBookmark } from '../src/endpoints/groupBookmarks.mjs'
 import { unpinMessage } from '../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../src/endpoints/groupCore.mjs'
+import { mountTemplate, renderTemplate } from '../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, refreshChannelPinsBar } from './banners.mjs'

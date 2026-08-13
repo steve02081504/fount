@@ -173,6 +173,7 @@
 				"expected": "${expected} 예상"
 			},
 			"reusedSuite": ">>> ${manifestId}:${name} 재사용(트리거는 변경되지 않고 마지막 ${status}가 사용됨)",
+			"prunedAbsentState": "존재하지 않는 스위트 상태를 정리했습니다: 스위트 ${suites}개, 하위 테스트 ${subtests}개",
 			"noisyOnlyRemain": "여전히 ${count}개의 스위트가 지나가지만 소음이 있습니다. ${suites}",
 			"noRealRunPlanned": "이번에는 실행할 필요가 없습니다. ${reused}는 재사용되고 ${blocked}는 차단될 것으로 예상됩니다(트리거는 변경되지 않은 상태로 유지됨).",
 			"allReusedHint": "이번에는 실제로 실행된 스위트가 없습니다: 실패는 이전 결과를 재사용한 것이며, 관련 파일이 변경되지 않아 차단이 해소되지 않았습니다. 관련 파일을 수정한 뒤 다시 실행하거나 `fount test --force`로 강제 실행하세요.",
@@ -2693,7 +2694,7 @@
 			"sync": {
 				"failed": "연합 동기화 실패: ${error}",
 				"incomplete": "${missing}/${total} 이벤트가 동기화되지 않은 상태로 유지됩니다.",
-				"noPeers": "연합 이웃에 연결되지 않아 기록 메시지를 아직 동기화할 수 없습니다. 전체 초대 링크를 쓰고 나중에 다시 시도해 주세요.",
+				"noPeers": "연합 이웃에 연결되지 않아 기록 메시지를 아직 동기화할 수 없습니다.",
 				"rateLimited": "연방 동기화 속도 제한이 진행 중입니다. 나중에 다시 시도해 주세요.",
 				"truncated": "DAG 증분이 가득 차지 않았습니다. 나중에 다시 시도하거나 한도를 늘릴 수 있습니다.",
 				"truncatedHint": "DAG 기록이 너무 깁니다. 나중에 다시 시도하거나 한도를 늘릴 수 있습니다."
@@ -4651,7 +4652,10 @@
 				"title": "북마크",
 				"aria-label": "북마크"
 			},
-			"saved": "모은",
+			"saved": {
+				"title": "모은",
+				"aria-label": "모은"
+			},
 			"translate": "번역",
 			"dm": "비공개 메시지 보내기",
 			"block": "차단",
@@ -5392,7 +5396,7 @@
 		},
 		"editorCommand": {
 			"title": "외부 편집기 명령",
-			"description": "외부 편집기에서 파일을 열 때 사용할 명령과 인수 템플릿을 설정합니다.",
+			"description": "외부 편집기에서 파일을 열 때 사용할 명령과 인수 템플릿을 설정합니다. 플레이스홀더로 파일 경로, 줄 번호, 열 번호를 지정할 수 있습니다.",
 			"editorPresetLabel": "편집기 사전 설정",
 			"commandLabel": "명령",
 			"argsTemplateLabel": "인수 템플릿",
@@ -5402,12 +5406,18 @@
 			"saveButton": "설정 저장",
 			"saveSuccess": "외부 편집기 명령 설정을 저장했습니다.",
 			"test": {
-				"button": "열어 보기",
+				"button": "테스트로 열기",
 				"pathInput": {
-					"placeholder": "시험해 볼 파일 경로(예: C:/work/project/src/main.mjs)"
+					"placeholder": "테스트할 파일 경로(예: C:/work/project/src/main.mjs)"
 				},
 				"pathRequired": "먼저 테스트할 파일 경로를 입력하세요.",
-				"success": "외부 편집기에서 파일을 여는 명령을 실행했습니다."
+				"success": "외부 편집기에서 열기를 시도했습니다.",
+				"lineInput": {
+					"aria-label": "줄 번호"
+				},
+				"columnInput": {
+					"aria-label": "열 번호"
+				}
 			}
 		},
 		"logout": {

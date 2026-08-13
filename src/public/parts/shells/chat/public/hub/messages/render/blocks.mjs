@@ -3,10 +3,10 @@
  * 【职责】特殊内容块：解密占位、贴纸、群邀请、语义引用气泡。
  */
 import { resolvePackEmojiUrl } from '../../../../../../scripts/features/emoji/packIndex.mjs'
-import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
 import { parseEmojiToken } from '../../../shared/inlineTokenSyntax.mjs'
 import { buildInviteJoinShareUrl } from '../../../src/inviteQr.mjs'
+import { renderTemplateAsHtmlString } from '../../../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { authorPresentationKeys } from '../../core/domUtils.mjs'
 import { store } from '../../core/state.mjs'

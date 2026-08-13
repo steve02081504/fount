@@ -173,6 +173,7 @@
 				"expected": "esperado ${expected}"
 			},
 			"reusedSuite": "\n>>> Reutilizando ${manifestId}:${name} (trigger sin cambios, último ${status})",
+			"prunedAbsentState": "Eliminado el estado de suites ya inexistentes: ${suites} suites, ${subtests} subpruebas",
 			"noisyOnlyRemain": "Aún quedan ${count} suites aprobando pero con ruido: ${suites}",
 			"noRealRunPlanned": "No hace falta ejecución real: ${reused} reutilizadas, ${blocked} previstas como bloqueadas (trigger sin cambios)",
 			"allReusedHint": "Esta vez no se ejecutó ninguna suite: los fallos son del último resultado heredado y el bloqueo no se resolvió (archivos relevantes sin cambios). Corrige los archivos y vuelve a ejecutar, o usa fount test --force para forzar ejecución real.",
@@ -2693,7 +2694,7 @@
 			"sync": {
 				"failed": "Error de sincronización de federación: ${error}",
 				"incomplete": "${missing}/${total} eventos permanecen sin sincronizar",
-				"noPeers": "No conectado al vecino federado, los mensajes históricos no se pueden sincronizar temporalmente; Usa el enlace de invitación completo e inténtelo de nuevo más tarde.",
+				"noPeers": "No hay conexión con vecinos federados; los mensajes históricos no se pueden sincronizar temporalmente",
 				"rateLimited": "El límite de velocidad de sincronización federal está en progreso. Vuelve a intentarlo más tarde.",
 				"truncated": "El incremento de DAG no está completo. Puedes volver a intentarlo más tarde o aumentar el límite.",
 				"truncatedHint": "El historial de DAG es demasiado largo. Puedes volver a intentarlo más tarde o aumentar el límite."
@@ -4657,7 +4658,10 @@
 				"title": "Guardar",
 				"aria-label": "Guardar"
 			},
-			"saved": "Coleccionado",
+			"saved": {
+				"title": "Guardado",
+				"aria-label": "Guardado"
+			},
 			"translate": "traducir",
 			"dm": "enviar mensaje privado",
 			"block": "Bloquear",
@@ -5413,7 +5417,13 @@
 					"placeholder": "Ruta de un archivo de prueba, p. ej. C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "Introduce primero la ruta del archivo de prueba.",
-				"success": "Se ejecutó el comando para abrir el archivo en el editor."
+				"success": "Se intentó abrir en el editor externo.",
+				"lineInput": {
+					"aria-label": "Número de línea"
+				},
+				"columnInput": {
+					"aria-label": "Número de columna"
+				}
 			}
 		},
 		"logout": {

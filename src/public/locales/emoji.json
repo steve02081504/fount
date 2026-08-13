@@ -173,6 +173,7 @@
 				"expected": "🔮 ${expected}"
 			},
 			"reusedSuite": "\n>>> ♻️ ${manifestId}:${name}（⚡⌀Δ，⏮ ${status}）",
+			"prunedAbsentState": "🧹 ⌀📦：${suites} 📦、${subtests} 🧪",
 			"noisyOnlyRemain": "＋ ${count} 📦 ✅＋🔊：${suites}",
 			"noRealRunPlanned": "🚫🏃：♻️ ${reused}、🚫⏸️ ${blocked}（⚡⌀Δ）",
 			"allReusedHint": "🚫🏃：❌＝⏮♻️，🚫⏸️⌀Δ（📁⌀Δ）🔧📁→🔁，／ `fount test --force`→💥🏃",
@@ -2693,7 +2694,7 @@
 			"sync": {
 				"failed": "🌐🔄❌：${error}",
 				"incomplete": "⏳${missing}/${total} 📅🚫🔄",
-				"noPeers": "🚫🤝🌐 · 📨🔗🔁",
+				"noPeers": "🚫🤝🌐 · 📨🔁",
 				"rateLimited": "🌐🔄🐢⏳",
 				"truncated": "🌳📥⏳ 🔁⬆️ 🔢",
 				"truncatedHint": "🌳📜↔️ 🔁⬆️ 🔢"
@@ -4651,7 +4652,10 @@
 				"title": "⭐",
 				"aria-label": "⭐"
 			},
-			"saved": "⭐✅",
+			"saved": {
+				"title": "⭐✅",
+				"aria-label": "⭐✅"
+			},
 			"translate": "🌐",
 			"dm": "📤🤫💬",
 			"block": "🚫👤",
@@ -5407,7 +5411,13 @@
 					"placeholder": "📂 C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "⚠️📂❓",
-				"success": "✅▶️🖥️📂"
+				"success": "✅▶️🖥️📂",
+				"lineInput": {
+					"aria-label": "#️⃣行"
+				},
+				"columnInput": {
+					"aria-label": "#️⃣列"
+				}
 			}
 		},
 		"logout": {

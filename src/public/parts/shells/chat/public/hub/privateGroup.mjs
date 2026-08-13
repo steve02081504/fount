@@ -5,12 +5,12 @@
  * 【数据结构】store.privateGroup 当前私聊 groupId / peerEntityHash。
  * 【关联】charCard、chatConfig、friendBindings、messages/loadMessages、hashNav、friendChat。
  */
-import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { charFriendBindingInput } from '../shared/friendBinding.mjs'
 import { deleteSession } from '../src/endpoints/groupCore.mjs'
 import { setGroupFriendBinding, unbindFriendGroup } from '../src/endpoints/groupFriendBinding.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 
 import { mountChatConfigPanel } from './chatConfig.mjs'
 import { openOverlayModal, closeOverlayModal } from './core/overlayModal.mjs'

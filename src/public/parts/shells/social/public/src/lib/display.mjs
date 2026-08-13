@@ -12,11 +12,11 @@ import {
 	renderTrustedMarkdownHtml,
 } from '/parts/shells:chat/shared/trustedMarkdown.mjs'
 import { isTrustedMarkdownAuthor } from '/parts/shells:chat/src/trustedAuthors.mjs'
-import { renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { formatSocialPostHref } from '../../shared/runUri.mjs'
 import { state, viewerEntityHash } from '../state.mjs'
+import { renderTemplateAsHtmlString } from '../templates.mjs'
 
 /** 重导出实体 at-id 格式化函数。 */
 export { formatEntityAtId }

@@ -4,8 +4,6 @@ import { getPersonalLists } from '../endpoints/chatBridge.mjs'
 import { getProfile, getProfileFollowers, getProfileFollowing, getProfileLikes, getProfilePosts } from '../endpoints/profile.mjs'
 import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
-import { appendTemplate, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
-import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
 import {
@@ -18,6 +16,12 @@ import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { bindFeedVideoAutoplay } from '../lib/videoAutoplay.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state, viewerEntityHash } from '../state.mjs'
+import {
+	appendTemplate,
+	openDialogFromTemplate,
+	renderTemplate,
+	renderTemplateAsHtmlString,
+} from '../templates.mjs'
 
 import { renderProfileAlbums } from './albums.mjs'
 

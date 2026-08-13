@@ -1,8 +1,8 @@
 import { createAlbum, deleteAlbum, getAlbumDetail, getEntityAlbums, updateAlbum } from '../endpoints/albums.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { viewerEntityHash } from '../state.mjs'
+import { openDialogFromTemplate } from '../templates.mjs'
 import { bindVisibilityPicker, readVisibilityPicker, renderVisibilityPickerHtml, visibilityDisplay } from '../visibilityPicker.mjs'
-import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 

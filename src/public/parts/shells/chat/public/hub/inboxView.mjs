@@ -1,12 +1,12 @@
 /**
  * Hub 跨群 inbox 视图（#inbox）。
  */
-import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { fetchInboxPage } from '../src/endpoints/inbox.mjs'
+import { mountTemplate, renderTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { groupDisplayName } from './core/domUtils.mjs'

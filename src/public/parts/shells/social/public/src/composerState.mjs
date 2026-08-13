@@ -1,4 +1,3 @@
-import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { groupRefLabel, renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 import { clearCwSensitive } from '/parts/shells:chat/shared/composerAttachmentFields.mjs'
 
@@ -7,6 +6,7 @@ import { getChatGroups } from './endpoints/chatBridge.mjs'
 import { renderQuoteBlockHtml } from './lib/display.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
 import { state } from './state.mjs'
+import { mountTemplate } from './templates.mjs'
 import { bindVisibilityPicker, applyVisibilityPicker } from './visibilityPicker.mjs'
 import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { openImageEditor } from '/scripts/components/imageEditor.mjs'

@@ -38,14 +38,11 @@ async function publishSignedEvent(username, groupId, wirePayload, options, publi
 /**
  * @param {string} username replica
  * @param {string} groupId 群 ID
- * @param {object} wirePayload canonical 签名事件
+ * @param {object | (() => object | Promise<object>)} wirePayload canonical 签名事件，或锁内签名回调（返回 wirePayload）
  * @param {{ checkpointOwnerSecretKey?: Uint8Array, publishFederation?: boolean, skipCheckpointRebuild?: boolean, federationState?: object, federationExistingSlotOnly?: boolean, federationJoinTimeoutMs?: number, ingress?: 'live' | 'backfill' }} [options] 落盘选项
  * @returns {Promise<'ok' | 'dup'>} `dup` 表示同 eventId 已落盘（锁内原子判定）
  */
 export async function commitSignedChatEvent(username, groupId, wirePayload, options = {}) {
-	// 退群联邦出站须在 broadcastAndPersist 之前完成：完整 checkpoint 重建会 maybePurgeLocalReplicaIfLeft
-	// 删掉 events.jsonl 并 teardown slot，晚于 rebuild 的 publish 读不到 leave 帧。
-	const publishLeaveBeforeRebuild = options.publishFederation && wirePayload.type === 'member_leave'
 	const persistOpts = {
 		checkpointOwnerSecretKey: options.checkpointOwnerSecretKey,
 		skipCheckpointRebuild: options.skipCheckpointRebuild,
@@ -53,7 +50,13 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opti
 		ingress: options.ingress,
 	}
 
+	let publishLeaveBeforeRebuild = false
 	const committed = await withGroupWriteLock(username, groupId, async () => {
+		if (wirePayload instanceof Function) wirePayload = wirePayload()
+		wirePayload = await wirePayload
+		// 退群联邦出站须在 broadcastAndPersist 之前完成：完整 checkpoint 重建会 maybePurgeLocalReplicaIfLeft
+		// 删掉 events.jsonl 并 teardown slot，晚于 rebuild 的 publish 读不到 leave 帧。
+		publishLeaveBeforeRebuild = options.publishFederation && wirePayload.type === 'member_leave'
 		const path = eventsPath(username, groupId)
 		const idNorm = String(wirePayload.id).trim()
 		const previous = await readJsonl(path, { sanitize: stripDagEventLocalExtensions })

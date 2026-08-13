@@ -5,8 +5,8 @@
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】codecsAv
  */
-import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { mountTemplate } from '../src/templates.mjs'
 
 import { joinCodecsAvRoom, leaveCodecsAvRoom } from './codecsAv.mjs'
 /** @type {import('./codecsAv.mjs').CodecsAvSession | null} */

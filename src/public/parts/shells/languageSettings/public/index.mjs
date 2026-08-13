@@ -2,10 +2,11 @@
  * 语言设置 shell 的客户端逻辑。
  */
 import { initTranslations, loadPreferredLangs, savePreferredLangs, getAvailableLocales } from '/scripts/i18n/index.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { createSearchableDropdown } from '/scripts/components/search.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
+
+import { renderTemplate } from './templates.mjs'
 
 // --- DOM Elements ---
 const availableLanguagesDropdown = document.getElementById('availableLanguagesDropdown')
@@ -161,7 +162,6 @@ function handleReset() {
  */
 async function init() {
 	applyTheme()
-	usingTemplates('/parts/shells:languageSettings/templates')
 	await initTranslations('languageSettings') // Initialize page-specific translations
 
 	userPreferredLocales = loadPreferredLangs()

@@ -93,7 +93,7 @@ export default {
 	 * @param {import('../../../../../src/decl/part.ts').part_stat_t} stat - 部件状态对象。
 	 * @returns {Promise<void>}
 	 */
-	async Init(stat) { },
+	async Init(stat) { username = stat.username },
 	/**
 	 * 加载函数。
 	 * @param {import('../../../../../src/decl/part.ts').part_stat_t} stat - 部件状态对象。

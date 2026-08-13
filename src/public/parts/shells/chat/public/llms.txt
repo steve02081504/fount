@@ -135,7 +135,7 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 | POST | `G/:groupId/fork/block-opposing` | body `{ acceptedTipId }`：把非该叶分支上的治理事件签发者写入本机 denylist |
 | PUT | `G/:groupId/governance-branch` | 选定本地治理分支 tip |
 | GET | `G/:groupId/peers` | P2P roster + 用户级 `trustedPeers` / `explorePeers` / `blockedPeers` 视图 |
-| POST | `G/:groupId/federation/catchup` | 向邻居补洞；响应含 `tipsCollected`、`wantIds`、`eventsFilled`、`wantIdsStillMissing`、`wantIdsRateLimited` |
+| POST | `G/:groupId/federation/catchup` | 向邻居补洞；响应含 `tipsCollected`、`peerRosterSize`、`wantIds`、`eventsFilled`、`wantIdsStillMissing`、`wantIdsRateLimited` |
 | POST | `G/:groupId/federation/join-snapshot` | 入群后向邻居请求快照，校验后落 `snapshot.json` 并物化 |
 | POST | `G/:groupId/federation/rotate-room-secret` | 写入 / 轮换群级 `roomSecret`；需 `ADMIN` 或 `MANAGE_ADMINS` |
 | POST | `G/:groupId/federation/tuning` | `federationPartitionCount`（2-64）、`rtcConnectionBudgetMax`（8-128）、`rtcJoinRatePerMin`（4-60）；需 `ADMIN` 或 `MANAGE_ADMINS` |

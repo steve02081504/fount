@@ -2,10 +2,7 @@
  * 【文件】public/hub/sidebar/channels.mjs
  * 【职责】侧栏频道树渲染（分类折叠、未读徽章、创建按钮）。
  */
-import {
-	mountTemplate,
-	renderTemplate,
-} from '../../../../../scripts/features/template.mjs'
+import { mountTemplate, renderTemplate } from '../../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { showChannelContextMenu } from '../channelContextMenu.mjs'
 import { buildChannelTree, channelTypeIconHtml } from '../channels.mjs'

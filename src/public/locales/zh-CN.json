@@ -145,7 +145,7 @@
 			"replHint": "enter 运行 · shift+enter 换行"
 		},
 		"test": {
-			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分组语法（空格分隔多组）：\n  manifest                    该 manifest 全部 suite\n  manifest:suite              指定 suite（逗号分隔多个；亦可用 manifest/suite）\n  manifest:suite:subtest      指定子测试（frontend 等已注册 subtests；亦可用 manifest/suite/subtest）\n  manifest:suite:file         pure/integration（serial.mjs）下按 *.test.mjs 文件 stem 过滤\n  PowerShell 拆散时后续 token 自动归并到当前组\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n默认（裸 fount test）：先跑失败/未完成项（suite 内失败文件优先；失败组有复现则跑完失败组即退），全绿后再跑内容过期项；任一轮失败即以 1 退出，不会在同一次调用内反复重试。永不全量（用 --all）。\n测试现状持久化于 data/test/state/main.json；失败 log 保留至转绿。每次运行更新 data/test/report.md 与 report.json。\nfrontend 等套件可注册 subtests（各带独立 trigger）；改一个视图文件只会使对应子测试过期。\npure/integration 未注册 subtests 时，第三段按目录内 *.test.mjs 的 stem 过滤（如 shells/chat:pure:channel_archive）。\n依赖项（manifest.json dependsOn）未通过时高层自动 blocked。\n\n--all         范围内全部 suite 作为目标（绿的仍可复用，除非 --force）\n--no-parallel 串行运行 suite 并流式输出 stdout/stderr；默认由资源闸门按内存与 CPU 自动并行。\n--force       禁用复用：默认沿用上次真实结果，--force 强制真跑目标。\n\n示例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分组语法（空格分隔多组）：\n  manifest                    该 manifest 全部 suite\n  manifest:suite              指定 suite（逗号分隔多个；亦可用 manifest/suite）\n  manifest:suite:subtest      指定子测试（frontend 等已注册 subtests；亦可用 manifest/suite/subtest）\n  manifest:suite:file         pure/integration（serial.mjs）下按 *.test.mjs 文件 stem 过滤\n  PowerShell 拆散时后续 token 自动归并到当前组\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n默认（裸 fount test）：先跑失败/未完成项（suite 内失败文件优先；失败组有复现则跑完失败组即退），全绿后再跑内容过期项；任一轮失败即以 1 退出，不会在同一次调用内反复重试。永不全量（用 --all）。\n测试现状持久化于 data/test/state/main.json（已移除/重命名的套件会自动清理）；失败 log 保留至转绿。每次运行更新 data/test/report.md 与 report.json。\nfrontend 等套件可注册 subtests（各带独立 trigger）；改一个视图文件只会使对应子测试过期。\npure/integration 未注册 subtests 时，第三段按目录内 *.test.mjs 的 stem 过滤（如 shells/chat:pure:channel_archive）。\n依赖项（manifest.json dependsOn）未通过时高层自动 blocked。\n\n--all         范围内全部 suite 作为目标（绿的仍可复用，除非 --force）\n--no-parallel 串行运行 suite 并流式输出 stdout/stderr；默认由资源闸门按内存与 CPU 自动并行。\n--force       禁用复用：默认沿用上次真实结果，--force 强制真跑目标。\n\n示例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
 			"passed": "通过：${label}",
 			"passedWithNoise": "通过：${label}（含有噪声）",
 			"failed": "失败：${label}",
@@ -173,6 +173,7 @@
 				"expected": "预期 ${expected}"
 			},
 			"reusedSuite": "\n>>> 复用 ${manifestId}:${name}（trigger 未变，沿用上次 ${status}）",
+			"prunedAbsentState": "已清除不存在套件的状态记录：${suites} 个套件、${subtests} 个子测试",
 			"noisyOnlyRemain": "仍有 ${count} 个套件通过但含噪声：${suites}",
 			"noRealRunPlanned": "本次无需真跑：复用 ${reused} 个、预计阻塞 ${blocked} 个（trigger 未变）",
 			"allReusedHint": "本次未真跑任何套件：失败为沿用的上次结果，阻塞随之未解（相关文件未变）。修复相关文件后重跑，或用 fount test --force 强制真跑。",
@@ -2693,7 +2694,7 @@
 			"sync": {
 				"failed": "联邦同步失败：${error}",
 				"incomplete": "尚有 ${missing}/${total} 个事件未同步",
-				"noPeers": "未连接到联邦邻居，历史消息暂无法同步；请使用完整邀请链接并稍后重试",
+				"noPeers": "未连接到联邦邻居，历史消息暂无法同步",
 				"rateLimited": "联邦同步限速中，请稍后再试",
 				"truncated": "DAG 增量未拉全，可稍后重试或提高 limit",
 				"truncatedHint": "DAG 历史过长，可稍后重试或提高 limit"
@@ -4651,7 +4652,10 @@
 				"title": "收藏",
 				"aria-label": "收藏"
 			},
-			"saved": "已收藏",
+			"saved": {
+				"title": "已收藏",
+				"aria-label": "已收藏"
+			},
 			"translate": "翻译",
 			"dm": "发私信",
 			"block": "拉黑",
@@ -5407,7 +5411,13 @@
 					"placeholder": "用于测试的文件路径，例如 C:/work/project/src/main.mjs"
 				},
 				"pathRequired": "请先填写测试文件路径。",
-				"success": "已尝试在外部编辑器中打开。"
+				"success": "已尝试在外部编辑器中打开。",
+				"lineInput": {
+					"aria-label": "行号"
+				},
+				"columnInput": {
+					"aria-label": "列号"
+				}
 			}
 		},
 		"logout": {

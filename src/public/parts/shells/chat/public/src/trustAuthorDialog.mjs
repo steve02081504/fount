@@ -5,9 +5,9 @@
  * 【数据结构】authorPubKeyHash、COOLDOWN_SECONDS、SECOND_CONFIRM_TIMEOUT_MS。
  * 【关联】trustedAuthors.mjs、hub/overlayModal.mjs。
  */
-import { renderTemplate, usingTemplates } from '../../../scripts/features/template.mjs'
 import { closeOverlayModal, openOverlayModal } from '../hub/core/overlayModal.mjs'
 
+import { renderTemplate } from './templates.mjs'
 import { addTrustedAuthor, TRUST_EXPIRES_NEVER } from './trustedAuthors.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
@@ -115,7 +115,6 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 			}
 
 			try {
-				usingTemplates('/parts/shells:chat/src/templates')
 				const trustRoot = await renderTemplate('hub/modals/trust_author', {
 					authorLabel,
 					durationOptions: durationOptions.map(option => ({

@@ -165,126 +165,13 @@ export function createDOMFromHtmlString(htmlString) {
 	return fragment.children.length == 1 ? fragment.children[0] : fragment
 }
 
-let templatePath
-
 /**
- * 设置模板路径。
- * @param {string} path - 模板路径。
- * @returns {void}
+ * 将模板根解析为可 fetch 的绝对路径。
+ * @param {string} path 模板根（如 `/parts/shells:social/src/templates`）
+ * @returns {string} 绝对模板根
  */
-export function usingTemplates(path) {
-	templatePath = (base_dir + '/' + path).replace(/\/+/g, '/').replace(/\/$/g, '')
-}
-
-/**
- * 在指定模板根下执行回调，结束后恢复先前路径（跨壳共享模块勿裸调 usingTemplates）。
- * @template T
- * @param {string} path 模板根（同 usingTemplates）
- * @param {() => T | Promise<T>} fn 回调
- * @returns {Promise<T>} 回调结果
- */
-export async function withTemplates(path, fn) {
-	const previous = templatePath
-	usingTemplates(path)
-	try {
-		return await fn()
-	}
-	finally {
-		templatePath = previous
-	}
-}
-
-/**
- * 渲染模板(不激活脚本)。
- * @param {string} template - 模板名称。
- * @param {object} [data={}] - 模板数据。
- * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素(脚本未激活)。
- */
-export async function renderTemplateNoScriptActivation(template, data = {}) {
-	data.geti18n ??= geti18n
-	data.renderTemplate ??= renderTemplateAsHtmlString
-	/**
-	 * 在模板渲染上下文中设置一个值。
-	 * @template T - 要设置的变量类型。
-	 * @param {string} name - 要设置的变量名。
-	 * @param {T} value - 要设置的变量值。
-	 * @returns {T} - 设置的值。
-	 */
-	data.setValue ??= (name, value) => data[name] = value
-	data.escapeHtml ??= escapeHtml
-	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => {
-		if (!response.ok) throw new Error(`HTTP error, status: ${response.status}`)
-		return response.text()
-	})
-	let html = template_cache[template] = await template_cache[template]
-
-	// 使用循环匹配所有 ${...} 表达式
-	let result = ''
-	const errors = []
-	while (html.indexOf('${') != -1) {
-		const length = html.indexOf('${')
-		result += html.slice(0, length)
-		html = html.slice(length + 2)
-		let end_index = 0
-		let matched = false
-		find: while (html.indexOf('}', end_index) != -1) { // 我们需要遍历所有的结束符直到表达式跑通
-			end_index = html.indexOf('}', end_index) + 1
-			const expression = html.slice(0, end_index - 1)
-			try {
-				const eval_result = await async_eval(expression, data)
-				if (eval_result.error) throw eval_result.error
-				result += escapeUnclosedTags(String(eval_result.result))
-				html = html.slice(end_index)
-				errors.length = 0
-				matched = true
-				break find
-			} catch (error) {
-				errors.push(error)
-			}
-		}
-		if (!matched) {
-			errors.forEach(console.error)
-			errors.length = 0
-			result += `\${${html.slice(0, end_index || html.length)}`
-			html = html.slice(end_index || html.length)
-		}
-	}
-	result += html
-	return i18nElement(await svgInliner(createDOMFromHtmlStringNoScriptActivation(result)), { skip_report: true })
-}
-
-/**
- * 渲染模板。
- * @param {string} template - 模板名称。
- * @param {object} [data={}] - 模板数据。
- * @returns {Promise<Element|DocumentFragment|Document>} - 渲染后的 DOM 元素。
- */
-export async function renderTemplate(template, data = {}) {
-	const node = await renderTemplateNoScriptActivation(template, data)
-	return activateScripts(node)
-}
-
-/**
- * 将模板渲染为 HTML 字符串。
- * @param {string} template - 模板名称。
- * @param {object} [data={}] - 模板数据。
- * @returns {Promise<string>} - 渲染后的 HTML 字符串。
- */
-export async function renderTemplateAsHtmlString(template, data = {}) {
-	let node = await renderTemplateNoScriptActivation(template, data)
-	if (node.nodeType === Node.DOCUMENT_NODE) {
-		node = node.documentElement.outerHTML
-		node = node.replace(/\s*<\/body>\s*<\/html>$/i, '\n</body>\n\n</html>\n')
-		node = node.replace(/<html ([^>]*)>\s*<head>/i, '<html $1>\n\n<head>')
-		node = node.replace(/^\s*<html/i, '<!DOCTYPE html>\n<html')
-		return node
-	}
-	if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
-		const div = document.createElement('div')
-		div.appendChild(node)
-		return div.innerHTML
-	}
-	return node.outerHTML
+export function resolveTemplateRoot(path) {
+	return (base_dir + '/' + path).replace(/\/+/g, '/').replace(/\/$/g, '')
 }
 
 /**
@@ -305,29 +192,166 @@ function mountRenderedNode(parent, node) {
 		parent.appendChild(node)
 }
 
+/** @type {Map<string, ReturnType<typeof createTemplatesApi>>} */
+const templatesByRoot = new Map()
+
 /**
- * 清空父节点并挂载模板渲染结果。
- * @param {Element} parent 父节点
- * @param {string} template 模板路径（相对 templates 根）
- * @param {object} [data] 模板数据
- * @returns {Promise<Element>} 挂载后的父节点（内容已移入 parent）
+ * @param {string} resolvedRoot 已 resolve 的绝对模板根
+ * @returns {{
+ *   renderTemplateNoScriptActivation: (template: string, data?: object) => Promise<Element|DocumentFragment|Document>,
+ *   renderTemplate: (template: string, data?: object) => Promise<Element|DocumentFragment|Document>,
+ *   renderTemplateAsHtmlString: (template: string, data?: object) => Promise<string>,
+ *   mountTemplate: (parent: Element, template: string, data?: object) => Promise<Element>,
+ *   appendTemplate: (parent: Element, template: string, data?: object) => Promise<Element>,
+ * }} 绑定到该根的模板 API
  */
-export async function mountTemplate(parent, template, data = {}) {
-	const node = await renderTemplate(template, data)
-	parent.replaceChildren()
-	mountRenderedNode(parent, node)
-	return parent
+function createTemplatesApi(resolvedRoot) {
+	/**
+	 * 渲染模板(不激活脚本)。
+	 * @param {string} template 模板名称
+	 * @param {object} [data={}] 模板数据
+	 * @returns {Promise<Element|DocumentFragment|Document>} 渲染后的 DOM（脚本未激活）
+	 */
+	async function renderTemplateNoScriptActivation(template, data = {}) {
+		data.geti18n ??= geti18n
+		data.renderTemplate ??= renderTemplateAsHtmlString
+		/**
+		 * 在模板渲染上下文中设置一个值。
+		 * @template T
+		 * @param {string} name 变量名
+		 * @param {T} value 变量值
+		 * @returns {T} 设置的值
+		 */
+		data.setValue ??= (name, value) => data[name] = value
+		data.escapeHtml ??= escapeHtml
+		const url = `${resolvedRoot}/${template}.html`
+		const cacheKey = url
+		if (!Object.hasOwn(template_cache, cacheKey))
+			template_cache[cacheKey] = fetch(url).then(response => {
+				if (!response.ok)
+					throw new Error(`HTTP error, status: ${response.status}`)
+				return response.text()
+			}).catch(error => {
+				delete template_cache[cacheKey]
+				throw error
+			})
+		let html = template_cache[cacheKey] = await template_cache[cacheKey]
+
+		let result = ''
+		const errors = []
+		while (html.indexOf('${') != -1) {
+			const length = html.indexOf('${')
+			result += html.slice(0, length)
+			html = html.slice(length + 2)
+			let end_index = 0
+			let matched = false
+			find: while (html.indexOf('}', end_index) != -1) {
+				end_index = html.indexOf('}', end_index) + 1
+				const expression = html.slice(0, end_index - 1)
+				try {
+					const eval_result = await async_eval(expression, data)
+					if (eval_result.error) throw eval_result.error
+					result += escapeUnclosedTags(String(eval_result.result))
+					html = html.slice(end_index)
+					errors.length = 0
+					matched = true
+					break find
+				} catch (error) {
+					errors.push(error)
+				}
+			}
+			if (!matched) {
+				errors.forEach(console.error)
+				errors.length = 0
+				result += `\${${html.slice(0, end_index || html.length)}`
+				html = html.slice(end_index || html.length)
+			}
+		}
+		result += html
+		return i18nElement(await svgInliner(createDOMFromHtmlStringNoScriptActivation(result)), { skip_report: true })
+	}
+
+	/**
+	 * 渲染模板。
+	 * @param {string} template 模板名称
+	 * @param {object} [data={}] 模板数据
+	 * @returns {Promise<Element|DocumentFragment|Document>} 渲染后的 DOM
+	 */
+	async function renderTemplate(template, data = {}) {
+		const node = await renderTemplateNoScriptActivation(template, data)
+		return activateScripts(node)
+	}
+
+	/**
+	 * 将模板渲染为 HTML 字符串。
+	 * @param {string} template 模板名称
+	 * @param {object} [data={}] 模板数据
+	 * @returns {Promise<string>} 渲染后的 HTML
+	 */
+	async function renderTemplateAsHtmlString(template, data = {}) {
+		let node = await renderTemplateNoScriptActivation(template, data)
+		if (node.nodeType === Node.DOCUMENT_NODE) {
+			node = node.documentElement.outerHTML
+			node = node.replace(/\s*<\/body>\s*<\/html>$/i, '\n</body>\n\n</html>\n')
+			node = node.replace(/<html ([^>]*)>\s*<head>/i, '<html $1>\n\n<head>')
+			node = node.replace(/^\s*<html/i, '<!DOCTYPE html>\n<html')
+			return node
+		}
+		if (node.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {
+			const div = document.createElement('div')
+			div.appendChild(node)
+			return div.innerHTML
+		}
+		return node.outerHTML
+	}
+
+	/**
+	 * 清空父节点并挂载模板渲染结果。
+	 * @param {Element} parent 父节点
+	 * @param {string} template 模板路径（相对 templates 根）
+	 * @param {object} [data] 模板数据
+	 * @returns {Promise<Element>} 挂载后的父节点
+	 */
+	async function mountTemplate(parent, template, data = {}) {
+		const node = await renderTemplate(template, data)
+		parent.replaceChildren()
+		mountRenderedNode(parent, node)
+		return parent
+	}
+
+	/**
+	 * 渲染模板并追加到父节点（不清空已有内容）。
+	 * @param {Element} parent 父节点
+	 * @param {string} template 模板路径（相对 templates 根）
+	 * @param {object} [data] 模板数据
+	 * @returns {Promise<Element>} 父节点
+	 */
+	async function appendTemplate(parent, template, data = {}) {
+		const node = await renderTemplate(template, data)
+		mountRenderedNode(parent, node)
+		return parent
+	}
+
+	return {
+		renderTemplateNoScriptActivation,
+		renderTemplate,
+		renderTemplateAsHtmlString,
+		mountTemplate,
+		appendTemplate,
+	}
 }
 
 /**
- * 渲染模板并追加到父节点（不清空已有内容）。
- * @param {Element} parent 父节点
- * @param {string} template 模板路径（相对 templates 根）
- * @param {object} [data] 模板数据
- * @returns {Promise<Element>} 父节点
+ * 绑定到指定模板根的渲染 API（按根记忆化；跨壳各用各的，无全局串台）。
+ * @param {string} path 模板根（如 `/parts/shells:chat/src/templates`）
+ * @returns {ReturnType<typeof createTemplatesApi>} 绑定 API
  */
-export async function appendTemplate(parent, template, data = {}) {
-	const node = await renderTemplate(template, data)
-	mountRenderedNode(parent, node)
-	return parent
+export function templatesFor(path) {
+	const resolved = resolveTemplateRoot(path)
+	let api = templatesByRoot.get(resolved)
+	if (!api) {
+		api = createTemplatesApi(resolved)
+		templatesByRoot.set(resolved, api)
+	}
+	return api
 }

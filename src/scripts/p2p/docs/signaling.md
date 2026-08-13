@@ -4,9 +4,7 @@ Standing conclusions for live federation. Package: `@steve02081504/fount-p2p`.
 
 ## connId dual-PC glare elimination
 
-`link.mjs` is a dumb pipe — no WebRTC perfect-negotiation/rollback (`node-datachannel` polyfill). Glare = both sides in `have-local-offer` on one PeerConnection → `setRemoteDescription(offer)` throws `InvalidStateError`.
-
-**Rule**: both sides dial directly; on true simultaneous dial build two PCs, then deterministically drop one. Logic in `link_registry.mjs`:
+No WebRTC perfect-negotiation/rollback on `node-datachannel`. **Rule**: both sides dial; on true simultaneous dial build two PCs, then drop one. Logic in `link_registry.mjs`:
 
 - One-way dial: `ensureDirectLinkToNode` → random `connId` → `createConnSession` + `createLink({ initiator: true })`. Frames `{ type: 'signal', from, connId, body }`; `signalSessions` keyed by `connId`.
 - Inbound `handleIncomingSignal`: existing `connId` → deliver; new `connId` + offer → independent answer PC (not blocked by per-nodeHash `inflights`); late ice/answer with no session → drop.

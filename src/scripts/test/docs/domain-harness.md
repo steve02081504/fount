@@ -13,7 +13,7 @@ Prefer smoke → e2e gates; do not jump straight to full e2e.
 
 **Triggers follow the same gate**: `shellBackend` only on `pure` / `integration` / `smoke_*`; deeper live suites watch infra + their own script (like fed suites).
 
-Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics under reuse. Federation live needs `node-datachannel`. Signaling: [signaling.md](../../p2p/docs/signaling.md). WHIP (`shells/chat/.../whip/`) must **lazy**-import `node-datachannel` — a static import breaks Termux chat shell load (`MODULE_NOT_FOUND` for `node_datachannel.node`; no android-arm64 prebuild yet — murat-dogan/node-datachannel#429). Same optional-degrade idea as BLE in fount-p2p.
+Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics under reuse. Federation live needs `node-datachannel`. Signaling: [signaling.md](../../p2p/docs/signaling.md). WHIP must lazy-import `node-datachannel` — static import breaks Termux (`MODULE_NOT_FOUND`; no android-arm64 — murat-dogan/node-datachannel#429).
 
 ## Live federation
 
@@ -25,6 +25,7 @@ Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics unde
 ## Chat integration
 
 - After `postChannelMessage`, wire `event.content` is often channel-key encrypted (`scheme: 'channel-key'`). Assert extras (`locale` / `content_warning`) via `readChannelMessagesForUser` decrypted rows.
+- Local concurrent appends (fire-and-forget auto-reply vs `role_assign`, or `Promise.all` of two `appendSignedLocalEvent`) must compute tips **inside** the group write lock. Signing against a stale tip set forks the DAG; `authzFold` keeps one branch and drops the other.
 - `message_edit` is folded out of `events.jsonl` during checkpoint rebuild. Assert edits with `readChannelMessagesForUser` + `mergeChannelMessagesForDisplay`.
 - Agent hashes: `ensureLocalAgentEntityHash` / `ensureAgentEntityIdentity` (or `keyPairFromSeed` + `entityHashFromRecoveryPubKeyHex`). Never path-derive from `chars/`.
 - Social inbound may call `rebuildSignedTimelineSnapshot` with no local identity — that path must not throw through `getEntitySecretKey`.
@@ -43,7 +44,7 @@ Never point `dataDir`/`dataPath` at the repo `data/` root. `assertDisposableData
 
 ## In-process server
 
-`createTestServerBoot` / `startTestServer`: one `init()` per Deno child. First call boots under `ensureSharedTestDataDir()`; later calls register new usernames into the live config (dirs / `loadParts` / `afterInit`) — isolation is by **random username**, not fresh `dataDir`. Import `node/boot.mjs` before registering `Deno.test` (`sanitizeOps`/`sanitizeResources` default false).
+`createTestServerBoot` / `startTestServer`: one `init()` per Deno child. First call boots under `ensureSharedTestDataDir()`; later calls register new usernames into the live config (dirs / `loadParts` / `afterInit`) — isolation is by **random username**, not fresh `dataDir`. Prefer `const { dataDir } = await boot()` for `seedStubCharPart` / filesystem writes — a caller-supplied `mkdtemp` may be ignored after the first init. Import `node/boot.mjs` before registering `Deno.test` (`sanitizeOps`/`sanitizeResources` default false).
 
 ## Fixture probes
 
@@ -64,6 +65,6 @@ Share state via module-level singletons under `…/test/fixtures/probes/*.mjs` (
 
 ## Platform bot / OnMessage contract
 
-- Prefer mock Client / Telegraf / WeChat long-poll (duck-typed `on`/`channels.fetch`/`send` / `getUpdates`+`sendMessage`) + no-AI fixture char (`on_message_yes`) over real tokens. Assert platform outbound (`channel.send` / `telegram.sendMessage` / `context.sendMessage`) and that `enumerateJoinedFederatedGroups` does not grow (virtual sessions must not create Hub groups). Threaded replies: forward `replyToPlatformMessageId` into Discord `reply.messageReference` / Telegram `reply_parameters` (FormatOutboundReply `send` helper, first chunk only). Bot shells also keep a Playwright `frontend` smoke (`#new-bot` / `#save-config` / …; WeChat adds `#qr-start`).
-- OnMessage contract (`*/test/integration/on_message_contract.test.mjs` + `chat/test/bridgeContract.mjs`): use `gentian_shell_contract` (willingness skeleton + `onMessageProbe.decisions`) — DM owner, guild `@bot` / Telegram `@BotUsername`, plain group silence, char log row `{ role: 'char', uid: CharUid }` (never `extension.charId`), Discord backfill-before-trigger, Discord DM with only `OwnerUserID`. Shared asserts: `assertOnMessageEventShape` / `assertCharReplyRowContract` / `assertBackfillBeforeTrigger`. `message.content` / ChatClient `Message.content` are fount **strings**; DAG wire is typed (`sticker`/`vote`/`call`/`group_invite` top-level `type`; text omits `type`), converted at hydrate — never hand wire `type` to chars.
-- Bot shells import chat `public/shared/**` (e.g. `messageAgentText`). Keep `chat/public/shared/**` + `shellLoadProbe.mjs` on bot integration triggers; `module_graph_probe.test.mjs` asserts named exports resolve (catches renames without loading discord.js/telegraf).
+- Prefer mock Client / Telegraf / WeChat long-poll + no-AI fixture char (`on_message_yes`) over real tokens. Assert platform outbound and that `enumerateJoinedFederatedGroups` does not grow (virtual sessions must not create Hub groups). Threaded replies: forward `replyToPlatformMessageId` into Discord `reply.messageReference` / Telegram `reply_parameters` (first chunk only).
+- OnMessage contract (`*/test/integration/on_message_contract.test.mjs` + `chat/test/bridgeContract.mjs`): use `gentian_shell_contract` — DM owner, guild `@bot` / Telegram `@BotUsername`, plain group silence, char log row `{ role: 'char', uid: CharUid }` (never `extension.charId`), Discord backfill-before-trigger, Discord DM with only `OwnerUserID`. Shared asserts: `assertOnMessageEventShape` / `assertCharReplyRowContract` / `assertBackfillBeforeTrigger`. `User*` = operator, `Char*` = agent, `ReplyTo*` = message author — never put the platform author in `User*`. Message.content is fount text; never hand wire `type` to chars.
+- Bot shells import chat `public/shared/**`. Keep `chat/public/shared/**` + `shellLoadProbe.mjs` on bot integration triggers; `module_graph_probe.test.mjs` asserts named exports resolve.

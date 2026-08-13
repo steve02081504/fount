@@ -1,5 +1,6 @@
 import { Buffer } from 'node:buffer'
 
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
@@ -224,7 +225,7 @@ export async function readTimelineEvents(username, entityHash) {
  * @param {string} username 用户
  * @param {string} entityHash 时间线 owner
  * @param {object} event 未签名事件
- * @param {{ fanout?: boolean, signerEntityHash?: string }} [options] 默认 fanout=true
+ * @param {{ fanout?: boolean, signerEntityHash?: string }} [options] 默认 fanout=true（异步，不阻塞返回）
  * @returns {Promise<object>} 签名事件
  */
 export async function commitTimelineEvent(username, entityHash, event, options = {}) {
@@ -232,13 +233,13 @@ export async function commitTimelineEvent(username, entityHash, event, options =
 		signerEntityHash: options.signerEntityHash,
 	})
 	if (options.fanout !== false)
-		await publishTimelineEvent(username, entityHash, signed)
+		void publishTimelineEvent(username, entityHash, signed).catch(handleError)
 	if (signed.type === 'post') {
 		const { dispatchSocialMessage } = await import('../dispatch.mjs')
 		await dispatchSocialMessage(username, entityHash, signed)
 		if (signed.content?.poll) {
 			const { schedulePollDeadlineForPost } = await import('../lib/pollDeadlineWatcher.mjs')
-			void schedulePollDeadlineForPost(username, entityHash, signed)
+			void schedulePollDeadlineForPost(username, entityHash, signed).catch(handleError)
 		}
 	}
 	return signed

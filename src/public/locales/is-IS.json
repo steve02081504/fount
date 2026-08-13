@@ -173,6 +173,7 @@
 				"expected": "búist við ${expected}"
 			},
 			"reusedSuite": ">>> Endurnotaðu ${manifestId}:${name} (kveikja helst óbreytt, síðasti ${status} er notaður)",
+			"prunedAbsentState": "Hreinsað úrelt ástand fjarlægðra svíta: ${suites} svítur, ${subtests} undirpróf",
 			"noisyOnlyRemain": "Enn eru ${count} svítur Staðið en með hávaða: ${suites}",
 			"noRealRunPlanned": "Það er engin þörf á að keyra í þetta skiptið: ${reused} eru endurnotaðir og búist er við að ${blocked} verði lokað (kveikjan helst óbreytt)",
 			"allReusedHint": "Enginn pakki keyrður í raun: bilun er arfleidd síðasta niðurstaða og lokun leystist ekki (skrár óbreyttar). Lagaðu skrár og keyrðu aftur eða notaðu fount test --force til að þvinga keyrslu.",
@@ -2693,7 +2694,7 @@
 			"sync": {
 				"failed": "Samstilling samtaka mistókst: ${error}",
 				"incomplete": "${missing}/${total} viðburðir eru ósamstilltir",
-				"noPeers": "Ekki er tengt við sambandsaðan nágranna, ekki er hægt að samstilla söguleg skilaboð tímabundið; vinsamlegast notaðu boðstengilinn í heild sinni og reyndu aftur síðar",
+				"noPeers": "Ekki er tengt við sambandsaðan nágranna, ekki er hægt að samstilla söguleg skilaboð tímabundið",
 				"rateLimited": "Hraðatakmörkun alStaðassamstillingar er í gangi, vinsamlegast reyndu aftur síðar.",
 				"truncated": "DAG hækkunin er ekki full. Þú getur reynt aftur síðar eða hækkað mörkin.",
 				"truncatedHint": "Saga DAG er of löng. Þú getur reynt aftur síðar eða hækkað mörkin."
@@ -4651,7 +4652,10 @@
 				"title": "Vista",
 				"aria-label": "Vista"
 			},
-			"saved": "Safnað",
+			"saved": {
+				"title": "Vistað",
+				"aria-label": "Vistað"
+			},
 			"translate": "Þýða",
 			"dm": "Sendið einkaskilaboð",
 			"block": "Banna",
@@ -5406,8 +5410,14 @@
 				"pathInput": {
 					"placeholder": "Slóð að skrá til að prófa, t.d. C:/work/project/src/main.mjs"
 				},
-				"pathRequired": "Sláðu fyrst inn prófunarslóð.",
-				"success": "Keyrði skipun til að opna skrána í ytri ritstjóra."
+				"pathRequired": "Sláðu fyrst inn slóð að prófunarskrá.",
+				"success": "Reyndi að opna í ytri ritstjóra.",
+				"lineInput": {
+					"aria-label": "Línunúmer"
+				},
+				"columnInput": {
+					"aria-label": "Dálknúmer"
+				}
 			}
 		},
 		"logout": {

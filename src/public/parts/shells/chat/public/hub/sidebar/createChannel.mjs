@@ -2,11 +2,10 @@
  * 【文件】public/hub/sidebar/createChannel.mjs
  * 【职责】新建频道对话框与入树刷新。
  */
-import { openDialogFromTemplate } from '../../../../../scripts/features/dialog.mjs'
-import { usingTemplates } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { createChannel } from '../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
+import { openDialogFromTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store, setState } from '../core/state.mjs'
 
@@ -19,7 +18,6 @@ import { selectChannel } from './selectChannel.mjs'
 export async function showCreateChannelModal() {
 	const groupId = store.context.currentGroupId
 	if (!groupId) return
-	usingTemplates('/parts/shells:chat/src/templates')
 	await openDialogFromTemplate('channel_create_modal', {}, {
 		activateScripts: false,
 		/**

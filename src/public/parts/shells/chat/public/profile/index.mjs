@@ -6,10 +6,6 @@
  * 【关联】src/endpoints/entities.mjs、ownerSettingsPanel.mjs；hub/entityProfile.mjs、profileEdit.mjs。
  */
 import { onServerEvent } from '../../../scripts/endpoints/server_events.mjs'
-import {
-	renderTemplate,
-	usingTemplates,
-} from '../../../scripts/features/template.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
 import { initTranslations, onLanguageChange } from '../../../scripts/i18n/index.mjs'
@@ -24,6 +20,7 @@ import { avatarInitial } from '../shared/hashAvatar.mjs'
 import { getEntityProfile } from '../src/endpoints/entities.mjs'
 import { getGroupList, getGroupState } from '../src/endpoints/groupCore.mjs'
 import { getViewer } from '../src/endpoints/viewer.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { initProfileOwnerSettings } from './ownerSettingsPanel.mjs'
@@ -76,7 +73,6 @@ function channelTypeIconHtml(type) {
  * 初始化个人资料页面
  */
 async function init() {
-	usingTemplates('/parts/shells:chat/src/templates')
 	applyTheme()
 	await initTranslations('chat.profile')
 	currentProfileCard = await createEntityProfileCardElement('embedded')

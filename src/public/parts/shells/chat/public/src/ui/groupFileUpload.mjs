@@ -5,7 +5,6 @@
  * 【数据结构】hub { groupId, state }、上传进度、file meta。
  * 【关联】federationUpload.mjs、groupFileBlob.mjs、errorHandlers.mjs。
  */
-import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { sha256HexFromBlob } from '../../shared/digest.mjs'
 import { fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 import { groupEntityHash } from '../../shared/groupEntityHash.mjs'
@@ -20,6 +19,7 @@ import { fetchGroupFileAsBlobUrl } from '../groupFileBlob.mjs'
 import { convergentChunkHashes } from '../lib/convergentChunk.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { arrayBufferToBase64, FEDERATION_CHUNK_MAX_BYTES } from '../lib/federationUpload.mjs'
+import { renderTemplate } from '../templates.mjs'
 
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
@@ -35,7 +35,6 @@ export const CHUNK_UPLOAD_MAX_BYTES = FEDERATION_CHUNK_MAX_BYTES
  * @returns {{ set: (percent: number, labelKey?: string) => void, done: () => void, fail: () => void }} 进度控制器
  */
 async function createUploadProgress(fileName) {
-	usingTemplates('/parts/shells:chat/src/templates')
 	const host = document.querySelector('.input-area') || document.body
 	let root = document.getElementById('group-file-upload-progress')
 	if (!root) {
@@ -211,7 +210,6 @@ export function createFileHandlers(hub) {
 	 * @returns {void}
 	 */
 	async function enqueuePendingFile(file) {
-		usingTemplates('/parts/shells:chat/src/templates')
 		const id = crypto.randomUUID()
 		const container = document.getElementById('group-pending-attachments')
 		if (!container) return

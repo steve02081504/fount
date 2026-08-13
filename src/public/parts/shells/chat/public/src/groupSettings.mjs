@@ -2,7 +2,6 @@
  * 【文件】public/src/groupSettings.mjs
  * 【职责】群设置面板入口：初始化、Tab 懒加载与重导出。
  */
-import { usingTemplates } from '../../../../scripts/features/template.mjs'
 import { initTranslations } from '../../../../scripts/i18n/index.mjs'
 
 import {
@@ -28,7 +27,6 @@ settingsContext.reload = groupId => loadGroupSettingsImpl(settingsContext, group
  */
 export async function initGroupSettings() {
 	await initTranslations('chat')
-	usingTemplates('/parts/shells:chat/src/templates')
 	const groupId = parseSettingsGroupIdFromHash()
 	if (groupId) await loadGroupSettingsImpl(settingsContext, groupId)
 }

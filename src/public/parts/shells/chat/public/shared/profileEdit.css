@@ -1,4 +1,6 @@
 .profile-edit-box {
+	display: flex;
+	flex-direction: column;
 	width: min(1040px, calc(100vw - 32px));
 	max-width: 1040px;
 	max-height: min(860px, calc(100dvh - 32px));
@@ -9,6 +11,7 @@
 .profile-edit-header,
 .profile-edit-actions {
 	display: flex;
+	flex-shrink: 0;
 	align-items: center;
 	justify-content: space-between;
 	gap: 16px;
@@ -32,7 +35,8 @@
 }
 
 .profile-edit-scroll {
-	max-height: calc(min(860px, 100dvh - 32px) - 136px);
+	flex: 1 1 auto;
+	min-height: 0;
 	overflow: auto;
 	padding: 22px;
 }
@@ -308,11 +312,10 @@
 @media (max-width: 640px) {
 	.profile-edit-box {
 		width: calc(100vw - 16px);
-		max-height: calc(100dvh - 16px);
+		max-height: calc(100dvh - 16px - env(safe-area-inset-bottom, 0px));
 	}
 
 	.profile-edit-scroll {
-		max-height: calc(100dvh - 152px);
 		padding: 16px;
 	}
 
@@ -326,9 +329,13 @@
 
 	.profile-edit-header,
 	.profile-edit-actions {
+		flex-wrap: wrap;
 		padding: 15px 16px;
 	}
 
+	.profile-edit-actions {
+		padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+	}
 }
 
 @media (max-width: 480px) {

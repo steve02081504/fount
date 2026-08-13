@@ -1,7 +1,7 @@
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
+import { appendTemplate } from '../templates.mjs'
 
 import { entityHandle, renderAvatarHtml } from './display.mjs'
-import { appendTemplate } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /**

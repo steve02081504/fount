@@ -2,15 +2,12 @@
  * 【文件】public/hub/sidebar/members.mjs
  * 【职责】成员列表侧栏与 Merkle 摘要条。
  */
-import {
-	mountTemplate,
-	renderTemplate,
-} from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { aliasForEntity } from '../../shared/aliases.mjs'
 import { disambiguateLabels, resolveDisplayName } from '../../shared/nameResolve.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { memberDisplaysAsAdmin } from '../../src/memberDisplay.mjs'
+import { mountTemplate, renderTemplate } from '../../src/templates.mjs'
 import { authorDisplayLabel, avatarColor, avatarInitial, avatarTextColor } from '../core/domUtils.mjs'
 import { store } from '../core/state.mjs'
 import { showMemberContextMenu } from '../memberContextMenu.mjs'

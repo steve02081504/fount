@@ -288,10 +288,11 @@ export async function buildAndSaveCheckpoint(username, groupId, options = {}) {
 		signingKey = await readLocalSignerSeed(username, groupId).catch(() => null)
 	}
 	const canSign = !!(signingKey && await canUseSecretKeyForCheckpointSignature(state, signingKey))
-	// 非签名节点（普通成员）不得用未签名 checkpoint 覆盖仍权威的采纳签名基态：覆盖会令
-	// isSignedBaseCheckpoint 失真、基态保护失效，下一次重放即把基态成员滤没。保留既有签名基态，
-	// 本地增量在每次 getState 动态叠加；更高 epoch 的新基态由 owner 经联邦下发后替换 snapshot.json。
-	if (!canSign && baseAuthoritative && isSignedBaseCheckpoint(previousCheckpoint))
+	// 非签名节点不得用未签名 checkpoint 覆盖已签名基态：覆盖会令 isSignedBaseCheckpoint
+	// 失真，下一次 tip 推进即 forceFullReplay；入群节点没有 pre-checkpoint 治理链，
+	// 全量重放会滤没 join 成员。本地增量在每次 getState 动态叠加；更高 epoch 的新基态
+	// 由 owner 经联邦下发后替换 snapshot.json。
+	if (!canSign && isSignedBaseCheckpoint(previousCheckpoint))
 		return previousCheckpoint
 
 	const dagTipIds = computeFederatableDagTipIds(events)
@@ -462,8 +463,13 @@ export async function runPostCheckpointMaintenance(username, groupId, checkpoint
  * @returns {Promise<object | null>} 新检查点；无事件时为 null
  */
 export async function rebuildAndSaveCheckpoint(username, groupId, options = {}) {
+	const previousCheckpoint = await safeReadJson(snapshotPath(username, groupId))
 	const checkpointPayload = await buildAndSaveCheckpoint(username, groupId, options)
 	if (!checkpointPayload) return null
-	await runPostCheckpointMaintenance(username, groupId, checkpointPayload, options)
+	const skippedOverwrite = isSignedBaseCheckpoint(previousCheckpoint)
+		&& checkpointPayload.checkpoint_signature === previousCheckpoint.checkpoint_signature
+		&& checkpointPayload.checkpoint_event_id === previousCheckpoint.checkpoint_event_id
+	if (!skippedOverwrite)
+		await runPostCheckpointMaintenance(username, groupId, checkpointPayload, options)
 	return checkpointPayload
 }

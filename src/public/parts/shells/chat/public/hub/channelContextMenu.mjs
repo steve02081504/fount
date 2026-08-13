@@ -5,7 +5,6 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】打开频道时可能触发 `updateHash`（由 `sidebar.selectChannel` 完成）；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/endpoints/groupCore、groupChannel、core/state、sidebar。
  */
-import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import {
@@ -18,6 +17,7 @@ import {
 	updateChannel,
 } from '../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../src/endpoints/groupCore.mjs'
+import { renderTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'

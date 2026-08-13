@@ -162,7 +162,7 @@
 	}
 
 	.header-overflow {
-		display: inline-flex;
+		display: inline-block;
 	}
 
 	.header-desktop-only:is(button, .search-wrap),
@@ -182,7 +182,7 @@
 	}
 
 	.composer-more {
-		display: inline-flex;
+		display: inline-block;
 	}
 
 	.composer-desktop-tool {

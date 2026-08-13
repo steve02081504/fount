@@ -1,5 +1,4 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
-import { appendTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { initTranslations, primaryLocale } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
@@ -10,6 +9,7 @@ import { getTaste, putTastePrivacy, rebuildTaste, renameTasteTag } from '../endp
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
 import { state } from '../state.mjs'
+import { appendTemplate, renderTemplate } from '../templates.mjs'
 
 import { renderBlocklist } from './profile.mjs'
 

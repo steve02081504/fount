@@ -1,5 +1,4 @@
 import { wrapContentWarningHtml } from '/scripts/features/contentReveal.mjs'
-import { renderTemplate, renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
 import { renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../shared/runUri.mjs'
 
@@ -19,6 +18,7 @@ import { playHeartAnim } from './lib/heartAnim.mjs'
 import { renderPollHtml } from './lib/pollUi.mjs'
 import { renderMediaHtml } from './mediaRender.mjs'
 import { viewerEntityHash } from './state.mjs'
+import { renderTemplate, renderTemplateAsHtmlString } from './templates.mjs'
 
 /**
  * @param {object} liveRef 直播引用

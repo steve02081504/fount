@@ -3,7 +3,6 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 import { getFiltersFromString, compileFilter, makeSearchable } from '../../../scripts/components/search.mjs'
 import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../../scripts/endpoints/parts.mjs'
 import { renderMarkdown } from '../../../scripts/features/markdown/index.mjs'
-import { mountTemplate, renderTemplate, usingTemplates } from '../../../scripts/features/template.mjs'
 import { geti18n, console } from '../../../scripts/i18n/index.mjs'
 import { onElementRemoved } from '../../../scripts/lib/onElementRemoved.mjs'
 import { svgInliner } from '../../../scripts/lib/svgInliner.mjs'
@@ -13,6 +12,7 @@ import { defaultIcons, genericDefaultIcon } from './constants.mjs'
 import { partDetailsCache, getpartDetails, clearCache, getAllpartNames } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'
 import { setHomeRegistry, setDefaultParts, setCurrentPartType, setCurrentPartPath, homeRegistry, defaultParts, currentPartType, preloadDragGenerators, currentPartPath, partBranches } from './state.mjs'
+import { mountTemplate, renderTemplate } from './templates.mjs'
 import { createActionButtons, showItemModal } from './ui/itemModal.mjs'
 
 // ==========================================
@@ -37,9 +37,6 @@ export const instruction = document.getElementById('subtitle')
 export const partTypesTabsContainer = document.getElementById('part-types-tabs')
 /** 部件类型内容容器元素 */
 export const partTypesContainers = document.getElementById('part-types-containers')
-
-// 初始化模板
-usingTemplates('/parts/shells:home/src/templates')
 
 // ==========================================
 // Utilities

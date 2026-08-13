@@ -83,7 +83,7 @@ reviews:
     # ── 前端 JS（pages + part public/）─────────────────────────────────
     - path: 'src/public/pages/**/*.mjs,src/public/pages/**/*.js,src/public/parts/**/public/**/*.mjs,src/public/parts/**/public/**/*.js'
       instructions: |
-        - 禁止大段拼接 HTML；用 `renderTemplate` / `mountTemplate` / `withTemplates`。跨 shell 共享模块禁止裸调 `usingTemplates`。
+        - 禁止大段拼接 HTML；用 shell `templates.mjs`（`templatesFor` / `dialogsFor`）的 `renderTemplate` / `mountTemplate` 等。禁止裸调已删除的 `usingTemplates` / `withTemplates`。
         - 非必要不用 `geti18n`；静态 UI 用 `data-i18n` / `setElementI18n`。`promptDialog` 等传 i18n key，不要先 `geti18n` 再传入。
         - 复用 `@src/public/pages/scripts/`，禁止 shell 内再抄一份。
         - 主题走 `applyTheme()`；对话框优先 `promptDialog` / `openDialogFromTemplate`。

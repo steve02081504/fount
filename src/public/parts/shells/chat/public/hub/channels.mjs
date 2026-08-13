@@ -5,14 +5,10 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/template、core/domUtils、streamingAv。
  */
-import {
-	mountTemplate,
-	renderTemplateAsHtmlString,
-	renderTemplateNoScriptActivation,
-} from '../../../../scripts/features/template.mjs'
 import { setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { hubEmptyListIcon } from '../src/lib/emojiSvg.mjs'
+import { mountTemplate, renderTemplateAsHtmlString, renderTemplateNoScriptActivation } from '../src/templates.mjs'
 
 import {
 	getHubAvSession,

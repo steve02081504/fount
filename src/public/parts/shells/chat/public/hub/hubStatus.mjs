@@ -5,8 +5,8 @@
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/toast、core/state、presence
  */
-import { renderTemplate, renderTemplateAsHtmlString, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { postEntityHeartbeat, setEntityStatus } from '../src/endpoints/entities.mjs'
+import { renderTemplate, renderTemplateAsHtmlString } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
@@ -174,7 +174,6 @@ function dismissStatusMenu() {
 export async function showStatusMenu(anchorElement) {
 	dismissStatusMenu()
 	const rect = anchorElement.getBoundingClientRect()
-	usingTemplates('/parts/shells:chat/src/templates')
 	const statusesHtml = (await Promise.all(MANUAL_STATUSES.map(status =>
 		renderTemplateAsHtmlString('hub/status/menu_option', { status }),
 	))).join('')

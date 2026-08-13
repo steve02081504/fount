@@ -3,7 +3,6 @@
  * 【职责】Hub 轻量引导：i18n、群列表与 hash 导航，不阻塞于 messages 重模块图。
  * 【关联】init.mjs（重型特性延后）、wireBootstrap、hashNav
  */
-import { usingTemplates } from '../../../../scripts/features/template.mjs'
 import { initTranslations } from '../../../../scripts/i18n/index.mjs'
 import { loadAliases } from '../shared/aliases.mjs'
 import { getViewer } from '../src/endpoints/viewer.mjs'
@@ -87,7 +86,6 @@ async function navigateHubFromLocation() {
 
 /** @returns {Promise<void>} Hub 壳层就绪：翻译、群列表与 hash 导航 */
 export async function initCore() {
-	usingTemplates('/parts/shells:chat/src/templates')
 	await initTranslations('chat')
 	const { setHubPane } = await import('./hubPane.mjs')
 	setHubPane('nav')

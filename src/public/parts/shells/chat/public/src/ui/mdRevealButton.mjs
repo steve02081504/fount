@@ -4,15 +4,13 @@
  * 【原理】appendTemplate 挂载 `hub/messages/md_reveal_button`，不覆盖气泡已有预览内容。
  * 【关联】groupMode.mjs、template.mjs。
  */
-import { appendTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
-
+import { appendTemplate } from '../templates.mjs'
 /** @type {boolean} */
 let templatesReady = false
 
 /** @returns {void} */
 function ensureTemplates() {
 	if (templatesReady) return
-	usingTemplates('/parts/shells:chat/src/templates')
 	templatesReady = true
 }
 

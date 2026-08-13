@@ -6,9 +6,9 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/template、../core/domUtils。
  */
-import { renderTemplate } from '../../../../../scripts/features/template.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { eventIdsEqual } from '../../src/lib/eventId.mjs'
+import { renderTemplate } from '../../src/templates.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /** @type {object | null} */
 let mainChannelActions = null

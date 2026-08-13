@@ -10,7 +10,7 @@
  *
  * 首次使用:
  *   1. 将此文件放入一个空文件夹
- *   2. 在该文件夹中运行: deno install --allow-scripts --allow-all --entrypoint subfount.mjs
+ *   2. 在该文件夹中运行: deno install --allow-scripts --entrypoint subfount.mjs
  *   3. infra only: deno run --allow-scripts --allow-all subfount.mjs
  *   4. 挂主机: deno run --allow-scripts --allow-all subfount.mjs <host-room-id> <password> [host-node-hash]
  *      host-node-hash 可选；提供时可直连主机，不必只靠 discovery。

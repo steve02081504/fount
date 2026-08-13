@@ -36,3 +36,8 @@ Deno.test('postMatchesQuery uses hashtag tokens only', () => {
 	assertEquals(postMatchesQuery({ content: { text: '#hello world' } }, '#hello'), true)
 	assertEquals(postMatchesQuery({ content: { text: '```\n#hello\n```' } }, '#hello'), false)
 })
+
+Deno.test('postMatchesQuery matches hashtags case-insensitively', () => {
+	assertEquals(postMatchesQuery({ content: { text: '#TrendTagSearch' } }, '#trendtagsearch'), true)
+	assertEquals(postMatchesQuery({ content: { text: '#foo' } }, '#Foo'), true)
+})

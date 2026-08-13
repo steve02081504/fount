@@ -2,10 +2,10 @@
  * 【文件】public/hub/messages/render/index.mjs
  * 【职责】单条频道消息块协调：聚合正文类型渲染、外壳、反应条与列表插入后绑定。
  */
-import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { bindContentReveal, wrapContentWarningHtml, wrapSensitiveMediaHtml } from '/scripts/features/contentReveal.mjs'
 import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
+import { isEntityHash128 } from '../../../shared/entityHash.mjs'
 import { firstEmojiTokenInText } from '../../../shared/inlineTokenSyntax.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isFirstMessageInAuthorGroup } from '/parts/shells:chat/shared/hashAvatar.mjs'
@@ -14,12 +14,12 @@ import {
 } from '/parts/shells:chat/shared/attribution.mjs'
 import { renderAttributionWarningIconHtml } from '/parts/shells:chat/shared/entityProfileCard.mjs'
 import { hubDeliveryReadIcon, hubDeliverySentIcon } from '../../../src/lib/emojiSvg.mjs'
+import { renderTemplateAsHtmlString } from '../../../src/templates.mjs'
 import { isTrustedAuthor } from '../../../src/trustedAuthors.mjs'
 import { buildMessagesByEventId } from '../../../src/ui/channelDisplay.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, formatTimeAttrs, timeI18nAttrFragment } from '../../core/domUtils.mjs'
 import { store } from '../../core/state.mjs'
 import { renderMessageActionsHtml } from '../messageActionsRender.mjs'
-
 
 import {
 	renderDecryptBodyHtml,
@@ -176,7 +176,8 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 	const failedAttr = message.sendFailed ? ' data-send-failed="1"' : ''
 	const deliveryAttr = message.deliveryStatus ? ` data-delivery-status="${escapeHtml(message.deliveryStatus)}"` : ''
 	const msgLocale = message.content?.locale ? ` data-message-locale="${escapeHtml(message.content.locale)}"` : ''
-	const rowAttrs = `data-message-id="${escapeHtml(String(message.eventId))}" data-author-key="${escapeHtml(authorKey)}" data-message-type="${escapeHtml(message.type || 'message')}"${message.isRemote ? ' data-is-remote="1"' : ''}${authorAttr}${charAttr}${streamingAttr}${pendingAttr}${failedAttr}${deliveryAttr}${msgLocale}${attributionAttr}`
+	const entityHashAttr = isEntityHash128(avatarKey) ? ` data-entity-hash="${escapeHtml(avatarKey)}"` : ''
+	const rowAttrs = `data-message-id="${escapeHtml(String(message.eventId))}" data-author-key="${escapeHtml(authorKey)}" data-message-type="${escapeHtml(message.type || 'message')}"${message.isRemote ? ' data-is-remote="1"' : ''}${authorAttr}${charAttr}${streamingAttr}${pendingAttr}${failedAttr}${deliveryAttr}${msgLocale}${attributionAttr}${entityHashAttr}`
 
 	const timeAttrs = formatTimeAttrs(time)
 	const typingLabelHtml = generating
