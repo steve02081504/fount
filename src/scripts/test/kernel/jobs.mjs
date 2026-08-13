@@ -15,13 +15,13 @@ import { skipBecauseSuiteKeys } from '../core/skip_because.mjs'
 import { pruneAbsentState, readState, suiteKey, writeState } from '../core/state.mjs'
 import { auditTriggerCoverage } from '../core/trigger_audit.mjs'
 import { buildVerdicts } from '../core/verdict.mjs'
+import { buildReasonsFromPlan, serializeContinueReasons } from '../runner/continue_reason.mjs'
 import {
 	buildCommittedChangedByKey,
 	collectSubtestFilterByKey,
 	listFreshNoisyKeys,
+	selectDefaultWave,
 	selectExplicitOrAll,
-	selectImperfectWave,
-	selectOutdatedWave,
 } from '../runner/selection.mjs'
 
 import { attachGitRoots, snapshotNestedGit, writeNestedGitState } from './nested_git.mjs'
@@ -193,64 +193,25 @@ export async function expandJobWave(params) {
 				code: explicitSuites ? 2 : 0,
 				empty: true,
 			}
-		const plan = buildPlan(
-			selection.goalKeys,
-			verdicts,
-			byKey,
-			allSuites,
-			selection.goalEvidenceByKey ?? new Map(),
-			options.force,
-			subtestFilterByKey,
-		)
-		return { selection, plan, verdicts, fingerprints, continueLoop: false, filtered }
+		return finishWave(selection, verdicts, byKey, allSuites, options.force, subtestFilterByKey, fingerprints, filtered)
 	}
 
-	const imperfect = selectImperfectWave({
+	const selection = selectDefaultWave({
 		verdicts,
 		state,
 		allSuites,
 		scope: filtered,
-		commitHash,
-		uncommittedHash,
-	})
-	if (imperfect.action === 'run') {
-		const plan = buildPlan(
-			imperfect.goalKeys,
-			verdicts,
-			byKey,
-			allSuites,
-			imperfect.goalEvidenceByKey ?? new Map(),
-			options.force,
-			subtestFilterByKey,
-		)
-		return { selection: imperfect, plan, verdicts, fingerprints, continueLoop: true, filtered }
-	}
-
-	const outdated = selectOutdatedWave({
-		verdicts,
-		scope: filtered,
-		allSuites,
 		committedChangedByKey,
+		uncommittedFiles,
 		commitHash,
 		uncommittedHash,
-		state,
 	})
-	if (outdated.action === 'run') {
-		const plan = buildPlan(
-			outdated.goalKeys,
-			verdicts,
-			byKey,
-			allSuites,
-			outdated.goalEvidenceByKey ?? new Map(),
-			options.force,
-			subtestFilterByKey,
-		)
-		return { selection: outdated, plan, verdicts, fingerprints, continueLoop: true, filtered }
-	}
+	if (selection.action === 'run')
+		return finishWave(selection, verdicts, byKey, allSuites, options.force, subtestFilterByKey, fingerprints, filtered)
 
 	const noisyKeys = listFreshNoisyKeys(verdicts, filtered)
 	if (noisyKeys.length)
-		return { error: 'noisyOnly', noisyKeys, code: 1, empty: true, continueLoop: true, filtered, verdicts, fingerprints }
+		return { error: 'noisyOnly', noisyKeys, code: 1, empty: true, filtered, verdicts, fingerprints }
 
 	const skipKeys = skipBecauseSuiteKeys(filtered).filter(key => !probedSkip.has(key))
 	if (skipKeys.length) {
@@ -260,6 +221,7 @@ export async function expandJobWave(params) {
 				suite: byKey.get(key),
 				action: 'run',
 				goal: true,
+				goalEvidence: { kind: 'skip_because' },
 			})),
 			goalKeys: new Set(skipKeys),
 		}
@@ -268,12 +230,43 @@ export async function expandJobWave(params) {
 			plan,
 			verdicts,
 			fingerprints,
-			continueLoop: false,
+			continueReasons: buildReasonsFromPlan(plan),
 			filtered,
 		}
 	}
 
-	return { empty: true, code: 0, continueLoop: true, filtered, verdicts, fingerprints }
+	return { empty: true, code: 0, filtered, verdicts, fingerprints }
+}
+
+/**
+ * @param {import('../runner/selection.mjs').GoalSelection} selection 选择
+ * @param {Map<string, import('../core/verdict.mjs').Verdict>} verdicts 裁决
+ * @param {Map<string, import('../core/manifest.mjs').SuiteDef>} byKey suite 表
+ * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
+ * @param {boolean | undefined} force 强制
+ * @param {Map<string, string[]>} subtestFilterByKey 子测试过滤
+ * @param {object} fingerprints 指纹
+ * @param {import('../core/manifest.mjs').SuiteDef[]} filtered 范围
+ * @returns {object} 波次
+ */
+function finishWave(selection, verdicts, byKey, allSuites, force, subtestFilterByKey, fingerprints, filtered) {
+	const plan = buildPlan(
+		selection.goalKeys,
+		verdicts,
+		byKey,
+		allSuites,
+		selection.goalEvidenceByKey ?? new Map(),
+		force,
+		subtestFilterByKey,
+	)
+	return {
+		selection,
+		plan,
+		verdicts,
+		fingerprints,
+		continueReasons: buildReasonsFromPlan(plan),
+		filtered,
+	}
 }
 
 /**
@@ -286,6 +279,15 @@ export async function expandJobWave(params) {
  * @returns {object} accepted 字段
  */
 export function acceptedFromWave(wave, counts = {}) {
+	const mode = wave.selection?.mode
+	const goalCount = wave.selection?.goalKeys?.size ?? 0
+	const imperfectCount = counts.imperfectCount
+		?? wave.selection?.imperfectKeys?.size
+		?? (mode === 'imperfect' ? goalCount : 0)
+	const outdatedCount = counts.outdatedCount
+		?? (mode === 'outdated' ? goalCount
+			: mode === 'continue' ? Math.max(0, goalCount - imperfectCount)
+			: 0)
 	return {
 		runCount: counts.runCount ?? 0,
 		reuseCount: counts.reuseCount ?? 0,
@@ -294,7 +296,9 @@ export function acceptedFromWave(wave, counts = {}) {
 		empty: wave.empty === true,
 		error: wave.error ?? null,
 		selectionMode: wave.selection?.mode ?? null,
-		goalCount: wave.selection?.goalKeys?.size ?? 0,
+		goalCount,
+		imperfectCount,
+		outdatedCount,
 		total: wave.filtered?.length ?? 0,
 		noisyKeys: wave.noisyKeys ?? [],
 		deadTriggers: wave.deadTriggers ?? [],
@@ -303,6 +307,36 @@ export function acceptedFromWave(wave, counts = {}) {
 		filterErrors: wave.filterErrors ?? [],
 		knownIds: wave.knownIds ?? [],
 		available: wave.available ?? [],
+		continueReasons: counts.continueReasons ?? serializeContinueReasons(wave.continueReasons),
+		remainingMs: counts.remainingMs ?? wave.remainingMs ?? null,
+		unknownCount: counts.unknownCount ?? wave.unknownCount ?? 0,
+	}
+}
+
+/**
+ * 本波命中路径：committed ∪ uncommitted。
+ * @param {object} fingerprints 指纹
+ * @param {string} key suite 键
+ * @returns {string[]} 路径
+ */
+export function changedFilesForRun(fingerprints, key) {
+	return [...new Set([
+		...fingerprints?.committedChangedByKey?.get(key) ?? [],
+		...fingerprints?.uncommittedFiles ?? [],
+	])]
+}
+
+/**
+ * 从裁决抽出 suite / 子测试 trigger 指纹。
+ * @param {import('../core/verdict.mjs').Verdict | undefined} verdict 裁决
+ * @returns {{ triggerHash: string | null, subtestTriggerHashes: Record<string, string | null> }} 指纹
+ */
+export function triggerHashesFromVerdict(verdict) {
+	return {
+		triggerHash: verdict?.triggerHash ?? null,
+		subtestTriggerHashes: verdict?.subtests
+			? Object.fromEntries(Object.entries(verdict.subtests).map(([name, sub]) => [name, sub.triggerHash ?? null]))
+			: {},
 	}
 }
 

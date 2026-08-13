@@ -11,9 +11,10 @@ import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL, TRIGGERED_REASONS_FI
 import { formatExpectedDuration, formatParallelRatePct, summarizeRunTiming } from '../core/run_timing.mjs'
 import { suiteKey } from '../core/state.mjs'
 
+import { formatContinueReasonLabel } from './continue_reason.mjs'
+
 /**
  * @typedef {import('./continue_reason.mjs').ContinueReason} ContinueReason
- * @typedef {import('./continue_reason.mjs').GoalEvidenceKind} ContinueReasonKind
  * @typedef {import('../core/estimate.mjs').EstimateTask} EstimateTask
  * @typedef {import('../core/plan.mjs').PlanSlot} PlanSlot
  */
@@ -394,45 +395,6 @@ function formatEstimatePoint(etaMs) {
 function shortHash(hash) {
 	if (!hash) return '—'
 	return hash.length > 12 ? `${hash.slice(0, 8)}…` : hash
-}
-
-/**
- * @param {ContinueReasonKind | string} kind 原因类型
- * @param {{ strict?: boolean }} [opts] strict 时未知 kind 抛错
- * @returns {string} 可读标签
- */
-function formatReasonKindLabel(kind, { strict = false } = {}) {
-	switch (kind) {
-		case 'imperfect_failed':
-			return geti18n('fountConsole.test.report.reason.imperfect.failed')
-		case 'imperfect_noisy':
-			return geti18n('fountConsole.test.report.reason.imperfect.noisy')
-		case 'imperfect_blocked':
-			return geti18n('fountConsole.test.report.reason.imperfect.blocked')
-		case 'imperfect_dependent':
-			return geti18n('fountConsole.test.report.reason.imperfect.dependent')
-		case 'missing_state_record':
-			return geti18n('fountConsole.test.report.reason.missingRecord')
-		case 'stale_content':
-			return geti18n('fountConsole.test.report.reason.staleContent')
-		case 'trigger_hash_drift':
-			return geti18n('fountConsole.test.report.reason.triggerHashDrift')
-		case 'explicit_selected':
-			return geti18n('fountConsole.test.report.reason.explicitSelected')
-		case 'dependency_required':
-			return geti18n('fountConsole.test.report.reason.dependencyRequired')
-	}
-	if (strict)
-		throw new Error(`unknown continue reason kind: ${kind}`)
-	return kind
-}
-
-/**
- * @param {ContinueReason} reason 续跑原因
- * @returns {string} 可读原因标签
- */
-function formatContinueReasonLabel(reason) {
-	return formatReasonKindLabel(reason.kind, { strict: true })
 }
 
 /**

@@ -9,7 +9,6 @@ import { getHeadCommitHash } from '../core/changed.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { buildEstimateTask, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
-import { reportMarkdownPath } from '../core/paths.mjs'
 import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
 import { formatSkipBecauseUrls, skipBecauseAction, skipBecauseUrlsForRun } from '../core/skip_because.mjs'
 import {
@@ -20,11 +19,19 @@ import {
 	writeState,
 } from '../core/state.mjs'
 import { GithubIssueCache, probeGithubIssueClosed } from '../hub/apis/github_issue.mjs'
+import { formatContinueReasonLabel } from '../runner/continue_reason.mjs'
 import { RunReportWriter } from '../runner/report.mjs'
 import { ResourceRunGate } from '../runner/scheduler.mjs'
 import { runSuite } from '../runner/suite_run.mjs'
 
-import { acceptedFromWave, expandJobWave, jobCommand, loadKernelCatalog } from './jobs.mjs'
+import {
+	acceptedFromWave,
+	changedFilesForRun,
+	expandJobWave,
+	jobCommand,
+	loadKernelCatalog,
+	triggerHashesFromVerdict,
+} from './jobs.mjs'
 import { ModuleCheckGate } from './module_check.mjs'
 import { attachGitRoots } from './nested_git.mjs'
 import { DEFAULT_PREP_SETTLE_MS, TestQueues } from './queues.mjs'
@@ -186,7 +193,7 @@ export class TestKernel {
 						type: 'queue-remove',
 						key,
 						reason: 'manifest_removed',
-						remainingMs: this.#remainingMs(),
+						...this.#remainingState(),
 					})
 			}
 		this.wake()
@@ -206,32 +213,46 @@ export class TestKernel {
 			spec,
 			pending: new Set(),
 			probedSkip: new Set(),
-			continueLoop: !spec.runAll && !spec.groups?.some(g => g.suiteSelectors?.length),
 			exitCode: 0,
 			done: Promise.withResolvers(),
+			released: false,
 		}
 		this.jobs.set(jobId, job)
-		const queued = await this.#enqueueWave(job)
-		let finished = { reportPath: null, allReusedHint: false }
-		if (queued.runCount === 0 && job.pending.size === 0) {
-			finished = await this.#finishReport(job.exitCode)
+		const prepared = await this.#prepareWave(job)
+		job.prepared = prepared
+		if (!prepared.activate) {
 			job.done.resolve(job.exitCode)
 			this.jobs.delete(jobId)
 		}
-		this.wake()
 		return {
 			jobId,
-			...queued.accepted,
-			...finished,
-			code: queued.runCount === 0 ? job.exitCode : queued.accepted.code,
+			...prepared.accepted,
+			reportPath: null,
+			allReusedHint: false,
+			code: prepared.accepted.code ?? job.exitCode,
 		}
 	}
 
 	/**
-	 * @param {object} job job
-	 * @returns {Promise<{ runCount: number, accepted: object }>} 真跑数与 accepted
+	 * accepted 发出后再激活队列，避免 suite-start 抢在计划摘要前。
+	 * @param {string} jobId job
+	 * @returns {Promise<void>}
 	 */
-	async #enqueueWave(job) {
+	async releaseJob(jobId) {
+		const job = this.jobs.get(jobId)
+		if (!job || job.released) return
+		job.released = true
+		const prepared = job.prepared
+		if (!prepared?.activate) return
+		await this.#activateWave(job, prepared)
+		this.wake()
+	}
+
+	/**
+	 * @param {object} job job
+	 * @returns {Promise<{ runCount: number, accepted: object, activate: boolean, wave?: object }>} 计划摘要
+	 */
+	async #prepareWave(job) {
 		const wave = await expandJobWave({
 			repoRoot: this.repoRoot,
 			options: { ...job.spec, probedSkip: job.probedSkip },
@@ -239,26 +260,71 @@ export class TestKernel {
 		})
 		if (wave.error || wave.empty) {
 			job.exitCode = wave.code ?? 0
-			return { runCount: 0, accepted: acceptedFromWave(wave, { runCount: 0, reuseCount: 0, blockedCount: 0 }) }
+			return {
+				runCount: 0,
+				activate: false,
+				accepted: acceptedFromWave(wave, { runCount: 0, reuseCount: 0, blockedCount: 0, remainingMs: 0 }),
+			}
 		}
 		job.fingerprints = wave.fingerprints
 		job.verdicts = wave.verdicts
 		job.selection = wave.selection
-		job.continueLoop = wave.continueLoop === true
-		await this.#beginReport(job, wave)
+		job.continueReasons = wave.continueReasons
 		let runCount = 0
 		let reuseCount = 0
 		let blockedCount = 0
-		for (const slot of wave.plan.slots) {
+		for (const slot of wave.plan.slots)
+			if (slot.action === 'reuse') reuseCount++
+			else if (slot.action === 'blocked') blockedCount++
+			else runCount++
+		const remaining = this.#remainingFromPlan(wave.plan)
+		return {
+			runCount,
+			activate: true,
+			wave,
+			accepted: acceptedFromWave(wave, {
+				runCount,
+				reuseCount,
+				blockedCount,
+				remainingMs: remaining.remainingMs,
+				unknownCount: remaining.unknownCount,
+			}),
+		}
+	}
+
+	/**
+	 * @param {object} job job
+	 * @param {{ wave: object, runCount: number }} prepared 已规划波次
+	 * @returns {Promise<void>}
+	 */
+	async #activateWave(job, prepared) {
+		const wave = prepared.wave
+		await this.#beginReport(job, wave)
+		const imperfectKeys = wave.selection?.imperfectKeys ?? new Set()
+		const runSlots = wave.plan.slots.filter(slot => slot.action === 'run')
+		runSlots.sort((a, b) => Number(imperfectKeys.has(b.key)) - Number(imperfectKeys.has(a.key)))
+		for (const slot of runSlots) {
+			const reason = wave.continueReasons?.get?.(slot.key)
+			const item = this.queues.enqueueCli({
+				key: slot.key,
+				viewerId: job.viewerId,
+				jobId: job.id,
+				force: job.spec.force,
+				subtests: slot.subtestsToRun,
+				fileFilters: slot.fileFilters,
+				reason: reason ? formatContinueReasonLabel(reason) : slot.key,
+				priority: imperfectKeys.has(slot.key) ? 0 : 1,
+				slot,
+			})
+			job.pending.add(item.id)
+			await this.#reportEnsure(slot.suite, reason)
+		}
+		for (const slot of wave.plan.slots) 
 			if (slot.action === 'reuse') {
-				reuseCount++
 				const prev = this.state.suites[slot.key]
-				const verdict = wave.verdicts.get(slot.key)
 				const fp = this.#fingerprintFor(slot.suite, wave.fingerprints)
-				const subtestTriggerHashes = verdict?.subtests
-					? Object.fromEntries(Object.entries(verdict.subtests).map(([name, sub]) => [name, sub.triggerHash ?? null]))
-					: null
-				refreshEntryFingerprint(this.state, slot.key, fp.commitHash, fp.uncommittedHash, verdict?.triggerHash ?? null, subtestTriggerHashes)
+				const hashes = triggerHashesFromVerdict(wave.verdicts.get(slot.key))
+				refreshEntryFingerprint(this.state, slot.key, fp.commitHash, fp.uncommittedHash, hashes.triggerHash, hashes.subtestTriggerHashes)
 				await writeState(this.repoRoot, this.state)
 				this.sessionPassed.set(slot.key, prev?.status !== 'failed')
 				await this.#reportResult(slot.suite, this.state.suites[slot.key], { reused: true })
@@ -269,12 +335,10 @@ export class TestKernel {
 					passed: prev?.status !== 'failed',
 					reused: true,
 					status: prev?.status,
-					remainingMs: this.#remainingMs(),
+					...this.#remainingState(),
 				})
-				continue
 			}
-			if (slot.action === 'blocked') {
-				blockedCount++
+			else if (slot.action === 'blocked') {
 				await this.#recordBlocked(slot, wave.fingerprints)
 				job.exitCode = 1
 				this.viewers.broadcast({
@@ -283,33 +347,13 @@ export class TestKernel {
 					jobId: job.id,
 					passed: false,
 					blockedBy: slot.blockedBy ?? [],
-					remainingMs: this.#remainingMs(),
+					...this.#remainingState(),
 				})
-				continue
 			}
-			const item = this.queues.enqueueCli({
-				key: slot.key,
-				viewerId: job.viewerId,
-				jobId: job.id,
-				force: job.spec.force,
-				subtests: slot.subtestsToRun,
-				fileFilters: slot.fileFilters,
-				reason: 'cli',
-				slot,
-			})
-			job.pending.add(item.id)
-			runCount++
-			await this.#reportEnsure(slot.suite, wave.continueReasons?.get?.(slot.key))
-			this.viewers.broadcast({
-				type: 'queue-append',
-				key: slot.key,
-				reason: 'cli',
-				jobId: job.id,
-				remainingMs: this.#remainingMs(),
-			})
-		}
+		
 		await this.#flushReportEstimate()
-		return { runCount, accepted: acceptedFromWave(wave, { runCount, reuseCount, blockedCount }) }
+		if (!job.pending.size)
+			await this.#finishJob(job)
 	}
 
 	/**
@@ -355,39 +399,75 @@ export class TestKernel {
 	}
 
 	/**
+	 * @param {import('../core/plan.mjs').RunPlan} plan 计划
+	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
+	 */
+	#remainingFromPlan(plan) {
+		const tasks = []
+		for (const slot of plan.slots) {
+			if (slot.action !== 'run') continue
+			const suite = slot.suite
+			if (!suite) continue
+			tasks.push(buildEstimateTask(suite, this.state.suites[slot.key], {
+				id: slot.key,
+				subtestsToRun: slot.subtestsToRun,
+				moduleCheckMs: this.moduleCheck.meanDurationMs(),
+			}))
+		}
+		return this.#snapshotFromTasks(tasks)
+	}
+
+	/**
 	 * @returns {import('../core/estimate.mjs').EstimateTask[]} 队列+在跑的预估任务
 	 */
 	#estimateTasks() {
+		const now = Date.now()
 		const tasks = []
 		for (const item of [...this.queues.cli, ...this.queues.fs]) {
 			const suite = this.catalog.byKey.get(item.key)
 			if (!suite) continue
 			tasks.push(buildEstimateTask(suite, this.state.suites[item.key], {
+				id: item.id,
 				subtestsToRun: item.subtests,
 				moduleCheckMs: this.moduleCheck.meanDurationMs(),
 			}))
 		}
-		for (const [key] of this.running) {
+		for (const [key, running] of this.running) {
 			const suite = this.catalog.byKey.get(key)
 			if (!suite) continue
+			const item = running.item
+			const meanCheck = this.moduleCheck.meanDurationMs()
+			const checkElapsed = this.moduleCheck.heldTicket ? now - this.moduleCheck.heldAt : 0
 			tasks.push(buildEstimateTask(suite, this.state.suites[key], {
-				moduleCheckMs: this.moduleCheck.meanDurationMs(),
+				id: item.id ?? `run:${key}`,
+				subtestsToRun: item.subtests,
+				elapsedMs: now - (running.startedAt ?? now),
+				running: true,
+				moduleCheckMs: running.checkDone ? 0 : Math.max(0, meanCheck - checkElapsed),
 			}))
 		}
 		return tasks
 	}
 
 	/**
-	 * @returns {number | null} 剩余预估；仅有未知耗时的真跑时为 null
+	 * @param {import('../core/estimate.mjs').EstimateTask[]} tasks 任务
+	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
 	 */
-	#remainingMs() {
-		const tasks = this.#estimateTasks()
-		if (!tasks.length) return 0
+	#snapshotFromTasks(tasks) {
+		if (!tasks.length) return { remainingMs: 0, unknownCount: 0 }
 		const estimate = summarizeEstimate(tasks, {
 			memBudgetBytes: this.globalBudget.memBytes,
 			cpuBudgetPct: CPU_BUDGET_PCT,
+			speculative: false,
 		})
-		return estimate.etaMs
+		return { remainingMs: estimate.etaMs, unknownCount: estimate.unknownCount }
+	}
+
+	/**
+	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
+	 */
+	#remainingState() {
+		return this.#snapshotFromTasks(this.#estimateTasks())
 	}
 
 	/**
@@ -398,7 +478,7 @@ export class TestKernel {
 		const tasks = this.#estimateTasks()
 		await this.report.setEstimatePlan(
 			new Map(tasks.map(task => [task.key, task])),
-			{ memBudgetBytes: this.globalBudget.memBytes, cpuBudgetPct: CPU_BUDGET_PCT },
+			{ memBudgetBytes: this.globalBudget.memBytes, cpuBudgetPct: CPU_BUDGET_PCT, speculative: false },
 		)
 	}
 
@@ -430,7 +510,14 @@ export class TestKernel {
 	 */
 	async #runLoop() {
 		while (!this.closed) {
-			this.queues.promotePrep()
+			const promoted = this.queues.promotePrep()
+			for (const item of promoted)
+				this.viewers.broadcast({
+					type: 'queue-append',
+					key: item.key,
+					reason: item.reason,
+					...this.#remainingState(),
+				})
 			await this.#admitReady()
 			if (this.#shouldExit()) {
 				this.issueCache.pruneOlderThan()
@@ -491,7 +578,7 @@ export class TestKernel {
 	async #runItem(item, suite, release) {
 		const key = item.key
 		const abort = new AbortController()
-		this.running.set(key, { item, abort })
+		this.running.set(key, { item, abort, startedAt: Date.now(), checkDone: false })
 		this.#syncKeepAwake()
 		const expectedMs = expectedRunDurationMs(suite, this.state.suites[key], item.subtests)
 		this.viewers.broadcast({
@@ -499,18 +586,22 @@ export class TestKernel {
 			key,
 			jobId: item.jobId,
 			expectedMs,
-			remainingMs: this.#remainingMs(),
+			...this.#remainingState(),
 		})
+		/** @type {object | null} */
+		let endEvent = null
 		try {
 			const skip = await this.#evalSkip(suite, item.subtests)
 			if (skip) {
-				await this.#finishSkip(item, suite, skip)
+				endEvent = await this.#finishSkip(item, suite, skip)
 				return
 			}
-			const fp = this.#fingerprintFor(suite, this.jobs.get(item.jobId)?.fingerprints ?? {
+			const job = this.jobs.get(item.jobId)
+			const fingerprints = job?.fingerprints ?? {
 				commitHash: await getHeadCommitHash(this.repoRoot),
 				uncommittedHash: null,
-			})
+			}
+			const fp = this.#fingerprintFor(suite, fingerprints)
 			const ticket = await this.moduleCheck.acquire()
 			const result = await runSuite(
 				suite,
@@ -520,7 +611,7 @@ export class TestKernel {
 						? resolveSerialOnlyFiles(suite, item.fileFilters, this.repoRoot).files
 						: undefined,
 					moduleCheckTicket: ticket,
-					triggeredFiles: suiteTriggeredFiles(suite, []),
+					triggeredFiles: suiteTriggeredFiles(suite, changedFilesForRun(fingerprints, key)),
 				},
 				this.globalBudget,
 				false,
@@ -534,6 +625,9 @@ export class TestKernel {
 			)
 			if (this.moduleCheck.heldTicket === ticket)
 				this.moduleCheck.ready(ticket)
+			const running = this.running.get(key)
+			if (running) running.checkDone = true
+			const hashes = triggerHashesFromVerdict(job?.verdicts?.get(key))
 			await upsertSuiteRun({
 				repoRoot: this.repoRoot,
 				state: this.state,
@@ -541,22 +635,20 @@ export class TestKernel {
 				result,
 				commitHash: fp.commitHash,
 				uncommittedHash: fp.uncommittedHash,
+				triggerHash: hashes.triggerHash,
 				ranSubtests: item.subtests,
+				subtestTriggerHashes: hashes.subtestTriggerHashes,
 			})
 			await writeState(this.repoRoot, this.state)
 			this.sessionPassed.set(key, result.passed)
 			await this.#reportResult(suite, this.state.suites[key])
-			this.viewers.broadcast({
+			if (!result.passed && job) job.exitCode = 1
+			endEvent = {
 				type: 'suite-end',
 				key,
 				jobId: item.jobId,
 				passed: result.passed,
 				durationMs: result.durationMs,
-				remainingMs: this.#remainingMs(),
-			})
-			if (!result.passed && item.jobId) {
-				const job = this.jobs.get(item.jobId)
-				if (job) job.exitCode = 1
 			}
 		}
 		finally {
@@ -570,9 +662,11 @@ export class TestKernel {
 						type: 'queue-remove',
 						key: fsItem.key,
 						reason: 'cli_complete',
-						remainingMs: this.#remainingMs(),
+						...this.#remainingState(),
 					})
 			}
+			if (endEvent)
+				this.viewers.broadcast({ ...endEvent, ...this.#remainingState() })
 			if (item.jobId)
 				await this.#onJobItemDone(item)
 			this.wake()
@@ -637,7 +731,7 @@ export class TestKernel {
 			noiseHits: [],
 			logPath: null,
 		}, { skipBecause: skip.urls, skipBecauseClosed: skip.closed })
-		this.viewers.broadcast({
+		return {
 			type: 'suite-end',
 			key: item.key,
 			jobId: item.jobId,
@@ -645,8 +739,7 @@ export class TestKernel {
 			skipBecause: skip.urls,
 			skipBecauseClosed: skip.closed,
 			durationMs: 0,
-			remainingMs: this.#remainingMs(),
-		})
+		}
 	}
 
 	/**
@@ -658,19 +751,14 @@ export class TestKernel {
 		if (!job) return
 		job.pending.delete(item.id)
 		if (job.pending.size) return
-		if (job.continueLoop && job.exitCode === 0) {
-			const more = await this.#enqueueWave(job)
-			if (more.runCount > 0) {
-				this.viewers.send(job.viewerId, {
-					type: 'accepted',
-					viewerId: job.viewerId,
-					jobId: job.id,
-					...more.accepted,
-					reportPath: this.report ? reportMarkdownPath(this.repoRoot).replace(/\\/g, '/') : null,
-				})
-				return
-			}
-		}
+		await this.#finishJob(job)
+	}
+
+	/**
+	 * @param {object} job job
+	 * @returns {Promise<void>}
+	 */
+	async #finishJob(job) {
 		const finished = await this.#finishReport(job.exitCode)
 		job.done.resolve(job.exitCode)
 		this.viewers.broadcast({
@@ -678,11 +766,10 @@ export class TestKernel {
 			jobId: job.id,
 			exitCode: job.exitCode,
 			...finished,
-			nothingToContinue: job.continueLoop && job.exitCode === 0,
 		})
 		this.jobs.delete(job.id)
 		if (this.queues.pendingEmpty() && !this.running.size)
-			this.viewers.broadcast({ type: 'idle', remainingMs: 0 })
+			this.viewers.broadcast({ type: 'idle', remainingMs: 0, unknownCount: 0 })
 	}
 
 	/**
@@ -732,6 +819,7 @@ export class TestKernel {
 			command: jobCommand(job.spec),
 			commitHash: wave.fingerprints?.commitHash ?? await getHeadCommitHash(this.repoRoot),
 			uncommittedHash: wave.fingerprints?.uncommittedHash ?? null,
+			continueReasons: wave.continueReasons,
 		})
 		await this.report.init()
 	}
@@ -790,7 +878,7 @@ export class TestKernel {
 				type: 'queue-remove',
 				key: item.key,
 				reason: 'viewer_gone',
-				remainingMs: this.#remainingMs(),
+				...this.#remainingState(),
 			})
 		}
 		for (const [, running] of this.running)

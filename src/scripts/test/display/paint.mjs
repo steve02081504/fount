@@ -1,7 +1,27 @@
 /**
  * 把内核 accepted / job-done 事件画成终端文案（旧 runner 的操作员输出）。
  */
-import { console } from '../../i18n/bare.mjs'
+import { console, geti18n } from '../../i18n/bare.mjs'
+import { formatDuration } from '../core/format_duration.mjs'
+import { formatContinueReasonLabel } from '../runner/continue_reason.mjs'
+
+/**
+ * @param {object} msg 含 remainingMs / unknownCount 的事件
+ * @returns {string} 可读剩余
+ */
+export function formatRemainingLabel(msg) {
+	const ms = msg.remainingMs
+	const unknown = msg.unknownCount ?? 0
+	if (unknown > 0 && (ms == null || !Number.isFinite(ms)))
+		return geti18n('fountConsole.test.display.remainingOnlyUnknown', { count: unknown })
+	if (ms == null || !Number.isFinite(ms)) return '?'
+	if (unknown > 0)
+		return geti18n('fountConsole.test.display.remainingUnknown', {
+			remaining: formatDuration(ms),
+			count: unknown,
+		})
+	return formatDuration(ms)
+}
 
 /**
  * 打印空波次 / 选择错误 / 波次头。
@@ -58,11 +78,17 @@ export function paintAccepted(msg) {
 		console.logI18n('fountConsole.test.nothingToContinue')
 		return
 	}
-	if (msg.selectionMode === 'imperfect')
+	if (msg.selectionMode === 'continue')
+		console.logI18n('fountConsole.test.continueDefault', {
+			count: msg.goalCount,
+			imperfect: msg.imperfectCount ?? 0,
+			outdated: msg.outdatedCount ?? 0,
+		})
+	else if (msg.selectionMode === 'imperfect')
 		console.logI18n('fountConsole.test.continueImperfect', { count: msg.goalCount })
 	else if (msg.selectionMode === 'outdated')
 		console.logI18n('fountConsole.test.outdatedSelected', { count: msg.goalCount })
-	if (msg.selectionMode === 'imperfect' || msg.selectionMode === 'outdated' || msg.selectionMode === 'explicit' || msg.selectionMode === 'all') {
+	if (['imperfect', 'outdated', 'continue', 'explicit', 'all', 'skip_because'].includes(msg.selectionMode)) {
 		console.logI18n('fountConsole.test.selectedSuites', { selected: msg.goalCount, total: msg.total })
 		console.logI18n('fountConsole.test.planSlotSummary', {
 			run: msg.runCount,
@@ -70,6 +96,13 @@ export function paintAccepted(msg) {
 			blocked: msg.blockedCount,
 		})
 	}
+	for (const row of msg.continueReasons ?? [])
+		console.logI18n('fountConsole.test.display.reason', {
+			label: row.key,
+			reason: formatContinueReasonLabel(row),
+		})
+	if (msg.runCount || msg.unknownCount || msg.remainingMs != null)
+		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(msg) })
 	if (!msg.runCount && (msg.reuseCount || msg.blockedCount))
 		console.logI18n('fountConsole.test.noRealRunPlanned', {
 			reused: msg.reuseCount,

@@ -10,7 +10,7 @@ import process from 'node:process'
 import { assertEquals, assertRejects } from 'jsr:@std/assert'
 import { execFile } from 'npm:@steve02081504/exec'
 
-import { reportMarkdownPath } from '../core/paths.mjs'
+import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { acquireModuleCheckTicket, signalModuleCheckReady } from '../hub/clients/module_check.mjs'
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
@@ -314,6 +314,108 @@ Deno.test('empty default job announces empty, does not write in-progress report,
 		await assertRejects(() => readFile(reportMarkdownPath(root), 'utf8'))
 		ws.close()
 		await handle.closed
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('accepted precedes suite-start and remaining drops the finished suite', async () => {
+	const root = join(tmpdir(), `fount-kernel-eta-${Date.now()}`)
+	await mkdir(root, { recursive: true })
+	try {
+		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
+		assertEquals(init.code, 0)
+		const commit = await execFile('git', [
+			'-c', 'user.email=t@t', '-c', 'user.name=t',
+			'commit', '--allow-empty', '-m', 'init',
+		], { cwd: root })
+		assertEquals(commit.code, 0)
+		const handle = await startTestKernel({
+			port: KERNEL_PORT + 11,
+			repoRoot: root,
+			autoExit: false,
+			watchFs: false,
+			writeReport: true,
+		})
+		try {
+			handle.kernel.issueCache.getClosed = issueStillOpen
+			const short = dummySkipSuite('__eta_short__', SKIP_URL)
+			const long = dummySkipSuite('__eta_long__', SKIP_URL)
+			short.heavy = true
+			long.heavy = true
+			handle.kernel.catalog.allSuites.push(short, long)
+			handle.kernel.catalog.byKey.set('testkit:__eta_short__', short)
+			handle.kernel.catalog.byKey.set('testkit:__eta_long__', long)
+			handle.kernel.state.suites['testkit:__eta_short__'] = {
+				status: 'failed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 100,
+				baselineDurationMs: 1000,
+				triggerHash: null,
+				failedFiles: [],
+				noiseHits: [],
+				logPath: null,
+			}
+			handle.kernel.state.suites['testkit:__eta_long__'] = {
+				status: 'failed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 100,
+				baselineDurationMs: 10_000,
+				triggerHash: null,
+				failedFiles: [],
+				noiseHits: [],
+				logPath: null,
+			}
+
+			const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+			await new Promise((resolve, reject) => {
+				ws.addEventListener('open', resolve, { once: true })
+				ws.addEventListener('error', reject, { once: true })
+			})
+			/** @type {object[]} */
+			const events = []
+			const done = new Promise(resolve => {
+				ws.addEventListener('message', event => {
+					const msg = JSON.parse(String(event.data))
+					events.push(msg)
+					if (msg.type === 'job-done') resolve()
+				})
+			})
+			ws.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
+			await done
+			ws.close()
+
+			const types = events.map(msg => msg.type)
+			assertEquals(types.indexOf('accepted') >= 0, true)
+			assertEquals(types.indexOf('accepted') < types.indexOf('suite-start'), true)
+			const accepted = events.find(msg => msg.type === 'accepted')
+			assertEquals(accepted?.mode, 'overview')
+			assertEquals(accepted?.runCount, 2)
+			assertEquals((accepted?.continueReasons ?? []).map(row => row.key).sort(), [
+				'testkit:__eta_long__',
+				'testkit:__eta_short__',
+			])
+			assertEquals(accepted?.remainingMs >= 10_000, true)
+
+			const firstEnd = events.find(msg => msg.type === 'suite-end')
+			const lastEnd = events.filter(msg => msg.type === 'suite-end').at(-1)
+			assertEquals(firstEnd?.remainingMs <= 10_000 + 1000, true)
+			assertEquals(firstEnd?.remainingMs < (accepted?.remainingMs ?? 0), true)
+			assertEquals(lastEnd?.remainingMs, 0)
+
+			const reasonsText = await readFile(triggeredReasonsMarkdownPath(root), 'utf8')
+			assertEquals(reasonsText.includes('历史失败'), true)
+			const report = JSON.parse(await readFile(reportJsonPath(root), 'utf8'))
+			assertEquals(report.slots.every(slot => slot.continueReason?.kind), true)
+		}
+		finally {
+			await handle.close()
+		}
 	}
 	finally {
 		await rm(root, { recursive: true, force: true })

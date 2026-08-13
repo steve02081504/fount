@@ -10,7 +10,8 @@ import { formatDuration } from '../core/format_duration.mjs'
 import { beginTestProgress, finishTestProgress } from '../core/progress.mjs'
 import { testHubUrl } from '../hub/index.mjs'
 
-import { paintAccepted, paintJobDone } from './paint.mjs'
+import { resolveDisplayMode } from './mode.mjs'
+import { formatRemainingLabel, paintAccepted, paintJobDone } from './paint.mjs'
 
 /**
  * @typedef {object} DisplayOptions
@@ -34,7 +35,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 
 	let exitCode = 0
 	let runCount = 0
-	let displayMode = watch || !job ? 'overview' : 'multi'
+	let displayMode = resolveDisplayMode({ watch, job })
 	const done = Promise.withResolvers()
 	let finished = 0
 
@@ -57,10 +58,16 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		}
 		if (msg.type === 'suite-start') {
 			const expected = formatMs(msg.expectedMs)
-			const remaining = formatMs(msg.remainingMs)
+			const remaining = formatRemainingLabel(msg)
 			const { manifestId, name } = splitKey(msg.key)
 			console.logI18n('fountConsole.test.runningSuite.base', { manifestId, name })
-			console.logI18n('fountConsole.test.display.eta', { expected, remaining })
+			if ((msg.unknownCount ?? 0) > 0 && (msg.remainingMs == null || !Number.isFinite(msg.remainingMs)))
+				console.logI18n('fountConsole.test.display.etaUnknown', {
+					expected,
+					count: msg.unknownCount,
+				})
+			else
+				console.logI18n('fountConsole.test.display.eta', { expected, remaining })
 			return
 		}
 		if (msg.type === 'suite-end') {
@@ -80,13 +87,13 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 			else
 				console.logI18n(msg.passed ? 'fountConsole.test.passed' : 'fountConsole.test.failed', { label: msg.key })
 			if (displayMode !== 'stream' && !msg.reused && !msg.blockedBy?.length)
-				console.logI18n('fountConsole.test.display.remaining', { remaining: formatMs(msg.remainingMs) })
+				console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(msg) })
 			return
 		}
 		if ((msg.type === 'queue-append' || msg.type === 'queue-remove') && displayMode === 'overview') {
 			console.logI18n(
 				msg.type === 'queue-append' ? 'fountConsole.test.queue.append' : 'fountConsole.test.queue.remove',
-				{ label: msg.key, reason: msg.reason || '', remaining: formatMs(msg.remainingMs) },
+				{ label: msg.key, reason: msg.reason || '', remaining: formatRemainingLabel(msg) },
 			)
 			return
 		}

@@ -7,6 +7,7 @@ import express from 'npm:express'
 import { WebSocketServer } from 'npm:ws'
 
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { resolveDisplayMode } from '../display/mode.mjs'
 import { createGithubIssueRouter } from '../hub/apis/github_issue.mjs'
 import { createHealthRouter } from '../hub/apis/health.mjs'
 import { createSharedStoreRouter } from '../hub/apis/shared_store.mjs'
@@ -139,9 +140,10 @@ async function onViewerMessage(kernel, viewer, raw) {
 	}
 	if (msg.type && msg.type !== 'hello') return
 	viewer.watch = msg.watch === true
-	viewer.mode = msg.watch || !msg.job ? 'overview' : msg.mode || 'overview'
+	viewer.mode = resolveDisplayMode({ watch: viewer.watch, job: msg.job })
 	kernel.seenViewer = true
 	if (msg.watch || !msg.job) {
+		viewer.mode = resolveDisplayMode({ watch: msg.watch === true, job: msg.job })
 		kernel.viewers.send(viewer.id, {
 			type: 'accepted',
 			viewerId: viewer.id,
@@ -154,9 +156,7 @@ async function onViewerMessage(kernel, viewer, raw) {
 	}
 	const submitted = await kernel.submitJob(msg.job, viewer.id)
 	viewer.jobId = submitted.jobId
-	if (submitted.runCount === 1) viewer.mode = 'stream'
-	else if (submitted.runCount > 1) viewer.mode = 'multi'
-	else viewer.mode = msg.mode || 'overview'
+	viewer.mode = resolveDisplayMode({ watch: false, job: msg.job, runCount: submitted.runCount })
 	kernel.viewers.send(viewer.id, {
 		type: 'accepted',
 		viewerId: viewer.id,
@@ -170,6 +170,8 @@ async function onViewerMessage(kernel, viewer, raw) {
 		error: submitted.error,
 		selectionMode: submitted.selectionMode,
 		goalCount: submitted.goalCount,
+		imperfectCount: submitted.imperfectCount,
+		outdatedCount: submitted.outdatedCount,
 		total: submitted.total,
 		noisyKeys: submitted.noisyKeys,
 		deadTriggers: submitted.deadTriggers,
@@ -178,9 +180,14 @@ async function onViewerMessage(kernel, viewer, raw) {
 		filterErrors: submitted.filterErrors,
 		knownIds: submitted.knownIds,
 		available: submitted.available,
+		continueReasons: submitted.continueReasons,
+		remainingMs: submitted.remainingMs,
+		unknownCount: submitted.unknownCount,
 		reportPath: submitted.reportPath,
 	})
-	if (submitted.runCount === 0)
+	if (kernel.jobs.has(submitted.jobId))
+		await kernel.releaseJob(submitted.jobId)
+	else
 		kernel.viewers.send(viewer.id, {
 			type: 'job-done',
 			jobId: submitted.jobId,

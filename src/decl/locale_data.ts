@@ -130,6 +130,10 @@ export type LocaleData = {
 		test: {
 			help: string
 			watchNoGroups: string
+			updateEstimates: {
+				incompatible: string
+				summary: string
+			}
 			skipBecause: {
 				pass: string
 				fail: string
@@ -140,7 +144,11 @@ export type LocaleData = {
 			}
 			display: {
 				eta: string
+				etaUnknown: string
+				reason: string
 				remaining: string
+				remainingUnknown: string
+				remainingOnlyUnknown: string
 			}
 			passed: string
 			passedWithNoise: string
@@ -160,6 +168,7 @@ export type LocaleData = {
 			statePathFinal: string
 			blocked: string
 			speculativeDiscard: string
+			continueDefault: string
 			continueImperfect: string
 			outdatedSelected: string
 			runningSuite: {
@@ -263,6 +272,7 @@ export type LocaleData = {
 					}
 					missingRecord: string
 					staleContent: string
+					skipBecause: string
 					triggerHashDrift: string
 				}
 				label: {
@@ -6222,6 +6232,7 @@ export type LocaleKeyParams = {
 	'fountConsole.server.showUrl.https': { url: string | number }
 	'fountConsole.test.available': { ids: string | number }
 	'fountConsole.test.blocked': { deps: string | number; label: string | number }
+	'fountConsole.test.continueDefault': { count: string | number; imperfect: string | number; outdated: string | number }
 	'fountConsole.test.continueImperfect': { count: string | number }
 	'fountConsole.test.denoPanic.alreadyReported': { signature: string | number }
 	'fountConsole.test.denoPanic.detected': { label: string | number; signature: string | number }
@@ -6230,7 +6241,11 @@ export type LocaleKeyParams = {
 	'fountConsole.test.denoPanic.publishFailed': { signature: string | number }
 	'fountConsole.test.denoPanic.published': { url: string | number }
 	'fountConsole.test.display.eta': { expected: string | number; remaining: string | number }
+	'fountConsole.test.display.etaUnknown': { count: string | number; expected: string | number }
+	'fountConsole.test.display.reason': { label: string | number; reason: string | number }
 	'fountConsole.test.display.remaining': { remaining: string | number }
+	'fountConsole.test.display.remainingOnlyUnknown': { count: string | number }
+	'fountConsole.test.display.remainingUnknown': { count: string | number; remaining: string | number }
 	'fountConsole.test.estimated.remaining': { completed: string | number; eta: string | number; total: string | number }
 	'fountConsole.test.estimated.run': { eta: string | number; rate: string | number }
 	'fountConsole.test.estimated.runSerial': { eta: string | number }
@@ -6302,6 +6317,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.unknown.suite': { name: string | number }
 	'fountConsole.test.unknown.suiteSelector': { ids: string | number }
 	'fountConsole.test.unsupportedSubtestFilter': { names: string | number; suite: string | number }
+	'fountConsole.test.updateEstimates.summary': { filesChanged: string | number; skipped: string | number; suitesUpdated: string | number }
 	'fountConsole.test.ws.fail': { detail: string | number }
 	'fountConsole.test.ws.pass': { detail: string | number }
 	'fountConsole.tray.createTrayFailed': { error: string | number }

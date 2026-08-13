@@ -27,7 +27,7 @@ alwaysApply: false
 - **i18n**: `src/scripts/i18n/bare.mjs` only — never pull in the server module graph. Display/CLI sets `FOUNT_TEST` via `mark.mjs` (not `env.mjs`).
 - **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` = dependency-tree mermaid. Fingerprints update only after that suite's plan slot finishes — never batch-align at wave start. Each run prunes orphan suite/subtest entries (and logs / Playwright dirs) missing from manifests.
 - **Run report**: `data/test/report.md` + `report.json` — last job/wave only; empty default wave does not overwrite. Trigger reasons: `data/test/triggered-reasons.md`.
-- **Default loop** (bare `fount test`): imperfect → outdated → 0 when both empty (prints `nothingToContinue`); never full-repo unless `--all`. Details: [continue-report.md](docs/continue-report.md).
+- **Default plan** (bare `fount test`): one wave of imperfect ∪ outdated (each suite once). Imperfect queues first; a failure only blocks dependents. Exit non-zero at the end if anything failed. Never full-repo unless `--all`. Details: [continue-report.md](docs/continue-report.md).
 - **Selectors**: `manifest:suite` / `manifest:suite:subtest`. Exact name wins; prefix only when no exact match; `*`/`?` always globs. Third CLI segment on serial suites = `*.test.mjs` stem → `FOUNT_TEST_ONLY`.
 - **`FOUNT_TEST_SUBTESTS`**: ambient env merges when CLI selects a suite without `:subtest` (CLI wins; not for dependsOn-only or wave goals without suiteSelectors).
 - **`FOUNT_TEST_TRIGGERED_FILES`**: temp file of repo-relative paths that matched this wave's triggers (empty = unconstrained). Protocol: [protocol.mjs](core/protocol.mjs).
@@ -56,7 +56,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 ## Manifest fields
 
 - **`triggers`**: glob via `npm:picomatch` (braces `{a,b}`, `dot: true`). Default ignores docs/metadata; override: [trigger-filter.md](docs/trigger-filter.md). Watch code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`). Federation: only `fed_core` watches `federation/**`. **Dead triggers** (zero matches) → print + **exit 1** before any suite runs.
-- **`dependsOn`**: plan pulls transitive deps. Imperfect wave = hard fails + one-level dependents; stale `unknown` → outdated wave.
+- **`dependsOn`**: plan pulls transitive deps. Default goals = imperfect (hard fails + one-level dependents, including fresh noisy) ∪ outdated (`unknown`). A failure only blocks dependents of that slot.
 - **`subtests`**: `{ name, triggers|trigger, spec? }`. When splitting a frontend god-file, update that subtest's `triggers`. Runtime filter: `FOUNT_TEST_SUBTESTS`. Suite-level `noisy` only marks subtests when **no** file failed.
 - **Live layering**: smoke → e2e gates; do not jump straight to full e2e. Details: [domain-harness.md](docs/domain-harness.md#live-layering).
 - **Browser scripts**: `/scripts/*` → `src/public/pages/scripts/` (browser absolute URLs only). Cross-runtime pure+browser: `shells/*/public/shared/`. Prefer absolute `/scripts/…` over relative climbs from part `public/` (URL-resolved; can land wrong). Do not import `/scripts/test/*` from Deno; pure tests use relative paths, not `/parts/` URLs. Split: pure → `shared/`, UI → `public/src/`.

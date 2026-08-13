@@ -1,9 +1,10 @@
 /**
- * 触发原因：由计划槽位 goalEvidence / provenance 格式化为报告文案。
+ * 触发原因：由计划槽位抽取，并格式化为报告 / 终端文案。
  */
+import { geti18n } from '../../i18n/bare.mjs'
 
 /**
- * @typedef {'missing_state_record' | 'imperfect_failed' | 'imperfect_noisy' | 'imperfect_blocked' | 'imperfect_dependent' | 'stale_content' | 'trigger_hash_drift' | 'explicit_selected' | 'dependency_required'} GoalEvidenceKind
+ * @typedef {'missing_state_record' | 'imperfect_failed' | 'imperfect_noisy' | 'imperfect_blocked' | 'imperfect_dependent' | 'stale_content' | 'trigger_hash_drift' | 'explicit_selected' | 'dependency_required' | 'skip_because'} GoalEvidenceKind
  */
 
 /**
@@ -23,6 +24,7 @@
  * @property {string} [requiredBy] 依赖拉入的直接纳入方
  */
 
+/** @typedef {GoalEvidenceKind} ContinueReasonKind */
 /** @typedef {GoalEvidence} ContinueReason */
 
 /**
@@ -50,4 +52,55 @@ export function buildReasonsFromPlan(plan) {
 		if (reason) map.set(slot.key, reason)
 	}
 	return map
+}
+
+/**
+ * 把原因表编成可 JSON 的数组。
+ * @param {Map<string, ContinueReason> | undefined} map 原因表
+ * @returns {Array<ContinueReason & { key: string }>} 序列化
+ */
+export function serializeContinueReasons(map) {
+	if (!map?.size) return []
+	return [...map.entries()].map(([key, reason]) => ({ key, ...reason }))
+}
+
+/**
+ * @param {ContinueReasonKind | string} kind 原因类型
+ * @param {{ strict?: boolean }} [opts] strict 时未知 kind 抛错
+ * @returns {string} 可读标签
+ */
+export function formatReasonKindLabel(kind, { strict = false } = {}) {
+	switch (kind) {
+		case 'imperfect_failed':
+			return geti18n('fountConsole.test.report.reason.imperfect.failed')
+		case 'imperfect_noisy':
+			return geti18n('fountConsole.test.report.reason.imperfect.noisy')
+		case 'imperfect_blocked':
+			return geti18n('fountConsole.test.report.reason.imperfect.blocked')
+		case 'imperfect_dependent':
+			return geti18n('fountConsole.test.report.reason.imperfect.dependent')
+		case 'missing_state_record':
+			return geti18n('fountConsole.test.report.reason.missingRecord')
+		case 'stale_content':
+			return geti18n('fountConsole.test.report.reason.staleContent')
+		case 'trigger_hash_drift':
+			return geti18n('fountConsole.test.report.reason.triggerHashDrift')
+		case 'explicit_selected':
+			return geti18n('fountConsole.test.report.reason.explicitSelected')
+		case 'dependency_required':
+			return geti18n('fountConsole.test.report.reason.dependencyRequired')
+		case 'skip_because':
+			return geti18n('fountConsole.test.report.reason.skipBecause')
+	}
+	if (strict)
+		throw new Error(`unknown continue reason kind: ${kind}`)
+	return kind
+}
+
+/**
+ * @param {ContinueReason} reason 续跑原因
+ * @returns {string} 可读原因标签
+ */
+export function formatContinueReasonLabel(reason) {
+	return formatReasonKindLabel(reason.kind, { strict: true })
 }

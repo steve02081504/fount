@@ -5,6 +5,7 @@
 import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
+import { resolveDisplayMode } from '../display/mode.mjs'
 import { paintAccepted, paintJobDone } from '../display/paint.mjs'
 import { acceptedFromWave } from '../kernel/jobs.mjs'
 
@@ -77,6 +78,43 @@ Deno.test('paintAccepted noisyOnly does not look like all-green', () => {
 	}))
 	assertEquals(logs[0]?.key, 'fountConsole.test.noisyOnlyRemain')
 	assertEquals(logs.some(row => row.key === 'fountConsole.test.nothingToContinue'), false)
+})
+
+Deno.test('bare continue job is overview regardless of runCount', () => {
+	assertEquals(resolveDisplayMode({ watch: false, job: {}, runCount: 3 }), 'overview')
+	assertEquals(resolveDisplayMode({ watch: true, job: undefined, runCount: 0 }), 'overview')
+	assertEquals(resolveDisplayMode({
+		watch: false,
+		job: { groups: [{ manifestSelectors: ['checks'], suiteSelectors: ['i18n_keys'] }] },
+		runCount: 1,
+	}), 'stream')
+	assertEquals(resolveDisplayMode({
+		watch: false,
+		job: { groups: [{ manifestSelectors: ['shells/chat'], suiteSelectors: ['pure', 'integration'] }] },
+		runCount: 2,
+	}), 'multi')
+})
+
+Deno.test('paintAccepted lists per-suite continue reasons before the wave body', () => {
+	const { logs } = captureI18n(() => paintAccepted({
+		selectionMode: 'continue',
+		goalCount: 2,
+		total: 10,
+		runCount: 2,
+		reuseCount: 0,
+		blockedCount: 0,
+		remainingMs: 12_000,
+		continueReasons: [
+			{ key: 'shells/social:pure', kind: 'imperfect_failed' },
+			{ key: 'checks:i18n_keys', kind: 'stale_content', matchedPaths: ['src/public/locales/zh-CN.json'] },
+		],
+	}))
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.continueDefault'), true)
+	assertEquals(logs.filter(row => row.key === 'fountConsole.test.display.reason').map(row => row.params.label), [
+		'shells/social:pure',
+		'checks:i18n_keys',
+	])
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
 })
 
 Deno.test('paintJobDone nothingToContinue after a finished wave', () => {

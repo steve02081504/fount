@@ -262,6 +262,58 @@ Deno.test('hasMeaningfulParallelSavings ignores noise-scale deltas', () => {
 	assertEquals(hasMeaningfulParallelSavings({}), false)
 })
 
+Deno.test('simulateParallelMakespanMs keeps duplicate suite instances', () => {
+	const result = simulateParallelMakespanMs([
+		task({ id: 'q1', key: 'same', durationMs: 1000, memMb: 100, cpuPct: 80 }),
+		task({ id: 'q2', key: 'same', name: 'same', durationMs: 1000, memMb: 100, cpuPct: 80 }),
+	], { memBudgetBytes: 200 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(result.makespanMs, 2000)
+})
+
+Deno.test('simulateParallelMakespanMs seeds running leftover at t=0', () => {
+	const result = simulateParallelMakespanMs([
+		task({
+			id: 'run', key: 'a', durationMs: 10_000, elapsedMs: 5000, running: true,
+			memMb: 100, cpuPct: 80,
+		}),
+		task({ id: 'q', key: 'b', name: 'b', durationMs: 1000, memMb: 100, cpuPct: 80 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(result.makespanMs, 6000)
+})
+
+Deno.test('unknown duration does not complete and release dependents', () => {
+	const summary = summarizeEstimate([
+		task({ key: 'dep', durationMs: null }),
+		task({ key: 'down', name: 'down', durationMs: 5000, deps: ['dep'] }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(summary.unknownCount, 1)
+	assertEquals(summary.etaMs, null)
+})
+
+Deno.test('known independent remaining survives unknown siblings', () => {
+	const summary = summarizeEstimate([
+		task({ durationMs: null }),
+		task({ key: 'shells/chat:b', name: 'b', durationMs: 5000 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(summary.unknownCount, 1)
+	assertEquals(summary.etaMs >= 5000, true)
+})
+
+Deno.test('hard-ready remaining does not overlap dependents', () => {
+	const result = simulateParallelMakespanMs([
+		task({ key: 'server:live', name: 'live', durationMs: 30_000, memMb: 400, cpuPct: 20 }),
+		task({
+			key: 'shells/chat:ws_rpc',
+			name: 'ws_rpc',
+			durationMs: 20_000,
+			memMb: 400,
+			cpuPct: 20,
+			deps: ['server:live'],
+		}),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(result.makespanMs, 50_000)
+})
+
 Deno.test('simulateParallelMakespanMs serializes module-check windows', () => {
 	const result = simulateParallelMakespanMs([
 		task({ durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),

@@ -16,6 +16,7 @@ export const DEFAULT_PREP_SETTLE_MS = 3 * 60 * 1000
  * @property {boolean} [force] 是否强制真跑
  * @property {string[]} [subtests] 子测试过滤
  * @property {string} [reason] 入队原因
+ * @property {number} [priority] 越小越先（同就绪时 imperfect 优先）
  * @property {number} enqueuedAt 入队时间
  */
 
@@ -131,7 +132,16 @@ export class TestQueues {
 	 */
 	peekReady(isReady) {
 		this.promotePrep()
-		const cliIdx = this.cli.findIndex(isReady)
+		let cliIdx = -1
+		let bestPriority = Infinity
+		for (let i = 0; i < this.cli.length; i++) {
+			if (!isReady(this.cli[i])) continue
+			const priority = this.cli[i].priority ?? 1
+			if (priority < bestPriority) {
+				bestPriority = priority
+				cliIdx = i
+			}
+		}
 		if (cliIdx >= 0)
 			return { queue: 'cli', index: cliIdx, item: this.cli[cliIdx] }
 		const fsIdx = this.fs.findIndex(isReady)

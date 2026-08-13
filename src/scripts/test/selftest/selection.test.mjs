@@ -1,13 +1,15 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
+import { buildPlan } from '../core/plan.mjs'
 import { resolveSelector } from '../core/selector.mjs'
-import { collectStaleTriggerEvidence, migrateLegacySuiteKey, migrateLegacyStateSuites } from '../core/state.mjs'
-import { judgeSuite } from '../core/verdict.mjs'
+import { collectStaleTriggerEvidence, migrateLegacySuiteKey, migrateLegacyStateSuites, suiteKey } from '../core/state.mjs'
+import { buildVerdicts, judgeSuite } from '../core/verdict.mjs'
 import {
 	goalExplicit,
 	goalImperfectKeys,
 	goalOutdated,
+	selectDefaultWave,
 	selectImperfectWave,
 	selectOutdatedWave,
 } from '../runner/selection.mjs'
@@ -190,6 +192,77 @@ Deno.test('judgeSuite elevates suite-level failed over green/noisy subtests', ()
 	assertEquals(verdict.kind, 'red')
 	assertEquals(verdict.fresh, true)
 	assertEquals(verdict.subtestsToRun, [])
+})
+
+Deno.test('selectDefaultWave includes failed and locale-stale together', () => {
+	const all = [
+		makeSuite('shells/social', 'pure', { triggers: ['src/public/parts/shells/social/test/pure/**'] }),
+		makeSuite('checks', 'i18n_keys', { triggers: ['src/public/locales/*.json'] }),
+		makeSuite('shells/config', 'frontend', {
+			triggers: ['src/public/parts/shells/config/public/**'],
+			subtests: [
+				{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: ['src/public/parts/shells/config/test/frontend/smoke.spec.mjs'] },
+				{ name: 'jsonEditor', spec: 'jsonEditor.spec.mjs', triggers: ['src/public/locales/**'] },
+			],
+		}),
+	]
+	const localeFile = 'src/public/locales/zh-CN.json'
+	const state = {
+		suites: {
+			'shells/social:pure': makeStateEntry({ status: 'failed', triggerHash: 'keep' }),
+			'checks:i18n_keys': makeStateEntry({ status: 'passed', triggerHash: 'old' }),
+			'shells/config:frontend': makeStateEntry({
+				status: 'passed',
+				triggerHash: 'old',
+				subtests: {
+					smoke: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 1, triggerHash: 'old' },
+					jsonEditor: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 1, triggerHash: 'old' },
+				},
+			}),
+		},
+	}
+	const uncommittedHashes = new Map([[localeFile, 'digest']])
+	const committedChangedByKey = new Map([
+		['shells/social:pure', []],
+		['checks:i18n_keys', []],
+		['shells/config:frontend', []],
+		['shells/config:frontend#smoke', []],
+		['shells/config:frontend#jsonEditor', []],
+	])
+	const verdicts = buildVerdicts(all, state, committedChangedByKey, uncommittedHashes)
+	assertEquals(verdicts.get('shells/social:pure')?.kind, 'red')
+	assertEquals(verdicts.get('checks:i18n_keys')?.kind, 'unknown')
+	assertEquals(verdicts.get('shells/config:frontend')?.kind, 'unknown')
+	assertEquals(verdicts.get('shells/config:frontend')?.subtestsToRun, ['jsonEditor'])
+
+	const selection = selectDefaultWave({
+		verdicts,
+		state,
+		allSuites: all,
+		scope: all,
+		committedChangedByKey,
+		uncommittedFiles: [localeFile],
+		commitHash: 'abc',
+		uncommittedHash: 'u',
+	})
+	assertEquals(selection.action, 'run')
+	assertEquals([...selection.goalKeys].sort(), [
+		'checks:i18n_keys',
+		'shells/config:frontend',
+		'shells/social:pure',
+	])
+	assertEquals(selection.goalEvidenceByKey.get('shells/social:pure')?.kind, 'imperfect_failed')
+	assertEquals(selection.goalEvidenceByKey.get('checks:i18n_keys')?.kind, 'stale_content')
+	assertEquals(selection.goalEvidenceByKey.get('checks:i18n_keys')?.matchedPaths, [localeFile])
+
+	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
+	const plan = buildPlan(selection.goalKeys, verdicts, byKey, all, selection.goalEvidenceByKey)
+	assertEquals(plan.slots.find(slot => slot.key === 'shells/config:frontend')?.subtestsToRun, ['jsonEditor'])
+	assertEquals(plan.slots.filter(slot => slot.action === 'run').map(slot => slot.key).sort(), [
+		'checks:i18n_keys',
+		'shells/config:frontend',
+		'shells/social:pure',
+	])
 })
 
 Deno.test('goalImperfectKeys keeps failed even if verdict misclassified green', () => {

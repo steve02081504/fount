@@ -18,4 +18,6 @@ CLI job queue is FIFO; FS-triggered queue is LIFO. Auto-exit only after **all vi
 
 Display must not import `env.mjs` (orchestrator heap-snapshot path). Heap snapshots: [heap-snapshots.md](heap-snapshots.md). CLI `cli.mjs` imports `mark.mjs` first so `FOUNT_TEST` is set before i18n.
 
+Bare `fount test` is always overview (reasons + remaining), even when several suites run. Explicit selectors: 1 true-run → stream, 2+ → multi. `accepted` is sent before any `suite-start`. Per-suite `continueReasons` and snapshot remaining (running leftover, not a replay of full durations) travel on `accepted` / queue / end events.
+
 A default job with nothing imperfect or outdated is `accepted.empty` — print `nothingToContinue`, do not stay silent. Report files are per job/wave, not written when the kernel starts; an empty wave leaves the previous report on disk.

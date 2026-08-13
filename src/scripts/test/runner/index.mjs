@@ -56,9 +56,8 @@ import {
 	buildCommittedChangedByKey,
 	collectSubtestFilterByKey,
 	listFreshNoisyKeys,
+	selectDefaultWave,
 	selectExplicitOrAll,
-	selectImperfectWave,
-	selectOutdatedWave,
 } from './selection.mjs'
 import { runSuite } from './suite_run.mjs'
 
@@ -301,7 +300,7 @@ async function executeWave(context) {
 	const continueReasons = buildReasonsFromPlan(plan)
 	const runSlotCount = plan.slots.filter(slot => slot.action === 'run').length
 	const reuseSlotCount = plan.slots.filter(slot => slot.action === 'reuse').length
-	if (selection.mode === 'imperfect' || selection.mode === 'outdated' || selection.mode === 'explicit' || selection.mode === 'all')
+	if (selection.mode === 'imperfect' || selection.mode === 'outdated' || selection.mode === 'continue' || selection.mode === 'explicit' || selection.mode === 'all' || selection.mode === 'skip_because')
 		console.logI18n('fountConsole.test.planSlotSummary', {
 			run: runSlotCount,
 			reuse: reuseSlotCount,
@@ -681,93 +680,64 @@ export async function runTests(options = {}) {
 			})
 		}
 
-		// 默认：imperfect（含 fresh noisy）→ outdated 循环；failed/blocked/noisy/pending 即退 1
+		// 默认：一份 imperfect ∪ outdated 计划；失败只挡依赖槽，收口统一非零。
 		// commit / trigger 指纹只在套件 slot 处理完后写入（run → upsertSuiteRun；reuse → refreshEntryFingerprint），
 		// 禁止波次开始前批量对齐——否则 Ctrl+C 会把未跑套件标成已在当前 HEAD 验证过。
-		for (; ;) {
-			const committedChangedByKey = await buildCommittedChangedByKey(REPO_ROOT, allSuites, state)
-			const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes)
-
-			const imperfect = selectImperfectWave({
+		const committedChangedByKey = await buildCommittedChangedByKey(REPO_ROOT, allSuites, state)
+		const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes)
+		const selection = selectDefaultWave({
+			verdicts,
+			state,
+			allSuites,
+			scope: filtered,
+			committedChangedByKey,
+			uncommittedFiles,
+			commitHash,
+			uncommittedHash,
+		})
+		if (selection.action === 'run') {
+			if (selection.mode === 'continue')
+				console.logI18n('fountConsole.test.continueDefault', {
+					count: selection.goalKeys.size,
+					imperfect: selection.imperfectKeys?.size ?? 0,
+					outdated: selection.goalKeys.size - (selection.imperfectKeys?.size ?? 0),
+				})
+			else if (selection.mode === 'imperfect')
+				console.logI18n('fountConsole.test.continueImperfect', { count: selection.goalKeys.size })
+			else if (selection.mode === 'outdated')
+				console.logI18n('fountConsole.test.outdatedSelected', { count: selection.goalKeys.size })
+			console.logI18n('fountConsole.test.selectedSuites', {
+				selected: selection.goalKeys.size,
+				total: allSuites.length,
+			})
+			return await executeWave({
+				selection,
 				verdicts,
-				state,
+				byKey,
 				allSuites,
-				scope: filtered,
+				state,
 				commitHash,
 				uncommittedHash,
-			})
-			if (imperfect.action === 'run') {
-				console.logI18n('fountConsole.test.continueImperfect', { count: imperfect.goalKeys.size })
-				console.logI18n('fountConsole.test.selectedSuites', {
-					selected: imperfect.goalKeys.size,
-					total: allSuites.length,
-				})
-				const code = await executeWave({
-					selection: imperfect,
-					verdicts,
-					byKey,
-					allSuites,
-					state,
-					commitHash,
-					uncommittedHash,
-					uncommittedFiles,
-					committedChangedByKey,
-					globalBudget,
-					options,
-					runId,
-					command,
-					subtestFilterByKey,
-				})
-				if (code !== 0) return code
-				continue
-			}
-
-			const outdated = selectOutdatedWave({
-				verdicts,
-				scope: filtered,
-				allSuites,
+				uncommittedFiles,
 				committedChangedByKey,
-				commitHash,
-				uncommittedHash,
-				state,
+				globalBudget,
+				options,
+				runId,
+				command,
+				subtestFilterByKey,
 			})
-			if (outdated.action === 'run') {
-				console.logI18n('fountConsole.test.outdatedSelected', { count: outdated.goalKeys.size })
-				console.logI18n('fountConsole.test.selectedSuites', {
-					selected: outdated.goalKeys.size,
-					total: allSuites.length,
-				})
-				const code = await executeWave({
-					selection: outdated,
-					verdicts,
-					byKey,
-					allSuites,
-					state,
-					commitHash,
-					uncommittedHash,
-					uncommittedFiles,
-					committedChangedByKey,
-					globalBudget,
-					options,
-					runId,
-					command,
-					subtestFilterByKey,
-				})
-				if (code !== 0) return code
-				continue
-			}
-
-			const noisyKeys = listFreshNoisyKeys(verdicts, filtered)
-			if (noisyKeys.length) {
-				console.logI18n('fountConsole.test.noisyOnlyRemain', {
-					count: noisyKeys.length,
-					suites: noisyKeys.join(', '),
-				})
-				return 1
-			}
-			console.logI18n('fountConsole.test.nothingToContinue')
-			return 0
 		}
+
+		const noisyKeys = listFreshNoisyKeys(verdicts, filtered)
+		if (noisyKeys.length) {
+			console.logI18n('fountConsole.test.noisyOnlyRemain', {
+				count: noisyKeys.length,
+				suites: noisyKeys.join(', '),
+			})
+			return 1
+		}
+		console.logI18n('fountConsole.test.nothingToContinue')
+		return 0
 	}
 	finally {
 		await hub.close().catch(() => { /* 关口失败不盖过测试退出码 */ })

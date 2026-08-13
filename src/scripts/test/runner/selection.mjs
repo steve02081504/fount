@@ -66,7 +66,8 @@ export function collectSubtestFilterByKey(groups, filtered, ambientSubtests = pa
  * @property {Map<string, GoalEvidence>} [goalEvidenceByKey] 目标证据
  * @property {Map<string, Map<string, string[] | undefined>>} [failedFirstByManifest] manifest → suite → 失败文件（FOUNT_TEST_FIRST）
  * @property {Map<string, string[]>} [subtestFilterByKey] suite 键 → 显式子测试过滤
- * @property {'imperfect' | 'outdated' | 'explicit' | 'all'} [mode] 波次模式
+ * @property {'imperfect' | 'outdated' | 'explicit' | 'all' | 'continue' | 'skip_because'} [mode] 波次模式
+ * @property {Set<string>} [imperfectKeys] 默认波次中的 imperfect 目标
  */
 
 /**
@@ -323,6 +324,7 @@ export function selectImperfectWave({
  * @param {SuiteDef[]} params.scope 范围
  * @param {SuiteDef[]} [params.allSuites] 全部 suite
  * @param {Map<string, string[]>} [params.committedChangedByKey] commit 变更
+ * @param {string[]} [params.uncommittedFiles] 未提交路径
  * @param {string} [params.commitHash] HEAD
  * @param {string | null} [params.uncommittedHash] 未提交 digest
  * @param {TestState} [params.state] 现状库
@@ -333,6 +335,7 @@ export function selectOutdatedWave({
 	scope,
 	allSuites = [],
 	committedChangedByKey = new Map(),
+	uncommittedFiles = [],
 	commitHash,
 	uncommittedHash,
 	state,
@@ -347,7 +350,10 @@ export function selectOutdatedWave({
 	for (const key of goalKeys) {
 		const suite = byKey.get(key)
 		const entry = state?.suites[key]
-		const changed = committedChangedByKey.get(key) ?? []
+		const changed = [...new Set([
+			...committedChangedByKey.get(key) ?? [],
+			...uncommittedFiles,
+		])]
 		const triggerEvidence = suite
 			? collectStaleTriggerEvidence(suite, changed, {
 				entry,
@@ -405,5 +411,80 @@ export function selectExplicitOrAll({
 		goalEvidenceByKey,
 		failedFirstByManifest: buildFailedFirstByManifest(state, manifestIds),
 		subtestFilterByKey,
+	}
+}
+
+/**
+ * 默认续跑：imperfect ∪ outdated，每个 suite 只规划一次。
+ * @param {object} params 参数
+ * @param {Map<string, Verdict>} params.verdicts 裁决表
+ * @param {TestState} params.state 现状库
+ * @param {SuiteDef[]} params.allSuites 全部 suite
+ * @param {SuiteDef[]} params.scope 范围
+ * @param {Map<string, string[]>} [params.committedChangedByKey] commit 变更
+ * @param {string[]} [params.uncommittedFiles] 未提交路径
+ * @param {string} params.commitHash HEAD
+ * @param {string | null} params.uncommittedHash 未提交 digest
+ * @returns {GoalSelection} 选择结果
+ */
+export function selectDefaultWave({
+	verdicts,
+	state,
+	allSuites,
+	scope,
+	committedChangedByKey = new Map(),
+	uncommittedFiles = [],
+	commitHash,
+	uncommittedHash,
+}) {
+	const imperfect = selectImperfectWave({
+		verdicts,
+		state,
+		allSuites,
+		scope,
+		commitHash,
+		uncommittedHash,
+	})
+	const outdated = selectOutdatedWave({
+		verdicts,
+		scope,
+		allSuites,
+		committedChangedByKey,
+		uncommittedFiles,
+		commitHash,
+		uncommittedHash,
+		state,
+	})
+	const goalKeys = new Set([
+		...imperfect.action === 'run' ? imperfect.goalKeys : [],
+		...outdated.action === 'run' ? outdated.goalKeys : [],
+	])
+	if (!goalKeys.size)
+		return { action: 'exit', code: 0, mode: 'continue' }
+
+	/** @type {Map<string, GoalEvidence>} */
+	const goalEvidenceByKey = new Map()
+	if (imperfect.action === 'run')
+		for (const [key, evidence] of imperfect.goalEvidenceByKey ?? [])
+			goalEvidenceByKey.set(key, evidence)
+	if (outdated.action === 'run')
+		for (const [key, evidence] of outdated.goalEvidenceByKey ?? [])
+			if (!goalEvidenceByKey.has(key))
+				goalEvidenceByKey.set(key, evidence)
+
+	const hasImperfect = imperfect.action === 'run'
+	const hasOutdated = outdated.action === 'run'
+	/** @type {GoalSelection['mode']} */
+	const mode = hasImperfect && hasOutdated
+		? 'continue'
+		: hasImperfect ? 'imperfect' : 'outdated'
+
+	return {
+		action: 'run',
+		mode,
+		goalKeys,
+		goalEvidenceByKey,
+		failedFirstByManifest: buildFailedFirstByManifest(state),
+		imperfectKeys: hasImperfect ? imperfect.goalKeys : new Set(),
 	}
 }
