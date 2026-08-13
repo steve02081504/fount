@@ -145,7 +145,32 @@
 			"replHint": "enter 运行 · shift+enter 换行"
 		},
 		"test": {
-			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分组语法（空格分隔多组）：\n  manifest                    该 manifest 全部 suite\n  manifest:suite              指定 suite（逗号分隔多个；亦可用 manifest/suite）\n  manifest:suite:subtest      指定子测试（frontend 等已注册 subtests；亦可用 manifest/suite/subtest）\n  manifest:suite:file         pure/integration（serial.mjs）下按 *.test.mjs 文件 stem 过滤\n  PowerShell 拆散时后续 token 自动归并到当前组\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n默认（裸 fount test）：先跑失败/未完成项（suite 内失败文件优先；失败组有复现则跑完失败组即退），全绿后再跑内容过期项；任一轮失败即以 1 退出，不会在同一次调用内反复重试。永不全量（用 --all）。\n测试现状持久化于 data/test/state/main.json（已移除/重命名的套件会自动清理）；失败 log 保留至转绿。每次运行更新 data/test/report.md 与 report.json。\nfrontend 等套件可注册 subtests（各带独立 trigger）；改一个视图文件只会使对应子测试过期。\npure/integration 未注册 subtests 时，第三段按目录内 *.test.mjs 的 stem 过滤（如 shells/chat:pure:channel_archive）。\n依赖项（manifest.json dependsOn）未通过时高层自动 blocked。\n\n--all         范围内全部 suite 作为目标（绿的仍可复用，除非 --force）\n--no-parallel 串行运行 suite 并流式输出 stdout/stderr；默认由资源闸门按内存与 CPU 自动并行。\n--force       禁用复用：默认沿用上次真实结果，--force 强制真跑目标。\n\n示例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\n选择器（空格分隔多组；逗号分隔同组多个 suite；/ 与 : 等价）：\n  名称              该组全部 suite（如 shells/chat）\n  名称:suite        指定 suite\n  名称:suite:子项   指定子测试或测试文件\n\n无精确匹配时按前缀展开（shells → shells/chat、shells/social），并支持 glob（*、?、**）。\n\n默认（裸 fount test）一次规划失败/未完成/含噪声与过期项并跑完；失败只挡住依赖它的槽，收口统一非零。不会全量，全量用 --all。\n\n--watch      持续监视，队列空也不退出（Ctrl+C 结束）；不能同时带 --all / --force / --update-estimates 或选择器\n--all        范围内全部 suite\n--force      强制重跑，不沿用上次结果\n--update-estimates  按现状库平均耗时回写各 manifest 的 expected；可带选择器；不跑测试\n\n示例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "用法：fount test --watch（不能同时使用其他参数）",
+			"updateEstimates": {
+				"incompatible": "用法：fount test --update-estimates [<groups>...]（不能同时使用其他开关）",
+				"summary": "已回写 ${suitesUpdated} 个套件的预计时长（${filesChanged} 个 manifest），跳过 ${skipped} 个无基线或已是最新"
+			},
+			"skipBecause": {
+				"pass": "跳过（issue 仍开或关闭未满延缓）：${label} — ${url}",
+				"fail": "失败（以下 issue 已关且已过延缓，请跟进并更新 skip_because 后再验）：${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "模组检查未发 ready 进程已退出：${label}"
+			},
+			"queue": {
+				"append": "入队：${label}（${reason}）剩余 ≈ ${remaining}",
+				"remove": "移出：${label}（${reason}）剩余 ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "预计占用 ${expected}，总剩余 ≈ ${remaining}",
+				"etaUnknown": "预计占用 ${expected}，总剩余含 ${count} 个未知时长",
+				"reason": "${label}：${reason}",
+				"remaining": "总剩余 ≈ ${remaining}",
+				"remainingUnknown": "总剩余 ≈ ${remaining}（另有 ${count} 个未知时长）",
+				"remainingOnlyUnknown": "总剩余：${count} 个未知时长",
+				"failureLog": "\n—— ${label}：失败日志 ——"
+			},
 			"passed": "通过：${label}",
 			"passedWithNoise": "通过：${label}（含有噪声）",
 			"failed": "失败：${label}",
@@ -157,13 +182,15 @@
 			"available": "可用项：${ids}",
 			"manifestMatched": "manifest 匹配结果：${ids}",
 			"selectedSuites": "已选择 ${selected}/${total} 个测试套件",
-			"planSlotSummary": "计划槽位：真跑 ${run}、复用 ${reuse}、阻塞 ${blocked}",
+			"planSlotSummary": "计划槽位：真跑 ${run}、复用 ${reuse}、阻塞 ${blocked}、跳过 ${skipped}",
 			"noMatchingSuites": "没有匹配的测试套件。",
 			"reportPath": "报告：${path}",
 			"reportPathFinal": "\n报告：${path}",
 			"statePathFinal": "现状：${path}",
 			"blocked": "阻塞：${label}（依赖未过：${deps}）",
+			"skippedTree": "跳过：${label}（skip_tree：${deps}）",
 			"speculativeDiscard": "丢弃预测结果：${label}（依赖未过：${deps}）",
+			"continueDefault": "续跑 ${count} 个套件（失败/未完成 ${imperfect}，过期 ${outdated}）",
 			"continueImperfect": "失败/噪声/未完成波次：${count} 个套件",
 			"outdatedSelected": "过期波次：${count} 个陈旧/未跑过的套件",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": "\n>>> 复用 ${manifestId}:${name}（trigger 未变，沿用上次 ${status}）",
 			"prunedAbsentState": "已清除不存在套件的状态记录：${suites} 个套件、${subtests} 个子测试",
 			"noisyOnlyRemain": "仍有 ${count} 个套件通过但含噪声：${suites}",
-			"noRealRunPlanned": "本次无需真跑：复用 ${reused} 个、预计阻塞 ${blocked} 个（trigger 未变）",
+			"noRealRunPlanned": "本次无需真跑：复用 ${reused} 个、预计阻塞 ${blocked} 个、跳过 ${skipped} 个（trigger 未变）",
 			"allReusedHint": "本次未真跑任何套件：失败为沿用的上次结果，阻塞随之未解（相关文件未变）。修复相关文件后重跑，或用 fount test --force 强制真跑。",
 			"failuresSaved": "已保存失败列表：${path}（${count} 个套件）",
 			"failuresCleared": "manifest ${manifestId} 已全部通过，失败列表已清除。",
@@ -247,7 +274,9 @@
 					"pending": "待运行",
 					"replay": "重跑失败项",
 					"replayImperfect": "重跑不完美项",
-					"silentPassed": "通过"
+					"silentPassed": "通过",
+					"skipped": "因 skip_because 跳过",
+					"skipTree": "因上游 skip_tree 跳过"
 				},
 				"pending": {
 					"estimate": "预估剩余耗时 ≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "state 无记录，自动补跑",
 					"staleContent": "内容已变，需重跑",
+					"skipBecause": "skip_because 复检",
 					"triggerHashDrift": "触发指纹漂移（无路径命中）"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "上游拉取：${requiredBy} 的依赖未绿",
 					"reused": "（复用）",
 					"rootCause": "根因",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "需跟进（已关）",
+					"skipTree": "skip_tree",
 					"terminateReason": "终止原因",
 					"triggerHashDrift": "触发指纹与当前工作区不一致（脏→净已忽略）",
 					"uncommittedHashRange": "未提交 digest"
@@ -338,7 +371,7 @@
 				"remaining": "预估剩余耗时 ≈ ${eta}（${completed}/${total} 个套件）",
 				"run": "预计本次运行耗时 ≈ ${eta}（预估并行率 ${rate}）",
 				"runSerial": "预计本次运行耗时 ≈ ${eta}（串行）",
-				"runSerialHint": "若并行预期 ≈ ${eta}（并行率 ${rate}），节省 ≈ ${savings}（去掉 --no-parallel）",
+				"runSerialHint": "若并行预期 ≈ ${eta}（并行率 ${rate}），节省 ≈ ${savings}",
 				"runSkipped": "另有复用 ${reused} 个、预计阻塞 ${blocked} 个（不计入预估）"
 			},
 			"unknown": {

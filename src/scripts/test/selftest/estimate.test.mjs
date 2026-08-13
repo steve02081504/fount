@@ -84,6 +84,12 @@ Deno.test('expectedRunDurationMs without subtests uses suite baseline', () => {
 	assertEquals(expectedRunDurationMs(suite, undefined), null)
 })
 
+Deno.test('expectedRunDurationMs without subtests falls back to manifest expected', () => {
+	const suite = makeSuite('shells/chat', 'ws', { expectedMs: 16_000 })
+	assertEquals(expectedRunDurationMs(suite, undefined), 16_000)
+	assertEquals(expectedRunDurationMs(suite, makeStateEntry({ baselineDurationMs: 12_000 })), 12_000)
+})
+
 Deno.test('expectedRunDurationMs sums overhead and selected subtests', () => {
 	const suite = makeSuite('shells/social', 'frontend', {
 		subtests: [
@@ -123,6 +129,19 @@ Deno.test('expectedRunDurationMs falls back to known mean for missing subtest', 
 	assertEquals(expectedRunDurationMs(suite, entry, ['feed', 'profile']), 45_000)
 })
 
+Deno.test('expectedRunDurationMs uses manifest expected when state has no timings', () => {
+	const suite = makeSuite('shells/social', 'frontend', {
+		expectedMs: 75_000,
+		subtests: [
+			{ name: 'feed', spec: 'feed.spec.mjs', triggers: [], expectedMs: 20_000 },
+			{ name: 'profile', spec: 'profile.spec.mjs', triggers: [], expectedMs: 30_000 },
+			{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [], expectedMs: 15_000 },
+		],
+	})
+	assertEquals(expectedRunDurationMs(suite, undefined, ['feed']), 30_000)
+	assertEquals(expectedRunDurationMs(suite, undefined), 75_000)
+})
+
 Deno.test('estimateEtaMs adds gap overhead per critical path slot', () => {
 	assertEquals(estimateEtaMs(60_000, 3), 60_000 + 3 * GAP_OVERHEAD_MS)
 	assertEquals(GAP_OVERHEAD_MS, 130)
@@ -153,7 +172,7 @@ Deno.test('simulateParallelMakespanMs overlaps dependent with running dep', () =
 	assertEquals(result.makespanMs, 30_000)
 })
 
-Deno.test('simulateParallelMakespanMs does not stack speculative chain', () => {
+Deno.test('simulateParallelMakespanMs does not let speculative finish satisfy dependents', () => {
 	const result = simulateParallelMakespanMs([
 		task({ key: 'server:a', name: 'a', durationMs: 30_000, memMb: 100, cpuPct: 10 }),
 		task({
@@ -165,8 +184,9 @@ Deno.test('simulateParallelMakespanMs does not stack speculative chain', () => {
 			deps: ['server:b'],
 		}),
 	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
-	// A||B 后 B 完成即 C 硬就绪（B 已落盘），墙钟 40s；禁止 A||B||C 三层叠成 30s
-	assertEquals(result.makespanMs, 40_000)
+	// A 硬跑、B 投机；B 先结束只释放资源，须等 A 硬完成才算 B 完成，C 才能开工。
+	// 墙钟 50s；禁止把 B 投机收尾当成 C 的硬就绪（40s）或三层叠成 30s。
+	assertEquals(result.makespanMs, 50_000)
 })
 
 Deno.test('simulateParallelMakespanMs promotes speculative so next layer can overlap', () => {
@@ -185,6 +205,28 @@ Deno.test('simulateParallelMakespanMs promotes speculative so next layer can ove
 	assertEquals(result.makespanMs, 50_000)
 })
 
+Deno.test('simulateParallelMakespanMs does not speculate on mixed hard and speculative same-key deps', () => {
+	const result = simulateParallelMakespanMs([
+		task({ id: 'anchor', key: 'server:other', name: 'other', durationMs: 30_000, memMb: 100, cpuPct: 10 }),
+		task({ id: 'gate', key: 'server:gate', name: 'gate', durationMs: 5_000, memMb: 100, cpuPct: 10 }),
+		task({
+			id: 'live-spec', key: 'server:live', name: 'live', durationMs: 40_000, memMb: 100, cpuPct: 10,
+			deps: ['server:other'],
+		}),
+		task({
+			id: 'live-hard', key: 'server:live', name: 'live', durationMs: 10_000, memMb: 100, cpuPct: 10,
+			deps: ['server:gate'],
+		}),
+		task({
+			id: 'chat', key: 'shells/chat:ws', name: 'ws', durationMs: 20_000, memMb: 100, cpuPct: 10,
+			deps: ['server:live'],
+		}),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	// t=5 live-hard 开工时 live-spec 仍为投机占用；下游不得据此重叠。
+	// t=30 other 完、live-spec 升硬后 chat 才可重叠；墙钟 50s 而非 40s。
+	assertEquals(result.makespanMs, 50_000)
+})
+
 Deno.test('simulateParallelMakespanMs never leaves ready work at makespan 0', () => {
 	// 与闸门同不变量：空闲 + 有活 → 必须开工，否则 ETA 塌成 0。
 	const result = simulateParallelMakespanMs([
@@ -193,9 +235,32 @@ Deno.test('simulateParallelMakespanMs never leaves ready work at makespan 0', ()
 	assertEquals(result.makespanMs, 12_000)
 	const summary = summarizeEstimate([
 		task({ durationMs: 12_000, memMb: 1800, cpuPct: 25 }),
-	], { serial: false, memBudgetBytes: 500 * MiB, cpuBudgetPct: 85 })
+	], { memBudgetBytes: 500 * MiB, cpuBudgetPct: 85 })
 	assertEquals(summary.etaMs > 0, true)
 	assertEquals(summary.runCount, 1)
+})
+
+Deno.test('never-run suite does not claim zero remaining', () => {
+	const tasks = [buildEstimateTask(makeSuite('testkit', 'kernel'), undefined)]
+	assertEquals(tasks[0].durationMs, null)
+	const summary = summarizeEstimate(tasks, { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	assertEquals(summary.runCount, 1)
+	assertEquals(summary.etaMs, null)
+})
+
+Deno.test('summarizeEstimate keeps known remaining when mixed with unknown duration', () => {
+	const summary = summarizeEstimate([
+		task({ durationMs: null }),
+		task({ key: 'shells/chat:b', name: 'b', durationMs: 5000 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	assertEquals(summary.etaMs > 0, true)
+})
+
+Deno.test('summarizeEstimate reused-only remaining stays 0', () => {
+	const summary = summarizeEstimate([
+		task({ durationMs: null, reused: true }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	assertEquals(summary.etaMs, 0)
 })
 
 Deno.test('summarizeEstimate reports run/reused/blocked breakdown', () => {
@@ -205,7 +270,6 @@ Deno.test('summarizeEstimate reports run/reused/blocked breakdown', () => {
 		task({ key: 'shells/chat:c', name: 'c', durationMs: 3000, blocked: true }),
 	]
 	const summary = summarizeEstimate(tasks, {
-		serial: true,
 		memBudgetBytes: 8000 * MiB,
 		cpuBudgetPct: 85,
 	})
@@ -219,4 +283,72 @@ Deno.test('hasMeaningfulParallelSavings ignores noise-scale deltas', () => {
 	assertEquals(hasMeaningfulParallelSavings({ savingsMs: 100 }), false)
 	assertEquals(hasMeaningfulParallelSavings({ savingsMs: 101 }), true)
 	assertEquals(hasMeaningfulParallelSavings({}), false)
+})
+
+Deno.test('simulateParallelMakespanMs keeps duplicate suite instances', () => {
+	const result = simulateParallelMakespanMs([
+		task({ id: 'q1', key: 'same', durationMs: 1000, memMb: 100, cpuPct: 80 }),
+		task({ id: 'q2', key: 'same', name: 'same', durationMs: 1000, memMb: 100, cpuPct: 80 }),
+	], { memBudgetBytes: 200 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(result.makespanMs, 2000)
+})
+
+Deno.test('simulateParallelMakespanMs seeds running leftover at t=0', () => {
+	const result = simulateParallelMakespanMs([
+		task({
+			id: 'run', key: 'a', durationMs: 10_000, elapsedMs: 5000, running: true,
+			memMb: 100, cpuPct: 80,
+		}),
+		task({ id: 'q', key: 'b', name: 'b', durationMs: 1000, memMb: 100, cpuPct: 80 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(result.makespanMs, 6000)
+})
+
+Deno.test('unknown duration does not complete and release dependents', () => {
+	const summary = summarizeEstimate([
+		task({ key: 'dep', durationMs: null }),
+		task({ key: 'down', name: 'down', durationMs: 5000, deps: ['dep'] }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(summary.unknownCount, 1)
+	assertEquals(summary.etaMs, null)
+})
+
+Deno.test('known independent remaining survives unknown siblings', () => {
+	const summary = summarizeEstimate([
+		task({ durationMs: null }),
+		task({ key: 'shells/chat:b', name: 'b', durationMs: 5000 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(summary.unknownCount, 1)
+	assertEquals(summary.etaMs >= 5000, true)
+})
+
+Deno.test('hard-ready remaining does not overlap dependents', () => {
+	const result = simulateParallelMakespanMs([
+		task({ key: 'server:live', name: 'live', durationMs: 30_000, memMb: 400, cpuPct: 20 }),
+		task({
+			key: 'shells/chat:ws_rpc',
+			name: 'ws_rpc',
+			durationMs: 20_000,
+			memMb: 400,
+			cpuPct: 20,
+			deps: ['server:live'],
+		}),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85, speculative: false })
+	assertEquals(result.makespanMs, 50_000)
+})
+
+Deno.test('simulateParallelMakespanMs adds module-check then execution', () => {
+	const result = simulateParallelMakespanMs([
+		task({ durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	assertEquals(result.makespanMs, 1200)
+})
+
+Deno.test('simulateParallelMakespanMs serializes module-check before execution start', () => {
+	const result = simulateParallelMakespanMs([
+		task({ durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
+		task({ key: 'shells/chat:b', name: 'b', durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	// A: 检查 0-200、执行 200-1200；B 检查从 200 开始、执行从 400 开始 → 1400
+	assertEquals(result.makespanMs, 1400)
 })

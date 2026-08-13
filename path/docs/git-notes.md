@@ -8,7 +8,7 @@ Day-to-day update CLI: [../AGENTS.md](../AGENTS.md).
 
 ## `git_valid_branch_name` / bash `case`
 
-Gates one-shot fetch/ls-remote. In bash `case` patterns, escape glob chars (`*\?*`, `*\**`) — do **not** quote them as `*'?'*` / `/'*|*'/'`; a dangling `'` makes `bash -n path/src/git.sh` fail and every sourced function vanish (`git_remote_branch_status: command not found`). Keep `@{` out of `case` arms (`[[ "$branch" == *'@{'* ]]`) — shellcheck SC1083 treats `{` in `*@{*` as literal. Regression: `fount test path:git --no-parallel`.
+Gates one-shot fetch/ls-remote. In bash `case` patterns, escape glob chars (`*\?*`, `*\**`) — do **not** quote them as `*'?'*` / `/'*|*'/'`; a dangling `'` makes `bash -n path/src/git.sh` fail and every sourced function vanish (`git_remote_branch_status: command not found`). Keep `@{` out of `case` arms (`[[ "$branch" == *'@{'* ]]`) — shellcheck SC1083 treats `{` in `*@{*` as literal. Regression: `fount test path:git`.
 
 ## Deno template literals → bash
 

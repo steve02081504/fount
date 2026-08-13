@@ -11,9 +11,10 @@ import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL, TRIGGERED_REASONS_FI
 import { formatExpectedDuration, formatParallelRatePct, summarizeRunTiming } from '../core/run_timing.mjs'
 import { suiteKey } from '../core/state.mjs'
 
+import { formatContinueReasonLabel } from './continue_reason.mjs'
+
 /**
  * @typedef {import('./continue_reason.mjs').ContinueReason} ContinueReason
- * @typedef {import('./continue_reason.mjs').GoalEvidenceKind} ContinueReasonKind
  * @typedef {import('../core/estimate.mjs').EstimateTask} EstimateTask
  * @typedef {import('../core/plan.mjs').PlanSlot} PlanSlot
  */
@@ -30,10 +31,12 @@ import { suiteKey } from '../core/state.mjs'
  * @property {string[]} [noiseHits] 噪声命中
  * @property {string | null} [logPath] 失败日志相对路径
  * @property {string[]} [blockedBy] 阻塞来源
+ * @property {string[]} [skippedBy] skip_tree 跳过来源
  * @property {boolean} [terminated] 是否被 watchdog 终止
  * @property {string | null} [terminateReason] 终止原因
  * @property {ContinueReason} [continueReason] 纳入本波的原因
- * @property {boolean} [reused] 本次未真跑、沿用上次结果
+ * @property {string[]} [skipBecause] skip_because issue URL 列表
+ * @property {string[]} [skipBecauseClosed] 其中已关闭、需跟进的 URL
  */
 
 /**
@@ -46,14 +49,14 @@ export class RunReportWriter {
 	/**
 	 * @param {object} options 选项
 	 * @param {string} options.repoRoot 仓库根
-	 * @param {PlanSlot[]} options.planSlots 计划槽位
+	 * @param {PlanSlot[]} [options.planSlots] 计划槽位
 	 * @param {string} options.runId 运行 id
 	 * @param {string} options.command 命令摘要
 	 * @param {string} options.commitHash HEAD
 	 * @param {string | null} options.uncommittedHash 未提交 digest
 	 * @param {Map<string, ContinueReason>} [options.continueReasons] suite 键 -> 触发原因
 	 */
-	constructor({ repoRoot, planSlots, runId, command, commitHash, uncommittedHash, continueReasons }) {
+	constructor({ repoRoot, planSlots = [], runId, command, commitHash, uncommittedHash, continueReasons }) {
 		this.repoRoot = repoRoot
 		this.runId = runId
 		this.command = command
@@ -71,7 +74,6 @@ export class RunReportWriter {
 		this.exitCode = null
 		/** @type {Map<string, EstimateTask> | null} */
 		this.estimatePlan = null
-		/** @type {{ serial: boolean, memBudgetBytes: number, cpuBudgetPct: number } | null} */
 		this.estimateOptions = null
 	}
 
@@ -88,26 +90,87 @@ export class RunReportWriter {
 	 * @param {SuiteStateEntry} entry 现状条目
 	 * @param {object} [options] 选项
 	 * @param {boolean} [options.reused] 是否复用上次结果
+	 * @param {string[]} [options.skipBecause] skip_because URL 列表
+	 * @param {string[]} [options.skipBecauseClosed] 已关闭需跟进的 URL
+	 * @param {string[]} [options.skippedBy] skip_tree 跳过来源
 	 * @returns {Promise<void>}
 	 */
-	recordResult(index, entry, { reused = false } = {}) {
+	recordResult(index, entry, { reused = false, skipBecause, skipBecauseClosed, skippedBy } = {}) {
 		return this.#enqueue(async () => {
 			const slot = this.slots[index]
 			this.slots[index] = {
 				...slot,
 				state: 'done',
-				status: entry.status,
+				status: skippedBy?.length ? 'passed' : entry.status,
 				durationMs: entry.durationMs,
 				failedFiles: entry.failedFiles,
 				noiseHits: entry.noiseHits,
 				logPath: entry.logPath,
 				blockedBy: entry.blockedBy,
+				skippedBy: skippedBy ?? slot.skippedBy,
 				terminated: entry.terminated,
 				terminateReason: entry.terminateReason,
 				reused,
+				skipBecause: skipBecause ?? slot.skipBecause,
+				skipBecauseClosed: skipBecauseClosed ?? slot.skipBecauseClosed,
 			}
 			await this.#writeFiles()
 		})
+	}
+
+	/**
+	 * 活报告：确保槽位存在；再次入队时回到 pending。
+	 * @param {object} spec 槽
+	 * @param {string} spec.manifestId manifest
+	 * @param {string} spec.name suite 名
+	 * @param {ContinueReason} [spec.continueReason] 纳入原因
+	 * @returns {Promise<number>} 下标
+	 */
+	ensureSlot({ manifestId, name, continueReason }) {
+		return this.#enqueue(async () => {
+			const key = suiteKey(manifestId, name)
+			let index = this.slots.findIndex(slot => suiteKey(slot.manifestId, slot.name) === key)
+			if (index < 0) {
+				this.slots.push({
+					manifestId,
+					name,
+					state: 'pending',
+					continueReason,
+				})
+				index = this.slots.length - 1
+			}
+			else
+				this.slots[index] = {
+					...this.slots[index],
+					state: 'pending',
+					continueReason: continueReason ?? this.slots[index].continueReason,
+					skipBecause: undefined,
+					skipBecauseClosed: undefined,
+					skippedBy: undefined,
+					reused: false,
+				}
+			await this.#writeFiles()
+			return index
+		})
+	}
+
+	/**
+	 * 按 suite 键写入结果（没有槽则先创建）。
+	 * @param {string} manifestId manifest
+	 * @param {string} name suite 名
+	 * @param {SuiteStateEntry} entry 现状条目
+	 * @param {object} [options] 选项
+	 * @param {boolean} [options.reused] 是否复用
+	 * @param {string[]} [options.skipBecause] skip_because URL 列表
+	 * @param {string[]} [options.skipBecauseClosed] 已关闭需跟进的 URL
+	 * @param {ContinueReason} [options.continueReason] 纳入原因
+	 * @returns {Promise<void>}
+	 */
+	async recordByKey(manifestId, name, entry, options = {}) {
+		let index = this.slots.findIndex(slot => suiteKey(slot.manifestId, slot.name) === suiteKey(manifestId, name))
+		if (index < 0)
+			index = await this.ensureSlot({ manifestId, name, continueReason: options.continueReason })
+		await this.recordResult(index, entry, options)
 	}
 
 	/**
@@ -138,7 +201,7 @@ export class RunReportWriter {
 
 	/**
 	 * @param {Map<string, EstimateTask>} plan suite 键 -> 预估任务
-	 * @param {{ serial: boolean, memBudgetBytes: number, cpuBudgetPct: number }} options 调度选项
+	 * @param {{ memBudgetBytes: number, cpuBudgetPct: number }} options 调度选项
 	 * @returns {Promise<void>}
 	 */
 	setEstimatePlan(plan, options) {
@@ -261,8 +324,7 @@ function buildRunMarkdown(summary, completed) {
 		lines.push(
 			`| ${geti18n('fountConsole.test.report.field.estimatedRemaining')} | ${formatEstimatePoint(summary.estimate.etaMs)} |`,
 		)
-		// 串行且相对并行无实质节省时并行率≈0%，不重复写。
-		if (!summary.estimate.serial || hasMeaningfulParallelSavings(summary.estimate))
+		if (hasMeaningfulParallelSavings(summary.estimate))
 			lines.push(
 				`| ${geti18n('fountConsole.test.report.field.estimatedParallelRate')} | ${formatParallelRatePct(summary.estimate.parallelRatePct)} |`,
 			)
@@ -276,10 +338,13 @@ function buildRunMarkdown(summary, completed) {
 
 	appendContinueReasonsLink(lines, summary)
 
-	appendSection(lines, geti18n('fountConsole.test.report.section.failed'), completed.filter(s => s.status === 'failed'))
+	const skipped = completed.filter(s => s.skipBecause?.length)
+	appendSkipSection(lines, skipped)
+	appendSkipTreeSection(lines, completed.filter(s => s.skippedBy?.length))
+	appendSection(lines, geti18n('fountConsole.test.report.section.failed'), completed.filter(s => s.status === 'failed' && !s.skipBecause?.length))
 	appendSection(lines, geti18n('fountConsole.test.state.sectionBlocked'), completed.filter(s => s.status === 'blocked'))
 	appendSection(lines, geti18n('fountConsole.test.report.section.noisyPassed'), completed.filter(s => s.status === 'noisy'))
-	appendSilentPassed(lines, completed.filter(s => s.status === 'passed'))
+	appendSilentPassed(lines, completed.filter(s => s.status === 'passed' && !s.skipBecause?.length && !s.skippedBy?.length))
 
 	const pending = summary.slots.filter(slot => slot.state === 'pending')
 	if (pending.length) {
@@ -288,8 +353,7 @@ function buildRunMarkdown(summary, completed) {
 			lines.push(geti18n('fountConsole.test.report.pending.estimate', {
 				eta: formatDuration(summary.estimate.etaMs),
 			}))
-			// 与 console 一致：串行相对并行无实质节省时不重复写并行预估。
-			if (summary.estimate.serial && hasMeaningfulParallelSavings(summary.estimate)) {
+			if (hasMeaningfulParallelSavings(summary.estimate)) {
 				lines.push(geti18n('fountConsole.test.report.pending.parallelEstimate', {
 					eta: formatDuration(summary.estimate.parallelEtaMs),
 					rate: formatParallelRatePct(summary.estimate.parallelRatePct),
@@ -320,7 +384,7 @@ function buildRunMarkdown(summary, completed) {
 }
 
 /**
- * @param {number} etaMs 预估耗时（毫秒）
+ * @param {number | null | undefined} etaMs 预估耗时（毫秒）
  * @returns {string} 可读单点 ETA
  */
 function formatEstimatePoint(etaMs) {
@@ -336,45 +400,6 @@ function formatEstimatePoint(etaMs) {
 function shortHash(hash) {
 	if (!hash) return '—'
 	return hash.length > 12 ? `${hash.slice(0, 8)}…` : hash
-}
-
-/**
- * @param {ContinueReasonKind | string} kind 原因类型
- * @param {{ strict?: boolean }} [opts] strict 时未知 kind 抛错
- * @returns {string} 可读标签
- */
-function formatReasonKindLabel(kind, { strict = false } = {}) {
-	switch (kind) {
-		case 'imperfect_failed':
-			return geti18n('fountConsole.test.report.reason.imperfect.failed')
-		case 'imperfect_noisy':
-			return geti18n('fountConsole.test.report.reason.imperfect.noisy')
-		case 'imperfect_blocked':
-			return geti18n('fountConsole.test.report.reason.imperfect.blocked')
-		case 'imperfect_dependent':
-			return geti18n('fountConsole.test.report.reason.imperfect.dependent')
-		case 'missing_state_record':
-			return geti18n('fountConsole.test.report.reason.missingRecord')
-		case 'stale_content':
-			return geti18n('fountConsole.test.report.reason.staleContent')
-		case 'trigger_hash_drift':
-			return geti18n('fountConsole.test.report.reason.triggerHashDrift')
-		case 'explicit_selected':
-			return geti18n('fountConsole.test.report.reason.explicitSelected')
-		case 'dependency_required':
-			return geti18n('fountConsole.test.report.reason.dependencyRequired')
-	}
-	if (strict)
-		throw new Error(`unknown continue reason kind: ${kind}`)
-	return kind
-}
-
-/**
- * @param {ContinueReason} reason 续跑原因
- * @returns {string} 可读原因标签
- */
-function formatContinueReasonLabel(reason) {
-	return formatReasonKindLabel(reason.kind, { strict: true })
 }
 
 /**
@@ -450,6 +475,34 @@ function buildContinueReasonsMarkdown(summary) {
 		lines.push('')
 	}
 	return lines.join('\n')
+}
+
+/**
+ * @param {string[]} lines 行缓冲
+ * @param {ReportSlot[]} entries skip 条目
+ */
+function appendSkipSection(lines, entries) {
+	if (!entries.length) return
+	lines.push(`## ${geti18n('fountConsole.test.report.section.skipped')}`, '')
+	for (const entry of entries) {
+		const urls = entry.skipBecause ?? []
+		lines.push(`- ${entry.manifestId}:${entry.name} — ${geti18n('fountConsole.test.report.label.skipBecause')}: ${urls.join(' ')}`)
+		if (entry.skipBecauseClosed?.length)
+			lines.push(`  - ${geti18n('fountConsole.test.report.label.skipBecauseClosed')}: ${entry.skipBecauseClosed.join(' ')}`)
+	}
+	lines.push('')
+}
+
+/**
+ * @param {string[]} lines 行缓冲
+ * @param {ReportSlot[]} entries skip_tree 下游
+ */
+function appendSkipTreeSection(lines, entries) {
+	if (!entries.length) return
+	lines.push(`## ${geti18n('fountConsole.test.report.section.skipTree')}`, '')
+	for (const entry of entries)
+		lines.push(`- ${entry.manifestId}:${entry.name} — ${geti18n('fountConsole.test.report.label.skipTree')}: ${(entry.skippedBy ?? []).join(', ')}`)
+	lines.push('')
 }
 
 /**

@@ -145,7 +145,32 @@
 			"replHint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति"
 		},
 		"test": {
-			"help": "उपयोग: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nसमूह सिंटैक्स (स्पेस से अलग कई समूह):\n  manifest                    उस manifest की सभी suite\n  manifest:suite              निर्दिष्ट suite (कॉमा से अलग; manifest/suite भी)\n  manifest:suite:subtest      उप-परीक्षण (frontend आदि पंजीकृत subtests; manifest/suite/subtest भी)\n  manifest:suite:file         pure/integration (serial.mjs) में *.test.mjs stem से फ़िल्टर\n  PowerShell में टोकन टूटने पर बाद के टोकन वर्तमान समूह में जुड़ जाते हैं\n\nmanifest id प्रत्येक test/manifest.json के शीर्ष \"id\" से।\nसटीक मिलान न होने पर स्वतः \"<नाम>/*\" विस्तार (जैसे shells → shells/chat,shells/social); glob (*, ?, **) भी।\nsuite नाम suite की id या name से मिलान; न होने पर \"<नाम>*\"/\"<नाम>_*\" विस्तार; glob भी।\n\nडिफ़ॉल्ट (नंगा fount test): पहले विफल/अधूरे (suite में विफल फ़ाइलें प्राथमिक; विफल समूह पूरा चलाकर बाहर), सब हरा होने पर stale; कोई राउंड विफल → exit 1, एक कॉल में दोबारा नहीं। कभी पूर्ण नहीं (--all से)।\nस्थिति data/test/state/main.json; विफलता लॉग हरा होने तक। प्रत्येक रन data/test/report.md और report.json अपडेट।\nfrontend आदि subtests पंजीकृत कर सकते हैं (अलग trigger); एक व्यू फ़ाइल बदलने से केवल वह subtest stale।\npure/integration में subtests न हों तो तीसरा खंड *.test.mjs stem (जैसे shells/chat:pure:channel_archive)।\nनिर्भरता (manifest.json dependsOn) विफल → ऊपरी स्तर blocked।\n\n--all         सीमा में सभी suite लक्ष्य (--force के बिना हरे पुन: उपयोग)\n--no-parallel suite क्रमिक, stdout/stderr स्ट्रीम; डिफ़ॉल्ट संसाधन गेट से समानांतर\n--force       पुन: उपयोग बंद; --force वास्तविक रन\n\nउदाहरण:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "उपयोग: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nचयनकर्ता (समूह रिक्त स्थान से अलग; एक समूह में suite कॉमा से अलग; / और : समान):\n  नाम              उस समूह की सभी suite (जैसे shells/chat)\n  नाम:suite        कोई विशिष्ट suite\n  नाम:suite:आइटम   कोई विशिष्ट उप-परीक्षण या परीक्षण फ़ाइल\n\nसटीक मिलान न होने पर उपसर्ग से विस्तार (shells → shells/chat, shells/social); glob (*, ?, **) भी समर्थित।\n\nडिफ़ॉल्ट (सिर्फ fount test): विफल/अधूरे और पुराने को एक ही पास में योजना बनाकर चलाता है; विफलता केवल निर्भर स्लॉट रोकती है — अंत में गैर-शून्य निकास। पूरा रिपो नहीं — उसके लिए --all।\n\n--watch      लगातार निगरानी; कतार खाली होने पर भी नहीं बंद होता (Ctrl+C से बाहर); --all / --force / --update-estimates / चयनकर्ताओं के साथ नहीं\n--all        दायरे की सभी suite\n--force      ज़बरदस्ती चलाएँ; पिछले परिणाम दोबारा नहीं\n--update-estimates  वर्तमान DB औसत से प्रत्येक manifest का expected फिर लिखता है; चयनकर्ता वैकल्पिक; परीक्षण नहीं चलाता\n\nउदाहरण:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "उपयोग: fount test --watch (अन्य विकल्पों के साथ उपयोग नहीं कर सकते)",
+			"updateEstimates": {
+				"incompatible": "उपयोग: fount test --update-estimates [<groups>...] (अन्य फ़्लैग के साथ उपयोग नहीं कर सकते)",
+				"summary": "${suitesUpdated} suite की अपेक्षित अवधि अपडेट (${filesChanged} manifest); बेसलाइन नहीं या पहले से अद्यतन — ${skipped} छोड़े"
+			},
+			"skipBecause": {
+				"pass": "छोड़ा गया (issue अभी खुला है या बंद है लेकिन अनुग्रह अवधि समाप्त नहीं): ${label} — ${url}",
+				"fail": "विफल (issue बंद हो चुका है और अनुग्रह अवधि समाप्त — पुनः जाँच से पहले skip_because अपडेट करें): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "मॉड्यूल जाँच: ready सिग्नल के बिना प्रक्रिया समाप्त: ${label}"
+			},
+			"queue": {
+				"append": "कतार में: ${label} (${reason}) शेष ≈ ${remaining}",
+				"remove": "कतार से हटाया: ${label} (${reason}) शेष ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "अनुमानित ${expected}, कुल शेष ≈ ${remaining}",
+				"etaUnknown": "अनुमानित ${expected}; कुल ${count} अज्ञात अवधि शेष",
+				"reason": "${label}: ${reason}",
+				"remaining": "कुल शेष ≈ ${remaining}",
+				"remainingUnknown": "≈ ${remaining} कुल शेष (${count} अतिरिक्त अज्ञात अवधि)",
+				"remainingOnlyUnknown": "≈ ${count} अज्ञात अवधि कुल शेष",
+				"failureLog": "\n—— ${label} की विफलता लॉग ——"
+			},
 			"passed": "पास: ${label}",
 			"passedWithNoise": "उत्तीर्ण: ${label} (शोर शामिल है)",
 			"failed": "विफल: ${label}",
@@ -157,13 +182,15 @@
 			"available": "उपलब्ध आइटम: ${ids}",
 			"manifestMatched": "प्रकट मिलान परिणाम: ${ids}",
 			"selectedSuites": "${selected}/${total} परीक्षण सुइट चयनित",
-			"planSlotSummary": "योजना: वास्तविक रन ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}",
+			"planSlotSummary": "योजना: वास्तविक रन ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}, छोड़ा गया ${skipped}",
 			"noMatchingSuites": "कोई मिलान वाली परीक्षण सूट नहीं.",
 			"reportPath": "रिपोर्ट: ${path}",
 			"reportPathFinal": "रिपोर्ट: ${path}",
 			"statePathFinal": "वर्तमान स्थिति: ${path}",
 			"blocked": "अवरुद्ध: ${label} (निर्भरता पारित नहीं हुई: ${deps})",
+			"skippedTree": "छोड़ा गया: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "पूर्वानुमान परिणाम खारिज करें: ${label} (निर्भरता पारित नहीं हुई: ${deps})",
+			"continueDefault": "जारी: ${count} सुइट (विफल/अपूर्ण ${imperfect}, पुराना ${outdated})",
 			"continueImperfect": "विफलता/शोर/अपूर्ण तरंगें: ${count} सुइट",
 			"outdatedSelected": "समाप्त तरंगें: ${count} पुरानी/न चली सुइट",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": ">>> पुन: उपयोग करें ${manifestId}:${name} (ट्रिगर अपरिवर्तित रहता है, अंतिम ${status} का उपयोग किया जाता है)",
 			"prunedAbsentState": "हटाए गए सुइट्स की स्थिति साफ़ की: ${suites} सुइट्स, ${subtests} उप-परीक्षण",
 			"noisyOnlyRemain": "वहाँ अभी भी ${count} सुइट्स गुजर रहे हैं लेकिन शोर के साथ: ${suites}",
-			"noRealRunPlanned": "इस बार चलाने की कोई आवश्यकता नहीं है: ${reused} का पुन: उपयोग किया जाता है और ${blocked} के अवरुद्ध होने की उम्मीद है (ट्रिगर अपरिवर्तित रहता है)",
+			"noRealRunPlanned": "इस बार चलाने की आवश्यकता नहीं: ${reused} पुन: उपयोग, ${blocked} अवरुद्ध अपेक्षित, ${skipped} छोड़ा गया (ट्रिगर अपरिवर्तित)",
 			"allReusedHint": "इस बार वास्तव में कोई सुइट नहीं चलाया गया है: विफलता विरासत में मिला अंतिम परिणाम है, और रुकावट का समाधान नहीं हुआ है (संबंधित फ़ाइलें अपरिवर्तित रहती हैं)। प्रासंगिक फ़ाइलों की मरम्मत करें और पुनः चलाएँ, या वास्तविक रन को बाध्य करने के लिए fount test --force का उपयोग करें।",
 			"failuresSaved": "सहेजी गई विफलता सूची: ${path} (${count} सुइट)",
 			"failuresCleared": "मैनिफ़ेस्ट ${manifestId} सभी पास हो गए हैं और विफलता सूची साफ़ कर दी गई है।",
@@ -247,7 +274,9 @@
 					"pending": "चलाया जाना है",
 					"replay": "विफल आइटम पुनः चलाएँ",
 					"replayImperfect": "अपूर्ण पुन:प्रदर्शन",
-					"silentPassed": "पास"
+					"silentPassed": "पास",
+					"skipped": "छोड़ा गया (skip_because)",
+					"skipTree": "छोड़ा गया (upstream skip_tree)"
 				},
 				"pending": {
 					"estimate": "अनुमानित शेष समय ≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "स्थिति कोई रिकॉर्ड नहीं, स्वचालित मेक-अप",
 					"staleContent": "सामग्री बदल गई है और इसे फिर से चलाने की आवश्यकता है।",
+					"skipBecause": "skip_because पुनः जाँच",
 					"triggerHashDrift": "ट्रिगर फ़िंगरप्रिंट बहाव (कोई पथ हिट नहीं)"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "अपस्ट्रीम पुल: ${requiredBy} की निर्भरता हरी नहीं है",
 					"reused": "(पुन: उपयोग)",
 					"rootCause": "मूल कारण",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "अनुवर्ती कार्रवाई चाहिए (बंद)",
+					"skipTree": "skip_tree",
 					"terminateReason": "समाप्ति का कारण",
 					"triggerHashDrift": "ट्रिगर फ़िंगरप्रिंट वर्तमान कार्यस्थान के साथ असंगत है (गंदे→नेट पर ध्यान नहीं दिया गया)",
 					"uncommittedHashRange": "डाइजेस्ट प्रस्तुत नहीं किया गया"
@@ -338,7 +371,7 @@
 				"remaining": "अनुमानित शेष समय ≈ ${eta} (${completed}/${total} सुइट)",
 				"run": "अनुमान है कि इस दौड़ में ≈ ${eta} लगेगा (अनुमानित समानांतर दर ${rate})",
 				"runSerial": "इस रन में ≈ ${eta} (सीरियल) लगने की उम्मीद है",
-				"runSerialHint": "यदि समानता अपेक्षित है ≈ ${eta} (समानांतर दर ${rate}), बचत ≈ ${savings} (हटाएं --no-parallel नहीं)",
+				"runSerialHint": "यदि समानता अपेक्षित है ≈ ${eta} (समानांतर दर ${rate}), बचत ≈ ${savings}",
 				"runSkipped": "ऐसे ${reused} टुकड़े भी हैं जिनका दोबारा उपयोग किया जाता है और ${blocked} टुकड़े भी हैं जिनके अवरुद्ध होने की उम्मीद है (अनुमान में शामिल नहीं)"
 			},
 			"unknown": {

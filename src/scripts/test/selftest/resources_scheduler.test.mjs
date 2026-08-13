@@ -158,41 +158,6 @@ Deno.test('ResourceRunGate fill-gap packs mem-heavy with cpu-heavy in parallel',
 	releaseCpu()
 })
 
-Deno.test('ResourceRunGate serial mode runs one light suite at a time', async () => {
-	const gate = new ResourceRunGate(8000 * MiB, () => undefined, { serial: true })
-	const a = makeSuite('shells/chat', 'pure', { resources: { memMb: 100, cpuPct: 5 } })
-	const b = makeSuite('shells/chat', 'fed_core', { resources: { memMb: 100, cpuPct: 5 } })
-
-	const releaseA = await gate.acquire(a)
-	const waitB = gate.acquire(b)
-	let bReady = false
-	waitB.then(() => { bReady = true })
-	await Promise.resolve()
-	assertEquals(bReady, false)
-
-	releaseA()
-	await waitB
-	assert(bReady)
-})
-
-Deno.test('ResourceRunGate serial mode admits waiters FIFO, not by footprint', async () => {
-	// 队首体量小、队尾体量大：串行必须按插入顺序（报告序）放行，而非资源择优。
-	const gate = new ResourceRunGate(8000 * MiB, () => undefined, { serial: true })
-	const small = makeSuite('shells/chat', 'pure', { resources: { memMb: 100, cpuPct: 5 } })
-	const big = makeSuite('shells/chat', 'fed_core', { resources: { memMb: 1800, cpuPct: 90 } })
-
-	/** @type {string[]} */
-	const admitted = []
-	const waitSmall = gate.acquire(small).then(release => { admitted.push('small'); return release })
-	const waitBig = gate.acquire(big).then(release => { admitted.push('big'); return release })
-
-	const releaseSmall = await waitSmall
-	assertEquals(admitted, ['small'])
-	releaseSmall()
-	await waitBig
-	assertEquals(admitted, ['small', 'big'])
-})
-
 Deno.test('PlanRunCoordinator throws on dependency deadlock', async () => {
 	const a = makeSuite('shells/chat', 'a', { dependsOn: ['b'] })
 	const b = makeSuite('shells/chat', 'b', { dependsOn: ['a'] })

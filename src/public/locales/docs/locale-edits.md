@@ -20,7 +20,7 @@ Always move keys with `.esh/commands/update_locale_data.py` (below) — never ha
 
 Use `.esh/commands/update_locale_data.py` — **move with `get(old)` → `set(new, value)` → `set(old, None)`** so each locale keeps its existing copy.
 
-Never delete then refill from zh-CN: `fake` / `emoji` and other non-Google targets collapse to Chinese.
+Never delete then refill from zh-CN: `fake` / `emoji` and other non-Google targets collapse to Chinese. `checks:i18n_keys` fails `emoji.json` if any string still carries Han / kana / Cyrillic — rewrite those leaves in emoji, do not wait for Google.
 
 When updating call sites, rewrite only quoted i18n key strings — do not blind-replace `profile.xxx` object fields or module paths.
 

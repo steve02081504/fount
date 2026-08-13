@@ -58,7 +58,7 @@ fi
 
 if [ ! -f ./data/test/report.md ]; then
 	printf '🔥 Creating test cache...\n'
-	fount test --no-parallel || true
+	fount test || true
 	printf '🥳 Test cache created successfully\n'
 fi
 

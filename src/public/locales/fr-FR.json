@@ -145,7 +145,32 @@
 			"replHint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne"
 		},
 		"test": {
-			"help": "Usage : fount test [--all] [--no-parallel] [--force] [<groupes>...]\n\nSyntaxe de groupement (plusieurs groupes séparés par des espaces) :\n  manifest                    toutes les suites du manifest\n  manifest:suite              suite précise (virgule pour plusieurs ; manifest/suite aussi)\n  manifest:suite:subtest      sous-tests (frontend, etc. ; manifest/suite/subtest aussi)\n  manifest:suite:file         filtre par stem de *.test.mjs sous pure/integration (serial.mjs)\n  Sous PowerShell, les jetons suivants sont fusionnés dans le groupe courant.\n\nL'id manifest provient du champ « id » de chaque test/manifest.json.\nSans correspondance exacte, expansion automatique « <nom>/* » (ex. shells → shells/chat, shells/social) ; glob (*, ? , **) supporté.\nSuite : correspondance par id ou name ; sinon expansion « <nom>* », « <nom>_* » ; glob supporté.\n\nPar défaut (fount test seul) : d'abord les échecs/inachevés (fichiers en échec prioritaires ; si le groupe échoue à nouveau, exécution puis sortie), puis les éléments périmés une fois tout vert ; un échec termine avec le code 1, sans nouvelle tentative dans le même appel. Jamais tout le périmètre (utilisez --all).\nÉtat persistant dans data/test/state/main.json ; logs d'échec conservés jusqu'au vert. Mise à jour de data/test/report.md et report.json à chaque exécution.\nLes suites comme frontend peuvent enregistrer des subtests (trigger indépendant) ; modifier une vue n'expire que le subtest concerné.\nSans subtests en pure/integration, le 3e segment filtre par stem de *.test.mjs (ex. shells/chat:pure:channel_archive).\nSi une dépendance (manifest.json dependsOn) échoue, les couches supérieures sont bloquées.\n\n--all         toutes les suites du périmètre (les vertes restent réutilisables sauf --force)\n--no-parallel exécution série des suites, sortie vers stdout/stderr ; par défaut parallélisation auto selon mémoire/CPU.\n--force       désactive la réutilisation : par défaut dernier résultat réel, --force force l'exécution.\n\nExemples :\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Utilisation : fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nSélecteurs (groupes séparés par des espaces ; suites d'un même groupe par des virgules ; / et : équivalents) :\n  nom               toutes les suites du groupe (ex. shells/chat)\n  nom:suite         une suite précise\n  nom:suite:élément un sous-test ou fichier de test précis\n\nSans correspondance exacte, expansion par préfixe (shells → shells/chat, shells/social) ; globs (*, ?, **) pris en charge.\n\nPar défaut (fount test seul) : planifie échecs/incomplets et obsolètes en un passage et les exécute ; les échecs ne bloquent que leurs dépendants — sortie non nulle en fin de course. Jamais tout le dépôt — utiliser --all pour cela.\n\n--watch      surveillance continue ; reste actif même si la file est vide (Ctrl+C pour quitter) ; incompatible avec --all, --force, --update-estimates ou des sélecteurs\n--all        toutes les suites dans la portée\n--force      exécution forcée ; ne réutilise pas les derniers résultats\n--update-estimates  réécrit expected dans chaque manifest à partir des moyennes actuelles de la base ; sélecteurs optionnels ; n'exécute pas les tests\n\nexemples :\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "Utilisation : fount test --watch (incompatible avec toute autre option)",
+			"updateEstimates": {
+				"incompatible": "Utilisation : fount test --update-estimates [<groups>...] (incompatible avec tout autre commutateur)",
+				"summary": "Durées prévues mises à jour pour ${suitesUpdated} suite(s) (${filesChanged} manifest(s)) ; ${skipped} ignorée(s) sans baseline ou déjà à jour"
+			},
+			"skipBecause": {
+				"pass": "Ignoré (issue encore ouverte ou fermée mais période de grâce non écoulée) : ${label} — ${url}",
+				"fail": "Échec (issue fermée et période de grâce écoulée — à traiter et mettre à jour skip_because avant nouvelle vérification) : ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Vérification des modules : processus terminé sans signal ready : ${label}"
+			},
+			"queue": {
+				"append": "Ajouté à la file : ${label} (${reason}) ≈ ${remaining} restant",
+				"remove": "Retiré de la file : ${label} (${reason}) ≈ ${remaining} restant"
+			},
+			"display": {
+				"eta": "Prévu ${expected}, total ≈ ${remaining} restant",
+				"etaUnknown": "Prévu ${expected}, total restant inclut ${count} durée(s) inconnue(s)",
+				"reason": "${label} : ${reason}",
+				"remaining": "Total ≈ ${remaining} restant",
+				"remainingUnknown": "≈ ${remaining} restant au total (${count} durée(s) inconnue(s) en plus)",
+				"remainingOnlyUnknown": "≈ ${count} durée(s) inconnue(s) restante(s) au total",
+				"failureLog": "\n—— Journal d'échecs : ${label} ——"
+			},
 			"passed": "Réussi : ${label}",
 			"passedWithNoise": "Réussi : ${label} (bruit détecté)",
 			"failed": "Échec : ${label}",
@@ -157,13 +182,15 @@
 			"available": "Éléments disponibles : ${ids}",
 			"manifestMatched": "Manifests correspondants : ${ids}",
 			"selectedSuites": "${selected}/${total} suites sélectionnées",
-			"planSlotSummary": "Plan : exécution ${run}, réutilisation ${reuse}, bloqué ${blocked}",
+			"planSlotSummary": "Plan : exécution ${run}, réutilisation ${reuse}, bloqué ${blocked}, ignoré ${skipped}",
 			"noMatchingSuites": "Aucune suite correspondante.",
 			"reportPath": "Rapport : ${path}",
 			"reportPathFinal": "Rapport : ${path}",
 			"statePathFinal": "État : ${path}",
 			"blocked": "Bloqué : ${label} (dépendance non validée : ${deps})",
+			"skippedTree": "Ignoré : ${label} (skip_tree : ${deps})",
 			"speculativeDiscard": "Résultat spéculatif ignoré : ${label} (dépendance non validée : ${deps})",
+			"continueDefault": "Reprise de ${count} suite(s) (échec/incomplet ${imperfect}, obsolète ${outdated})",
 			"continueImperfect": "Échecs/bruit/vagues incomplètes : ${count} suites",
 			"outdatedSelected": "Vague périmée : ${count} suites obsolètes/non exécutées",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": ">>> Réutilisation de ${manifestId}:${name} (déclencheur inchangé, dernier ${status})",
 			"prunedAbsentState": "État obsolète des suites supprimées nettoyé : ${suites} suites, ${subtests} sous-tests",
 			"noisyOnlyRemain": "Encore ${count} suites réussies avec bruit : ${suites}",
-			"noRealRunPlanned": "Aucune exécution nécessaire : ${reused} réutilisées, ${blocked} bloquées prévues (trigger inchangé)",
+			"noRealRunPlanned": "Aucune exécution nécessaire : ${reused} réutilisées, ${blocked} bloquées prévues, ${skipped} ignorées (trigger inchangé)",
 			"allReusedHint": "Aucune suite réellement exécutée : les échecs sont hérités, les blocages non résolus (fichiers inchangés). Corrigez puis relancez, ou fount test --force pour forcer.",
 			"failuresSaved": "Liste d'échecs : ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} tout vert, liste d'échecs effacée.",
@@ -247,7 +274,9 @@
 					"pending": "À exécuter",
 					"replay": "Réexécuter les échecs",
 					"replayImperfect": "Rejeu imparfait",
-					"silentPassed": "Réussies"
+					"silentPassed": "Réussies",
+					"skipped": "Ignoré (skip_because)",
+					"skipTree": "Ignoré (skip_tree en amont)"
 				},
 				"pending": {
 					"estimate": "Temps restant ≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "état sans enregistrement, rattrapage",
 					"staleContent": "contenu modifié, à réexécuter",
+					"skipBecause": "revérification skip_because",
 					"triggerHashDrift": "empreinte trigger dérivée (aucun chemin atteint)"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "Tirage amont : dépendance de ${requiredBy} non verte",
 					"reused": "(réutilisée)",
 					"rootCause": "cause racine",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "à suivre (fermée)",
+					"skipTree": "skip_tree",
 					"terminateReason": "motif d'arrêt",
 					"triggerHashDrift": "empreinte trigger incohérente avec l'espace de travail (dirty → net ignoré)",
 					"uncommittedHashRange": "résumé non commité"
@@ -338,7 +371,7 @@
 				"remaining": "Temps restant ≈ ${eta} (${completed}/${total} suites)",
 				"run": "Durée estimée ≈ ${eta} (taux parallèle ${rate})",
 				"runSerial": "Durée estimée ≈ ${eta} (série)",
-				"runSerialHint": "En parallèle ≈ ${eta} (taux ${rate}), gain ≈ ${savings} (retirez --no-parallel)",
+				"runSerialHint": "En parallèle ≈ ${eta} (taux ${rate}), gain ≈ ${savings}",
 				"runSkipped": "De plus ${reused} réutilisées et ${blocked} bloquées prévues (hors estimation)."
 			},
 			"unknown": {

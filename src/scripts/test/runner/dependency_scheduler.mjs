@@ -5,8 +5,9 @@
  * 按就近（同 manifest / 挂靠数）与便宜（丢弃损失小）排序。
  * 硬跑占用机器时，余量仍可 tryAcquire 投机——不因另有硬就绪/排队而停投机。
  */
+import { expectedRunDurationMs } from '../core/estimate.mjs'
 import { resolveSuiteResources, suiteSchedulePriority } from '../core/resources.mjs'
-import { getSuiteBaselineDurationMs, suiteKey } from '../core/state.mjs'
+import { suiteKey } from '../core/state.mjs'
 
 import { ResourceRunGate } from './scheduler.mjs'
 
@@ -114,8 +115,7 @@ export class PlanRunCoordinator {
 				})
 
 			const ready = this.#listReady(inFlight)
-			if (!this.gate.serial)
-				ready.sort((a, b) => this.#hardDispatchPriority(b) - this.#hardDispatchPriority(a))
+			ready.sort((a, b) => this.#hardDispatchPriority(b) - this.#hardDispatchPriority(a))
 
 			for (const slot of ready)
 				if (slot.action === 'run') {
@@ -148,38 +148,35 @@ export class PlanRunCoordinator {
 						this.depPassed.set(slot.key, result.passed)
 					})
 
-			if (!this.gate.serial) {
-				// 硬跑（含已占坑/排队）之外：余量能装下就投机，不因另有硬就绪在跑而停
-				const speculative = this.#listSpeculative(inFlight)
-				speculative.sort((a, b) =>
-					this.#speculativePriority(b, inFlight) - this.#speculativePriority(a, inFlight))
-				for (const slot of speculative) {
-					const release = this.gate.tryAcquire(slot.suite)
-					if (!release) continue
-					const abortController = new AbortController()
-					const stopArm = this.#armSpeculative(slot, abortController)
-					startTask(slot, async () => {
-						try {
-							const result = await handler(slot, {
-								speculative: true,
-								signal: abortController.signal,
-								/** @returns {Promise<CommitGate>} 提交闸门 */
-								awaitCommitGate: async () => {
-									await this.#waitDepsResolved(slot)
-									const failedDeps = this.#failedDeps(slot)
-									return failedDeps.length
-										? { ok: false, failedDeps }
-										: { ok: true, failedDeps: [] }
-								},
-							})
-							this.depPassed.set(slot.key, result.passed)
-						}
-						finally {
-							stopArm()
-							release()
-						}
-					}, { speculative: true })
-				}
+			const speculative = this.#listSpeculative(inFlight)
+			speculative.sort((a, b) =>
+				this.#speculativePriority(b, inFlight) - this.#speculativePriority(a, inFlight))
+			for (const slot of speculative) {
+				const release = this.gate.tryAcquire(slot.suite)
+				if (!release) continue
+				const abortController = new AbortController()
+				const stopArm = this.#armSpeculative(slot, abortController)
+				startTask(slot, async () => {
+					try {
+						const result = await handler(slot, {
+							speculative: true,
+							signal: abortController.signal,
+							/** @returns {Promise<CommitGate>} 提交闸门 */
+							awaitCommitGate: async () => {
+								await this.#waitDepsResolved(slot)
+								const failedDeps = this.#failedDeps(slot)
+								return failedDeps.length
+									? { ok: false, failedDeps }
+									: { ok: true, failedDeps: [] }
+							},
+						})
+						this.depPassed.set(slot.key, result.passed)
+					}
+					finally {
+						stopArm()
+						release()
+					}
+				}, { speculative: true })
 			}
 
 			const flying = Object.values(inFlight)
@@ -366,7 +363,7 @@ export class PlanRunCoordinator {
 		}
 		const entry = this.state.suites[slot.key]
 		const resources = resolveSuiteResources(slot.suite, entry)
-		const durationMs = getSuiteBaselineDurationMs(entry) ?? 60_000
+		const durationMs = expectedRunDurationMs(slot.suite, entry) ?? 60_000
 		// 便宜优先：与硬跑「大包优先」相反，预测错时损失小
 		const cheap = 1_000_000 / (1 + resources.memMb + resources.cpuPct + durationMs / 1000)
 		return near + cheap

@@ -15,4 +15,4 @@ alwaysApply: false
 - **Clipboard / shortcuts**: app-level (`sessionStorage` + `BroadcastChannel`), not OS. Keymap: `public/shared/keyboard`.
 - **Entity profile**: `#user:{entityHash}` via chat `entityProfilePopup.mjs`.
 - **UI**: Bootstrap `public/index.mjs`; state `cabinetStore`; named endpoints in `public/src/endpoints.mjs`; DOM under `public/src/`; Deno-pure under `public/shared/`. DaisyUI + shared `promptDialog` / `positionContextMenu`. Entry grid: `role="listbox"` + `aria-multiselectable`. SPA hashes: `` `${location.pathname}#…` ``. Omit unavailable context-menu items; no explanatory `data-i18n` on invisible controls.
-- **Tests**: `fount test shells/cabinet --no-parallel`. Pure suites import `public/shared/` only — keep Social `visibilitySpec` behind dynamic import in `remote.mjs`.
+- **Tests**: `fount test shells/cabinet`. Pure suites import `public/shared/` only — keep Social `visibilitySpec` behind dynamic import in `remote.mjs`.

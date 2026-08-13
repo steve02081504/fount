@@ -145,7 +145,32 @@
 			"replHint": "Enter để chạy · Shift+Enter để xuống dòng"
 		},
 		"test": {
-			"help": "Cách dùng: fount test [--all] [--no-parallel] [--force] [<nhóm>...]\n\nCú pháp nhóm (nhiều nhóm cách nhau bằng dấu cách):\n  manifest                    toàn bộ suite của manifest đó\n  manifest:suite              chỉ định suite (nhiều suite cách nhau bằng dấu phẩy; cũng dùng manifest/suite)\n  manifest:suite:subtest      chỉ định subtest (frontend v.v. đã đăng ký subtest; cũng dùng manifest/suite/subtest)\n  manifest:suite:file         lọc theo stem tệp *.test.mjs trong pure/integration (serial.mjs)\n  Khi PowerShell tách token, các token sau tự gộp vào nhóm hiện tại\n\nmanifest id lấy từ trường \"id\" cấp cao nhất trong mỗi test/manifest.json.\nKhông khớp chính xác thì tự mở rộng theo «<tên>/*» (vd. shells → shells/chat,shells/social); cũng hỗ trợ glob (*, ?, **).\nsuite khớp id hoặc name của từng suite; không khớp chính xác thì mở rộng theo «<tên>*» «<tên>_*»; cũng hỗ trợ glob.\n\nMặc định (fount test trần): chạy mục thất bại/chưa xong trước (ưu tiên tệp thất bại trong suite; nếu nhóm lỗi tái hiện thì chạy xong nhóm lỗi rồi thoát), sau khi tất cả xanh mới chạy mục nội dung hết hạn; bất kỳ vòng nào thất bại thoát 1, không thử lại trong cùng lần gọi. Không bao giờ chạy toàn bộ (dùng --all).\nTrạng thái kiểm thử lưu tại data/test/state/main.json (các suite đã xóa/đổi tên được dọn tự động); log thất bại giữ đến khi xanh. Mỗi lần chạy cập nhật data/test/report.md và report.json.\nCác gói như frontend có thể đăng ký subtest (mỗi cái có trigger riêng); sửa một tệp view chỉ làm subtest tương ứng hết hạn.\nKhi pure/integration chưa đăng ký subtest, đoạn thứ ba lọc theo stem *.test.mjs trong thư mục (vd. shells/chat:pure:channel_archive).\nKhi phụ thuộc (manifest.json dependsOn) chưa đạt, tầng cao tự bị blocked.\n\n--all         toàn bộ suite trong phạm vi làm mục tiêu (suite xanh vẫn tái sử dụng trừ khi --force)\n--no-parallel chạy suite tuần tự và stream stdout/stderr; mặc định cổng tài nguyên tự song song hóa theo bộ nhớ và CPU.\n--force       tắt tái sử dụng: mặc định dùng kết quả thật lần trước, --force ép chạy thật mục tiêu.\n\nVí dụ:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"help": "Cách dùng: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nBộ chọn (nhóm cách nhau bằng dấu cách; suite trong cùng nhóm bằng dấu phẩy; / và : tương đương):\n  tên               mọi suite trong nhóm (vd. shells/chat)\n  tên:suite         một suite cụ thể\n  tên:suite:mục     một subtest hoặc tệp kiểm thử cụ thể\n\nKhông khớp chính xác thì mở rộng theo tiền tố (shells → shells/chat, shells/social); hỗ trợ glob (*, ?, **).\n\nMặc định (fount test trần): lên kế hoạch thất bại/chưa xong và mục cũ trong một lượt rồi chạy; thất bại chỉ chặn slot phụ thuộc — thoát khác không ở cuối. Không bao giờ toàn repo — dùng --all cho việc đó.\n\n--watch      theo dõi liên tục; không thoát dù hàng đợi trống (Ctrl+C để thoát); không kết hợp với --all, --force, --update-estimates hoặc bộ chọn\n--all        mọi suite trong phạm vi\n--force      chạy cưỡng bức; không tái dùng kết quả trước\n--update-estimates  ghi lại expected trong mỗi manifest theo trung bình DB hiện tại; bộ chọn tùy chọn; không chạy kiểm thử\n\nví dụ:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"watchNoGroups": "Cách dùng: fount test --watch (không dùng cùng tùy chọn khác)",
+			"updateEstimates": {
+				"incompatible": "Cách dùng: fount test --update-estimates [<groups>...] (không dùng cùng cờ khác)",
+				"summary": "Đã cập nhật thời lượng dự kiến cho ${suitesUpdated} suite (${filesChanged} manifest); bỏ qua ${skipped} không có baseline hoặc đã mới nhất"
+			},
+			"skipBecause": {
+				"pass": "Bỏ qua (issue vẫn mở hoặc đã đóng nhưng chưa hết thời gian ân hạn): ${label} — ${url}",
+				"fail": "Thất bại (issue đã đóng và đã hết thời gian ân hạn — xử lý và cập nhật skip_because trước khi kiểm tra lại): ${label} — ${url}"
+			},
+			"moduleCheck": {
+				"missedReady": "Kiểm tra module: tiến trình thoát mà chưa gửi tín hiệu ready: ${label}"
+			},
+			"queue": {
+				"append": "Vào hàng đợi: ${label} (${reason}) còn ≈ ${remaining}",
+				"remove": "Ra khỏi hàng đợi: ${label} (${reason}) còn ≈ ${remaining}"
+			},
+			"display": {
+				"eta": "Dự kiến ${expected}, tổng còn ≈ ${remaining}",
+				"etaUnknown": "Dự kiến ${expected}; tổng còn ${count} mục thời lượng chưa biết",
+				"reason": "${label}: ${reason}",
+				"remaining": "Tổng còn ≈ ${remaining}",
+				"remainingUnknown": "≈ ${remaining} còn lại tổng cộng (thêm ${count} thời lượng chưa biết)",
+				"remainingOnlyUnknown": "≈ ${count} thời lượng chưa biết còn lại tổng cộng",
+				"failureLog": "\n—— Nhật ký lỗi: ${label} ——"
+			},
 			"passed": "ĐẠT: ${label}",
 			"passedWithNoise": "ĐẠT: ${label} (có nhiễu)",
 			"failed": "THẤT BẠI: ${label}",
@@ -157,13 +182,15 @@
 			"available": "Có sẵn: ${ids}",
 			"manifestMatched": "manifest khớp: ${ids}",
 			"selectedSuites": "Đã chọn ${selected}/${total} suite",
-			"planSlotSummary": "Khe kế hoạch: chạy thật ${run}, tái sử dụng ${reuse}, chặn ${blocked}",
+			"planSlotSummary": "Khe kế hoạch: chạy thật ${run}, tái sử dụng ${reuse}, chặn ${blocked}, bỏ qua ${skipped}",
 			"noMatchingSuites": "Không có suite khớp.",
 			"reportPath": "Báo cáo: ${path}",
 			"reportPathFinal": "\nBáo cáo: ${path}",
 			"statePathFinal": "Trạng thái: ${path}",
 			"blocked": "Chặn: ${label} (phụ thuộc chưa đạt: ${deps})",
+			"skippedTree": "Bỏ qua: ${label} (skip_tree: ${deps})",
 			"speculativeDiscard": "Bỏ kết quả dự đoán: ${label} (phụ thuộc chưa đạt: ${deps})",
+			"continueDefault": "Tiếp tục ${count} suite (thất bại/chưa xong ${imperfect}, cũ ${outdated})",
 			"continueImperfect": "Đợt thất bại/nhiễu/chưa hoàn tất: ${count} suite",
 			"outdatedSelected": "Đợt hết hạn: ${count} suite cũ/chưa chạy",
 			"runningSuite": {
@@ -175,7 +202,7 @@
 			"reusedSuite": "\n>>> Tái sử dụng ${manifestId}:${name} (trigger không đổi, dùng ${status} lần trước)",
 			"prunedAbsentState": "Đã xóa trạng thái các suite không còn tồn tại: ${suites} suite, ${subtests} subtest",
 			"noisyOnlyRemain": "Vẫn còn ${count} suite đạt nhưng có nhiễu: ${suites}",
-			"noRealRunPlanned": "Lần này không cần chạy thật: tái sử dụng ${reused}, dự kiến chặn ${blocked} (trigger không đổi)",
+			"noRealRunPlanned": "Lần này không cần chạy thật: tái sử dụng ${reused}, dự kiến chặn ${blocked}, bỏ qua ${skipped} (trigger không đổi)",
 			"allReusedHint": "Lần này không chạy thật suite nào: lỗi là kết quả lần trước, chặn chưa giải (tệp liên quan không đổi). Sửa tệp rồi chạy lại, hoặc dùng `fount test --force` để ép chạy thật.",
 			"failuresSaved": "Đã lưu danh sách thất bại: ${path} (${count} suite)",
 			"failuresCleared": "manifest ${manifestId} đều đã đạt, danh sách thất bại đã xóa.",
@@ -247,7 +274,9 @@
 					"pending": "Chờ chạy",
 					"replay": "Chạy lại mục thất bại",
 					"replayImperfect": "Chạy lại mục chưa hoàn hảo",
-					"silentPassed": "Đạt"
+					"silentPassed": "Đạt",
+					"skipped": "Bỏ qua (skip_because)",
+					"skipTree": "Bỏ qua (skip_tree upstream)"
 				},
 				"pending": {
 					"estimate": "Thời gian còn lại ước tính ≈ ${eta}",
@@ -266,6 +295,7 @@
 					},
 					"missingRecord": "state không có bản ghi, tự chạy bù",
 					"staleContent": "Nội dung đã thay đổi, cần chạy lại",
+					"skipBecause": "kiểm tra lại skip_because",
 					"triggerHashDrift": "Dấu vân tay trigger lệch (không khớp đường dẫn)"
 				},
 				"label": {
@@ -286,6 +316,9 @@
 					"pullUpstream": "Kéo upstream: phụ thuộc của ${requiredBy} chưa xanh",
 					"reused": "(tái sử dụng)",
 					"rootCause": "Nguyên nhân gốc",
+					"skipBecause": "issue",
+					"skipBecauseClosed": "cần theo dõi (đã đóng)",
+					"skipTree": "skip_tree",
 					"terminateReason": "Lý do dừng",
 					"triggerHashDrift": "Dấu vân tay trigger không khớp workspace hiện tại (dirty→clean đã bỏ qua)",
 					"uncommittedHashRange": "digest chưa commit"
@@ -338,7 +371,7 @@
 				"remaining": "Thời gian còn lại ước tính ≈ ${eta} (${completed}/${total} suite)",
 				"run": "Ước tính thời gian chạy ≈ ${eta} (tỷ lệ song song ước tính ${rate})",
 				"runSerial": "Ước tính thời gian chạy ≈ ${eta} (tuần tự)",
-				"runSerialHint": "Nếu song song dự kiến ≈ ${eta} (tỷ lệ song song ${rate}), tiết kiệm ≈ ${savings} (bỏ --no-parallel)",
+				"runSerialHint": "Nếu song song dự kiến ≈ ${eta} (tỷ lệ song song ${rate}), tiết kiệm ≈ ${savings}",
 				"runSkipped": "Ngoài ra tái sử dụng ${reused}, dự kiến chặn ${blocked} (không tính vào ước tính)"
 			},
 			"unknown": {

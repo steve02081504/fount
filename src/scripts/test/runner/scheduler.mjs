@@ -30,13 +30,11 @@ export class ResourceRunGate {
 	/**
 	 * @param {number} memBudgetBytes 机器内存预算
 	 * @param {(suite: SuiteDef) => SuiteStateEntry | undefined} [lookupEntry] 现状库查询
-	 * @param {{ serial?: boolean }} [options] serial 时一次只跑一个非 heavy suite
 	 */
-	constructor(memBudgetBytes, lookupEntry = () => undefined, { serial = false } = {}) {
+	constructor(memBudgetBytes, lookupEntry = () => undefined) {
 		this.memBudgetBytes = memBudgetBytes
 		this.cpuBudgetPct = CPU_BUDGET_PCT
 		this.lookupEntry = lookupEntry
-		this.serial = serial
 		this.usedMemBytes = 0
 		this.usedCpuPct = 0
 		/** @type {boolean} */
@@ -117,14 +115,6 @@ export class ResourceRunGate {
 	#tryAdmit() {
 		if (this.exclusiveRunning) return
 
-		// 串行：机器空闲时按插入顺序（= 报告拓扑序）放行队首，不做资源择优。
-		if (this.serial) {
-			if (this.usedMemBytes !== 0 || this.usedCpuPct !== 0) return
-			const w = this.waiters.shift()
-			if (w) this.#admit(w)
-			return
-		}
-
 		const idle = this.usedMemBytes === 0 && this.usedCpuPct === 0
 		if (idle && this.waiters.length) {
 			const heavyIdx = this.waiters.findIndex(w => w.suite.heavy)
@@ -152,7 +142,6 @@ export class ResourceRunGate {
 	 * @returns {(() => void) | null} 释放函数；装不下则为 null
 	 */
 	tryAcquire(suite) {
-		if (this.serial) return null
 		if (this.exclusiveRunning) return null
 		if (suite.heavy) {
 			if (this.usedMemBytes !== 0 || this.usedCpuPct !== 0) return null

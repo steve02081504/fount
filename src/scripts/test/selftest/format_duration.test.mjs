@@ -4,6 +4,7 @@ import { assertEquals } from 'jsr:@std/assert'
 import { formatDuration } from '../core/format_duration.mjs'
 
 Deno.test('formatDuration keeps sub-minute precision', () => {
+	assertEquals(formatDuration(565.4106421657701), '565 毫秒')
 	assertEquals(formatDuration(500), '500 毫秒')
 	assertEquals(formatDuration(45_000), '45 秒')
 	assertEquals(formatDuration(90_000), '1 分 30 秒')

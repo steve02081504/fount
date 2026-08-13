@@ -5,7 +5,11 @@ import { buildPlan } from '../core/plan.mjs'
 import { resolveSelector } from '../core/selector.mjs'
 import { suiteKey } from '../core/state.mjs'
 import { buildVerdicts } from '../core/verdict.mjs'
-import { buildReasonsFromPlan } from '../runner/continue_reason.mjs'
+import {
+	buildReasonsFromPlan,
+	formatContinueReasonLabel,
+	serializeContinueReasons,
+} from '../runner/continue_reason.mjs'
 import { goalContinue, goalImperfectKeys } from '../runner/selection.mjs'
 
 import { makeStateEntry, makeSuite } from './fixtures.mjs'
@@ -130,4 +134,9 @@ Deno.test('buildReasonsFromPlan stamps goal and dependency reasons', () => {
 	const reasons = buildReasonsFromPlan(plan)
 	assertEquals(reasons.get('shells/chat:frontend')?.kind, 'explicit_selected')
 	assertEquals(reasons.get('server:live')?.kind, 'dependency_required')
+	assertEquals(formatContinueReasonLabel(reasons.get('shells/chat:frontend')), '显式指名')
+	assertEquals(serializeContinueReasons(reasons).map(row => row.key).sort(), [
+		'server:live',
+		'shells/chat:frontend',
+	])
 })

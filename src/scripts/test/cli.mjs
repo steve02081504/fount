@@ -1,34 +1,40 @@
 /**
  * fount test CLI
  *
- *   fount test [--all] [--no-parallel] [--force] [<groups>...]
+ *   fount test [--watch]
+ *   fount test [--all] [--force] [<groups>...]
+ *   fount test --update-estimates [<groups>...]
  *
- * 分组语法：manifest、manifest:suite、manifest:suite:subtest、manifest/suite/subtest（空格分隔多组）
+ * 选择器：名称 / 名称:suite / 名称:suite:子项（空格多组，逗号多 suite；/ 与 : 等价）
  */
-import 'fount/scripts/test/env.mjs'
+import './mark.mjs'
 
 import process from 'node:process'
 
-import { geti18n } from '../i18n/bare.mjs'
+import { console, geti18n } from '../i18n/bare.mjs'
 
 import {
+	filterSuites,
 	listManifestIds,
 	loadAllSuites,
 	resolveManifestSelectors,
 } from './core/manifest.mjs'
 import { parseArgsOrExit } from './core/parse_args_or_exit.mjs'
-import { finishTestProgress } from './core/progress.mjs'
 import { REPO_ROOT } from './core/repo_root.mjs'
 import { isBareSuiteContinuation, resolveSelector } from './core/selector.mjs'
-import { runTests } from './runner/index.mjs'
+import { readState } from './core/state.mjs'
+import { updateManifestEstimates } from './core/update_estimates.mjs'
+import { runTestDisplay } from './display/index.mjs'
+import { ensureTestKernel } from './kernel/ensure.mjs'
 
 const { positionals, values } = parseArgsOrExit({
 	args: process.argv.slice(2),
 	allowPositionals: true,
 	options: {
 		all: { type: 'boolean', default: false },
-		'no-parallel': { type: 'boolean', default: false },
 		force: { type: 'boolean', default: false },
+		watch: { type: 'boolean', default: false },
+		'update-estimates': { type: 'boolean', default: false },
 		help: { type: 'boolean', short: 'h', default: false },
 	},
 })
@@ -36,6 +42,16 @@ const { positionals, values } = parseArgsOrExit({
 if (values.help || positionals.includes('help')) {
 	console.log(geti18n('fountConsole.test.help'))
 	process.exit(0)
+}
+
+if (values['update-estimates'] && (values.watch || values.all || values.force)) {
+	console.error(geti18n('fountConsole.test.updateEstimates.incompatible'))
+	process.exit(2)
+}
+
+if (values.watch && (values.all || values.force || positionals.length)) {
+	console.error(geti18n('fountConsole.test.watchNoGroups'))
+	process.exit(2)
 }
 
 /**
@@ -110,28 +126,69 @@ function parseGroupSelectors(args, knownIds, allSuites) {
 	return { groups }
 }
 
-process.exit(await (async () => {
+/**
+ * 将已解析分组展开为去重 suite 列表。
+ * @param {import('./core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
+ * @param {GroupInput[]} groups CLI 分组
+ * @param {string[]} knownIds 已知 manifest id
+ * @returns {import('./core/manifest.mjs').SuiteDef[]} 去重后的 suite
+ */
+function suitesFromGroups(allSuites, groups, knownIds) {
+	const seen = new Map()
+	for (const input of groups) {
+		const resolved = resolveManifestSelectors(input.manifestSelectors, knownIds, allSuites)
+		for (const suite of filterSuites(allSuites, {
+			manifestIds: resolved.manifestIds,
+			suiteSelectors: input.suiteSelectors.length ? input.suiteSelectors : undefined,
+		}))
+			seen.set(`${suite.manifestId}\0${suite.name}`, suite)
+	}
+	return [...seen.values()]
+}
+
+/**
+ * 加载全部 suite 并解析 CLI 选择器；未知 token 直接退出。
+ * @returns {Promise<{ allSuites: import('./core/manifest.mjs').SuiteDef[], knownIds: string[], parsed: Exclude<ReturnType<typeof parseGroupSelectors>, { error: string }> }>} 选择结果
+ */
+async function loadCliSelection() {
 	const allSuites = await loadAllSuites(REPO_ROOT)
 	const knownIds = listManifestIds(allSuites)
 	const parsed = parseGroupSelectors(positionals, knownIds, allSuites)
-
 	if ('error' in parsed) {
 		console.errorI18n('fountConsole.test.unknown.manifestId', { ids: parsed.token })
 		console.errorI18n('fountConsole.test.available', { ids: knownIds.join(', ') })
 		process.exit(2)
 	}
+	return { allSuites, knownIds, parsed }
+}
 
-	let exitCode = 1
-	try {
-		exitCode = await runTests({
+process.exit(await (async () => {
+	if (values['update-estimates']) {
+		const { allSuites, knownIds, parsed } = await loadCliSelection()
+		const suites = parsed.groups ? suitesFromGroups(allSuites, parsed.groups, knownIds) : allSuites
+		if (parsed.groups && !suites.length) {
+			console.error(geti18n('fountConsole.test.noMatchingSuites'))
+			process.exit(2)
+		}
+		const result = await updateManifestEstimates({
+			repoRoot: REPO_ROOT,
+			suites,
+			state: await readState(REPO_ROOT),
+		})
+		console.logI18n('fountConsole.test.updateEstimates.summary', result)
+		return 0
+	}
+
+	await ensureTestKernel()
+	if (values.watch)
+		return runTestDisplay({ watch: true })
+
+	const { parsed } = await loadCliSelection()
+	return runTestDisplay({
+		job: {
 			runAll: values.all,
-			noParallel: values['no-parallel'],
 			force: values.force,
 			groups: parsed.groups,
-		})
-	}
-	finally {
-		finishTestProgress(exitCode)
-	}
-	return exitCode
+		},
+	})
 })())

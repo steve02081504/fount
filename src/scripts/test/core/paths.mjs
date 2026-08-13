@@ -148,3 +148,12 @@ export function heapSnapshotDir(repoRoot) {
 export function denoPanicRecordPath(repoRoot) {
 	return join(testDataRoot(repoRoot), 'deno_panics.json')
 }
+
+/**
+ * 用户目录嵌套 git 指纹路径。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/state/nested_git.json
+ */
+export function nestedGitStatePath(repoRoot) {
+	return join(stateDir(repoRoot), 'nested_git.json')
+}

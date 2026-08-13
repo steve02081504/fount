@@ -105,10 +105,45 @@ export function findPrefixClusters(keys, min = PREFIX_CLUSTER_MIN) {
 /**
  * i18n 键结构问题。
  * @typedef {object} I18nKeyIssue
- * @property {'affix' | 'prefix_cluster' | 'numbered' | 'type_mismatch'} kind
+ * @property {'affix' | 'prefix_cluster' | 'numbered' | 'type_mismatch' | 'forbidden_script'} kind
  * @property {string} path 点分路径（含违规键或簇所在父路径）
  * @property {string} message 说明
  */
+
+/** emoji.json 禁止汉字 / 假名 / 西里尔；拉丁仅用于命令、快捷键、插值名 */
+export const EMOJI_LOCALE_FORBIDDEN_RE = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Cyrillic}/u
+
+/**
+ * 扫描 emoji 语种树中含禁止文字脚本的字符串。
+ * @param {unknown} data locale 节点
+ * @param {string} [path=''] 当前点分路径
+ * @returns {I18nKeyIssue[]} 禁止脚本问题
+ */
+export function scanEmojiLocaleForbiddenScript(data, path = '') {
+	/** @type {I18nKeyIssue[]} */
+	const issues = []
+	if (typeof data === 'string') {
+		const match = data.match(EMOJI_LOCALE_FORBIDDEN_RE)
+		if (match)
+			issues.push({
+				kind: 'forbidden_script',
+				path: path || '(root)',
+				message: `emoji 文案含禁止脚本「${match[0]}」。emoji 语种须用 emoji（拉丁仅用于命令 / 快捷键 / 插值）。`,
+			})
+		return issues
+	}
+	if (Array.isArray(data)) {
+		for (let index = 0; index < data.length; index++)
+			issues.push(...scanEmojiLocaleForbiddenScript(data[index], `${path}[${index}]`))
+		return issues
+	}
+	if (data && typeof data === 'object')
+		for (const [key, value] of Object.entries(data)) {
+			const child = path ? `${path}.${key}` : key
+			issues.push(...scanEmojiLocaleForbiddenScript(value, child))
+		}
+	return issues
+}
 
 /**
  * @param {unknown} value locale 节点

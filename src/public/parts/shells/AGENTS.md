@@ -11,7 +11,7 @@ alwaysApply: false
 - `/parts/<partpath>/<filepath_within_public>` → `src/public/parts/<partpath>/public/<filepath_within_public>`
   - `/parts/shells:chat/hub/messages.css` → `.../shells/chat/public/hub/messages.css`
   - `/parts/shells:chat` → `.../public/index.html` (default)
-- Path helpers (SSOT): browser `/scripts/lib/partPaths.mjs` · Deno `src/scripts/part_paths.mjs`（再导出）— `partpathToUrlPrefix` / `partpathToUrlPartKey` / `urlPartKeyToPartpath` / `parsePartsUrlPath` / `partPublicRelToBrowserPath`。勿再手写 `replace(/:/g,'/')` 或 `replaceAll('/',':')`。
+- Path helpers (SSOT): browser `/scripts/lib/partPaths.mjs` · Deno `src/scripts/part_paths.mjs` (re-export) — `partpathToUrlPrefix` / `partpathToUrlPartKey` / `urlPartKeyToPartpath` / `parsePartsUrlPath` / `partPublicRelToBrowserPath`. Do not hand-write `replace(/:/g,'/')` or `replaceAll('/',':')`.
 
 ## Standard Structure
 

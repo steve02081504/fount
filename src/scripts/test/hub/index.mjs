@@ -1,6 +1,5 @@
 /**
- * fount test 进程内共享 hub（Express）：固定 `127.0.0.1:8903`。
- * 父进程 `runTests` 启动；各 API 见 `hub/apis/`。
+ * fount test hub 端口与 URL；生产路径由测试内核独占 8903，本模块的 startTestHub 留给自测。
  */
 import express from 'npm:express'
 

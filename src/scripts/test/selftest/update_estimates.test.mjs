@@ -1,0 +1,153 @@
+/**
+ * --update-estimates：按现状库基线回写 manifest `expected`。
+ */
+/* global Deno */
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
+import { assertEquals } from 'jsr:@std/assert'
+
+import { formatExpected, parseExpectedMs, roundExpectedMs } from '../core/expected.mjs'
+import { suiteKey } from '../core/state.mjs'
+import { updateManifestEstimates } from '../core/update_estimates.mjs'
+
+import { makeStateEntry, makeSuite } from './fixtures.mjs'
+
+Deno.test('parseExpectedMs accepts number and duration tokens', () => {
+	assertEquals(parseExpectedMs(16_000), 16_000)
+	assertEquals(parseExpectedMs('16s'), 16_000)
+	assertEquals(parseExpectedMs('2m'), 120_000)
+	assertEquals(parseExpectedMs('4m12s'), 252_000)
+	assertEquals(parseExpectedMs('4m 12s'), 252_000)
+	assertEquals(parseExpectedMs('500ms'), 500)
+	assertEquals(parseExpectedMs(' 1h '), 3_600_000)
+	assertEquals(parseExpectedMs(0), null)
+	assertEquals(parseExpectedMs('nope'), null)
+	assertEquals(parseExpectedMs('16s leftover'), null)
+})
+
+Deno.test('roundExpectedMs uses second grid above 1s', () => {
+	assertEquals(roundExpectedMs(16_347), 16_000)
+	assertEquals(roundExpectedMs(477), 500)
+	assertEquals(roundExpectedMs(50), 100)
+	assertEquals(roundExpectedMs(0), null)
+	assertEquals(roundExpectedMs(-1), null)
+})
+
+Deno.test('formatExpected writes compact duration literals', () => {
+	assertEquals(formatExpected(16_000), '16s')
+	assertEquals(formatExpected(120_000), '2m')
+	assertEquals(formatExpected(252_000), '4m12s')
+	assertEquals(formatExpected(477), 500)
+	assertEquals(formatExpected(null), null)
+})
+
+/**
+ * @returns {Promise<string>} 临时仓库根
+ */
+async function makeRepoRoot() {
+	return await mkdtemp(join(tmpdir(), 'fount_update_estimates_'))
+}
+
+Deno.test('updateManifestEstimates writes suite and subtest expected after name', async () => {
+	const repoRoot = await makeRepoRoot()
+	try {
+		const rel = 'src/parts/demo/test/manifest.json'
+		const abs = join(repoRoot, rel)
+		await mkdir(join(abs, '..'), { recursive: true })
+		await writeFile(abs, `${JSON.stringify({
+			id: 'demo',
+			suites: [
+				{
+					name: 'pure',
+					run: ['deno', 'test'],
+					triggers: ['src/parts/demo/**'],
+				},
+				{
+					name: 'frontend',
+					run: ['deno', 'run'],
+					subtests: [
+						{ name: 'smoke', triggers: ['a'] },
+						{ name: 'feed', triggers: ['b'] },
+					],
+				},
+			],
+		}, null, '\t')}\n`, 'utf8')
+
+		const pure = makeSuite('demo', 'pure', { manifestPath: rel })
+		const frontend = makeSuite('demo', 'frontend', {
+			manifestPath: rel,
+			subtests: [
+				{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [] },
+				{ name: 'feed', spec: 'feed.spec.mjs', triggers: [] },
+			],
+		})
+		const result = await updateManifestEstimates({
+			repoRoot,
+			suites: [pure, frontend],
+			state: {
+				suites: {
+					[suiteKey('demo', 'pure')]: makeStateEntry({ baselineDurationMs: 16_347 }),
+					[suiteKey('demo', 'frontend')]: makeStateEntry({
+						baselineDurationMs: 90_400,
+						subtests: {
+							smoke: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 20_200, triggerHash: null },
+							feed: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 30_400, triggerHash: null },
+						},
+					}),
+				},
+			},
+		})
+		assertEquals(result, { filesChanged: 1, suitesUpdated: 2, skipped: 0 })
+
+		const written = JSON.parse(await readFile(abs, 'utf8'))
+		assertEquals(Object.keys(written.suites[0]), ['name', 'expected', 'run', 'triggers'])
+		assertEquals(written.suites[0].expected, '16s')
+		assertEquals(written.suites[1].expected, '1m30s')
+		assertEquals(written.suites[1].subtests[0].expected, '20s')
+		assertEquals(written.suites[1].subtests[1].expected, '30s')
+		assertEquals(Object.keys(written.suites[1].subtests[0])[1], 'expected')
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
+})
+
+Deno.test('updateManifestEstimates skips suites without baseline and leaves file when nothing changes', async () => {
+	const repoRoot = await makeRepoRoot()
+	try {
+		const rel = 'src/parts/demo/test/manifest.json'
+		const abs = join(repoRoot, rel)
+		await mkdir(join(abs, '..'), { recursive: true })
+		const original = `${JSON.stringify({
+			id: 'demo',
+			suites: [{ name: 'pure', expected: '16s', run: ['deno'] }],
+		}, null, '\t')}\n`
+		await writeFile(abs, original, 'utf8')
+
+		const suite = makeSuite('demo', 'pure', { manifestPath: rel })
+		const noBaseline = await updateManifestEstimates({
+			repoRoot,
+			suites: [suite],
+			state: { suites: {} },
+		})
+		assertEquals(noBaseline, { filesChanged: 0, suitesUpdated: 0, skipped: 1 })
+		assertEquals(await readFile(abs, 'utf8'), original)
+
+		const alreadyFresh = await updateManifestEstimates({
+			repoRoot,
+			suites: [suite],
+			state: {
+				suites: {
+					[suiteKey('demo', 'pure')]: makeStateEntry({ baselineDurationMs: 16_200 }),
+				},
+			},
+		})
+		assertEquals(alreadyFresh, { filesChanged: 0, suitesUpdated: 0, skipped: 1 })
+		assertEquals(await readFile(abs, 'utf8'), original)
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
+})

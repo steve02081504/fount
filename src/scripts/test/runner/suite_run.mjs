@@ -14,6 +14,7 @@ import {
 } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { suiteUsesSerialRunner } from '../core/resources.mjs'
+import { moduleCheckTicketEnv, withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
 
 import { runCommand } from './run_command.mjs'
 
@@ -41,6 +42,7 @@ export function applyTestHeapCapToDenoRun(command) {
  * @property {string[]} [subtests] FOUNT_TEST_SUBTESTS：子测试名
  * @property {string[]} [onlyFiles] FOUNT_TEST_ONLY：范围过滤（少用）
  * @property {string[]} [triggeredFiles] 本波次命中 trigger 的变更路径（写入临时文件后经 env 传路径）
+ * @property {string} [moduleCheckTicket] 模组检查租约
  */
 
 /**
@@ -54,7 +56,7 @@ export function applyTestHeapCapToDenoRun(command) {
  * @returns {{ command: string[], env: Record<string, string> }} 命令与环境
  */
 export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, triggeredFilesPath, globalBudget) {
-	const { firstFiles, subtests, onlyFiles } = options ?? {}
+	const { firstFiles, subtests, onlyFiles, moduleCheckTicket } = options ?? {}
 	const env = {
 		FOUNT_TEST: '1',
 		FOUNT_TEST_KEEP_GOING: '1',
@@ -66,10 +68,14 @@ export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, tr
 		FOUNT_TEST_SUBTESTS: subtests?.length ? subtests.join('\n') : '',
 		FOUNT_TEST_TRIGGERED_FILES: triggeredFilesPath || '',
 		RUST_BACKTRACE: 'full',
+		...moduleCheckTicketEnv(moduleCheckTicket),
 	}
 	if (suiteUsesSerialRunner(suite) && globalBudget)
 		applyBudgetToEnv(env, globalBudget)
-	return { command: applyTestHeapCapToDenoRun([...suite.run]), env }
+	return {
+		command: withDenoModuleCheckPreload(applyTestHeapCapToDenoRun([...suite.run]), moduleCheckTicket),
+		env,
+	}
 }
 
 /**
@@ -149,6 +155,8 @@ async function runSuiteOnce(suite, options, globalBudget, stream, watchdog) {
 			label: watchdog.label,
 			baselineDurationMs: watchdog.baselineDurationMs,
 			signal: watchdog.signal,
+			onStdout: watchdog.onStdout,
+			onStderr: watchdog.onStderr,
 		})
 		const timings = await readTimingsOutFile(timingsOut)
 		return {
@@ -185,6 +193,8 @@ export const MAX_SLEEP_INTERRUPT_ATTEMPTS = 5
  * @param {string} [watchdog.label] suite 标签
  * @param {number} [watchdog.baselineDurationMs] 基线耗时
  * @param {AbortSignal} [watchdog.signal] 外部取消
+ * @param {(chunk: string) => void} [watchdog.onStdout] stdout 回调
+ * @param {(chunk: string) => void} [watchdog.onStderr] stderr 回调
  * @returns {Promise<SuiteRunResult>} 运行结果
  */
 export async function runSuite(suite, options, globalBudget, stream = false, watchdog = {}) {
