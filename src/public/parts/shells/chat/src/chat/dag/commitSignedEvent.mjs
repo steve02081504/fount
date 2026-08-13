@@ -52,7 +52,8 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opti
 
 	let publishLeaveBeforeRebuild = false
 	const committed = await withGroupWriteLock(username, groupId, async () => {
-		wirePayload = await wirePayload?.() || wirePayload
+		if (wirePayload instanceof Function) wirePayload = wirePayload()
+		wirePayload = await wirePayload
 		// 退群联邦出站须在 broadcastAndPersist 之前完成：完整 checkpoint 重建会 maybePurgeLocalReplicaIfLeft
 		// 删掉 events.jsonl 并 teardown slot，晚于 rebuild 的 publish 读不到 leave 帧。
 		publishLeaveBeforeRebuild = options.publishFederation && wirePayload.type === 'member_leave'

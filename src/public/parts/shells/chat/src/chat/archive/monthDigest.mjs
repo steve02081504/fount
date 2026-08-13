@@ -390,12 +390,13 @@ export async function pickArchiveMonthByReputation(candidates, manifest, channel
 	const expectedTargetCount = Math.max(0, Math.floor(Number(options.expectedTargetCount) || 0))
 	const completeResponses = candidates.filter(row => row.complete).length
 	const allTargetsResponded = expectedTargetCount > 0 && completeResponses >= expectedTargetCount
-	// 问过的 peer 都答了就不是「子集独裁」——两节点群里对端有正信誉是常态。
-	const soleHighRepDictator = best.bucket.peers.length === 1 && best.score > 0 && !allTargetsResponded
+	// 仅两节点群：唯一对端答了就不是「子集独裁」。更大群不能单靠 allTargetsResponded 放行。
+	const twoNodeRemoteAnswered = (Number(options.activeMemberCount) || 0) === 2 && allTargetsResponded
+	const soleHighRepDictator = best.bucket.peers.length === 1 && best.score > 0 && !twoNodeRemoteAnswered
 	const quorumOk = !soleHighRepDictator && (
 		best.score > 0
 		|| best.bucket.peers.length >= strictMin
-		|| allTargetsResponded
+		|| twoNodeRemoteAnswered
 	)
 	if (!quorumOk) return { winner: null, digest: '', reason: 'quorum_failed' }
 

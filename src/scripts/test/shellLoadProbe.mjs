@@ -50,31 +50,31 @@ function stripComments(source) {
 
 /**
  * @param {string} text 源文本
- * @param {string} sep 顶层分隔符（单字符）
+ * @param {string} separator 顶层分隔符（单字符）
  * @returns {string[]} 分段
  */
-function splitTopLevel(text, sep) {
+function splitTopLevel(text, separator) {
 	const parts = []
 	let start = 0
 	let depth = 0
 	let quote = ''
-	for (let i = 0; i < text.length; i++) {
-		const ch = text[i]
+	for (let index = 0; index < text.length; index++) {
+		const character = text[index]
 		if (quote) {
-			if (ch === '\\') { i++; continue }
-			if (ch === quote) quote = ''
+			if (character === '\\') { index++; continue }
+			if (character === quote) quote = ''
 			continue
 		}
-		if (ch === '"' || ch === '\'' || ch === '`') {
-			quote = ch
+		if (character === '"' || character === '\'' || character === '`') {
+			quote = character
 			continue
 		}
-		if (ch === '{' || ch === '(' || ch === '[') { depth++; continue }
-		if (ch === '}' || ch === ')' || ch === ']') { depth--; continue }
-		if (depth !== 0 || ch !== sep) continue
-		if (sep === '=' && (text[i + 1] === '=' || text[i + 1] === '>')) continue
-		parts.push(text.slice(start, i))
-		start = i + 1
+		if (character === '{' || character === '(' || character === '[') { depth++; continue }
+		if (character === '}' || character === ')' || character === ']') { depth--; continue }
+		if (depth !== 0 || character !== separator) continue
+		if (separator === '=' && (text[index + 1] === '=' || text[index + 1] === '>')) continue
+		parts.push(text.slice(start, index))
+		start = index + 1
 	}
 	parts.push(text.slice(start))
 	return parts
@@ -122,10 +122,8 @@ export function parseObjectPatternBindings(clause) {
 			if (rest) names.push(rest)
 			continue
 		}
-		const beforeDefault = splitTopLevel(part, '=')[0].trim()
-		const colonParts = splitTopLevel(beforeDefault, ':')
-		const binding = (colonParts.length > 1 ? colonParts.slice(1).join(':') : colonParts[0]).trim()
-		const ident = binding.match(/^[A-Za-z_$][\w$]*/u)?.[0]
+		const colonParts = splitTopLevel(splitTopLevel(part, '=')[0].trim(), ':')
+		const ident = (colonParts.length > 1 ? colonParts.slice(1).join(':') : colonParts[0]).trim().match(/^[A-Za-z_$][\w$]*/u)?.[0]
 		if (ident) names.push(ident)
 	}
 	return names

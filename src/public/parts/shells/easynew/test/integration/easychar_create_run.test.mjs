@@ -33,8 +33,7 @@ function createTestChar(username, charName) {
 
 Deno.test('easynew easychar create runs greeting, prompt, and mock AI reply', async () => {
 	const username = `easy-char-${crypto.randomUUID().slice(0, 8)}`
-	const boot = createEasynewBoot({ username })
-	await boot.ensureServer()
+	await createEasynewBoot({ username }).ensureServer()
 
 	const charName = 'EasyCharTest'
 	assertEquals(await createTestChar(username, charName), charName)
@@ -50,8 +49,7 @@ Deno.test('easynew easychar create runs greeting, prompt, and mock AI reply', as
 
 Deno.test('easynew easychar loadPart SetData binds preferred AI source', async () => {
 	const username = `easy-char-pref-${crypto.randomUUID().slice(0, 8)}`
-	const boot = createEasynewBoot({ username })
-	await boot.ensureServer()
+	await createEasynewBoot({ username }).ensureServer()
 
 	const charName = 'EasyCharPref'
 	assertEquals(await createTestChar(username, charName), charName)
@@ -60,14 +58,12 @@ Deno.test('easynew easychar loadPart SetData binds preferred AI source', async (
 	assertEquals(getAnyPreferredDefaultPart(username, 'serviceSources/AI'), MOCK_AI_NAME)
 	assertEquals((await loadAnyPreferredDefaultPart(username, 'serviceSources/AI'))?.filename, MOCK_AI_NAME)
 
-	const char = await loadPart(username, `chars/${charName}`)
-	assertEquals((await char.interfaces.config.GetData()).AIsource, MOCK_AI_NAME)
+	assertEquals((await (await loadPart(username, `chars/${charName}`)).interfaces.config.GetData()).AIsource, MOCK_AI_NAME)
 })
 
 Deno.test('getAnyPreferredDefaultPart falls back by username when user record is missing', async () => {
 	const registered = `easy-char-reg-${crypto.randomUUID().slice(0, 8)}`
-	const boot = createEasynewBoot({ username: registered })
-	const { dataDir } = await boot.ensureServer()
+	const { dataDir } = await createEasynewBoot({ username: registered }).ensureServer()
 
 	const ghost = `easy-char-ghost-${crypto.randomUUID().slice(0, 8)}`
 	await seedMockAiSource(dataDir, ghost)

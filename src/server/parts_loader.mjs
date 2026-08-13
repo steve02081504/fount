@@ -94,11 +94,11 @@ export function getAllDefaultParts(user, parent) {
  * @returns {string | undefined} 一个随机的子部件名称，如果没有任何可用部件则为 undefined。
  */
 export function getAnyPreferredDefaultPart(user, parent) {
-	if (Object(user) instanceof String) user = getUserByUsername(user)
+	const username = user.username ?? user
 	const defaultPartNames = getAllDefaultParts(user, parent)
 	if (defaultPartNames.length)
 		return defaultPartNames[Math.floor(Math.random() * defaultPartNames.length)]
-	const allPartNames = getPartList(user.username, parent)
+	const allPartNames = getPartList(username, parent)
 	return allPartNames[Math.floor(Math.random() * allPartNames.length)]
 }
 
@@ -109,10 +109,10 @@ export function getAnyPreferredDefaultPart(user, parent) {
  * @returns {Promise<any | undefined>} 一个解析为已加载部件的承诺，如果没有任何可用部件则为 undefined。
  */
 export async function loadAnyPreferredDefaultPart(user, parent) {
-	if (Object(user) instanceof String) user = getUserByUsername(user)
+	const username = user.username ?? user
 	const partname = getAnyPreferredDefaultPart(user, parent)
 	if (!partname) return
-	return loadPart(user.username, parent + '/' + partname, { username: user.username })
+	return loadPart(username, parent + '/' + partname, { username })
 }
 
 /**

@@ -1,7 +1,9 @@
 /**
  * 群联邦同步水位：离线起始 UTC 月、末帧 tipsHash。
  */
+import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
 import { archiveMonthKey } from '../archive/settings.mjs'
 import { safeReadJson } from '../lib/fsSafe.mjs'
@@ -28,9 +30,11 @@ export async function loadGroupSyncState(username, groupId) {
  * @returns {Promise<object>} 写入后的状态
  */
 export async function saveGroupSyncState(username, groupId, patch) {
-	const next = { ...await loadGroupSyncState(username, groupId), ...patch }
-	await writeJsonAtomicSynced(groupSyncStatePath(username, groupId), next)
-	return next
+	return withAsyncMutex(`group-sync:${compositeKey(username, groupId)}`, async () => {
+		const next = { ...await loadGroupSyncState(username, groupId), ...patch }
+		await writeJsonAtomicSynced(groupSyncStatePath(username, groupId), next)
+		return next
+	})
 }
 
 /**
