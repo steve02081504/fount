@@ -172,7 +172,7 @@ function captureStdout(fn) {
 	}
 }
 
-Deno.test('paintSuiteEnd overview prints failed suite output after FAILED', () => {
+Deno.test('paintSuiteEnd overview prints remaining after FAILED without suite output', () => {
 	const output = 'Error: achievements page watch locale\n    at smoke.spec.mjs'
 	let written = ''
 	const { logs } = captureI18n(() => {
@@ -185,7 +185,7 @@ Deno.test('paintSuiteEnd overview prints failed suite output after FAILED', () =
 	})
 	assertEquals(logs[0]?.key, 'fountConsole.test.failed')
 	assertEquals(logs[0]?.params.label, 'shells/achievements:frontend')
-	assertEquals(written.includes(output), true)
+	assertEquals(written.includes(output), false)
 	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
 })
 

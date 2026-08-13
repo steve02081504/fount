@@ -142,6 +142,49 @@ export function aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash) {
 }
 
 /**
+ * 含子测试的 suite 裁决。
+ * @param {SuiteDef} suite suite
+ * @param {SuiteStateEntry | undefined} entry 现状条目
+ * @param {string[]} committedChanged 自 entry.commitHash 的 commit 变更
+ * @param {Map<string, string>} uncommittedHashes 未提交内容 digest 表
+ * @param {Map<string, string[]>} [committedChangedByKey] 含 `key#subtest` 的变更表
+ * @param {string | null} sharedTriggerHash suite 共享 trigger digest
+ * @param {boolean} skipBlock pass-skip 阻塞是否视为通过
+ * @param {boolean} treatPassed 是否按通过处理
+ * @param {boolean} passSkip skip_because 是否 as pass
+ * @returns {Verdict} 裁决
+ */
+function judgeSuiteWithSubtests(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey, sharedTriggerHash, skipBlock, treatPassed, passSkip) {
+	if (treatPassed)
+		return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash, subtestsToRun: [] }
+	const sharedStale = !entry
+		|| (entry.status === 'blocked' && !skipBlock)
+		|| suiteTriggersHit(suite, committedChanged)
+		|| isTriggerHashStale(entry.triggerHash, sharedTriggerHash)
+	/** @type {Record<string, Verdict>} */
+	const subVerdicts = {}
+	const key = suiteKey(suite.manifestId, suite.name)
+	for (const subtest of suite.subtests) {
+		const stChanged = committedChangedByKey?.get(`${key}#${subtest.name}`) ?? committedChanged
+		subVerdicts[subtest.name] = judgeSubtest(
+			suite,
+			subtest,
+			entry?.subtests?.[subtest.name],
+			sharedStale,
+			stChanged,
+			uncommittedHashes,
+		)
+	}
+	const aggregate = aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash)
+	// suite 级失败（如 watchdog 终止）无法归因到任何子测试时，聚合会得出 green/noisy
+	// 而掩盖失败；此时整套判 red（subtestsToRun 留空 → plan 全量重跑）。
+	if (aggregate.fresh && entry.status === 'failed' && !passSkip
+		&& (aggregate.kind === 'green' || aggregate.kind === 'noisy'))
+		return { ...aggregate, kind: 'red', subtestsToRun: [] }
+	return aggregate
+}
+
+/**
  * 对单 suite 裁决（含子测试聚合）。
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
@@ -152,44 +195,27 @@ export function aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash) {
  * @param {Map<string, import('./skip_because.mjs').IssueClosedState>} [issueStates] 已探测的 issue 状态
  * @returns {Verdict} 裁决
  */
-export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey, byKey, issueStates) {
+export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, committedChangedByKey, byKey = new Map(), issueStates) {
 	const sharedTriggerHash = digestFileHashes(
 		uncommittedHashes,
 		collectTriggerEvidence(suite, [...uncommittedHashes.keys()]).matchedPaths,
 	)
 	const passSkip = skipBecauseAsForSuite(suite) === 'pass'
-	const skipBlock = isPassSkipBlock(entry, byKey ?? new Map(), issueStates)
+	const skipBlock = isPassSkipBlock(entry, byKey, issueStates)
 	const treatPassed = passSkip || skipBlock
 
-	if (suite.subtests?.length) {
-		if (treatPassed)
-			return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash, subtestsToRun: [] }
-		const sharedStale = !entry
-			|| (entry.status === 'blocked' && !skipBlock)
-			|| suiteTriggersHit(suite, committedChanged)
-			|| isTriggerHashStale(entry.triggerHash, sharedTriggerHash)
-		/** @type {Record<string, Verdict>} */
-		const subVerdicts = {}
-		const key = suiteKey(suite.manifestId, suite.name)
-		for (const subtest of suite.subtests) {
-			const stChanged = committedChangedByKey?.get(`${key}#${subtest.name}`) ?? committedChanged
-			subVerdicts[subtest.name] = judgeSubtest(
-				suite,
-				subtest,
-				entry?.subtests?.[subtest.name],
-				sharedStale,
-				stChanged,
-				uncommittedHashes,
-			)
-		}
-		const aggregate = aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash)
-		// suite 级失败（如 watchdog 终止）无法归因到任何子测试时，聚合会得出 green/noisy
-		// 而掩盖失败；此时整套判 red（subtestsToRun 留空 → plan 全量重跑）。
-		if (aggregate.fresh && entry.status === 'failed' && !passSkip
-			&& (aggregate.kind === 'green' || aggregate.kind === 'noisy'))
-			return { ...aggregate, kind: 'red', subtestsToRun: [] }
-		return aggregate
-	}
+	if (suite.subtests?.length)
+		return judgeSuiteWithSubtests(
+			suite,
+			entry,
+			committedChanged,
+			uncommittedHashes,
+			committedChangedByKey,
+			sharedTriggerHash,
+			skipBlock,
+			treatPassed,
+			passSkip,
+		)
 
 	const fresh = isContentFresh(suite, entry, committedChanged, sharedTriggerHash, { ignoreBlocked: skipBlock })
 	if (!entry || (entry.status === 'blocked' && !skipBlock) || !fresh)

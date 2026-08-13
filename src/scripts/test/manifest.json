@@ -127,8 +127,7 @@
 				"src/scripts/test/core/plan.mjs",
 				"src/scripts/test/core/selector.mjs",
 				"src/scripts/test/core/protocol.mjs",
-				"src/scripts/test/core/resources.mjs",
-				"src/scripts/test/runner/index.mjs"
+				"src/scripts/test/core/resources.mjs"
 			]
 		},
 		{
@@ -319,8 +318,7 @@
 				"src/scripts/test/core/run_timing.mjs",
 				"src/scripts/test/core/format_duration.mjs",
 				"src/scripts/test/core/estimate.mjs",
-				"src/scripts/test/runner/report.mjs",
-				"src/scripts/test/runner/index.mjs"
+				"src/scripts/test/runner/report.mjs"
 			]
 		},
 		{
@@ -362,6 +360,7 @@
 			],
 			"triggers": [
 				"src/scripts/test/selftest/update_estimates.test.mjs",
+				"src/scripts/test/selftest/fixtures.mjs",
 				"src/scripts/test/core/update_estimates.mjs",
 				"src/scripts/test/core/expected.mjs",
 				"src/scripts/test/core/state.mjs"
@@ -382,8 +381,7 @@
 			"triggers": [
 				"src/scripts/test/selftest/trigger_audit.test.mjs",
 				"src/scripts/test/core/trigger_audit.mjs",
-				"src/scripts/test/runner/report.mjs",
-				"src/scripts/test/runner/index.mjs"
+				"src/scripts/test/runner/report.mjs"
 			]
 		},
 		{
@@ -549,10 +547,11 @@
 				"./src/scripts/test/selftest/nested_git.test.mjs",
 				"./src/scripts/test/selftest/issue_cache.test.mjs",
 				"./src/scripts/test/selftest/kernel_lifecycle.test.mjs",
-				"./src/scripts/test/selftest/display.test.mjs"
+				"./src/scripts/test/selftest/display.test.mjs",
+				"./src/scripts/test/selftest/jobs.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs}",
+				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,jobs.test.mjs,fixtures.mjs}",
 				"src/scripts/test/core/skip_because.mjs",
 				"src/scripts/test/module_check_ready.mjs",
 				"src/scripts/test/env.mjs",
@@ -571,6 +570,10 @@
 				"src/scripts/test/core/serial_files.mjs",
 				"src/scripts/test/core/github_issue.mjs",
 				"src/scripts/test/core/changed.mjs",
+				"src/scripts/test/core/paths.mjs",
+				"src/scripts/test/core/repo_root.mjs",
+				"src/scripts/test/core/selector.mjs",
+				"src/scripts/i18n/bare.mjs",
 				"src/scripts/test/runner/report.mjs",
 				"src/scripts/test/runner/scheduler.mjs",
 				"src/scripts/test/runner/continue_reason.mjs"

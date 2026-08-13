@@ -59,52 +59,52 @@ export function formatRemainingLabel(msg) {
 
 /**
  * 打印 accepted 的错误分支。
- * @param {object} msg 内核 accepted 载荷
+ * @param {object} message 内核 accepted 载荷
  * @returns {boolean} 是否已处理
  */
-function paintAcceptedError(msg) {
-	if (msg.error === 'deadTriggers') {
-		for (const dead of msg.deadTriggers ?? [])
+function paintAcceptedError(message) {
+	if (message.error === 'deadTriggers') {
+		for (const deadTrigger of message.deadTriggers ?? [])
 			console.errorI18n('fountConsole.test.triggerNoMatch', {
-				scope: dead.subtestName
-					? `${dead.manifestId}:${dead.suiteName}:${dead.subtestName}`
-					: `${dead.manifestId}:${dead.suiteName}`,
-				pattern: dead.pattern,
+				scope: deadTrigger.subtestName
+					? `${deadTrigger.manifestId}:${deadTrigger.suiteName}:${deadTrigger.subtestName}`
+					: `${deadTrigger.manifestId}:${deadTrigger.suiteName}`,
+				pattern: deadTrigger.pattern,
 			})
-		console.errorI18n('fountConsole.test.triggerNoMatchSummary', { count: (msg.deadTriggers ?? []).length })
+		console.errorI18n('fountConsole.test.triggerNoMatchSummary', { count: (message.deadTriggers ?? []).length })
 		return true
 	}
-	if (msg.error === 'unknownManifest') {
-		console.errorI18n('fountConsole.test.unknown.manifestId', { ids: (msg.unmatched ?? []).join(', ') })
-		console.errorI18n('fountConsole.test.available', { ids: (msg.knownIds ?? []).join(', ') })
+	if (message.error === 'unknownManifest') {
+		console.errorI18n('fountConsole.test.unknown.manifestId', { ids: (message.unmatched ?? []).join(', ') })
+		console.errorI18n('fountConsole.test.available', { ids: (message.knownIds ?? []).join(', ') })
 		return true
 	}
-	if (msg.error === 'unknownSuite') {
-		console.errorI18n('fountConsole.test.unknown.suiteSelector', { ids: (msg.unknownSuites ?? []).join(', ') })
-		console.errorI18n('fountConsole.test.available', { ids: (msg.available ?? []).join(', ') })
+	if (message.error === 'unknownSuite') {
+		console.errorI18n('fountConsole.test.unknown.suiteSelector', { ids: (message.unknownSuites ?? []).join(', ') })
+		console.errorI18n('fountConsole.test.available', { ids: (message.available ?? []).join(', ') })
 		return true
 	}
-	if (msg.error === 'subtestFilter') {
-		for (const err of msg.filterErrors ?? []) {
-			const names = (err.missing ?? []).join(', ')
-			if (err.kind === 'subtest')
-				console.errorI18n('fountConsole.test.unknown.subtestFilter', { suite: err.suiteId, names })
-			else if (err.kind === 'file')
-				console.errorI18n('fountConsole.test.unknown.fileFilter', { suite: err.suiteId, names })
+	if (message.error === 'subtestFilter') {
+		for (const filterError of message.filterErrors ?? []) {
+			const names = (filterError.missing ?? []).join(', ')
+			if (filterError.kind === 'subtest')
+				console.errorI18n('fountConsole.test.unknown.subtestFilter', { suite: filterError.suiteId, names })
+			else if (filterError.kind === 'file')
+				console.errorI18n('fountConsole.test.unknown.fileFilter', { suite: filterError.suiteId, names })
 			else
-				console.errorI18n('fountConsole.test.unsupportedSubtestFilter', { suite: err.suiteId, names })
+				console.errorI18n('fountConsole.test.unsupportedSubtestFilter', { suite: filterError.suiteId, names })
 		}
 		return true
 	}
-	if (msg.error === 'noMatchingSuites') {
+	if (message.error === 'noMatchingSuites') {
 		console.logI18n('fountConsole.test.noMatchingSuites')
-		console.errorI18n('fountConsole.test.available', { ids: (msg.available ?? []).join(', ') })
+		console.errorI18n('fountConsole.test.available', { ids: (message.available ?? []).join(', ') })
 		return true
 	}
-	if (msg.error === 'noisyOnly') {
+	if (message.error === 'noisyOnly') {
 		console.logI18n('fountConsole.test.noisyOnlyRemain', {
-			count: (msg.noisyKeys ?? []).length,
-			suites: (msg.noisyKeys ?? []).join(', '),
+			count: (message.noisyKeys ?? []).length,
+			suites: (message.noisyKeys ?? []).join(', '),
 		})
 		return true
 	}
@@ -112,109 +112,134 @@ function paintAcceptedError(msg) {
 }
 
 /**
- * 打印空波次 / 选择摘要 / 续跑原因 / ETA。
- * @param {object} msg 内核 accepted 载荷
+ * 打印选择模式摘要。
+ * @param {object} message 内核 accepted 载荷
  * @returns {void}
  */
-function paintAcceptedWave(msg) {
-	if (msg.empty || (msg.empty == null && !msg.error && !msg.runCount && !msg.selectionMode && (msg.code ?? 0) === 0)) {
-		console.logI18n('fountConsole.test.nothingToContinue')
-		return
-	}
-	if (msg.selectionMode === 'continue')
+function paintSelectionSummary(message) {
+	if (message.selectionMode === 'continue')
 		console.logI18n('fountConsole.test.continueDefault', {
-			count: msg.goalCount,
-			imperfect: msg.imperfectCount ?? 0,
-			outdated: msg.outdatedCount ?? 0,
+			count: message.goalCount,
+			imperfect: message.imperfectCount ?? 0,
+			outdated: message.outdatedCount ?? 0,
 		})
-	else if (msg.selectionMode === 'imperfect')
-		console.logI18n('fountConsole.test.continueImperfect', { count: msg.goalCount })
-	else if (msg.selectionMode === 'outdated')
-		console.logI18n('fountConsole.test.outdatedSelected', { count: msg.goalCount })
-	if (['imperfect', 'outdated', 'continue', 'explicit', 'all', 'skip_because'].includes(msg.selectionMode)) {
-		console.logI18n('fountConsole.test.selectedSuites', { selected: msg.goalCount, total: msg.total })
+	else if (message.selectionMode === 'imperfect')
+		console.logI18n('fountConsole.test.continueImperfect', { count: message.goalCount })
+	else if (message.selectionMode === 'outdated')
+		console.logI18n('fountConsole.test.outdatedSelected', { count: message.goalCount })
+	if (['imperfect', 'outdated', 'continue', 'explicit', 'all', 'skip_because'].includes(message.selectionMode)) {
+		console.logI18n('fountConsole.test.selectedSuites', { selected: message.goalCount, total: message.total })
 		console.logI18n('fountConsole.test.planSlotSummary', {
-			run: msg.runCount,
-			reuse: msg.reuseCount,
-			blocked: msg.blockedCount,
-			skipped: msg.skippedCount ?? 0,
+			run: message.runCount,
+			reuse: message.reuseCount,
+			blocked: message.blockedCount,
+			skipped: message.skippedCount ?? 0,
 		})
 	}
-	for (const row of msg.continueReasons ?? [])
+}
+
+/**
+ * 打印续跑原因。
+ * @param {object} message 内核 accepted 载荷
+ * @returns {void}
+ */
+function paintContinueReasons(message) {
+	for (const row of message.continueReasons ?? [])
 		console.logI18n('fountConsole.test.display.reason', {
 			label: row.key,
 			reason: formatContinueReasonLabel(row),
 		})
-	if (msg.runCount || msg.unknownCount || msg.remainingMs != null)
-		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(msg) })
-	if (!msg.runCount && (msg.reuseCount || msg.blockedCount || msg.skippedCount))
+}
+
+/**
+ * 打印剩余时间 / 无真跑提示。
+ * @param {object} message 内核 accepted 载荷
+ * @returns {void}
+ */
+function paintWaveEstimate(message) {
+	if (message.runCount || message.unknownCount || message.remainingMs != null)
+		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(message) })
+	if (!message.runCount && (message.reuseCount || message.blockedCount || message.skippedCount))
 		console.logI18n('fountConsole.test.noRealRunPlanned', {
-			reused: msg.reuseCount,
-			blocked: msg.blockedCount,
-			skipped: msg.skippedCount ?? 0,
+			reused: message.reuseCount,
+			blocked: message.blockedCount,
+			skipped: message.skippedCount ?? 0,
 		})
+}
+
+/**
+ * 打印空波次 / 选择摘要 / 续跑原因 / ETA。
+ * @param {object} message 内核 accepted 载荷
+ * @returns {void}
+ */
+function paintAcceptedWave(message) {
+	if (message.empty || (message.empty == null && !message.error && !message.runCount && !message.selectionMode && (message.code ?? 0) === 0)) {
+		console.logI18n('fountConsole.test.nothingToContinue')
+		return
+	}
+	paintSelectionSummary(message)
+	paintContinueReasons(message)
+	paintWaveEstimate(message)
 }
 
 /**
  * 打印空波次 / 选择错误 / 波次头。
- * @param {object} msg 内核 accepted 载荷
+ * @param {object} message 内核 accepted 载荷
  * @returns {void}
  */
-export function paintAccepted(msg) {
-	if (paintAcceptedError(msg)) return
-	paintAcceptedWave(msg)
+export function paintAccepted(message) {
+	if (paintAcceptedError(message)) return
+	paintAcceptedWave(message)
 }
 
 /**
- * 打印 suite-end（含 overview 下的失败/噪声输出）。
- * @param {object} msg 内核 suite-end 载荷
+ * 打印 suite-end（状态与剩余时间；失败输出延到 job-done）。
+ * @param {object} message 内核 suite-end 载荷
  * @param {object} [options] 选项
  * @param {boolean} [options.stream=false] 是否已实时打过子进程输出
  * @returns {void}
  */
-export function paintSuiteEnd(msg, { stream = false } = {}) {
-	if (msg.blockedBy?.length)
-		console.logI18n('fountConsole.test.blocked', { label: msg.key, deps: msg.blockedBy.join(', ') })
-	else if (msg.skippedBy?.length)
-		console.logI18n('fountConsole.test.skippedTree', { label: msg.key, deps: msg.skippedBy.join(', ') })
-	else if (msg.reused) {
-		const { manifestId, name } = splitSuiteKey(msg.key)
-		console.logI18n('fountConsole.test.reusedSuite', { manifestId, name, status: msg.status })
+export function paintSuiteEnd(message, { stream = false } = {}) {
+	if (message.blockedBy?.length)
+		console.logI18n('fountConsole.test.blocked', { label: message.key, deps: message.blockedBy.join(', ') })
+	else if (message.skippedBy?.length)
+		console.logI18n('fountConsole.test.skippedTree', { label: message.key, deps: message.skippedBy.join(', ') })
+	else if (message.reused) {
+		const { manifestId, name } = splitSuiteKey(message.key)
+		console.logI18n('fountConsole.test.reusedSuite', { manifestId, name, status: message.status })
 	}
-	else if (msg.missedReady)
-		console.logI18n('fountConsole.test.moduleCheck.missedReady', { label: msg.key })
-	else if (msg.skipBecause?.length)
-		console.logI18n(msg.passed ? 'fountConsole.test.skipBecause.pass' : 'fountConsole.test.skipBecause.fail', {
-			label: msg.key,
-			url: (msg.passed ? msg.skipBecause : msg.skipBecauseClosed ?? msg.skipBecause).join(' '),
+	else if (message.missedReady)
+		console.logI18n('fountConsole.test.moduleCheck.missedReady', { label: message.key })
+	else if (message.skipBecause?.length)
+		console.logI18n(message.passed ? 'fountConsole.test.skipBecause.pass' : 'fountConsole.test.skipBecause.fail', {
+			label: message.key,
+			url: (message.passed ? message.skipBecause : message.skipBecauseClosed ?? message.skipBecause).join(' '),
 		})
-	else if (!msg.passed)
-		console.logI18n('fountConsole.test.failed', { label: msg.key })
-	else if (msg.noiseHits?.length)
-		console.logI18n('fountConsole.test.passedWithNoise', { label: msg.key })
+	else if (!message.passed)
+		console.logI18n('fountConsole.test.failed', { label: message.key })
+	else if (message.noiseHits?.length)
+		console.logI18n('fountConsole.test.passedWithNoise', { label: message.key })
 	else
-		console.logI18n('fountConsole.test.passed', { label: msg.key })
-	if (!stream && suiteEndHasFailureOutput(msg))
-		writeFailureOutput(msg.output)
-	if (!stream && !msg.reused && !msg.blockedBy?.length && !msg.skippedBy?.length)
-		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(msg) })
+		console.logI18n('fountConsole.test.passed', { label: message.key })
+	if (!stream && !message.reused && !message.blockedBy?.length && !message.skippedBy?.length)
+		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(message) })
 }
 
 /**
  * 打印 job 收尾（报告路径、全复用提示、失败日志回放）。
- * @param {object} msg 内核 job-done 载荷
+ * @param {object} message 内核 job-done 载荷
  * @returns {void}
  */
-export function paintJobDone(msg) {
-	if (msg.allReusedHint)
+export function paintJobDone(message) {
+	if (message.allReusedHint)
 		console.logI18n('fountConsole.test.allReusedHint')
-	if (msg.nothingToContinue)
+	if (message.nothingToContinue)
 		console.logI18n('fountConsole.test.nothingToContinue')
-	if (msg.reportPath) {
-		console.logI18n('fountConsole.test.reportPathFinal', { path: msg.reportPath })
+	if (message.reportPath) {
+		console.logI18n('fountConsole.test.reportPathFinal', { path: message.reportPath })
 		console.logI18n('fountConsole.test.statePathFinal', { path: 'data/test/state/main.md' })
 	}
-	for (const row of msg.failureLogs ?? []) {
+	for (const row of message.failureLogs ?? []) {
 		console.logI18n('fountConsole.test.display.failureLog', { label: row.key })
 		writeFailureOutput(row.output)
 	}

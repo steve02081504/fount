@@ -193,6 +193,28 @@ export function goalImperfectKeys(verdicts, state, allSuites = [], issueStates) 
 }
 
 /**
+ * 由 imperfect 根键展开一层下游，并剔除 skip_tree。
+ * @param {Set<string>} imperfectKeys imperfect 根
+ * @param {Map<string, Verdict>} verdicts 裁决表
+ * @param {TestState} state 现状库
+ * @param {SuiteDef[]} allSuites 全部 suite
+ * @param {Map<string, import('../core/skip_because.mjs').IssueClosedState>} [issueStates] 已探测的 issue 状态
+ * @returns {{ byKey: Map<string, SuiteDef>, expandRoots: Set<string>, skipTree: Set<string>, goalKeys: Set<string> }} 展开结果
+ */
+function expandImperfectGoalKeys(imperfectKeys, verdicts, state, allSuites, issueStates) {
+	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
+	const expandRoots = new Set([...imperfectKeys].filter(key =>
+		isHardImperfectRoot(verdicts.get(key), state.suites[key], byKey.get(key), byKey, issueStates)))
+	const skipTree = skipTreeDescendantKeys(allSuites)
+	return {
+		byKey,
+		expandRoots,
+		skipTree,
+		goalKeys: new Set([...imperfectKeys, ...expandImperfectDependents(expandRoots, allSuites)].filter(key => !skipTree.has(key))),
+	}
+}
+
+/**
  * imperfect 目标 + hard-fail 根的一层下游（noisy 不拖下游）。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
@@ -202,11 +224,7 @@ export function goalImperfectKeys(verdicts, state, allSuites = [], issueStates) 
  */
 export function expandImperfectGoals(verdicts, state, allSuites, issueStates) {
 	const imperfectKeys = goalImperfectKeys(verdicts, state, allSuites, issueStates)
-	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
-	const expandRoots = new Set([...imperfectKeys].filter(key =>
-		isHardImperfectRoot(verdicts.get(key), state.suites[key], byKey.get(key), byKey, issueStates)))
-	const skipTree = skipTreeDescendantKeys(allSuites)
-	return new Set([...imperfectKeys, ...expandImperfectDependents(expandRoots, allSuites)].filter(key => !skipTree.has(key)))
+	return expandImperfectGoalKeys(imperfectKeys, verdicts, state, allSuites, issueStates).goalKeys
 }
 
 /**
@@ -286,15 +304,7 @@ export function selectImperfectWave({
 }) {
 	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
 	const imperfectKeys = new Set([...goalImperfectKeys(verdicts, state, allSuites, issueStates)].filter(k => scopeKeys.has(k)))
-	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
-	// hard-fail 拖一层下游（可超 scope）；noisy 只重跑自身
-	const expandRoots = new Set([...imperfectKeys].filter(key =>
-		isHardImperfectRoot(verdicts.get(key), state.suites[key], byKey.get(key), byKey, issueStates)))
-	const skipTree = skipTreeDescendantKeys(allSuites)
-	const goalKeys = new Set([
-		...imperfectKeys,
-		...expandImperfectDependents(expandRoots, allSuites),
-	].filter(key => !skipTree.has(key)))
+	const { goalKeys } = expandImperfectGoalKeys(imperfectKeys, verdicts, state, allSuites, issueStates)
 	if (!goalKeys.size)
 		return { action: 'exit', code: 0, mode: 'imperfect' }
 

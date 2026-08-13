@@ -28,7 +28,8 @@ import { attachGitRoots, snapshotNestedGit, writeNestedGitState } from './nested
 
 
 /**
- * @typedef {import('../runner/index.mjs').GroupInput} GroupInput
+ * CLI 分组输入（manifest / suite / subtest 选择器）。
+ * @typedef {{ manifestSelectors: string[], suiteSelectors: string[], subtestSelectors?: Record<string, string[]> }} GroupInput
  */
 
 /**
@@ -357,10 +358,10 @@ export function jobCommand(spec = {}) {
 		for (const group of spec.groups) {
 			const manifest = group.manifestSelectors?.[0]
 			if (group.suiteSelectors?.length)
-				parts.push(`${manifest}:${group.suiteSelectors.map(suite => {
+				for (const suite of group.suiteSelectors) {
 					const subs = group.subtestSelectors?.[suite]
-					return subs?.length ? `${suite}:${subs.join(',')}` : suite
-				}).join(',')}`)
+					parts.push(subs?.length ? `${manifest}:${suite}:${subs.join(',')}` : `${manifest}:${suite}`)
+				}
 			else if (manifest)
 				parts.push(manifest)
 		}

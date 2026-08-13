@@ -102,8 +102,6 @@ export class TestKernel {
 		this.seenViewer = false
 		this.catalog = null
 		this.state = null
-		/** @type {RunReportWriter | null} */
-		this.report = null
 		this.#wake = Promise.withResolvers()
 		this.#loop = null
 		this.#watcher = null
@@ -326,7 +324,7 @@ export class TestKernel {
 				slot,
 			})
 			job.pending.add(item.id)
-			await this.#reportEnsure(slot.suite, reason)
+			await this.#reportEnsure(job, slot.suite, reason)
 		}
 		for (const slot of wave.plan.slots) 
 			if (slot.action === 'reuse') {
@@ -336,7 +334,7 @@ export class TestKernel {
 				refreshEntryFingerprint(this.state, slot.key, fp.commitHash, fp.uncommittedHash, hashes.triggerHash, hashes.subtestTriggerHashes)
 				await writeState(this.repoRoot, this.state)
 				this.sessionPassed.set(slot.key, prev?.status !== 'failed')
-				await this.#reportResult(slot.suite, this.state.suites[slot.key], { reused: true })
+				await this.#reportResult(job, slot.suite, this.state.suites[slot.key], { reused: true })
 				this.viewers.broadcast({
 					type: 'suite-end',
 					key: slot.key,
@@ -348,7 +346,7 @@ export class TestKernel {
 				})
 			}
 			else if (slot.action === 'blocked') {
-				await this.#recordBlocked(slot, wave.fingerprints)
+				await this.#recordBlocked(job, slot, wave.fingerprints)
 				job.exitCode = 1
 				this.viewers.broadcast({
 					type: 'suite-end',
@@ -362,7 +360,7 @@ export class TestKernel {
 			else if (slot.action === 'skipped')
 				await this.#recordSkipped(slot, job.id)
 		
-		await this.#flushReportEstimate()
+		await this.#flushReportEstimate(job)
 		if (!job.pending.size)
 			await this.#finishJob(job)
 	}
@@ -389,11 +387,12 @@ export class TestKernel {
 	}
 
 	/**
+	 * @param {object} job job
 	 * @param {object} slot 槽
 	 * @param {object} fingerprints 指纹
 	 * @returns {Promise<void>}
 	 */
-	async #recordBlocked(slot, fingerprints) {
+	async #recordBlocked(job, slot, fingerprints) {
 		const fp = this.#fingerprintFor(slot.suite, fingerprints)
 		await upsertSuiteRun({
 			repoRoot: this.repoRoot,
@@ -406,7 +405,7 @@ export class TestKernel {
 		})
 		await writeState(this.repoRoot, this.state)
 		this.sessionPassed.set(slot.key, false)
-		await this.#reportResult(slot.suite, this.state.suites[slot.key])
+		await this.#reportResult(job, slot.suite, this.state.suites[slot.key])
 	}
 
 	/**
@@ -419,7 +418,7 @@ export class TestKernel {
 		const skippedBy = slot.skippedBy ?? []
 		this.sessionSkipped.add(slot.key)
 		this.sessionPassed.set(slot.key, true)
-		await this.#reportResult(slot.suite, this.state.suites[slot.key] ?? {
+		await this.#reportResult(this.jobs.get(jobId), slot.suite, this.state.suites[slot.key] ?? {
 			status: 'passed',
 			durationMs: 0,
 			failedFiles: [],
@@ -509,12 +508,13 @@ export class TestKernel {
 	}
 
 	/**
+	 * @param {object} [job] job
 	 * @returns {Promise<void>}
 	 */
-	async #flushReportEstimate() {
-		if (!this.report) return
+	async #flushReportEstimate(job) {
+		if (!job?.report) return
 		const tasks = this.#estimateTasks()
-		await this.report.setEstimatePlan(
+		await job.report.setEstimatePlan(
 			new Map(tasks.map(task => [task.key, task])),
 			{ memBudgetBytes: this.globalBudget.memBytes, cpuBudgetPct: CPU_BUDGET_PCT, speculative: false },
 		)
@@ -610,7 +610,7 @@ export class TestKernel {
 			const suite = this.catalog.byKey.get(item.key)
 			const job = item.jobId ? this.jobs.get(item.jobId) : undefined
 			if (suite)
-				await this.#recordBlocked({ suite, key: item.key, blockedBy }, job?.fingerprints ?? { commitHash: null, uncommittedHash: null })
+				await this.#recordBlocked(job, { suite, key: item.key, blockedBy }, job?.fingerprints ?? { commitHash: null, uncommittedHash: null })
 			else
 				this.sessionPassed.set(item.key, false)
 			if (job) job.exitCode = 1
@@ -676,6 +676,15 @@ export class TestKernel {
 			await this.#discardBlocked()
 			await this.#discardSkipped()
 			await this.#admitReady()
+			// `#admitReady` is async: even a sync body yields once. A job enqueued in
+			// that gap would otherwise miss this tick and sleep until an unrelated wake.
+			if (
+				this.queues.peekReady(item => this.#isHardReady(item))
+				&& this.gate.usedMemBytes === 0
+				&& this.gate.usedCpuPct === 0
+				&& !this.gate.exclusiveRunning
+			)
+				continue
 			if (this.queues.pendingEmpty() && !this.running.size) {
 				this.issueCache.pruneOlderThan()
 				if (this.jobs.size === 0)
@@ -809,7 +818,7 @@ export class TestKernel {
 			})
 			await writeState(this.repoRoot, this.state)
 			this.sessionPassed.set(key, result.passed)
-			await this.#reportResult(suite, this.state.suites[key])
+			await this.#reportResult(job, suite, this.state.suites[key])
 			if (!result.passed && job) job.exitCode = 1
 			endEvent = this.#withSuiteLog({
 				type: 'suite-end',
@@ -907,7 +916,7 @@ export class TestKernel {
 			if (job) job.exitCode = 1
 		}
 		this.sessionPassed.set(item.key, passed)
-		await this.#reportResult(suite, this.state.suites[item.key] ?? {
+		await this.#reportResult(job, suite, this.state.suites[item.key] ?? {
 			status: passed ? 'passed' : 'failed',
 			durationMs: 0,
 			failedFiles: [],
@@ -951,7 +960,7 @@ export class TestKernel {
 		await writeState(this.repoRoot, this.state)
 		if (job) job.exitCode = 1
 		this.sessionPassed.set(item.key, false)
-		await this.#reportResult(suite, this.state.suites[item.key])
+		await this.#reportResult(job, suite, this.state.suites[item.key])
 		return this.#withSuiteLog({
 			type: 'suite-end',
 			key: item.key,
@@ -979,7 +988,9 @@ export class TestKernel {
 	 * @returns {Promise<void>}
 	 */
 	async #finishJob(job) {
-		const finished = await this.#finishReport(job.exitCode)
+		if (job.finishing) return
+		job.finishing = true
+		const finished = await this.#finishReport(job)
 		job.done.resolve(job.exitCode)
 		this.viewers.broadcast({
 			type: 'job-done',
@@ -1044,9 +1055,9 @@ export class TestKernel {
 	 */
 	async #beginReport(job, wave) {
 		if (!this.writeReport) return
-		if (this.report)
-			await this.report.finalize(job.exitCode)
-		this.report = new RunReportWriter({
+		if (job.report)
+			await job.report.finalize(job.exitCode)
+		job.report = new RunReportWriter({
 			repoRoot: this.repoRoot,
 			planSlots: wave.plan.slots,
 			runId: randomUUID(),
@@ -1055,32 +1066,34 @@ export class TestKernel {
 			uncommittedHash: wave.fingerprints?.uncommittedHash ?? null,
 			continueReasons: wave.continueReasons,
 		})
-		await this.report.init()
+		await job.report.init()
 	}
 
 	/**
 	 * 收口报告；空波次未开报告则不动磁盘。
-	 * @param {number} exitCode 退出码
+	 * @param {object} job job
 	 * @returns {Promise<{ reportPath: string | null, allReusedHint: boolean }>} 收口信息
 	 */
-	async #finishReport(exitCode) {
-		if (!this.report) return { reportPath: null, allReusedHint: false }
-		const slots = this.report.slots.filter(slot => slot.state === 'done')
-		const allReusedHint = exitCode !== 0 && slots.length
+	async #finishReport(job) {
+		const report = job.report
+		if (!report) return { reportPath: null, allReusedHint: false }
+		const slots = report.slots.filter(slot => slot.state === 'done')
+		const allReusedHint = job.exitCode !== 0 && slots.length
 			&& slots.every(slot => slot.reused || slot.status === 'blocked')
-		const reportPath = (await this.report.finalize(exitCode)).replace(/\\/g, '/')
-		this.report = null
+		const reportPath = (await report.finalize(job.exitCode)).replace(/\\/g, '/')
+		job.report = null
 		return { reportPath, allReusedHint }
 	}
 
 	/**
+	 * @param {object} job job
 	 * @param {import('../core/manifest.mjs').SuiteDef} suite suite
 	 * @param {import('../runner/continue_reason.mjs').ContinueReason} [continueReason] 纳入原因
 	 * @returns {Promise<void>}
 	 */
-	async #reportEnsure(suite, continueReason) {
-		if (!this.report) return
-		await this.report.ensureSlot({
+	async #reportEnsure(job, suite, continueReason) {
+		if (!job?.report) return
+		await job.report.ensureSlot({
 			manifestId: suite.manifestId,
 			name: suite.name,
 			continueReason,
@@ -1088,14 +1101,15 @@ export class TestKernel {
 	}
 
 	/**
+	 * @param {object | undefined} job job
 	 * @param {import('../core/manifest.mjs').SuiteDef} suite suite
 	 * @param {object} entry 现状条目
 	 * @param {object} [options] 选项
 	 * @returns {Promise<void>}
 	 */
-	async #reportResult(suite, entry, options) {
-		if (!this.report || !entry) return
-		await this.report.recordByKey(suite.manifestId, suite.name, entry, options)
+	async #reportResult(job, suite, entry, options) {
+		if (!job?.report || !entry) return
+		await job.report.recordByKey(suite.manifestId, suite.name, entry, options)
 	}
 
 	/**
@@ -1121,10 +1135,8 @@ export class TestKernel {
 				if (!stillWanted) running.abort.abort('viewer_gone')
 			}
 		for (const job of [...this.jobs.values()])
-			if (job.viewerId === viewerId && job.pending.size === 0 && ![...this.running.values()].some(r => r.item.jobId === job.id)) {
-				job.done.resolve(job.exitCode)
-				this.jobs.delete(job.id)
-			}
+			if (job.viewerId === viewerId && job.pending.size === 0 && ![...this.running.values()].some(r => r.item.jobId === job.id))
+				void this.#finishJob(job)
 		this.wake()
 	}
 }

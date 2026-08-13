@@ -155,7 +155,6 @@ export class TestQueues {
 	 * @returns {QueueItem | undefined} 出队项
 	 */
 	dequeue(picked) {
-		if (!picked?.item) return undefined
 		const list = picked.queue === 'cli' ? this.cli : this.fs
 		const index = list.indexOf(picked.item)
 		if (index < 0) return undefined

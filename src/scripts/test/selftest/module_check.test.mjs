@@ -22,7 +22,7 @@ import {
 import { ModuleCheckGate } from '../kernel/module_check.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
 
-import { enqueueAndAwaitSkip } from './kernel_fixtures.mjs'
+import { awaitWithTimeout, enqueueAndAwaitSkip } from './kernel_fixtures.mjs'
 
 Deno.test('ModuleCheckGate second acquire waits until first ready', async () => {
 	const gate = new ModuleCheckGate()
@@ -109,15 +109,21 @@ Deno.test('withDenoModuleCheckPreload inserts after run/test', () => {
 /** 与 kernel_lifecycle / skip_because 错开端口。 */
 const MODULE_CHECK_KERNEL_PORT = 18940
 
-Deno.test('module-check HTTP: second acquire waits for ready', async () => {
-	const previous = process.env.FOUNT_TEST_HUB_URL
-	const handle = await startTestKernel({
-		port: MODULE_CHECK_KERNEL_PORT,
+/**
+ * @param {number} port 端口
+ * @returns {Promise<{ url: string, kernel: object, close: () => Promise<void> }>} 句柄
+ */
+function startModuleCheckKernel(port) {
+	return startTestKernel({
+		port,
 		autoExit: false,
 		watchFs: false,
 		writeReport: false,
 	})
-	process.env.FOUNT_TEST_HUB_URL = handle.url
+}
+
+Deno.test('module-check HTTP: second acquire waits for ready', async () => {
+	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT)
 	try {
 		const first = await acquireModuleCheckTicket()
 		let second
@@ -128,7 +134,15 @@ Deno.test('module-check HTTP: second acquire waits for ready', async () => {
 		await pending
 		assertEquals(Boolean(second), true)
 		await signalModuleCheckReady(second)
+	}
+	finally {
+		await handle.close()
+	}
+})
 
+Deno.test('module-check HTTP: abandon releases the waiter', async () => {
+	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 1)
+	try {
 		const held = await acquireModuleCheckTicket()
 		let unblocked
 		const waiting = acquireModuleCheckTicket().then(ticket => { unblocked = ticket })
@@ -138,11 +152,27 @@ Deno.test('module-check HTTP: second acquire waits for ready', async () => {
 		await waiting
 		assertEquals(Boolean(unblocked), true)
 		assertEquals(await abandonModuleCheckTicket(unblocked), true)
+	}
+	finally {
+		await handle.close()
+	}
+})
 
+Deno.test('module-check HTTP: abandon after ready returns false', async () => {
+	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 2)
+	try {
 		const afterReady = await acquireModuleCheckTicket()
 		await signalModuleCheckReady(afterReady)
 		assertEquals(await abandonModuleCheckTicket(afterReady), false)
+	}
+	finally {
+		await handle.close()
+	}
+})
 
+Deno.test('module-check HTTP: missed-ready is distinct from business errors', async () => {
+	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 3)
+	try {
 		await assertRejects(() => withModuleCheckTicket(async () => {}), ModuleCheckMissedReadyError)
 		const afterMissed = await acquireModuleCheckTicket()
 		assertEquals(Boolean(afterMissed), true)
@@ -162,20 +192,11 @@ Deno.test('module-check HTTP: second acquire waits for ready', async () => {
 	}
 	finally {
 		await handle.close()
-		if (previous === undefined) delete process.env.FOUNT_TEST_HUB_URL
-		else process.env.FOUNT_TEST_HUB_URL = previous
 	}
 })
 
 Deno.test('module-check preload releases before deno test body', async () => {
-	const previous = process.env.FOUNT_TEST_HUB_URL
-	const handle = await startTestKernel({
-		port: MODULE_CHECK_KERNEL_PORT + 1,
-		autoExit: false,
-		watchFs: false,
-		writeReport: false,
-	})
-	process.env.FOUNT_TEST_HUB_URL = handle.url
+	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 4)
 	const dir = await Deno.makeTempDir({ prefix: 'fount-mc-preload-' })
 	const file = join(dir, 'hold.test.mjs')
 	await writeFile(file, 'await new Promise(resolve => setTimeout(resolve, 1500))\nDeno.test("n", () => {})\n')
@@ -196,10 +217,7 @@ Deno.test('module-check preload releases before deno test body', async () => {
 				FOUNT_TEST_MODULE_CHECK_TICKET: ticket,
 			},
 		})
-		const second = await Promise.race([
-			acquireModuleCheckTicket(),
-			new Promise((_, reject) => setTimeout(() => reject(new Error('second acquire hung')), 8000)),
-		])
+		const second = await awaitWithTimeout(acquireModuleCheckTicket(), 'second acquire hung')
 		assertEquals(Boolean(second), true)
 		assertEquals(child.exitCode, null)
 		await signalModuleCheckReady(second)
@@ -212,18 +230,11 @@ Deno.test('module-check preload releases before deno test body', async () => {
 		child?.kill()
 		await handle.close()
 		await rm(dir, { recursive: true, force: true })
-		if (previous === undefined) delete process.env.FOUNT_TEST_HUB_URL
-		else process.env.FOUNT_TEST_HUB_URL = previous
 	}
 })
 
 Deno.test('module-check missed ready fails the deno suite', async () => {
-	const handle = await startTestKernel({
-		port: MODULE_CHECK_KERNEL_PORT + 2,
-		autoExit: false,
-		watchFs: false,
-		writeReport: false,
-	})
+	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 5)
 	try {
 		const suite = {
 			manifestId: 'testkit',

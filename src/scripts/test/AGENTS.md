@@ -21,7 +21,7 @@ alwaysApply: false
 
 ## Architecture
 
-- **Entry**: `fount test` → `cli.mjs` ensures a detached kernel then `display/` paints. `--watch` is a flag, not a selector. `--update-estimates` rewrites manifests and skips the kernel. Internals: [kernel.md](docs/kernel.md). Overview/multi print failed/noisy suite tails on `suite-end` and replay them at `job-done` (CI last-lines); stream mode already live-prints.
+- **Entry**: `fount test` → `cli.mjs` ensures a detached kernel then `display/` paints. `--watch` is a flag, not a selector. `--update-estimates` rewrites manifests and skips the kernel. Internals: [kernel.md](docs/kernel.md). Overview/multi print failed/noisy suite tails once at `job-done` (CI last-lines); stream mode already live-prints.
 - **CLI `--help`**: `fountConsole.test.help` is a usage tutorial (invocation, selectors, flags, examples). Kernel bind, state paths, manifest fields, and scheduler internals belong in this guide / `docs/` — not `--help`.
 - **`--update-estimates`**: rewrite suite/subtest `expected` from state EMA baselines (`baselineDurationMs` / subtest `durationMs`); skip the kernel; selectors narrow the set. Does not run tests. Combine with `--watch` / `--all` / `--force` is an error.
 - **i18n**: `src/scripts/i18n/bare.mjs` only — never pull in the server module graph. Display/CLI sets `FOUNT_TEST` via `mark.mjs` (not `env.mjs`).
@@ -82,5 +82,5 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **Deno panic auto-report**: `core/deno_panic.mjs` → `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override: `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.
 - **`[aria-ignore]`**: value = GitHub issue URL; closed-state via hub `github_issue` + Playwright `assertAriaIgnoreIssues`. Policy: `pages/scripts/test/aria_ignore.mjs`. No hub / `gh` → treat as still open. Page watch: [playwright.md](docs/playwright.md#page-watch).
 - **Locale triggers**: [trigger-filter.md](docs/trigger-filter.md#locale-triggers).
-- **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs`. Keep manifest id `testkit`.
+- **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs`. Timeout races: `awaitWithTimeout` in `selftest/kernel_fixtures.mjs` (clears the timer). Keep manifest id `testkit`.
 - **Naming**: readable identifiers (`context` not `ctx`). Suite/file/`Deno.test` names use domain semantics — never planning milestone codes.

@@ -94,7 +94,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	function onSuiteEnd(message) {
 		finished++
 		if (runCount) SetTaskbarProgress(Math.min(100, Math.floor((finished / runCount) * 100)))
-		if (suiteEndHasFailureOutput(message))
+		if (displayMode !== 'stream' && suiteEndHasFailureOutput(message))
 			failureLogs.push({ key: message.key, output: message.output })
 		paintSuiteEnd(message, { stream: displayMode === 'stream' })
 	}
@@ -129,19 +129,19 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 			done.resolve()
 	}
 
-	const handlers = {
-		accepted: onAccepted,
-		log: onLog,
-		'suite-start': onSuiteStart,
-		'suite-end': onSuiteEnd,
-		'queue-append': onQueue,
-		'queue-remove': onQueue,
-		'job-done': onJobDone,
-	}
+	const handlers = new Map([
+		['accepted', onAccepted],
+		['log', onLog],
+		['suite-start', onSuiteStart],
+		['suite-end', onSuiteEnd],
+		['queue-append', onQueue],
+		['queue-remove', onQueue],
+		['job-done', onJobDone],
+	])
 
 	ws.addEventListener('message', event => {
 		const message = JSON.parse(String(event.data))
-		const handler = handlers[message.type]
+		const handler = handlers.get(message.type)
 		if (handler) handler(message)
 		else if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
 			done.resolve()

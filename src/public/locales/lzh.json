@@ -152,11 +152,11 @@
 				"summary": "已回寫 ${suitesUpdated} 套件之預計時長（manifest ${filesChanged}），跳過 ${skipped} 無基線或已新"
 			},
 			"skipBecause": {
-				"pass": "略（issue 未闔，或已闔而未及延缓）：${label} — ${url}",
-				"fail": "敗（下列 issue 已闔且延缓已盡，宜跟進并更 skip_because 而後再驗）：${label} — ${url}"
+				"pass": "略（issue 未闔，或已闔而未及延緩）：${label} — ${url}",
+				"fail": "敗（下列 issue 已闔且延緩已盡，宜跟進并更 skip_because 而後再驗）：${label} — ${url}"
 			},
 			"moduleCheck": {
-				"missedReady": "模組檢未成 ready 而进程已退：${label}"
+				"missedReady": "模組檢未成 ready 而進程已退：${label}"
 			},
 			"queue": {
 				"append": "入隊：${label}（${reason}）餘 ≈ ${remaining}",

@@ -569,6 +569,15 @@ async function launchNodeOnce(options = {}) {
 		const ticket = await acquireModuleCheckTicket()
 		await finishListenHold()
 		const spawnArgs = withDenoModuleCheckPreload(workerArgs, ticket)
+		let ticketReleased = false
+		/**
+		 * @returns {Promise<void>}
+		 */
+		const releaseTicket = async () => {
+			if (!ticket || ticketReleased) return
+			ticketReleased = true
+			await abandonModuleCheckTicket(ticket)
+		}
 		try {
 			child = spawn(Deno.execPath(), spawnArgs, {
 				cwd: REPO_ROOT,
@@ -585,11 +594,10 @@ async function launchNodeOnce(options = {}) {
 			})
 		}
 		catch (error) {
-			if (ticket) await abandonModuleCheckTicket(ticket)
+			await releaseTicket()
 			throw error
 		}
-		if (ticket)
-			child.once('exit', () => { void abandonModuleCheckTicket(ticket) })
+		child.once('exit', () => { void releaseTicket() })
 		child.stderr.on('data', onOutput)
 
 		/** worker 提前退出时 resolve 退出码（就绪后仍挂着也无害：仅用于 race，不 reject）。 */
@@ -606,16 +614,32 @@ async function launchNodeOnce(options = {}) {
 
 		let readyInfo = null
 		const readline = createInterface({ input: child.stdout })
-		for await (const line of readline) {
-			if (!line.trim()) continue
-			try {
-				const parsed = JSON.parse(line)
-				if (parsed?.ready && parsed.baseUrl) {
-					readyInfo = parsed
-					break
+		let readyTimer
+		try {
+			const readyLine = (async () => {
+				for await (const line of readline) {
+					if (!line.trim()) continue
+					try {
+						const parsed = JSON.parse(line)
+						if (parsed?.ready && parsed.baseUrl) return parsed
+					}
+					catch { /* not json yet */ }
 				}
-			}
-			catch { /* not json yet */ }
+				return null
+			})()
+			readyInfo = await Promise.race([
+				readyLine,
+				new Promise((_, reject) => {
+					readyTimer = setTimeout(() => {
+						void releaseTicket()
+						readline.close()
+						reject(new Error(`node worker ready timed out (port ${port})\n${startupOutput}`.trimEnd()))
+					}, ms('2m'))
+				}),
+			])
+		}
+		finally {
+			clearTimeout(readyTimer)
 		}
 		readline.close()
 		// 读完 ready JSON 后继续排空 stdout，防止管道缓冲区满导致服务器 event loop 阻塞。

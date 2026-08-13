@@ -5,6 +5,7 @@ import { parseSkipBecause } from '../core/skip_because.mjs'
 
 /** 避开生产 8903 与 hub 自测 18903。 */
 export const KERNEL_PORT = 18904
+/** skip_because 自测用的稳定 GitHub issue URL。 */
 export const SKIP_URL = 'https://github.com/denoland/deno/issues/35804'
 
 /**
@@ -74,7 +75,32 @@ export function enqueueDummyJob(kernel, { key, jobId, endKey = key }) {
 		fingerprints: { commitHash: null, uncommittedHash: null },
 	}
 	kernel.jobs.set(job.id, job)
-	return { job, end: () => end }
+	/** @returns {object | null} 捕获的 suite-end */
+	const captureEnd = () => end
+	return { job, end: captureEnd }
+}
+
+/**
+ * 带超时等待 promise；无论成败都清掉定时器。
+ * @param {Promise<T>} promise 待等待
+ * @param {string} timeoutMessage 超时文案
+ * @param {number} [timeoutMs] 超时
+ * @returns {Promise<T>} 结果
+ * @template T
+ */
+export async function awaitWithTimeout(promise, timeoutMessage, timeoutMs = 8000) {
+	let timer
+	try {
+		return await Promise.race([
+			promise,
+			new Promise((_, reject) => {
+				timer = setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)
+			}),
+		])
+	}
+	finally {
+		clearTimeout(timer)
+	}
 }
 
 /**
@@ -84,10 +110,7 @@ export function enqueueDummyJob(kernel, { key, jobId, endKey = key }) {
  * @returns {Promise<void>}
  */
 export async function awaitJob(job, timeoutMessage, timeoutMs = 8000) {
-	await Promise.race([
-		job.done.promise,
-		new Promise((_, reject) => setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs)),
-	])
+	await awaitWithTimeout(job.done.promise, timeoutMessage, timeoutMs)
 }
 
 /**
@@ -102,6 +125,6 @@ export async function enqueueAndAwaitSkip(kernel, suite, jobId) {
 	kernel.catalog.byKey.set(key, suite)
 	const { job, end } = enqueueDummyJob(kernel, { key, jobId })
 	kernel.wake()
-	await job.done.promise
+	await awaitJob(job, `job ${jobId} timed out`)
 	return { end: end(), job }
 }

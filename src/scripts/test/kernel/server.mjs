@@ -144,10 +144,9 @@ async function onViewerMessage(kernel, viewer, rawMessage) {
 	}
 	if (message.type && message.type !== 'hello') return
 	viewer.watch = message.watch === true
-	viewer.mode = resolveDisplayMode({ watch: viewer.watch, job: message.job })
 	kernel.seenViewer = true
-	if (message.watch || !message.job) {
-		viewer.mode = resolveDisplayMode({ watch: message.watch === true, job: message.job })
+	if (viewer.watch || !message.job) {
+		viewer.mode = resolveDisplayMode({ watch: viewer.watch, job: message.job })
 		kernel.viewers.send(viewer.id, {
 			type: 'accepted',
 			viewerId: viewer.id,
@@ -164,31 +163,8 @@ async function onViewerMessage(kernel, viewer, rawMessage) {
 	kernel.viewers.send(viewer.id, {
 		type: 'accepted',
 		viewerId: viewer.id,
-		jobId: submitted.jobId,
 		mode: viewer.mode,
-		runCount: submitted.runCount,
-		reuseCount: submitted.reuseCount,
-		blockedCount: submitted.blockedCount,
-		skippedCount: submitted.skippedCount,
-		code: submitted.code,
-		empty: submitted.empty,
-		error: submitted.error,
-		selectionMode: submitted.selectionMode,
-		goalCount: submitted.goalCount,
-		imperfectCount: submitted.imperfectCount,
-		outdatedCount: submitted.outdatedCount,
-		total: submitted.total,
-		noisyKeys: submitted.noisyKeys,
-		deadTriggers: submitted.deadTriggers,
-		unmatched: submitted.unmatched,
-		unknownSuites: submitted.unknownSuites,
-		filterErrors: submitted.filterErrors,
-		knownIds: submitted.knownIds,
-		available: submitted.available,
-		continueReasons: submitted.continueReasons,
-		remainingMs: submitted.remainingMs,
-		unknownCount: submitted.unknownCount,
-		reportPath: submitted.reportPath,
+		...submitted,
 	})
 	if (kernel.jobs.has(submitted.jobId))
 		await kernel.releaseJob(submitted.jobId)

@@ -204,6 +204,28 @@ Deno.test('simulateParallelMakespanMs promotes speculative so next layer can ove
 	assertEquals(result.makespanMs, 50_000)
 })
 
+Deno.test('simulateParallelMakespanMs does not speculate on mixed hard and speculative same-key deps', () => {
+	const result = simulateParallelMakespanMs([
+		task({ id: 'anchor', key: 'server:other', name: 'other', durationMs: 30_000, memMb: 100, cpuPct: 10 }),
+		task({ id: 'gate', key: 'server:gate', name: 'gate', durationMs: 5_000, memMb: 100, cpuPct: 10 }),
+		task({
+			id: 'live-spec', key: 'server:live', name: 'live', durationMs: 40_000, memMb: 100, cpuPct: 10,
+			deps: ['server:other'],
+		}),
+		task({
+			id: 'live-hard', key: 'server:live', name: 'live', durationMs: 10_000, memMb: 100, cpuPct: 10,
+			deps: ['server:gate'],
+		}),
+		task({
+			id: 'chat', key: 'shells/chat:ws', name: 'ws', durationMs: 20_000, memMb: 100, cpuPct: 10,
+			deps: ['server:live'],
+		}),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	// t=5 live-hard 开工时 live-spec 仍为投机占用；下游不得据此重叠。
+	// t=30 other 完、live-spec 升硬后 chat 才可重叠；墙钟 50s 而非 40s。
+	assertEquals(result.makespanMs, 50_000)
+})
+
 Deno.test('simulateParallelMakespanMs never leaves ready work at makespan 0', () => {
 	// 与闸门同不变量：空闲 + 有活 → 必须开工，否则 ETA 塌成 0。
 	const result = simulateParallelMakespanMs([

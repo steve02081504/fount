@@ -289,14 +289,16 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 	 */
 	function canSpeculate(task) {
 		if (!speculative) return false
-		const byKey = new Map(running.map(slot => [slot.key, slot]))
+		const runningById = new Map(running.map(slot => [slot.id, slot]))
 		let anchoredToHard = false
 		for (const depKey of task.deps) {
 			if (!instancesByKey.has(depKey)) continue
-			const deps = instancesByKey.get(depKey)
-			if (deps.every(dep => completed.has(taskId(dep)))) continue
-			const slot = byKey.get(depKey)
-			if (!slot || slot.speculative) return false
+			const unfinished = instancesByKey.get(depKey).filter(dep => !completed.has(taskId(dep)))
+			if (!unfinished.length) continue
+			for (const dep of unfinished) {
+				const slot = runningById.get(taskId(dep))
+				if (!slot || slot.speculative) return false
+			}
 			anchoredToHard = true
 		}
 		return anchoredToHard
