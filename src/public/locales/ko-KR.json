@@ -169,7 +169,7 @@
 				"remaining": "전체 남음 ≈ ${remaining}",
 				"remainingUnknown": "전체 남음 ≈ ${remaining} (미지 소요 ${count}건 추가)",
 				"remainingOnlyUnknown": "전체 남음: 미지 소요 ${count}건",
-				"failureLog": "—— ${label} 실패 로그 ——"
+				"failureLog": "\n—— ${label} 실패 로그 ——"
 			},
 			"passed": "경로: ${label}",
 			"passedWithNoise": "통과: ${label}(노이즈 포함)",

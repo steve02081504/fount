@@ -169,7 +169,7 @@
 				"remaining": "Totale ≈ ${remaining} rimanenti",
 				"remainingUnknown": "≈ ${remaining} rimanenti in totale (${count} con durata sconosciuta in più)",
 				"remainingOnlyUnknown": "≈ ${count} con durata sconosciuta rimanenti in totale",
-				"failureLog": "—— Registro errori ${label} ——"
+				"failureLog": "\n—— Registro errori di ${label} ——"
 			},
 			"passed": "Superato: ${label}",
 			"passedWithNoise": "SUPERATO: ${label} (con rumore)",

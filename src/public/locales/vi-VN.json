@@ -169,7 +169,7 @@
 				"remaining": "Tổng còn ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} còn lại tổng cộng (thêm ${count} thời lượng chưa biết)",
 				"remainingOnlyUnknown": "≈ ${count} thời lượng chưa biết còn lại tổng cộng",
-				"failureLog": "—— nhật ký lỗi ${label}—"
+				"failureLog": "\n—— Nhật ký lỗi: ${label} ——"
 			},
 			"passed": "ĐẠT: ${label}",
 			"passedWithNoise": "ĐẠT: ${label} (có nhiễu)",

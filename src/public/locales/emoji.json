@@ -169,7 +169,7 @@
 				"remaining": "Σ⏳≈ ${remaining}",
 				"remainingUnknown": "Σ⏳≈ ${remaining}（+ ${count}×❓⏱️）",
 				"remainingOnlyUnknown": "Σ⏳：${count}×❓⏱️",
-				"failureLog": "\n—— ${label} 失败日志 ——"
+				"failureLog": "\n—— ❌📋 ${label} ——"
 			},
 			"passed": "✅: ${label}",
 			"passedWithNoise": "✅: ${label} (🔊)",

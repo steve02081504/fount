@@ -169,7 +169,7 @@
 				"remaining": "≈ ${remaining} left overall",
 				"remainingUnknown": "≈ ${remaining} left overall (${count} with unknown duration)",
 				"remainingOnlyUnknown": "${count} with unknown duration left overall",
-				"failureLog": "\n—— ${label} failure log ——"
+				"failureLog": "\n—— ${label} — failure log ——"
 			},
 			"passed": "PASSED: ${label}",
 			"passedWithNoise": "PASSED: ${label} (with noise)",

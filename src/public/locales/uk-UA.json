@@ -169,7 +169,7 @@
 				"remaining": "Загалом залишилось ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} залишилось загалом (ще ${count} з невідомою тривалістю)",
 				"remainingOnlyUnknown": "≈ ${count} з невідомою тривалістю залишилось загалом",
-				"failureLog": "—— Журнал помилок ${label} ——"
+				"failureLog": "\n—— Журнал збоїв: ${label} ——"
 			},
 			"passed": "Пройдено: ${label}",
 			"passedWithNoise": "Пройдено: ${label} (з шумом)",

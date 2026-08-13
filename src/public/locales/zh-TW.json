@@ -168,7 +168,7 @@
 				"remaining": "總剩餘 ≈ ${remaining}",
 				"remainingUnknown": "總剩餘 ≈ ${remaining}（另有 ${count} 個未知時長）",
 				"remainingOnlyUnknown": "總剩餘：${count} 個未知時長",
-				"failureLog": "—— ${label} 失敗日誌 ——"
+				"failureLog": "\n—— ${label}：失敗日誌 ——"
 			},
 			"passed": "透過：${label}",
 			"passedWithNoise": "透過：${label}（含有噪聲）",

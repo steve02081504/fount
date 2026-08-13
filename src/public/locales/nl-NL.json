@@ -169,7 +169,7 @@
 				"remaining": "Totaal ≈ ${remaining} resterend",
 				"remainingUnknown": "≈ ${remaining} resterend in totaal (${count} met onbekende duur extra)",
 				"remainingOnlyUnknown": "≈ ${count} met onbekende duur resterend in totaal",
-				"failureLog": "—— ${label} foutlogboek ——"
+				"failureLog": "\n—— Foutlogboek: ${label} ——"
 			},
 			"passed": "Geslaagd: ${label}",
 			"passedWithNoise": "Geslaagd: ${label} (met ruis)",

@@ -169,7 +169,7 @@
 				"remaining": "Total ≈ ${remaining} restant",
 				"remainingUnknown": "≈ ${remaining} restant au total (${count} durée(s) inconnue(s) en plus)",
 				"remainingOnlyUnknown": "≈ ${count} durée(s) inconnue(s) restante(s) au total",
-				"failureLog": "—— Journal des échecs de ${label} ——"
+				"failureLog": "\n—— Journal d'échecs : ${label} ——"
 			},
 			"passed": "Réussi : ${label}",
 			"passedWithNoise": "Réussi : ${label} (bruit détecté)",
