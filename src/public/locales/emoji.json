@@ -3826,6 +3826,16 @@
 			"availableModels": "✅🧠:",
 			"copied": "📋✅",
 			"apiKeyRequired": "🔑❓➡️🧠",
+			"oauth": {
+				"login": "🔑",
+				"logout": "🚪",
+				"loggedIn": "✅",
+				"notLoggedIn": "❌",
+				"waiting": "⏳",
+				"failed": "❌ ${message}",
+				"deviceCode": "${uri} → ${code}",
+				"credentialsRequired": "📝 JSON + env"
+			},
 			"copyModelIdTooltip": "👆➡️📋🆔",
 			"loadModelsFailed": "🧠📥❌: ${message}",
 			"modelSearchTitle": "🔍🧠📚",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "➡️"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "🔑 OAuth",
+		"callback": {
+			"working": "⏳",
+			"success": "✅",
+			"failed": "❌ ${message}",
+			"missingParams": "❓ code/state"
 		}
 	}
 }

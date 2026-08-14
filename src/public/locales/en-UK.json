@@ -3826,6 +3826,16 @@
 			"availableModels": "Available models:",
 			"copied": "Copied!",
 			"apiKeyRequired": "An API key is required to list models.",
+			"oauth": {
+				"login": "Log in",
+				"logout": "Log out",
+				"loggedIn": "Signed in",
+				"notLoggedIn": "Not signed in",
+				"waiting": "Waiting for authorisation…",
+				"failed": "Login failed: ${message}",
+				"deviceCode": "Open ${uri} and enter code ${code}",
+				"credentialsRequired": "Fill in the required JSON fields (region / project / location / account_id / gateway_id / API key). Credentials may also come from local environment variables."
+			},
 			"copyModelIdTooltip": "Click to copy model ID",
 			"loadModelsFailed": "Failed to load model: ${message}",
 			"modelSearchTitle": "Browse model catalog",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "Next media"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth login",
+		"callback": {
+			"working": "Finishing login…",
+			"success": "Signed in. You can close this page.",
+			"failed": "Login failed: ${message}",
+			"missingParams": "Callback is missing code or state."
 		}
 	}
 }

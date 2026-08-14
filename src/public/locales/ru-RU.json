@@ -3826,6 +3826,16 @@
 			"availableModels": "Доступные модели:",
 			"copied": "Скопировано!",
 			"apiKeyRequired": "Для получения списка моделей требуется ключ API.",
+			"oauth": {
+				"login": "Войти",
+				"logout": "Выйти",
+				"loggedIn": "Выполнен вход",
+				"notLoggedIn": "Вход не выполнен",
+				"waiting": "Ожидание авторизации…",
+				"failed": "Ошибка входа: ${message}",
+				"deviceCode": "Откройте ${uri} и введите код ${code}",
+				"credentialsRequired": "Заполните нужные поля JSON (region / project / location / account_id / gateway_id / API key). Учётки также могут быть в переменных окружения."
+			},
 			"copyModelIdTooltip": "Нажмите, чтобы скопировать идентификатор модели",
 			"loadModelsFailed": "Не удалось загрузить модель: `${message}",
 			"modelSearchTitle": "Каталог моделей",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "Следующее изображение"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Вход OAuth",
+		"callback": {
+			"working": "Завершение входа…",
+			"success": "Вход выполнен. Можно закрыть страницу.",
+			"failed": "Ошибка входа: ${message}",
+			"missingParams": "В callback нет code или state."
 		}
 	}
 }

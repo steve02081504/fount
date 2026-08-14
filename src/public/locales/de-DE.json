@@ -3826,6 +3826,16 @@
 			"availableModels": "Verfügbare Modelle:",
 			"copied": "Kopiert!",
 			"apiKeyRequired": "Zum Auflisten von Modellen ist ein API-Schlüssel erforderlich.",
+			"oauth": {
+				"login": "Anmelden",
+				"logout": "Abmelden",
+				"loggedIn": "Angemeldet",
+				"notLoggedIn": "Nicht angemeldet",
+				"waiting": "Warte auf Autorisierung…",
+				"failed": "Anmeldung fehlgeschlagen: ${message}",
+				"deviceCode": "Öffne ${uri} und gib den Code ${code} ein",
+				"credentialsRequired": "Fülle die nötigen JSON-Felder (region / project / location / account_id / gateway_id / API key). Zugangsdaten können auch aus Umgebungsvariablen kommen."
+			},
 			"copyModelIdTooltip": "Klicken Sie, um die Modell-ID zu kopieren",
 			"loadModelsFailed": "Modell konnte nicht geladen werden: ${message}",
 			"modelSearchTitle": "Modellkatalog durchstöbern",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "Nächstes Bild"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth-Anmeldung",
+		"callback": {
+			"working": "Anmeldung wird abgeschlossen…",
+			"success": "Angemeldet. Du kannst diese Seite schließen.",
+			"failed": "Anmeldung fehlgeschlagen: ${message}",
+			"missingParams": "Callback fehlt code oder state."
 		}
 	}
 }

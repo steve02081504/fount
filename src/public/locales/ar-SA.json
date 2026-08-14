@@ -3826,6 +3826,16 @@
 			"availableModels": "النماذج المتاحة:",
 			"copied": "منسوخ!",
 			"apiKeyRequired": "مطلوب مفتاح API لسرد النماذج.",
+			"oauth": {
+				"login": "تسجيل الدخول",
+				"logout": "تسجيل الخروج",
+				"loggedIn": "تم تسجيل الدخول",
+				"notLoggedIn": "غير مسجّل الدخول",
+				"waiting": "بانتظار التفويض…",
+				"failed": "فشل تسجيل الدخول: ${message}",
+				"deviceCode": "افتح ${uri} وأدخل الرمز ${code}",
+				"credentialsRequired": "املأ حقول JSON المطلوبة (region / project / location / account_id / gateway_id / API key). يمكن أن تأتي الاعتمادات من متغيرات البيئة."
+			},
 			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
 			"loadModelsFailed": "فشل تحميل النموذج: ${message}",
 			"modelSearchTitle": "تصفّح دليل النماذج",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "التالي"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "تسجيل OAuth",
+		"callback": {
+			"working": "جارٍ إتمام تسجيل الدخول…",
+			"success": "تم تسجيل الدخول. يمكنك إغلاق هذه الصفحة.",
+			"failed": "فشل تسجيل الدخول: ${message}",
+			"missingParams": "الرد ينقصه code أو state."
 		}
 	}
 }

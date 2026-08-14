@@ -3832,6 +3832,16 @@
 			"availableModels": "Modelli disponibili:",
 			"copied": "Copiato!",
 			"apiKeyRequired": "È necessaria una chiave API per elencare i modelli.",
+			"oauth": {
+				"login": "Accedi",
+				"logout": "Esci",
+				"loggedIn": "Accesso effettuato",
+				"notLoggedIn": "Non connesso",
+				"waiting": "In attesa di autorizzazione…",
+				"failed": "Accesso non riuscito: ${message}",
+				"deviceCode": "Apri ${uri} e inserisci il codice ${code}",
+				"credentialsRequired": "Compila i campi JSON richiesti (region / project / location / account_id / gateway_id / API key). Le credenziali possono arrivare anche dalle variabili d’ambiente."
+			},
 			"copyModelIdTooltip": "Fare clic per copiare l'ID del modello",
 			"loadModelsFailed": "Impossibile caricare il modello: ${message}",
 			"modelSearchTitle": "Sfoglia il catalogo modelli",
@@ -5933,6 +5943,15 @@
 			"next": {
 				"aria-label": "Elemento multimediale successivo"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Accesso OAuth",
+		"callback": {
+			"working": "Completamento dell’accesso…",
+			"success": "Accesso riuscito. Puoi chiudere questa pagina.",
+			"failed": "Accesso non riuscito: ${message}",
+			"missingParams": "Al callback manca code o state."
 		}
 	}
 }

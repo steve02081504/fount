@@ -1,0 +1,574 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot via device-flow OAuth.",
+			"description_markdown": "Sign in with the public VS Code Copilot client, then call Copilot's OpenAI-compatible completions API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"zh-CN": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "用 device flow 登录 GitHub Copilot。",
+			"description_markdown": "复用 VS Code Copilot 公开 client，换票后走 OpenAI 兼容补全接口。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"ar-SA": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot عبر OAuth لجهاز.",
+			"description_markdown": "تسجيل الدخول بعميل VS Code العام ثم واجهة الإكمال المتوافقة مع OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"de-DE": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot per Device-Flow-OAuth.",
+			"description_markdown": "Anmeldung mit dem öffentlichen VS-Code-Copilot-Client, dann OpenAI-kompatible Completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ki"
+			]
+		},
+		"emoji": {
+			"name": "🐙🤖",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "🐙➡️🤖",
+			"description_markdown": "💻🔑➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"🐙",
+				"🤖",
+				"🔑"
+			]
+		},
+		"es-ES": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot con OAuth de dispositivo.",
+			"description_markdown": "Inicio de sesión con el cliente público de VS Code Copilot y API compatible con OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ia"
+			]
+		},
+		"fr-FR": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot via OAuth device flow.",
+			"description_markdown": "Connexion avec le client Copilot public de VS Code, puis API compatible OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ia"
+			]
+		},
+		"hi-IN": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "डिवाइस-फ्लो OAuth से GitHub Copilot.",
+			"description_markdown": "VS Code Copilot सार्वजनिक क्लाइंट से लॉगिन, फिर OpenAI-संगत API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"is-IS": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot með device-flow OAuth.",
+			"description_markdown": "Innskráning með VS Code Copilot-biðlara, síðan OpenAI-samhæfð API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"it-IT": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot con OAuth device flow.",
+			"description_markdown": "Accesso con il client Copilot pubblico di VS Code, poi API compatibile OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ia"
+			]
+		},
+		"ja-JP": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "デバイスフロー OAuth で GitHub Copilot。",
+			"description_markdown": "VS Code Copilot の公開クライアントでログインし、OpenAI 互換 API を呼びます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"ko-KR": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "디바이스 플로우 OAuth로 GitHub Copilot.",
+			"description_markdown": "VS Code Copilot 공개 클라이언트로 로그인한 뒤 OpenAI 호환 API를 호출합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"lzh": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "以裝置流 OAuth 登 Copilot。",
+			"description_markdown": "襲 VS Code 公開客戶端，換票後走 OpenAI 兼容接口。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"nl-NL": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot via device-flow OAuth.",
+			"description_markdown": "Aanmelden met de publieke VS Code Copilot-client, daarna OpenAI-compatibele API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"pt-PT": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot via OAuth device flow.",
+			"description_markdown": "Início de sessão com o cliente público do VS Code Copilot e API compatível com OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ia"
+			]
+		},
+		"ru-RU": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot через device-flow OAuth.",
+			"description_markdown": "Вход публичным клиентом VS Code Copilot, затем OpenAI-совместимый API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ии"
+			]
+		},
+		"uk-UA": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot через device-flow OAuth.",
+			"description_markdown": "Вхід публічним клієнтом VS Code Copilot, далі OpenAI-сумісний API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ші"
+			]
+		},
+		"vi-VN": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot qua OAuth device flow.",
+			"description_markdown": "Đăng nhập bằng client Copilot công khai của VS Code, rồi gọi API tương thích OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		},
+		"zh-TW": {
+			"name": "GitHub Copilot",
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "用 device flow 登入 GitHub Copilot。",
+			"description_markdown": "沿用 VS Code Copilot 公開 client，換票後走 OpenAI 相容補全介面。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot via device-flow OAuth.",
+			"description_markdown": "Sign in with the public VS Code Copilot client, then call Copilot's OpenAI-compatible completions API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "用 device flow 登录 GitHub Copilot。",
+			"description_markdown": "复用 VS Code Copilot 公开 client，换票后走 OpenAI 兼容补全接口。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot عبر OAuth لجهاز.",
+			"description_markdown": "تسجيل الدخول بعميل VS Code العام ثم واجهة الإكمال المتوافقة مع OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot per Device-Flow-OAuth.",
+			"description_markdown": "Anmeldung mit dem öffentlichen VS-Code-Copilot-Client, dann OpenAI-kompatible Completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ki"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "🐙➡️🤖",
+			"description_markdown": "💻🔑➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"🐙",
+				"🤖",
+				"🔑"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot con OAuth de dispositivo.",
+			"description_markdown": "Inicio de sesión con el cliente público de VS Code Copilot y API compatible con OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ia"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot via OAuth device flow.",
+			"description_markdown": "Connexion avec le client Copilot public de VS Code, puis API compatible OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ia"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "डिवाइस-फ्लो OAuth से GitHub Copilot.",
+			"description_markdown": "VS Code Copilot सार्वजनिक क्लाइंट से लॉगिन, फिर OpenAI-संगत API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot með device-flow OAuth.",
+			"description_markdown": "Innskráning með VS Code Copilot-biðlara, síðan OpenAI-samhæfð API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot con OAuth device flow.",
+			"description_markdown": "Accesso con il client Copilot pubblico di VS Code, poi API compatibile OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ia"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "デバイスフロー OAuth で GitHub Copilot。",
+			"description_markdown": "VS Code Copilot の公開クライアントでログインし、OpenAI 互換 API を呼びます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "디바이스 플로우 OAuth로 GitHub Copilot.",
+			"description_markdown": "VS Code Copilot 공개 클라이언트로 로그인한 뒤 OpenAI 호환 API를 호출합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "以裝置流 OAuth 登 Copilot。",
+			"description_markdown": "襲 VS Code 公開客戶端，換票後走 OpenAI 兼容接口。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot via device-flow OAuth.",
+			"description_markdown": "Aanmelden met de publieke VS Code Copilot-client, daarna OpenAI-compatibele API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot via OAuth device flow.",
+			"description_markdown": "Início de sessão com o cliente público do VS Code Copilot e API compatível com OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ia"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot через device-flow OAuth.",
+			"description_markdown": "Вход публичным клиентом VS Code Copilot, затем OpenAI-совместимый API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ии"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot через device-flow OAuth.",
+			"description_markdown": "Вхід публічним клієнтом VS Code Copilot, далі OpenAI-сумісний API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ші"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "GitHub Copilot qua OAuth device flow.",
+			"description_markdown": "Đăng nhập bằng client Copilot công khai của VS Code, rồi gọi API tương thích OpenAI.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/simple-icons/github.svg",
+			"description": "用 device flow 登入 GitHub Copilot。",
+			"description_markdown": "沿用 VS Code Copilot 公開 client，換票後走 OpenAI 相容補全介面。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://github.com/features/copilot",
+			"tags": [
+				"github",
+				"copilot",
+				"oauth",
+				"ai"
+			],
+			"provider": "GitHub Copilot"
+		}
+	}
+}

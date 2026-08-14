@@ -3826,6 +3826,16 @@
 			"availableModels": "利用可能なモデル:",
 			"copied": "コピーしました！",
 			"apiKeyRequired": "モデルをリストするには API キーが必要です。",
+			"oauth": {
+				"login": "ログイン",
+				"logout": "ログアウト",
+				"loggedIn": "ログイン済み",
+				"notLoggedIn": "未ログイン",
+				"waiting": "承認待ち…",
+				"failed": "ログイン失敗：${message}",
+				"deviceCode": "${uri} を開き、コード ${code} を入力してください",
+				"credentialsRequired": "JSON に必要な項目（region / project / location / account_id / gateway_id / API key など）を記入してください。資格情報は環境変数でも渡せます。"
+			},
 			"copyModelIdTooltip": "クリックしてモデル ID をコピーします",
 			"loadModelsFailed": "モデルの読み込みに失敗しました: ${message}",
 			"modelSearchTitle": "モデルカタログを閲覧",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "次へ"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth ログイン",
+		"callback": {
+			"working": "ログインを完了しています…",
+			"success": "ログインしました。このページを閉じてください。",
+			"failed": "ログイン失敗：${message}",
+			"missingParams": "コールバックに code または state がありません。"
 		}
 	}
 }

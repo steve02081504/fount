@@ -3832,6 +3832,16 @@
 			"availableModels": "Modèles disponibles :",
 			"copied": "Copié!",
 			"apiKeyRequired": "Une clé API est requise pour répertorier les modèles.",
+			"oauth": {
+				"login": "Connexion",
+				"logout": "Déconnexion",
+				"loggedIn": "Connecté",
+				"notLoggedIn": "Non connecté",
+				"waiting": "En attente d’autorisation…",
+				"failed": "Échec de connexion : ${message}",
+				"deviceCode": "Ouvrez ${uri} et saisissez le code ${code}",
+				"credentialsRequired": "Renseignez les champs JSON requis (region / project / location / account_id / gateway_id / clé API). Les identifiants peuvent aussi venir des variables d’environnement."
+			},
 			"copyModelIdTooltip": "Cliquez pour copier l'ID du modèle",
 			"loadModelsFailed": "Échec du chargement du modèle : ${message}",
 			"modelSearchTitle": "Parcourir le catalogue de modèles",
@@ -5933,6 +5943,15 @@
 			"next": {
 				"aria-label": "Média suivant"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Connexion OAuth",
+		"callback": {
+			"working": "Finalisation de la connexion…",
+			"success": "Connecté. Vous pouvez fermer cette page.",
+			"failed": "Échec de connexion : ${message}",
+			"missingParams": "Le callback n’a pas de code ou de state."
 		}
 	}
 }

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="fount OAuth bounce" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/oauth/callback/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Forwards an OAuth callback to the local fount oauth_handler shell." />
+	<meta property="og:image" content="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<meta name="description" content="Forwards an OAuth callback to the local fount oauth_handler shell." />
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<title data-i18n="oauth_handler.title"></title>
+	<script blocking="render" type="module" src="../../preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../../base.css" type="text/css" />
+	<script type="module" src="./index.mjs"></script>
+</head>
+
+<body class="flex justify-center items-center h-screen">
+	<main><span class="loading loading-ring loading-lg"></span></main>
+
+	<dialog id="offline_dialog" class="modal">
+		<div class="modal-box">
+			<h3 class="font-bold text-lg" data-i18n="protocolhandler.offline_dialog.title"></h3>
+			<p class="py-4" id="offline_dialog_message"></p>
+			<div class="modal-action">
+				<button class="btn" id="start_btn" data-i18n="protocolhandler.offline_dialog.buttons.start"></button>
+				<button class="btn btn-primary" id="retry_btn" data-i18n="protocolhandler.offline_dialog.buttons.retry"></button>
+			</div>
+		</div>
+	</dialog>
+</body>
+
+</html>

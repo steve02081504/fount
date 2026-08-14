@@ -3826,6 +3826,16 @@
 			"availableModels": "उपलब्ध मॉडल:",
 			"copied": "नकल की गई!",
 			"apiKeyRequired": "मॉडलों को सूचीबद्ध करने के लिए एपीआई कुंजी की आवश्यकता होती है।",
+			"oauth": {
+				"login": "लॉग इन",
+				"logout": "लॉग आउट",
+				"loggedIn": "लॉग इन है",
+				"notLoggedIn": "लॉग इन नहीं",
+				"waiting": "अनुमति की प्रतीक्षा…",
+				"failed": "लॉगिन विफल: ${message}",
+				"deviceCode": "${uri} खोलें और कोड ${code} दर्ज करें",
+				"credentialsRequired": "आवश्यक JSON फ़ील्ड भरें (region / project / location / account_id / gateway_id / API key)। क्रेडेंशियल पर्यावरण चर से भी आ सकते हैं।"
+			},
 			"copyModelIdTooltip": "मॉडल आईडी कॉपी करने के लिए क्लिक करें",
 			"loadModelsFailed": "मॉडल लोड करने में विफल: ${message}",
 			"modelSearchTitle": "मॉडल कैटलॉग देखें",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "अगला मीडिया"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth लॉगिन",
+		"callback": {
+			"working": "लॉगिन पूरा हो रहा है…",
+			"success": "लॉग इन हो गया। इस पेज को बंद कर सकते हैं।",
+			"failed": "लॉगिन विफल: ${message}",
+			"missingParams": "कॉलबैक में code या state नहीं है।"
 		}
 	}
 }

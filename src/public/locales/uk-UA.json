@@ -3826,6 +3826,16 @@
 			"availableModels": "Доступні моделі:",
 			"copied": "Скопійовано!",
 			"apiKeyRequired": "Для переліку моделей потрібен ключ API.",
+			"oauth": {
+				"login": "Увійти",
+				"logout": "Вийти",
+				"loggedIn": "Увійшли",
+				"notLoggedIn": "Не увійшли",
+				"waiting": "Очікування авторизації…",
+				"failed": "Помилка входу: ${message}",
+				"deviceCode": "Відкрийте ${uri} і введіть код ${code}",
+				"credentialsRequired": "Заповніть потрібні поля JSON (region / project / location / account_id / gateway_id / API key). Облікові дані також можуть бути в змінних середовища."
+			},
 			"copyModelIdTooltip": "Натисніть, щоб скопіювати ідентифікатор моделі",
 			"loadModelsFailed": "Не вдалося завантажити модель: ${message}",
 			"modelSearchTitle": "Каталог моделей",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "Наступне медіа"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Вхід OAuth",
+		"callback": {
+			"working": "Завершення входу…",
+			"success": "Вхід виконано. Можна закрити сторінку.",
+			"failed": "Помилка входу: ${message}",
+			"missingParams": "У callback немає code або state."
 		}
 	}
 }

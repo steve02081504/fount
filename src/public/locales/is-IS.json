@@ -3826,6 +3826,16 @@
 			"availableModels": "Tiltækar gerðir:",
 			"copied": "Afritað!",
 			"apiKeyRequired": "API lykil er nauðsynleg til að skrá gerðir.",
+			"oauth": {
+				"login": "Skrá inn",
+				"logout": "Skrá út",
+				"loggedIn": "Skráð inn",
+				"notLoggedIn": "Ekki skráð inn",
+				"waiting": "Bíður eftir heimild…",
+				"failed": "Innskráning mistókst: ${message}",
+				"deviceCode": "Opnaðu ${uri} og sláðu inn kóðann ${code}",
+				"credentialsRequired": "Fylltu út nauðsynlega JSON-reiti (region / project / location / account_id / gateway_id / API key). Auðkenni geta einnig komið úr umhverfisbreytum."
+			},
 			"copyModelIdTooltip": "Smelltu til að afrita auðkenni fyrirmyndar",
 			"loadModelsFailed": "Mistókst að hlaða líkani: ${message}",
 			"modelSearchTitle": "Skoða líkanaskrá",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "Næsti miðill"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth-innskráning",
+		"callback": {
+			"working": "Lýkur innskráningu…",
+			"success": "Skráð inn. Þú getur lokað þessari síðu.",
+			"failed": "Innskráning mistókst: ${message}",
+			"missingParams": "Callback vantar code eða state."
 		}
 	}
 }

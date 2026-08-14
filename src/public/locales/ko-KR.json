@@ -3826,6 +3826,16 @@
 			"availableModels": "사용 가능한 모델:",
 			"copied": "복사되었습니다!",
 			"apiKeyRequired": "모델을 나열하려면 API 키가 필요합니다.",
+			"oauth": {
+				"login": "로그인",
+				"logout": "로그아웃",
+				"loggedIn": "로그인됨",
+				"notLoggedIn": "로그인되지 않음",
+				"waiting": "승인 대기 중…",
+				"failed": "로그인 실패: ${message}",
+				"deviceCode": "${uri}를 열고 코드 ${code}를 입력하세요",
+				"credentialsRequired": "JSON에 필요한 필드(region / project / location / account_id / gateway_id / API key 등)를 채우세요. 자격 증명은 환경 변수에서도 올 수 있습니다."
+			},
 			"copyModelIdTooltip": "모델 ID를 복사하려면 클릭하세요.",
 			"loadModelsFailed": "모델 로드 실패: ${message}",
 			"modelSearchTitle": "모델 카탈로그 탐색",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "다음 미디어"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth 로그인",
+		"callback": {
+			"working": "로그인을 완료하는 중…",
+			"success": "로그인되었습니다. 이 페이지를 닫아도 됩니다.",
+			"failed": "로그인 실패: ${message}",
+			"missingParams": "콜백에 code 또는 state가 없습니다."
 		}
 	}
 }

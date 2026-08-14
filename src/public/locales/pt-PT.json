@@ -3832,6 +3832,16 @@
 			"availableModels": "Modelos disponíveis:",
 			"copied": "Copiado!",
 			"apiKeyRequired": "Uma chave de API é necessária para listar modelos.",
+			"oauth": {
+				"login": "Iniciar sessão",
+				"logout": "Terminar sessão",
+				"loggedIn": "Sessão iniciada",
+				"notLoggedIn": "Sem sessão",
+				"waiting": "A aguardar autorização…",
+				"failed": "Falha no início de sessão: ${message}",
+				"deviceCode": "Abra ${uri} e introduza o código ${code}",
+				"credentialsRequired": "Preencha os campos JSON necessários (region / project / location / account_id / gateway_id / API key). As credenciais também podem vir do ambiente."
+			},
 			"copyModelIdTooltip": "Clique para copiar o ID do modelo",
 			"loadModelsFailed": "Falha ao carregar modelo: ${message}",
 			"modelSearchTitle": "Explorar catálogo de modelos",
@@ -5933,6 +5943,15 @@
 			"next": {
 				"aria-label": "Próximo"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Início de sessão OAuth",
+		"callback": {
+			"working": "A concluir o início de sessão…",
+			"success": "Sessão iniciada. Pode fechar esta página.",
+			"failed": "Falha no início de sessão: ${message}",
+			"missingParams": "O callback não tem code ou state."
 		}
 	}
 }

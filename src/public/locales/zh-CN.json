@@ -3826,6 +3826,16 @@
 			"availableModels": "可用模型：",
 			"copied": "已复制！",
 			"apiKeyRequired": "需要 API 密钥才能列出模型。",
+			"oauth": {
+				"login": "登录",
+				"logout": "退出登录",
+				"loggedIn": "已登录",
+				"notLoggedIn": "未登录",
+				"waiting": "等待授权…",
+				"failed": "登录失败：${message}",
+				"deviceCode": "打开 ${uri} 并输入代码 ${code}",
+				"credentialsRequired": "请在 JSON 中填写所需字段（region / project / location / account_id / gateway_id / API key 等）。凭证也可来自本机环境变量。"
+			},
 			"copyModelIdTooltip": "点击以复制模型 ID",
 			"loadModelsFailed": "加载模型失败：${message}",
 			"modelSearchTitle": "浏览模型目录",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "下一项"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth 登录",
+		"callback": {
+			"working": "正在完成登录…",
+			"success": "登录成功，可以关闭此页。",
+			"failed": "登录失败：${message}",
+			"missingParams": "回调缺少 code 或 state。"
 		}
 	}
 }

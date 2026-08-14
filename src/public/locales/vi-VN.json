@@ -3826,6 +3826,16 @@
 			"availableModels": "Các mô hình có sẵn:",
 			"copied": "Đã sao chép!",
 			"apiKeyRequired": "Cần có khóa API để liệt kê các mô hình.",
+			"oauth": {
+				"login": "Đăng nhập",
+				"logout": "Đăng xuất",
+				"loggedIn": "Đã đăng nhập",
+				"notLoggedIn": "Chưa đăng nhập",
+				"waiting": "Đang chờ ủy quyền…",
+				"failed": "Đăng nhập thất bại: ${message}",
+				"deviceCode": "Mở ${uri} và nhập mã ${code}",
+				"credentialsRequired": "Điền các trường JSON cần thiết (region / project / location / account_id / gateway_id / API key). Thông tin xác thực cũng có thể lấy từ biến môi trường."
+			},
 			"copyModelIdTooltip": "Nhấp để sao chép ID mẫu",
 			"loadModelsFailed": "Không tải được mô hình: ${message}",
 			"modelSearchTitle": "Duyệt danh mục mô hình",
@@ -5927,6 +5937,15 @@
 			"next": {
 				"aria-label": "Tiếp theo"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Đăng nhập OAuth",
+		"callback": {
+			"working": "Đang hoàn tất đăng nhập…",
+			"success": "Đăng nhập thành công. Có thể đóng trang này.",
+			"failed": "Đăng nhập thất bại: ${message}",
+			"missingParams": "Callback thiếu code hoặc state."
 		}
 	}
 }

@@ -3832,6 +3832,16 @@
 			"availableModels": "Beschikbare modellen:",
 			"copied": "Gekopieerd!",
 			"apiKeyRequired": "Om modellen weer te geven is een API-sleutel vereist.",
+			"oauth": {
+				"login": "Inloggen",
+				"logout": "Uitloggen",
+				"loggedIn": "Ingelogd",
+				"notLoggedIn": "Niet ingelogd",
+				"waiting": "Wachten op autorisatie…",
+				"failed": "Inloggen mislukt: ${message}",
+				"deviceCode": "Open ${uri} en voer code ${code} in",
+				"credentialsRequired": "Vul de vereiste JSON-velden in (region / project / location / account_id / gateway_id / API key). Credentials kunnen ook uit omgevingsvariabelen komen."
+			},
 			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
 			"loadModelsFailed": "Kan model niet laden: ${message}",
 			"modelSearchTitle": "Modelcatalogus doorbladeren",
@@ -5933,6 +5943,15 @@
 			"next": {
 				"aria-label": "Volgend item"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth-login",
+		"callback": {
+			"working": "Login afronden…",
+			"success": "Ingelogd. Je kunt deze pagina sluiten.",
+			"failed": "Inloggen mislukt: ${message}",
+			"missingParams": "Callback mist code of state."
 		}
 	}
 }

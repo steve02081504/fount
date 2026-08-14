@@ -57,30 +57,44 @@ const configTemplate = {
 /**
  * 获取 AI 源。
  * @param {object} config - 配置对象。
+ * @param {object} [extra] - 可选注入（OAuth / Gateway 等）。
+ * @param {() => (Promise<any> | any)} [extra.getClient] - 每次请求取客户端（可刷新 token）。
+ * @param {object} [extra.clientOptions] - 合并进默认 Anthropic 构造参数。
+ * @param {object} [extra.product_info] - 覆盖产品信息。
  * @returns {Promise<AIsource_t>} AI 源。
  */
-async function GetSource(config) {
+export async function GetSource(config, extra = {}) {
 	const { default: Anthropic } = await import('npm:@anthropic-ai/sdk')
 	const supportedImageTypes = config.allowed_mime_types ?? defaultSupportedImageTypes
-	// 初始化 Anthropic 客户端
-	const clientOptions = {
-		apiKey: config.apikey,
-	}
+	const infoLocales = extra.product_info || product_info
 
-	// 如果配置了 base_url，则设置自定义API地址
-	if (config.base_url)
-		clientOptions.baseURL = config.base_url
-
-
-	// 如果配置了代理 URL，则设置HTTP代理
-	if (config.proxy_url) {
-		const undici = await import('npm:undici')
-		clientOptions.fetchOptions = {
-			dispatcher: new undici.ProxyAgent(config.proxy_url),
+	/**
+	 * 取得 Anthropic 客户端。
+	 * @returns {Promise<any>} 客户端。
+	 */
+	async function getClient() {
+		if (extra.getClient) return extra.getClient()
+		const clientOptions = {
+			apiKey: config.apikey,
+			...extra.clientOptions,
 		}
+		if (config.base_url)
+			clientOptions.baseURL = config.base_url
+		if (config.proxy_url) {
+			const undici = await import('npm:undici')
+			clientOptions.fetchOptions = {
+				dispatcher: new undici.ProxyAgent(config.proxy_url),
+			}
+		}
+		return new Anthropic(clientOptions)
 	}
 
-	const client = new Anthropic(clientOptions)
+	const staticClient = extra.getClient ? undefined : await getClient()
+	/**
+	 * 本次请求用的客户端。
+	 * @returns {Promise<any>} 客户端。
+	 */
+	const clientOf = () => extra.getClient ? getClient() : staticClient
 
 	/**
 	 * AI 源实例。
@@ -88,7 +102,7 @@ async function GetSource(config) {
 	 */
 	const result = {
 		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
+		info: Object.fromEntries(Object.entries(structuredClone(infoLocales)).map(([k, v]) => {
 			v.name = config.name || config.model
 			return [k, v]
 		})),
@@ -111,13 +125,13 @@ async function GetSource(config) {
 			let text = ''
 
 			if (config.use_stream) {
-				const stream = await client.messages.create({ ...params, stream: true })
+				const stream = await (await clientOf()).messages.create({ ...params, stream: true })
 				for await (const event of stream)
 					if (event.type === 'content_block_delta' && event.delta.type === 'text_delta')
 						text += event.delta.text
 			}
 			else {
-				const message = await client.messages.create(params)
+				const message = await (await clientOf()).messages.create(params)
 				// Claude 的响应 content 是一个数组，我们只取文本部分
 				text = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
 			}
@@ -248,7 +262,7 @@ ${chatLogEntry.content}
 			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
 
 			if (useStream) {
-				const stream = await client.messages.create({ ...params, stream: true, signal })
+				const stream = await (await clientOf()).messages.create({ ...params, stream: true, signal })
 				for await (const event of stream) {
 					if (signal?.aborted) {
 						const err = new Error('Aborted by user')
@@ -262,7 +276,7 @@ ${chatLogEntry.content}
 				}
 			}
 			else {
-				const message = await client.messages.create({ ...params, signal })
+				const message = await (await clientOf()).messages.create({ ...params, signal })
 				result.content = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
 				previewUpdater(result)
 			}

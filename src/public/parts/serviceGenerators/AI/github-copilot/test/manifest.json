@@ -1,0 +1,24 @@
+{
+	"id": "serviceGenerators/AI/github-copilot",
+	"suites": [
+		{
+			"name": "integration",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/github-copilot/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/**",
+				"src/public/parts/serviceGenerators/AI/proxy/test/mockFetch.mjs",
+				"src/public/parts/shells/oauth_handler/src/providers.mjs"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/serviceGenerators/AI/github-copilot/test/integration/"
+			]
+		}
+	]
+}

@@ -56,5 +56,7 @@
 | Static checks (HTML / i18n / AGENTS English / JSDoc) | [src/scripts/checks/AGENTS.md](src/scripts/checks/AGENTS.md) |
 | Local search index | [src/scripts/search/AGENTS.md](src/scripts/search/AGENTS.md) |
 | Docs writing (design / review) | [docs/AGENTS.md](docs/AGENTS.md) |
+| OAuth login (AI subscription) | [src/public/parts/shells/oauth_handler/AGENTS.md](src/public/parts/shells/oauth_handler/AGENTS.md) |
+| AI generators (OAuth / IAM / Responses) | [src/public/parts/serviceGenerators/AI/AGENTS.md](src/public/parts/serviceGenerators/AI/AGENTS.md) |
 
 Baselines / reviews (read when needed, not day-to-day): [chat-social-dev-plan](docs/design/chat-social-dev-plan.md) · [world-distribution-spec](docs/design/world-distribution-spec.md) · [human-agent-operational-parity](docs/review/human-agent-operational-parity-review.md) · [chat-social-cabinet-tech-stack](docs/review/chat-social-cabinet-tech-stack.md). Issue trackers: [part-hot-reload](docs/issues/part-hot-reload.md).
