@@ -73,7 +73,7 @@
 
 🤓 💭: **⚡🛠️** + **🫧❤️🤝** 🚫🔥⚔️. ⛲ ➡️ 🌉: ☀️ ➡️ ⌨️🏗️, 📋📝, ⚡💼🫂; 🌙 ➡️ ❤️👂, 🔥💾🫂.
 
-⏳![relative date](https://img.shields.io/date/1727107200?label=费时) 💎🛠️, 🤝![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=贡献者) ❤️, ➕![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=活跃用户) 🌱👥, ⛲ ➡️ 🎓, 😌, 🔄 AI 🤝🏠.
+![relative date](https://img.shields.io/date/1727107200?label=⏳) 💎🛠️, ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=🤝) ❤️, ➕![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=👥) 🌱, ⛲ ➡️ 🎓, 😌, 🔄 AI 🤝🏠.
 
 0️⃣➡️⚙️ / 🏗️ / 🐣 ➡️ 👥📚 [**⛲ 0️⃣➡️🐣📖**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) (📚 ➡️ 🈲, 🚫🈲👤 ➡️ 🌐🔄👀).
 
