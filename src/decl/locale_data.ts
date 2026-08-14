@@ -3794,6 +3794,16 @@ export type LocaleData = {
 			availableModels: string
 			copied: string
 			apiKeyRequired: string
+			oauth: {
+				login: string
+				logout: string
+				loggedIn: string
+				notLoggedIn: string
+				waiting: string
+				failed: string
+				deviceCode: string
+				credentialsRequired: string
+			}
 			copyModelIdTooltip: string
 			loadModelsFailed: string
 			modelSearchTitle: string
@@ -5897,6 +5907,15 @@ export type LocaleData = {
 			}
 		}
 	}
+	oauth_handler: {
+		title: string
+		callback: {
+			working: string
+			success: string
+			failed: string
+			missingParams: string
+		}
+	}
 }
 // 用于从嵌套对象生成点表示法键的实用类型。
 type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ...0[]]
@@ -6349,6 +6368,7 @@ export type LocaleKeyParams = {
 	'log_viewer.logs.openSourceFailed': { message: string | number }
 	'login_info.modal.retrieve_error': { error: string | number }
 	'login_info.modal.transfer_error': { error: string | number }
+	'oauth_handler.callback.failed': { message: string | number }
 	'part_config.alerts.loadEditorFailed': { message: string | number }
 	'part_config.alerts.saveConfigFailed': { message: string | number }
 	'protocolhandler.offline_dialog.message': { hostUrl: string | number }
@@ -6377,6 +6397,8 @@ export type LocaleKeyParams = {
 	'serviceSource_manager.common_config_interface.meta.outputPrice': { price: string | number }
 	'serviceSource_manager.common_config_interface.meta.releaseDate': { date: string | number }
 	'serviceSource_manager.common_config_interface.modelsDevLoadFailed': { message: string | number }
+	'serviceSource_manager.common_config_interface.oauth.deviceCode': { code: string | number; uri: string | number }
+	'serviceSource_manager.common_config_interface.oauth.failed': { message: string | number }
 	'serviceSource_manager.common_config_interface.providerDocLink': { url: string | number }
 	'serviceSource_manager.common_config_interface.providerLabel': { provider: string | number }
 	'social.actions.blockFailed': { error: string | number }
