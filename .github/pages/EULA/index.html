@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="The Story of fount: Unveiling the Narrative in Your Tongue" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/readme/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="A quiet redirection to the heart of fount's documentation, finding the words that speak most clearly to you. The journey of understanding begins here." />
+	<meta name="description" content="A quiet redirection to the heart of fount's documentation, finding the words that speak most clearly to you. The journey of understanding begins here." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<link rel="icon" type="image/png" href="https://steve02081504.github.io/fount/imgs/icon.png" />
+	<link rel="icon" type="image/ico" href="https://steve02081504.github.io/fount/imgs/icon.ico" />
+	<title>Language Redirect</title>
+</head>
+
+<body>
+	<main aria-hidden="true"><!-- Redirect page; main content is script-driven --></main>
+	<script>
+		const README_BLOB = 'https://github.com/steve02081504/fount/blob/master/docs/readme/Readme.'
+		const ALIAS = {
+			zh: 'zh-CN', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', 'zh-HK': 'zh-TW',
+			en: 'en-UK', 'en-UK': 'en-UK', 'en-GB': 'en-UK',
+			ja: 'ja-JP', 'ja-JP': 'ja-JP',
+			fr: 'fr-FR', 'fr-FR': 'fr-FR',
+			es: 'es-ES', 'es-ES': 'es-ES',
+			de: 'de-DE', 'de-DE': 'de-DE',
+			ru: 'ru-RU', 'ru-RU': 'ru-RU',
+			pt: 'pt-BR', 'pt-BR': 'pt-BR', 'pt-PT': 'pt-BR',
+			hi: 'hi-IN', 'hi-IN': 'hi-IN',
+			ko: 'ko-KR', 'ko-KR': 'ko-KR',
+			it: 'it-IT', 'it-IT': 'it-IT',
+			vi: 'vi-VN', 'vi-VN': 'vi-VN',
+			ar: 'ar-SA', 'ar-SA': 'ar-SA',
+			is: 'is-IS', 'is-IS': 'is-IS',
+			nl: 'nl-NL', 'nl-NL': 'nl-NL',
+			uk: 'uk-UA', 'uk-UA': 'uk-UA',
+		}
+		const raw = navigator.language || navigator.userLanguage || ''
+		const [lang, region] = raw.split('-')
+		const tag = region ? `${lang.toLowerCase()}-${region.toUpperCase()}` : lang.toLowerCase()
+		window.location.href = README_BLOB + (ALIAS[tag] || ALIAS[lang.toLowerCase()] || 'en-UK') + '.md' + location.hash
+	</script>
+</body>
+
+</html>
