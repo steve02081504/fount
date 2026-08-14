@@ -15,7 +15,7 @@
 				"./path/test/"
 			],
 			"triggers": [
-				"path/**/*.{sh,ps1}",
+				"path/**/*.{sh,ps1,mjs}",
 				"path/test/**",
 				"src/scripts/test/deno/serial.mjs",
 				"src/scripts/test/core/{repo_root,paths}.mjs"

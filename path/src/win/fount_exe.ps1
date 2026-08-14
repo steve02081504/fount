@@ -50,13 +50,3 @@ function script:New-FountExe($executablePath = "fount.exe") {
 		Send-Ps12exeThrowIssue $_
 	}
 }
-
-function script:Install-FountRootExe {
-	$executablePath = "$FOUNT_DIR/fount.exe"
-	if (Test-Path -LiteralPath $executablePath) { return }
-	$errorCount = $Error.Count
-	# Optional Steam exe: keep $Error / $LastExitCode from reaching `fount server`.
-	New-FountExe $executablePath
-	while ($Error.Count -gt $errorCount) { $Error.RemoveAt(0) }
-	$global:LastExitCode = 0
-}
