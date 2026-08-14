@@ -1426,6 +1426,7 @@ export type LocaleData = {
 				}
 				page: {
 					title: string
+					description: string
 					kicker: string
 					subtitle: string
 					backToChat: string
