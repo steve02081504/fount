@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "依存関係をインストールしています...",
+				"compilingFavicon": "ファビコンが見つかりません。サーバーを起動して生成しています...",
 				"packageFailed": "エラー: ${package} のインストールに失敗しました。",
 				"browserMissing": "デフォルトのブラウザが検出されません。インストールしようとしています...",
 				"untrustedPartsWarning": "信頼できない fount コンポーネントはシステムにインストールしないでください。コンポーネントは何でもできるからです。",

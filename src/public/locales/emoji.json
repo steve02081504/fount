@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "📥🧩…",
+				"compilingFavicon": "🚫🔖, 🖥️🔨…",
 				"packageFailed": "❌: ${package} 📥💥",
 				"browserMissing": "🚫🌐, 🔄📥…",
 				"untrustedPartsWarning": "🚫❓ ⛲🧩 ➡️ ☣️",

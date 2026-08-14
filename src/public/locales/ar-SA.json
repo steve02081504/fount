@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "تثبيت التبعيات...",
+				"compilingFavicon": "ملف الأيقونة غير موجود؛ جارٍ تشغيل الخادم للتجميع...",
 				"packageFailed": "خطأ: فشل تثبيت ${package}.",
 				"browserMissing": "لم يتم اكتشاف المتصفح الافتراضي، جاري محاولة التثبيت...",
 				"untrustedPartsWarning": "لا تقم بتثبيت أي مكونات غير موثوقة على نظامك، يمكنها فعل أي شيء.",

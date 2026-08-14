@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "正置其依賴...",
+				"compilingFavicon": "網頁徽圖無存，正啟伺服以編之...",
 				"packageFailed": "誤：${package} 置未遂。",
 				"browserMissing": "未獲預設瀏覽器，試置之...",
 				"untrustedPartsWarning": "勿在系統置任何不受信之 fount 部件，其能行萬事",

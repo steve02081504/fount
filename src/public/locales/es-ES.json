@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Instalando dependencias...",
+				"compilingFavicon": "No se encuentra el favicon ; iniciando el servidor para compilarlo...",
 				"packageFailed": "Error: La instalación de ${package} falló.",
 				"browserMissing": "Navegador predeterminado no detectado, intentando instalar...",
 				"untrustedPartsWarning": "No instale ningún componente fount que no sea de confianza en su sistema, pueden hacer cualquier cosa.",

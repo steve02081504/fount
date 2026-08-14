@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Installation des dépendances...",
+				"compilingFavicon": "Favicon introuvable ; démarrage du serveur pour le compiler...",
 				"packageFailed": "Erreur : L'installation de ${package} a échoué.",
 				"browserMissing": "Navigateur par défaut non détecté, tentative d'installation...",
 				"untrustedPartsWarning": "N'installez aucun composant de fount non fiable sur votre système, ils peuvent tout faire.",

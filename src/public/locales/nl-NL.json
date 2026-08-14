@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Afhankelijkheden installeren...",
+				"compilingFavicon": "Faviconbestand niet gevonden ; server wordt gestart om te compileren...",
 				"packageFailed": "Fout: Installatie van ${package} is mislukt.",
 				"browserMissing": "Standaardbrowser niet gedetecteerd, probeert te installeren...",
 				"untrustedPartsWarning": "Installeer geen onbetrouwbare fountcomponenten op uw systeem; deze kunnen alles doen.",

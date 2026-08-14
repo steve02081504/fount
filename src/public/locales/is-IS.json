@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Setur upp ósjálfstæði...",
+				"compilingFavicon": "Favicon skrá finnst ekki ; ræsi þjón til að búa hana til...",
 				"packageFailed": "Villa: Uppsetning á ${package} mistókst.",
 				"browserMissing": "Sjálfgefinn vafri fannst ekki, reynir að setja upp...",
 				"untrustedPartsWarning": "Ekki setja upp neina ótryggða leturíhluti á kerfið þitt, þeir geta gert hvað sem er.",

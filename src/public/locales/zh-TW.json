@@ -464,6 +464,7 @@
 			},
 			"install": {
 				"installingDependencies": "正在安裝相依套件...",
+				"compilingFavicon": "圖示檔不存在，正在啟動伺服器編譯...",
 				"packageFailed": "錯誤：${package} 安裝失敗。",
 				"browserMissing": "未檢測到預設瀏覽器，正在嘗試安裝...",
 				"untrustedPartsWarning": "不要在您的系統上安裝任何不受信任的 fount 元件，它們可以做任何事情。",

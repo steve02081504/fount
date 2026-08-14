@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Installing dependencies...",
+				"compilingFavicon": "Favicon not found; starting server to compile...",
 				"packageFailed": "Error: Installation of ${package} failed.",
 				"browserMissing": "Default browser not detected, trying to install...",
 				"untrustedPartsWarning": "Do not install any untrusted fount components on your system, they can do anything.",

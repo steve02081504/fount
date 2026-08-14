@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Installazione delle dipendenze...",
+				"compilingFavicon": "File favicon non trovato ; avvio del server per compilarlo...",
 				"packageFailed": "Errore: installazione di ${package} non riuscita.",
 				"browserMissing": "Browser predefinito non rilevato, tentativo di installazione...",
 				"untrustedPartsWarning": "Non installare componenti di fount non attendibili sul tuo sistema, possono fare qualsiasi cosa.",

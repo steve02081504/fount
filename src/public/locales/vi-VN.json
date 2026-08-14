@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Đang cài đặt các phần phụ thuộc...",
+				"compilingFavicon": "Không tìm thấy favicon ; đang khởi động máy chủ để biên dịch...",
 				"packageFailed": "Lỗi: Cài đặt ${package} không thành công.",
 				"browserMissing": "Không tìm thấy trình duyệt mặc định, đang cố gắng cài đặt...",
 				"untrustedPartsWarning": "Không cài đặt bất kỳ thành phần nguồn không đáng tin cậy nào trên hệ thống của bạn, chúng có thể làm bất cứ điều gì.",
