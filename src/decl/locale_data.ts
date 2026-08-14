@@ -3832,6 +3832,14 @@ export type LocaleData = {
 				vision: string
 			}
 		}
+		platforms: {
+			bedrock: {
+				credentialsRequired: string
+			}
+			vertex: {
+				credentialsRequired: string
+			}
+		}
 		prompts: {
 			newFileName: string
 		}
