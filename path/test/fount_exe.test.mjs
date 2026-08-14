@@ -66,18 +66,19 @@ function script:ps12exe {
 $script:ghLog = @()
 function script:gh {
 	$script:ghLog += , ($args -join ' ')
-	if ($args[0] -eq 'auth') { cmd /c "exit ${ghMode === 'unauth' ? '1' : '0'}"; return }
+	# LastExitCode must be assigned — do not use cmd.exe (path tests run on Linux CI).
+	if ($args[0] -eq 'auth') { $global:LastExitCode = ${ghMode === 'unauth' ? '1' : '0'}; return }
 	if ($args[0] -eq 'issue' -and $args[1] -eq 'list') {
-		cmd /c "exit 0"
+		$global:LastExitCode = 0
 		if (${JSON.stringify(ghMode)} -eq 'existing') { return '[{"url":"https://github.com/steve02081504/ps12exe/issues/1"}]' }
 		return '[]'
 	}
 	if ($args[0] -eq 'issue' -and $args[1] -eq 'create') {
-		cmd /c "exit 0"
+		$global:LastExitCode = 0
 		$script:ghLog += , 'GH_CREATE'
 		return
 	}
-	cmd /c "exit 1"
+	$global:LastExitCode = 1
 }
 $ErrorCount = $Error.Count
 ${call}
@@ -129,6 +130,8 @@ Deno.test('Install-FountRootExe swallows ps12exe throw even when ico exists', as
 	})
 	assertEquals(result.code, 0, result.stderr || result.stdout)
 	assertStringIncludes(result.stdout, 'OK')
+	if (result.stdout.includes('GH issue create') || result.stdout.includes('GH_CREATE'))
+		throw new Error(`unauthenticated gh filed an issue:\n${result.stdout}`)
 })
 
 Deno.test('New-FountExe still fails hard when ps12exe throws', async () => {

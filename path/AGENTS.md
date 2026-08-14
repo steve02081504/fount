@@ -38,7 +38,7 @@ Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/s
 
 ## CI smoke
 
-CI-only `path-cmd-smoke`: [docs/ci-smoke.md](docs/ci-smoke.md). `test-fount` init → `remove` fails if output matches [remove-noise.patterns](../.github/path-ci/remove-noise.patterns).
+CI-only `path-cmd-smoke`: [docs/ci-smoke.md](docs/ci-smoke.md). `test-fount` init → `remove` fails if output matches [remove-noise.patterns](../.github/path-ci/remove-noise.patterns). pwsh harnesses in `path/test` run on Linux CI — set `$LastExitCode` directly; do not call `cmd.exe`.
 
 ## ShellCheck
 
