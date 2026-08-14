@@ -1,4 +1,4 @@
-﻿function script:Ensure-FountFavicon {
+﻿function script:Initialize-FountFavicon {
 	$iconPath = "$FOUNT_DIR/src/public/pages/favicon.ico"
 	if (Test-Path -LiteralPath $iconPath) { return }
 	Write-Host (Get-I18n -key 'install.compilingFavicon')
@@ -42,7 +42,7 @@ After a fix: drop the swallow/`catch` and this auto-report in https://github.com
 }
 
 function script:New-FountExe($executablePath = "fount.exe") {
-	Ensure-FountFavicon
+	Initialize-FountFavicon
 	Test-PWSHModule ps12exe
 	try {
 		ps12exe -inputFile "$FOUNT_DIR/src/runner/main.ps1" -outputFile $executablePath
@@ -55,6 +55,8 @@ function script:New-FountExe($executablePath = "fount.exe") {
 function script:Install-FountRootExe {
 	$executablePath = "$FOUNT_DIR/fount.exe"
 	if (Test-Path -LiteralPath $executablePath) { return }
+	$errorCount = $Error.Count
 	New-FountExe $executablePath
+	while ($Error.Count -gt $errorCount) { $Error.RemoveAt(0) }
 	$global:LastExitCode = 0
 }
