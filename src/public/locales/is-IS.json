@@ -1458,6 +1458,7 @@
 				},
 				"page": {
 					"title": "Hópstillingar",
+					"description": "Sjá um auðkenni hópsins, meðlimi, heimildir og tækin sem binda sameiginlega sviðið.",
 					"kicker": "Hópstjórn",
 					"subtitle": "Stjórna hópupplýsingum, meðlimum og sameiginlegum aðgerðum. Lágtíðniheimildir, geymsla og endurskoðunartæki eru miðlæg í háþróuðum stillingum.",
 					"backToChat": "Fara aftur í spjallið",

@@ -1458,6 +1458,7 @@
 				},
 				"page": {
 					"title": "Groepsinstellingen",
+					"description": "Beheer de identiteit, leden, rechten en de tools die jullie gedeelde podium verbinden.",
 					"kicker": "Groepsbeheer",
 					"subtitle": "Beheer groepsinformatie, leden en gemeenschappelijke functies. Laagfrequente machtigingen, opslag en auditingtools zijn gecentraliseerd in geavanceerde instellingen.",
 					"backToChat": "Terug naar chat",

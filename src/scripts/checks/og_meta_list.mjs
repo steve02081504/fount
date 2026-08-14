@@ -37,6 +37,18 @@ export function inspectOgMeta(content) {
 }
 
 /**
+ * 路径是否等于 under，或位于 under 目录下（避免 pages 误收 pages2）。
+ * @param {string} rel 仓库相对路径
+ * @param {string} [under] 规范化前缀
+ * @returns {boolean}
+ */
+export function pathMatchesUnder(rel, under) {
+	if (!under) return true
+	const path = rel.replace(/\\/g, '/')
+	return path === under || path.startsWith(`${under}/`)
+}
+
+/**
  * @param {string} repoRoot 仓库根
  * @param {{ under?: string }} [options]
  * @returns {Promise<{ files: string[], entries: Array<{ path: string, title: string, description: string }> }>}
@@ -44,7 +56,7 @@ export function inspectOgMeta(content) {
 export async function listOgMeta(repoRoot, options = {}) {
 	const under = options.under?.replace(/\\/g, '/').replace(/\/$/, '') ?? ''
 	const files = (await listRepoFiles(repoRoot, ['.html']))
-		.filter(rel => !under || rel.replace(/\\/g, '/').startsWith(under))
+		.filter(rel => pathMatchesUnder(rel, under))
 
 	/** @type {Array<{ path: string, title: string, description: string }>} */
 	const entries = []

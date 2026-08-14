@@ -28,7 +28,7 @@ alwaysApply: false
 ## Implementation
 
 1. Backend: `main.mjs` + `src/endpoints.mjs` + `authenticate` from `@src/server/auth/index.mjs`.
-2. Frontend: `public/index.html` — `/preload.mjs`, `/base.css`, `/base.mjs`. Full pages need an `h1` (axe `page-has-heading-one`) and locale leaves `${pageid}.title` + `.description` when `meta[name="description"]` is present ([i18n-notes](../../pages/docs/i18n-notes.md#pageid-title--description)).
+2. Frontend: `public/index.html` — `/preload.mjs`, `/base.css`, `/base.mjs`. Full pages need an `h1` (axe `page-has-heading-one`) and locale leaves `${pageid}.title` + `.description` when `meta[name="description"]` is present ([i18n-notes](../../pages/docs/i18n-notes.md#page-id-title--description)).
 3. Shared scripts: `@src/public/pages/scripts/`.
 4. **GetReply identity**: when building `chatReplyRequest` yourself, `User*` must be the local operator; message authors go only in `ReplyTo*` / `chat_log[].uid`. Details: [chat/session/AGENTS.md](chat/src/chat/session/AGENTS.md) Speaker identity. Platform bots use virtual bridge sessions — never `newGroup` for Discord/Telegram/WeChat chats.
 5. Add `public/llms.txt`.

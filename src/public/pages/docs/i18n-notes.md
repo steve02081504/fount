@@ -38,6 +38,6 @@ Icon-only controls: locale `{ title, aria-label }` ([locale-edits.md](../../loca
 
 Setting `data-i18n` (or inserting markup that has it) is enough — body MutationObserver runs `i18nElement`; do not call it again. Use `setElementI18n` only when the key is unchanged but interpolation params change.
 
-## Pageid title / description
+## Page ID title / description
 
 `initTranslations('foo')` always sets `document.title` from `foo.title`. If the document has `meta[name="description"]` (`checks:html_meta` requires it on full pages), it also `geti18n`s `foo.description` — a missing leaf is a Playwright `[i18n:missing]` hard-fail. Ship both keys with the page. Page watch cycles zh-CN → ja-JP → en-UK, so those three files need the string before PR locale sync.

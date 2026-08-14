@@ -1458,6 +1458,7 @@
 				},
 				"page": {
 					"title": "Paramètres du groupe",
+					"description": "Gérez l'identité du groupe, ses membres, ses permissions et les outils qui lient votre scène partagée.",
 					"kicker": "Gestion de groupe",
 					"subtitle": "Gérez les informations du groupe, les membres et les fonctions communes. Les autorisations basse fréquence, le stockage et les outils d'audit sont centralisés dans les paramètres avancés.",
 					"backToChat": "Revenir au chat",

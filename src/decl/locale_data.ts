@@ -448,6 +448,7 @@ export type LocaleData = {
 			}
 			install: {
 				installingDependencies: string
+				compilingFavicon: string
 				packageFailed: string
 				browserMissing: string
 				untrustedPartsWarning: string

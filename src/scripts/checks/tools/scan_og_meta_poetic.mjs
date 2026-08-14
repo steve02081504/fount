@@ -13,10 +13,9 @@ import { listOgMeta } from '../og_meta_list.mjs'
 const under = Deno.args[0] || ''
 const { files, entries } = await listOgMeta(REPO_ROOT, under ? { under } : {})
 
-const scope = under || '仓库'
-console.log(`${scope}: ${entries.length} 个 HTML 含 og meta（共 ${files.length} 个 .html）\n`)
+console.log(`${under || '仓库'}: ${entries.length} 个 HTML 含 og meta（共 ${files.length} 个 .html）\n`)
 
-for (const entry of entries.sort((a, b) => a.path.localeCompare(b.path))) {
+for (const entry of entries.sort((firstEntry, secondEntry) => firstEntry.path.localeCompare(secondEntry.path))) {
 	console.log(entry.path)
 	console.log(`  og:title: ${entry.title}`)
 	console.log(`  og:description: ${entry.description}`)

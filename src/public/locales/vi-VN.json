@@ -1458,6 +1458,7 @@
 				},
 				"page": {
 					"title": "Cài đặt nhóm",
+					"description": "Quản lý danh tính nhóm, thành viên, quyền hạn và các công cụ gắn kết sân khấu chung.",
 					"kicker": "Quản lý nhóm",
 					"subtitle": "Quản lý thông tin nhóm, thành viên và chức năng chung. Các công cụ cấp phép, lưu trữ và kiểm tra tần số thấp được tập trung trong cài đặt nâng cao.",
 					"backToChat": "Quay lại trò chuyện",

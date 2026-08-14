@@ -1458,6 +1458,7 @@
 				},
 				"page": {
 					"title": "Configuración de grupo",
+					"description": "Gestiona la identidad del grupo, sus miembros, permisos y las herramientas que unen vuestro escenario compartido.",
 					"kicker": "Group management",
 					"subtitle": "Gestionar información del grupo, miembros y funciones comunes. Los permisos de baja frecuencia, el almacenamiento y las herramientas de auditoría están centralizados en ajustes avanzadas.",
 					"backToChat": "Volver al chat",

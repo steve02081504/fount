@@ -1458,6 +1458,7 @@
 				},
 				"page": {
 					"title": "Gruppeneinstellungen",
+					"description": "Verwalten Sie Identität, Mitglieder, Berechtigungen und die Werkzeuge, die Ihre gemeinsame Bühne verbinden.",
 					"kicker": "Gruppenleitung",
 					"subtitle": "Verwalten Sie Gruppeninformationen, Mitglieder und allgemeine Funktionen. Low-Frequency-Berechtigungen, Speicher und Überwachungstools sind in erweiterten Einstellungen zentralisiert.",
 					"backToChat": "Zurück zum Chat",

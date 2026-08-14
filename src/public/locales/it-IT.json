@@ -1458,6 +1458,7 @@
 				},
 				"page": {
 					"title": "Impostazioni del gruppo",
+					"description": "Gestisci identità, membri, permessi del gruppo e gli strumenti che legano il palcoscenico condiviso.",
 					"kicker": "Impostazioni del gruppo",
 					"subtitle": "Gestisci le informazioni del gruppo, i membri e le funzioni comuni. Le autorizzazioni a bassa frequenza, l'archiviazione e gli strumenti di controllo sono centralizzati in impostazioni avanzate.",
 					"backToChat": "Torna alla chat",

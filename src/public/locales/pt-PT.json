@@ -1458,6 +1458,7 @@
 				},
 				"page": {
 					"title": "Definições de grupo",
+					"description": "Gira a identidade do grupo, os membros, as permissões e as ferramentas que unem o palco partilhado.",
 					"kicker": "Definições de grupo",
 					"subtitle": "Gira informações do grupo, membros e funções comuns. Permissões de baixa frequência, armazenamento e ferramentas de auditoria são centralizadas em definições avançadas.",
 					"backToChat": "Voltar a chat",

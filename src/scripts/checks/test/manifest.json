@@ -12,11 +12,12 @@
 				"--allow-all",
 				"-c",
 				"./deno.json",
-				"./src/scripts/checks/test/html_meta.test.mjs"
+				"./src/scripts/checks/test/html_meta.test.mjs",
+				"./src/scripts/checks/test/og_meta_list.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/checks/{html_meta.mjs,walk.mjs}",
-				"src/scripts/checks/test/html_meta.test.mjs",
+				"src/scripts/checks/{html_meta.mjs,og_meta_list.mjs,walk.mjs}",
+				"src/scripts/checks/test/{html_meta.test.mjs,og_meta_list.test.mjs}",
 				"**/*.html"
 			]
 		},
