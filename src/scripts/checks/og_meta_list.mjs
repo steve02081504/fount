@@ -10,8 +10,9 @@ import { isFullHtmlDocument } from './html_meta.mjs'
 import { listRepoFiles } from './walk.mjs'
 
 /**
- * @param {Document} document
- * @returns {{ title: string, description: string } | null}
+ * 从 DOM 文档提取 og:title / og:description。
+ * @param {Document} document 解析后的 HTML 文档
+ * @returns {{ title: string, description: string } | null} 至少一项非空则返回对象，否则 null
  */
 export function extractOgMeta(document) {
 	const head = document.querySelector('head')
@@ -23,8 +24,9 @@ export function extractOgMeta(document) {
 }
 
 /**
+ * 从 HTML 文本提取 og 元数据。
  * @param {string} content HTML 文本
- * @returns {{ skipped: true } | { skipped: false, meta: { title: string, description: string } }}
+ * @returns {{ skipped: true } | { skipped: false, meta: { title: string, description: string } }} 非完整文档或无 og 则 skipped
  */
 export function inspectOgMeta(content) {
 	if (!isFullHtmlDocument(content))
@@ -40,7 +42,7 @@ export function inspectOgMeta(content) {
  * 路径是否等于 under，或位于 under 目录下（避免 pages 误收 pages2）。
  * @param {string} rel 仓库相对路径
  * @param {string} [under] 规范化前缀
- * @returns {boolean}
+ * @returns {boolean} 匹配前缀或等于 under 则为 true
  */
 export function pathMatchesUnder(rel, under) {
 	if (!under) return true
@@ -49,9 +51,10 @@ export function pathMatchesUnder(rel, under) {
 }
 
 /**
+ * 列举仓库内带 og 元数据的 HTML。
  * @param {string} repoRoot 仓库根
- * @param {{ under?: string }} [options]
- * @returns {Promise<{ files: string[], entries: Array<{ path: string, title: string, description: string }> }>}
+ * @param {{ under?: string }} [options] 可选路径前缀过滤
+ * @returns {Promise<{ files: string[], entries: Array<{ path: string, title: string, description: string }> }>} 文件列表与 og 条目
  */
 export async function listOgMeta(repoRoot, options = {}) {
 	const under = options.under?.replace(/\\/g, '/').replace(/\/$/, '') ?? ''
