@@ -3866,10 +3866,10 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
+				"credentialsRequired": "Налаштуйте стандартний ланцюжок облікових даних AWS і вкажіть region у JSON."
 			},
 			"vertex": {
-				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+				"credentialsRequired": "Налаштуйте ADC і вкажіть project та location у JSON."
 			}
 		},
 		"prompts": {

@@ -3869,7 +3869,7 @@
 				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
 			},
 			"vertex": {
-				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+				"credentialsRequired": "请配置 ADC（应用默认凭据），并在 JSON 中填写 project 与 location。"
 			}
 		},
 		"prompts": {

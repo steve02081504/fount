@@ -3866,10 +3866,10 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
+				"credentialsRequired": "AWS 기본 자격 증명 체인을 구성하고 JSON에 region을 입력하세요."
 			},
 			"vertex": {
-				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+				"credentialsRequired": "ADC를 구성한 뒤 JSON에 project와 location을 입력하세요."
 			}
 		},
 		"prompts": {

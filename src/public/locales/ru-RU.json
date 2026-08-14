@@ -3866,10 +3866,10 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "Настройте цепочку учётных данных AWS по умолчанию и укажите region в JSON."
+				"credentialsRequired": "Настройте стандартную цепочку учётных данных AWS и укажите region в JSON."
 			},
 			"vertex": {
-				"credentialsRequired": "Настройте ADC и укажите project и location в JSON."
+				"credentialsRequired": "Настройте ADC (Application Default Credentials) и укажите project и location в JSON."
 			}
 		},
 		"prompts": {

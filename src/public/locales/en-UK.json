@@ -3869,7 +3869,7 @@
 				"credentialsRequired": "Configure the AWS default credential chain and set region in the JSON."
 			},
 			"vertex": {
-				"credentialsRequired": "Configure ADC, then set project and location in the JSON."
+				"credentialsRequired": "Configure Application Default Credentials (ADC), then set project and location in the JSON."
 			}
 		},
 		"prompts": {

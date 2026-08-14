@@ -3868,7 +3868,7 @@
 				"credentialsRequired": "請設定 AWS 預設憑證鏈，並在 JSON 中填寫 region。"
 			},
 			"vertex": {
-				"credentialsRequired": "請設定 ADC，並在 JSON 中填寫 project 與 location。"
+				"credentialsRequired": "請設定 ADC（應用程式預設憑證），並在 JSON 中填寫 project 與 location。"
 			}
 		},
 		"prompts": {

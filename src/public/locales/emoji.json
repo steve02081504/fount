@@ -3866,10 +3866,10 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "AWS chain + region"
+				"credentialsRequired": "🔑 AWS chain → region"
 			},
 			"vertex": {
-				"credentialsRequired": "ADC + project/location"
+				"credentialsRequired": "🔑 ADC → project/location"
 			}
 		},
 		"prompts": {

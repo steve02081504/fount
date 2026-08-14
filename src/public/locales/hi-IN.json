@@ -3866,10 +3866,10 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
+				"credentialsRequired": "AWS डिफ़ॉल्ट क्रेडेंशियल चेन कॉन्फ़िगर करें और JSON में region भरें।"
 			},
 			"vertex": {
-				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+				"credentialsRequired": "ADC कॉन्फ़िगर करें और JSON में project व location भरें।"
 			}
 		},
 		"prompts": {

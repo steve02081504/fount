@@ -3872,10 +3872,10 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
+				"credentialsRequired": "Configurez la chaîne d’identifiants AWS par défaut et renseignez region dans le JSON."
 			},
 			"vertex": {
-				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+				"credentialsRequired": "Configurez ADC, puis renseignez project et location dans le JSON."
 			}
 		},
 		"prompts": {

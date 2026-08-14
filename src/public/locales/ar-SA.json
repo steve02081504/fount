@@ -3866,10 +3866,10 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
+				"credentialsRequired": "يُرجى تهيئة سلسلة بيانات اعتماد AWS الافتراضية وتحديد region في JSON."
 			},
 			"vertex": {
-				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+				"credentialsRequired": "يُرجى تهيئة ADC وتحديد project و location في JSON."
 			}
 		},
 		"prompts": {

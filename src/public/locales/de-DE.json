@@ -3831,7 +3831,7 @@
 				"logout": "Abmelden",
 				"loggedIn": "Angemeldet",
 				"notLoggedIn": "Nicht angemeldet",
-				"waiting": "Warten Sie auf die Autorisierung…",
+				"waiting": "Bitte warten Sie auf die Autorisierung…",
 				"failed": "Anmeldung fehlgeschlagen: ${message}",
 				"deviceCode": "Öffnen Sie ${uri} und geben Sie den Code ${code} ein",
 				"credentialsRequired": "Füllen Sie die erforderlichen JSON-Felder aus (region / project / location / account_id / gateway_id / API key). Zugangsdaten können auch aus Umgebungsvariablen kommen."
@@ -3866,10 +3866,10 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "Konfigurieren Sie die AWS-Standard-Anmeldeinformationskette und tragen Sie region in JSON ein."
+				"credentialsRequired": "Richten Sie die standardmäßige AWS-Anmeldeinformationskette ein und tragen Sie region im JSON ein."
 			},
 			"vertex": {
-				"credentialsRequired": "Konfigurieren Sie ADC und tragen Sie project und location in JSON ein."
+				"credentialsRequired": "Richten Sie Application Default Credentials (ADC) ein und tragen Sie project und location im JSON ein."
 			}
 		},
 		"prompts": {
