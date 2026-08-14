@@ -465,7 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Setur upp ósjálfstæði...",
-				"compilingFavicon": "Favicon skrá finnst ekki ; ræsi þjón til að búa hana til...",
+				"compilingFavicon": "Faviconskrá finnst ekki; ræsi vefþjón til að búa hana til...",
 				"packageFailed": "Villa: Uppsetning á ${package} mistókst.",
 				"browserMissing": "Sjálfgefinn vafri fannst ekki, reynir að setja upp...",
 				"untrustedPartsWarning": "Ekki setja upp neina ótryggða leturíhluti á kerfið þitt, þeir geta gert hvað sem er.",
@@ -3836,7 +3836,7 @@
 				"waiting": "Bíður eftir heimild…",
 				"failed": "Innskráning mistókst: ${message}",
 				"deviceCode": "Opnaðu ${uri} og sláðu inn kóðann ${code}",
-				"credentialsRequired": "Fylltu út nauðsynlega JSON-reiti (region / project / location / account_id / gateway_id / API key). Auðkenni geta einnig komið úr umhverfisbreytum."
+				"credentialsRequired": "Fylltu út nauðsynlega JSON-reiti (region / project / location / account_id / gateway_id / API key). Aðgangsupplýsingar geta einnig komið úr umhverfisbreytum."
 			},
 			"copyModelIdTooltip": "Smelltu til að afrita auðkenni fyrirmyndar",
 			"loadModelsFailed": "Mistókst að hlaða líkani: ${message}",

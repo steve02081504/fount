@@ -27,14 +27,18 @@ async function runNewFountExeHarness(missingIcon) {
 		if (!missingIcon)
 			await writeFile(join(root, 'src', 'public', 'pages', 'favicon.ico'), 'ico')
 
-		const rootLit = JSON.stringify(root)
-		const srcLit = JSON.stringify(fountExePs1)
-
 		return await pwsh_exec(`
 $ErrorActionPreference = 'Stop'
-$FOUNT_DIR = ${rootLit}
-. ${srcLit}
+$FOUNT_DIR = ${JSON.stringify(root)}
+. ${JSON.stringify(fountExePs1)}
 function script:Test-PWSHModule([string]$ModuleName) {}
+function script:Get-I18n($key) { $key }
+$script:serverStarted = $false
+function script:run {
+	if ($args[0] -ne 'shutdown') { return }
+	$script:serverStarted = $true
+	Set-Content -LiteralPath "$FOUNT_DIR/src/public/pages/favicon.ico" 'compiled-ico'
+}
 function script:ps12exe {
 	param($inputFile, $outputFile)
 	$icon = Join-Path $FOUNT_DIR 'src/public/pages/favicon.ico'
@@ -43,13 +47,6 @@ function script:ps12exe {
 		exit 1
 	}
 	Set-Content -LiteralPath $outputFile 'fake-exe'
-}
-$script:serverStarted = $false
-function script:Ensure-FountFavicon {
-	$icon = Join-Path $FOUNT_DIR 'src/public/pages/favicon.ico'
-	if (Test-Path -LiteralPath $icon) { return }
-	$script:serverStarted = $true
-	Set-Content -LiteralPath $icon 'compiled-ico'
 }
 New-FountExe (Join-Path $FOUNT_DIR 'out.exe')
 if ($script:serverStarted) { Write-Output 'SERVER_STARTED' }

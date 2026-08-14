@@ -465,7 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Abhängigkeiten werden installiert...",
-				"compilingFavicon": "Favicon-Datei nicht gefunden ; Server wird gestartet, um sie zu erzeugen...",
+				"compilingFavicon": "Favicon-Datei nicht gefunden; Server wird gestartet, um sie zu erzeugen...",
 				"packageFailed": "Fehler: Die Installation von ${package} ist fehlgeschlagen.",
 				"browserMissing": "Standardbrowser nicht erkannt, Installation wird versucht...",
 				"untrustedPartsWarning": "Installieren Sie keine nicht vertrauenswürdigen Quellkomponenten auf Ihrem System, sie können alles bewirken.",

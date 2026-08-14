@@ -1458,7 +1458,7 @@
 				},
 				"page": {
 					"title": "Group settings",
-					"description": "Tend to a group's identity, members, permissions, and the tools that bind your shared stage.",
+					"description": "Manage group identity, members, permissions, and shared tools.",
 					"kicker": "Group settings",
 					"subtitle": "Manage group information, members and common functions. Low-frequency permissions, storage, and auditing tools are centralized in advanced settings.",
 					"backToChat": "Back to chat",

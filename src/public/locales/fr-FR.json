@@ -465,7 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Installation des dépendances...",
-				"compilingFavicon": "Favicon introuvable ; démarrage du serveur pour le compiler...",
+				"compilingFavicon": "Favicon introuvable; démarrage du serveur pour le compiler...",
 				"packageFailed": "Erreur : L'installation de ${package} a échoué.",
 				"browserMissing": "Navigateur par défaut non détecté, tentative d'installation...",
 				"untrustedPartsWarning": "N'installez aucun composant de fount non fiable sur votre système, ils peuvent tout faire.",
@@ -3842,7 +3842,7 @@
 				"waiting": "En attente d’autorisation…",
 				"failed": "Échec de connexion : ${message}",
 				"deviceCode": "Ouvrez ${uri} et saisissez le code ${code}",
-				"credentialsRequired": "Renseignez les champs JSON requis (region / project / location / account_id / gateway_id / clé API). Les identifiants peuvent aussi venir des variables d’environnement."
+				"credentialsRequired": "Les champs requis dépendent du fournisseur (region / project / location / account_id / gateway_id / clé API ; Azure OpenAI Responses : AZURE_OPENAI_API_KEY et endpoint). Les identifiants peuvent aussi venir des variables d’environnement."
 			},
 			"copyModelIdTooltip": "Cliquez pour copier l'ID du modèle",
 			"loadModelsFailed": "Échec du chargement du modèle : ${message}",

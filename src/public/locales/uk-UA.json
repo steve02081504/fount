@@ -465,7 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Встановлення залежностей...",
-				"compilingFavicon": "Файл favicon не знайдено ; запускаємо сервер для компіляції...",
+				"compilingFavicon": "Файл favicon не знайдено; запускаємо сервер для компіляції...",
 				"packageFailed": "Помилка: не вдалося встановити ${package}.",
 				"browserMissing": "Браузер за умовчанням не виявлено, намагаюся встановити...",
 				"untrustedPartsWarning": "Не встановлюйте ненадійні компоненти fount у вашу систему, вони можуть зробити все, що завгодно.",
@@ -3836,7 +3836,7 @@
 				"waiting": "Очікування авторизації…",
 				"failed": "Помилка входу: ${message}",
 				"deviceCode": "Відкрийте ${uri} і введіть код ${code}",
-				"credentialsRequired": "Заповніть потрібні поля JSON (region / project / location / account_id / gateway_id / API key). Облікові дані також можуть бути в змінних середовища."
+				"credentialsRequired": "Потрібні поля залежать від постачальника (region / project / location / account_id / gateway_id / API key; Azure OpenAI Responses: AZURE_OPENAI_API_KEY і endpoint). Облікові дані також можуть бути в змінних середовища."
 			},
 			"copyModelIdTooltip": "Натисніть, щоб скопіювати ідентифікатор моделі",
 			"loadModelsFailed": "Не вдалося завантажити модель: ${message}",

@@ -465,7 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Đang cài đặt các phần phụ thuộc...",
-				"compilingFavicon": "Không tìm thấy favicon ; đang khởi động máy chủ để biên dịch...",
+				"compilingFavicon": "Không tìm thấy favicon; đang khởi động máy chủ để biên dịch...",
 				"packageFailed": "Lỗi: Cài đặt ${package} không thành công.",
 				"browserMissing": "Không tìm thấy trình duyệt mặc định, đang cố gắng cài đặt...",
 				"untrustedPartsWarning": "Không cài đặt bất kỳ thành phần nguồn không đáng tin cậy nào trên hệ thống của bạn, chúng có thể làm bất cứ điều gì.",
@@ -1458,7 +1458,7 @@
 				},
 				"page": {
 					"title": "Cài đặt nhóm",
-					"description": "Quản lý danh tính nhóm, thành viên, quyền hạn và các công cụ gắn kết sân khấu chung.",
+					"description": "Quản lý danh tính nhóm, thành viên, quyền hạn và các công cụ chung.",
 					"kicker": "Quản lý nhóm",
 					"subtitle": "Quản lý thông tin nhóm, thành viên và chức năng chung. Các công cụ cấp phép, lưu trữ và kiểm tra tần số thấp được tập trung trong cài đặt nâng cao.",
 					"backToChat": "Quay lại trò chuyện",

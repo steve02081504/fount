@@ -465,7 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "Instalando dependências...",
-				"compilingFavicon": "Ficheiro favicon não encontrado ; a iniciar o servidor para compilar...",
+				"compilingFavicon": "Ficheiro favicon não encontrado; a iniciar o servidor para compilar...",
 				"packageFailed": "Erro: Falha na instalação de ${package}.",
 				"browserMissing": "Navegador padrão não detectado, tentando instalar...",
 				"untrustedPartsWarning": "Não instale nenhum componente de fount não confiável em seu sistema, eles podem fazer qualquer coisa.",
@@ -3842,7 +3842,7 @@
 				"waiting": "A aguardar autorização…",
 				"failed": "Falha no início de sessão: ${message}",
 				"deviceCode": "Abra ${uri} e introduza o código ${code}",
-				"credentialsRequired": "Preencha os campos JSON necessários (region / project / location / account_id / gateway_id / API key). As credenciais também podem vir do ambiente."
+				"credentialsRequired": "Os campos necessários dependem do fornecedor selecionado (region / project / location / account_id / gateway_id / API key; Azure OpenAI Responses: AZURE_OPENAI_API_KEY e endpoint). As credenciais também podem vir do ambiente."
 			},
 			"copyModelIdTooltip": "Clique para copiar o ID do modelo",
 			"loadModelsFailed": "Falha ao carregar modelo: ${message}",
@@ -5957,7 +5957,7 @@
 	},
 	"oauth_handler": {
 		"title": "Início de sessão OAuth",
-		"description": "Conclua o login do OAuth para a fonte de IA. A troca de tokens é concluída no lado do servidor.",
+		"description": "Conclua o início de sessão OAuth para a fonte de IA. A troca de tokens é concluída no lado do servidor.",
 		"callback": {
 			"working": "A concluir o início de sessão…",
 			"success": "Sessão iniciada. Pode fechar esta página.",
