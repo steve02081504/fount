@@ -27,9 +27,6 @@ Documented contract: report failure via `$LastExitCode` only (0/1/2/3). Do not t
 '@ + [string]$errorRecord + @'
 
 ```
-
-After a fix: drop the try/catch around `ps12exe` in `New-FountExe` (the auto-report) and the `$Error` / `$LastExitCode` restore in `Install-FountRootExe`.
-https://github.com/steve02081504/fount/blob/master/path/src/win/fount_exe.ps1
 '@)
 			gh issue create --repo $repo --title $query --body-file $temporaryFilePath | Out-Null
 		}
