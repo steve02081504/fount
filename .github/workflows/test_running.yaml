@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   test-fount:
-    timeout-minutes: 15
+    timeout-minutes: 4
     strategy:
       fail-fast: false
       matrix:
@@ -74,7 +74,7 @@ jobs:
 
   path-cmd-smoke:
     name: path CLI smoke
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
       FOUNT_REPO_ROOT: ${{ github.workspace }}
       GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
