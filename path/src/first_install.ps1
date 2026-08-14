@@ -56,5 +56,7 @@
 		Register-FountBootBackground
 
 		invoke_explorer_refresh
+
+		Install-FountRootExe # Steam 必须 exe 才能进游戏库，bat 不行
 	}
 }

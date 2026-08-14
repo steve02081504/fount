@@ -28,7 +28,6 @@ function script:require_mid {
 function script:bootstrap_full {
 	require_mid
 	fount_first_install_if_needed @args
-	Install-FountRootExe # Steam 必须 exe 才能进游戏库，bat 不行
 }
 
 function script:bootstrap_server {
