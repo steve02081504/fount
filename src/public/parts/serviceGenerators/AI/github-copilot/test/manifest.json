@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "integration",
+			"expected": "1s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/github-copilot/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/**",

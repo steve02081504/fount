@@ -143,6 +143,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": "3m15s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -162,6 +163,7 @@
 		},
 		{
 			"name": "integration",
+			"expected": "7m56s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -184,6 +186,7 @@
 		},
 		{
 			"name": "smoke_chat",
+			"expected": "18s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -207,6 +210,7 @@
 		},
 		{
 			"name": "smoke_ai",
+			"expected": "20s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -230,6 +234,7 @@
 		},
 		{
 			"name": "e2e_single",
+			"expected": "26s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -253,6 +258,7 @@
 		},
 		{
 			"name": "e2e_single_extended",
+			"expected": "28s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -276,6 +282,7 @@
 		},
 		{
 			"name": "ws",
+			"expected": "24s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -299,6 +306,7 @@
 		},
 		{
 			"name": "ws_read_marker",
+			"expected": "16s",
 			"dependsOn": [
 				"server:live",
 				"ws"
@@ -322,6 +330,7 @@
 		},
 		{
 			"name": "ws_rpc",
+			"expected": "19s",
 			"dependsOn": [
 				"server:live",
 				"ws"
@@ -345,6 +354,7 @@
 		},
 		{
 			"name": "ws_stream",
+			"expected": "25s",
 			"dependsOn": [
 				"server:live",
 				"ws_rpc"
@@ -368,6 +378,7 @@
 		},
 		{
 			"name": "av_relay",
+			"expected": "19s",
 			"dependsOn": [
 				"server:live",
 				"ws"
@@ -391,6 +402,7 @@
 		},
 		{
 			"name": "fed_core",
+			"expected": "1m45s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -412,6 +424,7 @@
 		},
 		{
 			"name": "fed_e2e_extended",
+			"expected": "3m3s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -433,6 +446,7 @@
 		},
 		{
 			"name": "fed_dm",
+			"expected": "1m55s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -454,6 +468,7 @@
 		},
 		{
 			"name": "fed_archive_month",
+			"expected": "1m12s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -475,6 +490,7 @@
 		},
 		{
 			"name": "fed_mailbox",
+			"expected": "1m18s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -496,6 +512,7 @@
 		},
 		{
 			"name": "fed_ban",
+			"expected": "4m45s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -517,6 +534,7 @@
 		},
 		{
 			"name": "fed_emoji",
+			"expected": "44s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -538,6 +556,7 @@
 		},
 		{
 			"name": "fed_emoji_nonmember",
+			"expected": "59s",
 			"dependsOn": [
 				"fed_core",
 				"fed_emoji"
@@ -560,6 +579,7 @@
 		},
 		{
 			"name": "fed_emoji_nearcache",
+			"expected": "59s",
 			"dependsOn": [
 				"fed_core",
 				"fed_emoji"
@@ -582,6 +602,7 @@
 		},
 		{
 			"name": "fed_file_transfer",
+			"expected": "50s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -603,6 +624,7 @@
 		},
 		{
 			"name": "fed_control_plane",
+			"expected": "2m18s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -624,6 +646,7 @@
 		},
 		{
 			"name": "fed_reputation_owner",
+			"expected": "2m48s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -645,6 +668,7 @@
 		},
 		{
 			"name": "fed_entity_search",
+			"expected": "32s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -666,6 +690,7 @@
 		},
 		{
 			"name": "frontend",
+			"expected": "12m35s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -674,12 +699,14 @@
 			"subtests": [
 				{
 					"name": "smoke",
+					"expected": "11s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs"
 					]
 				},
 				{
 					"name": "deepLink",
+					"expected": "24s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/deepLink.spec.mjs",
 						"src/public/parts/shells/chat/public/shared/runUri.mjs"
@@ -687,6 +714,7 @@
 				},
 				{
 					"name": "composer",
+					"expected": "1m42s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/composer.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/composerExtras.mjs",
@@ -696,6 +724,7 @@
 				},
 				{
 					"name": "attachments",
+					"expected": "42s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/attachments.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/render/**",
@@ -710,6 +739,7 @@
 				},
 				{
 					"name": "navigation",
+					"expected": "2m12s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/navigation.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/serverBar.mjs",
@@ -718,6 +748,7 @@
 				},
 				{
 					"name": "mobilePane",
+					"expected": "55s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/mobilePane.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/hubPane.mjs",
@@ -728,6 +759,7 @@
 				},
 				{
 					"name": "messageActions",
+					"expected": "2m44s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/messageActions.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/**"
@@ -735,6 +767,7 @@
 				},
 				{
 					"name": "unread",
+					"expected": "30s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/unread.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/memberReadMarkers.mjs"
@@ -742,6 +775,7 @@
 				},
 				{
 					"name": "inbox",
+					"expected": "28s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/inbox.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/inbox*.mjs",
@@ -751,6 +785,7 @@
 				},
 				{
 					"name": "hubE2E",
+					"expected": "22s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/hubE2E.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/**"
@@ -758,12 +793,14 @@
 				},
 				{
 					"name": "secondaryPages",
+					"expected": "1m50s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/secondaryPages.spec.mjs"
 					]
 				},
 				{
 					"name": "profile",
+					"expected": "43s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/profile.spec.mjs",
 						"src/public/parts/shells/chat/public/profile/**",

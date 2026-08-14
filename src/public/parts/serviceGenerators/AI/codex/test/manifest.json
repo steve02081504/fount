@@ -19,6 +19,7 @@
 		},
 		{
 			"name": "integration",
+			"expected": "6s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/codex/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/**",

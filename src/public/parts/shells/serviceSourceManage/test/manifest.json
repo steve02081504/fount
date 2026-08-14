@@ -12,6 +12,7 @@
 	"suites": [
 		{
 			"name": "frontend",
+			"expected": "34s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -19,6 +20,7 @@
 			"subtests": [
 				{
 					"name": "jsonEditor",
+					"expected": "8s",
 					"triggers": [
 						"src/public/parts/shells/serviceSourceManage/test/frontend/jsonEditor.spec.mjs",
 						"src/public/parts/shells/serviceSourceManage/test/frontend/fixtures.mjs",

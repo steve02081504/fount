@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": "1s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/cloudflare-ai-gateway/src/route.mjs",
 				"src/public/parts/serviceGenerators/AI/cloudflare-ai-gateway/test/pure/**"
@@ -19,6 +20,7 @@
 		},
 		{
 			"name": "integration",
+			"expected": "1s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/cloudflare-ai-gateway/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/**",
