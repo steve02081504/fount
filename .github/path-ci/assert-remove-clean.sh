@@ -13,5 +13,11 @@ while IFS= read -r pattern || [ -n "$pattern" ]; do
 		echo "--- captured output ---" >&2
 		printf '%s\n' "$output" >&2
 		exit 1
+	else
+		grep_status=$?
+		if [ "$grep_status" -ne 1 ]; then
+			echo "grep failed with status $grep_status for pattern: $pattern" >&2
+			exit "$grep_status"
+		fi
 	fi
 done < "$patterns_file"

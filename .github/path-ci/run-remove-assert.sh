@@ -3,13 +3,13 @@
 # usage: bash run-remove-assert.sh <fount-entry>
 set -euo pipefail
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
-entry=$1
 out=$(mktemp)
-set +e
-"$entry" remove >"$out" 2>&1
-ec=$?
-set -e
+if "$1" remove >"$out" 2>&1; then
+	exit_code=0
+else
+	exit_code=$?
+fi
 cat "$out"
 bash "$here/assert-remove-clean.sh" "$here/remove-noise.patterns" "$out"
 rm -f "$out"
-exit "$ec"
+exit "$exit_code"

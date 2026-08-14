@@ -19,7 +19,7 @@ if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_deno") {
 	$deno = Get-Command deno -ErrorAction SilentlyContinue
 	if ($deno) {
 		try {
-			Remove-Item -LiteralPath $deno.Source -Force
+			Remove-Item -LiteralPath $deno.Source -Force -ErrorAction Stop
 		}
 		catch {
 			Write-Warning (Get-I18n -key 'remove.remove.denoFailed' -params @{message = $_.Exception.Message })

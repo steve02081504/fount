@@ -1,4 +1,4 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 
 function Get-MainBranchRef {
 	$symbolic = git symbolic-ref refs/remotes/origin/HEAD 2>$null
