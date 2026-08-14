@@ -15,14 +15,16 @@
 	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 	<link rel="manifest" href="/manifest.json" />
 	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
 	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<script type="module" src="/base.mjs"></script>
 </head>
 
-<body>
+<body class="flex justify-center items-center h-screen">
 	<main>
-		<h1 class="sr-only" data-i18n="chat.title"></h1>
-		<p class="p-4 text-base-content/70" data-i18n="chat.hub.redirectToHub"></p>
+		<h1 class="sr-only" data-i18n="chat.hub.redirectToHub"></h1>
+		<span class="loading loading-ring loading-lg"></span>
 	</main>
 	<script type="module" src="./index.mjs"></script>
 </body>
