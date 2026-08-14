@@ -10,7 +10,12 @@
 function script:New-FountExe($executablePath = "fount.exe") {
 	Ensure-FountFavicon
 	Test-PWSHModule ps12exe
-	ps12exe -inputFile "$FOUNT_DIR/src/runner/main.ps1" -outputFile $executablePath
+	try {
+		ps12exe -inputFile "$FOUNT_DIR/src/runner/main.ps1" -outputFile $executablePath
+	}
+	finally {
+		$global:LastExitCode = 0
+	}
 }
 
 function script:Install-FountRootExe {

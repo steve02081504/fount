@@ -28,6 +28,24 @@ run_capture() {
 	"$@" 2>&1
 }
 
+# Command substitution + set -e otherwise swallows fount's stdout on nonzero exit.
+invoke_fount() {
+	local name="$1"
+	shift
+	local output ec
+	set +e
+	output="$(run_capture "$FOUNT" "$@")"
+	ec=$?
+	set -e
+	if [ "$ec" -ne 0 ]; then
+		echo "[$name] fount $* exited $ec" >&2
+		echo "--- captured output ---" >&2
+		echo "$output" >&2
+		exit "$ec"
+	fi
+	printf '%s' "$output"
+}
+
 echo "path smoke: repo=$ROOT"
 
 touch .noupdate .noautoboot
@@ -42,16 +60,16 @@ if [ ! -d node_modules ]; then
 fi
 
 echo "== server =="
-out="$(run_capture "$FOUNT" server)"
+out="$(invoke_fount server server)"
 assert_output_contains server "$MARKER" "$out"
 
 echo "== reboot =="
-out="$(run_capture "$FOUNT" reboot)"
+out="$(invoke_fount reboot reboot)"
 assert_output_contains reboot "$MARKER" "$out"
 assert_output_contains reboot 'reboot' "$out"
 
 echo "== log =="
-out="$(run_capture "$FOUNT" log)"
+out="$(invoke_fount log log)"
 assert_output_contains log "$LOG_MARKER" "$out"
 
 echo "== background =="
@@ -88,12 +106,12 @@ echo "[background] ok"
 
 echo "== install (init) =="
 rm -rf node_modules
-run_capture "$FOUNT" init
+invoke_fount install init >/dev/null
 if [ ! -d node_modules ]; then
 	echo "[install] node_modules missing after init" >&2
 	exit 1
 fi
-out="$(run_capture "$FOUNT" server)"
+out="$(invoke_fount install server)"
 assert_output_contains install "$MARKER" "$out"
 
 echo "path smoke: all passed"
