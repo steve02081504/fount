@@ -465,6 +465,7 @@
 			},
 			"install": {
 				"installingDependencies": "正在安装依赖...",
+				"compilingFavicon": "图标文件不存在，正在启动服务器编译...",
 				"packageFailed": "错误：${package} 安装失败。",
 				"browserMissing": "未检测到默认浏览器，正在尝试安装...",
 				"untrustedPartsWarning": "不要在您的系统上安装任何不受信任的 fount 组件，它们可以做任何事情。",
