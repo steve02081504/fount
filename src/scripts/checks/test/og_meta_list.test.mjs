@@ -3,9 +3,9 @@
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std/assert/mod.ts'
+import { parseHTML } from 'npm:linkedom'
 
 import { extractOgMeta, inspectOgMeta, pathMatchesUnder } from '../og_meta_list.mjs'
-import { parseHTML } from 'npm:linkedom'
 
 Deno.test('extractOgMeta reads head meta tags', () => {
 	const { document } = parseHTML(`<!DOCTYPE html><html><head>

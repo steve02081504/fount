@@ -427,10 +427,10 @@
 				"createDesktopAppFailed": "Fehler: Desktop-Anwendung konnte nicht erstellt werden."
 			},
 			"steam": {
-				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
-				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
-				"failed": "Steam 注册失败：${message}",
-				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+				"registering": "fount wird als Nicht-Steam-Spiel in Steam registriert…",
+				"registered": "fount wurde zur Steam-Bibliothek hinzugefügt. Starten Sie Steam neu, falls es ausgeführt wird, damit die Änderung wirksam wird.",
+				"failed": "Steam-Registrierung fehlgeschlagen: ${message}",
+				"exeFailed": "fount.exe konnte nicht erstellt werden; Steam-Registrierung übersprungen."
 			},
 			"git": {
 				"repoNotFound": "Das Git-Repository von fount wurde nicht gefunden. Eine neue initialisieren...",
@@ -511,8 +511,8 @@
 				"desktopShortcutNotFound": "Desktop-Verknüpfung nicht gefunden.",
 				"startMenuShortcutRemoved": "Die Verknüpfung im Startmenü wurde entfernt.",
 				"startMenuShortcutNotFound": "Startmenüverknüpfung nicht gefunden.",
-				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
-				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
+				"steamShortcutRemoved": "fount wurde aus der Steam-Bibliothek entfernt.",
+				"steamShortcutNotFound": "fount wurde in Steam nicht gefunden.",
 				"moduleRemoved": "${module} wurde entfernt.",
 				"uninstalling": {
 					"chrome": "Chrome wird deinstalliert...",
@@ -535,7 +535,7 @@
 					"installedSystemPackages": "Installierte Systempakete werden entfernt...",
 					"protocolHandler": "`fount://`-Protokollhandler wird entfernt...",
 					"startMenuShortcut": "Startmenü-Verknüpfungen werden entfernt...",
-					"steamShortcut": "正在从 Steam 移除 fount…",
+					"steamShortcut": "fount wird aus Steam entfernt…",
 					"terminalKeybindings": "Terminal-Tastenkürzel-Patch wird entfernt...",
 					"terminalProfile": "Windows-Terminalprofil wird entfernt..."
 				},

@@ -427,10 +427,10 @@
 				"createDesktopAppFailed": "Erreur : échec de la création de l'application de bureau."
 			},
 			"steam": {
-				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
-				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
-				"failed": "Steam 注册失败：${message}",
-				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+				"registering": "Enregistrement de fount comme jeu non Steam dans Steam…",
+				"registered": "fount a été ajouté à votre bibliothèque Steam. Si Steam est en cours d'exécution, redémarrez-le pour que le changement prenne effet.",
+				"failed": "Échec de l'enregistrement sur Steam : ${message}",
+				"exeFailed": "Impossible de générer fount.exe ; enregistrement Steam ignoré."
 			},
 			"git": {
 				"repoNotFound": "Le dépôt git de la fount est introuvable. Initialisation d'un nouveau...",
@@ -511,8 +511,8 @@
 				"desktopShortcutNotFound": "Raccourci sur le bureau introuvable.",
 				"startMenuShortcutRemoved": "Le raccourci du menu Démarrer a été supprimé.",
 				"startMenuShortcutNotFound": "Raccourci du menu Démarrer introuvable.",
-				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
-				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
+				"steamShortcutRemoved": "fount a été retiré de votre bibliothèque Steam.",
+				"steamShortcutNotFound": "fount est introuvable dans Steam.",
 				"moduleRemoved": "${module} a été supprimé.",
 				"uninstalling": {
 					"chrome": "Désinstallation de Chrome...",
@@ -535,7 +535,7 @@
 					"installedSystemPackages": "Suppression des packages système installés...",
 					"protocolHandler": "Suppression du gestionnaire de protocole `fount://`...",
 					"startMenuShortcut": "Suppression des raccourcis du menu Démarrer...",
-					"steamShortcut": "正在从 Steam 移除 fount…",
+					"steamShortcut": "Suppression de fount de Steam…",
 					"terminalKeybindings": "Suppression du correctif de raccourcis du terminal...",
 					"terminalProfile": "Suppression du profil de terminal Windows..."
 				},

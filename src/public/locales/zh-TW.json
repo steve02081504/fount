@@ -426,10 +426,10 @@
 				"createDesktopAppFailed": "錯誤：建立桌面應用程式失敗。"
 			},
 			"steam": {
-				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
-				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
-				"failed": "Steam 注册失败：${message}",
-				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+				"registering": "正在將 fount 註冊為 Steam 非 Steam 遊戲…",
+				"registered": "已將 fount 加入 Steam 遊戲庫。若 Steam 正在執行，需重新啟動後才會生效。",
+				"failed": "Steam 註冊失敗：${message}",
+				"exeFailed": "未能產生 fount.exe，已略過 Steam 註冊。"
 			},
 			"git": {
 				"repoNotFound": "未找到 fount 的 git 儲存庫，正在初始化一個新的...",
@@ -510,7 +510,7 @@
 				"desktopShortcutNotFound": "未找到桌面捷徑。",
 				"startMenuShortcutRemoved": "開始選單捷徑已移除。",
 				"startMenuShortcutNotFound": "未找到開始選單捷徑。",
-				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
+				"steamShortcutRemoved": "已從 Steam 遊戲庫移除 fount。",
 				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
 				"moduleRemoved": "${module} 已移除。",
 				"uninstalling": {
@@ -534,7 +534,7 @@
 					"installedSystemPackages": "正在移除已安裝的系統套件...",
 					"protocolHandler": "正在移除 `fount://` 協定處理器...",
 					"startMenuShortcut": "正在移除開始選單捷徑...",
-					"steamShortcut": "正在从 Steam 移除 fount…",
+					"steamShortcut": "正在從 Steam 移除 fount…",
 					"terminalKeybindings": "正在移除終端機按鍵綁定修補…",
 					"terminalProfile": "正在移除 Windows Terminal Profile..."
 				},

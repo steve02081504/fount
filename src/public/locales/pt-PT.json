@@ -427,10 +427,10 @@
 				"createDesktopAppFailed": "Erro: Falha ao criar aplicativo de desktop."
 			},
 			"steam": {
-				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
-				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
-				"failed": "Steam 注册失败：${message}",
-				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+				"registering": "A registar fount como jogo não Steam no Steam…",
+				"registered": "fount foi adicionado à sua biblioteca Steam. Se o Steam estiver em execução, reinicie-o para que a alteração tenha efeito.",
+				"failed": "Falha ao registar no Steam: ${message}",
+				"exeFailed": "Não foi possível gerar fount.exe; registo no Steam ignorado."
 			},
 			"git": {
 				"repoNotFound": "O repositório git da fount não foi encontrado. Inicializando um novo...",
@@ -511,8 +511,8 @@
 				"desktopShortcutNotFound": "Atalho na área de trabalho não encontrado.",
 				"startMenuShortcutRemoved": "O atalho do menu Iniciar foi removido.",
 				"startMenuShortcutNotFound": "Atalho do menu Iniciar não encontrado.",
-				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
-				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
+				"steamShortcutRemoved": "fount foi removido da sua biblioteca Steam.",
+				"steamShortcutNotFound": "fount não foi encontrado no Steam.",
 				"moduleRemoved": "${module} foi removido.",
 				"uninstalling": {
 					"chrome": "Desinstalando o Chrome...",
@@ -535,7 +535,7 @@
 					"installedSystemPackages": "Removendo pacotes de sistema instalados...",
 					"protocolHandler": "Removendo o manipulador de protocolo `fount://`...",
 					"startMenuShortcut": "Removendo atalhos do menu Iniciar...",
-					"steamShortcut": "正在从 Steam 移除 fount…",
+					"steamShortcut": "A remover fount do Steam…",
 					"terminalKeybindings": "A remover patch de atalhos do terminal...",
 					"terminalProfile": "Removendo o perfil do terminal do Windows..."
 				},

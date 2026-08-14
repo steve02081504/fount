@@ -427,10 +427,10 @@
 				"createDesktopAppFailed": "Villa: Mistókst að búa til skjáborðsforrit."
 			},
 			"steam": {
-				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
-				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
-				"failed": "Steam 注册失败：${message}",
-				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+				"registering": "Skráir fount sem leik sem ekki er á Steam í Steam…",
+				"registered": "fount hefur verið bætt við Steam safnið þitt. Endurræstu Steam ef það er í gangi til að breytingin taki gildi.",
+				"failed": "Skráning á Steam mistókst: ${message}",
+				"exeFailed": "Gat ekki búið til fount.exe; sleppti skráningu á Steam."
 			},
 			"git": {
 				"repoNotFound": "Git geymslan fyrir font fannst ekki. Byrjar nýjan...",
@@ -511,8 +511,8 @@
 				"desktopShortcutNotFound": "Flýtileið á skjáborði fannst ekki.",
 				"startMenuShortcutRemoved": "Flýtileið fyrir upphafsvalmynd hefur verið fjarlægð.",
 				"startMenuShortcutNotFound": "Flýtileið fyrir upphafsvalmynd fannst ekki.",
-				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
-				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
+				"steamShortcutRemoved": "fount hefur verið fjarlægt úr Steam safninu þínu.",
+				"steamShortcutNotFound": "fount fannst ekki í Steam.",
 				"moduleRemoved": "${module} hefur verið fjarlægt.",
 				"uninstalling": {
 					"chrome": "Fjarlægir Chrome...",
@@ -535,7 +535,7 @@
 					"installedSystemPackages": "Fjarlægir uppsetta kerfispakka...",
 					"protocolHandler": "Fjarlægir `fount://` samskiptareglur...",
 					"startMenuShortcut": "Fjarlægir flýtivísa fyrir upphafsvalmynd...",
-					"steamShortcut": "正在从 Steam 移除 fount…",
+					"steamShortcut": "Fjarlægir fount úr Steam…",
 					"terminalKeybindings": "Fjarlægir lagfæringu lyklaborðsviðmóts skels...",
 					"terminalProfile": "Fjarlægir Windows Terminal Profile..."
 				},

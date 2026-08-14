@@ -17,7 +17,6 @@ import {
 	skipBecauseUrlsForRun,
 	skipTreeDescendantKeys,
 } from '../core/skip_because.mjs'
-
 import { startTestKernel } from '../kernel/server.mjs'
 
 import { makeStateEntry, makeSuite } from './fixtures.mjs'
@@ -366,6 +365,9 @@ Deno.test('skip_because delay: closed within delay passes; expired fails', async
 		writeReport: false,
 	})
 	try {
+		/**
+		 *
+		 */
 		handle.kernel.issueCache.getState = async () => ({ closed: true, closedAt: Date.now() - 1000 })
 		const { end: within } = await enqueueAndAwaitSkip(
 			handle.kernel,
@@ -376,6 +378,9 @@ Deno.test('skip_because delay: closed within delay passes; expired fails', async
 		assertEquals(within?.skipBecause, [SKIP_URL])
 		assertEquals(within?.skipBecauseClosed ?? [], [])
 
+		/**
+		 *
+		 */
 		handle.kernel.issueCache.getState = async () => ({ closed: true, closedAt: Date.now() - 20 * 86_400_000 })
 		const { end: expired, job } = await enqueueAndAwaitSkip(
 			handle.kernel,

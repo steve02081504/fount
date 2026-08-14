@@ -14,7 +14,14 @@ import { TestQueues } from '../kernel/queues.mjs'
 function mutableClock(start = 0) {
 	let current = start
 	return {
+		/**
+		 *
+		 */
 		now: () => current,
+		/**
+		 *
+		 * @param value
+		 */
 		set: value => { current = value },
 	}
 }

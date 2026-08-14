@@ -427,10 +427,10 @@
 				"createDesktopAppFailed": "Error: Failed to create desktop application."
 			},
 			"steam": {
-				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
-				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
-				"failed": "Steam 注册失败：${message}",
-				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+				"registering": "Registering fount as a non-Steam game in Steam…",
+				"registered": "fount has been added to your Steam library. Restart Steam if it is running for the change to take effect.",
+				"failed": "Steam registration failed: ${message}",
+				"exeFailed": "Could not generate fount.exe; Steam registration skipped."
 			},
 			"git": {
 				"repoNotFound": "The git repository of fount was not found. Initializing a new one...",
@@ -511,8 +511,8 @@
 				"desktopShortcutNotFound": "Desktop shortcut not found.",
 				"startMenuShortcutRemoved": "Start menu shortcut has been removed.",
 				"startMenuShortcutNotFound": "Start menu shortcut not found.",
-				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
-				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
+				"steamShortcutRemoved": "fount has been removed from your Steam library.",
+				"steamShortcutNotFound": "fount was not found in Steam.",
 				"moduleRemoved": "${module} has been removed.",
 				"uninstalling": {
 					"chrome": "Uninstalling Chrome...",
@@ -535,7 +535,7 @@
 					"installedSystemPackages": "Removing installed system packages...",
 					"protocolHandler": "Removing `fount://` protocol handler...",
 					"startMenuShortcut": "Removing start menu shortcuts...",
-					"steamShortcut": "正在从 Steam 移除 fount…",
+					"steamShortcut": "Removing fount from Steam…",
 					"terminalKeybindings": "Removing terminal keybinding patch...",
 					"terminalProfile": "Removing Windows Terminal Profile..."
 				},
