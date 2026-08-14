@@ -4,7 +4,7 @@
 /* global Deno */
 import { Buffer } from 'node:buffer'
 import { existsSync } from 'node:fs'
-import { copyFile, mkdir, readFile, readdir, stat } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, readdir, rm, stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { dirname, join, resolve, sep } from 'node:path'
 import process from 'node:process'
@@ -201,7 +201,7 @@ async function pngIsFresh(pngPath, svgPath) {
 export async function renderSvgToPng({ svgPath, pngPath, width, height }) {
 	if (await pngIsFresh(pngPath, svgPath)) return pngPath
 	const { Resvg } = await import('npm:@resvg/resvg-js')
-	let svg = await Deno.readTextFile(svgPath)
+	let svg = await readFile(svgPath, 'utf8')
 	if (height) svg = cropSvgToAspect(svg, width, height)
 	const png = Buffer.from(new Resvg(svg, {
 		fitTo: { mode: 'width', value: width },
@@ -378,7 +378,7 @@ export async function copySteamImages(gridDir, appId, images) {
 	const names = steamGridFilenames(appId)
 	for (const file of await readdir(gridDir))
 		if (isSteamGridFile(file, appId))
-			await Deno.remove(join(gridDir, file))
+			await rm(join(gridDir, file))
 	await copyFile(images.landscape, join(gridDir, names.landscape))
 	await copyFile(images.portrait, join(gridDir, names.portrait))
 	await copyFile(images.hero, join(gridDir, names.hero))
@@ -399,7 +399,7 @@ export async function removeSteamImages(gridDir, appId) {
 	if (!existsSync(gridDir)) return
 	for (const file of await readdir(gridDir))
 		if (isSteamGridFile(file, appId))
-			await Deno.remove(join(gridDir, file))
+			await rm(join(gridDir, file))
 }
 
 /**

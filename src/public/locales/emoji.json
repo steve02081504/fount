@@ -428,9 +428,9 @@
 			},
 			"steam": {
 				"registering": "🎮➕…",
-				"registered": "✅ 🎮 ⛲ — restart Steam",
+				"registered": "✅ 🎮 ⛲ — 🔄",
 				"failed": "❌ 🎮: ${message}",
-				"exeFailed": "❌ fount.exe → skip 🎮"
+				"exeFailed": "❌ fount.exe → ⏭️ 🎮"
 			},
 			"git": {
 				"repoNotFound": "🤔❓ 🐙🐱… ➡️ ✨",

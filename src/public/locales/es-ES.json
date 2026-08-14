@@ -428,7 +428,7 @@
 			},
 			"steam": {
 				"registering": "Registrando fount como juego no Steam en Steam…",
-				"registered": "fount se ha añadido a tu biblioteca de Steam. Si Steam está en ejecución, reinícialo para que el cambio surta efecto.",
+				"registered": "fount se ha añadido a su biblioteca de Steam. Si Steam está en ejecución, reinícielo para que el cambio surta efecto.",
 				"failed": "Error al registrar en Steam: ${message}",
 				"exeFailed": "No se pudo generar fount.exe; se omitió el registro en Steam."
 			},

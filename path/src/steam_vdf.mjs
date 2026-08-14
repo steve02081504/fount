@@ -52,19 +52,20 @@ export function isSteamGridFile(file, appId) {
 
 /**
  * 解析二进制 VDF。
- * @param {Uint8Array} buf 文件内容；空则 `{ shortcuts: {} }`
+ * @param {Uint8Array} binaryData 文件内容；空则 `{ shortcuts: {} }`
  * @returns {object} 根对象
  */
-export function parseBinaryVdf(buf) {
-	if (!buf.length) return { shortcuts: {} }
+export function parseBinaryVdf(binaryData) {
+	if (!binaryData.length) return { shortcuts: {} }
 	let offset = 0
 	/**
 	 * @returns {string} 以 NUL 结尾的字符串
 	 */
 	function readString() {
 		const start = offset
-		while (offset < buf.length && buf[offset]) offset++
-		const text = new TextDecoder().decode(buf.subarray(start, offset))
+		while (offset < binaryData.length && binaryData[offset]) offset++
+		if (offset >= binaryData.length) throw new Error('shortcuts.vdf: truncated string')
+		const text = new TextDecoder().decode(binaryData.subarray(start, offset))
 		offset++
 		return text
 	}
@@ -73,19 +74,20 @@ export function parseBinaryVdf(buf) {
 	 */
 	function readObject() {
 		const object = {}
-		while (offset < buf.length) {
-			const type = buf[offset++]
+		while (offset < binaryData.length) {
+			const type = binaryData[offset++]
 			if (type === TYPE_END) return object
 			const key = readString()
 			if (type === TYPE_OBJECT) object[key] = readObject()
 			else if (type === TYPE_STRING) object[key] = readString()
 			else if (type === TYPE_INT) {
-				object[key] = (buf[offset] | buf[offset + 1] << 8 | buf[offset + 2] << 16 | buf[offset + 3] << 24) >>> 0
+				if (offset + 4 > binaryData.length) throw new Error('shortcuts.vdf: truncated int')
+				object[key] = (binaryData[offset] | binaryData[offset + 1] << 8 | binaryData[offset + 2] << 16 | binaryData[offset + 3] << 24) >>> 0
 				offset += 4
 			}
 			else throw new Error(`shortcuts.vdf: unknown type ${type} at ${offset - 1}`)
 		}
-		return object
+		throw new Error('shortcuts.vdf: truncated object')
 	}
 	return readObject()
 }
@@ -102,7 +104,7 @@ export function writeBinaryVdf(root) {
 	 * @returns {void}
 	 */
 	function writeString(text) {
-		chunks.push(Buffer.from(String(text), 'utf8'), Buffer.from([0]))
+		chunks.push(Buffer.from(text, 'utf8'), Buffer.from([0]))
 	}
 	/**
 	 * @param {object} object 对象
@@ -141,22 +143,31 @@ export function writeBinaryVdf(root) {
  */
 export function entryToSteam(fields) {
 	const steam = {}
-	if ('appId' in fields) steam.appid = fields.appId >>> 0
-	if ('appName' in fields) steam.AppName = fields.appName
-	if ('exe' in fields) steam.Exe = fields.exe
-	if ('startDir' in fields) steam.StartDir = fields.startDir
-	if ('icon' in fields) steam.icon = fields.icon
-	if ('shortcutPath' in fields) steam.ShortcutPath = fields.shortcutPath
-	if ('launchOptions' in fields) steam.LaunchOptions = fields.launchOptions
-	if ('isHidden' in fields) steam.IsHidden = fields.isHidden ? 1 : 0
-	if ('allowDesktopConfig' in fields) steam.AllowDesktopConfig = fields.allowDesktopConfig ? 1 : 0
-	if ('allowOverlay' in fields) steam.AllowOverlay = fields.allowOverlay ? 1 : 0
-	if ('openVr' in fields) steam.OpenVR = fields.openVr ? 1 : 0
-	if ('devkit' in fields) steam.Devkit = fields.devkit ? 1 : 0
-	if ('devkitGameId' in fields) steam.DevkitGameID = fields.devkitGameId
-	if ('devkitOverrideAppId' in fields) steam.DevkitOverrideAppID = fields.devkitOverrideAppId >>> 0
-	if ('lastPlayTime' in fields) steam.LastPlayTime = fields.lastPlayTime >>> 0
-	if ('flatpakAppId' in fields) steam.FlatpakAppID = fields.flatpakAppId
+	for (const [from, to] of [
+		['appName', 'AppName'],
+		['exe', 'Exe'],
+		['startDir', 'StartDir'],
+		['icon', 'icon'],
+		['shortcutPath', 'ShortcutPath'],
+		['launchOptions', 'LaunchOptions'],
+		['devkitGameId', 'DevkitGameID'],
+		['flatpakAppId', 'FlatpakAppID'],
+	])
+		if (from in fields) steam[to] = fields[from]
+	for (const [from, to] of [
+		['isHidden', 'IsHidden'],
+		['allowDesktopConfig', 'AllowDesktopConfig'],
+		['allowOverlay', 'AllowOverlay'],
+		['openVr', 'OpenVR'],
+		['devkit', 'Devkit'],
+	])
+		if (from in fields) steam[to] = fields[from] ? 1 : 0
+	for (const [from, to] of [
+		['appId', 'appid'],
+		['devkitOverrideAppId', 'DevkitOverrideAppID'],
+		['lastPlayTime', 'LastPlayTime'],
+	])
+		if (from in fields) steam[to] = fields[from] >>> 0
 	if ('tags' in fields)
 		steam.tags = Object.fromEntries((fields.tags || []).map((tag, index) => [String(index), tag]))
 	return steam

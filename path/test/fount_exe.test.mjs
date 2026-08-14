@@ -38,6 +38,10 @@ async function runFountExeHarness({
 		if (!missingIcon)
 			await writeFile(join(root, 'src', 'public', 'pages', 'favicon.ico'), 'ico')
 
+		const ghIssueList = ghMode === 'existing'
+			? 'return \'[{"url":"https://github.com/steve02081504/ps12exe/issues/1"}]\''
+			: 'return \'[]\''
+
 		return await pwsh_exec(`
 $ErrorActionPreference = 'Continue'
 $FOUNT_DIR = ${JSON.stringify(root)}
@@ -70,8 +74,7 @@ function script:gh {
 	if ($args[0] -eq 'auth') { $global:LastExitCode = ${ghMode === 'unauth' ? '1' : '0'}; return }
 	if ($args[0] -eq 'issue' -and $args[1] -eq 'list') {
 		$global:LastExitCode = 0
-		if (${JSON.stringify(ghMode)} -eq 'existing') { return '[{"url":"https://github.com/steve02081504/ps12exe/issues/1"}]' }
-		return '[]'
+		${ghIssueList}
 	}
 	if ($args[0] -eq 'issue' -and $args[1] -eq 'create') {
 		$global:LastExitCode = 0

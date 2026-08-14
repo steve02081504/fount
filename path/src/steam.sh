@@ -2,10 +2,7 @@
 # Steam non-Steam shortcut register / unregister via path/src/steam.mjs
 
 run_fount_steam_js() {
-	local action="$1" out line
-	out=$(run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/path/src/steam.mjs" "$action" "$FOUNT_DIR" 2>/dev/null) || true
-	line=$(printf '%s\n' "$out" | grep '^FOUNT_STEAM:' | tail -n1) || true
-	printf '%s' "${line#FOUNT_STEAM:}"
+	printf '%s' "$(run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/path/src/steam.mjs" "$1" "$FOUNT_DIR" 2>/dev/null | grep '^FOUNT_STEAM:' | tail -n1 | sed 's/^FOUNT_STEAM://' || true)"
 }
 
 register_fount_steam() {

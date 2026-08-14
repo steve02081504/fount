@@ -7,7 +7,7 @@ import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
+import { assert, assertEquals, assertStringIncludes, assertThrows } from 'jsr:@std/assert'
 
 import { REPO_ROOT } from '../../src/scripts/test/core/repo_root.mjs'
 import {
@@ -27,6 +27,7 @@ import {
 	unregisterFountSteam,
 } from '../src/steam.mjs'
 import {
+	entryToSteam,
 	parseBinaryVdf,
 	steamShortcutAppId,
 	writeBinaryVdf,
@@ -123,6 +124,24 @@ Deno.test('binary vdf roundtrip keeps sibling shortcuts', () => {
 	assertEquals(back.shortcuts[0].AppName, 'Other')
 	assertEquals(back.shortcuts[1].AppName, 'fount')
 	assertEquals(back.shortcuts[1].appid, 2)
+})
+
+Deno.test('parseBinaryVdf rejects truncated vdf', () => {
+	const full = writeBinaryVdf({ shortcuts: { 0: { AppName: 'x', appid: 1 } } })
+	assertThrows(() => parseBinaryVdf(full.subarray(0, -1)))
+	assertThrows(() => parseBinaryVdf(Uint8Array.of(1, 97, 0, 98)))
+	assertThrows(() => parseBinaryVdf(Uint8Array.of(2, 97, 0, 1, 2)))
+})
+
+Deno.test('entryToSteam maps present fields and omits the rest', () => {
+	assertEquals(entryToSteam({ appName: 'fount', isHidden: true, allowOverlay: false, appId: -1 }), {
+		AppName: 'fount',
+		IsHidden: 1,
+		AllowOverlay: 0,
+		appid: 4294967295,
+	})
+	assertEquals(entryToSteam({ tags: ['a'] }).tags, { 0: 'a' })
+	assertEquals(entryToSteam({}), {})
 })
 
 Deno.test('steamLaunchPaths uses fount.exe on Windows and path/fount elsewhere', () => {
