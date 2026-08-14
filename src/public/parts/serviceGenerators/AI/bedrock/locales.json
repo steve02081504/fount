@@ -1,0 +1,574 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Amazon Bedrock Converse via the AWS credential chain.",
+			"description_markdown": "Uses region plus the default AWS chain (profile, keys, bearer token, ECS, IRSA) and Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"zh-CN": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "用 AWS 凭证链调用 Bedrock Converse。",
+			"description_markdown": "填 region，其余走默认凭证链（profile / AKSK / Bearer / ECS / IRSA），推理用 Converse(Stream)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"ar-SA": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse عبر سلسلة اعتمادات AWS.",
+			"description_markdown": "المنطقة ثم سلسلة AWS الافتراضية و Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"de-DE": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse über die AWS-Credential-Kette.",
+			"description_markdown": "Region plus Standardkette; Inferenz per Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ki"
+			]
+		},
+		"emoji": {
+			"name": "☁️🪨",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "🔑➡️🪨",
+			"description_markdown": "☁️🔑➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"☁️",
+				"🪨",
+				"🔑"
+			]
+		},
+		"es-ES": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse con la cadena de credenciales AWS.",
+			"description_markdown": "Región más la cadena por defecto y Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ia"
+			]
+		},
+		"fr-FR": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse via la chaîne d'identifiants AWS.",
+			"description_markdown": "Région plus la chaîne par défaut et Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ia"
+			]
+		},
+		"hi-IN": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "AWS क्रेडेंशियल चेन से Bedrock Converse.",
+			"description_markdown": "region के साथ डिफ़ॉल्ट श्रृंखला और Converse(Stream)।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"is-IS": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse með AWS auðkenniskeðju.",
+			"description_markdown": "Svæði og sjálfgefin keðja; Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"it-IT": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse con la catena credenziali AWS.",
+			"description_markdown": "Region più catena predefinita e Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ia"
+			]
+		},
+		"ja-JP": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "AWS 資格情報チェーンで Bedrock Converse。",
+			"description_markdown": "region とデフォルトチェーン。推論は Converse(Stream)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"ko-KR": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "AWS 자격 증명 체인으로 Bedrock Converse.",
+			"description_markdown": "region과 기본 체인. 추론은 Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"lzh": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "以 AWS 憑據鏈召 Bedrock Converse。",
+			"description_markdown": "填 region，餘走默認鏈。推理用 Converse(Stream)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"nl-NL": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse via de AWS-credentialketen.",
+			"description_markdown": "Region plus de standaardketen en Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"pt-PT": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse via a cadeia de credenciais AWS.",
+			"description_markdown": "Região mais a cadeia predefinida e Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ia"
+			]
+		},
+		"ru-RU": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse через цепочку учёток AWS.",
+			"description_markdown": "Регион и стандартная цепочка; Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ии"
+			]
+		},
+		"uk-UA": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse через ланцюг облікових AWS.",
+			"description_markdown": "Регіон і стандартний ланцюг; Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ші"
+			]
+		},
+		"vi-VN": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse qua chuỗi chứng thực AWS.",
+			"description_markdown": "region cùng chuỗi mặc định và Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		},
+		"zh-TW": {
+			"name": "Amazon Bedrock",
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "用 AWS 憑證鏈呼叫 Bedrock Converse。",
+			"description_markdown": "填 region，其餘走預設憑證鏈，推理用 Converse(Stream)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Amazon Bedrock Converse via the AWS credential chain.",
+			"description_markdown": "Uses region plus the default AWS chain (profile, keys, bearer token, ECS, IRSA) and Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "用 AWS 凭证链调用 Bedrock Converse。",
+			"description_markdown": "填 region，其余走默认凭证链（profile / AKSK / Bearer / ECS / IRSA），推理用 Converse(Stream)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse عبر سلسلة اعتمادات AWS.",
+			"description_markdown": "المنطقة ثم سلسلة AWS الافتراضية و Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse über die AWS-Credential-Kette.",
+			"description_markdown": "Region plus Standardkette; Inferenz per Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ki"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "🔑➡️🪨",
+			"description_markdown": "☁️🔑➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"☁️",
+				"🪨",
+				"🔑"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse con la cadena de credenciales AWS.",
+			"description_markdown": "Región más la cadena por defecto y Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ia"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse via la chaîne d'identifiants AWS.",
+			"description_markdown": "Région plus la chaîne par défaut et Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ia"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "AWS क्रेडेंशियल चेन से Bedrock Converse.",
+			"description_markdown": "region के साथ डिफ़ॉल्ट श्रृंखला और Converse(Stream)।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse með AWS auðkenniskeðju.",
+			"description_markdown": "Svæði og sjálfgefin keðja; Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse con la catena credenziali AWS.",
+			"description_markdown": "Region più catena predefinita e Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ia"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "AWS 資格情報チェーンで Bedrock Converse。",
+			"description_markdown": "region とデフォルトチェーン。推論は Converse(Stream)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "AWS 자격 증명 체인으로 Bedrock Converse.",
+			"description_markdown": "region과 기본 체인. 추론은 Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "以 AWS 憑據鏈召 Bedrock Converse。",
+			"description_markdown": "填 region，餘走默認鏈。推理用 Converse(Stream)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse via de AWS-credentialketen.",
+			"description_markdown": "Region plus de standaardketen en Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse via a cadeia de credenciais AWS.",
+			"description_markdown": "Região mais a cadeia predefinida e Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ia"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse через цепочку учёток AWS.",
+			"description_markdown": "Регион и стандартная цепочка; Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ии"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse через ланцюг облікових AWS.",
+			"description_markdown": "Регіон і стандартний ланцюг; Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ші"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "Bedrock Converse qua chuỗi chứng thực AWS.",
+			"description_markdown": "region cùng chuỗi mặc định và Converse(Stream).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/simple-icons/amazonaws.svg",
+			"description": "用 AWS 憑證鏈呼叫 Bedrock Converse。",
+			"description_markdown": "填 region，其餘走預設憑證鏈，推理用 Converse(Stream)。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://aws.amazon.com/bedrock/",
+			"tags": [
+				"aws",
+				"bedrock",
+				"iam",
+				"ai"
+			],
+			"provider": "Amazon Bedrock"
+		}
+	}
+}

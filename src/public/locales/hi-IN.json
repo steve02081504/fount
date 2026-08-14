@@ -426,6 +426,12 @@
 				"lsregisterFailed": "चेतावनी: किसी एप्लिकेशन को लॉन्चसर्विसेज के साथ पंजीकृत करने के लिए `lsregister` का उपयोग करना विफल रहा।",
 				"createDesktopAppFailed": "त्रुटि: डेस्कटॉप एप्लिकेशन बनाने में विफल।"
 			},
+			"steam": {
+				"registering": "fount को Steam में गैर-Steam गेम के रूप में पंजीकृत किया जा रहा है…",
+				"registered": "fount को आपकी Steam लाइब्रेरी में जोड़ दिया गया है। यदि Steam चल रहा है, तो परिवर्तन लागू करने के लिए उसे पुनः प्रारंभ करें।",
+				"failed": "Steam पंजीकरण विफल: ${message}",
+				"exeFailed": "fount.exe नहीं बन सका; Steam पंजीकरण छोड़ दिया गया।"
+			},
 			"git": {
 				"repoNotFound": "fount का गिट भंडार नहीं मिला। एक नया प्रारंभ किया जा रहा है...",
 				"fetchingAndResetting": "दूरस्थ रिपॉजिटरी से प्राप्त किया जा रहा है और मास्टर पर रीसेट किया जा रहा है...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "निर्भरताएँ स्थापित की जा रही हैं...",
+				"compilingFavicon": "फ़ेविकॉन फ़ाइल मौजूद नहीं है, सर्वर चालू करके संकलन किया जा रहा है...",
 				"packageFailed": "त्रुटि: ${package} की स्थापना विफल रही।",
 				"browserMissing": "डिफ़ॉल्ट ब्राउज़र का पता नहीं चला, इंस्टॉल करने का प्रयास किया जा रहा है...",
 				"untrustedPartsWarning": "अपने सिस्टम पर कोई भी अविश्वसनीय fount घटक स्थापित न करें, वे कुछ भी कर सकते हैं।",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "डेस्कटॉप शॉर्टकट नहीं मिला.",
 				"startMenuShortcutRemoved": "प्रारंभ मेनू शॉर्टकट हटा दिया गया है.",
 				"startMenuShortcutNotFound": "प्रारंभ मेनू शॉर्टकट नहीं मिला.",
+				"steamShortcutRemoved": "fount को आपकी Steam लाइब्रेरी से हटा दिया गया है।",
+				"steamShortcutNotFound": "Steam में fount नहीं मिला।",
 				"moduleRemoved": "${module} हटा दिया गया है.",
 				"uninstalling": {
 					"chrome": "Chrome अनइंस्टॉल किया जा रहा है...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "स्थापित सिस्टम पैकेजों को हटाया जा रहा है...",
 					"protocolHandler": "फ़ॉन्ट://प्रोटोकॉल हैंडलर हटाया जा रहा है...",
 					"startMenuShortcut": "प्रारंभ मेनू शॉर्टकट हटा रहा है...",
+					"steamShortcut": "Steam से fount हटाया जा रहा है…",
 					"terminalKeybindings": "टर्मिनल कुंजी बाइंडिंग पैच हटाया जा रहा है...",
 					"terminalProfile": "Windows टर्मिनल प्रोफ़ाइल हटाई जा रही है..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "समूह सेटिंग",
+					"description": "समूह की पहचान, सदस्यों, अनुमतियों और साझा मंच को जोड़ने वाले उपकरणों का प्रबंधन करें।",
 					"kicker": "समूह प्रबंधन",
 					"subtitle": "समूह की जानकारी, सदस्यों और सामान्य कार्यों को प्रबंधित करें। कम-आवृत्ति अनुमतियाँ, भंडारण और ऑडिटिंग उपकरण उन्नत सेटिंग्स में केंद्रीकृत हैं।",
 					"backToChat": "चैट पर वापस",
@@ -3826,6 +3837,16 @@
 			"availableModels": "उपलब्ध मॉडल:",
 			"copied": "नकल की गई!",
 			"apiKeyRequired": "मॉडलों को सूचीबद्ध करने के लिए एपीआई कुंजी की आवश्यकता होती है।",
+			"oauth": {
+				"login": "लॉग इन",
+				"logout": "लॉग आउट",
+				"loggedIn": "लॉग इन है",
+				"notLoggedIn": "लॉग इन नहीं",
+				"waiting": "अनुमति की प्रतीक्षा…",
+				"failed": "लॉगिन विफल: ${message}",
+				"deviceCode": "${uri} खोलें और कोड ${code} दर्ज करें",
+				"credentialsRequired": "आवश्यक JSON फ़ील्ड भरें (region / project / location / account_id / gateway_id / API key)। क्रेडेंशियल पर्यावरण चर से भी आ सकते हैं।"
+			},
 			"copyModelIdTooltip": "मॉडल आईडी कॉपी करने के लिए क्लिक करें",
 			"loadModelsFailed": "मॉडल लोड करने में विफल: ${message}",
 			"modelSearchTitle": "मॉडल कैटलॉग देखें",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "रिलीज़ तिथि: ${date}",
 				"toolCall": "टूल कॉल समर्थित",
 				"vision": "दृश्य इनपुट समर्थित"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "AWS डिफ़ॉल्ट क्रेडेंशियल चेन कॉन्फ़िगर करें और JSON में region भरें।"
+			},
+			"vertex": {
+				"credentialsRequired": "ADC कॉन्फ़िगर करें और JSON में project व location भरें।"
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "अगला मीडिया"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth लॉगिन",
+		"description": "AI स्रोत के लिए OAuth लॉगिन पूरा करें। सर्वर साइड पर टोकन विनिमय पूरा हो गया है।",
+		"callback": {
+			"working": "लॉगिन पूरा हो रहा है…",
+			"success": "लॉग इन हो गया। इस पेज को बंद कर सकते हैं।",
+			"failed": "लॉगिन विफल: ${message}",
+			"missingParams": "कॉलबैक में code या state नहीं है।"
 		}
 	}
 }

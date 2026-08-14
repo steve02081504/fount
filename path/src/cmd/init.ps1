@@ -4,7 +4,7 @@
 		exit (fount_handle_init_force $FOUNT_DIR)
 	}
 	bootstrap_full init
-	$exitCode = $LASTEXITCODE
+	$exitCode = $LastExitCode
 	Write-TaskbarProgressClear
 	exit $exitCode
 }

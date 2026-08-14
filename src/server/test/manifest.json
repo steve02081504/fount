@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": "6s",
 			"run": [
 				"deno",
 				"test",
@@ -26,10 +27,7 @@
 		},
 		{
 			"name": "live",
-			"skip_because": {
-				"url": "https://github.com/homebridge/ciao/issues/72",
-				"delay": "25h"
-			},
+			"expected": "1m34s",
 			"run": [
 				"deno",
 				"test",

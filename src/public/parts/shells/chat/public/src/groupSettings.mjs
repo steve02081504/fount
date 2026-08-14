@@ -26,7 +26,7 @@ settingsContext.reload = groupId => loadGroupSettingsImpl(settingsContext, group
  * @returns {Promise<void>}
  */
 export async function initGroupSettings() {
-	await initTranslations('chat')
+	await initTranslations('chat.group.settings.page')
 	const groupId = parseSettingsGroupIdFromHash()
 	if (groupId) await loadGroupSettingsImpl(settingsContext, groupId)
 }

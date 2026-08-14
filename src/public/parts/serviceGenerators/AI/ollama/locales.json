@@ -172,7 +172,7 @@
 			"name": "Ollama",
 			"avatar": "https://api.iconify.design/simple-icons/ollama.svg",
 			"description": "Ollama",
-			"description_markdown": "於本地運行大型語言模型。",
+			"description_markdown": "於本地行宏文。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -439,7 +439,7 @@
 		"lzh": {
 			"avatar": "https://api.iconify.design/simple-icons/ollama.svg",
 			"description": "Ollama",
-			"description_markdown": "於本地運行大型語言模型。",
+			"description_markdown": "於本地行宏文。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": "1s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/proxy/**",
 				"src/scripts/test/fixtures/openai_prompt_cache_mock.mjs"
@@ -19,6 +20,7 @@
 		},
 		{
 			"name": "integration",
+			"expected": "11s",
 			"dependsOn": [
 				"server:live"
 			],

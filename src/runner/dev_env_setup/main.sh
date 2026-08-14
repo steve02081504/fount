@@ -48,7 +48,7 @@ if check_cmd gh 'install from https://github.com/cli/cli/releases'; then
 	fi
 fi
 
-check_cmd fount 'run fount and itll be auto-added to path'
+check_cmd fount.sh 'run fount and itll be auto-added to path'
 
 if [ "$all_set" -eq 1 ]; then
 	printf '🥳 All commands are usable, your dev environment is ready!\n'
@@ -58,7 +58,7 @@ fi
 
 if [ ! -f ./data/test/report.md ]; then
 	printf '🔥 Creating test cache...\n'
-	fount test || true
+	"$REPO_ROOT/path/fount.sh" test || true
 	printf '🥳 Test cache created successfully\n'
 fi
 

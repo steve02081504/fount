@@ -1,0 +1,270 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "OAuth Handler",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Completes AI provider OAuth logins.",
+			"description_markdown": "Canonical PKCE callback for Codex and Claude. GitHub Copilot uses device-code login. Token exchange stays on the server.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"login",
+				"ai"
+			]
+		},
+		"zh-CN": {
+			"name": "OAuth 处理",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "完成 AI 源的 OAuth 登录。",
+			"description_markdown": "Codex、Claude 的 PKCE 回调点；GitHub Copilot 使用 device-code 登录。令牌交换在服务端完成。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"登录",
+				"ai"
+			]
+		},
+		"ar-SA": {
+			"name": "معالج OAuth",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "إكمال تسجيلات OAuth لمزودي الذكاء الاصطناعي.",
+			"description_markdown": "صفحة رد وحيدة لتبادل الرموز على الخادم.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"تسجيل",
+				"ai"
+			]
+		},
+		"de-DE": {
+			"name": "OAuth-Handler",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Schließt OAuth-Anmeldungen für KI-Anbieter ab.",
+			"description_markdown": "Kanonischer Callback; Token-Tausch bleibt auf dem Server.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"anmeldung",
+				"ki"
+			]
+		},
+		"emoji": {
+			"name": "🔑🚪",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "🔑➡️✅",
+			"description_markdown": "🔑🖥️✅",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"🔑",
+				"🚪",
+				"🤖"
+			]
+		},
+		"es-ES": {
+			"name": "Gestor OAuth",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Completa inicios de sesión OAuth de proveedores de IA.",
+			"description_markdown": "Callback canónico; el canje de tokens queda en el servidor.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"inicio",
+				"ia"
+			]
+		},
+		"fr-FR": {
+			"name": "Gestionnaire OAuth",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Termine les connexions OAuth des fournisseurs d'IA.",
+			"description_markdown": "Callback canonique ; l'échange de jetons reste côté serveur.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"connexion",
+				"ia"
+			]
+		},
+		"hi-IN": {
+			"name": "OAuth हैंडलर",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "AI प्रदाताओं का OAuth लॉगिन पूरा करता है।",
+			"description_markdown": "कैनोनिकल कॉलबैक; टोकन विनिमय सर्वर पर रहता है।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"लॉगिन",
+				"ai"
+			]
+		},
+		"is-IS": {
+			"name": "OAuth-meðhöndlun",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Lýkur OAuth innskráningum AI-veitenda.",
+			"description_markdown": "Aðal callback; tókaskipti eru á þjóninum.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"innskráning",
+				"ai"
+			]
+		},
+		"it-IT": {
+			"name": "Gestore OAuth",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Completa i login OAuth dei provider IA.",
+			"description_markdown": "Callback canonico; lo scambio token resta sul server.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"accesso",
+				"ia"
+			]
+		},
+		"ja-JP": {
+			"name": "OAuth ハンドラ",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "AI プロバイダの OAuth ログインを完了します。",
+			"description_markdown": "正規コールバック。トークン交換はサーバー側です。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"ログイン",
+				"ai"
+			]
+		},
+		"ko-KR": {
+			"name": "OAuth 처리기",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "AI 제공자의 OAuth 로그인을 완료합니다.",
+			"description_markdown": "정규 콜백. 토큰 교환은 서버에서 합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"로그인",
+				"ai"
+			]
+		},
+		"lzh": {
+			"name": "OAuth 司",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "成 AI 源之 OAuth 登入。",
+			"description_markdown": "唯一回調。換票於伺服。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"登入",
+				"ai"
+			]
+		},
+		"nl-NL": {
+			"name": "OAuth-handler",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Rondt OAuth-logins van AI-providers af.",
+			"description_markdown": "Canonieke callback; tokenwisseling blijft op de server.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"login",
+				"ai"
+			]
+		},
+		"pt-PT": {
+			"name": "Gestor OAuth",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Conclui logins OAuth de fornecedores de IA.",
+			"description_markdown": "Callback canónico; a troca de tokens fica no servidor.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"login",
+				"ia"
+			]
+		},
+		"ru-RU": {
+			"name": "Обработчик OAuth",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Завершает OAuth-вход провайдеров ИИ.",
+			"description_markdown": "Канонический callback; обмен токенов на сервере.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"вход",
+				"ии"
+			]
+		},
+		"uk-UA": {
+			"name": "Обробник OAuth",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Завершує OAuth-вхід провайдерів ШІ.",
+			"description_markdown": "Канонічний callback; обмін токенів на сервері.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"вхід",
+				"ші"
+			]
+		},
+		"vi-VN": {
+			"name": "Trình OAuth",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "Hoàn tất đăng nhập OAuth của nguồn AI.",
+			"description_markdown": "Callback chuẩn; đổi token ở phía máy chủ.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"đăng nhập",
+				"ai"
+			]
+		},
+		"zh-TW": {
+			"name": "OAuth 處理",
+			"avatar": "https://api.iconify.design/material-symbols/key.svg",
+			"description": "完成 AI 源的 OAuth 登入。",
+			"description_markdown": "Codex、Claude 的 PKCE 回調點；GitHub Copilot 使用 device-code 登入。換票在伺服端完成。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"oauth",
+				"登入",
+				"ai"
+			]
+		}
+	}
+}

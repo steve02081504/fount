@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": 600,
 			"triggers": [
 				"src/public/parts/serviceGenerators/SpeechRecognition/**",
 				"src/decl/SpeechRecognitionSource.ts",

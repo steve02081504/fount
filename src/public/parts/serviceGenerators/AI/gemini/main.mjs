@@ -199,9 +199,12 @@ function isGeminiApiKeyError(err) {
 /**
  * 获取 AI 源。
  * @param {object} config - 配置对象。
+ * @param {object} [extra] - 可选注入（Vertex 等）。
+ * @param {(args: { GoogleGenAI: any, config: object }) => (Promise<any> | any)} [extra.createAi] - 自定义客户端。
+ * @param {object} [extra.product_info] - 覆盖产品信息。
  * @returns {Promise<AIsource_t>} AI 源。
  */
-async function GetSource(config) {
+export async function GetSource(config, extra = {}) {
 	const {
 		GoogleGenAI,
 		HarmCategory,
@@ -214,13 +217,16 @@ async function GetSource(config) {
 	config.max_input_tokens ??= configTemplate.max_input_tokens
 	config.keep_thought_signature ??= configTemplate.keep_thought_signature
 	const supportedFileTypes = config.allowed_mime_types ?? defaultSupportedFileTypes
+	const infoLocales = extra.product_info || product_info
 
-	const ai = new GoogleGenAI({
-		apiKey: config.apikey,
-		httpOptions: config.base_url ? {
-			baseUrl: config.base_url,
-		} : undefined
-	})
+	const ai = extra.createAi
+		? await extra.createAi({ GoogleGenAI, config })
+		: new GoogleGenAI({
+			apiKey: config.apikey,
+			httpOptions: config.base_url ? {
+				baseUrl: config.base_url,
+			} : undefined
+		})
 
 	const fileUploadMap = new Map()
 	/**
@@ -308,7 +314,7 @@ async function GetSource(config) {
 	const result = {
 		type: 'text-chat',
 		is_paid: false,
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([k, v]) => {
+		info: Object.fromEntries(Object.entries(structuredClone(infoLocales)).map(([k, v]) => {
 			v.name = config.name || config.model
 			return [k, v]
 		})),

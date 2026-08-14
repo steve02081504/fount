@@ -1,10 +1,12 @@
 ﻿# Uninstall fount-pwsh
 Write-Host (Get-I18n -key 'remove.uninstalling.fountPwsh')
-try {
-	Uninstall-Module -Name fount-pwsh -AllVersions -Force -ErrorAction Stop
-}
-catch {
-	Write-Warning (Get-I18n -key 'remove.uninstallFountPwshFailed' -params @{message = $_.Exception.Message })
+if (Get-Module -Name fount-pwsh -ListAvailable) {
+	try {
+		Uninstall-Module -Name fount-pwsh -AllVersions -Force -ErrorAction Stop
+	}
+	catch {
+		Write-Warning (Get-I18n -key 'remove.uninstallFountPwshFailed' -params @{message = $_.Exception.Message })
+	}
 }
 Set-Title "𝓯𝓸𝓾"
 Write-TaskbarProgress -Percent 45

@@ -1,0 +1,77 @@
+{
+	"id": "shells/oauth_handler",
+	"triggerSets": {
+		"frontendShared": [
+			"src/public/parts/shells/oauth_handler/public/**",
+			"src/public/parts/shells/oauth_handler/test/frontend/**",
+			"src/scripts/test/playwright/**",
+			"src/public/pages/scripts/**"
+		]
+	},
+	"suites": [
+		{
+			"name": "pure",
+			"expected": "1s",
+			"triggers": [
+				"src/public/parts/shells/oauth_handler/src/{pkce,portHook,providers,pending}.mjs",
+				"src/public/parts/shells/oauth_handler/test/pure/**"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/oauth_handler/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"expected": "8s",
+			"triggers": [
+				"src/public/parts/shells/oauth_handler/src/{portHook,login,endpoints,persist,pending,providers,pkce}.mjs",
+				"src/public/parts/shells/oauth_handler/main.mjs",
+				"src/public/parts/shells/oauth_handler/test/integration/**"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/oauth_handler/test/integration/"
+			]
+		},
+		{
+			"name": "frontend",
+			"expected": "48s",
+			"dependsOn": [
+				"server:live"
+			],
+			"trigger": "frontendShared",
+			"subtests": [
+				{
+					"name": "smoke",
+					"expected": "28s",
+					"triggers": [
+						"src/public/parts/shells/oauth_handler/test/frontend/smoke.spec.mjs",
+						"src/public/parts/shells/oauth_handler/public/**",
+						"src/public/locales/**"
+					]
+				}
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/oauth_handler/test/frontend/run.mjs"
+			]
+		}
+	]
+}

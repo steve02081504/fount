@@ -82,6 +82,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": "52s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -101,6 +102,7 @@
 		},
 		{
 			"name": "integration",
+			"expected": "4m58s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -123,6 +125,7 @@
 		},
 		{
 			"name": "smoke_social",
+			"expected": "16s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -145,6 +148,7 @@
 		},
 		{
 			"name": "e2e_single",
+			"expected": "29s",
 			"dependsOn": [
 				"server:live",
 				"smoke_social"
@@ -167,6 +171,7 @@
 		},
 		{
 			"name": "ws",
+			"expected": "23s",
 			"dependsOn": [
 				"server:live",
 				"smoke_social"
@@ -190,6 +195,7 @@
 		},
 		{
 			"name": "cross_shell_emoji",
+			"expected": "2m32s",
 			"dependsOn": [
 				"server:live",
 				"smoke_social",
@@ -215,6 +221,7 @@
 		},
 		{
 			"name": "frontend",
+			"expected": "25m19s",
 			"dependsOn": [
 				"server:live",
 				"smoke_social",
@@ -224,12 +231,14 @@
 			"subtests": [
 				{
 					"name": "smoke",
+					"expected": "6s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/smoke.spec.mjs"
 					]
 				},
 				{
 					"name": "postActions",
+					"expected": "1m50s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/postActions.spec.mjs",
 						"src/public/parts/shells/social/public/src/actions/**",
@@ -239,6 +248,7 @@
 				},
 				{
 					"name": "replies",
+					"expected": "27s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/replies.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/replies.mjs"
@@ -246,6 +256,7 @@
 				},
 				{
 					"name": "postDetail",
+					"expected": "12s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/postDetail.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/postDetail.mjs",
@@ -254,6 +265,7 @@
 				},
 				{
 					"name": "composer",
+					"expected": "3m15s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/composer.spec.mjs",
 						"src/public/parts/shells/social/public/index.html",
@@ -266,6 +278,7 @@
 				},
 				{
 					"name": "deepLink",
+					"expected": "36s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/deepLink.spec.mjs",
 						"src/public/parts/shells/social/public/src/navigation.mjs"
@@ -273,6 +286,7 @@
 				},
 				{
 					"name": "feed",
+					"expected": "2m41s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/feed.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/feed.mjs",
@@ -282,6 +296,7 @@
 				},
 				{
 					"name": "navigation",
+					"expected": "1m37s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/navigation.spec.mjs",
 						"src/public/parts/shells/social/public/src/navigation.mjs",
@@ -291,6 +306,7 @@
 				},
 				{
 					"name": "profile",
+					"expected": "2m59s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/profile.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/profile.mjs",
@@ -305,6 +321,7 @@
 				},
 				{
 					"name": "saved",
+					"expected": "1m31s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/saved.spec.mjs",
 						"src/public/parts/shells/social/public/src/{views,actions}/saved.mjs"
@@ -312,6 +329,7 @@
 				},
 				{
 					"name": "drafts",
+					"expected": "10s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/drafts.spec.mjs",
 						"src/public/parts/shells/social/public/src/{views,actions}/drafts.mjs",
@@ -322,6 +340,7 @@
 				},
 				{
 					"name": "videos",
+					"expected": "3m52s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/videos.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/video.mjs",
@@ -332,6 +351,7 @@
 				},
 				{
 					"name": "explore_notifications",
+					"expected": "4m19s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/explore_notifications.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/{explore,notifications}.mjs"

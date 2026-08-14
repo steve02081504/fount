@@ -14,7 +14,16 @@ import { TestQueues } from '../kernel/queues.mjs'
 function mutableClock(start = 0) {
 	let current = start
 	return {
+		/**
+		 * 当前模拟时间（毫秒）。
+		 * @returns {number} 当前毫秒
+		 */
 		now: () => current,
+		/**
+		 * 将模拟时间设为指定值。
+		 * @param {number} value 新毫秒
+		 * @returns {void}
+		 */
 		set: value => { current = value },
 	}
 }

@@ -1,0 +1,41 @@
+{
+	"id": "serviceGenerators/AI/codex",
+	"suites": [
+		{
+			"name": "pure",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/codex/src/responsesClient.mjs",
+				"src/public/parts/serviceGenerators/AI/codex/test/pure/**"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/AI/codex/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"expected": "6s",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/codex/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/**",
+				"src/public/parts/serviceGenerators/AI/proxy/test/mockFetch.mjs",
+				"src/public/parts/shells/oauth_handler/src/providers.mjs"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/serviceGenerators/AI/codex/test/integration/"
+			]
+		}
+	]
+}

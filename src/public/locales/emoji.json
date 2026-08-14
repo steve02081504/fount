@@ -426,6 +426,12 @@
 				"lsregisterFailed": "⚠️ `lsregister` 💥",
 				"createDesktopAppFailed": "❌ 🖥️💔"
 			},
+			"steam": {
+				"registering": "🎮➕…",
+				"registered": "✅ 🎮 ⛲ — 🔄",
+				"failed": "❌ 🎮: ${message}",
+				"exeFailed": "❌ fount.exe → ⏭️ 🎮"
+			},
 			"git": {
 				"repoNotFound": "🤔❓ 🐙🐱… ➡️ ✨",
 				"fetchingAndResetting": "☁️📥 ➡️ 🌳",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "📥🧩…",
+				"compilingFavicon": "🚫🔖, 🖥️🔨…",
 				"packageFailed": "❌: ${package} 📥💥",
 				"browserMissing": "🚫🌐, 🔄📥…",
 				"untrustedPartsWarning": "🚫❓ ⛲🧩 ➡️ ☣️",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "❓ 🖥️",
 				"startMenuShortcutRemoved": "✅ 👋 🏁",
 				"startMenuShortcutNotFound": "❓ 🏁",
+				"steamShortcutRemoved": "✅ 👋 🎮",
+				"steamShortcutNotFound": "❓ 🎮",
 				"moduleRemoved": "✅ 👋 ${module}",
 				"uninstalling": {
 					"chrome": "👋 🌐…",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "👋 📦…",
 					"protocolHandler": "👋 🔗⛲://",
 					"startMenuShortcut": "👋 🏁…",
+					"steamShortcut": "👋 🎮…",
 					"terminalKeybindings": "👋 ⌨️🗺️ 🩹…",
 					"terminalProfile": "👋 🪟🖥️"
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "👥⚙️",
+					"description": "👥⚙️📋🔐",
 					"kicker": "👥🛡️",
 					"subtitle": "👥📋➕👤🔧🔽🔐、💾📜🔧 📚▶️🔧⚙️",
 					"backToChat": "🔙💬",
@@ -3826,6 +3837,16 @@
 			"availableModels": "✅🧠:",
 			"copied": "📋✅",
 			"apiKeyRequired": "🔑❓➡️🧠",
+			"oauth": {
+				"login": "🔑",
+				"logout": "🚪",
+				"loggedIn": "✅",
+				"notLoggedIn": "❌",
+				"waiting": "⏳",
+				"failed": "❌ ${message}",
+				"deviceCode": "${uri} → ${code}",
+				"credentialsRequired": "📝 JSON + env"
+			},
 			"copyModelIdTooltip": "👆➡️📋🆔",
 			"loadModelsFailed": "🧠📥❌: ${message}",
 			"modelSearchTitle": "🔍🧠📚",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "📅 ${date}",
 				"toolCall": "🔧✅",
 				"vision": "👁️✅"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "🔑 AWS chain → region"
+			},
+			"vertex": {
+				"credentialsRequired": "🔑 ADC → project/location"
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "➡️"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "🔑 OAuth",
+		"description": "🔑➡️✅",
+		"callback": {
+			"working": "⏳",
+			"success": "✅",
+			"failed": "❌ ${message}",
+			"missingParams": "❓ code/state"
 		}
 	}
 }

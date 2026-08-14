@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Viðvörun: Mistókst að nota `lsregister` til að skrá forrit hjá LaunchServices.",
 				"createDesktopAppFailed": "Villa: Mistókst að búa til skjáborðsforrit."
 			},
+			"steam": {
+				"registering": "Skráir fount sem leik sem ekki er á Steam í Steam…",
+				"registered": "fount hefur verið bætt við Steam safnið þitt. Endurræstu Steam ef það er í gangi til að breytingin taki gildi.",
+				"failed": "Skráning á Steam mistókst: ${message}",
+				"exeFailed": "Gat ekki búið til fount.exe; sleppti skráningu á Steam."
+			},
 			"git": {
 				"repoNotFound": "Git geymslan fyrir font fannst ekki. Byrjar nýjan...",
 				"fetchingAndResetting": "Sækir úr fjarlægri geymslu og endurstillir í master...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Setur upp ósjálfstæði...",
+				"compilingFavicon": "Faviconskrá finnst ekki; ræsi vefþjón til að búa hana til...",
 				"packageFailed": "Villa: Uppsetning á ${package} mistókst.",
 				"browserMissing": "Sjálfgefinn vafri fannst ekki, reynir að setja upp...",
 				"untrustedPartsWarning": "Ekki setja upp neina ótryggða leturíhluti á kerfið þitt, þeir geta gert hvað sem er.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Flýtileið á skjáborði fannst ekki.",
 				"startMenuShortcutRemoved": "Flýtileið fyrir upphafsvalmynd hefur verið fjarlægð.",
 				"startMenuShortcutNotFound": "Flýtileið fyrir upphafsvalmynd fannst ekki.",
+				"steamShortcutRemoved": "fount hefur verið fjarlægt úr Steam safninu þínu.",
+				"steamShortcutNotFound": "fount fannst ekki í Steam.",
 				"moduleRemoved": "${module} hefur verið fjarlægt.",
 				"uninstalling": {
 					"chrome": "Fjarlægir Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Fjarlægir uppsetta kerfispakka...",
 					"protocolHandler": "Fjarlægir `fount://` samskiptareglur...",
 					"startMenuShortcut": "Fjarlægir flýtivísa fyrir upphafsvalmynd...",
+					"steamShortcut": "Fjarlægir fount úr Steam…",
 					"terminalKeybindings": "Fjarlægir lagfæringu lyklaborðsviðmóts skels...",
 					"terminalProfile": "Fjarlægir Windows Terminal Profile..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Hópstillingar",
+					"description": "Sjá um auðkenni hópsins, meðlimi, heimildir og tækin sem binda sameiginlega sviðið.",
 					"kicker": "Hópstjórn",
 					"subtitle": "Stjórna hópupplýsingum, meðlimum og sameiginlegum aðgerðum. Lágtíðniheimildir, geymsla og endurskoðunartæki eru miðlæg í háþróuðum stillingum.",
 					"backToChat": "Fara aftur í spjallið",
@@ -3826,6 +3837,16 @@
 			"availableModels": "Tiltækar gerðir:",
 			"copied": "Afritað!",
 			"apiKeyRequired": "API lykil er nauðsynleg til að skrá gerðir.",
+			"oauth": {
+				"login": "Skrá inn",
+				"logout": "Skrá út",
+				"loggedIn": "Skráð inn",
+				"notLoggedIn": "Ekki skráð inn",
+				"waiting": "Bíður eftir heimild…",
+				"failed": "Innskráning mistókst: ${message}",
+				"deviceCode": "Opnaðu ${uri} og sláðu inn kóðann ${code}",
+				"credentialsRequired": "Fylltu út nauðsynlega JSON-reiti (region / project / location / account_id / gateway_id / API key). Aðgangsupplýsingar geta einnig komið úr umhverfisbreytum."
+			},
 			"copyModelIdTooltip": "Smelltu til að afrita auðkenni fyrirmyndar",
 			"loadModelsFailed": "Mistókst að hlaða líkani: ${message}",
 			"modelSearchTitle": "Skoða líkanaskrá",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "Útgáfudagur: ${date}",
 				"toolCall": "Styður verkfæraköll",
 				"vision": "Styður sjónrænt inntak"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Stilltu sjálfgefna AWS-auðkenniskeðjuna og settu region í JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Stilltu ADC og settu project og location í JSON."
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "Næsti miðill"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth-innskráning",
+		"description": "Ljúktu við OAuth innskráninguna fyrir gervigreindargjafann. Token-skiptum er lokið á miðlarahlið.",
+		"callback": {
+			"working": "Lýkur innskráningu…",
+			"success": "Skráð inn. Þú getur lokað þessari síðu.",
+			"failed": "Innskráning mistókst: ${message}",
+			"missingParams": "Callback vantar code eða state."
 		}
 	}
 }

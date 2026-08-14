@@ -426,6 +426,12 @@
 				"lsregisterFailed": "تحذير: فشل استخدام `lsregister` لتسجيل تطبيق في LaunchServices.",
 				"createDesktopAppFailed": "خطأ: فشل إنشاء تطبيق سطح المكتب."
 			},
+			"steam": {
+				"registering": "جارٍ تسجيل fount كلعبة غير Steam في Steam…",
+				"registered": "تمت إضافة fount إلى مكتبة Steam. إذا كان Steam يعمل، أعد تشغيله حتى يسري التغيير.",
+				"failed": "فشل التسجيل في Steam: ${message}",
+				"exeFailed": "تعذّر إنشاء fount.exe؛ تم تخطي التسجيل في Steam."
+			},
 			"git": {
 				"repoNotFound": "لم يتم العثور على مستودع git الخاص بfount. تهيئة واحدة جديدة...",
 				"fetchingAndResetting": "جارٍ الجلب من المستودع البعيد وإعادة التعيين إلى الوضع الرئيسي...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "تثبيت التبعيات...",
+				"compilingFavicon": "ملف الأيقونة غير موجود؛ جارٍ تشغيل الخادم للتجميع...",
 				"packageFailed": "خطأ: فشل تثبيت ${package}.",
 				"browserMissing": "لم يتم اكتشاف المتصفح الافتراضي، جاري محاولة التثبيت...",
 				"untrustedPartsWarning": "لا تقم بتثبيت أي مكونات غير موثوقة على نظامك، يمكنها فعل أي شيء.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "لم يتم العثور على اختصار سطح المكتب.",
 				"startMenuShortcutRemoved": "تمت إزالة اختصار قائمة ابدأ.",
 				"startMenuShortcutNotFound": "لم يتم العثور على اختصار قائمة ابدأ.",
+				"steamShortcutRemoved": "تمت إزالة fount من مكتبة Steam.",
+				"steamShortcutNotFound": "لم يُعثر على fount في Steam.",
 				"moduleRemoved": "تمت إزالة ${module}.",
 				"uninstalling": {
 					"chrome": "جارٍ إلغاء تثبيت Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "جارٍ إزالة حزم النظام المثبتة...",
 					"protocolHandler": "جارٍ إزالة `fount://` معالج البروتوكول...",
 					"startMenuShortcut": "جارٍ إزالة اختصارات قائمة البدء...",
+					"steamShortcut": "جارٍ إزالة fount من Steam…",
 					"terminalKeybindings": "جارٍ إزالة ترقيع اختصارات الطرفية...",
 					"terminalProfile": "جارٍ إزالة ملف التعريف الطرفي لـ Windows..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "إعدادات المجموعة",
+					"description": "أدر هوية المجموعة وأعضاءها وصلاحياتها والأدوات التي تربط منصتكم المشتركة.",
 					"kicker": "إدارة المجموعة",
 					"subtitle": "إدارة معلومات المجموعة والأعضاء والوظائف المشتركة. يتم مركزية الأذونات والتخزين وأدوات التدقيق ذات التردد المنخفض في الإعدادات المتقدمة.",
 					"backToChat": "العودة إلى الدردشة",
@@ -3826,6 +3837,16 @@
 			"availableModels": "النماذج المتاحة:",
 			"copied": "منسوخ!",
 			"apiKeyRequired": "مطلوب مفتاح API لسرد النماذج.",
+			"oauth": {
+				"login": "تسجيل الدخول",
+				"logout": "تسجيل الخروج",
+				"loggedIn": "تم تسجيل الدخول",
+				"notLoggedIn": "غير مسجّل الدخول",
+				"waiting": "بانتظار التفويض…",
+				"failed": "فشل تسجيل الدخول: ${message}",
+				"deviceCode": "افتح ${uri} وأدخل الرمز ${code}",
+				"credentialsRequired": "املأ حقول JSON المطلوبة (region / project / location / account_id / gateway_id / API key). يمكن أن تأتي الاعتمادات من متغيرات البيئة."
+			},
 			"copyModelIdTooltip": "انقر لنسخ معرف النموذج",
 			"loadModelsFailed": "فشل تحميل النموذج: ${message}",
 			"modelSearchTitle": "تصفّح دليل النماذج",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "تاريخ الإصدار: ${date}",
 				"toolCall": "يدعم استدعاء الأدوات",
 				"vision": "يدعم الإدخال البصري"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "يُرجى تهيئة سلسلة بيانات اعتماد AWS الافتراضية وتحديد region في JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "يُرجى تهيئة ADC وتحديد project و location في JSON."
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "التالي"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "تسجيل OAuth",
+		"description": "أكمل تسجيل دخول OAuth لمصدر الذكاء الاصطناعي. اكتمل تبادل التوكن على جانب الخادم.",
+		"callback": {
+			"working": "جارٍ إتمام تسجيل الدخول…",
+			"success": "تم تسجيل الدخول. يمكنك إغلاق هذه الصفحة.",
+			"failed": "فشل تسجيل الدخول: ${message}",
+			"missingParams": "الرد ينقصه code أو state."
 		}
 	}
 }

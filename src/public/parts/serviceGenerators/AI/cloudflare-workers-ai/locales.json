@@ -1,0 +1,574 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare Workers AI OpenAI-compatible chat.",
+			"description_markdown": "Account ID + API token. Completions at `/client/v4/accounts/{id}/ai/v1/chat/completions` with `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"zh-CN": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare Workers AI 的 OpenAI 兼容聊天。",
+			"description_markdown": "账号 ID + API token。打 `/client/v4/accounts/{id}/ai/v1/chat/completions`，带 `x-session-affinity`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"ar-SA": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "دردشة Workers AI المتوافقة مع OpenAI.",
+			"description_markdown": "معرّف الحساب ورمز API مع `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"de-DE": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-kompatibler Chat von Workers AI.",
+			"description_markdown": "Konto-ID plus API-Token und `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ki"
+			]
+		},
+		"emoji": {
+			"name": "🟠🤖",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "🔑➡️🤖",
+			"description_markdown": "🟠🔑➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"🟠",
+				"🤖",
+				"🔑"
+			]
+		},
+		"es-ES": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat compatible con OpenAI de Workers AI.",
+			"description_markdown": "ID de cuenta + token API y `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ia"
+			]
+		},
+		"fr-FR": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat compatible OpenAI de Workers AI.",
+			"description_markdown": "ID de compte + jeton API et `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ia"
+			]
+		},
+		"hi-IN": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Workers AI का OpenAI-संगत चैट.",
+			"description_markdown": "खाता ID + API टोकन और `x-session-affinity`।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"is-IS": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-samhæfð spjall Workers AI.",
+			"description_markdown": "Reikningsauðkenni + API-tóki og `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"it-IT": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat compatibile OpenAI di Workers AI.",
+			"description_markdown": "ID account + token API e `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ia"
+			]
+		},
+		"ja-JP": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Workers AI の OpenAI 互換チャット。",
+			"description_markdown": "アカウント ID と API トークン。`x-session-affinity` 付き。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"ko-KR": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Workers AI의 OpenAI 호환 채팅.",
+			"description_markdown": "계정 ID + API 토큰, `x-session-affinity` 포함.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"lzh": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Workers AI 之 OpenAI 兼容對談。",
+			"description_markdown": "賬號與 token。帶 `x-session-affinity`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"nl-NL": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-compatibele chat van Workers AI.",
+			"description_markdown": "Account-ID + API-token en `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"pt-PT": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat compatível com OpenAI do Workers AI.",
+			"description_markdown": "ID da conta + token API e `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ia"
+			]
+		},
+		"ru-RU": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-совместимый чат Workers AI.",
+			"description_markdown": "ID аккаунта + API-токен и `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ии"
+			]
+		},
+		"uk-UA": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-сумісний чат Workers AI.",
+			"description_markdown": "ID облікового запису + API-токен і `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ші"
+			]
+		},
+		"vi-VN": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat tương thích OpenAI của Workers AI.",
+			"description_markdown": "Account ID + API token và `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		},
+		"zh-TW": {
+			"name": "Cloudflare Workers AI",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare Workers AI 的 OpenAI 相容聊天。",
+			"description_markdown": "帳號 ID + API token。打 chat completions，帶 `x-session-affinity`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare Workers AI OpenAI-compatible chat.",
+			"description_markdown": "Account ID + API token. Completions at `/client/v4/accounts/{id}/ai/v1/chat/completions` with `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare Workers AI 的 OpenAI 兼容聊天。",
+			"description_markdown": "账号 ID + API token。打 `/client/v4/accounts/{id}/ai/v1/chat/completions`，带 `x-session-affinity`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "دردشة Workers AI المتوافقة مع OpenAI.",
+			"description_markdown": "معرّف الحساب ورمز API مع `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-kompatibler Chat von Workers AI.",
+			"description_markdown": "Konto-ID plus API-Token und `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ki"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "🔑➡️🤖",
+			"description_markdown": "🟠🔑➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"🟠",
+				"🤖",
+				"🔑"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat compatible con OpenAI de Workers AI.",
+			"description_markdown": "ID de cuenta + token API y `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ia"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat compatible OpenAI de Workers AI.",
+			"description_markdown": "ID de compte + jeton API et `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ia"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Workers AI का OpenAI-संगत चैट.",
+			"description_markdown": "खाता ID + API टोकन और `x-session-affinity`।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-samhæfð spjall Workers AI.",
+			"description_markdown": "Reikningsauðkenni + API-tóki og `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat compatibile OpenAI di Workers AI.",
+			"description_markdown": "ID account + token API e `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ia"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Workers AI の OpenAI 互換チャット。",
+			"description_markdown": "アカウント ID と API トークン。`x-session-affinity` 付き。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Workers AI의 OpenAI 호환 채팅.",
+			"description_markdown": "계정 ID + API 토큰, `x-session-affinity` 포함.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Workers AI 之 OpenAI 兼容對談。",
+			"description_markdown": "賬號與 token。帶 `x-session-affinity`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-compatibele chat van Workers AI.",
+			"description_markdown": "Account-ID + API-token en `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat compatível com OpenAI do Workers AI.",
+			"description_markdown": "ID da conta + token API e `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ia"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-совместимый чат Workers AI.",
+			"description_markdown": "ID аккаунта + API-токен и `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ии"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "OpenAI-сумісний чат Workers AI.",
+			"description_markdown": "ID облікового запису + API-токен і `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ші"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Chat tương thích OpenAI của Workers AI.",
+			"description_markdown": "Account ID + API token và `x-session-affinity`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare Workers AI 的 OpenAI 相容聊天。",
+			"description_markdown": "帳號 ID + API token。打 chat completions，帶 `x-session-affinity`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/workers-ai/",
+			"tags": [
+				"cloudflare",
+				"workers-ai",
+				"openai",
+				"ai"
+			],
+			"provider": "Cloudflare Workers AI"
+		}
+	}
+}

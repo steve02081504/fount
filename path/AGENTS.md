@@ -14,6 +14,8 @@ Thin entries `path/fount.{ps1,sh}` dispatch to `path/src/cmd/<name>.*` via inlin
 | `bootstrap_server` | Server path (uses background updates) |
 | `require_mid` + `source_uninstall_hooks` | `remove` |
 
+`fount init` (and first install) registers a non-Steam shortcut when Steam is present — skip otherwise. Windows launchers use `$FOUNT_DIR/fount.exe` (written if missing, gitignored); other platforms use `path/fount`. `New-FountExe` keeps try/catch glued to `ps12exe`: any throw is reported ([ps12exe#58](https://github.com/steve02081504/ps12exe/issues/58)) and **not** rethrown. `geneexe` fails via `index.ps1` (`$Error.Count` / `$LastExitCode`). Steam registration swallows failures so `fount init` still succeeds. `shortcuts.vdf` is read/written in `path/src/steam_vdf.mjs` (no nonsteam); appid is `crc32(Exe+AppName)|0x80000000` so library art matches. If the favicon.ico file is missing, geneexe calls `run shutdown` so init compiles the icon. Call the `run` function, not `fount shutdown`, so bootstrap cannot recurse into Steam registration. `fount geneexe [path]` still defaults to `./fount.exe` (cwd). `remove` unregisters this install only (level 85, before Deno uninstall).
+
 Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/src/win/` or `unix/`. Shared helpers: `in_container`, `run_with_updates`, `trap_terminal_teardown`, `handle_docker_passthrough`, `check_temp_guard`, `sed_escape`.
 
 `remove` scans `**/*.uninstall.<level>.*` under `path/src`, highest level first; level `0` deletes the install tree.
@@ -36,7 +38,7 @@ Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/s
 
 ## CI smoke
 
-CI-only `path-cmd-smoke`: [docs/ci-smoke.md](docs/ci-smoke.md).
+CI-only `path-cmd-smoke`: [docs/ci-smoke.md](docs/ci-smoke.md). `test-fount` init → `remove` fails if output matches [remove-noise.patterns](../.github/path-ci/remove-noise.patterns). pwsh harnesses in `path/test` run on Linux CI — set `$LastExitCode` directly; do not call `cmd.exe`.
 
 ## ShellCheck
 

@@ -27,8 +27,8 @@ if (Test-Path -LiteralPath $Profile) {
 	if ($newContent) { $newContent += $nl }
 	if ($newContent -ne $existing) {
 		[IO.File]::WriteAllText($Profile, $newContent)
+		Write-Host (Get-I18n -key 'remove.fountPwshRemovedFromProfile')
 	}
-	Write-Host (Get-I18n -key 'remove.fountPwshRemovedFromProfile')
 }
 else {
 	Write-Host (Get-I18n -key 'remove.pwshProfileNotFound')

@@ -20,7 +20,7 @@ function script:require_mid {
 	require env win/refresh_path win/winget win/installer_dir
 	require packages browser passthrough profile
 	require git deno fs init_force update run debug boot
-	require win/file_attrs win/wt win/protocol_reg keybindings desktop
+	require win/file_attrs win/wt win/protocol_reg keybindings desktop steam
 	require win/app_restart win/explorer_refresh win/keep_awake first_install
 	install_deno
 }

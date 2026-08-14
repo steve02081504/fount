@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Предупреждение. Не удалось использовать `lsregister` для регистрации приложения в LaunchServices.",
 				"createDesktopAppFailed": "Ошибка: не удалось создать настольное приложение."
 			},
+			"steam": {
+				"registering": "Регистрация fount как не-Steam-игры в Steam…",
+				"registered": "fount добавлен в библиотеку Steam. Если Steam запущен, перезапустите его, чтобы изменения вступили в силу.",
+				"failed": "Ошибка регистрации в Steam: ${message}",
+				"exeFailed": "Не удалось создать fount.exe; регистрация в Steam пропущена."
+			},
 			"git": {
 				"repoNotFound": "Git-репозиторий fount не найден. Инициализируем новый...",
 				"fetchingAndResetting": "Извлечение из удаленного репозитория и сброс на главный...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Установка зависимостей...",
+				"compilingFavicon": "Файл favicon не найден; запуск сервера для компиляции...",
 				"packageFailed": "Ошибка: установка ${package} не удалась.",
 				"browserMissing": "Браузер по умолчанию не обнаружен, пытаюсь установить...",
 				"untrustedPartsWarning": "Не устанавливайте в своей системе ненадежные компоненты fount, они могут сделать что угодно.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Ярлык на рабочем столе не найден.",
 				"startMenuShortcutRemoved": "Ярлык меню «Пуск» удален.",
 				"startMenuShortcutNotFound": "Ярлык меню «Пуск» не найден.",
+				"steamShortcutRemoved": "fount удалён из библиотеки Steam.",
+				"steamShortcutNotFound": "fount не найден в Steam.",
 				"moduleRemoved": "${module} удален.",
 				"uninstalling": {
 					"chrome": "Удаление Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Удаление установленных системных пакетов...",
 					"protocolHandler": "Удаление обработчика протокола `fount://`...",
 					"startMenuShortcut": "Удаление ярлыков меню Пуск...",
+					"steamShortcut": "Удаление fount из Steam…",
 					"terminalKeybindings": "Удаление патча привязки клавиш терминала...",
 					"terminalProfile": "Удаление профиля терминала Windows..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Настройки группы",
+					"description": "Управляйте идентичностью группы, участниками, правами и инструментами общего пространства.",
 					"kicker": "Управление группой",
 					"subtitle": "Управляйте информацией о группе, участниками и общими функциями. Низкочастотные разрешения, инструменты хранения и аудита централизованы в расширенных настройках.",
 					"backToChat": "Вернуться в чат",
@@ -3826,6 +3837,16 @@
 			"availableModels": "Доступные модели:",
 			"copied": "Скопировано!",
 			"apiKeyRequired": "Для получения списка моделей требуется ключ API.",
+			"oauth": {
+				"login": "Войти",
+				"logout": "Выйти",
+				"loggedIn": "Выполнен вход",
+				"notLoggedIn": "Вход не выполнен",
+				"waiting": "Ожидание авторизации…",
+				"failed": "Ошибка входа: ${message}",
+				"deviceCode": "Откройте ${uri} и введите код ${code}",
+				"credentialsRequired": "Заполните нужные поля JSON (region / project / location / account_id / gateway_id / API key). Учётные данные также могут быть в переменных окружения."
+			},
 			"copyModelIdTooltip": "Нажмите, чтобы скопировать идентификатор модели",
 			"loadModelsFailed": "Не удалось загрузить модель: `${message}",
 			"modelSearchTitle": "Каталог моделей",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "Дата выпуска: ${date}",
 				"toolCall": "Поддерживает вызов инструментов",
 				"vision": "Поддерживает визуальный ввод"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Настройте стандартную цепочку учётных данных AWS и укажите region в JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Настройте ADC (Application Default Credentials) и укажите project и location в JSON."
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "Следующее изображение"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Вход OAuth",
+		"description": "Завершите вход по OAuth для источника AI. Обмен токенов осуществляется на стороне сервера.",
+		"callback": {
+			"working": "Завершение входа…",
+			"success": "Вход выполнен. Можно закрыть страницу.",
+			"failed": "Ошибка входа: ${message}",
+			"missingParams": "В callback нет code или state."
 		}
 	}
 }

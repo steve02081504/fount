@@ -16,9 +16,9 @@ function script:Get-FountTestLidAc {
 }
 function script:Set-FountTestLidAc([int]$Index) {
 	& powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS $script:FountTestLidActionGuid $Index | Out-Null
-	if ($LASTEXITCODE) { throw "powercfg /setacvalueindex failed (exit $LASTEXITCODE)" }
+	if ($LastExitCode) { throw "powercfg /setacvalueindex failed (exit $LastExitCode)" }
 	& powercfg /setactive SCHEME_CURRENT | Out-Null
-	if ($LASTEXITCODE) { throw "powercfg /setactive failed (exit $LASTEXITCODE)" }
+	if ($LastExitCode) { throw "powercfg /setactive failed (exit $LastExitCode)" }
 }
 function script:Invoke-FountTestKeepAwakeLocked([scriptblock]$Body) {
 	$mutex = [System.Threading.Mutex]::new($false, 'Local\FountTestKeepAwake')

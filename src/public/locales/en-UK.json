@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Warning: Using `lsregister` to register an application with LaunchServices failed.",
 				"createDesktopAppFailed": "Error: Failed to create desktop application."
 			},
+			"steam": {
+				"registering": "Registering fount as a non-Steam game in Steam…",
+				"registered": "fount has been added to your Steam library. Restart Steam if it is running for the change to take effect.",
+				"failed": "Steam registration failed: ${message}",
+				"exeFailed": "Could not generate fount.exe; Steam registration skipped."
+			},
 			"git": {
 				"repoNotFound": "The git repository of fount was not found. Initializing a new one...",
 				"fetchingAndResetting": "Fetching from remote repository and resetting to master...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Installing dependencies...",
+				"compilingFavicon": "Favicon not found; starting server to compile...",
 				"packageFailed": "Error: Installation of ${package} failed.",
 				"browserMissing": "Default browser not detected, trying to install...",
 				"untrustedPartsWarning": "Do not install any untrusted fount components on your system, they can do anything.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Desktop shortcut not found.",
 				"startMenuShortcutRemoved": "Start menu shortcut has been removed.",
 				"startMenuShortcutNotFound": "Start menu shortcut not found.",
+				"steamShortcutRemoved": "fount has been removed from your Steam library.",
+				"steamShortcutNotFound": "fount was not found in Steam.",
 				"moduleRemoved": "${module} has been removed.",
 				"uninstalling": {
 					"chrome": "Uninstalling Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Removing installed system packages...",
 					"protocolHandler": "Removing `fount://` protocol handler...",
 					"startMenuShortcut": "Removing start menu shortcuts...",
+					"steamShortcut": "Removing fount from Steam…",
 					"terminalKeybindings": "Removing terminal keybinding patch...",
 					"terminalProfile": "Removing Windows Terminal Profile..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Group settings",
+					"description": "Manage group identity, members, permissions, and shared tools.",
 					"kicker": "Group settings",
 					"subtitle": "Manage group information, members and common functions. Low-frequency permissions, storage, and auditing tools are centralized in advanced settings.",
 					"backToChat": "Back to chat",
@@ -3826,6 +3837,16 @@
 			"availableModels": "Available models:",
 			"copied": "Copied!",
 			"apiKeyRequired": "An API key is required to list models.",
+			"oauth": {
+				"login": "Log in",
+				"logout": "Log out",
+				"loggedIn": "Signed in",
+				"notLoggedIn": "Not signed in",
+				"waiting": "Waiting for authorisation…",
+				"failed": "Login failed: ${message}",
+				"deviceCode": "Open ${uri} and enter code ${code}",
+				"credentialsRequired": "Fill in the required JSON fields (region / project / location / account_id / gateway_id / API key). Credentials may also come from local environment variables."
+			},
 			"copyModelIdTooltip": "Click to copy model ID",
 			"loadModelsFailed": "Failed to load model: ${message}",
 			"modelSearchTitle": "Browse model catalog",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "Release date: ${date}",
 				"toolCall": "Supports tool calling",
 				"vision": "Supports vision input"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Configure the AWS default credential chain and set region in the JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Configure Application Default Credentials (ADC), then set project and location in the JSON."
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "Next media"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth login",
+		"description": "Completes AI provider OAuth logins. Token exchange stays on the server.",
+		"callback": {
+			"working": "Finishing login…",
+			"success": "Signed in. You can close this page.",
+			"failed": "Login failed: ${message}",
+			"missingParams": "Callback is missing code or state."
 		}
 	}
 }

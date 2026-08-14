@@ -26,7 +26,7 @@ function Invoke-FountCapture {
 	param([Parameter(ValueFromRemainingArguments = $true)][string[]]$FountArgs)
 	$output = & $Fount @FountArgs 2>&1 | Out-String
 	if ($LastExitCode -ne 0) {
-		throw "fount @FountArgs exited with $LastExitCode"
+		throw "fount $($FountArgs -join ' ') exited with $LastExitCode`n--- captured output ---`n$output"
 	}
 	return $output
 }

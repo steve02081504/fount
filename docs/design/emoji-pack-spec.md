@@ -6,11 +6,7 @@
 
 发帖路径会把 token 内 `name`/`alt` 别名改写成规范 `emojiId`（`canonicalizeEmojiTokensInText`）；token 的 emojiId 位允许 unicode。
 
-## 动机
-
-原先 chat 里群表情、贴纸包、自定义收藏、使用统计各自一套；picker 按 tab 切页，且 `resolveEmojiProvider` 只取第一个 provider，social 一注册就顶掉 chat。
-
-目标：
+## 目标
 
 1. **界面与秩序归核心**，数据与分发归 part（chat / social 只是表情包提供者）。
 2. 群表情与贴纸收敛为**同一 pack 模型**：一份图既可插行内 emoji，也可发大图贴纸。
@@ -54,7 +50,7 @@ social：作者包 + 关注时跨壳写收藏 + 默认包链接（实体 profile
 | 来源 | 路径 |
 | --- | --- |
 | 群包 | `{groupDir}/emoji_packs/{packId}/{manifest.json,binaries/}` |
-| 作者包 | `entities/{hash}/emoji_packs/`（替换原 `stickers/packs/`） |
+| 作者包 | `entities/{hash}/emoji_packs/` |
 
 旧 `group_emojis/manifest.json` **不读、不迁移**；老群按空处理。
 
@@ -96,7 +92,6 @@ chat shell data 键与 HTTP 前缀均为 **`emoji_usage`**（per fount 用户）
 - `id`：unicode 字形本身，或 pack 的 `packId/emojiId`。
 - 一份 700 日志同时喂「最近使用（单表情次数降序）」与「包窗口内次数」。
 - `lastUsedAtByPack` 覆盖已滑出窗口的包。
-- 取代昔日 512 条聚合表与 `customEmojis`（旧 API 名已废弃，不迁移）。
 
 ## 默认包链接
 
@@ -138,16 +133,6 @@ chat shell data 键与 HTTP 前缀均为 **`emoji_usage`**（per fount 用户）
 - 只提供「加群 / 关注」入口；**删除** `POST /stickers/install/:packId` 这类脱离链接的安装路径。
 - 页面路径暂留 chat shell；入口放在 emoji picker 页脚与群设置表情页（不挂 home）。逻辑放核心共享脚本。
 
-## 删除清单
-
-| 删除 | 理由 |
-| --- | --- |
-| `registries.sticker` / `providers/sticker.mjs` / `components/stickerPicker.mjs` | 并入 emoji pack |
-| `sticker_collection` shellData 与重复 `/stickers/*` 安装路径 | 可用性由链接派生 |
-| 旧 512 聚合表、`customEmojis`、`emojiUsageApi` | 改为 700 日志 + collection（同名 `emoji_usage`） |
-| 旧单包 `group_emojis/manifest.json` 读取 | 不迁移 |
-| 独立贴纸广场 / `POST /stickers/install` | 探索页仅加群/关注 |
-
 ## Locale 匹配
 
 前后端各自 `i18n/locale_match.mjs` 导出同名同签名：
@@ -155,8 +140,6 @@ chat shell data 键与 HTTP 前缀均为 **`emoji_usage`**（per fount 用户）
 - `matchLocale(preferred, available)` —— 严格前缀
 - `getBestLocale` —— `matchLocale ?? FALLBACK_LOCALE`
 - `pickLocalizedSlice(map, preferred)`
-
-`getLocalizedInfo` / 私有 `pickLocalizedSlice` / 旧 `getbestlocale` 删除。
 
 ## 验收要领
 

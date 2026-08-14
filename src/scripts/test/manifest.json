@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "manifest_selectors",
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -20,6 +21,7 @@
 		},
 		{
 			"name": "trigger_filter",
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -39,6 +41,7 @@
 		},
 		{
 			"name": "dependencies_state",
+			"expected": 900,
 			"run": [
 				"deno",
 				"test",
@@ -67,6 +70,7 @@
 		},
 		{
 			"name": "prune_state",
+			"expected": 800,
 			"run": [
 				"deno",
 				"test",
@@ -85,6 +89,7 @@
 		},
 		{
 			"name": "continue_reason",
+			"expected": 600,
 			"run": [
 				"deno",
 				"test",
@@ -111,6 +116,7 @@
 		},
 		{
 			"name": "serial_files",
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -132,6 +138,7 @@
 		},
 		{
 			"name": "selection",
+			"expected": 800,
 			"run": [
 				"deno",
 				"test",
@@ -156,6 +163,7 @@
 		},
 		{
 			"name": "protocol_order",
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -178,6 +186,7 @@
 		},
 		{
 			"name": "runner_watchdog",
+			"expected": 800,
 			"run": [
 				"deno",
 				"test",
@@ -199,6 +208,7 @@
 		},
 		{
 			"name": "resources_scheduler",
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -222,6 +232,7 @@
 		},
 		{
 			"name": "proc_sample",
+			"expected": 600,
 			"run": [
 				"deno",
 				"test",
@@ -239,6 +250,7 @@
 		},
 		{
 			"name": "deno_panic",
+			"expected": "2s",
 			"run": [
 				"deno",
 				"test",
@@ -257,6 +269,7 @@
 		},
 		{
 			"name": "test_hub",
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -281,6 +294,7 @@
 		},
 		{
 			"name": "page_watch",
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -302,6 +316,7 @@
 		},
 		{
 			"name": "run_timing",
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -323,6 +338,7 @@
 		},
 		{
 			"name": "estimate",
+			"expected": 800,
 			"run": [
 				"deno",
 				"test",
@@ -348,6 +364,7 @@
 		},
 		{
 			"name": "update_estimates",
+			"expected": 600,
 			"run": [
 				"deno",
 				"test",
@@ -368,6 +385,7 @@
 		},
 		{
 			"name": "trigger_audit",
+			"expected": 600,
 			"run": [
 				"deno",
 				"test",
@@ -386,6 +404,7 @@
 		},
 		{
 			"name": "disposable_path",
+			"expected": 400,
 			"run": [
 				"deno",
 				"test",
@@ -406,6 +425,7 @@
 		},
 		{
 			"name": "browser_diagnostics",
+			"expected": 600,
 			"run": [
 				"deno",
 				"test",
@@ -425,6 +445,7 @@
 		},
 		{
 			"name": "cdn_cache",
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -444,6 +465,7 @@
 		},
 		{
 			"name": "fatal_exit",
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -462,6 +484,7 @@
 		},
 		{
 			"name": "port_lease",
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -480,6 +503,7 @@
 		},
 		{
 			"name": "shell_load_probe",
+			"expected": 300,
 			"run": [
 				"deno",
 				"test",
@@ -497,6 +521,7 @@
 		},
 		{
 			"name": "locale_match",
+			"expected": 300,
 			"run": [
 				"deno",
 				"test",
@@ -515,6 +540,7 @@
 		},
 		{
 			"name": "epoch_cache",
+			"expected": 200,
 			"run": [
 				"deno",
 				"test",
@@ -533,6 +559,7 @@
 		},
 		{
 			"name": "kernel",
+			"expected": "17s",
 			"run": [
 				"deno",
 				"test",

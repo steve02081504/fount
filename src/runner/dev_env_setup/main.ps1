@@ -38,7 +38,7 @@ $checks = @(
 		}
 	}
 	@{
-		Command        = 'fount'
+		Command        = 'fount.ps1'
 		GetDescription = 'run fount and itll be auto-added to path'
 	}
 )
@@ -64,7 +64,7 @@ else {
 
 if (-not (Test-Path './data/test/report.md')) {
 	Write-Host '🔥 Creating test cache...'
-	& fount test
+	& $RepoRoot/path/fount.ps1 test
 	Write-Host '🥳 Test cache created successfully'
 }
 

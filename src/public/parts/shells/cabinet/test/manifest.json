@@ -24,6 +24,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": "24s",
 			"trigger": [
 				"shellBackend",
 				"shellPureTests",
@@ -42,6 +43,7 @@
 		},
 		{
 			"name": "integration",
+			"expected": "1m23s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -63,6 +65,7 @@
 		},
 		{
 			"name": "frontend",
+			"expected": "1m15s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -70,6 +73,7 @@
 			"subtests": [
 				{
 					"name": "shortcuts",
+					"expected": "16s",
 					"triggers": [
 						"src/public/parts/shells/cabinet/test/frontend/shortcuts.spec.mjs",
 						"src/public/parts/shells/cabinet/test/frontend/fixtures.mjs",
@@ -87,6 +91,7 @@
 				},
 				{
 					"name": "daisyui",
+					"expected": "16s",
 					"triggers": [
 						"src/public/parts/shells/cabinet/test/frontend/daisyui.spec.mjs",
 						"src/public/parts/shells/cabinet/test/frontend/fixtures.mjs",

@@ -1,0 +1,42 @@
+{
+	"id": "serviceGenerators/AI/azure-openai-responses",
+	"suites": [
+		{
+			"name": "pure",
+			"expected": 300,
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/azure-openai-responses/src/url.mjs",
+				"src/public/parts/serviceGenerators/AI/azure-openai-responses/test/pure/**"
+			],
+			"run": [
+				"deno",
+				"test",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/serviceGenerators/AI/azure-openai-responses/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"expected": 900,
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/azure-openai-responses/**",
+				"src/public/parts/serviceGenerators/AI/codex/src/**",
+				"src/public/parts/serviceGenerators/AI/proxy/src/**",
+				"src/public/parts/serviceGenerators/AI/proxy/test/mockFetch.mjs"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/serviceGenerators/AI/azure-openai-responses/test/integration/"
+			]
+		}
+	]
+}

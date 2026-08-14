@@ -1,0 +1,574 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini on Vertex AI via Application Default Credentials.",
+			"description_markdown": "Uses ADC (`gcloud auth application-default login` or `GOOGLE_APPLICATION_CREDENTIALS`) plus project and location. Separate from the Gemini API-key generator.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"zh-CN": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "用 ADC 调用 Vertex 上的 Gemini。",
+			"description_markdown": "凭证走 ADC（`gcloud auth application-default login` 或 `GOOGLE_APPLICATION_CREDENTIALS`），另填 project / location。不和 gemini 的 API key 源混在一起。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"ar-SA": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini على Vertex عبر ADC.",
+			"description_markdown": "اعتمادات ADC مع المشروع والموقع. منفصل عن مولّد مفتاح Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"de-DE": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini auf Vertex AI per ADC.",
+			"description_markdown": "ADC plus Projekt und Location. Getrennt vom Gemini-API-Key-Generator.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"emoji": {
+			"name": "☁️💎",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "🔑➡️💎",
+			"description_markdown": "☁️🔑➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"☁️",
+				"💎",
+				"🔑"
+			]
+		},
+		"es-ES": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini en Vertex AI con ADC.",
+			"description_markdown": "ADC más proyecto y ubicación. Separado del generador de API key de Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"fr-FR": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini sur Vertex AI via ADC.",
+			"description_markdown": "ADC plus projet et location. Séparé du générateur clé API Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"hi-IN": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "ADC से Vertex पर Gemini.",
+			"description_markdown": "ADC के साथ project और location। Gemini API-key जनरेटर से अलग।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"is-IS": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini á Vertex AI með ADC.",
+			"description_markdown": "ADC auk verkefnis og staðsetningar. Aðskilið frá Gemini API-lykli.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"it-IT": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini su Vertex AI via ADC.",
+			"description_markdown": "ADC più project e location. Separato dal generatore API key Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"ja-JP": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "ADC で Vertex 上の Gemini。",
+			"description_markdown": "ADC と project / location。Gemini の API キー源とは別です。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"ko-KR": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "ADC로 Vertex의 Gemini.",
+			"description_markdown": "ADC와 project / location. Gemini API 키 생성기와 분리됩니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"lzh": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "以 ADC 召 Vertex 之 Gemini。",
+			"description_markdown": "憑據走 ADC，另填 project / location。不與 gemini 密鑰源混。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"nl-NL": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini op Vertex AI via ADC.",
+			"description_markdown": "ADC plus project en location. Los van de Gemini API-keybron.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"pt-PT": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini no Vertex AI via ADC.",
+			"description_markdown": "ADC mais project e location. Separado do gerador de API key Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"ru-RU": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini на Vertex через ADC.",
+			"description_markdown": "ADC плюс project и location. Отдельно от генератора API-ключа Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"uk-UA": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini на Vertex через ADC.",
+			"description_markdown": "ADC плюс project і location. Окремо від генератора API-ключа Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"vi-VN": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini trên Vertex qua ADC.",
+			"description_markdown": "ADC cùng project / location. Tách khỏi nguồn API key Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		},
+		"zh-TW": {
+			"name": "Google Vertex AI",
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "用 ADC 呼叫 Vertex 上的 Gemini。",
+			"description_markdown": "憑證走 ADC，另填 project / location。不和 gemini 的 API key 源混在一起。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini on Vertex AI via Application Default Credentials.",
+			"description_markdown": "Uses ADC (`gcloud auth application-default login` or `GOOGLE_APPLICATION_CREDENTIALS`) plus project and location. Separate from the Gemini API-key generator.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "用 ADC 调用 Vertex 上的 Gemini。",
+			"description_markdown": "凭证走 ADC（`gcloud auth application-default login` 或 `GOOGLE_APPLICATION_CREDENTIALS`），另填 project / location。不和 gemini 的 API key 源混在一起。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini على Vertex عبر ADC.",
+			"description_markdown": "اعتمادات ADC مع المشروع والموقع. منفصل عن مولّد مفتاح Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini auf Vertex AI per ADC.",
+			"description_markdown": "ADC plus Projekt und Location. Getrennt vom Gemini-API-Key-Generator.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "🔑➡️💎",
+			"description_markdown": "☁️🔑➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"☁️",
+				"💎",
+				"🔑"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini en Vertex AI con ADC.",
+			"description_markdown": "ADC más proyecto y ubicación. Separado del generador de API key de Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini sur Vertex AI via ADC.",
+			"description_markdown": "ADC plus projet et location. Séparé du générateur clé API Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "ADC से Vertex पर Gemini.",
+			"description_markdown": "ADC के साथ project और location। Gemini API-key जनरेटर से अलग।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini á Vertex AI með ADC.",
+			"description_markdown": "ADC auk verkefnis og staðsetningar. Aðskilið frá Gemini API-lykli.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini su Vertex AI via ADC.",
+			"description_markdown": "ADC più project e location. Separato dal generatore API key Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "ADC で Vertex 上の Gemini。",
+			"description_markdown": "ADC と project / location。Gemini の API キー源とは別です。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "ADC로 Vertex의 Gemini.",
+			"description_markdown": "ADC와 project / location. Gemini API 키 생성기와 분리됩니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "以 ADC 召 Vertex 之 Gemini。",
+			"description_markdown": "憑據走 ADC，另填 project / location。不與 gemini 密鑰源混。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini op Vertex AI via ADC.",
+			"description_markdown": "ADC plus project en location. Los van de Gemini API-keybron.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini no Vertex AI via ADC.",
+			"description_markdown": "ADC mais project e location. Separado do gerador de API key Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini на Vertex через ADC.",
+			"description_markdown": "ADC плюс project и location. Отдельно от генератора API-ключа Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini на Vertex через ADC.",
+			"description_markdown": "ADC плюс project і location. Окремо від генератора API-ключа Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "Gemini trên Vertex qua ADC.",
+			"description_markdown": "ADC cùng project / location. Tách khỏi nguồn API key Gemini.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/simple-icons/googlecloud.svg",
+			"description": "用 ADC 呼叫 Vertex 上的 Gemini。",
+			"description_markdown": "憑證走 ADC，另填 project / location。不和 gemini 的 API key 源混在一起。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://cloud.google.com/vertex-ai",
+			"tags": [
+				"google",
+				"vertex",
+				"gemini",
+				"iam"
+			],
+			"provider": "Google Vertex AI"
+		}
+	}
+}

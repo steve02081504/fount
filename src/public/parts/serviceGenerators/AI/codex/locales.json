@@ -1,0 +1,574 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "ChatGPT Plus/Pro Codex via OAuth.",
+			"description_markdown": "PKCE login with the Codex CLI client, then the Codex Responses API — not chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"zh-CN": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "用 OAuth 接入 ChatGPT Plus/Pro 的 Codex。",
+			"description_markdown": "踩 Codex CLI 的 PKCE 登录，推理走 Codex Responses API，不是 chat completions。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"ar-SA": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex عبر OAuth لحساب ChatGPT.",
+			"description_markdown": "تسجيل PKCE ثم Responses API وليس chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"de-DE": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "ChatGPT-Plus/Pro-Codex per OAuth.",
+			"description_markdown": "PKCE mit Codex-CLI-Client, danach Responses-API statt Chat Completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"emoji": {
+			"name": "💬🧩",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "🔑➡️🧩",
+			"description_markdown": "🔑➡️📄",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"💬",
+				"🧩",
+				"🔑"
+			]
+		},
+		"es-ES": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex de ChatGPT Plus/Pro con OAuth.",
+			"description_markdown": "PKCE del cliente Codex CLI y luego Responses API, no chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"fr-FR": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro via OAuth.",
+			"description_markdown": "PKCE du client Codex CLI, puis Responses API (pas chat completions).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"hi-IN": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OAuth से ChatGPT Plus/Pro Codex.",
+			"description_markdown": "Codex CLI PKCE लॉगिन, फिर Responses API — chat completions नहीं.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"is-IS": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "ChatGPT Plus/Pro Codex með OAuth.",
+			"description_markdown": "PKCE með Codex CLI, síðan Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"it-IT": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro via OAuth.",
+			"description_markdown": "PKCE del client Codex CLI, poi Responses API, non chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"ja-JP": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OAuth で ChatGPT Plus/Pro の Codex。",
+			"description_markdown": "Codex CLI の PKCE でログインし、Responses API を呼びます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"ko-KR": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OAuth로 ChatGPT Plus/Pro Codex.",
+			"description_markdown": "Codex CLI PKCE 로그인 후 Responses API를 사용합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"lzh": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "以 OAuth 通 ChatGPT Codex。",
+			"description_markdown": "襲 Codex CLI 之 PKCE，推理走 Responses，非 chat completions。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"nl-NL": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "ChatGPT Plus/Pro Codex via OAuth.",
+			"description_markdown": "PKCE met de Codex CLI-client, daarna Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"pt-PT": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro via OAuth.",
+			"description_markdown": "PKCE do cliente Codex CLI e depois Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"ru-RU": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro через OAuth.",
+			"description_markdown": "PKCE клиента Codex CLI, затем Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"uk-UA": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro через OAuth.",
+			"description_markdown": "PKCE клієнта Codex CLI, далі Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"vi-VN": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro qua OAuth.",
+			"description_markdown": "PKCE của Codex CLI, rồi Responses API — không phải chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		},
+		"zh-TW": {
+			"name": "ChatGPT Codex",
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "用 OAuth 接入 ChatGPT Plus/Pro 的 Codex。",
+			"description_markdown": "沿用 Codex CLI 的 PKCE 登入，推理走 Codex Responses API，不是 chat completions。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "ChatGPT Plus/Pro Codex via OAuth.",
+			"description_markdown": "PKCE login with the Codex CLI client, then the Codex Responses API — not chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "用 OAuth 接入 ChatGPT Plus/Pro 的 Codex。",
+			"description_markdown": "踩 Codex CLI 的 PKCE 登录，推理走 Codex Responses API，不是 chat completions。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex عبر OAuth لحساب ChatGPT.",
+			"description_markdown": "تسجيل PKCE ثم Responses API وليس chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "ChatGPT-Plus/Pro-Codex per OAuth.",
+			"description_markdown": "PKCE mit Codex-CLI-Client, danach Responses-API statt Chat Completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "🔑➡️🧩",
+			"description_markdown": "🔑➡️📄",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"💬",
+				"🧩",
+				"🔑"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex de ChatGPT Plus/Pro con OAuth.",
+			"description_markdown": "PKCE del cliente Codex CLI y luego Responses API, no chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro via OAuth.",
+			"description_markdown": "PKCE du client Codex CLI, puis Responses API (pas chat completions).",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OAuth से ChatGPT Plus/Pro Codex.",
+			"description_markdown": "Codex CLI PKCE लॉगिन, फिर Responses API — chat completions नहीं.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "ChatGPT Plus/Pro Codex með OAuth.",
+			"description_markdown": "PKCE með Codex CLI, síðan Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro via OAuth.",
+			"description_markdown": "PKCE del client Codex CLI, poi Responses API, non chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OAuth で ChatGPT Plus/Pro の Codex。",
+			"description_markdown": "Codex CLI の PKCE でログインし、Responses API を呼びます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "OAuth로 ChatGPT Plus/Pro Codex.",
+			"description_markdown": "Codex CLI PKCE 로그인 후 Responses API를 사용합니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "以 OAuth 通 ChatGPT Codex。",
+			"description_markdown": "襲 Codex CLI 之 PKCE，推理走 Responses，非 chat completions。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "ChatGPT Plus/Pro Codex via OAuth.",
+			"description_markdown": "PKCE met de Codex CLI-client, daarna Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro via OAuth.",
+			"description_markdown": "PKCE do cliente Codex CLI e depois Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro через OAuth.",
+			"description_markdown": "PKCE клиента Codex CLI, затем Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro через OAuth.",
+			"description_markdown": "PKCE клієнта Codex CLI, далі Responses API.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "Codex ChatGPT Plus/Pro qua OAuth.",
+			"description_markdown": "PKCE của Codex CLI, rồi Responses API — không phải chat completions.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/simple-icons/openai.svg",
+			"description": "用 OAuth 接入 ChatGPT Plus/Pro 的 Codex。",
+			"description_markdown": "沿用 Codex CLI 的 PKCE 登入，推理走 Codex Responses API，不是 chat completions。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://chatgpt.com",
+			"tags": [
+				"chatgpt",
+				"codex",
+				"oauth",
+				"openai"
+			],
+			"provider": "OpenAI Codex"
+		}
+	}
+}

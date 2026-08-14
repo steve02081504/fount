@@ -23,7 +23,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。
 
-上一周期（收件人 / 触发 / 具名层 / ChatClient / bridge / bot 生命周期与 operator 认领 / 龙胆迁移 / social `OnMessage` 与 actor 平权 / poll·edit·for_you）与统一实体模型整批以及对象面穿线收口已完成并从本档清出。开放平权缺陷（owner 单向声明、远端 agent、入站分流等）以 [平权审阅](../review/human-agent-operational-parity-review.md) 为准，不在本档重复开里程碑。
+开放平权缺陷以 [平权审阅](../review/human-agent-operational-parity-review.md) 为准，不在本档重复开里程碑。
 
 ---
 

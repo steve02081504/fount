@@ -1,21 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { createFetchChatCompletionWithRetry } from './src/chatCompletion.mjs'
-import { buildContentForShowFromLogprobs } from './src/logprobsRenderer.mjs'
-import { buildMessagesFromPromptStruct } from './src/messageBuilder.mjs'
-import { buildReasoningDetailsMarkdown } from './src/reasoningRenderer.mjs'
-import { clearFormat } from './src/responseFormat.mjs'
+import { defaultConvertConfig } from './src/convertConfig.mjs'
+import { createOpenAICompatibleSource } from './src/openaiCompatibleSource.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 /**
  * AI 源类型别名。
  * @typedef {import('../../../../../decl/AIsource.ts').AIsource_t} AIsource_t
- */
-/**
- * 提示词结构类型别名。
- * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
  */
 
 /**
@@ -37,7 +30,7 @@ export default {
 			 * 获取此 AI 源的配置模板。
 			 * @returns {Promise<object>} 配置模板。
 			 */
-			GetConfigTemplate: async () => configTemplate,
+			GetConfigTemplate: async () => structuredClone(configTemplate),
 			GetSource,
 		}
 	}
@@ -56,13 +49,7 @@ const configTemplate = {
 		top_logprobs: 5,
 	},
 	custom_headers: {},
-	convert_config: {
-		roleReminding: true,
-		ignoreFiles: false,
-		forceRoleAlternation: false,
-		forceUserMessageEnding: false,
-		forceNoSystemMessages: false,
-	},
+	convert_config: defaultConvertConfig(),
 	use_stream: true,
 }
 /**
@@ -73,129 +60,11 @@ const configTemplate = {
  * @returns {Promise<AIsource_t>} AI 源。
  */
 async function GetSource(config, { SaveConfig }) {
-	config.use_stream ??= true
-	const fetchChatCompletionWithRetry = createFetchChatCompletionWithRetry(config, { SaveConfig })
-	/**
-	 * AI 源实例。
-	 * @type {AIsource_t}
-	 */
-	const result = {
-		type: 'text-chat',
-		info: Object.fromEntries(Object.entries(structuredClone(product_info)).map(([locale, localeInfo]) => {
-			localeInfo.name = config.name || config.model
-			return [locale, localeInfo]
-		})),
+	return createOpenAICompatibleSource({
+		config,
+		configTemplate,
+		product_info,
+		SaveConfig,
 		is_paid: false,
-		extension: {},
-
-		/**
-		 * 使用纯文本提示调用 Proxy 提供方。
-		 * @param {string} prompt 要发送的提示内容。
-		 * @returns {Promise<{content: string, files: any[]}>} 提供方返回结果。
-		 */
-		Call: async prompt => {
-			return await fetchChatCompletionWithRetry(config.convert_config?.forceNoSystemMessages ? [
-				{
-					role: 'user',
-					content: 'system: ' + prompt
-				}
-			] : [
-				{
-					role: 'system',
-					content: prompt
-				}
-			])
-		},
-		/**
-		 * 使用结构化提示调用 AI 源。
-		 * @param {prompt_struct_t} prompt_struct - 要发送给 AI 的结构化提示。
-		 * @param {import('../../../../../decl/AIsource.ts').GenerationOptions} [options] - 生成选项。
-		 * @returns {Promise<{content: string, files: any[]}>} 来自 AI 的结果。
-		 */
-		StructCall: async (prompt_struct, options = {}) => {
-			const { base_result = {}, replyPreviewUpdater, signal, supported_functions } = options
-			const enableLogprobsShow = config.model_arguments?.logprobs && supported_functions?.html
-			const enableHtmlShow = supported_functions?.html ?? false
-			const useThemeStyles = supported_functions?.fount_themes ?? false
-			const messages = buildMessagesFromPromptStruct(prompt_struct, config, configTemplate)
-
-			const result = {
-				content: '',
-				files: [...base_result?.files || []],
-				extension: { ...base_result?.extension },
-			}
-
-			/**
-			 * 构建 content_for_show：先 logprobs，再在开头插入 reasoning details 块。
-			 * @param {{content: string, extension?: any}} partialResult - 结果对象
-			 * @param {boolean} [streaming] - 流式预览时为 true，details 默认展开；结束后为 false，默认折叠。
-			 * @returns {void}
-			 */
-			const i18nRender = { locales: prompt_struct.locales, supported_functions }
-			/**
-			 * 构建 show 内容。
-			 * @param {{content: string, extension?: any}} partialResult - 结果对象
-			 * @param {boolean} [streaming] - 流式预览时为 true，details 默认展开；结束后为 false，默认折叠。
-			 */
-			const buildShow = (partialResult, streaming = false) => {
-				let show = enableLogprobsShow ? buildContentForShowFromLogprobs(partialResult, { useThemeStyles, ...i18nRender }) : null
-				if (enableHtmlShow) {
-					const reasoningHtml = buildReasoningDetailsMarkdown(partialResult, { open: streaming, ...i18nRender })
-					if (reasoningHtml) show = reasoningHtml + (show ?? partialResult.content)
-				}
-				if (show != null) partialResult.content_for_show = show
-			}
-
-			/**
-			 * 预览更新器：将当前累积结果的快照（含 reasoning HTML）发送给上游。
-			 * @param {{content: string, files: any[]}} partialResult - 当前累积结果对象
-			 * @returns {void}
-			 */
-			const previewUpdater = partialResult => {
-				const previewReply = { ...partialResult }
-				buildShow(previewReply, true)
-				replyPreviewUpdater?.(clearFormat(previewReply, prompt_struct))
-			}
-
-			await fetchChatCompletionWithRetry(messages, {
-				signal, previewUpdater, result
-			})
-
-			buildShow(result)
-
-			return Object.assign(base_result, clearFormat(result, prompt_struct))
-		},
-		tokenizer: {
-			/**
-			 * 释放分词器。
-			 * @returns {number} 0
-			 */
-			free: () => 0,
-			/**
-			 * 编码提示。
-			 * @param {string} prompt - 要编码的提示。
-			 * @returns {string} 编码后的提示。
-			 */
-			encode: prompt => prompt,
-			/**
-			 * 解码令牌。
-			 * @param {string} tokens - 要解码的令牌。
-			 * @returns {string} 解码后的令牌。
-			 */
-			decode: tokens => tokens,
-			/**
-			 * 解码单个令牌。
-			 * @param {string} token - 要解码的令牌。
-			 * @returns {string} 解码后的令牌。
-			 */
-			decode_single: token => token,
-			/**
-			 * 获取令牌计数。
-			 * @param {string} prompt - 要计算令牌的提示。
-			 * @returns {number} 令牌数。
-			 */
-			get_token_count: prompt => prompt.length
-		}
-	}
-	return result
+	})
 }

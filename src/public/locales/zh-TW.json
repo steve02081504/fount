@@ -425,6 +425,12 @@
 				"lsregisterFailed": "警告：使用 `lsregister` 向 LaunchServices 註冊應用程式失敗。",
 				"createDesktopAppFailed": "錯誤：建立桌面應用程式失敗。"
 			},
+			"steam": {
+				"registering": "正在將 fount 註冊為 Steam 非 Steam 遊戲…",
+				"registered": "已將 fount 加入 Steam 遊戲庫。若 Steam 正在執行，需重新啟動後才會生效。",
+				"failed": "Steam 註冊失敗：${message}",
+				"exeFailed": "未能產生 fount.exe，已略過 Steam 註冊。"
+			},
 			"git": {
 				"repoNotFound": "未找到 fount 的 git 儲存庫，正在初始化一個新的...",
 				"fetchingAndResetting": "正在從遠端儲存庫擷取並重設到 master...",
@@ -464,6 +470,7 @@
 			},
 			"install": {
 				"installingDependencies": "正在安裝相依套件...",
+				"compilingFavicon": "圖示檔不存在，正在啟動伺服器編譯...",
 				"packageFailed": "錯誤：${package} 安裝失敗。",
 				"browserMissing": "未檢測到預設瀏覽器，正在嘗試安裝...",
 				"untrustedPartsWarning": "不要在您的系統上安裝任何不受信任的 fount 元件，它們可以做任何事情。",
@@ -503,6 +510,8 @@
 				"desktopShortcutNotFound": "未找到桌面捷徑。",
 				"startMenuShortcutRemoved": "開始選單捷徑已移除。",
 				"startMenuShortcutNotFound": "未找到開始選單捷徑。",
+				"steamShortcutRemoved": "已從 Steam 遊戲庫移除 fount。",
+				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
 				"moduleRemoved": "${module} 已移除。",
 				"uninstalling": {
 					"chrome": "正在解除安裝 Chrome...",
@@ -525,6 +534,7 @@
 					"installedSystemPackages": "正在移除已安裝的系統套件...",
 					"protocolHandler": "正在移除 `fount://` 協定處理器...",
 					"startMenuShortcut": "正在移除開始選單捷徑...",
+					"steamShortcut": "正在從 Steam 移除 fount…",
 					"terminalKeybindings": "正在移除終端機按鍵綁定修補…",
 					"terminalProfile": "正在移除 Windows Terminal Profile..."
 				},
@@ -1456,6 +1466,7 @@
 				},
 				"page": {
 					"title": "群組設定",
+					"description": "打理群組身分、成員、權限與維繫共同舞台的各項工具。",
 					"kicker": "群組管理",
 					"subtitle": "管理群資料、成員和常用功能。低頻的許可權、儲存與審計工具集中在高階設定中。",
 					"backToChat": "返回聊天",
@@ -3395,7 +3406,7 @@
 				"reasoningDetailsTitle": "推理過程",
 				"logprobsNotApplicable": "不適用",
 				"logprobsTopLogprobsMeta": "top_logprobs（已選：${token}）",
-				"logprobsMetricsFooter": "首詞元延遲: ${ttft} | 用時: ${time} | 詞元: ${tokens} | 速度: ${speed}",
+				"logprobsMetricsFooter": "首token延遲: ${ttft} | 用時: ${time} | token: ${tokens} | 速度: ${speed}",
 				"noReplyContent": "（無回應內容）",
 				"feedback": {
 					"thumbsUp": {
@@ -3825,6 +3836,16 @@
 			"availableModels": "可用模型：",
 			"copied": "已複製！",
 			"apiKeyRequired": "需要 API 金鑰才能列出模型。",
+			"oauth": {
+				"login": "登入",
+				"logout": "登出",
+				"loggedIn": "已登入",
+				"notLoggedIn": "未登入",
+				"waiting": "等待授權…",
+				"failed": "登入失敗：${message}",
+				"deviceCode": "打開 ${uri} 並輸入代碼 ${code}",
+				"credentialsRequired": "請在 JSON 中填寫所需欄位（region / project / location / account_id / gateway_id / API key 等）。憑證也可來自本機環境變數。"
+			},
 			"copyModelIdTooltip": "點擊以複製模型 ID",
 			"loadModelsFailed": "載入模型失敗：${message}",
 			"modelSearchTitle": "瀏覽模型目錄",
@@ -3851,6 +3872,14 @@
 				"releaseDate": "發佈日期：${date}",
 				"toolCall": "支援工具呼叫",
 				"vision": "支援視覺輸入"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "請設定 AWS 預設憑證鏈，並在 JSON 中填寫 region。"
+			},
+			"vertex": {
+				"credentialsRequired": "請設定 ADC（應用程式預設憑證），並在 JSON 中填寫 project 與 location。"
 			}
 		},
 		"prompts": {
@@ -5926,6 +5955,16 @@
 			"next": {
 				"aria-label": "下一張"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth 登入",
+		"description": "完成 AI 源的 OAuth 登入。Token 交換在伺服器端完成。",
+		"callback": {
+			"working": "正在完成登入…",
+			"success": "登入成功，可以關閉此頁。",
+			"failed": "登入失敗：${message}",
+			"missingParams": "回調缺少 code 或 state。"
 		}
 	}
 }

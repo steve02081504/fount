@@ -19,7 +19,7 @@ require() {
 
 # Runtime modules: deno, run, git, desktop hooks, … (no first-install pass)
 require_mid() {
-	require unix/sed git update fs run debug desktop boot keybindings deno first_install
+	require unix/sed git update fs run debug desktop boot keybindings deno steam first_install
 	install_deno
 }
 

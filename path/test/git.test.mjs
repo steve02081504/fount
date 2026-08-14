@@ -5,6 +5,7 @@
 import { join } from 'node:path'
 
 import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
+import { bash_exec, pwsh_exec } from 'npm:@steve02081504/exec'
 
 import { REPO_ROOT } from '../../src/scripts/test/core/repo_root.mjs'
 
@@ -48,44 +49,6 @@ const VALID_BRANCH_NAMES = ['lava', 'master', 'feature/foo']
  * @returns {string} base64
  */
 const encodeBase64 = (value) => btoa(String.fromCharCode(...new TextEncoder().encode(value)))
-
-/**
- * 在 bash 中跑一段脚本，返回 { code, stdout, stderr }。
- * @param {string} script bash 源码
- * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 返回 bash 执行结果
- */
-async function runBash(script) {
-	const { code, stdout, stderr } = await new Deno.Command('bash', {
-		args: ['-c', script],
-		cwd: REPO_ROOT,
-		stdout: 'piped',
-		stderr: 'piped',
-	}).output()
-	return {
-		code,
-		stdout: new TextDecoder().decode(stdout),
-		stderr: new TextDecoder().decode(stderr),
-	}
-}
-
-/**
- * 在 pwsh 中跑一段脚本（仅校验函数，不 dot-source 整文件以免触发安装副作用）。
- * @param {string} script PowerShell 源码
- * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 执行结果
- */
-async function runPwsh(script) {
-	const { code, stdout, stderr } = await new Deno.Command(Deno.build.os === 'windows' ? 'powershell' : 'pwsh', {
-		args: ['-NoProfile', '-NonInteractive', '-Command', script],
-		cwd: REPO_ROOT,
-		stdout: 'piped',
-		stderr: 'piped',
-	}).output()
-	return {
-		code,
-		stdout: new TextDecoder().decode(stdout),
-		stderr: new TextDecoder().decode(stderr),
-	}
-}
 
 /**
  * 从 git.ps1 抽出指定 `function script:NAME` 供隔离测试（去掉 script: 前缀）。
@@ -139,12 +102,12 @@ const extractPsParsePrFn = () => extractPsScriptFn('git_parse_pr_number')
 
 
 Deno.test('git.sh parses under bash -n', async () => {
-	const result = await runBash(`bash -n ${JSON.stringify(gitShPath)}`)
+	const result = await bash_exec(`bash -n ${JSON.stringify(gitShPath)}`)
 	assertEquals(result.code, 0, result.stderr || result.stdout)
 })
 
 Deno.test('git_valid_branch_name accepts normal branch names like lava', async () => {
-	const result = await runBash(`
+	const result = await bash_exec(`
 		set -e
 		# shellcheck source=/dev/null
 		. ${JSON.stringify(gitShPath)}
@@ -158,7 +121,7 @@ Deno.test('git_valid_branch_name accepts normal branch names like lava', async (
 })
 
 Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', async () => {
-	const result = await runBash(`
+	const result = await bash_exec(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		decode() { printf '%s' "$1" | base64 -d; }
@@ -182,7 +145,7 @@ Deno.test('git_valid_branch_name bash and PowerShell agree', async () => {
 	const allNames = [...VALID_BRANCH_NAMES, ...INVALID_BRANCH_NAMES]
 	const encoded = allNames.map(encodeBase64)
 
-	const bash = await runBash(`
+	const bash = await bash_exec(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		decode() { printf '%s' "$1" | base64 -d; }
@@ -192,7 +155,7 @@ Deno.test('git_valid_branch_name bash and PowerShell agree', async () => {
 	`)
 	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
 
-	const powerShellResult = await runPwsh(`
+	const powerShellResult = await pwsh_exec(`
 ${await extractPsValidBranchFn()}
 $encoded = @(${encoded.map(base64Name => `'${base64Name}'`).join(', ')})
 foreach ($base64Name in $encoded) {
@@ -211,7 +174,7 @@ foreach ($base64Name in $encoded) {
 
 Deno.test('git_valid_branch_name rejects control characters (bash and PowerShell)', async () => {
 	const base64Name = encodeBase64('a\u0001b')
-	const bash = await runBash(`
+	const bash = await bash_exec(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		if git_valid_branch_name "$(printf '%s' ${JSON.stringify(base64Name)} | base64 -d)"; then
@@ -223,7 +186,7 @@ Deno.test('git_valid_branch_name rejects control characters (bash and PowerShell
 	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
 	assertEquals(bash.stdout.trim(), 'ok')
 
-	const powerShellResult = await runPwsh(`
+	const powerShellResult = await pwsh_exec(`
 ${await extractPsValidBranchFn()}
 if (git_valid_branch_name ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${base64Name}')))) { Write-Error 'accepted'; exit 1 }
 Write-Output ok
@@ -233,7 +196,7 @@ Write-Output ok
 })
 
 Deno.test('sourcing git.sh defines git_remote_branch_status', async () => {
-	const result = await runBash(`
+	const result = await bash_exec(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		type git_remote_branch_status >/dev/null
@@ -274,7 +237,7 @@ const INVALID_PR_TARGETS = [
 ]
 
 Deno.test('git_parse_pr_number accepts pr/N pull/N #N and GitHub URLs (bash)', async () => {
-	const result = await runBash(`
+	const result = await bash_exec(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		${VALID_PR_TARGETS.map(([target, number]) => `
@@ -288,7 +251,7 @@ Deno.test('git_parse_pr_number accepts pr/N pull/N #N and GitHub URLs (bash)', a
 })
 
 Deno.test('git_parse_pr_number rejects non-PR targets (bash)', async () => {
-	const result = await runBash(`
+	const result = await bash_exec(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		decode() { printf '%s' "$1" | base64 -d; }
@@ -311,7 +274,7 @@ Deno.test('git_parse_pr_number bash and PowerShell agree', async () => {
 	]
 	const encoded = allTargets.map(encodeBase64)
 
-	const bash = await runBash(`
+	const bash = await bash_exec(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		decode() { printf '%s' "$1" | base64 -d; }
@@ -321,7 +284,7 @@ Deno.test('git_parse_pr_number bash and PowerShell agree', async () => {
 	`)
 	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
 
-	const powerShellResult = await runPwsh(`
+	const powerShellResult = await pwsh_exec(`
 ${await extractPsParsePrFn()}
 $encoded = @(${encoded.map(base64Name => `'${base64Name}'`).join(', ')})
 foreach ($base64Name in $encoded) {
@@ -344,7 +307,7 @@ foreach ($base64Name in $encoded) {
  */
 Deno.test('git_checkout_branch tracks one-shot origin ref under single-branch fetch', async () => {
 	const allHeadsFetchRe = String.raw`^(\+)?refs/heads/\*:refs/remotes/origin/\*$`
-	const result = await runBash(`
+	const result = await bash_exec(`
 		set -euo pipefail
 		temporaryDirectory=$(mktemp -d)
 		cleanup() { rm -rf "$temporaryDirectory"; }
@@ -404,7 +367,7 @@ Deno.test('git_checkout_branch tracks one-shot origin ref under single-branch fe
  * fount_show_version：本地 tip / 落后 / 分离 HEAD 状态键。
  */
 Deno.test('fount_show_version reports branch sha and freshness', async () => {
-	const result = await runBash(`
+	const result = await bash_exec(`
 		set -euo pipefail
 		temporaryDirectory=$(mktemp -d)
 		cleanup() { rm -rf "$temporaryDirectory"; }
@@ -469,7 +432,7 @@ const ANDROID_LOCALE_TO_LANG = [
 ]
 
 Deno.test('android_locale_to_lang normalizes BCP47 script tags for Termux LANG', async () => {
-	const result = await runBash(`
+	const result = await bash_exec(`
 		set -e
 		. ${JSON.stringify(termuxShPath)}
 		${ANDROID_LOCALE_TO_LANG.map(([tag, want]) => `
@@ -484,7 +447,7 @@ Deno.test('android_locale_to_lang normalizes BCP47 script tags for Termux LANG',
 
 Deno.test('android_locale_to_lang feeds get_system_locales toward zh-CN', async () => {
 	const i18nShPath = join(REPO_ROOT, 'path', 'src', 'i18n.sh')
-	const result = await runBash(`
+	const result = await bash_exec(`
 		set -e
 		FOUNT_DIR=${JSON.stringify(REPO_ROOT)}
 		. ${JSON.stringify(termuxShPath)}

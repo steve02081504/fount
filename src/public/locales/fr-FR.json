@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Avertissement : L'utilisation de `lsregister` pour enregistrer une application auprès de LaunchServices a échoué.",
 				"createDesktopAppFailed": "Erreur : échec de la création de l'application de bureau."
 			},
+			"steam": {
+				"registering": "Enregistrement de fount comme jeu non Steam dans Steam…",
+				"registered": "fount a été ajouté à votre bibliothèque Steam. Si Steam est en cours d'exécution, redémarrez-le pour que le changement prenne effet.",
+				"failed": "Échec de l'enregistrement sur Steam : ${message}",
+				"exeFailed": "Impossible de générer fount.exe ; enregistrement Steam ignoré."
+			},
 			"git": {
 				"repoNotFound": "Le dépôt git de la fount est introuvable. Initialisation d'un nouveau...",
 				"fetchingAndResetting": "Récupération à partir du référentiel distant et réinitialisation vers le maître...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Installation des dépendances...",
+				"compilingFavicon": "Favicon introuvable ; démarrage du serveur pour le compiler...",
 				"packageFailed": "Erreur : L'installation de ${package} a échoué.",
 				"browserMissing": "Navigateur par défaut non détecté, tentative d'installation...",
 				"untrustedPartsWarning": "N'installez aucun composant de fount non fiable sur votre système, ils peuvent tout faire.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Raccourci sur le bureau introuvable.",
 				"startMenuShortcutRemoved": "Le raccourci du menu Démarrer a été supprimé.",
 				"startMenuShortcutNotFound": "Raccourci du menu Démarrer introuvable.",
+				"steamShortcutRemoved": "fount a été retiré de votre bibliothèque Steam.",
+				"steamShortcutNotFound": "fount est introuvable dans Steam.",
 				"moduleRemoved": "${module} a été supprimé.",
 				"uninstalling": {
 					"chrome": "Désinstallation de Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Suppression des packages système installés...",
 					"protocolHandler": "Suppression du gestionnaire de protocole `fount://`...",
 					"startMenuShortcut": "Suppression des raccourcis du menu Démarrer...",
+					"steamShortcut": "Suppression de fount de Steam…",
 					"terminalKeybindings": "Suppression du correctif de raccourcis du terminal...",
 					"terminalProfile": "Suppression du profil de terminal Windows..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Paramètres du groupe",
+					"description": "Gérez l'identité du groupe, ses membres, ses permissions et les outils qui lient votre scène partagée.",
 					"kicker": "Gestion de groupe",
 					"subtitle": "Gérez les informations du groupe, les membres et les fonctions communes. Les autorisations basse fréquence, le stockage et les outils d'audit sont centralisés dans les paramètres avancés.",
 					"backToChat": "Revenir au chat",
@@ -3832,6 +3843,16 @@
 			"availableModels": "Modèles disponibles :",
 			"copied": "Copié!",
 			"apiKeyRequired": "Une clé API est requise pour répertorier les modèles.",
+			"oauth": {
+				"login": "Connexion",
+				"logout": "Déconnexion",
+				"loggedIn": "Connecté",
+				"notLoggedIn": "Non connecté",
+				"waiting": "En attente d’autorisation…",
+				"failed": "Échec de connexion : ${message}",
+				"deviceCode": "Ouvrez ${uri} et saisissez le code ${code}",
+				"credentialsRequired": "Les champs requis dépendent du fournisseur (region / project / location / account_id / gateway_id / clé API ; Azure OpenAI Responses : AZURE_OPENAI_API_KEY et endpoint). Les identifiants peuvent aussi venir des variables d’environnement."
+			},
 			"copyModelIdTooltip": "Cliquez pour copier l'ID du modèle",
 			"loadModelsFailed": "Échec du chargement du modèle : ${message}",
 			"modelSearchTitle": "Parcourir le catalogue de modèles",
@@ -3858,6 +3879,14 @@
 				"releaseDate": "Date de sortie : ${date}",
 				"toolCall": "Prend en charge les appels d'outils",
 				"vision": "Prend en charge la saisie visuelle"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Configurez la chaîne d’identifiants AWS par défaut et renseignez region dans le JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Configurez ADC, puis renseignez project et location dans le JSON."
 			}
 		},
 		"prompts": {
@@ -5933,6 +5962,16 @@
 			"next": {
 				"aria-label": "Média suivant"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Connexion OAuth",
+		"description": "Complétez la connexion OAuth pour la source AI. L'échange des jetons s'effectue côté serveur.",
+		"callback": {
+			"working": "Finalisation de la connexion…",
+			"success": "Connecté. Vous pouvez fermer cette page.",
+			"failed": "Échec de connexion : ${message}",
+			"missingParams": "Le callback n’a pas de code ou de state."
 		}
 	}
 }

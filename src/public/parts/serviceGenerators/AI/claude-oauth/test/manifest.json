@@ -1,0 +1,25 @@
+{
+	"id": "serviceGenerators/AI/claude-oauth",
+	"suites": [
+		{
+			"name": "integration",
+			"expected": "1s",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/claude-oauth/**",
+				"src/public/parts/serviceGenerators/AI/claude-api/main.mjs",
+				"src/public/parts/serviceGenerators/AI/proxy/test/mockFetch.mjs",
+				"src/public/parts/shells/oauth_handler/src/providers.mjs"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/serviceGenerators/AI/claude-oauth/test/integration/"
+			]
+		}
+	]
+}

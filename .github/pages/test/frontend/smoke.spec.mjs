@@ -56,4 +56,9 @@ test.describe('GitHub Pages smoke', () => {
 			timeout: 15_000,
 		}).toBe(true)
 	})
+
+	test('oauth bounce shows offline dialog when fount is unreachable', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/oauth/callback/?hostUrl=http://127.0.0.1:1&code=c&state=s`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('#offline_dialog')).toBeVisible({ timeout: 30_000 })
+	})
 })

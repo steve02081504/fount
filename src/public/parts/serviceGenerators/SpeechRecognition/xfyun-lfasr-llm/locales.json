@@ -157,7 +157,7 @@
 			]
 		},
 		"lzh": {
-			"name": "訊飛 LFASR LLM 生成器",
+			"name": "訊飛 LFASR 宏文生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
 			"description": "訊飛批量 LFASR 大模型。",
 			"description_markdown": "訊飛批量 LFASR 大模型。",
@@ -418,7 +418,7 @@
 			"provider": "xfyun"
 		},
 		"lzh": {
-			"name": "訊飛 LFASR LLM",
+			"name": "訊飛 LFASR 宏文",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
 			"description": "訊飛批量 LFASR 大模型。",
 			"description_markdown": "訊飛批量 LFASR 大模型。",

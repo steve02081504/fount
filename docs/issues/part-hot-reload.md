@@ -15,11 +15,10 @@
 - 不要用 `import(url + '?v=' + n)` 绕。part 是文件夹：`main.mjs` 用静态相对路径 import helper，打在入口上的 query 打不中内部依赖；且每次 bust 在 module map 里留一条永不复用的条目。
 - 不要再去 V8 开 issue。阻塞不在 V8。
 
-## 技术结论（已核实）
+## 站立结论
 
-- `v8::Module` 是普通堆对象；root 是 embedder 的 `v8::Global`（`deno_core` module map 的 `handles` / `handles_inverted`）。「V8 里模块是 GC root、永不回收」不成立。同形泄漏在 Node 已修：[nodejs/node#33439](https://github.com/nodejs/node/issues/33439) → [nodejs/node#48510](https://github.com/nodejs/node/pull/48510)。
-- [denoland/deno#34944](https://github.com/denoland/deno/pull/34944) 的路径在原理上可行：从 `by_name` 去掉条目 → 下次 `import()` 重编译。文件夹型 part 需要**目录前缀** eviction（点淘汰不够）。
-- eviction 只让旧模块 *原则上* 可回收。重载循环里通常仍活着：实例化模块强引用依赖；持有 v1 的 exports / 闭包钉住整棵子图；`--inspect` 另有独立留存。原语落地后，`unloadPartBase` / `reloadPart` 必须丢掉对旧 part 的**所有**引用。
+- 阻塞在 Deno embedder 的 module-map eviction（文件夹 part 需要**目录前缀**淘汰），不在 V8 GC。
+- eviction 只让旧模块原则上可回收；重载循环里 exports / 闭包仍会钉住子图。原语落地后，`unloadPartBase` / `reloadPart` 必须丢掉对旧 part 的**所有**引用。
 
 ## 原语落地后要改什么
 

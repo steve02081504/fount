@@ -1,0 +1,22 @@
+{
+	"id": "serviceGenerators/AI/vertex",
+	"suites": [
+		{
+			"name": "integration",
+			"triggers": [
+				"src/public/parts/serviceGenerators/AI/vertex/**",
+				"src/public/parts/serviceGenerators/AI/gemini/main.mjs"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/serviceGenerators/AI/vertex/test/integration/"
+			]
+		}
+	]
+}
