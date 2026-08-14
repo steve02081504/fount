@@ -3,7 +3,7 @@
 # Requires install-hooks.sh to have swapped JS entrypoints first.
 set -euo pipefail
 
-ROOT="${FOUNT_REPO_ROOT:-$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd -P)}"
+ROOT="${FOUNT_REPO_ROOT:-$(CDPATH='' cd -- "$(dirname -- "$0")/../.." && pwd -P)}"
 cd "$ROOT"
 
 FOUNT="${ROOT}/path/fount.sh"

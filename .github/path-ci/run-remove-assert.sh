@@ -2,7 +2,7 @@
 # Copy this directory out of FOUNT_DIR first — `remove` deletes the install tree.
 # usage: bash run-remove-assert.sh <fount-entry>
 set -euo pipefail
-here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
 out=$(mktemp)
 if "$1" remove >"$out" 2>&1; then
 	exit_code=0
