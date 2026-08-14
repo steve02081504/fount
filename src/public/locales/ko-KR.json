@@ -5949,6 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth 로그인",
+		"description": "AI 소스에 대한 OAuth 로그인을 완료합니다. 티켓 교환은 서버 측에서 완료됩니다.",
 		"callback": {
 			"working": "로그인을 완료하는 중…",
 			"success": "로그인되었습니다. 이 페이지를 닫아도 됩니다.",

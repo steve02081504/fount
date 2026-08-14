@@ -5955,6 +5955,7 @@
 	},
 	"oauth_handler": {
 		"title": "Accesso OAuth",
+		"description": "Completa l'accesso OAuth per l'origine AI. Lo scambio dei biglietti viene completato lato server.",
 		"callback": {
 			"working": "Completamento dell’accesso…",
 			"success": "Accesso riuscito. Puoi chiudere questa pagina.",

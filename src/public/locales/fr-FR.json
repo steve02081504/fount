@@ -5955,6 +5955,7 @@
 	},
 	"oauth_handler": {
 		"title": "Connexion OAuth",
+		"description": "Complétez la connexion OAuth pour la source AI. L'échange des tickets s'effectue côté serveur.",
 		"callback": {
 			"working": "Finalisation de la connexion…",
 			"success": "Connecté. Vous pouvez fermer cette page.",

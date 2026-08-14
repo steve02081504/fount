@@ -5949,6 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth-innskráning",
+		"description": "Ljúktu við OAuth innskráninguna fyrir gervigreindargjafann. Miðaskiptum er lokið á miðlarahlið.",
 		"callback": {
 			"working": "Lýkur innskráningu…",
 			"success": "Skráð inn. Þú getur lokað þessari síðu.",

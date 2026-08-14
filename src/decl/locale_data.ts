@@ -5917,6 +5917,7 @@ export type LocaleData = {
 	}
 	oauth_handler: {
 		title: string
+		description: string
 		callback: {
 			working: string
 			success: string
