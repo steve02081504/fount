@@ -2,16 +2,28 @@ const sessions = new Map()
 const TTL_MS = 15 * 60 * 1000
 
 /**
- * 丢掉过期的 pending 登录。
+ * 丢掉一条 pending 登录并释放 hook / 轮询。
+ * @param {string} state - OAuth state。
  * @returns {void}
  */
-function sweep() {
+function forget(state) {
+	const session = sessions.get(state)
+	if (!session) return
+	clearTimeout(session.expireTimer)
+	session.hook?.close?.()
+	session.abort?.abort()
+	sessions.delete(state)
+}
+
+/**
+ * 丢掉已过期的 pending 登录。
+ * @returns {void}
+ */
+export function sweepExpired() {
 	const now = Date.now()
 	for (const [state, session] of sessions)
-		if (now - session.createdAt > TTL_MS) {
-			session.hook?.close?.()
-			sessions.delete(state)
-		}
+		if (now - session.createdAt > TTL_MS)
+			forget(state)
 }
 
 /**
@@ -21,9 +33,14 @@ function sweep() {
  * @returns {object} 登记后的会话。
  */
 export function putPending(state, session) {
-	sweep()
+	sweepExpired()
 	const record = { ...session, createdAt: Date.now(), status: 'pending' }
 	sessions.set(state, record)
+	record.expireTimer = setTimeout(() => forget(state), TTL_MS)
+	if (typeof record.expireTimer === 'number')
+		globalThis.Deno?.unrefTimer?.(record.expireTimer)
+	else
+		record.expireTimer.unref?.()
 	return record
 }
 
@@ -33,7 +50,7 @@ export function putPending(state, session) {
  * @returns {object | undefined} 会话。
  */
 export function getPending(state) {
-	sweep()
+	sweepExpired()
 	return sessions.get(state)
 }
 
@@ -43,7 +60,5 @@ export function getPending(state) {
  * @returns {void}
  */
 export function deletePending(state) {
-	const session = sessions.get(state)
-	session?.hook?.close?.()
-	sessions.delete(state)
+	forget(state)
 }

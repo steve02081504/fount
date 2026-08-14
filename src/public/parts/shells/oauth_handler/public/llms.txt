@@ -22,15 +22,15 @@ GitHub Pages bounce：`https://steve02081504.github.io/fount/oauth/callback` 找
 ## API
 
 ### POST /api/parts/shells:oauth_handler/start
-- Body：`provider`（`openai-codex` / `anthropic` / `github-copilot`），可选 `sourceName`、`serviceSourcePath`、`enterpriseUrl`
-- 用途：开始登录。PKCE 打开浏览器并监听官方登记端口；device flow 返回 `verificationUri` 与 `userCode`。
+- Body：`provider`（`openai-codex` / `anthropic` / `github-copilot`），可选 `sourceName`、`serviceSourcePath`
+- 用途：开始登录。PKCE 打开浏览器并监听官方登记端口；device flow 返回 `verificationUri` 与 `userCode`。GitHub Enterprise 域名只读已保存的服务源 `config.enterpriseUrl`，不接受请求体传入。
 
 ### POST /api/parts/shells:oauth_handler/complete
 - Body：`state`、`code`
-- 用途：PKCE 换票；若 start 时给了 `sourceName` 则写入该服务源 `config.oauth`。
+- 用途：PKCE 换票；若 start 时给了 `sourceName` 则写入该服务源 `config.oauth`。响应仅为 `{ status: "completed" }`，不含 refresh token。
 
 ### GET /api/parts/shells:oauth_handler/status/:state
-- 用途：查询 pending / completed / failed（device flow 轮询用）。
+- 用途：查询 pending / completed / failed（device flow 轮询用）。快照只有 `status` 与 `error`，不含 oauth 凭证。
 
 ### POST /api/parts/shells:oauth_handler/cancel
 - Body：`state`

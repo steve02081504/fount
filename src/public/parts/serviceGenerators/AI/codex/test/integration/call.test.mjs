@@ -7,11 +7,6 @@ import { assertEquals } from 'jsr:@std/assert'
 import { mockJsonFetch, responsesOutputResponse } from '../../../proxy/test/mockFetch.mjs'
 import generator from '../../main.mjs'
 
-/**
- *
- */
-const saveConfig = async () => { }
-
 Deno.test('Codex Call posts Responses with account id and originator fount', async () => {
 	const mock = mockJsonFetch(() => responsesOutputResponse('pong'))
 	try {
@@ -25,7 +20,10 @@ Deno.test('Codex Call posts Responses with account id and originator fount', asy
 				expires: Date.now() + 60_000,
 				accountId: 'acct_x',
 			},
-		}, { SaveConfig: saveConfig })
+		}, { /**
+		 *
+		 */
+			SaveConfig: async () => { } })
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'pong')
 		assertEquals(mock.calls[0].url, 'https://chatgpt.com/backend-api/codex/responses')

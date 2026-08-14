@@ -8,20 +8,20 @@ import { startPortHook, withQuery } from '../../src/portHook.mjs'
 
 Deno.test('port hook 302 forwards code and state', async () => {
 	const port = 18765
-	const target = 'http://127.0.0.1:8931/parts/shells:oauth_handler/callback'
+	const target = 'http://localhost:8931/parts/shells:oauth_handler/callback'
 	const hook = await startPortHook({
 		port,
 		pathname: '/auth/callback',
 		targetUrl: target,
 	})
 	try {
-		const response = await fetch(`http://127.0.0.1:${port}/auth/callback?code=c1&state=s1`, { redirect: 'manual' })
+		const response = await fetch(`http://localhost:${port}/auth/callback?code=c1&state=s1`, { redirect: 'manual' })
 		assertEquals(response.status, 302)
 		assertEquals(
 			response.headers.get('location'),
 			withQuery(target, '?code=c1&state=s1'),
 		)
-		const missing = await fetch(`http://127.0.0.1:${port}/nope`, { redirect: 'manual' })
+		const missing = await fetch(`http://localhost:${port}/nope`, { redirect: 'manual' })
 		assertEquals(missing.status, 404)
 	}
 	finally {

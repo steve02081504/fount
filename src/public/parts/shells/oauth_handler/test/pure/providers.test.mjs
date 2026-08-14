@@ -4,7 +4,7 @@
 /* global Deno */
 import { Buffer } from 'node:buffer'
 
-import { assertEquals } from 'jsr:@std/assert'
+import { assertEquals, assertThrows } from 'jsr:@std/assert'
 
 import {
 	chatgptAccountIdFromJwt,
@@ -46,14 +46,17 @@ Deno.test('githubDomain normalizes URL or host', () => {
 	assertEquals(githubDomain('github.example.com'), 'github.example.com')
 })
 
+Deno.test('githubDomain rejects loopback and private hosts', () => {
+	assertThrows(() => githubDomain('http://127.0.0.1'), Error, 'internal')
+	assertThrows(() => githubDomain('localhost'), Error, 'internal')
+	assertThrows(() => githubDomain('10.0.0.1'), Error, 'internal')
+	assertThrows(() => githubDomain('192.168.1.1'), Error, 'internal')
+	assertThrows(() => githubDomain('169.254.169.254'), Error, 'internal')
+})
+
 Deno.test('exchangeCodexCode posts PKCE body and keeps redirect_uri', async () => {
-	const calls = []
-	const orig = globalThis.fetch
-	/**
-	 *
-	 * @param url
-	 * @param init
-	 */
+	const requests = []
+	const originalFetch = globalThis.fetch
 	/**
 	 * 记下 Codex token 换票请求。
 	 * @param {string | URL} url - 请求 URL。
@@ -61,7 +64,7 @@ Deno.test('exchangeCodexCode posts PKCE body and keeps redirect_uri', async () =
 	 * @returns {Promise<Response>} 假 token 响应。
 	 */
 	globalThis.fetch = async (url, init) => {
-		calls.push({ url: String(url), init })
+		requests.push({ url: String(url), init })
 		return new Response(JSON.stringify({
 			access_token: fakeJwt('acct_codex'),
 			refresh_token: 'r',
@@ -71,9 +74,9 @@ Deno.test('exchangeCodexCode posts PKCE body and keeps redirect_uri', async () =
 	try {
 		const oauth = await exchangeCodexCode('the-code', 'the-verifier')
 		assertEquals(oauth.accountId, 'acct_codex')
-		assertEquals(calls.length, 1)
-		assertEquals(calls[0].url, CODEX.tokenUrl)
-		const body = new URLSearchParams(calls[0].init.body)
+		assertEquals(requests.length, 1)
+		assertEquals(requests[0].url, CODEX.tokenUrl)
+		const body = new URLSearchParams(requests[0].init.body)
 		assertEquals(body.get('grant_type'), 'authorization_code')
 		assertEquals(body.get('code'), 'the-code')
 		assertEquals(body.get('code_verifier'), 'the-verifier')
@@ -81,6 +84,6 @@ Deno.test('exchangeCodexCode posts PKCE body and keeps redirect_uri', async () =
 		assertEquals(body.get('client_id'), CODEX.clientId)
 	}
 	finally {
-		globalThis.fetch = orig
+		globalThis.fetch = originalFetch
 	}
 })

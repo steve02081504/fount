@@ -32,7 +32,6 @@ export async function createResponsesSource({
 	 */
 	async function run(messages, options = {}) {
 		const { url, headers } = await resolveRequest()
-		const result = options.result ?? { content: '', files: [] }
 		return fetchResponses({
 			url,
 			headers,
@@ -43,7 +42,7 @@ export async function createResponsesSource({
 			}),
 			signal: options.signal,
 			previewUpdater: options.previewUpdater,
-			result,
+			result: options.result,
 		})
 	}
 

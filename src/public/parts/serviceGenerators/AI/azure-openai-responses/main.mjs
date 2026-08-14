@@ -18,7 +18,6 @@ const configTemplate = {
 	apikey: process.env.AZURE_OPENAI_API_KEY || '',
 	endpoint: process.env.AZURE_OPENAI_ENDPOINT || '',
 	resource: process.env.AZURE_OPENAI_RESOURCE || '',
-	url: '',
 	model_arguments: {},
 	convert_config: defaultConvertConfig(),
 	use_stream: true,

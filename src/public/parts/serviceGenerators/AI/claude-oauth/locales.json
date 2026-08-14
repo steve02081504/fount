@@ -19,7 +19,7 @@
 			"name": "Claude Pro/Max",
 			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
 			"description": "Claude Pro/Max OAuth（额外用量）。",
-			"description_markdown": "踩 Claude Code 的 PKCE。第三方流量按 extra usage 计费，不是订阅额度。不加官方 CLI 的 billing 头。",
+			"description_markdown": "使用 Claude Code 的 PKCE 流程。第三方流量按 extra usage 计费，不是订阅额度。不加官方 CLI 的 billing 头。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://claude.ai",
@@ -304,7 +304,7 @@
 		"zh-CN": {
 			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
 			"description": "Claude Pro/Max OAuth（额外用量）。",
-			"description_markdown": "踩 Claude Code 的 PKCE。第三方流量按 extra usage 计费，不是订阅额度。不加官方 CLI 的 billing 头。",
+			"description_markdown": "使用 Claude Code 的 PKCE 流程。第三方流量按 extra usage 计费，不是订阅额度。不加官方 CLI 的 billing 头。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://claude.ai",

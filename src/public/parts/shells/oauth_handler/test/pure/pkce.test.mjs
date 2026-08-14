@@ -12,16 +12,18 @@ Deno.test('PKCE verifier is base64url and challenge is S256', async () => {
 	assertEquals(/^[A-Za-z0-9_-]+$/.test(verifier), true)
 	assertEquals(verifier.includes('='), false)
 	const { createHash } = await import('node:crypto')
-	const expected = createHash('sha256').update(verifier).digest('base64')
-		.replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '')
-	assertEquals(challenge, expected)
+	assertEquals(
+		challenge,
+		createHash('sha256').update(verifier).digest('base64')
+			.replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, ''),
+	)
 })
 
 Deno.test('randomState is hex', () => {
-	const a = randomState()
-	const b = randomState()
-	assertEquals(/^[0-9a-f]+$/.test(a), true)
-	assertNotEquals(a, b)
+	const firstState = randomState()
+	const secondState = randomState()
+	assertEquals(/^[0-9a-f]+$/.test(firstState), true)
+	assertNotEquals(firstState, secondState)
 })
 
 Deno.test('canonical callback and query forward', () => {

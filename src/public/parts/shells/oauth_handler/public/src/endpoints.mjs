@@ -3,18 +3,11 @@
  */
 
 /**
- * 调用 oauth_handler REST。
- * @param {string} path - 路径（不含前缀）。
- * @param {string} [method='GET'] - HTTP 方法。
- * @param {object} [body] - JSON body。
+ * 解析 oauth_handler JSON 响应。
+ * @param {Response} response - fetch 响应。
  * @returns {Promise<any>} JSON。
  */
-async function callApi(path, method = 'GET', body) {
-	const response = await fetch(`/api/parts/shells:oauth_handler/${path}`, {
-		method,
-		headers: { 'Content-Type': 'application/json' },
-		body: body ? JSON.stringify(body) : undefined,
-	})
+async function readJson(response) {
 	const data = await response.json().catch(() => ({}))
 	if (!response.ok) throw Object.assign(new Error(data.message || response.statusText), data)
 	return data
@@ -26,16 +19,24 @@ async function callApi(path, method = 'GET', body) {
  * @returns {Promise<object>} start 结果。
  */
 export function startOAuth(body) {
-	return callApi('start', 'POST', body)
+	return fetch('/api/parts/shells:oauth_handler/start', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(body),
+	}).then(readJson)
 }
 
 /**
  * 用授权码完成 PKCE。
  * @param {{ state: string, code: string }} body - complete 参数。
- * @returns {Promise<object>} 凭证。
+ * @returns {Promise<object>} 完成状态。
  */
 export function completeOAuth(body) {
-	return callApi('complete', 'POST', body)
+	return fetch('/api/parts/shells:oauth_handler/complete', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(body),
+	}).then(readJson)
 }
 
 /**
@@ -44,7 +45,7 @@ export function completeOAuth(body) {
  * @returns {Promise<object>} 状态。
  */
 export function oauthStatus(state) {
-	return callApi(`status/${encodeURIComponent(state)}`)
+	return fetch(`/api/parts/shells:oauth_handler/status/${encodeURIComponent(state)}`).then(readJson)
 }
 
 /**
@@ -53,5 +54,9 @@ export function oauthStatus(state) {
  * @returns {Promise<object>} 空对象。
  */
 export function cancelOAuth(state) {
-	return callApi('cancel', 'POST', { state })
+	return fetch('/api/parts/shells:oauth_handler/cancel', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ state }),
+	}).then(readJson)
 }

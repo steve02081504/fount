@@ -27,6 +27,41 @@ export function copilotBaseUrl(token, enterpriseDomain) {
 }
 
 /**
+ * 是否为回环 / 私网 / 链路本地等内网主机名。
+ * @param {string} hostname - 已解析 hostname。
+ * @returns {boolean} 内网则为 true。
+ */
+function isInternalHostname(hostname) {
+	const host = hostname.replace(/^\[|\]$/g, '').toLowerCase()
+	if (host === 'localhost' || host.endsWith('.localhost') || host === 'localhost.localdomain') return true
+	if (host === '::1' || host === '0.0.0.0' || host === '::' || host === '[::1]') return true
+	if (host.includes(':')) {
+		if (host === '::1' || host.startsWith('fe80:') || host.startsWith('fc') || host.startsWith('fd')) return true
+		const mapped = host.match(/:ffff:(\d{1,3}(?:\.\d{1,3}){3})$/)
+		if (mapped) return isInternalHostname(mapped[1])
+		return false
+	}
+	const parts = host.split('.').map(Number)
+	if (parts.length !== 4 || parts.some(part => !Number.isInteger(part) || part < 0 || part > 255)) return false
+	const [a, b] = parts
+	if (a === 0 || a === 10 || a === 127) return true
+	if (a === 169 && b === 254) return true
+	if (a === 172 && b >= 16 && b <= 31) return true
+	if (a === 192 && b === 168) return true
+	return false
+}
+
+/**
+ * 拒绝内网 OAuth 主机。
+ * @param {string} hostname - hostname。
+ * @returns {void}
+ */
+function assertPublicHostname(hostname) {
+	if (isInternalHostname(hostname))
+		throw new Error(`Refusing internal OAuth host: ${hostname}`)
+}
+
+/**
  * 规范化 GitHub 域名。
  * @param {string} [input] - 用户输入的 URL 或域名。
  * @returns {string} hostname。
@@ -35,11 +70,12 @@ export function githubDomain(input) {
 	const trimmed = input?.trim()
 	if (!trimmed) return 'github.com'
 	const url = trimmed.includes('://') ? new URL(trimmed) : new URL(`https://${trimmed}`)
+	assertPublicHostname(url.hostname)
 	return url.hostname
 }
 
 /**
- *
+ * Codex（ChatGPT）PKCE 登录参数。
  */
 export const CODEX = {
 	id: 'openai-codex',
@@ -53,7 +89,7 @@ export const CODEX = {
 }
 
 /**
- *
+ * Claude Pro/Max PKCE 登录参数。
  */
 export const ANTHROPIC = {
 	id: 'anthropic',
@@ -67,7 +103,7 @@ export const ANTHROPIC = {
 }
 
 /**
- *
+ * GitHub Copilot device flow 参数。
  */
 export const COPILOT = {
 	id: 'github-copilot',
@@ -210,6 +246,8 @@ export async function startCopilotDevice(enterpriseUrl) {
 	})
 	const json = await response.json()
 	if (!response.ok) throw new Error(json.error_description || json.error || `Copilot device ${response.status}`)
+	if (json.verification_uri)
+		assertPublicHostname(new URL(json.verification_uri).hostname)
 	return { ...json, domain }
 }
 

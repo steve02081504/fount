@@ -1,5 +1,5 @@
 /**
- * Workers AI completions URL。
+ * Workers AI completions 端点。
  */
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'

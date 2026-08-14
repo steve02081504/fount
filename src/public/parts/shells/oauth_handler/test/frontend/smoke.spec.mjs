@@ -12,6 +12,6 @@ test.describe('oauth_handler shell smoke', () => {
 	test('callback without params shows missingParams', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:oauth_handler/callback`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#message')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('#message')).toHaveAttribute('data-i18n', /oauth_handler\.callback\.(missingParams|working)/)
+		await expect(page.locator('#message')).toHaveAttribute('data-i18n', 'oauth_handler.callback.missingParams', { timeout: 30_000 })
 	})
 })

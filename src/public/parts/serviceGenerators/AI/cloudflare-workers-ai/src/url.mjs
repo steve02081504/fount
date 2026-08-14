@@ -1,5 +1,5 @@
 /**
- * Cloudflare Workers AI chat completions URL。
+ * Cloudflare Workers AI chat completions 端点。
  * @param {string} accountId - 账号 ID。
  * @returns {string} 端点。
  */

@@ -7,11 +7,6 @@ import { assertEquals } from 'jsr:@std/assert'
 import { mockJsonFetch, openaiMessageResponse } from '../../../proxy/test/mockFetch.mjs'
 import generator from '../../main.mjs'
 
-/**
- *
- */
-const saveConfig = async () => { }
-
 Deno.test('Workers AI Call sets session affinity and account URL', async () => {
 	const mock = mockJsonFetch(() => openaiMessageResponse('cf'))
 	try {
@@ -22,7 +17,10 @@ Deno.test('Workers AI Call sets session affinity and account URL', async () => {
 			apikey: 'tok',
 			sessionAffinity: 'sess-1',
 			use_stream: false,
-		}, { SaveConfig: saveConfig })
+		}, { /**
+		 *
+		 */
+			SaveConfig: async () => { } })
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'cf')
 		assertEquals(

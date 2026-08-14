@@ -61,12 +61,12 @@ async function GetSource(config, { SaveConfig }) {
 		 * @returns {Promise<{url: string, headers: Record<string, string>}>} 请求。
 		 */
 		resolveRequest: async () => {
-			const creds = await ensureOAuthCredentials(config, CODEX.id, SaveConfig)
+			const credentials = await ensureOAuthCredentials(config, CODEX.id, SaveConfig)
 			return {
 				url: CODEX_RESPONSES_URL,
 				headers: {
-					Authorization: `Bearer ${creds.access}`,
-					'ChatGPT-Account-Id': creds.accountId,
+					Authorization: `Bearer ${credentials.access}`,
+					'ChatGPT-Account-Id': credentials.accountId,
 					'OpenAI-Beta': 'responses=v1',
 					originator: 'fount',
 				},

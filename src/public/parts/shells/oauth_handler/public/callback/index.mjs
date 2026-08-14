@@ -17,14 +17,14 @@ async function main() {
 		window.location.href = `/login?redirect=${encodeURIComponent(window.location.href)}`
 		return
 	}
-	const params = new URL(window.location.href).searchParams
-	const error = params.get('error')
+	const searchParameters = new URL(window.location.href).searchParams
+	const error = searchParameters.get('error')
 	if (error) {
 		setElementI18n(message, 'oauth_handler.callback.failed', { message: error })
 		return
 	}
-	const code = params.get('code')
-	const state = params.get('state')
+	const code = searchParameters.get('code')
+	const state = searchParameters.get('state')
 	if (!code || !state) {
 		setElementI18n(message, 'oauth_handler.callback.missingParams')
 		return
@@ -33,8 +33,8 @@ async function main() {
 		await completeOAuth({ state, code })
 		message.textContent = geti18n('oauth_handler.callback.success')
 	}
-	catch (err) {
-		setElementI18n(message, 'oauth_handler.callback.failed', { message: err.message })
+	catch (error) {
+		setElementI18n(message, 'oauth_handler.callback.failed', { message: error.message })
 	}
 }
 

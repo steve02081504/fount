@@ -28,7 +28,8 @@
 		{
 			"name": "integration",
 			"triggers": [
-				"src/public/parts/shells/oauth_handler/src/portHook.mjs",
+				"src/public/parts/shells/oauth_handler/src/{portHook,login,endpoints,persist,pending,providers,pkce}.mjs",
+				"src/public/parts/shells/oauth_handler/main.mjs",
 				"src/public/parts/shells/oauth_handler/test/integration/**"
 			],
 			"run": [

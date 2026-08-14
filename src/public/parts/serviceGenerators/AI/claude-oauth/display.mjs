@@ -1,3 +1,3 @@
 /* global sourceName, serviceSourcePath, cache */
-const { renderOauthPanel } = await import('/parts/shells:oauth_handler/src/oauthDisplay.mjs')
-return args => renderOauthPanel({ ...args, provider: 'anthropic', sourceName, serviceSourcePath, cache })
+return options => import('/parts/shells:oauth_handler/src/oauthDisplay.mjs').then(({ renderOauthPanel }) =>
+	renderOauthPanel({ ...options, provider: 'anthropic', sourceName, serviceSourcePath, cache }))

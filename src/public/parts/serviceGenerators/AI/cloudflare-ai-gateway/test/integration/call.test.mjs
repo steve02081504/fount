@@ -7,11 +7,6 @@ import { assertEquals } from 'jsr:@std/assert'
 import { mockJsonFetch, openaiMessageResponse } from '../../../proxy/test/mockFetch.mjs'
 import generator from '../../main.mjs'
 
-/**
- *
- */
-const saveConfig = async () => { }
-
 Deno.test('AI Gateway openai prefix uses cf-aig-authorization', async () => {
 	const mock = mockJsonFetch(() => openaiMessageResponse('gw'))
 	try {
@@ -22,7 +17,10 @@ Deno.test('AI Gateway openai prefix uses cf-aig-authorization', async () => {
 			gateway_id: 'gw1',
 			apikey: 'tok',
 			use_stream: false,
-		}, { SaveConfig: saveConfig })
+		}, { /**
+		 *
+		 */
+			SaveConfig: async () => { } })
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'gw')
 		assertEquals(

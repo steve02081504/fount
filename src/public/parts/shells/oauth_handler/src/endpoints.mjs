@@ -14,9 +14,9 @@ const PREFIX = '/api/parts/shells\\:oauth_handler'
 export function setEndpoints(router) {
 	router.post(`${PREFIX}/start`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const { provider, sourceName, serviceSourcePath, enterpriseUrl } = req.body || {}
+		const { provider, sourceName, serviceSourcePath } = req.body || {}
 		if (provider === 'github-copilot') {
-			res.status(200).json(await startCopilotLogin({ username, sourceName, serviceSourcePath, enterpriseUrl }))
+			res.status(200).json(await startCopilotLogin({ username, sourceName, serviceSourcePath }))
 			return
 		}
 		const spec = provider === 'openai-codex' ? CODEX : provider === 'anthropic' ? ANTHROPIC : undefined
@@ -28,7 +28,8 @@ export function setEndpoints(router) {
 		const { username } = getUserByReq(req)
 		const { state, code } = req.body || {}
 		if (!state || !code) throw httpError(400, 'state and code are required')
-		res.status(200).json(await completePkceLogin({ username, state, code }))
+		await completePkceLogin({ username, state, code })
+		res.status(200).json({ status: 'completed' })
 	})
 
 	router.get(`${PREFIX}/status/:state`, authenticate, (req, res) => {

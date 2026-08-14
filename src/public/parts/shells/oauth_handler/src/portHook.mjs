@@ -11,7 +11,7 @@ import http from 'node:http'
 export function startPortHook({ port, pathname, targetUrl }) {
 	return new Promise((resolve, reject) => {
 		const server = http.createServer((req, res) => {
-			const url = new URL(req.url || '/', 'http://127.0.0.1')
+			const url = new URL(req.url, 'http://localhost')
 			if (url.pathname !== pathname) {
 				res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
 				res.end('Not found')
@@ -21,7 +21,7 @@ export function startPortHook({ port, pathname, targetUrl }) {
 			res.end()
 		})
 		server.on('error', reject)
-		server.listen(port, '127.0.0.1', () => {
+		server.listen(port, 'localhost', () => {
 			resolve({
 				/**
 				 * 关闭 hook 端口。
@@ -42,11 +42,11 @@ export function startPortHook({ port, pathname, targetUrl }) {
  * @returns {string} 带 query 的 URL。
  */
 export function withQuery(targetUrl, search) {
-	const dest = new URL(targetUrl)
+	const destination = new URL(targetUrl)
 	const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search)
 	for (const [key, value] of params)
-		dest.searchParams.set(key, value)
-	return dest.href
+		destination.searchParams.set(key, value)
+	return destination.href
 }
 
 /**

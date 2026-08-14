@@ -7,11 +7,6 @@ import { assertEquals } from 'jsr:@std/assert'
 import { mockJsonFetch, openaiMessageResponse } from '../../../proxy/test/mockFetch.mjs'
 import generator from '../../main.mjs'
 
-/**
- *
- */
-const saveConfig = async () => { }
-
 Deno.test('Copilot Call uses copilot host and editor headers', async () => {
 	const mock = mockJsonFetch(() => openaiMessageResponse('ok'))
 	try {
@@ -24,7 +19,10 @@ Deno.test('Copilot Call uses copilot host and editor headers', async () => {
 				refresh: 'gh',
 				expires: Date.now() + 60_000,
 			},
-		}, { SaveConfig: saveConfig })
+		}, { /**
+		 *
+		 */
+			SaveConfig: async () => { } })
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'ok')
 		assertEquals(mock.calls[0].url, 'https://api.individual.githubcopilot.com/chat/completions')

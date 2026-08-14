@@ -1,8 +1,9 @@
 import open from 'npm:open'
 
 import { hosturl } from '../../../../../server/server.mjs'
+import { getServiceSourceFile } from '../../serviceSourceManage/src/manager.mjs'
 
-import { deletePending, getPending, putPending } from './pending.mjs'
+import { deletePending, getPending, putPending, sweepExpired } from './pending.mjs'
 import { persistOAuthToSource } from './persist.mjs'
 import { generatePKCE, randomState } from './pkce.mjs'
 import { canonicalCallbackUrl, startPortHook } from './portHook.mjs'
@@ -26,6 +27,7 @@ import {
  * @returns {Promise<object>} start 响应。
  */
 export async function startPkceLogin({ username, provider, sourceName, serviceSourcePath }) {
+	sweepExpired()
 	const { verifier, challenge } = generatePKCE()
 	const state = provider === ANTHROPIC ? verifier : randomState()
 	const hook = await startPortHook({
@@ -66,10 +68,12 @@ export async function startPkceLogin({ username, provider, sourceName, serviceSo
  * @param {string} args.username - 用户名。
  * @param {string} [args.sourceName] - 服务源名。
  * @param {string} [args.serviceSourcePath] - 服务源路径。
- * @param {string} [args.enterpriseUrl] - GitHub Enterprise。
  * @returns {Promise<object>} start 响应。
  */
-export async function startCopilotLogin({ username, sourceName, serviceSourcePath, enterpriseUrl }) {
+export async function startCopilotLogin({ username, sourceName, serviceSourcePath }) {
+	const enterpriseUrl = sourceName
+		? (await getServiceSourceFile(username, sourceName, serviceSourcePath || 'serviceSources/AI'))?.config?.enterpriseUrl
+		: undefined
 	const device = await startCopilotDevice(enterpriseUrl)
 	const state = randomState()
 	const abort = new AbortController()
@@ -107,7 +111,7 @@ export async function startCopilotLogin({ username, sourceName, serviceSourcePat
  * @param {string} args.username - 当前用户。
  * @param {string} args.state - OAuth state。
  * @param {string} args.code - 授权码。
- * @returns {Promise<object>} 凭证。
+ * @returns {Promise<object>} 完成状态。
  */
 export async function completePkceLogin({ username, state, code }) {
 	const session = getPending(state)
@@ -125,7 +129,7 @@ export async function completePkceLogin({ username, state, code }) {
 	await persistOAuthToSource(session.username, session.sourceName, session.serviceSourcePath, oauth)
 	await session.hook?.close?.()
 	session.hook = undefined
-	return oauth
+	return { status: 'completed' }
 }
 
 /**
@@ -141,7 +145,6 @@ export function loginStatus(username, state) {
 	return {
 		status: session.status,
 		error: session.error,
-		oauth: session.oauth,
 	}
 }
 

@@ -9,8 +9,8 @@ import { initTranslations, setElementI18n } from '../../scripts/i18n/index.mjs'
 const CALLBACK_PATH = '/parts/shells:oauth_handler/callback'
 const offlineDialog = document.getElementById('offline_dialog')
 const offlineMessageElement = document.getElementById('offline_dialog_message')
-const startBtn = document.getElementById('start_btn')
-const retryBtn = document.getElementById('retry_btn')
+const startButton = document.getElementById('start_btn')
+const retryButton = document.getElementById('retry_btn')
 
 /**
  * 带着当前 query 跳到本机 oauth_handler callback。
@@ -30,33 +30,32 @@ function bounceToFount(hostUrl) {
 async function attemptConnection() {
 	const hostUrl = window.fount?.hostUrl ?? urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl')
 	if (hostUrl) {
-		const isOnline = await pingFount(hostUrl)
-		if (isOnline) return bounceToFount(hostUrl)
+		if (await pingFount(hostUrl)) return bounceToFount(hostUrl)
 
 		setElementI18n(offlineMessageElement, 'protocolhandler.offline_dialog.message', { hostUrl })
 		offlineDialog.showModal()
 
-		const checkInterval = setInterval(() => {
-			pingFount(hostUrl).then(isOnlineNow => {
-				if (!isOnlineNow) return
-				clearInterval(checkInterval)
-				offlineDialog.close()
-				bounceToFount(hostUrl)
-			})
+		const checkInterval = setInterval(async () => {
+			if (!await pingFount(hostUrl)) return
+			clearInterval(checkInterval)
+			offlineDialog.close()
+			bounceToFount(hostUrl)
 		}, 1000)
 
 		/**
-		 *
+		 * 关掉离线对话框并重试连接。
+		 * @returns {void}
 		 */
-		retryBtn.onclick = () => {
+		retryButton.onclick = () => {
 			offlineDialog.close()
 			clearInterval(checkInterval)
 			attemptConnection()
 		}
 		/**
-		 *
+		 * 关掉离线对话框并打开 fount 仓库。
+		 * @returns {void}
 		 */
-		startBtn.onclick = () => {
+		startButton.onclick = () => {
 			offlineDialog.close()
 			window.location.href = 'https://github.com/steve02081504/fount'
 		}

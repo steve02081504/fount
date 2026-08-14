@@ -73,7 +73,6 @@ export async function GetSource(config, extra = {}) {
 	 * @returns {Promise<any>} 客户端。
 	 */
 	async function getClient() {
-		if (extra.getClient) return extra.getClient()
 		const clientOptions = {
 			apiKey: config.apikey,
 			...extra.clientOptions,
@@ -94,7 +93,7 @@ export async function GetSource(config, extra = {}) {
 	 * 本次请求用的客户端。
 	 * @returns {Promise<any>} 客户端。
 	 */
-	const clientOf = () => extra.getClient ? getClient() : staticClient
+	const clientOf = extra.getClient ?? (() => staticClient)
 
 	/**
 	 * AI 源实例。
@@ -262,7 +261,7 @@ ${chatLogEntry.content}
 			const useStream = (config.use_stream ?? true) && !!replyPreviewUpdater
 
 			if (useStream) {
-				const stream = await (await clientOf()).messages.create({ ...params, stream: true, signal })
+				const stream = await (await clientOf()).messages.create({ ...params, stream: true }, { signal })
 				for await (const event of stream) {
 					if (signal?.aborted) {
 						const err = new Error('Aborted by user')
@@ -276,7 +275,7 @@ ${chatLogEntry.content}
 				}
 			}
 			else {
-				const message = await (await clientOf()).messages.create({ ...params, signal })
+				const message = await (await clientOf()).messages.create(params, { signal })
 				result.content = message.content.filter(block => block.type === 'text').map(block => block.text).join('')
 				previewUpdater(result)
 			}

@@ -12,23 +12,22 @@
  */
 export async function renderOauthPanel({ data, containers, editors, provider, sourceName, serviceSourcePath, cache }) {
 	const { cancelOAuth, oauthStatus, startOAuth } = await import('/parts/shells:oauth_handler/src/endpoints.mjs')
-	const div = containers.generatorDisplay
 	const panel = document.createElement('div')
 	panel.className = 'flex flex-col gap-2 mb-4'
 	const row = document.createElement('div')
 	row.className = 'flex gap-2 items-center flex-wrap'
 	const status = document.createElement('span')
-	const loginBtn = document.createElement('button')
-	loginBtn.type = 'button'
-	loginBtn.className = 'btn btn-primary btn-sm'
-	loginBtn.dataset.i18n = 'serviceSource_manager.common_config_interface.oauth.login'
-	const logoutBtn = document.createElement('button')
-	logoutBtn.type = 'button'
-	logoutBtn.className = 'btn btn-sm'
-	logoutBtn.dataset.i18n = 'serviceSource_manager.common_config_interface.oauth.logout'
+	const loginButton = document.createElement('button')
+	loginButton.type = 'button'
+	loginButton.className = 'btn btn-primary btn-sm'
+	loginButton.dataset.i18n = 'serviceSource_manager.common_config_interface.oauth.login'
+	const logoutButton = document.createElement('button')
+	logoutButton.type = 'button'
+	logoutButton.className = 'btn btn-sm'
+	logoutButton.dataset.i18n = 'serviceSource_manager.common_config_interface.oauth.logout'
 	const hint = document.createElement('p')
 	hint.className = 'text-sm opacity-80'
-	row.append(status, loginBtn, logoutBtn)
+	row.append(status, loginButton, logoutButton)
 	panel.append(row, hint)
 
 	/**
@@ -40,19 +39,18 @@ export async function renderOauthPanel({ data, containers, editors, provider, so
 		status.dataset.i18n = loggedIn
 			? 'serviceSource_manager.common_config_interface.oauth.loggedIn'
 			: 'serviceSource_manager.common_config_interface.oauth.notLoggedIn'
-		logoutBtn.disabled = !loggedIn
+		logoutButton.disabled = !loggedIn
 		if (!hint.dataset.i18n?.includes('deviceCode') && !hint.dataset.i18n?.includes('failed'))
 			hint.hidden = true
 	}
 
-	loginBtn.addEventListener('click', async () => {
-		loginBtn.disabled = true
+	loginButton.addEventListener('click', async () => {
+		loginButton.disabled = true
 		try {
 			const started = await startOAuth({
 				provider,
 				sourceName,
 				serviceSourcePath,
-				enterpriseUrl: data.enterpriseUrl,
 			})
 			cache.oauthState = started.state
 			if (started.mode === 'device') {
@@ -67,7 +65,9 @@ export async function renderOauthPanel({ data, containers, editors, provider, so
 			while (cache.oauthState === started.state) {
 				const snap = await oauthStatus(started.state)
 				if (snap.status === 'completed') {
-					data.oauth = snap.oauth
+					const { getServiceSourceFile } = await import('/parts/shells:serviceSourceManage/src/endpoints.mjs')
+					const saved = await getServiceSourceFile(sourceName, serviceSourcePath)
+					Object.assign(data, saved.config)
 					editors?.json?.set({ json: data })
 					break
 				}
@@ -81,18 +81,18 @@ export async function renderOauthPanel({ data, containers, editors, provider, so
 			hint.dataset.i18n = 'serviceSource_manager.common_config_interface.oauth.failed'
 		}
 		finally {
-			loginBtn.disabled = false
+			loginButton.disabled = false
 			paint()
 		}
 	})
 
-	logoutBtn.addEventListener('click', async () => {
+	logoutButton.addEventListener('click', async () => {
 		if (cache.oauthState) await cancelOAuth(cache.oauthState).catch(() => { })
 		delete data.oauth
 		editors?.json?.set({ json: data })
 		paint()
 	})
 
-	div.replaceChildren(panel)
+	containers.generatorDisplay.replaceChildren(panel)
 	paint()
 }

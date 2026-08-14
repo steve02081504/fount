@@ -7,11 +7,6 @@ import { assertEquals } from 'jsr:@std/assert'
 import { mockJsonFetch, responsesOutputResponse } from '../../../proxy/test/mockFetch.mjs'
 import generator from '../../main.mjs'
 
-/**
- *
- */
-const saveConfig = async () => { }
-
 Deno.test('Azure Responses Call uses api-key header', async () => {
 	const mock = mockJsonFetch(() => responsesOutputResponse('az'))
 	try {
@@ -21,7 +16,7 @@ Deno.test('Azure Responses Call uses api-key header', async () => {
 			apikey: 'azure-key',
 			endpoint: 'https://demo.openai.azure.com',
 			use_stream: false,
-		}, { SaveConfig: saveConfig })
+		})
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'az')
 		assertEquals(mock.calls[0].url, 'https://demo.openai.azure.com/openai/v1/responses')
