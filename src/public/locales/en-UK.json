@@ -5949,6 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth login",
+		"description": "Completes AI provider OAuth logins. Token exchange stays on the server.",
 		"callback": {
 			"working": "Finishing login…",
 			"success": "Signed in. You can close this page.",

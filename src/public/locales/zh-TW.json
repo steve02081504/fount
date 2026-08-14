@@ -5948,6 +5948,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth 登入",
+		"description": "完成 AI 源的 OAuth 登入。換票在伺服端完成。",
 		"callback": {
 			"working": "正在完成登入…",
 			"success": "登入成功，可以關閉此頁。",

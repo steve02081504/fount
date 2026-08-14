@@ -5949,6 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth ログイン",
+		"description": "AI プロバイダの OAuth ログインを完了します。トークン交換はサーバー側です。",
 		"callback": {
 			"working": "ログインを完了しています…",
 			"success": "ログインしました。このページを閉じてください。",

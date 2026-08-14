@@ -5949,6 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth 登录",
+		"description": "完成 AI 源的 OAuth 登录。换票在服务端完成。",
 		"callback": {
 			"working": "正在完成登录…",
 			"success": "登录成功，可以关闭此页。",

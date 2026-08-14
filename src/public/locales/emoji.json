@@ -5949,6 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "🔑 OAuth",
+		"description": "🔑➡️✅",
 		"callback": {
 			"working": "⏳",
 			"success": "✅",

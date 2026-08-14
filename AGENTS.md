@@ -6,7 +6,7 @@
 
 - **Modular**: Everything is a self-contained "part" loaded dynamically from `@src/public/parts/`.
 - **Evergreen deps**: No lock file (`deno.json` `"lock": false`); Deno URL imports.
-- **Single process**: `async/await` only. OS launches only via `npm:open` or `@src/scripts/launch_external.mjs`; no `node:child_process` in part/shell/plugin code (CLI/build scripts exempt).
+- **Single process**: stay in-process with promises. OS launches only via `npm:open` or `@src/scripts/launch_external.mjs`; no `node:child_process` in part/shell/plugin code (CLI/build scripts exempt).
 
 ## System Overview
 
@@ -23,6 +23,7 @@
 - **I18n**: edit `src/public/locales/zh-CN.json` day-to-day; `update-locales.py` syncs other langs (`master` / GitHub Actions; feature branches skip — PR CI syncs). **Write locale JSON only via Python** — JS `JSON.stringify` reorders numeric keys like `404`. Switch leaves / params / tree layout: [i18n-notes.md](src/public/pages/docs/i18n-notes.md). Bulk key moves: [locale-edits.md](src/public/locales/docs/locale-edits.md).
 - **Emoji packs**: UI and ordering live in core `features/emoji/` + `components/emojiPicker.mjs`; chat/social only supply providers. Spec: [emoji-pack-spec](docs/design/emoji-pack-spec.md).
 - **Lint**: `eslint --fix --quiet` (no `npx`). Product runtime: no logging unless error/warning. CI/workflow/test-driver progress & diagnostic output is fine. `jsdoc/require-jsdoc` covers re-exports — write a real one-liner; do not leave empty `/** */` stubs.
+- **Promises**: prefer a compact `.then()` / `.catch()` chain when it stays readable. Do not rewrite those chains to `async`/`await`/`try`/`catch` for style — mixed `await` + `.then()` often costs more to parse.
 - **IDs / case**: compare hex / `entityHash` / `eventId` keys as-is — no `.toLowerCase()` or convenience `normalizeHex64` on local data; body search uses `RegExp(..., 'i')`, do not pre-lower the haystack. `normalizeHex64` only for verify domains, deterministic protocol IDs, and untrusted inbound auth. When JSDoc is already `string`, do not wrap with `String(x || '')`. Inverted-index posting-key exception: [search/AGENTS.md](src/scripts/search/AGENTS.md).
 - **Testing**: `fount test` — self-contained, no running server; path CLI runs `deno upgrade canary` first (matches CI). Default: one plan of imperfect (incl. fresh noisy) ∪ outdated; a failure only blocks dependents; never full-repo unless `--all`. Selectors: `manifest` / `manifest:suite` / `manifest:suite:subtest`. Live display: `fount test --watch`. See [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md).
 - **Logs**: `fount log` — main-process console via `localhost` (not `127.0.0.1`). Check before guessing from browser 404s. Selector one-shot: `fount log error:5` / `error+warn:10` / `:20` / `5` (`src/log_viewer/selector.mjs`). VT logo on log viewer / fg server TTY: [imgs/icon_anime/AGENTS.md](imgs/icon_anime/AGENTS.md). Standalone: `fount logo` / `fount logo watch`.
