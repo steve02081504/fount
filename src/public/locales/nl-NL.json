@@ -5955,7 +5955,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth-login",
-		"description": "Voltooi de OAuth-login voor de AI-bron. De ticketuitwisseling wordt aan de serverzijde voltooid.",
+		"description": "Voltooi de OAuth-login voor de AI-bron. De tokenuitwisseling wordt aan de serverzijde voltooid.",
 		"callback": {
 			"working": "Login afronden…",
 			"success": "Ingelogd. Je kunt deze pagina sluiten.",

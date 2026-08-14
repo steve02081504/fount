@@ -5949,7 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth-Anmeldung",
-		"description": "Vervollständigen Sie die OAuth-Anmeldung für die AI-Quelle. Der Ticketaustausch wird serverseitig abgeschlossen.",
+		"description": "Vervollständigen Sie die OAuth-Anmeldung für die AI-Quelle. Der Token-Austausch wird serverseitig abgeschlossen.",
 		"callback": {
 			"working": "Anmeldung wird abgeschlossen…",
 			"success": "Angemeldet. Sie können diese Seite schließen.",

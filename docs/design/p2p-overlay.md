@@ -30,20 +30,13 @@
 | Gossip | 群内在 overlay 就位前保留一跳 gossip 补位 |
 | 轮换 | kick / ban 事件自动轮换 `roomSecret` |
 
-## 落地概况
-
-**P0–P2 已完成**（link 层、link_registry、discovery、group_link_set、Chat 联邦）。**P3 overlay 路由**已在 `link_registry.mjs` 接入（`createOverlayRouter`，直连失败时 relay）。**P4 外围**（mDNS/BT discovery、subfounts 全量对齐）部分完成。
-
-要点：
+## 运行时要点
 
 - `ensureLinkToNode`：直连优先 → overlay relay → discovery → Mailbox。
-- Chat 群联邦经 `createGroupLinkSet`（`room.mjs`）；`FederationSlot` / `partitionBridge` 等为 chat 侧出站抽象，底层走 node/group scope envelope。
 - 发现层默认 `mdns` + `nostr`；BT 需 `FOUNT_ENABLE_BT_DISCOVERY=1`。
 - 房主在 `group_link_set.start()` 主动拉起 discovery，避免「只有自己一个成员」的暗房。
-- `group:` scope 与入站成员校验（见下「群 scope 成员与 bootstrap」）。
 - join 流携带 `introducerNodeHash`，减少纯 discovery 冷启动窗口。
-
-回归口径：`fount test p2p` + `shells/chat:fed_core fed_e2e_extended fed_dm`（`fed_dm` 长串后建议单独重跑）。
+- 回归：`fount test p2p` + `shells/chat:fed_core fed_e2e_extended fed_dm`。
 
 ## 分层
 

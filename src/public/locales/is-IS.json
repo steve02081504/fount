@@ -3866,7 +3866,7 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "Stilltu sjálfgefna AWS-auðkennisklasann og settu region í JSON."
+				"credentialsRequired": "Stilltu sjálfgefna AWS-auðkenniskeðjuna og settu region í JSON."
 			},
 			"vertex": {
 				"credentialsRequired": "Stilltu ADC og settu project og location í JSON."
@@ -5949,7 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth-innskráning",
-		"description": "Ljúktu við OAuth innskráninguna fyrir gervigreindargjafann. Miðaskiptum er lokið á miðlarahlið.",
+		"description": "Ljúktu við OAuth innskráninguna fyrir gervigreindargjafann. Token-skiptum er lokið á miðlarahlið.",
 		"callback": {
 			"working": "Lýkur innskráningu…",
 			"success": "Skráð inn. Þú getur lokað þessari síðu.",

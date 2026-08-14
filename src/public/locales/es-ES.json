@@ -5955,7 +5955,7 @@
 	},
 	"oauth_handler": {
 		"title": "Inicio de sesión OAuth",
-		"description": "Complete el inicio de sesión de OAuth para la fuente de IA. El intercambio de billetes se completa en el lado del servidor.",
+		"description": "Complete el inicio de sesión de OAuth para la fuente de IA. El intercambio de tokens se completa en el lado del servidor.",
 		"callback": {
 			"working": "Completando el inicio de sesión…",
 			"success": "Sesión iniciada. Puedes cerrar esta página.",

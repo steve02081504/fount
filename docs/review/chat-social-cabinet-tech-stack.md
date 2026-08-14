@@ -53,16 +53,6 @@
 
 ---
 
-## 三、分壳速览
-
-| 壳 | 强 | 弱 |
-| --- | --- | --- |
-| **Chat** | 实体模型统一；Hub stream/gestures；view-log 主读；ChatClient 工厂；channelActions 分槽；thread → messageSurface；`shared/*` 跨壳 | 相对 import 路径脆弱 |
-| **Social** | SocialClient 组合式；composer / mutedKeywords / CW 与 chat helpers 对齐 | 同左；Timeline 与 Chat DAG 无共享 |
-| **Cabinet** | 后端 oplog；前端 cabinetStore + 域模块 | — |
-
----
-
 ## 关联
 
 | 文档 | 关系 |

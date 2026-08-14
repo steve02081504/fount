@@ -5949,7 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "OAuth 登入",
-		"description": "成 AI 源之 OAuth 登入。換票於伺服。",
+		"description": "成 AI 源之 OAuth 登入。Token 交換於伺服端完成。",
 		"callback": {
 			"working": "成登入中…",
 			"success": "登入成，可關此頁。",

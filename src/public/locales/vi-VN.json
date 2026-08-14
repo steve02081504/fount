@@ -5949,7 +5949,7 @@
 	},
 	"oauth_handler": {
 		"title": "Đăng nhập OAuth",
-		"description": "Hoàn tất đăng nhập OAuth cho nguồn AI. Việc trao đổi vé được hoàn thành ở phía máy chủ.",
+		"description": "Hoàn tất đăng nhập OAuth cho nguồn AI. Việc trao đổi mã thông báo được hoàn thành ở phía máy chủ.",
 		"callback": {
 			"working": "Đang hoàn tất đăng nhập…",
 			"success": "Đăng nhập thành công. Có thể đóng trang này.",

@@ -47,7 +47,7 @@ Enforced by `agents_md_english`; writing rules: [docs/AGENTS.md](../../../docs/A
 - Tag-only blocks (`@param` / `@typedef` / … without a prose summary) are fine; empty `/** */` stubs are not a substitute for a real one-liner on re-exports.
 - List leftovers: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg).
 
-## HTML og meta 诗意
+## HTML og meta tone
 
-- 完整 HTML 的 `og:title` / `og:description` 宜有意象与修辞（参考 chat / login / wait 等已润色页）。
-- 列出全部 og meta：`deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_og_meta_poetic.mjs`（可选子路径）。提取逻辑：`og_meta_list.mjs`。
+- Full-page `og:title` / `og:description` should carry imagery and rhetoric (see polished pages such as chat / login / wait).
+- List all og meta: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_og_meta_poetic.mjs` (optional subpath). Extraction: `og_meta_list.mjs`.
