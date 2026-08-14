@@ -1,0 +1,7 @@
+# CI `fount remove` must not dump these. One regex per line; `#` comments.
+FullyQualifiedErrorId
+Entering debug mode
+\[DBG\]:
+Cannot bind argument to parameter
+The term 'deno' is not recognized
+No match was found for the specified search criteria

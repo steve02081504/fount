@@ -17,7 +17,6 @@ import {
 	skipBecauseUrlsForRun,
 	skipTreeDescendantKeys,
 } from '../core/skip_because.mjs'
-
 import { startTestKernel } from '../kernel/server.mjs'
 
 import { makeStateEntry, makeSuite } from './fixtures.mjs'
@@ -366,6 +365,10 @@ Deno.test('skip_because delay: closed within delay passes; expired fails', async
 		writeReport: false,
 	})
 	try {
+		/**
+		 * 模拟 issue 在 delay 窗口内仍视为跳过。
+		 * @returns {Promise<{ closed: boolean, closedAt: number }>} 假关单状态
+		 */
 		handle.kernel.issueCache.getState = async () => ({ closed: true, closedAt: Date.now() - 1000 })
 		const { end: within } = await enqueueAndAwaitSkip(
 			handle.kernel,
@@ -376,6 +379,10 @@ Deno.test('skip_because delay: closed within delay passes; expired fails', async
 		assertEquals(within?.skipBecause, [SKIP_URL])
 		assertEquals(within?.skipBecauseClosed ?? [], [])
 
+		/**
+		 * 模拟 issue 已关单且超出 delay。
+		 * @returns {Promise<{ closed: boolean, closedAt: number }>} 过期关单状态
+		 */
 		handle.kernel.issueCache.getState = async () => ({ closed: true, closedAt: Date.now() - 20 * 86_400_000 })
 		const { end: expired, job } = await enqueueAndAwaitSkip(
 			handle.kernel,

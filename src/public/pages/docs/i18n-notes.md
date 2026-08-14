@@ -37,3 +37,7 @@ Icon-only controls: locale `{ title, aria-label }` ([locale-edits.md](../../loca
 **Icon / empty `<label>` controls** (DaisyUI drawer toggle/overlay, file-upload chrome): axe forbids `aria-label` on bare `<label>`, and `role="button"` on `<label>` fails `aria-allowed-role`. Do **not** put `{ aria-label }` objects on the `<label>`. Use a **string** key on a child `<span class="sr-only" data-i18n="…">`; keep `{ title, aria-label }` for real `<button>`s. Drawer overlay + panel must sit inside one landmark (`aside.drawer-side`) so sr-only text does not trip `region`.
 
 Setting `data-i18n` (or inserting markup that has it) is enough — body MutationObserver runs `i18nElement`; do not call it again. Use `setElementI18n` only when the key is unchanged but interpolation params change.
+
+## Page ID title / description
+
+`initTranslations('foo')` always sets `document.title` from `foo.title`. If the document has `meta[name="description"]` (`checks:html_meta` requires it on full pages), it also `geti18n`s `foo.description` — a missing leaf is a Playwright `[i18n:missing]` hard-fail. Ship both keys with the page. Page watch cycles zh-CN → ja-JP → en-UK, so those three files need the string before PR locale sync.

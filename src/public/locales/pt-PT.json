@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Aviso: falha ao usar `lsregister` para registar um aplicativo com LaunchServices.",
 				"createDesktopAppFailed": "Erro: Falha ao criar aplicativo de desktop."
 			},
+			"steam": {
+				"registering": "A registar fount como jogo não Steam no Steam…",
+				"registered": "fount foi adicionado à sua biblioteca Steam. Se o Steam estiver em execução, reinicie-o para que a alteração tenha efeito.",
+				"failed": "Falha ao registar no Steam: ${message}",
+				"exeFailed": "Não foi possível gerar fount.exe; registo no Steam ignorado."
+			},
 			"git": {
 				"repoNotFound": "O repositório git da fount não foi encontrado. Inicializando um novo...",
 				"fetchingAndResetting": "Buscando do repositório remoto e redefinindo para master...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Instalando dependências...",
+				"compilingFavicon": "Ficheiro favicon não encontrado; a iniciar o servidor para compilar...",
 				"packageFailed": "Erro: Falha na instalação de ${package}.",
 				"browserMissing": "Navegador padrão não detectado, tentando instalar...",
 				"untrustedPartsWarning": "Não instale nenhum componente de fount não confiável em seu sistema, eles podem fazer qualquer coisa.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Atalho na área de trabalho não encontrado.",
 				"startMenuShortcutRemoved": "O atalho do menu Iniciar foi removido.",
 				"startMenuShortcutNotFound": "Atalho do menu Iniciar não encontrado.",
+				"steamShortcutRemoved": "fount foi removido da sua biblioteca Steam.",
+				"steamShortcutNotFound": "fount não foi encontrado no Steam.",
 				"moduleRemoved": "${module} foi removido.",
 				"uninstalling": {
 					"chrome": "Desinstalando o Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Removendo pacotes de sistema instalados...",
 					"protocolHandler": "Removendo o manipulador de protocolo `fount://`...",
 					"startMenuShortcut": "Removendo atalhos do menu Iniciar...",
+					"steamShortcut": "A remover fount do Steam…",
 					"terminalKeybindings": "A remover patch de atalhos do terminal...",
 					"terminalProfile": "Removendo o perfil do terminal do Windows..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Definições de grupo",
+					"description": "Gira a identidade do grupo, os membros, as permissões e as ferramentas que unem o palco partilhado.",
 					"kicker": "Definições de grupo",
 					"subtitle": "Gira informações do grupo, membros e funções comuns. Permissões de baixa frequência, armazenamento e ferramentas de auditoria são centralizadas em definições avançadas.",
 					"backToChat": "Voltar a chat",
@@ -3832,6 +3843,16 @@
 			"availableModels": "Modelos disponíveis:",
 			"copied": "Copiado!",
 			"apiKeyRequired": "Uma chave de API é necessária para listar modelos.",
+			"oauth": {
+				"login": "Iniciar sessão",
+				"logout": "Terminar sessão",
+				"loggedIn": "Sessão iniciada",
+				"notLoggedIn": "Sem sessão",
+				"waiting": "A aguardar autorização…",
+				"failed": "Falha no início de sessão: ${message}",
+				"deviceCode": "Abra ${uri} e introduza o código ${code}",
+				"credentialsRequired": "Os campos necessários dependem do fornecedor selecionado (region / project / location / account_id / gateway_id / API key; Azure OpenAI Responses: AZURE_OPENAI_API_KEY e endpoint). As credenciais também podem vir do ambiente."
+			},
 			"copyModelIdTooltip": "Clique para copiar o ID do modelo",
 			"loadModelsFailed": "Falha ao carregar modelo: ${message}",
 			"modelSearchTitle": "Explorar catálogo de modelos",
@@ -3858,6 +3879,14 @@
 				"releaseDate": "Data de lançamento: ${date}",
 				"toolCall": "Suporta chamadas de ferramentas",
 				"vision": "Suporta entrada visual"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Configure a cadeia de credenciais predefinida da AWS e defina region no JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Configure o ADC e defina project e location no JSON."
 			}
 		},
 		"prompts": {
@@ -5933,6 +5962,16 @@
 			"next": {
 				"aria-label": "Próximo"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Início de sessão OAuth",
+		"description": "Conclua o início de sessão OAuth para a fonte de IA. A troca de tokens é concluída no lado do servidor.",
+		"callback": {
+			"working": "A concluir o início de sessão…",
+			"success": "Sessão iniciada. Pode fechar esta página.",
+			"failed": "Falha no início de sessão: ${message}",
+			"missingParams": "O callback não tem code ou state."
 		}
 	}
 }

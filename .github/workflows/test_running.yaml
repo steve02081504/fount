@@ -38,7 +38,9 @@ jobs:
           export FOUNT_DIR="$PWD/fount"
           export FOUNT_BRANCH="${{ steps.extract_branch.outputs.branch }}"
           curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.sh | bash -s init
-          ./fount/path/fount.sh remove
+          ci=$(mktemp -d)
+          cp -R "$FOUNT_DIR/.github/path-ci/." "$ci/"
+          bash "$ci/run-remove-assert.sh" "$FOUNT_DIR/path/fount.sh"
 
       - name: test script (pwsh)
         if: runner.os == 'Windows'
@@ -49,7 +51,11 @@ jobs:
           $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
           Invoke-Expression "function fountInstaller { $scriptContent }"
           fountInstaller init
-          ./fount/path/fount.ps1 remove
+          $ci = Join-Path $env:TEMP "fount-remove-assert-$PID"
+          New-Item -ItemType Directory -Path $ci | Out-Null
+          Copy-Item -Recurse -Force "$env:FOUNT_DIR\.github\path-ci\*" $ci
+          & (Join-Path $ci 'run-remove-assert.ps1') -Fount (Join-Path $env:FOUNT_DIR 'path\fount.ps1')
+          if ($LastExitCode) { exit $LastExitCode }
 
       - name: test script (pwsh)
         if: runner.os != 'Windows'
@@ -60,13 +66,18 @@ jobs:
           $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
           Invoke-Expression "function fountInstaller { $scriptContent }"
           fountInstaller init
-          ./fount/path/fount.ps1 remove
+          $ci = Join-Path ([IO.Path]::GetTempPath()) "fount-remove-assert-$PID"
+          New-Item -ItemType Directory -Path $ci | Out-Null
+          Copy-Item -Recurse -Force "$env:FOUNT_DIR/.github/path-ci/*" $ci
+          & (Join-Path $ci 'run-remove-assert.ps1') -Fount (Join-Path $env:FOUNT_DIR 'path/fount.ps1')
+          if ($LastExitCode) { exit $LastExitCode }
 
   path-cmd-smoke:
     name: path CLI smoke
     timeout-minutes: 10
     env:
       FOUNT_REPO_ROOT: ${{ github.workspace }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
     strategy:
       fail-fast: false
       matrix:

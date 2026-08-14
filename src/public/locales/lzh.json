@@ -426,6 +426,12 @@
 				"lsregisterFailed": "警：以 `lsregister` 註冊應用於 LaunchServices 未遂",
 				"createDesktopAppFailed": "誤：桌面應用立未遂"
 			},
+			"steam": {
+				"registering": "正將 fount 註冊為 Steam 非 Steam 之戲…",
+				"registered": "fount 已入 Steam 戲庫。若 Steam 方運行，需重啟方見效。",
+				"failed": "Steam 註冊未遂：${message}",
+				"exeFailed": "fount.exe 未能生，已略 Steam 註冊。"
+			},
 			"git": {
 				"repoNotFound": "fount 之 git 倉庫未覓得，今新創之...",
 				"fetchingAndResetting": "正自遠端獲取，並重置於主...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "正置其依賴...",
+				"compilingFavicon": "網頁徽圖無存，正啟伺服以編之...",
 				"packageFailed": "誤：${package} 置未遂。",
 				"browserMissing": "未獲預設瀏覽器，試置之...",
 				"untrustedPartsWarning": "勿在系統置任何不受信之 fount 部件，其能行萬事",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "桌面快捷未覓得",
 				"startMenuShortcutRemoved": "開始綱目快捷已移除",
 				"startMenuShortcutNotFound": "開始綱目快捷未覓得",
+				"steamShortcutRemoved": "fount 已自 Steam 戲庫除之。",
+				"steamShortcutNotFound": "Steam 中未覓得 fount。",
 				"moduleRemoved": "${module} 已移除",
 				"uninstalling": {
 					"chrome": "正拔除 Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "正移除已裝之系統包...",
 					"protocolHandler": "正移除 `fount://` 協議...",
 					"startMenuShortcut": "正移除開始綱目快捷...",
+					"steamShortcut": "正自 Steam 除 fount…",
 					"terminalKeybindings": "正移除終端按鍵綁定之修補…",
 					"terminalProfile": "正移除 Windows Terminal Profile..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "群組樞機",
+					"description": "理群之身分、成員、權限與共臺之器。",
 					"kicker": "群組管理",
 					"subtitle": "掌群簿牒、成員與常用之法。低頻之權限、庫藏與審計，彙於樞機之制。",
 					"backToChat": "返聊天",
@@ -3396,7 +3407,7 @@
 				"reasoningDetailsTitle": "推演本末",
 				"logprobsNotApplicable": "無涉",
 				"logprobsTopLogprobsMeta": "top_logprobs（所揀：${token}）",
-				"logprobsMetricsFooter": "首詞元遲延: ${ttft} | 歷時: ${time} | 詞元: ${tokens} | 速率: ${speed}",
+				"logprobsMetricsFooter": "首文元遲延: ${ttft} | 歷時: ${time} | 文元: ${tokens} | 速率: ${speed}",
 				"noReplyContent": "（未有覆言）",
 				"feedback": {
 					"thumbsUp": {
@@ -3826,6 +3837,16 @@
 			"availableModels": "現有法式：",
 			"copied": "已謄。",
 			"apiKeyRequired": "需憑符鑰方可列出模組。",
+			"oauth": {
+				"login": "登入",
+				"logout": "登出",
+				"loggedIn": "已登入",
+				"notLoggedIn": "未登入",
+				"waiting": "待授權…",
+				"failed": "登入敗：${message}",
+				"deviceCode": "啟 ${uri} 並入碼 ${code}",
+				"credentialsRequired": "於 JSON 填所需欄（region / project / location / account_id / gateway_id / API key）。憑據亦可出環境變數。"
+			},
 			"copyModelIdTooltip": "觸以錄模組 ID",
 			"loadModelsFailed": "載模組未遂：${message}",
 			"modelSearchTitle": "覽模冊",
@@ -3841,17 +3862,25 @@
 			},
 			"meta": {
 				"cachePrice": "緩存讀寫：${read} / ${write}",
-				"context": "文脈：${context} tokens",
-				"inputPrice": "輸入價：${price} / 1M tokens",
+				"context": "文脈：${context} 文元",
+				"inputPrice": "輸入價：${price} / 1M 文元",
 				"knowledge": "見聞止於：${knowledge}",
 				"modalities": "模態：輸入 ${input}，輸出 ${output}",
 				"openWeights": "權重開放",
-				"outputLimit": "最大輸出：${output} tokens",
-				"outputPrice": "輸出價：${price} / 1M tokens",
+				"outputLimit": "最大輸出：${output} 文元",
+				"outputPrice": "輸出價：${price} / 1M 文元",
 				"reasoning": "通推理",
 				"releaseDate": "發佈之日：${date}",
 				"toolCall": "通工具喚起",
 				"vision": "通視覺輸入"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "當設 AWS 默認憑據鏈，於 JSON 填 region。"
+			},
+			"vertex": {
+				"credentialsRequired": "當設 ADC，於 JSON 填 project 與 location。"
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "下一項"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth 登入",
+		"description": "成 AI 源之 OAuth 登入。Token 交換於伺服端完成。",
+		"callback": {
+			"working": "成登入中…",
+			"success": "登入成，可關此頁。",
+			"failed": "登入敗：${message}",
+			"missingParams": "回調缺 code 或 state。"
 		}
 	}
 }

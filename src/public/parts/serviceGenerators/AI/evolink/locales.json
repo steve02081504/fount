@@ -194,7 +194,7 @@
 			"name": "Evolink",
 			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
 			"description": "Evolink",
-			"description_markdown": "接 Evolink 之 OpenAI 相容 LLM 端點，並支持 Anthropic Messages API。模型甚夥，含 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"description_markdown": "接 Evolink 之 OpenAI 相容宏文端點，並支持 Anthropic Messages API。模型甚夥，含 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -497,7 +497,7 @@
 		"lzh": {
 			"avatar": "https://api.iconify.design/mdi/link-variant.svg",
 			"description": "Evolink",
-			"description_markdown": "接 Evolink 之 OpenAI 相容 LLM 端點，並支持 Anthropic Messages API。模型甚夥，含 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
+			"description_markdown": "接 Evolink 之 OpenAI 相容宏文端點，並支持 Anthropic Messages API。模型甚夥，含 GPT-5.5、Claude、Gemini 3.x、DeepSeek V4 等。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

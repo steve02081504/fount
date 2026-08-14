@@ -10,7 +10,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 
 | Suite | Enforces |
 | --- | --- |
-| `html_meta` | HTML meta / landmarks / `drawer-toggle` / aside ARIA |
+| `html_meta` | HTML meta / landmarks / `drawer-toggle` / aside ARIA; `og_meta_list` `under` prefix filter |
 | `info` | parts `locales.json` / `achievements_registry.json` info + remote icon URL |
 | `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN + emoji.json must not carry Han/kana/Cyrillic |
 | `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
@@ -46,3 +46,8 @@ Enforced by `agents_md_english`; writing rules: [docs/AGENTS.md](../../../docs/A
 - Summaries must be Chinese (contain CJK). Pure-English summaries fail.
 - Tag-only blocks (`@param` / `@typedef` / … without a prose summary) are fine; empty `/** */` stubs are not a substitute for a real one-liner on re-exports.
 - List leftovers: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg).
+
+## HTML og meta tone
+
+- Full-page `og:title` / `og:description` should carry imagery and rhetoric (see polished pages such as chat / login / wait).
+- List all og meta: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_og_meta_poetic.mjs` (optional subpath). Extraction: `og_meta_list.mjs`.

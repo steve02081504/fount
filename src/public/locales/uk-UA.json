@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Попередження: використання `lsregister` для реєстрації програми в LaunchServices не вдалося.",
 				"createDesktopAppFailed": "Помилка: не вдалося створити настільну програму."
 			},
+			"steam": {
+				"registering": "Реєстрація fount як не-Steam-гри в Steam…",
+				"registered": "fount додано до вашої бібліотеки Steam. Якщо Steam запущено, перезапустіть його, щоб зміни набули чинності.",
+				"failed": "Помилка реєстрації в Steam: ${message}",
+				"exeFailed": "Не вдалося створити fount.exe; реєстрацію в Steam пропущено."
+			},
 			"git": {
 				"repoNotFound": "Git-репозиторій fountу не знайдено. Ініціалізація нового...",
 				"fetchingAndResetting": "Отримання з віддаленого сховища та скидання до основного...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Встановлення залежностей...",
+				"compilingFavicon": "Файл favicon не знайдено; запускаємо сервер для компіляції...",
 				"packageFailed": "Помилка: не вдалося встановити ${package}.",
 				"browserMissing": "Браузер за умовчанням не виявлено, намагаюся встановити...",
 				"untrustedPartsWarning": "Не встановлюйте ненадійні компоненти fount у вашу систему, вони можуть зробити все, що завгодно.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Ярлик на робочому столі не знайдено.",
 				"startMenuShortcutRemoved": "Ярлик меню «Пуск» видалено.",
 				"startMenuShortcutNotFound": "Ярлик меню «Пуск» не знайдено.",
+				"steamShortcutRemoved": "fount видалено з бібліотеки Steam.",
+				"steamShortcutNotFound": "fount не знайдено в Steam.",
 				"moduleRemoved": "${module} видалено.",
 				"uninstalling": {
 					"chrome": "Видалення Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Видалення встановлених системних пакетів...",
 					"protocolHandler": "Видалення обробника протоколу `fount://`...",
 					"startMenuShortcut": "Видалення ярликів меню «Пуск»...",
+					"steamShortcut": "Видалення fount із Steam…",
 					"terminalKeybindings": "Видалення патча прив'язок клавіш термінала…",
 					"terminalProfile": "Видалення профілю Windows Terminal..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Налаштування групи",
+					"description": "Керуйте ідентичністю групи, учасниками, правами та інструментами спільної сцени.",
 					"kicker": "Налаштування групи",
 					"subtitle": "Керуйте інформацією про групу, учасниками та загальними функціями. Низькочастотні дозволи, сховище та інструменти аудиту централізовані в розширених налаштуваннях.",
 					"backToChat": "Повернутися до чату",
@@ -3826,6 +3837,16 @@
 			"availableModels": "Доступні моделі:",
 			"copied": "Скопійовано!",
 			"apiKeyRequired": "Для переліку моделей потрібен ключ API.",
+			"oauth": {
+				"login": "Увійти",
+				"logout": "Вийти",
+				"loggedIn": "Увійшли",
+				"notLoggedIn": "Не увійшли",
+				"waiting": "Очікування авторизації…",
+				"failed": "Помилка входу: ${message}",
+				"deviceCode": "Відкрийте ${uri} і введіть код ${code}",
+				"credentialsRequired": "Потрібні поля залежать від постачальника (region / project / location / account_id / gateway_id / API key; Azure OpenAI Responses: AZURE_OPENAI_API_KEY і endpoint). Облікові дані також можуть бути в змінних середовища."
+			},
 			"copyModelIdTooltip": "Натисніть, щоб скопіювати ідентифікатор моделі",
 			"loadModelsFailed": "Не вдалося завантажити модель: ${message}",
 			"modelSearchTitle": "Каталог моделей",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "Дата випуску: ${date}",
 				"toolCall": "Підтримує виклик інструментів",
 				"vision": "Підтримує візуальний ввід"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Налаштуйте стандартний ланцюжок облікових даних AWS і вкажіть region у JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Налаштуйте ADC і вкажіть project та location у JSON."
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "Наступне медіа"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Вхід OAuth",
+		"description": "Завершіть вхід OAuth для джерела AI. Обмін токенів завершується на стороні сервера.",
+		"callback": {
+			"working": "Завершення входу…",
+			"success": "Вхід виконано. Можна закрити сторінку.",
+			"failed": "Помилка входу: ${message}",
+			"missingParams": "У callback немає code або state."
 		}
 	}
 }

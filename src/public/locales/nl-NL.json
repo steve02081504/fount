@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Waarschuwing: het gebruik van `lsregister` om een ​​applicatie te registreren bij LaunchServices is mislukt.",
 				"createDesktopAppFailed": "Fout: Kan bureaubladtoepassing niet maken."
 			},
+			"steam": {
+				"registering": "fount wordt geregistreerd als niet-Steam-spel in Steam…",
+				"registered": "fount is toegevoegd aan je Steam-bibliotheek. Start Steam opnieuw als het draait, zodat de wijziging van kracht wordt.",
+				"failed": "Steam-registratie mislukt: ${message}",
+				"exeFailed": "fount.exe kon niet worden gegenereerd; Steam-registratie overgeslagen."
+			},
 			"git": {
 				"repoNotFound": "De git-repository van fount is niet gevonden. Een nieuwe initialiseren...",
 				"fetchingAndResetting": "Ophalen uit externe opslagplaats en opnieuw instellen op master...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Afhankelijkheden installeren...",
+				"compilingFavicon": "Faviconbestand niet gevonden; server wordt gestart om te compileren...",
 				"packageFailed": "Fout: Installatie van ${package} is mislukt.",
 				"browserMissing": "Standaardbrowser niet gedetecteerd, probeert te installeren...",
 				"untrustedPartsWarning": "Installeer geen onbetrouwbare fountcomponenten op uw systeem; deze kunnen alles doen.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Snelkoppeling op het bureaublad niet gevonden.",
 				"startMenuShortcutRemoved": "De snelkoppeling naar het startmenu is verwijderd.",
 				"startMenuShortcutNotFound": "Snelkoppeling naar startmenu niet gevonden.",
+				"steamShortcutRemoved": "fount is verwijderd uit je Steam-bibliotheek.",
+				"steamShortcutNotFound": "fount is niet gevonden in Steam.",
 				"moduleRemoved": "${module} is verwijderd.",
 				"uninstalling": {
 					"chrome": "Chrome verwijderen...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Geïnstalleerde systeempakketten verwijderen...",
 					"protocolHandler": "Fot:// protocolhandler verwijderen...",
 					"startMenuShortcut": "Snelkoppelingen naar het startmenu verwijderen...",
+					"steamShortcut": "fount wordt uit Steam verwijderd…",
 					"terminalKeybindings": "Terminal-toetsenpatch wordt verwijderd...",
 					"terminalProfile": "Windows Terminal-profiel verwijderen..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Groepsinstellingen",
+					"description": "Beheer de identiteit, leden, rechten en de tools die jullie gedeelde podium verbinden.",
 					"kicker": "Groepsbeheer",
 					"subtitle": "Beheer groepsinformatie, leden en gemeenschappelijke functies. Laagfrequente machtigingen, opslag en auditingtools zijn gecentraliseerd in geavanceerde instellingen.",
 					"backToChat": "Terug naar chat",
@@ -3832,6 +3843,16 @@
 			"availableModels": "Beschikbare modellen:",
 			"copied": "Gekopieerd!",
 			"apiKeyRequired": "Om modellen weer te geven is een API-sleutel vereist.",
+			"oauth": {
+				"login": "Inloggen",
+				"logout": "Uitloggen",
+				"loggedIn": "Ingelogd",
+				"notLoggedIn": "Niet ingelogd",
+				"waiting": "Wachten op autorisatie…",
+				"failed": "Inloggen mislukt: ${message}",
+				"deviceCode": "Open ${uri} en voer code ${code} in",
+				"credentialsRequired": "Vul de vereiste JSON-velden in (region / project / location / account_id / gateway_id / API key). Credentials kunnen ook uit omgevingsvariabelen komen."
+			},
 			"copyModelIdTooltip": "Klik om de model-ID te kopiëren",
 			"loadModelsFailed": "Kan model niet laden: ${message}",
 			"modelSearchTitle": "Modelcatalogus doorbladeren",
@@ -3858,6 +3879,14 @@
 				"releaseDate": "Releasedatum: ${date}",
 				"toolCall": "Ondersteunt tool-aanroepen",
 				"vision": "Ondersteunt visuele invoer"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Configureer de standaard AWS-referentieketen en vul region in het JSON in."
+			},
+			"vertex": {
+				"credentialsRequired": "Configureer ADC en vul project en location in het JSON in."
 			}
 		},
 		"prompts": {
@@ -5933,6 +5962,16 @@
 			"next": {
 				"aria-label": "Volgend item"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth-login",
+		"description": "Voltooi de OAuth-login voor de AI-bron. De tokenuitwisseling wordt aan de serverzijde voltooid.",
+		"callback": {
+			"working": "Login afronden…",
+			"success": "Ingelogd. Je kunt deze pagina sluiten.",
+			"failed": "Inloggen mislukt: ${message}",
+			"missingParams": "Callback mist code of state."
 		}
 	}
 }

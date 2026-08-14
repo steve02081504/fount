@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Warnung: Die Verwendung von `lsregister` zum Registrieren einer Anwendung bei LaunchServices ist fehlgeschlagen.",
 				"createDesktopAppFailed": "Fehler: Desktop-Anwendung konnte nicht erstellt werden."
 			},
+			"steam": {
+				"registering": "fount wird als Nicht-Steam-Spiel in Steam registriert…",
+				"registered": "fount wurde zur Steam-Bibliothek hinzugefügt. Starten Sie Steam neu, falls es ausgeführt wird, damit die Änderung wirksam wird.",
+				"failed": "Steam-Registrierung fehlgeschlagen: ${message}",
+				"exeFailed": "fount.exe konnte nicht erstellt werden; Steam-Registrierung übersprungen."
+			},
 			"git": {
 				"repoNotFound": "Das Git-Repository von fount wurde nicht gefunden. Eine neue initialisieren...",
 				"fetchingAndResetting": "Vom Remote-Repository abrufen und auf Master zurücksetzen ...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Abhängigkeiten werden installiert...",
+				"compilingFavicon": "Favicon-Datei nicht gefunden; Server wird gestartet, um sie zu erzeugen...",
 				"packageFailed": "Fehler: Die Installation von ${package} ist fehlgeschlagen.",
 				"browserMissing": "Standardbrowser nicht erkannt, Installation wird versucht...",
 				"untrustedPartsWarning": "Installieren Sie keine nicht vertrauenswürdigen Quellkomponenten auf Ihrem System, sie können alles bewirken.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Desktop-Verknüpfung nicht gefunden.",
 				"startMenuShortcutRemoved": "Die Verknüpfung im Startmenü wurde entfernt.",
 				"startMenuShortcutNotFound": "Startmenüverknüpfung nicht gefunden.",
+				"steamShortcutRemoved": "fount wurde aus der Steam-Bibliothek entfernt.",
+				"steamShortcutNotFound": "fount wurde in Steam nicht gefunden.",
 				"moduleRemoved": "${module} wurde entfernt.",
 				"uninstalling": {
 					"chrome": "Chrome wird deinstalliert...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Installierte Systempakete werden entfernt...",
 					"protocolHandler": "`fount://`-Protokollhandler wird entfernt...",
 					"startMenuShortcut": "Startmenü-Verknüpfungen werden entfernt...",
+					"steamShortcut": "fount wird aus Steam entfernt…",
 					"terminalKeybindings": "Terminal-Tastenkürzel-Patch wird entfernt...",
 					"terminalProfile": "Windows-Terminalprofil wird entfernt..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Gruppeneinstellungen",
+					"description": "Verwalten Sie Identität, Mitglieder, Berechtigungen und die Werkzeuge, die Ihre gemeinsame Bühne verbinden.",
 					"kicker": "Gruppenleitung",
 					"subtitle": "Verwalten Sie Gruppeninformationen, Mitglieder und allgemeine Funktionen. Low-Frequency-Berechtigungen, Speicher und Überwachungstools sind in erweiterten Einstellungen zentralisiert.",
 					"backToChat": "Zurück zum Chat",
@@ -3826,6 +3837,16 @@
 			"availableModels": "Verfügbare Modelle:",
 			"copied": "Kopiert!",
 			"apiKeyRequired": "Zum Auflisten von Modellen ist ein API-Schlüssel erforderlich.",
+			"oauth": {
+				"login": "Anmelden",
+				"logout": "Abmelden",
+				"loggedIn": "Angemeldet",
+				"notLoggedIn": "Nicht angemeldet",
+				"waiting": "Bitte warten Sie auf die Autorisierung…",
+				"failed": "Anmeldung fehlgeschlagen: ${message}",
+				"deviceCode": "Öffnen Sie ${uri} und geben Sie den Code ${code} ein",
+				"credentialsRequired": "Füllen Sie die erforderlichen JSON-Felder aus (region / project / location / account_id / gateway_id / API key). Zugangsdaten können auch aus Umgebungsvariablen kommen."
+			},
 			"copyModelIdTooltip": "Klicken Sie, um die Modell-ID zu kopieren",
 			"loadModelsFailed": "Modell konnte nicht geladen werden: ${message}",
 			"modelSearchTitle": "Modellkatalog durchstöbern",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "Veröffentlichungsdatum: ${date}",
 				"toolCall": "Unterstützt Tool-Aufrufe",
 				"vision": "Unterstützt visuelle Eingabe"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Richten Sie die standardmäßige AWS-Anmeldeinformationskette ein und tragen Sie region im JSON ein."
+			},
+			"vertex": {
+				"credentialsRequired": "Richten Sie Application Default Credentials (ADC) ein und tragen Sie project und location im JSON ein."
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "Nächstes Bild"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth-Anmeldung",
+		"description": "Vervollständigen Sie die OAuth-Anmeldung für die AI-Quelle. Der Token-Austausch wird serverseitig abgeschlossen.",
+		"callback": {
+			"working": "Anmeldung wird abgeschlossen…",
+			"success": "Angemeldet. Sie können diese Seite schließen.",
+			"failed": "Anmeldung fehlgeschlagen: ${message}",
+			"missingParams": "Callback fehlt code oder state."
 		}
 	}
 }

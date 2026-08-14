@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "frontend",
+			"expected": "45s",
 			"run": [
 				"deno",
 				"run",
@@ -26,7 +27,8 @@
 						".github/pages/test/frontend/smoke.spec.mjs",
 						".github/pages/index.html",
 						".github/pages/base.mjs",
-						".github/pages/wait/install/**"
+						".github/pages/wait/install/**",
+						".github/pages/oauth/callback/**"
 					]
 				}
 			]

@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Cảnh báo: Không thể sử dụng `lsregister` để đăng ký ứng dụng với LaunchServices.",
 				"createDesktopAppFailed": "Lỗi: Không tạo được ứng dụng dành cho máy tính để bàn."
 			},
+			"steam": {
+				"registering": "Đang đăng ký fount là trò chơi không phải Steam trong Steam…",
+				"registered": "fount đã được thêm vào thư viện Steam của bạn. Nếu Steam đang chạy, hãy khởi động lại để thay đổi có hiệu lực.",
+				"failed": "Đăng ký Steam thất bại: ${message}",
+				"exeFailed": "Không thể tạo fount.exe; đã bỏ qua đăng ký Steam."
+			},
 			"git": {
 				"repoNotFound": "Không tìm thấy kho git của fount. Đang khởi tạo một cái mới...",
 				"fetchingAndResetting": "Đang tìm nạp từ kho lưu trữ từ xa và đặt lại về kho chính...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Đang cài đặt các phần phụ thuộc...",
+				"compilingFavicon": "Không tìm thấy favicon; đang khởi động máy chủ để biên dịch...",
 				"packageFailed": "Lỗi: Cài đặt ${package} không thành công.",
 				"browserMissing": "Không tìm thấy trình duyệt mặc định, đang cố gắng cài đặt...",
 				"untrustedPartsWarning": "Không cài đặt bất kỳ thành phần nguồn không đáng tin cậy nào trên hệ thống của bạn, chúng có thể làm bất cứ điều gì.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Không tìm thấy lối tắt trên màn hình.",
 				"startMenuShortcutRemoved": "Phím tắt menu bắt đầu đã bị xóa.",
 				"startMenuShortcutNotFound": "Không tìm thấy lối tắt menu bắt đầu.",
+				"steamShortcutRemoved": "fount đã được xóa khỏi thư viện Steam của bạn.",
+				"steamShortcutNotFound": "Không tìm thấy fount trong Steam.",
 				"moduleRemoved": "${module} đã bị xóa.",
 				"uninstalling": {
 					"chrome": "Đang gỡ cài đặt Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Đang xóa các gói hệ thống đã cài đặt...",
 					"protocolHandler": "Đang xóa trình xử lý giao thức `fount://`...",
 					"startMenuShortcut": "Đang xóa các phím tắt menu bắt đầu...",
+					"steamShortcut": "Đang xóa fount khỏi Steam…",
 					"terminalKeybindings": "Đang gỡ bản vá phím tắt terminal...",
 					"terminalProfile": "Đang xóa cấu hình thiết bị đầu cuối Windows..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Cài đặt nhóm",
+					"description": "Quản lý danh tính nhóm, thành viên, quyền hạn và các công cụ chung.",
 					"kicker": "Quản lý nhóm",
 					"subtitle": "Quản lý thông tin nhóm, thành viên và chức năng chung. Các công cụ cấp phép, lưu trữ và kiểm tra tần số thấp được tập trung trong cài đặt nâng cao.",
 					"backToChat": "Quay lại trò chuyện",
@@ -3826,6 +3837,16 @@
 			"availableModels": "Các mô hình có sẵn:",
 			"copied": "Đã sao chép!",
 			"apiKeyRequired": "Cần có khóa API để liệt kê các mô hình.",
+			"oauth": {
+				"login": "Đăng nhập",
+				"logout": "Đăng xuất",
+				"loggedIn": "Đã đăng nhập",
+				"notLoggedIn": "Chưa đăng nhập",
+				"waiting": "Đang chờ ủy quyền…",
+				"failed": "Đăng nhập thất bại: ${message}",
+				"deviceCode": "Mở ${uri} và nhập mã ${code}",
+				"credentialsRequired": "Điền các trường JSON cần thiết (region / project / location / account_id / gateway_id / API key). Thông tin xác thực cũng có thể lấy từ biến môi trường."
+			},
 			"copyModelIdTooltip": "Nhấp để sao chép ID mẫu",
 			"loadModelsFailed": "Không tải được mô hình: ${message}",
 			"modelSearchTitle": "Duyệt danh mục mô hình",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "Ngày phát hành: ${date}",
 				"toolCall": "Hỗ trợ gọi công cụ",
 				"vision": "Hỗ trợ đầu vào hình ảnh"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Cấu hình chuỗi thông tin xác thực mặc định của AWS và đặt region trong JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Cấu hình ADC, rồi đặt project và location trong JSON."
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "Tiếp theo"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Đăng nhập OAuth",
+		"description": "Hoàn tất đăng nhập OAuth cho nguồn AI. Việc trao đổi mã thông báo được hoàn thành ở phía máy chủ.",
+		"callback": {
+			"working": "Đang hoàn tất đăng nhập…",
+			"success": "Đăng nhập thành công. Có thể đóng trang này.",
+			"failed": "Đăng nhập thất bại: ${message}",
+			"missingParams": "Callback thiếu code hoặc state."
 		}
 	}
 }

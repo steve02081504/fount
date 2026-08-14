@@ -426,6 +426,12 @@
 				"lsregisterFailed": "警告: `lsregister` を使用してアプリケーションを LaunchServices に登録することに失敗しました。",
 				"createDesktopAppFailed": "エラー: デスクトップ アプリケーションの作成に失敗しました。"
 			},
+			"steam": {
+				"registering": "fount を Steam の非 Steam ゲームとして登録しています…",
+				"registered": "fount を Steam ライブラリに追加しました。Steam が起動中の場合は、反映させるために再起動してください。",
+				"failed": "Steam への登録に失敗しました: ${message}",
+				"exeFailed": "fount.exe を生成できなかったため、Steam への登録をスキップしました。"
+			},
 			"git": {
 				"repoNotFound": "Font の git リポジトリが見つかりませんでした。新しいものを初期化しています...",
 				"fetchingAndResetting": "リモートリポジトリから取得してマスターにリセットしています...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "依存関係をインストールしています...",
+				"compilingFavicon": "ファビコンが見つかりません。サーバーを起動して生成しています...",
 				"packageFailed": "エラー: ${package} のインストールに失敗しました。",
 				"browserMissing": "デフォルトのブラウザが検出されません。インストールしようとしています...",
 				"untrustedPartsWarning": "信頼できない fount コンポーネントはシステムにインストールしないでください。コンポーネントは何でもできるからです。",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "デスクトップショートカットが見つかりません。",
 				"startMenuShortcutRemoved": "「スタート」メニューのショートカットが削除されました。",
 				"startMenuShortcutNotFound": "[スタート] メニューのショートカットが見つかりません。",
+				"steamShortcutRemoved": "fount を Steam ライブラリから削除しました。",
+				"steamShortcutNotFound": "Steam に fount が見つかりませんでした。",
 				"moduleRemoved": "${module} が削除されました。",
 				"uninstalling": {
 					"chrome": "Chrome をアンインストールしています...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "インストールされているシステム パッケージを削除しています...",
 					"protocolHandler": "`fount://` プロトコル ハンドラーを削除しています...",
 					"startMenuShortcut": "スタート メニューのショートカットを削除しています...",
+					"steamShortcut": "Steam から fount を削除しています…",
 					"terminalKeybindings": "ターミナルのキーバインドパッチを削除しています...",
 					"terminalProfile": "Windows ターミナル プロファイルを削除しています..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "グループ設定",
+					"description": "グループの身元、メンバー、権限、そして共有スペースを支える各種ツールを管理します。",
 					"kicker": "グループ経営",
 					"subtitle": "グループ情報、メンバー、共通機能を管理します。低頻度のアクセス許可、ストレージ、監査ツールは詳細設定に一元化されています。",
 					"backToChat": "チャットに戻る",
@@ -3826,6 +3837,16 @@
 			"availableModels": "利用可能なモデル:",
 			"copied": "コピーしました！",
 			"apiKeyRequired": "モデルをリストするには API キーが必要です。",
+			"oauth": {
+				"login": "ログイン",
+				"logout": "ログアウト",
+				"loggedIn": "ログイン済み",
+				"notLoggedIn": "未ログイン",
+				"waiting": "承認待ち…",
+				"failed": "ログイン失敗：${message}",
+				"deviceCode": "${uri} を開き、コード ${code} を入力してください",
+				"credentialsRequired": "JSON に必要な項目（region / project / location / account_id / gateway_id / API key など）を記入してください。資格情報は環境変数でも渡せます。"
+			},
 			"copyModelIdTooltip": "クリックしてモデル ID をコピーします",
 			"loadModelsFailed": "モデルの読み込みに失敗しました: ${message}",
 			"modelSearchTitle": "モデルカタログを閲覧",
@@ -3852,6 +3873,14 @@
 				"releaseDate": "リリース日: ${date}",
 				"toolCall": "ツール呼び出し対応",
 				"vision": "視覚入力対応"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "AWS のデフォルト認証情報チェーンを設定し、JSON に region を記入してください。"
+			},
+			"vertex": {
+				"credentialsRequired": "ADC を設定し、JSON に project と location を記入してください。"
 			}
 		},
 		"prompts": {
@@ -5927,6 +5956,16 @@
 			"next": {
 				"aria-label": "次へ"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "OAuth ログイン",
+		"description": "AI プロバイダの OAuth ログインを完了します。トークン交換はサーバー側で行います。",
+		"callback": {
+			"working": "ログインを完了しています…",
+			"success": "ログインしました。このページを閉じてください。",
+			"failed": "ログイン失敗：${message}",
+			"missingParams": "コールバックに code または state がありません。"
 		}
 	}
 }

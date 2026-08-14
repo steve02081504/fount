@@ -409,6 +409,12 @@ export type LocaleData = {
 				lsregisterFailed: string
 				createDesktopAppFailed: string
 			}
+			steam: {
+				registering: string
+				registered: string
+				failed: string
+				exeFailed: string
+			}
 			git: {
 				repoNotFound: string
 				fetchingAndResetting: string
@@ -448,6 +454,7 @@ export type LocaleData = {
 			}
 			install: {
 				installingDependencies: string
+				compilingFavicon: string
 				packageFailed: string
 				browserMissing: string
 				untrustedPartsWarning: string
@@ -487,6 +494,8 @@ export type LocaleData = {
 				desktopShortcutNotFound: string
 				startMenuShortcutRemoved: string
 				startMenuShortcutNotFound: string
+				steamShortcutRemoved: string
+				steamShortcutNotFound: string
 				moduleRemoved: string
 				uninstalling: {
 					chrome: string
@@ -509,6 +518,7 @@ export type LocaleData = {
 					installedSystemPackages: string
 					protocolHandler: string
 					startMenuShortcut: string
+					steamShortcut: string
 					terminalKeybindings: string
 					terminalProfile: string
 				}
@@ -1425,6 +1435,7 @@ export type LocaleData = {
 				}
 				page: {
 					title: string
+					description: string
 					kicker: string
 					subtitle: string
 					backToChat: string
@@ -3794,6 +3805,16 @@ export type LocaleData = {
 			availableModels: string
 			copied: string
 			apiKeyRequired: string
+			oauth: {
+				login: string
+				logout: string
+				loggedIn: string
+				notLoggedIn: string
+				waiting: string
+				failed: string
+				deviceCode: string
+				credentialsRequired: string
+			}
 			copyModelIdTooltip: string
 			loadModelsFailed: string
 			modelSearchTitle: string
@@ -3820,6 +3841,14 @@ export type LocaleData = {
 				releaseDate: string
 				toolCall: string
 				vision: string
+			}
+		}
+		platforms: {
+			bedrock: {
+				credentialsRequired: string
+			}
+			vertex: {
+				credentialsRequired: string
 			}
 		}
 		prompts: {
@@ -5897,6 +5926,16 @@ export type LocaleData = {
 			}
 		}
 	}
+	oauth_handler: {
+		title: string
+		description: string
+		callback: {
+			working: string
+			success: string
+			failed: string
+			missingParams: string
+		}
+	}
 }
 // 用于从嵌套对象生成点表示法键的实用类型。
 type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ...0[]]
@@ -6220,6 +6259,7 @@ export type LocaleKeyParams = {
 	'fountConsole.path.shortcut.desktopShortcutCreated': { path: string | number }
 	'fountConsole.path.shortcut.shortcutNotSupported': { os: string | number }
 	'fountConsole.path.shortcut.startMenuShortcutCreated': { path: string | number }
+	'fountConsole.path.steam.failed': { message: string | number }
 	'fountConsole.path.terminalKeybindings.editorRemoved': { path: string | number }
 	'fountConsole.path.terminalKeybindings.wtPatchFailed': { message: string | number; path: string | number }
 	'fountConsole.path.terminalKeybindings.wtRemoved': { path: string | number }
@@ -6349,6 +6389,7 @@ export type LocaleKeyParams = {
 	'log_viewer.logs.openSourceFailed': { message: string | number }
 	'login_info.modal.retrieve_error': { error: string | number }
 	'login_info.modal.transfer_error': { error: string | number }
+	'oauth_handler.callback.failed': { message: string | number }
 	'part_config.alerts.loadEditorFailed': { message: string | number }
 	'part_config.alerts.saveConfigFailed': { message: string | number }
 	'protocolhandler.offline_dialog.message': { hostUrl: string | number }
@@ -6377,6 +6418,8 @@ export type LocaleKeyParams = {
 	'serviceSource_manager.common_config_interface.meta.outputPrice': { price: string | number }
 	'serviceSource_manager.common_config_interface.meta.releaseDate': { date: string | number }
 	'serviceSource_manager.common_config_interface.modelsDevLoadFailed': { message: string | number }
+	'serviceSource_manager.common_config_interface.oauth.deviceCode': { code: string | number; uri: string | number }
+	'serviceSource_manager.common_config_interface.oauth.failed': { message: string | number }
 	'serviceSource_manager.common_config_interface.providerDocLink': { url: string | number }
 	'serviceSource_manager.common_config_interface.providerLabel': { provider: string | number }
 	'social.actions.blockFailed': { error: string | number }

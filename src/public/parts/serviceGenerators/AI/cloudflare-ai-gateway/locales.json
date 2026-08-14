@@ -1,0 +1,574 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway (account-bound, not OpenRouter).",
+			"description_markdown": "Routes by model prefix: `openai/` → OpenAI, `anthropic/` → Anthropic Messages, else the compat channel. Auth uses `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"zh-CN": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway（账号绑定，不是 OpenRouter）。",
+			"description_markdown": "按模型前缀分流：`openai/` 走 OpenAI，`anthropic/` 走 Anthropic Messages，其余走 compat。鉴权头 `cf-aig-authorization`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"ar-SA": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "بوابة AI من Cloudflare مرتبطة بالحساب.",
+			"description_markdown": "التوجيه حسب بادئة النموذج. التوثيق بـ `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"de-DE": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway (kontogebunden).",
+			"description_markdown": "Routing nach Modellpräfix. Auth über `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ki"
+			]
+		},
+		"emoji": {
+			"name": "🟠🚪",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "🔑➡️🚪",
+			"description_markdown": "🟠🚪➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"🟠",
+				"🚪",
+				"🔑"
+			]
+		},
+		"es-ES": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway de Cloudflare (ligado a la cuenta).",
+			"description_markdown": "Enruta por prefijo de modelo. Auth con `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ia"
+			]
+		},
+		"fr-FR": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare (lié au compte).",
+			"description_markdown": "Routage selon le préfixe du modèle. Auth via `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ia"
+			]
+		},
+		"hi-IN": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "खाता-बद्ध Cloudflare AI Gateway.",
+			"description_markdown": "मॉडल उपसर्ग से रूट। `cf-aig-authorization` से प्रमाणन।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"is-IS": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway bundið reikningi.",
+			"description_markdown": "Beinir eftir forskeyti líkans. Auðkenning með `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"it-IT": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare (legato all'account).",
+			"description_markdown": "Instrada per prefisso modello. Auth con `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ia"
+			]
+		},
+		"ja-JP": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "アカウント紐付けの AI Gateway。",
+			"description_markdown": "モデル接頭辞で経路を分ける。認証は `cf-aig-authorization`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"ko-KR": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "계정에 묶인 Cloudflare AI Gateway.",
+			"description_markdown": "모델 접두사로 라우팅. 인증은 `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"lzh": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "賬號綁定之 AI Gateway。",
+			"description_markdown": "按模型前綴分流。鑒權 `cf-aig-authorization`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"nl-NL": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway (accountgebonden).",
+			"description_markdown": "Routeert op modelprefix. Auth via `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"pt-PT": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway da Cloudflare (ligado à conta).",
+			"description_markdown": "Encaminha pelo prefixo do modelo. Auth com `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ia"
+			]
+		},
+		"ru-RU": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare, привязанный к аккаунту.",
+			"description_markdown": "Маршрутизация по префиксу модели. Auth — `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ии"
+			]
+		},
+		"uk-UA": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare, прив'язаний до облікового запису.",
+			"description_markdown": "Маршрутизація за префіксом моделі. Auth — `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ші"
+			]
+		},
+		"vi-VN": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare gắn tài khoản.",
+			"description_markdown": "Định tuyến theo tiền tố model. Auth bằng `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		},
+		"zh-TW": {
+			"name": "Cloudflare AI Gateway",
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway（帳號綁定，不是 OpenRouter）。",
+			"description_markdown": "依模型前綴分流：`openai/`、`anthropic/` 或 compat。鑑權頭 `cf-aig-authorization`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway (account-bound, not OpenRouter).",
+			"description_markdown": "Routes by model prefix: `openai/` → OpenAI, `anthropic/` → Anthropic Messages, else the compat channel. Auth uses `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway（账号绑定，不是 OpenRouter）。",
+			"description_markdown": "按模型前缀分流：`openai/` 走 OpenAI，`anthropic/` 走 Anthropic Messages，其余走 compat。鉴权头 `cf-aig-authorization`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "بوابة AI من Cloudflare مرتبطة بالحساب.",
+			"description_markdown": "التوجيه حسب بادئة النموذج. التوثيق بـ `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway (kontogebunden).",
+			"description_markdown": "Routing nach Modellpräfix. Auth über `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ki"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "🔑➡️🚪",
+			"description_markdown": "🟠🚪➡️🤖",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"🟠",
+				"🚪",
+				"🔑"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway de Cloudflare (ligado a la cuenta).",
+			"description_markdown": "Enruta por prefijo de modelo. Auth con `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ia"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare (lié au compte).",
+			"description_markdown": "Routage selon le préfixe du modèle. Auth via `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ia"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "खाता-बद्ध Cloudflare AI Gateway.",
+			"description_markdown": "मॉडल उपसर्ग से रूट। `cf-aig-authorization` से प्रमाणन।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway bundið reikningi.",
+			"description_markdown": "Beinir eftir forskeyti líkans. Auðkenning með `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare (legato all'account).",
+			"description_markdown": "Instrada per prefisso modello. Auth con `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ia"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "アカウント紐付けの AI Gateway。",
+			"description_markdown": "モデル接頭辞で経路を分ける。認証は `cf-aig-authorization`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "계정에 묶인 Cloudflare AI Gateway.",
+			"description_markdown": "모델 접두사로 라우팅. 인증은 `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "賬號綁定之 AI Gateway。",
+			"description_markdown": "按模型前綴分流。鑒權 `cf-aig-authorization`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway (accountgebonden).",
+			"description_markdown": "Routeert op modelprefix. Auth via `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway da Cloudflare (ligado à conta).",
+			"description_markdown": "Encaminha pelo prefixo do modelo. Auth com `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ia"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare, привязанный к аккаунту.",
+			"description_markdown": "Маршрутизация по префиксу модели. Auth — `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ии"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare, прив'язаний до облікового запису.",
+			"description_markdown": "Маршрутизація за префіксом моделі. Auth — `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ші"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "AI Gateway Cloudflare gắn tài khoản.",
+			"description_markdown": "Định tuyến theo tiền tố model. Auth bằng `cf-aig-authorization`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/simple-icons/cloudflare.svg",
+			"description": "Cloudflare AI Gateway（帳號綁定，不是 OpenRouter）。",
+			"description_markdown": "依模型前綴分流：`openai/`、`anthropic/` 或 compat。鑑權頭 `cf-aig-authorization`。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://developers.cloudflare.com/ai-gateway/",
+			"tags": [
+				"cloudflare",
+				"ai-gateway",
+				"iam",
+				"ai"
+			],
+			"provider": "Cloudflare AI Gateway"
+		}
+	}
+}

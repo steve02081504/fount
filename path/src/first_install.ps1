@@ -56,5 +56,7 @@
 		Register-FountBootBackground
 
 		invoke_explorer_refresh
+
+		Register-FountSteam
 	}
 }

@@ -41,7 +41,7 @@ function script:handle_unix_passthrough {
 				}
 				if (Get-Command -Name "brew" -ErrorAction Ignore) {
 					brew list --formula $package 2>$null | Out-Null
-					if ($LASTEXITCODE -ne 0) {
+					if ($LastExitCode -ne 0) {
 						brew install $package
 					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }

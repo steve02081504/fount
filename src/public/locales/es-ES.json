@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Advertencia: Error al utilizar `lsregister` para registrar una aplicación con LaunchServices.",
 				"createDesktopAppFailed": "Error: no se pudo crear la aplicación de escritorio."
 			},
+			"steam": {
+				"registering": "Registrando fount como juego no Steam en Steam…",
+				"registered": "fount se ha añadido a su biblioteca de Steam. Si Steam está en ejecución, reinícielo para que el cambio surta efecto.",
+				"failed": "Error al registrar en Steam: ${message}",
+				"exeFailed": "No se pudo generar fount.exe; se omitió el registro en Steam."
+			},
 			"git": {
 				"repoNotFound": "No se encontró el repositorio git de fount. Inicializando uno nuevo...",
 				"fetchingAndResetting": "Obteniendo desde el repositorio remoto y restableciendo al maestro...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Instalando dependencias...",
+				"compilingFavicon": "No se encuentra el favicon; se inicia el servidor para compilarlo...",
 				"packageFailed": "Error: La instalación de ${package} falló.",
 				"browserMissing": "Navegador predeterminado no detectado, intentando instalar...",
 				"untrustedPartsWarning": "No instale ningún componente fount que no sea de confianza en su sistema, pueden hacer cualquier cosa.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "No se encontró el acceso directo en el escritorio.",
 				"startMenuShortcutRemoved": "Se ha eliminado el acceso directo al menú Inicio.",
 				"startMenuShortcutNotFound": "No se encontró el acceso directo al menú Inicio.",
+				"steamShortcutRemoved": "fount se ha eliminado de su biblioteca de Steam.",
+				"steamShortcutNotFound": "No se encontró fount en Steam.",
 				"moduleRemoved": "${module} ha sido eliminado.",
 				"uninstalling": {
 					"chrome": "Desinstalando Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Eliminando paquetes del sistema instalados...",
 					"protocolHandler": "Eliminando el controlador de protocolo `fount://`...",
 					"startMenuShortcut": "Eliminando accesos directos del menú Inicio...",
+					"steamShortcut": "Eliminando fount de Steam…",
 					"terminalKeybindings": "Eliminando parche de atajos del terminal...",
 					"terminalProfile": "Eliminando el perfil de terminal de Windows..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Configuración de grupo",
+					"description": "Gestiona la identidad del grupo, sus miembros, permisos y las herramientas que unen vuestro escenario compartido.",
 					"kicker": "Group management",
 					"subtitle": "Gestionar información del grupo, miembros y funciones comunes. Los permisos de baja frecuencia, el almacenamiento y las herramientas de auditoría están centralizados en ajustes avanzadas.",
 					"backToChat": "Volver al chat",
@@ -3832,6 +3843,16 @@
 			"availableModels": "Modelos disponibles:",
 			"copied": "¡Copiado!",
 			"apiKeyRequired": "Se requiere una clave API para enumerar modelos.",
+			"oauth": {
+				"login": "Iniciar sesión",
+				"logout": "Cerrar sesión",
+				"loggedIn": "Sesión iniciada",
+				"notLoggedIn": "Sin sesión",
+				"waiting": "Esperando autorización…",
+				"failed": "Error de inicio de sesión: ${message}",
+				"deviceCode": "Abre ${uri} e introduce el código ${code}",
+				"credentialsRequired": "Rellena los campos JSON necesarios (region / project / location / account_id / gateway_id / API key). Las credenciales también pueden venir del entorno."
+			},
 			"copyModelIdTooltip": "Haga clic para copiar el ID del modelo",
 			"loadModelsFailed": "No se pudo cargar el modelo: ${message}",
 			"modelSearchTitle": "Explorar catálogo de modelos",
@@ -3858,6 +3879,14 @@
 				"releaseDate": "Fecha de lanzamiento: ${date}",
 				"toolCall": "Admite llamadas a herramientas",
 				"vision": "Admite entrada visual"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Configure la cadena de credenciales predeterminada de AWS y especifique region en el JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Configure ADC y especifique project y location en el JSON."
 			}
 		},
 		"prompts": {
@@ -5933,6 +5962,16 @@
 			"next": {
 				"aria-label": "Medio siguiente"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Inicio de sesión OAuth",
+		"description": "Complete el inicio de sesión de OAuth para la fuente de IA. El intercambio de tokens se completa en el lado del servidor.",
+		"callback": {
+			"working": "Completando el inicio de sesión…",
+			"success": "Sesión iniciada. Puedes cerrar esta página.",
+			"failed": "Error de inicio de sesión: ${message}",
+			"missingParams": "Al callback le falta code o state."
 		}
 	}
 }

@@ -1,21 +1,21 @@
 # fount P2P Overlay 架构
 
-更新：`2026-07-20`
+更新：`2026-08-14`
 
-> 核心实现在 npm 包 [@steve02081504/fount-p2p](https://github.com/steve02081504/fount-p2p) 与 monorepo `src/scripts/p2p/`。本文描述**架构目标、分层与线协议**；实施状态以代码与 `fount test p2p` / `shells/chat:fed_*` 为准。
+> 核心实现在 npm 包 [@steve02081504/fount-p2p](https://github.com/steve02081504/fount-p2p) 与 monorepo `src/scripts/p2p/`。本文描述**架构目标、分层与线协议**；实施状态以代码、fount-p2p 自身测试与 `shells/chat:fed_*` 为准。
 
 ## 目标
 
 - **nodeHash 中心**：一 `nodeHash` 一条逻辑链接，跨群复用物理传输。
 - **分层解耦**：发现、信令、传输、overlay 路由、业务派发各自独立。
-- **Nostr 可插拔**：降为发现源之一，与 mDNS / BT 并列。
+- **Nostr 可插拔**：降为发现源之一，与 LAN / BT 并列。
 - **Mailbox 复用**：定向投递 / 离线继续复用现有 Mailbox，键仍是收件人 `pubKeyHash`。
 - **握手显式授权**：challenge-response + DTLS 指纹绑定；房间口令不再作为 overlay 隐式授权（见下表）。
 
 ## 非目标
 
-- 首版不要求 LAN / BT 自带独立传输（BT 为发现插件，默认关）。
 - 首版不要求 ICE restart；网络切换后允许断链重建。
+- BT 发现/链路按硬件探测降级，无独立环境开关。
 - AV 继续保留服务端 `av-relay`，不走 node-datachannel 主路径。
 
 ## 已拍板决策
@@ -30,20 +30,14 @@
 | Gossip | 群内在 overlay 就位前保留一跳 gossip 补位 |
 | 轮换 | kick / ban 事件自动轮换 `roomSecret` |
 
-## 落地概况
+## 运行时要点
 
-**P0–P2 已完成**（link 层、link_registry、discovery、group_link_set、Chat 联邦）。**P3 overlay 路由**已在 `link_registry.mjs` 接入（`createOverlayRouter`，直连失败时 relay）。**P4 外围**（mDNS/BT discovery、subfounts 全量对齐）部分完成。
-
-要点：
-
-- `ensureLinkToNode`：直连优先 → overlay relay → discovery → Mailbox。
-- Chat 群联邦经 `createGroupLinkSet`（`room.mjs`）；`FederationSlot` / `partitionBridge` 等为 chat 侧出站抽象，底层走 node/group scope envelope。
-- 发现层默认 `mdns` + `nostr`；BT 需 `FOUNT_ENABLE_BT_DISCOVERY=1`。
-- 房主在 `group_link_set.start()` 主动拉起 discovery，避免「只有自己一个成员」的暗房。
-- `group:` scope 与入站成员校验（见下「群 scope 成员与 bootstrap」）。
-- join 流携带 `introducerNodeHash`，减少纯 discovery 冷启动窗口。
-
-回归口径：`fount test p2p` + `shells/chat:fed_core fed_e2e_extended fed_dm`（`fed_dm` 长串后建议单独重跑）。
+- `ensureLinkToNode`：只建直连，按 LinkProvider 的 `level` 降序尝试，失败则下一个。
+- overlay 只是 `sendToNodeLink` 的发送回退（直连失败后多跳 relay），不含 Mailbox。
+- 发现层默认 `lan` + `nostr`。
+- `group_link_set.start()` 启动群 presence、监听 advert 并扫描可见成员，不限定房主。主动启动 discovery 是为了避免无法发现其他成员。
+- join 流携带 `introducerNodeHash`，缩短仅依靠 discovery 建链的等待时间。
+- 回归：`fount test shells/chat:fed_core fed_e2e_extended fed_dm`；P2P 内核在 fount-p2p 仓库（`npm test` / `npm run test:live`）。
 
 ## 分层
 
@@ -51,7 +45,7 @@
 发现层 → 信令层 → 传输层 → 链接层 → overlay 路由层 → 业务派发层
 ```
 
-1. **发现层**：可插拔 provider（`mdns` / `nostr` / `bt`），暴露 `advertise` / `subscribe` / `sendSignal` / `onSignal`。
+1. **发现层**：可插拔 provider（`lan` / `nostr` / `bt`），暴露 `advertise` / `subscribe` / `sendSignal` / `onSignal`。
 2. **信令层**：offer / answer / ICE 候选投递，可经发现表或 mesh 邻居转发。
 3. **传输层**：裸 `RTCPeerConnection` 建立双 DataChannel（`control` + `bulk`）。
 4. **链接层**：握手、心跳、分帧、分片、背压、glare 收敛、逻辑链接生命周期。
@@ -63,7 +57,7 @@
 | 区域 | 路径 | 职责 |
 | --- | --- | --- |
 | Link 协议 | `src/scripts/p2p/link/` | 分帧、握手、SDP 指纹、channel mux、RTC 封装 |
-| 链接注册表 | `src/scripts/p2p/link_registry.mjs` | discovery 编排、直连、overlay relay、Mailbox 回退 |
+| 链接注册表 | `src/scripts/p2p/link_registry.mjs` | discovery 编排、按 level 直连；`sendToNodeLink` 才 overlay 回退（Mailbox 另路） |
 | 群链接集 | `src/scripts/p2p/group_link_set.mjs` | 群活跃成员链接集、roomSecret、discovery 生命周期 |
 | Overlay | `src/scripts/p2p/overlay/index.mjs` | `route_req` / `route_resp` / `relay` 多跳路由 |
 | 发现 | `src/scripts/p2p/discovery/` | provider 注册与调度 |
@@ -239,8 +233,8 @@ now - 10min <= ts <= now + 10min
 
 每阶段至少：
 
-- `fount test p2p`
-- `fount test shells/chat:integration`（含 `fed_*`）
+- fount-p2p 仓库：`npm test` / `npm run test:live`
+- `fount test shells/chat:fed_core fed_e2e_extended fed_dm`
 - `fount test server:live`（live probe 用 Deno `.mjs`，显式 close DataChannel 与 PeerConnection）
 
 Windows 本地验证直接 `fount test`。

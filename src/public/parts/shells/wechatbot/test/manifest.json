@@ -27,6 +27,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": "16s",
 			"trigger": [
 				"shellPureTests",
 				"testFramework"
@@ -44,6 +45,7 @@
 		},
 		{
 			"name": "integration",
+			"expected": "27s",
 			"trigger": [
 				"shellIntegrationTests",
 				"testFramework"
@@ -61,6 +63,7 @@
 		},
 		{
 			"name": "frontend",
+			"expected": "1m20s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -68,6 +71,7 @@
 			"subtests": [
 				{
 					"name": "smoke",
+					"expected": "3s",
 					"triggers": [
 						"src/public/parts/shells/wechatbot/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/wechatbot/test/frontend/fixtures.mjs",
@@ -76,6 +80,7 @@
 				},
 				{
 					"name": "jsonEditor",
+					"expected": "7s",
 					"triggers": [
 						"src/public/parts/shells/wechatbot/test/frontend/jsonEditor.spec.mjs",
 						"src/public/parts/shells/wechatbot/test/frontend/fixtures.mjs",

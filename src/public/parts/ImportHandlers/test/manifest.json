@@ -3,6 +3,7 @@
 	"suites": [
 		{
 			"name": "pure",
+			"expected": "1s",
 			"triggers": [
 				"src/public/parts/ImportHandlers/Risu/{rpack.mjs,module-parser.mjs}",
 				"src/public/parts/ImportHandlers/test/pure/**",
@@ -21,6 +22,7 @@
 		},
 		{
 			"name": "integration",
+			"expected": "17s",
 			"dependsOn": [
 				"server:live"
 			],

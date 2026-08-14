@@ -1,0 +1,574 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses API.",
+			"description_markdown": "Calls `/openai/v1/responses` with the `api-key` header. Chat Completions Azure endpoints stay on proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"zh-CN": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI 的 Responses 端点。",
+			"description_markdown": "打 `/openai/v1/responses`，头用 `api-key`。Azure Chat Completions 继续走 proxy。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"ar-SA": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "واجهة Responses لـ Azure OpenAI.",
+			"description_markdown": "يستدعي `/openai/v1/responses` برأس `api-key`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"de-DE": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure-OpenAI-Responses-API.",
+			"description_markdown": "Ruft `/openai/v1/responses` mit `api-key` auf. Chat Completions bleiben bei proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ki"
+			]
+		},
+		"emoji": {
+			"name": "☁️📄",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "🔑➡️📄",
+			"description_markdown": "☁️🔑➡️📄",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"☁️",
+				"📄",
+				"🔑"
+			]
+		},
+		"es-ES": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses de Azure OpenAI.",
+			"description_markdown": "Llama a `/openai/v1/responses` con `api-key`. Completions siguen en proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ia"
+			]
+		},
+		"fr-FR": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses d'Azure OpenAI.",
+			"description_markdown": "Appelle `/openai/v1/responses` avec `api-key`. Les Completions restent sur proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ia"
+			]
+		},
+		"hi-IN": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses API.",
+			"description_markdown": "`api-key` के साथ `/openai/v1/responses`। Chat Completions proxy पर रहें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"is-IS": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses API.",
+			"description_markdown": "Kallar `/openai/v1/responses` með `api-key`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"it-IT": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses di Azure OpenAI.",
+			"description_markdown": "Chiama `/openai/v1/responses` con `api-key`. Le Completions restano su proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ia"
+			]
+		},
+		"ja-JP": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI の Responses API。",
+			"description_markdown": "`api-key` で `/openai/v1/responses` を呼びます。Chat Completions は proxy のままです。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"ko-KR": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses API.",
+			"description_markdown": "`api-key`로 `/openai/v1/responses`를 호출합니다. Chat Completions는 proxy에 둡니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"lzh": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI 之 Responses 端。",
+			"description_markdown": "以 `api-key` 叩 `/openai/v1/responses`。Completions 仍走 proxy。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"nl-NL": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses-API.",
+			"description_markdown": "Roept `/openai/v1/responses` aan met `api-key`. Completions blijven op proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"pt-PT": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses do Azure OpenAI.",
+			"description_markdown": "Chama `/openai/v1/responses` com `api-key`. Completions ficam no proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ia"
+			]
+		},
+		"ru-RU": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Responses API Azure OpenAI.",
+			"description_markdown": "Вызывает `/openai/v1/responses` с `api-key`. Completions остаются в proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ии"
+			]
+		},
+		"uk-UA": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Responses API Azure OpenAI.",
+			"description_markdown": "Викликає `/openai/v1/responses` з `api-key`. Completions лишаються в proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ші"
+			]
+		},
+		"vi-VN": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses của Azure OpenAI.",
+			"description_markdown": "Gọi `/openai/v1/responses` với `api-key`. Chat Completions vẫn dùng proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		},
+		"zh-TW": {
+			"name": "Azure OpenAI Responses",
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI 的 Responses 端點。",
+			"description_markdown": "打 `/openai/v1/responses`，標頭用 `api-key`。Azure Chat Completions 繼續走 proxy。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses API.",
+			"description_markdown": "Calls `/openai/v1/responses` with the `api-key` header. Chat Completions Azure endpoints stay on proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI 的 Responses 端点。",
+			"description_markdown": "打 `/openai/v1/responses`，头用 `api-key`。Azure Chat Completions 继续走 proxy。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "واجهة Responses لـ Azure OpenAI.",
+			"description_markdown": "يستدعي `/openai/v1/responses` برأس `api-key`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure-OpenAI-Responses-API.",
+			"description_markdown": "Ruft `/openai/v1/responses` mit `api-key` auf. Chat Completions bleiben bei proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ki"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "🔑➡️📄",
+			"description_markdown": "☁️🔑➡️📄",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"☁️",
+				"📄",
+				"🔑"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses de Azure OpenAI.",
+			"description_markdown": "Llama a `/openai/v1/responses` con `api-key`. Completions siguen en proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ia"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses d'Azure OpenAI.",
+			"description_markdown": "Appelle `/openai/v1/responses` avec `api-key`. Les Completions restent sur proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ia"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses API.",
+			"description_markdown": "`api-key` के साथ `/openai/v1/responses`। Chat Completions proxy पर रहें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses API.",
+			"description_markdown": "Kallar `/openai/v1/responses` með `api-key`.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses di Azure OpenAI.",
+			"description_markdown": "Chiama `/openai/v1/responses` con `api-key`. Le Completions restano su proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ia"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI の Responses API。",
+			"description_markdown": "`api-key` で `/openai/v1/responses` を呼びます。Chat Completions は proxy のままです。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses API.",
+			"description_markdown": "`api-key`로 `/openai/v1/responses`를 호출합니다. Chat Completions는 proxy에 둡니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI 之 Responses 端。",
+			"description_markdown": "以 `api-key` 叩 `/openai/v1/responses`。Completions 仍走 proxy。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI Responses-API.",
+			"description_markdown": "Roept `/openai/v1/responses` aan met `api-key`. Completions blijven op proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses do Azure OpenAI.",
+			"description_markdown": "Chama `/openai/v1/responses` com `api-key`. Completions ficam no proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ia"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Responses API Azure OpenAI.",
+			"description_markdown": "Вызывает `/openai/v1/responses` с `api-key`. Completions остаются в proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ии"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Responses API Azure OpenAI.",
+			"description_markdown": "Викликає `/openai/v1/responses` з `api-key`. Completions лишаються в proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ші"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "API Responses của Azure OpenAI.",
+			"description_markdown": "Gọi `/openai/v1/responses` với `api-key`. Chat Completions vẫn dùng proxy.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/simple-icons/microsoftazure.svg",
+			"description": "Azure OpenAI 的 Responses 端點。",
+			"description_markdown": "打 `/openai/v1/responses`，標頭用 `api-key`。Azure Chat Completions 繼續走 proxy。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://learn.microsoft.com/azure/ai-foundry/openai/how-to/responses",
+			"tags": [
+				"azure",
+				"openai",
+				"responses",
+				"ai"
+			],
+			"provider": "Azure OpenAI"
+		}
+	}
+}

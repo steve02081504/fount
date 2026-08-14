@@ -1,11 +1,11 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
 
 function Get-MainBranchRef {
 	$symbolic = git symbolic-ref refs/remotes/origin/HEAD 2>$null
-	if ($LASTEXITCODE -eq 0 -and $symbolic) { return $symbolic.Trim() }
+	if ($LastExitCode -eq 0 -and $symbolic) { return $symbolic.Trim() }
 	foreach ($candidate in @('origin/master', 'origin/main', 'master', 'main')) {
 		git rev-parse --verify --quiet $candidate | Out-Null
-		if ($LASTEXITCODE -eq 0) { return $candidate }
+		if ($LastExitCode -eq 0) { return $candidate }
 	}
 	throw '找不到主分支（origin/HEAD / master / main）'
 }

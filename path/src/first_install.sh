@@ -23,5 +23,6 @@ fount_first_install_if_needed() {
 		print_i18n_yellow 'install.untrustedPartsWarning'
 		echo -e "${C_GREEN}======================================================${C_RESET}"
 		write_taskbar_progress_clear
+		register_fount_steam || true
 	fi
 }

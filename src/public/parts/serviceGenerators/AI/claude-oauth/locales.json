@@ -1,0 +1,574 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (extra usage).",
+			"description_markdown": "PKCE with the Claude Code client. Third-party traffic is billed as extra usage, not plan quota. No official CLI billing headers.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"zh-CN": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max OAuth（额外用量）。",
+			"description_markdown": "使用 Claude Code 的 PKCE 流程。第三方流量按 extra usage 计费，不是订阅额度。不加官方 CLI 的 billing 头。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"ar-SA": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max عبر OAuth (استخدام إضافي).",
+			"description_markdown": "PKCE لعميل Claude Code. حركة الطرف الثالث فوترة extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"de-DE": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max per OAuth (Extra-Nutzung).",
+			"description_markdown": "PKCE mit Claude-Code-Client. Drittanbieter-Traffic ist extra usage, nicht das Abo-Kontingent.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ki"
+			]
+		},
+		"emoji": {
+			"name": "📜💎",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "🔑➡️📜",
+			"description_markdown": "🔑📜💰",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"📜",
+				"💎",
+				"🔑"
+			]
+		},
+		"es-ES": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max con OAuth (uso extra).",
+			"description_markdown": "PKCE del cliente Claude Code. El tráfico de terceros es extra usage, no la cuota del plan.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ia"
+			]
+		},
+		"fr-FR": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (usage extra).",
+			"description_markdown": "PKCE du client Claude Code. Le trafic tiers est facturé en extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ia"
+			]
+		},
+		"hi-IN": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "OAuth से Claude Pro/Max (अतिरिक्त उपयोग)।",
+			"description_markdown": "Claude Code PKCE। तृतीय-पक्ष ट्रैफ़िक extra usage है, प्लान कोटा नहीं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"is-IS": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max með OAuth (auknotkun).",
+			"description_markdown": "PKCE með Claude Code. Þriðja aðila umferð er extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"it-IT": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (uso extra).",
+			"description_markdown": "PKCE del client Claude Code. Il traffico di terze parti è extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ia"
+			]
+		},
+		"ja-JP": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "OAuth の Claude Pro/Max（追加利用）。",
+			"description_markdown": "Claude Code の PKCE。第三者トラフィックはプラン枠ではなく extra usage です。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"ko-KR": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "OAuth Claude Pro/Max (추가 사용량).",
+			"description_markdown": "Claude Code PKCE. 서드파티 트래픽은 요금제 한도가 아니라 extra usage입니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"lzh": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max 之 OAuth（額外用量）。",
+			"description_markdown": "襲 Claude Code 之 PKCE。第三方流量以 extra usage 計，非訂閱額。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"nl-NL": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (extra usage).",
+			"description_markdown": "PKCE met de Claude Code-client. Derdenverkeer is extra usage, geen abonnementsquota.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"pt-PT": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (uso extra).",
+			"description_markdown": "PKCE do cliente Claude Code. Tráfego de terceiros é extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ia"
+			]
+		},
+		"ru-RU": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max через OAuth (extra usage).",
+			"description_markdown": "PKCE клиента Claude Code. Сторонний трафик — extra usage, не квота плана.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ии"
+			]
+		},
+		"uk-UA": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max через OAuth (extra usage).",
+			"description_markdown": "PKCE клієнта Claude Code. Сторонній трафік — extra usage, не квота плану.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ші"
+			]
+		},
+		"vi-VN": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max qua OAuth (extra usage).",
+			"description_markdown": "PKCE của Claude Code. Lưu lượng bên thứ ba tính extra usage, không phải hạn mức gói.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		},
+		"zh-TW": {
+			"name": "Claude Pro/Max",
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max OAuth（額外用量）。",
+			"description_markdown": "沿用 Claude Code 的 PKCE。第三方流量按 extra usage 計費，不是訂閱額度。不加官方 CLI 的 billing 頭。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			]
+		}
+	},
+	"product_info": {
+		"en-UK": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (extra usage).",
+			"description_markdown": "PKCE with the Claude Code client. Third-party traffic is billed as extra usage, not plan quota. No official CLI billing headers.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"zh-CN": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max OAuth（额外用量）。",
+			"description_markdown": "使用 Claude Code 的 PKCE 流程。第三方流量按 extra usage 计费，不是订阅额度。不加官方 CLI 的 billing 头。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"ar-SA": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max عبر OAuth (استخدام إضافي).",
+			"description_markdown": "PKCE لعميل Claude Code. حركة الطرف الثالث فوترة extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max per OAuth (Extra-Nutzung).",
+			"description_markdown": "PKCE mit Claude-Code-Client. Drittanbieter-Traffic ist extra usage, nicht das Abo-Kontingent.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ki"
+			],
+			"provider": "Anthropic"
+		},
+		"emoji": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "🔑➡️📜",
+			"description_markdown": "🔑📜💰",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"📜",
+				"💎",
+				"🔑"
+			],
+			"provider": "Anthropic"
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max con OAuth (uso extra).",
+			"description_markdown": "PKCE del cliente Claude Code. El tráfico de terceros es extra usage, no la cuota del plan.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ia"
+			],
+			"provider": "Anthropic"
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (usage extra).",
+			"description_markdown": "PKCE du client Claude Code. Le trafic tiers est facturé en extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ia"
+			],
+			"provider": "Anthropic"
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "OAuth से Claude Pro/Max (अतिरिक्त उपयोग)।",
+			"description_markdown": "Claude Code PKCE। तृतीय-पक्ष ट्रैफ़िक extra usage है, प्लान कोटा नहीं।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max með OAuth (auknotkun).",
+			"description_markdown": "PKCE með Claude Code. Þriðja aðila umferð er extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (uso extra).",
+			"description_markdown": "PKCE del client Claude Code. Il traffico di terze parti è extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ia"
+			],
+			"provider": "Anthropic"
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "OAuth の Claude Pro/Max（追加利用）。",
+			"description_markdown": "Claude Code の PKCE。第三者トラフィックはプラン枠ではなく extra usage です。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "OAuth Claude Pro/Max (추가 사용량).",
+			"description_markdown": "Claude Code PKCE. 서드파티 트래픽은 요금제 한도가 아니라 extra usage입니다.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"lzh": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max 之 OAuth（額外用量）。",
+			"description_markdown": "襲 Claude Code 之 PKCE。第三方流量以 extra usage 計，非訂閱額。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (extra usage).",
+			"description_markdown": "PKCE met de Claude Code-client. Derdenverkeer is extra usage, geen abonnementsquota.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max via OAuth (uso extra).",
+			"description_markdown": "PKCE do cliente Claude Code. Tráfego de terceiros é extra usage.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ia"
+			],
+			"provider": "Anthropic"
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max через OAuth (extra usage).",
+			"description_markdown": "PKCE клиента Claude Code. Сторонний трафик — extra usage, не квота плана.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ии"
+			],
+			"provider": "Anthropic"
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max через OAuth (extra usage).",
+			"description_markdown": "PKCE клієнта Claude Code. Сторонній трафік — extra usage, не квота плану.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ші"
+			],
+			"provider": "Anthropic"
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max qua OAuth (extra usage).",
+			"description_markdown": "PKCE của Claude Code. Lưu lượng bên thứ ba tính extra usage, không phải hạn mức gói.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		},
+		"zh-TW": {
+			"avatar": "https://api.iconify.design/simple-icons/anthropic.svg",
+			"description": "Claude Pro/Max OAuth（額外用量）。",
+			"description_markdown": "沿用 Claude Code 的 PKCE。第三方流量按 extra usage 計費，不是訂閱額度。不加官方 CLI 的 billing 頭。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "https://claude.ai",
+			"tags": [
+				"claude",
+				"anthropic",
+				"oauth",
+				"ai"
+			],
+			"provider": "Anthropic"
+		}
+	}
+}

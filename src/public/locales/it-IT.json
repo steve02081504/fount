@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Avviso: l'utilizzo di `lsregister` per registrare un'applicazione con LaunchServices non è riuscito.",
 				"createDesktopAppFailed": "Errore: impossibile creare l'applicazione desktop."
 			},
+			"steam": {
+				"registering": "Registrazione di fount come gioco non Steam in Steam…",
+				"registered": "fount è stato aggiunto alla tua libreria Steam. Se Steam è in esecuzione, riavvialo per applicare la modifica.",
+				"failed": "Registrazione su Steam non riuscita: ${message}",
+				"exeFailed": "Impossibile generare fount.exe; registrazione su Steam ignorata."
+			},
 			"git": {
 				"repoNotFound": "Impossibile trovare il repository git del fount. Inizializzandone uno nuovo...",
 				"fetchingAndResetting": "Recupero dal repository remoto e ripristino del master...",
@@ -465,6 +471,7 @@
 			},
 			"install": {
 				"installingDependencies": "Installazione delle dipendenze...",
+				"compilingFavicon": "File favicon non trovato; avvio del server per compilarlo...",
 				"packageFailed": "Errore: installazione di ${package} non riuscita.",
 				"browserMissing": "Browser predefinito non rilevato, tentativo di installazione...",
 				"untrustedPartsWarning": "Non installare componenti di fount non attendibili sul tuo sistema, possono fare qualsiasi cosa.",
@@ -504,6 +511,8 @@
 				"desktopShortcutNotFound": "Collegamento sul desktop non trovato.",
 				"startMenuShortcutRemoved": "Il collegamento al menu Start è stato rimosso.",
 				"startMenuShortcutNotFound": "Collegamento al menu Start non trovato.",
+				"steamShortcutRemoved": "fount è stato rimosso dalla tua libreria Steam.",
+				"steamShortcutNotFound": "fount non trovato in Steam.",
 				"moduleRemoved": "${module} è stato rimosso.",
 				"uninstalling": {
 					"chrome": "Disinstallazione di Chrome...",
@@ -526,6 +535,7 @@
 					"installedSystemPackages": "Rimozione dei pacchetti di sistema installati...",
 					"protocolHandler": "Rimozione del gestore del protocollo `fount://` in corso...",
 					"startMenuShortcut": "Rimozione delle scorciatoie dal menu Start...",
+					"steamShortcut": "Rimozione di fount da Steam…",
 					"terminalKeybindings": "Rimozione patch scorciatoie del terminale...",
 					"terminalProfile": "Rimozione del profilo terminale di Windows..."
 				},
@@ -1457,6 +1467,7 @@
 				},
 				"page": {
 					"title": "Impostazioni del gruppo",
+					"description": "Gestisci identità, membri, permessi del gruppo e gli strumenti che legano il palcoscenico condiviso.",
 					"kicker": "Impostazioni del gruppo",
 					"subtitle": "Gestisci le informazioni del gruppo, i membri e le funzioni comuni. Le autorizzazioni a bassa frequenza, l'archiviazione e gli strumenti di controllo sono centralizzati in impostazioni avanzate.",
 					"backToChat": "Torna alla chat",
@@ -3832,6 +3843,16 @@
 			"availableModels": "Modelli disponibili:",
 			"copied": "Copiato!",
 			"apiKeyRequired": "È necessaria una chiave API per elencare i modelli.",
+			"oauth": {
+				"login": "Accedi",
+				"logout": "Esci",
+				"loggedIn": "Accesso effettuato",
+				"notLoggedIn": "Non connesso",
+				"waiting": "In attesa di autorizzazione…",
+				"failed": "Accesso non riuscito: ${message}",
+				"deviceCode": "Apri ${uri} e inserisci il codice ${code}",
+				"credentialsRequired": "Compila i campi JSON richiesti (region / project / location / account_id / gateway_id / API key). Le credenziali possono arrivare anche dalle variabili d’ambiente."
+			},
 			"copyModelIdTooltip": "Fare clic per copiare l'ID del modello",
 			"loadModelsFailed": "Impossibile caricare il modello: ${message}",
 			"modelSearchTitle": "Sfoglia il catalogo modelli",
@@ -3858,6 +3879,14 @@
 				"releaseDate": "Data di rilascio: ${date}",
 				"toolCall": "Supporta le chiamate agli strumenti",
 				"vision": "Supporta l'input visivo"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Configura la catena di credenziali predefinita di AWS e imposta region nel JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Configura ADC, quindi imposta project e location nel JSON."
 			}
 		},
 		"prompts": {
@@ -5933,6 +5962,16 @@
 			"next": {
 				"aria-label": "Elemento multimediale successivo"
 			}
+		}
+	},
+	"oauth_handler": {
+		"title": "Accesso OAuth",
+		"description": "Completa l'accesso OAuth per l'origine AI. Lo scambio dei token viene completato lato server.",
+		"callback": {
+			"working": "Completamento dell’accesso…",
+			"success": "Accesso riuscito. Puoi chiudere questa pagina.",
+			"failed": "Accesso non riuscito: ${message}",
+			"missingParams": "Al callback manca code o state."
 		}
 	}
 }
