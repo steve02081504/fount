@@ -7,7 +7,8 @@ $here = $PSScriptRoot
 $outFile = Join-Path $env:TEMP "fount-remove-out-$PID.txt"
 $exitCode = 1
 try {
-	$output = & $Fount remove 2>&1 | Out-String
+	$cmd = Get-Command -Name $Fount -ErrorAction Stop
+	$output = & $cmd remove 2>&1 | Out-String
 	$exitCode = $LastExitCode
 }
 catch {
