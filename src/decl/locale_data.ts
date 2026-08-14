@@ -409,6 +409,12 @@ export type LocaleData = {
 				lsregisterFailed: string
 				createDesktopAppFailed: string
 			}
+			steam: {
+				registering: string
+				registered: string
+				failed: string
+				exeFailed: string
+			}
 			git: {
 				repoNotFound: string
 				fetchingAndResetting: string
@@ -488,6 +494,8 @@ export type LocaleData = {
 				desktopShortcutNotFound: string
 				startMenuShortcutRemoved: string
 				startMenuShortcutNotFound: string
+				steamShortcutRemoved: string
+				steamShortcutNotFound: string
 				moduleRemoved: string
 				uninstalling: {
 					chrome: string
@@ -510,6 +518,7 @@ export type LocaleData = {
 					installedSystemPackages: string
 					protocolHandler: string
 					startMenuShortcut: string
+					steamShortcut: string
 					terminalKeybindings: string
 					terminalProfile: string
 				}
@@ -6250,6 +6259,7 @@ export type LocaleKeyParams = {
 	'fountConsole.path.shortcut.desktopShortcutCreated': { path: string | number }
 	'fountConsole.path.shortcut.shortcutNotSupported': { os: string | number }
 	'fountConsole.path.shortcut.startMenuShortcutCreated': { path: string | number }
+	'fountConsole.path.steam.failed': { message: string | number }
 	'fountConsole.path.terminalKeybindings.editorRemoved': { path: string | number }
 	'fountConsole.path.terminalKeybindings.wtPatchFailed': { message: string | number; path: string | number }
 	'fountConsole.path.terminalKeybindings.wtRemoved': { path: string | number }
