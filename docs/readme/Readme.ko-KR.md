@@ -112,7 +112,7 @@ fount의 프로젝트 아키텍처는 개발자의 습관을 충분히 고려하
 [프로젝트 저장소 아키텍처를 알고 싶으신가요? DeepWiki를 확인하세요!](https://deepwiki.com/steve02081504/fount)
 
 - **Git 기반**: 모든 구성 요소는 Git을 통해 관리될 수 있습니다.
-- **VSCode 통합**: 프로젝트 구조는 명확하며, [AGENTS.md](../AGENTS.md)에서 제공하는 지침과 함께, 당신이 선호하는 IDE에서 Agent 로직을 직접 개발하고 디버그할 수 있습니다.
+- **VSCode 통합**: 프로젝트 구조는 명확하며, [AGENTS.md](../../AGENTS.md)에서 제공하는 지침과 함께, 당신이 선호하는 IDE에서 Agent 로직을 직접 개발하고 디버그할 수 있습니다.
 
 ---
 
@@ -312,7 +312,7 @@ fount의 세계는 단순한 단어와 코드를 넘어, 눈을 즐겁게 하고
 
 기사의 방패처럼, fount 배지는 당신의 창작물에 대한 영광의 인장입니다. 이 배지를 리포지토리나 당신의 작품을 전시하고 싶은 곳 어디든 자랑스럽게 표시할 수 있습니다.
 
-fount 로고의 SVG 파일은 [여기](../imgs/)에서 찾을 수 있습니다.
+fount 로고의 SVG 파일은 [여기](../../imgs/)에서 찾을 수 있습니다.
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

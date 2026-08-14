@@ -112,7 +112,7 @@ L'architecture du projet fount est conçue en tenant pleinement compte des habit
 [Vous voulez connaître l'architecture du dépôt de projet ? Jetez un œil à DeepWiki !](https://deepwiki.com/steve02081504/fount)
 
 - **Piloté par Git** : Tous les composants peuvent être gérés via Git.
-- **Intégration VSCode** : La structure du projet est claire. Combiné aux instructions fournies dans [AGENTS.md](../AGENTS.md), vous pouvez développer et déboguer la logique de votre Agent directement dans votre IDE préféré.
+- **Intégration VSCode** : La structure du projet est claire. Combiné aux instructions fournies dans [AGENTS.md](../../AGENTS.md), vous pouvez développer et déboguer la logique de votre Agent directement dans votre IDE préféré.
 
 ---
 
@@ -310,7 +310,7 @@ Le monde de fount est plus que des mots et du code ; c'est un festin pour les ye
 
 ### Badges fount : Le Sceau de la Gloire
 
-Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous souhaitez présenter votre travail. Retrouvez les fichiers SVG du logo fount [ici](../imgs/).
+Vous pouvez fièrement afficher ce badge dans votre dépôt ou partout où vous souhaitez présenter votre travail. Retrouvez les fichiers SVG du logo fount [ici](../../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

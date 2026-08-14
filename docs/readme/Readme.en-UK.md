@@ -112,7 +112,7 @@ fount's project architecture is designed with full consideration for developers'
 [Want to know the project repository architecture? Check out DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 - **Git Driven**: All parts can be managed via Git.
-- **VSCode Integration**: The project structure is clear. Combined with the guidance provided in [AGENTS.md](../AGENTS.md), you can develop and debug your Agent logic directly in your favourite IDE.
+- **VSCode Integration**: The project structure is clear. Combined with the guidance provided in [AGENTS.md](../../AGENTS.md), you can develop and debug your Agent logic directly in your favourite IDE.
 
 ---
 
@@ -310,7 +310,7 @@ The world of fount is more than words and code; it's a feast for the eyes and an
 
 ### fount Badges: The Seal of Glory
 
-You can proudly display this badge in your repository or anywhere you wish to showcase your work. Find the SVG files of the fount logo [here](../imgs/).
+You can proudly display this badge in your repository or anywhere you wish to showcase your work. Find the SVG files of the fount logo [here](../../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

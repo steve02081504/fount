@@ -112,7 +112,7 @@ Verkefnisarkitektúr fount er hannaður með venjur forritara í huga.
 [Viltu vita um arkitektúr verkefnageymslunnar? Skoðaðu DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 - **Drifið af Git**: Hægt er að stjórna öllum hlutum í gegnum Git.
-- **VSCode Samþætting**: Verkefnisuppbyggingin er skýr, og með leiðbeiningunum í [AGENTS.md](../AGENTS.md) geturðu þróað og villuleitað rökfræði miðilsins beint í þínu uppáhalds IDE.
+- **VSCode Samþætting**: Verkefnisuppbyggingin er skýr, og með leiðbeiningunum í [AGENTS.md](../../AGENTS.md) geturðu þróað og villuleitað rökfræði miðilsins beint í þínu uppáhalds IDE.
 
 ---
 
@@ -311,7 +311,7 @@ Heimur fount er ekki bara texti og kóði, heldur einnig veisla fyrir augað og 
 
 ### fount merki: Heiðursmerki
 
-Þú getur stolt/ur/t notað þetta merki í kóðasafninu þínu eða hvar sem þú vilt sýna það. Þú getur fundið SVG skrá fyrir fount lógóið [hér](../imgs/).
+Þú getur stolt/ur/t notað þetta merki í kóðasafninu þínu eða hvar sem þú vilt sýna það. Þú getur fundið SVG skrá fyrir fount lógóið [hér](../../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

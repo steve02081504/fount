@@ -112,7 +112,7 @@ De projectarchitectuur van fount is ontworpen met volledige inachtneming van de 
 [Wilt u de architectuur van de projectrepository weten? Neem een kijkje op DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 - **Git-gestuurd**: Alle componenten kunnen via Git worden beheerd.
-- **VSCode-integratie**: De projectstructuur is duidelijk. In combinatie met de richtlijnen in [AGENTS.md](../AGENTS.md) kunt u de logica van uw Agent rechtstreeks in uw favoriete IDE ontwikkelen en debuggen.
+- **VSCode-integratie**: De projectstructuur is duidelijk. In combinatie met de richtlijnen in [AGENTS.md](../../AGENTS.md) kunt u de logica van uw Agent rechtstreeks in uw favoriete IDE ontwikkelen en debuggen.
 
 ---
 
@@ -311,7 +311,7 @@ De wereld van fount is meer dan alleen woorden en code; het is een feest van bee
 
 ### fount-badges: Een teken van eer
 
-Je kunt deze badge met trots gebruiken in je repository of waar je hem ook wilt tonen. Je kunt het SVG-bestand van het fount-logo [hier](../imgs/) vinden.
+Je kunt deze badge met trots gebruiken in je repository of waar je hem ook wilt tonen. Je kunt het SVG-bestand van het fount-logo [hier](../../imgs/) vinden.
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

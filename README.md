@@ -67,23 +67,23 @@ Use [SSP](https://ssp.shillest.net/) when you:
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
 
-[![English (United Kingdom)](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/United-Kingdom.png)](./docs/Readme.en-UK.md)
-[![日本語](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Japan.png)](./docs/Readme.ja-JP.md)
-[![中文](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/China.png)](./docs/Readme.zh-CN.md)
-[![繁體中文](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Taiwan.png)](./docs/Readme.zh-TW.md)
-[![Français](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/France.png)](./docs/Readme.fr-FR.md)
-[![Español](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Spain.png)](./docs/Readme.es-ES.md)
-[![Deutsch](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Germany.png)](./docs/Readme.de-DE.md)
-[![русский](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Russia.png)](./docs/Readme.ru-RU.md)
-[![Português](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Portugal.png)](./docs/Readme.pt-BR.md)
-[![हिन्दी](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/India.png)](./docs/Readme.hi-IN.md)
-[![한국어](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/South-Korea.png)](./docs/Readme.ko-KR.md)
-[![Italiano](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Italy.png)](./docs/Readme.it-IT.md)
-[![Tiếng Việt](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Vietnam.png)](./docs/Readme.vi-VN.md)
-[![Nederlands](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Netherlands.png)](./docs/Readme.nl-NL.md)
-[![Українська](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Ukraine.png)](./docs/Readme.uk-UA.md)
-[![العربية](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Saudi-Arabia.png)](./docs/Readme.ar-SA.md)
-[![Íslenska](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Iceland.png)](./docs/Readme.is-IS.md)
+[![English (United Kingdom)](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/United-Kingdom.png)](./docs/readme/Readme.en-UK.md)
+[![日本語](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Japan.png)](./docs/readme/Readme.ja-JP.md)
+[![中文](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/China.png)](./docs/readme/Readme.zh-CN.md)
+[![繁體中文](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Taiwan.png)](./docs/readme/Readme.zh-TW.md)
+[![Français](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/France.png)](./docs/readme/Readme.fr-FR.md)
+[![Español](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Spain.png)](./docs/readme/Readme.es-ES.md)
+[![Deutsch](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Germany.png)](./docs/readme/Readme.de-DE.md)
+[![русский](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Russia.png)](./docs/readme/Readme.ru-RU.md)
+[![Português](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Portugal.png)](./docs/readme/Readme.pt-BR.md)
+[![हिन्दी](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/India.png)](./docs/readme/Readme.hi-IN.md)
+[![한국어](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/South-Korea.png)](./docs/readme/Readme.ko-KR.md)
+[![Italiano](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Italy.png)](./docs/readme/Readme.it-IT.md)
+[![Tiếng Việt](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Vietnam.png)](./docs/readme/Readme.vi-VN.md)
+[![Nederlands](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Netherlands.png)](./docs/readme/Readme.nl-NL.md)
+[![Українська](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Ukraine.png)](./docs/readme/Readme.uk-UA.md)
+[![العربية](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Saudi-Arabia.png)](./docs/readme/Readme.ar-SA.md)
+[![Íslenska](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Iceland.png)](./docs/readme/Readme.is-IS.md)
 
 ![Repobeats analytics image](https://repobeats.axiom.co/api/embed/d0bbc20f70089126a83c66d9c1f88c7ec67aa101.svg)
 
@@ -132,7 +132,7 @@ fount's project architecture is designed with full consideration for developers'
 [Want to know the project repository architecture? Check out DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 - **Git Driven**: All parts can be managed via Git.
-- **VSCode Integration**: The project structure is clear. Combined with the guidance provided in [AGENTS.md](../AGENTS.md), you can develop and debug your Agent logic directly in your favourite IDE.
+- **VSCode Integration**: The project structure is clear. Combined with the guidance provided in [AGENTS.md](./AGENTS.md), you can develop and debug your Agent logic directly in your favourite IDE.
 
 ---
 

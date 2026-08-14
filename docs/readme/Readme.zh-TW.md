@@ -112,7 +112,7 @@ fount 的專案架構設計充分考慮了開發者的習慣。
 [想知道專案儲存庫架構嗎？快來看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)
 
 - **Git 驅動**：所有組件均可透過 Git 管理。
-- **VSCode 整合**：專案結構清晰，配合 [AGENTS.md](../AGENTS.md) 提供的指引，你可以直接在你喜歡的 IDE 中開發、除錯你的 Agent 邏輯。
+- **VSCode 整合**：專案結構清晰，配合 [AGENTS.md](../../AGENTS.md) 提供的指引，你可以直接在你喜歡的 IDE 中開發、除錯你的 Agent 邏輯。
 
 ---
 
@@ -311,7 +311,7 @@ fount 的世界不止是文字與程式碼，它更是一場視覺與連結的�
 
 ### fount 徽章：榮耀的印記
 
-你可以自豪地在你的儲存庫或任何希望展示的地方，使用這枚徽章。你可以在[此處](../imgs/)找到 fount logo 的 SVG 檔案。
+你可以自豪地在你的儲存庫或任何希望展示的地方，使用這枚徽章。你可以在[此處](../../imgs/)找到 fount logo 的 SVG 檔案。
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

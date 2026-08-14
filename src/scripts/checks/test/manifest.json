@@ -4,6 +4,9 @@
 		{
 			"name": "html_meta",
 			"expected": "2s",
+			"triggerFilter": {
+				"unignore": ["docs/readme/*.md"]
+			},
 			"run": [
 				"deno",
 				"test",
@@ -18,7 +21,8 @@
 			"triggers": [
 				"src/scripts/checks/{html_meta.mjs,og_meta_list.mjs,walk.mjs}",
 				"src/scripts/checks/test/{html_meta.test.mjs,og_meta_list.test.mjs}",
-				"**/*.html"
+				"**/*.html",
+				"docs/readme/*.md"
 			]
 		},
 		{

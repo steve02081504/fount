@@ -256,7 +256,7 @@ jobs:
           # session, but are embedded in rendered Markdown as pre-signed URLs with a short-lived JWT.
           echo "::group::Pre-fetching rendered Markdown for JWT URLs"
           JWT_HTML_FILE=/tmp/rendered_pages.html
-          for mdfile in README.md docs/Readme.*.md; do
+          for mdfile in README.md docs/readme/Readme.*.md; do
             [ -f "$mdfile" ] || continue
             api_path=$(echo "$mdfile" | sed 's|^\./||')
             gh api "/repos/$GITHUB_REPOSITORY/contents/$api_path" \

@@ -112,7 +112,7 @@ fount 的项目架构设计充分考虑了开发者的习惯。
 [想知道项目仓库架构吗？快来看看 DeepWiki！](https://deepwiki.com/steve02081504/fount)
 
 - **Git 驱动**：所有组件均可通过 Git 管理。
-- **VSCode 集成**：项目结构清晰，配合 [AGENTS.md](../AGENTS.md) 提供的指引，你可以直接在你喜欢的 IDE 中开发、调试你的 Agent 逻辑。
+- **VSCode 集成**：项目结构清晰，配合 [AGENTS.md](../../AGENTS.md) 提供的指引，你可以直接在你喜欢的 IDE 中开发、调试你的 Agent 逻辑。
 
 ---
 
@@ -311,7 +311,7 @@ fount 的世界不止是文字与代码，它更是一场视觉与连接的盛�
 
 ### fount 徽章：荣耀的印记
 
-你可以自豪地在你的仓库或任何希望展示的地方，使用这枚徽章。你可以在[此处](../imgs/)找到 fount logo 的 SVG 文件。
+你可以自豪地在你的仓库或任何希望展示的地方，使用这枚徽章。你可以在[此处](../../imgs/)找到 fount logo 的 SVG 文件。
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

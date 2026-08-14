@@ -112,7 +112,7 @@ fount のプロジェクトアーキテクチャ設計は、開発者の習慣�
 [プロジェクトリポジトリのアーキテクチャを知りたいですか？ DeepWiki をご覧ください！](https://deepwiki.com/steve02081504/fount)
 
 - **Git駆動**: すべてのコンポーネントは Git を介して管理できます。
-- **VSCode 統合**: プロジェクト構造は明確で、[AGENTS.md](../AGENTS.md) で提供されるガイドラインと組み合わせることで、お気に入りの IDE で直接 Agent のロジックを開発、デバッグできます。
+- **VSCode 統合**: プロジェクト構造は明確で、[AGENTS.md](../../AGENTS.md) で提供されるガイドラインと組み合わせることで、お気に入りの IDE で直接 Agent のロジックを開発、デバッグできます。
 
 ---
 
@@ -312,7 +312,7 @@ fountの世界は単なる言葉やコードではありません。それは目
 
 騎士の盾のように、fountバッジはあなたの創造物に対する栄光の印です。このバッジをリポジトリや、あなたの作品を展示したい任意の場所に誇らしげに表示できます。
 
-fountロゴのSVGファイルは[こちら](../imgs/)にあります。
+fountロゴのSVGファイルは[こちら](../../imgs/)にあります。
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

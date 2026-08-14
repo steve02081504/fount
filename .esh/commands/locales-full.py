@@ -21,7 +21,7 @@ _INDENT = 2
 FOUNT_DIR = Path.cwd()
 MAIN_LOCALES_DIR = FOUNT_DIR / "src" / "public" / "locales"
 FULL_LOCALES_DIR = FOUNT_DIR / "full_locales"
-DOCS_DIR = FOUNT_DIR / "docs"
+README_DIR = FOUNT_DIR / "docs" / "readme"
 LOCALES_FILENAME = "locales.json"
 IGNORE_DIRS = {"node_modules", ".git", "dist", "build"}
 LANG_LIKE_KEYS = {"emoji", "lzh"}
@@ -134,7 +134,7 @@ def merge_cmd(lang: str, out_path: Path) -> None:
 	main_path = FOUNT_DIR / main_rel
 
 	full = {}
-	readme_path = DOCS_DIR / f"Readme.{lang}.md"
+	readme_path = README_DIR / f"Readme.{lang}.md"
 	if readme_path.exists():
 		full["_docs_readme"] = _readme_to_yaml(readme_path.read_text(encoding="utf-8"))
 	if main_path.exists():
@@ -158,7 +158,7 @@ def back_cmd(lang: str, in_path: Path) -> None:
 	wrote = 0
 
 	if "_docs_readme" in full:
-		readme_path = DOCS_DIR / f"Readme.{lang}.md"
+		readme_path = README_DIR / f"Readme.{lang}.md"
 		if write_if_changed(readme_path, _readme_from_yaml(full["_docs_readme"])):
 			print(f"Wrote readme: {readme_path.name}")
 			wrote += 1

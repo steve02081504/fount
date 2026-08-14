@@ -112,7 +112,7 @@ Kiến trúc dự án của fount được thiết kế với sự cân nhắc �
 [Muốn biết kiến trúc kho lưu trữ dự án? Hãy xem DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 - **Điều khiển bằng Git**: Tất cả các thành phần đều có thể được quản lý thông qua Git.
-- **Tích hợp VSCode**: Cấu trúc dự án rõ ràng, kết hợp với hướng dẫn được cung cấp trong [AGENTS.md](../AGENTS.md), bạn có thể phát triển, gỡ lỗi logic Agent của mình trực tiếp trong IDE yêu thích của mình.
+- **Tích hợp VSCode**: Cấu trúc dự án rõ ràng, kết hợp với hướng dẫn được cung cấp trong [AGENTS.md](../../AGENTS.md), bạn có thể phát triển, gỡ lỗi logic Agent của mình trực tiếp trong IDE yêu thích của mình.
 
 ---
 
@@ -310,7 +310,7 @@ Thế giới của fount không chỉ là từ ngữ và mã lệnh; đó là m�
 
 ### Huy hiệu fount: Con dấu của vinh quang
 
-Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ của mình hoặc bất cứ nơi nào bạn muốn trưng bày tác phẩm của mình. Tìm các tệp SVG của logo fount [tại đây](../imgs/).
+Bạn có thể tự hào hiển thị huy hiệu này trong kho lưu trữ của mình hoặc bất cứ nơi nào bạn muốn trưng bày tác phẩm của mình. Tìm các tệp SVG của logo fount [tại đây](../../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

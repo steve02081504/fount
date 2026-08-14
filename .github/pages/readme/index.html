@@ -19,82 +19,29 @@
 <body>
 	<main aria-hidden="true"><!-- Redirect page; main content is script-driven --></main>
 	<script>
-		const language = navigator.language || navigator.userLanguage
-		switch (language) {
-			case 'zh':
-			case 'zh-CN':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.zh-CN.md' + location.hash
-				break
-			case 'zh-TW':
-			case 'zh-HK':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.zh-TW.md' + location.hash
-				break
-			case 'en':
-			case 'en-UK':
-			case 'en-GB':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.en-UK.md' + location.hash
-				break
-			case 'ja':
-			case 'ja-JP':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.ja-JP.md' + location.hash
-				break
-			case 'fr':
-			case 'fr-FR':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.fr-FR.md' + location.hash
-				break
-			case 'es':
-			case 'es-ES':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.es-ES.md' + location.hash
-				break
-			case 'de':
-			case 'de-DE':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.de-DE.md' + location.hash
-				break
-			case 'ru':
-			case 'ru-RU':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.ru-RU.md' + location.hash
-				break
-			case 'pt':
-			case 'pt-BR':
-			case 'pt-PT':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.pt-BR.md' + location.hash
-				break
-			case 'hi':
-			case 'hi-IN':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.hi-IN.md' + location.hash
-				break
-			case 'ko':
-			case 'ko-KR':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.ko-KR.md' + location.hash
-				break
-			case 'it':
-			case 'it-IT':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.it-IT.md' + location.hash
-				break
-			case 'vi':
-			case 'vi-VN':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.vi-VN.md' + location.hash
-				break
-			case 'ar':
-			case 'ar-SA':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.ar-SA.md' + location.hash
-				break
-			case 'is':
-			case 'is-IS':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.is-IS.md' + location.hash
-				break
-			case 'nl':
-			case 'nl-NL':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.nl-NL.md' + location.hash
-				break
-			case 'uk':
-			case 'uk-UA':
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.uk-UA.md' + location.hash
-				break
-			default:
-				window.location.href = 'https://github.com/steve02081504/fount/blob/master/docs/Readme.en-UK.md' + location.hash
-				break
+		const README_BLOB = 'https://github.com/steve02081504/fount/blob/master/docs/readme/Readme.'
+		const ALIAS = {
+			zh: 'zh-CN', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', 'zh-HK': 'zh-TW',
+			en: 'en-UK', 'en-UK': 'en-UK', 'en-GB': 'en-UK',
+			ja: 'ja-JP', 'ja-JP': 'ja-JP',
+			fr: 'fr-FR', 'fr-FR': 'fr-FR',
+			es: 'es-ES', 'es-ES': 'es-ES',
+			de: 'de-DE', 'de-DE': 'de-DE',
+			ru: 'ru-RU', 'ru-RU': 'ru-RU',
+			pt: 'pt-BR', 'pt-BR': 'pt-BR', 'pt-PT': 'pt-BR',
+			hi: 'hi-IN', 'hi-IN': 'hi-IN',
+			ko: 'ko-KR', 'ko-KR': 'ko-KR',
+			it: 'it-IT', 'it-IT': 'it-IT',
+			vi: 'vi-VN', 'vi-VN': 'vi-VN',
+			ar: 'ar-SA', 'ar-SA': 'ar-SA',
+			is: 'is-IS', 'is-IS': 'is-IS',
+			nl: 'nl-NL', 'nl-NL': 'nl-NL',
+			uk: 'uk-UA', 'uk-UA': 'uk-UA',
 		}
+		const raw = navigator.language || navigator.userLanguage || ''
+		const [lang, region] = raw.split('-')
+		const tag = region ? `${lang.toLowerCase()}-${region.toUpperCase()}` : lang.toLowerCase()
+		window.location.href = README_BLOB + (ALIAS[tag] || ALIAS[lang.toLowerCase()] || 'en-UK') + '.md' + location.hash
 	</script>
 </body>
 

@@ -112,7 +112,7 @@ A arquitetura do projeto fount é projetada com total consideração pelos hábi
 [Quer saber a arquitetura do repositório do projeto? Dê uma olhada no DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 - **Impulsionado por Git**: Todos os componentes podem ser gerenciados via Git.
-- **Integração com VSCode**: A estrutura do projeto é clara. Combinado com a orientação fornecida em [AGENTS.md](../AGENTS.md), você pode desenvolver e depurar a lógica do seu Agente diretamente no seu IDE favorito.
+- **Integração com VSCode**: A estrutura do projeto é clara. Combinado com a orientação fornecida em [AGENTS.md](../../AGENTS.md), você pode desenvolver e depurar a lógica do seu Agente diretamente no seu IDE favorito.
 
 ---
 
@@ -310,7 +310,7 @@ O mundo do fount é mais do que palavras e código; é um deleite para os olhos 
 
 ### Insígnias fount: O Selo da Glória
 
-Você pode exibir com orgulho esta insígnia em seu repositório ou em qualquer lugar que deseje mostrar seu trabalho. Encontre os arquivos SVG do logo do fount [aqui](../imgs/).
+Você pode exibir com orgulho esta insígnia em seu repositório ou em qualquer lugar que deseje mostrar seu trabalho. Encontre os arquivos SVG do logo do fount [aqui](../../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)

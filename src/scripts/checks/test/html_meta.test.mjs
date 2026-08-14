@@ -2,7 +2,7 @@
  * 仓库完整 HTML：元数据、main、drawer-toggle、aside ARIA。
  */
 /* global Deno */
-import { readFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { assertEquals, assert } from 'https://deno.land/std/assert/mod.ts'
@@ -88,4 +88,21 @@ Deno.test('repo full HTML documents pass html meta checks', async () => {
 	}
 	assert(checked > 0, '未找到任何完整 HTML 文档')
 	assertEquals(failures, [], failures.join('\n'))
+})
+
+Deno.test('pages readme redirect and root flags cover docs/readme locales', async () => {
+	const html = await readFile(join(REPO_ROOT, '.github/pages/readme/index.html'), 'utf8')
+	const rootReadme = await readFile(join(REPO_ROOT, 'README.md'), 'utf8')
+	assert(html.includes('docs/readme/Readme.'), 'redirect blob prefix')
+	const files = (await readdir(join(REPO_ROOT, 'docs/readme')))
+		.filter(name => /^Readme\.[^.]+\.md$/.test(name))
+	assert(files.length > 0, 'docs/readme 中没有 Readme.*.md')
+	assertEquals(
+		files.filter(name => !html.includes(`'${name.slice('Readme.'.length, -'.md'.length)}'`)),
+		[],
+	)
+	assertEquals(
+		files.filter(name => !rootReadme.includes(`./docs/readme/${name}`)),
+		[],
+	)
 })

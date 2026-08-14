@@ -112,7 +112,7 @@ Die Projektarchitektur von fount wurde unter umfassender Berücksichtigung der G
 [Möchten Sie die Architektur des Projekt-Repositorys kennen? Werfen Sie einen Blick auf DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 - **Git-gesteuert**: Alle Komponenten können über Git verwaltet werden.
-- **VSCode-Integration**: Die Projektstruktur ist klar. In Verbindung mit den Anweisungen in [AGENTS.md](../AGENTS.md) können Sie Ihre Agent-Logik direkt in Ihrer bevorzugten IDE entwickeln und debuggen.
+- **VSCode-Integration**: Die Projektstruktur ist klar. In Verbindung mit den Anweisungen in [AGENTS.md](../../AGENTS.md) können Sie Ihre Agent-Logik direkt in Ihrer bevorzugten IDE entwickeln und debuggen.
 
 ---
 
@@ -310,7 +310,7 @@ Die Welt von fount ist mehr als Worte und Code; sie ist ein Fest für die Augen 
 
 ### fount-Embleme: Das Siegel des Ruhms
 
-Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentieren, wo du deine Arbeit zeigen möchtest. Die SVG-Dateien des fount-Logos findest du [hier](../imgs/).
+Du kannst dieses Emblem stolz in deinem Repository oder überall dort präsentieren, wo du deine Arbeit zeigen möchtest. Die SVG-Dateien des fount-Logos findest du [hier](../../imgs/).
 
 ```markdown
 [![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
