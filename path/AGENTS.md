@@ -14,7 +14,7 @@ Thin entries `path/fount.{ps1,sh}` dispatch to `path/src/cmd/<name>.*` via inlin
 | `bootstrap_server` | Server path (uses background updates) |
 | `require_mid` + `source_uninstall_hooks` | `remove` |
 
-Windows `bootstrap_full` writes `$FOUNT_DIR/fount.exe` when missing (gitignored) — Steam convenience, not required to run. Skips when `favicon.ico` is not yet compiled (server `init`); compile failures are swallowed (`$Error` / `LastExitCode` restored) so they cannot fail `fount server`. `fount geneexe [path]` still defaults to `./fount.exe` (cwd) and still fails hard. If the ico is missing, geneexe calls `run shutdown` so init compiles the icon. Call the `run` function, not `fount shutdown`, so bootstrap cannot recurse into `Install-FountRootExe`.
+Windows `bootstrap_full` writes `$FOUNT_DIR/fount.exe` when missing (gitignored) — Steam convenience, not required to run. Compile failures are swallowed (`catch` + `$Error` / `LastExitCode` restored) so they cannot fail `fount server`. If `gh` is authenticated, a swallowed ps12exe throw auto-opens (or finds) a `steve02081504/ps12exe` issue; path-cmd-smoke sets `GH_TOKEN`. `fount geneexe [path]` still defaults to `./fount.exe` (cwd) and still fails hard. If the ico is missing, geneexe calls `run shutdown` so init compiles the icon. Call the `run` function, not `fount shutdown`, so bootstrap cannot recurse into `Install-FountRootExe`.
 
 Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/src/win/` or `unix/`. Shared helpers: `in_container`, `run_with_updates`, `trap_terminal_teardown`, `handle_docker_passthrough`, `check_temp_guard`, `sed_escape`.
 
@@ -38,7 +38,7 @@ Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/s
 
 ## CI smoke
 
-CI-only `path-cmd-smoke`: [docs/ci-smoke.md](docs/ci-smoke.md).
+CI-only `path-cmd-smoke`: [docs/ci-smoke.md](docs/ci-smoke.md). `test-fount` init → `remove` fails if output matches [remove-noise.patterns](../.github/path-ci/remove-noise.patterns).
 
 ## ShellCheck
 

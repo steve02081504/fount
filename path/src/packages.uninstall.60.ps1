@@ -16,8 +16,14 @@ if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_winget") {
 
 if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_deno") {
 	Write-Host (Get-I18n -key 'remove.uninstalling.deno')
-	try { Remove-Item $(Get-Command deno).Source -Force } catch {
-		Write-Warning (Get-I18n -key 'remove.remove.denoFailed' -params @{message = $_.Exception.Message })
+	$deno = Get-Command deno -ErrorAction SilentlyContinue
+	if ($deno) {
+		try {
+			Remove-Item -LiteralPath $deno.Source -Force
+		}
+		catch {
+			Write-Warning (Get-I18n -key 'remove.remove.denoFailed' -params @{message = $_.Exception.Message })
+		}
 	}
 	Remove-Item "~/.deno" -Force -Recurse -ErrorAction Ignore
 
