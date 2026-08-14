@@ -511,7 +511,7 @@
 				"desktopShortcutNotFound": "No se encontró el acceso directo en el escritorio.",
 				"startMenuShortcutRemoved": "Se ha eliminado el acceso directo al menú Inicio.",
 				"startMenuShortcutNotFound": "No se encontró el acceso directo al menú Inicio.",
-				"steamShortcutRemoved": "fount se ha eliminado de tu biblioteca de Steam.",
+				"steamShortcutRemoved": "fount se ha eliminado de su biblioteca de Steam.",
 				"steamShortcutNotFound": "No se encontró fount en Steam.",
 				"moduleRemoved": "${module} ha sido eliminado.",
 				"uninstalling": {

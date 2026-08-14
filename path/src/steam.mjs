@@ -71,10 +71,10 @@ export function quoteSteamPath(value, platform = process.platform) {
  * @param {string} right 路径
  * @returns {boolean} 是否同一路径
  */
-function pathEq(left, right) {
-	const a = resolve(unquoteSteamPath(left))
-	const b = resolve(unquoteSteamPath(right))
-	return process.platform === 'win32' ? a.toLowerCase() === b.toLowerCase() : a === b
+function pathsEqual(left, right) {
+	const resolvedLeft = resolve(unquoteSteamPath(left))
+	const resolvedRight = resolve(unquoteSteamPath(right))
+	return process.platform === 'win32' ? resolvedLeft.toLowerCase() === resolvedRight.toLowerCase() : resolvedLeft === resolvedRight
 }
 
 /**
@@ -155,10 +155,10 @@ export function steamLaunchPaths(fountDir, platform = process.platform) {
  */
 function isFountLauncher(exePath, fountDir) {
 	const root = resolve(fountDir)
-	return pathEq(exePath, join(root, 'fount.exe'))
-		|| pathEq(exePath, join(root, 'path', 'fount'))
-		|| pathEq(exePath, join(root, 'path', 'fount.ps1'))
-		|| pathEq(exePath, join(root, 'path', 'fount.sh'))
+	return pathsEqual(exePath, join(root, 'fount.exe'))
+		|| pathsEqual(exePath, join(root, 'path', 'fount'))
+		|| pathsEqual(exePath, join(root, 'path', 'fount.ps1'))
+		|| pathsEqual(exePath, join(root, 'path', 'fount.sh'))
 }
 
 /**
@@ -168,10 +168,8 @@ function isFountLauncher(exePath, fountDir) {
  * @returns {boolean} 是则 true
  */
 export function isFountEntry(entry, fountDir) {
-	const exe = resolve(unquoteSteamPath(entry.exe || ''))
-	const startDir = resolve(unquoteSteamPath(entry.startDir || ''))
-	if (isFountLauncher(exe, fountDir)) return true
-	return entry.appName === APP_NAME && pathEq(startDir, fountDir)
+	if (isFountLauncher(resolve(unquoteSteamPath(entry.exe)), fountDir)) return true
+	return entry.appName === APP_NAME && pathsEqual(resolve(unquoteSteamPath(entry.startDir)), fountDir)
 }
 
 /**
@@ -257,12 +255,11 @@ export async function ensureSteamImages(imgsDir) {
  */
 export async function queryWindowsSteamPath() {
 	try {
-		const proc = new Deno.Command('reg', {
+		const { code, stdout } = await new Deno.Command('reg', {
 			args: ['query', 'HKCU\\SOFTWARE\\Valve\\Steam', '/v', 'SteamPath'],
 			stdout: 'piped',
 			stderr: 'piped',
-		})
-		const { code, stdout } = await proc.output()
+		}).output()
 		if (code) return
 		const text = new TextDecoder().decode(stdout)
 		const match = /SteamPath\s+REG_\w+\s+(.+)/.exec(text)
@@ -408,8 +405,7 @@ export async function removeSteamImages(gridDir, appId) {
  * @returns {Promise<ShortcutsFile>} shortcuts
  */
 export async function loadShortcutsFile(shortcutsPath) {
-	const buf = existsSync(shortcutsPath) ? await readFile(shortcutsPath) : new Uint8Array()
-	return ShortcutsFile.fromBuffer(buf, shortcutsPath)
+	return ShortcutsFile.fromBuffer(existsSync(shortcutsPath) ? await readFile(shortcutsPath) : new Uint8Array(), shortcutsPath)
 }
 
 /**

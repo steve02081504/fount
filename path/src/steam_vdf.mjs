@@ -127,7 +127,7 @@ export function writeBinaryVdf(root) {
 			else {
 				chunks.push(Buffer.from([TYPE_STRING]))
 				writeString(key)
-				writeString(value ?? '')
+				writeString(value)
 			}
 		
 		chunks.push(Buffer.from([TYPE_END]))
@@ -169,7 +169,7 @@ export function entryToSteam(fields) {
 	])
 		if (from in fields) steam[to] = fields[from] >>> 0
 	if ('tags' in fields)
-		steam.tags = Object.fromEntries((fields.tags || []).map((tag, index) => [String(index), tag]))
+		steam.tags = Object.fromEntries(fields.tags.map((tag, index) => [String(index), tag]))
 	return steam
 }
 
@@ -225,7 +225,7 @@ export class ShortcutsFile {
 	constructor(root = { shortcuts: {} }, path = '') {
 		this.root = root
 		if (!this.root.shortcuts || typeof this.root.shortcuts !== 'object')
-			this.root.shortcuts = {}
+			throw new Error('shortcuts.vdf: missing shortcuts object')
 		this.path = path
 	}
 

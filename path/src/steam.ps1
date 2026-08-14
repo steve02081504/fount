@@ -1,10 +1,9 @@
 function script:Invoke-FountSteamJs([string]$Action) {
 	$errorCount = $Error.Count
 	try {
-		$out = deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/path/src/steam.mjs" $Action $FOUNT_DIR 2>&1 | Out-String
-		$code = $LastExitCode
-		if ($out -match '(?m)^FOUNT_STEAM:(.+)$') { return $Matches[1] | ConvertFrom-Json }
-		if ($code) { return [pscustomobject]@{ status = 'error'; message = $out.Trim() } }
+		$output = deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/path/src/steam.mjs" $Action $FOUNT_DIR 2>&1 | Out-String
+		if ($output -match '(?m)^FOUNT_STEAM:(.+)$') { return $Matches[1] | ConvertFrom-Json }
+		if ($LastExitCode) { return [pscustomobject]@{ status = 'error'; message = $output.Trim() } }
 		return [pscustomobject]@{ status = 'skip' }
 	}
 	catch {
