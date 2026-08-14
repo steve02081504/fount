@@ -28,10 +28,6 @@
 		{
 			"name": "live",
 			"expected": "1m34s",
-			"skip_because": {
-				"url": "https://github.com/homebridge/ciao/issues/72",
-				"delay": "25h"
-			},
 			"run": [
 				"deno",
 				"test",
