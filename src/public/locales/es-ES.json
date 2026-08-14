@@ -3872,10 +3872,10 @@
 		},
 		"platforms": {
 			"bedrock": {
-				"credentialsRequired": "Configura la cadena de credenciales predeterminada de AWS y especifica region en el JSON."
+				"credentialsRequired": "Configure la cadena de credenciales predeterminada de AWS y especifique region en el JSON."
 			},
 			"vertex": {
-				"credentialsRequired": "Configura ADC y especifica project y location en el JSON."
+				"credentialsRequired": "Configure ADC y especifique project y location en el JSON."
 			}
 		},
 		"prompts": {

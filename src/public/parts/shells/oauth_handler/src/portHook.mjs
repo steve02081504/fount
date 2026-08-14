@@ -43,8 +43,7 @@ export function startPortHook({ port, pathname, targetUrl }) {
  */
 export function withQuery(targetUrl, search) {
 	const destination = new URL(targetUrl)
-	const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search)
-	for (const [key, value] of params)
+	for (const [key, value] of new URLSearchParams(search.startsWith('?') ? search.slice(1) : search))
 		destination.searchParams.set(key, value)
 	return destination.href
 }

@@ -43,11 +43,11 @@ function isInternalHostname(hostname) {
 	}
 	const parts = host.split('.').map(Number)
 	if (parts.length !== 4 || parts.some(part => !Number.isInteger(part) || part < 0 || part > 255)) return false
-	const [a, b] = parts
-	if (a === 0 || a === 10 || a === 127) return true
-	if (a === 169 && b === 254) return true
-	if (a === 172 && b >= 16 && b <= 31) return true
-	if (a === 192 && b === 168) return true
+	const [firstOctet, secondOctet] = parts
+	if (firstOctet === 0 || firstOctet === 10 || firstOctet === 127) return true
+	if (firstOctet === 169 && secondOctet === 254) return true
+	if (firstOctet === 172 && secondOctet >= 16 && secondOctet <= 31) return true
+	if (firstOctet === 192 && secondOctet === 168) return true
 	return false
 }
 

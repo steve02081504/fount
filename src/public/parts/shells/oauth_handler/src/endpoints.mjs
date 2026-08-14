@@ -37,9 +37,9 @@ export function setEndpoints(router) {
 		res.status(200).json(loginStatus(username, req.params.state))
 	})
 
-	router.post(`${PREFIX}/cancel`, authenticate, (req, res) => {
+	router.post(`${PREFIX}/cancel`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		cancelLogin(username, req.body?.state)
+		await cancelLogin(username, req.body?.state)
 		res.status(200).json({})
 	})
 }

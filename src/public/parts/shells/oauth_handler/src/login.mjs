@@ -27,7 +27,7 @@ import {
  * @returns {Promise<object>} start 响应。
  */
 export async function startPkceLogin({ username, provider, sourceName, serviceSourcePath }) {
-	sweepExpired()
+	await sweepExpired()
 	const { verifier, challenge } = generatePKCE()
 	const state = provider === ANTHROPIC ? verifier : randomState()
 	const hook = await startPortHook({
@@ -152,11 +152,10 @@ export function loginStatus(username, state) {
  * 取消 pending 登录。
  * @param {string} username - 当前用户。
  * @param {string} state - OAuth state。
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function cancelLogin(username, state) {
+export async function cancelLogin(username, state) {
 	const session = getPending(state)
 	if (!session || session.username !== username) return
-	session.abort?.abort()
-	deletePending(state)
+	await deletePending(state)
 }

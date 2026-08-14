@@ -12,6 +12,7 @@
  */
 export async function renderOauthPanel({ data, containers, editors, provider, sourceName, serviceSourcePath, cache }) {
 	const { cancelOAuth, oauthStatus, startOAuth } = await import('/parts/shells:oauth_handler/src/endpoints.mjs')
+	const { getServiceSourceFile, setServiceSourceFile } = await import('/parts/shells:serviceSourceManage/src/endpoints.mjs')
 	const panel = document.createElement('div')
 	panel.className = 'flex flex-col gap-2 mb-4'
 	const row = document.createElement('div')
@@ -65,9 +66,7 @@ export async function renderOauthPanel({ data, containers, editors, provider, so
 			while (cache.oauthState === started.state) {
 				const snap = await oauthStatus(started.state)
 				if (snap.status === 'completed') {
-					const { getServiceSourceFile } = await import('/parts/shells:serviceSourceManage/src/endpoints.mjs')
-					const saved = await getServiceSourceFile(sourceName, serviceSourcePath)
-					Object.assign(data, saved.config)
+					Object.assign(data, (await getServiceSourceFile(sourceName, serviceSourcePath)).config)
 					editors?.json?.set({ json: data })
 					break
 				}
@@ -88,7 +87,9 @@ export async function renderOauthPanel({ data, containers, editors, provider, so
 
 	logoutButton.addEventListener('click', async () => {
 		if (cache.oauthState) await cancelOAuth(cache.oauthState).catch(() => { })
+		delete cache.oauthState
 		delete data.oauth
+		if (sourceName) await setServiceSourceFile(sourceName, { config: data }, serviceSourcePath)
 		editors?.json?.set({ json: data })
 		paint()
 	})

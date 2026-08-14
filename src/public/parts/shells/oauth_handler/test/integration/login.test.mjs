@@ -56,18 +56,18 @@ Deno.test('complete PKCE keeps oauth server-side and omits it from API snapshots
 	}
 	finally {
 		globalThis.fetch = originalFetch
-		deletePending(state)
+		await deletePending(state)
 	}
 })
 
-Deno.test('cancel drops the pending session', () => {
+Deno.test('cancel drops the pending session', async () => {
 	const state = `cancel-${crypto.randomUUID().slice(0, 8)}`
 	putPending(state, { username: 'oauth-handler-test', providerId: CODEX.id, verifier: 'v' })
 	try {
-		cancelLogin('oauth-handler-test', state)
+		await cancelLogin('oauth-handler-test', state)
 		assertEquals(loginStatus('oauth-handler-test', state).status, 'unknown')
 	}
 	finally {
-		deletePending(state)
+		await deletePending(state)
 	}
 })
