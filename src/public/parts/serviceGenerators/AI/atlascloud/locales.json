@@ -183,7 +183,7 @@
 			"name": "Atlas Cloud",
 			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
 			"description": "Atlas Cloud",
-			"description_markdown": "接 Atlas Cloud 之 OpenAI 相容 LLM 接口。",
+			"description_markdown": "接 Atlas Cloud 之 OpenAI 相容宏文接口。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -468,7 +468,7 @@
 		"lzh": {
 			"avatar": "https://api.iconify.design/mdi/cloud-outline.svg",
 			"description": "Atlas Cloud",
-			"description_markdown": "接 Atlas Cloud 之 OpenAI 相容 LLM 接口。",
+			"description_markdown": "接 Atlas Cloud 之 OpenAI 相容宏文接口。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [

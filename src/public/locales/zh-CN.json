@@ -3396,7 +3396,7 @@
 				"reasoningDetailsTitle": "推理过程",
 				"logprobsNotApplicable": "不适用",
 				"logprobsTopLogprobsMeta": "top_logprobs（已选：${token}）",
-				"logprobsMetricsFooter": "首词元延迟: ${ttft} | 用时: ${time} | 词元: ${tokens} | 速度: ${speed}",
+				"logprobsMetricsFooter": "首token延迟: ${ttft} | 用时: ${time} | token: ${tokens} | 速度: ${speed}",
 				"noReplyContent": "（无回复内容）",
 				"feedback": {
 					"thumbsUp": {

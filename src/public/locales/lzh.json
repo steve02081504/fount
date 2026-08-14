@@ -3396,7 +3396,7 @@
 				"reasoningDetailsTitle": "推演本末",
 				"logprobsNotApplicable": "無涉",
 				"logprobsTopLogprobsMeta": "top_logprobs（所揀：${token}）",
-				"logprobsMetricsFooter": "首詞元遲延: ${ttft} | 歷時: ${time} | 詞元: ${tokens} | 速率: ${speed}",
+				"logprobsMetricsFooter": "首文元遲延: ${ttft} | 歷時: ${time} | 文元: ${tokens} | 速率: ${speed}",
 				"noReplyContent": "（未有覆言）",
 				"feedback": {
 					"thumbsUp": {
@@ -3851,13 +3851,13 @@
 			},
 			"meta": {
 				"cachePrice": "緩存讀寫：${read} / ${write}",
-				"context": "文脈：${context} tokens",
-				"inputPrice": "輸入價：${price} / 1M tokens",
+				"context": "文脈：${context} 文元",
+				"inputPrice": "輸入價：${price} / 1M 文元",
 				"knowledge": "見聞止於：${knowledge}",
 				"modalities": "模態：輸入 ${input}，輸出 ${output}",
 				"openWeights": "權重開放",
-				"outputLimit": "最大輸出：${output} tokens",
-				"outputPrice": "輸出價：${price} / 1M tokens",
+				"outputLimit": "最大輸出：${output} 文元",
+				"outputPrice": "輸出價：${price} / 1M 文元",
 				"reasoning": "通推理",
 				"releaseDate": "發佈之日：${date}",
 				"toolCall": "通工具喚起",
