@@ -3834,7 +3834,7 @@
 				"waiting": "Ожидание авторизации…",
 				"failed": "Ошибка входа: ${message}",
 				"deviceCode": "Откройте ${uri} и введите код ${code}",
-				"credentialsRequired": "Заполните нужные поля JSON (region / project / location / account_id / gateway_id / API key). Учётки также могут быть в переменных окружения."
+				"credentialsRequired": "Заполните нужные поля JSON (region / project / location / account_id / gateway_id / API key). Учётные данные также могут быть в переменных окружения."
 			},
 			"copyModelIdTooltip": "Нажмите, чтобы скопировать идентификатор модели",
 			"loadModelsFailed": "Не удалось загрузить модель: `${message}",
@@ -3862,6 +3862,14 @@
 				"releaseDate": "Дата выпуска: ${date}",
 				"toolCall": "Поддерживает вызов инструментов",
 				"vision": "Поддерживает визуальный ввод"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Настройте цепочку учётных данных AWS по умолчанию и укажите region в JSON."
+			},
+			"vertex": {
+				"credentialsRequired": "Настройте ADC и укажите project и location в JSON."
 			}
 		},
 		"prompts": {

@@ -3863,6 +3863,14 @@
 				"vision": "支援視覺輸入"
 			}
 		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "請設定 AWS 預設憑證鏈，並在 JSON 中填寫 region。"
+			},
+			"vertex": {
+				"credentialsRequired": "請設定 ADC，並在 JSON 中填寫 project 與 location。"
+			}
+		},
 		"prompts": {
 			"newFileName": "請輸入新的服務來源檔案名稱 (請勿包含副檔名):"
 		},

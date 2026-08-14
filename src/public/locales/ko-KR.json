@@ -3864,6 +3864,14 @@
 				"vision": "시각 입력 지원"
 			}
 		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
+			},
+			"vertex": {
+				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+			}
+		},
 		"prompts": {
 			"newFileName": "새 서비스 소스 파일 이름을 입력하세요(접미사 제외)."
 		},

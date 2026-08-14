@@ -3864,6 +3864,14 @@
 				"vision": "Підтримує візуальний ввід"
 			}
 		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
+			},
+			"vertex": {
+				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+			}
+		},
 		"prompts": {
 			"newFileName": "Будь ласка, введіть назву нового вихідного файлу служби (не включайте суфікс):"
 		},

@@ -3864,6 +3864,14 @@
 				"vision": "दृश्य इनपुट समर्थित"
 			}
 		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
+			},
+			"vertex": {
+				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+			}
+		},
 		"prompts": {
 			"newFileName": "कृपया नया सेवा स्रोत फ़ाइल नाम दर्ज करें (प्रत्यय शामिल न करें):"
 		},

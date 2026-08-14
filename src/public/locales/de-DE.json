@@ -3831,10 +3831,10 @@
 				"logout": "Abmelden",
 				"loggedIn": "Angemeldet",
 				"notLoggedIn": "Nicht angemeldet",
-				"waiting": "Warte auf Autorisierung…",
+				"waiting": "Warten Sie auf die Autorisierung…",
 				"failed": "Anmeldung fehlgeschlagen: ${message}",
-				"deviceCode": "Öffne ${uri} und gib den Code ${code} ein",
-				"credentialsRequired": "Fülle die nötigen JSON-Felder (region / project / location / account_id / gateway_id / API key). Zugangsdaten können auch aus Umgebungsvariablen kommen."
+				"deviceCode": "Öffnen Sie ${uri} und geben Sie den Code ${code} ein",
+				"credentialsRequired": "Füllen Sie die erforderlichen JSON-Felder aus (region / project / location / account_id / gateway_id / API key). Zugangsdaten können auch aus Umgebungsvariablen kommen."
 			},
 			"copyModelIdTooltip": "Klicken Sie, um die Modell-ID zu kopieren",
 			"loadModelsFailed": "Modell konnte nicht geladen werden: ${message}",
@@ -3862,6 +3862,14 @@
 				"releaseDate": "Veröffentlichungsdatum: ${date}",
 				"toolCall": "Unterstützt Tool-Aufrufe",
 				"vision": "Unterstützt visuelle Eingabe"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "Konfigurieren Sie die AWS-Standard-Anmeldeinformationskette und tragen Sie region in JSON ein."
+			},
+			"vertex": {
+				"credentialsRequired": "Konfigurieren Sie ADC und tragen Sie project und location in JSON ein."
 			}
 		},
 		"prompts": {
@@ -5943,7 +5951,7 @@
 		"title": "OAuth-Anmeldung",
 		"callback": {
 			"working": "Anmeldung wird abgeschlossen…",
-			"success": "Angemeldet. Du kannst diese Seite schließen.",
+			"success": "Angemeldet. Sie können diese Seite schließen.",
 			"failed": "Anmeldung fehlgeschlagen: ${message}",
 			"missingParams": "Callback fehlt code oder state."
 		}

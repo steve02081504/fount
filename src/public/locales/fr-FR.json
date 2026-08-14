@@ -3870,6 +3870,14 @@
 				"vision": "Prend en charge la saisie visuelle"
 			}
 		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "请配置 AWS 默认凭证链，并在 JSON 中填写 region。"
+			},
+			"vertex": {
+				"credentialsRequired": "请配置 ADC，并在 JSON 中填写 project 与 location。"
+			}
+		},
 		"prompts": {
 			"newFileName": "Veuillez saisir le nouveau nom du fichier source du service (n'incluez pas le suffixe) :"
 		},

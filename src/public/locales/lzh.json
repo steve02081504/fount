@@ -3834,7 +3834,7 @@
 				"waiting": "待授權…",
 				"failed": "登入敗：${message}",
 				"deviceCode": "啟 ${uri} 並入碼 ${code}",
-				"credentialsRequired": "於 JSON 填所需欄。憑據亦可出環境變數。"
+				"credentialsRequired": "於 JSON 填所需欄（region / project / location / account_id / gateway_id / API key）。憑據亦可出環境變數。"
 			},
 			"copyModelIdTooltip": "觸以錄模組 ID",
 			"loadModelsFailed": "載模組未遂：${message}",
@@ -3862,6 +3862,14 @@
 				"releaseDate": "發佈之日：${date}",
 				"toolCall": "通工具喚起",
 				"vision": "通視覺輸入"
+			}
+		},
+		"platforms": {
+			"bedrock": {
+				"credentialsRequired": "配 AWS 默認憑據鏈，JSON 填 region。"
+			},
+			"vertex": {
+				"credentialsRequired": "配 ADC，JSON 填 project 與 location。"
 			}
 		},
 		"prompts": {
