@@ -19,6 +19,7 @@ const fountExePs1 = join(REPO_ROOT, 'path', 'src', 'win', 'fount_exe.ps1')
  * @param {boolean} [options.missingIcon] 是否缺 ico
  * @param {boolean} [options.compileIcon] 假 `run shutdown` 是否写出 ico
  * @param {boolean} [options.ps12exeThrows] 假 ps12exe 是否 Write-Error + throw
+ * @param {number} [options.ps12exeExitCode] 假 ps12exe 仅设置的 `$LastExitCode`（0 表示写出 exe）
  * @param {'New-FountExe' | 'Install-FountRootExe'} [options.entry] 入口
  * @param {'unauth' | 'create' | 'existing'} [options.ghMode] 假 gh 行为（默认未登录，避免打到真 GitHub）
  * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 执行结果
@@ -27,6 +28,7 @@ async function runFountExeHarness({
 	missingIcon = false,
 	compileIcon = true,
 	ps12exeThrows = false,
+	ps12exeExitCode = 0,
 	entry = 'New-FountExe',
 	ghMode = 'unauth',
 } = {}) {
@@ -61,6 +63,10 @@ function script:ps12exe {
 		Write-Error "Icon file not found: $icon"
 		throw 'ScriptHalted'
 	}
+	if (${ps12exeExitCode}) {
+		$global:LastExitCode = ${ps12exeExitCode}
+		return
+	}
 	Set-Content -LiteralPath $outputFile 'fake-exe'
 }
 $script:ghLog = @()
@@ -82,12 +88,13 @@ function script:gh {
 }
 $ErrorCount = $Error.Count
 ${call}
-if ($ErrorCount -ne $Error.Count) { Write-Output 'ERROR_LEAK'; exit 1 }
-if ($LastExitCode) { Write-Output "EXIT_$LastExitCode"; exit $LastExitCode }
+if ($ErrorCount -ne $Error.Count) { Write-Output 'ERROR_LEAK' }
 $script:ghLog | ForEach-Object { Write-Output "GH $_" }
 if ($script:serverStarted) { Write-Output 'SERVER_STARTED' }
 if (Test-Path -LiteralPath (Join-Path $FOUNT_DIR 'out.exe')) { Write-Output 'EXE_WRITTEN' }
 if (Test-Path -LiteralPath (Join-Path $FOUNT_DIR 'fount.exe')) { Write-Output 'ROOT_EXE_WRITTEN' }
+if ($ErrorCount -ne $Error.Count) { exit 1 }
+if ($LastExitCode) { Write-Output "EXIT_$LastExitCode"; exit $LastExitCode }
 Write-Output 'OK'
 `)
 	}
@@ -134,13 +141,40 @@ Deno.test('Install-FountRootExe swallows ps12exe throw even when ico exists', as
 		throw new Error(`unauthenticated gh filed an issue:\n${result.stdout}`)
 })
 
-Deno.test('New-FountExe still fails hard when ps12exe throws', async () => {
+Deno.test('New-FountExe reports ps12exe throw; $Error growth fails geneexe', async () => {
 	const result = await runFountExeHarness({
 		ps12exeThrows: true,
 		entry: 'New-FountExe',
+		ghMode: 'create',
 	})
 	if (result.code === 0)
 		throw new Error(`geneexe path swallowed ps12exe throw:\n${result.stdout}\n${result.stderr}`)
+	assertStringIncludes(result.stdout, 'GH issue create')
+	assertStringIncludes(result.stdout, 'GH_CREATE')
+})
+
+Deno.test('New-FountExe fails when ps12exe only sets LastExitCode', async () => {
+	const result = await runFountExeHarness({
+		ps12exeExitCode: 2,
+		entry: 'New-FountExe',
+		ghMode: 'create',
+	})
+	if (result.code === 0)
+		throw new Error(`geneexe path ignored ps12exe LastExitCode:\n${result.stdout}\n${result.stderr}`)
+	if (result.stdout.includes('GH_CREATE') || result.stdout.includes('GH issue create'))
+		throw new Error(`LastExitCode-only failure filed a throw issue:\n${result.stdout}`)
+})
+
+Deno.test('Install-FountRootExe swallows ps12exe LastExitCode-only failure', async () => {
+	const result = await runFountExeHarness({
+		ps12exeExitCode: 2,
+		entry: 'Install-FountRootExe',
+		ghMode: 'create',
+	})
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertStringIncludes(result.stdout, 'OK')
+	if (result.stdout.includes('GH_CREATE') || result.stdout.includes('GH issue create'))
+		throw new Error(`LastExitCode-only failure filed a throw issue:\n${result.stdout}`)
 })
 
 Deno.test('Install-FountRootExe files a ps12exe issue when gh is authenticated and none exists', async () => {

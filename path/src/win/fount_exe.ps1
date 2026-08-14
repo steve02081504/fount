@@ -28,7 +28,8 @@ Documented contract: report failure via `$LastExitCode` only (0/1/2/3). Do not t
 
 ```
 
-After a fix: drop the swallow/`catch` and this auto-report in https://github.com/steve02081504/fount/blob/master/path/src/win/fount_exe.ps1 (`Install-FountRootExe`).
+After a fix: drop the try/catch around `ps12exe` in `New-FountExe` (the auto-report) and the `$Error` / `$LastExitCode` restore in `Install-FountRootExe`.
+https://github.com/steve02081504/fount/blob/master/path/src/win/fount_exe.ps1
 '@)
 			gh issue create --repo $repo --title $query --body-file $temporaryFilePath | Out-Null
 		}
@@ -42,6 +43,9 @@ After a fix: drop the swallow/`catch` and this auto-report in https://github.com
 function script:New-FountExe($executablePath = "fount.exe") {
 	Initialize-FountFavicon
 	Test-PWSHModule ps12exe
+	# Contract: ps12exe fails via $LastExitCode only (steve02081504/ps12exe#58).
+	# This try/catch stays glued to the ps12exe call — report every throw, do not rethrow.
+	# geneexe sees $Error / $LastExitCode via index.ps1. Do not move Send-Ps12exeThrowIssue.
 	try {
 		ps12exe -inputFile "$FOUNT_DIR/src/runner/main.ps1" -outputFile $executablePath
 	}
@@ -54,6 +58,7 @@ function script:Install-FountRootExe {
 	$executablePath = "$FOUNT_DIR/fount.exe"
 	if (Test-Path -LiteralPath $executablePath) { return }
 	$errorCount = $Error.Count
+	# Optional Steam exe: keep $Error / $LastExitCode from reaching `fount server`.
 	New-FountExe $executablePath
 	while ($Error.Count -gt $errorCount) { $Error.RemoveAt(0) }
 	$global:LastExitCode = 0
