@@ -84,8 +84,8 @@ Use [SSP](https://ssp.shillest.net/) when you:
 [![Українська](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Ukraine.png)](./docs/readme/Readme.uk-UA.md)
 [![العربية](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Saudi-Arabia.png)](./docs/readme/Readme.ar-SA.md)
 [![Íslenska](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Iceland.png)](./docs/readme/Readme.is-IS.md)
-[![文言](https://img.shields.io/badge/文言-lzh-lightgrey)](./docs/readme/Readme.lzh.md)
-[![🤓](https://img.shields.io/badge/🤓-emoji-lightgrey)](./docs/readme/Readme.emoji.md)
+[![文言](./docs/readme/img/flags/lzh.svg)](./docs/readme/Readme.lzh.md)
+[![🤓](./docs/readme/img/flags/emoji.svg)](./docs/readme/Readme.emoji.md)
 
 ![Repobeats analytics image](https://repobeats.axiom.co/api/embed/d0bbc20f70089126a83c66d9c1f88c7ec67aa101.svg)
 
