@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Cảnh báo: Không thể sử dụng `lsregister` để đăng ký ứng dụng với LaunchServices.",
 				"createDesktopAppFailed": "Lỗi: Không tạo được ứng dụng dành cho máy tính để bàn."
 			},
+			"steam": {
+				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
+				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
+				"failed": "Steam 注册失败：${message}",
+				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+			},
 			"git": {
 				"repoNotFound": "Không tìm thấy kho git của fount. Đang khởi tạo một cái mới...",
 				"fetchingAndResetting": "Đang tìm nạp từ kho lưu trữ từ xa và đặt lại về kho chính...",
@@ -505,6 +511,8 @@
 				"desktopShortcutNotFound": "Không tìm thấy lối tắt trên màn hình.",
 				"startMenuShortcutRemoved": "Phím tắt menu bắt đầu đã bị xóa.",
 				"startMenuShortcutNotFound": "Không tìm thấy lối tắt menu bắt đầu.",
+				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
+				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
 				"moduleRemoved": "${module} đã bị xóa.",
 				"uninstalling": {
 					"chrome": "Đang gỡ cài đặt Chrome...",
@@ -527,6 +535,7 @@
 					"installedSystemPackages": "Đang xóa các gói hệ thống đã cài đặt...",
 					"protocolHandler": "Đang xóa trình xử lý giao thức `fount://`...",
 					"startMenuShortcut": "Đang xóa các phím tắt menu bắt đầu...",
+					"steamShortcut": "正在从 Steam 移除 fount…",
 					"terminalKeybindings": "Đang gỡ bản vá phím tắt terminal...",
 					"terminalProfile": "Đang xóa cấu hình thiết bị đầu cuối Windows..."
 				},

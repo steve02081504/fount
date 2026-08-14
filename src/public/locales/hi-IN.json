@@ -426,6 +426,12 @@
 				"lsregisterFailed": "चेतावनी: किसी एप्लिकेशन को लॉन्चसर्विसेज के साथ पंजीकृत करने के लिए `lsregister` का उपयोग करना विफल रहा।",
 				"createDesktopAppFailed": "त्रुटि: डेस्कटॉप एप्लिकेशन बनाने में विफल।"
 			},
+			"steam": {
+				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
+				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
+				"failed": "Steam 注册失败：${message}",
+				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+			},
 			"git": {
 				"repoNotFound": "fount का गिट भंडार नहीं मिला। एक नया प्रारंभ किया जा रहा है...",
 				"fetchingAndResetting": "दूरस्थ रिपॉजिटरी से प्राप्त किया जा रहा है और मास्टर पर रीसेट किया जा रहा है...",
@@ -505,6 +511,8 @@
 				"desktopShortcutNotFound": "डेस्कटॉप शॉर्टकट नहीं मिला.",
 				"startMenuShortcutRemoved": "प्रारंभ मेनू शॉर्टकट हटा दिया गया है.",
 				"startMenuShortcutNotFound": "प्रारंभ मेनू शॉर्टकट नहीं मिला.",
+				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
+				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
 				"moduleRemoved": "${module} हटा दिया गया है.",
 				"uninstalling": {
 					"chrome": "Chrome अनइंस्टॉल किया जा रहा है...",
@@ -527,6 +535,7 @@
 					"installedSystemPackages": "स्थापित सिस्टम पैकेजों को हटाया जा रहा है...",
 					"protocolHandler": "फ़ॉन्ट://प्रोटोकॉल हैंडलर हटाया जा रहा है...",
 					"startMenuShortcut": "प्रारंभ मेनू शॉर्टकट हटा रहा है...",
+					"steamShortcut": "正在从 Steam 移除 fount…",
 					"terminalKeybindings": "टर्मिनल कुंजी बाइंडिंग पैच हटाया जा रहा है...",
 					"terminalProfile": "Windows टर्मिनल प्रोफ़ाइल हटाई जा रही है..."
 				},

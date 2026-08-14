@@ -426,6 +426,12 @@
 				"lsregisterFailed": "Advertencia: Error al utilizar `lsregister` para registrar una aplicación con LaunchServices.",
 				"createDesktopAppFailed": "Error: no se pudo crear la aplicación de escritorio."
 			},
+			"steam": {
+				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
+				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
+				"failed": "Steam 注册失败：${message}",
+				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+			},
 			"git": {
 				"repoNotFound": "No se encontró el repositorio git de fount. Inicializando uno nuevo...",
 				"fetchingAndResetting": "Obteniendo desde el repositorio remoto y restableciendo al maestro...",
@@ -505,6 +511,8 @@
 				"desktopShortcutNotFound": "No se encontró el acceso directo en el escritorio.",
 				"startMenuShortcutRemoved": "Se ha eliminado el acceso directo al menú Inicio.",
 				"startMenuShortcutNotFound": "No se encontró el acceso directo al menú Inicio.",
+				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
+				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
 				"moduleRemoved": "${module} ha sido eliminado.",
 				"uninstalling": {
 					"chrome": "Desinstalando Chrome...",
@@ -527,6 +535,7 @@
 					"installedSystemPackages": "Eliminando paquetes del sistema instalados...",
 					"protocolHandler": "Eliminando el controlador de protocolo `fount://`...",
 					"startMenuShortcut": "Eliminando accesos directos del menú Inicio...",
+					"steamShortcut": "正在从 Steam 移除 fount…",
 					"terminalKeybindings": "Eliminando parche de atajos del terminal...",
 					"terminalProfile": "Eliminando el perfil de terminal de Windows..."
 				},

@@ -426,6 +426,12 @@
 				"lsregisterFailed": "警告: `lsregister` を使用してアプリケーションを LaunchServices に登録することに失敗しました。",
 				"createDesktopAppFailed": "エラー: デスクトップ アプリケーションの作成に失敗しました。"
 			},
+			"steam": {
+				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
+				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
+				"failed": "Steam 注册失败：${message}",
+				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+			},
 			"git": {
 				"repoNotFound": "Font の git リポジトリが見つかりませんでした。新しいものを初期化しています...",
 				"fetchingAndResetting": "リモートリポジトリから取得してマスターにリセットしています...",
@@ -505,6 +511,8 @@
 				"desktopShortcutNotFound": "デスクトップショートカットが見つかりません。",
 				"startMenuShortcutRemoved": "「スタート」メニューのショートカットが削除されました。",
 				"startMenuShortcutNotFound": "[スタート] メニューのショートカットが見つかりません。",
+				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
+				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
 				"moduleRemoved": "${module} が削除されました。",
 				"uninstalling": {
 					"chrome": "Chrome をアンインストールしています...",
@@ -527,6 +535,7 @@
 					"installedSystemPackages": "インストールされているシステム パッケージを削除しています...",
 					"protocolHandler": "`fount://` プロトコル ハンドラーを削除しています...",
 					"startMenuShortcut": "スタート メニューのショートカットを削除しています...",
+					"steamShortcut": "正在从 Steam 移除 fount…",
 					"terminalKeybindings": "ターミナルのキーバインドパッチを削除しています...",
 					"terminalProfile": "Windows ターミナル プロファイルを削除しています..."
 				},

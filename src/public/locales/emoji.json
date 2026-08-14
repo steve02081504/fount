@@ -426,6 +426,12 @@
 				"lsregisterFailed": "⚠️ `lsregister` 💥",
 				"createDesktopAppFailed": "❌ 🖥️💔"
 			},
+			"steam": {
+				"registering": "🎮➕…",
+				"registered": "✅ 🎮 ⛲ — restart Steam",
+				"failed": "❌ 🎮: ${message}",
+				"exeFailed": "❌ fount.exe → skip 🎮"
+			},
 			"git": {
 				"repoNotFound": "🤔❓ 🐙🐱… ➡️ ✨",
 				"fetchingAndResetting": "☁️📥 ➡️ 🌳",
@@ -505,6 +511,8 @@
 				"desktopShortcutNotFound": "❓ 🖥️",
 				"startMenuShortcutRemoved": "✅ 👋 🏁",
 				"startMenuShortcutNotFound": "❓ 🏁",
+				"steamShortcutRemoved": "✅ 👋 🎮",
+				"steamShortcutNotFound": "❓ 🎮",
 				"moduleRemoved": "✅ 👋 ${module}",
 				"uninstalling": {
 					"chrome": "👋 🌐…",
@@ -527,6 +535,7 @@
 					"installedSystemPackages": "👋 📦…",
 					"protocolHandler": "👋 🔗⛲://",
 					"startMenuShortcut": "👋 🏁…",
+					"steamShortcut": "👋 🎮…",
 					"terminalKeybindings": "👋 ⌨️🗺️ 🩹…",
 					"terminalProfile": "👋 🪟🖥️"
 				},

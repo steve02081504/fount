@@ -426,6 +426,12 @@
 				"lsregisterFailed": "تحذير: فشل استخدام `lsregister` لتسجيل تطبيق في LaunchServices.",
 				"createDesktopAppFailed": "خطأ: فشل إنشاء تطبيق سطح المكتب."
 			},
+			"steam": {
+				"registering": "正在将 fount 注册为 Steam 非 Steam 游戏…",
+				"registered": "已将 fount 加入 Steam 游戏库。若 Steam 正在运行，需重启后生效。",
+				"failed": "Steam 注册失败：${message}",
+				"exeFailed": "未能生成 fount.exe，已跳过 Steam 注册。"
+			},
 			"git": {
 				"repoNotFound": "لم يتم العثور على مستودع git الخاص بfount. تهيئة واحدة جديدة...",
 				"fetchingAndResetting": "جارٍ الجلب من المستودع البعيد وإعادة التعيين إلى الوضع الرئيسي...",
@@ -505,6 +511,8 @@
 				"desktopShortcutNotFound": "لم يتم العثور على اختصار سطح المكتب.",
 				"startMenuShortcutRemoved": "تمت إزالة اختصار قائمة ابدأ.",
 				"startMenuShortcutNotFound": "لم يتم العثور على اختصار قائمة ابدأ.",
+				"steamShortcutRemoved": "已从 Steam 游戏库移除 fount。",
+				"steamShortcutNotFound": "未在 Steam 中找到 fount。",
 				"moduleRemoved": "تمت إزالة ${module}.",
 				"uninstalling": {
 					"chrome": "جارٍ إلغاء تثبيت Chrome...",
@@ -527,6 +535,7 @@
 					"installedSystemPackages": "جارٍ إزالة حزم النظام المثبتة...",
 					"protocolHandler": "جارٍ إزالة `fount://` معالج البروتوكول...",
 					"startMenuShortcut": "جارٍ إزالة اختصارات قائمة البدء...",
+					"steamShortcut": "正在从 Steam 移除 fount…",
 					"terminalKeybindings": "جارٍ إزالة ترقيع اختصارات الطرفية...",
 					"terminalProfile": "جارٍ إزالة ملف التعريف الطرفي لـ Windows..."
 				},
