@@ -5,8 +5,10 @@ import { loadAllSuites } from '../core/manifest.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {
 	findDeadTriggers,
+	findLiveTestFrameworkTriggers,
 	findLocaleTreeTriggers,
 	isLocaleTreeTrigger,
+	isTestFrameworkTrigger,
 	triggerPatternMatchesAny,
 } from '../core/trigger_audit.mjs'
 
@@ -86,6 +88,27 @@ Deno.test('findLocaleTreeTriggers allows checks and flags Playwright/path', () =
 	}])
 })
 
-Deno.test('repo manifests do not hang locale JSON on non-checks suites', async () => {
-	assertEquals(findLocaleTreeTriggers(await loadAllSuites(REPO_ROOT)), [])
+Deno.test('repo manifests keep locale JSON and live harness triggers on the right suites', async () => {
+	const all = await loadAllSuites(REPO_ROOT)
+	assertEquals(findLocaleTreeTriggers(all), [])
+	assertEquals(findLiveTestFrameworkTriggers(all), [])
+})
+
+Deno.test('isTestFrameworkTrigger only matches src/scripts/test', () => {
+	assertEquals(isTestFrameworkTrigger('src/scripts/test/node/launch.mjs'), true)
+	assertEquals(isTestFrameworkTrigger('src/scripts/test/{deno/serial.mjs,node/boot.mjs}'), true)
+	assertEquals(isTestFrameworkTrigger('src/scripts/test/core/allowNoise.mjs'), true)
+	assertEquals(isTestFrameworkTrigger('src/server/test/live/**'), false)
+	assertEquals(isTestFrameworkTrigger('src/scripts/ms.mjs'), false)
+})
+
+Deno.test('findLiveTestFrameworkTriggers allows testkit and flags product live', () => {
+	const kit = makeSuite('testkit', 'launch_node', { triggers: ['src/scripts/test/node/launch.mjs'] })
+	const live = makeSuite('server', 'live', { triggers: ['src/server/test/live/**', 'src/scripts/test/node/launch.mjs'] })
+	assertEquals(findLiveTestFrameworkTriggers([kit]), [])
+	assertEquals(findLiveTestFrameworkTriggers([live]), [{
+		manifestId: 'server',
+		suiteName: 'live',
+		pattern: 'src/scripts/test/node/launch.mjs',
+	}])
 })

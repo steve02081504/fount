@@ -8,6 +8,9 @@ import { matchGlob } from './trigger_filter.mjs'
 /** locale JSON / list.csv 只允许挂在这些 manifest（静态检查）。 */
 const LOCALE_TREE_TRIGGER_ALLOW = new Set(['checks'])
 
+/** 节点启动 / 测试辅助只允许挂在 testkit；产品 `live` 套件盯这些会在改测试框架时整波重跑。 */
+const TEST_FRAMEWORK_TRIGGER_ALLOW = new Set(['testkit'])
+
 /**
  * @typedef {import('./manifest.mjs').SuiteDef} SuiteDef
  */
@@ -50,6 +53,48 @@ export function findLocaleTreeTriggers(suites) {
 		for (const subtest of suite.subtests ?? [])
 			for (const pattern of subtest.triggers) {
 				if (!isLocaleTreeTrigger(pattern)) continue
+				hits.push({
+					manifestId: suite.manifestId,
+					suiteName: suite.name,
+					subtestName: subtest.name,
+					pattern,
+				})
+			}
+	}
+	return hits
+}
+
+/**
+ * 是否点名 `src/scripts/test/`（不含产品自己的 `src/server/test/` 等）。
+ * @param {string} pattern trigger glob
+ * @returns {boolean} 是否为测试框架路径
+ */
+export function isTestFrameworkTrigger(pattern) {
+	const normalized = pattern.replaceAll('\\', '/')
+	return normalized === 'src/scripts/test'
+		|| normalized.startsWith('src/scripts/test/')
+		|| normalized.startsWith('src/scripts/test{')
+		|| normalized.startsWith('src/scripts/test*')
+}
+
+/**
+ * 产品 `live` 套件不得挂测试框架路径（改 launch/boot 只应跑 testkit）。
+ * @param {SuiteDef[]} suites 全部 suite
+ * @returns {DeadTrigger[]} 违规 trigger
+ */
+export function findLiveTestFrameworkTriggers(suites) {
+	/** @type {DeadTrigger[]} */
+	const hits = []
+	for (const suite of suites) {
+		if (TEST_FRAMEWORK_TRIGGER_ALLOW.has(suite.manifestId)) continue
+		if (suite.name !== 'live') continue
+		for (const pattern of suite.triggers) {
+			if (!isTestFrameworkTrigger(pattern)) continue
+			hits.push({ manifestId: suite.manifestId, suiteName: suite.name, pattern })
+		}
+		for (const subtest of suite.subtests ?? [])
+			for (const pattern of subtest.triggers) {
+				if (!isTestFrameworkTrigger(pattern)) continue
 				hits.push({
 					manifestId: suite.manifestId,
 					suiteName: suite.name,

@@ -56,7 +56,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Manifest fields
 
-- **`triggers`**: glob via `npm:picomatch` (braces `{a,b}`, `dot: true`). Default ignores docs/metadata; override: [trigger-filter.md](docs/trigger-filter.md). Watch code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`). Federation: only `fed_core` watches `federation/**`. Locale JSON only on `checks` — not Playwright / path. Multi-subtest `frontendShared` = harness, not `test/frontend/**`. **Dead triggers** (zero matches) → print + **exit 1** before any suite runs.
+- **`triggers`**: glob via `npm:picomatch` (braces `{a,b}`, `dot: true`). Default ignores docs/metadata; override: [trigger-filter.md](docs/trigger-filter.md). Watch code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`; **`live` never watches `src/scripts/test/`**). Federation: only `fed_core` watches `federation/**`. Locale JSON only on `checks` — not Playwright / path. Multi-subtest `frontendShared` = harness, not `test/frontend/**`. **Dead triggers** (zero matches) → print + **exit 1** before any suite runs.
 - **`dependsOn`**: plan pulls transitive deps. Default goals = imperfect (hard fails + one-level dependents, including fresh noisy) ∪ outdated (`unknown`). A failure only blocks dependents of that slot.
 - **`subtests`**: `{ name, triggers|trigger, spec? }`. When splitting a frontend god-file, update that subtest's `triggers`. Runtime filter: `FOUNT_TEST_SUBTESTS`. Suite-level `noisy` only marks subtests when **no** file failed.
 - **Live layering**: smoke → e2e gates; do not jump straight to full e2e. Details: [domain-harness.md](docs/domain-harness.md#live-layering).
