@@ -127,3 +127,16 @@ Deno.test('removeKey drops prep and both queues', () => {
 	assertEquals(removed.length, 2)
 	assertEquals(queues.allEmpty(), true)
 })
+
+Deno.test('drain empties cli, fs, and prep', () => {
+	const clock = mutableClock()
+	const queues = new TestQueues({ prepSettleMs: 10, now: clock.now })
+	queues.enqueueCli({ key: 'cli', viewerId: 'v' })
+	queues.hitPrep('prep')
+	clock.set(10)
+	queues.promotePrep()
+	queues.hitPrep('still-prep')
+	const drained = queues.drain()
+	assertEquals(drained.map(item => item.key), ['cli', 'prep'])
+	assertEquals(queues.allEmpty(), true)
+})

@@ -1,16 +1,26 @@
 /**
- * 确保测试内核在跑：health 失败则拉起 detached 进程。
+ * 测试内核进程：health / spawn / ensure / shutdown / reboot。
  */
 /* global Deno */
-import { spawn } from 'node:child_process'
+import { execFile as execFileCallback, spawn } from 'node:child_process'
 import { dirname, join } from 'node:path'
+import process from 'node:process'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
+import { promisify } from 'node:util'
 
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { TEST_KERNEL_HEALTH_ID } from '../hub/apis/health.mjs'
 import { TEST_HUB_PORT, testHubUrl } from '../hub/index.mjs'
 
+const execFile = promisify(execFileCallback)
 const KERNEL_ENTRY = join(dirname(fileURLToPath(import.meta.url)), 'index.mjs')
+
+/** CLI `--kernel` 允许的操作。 */
+export const KERNEL_ACTIONS = new Set(['shutdown', 'reboot'])
+
+/** POST /shutdown 之后仍活着则改杀监听进程的等待（兼容旧内核）。 */
+const KILL_AFTER_MS = 2000
 
 /**
  * @param {string} url hub URL
@@ -19,7 +29,8 @@ const KERNEL_ENTRY = join(dirname(fileURLToPath(import.meta.url)), 'index.mjs')
 export async function kernelHealthy(url) {
 	try {
 		const res = await fetch(`${url}/health`, { signal: AbortSignal.timeout(1500) })
-		return res.ok
+		if (!res.ok) return false
+		return (await res.json())?.kernel === TEST_KERNEL_HEALTH_ID
 	}
 	catch {
 		return false
@@ -68,7 +79,107 @@ export async function ensureTestKernel({ port = TEST_HUB_PORT } = {}) {
 	await spawnDetachedKernel(port)
 	for (let i = 0; i < 50; i++) {
 		if (await kernelHealthy(url)) return url
+		if (i === 24) await spawnDetachedKernel(port)
 		await delay(100)
 	}
 	throw new Error(`test kernel did not become healthy at ${url}`)
+}
+
+/**
+ * 从 netstat -ano 行里抠 LISTENING pid。
+ * @param {string} stdout netstat 输出
+ * @param {number} port 端口
+ * @returns {number} pid；没有则为 0
+ */
+export function parseNetstatListenPid(stdout, port) {
+	const token = `:${port}`
+	for (const line of stdout.split(/\r?\n/)) {
+		if (!/LISTEN/i.test(line) && !line.includes('侦听')) continue
+		const index = line.indexOf(token)
+		if (index < 0) continue
+		const after = line[index + token.length]
+		if (after && after !== ' ' && after !== '\t') continue
+		const pid = Number(line.trim().split(/\s+/).at(-1))
+		if (pid > 0) return pid
+	}
+	return 0
+}
+
+/**
+ * 查谁在听这个口；没有则为 0。
+ * @param {number} port 端口
+ * @returns {Promise<number>} pid
+ */
+async function listenerPid(port) {
+	try {
+		if (process.platform === 'win32') {
+			const { stdout } = await execFile('netstat', ['-ano', '-p', 'tcp'], { windowsHide: true })
+			return parseNetstatListenPid(String(stdout), port)
+		}
+		const { stdout } = await execFile('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'])
+		const pid = Number(String(stdout).trim().split(/\s+/)[0])
+		return pid > 0 ? pid : 0
+	}
+	catch {
+		return 0
+	}
+}
+
+/**
+ * 杀掉听口进程（跳过自己）。
+ * @param {number} port 端口
+ * @returns {Promise<boolean>} 是否发出 kill
+ */
+async function killPortListener(port) {
+	const pid = await listenerPid(port)
+	if (!pid || pid === process.pid) return false
+	try {
+		process.kill(pid, 'SIGTERM')
+		return true
+	}
+	catch {
+		return false
+	}
+}
+
+/**
+ * 关掉已在跑的内核；本来就没在跑则 already_down。
+ * @param {object} [options] 选项
+ * @param {number} [options.port] 端口
+ * @param {number} [options.timeoutMs] 等待 health 消失的上限
+ * @returns {Promise<'already_down' | 'stopped'>} 结果
+ */
+export async function shutdownTestKernel({ port = TEST_HUB_PORT, timeoutMs = 15_000 } = {}) {
+	const url = testHubUrl(port)
+	if (!await kernelHealthy(url)) return 'already_down'
+	const started = Date.now()
+	const deadline = started + timeoutMs
+	try {
+		await fetch(`${url}/shutdown`, {
+			method: 'POST',
+			signal: AbortSignal.timeout(Math.max(1, Math.min(5000, deadline - Date.now()))),
+		})
+	}
+	catch { /* 内核可能在写完响应前就退出；旧内核没有这条路由 */ }
+	let killed = false
+	while (Date.now() < deadline) {
+		if (!await kernelHealthy(url)) return 'stopped'
+		if (!killed && Date.now() - started >= KILL_AFTER_MS) {
+			killed = true
+			await killPortListener(port)
+		}
+		await delay(100)
+	}
+	throw new Error(`test kernel did not stop at ${url}`)
+}
+
+/**
+ * 关掉（若在跑）再拉起。
+ * @param {object} [options] 选项
+ * @param {number} [options.port] 端口
+ * @returns {Promise<string>} hub URL
+ */
+export async function rebootTestKernel({ port = TEST_HUB_PORT } = {}) {
+	await shutdownTestKernel({ port })
+	return ensureTestKernel({ port })
 }

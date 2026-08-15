@@ -145,11 +145,18 @@
 			"replHint": "Enter til að keyra · Shift+Enter fyrir nýja línu"
 		},
 		"test": {
-			"help": "Notkun: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nVal (hópar aðskildir með bilum; suite innan hóps með kommum; / og : jafngild):\n  nafn              öll suite í hópnum (t.d. shells/chat)\n  nafn:suite        ákveðið suite\n  nafn:suite:atriði ákveðið undirpróf eða prófskrá\n\nÁn nákvæms samsvarar, stækkar eftir forskeyti (shells → shells/chat, shells/social); glob (*, ?, **) líka stutt.\n\nSjálfgefið (bara fount test): skipuleggur mistök/ókláruð/hávær og úrelt í einu lagi og keyrir; mistök stöðva aðeins háðar raufir — ekki-núll útganga að lokum. Aldrei allt repo — notaðu --all fyrir það.\n\n--watch      fylgist áfram; hættir ekki þó biðröð sé tóm (Ctrl+C til að hætta); ekki með --all, --force, --update-estimates eða vali\n--all        öll suite innan umfangs\n--force      þvinga keyrslu; endurnýtir ekki fyrri niðurstöður\n--update-estimates  skrifar expected í hverju manifest út frá núverandi meðaltölum í gagnagrunni; val valfrjálst; keyrir ekki próf\n\ndæmi:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "Notkun: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nVal (hópar aðskildir með bilum; suite innan hóps með kommum; / og : jafngild):\n  nafn              öll suite í hópnum (t.d. shells/chat)\n  nafn:suite        ákveðið suite\n  nafn:suite:atriði ákveðið undirpróf eða prófskrá\n\nÁn nákvæms samsvarar, stækkar eftir forskeyti (shells → shells/chat, shells/social); glob (*, ?, **) líka stutt.\n\nSjálfgefið (bara fount test): skipuleggur mistök/ókláruð/hávær og úrelt í einu lagi og keyrir; mistök stöðva aðeins háðar raufir — ekki-núll útganga að lokum. Aldrei allt repo — notaðu --all fyrir það.\n\n--watch      fylgist áfram; hættir ekki þó biðröð sé tóm (Ctrl+C til að hætta); ekki með --all, --force, --update-estimates eða vali\n--all        öll suite innan umfangs\n--force      þvinga keyrslu; endurnýtir ekki fyrri niðurstöður\n--update-estimates  skrifar expected í hverju manifest út frá núverandi meðaltölum í gagnagrunni; val valfrjálst; keyrir ekki próf\n--kernel     shutdown stöðvar prófunarkjarnann; reboot stöðvar og ræsir aftur; ekki með öðrum færibreytum\n\ndæmi:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Notkun: fount test --watch (ekki hægt með öðrum valkostum)",
 			"updateEstimates": {
 				"incompatible": "Notkun: fount test --update-estimates [<groups>...] (ekki hægt með öðrum rofum)",
 				"summary": "Uppfærði áætlaðan tíma fyrir ${suitesUpdated} suite (${filesChanged} manifest); sleppti ${skipped} án grunnlínu eða þegar uppfært"
+			},
+			"kernel": {
+				"incompatible": "Notkun: fount test --kernel shutdown|reboot (ekki hægt að nota með öðrum valkostum)",
+				"unknownAction": "Óþekkt kjarnaaðgerð: ${action} (vænt shutdown eða reboot)",
+				"alreadyDown": "Prófakjarni er ekki í gangi",
+				"stopped": "Prófakjarni var stöðvaður",
+				"rebooted": "Prófakjarni var endurræstur"
 			},
 			"skipBecause": {
 				"pass": "Sleppt (issue enn opið eða lokað en biðtími ekki liðinn): ${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "Áætlaður tími sem eftir er ≈ ${eta}",
-					"itemExpected": "Búist við ${expected}",
-					"parallelEstimate": "Áætluð samhliða tímanotkun ≈ ${eta} (áætlað samhliða hlutfall ${rate})",
-					"savings": "Áætlaður sparnaður ≈ ${savings}"
+					"itemExpected": "Búist við ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "Dregið inn vegna háðar",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "Skipun",
 					"duration": "Tímalengd",
-					"estimatedParallelRate": "Áætlað samhliða hlutfall",
 					"estimatedRemaining": "Áætlaður tími sem eftir er",
 					"exit": "Útgöngustaða",
 					"failed": "Fjöldi bilana",
@@ -366,13 +370,6 @@
 				"marker": "[Ástæða uppsagnar: ${reason}]",
 				"speculative": "Lokað ${label}: Bjartsýn háð mistókst, snemmbúin stöðvun aflýst",
 				"unknown": "LOKAÐ ${label}: próf truflað"
-			},
-			"estimated": {
-				"remaining": "Áætlaður tími sem eftir er ≈ ${eta} (${completed}/${total} pakkar)",
-				"run": "Áætlað er að þessi keyrsla taki ≈ ${eta} (áætlað samhliða hlutfall ${rate})",
-				"runSerial": "Búist er við að þessi keyrsla taki ≈ ${eta} (raðkeyrsla)",
-				"runSerialHint": "Ef gert er ráð fyrir samsvörun ≈ ${eta} (samhliða hlutfall ${rate}), sparnaður ≈ ${savings}",
-				"runSkipped": "Það eru líka ${reused} stykki sem eru endurnotuð og ${blocked} stykki sem búist er við að verði lokað (ekki innifalið í Framvindainni)"
 			},
 			"unknown": {
 				"fileFilter": "Óþekkt prófunarskráasía: ${suite} → ${names}",

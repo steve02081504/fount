@@ -24,6 +24,7 @@ import { TestKernel } from './runtime.mjs'
  * @param {boolean} [options.watchFs] 是否监视文件系统
  * @param {number} [options.prepSettleMs] 预备静置毫秒
  * @param {boolean} [options.writeReport] 是否写活报告
+ * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
  * @returns {Promise<{ url: string, kernel: TestKernel, close: () => Promise<void> }>} 句柄
  */
 export async function startTestKernel({
@@ -33,8 +34,9 @@ export async function startTestKernel({
 	watchFs = true,
 	prepSettleMs,
 	writeReport = true,
+	moduleCheckHoldTimeoutMs,
 } = {}) {
-	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport })
+	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs })
 	await kernel.start()
 
 	const app = express()
@@ -46,22 +48,56 @@ export async function startTestKernel({
 		next()
 	})
 	app.use(express.json({ limit: '4mb' }))
-	app.use(createHealthRouter())
+	app.use(createHealthRouter({ kernel: true }))
 	app.use(createGithubIssueRouter(kernel.issueCache))
 	app.use(createSharedStoreRouter())
 
 	app.post('/module-check/acquire', async (request, response) => {
-		const ticket = await kernel.moduleCheck.acquire()
-		response.json({ ticket })
+		const abort = new AbortController()
+		/** 客户端断开且尚未写出响应时取消等待。 */
+		const onDisconnect = () => {
+			if (!response.writableEnded) abort.abort()
+		}
+		response.on('close', onDisconnect)
+		/** @type {string | null} */
+		let ticket = null
+		try {
+			ticket = await kernel.moduleCheck.acquire(abort.signal)
+			if (!response.writable || response.destroyed || response.writableEnded) {
+				kernel.moduleCheck.consumeMissedReady(ticket)
+				return
+			}
+			response.json({ ticket })
+		}
+		catch (error) {
+			if (ticket) kernel.moduleCheck.consumeMissedReady(ticket)
+			if (abort.signal.aborted || error?.name === 'AbortError') {
+				if (!response.headersSent) response.status(499).end()
+				return
+			}
+			throw error
+		}
+		finally {
+			response.off('close', onDisconnect)
+		}
 	})
 	app.post('/module-check/ready', (request, response) => {
 		const ticket = String(request.body?.ticket || '')
 		const durationMs = kernel.moduleCheck.ready(ticket)
+		kernel.markModuleCheckDone(ticket)
 		response.json({ ok: durationMs != null, durationMs })
 	})
 	app.post('/module-check/abandon', (request, response) => {
 		const ticket = String(request.body?.ticket || '')
-		response.json({ missed: kernel.moduleCheck.abandon(ticket) })
+		response.json({ missed: kernel.moduleCheck.consumeMissedReady(ticket) })
+	})
+	app.post('/shutdown', (request, response) => {
+		if (request.headers.origin) return void response.sendStatus(403)
+		response.json({ ok: true })
+		/** 响应发出后再关，避免和当前请求互相等待。 */
+		const go = () => { void kernel.close() }
+		if (response.writableEnded) queueMicrotask(go)
+		else response.once('finish', go)
 	})
 
 	let server

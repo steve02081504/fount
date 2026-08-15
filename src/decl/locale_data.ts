@@ -134,6 +134,13 @@ export type LocaleData = {
 				incompatible: string
 				summary: string
 			}
+			kernel: {
+				incompatible: string
+				unknownAction: string
+				alreadyDown: string
+				stopped: string
+				rebooted: string
+			}
 			skipBecause: {
 				pass: string
 				fail: string
@@ -264,8 +271,6 @@ export type LocaleData = {
 				pending: {
 					estimate: string
 					itemExpected: string
-					parallelEstimate: string
-					savings: string
 				}
 				reason: {
 					dependencyRequired: string
@@ -309,7 +314,6 @@ export type LocaleData = {
 				field: {
 					command: string
 					duration: string
-					estimatedParallelRate: string
 					estimatedRemaining: string
 					exit: string
 					failed: string
@@ -349,13 +353,6 @@ export type LocaleData = {
 				marker: string
 				speculative: string
 				unknown: string
-			}
-			estimated: {
-				remaining: string
-				run: string
-				runSerial: string
-				runSerialHint: string
-				runSkipped: string
 			}
 			unknown: {
 				fileFilter: string
@@ -6313,11 +6310,6 @@ export type LocaleKeyParams = {
 	'fountConsole.test.display.remaining': { remaining: string | number }
 	'fountConsole.test.display.remainingOnlyUnknown': { count: string | number }
 	'fountConsole.test.display.remainingUnknown': { count: string | number; remaining: string | number }
-	'fountConsole.test.estimated.remaining': { completed: string | number; eta: string | number; total: string | number }
-	'fountConsole.test.estimated.run': { eta: string | number; rate: string | number }
-	'fountConsole.test.estimated.runSerial': { eta: string | number }
-	'fountConsole.test.estimated.runSerialHint': { eta: string | number; rate: string | number; savings: string | number }
-	'fountConsole.test.estimated.runSkipped': { blocked: string | number; reused: string | number }
 	'fountConsole.test.failed': { label: string | number }
 	'fountConsole.test.failedWithCode': { code: string | number; label: string | number }
 	'fountConsole.test.failuresCleared': { manifestId: string | number }
@@ -6325,6 +6317,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.federationCleanupPost': { output: string | number }
 	'fountConsole.test.federationCleanupPre': { output: string | number }
 	'fountConsole.test.heapSnapshotSaved': { path: string | number }
+	'fountConsole.test.kernel.unknownAction': { action: string | number }
 	'fountConsole.test.manifestMatched': { ids: string | number }
 	'fountConsole.test.moduleCheck.missedReady': { label: string | number }
 	'fountConsole.test.noRealRunPlanned': { blocked: string | number; reused: string | number; skipped: string | number }
@@ -6351,8 +6344,6 @@ export type LocaleKeyParams = {
 	'fountConsole.test.report.label.pullUpstream': { requiredBy: string | number }
 	'fountConsole.test.report.pending.estimate': { eta: string | number }
 	'fountConsole.test.report.pending.itemExpected': { expected: string | number }
-	'fountConsole.test.report.pending.parallelEstimate': { eta: string | number; rate: string | number }
-	'fountConsole.test.report.pending.savings': { savings: string | number }
 	'fountConsole.test.report.progressFormat': { completed: string | number; total: string | number }
 	'fountConsole.test.report.suitesFormat': { completed: string | number; passed: string | number }
 	'fountConsole.test.reportPath': { path: string | number }

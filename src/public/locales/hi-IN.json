@@ -145,11 +145,18 @@
 			"replHint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति"
 		},
 		"test": {
-			"help": "उपयोग: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nचयनकर्ता (समूह रिक्त स्थान से अलग; एक समूह में suite कॉमा से अलग; / और : समान):\n  नाम              उस समूह की सभी suite (जैसे shells/chat)\n  नाम:suite        कोई विशिष्ट suite\n  नाम:suite:आइटम   कोई विशिष्ट उप-परीक्षण या परीक्षण फ़ाइल\n\nसटीक मिलान न होने पर उपसर्ग से विस्तार (shells → shells/chat, shells/social); glob (*, ?, **) भी समर्थित।\n\nडिफ़ॉल्ट (सिर्फ fount test): विफल/अधूरे और पुराने को एक ही पास में योजना बनाकर चलाता है; विफलता केवल निर्भर स्लॉट रोकती है — अंत में गैर-शून्य निकास। पूरा रिपो नहीं — उसके लिए --all।\n\n--watch      लगातार निगरानी; कतार खाली होने पर भी नहीं बंद होता (Ctrl+C से बाहर); --all / --force / --update-estimates / चयनकर्ताओं के साथ नहीं\n--all        दायरे की सभी suite\n--force      ज़बरदस्ती चलाएँ; पिछले परिणाम दोबारा नहीं\n--update-estimates  वर्तमान DB औसत से प्रत्येक manifest का expected फिर लिखता है; चयनकर्ता वैकल्पिक; परीक्षण नहीं चलाता\n\nउदाहरण:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "उपयोग: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nचयनकर्ता (समूह रिक्त स्थान से अलग; एक समूह में suite कॉमा से अलग; / और : समान):\n  नाम              उस समूह की सभी suite (जैसे shells/chat)\n  नाम:suite        कोई विशिष्ट suite\n  नाम:suite:आइटम   कोई विशिष्ट उप-परीक्षण या परीक्षण फ़ाइल\n\nसटीक मिलान न होने पर उपसर्ग से विस्तार (shells → shells/chat, shells/social); glob (*, ?, **) भी समर्थित।\n\nडिफ़ॉल्ट (सिर्फ fount test): विफल/अधूरे और पुराने को एक ही पास में योजना बनाकर चलाता है; विफलता केवल निर्भर स्लॉट रोकती है — अंत में गैर-शून्य निकास। पूरा रिपो नहीं — उसके लिए --all।\n\n--watch      लगातार निगरानी; कतार खाली होने पर भी नहीं बंद होता (Ctrl+C से बाहर); --all / --force / --update-estimates / चयनकर्ताओं के साथ नहीं\n--all        दायरे की सभी suite\n--force      ज़बरदस्ती चलाएँ; पिछले परिणाम दोबारा नहीं\n--update-estimates  वर्तमान DB औसत से प्रत्येक manifest का expected फिर लिखता है; चयनकर्ता वैकल्पिक; परीक्षण नहीं चलाता\n--kernel     shutdown परीक्षण कर्नेल बंद करता है; reboot बंद कर फिर चलाता है; अन्य तर्कों के साथ नहीं\n\nउदाहरण:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "उपयोग: fount test --watch (अन्य विकल्पों के साथ उपयोग नहीं कर सकते)",
 			"updateEstimates": {
 				"incompatible": "उपयोग: fount test --update-estimates [<groups>...] (अन्य फ़्लैग के साथ उपयोग नहीं कर सकते)",
 				"summary": "${suitesUpdated} suite की अपेक्षित अवधि अपडेट (${filesChanged} manifest); बेसलाइन नहीं या पहले से अद्यतन — ${skipped} छोड़े"
+			},
+			"kernel": {
+				"incompatible": "उपयोग: fount test --kernel shutdown|reboot (अन्य विकल्पों के साथ उपयोग नहीं किया जा सकता)",
+				"unknownAction": "अज्ञात कर्नेल क्रिया: ${action} (shutdown या reboot अपेक्षित)",
+				"alreadyDown": "परीक्षण कर्नेल चल नहीं रहा है",
+				"stopped": "परीक्षण कर्नेल बंद कर दिया गया",
+				"rebooted": "परीक्षण कर्नेल पुनः आरंभ हो गया"
 			},
 			"skipBecause": {
 				"pass": "छोड़ा गया (issue अभी खुला है या बंद है लेकिन अनुग्रह अवधि समाप्त नहीं): ${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "अनुमानित शेष समय ≈ ${eta}",
-					"itemExpected": "अपेक्षित ${expected}",
-					"parallelEstimate": "अनुमानित समानांतर समय खपत ≈ ${eta} (अनुमानित समानांतर दर ${rate})",
-					"savings": "अनुमानित बचत ≈ ${savings}"
+					"itemExpected": "अपेक्षित ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "निर्भरता खींचती है",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "आदेश",
 					"duration": "समय",
-					"estimatedParallelRate": "अनुमानित समानता दर",
 					"estimatedRemaining": "अनुमानित शेष समय",
 					"exit": "निकास स्थिति",
 					"failed": "विफलताओं की संख्या",
@@ -366,13 +370,6 @@
 				"marker": "[समाप्ति का कारण: ${reason}]",
 				"speculative": "समाप्त ${label}: सट्टा निर्भरता समाप्त नहीं हुई है, प्रारंभिक रोक रद्द कर दी गई है",
 				"unknown": "समाप्त ${label}: परीक्षण बाधित"
-			},
-			"estimated": {
-				"remaining": "अनुमानित शेष समय ≈ ${eta} (${completed}/${total} सुइट)",
-				"run": "अनुमान है कि इस दौड़ में ≈ ${eta} लगेगा (अनुमानित समानांतर दर ${rate})",
-				"runSerial": "इस रन में ≈ ${eta} (सीरियल) लगने की उम्मीद है",
-				"runSerialHint": "यदि समानता अपेक्षित है ≈ ${eta} (समानांतर दर ${rate}), बचत ≈ ${savings}",
-				"runSkipped": "ऐसे ${reused} टुकड़े भी हैं जिनका दोबारा उपयोग किया जाता है और ${blocked} टुकड़े भी हैं जिनके अवरुद्ध होने की उम्मीद है (अनुमान में शामिल नहीं)"
 			},
 			"unknown": {
 				"fileFilter": "अज्ञात परीक्षण फ़ाइल फ़िल्टरिंग: ${suite} → ${names}",

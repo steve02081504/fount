@@ -42,12 +42,8 @@
 				"src/server/test/live/**",
 				"src/server/auth/**",
 				"src/server/web_server/**",
-				"src/scripts/test/node/{launch.mjs,boot.mjs}",
-				"src/scripts/test/core/allowNoise.mjs",
-				"src/scripts/test/core/url.mjs",
 				"src/scripts/ms.mjs",
-				"src/scripts/WsAbleRouter.mjs",
-				"src/server/web_server/resources.mjs"
+				"src/scripts/WsAbleRouter.mjs"
 			]
 		}
 	]

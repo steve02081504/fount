@@ -1,7 +1,17 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { findDeadTriggers, triggerPatternMatchesAny } from '../core/trigger_audit.mjs'
+import { loadAllSuites } from '../core/manifest.mjs'
+import { REPO_ROOT } from '../core/repo_root.mjs'
+import {
+	expandGlobBraces,
+	findDeadTriggers,
+	findLiveTestFrameworkTriggers,
+	findLocaleTreeTriggers,
+	isLocaleTreeTrigger,
+	isTestFrameworkTrigger,
+	triggerPatternMatchesAny,
+} from '../core/trigger_audit.mjs'
 
 import { makeSuite } from './fixtures.mjs'
 
@@ -49,4 +59,75 @@ Deno.test('findDeadTriggers skips patterns shared with a matching scope', () => 
 		triggers: ['src/scripts/test/core/state.mjs'],
 	})
 	assertEquals(findDeadTriggers([suite], REPO_FILES), [])
+})
+
+Deno.test('expandGlobBraces expands nested braces to the full pattern list', () => {
+	assertEquals(expandGlobBraces('src/public/{pages,locales}/**'), [
+		'src/public/pages/**',
+		'src/public/locales/**',
+	])
+	assertEquals(expandGlobBraces('src/public/{pages,{locales,assets}}/**'), [
+		'src/public/pages/**',
+		'src/public/locales/**',
+		'src/public/assets/**',
+	])
+})
+
+Deno.test('isLocaleTreeTrigger only matches the locales directory', () => {
+	assertEquals(isLocaleTreeTrigger('src/public/locales/**'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/locales/*.json'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/locales/zh-CN.json'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/{pages,locales}/**'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/{pages,{locales,assets}}/**'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/**'), false)
+	assertEquals(isLocaleTreeTrigger('**/*'), false)
+	assertEquals(isLocaleTreeTrigger('src/public/pages/scripts/**'), false)
+})
+
+Deno.test('findLocaleTreeTriggers allows checks and flags Playwright/path', () => {
+	const checks = makeSuite('checks', 'i18n_keys', { triggers: ['src/public/locales/*.json'] })
+	const frontend = {
+		...makeSuite('shells/home', 'frontend', { triggers: [] }),
+		subtests: [{
+			name: 'smoke',
+			spec: 'smoke.spec.mjs',
+			triggers: ['src/public/locales/**'],
+		}],
+	}
+	assertEquals(findLocaleTreeTriggers([checks]), [])
+	assertEquals(findLocaleTreeTriggers([frontend]), [{
+		manifestId: 'shells/home',
+		suiteName: 'frontend',
+		subtestName: 'smoke',
+		pattern: 'src/public/locales/**',
+	}])
+})
+
+Deno.test('repo manifests keep locale JSON and live harness triggers on the right suites', async () => {
+	const all = await loadAllSuites(REPO_ROOT)
+	assertEquals(findLocaleTreeTriggers(all), [])
+	assertEquals(findLiveTestFrameworkTriggers(all), [])
+})
+
+Deno.test('isTestFrameworkTrigger only matches src/scripts/test', () => {
+	assertEquals(isTestFrameworkTrigger('src/scripts/test/node/launch.mjs'), true)
+	assertEquals(isTestFrameworkTrigger('src/scripts/test/{deno/serial.mjs,node/boot.mjs}'), true)
+	assertEquals(isTestFrameworkTrigger('src/scripts/{checks,test}/**'), true)
+	assertEquals(isTestFrameworkTrigger('src/scripts/{checks,{test,foo}}/**'), true)
+	assertEquals(isTestFrameworkTrigger('src/scripts/test/core/allowNoise.mjs'), true)
+	assertEquals(isTestFrameworkTrigger('src/server/test/live/**'), false)
+	assertEquals(isTestFrameworkTrigger('src/scripts/ms.mjs'), false)
+})
+
+Deno.test('findLiveTestFrameworkTriggers allows testkit and flags product live', () => {
+	assertEquals(findLiveTestFrameworkTriggers([
+		makeSuite('testkit', 'launch_node', { triggers: ['src/scripts/test/node/launch.mjs'] }),
+	]), [])
+	assertEquals(findLiveTestFrameworkTriggers([
+		makeSuite('server', 'live', { triggers: ['src/server/test/live/**', 'src/scripts/test/node/launch.mjs'] }),
+	]), [{
+		manifestId: 'server',
+		suiteName: 'live',
+		pattern: 'src/scripts/test/node/launch.mjs',
+	}])
 })

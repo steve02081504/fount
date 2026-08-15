@@ -206,6 +206,18 @@ export class TestQueues {
 	}
 
 	/**
+	 * 移出全部预备与待运行项（内核关闭）。
+	 * @returns {QueueItem[]} 待运行项
+	 */
+	drain() {
+		const queued = [...this.cli, ...this.fs]
+		this.cli = []
+		this.fs = []
+		this.prep.clear()
+		return queued
+	}
+
+	/**
 	 * 双待运行队列是否空（不含预备）。
 	 * @returns {boolean} 是否空
 	 */

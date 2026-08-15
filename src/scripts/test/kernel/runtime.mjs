@@ -69,6 +69,7 @@ export class TestKernel {
 	 * @param {boolean} [options.watchFs] 是否监视文件系统
 	 * @param {number} [options.prepSettleMs] 预备静置毫秒
 	 * @param {boolean} [options.writeReport] 是否写活报告
+	 * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
 	 */
 	constructor({
 		repoRoot,
@@ -76,13 +77,17 @@ export class TestKernel {
 		watchFs = true,
 		prepSettleMs = DEFAULT_PREP_SETTLE_MS,
 		writeReport = true,
+		moduleCheckHoldTimeoutMs,
 	}) {
 		this.repoRoot = repoRoot
 		this.autoExit = autoExit
 		this.watchFsEnabled = watchFs
 		this.writeReport = writeReport
 		this.queues = new TestQueues({ prepSettleMs })
-		this.moduleCheck = new ModuleCheckGate()
+		this.moduleCheck = new ModuleCheckGate({
+			...moduleCheckHoldTimeoutMs == null ? {} : { holdTimeoutMs: moduleCheckHoldTimeoutMs },
+			onHoldTimeout: this.markModuleCheckDone.bind(this),
+		})
 		this.issueCache = new GithubIssueCache()
 		this.viewers = new ViewerHub()
 		this.globalBudget = computeGlobalBudget()
@@ -99,6 +104,7 @@ export class TestKernel {
 		/** @type {Set<string>} */
 		this.sessionSkipped = new Set()
 		this.closed = false
+		this.#closeDone = null
 		this.seenViewer = false
 		this.catalog = null
 		this.state = null
@@ -112,6 +118,7 @@ export class TestKernel {
 	#wake
 	#loop
 	#watcher
+	#closeDone
 
 	/** 唤醒调度循环。 */
 	wake() {
@@ -144,14 +151,58 @@ export class TestKernel {
 	}
 
 	/**
+	 * 取消在跑任务并排空队列；调度循环内调用时不等待自身结束。
 	 * @returns {Promise<void>}
 	 */
 	async close() {
-		if (this.closed) return
+		if (this.#closeDone) return this.#closeDone
 		this.closed = true
 		this.#watcher?.close()
+		this.moduleCheck.close()
+		const queued = this.queues.drain()
+		const runningItems = [...this.running.values()]
+		for (const running of runningItems)
+			running.abort?.abort('kernel_shutdown')
 		this.wake()
+		this.#closeDone = this.#settleClose(queued, runningItems)
 		this.onClose()
+		return this.#closeDone
+	}
+
+	/**
+	 * 结算排队项与在跑项的 job，再等在跑收掉。
+	 * @param {object[]} queued 关闭时取出的队列项
+	 * @param {object[]} runningItems 关闭时的在跑项
+	 * @returns {Promise<void>}
+	 */
+	async #settleClose(queued, runningItems) {
+		for (const item of queued)
+			if (item.jobId) await this.#onJobItemDone(item)
+		await this.#drainRunning()
+		for (const running of runningItems)
+			if (running.item?.jobId) await this.#onJobItemDone(running.item)
+	}
+
+	/**
+	 * 等正在跑的 suite 在 abort 后收掉；超时不阻塞关机。
+	 * @returns {Promise<void>}
+	 */
+	async #drainRunning() {
+		const deadline = Date.now() + 10_000
+		while (this.running.size && Date.now() < deadline)
+			await new Promise(resolve => setTimeout(resolve, 50))
+	}
+
+	/**
+	 * 子进程 ready / 持有超时后，该 suite 不再占用模组检查互斥时长。
+	 * 不表示已收到 ready；超时只放互斥，未 ready 信息仍留在闸上。
+	 * @param {string} ticket 租约
+	 * @returns {void}
+	 */
+	markModuleCheckDone(ticket) {
+		if (!ticket) return
+		for (const running of this.running.values())
+			if (running.ticket === ticket) running.checkDone = true
 	}
 
 	/**
@@ -694,7 +745,7 @@ export class TestKernel {
 			if (this.#shouldExit()) {
 				this.issueCache.pruneOlderThan()
 				await this.close()
-				return
+				break
 			}
 			const waitPrep = this.queues.nextPrepWaitMs()
 			const waiters = [this.#wake.promise]
@@ -702,6 +753,7 @@ export class TestKernel {
 				waiters.push(new Promise(resolve => setTimeout(resolve, waitPrep)))
 			await Promise.race(waiters)
 		}
+		await this.#drainRunning()
 	}
 
 	/**
@@ -778,7 +830,9 @@ export class TestKernel {
 				uncommittedHash: null,
 			}
 			const fp = this.#fingerprintFor(suite, fingerprints)
-			ticket = suite.run[0] === 'deno' ? await this.moduleCheck.acquire() : null
+			ticket = suite.run[0] === 'deno' ? await this.moduleCheck.acquire(abort.signal) : null
+			const runningHold = this.running.get(key)
+			if (runningHold) runningHold.ticket = ticket
 			const result = await runSuite(
 				suite,
 				{
@@ -799,7 +853,7 @@ export class TestKernel {
 					onStderr: this.#broadcastLog.bind(this, key, item.jobId, 'stderr'),
 				},
 			)
-			if (ticket && this.moduleCheck.abandon(ticket)) {
+			if (ticket && this.moduleCheck.consumeMissedReady(ticket)) {
 				endEvent = await this.#finishMissedReady(item, suite)
 				return
 			}
@@ -830,6 +884,10 @@ export class TestKernel {
 			}, result, this.state.suites[key])
 		}
 		catch (error) {
+			if (ticket && this.moduleCheck.consumeMissedReady(ticket)) {
+				endEvent = await this.#finishMissedReady(item, suite)
+				return
+			}
 			const job = item.jobId ? this.jobs.get(item.jobId) : undefined
 			if (job) job.exitCode = 1
 			this.sessionPassed.set(key, false)
@@ -936,7 +994,7 @@ export class TestKernel {
 	}
 
 	/**
-	 * 子进程未发 ready 就退出：记失败并释放闸（调用方已 abandon）。
+	 * 子进程未发 ready 就退出：记失败并释放闸（调用方已 consumeMissedReady）。
 	 * @param {object} item 项
 	 * @param {import('../core/manifest.mjs').SuiteDef} suite suite
 	 * @returns {Promise<object>} suite-end 事件

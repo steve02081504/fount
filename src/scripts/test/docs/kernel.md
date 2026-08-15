@@ -6,6 +6,8 @@ Detached singleton on `http://127.0.0.1:8903` (`kernel/server.mjs`). CLI `ensure
 
 A second kernel listen hits `EADDRINUSE` and exits 0; the CLI attaches to the winner.
 
+`fount test --kernel shutdown` POSTs `/shutdown` (abort running suites, drain, exit). Already down is success. Health must identify the test kernel (`kernel` field on `GET /health`); a generic `/health` on that port is not ours and is not SIGTERM'd. If our process ignores `/shutdown` (old build, wedged loop), the CLI SIGTERMs the listener on that port after 2s. `--kernel reboot` is shutdown then `ensure`. Neither enqueues a job.
+
 On Windows the Node `listening` callback can fire before bind (`address()` is `null`). Treat that as `EADDRINUSE` — do not trust the callback alone.
 
 ## Watch

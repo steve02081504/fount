@@ -24,8 +24,7 @@
 						"src/public/parts/shells/browserIntegration/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/browserIntegration/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/browserIntegration/public/index.{html,mjs}",
-						"src/public/parts/shells/browserIntegration/public/templates.mjs",
-						"src/public/locales/**"
+						"src/public/parts/shells/browserIntegration/public/templates.mjs"
 					]
 				}
 			],

@@ -145,11 +145,18 @@
 			"replHint": "Enter để chạy · Shift+Enter để xuống dòng"
 		},
 		"test": {
-			"help": "Cách dùng: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nBộ chọn (nhóm cách nhau bằng dấu cách; suite trong cùng nhóm bằng dấu phẩy; / và : tương đương):\n  tên               mọi suite trong nhóm (vd. shells/chat)\n  tên:suite         một suite cụ thể\n  tên:suite:mục     một subtest hoặc tệp kiểm thử cụ thể\n\nKhông khớp chính xác thì mở rộng theo tiền tố (shells → shells/chat, shells/social); hỗ trợ glob (*, ?, **).\n\nMặc định (fount test trần): lên kế hoạch thất bại/chưa xong và mục cũ trong một lượt rồi chạy; thất bại chỉ chặn slot phụ thuộc — thoát khác không ở cuối. Không bao giờ toàn repo — dùng --all cho việc đó.\n\n--watch      theo dõi liên tục; không thoát dù hàng đợi trống (Ctrl+C để thoát); không kết hợp với --all, --force, --update-estimates hoặc bộ chọn\n--all        mọi suite trong phạm vi\n--force      chạy cưỡng bức; không tái dùng kết quả trước\n--update-estimates  ghi lại expected trong mỗi manifest theo trung bình DB hiện tại; bộ chọn tùy chọn; không chạy kiểm thử\n\nví dụ:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "Cách dùng: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nBộ chọn (nhóm cách nhau bằng dấu cách; suite trong cùng nhóm bằng dấu phẩy; / và : tương đương):\n  tên               mọi suite trong nhóm (vd. shells/chat)\n  tên:suite         một suite cụ thể\n  tên:suite:mục     một subtest hoặc tệp kiểm thử cụ thể\n\nKhông khớp chính xác thì mở rộng theo tiền tố (shells → shells/chat, shells/social); hỗ trợ glob (*, ?, **).\n\nMặc định (fount test trần): lên kế hoạch thất bại/chưa xong và mục cũ trong một lượt rồi chạy; thất bại chỉ chặn slot phụ thuộc — thoát khác không ở cuối. Không bao giờ toàn repo — dùng --all cho việc đó.\n\n--watch      theo dõi liên tục; không thoát dù hàng đợi trống (Ctrl+C để thoát); không kết hợp với --all, --force, --update-estimates hoặc bộ chọn\n--all        mọi suite trong phạm vi\n--force      chạy cưỡng bức; không tái dùng kết quả trước\n--update-estimates  ghi lại expected trong mỗi manifest theo trung bình DB hiện tại; bộ chọn tùy chọn; không chạy kiểm thử\n--kernel     shutdown dừng kernel kiểm thử; reboot dừng rồi khởi động lại; không dùng cùng đối số khác\n\nví dụ:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Cách dùng: fount test --watch (không dùng cùng tùy chọn khác)",
 			"updateEstimates": {
 				"incompatible": "Cách dùng: fount test --update-estimates [<groups>...] (không dùng cùng cờ khác)",
 				"summary": "Đã cập nhật thời lượng dự kiến cho ${suitesUpdated} suite (${filesChanged} manifest); bỏ qua ${skipped} không có baseline hoặc đã mới nhất"
+			},
+			"kernel": {
+				"incompatible": "Cách dùng: fount test --kernel shutdown|reboot (không thể dùng cùng các tùy chọn khác)",
+				"unknownAction": "Thao tác kernel không hợp lệ: ${action} (cần shutdown hoặc reboot)",
+				"alreadyDown": "Kernel thử nghiệm chưa chạy",
+				"stopped": "Đã dừng kernel thử nghiệm",
+				"rebooted": "Đã khởi động lại kernel thử nghiệm"
 			},
 			"skipBecause": {
 				"pass": "Bỏ qua (issue vẫn mở hoặc đã đóng nhưng chưa hết thời gian ân hạn): ${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "Thời gian còn lại ước tính ≈ ${eta}",
-					"itemExpected": "dự kiến ${expected}",
-					"parallelEstimate": "Ước tính thời gian song song ≈ ${eta} (tỷ lệ song song ước tính ${rate})",
-					"savings": "Ước tính tiết kiệm ≈ ${savings}"
+					"itemExpected": "dự kiến ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "Kéo vào do phụ thuộc",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "Lệnh",
 					"duration": "Thời gian",
-					"estimatedParallelRate": "Tỷ lệ song song ước tính",
 					"estimatedRemaining": "Thời gian còn lại ước tính",
 					"exit": "Trạng thái thoát",
 					"failed": "Số thất bại",
@@ -366,13 +370,6 @@
 				"marker": "[Lý do dừng: ${reason}]",
 				"speculative": "Đã dừng ${label}: phụ thuộc đầu cơ chưa đạt, hủy dừng sớm",
 				"unknown": "ĐÃ DỪNG ${label}: kiểm thử bị gián đoạn"
-			},
-			"estimated": {
-				"remaining": "Thời gian còn lại ước tính ≈ ${eta} (${completed}/${total} suite)",
-				"run": "Ước tính thời gian chạy ≈ ${eta} (tỷ lệ song song ước tính ${rate})",
-				"runSerial": "Ước tính thời gian chạy ≈ ${eta} (tuần tự)",
-				"runSerialHint": "Nếu song song dự kiến ≈ ${eta} (tỷ lệ song song ${rate}), tiết kiệm ≈ ${savings}",
-				"runSkipped": "Ngoài ra tái sử dụng ${reused}, dự kiến chặn ${blocked} (không tính vào ước tính)"
 			},
 			"unknown": {
 				"fileFilter": "Lọc tệp kiểm thử không xác định: ${suite} → ${names}",
