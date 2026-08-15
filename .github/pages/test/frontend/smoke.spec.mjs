@@ -257,6 +257,41 @@ test.describe('install runner wait', () => {
 		await expect.poll(() => eulaHits.length).toBeGreaterThan(0)
 	})
 
+	test('from=runner retries /eula after 8930 comes up', async ({ page, baseUrl }) => {
+		let probes = 0
+		let alive = false
+		/** @type {string[]} */
+		const eulaHits = []
+		await page.route(INSTALLER_STATUS, async route => {
+			const url = route.request().url()
+			const accept = /\/eula(?:\/|$|\?)/.test(url)
+			if (!alive) {
+				if (!accept) probes++
+				if (probes < 3) {
+					await route.abort('connectionrefused')
+					return
+				}
+				alive = true
+			}
+			if (accept) eulaHits.push(url)
+			await route.fulfill({
+				status: 200,
+				contentType: 'application/json',
+				headers: { 'Access-Control-Allow-Origin': '*' },
+				body: JSON.stringify({
+					message: accept ? 'accepted' : 'pong',
+					eula: accept ? 'accepted' : 'pending',
+				}),
+			})
+		})
+		await page.addInitScript(() => {
+			localStorage.setItem('fountEulaAccepted', '1')
+		})
+		await page.goto(`${baseUrl}/wait/install/?from=runner`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+		await expect.poll(() => eulaHits.length).toBeGreaterThan(0)
+	})
+
 	test('from=runner closes EULA when CLI already accepted', async ({ page, baseUrl }) => {
 		await page.route(EULA_MD, fulfillEulaFromRepo)
 		await mockInstallerStatus(page, { eula: 'accepted' })

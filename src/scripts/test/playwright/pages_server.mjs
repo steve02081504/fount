@@ -2,6 +2,7 @@
  * GitHub Pages 本地静态服务器（与 `.esh/commands/pages-server.mjs` 同规则）。
  * 从原始路径挂载，无需复制/构建；部署流程见 `.github/workflows/pages.yaml`。
  */
+import { watch } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
@@ -78,15 +79,15 @@ function pagesFileContentType(relPath) {
 	return 'text/plain'
 }
 
-fs.watch(REPO_ROOT, (event, filename) => {
-	const normalized = String(filename || '').replaceAll('\\', '/')
-	if (event === 'change' && normalized.startsWith('.github/pages/'))
-		delete hooked_file_cache[normalized.slice('.github/pages/'.length)]
-	if (event === 'change' && normalized === '.git/HEAD') {
-		refreshFountGitMeta()
-		for (const key of Object.keys(hooked_file_cache))
-			delete hooked_file_cache[key]
-	}
+watch(path.join(REPO_ROOT, '.github', 'pages'), { recursive: true }, (_event, filename) => {
+	if (!filename) return
+	delete hooked_file_cache[String(filename).replaceAll('\\', '/')]
+})
+watch(path.join(REPO_ROOT, '.git'), (_event, filename) => {
+	if (String(filename || '').replaceAll('\\', '/') !== 'HEAD') return
+	refreshFountGitMeta()
+	for (const key of Object.keys(hooked_file_cache))
+		delete hooked_file_cache[key]
 })
 
 /**

@@ -669,12 +669,14 @@ async function handleInstallerFlow() {
 
 	const eula = await import('./eula.mjs')
 	eula.watchRunnerEulaAcceptance()
-	eula.ensureEulaAccepted().then(() => eula.notifyRunnerEulaAccepted())
+	const eulaAccepted = eula.ensureEulaAccepted()
 
 	if (!await waitUntilInstallerAlive()) {
 		window.location.href = './error'
 		return
 	}
+
+	eulaAccepted.then(() => eula.notifyRunnerEulaAccepted())
 
 	whenFountInstallerFails().then(() => {
 		window.location.href = './error'
