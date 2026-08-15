@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# First-run EULA gate (cmd_open when data/config.json is missing).
+# First-run EULA gate (ensure_fount_config / Ensure-FountConfig when data/config.json is missing).
 
 FOUNT_EULA_URL="https://steve02081504.github.io/fount/EULA/"
 FOUNT_INSTALL_WAIT_URL="https://steve02081504.github.io/fount/wait/install/?from=runner"
@@ -79,14 +79,50 @@ start_fount_status_server() {
 	fi
 }
 
+# wait/install polls :8930; keep the flag until stop so cmd_open does not open a second tab.
+begin_fount_install_wait() {
+	export FOUNT_INSTALL_WAIT=1
+}
+
 stop_fount_status_server() {
 	if [[ -n "${STATUS_SERVER_PID:-}" ]]; then
 		kill "$STATUS_SERVER_PID" 2>/dev/null
 		STATUS_SERVER_PID=""
 	fi
+	unset FOUNT_INSTALL_WAIT
 	[ -n "${FOUNT_STATUS_HANDLER:-}" ] && rm -f "$FOUNT_STATUS_HANDLER"
 	[ -n "${FOUNT_STATUS_FIFO:-}" ] && rm -f "$FOUNT_STATUS_FIFO"
 	[ -n "${EULA_ACCEPT_FILE:-}" ] && rm -f "$EULA_ACCEPT_FILE"
+}
+
+ensure_fount_config() {
+	[ -f "$FOUNT_DIR/data/config.json" ] && return 0
+	if fount_eula_env_accepted || in_docker; then
+		copy_fount_default_config
+		return 0
+	fi
+	require browser unix/ipc unix/url
+	if [[ ! -r /dev/tty ]]; then
+		print_i18n_red 'eula.required' >&2
+		echo "$FOUNT_EULA_URL" >&2
+		"$0" remove
+		exit 1
+	fi
+	install_ipc_tools
+	trap_terminal_teardown stop_fount_status_server
+	start_fount_status_server
+	if [[ -z "${STATUS_SERVER_PID:-}" ]]; then
+		print_i18n_yellow 'eula.statusServerFailed'
+	fi
+	begin_fount_install_wait
+	open_url_in_browser "$FOUNT_INSTALL_WAIT_URL"
+	if ! confirm_fount_eula; then
+		get_i18n 'eula.declined'
+		stop_fount_status_server
+		"$0" remove
+		exit 1
+	fi
+	copy_fount_default_config
 }
 
 confirm_fount_eula() {

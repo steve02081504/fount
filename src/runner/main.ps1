@@ -278,6 +278,7 @@ try {
 			Remove-Item -LiteralPath $eulaAcceptFile -Force -ErrorAction Ignore
 			$statusServerJob = Start-FountStatusServer -AcceptFile $eulaAcceptFile
 			Test-Browser
+			Begin-FountInstallWait
 			Start-Process $script:FountInstallWaitUrl
 			if (-not (Confirm-FountEula -AcceptFile $eulaAcceptFile)) {
 				Write-Host (Get-I18n -key 'eula.declined')

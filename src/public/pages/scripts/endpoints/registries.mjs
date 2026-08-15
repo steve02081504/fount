@@ -18,7 +18,6 @@ export async function getRegistry(name, { nocache = false } = {}) {
 	const fetchPromise = (async () => {
 		const qs = nocache ? '?nocache=1' : ''
 		const res = await fetch(`/api/registries/${encodeURIComponent(name)}${qs}`)
-		if (res.status === 404) return []
 		if (!res.ok)
 			throw new Error(`registry fetch failed: ${name} ${res.status}`)
 		return res.json()

@@ -8,6 +8,7 @@ import { join } from 'node:path'
 
 import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
+import { REPO_ROOT } from '../core/repo_root.mjs'
 import { createPagesApp } from '../playwright/pages_server.mjs'
 
 /**
@@ -117,5 +118,19 @@ Deno.test('hooked pages reject malformed percent-encoding with 400', async () =>
 	finally {
 		await close()
 		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('pages scripts overlay serves GitHub Pages registries stub', async () => {
+	const { port, close } = await listenApp(createPagesApp(REPO_ROOT))
+	try {
+		const response = await fetch(`http://127.0.0.1:${port}/fount/scripts/endpoints/registries.mjs`)
+		assertEquals(response.ok, true)
+		const text = await response.text()
+		assert(!text.includes('/api/registries'), text)
+		assertStringIncludes(text, 'GitHub Pages')
+	}
+	finally {
+		await close()
 	}
 })

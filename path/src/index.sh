@@ -46,9 +46,8 @@ fi
 unset FOUNT_CLICK
 
 if [ ! -f "$FOUNT_DIR/data/config.json" ] && [ "${1:-}" != "remove" ]; then
-	require cmd/open
-	cmd_open open "$@"
-	exit $?
+	require eula
+	ensure_fount_config
 fi
 
 cmd="${1:-}"

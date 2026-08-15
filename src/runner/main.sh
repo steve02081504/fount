@@ -412,6 +412,7 @@ else
 			print_i18n_yellow 'eula.statusServerFailed'
 		fi
 		test_browser
+		begin_fount_install_wait
 		open_install_wait_page
 		if ! confirm_fount_eula; then
 			get_i18n 'eula.declined'

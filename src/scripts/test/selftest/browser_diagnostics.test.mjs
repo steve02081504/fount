@@ -14,9 +14,11 @@ import {
 	isI18nMissingConsoleText,
 	isIgnoredBrowserNetworkError,
 	isIgnoredChildFrameSecurityError,
+	isIgnoredPagesProbeUrl,
 	isPageWatchConsoleText,
 	pageErrorFromCdpException,
 	recordBrowserNetworkEntry,
+	shouldIgnoreBrowserNetwork,
 } from '../playwright/browser_diagnostics.mjs'
 
 Deno.test('recordBrowserNetworkEntry aggregates identical http failures', () => {
@@ -102,6 +104,32 @@ Deno.test('isPageWatchConsoleText matches page watch prefix', () => {
 Deno.test('isI18nMissingConsoleText matches i18n missing prefix', () => {
 	assertEquals(isI18nMissingConsoleText(`${I18N_MISSING_PREFIX} Translation key "foo.bar" not found.`), true)
 	assertEquals(isI18nMissingConsoleText('plain log'), false)
+})
+
+Deno.test('isIgnoredPagesProbeUrl matches ping and installer 8930', () => {
+	assertEquals(isIgnoredPagesProbeUrl('http://127.0.0.1:28931/api/ping'), true)
+	assertEquals(isIgnoredPagesProbeUrl('http://127.0.0.1:28931/api/ping?cache=1'), true)
+	assertEquals(isIgnoredPagesProbeUrl('http://localhost:8930/eula'), true)
+	assertEquals(isIgnoredPagesProbeUrl('http://localhost:8930/'), true)
+	assertEquals(isIgnoredPagesProbeUrl('http://127.0.0.1:28931/api/registries/markdown_extensions'), false)
+})
+
+Deno.test('shouldIgnoreBrowserNetwork drops installer HTTP 4xx/5xx and ping failures', () => {
+	assertEquals(shouldIgnoreBrowserNetwork({
+		kind: 'http',
+		url: 'http://localhost:8930/eula',
+		error: null,
+	}), true)
+	assertEquals(shouldIgnoreBrowserNetwork({
+		kind: 'http',
+		url: 'http://127.0.0.1:28931/api/ping',
+		error: null,
+	}), true)
+	assertEquals(shouldIgnoreBrowserNetwork({
+		kind: 'http',
+		url: 'http://127.0.0.1:28931/api/registries/markdown_extensions',
+		error: null,
+	}), false)
 })
 
 Deno.test('isIgnoredBrowserNetworkError drops ORB and abort', () => {

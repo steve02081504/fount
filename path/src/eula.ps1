@@ -1,4 +1,4 @@
-# First-run EULA gate (cmd_open when data/config.json is missing).
+# First-run EULA gate (ensure_fount_config / Ensure-FountConfig when data/config.json is missing).
 
 $script:FountEulaUrl = 'https://steve02081504.github.io/fount/EULA/'
 $script:FountInstallWaitUrl = 'https://steve02081504.github.io/fount/wait/install/?from=runner'
@@ -67,6 +67,51 @@ function script:Start-FountStatusServer {
 		}
 	}
 	return Start-Job -ScriptBlock $scriptBlock -ArgumentList $AcceptFile, $script:FountEulaPs1Path
+}
+
+function script:Begin-FountInstallWait {
+	$env:FOUNT_INSTALL_WAIT = '1'
+}
+
+function script:Stop-FountStatusServer {
+	if ($null -ne $script:FountStatusServerJob) {
+		Stop-Job $script:FountStatusServerJob -ErrorAction SilentlyContinue
+		Remove-Job $script:FountStatusServerJob -Force -ErrorAction SilentlyContinue
+		$script:FountStatusServerJob = $null
+	}
+	Remove-Item Env:\FOUNT_INSTALL_WAIT -Force -ErrorAction Ignore
+	if ($script:FountEulaAcceptFile) {
+		Remove-Item -LiteralPath $script:FountEulaAcceptFile -Force -ErrorAction Ignore
+		$script:FountEulaAcceptFile = $null
+	}
+}
+
+function script:Ensure-FountConfig {
+	if (Test-Path -Path "$FOUNT_DIR/data/config.json") { return }
+	if ((Test-FountEulaEnvAccepted) -or (in_docker)) {
+		Copy-FountDefaultConfig
+		return
+	}
+	require win/refresh_path win/winget browser
+	if (-not (Test-FountConsoleInput)) {
+		$Host.UI.WriteErrorLine((Get-I18n -key 'eula.required'))
+		$Host.UI.WriteErrorLine($script:FountEulaUrl)
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
+		exit 1
+	}
+	$script:FountEulaAcceptFile = Join-Path ([IO.Path]::GetTempPath()) "fount-eula-accepted-$PID"
+	Remove-Item -LiteralPath $script:FountEulaAcceptFile -Force -ErrorAction Ignore
+	$script:FountStatusServerJob = Start-FountStatusServer -AcceptFile $script:FountEulaAcceptFile
+	Test-Browser
+	Begin-FountInstallWait
+	Start-Process $script:FountInstallWaitUrl
+	if (-not (Confirm-FountEula -AcceptFile $script:FountEulaAcceptFile)) {
+		Write-Host (Get-I18n -key 'eula.declined')
+		Stop-FountStatusServer
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
+		exit 1
+	}
+	Copy-FountDefaultConfig
 }
 
 function script:Confirm-FountEula {

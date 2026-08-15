@@ -18,7 +18,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 - **`endpoints/base.mjs`**: Core auth/system APIs (`login`, `register`, `whoami`, `getUserSetting`, etc.).
 - **`endpoints/parts.mjs`**: `runPart`, `loadPart`, `getPartList`, `getPartDetails`, `setDefaultPart`.
 - **`endpoints/server_events.mjs`**: `onServerEvent` — server-sent event bus.
-- **`endpoints/registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`.
+- **`endpoints/registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`. GitHub Pages overrides this file under `.github/pages/scripts/` (`cp -n`).
 - **`endpoints/p2p/evfsMedia.mjs`**: EVFS GET/PUT (`fetchEvfsFile`, `fetchMediaRef`, `uploadEvfsFile`, `uploadEvfsAttachment`). Pure URL helpers stay Deno-pure in chat `shared/evfsMedia.mjs` (`entityFileUrl`, `mediaRefUrl`).
 - **`debug_log.mjs`**: `debugLog(name, data)` → `debug_logs/`.
 - **HTML templates**: import bound helpers from the shell’s `templates.mjs` (or `templatesFor(root)` / `dialogsFor(root)`) — never `fetch(…html)`.

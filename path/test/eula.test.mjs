@@ -2,7 +2,7 @@
  * 首次安装 EULA：path CLI 走 i18n；runner 先拉取 fount 再加载 locale。
  */
 /* global Deno */
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -189,19 +189,56 @@ function Invoke-Accept($Method, $Path, $Origin) {
 	}
 })
 
-Deno.test('open cmd exits 1 when EULA is not accepted', async () => {
-	const openPs1 = await readFile(join(REPO_ROOT, 'path', 'src', 'cmd', 'open.ps1'), 'utf8')
-	const openSh = await readFile(join(REPO_ROOT, 'path', 'src', 'cmd', 'open.sh'), 'utf8')
-	const psNoTty = openPs1.split('Test-FountConsoleInput')[1].split('Remove-Item')[0]
+Deno.test('FOUNT_ACCEPT_EULA copies default config without consuming argv', async () => {
+	const dir = await mkdtemp(join(tmpdir(), 'fount-eula-cfg-'))
+	try {
+		await mkdir(join(dir, 'default'))
+		await writeFile(join(dir, 'default', 'config.json'), '{"ok":1}')
+		const powerShellResult = await pwsh_exec(`
+$FOUNT_DIR = ${JSON.stringify(dir)}
+$env:FOUNT_ACCEPT_EULA = '1'
+function script:in_docker { $false }
+function script:require { }
+. ${JSON.stringify(eulaPs1Path)}
+Ensure-FountConfig
+if (Test-Path -LiteralPath (Join-Path $FOUNT_DIR 'data/config.json')) { 'copied' } else { 'missing' }
+`)
+		assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
+		assertEquals(powerShellResult.stdout.trim(), 'copied')
+
+		await rm(join(dir, 'data'), { recursive: true, force: true })
+		const bash = await bash_exec(`
+FOUNT_DIR=${JSON.stringify(dir)}
+export FOUNT_DIR FOUNT_ACCEPT_EULA=1
+in_docker() { return 1; }
+require() { :; }
+source ${JSON.stringify(eulaShPath)}
+ensure_fount_config
+test -f "$FOUNT_DIR/data/config.json" && echo copied || echo missing
+`)
+		assertEquals(bash.code, 0, bash.stderr || bash.stdout)
+		assertEquals(bash.stdout.trim(), 'copied')
+	}
+	finally {
+		await rm(dir, { recursive: true, force: true })
+	}
+})
+
+Deno.test('EULA gate exits 1 when not accepted', async () => {
+	const eulaPs1 = await readFile(eulaPs1Path, 'utf8')
+	const eulaSh = await readFile(eulaShPath, 'utf8')
+	const psEnsure = eulaPs1.split('function script:Ensure-FountConfig')[1].split('function script:Confirm-FountEula')[0]
+	const psNoTty = psEnsure.split('Test-FountConsoleInput')[1].split('FountEulaAcceptFile')[0]
 	assert(psNoTty.includes('exit 1'), 'pwsh no-tty EULA branch')
 	assert(!psNoTty.includes('exit $LastExitCode'))
-	const psDeclined = openPs1.split('eula.declined')[1].split('Copy-FountDefaultConfig')[0]
+	const psDeclined = psEnsure.split('eula.declined')[1].split('Copy-FountDefaultConfig')[0]
 	assert(psDeclined.includes('exit 1'), 'pwsh declined EULA branch')
 	assert(!psDeclined.includes('exit $LastExitCode'))
-	const shNoTty = openSh.split('/dev/tty')[1].split('install_ipc_tools')[0]
+	const shEnsure = eulaSh.split('ensure_fount_config()')[1].split('confirm_fount_eula()')[0]
+	const shNoTty = shEnsure.split('/dev/tty')[1].split('install_ipc_tools')[0]
 	assert(shNoTty.includes('exit 1'), 'bash no-tty EULA branch')
 	assert(!shNoTty.includes('exit $?'))
-	const shDeclined = openSh.split('eula.declined')[1].split('copy_fount_default_config')[0]
+	const shDeclined = shEnsure.split('eula.declined')[1].split('copy_fount_default_config')[0]
 	assert(shDeclined.includes('exit 1'), 'bash declined EULA branch')
 	assert(!shDeclined.includes('exit $?'))
 })

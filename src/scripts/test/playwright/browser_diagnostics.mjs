@@ -23,6 +23,26 @@ export function isIgnoredBrowserNetworkError(errorText) {
 }
 
 /**
+ * Pages 安装器探针 URL：同机无 fount 时 `/api/ping` 与 `:8930`（含 `/eula`）失败是预期。
+ * @param {string | null | undefined} url 请求 URL
+ * @returns {boolean} 应忽略则为 true
+ */
+export function isIgnoredPagesProbeUrl(url) {
+	if (!url) return false
+	return /\/api\/ping(?:\?|$)/.test(url) || /:8930(?:\/|$)/.test(url)
+}
+
+/**
+ * 是否从网络诊断中丢弃（requestfailed 的 ORB/abort + Pages 探针）。
+ * @param {{ kind?: string, url?: string, error?: string | null }} entry 诊断条目
+ * @returns {boolean} 应忽略则为 true
+ */
+export function shouldIgnoreBrowserNetwork(entry) {
+	if (entry.kind === 'requestfailed' && isIgnoredBrowserNetworkError(entry.error)) return true
+	return isIgnoredPagesProbeUrl(entry.url)
+}
+
+/**
  * 子 frame 的 SecurityError（含沙箱无 allow-same-origin 时读 serviceWorker；WPT 要求抛）。
  * 只认 CDP 结构化字段：`exception.className` + frame 归属；缺 className 则不忽略。
  * @param {{ exception?: { className?: string } } | null | undefined} exceptionDetails CDP Runtime.ExceptionDetails
@@ -217,25 +237,26 @@ export function createBrowserDiagnostics() {
 		})
 		page.on('requestfailed', req => {
 			const error = req.failure()?.errorText || null
-			if (isIgnoredBrowserNetworkError(error)) return
-			if (/\/api\/ping(?:\?|$)/.test(req.url())) return // Pages 无节点时的探针失败不计入
-			if (/:8930(?:\/|$)/.test(req.url())) return // 安装器存活探针
+			const url = req.url()
+			if (shouldIgnoreBrowserNetwork({ kind: 'requestfailed', url, error })) return
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'requestfailed',
 				method: req.method(),
 				status: null,
-				url: req.url(),
+				url,
 				error,
 			})
 		})
 		page.on('response', res => {
 			const status = res.status()
 			if (status < 400) return
+			const url = res.url()
+			if (shouldIgnoreBrowserNetwork({ kind: 'http', url, error: null })) return
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'http',
 				method: res.request().method(),
 				status,
-				url: res.url(),
+				url,
 				error: null,
 			})
 		})
