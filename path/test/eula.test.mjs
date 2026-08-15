@@ -57,3 +57,50 @@ Get-I18n -key 'eula.prompt'
 	assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
 	assertStringIncludes(powerShellResult.stdout, expected)
 })
+
+Deno.test('FOUNT_ACCEPT_EULA matches only exact 1/true/yes', async () => {
+	const powerShellResult = await pwsh_exec(`
+. ${JSON.stringify(eulaPs1Path)}
+function Check($v) {
+	$env:FOUNT_ACCEPT_EULA = $v
+	if (Test-FountEulaEnvAccepted) { 'yes' } else { 'no' }
+}
+@(
+	(Check '1'),
+	(Check 'true'),
+	(Check 'YES'),
+	(Check '10'),
+	(Check 'trueish'),
+	(Check 'fooyes'),
+	(Check '')
+) -join ','
+`)
+	assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
+	assertEquals(powerShellResult.stdout.trim(), 'yes,yes,yes,no,no,no,no')
+})
+
+Deno.test('status handler CORS allows only GitHub Pages origin', async () => {
+	const sh = await readFile(eulaShPath, 'utf8')
+	const ps1 = await readFile(eulaPs1Path, 'utf8')
+	assertStringIncludes(sh, 'Access-Control-Allow-Origin: https://steve02081504.github.io')
+	assert(!sh.includes('Access-Control-Allow-Origin: *'), eulaShPath)
+	assertStringIncludes(ps1, 'https://steve02081504.github.io')
+	assert(!ps1.includes('Access-Control-Allow-Origin", "*"'), eulaPs1Path)
+})
+
+Deno.test('open cmd exits 1 when EULA is not accepted', async () => {
+	const openPs1 = await readFile(join(REPO_ROOT, 'path', 'src', 'cmd', 'open.ps1'), 'utf8')
+	const openSh = await readFile(join(REPO_ROOT, 'path', 'src', 'cmd', 'open.sh'), 'utf8')
+	const psNoTty = openPs1.split('Test-FountConsoleInput')[1].split('Remove-Item')[0]
+	assert(psNoTty.includes('exit 1'), 'pwsh no-tty EULA branch')
+	assert(!psNoTty.includes('exit $LastExitCode'))
+	const psDeclined = openPs1.split('eula.declined')[1].split('Copy-FountDefaultConfig')[0]
+	assert(psDeclined.includes('exit 1'), 'pwsh declined EULA branch')
+	assert(!psDeclined.includes('exit $LastExitCode'))
+	const shNoTty = openSh.split('/dev/tty')[1].split('install_ipc_tools')[0]
+	assert(shNoTty.includes('exit 1'), 'bash no-tty EULA branch')
+	assert(!shNoTty.includes('exit $?'))
+	const shDeclined = openSh.split('eula.declined')[1].split('copy_fount_default_config')[0]
+	assert(shDeclined.includes('exit 1'), 'bash declined EULA branch')
+	assert(!shDeclined.includes('exit $?'))
+})

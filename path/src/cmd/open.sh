@@ -20,7 +20,7 @@ cmd_open() {
 		print_i18n_red 'eula.required' >&2
 		echo "$FOUNT_EULA_URL" >&2
 		"$0" remove
-		exit $?
+		exit 1
 	fi
 
 	install_ipc_tools
@@ -33,7 +33,7 @@ cmd_open() {
 		get_i18n 'eula.declined'
 		stop_fount_status_server
 		"$0" remove
-		exit $?
+		exit 1
 	fi
 	copy_fount_default_config
 	"$0" "$@"

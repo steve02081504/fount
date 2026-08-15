@@ -40,7 +40,7 @@ Sujeito ao seu cumprimento deste Contrato, o Licenciante concede a você uma lic
 * Ler e navegar o código-fonte e a documentação técnica que o Licenciante tem o direito de licenciar;
 * Manter cópias locais do acima para referência acadêmica ou revisão por pares.
 
-Exceto os direitos expressamente concedidos acima, o Licenciante **não concedeu e não pretende conceder** quaisquer outros direitos sobre o Software, incluindo qualquer direito de execução efetiva para fins comerciais ou não comerciais. Este Contrato igualmente não autoriza software, modelos, APIs, serviços ou dados de terceiros.
+Exceto os direitos expressamente concedidos acima, o Licenciante **não concedeu e não pretende conceder** quaisquer outros direitos sobre o Software, incluindo qualquer direito de execução efetiva para fins comerciais ou não comerciais. Este Contrato igualmente não concede qualquer licença sobre software, modelos, APIs, serviços ou dados de terceiros.
 
 ### 2.3 Diferentes Materiais no Repositório
 

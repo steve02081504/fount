@@ -82,7 +82,6 @@ export function collectAriaLabelsForLocaleCheck(root = document) {
 	const out = []
 	if (!root?.querySelectorAll) return out
 	for (const el of root.querySelectorAll('[aria-label]')) {
-		if (el.nodeType !== 1) continue
 		if (isInsideLocaleCheckSkip(el)) continue
 		if (el.closest('[aria-hidden="true"]')) continue
 		if (el.closest('[inert]')) continue

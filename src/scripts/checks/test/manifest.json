@@ -22,6 +22,7 @@
 				"src/scripts/checks/{html_meta.mjs,og_meta_list.mjs,walk.mjs}",
 				"src/scripts/checks/test/{html_meta.test.mjs,og_meta_list.test.mjs}",
 				"**/*.html",
+				".github/pages/scripts/i18n/redirect_dict.mjs",
 				"docs/readme/*.md",
 				"docs/EULA/*.md"
 			]

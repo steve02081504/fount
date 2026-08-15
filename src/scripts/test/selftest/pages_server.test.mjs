@@ -1,0 +1,86 @@
+/**
+ * Pages 本地服务器：目录路由 Content-Type、hooked 缓存隔离。
+ */
+/* global Deno */
+import { mkdir, mkdtemp, writeFile, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
+import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
+
+import { createPagesApp } from '../playwright/pages_server.mjs'
+
+/**
+ * @param {string} marker 写入 HTML 的可辨识文本
+ * @returns {Promise<string>} 临时仓库根
+ */
+async function makePagesRoot(marker) {
+	const root = await mkdtemp(join(tmpdir(), 'pages-server-'))
+	const dir = join(root, '.github', 'pages', 'EULA')
+	await mkdir(dir, { recursive: true })
+	await writeFile(
+		join(dir, 'index.html'),
+		`<!DOCTYPE html><html><body>${marker} __FOUNT_GIT_REF__</body></html>\n`,
+		'utf8',
+	)
+	return root
+}
+
+/**
+ * @param {import('npm:express').Express} app Express
+ * @returns {Promise<{ port: number, close: () => Promise<void> }>} 句柄
+ */
+function listenApp(app) {
+	return new Promise((resolve, reject) => {
+		const server = app.listen(0, '127.0.0.1', () => {
+			const address = server.address()
+			resolve({
+				port: address.port,
+				/**
+				 * 关闭测试 HTTP server。
+				 * @returns {Promise<void>}
+				 */
+				close: () => new Promise((closeResolve, closeReject) => {
+					server.closeAllConnections?.()
+					server.close(error => error ? closeReject(error) : closeResolve())
+				}),
+			})
+		})
+		server.on('error', reject)
+	})
+}
+
+Deno.test('directory route hooked HTML uses html Content-Type', async () => {
+	const root = await makePagesRoot('eula-page')
+	const app = createPagesApp(root)
+	const { port, close } = await listenApp(app)
+	try {
+		const response = await fetch(`http://127.0.0.1:${port}/fount/EULA/`)
+		assertEquals(response.ok, true)
+		assertStringIncludes(response.headers.get('content-type') || '', 'text/html')
+		assertStringIncludes(await response.text(), 'eula-page')
+	}
+	finally {
+		await close()
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('hooked file cache is per createPagesApp instance', async () => {
+	const rootA = await makePagesRoot('site-a')
+	const rootB = await makePagesRoot('site-b')
+	const a = await listenApp(createPagesApp(rootA))
+	const b = await listenApp(createPagesApp(rootB))
+	try {
+		const textA = await (await fetch(`http://127.0.0.1:${a.port}/fount/EULA/`)).text()
+		const textB = await (await fetch(`http://127.0.0.1:${b.port}/fount/EULA/`)).text()
+		assertStringIncludes(textA, 'site-a')
+		assertStringIncludes(textB, 'site-b')
+	}
+	finally {
+		await a.close()
+		await b.close()
+		await rm(rootA, { recursive: true, force: true })
+		await rm(rootB, { recursive: true, force: true })
+	}
+})

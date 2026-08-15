@@ -29,6 +29,8 @@ const eulaAgree = document.getElementById('eula-agree')
 const eulaContinue = document.getElementById('eula-continue')
 
 let eulaLoaded = false
+/** 仅首页下载流程在加载中可关；runner/open 全程锁定。 */
+let dismissible = false
 let continueAt = 0
 let countdownTimer = 0
 /** @type {AbortController | null} */
@@ -59,7 +61,7 @@ export function installerDownloadUrl() {
 
 /**
  * 本源是否已同意过 EULA。
- * @returns {boolean}
+ * @returns {boolean} 是否已同意
  */
 export function hasAcceptedEula() {
 	return localStorage.getItem(EULA_STORAGE_KEY) === '1'
@@ -161,15 +163,11 @@ function startCountdown() {
 }
 
 /**
- * 加载完成前可点外围关闭；加载后锁定。
- * @param {boolean} locked 是否锁定
+ * 按当前会话更新遮罩锁定。
  * @returns {void}
  */
-function setBackdropLocked(locked) {
-	eulaDialog.classList.toggle('eula-loaded', locked)
-	eulaBackdrop.toggleAttribute('inert', locked)
-	const closeBtn = eulaBackdrop.querySelector('button')
-	if (closeBtn) closeBtn.disabled = locked
+function syncBackdropLock() {
+	eulaBackdrop.toggleAttribute('inert', !dismissible || eulaLoaded)
 }
 
 /**
@@ -179,7 +177,7 @@ function setBackdropLocked(locked) {
  */
 async function loadEula(locale) {
 	eulaLoaded = false
-	setBackdropLocked(false)
+	syncBackdropLock()
 	clearInterval(countdownTimer)
 	continueAt = Date.now() + continueDelayMs()
 	syncContinueButton()
@@ -205,9 +203,9 @@ async function loadEula(locale) {
 		const html = marked.parse(markdown, { async: false })
 		eulaBody.innerHTML = html
 		eulaBody.lang = locale
-		eulaBody.dir = locale === 'ar-SA' || locale.startsWith('ar') ? 'rtl' : 'ltr'
+		eulaBody.dir = locale.startsWith('ar') ? 'rtl' : 'ltr'
 		eulaLoaded = true
-		setBackdropLocked(true)
+		syncBackdropLock()
 		startCountdown()
 	}
 	catch (error) {
@@ -218,7 +216,9 @@ async function loadEula(locale) {
 		failed.dataset.i18n = 'installer_wait_screen.eula.load_failed'
 		eulaBody.appendChild(failed)
 		eulaLoaded = false
-		setBackdropLocked(false)
+		continueAt = 0
+		clearInterval(countdownTimer)
+		syncBackdropLock()
 		syncContinueButton()
 	}
 }
@@ -236,6 +236,8 @@ function showEulaDialog() {
 	)
 	eulaLocaleSelect.value = locale
 	eulaAgree.checked = false
+	eulaLoaded = false
+	syncBackdropLock()
 	eulaDialog.showModal()
 	loadEula(locale)
 }
@@ -253,18 +255,20 @@ function finishAccepted() {
 
 /**
  * 若尚未同意则弹出 EULA，同意后（含 CLI 侧信令）resolve。
+ * @param {{ allowDismiss?: boolean }} [options] `allowDismiss` 仅下载路径在加载中可关
  * @returns {Promise<void>}
  */
-export function ensureEulaAccepted() {
+export function ensureEulaAccepted({ allowDismiss = false } = {}) {
 	if (hasAcceptedEula()) return Promise.resolve()
-	if (!acceptPromise) {
+	dismissible = allowDismiss
+	if (!acceptPromise) 
 		acceptPromise = new Promise(resolve => {
 			acceptResolve = resolve
 			showEulaDialog()
 		}).finally(() => {
 			acceptPromise = null
 		})
-	}
+	
 	return acceptPromise
 }
 
@@ -295,7 +299,7 @@ export function notifyRunnerEulaAccepted() {
  * @returns {Promise<void>}
  */
 export function promptEulaAndDownload() {
-	return ensureEulaAccepted().then(startInstallerDownload)
+	return ensureEulaAccepted({ allowDismiss: true }).then(startInstallerDownload)
 }
 
 /**
@@ -334,19 +338,22 @@ eulaContinue.addEventListener('click', () => {
 	finishAccepted()
 })
 eulaDialog.addEventListener('cancel', event => {
-	if (eulaLoaded) event.preventDefault()
+	if (!dismissible || eulaLoaded) event.preventDefault()
 })
 eulaDialog.addEventListener('close', () => {
 	eulaAbort?.abort()
 	eulaLoaded = false
 	clearInterval(countdownTimer)
-	setBackdropLocked(false)
+	syncBackdropLock()
 	if (hasAcceptedEula()) {
 		acceptResolve?.()
 		acceptResolve = null
+		return
 	}
-	else {
-		acceptPromise = null
-		acceptResolve = null
+	if (!dismissible && acceptResolve) {
+		queueMicrotask(showEulaDialog)
+		return
 	}
+	acceptPromise = null
+	acceptResolve = null
 })

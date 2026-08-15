@@ -37,7 +37,7 @@ if [[ -f "${EULA_ACCEPT_FILE}" ]]; then
 	msg=accepted
 	eula=accepted
 fi
-printf 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{"message":"%s","eula":"%s"}' "$msg" "$eula"
+printf 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: https://steve02081504.github.io\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{"message":"%s","eula":"%s"}' "$msg" "$eula"
 EOF
 	chmod +x "$FOUNT_STATUS_HANDLER"
 }

@@ -301,10 +301,6 @@ body.scroll-lock {
 	background-image: radial-gradient(120% 80% at 50% -10%, color-mix(in oklab, var(--color-primary) 16%, transparent), transparent 55%);
 }
 
-#eula-dialog.eula-loaded .modal-backdrop {
-	pointer-events: none;
-}
-
 .eula-markdown {
 	line-height: 1.65;
 }

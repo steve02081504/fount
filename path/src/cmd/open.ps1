@@ -22,7 +22,7 @@
 			$Host.UI.WriteErrorLine((Get-I18n -key 'eula.required'))
 			$Host.UI.WriteErrorLine($script:FountEulaUrl)
 			& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
-			exit $LastExitCode
+			exit 1
 		}
 		Remove-Item -LiteralPath $acceptFile -Force -ErrorAction Ignore
 		$statusServerJob = Start-FountStatusServer -AcceptFile $acceptFile
@@ -31,7 +31,7 @@
 		if (-not (Confirm-FountEula -AcceptFile $acceptFile)) {
 			Write-Host (Get-I18n -key 'eula.declined')
 			& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
-			exit $LastExitCode
+			exit 1
 		}
 		Copy-FountDefaultConfig
 		fount.ps1 @rest

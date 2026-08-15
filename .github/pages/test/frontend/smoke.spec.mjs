@@ -192,6 +192,8 @@ const INSTALLER_STATUS = /http:\/\/localhost:8930(?:\/|$|\?)/
 async function mockInstallerStatus(page, state = { eula: 'pending' }) {
 	/** @type {string[]} */
 	const eulaHits = []
+	/** @type {string[]} */
+	const aliveHits = []
 	await page.route(INSTALLER_STATUS, async route => {
 		const url = route.request().url()
 		const accept = /\/eula(?:\/|$|\?)/.test(url)
@@ -199,6 +201,7 @@ async function mockInstallerStatus(page, state = { eula: 'pending' }) {
 			eulaHits.push(url)
 			state.eula = 'accepted'
 		}
+		else aliveHits.push(url)
 		await route.fulfill({
 			status: 200,
 			contentType: 'application/json',
@@ -209,7 +212,7 @@ async function mockInstallerStatus(page, state = { eula: 'pending' }) {
 			}),
 		})
 	})
-	return { eulaHits }
+	return { eulaHits, aliveHits }
 }
 
 test.describe('install runner wait', () => {
@@ -218,6 +221,19 @@ test.describe('install runner wait', () => {
 		await openInstallFlow(page, baseUrl)
 		await expect(page.locator('#eula-dialog')).toBeHidden()
 		await expect(page.locator('#mini-game-section')).toBeHidden()
+	})
+
+	test('from=runner cannot dismiss EULA while loading', async ({ page, baseUrl }) => {
+		await page.route(EULA_MD, async route => {
+			await new Promise(resolve => setTimeout(resolve, 2500))
+			await fulfillEulaFromRepo(route)
+		})
+		await mockInstallerStatus(page)
+		await page.goto(`${baseUrl}/wait/install/?from=runner`, { waitUntil: 'domcontentloaded' })
+		const dialog = page.locator('#eula-dialog')
+		await expect(dialog).toBeVisible({ timeout: 30_000 })
+		await dialog.locator('.modal-backdrop').click({ position: { x: 8, y: 8 }, force: true })
+		await expect(dialog).toBeVisible()
 	})
 
 	test('from=runner shows EULA and signals installer, not download', async ({ page, baseUrl }) => {
@@ -294,7 +310,7 @@ test.describe('install runner wait', () => {
 
 	test('from=runner closes EULA when CLI already accepted', async ({ page, baseUrl }) => {
 		await page.route(EULA_MD, fulfillEulaFromRepo)
-		await mockInstallerStatus(page, { eula: 'accepted' })
+		const { aliveHits } = await mockInstallerStatus(page, { eula: 'accepted' })
 		await page.addInitScript(() => {
 			globalThis.fount ??= {}
 			globalThis.fount.test ??= {}
@@ -302,6 +318,7 @@ test.describe('install runner wait', () => {
 		})
 		await page.goto(`${baseUrl}/wait/install/?from=runner`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+		await expect.poll(() => aliveHits.length).toBeGreaterThan(0)
 		await expect(page.locator('#eula-dialog')).toBeHidden({ timeout: 30_000 })
 	})
 })

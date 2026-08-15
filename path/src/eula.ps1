@@ -4,7 +4,7 @@ $script:FountEulaUrl = 'https://steve02081504.github.io/fount/EULA/'
 $script:FountInstallWaitUrl = 'https://steve02081504.github.io/fount/wait/install/?from=runner'
 
 function script:Test-FountEulaEnvAccepted {
-	$env:FOUNT_ACCEPT_EULA -match '^(?i)1|true|yes$'
+	$env:FOUNT_ACCEPT_EULA -match '^(?i)(1|true|yes)$'
 }
 
 function script:Copy-FountDefaultConfig {
@@ -41,7 +41,7 @@ function script:Start-FountStatusServer {
 			while ($true) {
 				$context = $listener.GetContext()
 				$response = $context.Response
-				$response.AddHeader("Access-Control-Allow-Origin", "*")
+				$response.AddHeader("Access-Control-Allow-Origin", "https://steve02081504.github.io")
 				$path = $context.Request.Url.AbsolutePath.TrimEnd('/')
 				if ($path -eq '/eula') {
 					Set-Content -LiteralPath $AcceptFile -Value '1' -Encoding ascii

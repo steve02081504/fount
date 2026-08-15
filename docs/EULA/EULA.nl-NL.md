@@ -40,7 +40,7 @@ Onder voorbehoud van uw naleving van deze Overeenkomst verleent de Licentiegever
 * Broncode en technische documentatie te lezen en te raadplegen die de Licentiegever mag licentiëren;
 * Lokale kopieën van het voorgaande te bewaren ten behoeve van academische raadpleging of peer review.
 
-Behoudens de hierboven uitdrukkelijk verleende rechten heeft de Licentiegever **geen andere rechten op de Software verleend en beoogt hij die ook niet te verlenen**, met inbegrip van enig recht op feitelijke uitvoering voor commerciële of niet-commerciële doeleinden. Deze Overeenkomst machtigt evenmin software, modellen, API's, diensten of gegevens van derden.
+Behoudens de hierboven uitdrukkelijk verleende rechten heeft de Licentiegever **geen andere rechten op de Software verleend en beoogt hij die ook niet te verlenen**, met inbegrip van enig recht op feitelijke uitvoering voor commerciële of niet-commerciële doeleinden. Deze Overeenkomst verleent evenmin enige licentie op software, modellen, API's, diensten of gegevens van derden.
 
 ### 2.3 Verschillende materialen in de Repository
 

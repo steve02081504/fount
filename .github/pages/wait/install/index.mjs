@@ -13,6 +13,13 @@ import {
 	createAutoPreview,
 } from '../../scripts/theme/viewTransition.mjs'
 
+import {
+	INSTALLER_STATUS_ORIGIN,
+	ensureEulaAccepted,
+	notifyRunnerEulaAccepted,
+	promptEulaAndDownload,
+	watchRunnerEulaAcceptance,
+} from './eula.mjs'
 import { renderTemplate } from './templates.mjs'
 
 const hostUrl = 'http://localhost:8931'
@@ -615,7 +622,7 @@ async function populateLanguageSelector() {
  */
 const checkFountInstallerAlive = async () => {
 	try {
-		return (await fetch('http://localhost:8930', { cache: 'no-store' })).ok
+		return (await fetch(INSTALLER_STATUS_ORIGIN, { cache: 'no-store' })).ok
 	}
 	catch {
 		return false
@@ -624,7 +631,7 @@ const checkFountInstallerAlive = async () => {
 
 /**
  * 当前页是否由 runner 打开（等待安装，而非项目主页）。
- * @returns {boolean}
+ * @returns {boolean} 是否为 runner 等待页
  */
 function isRunnerWait() {
 	return new URLSearchParams(location.search).get(RUNNER_WAIT_PARAM) === 'runner'
@@ -633,7 +640,7 @@ function isRunnerWait() {
 /**
  * 等到本机安装器状态服务起来，或超时。
  * @param {number} [timeoutMs=30000] 超时
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} 安装器是否已起来
  */
 async function waitUntilInstallerAlive(timeoutMs = 30_000) {
 	const start = Date.now()
@@ -667,16 +674,15 @@ async function handleInstallerFlow() {
 		section.classList.remove('hidden')
 	footerReadyText.dataset.i18n = 'installer_wait_screen.footer.wait_text'
 
-	const eula = await import('./eula.mjs')
-	eula.watchRunnerEulaAcceptance()
-	const eulaAccepted = eula.ensureEulaAccepted()
+	watchRunnerEulaAcceptance()
+	const eulaAccepted = ensureEulaAccepted()
 
 	if (!await waitUntilInstallerAlive()) {
 		window.location.href = './error'
 		return
 	}
 
-	eulaAccepted.then(() => eula.notifyRunnerEulaAccepted())
+	eulaAccepted.then(() => notifyRunnerEulaAccepted())
 
 	whenFountInstallerFails().then(() => {
 		window.location.href = './error'
@@ -732,7 +738,7 @@ async function handleStandaloneFlow() {
 	 * @returns {void}
 	 */
 	launchButton.onclick = () => {
-		import('./eula.mjs').then(mod => mod.promptEulaAndDownload())
+		promptEulaAndDownload()
 	}
 }
 

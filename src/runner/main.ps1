@@ -129,7 +129,7 @@ if (!$env:FOUNT_DIR) {
 	$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
 }
 
-$script:AcceptEula = $env:FOUNT_ACCEPT_EULA -match '^(?i)1|true|yes$'
+$script:AcceptEula = $env:FOUNT_ACCEPT_EULA -match '^(?i)(1|true|yes)$'
 $newargs = @($args)
 if ($newargs.Count -eq 0) {
 	$newargs = @("open", "keepalive")
