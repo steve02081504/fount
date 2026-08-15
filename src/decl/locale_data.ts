@@ -452,6 +452,13 @@ export type LocaleData = {
 			tempDir: {
 				blocked: string
 			}
+			eula: {
+				prompt: string
+				yn: string
+				required: string
+				declined: string
+				statusServerFailed: string
+			}
 			install: {
 				installingDependencies: string
 				compilingFavicon: string
@@ -462,6 +469,7 @@ export type LocaleData = {
 				permissionDeniedNotRoot: string
 				rootWarningAsRoot: string
 				rootWarningPreferUser: string
+				runnerUpdating: string
 			}
 			clean: {
 				removingCaches: string
@@ -575,6 +583,17 @@ export type LocaleData = {
 			title: string
 			message: string
 			dismiss: string
+		}
+		eula: {
+			title: string
+			agree: string
+			continue: string
+			continue_in: string
+			language: {
+				'aria-label': string
+			}
+			loading: string
+			load_failed: string
 		}
 		footer: {
 			ready_text: string
@@ -6383,6 +6402,7 @@ export type LocaleKeyParams = {
 	'import.alerts.importFailed': { error: string | number }
 	'import.errors.fileImportFailed': { message: string | number }
 	'import.errors.textImportFailed': { message: string | number }
+	'installer_wait_screen.eula.continue_in': { seconds: string | number }
 	'installer_wait_screen.features.aiSources.description': { atlasCloudLink: string | number; evolinkLink: string | number }
 	'installer_wait_screen.footer.error_message': { error: string | number }
 	'installer_wait_screen.utm_welcome.message': { source: string | number }

@@ -229,7 +229,7 @@
 					<!-- Theme List -->
 					<div class="lg:w-1/2 flex flex-col gap-4 p-4 lg:p-6 max-h-[80vh]">
 						<input type="text" id="theme-search" class="input input-bordered w-full" data-i18n="installer_wait_screen.theme_selector.search" />
-						<div id="theme-list" class="grid gap-4 overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
+						<div id="theme-list" tabindex="0" class="grid gap-4 overflow-y-auto grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
 							<!-- Theme previews will be populated by JS -->
 						</div>
 					</div>
@@ -293,6 +293,24 @@
 			</button>
 		</div>
 	</footer>
+
+	<dialog id="eula-dialog" class="modal">
+		<div class="modal-box eula-box flex max-h-[90vh] w-11/12 max-w-3xl flex-col">
+			<div class="mb-3 flex items-start justify-between gap-3">
+				<h2 class="text-xl font-bold" data-i18n="installer_wait_screen.eula.title"></h2>
+				<select id="eula-locale" class="select select-bordered select-sm w-auto shrink-0" data-i18n="installer_wait_screen.eula.language" language-check-ignore></select>
+			</div>
+			<div id="eula-body" class="eula-markdown min-h-40 flex-1 overflow-y-auto" language-check-ignore></div>
+			<div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<label class="label cursor-pointer justify-start gap-2">
+					<input id="eula-agree" type="checkbox" class="checkbox checkbox-primary" />
+					<span data-i18n="installer_wait_screen.eula.agree"></span>
+				</label>
+				<button id="eula-continue" type="button" class="btn btn-primary min-w-40" disabled data-i18n="installer_wait_screen.eula.continue"></button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop backdrop-blur-sm" id="eula-backdrop"><button type="submit" data-i18n="util.common.close"></button></form>
+	</dialog>
 
 	<dialog id="utm-welcome-dialog" class="modal">
 		<div class="modal-box utm-welcome-box max-w-md border border-base-content/10 bg-base-100 text-center shadow-2xl">

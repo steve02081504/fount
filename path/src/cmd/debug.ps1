@@ -1,7 +1,8 @@
 ﻿function script:cmd_debug {
 	bootstrap_full @args
 	try {
-		& (Join-Path $FOUNT_DIR 'path/fount.ps1') keepalive debug @($args | Select-Object -Skip 1)
+		$rest = @($args | Select-Object -Skip 1)
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') keepalive debug @rest
 	}
 	finally {
 		Write-TaskbarProgressClear

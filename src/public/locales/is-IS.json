@@ -469,6 +469,13 @@
 			"tempDir": {
 				"blocked": "Villa: ekki hægt að keyra `fount` í tímabundinni möppu\n\nfount tengist kerfinu djúpt og skráir `PATH` skipunina og marga kerfishooks í `fount`. Ef keyrt í tímabundinni möppu, eftir að kerfið hreinsar tímabundnar skrár, geturðu ekki keyrt `fount remove` til að fjarlægja fount og hooks þess.\n\nFærðu fount í varanlega möppu áður en þú keyrir. Ef þú vilt aðeins prófa stutt, keyrðu `fount remove` handvirkt eftir prófið."
 			},
+			"eula": {
+				"prompt": "Samþykkir þú notendaleyfissamning (EULA) fount?",
+				"yn": "[Y/N] ",
+				"required": "Samþykki EULA er nauðsynlegt til að halda áfram. Stilltu `FOUNT_ACCEPT_EULA=1` og keyrðu aftur, eða keyrðu úr gagnvirkri skel.",
+				"declined": "EULA hafnað. Fjarlægir fount.",
+				"statusServerFailed": "Aðvörun: Gat ekki ræst uppsetningarstöðuþjón. EULA verður sýnd í þessari skel."
+			},
 			"install": {
 				"installingDependencies": "Setur upp ósjálfstæði...",
 				"compilingFavicon": "Faviconskrá finnst ekki; ræsi vefþjón til að búa hana til...",
@@ -478,7 +485,8 @@
 				"permissionDeniedAsRoot": "Villa: Gat ekki skrifað í fount-möppuna '${path}'. Þú ert að keyra sem rót en aðgangi er enn hafnað — vinsamlegast athugaðu og leiðréttu öryggisheimildir þessarar möppu til að veita núverandi notanda fulla stjórn.",
 				"permissionDeniedNotRoot": "Villa: Gat ekki skrifað í fount-möppuna '${path}'. Vinsamlegast leiðréttu öryggisheimildir möppunnar til að veita núverandi notanda skrifaðgang, eða keyrðu fount sem rót.",
 				"rootWarningAsRoot": "Ekki mælt með því: að keyra font þar sem rót veitir fullan kerfisaðgang að öllum fontahlutum.",
-				"rootWarningPreferUser": "Nema þú vitir hvað þú ert að gera er mælt með því að keyra fount sem venjulegur notandi."
+				"rootWarningPreferUser": "Nema þú vitir hvað þú ert að gera er mælt með því að keyra fount sem venjulegur notandi.",
+				"runnerUpdating": "Uppfærir uppsetningarforritið…"
 			},
 			"clean": {
 				"removingCaches": "Fjarlægir skyndiminni...",
@@ -607,6 +615,17 @@
 			"title": "Langt að koma",
 			"message": "Velkomin, gestir frá `${source}`!\nEnginn te eða snarl hér — bara kveðja :)",
 			"dismiss": "Takk, ég skoða aðeins"
+		},
+		"eula": {
+			"title": "Notendaleyfissamningur",
+			"agree": "Ég hef lesið þennan samning og samþykki hann",
+			"continue": "Halda áfram",
+			"continue_in": "Halda áfram (${seconds})",
+			"language": {
+				"aria-label": "Tungumál samnings"
+			},
+			"loading": "Hleður samningi…",
+			"load_failed": "Ekki tókst að hlaða samningnum."
 		},
 		"footer": {
 			"ready_text": "Tilbúin(n) að hefja ferðalagið?",

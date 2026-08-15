@@ -469,6 +469,13 @@
 			"tempDir": {
 				"blocked": "Errore: impossibile eseguire `fount` nella directory temporanea\n\nfount è profondamente accoppiato al sistema e registra il comando `PATH` e più hook di sistema in `fount`. Se eseguito in una directory temporanea, dopo che il sistema cancella i file temporanei, non sarà possibile eseguire `fount remove` per rimuovere fount e i suoi hook.\n\nSpostare fount in una directory non temporanea prima di eseguirlo. Se si desidera solo un breve test, eseguire manualmente `fount remove` al termine del test."
 			},
+			"eula": {
+				"prompt": "Accetti il contratto di licenza con l'utente finale (EULA) di fount?",
+				"yn": "[Y/N] ",
+				"required": "Per continuare è necessario accettare l'EULA. Imposta `FOUNT_ACCEPT_EULA=1` e riprova, oppure esegui da un terminale interattivo.",
+				"declined": "EULA rifiutata. Rimozione di fount in corso.",
+				"statusServerFailed": "Avviso: impossibile avviare il server di stato dell'installazione. Verrà mostrata l'EULA in questo terminale."
+			},
 			"install": {
 				"installingDependencies": "Installazione delle dipendenze...",
 				"compilingFavicon": "File favicon non trovato; avvio del server per compilarlo...",
@@ -478,7 +485,8 @@
 				"permissionDeniedAsRoot": "Errore: impossibile scrivere nella directory fount '${path}'. Stai eseguendo come root ma l'accesso è ancora negato: controlla e correggi le autorizzazioni di sicurezza su questa cartella per concedere all'utente corrente il controllo completo.",
 				"permissionDeniedNotRoot": "Errore: impossibile scrivere nella directory fount '${path}'. Correggi le autorizzazioni di sicurezza sulla cartella per concedere all'utente corrente l'accesso in scrittura, o esegui fount come root.",
 				"rootWarningAsRoot": "Non consigliato: l'esecuzione del fount come root garantisce l'accesso completo al sistema a tutti i componenti del fount.",
-				"rootWarningPreferUser": "A meno che tu non sappia cosa stai facendo, si consiglia di eseguire fount come utente normale."
+				"rootWarningPreferUser": "A meno che tu non sappia cosa stai facendo, si consiglia di eseguire fount come utente normale.",
+				"runnerUpdating": "Aggiornamento dell'installer…"
 			},
 			"clean": {
 				"removingCaches": "Rimozione cache...",
@@ -607,6 +615,17 @@
 			"title": "Da lontano",
 			"message": "Benvenuti, ospiti provenienti da `${source}`!\nQui non ci sono né tè né dolci — solo un saluto :)",
 			"dismiss": "Grazie, do un'occhiata in giro"
+		},
+		"eula": {
+			"title": "Contratto di licenza con l'utente finale",
+			"agree": "Ho letto e accetto il presente accordo",
+			"continue": "Continua",
+			"continue_in": "Continua (${seconds})",
+			"language": {
+				"aria-label": "Lingua dell'accordo"
+			},
+			"loading": "Caricamento dell'accordo…",
+			"load_failed": "Impossibile caricare l'accordo."
 		},
 		"footer": {
 			"ready_text": "Pronto per iniziare il tuo viaggio?",

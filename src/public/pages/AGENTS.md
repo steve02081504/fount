@@ -18,7 +18,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 - **`endpoints/base.mjs`**: Core auth/system APIs (`login`, `register`, `whoami`, `getUserSetting`, etc.).
 - **`endpoints/parts.mjs`**: `runPart`, `loadPart`, `getPartList`, `getPartDetails`, `setDefaultPart`.
 - **`endpoints/server_events.mjs`**: `onServerEvent` — server-sent event bus.
-- **`endpoints/registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`.
+- **`endpoints/registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`. GitHub Pages overrides this file under `.github/pages/scripts/` (`cp -n`).
 - **`endpoints/p2p/evfsMedia.mjs`**: EVFS GET/PUT (`fetchEvfsFile`, `fetchMediaRef`, `uploadEvfsFile`, `uploadEvfsAttachment`). Pure URL helpers stay Deno-pure in chat `shared/evfsMedia.mjs` (`entityFileUrl`, `mediaRefUrl`).
 - **`debug_log.mjs`**: `debugLog(name, data)` → `debug_logs/`.
 - **HTML templates**: import bound helpers from the shell’s `templates.mjs` (or `templatesFor(root)` / `dialogsFor(root)`) — never `fetch(…html)`.
@@ -60,7 +60,8 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 - **`lib/infiniteScroll.mjs`**: `ensureScrollSentinel` / `insertBeforeScrollSentinel` / `bindInfiniteScroll` / `disconnectInfiniteScroll`. Rising-edge / replay traps: Social [ui-details.md](../parts/shells/social/public/docs/ui-details.md#feed-pagination--replay).
 - **`lib/base64.mjs`**: `arrayBufferToBase64` / `blobToBase64` — reuse; do not copy per shell.
 - **`lib/svgInliner.mjs`**: Inline `.svg` `<img>` for `currentColor`. Put `svg-inliner-ignore` on user/media avatars (inlining untrusted SVG activates scripts).
-- **`user-content`**: boolean attr on user/dynamic text & inputs. Page `watch` locale scan hides `[user-content]` — same opt-out style as `svg-inliner-ignore`.
+- **`user-content`**: boolean attr on user/dynamic text & inputs. Page `watch` locale scan skips it.
+- **`language-check-ignore`**: boolean attr on intentional multilingual chrome (language name lists, EULA in a chosen locale). Same locale-scan skip as `user-content`; do not use `user-content` for that.
 - **`aria-ignore`**: value **must** be a GitHub issue URL. Policy: [test AGENTS](../../scripts/test/AGENTS.md) Operator tools.
 - **Incomplete UI a11y**: use `aria-hidden` / `inert` / `hidden` (not bare `opacity: 0`). Fix the product — do not soften page `watch`.
 - **`credentialManager.mjs`** / **`host/urlDataTransfer.mjs`**: credential encryption/transfer; Catbox via `host/catbox.mjs`.

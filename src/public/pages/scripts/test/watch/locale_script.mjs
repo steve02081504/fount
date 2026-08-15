@@ -2,6 +2,13 @@
  * 语种脚本约束（可见文案 + aria-label）：纯函数，供 locale watcher / selftest 共用。
  */
 
+/** 用户动态文案：语种扫描整棵子树跳过。 */
+export const USER_CONTENT_ATTR = 'user-content'
+/** 故意多语种的 chrome（语言名列表、选定语言的法律文本等）。 */
+export const LANGUAGE_CHECK_IGNORE_ATTR = 'language-check-ignore'
+/** 可见文案与 aria-label 语种扫描共同跳过。 */
+export const LOCALE_CHECK_SKIP_SELECTOR = `[${USER_CONTENT_ATTR}], [${LANGUAGE_CHECK_IGNORE_ATTR}]`
+
 /** 英语：不得出现汉字 / 假名；中文：不得出现平假名 / 片假名 */
 export const SCRIPT_FORBIDDEN = {
 	'en-UK': /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}/u,
@@ -57,7 +64,16 @@ export function ariaLabelLocaleProblem(localeNorm, label, jaForbidden = null) {
 }
 
 /**
- * 收集应接受语种检查的 aria-label（跳过 user-content / 隐藏 / aria-hidden / inert）。
+ * 元素是否落在语种扫描跳过子树内。
+ * @param {Element | null | undefined} el 元素
+ * @returns {boolean} 应跳过
+ */
+export function isInsideLocaleCheckSkip(el) {
+	return Boolean(el?.closest?.(LOCALE_CHECK_SKIP_SELECTOR))
+}
+
+/**
+ * 收集应接受语种检查的 aria-label（跳过 user-content / language-check-ignore / 隐藏 / aria-hidden / inert）。
  * @param {ParentNode} [root=document] 扫描根
  * @returns {{ label: string, where: string }[]} 条目
  */
@@ -66,8 +82,7 @@ export function collectAriaLabelsForLocaleCheck(root = document) {
 	const out = []
 	if (!root?.querySelectorAll) return out
 	for (const el of root.querySelectorAll('[aria-label]')) {
-		if (!(el instanceof Element)) continue
-		if (el.closest('[user-content]')) continue
+		if (isInsideLocaleCheckSkip(el)) continue
 		if (el.closest('[aria-hidden="true"]')) continue
 		if (el.closest('[inert]')) continue
 		if (el.closest('[hidden], .hidden')) continue

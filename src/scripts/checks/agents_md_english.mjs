@@ -1,6 +1,6 @@
 /**
  * AGENTS.md 及被其（间接）引用的 `.md` 须保持英文（禁止 CJK）。
- * 人类面向的 `docs/design/`、`docs/review/`、`docs/issues/` 可为中文；仍会遍历以解析链接。
+ * 人类面向的 `docs/design/`、`docs/review/`、`docs/issues/`、`docs/readme/` 可为中文；仍会遍历以解析链接。
  * 闭包内非 `AGENTS.md` 的 `.md` 必须位于名为 `docs` 的目录下（路径含 `/docs/` 段）。
  */
 import { readdir, readFile, stat } from 'node:fs/promises'
@@ -16,7 +16,7 @@ export const CJK_RE = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p
 const MD_LINK_RE = /\]\(\s*(?:<([^>\n#]+?\.md)(?:#[^>\s]*)?>|([^)\s#]+?\.md)(?:#[^)\s]*)?)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/gi
 
 /** 人类面向、允许中文的 docs 子目录前缀 */
-const HUMAN_FACING_DOCS_PREFIXES = ['docs/design/', 'docs/review/', 'docs/issues/']
+const HUMAN_FACING_DOCS_PREFIXES = ['docs/design/', 'docs/review/', 'docs/issues/', 'docs/readme/']
 
 /**
  * 从 Markdown 文本收集本地 `.md` 链接目标（去掉片段）。
@@ -108,7 +108,7 @@ async function collectAgentsMd(repoRoot, directoryPath, paths) {
 
 /**
  * 遍历 repoRoot 下所有 AGENTS.md 及其链接的仓库内 `.md`（传递闭包）。
- * `docs/design/`、`docs/review/`、`docs/issues/` 之外禁止 CJK。
+ * `docs/design/`、`docs/review/`、`docs/issues/`、`docs/readme/` 之外禁止 CJK。
  * 闭包内非 `AGENTS.md` 须位于 `docs/` 目录下。
  * @param {string} repoRoot 仓库根绝对路径
  * @returns {Promise<{ files: string[], issues: { path: string, lines: number[], missing?: boolean, placement?: boolean, from?: string }[] }>} 已扫描文件与问题

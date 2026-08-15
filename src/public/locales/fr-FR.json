@@ -469,6 +469,13 @@
 			"tempDir": {
 				"blocked": "Erreur : impossible d'exécuter `fount` dans un répertoire temporaire\n\nfount est profondément couplé au système et enregistre la commande `PATH` et plusieurs hooks système dans `fount`. Si vous l'exécutez dans un répertoire temporaire, après que le système a effacé les fichiers temporaires, vous ne pourrez plus exécuter `fount remove` pour supprimer fount et ses hooks.\n\nVeuillez déplacer fount vers un répertoire non temporaire avant de l'exécuter. Si vous souhaitez seulement tester brièvement, exécutez manuellement `fount remove` après le test."
 			},
+			"eula": {
+				"prompt": "Acceptez-vous le contrat de licence utilisateur final (EULA) de fount ?",
+				"yn": "[Y/N] ",
+				"required": "L'acceptation de l'EULA est requise. Définissez `FOUNT_ACCEPT_EULA=1` puis relancez, ou exécutez depuis un terminal interactif.",
+				"declined": "EULA refusée. Suppression de fount.",
+				"statusServerFailed": "Avertissement : impossible de démarrer le serveur d'état d'installation. L'EULA s'affichera dans ce terminal."
+			},
 			"install": {
 				"installingDependencies": "Installation des dépendances...",
 				"compilingFavicon": "Favicon introuvable ; démarrage du serveur pour le compiler...",
@@ -478,7 +485,8 @@
 				"permissionDeniedAsRoot": "Erreur : Impossible d'écrire dans le répertoire fount '${path}'. Vous utilisez le compte root mais l'accès est toujours refusé. Veuillez vérifier et corriger les autorisations de sécurité sur ce dossier pour accorder un contrôle total à l'utilisateur actuel.",
 				"permissionDeniedNotRoot": "Erreur : Impossible d'écrire dans le répertoire fount '${path}'. Veuillez corriger les autorisations de sécurité sur le dossier pour accorder l'accès en écriture à l'utilisateur actuel, ou exécuter fount en tant qu'utilisateur root.",
 				"rootWarningAsRoot": "Non recommandé : exécuter fount en tant qu'utilisateur root accorde un accès complet au système à tous les composants de fount.",
-				"rootWarningPreferUser": "À moins que vous ne sachiez ce que vous faites, il est recommandé d'exécuter fount en tant qu'utilisateur normal."
+				"rootWarningPreferUser": "À moins que vous ne sachiez ce que vous faites, il est recommandé d'exécuter fount en tant qu'utilisateur normal.",
+				"runnerUpdating": "Mise à jour de l'installateur…"
 			},
 			"clean": {
 				"removingCaches": "Suppression du cache...",
@@ -607,6 +615,17 @@
 			"title": "De loin",
 			"message": "Bienvenue, visiteurs venus de `${source}` !\nPas de thé ni de gâteaux ici — juste un petit salut :)",
 			"dismiss": "Merci, je jette un œil"
+		},
+		"eula": {
+			"title": "Contrat de licence utilisateur final",
+			"agree": "J'ai lu et j'accepte ce contrat",
+			"continue": "Continuer",
+			"continue_in": "Continuer (${seconds})",
+			"language": {
+				"aria-label": "Langue du contrat"
+			},
+			"loading": "Chargement du contrat…",
+			"load_failed": "Échec du chargement du contrat."
 		},
 		"footer": {
 			"ready_text": "Prêt à commencer votre voyage ?",

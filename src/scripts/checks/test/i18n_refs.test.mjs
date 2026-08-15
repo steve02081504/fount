@@ -107,10 +107,11 @@ Deno.test('extract + scan catches data-i18n leave parent and CLI stale keys', ()
 	assert(jsIssues.some(i => i.kind === 'object_not_element' && i.key === 'chat.hub.group.context.leave'))
 	assertEquals(jsIssues.filter(i => i.key === 'chat.hub.group.context.leave.ok').length, 0)
 
-	const staleCli = 'Write-Host (Get-I18n -key \'remove.removingFount\')\nget_i18n \'remove.removing.fount.main\'\n'
-	assertEquals(extractFountConsolePathKeys(staleCli).map(r => r.key), [
+	const staleCli = 'Write-Host (Get-I18n -key \'remove.removingFount\')\nget_i18n \'remove.removing.fount.main\'\nprint_i18n_red \'eula.required\'\n'
+	assertEquals(extractFountConsolePathKeys(staleCli).map(reference => reference.key), [
 		'remove.removingFount',
 		'remove.removing.fount.main',
+		'eula.required',
 	])
 	const cliIssues = scanFountConsolePathScript(LEAVE_LIKE, staleCli, 'fount.ps1')
 	assert(cliIssues.some(i => i.kind === 'missing' && i.key === 'remove.removingFount'))
@@ -172,7 +173,12 @@ Deno.test('repo: element/string i18n refs and fountConsole.path CLI keys resolve
 		const text = await readFile(join(REPO_ROOT, relativePath), 'utf8')
 		issues.push(...scanSourceI18nRefs(locale, text, relativePath))
 	}
-	for (const relativePath of ['path/fount.ps1', 'path/fount.sh']) {
+	const cliFiles = [
+		...await listRepoFiles(REPO_ROOT, ['.ps1', '.sh'], { under: 'path' }),
+		'src/runner/main.ps1',
+		'src/runner/main.sh',
+	]
+	for (const relativePath of cliFiles) {
 		const text = await readFile(join(REPO_ROOT, relativePath), 'utf8')
 		issues.push(...scanFountConsolePathScript(locale, text, relativePath))
 	}

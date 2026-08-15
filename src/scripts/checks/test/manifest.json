@@ -4,6 +4,9 @@
 		{
 			"name": "html_meta",
 			"expected": "2s",
+			"triggerFilter": {
+				"unignore": ["docs/readme/*.md", "docs/EULA/*.md"]
+			},
 			"run": [
 				"deno",
 				"test",
@@ -18,7 +21,10 @@
 			"triggers": [
 				"src/scripts/checks/{html_meta.mjs,og_meta_list.mjs,walk.mjs}",
 				"src/scripts/checks/test/{html_meta.test.mjs,og_meta_list.test.mjs}",
-				"**/*.html"
+				"**/*.html",
+				".github/pages/scripts/i18n/redirect_dict.mjs",
+				"docs/readme/*.md",
+				"docs/EULA/*.md"
 			]
 		},
 		{
@@ -79,8 +85,9 @@
 				"src/scripts/checks/test/i18n_refs.test.mjs",
 				"src/public/locales/*.json",
 				"src/**/*.{html,mjs,js,ts}",
-				"path/fount.ps1",
-				"path/fount.sh"
+				"path/**/*.{ps1,sh}",
+				"src/runner/main.ps1",
+				"src/runner/main.sh"
 			]
 		},
 		{
@@ -147,6 +154,34 @@
 				"src/scripts/checks/{text_lf.mjs,walk.mjs}",
 				"src/scripts/checks/test/text_lf.test.mjs",
 				"**/*"
+			]
+		},
+		{
+			"name": "locale_md_align",
+			"expected": "1s",
+			"triggerFilter": {
+				"unignore": ["docs/EULA/*.md", "docs/readme/*.md"]
+			},
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/locale_md_align.test.mjs",
+				"./src/scripts/checks/test/locale_sets.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/locale_md_align.mjs",
+				"src/scripts/checks/locale_sets.mjs",
+				"src/scripts/checks/test/locale_md_align.test.mjs",
+				"src/scripts/checks/test/locale_sets.test.mjs",
+				"src/public/locales/list.csv",
+				"src/public/locales/*.json",
+				"docs/EULA/*.md",
+				"docs/readme/*.md"
 			]
 		},
 		{

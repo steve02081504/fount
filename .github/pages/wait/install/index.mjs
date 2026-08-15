@@ -13,9 +13,18 @@ import {
 	createAutoPreview,
 } from '../../scripts/theme/viewTransition.mjs'
 
+import {
+	INSTALLER_STATUS_ORIGIN,
+	ensureEulaAccepted,
+	notifyRunnerEulaAccepted,
+	promptEulaAndDownload,
+	watchRunnerEulaAcceptance,
+} from './eula.mjs'
 import { renderTemplate } from './templates.mjs'
 
 const hostUrl = 'http://localhost:8931'
+/** runner 打开本页时带的查询参数，激活等待安装而非项目主页。 */
+const RUNNER_WAIT_PARAM = 'from'
 
 // --- DOM 元素引用 ---
 const launchButton = document.getElementById('launchButton')
@@ -613,11 +622,33 @@ async function populateLanguageSelector() {
  */
 const checkFountInstallerAlive = async () => {
 	try {
-		return (await fetch('http://localhost:8930', { cache: 'no-store' })).ok
+		return (await fetch(INSTALLER_STATUS_ORIGIN, { cache: 'no-store' })).ok
 	}
 	catch {
 		return false
 	}
+}
+
+/**
+ * 当前页是否由 runner 打开（等待安装，而非项目主页）。
+ * @returns {boolean} 是否为 runner 等待页
+ */
+function isRunnerWait() {
+	return new URLSearchParams(location.search).get(RUNNER_WAIT_PARAM) === 'runner'
+}
+
+/**
+ * 等到本机安装器状态服务起来，或超时。
+ * @param {number} [timeoutMs=30000] 超时
+ * @returns {Promise<boolean>} 安装器是否已起来
+ */
+async function waitUntilInstallerAlive(timeoutMs = 30_000) {
+	const start = Date.now()
+	while (Date.now() - start < timeoutMs) {
+		if (await checkFountInstallerAlive()) return true
+		await new Promise(resolve => setTimeout(resolve, 400))
+	}
+	return false
 }
 
 /**
@@ -642,6 +673,16 @@ async function handleInstallerFlow() {
 	for (const section of [themeSelectionSection, miniGameSection, tipsSection])
 		section.classList.remove('hidden')
 	footerReadyText.dataset.i18n = 'installer_wait_screen.footer.wait_text'
+
+	watchRunnerEulaAcceptance()
+	const eulaAccepted = ensureEulaAccepted()
+
+	if (!await waitUntilInstallerAlive()) {
+		window.location.href = './error'
+		return
+	}
+
+	eulaAccepted.then(() => notifyRunnerEulaAccepted())
 
 	whenFountInstallerFails().then(() => {
 		window.location.href = './error'
@@ -676,24 +717,7 @@ async function handleInstallerFlow() {
 async function handleStandaloneFlow() {
 	launchButtonSpinner.style.display = 'none'
 
-	launchButtonText.dataset.i18n = window.fount
-		? 'installer_wait_screen.footer.open_fount'
-		: 'installer_wait_screen.footer.open_or_install_fount'
-
-	/**
-	 * 在 fount 服务不可用时打开主页。
-	 * @returns {void}
-	 */
-	launchButton.onclick = () => {
-		if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-			window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' // lol webkit
-			return
-		}
-		window.location.href = 'fount://page/'
-		setTimeout(() => { window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' }, 5000)
-	}
-
-	const savedHostUrl = await getFountHostUrl()
+	const savedHostUrl = globalThis.fount?.test?.forceInstall ? '' : await getFountHostUrl()
 
 	if (savedHostUrl) {
 		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
@@ -704,6 +728,16 @@ async function handleStandaloneFlow() {
 			const isOnline = await pingFount(savedHostUrl)
 			window.location.href = isOnline ? savedHostUrl : 'fount://page/'
 		}
+		return
+	}
+
+	launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_or_install_fount'
+	/**
+	 * 安装：EULA 同意后按平台从 latest release 下载。
+	 * @returns {void}
+	 */
+	launchButton.onclick = () => {
+		promptEulaAndDownload()
 	}
 }
 
@@ -728,15 +762,26 @@ async function main() {
 
 	// Tips: random one, rotate
 	const [tipCurrent, tipNext] = tipsDisplay.querySelectorAll('.tip-slide')
+	let tipTimer = 0
 	/**
 	 * 显示随机提示。
+	 * @param {boolean} [animate=true] 是否播放切换动画
 	 * @returns {void}
 	 */
-	const showRandomTip = () => {
-		tipNext.innerHTML = geti18n('tips.data')
+	const showRandomTip = (animate = true) => {
+		const html = geti18n('tips.data')
+		clearTimeout(tipTimer)
+		if (!animate) {
+			tipCurrent.innerHTML = html
+			tipNext.innerHTML = ''
+			tipCurrent.classList.remove('tip-exit-left')
+			tipNext.classList.remove('tip-enter-from-right')
+			return
+		}
+		tipNext.innerHTML = html
 		tipCurrent.classList.add('tip-exit-left')
 		tipNext.classList.add('tip-enter-from-right')
-		setTimeout(() => {
+		tipTimer = setTimeout(() => {
 			tipCurrent.classList.remove('tip-exit-left')
 			tipNext.classList.remove('tip-enter-from-right')
 			tipCurrent.innerHTML = tipNext.innerHTML
@@ -745,6 +790,7 @@ async function main() {
 	}
 	showRandomTip()
 	setInterval(showRandomTip, 13000)
+	onLanguageChange(() => showRandomTip(false))
 
 	// --- Easter Egg ---
 	const shakeStates = new Map()
@@ -846,8 +892,7 @@ async function main() {
 	if (window.fount?.hasStar)
 		starThankYouEl.classList.remove('hidden')
 
-	// Start fount service check
-	if (await checkFountInstallerAlive())
+	if (isRunnerWait())
 		await handleInstallerFlow()
 	else
 		await handleStandaloneFlow()

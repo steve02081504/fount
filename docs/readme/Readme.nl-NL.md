@@ -1,0 +1,377 @@
+<details>
+<summary><small>TL;DR</small></summary>
+
+fount is een programmeerbare, gestandaardiseerde, modulaire en aanpasbare agent-runtimeplatform dat verschillende onderdelen laadt om diensten te leveren.  
+Voor code-gerelateerde vragen, zie [deepwiki](https://deepwiki.com/steve02081504/fount).  
+<small>De naam fount is volledig in kleine letters—het is `f`ount, niet `F`ount.</small>
+
+#### Waarom fount?
+
+- Gestandaardiseerd, rijk en krachtig ecosysteem out-of-the-box; vermijd het wiel opnieuw uitvinden en debug-nightmares
+- Pas agentlogica aan, niet alleen prompts en UI
+- Gebruik en leer van andere krachtige fount-agenten in de community
+- Kantoorvriendelijk, snelle rapportexport
+- Naadloze integratie van personages in IDE's, browsers, terminals, Telegram, enz.
+- Agent-georiënteerde plug-ins uit de community die andere LLM-chatfrontends niet hebben
+- Configureer de API en gebruik het standaardpersonage ZL-31 om onderdeelconfiguratie, -creatie en alle gebruikershandelingen via gesprek te voltooien—zonder leren of onboarding
+
+#### Waarom niet fount?
+
+- Steilere leercurve, codekennis nodig
+- Sommige community-onderdelen kunnen kwaadaardige code bevatten; beoordeel en kies zorgvuldig
+
+##### Wat moet ik gebruiken?
+
+Gebruik [OpenClaw](https://openclaw.ai/) wanneer je:
+
+- AI-agenten wilt proberen zonder diepe aanpassing of efficiëntietuning
+
+Gebruik [ChatGPT](https://chatgpt.com/) of vergelijkbare online LLM-chatplatforms wanneer je:
+
+- Alleen wilt chatten
+- Geen diepe aanpassing van AI-personages nodig hebt
+- Het niet erg vindt dat chatgeschiedenis in de cloud wordt opgeslagen zonder export of migratie
+- Het niet erg vindt om advertenties te zien
+
+Gebruik [character.ai](https://character.ai/) of vergelijkbare online LLM-personage-roleplayplatforms wanneer je:
+
+- Een LLM-gestuurd personage wilt draaien zonder agentfuncties
+- Abonnementskosten acceptabel vindt
+- Geen software wilt configureren
+
+Gebruik [SillyTavern](https://github.com/SillyTavern/SillyTavern/) wanneer je:
+
+- Een personage of functie nodig hebt die STscript of SillyTavern-plugins vereist
+
+Gebruik [SSP](https://ssp.shillest.net/) wanneer je:
+
+- Verschillende desktop pets wilt draaien en het niet per se nodig is dat ze AI gebruiken
+
+</details>
+
+<h1 align="center">⛲fount💪</h1>
+
+> <p align="center">Een Vonk van de Geest, een Vriend voor het Leven</p>
+
+<p align="center">
+<a href="https://github.com/topics/fount-repo"><img src="https://steve02081504.github.io/fount/badges/fount_repo.svg" alt="fount repo"></a>
+<a href="https://deepwiki.com/steve02081504/fount"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+<a href="https://github.com/users/steve02081504/packages/container/package/fount"><img src="https://img.shields.io/docker/image-size/steve02081504/fount" alt="Docker Image Size"></a>
+<a href="https://github.com/steve02081504/fount/archive/refs/heads/master.zip"><img src="https://img.shields.io/github/repo-size/steve02081504/fount" alt="GitHub repo size"></a>
+<a href="https://t.me/GentianAphrodite"><img src="https://img.shields.io/badge/Telegram-%235AA9E6?logo=telegram&labelColor=FFFFFF" alt="Telegram"></a>
+<a href="https://www.codefactor.io/repository/github/steve02081504/fount"><img src="https://www.codefactor.io/repository/github/steve02081504/fount/badge" alt="CodeFactor"></a>
+<a href="https://app.codacy.com/gh/steve02081504/fount/dashboard?utm_source=gh&amp;utm_medium=referral&amp;utm_content=&amp;utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8615bc18e3fa4ff391f41e9dcadf93f7" alt="Codacy Badge"></a>
+</p>
+
+<p align="center"><a href="https://trendshift.io/repositories/13136" target="_blank"><img src="https://trendshift.io/api/badge/repositories/13136" alt="steve02081504%2Ffount | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a></p>
+
+![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
+
+## Wat is fount?
+
+fount is een **moderne, schaalbare AI-agent runtime-omgeving**.
+
+Wij geloven dat **zeer efficiënte productiviteitstools** en **meeslepende emotionele interactie** elkaar niet hoeven uit te sluiten. fount is een brug: overdag kan het de bekwame assistent zijn die u helpt bij het schrijven van complexe code en het organiseren van vergadernotulen; 's nachts kan het een digitale vertrouweling zijn die uw emoties begrijpt en met u meevoelt.
+
+Na ![relative date](https://img.shields.io/date/1727107200?label=Besteedde%20Tijd) van toegewijde verfijning, waarin de passie van ![GitHub contributors](https://img.shields.io/github/contributors/steve02081504/fount?label=Bijdragers) is opgenomen, en met een levendige gemeenschap met ![number of active users](https://img.shields.io/jsdelivr/gh/hy/steve02081504/fount?label=Actieve%20Gebruikers), is fount nu een volwassen, stabiel en voortdurend evoluerend AI-interactieplatform.
+
+Als u wilt configureren, instellen en vanaf nul wilt beginnen, kunt u de community-tutorial [**fount-gids voor dummies vanaf nul**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) raadplegen (de tutorial is in het Chinees, niet-Chinese gebruikers kunnen de vertaalfunctie van de browser gebruiken om deze te lezen).
+
+![Afbeelding](https://github.com/user-attachments/assets/05a5ad16-cc9a-49be-8c55-0c11353cb0d2)
+
+---
+
+## 🚀 Efficiëntie en Engineering: Gebouwd voor Professionals, Ontwikkelaars en Geeks
+
+fount transformeert interactie in productiviteitsassets. Alles is te slepen en neer te zetten (drag-and-drop), alles is een bestand en de logica wordt aangedreven door code.
+
+### 1. Geen leren nodig, direct te gebruiken
+
+- Configureer de API en gebruik het standaardpersonage ZL-31 om onderdeelconfiguratie, -creatie en **alle gebruikershandelingen** via gesprek te voltooien—zonder leren of onboarding.
+  ![Afbeelding](https://github.com/user-attachments/assets/b871ec43-731a-468c-ad74-6c5a7ba8d737)
+
+### 2. Kennis als Asset en Naadloos Delen
+
+- **Directe Rapportgeneratie**: Sleep een conversatiebel direct naar een map om direct een onafhankelijk HTML-rapport te genereren. Dit is ideaal voor het snel organiseren van technische documenten, vergaderverslagen of flarden van inspiratie.
+  ![Afbeelding](https://github.com/user-attachments/assets/0ef54ac0-7575-4b52-aa44-7b555dc4c4be)
+- **Workflow-inkapseling en -distributie**: Sleep de door u gecreëerde rol (agent) direct naar het bureaublad om een deelbaar bestand te genereren. Verspreid uw Prompt-engineering en workflow-logica moeiteloos naar collega's of de gemeenschap.
+  ![Afbeelding](https://github.com/user-attachments/assets/5e14fe6e-2c65-492a-a09f-964c1e8ab9e0)
+
+### 3. Realtime Code-uitvoeringsomgeving
+
+Niet langer alleen Markdown-markering. In fount zijn de codeblokken die door de rol (agent) worden verzonden **levend**.
+
+- Ondersteunt realtime compilatie en uitvoering voor meerdere talen (C/C++/Rust/Python/JS, enz.).
+- Bekijk direct de stdout-uitvoer, en zelfs de ASM-disassemblageresultaten voor gecompileerde talen.
+- Laat de AI uw realtime verificator worden voor pair programming.
+  ![Afbeelding](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
+
+### 4. Ontwikkelaarsvriendelijk
+
+De projectarchitectuur van fount is ontworpen met volledige inachtneming van de gewoonten van ontwikkelaars.
+[Wilt u de architectuur van de projectrepository weten? Neem een kijkje op DeepWiki!](https://deepwiki.com/steve02081504/fount)
+
+- **Git-gestuurd**: Alle componenten kunnen via Git worden beheerd.
+- **VSCode-integratie**: De projectstructuur is duidelijk. In combinatie met de richtlijnen in [AGENTS.md](../../AGENTS.md) kunt u de logica van uw Agent rechtstreeks in uw favoriete IDE ontwikkelen en debuggen.
+
+---
+
+## 🎭 Onderdompeling en Resonantie: High-Fidelity Interactie-ervaring
+
+Wanneer het werk erop zit, biedt fount een verbinding die het gewone overstijgt. We verwerpen de stijfheid van traditionele tools en streven naar een natuurlijke, vloeiende en diepgaande "high-fidelity" interactie.
+
+- **Naadloze Gesprekken, Altijd en Overal**
+  Een chat gestart op een computer kan naadloos doorgaan op een mobiele telefoon of tablet. fount houdt uw gesprekken gesynchroniseerd, zodat u nauw verbonden blijft met uw rol, waar u ook bent.
+
+- **Expressieve, Meeslepende Chat**
+  Door gebruik te maken van de kracht van HTML stelt fount de rol (agent) in staat om zich uit te drukken via rich text, afbeeldingen en zelfs interactieve elementen, waardoor elk gesprek levendig en diepgaand wordt.
+
+- **Een Bijeenkomst van Geesten: Native Groepschat**
+  Nodig meerdere rollen uit om deel te nemen aan hetzelfde gesprek en wees getuige van hun dynamische en boeiende interacties, of het nu gaat om een werkgerelateerde brainstormsessie of een verhaaluitvoering tussen de rollen.
+  ![Afbeelding](https://github.com/user-attachments/assets/eea1cc7c-d258-4a2d-b16f-12815a88811d)
+
+- **Mooie, Aanpasbare Interface**
+  Kies uit meer dan 30 verbluffende thema's, of creëer uw eigen kleuren. fount is uw exclusieve canvas.
+  ![Afbeelding](https://github.com/user-attachments/assets/0d327a06-6446-4bf3-8a05-f941aa5f4ed9)
+
+- **Overal Beschikbaar**
+  fount draait naadloos op Windows, macOS, Linux en zelfs Android, en voldoet aan uw verschillende behoeften door middel van directe installatie of de flexibiliteit van Docker.
+
+- **Ongebreidelde AI-bronintegratie: Omarm het Oneindige**
+  fount biedt ongeëvenaarde _keuze_ en _flexibiliteit_ bij het verbinden van AI-bronnen. Aangepaste JavaScript-code in de AI Source Generator stelt u in staat om verbinding te maken met _elke_ AI-bron – OpenAI, Claude, [Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), [Evolink](https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral... In de stroom van de code kunt u zorgvuldig complexe reguliere expressies ontwerpen, uitgebreide API-bibliotheken aanroepen en multimedia-middelen insluiten. fount ondersteunt ook native het creëren van API Pools om intelligente verzoekroutering te bereiken. De logica van communicatie volgt _uw_ wil, gevormd door de kracht van code.
+  ![Afbeelding](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
+
+Als u zich verloren voelt in de zee van agents, of op zoek bent naar vergeten verhalen, dan wacht onze [**levendige en vriendelijke gemeenschap**](https://t.me/GentianAphrodite) op uw komst. Het is een toevluchtsoord voor gelijkgestemden, waar ontwikkelaars en makers hun wijsheid en creaties delen.
+
+---
+
+## Gezelschap: Voorbij de digitale grenzen
+
+fount streeft ernaar om personages te verweven in het weefsel van je leven, en biedt gezelschap en ondersteuning die verder gaan dan het scherm.
+
+- **Telegram/Discord-integratie**
+  Verbind je personages met Telegram- of Discord-communities via de ingebouwde Bot Shells, waardoor ze levende leden worden.
+  ![Afbeelding](https://github.com/user-attachments/assets/b83301df-2205-4013-b059-4bced94e5857)
+  ![Afbeelding](https://github.com/user-attachments/assets/299255c9-eed3-4deb-b433-41b80930cbdb)
+
+- **Browserintegratie**
+  Integreer personages in browserextensies, waardoor ze de inhoud van pagina's in uw browser kunnen **zien en aanpassen**, waardoor "surfen op het web met AI" echt wordt gerealiseerd.
+  U kunt tegen uw personage zeggen: Hé XX, help me de kleur van deze pagina te veranderen en voeg wat decoraties toe.
+  ![Afbeelding](https://github.com/user-attachments/assets/c4dd7d46-122d-45f3-b0fe-53239725dcd6)
+
+- **IDE-integratie**
+  Integreer personages in IDE's zoals JetBrains, neovim, Zed, enz., zodat ze contextbewuste assistentie en suggesties kunnen bieden terwijl u code schrijft, net als Cursor Agent of GitHub Copilot.
+  ![Afbeelding](https://github.com/user-attachments/assets/70385a8d-c2cf-474d-b894-12f8675c2dc9)
+
+- **De rust van de terminal (in combinatie met [fount-pwsh](https://github.com/steve02081504/fount-pwsh))**
+  Wanneer een terminalcommando mislukt, laat je personage dan zachtjes begeleiding bieden, en verlicht de eenzaamheid in de wereld van code.
+  ![Afbeelding](https://github.com/user-attachments/assets/93afee48-93d4-42c7-a5e0-b7f5c93bdee9)
+
+- **Onbeperkte Shell-uitbreidingen**
+  Met een beetje programmeervaardigheid kun je je eigen fount Shells creëren, waardoor de tentakels van je personages zich uitstrekken naar elke hoek die je je maar kunt voorstellen.
+
+---
+
+## Creëren: Voorbij de grenzen van prompts
+
+Voor makers biedt fount een duidelijker pad om je AI-personages tot leven te brengen.
+
+- **Revolutionaire, door AI ondersteunde creatie**
+  Beschrijf het personage in je hoofd met één zin, en onze intelligente AI-assistent genereert een volledige persona voor je. Dit vereenvoudigt het aanvankelijk omslachtige proces aanzienlijk, zodat je je kunt concentreren op het verfijnen van en communiceren met je creatie.
+
+- **De magie van code, toegankelijker dan je denkt**
+  In fount is code een vorm van moderne magie. Met de zorgvuldige begeleiding van onze community en de inspiratie van AI, is het verrassend eenvoudig om te leren. Je zult ontdekken dat het gebruik van code om de logica van een personage te definiëren een intuïtieve en onderhoudbare manier kan zijn, waardoor personages ontstaan wiens reacties zijn geweven door _jouw_ logica.
+
+- **Begin met kant-en-klare magie: Een schatkist aan sjablonen**
+  De fount-community biedt een overvloed aan vooraf gemaakte personage- en persona-sjablonen. Het zijn "levende blauwdrukken", gemakkelijk aan te passen en te personaliseren, die je een uitstekend startpunt bieden.
+
+- **Ingebedde bronnen**
+  Verweef afbeeldingen, audio en andere bronnen rechtstreeks in je personages om hun aanwezigheid te verrijken.
+  ![Afbeelding](https://github.com/user-attachments/assets/9740cd43-06fd-46c0-a114-e4bd99f13045)
+
+- **Continue integratie**
+  Gebruik [fount-charCI](https://github.com/marketplace/actions/fount-charci) om de ontwikkeling van je personage te ondersteunen, door automatisch tests uit te voeren bij elke commit en problemen in realtime te rapporteren.
+  ![Afbeelding](https://github.com/user-attachments/assets/3f6a188d-6643-4d70-8bd1-b75f00c76439)
+  ![Afbeelding](https://github.com/user-attachments/assets/30eb8374-64c2-41bc-a7d1-f15596352260)
+
+- **Compatibiliteit met oudere formaten**
+  fount omarmt het verleden en biedt compatibiliteitsmodules om SillyTavern- en Risu-personagekaarten te draaien (hoewel migratie van bestaande personages niet wordt ondersteund).
+
+---
+
+## Architectuur: De hoeksteen van innovatie
+
+fount is gebouwd op een robuuste en uitbreidbare architectuur. De backend maakt gebruik van de veiligheid en snelheid van [Deno](https://deno.com/) en gebruikt [Express](https://expressjs.com/) voor efficiënte routing. De frontend is zorgvuldig vervaardigd met HTML, CSS en JavaScript, en biedt een intuïtieve en visueel aantrekkelijke interface.
+
+### Uitbreidingen: Een innovatief tapijt geweven uit duizenden draden
+
+In de wereld van fount is modulariteit van het grootste belang. Een rijk ecosysteem van componenten is met elkaar verweven en creëert het tapijt van je ervaring. Al deze componenten kunnen eenvoudig door gebruikers worden geïnstalleerd, uitgebreid en aangepast.
+
+- **chars (personages):** De kern van fount, de geboorteplaats van persoonlijkheden.
+- **worlds (werelden):** _Veel meer dan alleen maar achtergrondverhalen._ Het zijn de stille architecten van de realiteit, die kennis in personages kunnen injecteren, hun beslissingen kunnen beïnvloeden en zelfs de chatgeschiedenis kunnen manipuleren.
+- **personas (persona's):** _Niet alleen maar gebruikersprofielen._ Persona's hebben de kracht om je woorden en percepties te verdraaien en zelfs te controleren, waardoor echt meeslepende rollenspellen mogelijk worden.
+- **shells (interactie-interfaces):** Poorten naar de ziel van fount, die de reikwijdte van de personages buiten de interface uitbreiden.
+- **ImportHandlers (importhandlers):** De welkomsthand van fount, die de kloof tussen verschillende personageformaten overbrugt.
+- **AIsources (AI-bronnen):** De oerkracht die de gedachten van je personages aandrijft.
+- **AIsourceGenerators (AI-brongeneratoren):** De alchemisten van fount, die via de kracht van JavaScript sjablonen en logica bieden om verbindingen te leggen met _elke_ denkbare AI-bron.
+
+![Afbeelding](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
+
+## Installatie en verwijdering: Een elegante ontmoeting en afscheid
+
+<a id="installation"></a>
+
+### Installatie: Verweef fount in je wereld – _moeiteloos_
+
+> [!TIP]
+>
+> Als u wilt configureren, instellen en vanaf nul wilt beginnen, kunt u de community-tutorial [**fount-gids voor dummies vanaf nul**](https://github.com/Xiaoqiush81/fount-Guide-for-dummies) raadplegen (de tutorial is in het Chinees, niet-Chinese gebruikers kunnen de vertaalfunctie van de browser gebruiken om deze te lezen).
+
+Begin je reis met fount, een stabiel en betrouwbaar platform. Met slechts een paar simpele klikken of commando's ontvouwt de wereld van fount zich.
+
+> [!CAUTION]
+>
+> In de wereld van fount kunnen personages vrijelijk JavaScript-commando's uitvoeren, wat hen krachtige mogelijkheden geeft. Kies daarom je personages met zorg, net zoals je vrienden in het echte leven zou kiezen, om de veiligheid van je lokale bestanden te garanderen.
+
+### Linux/macOS/Android: Het gefluister van de Shell – _één commando, en je bent vertrokken_
+
+```bash
+# Definieer indien nodig de omgevingsvariabele $FOUNT_DIR om de fount-directory op te geven
+install_package() { _command_name="$1"; _package_list=${2:-$_command_name}; _has_sudo=""; _installed_pkg_name="" ; if command -v "$_command_name" >/dev/null 2>&1; then return 0; fi; if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then _has_sudo="sudo"; fi; for _package in $_package_list; do if command -v apt-get >/dev/null 2>&1; then $_has_sudo apt-get update -y; $_has_sudo apt-get install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pacman >/dev/null 2>&1; then $_has_sudo pacman -Syy --noconfirm; $_has_sudo pacman -S --needed --noconfirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v dnf >/dev/null 2>&1; then $_has_sudo dnf install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v yum >/dev/null 2>&1; then $_has_sudo yum install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v zypper >/dev/null 2>&1; then $_has_sudo zypper install -y --no-confirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v apk >/dev/null 2>&1; then if [ "$(id -u)" -eq 0 ]; then apk add --update "$_package"; else $_has_sudo apk add --update "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v brew >/dev/null 2>&1; then if ! brew list --formula "$_package"; then brew install "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pkg >/dev/null 2>&1; then pkg install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v snap >/dev/null 2>&1; then $_has_sudo snap install "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; done; if command -v "$_command_name" >/dev/null 2>&1; then case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in *";$_installed_pkg_name;"*) ;; *) if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then FOUNT_AUTO_INSTALLED_PACKAGES="$_installed_pkg_name"; else FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$_installed_pkg_name"; fi; ;; esac; return 0; else echo "Error: Failed to install '$_command_name' from any source." >&2; return 1; fi; }
+install_package "bash" "bash gnu-bash"; install_package "curl"
+export FOUNT_AUTO_INSTALLED_PACKAGES
+curl -fsSL https://steve02081504.github.io/fount/install.sh | bash
+. "$HOME/.profile"
+```
+
+Als je even wilt pauzeren om je gedachten te ordenen voor het grote avontuur (een proefrun):
+
+```bash
+install_package() { _command_name="$1"; _package_list=${2:-$_command_name}; _has_sudo=""; _installed_pkg_name="" ; if command -v "$_command_name" >/dev/null 2>&1; then return 0; fi; if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then _has_sudo="sudo"; fi; for _package in $_package_list; do if command -v apt-get >/dev/null 2>&1; then $_has_sudo apt-get update -y; $_has_sudo apt-get install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pacman >/dev/null 2>&1; then $_has_sudo pacman -Syy --noconfirm; $_has_sudo pacman -S --needed --noconfirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v dnf >/dev/null 2>&1; then $_has_sudo dnf install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v yum >/dev/null 2>&1; then $_has_sudo yum install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v zypper >/dev/null 2>&1; then $_has_sudo zypper install -y --no-confirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v apk >/dev/null 2>&1; then if [ "$(id -u)" -eq 0 ]; then apk add --update "$_package"; else $_has_sudo apk add --update "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v brew >/dev/null 2>&1; then if ! brew list --formula "$_package"; then brew install "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pkg >/dev/null 2>&1; then pkg install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v snap >/dev/null 2>&1; then $_has_sudo snap install "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; done; if command -v "$_command_name" >/dev/null 2>&1; then case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in *";$_installed_pkg_name;"*) ;; *) if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then FOUNT_AUTO_INSTALLED_PACKAGES="$_installed_pkg_name"; else FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$_installed_pkg_name"; fi; ;; esac; return 0; else echo "Error: Failed to install '$_command_name' from any source." >&2; return 1; fi; }
+install_package "bash" "bash gnu-bash"; install_package "curl"
+export FOUNT_AUTO_INSTALLED_PACKAGES
+curl -fsSL https://steve02081504.github.io/fount/install.sh | bash -s init
+. "$HOME/.profile"
+```
+
+### Windows: Verschillende wegen, hetzelfde doel – _de eenvoudigste weg_
+
+- **Direct en puur (aanbevolen):** Download het `exe`-bestand van [Releases](https://github.com/steve02081504/fount/releases) en voer het uit.
+
+- **De kracht van PowerShell:**
+
+  ```powershell
+  # Definieer indien nodig de omgevingsvariabele $env:FOUNT_DIR om de fount-directory op te geven
+  irm https://steve02081504.github.io/fount/install.ps1 | iex
+  ```
+
+  Voor een proefrun:
+
+  ```powershell
+  $scriptContent = Invoke-RestMethod https://steve02081504.github.io/fount/install.ps1
+  Invoke-Expression "function fountInstaller { $scriptContent }"
+  fountInstaller init
+  ```
+
+### Git-installatie: Voor degenen die van een beetje magie houden
+
+Als je Git hebt geïnstalleerd, is het omarmen van fount net zo eenvoudig als het uitvoeren van een script.
+
+- **Voor Windows:** Open de opdrachtprompt of PowerShell en dubbelklik op `run.bat`.
+- **Voor Linux/macOS/Android:** Open de terminal en voer `./run.sh` uit.
+
+### Docker: Omarm de containers
+
+```bash
+docker pull ghcr.io/steve02081504/fount
+```
+
+### Verwijderen: Een elegant afscheid
+
+```bash
+fount remove
+```
+
+## Kom je schaduwen tegen? Geen paniek
+
+Als je tijdens je reis moeilijkheden ondervindt, neem dan contact met ons op. We staan altijd klaar om te helpen en streven ernaar de meeste problemen binnen 10 minuten tot 24 uur op te lossen.
+
+- **GitHub Issues:** Rapporteer eventuele bugs of stel nieuwe functies voor via [GitHub Issues](https://github.com/steve02081504/fount/issues).
+- **Telegram Community:** Sluit je aan bij onze [levendige Telegram-community](https://t.me/GentianAphrodite) voor realtime ondersteuning en discussies.
+
+Je stem zal uiteindelijk gehoord worden. Start fount gewoon opnieuw op en de schaduwen zullen verdwijnen.
+
+---
+
+## Badges en links: Laat je creatie schitteren, maak de wereld bereikbaar
+
+De wereld van fount is meer dan alleen woorden en code; het is een feest van beeld en verbinding. We hebben prachtige badges en handige links voor je voorbereid, zodat je creatie kan schitteren in al zijn glorie.
+
+### fount-badges: Een teken van eer
+
+Je kunt deze badge met trots gebruiken in je repository of waar je hem ook wilt tonen. Je kunt het SVG-bestand van het fount-logo [hier](../../imgs/) vinden.
+
+```markdown
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
+```
+
+[![fount repo](https://steve02081504.github.io/fount/badges/fount_repo.svg)](https://github.com/topics/fount-repo)
+
+```markdown
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
+```
+
+[![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
+
+| Kleurformaat |         Code         |
+| :----------: | :------------------: |
+|     HEX      |      `#0e3c5c`       |
+|     RGB      |  `rgb(14, 60, 92)`   |
+|     HSL      | `hsl(205, 74%, 21%)` |
+
+Je kunt ook de [badge-toevoeger](https://steve02081504.github.io/fount/badges/) gebruiken om het fount-logo toe te voegen aan elke badge van shields.io.
+
+### Automatische installatielinks: Magie binnen handbereik
+
+Stel je voor dat andere gebruikers met slechts één klik jouw creatie rechtstreeks in hun fount-wereld kunnen installeren. Combineer gewoon je component-zip-link of Git-repositorylink met de protocollink van fount.
+
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<jouw-component-link>`
+
+---
+
+## Aanbevolen browsers: Voor een perfecte ontmoeting
+
+De frontend van fount is geweven uit moderne webtechnologieën, maar niet alle browsers kunnen perfect resoneren met zijn ziel. Voor de meest serene en vloeiende ervaring raden we de partners aan die het meest in harmonie zijn met het ritme van fount:
+
+- [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/): Ze zijn synchroon met de geest van fount en bieden de beste prestaties en compatibiliteit, waardoor elke interactie zo vloeiend is als een gedicht.
+
+Maar sommige browsers bewandelen andere paden, en hun ontmoeting met fount kan gepaard gaan met een lichte dissonantie:
+
+- **Mozilla Firefox**: Hij is als een koppige zwerver, die nieuwe technologieën altijd traag omarmt en soms zelfs kiest om voor altijd in het verleden te blijven. Dit doorzettingsvermogen kan echter tot enige spijt leiden:
+  - Door het gebrek aan ondersteuning voor [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), zal elke koude start en protocolafhandeling van fount 1-2 seconden langzamer zijn dan zou moeten; dit is stilletjes gestolen tijd.
+  - Het ontbreken van ondersteuning voor [CSS `anchor`-positionering](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning) zal de UI van sommige pagina's een vleugje onvolmaakt stof geven, wat het pure gevoel verstoort.
+  - Het ontbreken van ondersteuning voor [`blocking="render"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script) kan ervoor zorgen dat de fount-pagina flikkert tijdens het laden, wat je ogen kan irriteren.
+  - Volgens foutrapporten van de backend is het alleen in de wereld van Firefox dat fount-pagina's soms in mysterieuze fouten vervallen of er vreemd uitzien - als dat gebeurt, probeer dan te vernieuwen, misschien verdrijft dat de mist.
+
+- **Apple Safari**: Zijn ondersteuning voor "opkomende" (enkele jaren oude) webstandaarden is misschien iets beter dan die van Firefox, maar uiteindelijk niet veel.
+  - Ook hier ontbreekt de ondersteuning voor [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules), wat betekent dat de opstart van fount nog steeds een beetje traag zal zijn, waardoor je kostbare momenten verspilt.
+
+- **Brave**: Het is gebaseerd op Chromium, maar zijn krachtige privacyschild kan soms onbedoeld een deel van het licht van fount blokkeren, wat de normale werking van sommige functies kan beïnvloeden.
+
+---
+
+### Wees getuige van de groei: De sterrengeschiedenis van fount
+
+[![Star History Chart](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
+
+### Bijdragers
+
+[![Contributors](https://contrib.rocks/image?repo=steve02081504/fount)](https://github.com/steve02081504/fount/graphs/contributors)
+
+### Slotwoord: De aanraking van de ambachtsman
+
+Buiten het gefluister van de AI biedt fount een diepere verbinding — _de aanraking van de ambachtsman_. In onze community vind je een overvloed aan vooraf gemaakte personage- en persona-sjablonen, _elk een zorgvuldig vervaardigde basis, wachtend om gewekt te worden door jouw unieke visie_.
+
+fount stelt je in staat om op een natuurlijke, meeslepende en diep persoonlijke manier AI-personages te creëren en ermee te communiceren. Of je nu een ervaren maker bent of net aan je reis begint, fount heet je van harte welkom.
+
+Sluit je aan bij onze **vriendelijke community**, op een volwassen platform en met de steun van een toegewijd team, en ontdek de magie van het tot leven brengen van je verbeelding.

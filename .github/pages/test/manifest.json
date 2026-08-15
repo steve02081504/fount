@@ -2,8 +2,26 @@
 	"id": "pages",
 	"suites": [
 		{
+			"name": "pure",
+			"expected": "1s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./.github/pages/test/registries.test.mjs"
+			],
+			"triggers": [
+				".github/pages/test/registries.test.mjs",
+				".github/pages/scripts/endpoints/registries.mjs"
+			]
+		},
+		{
 			"name": "frontend",
-			"expected": "45s",
+			"expected": "2m",
 			"run": [
 				"deno",
 				"run",

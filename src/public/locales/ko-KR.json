@@ -469,6 +469,13 @@
 			"tempDir": {
 				"blocked": "오류: 임시 디렉터리에서 `fount`를 실행할 수 없습니다\n\nfount는 시스템과 깊이 결합되며 `fount`에서 `PATH` 명령과 여러 시스템 hook을 등록합니다. 임시 디렉터리에서 실행하면 시스템이 임시 파일을 지운 후 `fount remove`를 실행하여 fount와 hook을 제거할 수 없습니다.\n\n실행하기 전에 fount를 비임시 디렉터리로 이동하세요. 잠깐 테스트만 하려면 테스트 완료 후 수동으로 `fount remove`를 실행하세요."
 			},
+			"eula": {
+				"prompt": "fount 최종 사용자 라이선스 계약(EULA)에 동의하시겠습니까?",
+				"yn": "[Y/N] ",
+				"required": "계속하려면 EULA에 동의해야 합니다. `FOUNT_ACCEPT_EULA=1`을 설정한 뒤 다시 실행하거나, 대화형 터미널에서 실행하세요.",
+				"declined": "EULA가 거부되었습니다. fount를 제거하는 중입니다.",
+				"statusServerFailed": "경고: 설치 상태 서버를 시작하지 못했습니다. 이 터미널에서 EULA를 표시합니다."
+			},
 			"install": {
 				"installingDependencies": "종속성 설치 중...",
 				"compilingFavicon": "파비콘 파일이 없습니다. 서버를 시작해 생성하는 중...",
@@ -478,7 +485,8 @@
 				"permissionDeniedAsRoot": "오류: fount 디렉터리 '${path}'에 쓸 수 없습니다. root로 실행 중이지만 액세스가 여전히 거부되었습니다. 현재 사용자에게 모든 권한을 부여하려면 이 폴더의 보안 권한을 확인하고 수정하십시오.",
 				"permissionDeniedNotRoot": "오류: fount 디렉터리 '${path}'에 쓸 수 없습니다. 폴더의 보안 권한을 수정하여 현재 사용자에게 쓰기 액세스 권한을 부여하거나, root로 fount를 실행하십시오.",
 				"rootWarningAsRoot": "권장되지 않음: 루트로 fount를 실행하면 모든 fount 구성 요소에 대한 전체 시스템 액세스 권한이 부여됩니다.",
-				"rootWarningPreferUser": "무엇을 하고 있는지 모르는 경우에는 일반 사용자로 fount를 실행하는 것이 좋습니다."
+				"rootWarningPreferUser": "무엇을 하고 있는지 모르는 경우에는 일반 사용자로 fount를 실행하는 것이 좋습니다.",
+				"runnerUpdating": "설치 프로그램을 업데이트하는 중…"
 			},
 			"clean": {
 				"removingCaches": "캐시 삭제 중...",
@@ -607,6 +615,17 @@
 			"title": "먼 길 오셨군요",
 			"message": "`${source}`에서 오신 분들, 환영합니다!\n차나 다과는 없지만, 따뜻한 인사를 드립니다 :)",
 			"dismiss": "고마워요, 둘러볼게요"
+		},
+		"eula": {
+			"title": "최종 사용자 라이선스 계약",
+			"agree": "본 계약을 읽었으며 이에 동의합니다",
+			"continue": "계속",
+			"continue_in": "계속 (${seconds})",
+			"language": {
+				"aria-label": "계약서 언어"
+			},
+			"loading": "계약서를 불러오는 중…",
+			"load_failed": "계약서를 불러오지 못했습니다."
 		},
 		"footer": {
 			"ready_text": "여정을 시작할 준비가 되셨나요?",

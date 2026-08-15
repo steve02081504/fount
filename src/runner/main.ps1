@@ -129,9 +129,10 @@ if (!$env:FOUNT_DIR) {
 	$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
 }
 
-$newargs = $args
-if ($args.Length -eq 0) {
-	$newargs = @("open", "keepalive")
+$script:AcceptEula = $env:FOUNT_ACCEPT_EULA -match '^(?i)(1|true|yes)$'
+$forwardedArgs = @($args)
+if ($forwardedArgs.Count -eq 0) {
+	$forwardedArgs = @("open", "keepalive")
 }
 
 $Script:Installed_winget = 0
@@ -161,6 +162,11 @@ function Test-Winget {
 			}
 			$Script:Installed_winget = 1
 			RefreshPath
+			if ($env:FOUNT_DIR -and (Test-Path $env:FOUNT_DIR)) {
+				New-Item -Path "$env:FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+				Set-Content "$env:FOUNT_DIR/data/installer/auto_installed_winget" '1'
+				$Script:Installed_winget = 0
+			}
 		}
 	} catch { <# ignore #> }
 }
@@ -196,88 +202,96 @@ function Test-Browser {
 	if (Get-Browser) {
 		$Script:Installed_chrome = 1
 		RefreshPath
+		if ($env:FOUNT_DIR -and (Test-Path $env:FOUNT_DIR)) {
+			New-Item -Path "$env:FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+			Set-Content "$env:FOUNT_DIR/data/installer/auto_installed_chrome" '1'
+			$Script:Installed_chrome = 0
+		}
 	}
+}
+
+function Install-FountTree {
+	param([string]$Dir, [string]$Branch)
+	Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
+	if (Get-Command git -ErrorAction Ignore) {
+		git clone -c core.autocrlf=false https://github.com/steve02081504/fount $Dir --depth 1 --single-branch --branch $Branch
+		if ($LastExitCode) {
+			Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
+		}
+	}
+	if (!(Test-Path $Dir)) {
+		Remove-Item "$env:TEMP/fount-$Branch" -Force -ErrorAction Ignore -Recurse
+		try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/$Branch.zip -OutFile $env:TEMP/fount.zip }
+		catch {
+			throw "Failed to download fount: $($_.Exception.Message)"
+		}
+		Expand-Archive $env:TEMP/fount.zip $env:TEMP -Force
+		Remove-Item $env:TEMP/fount.zip -Force
+		New-Item $(Split-Path -Parent $Dir) -ItemType Directory -Force -ErrorAction Ignore
+		Move-Item "$env:TEMP/fount-$Branch" $Dir -Force
+	}
+	if (!(Test-Path $Dir)) {
+		throw "Failed to install fount"
+	}
+}
+
+function Remove-FountAfterEulaDecline {
+	$fountPs1 = Join-Path $env:FOUNT_DIR 'path/fount.ps1'
+	if (Test-Path -LiteralPath $fountPs1) {
+		& $fountPs1 remove
+	}
+	else {
+		Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Recurse
+	}
+}
+
+function Import-FountLocale([string]$Dir) {
+	$script:FOUNT_DIR = $Dir
+	. (Join-Path $Dir 'path/src/i18n.ps1')
+	. (Join-Path $Dir 'path/src/eula.ps1')
 }
 
 $statusServerJob = $null
 $fountExitCode = 1
+$eulaAcceptFile = $null
 try {
 	if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
-		if ($newargs -contains "open") {
-			$statusServerScriptBlock = {
-				$listener = [System.Net.HttpListener]::new()
-				$listener.Prefixes.Add("http://localhost:8930/")
-				$listener.Start()
-
-				try {
-					while ($true) {
-						$response = $listener.GetContext().Response
-						$response.AddHeader("Access-Control-Allow-Origin", "*")
-						$buffer = [System.Text.Encoding]::UTF8.GetBytes('{"message":"pong"}')
-						$response.ContentType = "application/json"
-						$response.ContentLength64 = $buffer.Length
-						$response.OutputStream.Write($buffer, 0, $buffer.Length)
-						$response.Close()
-					}
-				}
-				finally {
-					$listener.Stop()
-					$listener.Close()
-				}
-			}
-			$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
-			$newargs = @($newargs | Where-Object { $_ -ne 'open' })
-			Test-Browser
-			Start-Process 'https://steve02081504.github.io/fount/wait/install'
-		}
 		Write-TaskbarProgress -Percent 0
-		Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
-		if (Get-Command git -ErrorAction Ignore) {
-			Write-TaskbarProgress -Percent 20
-			git clone -c core.autocrlf=false https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
-			if ($LastExitCode) {
-				Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Confirm:$false -Recurse
-				Write-TaskbarProgress -Percent 25
-			}
-			else { Write-TaskbarProgress -Percent 40 }
-		}
-		if (!(Test-Path $env:FOUNT_DIR)) {
-			Write-TaskbarProgress -Percent 25
-			Remove-Item $env:TEMP/fount-$env:FOUNT_BRANCH -Force -ErrorAction Ignore -Confirm:$false -Recurse
-			try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/$env:FOUNT_BRANCH.zip -OutFile $env:TEMP/fount.zip }
-			catch {
-				$Host.UI.WriteErrorLine("Failed to download fount: $($_.Exception.Message)")
-				exit 1
-			}
-			Expand-Archive $env:TEMP/fount.zip $env:TEMP -Force
-			Remove-Item $env:TEMP/fount.zip -Force
-			# 确保父文件夹存在
-			New-Item $(Split-Path -Parent $env:FOUNT_DIR) -ItemType Directory -Force -ErrorAction Ignore
-			Move-Item $env:TEMP/fount-$env:FOUNT_BRANCH $env:FOUNT_DIR -Force
-			Write-TaskbarProgress -Percent 50
-		}
+		Install-FountTree -Dir $env:FOUNT_DIR -Branch $env:FOUNT_BRANCH
+		Write-TaskbarProgress -Percent 50
 		if (!(Test-Path $env:FOUNT_DIR)) {
 			Write-TaskbarProgressError
 			$Host.UI.WriteErrorLine("Failed to install fount")
 			exit 1
 		}
 		$Script:fountDir = $env:FOUNT_DIR
+		Import-FountLocale $env:FOUNT_DIR
 		Write-TaskbarProgress -Percent 60
-		if ($Script:Installed_winget) {
-			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
-			Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
-			$Script:Installed_winget = 0
+		if (-not $script:AcceptEula) {
+			$eulaAcceptFile = Join-Path ([IO.Path]::GetTempPath()) "fount-eula-accepted-$PID"
+			if (-not (Test-FountConsoleInput)) {
+				$Host.UI.WriteErrorLine((Get-I18n -key 'eula.required'))
+				$Host.UI.WriteErrorLine($script:FountEulaUrl)
+				Remove-FountAfterEulaDecline
+				exit 1
+			}
+			Remove-Item -LiteralPath $eulaAcceptFile -Force -ErrorAction Ignore
+			$statusServerJob = Start-FountStatusServer -AcceptFile $eulaAcceptFile
+			Test-Browser
+			Begin-FountInstallWait
+			Open-FountInstallWaitPage
+			if (-not (Confirm-FountEula -AcceptFile $eulaAcceptFile)) {
+				Write-Host (Get-I18n -key 'eula.declined')
+				Remove-FountAfterEulaDecline
+				exit 1
+			}
 		}
-		if ($Script:Installed_chrome) {
-			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
-			Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
-			$Script:Installed_chrome = 0
-		}
+		Copy-FountDefaultConfig
 		Write-TaskbarProgress -Percent 70
-		# 安装阶段结束，进度由后续 run.bat / path 脚本与 server 接续
 	}
 	else {
 		$Script:fountDir = (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
+		Import-FountLocale $Script:fountDir
 	}
 
 	try { Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -ErrorAction Ignore }
@@ -287,7 +301,7 @@ try {
 			#_!! Remove-Item "${PSCommandPath}.old"
 		#_!! }
 		#_!! $(if ((Get-Command ps12exe -ErrorAction Ignore) -and ($PSEXEscript -ne (ps12exe -inputFile "$Script:fountDir/src/runner/main.ps1" -PreprocessOnly))) {
-			#_!! "Doing runner updating..."
+			#_!! Write-Host (Get-I18n -key 'install.runnerUpdating')
 			#_!! Move-Item "$PSCommandPath" "${PSCommandPath}.old"
 			#_!! & "$Script:fountDir/run.bat" geneexe "$PSCommandPath"
 		#_!! }) 6> $null
@@ -297,22 +311,24 @@ try {
 		if ($canSelfModify) {
 			$sourceFile = "$Script:fountDir/src/runner/main.ps1"
 			if ((Get-FileHash -LiteralPath $PSCommandPath).Hash -ne (Get-FileHash -LiteralPath $sourceFile).Hash) {
-				Write-Host "Doing runner updating..."
+				Write-Host (Get-I18n -key 'install.runnerUpdating')
 				try { Copy-Item -LiteralPath $sourceFile -Destination $PSCommandPath -Force }
 				catch { <# 文件无写权限时静默跳过 #> }
 			}
 		}
 	#_endif
 	$OutputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::UTF8
-	& "$Script:fountDir/run.bat" @newargs
+	& "$Script:fountDir/run.bat" @forwardedArgs
 	$fountExitCode = $LastExitCode
 }
 finally {
 	Write-TaskbarProgressClear
 	if ($null -ne $statusServerJob) {
-		Write-Host "Shutting down installation status server..."
 		$statusServerJob | Stop-Job
 		$statusServerJob | Remove-Job
+	}
+	if ($eulaAcceptFile) {
+		Remove-Item -LiteralPath $eulaAcceptFile -Force -ErrorAction Ignore
 	}
 	if ($Script:Installed_chrome) {
 		winget uninstall --id Google.Chrome -e --source winget

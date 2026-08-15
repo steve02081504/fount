@@ -81,6 +81,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **Hung run**: `data/test/state/logs/`; rerun with env from the log. Watchdogs / sleep retry / baselines: [host-keep-awake.md](docs/host-keep-awake.md), [resource-scheduling.md](docs/resource-scheduling.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
 - **Deno panic auto-report**: `core/deno_panic.mjs` → `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override: `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.
 - **`[aria-ignore]`**: value = GitHub issue URL; closed-state via hub `github_issue` + Playwright `assertAriaIgnoreIssues`. Policy: `pages/scripts/test/aria_ignore.mjs`. No hub / `gh` → treat as still open. Page watch: [playwright.md](docs/playwright.md#page-watch).
+- **`[language-check-ignore]`**: boolean; page-watch locale script scan skips the subtree (language name lists, EULA in a chosen locale). Not `user-content`. Selector: `LOCALE_CHECK_SKIP_SELECTOR` in `pages/scripts/test/watch/locale_script.mjs`.
 - **Locale triggers**: [trigger-filter.md](docs/trigger-filter.md#locale-triggers).
 - **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs`. Timeout races: `awaitWithTimeout` in `selftest/kernel_fixtures.mjs` (clears the timer). Keep manifest id `testkit`.
 - **Naming**: readable identifiers (`context` not `ctx`). Suite/file/`Deno.test` names use domain semantics — never planning milestone codes.

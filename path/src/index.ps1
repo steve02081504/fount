@@ -28,7 +28,7 @@ if ($env:OSTYPE -match '^(msys|cygwin)') {
 $script:FountCallerErrorActionPreference = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
 try {
-	require env i18n terminal temp_guard
+	require env i18n eula terminal temp_guard
 
 	check_temp_guard $args[0]
 
@@ -46,6 +46,10 @@ try {
 	}
 
 	$cmd = $args[0]
+	if (-not (Test-Path -Path "$FOUNT_DIR/data/config.json") -and $cmd -ne 'remove') {
+		Ensure-FountConfig
+		if ($ErrorCount -ne $Error.Count) { exit 1 }
+	}
 	if ($cmd -and $cmd -match '^[a-z]+$') {
 		$commandFile = Join-Path $script:FOUNT_SRC "cmd\$cmd.ps1"
 		if (Test-Path -LiteralPath $commandFile) {
@@ -62,5 +66,6 @@ try {
 	if ($ErrorCount -ne $Error.Count) { exit 1 }
 	exit $LastExitCode
 } finally {
+	Stop-FountStatusServer
 	$ErrorActionPreference = $script:FountCallerErrorActionPreference
 }
