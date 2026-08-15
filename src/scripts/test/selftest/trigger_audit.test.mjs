@@ -4,6 +4,7 @@ import { assertEquals } from 'jsr:@std/assert'
 import { loadAllSuites } from '../core/manifest.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {
+	expandGlobBraces,
 	findDeadTriggers,
 	findLiveTestFrameworkTriggers,
 	findLocaleTreeTriggers,
@@ -60,11 +61,24 @@ Deno.test('findDeadTriggers skips patterns shared with a matching scope', () => 
 	assertEquals(findDeadTriggers([suite], REPO_FILES), [])
 })
 
+Deno.test('expandGlobBraces expands nested braces to the full pattern list', () => {
+	assertEquals(expandGlobBraces('src/public/{pages,locales}/**'), [
+		'src/public/pages/**',
+		'src/public/locales/**',
+	])
+	assertEquals(expandGlobBraces('src/public/{pages,{locales,assets}}/**'), [
+		'src/public/pages/**',
+		'src/public/locales/**',
+		'src/public/assets/**',
+	])
+})
+
 Deno.test('isLocaleTreeTrigger only matches the locales directory', () => {
 	assertEquals(isLocaleTreeTrigger('src/public/locales/**'), true)
 	assertEquals(isLocaleTreeTrigger('src/public/locales/*.json'), true)
 	assertEquals(isLocaleTreeTrigger('src/public/locales/zh-CN.json'), true)
 	assertEquals(isLocaleTreeTrigger('src/public/{pages,locales}/**'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/{pages,{locales,assets}}/**'), true)
 	assertEquals(isLocaleTreeTrigger('src/public/**'), false)
 	assertEquals(isLocaleTreeTrigger('**/*'), false)
 	assertEquals(isLocaleTreeTrigger('src/public/pages/scripts/**'), false)
@@ -99,6 +113,7 @@ Deno.test('isTestFrameworkTrigger only matches src/scripts/test', () => {
 	assertEquals(isTestFrameworkTrigger('src/scripts/test/node/launch.mjs'), true)
 	assertEquals(isTestFrameworkTrigger('src/scripts/test/{deno/serial.mjs,node/boot.mjs}'), true)
 	assertEquals(isTestFrameworkTrigger('src/scripts/{checks,test}/**'), true)
+	assertEquals(isTestFrameworkTrigger('src/scripts/{checks,{test,foo}}/**'), true)
 	assertEquals(isTestFrameworkTrigger('src/scripts/test/core/allowNoise.mjs'), true)
 	assertEquals(isTestFrameworkTrigger('src/server/test/live/**'), false)
 	assertEquals(isTestFrameworkTrigger('src/scripts/ms.mjs'), false)

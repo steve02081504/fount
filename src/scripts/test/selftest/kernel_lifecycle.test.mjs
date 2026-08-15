@@ -401,6 +401,27 @@ Deno.test('POST /shutdown stops the in-process kernel', async () => {
 	assertEquals(await kernelHealthy(handle.url), false)
 })
 
+Deno.test('POST /shutdown rejects Origin-bearing requests', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 7,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		assertEquals(await kernelHealthy(handle.url), true)
+		const res = await fetch(`${handle.url}/shutdown`, {
+			method: 'POST',
+			headers: { Origin: 'http://example.test' },
+		})
+		assertEquals(res.status, 403)
+		assertEquals(await kernelHealthy(handle.url), true)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
 Deno.test('shutdownTestKernel returns already_down when nothing is listening', async () => {
 	assertEquals(await shutdownTestKernel({ port: CONTROL_PORT + 1, timeoutMs: 1000 }), 'already_down')
 })

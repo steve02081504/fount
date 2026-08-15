@@ -92,6 +92,7 @@ export async function startTestKernel({
 		response.json({ missed: kernel.moduleCheck.consumeMissedReady(ticket) })
 	})
 	app.post('/shutdown', (request, response) => {
+		if (request.headers.origin) return void response.sendStatus(403)
 		response.json({ ok: true })
 		/** 响应发出后再关，避免和当前请求互相等待。 */
 		const go = () => { void kernel.close() }

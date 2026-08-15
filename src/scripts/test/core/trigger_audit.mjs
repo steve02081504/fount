@@ -29,7 +29,7 @@ const TEST_FRAMEWORK_TRIGGER_ALLOW = new Set(['testkit'])
  * @param {string} pattern glob
  * @returns {string[]} 展开后的模式
  */
-function expandGlobBraces(pattern) {
+export function expandGlobBraces(pattern) {
 	const start = pattern.indexOf('{')
 	if (start < 0) return [pattern]
 	let depth = 0
