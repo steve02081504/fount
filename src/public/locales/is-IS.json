@@ -609,15 +609,15 @@
 			"dismiss": "Takk, ég skoða aðeins"
 		},
 		"eula": {
-			"title": "notendaleyfissamningi",
-			"agree": "Ég hef lesið og samþykki þennan samning",
-			"continue": "halda áfram",
+			"title": "Notendaleyfissamningur",
+			"agree": "Ég hef lesið þennan samning og samþykki hann",
+			"continue": "Halda áfram",
 			"continue_in": "Halda áfram (${seconds})",
 			"language": {
-				"aria-label": "samskiptamál"
+				"aria-label": "Tungumál samnings"
 			},
-			"loading": "Hleður samskiptareglu...",
-			"load_failed": "Ekki tókst að hlaða bókun."
+			"loading": "Hleður samningi…",
+			"load_failed": "Ekki tókst að hlaða samningnum."
 		},
 		"footer": {
 			"ready_text": "Tilbúin(n) að hefja ferðalagið?",

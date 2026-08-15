@@ -611,13 +611,13 @@
 		"eula": {
 			"title": "Contrat de licence utilisateur final",
 			"agree": "J'ai lu et j'accepte cet accord",
-			"continue": "continuer",
+			"continue": "Continuer",
 			"continue_in": "Continuer (${seconds})",
 			"language": {
-				"aria-label": "langage protocolaire"
+				"aria-label": "Langue de l'accord"
 			},
-			"loading": "Chargement du protocole…",
-			"load_failed": "Le chargement du protocole a échoué."
+			"loading": "Chargement de l'accord…",
+			"load_failed": "Échec du chargement de l'accord."
 		},
 		"footer": {
 			"ready_text": "Prêt à commencer votre voyage ?",

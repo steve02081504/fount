@@ -609,15 +609,15 @@
 			"dismiss": "Obrigado, vou dar uma vista de olhos"
 		},
 		"eula": {
-			"title": "Contrato de licença de usuário final",
-			"agree": "Eu li e concordo com este acordo",
-			"continue": "continuar",
+			"title": "Contrato de licença de utilizador final",
+			"agree": "Li e aceito este acordo",
+			"continue": "Continuar",
 			"continue_in": "Continuar (${seconds})",
 			"language": {
-				"aria-label": "linguagem de protocolo"
+				"aria-label": "Idioma do acordo"
 			},
-			"loading": "Carregando protocolo…",
-			"load_failed": "Falha no carregamento do protocolo."
+			"loading": "A carregar o acordo…",
+			"load_failed": "Não foi possível carregar o acordo."
 		},
 		"footer": {
 			"ready_text": "Pronto para começar a sua jornada?",

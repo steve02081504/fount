@@ -609,15 +609,15 @@
 			"dismiss": "👌👀"
 		},
 		"eula": {
-			"title": "最终用户许可协议",
-			"agree": "我已阅读并同意本协议",
-			"continue": "继续",
-			"continue_in": "继续（${seconds}）",
+			"title": "📜 EULA",
+			"agree": "✅📖🤝",
+			"continue": "▶️",
+			"continue_in": "▶️ (${seconds})",
 			"language": {
-				"aria-label": "协议语言"
+				"aria-label": "🌐📜"
 			},
-			"loading": "正在加载协议…",
-			"load_failed": "协议加载失败。"
+			"loading": "📥📜…",
+			"load_failed": "❌📜"
 		},
 		"footer": {
 			"ready_text": "🚀❓",

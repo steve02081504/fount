@@ -610,14 +610,14 @@
 		},
 		"eula": {
 			"title": "Acuerdo de licencia de usuario final",
-			"agree": "He leído y acepto este acuerdo.",
-			"continue": "continuar",
-			"continue_in": "Continuar(${seconds})",
+			"agree": "He leído y acepto este acuerdo",
+			"continue": "Continuar",
+			"continue_in": "Continuar (${seconds})",
 			"language": {
-				"aria-label": "lenguaje de protocolo"
+				"aria-label": "Idioma del acuerdo"
 			},
-			"loading": "Cargando protocolo…",
-			"load_failed": "Error al cargar el protocolo."
+			"loading": "Cargando el acuerdo…",
+			"load_failed": "No se pudo cargar el acuerdo."
 		},
 		"footer": {
 			"ready_text": "¿Listo para empezar tu aventura?",

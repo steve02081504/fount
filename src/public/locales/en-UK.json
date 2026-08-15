@@ -610,7 +610,7 @@
 		},
 		"eula": {
 			"title": "End-User Licence Agreement",
-			"agree": "I have read and agree to this agreement",
+			"agree": "I have read and agree to this licence agreement",
 			"continue": "Continue",
 			"continue_in": "Continue (${seconds})",
 			"language": {

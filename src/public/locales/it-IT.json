@@ -609,15 +609,15 @@
 			"dismiss": "Grazie, do un'occhiata in giro"
 		},
 		"eula": {
-			"title": "Contratto di licenza per l'utente finale",
-			"agree": "Ho letto e accetto questo accordo",
-			"continue": "continuare",
-			"continue_in": "Continua(${seconds})",
+			"title": "Contratto di licenza con l'utente finale",
+			"agree": "Ho letto e accetto il presente accordo",
+			"continue": "Continua",
+			"continue_in": "Continua (${seconds})",
 			"language": {
-				"aria-label": "linguaggio di protocollo"
+				"aria-label": "Lingua dell'accordo"
 			},
-			"loading": "Caricamento protocollo…",
-			"load_failed": "Il caricamento del protocollo non è riuscito."
+			"loading": "Caricamento dell'accordo…",
+			"load_failed": "Impossibile caricare l'accordo."
 		},
 		"footer": {
 			"ready_text": "Pronto per iniziare il tuo viaggio?",

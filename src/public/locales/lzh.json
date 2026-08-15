@@ -609,15 +609,15 @@
 			"dismiss": "多謝，且隨意徜徉"
 		},
 		"eula": {
-			"title": "最终用户许可协议",
-			"agree": "我已阅读并同意本协议",
-			"continue": "继续",
-			"continue_in": "继续（${seconds}）",
+			"title": "終端用戶許可之約",
+			"agree": "余已閱此約，願從之",
+			"continue": "續行",
+			"continue_in": "續行（${seconds}）",
 			"language": {
-				"aria-label": "协议语言"
+				"aria-label": "契約之語"
 			},
-			"loading": "正在加载协议…",
-			"load_failed": "协议加载失败。"
+			"loading": "契約載入中…",
+			"load_failed": "契約載入未遂。"
 		},
 		"footer": {
 			"ready_text": "啟程？",

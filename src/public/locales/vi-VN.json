@@ -614,10 +614,10 @@
 			"continue": "Tiếp tục",
 			"continue_in": "Tiếp tục (${seconds})",
 			"language": {
-				"aria-label": "ngôn ngữ giao thức"
+				"aria-label": "Ngôn ngữ thỏa thuận"
 			},
-			"loading": "Đang tải giao thức…",
-			"load_failed": "Tải giao thức không thành công."
+			"loading": "Đang tải thỏa thuận…",
+			"load_failed": "Không thể tải thỏa thuận."
 		},
 		"footer": {
 			"ready_text": "Sẵn sàng bắt đầu hành trình của bạn?",

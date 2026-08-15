@@ -610,14 +610,14 @@
 		},
 		"eula": {
 			"title": "Licentieovereenkomst voor eindgebruikers",
-			"agree": "Ik heb deze overeenkomst gelezen en ga hiermee akkoord",
-			"continue": "doorgaan",
+			"agree": "Ik heb deze overeenkomst gelezen en ga ermee akkoord",
+			"continue": "Doorgaan",
 			"continue_in": "Doorgaan (${seconds})",
 			"language": {
-				"aria-label": "protocol taal"
+				"aria-label": "Taal van de overeenkomst"
 			},
-			"loading": "Protocol laden…",
-			"load_failed": "Het laden van het protocol is mislukt."
+			"loading": "Overeenkomst laden…",
+			"load_failed": "De overeenkomst kon niet worden geladen."
 		},
 		"footer": {
 			"ready_text": "Klaar om je reis te beginnen?",

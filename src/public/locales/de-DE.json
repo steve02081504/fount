@@ -611,13 +611,13 @@
 		"eula": {
 			"title": "Endbenutzer-Lizenzvereinbarung",
 			"agree": "Ich habe diese Vereinbarung gelesen und stimme ihr zu",
-			"continue": "weitermachen",
+			"continue": "Weiter",
 			"continue_in": "Weiter (${seconds})",
 			"language": {
-				"aria-label": "Protokollsprache"
+				"aria-label": "Sprache der Vereinbarung"
 			},
-			"loading": "Protokoll wird geladen…",
-			"load_failed": "Das Laden des Protokolls ist fehlgeschlagen."
+			"loading": "Vereinbarung wird geladen…",
+			"load_failed": "Die Vereinbarung konnte nicht geladen werden."
 		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
