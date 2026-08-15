@@ -320,11 +320,10 @@ function buildRunMarkdown(summary, completed) {
 	]
 
 	// 剩余全是复用/预计阻塞时 ETA≈0，无信息量，略去。
-	if (summary.estimate?.runCount) {
+	if (summary.estimate?.runCount)
 		lines.push(
 			`| ${geti18n('fountConsole.test.report.field.estimatedRemaining')} | ${formatEstimatePoint(summary.estimate.etaMs)} |`,
 		)
-	}
 
 	lines.push(
 		'',
