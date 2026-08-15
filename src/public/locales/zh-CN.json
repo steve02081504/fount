@@ -469,6 +469,14 @@
 			"tempDir": {
 				"blocked": "错误：无法在临时目录中运行 `fount`\n\nfount 会与系统深度耦合，并在 `fount` 中注册 `PATH` 命令及多项系统 hook。若在临时目录运行，系统清空临时文件后，您将无法执行 `fount remove` 来移除 fount 及其 hook。\n\n请将 fount 移动到非临时目录后再运行。若您只想简短测试，请在测试完成后手动执行 `fount remove`。"
 			},
+			"eula": {
+				"prompt": "是否接受 fount 最终用户许可协议（EULA）？",
+				"yn": "[Y/N] ",
+				"required": "需要同意 EULA。请设置 `FOUNT_ACCEPT_EULA=1` 后重试，或在交互式终端中运行。",
+				"declined": "已拒绝 EULA，正在移除 fount。",
+				"statusServerFailed": "警告：无法启动状态服务器。将仅在此终端中提示 EULA。",
+				"shuttingDownStatusServer": "正在关闭安装状态服务器…"
+			},
 			"install": {
 				"installingDependencies": "正在安装依赖...",
 				"compilingFavicon": "图标文件不存在，正在启动服务器编译...",
@@ -478,7 +486,8 @@
 				"permissionDeniedAsRoot": "错误：无法写入 fount 目录 '${path}'。您正以 root 身份运行，但访问仍被拒绝——请检查并修正该文件夹的安全权限，为当前用户授予完全控制权限。",
 				"permissionDeniedNotRoot": "错误：无法写入 fount 目录 '${path}'。请修正该文件夹的安全权限以授予当前用户写入权限，或以 root 身份运行 fount。",
 				"rootWarningAsRoot": "不推荐：以 root 身份运行 fount 会授予所有 fount 组件完全的系统访问权限。",
-				"rootWarningPreferUser": "除非您清楚自己在做什么，否则建议以普通用户身份运行 fount。"
+				"rootWarningPreferUser": "除非您清楚自己在做什么，否则建议以普通用户身份运行 fount。",
+				"runnerUpdating": "正在更新安装器…"
 			},
 			"clean": {
 				"removingCaches": "正在移除缓存...",
