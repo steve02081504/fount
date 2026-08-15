@@ -5,6 +5,9 @@ import { exec } from 'npm:@steve02081504/exec'
 
 import { matchGlob } from './trigger_filter.mjs'
 
+/** locale JSON / list.csv 只允许挂在这些 manifest（静态检查）。 */
+const LOCALE_TREE_TRIGGER_ALLOW = new Set(['checks'])
+
 /**
  * @typedef {import('./manifest.mjs').SuiteDef} SuiteDef
  */
@@ -17,6 +20,46 @@ import { matchGlob } from './trigger_filter.mjs'
  * @property {string} [subtestName] 子测试名（suite 级 trigger 时省略）
  * @property {string} pattern 未命中任何文件的 glob
  */
+
+/**
+ * 是否为 `src/public/locales` 树的 trigger（不含 `src/public/**` 这类更宽 glob）。
+ * @param {string} pattern trigger glob
+ * @returns {boolean} 是否点名 locales 目录
+ */
+export function isLocaleTreeTrigger(pattern) {
+	const normalized = pattern.replaceAll('\\', '/')
+	return normalized === 'src/public/locales'
+		|| normalized.startsWith('src/public/locales/')
+		|| normalized.startsWith('src/public/locales*')
+}
+
+/**
+ * 扫描挂了 locale 树、但不在允许名单内的 trigger（会把日常文案改动扩成 Playwright / path 波）。
+ * @param {import('./manifest.mjs').SuiteDef[]} suites 全部 suite
+ * @returns {DeadTrigger[]} 违规 trigger
+ */
+export function findLocaleTreeTriggers(suites) {
+	/** @type {DeadTrigger[]} */
+	const hits = []
+	for (const suite of suites) {
+		if (LOCALE_TREE_TRIGGER_ALLOW.has(suite.manifestId)) continue
+		for (const pattern of suite.triggers) {
+			if (!isLocaleTreeTrigger(pattern)) continue
+			hits.push({ manifestId: suite.manifestId, suiteName: suite.name, pattern })
+		}
+		for (const subtest of suite.subtests ?? [])
+			for (const pattern of subtest.triggers) {
+				if (!isLocaleTreeTrigger(pattern)) continue
+				hits.push({
+					manifestId: suite.manifestId,
+					suiteName: suite.name,
+					subtestName: subtest.name,
+					pattern,
+				})
+			}
+	}
+	return hits
+}
 
 /**
  * 列出仓库内参与 trigger 匹配的文件（已跟踪 + 未忽略未跟踪）。

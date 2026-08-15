@@ -31,7 +31,6 @@
 						"src/public/pages/scripts/features/template.mjs",
 						"src/public/pages/base.mjs",
 						"src/public/pages/scripts/i18n/base.mjs",
-						"src/public/locales/**",
 						"src/scripts/ms.mjs"
 					]
 				}

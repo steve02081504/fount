@@ -383,7 +383,10 @@
 		},
 		{
 			"name": "trigger_audit",
-			"expected": 600,
+			"expected": "2s",
+			"triggerFilter": {
+				"unignore": ["**/test/manifest.json"]
+			},
 			"run": [
 				"deno",
 				"test",
@@ -396,8 +399,10 @@
 			],
 			"triggers": [
 				"src/scripts/test/selftest/trigger_audit.test.mjs",
+				"src/scripts/test/selftest/fixtures.mjs",
 				"src/scripts/test/core/trigger_audit.mjs",
-				"src/scripts/test/runner/report.mjs"
+				"src/scripts/test/core/manifest.mjs",
+				"**/test/manifest.json"
 			]
 		},
 		{
@@ -501,6 +506,29 @@
 			]
 		},
 		{
+			"name": "launch_node",
+			"expected": "30s",
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/scripts/test/selftest/launch_node.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/launch_node.test.mjs",
+				"src/scripts/test/selftest/crash_before_ready_bootstrap.mjs",
+				"src/scripts/test/selftest/crash_after_ready_bootstrap.mjs",
+				"src/scripts/test/node/launch.mjs",
+				"src/scripts/test/node/worker.mjs",
+				"src/scripts/test/node/boot.mjs",
+				"src/scripts/test/deno/serial.mjs"
+			]
+		},
+		{
 			"name": "port_lease",
 			"expected": 700,
 			"run": [
@@ -593,11 +621,10 @@
 				"./src/scripts/test/selftest/issue_cache.test.mjs",
 				"./src/scripts/test/selftest/kernel_lifecycle.test.mjs",
 				"./src/scripts/test/selftest/display.test.mjs",
-				"./src/scripts/test/selftest/jobs.test.mjs",
-				"./src/scripts/test/selftest/launch_node.test.mjs"
+				"./src/scripts/test/selftest/jobs.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,jobs.test.mjs,launch_node.test.mjs,crash_before_ready_bootstrap.mjs,crash_after_ready_bootstrap.mjs,fixtures.mjs}",
+				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,jobs.test.mjs,fixtures.mjs}",
 				"src/scripts/test/core/skip_because.mjs",
 				"src/scripts/test/module_check_ready.mjs",
 				"src/scripts/test/env.mjs",

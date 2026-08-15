@@ -1,7 +1,14 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { findDeadTriggers, triggerPatternMatchesAny } from '../core/trigger_audit.mjs'
+import { loadAllSuites } from '../core/manifest.mjs'
+import { REPO_ROOT } from '../core/repo_root.mjs'
+import {
+	findDeadTriggers,
+	findLocaleTreeTriggers,
+	isLocaleTreeTrigger,
+	triggerPatternMatchesAny,
+} from '../core/trigger_audit.mjs'
 
 import { makeSuite } from './fixtures.mjs'
 
@@ -49,4 +56,36 @@ Deno.test('findDeadTriggers skips patterns shared with a matching scope', () => 
 		triggers: ['src/scripts/test/core/state.mjs'],
 	})
 	assertEquals(findDeadTriggers([suite], REPO_FILES), [])
+})
+
+Deno.test('isLocaleTreeTrigger only matches the locales directory', () => {
+	assertEquals(isLocaleTreeTrigger('src/public/locales/**'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/locales/*.json'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/locales/zh-CN.json'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/**'), false)
+	assertEquals(isLocaleTreeTrigger('**/*'), false)
+	assertEquals(isLocaleTreeTrigger('src/public/pages/scripts/**'), false)
+})
+
+Deno.test('findLocaleTreeTriggers allows checks and flags Playwright/path', () => {
+	const checks = makeSuite('checks', 'i18n_keys', { triggers: ['src/public/locales/*.json'] })
+	const frontend = {
+		...makeSuite('shells/home', 'frontend', { triggers: [] }),
+		subtests: [{
+			name: 'smoke',
+			spec: 'smoke.spec.mjs',
+			triggers: ['src/public/locales/**'],
+		}],
+	}
+	assertEquals(findLocaleTreeTriggers([checks]), [])
+	assertEquals(findLocaleTreeTriggers([frontend]), [{
+		manifestId: 'shells/home',
+		suiteName: 'frontend',
+		subtestName: 'smoke',
+		pattern: 'src/public/locales/**',
+	}])
+})
+
+Deno.test('repo manifests do not hang locale JSON on non-checks suites', async () => {
+	assertEquals(findLocaleTreeTriggers(await loadAllSuites(REPO_ROOT)), [])
 })

@@ -18,10 +18,9 @@
 		],
 		"frontendShared": [
 			"src/public/parts/shells/discordbot/public/**",
-			"src/public/parts/shells/discordbot/test/frontend/**",
+			"src/public/parts/shells/discordbot/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
 			"src/scripts/test/playwright/**",
-			"src/public/pages/scripts/test/**",
-			"src/public/pages/scripts/components/jsonEditor.mjs"
+			"src/public/pages/scripts/test/**"
 		]
 	},
 	"suites": [
@@ -86,8 +85,7 @@
 						"src/public/parts/shells/discordbot/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/discordbot/public/index.{html,mjs}",
 						"src/public/pages/scripts/components/jsonEditor.mjs",
-						"src/scripts/test/playwright/json_editor.mjs",
-						"src/public/locales/**"
+						"src/scripts/test/playwright/json_editor.mjs"
 					]
 				}
 			],

@@ -20,8 +20,7 @@
 				"src/scripts/test/deno/serial.mjs",
 				"src/scripts/test/core/{repo_root,paths}.mjs",
 				"src/scripts/nicerWriteFile.mjs",
-				"src/runner/main.{ps1,sh}",
-				"src/public/locales/zh-CN.json"
+				"src/runner/main.{ps1,sh}"
 			]
 		}
 	]

@@ -666,10 +666,16 @@ async function launchNodeOnce(options = {}) {
 		}
 
 		try {
-			await Promise.race([
-				waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username, pingAbort.signal),
-				earlyExit,
-			])
+			const pingDeadline = setTimeout(() => pingAbort.abort(), ms('2m'))
+			try {
+				await Promise.race([
+					waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username, pingAbort.signal),
+					earlyExit,
+				])
+			}
+			finally {
+				clearTimeout(pingDeadline)
+			}
 		}
 		catch (error) {
 			if (startupOutput.trim()) error.message += `\n${startupOutput.trimEnd()}`

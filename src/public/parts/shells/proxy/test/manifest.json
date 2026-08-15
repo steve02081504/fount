@@ -24,8 +24,7 @@
 						"src/public/parts/shells/proxy/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/proxy/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/proxy/public/index.{html,mjs}",
-						"src/public/parts/shells/proxy/public/templates.mjs",
-						"src/public/locales/**"
+						"src/public/parts/shells/proxy/public/templates.mjs"
 					]
 				}
 			],

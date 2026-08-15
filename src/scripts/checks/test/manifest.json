@@ -70,6 +70,14 @@
 		{
 			"name": "i18n_refs",
 			"expected": "2s",
+			"triggerFilter": {
+				"ignore": ["src/scripts/checks/**"],
+				"unignore": [
+					"src/scripts/checks/i18n_refs.mjs",
+					"src/scripts/checks/walk.mjs",
+					"src/scripts/checks/test/i18n_refs.test.mjs"
+				]
+			},
 			"run": [
 				"deno",
 				"test",
@@ -84,7 +92,9 @@
 				"src/scripts/checks/{i18n_refs.mjs,walk.mjs}",
 				"src/scripts/checks/test/i18n_refs.test.mjs",
 				"src/public/locales/*.json",
-				"src/**/*.{html,mjs,js,ts}",
+				"src/public/**/*.{html,mjs,js,ts}",
+				"src/server/**/*.{mjs,js,ts}",
+				"src/scripts/**/*.{mjs,js,ts}",
 				"path/**/*.{ps1,sh}",
 				"src/runner/main.ps1",
 				"src/runner/main.sh"
