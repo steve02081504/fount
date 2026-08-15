@@ -4,7 +4,7 @@ Day-to-day: [AGENTS.md](../AGENTS.md). Do not work around these in fount or in t
 
 ## Concurrent `node_modules` corruption (`denoland/deno#35804`)
 
-Parallel `deno test` / `deno run` children against `"nodeModulesDir": "auto"` + `"lock": false` can leave Windows `node_modules/.deno` incomplete ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). Symptoms: `Cannot find module` / `NotFound: 系统找不到指定的路径` for already-declared npm deps (`etag`, `safer-buffer`, `@opentelemetry/core`, …).
+Parallel `deno test` / `deno run` children against `"nodeModulesDir": "auto"` + `"lock": false` can leave Windows `node_modules/.deno` incomplete ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). Symptoms: `Cannot find module` / `NotFound: The system cannot find the path specified` for already-declared npm deps (`etag`, `safer-buffer`, `@opentelemetry/core`, …).
 
 Module-check mutex only serializes spawn→JS-ready ([resource-scheduling.md](resource-scheduling.md)); it does not fix post-ready races. Do not force `--no-parallel` as a product default. After a Deno fix: drop any leftover Windows `--no-parallel` guidance that exists solely for this class of flake.
 

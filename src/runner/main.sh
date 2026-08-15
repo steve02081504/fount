@@ -57,6 +57,10 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 fi
 
 STATUS_SERVER_PID=""
+EULA_ACCEPT_FILE=""
+STATUS_HANDLER=""
+STATUS_FIFO=""
+EULA_DECLINED=0
 OS_TYPE=$(uname -s)
 IN_TERMUX=0
 if [[ -d "/data/data/com.termux" ]]; then
@@ -70,6 +74,12 @@ cleanup() {
 		kill "$STATUS_SERVER_PID" 2>/dev/null
 		STATUS_SERVER_PID=""
 	fi
+	if [[ "${EULA_DECLINED:-0}" -eq 1 ]] && type uninstall_auto_packages &>/dev/null; then
+		uninstall_auto_packages
+	fi
+	[ -n "${EULA_ACCEPT_FILE:-}" ] && rm -f "$EULA_ACCEPT_FILE"
+	[ -n "${STATUS_HANDLER:-}" ] && rm -f "$STATUS_HANDLER"
+	[ -n "${STATUS_FIFO:-}" ] && rm -f "$STATUS_FIFO"
 	write_taskbar_progress_clear
 }
 trap cleanup EXIT
@@ -197,10 +207,143 @@ test_browser() {
 	return 0
 }
 
+EULA_URL="https://steve02081504.github.io/fount/EULA/"
+INSTALL_WAIT_URL="https://steve02081504.github.io/fount/wait/install/?from=runner"
+EULA_ACCEPT_FILE="${TMPDIR:-/tmp}/fount-eula-accepted-$$"
+STATUS_HANDLER=""
+STATUS_FIFO=""
+EULA_DECLINED=0
+
+is_accept_eula_arg() {
+	echo "$1" | grep -qiE '^--?accept-?eula$|^accept-?eula$'
+}
+
+uninstall_auto_packages() {
+	local package has_sudo=""
+	if [[ $(id -u) -ne 0 ]] && command -v sudo &>/dev/null; then has_sudo="sudo"; fi
+	IFS=';' read -r -a pkgs <<< "${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
+	for package in "${pkgs[@]}"; do
+		[ -z "$package" ] && continue
+		if command -v apt-get &>/dev/null; then $has_sudo apt-get purge -y "$package" >/dev/null 2>&1 && continue; fi
+		if command -v pacman &>/dev/null; then $has_sudo pacman -Rns --noconfirm "$package" >/dev/null 2>&1 && continue; fi
+		if command -v dnf &>/dev/null; then $has_sudo dnf remove -y "$package" >/dev/null 2>&1 && continue; fi
+		if command -v yum &>/dev/null; then $has_sudo yum remove -y "$package" >/dev/null 2>&1 && continue; fi
+		if command -v zypper &>/dev/null; then $has_sudo zypper remove -y --no-confirm "$package" >/dev/null 2>&1 && continue; fi
+		if command -v apk &>/dev/null; then $has_sudo apk del "$package" >/dev/null 2>&1 && continue; fi
+		if command -v brew &>/dev/null; then brew uninstall "$package" >/dev/null 2>&1 && continue; fi
+		if command -v snap &>/dev/null; then $has_sudo snap remove "$package" >/dev/null 2>&1 && continue; fi
+		if command -v pkg &>/dev/null; then pkg uninstall -y "$package" >/dev/null 2>&1 && continue; fi
+	done
+}
+
+write_status_handler() {
+	STATUS_HANDLER=$(mktemp)
+	cat > "$STATUS_HANDLER" << 'EOF'
+#!/usr/bin/env bash
+req=""
+IFS= read -r req || true
+while IFS= read -r -t 2 line && [[ "$line" != $'\r' && -n "$line" ]]; do
+	:
+done
+case "$req" in
+*"/eula"*) : > "${EULA_ACCEPT_FILE}" ;;
+esac
+msg=installing
+eula=pending
+if [[ -f "${EULA_ACCEPT_FILE}" ]]; then
+	msg=accepted
+	eula=accepted
+fi
+printf 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{"message":"%s","eula":"%s"}' "$msg" "$eula"
+EOF
+	chmod +x "$STATUS_HANDLER"
+}
+
+start_status_server() {
+	rm -f "$EULA_ACCEPT_FILE"
+	export EULA_ACCEPT_FILE
+	write_status_handler
+	if command -v socat &>/dev/null; then
+		socat -T 5 TCP-LISTEN:8930,reuseaddr,fork EXEC:"$STATUS_HANDLER" >/dev/null 2>&1 &
+		STATUS_SERVER_PID=$!
+	elif command -v nc &>/dev/null; then
+		STATUS_FIFO=$(mktemp -u)
+		mkfifo "$STATUS_FIFO"
+		(
+			nc_q=""
+			if nc -h 2>&1 | grep -q -- '-q'; then nc_q="-q 0"; fi
+			while true; do
+				# shellcheck disable=SC2086
+				nc -l 8930 $nc_q <"$STATUS_FIFO" 2>/dev/null | "$STATUS_HANDLER" >"$STATUS_FIFO" || break
+			done
+		) >/dev/null 2>&1 &
+		STATUS_SERVER_PID=$!
+	fi
+}
+
+open_install_wait_page() {
+	local URL="$INSTALL_WAIT_URL"
+	if [[ $IN_TERMUX -eq 1 ]]; then
+		termux-open-url "$URL" >/dev/null 2>&1 &
+	elif [[ "$OS_TYPE" == "Linux" ]]; then
+		install_package "xdg-open" "xdg-utils"
+		xdg-open "$URL" >/dev/null 2>&1 &
+	elif [[ "$OS_TYPE" == "Darwin" ]]; then
+		open "$URL" >/dev/null 2>&1 &
+	fi
+}
+
+confirm_fount_eula() {
+	if [[ -f "$EULA_ACCEPT_FILE" ]]; then return 0; fi
+	if [[ ! -r /dev/tty ]]; then
+		echo -e "${C_RED}EULA acceptance is required. Re-run with --accept-EULA, or from an interactive terminal.${C_RESET}" >&2
+		echo "$EULA_URL" >&2
+		return 1
+	fi
+	echo "Do you accept the fount End-User License Agreement (EULA)?"
+	if [ -t 1 ]; then
+		printf '\033]8;;%s\033\\%s\033]8;;\033\\\n' "$EULA_URL" "$EULA_URL"
+	else
+		echo "$EULA_URL"
+	fi
+	printf '[Y/N] '
+	local key=""
+	while true; do
+		if [[ -f "$EULA_ACCEPT_FILE" ]]; then
+			echo Y
+			return 0
+		fi
+		if read -r -t 1 -n 1 -s key </dev/tty 2>/dev/null; then
+			case "$key" in
+			y | Y)
+				: >"$EULA_ACCEPT_FILE"
+				echo Y
+				return 0
+				;;
+			n | N)
+				echo N
+				return 1
+				;;
+			esac
+		fi
+	done
+}
+
 # 默认安装目录
 FOUNT_DIR="${FOUNT_DIR:-"$HOME/.local/share/fount"}"
 
-new_args=("$@")
+accept_eula=0
+case "${FOUNT_ACCEPT_EULA:-}" in
+1 | true | TRUE | yes | YES) accept_eula=1 ;;
+esac
+new_args=()
+for arg in "$@"; do
+	if is_accept_eula_arg "$arg"; then
+		accept_eula=1
+	else
+		new_args+=("$arg")
+	fi
+done
 if [[ "${#new_args[@]}" -eq 0 ]]; then
 	new_args=("open" "keepalive")
 fi
@@ -230,40 +373,30 @@ else
 		IN_DOCKER=1
 	fi
 
-	if [[ $IN_DOCKER -eq 0 && "${new_args[*]}" == *'open'* ]]; then
+	if [[ $IN_DOCKER -eq 0 && "$accept_eula" -eq 0 ]]; then
 		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
 		write_taskbar_progress 5
-
-		if command -v nc &>/dev/null; then
-			while true; do {
-				while IFS= read -r -t 2 line && [[ "$line" != $'\r' ]]; do :; done
-				echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"installing\"}"
-			} | nc -l 8930 -q 0; done >/dev/null 2>&1 &
-			STATUS_SERVER_PID=$!
-		elif command -v socat &>/dev/null; then
-			(socat -T 5 TCP-LISTEN:8930,reuseaddr,fork SYSTEM:"read; echo -e 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"installing\"}'") >/dev/null 2>&1 &
-			STATUS_SERVER_PID=$!
-		fi
+		start_status_server
 		write_taskbar_progress 10
 
 		if [[ -n "$STATUS_SERVER_PID" ]]; then
 			test_browser
-			URL='https://steve02081504.github.io/fount/wait/install'
-			if [[ $IN_TERMUX -eq 1 ]]; then
-				termux-open-url "$URL" >/dev/null 2>&1 &
-			elif [[ "$OS_TYPE" == "Linux" ]]; then
-				install_package "xdg-open" "xdg-utils"
-				xdg-open "$URL" >/dev/null 2>&1 &
-			elif [[ "$OS_TYPE" == "Darwin" ]]; then
-				open "$URL" >/dev/null 2>&1 &
-			fi
+			open_install_wait_page
 			temp_args=()
 			for arg in "${new_args[@]}"; do
 				[[ "$arg" != "open" ]] && temp_args+=("$arg")
 			done
 			new_args=("${temp_args[@]}")
 		else
-			echo -e "${C_YELLOW}Warning: Could not start status server. Proceeding with standard installation.${C_RESET}"
+			echo -e "${C_YELLOW}Warning: Could not start status server. Proceeding with EULA prompt in this terminal.${C_RESET}"
+		fi
+	fi
+
+	if [[ "$accept_eula" -eq 0 ]]; then
+		if ! confirm_fount_eula; then
+			echo "EULA declined. Aborting installation."
+			EULA_DECLINED=1
+			exit 1
 		fi
 	fi
 
@@ -293,7 +426,7 @@ else
 		write_taskbar_progress 35
 
 		TMP_DIR=$(mktemp -d)
-		trap 'rm -rf "$TMP_DIR"' EXIT
+		trap 'rm -rf "$TMP_DIR"; cleanup' EXIT
 
 		ZIP_URL="https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip"
 		ZIP_FILE="$TMP_DIR/fount.zip"

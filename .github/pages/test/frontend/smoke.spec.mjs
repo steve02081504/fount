@@ -180,3 +180,93 @@ test.describe('install EULA download', () => {
 		await expect.poll(() => hits.at(-1) || '').toMatch(/\/fount\.sh$/)
 	})
 })
+
+const INSTALLER_STATUS = /http:\/\/localhost:8930(?:\/|$|\?)/
+
+/**
+ * 拦截本机 runner 状态服务（存活探针 + `/eula` 信令）。
+ * @param {import('npm:@playwright/test').Page} page 页面
+ * @param {{ eula?: string }} [state] 初始 eula 字段
+ * @returns {Promise<{ eulaHits: string[] }>} `/eula` 命中记录
+ */
+async function mockInstallerStatus(page, state = { eula: 'pending' }) {
+	/** @type {string[]} */
+	const eulaHits = []
+	await page.route(INSTALLER_STATUS, async route => {
+		const url = route.request().url()
+		const accept = /\/eula(?:\/|$|\?)/.test(url)
+		if (accept) {
+			eulaHits.push(url)
+			state.eula = 'accepted'
+		}
+		await route.fulfill({
+			status: 200,
+			contentType: 'application/json',
+			headers: { 'Access-Control-Allow-Origin': '*' },
+			body: JSON.stringify({
+				message: accept ? 'accepted' : 'pong',
+				eula: state.eula,
+			}),
+		})
+	})
+	return { eulaHits }
+}
+
+test.describe('install runner wait', () => {
+	test('without from=runner, live 8930 stays homepage', async ({ page, baseUrl }) => {
+		await mockInstallerStatus(page)
+		await openInstallFlow(page, baseUrl)
+		await expect(page.locator('#eula-dialog')).toBeHidden()
+		await expect(page.locator('#mini-game-section')).toBeHidden()
+	})
+
+	test('from=runner shows EULA and signals installer, not download', async ({ page, baseUrl }) => {
+		await page.route(EULA_MD, fulfillEulaFromRepo)
+		const { eulaHits } = await mockInstallerStatus(page)
+		/** @type {string[]} */
+		const downloads = []
+		await page.context().route(RELEASE_DOWNLOAD, async route => {
+			downloads.push(route.request().url())
+			await route.fulfill({ status: 200, contentType: 'application/octet-stream', body: 'ok' })
+		})
+		await page.addInitScript(() => {
+			globalThis.fount ??= {}
+			globalThis.fount.test ??= {}
+			globalThis.fount.test.eulaContinueDelayMs = 0
+		})
+		await page.goto(`${baseUrl}/wait/install/?from=runner`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+		const dialog = page.locator('#eula-dialog')
+		await expect(dialog).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#eula-body h1')).toBeVisible({ timeout: 15_000 })
+		await page.locator('#eula-agree').check()
+		await page.locator('#eula-continue').click()
+		await expect.poll(() => eulaHits.length).toBeGreaterThan(0)
+		expect(downloads).toEqual([])
+	})
+
+	test('from=runner with prior EULA skips dialog and still signals', async ({ page, baseUrl }) => {
+		const { eulaHits } = await mockInstallerStatus(page)
+		await page.addInitScript(() => {
+			localStorage.setItem('fountEulaAccepted', '1')
+		})
+		await page.goto(`${baseUrl}/wait/install/?from=runner`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#mini-game-section')).not.toHaveClass(/hidden/, { timeout: 30_000 })
+		await expect(page.locator('#eula-dialog')).toBeHidden()
+		await expect.poll(() => eulaHits.length).toBeGreaterThan(0)
+	})
+
+	test('from=runner closes EULA when CLI already accepted', async ({ page, baseUrl }) => {
+		await page.route(EULA_MD, fulfillEulaFromRepo)
+		await mockInstallerStatus(page, { eula: 'accepted' })
+		await page.addInitScript(() => {
+			globalThis.fount ??= {}
+			globalThis.fount.test ??= {}
+			globalThis.fount.test.eulaContinueDelayMs = 0
+		})
+		await page.goto(`${baseUrl}/wait/install/?from=runner`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#eula-dialog')).toBeHidden({ timeout: 30_000 })
+	})
+})

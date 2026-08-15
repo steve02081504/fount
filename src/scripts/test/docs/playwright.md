@@ -32,7 +32,8 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 - `pageerror`, `[test:…]` console (from `scripts/test/watch/`), and `[i18n:missing]` (from `geti18n`, no dedup) hard-fail.
 - Dropped request failures: `net::ERR_BLOCKED_BY_ORB`, `net::ERR_ABORTED`.
 - Child-frame `SecurityError` ignored via CDP only (`exception.className` + frame ≠ main; `isIgnoredChildFrameSecurityError`). Main-frame `SecurityError` still hard-fails.
-- Pages fixtures ignore `/api/ping` and `:8930` installer probe failures only.
+- Pages fixtures ignore `/api/ping` and `:8930` installer probe / `/eula` signal failures only.
+- Install wait vs homepage: `?from=runner` enters installer wait (EULA + 8930). Bare `/wait/install/` stays the project homepage and does not probe 8930.
 - Do not gate product code on `fount.test.enabled` to paper over these. **URLs are logged as-is** — fixtures must not put durable secrets in URLs.
 - Locale load goes through i18n `loadLocaleData` / `setLanguage` — do not fetch `/api/getlocaledata` from test code.
 - `loadLocaleData` / `initTranslations` use an epoch cache (`lib/epochCache.mjs`): `locale-updated` bumps the epoch so stale fetches never refill the cache, but **the in-flight result is still applied**. Do not re-read only `cache.get` after `await load` — that drops the bundle when the epoch moved and leaves `preferred` ≠ `main_locale` (page watch then reports `aria-label missing-zh` on English chrome).

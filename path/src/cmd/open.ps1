@@ -32,7 +32,7 @@
 	$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
 	try {
 		Test-Browser
-		Start-Process 'https://steve02081504.github.io/fount/wait/install'
+		Start-Process 'https://steve02081504.github.io/fount/wait/install/?from=runner'
 		fount.ps1 @($args | Select-Object -Skip 1)
 	}
 	finally {

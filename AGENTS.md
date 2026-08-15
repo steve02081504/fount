@@ -41,6 +41,7 @@
 | Task | Guide |
 | --- | --- |
 | path CLI | [path/AGENTS.md](path/AGENTS.md) |
+| Installer runner | [src/runner/AGENTS.md](src/runner/AGENTS.md) |
 | Logo TUI / icon_anime | [imgs/icon_anime/AGENTS.md](imgs/icon_anime/AGENTS.md) |
 | P2P / federation / Mailbox / EVFS | [src/server/p2p_server/AGENTS.md](src/server/p2p_server/AGENTS.md) |
 | P2P package / sim tests | [fount-p2p](https://github.com/steve02081504/fount-p2p) (`@steve02081504/fount-p2p`) |

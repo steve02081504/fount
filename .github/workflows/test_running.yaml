@@ -37,7 +37,7 @@ jobs:
         run: |
           export FOUNT_DIR="$PWD/fount"
           export FOUNT_BRANCH="${{ steps.extract_branch.outputs.branch }}"
-          curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.sh | bash -s init
+          curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.sh | bash -s -- --accept-EULA init
           ci=$(mktemp -d)
           cp -R "$FOUNT_DIR/.github/path-ci/." "$ci/"
           bash "$ci/run-remove-assert.sh" "$FOUNT_DIR/path/fount.sh"
@@ -50,7 +50,7 @@ jobs:
           $env:FOUNT_BRANCH = "${{ steps.extract_branch.outputs.branch }}"
           $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
           Invoke-Expression "function fountInstaller { $scriptContent }"
-          fountInstaller init
+          fountInstaller --accept-EULA init
           $ci = Join-Path $env:TEMP "fount-remove-assert-$PID"
           New-Item -ItemType Directory -Path $ci | Out-Null
           Copy-Item -Recurse -Force "$env:FOUNT_DIR\.github\path-ci\*" $ci
@@ -65,7 +65,7 @@ jobs:
           $env:FOUNT_BRANCH = "${{ steps.extract_branch.outputs.branch }}"
           $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
           Invoke-Expression "function fountInstaller { $scriptContent }"
-          fountInstaller init
+          fountInstaller --accept-EULA init
           $ci = Join-Path ([IO.Path]::GetTempPath()) "fount-remove-assert-$PID"
           New-Item -ItemType Directory -Path $ci | Out-Null
           Copy-Item -Recurse -Force "$env:FOUNT_DIR/.github/path-ci/*" $ci

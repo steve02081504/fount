@@ -1,5 +1,6 @@
 /**
- * 安装前 EULA：jsDelivr 拉取协议（回落 GitHub raw），同意并倒计时后按平台下载 release。
+ * 安装前 EULA：jsDelivr 拉取协议（回落 GitHub raw）。
+ * 首页点安装则同意后下载 release；runner 打开时同意后信令本机安装器。
  */
 import { marked } from 'https://cdn.jsdelivr.net/npm/marked/+esm'
 
@@ -14,6 +15,12 @@ import {
 /** 构建时替换为当前 git 引用（分支名或 commit）。 */
 const FOUNT_GIT_REF = '__FOUNT_GIT_REF__'
 
+/** 本机 runner 状态服务。 */
+export const INSTALLER_STATUS_ORIGIN = 'http://localhost:8930'
+
+/** localStorage：曾在本源同意过 EULA。 */
+export const EULA_STORAGE_KEY = 'fountEulaAccepted'
+
 const eulaDialog = document.getElementById('eula-dialog')
 const eulaBackdrop = document.getElementById('eula-backdrop')
 const eulaBody = document.getElementById('eula-body')
@@ -27,6 +34,11 @@ let countdownTimer = 0
 /** @type {AbortController | null} */
 let eulaAbort = null
 let localeOptionsReady = false
+/** @type {(() => void) | null} */
+let acceptResolve = null
+/** @type {Promise<void> | null} */
+let acceptPromise = null
+let runnerWatchStarted = false
 
 /**
  * 按浏览器平台信息选择 release 资产名。
@@ -43,6 +55,22 @@ export function installerAssetName() {
  */
 export function installerDownloadUrl() {
 	return `https://github.com/steve02081504/fount/releases/latest/download/${installerAssetName()}`
+}
+
+/**
+ * 本源是否已同意过 EULA。
+ * @returns {boolean}
+ */
+export function hasAcceptedEula() {
+	return localStorage.getItem(EULA_STORAGE_KEY) === '1'
+}
+
+/**
+ * 记下本源已同意 EULA。
+ * @returns {void}
+ */
+export function markEulaAccepted() {
+	localStorage.setItem(EULA_STORAGE_KEY, '1')
 }
 
 /**
@@ -196,6 +224,51 @@ async function loadEula(locale) {
 }
 
 /**
+ * 弹出 EULA 对话框并开始加载。
+ * @returns {void}
+ */
+function showEulaDialog() {
+	if (eulaDialog.open) return
+	ensureLocaleOptions()
+	const locale = getBestLocale(
+		[primaryLocale(), ...navigator.languages || [navigator.language]],
+		getAvailableLocales(),
+	)
+	eulaLocaleSelect.value = locale
+	eulaAgree.checked = false
+	eulaDialog.showModal()
+	loadEula(locale)
+}
+
+/**
+ * 完成本源同意并唤醒等待者。
+ * @returns {void}
+ */
+function finishAccepted() {
+	markEulaAccepted()
+	acceptResolve?.()
+	acceptResolve = null
+	if (eulaDialog.open) eulaDialog.close()
+}
+
+/**
+ * 若尚未同意则弹出 EULA，同意后（含 CLI 侧信令）resolve。
+ * @returns {Promise<void>}
+ */
+export function ensureEulaAccepted() {
+	if (hasAcceptedEula()) return Promise.resolve()
+	if (!acceptPromise) {
+		acceptPromise = new Promise(resolve => {
+			acceptResolve = resolve
+			showEulaDialog()
+		}).finally(() => {
+			acceptPromise = null
+		})
+	}
+	return acceptPromise
+}
+
+/**
  * 触发 release 资产下载（跨域走新标签，避免离开本页）。
  * @returns {void}
  */
@@ -210,27 +283,55 @@ function startInstallerDownload() {
 }
 
 /**
- * 弹出 EULA；同意并倒计时结束后下载安装包。
- * @returns {void}
+ * 通知本机 runner：用户已同意 EULA，可以开始安装。
+ * @returns {Promise<void>}
+ */
+export function notifyRunnerEulaAccepted() {
+	return fetch(`${INSTALLER_STATUS_ORIGIN}/eula`, { cache: 'no-store' }).then(() => { }, () => { })
+}
+
+/**
+ * 弹出 EULA；同意并倒计时结束后下载安装包。已同意则直接下载。
+ * @returns {Promise<void>}
  */
 export function promptEulaAndDownload() {
-	ensureLocaleOptions()
-	const locale = getBestLocale(
-		[primaryLocale(), ...navigator.languages || [navigator.language]],
-		getAvailableLocales(),
-	)
-	eulaLocaleSelect.value = locale
-	eulaAgree.checked = false
-	eulaDialog.showModal()
-	loadEula(locale)
+	return ensureEulaAccepted().then(startInstallerDownload)
+}
+
+/**
+ * 轮询 runner 状态：CLI 已同意时关掉对话框并唤醒等待者。
+ * @returns {void}
+ */
+export function watchRunnerEulaAcceptance() {
+	if (runnerWatchStarted) return
+	runnerWatchStarted = true
+	/** 直到本源已记下同意。 */
+	const poll = async () => {
+		if (hasAcceptedEula()) {
+			finishAccepted()
+			return
+		}
+		try {
+			const response = await fetch(INSTALLER_STATUS_ORIGIN, { cache: 'no-store' })
+			if (response.ok) {
+				const data = await response.json()
+				if (data?.eula === 'accepted') {
+					finishAccepted()
+					return
+				}
+			}
+		}
+		catch { /* 安装器尚未起来 */ }
+		setTimeout(poll, 400)
+	}
+	poll()
 }
 
 eulaLocaleSelect.addEventListener('change', () => loadEula(eulaLocaleSelect.value))
 eulaAgree.addEventListener('change', syncContinueButton)
 eulaContinue.addEventListener('click', () => {
 	if (eulaContinue.disabled) return
-	eulaDialog.close()
-	startInstallerDownload()
+	finishAccepted()
 })
 eulaDialog.addEventListener('cancel', event => {
 	if (eulaLoaded) event.preventDefault()
@@ -240,4 +341,12 @@ eulaDialog.addEventListener('close', () => {
 	eulaLoaded = false
 	clearInterval(countdownTimer)
 	setBackdropLocked(false)
+	if (hasAcceptedEula()) {
+		acceptResolve?.()
+		acceptResolve = null
+	}
+	else {
+		acceptPromise = null
+		acceptResolve = null
+	}
 })

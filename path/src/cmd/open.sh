@@ -23,7 +23,7 @@ cmd_open() {
 	fi
 
 	if [[ -n "$STATUS_SERVER_PID" ]]; then
-		URL='https://steve02081504.github.io/fount/wait/install'
+		URL='https://steve02081504.github.io/fount/wait/install/?from=runner'
 		open_url_in_browser "$URL"
 	else
 		echo -e "${C_YELLOW}Warning: Could not start status server. Proceeding with standard installation.${C_RESET}"
