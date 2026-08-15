@@ -305,3 +305,32 @@ Deno.test('ariaLabelLocaleProblem requires zh/ja script and forbids cross-script
 	assertEquals(ariaLabelLocaleProblem('en-UK', '下载'), 'forbidden-script')
 	assertEquals(ariaLabelLocaleProblem('zh-CN', '  '), null)
 })
+
+Deno.test('locale check skip: language-check-ignore and user-content', async () => {
+	const { parseHTML } = await import('npm:linkedom')
+	const {
+		LANGUAGE_CHECK_IGNORE_ATTR,
+		LOCALE_CHECK_SKIP_SELECTOR,
+		collectAriaLabelsForLocaleCheck,
+		isInsideLocaleCheckSkip,
+	} = await import('../../../public/pages/scripts/test/watch/locale_script.mjs')
+
+	assertEquals(LANGUAGE_CHECK_IGNORE_ATTR, 'language-check-ignore')
+	assertEquals(LOCALE_CHECK_SKIP_SELECTOR.includes(LANGUAGE_CHECK_IGNORE_ATTR), true)
+
+	const { document } = parseHTML(`<!DOCTYPE html><html><body>
+		<button aria-label="下载">keep</button>
+		<button language-check-ignore aria-label="日本語">lang</button>
+		<div language-check-ignore><button aria-label="한국어">nested</button></div>
+		<button user-content aria-label="文言">user</button>
+	</body></html>`)
+
+	assertEquals(isInsideLocaleCheckSkip(document.querySelector('[language-check-ignore]')), true)
+	assertEquals(isInsideLocaleCheckSkip(document.querySelector('[user-content]')), true)
+	assertEquals(isInsideLocaleCheckSkip(document.querySelector('button[aria-label="下载"]')), false)
+
+	assertEquals(
+		collectAriaLabelsForLocaleCheck(document).map(item => item.label),
+		['下载'],
+	)
+})

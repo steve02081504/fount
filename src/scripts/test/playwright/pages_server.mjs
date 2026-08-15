@@ -11,44 +11,81 @@ import { git } from '../../../scripts/git.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 
 const GITHUB_PAGES_COMMENTS_URL = 'https://steve02081504.github.io/fount/data/comments.json'
-const FOUNT_COMMIT_HASH_PLACEHOLDER = '__FOUNT_COMMIT_HASH__'
+/** 与 CI `sed` 对齐的 commit 占位符。 */
+export const FOUNT_COMMIT_HASH_PLACEHOLDER = '__FOUNT_COMMIT_HASH__'
+/** 与 CI `sed` 对齐的 git 引用占位符（分支名；detached 时为 commit）。 */
+export const FOUNT_GIT_REF_PLACEHOLDER = '__FOUNT_GIT_REF__'
 
 let fountVersion = 'unknown'
+let fountGitRef = 'master'
 /**
- * 解析 Pages Sentry release 占位符（与 CI sed 对齐）。
- * @returns {Promise<string>} commit hash 或 unknown
+ * 刷新 Pages 占位符用的 commit / 分支。
+ * @returns {Promise<void>}
  */
-async function refreshFountVersion() {
-	fountVersion = await git.withPath(REPO_ROOT)('rev-parse', 'HEAD') || 'unknown'
+async function refreshFountGitMeta() {
+	const gitHere = git.withPath(REPO_ROOT)
+	fountVersion = await gitHere('rev-parse', 'HEAD') || 'unknown'
+	const branch = await gitHere('rev-parse', '--abbrev-ref', 'HEAD')
+	fountGitRef = branch && branch !== 'HEAD' ? branch : fountVersion
 }
 
-const hooked_version_files = [
-	'base.mjs',
-]
-const hooked_version_file_cache = {}
+const hooked_file_cache = {}
 /**
- * 读取 Pages base.mjs 并替换 commit hash 占位符。
- * @param {string} filePath `.github/pages/` 下的相对路径
- * @returns {Promise<string>} 替换后的模块源码
+ * 替换 Pages 源里的构建占位符（与 workflows/pages.yaml 一致）。
+ * @param {string} source 源文本
+ * @param {{ commitHash?: string, gitRef?: string }} [values] 覆盖值
+ * @returns {string} 替换后文本
  */
-async function getHookedVersionFileContent(filePath) {
-	if (hooked_version_file_cache[filePath]) return hooked_version_file_cache[filePath]
-	const fullPath = path.join(REPO_ROOT, '.github', 'pages', filePath)
-	const source = await fs.readFile(fullPath, 'utf8')
-	return hooked_version_file_cache[filePath] = source.replaceAll(FOUNT_COMMIT_HASH_PLACEHOLDER, fountVersion)
+export function applyPagesPlaceholders(source, values = {}) {
+	return source
+		.replaceAll(FOUNT_COMMIT_HASH_PLACEHOLDER, values.commitHash ?? fountVersion)
+		.replaceAll(FOUNT_GIT_REF_PLACEHOLDER, values.gitRef ?? fountGitRef)
+}
+
+/**
+ * 读取并替换含占位符的 Pages 文件；无占位符则返回 null（走 static）。
+ * @param {string} pagesRoot `.github/pages` 绝对路径
+ * @param {string} relPath 相对路径
+ * @returns {Promise<string | null>} 替换后的正文；无占位符或读失败则为 null
+ */
+async function getHookedPagesFile(pagesRoot, relPath) {
+	const candidates = [relPath]
+	if (relPath.endsWith('/')) candidates.push(`${relPath}index.html`)
+	else if (!path.posix.extname(relPath)) candidates.push(`${relPath}/index.html`)
+	for (const candidate of candidates) {
+		if (hooked_file_cache[candidate]) return hooked_file_cache[candidate]
+		const fullPath = path.join(pagesRoot, candidate)
+		let source
+		try {
+			source = await fs.readFile(fullPath, 'utf8')
+		}
+		catch {
+			continue
+		}
+		if (!source.includes('__FOUNT_')) return null
+		return hooked_file_cache[candidate] = applyPagesPlaceholders(source)
+	}
+	return null
+}
+
+/**
+ * @param {string} relPath 相对 `.github/pages` 的路径
+ * @returns {string} Content-Type
+ */
+function pagesFileContentType(relPath) {
+	if (relPath.endsWith('.html')) return 'html'
+	if (relPath.endsWith('.mjs') || relPath.endsWith('.js')) return 'application/javascript'
+	return 'text/plain'
 }
 
 fs.watch(REPO_ROOT, (event, filename) => {
-	if (event === 'change' && filename.startsWith('.github/pages/')) {
-		const filePath = filename.slice('.github/pages/'.length)
-		if (hooked_version_files.includes(filePath))
-			delete hooked_version_file_cache[filePath]
-	}
-	// git commit
-	if (event === 'change' && filename === '.git/HEAD') {
-		refreshFountVersion()
-		for (const filePath of hooked_version_files)
-			delete hooked_version_file_cache[filePath]
+	const normalized = String(filename || '').replaceAll('\\', '/')
+	if (event === 'change' && normalized.startsWith('.github/pages/'))
+		delete hooked_file_cache[normalized.slice('.github/pages/'.length)]
+	if (event === 'change' && normalized === '.git/HEAD') {
+		refreshFountGitMeta()
+		for (const key of Object.keys(hooked_file_cache))
+			delete hooked_file_cache[key]
 	}
 })
 
@@ -103,13 +140,19 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 		])
 	})
 
-	for (const filePath of hooked_version_files)
-		app.get(`/fount/${filePath}`, async (req, res) => {
-			const body = await getHookedVersionFileContent(filePath)
-			res.type('application/javascript').send(body)
-		})
+	const pagesRoot = path.join(projectRoot, '.github', 'pages')
+	app.use('/fount', async (req, res, next) => {
+		if (req.method !== 'GET' && req.method !== 'HEAD') return next()
+		const relPath = path.posix.normalize(decodeURIComponent(req.path.replace(/^\//, '')))
+		if (relPath.startsWith('..')) return next()
+		const abs = path.resolve(pagesRoot, relPath)
+		if (!abs.startsWith(path.resolve(pagesRoot))) return next()
+		const body = await getHookedPagesFile(pagesRoot, relPath)
+		if (body == null) return next()
+		res.type(pagesFileContentType(relPath)).send(body)
+	})
 
-	app.use('/fount', express.static(path.join(projectRoot, '.github', 'pages')))
+	app.use('/fount', express.static(pagesRoot))
 	return app
 }
 
@@ -131,7 +174,8 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
  * @param {string} [options.host='127.0.0.1'] 绑定地址
  * @returns {Promise<PagesServerHandle>} 服务器句柄
  */
-export function startPagesServer({ port = 8080, projectRoot = REPO_ROOT, host = '127.0.0.1' } = {}) {
+export async function startPagesServer({ port = 8080, projectRoot = REPO_ROOT, host = '127.0.0.1' } = {}) {
+	await refreshFountGitMeta()
 	const app = createPagesApp(projectRoot)
 	return new Promise((resolve, reject) => {
 		const server = app.listen(port, host, () => {

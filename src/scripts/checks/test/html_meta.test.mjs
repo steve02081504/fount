@@ -90,19 +90,47 @@ Deno.test('repo full HTML documents pass html meta checks', async () => {
 	assertEquals(failures, [], failures.join('\n'))
 })
 
-Deno.test('pages readme redirect and root flags cover docs/readme locales', async () => {
-	const html = await readFile(join(REPO_ROOT, '.github/pages/readme/index.html'), 'utf8')
-	const rootReadme = await readFile(join(REPO_ROOT, 'README.md'), 'utf8')
-	assert(html.includes('docs/readme/Readme.'), 'redirect blob prefix')
-	const files = (await readdir(join(REPO_ROOT, 'docs/readme')))
-		.filter(name => /^Readme\.[^.]+\.md$/.test(name))
-	assert(files.length > 0, 'docs/readme 中没有 Readme.*.md')
+/**
+ * 语言跳转页 ALIAS 必须点名每个 Stem.locale.md。
+ * @param {string} htmlRel 跳转页路径
+ * @param {string} dir markdown 目录
+ * @param {string} stem 文件名前缀
+ * @param {string} blobNeedle blob URL 中的路径片段
+ * @returns {Promise<void>}
+ */
+async function assertRedirectCoversStem(htmlRel, dir, stem, blobNeedle) {
+	const html = await readFile(join(REPO_ROOT, htmlRel), 'utf8')
+	assert(html.includes(blobNeedle), `redirect blob prefix ${blobNeedle}`)
+	const files = (await readdir(join(REPO_ROOT, dir)))
+		.filter(name => name.startsWith(`${stem}.`) && name.endsWith('.md'))
+	assert(files.length > 0, `${dir} 中没有 ${stem}.*.md`)
 	assertEquals(
-		files.filter(name => !html.includes(`'${name.slice('Readme.'.length, -'.md'.length)}'`)),
+		files.filter(name => !html.includes(`'${name.slice(`${stem}.`.length, -'.md'.length)}'`)),
 		[],
 	)
+}
+
+Deno.test('pages readme redirect and root flags cover docs/readme locales', async () => {
+	await assertRedirectCoversStem(
+		'.github/pages/readme/index.html',
+		'docs/readme',
+		'Readme',
+		'docs/readme/Readme.',
+	)
+	const rootReadme = await readFile(join(REPO_ROOT, 'README.md'), 'utf8')
+	const files = (await readdir(join(REPO_ROOT, 'docs/readme')))
+		.filter(name => name.startsWith('Readme.') && name.endsWith('.md'))
 	assertEquals(
 		files.filter(name => !rootReadme.includes(`./docs/readme/${name}`)),
 		[],
+	)
+})
+
+Deno.test('pages EULA redirect covers docs/EULA locales', async () => {
+	await assertRedirectCoversStem(
+		'.github/pages/EULA/index.html',
+		'docs/EULA',
+		'EULA',
+		'docs/EULA/EULA.',
 	)
 })

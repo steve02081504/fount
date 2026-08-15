@@ -5,7 +5,7 @@
 			"name": "html_meta",
 			"expected": "2s",
 			"triggerFilter": {
-				"unignore": ["docs/readme/*.md"]
+				"unignore": ["docs/readme/*.md", "docs/EULA/*.md"]
 			},
 			"run": [
 				"deno",
@@ -22,7 +22,8 @@
 				"src/scripts/checks/{html_meta.mjs,og_meta_list.mjs,walk.mjs}",
 				"src/scripts/checks/test/{html_meta.test.mjs,og_meta_list.test.mjs}",
 				"**/*.html",
-				"docs/readme/*.md"
+				"docs/readme/*.md",
+				"docs/EULA/*.md"
 			]
 		},
 		{
@@ -167,11 +168,16 @@
 				"--allow-all",
 				"-c",
 				"./deno.json",
-				"./src/scripts/checks/test/locale_md_align.test.mjs"
+				"./src/scripts/checks/test/locale_md_align.test.mjs",
+				"./src/scripts/checks/test/locale_sets.test.mjs"
 			],
 			"triggers": [
 				"src/scripts/checks/locale_md_align.mjs",
+				"src/scripts/checks/locale_sets.mjs",
 				"src/scripts/checks/test/locale_md_align.test.mjs",
+				"src/scripts/checks/test/locale_sets.test.mjs",
+				"src/public/locales/list.csv",
+				"src/public/locales/*.json",
 				"docs/EULA/*.md",
 				"docs/readme/*.md"
 			]

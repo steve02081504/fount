@@ -296,3 +296,58 @@ body.scroll-lock {
 		animation: none;
 	}
 }
+
+.eula-box {
+	background-image: radial-gradient(120% 80% at 50% -10%, color-mix(in oklab, var(--color-primary) 16%, transparent), transparent 55%);
+}
+
+#eula-dialog.eula-loaded .modal-backdrop {
+	pointer-events: none;
+}
+
+.eula-markdown {
+	line-height: 1.65;
+}
+
+.eula-markdown h1 {
+	font-size: 1.5rem;
+	font-weight: 700;
+	margin: 0 0 0.75rem;
+}
+
+.eula-markdown h2 {
+	font-size: 1.2rem;
+	font-weight: 700;
+	margin: 1.25rem 0 0.5rem;
+}
+
+.eula-markdown h3 {
+	font-size: 1.05rem;
+	font-weight: 600;
+	margin: 1rem 0 0.4rem;
+}
+
+.eula-markdown p,
+.eula-markdown ul,
+.eula-markdown ol {
+	margin: 0.5rem 0;
+}
+
+.eula-markdown ul,
+.eula-markdown ol {
+	padding-inline-start: 1.5rem;
+	list-style: revert;
+}
+
+.eula-markdown a {
+	text-decoration: underline;
+}
+
+.eula-markdown hr {
+	margin: 1rem 0;
+	border-color: color-mix(in oklab, var(--color-base-content) 20%, transparent);
+}
+
+.eula-markdown strong {
+	font-weight: 700;
+}

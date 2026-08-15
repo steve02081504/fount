@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "frontend",
-			"expected": "45s",
+			"expected": "2m",
 			"run": [
 				"deno",
 				"run",

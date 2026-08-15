@@ -10,7 +10,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 
 | Suite | Enforces |
 | --- | --- |
-| `html_meta` | HTML meta / landmarks / `drawer-toggle` / aside ARIA; `og_meta_list` `under` prefix filter; pages readme redirect locales vs `docs/readme/` |
+| `html_meta` | HTML meta / landmarks / `drawer-toggle` / aside ARIA; `og_meta_list` `under` prefix filter; pages readme/EULA redirect locales vs `docs/readme/` / `docs/EULA/` |
 | `info` | parts `locales.json` / `achievements_registry.json` info + remote icon URL |
 | `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN + emoji.json must not carry Han/kana/Cyrillic |
 | `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
@@ -19,7 +19,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `agents_md_english` | `AGENTS.md` + linked `.md` English-only; non-`AGENTS.md` under `docs/` |
 | `text_lf` | UTF-8 text (fatal decode, no NUL) must be LF; under `fount test` scopes to triggered files when set |
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
-| `locale_md_align` | Parallel `Stem.locale.md` families (`docs/EULA`, `docs/readme`): same line count; per-line heading / hr / quote / fence / list marker / bold / italic / link / image / inline-code counts vs `en-UK` |
+| `locale_md_align` | Parallel `Stem.locale.md` families (`docs/EULA`, `docs/readme`): same line count; per-line heading / hr / quote / fence / list marker / bold / italic / link / image / inline-code counts vs `en-UK`. Same suite: EULA / README / `list.csv` / `locales/*.json` locale **ids** must be one set |
 
 `listRepoFiles` (`walk.mjs`): default is `git ls-files` (+ untracked, exclude-standard); pass `ignore` to force a filesystem walk. Empty/omitted suffixes = all files.
 
@@ -47,7 +47,7 @@ Enforced by `agents_md_english`; writing rules: [docs/AGENTS.md](../../../docs/A
 - Summaries must be Chinese (contain CJK). Pure-English summaries fail.
 - Tag-only blocks (`@param` / `@typedef` / … without a prose summary) are fine; empty `/** */` stubs are not a substitute for a real one-liner on re-exports.
 - List leftovers: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg).
-- Locale markdown families: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_locale_md_align.mjs` (optional dir; default `docs/EULA` + `docs/readme`).
+- Locale markdown families: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_locale_md_align.mjs` (optional dir; default `docs/EULA` + `docs/readme`). Locale **id** sets: `fount test checks:locale_md_align` (`locale_sets.mjs`).
 
 ## HTML og meta tone
 

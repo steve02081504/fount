@@ -22,7 +22,7 @@ export function observe(target, init) {
 }
 
 /**
- * 同步忽略（pageText 隐藏 `[user-content]`）。
+ * 同步忽略（pageText 隐藏语种扫描跳过节点）。
  * @template T
  * @param {() => T} fn 同步工作
  * @returns {T} fn 的返回值

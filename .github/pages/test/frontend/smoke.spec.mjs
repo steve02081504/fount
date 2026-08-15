@@ -1,3 +1,8 @@
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+
+import { REPO_ROOT } from 'fount/scripts/test/core/repo_root.mjs'
+
 import { expect, test } from './fixtures.mjs'
 
 test.describe('GitHub Pages smoke', () => {
@@ -60,5 +65,118 @@ test.describe('GitHub Pages smoke', () => {
 	test('oauth bounce shows offline dialog when fount is unreachable', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/oauth/callback/?hostUrl=http://127.0.0.1:1&code=c&state=s`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#offline_dialog')).toBeVisible({ timeout: 30_000 })
+	})
+})
+
+const EULA_MD = /EULA\.[^/?#]+\.md/
+const RELEASE_DOWNLOAD = /github\.com\/steve02081504\/fount\/releases\/latest\/download\/(fount\.exe|fount\.sh)/
+
+/**
+ * 用仓库内 EULA 文件应答 jsDelivr / GitHub raw。
+ * @param {import('npm:@playwright/test').Route} route 拦截到的请求
+ * @returns {Promise<void>}
+ */
+async function fulfillEulaFromRepo(route) {
+	expect(route.request().url()).not.toContain('__FOUNT_')
+	const match = /EULA\.([^/?#]+)\.md/.exec(route.request().url())
+	const locale = match[1]
+	const body = await readFile(join(REPO_ROOT, 'docs/EULA', `EULA.${locale}.md`), 'utf8')
+	await route.fulfill({ status: 200, contentType: 'text/markdown; charset=utf-8', body })
+}
+
+/**
+ * 打开安装页并进入「打开/安装」路径（跳过已保存主机）。
+ * @param {import('npm:@playwright/test').Page} page 页面
+ * @param {string} baseUrl Pages 根
+ * @param {{ platform?: string, eulaContinueDelayMs?: number }} [options] 平台与倒计时
+ * @returns {Promise<void>}
+ */
+async function openInstallFlow(page, baseUrl, options = {}) {
+	const platform = options.platform ?? 'Windows'
+	const eulaContinueDelayMs = options.eulaContinueDelayMs ?? 0
+	await page.addInitScript(({ platform: uaPlatform, eulaContinueDelayMs: delay }) => {
+		Object.defineProperty(navigator, 'userAgentData', {
+			configurable: true,
+			value: { platform: uaPlatform },
+		})
+		globalThis.fount ??= {}
+		globalThis.fount.test ??= {}
+		globalThis.fount.test.forceInstall = true
+		globalThis.fount.test.eulaContinueDelayMs = delay
+	}, { platform, eulaContinueDelayMs })
+	await page.goto(`${baseUrl}/wait/install/`, { waitUntil: 'domcontentloaded' })
+	await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+	await expect(page.locator('#launchButtonSpinner')).toBeHidden()
+}
+
+test.describe('install EULA download', () => {
+	test('backdrop dismisses only before EULA loads', async ({ page, baseUrl }) => {
+		await page.route(EULA_MD, async route => {
+			await new Promise(resolve => setTimeout(resolve, 2500))
+			await fulfillEulaFromRepo(route)
+		})
+		await openInstallFlow(page, baseUrl)
+		await page.locator('#launchButton').click()
+		const dialog = page.locator('#eula-dialog')
+		await expect(dialog).toBeVisible()
+		await dialog.locator('.modal-backdrop').click({ position: { x: 8, y: 8 } })
+		await expect(dialog).toBeHidden()
+
+		await page.locator('#launchButton').click()
+		await expect(dialog).toBeVisible()
+		await expect(page.locator('#eula-body h1')).toBeVisible({ timeout: 15_000 })
+		await dialog.locator('.modal-backdrop').click({ position: { x: 8, y: 8 }, force: true })
+		await expect(dialog).toBeVisible()
+	})
+
+	test('jsDelivr miss falls back to GitHub raw', async ({ page, baseUrl }) => {
+		await page.route(/cdn\.jsdelivr\.net\/gh\/steve02081504\/fount.*EULA/, route => route.abort('aborted'))
+		await page.route(/raw\.githubusercontent\.com\/steve02081504\/fount\/.+\/docs\/EULA\//, fulfillEulaFromRepo)
+		await openInstallFlow(page, baseUrl)
+		await page.locator('#launchButton').click()
+		await expect(page.locator('#eula-body h1')).toBeVisible({ timeout: 15_000 })
+	})
+
+	test('continue stays disabled until agree after load', async ({ page, baseUrl }) => {
+		await page.route(EULA_MD, fulfillEulaFromRepo)
+		await openInstallFlow(page, baseUrl, { eulaContinueDelayMs: 2500 })
+		await page.locator('#launchButton').click()
+		const continueBtn = page.locator('#eula-continue')
+		await page.locator('#eula-agree').check()
+		await expect(page.locator('#eula-body h1')).toBeVisible({ timeout: 15_000 })
+		await expect(continueBtn).toBeDisabled()
+		await expect(continueBtn).toBeEnabled({ timeout: 8_000 })
+	})
+
+	test('Windows downloads fount.exe', async ({ page, baseUrl }) => {
+		await page.route(EULA_MD, fulfillEulaFromRepo)
+		/** @type {string[]} */
+		const hits = []
+		await page.context().route(RELEASE_DOWNLOAD, async route => {
+			hits.push(route.request().url())
+			await route.fulfill({ status: 200, contentType: 'application/octet-stream', body: 'ok' })
+		})
+		await openInstallFlow(page, baseUrl, { platform: 'Windows' })
+		await page.locator('#launchButton').click()
+		await expect(page.locator('#eula-body h1')).toBeVisible({ timeout: 15_000 })
+		await page.locator('#eula-agree').check()
+		await page.locator('#eula-continue').click()
+		await expect.poll(() => hits.at(-1) || '').toMatch(/\/fount\.exe$/)
+	})
+
+	test('non-Windows downloads fount.sh', async ({ page, baseUrl }) => {
+		await page.route(EULA_MD, fulfillEulaFromRepo)
+		/** @type {string[]} */
+		const hits = []
+		await page.context().route(RELEASE_DOWNLOAD, async route => {
+			hits.push(route.request().url())
+			await route.fulfill({ status: 200, contentType: 'application/octet-stream', body: 'ok' })
+		})
+		await openInstallFlow(page, baseUrl, { platform: 'Linux' })
+		await page.locator('#launchButton').click()
+		await expect(page.locator('#eula-body h1')).toBeVisible({ timeout: 15_000 })
+		await page.locator('#eula-agree').check()
+		await page.locator('#eula-continue').click()
+		await expect.poll(() => hits.at(-1) || '').toMatch(/\/fount\.sh$/)
 	})
 })

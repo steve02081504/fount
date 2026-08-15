@@ -75,7 +75,7 @@ Use [SSP](https://ssp.shillest.net/) when you:
 [![Español](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Spain.png)](./docs/readme/Readme.es-ES.md)
 [![Deutsch](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Germany.png)](./docs/readme/Readme.de-DE.md)
 [![русский](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Russia.png)](./docs/readme/Readme.ru-RU.md)
-[![Português](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Portugal.png)](./docs/readme/Readme.pt-BR.md)
+[![Português](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Portugal.png)](./docs/readme/Readme.pt-PT.md)
 [![हिन्दी](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/India.png)](./docs/readme/Readme.hi-IN.md)
 [![한국어](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/South-Korea.png)](./docs/readme/Readme.ko-KR.md)
 [![Italiano](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Italy.png)](./docs/readme/Readme.it-IT.md)

@@ -321,9 +321,14 @@ jobs:
         if: steps.pages_skip.outputs.skip != 'true'
         uses: actions/configure-pages@v5
 
-      - name: Embed commit hash
+      - name: Embed pages placeholders
         if: steps.pages_skip.outputs.skip != 'true'
-        run: sed -i "s|__FOUNT_COMMIT_HASH__|${GITHUB_SHA}|g" .github/pages/base.mjs
+        run: |
+          find .github/pages -type f \( -name '*.mjs' -o -name '*.js' -o -name '*.html' \) \
+            -exec sed -i \
+              -e "s|__FOUNT_COMMIT_HASH__|${GITHUB_SHA}|g" \
+              -e "s|__FOUNT_GIT_REF__|${GITHUB_REF_NAME}|g" \
+            {} +
 
       - name: Upload artifact
         if: steps.pages_skip.outputs.skip != 'true'

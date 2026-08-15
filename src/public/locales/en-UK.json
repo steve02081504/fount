@@ -608,6 +608,17 @@
 			"message": "Welcome, visitors from `${source}`!\nWe've no tea or biscuits on offer — just a friendly hello :)",
 			"dismiss": "Thanks, I'll have a look around"
 		},
+		"eula": {
+			"title": "End-User Licence Agreement",
+			"agree": "I have read and agree to this agreement",
+			"continue": "Continue",
+			"continue_in": "Continue (${seconds})",
+			"language": {
+				"aria-label": "Agreement language"
+			},
+			"loading": "Loading the agreement…",
+			"load_failed": "Failed to load the agreement."
+		},
 		"footer": {
 			"ready_text": "Ready to start your journey?",
 			"wait_text": "Please wait a moment...",

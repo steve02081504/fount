@@ -608,6 +608,17 @@
 			"message": "`${source}` からいらしたお客様、ようこそ！\nお茶もお菓子もございませんが、心ばかりのご挨拶を :)",
 			"dismiss": "ありがとう、見て回ります"
 		},
+		"eula": {
+			"title": "エンドユーザー使用許諾契約",
+			"agree": "本契約を読み、同意します",
+			"continue": "続行",
+			"continue_in": "続行（${seconds}）",
+			"language": {
+				"aria-label": "契約の言語"
+			},
+			"loading": "契約を読み込み中…",
+			"load_failed": "契約の読み込みに失敗しました。"
+		},
 		"footer": {
 			"ready_text": "冒険を始める準備はできましたか？",
 			"wait_text": "しばらくお待ちください...",

@@ -37,13 +37,14 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 - Locale load goes through i18n `loadLocaleData` / `setLanguage` — do not fetch `/api/getlocaledata` from test code.
 - `loadLocaleData` / `initTranslations` use an epoch cache (`lib/epochCache.mjs`): `locale-updated` bumps the epoch so stale fetches never refill the cache, but **the in-flight result is still applied**. Do not re-read only `cache.get` after `await load` — that drops the bundle when the epoch moved and leaves `preferred` ≠ `main_locale` (page watch then reports `aria-label missing-zh` on English chrome).
 - `pages_server.close` calls `closeAllConnections()` before `close()` — otherwise keep-alive sockets can hang the driver past the idle watchdog.
+- Pages placeholders `__FOUNT_COMMIT_HASH__` / `__FOUNT_GIT_REF__` are substituted by `pages_server` (local) and `pages.yaml` `sed` (deploy). Git ref is the current branch (`rev-parse --abbrev-ref HEAD`), or the commit when detached. Do not hardcode `master` in Pages fetch URLs.
 
 ## Page watch
 
 `watch` (`scripts/test/watch/`): mounts `fount.test.watch` (`kick` / `drain` / `holdLocale` / `releaseLocale` / `started`). Locale bootstrap then `loop.start()` — the only ready gate.
 
 - a11y: MutationObserver dirty → axe; `[aria-ignore]` via shared `test/aria_ignore.mjs` + hub probes.
-- locale: zh-CN → ja-JP → en-UK (`holdLocale` skips); visible-text + **aria-label** scans (skip `[user-content]` / `[aria-hidden="true"]` / `[inert]` / `[hidden]` / `.hidden`) require Han on zh-CN and Hira/Kata/Han on ja-JP; en-UK must not carry CJK. Use `data-i18n` object keys — never hardcode English `aria-label` as a fallback.
+- locale: zh-CN → ja-JP → en-UK (`holdLocale` skips); visible-text + **aria-label** scans (skip `[user-content]` / `[language-check-ignore]` / `[aria-hidden="true"]` / `[inert]` / `[hidden]` / `.hidden`) require Han on zh-CN and Hira/Kata/Han on ja-JP; en-UK must not carry CJK. Use `data-i18n` object keys — never hardcode English `aria-label` as a fallback. `[user-content]` = user/dynamic text; `[language-check-ignore]` = intentional multilingual chrome (language names, EULA in a chosen locale).
 - Playwright teardown `waitForWatchDrain` → `watch.drain()`. Pause rotation during asserts with `holdLocale` / `releaseLocale` (see `json_editor.mjs`).
 - Hard-fail on `[test:a11y]` / `[test:locale]` / `[test:watch]` except axe `color-contrast` and `link-in-text-block`. Prefer `[data-i18n="…"]` selectors. UI chrome must use `data-i18n` / `setLocalizeLogic`.
 

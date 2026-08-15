@@ -1,14 +1,16 @@
 /**
- * 可见 UI 文案提取：临时隐藏 `[user-content]` 后读 title + body.innerText。
+ * 可见 UI 文案提取：临时隐藏语种扫描跳过节点后读 title + body.innerText。
  * 调用方负责套 mutations.ignore，避免隐藏操作喂脏 a11y。
  */
+import { LOCALE_CHECK_SKIP_SELECTOR } from './locale_script.mjs'
 
 /**
- * 收集页面可见文案（含 title）；跳过 `[user-content]`。
+ * 收集页面可见文案（含 title）；跳过 `[user-content]` / `[language-check-ignore]`。
+ * @param {Document} [doc=document] 文档
  * @returns {string} 可见文案
  */
-export function collectVisiblePageText() {
-	const skipped = [...document.querySelectorAll('[user-content]')]
+export function collectVisiblePageText(doc = document) {
+	const skipped = [...doc.querySelectorAll(LOCALE_CHECK_SKIP_SELECTOR)]
 	/** @type {{ value: string, priority: string }[]} */
 	const prev = []
 	for (const el of skipped) {
@@ -19,7 +21,7 @@ export function collectVisiblePageText() {
 		el.style.setProperty('display', 'none', 'important')
 	}
 	try {
-		return `${document.title}\n${document.body?.innerText ?? ''}`
+		return `${doc.title}\n${doc.body?.innerText ?? ''}`
 	}
 	finally {
 		skipped.forEach((el, i) => {

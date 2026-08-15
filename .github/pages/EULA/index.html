@@ -19,7 +19,7 @@
 <body>
 	<main aria-hidden="true"><!-- Redirect page; main content is script-driven --></main>
 	<script>
-		const EULA_BLOB = 'https://github.com/steve02081504/fount/blob/master/docs/EULA/EULA.'
+		const EULA_BLOB = 'https://github.com/steve02081504/fount/blob/__FOUNT_GIT_REF__/docs/EULA/EULA.'
 		const ALIAS = {
 			zh: 'zh-CN', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', 'zh-HK': 'zh-TW',
 			en: 'en-UK', 'en-UK': 'en-UK', 'en-GB': 'en-UK',
@@ -28,7 +28,7 @@
 			es: 'es-ES', 'es-ES': 'es-ES',
 			de: 'de-DE', 'de-DE': 'de-DE',
 			ru: 'ru-RU', 'ru-RU': 'ru-RU',
-			pt: 'pt-BR', 'pt-BR': 'pt-BR', 'pt-PT': 'pt-BR',
+			pt: 'pt-PT', 'pt-PT': 'pt-PT', 'pt-BR': 'pt-PT',
 			hi: 'hi-IN', 'hi-IN': 'hi-IN',
 			ko: 'ko-KR', 'ko-KR': 'ko-KR',
 			it: 'it-IT', 'it-IT': 'it-IT',
@@ -37,6 +37,8 @@
 			is: 'is-IS', 'is-IS': 'is-IS',
 			nl: 'nl-NL', 'nl-NL': 'nl-NL',
 			uk: 'uk-UA', 'uk-UA': 'uk-UA',
+			lzh: 'lzh',
+			emoji: 'emoji',
 		}
 		const raw = navigator.language || navigator.userLanguage || ''
 		const [lang, region] = raw.split('-')

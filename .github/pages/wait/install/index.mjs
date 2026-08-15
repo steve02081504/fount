@@ -676,24 +676,8 @@ async function handleInstallerFlow() {
 async function handleStandaloneFlow() {
 	launchButtonSpinner.style.display = 'none'
 
-	launchButtonText.dataset.i18n = window.fount
-		? 'installer_wait_screen.footer.open_fount'
-		: 'installer_wait_screen.footer.open_or_install_fount'
-
-	/**
-	 * 在 fount 服务不可用时打开主页。
-	 * @returns {void}
-	 */
-	launchButton.onclick = () => {
-		if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-			window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' // lol webkit
-			return
-		}
-		window.location.href = 'fount://page/'
-		setTimeout(() => { window.location.href = 'https://steve02081504.github.io/fount/readme/#installation' }, 5000)
-	}
-
-	const savedHostUrl = await getFountHostUrl()
+	const forceInstall = Boolean(globalThis.fount?.test?.forceInstall)
+	const savedHostUrl = forceInstall ? '' : await getFountHostUrl()
 
 	if (savedHostUrl) {
 		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
@@ -704,6 +688,16 @@ async function handleStandaloneFlow() {
 			const isOnline = await pingFount(savedHostUrl)
 			window.location.href = isOnline ? savedHostUrl : 'fount://page/'
 		}
+		return
+	}
+
+	launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_or_install_fount'
+	/**
+	 * 安装：EULA 同意后按平台从 latest release 下载。
+	 * @returns {void}
+	 */
+	launchButton.onclick = () => {
+		import('./eula.mjs').then(mod => mod.promptEulaAndDownload())
 	}
 }
 
