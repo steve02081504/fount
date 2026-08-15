@@ -46,6 +46,12 @@ try {
 	}
 
 	$cmd = $args[0]
+	if (-not (Test-Path -Path "$FOUNT_DIR/data/config.json") -and $cmd -ne 'remove') {
+		require cmd/open
+		cmd_open @(@('open') + @($args))
+		if ($ErrorCount -ne $Error.Count) { exit 1 }
+		exit $LastExitCode
+	}
 	if ($cmd -and $cmd -match '^[a-z]+$') {
 		$commandFile = Join-Path $script:FOUNT_SRC "cmd\$cmd.ps1"
 		if (Test-Path -LiteralPath $commandFile) {

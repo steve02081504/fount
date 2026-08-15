@@ -129,17 +129,8 @@ if (!$env:FOUNT_DIR) {
 	$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
 }
 
-function Test-FountAcceptEulaArg([string]$Value) {
-	return $Value -match '^(?i)-{0,2}accept-?eula$'
-}
-
 $script:AcceptEula = $env:FOUNT_ACCEPT_EULA -match '^(?i)1|true|yes$'
-$filteredArgs = @()
-foreach ($a in $args) {
-	if (Test-FountAcceptEulaArg "$a") { $script:AcceptEula = $true }
-	else { $filteredArgs += $a }
-}
-$newargs = @($filteredArgs)
+$newargs = @($args)
 if ($newargs.Count -eq 0) {
 	$newargs = @("open", "keepalive")
 }
@@ -262,11 +253,54 @@ function Test-FountConsoleInput {
 	catch { return $false }
 }
 
+function Install-FountTree {
+	param([string]$Dir, [string]$Branch)
+	Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
+	if (Get-Command git -ErrorAction Ignore) {
+		git clone -c core.autocrlf=false https://github.com/steve02081504/fount $Dir --depth 1 --single-branch --branch $Branch
+		if ($LastExitCode) {
+			Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
+		}
+	}
+	if (!(Test-Path $Dir)) {
+		Remove-Item "$env:TEMP/fount-$Branch" -Force -ErrorAction Ignore -Recurse
+		try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/$Branch.zip -OutFile $env:TEMP/fount.zip }
+		catch {
+			throw "Failed to download fount: $($_.Exception.Message)"
+		}
+		Expand-Archive $env:TEMP/fount.zip $env:TEMP -Force
+		Remove-Item $env:TEMP/fount.zip -Force
+		New-Item $(Split-Path -Parent $Dir) -ItemType Directory -Force -ErrorAction Ignore
+		Move-Item "$env:TEMP/fount-$Branch" $Dir -Force
+	}
+	if (!(Test-Path $Dir)) {
+		throw "Failed to install fount"
+	}
+}
+
+function Copy-FountDefaultConfig([string]$Dir) {
+	$dest = Join-Path $Dir 'data/config.json'
+	if (Test-Path -LiteralPath $dest) { return }
+	New-Item -Path (Join-Path $Dir 'data') -ItemType Directory -Force | Out-Null
+	Copy-Item -LiteralPath (Join-Path $Dir 'default/config.json') -Destination $dest
+}
+
+function Remove-FountAfterEulaDecline {
+	$fountPs1 = Join-Path $env:FOUNT_DIR 'path/fount.ps1'
+	if (Test-Path -LiteralPath $fountPs1) {
+		& $fountPs1 remove
+	}
+	else {
+		Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Recurse
+	}
+}
+
 function Confirm-FountEula {
 	param([string]$AcceptFile)
+	if ($script:AcceptEula) { return $true }
 	if (Test-Path -LiteralPath $AcceptFile) { return $true }
 	if (-not (Test-FountConsoleInput)) {
-		$Host.UI.WriteErrorLine("EULA acceptance is required. Re-run with --accept-EULA, or from an interactive terminal.")
+		$Host.UI.WriteErrorLine("EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.")
 		$Host.UI.WriteErrorLine($script:EulaUrl)
 		return $false
 	}
@@ -298,43 +332,39 @@ $statusServerJob = $null
 $fountExitCode = 1
 try {
 	if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
+		$cloneJob = $null
 		if (-not $script:AcceptEula) {
+			if (-not (Test-FountConsoleInput)) {
+				$Host.UI.WriteErrorLine("EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.")
+				$Host.UI.WriteErrorLine($script:EulaUrl)
+				exit 1
+			}
 			Remove-Item -LiteralPath $script:EulaAcceptFile -Force -ErrorAction Ignore
 			$statusServerJob = Start-FountStatusServer -AcceptFile $script:EulaAcceptFile
 			Test-Browser
 			Start-Process $script:InstallWaitUrl
-			if ($newargs -contains "open") {
-				$newargs = @($newargs | Where-Object { $_ -ne 'open' })
-			}
+			Write-TaskbarProgress
+			$cloneJob = Start-Job -ScriptBlock ${function:Install-FountTree} -ArgumentList $env:FOUNT_DIR, $env:FOUNT_BRANCH
 			if (-not (Confirm-FountEula -AcceptFile $script:EulaAcceptFile)) {
-				Write-Host "EULA declined. Aborting installation."
+				Write-Host "EULA declined. Removing fount."
+				Stop-Job $cloneJob -ErrorAction SilentlyContinue
+				Remove-Job $cloneJob -Force -ErrorAction SilentlyContinue
+				Remove-FountAfterEulaDecline
 				exit 1
 			}
-		}
-		Write-TaskbarProgress -Percent 0
-		Remove-Item $env:FOUNT_DIR -Confirm -ErrorAction Ignore -Recurse
-		if (Get-Command git -ErrorAction Ignore) {
-			Write-TaskbarProgress -Percent 20
-			git clone -c core.autocrlf=false https://github.com/steve02081504/fount $env:FOUNT_DIR --depth 1 --single-branch --branch $env:FOUNT_BRANCH
-			if ($LastExitCode) {
-				Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Confirm:$false -Recurse
-				Write-TaskbarProgress -Percent 25
-			}
-			else { Write-TaskbarProgress -Percent 40 }
-		}
-		if (!(Test-Path $env:FOUNT_DIR)) {
-			Write-TaskbarProgress -Percent 25
-			Remove-Item $env:TEMP/fount-$env:FOUNT_BRANCH -Force -ErrorAction Ignore -Confirm:$false -Recurse
-			try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/$env:FOUNT_BRANCH.zip -OutFile $env:TEMP/fount.zip }
-			catch {
-				$Host.UI.WriteErrorLine("Failed to download fount: $($_.Exception.Message)")
+			Wait-Job $cloneJob | Out-Null
+			if ($cloneJob.State -ne 'Completed') {
+				Receive-Job $cloneJob
+				Write-TaskbarProgressError
+				$Host.UI.WriteErrorLine("Failed to install fount")
 				exit 1
 			}
-			Expand-Archive $env:TEMP/fount.zip $env:TEMP -Force
-			Remove-Item $env:TEMP/fount.zip -Force
-			# 确保父文件夹存在
-			New-Item $(Split-Path -Parent $env:FOUNT_DIR) -ItemType Directory -Force -ErrorAction Ignore
-			Move-Item $env:TEMP/fount-$env:FOUNT_BRANCH $env:FOUNT_DIR -Force
+			Receive-Job $cloneJob
+			Remove-Job $cloneJob -Force -ErrorAction SilentlyContinue
+		}
+		else {
+			Write-TaskbarProgress -Percent 0
+			Install-FountTree -Dir $env:FOUNT_DIR -Branch $env:FOUNT_BRANCH
 			Write-TaskbarProgress -Percent 50
 		}
 		if (!(Test-Path $env:FOUNT_DIR)) {
@@ -343,15 +373,16 @@ try {
 			exit 1
 		}
 		$Script:fountDir = $env:FOUNT_DIR
+		Copy-FountDefaultConfig $env:FOUNT_DIR
 		Write-TaskbarProgress -Percent 60
 		if ($Script:Installed_winget) {
-			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
-			Set-Content "$FOUNT_DIR/data/installer/auto_installed_winget" '1'
+			New-Item -Path "$env:FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+			Set-Content "$env:FOUNT_DIR/data/installer/auto_installed_winget" '1'
 			$Script:Installed_winget = 0
 		}
 		if ($Script:Installed_chrome) {
-			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
-			Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
+			New-Item -Path "$env:FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+			Set-Content "$env:FOUNT_DIR/data/installer/auto_installed_chrome" '1'
 			$Script:Installed_chrome = 0
 		}
 		Write-TaskbarProgress -Percent 70

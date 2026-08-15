@@ -45,6 +45,12 @@ fi
 
 unset FOUNT_CLICK
 
+if [ ! -f "$FOUNT_DIR/data/config.json" ] && [ "${1:-}" != "remove" ]; then
+	require cmd/open
+	cmd_open open "$@"
+	exit $?
+fi
+
 cmd="${1:-}"
 
 if [ -n "$cmd" ] && [[ "$cmd" =~ ^[a-z]+$ ]] && [ -f "$FOUNT_SRC/cmd/${cmd}.sh" ]; then

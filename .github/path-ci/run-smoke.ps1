@@ -32,6 +32,7 @@ function Invoke-FountCapture {
 }
 
 Write-Host "path smoke: repo=$Root"
+$env:FOUNT_ACCEPT_EULA = '1'
 
 foreach ($flag in '.noupdate', '.noautoboot') {
 	$path = Join-Path $Root $flag

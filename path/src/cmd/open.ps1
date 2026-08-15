@@ -1,5 +1,5 @@
 ﻿function script:cmd_open {
-	require passthrough win/refresh_path win/winget browser
+	require passthrough win/refresh_path win/winget browser eula
 	if (Test-Path -Path "$FOUNT_DIR/data/config.json") {
 		handle_docker_passthrough @args
 		Test-Browser
@@ -8,36 +8,40 @@
 		exit $LastExitCode
 	}
 
-	$statusServerScriptBlock = {
-		$listener = [System.Net.HttpListener]::new()
-		$listener.Prefixes.Add("http://localhost:8930/")
-		$listener.Start()
-
-		try {
-			while ($true) {
-				$response = $listener.GetContext().Response
-				$response.AddHeader("Access-Control-Allow-Origin", "*")
-				$buffer = [System.Text.Encoding]::UTF8.GetBytes('{"message":"pong"}')
-				$response.ContentType = "application/json"
-				$response.ContentLength64 = $buffer.Length
-				$response.OutputStream.Write($buffer, 0, $buffer.Length)
-				$response.Close()
-			}
-		}
-		finally {
-			$listener.Stop()
-			$listener.Close()
-		}
+	$rest = @($args | Select-Object -Skip 1)
+	if (Test-FountEulaEnvAccepted) {
+		Copy-FountDefaultConfig
+		fount.ps1 @rest
+		exit $LastExitCode
 	}
-	$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
+
+	$acceptFile = Join-Path ([IO.Path]::GetTempPath()) "fount-eula-accepted-$PID"
+	$statusServerJob = $null
 	try {
+		if (-not (Test-FountConsoleInput)) {
+			$Host.UI.WriteErrorLine("EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.")
+			$Host.UI.WriteErrorLine($script:FountEulaUrl)
+			& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
+			exit $LastExitCode
+		}
+		Remove-Item -LiteralPath $acceptFile -Force -ErrorAction Ignore
+		$statusServerJob = Start-FountStatusServer -AcceptFile $acceptFile
 		Test-Browser
-		Start-Process 'https://steve02081504.github.io/fount/wait/install/?from=runner'
-		fount.ps1 @($args | Select-Object -Skip 1)
+		Start-Process $script:FountInstallWaitUrl
+		if (-not (Confirm-FountEula -AcceptFile $acceptFile)) {
+			Write-Host "EULA declined. Removing fount."
+			& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
+			exit $LastExitCode
+		}
+		Copy-FountDefaultConfig
+		fount.ps1 @rest
+		exit $LastExitCode
 	}
 	finally {
-		Stop-Job $statusServerJob -ErrorAction SilentlyContinue
-		Remove-Job $statusServerJob -Force -ErrorAction SilentlyContinue
+		if ($null -ne $statusServerJob) {
+			Stop-Job $statusServerJob -ErrorAction SilentlyContinue
+			Remove-Job $statusServerJob -Force -ErrorAction SilentlyContinue
+		}
+		Remove-Item -LiteralPath $acceptFile -Force -ErrorAction Ignore
 	}
-	exit $LastExitCode
 }

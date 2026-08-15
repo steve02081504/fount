@@ -80,6 +80,7 @@ cleanup() {
 	[ -n "${EULA_ACCEPT_FILE:-}" ] && rm -f "$EULA_ACCEPT_FILE"
 	[ -n "${STATUS_HANDLER:-}" ] && rm -f "$STATUS_HANDLER"
 	[ -n "${STATUS_FIFO:-}" ] && rm -f "$STATUS_FIFO"
+	[ -n "${FOUNT_INSTALL_TMP:-}" ] && rm -rf "$FOUNT_INSTALL_TMP"
 	write_taskbar_progress_clear
 }
 trap cleanup EXIT
@@ -214,10 +215,6 @@ STATUS_HANDLER=""
 STATUS_FIFO=""
 EULA_DECLINED=0
 
-is_accept_eula_arg() {
-	echo "$1" | grep -qiE '^--?accept-?eula$|^accept-?eula$'
-}
-
 uninstall_auto_packages() {
 	local package has_sudo=""
 	if [[ $(id -u) -ne 0 ]] && command -v sudo &>/dev/null; then has_sudo="sudo"; fi
@@ -248,7 +245,7 @@ done
 case "$req" in
 *"/eula"*) : > "${EULA_ACCEPT_FILE}" ;;
 esac
-msg=installing
+msg=pong
 eula=pending
 if [[ -f "${EULA_ACCEPT_FILE}" ]]; then
 	msg=accepted
@@ -294,9 +291,12 @@ open_install_wait_page() {
 }
 
 confirm_fount_eula() {
+	case "${FOUNT_ACCEPT_EULA:-}" in
+	1 | true | TRUE | yes | YES) return 0 ;;
+	esac
 	if [[ -f "$EULA_ACCEPT_FILE" ]]; then return 0; fi
 	if [[ ! -r /dev/tty ]]; then
-		echo -e "${C_RED}EULA acceptance is required. Re-run with --accept-EULA, or from an interactive terminal.${C_RESET}" >&2
+		echo -e "${C_RED}EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.${C_RESET}" >&2
 		echo "$EULA_URL" >&2
 		return 1
 	fi
@@ -336,17 +336,119 @@ accept_eula=0
 case "${FOUNT_ACCEPT_EULA:-}" in
 1 | true | TRUE | yes | YES) accept_eula=1 ;;
 esac
-new_args=()
-for arg in "$@"; do
-	if is_accept_eula_arg "$arg"; then
-		accept_eula=1
-	else
-		new_args+=("$arg")
-	fi
-done
+new_args=("$@")
 if [[ "${#new_args[@]}" -eq 0 ]]; then
 	new_args=("open" "keepalive")
 fi
+
+copy_fount_default_config() {
+	local dest="$FOUNT_DIR/data/config.json"
+	[ -f "$dest" ] && return 0
+	mkdir -p "$FOUNT_DIR/data"
+	cp "$FOUNT_DIR/default/config.json" "$dest"
+}
+
+remove_fount_after_eula_decline() {
+	if [ -f "$FOUNT_DIR/path/fount.sh" ]; then
+		"$FOUNT_DIR/path/fount.sh" remove
+	else
+		rm -rf "$FOUNT_DIR"
+	fi
+}
+
+install_fount_tree() {
+	echo -e "Installing fount into ${C_CYAN}$FOUNT_DIR${C_RESET}..."
+	rm -rf "$FOUNT_DIR"
+	mkdir -p "$(dirname "$FOUNT_DIR")"
+	write_taskbar_progress 20
+
+	if command -v git &>/dev/null; then
+		write_taskbar_progress 25
+		echo "Cloning fount repository..."
+		if git clone -c core.autocrlf=false https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
+			echo -e "${C_GREEN}Clone successful.${C_RESET}"
+			write_taskbar_progress 40
+		else
+			echo -e "${C_YELLOW}Git clone failed, falling back to zip download...${C_RESET}"
+			rm -rf "$FOUNT_DIR"
+			write_taskbar_progress 25
+		fi
+	fi
+
+	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
+		write_taskbar_progress 25
+		install_package "curl" "curl" || install_package "wget" "wget" || return 1
+		write_taskbar_progress 30
+		install_package "unzip" "unzip" || return 1
+		write_taskbar_progress 35
+
+		FOUNT_INSTALL_TMP=$(mktemp -d)
+		ZIP_URL="https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip"
+		ZIP_FILE="$FOUNT_INSTALL_TMP/fount.zip"
+
+		echo "Downloading fount from $ZIP_URL..."
+		if command -v curl &>/dev/null; then
+			curl --progress-bar -L -o "$ZIP_FILE" "$ZIP_URL"
+		else
+			wget -q --show-progress -O "$ZIP_FILE" "$ZIP_URL"
+		fi
+		write_taskbar_progress 40
+
+		# shellcheck disable=SC2181
+		if [ $? -ne 0 ]; then
+			echo -e "${C_RED}Error: Download failed.${C_RESET}" >&2
+			rm -rf "$FOUNT_INSTALL_TMP"
+			FOUNT_INSTALL_TMP=""
+			return 1
+		fi
+
+		echo "Unzipping fount..."
+		if ! unzip -q -o "$ZIP_FILE" -d "$FOUNT_INSTALL_TMP"; then
+			echo -e "${C_RED}Error: Unzip failed.${C_RESET}" >&2
+			rm -rf "$FOUNT_INSTALL_TMP"
+			FOUNT_INSTALL_TMP=""
+			return 1
+		fi
+		write_taskbar_progress 50
+
+		extracted_dir=$(find "$FOUNT_INSTALL_TMP" -maxdepth 1 -type d -name "fount-*" | head -n 1)
+
+		if [ -z "$extracted_dir" ] || [ ! -d "$extracted_dir" ]; then
+			echo -e "${C_RED}Error: Could not find extracted fount directory in $FOUNT_INSTALL_TMP${C_RESET}" >&2
+			rm -rf "$FOUNT_INSTALL_TMP"
+			FOUNT_INSTALL_TMP=""
+			return 1
+		fi
+
+		mkdir -p "$FOUNT_DIR"
+		mv "$extracted_dir"/* "$FOUNT_DIR"
+		rm -rf "$FOUNT_INSTALL_TMP"
+		FOUNT_INSTALL_TMP=""
+	fi
+
+	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
+		write_taskbar_progress_error
+		echo -e "${C_RED}Error: fount installation failed. Main script not found.${C_RESET}" >&2
+		return 1
+	fi
+
+	write_taskbar_progress 60
+	echo "Setting permissions..."
+	if [[ "$OSTYPE" == "darwin"* ]]; then
+		xattr -dr com.apple.quarantine "$FOUNT_DIR" 2>/dev/null || true
+	fi
+	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -exec chmod +x {} +
+	find "$FOUNT_DIR/path" -maxdepth 1 -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
+	[ -f "$FOUNT_DIR/path/desktop.ini" ] && chmod -x "$FOUNT_DIR/path/desktop.ini"
+	for agentsManifestPath in "$FOUNT_DIR/path/AGENTS.md" "$FOUNT_DIR/path/agents.md"; do
+		[ -f "$agentsManifestPath" ] && chmod -x "$agentsManifestPath"
+	done
+	[ -f "$FOUNT_DIR/gradlew" ] && chmod +x "$FOUNT_DIR/gradlew"
+	[ -f "$FOUNT_DIR/gradlew.bat" ] && chmod +x "$FOUNT_DIR/gradlew.bat"
+	write_taskbar_progress 70
+	echo -e "${C_GREEN}fount installation complete.${C_RESET}"
+	return 0
+}
 
 SCRIPT_SELF_PATH=""
 if [[ -n "${BASH_SOURCE[0]:-}" && -f "${BASH_SOURCE[0]}" ]]; then
@@ -373,123 +475,59 @@ else
 		IN_DOCKER=1
 	fi
 
+	need_eula=0
 	if [[ $IN_DOCKER -eq 0 && "$accept_eula" -eq 0 ]]; then
+		need_eula=1
+	fi
+
+	if [[ "$need_eula" -eq 1 ]]; then
+		if [[ ! -r /dev/tty ]]; then
+			echo -e "${C_RED}EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.${C_RESET}" >&2
+			echo "$EULA_URL" >&2
+			exit 1
+		fi
 		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
 		write_taskbar_progress 5
 		start_status_server
 		write_taskbar_progress 10
-
-		if [[ -n "$STATUS_SERVER_PID" ]]; then
-			test_browser
-			open_install_wait_page
-			temp_args=()
-			for arg in "${new_args[@]}"; do
-				[[ "$arg" != "open" ]] && temp_args+=("$arg")
-			done
-			new_args=("${temp_args[@]}")
-		else
+		if [[ -z "$STATUS_SERVER_PID" ]]; then
 			echo -e "${C_YELLOW}Warning: Could not start status server. Proceeding with EULA prompt in this terminal.${C_RESET}"
 		fi
+		test_browser
+		open_install_wait_page
 	fi
 
-	if [[ "$accept_eula" -eq 0 ]]; then
-		if ! confirm_fount_eula; then
-			echo "EULA declined. Aborting installation."
-			EULA_DECLINED=1
-			exit 1
-		fi
-	fi
-
-	echo -e "Installing fount into ${C_CYAN}$FOUNT_DIR${C_RESET}..."
-	rm -rf "$FOUNT_DIR"
-	mkdir -p "$(dirname "$FOUNT_DIR")"
-	write_taskbar_progress 20
-
-	if install_package "git" "git git-core"; then
-		write_taskbar_progress 25
-		echo "Cloning fount repository..."
-		if git clone -c core.autocrlf=false https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
-			echo -e "${C_GREEN}Clone successful.${C_RESET}"
-			write_taskbar_progress 40
-		else
-			echo -e "${C_YELLOW}Git clone failed, falling back to zip download...${C_RESET}"
-			rm -rf "$FOUNT_DIR"
-			write_taskbar_progress 25
-		fi
-	fi
-
-	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
-		write_taskbar_progress 25
+	install_package "git" "git git-core" || true
+	if ! command -v git &>/dev/null; then
 		install_package "curl" "curl" || install_package "wget" "wget" || exit 1
-		write_taskbar_progress 30
 		install_package "unzip" "unzip" || exit 1
-		write_taskbar_progress 35
-
-		TMP_DIR=$(mktemp -d)
-		trap 'rm -rf "$TMP_DIR"; cleanup' EXIT
-
-		ZIP_URL="https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip"
-		ZIP_FILE="$TMP_DIR/fount.zip"
-
-		echo "Downloading fount from $ZIP_URL..."
-		if command -v curl &>/dev/null; then
-			curl --progress-bar -L -o "$ZIP_FILE" "$ZIP_URL"
-		else
-			wget -q --show-progress -O "$ZIP_FILE" "$ZIP_URL"
-		fi
-		write_taskbar_progress 40
-
-		# shellcheck disable=SC2181
-		if [ $? -ne 0 ]; then
-			echo -e "${C_RED}Error: Download failed.${C_RESET}" >&2
-			exit 1
-		fi
-
-		echo "Unzipping fount..."
-		if ! unzip -q -o "$ZIP_FILE" -d "$TMP_DIR"; then
-			echo -e "${C_RED}Error: Unzip failed.${C_RESET}" >&2
-			exit 1
-		fi
-		write_taskbar_progress 50
-
-		extracted_dir=$(find "$TMP_DIR" -maxdepth 1 -type d -name "fount-*" | head -n 1)
-
-		if [ -z "$extracted_dir" ] || [ ! -d "$extracted_dir" ]; then
-			echo -e "${C_RED}Error: Could not find extracted fount directory in $TMP_DIR${C_RESET}" >&2
-			exit 1
-		fi
-
-		mkdir -p "$FOUNT_DIR"
-		mv "$extracted_dir"/* "$FOUNT_DIR"
 	fi
 
-	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
+	if [[ "$need_eula" -eq 1 ]]; then
+		install_fount_tree &
+		install_pid=$!
+		if ! confirm_fount_eula; then
+			echo "EULA declined. Removing fount."
+			kill "$install_pid" 2>/dev/null
+			wait "$install_pid" 2>/dev/null
+			EULA_DECLINED=1
+			remove_fount_after_eula_decline
+			exit 1
+		fi
+		wait "$install_pid"
+		install_status=$?
+	else
+		install_fount_tree
+		install_status=$?
+	fi
+
+	if [[ "$install_status" -ne 0 ]] || [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
 		write_taskbar_progress_error
 		echo -e "${C_RED}Error: fount installation failed. Main script not found.${C_RESET}" >&2
 		exit 1
 	fi
 
-	write_taskbar_progress 60
-	echo "Setting permissions..."
-	if [[ "$OSTYPE" == "darwin"* ]]; then
-		xattr -dr com.apple.quarantine "$FOUNT_DIR" 2>/dev/null || true
-	fi
-	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -exec chmod +x {} +
-	find "$FOUNT_DIR/path" -maxdepth 1 -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
-	[ -f "$FOUNT_DIR/path/desktop.ini" ] && chmod -x "$FOUNT_DIR/path/desktop.ini"
-	for agentsManifestPath in "$FOUNT_DIR/path/AGENTS.md" "$FOUNT_DIR/path/agents.md"; do
-		[ -f "$agentsManifestPath" ] && chmod -x "$agentsManifestPath"
-	done
-	[ -f "$FOUNT_DIR/gradlew" ] && chmod +x "$FOUNT_DIR/gradlew"
-	[ -f "$FOUNT_DIR/gradlew.bat" ] && chmod +x "$FOUNT_DIR/gradlew.bat"
-	write_taskbar_progress 70
-
-	echo -e "${C_GREEN}fount installation complete.${C_RESET}"
-
-	if [[ -n "$STATUS_SERVER_PID" ]]; then
-		kill "$STATUS_SERVER_PID" 2>/dev/null
-		STATUS_SERVER_PID=""
-	fi
+	copy_fount_default_config
 fi
 
 # 若脚本自身内容和$FOUNT_DIR/src/runner/main.sh的内容不同，则更新自身
