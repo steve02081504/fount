@@ -23,13 +23,18 @@ export function isIgnoredBrowserNetworkError(errorText) {
 }
 
 /**
- * Pages 安装器探针 URL：同机无 fount 时 `/api/ping` 与 `:8930`（含 `/eula`）失败是预期。
+ * Pages 安装器探针 URL：同机无 fount 时 `/api/ping` 与本机 `:8930` 存活探针 / `/eula` 失败是预期。
  * @param {string | null | undefined} url 请求 URL
  * @returns {boolean} 应忽略则为 true
  */
 export function isIgnoredPagesProbeUrl(url) {
 	if (!url) return false
-	return /\/api\/ping(?:\?|$)/.test(url) || /:8930(?:\/|$)/.test(url)
+	if (/\/api\/ping(?:\?|$)/.test(url)) return true
+	const parsed = new URL(url)
+	if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') return false
+	if (parsed.port !== '8930') return false
+	const path = parsed.pathname.replace(/\/+$/, '') || '/'
+	return path === '/' || path === '/eula'
 }
 
 /**

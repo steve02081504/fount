@@ -4,19 +4,21 @@
  */
 
 /**
- * @param {string} [_name] registry 名称
- * @param {{ nocache?: boolean }} [_options] 与节点客户端同签名
+ * GitHub Pages 无 fount 节点，恒返回空条目列表。
+ * @param {string} [registryName] registry 名称
+ * @param {{ nocache?: boolean }} [options] 与节点客户端同签名
  * @returns {Promise<RegistryEntry[]>} 空列表
  */
-export function getRegistry(_name, _options) {
+export function getRegistry(registryName, options) {
 	return Promise.resolve([])
 }
 
 /**
- * @param {string} [_name] registry 名称
- * @param {{ nocache?: boolean }} [_options] 与节点客户端同签名
+ * GitHub Pages 无 fount 节点，恒返回空模块列表。
+ * @param {string} [registryName] registry 名称
+ * @param {{ nocache?: boolean }} [options] 与节点客户端同签名
  * @returns {Promise<Array<{ entry: RegistryEntry, module: unknown }>>} 空列表
  */
-export function importRegistryModules(_name, _options) {
+export function importRegistryModules(registryName, options) {
 	return Promise.resolve([])
 }

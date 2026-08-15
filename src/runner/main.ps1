@@ -130,9 +130,9 @@ if (!$env:FOUNT_DIR) {
 }
 
 $script:AcceptEula = $env:FOUNT_ACCEPT_EULA -match '^(?i)(1|true|yes)$'
-$newargs = @($args)
-if ($newargs.Count -eq 0) {
-	$newargs = @("open", "keepalive")
+$forwardedArgs = @($args)
+if ($forwardedArgs.Count -eq 0) {
+	$forwardedArgs = @("open", "keepalive")
 }
 
 $Script:Installed_winget = 0
@@ -279,7 +279,7 @@ try {
 			$statusServerJob = Start-FountStatusServer -AcceptFile $eulaAcceptFile
 			Test-Browser
 			Begin-FountInstallWait
-			Start-Process $script:FountInstallWaitUrl
+			Open-FountInstallWaitPage
 			if (-not (Confirm-FountEula -AcceptFile $eulaAcceptFile)) {
 				Write-Host (Get-I18n -key 'eula.declined')
 				Remove-FountAfterEulaDecline
@@ -318,7 +318,7 @@ try {
 		}
 	#_endif
 	$OutputEncoding = [console]::OutputEncoding = [System.Text.Encoding]::UTF8
-	& "$Script:fountDir/run.bat" @newargs
+	& "$Script:fountDir/run.bat" @forwardedArgs
 	$fountExitCode = $LastExitCode
 }
 finally {

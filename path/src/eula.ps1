@@ -73,6 +73,16 @@ function script:Begin-FountInstallWait {
 	$env:FOUNT_INSTALL_WAIT = '1'
 }
 
+function script:Open-FountInstallWaitPage {
+	try {
+		Start-Process $script:FountInstallWaitUrl -ErrorAction Stop
+	}
+	catch {
+		$Host.UI.WriteErrorLine("$_")
+		exit 1
+	}
+}
+
 function script:Stop-FountStatusServer {
 	if ($null -ne $script:FountStatusServerJob) {
 		Stop-Job $script:FountStatusServerJob -ErrorAction SilentlyContinue
@@ -104,7 +114,7 @@ function script:Ensure-FountConfig {
 	$script:FountStatusServerJob = Start-FountStatusServer -AcceptFile $script:FountEulaAcceptFile
 	Test-Browser
 	Begin-FountInstallWait
-	Start-Process $script:FountInstallWaitUrl
+	Open-FountInstallWaitPage
 	if (-not (Confirm-FountEula -AcceptFile $script:FountEulaAcceptFile)) {
 		Write-Host (Get-I18n -key 'eula.declined')
 		Stop-FountStatusServer

@@ -110,8 +110,11 @@ Deno.test('isIgnoredPagesProbeUrl matches ping and installer 8930', () => {
 	assertEquals(isIgnoredPagesProbeUrl('http://127.0.0.1:28931/api/ping'), true)
 	assertEquals(isIgnoredPagesProbeUrl('http://127.0.0.1:28931/api/ping?cache=1'), true)
 	assertEquals(isIgnoredPagesProbeUrl('http://localhost:8930/eula'), true)
+	assertEquals(isIgnoredPagesProbeUrl('http://127.0.0.1:8930/eula'), true)
 	assertEquals(isIgnoredPagesProbeUrl('http://localhost:8930/'), true)
 	assertEquals(isIgnoredPagesProbeUrl('http://127.0.0.1:28931/api/registries/markdown_extensions'), false)
+	assertEquals(isIgnoredPagesProbeUrl('http://evil.example:8930/'), false)
+	assertEquals(isIgnoredPagesProbeUrl('http://localhost:8930/not-installer'), false)
 })
 
 Deno.test('shouldIgnoreBrowserNetwork drops installer HTTP 4xx/5xx and ping failures', () => {

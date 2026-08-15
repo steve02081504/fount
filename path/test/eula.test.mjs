@@ -90,6 +90,8 @@ Deno.test('runner installs fount before loading locale and prompting EULA', asyn
 	const powerShellFlow = runnerPs1.slice(runnerPs1.indexOf('$statusServerJob = $null'))
 	assertMarkerOrder(powerShellFlow, 'Install-FountTree', 'Import-FountLocale', 'pwsh: clone before locale')
 	assertMarkerOrder(powerShellFlow, 'Import-FountLocale', 'Confirm-FountEula', 'pwsh: locale before EULA prompt')
+	assertMarkerOrder(powerShellFlow, 'Begin-FountInstallWait', 'Open-FountInstallWaitPage', 'pwsh: flag before wait/install')
+	assertMarkerOrder(powerShellFlow, 'Open-FountInstallWaitPage', 'Confirm-FountEula', 'pwsh: wait/install before EULA prompt')
 })
 
 Deno.test('Get-I18n loads eula.prompt from the fount locale tree', async () => {
@@ -227,6 +229,9 @@ test -f "$FOUNT_DIR/data/config.json" && echo copied || echo missing
 Deno.test('EULA gate exits 1 when not accepted', async () => {
 	const eulaPs1 = await readFile(eulaPs1Path, 'utf8')
 	const eulaSh = await readFile(eulaShPath, 'utf8')
+	const psOpenWait = eulaPs1.split('function script:Open-FountInstallWaitPage')[1].split('function script:Stop-FountStatusServer')[0]
+	assert(psOpenWait.includes('-ErrorAction Stop'), 'pwsh wait/install spawn uses Stop')
+	assert(psOpenWait.includes('exit 1'), 'pwsh wait/install spawn failure exits 1')
 	const psEnsure = eulaPs1.split('function script:Ensure-FountConfig')[1].split('function script:Confirm-FountEula')[0]
 	const psNoTty = psEnsure.split('Test-FountConsoleInput')[1].split('FountEulaAcceptFile')[0]
 	assert(psNoTty.includes('exit 1'), 'pwsh no-tty EULA branch')
