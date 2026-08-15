@@ -93,10 +93,10 @@ Deno.test('scanLocaleMdAlign: temp family', async () => {
 	try {
 		await writeFile(join(family, 'EULA.en-UK.md'), '# A\n\n**x**\n', 'utf8')
 		await writeFile(join(family, 'EULA.zh-CN.md'), '# 甲\n\n**乙**\n', 'utf8')
-		const { issues } = await scanLocaleMdAlign(dir)
+		const { issues } = await scanLocaleMdAlign(dir, { dirs: ['docs/EULA'] })
 		assertEquals(issues, [])
 		await writeFile(join(family, 'EULA.zh-CN.md'), '# 甲\n\nx\n', 'utf8')
-		const bad = await scanLocaleMdAlign(dir)
+		const bad = await scanLocaleMdAlign(dir, { dirs: ['docs/EULA'] })
 		assert(bad.issues.some(issue => issue.field === 'bold'))
 	}
 	finally {
@@ -104,7 +104,7 @@ Deno.test('scanLocaleMdAlign: temp family', async () => {
 	}
 })
 
-Deno.test('repo: docs/EULA locales share markdown shape', async () => {
+Deno.test('repo: EULA and readme locales share markdown shape', async () => {
 	const { issues } = await scanLocaleMdAlign(REPO_ROOT)
 	if (issues.length) {
 		const sample = issues.slice(0, 24).map(formatLocaleMdAlignIssue).join('\n')

@@ -5,7 +5,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 /** 默认检查的目录（相对仓库根）。 */
-export const DEFAULT_LOCALE_MD_DIRS = Object.freeze(['docs/EULA'])
+export const DEFAULT_LOCALE_MD_DIRS = Object.freeze(['docs/EULA', 'docs/readme'])
 
 /** 参与比对的形状字段。 */
 export const SHAPE_KEYS = Object.freeze([

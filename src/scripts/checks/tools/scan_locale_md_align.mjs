@@ -5,7 +5,6 @@
  *
  * 用法：
  *   deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_locale_md_align.mjs
- *   deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_locale_md_align.mjs docs/EULA
  *   deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_locale_md_align.mjs docs/readme
  */
 import { REPO_ROOT } from '../../test/core/repo_root.mjs'

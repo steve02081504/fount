@@ -157,7 +157,7 @@
 			"name": "locale_md_align",
 			"expected": "1s",
 			"triggerFilter": {
-				"unignore": ["docs/EULA/*.md"]
+				"unignore": ["docs/EULA/*.md", "docs/readme/*.md"]
 			},
 			"run": [
 				"deno",
@@ -172,7 +172,8 @@
 			"triggers": [
 				"src/scripts/checks/locale_md_align.mjs",
 				"src/scripts/checks/test/locale_md_align.test.mjs",
-				"docs/EULA/*.md"
+				"docs/EULA/*.md",
+				"docs/readme/*.md"
 			]
 		},
 		{

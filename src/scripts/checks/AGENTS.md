@@ -19,7 +19,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `agents_md_english` | `AGENTS.md` + linked `.md` English-only; non-`AGENTS.md` under `docs/` |
 | `text_lf` | UTF-8 text (fatal decode, no NUL) must be LF; under `fount test` scopes to triggered files when set |
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
-| `locale_md_align` | Parallel `Stem.locale.md` families (default `docs/EULA`): same line count; per-line heading / hr / quote / fence / list marker / bold / italic / link / image / inline-code counts vs `en-UK` |
+| `locale_md_align` | Parallel `Stem.locale.md` families (`docs/EULA`, `docs/readme`): same line count; per-line heading / hr / quote / fence / list marker / bold / italic / link / image / inline-code counts vs `en-UK` |
 
 `listRepoFiles` (`walk.mjs`): default is `git ls-files` (+ untracked, exclude-standard); pass `ignore` to force a filesystem walk. Empty/omitted suffixes = all files.
 
@@ -47,7 +47,7 @@ Enforced by `agents_md_english`; writing rules: [docs/AGENTS.md](../../../docs/A
 - Summaries must be Chinese (contain CJK). Pure-English summaries fail.
 - Tag-only blocks (`@param` / `@typedef` / … without a prose summary) are fine; empty `/** */` stubs are not a substitute for a real one-liner on re-exports.
 - List leftovers: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg).
-- Locale markdown families: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_locale_md_align.mjs` (optional dir; default `docs/EULA`).
+- Locale markdown families: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_locale_md_align.mjs` (optional dir; default `docs/EULA` + `docs/readme`).
 
 ## HTML og meta tone
 
