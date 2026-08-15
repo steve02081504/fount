@@ -337,7 +337,7 @@ fount 的世界不止是文字與程式碼，它更是一場視覺與連結的�
 
 想像一下，其他使用者只需輕輕一點，就能將你的創作直接安裝到他們的 fount 世界中。只需將你的組件 zip 連結或 Git 儲存庫連結與 fount 的協定連結組合即可。
 
-`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `你的組件連結`
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<你的組件連結>`
 
 ---
 

@@ -13,7 +13,7 @@ Voor code-gerelateerde vragen, zie [deepwiki](https://deepwiki.com/steve02081504
 - Kantoorvriendelijk, snelle rapportexport
 - Naadloze integratie van personages in IDE's, browsers, terminals, Telegram, enz.
 - Agent-georiënteerde plug-ins uit de community die andere LLM-chatfrontends niet hebben
-- Configureer de API en gebruik het standaardpersonage ZL-31 om onderdeelconfiguratie, -creatie en **alle gebruikershandelingen** via gesprek te voltooien—zonder leren of onboarding
+- Configureer de API en gebruik het standaardpersonage ZL-31 om onderdeelconfiguratie, -creatie en alle gebruikershandelingen via gesprek te voltooien—zonder leren of onboarding
 
 #### Waarom niet fount?
 
@@ -337,7 +337,7 @@ Je kunt ook de [badge-toevoeger](https://steve02081504.github.io/fount/badges/) 
 
 Stel je voor dat andere gebruikers met slechts één klik jouw creatie rechtstreeks in hun fount-wereld kunnen installeren. Combineer gewoon je component-zip-link of Git-repositorylink met de protocollink van fount.
 
-`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `jouw-component-link`
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<jouw-component-link>`
 
 ---
 

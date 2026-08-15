@@ -337,7 +337,7 @@ fount 之世不止是文字與碼，它更是一場目視與連接之盛宴。�
 
 想像一下，他用者唯需輕輕一點，就能將君之創作直接安置到其 fount 之世中。唯需將君之器 zip 鏈或 Git 卷宗鏈與 fount 之規儀鏈組合即可。
 
-`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `君之器鏈`
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<君之器鏈>`
 
 ---
 

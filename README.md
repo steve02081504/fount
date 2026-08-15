@@ -252,6 +252,7 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of parts inte
 Embark on your journey with fount, a stable and reliable platform. A few simple clicks or commands, and the world of fount unfolds.
 
 > [!CAUTION]
+>
 > In the world of fount, characters can freely execute JavaScript commands, granting them powerful capabilities. Therefore, please choose the characters you trust with the same care you would in real life to ensure the safety of your local files.
 
 ### Linux/macOS/Android: The Whispers of the Shell – _One Line, and You're In_

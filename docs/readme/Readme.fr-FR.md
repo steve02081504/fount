@@ -13,7 +13,7 @@ Pour les questions liées au code, consultez [deepwiki](https://deepwiki.com/ste
 - Adapté au bureau, export rapide de rapports
 - Intégration transparente des personnages dans les IDE, navigateurs, terminaux, Telegram, etc.
 - Plugins orientés agent de la communauté que les autres frontends de chat LLM n'ont pas
-- Configurez l'API, puis utilisez le personnage par défaut ZL-31 pour accomplir la configuration des pièces, la création et **toutes les actions utilisateur** par conversation—sans apprentissage ni intégration
+- Configurez l'API, puis utilisez le personnage par défaut ZL-31 pour accomplir la configuration des pièces, la création et toutes les actions utilisateur par conversation—sans apprentissage ni intégration
 
 #### Pourquoi pas fount ?
 
@@ -230,6 +230,7 @@ Dans le monde de fount, la modularité règne en maître. Un riche écosystème 
 Embarquez pour votre voyage avec fount, une plateforme stable et fiable. Quelques clics ou commandes simples, et le monde de fount se dévoile.
 
 > [!CAUTION]
+>
 > Dans le monde de fount, les personnages peuvent exécuter librement des commandes JavaScript, leur conférant des capacités puissantes. Par conséquent, choisissez les personnages auxquels vous faites confiance avec le même soin que dans la vie réelle pour garantir la sécurité de vos fichiers locaux.
 
 ### Linux/macOS/Android : Les Murmures du Shell – _Une Ligne, et Vous êtes Dedans_
@@ -336,7 +337,7 @@ Vous pouvez également utiliser l'[Ajouteur de Badges](https://steve02081504.git
 
 Imaginez que d'autres installent vos créations dans leur monde fount d'un simple clic. Combinez simplement le lien ZIP ou du dépôt Git de votre composant avec le lien de protocole de fount.
 
-`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Votre_Lien_de_Composant`
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<Votre_Lien_de_Composant>`
 
 ---
 

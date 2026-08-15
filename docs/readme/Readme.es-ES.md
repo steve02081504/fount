@@ -13,7 +13,7 @@ Para consultas sobre código, consulta [deepwiki](https://deepwiki.com/steve0208
 - Amigable con la oficina, exportación rápida de informes
 - Integración fluida de personajes en IDEs, navegadores, terminales, Telegram, etc.
 - Plugins orientados a agentes de la comunidad que otras interfaces de chat LLM no tienen
-- Configure la API y use el personaje por defecto ZL-31 para completar la configuración de partes, creación y **todas las operaciones de usuario** por conversación—sin aprendizaje ni incorporación
+- Configure la API y use el personaje por defecto ZL-31 para completar la configuración de partes, creación y todas las operaciones de usuario por conversación—sin aprendizaje ni incorporación
 
 #### ¿Por qué no fount?
 
@@ -230,6 +230,7 @@ En el mundo de fount, la modularidad reina suprema. Un rico ecosistema de compon
 Embárcate en tu viaje con fount, una plataforma estable y confiable. Unos pocos clics o comandos simples, y el mundo de fount se despliega.
 
 > [!CAUTION]
+>
 > En el mundo de fount, los personajes pueden ejecutar libremente comandos de JavaScript, otorgándoles capacidades poderosas. Por lo tanto, elige los personajes en los que confías con el mismo cuidado que lo harías en la vida real para garantizar la seguridad de tus archivos locales.
 
 ### Linux/macOS/Android: Los Susurros del Shell – _Una Línea, y Estás Dentro_
@@ -336,7 +337,7 @@ También puedes usar el [Añadidor de Insignias](https://steve02081504.github.io
 
 Imagina que otros instalan tus creaciones en su mundo de fount con un solo clic. Simplemente combina el enlace ZIP o del repositorio Git de tu componente con el enlace de protocolo de fount.
 
-`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Tu_Enlace_de_Componente`
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<Tu_Enlace_de_Componente>`
 
 ---
 

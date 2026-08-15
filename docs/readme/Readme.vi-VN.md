@@ -13,7 +13,7 @@ Với câu hỏi liên quan đến mã, xem [deepwiki](https://deepwiki.com/stev
 - Thân thiện văn phòng, xuất báo cáo nhanh
 - Tích hợp nhân vật liền mạch vào IDE, trình duyệt, terminal, Telegram, v.v.
 - Plugin hướng agent từ cộng đồng mà các giao diện chat LLM khác không có
-- Chỉ cần cấu hình API, sau đó dùng nhân vật mặc định ZL-31 để hoàn thành cấu hình phần, tạo phần và **mọi thao tác người dùng** qua hội thoại—không cần học hay làm quen
+- Chỉ cần cấu hình API, sau đó dùng nhân vật mặc định ZL-31 để hoàn thành cấu hình phần, tạo phần và mọi thao tác người dùng qua hội thoại—không cần học hay làm quen
 
 #### Tại sao không fount?
 
@@ -230,6 +230,7 @@ Trong thế giới của fount, tính mô-đun là tối cao. Một hệ sinh th
 Hãy bắt đầu hành trình của bạn với fount, một nền tảng ổn định và đáng tin cậy. Chỉ với vài cú nhấp chuột hoặc lệnh đơn giản, thế giới của fount sẽ từ từ mở ra.
 
 > [!CAUTION]
+>
 > Trong thế giới của fount, các nhân vật có thể tự do thực thi các lệnh JavaScript, mang lại cho chúng những khả năng mạnh mẽ. Do đó, hãy chọn các nhân vật mà bạn tin tưởng với sự cẩn trọng như khi kết bạn trong đời thực để đảm bảo an toàn cho các tệp cục bộ của bạn.
 
 ### Linux/macOS/Android: Lời thì thầm của Shell – _Một dòng lệnh, và bạn đã sẵn sàng_
@@ -336,7 +337,7 @@ Bạn cũng có thể sử dụng [Trình thêm huy hiệu](https://steve0208150
 
 Hãy tưởng tượng những người khác cài đặt sáng tạo của bạn vào thế giới fount của họ chỉ bằng một cú nhấp chuột. Chỉ cần kết hợp liên kết ZIP hoặc kho Git của thành phần của bạn với liên kết giao thức của fount.
 
-`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Liên_kết_thành_phần_của_bạn`
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<Liên_kết_thành_phần_của_bạn>`
 
 ---
 

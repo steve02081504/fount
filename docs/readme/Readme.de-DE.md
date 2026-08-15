@@ -13,7 +13,7 @@ Für codebezogene Fragen siehe [deepwiki](https://deepwiki.com/steve02081504/fou
 - Ideal für den Büroalltag, schneller Report-Export
 - Nahtlose Integration von Charakteren in IDEs, Browser, Terminals, Telegram usw.
 - Agent-orientierte Plugins aus der Community, die andere LLM-Chat-Frontends nicht haben
-- API konfigurieren, dann den Standard-Charakter ZL-31 nutzen, um Komponenten-Konfiguration, Erstellung und **alle Benutzeraktionen** per Dialog zu erledigen—ohne Einarbeitung
+- API konfigurieren, dann den Standard-Charakter ZL-31 nutzen, um Komponenten-Konfiguration, Erstellung und alle Benutzeraktionen per Dialog zu erledigen—ohne Einarbeitung
 
 #### Warum nicht fount?
 
@@ -230,6 +230,7 @@ In der Welt von fount regiert die Modularität. Ein reichhaltiges Ökosystem von
 Beginne deine Reise mit fount, einer stabilen und zuverlässigen Plattform. Ein paar einfache Klicks oder Befehle, und die Welt von fount entfaltet sich.
 
 > [!CAUTION]
+>
 > In der Welt von fount können Charaktere frei JavaScript-Befehle ausführen, was ihnen beträchtliche Macht verleiht. Wähle daher die Charaktere, denen du vertraust, mit derselben Sorgfalt wie im echten Leben, um die Sicherheit deiner lokalen Dateien zu gewährleisten.
 
 ### Linux/macOS/Android: Das Flüstern der Shell – _Ein Befehl, und die Reise beginnt_
@@ -336,7 +337,7 @@ Du kannst auch den [Badge-Adder](https://steve02081504.github.io/fount/badges/) 
 
 Stell dir vor, andere installieren deine Kreationen mit einem einzigen Klick in ihre fount-Welt. Kombiniere einfach den ZIP- oder Git-Repository-Link deiner Komponente mit dem Protokolllink von fount.
 
-`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `Dein_Komponenten_Link`
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<Dein_Komponenten_Link>`
 
 ---
 

@@ -337,7 +337,7 @@ fount remove
 
 💭: 👤👆 ➡️ 🎨 📥 ⛲🌍. 🧩 zip 🔗 / Git 📦🔗 + ⛲ protocol 🔗.
 
-`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `🧩🔗`
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<🧩🔗>`
 
 ---
 

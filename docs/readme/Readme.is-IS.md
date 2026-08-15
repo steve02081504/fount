@@ -13,7 +13,7 @@ Fyrir spurningar varðandi kóða, sjá [deepwiki](https://deepwiki.com/steve020
 - Vinnustofuvænt, fljótur skýrsluútflutningur
 - Óaðskiljanleg samþætting persóna í IDE, vafra, endastöðvar, Telegram o.s.frv.
 - Miðill-stýrðar viðbætur frá samfélaginu sem aðrar LLM spjallviðmót hafa ekki
-- Stilltu API og notaðu sjálfgefið persónu ZL-31 til að ljúka hlutastillingu, sköpun og **öllum notendaaðgerðum** í gegnum samræður—án náms eða innleiðingar
+- Stilltu API og notaðu sjálfgefið persónu ZL-31 til að ljúka hlutastillingu, sköpun og öllum notendaaðgerðum í gegnum samræður—án náms eða innleiðingar
 
 #### Af hverju ekki fount?
 
@@ -337,7 +337,7 @@ Heimur fount er ekki bara texti og kóði, heldur einnig veisla fyrir augað og 
 
 Ímyndaðu þér að aðrir notendur geti sett upp sköpun þína beint í sinn fount heim með einum smelli. Þú þarft bara að sameina zip-hlekkinn á íhlutinn þinn eða Git kóðasafnshlekkinn við samskiptaregluhlekk fount.
 
-`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;` + `hlekkurinn á íhlutinn þinn`
+`https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<hlekkurinn á íhlutinn þinn>`
 
 ---
 
