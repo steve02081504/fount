@@ -79,17 +79,17 @@ confirm_fount_eula() {
 	if fount_eula_env_accepted; then return 0; fi
 	if [[ -n "${EULA_ACCEPT_FILE:-}" && -f "$EULA_ACCEPT_FILE" ]]; then return 0; fi
 	if [[ ! -r /dev/tty ]]; then
-		echo -e "${C_RED}EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.${C_RESET}" >&2
+		print_i18n_red 'eula.required' >&2
 		echo "$FOUNT_EULA_URL" >&2
 		return 1
 	fi
-	echo "Do you accept the fount End-User License Agreement (EULA)?"
+	get_i18n 'eula.prompt'
 	if [ -t 1 ]; then
 		printf '\033]8;;%s\033\\%s\033]8;;\033\\\n' "$FOUNT_EULA_URL" "$FOUNT_EULA_URL"
 	else
 		echo "$FOUNT_EULA_URL"
 	fi
-	printf '[Y/N] '
+	printf '%s' "$(get_i18n 'eula.yn')"
 	local key=""
 	while true; do
 		if [[ -f "$EULA_ACCEPT_FILE" ]]; then

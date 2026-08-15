@@ -84,8 +84,9 @@
 				"src/scripts/checks/test/i18n_refs.test.mjs",
 				"src/public/locales/*.json",
 				"src/**/*.{html,mjs,js,ts}",
-				"path/fount.ps1",
-				"path/fount.sh"
+				"path/**/*.{ps1,sh}",
+				"src/runner/main.ps1",
+				"src/runner/main.sh"
 			]
 		},
 		{

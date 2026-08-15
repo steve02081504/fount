@@ -57,9 +57,6 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 fi
 
 STATUS_SERVER_PID=""
-EULA_ACCEPT_FILE=""
-STATUS_HANDLER=""
-STATUS_FIFO=""
 EULA_DECLINED=0
 OS_TYPE=$(uname -s)
 IN_TERMUX=0
@@ -70,16 +67,13 @@ fi
 # 确保在脚本退出时，状态服务器进程能被清理，并清除任务栏进度
 # shellcheck disable=SC2329 # trap中有调用
 cleanup() {
-	if [[ -n "$STATUS_SERVER_PID" ]]; then
-		kill "$STATUS_SERVER_PID" 2>/dev/null
-		STATUS_SERVER_PID=""
+	if [[ -n "${STATUS_SERVER_PID:-}" ]]; then
+		get_i18n 'eula.shuttingDownStatusServer'
+		stop_fount_status_server
 	fi
 	if [[ "${EULA_DECLINED:-0}" -eq 1 ]] && type uninstall_auto_packages &>/dev/null; then
 		uninstall_auto_packages
 	fi
-	[ -n "${EULA_ACCEPT_FILE:-}" ] && rm -f "$EULA_ACCEPT_FILE"
-	[ -n "${STATUS_HANDLER:-}" ] && rm -f "$STATUS_HANDLER"
-	[ -n "${STATUS_FIFO:-}" ] && rm -f "$STATUS_FIFO"
 	[ -n "${FOUNT_INSTALL_TMP:-}" ] && rm -rf "$FOUNT_INSTALL_TMP"
 	write_taskbar_progress_clear
 }
@@ -200,20 +194,13 @@ test_browser() {
 		fi
 	fi
 
-	echo "Default web browser is not detected, attempting to install..."
+	get_i18n 'install.browserMissing'
 	install_package "google-chrome" "google-chrome google-chrome-stable"
 	if ! command -v google-chrome &>/dev/null; then
 		install_package "chromium-browser" "chromium-browser chromium"
 	fi
 	return 0
 }
-
-EULA_URL="https://steve02081504.github.io/fount/EULA/"
-INSTALL_WAIT_URL="https://steve02081504.github.io/fount/wait/install/?from=runner"
-EULA_ACCEPT_FILE="${TMPDIR:-/tmp}/fount-eula-accepted-$$"
-STATUS_HANDLER=""
-STATUS_FIFO=""
-EULA_DECLINED=0
 
 uninstall_auto_packages() {
 	local package has_sudo=""
@@ -233,53 +220,8 @@ uninstall_auto_packages() {
 	done
 }
 
-write_status_handler() {
-	STATUS_HANDLER=$(mktemp)
-	cat > "$STATUS_HANDLER" << 'EOF'
-#!/usr/bin/env bash
-req=""
-IFS= read -r req || true
-while IFS= read -r -t 2 line && [[ "$line" != $'\r' && -n "$line" ]]; do
-	:
-done
-case "$req" in
-*"/eula"*) : > "${EULA_ACCEPT_FILE}" ;;
-esac
-msg=pong
-eula=pending
-if [[ -f "${EULA_ACCEPT_FILE}" ]]; then
-	msg=accepted
-	eula=accepted
-fi
-printf 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{"message":"%s","eula":"%s"}' "$msg" "$eula"
-EOF
-	chmod +x "$STATUS_HANDLER"
-}
-
-start_status_server() {
-	rm -f "$EULA_ACCEPT_FILE"
-	export EULA_ACCEPT_FILE
-	write_status_handler
-	if command -v socat &>/dev/null; then
-		socat -T 5 TCP-LISTEN:8930,reuseaddr,fork EXEC:"$STATUS_HANDLER" >/dev/null 2>&1 &
-		STATUS_SERVER_PID=$!
-	elif command -v nc &>/dev/null; then
-		STATUS_FIFO=$(mktemp -u)
-		mkfifo "$STATUS_FIFO"
-		(
-			nc_q=""
-			if nc -h 2>&1 | grep -q -- '-q'; then nc_q="-q 0"; fi
-			while true; do
-				# shellcheck disable=SC2086
-				nc -l 8930 $nc_q <"$STATUS_FIFO" 2>/dev/null | "$STATUS_HANDLER" >"$STATUS_FIFO" || break
-			done
-		) >/dev/null 2>&1 &
-		STATUS_SERVER_PID=$!
-	fi
-}
-
 open_install_wait_page() {
-	local URL="$INSTALL_WAIT_URL"
+	local URL="$FOUNT_INSTALL_WAIT_URL"
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		termux-open-url "$URL" >/dev/null 2>&1 &
 	elif [[ "$OS_TYPE" == "Linux" ]]; then
@@ -290,47 +232,18 @@ open_install_wait_page() {
 	fi
 }
 
-confirm_fount_eula() {
-	case "${FOUNT_ACCEPT_EULA:-}" in
-	1 | true | TRUE | yes | YES) return 0 ;;
-	esac
-	if [[ -f "$EULA_ACCEPT_FILE" ]]; then return 0; fi
-	if [[ ! -r /dev/tty ]]; then
-		echo -e "${C_RED}EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.${C_RESET}" >&2
-		echo "$EULA_URL" >&2
-		return 1
-	fi
-	echo "Do you accept the fount End-User License Agreement (EULA)?"
-	if [ -t 1 ]; then
-		printf '\033]8;;%s\033\\%s\033]8;;\033\\\n' "$EULA_URL" "$EULA_URL"
-	else
-		echo "$EULA_URL"
-	fi
-	printf '[Y/N] '
-	local key=""
-	while true; do
-		if [[ -f "$EULA_ACCEPT_FILE" ]]; then
-			echo Y
-			return 0
-		fi
-		if read -r -t 1 -n 1 -s key </dev/tty 2>/dev/null; then
-			case "$key" in
-			y | Y)
-				: >"$EULA_ACCEPT_FILE"
-				echo Y
-				return 0
-				;;
-			n | N)
-				echo N
-				return 1
-				;;
-			esac
-		fi
-	done
-}
-
 # 默认安装目录
 FOUNT_DIR="${FOUNT_DIR:-"$HOME/.local/share/fount"}"
+
+import_fount_locale() {
+	FOUNT_CONSOLE_ANSI=0
+	[ -t 1 ] && FOUNT_CONSOLE_ANSI=1
+	export FOUNT_CONSOLE_ANSI FOUNT_DIR
+	# shellcheck disable=SC1091
+	. "$FOUNT_DIR/path/src/i18n.sh"
+	# shellcheck disable=SC1091
+	. "$FOUNT_DIR/path/src/eula.sh"
+}
 
 accept_eula=0
 case "${FOUNT_ACCEPT_EULA:-}" in
@@ -340,13 +253,6 @@ new_args=("$@")
 if [[ "${#new_args[@]}" -eq 0 ]]; then
 	new_args=("open" "keepalive")
 fi
-
-copy_fount_default_config() {
-	local dest="$FOUNT_DIR/data/config.json"
-	[ -f "$dest" ] && return 0
-	mkdir -p "$FOUNT_DIR/data"
-	cp "$FOUNT_DIR/default/config.json" "$dest"
-}
 
 remove_fount_after_eula_decline() {
 	if [ -f "$FOUNT_DIR/path/fount.sh" ]; then
@@ -468,33 +374,12 @@ fi
 if command -v fount.sh &>/dev/null; then
 	# 从现有命令推断出安装目录
 	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
+	import_fount_locale
 else
 	# 检测环境
 	IN_DOCKER=0
 	if [ -f "/.dockerenv" ] || grep -q 'docker\|containerd' /proc/1/cgroup 2>/dev/null; then
 		IN_DOCKER=1
-	fi
-
-	need_eula=0
-	if [[ $IN_DOCKER -eq 0 && "$accept_eula" -eq 0 ]]; then
-		need_eula=1
-	fi
-
-	if [[ "$need_eula" -eq 1 ]]; then
-		if [[ ! -r /dev/tty ]]; then
-			echo -e "${C_RED}EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.${C_RESET}" >&2
-			echo "$EULA_URL" >&2
-			exit 1
-		fi
-		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
-		write_taskbar_progress 5
-		start_status_server
-		write_taskbar_progress 10
-		if [[ -z "$STATUS_SERVER_PID" ]]; then
-			echo -e "${C_YELLOW}Warning: Could not start status server. Proceeding with EULA prompt in this terminal.${C_RESET}"
-		fi
-		test_browser
-		open_install_wait_page
 	fi
 
 	install_package "git" "git git-core" || true
@@ -503,28 +388,43 @@ else
 		install_package "unzip" "unzip" || exit 1
 	fi
 
-	if [[ "$need_eula" -eq 1 ]]; then
-		install_fount_tree &
-		install_pid=$!
-		if ! confirm_fount_eula; then
-			echo "EULA declined. Removing fount."
-			kill "$install_pid" 2>/dev/null
-			wait "$install_pid" 2>/dev/null
-			EULA_DECLINED=1
-			remove_fount_after_eula_decline
-			exit 1
-		fi
-		wait "$install_pid"
-		install_status=$?
-	else
-		install_fount_tree
-		install_status=$?
-	fi
-
+	install_fount_tree
+	install_status=$?
 	if [[ "$install_status" -ne 0 ]] || [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
 		write_taskbar_progress_error
 		echo -e "${C_RED}Error: fount installation failed. Main script not found.${C_RESET}" >&2
 		exit 1
+	fi
+
+	import_fount_locale
+
+	need_eula=0
+	if [[ $IN_DOCKER -eq 0 && "$accept_eula" -eq 0 ]]; then
+		need_eula=1
+	fi
+
+	if [[ "$need_eula" -eq 1 ]]; then
+		if [[ ! -r /dev/tty ]]; then
+			print_i18n_red 'eula.required' >&2
+			echo "$FOUNT_EULA_URL" >&2
+			remove_fount_after_eula_decline
+			exit 1
+		fi
+		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
+		write_taskbar_progress 5
+		start_fount_status_server
+		write_taskbar_progress 10
+		if [[ -z "${STATUS_SERVER_PID:-}" ]]; then
+			print_i18n_yellow 'eula.statusServerFailed'
+		fi
+		test_browser
+		open_install_wait_page
+		if ! confirm_fount_eula; then
+			get_i18n 'eula.declined'
+			EULA_DECLINED=1
+			remove_fount_after_eula_decline
+			exit 1
+		fi
 	fi
 
 	copy_fount_default_config
@@ -532,6 +432,7 @@ fi
 
 # 若脚本自身内容和$FOUNT_DIR/src/runner/main.sh的内容不同，则更新自身
 if [[ "$can_self_modify" -eq 1 && -f "$FOUNT_DIR/src/runner/main.sh" ]] && ! cmp -s "$FOUNT_DIR/src/runner/main.sh" "$SCRIPT_SELF_PATH"; then
+	get_i18n 'install.runnerUpdating'
 	cp "$FOUNT_DIR/src/runner/main.sh" "$SCRIPT_SELF_PATH"
 	chmod +x "$SCRIPT_SELF_PATH"
 fi

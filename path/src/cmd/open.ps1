@@ -1,5 +1,5 @@
 ﻿function script:cmd_open {
-	require passthrough win/refresh_path win/winget browser eula
+	require passthrough win/refresh_path win/winget browser eula env
 	if (Test-Path -Path "$FOUNT_DIR/data/config.json") {
 		handle_docker_passthrough @args
 		Test-Browser
@@ -9,7 +9,7 @@
 	}
 
 	$rest = @($args | Select-Object -Skip 1)
-	if (Test-FountEulaEnvAccepted) {
+	if ((Test-FountEulaEnvAccepted) -or (in_docker)) {
 		Copy-FountDefaultConfig
 		fount.ps1 @rest
 		exit $LastExitCode
@@ -19,7 +19,7 @@
 	$statusServerJob = $null
 	try {
 		if (-not (Test-FountConsoleInput)) {
-			$Host.UI.WriteErrorLine("EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.")
+			$Host.UI.WriteErrorLine((Get-I18n -key 'eula.required'))
 			$Host.UI.WriteErrorLine($script:FountEulaUrl)
 			& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
 			exit $LastExitCode
@@ -29,7 +29,7 @@
 		Test-Browser
 		Start-Process $script:FountInstallWaitUrl
 		if (-not (Confirm-FountEula -AcceptFile $acceptFile)) {
-			Write-Host "EULA declined. Removing fount."
+			Write-Host (Get-I18n -key 'eula.declined')
 			& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
 			exit $LastExitCode
 		}

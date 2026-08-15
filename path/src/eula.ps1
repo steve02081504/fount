@@ -68,13 +68,13 @@ function script:Confirm-FountEula {
 	if (Test-FountEulaEnvAccepted) { return $true }
 	if ($AcceptFile -and (Test-Path -LiteralPath $AcceptFile)) { return $true }
 	if (-not (Test-FountConsoleInput)) {
-		$Host.UI.WriteErrorLine("EULA acceptance is required. Re-run with FOUNT_ACCEPT_EULA=1, or from an interactive terminal.")
+		$Host.UI.WriteErrorLine((Get-I18n -key 'eula.required'))
 		$Host.UI.WriteErrorLine($script:FountEulaUrl)
 		return $false
 	}
-	Write-Host "Do you accept the fount End-User License Agreement (EULA)?"
+	Write-Host (Get-I18n -key 'eula.prompt')
 	Write-Host (Format-FountOsc8Link $script:FountEulaUrl)
-	Write-Host -NoNewline "[Y/N] "
+	Write-Host -NoNewline (Get-I18n -key 'eula.yn')
 	while ($true) {
 		if (Test-Path -LiteralPath $AcceptFile) {
 			Write-Host "Y"
