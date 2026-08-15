@@ -76,6 +76,60 @@ Deno.test('ModuleCheckGate ignores mismatched ticket', async () => {
 	gate.ready(ticket)
 })
 
+Deno.test('ModuleCheckGate hold timeout releases waiters when holder never readies', async () => {
+	const gate = new ModuleCheckGate({ holdTimeoutMs: 50 })
+	const leaked = await gate.acquire()
+	const next = await awaitWithTimeout(gate.acquire(), 'hold timeout did not release waiter', 1000)
+	assertEquals(Boolean(next), true)
+	assertEquals(next === leaked, false)
+	assertEquals(gate.ready(leaked), null)
+	assertEquals(typeof gate.ready(next), 'number')
+})
+
+Deno.test('ModuleCheckGate aborted waiter does not steal the next ticket', async () => {
+	const gate = new ModuleCheckGate()
+	const first = await gate.acquire()
+	const abort = new AbortController()
+	let stolen
+	const waiting = gate.acquire(abort.signal).then(ticket => { stolen = ticket })
+	await Promise.resolve()
+	abort.abort()
+	await awaitWithTimeout(
+		waiting.then(() => { throw new Error('aborted acquire should reject') }, () => {}),
+		'aborted acquire did not reject',
+	)
+	assertEquals(stolen, undefined)
+	gate.ready(first)
+	const third = await awaitWithTimeout(gate.acquire(), 'acquire hung after aborted waiter')
+	assertEquals(Boolean(third), true)
+	assertEquals(stolen, undefined)
+	gate.ready(third)
+})
+
+Deno.test('ModuleCheckGate already-aborted signal does not enqueue a waiter', async () => {
+	const gate = new ModuleCheckGate()
+	const first = await gate.acquire()
+	const abort = new AbortController()
+	abort.abort()
+	await awaitWithTimeout(
+		assertRejects(() => gate.acquire(abort.signal), DOMException),
+		'already-aborted acquire did not reject',
+	)
+	gate.ready(first)
+	const next = await awaitWithTimeout(gate.acquire(), 'acquire hung after aborted-signal enqueue')
+	assertEquals(Boolean(next), true)
+	gate.ready(next)
+})
+
+Deno.test('ModuleCheckGate close rejects waiters and drops the holder', async () => {
+	const gate = new ModuleCheckGate()
+	await gate.acquire()
+	const pending = gate.acquire()
+	gate.close()
+	await assertRejects(() => pending, DOMException)
+	assertEquals(gate.heldTicket, null)
+})
+
 Deno.test('withDenoModuleCheckPreload inserts after run/test', () => {
 	const ticket = 't1'
 	assertEquals(
@@ -111,14 +165,16 @@ const MODULE_CHECK_KERNEL_PORT = 18940
 
 /**
  * @param {number} port 端口
+ * @param {object} [extra] 传给 startTestKernel 的额外选项
  * @returns {Promise<{ url: string, kernel: object, close: () => Promise<void> }>} 句柄
  */
-function startModuleCheckKernel(port) {
+function startModuleCheckKernel(port, extra = {}) {
 	return startTestKernel({
 		port,
 		autoExit: false,
 		watchFs: false,
 		writeReport: false,
+		...extra,
 	})
 }
 
@@ -256,6 +312,40 @@ Deno.test('module-check missed ready fails the deno suite', async () => {
 		assertEquals(end?.passed, false)
 		assertEquals(end?.missedReady, true)
 		assertEquals(job.exitCode, 1)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('module-check HTTP: holder that never readies does not block later acquires', async () => {
+	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 6, { moduleCheckHoldTimeoutMs: 80 })
+	try {
+		const leaked = await acquireModuleCheckTicket()
+		assertEquals(Boolean(leaked), true)
+		const next = await awaitWithTimeout(acquireModuleCheckTicket(), 'leaked holder blocked acquire', 1000)
+		assertEquals(Boolean(next), true)
+		assertEquals(next === leaked, false)
+		await signalModuleCheckReady(next)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('module-check HTTP: aborted waiter does not steal the next ticket', async () => {
+	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 7)
+	try {
+		const first = await acquireModuleCheckTicket()
+		const abort = new AbortController()
+		const pending = fetch(`${handle.url}/module-check/acquire`, { method: 'POST', signal: abort.signal })
+		await new Promise(resolve => setTimeout(resolve, 50))
+		abort.abort()
+		await pending.catch(() => {})
+		await signalModuleCheckReady(first)
+		const third = await awaitWithTimeout(acquireModuleCheckTicket(), 'acquire hung after aborted waiter', 1000)
+		assertEquals(Boolean(third), true)
+		await signalModuleCheckReady(third)
 	}
 	finally {
 		await handle.close()

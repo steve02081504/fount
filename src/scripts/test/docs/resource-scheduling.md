@@ -6,6 +6,8 @@ Suite parallelism is governed by `ResourceRunGate` (`runner/scheduler.mjs`):
 - **`heavy: true`** — machine-exclusive (today: `p2p/sim` only).
 - **All other suites** — 2D bin packing on free memory (`freemem × 0.7`) and CPU budget (85% cap). Ready suites acquire in BFD order; waiters wake by fill score `min(memUtil, cpuUtil)`.
 - **Module-check mutex** — at most one Deno process may be in the spawn→JS-ready window against the shared `node_modules` ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). Parent `acquire`s before spawn; child `env.mjs` or `--preload module_check_ready.mjs` POSTs ready (so `deno test` files that do not import `env.mjs` still signal). Exit without ready is a framework error (`ModuleCheckMissedReadyError`), not a silent release. Spawn failure only abandons the ticket. After ready, wall-clock overlap is allowed. Playwright `node` is not gated. `launchNode` `{ ready, baseUrl }` is too late to use as the signal.
+  - Hold without ready longer than idle (`10m`) → auto-abandon so a killed child cannot leak the mutex and freeze later Deno suites on `acquire`.
+  - HTTP `acquire` waiters are cancelled if the client disconnects (aborted fetch / killed `serial.mjs`); a ticket assigned to a dead response is abandoned immediately.
 
 No CLI concurrency knob: suite packing and `serial.mjs` inner file parallelism both use `computeGlobalBudget()`. `serial.mjs` still forces `DENO_JOBS=1` so one file cannot stack parallel `launchNode`s.
 

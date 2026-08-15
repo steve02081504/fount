@@ -24,6 +24,7 @@ alwaysApply: false
 - **Entry**: `fount test` → `cli.mjs` ensures a detached kernel then `display/` paints. `--watch` is a flag, not a selector. `--update-estimates` rewrites manifests and skips the kernel. Internals: [kernel.md](docs/kernel.md). Overview/multi print failed/noisy suite tails once at `job-done` (CI last-lines); stream mode already live-prints.
 - **CLI `--help`**: `fountConsole.test.help` is a usage tutorial (invocation, selectors, flags, examples). Kernel bind, state paths, manifest fields, and scheduler internals belong in this guide / `docs/` — not `--help`.
 - **`--update-estimates`**: rewrite suite/subtest `expected` from state EMA baselines (`baselineDurationMs` / subtest `durationMs`); skip the kernel; selectors narrow the set. Does not run tests. Combine with `--watch` / `--all` / `--force` is an error.
+- **`--kernel shutdown|reboot`**: talk to the detached hub only — do not enqueue a job. `shutdown` POSTs `/shutdown` (no-op if already down); `reboot` shuts down then `ensure`s. Incompatible with other flags or selectors. A hung kernel: `fount test --kernel reboot`.
 - **i18n**: `src/scripts/i18n/bare.mjs` only — never pull in the server module graph. Display/CLI sets `FOUNT_TEST` via `mark.mjs` (not `env.mjs`).
 - **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` = dependency-tree mermaid. Fingerprints update only after that suite's plan slot finishes — never batch-align at wave start. Each run prunes orphan suite/subtest entries (and logs / Playwright dirs) missing from manifests.
 - **Run report**: `data/test/report.md` + `report.json` — last job/wave only; empty default wave does not overwrite. Trigger reasons: `data/test/triggered-reasons.md`.
@@ -78,7 +79,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Operator tools
 
-- **Hung run**: `data/test/state/logs/`; rerun with env from the log. Watchdogs / sleep retry / baselines: [host-keep-awake.md](docs/host-keep-awake.md), [resource-scheduling.md](docs/resource-scheduling.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
+- **Hung run**: `data/test/state/logs/`; rerun with env from the log. Watchdogs / sleep retry / baselines: [host-keep-awake.md](docs/host-keep-awake.md), [resource-scheduling.md](docs/resource-scheduling.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`. Module-check mutex leaks (killed Deno child never POSTs ready) auto-release after the idle window; they must not freeze later suites. Stuck detached kernel: `fount test --kernel shutdown` / `--kernel reboot`.
 - **Deno panic auto-report**: `core/deno_panic.mjs` → `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override: `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.
 - **`[aria-ignore]`**: value = GitHub issue URL; closed-state via hub `github_issue` + Playwright `assertAriaIgnoreIssues`. Policy: `pages/scripts/test/aria_ignore.mjs`. No hub / `gh` → treat as still open. Page watch: [playwright.md](docs/playwright.md#page-watch).
 - **`[language-check-ignore]`**: boolean; page-watch locale script scan skips the subtree (language name lists, EULA in a chosen locale). Not `user-content`. Selector: `LOCALE_CHECK_SKIP_SELECTOR` in `pages/scripts/test/watch/locale_script.mjs`.

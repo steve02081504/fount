@@ -69,6 +69,7 @@ export class TestKernel {
 	 * @param {boolean} [options.watchFs] 是否监视文件系统
 	 * @param {number} [options.prepSettleMs] 预备静置毫秒
 	 * @param {boolean} [options.writeReport] 是否写活报告
+	 * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
 	 */
 	constructor({
 		repoRoot,
@@ -76,13 +77,17 @@ export class TestKernel {
 		watchFs = true,
 		prepSettleMs = DEFAULT_PREP_SETTLE_MS,
 		writeReport = true,
+		moduleCheckHoldTimeoutMs,
 	}) {
 		this.repoRoot = repoRoot
 		this.autoExit = autoExit
 		this.watchFsEnabled = watchFs
 		this.writeReport = writeReport
 		this.queues = new TestQueues({ prepSettleMs })
-		this.moduleCheck = new ModuleCheckGate()
+		this.moduleCheck = new ModuleCheckGate({
+			...moduleCheckHoldTimeoutMs == null ? {} : { holdTimeoutMs: moduleCheckHoldTimeoutMs },
+			onHoldTimeout: this.markModuleCheckDone.bind(this),
+		})
 		this.issueCache = new GithubIssueCache()
 		this.viewers = new ViewerHub()
 		this.globalBudget = computeGlobalBudget()
@@ -150,8 +155,32 @@ export class TestKernel {
 		if (this.closed) return
 		this.closed = true
 		this.#watcher?.close()
+		this.moduleCheck.close()
+		for (const running of this.running.values())
+			running.abort?.abort('kernel_shutdown')
 		this.wake()
 		this.onClose()
+	}
+
+	/**
+	 * 等正在跑的 suite 在 abort 后收掉；超时不阻塞关机。
+	 * @returns {Promise<void>}
+	 */
+	async #drainRunning() {
+		const deadline = Date.now() + 10_000
+		while (this.running.size && Date.now() < deadline)
+			await new Promise(resolve => setTimeout(resolve, 50))
+	}
+
+	/**
+	 * 子进程 ready / 持有超时后，该 suite 不再占用模组检查互斥时长。
+	 * @param {string} ticket 租约
+	 * @returns {void}
+	 */
+	markModuleCheckDone(ticket) {
+		if (!ticket) return
+		for (const running of this.running.values())
+			if (running.ticket === ticket) running.checkDone = true
 	}
 
 	/**
@@ -694,7 +723,7 @@ export class TestKernel {
 			if (this.#shouldExit()) {
 				this.issueCache.pruneOlderThan()
 				await this.close()
-				return
+				break
 			}
 			const waitPrep = this.queues.nextPrepWaitMs()
 			const waiters = [this.#wake.promise]
@@ -702,6 +731,7 @@ export class TestKernel {
 				waiters.push(new Promise(resolve => setTimeout(resolve, waitPrep)))
 			await Promise.race(waiters)
 		}
+		await this.#drainRunning()
 	}
 
 	/**
@@ -778,7 +808,9 @@ export class TestKernel {
 				uncommittedHash: null,
 			}
 			const fp = this.#fingerprintFor(suite, fingerprints)
-			ticket = suite.run[0] === 'deno' ? await this.moduleCheck.acquire() : null
+			ticket = suite.run[0] === 'deno' ? await this.moduleCheck.acquire(abort.signal) : null
+			const runningHold = this.running.get(key)
+			if (runningHold) runningHold.ticket = ticket
 			const result = await runSuite(
 				suite,
 				{

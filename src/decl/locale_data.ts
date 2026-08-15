@@ -138,6 +138,13 @@ export type LocaleData = {
 				pass: string
 				fail: string
 			}
+			kernel: {
+				incompatible: string
+				unknownAction: string
+				alreadyDown: string
+				stopped: string
+				rebooted: string
+			}
 			moduleCheck: {
 				missedReady: string
 			}
@@ -6325,6 +6332,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.federationCleanupPost': { output: string | number }
 	'fountConsole.test.federationCleanupPre': { output: string | number }
 	'fountConsole.test.heapSnapshotSaved': { path: string | number }
+	'fountConsole.test.kernel.unknownAction': { action: string | number }
 	'fountConsole.test.manifestMatched': { ids: string | number }
 	'fountConsole.test.moduleCheck.missedReady': { label: string | number }
 	'fountConsole.test.noRealRunPlanned': { blocked: string | number; reused: string | number; skipped: string | number }
