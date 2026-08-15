@@ -151,6 +151,13 @@
 				"incompatible": "Utilisation : fount test --update-estimates [<groups>...] (incompatible avec tout autre commutateur)",
 				"summary": "Durées prévues mises à jour pour ${suitesUpdated} suite(s) (${filesChanged} manifest(s)) ; ${skipped} ignorée(s) sans baseline ou déjà à jour"
 			},
+			"kernel": {
+				"incompatible": "Utilisation : font test --kernel shutdown|reboot (les autres paramètres ne peuvent pas être utilisés en même temps)",
+				"unknownAction": "Action du noyau inconnue : ${action} (arrêt ou redémarrage prévu)",
+				"alreadyDown": "Le noyau de test n'est pas en cours d'exécution",
+				"stopped": "Le noyau de test est en panne",
+				"rebooted": "Le noyau de test a redémarré"
+			},
 			"skipBecause": {
 				"pass": "Ignoré (issue encore ouverte ou fermée mais période de grâce non écoulée) : ${label} — ${url}",
 				"fail": "Échec (issue fermée et période de grâce écoulée — à traiter et mettre à jour skip_because avant nouvelle vérification) : ${label} — ${url}"

@@ -151,6 +151,13 @@
 				"incompatible": "Gebruik: fount test --update-estimates [<groups>...] (niet te combineren met andere schakelaars)",
 				"summary": "Verwachte duur bijgewerkt voor ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ${skipped} overgeslagen zonder baseline of al actueel"
 			},
+			"kernel": {
+				"incompatible": "Gebruik: fount test --kernel shutdown|reboot (andere parameters kunnen niet tegelijkertijd worden gebruikt)",
+				"unknownAction": "Onbekende kernelactie: ${action} (verwacht afsluiten of opnieuw opstarten)",
+				"alreadyDown": "De testkernel is niet actief",
+				"stopped": "De testkernel is offline",
+				"rebooted": "De testkernel is opnieuw opgestart"
+			},
 			"skipBecause": {
 				"pass": "Overgeslagen (issue nog open of gesloten maar respijtperiode nog niet verstreken): ${label} — ${url}",
 				"fail": "Mislukt (issue gesloten en respijtperiode verstreken — opvolgen en skip_because bijwerken vóór hercontrole): ${label} — ${url}"

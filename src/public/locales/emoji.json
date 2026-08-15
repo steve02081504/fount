@@ -151,6 +151,13 @@
 				"incompatible": "📖：`fount test --update-estimates` [<groups>…]（🚫+🚩）",
 				"summary": "✍️ ${suitesUpdated} 📦⏱️（manifest ${filesChanged}）；⏭️ ${skipped} 🚫📏／✅🆕"
 			},
+			"kernel": {
+				"incompatible": "用法：fount test --kernel shutdown|reboot（不能同时使用其他参数）",
+				"unknownAction": "未知内核操作：${action}（应为 shutdown 或 reboot）",
+				"alreadyDown": "测试内核未在运行",
+				"stopped": "测试内核已关闭",
+				"rebooted": "测试内核已重启"
+			},
 			"skipBecause": {
 				"pass": "⏭️（🐙🔓／🔒⏳❌）：${label} — ${url}",
 				"fail": "❌（🐙🔒⏳✅→👣＋🔄`skip_because`→🔁）：${label} — ${url}"

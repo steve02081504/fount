@@ -151,6 +151,13 @@
 				"incompatible": "Uso: fount test --update-estimates [<groups>...] (non utilizzabile con altri flag)",
 				"summary": "Durate previste aggiornate per ${suitesUpdated} suite (${filesChanged} manifest); saltate ${skipped} senza baseline o già aggiornate"
 			},
+			"kernel": {
+				"incompatible": "Utilizzo: fount test --kernel shutdown|reboot (altri parametri non possono essere utilizzati contemporaneamente)",
+				"unknownAction": "Azione del kernel sconosciuta: ${action} (arresto o riavvio previsto)",
+				"alreadyDown": "Il kernel di prova non è in esecuzione",
+				"stopped": "Il kernel di test è inattivo",
+				"rebooted": "Il kernel di test è stato riavviato"
+			},
 			"skipBecause": {
 				"pass": "Saltato (issue ancora aperta o chiusa ma periodo di grazia non scaduto): ${label} — ${url}",
 				"fail": "Non superato (issue chiusa e periodo di grazia scaduto — dar seguito e aggiornare skip_because prima di riverificare): ${label} — ${url}"

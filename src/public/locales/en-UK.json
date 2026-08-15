@@ -151,6 +151,13 @@
 				"incompatible": "usage: fount test --update-estimates [<groups>...] (cannot be used with any other flags)",
 				"summary": "Updated expected durations for ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); skipped ${skipped} with no baseline or already up to date"
 			},
+			"kernel": {
+				"incompatible": "Usage: fount test --kernel shutdown|reboot (other parameters cannot be used at the same time)",
+				"unknownAction": "Unknown kernel action: ${action} (expected shutdown or reboot)",
+				"alreadyDown": "Test kernel is not running",
+				"stopped": "Test kernel is down",
+				"rebooted": "Test kernel has restarted"
+			},
 			"skipBecause": {
 				"pass": "Skipped (issue still open, or closed but grace period not elapsed): ${label} — ${url}",
 				"fail": "Failed (issue closed and grace period elapsed — follow up and update skip_because before re-checking): ${label} — ${url}"

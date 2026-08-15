@@ -150,6 +150,13 @@
 				"incompatible": "用法：fount test --update-estimates [<groups>...]（不能同時使用其他開關）",
 				"summary": "已回寫 ${suitesUpdated} 個套件的預計時長（${filesChanged} 個 manifest），跳過 ${skipped} 個無基線或已是最新"
 			},
+			"kernel": {
+				"incompatible": "用法：fount test --kernel shutdown|reboot（不能同時使用其他參數）",
+				"unknownAction": "未知核心操作：${action}（應為 shutdown 或 reboot）",
+				"alreadyDown": "測試內核未正在運行",
+				"stopped": "測試核心已關閉",
+				"rebooted": "測試內核已重啟"
+			},
 			"skipBecause": {
 				"pass": "跳過（issue 仍開或關閉未滿延緩）：${label} — ${url}",
 				"fail": "失敗（以下 issue 已關且已過延緩，請跟進並更新 skip_because 後再驗）：${label} — ${url}"

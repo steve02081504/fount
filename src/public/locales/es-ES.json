@@ -151,6 +151,13 @@
 				"incompatible": "Uso: fount test --update-estimates [<groups>...] (no se puede usar con ningún otro conmutador)",
 				"summary": "Duraciones previstas actualizadas en ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); omitidas ${skipped} sin baseline o ya actualizadas"
 			},
+			"kernel": {
+				"incompatible": "Uso: prueba de fuente --apagado del kernel|reinicio (no se pueden usar otros parámetros al mismo tiempo)",
+				"unknownAction": "Acción desconocida del kernel: ${action} (apagado o reinicio esperado)",
+				"alreadyDown": "El kernel de prueba no se está ejecutando",
+				"stopped": "El kernel de prueba no funciona",
+				"rebooted": "El kernel de prueba se ha reiniciado"
+			},
 			"skipBecause": {
 				"pass": "Omitido (issue aún abierta o cerrada pero sin cumplir el periodo de gracia): ${label} — ${url}",
 				"fail": "Error (issue cerrada y periodo de gracia cumplido — dar seguimiento y actualizar skip_because antes de volver a comprobar): ${label} — ${url}"
