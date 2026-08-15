@@ -155,12 +155,21 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 	const pagesRoot = path.join(projectRoot, '.github', 'pages')
 	app.use('/fount', async (req, res, next) => {
 		if (req.method !== 'GET' && req.method !== 'HEAD') return next()
-		const relPath = path.posix.normalize(
-			decodeURIComponent(req.path.replace(/^\//, '')).replaceAll('\\', '/'),
-		)
+		let relPath
+		try {
+			relPath = path.posix.normalize(
+				decodeURIComponent(req.path.replace(/^\//, '')).replaceAll('\\', '/'),
+			)
+		}
+		catch (error) {
+			if (error instanceof URIError) {
+				res.status(400).end()
+				return
+			}
+			throw error
+		}
 		if (relPath === '..' || relPath.startsWith('../')) return next()
-		const abs = path.resolve(pagesRoot, relPath)
-		if (!isInsidePagesRoot(pagesRoot, abs)) return next()
+		if (!isInsidePagesRoot(pagesRoot, path.resolve(pagesRoot, relPath))) return next()
 		const hooked = await getHookedPagesFile(pagesRoot, relPath, hooked_file_cache)
 		if (hooked == null) return next()
 		res.type(pagesFileContentType(hooked.relPath)).send(hooked.body)

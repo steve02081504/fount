@@ -94,12 +94,25 @@ Deno.test('hooked pages reject Windows-style path escape', async () => {
 		'<!DOCTYPE html><html><body>LEAKED-PRIVATE __FOUNT_GIT_REF__</body></html>\n',
 		'utf8',
 	)
-	const app = createPagesApp(root)
-	const { port, close } = await listenApp(app)
+	const { port, close } = await listenApp(createPagesApp(root))
 	try {
-		const response = await fetch(`http://127.0.0.1:${port}/fount/x%5C..%5C..%5Cpages-private/secret.html`)
-		const text = await response.text()
+		const text = await (await fetch(`http://127.0.0.1:${port}/fount/x%5C..%5C..%5Cpages-private/secret.html`)).text()
 		assert(!text.includes('LEAKED-PRIVATE'), text)
+	}
+	finally {
+		await close()
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('hooked pages reject malformed percent-encoding with 400', async () => {
+	const root = await makePagesRoot('public-eula')
+	const { port, close } = await listenApp(createPagesApp(root))
+	try {
+		const malformed = await fetch(`http://127.0.0.1:${port}/fount/%zz`)
+		assertEquals(malformed.status, 400)
+		const invalidUtf8 = await fetch(`http://127.0.0.1:${port}/fount/%80`)
+		assertEquals(invalidUtf8.status, 400)
 	}
 	finally {
 		await close()

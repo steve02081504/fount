@@ -2,6 +2,7 @@
 
 $script:FountEulaUrl = 'https://steve02081504.github.io/fount/EULA/'
 $script:FountInstallWaitUrl = 'https://steve02081504.github.io/fount/wait/install/?from=runner'
+$script:FountEulaPs1Path = Join-Path $PSScriptRoot 'eula.ps1'
 
 function script:Test-FountEulaEnvAccepted {
 	$env:FOUNT_ACCEPT_EULA -match '^(?i)(1|true|yes)$'
@@ -30,10 +31,18 @@ function script:Test-FountConsoleInput {
 	catch { return $false }
 }
 
+function script:Write-FountEulaAcceptFromRequest {
+	param($Request, [string]$AcceptFile)
+	if ($Request.HttpMethod -eq 'GET' -and $Request.Url.AbsolutePath.TrimEnd('/') -eq '/eula' -and $Request.Headers['Origin'] -eq 'https://steve02081504.github.io') {
+		Set-Content -LiteralPath $AcceptFile -Value '1' -Encoding ascii
+	}
+}
+
 function script:Start-FountStatusServer {
 	param([string]$AcceptFile)
 	$scriptBlock = {
-		param($AcceptFile)
+		param($AcceptFile, $EulaPs1)
+		. $EulaPs1
 		$listener = [System.Net.HttpListener]::new()
 		$listener.Prefixes.Add("http://localhost:8930/")
 		$listener.Start()
@@ -42,12 +51,7 @@ function script:Start-FountStatusServer {
 				$context = $listener.GetContext()
 				$response = $context.Response
 				$response.AddHeader("Access-Control-Allow-Origin", "https://steve02081504.github.io")
-				$path = $context.Request.Url.AbsolutePath.TrimEnd('/')
-				$method = $context.Request.HttpMethod
-				$origin = $context.Request.Headers['Origin']
-				if ($method -eq 'GET' -and $path -eq '/eula' -and $origin -eq 'https://steve02081504.github.io') {
-					Set-Content -LiteralPath $AcceptFile -Value '1' -Encoding ascii
-				}
+				Write-FountEulaAcceptFromRequest $context.Request $AcceptFile
 				$eula = if (Test-Path -LiteralPath $AcceptFile) { 'accepted' } else { 'pending' }
 				$message = if ($eula -eq 'accepted') { 'accepted' } else { 'pong' }
 				$buffer = [System.Text.Encoding]::UTF8.GetBytes("{`"message`":`"$message`",`"eula`":`"$eula`"}")
@@ -62,7 +66,7 @@ function script:Start-FountStatusServer {
 			$listener.Close()
 		}
 	}
-	return Start-Job -ScriptBlock $scriptBlock -ArgumentList $AcceptFile
+	return Start-Job -ScriptBlock $scriptBlock -ArgumentList $AcceptFile, $script:FountEulaPs1Path
 }
 
 function script:Confirm-FountEula {

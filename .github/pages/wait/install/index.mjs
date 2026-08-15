@@ -15,6 +15,7 @@ import {
 
 import {
 	INSTALLER_STATUS_ORIGIN,
+	INSTALLER_PROBE_TIMEOUT_MS,
 	ensureEulaAccepted,
 	notifyRunnerEulaAccepted,
 	promptEulaAndDownload,
@@ -622,7 +623,10 @@ async function populateLanguageSelector() {
  */
 const checkFountInstallerAlive = async () => {
 	try {
-		return (await fetch(INSTALLER_STATUS_ORIGIN, { cache: 'no-store' })).ok
+		return (await fetch(INSTALLER_STATUS_ORIGIN, {
+			cache: 'no-store',
+			signal: AbortSignal.timeout(INSTALLER_PROBE_TIMEOUT_MS),
+		})).ok
 	}
 	catch {
 		return false
@@ -682,7 +686,9 @@ async function handleInstallerFlow() {
 		return
 	}
 
-	eulaAccepted.then(() => notifyRunnerEulaAccepted())
+	eulaAccepted.then(() => notifyRunnerEulaAccepted()).catch(() => {
+		window.location.href = './error'
+	})
 
 	whenFountInstallerFails().then(() => {
 		window.location.href = './error'

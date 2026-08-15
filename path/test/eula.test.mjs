@@ -2,7 +2,8 @@
  * 首次安装 EULA：path CLI 走 i18n；runner 先拉取 fount 再加载 locale。
  */
 /* global Deno */
-import { readFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
@@ -18,6 +19,54 @@ const runnerPs1Path = join(REPO_ROOT, 'src', 'runner', 'main.ps1')
 const zhCnPath = join(REPO_ROOT, 'src', 'public', 'locales', 'zh-CN.json')
 
 const HARDCODED_EULA_PROMPT = 'Do you accept the fount End-User License Agreement (EULA)?'
+const PAGES_ORIGIN = 'https://steve02081504.github.io'
+
+/**
+ * 断言 haystack 中 earlier 先于 later 出现，且两者都存在。
+ * @param {string} haystack 源码片段
+ * @param {string} earlier 先出现的标记
+ * @param {string} later 后出现的标记
+ * @param {string} message 失败说明
+ * @returns {void}
+ */
+function assertMarkerOrder(haystack, earlier, later, message) {
+	const earlierAt = haystack.indexOf(earlier)
+	const laterAt = haystack.indexOf(later)
+	assert(earlierAt >= 0, `${earlier} missing`)
+	assert(laterAt >= 0, `${later} missing`)
+	assert(earlierAt < laterAt, message)
+}
+
+/**
+ * 对 eula.sh 生成的状态处理器喂一条 HTTP 请求。
+ * @param {string} request 原始请求（含结尾空行）
+ * @returns {Promise<{ accepted: boolean, body: string }>} 是否写入接受文件与响应正文
+ */
+async function runBashStatusHandler(request) {
+	const dir = await mkdtemp(join(tmpdir(), 'fount-eula-'))
+	const acceptFile = join(dir, 'accepted')
+	const requestFile = join(dir, 'request')
+	await writeFile(requestFile, request)
+	try {
+		const result = await bash_exec(`
+source ${JSON.stringify(eulaShPath)}
+EULA_ACCEPT_FILE=${JSON.stringify(acceptFile)}
+export EULA_ACCEPT_FILE
+write_fount_status_handler
+cat ${JSON.stringify(requestFile)} | "$FOUNT_STATUS_HANDLER"
+rm -f "$FOUNT_STATUS_HANDLER"
+test -f "$EULA_ACCEPT_FILE" && echo __ACCEPTED__ || echo __PENDING__
+`)
+		assertEquals(result.code, 0, result.stderr || result.stdout)
+		return {
+			accepted: result.stdout.includes('__ACCEPTED__'),
+			body: result.stdout,
+		}
+	}
+	finally {
+		await rm(dir, { recursive: true, force: true })
+	}
+}
 
 Deno.test('eula.sh parses under bash -n', async () => {
 	const result = await bash_exec(`bash -n ${JSON.stringify(eulaShPath)}`)
@@ -35,12 +84,12 @@ Deno.test('runner installs fount before loading locale and prompting EULA', asyn
 	const runnerSh = await readFile(runnerShPath, 'utf8')
 	const runnerPs1 = await readFile(runnerPs1Path, 'utf8')
 	const bashFlow = runnerSh.slice(runnerSh.indexOf('install_package "git"'))
-	assert(bashFlow.indexOf('install_fount_tree') < bashFlow.indexOf('import_fount_locale'), 'bash: clone before locale')
-	assert(bashFlow.indexOf('import_fount_locale') < bashFlow.indexOf('confirm_fount_eula'), 'bash: locale before EULA prompt')
+	assertMarkerOrder(bashFlow, 'install_fount_tree', 'import_fount_locale', 'bash: clone before locale')
+	assertMarkerOrder(bashFlow, 'import_fount_locale', 'confirm_fount_eula', 'bash: locale before EULA prompt')
 
 	const powerShellFlow = runnerPs1.slice(runnerPs1.indexOf('$statusServerJob = $null'))
-	assert(powerShellFlow.indexOf('Install-FountTree') < powerShellFlow.indexOf('Import-FountLocale'), 'pwsh: clone before locale')
-	assert(powerShellFlow.indexOf('Import-FountLocale') < powerShellFlow.indexOf('Confirm-FountEula'), 'pwsh: locale before EULA prompt')
+	assertMarkerOrder(powerShellFlow, 'Install-FountTree', 'Import-FountLocale', 'pwsh: clone before locale')
+	assertMarkerOrder(powerShellFlow, 'Import-FountLocale', 'Confirm-FountEula', 'pwsh: locale before EULA prompt')
 })
 
 Deno.test('Get-I18n loads eula.prompt from the fount locale tree', async () => {
@@ -89,16 +138,55 @@ Deno.test('status handler CORS allows only GitHub Pages origin', async () => {
 })
 
 Deno.test('status handler writes accept file only for GET /eula from GitHub Pages', async () => {
-	const sh = await readFile(eulaShPath, 'utf8')
-	const ps1 = await readFile(eulaPs1Path, 'utf8')
-	assert(!sh.includes('*"/eula"*'), eulaShPath)
-	assertStringIncludes(sh, '"$method" == GET')
-	assertStringIncludes(sh, '"$req_path" == /eula')
-	assertStringIncludes(sh, '"$origin" == https://steve02081504.github.io')
-	assertStringIncludes(ps1, 'HttpMethod')
-	assertStringIncludes(ps1, 'Headers[\'Origin\']')
-	assertStringIncludes(ps1, '$path -eq \'/eula\'')
-	assertStringIncludes(ps1, '$origin -eq \'https://steve02081504.github.io\'')
+	const accept = await runBashStatusHandler(`GET /eula HTTP/1.1\r\nOrigin: ${PAGES_ORIGIN}\r\n\r\n`)
+	assert(accept.accepted, accept.body)
+	assertStringIncludes(accept.body, '"eula":"accepted"')
+
+	const withQuery = await runBashStatusHandler(`GET /eula?x=1 HTTP/1.1\r\nOrigin: ${PAGES_ORIGIN}\r\n\r\n`)
+	assert(withQuery.accepted, withQuery.body)
+
+	const withSlash = await runBashStatusHandler(`GET /eula/ HTTP/1.1\r\nOrigin: ${PAGES_ORIGIN}\r\n\r\n`)
+	assert(withSlash.accepted, withSlash.body)
+
+	const wrongMethod = await runBashStatusHandler(`POST /eula HTTP/1.1\r\nOrigin: ${PAGES_ORIGIN}\r\n\r\n`)
+	assert(!wrongMethod.accepted, wrongMethod.body)
+
+	const wrongOrigin = await runBashStatusHandler('GET /eula HTTP/1.1\r\nOrigin: https://evil.example\r\n\r\n')
+	assert(!wrongOrigin.accepted, wrongOrigin.body)
+
+	const wrongPath = await runBashStatusHandler(`GET / HTTP/1.1\r\nOrigin: ${PAGES_ORIGIN}\r\n\r\n`)
+	assert(!wrongPath.accepted, wrongPath.body)
+
+	const dir = await mkdtemp(join(tmpdir(), 'fount-eula-ps1-'))
+	const acceptFile = join(dir, 'accepted')
+	try {
+		const powerShellResult = await pwsh_exec(`
+$ErrorActionPreference = 'Stop'
+. ${JSON.stringify(eulaPs1Path)}
+$acceptFile = ${JSON.stringify(acceptFile)}
+function Invoke-Accept($Method, $Path, $Origin) {
+	Remove-Item -LiteralPath $acceptFile -ErrorAction SilentlyContinue
+	Write-FountEulaAcceptFromRequest ([pscustomobject]@{
+		HttpMethod = $Method
+		Url = [pscustomobject]@{ AbsolutePath = $Path }
+		Headers = @{ Origin = $Origin }
+	}) $acceptFile
+	Test-Path -LiteralPath $acceptFile
+}
+@(
+	$(if (Invoke-Accept 'GET' '/eula' ${JSON.stringify(PAGES_ORIGIN)}) { 'yes' } else { 'no' }),
+	$(if (Invoke-Accept 'GET' '/eula/' ${JSON.stringify(PAGES_ORIGIN)}) { 'yes' } else { 'no' }),
+	$(if (Invoke-Accept 'PUT' '/eula' ${JSON.stringify(PAGES_ORIGIN)}) { 'yes' } else { 'no' }),
+	$(if (Invoke-Accept 'GET' '/eula' 'https://evil.example') { 'yes' } else { 'no' }),
+	$(if (Invoke-Accept 'GET' '/' ${JSON.stringify(PAGES_ORIGIN)}) { 'yes' } else { 'no' })
+) -join ','
+`)
+		assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
+		assertEquals(powerShellResult.stdout.trim(), 'yes,yes,no,no,no')
+	}
+	finally {
+		await rm(dir, { recursive: true, force: true })
+	}
 })
 
 Deno.test('open cmd exits 1 when EULA is not accepted', async () => {
