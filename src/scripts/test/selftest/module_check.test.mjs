@@ -174,6 +174,14 @@ Deno.test('module-check HTTP: missed-ready is distinct from business errors', as
 	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 3)
 	try {
 		await assertRejects(() => withModuleCheckTicket(async () => {}), ModuleCheckMissedReadyError)
+		try {
+			await withModuleCheckTicket(async () => ({ code: 1, output: 'FAILED' }))
+			throw new Error('expected throw')
+		}
+		catch (error) {
+			assertEquals(error instanceof ModuleCheckMissedReadyError, true)
+			assertEquals(error.result, { code: 1, output: 'FAILED' })
+		}
 		const afterMissed = await acquireModuleCheckTicket()
 		assertEquals(Boolean(afterMissed), true)
 		await signalModuleCheckReady(afterMissed)

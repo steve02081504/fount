@@ -1,5 +1,5 @@
 /**
- * CLI FIFO / FS LIFO / 预备 debounce / viewer 移除 / CLI 完成剔 FS。
+ * CLI 同优先级 LIFO / FS LIFO / 预备 debounce / viewer 移除 / CLI 完成剔 FS。
  */
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
@@ -28,14 +28,22 @@ function mutableClock(start = 0) {
 	}
 }
 
-Deno.test('CLI queue is FIFO', () => {
+Deno.test('CLI queue is LIFO among equal priority', () => {
 	const queues = new TestQueues()
 	queues.enqueueCli({ key: 'a', viewerId: 'v1' })
 	queues.enqueueCli({ key: 'b', viewerId: 'v1' })
 	const first = queues.peekReady(() => true)
-	assertEquals(first?.item.key, 'a')
+	assertEquals(first?.item.key, 'b')
 	queues.dequeue(first)
-	assertEquals(queues.peekReady(() => true)?.item.key, 'b')
+	assertEquals(queues.peekReady(() => true)?.item.key, 'a')
+})
+
+Deno.test('CLI imperfect priority still beats a later normal item', () => {
+	const queues = new TestQueues()
+	queues.enqueueCli({ key: 'old', viewerId: 'v', priority: 1 })
+	queues.enqueueCli({ key: 'imperfect', viewerId: 'v', priority: 0 })
+	queues.enqueueCli({ key: 'newer', viewerId: 'v', priority: 1 })
+	assertEquals(queues.peekReady(() => true)?.item.key, 'imperfect')
 })
 
 Deno.test('FS fills when no CLI item is ready', () => {

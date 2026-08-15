@@ -296,3 +296,77 @@ Deno.test('failed dep discards queued dependents as blocked', async () => {
 		await handle.close()
 	}
 })
+
+Deno.test('accepted remaining includes already-running leftover', async () => {
+	const root = join(tmpdir(), `fount-kernel-wait-eta-${Date.now()}`)
+	await mkdir(root, { recursive: true })
+	try {
+		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
+		assertEquals(init.code, 0)
+		const commit = await execFile('git', [
+			'-c', 'user.email=t@t', '-c', 'user.name=t',
+			'commit', '--allow-empty', '-m', 'init',
+		], { cwd: root })
+		assertEquals(commit.code, 0)
+		const handle = await startTestKernel({
+			port: KERNEL_PORT + 14,
+			repoRoot: root,
+			autoExit: false,
+			watchFs: false,
+			writeReport: false,
+		})
+		try {
+			const blocker = {
+				manifestId: 'testkit',
+				name: '__wait_block__',
+				run: ['true'],
+				triggers: [],
+				dependencies: [],
+				heavy: true,
+				expectedMs: 60_000,
+			}
+			const next = {
+				manifestId: 'testkit',
+				name: '__wait_next__',
+				run: ['true'],
+				triggers: [],
+				dependencies: [],
+				heavy: true,
+				expectedMs: 1000,
+			}
+			handle.kernel.catalog.allSuites.push(blocker, next)
+			handle.kernel.catalog.byKey.set('testkit:__wait_block__', blocker)
+			handle.kernel.catalog.byKey.set('testkit:__wait_next__', next)
+			handle.kernel.state.suites['testkit:__wait_block__'] = {
+				status: 'failed',
+				durationMs: 1000,
+				baselineDurationMs: 60_000,
+				failedFiles: [],
+				noiseHits: [],
+				logPath: null,
+			}
+			handle.kernel.running.set('testkit:__wait_block__', {
+				item: { id: 'run-block', key: 'testkit:__wait_block__' },
+				startedAt: Date.now(),
+				checkDone: true,
+			})
+			const submitted = await handle.kernel.submitJob({
+				force: true,
+				groups: [{
+					manifestSelectors: ['testkit'],
+					suiteSelectors: ['__wait_next__'],
+					subtestSelectors: {},
+				}],
+			}, 'v-wait')
+			assertEquals(submitted.runCount, 1)
+			assertEquals(submitted.remainingMs > 50_000, true, `remainingMs=${submitted.remainingMs}`)
+		}
+		finally {
+			handle.kernel.running.clear()
+			await handle.close()
+		}
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
+})
