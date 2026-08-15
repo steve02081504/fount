@@ -87,6 +87,17 @@ Deno.test('ModuleCheckGate hold timeout releases waiters when holder never readi
 	assertEquals(typeof gate.ready(next), 'number')
 })
 
+Deno.test('ModuleCheckGate hold timeout keeps missed-ready after abandon is false', async () => {
+	const gate = new ModuleCheckGate({ holdTimeoutMs: 50 })
+	const leaked = await gate.acquire()
+	const next = await awaitWithTimeout(gate.acquire(), 'hold timeout did not release waiter', 1000)
+	assertEquals(gate.abandon(leaked), false)
+	assertEquals(gate.consumeMissedReady(leaked), true)
+	assertEquals(gate.consumeMissedReady(leaked), false)
+	assertEquals(typeof gate.ready(next), 'number')
+	assertEquals(gate.consumeMissedReady(next), false)
+})
+
 Deno.test('ModuleCheckGate aborted waiter does not steal the next ticket', async () => {
 	const gate = new ModuleCheckGate()
 	const first = await gate.acquire()
@@ -319,6 +330,27 @@ Deno.test('module-check missed ready fails the deno suite', async () => {
 	}
 })
 
+Deno.test('module-check hold timeout still records missed ready when the suite exits', async () => {
+	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 8, { moduleCheckHoldTimeoutMs: 50 })
+	try {
+		const suite = {
+			manifestId: 'testkit',
+			name: '__hold_timeout_missed__',
+			run: ['deno', 'eval', 'await new Promise(resolve => setTimeout(resolve, 200))'],
+			triggers: [],
+			dependencies: [],
+			heavy: false,
+		}
+		const { end, job } = await enqueueAndAwaitSkip(handle.kernel, suite, 'hold-timeout-missed')
+		assertEquals(end?.passed, false)
+		assertEquals(end?.missedReady, true)
+		assertEquals(job.exitCode, 1)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
 Deno.test('module-check HTTP: holder that never readies does not block later acquires', async () => {
 	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 6, { moduleCheckHoldTimeoutMs: 80 })
 	try {
@@ -327,6 +359,7 @@ Deno.test('module-check HTTP: holder that never readies does not block later acq
 		const next = await awaitWithTimeout(acquireModuleCheckTicket(), 'leaked holder blocked acquire', 1000)
 		assertEquals(Boolean(next), true)
 		assertEquals(next === leaked, false)
+		assertEquals(await abandonModuleCheckTicket(leaked), true)
 		await signalModuleCheckReady(next)
 	}
 	finally {

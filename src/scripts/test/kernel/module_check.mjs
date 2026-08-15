@@ -37,6 +37,8 @@ export class ModuleCheckGate {
 		this.#waiters = []
 		/** @type {ReturnType<typeof setTimeout> | null} */
 		this.#holdTimer = null
+		/** @type {Set<string>} */
+		this.#pendingReady = new Set()
 		/** @type {number} */
 		this.durationTotalMs = 0
 		/** @type {number} */
@@ -45,6 +47,7 @@ export class ModuleCheckGate {
 
 	#waiters
 	#holdTimer
+	#pendingReady
 
 	/**
 	 * 当前排队等待租约的数量。
@@ -67,9 +70,9 @@ export class ModuleCheckGate {
 			const waiter = { resolve, reject }
 			this.#waiters.push(waiter)
 			signal?.addEventListener('abort', () => {
-				const idx = this.#waiters.indexOf(waiter)
-				if (idx < 0) return
-				this.#waiters.splice(idx, 1)
+				const index = this.#waiters.indexOf(waiter)
+				if (index < 0) return
+				this.#waiters.splice(index, 1)
 				reject(abortError(signal))
 			}, { once: true })
 		})
@@ -82,6 +85,7 @@ export class ModuleCheckGate {
 		const ticket = randomUUID()
 		this.heldTicket = ticket
 		this.heldAt = Date.now()
+		this.#pendingReady.add(ticket)
 		this.#armHoldTimer()
 		return ticket
 	}
@@ -130,16 +134,31 @@ export class ModuleCheckGate {
 	 * @returns {number | null} 本次检查时长；ticket 不匹配则为 null
 	 */
 	ready(ticket) {
+		this.#pendingReady.delete(ticket)
 		return this.#release(ticket, true)
 	}
 
 	/**
 	 * 子进程未 ready 就结束：释放等待者，不记时长。
+	 * hold 超时后互斥已释放，此处为 false，未 ready 信息仍在 {@link consumeMissedReady}。
 	 * @param {string} ticket 租约
-	 * @returns {boolean} 仍持有该 ticket（missed）
+	 * @returns {boolean} 仍持有该 ticket
 	 */
 	abandon(ticket) {
 		return this.#release(ticket, false) != null
+	}
+
+	/**
+	 * 任务退出时取走未 ready 状态并释放互斥（若仍占用）。
+	 * hold 超时后 abandon 为 false，只要从未 ready 仍为 true。
+	 * @param {string} ticket 租约
+	 * @returns {boolean} 从未收到 ready
+	 */
+	consumeMissedReady(ticket) {
+		if (!ticket) return false
+		const pending = this.#pendingReady.delete(ticket)
+		this.#release(ticket, false)
+		return pending
 	}
 
 	/**
@@ -152,6 +171,7 @@ export class ModuleCheckGate {
 			this.#holdTimer = null
 		}
 		this.heldTicket = null
+		this.#pendingReady.clear()
 		const waiters = this.#waiters.splice(0)
 		const error = abortError()
 		for (const waiter of waiters) waiter.reject(error)

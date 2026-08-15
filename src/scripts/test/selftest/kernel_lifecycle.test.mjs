@@ -433,6 +433,48 @@ Deno.test('shutdownTestKernel stops a running kernel', async () => {
 	}
 })
 
+Deno.test('kernel close settles one running item and one queued item', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 6,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		const { job } = enqueueDummyJob(handle.kernel, { key: 'testkit:__run__', jobId: 'close-drain' })
+		const runningItem = handle.kernel.queues.cli.find(item => item.key === 'testkit:__run__')
+		handle.kernel.queues.cli = handle.kernel.queues.cli.filter(item => item !== runningItem)
+		const queuedItem = handle.kernel.queues.enqueueCli({
+			key: 'testkit:__queued__',
+			viewerId: 'v',
+			jobId: job.id,
+		})
+		job.pending.add(queuedItem.id)
+		const abort = new AbortController()
+		handle.kernel.running.set('testkit:__run__', {
+			item: runningItem,
+			abort,
+			startedAt: Date.now(),
+			checkDone: true,
+		})
+		abort.signal.addEventListener('abort', () => {
+			setTimeout(() => {
+				handle.kernel.running.delete('testkit:__run__')
+			}, 80)
+		}, { once: true })
+		assertEquals(handle.kernel.running.size, 1)
+		assertEquals(handle.kernel.queues.cli.length, 1)
+		await awaitWithTimeout(handle.close(), 'close did not drain running and queued items')
+		assertEquals(handle.kernel.running.size, 0)
+		assertEquals(handle.kernel.queues.cli.length, 0)
+		await awaitWithTimeout(job.done.promise, 'job did not settle on close')
+	}
+	finally {
+		handle.kernel.running.delete('testkit:__run__')
+		await handle.close()
+	}
+})
+
 Deno.test('kernel close aborts running suites', async () => {
 	const handle = await startTestKernel({
 		port: CONTROL_PORT + 3,

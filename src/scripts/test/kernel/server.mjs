@@ -64,13 +64,13 @@ export async function startTestKernel({
 		try {
 			ticket = await kernel.moduleCheck.acquire(abort.signal)
 			if (!response.writable || response.destroyed || response.writableEnded) {
-				kernel.moduleCheck.abandon(ticket)
+				kernel.moduleCheck.consumeMissedReady(ticket)
 				return
 			}
 			response.json({ ticket })
 		}
 		catch (error) {
-			if (ticket) kernel.moduleCheck.abandon(ticket)
+			if (ticket) kernel.moduleCheck.consumeMissedReady(ticket)
 			if (abort.signal.aborted || error?.name === 'AbortError') {
 				if (!response.headersSent) response.status(499).end()
 				return
@@ -89,7 +89,7 @@ export async function startTestKernel({
 	})
 	app.post('/module-check/abandon', (request, response) => {
 		const ticket = String(request.body?.ticket || '')
-		response.json({ missed: kernel.moduleCheck.abandon(ticket) })
+		response.json({ missed: kernel.moduleCheck.consumeMissedReady(ticket) })
 	})
 	app.post('/shutdown', (request, response) => {
 		response.json({ ok: true })

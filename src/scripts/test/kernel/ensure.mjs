@@ -30,8 +30,7 @@ export async function kernelHealthy(url) {
 	try {
 		const res = await fetch(`${url}/health`, { signal: AbortSignal.timeout(1500) })
 		if (!res.ok) return false
-		const body = await res.json()
-		return body?.kernel === TEST_KERNEL_HEALTH_ID
+		return (await res.json())?.kernel === TEST_KERNEL_HEALTH_ID
 	}
 	catch {
 		return false

@@ -34,12 +34,12 @@ function expandGlobBraces(pattern) {
 	if (start < 0) return [pattern]
 	let depth = 0
 	let end = -1
-	for (let i = start; i < pattern.length; i++) 
-		if (pattern[i] === '{') depth++
-		else if (pattern[i] === '}') {
+	for (let index = start; index < pattern.length; index++) 
+		if (pattern[index] === '{') depth++
+		else if (pattern[index] === '}') {
 			depth--
 			if (!depth) {
-				end = i
+				end = index
 				break
 			}
 		}
@@ -49,19 +49,19 @@ function expandGlobBraces(pattern) {
 	const prefix = pattern.slice(0, start)
 	const suffix = pattern.slice(end + 1)
 	/** @type {string[]} */
-	const alts = []
+	const alternatives = []
 	depth = 0
 	let last = 0
-	for (let i = 0; i < inner.length; i++) 
-		if (inner[i] === '{') depth++
-		else if (inner[i] === '}') depth--
-		else if (inner[i] === ',' && !depth) {
-			alts.push(inner.slice(last, i))
-			last = i + 1
+	for (let index = 0; index < inner.length; index++) 
+		if (inner[index] === '{') depth++
+		else if (inner[index] === '}') depth--
+		else if (inner[index] === ',' && !depth) {
+			alternatives.push(inner.slice(last, index))
+			last = index + 1
 		}
 	
-	alts.push(inner.slice(last))
-	return alts.flatMap(alt => expandGlobBraces(prefix + alt + suffix))
+	alternatives.push(inner.slice(last))
+	return alternatives.flatMap(alt => expandGlobBraces(prefix + alt + suffix))
 }
 
 /**

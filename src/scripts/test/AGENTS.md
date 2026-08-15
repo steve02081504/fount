@@ -79,7 +79,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Operator tools
 
-- **Hung run**: `data/test/state/logs/`; rerun with env from the log. Watchdogs / sleep retry / baselines: [host-keep-awake.md](docs/host-keep-awake.md), [resource-scheduling.md](docs/resource-scheduling.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`. Module-check mutex leaks (killed Deno child never POSTs ready) auto-release after the idle window; they must not freeze later suites. Stuck detached kernel: `fount test --kernel shutdown` / `--kernel reboot`.
+- **Hung run**: `data/test/state/logs/`; rerun with env from the log. Watchdogs / sleep retry / baselines: [host-keep-awake.md](docs/host-keep-awake.md), [resource-scheduling.md](docs/resource-scheduling.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`. Module-check mutex leaks (killed Deno child never POSTs ready) auto-release the mutex after the idle window and still fail the suite as missed-ready; they must not freeze later suites. Stuck detached kernel: `fount test --kernel shutdown` / `--kernel reboot`.
 - **Deno panic auto-report**: `core/deno_panic.mjs` → `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override: `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.
 - **`[aria-ignore]`**: value = GitHub issue URL; closed-state via hub `github_issue` + Playwright `assertAriaIgnoreIssues`. Policy: `pages/scripts/test/aria_ignore.mjs`. No hub / `gh` → treat as still open. Page watch: [playwright.md](docs/playwright.md#page-watch).
 - **`[language-check-ignore]`**: boolean; page-watch locale script scan skips the subtree (language name lists, EULA in a chosen locale). Not `user-content`. Selector: `LOCALE_CHECK_SKIP_SELECTOR` in `pages/scripts/test/watch/locale_script.mjs`.
