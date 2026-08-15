@@ -29,9 +29,9 @@ export function isIgnoredBrowserNetworkError(errorText) {
  */
 export function isIgnoredPagesProbeUrl(url) {
 	if (!url) return false
-	if (/\/api\/ping(?:\?|$)/.test(url)) return true
 	const parsed = new URL(url)
 	if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') return false
+	if (parsed.pathname === '/api/ping') return true
 	if (parsed.port !== '8930') return false
 	const path = parsed.pathname.replace(/\/+$/, '') || '/'
 	return path === '/' || path === '/eula'

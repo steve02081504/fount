@@ -189,8 +189,9 @@ async function runPool(files, { stopOnFailure }) {
 				if (!(error instanceof ModuleCheckMissedReadyError)) throw error
 				const rel = toRepoRelative(REPO_ROOT, file)
 				const result = error.result
-				if (result?.code)
-					recordResult(file, result.code, result.output, result.signal)
+				const exitCode = result?.code ?? (result?.signal ? 1 : 0)
+				if (exitCode)
+					recordResult(file, exitCode, result?.output, result?.signal)
 				else {
 					console.errorI18n('fountConsole.test.moduleCheck.missedReady', { label: rel })
 					failed.push(rel)

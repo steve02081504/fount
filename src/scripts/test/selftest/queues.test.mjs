@@ -30,19 +30,19 @@ function mutableClock(start = 0) {
 
 Deno.test('CLI queue is LIFO among equal priority', () => {
 	const queues = new TestQueues()
-	queues.enqueueCli({ key: 'a', viewerId: 'v1' })
-	queues.enqueueCli({ key: 'b', viewerId: 'v1' })
+	queues.enqueueCli({ key: 'earlier', viewerId: 'viewer' })
+	queues.enqueueCli({ key: 'later', viewerId: 'viewer' })
 	const first = queues.peekReady(() => true)
-	assertEquals(first?.item.key, 'b')
+	assertEquals(first?.item.key, 'later')
 	queues.dequeue(first)
-	assertEquals(queues.peekReady(() => true)?.item.key, 'a')
+	assertEquals(queues.peekReady(() => true)?.item.key, 'earlier')
 })
 
 Deno.test('CLI imperfect priority still beats a later normal item', () => {
 	const queues = new TestQueues()
-	queues.enqueueCli({ key: 'old', viewerId: 'v', priority: 1 })
-	queues.enqueueCli({ key: 'imperfect', viewerId: 'v', priority: 0 })
-	queues.enqueueCli({ key: 'newer', viewerId: 'v', priority: 1 })
+	queues.enqueueCli({ key: 'old', viewerId: 'viewer', priority: 1 })
+	queues.enqueueCli({ key: 'imperfect', viewerId: 'viewer', priority: 0 })
+	queues.enqueueCli({ key: 'newer', viewerId: 'viewer', priority: 1 })
 	assertEquals(queues.peekReady(() => true)?.item.key, 'imperfect')
 })
 

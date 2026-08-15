@@ -192,12 +192,12 @@ function Invoke-Accept($Method, $Path, $Origin) {
 })
 
 Deno.test('FOUNT_ACCEPT_EULA copies default config without consuming argv', async () => {
-	const dir = await mkdtemp(join(tmpdir(), 'fount-eula-cfg-'))
+	const temporaryDirectory = await mkdtemp(join(tmpdir(), 'fount-eula-cfg-'))
 	try {
-		await mkdir(join(dir, 'default'))
-		await writeFile(join(dir, 'default', 'config.json'), '{"ok":1}')
+		await mkdir(join(temporaryDirectory, 'default'))
+		await writeFile(join(temporaryDirectory, 'default', 'config.json'), '{"ok":1}')
 		const powerShellResult = await pwsh_exec(`
-$FOUNT_DIR = ${JSON.stringify(dir)}
+$FOUNT_DIR = ${JSON.stringify(temporaryDirectory)}
 $env:FOUNT_ACCEPT_EULA = '1'
 function script:in_docker { $false }
 function script:require { }
@@ -208,9 +208,9 @@ if (Test-Path -LiteralPath (Join-Path $FOUNT_DIR 'data/config.json')) { 'copied'
 		assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
 		assertEquals(powerShellResult.stdout.trim(), 'copied')
 
-		await rm(join(dir, 'data'), { recursive: true, force: true })
-		const bash = await bash_exec(`
-FOUNT_DIR=${JSON.stringify(dir)}
+		await rm(join(temporaryDirectory, 'data'), { recursive: true, force: true })
+		const bashResult = await bash_exec(`
+FOUNT_DIR=${JSON.stringify(temporaryDirectory)}
 export FOUNT_DIR FOUNT_ACCEPT_EULA=1
 in_docker() { return 1; }
 require() { :; }
@@ -218,11 +218,11 @@ source ${JSON.stringify(eulaShPath)}
 ensure_fount_config
 test -f "$FOUNT_DIR/data/config.json" && echo copied || echo missing
 `)
-		assertEquals(bash.code, 0, bash.stderr || bash.stdout)
-		assertEquals(bash.stdout.trim(), 'copied')
+		assertEquals(bashResult.code, 0, bashResult.stderr || bashResult.stdout)
+		assertEquals(bashResult.stdout.trim(), 'copied')
 	}
 	finally {
-		await rm(dir, { recursive: true, force: true })
+		await rm(temporaryDirectory, { recursive: true, force: true })
 	}
 })
 
