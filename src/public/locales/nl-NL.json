@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Geschatte resterende tijd ≈ ${eta}",
-					"itemExpected": "verwacht ${expected}",
-					"parallelEstimate": "Geschatte parallelle tijd ≈ ${eta} (factor ${rate})",
-					"savings": "Geschatte besparing ≈ ${savings}"
+					"itemExpected": "verwacht ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "afhankelijkheid meegenomen",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "Opdracht",
 					"duration": "Duur",
-					"estimatedParallelRate": "Geschatte parallelle factor",
 					"estimatedRemaining": "Geschatte resterende tijd",
 					"exit": "Exitcode",
 					"failed": "Mislukkingen",
@@ -366,13 +363,6 @@
 				"marker": "[Afbraakreden: ${reason}]",
 				"speculative": "${label} afgebroken: speculatieve afhankelijkheid niet geslaagd, vroegtijdig stoppen",
 				"unknown": "${label} afgebroken: test onderbroken"
-			},
-			"estimated": {
-				"remaining": "Geschatte resterende tijd ≈ ${eta} (${completed}/${total} suites)",
-				"run": "Geschatte looptijd ≈ ${eta} (parallelle factor ${rate})",
-				"runSerial": "Geschatte looptijd ≈ ${eta} (serieel)",
-				"runSerialHint": "Bij parallel ≈ ${eta} (factor ${rate}), besparing ≈ ${savings}",
-				"runSkipped": "Daarnaast ${reused} hergebruikt en ${blocked} naar verwachting geblokkeerd (niet meegeteld)"
 			},
 			"unknown": {
 				"fileFilter": "Onbekende testbestandsfilter: ${suite} → ${names}",

@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "الوقت المتبقي المقدر ≈ ${eta}",
-					"itemExpected": "المتوقع ${expected}",
-					"parallelEstimate": "استهلاك الوقت الموازي المقدر ≈ ${eta} (المعدل الموازي المقدر ${rate})",
-					"savings": "المدخرات المقدرة ≈ ${savings}"
+					"itemExpected": "المتوقع ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "سحب التبعية",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "طلب",
 					"duration": "مضيعة للوقت",
-					"estimatedParallelRate": "معدل التوازي المقدر",
 					"estimatedRemaining": "الوقت المتبقي المقدر",
 					"exit": "حالة الخروج",
 					"failed": "عدد حالات الفشل",
@@ -366,13 +363,6 @@
 				"marker": "[سبب الإنهاء: ${reason}]",
 				"speculative": "تم إغلاق ${label}: لم ينته اعتماد المضاربة، وتم إلغاء الإيقاف المبكر",
 				"unknown": "تم إغلاق ${label}: تمت مقاطعة الاختبار"
-			},
-			"estimated": {
-				"remaining": "الوقت المتبقي المقدر ≈ ${eta} (حزمة (${completed}/${total})",
-				"run": "من المقدر أن يستغرق هذا التشغيل ≈ ${eta} (المعدل الموازي المقدر ${rate})",
-				"runSerial": "من المتوقع أن يستغرق هذا التشغيل ≈ ${eta} (مسلسل)",
-				"runSerialHint": "إذا كان التوازي متوقعًا ≈ ${eta} (المعدل الموازي ${rate})، والادخار ≈ ${savings}",
-				"runSkipped": "هناك أيضًا قطع ${reused} التي يتم إعادة استخدامها وقطع ${blocked} التي من المتوقع أن يتم حظرها (غير مدرجة في التقدير)"
 			},
 			"unknown": {
 				"fileFilter": "تصفية ملفات اختبار غير معروفة: ${suite} → ${names}",

@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "अनुमानित शेष समय ≈ ${eta}",
-					"itemExpected": "अपेक्षित ${expected}",
-					"parallelEstimate": "अनुमानित समानांतर समय खपत ≈ ${eta} (अनुमानित समानांतर दर ${rate})",
-					"savings": "अनुमानित बचत ≈ ${savings}"
+					"itemExpected": "अपेक्षित ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "निर्भरता खींचती है",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "आदेश",
 					"duration": "समय",
-					"estimatedParallelRate": "अनुमानित समानता दर",
 					"estimatedRemaining": "अनुमानित शेष समय",
 					"exit": "निकास स्थिति",
 					"failed": "विफलताओं की संख्या",
@@ -366,13 +363,6 @@
 				"marker": "[समाप्ति का कारण: ${reason}]",
 				"speculative": "समाप्त ${label}: सट्टा निर्भरता समाप्त नहीं हुई है, प्रारंभिक रोक रद्द कर दी गई है",
 				"unknown": "समाप्त ${label}: परीक्षण बाधित"
-			},
-			"estimated": {
-				"remaining": "अनुमानित शेष समय ≈ ${eta} (${completed}/${total} सुइट)",
-				"run": "अनुमान है कि इस दौड़ में ≈ ${eta} लगेगा (अनुमानित समानांतर दर ${rate})",
-				"runSerial": "इस रन में ≈ ${eta} (सीरियल) लगने की उम्मीद है",
-				"runSerialHint": "यदि समानता अपेक्षित है ≈ ${eta} (समानांतर दर ${rate}), बचत ≈ ${savings}",
-				"runSkipped": "ऐसे ${reused} टुकड़े भी हैं जिनका दोबारा उपयोग किया जाता है और ${blocked} टुकड़े भी हैं जिनके अवरुद्ध होने की उम्मीद है (अनुमान में शामिल नहीं)"
 			},
 			"unknown": {
 				"fileFilter": "अज्ञात परीक्षण फ़ाइल फ़िल्टरिंग: ${suite} → ${names}",

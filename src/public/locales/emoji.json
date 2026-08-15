@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "⏱️⏳≈ ${eta}",
-					"itemExpected": "🔮 ${expected}",
-					"parallelEstimate": "🔀⏱️≈ ${eta}（🔀 ${rate}）",
-					"savings": "💰≈ ${savings}"
+					"itemExpected": "🔮 ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "🔗📥",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "⌨️",
 					"duration": "⏱️",
-					"estimatedParallelRate": "🔀≈",
 					"estimatedRemaining": "⏱️⏳≈",
 					"exit": "🚪",
 					"failed": "❌ #",
@@ -366,13 +363,6 @@
 				"marker": "[⏹️: ${reason}]",
 				"speculative": "⏹️ ${label}：🔮🔗🚫，❌⏹",
 				"unknown": "⏹️ ${label}：🧪🛑"
-			},
-			"estimated": {
-				"remaining": "⏱️⏳ ≈ ${eta}（${completed}/${total} 📦）",
-				"run": "⏱️ ≈ ${eta}（🔀 ${rate}）",
-				"runSerial": "⏱️ ≈ ${eta}（📦→→）",
-				"runSerialHint": "🔀≈ ${eta}（${rate}），💰 ≈ ${savings}",
-				"runSkipped": "＋♻️ ${reused}，🚫⏸️ ${blocked}（∉⏱️）"
 			},
 			"unknown": {
 				"fileFilter": "🚫🧪📁🔽：${suite} → ${names}",

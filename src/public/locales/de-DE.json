@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Geschätzte Restzeit ≈ ${eta}",
-					"itemExpected": "erwartet ${expected}",
-					"parallelEstimate": "Parallele Schätzung ≈ ${eta} (Rate ${rate})",
-					"savings": "Geschätzte Ersparnis ≈ ${savings}"
+					"itemExpected": "erwartet ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "Über Abhängigkeit eingeschlossen",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "Befehl",
 					"duration": "Dauer",
-					"estimatedParallelRate": "Geschätzte Parallelrate",
 					"estimatedRemaining": "Geschätzte Restzeit",
 					"exit": "Exit-Status",
 					"failed": "Fehlgeschlagen",
@@ -366,13 +363,6 @@
 				"marker": "[Abbruchgrund: ${reason}]",
 				"speculative": "Abgebrochen ${label}: spekulative Abhängigkeit nicht bestanden, Frühstopp aufgehoben",
 				"unknown": "Abgebrochen ${label}: Test unterbrochen"
-			},
-			"estimated": {
-				"remaining": "Geschätzte Restzeit ≈ ${eta} (${completed}/${total} Suites)",
-				"run": "Geschätzte Laufzeit ≈ ${eta} (Parallelrate ${rate})",
-				"runSerial": "Geschätzte Laufzeit ≈ ${eta} (seriell)",
-				"runSerialHint": "Bei Parallelität ≈ ${eta} (Rate ${rate}), Ersparnis ≈ ${savings}",
-				"runSkipped": "Zusätzlich ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (nicht in Schätzung)"
 			},
 			"unknown": {
 				"fileFilter": "Unbekannter Testdatei-Filter: ${suite} → ${names}",

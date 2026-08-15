@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "남은 예상 시간 ≒ ${eta}",
-					"itemExpected": "${expected} 예상",
-					"parallelEstimate": "예상 병렬 시간 소모 ≒ ${eta} (예상 병렬 속도 ${rate})",
-					"savings": "예상 절감액 ≒ ${savings}"
+					"itemExpected": "${expected} 예상"
 				},
 				"reason": {
 					"dependencyRequired": "종속성 풀인",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "주문",
 					"duration": "시간이 많이 걸리는",
-					"estimatedParallelRate": "예상 병렬 처리 속도",
 					"estimatedRemaining": "예상 남은 시간",
 					"exit": "종료",
 					"failed": "실패",
@@ -366,13 +363,6 @@
 				"marker": "[해지 이유: ${reason}]",
 				"speculative": "종료된 ${label}: 투기적 종속성이 통과되지 않았으며 조기 중지가 취소되었습니다.",
 				"unknown": "TERMINATED ${label}: 테스트가 중단되었습니다."
-			},
-			"estimated": {
-				"remaining": "남은 예상 시간 ≒ ${eta} (${completed}/${total} 스위트)",
-				"run": "이 실행에는 약 ${eta}(예상 병렬 속도 ${rate})이 소요될 것으로 예상됩니다.",
-				"runSerial": "이 실행에는 약 ${eta}(연속)가 소요될 것으로 예상됩니다.",
-				"runSerialHint": "병렬 처리가 예상되는 경우 ≒ ${eta}(병렬 비율 ${rate}), 절감액 ≒ ${savings}",
-				"runSkipped": "또한 재사용되는 ${reused}개 조각과 차단될 것으로 예상되는 ${blocked}개 조각도 있습니다(추정치에는 포함되지 않음)."
 			},
 			"unknown": {
 				"fileFilter": "알 수 없는 테스트 파일 필터링: ${suite} → ${names}",

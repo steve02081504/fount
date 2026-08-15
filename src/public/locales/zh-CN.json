@@ -287,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "预估剩余耗时 ≈ ${eta}",
-					"itemExpected": "预期 ${expected}",
-					"parallelEstimate": "并行预估耗时 ≈ ${eta}（预估并行率 ${rate}）",
-					"savings": "预计可节省 ≈ ${savings}"
+					"itemExpected": "预期 ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "依赖拉入",
@@ -333,7 +331,6 @@
 				"field": {
 					"command": "命令",
 					"duration": "耗时",
-					"estimatedParallelRate": "预估并行率",
 					"estimatedRemaining": "预估剩余耗时",
 					"exit": "退出状态",
 					"failed": "失败数",
@@ -373,13 +370,6 @@
 				"marker": "[终止原因: ${reason}]",
 				"speculative": "已终止 ${label}：投机依赖未过，取消早停",
 				"unknown": "已终止 ${label}：测试被中断"
-			},
-			"estimated": {
-				"remaining": "预估剩余耗时 ≈ ${eta}（${completed}/${total} 个套件）",
-				"run": "预计本次运行耗时 ≈ ${eta}（预估并行率 ${rate}）",
-				"runSerial": "预计本次运行耗时 ≈ ${eta}（串行）",
-				"runSerialHint": "若并行预期 ≈ ${eta}（并行率 ${rate}），节省 ≈ ${savings}",
-				"runSkipped": "另有复用 ${reused} 个、预计阻塞 ${blocked} 个（不计入预估）"
 			},
 			"unknown": {
 				"fileFilter": "未知的测试文件过滤：${suite} → ${names}",

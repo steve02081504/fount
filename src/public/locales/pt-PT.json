@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Tempo restante estimado ≈ ${eta}",
-					"itemExpected": "Esperado ${expected}",
-					"parallelEstimate": "Consumo de tempo paralelo estimado ≈ ${eta} (taxa paralela estimada ${rate})",
-					"savings": "Economia estimada ≈ ${savings}"
+					"itemExpected": "Esperado ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "Atração de dependência",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "Comando",
 					"duration": "Duração",
-					"estimatedParallelRate": "Taxa estimada de paralelismo",
 					"estimatedRemaining": "Tempo restante estimado",
 					"exit": "Saída",
 					"failed": "Falhas",
@@ -366,13 +363,6 @@
 				"marker": "[Motivo da terminação: ${reason}]",
 				"speculative": "Terminado ${label}: A dependência especulativa não passou, parada antecipada cancelada",
 				"unknown": "TERMINADO ${label}: teste interrompido"
-			},
-			"estimated": {
-				"remaining": "Tempo restante estimado ≈ ${eta} (${completed}/${total} suites)",
-				"run": "Estima-se que esta execução levará ≈ ${eta} (taxa paralela estimada ${rate})",
-				"runSerial": "Espera-se que esta execução leve ≈ ${eta} (serial)",
-				"runSerialHint": "Se o paralelismo esperado ≈ ${eta} (taxa paralela ${rate}), economia ≈ ${savings}",
-				"runSkipped": "Existem também peças ${reused} que são reutilizadas e peças ${blocked} que devem ser bloqueadas (não incluídas na estimativa)"
 			},
 			"unknown": {
 				"fileFilter": "Filtragem de ficheiro de teste desconhecido: ${suite} → ${names}",

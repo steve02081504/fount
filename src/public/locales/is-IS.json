@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Áætlaður tími sem eftir er ≈ ${eta}",
-					"itemExpected": "Búist við ${expected}",
-					"parallelEstimate": "Áætluð samhliða tímanotkun ≈ ${eta} (áætlað samhliða hlutfall ${rate})",
-					"savings": "Áætlaður sparnaður ≈ ${savings}"
+					"itemExpected": "Búist við ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "Dregið inn vegna háðar",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "Skipun",
 					"duration": "Tímalengd",
-					"estimatedParallelRate": "Áætlað samhliða hlutfall",
 					"estimatedRemaining": "Áætlaður tími sem eftir er",
 					"exit": "Útgöngustaða",
 					"failed": "Fjöldi bilana",
@@ -366,13 +363,6 @@
 				"marker": "[Ástæða uppsagnar: ${reason}]",
 				"speculative": "Lokað ${label}: Bjartsýn háð mistókst, snemmbúin stöðvun aflýst",
 				"unknown": "LOKAÐ ${label}: próf truflað"
-			},
-			"estimated": {
-				"remaining": "Áætlaður tími sem eftir er ≈ ${eta} (${completed}/${total} pakkar)",
-				"run": "Áætlað er að þessi keyrsla taki ≈ ${eta} (áætlað samhliða hlutfall ${rate})",
-				"runSerial": "Búist er við að þessi keyrsla taki ≈ ${eta} (raðkeyrsla)",
-				"runSerialHint": "Ef gert er ráð fyrir samsvörun ≈ ${eta} (samhliða hlutfall ${rate}), sparnaður ≈ ${savings}",
-				"runSkipped": "Það eru líka ${reused} stykki sem eru endurnotuð og ${blocked} stykki sem búist er við að verði lokað (ekki innifalið í Framvindainni)"
 			},
 			"unknown": {
 				"fileFilter": "Óþekkt prófunarskráasía: ${suite} → ${names}",

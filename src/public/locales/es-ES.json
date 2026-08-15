@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Tiempo restante estimado ≈ ${eta}",
-					"itemExpected": "esperado ${expected}",
-					"parallelEstimate": "Estimación paralela ≈ ${eta} (tasa ${rate})",
-					"savings": "Ahorro estimado ≈ ${savings}"
+					"itemExpected": "esperado ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "incluido por dependencia",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "Comando",
 					"duration": "Duración",
-					"estimatedParallelRate": "Tasa paralela estimada",
 					"estimatedRemaining": "Tiempo restante estimado",
 					"exit": "Código de salida",
 					"failed": "Fallidos",
@@ -366,13 +363,6 @@
 				"marker": "[Motivo de terminación: ${reason}]",
 				"speculative": "Terminado ${label}: dependencia especulativa no superada, parada anticipada cancelada",
 				"unknown": "TERMINADO ${label}: prueba interrumpida"
-			},
-			"estimated": {
-				"remaining": "Tiempo restante estimado ≈ ${eta} (${completed}/${total} suites)",
-				"run": "Duración estimada de esta ejecución ≈ ${eta} (tasa paralela ${rate})",
-				"runSerial": "Duración estimada de esta ejecución ≈ ${eta} (en serie)",
-				"runSerialHint": "Si el paralelismo esperado ≈ ${eta} (tasa ${rate}), ahorro ≈ ${savings}",
-				"runSkipped": "Además, ${reused} reutilizadas y ${blocked} previstas como bloqueadas (no incluidas en la estimación)"
 			},
 			"unknown": {
 				"fileFilter": "filtro de archivo de prueba desconocido: ${suite} → ${names}",

@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Осталось ≈ ${eta}",
-					"itemExpected": "ожидается ${expected}",
-					"parallelEstimate": "Параллельно ≈ ${eta} (коэфф. ${rate})",
-					"savings": "Экономия ≈ ${savings}"
+					"itemExpected": "ожидается ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "подтянуто зависимостью",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "Команда",
 					"duration": "Время",
-					"estimatedParallelRate": "Оценка параллелизма",
 					"estimatedRemaining": "Осталось (оценка)",
 					"exit": "Код выхода",
 					"failed": "Провалов",
@@ -366,13 +363,6 @@
 				"marker": "[Причина: ${reason}]",
 				"speculative": "Прервано ${label}: спекулятивная зависимость не пройдена, ранний стоп отменён",
 				"unknown": "ПРЕРВАНО ${label}: тест прерван"
-			},
-			"estimated": {
-				"remaining": "Осталось ≈ ${eta} (${completed}/${total} suite)",
-				"run": "Ожидаемое время ≈ ${eta} (параллелизм ${rate})",
-				"runSerial": "Ожидаемое время ≈ ${eta} (последовательно)",
-				"runSerialHint": "При параллелизме ≈ ${eta} (коэфф. ${rate}), экономия ≈ ${savings}",
-				"runSkipped": "Повтор ${reused}, ожидаемая блокировка ${blocked} (не в оценке)"
 			},
 			"unknown": {
 				"fileFilter": "Неизвестный фильтр тестовых файлов: ${suite} → ${names}",

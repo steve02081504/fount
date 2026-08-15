@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Temps restant ≈ ${eta}",
-					"itemExpected": "attendu ${expected}",
-					"parallelEstimate": "Temps parallèle estimé ≈ ${eta} (taux ${rate})",
-					"savings": "Gain estimé ≈ ${savings}"
+					"itemExpected": "attendu ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "dépendance intégrée",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "Commande",
 					"duration": "Durée",
-					"estimatedParallelRate": "Taux parallèle estimé",
 					"estimatedRemaining": "Temps restant estimé",
 					"exit": "Code de sortie",
 					"failed": "Échecs",
@@ -366,13 +363,6 @@
 				"marker": "[Arrêt : ${reason}]",
 				"speculative": "${label} arrêté : dépendance spéculative non validée, annulation anticipée",
 				"unknown": "${label} arrêté : test interrompu"
-			},
-			"estimated": {
-				"remaining": "Temps restant ≈ ${eta} (${completed}/${total} suites)",
-				"run": "Durée estimée ≈ ${eta} (taux parallèle ${rate})",
-				"runSerial": "Durée estimée ≈ ${eta} (série)",
-				"runSerialHint": "En parallèle ≈ ${eta} (taux ${rate}), gain ≈ ${savings}",
-				"runSkipped": "De plus ${reused} réutilisées et ${blocked} bloquées prévues (hors estimation)."
 			},
 			"unknown": {
 				"fileFilter": "Filtre de fichier de test inconnu : ${suite} → ${names}",

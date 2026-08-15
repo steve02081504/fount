@@ -279,9 +279,7 @@
 				},
 				"pending": {
 					"estimate": "預估剩餘耗時 ≈ ${eta}",
-					"itemExpected": "預期 ${expected}",
-					"parallelEstimate": "並行預估耗時 ≈ ${eta}（預估並行率 ${rate}）",
-					"savings": "預計可節省 ≈ ${savings}"
+					"itemExpected": "預期 ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "依賴拉入",
@@ -325,7 +323,6 @@
 				"field": {
 					"command": "命令",
 					"duration": "耗時",
-					"estimatedParallelRate": "預估並行率",
 					"estimatedRemaining": "預估剩餘耗時",
 					"exit": "退出狀態",
 					"failed": "失敗數",
@@ -365,13 +362,6 @@
 				"marker": "[終止原因: ${reason}]",
 				"speculative": "已終止 ${label}：投機依賴未過，取消早停",
 				"unknown": "已終止 ${label}：測試被中斷"
-			},
-			"estimated": {
-				"remaining": "預估剩餘耗時 ≈ ${eta}（${completed}/${total} 個套件）",
-				"run": "預計本次執行耗時 ≈ ${eta}（預估並行率 ${rate}）",
-				"runSerial": "預計本次執行耗時 ≈ ${eta}（序列）",
-				"runSerialHint": "若並行預期 ≈ ${eta}（並行率 ${rate}），節省 ≈ ${savings}",
-				"runSkipped": "另有複用 ${reused} 個、預計阻塞 ${blocked} 個（不計入預估）"
 			},
 			"unknown": {
 				"fileFilter": "未知的測試檔案過濾：${suite} → ${names}",

@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Thời gian còn lại ước tính ≈ ${eta}",
-					"itemExpected": "dự kiến ${expected}",
-					"parallelEstimate": "Ước tính thời gian song song ≈ ${eta} (tỷ lệ song song ước tính ${rate})",
-					"savings": "Ước tính tiết kiệm ≈ ${savings}"
+					"itemExpected": "dự kiến ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "Kéo vào do phụ thuộc",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "Lệnh",
 					"duration": "Thời gian",
-					"estimatedParallelRate": "Tỷ lệ song song ước tính",
 					"estimatedRemaining": "Thời gian còn lại ước tính",
 					"exit": "Trạng thái thoát",
 					"failed": "Số thất bại",
@@ -366,13 +363,6 @@
 				"marker": "[Lý do dừng: ${reason}]",
 				"speculative": "Đã dừng ${label}: phụ thuộc đầu cơ chưa đạt, hủy dừng sớm",
 				"unknown": "ĐÃ DỪNG ${label}: kiểm thử bị gián đoạn"
-			},
-			"estimated": {
-				"remaining": "Thời gian còn lại ước tính ≈ ${eta} (${completed}/${total} suite)",
-				"run": "Ước tính thời gian chạy ≈ ${eta} (tỷ lệ song song ước tính ${rate})",
-				"runSerial": "Ước tính thời gian chạy ≈ ${eta} (tuần tự)",
-				"runSerialHint": "Nếu song song dự kiến ≈ ${eta} (tỷ lệ song song ${rate}), tiết kiệm ≈ ${savings}",
-				"runSkipped": "Ngoài ra tái sử dụng ${reused}, dự kiến chặn ${blocked} (không tính vào ước tính)"
 			},
 			"unknown": {
 				"fileFilter": "Lọc tệp kiểm thử không xác định: ${suite} → ${names}",

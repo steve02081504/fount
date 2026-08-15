@@ -347,15 +347,18 @@ export class PortCollisionError extends Error {
  * @param {string} apiKey API key
  * @param {number} [timeoutMs=120000] 超时毫秒
  * @param {string} [expectedUsername] 预期用户名（防端口被其它 fount 实例占用）
+ * @param {AbortSignal} [signal] 启动失败/worker 退出时取消 ping
  * @returns {Promise<void>} 就绪后 resolve
  */
-async function waitForPing(baseUrl, apiKey, timeoutMs = ms('2m'), expectedUsername = null) {
+async function waitForPing(baseUrl, apiKey, timeoutMs = ms('2m'), expectedUsername = null, signal) {
 	const deadline = Date.now() + timeoutMs
 	while (Date.now() < deadline) {
+		if (signal?.aborted) throw signal.reason ?? new Error(`node ping aborted: ${baseUrl}`)
 		try {
 			const ping = await fetch(`${baseUrl}/api/ping?fount-apikey=${encodeURIComponent(apiKey)}`, {
 				method: 'GET',
 				cache: 'no-store',
+				signal,
 			})
 			if (!ping.ok || (await ping.json())?.message !== 'pong') {
 				await new Promise(resolve => setTimeout(resolve, 500))
@@ -364,6 +367,7 @@ async function waitForPing(baseUrl, apiKey, timeoutMs = ms('2m'), expectedUserna
 			const whoami = await fetch(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`, {
 				method: 'GET',
 				cache: 'no-store',
+				signal,
 			})
 			if (!whoami.ok) {
 				await new Promise(resolve => setTimeout(resolve, 500))
@@ -378,6 +382,7 @@ async function waitForPing(baseUrl, apiKey, timeoutMs = ms('2m'), expectedUserna
 		}
 		catch (error) {
 			if (error instanceof PortCollisionError) throw error
+			if (signal?.aborted || error?.name === 'AbortError') throw error
 		}
 		await new Promise(resolve => setTimeout(resolve, 500))
 	}
@@ -487,6 +492,8 @@ async function launchNodeOnce(options = {}) {
 	let leaseCommitted = false
 	/** @type {import('node:child_process').ChildProcess | undefined} */
 	let child
+	let acceptExit = false
+	const pingAbort = new AbortController()
 	/**
 	 * 释放 listen hold（若尚未释放）。
 	 * @returns {Promise<void>}
@@ -600,20 +607,24 @@ async function launchNodeOnce(options = {}) {
 		child.once('exit', () => { void releaseTicket() })
 		child.stderr.on('data', onOutput)
 
-		/** worker 提前退出时 resolve 退出码（就绪后仍挂着也无害：仅用于 race，不 reject）。 */
 		const childExited = new Promise(resolve => {
 			child.once('exit', code => resolve(code ?? -1))
 		})
 		/**
-		 * @returns {Promise<never>} worker 在就绪前退出即抛错（fail-fast，免等 ping 超时）
+		 * worker 在就绪前退出即抛错（fail-fast）。同一 Promise 用于 ready JSON / ping 两段 race。
+		 * @returns {Promise<void>} 已接受的退出为 no-op
 		 */
 		const failOnEarlyExit = async () => {
 			const code = await childExited
+			if (acceptExit) return
+			pingAbort.abort()
 			throw new Error(`node worker exited with code ${code} before ready (port ${port})\n${startupOutput}`.trimEnd())
 		}
+		const earlyExit = failOnEarlyExit()
 
 		let readyInfo = null
 		const readline = createInterface({ input: child.stdout })
+		child.once('exit', () => { try { readline.close() } catch { /* already closed */ } })
 		let readyTimer
 		try {
 			const readyLine = (async () => {
@@ -629,6 +640,7 @@ async function launchNodeOnce(options = {}) {
 			})()
 			readyInfo = await Promise.race([
 				readyLine,
+				earlyExit,
 				new Promise((_, reject) => {
 					readyTimer = setTimeout(() => {
 						void releaseTicket()
@@ -647,19 +659,23 @@ async function launchNodeOnce(options = {}) {
 		child.stdout.resume()
 		child.stderr.resume()
 
-		if (!readyInfo?.baseUrl)
-			await failOnEarlyExit()
+		if (!readyInfo?.baseUrl) {
+			if (child.exitCode != null || child.killed)
+				await earlyExit
+			throw new Error(`node worker ready timed out (port ${port})\n${startupOutput}`.trimEnd())
+		}
 
 		try {
 			await Promise.race([
-				waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username),
-				failOnEarlyExit(),
+				waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username, pingAbort.signal),
+				earlyExit,
 			])
 		}
 		catch (error) {
 			if (startupOutput.trim()) error.message += `\n${startupOutput.trimEnd()}`
 			throw error
 		}
+		acceptExit = true
 		await finishPortLease()
 		captureEnabled = true
 
@@ -689,6 +705,8 @@ async function launchNodeOnce(options = {}) {
 		}
 	}
 	catch (error) {
+		acceptExit = true
+		pingAbort.abort()
 		if (child) try { child.kill('SIGKILL') } catch { /* already dead */ }
 		await finishListenHold()
 		await finishPortLease()

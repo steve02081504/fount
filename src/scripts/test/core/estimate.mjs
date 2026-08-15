@@ -1,10 +1,9 @@
 /**
- * 待运行套件耗时预估：串行累加 + 虚拟并行调度模拟。
+ * 待运行套件耗时预估：虚拟并行调度模拟墙钟与 ETA。
  */
 import { MiB } from './concurrency.mjs'
 import { declaredOverheadMs } from './expected.mjs'
 import { resolveSuiteResources } from './resources.mjs'
-import { parallelRatePct as calcParallelRatePct } from './run_timing.mjs'
 import {
 	getSuiteBaselineDurationMs,
 	suiteKey,
@@ -534,7 +533,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 }
 
 /**
- * 汇总预估：串行累加 vs 并行模拟墙钟与 ETA。
+ * 汇总预估：并行模拟墙钟与 ETA。
  * @param {EstimateTask[]} tasks 任务列表
  * @param {object} options 选项
  * @param {number} options.memBudgetBytes 内存预算（字节）
@@ -543,39 +542,19 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
  * @returns {object} 预估汇总（etaMs 在仅有未知耗时的真跑时为 null）
  */
 export function summarizeEstimate(tasks, { memBudgetBytes, cpuBudgetPct, speculative = true }) {
-	const serialSum = serialSumMs(tasks)
 	const unknownCount = tasks.filter(isUnknownRunDuration).length
-	const { makespanMs: parallelMakespanMs, criticalPathCount: parallelGapCount } =
+	const { makespanMs, criticalPathCount: gapCount } =
 		simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct, speculative })
-	const rawEtaMs = estimateEtaMs(parallelMakespanMs, parallelGapCount)
-	const etaMs = unknownCount > 0 && parallelMakespanMs === 0 ? null : rawEtaMs
-	const savingsMs = Math.max(0, serialSum - parallelMakespanMs)
+	const rawEtaMs = estimateEtaMs(makespanMs, gapCount)
+	const etaMs = unknownCount > 0 && makespanMs === 0 ? null : rawEtaMs
 
 	return {
-		serialSumMs: serialSum,
-		parallelMakespanMs,
-		chosenMakespanMs: parallelMakespanMs,
+		makespanMs,
 		etaMs,
-		parallelEtaMs: etaMs,
 		unknownCount,
-		parallelRatePct: calcParallelRatePct(serialSum, parallelMakespanMs),
-		savingsMs,
-		gapCount: parallelGapCount,
-		parallelGapCount,
+		gapCount,
 		runCount: tasks.filter(task => !task.reused && !task.blocked).length,
 		reusedCount: tasks.filter(task => task.reused).length,
 		blockedCount: tasks.filter(task => task.blocked).length,
 	}
-}
-
-/** 低于此阈值的并行节省视为噪声，不展示「并行预估 / 可节省」。 */
-export const PARALLEL_SAVINGS_NOISE_MS = 100
-
-/**
- * 串行相对并行是否有值得展示的节省（与 console / report 共用）。
- * @param {{ savingsMs?: number | null }} estimate 预估汇总
- * @returns {boolean} 节省是否超过噪声阈值
- */
-export function hasMeaningfulParallelSavings(estimate) {
-	return Math.abs(estimate?.savingsMs ?? 0) > PARALLEL_SAVINGS_NOISE_MS
 }

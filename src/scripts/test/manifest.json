@@ -332,7 +332,6 @@
 				"src/scripts/test/selftest/{run_timing.test.mjs,format_duration.test.mjs}",
 				"src/scripts/test/core/run_timing.mjs",
 				"src/scripts/test/core/format_duration.mjs",
-				"src/scripts/test/core/estimate.mjs",
 				"src/scripts/test/runner/report.mjs"
 			]
 		},
@@ -358,7 +357,6 @@
 				"src/scripts/test/runner/scheduler.mjs",
 				"src/scripts/test/core/resources.mjs",
 				"src/scripts/test/core/baseline.mjs",
-				"src/scripts/test/core/run_timing.mjs",
 				"src/scripts/test/core/expected.mjs"
 			]
 		},
@@ -595,10 +593,11 @@
 				"./src/scripts/test/selftest/issue_cache.test.mjs",
 				"./src/scripts/test/selftest/kernel_lifecycle.test.mjs",
 				"./src/scripts/test/selftest/display.test.mjs",
-				"./src/scripts/test/selftest/jobs.test.mjs"
+				"./src/scripts/test/selftest/jobs.test.mjs",
+				"./src/scripts/test/selftest/launch_node.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,jobs.test.mjs,fixtures.mjs}",
+				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,jobs.test.mjs,launch_node.test.mjs,crash_before_ready_bootstrap.mjs,crash_after_ready_bootstrap.mjs,fixtures.mjs}",
 				"src/scripts/test/core/skip_because.mjs",
 				"src/scripts/test/module_check_ready.mjs",
 				"src/scripts/test/env.mjs",

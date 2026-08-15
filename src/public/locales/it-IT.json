@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Tempo rimanente stimato ≈ ${eta}",
-					"itemExpected": "previsto ${expected}",
-					"parallelEstimate": "Consumo di tempo parallelo stimato ≈ ${eta} (velocità parallela stimata ${rate})",
-					"savings": "Risparmio stimato ≈ ${savings}"
+					"itemExpected": "previsto ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "La dipendenza aumenta",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "comando",
 					"duration": "durata",
-					"estimatedParallelRate": "Tasso di parallelismo stimato",
 					"estimatedRemaining": "Tempo rimanente stimato",
 					"exit": "Uscita",
 					"failed": "fallito",
@@ -366,13 +363,6 @@
 				"marker": "[Motivo della risoluzione: ${reason}]",
 				"speculative": "Terminato ${label}: la dipendenza speculativa non è passata, interruzione anticipata annullata",
 				"unknown": "TERMINATO ${label}: test interrotto"
-			},
-			"estimated": {
-				"remaining": "Tempo rimanente stimato ≈ ${eta} (pacchetti ${completed}/${total})",
-				"run": "Si stima che questa corsa richiederà ≈ ${eta} (velocità parallela stimata ${rate})",
-				"runSerial": "Si prevede che questa corsa durerà ≈ ${eta} (seriale)",
-				"runSerialHint": "Se è previsto il parallelismo ≈ ${eta} (velocità di parallelo ${rate}), risparmio ≈ ${savings}",
-				"runSkipped": "Ci sono anche pezzi ${reused} che vengono riutilizzati e pezzi ${blocked} che si prevede verranno bloccati (non compresi nel preventivo)"
 			},
 			"unknown": {
 				"fileFilter": "Filtraggio file di test sconosciuto: ${suite} → ${names}",

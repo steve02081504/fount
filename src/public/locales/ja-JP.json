@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "推定残り時間 ≈ ${eta}",
-					"itemExpected": "期待される ${expected}",
-					"parallelEstimate": "推定並列時間消費量 ≈ ${eta} (推定並列速度 ${rate})",
-					"savings": "推定節約額 ≈ ${savings}"
+					"itemExpected": "期待される ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "依存により実行対象",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "コマンド",
 					"duration": "所要時間",
-					"estimatedParallelRate": "推定並列処理速度",
 					"estimatedRemaining": "推定残り時間",
 					"exit": "終了ステータス",
 					"failed": "失敗数",
@@ -366,13 +363,6 @@
 				"marker": "[終了理由: ${reason}]",
 				"speculative": "${label} を終了: 投機的依存が未通過のため早期停止をキャンセル",
 				"unknown": "${label} を終了: テストが中断されました"
-			},
-			"estimated": {
-				"remaining": "推定残り時間 ≈ ${eta} (${completed}/${total} スイート)",
-				"run": "この実行には ≈ ${eta} (推定並列速度 ${rate}) かかると推定されます",
-				"runSerial": "この実行には ≈ ${eta} (シリアル) かかると予想されます",
-				"runSerialHint": "並列処理が期待される場合 ≈ ${eta} (並列レート ${rate})、節約額 ≈ ${savings}",
-				"runSkipped": "ほかに再利用 ${reused} 件、ブロック予定 ${blocked} 件（見積もり外）"
 			},
 			"unknown": {
 				"fileFilter": "不明なテスト ファイルのフィルタリング: ${suite} → ${names}",

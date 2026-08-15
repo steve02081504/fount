@@ -280,9 +280,7 @@
 				},
 				"pending": {
 					"estimate": "Estimated remaining time ≈ ${eta}",
-					"itemExpected": "expected ${expected}",
-					"parallelEstimate": "Parallel est. ≈ ${eta} (rate ${rate})",
-					"savings": "Est. savings ≈ ${savings}"
+					"itemExpected": "expected ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "pulled in by dependency",
@@ -326,7 +324,6 @@
 				"field": {
 					"command": "command",
 					"duration": "duration",
-					"estimatedParallelRate": "Est. parallel rate",
 					"estimatedRemaining": "Est. remaining",
 					"exit": "exit",
 					"failed": "failed",
@@ -366,13 +363,6 @@
 				"marker": "[Termination reason: ${reason}]",
 				"speculative": "Aborted ${label}: speculative dependency not passed — early stop cancelled",
 				"unknown": "TERMINATED ${label}: test interrupted"
-			},
-			"estimated": {
-				"remaining": "Estimated remaining ≈ ${eta} (${completed}/${total} suites)",
-				"run": "Estimated run time ≈ ${eta} (parallel rate ${rate})",
-				"runSerial": "Estimated run time ≈ ${eta} (serial)",
-				"runSerialHint": "With parallelism ≈ ${eta} (rate ${rate}), savings ≈ ${savings}",
-				"runSkipped": "Also ${reused} reused, ${blocked} expected blocked (not counted)"
 			},
 			"unknown": {
 				"fileFilter": "Unknown test file filter: ${suite} → ${names}",
