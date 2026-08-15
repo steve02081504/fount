@@ -152,11 +152,11 @@
 				"summary": "Durate previste aggiornate per ${suitesUpdated} suite (${filesChanged} manifest); saltate ${skipped} senza baseline o già aggiornate"
 			},
 			"kernel": {
-				"incompatible": "Utilizzo: fount test --kernel shutdown|reboot (altri parametri non possono essere utilizzati contemporaneamente)",
-				"unknownAction": "Azione del kernel sconosciuta: ${action} (arresto o riavvio previsto)",
-				"alreadyDown": "Il kernel di prova non è in esecuzione",
-				"stopped": "Il kernel di test è inattivo",
-				"rebooted": "Il kernel di test è stato riavviato"
+				"incompatible": "Utilizzo: fount test --kernel shutdown|reboot (non può essere usato insieme ad altre opzioni)",
+				"unknownAction": "Azione del kernel sconosciuta: ${action} (previsto shutdown o reboot)",
+				"alreadyDown": "Il kernel di test non è in esecuzione",
+				"stopped": "Kernel di test arrestato",
+				"rebooted": "Kernel di test riavviato"
 			},
 			"skipBecause": {
 				"pass": "Saltato (issue ancora aperta o chiusa ma periodo di grazia non scaduto): ${label} — ${url}",

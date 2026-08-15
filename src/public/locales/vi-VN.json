@@ -152,11 +152,11 @@
 				"summary": "Đã cập nhật thời lượng dự kiến cho ${suitesUpdated} suite (${filesChanged} manifest); bỏ qua ${skipped} không có baseline hoặc đã mới nhất"
 			},
 			"kernel": {
-				"incompatible": "Cách sử dụng: fount test --kernelshutdown|reboot (không thể sử dụng các tham số khác cùng lúc)",
-				"unknownAction": "Hành động hạt nhân không xác định: ${action} (dự kiến ​​tắt hoặc khởi động lại)",
-				"alreadyDown": "Kernel kiểm tra không chạy",
-				"stopped": "Hạt nhân thử nghiệm bị hỏng",
-				"rebooted": "Hạt nhân thử nghiệm đã khởi động lại"
+				"incompatible": "Cách dùng: fount test --kernel shutdown|reboot (không thể dùng cùng các tùy chọn khác)",
+				"unknownAction": "Thao tác kernel không hợp lệ: ${action} (cần shutdown hoặc reboot)",
+				"alreadyDown": "Kernel thử nghiệm chưa chạy",
+				"stopped": "Đã dừng kernel thử nghiệm",
+				"rebooted": "Đã khởi động lại kernel thử nghiệm"
 			},
 			"skipBecause": {
 				"pass": "Bỏ qua (issue vẫn mở hoặc đã đóng nhưng chưa hết thời gian ân hạn): ${label} — ${url}",

@@ -152,11 +152,11 @@
 				"summary": "Uppfærði áætlaðan tíma fyrir ${suitesUpdated} suite (${filesChanged} manifest); sleppti ${skipped} án grunnlínu eða þegar uppfært"
 			},
 			"kernel": {
-				"incompatible": "Notkun: leturpróf --kjarnalokun|endurræsa (ekki hægt að nota aðrar breytur á sama tíma)",
-				"unknownAction": "Óþekkt kjarnaaðgerð: ${action} (væntanleg lokun eða endurræsing)",
-				"alreadyDown": null,
-				"stopped": "Prófakjarni er niðri",
-				"rebooted": "Prófunarkjarni hefur endurræst sig"
+				"incompatible": "Notkun: fount test --kernel shutdown|reboot (ekki hægt að nota með öðrum valkostum)",
+				"unknownAction": "Óþekkt kjarnaaðgerð: ${action} (vænt shutdown eða reboot)",
+				"alreadyDown": "Prófakjarni er ekki í gangi",
+				"stopped": "Prófakjarni var stöðvaður",
+				"rebooted": "Prófakjarni var endurræstur"
 			},
 			"skipBecause": {
 				"pass": "Sleppt (issue enn opið eða lokað en biðtími ekki liðinn): ${label} — ${url}",

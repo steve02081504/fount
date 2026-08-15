@@ -152,11 +152,11 @@
 				"summary": "Updated expected durations for ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); skipped ${skipped} with no baseline or already up to date"
 			},
 			"kernel": {
-				"incompatible": "Usage: fount test --kernel shutdown|reboot (other parameters cannot be used at the same time)",
+				"incompatible": "usage: fount test --kernel shutdown|reboot (cannot be used with any other flags)",
 				"unknownAction": "Unknown kernel action: ${action} (expected shutdown or reboot)",
 				"alreadyDown": "Test kernel is not running",
-				"stopped": "Test kernel is down",
-				"rebooted": "Test kernel has restarted"
+				"stopped": "Test kernel stopped",
+				"rebooted": "Test kernel restarted"
 			},
 			"skipBecause": {
 				"pass": "Skipped (issue still open, or closed but grace period not elapsed): ${label} — ${url}",

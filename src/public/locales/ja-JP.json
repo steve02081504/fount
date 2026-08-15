@@ -152,11 +152,11 @@
 				"summary": "${suitesUpdated} 件の suite の予想時間を更新（manifest ${filesChanged} 件）。ベースラインなしまたは最新のため ${skipped} 件をスキップ"
 			},
 			"kernel": {
-				"incompatible": "使用法: fount test --kernel shutdown|reboot (他のパラメータを同時に使用することはできません)",
-				"unknownAction": "不明なカーネル アクション: ${action} (シャットダウンまたは再起動が予想されます)",
-				"alreadyDown": "テストカーネルが実行されていません",
-				"stopped": "テストカーネルがダウンしています",
-				"rebooted": "テストカーネルが再起動されました"
+				"incompatible": "使い方: fount test --kernel shutdown|reboot（他のオプションと併用できません）",
+				"unknownAction": "不明なカーネル操作: ${action}（shutdown または reboot を指定してください）",
+				"alreadyDown": "テストカーネルは起動していません",
+				"stopped": "テストカーネルを停止しました",
+				"rebooted": "テストカーネルを再起動しました"
 			},
 			"skipBecause": {
 				"pass": "スキップ（issue 未クローズ、またはクローズ後の猶予期間内）: ${label} — ${url}",

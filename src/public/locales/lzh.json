@@ -152,11 +152,11 @@
 				"summary": "已回寫 ${suitesUpdated} 套件之預計時長（manifest ${filesChanged}），跳過 ${skipped} 無基線或已新"
 			},
 			"kernel": {
-				"incompatible": "用法：fount test --kernel shutdown|reboot（不能同时使用其他参数）",
-				"unknownAction": "未知内核操作：${action}（应为 shutdown 或 reboot）",
-				"alreadyDown": "测试内核未在运行",
-				"stopped": "测试内核已关闭",
-				"rebooted": "测试内核已重启"
+				"incompatible": "用法：fount test --kernel shutdown|reboot（不可同用他參）",
+				"unknownAction": "未知內核之操：${action}（當為 shutdown 或 reboot）",
+				"alreadyDown": "測核未行",
+				"stopped": "測核已止",
+				"rebooted": "測核已復"
 			},
 			"skipBecause": {
 				"pass": "略（issue 未闔，或已闔而未及延緩）：${label} — ${url}",

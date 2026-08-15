@@ -152,11 +152,11 @@
 				"summary": "Erwartete Laufzeiten für ${suitesUpdated} Suite(s) aktualisiert (${filesChanged} Manifest(e)); ${skipped} ohne Baseline oder bereits aktuell übersprungen"
 			},
 			"kernel": {
-				"incompatible": "Verwendung: fount test --kernel Shutdown|reboot (andere Parameter können nicht gleichzeitig verwendet werden)",
-				"unknownAction": "Unbekannte Kernel-Aktion: ${action} (erwartetes Herunterfahren oder Neustarten)",
-				"alreadyDown": "Der Testkernel läuft nicht",
-				"stopped": "Der Testkernel ist ausgefallen",
-				"rebooted": "Der Testkernel wurde neu gestartet"
+				"incompatible": "Verwendung: fount test --kernel shutdown|reboot (nicht mit anderen Optionen kombinierbar)",
+				"unknownAction": "Unbekannte Kernel-Aktion: ${action} (erwartet: shutdown oder reboot)",
+				"alreadyDown": "Test-Kernel läuft nicht",
+				"stopped": "Test-Kernel wurde beendet",
+				"rebooted": "Test-Kernel wurde neu gestartet"
 			},
 			"skipBecause": {
 				"pass": "Übersprungen (Issue noch offen oder geschlossen, Karenzzeit noch nicht abgelaufen): ${label} — ${url}",

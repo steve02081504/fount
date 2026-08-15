@@ -152,11 +152,11 @@
 				"summary": "Duraciones previstas actualizadas en ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); omitidas ${skipped} sin baseline o ya actualizadas"
 			},
 			"kernel": {
-				"incompatible": "Uso: prueba de fuente --apagado del kernel|reinicio (no se pueden usar otros parámetros al mismo tiempo)",
-				"unknownAction": "Acción desconocida del kernel: ${action} (apagado o reinicio esperado)",
-				"alreadyDown": "El kernel de prueba no se está ejecutando",
-				"stopped": "El kernel de prueba no funciona",
-				"rebooted": "El kernel de prueba se ha reiniciado"
+				"incompatible": "Uso: fount test --kernel shutdown|reboot (no se puede combinar con otras opciones)",
+				"unknownAction": "Acción de kernel desconocida: ${action} (se esperaba shutdown o reboot)",
+				"alreadyDown": "El kernel de prueba no está en ejecución",
+				"stopped": "Kernel de prueba detenido",
+				"rebooted": "Kernel de prueba reiniciado"
 			},
 			"skipBecause": {
 				"pass": "Omitido (issue aún abierta o cerrada pero sin cumplir el periodo de gracia): ${label} — ${url}",

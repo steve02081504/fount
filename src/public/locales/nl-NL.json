@@ -152,11 +152,11 @@
 				"summary": "Verwachte duur bijgewerkt voor ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ${skipped} overgeslagen zonder baseline of al actueel"
 			},
 			"kernel": {
-				"incompatible": "Gebruik: fount test --kernel shutdown|reboot (andere parameters kunnen niet tegelijkertijd worden gebruikt)",
-				"unknownAction": "Onbekende kernelactie: ${action} (verwacht afsluiten of opnieuw opstarten)",
-				"alreadyDown": "De testkernel is niet actief",
-				"stopped": "De testkernel is offline",
-				"rebooted": "De testkernel is opnieuw opgestart"
+				"incompatible": "Gebruik: fount test --kernel shutdown|reboot (kan niet worden gecombineerd met andere opties)",
+				"unknownAction": "Onbekende kernelactie: ${action} (verwacht: shutdown of reboot)",
+				"alreadyDown": "Testkernel draait niet",
+				"stopped": "Testkernel gestopt",
+				"rebooted": "Testkernel herstart"
 			},
 			"skipBecause": {
 				"pass": "Overgeslagen (issue nog open of gesloten maar respijtperiode nog niet verstreken): ${label} — ${url}",

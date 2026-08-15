@@ -152,11 +152,11 @@
 				"summary": "تم تحديث المدد المتوقعة لـ ${suitesUpdated} حزمة (${filesChanged} manifest)؛ تم تخطي ${skipped} بلا خط أساس أو محدّثة مسبقاً"
 			},
 			"kernel": {
-				"incompatible": "الاستخدام: اختبار النافورة - إيقاف تشغيل kernel | إعادة التشغيل (لا يمكن استخدام معلمات أخرى في نفس الوقت)",
-				"unknownAction": "إجراء kernel غير معروف: ${action} (إيقاف التشغيل أو إعادة التشغيل المتوقع)",
-				"alreadyDown": "نواة الاختبار لا تعمل",
-				"stopped": "نواة الاختبار معطلة",
-				"rebooted": "تمت إعادة تشغيل نواة الاختبار"
+				"incompatible": "الاستخدام: fount test --kernel shutdown|reboot (لا يمكن دمجه مع خيارات أخرى)",
+				"unknownAction": "إجراء kernel غير معروف: ${action} (المتوقع shutdown أو reboot)",
+				"alreadyDown": "نواة الاختبار غير قيد التشغيل",
+				"stopped": "تم إيقاف نواة الاختبار",
+				"rebooted": "تم إعادة تشغيل نواة الاختبار"
 			},
 			"skipBecause": {
 				"pass": "تم التخطي (المسألة ما زالت مفتوحة أو مُغلقة ولم تنتهِ فترة السماح): ${label} — ${url}",

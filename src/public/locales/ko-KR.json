@@ -152,11 +152,11 @@
 				"summary": "${suitesUpdated}개 suite의 예상 시간을 갱신함(manifest ${filesChanged}개). 기준선 없음 또는 이미 최신이라 ${skipped}개 건너뜀"
 			},
 			"kernel": {
-				"incompatible": "사용법: fount test --kernel shutdown|reboot (다른 매개변수를 동시에 사용할 수 없음)",
-				"unknownAction": "알 수 없는 커널 작업: ${action}(예상된 종료 또는 재부팅)",
-				"alreadyDown": "테스트 커널이 실행되고 있지 않습니다.",
-				"stopped": "테스트 커널이 다운되었습니다",
-				"rebooted": "테스트 커널이 다시 시작되었습니다"
+				"incompatible": "사용법: fount test --kernel shutdown|reboot (다른 옵션과 함께 사용할 수 없음)",
+				"unknownAction": "알 수 없는 커널 작업: ${action} (shutdown 또는 reboot 이어야 함)",
+				"alreadyDown": "테스트 커널이 실행 중이 아닙니다",
+				"stopped": "테스트 커널이 중지되었습니다",
+				"rebooted": "테스트 커널이 재시작되었습니다"
 			},
 			"skipBecause": {
 				"pass": "건너뜀(issue 열림 또는 닫힘 후 유예 기간 미경과): ${label} — ${url}",

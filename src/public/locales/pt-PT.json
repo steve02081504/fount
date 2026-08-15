@@ -152,11 +152,11 @@
 				"summary": "Durações previstas atualizadas em ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ignoradas ${skipped} sem baseline ou já atualizadas"
 			},
 			"kernel": {
-				"incompatible": "Uso: fount test --kernel shutdown|reboot (outros parâmetros não podem ser usados ​​ao mesmo tempo)",
-				"unknownAction": "Ação desconhecida do kernel: ${action} (desligamento ou reinicialização esperado)",
+				"incompatible": "Uso: fount test --kernel shutdown|reboot (não pode ser usado com outras opções)",
+				"unknownAction": "Ação de kernel desconhecida: ${action} (esperado shutdown ou reboot)",
 				"alreadyDown": "O kernel de teste não está em execução",
-				"stopped": "O kernel de teste está inativo",
-				"rebooted": "O kernel de teste foi reiniciado"
+				"stopped": "Kernel de teste encerrado",
+				"rebooted": "Kernel de teste reiniciado"
 			},
 			"skipBecause": {
 				"pass": "Ignorado (issue ainda aberta ou fechada mas período de carência não decorrido): ${label} — ${url}",

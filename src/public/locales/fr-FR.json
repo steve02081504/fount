@@ -152,11 +152,11 @@
 				"summary": "Durées prévues mises à jour pour ${suitesUpdated} suite(s) (${filesChanged} manifest(s)) ; ${skipped} ignorée(s) sans baseline ou déjà à jour"
 			},
 			"kernel": {
-				"incompatible": "Utilisation : font test --kernel shutdown|reboot (les autres paramètres ne peuvent pas être utilisés en même temps)",
-				"unknownAction": "Action du noyau inconnue : ${action} (arrêt ou redémarrage prévu)",
+				"incompatible": "Utilisation : fount test --kernel shutdown|reboot (ne peut pas être combiné avec d'autres options)",
+				"unknownAction": "Action du noyau inconnue : ${action} (attendu : shutdown ou reboot)",
 				"alreadyDown": "Le noyau de test n'est pas en cours d'exécution",
-				"stopped": "Le noyau de test est en panne",
-				"rebooted": "Le noyau de test a redémarré"
+				"stopped": "Noyau de test arrêté",
+				"rebooted": "Noyau de test redémarré"
 			},
 			"skipBecause": {
 				"pass": "Ignoré (issue encore ouverte ou fermée mais période de grâce non écoulée) : ${label} — ${url}",
