@@ -154,6 +154,28 @@
 			]
 		},
 		{
+			"name": "locale_md_align",
+			"expected": "1s",
+			"triggerFilter": {
+				"unignore": ["docs/EULA/*.md"]
+			},
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/locale_md_align.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/locale_md_align.mjs",
+				"src/scripts/checks/test/locale_md_align.test.mjs",
+				"docs/EULA/*.md"
+			]
+		},
+		{
 			"name": "jsdoc_no_english",
 			"expected": "3s",
 			"run": [
