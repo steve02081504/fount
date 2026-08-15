@@ -452,6 +452,14 @@ export type LocaleData = {
 			tempDir: {
 				blocked: string
 			}
+			eula: {
+				prompt: string
+				yn: string
+				required: string
+				declined: string
+				statusServerFailed: string
+				shuttingDownStatusServer: string
+			}
 			install: {
 				installingDependencies: string
 				compilingFavicon: string
@@ -462,6 +470,7 @@ export type LocaleData = {
 				permissionDeniedNotRoot: string
 				rootWarningAsRoot: string
 				rootWarningPreferUser: string
+				runnerUpdating: string
 			}
 			clean: {
 				removingCaches: string
