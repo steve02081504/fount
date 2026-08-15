@@ -608,6 +608,17 @@
 			"message": "Willkommen, Gäste von `${source}`!\nTee und Snacks haben wir leider nicht — nur einen herzlichen Gruß :)",
 			"dismiss": "Danke, ich schaue mich um"
 		},
+		"eula": {
+			"title": "Endbenutzer-Lizenzvereinbarung",
+			"agree": "Ich habe diese Vereinbarung gelesen und stimme ihr zu",
+			"continue": "weitermachen",
+			"continue_in": "Weiter (${seconds})",
+			"language": {
+				"aria-label": "Protokollsprache"
+			},
+			"loading": "Protokoll wird geladen…",
+			"load_failed": "Das Laden des Protokolls ist fehlgeschlagen."
+		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
 			"wait_text": "Bitte warten Sie einen Moment...",

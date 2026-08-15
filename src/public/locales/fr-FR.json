@@ -608,6 +608,17 @@
 			"message": "Bienvenue, visiteurs venus de `${source}` !\nPas de thé ni de gâteaux ici — juste un petit salut :)",
 			"dismiss": "Merci, je jette un œil"
 		},
+		"eula": {
+			"title": "Contrat de licence utilisateur final",
+			"agree": "J'ai lu et j'accepte cet accord",
+			"continue": "continuer",
+			"continue_in": "Continuer (${seconds})",
+			"language": {
+				"aria-label": "langage protocolaire"
+			},
+			"loading": "Chargement du protocole…",
+			"load_failed": "Le chargement du protocole a échoué."
+		},
 		"footer": {
 			"ready_text": "Prêt à commencer votre voyage ?",
 			"wait_text": "Veuillez patienter un instant...",

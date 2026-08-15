@@ -608,6 +608,17 @@
 			"message": "👋 ⬅️ ${source}\n🍵❌ 🍪❌ 👋 :)",
 			"dismiss": "👌👀"
 		},
+		"eula": {
+			"title": "最终用户许可协议",
+			"agree": "我已阅读并同意本协议",
+			"continue": "继续",
+			"continue_in": "继续（${seconds}）",
+			"language": {
+				"aria-label": "协议语言"
+			},
+			"loading": "正在加载协议…",
+			"load_failed": "协议加载失败。"
+		},
 		"footer": {
 			"ready_text": "🚀❓",
 			"wait_text": "⏳…",

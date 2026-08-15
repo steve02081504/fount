@@ -607,6 +607,17 @@
 			"message": "歡迎從 `${source}` 來的朋友！\n茶點沒備，只好獻上幾句問候 :)",
 			"dismiss": "好，隨便逛逛"
 		},
+		"eula": {
+			"title": "最終用戶許可協議",
+			"agree": "我已閱讀並同意本協議",
+			"continue": "繼續",
+			"continue_in": "繼續（${seconds}）",
+			"language": {
+				"aria-label": "協定語言"
+			},
+			"loading": "正在加載協定…",
+			"load_failed": "協議加載失敗。"
+		},
 		"footer": {
 			"ready_text": "準備好開始您的旅程了嗎？",
 			"wait_text": "請稍候片刻...",

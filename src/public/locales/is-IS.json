@@ -608,6 +608,17 @@
 			"message": "Velkomin, gestir frá `${source}`!\nEnginn te eða snarl hér — bara kveðja :)",
 			"dismiss": "Takk, ég skoða aðeins"
 		},
+		"eula": {
+			"title": "notendaleyfissamningi",
+			"agree": "Ég hef lesið og samþykki þennan samning",
+			"continue": "halda áfram",
+			"continue_in": "Halda áfram (${seconds})",
+			"language": {
+				"aria-label": "samskiptamál"
+			},
+			"loading": "Hleður samskiptareglu...",
+			"load_failed": "Ekki tókst að hlaða bókun."
+		},
 		"footer": {
 			"ready_text": "Tilbúin(n) að hefja ferðalagið?",
 			"wait_text": "Vinsamlegast bíðið augnablik...",

@@ -608,6 +608,17 @@
 			"message": "Chào mừng khách từ `${source}`!\nỞ đây không có trà hay bánh — chỉ là lời chào thôi :)",
 			"dismiss": "Cảm ơn, để tôi xem qua"
 		},
+		"eula": {
+			"title": "Thỏa thuận cấp phép người dùng cuối",
+			"agree": "Tôi đã đọc và đồng ý với thỏa thuận này",
+			"continue": "Tiếp tục",
+			"continue_in": "Tiếp tục (${seconds})",
+			"language": {
+				"aria-label": "ngôn ngữ giao thức"
+			},
+			"loading": "Đang tải giao thức…",
+			"load_failed": "Tải giao thức không thành công."
+		},
 		"footer": {
 			"ready_text": "Sẵn sàng bắt đầu hành trình của bạn?",
 			"wait_text": "Vui lòng đợi một lát...",

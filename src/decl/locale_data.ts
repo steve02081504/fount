@@ -576,6 +576,17 @@ export type LocaleData = {
 			message: string
 			dismiss: string
 		}
+		eula: {
+			title: string
+			agree: string
+			continue: string
+			continue_in: string
+			language: {
+				'aria-label': string
+			}
+			loading: string
+			load_failed: string
+		}
 		footer: {
 			ready_text: string
 			wait_text: string
@@ -6383,6 +6394,7 @@ export type LocaleKeyParams = {
 	'import.alerts.importFailed': { error: string | number }
 	'import.errors.fileImportFailed': { message: string | number }
 	'import.errors.textImportFailed': { message: string | number }
+	'installer_wait_screen.eula.continue_in': { seconds: string | number }
 	'installer_wait_screen.features.aiSources.description': { atlasCloudLink: string | number; evolinkLink: string | number }
 	'installer_wait_screen.footer.error_message': { error: string | number }
 	'installer_wait_screen.utm_welcome.message': { source: string | number }

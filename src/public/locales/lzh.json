@@ -608,6 +608,17 @@
 			"message": "歡迎 `${source}` 來客！\n此處無茶無點，僅致一問 :)",
 			"dismiss": "多謝，且隨意徜徉"
 		},
+		"eula": {
+			"title": "最终用户许可协议",
+			"agree": "我已阅读并同意本协议",
+			"continue": "继续",
+			"continue_in": "继续（${seconds}）",
+			"language": {
+				"aria-label": "协议语言"
+			},
+			"loading": "正在加载协议…",
+			"load_failed": "协议加载失败。"
+		},
 		"footer": {
 			"ready_text": "啟程？",
 			"wait_text": "稍安勿躁...",

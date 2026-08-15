@@ -608,6 +608,17 @@
 			"message": "Welkom, bezoekers van `${source}`!\nGeen thee of koekjes hier — alleen een vriendelijke groet :)",
 			"dismiss": "Bedankt, ik kijk even rond"
 		},
+		"eula": {
+			"title": "Licentieovereenkomst voor eindgebruikers",
+			"agree": "Ik heb deze overeenkomst gelezen en ga hiermee akkoord",
+			"continue": "doorgaan",
+			"continue_in": "Doorgaan (${seconds})",
+			"language": {
+				"aria-label": "protocol taal"
+			},
+			"loading": "Protocol laden…",
+			"load_failed": "Het laden van het protocol is mislukt."
+		},
 		"footer": {
 			"ready_text": "Klaar om je reis te beginnen?",
 			"wait_text": "Een ogenblik geduld...",

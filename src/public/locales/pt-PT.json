@@ -608,6 +608,17 @@
 			"message": "Bem-vindos, visitantes de `${source}`!\nNão temos chá nem petiscos — apenas um cumprimento :)",
 			"dismiss": "Obrigado, vou dar uma vista de olhos"
 		},
+		"eula": {
+			"title": "Contrato de licença de usuário final",
+			"agree": "Eu li e concordo com este acordo",
+			"continue": "continuar",
+			"continue_in": "Continuar (${seconds})",
+			"language": {
+				"aria-label": "linguagem de protocolo"
+			},
+			"loading": "Carregando protocolo…",
+			"load_failed": "Falha no carregamento do protocolo."
+		},
 		"footer": {
 			"ready_text": "Pronto para começar a sua jornada?",
 			"wait_text": "Aguarde um momento...",
