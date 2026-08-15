@@ -12,10 +12,6 @@ import {
 
 /** 构建时替换为当前 git 引用（分支名；detached 时为 commit）。远端按 ref 取文件，未 push 的 SHA 会 404。 */
 const FOUNT_GIT_REF = '__FOUNT_GIT_REF__'
-const EULA_FETCH_TIMEOUT_MS = 8000
-/** 本机 runner 探测 / 通知的短超时。 */
-export const INSTALLER_PROBE_TIMEOUT_MS = 1500
-const EULA_NOTIFY_DEADLINE_MS = 10_000
 const EULA_NOTIFY_RETRY_MS = 400
 const EULA_CANCELLED = 'cancelled'
 
@@ -93,7 +89,7 @@ function eulaMarkdownUrls(locale) {
 }
 
 /**
- * 按 URL 列表依次拉取文本；空正文与非 2xx、超时均记错并试下一个。
+ * 按 URL 列表依次拉取文本；空正文与非 2xx 记错并试下一个。
  * @param {string[]} urls 候选
  * @param {AbortSignal} signal 取消
  * @returns {Promise<string>} 正文
@@ -102,9 +98,7 @@ async function fetchTextFallback(urls, signal) {
 	let lastError
 	for (const url of urls)
 		try {
-			const response = await fetch(url, {
-				signal: AbortSignal.any([signal, AbortSignal.timeout(EULA_FETCH_TIMEOUT_MS)]),
-			})
+			const response = await fetch(url, { signal })
 			if (!response.ok) {
 				lastError = new Error(`${response.status} ${url}`)
 				continue
@@ -117,7 +111,7 @@ async function fetchTextFallback(urls, signal) {
 			return text
 		}
 		catch (error) {
-			if (error?.name === 'AbortError' && signal.aborted) throw error
+			if (error?.name === 'AbortError') throw error
 			lastError = error
 		}
 
@@ -306,23 +300,13 @@ function startInstallerDownload() {
  * @returns {Promise<void>}
  */
 export async function notifyRunnerEulaAccepted() {
-	const deadline = Date.now() + EULA_NOTIFY_DEADLINE_MS
-	let lastError
-	while (Date.now() < deadline) {
+	while (true) {
 		try {
-			const response = await fetch(`${INSTALLER_STATUS_ORIGIN}/eula`, {
-				cache: 'no-store',
-				signal: AbortSignal.timeout(INSTALLER_PROBE_TIMEOUT_MS),
-			})
-			if (response.ok) return
-			lastError = new Error(`${response.status} ${INSTALLER_STATUS_ORIGIN}/eula`)
+			if ((await fetch(`${INSTALLER_STATUS_ORIGIN}/eula`, { cache: 'no-store' })).ok) return
 		}
-		catch (error) {
-			lastError = error
-		}
+		catch { /* 安装器尚未就绪 */ }
 		await new Promise(resolve => setTimeout(resolve, EULA_NOTIFY_RETRY_MS))
 	}
-	throw lastError || new Error('EULA notify timed out')
 }
 
 /**
@@ -350,10 +334,7 @@ export function watchRunnerEulaAcceptance() {
 			return
 		}
 		try {
-			const response = await fetch(INSTALLER_STATUS_ORIGIN, {
-				cache: 'no-store',
-				signal: AbortSignal.timeout(INSTALLER_PROBE_TIMEOUT_MS),
-			})
+			const response = await fetch(INSTALLER_STATUS_ORIGIN, { cache: 'no-store' })
 			if (response.ok) {
 				const data = await response.json()
 				if (data?.eula === 'accepted') {
