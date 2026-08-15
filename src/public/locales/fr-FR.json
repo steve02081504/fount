@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "L'acceptation de l'EULA est requise. Définissez `FOUNT_ACCEPT_EULA=1` puis relancez, ou exécutez depuis un terminal interactif.",
 				"declined": "EULA refusée. Suppression de fount.",
-				"statusServerFailed": "Avertissement : impossible de démarrer le serveur d'état d'installation. L'EULA s'affichera dans ce terminal.",
-				"shuttingDownStatusServer": "Arrêt du serveur d'état d'installation…"
+				"statusServerFailed": "Avertissement : impossible de démarrer le serveur d'état d'installation. L'EULA s'affichera dans ce terminal."
 			},
 			"install": {
 				"installingDependencies": "Installation des dépendances...",
@@ -619,14 +618,14 @@
 		},
 		"eula": {
 			"title": "Contrat de licence utilisateur final",
-			"agree": "J'ai lu et j'accepte cet accord",
+			"agree": "J'ai lu et j'accepte ce contrat",
 			"continue": "Continuer",
 			"continue_in": "Continuer (${seconds})",
 			"language": {
-				"aria-label": "Langue de l'accord"
+				"aria-label": "Langue du contrat"
 			},
-			"loading": "Chargement de l'accord…",
-			"load_failed": "Échec du chargement de l'accord."
+			"loading": "Chargement du contrat…",
+			"load_failed": "Échec du chargement du contrat."
 		},
 		"footer": {
 			"ready_text": "Prêt à commencer votre voyage ?",

@@ -4,8 +4,7 @@ cmd_open() {
 	shift
 	if [ -f "$FOUNT_DIR/data/config.json" ]; then
 		handle_docker_passthrough open "$@"
-		TARGET_URL='https://steve02081504.github.io/fount/wait?cold_bootting=true'
-		open_url_in_browser "$TARGET_URL"
+		open_url_in_browser 'https://steve02081504.github.io/fount/wait?cold_bootting=true'
 		"$0" "$@"
 		exit $?
 	fi
@@ -24,6 +23,7 @@ cmd_open() {
 	fi
 
 	install_ipc_tools
+	trap_terminal_teardown stop_fount_status_server
 	start_fount_status_server
 	if [[ -z "${STATUS_SERVER_PID:-}" ]]; then
 		print_i18n_yellow 'eula.statusServerFailed'

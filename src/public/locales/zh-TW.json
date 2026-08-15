@@ -473,8 +473,7 @@
 				"yn": "[Y/N] ",
 				"required": "須先同意 EULA 才能繼續。請設定 `FOUNT_ACCEPT_EULA=1` 後重試，或在互動式終端機中執行。",
 				"declined": "您已拒絕 EULA，正在移除 fount。",
-				"statusServerFailed": "警告：無法啟動安裝狀態服務，將在本終端機提示 EULA。",
-				"shuttingDownStatusServer": "正在關閉安裝狀態服務…"
+				"statusServerFailed": "警告：無法啟動安裝狀態服務，將在本終端機提示 EULA。"
 			},
 			"install": {
 				"installingDependencies": "正在安裝相依套件...",

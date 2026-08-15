@@ -143,8 +143,7 @@ function ensureLocaleOptions() {
  */
 function syncContinueButton() {
 	const remaining = Math.max(0, Math.ceil((continueAt - Date.now()) / 1000))
-	const ready = eulaLoaded && eulaAgree.checked && remaining === 0
-	eulaContinue.disabled = !ready
+	eulaContinue.disabled = !(eulaLoaded && eulaAgree.checked && remaining === 0)
 	if (remaining > 0)
 		setElementI18n(eulaContinue, 'installer_wait_screen.eula.continue_in', { seconds: remaining })
 	else
@@ -200,8 +199,7 @@ async function loadEula(locale) {
 	try {
 		const markdown = await fetchTextFallback(eulaMarkdownUrls(locale), abort.signal)
 		if (abort.signal.aborted) return
-		const html = marked.parse(markdown, { async: false })
-		eulaBody.innerHTML = html
+		eulaBody.innerHTML = marked.parse(markdown, { async: false })
 		eulaBody.lang = locale
 		eulaBody.dir = locale.startsWith('ar') ? 'rtl' : 'ltr'
 		eulaLoaded = true

@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "계속하려면 EULA에 동의해야 합니다. `FOUNT_ACCEPT_EULA=1`을 설정한 뒤 다시 실행하거나, 대화형 터미널에서 실행하세요.",
 				"declined": "EULA가 거부되었습니다. fount를 제거하는 중입니다.",
-				"statusServerFailed": "경고: 설치 상태 서버를 시작하지 못했습니다. 이 터미널에서 EULA를 표시합니다.",
-				"shuttingDownStatusServer": "설치 상태 서버를 종료하는 중…"
+				"statusServerFailed": "경고: 설치 상태 서버를 시작하지 못했습니다. 이 터미널에서 EULA를 표시합니다."
 			},
 			"install": {
 				"installingDependencies": "종속성 설치 중...",

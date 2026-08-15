@@ -6,7 +6,7 @@ import { mkdir, mkdtemp, writeFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
+import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { createPagesApp } from '../playwright/pages_server.mjs'
 
@@ -69,18 +69,40 @@ Deno.test('directory route hooked HTML uses html Content-Type', async () => {
 Deno.test('hooked file cache is per createPagesApp instance', async () => {
 	const rootA = await makePagesRoot('site-a')
 	const rootB = await makePagesRoot('site-b')
-	const a = await listenApp(createPagesApp(rootA))
-	const b = await listenApp(createPagesApp(rootB))
+	const siteA = await listenApp(createPagesApp(rootA))
+	const siteB = await listenApp(createPagesApp(rootB))
 	try {
-		const textA = await (await fetch(`http://127.0.0.1:${a.port}/fount/EULA/`)).text()
-		const textB = await (await fetch(`http://127.0.0.1:${b.port}/fount/EULA/`)).text()
+		const textA = await (await fetch(`http://127.0.0.1:${siteA.port}/fount/EULA/`)).text()
+		const textB = await (await fetch(`http://127.0.0.1:${siteB.port}/fount/EULA/`)).text()
 		assertStringIncludes(textA, 'site-a')
 		assertStringIncludes(textB, 'site-b')
 	}
 	finally {
-		await a.close()
-		await b.close()
+		await siteA.close()
+		await siteB.close()
 		await rm(rootA, { recursive: true, force: true })
 		await rm(rootB, { recursive: true, force: true })
+	}
+})
+
+Deno.test('hooked pages reject Windows-style path escape', async () => {
+	const root = await makePagesRoot('public-eula')
+	const leaked = join(root, '.github', 'pages-private')
+	await mkdir(leaked, { recursive: true })
+	await writeFile(
+		join(leaked, 'secret.html'),
+		'<!DOCTYPE html><html><body>LEAKED-PRIVATE __FOUNT_GIT_REF__</body></html>\n',
+		'utf8',
+	)
+	const app = createPagesApp(root)
+	const { port, close } = await listenApp(app)
+	try {
+		const response = await fetch(`http://127.0.0.1:${port}/fount/x%5C..%5C..%5Cpages-private/secret.html`)
+		const text = await response.text()
+		assert(!text.includes('LEAKED-PRIVATE'), text)
+	}
+	finally {
+		await close()
+		await rm(root, { recursive: true, force: true })
 	}
 })

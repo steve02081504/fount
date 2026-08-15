@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "须先同意 EULA 才能继续。请设置 `FOUNT_ACCEPT_EULA=1` 后重试，或在交互式终端中运行。",
 				"declined": "您已拒绝 EULA，正在移除 fount。",
-				"statusServerFailed": "警告：无法启动安装状态服务，将在本终端提示 EULA。",
-				"shuttingDownStatusServer": "正在关闭安装状态服务…"
+				"statusServerFailed": "警告：无法启动安装状态服务，将在本终端提示 EULA。"
 			},
 			"install": {
 				"installingDependencies": "正在安装依赖...",

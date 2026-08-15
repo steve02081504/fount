@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "🚫➡️ 📜 EULA | `FOUNT_ACCEPT_EULA=1` 🔄 | 💻🗣️",
 				"declined": "❌ 📜 EULA ➡️ 🗑️ ⛲",
-				"statusServerFailed": "⚠️ 🖥️📊 🚫 ➡️ 💻📜 EULA",
-				"shuttingDownStatusServer": "🛑 🖥️📊…"
+				"statusServerFailed": "⚠️ 🖥️📊 🚫 ➡️ 💻📜 EULA"
 			},
 			"install": {
 				"installingDependencies": "📥🧩…",

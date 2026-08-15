@@ -115,6 +115,10 @@ async function assertRedirectCoversStem(htmlRel, dir, stem, blobNeedle) {
 
 Deno.test('resolveDocLocale maps tags, prefixes, and unknown to en-UK', () => {
 	assertEquals(resolveDocLocale('zh-HK'), 'zh-TW')
+	assertEquals(resolveDocLocale('zh-Hant'), 'zh-TW')
+	assertEquals(resolveDocLocale('zh-hant-hk'), 'zh-TW')
+	assertEquals(resolveDocLocale('zh-Hans'), 'zh-CN')
+	assertEquals(resolveDocLocale('zh-hans-cn'), 'zh-CN')
 	assertEquals(resolveDocLocale('en-GB'), 'en-UK')
 	assertEquals(resolveDocLocale('pt-BR'), 'pt-PT')
 	assertEquals(resolveDocLocale('ja'), 'ja-JP')
@@ -126,7 +130,7 @@ Deno.test('pages readme redirect and root flags cover docs/readme locales', asyn
 		'.github/pages/readme/index.html',
 		'docs/readme',
 		'Readme',
-		'docs/readme/Readme.',
+		'docs/readme/Readme',
 	)
 	const rootReadme = await readFile(join(REPO_ROOT, 'README.md'), 'utf8')
 	const files = (await readdir(join(REPO_ROOT, 'docs/readme')))
@@ -142,6 +146,6 @@ Deno.test('pages EULA redirect covers docs/EULA locales', async () => {
 		'.github/pages/EULA/index.html',
 		'docs/EULA',
 		'EULA',
-		'docs/EULA/EULA.',
+		'docs/EULA/EULA',
 	)
 })

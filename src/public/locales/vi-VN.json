@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "Bạn phải chấp nhận EULA để tiếp tục. Đặt `FOUNT_ACCEPT_EULA=1` rồi chạy lại, hoặc chạy từ terminal tương tác.",
 				"declined": "Đã từ chối EULA. Đang gỡ fount.",
-				"statusServerFailed": "Cảnh báo: không thể khởi động máy chủ trạng thái cài đặt. EULA sẽ hiển thị trong terminal này.",
-				"shuttingDownStatusServer": "Đang tắt máy chủ trạng thái cài đặt…"
+				"statusServerFailed": "Cảnh báo: không thể khởi động máy chủ trạng thái cài đặt. EULA sẽ hiển thị trong terminal này."
 			},
 			"install": {
 				"installingDependencies": "Đang cài đặt các phần phụ thuộc...",

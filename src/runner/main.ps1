@@ -323,7 +323,6 @@ try {
 finally {
 	Write-TaskbarProgressClear
 	if ($null -ne $statusServerJob) {
-		Write-Host (Get-I18n -key 'eula.shuttingDownStatusServer')
 		$statusServerJob | Stop-Job
 		$statusServerJob | Remove-Job
 	}

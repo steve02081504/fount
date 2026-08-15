@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "يجب الموافقة على EULA للمتابعة. اضبط `FOUNT_ACCEPT_EULA=1` ثم أعد التشغيل، أو نفّذ الأمر من طرفية تفاعلية.",
 				"declined": "تم رفض EULA. جارٍ إزالة fount.",
-				"statusServerFailed": "تحذير: تعذّر تشغيل خادم حالة التثبيت. سيُعرض EULA في هذه الطرفية.",
-				"shuttingDownStatusServer": "جارٍ إيقاف خادم حالة التثبيت…"
+				"statusServerFailed": "تحذير: تعذّر تشغيل خادم حالة التثبيت. سيُعرض EULA في هذه الطرفية."
 			},
 			"install": {
 				"installingDependencies": "تثبيت التبعيات...",

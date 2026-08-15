@@ -54,6 +54,17 @@ function hookedPagesCandidates(relPath) {
 }
 
 /**
+ * 解析后的路径是否仍在 pages 根内（不用 startsWith，避免 Windows 前缀误判）。
+ * @param {string} pagesRoot pages 根
+ * @param {string} target 目标路径
+ * @returns {boolean} 在根内
+ */
+function isInsidePagesRoot(pagesRoot, target) {
+	const relative = path.relative(path.resolve(pagesRoot), path.resolve(target))
+	return relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative)
+}
+
+/**
  * 读取并替换含占位符的 Pages 文件。
  * @param {string} pagesRoot `.github/pages` 绝对路径
  * @param {string} relPath 相对路径
@@ -64,6 +75,7 @@ async function getHookedPagesFile(pagesRoot, relPath, cache) {
 	for (const candidate of hookedPagesCandidates(relPath)) {
 		if (cache[candidate]) return { body: cache[candidate], relPath: candidate }
 		const fullPath = path.join(pagesRoot, candidate)
+		if (!isInsidePagesRoot(pagesRoot, fullPath)) continue
 		let source
 		try {
 			source = await fs.readFile(fullPath, 'utf8')
@@ -143,10 +155,12 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 	const pagesRoot = path.join(projectRoot, '.github', 'pages')
 	app.use('/fount', async (req, res, next) => {
 		if (req.method !== 'GET' && req.method !== 'HEAD') return next()
-		const relPath = path.posix.normalize(decodeURIComponent(req.path.replace(/^\//, '')))
-		if (relPath.startsWith('..')) return next()
+		const relPath = path.posix.normalize(
+			decodeURIComponent(req.path.replace(/^\//, '')).replaceAll('\\', '/'),
+		)
+		if (relPath === '..' || relPath.startsWith('../')) return next()
 		const abs = path.resolve(pagesRoot, relPath)
-		if (!abs.startsWith(path.resolve(pagesRoot))) return next()
+		if (!isInsidePagesRoot(pagesRoot, abs)) return next()
 		const hooked = await getHookedPagesFile(pagesRoot, relPath, hooked_file_cache)
 		if (hooked == null) return next()
 		res.type(pagesFileContentType(hooked.relPath)).send(hooked.body)

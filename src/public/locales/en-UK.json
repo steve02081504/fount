@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "You must accept the EULA to continue. Set `FOUNT_ACCEPT_EULA=1` and try again, or run from an interactive terminal.",
 				"declined": "EULA declined. Removing fount.",
-				"statusServerFailed": "Warning: Could not start the installation status server. Showing the EULA prompt in this terminal instead.",
-				"shuttingDownStatusServer": "Shutting down installation status server…"
+				"statusServerFailed": "Warning: Could not start the installation status server. Showing the EULA prompt in this terminal instead."
 			},
 			"install": {
 				"installingDependencies": "Installing dependencies...",

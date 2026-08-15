@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "Es necesario aceptar la EULA para continuar. Establezca `FOUNT_ACCEPT_EULA=1` y vuelva a ejecutar, o ejecútelo desde una terminal interactiva.",
 				"declined": "EULA rechazada. Eliminando fount.",
-				"statusServerFailed": "Advertencia: no se pudo iniciar el servidor de estado de instalación. Se mostrará la EULA en esta terminal.",
-				"shuttingDownStatusServer": "Cerrando el servidor de estado de instalación…"
+				"statusServerFailed": "Advertencia: no se pudo iniciar el servidor de estado de instalación. Se mostrará la EULA en esta terminal."
 			},
 			"install": {
 				"installingDependencies": "Instalando dependencias...",

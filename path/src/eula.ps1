@@ -43,11 +43,13 @@ function script:Start-FountStatusServer {
 				$response = $context.Response
 				$response.AddHeader("Access-Control-Allow-Origin", "https://steve02081504.github.io")
 				$path = $context.Request.Url.AbsolutePath.TrimEnd('/')
-				if ($path -eq '/eula') {
+				$method = $context.Request.HttpMethod
+				$origin = $context.Request.Headers['Origin']
+				if ($method -eq 'GET' -and $path -eq '/eula' -and $origin -eq 'https://steve02081504.github.io') {
 					Set-Content -LiteralPath $AcceptFile -Value '1' -Encoding ascii
 				}
 				$eula = if (Test-Path -LiteralPath $AcceptFile) { 'accepted' } else { 'pending' }
-				$message = if ($path -eq '/eula') { 'accepted' } else { 'pong' }
+				$message = if ($eula -eq 'accepted') { 'accepted' } else { 'pong' }
 				$buffer = [System.Text.Encoding]::UTF8.GetBytes("{`"message`":`"$message`",`"eula`":`"$eula`"}")
 				$response.ContentType = "application/json"
 				$response.ContentLength64 = $buffer.Length

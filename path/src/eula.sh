@@ -25,12 +25,26 @@ write_fount_status_handler() {
 #!/usr/bin/env bash
 req=""
 IFS= read -r req || true
+req="${req%$'\r'}"
+method="${req%% *}"
+req_rest="${req#* }"
+req_path="${req_rest%% *}"
+req_path="${req_path%%\?*}"
+[[ "$req_path" == */ && "$req_path" != / ]] && req_path="${req_path%/}"
+origin=""
 while IFS= read -r -t 2 line && [[ "$line" != $'\r' && -n "$line" ]]; do
-	:
+	line="${line%$'\r'}"
+	case "$line" in
+	[Oo][Rr][Ii][Gg][Ii][Nn]:*)
+		origin="${line#*:}"
+		origin="${origin#"${origin%%[![:space:]]*}"}"
+		origin="${origin%"${origin##*[![:space:]]}"}"
+		;;
+	esac
 done
-case "$req" in
-*"/eula"*) : > "${EULA_ACCEPT_FILE}" ;;
-esac
+if [[ "$method" == GET && "$req_path" == /eula && "$origin" == https://steve02081504.github.io ]]; then
+	: > "${EULA_ACCEPT_FILE}"
+fi
 msg=pong
 eula=pending
 if [[ -f "${EULA_ACCEPT_FILE}" ]]; then

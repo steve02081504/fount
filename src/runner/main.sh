@@ -68,7 +68,6 @@ fi
 # shellcheck disable=SC2329 # trap中有调用
 cleanup() {
 	if [[ -n "${STATUS_SERVER_PID:-}" ]]; then
-		get_i18n 'eula.shuttingDownStatusServer'
 		stop_fount_status_server
 	fi
 	if [[ "${EULA_DECLINED:-0}" -eq 1 ]] && type uninstall_auto_packages &>/dev/null; then
@@ -398,12 +397,7 @@ else
 
 	import_fount_locale
 
-	need_eula=0
 	if [[ $IN_DOCKER -eq 0 && "$accept_eula" -eq 0 ]]; then
-		need_eula=1
-	fi
-
-	if [[ "$need_eula" -eq 1 ]]; then
 		if [[ ! -r /dev/tty ]]; then
 			print_i18n_red 'eula.required' >&2
 			echo "$FOUNT_EULA_URL" >&2

@@ -32,21 +32,21 @@ Deno.test('eula and runner scripts do not hardcode the EULA prompt', async () =>
 })
 
 Deno.test('runner installs fount before loading locale and prompting EULA', async () => {
-	const sh = await readFile(runnerShPath, 'utf8')
-	const ps1 = await readFile(runnerPs1Path, 'utf8')
-	const shFlow = sh.slice(sh.indexOf('install_package "git"'))
-	assert(shFlow.indexOf('install_fount_tree') < shFlow.indexOf('import_fount_locale'), 'bash: clone before locale')
-	assert(shFlow.indexOf('import_fount_locale') < shFlow.indexOf('confirm_fount_eula'), 'bash: locale before EULA prompt')
+	const runnerSh = await readFile(runnerShPath, 'utf8')
+	const runnerPs1 = await readFile(runnerPs1Path, 'utf8')
+	const bashFlow = runnerSh.slice(runnerSh.indexOf('install_package "git"'))
+	assert(bashFlow.indexOf('install_fount_tree') < bashFlow.indexOf('import_fount_locale'), 'bash: clone before locale')
+	assert(bashFlow.indexOf('import_fount_locale') < bashFlow.indexOf('confirm_fount_eula'), 'bash: locale before EULA prompt')
 
-	const psFlow = ps1.slice(ps1.indexOf('$statusServerJob = $null'))
-	assert(psFlow.indexOf('Install-FountTree') < psFlow.indexOf('Import-FountLocale'), 'pwsh: clone before locale')
-	assert(psFlow.indexOf('Import-FountLocale') < psFlow.indexOf('Confirm-FountEula'), 'pwsh: locale before EULA prompt')
+	const powerShellFlow = runnerPs1.slice(runnerPs1.indexOf('$statusServerJob = $null'))
+	assert(powerShellFlow.indexOf('Install-FountTree') < powerShellFlow.indexOf('Import-FountLocale'), 'pwsh: clone before locale')
+	assert(powerShellFlow.indexOf('Import-FountLocale') < powerShellFlow.indexOf('Confirm-FountEula'), 'pwsh: locale before EULA prompt')
 })
 
 Deno.test('Get-I18n loads eula.prompt from the fount locale tree', async () => {
-	const zh = JSON.parse(await readFile(zhCnPath, 'utf8'))
-	const expected = zh.fountConsole.path.eula.prompt
-	assertEquals(typeof expected, 'string')
+	const zhCnLocale = JSON.parse(await readFile(zhCnPath, 'utf8'))
+	const expectedPrompt = zhCnLocale.fountConsole.path.eula.prompt
+	assertEquals(typeof expectedPrompt, 'string')
 
 	const powerShellResult = await pwsh_exec(`
 $FOUNT_DIR = ${JSON.stringify(REPO_ROOT)}
@@ -55,7 +55,7 @@ $env:FOUNT_LOCALE = 'zh-CN'
 Get-I18n -key 'eula.prompt'
 `)
 	assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
-	assertStringIncludes(powerShellResult.stdout, expected)
+	assertStringIncludes(powerShellResult.stdout, expectedPrompt)
 })
 
 Deno.test('FOUNT_ACCEPT_EULA matches only exact 1/true/yes', async () => {
@@ -86,6 +86,19 @@ Deno.test('status handler CORS allows only GitHub Pages origin', async () => {
 	assert(!sh.includes('Access-Control-Allow-Origin: *'), eulaShPath)
 	assertStringIncludes(ps1, 'https://steve02081504.github.io')
 	assert(!ps1.includes('Access-Control-Allow-Origin", "*"'), eulaPs1Path)
+})
+
+Deno.test('status handler writes accept file only for GET /eula from GitHub Pages', async () => {
+	const sh = await readFile(eulaShPath, 'utf8')
+	const ps1 = await readFile(eulaPs1Path, 'utf8')
+	assert(!sh.includes('*"/eula"*'), eulaShPath)
+	assertStringIncludes(sh, '"$method" == GET')
+	assertStringIncludes(sh, '"$req_path" == /eula')
+	assertStringIncludes(sh, '"$origin" == https://steve02081504.github.io')
+	assertStringIncludes(ps1, 'HttpMethod')
+	assertStringIncludes(ps1, 'Headers[\'Origin\']')
+	assertStringIncludes(ps1, '$path -eq \'/eula\'')
+	assertStringIncludes(ps1, '$origin -eq \'https://steve02081504.github.io\'')
 })
 
 Deno.test('open cmd exits 1 when EULA is not accepted', async () => {

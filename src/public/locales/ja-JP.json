@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "続行するには EULA への同意が必要です。`FOUNT_ACCEPT_EULA=1` を設定して再実行するか、対話型ターミナルから実行してください。",
 				"declined": "EULA が拒否されました。fount を削除しています。",
-				"statusServerFailed": "警告：インストール状態サーバーを起動できませんでした。このターミナルで EULA を表示します。",
-				"shuttingDownStatusServer": "インストール状態サーバーを終了しています…"
+				"statusServerFailed": "警告：インストール状態サーバーを起動できませんでした。このターミナルで EULA を表示します。"
 			},
 			"install": {
 				"installingDependencies": "依存関係をインストールしています...",

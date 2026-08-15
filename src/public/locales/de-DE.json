@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "Die Annahme der EULA ist erforderlich. Setzen Sie `FOUNT_ACCEPT_EULA=1` und führen Sie den Vorgang erneut aus, oder starten Sie ihn in einem interaktiven Terminal.",
 				"declined": "EULA abgelehnt. fount wird entfernt.",
-				"statusServerFailed": "Warnung: Der Installationsstatus-Server konnte nicht gestartet werden. Die EULA wird in diesem Terminal angezeigt.",
-				"shuttingDownStatusServer": "Installationsstatus-Server wird heruntergefahren…"
+				"statusServerFailed": "Warnung: Der Installationsstatus-Server konnte nicht gestartet werden. Die EULA wird in diesem Terminal angezeigt."
 			},
 			"install": {
 				"installingDependencies": "Abhängigkeiten werden installiert...",

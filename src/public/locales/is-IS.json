@@ -474,8 +474,7 @@
 				"yn": "[Y/N] ",
 				"required": "Samþykki EULA er nauðsynlegt til að halda áfram. Stilltu `FOUNT_ACCEPT_EULA=1` og keyrðu aftur, eða keyrðu úr gagnvirkri skel.",
 				"declined": "EULA hafnað. Fjarlægir fount.",
-				"statusServerFailed": "Aðvörun: Gat ekki ræst uppsetningarstöðuþjón. EULA verður sýnd í þessari skel.",
-				"shuttingDownStatusServer": "Slökkt á uppsetningarstöðuþjóni…"
+				"statusServerFailed": "Aðvörun: Gat ekki ræst uppsetningarstöðuþjón. EULA verður sýnd í þessari skel."
 			},
 			"install": {
 				"installingDependencies": "Setur upp ósjálfstæði...",

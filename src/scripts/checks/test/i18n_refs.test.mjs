@@ -108,7 +108,7 @@ Deno.test('extract + scan catches data-i18n leave parent and CLI stale keys', ()
 	assertEquals(jsIssues.filter(i => i.key === 'chat.hub.group.context.leave.ok').length, 0)
 
 	const staleCli = 'Write-Host (Get-I18n -key \'remove.removingFount\')\nget_i18n \'remove.removing.fount.main\'\nprint_i18n_red \'eula.required\'\n'
-	assertEquals(extractFountConsolePathKeys(staleCli).map(r => r.key), [
+	assertEquals(extractFountConsolePathKeys(staleCli).map(reference => reference.key), [
 		'remove.removingFount',
 		'remove.removing.fount.main',
 		'eula.required',

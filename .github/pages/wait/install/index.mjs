@@ -717,8 +717,7 @@ async function handleInstallerFlow() {
 async function handleStandaloneFlow() {
 	launchButtonSpinner.style.display = 'none'
 
-	const forceInstall = Boolean(globalThis.fount?.test?.forceInstall)
-	const savedHostUrl = forceInstall ? '' : await getFountHostUrl()
+	const savedHostUrl = globalThis.fount?.test?.forceInstall ? '' : await getFountHostUrl()
 
 	if (savedHostUrl) {
 		launchButtonText.dataset.i18n = 'installer_wait_screen.footer.open_fount'
