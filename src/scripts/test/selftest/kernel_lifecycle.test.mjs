@@ -10,7 +10,7 @@ import { assertEquals, assertRejects } from 'jsr:@std/assert'
 import { execFile } from 'npm:@steve02081504/exec'
 
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
-import { testHubUrl } from '../hub/index.mjs'
+import { startTestHub, testHubUrl } from '../hub/index.mjs'
 import { kernelHealthy, parseNetstatListenPid, rebootTestKernel, shutdownTestKernel } from '../kernel/ensure.mjs'
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
@@ -405,6 +405,17 @@ Deno.test('shutdownTestKernel returns already_down when nothing is listening', a
 	assertEquals(await shutdownTestKernel({ port: CONTROL_PORT + 1, timeoutMs: 1000 }), 'already_down')
 })
 
+Deno.test('kernelHealthy rejects generic hub /health', async () => {
+	const hub = await startTestHub({ port: CONTROL_PORT + 5 })
+	try {
+		assertEquals(await kernelHealthy(hub.url), false)
+		assertEquals(await shutdownTestKernel({ port: CONTROL_PORT + 5, timeoutMs: 1000 }), 'already_down')
+	}
+	finally {
+		await hub.close()
+	}
+})
+
 Deno.test('shutdownTestKernel stops a running kernel', async () => {
 	const handle = await startTestKernel({
 		port: CONTROL_PORT + 2,
@@ -439,11 +450,16 @@ Deno.test('kernel close aborts running suites', async () => {
 		})
 		const aborted = new Promise(resolve => {
 			abort.signal.addEventListener('abort', () => {
-				handle.kernel.running.delete('testkit:__abort__')
-				resolve()
+				setTimeout(() => {
+					handle.kernel.running.delete('testkit:__abort__')
+					resolve()
+				}, 80)
 			}, { once: true })
 		})
-		await handle.close()
+		const closing = handle.close()
+		assertEquals(handle.kernel.running.has('testkit:__abort__'), true)
+		await awaitWithTimeout(closing, 'close returned before running suite drained')
+		assertEquals(handle.kernel.running.size, 0)
 		await awaitWithTimeout(aborted, 'close did not abort running suite')
 	}
 	finally {

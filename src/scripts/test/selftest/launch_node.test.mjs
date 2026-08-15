@@ -36,6 +36,7 @@ Deno.test('launchNode worker exit and stopNode', async () => {
 	/** @type {unknown[]} */
 	const rejections = []
 	/**
+	 * 收集未处理拒绝原因。
 	 * @param {unknown} reason 拒绝原因
 	 * @returns {void}
 	 */

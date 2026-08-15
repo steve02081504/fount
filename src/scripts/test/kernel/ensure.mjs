@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { TEST_KERNEL_HEALTH_ID } from '../hub/apis/health.mjs'
 import { TEST_HUB_PORT, testHubUrl } from '../hub/index.mjs'
 
 const execFile = promisify(execFileCallback)
@@ -28,7 +29,9 @@ const KILL_AFTER_MS = 2000
 export async function kernelHealthy(url) {
 	try {
 		const res = await fetch(`${url}/health`, { signal: AbortSignal.timeout(1500) })
-		return res.ok
+		if (!res.ok) return false
+		const body = await res.json()
+		return body?.kernel === TEST_KERNEL_HEALTH_ID
 	}
 	catch {
 		return false
@@ -93,9 +96,9 @@ export function parseNetstatListenPid(stdout, port) {
 	const token = `:${port}`
 	for (const line of stdout.split(/\r?\n/)) {
 		if (!/LISTEN/i.test(line) && !line.includes('侦听')) continue
-		const idx = line.indexOf(token)
-		if (idx < 0) continue
-		const after = line[idx + token.length]
+		const index = line.indexOf(token)
+		if (index < 0) continue
+		const after = line[index + token.length]
 		if (after && after !== ' ' && after !== '\t') continue
 		const pid = Number(line.trim().split(/\s+/).at(-1))
 		if (pid > 0) return pid
@@ -151,11 +154,14 @@ export async function shutdownTestKernel({ port = TEST_HUB_PORT, timeoutMs = 15_
 	const url = testHubUrl(port)
 	if (!await kernelHealthy(url)) return 'already_down'
 	const started = Date.now()
+	const deadline = started + timeoutMs
 	try {
-		await fetch(`${url}/shutdown`, { method: 'POST', signal: AbortSignal.timeout(5000) })
+		await fetch(`${url}/shutdown`, {
+			method: 'POST',
+			signal: AbortSignal.timeout(Math.max(1, Math.min(5000, deadline - Date.now()))),
+		})
 	}
 	catch { /* 内核可能在写完响应前就退出；旧内核没有这条路由 */ }
-	const deadline = started + timeoutMs
 	let killed = false
 	while (Date.now() < deadline) {
 		if (!await kernelHealthy(url)) return 'stopped'

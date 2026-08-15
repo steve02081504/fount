@@ -545,8 +545,7 @@ export function summarizeEstimate(tasks, { memBudgetBytes, cpuBudgetPct, specula
 	const unknownCount = tasks.filter(isUnknownRunDuration).length
 	const { makespanMs, criticalPathCount: gapCount } =
 		simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct, speculative })
-	const rawEtaMs = estimateEtaMs(makespanMs, gapCount)
-	const etaMs = unknownCount > 0 && makespanMs === 0 ? null : rawEtaMs
+	const etaMs = unknownCount > 0 && makespanMs === 0 ? null : estimateEtaMs(makespanMs, gapCount)
 
 	return {
 		makespanMs,

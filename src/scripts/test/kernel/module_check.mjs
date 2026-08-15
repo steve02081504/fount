@@ -47,6 +47,14 @@ export class ModuleCheckGate {
 	#holdTimer
 
 	/**
+	 * 当前排队等待租约的数量。
+	 * @returns {number} 等待者数
+	 */
+	get waiting() {
+		return this.#waiters.length
+	}
+
+	/**
 	 * 等待并占用闸门，返回 ticket（spawn 前调用）。
 	 * @param {AbortSignal} [signal] 取消等待（已占用的 ticket 不受影响）
 	 * @returns {Promise<string>} ticket
@@ -112,8 +120,7 @@ export class ModuleCheckGate {
 			clearTimeout(this.#holdTimer)
 			this.#holdTimer = null
 		}
-		const next = this.#waiters.shift()
-		if (next) next.resolve(this.#take())
+		this.#waiters.shift()?.resolve(this.#take())
 		return duration
 	}
 

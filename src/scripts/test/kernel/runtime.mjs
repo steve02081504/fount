@@ -104,6 +104,7 @@ export class TestKernel {
 		/** @type {Set<string>} */
 		this.sessionSkipped = new Set()
 		this.closed = false
+		this.#closeDone = null
 		this.seenViewer = false
 		this.catalog = null
 		this.state = null
@@ -117,6 +118,7 @@ export class TestKernel {
 	#wake
 	#loop
 	#watcher
+	#closeDone
 
 	/** 唤醒调度循环。 */
 	wake() {
@@ -149,17 +151,20 @@ export class TestKernel {
 	}
 
 	/**
+	 * 取消在跑任务并排空；调度循环内调用时不等待自身结束。
 	 * @returns {Promise<void>}
 	 */
 	async close() {
-		if (this.closed) return
+		if (this.#closeDone) return this.#closeDone
 		this.closed = true
 		this.#watcher?.close()
 		this.moduleCheck.close()
 		for (const running of this.running.values())
 			running.abort?.abort('kernel_shutdown')
 		this.wake()
+		this.#closeDone = this.#drainRunning()
 		this.onClose()
+		return this.#closeDone
 	}
 
 	/**

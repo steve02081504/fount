@@ -48,7 +48,7 @@ export async function startTestKernel({
 		next()
 	})
 	app.use(express.json({ limit: '4mb' }))
-	app.use(createHealthRouter())
+	app.use(createHealthRouter({ kernel: true }))
 	app.use(createGithubIssueRouter(kernel.issueCache))
 	app.use(createSharedStoreRouter())
 

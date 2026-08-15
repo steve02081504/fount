@@ -64,6 +64,7 @@ Deno.test('isLocaleTreeTrigger only matches the locales directory', () => {
 	assertEquals(isLocaleTreeTrigger('src/public/locales/**'), true)
 	assertEquals(isLocaleTreeTrigger('src/public/locales/*.json'), true)
 	assertEquals(isLocaleTreeTrigger('src/public/locales/zh-CN.json'), true)
+	assertEquals(isLocaleTreeTrigger('src/public/{pages,locales}/**'), true)
 	assertEquals(isLocaleTreeTrigger('src/public/**'), false)
 	assertEquals(isLocaleTreeTrigger('**/*'), false)
 	assertEquals(isLocaleTreeTrigger('src/public/pages/scripts/**'), false)
@@ -97,16 +98,19 @@ Deno.test('repo manifests keep locale JSON and live harness triggers on the righ
 Deno.test('isTestFrameworkTrigger only matches src/scripts/test', () => {
 	assertEquals(isTestFrameworkTrigger('src/scripts/test/node/launch.mjs'), true)
 	assertEquals(isTestFrameworkTrigger('src/scripts/test/{deno/serial.mjs,node/boot.mjs}'), true)
+	assertEquals(isTestFrameworkTrigger('src/scripts/{checks,test}/**'), true)
 	assertEquals(isTestFrameworkTrigger('src/scripts/test/core/allowNoise.mjs'), true)
 	assertEquals(isTestFrameworkTrigger('src/server/test/live/**'), false)
 	assertEquals(isTestFrameworkTrigger('src/scripts/ms.mjs'), false)
 })
 
 Deno.test('findLiveTestFrameworkTriggers allows testkit and flags product live', () => {
-	const kit = makeSuite('testkit', 'launch_node', { triggers: ['src/scripts/test/node/launch.mjs'] })
-	const live = makeSuite('server', 'live', { triggers: ['src/server/test/live/**', 'src/scripts/test/node/launch.mjs'] })
-	assertEquals(findLiveTestFrameworkTriggers([kit]), [])
-	assertEquals(findLiveTestFrameworkTriggers([live]), [{
+	assertEquals(findLiveTestFrameworkTriggers([
+		makeSuite('testkit', 'launch_node', { triggers: ['src/scripts/test/node/launch.mjs'] }),
+	]), [])
+	assertEquals(findLiveTestFrameworkTriggers([
+		makeSuite('server', 'live', { triggers: ['src/server/test/live/**', 'src/scripts/test/node/launch.mjs'] }),
+	]), [{
 		manifestId: 'server',
 		suiteName: 'live',
 		pattern: 'src/scripts/test/node/launch.mjs',

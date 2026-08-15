@@ -10,6 +10,7 @@ import process from 'node:process'
 import { assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { waitUntil } from '../core/wait.mjs'
 import {
 	abandonModuleCheckTicket,
 	acquireModuleCheckTicket,
@@ -339,7 +340,7 @@ Deno.test('module-check HTTP: aborted waiter does not steal the next ticket', as
 		const first = await acquireModuleCheckTicket()
 		const abort = new AbortController()
 		const pending = fetch(`${handle.url}/module-check/acquire`, { method: 'POST', signal: abort.signal })
-		await new Promise(resolve => setTimeout(resolve, 50))
+		await waitUntil(() => handle.kernel.moduleCheck.waiting > 0, 2000, 10)
 		abort.abort()
 		await pending.catch(() => {})
 		await signalModuleCheckReady(first)
