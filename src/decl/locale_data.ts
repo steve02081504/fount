@@ -458,7 +458,6 @@ export type LocaleData = {
 				required: string
 				declined: string
 				statusServerFailed: string
-				shuttingDownStatusServer: string
 			}
 			install: {
 				installingDependencies: string
