@@ -469,6 +469,14 @@
 			"tempDir": {
 				"blocked": "🚫⛲🏃‍♂️📁🕒\n\n⛲🔗🖥️➡️`PATH`&🪝 in `fount`\n🕒📁🗑️➡️🚫`fount remove`\n\n📦➡️📁✅ | 🧪➡️`fount remove`"
 			},
+			"eula": {
+				"prompt": "📜 EULA ⛲ — ✅?",
+				"yn": "[Y/N] ",
+				"required": "🚫➡️ 📜 EULA | `FOUNT_ACCEPT_EULA=1` 🔄 | 💻🗣️",
+				"declined": "❌ 📜 EULA ➡️ 🗑️ ⛲",
+				"statusServerFailed": "⚠️ 🖥️📊 🚫 ➡️ 💻📜 EULA",
+				"shuttingDownStatusServer": "🛑 🖥️📊…"
+			},
 			"install": {
 				"installingDependencies": "📥🧩…",
 				"compilingFavicon": "🚫🔖, 🖥️🔨…",
@@ -478,7 +486,8 @@
 				"permissionDeniedAsRoot": "❌✍️ ⛲📁 '${path}' 👑✅❌🔒 — 🔧🔐📁 ➡️ 👤💯",
 				"permissionDeniedNotRoot": "❌✍️ ⛲📁 '${path}' 🔧🔐📁 ➡️ 👤✍️ 🔄 👑 ⛲",
 				"rootWarningAsRoot": "⚠️👑 ⛲ ➡️ 💥",
-				"rootWarningPreferUser": "🙂👍 ⛲ ✅"
+				"rootWarningPreferUser": "🙂👍 ⛲ ✅",
+				"runnerUpdating": "🔄 📥⛲…"
 			},
 			"clean": {
 				"removingCaches": "🧹🗑️…",

@@ -470,12 +470,12 @@
 				"blocked": "Error: cannot run `fount` in temporary directory\n\nFount will be deeply coupled with the system and register the `PATH` command and multiple system hooks in `fount`. If running in a temporary directory, after the system clears the temporary files, you will not be able to execute `fount remove` to remove fount and its hooks.\n\nPlease move fount to a non-temporary directory before running. If you only want to test briefly, please manually execute `fount remove` after the test is completed."
 			},
 			"eula": {
-				"prompt": "Do you accept the fount End-User License Agreement (EULA)?",
+				"prompt": "Do you accept the fount End-User Licence Agreement (EULA)?",
 				"yn": "[Y/N] ",
-				"required": "EULA acceptance is required. Re-run with `FOUNT_ACCEPT_EULA=1`, or from an interactive terminal.",
+				"required": "You must accept the EULA to continue. Set `FOUNT_ACCEPT_EULA=1` and try again, or run from an interactive terminal.",
 				"declined": "EULA declined. Removing fount.",
-				"statusServerFailed": "Warning: Could not start status server. Proceeding with EULA prompt in this terminal.",
-				"shuttingDownStatusServer": "Shutting down installation status server..."
+				"statusServerFailed": "Warning: Could not start the installation status server. Showing the EULA prompt in this terminal instead.",
+				"shuttingDownStatusServer": "Shutting down installation status server…"
 			},
 			"install": {
 				"installingDependencies": "Installing dependencies...",
@@ -487,7 +487,7 @@
 				"permissionDeniedNotRoot": "Error: Cannot write to fount directory '${path}'. Please fix the folder's security permissions to grant the current user write access, or run fount as root.",
 				"rootWarningAsRoot": "Not recommended: running fount as root grants full system access to all fount components.",
 				"rootWarningPreferUser": "Unless you know what you are doing, it is recommended to run fount as a normal user.",
-				"runnerUpdating": "Doing runner updating..."
+				"runnerUpdating": "Updating the installer…"
 			},
 			"clean": {
 				"removingCaches": "Removing cache...",

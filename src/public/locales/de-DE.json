@@ -469,6 +469,14 @@
 			"tempDir": {
 				"blocked": "Fehler: `fount` kann nicht im temporären Verzeichnis ausgeführt werden\n\nfount ist eng mit dem System gekoppelt und registriert in `fount` den `PATH`-Befehl sowie mehrere System-Hooks. Wird fount in einem temporären Verzeichnis ausgeführt, können Sie nach dem Löschen der temporären Dateien durch das System `fount remove` nicht mehr ausführen, um fount und seine Hooks zu entfernen.\n\nBitte verschieben Sie fount vor dem Ausführen in ein nicht temporäres Verzeichnis. Wenn Sie nur kurz testen möchten, führen Sie `fount remove` nach Abschluss des Tests manuell aus."
 			},
+			"eula": {
+				"prompt": "Akzeptieren Sie die Endbenutzer-Lizenzvereinbarung (EULA) für fount?",
+				"yn": "[Y/N] ",
+				"required": "Die Annahme der EULA ist erforderlich. Setzen Sie `FOUNT_ACCEPT_EULA=1` und führen Sie den Vorgang erneut aus, oder starten Sie ihn in einem interaktiven Terminal.",
+				"declined": "EULA abgelehnt. fount wird entfernt.",
+				"statusServerFailed": "Warnung: Der Installationsstatus-Server konnte nicht gestartet werden. Die EULA wird in diesem Terminal angezeigt.",
+				"shuttingDownStatusServer": "Installationsstatus-Server wird heruntergefahren…"
+			},
 			"install": {
 				"installingDependencies": "Abhängigkeiten werden installiert...",
 				"compilingFavicon": "Favicon-Datei nicht gefunden; Server wird gestartet, um sie zu erzeugen...",
@@ -478,7 +486,8 @@
 				"permissionDeniedAsRoot": "Fehler: Es konnte nicht in das fount-Verzeichnis „${path}“ geschrieben werden. Sie werden als Root ausgeführt, aber der Zugriff ist weiterhin verweigert. Bitte überprüfen und korrigieren Sie die Sicherheitsberechtigungen dieses Ordners, um dem aktuellen Benutzer Vollzugriff zu gewähren.",
 				"permissionDeniedNotRoot": "Fehler: Es konnte nicht in das fount-Verzeichnis „${path}“ geschrieben werden. Bitte korrigieren Sie die Sicherheitsberechtigungen des Ordners, um dem aktuellen Benutzer Schreibzugriff zu gewähren, oder führen Sie fount als Root aus.",
 				"rootWarningAsRoot": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle fount-Komponenten.",
-				"rootWarningPreferUser": "Sofern Sie nicht wissen, was Sie tun, wird empfohlen, fount als normaler Benutzer auszuführen."
+				"rootWarningPreferUser": "Sofern Sie nicht wissen, was Sie tun, wird empfohlen, fount als normaler Benutzer auszuführen.",
+				"runnerUpdating": "Installer wird aktualisiert…"
 			},
 			"clean": {
 				"removingCaches": "Cache wird entfernt...",

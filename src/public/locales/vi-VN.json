@@ -469,6 +469,14 @@
 			"tempDir": {
 				"blocked": "Lỗi: không thể chạy `fount` trong thư mục tạm\n\nfount liên kết sâu với hệ thống và đăng ký lệnh `PATH` cùng nhiều hook hệ thống trong `fount`. Nếu chạy trong thư mục tạm, sau khi hệ thống xóa tệp tạm, bạn sẽ không thể thực thi `fount remove` để gỡ fount và các hook của nó.\n\nVui lòng di chuyển fount sang thư mục không tạm trước khi chạy. Nếu chỉ muốn thử nhanh, hãy thực thi `fount remove` thủ công sau khi thử."
 			},
+			"eula": {
+				"prompt": "Bạn có chấp nhận Thỏa thuận cấp phép người dùng cuối (EULA) của fount không?",
+				"yn": "[Y/N] ",
+				"required": "Bạn phải chấp nhận EULA để tiếp tục. Đặt `FOUNT_ACCEPT_EULA=1` rồi chạy lại, hoặc chạy từ terminal tương tác.",
+				"declined": "Đã từ chối EULA. Đang gỡ fount.",
+				"statusServerFailed": "Cảnh báo: không thể khởi động máy chủ trạng thái cài đặt. EULA sẽ hiển thị trong terminal này.",
+				"shuttingDownStatusServer": "Đang tắt máy chủ trạng thái cài đặt…"
+			},
 			"install": {
 				"installingDependencies": "Đang cài đặt các phần phụ thuộc...",
 				"compilingFavicon": "Không tìm thấy favicon; đang khởi động máy chủ để biên dịch...",
@@ -478,7 +486,8 @@
 				"permissionDeniedAsRoot": "Lỗi: Không thể ghi vào thư mục fount '${path}'. Bạn đang chạy với quyền root nhưng quyền truy cập vẫn bị từ chối — vui lòng kiểm tra và sửa các quyền bảo mật trên thư mục này để cấp cho người dùng hiện tại quyền kiểm soát hoàn toàn.",
 				"permissionDeniedNotRoot": "Lỗi: Không thể ghi vào thư mục fount '${path}'. Vui lòng sửa các quyền bảo mật trên thư mục để cấp quyền ghi cho người dùng hiện tại, hoặc chạy fount với quyền root.",
 				"rootWarningAsRoot": "Không được khuyến nghị: chạy fount với quyền root cấp quyền truy cập toàn bộ hệ thống vào tất cả các thành phần của fount.",
-				"rootWarningPreferUser": "Trừ khi bạn biết mình đang làm gì, bạn nên chạy fount như một người dùng bình thường."
+				"rootWarningPreferUser": "Trừ khi bạn biết mình đang làm gì, bạn nên chạy fount như một người dùng bình thường.",
+				"runnerUpdating": "Đang cập nhật trình cài đặt…"
 			},
 			"clean": {
 				"removingCaches": "Đang xóa bộ nhớ đệm...",

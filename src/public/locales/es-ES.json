@@ -469,6 +469,14 @@
 			"tempDir": {
 				"blocked": "Error: no se puede ejecutar `fount` en el directorio temporal\n\nfount se acopla profundamente al sistema y registra el comando `PATH` y varios hooks del sistema en `fount`. Si se ejecuta en un directorio temporal, después de que el sistema borre los archivos temporales, no podrá ejecutar `fount remove` para eliminar fount y sus hooks.\n\nMueva fount a un directorio no temporal antes de ejecutarlo. Si solo desea probar brevemente, ejecute manualmente `fount remove` después de la prueba."
 			},
+			"eula": {
+				"prompt": "¿Acepta el acuerdo de licencia de usuario final (EULA) de fount?",
+				"yn": "[Y/N] ",
+				"required": "Es necesario aceptar la EULA para continuar. Establezca `FOUNT_ACCEPT_EULA=1` y vuelva a ejecutar, o ejecútelo desde una terminal interactiva.",
+				"declined": "EULA rechazada. Eliminando fount.",
+				"statusServerFailed": "Advertencia: no se pudo iniciar el servidor de estado de instalación. Se mostrará la EULA en esta terminal.",
+				"shuttingDownStatusServer": "Cerrando el servidor de estado de instalación…"
+			},
 			"install": {
 				"installingDependencies": "Instalando dependencias...",
 				"compilingFavicon": "No se encuentra el favicon; se inicia el servidor para compilarlo...",
@@ -478,7 +486,8 @@
 				"permissionDeniedAsRoot": "Error: No se puede escribir en el directorio de fount '${path}'. Está ejecutando como root pero el acceso sigue denegado; verifique y corrija los permisos de seguridad en esta carpeta para otorgar al usuario actual control total.",
 				"permissionDeniedNotRoot": "Error: No se puede escribir en el directorio de fount '${path}'. Corrija los permisos de seguridad en la carpeta para otorgar acceso de escritura al usuario actual o ejecute fount como root.",
 				"rootWarningAsRoot": "No recomendado: ejecutar fount como root otorga acceso completo al sistema a todos los componentes de fount.",
-				"rootWarningPreferUser": "A menos que sepa lo que está haciendo, se recomienda ejecutar fount como usuario normal."
+				"rootWarningPreferUser": "A menos que sepa lo que está haciendo, se recomienda ejecutar fount como usuario normal.",
+				"runnerUpdating": "Actualizando el instalador…"
 			},
 			"clean": {
 				"removingCaches": "Eliminando caché...",
