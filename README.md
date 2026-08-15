@@ -67,23 +67,25 @@ Use [SSP](https://ssp.shillest.net/) when you:
 
 ![repo img](https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b)
 
-[![English (United Kingdom)](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/United-Kingdom.png)](./docs/Readme.en-UK.md)
-[![日本語](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Japan.png)](./docs/Readme.ja-JP.md)
-[![中文](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/China.png)](./docs/Readme.zh-CN.md)
-[![繁體中文](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Taiwan.png)](./docs/Readme.zh-TW.md)
-[![Français](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/France.png)](./docs/Readme.fr-FR.md)
-[![Español](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Spain.png)](./docs/Readme.es-ES.md)
-[![Deutsch](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Germany.png)](./docs/Readme.de-DE.md)
-[![русский](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Russia.png)](./docs/Readme.ru-RU.md)
-[![Português](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Portugal.png)](./docs/Readme.pt-BR.md)
-[![हिन्दी](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/India.png)](./docs/Readme.hi-IN.md)
-[![한국어](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/South-Korea.png)](./docs/Readme.ko-KR.md)
-[![Italiano](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Italy.png)](./docs/Readme.it-IT.md)
-[![Tiếng Việt](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Vietnam.png)](./docs/Readme.vi-VN.md)
-[![Nederlands](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Netherlands.png)](./docs/Readme.nl-NL.md)
-[![Українська](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Ukraine.png)](./docs/Readme.uk-UA.md)
-[![العربية](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Saudi-Arabia.png)](./docs/Readme.ar-SA.md)
-[![Íslenska](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Iceland.png)](./docs/Readme.is-IS.md)
+[![English (United Kingdom)](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/United-Kingdom.png)](./docs/readme/Readme.en-UK.md)
+[![日本語](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Japan.png)](./docs/readme/Readme.ja-JP.md)
+[![中文](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/China.png)](./docs/readme/Readme.zh-CN.md)
+[![繁體中文](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Taiwan.png)](./docs/readme/Readme.zh-TW.md)
+[![Français](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/France.png)](./docs/readme/Readme.fr-FR.md)
+[![Español](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Spain.png)](./docs/readme/Readme.es-ES.md)
+[![Deutsch](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Germany.png)](./docs/readme/Readme.de-DE.md)
+[![русский](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Russia.png)](./docs/readme/Readme.ru-RU.md)
+[![Português](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Portugal.png)](./docs/readme/Readme.pt-PT.md)
+[![हिन्दी](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/India.png)](./docs/readme/Readme.hi-IN.md)
+[![한국어](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/South-Korea.png)](./docs/readme/Readme.ko-KR.md)
+[![Italiano](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Italy.png)](./docs/readme/Readme.it-IT.md)
+[![Tiếng Việt](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Vietnam.png)](./docs/readme/Readme.vi-VN.md)
+[![Nederlands](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Netherlands.png)](./docs/readme/Readme.nl-NL.md)
+[![Українська](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Ukraine.png)](./docs/readme/Readme.uk-UA.md)
+[![العربية](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Saudi-Arabia.png)](./docs/readme/Readme.ar-SA.md)
+[![Íslenska](https://raw.githubusercontent.com/gosquared/flags/master/flags/flags/shiny/48/Iceland.png)](./docs/readme/Readme.is-IS.md)
+[![文言](./docs/readme/img/flags/lzh.svg)](./docs/readme/Readme.lzh.md)
+[![🤓](./docs/readme/img/flags/emoji.svg)](./docs/readme/Readme.emoji.md)
 
 ![Repobeats analytics image](https://repobeats.axiom.co/api/embed/d0bbc20f70089126a83c66d9c1f88c7ec67aa101.svg)
 
@@ -132,7 +134,7 @@ fount's project architecture is designed with full consideration for developers'
 [Want to know the project repository architecture? Check out DeepWiki!](https://deepwiki.com/steve02081504/fount)
 
 - **Git Driven**: All parts can be managed via Git.
-- **VSCode Integration**: The project structure is clear. Combined with the guidance provided in [AGENTS.md](../AGENTS.md), you can develop and debug your Agent logic directly in your favourite IDE.
+- **VSCode Integration**: The project structure is clear. Combined with the guidance provided in [AGENTS.md](./AGENTS.md), you can develop and debug your Agent logic directly in your favourite IDE.
 
 ---
 
@@ -250,16 +252,16 @@ In the world of fount, modularity reigns supreme. A rich ecosystem of parts inte
 Embark on your journey with fount, a stable and reliable platform. A few simple clicks or commands, and the world of fount unfolds.
 
 > [!CAUTION]
+>
 > In the world of fount, characters can freely execute JavaScript commands, granting them powerful capabilities. Therefore, please choose the characters you trust with the same care you would in real life to ensure the safety of your local files.
 
 ### Linux/macOS/Android: The Whispers of the Shell – _One Line, and You're In_
 
 ```bash
 # If needed, define the environment variable $FOUNT_DIR to specify the fount directory
-INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
 install_package() { _command_name="$1"; _package_list=${2:-$_command_name}; _has_sudo=""; _installed_pkg_name="" ; if command -v "$_command_name" >/dev/null 2>&1; then return 0; fi; if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then _has_sudo="sudo"; fi; for _package in $_package_list; do if command -v apt-get >/dev/null 2>&1; then $_has_sudo apt-get update -y; $_has_sudo apt-get install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pacman >/dev/null 2>&1; then $_has_sudo pacman -Syy --noconfirm; $_has_sudo pacman -S --needed --noconfirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v dnf >/dev/null 2>&1; then $_has_sudo dnf install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v yum >/dev/null 2>&1; then $_has_sudo yum install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v zypper >/dev/null 2>&1; then $_has_sudo zypper install -y --no-confirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v apk >/dev/null 2>&1; then if [ "$(id -u)" -eq 0 ]; then apk add --update "$_package"; else $_has_sudo apk add --update "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v brew >/dev/null 2>&1; then if ! brew list --formula "$_package"; then brew install "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pkg >/dev/null 2>&1; then pkg install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v snap >/dev/null 2>&1; then $_has_sudo snap install "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; done; if command -v "$_command_name" >/dev/null 2>&1; then case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in *";$_installed_pkg_name;"*) ;; *) if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then FOUNT_AUTO_INSTALLED_PACKAGES="$_installed_pkg_name"; else FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$_installed_pkg_name"; fi; ;; esac; return 0; else echo "Error: Failed to install '$_command_name' from any source." >&2; return 1; fi; }
 install_package "bash" "bash gnu-bash"; install_package "curl"
-export FOUNT_AUTO_INSTALLED_PACKAGES="$INSTALLED_PACKAGES"
+export FOUNT_AUTO_INSTALLED_PACKAGES
 curl -fsSL https://steve02081504.github.io/fount/install.sh | bash
 . "$HOME/.profile"
 ```
@@ -267,10 +269,9 @@ curl -fsSL https://steve02081504.github.io/fount/install.sh | bash
 Should you wish to pause, to gather your thoughts before the grand adventure (a dry run):
 
 ```bash
-INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
 install_package() { _command_name="$1"; _package_list=${2:-$_command_name}; _has_sudo=""; _installed_pkg_name="" ; if command -v "$_command_name" >/dev/null 2>&1; then return 0; fi; if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then _has_sudo="sudo"; fi; for _package in $_package_list; do if command -v apt-get >/dev/null 2>&1; then $_has_sudo apt-get update -y; $_has_sudo apt-get install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pacman >/dev/null 2>&1; then $_has_sudo pacman -Syy --noconfirm; $_has_sudo pacman -S --needed --noconfirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v dnf >/dev/null 2>&1; then $_has_sudo dnf install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v yum >/dev/null 2>&1; then $_has_sudo yum install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v zypper >/dev/null 2>&1; then $_has_sudo zypper install -y --no-confirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v apk >/dev/null 2>&1; then if [ "$(id -u)" -eq 0 ]; then apk add --update "$_package"; else $_has_sudo apk add --update "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v brew >/dev/null 2>&1; then if ! brew list --formula "$_package"; then brew install "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pkg >/dev/null 2>&1; then pkg install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v snap >/dev/null 2>&1; then $_has_sudo snap install "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; done; if command -v "$_command_name" >/dev/null 2>&1; then case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in *";$_installed_pkg_name;"*) ;; *) if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then FOUNT_AUTO_INSTALLED_PACKAGES="$_installed_pkg_name"; else FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$_installed_pkg_name"; fi; ;; esac; return 0; else echo "Error: Failed to install '$_command_name' from any source." >&2; return 1; fi; }
 install_package "bash" "bash gnu-bash"; install_package "curl"
-export FOUNT_AUTO_INSTALLED_PACKAGES="$INSTALLED_PACKAGES"
+export FOUNT_AUTO_INSTALLED_PACKAGES
 curl -fsSL https://steve02081504.github.io/fount/install.sh | bash -s init
 . "$HOME/.profile"
 ```

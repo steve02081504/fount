@@ -1,6 +1,6 @@
 /**
  * AGENTS.md 与引用闭包 `.md`：英文、可解析链接；非 AGENTS.md 须在 docs/ 下。
- * `docs/design/`、`docs/review/`、`docs/issues/` 可为中文。
+ * `docs/design/`、`docs/review/`、`docs/issues/`、`docs/readme/` 可为中文。
  */
 /* global Deno */
 import { mkdir, writeFile, rm } from 'node:fs/promises'
@@ -118,6 +118,7 @@ Deno.test('isHumanFacingDocsPath', () => {
 	assertEquals(isHumanFacingDocsPath('docs/design/emoji-pack-spec.md'), true)
 	assertEquals(isHumanFacingDocsPath('docs/review/foo.md'), true)
 	assertEquals(isHumanFacingDocsPath('docs/issues/part-hot-reload.md'), true)
+	assertEquals(isHumanFacingDocsPath('docs/readme/Readme.zh-CN.md'), true)
 	assertEquals(isHumanFacingDocsPath('docs/AGENTS.md'), false)
 	assertEquals(isHumanFacingDocsPath('src/scripts/test/AGENTS.md'), false)
 })

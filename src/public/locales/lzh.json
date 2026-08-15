@@ -469,6 +469,13 @@
 			"tempDir": {
 				"blocked": "錯：權宜之所（臨時目錄），不可驅使 fount。\n\nfount 既與主機血脈相連（深耦），必勒銘於 PATH 及樞機之內。若棲於權宜之所，一旦系統蕩滌，則 fount 及其所勒之印難以盡除。\n\n請遷 fount 至常駐之所而後啟之。若僅為試手，則大功告成之際，切記親手行 fount remove 以除其跡。"
 			},
+			"eula": {
+				"prompt": "汝肯願承 fount 終端用戶許可之約（EULA）乎？",
+				"yn": "[Y/N] ",
+				"required": "須先承此約方可續行。設 `FOUNT_ACCEPT_EULA=1` 後重試，或於交互終端行之。",
+				"declined": "已拒此約，正除 fount。",
+				"statusServerFailed": "戒：安裝狀態服務啟動不成，將於此終端示約。"
+			},
 			"install": {
 				"installingDependencies": "正置其依賴...",
 				"compilingFavicon": "網頁徽圖無存，正啟伺服以編之...",
@@ -478,7 +485,8 @@
 				"permissionDeniedAsRoot": "錯：未可寫入 fount 目錄 '${path}'。雖以 root 行之，然仍拒訪——宜檢修此目錄之安全權限，為當前客授予完全控制之權。",
 				"permissionDeniedNotRoot": "錯：未可寫入 fount 目錄 '${path}'。宜修正此目錄之安全權限，以授當前客寫入之權，或以 root 身份運行 fount。",
 				"rootWarningAsRoot": "不宜：以 root 身份運行 fount，將授予其所有部件完全之系統權限",
-				"rootWarningPreferUser": "非明其所以者，宜以常客身份運行 fount"
+				"rootWarningPreferUser": "非明其所以者，宜以常人身份運行 fount",
+				"runnerUpdating": "正更安裝器…"
 			},
 			"clean": {
 				"removingCaches": "正清除緩存...",
@@ -607,6 +615,17 @@
 			"title": "遠道而來",
 			"message": "歡迎 `${source}` 來客！\n此處無茶無點，僅致一問 :)",
 			"dismiss": "多謝，且隨意徜徉"
+		},
+		"eula": {
+			"title": "終端用戶許可之約",
+			"agree": "余已閱此約，願從之",
+			"continue": "續行",
+			"continue_in": "續行（${seconds}）",
+			"language": {
+				"aria-label": "契約之語"
+			},
+			"loading": "契約載入中…",
+			"load_failed": "契約載入未遂。"
 		},
 		"footer": {
 			"ready_text": "啟程？",

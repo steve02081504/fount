@@ -436,17 +436,18 @@ export class TestKernel {
 	}
 
 	/**
+	 * 本波真跑槽 + 当前在跑/已排队（含等待调度的占用）。
 	 * @param {import('../core/plan.mjs').RunPlan} plan 计划
 	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
 	 */
 	#remainingFromPlan(plan) {
-		const tasks = []
+		const tasks = this.#estimateTasks()
 		for (const slot of plan.slots) {
 			if (slot.action !== 'run') continue
 			const suite = slot.suite
 			if (!suite) continue
 			tasks.push(buildEstimateTask(suite, this.state.suites[slot.key], {
-				id: slot.key,
+				id: `wave:${slot.key}`,
 				subtestsToRun: slot.subtestsToRun,
 				moduleCheckMs: this.moduleCheck.meanDurationMs(),
 			}))

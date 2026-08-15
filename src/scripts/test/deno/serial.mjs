@@ -188,8 +188,14 @@ async function runPool(files, { stopOnFailure }) {
 			catch (error) {
 				if (!(error instanceof ModuleCheckMissedReadyError)) throw error
 				const rel = toRepoRelative(REPO_ROOT, file)
-				console.errorI18n('fountConsole.test.moduleCheck.missedReady', { label: rel })
-				failed.push(rel)
+				const result = error.result
+				const exitCode = result?.code ?? (result?.signal ? 1 : 0)
+				if (exitCode)
+					recordResult(file, exitCode, result?.output, result?.signal)
+				else {
+					console.errorI18n('fountConsole.test.moduleCheck.missedReady', { label: rel })
+					failed.push(rel)
+				}
 				stopped = true
 				await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)
 				return
@@ -223,7 +229,7 @@ if (firstFiles.length) {
 if (restFiles.length)
 	await runPool(restFiles, { stopOnFailure: !keepGoing })
 
-if (silentPassed > 0)
+if (silentPassed > 0 && !failed.length)
 	console.logI18n(silentPassed > 1
 		? 'fountConsole.test.silentPassedMany'
 		: 'fountConsole.test.silentPassedOne', silentPassed > 1 ? { count: silentPassed } : undefined)

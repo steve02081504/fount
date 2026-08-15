@@ -34,10 +34,12 @@ jobs:
 
       - name: test script (bash)
         shell: bash
+        env:
+          FOUNT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
           export FOUNT_DIR="$PWD/fount"
-          export FOUNT_BRANCH="${{ steps.extract_branch.outputs.branch }}"
-          curl -fsSL https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.sh | bash -s init
+          export FOUNT_ACCEPT_EULA=1
+          curl -fsSL "https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${FOUNT_BRANCH}/src/runner/main.sh" | bash -s -- init
           ci=$(mktemp -d)
           cp -R "$FOUNT_DIR/.github/path-ci/." "$ci/"
           bash "$ci/run-remove-assert.sh" "$FOUNT_DIR/path/fount.sh"
@@ -45,10 +47,12 @@ jobs:
       - name: test script (pwsh)
         if: runner.os == 'Windows'
         shell: powershell
+        env:
+          FOUNT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
           $env:FOUNT_DIR = "$PWD/fount"
-          $env:FOUNT_BRANCH = "${{ steps.extract_branch.outputs.branch }}"
-          $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
+          $env:FOUNT_ACCEPT_EULA = '1'
+          $scriptContent = Invoke-RestMethod "https://raw.githubusercontent.com/steve02081504/fount/refs/heads/$($env:FOUNT_BRANCH)/src/runner/main.ps1"
           Invoke-Expression "function fountInstaller { $scriptContent }"
           fountInstaller init
           $ci = Join-Path $env:TEMP "fount-remove-assert-$PID"
@@ -60,10 +64,12 @@ jobs:
       - name: test script (pwsh)
         if: runner.os != 'Windows'
         shell: pwsh
+        env:
+          FOUNT_BRANCH: ${{ steps.extract_branch.outputs.branch }}
         run: |
           $env:FOUNT_DIR = "$PWD/fount"
-          $env:FOUNT_BRANCH = "${{ steps.extract_branch.outputs.branch }}"
-          $scriptContent = Invoke-RestMethod https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${{ steps.extract_branch.outputs.branch }}/src/runner/main.ps1
+          $env:FOUNT_ACCEPT_EULA = '1'
+          $scriptContent = Invoke-RestMethod "https://raw.githubusercontent.com/steve02081504/fount/refs/heads/$($env:FOUNT_BRANCH)/src/runner/main.ps1"
           Invoke-Expression "function fountInstaller { $scriptContent }"
           fountInstaller init
           $ci = Join-Path ([IO.Path]::GetTempPath()) "fount-remove-assert-$PID"

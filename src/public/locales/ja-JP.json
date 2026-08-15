@@ -469,6 +469,13 @@
 			"tempDir": {
 				"blocked": "エラー: 一時ディレクトリで `fount` を実行できません\n\nfount はシステムと深く結合し、`fount` 内で `PATH` コマンドと複数のシステム hook を登録します。一時ディレクトリで実行すると、システムが一時ファイルを消去した後、`fount remove` を実行して fount とその hook を削除できなくなります。\n\n実行前に fount を非一時ディレクトリに移動してください。短時間のテストのみの場合は、テスト完了後に手動で `fount remove` を実行してください。"
 			},
+			"eula": {
+				"prompt": "fount のエンドユーザー使用許諾契約（EULA）に同意しますか？",
+				"yn": "[Y/N] ",
+				"required": "続行するには EULA への同意が必要です。`FOUNT_ACCEPT_EULA=1` を設定して再実行するか、対話型ターミナルから実行してください。",
+				"declined": "EULA が拒否されました。fount を削除しています。",
+				"statusServerFailed": "警告：インストール状態サーバーを起動できませんでした。このターミナルで EULA を表示します。"
+			},
 			"install": {
 				"installingDependencies": "依存関係をインストールしています...",
 				"compilingFavicon": "ファビコンが見つかりません。サーバーを起動して生成しています...",
@@ -478,7 +485,8 @@
 				"permissionDeniedAsRoot": "エラー: ディレクトリ '${path}' に書き込めません。 root として実行していますが、アクセスはまだ拒否されています。このフォルダーのセキュリティ権限を確認して修正し、現在のユーザーにフル コントロールを付与してください。",
 				"permissionDeniedNotRoot": "エラー: ディレクトリ '${path}' に書き込めません。フォルダーのセキュリティ権限を修正して現在のユーザーに書き込みアクセスを許可するか、root として fount を実行してください。",
 				"rootWarningAsRoot": "推奨されません: root として fount を実行すると、すべての fount コンポーネントへの完全なシステム アクセスが許可されます。",
-				"rootWarningPreferUser": "自分が何をしているのかよくわからない場合は、通常のユーザーとして fount を実行することをお勧めします。"
+				"rootWarningPreferUser": "自分が何をしているのかよくわからない場合は、通常のユーザーとして fount を実行することをお勧めします。",
+				"runnerUpdating": "インストーラーを更新しています…"
 			},
 			"clean": {
 				"removingCaches": "キャッシュを削除しています...",
@@ -607,6 +615,17 @@
 			"title": "遠路よりいらっしゃい",
 			"message": "`${source}` からいらしたお客様、ようこそ！\nお茶もお菓子もございませんが、心ばかりのご挨拶を :)",
 			"dismiss": "ありがとう、見て回ります"
+		},
+		"eula": {
+			"title": "エンドユーザー使用許諾契約",
+			"agree": "本契約を読み、同意します",
+			"continue": "続行",
+			"continue_in": "続行（${seconds}）",
+			"language": {
+				"aria-label": "契約の言語"
+			},
+			"loading": "契約を読み込み中…",
+			"load_failed": "契約の読み込みに失敗しました。"
 		},
 		"footer": {
 			"ready_text": "冒険を始める準備はできましたか？",

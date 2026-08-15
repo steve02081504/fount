@@ -48,6 +48,8 @@ invoke_fount() {
 
 echo "path smoke: repo=$ROOT"
 
+export FOUNT_ACCEPT_EULA=1
+
 touch .noupdate .noautoboot
 
 if [ ! -x "$FOUNT" ]; then

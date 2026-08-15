@@ -11,11 +11,13 @@ import { getTestHubBaseUrl } from '../base_url.mjs'
 export class ModuleCheckMissedReadyError extends Error {
 	/**
 	 * @param {string} [label] suite / 文件
+	 * @param {unknown} [result] 子进程已返回的结果（若有）
 	 */
-	constructor(label = '') {
+	constructor(label = '', result) {
 		super(label ? `module-check missed ready: ${label}` : 'module-check missed ready')
 		this.name = 'ModuleCheckMissedReadyError'
 		this.label = label
+		this.result = result
 	}
 }
 
@@ -118,7 +120,7 @@ export async function withModuleCheckTicket(run) {
 		const result = await run(ticket)
 		if (ticket) {
 			const missed = await abandonModuleCheckTicket(ticket)
-			if (missed) throw new ModuleCheckMissedReadyError()
+			if (missed) throw new ModuleCheckMissedReadyError('', result)
 		}
 		return result
 	}

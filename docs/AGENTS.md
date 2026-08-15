@@ -13,11 +13,12 @@ For maintainers of `docs/design/`, `docs/review/`, `docs/issues/`, and every `AG
 | `docs/design/` | Baselines, specs, unscheduled directions |
 | `docs/review/` | Gap analysis vs current state; code and tests are ground truth — do not re-describe landed work as long prose |
 | `docs/issues/` | Standing conclusions for open / blocked GitHub issues (ours or upstream) — status, don't-dos, what to change when unblocked. Not day-to-day agent reading |
+| `docs/readme/` | Localized product READMEs. Not agent day-to-day |
 | `AGENTS.md` (+ linked `docs/*.md`) | Day-to-day agent guidance only |
 
 **`AGENTS.md` content policy**: keep important conclusions, guidelines, and tool introductions. Important but uncommon → new file under a nearby `docs/` + one-line link from `AGENTS.md`. Research narratives, investigation diaries, and one-off task-specific notes → delete (do not archive).
 
-**Language**: `docs/design/`, `docs/review/`, and `docs/issues/` are **human-facing Chinese** (keep Chinese). Every `AGENTS.md` and non-`AGENTS.md` file in its link closure stay **English** — enforced by `fount test checks:agents_md_english` (`docs/design|review|issues` exempt from CJK). Non-`AGENTS.md` files in that closure must live under a directory named `docs`.
+**Language**: `docs/design/`, `docs/review/`, and `docs/issues/` are **human-facing Chinese** (keep Chinese). `docs/readme/` is human-facing product README translations. Every `AGENTS.md` and non-`AGENTS.md` file in its link closure stay **English** — enforced by `fount test checks:agents_md_english` (`docs/design|review|issues|readme` exempt from CJK). Non-`AGENTS.md` files in that closure must live under a directory named `docs`.
 
 Milestone codes (`M1` / `G4` etc.) are fine in design/review while a batch is open; **never** leak them into source / test names / `llms.txt` (see root `AGENTS.md`).
 

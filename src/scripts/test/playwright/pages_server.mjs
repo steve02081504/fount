@@ -2,6 +2,7 @@
  * GitHub Pages 本地静态服务器（与 `.esh/commands/pages-server.mjs` 同规则）。
  * 从原始路径挂载，无需复制/构建；部署流程见 `.github/workflows/pages.yaml`。
  */
+import { watch } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
@@ -11,46 +12,93 @@ import { git } from '../../../scripts/git.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 
 const GITHUB_PAGES_COMMENTS_URL = 'https://steve02081504.github.io/fount/data/comments.json'
-const FOUNT_COMMIT_HASH_PLACEHOLDER = '__FOUNT_COMMIT_HASH__'
+/** 与 CI `sed` 对齐的 commit 占位符。 */
+export const FOUNT_COMMIT_HASH_PLACEHOLDER = '__FOUNT_COMMIT_HASH__'
+/** 与 CI `sed` 对齐的 git 引用占位符（分支名；detached 时为 commit）。 */
+export const FOUNT_GIT_REF_PLACEHOLDER = '__FOUNT_GIT_REF__'
 
 let fountVersion = 'unknown'
+let fountGitRef = 'master'
 /**
- * 解析 Pages Sentry release 占位符（与 CI sed 对齐）。
- * @returns {Promise<string>} commit hash 或 unknown
+ * 刷新 Pages 占位符用的 commit / 分支。
+ * @returns {Promise<void>}
  */
-async function refreshFountVersion() {
-	fountVersion = await git.withPath(REPO_ROOT)('rev-parse', 'HEAD') || 'unknown'
+async function refreshFountGitMeta() {
+	const gitHere = git.withPath(REPO_ROOT)
+	fountVersion = await gitHere('rev-parse', 'HEAD') || 'unknown'
+	const branch = await gitHere('rev-parse', '--abbrev-ref', 'HEAD')
+	fountGitRef = branch && branch !== 'HEAD' ? branch : fountVersion
 }
 
-const hooked_version_files = [
-	'base.mjs',
-]
-const hooked_version_file_cache = {}
 /**
- * 读取 Pages base.mjs 并替换 commit hash 占位符。
- * @param {string} filePath `.github/pages/` 下的相对路径
- * @returns {Promise<string>} 替换后的模块源码
+ * 替换 Pages 源里的构建占位符（与 workflows/pages.yaml 一致）。
+ * @param {string} source 源文本
+ * @param {{ commitHash?: string, gitRef?: string }} [values] 覆盖值
+ * @returns {string} 替换后文本
  */
-async function getHookedVersionFileContent(filePath) {
-	if (hooked_version_file_cache[filePath]) return hooked_version_file_cache[filePath]
-	const fullPath = path.join(REPO_ROOT, '.github', 'pages', filePath)
-	const source = await fs.readFile(fullPath, 'utf8')
-	return hooked_version_file_cache[filePath] = source.replaceAll(FOUNT_COMMIT_HASH_PLACEHOLDER, fountVersion)
+export function applyPagesPlaceholders(source, values = {}) {
+	return source
+		.replaceAll(FOUNT_COMMIT_HASH_PLACEHOLDER, values.commitHash ?? fountVersion)
+		.replaceAll(FOUNT_GIT_REF_PLACEHOLDER, values.gitRef ?? fountGitRef)
 }
 
-fs.watch(REPO_ROOT, (event, filename) => {
-	if (event === 'change' && filename.startsWith('.github/pages/')) {
-		const filePath = filename.slice('.github/pages/'.length)
-		if (hooked_version_files.includes(filePath))
-			delete hooked_version_file_cache[filePath]
+/**
+ * @param {string} relPath 请求相对路径
+ * @returns {string[]} 候选文件路径
+ */
+function hookedPagesCandidates(relPath) {
+	const candidates = [relPath]
+	if (relPath.endsWith('/')) candidates.push(`${relPath}index.html`)
+	else if (!path.posix.extname(relPath)) candidates.push(`${relPath}/index.html`)
+	return candidates
+}
+
+/**
+ * 解析后的路径是否仍在 pages 根内（不用 startsWith，避免 Windows 前缀误判）。
+ * @param {string} pagesRoot pages 根
+ * @param {string} target 目标路径
+ * @returns {boolean} 在根内
+ */
+function isInsidePagesRoot(pagesRoot, target) {
+	const relative = path.relative(path.resolve(pagesRoot), path.resolve(target))
+	return relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative)
+}
+
+/**
+ * 读取并替换含占位符的 Pages 文件。
+ * @param {string} pagesRoot `.github/pages` 绝对路径
+ * @param {string} relPath 相对路径
+ * @param {Record<string, string>} cache 本应用实例的文件缓存
+ * @returns {Promise<{ body: string, relPath: string } | null>} 命中的文件；无占位符或读失败则为 null
+ */
+async function getHookedPagesFile(pagesRoot, relPath, cache) {
+	for (const candidate of hookedPagesCandidates(relPath)) {
+		if (cache[candidate]) return { body: cache[candidate], relPath: candidate }
+		const fullPath = path.join(pagesRoot, candidate)
+		if (!isInsidePagesRoot(pagesRoot, fullPath)) continue
+		let source
+		try {
+			source = await fs.readFile(fullPath, 'utf8')
+		}
+		catch {
+			continue
+		}
+		if (!source.includes('__FOUNT_')) return null
+		const body = cache[candidate] = applyPagesPlaceholders(source)
+		return { body, relPath: candidate }
 	}
-	// git commit
-	if (event === 'change' && filename === '.git/HEAD') {
-		refreshFountVersion()
-		for (const filePath of hooked_version_files)
-			delete hooked_version_file_cache[filePath]
-	}
-})
+	return null
+}
+
+/**
+ * @param {string} relPath 相对 `.github/pages` 的路径
+ * @returns {string} Content-Type
+ */
+function pagesFileContentType(relPath) {
+	if (relPath.endsWith('.html')) return 'html'
+	if (relPath.endsWith('.mjs') || relPath.endsWith('.js')) return 'application/javascript'
+	return 'text/plain'
+}
 
 /**
  * 创建模拟 GitHub Pages 部署结构的 Express 应用（不 listen）。
@@ -58,6 +106,7 @@ fs.watch(REPO_ROOT, (event, filename) => {
  * @returns {import('npm:express').Express} Express 应用
  */
 export function createPagesApp(projectRoot = REPO_ROOT) {
+	const hooked_file_cache = {}
 	const app = express()
 
 	// `cp -r ./src/public/locales ./.github/pages/`
@@ -103,13 +152,47 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 		])
 	})
 
-	for (const filePath of hooked_version_files)
-		app.get(`/fount/${filePath}`, async (req, res) => {
-			const body = await getHookedVersionFileContent(filePath)
-			res.type('application/javascript').send(body)
-		})
+	const pagesRoot = path.join(projectRoot, '.github', 'pages')
+	app.use('/fount', async (req, res, next) => {
+		if (req.method !== 'GET' && req.method !== 'HEAD') return next()
+		let relPath
+		try {
+			relPath = path.posix.normalize(
+				decodeURIComponent(req.path.replace(/^\//, '')).replaceAll('\\', '/'),
+			)
+		}
+		catch (error) {
+			if (error instanceof URIError) {
+				res.status(400).end()
+				return
+			}
+			throw error
+		}
+		if (relPath === '..' || relPath.startsWith('../')) return next()
+		if (!isInsidePagesRoot(pagesRoot, path.resolve(pagesRoot, relPath))) return next()
+		const hooked = await getHookedPagesFile(pagesRoot, relPath, hooked_file_cache)
+		if (hooked == null) return next()
+		res.type(pagesFileContentType(hooked.relPath)).send(hooked.body)
+	})
 
-	app.use('/fount', express.static(path.join(projectRoot, '.github', 'pages')))
+	app.use('/fount', express.static(pagesRoot))
+	/**
+	 * 失效单个 hooked 缓存项。
+	 * @param {string} filename 相对 `.github/pages` 的路径
+	 * @returns {void}
+	 */
+	app.locals.invalidateHookedPages = filename => {
+		if (!filename) return
+		delete hooked_file_cache[String(filename).replaceAll('\\', '/')]
+	}
+	/**
+	 * 清空 hooked 缓存。
+	 * @returns {void}
+	 */
+	app.locals.invalidateAllHookedPages = () => {
+		for (const key of Object.keys(hooked_file_cache))
+			delete hooked_file_cache[key]
+	}
 	return app
 }
 
@@ -131,8 +214,17 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
  * @param {string} [options.host='127.0.0.1'] 绑定地址
  * @returns {Promise<PagesServerHandle>} 服务器句柄
  */
-export function startPagesServer({ port = 8080, projectRoot = REPO_ROOT, host = '127.0.0.1' } = {}) {
+export async function startPagesServer({ port = 8080, projectRoot = REPO_ROOT, host = '127.0.0.1' } = {}) {
+	await refreshFountGitMeta()
 	const app = createPagesApp(projectRoot)
+	const pagesWatcher = watch(path.join(projectRoot, '.github', 'pages'), { recursive: true }, (_event, filename) => {
+		app.locals.invalidateHookedPages(filename)
+	})
+	const gitWatcher = watch(path.join(projectRoot, '.git'), (_event, filename) => {
+		if (String(filename || '').replaceAll('\\', '/') !== 'HEAD') return
+		refreshFountGitMeta()
+		app.locals.invalidateAllHookedPages()
+	})
 	return new Promise((resolve, reject) => {
 		const server = app.listen(port, host, () => {
 			resolve({
@@ -141,10 +233,12 @@ export function startPagesServer({ port = 8080, projectRoot = REPO_ROOT, host = 
 				port,
 				baseUrl: `http://${host}:${port}/fount`,
 				/**
-				 * 关闭 HTTP server（掐断 keep-alive 后 close）。
+				 * 关闭 HTTP server 与文件系统监视（掐断 keep-alive 后 close）。
 				 * @returns {Promise<void>}
 				 */
 				close: () => new Promise((closeResolve, closeReject) => {
+					pagesWatcher.close()
+					gitWatcher.close()
 					// Playwright 退出后 keep-alive 连接可能仍挂着；不强制掐断则 server.close 会一直等
 					server.closeAllConnections?.()
 					server.close(error => error ? closeReject(error) : closeResolve())

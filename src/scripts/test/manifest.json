@@ -444,6 +444,26 @@
 			]
 		},
 		{
+			"name": "pages_server",
+			"expected": "1s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/pages_server.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/pages_server.test.mjs",
+				"src/scripts/test/playwright/pages_server.mjs",
+				"src/scripts/test/core/repo_root.mjs",
+				".github/pages/scripts/endpoints/registries.mjs"
+			]
+		},
+		{
 			"name": "cdn_cache",
 			"expected": "1s",
 			"run": [

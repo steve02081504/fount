@@ -18,8 +18,8 @@ handle_auto_reinitialization() {
 run() {
 	local original_title exit_code
 	if [[ $(id -u) -eq 0 ]]; then
-		print_i18n_yellow 'install.rootWarning1' >&2
-		print_i18n_yellow 'install.rootWarning2' >&2
+		print_i18n_yellow 'install.rootWarningAsRoot' >&2
+		print_i18n_yellow 'install.rootWarningPreferUser' >&2
 	fi
 	write_taskbar_progress 5
 	original_title=$(get_title)

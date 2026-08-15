@@ -195,7 +195,7 @@ export function extractI18nRefsFromSource(text) {
 }
 
 /**
- * 从 fount.ps1 / fount.sh 提取相对 fountConsole.path 的键。
+ * 从 path CLI / runner 脚本提取相对 fountConsole.path 的键。
  * @param {string} text 脚本正文
  * @returns {{ key: string, line: number }[]} 相对键（仍带 remove.… 前缀）
  */
@@ -207,7 +207,7 @@ export function extractFountConsolePathKeys(text) {
 	 * @returns {number} 1-based 行号
 	 */
 	const lineAt = (index) => text.slice(0, index).split('\n').length
-	for (const match of text.matchAll(/\b(?:Get-I18n\s+-key|get_i18n)\s+'(?:([^']+))'/g))
+	for (const match of text.matchAll(/\b(?:Get-I18n\s+-key|get_i18n|print_i18n(?:_red|_yellow|_green)?)\s+'(?:([^']+))'/g))
 		refs.push({ key: match[1], line: lineAt(match.index ?? 0) })
 	return refs
 }

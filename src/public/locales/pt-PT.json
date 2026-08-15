@@ -469,6 +469,13 @@
 			"tempDir": {
 				"blocked": "Erro: não é possível executar `fount` no diretório temporário\n\nfount acopla-se profundamente ao sistema e regista o comando `PATH` e vários hooks do sistema em `fount`. Se executado num diretório temporário, após o sistema limpar os ficheiros temporários, não poderá executar `fount remove` para remover fount e os seus hooks.\n\nMova fount para um diretório não temporário antes de executar. Se apenas quiser testar brevemente, execute manualmente `fount remove` após o teste."
 			},
+			"eula": {
+				"prompt": "Aceita o contrato de licença de utilizador final (EULA) do fount?",
+				"yn": "[Y/N] ",
+				"required": "É necessário aceitar a EULA para continuar. Defina `FOUNT_ACCEPT_EULA=1` e volte a executar, ou execute a partir de um terminal interativo.",
+				"declined": "EULA recusada. A remover o fount.",
+				"statusServerFailed": "Aviso: não foi possível iniciar o servidor de estado da instalação. A EULA será mostrada neste terminal."
+			},
 			"install": {
 				"installingDependencies": "Instalando dependências...",
 				"compilingFavicon": "Ficheiro favicon não encontrado; a iniciar o servidor para compilar...",
@@ -478,7 +485,8 @@
 				"permissionDeniedAsRoot": "Erro: Não é possível escrever no diretório fount '${path}'. Está a executar como root, mas o acesso continua a ser negado — verifique e corrija as permissões de segurança nesta pasta para conceder controlo total ao utilizador atual.",
 				"permissionDeniedNotRoot": "Erro: Não é possível escrever no diretório fount '${path}'. Corrija as permissões de segurança na pasta para conceder acesso de escrita ao utilizador atual ou execute fount como root.",
 				"rootWarningAsRoot": "Não recomendado: executar o fount como root concede acesso total do sistema a todos os componentes do fount.",
-				"rootWarningPreferUser": "A menos que você saiba o que está fazendo, é recomendável executar o fount como um usuário normal."
+				"rootWarningPreferUser": "A menos que saiba o que está a fazer, recomenda-se executar o fount como um utilizador normal.",
+				"runnerUpdating": "A atualizar o instalador…"
 			},
 			"clean": {
 				"removingCaches": "Removendo cache...",
@@ -607,6 +615,17 @@
 			"title": "De longe",
 			"message": "Bem-vindos, visitantes de `${source}`!\nNão temos chá nem petiscos — apenas um cumprimento :)",
 			"dismiss": "Obrigado, vou dar uma vista de olhos"
+		},
+		"eula": {
+			"title": "Contrato de licença de utilizador final",
+			"agree": "Li e aceito este acordo",
+			"continue": "Continuar",
+			"continue_in": "Continuar (${seconds})",
+			"language": {
+				"aria-label": "Idioma do acordo"
+			},
+			"loading": "A carregar o acordo…",
+			"load_failed": "Não foi possível carregar o acordo."
 		},
 		"footer": {
 			"ready_text": "Pronto para começar a sua jornada?",

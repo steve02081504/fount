@@ -64,14 +64,17 @@ trap_taskbar_clear() {
 	trap 'write_taskbar_progress_clear' EXIT INT TERM
 }
 
-# Restore title + clear taskbar progress on EXIT/INT/TERM
+# Restore title + clear taskbar progress on EXIT/INT/TERM. Optional extra cleanup function name.
 trap_terminal_teardown() {
-	local _saved_title
-	_saved_title=$(get_title)
+	FOUNT_TERMINAL_TEARDOWN_TITLE=$(get_title)
+	FOUNT_TERMINAL_TEARDOWN_HOOK="${1:-}"
 	# shellcheck disable=SC2329
 	_terminal_teardown() {
 		write_taskbar_progress_clear
-		set_title "$_saved_title"
+		set_title "$FOUNT_TERMINAL_TEARDOWN_TITLE"
+		if [ -n "${FOUNT_TERMINAL_TEARDOWN_HOOK:-}" ]; then
+			"$FOUNT_TERMINAL_TEARDOWN_HOOK"
+		fi
 	}
 	trap '_terminal_teardown' EXIT INT TERM
 }

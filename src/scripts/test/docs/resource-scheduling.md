@@ -23,7 +23,7 @@ ETA simulation (`simulateParallelMakespanMs`) uses the same one-layer hard-ancho
 
 ## Ordering
 
-- **Manifest list / `report.md` slots / dispatch**: same topo + tie-break (`listManifestIds` / `topoSortSuites`). Ready set re-sorted by `suiteSchedulePriority` then bin-packed.
+- **Manifest list / `report.md` slots / dispatch**: same topo + tie-break (`listManifestIds` / `topoSortSuites`). Ready set re-sorted by `suiteSchedulePriority` then bin-packed. CLI queue: later equal-`priority` items first.
 
 ## Per-suite footprint
 

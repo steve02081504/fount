@@ -1,7 +1,13 @@
 ﻿# Windows: passthrough entry is fount.ps1; container detection lives in env.ps1
+# Splat is `@name` / `@args` — `@(...)` is array subexpression and passes one nested argument.
+function script:Invoke-FountFromCmd {
+	$rest = @($args | Select-Object -Skip 1)
+	& (Join-Path $FOUNT_DIR 'path/fount.ps1') @rest
+}
+
 function script:handle_docker_passthrough {
 	if (-not (in_docker)) { return }
-	fount.ps1 @($args | Select-Object -Skip 1)
+	Invoke-FountFromCmd @args
 	exit $LastExitCode
 }
 

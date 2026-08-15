@@ -469,6 +469,13 @@
 			"tempDir": {
 				"blocked": "Error: cannot run `fount` in temporary directory\n\nFount will be deeply coupled with the system and register the `PATH` command and multiple system hooks in `fount`. If running in a temporary directory, after the system clears the temporary files, you will not be able to execute `fount remove` to remove fount and its hooks.\n\nPlease move fount to a non-temporary directory before running. If you only want to test briefly, please manually execute `fount remove` after the test is completed."
 			},
+			"eula": {
+				"prompt": "Do you accept the fount End-User Licence Agreement (EULA)?",
+				"yn": "[Y/N] ",
+				"required": "You must accept the EULA to continue. Set `FOUNT_ACCEPT_EULA=1` and try again, or run from an interactive terminal.",
+				"declined": "EULA declined. Removing fount.",
+				"statusServerFailed": "Warning: Could not start the installation status server. Showing the EULA prompt in this terminal instead."
+			},
 			"install": {
 				"installingDependencies": "Installing dependencies...",
 				"compilingFavicon": "Favicon not found; starting server to compile...",
@@ -478,7 +485,8 @@
 				"permissionDeniedAsRoot": "Error: Cannot write to fount directory '${path}'. You are running as root but access is still denied — please check and fix the folder's security permissions to grant the current user full control.",
 				"permissionDeniedNotRoot": "Error: Cannot write to fount directory '${path}'. Please fix the folder's security permissions to grant the current user write access, or run fount as root.",
 				"rootWarningAsRoot": "Not recommended: running fount as root grants full system access to all fount components.",
-				"rootWarningPreferUser": "Unless you know what you are doing, it is recommended to run fount as a normal user."
+				"rootWarningPreferUser": "Unless you know what you are doing, it is recommended to run fount as a normal user.",
+				"runnerUpdating": "Updating the installer…"
 			},
 			"clean": {
 				"removingCaches": "Removing cache...",
@@ -607,6 +615,17 @@
 			"title": "From afar",
 			"message": "Welcome, visitors from `${source}`!\nWe've no tea or biscuits on offer — just a friendly hello :)",
 			"dismiss": "Thanks, I'll have a look around"
+		},
+		"eula": {
+			"title": "End-User Licence Agreement",
+			"agree": "I have read and agree to this licence agreement",
+			"continue": "Continue",
+			"continue_in": "Continue (${seconds})",
+			"language": {
+				"aria-label": "Agreement language"
+			},
+			"loading": "Loading the agreement…",
+			"load_failed": "Failed to load the agreement."
 		},
 		"footer": {
 			"ready_text": "Ready to start your journey?",

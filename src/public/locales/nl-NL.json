@@ -469,6 +469,13 @@
 			"tempDir": {
 				"blocked": "Fout: kan `fount` niet uitvoeren in de tijdelijke map\n\nfount is diep gekoppeld aan het systeem en registreert het `PATH`-commando en meerdere systeemhooks in `fount`. Bij uitvoering in een tijdelijke map kunt u na het wissen van tijdelijke bestanden door het systeem geen `fount remove` meer uitvoeren om fount en de hooks te verwijderen.\n\nVerplaats fount naar een niet-tijdelijke map voordat u het uitvoert. Als u alleen kort wilt testen, voer `fount remove` handmatig uit na de test."
 			},
+			"eula": {
+				"prompt": "Accepteert u de licentieovereenkomst voor eindgebruikers (EULA) van fount?",
+				"yn": "[Y/N] ",
+				"required": "Acceptatie van de EULA is vereist. Stel `FOUNT_ACCEPT_EULA=1` in en voer opnieuw uit, of start vanuit een interactieve terminal.",
+				"declined": "EULA geweigerd. fount wordt verwijderd.",
+				"statusServerFailed": "Waarschuwing: de installatiestatusserver kon niet worden gestart. De EULA wordt in deze terminal getoond."
+			},
 			"install": {
 				"installingDependencies": "Afhankelijkheden installeren...",
 				"compilingFavicon": "Faviconbestand niet gevonden; server wordt gestart om te compileren...",
@@ -478,7 +485,8 @@
 				"permissionDeniedAsRoot": "Fout: Kan niet schrijven naar de fount-map '${path}'. U werkt als root, maar de toegang wordt nog steeds geweigerd. Controleer en corrigeer de beveiligingsmachtigingen van deze map om de huidige gebruiker volledige controle te geven.",
 				"permissionDeniedNotRoot": "Fout: Kan niet schrijven naar de fount-map '${path}'. Corrigeer de beveiligingsmachtigingen van de map om schrijftoegang te verlenen aan de huidige gebruiker, of voer fount uit als root.",
 				"rootWarningAsRoot": "Niet aanbevolen: het uitvoeren van fount als root geeft volledige systeemtoegang tot alle fountcomponenten.",
-				"rootWarningPreferUser": "Tenzij u weet wat u doet, wordt aanbevolen om font als normale gebruiker uit te voeren."
+				"rootWarningPreferUser": "Tenzij u weet wat u doet, wordt aanbevolen om fount als normale gebruiker uit te voeren.",
+				"runnerUpdating": "Installer wordt bijgewerkt…"
 			},
 			"clean": {
 				"removingCaches": "Cache verwijderen...",
@@ -607,6 +615,17 @@
 			"title": "Van ver",
 			"message": "Welkom, bezoekers van `${source}`!\nGeen thee of koekjes hier — alleen een vriendelijke groet :)",
 			"dismiss": "Bedankt, ik kijk even rond"
+		},
+		"eula": {
+			"title": "Licentieovereenkomst voor eindgebruikers",
+			"agree": "Ik heb deze overeenkomst gelezen en ga ermee akkoord",
+			"continue": "Doorgaan",
+			"continue_in": "Doorgaan (${seconds})",
+			"language": {
+				"aria-label": "Taal van de overeenkomst"
+			},
+			"loading": "Overeenkomst laden…",
+			"load_failed": "De overeenkomst kon niet worden geladen."
 		},
 		"footer": {
 			"ready_text": "Klaar om je reis te beginnen?",

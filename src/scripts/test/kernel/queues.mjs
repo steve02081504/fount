@@ -1,5 +1,5 @@
 /**
- * 测试内核待运行队列：CLI FIFO、FS LIFO、预备 debounce。
+ * 测试内核待运行队列：CLI 同优先级 LIFO、FS LIFO、预备 debounce。
  */
 
 /** 预备队列默认静置时长（毫秒）。 */
@@ -29,7 +29,7 @@ export const DEFAULT_PREP_SETTLE_MS = 3 * 60 * 1000
  */
 
 /**
- * CLI FIFO + FS LIFO + 预备 debounce。
+ * CLI 同优先级 LIFO + FS LIFO + 预备 debounce。
  */
 export class TestQueues {
 	/**
@@ -60,7 +60,7 @@ export class TestQueues {
 	}
 
 	/**
-	 * CLI 队列追加（FIFO 尾部）。
+	 * CLI 队列追加（尾部；同优先级由 peekReady 取最后入队者）。
 	 * @param {Omit<QueueItem, 'id' | 'source' | 'enqueuedAt'>} spec 项
 	 * @returns {QueueItem} 入队项
 	 */
@@ -126,7 +126,7 @@ export class TestQueues {
 	}
 
 	/**
-	 * 取下一个可调度项：CLI 中最早的 ready，否则 FS 中最新的 ready。不做出队。
+	 * 取下一个可调度项：CLI 同优先级后入队者先（LIFO），否则 FS 中最新的 ready。不做出队。
 	 * @param {(item: QueueItem) => boolean} isReady 是否可开工
 	 * @returns {{ queue: 'cli' | 'fs', item: QueueItem } | null} 选中项
 	 */
@@ -140,6 +140,8 @@ export class TestQueues {
 				bestPriority = priority
 				best = item
 			}
+			else if (priority === bestPriority)
+				best = item
 		}
 		if (best)
 			return { queue: 'cli', item: best }
