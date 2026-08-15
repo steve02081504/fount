@@ -35,4 +35,10 @@ Set on manifest root or individual suite. Suite layer merges on top of manifest.
 
 ## Locale triggers
 
-Put `src/public/locales/**` on **jsonEditor subtests** (aria-label asserts), not suite-level `frontendShared`. Locale-only waves also hit `checks:i18n_*` — do not hang locales on Pages / chat / social / cabinet frontends unless a subtest asserts copy.
+`src/public/locales/*.json` and `list.csv` belong on **`checks` only** (`i18n_keys` / `i18n_refs` / `locale_md_align`). Do not hang `src/public/locales/**` (or brace equivalents such as `src/public/{pages,locales}/**`) on Playwright (smoke, jsonEditor, page-watch) or path CLI — those re-run when the page/widget/CLI **code** changes. jsonEditor aria-label wiring is `i18n_refs` (key + applicator) plus the editor spec when the widget changes. Enforced by `testkit:trigger_audit`.
+
+`frontendShared` on multi-subtest shells is harness only (`fixtures` / `run` / `phases` / `playwright.config` + Playwright helpers). Spec files live on that subtest — do not use `test/frontend/**` at suite level or changing one spec re-runs every sibling.
+
+## Test harness triggers
+
+`src/scripts/test/node/**` (launch/boot/worker), `serial.mjs`, and helpers like `allowNoise` / `url` belong on **`testkit`** (and `pure` / `integration` may watch `serial.mjs` / `boot.mjs`). Product **`live`** suites watch the server and that suite's own tests — not the harness (including brace globs such as `src/scripts/{checks,test}/**`). Changing launch must not stale `server:live`; `testkit:launch_node` covers it. Enforced by `testkit:trigger_audit`.

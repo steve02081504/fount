@@ -10,11 +10,14 @@ import { assertEquals, assertRejects } from 'jsr:@std/assert'
 import { execFile } from 'npm:@steve02081504/exec'
 
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
+import { startTestHub, testHubUrl } from '../hub/index.mjs'
+import { kernelHealthy, parseNetstatListenPid, rebootTestKernel, shutdownTestKernel } from '../kernel/ensure.mjs'
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
 
 import {
 	awaitJob,
+	awaitWithTimeout,
 	dummySkipSuite,
 	enqueueDummyJob,
 	issueStillOpen,
@@ -368,5 +371,175 @@ Deno.test('accepted remaining includes already-running leftover', async () => {
 	}
 	finally {
 		await rm(root, { recursive: true, force: true })
+	}
+})
+
+/** 避开 skip_because 18920 段与 module_check 18940 段。 */
+const CONTROL_PORT = 18930
+
+Deno.test('parseNetstatListenPid reads LISTENING pid and ignores longer ports', () => {
+	const stdout = [
+		'  TCP    127.0.0.1:89030        0.0.0.0:0              LISTENING       1',
+		'  TCP    127.0.0.1:8903         0.0.0.0:0              LISTENING       4242',
+	].join('\n')
+	assertEquals(parseNetstatListenPid(stdout, 8903), 4242)
+	assertEquals(parseNetstatListenPid(stdout, 89030), 1)
+	assertEquals(parseNetstatListenPid(stdout, 80), 0)
+})
+
+Deno.test('POST /shutdown stops the in-process kernel', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	assertEquals(await kernelHealthy(handle.url), true)
+	const res = await fetch(`${handle.url}/shutdown`, { method: 'POST' })
+	assertEquals(res.ok, true)
+	await awaitWithTimeout(handle.closed, 'kernel did not close after /shutdown')
+	assertEquals(await kernelHealthy(handle.url), false)
+})
+
+Deno.test('POST /shutdown rejects Origin-bearing requests', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 7,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		assertEquals(await kernelHealthy(handle.url), true)
+		const res = await fetch(`${handle.url}/shutdown`, {
+			method: 'POST',
+			headers: { Origin: 'http://example.test' },
+		})
+		assertEquals(res.status, 403)
+		assertEquals(await kernelHealthy(handle.url), true)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('shutdownTestKernel returns already_down when nothing is listening', async () => {
+	assertEquals(await shutdownTestKernel({ port: CONTROL_PORT + 1, timeoutMs: 1000 }), 'already_down')
+})
+
+Deno.test('kernelHealthy rejects generic hub /health', async () => {
+	const hub = await startTestHub({ port: CONTROL_PORT + 5 })
+	try {
+		assertEquals(await kernelHealthy(hub.url), false)
+		assertEquals(await shutdownTestKernel({ port: CONTROL_PORT + 5, timeoutMs: 1000 }), 'already_down')
+	}
+	finally {
+		await hub.close()
+	}
+})
+
+Deno.test('shutdownTestKernel stops a running kernel', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 2,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		assertEquals(await shutdownTestKernel({ port: CONTROL_PORT + 2 }), 'stopped')
+		await awaitWithTimeout(handle.closed, 'kernel did not close after shutdownTestKernel')
+		assertEquals(await kernelHealthy(handle.url), false)
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('kernel close settles one running item and one queued item', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 6,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		const { job } = enqueueDummyJob(handle.kernel, { key: 'testkit:__run__', jobId: 'close-drain' })
+		const runningItem = handle.kernel.queues.cli.find(item => item.key === 'testkit:__run__')
+		handle.kernel.queues.cli = handle.kernel.queues.cli.filter(item => item !== runningItem)
+		const queuedItem = handle.kernel.queues.enqueueCli({
+			key: 'testkit:__queued__',
+			viewerId: 'v',
+			jobId: job.id,
+		})
+		job.pending.add(queuedItem.id)
+		const abort = new AbortController()
+		handle.kernel.running.set('testkit:__run__', {
+			item: runningItem,
+			abort,
+			startedAt: Date.now(),
+			checkDone: true,
+		})
+		abort.signal.addEventListener('abort', () => {
+			setTimeout(() => {
+				handle.kernel.running.delete('testkit:__run__')
+			}, 80)
+		}, { once: true })
+		assertEquals(handle.kernel.running.size, 1)
+		assertEquals(handle.kernel.queues.cli.length, 1)
+		await awaitWithTimeout(handle.close(), 'close did not drain running and queued items')
+		assertEquals(handle.kernel.running.size, 0)
+		assertEquals(handle.kernel.queues.cli.length, 0)
+		await awaitWithTimeout(job.done.promise, 'job did not settle on close')
+	}
+	finally {
+		handle.kernel.running.delete('testkit:__run__')
+		await handle.close()
+	}
+})
+
+Deno.test('kernel close aborts running suites', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 3,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		const abort = new AbortController()
+		handle.kernel.running.set('testkit:__abort__', {
+			item: { key: 'testkit:__abort__' },
+			abort,
+			startedAt: Date.now(),
+			checkDone: true,
+		})
+		const aborted = new Promise(resolve => {
+			abort.signal.addEventListener('abort', () => {
+				setTimeout(() => {
+					handle.kernel.running.delete('testkit:__abort__')
+					resolve()
+				}, 80)
+			}, { once: true })
+		})
+		const closing = handle.close()
+		assertEquals(handle.kernel.running.has('testkit:__abort__'), true)
+		await awaitWithTimeout(closing, 'close returned before running suite drained')
+		assertEquals(handle.kernel.running.size, 0)
+		await awaitWithTimeout(aborted, 'close did not abort running suite')
+	}
+	finally {
+		handle.kernel.running.delete('testkit:__abort__')
+		await handle.close()
+	}
+})
+
+Deno.test('rebootTestKernel starts a kernel when none is running', async () => {
+	const port = CONTROL_PORT + 4
+	assertEquals(await kernelHealthy(testHubUrl(port)), false)
+	const url = await rebootTestKernel({ port })
+	try {
+		assertEquals(url, testHubUrl(port))
+		assertEquals(await kernelHealthy(url), true)
+	}
+	finally {
+		await shutdownTestKernel({ port })
 	}
 })

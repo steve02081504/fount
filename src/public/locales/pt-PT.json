@@ -145,11 +145,18 @@
 			"replHint": "Enter para executar · Shift+Enter para nova linha"
 		},
 		"test": {
-			"help": "Utilização: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nSeletores (grupos separados por espaços; suites no mesmo grupo por vírgulas; / e : equivalentes):\n  nome              todas as suites do grupo (ex.: shells/chat)\n  nome:suite        uma suite específica\n  nome:suite:item   um subteste ou ficheiro de teste específico\n\nSem correspondência exata, expande por prefixo (shells → shells/chat, shells/social); globs (*, ?, **) também suportados.\n\nPor defeito (fount test simples): planeia falhas/incompletos/ruidosos e obsoletos numa só passagem e executa; as falhas só bloqueiam dependentes — saída não zero no final. Nunca o repositório inteiro — usa --all para isso.\n\n--watch      vigilância contínua; mantém-se ativo mesmo com fila vazia (Ctrl+C para sair); não combina com --all, --force, --update-estimates ou seletores\n--all        todas as suites no âmbito\n--force      execução forçada; não reutiliza resultados anteriores\n--update-estimates  reescreve expected em cada manifest a partir das médias atuais da BD; seletores opcionais; não executa testes\n\nexemplos:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "Utilização: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSeletores (grupos separados por espaços; suites no mesmo grupo por vírgulas; / e : equivalentes):\n  nome              todas as suites do grupo (ex.: shells/chat)\n  nome:suite        uma suite específica\n  nome:suite:item   um subteste ou ficheiro de teste específico\n\nSem correspondência exata, expande por prefixo (shells → shells/chat, shells/social); globs (*, ?, **) também suportados.\n\nPor defeito (fount test simples): planeia falhas/incompletos/ruidosos e obsoletos numa só passagem e executa; as falhas só bloqueiam dependentes — saída não zero no final. Nunca o repositório inteiro — usa --all para isso.\n\n--watch      vigilância contínua; mantém-se ativo mesmo com fila vazia (Ctrl+C para sair); não combina com --all, --force, --update-estimates ou seletores\n--all        todas as suites no âmbito\n--force      execução forçada; não reutiliza resultados anteriores\n--update-estimates  reescreve expected em cada manifest a partir das médias atuais da BD; seletores opcionais; não executa testes\n--kernel     shutdown para o kernel de testes; reboot para e volta a iniciar; não combina com outros argumentos\n\nexemplos:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Utilização: fount test --watch (não pode ser usado com outras opções)",
 			"updateEstimates": {
 				"incompatible": "Utilização: fount test --update-estimates [<groups>...] (não pode ser usado com outros interruptores)",
 				"summary": "Durações previstas atualizadas em ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ignoradas ${skipped} sem baseline ou já atualizadas"
+			},
+			"kernel": {
+				"incompatible": "Uso: fount test --kernel shutdown|reboot (não pode ser usado com outras opções)",
+				"unknownAction": "Ação de kernel desconhecida: ${action} (esperado shutdown ou reboot)",
+				"alreadyDown": "O kernel de teste não está em execução",
+				"stopped": "Kernel de teste encerrado",
+				"rebooted": "Kernel de teste reiniciado"
 			},
 			"skipBecause": {
 				"pass": "Ignorado (issue ainda aberta ou fechada mas período de carência não decorrido): ${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "Tempo restante estimado ≈ ${eta}",
-					"itemExpected": "Esperado ${expected}",
-					"parallelEstimate": "Consumo de tempo paralelo estimado ≈ ${eta} (taxa paralela estimada ${rate})",
-					"savings": "Economia estimada ≈ ${savings}"
+					"itemExpected": "Esperado ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "Atração de dependência",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "Comando",
 					"duration": "Duração",
-					"estimatedParallelRate": "Taxa estimada de paralelismo",
 					"estimatedRemaining": "Tempo restante estimado",
 					"exit": "Saída",
 					"failed": "Falhas",
@@ -366,13 +370,6 @@
 				"marker": "[Motivo da terminação: ${reason}]",
 				"speculative": "Terminado ${label}: A dependência especulativa não passou, parada antecipada cancelada",
 				"unknown": "TERMINADO ${label}: teste interrompido"
-			},
-			"estimated": {
-				"remaining": "Tempo restante estimado ≈ ${eta} (${completed}/${total} suites)",
-				"run": "Estima-se que esta execução levará ≈ ${eta} (taxa paralela estimada ${rate})",
-				"runSerial": "Espera-se que esta execução leve ≈ ${eta} (serial)",
-				"runSerialHint": "Se o paralelismo esperado ≈ ${eta} (taxa paralela ${rate}), economia ≈ ${savings}",
-				"runSkipped": "Existem também peças ${reused} que são reutilizadas e peças ${blocked} que devem ser bloqueadas (não incluídas na estimativa)"
 			},
 			"unknown": {
 				"fileFilter": "Filtragem de ficheiro de teste desconhecido: ${suite} → ${names}",

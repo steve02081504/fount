@@ -145,11 +145,18 @@
 			"replHint": "Enter で実行 · Shift+Enter で改行"
 		},
 		"test": {
-			"help": "使い方: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nセレクタ（グループはスペース区切り、同一グループ内の suite はカンマ区切り。/ と : は同義）:\n  名前              そのグループの全 suite（例: shells/chat）\n  名前:suite        suite を指定\n  名前:suite:項目   サブテストまたはテストファイルを指定\n\n完全一致がない場合はプレフィックスで展開（shells → shells/chat, shells/social）。glob（*, ?, **）も可。\n\nデフォルト（fount test のみ）: 失敗/未完了/ノイズありと期限切れを一括で計画して実行。失敗は依存先のスロットのみブロックし、最後に非ゼロで終了。全量は走らない（全量は --all）。\n\n--watch      監視を継続。キューが空でも終了しない（Ctrl+C で終了）。--all / --force / --update-estimates / セレクタとは併用不可\n--all        範囲内の全 suite\n--force      強制実行（前回結果を再利用しない）\n--update-estimates  現行 DB の平均所要時間から各 manifest の expected を書き戻す。セレクタ任意。テストは実行しない\n\n例:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "使い方: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nセレクタ（グループはスペース区切り、同一グループ内の suite はカンマ区切り。/ と : は同義）:\n  名前              そのグループの全 suite（例: shells/chat）\n  名前:suite        suite を指定\n  名前:suite:項目   サブテストまたはテストファイルを指定\n\n完全一致がない場合はプレフィックスで展開（shells → shells/chat, shells/social）。glob（*, ?, **）も可。\n\nデフォルト（fount test のみ）: 失敗/未完了/ノイズありと期限切れを一括で計画して実行。失敗は依存先のスロットのみブロックし、最後に非ゼロで終了。全量は走らない（全量は --all）。\n\n--watch      監視を継続。キューが空でも終了しない（Ctrl+C で終了）。--all / --force / --update-estimates / セレクタとは併用不可\n--all        範囲内の全 suite\n--force      強制実行（前回結果を再利用しない）\n--update-estimates  現行 DB の平均所要時間から各 manifest の expected を書き戻す。セレクタ任意。テストは実行しない\n--kernel     shutdown はテストカーネルを停止；reboot は停止して再起動；他の引数と併用不可\n\n例:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "使い方: fount test --watch（他のオプションとは併用できません）",
 			"updateEstimates": {
 				"incompatible": "使い方: fount test --update-estimates [<groups>...]（他のフラグとは併用できません）",
 				"summary": "${suitesUpdated} 件の suite の予想時間を更新（manifest ${filesChanged} 件）。ベースラインなしまたは最新のため ${skipped} 件をスキップ"
+			},
+			"kernel": {
+				"incompatible": "使い方: fount test --kernel shutdown|reboot（他のオプションと併用できません）",
+				"unknownAction": "不明なカーネル操作: ${action}（shutdown または reboot を指定してください）",
+				"alreadyDown": "テストカーネルは起動していません",
+				"stopped": "テストカーネルを停止しました",
+				"rebooted": "テストカーネルを再起動しました"
 			},
 			"skipBecause": {
 				"pass": "スキップ（issue 未クローズ、またはクローズ後の猶予期間内）: ${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "推定残り時間 ≈ ${eta}",
-					"itemExpected": "期待される ${expected}",
-					"parallelEstimate": "推定並列時間消費量 ≈ ${eta} (推定並列速度 ${rate})",
-					"savings": "推定節約額 ≈ ${savings}"
+					"itemExpected": "期待される ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "依存により実行対象",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "コマンド",
 					"duration": "所要時間",
-					"estimatedParallelRate": "推定並列処理速度",
 					"estimatedRemaining": "推定残り時間",
 					"exit": "終了ステータス",
 					"failed": "失敗数",
@@ -366,13 +370,6 @@
 				"marker": "[終了理由: ${reason}]",
 				"speculative": "${label} を終了: 投機的依存が未通過のため早期停止をキャンセル",
 				"unknown": "${label} を終了: テストが中断されました"
-			},
-			"estimated": {
-				"remaining": "推定残り時間 ≈ ${eta} (${completed}/${total} スイート)",
-				"run": "この実行には ≈ ${eta} (推定並列速度 ${rate}) かかると推定されます",
-				"runSerial": "この実行には ≈ ${eta} (シリアル) かかると予想されます",
-				"runSerialHint": "並列処理が期待される場合 ≈ ${eta} (並列レート ${rate})、節約額 ≈ ${savings}",
-				"runSkipped": "ほかに再利用 ${reused} 件、ブロック予定 ${blocked} 件（見積もり外）"
 			},
 			"unknown": {
 				"fileFilter": "不明なテスト ファイルのフィルタリング: ${suite} → ${names}",

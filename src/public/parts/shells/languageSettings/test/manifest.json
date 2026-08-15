@@ -24,8 +24,7 @@
 						"src/public/parts/shells/languageSettings/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/languageSettings/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/languageSettings/public/index.{html,mjs}",
-						"src/public/parts/shells/languageSettings/public/templates.mjs",
-						"src/public/locales/**"
+						"src/public/parts/shells/languageSettings/public/templates.mjs"
 					]
 				}
 			],

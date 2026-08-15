@@ -145,11 +145,18 @@
 			"replHint": "↩️ ▶️ · ⇧↩️ ↩️"
 		},
 		"test": {
-			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n       `fount test --update-estimates` [<groups>…]\n\n🎯（␣＝📦×N；`,`＝1📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：1📋 ❌/⏳+⏰ ▶️；❌→🔗🚫 only；exit≠0；🚫∞（→ `--all`）\n\n`--watch`      👁️♾️，📭≠🚪（Ctrl+C）；🚫`--all`／`--force`／`--update-estimates`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n`--update-estimates`  🗄️avg⏱️→ manifest `expected`；🎯OK；🚫🏃🧪\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n  `fount test --update-estimates`\n  `fount test --update-estimates shells/chat`",
+			"help": "📖：`fount test` [--watch]\n       `fount test` [--all] [--force] [<groups>…]\n       `fount test --update-estimates` [<groups>…]\n       `fount test --kernel` shutdown|reboot\n\n🎯（␣＝📦×N；`,`＝1📦；`/`≡`:`）：\n  📛              📦∞（`shells/chat`）\n  📛:`suite`      📦①\n  📛:`suite`:🔬  🔬／🧪📁\n\n🚫🎯 → prefix↗（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n\n⭐（⌀ `fount test`）：1📋 ❌/⏳+⏰ ▶️；❌→🔗🚫 only；exit≠0；🚫∞（→ `--all`）\n\n`--watch`      👁️♾️，📭≠🚪（Ctrl+C）；🚫`--all`／`--force`／`--update-estimates`／🎯\n`--all`        📦∞\n`--force`      💥🏃，🚫♻️\n`--update-estimates`  🗄️avg⏱️→ manifest `expected`；🎯OK；🚫🏃🧪\n`--kernel`     shutdown 🛑🧪🧠; reboot 🛑↻; 🚫+other\n\n💡：\n  `fount test`\n  `fount test --watch`\n  `fount test --all`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n  `fount test --update-estimates`\n  `fount test --update-estimates shells/chat`\n  `fount test --kernel shutdown`\n  `fount test --kernel reboot`",
 			"watchNoGroups": "📖：`fount test --watch`（🚫+⚙️）",
 			"updateEstimates": {
 				"incompatible": "📖：`fount test --update-estimates` [<groups>…]（🚫+🚩）",
 				"summary": "✍️ ${suitesUpdated} 📦⏱️（manifest ${filesChanged}）；⏭️ ${skipped} 🚫📏／✅🆕"
+			},
+			"kernel": {
+				"incompatible": "📖：`fount test --kernel shutdown|reboot`（🚫+⚙️）",
+				"unknownAction": "❓🧠 ${action}（`shutdown`|`reboot`）",
+				"alreadyDown": "🧪🧠🚫▶️",
+				"stopped": "🧪🧠⏹️",
+				"rebooted": "🧪🧠🔄"
 			},
 			"skipBecause": {
 				"pass": "⏭️（🐙🔓／🔒⏳❌）：${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "⏱️⏳≈ ${eta}",
-					"itemExpected": "🔮 ${expected}",
-					"parallelEstimate": "🔀⏱️≈ ${eta}（🔀 ${rate}）",
-					"savings": "💰≈ ${savings}"
+					"itemExpected": "🔮 ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "🔗📥",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "⌨️",
 					"duration": "⏱️",
-					"estimatedParallelRate": "🔀≈",
 					"estimatedRemaining": "⏱️⏳≈",
 					"exit": "🚪",
 					"failed": "❌ #",
@@ -366,13 +370,6 @@
 				"marker": "[⏹️: ${reason}]",
 				"speculative": "⏹️ ${label}：🔮🔗🚫，❌⏹",
 				"unknown": "⏹️ ${label}：🧪🛑"
-			},
-			"estimated": {
-				"remaining": "⏱️⏳ ≈ ${eta}（${completed}/${total} 📦）",
-				"run": "⏱️ ≈ ${eta}（🔀 ${rate}）",
-				"runSerial": "⏱️ ≈ ${eta}（📦→→）",
-				"runSerialHint": "🔀≈ ${eta}（${rate}），💰 ≈ ${savings}",
-				"runSkipped": "＋♻️ ${reused}，🚫⏸️ ${blocked}（∉⏱️）"
 			},
 			"unknown": {
 				"fileFilter": "🚫🧪📁🔽：${suite} → ${names}",

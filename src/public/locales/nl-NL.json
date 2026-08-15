@@ -145,11 +145,18 @@
 			"replHint": "Enter om uit te voeren · Shift+Enter voor nieuwe regel"
 		},
 		"test": {
-			"help": "Gebruik: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nSelectors (groepen gescheiden door spaties; suites binnen een groep door komma's; / en : equivalent):\n  naam              alle suites in die groep (bijv. shells/chat)\n  naam:suite        een specifieke suite\n  naam:suite:item   een specifieke subtest of testbestand\n\nZonder exacte match uitbreiden op prefix (shells → shells/chat, shells/social); globs (*, ?, **) ook ondersteund.\n\nStandaard (alleen fount test): plant mislukkingen/onvoltooid/ruis en verouderd in één ronde en voert uit; mislukkingen blokkeren alleen afhankelijken — niet-nul exit aan het eind. Nooit volledige repo — gebruik --all daarvoor.\n\n--watch      blijft kijken; blijft actief ook als de wachtrij leeg is (Ctrl+C om te stoppen); niet te combineren met --all, --force, --update-estimates of selectors\n--all        alle suites in bereik\n--force      geforceerde run; hergebruikt geen vorige resultaten\n--update-estimates  schrijft expected in elk manifest terug op basis van huidige DB-gemiddelden; optionele selectors; voert geen tests uit\n\nvoorbeelden:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "Gebruik: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelectors (groepen gescheiden door spaties; suites binnen een groep door komma's; / en : equivalent):\n  naam              alle suites in die groep (bijv. shells/chat)\n  naam:suite        een specifieke suite\n  naam:suite:item   een specifieke subtest of testbestand\n\nZonder exacte match uitbreiden op prefix (shells → shells/chat, shells/social); globs (*, ?, **) ook ondersteund.\n\nStandaard (alleen fount test): plant mislukkingen/onvoltooid/ruis en verouderd in één ronde en voert uit; mislukkingen blokkeren alleen afhankelijken — niet-nul exit aan het eind. Nooit volledige repo — gebruik --all daarvoor.\n\n--watch      blijft kijken; blijft actief ook als de wachtrij leeg is (Ctrl+C om te stoppen); niet te combineren met --all, --force, --update-estimates of selectors\n--all        alle suites in bereik\n--force      geforceerde run; hergebruikt geen vorige resultaten\n--update-estimates  schrijft expected in elk manifest terug op basis van huidige DB-gemiddelden; optionele selectors; voert geen tests uit\n--kernel     shutdown stopt de testkernel; reboot stopt en start opnieuw; niet te combineren met andere argumenten\n\nvoorbeelden:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Gebruik: fount test --watch (niet te combineren met andere opties)",
 			"updateEstimates": {
 				"incompatible": "Gebruik: fount test --update-estimates [<groups>...] (niet te combineren met andere schakelaars)",
 				"summary": "Verwachte duur bijgewerkt voor ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ${skipped} overgeslagen zonder baseline of al actueel"
+			},
+			"kernel": {
+				"incompatible": "Gebruik: fount test --kernel shutdown|reboot (kan niet worden gecombineerd met andere opties)",
+				"unknownAction": "Onbekende kernelactie: ${action} (verwacht: shutdown of reboot)",
+				"alreadyDown": "Testkernel draait niet",
+				"stopped": "Testkernel gestopt",
+				"rebooted": "Testkernel herstart"
 			},
 			"skipBecause": {
 				"pass": "Overgeslagen (issue nog open of gesloten maar respijtperiode nog niet verstreken): ${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "Geschatte resterende tijd ≈ ${eta}",
-					"itemExpected": "verwacht ${expected}",
-					"parallelEstimate": "Geschatte parallelle tijd ≈ ${eta} (factor ${rate})",
-					"savings": "Geschatte besparing ≈ ${savings}"
+					"itemExpected": "verwacht ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "afhankelijkheid meegenomen",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "Opdracht",
 					"duration": "Duur",
-					"estimatedParallelRate": "Geschatte parallelle factor",
 					"estimatedRemaining": "Geschatte resterende tijd",
 					"exit": "Exitcode",
 					"failed": "Mislukkingen",
@@ -366,13 +370,6 @@
 				"marker": "[Afbraakreden: ${reason}]",
 				"speculative": "${label} afgebroken: speculatieve afhankelijkheid niet geslaagd, vroegtijdig stoppen",
 				"unknown": "${label} afgebroken: test onderbroken"
-			},
-			"estimated": {
-				"remaining": "Geschatte resterende tijd ≈ ${eta} (${completed}/${total} suites)",
-				"run": "Geschatte looptijd ≈ ${eta} (parallelle factor ${rate})",
-				"runSerial": "Geschatte looptijd ≈ ${eta} (serieel)",
-				"runSerialHint": "Bij parallel ≈ ${eta} (factor ${rate}), besparing ≈ ${savings}",
-				"runSkipped": "Daarnaast ${reused} hergebruikt en ${blocked} naar verwachting geblokkeerd (niet meegeteld)"
 			},
 			"unknown": {
 				"fileFilter": "Onbekende testbestandsfilter: ${suite} → ${names}",

@@ -145,11 +145,18 @@
 			"replHint": "Enter로 실행 · Shift+Enter 줄바꿈"
 		},
 		"test": {
-			"help": "사용법: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\n선택자(그룹은 공백으로 구분, 같은 그룹 내 suite는 쉼표로 구분. / 와 : 는 동일):\n  이름              해당 그룹의 모든 suite(예: shells/chat)\n  이름:suite        특정 suite\n  이름:suite:항목   특정 하위 테스트 또는 테스트 파일\n\n정확히 일치하지 않으면 접두사로 확장(shells → shells/chat, shells/social). glob(*, ?, **)도 지원.\n\n기본(옵션 없는 fount test): 실패/미완료/소음과 만료 항목을 한 번에 계획해 실행. 실패는 의존 슬롯만 막고, 마지막에 0이 아닌 종료 코드. 전체 실행은 하지 않음 — 전체는 --all.\n\n--watch      계속 감시. 큐가 비어도 종료하지 않음(Ctrl+C로 종료). --all / --force / --update-estimates / 선택자와 함께 사용 불가\n--all        범위 내 모든 suite\n--force      강제 실행, 이전 결과 재사용 안 함\n--update-estimates  현재 DB 평균 소요 시간으로 각 manifest의 expected를 다시 기록. 선택자 선택 가능. 테스트는 실행하지 않음\n\n예:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "사용법: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\n선택자(그룹은 공백으로 구분, 같은 그룹 내 suite는 쉼표로 구분. / 와 : 는 동일):\n  이름              해당 그룹의 모든 suite(예: shells/chat)\n  이름:suite        특정 suite\n  이름:suite:항목   특정 하위 테스트 또는 테스트 파일\n\n정확히 일치하지 않으면 접두사로 확장(shells → shells/chat, shells/social). glob(*, ?, **)도 지원.\n\n기본(옵션 없는 fount test): 실패/미완료/소음과 만료 항목을 한 번에 계획해 실행. 실패는 의존 슬롯만 막고, 마지막에 0이 아닌 종료 코드. 전체 실행은 하지 않음 — 전체는 --all.\n\n--watch      계속 감시. 큐가 비어도 종료하지 않음(Ctrl+C로 종료). --all / --force / --update-estimates / 선택자와 함께 사용 불가\n--all        범위 내 모든 suite\n--force      강제 실행, 이전 결과 재사용 안 함\n--update-estimates  현재 DB 평균 소요 시간으로 각 manifest의 expected를 다시 기록. 선택자 선택 가능. 테스트는 실행하지 않음\n--kernel     shutdown은 테스트 커널을 종료; reboot는 종료 후 다시 기동; 다른 인자와 함께 사용 불가\n\n예:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "사용법: fount test --watch (다른 옵션과 함께 사용할 수 없음)",
 			"updateEstimates": {
 				"incompatible": "사용법: fount test --update-estimates [<groups>...] (다른 플래그와 함께 사용할 수 없음)",
 				"summary": "${suitesUpdated}개 suite의 예상 시간을 갱신함(manifest ${filesChanged}개). 기준선 없음 또는 이미 최신이라 ${skipped}개 건너뜀"
+			},
+			"kernel": {
+				"incompatible": "사용법: fount test --kernel shutdown|reboot (다른 옵션과 함께 사용할 수 없음)",
+				"unknownAction": "알 수 없는 커널 작업: ${action} (shutdown 또는 reboot 이어야 함)",
+				"alreadyDown": "테스트 커널이 실행 중이 아닙니다",
+				"stopped": "테스트 커널이 중지되었습니다",
+				"rebooted": "테스트 커널이 재시작되었습니다"
 			},
 			"skipBecause": {
 				"pass": "건너뜀(issue 열림 또는 닫힘 후 유예 기간 미경과): ${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "남은 예상 시간 ≒ ${eta}",
-					"itemExpected": "${expected} 예상",
-					"parallelEstimate": "예상 병렬 시간 소모 ≒ ${eta} (예상 병렬 속도 ${rate})",
-					"savings": "예상 절감액 ≒ ${savings}"
+					"itemExpected": "${expected} 예상"
 				},
 				"reason": {
 					"dependencyRequired": "종속성 풀인",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "주문",
 					"duration": "시간이 많이 걸리는",
-					"estimatedParallelRate": "예상 병렬 처리 속도",
 					"estimatedRemaining": "예상 남은 시간",
 					"exit": "종료",
 					"failed": "실패",
@@ -366,13 +370,6 @@
 				"marker": "[해지 이유: ${reason}]",
 				"speculative": "종료된 ${label}: 투기적 종속성이 통과되지 않았으며 조기 중지가 취소되었습니다.",
 				"unknown": "TERMINATED ${label}: 테스트가 중단되었습니다."
-			},
-			"estimated": {
-				"remaining": "남은 예상 시간 ≒ ${eta} (${completed}/${total} 스위트)",
-				"run": "이 실행에는 약 ${eta}(예상 병렬 속도 ${rate})이 소요될 것으로 예상됩니다.",
-				"runSerial": "이 실행에는 약 ${eta}(연속)가 소요될 것으로 예상됩니다.",
-				"runSerialHint": "병렬 처리가 예상되는 경우 ≒ ${eta}(병렬 비율 ${rate}), 절감액 ≒ ${savings}",
-				"runSkipped": "또한 재사용되는 ${reused}개 조각과 차단될 것으로 예상되는 ${blocked}개 조각도 있습니다(추정치에는 포함되지 않음)."
 			},
 			"unknown": {
 				"fileFilter": "알 수 없는 테스트 파일 필터링: ${suite} → ${names}",

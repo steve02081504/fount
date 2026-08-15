@@ -145,11 +145,18 @@
 			"replHint": "enter 运行 · shift+enter 换行"
 		},
 		"test": {
-			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\n选择器（空格分隔多组；逗号分隔同组多个 suite；/ 与 : 等价）：\n  名称              该组全部 suite（如 shells/chat）\n  名称:suite        指定 suite\n  名称:suite:子项   指定子测试或测试文件\n\n无精确匹配时按前缀展开（shells → shells/chat、shells/social），并支持 glob（*、?、**）。\n\n默认（裸 fount test）一次规划失败/未完成/含噪声与过期项并跑完；失败只挡住依赖它的槽，收口统一非零。不会全量，全量用 --all。\n\n--watch      持续监视，队列空也不退出（Ctrl+C 结束）；不能同时带 --all / --force / --update-estimates 或选择器\n--all        范围内全部 suite\n--force      强制重跑，不沿用上次结果\n--update-estimates  按现状库平均耗时回写各 manifest 的 expected；可带选择器；不跑测试\n\n示例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\n选择器（空格分隔多组；逗号分隔同组多个 suite；/ 与 : 等价）：\n  名称              该组全部 suite（如 shells/chat）\n  名称:suite        指定 suite\n  名称:suite:子项   指定子测试或测试文件\n\n无精确匹配时按前缀展开（shells → shells/chat、shells/social），并支持 glob（*、?、**）。\n\n默认（裸 fount test）一次规划失败/未完成/含噪声与过期项并跑完；失败只挡住依赖它的槽，收口统一非零。不会全量，全量用 --all。\n\n--watch      持续监视，队列空也不退出（Ctrl+C 结束）；不能同时带 --all / --force / --update-estimates 或选择器\n--all        范围内全部 suite\n--force      强制重跑，不沿用上次结果\n--update-estimates  按现状库平均耗时回写各 manifest 的 expected；可带选择器；不跑测试\n--kernel     shutdown 关闭测试内核；reboot 关掉再拉起；不能同时带其他参数\n\n示例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "用法：fount test --watch（不能同时使用其他参数）",
 			"updateEstimates": {
 				"incompatible": "用法：fount test --update-estimates [<groups>...]（不能同时使用其他开关）",
 				"summary": "已回写 ${suitesUpdated} 个套件的预计时长（${filesChanged} 个 manifest），跳过 ${skipped} 个无基线或已是最新"
+			},
+			"kernel": {
+				"incompatible": "用法：fount test --kernel shutdown|reboot（不可与其他参数同时使用）",
+				"unknownAction": "未知内核操作：${action}（应为 shutdown 或 reboot）",
+				"alreadyDown": "测试内核未在运行",
+				"stopped": "测试内核已停止",
+				"rebooted": "测试内核已重启"
 			},
 			"skipBecause": {
 				"pass": "跳过（issue 仍开或关闭未满延缓）：${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "预估剩余耗时 ≈ ${eta}",
-					"itemExpected": "预期 ${expected}",
-					"parallelEstimate": "并行预估耗时 ≈ ${eta}（预估并行率 ${rate}）",
-					"savings": "预计可节省 ≈ ${savings}"
+					"itemExpected": "预期 ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "依赖拉入",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "命令",
 					"duration": "耗时",
-					"estimatedParallelRate": "预估并行率",
 					"estimatedRemaining": "预估剩余耗时",
 					"exit": "退出状态",
 					"failed": "失败数",
@@ -366,13 +370,6 @@
 				"marker": "[终止原因: ${reason}]",
 				"speculative": "已终止 ${label}：投机依赖未过，取消早停",
 				"unknown": "已终止 ${label}：测试被中断"
-			},
-			"estimated": {
-				"remaining": "预估剩余耗时 ≈ ${eta}（${completed}/${total} 个套件）",
-				"run": "预计本次运行耗时 ≈ ${eta}（预估并行率 ${rate}）",
-				"runSerial": "预计本次运行耗时 ≈ ${eta}（串行）",
-				"runSerialHint": "若并行预期 ≈ ${eta}（并行率 ${rate}），节省 ≈ ${savings}",
-				"runSkipped": "另有复用 ${reused} 个、预计阻塞 ${blocked} 个（不计入预估）"
 			},
 			"unknown": {
 				"fileFilter": "未知的测试文件过滤：${suite} → ${names}",

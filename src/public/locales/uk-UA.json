@@ -145,11 +145,18 @@
 			"replHint": "Enter — виконати · Shift+Enter — новий рядок"
 		},
 		"test": {
-			"help": "Використання: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n\nСелектори (групи через пробіл; набори в групі через кому; / і : еквівалентні):\n  ім'я              усі набори групи (напр. shells/chat)\n  ім'я:suite        конкретний набір\n  ім'я:suite:елемент конкретний підтест або файл тесту\n\nБез точного збігу — розширення за префіксом (shells → shells/chat, shells/social); підтримуються glob (*, ?, **).\n\nЗа замовчуванням (лише fount test): планує збої/незавершені та застарілі за один прохід і виконує; збої блокують лише залежні слоти — ненульовий вихід наприкінці. Не весь репозиторій — для цього --all.\n\n--watch      безперервне спостереження; не завершується навіть при порожній черзі (Ctrl+C для виходу); не можна поєднувати з --all, --force, --update-estimates або селекторами\n--all        усі набори в області\n--force      примусовий запуск; не перевикористовує минулі результати\n--update-estimates  перезаписує expected у кожному manifest за поточними середніми з БД; селектори необов'язкові; тести не запускає\n\nприклади:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat",
+			"help": "Використання: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nСелектори (групи через пробіл; набори в групі через кому; / і : еквівалентні):\n  ім'я              усі набори групи (напр. shells/chat)\n  ім'я:suite        конкретний набір\n  ім'я:suite:елемент конкретний підтест або файл тесту\n\nБез точного збігу — розширення за префіксом (shells → shells/chat, shells/social); підтримуються glob (*, ?, **).\n\nЗа замовчуванням (лише fount test): планує збої/незавершені та застарілі за один прохід і виконує; збої блокують лише залежні слоти — ненульовий вихід наприкінці. Не весь репозиторій — для цього --all.\n\n--watch      безперервне спостереження; не завершується навіть при порожній черзі (Ctrl+C для виходу); не можна поєднувати з --all, --force, --update-estimates або селекторами\n--all        усі набори в області\n--force      примусовий запуск; не перевикористовує минулі результати\n--update-estimates  перезаписує expected у кожному manifest за поточними середніми з БД; селектори необов'язкові; тести не запускає\n--kernel     shutdown зупиняє тестове ядро; reboot зупиняє і піднімає знову; не можна поєднувати з іншими аргументами\n\nприклади:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Використання: fount test --watch (не можна використовувати з іншими параметрами)",
 			"updateEstimates": {
 				"incompatible": "Використання: fount test --update-estimates [<groups>...] (не можна використовувати з іншими прапорцями)",
 				"summary": "Оновлено очікувані тривалості для ${suitesUpdated} набор(ів) (${filesChanged} manifest); пропущено ${skipped} без базової лінії або вже актуально"
+			},
+			"kernel": {
+				"incompatible": "Використання: fount test --kernel shutdown|reboot (не можна поєднувати з іншими параметрами)",
+				"unknownAction": "Невідома дія ядра: ${action} (очікується shutdown або reboot)",
+				"alreadyDown": "Тестове ядро не запущено",
+				"stopped": "Тестове ядро зупинено",
+				"rebooted": "Тестове ядро перезапущено"
 			},
 			"skipBecause": {
 				"pass": "Пропущено (issue відкритий або закритий, але пільговий період ще не минув): ${label} — ${url}",
@@ -280,9 +287,7 @@
 				},
 				"pending": {
 					"estimate": "Приблизний час, що залишився ≈ ${eta}",
-					"itemExpected": "Очікуваний ${expected}",
-					"parallelEstimate": "Приблизне паралельне споживання часу ≈ ${eta} (розрахункова паралельна швидкість ${rate})",
-					"savings": "Приблизна економія ≈ ${savings}"
+					"itemExpected": "Очікуваний ${expected}"
 				},
 				"reason": {
 					"dependencyRequired": "Втягування залежності",
@@ -326,7 +331,6 @@
 				"field": {
 					"command": "команда",
 					"duration": "тривалість",
-					"estimatedParallelRate": "Розрахункова швидкість паралелізму",
 					"estimatedRemaining": "Приблизний час, що залишився",
 					"exit": "Статус виходу",
 					"failed": "Кількість відмов",
@@ -366,13 +370,6 @@
 				"marker": "[Причина розірвання: ${reason}]",
 				"speculative": "Припинено ${label}: спекулятивну залежність не минуло, ранню зупинку скасовано",
 				"unknown": "ПРИПИНЕНО ${label}: тест перервано"
-			},
-			"estimated": {
-				"remaining": "Приблизний час, що залишився ≈ ${eta} (${completed}/${total} packages)",
-				"run": "За оцінками, цей запуск займе ≈ ${eta} (орієнтовна паралельна швидкість ${rate})",
-				"runSerial": "Очікується, що цей запуск триватиме ≈ ${eta} (серійний)",
-				"runSerialHint": "Якщо очікуваний паралелізм ≈ ${eta} (паралельна ставка ${rate}), заощадження ≈ ${savings}",
-				"runSkipped": "Є також ${reused} штук, які використовуються повторно, і ${blocked} частин, які очікується, що будуть заблоковані (не включено в оцінку)"
 			},
 			"unknown": {
 				"fileFilter": "Фільтрування невідомих тестових файлів: ${suite} → ${names}",
