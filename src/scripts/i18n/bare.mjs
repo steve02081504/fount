@@ -52,11 +52,13 @@ export function onLocaleFileChanged(fn) {
  * @type {Console}
  */
 export const console = baseConsole
+
+const FOUNT_LOCALES_DIR = `${__dirname}/src/public/locales`
 /**
  * 所有可用区域设置的列表。
  * @type {{id: string, name: string}[]}
  */
-export const fountLocaleList = fs.readFileSync(__dirname + '/src/public/locales/list.csv', 'utf8')
+export const fountLocaleList = fs.readFileSync(`${FOUNT_LOCALES_DIR}/list.csv`, 'utf8')
 	.trim()
 	.split('\n')
 	.slice(1) // Skip header
@@ -75,7 +77,7 @@ const fountLocaleCache = {}
  */
 export function getLocaleData(localeList) {
 	const resultLocale = getBestLocale(localeList, fountLocaleList)
-	return fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/public/locales/${resultLocale}.json`)
+	return fountLocaleCache[resultLocale] ??= loadJsonFile(`${FOUNT_LOCALES_DIR}/${resultLocale}.json`)
 }
 
 /**
@@ -97,8 +99,9 @@ export const localhostLocales = [...new Set([
  */
 export let localhostLocaleData = getLocaleData(localhostLocales)
 
-fs.watch(`${__dirname}/src/public/locales`, (event, filename) => {
+fs.watch(FOUNT_LOCALES_DIR, (_event, filename) => {
 	if (!filename?.endsWith('.json')) return
+	if (!fs.existsSync(`${FOUNT_LOCALES_DIR}/${filename}`)) return
 	const locale = filename.slice(0, -5)
 	if (!process.env.FOUNT_TEST) console.log(`Detected change in ${filename}.`)
 
