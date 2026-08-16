@@ -20,6 +20,10 @@ const write = (text) => {
 const MOUSE_ON = '\x1b[?1000h\x1b[?1002h\x1b[?1006h'
 /** 禁用鼠标上报（逆序）。 */
 const MOUSE_OFF = '\x1b[?1006l\x1b[?1002l\x1b[?1000l'
+/** 关自动换行：满宽行再 `\n` 否则会 wrap 进下一行再换行，隔出空行。 */
+const WRAP_OFF = '\x1b[?7l'
+/** 恢复自动换行（离开备用屏前）。 */
+const WRAP_ON = '\x1b[?7h'
 
 /**
  * SGR 鼠标指针事件。仅设置发生变化的按键
@@ -183,7 +187,7 @@ export function start({ onResize, onPointer, onUserAbort } = {}) {
 	// Defer console output until stop leaves the alternate screen.
 	virtualConsole.block()
 	// Alternate screen keeps the pre-start scrollback + cursor row; leave restores them.
-	write(`\x1b[?1049h\x1b[?25l\x1b[2J\x1b[H${MOUSE_ON}`)
+	write(`\x1b[?1049h${WRAP_OFF}\x1b[?25l\x1b[2J\x1b[H${MOUSE_ON}`)
 
 	if (onResize) unwatchResize = watchTerminalSize(onResize)
 
@@ -325,6 +329,6 @@ export function stop() {
 	}
 	try { stdin.setRawMode?.(false) } catch { /* Node/Deno teardown on odd TTYs */ }
 	try { stdin.pause?.() } catch { /* already paused */ }
-	write(`${MOUSE_OFF}\x1b[?25h\x1b[0m\x1b[?1049l`)
+	write(`${MOUSE_OFF}\x1b[?25h\x1b[0m${WRAP_ON}\x1b[?1049l`)
 	virtualConsole.unblock()
 }

@@ -35,7 +35,7 @@ fount test icon_anime
 fount test icon_anime:frontend
 ```
 
-Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then quit). Left quick-click → ripple; left hold/drag → cool spotlight. Right-drag → stroke wind; right long-still → tornado vortex. Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.
+Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then quit). Left quick-click → ripple; left hold/drag → cool spotlight. Right-drag → stroke wind; right long-still → tornado vortex. Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit. Autowrap off (`?7l`) while the TUI is up.
 
 Tests under `test/` (`fluid_*`, `anim`, `terrain`, `gravity_*`) plus `test/frontend` (Playwright via the Pages mapping server: `setIO`, play, stop restores the normal buffer). Demo `/imgs/icon_anime/` hangs `globalThis.terminal` (DOM xterm) and `globalThis.icon` (session API).
 

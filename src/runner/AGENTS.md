@@ -23,3 +23,7 @@ CI sets `FOUNT_ACCEPT_EULA=1`. There is no `--accept-EULA` flag.
 ## path CLI
 
 No `data/config.json` (except `remove`): `ensure_fount_config` / `Ensure-FountConfig`, then the original command. Same EULA + 8930 + wait page; `N` → `fount remove`. `cmd_open` opens `wait?cold_bootting=true` only when `FOUNT_INSTALL_WAIT` is unset. See [path AGENTS](../../path/AGENTS.md).
+
+## `fount.exe` native child TTY ([ps12exe#59](https://github.com/steve02081504/ps12exe/issues/59))
+
+The compiled runner (`& run.bat`) gives Deno/Node children a redirected stdout (`isTTY` false) even in a real console. `fount.exe logo` then no-ops and exits. Do not `Start-Process -NoNewWindow` or skip `canUseTui` as a workaround. After that issue closes: `fount geneexe`, then `fount.exe logo` must hold the TUI.
