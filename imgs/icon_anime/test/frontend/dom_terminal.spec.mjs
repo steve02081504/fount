@@ -65,6 +65,18 @@ async function playAndRestore(marker) {
 	return { before, afterStop, later: bufferText(terminal.buffer.normal) }
 }
 
+/**
+ * 备用屏自动换行统计（满宽帧 + `\n` 会隔行插入空行）。
+ * @returns {{ wrapped: number, cols: number }} `isWrapped` 行数与列数
+ */
+const wrapStats = () => {
+	const buf = globalThis.terminal.buffer.active
+	let wrapped = 0
+	for (let lineIndex = 0; lineIndex < buf.length; lineIndex++)
+		if (buf.getLine(lineIndex).isWrapped) wrapped++
+	return { wrapped, cols: globalThis.terminal.cols }
+}
+
 test.describe('icon_anime DOM terminal', () => {
 	test('demo page plays in the terminal', async ({ page }) => {
 		await openDemo(page)
@@ -73,6 +85,20 @@ test.describe('icon_anime DOM terminal', () => {
 			return Boolean(rows?.innerText?.trim())
 		}, null, { timeout: 15_000 })
 	})
+
+	for (const { width, height } of [
+		{ width: 390, height: 844 },
+		{ width: 1280, height: 720 },
+	])
+		test(`full-width frames do not autowrap at ${width}x${height}`, async ({ page }) => {
+			await page.setViewportSize({ width, height })
+			await openDemo(page)
+			await page.waitForFunction(() => globalThis.terminal?.buffer.active.type === 'alternate'
+				&& globalThis.terminal.buffer.active.length > 1, null, { timeout: 15_000 })
+			const { wrapped, cols } = await page.evaluate(wrapStats)
+			expect(cols).toBeGreaterThan(width >= 1280 ? 80 : 20)
+			expect(wrapped).toBe(0)
+		})
 
 	test('accepts setIO(terminal), plays, and restores buffer on stop', async ({ page }) => {
 		await openDemo(page)
