@@ -613,6 +613,16 @@
 			"message": "歡迎 `${source}` 來客！\n此處無茶無點，僅致一問 :)",
 			"dismiss": "多謝，且隨意徜徉"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "廣告之示"
+			},
+			"badge": "本為廣告之位",
+			"lede": "此處本當有商賈之宣傳、政事之說教、求贊之辭，或道義之縛——",
+			"punchline": "然 <strong>fount 性醋</strong>，故無此等俗物 :D",
+			"nudge": "宜多飲水，起立徐行，遠眺舒目！",
+			"dismiss": "醋矣，多謝"
+		},
 		"eula": {
 			"title": "終端用戶許可之約",
 			"agree": "余已閱此約，願從之",

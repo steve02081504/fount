@@ -347,3 +347,158 @@ body.scroll-lock {
 .eula-markdown strong {
 	font-weight: 700;
 }
+
+/* 入场结束后的「广告」底栏：警戒条 + 虹彩描边，刷新必现、不落存储 */
+@property --cool-notice-angle {
+	syntax: "<angle>";
+	initial-value: 0deg;
+	inherits: false;
+}
+
+.cool-notice {
+	--cool-notice-pad: max(0.75rem, env(safe-area-inset-bottom, 0px));
+
+	position: fixed;
+	z-index: 40;
+	inset-inline: 0.6rem;
+	bottom: var(--cool-notice-pad);
+	overflow: hidden;
+	isolation: isolate;
+	border-radius: 1rem;
+	color: var(--color-base-content);
+	background: transparent;
+	box-shadow:
+		0 0 0 1px color-mix(in oklab, var(--color-warning) 45%, transparent),
+		0 18px 40px color-mix(in oklab, var(--color-base-content) 28%, transparent);
+	transform: translateY(calc(100% + 1.5rem));
+	transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cool-notice::before {
+	content: "";
+	position: absolute;
+	inset: -45%;
+	z-index: -2;
+	background: conic-gradient(from var(--cool-notice-angle, 0deg), #ff3b3b, #ffd60a, #32d74b, #0a84ff, #bf5af2, #ff3b3b);
+	animation: cool-notice-spin 3.2s linear infinite;
+}
+
+.cool-notice::after {
+	content: "";
+	position: absolute;
+	inset: 3px;
+	z-index: -1;
+	border-radius: calc(1rem - 2px);
+	background:
+		radial-gradient(120% 180% at 0% 0%, color-mix(in oklab, var(--color-warning) 28%, transparent), transparent 55%),
+		radial-gradient(90% 140% at 100% 120%, color-mix(in oklab, var(--color-primary) 22%, transparent), transparent 50%),
+		var(--color-base-100);
+}
+
+body.cool-notice-open {
+	padding-bottom: 11rem;
+}
+
+.cool-notice.cool-notice-in {
+	transform: none;
+}
+
+.cool-notice-tape {
+	height: 0.55rem;
+	background: repeating-linear-gradient(-45deg, #111 0 12px, #f5c518 12px 24px);
+	background-size: 34px 34px;
+	animation: cool-notice-tape 0.7s linear infinite;
+}
+
+.cool-notice-body {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.85rem 1.1rem;
+	padding: 0.9rem 1rem 1rem;
+}
+
+.cool-notice-badge {
+	flex: none;
+	display: inline-grid;
+	place-items: center;
+	min-width: 4.6rem;
+	padding: 0.35rem 0.55rem;
+	border: 3px solid #e11d48;
+	border-radius: 0.35rem;
+	color: #e11d48;
+	font-size: 0.78rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	text-decoration: line-through;
+	text-decoration-thickness: 0.18em;
+	box-shadow: 0 0 0 3px color-mix(in oklab, #e11d48 18%, transparent);
+	animation: cool-notice-badge 1.6s ease-in-out infinite;
+}
+
+.cool-notice-copy {
+	flex: 1 1 16rem;
+	min-width: 0;
+	text-align: start;
+	line-height: 1.45;
+}
+
+.cool-notice-copy p+p {
+	margin-top: 0.2rem;
+}
+
+.cool-notice-punchline {
+	font-size: 1.05rem;
+	font-weight: 700;
+}
+
+.cool-notice-punchline strong {
+	color: var(--color-warning);
+	text-shadow: 0 0 0.7rem color-mix(in oklab, var(--color-warning) 65%, transparent);
+}
+
+.cool-notice-dismiss {
+	flex: none;
+	margin-inline-start: auto;
+	box-shadow: 0 0 1.4rem color-mix(in oklab, var(--color-warning) 55%, transparent);
+}
+
+@keyframes cool-notice-spin {
+	to {
+		--cool-notice-angle: 360deg;
+	}
+}
+
+@keyframes cool-notice-tape {
+	to {
+		background-position: 34px 0;
+	}
+}
+
+@keyframes cool-notice-badge {
+
+	0%,
+	100% {
+		transform: rotate(-8deg) scale(1);
+	}
+
+	50% {
+		transform: rotate(-4deg) scale(1.06);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.cool-notice,
+	.cool-notice-tape,
+	.cool-notice-badge,
+	.cool-notice::before {
+		animation: none;
+		transition: none;
+	}
+
+	.cool-notice {
+		transform: none;
+	}
+}

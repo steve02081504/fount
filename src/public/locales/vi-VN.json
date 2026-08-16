@@ -613,6 +613,16 @@
 			"message": "Chào mừng khách từ `${source}`!\nỞ đây không có trà hay bánh — chỉ là lời chào thôi :)",
 			"dismiss": "Cảm ơn, để tôi xem qua"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "Quảng cáo"
+			},
+			"badge": "Lẽ ra là quảng cáo",
+			"lede": "Chỗ này lẽ ra phải có quảng cáo thương mại, tuyên truyền chính trị/DEI, kêu gọi tài trợ hay mua chuộc lương tâm——",
+			"punchline": "nhưng <strong>fount cool quá</strong> nên không có mấy thứ đó đâu :D",
+			"nudge": "Nhớ uống nước, đứng dậy đi lại và nhìn xa một chút nhé!",
+			"dismiss": "Cool, cảm ơn"
+		},
 		"eula": {
 			"title": "Thỏa thuận cấp phép người dùng cuối",
 			"agree": "Tôi đã đọc và đồng ý với thỏa thuận này",

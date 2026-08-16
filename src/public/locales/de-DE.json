@@ -613,6 +613,16 @@
 			"message": "Willkommen, Gäste von `${source}`!\nTee und Snacks haben wir leider nicht — nur einen herzlichen Gruß :)",
 			"dismiss": "Danke, ich schaue mich um"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "Werbung"
+			},
+			"badge": "Hier wäre Werbung",
+			"lede": "Hier hätte eigentlich eine aufdringliche Werbung, politische oder DEI-Propaganda, ein Sponsoring-Aufruf oder moralischer Druck stehen sollen—",
+			"punchline": "aber <strong>fount ist cool</strong>, deshalb gibt's das nicht :D",
+			"nudge": "Trink Wasser, steh auf und schau in die Ferne!",
+			"dismiss": "Cool, danke"
+		},
 		"eula": {
 			"title": "Endbenutzer-Lizenzvereinbarung",
 			"agree": "Ich habe diese Vereinbarung gelesen und stimme ihr zu",

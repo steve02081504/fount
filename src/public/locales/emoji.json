@@ -613,6 +613,16 @@
 			"message": "👋 ⬅️ ${source}\n🍵❌ 🍪❌ 👋 :)",
 			"dismiss": "👌👀"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "📢"
+			},
+			"badge": "📢❌",
+			"lede": "📢💰🏛️🙏😇—",
+			"punchline": "⛲😎✨ :D",
+			"nudge": "💧🧍👀🌄",
+			"dismiss": "😎🙏"
+		},
 		"eula": {
 			"title": "📜 EULA",
 			"agree": "✅📖🤝",

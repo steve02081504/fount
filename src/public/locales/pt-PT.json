@@ -613,6 +613,16 @@
 			"message": "Bem-vindos, visitantes de `${source}`!\nNão temos chá nem petiscos — apenas um cumprimento :)",
 			"dismiss": "Obrigado, vou dar uma vista de olhos"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "Publicidade"
+			},
+			"badge": "Devia ser um anúncio",
+			"lede": "Aqui devia estar um anúncio chamativo, propaganda política ou DEI, um pedido de patrocínio ou chantagem moral—",
+			"punchline": "mas o <strong>fount é fixe</strong>, por isso não há nada disso :D",
+			"nudge": "Beba água, levante-se e olhe para longe!",
+			"dismiss": "Fixe, obrigado"
+		},
 		"eula": {
 			"title": "Contrato de licença de utilizador final",
 			"agree": "Li e aceito este acordo",

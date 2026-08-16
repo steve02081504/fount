@@ -581,6 +581,16 @@ export type LocaleData = {
 			message: string
 			dismiss: string
 		}
+		cool_notice: {
+			region: {
+				'aria-label': string
+			}
+			badge: string
+			lede: string
+			punchline: string
+			nudge: string
+			dismiss: string
+		}
 		eula: {
 			title: string
 			agree: string

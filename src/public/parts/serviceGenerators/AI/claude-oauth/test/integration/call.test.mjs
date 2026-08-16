@@ -21,10 +21,10 @@ Deno.test('Claude OAuth Call sends auth token beta header without billing spoof'
 				refresh: 'r',
 				expires: Date.now() + 60_000,
 			},
-		}, { /**
-		 *
-		 */
-			SaveConfig: async () => { } })
+		}, {
+			/** GetSource 依赖桩：空 SaveConfig。 */
+			SaveConfig: async () => { }
+		})
 		const result = await source.Call('hello')
 		assertEquals(result.content, 'hi')
 		const headers = new Headers(mock.calls[0].init.headers)

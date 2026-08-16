@@ -49,10 +49,10 @@ function scanTemplateInterpolation(text, start, pos) {
 }
 
 /**
- * 判断 `pos` 是否落在字符串或模板字面量内（跳过注释）。
+ * 判断 `pos` 是否落在字符串、模板字面量或未闭合的行/块注释内。
  * @param {string} text 源码
  * @param {number} pos 字节偏移
- * @returns {boolean} 在引号/模板内则为 true
+ * @returns {boolean} 在引号/模板/注释内则为 true
  */
 function isInsideStringOrTemplate(text, pos) {
 	let i = 0
@@ -86,14 +86,17 @@ function isInsideStringOrTemplate(text, pos) {
 		if (c === '/' && text[i + 1] === '/') {
 			i += 2
 			while (i < pos && text[i] !== '\n') i++
+			if (i >= pos) return true
 			continue
 		}
 		if (c === '/' && text[i + 1] === '*') {
 			i += 2
+			let closed = false
 			while (i < pos) {
-				if (text[i] === '*' && text[i + 1] === '/') { i += 2; break }
+				if (text[i] === '*' && text[i + 1] === '/') { i += 2; closed = true; break }
 				i++
 			}
+			if (!closed) return true
 			continue
 		}
 		i++
@@ -124,19 +127,19 @@ function skipTemplateLiteral(text, start, pos) {
 
 /**
  * 从源码文本中提取 JSDoc 块（含起止行号）。
- * 仅匹配行首（或前置空白）的 `/**`，并跳过字符串/模板字面量内的伪注释。
+ * 匹配任意位置的 `/**`（含行内对象字面量前的注释），并跳过字符串/模板/普通注释内的伪 JSDoc。
  * @param {string} text 源码
  * @returns {{ text: string, startLine: number, endLine: number }[]} 块列表
  */
 export function extractJsdocBlocks(text) {
 	/** @type {{ text: string, startLine: number, endLine: number }[]} */
 	const blocks = []
-	const re = /(^|\n)([ \t]*)\/\*\*/g
+	const jsdocStartPattern = /\/\*\*/g
 	let match
-	while ((match = re.exec(text)) !== null) {
-		const start = match.index + match[1].length + match[2].length
+	while ((match = jsdocStartPattern.exec(text)) !== null) {
+		const start = match.index
 		if (isInsideStringOrTemplate(text, start)) {
-			re.lastIndex = start + 3
+			jsdocStartPattern.lastIndex = start + 3
 			continue
 		}
 		const end = text.indexOf('*/', start + 3)
@@ -145,7 +148,7 @@ export function extractJsdocBlocks(text) {
 		const startLine = text.slice(0, start).split(/\r?\n/).length
 		const endLine = text.slice(0, end + 2).split(/\r?\n/).length
 		blocks.push({ text: blockText, startLine, endLine })
-		re.lastIndex = end + 2
+		jsdocStartPattern.lastIndex = end + 2
 	}
 	return blocks
 }

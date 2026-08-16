@@ -39,25 +39,49 @@ Deno.test('isTagOnlyJsdoc: empty stub is not tag-only', () => {
 })
 
 Deno.test('extractJsdocBlocks: line numbers', () => {
-	const text = '/** 甲 */\nconst x = 1\n/** 乙 */'
-	const blocks = extractJsdocBlocks(text)
+	const blocks = extractJsdocBlocks('/** 甲 */\nconst x = 1\n/** 乙 */')
 	assertEquals(blocks.length, 2)
 	assertEquals(blocks[0].startLine, 1)
 	assertEquals(blocks[1].startLine, 3)
 })
 
 Deno.test('extractJsdocBlocks: ignores JSDoc text inside template literals', () => {
-	const text = 'const s = `\n/** English doc */\n`\n/** 中文摘要 */\n'
-	const blocks = extractJsdocBlocks(text)
+	const blocks = extractJsdocBlocks('const s = `\n/** English doc */\n`\n/** 中文摘要 */\n')
 	assertEquals(blocks.length, 1)
 	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
 })
 
 Deno.test('extractJsdocBlocks: ignores JSDoc inside nested template interpolations', () => {
-	const text = 'const s = `${`\n/** English nested */\n`}`\n/** 中文摘要 */\n'
-	const blocks = extractJsdocBlocks(text)
+	const blocks = extractJsdocBlocks('const s = `${`\n/** English nested */\n`}`\n/** 中文摘要 */\n')
 	assertEquals(blocks.length, 1)
 	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
+})
+
+Deno.test('extractJsdocBlocks: inline JSDoc before object literal property', () => {
+	const blocks = extractJsdocBlocks('foo({ /** 中文摘要 */\n\tbar: 1 })\n')
+	assertEquals(blocks.length, 1)
+	assertEquals(blocks[0].startLine, 1)
+	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
+})
+
+Deno.test('extractJsdocBlocks: ignores JSDoc-shaped text inside line comments', () => {
+	const blocks = extractJsdocBlocks('// /** English doc */\n/** 中文摘要 */\n')
+	assertEquals(blocks.length, 1)
+	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
+})
+
+Deno.test('extractJsdocBlocks: ignores JSDoc-shaped text inside block comments', () => {
+	const blocks = extractJsdocBlocks('/* /** English doc\n*/\n/** 中文摘要 */\n')
+	assertEquals(blocks.length, 1)
+	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
+})
+
+Deno.test('scanFileJsdocNoEnglish: flags inline empty JSDoc stub', () => {
+	const text = 'GetSource(cfg, { /**\n *\n */\n\tSaveConfig: async () => {} })'
+	const issues = scanFileJsdocNoEnglish('foo.mjs', text)
+	assertEquals(issues.length, 1)
+	assertEquals(issues[0].missingSummary, true)
+	assertEquals(issues[0].line, 1)
 })
 
 Deno.test('scanFileJsdocNoEnglish: flags English summary and empty /** */', () => {
