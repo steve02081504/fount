@@ -615,13 +615,13 @@
 		},
 		"cool_notice": {
 			"region": {
-				"aria-label": "广告提示"
+				"aria-label": "廣告之示"
 			},
-			"badge": "本应是广告",
-			"lede": "这里本该塞一条醒目的商业广告、政治/DEI 宣传、赞助请求或道德绑架——",
-			"punchline": "但因为 <strong>fount 很酷</strong>，所以没有这些东西 :D",
-			"nudge": "记得多喝水，站起来走走，看看远方！",
-			"dismiss": "酷，谢谢"
+			"badge": "本為廣告之位",
+			"lede": "此處本當有商賈之宣傳、政事之說教、求贊之辭，或道義之縛——",
+			"punchline": "然 <strong>fount 性酷</strong>，故無此等俗物 :D",
+			"nudge": "宜多飲水，起立徐行，遠眺舒目！",
+			"dismiss": "酷矣，多謝"
 		},
 		"eula": {
 			"title": "終端用戶許可之約",

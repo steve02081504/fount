@@ -615,13 +615,13 @@
 		},
 		"cool_notice": {
 			"region": {
-				"aria-label": "广告提示"
+				"aria-label": "Anuncio"
 			},
-			"badge": "本应是广告",
-			"lede": "这里本该塞一条醒目的商业广告、政治/DEI 宣传、赞助请求或道德绑架——",
-			"punchline": "但因为 <strong>fount 很酷</strong>，所以没有这些东西 :D",
-			"nudge": "记得多喝水，站起来走走，看看远方！",
-			"dismiss": "酷，谢谢"
+			"badge": "Debía ser un anuncio",
+			"lede": "Aquí debería haber un anuncio llamativo, propaganda política o de DEI, una petición de patrocinio o chantaje emocional—",
+			"punchline": "pero <strong>fount mola</strong>, así que nada de eso :D",
+			"nudge": "¡Bebe agua, levántate y mira a lo lejos!",
+			"dismiss": "Mola, gracias"
 		},
 		"eula": {
 			"title": "Acuerdo de licencia de usuario final",

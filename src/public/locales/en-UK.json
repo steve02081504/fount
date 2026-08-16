@@ -615,12 +615,12 @@
 		},
 		"cool_notice": {
 			"region": {
-				"aria-label": "Not an advertisement"
+				"aria-label": "Advertisement"
 			},
-			"badge": "Not an ad",
-			"lede": "This slot was booked for a loud advert, a political/DEI sermon, a sponsorship plea, or a guilt trip—",
-			"punchline": "but <strong>fount is cool</strong>, so none of that :D",
-			"nudge": "Drink some water. Stand up. Look at something far away!",
+			"badge": "Ad slot",
+			"lede": "This space was meant for a flashy advert, a political or DEI sermon, a sponsorship plea, or a guilt trip—",
+			"punchline": "but <strong>fount is cool</strong>, so you get none of that :D",
+			"nudge": "Drink some water, stand up, and look at something far away!",
 			"dismiss": "Cool, thanks"
 		},
 		"eula": {
