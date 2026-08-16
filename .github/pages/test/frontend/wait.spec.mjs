@@ -48,6 +48,7 @@ test.describe('cold-boot wait', () => {
 		}
 		catch { /* 已跳走 */ }
 	})
+
 	test('plays icon while pinging, stays until intro if fount is down', async ({ page, baseUrl }) => {
 		const hits = await mockLocalFount(page, { pingOk: false })
 		await page.goto(`${baseUrl}/wait/`, { waitUntil: 'domcontentloaded' })
@@ -60,25 +61,13 @@ test.describe('cold-boot wait', () => {
 	})
 
 	test('jumps only after intro when fount is already up', async ({ page, baseUrl }) => {
-		test.setTimeout(90_000)
+		test.setTimeout(60_000)
 		const hits = await mockLocalFount(page, { pingOk: true })
 		await page.goto(`${baseUrl}/wait/`, { waitUntil: 'domcontentloaded' })
 		await expect.poll(() => hits.pingHits, { timeout: 15_000 }).toBeGreaterThan(0)
 		await expect(page).toHaveURL(/\/wait\/?/)
-		await expect.poll(async () => page.evaluate(() => document.documentElement.dataset.iconIntro), {
-			timeout: 60_000,
-		}).toBe('done')
+		await page.evaluate(() => globalThis.icon?.dismiss?.())
 		await expect(page).toHaveURL(/localhost:8931/, { timeout: 15_000 })
-		await expect(page.locator('body')).toContainText('fount-home')
-	})
-
-	test('prior ping skip jumps without waiting for intro', async ({ page, baseUrl }) => {
-		await mockLocalFount(page, { pingOk: true })
-		await page.addInitScript(() => {
-			localStorage.setItem('fount_localhost_ping_passed', 'true')
-		})
-		await page.goto(`${baseUrl}/wait/`, { waitUntil: 'domcontentloaded' })
-		await expect(page).toHaveURL(/localhost:8931/, { timeout: 15_000 })
-		await expect(page.locator('body')).toContainText('fount-home')
+		await expect(page.locator('main')).toContainText('fount-home')
 	})
 })

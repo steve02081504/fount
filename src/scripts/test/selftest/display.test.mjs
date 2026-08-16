@@ -226,3 +226,8 @@ Deno.test('paintJobWait names queue depth not another suite', () => {
 	assertEquals(logs.map(row => row.key), ['fountConsole.test.display.queued'])
 	assertEquals(logs[0]?.params.count, 3)
 })
+
+Deno.test('paintJobWait passes aheadCount through without a default', () => {
+	const { logs } = captureI18n(() => paintJobWait({}))
+	assertEquals(logs[0]?.params.count, undefined)
+})

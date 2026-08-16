@@ -543,3 +543,60 @@ Deno.test('rebootTestKernel starts a kernel when none is running', async () => {
 		await shutdownTestKernel({ port })
 	}
 })
+
+Deno.test('last suite of a job does not emit job-wait after suite-end', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 8,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		/** @type {object[]} */
+		const events = []
+		const viewer = handle.kernel.viewers.add({
+			readyState: 1,
+			/**
+			 * @param {string} raw 事件 JSON
+			 * @returns {void}
+			 */
+			send: raw => { events.push(JSON.parse(raw)) },
+		}, { mode: 'overview' })
+		const suite = {
+			manifestId: 'testkit',
+			name: '__job_wait_last__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [],
+			heavy: false,
+		}
+		const key = 'testkit:__job_wait_last__'
+		handle.kernel.catalog.allSuites.push(suite)
+		handle.kernel.catalog.byKey.set(key, suite)
+		const jobId = 'job-wait-last'
+		viewer.jobId = jobId
+		const item = handle.kernel.queues.enqueueCli({ key, viewerId: viewer.id, jobId })
+		const job = {
+			id: jobId,
+			viewerId: viewer.id,
+			spec: {},
+			pending: new Set([item.id]),
+			probedSkip: new Set(),
+			continueLoop: false,
+			exitCode: 0,
+			done: Promise.withResolvers(),
+			fingerprints: { commitHash: null, uncommittedHash: null },
+		}
+		handle.kernel.jobs.set(jobId, job)
+		handle.kernel.wake()
+		await awaitJob(job, 'job-wait-last timed out')
+		const types = events.map(event => event.type)
+		const suiteEndAt = types.indexOf('suite-end')
+		assertEquals(suiteEndAt >= 0, true)
+		assertEquals(types.slice(suiteEndAt).includes('job-wait'), false)
+		assertEquals(types.includes('job-done'), true)
+	}
+	finally {
+		await handle.close()
+	}
+})

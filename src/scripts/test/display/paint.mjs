@@ -231,7 +231,7 @@ export function paintSuiteEnd(message, { stream = false } = {}) {
  * @returns {void}
  */
 export function paintJobWait(message) {
-	console.logI18n('fountConsole.test.display.queued', { count: message.aheadCount ?? 0 })
+	console.logI18n('fountConsole.test.display.queued', { count: message.aheadCount })
 }
 
 /**

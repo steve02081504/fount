@@ -139,9 +139,8 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 * @returns {void}
 	 */
 	function onJobWait(message) {
-		const aheadCount = message.aheadCount ?? 0
-		if (aheadCount === lastAheadCount) return
-		lastAheadCount = aheadCount
+		if (message.aheadCount === lastAheadCount) return
+		lastAheadCount = message.aheadCount
 		paintJobWait(message)
 	}
 

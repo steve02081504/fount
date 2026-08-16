@@ -582,11 +582,9 @@ export class TestKernel {
 		for (const viewer of this.viewers.values()) {
 			if (viewer.watch || !viewer.jobId) continue
 			const job = this.jobs.get(viewer.jobId)
-			const runningMine = job && [...this.running.values()].some(running => running.item.jobId === job.id)
-			if (runningMine) continue
+			if (job && [...this.running.values()].some(running => running.item.jobId === job.id)) continue
 			const waitingMine = Boolean(job?.pending.size)
-			const waitingIdle = viewer.mode === 'overview' && !waitingMine && busy > 0
-			if (!waitingMine && !waitingIdle) continue
+			if (!waitingMine && !(viewer.mode === 'overview' && busy > 0)) continue
 			const aheadCount = waitingMine ? this.#aheadCount(job.id) : busy
 			if (viewer.lastAheadCount === aheadCount) continue
 			viewer.lastAheadCount = aheadCount
@@ -960,9 +958,9 @@ export class TestKernel {
 			}
 			if (endEvent)
 				this.viewers.broadcast({ ...endEvent, ...this.#remainingState() })
-			this.#notifyJobWaits()
 			if (item.jobId)
 				await this.#onJobItemDone(item)
+			this.#notifyJobWaits()
 			this.wake()
 		}
 	}
