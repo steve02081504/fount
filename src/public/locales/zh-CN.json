@@ -613,6 +613,16 @@
 			"message": "欢迎从 `${source}` 来的朋友！\n茶点没备，只好献上几句问候 :)",
 			"dismiss": "好，随便逛逛"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "广告提示"
+			},
+			"badge": "本应是广告",
+			"lede": "这里本该塞一条醒目的商业广告、政治/DEI 宣传、赞助请求或道德绑架——",
+			"punchline": "但因为 <strong>fount 很醋</strong>，所以没有这些东西 :D",
+			"nudge": "记得多喝水，站起来走走，看看远方！",
+			"dismiss": "醋，谢谢"
+		},
 		"eula": {
 			"title": "最终用户许可协议",
 			"agree": "我已阅读并同意本协议",

@@ -612,6 +612,16 @@
 			"message": "歡迎從 `${source}` 來的朋友！\n茶點沒備，只好獻上幾句問候 :)",
 			"dismiss": "好，隨便逛逛"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "廣告提示"
+			},
+			"badge": "本應是廣告",
+			"lede": "這裡本該塞一條醒目的商業廣告、政治/DEI 宣傳、贊助請求或道德綁架——",
+			"punchline": "但因為 <strong>fount 很醋</strong>，所以沒有這些東西 :D",
+			"nudge": "記得多喝水，站起來走走，看看遠方！",
+			"dismiss": "醋，謝謝"
+		},
 		"eula": {
 			"title": "最終使用者授權合約",
 			"agree": "我已閱讀並同意本合約",

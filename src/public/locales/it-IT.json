@@ -613,6 +613,16 @@
 			"message": "Benvenuti, ospiti provenienti da `${source}`!\nQui non ci sono né tè né dolci — solo un saluto :)",
 			"dismiss": "Grazie, do un'occhiata in giro"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "Pubblicità"
+			},
+			"badge": "Qui ci sarebbe stata una pubblicità",
+			"lede": "Qui avrebbe dovuto esserci una pubblicità invadente, propaganda politica o DEI, una richiesta di sponsorizzazione o ricatto morale—",
+			"punchline": "ma <strong>fount è figo</strong>, quindi niente di tutto questo :D",
+			"nudge": "Bevi acqua, alzati e guarda lontano!",
+			"dismiss": "Figo, grazie"
+		},
 		"eula": {
 			"title": "Contratto di licenza con l'utente finale",
 			"agree": "Ho letto e accetto il presente accordo",

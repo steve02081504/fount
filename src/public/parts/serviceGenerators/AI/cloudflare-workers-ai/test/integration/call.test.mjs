@@ -17,10 +17,10 @@ Deno.test('Workers AI Call sets session affinity and account URL', async () => {
 			apikey: 'tok',
 			sessionAffinity: 'sess-1',
 			use_stream: false,
-		}, { /**
-		 *
-		 */
-			SaveConfig: async () => { } })
+		}, {
+			/** GetSource 依赖桩：空 SaveConfig。 */
+			SaveConfig: async () => { }
+		})
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'cf')
 		assertEquals(

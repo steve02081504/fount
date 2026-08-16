@@ -613,6 +613,16 @@
 			"message": "Welcome, visitors from `${source}`!\nWe've no tea or biscuits on offer — just a friendly hello :)",
 			"dismiss": "Thanks, I'll have a look around"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "Advertisement"
+			},
+			"badge": "Ad slot",
+			"lede": "This space was meant for a flashy advert, a political or DEI sermon, a sponsorship plea, or a guilt trip—",
+			"punchline": "but <strong>fount is cool</strong>, so you get none of that :D",
+			"nudge": "Drink some water, stand up, and look at something far away!",
+			"dismiss": "Cool, thanks"
+		},
 		"eula": {
 			"title": "End-User Licence Agreement",
 			"agree": "I have read and agree to this licence agreement",

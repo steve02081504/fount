@@ -46,6 +46,7 @@ Enforced by `agents_md_english`; writing rules: [docs/AGENTS.md](../../../docs/A
 
 - Summaries must be Chinese (contain CJK). Pure-English summaries fail.
 - Tag-only blocks (`@param` / `@typedef` / … without a prose summary) are fine; empty `/** */` stubs are not a substitute for a real one-liner on re-exports.
+- `extractJsdocBlocks` matches inline `/**` (e.g. `{ /** … */ prop`) as well as line-leading blocks; skips JSDoc-shaped text inside strings, templates, and ordinary line/block comments.
 - List leftovers: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg).
 - Locale markdown families: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_locale_md_align.mjs` (optional dir; default `docs/EULA` + `docs/readme`). Locale **id** sets: `fount test checks:locale_md_align` (`locale_sets.mjs`).
 

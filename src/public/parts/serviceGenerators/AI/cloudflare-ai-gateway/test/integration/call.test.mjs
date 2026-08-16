@@ -17,10 +17,10 @@ Deno.test('AI Gateway openai prefix uses cf-aig-authorization', async () => {
 			gateway_id: 'gw1',
 			apikey: 'tok',
 			use_stream: false,
-		}, { /**
-		 *
-		 */
-			SaveConfig: async () => { } })
+		}, {
+			/** GetSource 依赖桩：空 SaveConfig。 */
+			SaveConfig: async () => { }
+		})
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'gw')
 		assertEquals(

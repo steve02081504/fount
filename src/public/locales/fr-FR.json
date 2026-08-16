@@ -613,6 +613,16 @@
 			"message": "Bienvenue, visiteurs venus de `${source}` !\nPas de thé ni de gâteaux ici — juste un petit salut :)",
 			"dismiss": "Merci, je jette un œil"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "Publicité"
+			},
+			"badge": "Emplacement publicitaire",
+			"lede": "Ici, il y aurait normalement une publicité criarde, un sermon politique ou DEI, une demande de sponsoring ou une culpabilisation—",
+			"punchline": "mais <strong>fount est cool</strong>, alors rien de tout ça :D",
+			"nudge": "Buvez de l'eau, levez-vous et regardez au loin !",
+			"dismiss": "Cool, merci"
+		},
 		"eula": {
 			"title": "Contrat de licence utilisateur final",
 			"agree": "J'ai lu et j'accepte ce contrat",

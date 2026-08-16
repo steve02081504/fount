@@ -20,10 +20,10 @@ Deno.test('Codex Call posts Responses with account id and originator fount', asy
 				expires: Date.now() + 60_000,
 				accountId: 'acct_x',
 			},
-		}, { /**
-		 *
-		 */
-			SaveConfig: async () => { } })
+		}, {
+			/** GetSource 依赖桩：空 SaveConfig。 */
+			SaveConfig: async () => { }
+		})
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'pong')
 		assertEquals(mock.calls[0].url, 'https://chatgpt.com/backend-api/codex/responses')

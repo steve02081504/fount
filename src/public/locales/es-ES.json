@@ -613,6 +613,16 @@
 			"message": "¡Bienvenidos, visitantes de `${source}`!\nNo tenemos té ni bocadillos — solo un saludo :)",
 			"dismiss": "Gracias, echaré un vistazo"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "Anuncio"
+			},
+			"badge": "Debía ser un anuncio",
+			"lede": "Aquí debería haber un anuncio llamativo, propaganda política o de DEI, una petición de patrocinio o chantaje emocional—",
+			"punchline": "pero <strong>fount mola</strong>, así que nada de eso :D",
+			"nudge": "¡Bebe agua, levántate y mira a lo lejos!",
+			"dismiss": "Mola, gracias"
+		},
 		"eula": {
 			"title": "Acuerdo de licencia de usuario final",
 			"agree": "He leído y acepto este acuerdo",
