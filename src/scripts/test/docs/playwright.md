@@ -6,6 +6,8 @@ Day-to-day selectors / taxonomy: [AGENTS.md](../AGENTS.md). This file is fixture
 
 `runPlaywright` / `runPlaywrightWithNode` accept `playwrightArgs` as `string | string[]`. Prefer an argv array (e.g. `process.argv.slice(2)`) so grep patterns and other values with spaces keep their token boundaries; a string is still split on whitespace for older call sites.
 
+Single-config Pages driver (`.github/pages/test/frontend/run.mjs`) has no Playwright projects: it passes spec filenames from `playwrightArgsForSubtests` when `FOUNT_TEST_SUBTESTS` is set (`pages:frontend:wait` → `wait.spec.mjs`). Do not rely on argv slice alone or a named subtest still runs every `*.spec.mjs`.
+
 ## Fixtures
 
 `createFountFixtures({ locale, isolated? })` — `isolated` registers `FOUNT_TEST_USERNAME` + `assertIsolatedFrontendTest` (Chat/Social/Cabinet). Locale `addInitScript` wraps `localStorage` in try/catch (`about:blank` / sandboxed frames throw `SecurityError`). When `FOUNT_TEST_HUB_URL` is set (parent hub `127.0.0.1:8903`), fixtures also inject `fount.test.hubUrl` for in-page hub clients / page `watch`.

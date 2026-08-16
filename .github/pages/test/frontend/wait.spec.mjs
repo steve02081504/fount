@@ -41,6 +41,13 @@ async function mockLocalFount(page, options = {}) {
 }
 
 test.describe('cold-boot wait', () => {
+	test.afterEach(async ({ page }) => {
+		if (page.isClosed()) return
+		try {
+			await page.evaluate(() => globalThis.icon?.dismiss?.())
+		}
+		catch { /* 已跳走 */ }
+	})
 	test('plays icon while pinging, stays until intro if fount is down', async ({ page, baseUrl }) => {
 		const hits = await mockLocalFount(page, { pingOk: false })
 		await page.goto(`${baseUrl}/wait/`, { waitUntil: 'domcontentloaded' })

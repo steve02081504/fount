@@ -1,6 +1,7 @@
 /**
  * GitHub Pages 前端 Playwright driver：启动 pages-server → 跑 spec → 关闭。
  */
+import { readdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -8,6 +9,7 @@ import { fileURLToPath } from 'node:url'
 import { allocateTestPortBlock } from 'fount/scripts/test/node/launch.mjs'
 import { resolveFrontendPort } from 'fount/scripts/test/playwright/env.mjs'
 import { startPagesServer } from 'fount/scripts/test/playwright/pages_server.mjs'
+import { playwrightArgsForSubtests } from 'fount/scripts/test/playwright/phases.mjs'
 import { runPlaywright } from 'fount/scripts/test/playwright/run.mjs'
 
 const testDir = dirname(fileURLToPath(import.meta.url))
@@ -49,7 +51,10 @@ try {
 			FOUNT_TEST_BASE_URL: server.baseUrl,
 			FOUNT_TEST_SCOPE: process.env.FOUNT_TEST_SCOPE || 'pages',
 		},
-		playwrightArgs: process.argv.slice(2),
+		playwrightArgs: playwrightArgsForSubtests(
+			(await readdir(testDir)).filter(name => name.endsWith('.spec.mjs')),
+			process.argv.slice(2),
+		),
 	})
 	// idle watchdog 只认 stdout 活跃（与 serial.mjs 同）；无独立 heartbeat API
 	process.stdout.write(`[pages] playwright exited code=${process.exitCode}\n`)

@@ -22,9 +22,9 @@ icon.setIO(setTerminal(document.getElementById('terminal')))
 
 await icon.intro()
 document.documentElement.dataset.iconIntro = 'done'
-if (localStorage.getItem('fount_localhost_ping_passed') === 'true')
-	window.location.href = jumpTo
-else await ready
-saveFountHostUrl(hostUrl)
-localStorage.setItem('fount_localhost_ping_passed', true)
+if (!localStorage.getItem('fount_localhost_ping_passed')) {
+	await ready
+	saveFountHostUrl(hostUrl)
+	localStorage.setItem('fount_localhost_ping_passed', true)
+}
 window.location.href = jumpTo
