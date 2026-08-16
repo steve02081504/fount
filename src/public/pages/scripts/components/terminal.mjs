@@ -116,8 +116,7 @@ export function setTerminal(element) {
 	})
 	terminal.open(element)
 	// TODO: drop when https://github.com/xtermjs/xterm.js/issues/6109 is fixed
-	for (const node of document.body.children)
-		if (node.style.top === '-50000px') node.setAttribute('aria-hidden', 'true')
+	terminal._core._renderService._renderer.value._widthCache._container.setAttribute('aria-hidden', 'true')
 	fitAddon.fit()
 	window.addEventListener('resize', () => {
 		fitAddon.fit()
