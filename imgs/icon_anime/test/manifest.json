@@ -18,6 +18,24 @@
 				"imgs/icon_anime/**",
 				"src/scripts/test/deno/serial.mjs"
 			]
+		},
+		{
+			"name": "frontend",
+			"expected": "45s",
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./imgs/icon_anime/test/frontend/run.mjs"
+			],
+			"triggers": [
+				"imgs/icon_anime/**",
+				"src/public/pages/scripts/components/terminal.mjs",
+				"src/scripts/test/playwright/**"
+			]
 		}
 	]
 }
