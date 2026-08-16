@@ -26,13 +26,13 @@ const openDemo = async page => {
 async function playAndRestore(marker) {
 	const { terminal, icon } = globalThis
 	/**
-	 * @param {{ length: number, getLine: (y: number) => { translateToString: (trim: boolean) => string } }} buffer xterm 缓冲
+	 * @param {{ length: number, getLine: (lineIndex: number) => { translateToString: (trim: boolean) => string } }} buffer xterm 缓冲
 	 * @returns {string} 纯文本
 	 */
 	const bufferText = buffer => {
 		const lines = []
-		for (let y = 0; y < buffer.length; y++)
-			lines.push(buffer.getLine(y).translateToString(true))
+		for (let lineIndex = 0; lineIndex < buffer.length; lineIndex++)
+			lines.push(buffer.getLine(lineIndex).translateToString(true))
 		return lines.join('\n')
 	}
 	/**

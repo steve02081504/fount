@@ -54,7 +54,7 @@ Tests under `test/` (`fluid_*`, `anim`, `terrain`, `gravity_*`) plus `test/front
 | `compose/` | Palette, buffer render, `composeFrame` |
 | `player.mjs` | Re-exports TUI player; host defaults from `player/node.mjs` or `player/browser.mjs` |
 | `player/shared.mjs` | play/loop, mouse, alt-screen, console block |
-| `terminal.mjs` | Re-exports IO size helpers; host ANSI from `terminal/node.mjs` or `terminal/browser.mjs` |
+| `terminal/` | Host ANSI: `node.mjs` / `browser.mjs` |
 | `gesture/` | Pointer, light (torch+ripple), wind (stroke+vortex) |
 | `terrain/` | Surface + caves |
 | `hash.mjs` | `hash01` + fBm + ortho deltas |

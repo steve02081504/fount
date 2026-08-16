@@ -21,21 +21,18 @@ const supportsAnsi = termHost.defaultSupportsAnsi
 /**
  * 绑定播放器用的 console / stdin / stdout。
  * 可传 DOM `setTerminal` 的返回值：`setIO(terminal)`（用其 `.console` / `.stdin` / `.stdout`）。
- * 也可传字段包；省略的 `stdout` 取 `console._stdout`。
+ * 也可传字段包；未给出 `stdout` 字段时改为当前 `console._stdout`（不保留旧 stdout）。
  * @param {{
  *   console?: { block?: () => void, unblock?: () => boolean, _stdout?: IoStdout },
  *   stdin?: IoStdin,
  *   stdout?: IoStdout,
- * }} [io] 终端或 IO 字段；缺省保持当前绑定
+ * }} [io] 终端或 IO 字段；缺省只按当前 console 刷新 stdout
  * @returns {void}
  */
 export function setIO(io = {}) {
 	if (io.console) activeConsole = io.console
 	if ('stdout' in io) activeStdout = io.stdout
-	else try {
-		activeStdout = activeConsole._stdout
-	}
-	catch { activeStdout = undefined }
+	else activeStdout = activeConsole._stdout
 	if ('stdin' in io) activeStdin = io.stdin
 }
 

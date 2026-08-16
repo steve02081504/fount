@@ -32,7 +32,7 @@ export {
 	signal, abort, start, intro, dismiss, farewell, sleep, setIO,
 } from './session.mjs'
 /** 终端尺寸。 */
-export { terminalSize } from './terminal.mjs'
+export { terminalSize } from './io.mjs'
 /** 底层播放器工具。 */
 export { fps, consumeStdin } from './player.mjs'
 

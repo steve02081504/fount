@@ -1,11 +1,10 @@
 /**
  * 可中止的延时（不依赖 `node:timers`）。
  * @param {number} milliseconds 毫秒
- * @param {unknown} [_value] 占位（对齐 `timers/promises` 第二参）
  * @param {{ signal?: AbortSignal }} [options] 中止信号
  * @returns {Promise<void>} 到期兑现；中止则拒绝 `AbortError`
  */
-export function delay(milliseconds, _value, { signal } = {}) {
+export function delay(milliseconds, { signal } = {}) {
 	return new Promise((resolve, reject) => {
 		/**
 		 * @returns {Error} 中止错误
@@ -17,10 +16,18 @@ export function delay(milliseconds, _value, { signal } = {}) {
 			reject(abortError())
 			return
 		}
-		const timer = setTimeout(resolve, milliseconds)
-		signal?.addEventListener('abort', () => {
+		/**
+		 * 到期前中止：清定时器并拒绝。
+		 * @returns {void}
+		 */
+		const onAbort = () => {
 			clearTimeout(timer)
 			reject(abortError())
-		}, { once: true })
+		}
+		const timer = setTimeout(() => {
+			signal?.removeEventListener('abort', onAbort)
+			resolve()
+		}, milliseconds)
+		signal?.addEventListener('abort', onAbort, { once: true })
 	})
 }

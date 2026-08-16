@@ -8,12 +8,11 @@ import { lightPointer } from './gesture/light.mjs'
 import { windPointer } from './gesture/wind.mjs'
 import { startGravity, stopGravity } from './gravity.mjs'
 import { ICON_W, ICON_H } from './icon.mjs'
-import { setIO } from './io.mjs'
+import { canUseTui, setIO } from './io.mjs'
 import * as player from './player.mjs'
 import {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene/index.mjs'
-import { canUseTui } from './terminal.mjs'
 
 /** 绑定播放器 console / stdin / stdout。 */
 export { setIO }
@@ -121,7 +120,7 @@ export async function intro() {
  */
 export async function sleep(milliseconds) {
 	try {
-		await delay(milliseconds, undefined, { signal })
+		await delay(milliseconds, { signal })
 	}
 	catch (error) {
 		if (error?.name === 'AbortError') return

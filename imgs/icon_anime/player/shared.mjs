@@ -16,14 +16,6 @@ const write = (text) => {
 	return Boolean(stdout?.targetStream.write(text))
 }
 
-/**
- * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧或工厂
- * @returns {AsyncGenerator<string, void, unknown>} 帧流
- */
-async function* iterateFrames(frames) {
-	yield* typeof frames === 'function' ? frames() : frames
-}
-
 /** 启用 SGR 按键 + 拖拽鼠标上报。 */
 const MOUSE_ON = '\x1b[?1000h\x1b[?1002h\x1b[?1006h'
 /** 禁用鼠标上报（逆序）。 */
@@ -77,6 +69,8 @@ export function createEscHold(holdMs = ESC_HOLD_MS, gapMs = ESC_HOLD_GAP_MS) {
 	}
 }
 
+const latin1 = new TextDecoder('latin1')
+
 /**
  * 将一块 stdin 数据喂入 SGR 鼠标 / Ctrl+C / ESC 解析器。
  * 末尾不完整的 CSI 作为 carry 缓冲返回。
@@ -86,12 +80,8 @@ export function createEscHold(holdMs = ESC_HOLD_MS, gapMs = ESC_HOLD_GAP_MS) {
  * @returns {string} 新 carry
  */
 export const consumeStdin = (carry, chunk, sink = {}) => {
-	let text = carry
-	for (let offset = 0; offset < chunk.length; offset++) {
-		const byte = chunk[offset]
-		if (byte === 0x03) sink.abort?.()
-		text += String.fromCharCode(byte)
-	}
+	const text = carry + latin1.decode(chunk)
+	if (chunk.includes(0x03)) sink.abort?.()
 
 	let cursor = 0
 	while (cursor < text.length) {
@@ -249,14 +239,14 @@ export function paint(frame) {
  */
 async function playFrames(frames) {
 	if (!canUseTui()) return
-	for await (const frame of iterateFrames(frames)) {
+	for await (const frame of frames instanceof Function ? frames() : frames) {
 		if (playSignal.aborted) return
 		const started = performance.now()
 		paint(frame)
 		const wait = 1000 / fps - (performance.now() - started)
 		if (wait <= 0) continue
 		try {
-			await delay(wait, undefined, { signal: playSignal })
+			await delay(wait, { signal: playSignal })
 		}
 		catch (error) {
 			if (error?.name === 'AbortError') return

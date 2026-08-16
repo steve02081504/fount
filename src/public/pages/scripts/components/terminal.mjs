@@ -14,28 +14,28 @@ document.head.prepend(Object.assign(document.createElement('link'), {
 
 /**
  * 简易事件订阅。
- * @returns {{ on: (event: string, fn: Function) => void, off: (event: string, fn: Function) => void, emit: (event: string, ...args: unknown[]) => void }} 事件口
+ * @returns {{ on: (event: string, listener: Function) => void, off: (event: string, listener: Function) => void, emit: (event: string, ...args: unknown[]) => void }} 事件口
  */
 const createEmitter = () => {
 	const listeners = new Map()
 	return {
 		/**
 		 * @param {string} event 事件名
-		 * @param {Function} fn 回调
+		 * @param {Function} listener 回调
 		 * @returns {void}
 		 */
-		on(event, fn) {
+		on(event, listener) {
 			let set = listeners.get(event)
 			if (!set) listeners.set(event, set = new Set())
-			set.add(fn)
+			set.add(listener)
 		},
 		/**
 		 * @param {string} event 事件名
-		 * @param {Function} fn 回调
+		 * @param {Function} listener 回调
 		 * @returns {void}
 		 */
-		off(event, fn) {
-			listeners.get(event)?.delete(fn)
+		off(event, listener) {
+			listeners.get(event)?.delete(listener)
 		},
 		/**
 		 * @param {string} event 事件名
@@ -43,7 +43,7 @@ const createEmitter = () => {
 		 * @returns {void}
 		 */
 		emit(event, ...args) {
-			for (const fn of listeners.get(event) ?? []) fn(...args)
+			for (const listener of listeners.get(event) ?? []) listener(...args)
 		},
 	}
 }
@@ -130,7 +130,7 @@ export function setTerminal(element) {
 			terminal.paste(await navigator.clipboard.readText())
 	})
 
-	const vc = new VirtualConsole()
+	const virtualConsole = new VirtualConsole()
 	const outEvents = createEmitter()
 	const inEvents = createEmitter()
 
@@ -173,7 +173,7 @@ export function setTerminal(element) {
 		 */
 		write(chunk) {
 			const text = chunkToText(chunk)
-			vc.writeAs(method, text)
+			virtualConsole.writeAs(method, text)
 			return paint(text)
 		},
 		on: outEvents.on,
@@ -182,11 +182,11 @@ export function setTerminal(element) {
 
 	const stdout = createStdStream('stdout')
 	const stderr = createStdStream('stderr')
-	const ioConsole = Object.create(vc)
+	const ioConsole = Object.create(virtualConsole)
 	Object.defineProperty(ioConsole, '_stdout', { value: stdout, enumerable: true })
 	Object.defineProperty(ioConsole, '_stderr', { value: stderr, enumerable: true })
 
-	vc.addLogEntryListener(entry => {
+	virtualConsole.addLogEntryListener(entry => {
 		if (entry.method === 'stdout' || entry.method === 'stderr') return
 		paint(entry.toString())
 	})
@@ -194,10 +194,9 @@ export function setTerminal(element) {
 	const stdin = {
 		isTTY: true,
 		/**
-		 * @param {boolean} [_mode] raw 模式（DOM 无操作）
 		 * @returns {void}
 		 */
-		setRawMode(_mode) { /* xterm 已是字符模式 */ },
+		setRawMode() { /* xterm 已是字符模式 */ },
 		/**
 		 * @returns {void}
 		 */
@@ -210,8 +209,9 @@ export function setTerminal(element) {
 		off: inEvents.off,
 	}
 
+	const utf8 = new TextEncoder()
 	terminal.onData(data => {
-		inEvents.emit('data', Uint8Array.from(data, char => char.charCodeAt(0) & 0xff))
+		inEvents.emit('data', utf8.encode(data))
 	})
 	terminal.onResize(() => {
 		outEvents.emit('resize')

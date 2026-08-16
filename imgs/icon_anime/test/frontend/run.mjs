@@ -11,9 +11,6 @@ import { resolveFrontendPort } from 'fount/scripts/test/playwright/env.mjs'
 import { runPlaywright } from 'fount/scripts/test/playwright/run.mjs'
 import express from 'npm:express'
 
-const testDir = dirname(fileURLToPath(import.meta.url))
-const configPath = join(testDir, 'playwright.config.mjs')
-
 /**
  * 以仓库根为静态根，让 `imgs/icon_anime` 用相对路径加载 `src/public/pages/scripts`。
  * @param {{ port: number, host: string }} options 监听
@@ -80,7 +77,7 @@ try {
 	if (commitPort) await commitPort(port)
 
 	process.exitCode = await runPlaywright({
-		configPath,
+		configPath: join(dirname(fileURLToPath(import.meta.url)), 'playwright.config.mjs'),
 		env: {
 			FOUNT_TEST_BASE_URL: server.baseUrl,
 			FOUNT_TEST_SCOPE: process.env.FOUNT_TEST_SCOPE || 'icon_anime',
