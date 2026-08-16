@@ -38,6 +38,8 @@ Documented contract: report failure via `$LastExitCode` only (0/1/2/3). Do not t
 }
 
 function script:New-FountExe($executablePath = "fount.exe") {
+	# $null skips PowerShell default values.
+	if (-not $executablePath) { $executablePath = "fount.exe" }
 	Initialize-FountFavicon
 	Test-PWSHModule ps12exe
 	# Contract: ps12exe fails via $LastExitCode only (steve02081504/ps12exe#58).
