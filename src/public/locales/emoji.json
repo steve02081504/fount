@@ -613,6 +613,16 @@
 			"message": "👋 ⬅️ ${source}\n🍵❌ 🍪❌ 👋 :)",
 			"dismiss": "👌👀"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "📢"
+			},
+			"badge": "📢❌",
+			"lede": "📢💰🏛️🙏😇—",
+			"punchline": "⛲😎✨ :D",
+			"nudge": "💧🧍👀🌄",
+			"dismiss": "😎🙏"
+		},
 		"eula": {
 			"title": "📜 EULA",
 			"agree": "✅📖🤝",
@@ -665,16 +675,6 @@
 				"title": "🔗🤖🌐",
 				"description": "⛲ ➡️ 🤖🌐∞ : OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI… 💻⚙️🪄"
 			}
-		},
-		"cool_notice": {
-			"region": {
-				"aria-label": "📢"
-			},
-			"badge": "📢❌",
-			"lede": "📢💰🏛️🙏😇—",
-			"punchline": "⛲😎✨ :D",
-			"nudge": "💧🧍👀🌄",
-			"dismiss": "😎🙏"
 		}
 	},
 	"protocolhandler": {
