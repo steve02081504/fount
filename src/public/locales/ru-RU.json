@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "≈ ${count} с неизвестной длительностью осталось всего",
 				"queued": {
 					"switch": "count",
-					"default": "В очереди, впереди ${count} расписаний",
+					"default": "В очереди — впереди ${count}",
 					"cases": {
-						"0": "Очередь"
+						"0": "В очереди"
 					}
 				},
 				"failureLog": "\n—— Журнал сбоев: ${label} ——"

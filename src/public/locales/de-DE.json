@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "Gesamt: ${count} mit unbekannter Dauer verbleibend",
 				"queued": {
 					"switch": "count",
-					"default": "Warteschlange, es liegen ${count} Zeitpläne vor uns",
+					"default": "In der Warteschlange — ${count} vor dir",
 					"cases": {
-						"0": "Warteschlange"
+						"0": "In der Warteschlange"
 					}
 				},
 				"failureLog": "\n—— Fehlerprotokoll: ${label} ——"

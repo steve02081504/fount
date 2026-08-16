@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "总剩余：${count} 个未知时长",
 				"queued": {
 					"switch": "count",
-					"default": "正在排队，前方还有 ${count} 个调度",
+					"default": "排队等待中，前方还有 ${count} 项",
 					"cases": {
-						"0": "正在排队"
+						"0": "排队等待中"
 					}
 				},
 				"failureLog": "\n—— ${label}：失败日志 ——"

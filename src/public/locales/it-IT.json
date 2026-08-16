@@ -178,7 +178,7 @@
 				"remainingOnlyUnknown": "≈ ${count} con durata sconosciuta rimanenti in totale",
 				"queued": {
 					"switch": "count",
-					"default": "In coda, ci sono ${count} programmi in anticipo",
+					"default": "In coda — ${count} davanti",
 					"cases": {
 						"0": "In coda"
 					}

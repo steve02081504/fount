@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "≈ ${count} með óþekktri lengd eftir samtals",
 				"queued": {
 					"switch": "count",
-					"default": "Í biðröð, það eru ${count} áætlanir framundan",
+					"default": "Í biðröð — ${count} á undan",
 					"cases": {
-						"0": "Biðraðir"
+						"0": "Í biðröð"
 					}
 				},
 				"failureLog": "\n—— ${label} — bilanaskrá ——"

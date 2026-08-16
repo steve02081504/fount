@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "≈ ${count} thời lượng chưa biết còn lại tổng cộng",
 				"queued": {
 					"switch": "count",
-					"default": "Đang xếp hàng, còn có lịch trình ${count} phía trước",
+					"default": "Đang chờ — còn ${count} phía trước",
 					"cases": {
-						"0": "Xếp hàng"
+						"0": "Đang chờ"
 					}
 				},
 				"failureLog": "\n—— Nhật ký lỗi: ${label} ——"

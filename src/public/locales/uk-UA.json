@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "≈ ${count} з невідомою тривалістю залишилось загалом",
 				"queued": {
 					"switch": "count",
-					"default": "У черзі, попереду ${count} розкладів",
+					"default": "У черзі — попереду ${count}",
 					"cases": {
-						"0": "Постановка в чергу"
+						"0": "У черзі"
 					}
 				},
 				"failureLog": "\n—— Журнал збоїв: ${label} ——"

@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "Σ⏳：${count}×❓⏱️",
 				"queued": {
 					"switch": "count",
-					"default": "正在排队，前方还有 ${count} 个调度",
+					"default": "⏳ ${count}↑",
 					"cases": {
-						"0": "正在排队"
+						"0": "⏳"
 					}
 				},
 				"failureLog": "\n—— ❌📋 ${label} ——"

@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "≈ ${count} بمدة غير معروفة متبقية إجمالًا",
 				"queued": {
 					"switch": "count",
-					"default": "في قائمة الانتظار، هناك ${count} جداول زمنية قادمة",
+					"default": "في الطابور — ${count} أمامك",
 					"cases": {
-						"0": "الطابور"
+						"0": "في الطابور"
 					}
 				},
 				"failureLog": "\n—— سجل فشل ${label} ——"

@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "≈ ${count} con duración desconocida restante en total",
 				"queued": {
 					"switch": "count",
-					"default": "En cola, hay ${count} programaciones por delante",
+					"default": "En cola — ${count} por delante",
 					"cases": {
-						"0": "hacer cola"
+						"0": "En cola"
 					}
 				},
 				"failureLog": "\n—— Registro de fallos: ${label} ——"

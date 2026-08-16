@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "≈ ${count} met onbekende duur resterend in totaal",
 				"queued": {
 					"switch": "count",
-					"default": "Er staan ​​wachtrijen, er staan ​​${count} planningen voor de boeg",
+					"default": "In de wachtrij — ${count} voor je",
 					"cases": {
-						"0": "In de rij staan"
+						"0": "In de wachtrij"
 					}
 				},
 				"failureLog": "\n—— Foutlogboek: ${label} ——"

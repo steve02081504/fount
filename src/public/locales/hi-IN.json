@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "≈ ${count} अज्ञात अवधि कुल शेष",
 				"queued": {
 					"switch": "count",
-					"default": "कतार में, आगे ${count} शेड्यूल हैं",
+					"default": "कतार में — आगे ${count}",
 					"cases": {
-						"0": "कतार"
+						"0": "कतार में"
 					}
 				},
 				"failureLog": "\n—— ${label} की विफलता लॉग ——"

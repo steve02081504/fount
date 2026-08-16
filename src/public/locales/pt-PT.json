@@ -178,7 +178,7 @@
 				"remainingOnlyUnknown": "≈ ${count} com duração desconhecida restante no total",
 				"queued": {
 					"switch": "count",
-					"default": "Na fila, há ${count} agendamentos pela frente",
+					"default": "Na fila — ${count} à frente",
 					"cases": {
 						"0": "Na fila"
 					}

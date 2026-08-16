@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "전체 남음: 미지 소요 ${count}건",
 				"queued": {
 					"switch": "count",
-					"default": "대기 중입니다. 앞으로 ${count}개의 일정이 남아 있습니다.",
+					"default": "대기 중 — 앞에 ${count}건",
 					"cases": {
-						"0": "대기열"
+						"0": "대기 중"
 					}
 				},
 				"failureLog": "\n—— ${label} 실패 로그 ——"

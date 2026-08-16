@@ -178,9 +178,9 @@
 				"remainingOnlyUnknown": "${count} with unknown duration left overall",
 				"queued": {
 					"switch": "count",
-					"default": "Queuing, there are ${count} schedules ahead",
+					"default": "Waiting in queue — ${count} ahead",
 					"cases": {
-						"0": "Queuing"
+						"0": "Waiting in queue"
 					}
 				},
 				"failureLog": "\n—— ${label} — failure log ——"

@@ -177,9 +177,9 @@
 				"remainingOnlyUnknown": "總剩餘：${count} 個未知時長",
 				"queued": {
 					"switch": "count",
-					"default": "正在排隊，前方還有 ${count} 個調度",
+					"default": "排隊等待中，前方還有 ${count} 項",
 					"cases": {
-						"0": "正在排隊"
+						"0": "排隊等待中"
 					}
 				},
 				"failureLog": "\n—— ${label}：失敗日誌 ——"
