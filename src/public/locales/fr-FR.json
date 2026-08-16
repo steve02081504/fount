@@ -613,6 +613,16 @@
 			"message": "Bienvenue, visiteurs venus de `${source}` !\nPas de thé ni de gâteaux ici — juste un petit salut :)",
 			"dismiss": "Merci, je jette un œil"
 		},
+		"cool_notice": {
+			"region": {
+				"aria-label": "广告提示"
+			},
+			"badge": "本应是广告",
+			"lede": "这里本该塞一条醒目的商业广告、政治/DEI 宣传、赞助请求或道德绑架——",
+			"punchline": "但因为 <strong>fount 很酷</strong>，所以没有这些东西 :D",
+			"nudge": "记得多喝水，站起来走走，看看远方！",
+			"dismiss": "酷，谢谢"
+		},
 		"eula": {
 			"title": "Contrat de licence utilisateur final",
 			"agree": "J'ai lu et j'accepte ce contrat",
