@@ -201,11 +201,17 @@ function showCoolNotice() {
  */
 function dismissCoolNotice() {
 	coolNotice.classList.remove('cool-notice-in')
-	document.body.classList.remove('cool-notice-open')
-	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+	/**
+	 *
+	 */
+	const hide = () => {
 		coolNotice.classList.add('hidden')
+		document.body.classList.remove('cool-notice-open')
+	}
+	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+		hide()
 	else
-		coolNotice.addEventListener('transitionend', () => coolNotice.classList.add('hidden'), { once: true })
+		coolNotice.addEventListener('transitionend', hide, { once: true })
 }
 
 /**

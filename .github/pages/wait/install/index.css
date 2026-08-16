@@ -357,6 +357,7 @@ body.scroll-lock {
 
 .cool-notice {
 	--cool-notice-pad: max(0.75rem, env(safe-area-inset-bottom, 0px));
+
 	position: fixed;
 	z-index: 40;
 	inset-inline: 0.6rem;

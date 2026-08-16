@@ -67,12 +67,7 @@ function typeFromUrlSuffix(url) {
  * @returns {boolean} 是否可预取
  */
 function isStaticAssetUrl(url) {
-	try {
-		return STATIC_ASSET_PATH_REG.test(new URL(url).pathname)
-	}
-	catch {
-		return false
-	}
+	return STATIC_ASSET_PATH_REG.test(new URL(url).pathname)
 }
 
 /**

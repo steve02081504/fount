@@ -38,12 +38,11 @@ test.describe('GitHub Pages smoke', () => {
 		await expect(notice).toContainText('fount')
 		await page.locator('#cool-notice-dismiss').click()
 		await expect(notice).toBeHidden()
-		const stored = await page.evaluate(() => ({
+		expect(JSON.stringify(await page.evaluate(() => ({
 			localStorage: { ...localStorage },
 			sessionStorage: { ...sessionStorage },
 			cookies: document.cookie,
-		}))
-		expect(JSON.stringify(stored)).not.toMatch(/cool.?notice/i)
+		})))).not.toMatch(/cool.?notice/i)
 
 		await page.reload({ waitUntil: 'domcontentloaded' })
 		await expect(notice).toBeHidden()
