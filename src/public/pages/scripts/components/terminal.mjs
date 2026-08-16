@@ -67,6 +67,7 @@ const chunkToText = (chunk) => {
  */
 export function setTerminal(element) {
 	const terminal = new Terminal({
+		convertEol: true,
 		linkHandler: {
 			/**
 			 * 激活链接。
