@@ -14,11 +14,10 @@
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<link href="../../src/public/pages/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
-	<script type="module" src="../../src/public/pages/base.mjs"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.min.css" />
 </head>
 <body class="flex h-screen flex-col bg-base-200 p-4">
-	<main id="term" class="mockup-code border min-h-0 w-full flex-1 overflow-hidden"></main>
+	<main id="terminal" class="mockup-code border min-h-0 w-full flex-1 overflow-hidden"></main>
 	<script type="module">
 		import { attach } from './page.mjs'
 		import { start } from './session.mjs'
