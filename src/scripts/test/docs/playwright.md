@@ -47,9 +47,9 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 `watch` (`scripts/test/watch/`): mounts `fount.test.watch` (`kick` / `drain` / `holdLocale` / `releaseLocale` / `started`). Locale bootstrap then `loop.start()` — the only ready gate.
 
 - a11y: MutationObserver dirty → axe; `[aria-ignore]` via shared `test/aria_ignore.mjs` + hub probes.
-- locale: zh-CN → ja-JP → en-UK (`holdLocale` skips); visible-text + **aria-label** scans (skip `[user-content]` / `[language-check-ignore]` / `[aria-hidden="true"]` / `[inert]` / `[hidden]` / `.hidden`) require Han on zh-CN and Hira/Kata/Han on ja-JP; en-UK must not carry CJK. Use `data-i18n` object keys — never hardcode English `aria-label` as a fallback. `[user-content]` = user/dynamic text; `[language-check-ignore]` = intentional multilingual chrome (language names, EULA in a chosen locale).
+- locale: zh-CN → ja-JP → en-UK (`holdLocale` skips); no `[data-i18n]` = textless page (skip rotation; axe also skips `html-has-lang`). Visible-text + **aria-label** scans (skip `[user-content]` / `[language-check-ignore]` / `[aria-hidden="true"]` / `[inert]` / `[hidden]` / `.hidden`) require Han on zh-CN and Hira/Kata/Han on ja-JP; en-UK must not carry CJK. Use `data-i18n` object keys — never hardcode English `aria-label` as a fallback. `[user-content]` = user/dynamic text; `[language-check-ignore]` = intentional multilingual chrome (language names, EULA in a chosen locale).
 - Playwright teardown `waitForWatchDrain` → `watch.drain()`. Pause rotation during asserts with `holdLocale` / `releaseLocale` (see `json_editor.mjs`).
-- Hard-fail on `[test:a11y]` / `[test:locale]` / `[test:watch]` except axe `color-contrast` and `link-in-text-block`. Prefer `[data-i18n="…"]` selectors. UI chrome must use `data-i18n` / `setLocalizeLogic`.
+- Hard-fail on `[test:a11y]` / `[test:locale]` / `[test:watch]` except axe `color-contrast`, `link-in-text-block`, and `html-has-lang` when the document has no `[data-i18n]` (no chrome copy). Prefer `[data-i18n="…"]` selectors. UI chrome must use `data-i18n` / `setLocalizeLogic`.
 
 Icon-only controls need a visible glyph/SVG (or explicit size) — aria-label alone yields a 0×0 box and Playwright `toBeVisible` reports hidden. Incomplete UI must use `aria-hidden` / `inert` / `hidden` (not bare `opacity: 0`).
 

@@ -146,6 +146,7 @@ async function scan({ refreshGithubIssues = false } = {}) {
 		rules: {
 			'color-contrast': { enabled: false },
 			'link-in-text-block': { enabled: false },
+			'html-has-lang': { enabled: Boolean(document.querySelector('[data-i18n]')) },
 		},
 	})
 	for (const violation of results.violations)
