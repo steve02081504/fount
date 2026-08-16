@@ -764,10 +764,10 @@ export class TestKernel {
 					reason: item.reason,
 					...this.#remainingState(),
 				})
-			if (promoted.length)
-				this.#notifyJobWaits()
 			await this.#discardBlocked()
 			await this.#discardSkipped()
+			if (promoted.length)
+				this.#notifyJobWaits()
 			await this.#admitReady()
 			this.#notifyJobWaits()
 			// `#admitReady` is async: even a sync body yields once. A job enqueued in
@@ -961,7 +961,6 @@ export class TestKernel {
 				this.viewers.broadcast({ ...endEvent, ...this.#remainingState() })
 			if (item.jobId)
 				await this.#onJobItemDone(item)
-			this.#notifyJobWaits()
 			this.wake()
 		}
 	}
