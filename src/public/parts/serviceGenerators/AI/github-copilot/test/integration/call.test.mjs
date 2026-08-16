@@ -19,10 +19,10 @@ Deno.test('Copilot Call uses copilot host and editor headers', async () => {
 				refresh: 'gh',
 				expires: Date.now() + 60_000,
 			},
-		}, { /**
-		 *
-		 */
-			SaveConfig: async () => { } })
+		}, {
+			/** GetSource 依赖桩：空 SaveConfig。 */
+			SaveConfig: async () => { }
+		})
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'ok')
 		assertEquals(mock.calls[0].url, 'https://api.individual.githubcopilot.com/chat/completions')

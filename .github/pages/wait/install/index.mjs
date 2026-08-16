@@ -201,9 +201,7 @@ function showCoolNotice() {
  */
 function dismissCoolNotice() {
 	coolNotice.classList.remove('cool-notice-in')
-	/**
-	 *
-	 */
+	/** 过渡结束后隐藏底栏并恢复 body 布局。 */
 	const hide = () => {
 		coolNotice.classList.add('hidden')
 		document.body.classList.remove('cool-notice-open')

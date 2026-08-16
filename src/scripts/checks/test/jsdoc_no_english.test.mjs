@@ -60,6 +60,22 @@ Deno.test('extractJsdocBlocks: ignores JSDoc inside nested template interpolatio
 	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
 })
 
+Deno.test('extractJsdocBlocks: inline JSDoc before object literal property', () => {
+	const text = 'foo({ /** 中文摘要 */\n\tbar: 1 })\n'
+	const blocks = extractJsdocBlocks(text)
+	assertEquals(blocks.length, 1)
+	assertEquals(blocks[0].startLine, 1)
+	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
+})
+
+Deno.test('scanFileJsdocNoEnglish: flags inline empty JSDoc stub', () => {
+	const text = 'GetSource(cfg, { /**\n *\n */\n\tSaveConfig: async () => {} })'
+	const issues = scanFileJsdocNoEnglish('foo.mjs', text)
+	assertEquals(issues.length, 1)
+	assertEquals(issues[0].missingSummary, true)
+	assertEquals(issues[0].line, 1)
+})
+
 Deno.test('scanFileJsdocNoEnglish: flags English summary and empty /** */', () => {
 	const english = scanFileJsdocNoEnglish('foo.mjs', '/** English doc */\nexport const x = 1')
 	assertEquals(english.length, 1)

@@ -124,17 +124,17 @@ function skipTemplateLiteral(text, start, pos) {
 
 /**
  * 从源码文本中提取 JSDoc 块（含起止行号）。
- * 仅匹配行首（或前置空白）的 `/**`，并跳过字符串/模板字面量内的伪注释。
+ * 匹配任意位置的 `/**`（含行内对象字面量前的注释），并跳过字符串/模板字面量内的伪注释。
  * @param {string} text 源码
  * @returns {{ text: string, startLine: number, endLine: number }[]} 块列表
  */
 export function extractJsdocBlocks(text) {
 	/** @type {{ text: string, startLine: number, endLine: number }[]} */
 	const blocks = []
-	const re = /(^|\n)([ \t]*)\/\*\*/g
+	const re = /\/\*\*/g
 	let match
 	while ((match = re.exec(text)) !== null) {
-		const start = match.index + match[1].length + match[2].length
+		const start = match.index
 		if (isInsideStringOrTemplate(text, start)) {
 			re.lastIndex = start + 3
 			continue
