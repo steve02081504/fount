@@ -181,15 +181,17 @@ if (!is_hidden_page) {
 
 /**
  * 设置预渲染。
- * @param {string} [hostUrl] - 主机 URL。
+ * @param {string} [hostUrl] - 主机 URL（可带 search / hash）。
  */
 export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl') ?? 'http://localhost:8931') {
+	const host = new URL(hostUrl.includes('://') ? hostUrl : `http://${hostUrl}`)
+	const href = new URL('/parts/shells/home' + host.search + host.hash, host).href
 	if (HTMLScriptElement.supports?.('speculationrules')) {
 		const specScript = document.createElement('script')
 		specScript.type = 'speculationrules'
 		specScript.textContent = JSON.stringify({
 			prerender: [{
-				urls: [hostUrl + '/parts/shells/home']
+				urls: [href]
 			}]
 		})
 		document.head.prepend(specScript)
@@ -197,7 +199,7 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
 	else {
 		const link = document.createElement('link')
 		link.rel = 'prerender'
-		link.href = hostUrl + '/parts/shells/home'
+		link.href = href
 		document.head.prepend(link)
 	}
 }

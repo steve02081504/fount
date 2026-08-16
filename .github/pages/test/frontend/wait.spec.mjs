@@ -34,7 +34,7 @@ async function mockLocalFount(page, options = {}) {
 		await route.fulfill({
 			status: 200,
 			contentType: 'text/html; charset=utf-8',
-			body: '<!DOCTYPE html><html><body>fount-home</body></html>',
+			body: '<!DOCTYPE html><html><body><main>fount-home</main></body></html>',
 		})
 	})
 	return hits

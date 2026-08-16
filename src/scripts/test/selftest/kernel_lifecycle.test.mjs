@@ -544,7 +544,7 @@ Deno.test('rebootTestKernel starts a kernel when none is running', async () => {
 	}
 })
 
-Deno.test('last suite of a job does not emit job-wait after suite-end', async () => {
+Deno.test('last suite of a job does not emit job-wait after job-done while others are busy', async () => {
 	const handle = await startTestKernel({
 		port: CONTROL_PORT + 8,
 		autoExit: false,
@@ -573,6 +573,12 @@ Deno.test('last suite of a job does not emit job-wait after suite-end', async ()
 		const key = 'testkit:__job_wait_last__'
 		handle.kernel.catalog.allSuites.push(suite)
 		handle.kernel.catalog.byKey.set(key, suite)
+		handle.kernel.running.set('testkit:__other_busy__', {
+			item: { key: 'testkit:__other_busy__', jobId: 'other-job' },
+			abort: new AbortController(),
+			startedAt: Date.now(),
+			checkDone: true,
+		})
 		const jobId = 'job-wait-last'
 		viewer.jobId = jobId
 		const item = handle.kernel.queues.enqueueCli({ key, viewerId: viewer.id, jobId })
@@ -594,9 +600,12 @@ Deno.test('last suite of a job does not emit job-wait after suite-end', async ()
 		const suiteEndAt = types.indexOf('suite-end')
 		assertEquals(suiteEndAt >= 0, true)
 		assertEquals(types.slice(suiteEndAt).includes('job-wait'), false)
-		assertEquals(types.includes('job-done'), true)
+		const jobDoneAt = types.indexOf('job-done')
+		assertEquals(jobDoneAt >= 0, true)
+		assertEquals(types.slice(jobDoneAt).includes('job-wait'), false)
 	}
 	finally {
+		handle.kernel.running.delete('testkit:__other_busy__')
 		await handle.close()
 	}
 })
