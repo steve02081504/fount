@@ -37,13 +37,13 @@ fount test icon_anime:frontend
 
 Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then quit). Left quick-click → ripple; left hold/drag → cool spotlight. Right-drag → stroke wind; right long-still → tornado vortex. Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.
 
-Tests under `test/` (`fluid_*`, `anim`, `terrain`, `gravity_*`) plus `test/frontend` (Playwright DOM xterm: `setIO`, play, stop restores the normal buffer). The page module is `test/frontend/dom_terminal.mjs` (`attach` from `page.mjs`); the spec `import()`s `playAndRestore` instead of a `globalThis` bag. Demo: `/imgs/icon_anime/`.
+Tests under `test/` (`fluid_*`, `anim`, `terrain`, `gravity_*`) plus `test/frontend` (Playwright against the demo page: `setIO`, play, stop restores the normal buffer). Demo `/imgs/icon_anime/` hangs `globalThis.terminal` (DOM xterm) and `globalThis.icon` (session API).
 
 ## Modules
 
 | Path | Role |
 | --- | --- |
-| `index.html` / `page.mjs` | Browser demo: DOM xterm + `start()` |
+| `index.html` / `page.mjs` | Browser demo: DOM xterm + `start()`; `attach` sets `globalThis.terminal` / `icon` |
 | `index.mjs` | CLI entry + public re-exports |
 | `session.mjs` | Singleton session API; starts/stops device gravity; re-exports `setIO` |
 | `io.mjs` | `setIO` / `canUseTui` / `terminalSize` / `watchTerminalSize` |

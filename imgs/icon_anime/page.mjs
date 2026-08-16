@@ -4,17 +4,18 @@
 import { setTerminal } from '../../src/public/pages/scripts/components/terminal.mjs'
 import { applyTheme } from '../../src/public/pages/scripts/theme/index.mjs'
 
-import { setIO } from './session.mjs'
+import * as icon from './session.mjs'
 
 applyTheme()
 
 /**
- * 在容器上挂终端并绑定 icon IO。
+ * 在容器上挂终端并绑定 icon IO，同时把 `terminal` / `icon` 挂到 `globalThis`。
  * @param {HTMLElement} [element] 终端容器，默认 `#term`
  * @returns {import('https://esm.sh/xterm').Terminal} 终端
  */
 export function attach(element = document.getElementById('term')) {
 	const terminal = setTerminal(element)
-	setIO(terminal)
+	icon.setIO(terminal)
+	Object.assign(globalThis, { terminal, icon })
 	return terminal
 }

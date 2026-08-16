@@ -19,7 +19,7 @@ const configPath = join(testDir, 'playwright.config.mjs')
  * @param {{ port: number, host: string }} options 监听
  * @returns {Promise<{ baseUrl: string, close: () => Promise<void> }>} 服务器
  */
-function startHarnessServer({ port, host }) {
+function startStaticServer({ port, host }) {
 	const app = express()
 	/**
 	 * template.mjs 会 `import { base_dir } from '../../base.mjs'`。
@@ -73,10 +73,10 @@ else {
 
 if (releasePort) await releasePort(port)
 
-/** @type {Awaited<ReturnType<typeof startHarnessServer>> | null} */
+/** @type {Awaited<ReturnType<typeof startStaticServer>> | null} */
 let server = null
 try {
-	server = await startHarnessServer({ port, host: '127.0.0.1' })
+	server = await startStaticServer({ port, host: '127.0.0.1' })
 	if (commitPort) await commitPort(port)
 
 	process.exitCode = await runPlaywright({
