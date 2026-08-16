@@ -12,9 +12,8 @@
 export function resolveDisplayMode({ watch = false, job, runCount = 0 } = {}) {
 	if (watch || !job) return 'overview'
 	if (!job.runAll && !job.groups?.length) return 'overview'
-	if (runCount === 1) return 'stream'
 	if (runCount > 1) return 'multi'
-	return 'overview'
+	return 'stream'
 }
 
 /**

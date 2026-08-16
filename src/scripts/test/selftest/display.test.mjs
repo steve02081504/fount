@@ -8,7 +8,7 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
 import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
-import { paintAccepted, paintJobDone, paintSuiteEnd } from '../display/paint.mjs'
+import { paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd } from '../display/paint.mjs'
 import { acceptedFromWave } from '../kernel/jobs.mjs'
 
 /**
@@ -95,6 +95,11 @@ Deno.test('bare continue job is overview regardless of runCount', () => {
 		job: { groups: [{ manifestSelectors: ['shells/chat'], suiteSelectors: ['pure', 'integration'] }] },
 		runCount: 2,
 	}), 'multi')
+	assertEquals(resolveDisplayMode({
+		watch: false,
+		job: { groups: [{ manifestSelectors: ['checks'], suiteSelectors: ['text_lf'] }] },
+		runCount: 0,
+	}), 'stream')
 })
 
 Deno.test('displayShouldResolve: overview waits for idle unless empty job', () => {
@@ -214,4 +219,15 @@ Deno.test('paintJobDone reprints failed suite logs after the report path', () =>
 	assertEquals(logs.at(-1)?.key, 'fountConsole.test.display.failureLog')
 	assertEquals(logs.at(-1)?.params.label, 'shells/achievements:frontend')
 	assertEquals(written.includes('Error: still failing'), true)
+})
+
+Deno.test('paintJobWait names queue depth not another suite', () => {
+	const { logs } = captureI18n(() => paintJobWait({ aheadCount: 3 }))
+	assertEquals(logs.map(row => row.key), ['fountConsole.test.display.queued'])
+	assertEquals(logs[0]?.params.count, 3)
+})
+
+Deno.test('paintJobWait passes aheadCount through without a default', () => {
+	const { logs } = captureI18n(() => paintJobWait({}))
+	assertEquals(logs[0]?.params.count, undefined)
 })

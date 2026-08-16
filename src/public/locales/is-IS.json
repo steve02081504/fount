@@ -176,6 +176,13 @@
 				"remaining": "Samtals ≈ ${remaining} eftir",
 				"remainingUnknown": "≈ ${remaining} eftir samtals (${count} með óþekktri lengd aukalega)",
 				"remainingOnlyUnknown": "≈ ${count} með óþekktri lengd eftir samtals",
+				"queued": {
+					"switch": "count",
+					"default": "Í biðröð — ${count} á undan",
+					"cases": {
+						"0": "Í biðröð"
+					}
+				},
 				"failureLog": "\n—— ${label} — bilanaskrá ——"
 			},
 			"passed": "Staðið: ${label}",

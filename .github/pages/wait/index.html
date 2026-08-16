@@ -19,31 +19,11 @@
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="../base.css" type="text/css" />
-	<script type="module">
-		import { setPreRender } from '../base.mjs'
-		import { waitForFountService, saveFountHostUrl } from '../scripts/fountHostGetter.mjs'
-
-		const hostUrl = 'http://localhost:8931'
-		const jumpTo = hostUrl + '?cold_bootting=true'
-
-		try {
-			navigator.serviceWorker?.controller?.postMessage({ type: 'ENTER_COLD_BOOT' })
-		} catch (error) {
-			if (error.name != 'SecurityError') throw error
-		}
-		if (localStorage.getItem('fount_localhost_ping_passed') === 'true')
-			window.location.href = jumpTo
-
-		setPreRender(jumpTo)
-		await waitForFountService(hostUrl)
-		saveFountHostUrl(hostUrl)
-		localStorage.setItem('fount_localhost_ping_passed', true)
-		window.location.href = jumpTo
-	</script>
 </head>
 
-<body class="flex justify-center items-center h-screen">
-	<main><span class="loading loading-ring loading-lg"></span></main>
+<body class="flex h-screen flex-col bg-base-200 p-4">
+	<main id="terminal" class="mockup-code border min-h-0 w-full flex-1 overflow-hidden" language-check-ignore></main>
+	<script type="module" src="./index.mjs"></script>
 </body>
 
 </html>

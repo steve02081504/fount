@@ -159,6 +159,7 @@ export type LocaleData = {
 				remaining: string
 				remainingUnknown: string
 				remainingOnlyUnknown: string
+				queued: LocaleSwitchLeaf
 				failureLog: string
 			}
 			passed: string
@@ -5963,12 +5964,22 @@ export type LocaleData = {
 		}
 	}
 }
+/**
+ * i18n switch 叶子（singular / plural 等），由 geti18n 按 params[switch] 解析。
+ */
+export type LocaleSwitchLeaf = {
+	switch: string
+	default: string | LocaleSwitchLeaf
+	cases?: { [key: string]: string | LocaleSwitchLeaf }
+}
 // 用于从嵌套对象生成点表示法键的实用类型。
 type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ...0[]]
 
 type Paths<T, D extends number = 8> = [D] extends [never]
 	? never
-	: T extends readonly (infer ArrayElement)[]
+	: T extends LocaleSwitchLeaf
+		? ''
+		: T extends readonly (infer ArrayElement)[]
 		? `${number}` | Join<`${number}`, Paths<ArrayElement, Prev[D]>>
 		: T extends object
 		? { [K in keyof T]-?: K extends string | number
@@ -6316,6 +6327,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.display.eta': { expected: string | number; remaining: string | number }
 	'fountConsole.test.display.etaUnknown': { count: string | number; expected: string | number }
 	'fountConsole.test.display.failureLog': { label: string | number }
+	'fountConsole.test.display.queued': { count: string | number }
 	'fountConsole.test.display.reason': { label: string | number; reason: string | number }
 	'fountConsole.test.display.remaining': { remaining: string | number }
 	'fountConsole.test.display.remainingOnlyUnknown': { count: string | number }

@@ -176,6 +176,13 @@
 				"remaining": "全体残り ≈ ${remaining}",
 				"remainingUnknown": "全体残り ≈ ${remaining}（別途未知の所要時間 ${count} 件）",
 				"remainingOnlyUnknown": "全体残り：未知の所要時間 ${count} 件",
+				"queued": {
+					"switch": "count",
+					"default": "待機中 — 前方 ${count} 件",
+					"cases": {
+						"0": "待機中"
+					}
+				},
 				"failureLog": "\n—— ${label} の失敗ログ ——"
 			},
 			"passed": "合格: ${label}",

@@ -4,6 +4,7 @@ import { assertEquals } from 'jsr:@std/assert'
 import { orderFailedFirst, readTestTriggeredFiles, readTimingsOutFile, writeTestTriggeredFiles, writeTimingsOutFile } from '../core/protocol.mjs'
 import { suiteTriggeredFiles } from '../core/state.mjs'
 import { aggregateSubtestVerdicts, judgeSubtest } from '../core/verdict.mjs'
+import { playwrightArgsForSubtests } from '../playwright/phases.mjs'
 import { collectSubtestFilterByKey } from '../runner/selection.mjs'
 import { buildSuiteInvocation, mapTimingsToSubtests } from '../runner/suite_run.mjs'
 
@@ -169,5 +170,20 @@ Deno.test('writeTestTriggeredFiles / readTestTriggeredFiles round-trip', async (
 		await Deno.remove(path).catch(() => {})
 		if (previous === undefined) Deno.env.delete('FOUNT_TEST_TRIGGERED_FILES')
 		else Deno.env.set('FOUNT_TEST_TRIGGERED_FILES', previous)
+	}
+})
+
+Deno.test('playwrightArgsForSubtests appends matching spec files', () => {
+	const specs = ['smoke.spec.mjs', 'wait.spec.mjs']
+	const previous = Deno.env.get('FOUNT_TEST_SUBTESTS')
+	try {
+		Deno.env.delete('FOUNT_TEST_SUBTESTS')
+		assertEquals(playwrightArgsForSubtests(specs, ['--debug']), ['--debug'])
+		Deno.env.set('FOUNT_TEST_SUBTESTS', 'wait')
+		assertEquals(playwrightArgsForSubtests(specs, ['--debug']), ['--debug', 'wait.spec.mjs'])
+	}
+	finally {
+		if (previous === undefined) Deno.env.delete('FOUNT_TEST_SUBTESTS')
+		else Deno.env.set('FOUNT_TEST_SUBTESTS', previous)
 	}
 })

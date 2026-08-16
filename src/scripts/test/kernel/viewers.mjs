@@ -12,6 +12,7 @@ import { WebSocket } from 'npm:ws'
  * @property {boolean} watch
  * @property {string | null} jobId
  * @property {'stream' | 'multi' | 'overview'} mode
+ * @property {number} [lastAheadCount] 上次推送的排队深度
  */
 
 /**
@@ -65,6 +66,14 @@ export class ViewerHub {
 	}
 
 	/**
+	 * 遍历当前 viewer。
+	 * @returns {IterableIterator<Viewer>} viewers
+	 */
+	values() {
+		return this.viewers.values()
+	}
+
+	/**
 	 * @param {string} id viewer id
 	 * @param {object} event 事件
 	 * @returns {void}
@@ -76,7 +85,7 @@ export class ViewerHub {
 	}
 
 	/**
-	 * 按订阅发送：overview/watch 收全部；job 订阅只收自己的 job。
+	 * 按订阅发送：watch 收全部；已认领 job 只收自己的事件；hello 前不收 suite 流。
 	 * @param {object} event 事件
 	 * @returns {void}
 	 */
@@ -84,14 +93,21 @@ export class ViewerHub {
 		const raw = JSON.stringify(event)
 		for (const viewer of this.viewers.values()) {
 			if (viewer.ws.readyState !== WebSocket.OPEN) continue
-			if (viewer.mode === 'overview' || viewer.watch) {
-				viewer.ws.send(raw)
-				continue
-			}
-			if (event.jobId && viewer.jobId === event.jobId)
-				viewer.ws.send(raw)
-			else if (!event.jobId && (event.type === 'idle' || event.type === 'snapshot'))
+			if (eventBelongsToViewer(viewer, event))
 				viewer.ws.send(raw)
 		}
 	}
+}
+
+/**
+ * 该 viewer 是否该看到此事件。
+ * @param {Viewer} viewer viewer
+ * @param {object} event 事件
+ * @returns {boolean} 是否发送
+ */
+export function eventBelongsToViewer(viewer, event) {
+	if (viewer.watch) return true
+	if (!viewer.jobId) return false
+	if (event.jobId === viewer.jobId) return true
+	return !event.jobId && event.type === 'idle' && viewer.mode === 'overview'
 }

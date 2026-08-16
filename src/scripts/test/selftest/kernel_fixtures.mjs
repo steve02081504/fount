@@ -51,7 +51,7 @@ export function dummySkipSuite(name, skipBecause) {
 export function enqueueDummyJob(kernel, { key, jobId, endKey = key }) {
 	/** @type {object | null} */
 	let end = null
-	kernel.viewers.add({
+	const viewer = kernel.viewers.add({
 		readyState: 1,
 		/**
 		 * @param {string} raw 事件 JSON
@@ -62,6 +62,7 @@ export function enqueueDummyJob(kernel, { key, jobId, endKey = key }) {
 			if (message.type === 'suite-end' && message.key === endKey) end = message
 		},
 	}, { mode: 'overview' })
+	viewer.jobId = jobId
 	const item = kernel.queues.enqueueCli({ key, viewerId: 'v', jobId })
 	const job = {
 		id: jobId,

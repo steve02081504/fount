@@ -176,6 +176,13 @@
 				"remaining": "Σ⏳≈ ${remaining}",
 				"remainingUnknown": "Σ⏳≈ ${remaining}（+ ${count}×❓⏱️）",
 				"remainingOnlyUnknown": "Σ⏳：${count}×❓⏱️",
+				"queued": {
+					"switch": "count",
+					"default": "⏳ ${count}↑",
+					"cases": {
+						"0": "⏳"
+					}
+				},
 				"failureLog": "\n—— ❌📋 ${label} ——"
 			},
 			"passed": "✅: ${label}",

@@ -11,9 +11,10 @@
 - 🎨 Agent 🧩, 🚫1️⃣ prompt + UI 🏗️
 - 👀🤝 👥💪 ⛲ Agent
 - 💼😊, ⚡📤📄
-- 🎭🔌 IDE / 🌐 / 🖥️ / Discord …
+- 🎭🔌 IDE / 🌐 / 🖥️ / Telegram …
 - 👥 Agent 🔌, 🚫 LLM 💬🖥️
 - ⚙️ API ➡️ ⚙️🎭 ZL-31 💬 ➡️ 🧩⚙️ / 🆕🧩 / 👤✋💯, 🚫📚🆕
+- 👥⛲ + 🤖 Agent 💬, 📁∞📤, 👍, 😀🎨. 🚫🛡️, 🚫🔨, 🚫💳💰
 
 #### ❓🚫⛲?
 
@@ -38,6 +39,11 @@
 - ▶️ LLM 🎭, 🚫 Agent 🛠️
 - 💳💰 👌
 - 😴⚙️💻
+
+[Discord](https://discord.com/) ➡️ 🫵:
+
+- 💬, 🤷 🔨❓
+- 🤷 📁📏⬆️ + 📢
 
 [SillyTavern](https://github.com/SillyTavern/SillyTavern/) ➡️ 🫵:
 
@@ -106,7 +112,17 @@
 - AI ➡️ 👥⌨️ ⏰✅.
   ![🖼️](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 4. 👨‍💻😊
+### 4. 🏠🔗 P2P 🤝: 🏝️💥, 🔒🛡️
+
+⛲ 🚫1️⃣ 👤🤝, ➕ 👥🔒📡. P2P 🔐📡 🏠, 🚫🔧😫, 1️⃣🔗 ➡️ 👥🏠LAN.
+
+🫵 + 👥 + 🤖 ➡️ 💻💬 + 📁🐘. 🚫☁️👀, 🚫🌐📶⬇️ — 💬✨ + 🔒📦 ➡️ 🏠🌐🔒.
+
+🚫📡🛜 ➡️ 📶🔵🔗. 👨‍💻💪 ➡️ P2P 🧩🔧 LoRa / NFC / 🔴 / USB / 🔊 …
+
+![🖼️](https://github.com/user-attachments/assets/be1bbb97-242c-4b9b-8b4d-c9bf94c125c1)
+
+### 5. 👨‍💻😊
 
 ⛲ 📦🏗️ ➡️ 👨‍💻🧠.
 [📦☁️🏗️❓ ➡️ DeepWiki!](https://deepwiki.com/steve02081504/fount)

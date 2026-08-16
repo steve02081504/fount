@@ -176,6 +176,13 @@
 				"remaining": "Total ≈ ${remaining} restant",
 				"remainingUnknown": "≈ ${remaining} restant au total (${count} durée(s) inconnue(s) en plus)",
 				"remainingOnlyUnknown": "≈ ${count} durée(s) inconnue(s) restante(s) au total",
+				"queued": {
+					"switch": "count",
+					"default": "En file d'attente — ${count} devant",
+					"cases": {
+						"0": "En file d'attente"
+					}
+				},
 				"failureLog": "\n—— Journal d'échecs : ${label} ——"
 			},
 			"passed": "Réussi : ${label}",

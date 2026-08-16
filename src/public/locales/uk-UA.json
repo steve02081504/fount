@@ -176,6 +176,13 @@
 				"remaining": "Загалом залишилось ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} залишилось загалом (ще ${count} з невідомою тривалістю)",
 				"remainingOnlyUnknown": "≈ ${count} з невідомою тривалістю залишилось загалом",
+				"queued": {
+					"switch": "count",
+					"default": "У черзі — попереду ${count}",
+					"cases": {
+						"0": "У черзі"
+					}
+				},
 				"failureLog": "\n—— Журнал збоїв: ${label} ——"
 			},
 			"passed": "Пройдено: ${label}",

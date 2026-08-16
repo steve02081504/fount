@@ -11,9 +11,10 @@ For code-related questions, see [deepwiki](https://deepwiki.com/steve02081504/fo
 - Customise agent logic, not just prompts and UI
 - Use and learn from other powerful fount agents in the community
 - Office-friendly, quick report export
-- Seamless integration of characters into IDEs, browsers, terminals, Discord, etc.
+- Seamless integration of characters into IDEs, browsers, terminals, Telegram, etc.
 - Agent-oriented plugins from the community that other LLM chat frontends don't have
 - Just configure the API, then use the default character ZL-31 to complete part configuration, part creation, and all user operations via conversation—no learning or onboarding required
+- Chat freely with other fount users and their Agents, share files of any size, react with likes, and use custom emojis. No moderation, no ban risk, and no expensive subscriptions
 
 #### Why not fount?
 
@@ -38,6 +39,11 @@ Use [character.ai](https://character.ai/) or similar online LLM character role-p
 - Want to run an LLM-driven character without agent features
 - Are fine with subscription costs
 - Don't want to configure software
+
+Use [Discord](https://discord.com/) when you:
+
+- Want to chat and don't mind the risk of being banned
+- Are willing to tolerate file upload size limits and ads
 
 Use [SillyTavern](https://github.com/SillyTavern/SillyTavern/) when you:
 
@@ -128,7 +134,17 @@ No longer just Markdown highlighting. In fount, the code blocks sent by the char
 - Let the AI become your real-time verifier for pair programming.
   ![Image](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 4. Developer-Friendly
+### 4. LAN P2P Collaboration: Break Silos, Guard Privacy
+
+fount is not only your personal digital confidant, but also your team's private hub. It natively supports P2P encrypted communication. With no cumbersome configuration, a simple invitation link is all it takes to connect colleagues on the same LAN.
+
+You, your colleagues, and your respective Agents can gather in a pure digital space to discuss code and transfer oversized files. No prying external servers, no public bandwidth limits—all sparks of conversation and confidential data flow safely within your intranet forever.
+
+Even without a network router, you can connect directly via Bluetooth. For hardcore developers, fount allows customisation and extension of the P2P layer to support LoRa, NFC, infrared, USB, and even custom data exchange protocols like sound waves.
+
+![Image](https://github.com/user-attachments/assets/be1bbb97-242c-4b9b-8b4d-c9bf94c125c1)
+
+### 5. Developer-Friendly
 
 fount's project architecture is designed with full consideration for developers' habits.
 [Want to know the project repository architecture? Check out DeepWiki!](https://deepwiki.com/steve02081504/fount)

@@ -20,6 +20,7 @@ import {
 	awaitWithTimeout,
 	dummySkipSuite,
 	enqueueDummyJob,
+	issueClosed,
 	issueStillOpen,
 	KERNEL_PORT,
 	SKIP_URL,
@@ -533,13 +534,269 @@ Deno.test('kernel close aborts running suites', async () => {
 
 Deno.test('rebootTestKernel starts a kernel when none is running', async () => {
 	const port = CONTROL_PORT + 4
-	assertEquals(await kernelHealthy(testHubUrl(port)), false)
-	const url = await rebootTestKernel({ port })
 	try {
+		assertEquals(await kernelHealthy(testHubUrl(port)), false)
+		const url = await rebootTestKernel({ port })
 		assertEquals(url, testHubUrl(port))
 		assertEquals(await kernelHealthy(url), true)
 	}
 	finally {
 		await shutdownTestKernel({ port })
+	}
+})
+
+Deno.test('last suite of a job does not emit job-wait after job-done while others are busy', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 8,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		/** @type {object[]} */
+		const events = []
+		const viewer = handle.kernel.viewers.add({
+			readyState: 1,
+			/**
+			 * @param {string} raw 事件 JSON
+			 * @returns {void}
+			 */
+			send: raw => { events.push(JSON.parse(raw)) },
+		}, { mode: 'overview' })
+		const suite = {
+			manifestId: 'testkit',
+			name: '__job_wait_last__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [],
+			heavy: false,
+		}
+		const key = 'testkit:__job_wait_last__'
+		handle.kernel.catalog.allSuites.push(suite)
+		handle.kernel.catalog.byKey.set(key, suite)
+		handle.kernel.running.set('testkit:__other_busy__', {
+			item: { key: 'testkit:__other_busy__', jobId: 'other-job' },
+			abort: new AbortController(),
+			startedAt: Date.now(),
+			checkDone: true,
+		})
+		const jobId = 'job-wait-last'
+		viewer.jobId = jobId
+		const item = handle.kernel.queues.enqueueCli({ key, viewerId: viewer.id, jobId })
+		const job = {
+			id: jobId,
+			viewerId: viewer.id,
+			spec: {},
+			pending: new Set([item.id]),
+			probedSkip: new Set(),
+			continueLoop: false,
+			exitCode: 0,
+			done: Promise.withResolvers(),
+			fingerprints: { commitHash: null, uncommittedHash: null },
+		}
+		handle.kernel.jobs.set(jobId, job)
+		handle.kernel.wake()
+		await awaitJob(job, 'job-wait-last timed out')
+		const types = events.map(event => event.type)
+		const suiteEndAt = types.indexOf('suite-end')
+		assertEquals(suiteEndAt >= 0, true)
+		assertEquals(types.slice(suiteEndAt).includes('job-wait'), false)
+		const jobDoneAt = types.indexOf('job-done')
+		assertEquals(jobDoneAt >= 0, true)
+		assertEquals(types.slice(jobDoneAt).includes('job-wait'), false)
+	}
+	finally {
+		handle.kernel.running.delete('testkit:__other_busy__')
+		await handle.close()
+	}
+})
+
+/**
+ * 占住别的 job，使本 job 的 job-wait 有 aheadCount。
+ * @param {import('../kernel/runtime.mjs').TestKernel} kernel 内核
+ * @returns {() => void} 清理
+ */
+function holdOtherBusy(kernel) {
+	kernel.running.set('testkit:__other_busy__', {
+		item: { key: 'testkit:__other_busy__', jobId: 'other-job' },
+		abort: new AbortController(),
+		startedAt: Date.now(),
+		checkDone: true,
+	})
+	return () => kernel.running.delete('testkit:__other_busy__')
+}
+
+/**
+ * 同 job 入队多项并收集 viewer 事件。
+ * @param {import('../kernel/runtime.mjs').TestKernel} kernel 内核
+ * @param {object} spec 项
+ * @param {string[]} spec.keys suite 键
+ * @param {string} spec.jobId job
+ * @returns {{ job: object, events: object[] }} job 与事件
+ */
+function enqueueJobKeys(kernel, { keys, jobId }) {
+	/** @type {object[]} */
+	const events = []
+	const viewer = kernel.viewers.add({
+		readyState: 1,
+		/**
+		 * @param {string} raw 事件 JSON
+		 * @returns {void}
+		 */
+		send: raw => { events.push(JSON.parse(raw)) },
+	}, { mode: 'overview' })
+	viewer.jobId = jobId
+	const pending = new Set()
+	for (const key of keys) {
+		const item = kernel.queues.enqueueCli({ key, viewerId: viewer.id, jobId })
+		pending.add(item.id)
+	}
+	const job = {
+		id: jobId,
+		viewerId: viewer.id,
+		spec: {},
+		pending,
+		probedSkip: new Set(),
+		continueLoop: false,
+		exitCode: 0,
+		done: Promise.withResolvers(),
+		fingerprints: { commitHash: null, uncommittedHash: null },
+	}
+	kernel.jobs.set(jobId, job)
+	return { job, events }
+}
+
+/**
+ * @param {object[]} events viewer 事件
+ * @returns {void}
+ */
+function assertDiscardJobHasNoJobWait(events) {
+	const types = events.map(event => event.type)
+	assertEquals(types.includes('suite-end'), true)
+	assertEquals(types.includes('job-done'), true)
+	assertEquals(types.includes('job-wait'), false)
+}
+
+Deno.test('blocked dependent does not emit job-wait before job-done while others are busy', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 9,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	const releaseBusy = holdOtherBusy(handle.kernel)
+	try {
+		handle.kernel.issueCache.getState = issueClosed
+		const dep = dummySkipSuite('__job_wait_block_dep__', SKIP_URL)
+		const depKey = 'testkit:__job_wait_block_dep__'
+		const childKey = 'testkit:__job_wait_block_child__'
+		const child = {
+			manifestId: 'testkit',
+			name: '__job_wait_block_child__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [{ manifestId: 'testkit', name: '__job_wait_block_dep__' }],
+			heavy: false,
+		}
+		handle.kernel.catalog.allSuites.push(dep, child)
+		handle.kernel.catalog.byKey.set(depKey, dep)
+		handle.kernel.catalog.byKey.set(childKey, child)
+		const { job, events } = enqueueJobKeys(handle.kernel, {
+			keys: [depKey, childKey],
+			jobId: 'job-wait-block',
+		})
+		handle.kernel.wake()
+		await awaitJob(job, 'job-wait-block timed out')
+		assertDiscardJobHasNoJobWait(events)
+	}
+	finally {
+		releaseBusy()
+		await handle.close()
+	}
+})
+
+Deno.test('skip_tree dependent does not emit job-wait before job-done while others are busy', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 10,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	const releaseBusy = holdOtherBusy(handle.kernel)
+	try {
+		handle.kernel.issueCache.getState = issueStillOpen
+		const dep = dummySkipSuite('__job_wait_skip_dep__', { url: SKIP_URL, as: 'skip_tree' })
+		const depKey = 'testkit:__job_wait_skip_dep__'
+		const childKey = 'testkit:__job_wait_skip_child__'
+		const child = {
+			manifestId: 'testkit',
+			name: '__job_wait_skip_child__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [{ manifestId: 'testkit', name: '__job_wait_skip_dep__' }],
+			heavy: false,
+		}
+		handle.kernel.catalog.allSuites.push(dep, child)
+		handle.kernel.catalog.byKey.set(depKey, dep)
+		handle.kernel.catalog.byKey.set(childKey, child)
+		const { job, events } = enqueueJobKeys(handle.kernel, {
+			keys: [depKey, childKey],
+			jobId: 'job-wait-skip',
+		})
+		handle.kernel.wake()
+		await awaitJob(job, 'job-wait-skip timed out')
+		assertDiscardJobHasNoJobWait(events)
+	}
+	finally {
+		releaseBusy()
+		await handle.close()
+	}
+})
+
+Deno.test('promoted FS queue does not emit job-wait before discarding a blocked CLI job', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 11,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+		prepSettleMs: 0,
+	})
+	const releaseBusy = holdOtherBusy(handle.kernel)
+	try {
+		const depKey = 'testkit:__job_wait_prep_dep__'
+		const childKey = 'testkit:__job_wait_prep_child__'
+		const fsKey = 'testkit:__job_wait_prep_fs__'
+		const child = {
+			manifestId: 'testkit',
+			name: '__job_wait_prep_child__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [{ manifestId: 'testkit', name: '__job_wait_prep_dep__' }],
+			heavy: false,
+		}
+		const fsSuite = {
+			manifestId: 'testkit',
+			name: '__job_wait_prep_fs__',
+			run: ['true'],
+			triggers: [],
+			dependencies: [{ manifestId: 'testkit', name: '__job_wait_prep_dep__' }],
+			heavy: false,
+		}
+		handle.kernel.catalog.allSuites.push(child, fsSuite)
+		handle.kernel.catalog.byKey.set(childKey, child)
+		handle.kernel.catalog.byKey.set(fsKey, fsSuite)
+		handle.kernel.sessionPassed.set(depKey, false)
+		handle.kernel.queues.hitPrep(fsKey)
+		const { job, events } = enqueueJobKeys(handle.kernel, {
+			keys: [childKey],
+			jobId: 'job-wait-prep',
+		})
+		handle.kernel.wake()
+		await awaitJob(job, 'job-wait-prep timed out')
+		assertDiscardJobHasNoJobWait(events)
+	}
+	finally {
+		releaseBusy()
+		await handle.close()
 	}
 })

@@ -29,12 +29,15 @@ let jaForbiddenLoading = null
 /** @type {Promise<typeof import('../../i18n/index.mjs')> | null} */
 let i18nModule = null
 
+/** @returns {boolean} 无 data-i18n 则为无 UI 文案页 */
+const isTextlessPage = () => !document.querySelector('[data-i18n]')
+
 /**
  * 三语脚本检查是否都跑过。
  * @returns {boolean} 全部 seen 则为 true
  */
 function covered() {
-	return LOCALE_CYCLE.every(locale => seen.has(locale))
+	return isTextlessPage() || LOCALE_CYCLE.every(locale => seen.has(locale))
 }
 
 /**
@@ -42,9 +45,9 @@ function covered() {
  * @returns {Promise<void>}
  */
 export async function bootstrap() {
+	if (isTextlessPage()) return
 	void loadJaForbiddenRe()
 	const i18n = await getI18n()
-	if (!document.querySelector('[data-i18n]')) return
 
 	const preferred = i18n.loadPreferredLangs()[0]
 	if (preferred) {
@@ -86,6 +89,7 @@ export async function bootstrap() {
  * @returns {Promise<boolean>} true = 空转
  */
 async function run({ draining }) {
+	if (isTextlessPage()) return true
 	if (isLocaleHeld() && !draining) return true
 	const i18n = await getI18n()
 	if (draining) {

@@ -48,6 +48,16 @@
 						".github/pages/wait/install/**",
 						".github/pages/oauth/callback/**"
 					]
+				},
+				{
+					"name": "wait",
+					"expected": "1m",
+					"triggers": [
+						".github/pages/test/frontend/wait.spec.mjs",
+						".github/pages/wait/index.html",
+						".github/pages/wait/index.mjs",
+						"imgs/icon_anime/**"
+					]
 				}
 			]
 		}
