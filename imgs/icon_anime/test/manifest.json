@@ -34,7 +34,8 @@
 			"triggers": [
 				"imgs/icon_anime/**",
 				"src/public/pages/scripts/components/terminal.mjs",
-				"src/scripts/test/playwright/**"
+				"src/scripts/test/playwright/**",
+				".github/pages/{preload.mjs,base.css}"
 			]
 		}
 	]

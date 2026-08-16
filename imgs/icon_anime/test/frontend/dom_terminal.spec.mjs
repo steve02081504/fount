@@ -19,7 +19,7 @@ const openDemo = async page => {
 
 /**
  * 写入标记 → 播放 → dismiss，返回主缓冲快照。
- * 在演示页里跑：页面已 `start()`，先 dismiss 再写标记。
+ * 在演示页里跑：页面已 `intro()`，先 dismiss 再写标记。
  * @param {string} marker 主缓冲标记
  * @returns {Promise<{ before: string, afterStop: string, later: string }>} 快照
  */
