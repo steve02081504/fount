@@ -45,7 +45,7 @@ Utilisez [Discord](https://discord.com/) lorsque vous :
 - Voulez discuter sans vous soucier du risque d'être banni
 - Acceptez les limites de taille d'envoi de fichiers et la publicité
 
-[SillyTavern](https://github.com/SillyTavern/SillyTavern/) lorsque vous :
+Utilisez [SillyTavern](https://github.com/SillyTavern/SillyTavern/) lorsque vous :
 
 - Avez besoin d'un personnage ou d'une fonction nécessitant STscript ou les plugins SillyTavern
 

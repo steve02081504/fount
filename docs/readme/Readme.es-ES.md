@@ -45,7 +45,7 @@ Usa [Discord](https://discord.com/) cuando:
 - Quieras chatear y no te importe el riesgo de ser baneado
 - Estés dispuesto a tolerar límites de tamaño de archivo y anuncios
 
-[SillyTavern](https://github.com/SillyTavern/SillyTavern/) cuando:
+Usa [SillyTavern](https://github.com/SillyTavern/SillyTavern/) cuando:
 
 - Necesites un personaje o función que requiera STscript o plugins de SillyTavern
 

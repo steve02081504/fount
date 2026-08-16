@@ -45,7 +45,7 @@ fount — это программируемая, стандартизирова�
 - Хотите общаться и не боитесь риска бана
 - Готовы мириться с лимитами размера файлов и рекламой
 
-[SillyTavern](https://github.com/SillyTavern/SillyTavern/), когда вы:
+Используйте [SillyTavern](https://github.com/SillyTavern/SillyTavern/), когда вы:
 
 - Нужен персонаж или функция, требующие STscript или плагинов SillyTavern
 

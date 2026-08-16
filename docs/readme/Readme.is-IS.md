@@ -45,7 +45,7 @@ Notaðu [Discord](https://discord.com/) þegar þú:
 - Vilt spjalla og hirðir ekki um hættu á banni
 - Ert tilbúin(n) að þola takmörkun á skráarstærð og auglýsingar
 
-[SillyTavern](https://github.com/SillyTavern/SillyTavern/) þegar þú:
+Notaðu [SillyTavern](https://github.com/SillyTavern/SillyTavern/) þegar þú:
 
 - Þarft persónu eða eiginleika sem krefst STscript eða SillyTavern viðbóta
 

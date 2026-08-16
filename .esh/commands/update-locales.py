@@ -1728,7 +1728,8 @@ def self_test_normalize_applicator() -> int:
 		return 1
 
 	import tempfile
-	ts_path = tempfile.mkstemp(suffix=".ts")[1]
+	fd, ts_path = tempfile.mkstemp(suffix=".ts")
+	os.close(fd)
 	try:
 		with redirect_stdout(io.StringIO()):
 			generate_locale_data_ts(OrderedDict([("queued", switch_leaf), ("plain", "x")]), ts_path)

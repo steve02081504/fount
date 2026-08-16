@@ -45,7 +45,7 @@ Dùng [Discord](https://discord.com/) khi bạn:
 - Muốn trò chuyện và không ngại rủi ro bị ban
 - Chấp nhận giới hạn kích thước tải tệp và quảng cáo
 
-[SillyTavern](https://github.com/SillyTavern/SillyTavern/) khi bạn:
+Dùng [SillyTavern](https://github.com/SillyTavern/SillyTavern/) khi bạn:
 
 - Cần nhân vật hoặc tính năng yêu cầu STscript hoặc plugin SillyTavern
 

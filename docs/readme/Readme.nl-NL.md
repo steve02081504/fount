@@ -45,7 +45,7 @@ Gebruik [Discord](https://discord.com/) wanneer je:
 - Wilt chatten en het risico op een ban niet erg vindt
 - Bereid bent bestandsgrootte-limieten en advertenties te tolereren
 
-[SillyTavern](https://github.com/SillyTavern/SillyTavern/) wanneer je:
+Gebruik [SillyTavern](https://github.com/SillyTavern/SillyTavern/) wanneer je:
 
 - Een personage of functie nodig hebt die STscript of SillyTavern-plugins vereist
 

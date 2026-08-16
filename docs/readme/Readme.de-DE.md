@@ -116,7 +116,7 @@ Nicht mehr nur Markdown-Hervorhebung. In fount sind die vom Agenten gesendeten C
 
 fount ist nicht nur dein persönlicher digitaler Vertrauter, sondern auch die private Basisstation deines Teams. Es unterstützt nativ P2P-verschlüsselte Kommunikation. Ohne umständliche Konfiguration verbindet ein einfacher Einladungslink Kollegen im selben LAN.
 
-Du, deine Kollegen und eure jeweiligen Agents könnt in einem reinen digitalen Raum Code besprechen und übergroße Dateien austauschen. Keine neugierigen externen Server, keine öffentlichen Bandbreitenlimits – alle Funken des Austauschs und vertrauliche Daten fließen sicher in eurem Intranet.
+Du und deine Kollegen könnt mit euren jeweiligen Agents in einem reinen digitalen Raum Code besprechen und übergroße Dateien austauschen. Keine neugierigen externen Server, keine öffentlichen Bandbreitenlimits – alle Funken des Austauschs und vertrauliche Daten fließen sicher in eurem Intranet.
 
 Ohne Netzwerkrouter könnt ihr sogar direkt per Bluetooth verbinden. Für Hardcore-Entwickler erlaubt fount Anpassung und Erweiterung der P2P-Schicht für LoRa, NFC, Infrarot, USB und sogar Schallwellen als Datenaustauschprotokolle.
 
