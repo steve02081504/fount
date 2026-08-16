@@ -202,14 +202,10 @@ function showCoolNotice() {
 function dismissCoolNotice() {
 	coolNotice.classList.remove('cool-notice-in')
 	document.body.classList.remove('cool-notice-open')
-	/**
-	 *
-	 */
-	const hide = () => coolNotice.classList.add('hidden')
 	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-		hide()
+		coolNotice.classList.add('hidden')
 	else
-		coolNotice.addEventListener('transitionend', hide, { once: true })
+		coolNotice.addEventListener('transitionend', () => coolNotice.classList.add('hidden'), { once: true })
 }
 
 /**
