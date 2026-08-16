@@ -21,6 +21,7 @@ const fountExePs1 = join(REPO_ROOT, 'path', 'src', 'win', 'fount_exe.ps1')
  * @param {boolean} [options.ps12exeThrows] 假 ps12exe 是否 Write-Error + throw
  * @param {number} [options.ps12exeExitCode] 假 ps12exe 仅设置的 `$LastExitCode`（0 表示写出 exe）
  * @param {'unauth' | 'create' | 'existing'} [options.ghMode] 假 gh 行为（默认未登录，避免打到真 GitHub）
+ * @param {'explicit' | 'null' | 'omitted' | 'geneexe'} [options.call] 调用方式
  * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 执行结果
  */
 async function runFountExeHarness({
@@ -29,6 +30,7 @@ async function runFountExeHarness({
 	ps12exeThrows = false,
 	ps12exeExitCode = 0,
 	ghMode = 'unauth',
+	call = 'explicit',
 } = {}) {
 	const root = await mkdtemp(join(tmpdir(), 'fount-exe-'))
 	try {
@@ -41,6 +43,17 @@ async function runFountExeHarness({
 		const ghIssueList = ghMode === 'existing'
 			? 'return \'[{"url":"https://github.com/steve02081504/ps12exe/issues/1"}]\''
 			: 'return \'[]\''
+
+		const geneexePs1 = join(REPO_ROOT, 'path', 'src', 'cmd', 'geneexe.ps1')
+		const invoke = {
+			explicit: 'New-FountExe (Join-Path $FOUNT_DIR \'out.exe\')',
+			null: 'New-FountExe $null',
+			omitted: 'New-FountExe',
+			geneexe: `. ${JSON.stringify(geneexePs1)}; function script:require_mid {}; function script:fount_first_install_if_needed {}; function script:require {}; cmd_geneexe geneexe`,
+		}[call]
+		const expectExe = call === 'explicit'
+			? 'Join-Path $FOUNT_DIR \'out.exe\''
+			: 'Join-Path $work \'fount.exe\''
 
 		return await pwsh_exec(`
 $ErrorActionPreference = 'Continue'
@@ -65,6 +78,7 @@ function script:ps12exe {
 		$global:LastExitCode = ${ps12exeExitCode}
 		return
 	}
+	if (-not $outputFile) { throw 'missing outputFile' }
 	Set-Content -LiteralPath $outputFile 'fake-exe'
 }
 $script:ghLog = @()
@@ -83,12 +97,17 @@ function script:gh {
 	}
 	$global:LastExitCode = 1
 }
+$work = Join-Path $FOUNT_DIR 'cwd'
+New-Item -ItemType Directory -Path $work | Out-Null
+Push-Location $work
 $ErrorCount = $Error.Count
-New-FountExe (Join-Path $FOUNT_DIR 'out.exe')
+${invoke}
 if ($ErrorCount -ne $Error.Count) { Write-Output 'ERROR_LEAK' }
 $script:ghLog | ForEach-Object { Write-Output "GH $_" }
 if ($script:serverStarted) { Write-Output 'SERVER_STARTED' }
-if (Test-Path -LiteralPath (Join-Path $FOUNT_DIR 'out.exe')) { Write-Output 'EXE_WRITTEN' }
+if (Test-Path -LiteralPath (${expectExe})) { Write-Output 'EXE_WRITTEN' }
+if (Test-Path -LiteralPath (Join-Path $FOUNT_DIR 'src/runner/main.exe')) { Write-Output 'MAIN_EXE' }
+Pop-Location
 if ($ErrorCount -ne $Error.Count) { exit 1 }
 if ($LastExitCode) { Write-Output "EXIT_$LastExitCode"; exit $LastExitCode }
 Write-Output 'OK'
@@ -154,4 +173,26 @@ Deno.test('New-FountExe skips issue create when a matching ps12exe issue already
 	assertStringIncludes(result.stdout, 'GH issue list')
 	if (result.stdout.includes('GH_CREATE') || result.stdout.includes('GH issue create'))
 		throw new Error(`created a duplicate issue:\n${result.stdout}`)
+})
+
+Deno.test('New-FountExe $null still writes ./fount.exe (PowerShell default param does not apply)', async () => {
+	const result = await runFountExeHarness({ call: 'null' })
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertStringIncludes(result.stdout, 'EXE_WRITTEN')
+	if (result.stdout.includes('MAIN_EXE'))
+		throw new Error(`wrote runner/main.exe instead of cwd/fount.exe:\n${result.stdout}`)
+})
+
+Deno.test('New-FountExe with no argument writes ./fount.exe', async () => {
+	const result = await runFountExeHarness({ call: 'omitted' })
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertStringIncludes(result.stdout, 'EXE_WRITTEN')
+})
+
+Deno.test('fount geneexe with no path writes ./fount.exe', async () => {
+	const result = await runFountExeHarness({ call: 'geneexe' })
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertStringIncludes(result.stdout, 'EXE_WRITTEN')
+	if (result.stdout.includes('MAIN_EXE'))
+		throw new Error(`geneexe wrote runner/main.exe instead of cwd/fount.exe:\n${result.stdout}`)
 })
