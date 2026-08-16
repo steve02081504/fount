@@ -14,6 +14,8 @@ import { events } from '../events.mjs'
 const EXTERNAL_URL_REG = /^https?:\/\//i
 const BACKEND_IMPORT_REG = /(?:from\s+["']|import\s*\(\s*["'])(?:node|npm|jsr):/m
 const BLOCK_COMMENT_REG = /\/\*[\S\s]*?\*\//g
+/** const/let/var 字面量只预取带静态后缀的资源，避免把 POST API / 站点根当 GET 预加载。 */
+const STATIC_ASSET_PATH_REG = /\.(?:mjs|js|css|svg|png|jpe?g|webp|gif|ico|woff2?|ttf|otf|json|wasm)$/i
 
 /**
  * 预加载资源类型
@@ -60,7 +62,21 @@ function typeFromUrlSuffix(url) {
 }
 
 /**
- * 提取 JS/MJS 中的外部 URL（import / import() / fetch / const|let|var 单引号字面量 / // @fetch-resource）
+ * const/let/var 里的 URL 是否为可 GET 的静态资源（图标、字体、脚本），而非 API / 站点根。
+ * @param {string} url 候选 URL
+ * @returns {boolean} 是否可预取
+ */
+function isStaticAssetUrl(url) {
+	try {
+		return STATIC_ASSET_PATH_REG.test(new URL(url).pathname)
+	}
+	catch {
+		return false
+	}
+}
+
+/**
+ * 提取 JS/MJS 中的外部 URL（import / import() / fetch / 带静态后缀的 const|let|var 单引号字面量 / // @fetch-resource）
  * @param {string} content - 文件内容
  * @returns {PreloadResource[]} 提取的资源列表
  */
@@ -92,10 +108,12 @@ export function extractFromJs(content) {
 			continue
 		}
 
-		const urlMatch = line.match(/(?:import\s+(?:[^"']+\s+from\s+)?|import\s*\(\s*|fetch\s*\(\s*)["'](https?:\/\/[^"']+)["']/)
-			|| line.match(/(?:const|let|var)\s+\w+\s*=\s*'(https?:\/\/[^']+)'/)
+		const importOrFetch = line.match(/(?:import\s+(?:[^"']+\s+from\s+)?|import\s*\(\s*|fetch\s*\(\s*)["'](https?:\/\/[^"']+)["']/)
+		const assigned = importOrFetch ? null : line.match(/(?:const|let|var)\s+\w+\s*=\s*'(https?:\/\/[^']+)'/)
+		const urlMatch = importOrFetch || assigned
 		if (urlMatch) {
 			const url = urlMatch[1]
+			if (assigned && !isStaticAssetUrl(url)) continue
 			const type = line.includes('import') ? 'mjs' : typeFromUrlSuffix(url)
 			out.push({ url, type })
 		}

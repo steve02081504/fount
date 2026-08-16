@@ -35,6 +35,21 @@ const templatey = \`https://example.com/\${id}.svg\`
 	])
 })
 
+Deno.test('extractFromJs does not preload POST APIs or origin roots from const URLs', async () => {
+	const { extractFromJs } = await import('../../web_server/preload_list.mjs')
+	const urls = extractFromJs(`\
+const CATBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.php'
+const CATBOX_SERVE_HOST = 'https://litter.catbox.moe'
+const base_dir = 'https://steve02081504.github.io/fount'
+const DAISY = 'https://cdn.jsdelivr.net/npm/daisyui/daisyui.css'
+await fetch('https://api.iconify.design/line-md/play.svg')
+`)
+	assertEquals(urls.map(resource => resource.url), [
+		'https://cdn.jsdelivr.net/npm/daisyui/daisyui.css',
+		'https://api.iconify.design/line-md/play.svg',
+	])
+})
+
 Deno.test('mergeAndDedupe drops unresolved ${…} preload URLs (godbolt executor body)', async () => {
 	const { extractFromJs, isConcreteExternalUrl, mergeAndDedupe } = await import('../../web_server/preload_list.mjs')
 	const extracted = extractFromJs(GODBOLT_TEMPLATE)
