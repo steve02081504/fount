@@ -226,6 +226,15 @@ export function paintSuiteEnd(message, { stream = false } = {}) {
 }
 
 /**
+ * 打印本 job 仍在等调度（前方占用来自其他 job / FS 队列）。
+ * @param {object} message 内核 job-wait 载荷
+ * @returns {void}
+ */
+export function paintJobWait(message) {
+	console.logI18n('fountConsole.test.display.queued', { count: message.aheadCount ?? 0 })
+}
+
+/**
  * 打印 job 收尾（报告路径、全复用提示、失败日志回放）。
  * @param {object} message 内核 job-done 载荷
  * @returns {void}

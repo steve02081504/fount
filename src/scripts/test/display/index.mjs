@@ -11,7 +11,7 @@ import { beginTestProgress, finishTestProgress } from '../core/progress.mjs'
 import { testHubUrl } from '../hub/index.mjs'
 
 import { displayShouldResolve, resolveDisplayMode } from './mode.mjs'
-import { formatRemainingLabel, paintAccepted, paintJobDone, paintSuiteEnd, splitSuiteKey, suiteEndHasFailureOutput } from './paint.mjs'
+import { formatRemainingLabel, paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd, splitSuiteKey, suiteEndHasFailureOutput } from './paint.mjs'
 
 /**
  * @typedef {object} DisplayOptions
@@ -36,12 +36,29 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	let exitCode = 0
 	let runCount = 0
 	let displayMode = resolveDisplayMode({ watch, job })
+	/** @type {string | null} */
+	let jobId = null
 	const done = Promise.withResolvers()
 	let finished = 0
 	/** @type {{ key: string, output: string }[]} */
 	const failureLogs = []
+	/** @type {number | null} */
+	let lastAheadCount = null
 
 	beginTestProgress()
+
+	/**
+	 * 非 watch 只画本 job；hello/accepted 之前丢掉带 jobId 的外来事件。
+	 * @param {object} message 内核事件
+	 * @returns {boolean} 是否属于本次显示
+	 */
+	function displayEventForThisView(message) {
+		if (watch) return true
+		if (message.type === 'accepted') return true
+		if (message.jobId && jobId && message.jobId !== jobId) return false
+		if (message.jobId && !jobId) return false
+		return true
+	}
 
 	/**
 	 * @param {object} message accepted
@@ -50,6 +67,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	function onAccepted(message) {
 		runCount = message.runCount ?? 0
 		displayMode = message.mode || displayMode
+		jobId = message.jobId ?? jobId
 		paintAccepted(message)
 		if (message.reportPath)
 			console.logI18n('fountConsole.test.reportPath', { path: message.reportPath })
@@ -109,10 +127,22 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 				done.resolve()
 			return
 		}
+		if (!watch) return
 		console.logI18n(
 			message.type === 'queue-append' ? 'fountConsole.test.queue.append' : 'fountConsole.test.queue.remove',
 			{ label: message.key, reason: message.reason || '', remaining: formatRemainingLabel(message) },
 		)
+	}
+
+	/**
+	 * @param {object} message job-wait
+	 * @returns {void}
+	 */
+	function onJobWait(message) {
+		const aheadCount = message.aheadCount ?? 0
+		if (aheadCount === lastAheadCount) return
+		lastAheadCount = aheadCount
+		paintJobWait(message)
 	}
 
 	/**
@@ -136,11 +166,13 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		['suite-end', onSuiteEnd],
 		['queue-append', onQueue],
 		['queue-remove', onQueue],
+		['job-wait', onJobWait],
 		['job-done', onJobDone],
 	])
 
 	ws.addEventListener('message', event => {
 		const message = JSON.parse(String(event.data))
+		if (!displayEventForThisView(message)) return
 		const handler = handlers.get(message.type)
 		if (handler) handler(message)
 		else if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
