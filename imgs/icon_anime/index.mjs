@@ -14,8 +14,6 @@
  *   右键拖拽笔画风；右键长按静止 → 顺时针涡旋（跟随 / 重组 / 释放清除）。
  */
 
-import process from 'node:process'
-
 import * as icon from './session.mjs'
 
 /** 图标布局常量与打包轮廓辅助。 */
@@ -31,14 +29,15 @@ export {
 } from './scene/index.mjs'
 /** 交互式 TUI 会话。 */
 export {
-	signal, abort, start, intro, dismiss, farewell, sleep,
+	signal, abort, start, intro, dismiss, farewell, sleep, setIO,
 } from './session.mjs'
 /** 终端尺寸。 */
-export { terminalSize } from './terminal.mjs'
+export { terminalSize } from './io.mjs'
 /** 底层播放器工具。 */
 export { fps, consumeStdin } from './player.mjs'
 
 if (import.meta.main) {
+	const { default: process } = await import('node:process')
 	await icon.start()
 	await icon.farewell()
 	process.exit(icon.signal.aborted ? 130 : 0)

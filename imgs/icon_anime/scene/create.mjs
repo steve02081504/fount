@@ -8,7 +8,7 @@ import { createWindGesture } from '../gesture/wind.mjs'
 import {
 	ICON_W, ICON_H, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
 } from '../icon.mjs'
-import { terminalSize } from '../terminal.mjs'
+import { terminalSize } from '../io.mjs'
 import { generateTerrain } from '../terrain/index.mjs'
 
 import { onParticleHit } from './particle_hit.mjs'
