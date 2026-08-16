@@ -2,9 +2,6 @@ import { createDocumentFragmentFromHtmlString } from '../features/template.mjs'
 
 const IconCache = {}
 
-/** 用户内容等勿 inline 的 img 标记（保持 `<img>`，避免 fetch+脚本激活）。 */
-export const SVG_INLINER_IGNORE = 'svg-inliner-ignore'
-
 /**
  * @param {string} url SVG URL
  * @returns {Promise<string>} SVG 文本（id 已加 uuid 后缀）
@@ -25,7 +22,7 @@ async function loadSvgText(url) {
  * @returns {Promise<DocumentFragmentOrElement>} - 处理后的 DOM。
  */
 export async function svgInliner(DOM) {
-	const svgs = DOM.querySelectorAll(`img[src$=".svg"]:not([${SVG_INLINER_IGNORE}])`)
+	const svgs = DOM.querySelectorAll(`img[src$=".svg"]:not([svg-inliner-ignore])`)
 	await Promise.all([...svgs].map(async img => {
 		const url = img.getAttribute('src')
 		const data = await loadSvgText(url)

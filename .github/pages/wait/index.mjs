@@ -18,10 +18,7 @@ const jumpTo = `${hostUrl}?cold_bootting=true`
 setPreRender(jumpTo)
 const ready = waitForFountService(hostUrl)
 
-icon.setIO(setTerminal(document.getElementById('terminal')))
-
-await icon.intro()
-document.documentElement.dataset.iconIntro = 'done'
+await icon.setIO(setTerminal(document.getElementById('terminal'))).intro()
 if (!localStorage.getItem('fount_localhost_ping_passed')) {
 	await ready
 	saveFountHostUrl(hostUrl)

@@ -12,7 +12,7 @@ Physics / materials / hot-path: [docs/physics-notes.md](docs/physics-notes.md).
 
 ## Hosting
 
-Process-wide singleton used by `fount logo`, the CLI log viewer, and the foreground server (`src/server/index.mjs`) when stdout is a real TTY. Browser hosts pass a DOM terminal via `setIO`. Demo page: [`index.html`](index.html) (`page.mjs` loads `../../src/public/pages/scripts/components/terminal.mjs` by relative path). With a frontend static server rooted at the repo, open `/imgs/icon_anime/`.
+Process-wide singleton used by `fount logo`, the CLI log viewer, and the foreground server (`src/server/index.mjs`) when stdout is a real TTY. Browser hosts pass a DOM terminal via `setIO`. Demo page: [`index.html`](index.html) (inline: `setTerminal` from `/fount/scripts/components/terminal.mjs`, then `setIO(terminal).intro()`). GitHub Pages / pages mapping server: `/imgs/icon_anime/`.
 
 `player/` and `terminal/` load Node (`npm:`) vs browser (`https://esm.sh/…`) implementations with `if (globalThis.document)`, same pattern as `gravity_acquire/`. Shared modules must not static-import `node:*` / `npm:`.
 
@@ -37,13 +37,13 @@ fount test icon_anime:frontend
 
 Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then quit). Left quick-click → ripple; left hold/drag → cool spotlight. Right-drag → stroke wind; right long-still → tornado vortex. Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.
 
-Tests under `test/` (`fluid_*`, `anim`, `terrain`, `gravity_*`) plus `test/frontend` (Playwright against the demo page: `setIO`, play, stop restores the normal buffer). Demo `/imgs/icon_anime/` hangs `globalThis.terminal` (DOM xterm) and `globalThis.icon` (session API).
+Tests under `test/` (`fluid_*`, `anim`, `terrain`, `gravity_*`) plus `test/frontend` (Playwright via the Pages mapping server: `setIO`, play, stop restores the normal buffer). Demo `/imgs/icon_anime/` hangs `globalThis.terminal` (DOM xterm) and `globalThis.icon` (session API).
 
 ## Modules
 
 | Path | Role |
 | --- | --- |
-| `index.html` / `page.mjs` | Browser demo: DOM xterm + `start()`; `attach` sets `globalThis.terminal` / `icon` |
+| `index.html` | Browser demo: DOM xterm + `intro()`; hangs `globalThis.terminal` / `icon` |
 | `index.mjs` | CLI entry + public re-exports |
 | `session.mjs` | Singleton session API; starts/stops device gravity; re-exports `setIO` |
 | `io.mjs` | `setIO` / `canUseTui` / `terminalSize` / `watchTerminalSize` |

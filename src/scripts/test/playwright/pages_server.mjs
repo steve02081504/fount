@@ -112,7 +112,7 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 	// `cp -r ./src/public/locales ./.github/pages/`
 	app.use('/fount/locales', express.static(path.join(projectRoot, 'src', 'public', 'locales')))
 
-	// `cp -r ./imgs ./.github/pages/`（wait 页从 `/imgs/icon_anime/` 加载入场动画）
+	// `cp -r ./imgs ./.github/pages/`（wait / icon_anime 演示从 `/fount/imgs/icon_anime/` 加载）
 	app.use('/fount/imgs', express.static(path.join(projectRoot, 'imgs')))
 
 	// `cp -rn ./src/public/pages/scripts ./.github/pages/`（-n：目标已有则不覆盖）

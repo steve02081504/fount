@@ -4,25 +4,29 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta property="og:title" content="A Fountain in the Terminal: fount's Living Mark" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/imgs/icon_anime/" />
 	<meta property="og:type" content="website" />
 	<meta property="og:description" content="Watch the glyph-spring rise in a browser terminal—terrain, water, wind—then hold, a quiet emblem that still breathes." />
 	<meta name="description" content="Watch the glyph-spring rise in a browser terminal—terrain, water, wind—then hold, a quiet emblem that still breathes." />
 	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
-	<link rel="icon" href="../icon.svg" type="image/svg+xml" />
-	<title>fount</title>
-	<script blocking="render" type="module" src="../../src/public/pages/preload.mjs"></script>
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<link rel="icon" type="image/png" href="https://steve02081504.github.io/fount/imgs/icon.png" />
+	<link rel="icon" type="image/ico" href="https://steve02081504.github.io/fount/imgs/icon.ico" />
+	<title>𝒻ℴ𝓊𝓃𝓉 𝓵𝓸𝓰𝓸</title>
+	<script blocking="render" type="module" src="/fount/preload.mjs"></script>
 	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
-	<link href="../../src/public/pages/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/fount/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.min.css" />
 </head>
 <body class="flex h-screen flex-col bg-base-200 p-4">
 	<main id="terminal" class="mockup-code border min-h-0 w-full flex-1 overflow-hidden"></main>
 	<script type="module">
-		import { attach } from './page.mjs'
-		import { start } from './session.mjs'
-		attach()
-		void start()
+		import * as icon from './session.mjs'
+		import { setTerminal } from '/fount/scripts/components/terminal.mjs'
+		const terminal = setTerminal(document.getElementById('terminal'))
+		await icon.setIO(terminal).intro()
+		Object.assign(globalThis, { terminal, icon })
 	</script>
 </body>
 </html>

@@ -134,6 +134,31 @@ Deno.test('pages serve icon_anime from repo imgs', async () => {
 	}
 })
 
+Deno.test('pages serve icon_anime demo same-origin assets', async () => {
+	const { port, close } = await listenApp(createPagesApp(REPO_ROOT))
+	try {
+		const pageUrl = `http://127.0.0.1:${port}/fount/imgs/icon_anime/`
+		const response = await fetch(pageUrl)
+		assertEquals(response.ok, true)
+		assertStringIncludes(response.headers.get('content-type') || '', 'html')
+		const html = await response.text()
+		const hrefs = [
+			...html.matchAll(/\b(?:src|href)="([^"]+)"/g),
+			...html.matchAll(/\bfrom\s+['"]([^'"]+)['"]/g),
+		].map(match => match[1]).filter(href => href.startsWith('/') || href.startsWith('.'))
+		assert(hrefs.length, html)
+		for (const href of hrefs) {
+			const assetUrl = new URL(href, pageUrl)
+			const asset = await fetch(assetUrl)
+			assertEquals(asset.ok, true, `${href} -> ${assetUrl} ${asset.status}`)
+			await asset.arrayBuffer()
+		}
+	}
+	finally {
+		await close()
+	}
+})
+
 Deno.test('pages scripts overlay serves GitHub Pages registries stub', async () => {
 	const { port, close } = await listenApp(createPagesApp(REPO_ROOT))
 	try {

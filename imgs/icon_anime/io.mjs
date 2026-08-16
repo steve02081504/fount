@@ -27,13 +27,14 @@ const supportsAnsi = termHost.defaultSupportsAnsi
  *   stdin?: IoStdin,
  *   stdout?: IoStdout,
  * }} [io] 终端或 IO 字段；缺省只按当前 console 刷新 stdout
- * @returns {void}
+ * @returns {object | undefined} 调用时的 `this`（`icon.setIO(io).intro()`）
  */
 export function setIO(io = {}) {
 	if (io.console) activeConsole = io.console
 	if ('stdout' in io) activeStdout = io.stdout
 	else activeStdout = activeConsole._stdout
 	if ('stdin' in io) activeStdin = io.stdin
+	return this
 }
 
 /**

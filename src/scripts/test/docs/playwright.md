@@ -39,7 +39,7 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 - Do not gate product code on `fount.test.enabled` to paper over these. **URLs are logged as-is** — fixtures must not put durable secrets in URLs.
 - Locale load goes through i18n `loadLocaleData` / `setLanguage` — do not fetch `/api/getlocaledata` from test code.
 - `loadLocaleData` / `initTranslations` use an epoch cache (`lib/epochCache.mjs`): `locale-updated` bumps the epoch so stale fetches never refill the cache, but **the in-flight result is still applied**. Do not re-read only `cache.get` after `await load` — that drops the bundle when the epoch moved and leaves `preferred` ≠ `main_locale` (page watch then reports `aria-label missing-zh` on English chrome).
-- `pages_server.close` closes the `.github/pages` and `.git` watchers, then `closeAllConnections()` before `close()` — otherwise keep-alive sockets can hang the driver past the idle watchdog. Directory routes that resolve to hooked `index.html` send `text/html`.
+- `pages_server.close` closes the `.github/pages` and `.git` watchers, then `closeAllConnections()` before `close()` — otherwise keep-alive sockets can hang the driver past the idle watchdog. Directory routes that resolve to hooked `index.html` send `text/html`. `icon_anime:frontend` uses this mapping server (not a repo-root static root): demo URL is `${FOUNT_TEST_BASE_URL}/imgs/icon_anime/`.
 - Pages placeholders `__FOUNT_COMMIT_HASH__` / `__FOUNT_GIT_REF__` are substituted by `pages_server` (local) and `pages.yaml` `sed` (deploy). Git ref is the current branch (`rev-parse --abbrev-ref HEAD`), or the commit when detached. Do not hardcode `master` in Pages fetch URLs.
 
 ## Page watch
