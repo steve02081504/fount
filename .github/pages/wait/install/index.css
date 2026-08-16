@@ -461,7 +461,6 @@ body.cool-notice-open {
 	flex: none;
 	margin-inline-start: auto;
 	box-shadow: 0 0 1.4rem color-mix(in oklab, var(--color-warning) 55%, transparent);
-	animation: cool-notice-pulse 1.4s ease-in-out infinite;
 }
 
 @keyframes cool-notice-spin {
@@ -488,24 +487,11 @@ body.cool-notice-open {
 	}
 }
 
-@keyframes cool-notice-pulse {
-
-	0%,
-	100% {
-		transform: scale(1);
-	}
-
-	50% {
-		transform: scale(1.05);
-	}
-}
-
 @media (prefers-reduced-motion: reduce) {
 
 	.cool-notice,
 	.cool-notice-tape,
 	.cool-notice-badge,
-	.cool-notice-dismiss,
 	.cool-notice::before {
 		animation: none;
 		transition: none;
