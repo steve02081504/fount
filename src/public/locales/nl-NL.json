@@ -176,6 +176,13 @@
 				"remaining": "Totaal ≈ ${remaining} resterend",
 				"remainingUnknown": "≈ ${remaining} resterend in totaal (${count} met onbekende duur extra)",
 				"remainingOnlyUnknown": "≈ ${count} met onbekende duur resterend in totaal",
+				"queued": {
+					"switch": "count",
+					"default": "Er staan ​​wachtrijen, er staan ​​${count} planningen voor de boeg",
+					"cases": {
+						"0": "In de rij staan"
+					}
+				},
 				"failureLog": "\n—— Foutlogboek: ${label} ——"
 			},
 			"passed": "Geslaagd: ${label}",

@@ -176,6 +176,13 @@
 				"remaining": "總餘 ≈ ${remaining}",
 				"remainingUnknown": "總餘 ≈ ${remaining}（另有 ${count} 個未知時長）",
 				"remainingOnlyUnknown": "總餘：${count} 個未知時長",
+				"queued": {
+					"switch": "count",
+					"default": "正在排队，前方还有 ${count} 个调度",
+					"cases": {
+						"0": "正在排队"
+					}
+				},
 				"failureLog": "\n—— ${label}：失利錄 ——"
 			},
 			"passed": "通過：${label}",

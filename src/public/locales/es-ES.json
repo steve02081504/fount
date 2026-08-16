@@ -176,6 +176,13 @@
 				"remaining": "Total ≈ ${remaining} restante",
 				"remainingUnknown": "≈ ${remaining} restante en total (${count} con duración desconocida adicional)",
 				"remainingOnlyUnknown": "≈ ${count} con duración desconocida restante en total",
+				"queued": {
+					"switch": "count",
+					"default": "En cola, hay ${count} programaciones por delante",
+					"cases": {
+						"0": "hacer cola"
+					}
+				},
 				"failureLog": "\n—— Registro de fallos: ${label} ——"
 			},
 			"passed": "Aprobado: ${label}",

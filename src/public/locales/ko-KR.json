@@ -176,6 +176,13 @@
 				"remaining": "전체 남음 ≈ ${remaining}",
 				"remainingUnknown": "전체 남음 ≈ ${remaining} (미지 소요 ${count}건 추가)",
 				"remainingOnlyUnknown": "전체 남음: 미지 소요 ${count}건",
+				"queued": {
+					"switch": "count",
+					"default": "대기 중입니다. 앞으로 ${count}개의 일정이 남아 있습니다.",
+					"cases": {
+						"0": "대기열"
+					}
+				},
 				"failureLog": "\n—— ${label} 실패 로그 ——"
 			},
 			"passed": "경로: ${label}",

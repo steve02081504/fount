@@ -176,6 +176,13 @@
 				"remaining": "Всего осталось ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} осталось всего (ещё ${count} с неизвестной длительностью)",
 				"remainingOnlyUnknown": "≈ ${count} с неизвестной длительностью осталось всего",
+				"queued": {
+					"switch": "count",
+					"default": "В очереди, впереди ${count} расписаний",
+					"cases": {
+						"0": "Очередь"
+					}
+				},
 				"failureLog": "\n—— Журнал сбоев: ${label} ——"
 			},
 			"passed": "ПРОЙДЕНО: ${label}",

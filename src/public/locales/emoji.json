@@ -176,6 +176,13 @@
 				"remaining": "Σ⏳≈ ${remaining}",
 				"remainingUnknown": "Σ⏳≈ ${remaining}（+ ${count}×❓⏱️）",
 				"remainingOnlyUnknown": "Σ⏳：${count}×❓⏱️",
+				"queued": {
+					"switch": "count",
+					"default": "正在排队，前方还有 ${count} 个调度",
+					"cases": {
+						"0": "正在排队"
+					}
+				},
 				"failureLog": "\n—— ❌📋 ${label} ——"
 			},
 			"passed": "✅: ${label}",

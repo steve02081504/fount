@@ -159,6 +159,7 @@ export type LocaleData = {
 				remaining: string
 				remainingUnknown: string
 				remainingOnlyUnknown: string
+				queued: string
 				failureLog: string
 			}
 			passed: string
@@ -6316,6 +6317,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.display.eta': { expected: string | number; remaining: string | number }
 	'fountConsole.test.display.etaUnknown': { count: string | number; expected: string | number }
 	'fountConsole.test.display.failureLog': { label: string | number }
+	'fountConsole.test.display.queued': { count: string | number }
 	'fountConsole.test.display.reason': { label: string | number; reason: string | number }
 	'fountConsole.test.display.remaining': { remaining: string | number }
 	'fountConsole.test.display.remainingOnlyUnknown': { count: string | number }

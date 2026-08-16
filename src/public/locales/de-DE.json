@@ -176,6 +176,13 @@
 				"remaining": "Gesamt ≈ ${remaining} verbleibend",
 				"remainingUnknown": "Gesamt ≈ ${remaining} verbleibend (${count} mit unbekannter Dauer)",
 				"remainingOnlyUnknown": "Gesamt: ${count} mit unbekannter Dauer verbleibend",
+				"queued": {
+					"switch": "count",
+					"default": "Warteschlange, es liegen ${count} Zeitpläne vor uns",
+					"cases": {
+						"0": "Warteschlange"
+					}
+				},
 				"failureLog": "\n—— Fehlerprotokoll: ${label} ——"
 			},
 			"passed": "Bestanden: ${label}",
