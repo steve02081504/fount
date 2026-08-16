@@ -65,9 +65,9 @@ export async function waitForFountService(host) {
 		const url = new URL('/api/ping', host)
 		const response = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store' })
 		const data = await response.json()
-		if (data?.client_name != 'fount') continue
-		return
-	} catch { }
+		if (data?.client_name == 'fount') return
+		await new Promise(resolve => setTimeout(resolve, 250))
+	} catch { /* 未就绪 */ }
 }
 
 /**

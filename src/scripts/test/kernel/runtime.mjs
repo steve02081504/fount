@@ -560,6 +560,45 @@ export class TestKernel {
 	}
 
 	/**
+	 * 其他 job / FS 队列里尚未属于本 job 的调度项数。
+	 * @param {string} jobId job
+	 * @returns {number} 项数
+	 */
+	#aheadCount(jobId) {
+		let count = 0
+		for (const running of this.running.values())
+			if (running.item.jobId !== jobId) count++
+		for (const item of this.queues.cli)
+			if (item.jobId !== jobId) count++
+		return count + this.queues.fs.length
+	}
+
+	/**
+	 * 仍在等开工的 job 推一条排队深度（不点名别人的 suite）。
+	 * @returns {void}
+	 */
+	#notifyJobWaits() {
+		const busy = this.running.size + this.queues.cli.length + this.queues.fs.length
+		for (const viewer of this.viewers.values()) {
+			if (viewer.watch || !viewer.jobId) continue
+			const job = this.jobs.get(viewer.jobId)
+			if (!job || job.finishing) continue
+			if ([...this.running.values()].some(running => running.item.jobId === job.id)) continue
+			const waitingMine = Boolean(job.pending.size)
+			if (!waitingMine && !(viewer.mode === 'overview' && busy > 0)) continue
+			const aheadCount = waitingMine ? this.#aheadCount(job.id) : busy
+			if (viewer.lastAheadCount === aheadCount) continue
+			viewer.lastAheadCount = aheadCount
+			this.viewers.send(viewer.id, {
+				type: 'job-wait',
+				jobId: viewer.jobId,
+				aheadCount,
+				...this.#remainingState(),
+			})
+		}
+	}
+
+	/**
 	 * @param {object} [job] job
 	 * @returns {Promise<void>}
 	 */
@@ -727,7 +766,10 @@ export class TestKernel {
 				})
 			await this.#discardBlocked()
 			await this.#discardSkipped()
+			if (promoted.length)
+				this.#notifyJobWaits()
 			await this.#admitReady()
+			this.#notifyJobWaits()
 			// `#admitReady` is async: even a sync body yields once. A job enqueued in
 			// that gap would otherwise miss this tick and sleep until an unrelated wake.
 			if (
@@ -814,6 +856,7 @@ export class TestKernel {
 			expectedMs,
 			...this.#remainingState(),
 		})
+		this.#notifyJobWaits()
 		/** @type {object | null} */
 		let endEvent = null
 		/** @type {string | null} */

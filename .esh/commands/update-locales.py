@@ -1523,7 +1523,7 @@ def generate_locale_data_ts(ref_data, output_path):
 			if isinstance(value, list):
 				parts.append(f"{indent}{ts_key}: {generate_ts_array_type(value, indent_level)}")
 			elif is_switch_value(value):
-				parts.append(f"{indent}{ts_key}: string")
+				parts.append(f"{indent}{ts_key}: LocaleSwitchLeaf")
 			elif isinstance(value, (OrderedDict, dict)):
 				parts.append(f"{indent}{ts_key}: {generate_ts_type_recursive(value, indent_level + 1)}")
 			elif isinstance(value, str):
@@ -1605,12 +1605,22 @@ def generate_locale_data_ts(ref_data, output_path):
  * 表示所有可能的语言环境数据类型。
  */
 export type LocaleData = {locale_data_type_str}
+/**
+ * i18n switch 叶子（singular / plural 等），由 geti18n 按 params[switch] 解析。
+ */
+export type LocaleSwitchLeaf = {{
+	switch: string
+	default: string | LocaleSwitchLeaf
+	cases?: {{ [key: string]: string | LocaleSwitchLeaf }}
+}}
 // 用于从嵌套对象生成点表示法键的实用类型。
 type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ...0[]]
 
 type Paths<T, D extends number = 8> = [D] extends [never]
 	? never
-	: T extends readonly (infer ArrayElement)[]
+	: T extends LocaleSwitchLeaf
+		? ''
+		: T extends readonly (infer ArrayElement)[]
 		? `${{number}}` | Join<`${{number}}`, Paths<ArrayElement, Prev[D]>>
 		: T extends object
 		? {{ [K in keyof T]-?: K extends string | number
@@ -1715,6 +1725,23 @@ def self_test_normalize_applicator() -> int:
 	translated = translate_value(copy.deepcopy(switch_leaf), "en-UK", "en-UK")
 	if translated.get("switch") != "count" or "cases" not in translated:
 		print(f"translate_value should preserve switch schema: {translated!r}", file=sys.stderr)
+		return 1
+
+	import tempfile
+	fd, ts_path = tempfile.mkstemp(suffix=".ts")
+	os.close(fd)
+	try:
+		with redirect_stdout(io.StringIO()):
+			generate_locale_data_ts(OrderedDict([("queued", switch_leaf), ("plain", "x")]), ts_path)
+		with open(ts_path, encoding="utf-8") as generated:
+			ts_text = generated.read()
+	finally:
+		os.remove(ts_path)
+	if "queued: LocaleSwitchLeaf" not in ts_text or "T extends LocaleSwitchLeaf" not in ts_text:
+		print(f"switch leaf should type as LocaleSwitchLeaf: {ts_text[:500]!r}", file=sys.stderr)
+		return 1
+	if "plain: string" not in ts_text:
+		print("plain string leaf should stay string", file=sys.stderr)
 		return 1
 
 	print(json.dumps({"ok": True, "aria-label": val_a["aria-label"], "switch": True}, ensure_ascii=False))

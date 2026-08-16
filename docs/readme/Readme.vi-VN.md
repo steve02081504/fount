@@ -14,6 +14,7 @@ Với câu hỏi liên quan đến mã, xem [deepwiki](https://deepwiki.com/stev
 - Tích hợp nhân vật liền mạch vào IDE, trình duyệt, terminal, Telegram, v.v.
 - Plugin hướng agent từ cộng đồng mà các giao diện chat LLM khác không có
 - Chỉ cần cấu hình API, sau đó dùng nhân vật mặc định ZL-31 để hoàn thành cấu hình phần, tạo phần và mọi thao tác người dùng qua hội thoại—không cần học hay làm quen
+- Trò chuyện tự do với người dùng fount khác và Agent của họ, chia sẻ tệp không giới hạn kích thước, thích và dùng emoji tùy chỉnh. Không kiểm duyệt, không lo bị ban, không cần gói đăng ký đắt đỏ
 
 #### Tại sao không fount?
 
@@ -38,6 +39,11 @@ Dùng [character.ai](https://character.ai/) hoặc nền tảng nhập vai nhân
 - Muốn chạy nhân vật điều khiển bởi LLM mà không cần tính năng agent
 - Chấp nhận chi phí đăng ký
 - Không muốn cấu hình phần mềm
+
+Dùng [Discord](https://discord.com/) khi bạn:
+
+- Muốn trò chuyện và không ngại rủi ro bị ban
+- Chấp nhận giới hạn kích thước tải tệp và quảng cáo
 
 Dùng [SillyTavern](https://github.com/SillyTavern/SillyTavern/) khi bạn:
 
@@ -106,7 +112,17 @@ Không còn chỉ là làm nổi bật Markdown. Trong fount, các khối mã đ
 - Biến AI thành trình xác minh theo thời gian thực cho lập trình cặp của bạn.
   ![Hình ảnh](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 4. Thân thiện với Nhà phát triển
+### 4. Cộng tác P2P LAN: phá vỡ đảo, bảo vệ quyền riêng tư
+
+fount không chỉ là tri kỷ số cá nhân của bạn, mà còn là trạm riêng của nhóm. Nó hỗ trợ sẵn giao tiếp P2P mã hóa. Không cần cấu hình rườm rà, chỉ một liên kết mời đơn giản là đủ để kết nối đồng nghiệp trên cùng LAN.
+
+Bạn, đồng nghiệp và các Agent có thể tụ họp trong không gian số thuần khiết để bàn code và truyền tệp cực lớn. Không máy chủ bên ngoài theo dõi, không giới hạn băng thông công cộng — mọi tia sáng trò chuyện và dữ liệu bí mật luôn chảy an toàn trong mạng nội bộ.
+
+Không có router mạng, bạn vẫn có thể kết nối trực tiếp qua Bluetooth. Với lập trình viên hardcore, fount cho phép tùy biến và mở rộng lớp P2P cho LoRa, NFC, hồng ngoại, USB và cả giao thức trao đổi tùy chỉnh như sóng âm.
+
+![Hình ảnh](https://github.com/user-attachments/assets/be1bbb97-242c-4b9b-8b4d-c9bf94c125c1)
+
+### 5. Thân thiện với Nhà phát triển
 
 Kiến trúc dự án của fount được thiết kế với sự cân nhắc đầy đủ thói quen của nhà phát triển.
 [Muốn biết kiến trúc kho lưu trữ dự án? Hãy xem DeepWiki!](https://deepwiki.com/steve02081504/fount)

@@ -73,6 +73,21 @@ export function subtestMatchesSpec(subtestName, specBasename) {
 }
 
 /**
+ * 无阶段 Playwright driver：把 `FOUNT_TEST_SUBTESTS` 收成 spec 文件名 argv。
+ * @param {string[]} specBasenames 目录内 `*.spec.mjs`
+ * @param {string[]} [extraArgs] 额外 playwright argv（在 spec 之前）
+ * @returns {string[]} playwright argv
+ */
+export function playwrightArgsForSubtests(specBasenames, extraArgs = []) {
+	const subtests = parseTestSubtestsEnv()
+	if (!subtests.length) return extraArgs
+	const specs = specBasenames.filter(name => subtests.some(st => subtestMatchesSpec(st, name)))
+	if (!specs.length)
+		throw new Error(`FOUNT_TEST_SUBTESTS=${subtests.join(',')} matched no spec in ${specBasenames.join(', ')}`)
+	return [...extraArgs, ...specs]
+}
+
+/**
  * 按 FOUNT_TEST_ONLY / FOUNT_TEST_SUBTESTS 过滤阶段内 spec。
  * @param {FrontendPhase[]} phases 全部阶段
  * @param {string} repoRoot 仓库根

@@ -121,6 +121,19 @@ Deno.test('hooked pages reject malformed percent-encoding with 400', async () =>
 	}
 })
 
+Deno.test('pages serve icon_anime from repo imgs', async () => {
+	const { port, close } = await listenApp(createPagesApp(REPO_ROOT))
+	try {
+		const response = await fetch(`http://127.0.0.1:${port}/fount/imgs/icon_anime/session.mjs`)
+		assertEquals(response.ok, true)
+		assertStringIncludes(response.headers.get('content-type') || '', 'javascript')
+		assertStringIncludes(await response.text(), 'export async function intro')
+	}
+	finally {
+		await close()
+	}
+})
+
 Deno.test('pages scripts overlay serves GitHub Pages registries stub', async () => {
 	const { port, close } = await listenApp(createPagesApp(REPO_ROOT))
 	try {

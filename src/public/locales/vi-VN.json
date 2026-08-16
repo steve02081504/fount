@@ -176,6 +176,13 @@
 				"remaining": "Tổng còn ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} còn lại tổng cộng (thêm ${count} thời lượng chưa biết)",
 				"remainingOnlyUnknown": "≈ ${count} thời lượng chưa biết còn lại tổng cộng",
+				"queued": {
+					"switch": "count",
+					"default": "Đang chờ — còn ${count} phía trước",
+					"cases": {
+						"0": "Đang chờ"
+					}
+				},
 				"failureLog": "\n—— Nhật ký lỗi: ${label} ——"
 			},
 			"passed": "ĐẠT: ${label}",
