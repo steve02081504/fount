@@ -8,16 +8,22 @@
 	<meta property="og:description" content="Watch the glyph-spring rise in a browser terminal—terrain, water, wind—then hold, a quiet emblem that still breathes." />
 	<meta name="description" content="Watch the glyph-spring rise in a browser terminal—terrain, water, wind—then hold, a quiet emblem that still breathes." />
 	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
-	<link rel="icon" href="../../../icon.svg" type="image/svg+xml" />
+	<link rel="icon" href="../icon.svg" type="image/svg+xml" />
 	<title>fount</title>
 	<style>
 		html, body, main { margin: 0; height: 100%; background: #111; }
-		#term { width: 800px; height: 480px; }
+		#term { width: 100%; height: 100%; }
 	</style>
 </head>
 <body>
 	<main>
 		<div id="term"></div>
 	</main>
+	<script type="module">
+		import { attach } from './page.mjs'
+		import { start } from './session.mjs'
+		attach()
+		void start()
+	</script>
 </body>
 </html>

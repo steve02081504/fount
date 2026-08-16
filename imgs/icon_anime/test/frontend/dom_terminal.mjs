@@ -1,11 +1,10 @@
 /**
  * DOM 终端测试页：挂 xterm、把 IO 交给 icon session。
  */
-import { setTerminal } from '/scripts/components/terminal.mjs'
-import { dismiss, setIO, start } from '/imgs/icon_anime/session.mjs'
+import { attach } from '../../page.mjs'
+import { dismiss, start } from '../../session.mjs'
 
-const terminal = setTerminal(document.getElementById('term'))
-setIO(terminal)
+const terminal = attach()
 
 /**
  * @param {{ length: number, getLine: (y: number) => { translateToString: (trim: boolean) => string } }} buffer xterm 缓冲
@@ -18,6 +17,10 @@ const bufferText = buffer => {
 	return lines.join('\n')
 }
 
+/**
+ * @param {number} ms 毫秒
+ * @returns {Promise<void>}
+ */
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 /**
