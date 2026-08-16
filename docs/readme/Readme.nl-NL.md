@@ -14,6 +14,7 @@ Voor code-gerelateerde vragen, zie [deepwiki](https://deepwiki.com/steve02081504
 - Naadloze integratie van personages in IDE's, browsers, terminals, Telegram, enz.
 - Agent-georiënteerde plug-ins uit de community die andere LLM-chatfrontends niet hebben
 - Configureer de API en gebruik het standaardpersonage ZL-31 om onderdeelconfiguratie, -creatie en alle gebruikershandelingen via gesprek te voltooien—zonder leren of onboarding
+- Chat vrij met andere fount-gebruikers en hun Agents, deel bestanden zonder groottebeperking, reageer met likes en gebruik aangepaste emoji's. Geen moderatie, geen ban-risico, geen dure abonnementen
 
 #### Waarom niet fount?
 
@@ -39,7 +40,12 @@ Gebruik [character.ai](https://character.ai/) of vergelijkbare online LLM-person
 - Abonnementskosten acceptabel vindt
 - Geen software wilt configureren
 
-Gebruik [SillyTavern](https://github.com/SillyTavern/SillyTavern/) wanneer je:
+Gebruik [Discord](https://discord.com/) wanneer je:
+
+- Wilt chatten en het risico op een ban niet erg vindt
+- Bereid bent bestandsgrootte-limieten en advertenties te tolereren
+
+[SillyTavern](https://github.com/SillyTavern/SillyTavern/) wanneer je:
 
 - Een personage of functie nodig hebt die STscript of SillyTavern-plugins vereist
 
@@ -106,7 +112,17 @@ Niet langer alleen Markdown-markering. In fount zijn de codeblokken die door de 
 - Laat de AI uw realtime verificator worden voor pair programming.
   ![Afbeelding](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 4. Ontwikkelaarsvriendelijk
+### 4. LAN P2P-samenwerking: silo's doorbreken, privacy bewaken
+
+fount is niet alleen je persoonlijke digitale vertrouweling, maar ook de private hub van je team. Het ondersteunt native P2P-versleutelde communicatie. Zonder omslachtige configuratie volstaat een eenvoudige uitnodigingslink om collega's op hetzelfde LAN te verbinden.
+
+Jij, je collega's en jullie Agents kunnen samenkomen in een pure digitale ruimte om code te bespreken en enorme bestanden over te dragen. Geen nieuwsgierige externe servers, geen publieke bandbreedtelimieten: alle vonken van gesprek en vertrouwelijke data stromen veilig binnen jullie intranet.
+
+Zonder netwerkrouter kun je zelfs direct via Bluetooth verbinden. Voor hardcore ontwikkelaars laat fount de P2P-laag aanpassen en uitbreiden voor LoRa, NFC, infrarood, USB en zelfs aangepaste uitwisselingsprotocollen zoals geluidsgolven.
+
+![Afbeelding](https://github.com/user-attachments/assets/be1bbb97-242c-4b9b-8b4d-c9bf94c125c1)
+
+### 5. Ontwikkelaarsvriendelijk
 
 De projectarchitectuur van fount is ontworpen met volledige inachtneming van de gewoonten van ontwikkelaars.
 [Wilt u de architectuur van de projectrepository weten? Neem een kijkje op DeepWiki!](https://deepwiki.com/steve02081504/fount)

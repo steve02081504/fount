@@ -14,6 +14,7 @@ Fyrir spurningar varðandi kóða, sjá [deepwiki](https://deepwiki.com/steve020
 - Óaðskiljanleg samþætting persóna í IDE, vafra, endastöðvar, Telegram o.s.frv.
 - Miðill-stýrðar viðbætur frá samfélaginu sem aðrar LLM spjallviðmót hafa ekki
 - Stilltu API og notaðu sjálfgefið persónu ZL-31 til að ljúka hlutastillingu, sköpun og öllum notendaaðgerðum í gegnum samræður—án náms eða innleiðingar
+- Spjallaðu frjálst við aðra fount-notendur og Agents þeirra, deildu skrám af hvaða stærð sem er, bregstu við með lækum og notaðu sérsniðin emoji. Engin ritskoðun, engin hætta á banni, engin dýr áskrift
 
 #### Af hverju ekki fount?
 
@@ -39,7 +40,12 @@ Notaðu [character.ai](https://character.ai/) eða svipaðar net-leikvettvangar 
 - Er ásættanlegur með áskriftarkostnað
 - Vilt ekki stilla hugbúnað
 
-Notaðu [SillyTavern](https://github.com/SillyTavern/SillyTavern/) þegar þú:
+Notaðu [Discord](https://discord.com/) þegar þú:
+
+- Vilt spjalla og hirðir ekki um hættu á banni
+- Ert tilbúin(n) að þola takmörkun á skráarstærð og auglýsingar
+
+[SillyTavern](https://github.com/SillyTavern/SillyTavern/) þegar þú:
 
 - Þarft persónu eða eiginleika sem krefst STscript eða SillyTavern viðbóta
 
@@ -106,7 +112,17 @@ Ekki bara Markdown auðkenning lengur. Í fount eru kóðablokkir sem miðillinn
 - Leyfðu gervigreindinni að verða rauntíma sannprófari fyrir parforritun þína.
   ![Mynd](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 4. Forritaravænni
+### 4. LAN P2P samstarf: brjóta einangrun, vernda friðhelgi
+
+fount er ekki bara persónulegur stafrænn félagi þinn, heldur einnig einkahöfuðstöð teymisins. Það styður innbyggt P2P dulkóðað samskipti. Án flókins uppsetningar nægir einföld boðslækkja til að tengja samstarfsfólk á sama LAN.
+
+Þú, samstarfsfólk þitt og Agents ykkar getið sameinast í hreinu stafrænu rými til að ræða kóða og flytja risastórar skrár. Engir forvitnir ytri netþjónar, engar takmarkanir á opinberri bandbreidd — allar samtalsglæður og trúnaðargögn flæða örugglega innan innri nets ykkar.
+
+Jafnvel án netbeinis getið þið tengst beint með Bluetooth. Fyrir harðkóra forritara leyfir fount að sérsníða og stækka P2P-lagið fyrir LoRa, NFC, innrauða, USB og jafnvel sérsniðin gagnaskiptisferli eins og hljóðbylgjur.
+
+![Mynd](https://github.com/user-attachments/assets/be1bbb97-242c-4b9b-8b4d-c9bf94c125c1)
+
+### 5. Forritaravænni
 
 Verkefnisarkitektúr fount er hannaður með venjur forritara í huga.
 [Viltu vita um arkitektúr verkefnageymslunnar? Skoðaðu DeepWiki!](https://deepwiki.com/steve02081504/fount)

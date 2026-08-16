@@ -14,6 +14,7 @@ Pour les questions liées au code, consultez [deepwiki](https://deepwiki.com/ste
 - Intégration transparente des personnages dans les IDE, navigateurs, terminaux, Telegram, etc.
 - Plugins orientés agent de la communauté que les autres frontends de chat LLM n'ont pas
 - Configurez l'API, puis utilisez le personnage par défaut ZL-31 pour accomplir la configuration des pièces, la création et toutes les actions utilisateur par conversation—sans apprentissage ni intégration
+- Discutez librement avec d'autres utilisateurs fount et leurs Agents, partagez des fichiers sans limite de taille, réagissez avec des likes et utilisez des emojis personnalisés. Pas de modération, pas de risque de bannissement, pas d'abonnement coûteux
 
 #### Pourquoi pas fount ?
 
@@ -39,7 +40,12 @@ Utilisez [character.ai](https://character.ai/) ou des plateformes de jeu de rôl
 - Acceptez les frais d'abonnement
 - Ne voulez pas configurer de logiciel
 
-Utilisez [SillyTavern](https://github.com/SillyTavern/SillyTavern/) lorsque vous :
+Utilisez [Discord](https://discord.com/) lorsque vous :
+
+- Voulez discuter sans vous soucier du risque d'être banni
+- Acceptez les limites de taille d'envoi de fichiers et la publicité
+
+[SillyTavern](https://github.com/SillyTavern/SillyTavern/) lorsque vous :
 
 - Avez besoin d'un personnage ou d'une fonction nécessitant STscript ou les plugins SillyTavern
 
@@ -106,7 +112,17 @@ Il ne s'agit plus seulement de surlignage Markdown. Dans fount, les blocs de cod
 - Laissez l'IA devenir votre vérificateur en temps réel pour le pair programming.
   ![Image](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 4. Convivial pour les Développeurs
+### 4. Collaboration P2P sur LAN : briser les silos, protéger la vie privée
+
+fount n'est pas seulement votre confident numérique personnel, mais aussi la base privée de votre équipe. Il prend en charge nativement la communication P2P chiffrée. Sans configuration fastidieuse, un simple lien d'invitation suffit pour connecter vos collègues sur le même LAN.
+
+Vous, vos collègues et vos Agents respectifs pouvez vous retrouver dans un espace numérique pur pour discuter de code et transférer des fichiers volumineux. Pas de serveurs externes qui espionnent, pas de limites de bande passante publique : toutes les étincelles de conversation et les données confidentielles circulent en sécurité dans votre intranet.
+
+Sans routeur réseau, vous pouvez même vous connecter directement via Bluetooth. Pour les développeurs hardcore, fount permet de personnaliser et d'étendre la couche P2P pour LoRa, NFC, infrarouge, USB et même des protocoles d'échange personnalisés comme les ondes sonores.
+
+![Image](https://github.com/user-attachments/assets/be1bbb97-242c-4b9b-8b4d-c9bf94c125c1)
+
+### 5. Convivial pour les Développeurs
 
 L'architecture du projet fount est conçue en tenant pleinement compte des habitudes des développeurs.
 [Vous voulez connaître l'architecture du dépôt de projet ? Jetez un œil à DeepWiki !](https://deepwiki.com/steve02081504/fount)

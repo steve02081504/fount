@@ -14,6 +14,7 @@ Für codebezogene Fragen siehe [deepwiki](https://deepwiki.com/steve02081504/fou
 - Nahtlose Integration von Charakteren in IDEs, Browser, Terminals, Telegram usw.
 - Agent-orientierte Plugins aus der Community, die andere LLM-Chat-Frontends nicht haben
 - API konfigurieren, dann den Standard-Charakter ZL-31 nutzen, um Komponenten-Konfiguration, Erstellung und alle Benutzeraktionen per Dialog zu erledigen—ohne Einarbeitung
+- Chatte frei mit anderen fount-Nutzern und ihren Agents, teile Dateien beliebiger Größe, reagiere mit Likes und nutze eigene Emojis. Keine Moderation, kein Bann-Risiko, keine teuren Abos
 
 #### Warum nicht fount?
 
@@ -38,6 +39,11 @@ Für codebezogene Fragen siehe [deepwiki](https://deepwiki.com/steve02081504/fou
 - Einen LLM-gesteuerten Charakter ohne Agent-Funktionen betreiben möchtest
 - Mit Abo-Kosten einverstanden bist
 - Keine Software konfigurieren möchtest
+
+[Discord](https://discord.com/) nutzen, wenn du:
+
+- Chatten willst und das Risiko einer Sperre nicht störst
+- Dateigrößen-Limits und Werbung in Kauf nimmst
 
 [SillyTavern](https://github.com/SillyTavern/SillyTavern/) nutzen, wenn du:
 
@@ -106,7 +112,17 @@ Nicht mehr nur Markdown-Hervorhebung. In fount sind die vom Agenten gesendeten C
 - Lassen Sie die KI zum Echtzeit-Verifizierer für Ihre Pair-Programming-Sitzungen werden.
   ![Bild](https://github.com/user-attachments/assets/66792238-4d70-4fa6-b0b3-76e506e49977)
 
-### 4. Entwicklerfreundlich
+### 4. LAN-P2P-Zusammenarbeit: Silos sprengen, Privatsphäre wahren
+
+fount ist nicht nur dein persönlicher digitaler Vertrauter, sondern auch die private Basisstation deines Teams. Es unterstützt nativ P2P-verschlüsselte Kommunikation. Ohne umständliche Konfiguration verbindet ein einfacher Einladungslink Kollegen im selben LAN.
+
+Du, deine Kollegen und eure jeweiligen Agents könnt in einem reinen digitalen Raum Code besprechen und übergroße Dateien austauschen. Keine neugierigen externen Server, keine öffentlichen Bandbreitenlimits – alle Funken des Austauschs und vertrauliche Daten fließen sicher in eurem Intranet.
+
+Ohne Netzwerkrouter könnt ihr sogar direkt per Bluetooth verbinden. Für Hardcore-Entwickler erlaubt fount Anpassung und Erweiterung der P2P-Schicht für LoRa, NFC, Infrarot, USB und sogar Schallwellen als Datenaustauschprotokolle.
+
+![Bild](https://github.com/user-attachments/assets/be1bbb97-242c-4b9b-8b4d-c9bf94c125c1)
+
+### 5. Entwicklerfreundlich
 
 Die Projektarchitektur von fount wurde unter umfassender Berücksichtigung der Gewohnheiten von Entwicklern konzipiert.
 [Möchten Sie die Architektur des Projekt-Repositorys kennen? Werfen Sie einen Blick auf DeepWiki!](https://deepwiki.com/steve02081504/fount)
