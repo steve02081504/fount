@@ -56,6 +56,8 @@ const testimonialCurrent = document.getElementById('testimonial-current')
 const testimonialNext = document.getElementById('testimonial-next')
 const utmWelcomeDialog = document.getElementById('utm-welcome-dialog')
 const utmWelcomeMessage = document.getElementById('utm-welcome-message')
+const coolNotice = document.getElementById('cool-notice')
+const coolNoticeDismiss = document.getElementById('cool-notice-dismiss')
 
 /**
  * 从指定 URL 获取 JSON 数据。
@@ -181,6 +183,33 @@ function maybeShowUtmWelcome() {
 		source: escapeHtml(source),
 	})
 	utmWelcomeDialog.showModal()
+}
+
+/**
+ * 入场结束后弹出广告底栏（会话内关闭，不写 cookie / 存储）。
+ * @returns {void}
+ */
+function showCoolNotice() {
+	coolNotice.classList.remove('hidden')
+	document.body.classList.add('cool-notice-open')
+	requestAnimationFrame(() => coolNotice.classList.add('cool-notice-in'))
+}
+
+/**
+ * 收起广告底栏。
+ * @returns {void}
+ */
+function dismissCoolNotice() {
+	coolNotice.classList.remove('cool-notice-in')
+	document.body.classList.remove('cool-notice-open')
+	/**
+	 *
+	 */
+	const hide = () => coolNotice.classList.add('hidden')
+	if (window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+		hide()
+	else
+		coolNotice.addEventListener('transitionend', hide, { once: true })
 }
 
 /**
@@ -750,6 +779,8 @@ async function main() {
 		playHeroAnimation()
 	])
 	maybeShowUtmWelcome()
+	showCoolNotice()
+	coolNoticeDismiss.addEventListener('click', dismissCoolNotice)
 
 	adjectiveRotator = createRotatingText(rotatingAdjectiveEl, [], 2500)
 	nounRotator = createRotatingText(rotatingNounEl, [], 2500)

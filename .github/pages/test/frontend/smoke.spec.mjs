@@ -29,6 +29,28 @@ test.describe('GitHub Pages smoke', () => {
 		await expect(page.locator('h1').first()).toBeAttached()
 	})
 
+	test('cool notice appears after hero intro, dismisses without storage, returns on reload', async ({ page, baseUrl }) => {
+		const notice = page.locator('#cool-notice')
+		await page.goto(`${baseUrl}/wait/install/`, { waitUntil: 'domcontentloaded' })
+		await expect(notice).toBeHidden()
+		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+		await expect(notice).toBeVisible()
+		await expect(notice).toContainText('fount')
+		await page.locator('#cool-notice-dismiss').click()
+		await expect(notice).toBeHidden()
+		const stored = await page.evaluate(() => ({
+			localStorage: { ...localStorage },
+			sessionStorage: { ...sessionStorage },
+			cookies: document.cookie,
+		}))
+		expect(JSON.stringify(stored)).not.toMatch(/cool.?notice/i)
+
+		await page.reload({ waitUntil: 'domcontentloaded' })
+		await expect(notice).toBeHidden()
+		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+		await expect(notice).toBeVisible()
+	})
+
 	test('utm_source shows welcome dialog after hero intro', async ({ page, baseUrl }) => {
 		const dialog = page.locator('#utm-welcome-dialog')
 		/**
