@@ -21,7 +21,7 @@ const fountExePs1 = join(REPO_ROOT, 'path', 'src', 'win', 'fount_exe.ps1')
  * @param {boolean} [options.ps12exeThrows] 假 ps12exe 是否 Write-Error + throw
  * @param {number} [options.ps12exeExitCode] 假 ps12exe 仅设置的 `$LastExitCode`（0 表示写出 exe）
  * @param {'unauth' | 'create' | 'existing'} [options.ghMode] 假 gh 行为（默认未登录，避免打到真 GitHub）
- * @param {'explicit' | 'null' | 'omitted' | 'geneexe'} [options.call] 调用方式
+ * @param {'explicit' | 'null' | 'omitted' | 'geneexe' | 'selfOverwrite'} [options.call] 调用方式
  * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 执行结果
  */
 async function runFountExeHarness({
@@ -50,6 +50,25 @@ async function runFountExeHarness({
 			null: 'New-FountExe $null',
 			omitted: 'New-FountExe',
 			geneexe: `. ${JSON.stringify(geneexePs1)}; function script:require_mid {}; function script:fount_first_install_if_needed {}; function script:require {}; cmd_geneexe geneexe`,
+			selfOverwrite: `
+$target = Join-Path $work 'fount.exe'
+$lockProc = $null
+if ($IsWindows) {
+	Copy-Item "$env:SystemRoot\\System32\\ping.exe" $target
+	$lockProc = Start-Process -FilePath $target -ArgumentList '127.0.0.1','-t' -PassThru
+	Start-Sleep -Milliseconds 500
+}
+else {
+	Set-Content -LiteralPath $target 'old-exe'
+}
+try {
+	New-FountExe
+}
+finally {
+	if ($lockProc) { Stop-Process -Id $lockProc.Id -Force -ErrorAction SilentlyContinue }
+}
+if (Test-Path -LiteralPath "$target.old") { Write-Output 'RENAMED_OLD' }
+`,
 		}[call]
 		const expectExe = call === 'explicit'
 			? 'Join-Path $FOUNT_DIR \'out.exe\''
@@ -195,4 +214,14 @@ Deno.test('fount geneexe with no path writes ./fount.exe', async () => {
 	assertStringIncludes(result.stdout, 'EXE_WRITTEN')
 	if (result.stdout.includes('MAIN_EXE'))
 		throw new Error(`geneexe wrote runner/main.exe instead of cwd/fount.exe:\n${result.stdout}`)
+})
+
+Deno.test('New-FountExe clears existing output (delete or rename to .old) before compile', async () => {
+	const result = await runFountExeHarness({ call: 'selfOverwrite' })
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertStringIncludes(result.stdout, 'EXE_WRITTEN')
+	if (Deno.build.os === 'windows')
+		assertStringIncludes(result.stdout, 'RENAMED_OLD')
+	if (result.stdout.includes('ERROR_LEAK'))
+		throw new Error(`self-overwrite path leaked errors:\n${result.stdout}`)
 })
