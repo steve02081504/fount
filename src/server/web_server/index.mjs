@@ -9,6 +9,7 @@ import { __dirname } from '../base.mjs'
 import { registerEndpoints } from './endpoints.mjs'
 import { diff_if_auth, registerMiddleware } from './middleware.mjs'
 import { PartsRouter } from './parts_router.mjs'
+import { registerPhpDecoy } from './php_decoy.mjs'
 import { betterSendFile, registerResources } from './resources.mjs'
 import { registerWellKnowns } from './well-knowns.mjs'
 
@@ -34,6 +35,9 @@ mainRouter.post('/api/sentrytunnel', diff_if_auth(
 
 // 在主路由器上设置中间件
 registerMiddleware(mainRouter)
+
+// 为php请求路由到html/mjs文件 —— 一般由 X-Powered-By: PHP/4.2.0 诱饵触发（须在 cookieParser 之后）
+registerPhpDecoy(mainRouter)
 
 // 在主路由器上设置 API、well-known 和资源端点
 registerEndpoints(mainRouter)
