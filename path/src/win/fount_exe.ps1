@@ -37,9 +37,23 @@ Documented contract: report failure via `$LastExitCode` only (0/1/2/3). Do not t
 	catch { }
 }
 
+function script:Clear-FountExeOutput($executablePath) {
+	if (-not (Test-Path -LiteralPath $executablePath)) { return }
+	Remove-Item -LiteralPath $executablePath -Force -ErrorAction Ignore
+	if (-not (Test-Path -LiteralPath $executablePath)) { return }
+	$staleOld = "$executablePath.old"
+	Remove-Item -LiteralPath $staleOld -Force -ErrorAction Ignore
+	Rename-Item -LiteralPath $executablePath -NewName ([IO.Path]::GetFileName($staleOld)) -Force -ErrorAction SilentlyContinue
+}
+
 function script:New-FountExe($executablePath = "fount.exe") {
 	# $null skips PowerShell default values.
 	if (-not $executablePath) { $executablePath = "fount.exe" }
+	if (-not [IO.Path]::IsPathRooted($executablePath)) {
+		$executablePath = Join-Path (Get-Location).ProviderPath $executablePath
+	}
+	$executablePath = [IO.Path]::GetFullPath($executablePath)
+	Clear-FountExeOutput $executablePath
 	Initialize-FountFavicon
 	Test-PWSHModule ps12exe
 	# Contract: ps12exe fails via $LastExitCode only (steve02081504/ps12exe#58).
