@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Apache Status</title>
+	<style>
+		body {
+			font-family: "Courier New", Courier, monospace;
+			background-color: #ffffff;
+			color: #000000;
+		}
+
+		h1 {
+			font-size: 1.5em;
+			border-bottom: 1px solid #000;
+		}
+
+		table {
+			border-collapse: collapse;
+			margin-top: 15px;
+			width: 100%;
+		}
+
+		th,
+		td {
+			text-align: left;
+			padding: 2px 5px;
+			font-size: 0.9em;
+		}
+
+		th {
+			background-color: #cccccc;
+		}
+
+		.scoreboard {
+			font-weight: bold;
+			padding: 10px 0;
+			letter-spacing: 2px;
+		}
+
+		hr {
+			border: 0;
+			border-top: 1px solid #000;
+			margin: 15px 0;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>Apache Server Status for localhost</h1>
+
+	<dl>
+		<dt>Server Version: Apache/1.3.26 (Unix) RedHat/Linux PHP/4.2.0</dt>
+		<dt>Server Built: May 15 2002 10:22:15</dt>
+	</dl>
+	<hr>
+
+	<dl>
+		<dt>Current Time: <span id="current-time">Saturday, 26-Oct-2002 14:32:11 GMT</span></dt>
+		<dt>Restart Time: <span id="restart-time">Wednesday, 23-Oct-2002 09:12:45 GMT</span></dt>
+		<dt>Parent Server Generation: 1</dt>
+		<dt>Server uptime: 201 days 14 hours 22 minutes</dt>
+		<dt>Total accesses: 8943210 - Total Traffic: 12.4 GB</dt>
+		<dt>CPU Usage: u14.2 s3.1 cu0 cs0 - .001% CPU load</dt>
+		<dt>0.51 requests/sec - 731 B/second - 1433 B/request</dt>
+		<dt>4 requests currently being processed, 6 idle servers</dt>
+	</dl>
+
+	<div class="scoreboard">
+		_W__R_K_C_......................................
+	</div>
+
+	<p>Scoreboard Key:<br>
+		"<b><code>_</code></b>" Waiting for Connection, "<b><code>S</code></b>" Starting up, "<b><code>R</code></b>" Reading Request,<br>
+		"<b><code>W</code></b>" Sending Reply, "<b><code>K</code></b>" Keepalive (read), "<b><code>D</code></b>" DNS Lookup,<br>
+		"<b><code>C</code></b>" Closing connection, "<b><code>L</code></b>" Logging, "<b><code>G</code></b>" Gracefully finishing,<br>
+		"<b><code>.</code></b>" Open slot with no current process</p>
+
+	<table border="0">
+		<tr>
+			<th>Srv</th>
+			<th>PID</th>
+			<th>Acc</th>
+			<th>M</th>
+			<th>CPU</th>
+			<th>SS</th>
+			<th>Req</th>
+			<th>Conn</th>
+			<th>Child</th>
+			<th>Slot</th>
+			<th>Client</th>
+			<th>VHost</th>
+			<th>Request</th>
+		</tr>
+
+		<tr>
+			<td>0-0</td>
+			<td>2301</td>
+			<td>0/15/234</td>
+			<td><b>W</b></td>
+			<td>0.12</td>
+			<td>2</td>
+			<td>0</td>
+			<td>0.0</td>
+			<td>0.12</td>
+			<td>0.00</td>
+			<td>218.10.4.2</td>
+			<td>localhost</td>
+			<td>GET /cgi-bin/formmail.pl HTTP/1.0</td>
+		</tr>
+
+		<tr>
+			<td>1-0</td>
+			<td>2302</td>
+			<td>0/8/120</td>
+			<td><b>K</b></td>
+			<td>0.05</td>
+			<td>15</td>
+			<td>0</td>
+			<td>0.0</td>
+			<td>0.05</td>
+			<td>0.00</td>
+			<td>192.168.0.50</td>
+			<td>localhost</td>
+			<td>GET /index.php?page=../../../../etc/passwd HTTP/1.0</td>
+		</tr>
+
+		<tr>
+			<td>2-0</td>
+			<td>2305</td>
+			<td>0/2/15</td>
+			<td><b>C</b></td>
+			<td>0.01</td>
+			<td>1</td>
+			<td>0</td>
+			<td>0.0</td>
+			<td>0.01</td>
+			<td>0.00</td>
+			<td>64.233.160.0</td>
+			<td>localhost</td>
+			<td>GET /c99.php?act=cmd HTTP/1.0</td>
+		</tr>
+
+		<!-- 当前页面请求 -->
+		<tr>
+			<td>3-0</td>
+			<td>2310</td>
+			<td>0/1/1</td>
+			<td><b>R</b></td>
+			<td>0.00</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0.0</td>
+			<td>0.00</td>
+			<td>0.00</td>
+			<td>127.0.0.1</td>
+			<td>localhost</td>
+			<td>GET /server-status.php HTTP/1.1</td>
+		</tr>
+	</table>
+
+	<hr>
+	<!--
+	<br />
+	<b>Warning</b>:  Cannot add header information - headers already sent by (output started at /usr/local/apache/htdocs/server-status.php:2) in <b>/usr/local/apache/htdocs/server-status.php</b> on line <b>55</b><br />
+	-->
+
+	<script>
+		const now = new Date()
+		const restart = new Date(now.getTime() - (201 * 24 * 60 * 60 * 1000) - (14 * 60 * 60 * 1000))
+		document.getElementById('current-time').innerText = now.toUTCString().replace('UTC', 'GMT')
+		document.getElementById('restart-time').innerText = restart.toUTCString().replace('UTC', 'GMT')
+	</script>
+</body>
+
+</html>
