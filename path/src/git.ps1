@@ -104,6 +104,7 @@ function script:git_supplement_repo {
 		$urls += "https://gh-proxy.org/github.com/steve02081504/fount.git"
 		$urls += "https://gitclone.com/github.com/steve02081504/fount.git"
 	}
+	$hadGit = Test-Path -LiteralPath "$FOUNT_DIR/.git"
 	invoke_repo_git init -b master
 	if ($LastExitCode -ne 0) { return }
 	invoke_repo_git config core.autocrlf false
@@ -122,6 +123,12 @@ function script:git_supplement_repo {
 			$global:LastExitCode = 0
 			return
 		}
+	}
+	# All configured fetches failed: undo the .git this invocation created so the
+	# caller can retry the full source sequence on the next run. Never touch a
+	# pre-existing repo.
+	if (-not $hadGit) {
+		Remove-Item -LiteralPath "$FOUNT_DIR/.git" -Recurse -Force -ErrorAction SilentlyContinue
 	}
 	$global:LastExitCode = 1
 }

@@ -85,6 +85,8 @@ git_supplement_repo() {
 	if [[ "$locale_var" =~ _(CN|KP|RU)(\.|@|$) ]]; then
 		urls+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
 	fi
+	local had_git=0
+	[ -d "$FOUNT_DIR/.git" ] && had_git=1
 	invoke_repo_git init -b master || return 1
 	invoke_repo_git config core.autocrlf false || return 1
 	for url in "${urls[@]}"; do
@@ -98,6 +100,12 @@ git_supplement_repo() {
 			return 0
 		fi
 	done
+	# All configured fetches failed: undo the .git this invocation created so the
+	# caller can retry the full source sequence on the next run. Never touch a
+	# pre-existing repo.
+	if [ "$had_git" -eq 0 ]; then
+		rm -rf "$FOUNT_DIR/.git"
+	fi
 	return 1
 }
 
