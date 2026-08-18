@@ -17,9 +17,8 @@ test.describe('Telegram bot URL char template prefill', () => {
 
 	test('URL char param does not clobber a saved non-empty config', async ({ page, baseUrl }) => {
 		const botname = `url-char-saved-${Date.now()}`
-		const saved = { token: 'test-token', char: 'saved-char', config: { OwnerUserID: 'SAVED_OWNER' } }
 		const res = await page.request.post(`${baseUrl}/api/parts/shells:telegrambot/setbotconfig`, {
-			data: { botname, config: saved },
+			data: { botname, config: { token: 'test-token', char: 'saved-char', config: { OwnerUserID: 'SAVED_OWNER' } } },
 		})
 		expect(res.ok()).toBeTruthy()
 

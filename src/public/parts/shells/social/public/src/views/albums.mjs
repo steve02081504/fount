@@ -11,12 +11,10 @@ import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
  * @returns {string} 封面 HTML
  */
 function renderAlbumCoverHtml(coverMediaRef) {
-	if (coverMediaRef)
-		try {
-			const url = mediaRefUrl(coverMediaRef)
-			return `<div class="album-card-cover"><img class="album-card-cover-img" src="${escapeHtml(url)}" alt="" loading="lazy" /></div>`
-		}
-		catch { /* fall through */ }
+	if (coverMediaRef) try {
+		return `<div class="album-card-cover"><img class="album-card-cover-img" src="${escapeHtml(mediaRefUrl(coverMediaRef))}" alt="" loading="lazy" /></div>`
+	}
+	catch { /* fall through */ }
 
 	return ''
 }

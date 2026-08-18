@@ -17,19 +17,19 @@ test.describe('WeChat bot URL char template prefill', () => {
 
 	test('URL char param does not clobber a saved non-empty config', async ({ page, baseUrl }) => {
 		const botname = `url-char-saved-${Date.now()}`
-		const response = await page.request.post(`${baseUrl}/api/parts/shells:wechatbot/setbotconfig`, {
+		expect((await page.request.post(`${baseUrl}/api/parts/shells:wechatbot/setbotconfig`, {
 			data: {
 				botname,
-				config: { token: 'test-token', char: 'urlChar', config: { OwnerWeChatId: 'SAVED_OWNER' } },
+				config: { token: 'test-token', char: 'saved-char', config: { OwnerWeChatId: 'SAVED_OWNER' } },
 			},
-		})
-		expect(response.ok()).toBeTruthy()
+		})).ok()).toBeTruthy()
 
 		await page.goto(`${baseUrl}/parts/shells:wechatbot/?name=${botname}&char=urlChar`, {
 			waitUntil: 'domcontentloaded',
 		})
 		const content = page.locator('#config-editor .cm-content')
 		await expect(content).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#char-select-dropdown')).toHaveAttribute('data-value', 'urlChar')
 		await expect(content).toContainText('SAVED_OWNER')
 		await expect(content).not.toContainText('URL_CHAR_TEMPLATE_OWNER')
 	})
