@@ -76,6 +76,31 @@ git_fetch_pull_request() {
 	invoke_repo_git fetch origin --prune "+refs/pull/${pr}/head:refs/remotes/origin/pr/${pr}"
 }
 
+# Repair a missing/corrupt $FOUNT_DIR repo: init, wire origin, then fetch master
+# with CN/KP/RU mirror fallback and a low-speed timeout (mirrors runner's installer).
+# Leaves origin pointed at whichever URL actually fetched.
+git_supplement_repo() {
+	local urls=("https://github.com/steve02081504/fount.git") origin_added=0 url
+	local locale_var="${LC_ALL:-${LC_MESSAGES:-$LANG}}"
+	if [[ "$locale_var" =~ _(CN|KP|RU)(\.|@|$) ]]; then
+		urls+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
+	fi
+	invoke_repo_git init -b master || return 1
+	invoke_repo_git config core.autocrlf false || return 1
+	for url in "${urls[@]}"; do
+		if [ "$origin_added" -eq 0 ]; then
+			invoke_repo_git remote add origin "$url" || return 1
+			origin_added=1
+		else
+			invoke_repo_git remote set-url origin "$url" || continue
+		fi
+		if invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin master --depth 1; then
+			return 0
+		fi
+	done
+	return 1
+}
+
 git_backup_uncommitted() {
 	command -v git &>/dev/null || return 0
 	[ -d "$FOUNT_DIR/.git" ] || return 0

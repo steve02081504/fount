@@ -94,6 +94,38 @@ function script:git_fetch_pull_request($Pr) {
 	invoke_repo_git fetch origin --prune "+refs/pull/${Pr}/head:refs/remotes/origin/pr/${Pr}"
 }
 
+# Repair a missing/corrupt $FOUNT_DIR repo: init, wire origin, then fetch master
+# with CN/KP/RU mirror fallback and a low-speed timeout (mirrors runner's installer).
+# Leaves origin pointed at whichever URL actually fetched.
+function script:git_supplement_repo {
+	$global:LastExitCode = 0
+	$urls = @("https://github.com/steve02081504/fount.git")
+	if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+		$urls += "https://gh-proxy.org/github.com/steve02081504/fount.git"
+		$urls += "https://gitclone.com/github.com/steve02081504/fount.git"
+	}
+	invoke_repo_git init -b master
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git config core.autocrlf false
+	if ($LastExitCode -ne 0) { return }
+	$originAdded = $false
+	foreach ($url in $urls) {
+		if ($originAdded) {
+			invoke_repo_git remote set-url origin $url
+		}
+		else {
+			invoke_repo_git remote add origin $url
+			$originAdded = $true
+		}
+		invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin master --depth 1
+		if ($LastExitCode -eq 0) {
+			$global:LastExitCode = 0
+			return
+		}
+	}
+	$global:LastExitCode = 1
+}
+
 function script:git_backup_uncommitted {
 	$global:LastExitCode = 0
 	if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }
@@ -250,11 +282,8 @@ function script:fount_upgrade {
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host (Get-I18n -key 'git.repoNotFound')
-		invoke_repo_git init -b master
-		invoke_repo_git config core.autocrlf false
-		invoke_repo_git remote add origin https://github.com/steve02081504/fount.git
 		Write-Host (Get-I18n -key 'git.fetchingAndResetting')
-		invoke_repo_git fetch origin master --depth 1
+		git_supplement_repo
 		if ($LastExitCode -ne 0) {
 			Write-Warning (Get-I18n -key 'git.fetchFailed')
 			Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
