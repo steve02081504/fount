@@ -29,10 +29,12 @@ export function createJsonEditor(jsonEditorContainer, options) {
 	})
 
 	/**
-	 * 取解析后的 JSON；仅有 text 时经 jsonrepair 再 parse。
+	 * 取解析后的 JSON；先触发 validate 冲刷 text 模式的 300ms 防抖，避免返回陈旧内容。
+	 * 仅有 text 时经 jsonrepair 再 parse。
 	 * @returns {unknown} JSON 值
 	 */
 	result.getJson = () => {
+		void result.validate()
 		const content = result.get()
 		if ('json' in content) return content.json
 		return JSON.parse(jsonrepair(content.text))
@@ -47,7 +49,7 @@ export function createJsonEditor(jsonEditorContainer, options) {
 			e.preventDefault()
 			onSave(result.getJson())
 		}
-	})
+	}, true)
 
 	onThemeChange(
 		(theme, isDark) => {

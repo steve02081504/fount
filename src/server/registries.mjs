@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 
 import { loadJsonFile } from '../scripts/json_loader.mjs'
@@ -99,6 +100,7 @@ export async function loadRegistryJsonEntries(username, registryName, { nocache 
 	/** @type {Array<{ entry: RegistryEntry & { partpath?: string }, data: unknown }>} */
 	const results = []
 	for (const entry of entries) {
+		if (!fs.existsSync(entry.path)) continue
 		const raw = loadJsonFile(entry.path)
 		results.push({ entry, data: raw[entry.dataField || registryName] ?? raw })
 	}

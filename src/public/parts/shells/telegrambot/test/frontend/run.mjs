@@ -15,4 +15,7 @@ process.exit(await runShellFrontendTests({
 	apiKeyPrefix: 'fount-telegrambot-fe-key',
 	loadParts: ['shells/telegrambot', 'shells/chat'],
 	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
+	fixtureCopies: [
+		{ from: join(testDir, 'fixtures/chars/urlChar'), to: 'chars/urlChar' },
+	],
 }))

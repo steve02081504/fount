@@ -87,6 +87,19 @@
 						"src/public/pages/scripts/components/jsonEditor.mjs",
 						"src/scripts/test/playwright/json_editor.mjs"
 					]
+				},
+				{
+					"name": "urlChar",
+					"expected": "14s",
+					"triggers": [
+						"src/public/parts/shells/wechatbot/test/frontend/urlChar.spec.mjs",
+						"src/public/parts/shells/wechatbot/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/wechatbot/test/frontend/phases.mjs",
+						"src/public/parts/shells/wechatbot/test/frontend/fixtures/chars/urlChar/**",
+						"src/public/parts/shells/wechatbot/public/index.{html,mjs}",
+						"src/public/parts/shells/wechatbot/src/{bot.mjs,default_interface/**,endpoints.mjs}",
+						"src/public/parts/shells/wechatbot/test/frontend/run.mjs"
+					]
 				}
 			],
 			"run": [
