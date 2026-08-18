@@ -83,7 +83,7 @@ while ($queue.Count -gt 0) {
 }
 $out -join ','
 `
-		const res = await powershell_exec(script, { no_output_record: false })
+		const res = await powershell_exec(script)
 		const text = (res.stdout ?? '').trim()
 		if (!text) return [rootPid]
 		const pids = text.split(',').map(s => Number(s.trim())).filter(n => n > 0)
