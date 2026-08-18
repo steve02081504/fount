@@ -101,9 +101,10 @@ async function renderCharDropdown() {
 /**
  * 加载机器人配置。
  * @param {string} botname - 机器人名称。
+ * @param {string} [urlChar] - URL 参数指定的角色（优先于已存配置）。
  * @returns {Promise<void>}
  */
-async function loadBotConfig(botname) {
+async function loadBotConfig(botname, urlChar) {
 	selectedBot = botname
 
 	if (!botname) {
@@ -117,11 +118,12 @@ async function loadBotConfig(botname) {
 	}
 
 	const config = await getBotConfig(botname)
+	const effectiveChar = urlChar || config.char
 	tokenInput.value = config.token || ''
-	charSelectDropdown.dataset.value = config.char || ''
+	charSelectDropdown.dataset.value = effectiveChar || ''
 
-	if (config.char && (!config.config || !Object.keys(config.config).length)) {
-		const template = await getBotConfigTemplate(config.char)
+	if (effectiveChar && (!config.config || !Object.keys(config.config).length)) {
+		const template = await getBotConfigTemplate(effectiveChar)
 		if (template) config.config = template
 	}
 
@@ -374,11 +376,12 @@ async function initializeFromURLParams() {
 		if (botToLoad) {
 			// Set the dropdown value and load the config
 			botListDropdown.dataset.value = botToLoad
-			await loadBotConfig(botToLoad)
+			// URL char takes precedence over the stored char (and pre-fills the template for fresh bots)
+			await loadBotConfig(botToLoad, charName)
 		}
 
-		// 5. Set the character from URL param, this has precedence
-		if (charName)
+		// 5. Character dropdown reflects the URL param when no bot was loaded
+		if (charName && !botToLoad)
 			charSelectDropdown.dataset.value = charName
 	}
 	catch (error) {
