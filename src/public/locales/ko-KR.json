@@ -395,6 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "`.noupdate` 파일이 존재하므로 fount 업데이트를 건너뜁니다.",
 				"switchingToBranch": "'${branch}' 브랜치로 전환 중…",
+				"switchingToRemote": "원격 '${url}'의 기본 브랜치 '${branch}'로 전환 중…",
 				"removedNoUpdate": "`.noupdate`를 제거했습니다. 자동 업데이트가 재개됩니다.",
 				"pinningToCommit": "커밋 `${ref}`에 고정하고 `.noupdate`를 생성하는 중…",
 				"pinningToPullRequest": "풀 리퀘스트 #${pr}에 고정하고 `.noupdate`를 생성하는 중…",

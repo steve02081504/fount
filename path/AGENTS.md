@@ -28,6 +28,7 @@ Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/s
 - `fount update <branch>` — checkout + remove `.noupdate`; unknown names `ls-remote` once then one-shot fetch.
 - `fount update <sha>` — detach + create `.noupdate`.
 - `fount update pr/<n>` (also `pull/<n>`, `#<n>`, or a GitHub PR URL) — fetch `refs/pull/<n>/head` into `origin/pr/<n>`, detach, create `.noupdate`. Re-run to refresh the tip.
+- `fount update <remote-url>` — point `origin` at that URL and check out its default branch (tracking it), clearing `.noupdate`; subsequent plain updates follow it. Detected before branch names via `git_is_remote_url` (http(s)/ssh/git/ftp/file URLs and scp-like `user@host:path`).
 - If the current upstream is confirmed gone on origin (not a network error), fall back to tracking `master`.
 - Git / bash / Deno-template traps: [docs/git-notes.md](docs/git-notes.md).
 

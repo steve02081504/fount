@@ -8,7 +8,7 @@
 	deno_upgrade
 }
 
-# Switch to a remote branch tip (one-shot fetch; does not widen remote.origin.fetch).
+# 切换到远端分支尖端（一次性拉取；不扩展 remote.origin.fetch）。
 function script:fount_switch_to_branch($Target) {
 	Write-Host (Get-I18n -key 'update.switchingToBranch' -params @{ branch = $Target })
 	git_fetch_remote_branch $Target
@@ -21,7 +21,7 @@ function script:fount_switch_to_branch($Target) {
 	}
 }
 
-# Explicit target: PR → detach at head & .noupdate; branch → track tip & clear .noupdate; commit → detach & .noupdate.
+# 显式目标：PR → 分离到 head 并写 .noupdate；分支 → 跟踪尖端并清除 .noupdate；提交 → 分离并写 .noupdate。
 function script:fount_update_to_ref($Target) {
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Write-Host (Get-I18n -key 'git.notInstalledSkippingPull')
@@ -32,14 +32,17 @@ function script:fount_update_to_ref($Target) {
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host (Get-I18n -key 'git.repoNotFound')
-		invoke_repo_git init -b master
-		invoke_repo_git config core.autocrlf false
-		invoke_repo_git remote add origin https://github.com/steve02081504/fount.git
+		git_supplement_repo
+		if ($LastExitCode -ne 0) {
+			Write-Warning (Get-I18n -key 'git.fetchFailed')
+			Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+			return
+		}
 	}
 
 	invoke_repo_git config core.autocrlf false
 
-	# GitHub pull request tip — pin like a commit (re-run the same command to refresh).
+	# GitHub pull request 尖端 —— 像提交一样固定（重复运行同一命令即可刷新）。
 	$prNumber = git_parse_pr_number $Target
 	if ($prNumber) {
 		Write-Host (Get-I18n -key 'update.pinningToPullRequest' -params @{ pr = $prNumber })
@@ -57,7 +60,13 @@ function script:fount_update_to_ref($Target) {
 		return
 	}
 
-	# Known locally / already tracked — refresh that one tip, no ls-remote.
+	# 远程 URL —— 把 origin 指到该远程并切到其默认分支。
+	if (git_is_remote_url $Target) {
+		fount_update_to_url $Target
+		return
+	}
+
+	# 本地已知/已跟踪 —— 只刷新那一个尖端，不做 ls-remote。
 	if ((git_ref_exists "origin/$Target") -or (git_ref_exists "refs/heads/$Target")) {
 		if (git_ref_exists "origin/$Target") {
 			fount_switch_to_branch $Target
@@ -80,7 +89,7 @@ function script:fount_update_to_ref($Target) {
 		return
 	}
 
-	# Unknown named target — ask origin once, then one-shot fetch if it is a branch.
+	# 未知具名目标 —— 先询问 origin 一次，若是分支再做一次性拉取。
 	$remoteStatus = git_remote_branch_status $Target
 	if ($remoteStatus -eq 2) {
 		Write-Warning (Get-I18n -key 'git.fetchFailed')
@@ -94,8 +103,8 @@ function script:fount_update_to_ref($Target) {
 		return
 	}
 
-	# Bare ref → FETCH_HEAD; enough to resolve a commit/tag object.
-	invoke_repo_git fetch origin $Target 2>$null | Out-Null
+	# 裸 ref → FETCH_HEAD；足以解析一个 commit/tag 对象。
+	git_fetch_with_fallback $Target 2>$null | Out-Null
 	$commit = invoke_repo_git rev-parse --verify "${Target}^{commit}" 2>$null
 	if ($LastExitCode -ne 0 -or -not $commit) {
 		Write-Warning (Get-I18n -key 'update.unknownTarget' -params @{ target = $Target })
@@ -110,7 +119,34 @@ function script:fount_update_to_ref($Target) {
 	deno_upgrade
 }
 
-# After the first successful deno upgrade, routine starts refresh in the background.
+# `fount update <remote-url>` —— 把 origin 指到该远程并切到其默认分支（随后普通更新跟随它）。
+function script:fount_update_to_url($Url) {
+	$symref = invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 ls-remote --symref $Url HEAD 2>$null
+	if ($LastExitCode -ne 0) {
+		Write-Warning (Get-I18n -key 'git.fetchFailed')
+		return
+	}
+	$defaultBranch = $null
+	foreach ($line in $symref) {
+		if ($line -match '^ref:\s*refs/heads/([^\s\t]+)') { $defaultBranch = $Matches[1]; break }
+	}
+	if (-not $defaultBranch) { $defaultBranch = 'master' }
+	if (invoke_repo_git remote 2>$null -contains 'origin') {
+		invoke_repo_git remote set-url origin $Url
+	}
+	else {
+		invoke_repo_git remote add origin $Url
+	}
+	if ($LastExitCode -ne 0) {
+		Write-Warning (Get-I18n -key 'git.fetchFailed')
+		return
+	}
+	fount_switch_to_branch $defaultBranch
+	if ($LastExitCode -ne 0) { return }
+	deno_upgrade
+}
+
+# 首次成功升级 deno 后，例程改为在后台刷新。
 function script:update_fount_and_deno_background {
 	if (Test-Path -Path "$FOUNT_DIR/.noupdate") {
 		Write-Host (Get-I18n -key 'update.skippingFountUpdate')
@@ -118,7 +154,7 @@ function script:update_fount_and_deno_background {
 	}
 	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
 	if (Test-Path $upgradedFlag) {
-		# Start-Job cannot call in-process functions; re-enter via `fount update`.
+		# Start-Job 无法调用进程内函数；通过 `fount update` 重新进入。
 		Start-Job -ScriptBlock {
 			param($fountPs1)
 			& $fountPs1 update

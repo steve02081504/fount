@@ -395,6 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "⏭️ ⛲ ⏫",
 				"switchingToBranch": "🔀🌿 '${branch}'…",
+				"switchingToRemote": "🔀🌐 '${url}' ➡️🌿 '${branch}'…",
 				"removedNoUpdate": "🗑️ `.noupdate` ➡️ ▶️⏫",
 				"pinningToCommit": "📌 `${ref}` ➕ `.noupdate`…",
 				"pinningToPullRequest": "📌 PR#${pr} ➕ `.noupdate`…",
