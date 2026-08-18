@@ -232,13 +232,15 @@ fount_update_to_ref() {
 fount_update_to_url() {
 	local url="$1" default_branch symref
 	if invoke_repo_git remote | grep -qx origin; then
-		invoke_repo_git remote set-url origin "$url"
+		if ! invoke_repo_git remote set-url origin "$url"; then
+			print_i18n_yellow 'git.fetchFailed' >&2
+			return 1
+		fi
 	else
-		invoke_repo_git remote add origin "$url"
-	fi
-	if [ "$?" -ne 0 ]; then
-		print_i18n_yellow 'git.fetchFailed' >&2
-		return 1
+		if ! invoke_repo_git remote add origin "$url"; then
+			print_i18n_yellow 'git.fetchFailed' >&2
+			return 1
+		fi
 	fi
 	symref=$(invoke_repo_git ls-remote --symref "$url" HEAD 2>/dev/null) || {
 		print_i18n_yellow 'git.fetchFailed' >&2

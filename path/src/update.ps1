@@ -141,7 +141,6 @@ function script:fount_update_to_url($Url) {
 		if ($line -match '^ref:\s*refs/heads/([^\s\t]+)') { $defaultBranch = $Matches[1]; break }
 	}
 	if (-not $defaultBranch) { $defaultBranch = 'master' }
-	Write-Host (Get-I18n -key 'update.switchingToRemote' -params @{ url = $Url; branch = $defaultBranch })
 	fount_switch_to_branch $defaultBranch
 	if ($LastExitCode -ne 0) { return }
 	deno_upgrade
