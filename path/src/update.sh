@@ -175,6 +175,12 @@ fount_update_to_ref() {
 		return
 	fi
 
+	# 远程 URL —— 把 origin 指到该远程并切到其默认分支。
+	if git_is_remote_url "$target"; then
+		fount_update_to_url "$target"
+		return
+	fi
+
 	# 本地已知/已跟踪 —— 只刷新那一个尖端，不做 ls-remote。
 	if git_ref_exists "origin/$target" || git_ref_exists "refs/heads/$target"; then
 		if git_ref_exists "origin/$target"; then
@@ -219,6 +225,29 @@ fount_update_to_ref() {
 	git_detach_to_ref "$commit" || return 1
 	: >"$FOUNT_DIR/.noupdate"
 	get_i18n 'update.createdNoUpdate'
+	deno_upgrade
+}
+
+# `fount update <remote-url>` —— 把 origin 指到该远程并切到其默认分支（随后普通更新跟随它）。
+fount_update_to_url() {
+	local url="$1" default_branch symref
+	if invoke_repo_git remote | grep -qx origin; then
+		invoke_repo_git remote set-url origin "$url"
+	else
+		invoke_repo_git remote add origin "$url"
+	fi
+	if [ "$?" -ne 0 ]; then
+		print_i18n_yellow 'git.fetchFailed' >&2
+		return 1
+	fi
+	symref=$(invoke_repo_git ls-remote --symref "$url" HEAD 2>/dev/null) || {
+		print_i18n_yellow 'git.fetchFailed' >&2
+		return 1
+	}
+	default_branch=$(printf '%s\n' "$symref" | sed -n 's/^ref: refs\/heads\///p' | head -n 1)
+	[ -z "$default_branch" ] && default_branch=master
+	get_i18n 'update.switchingToRemote' 'url' "$url" 'branch' "$default_branch"
+	fount_switch_to_branch "$default_branch" || return 1
 	deno_upgrade
 }
 

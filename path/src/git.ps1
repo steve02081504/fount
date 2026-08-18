@@ -85,6 +85,14 @@ function script:git_parse_pr_number($Target) {
 	return $null
 }
 
+# 检测是否为远程 URL（http(s)/ssh/git/ftp/file 协议，或 scp-like 的 user@host:path）。
+function script:git_is_remote_url($Target) {
+	if ([string]::IsNullOrEmpty($Target)) { return $false }
+	if ($Target -match '^(?i)(https?|ssh|git\+ssh|git|ftp|file)://') { return $true }
+	if ($Target -match '^[^/:]+@[^/:]+:') { return $true }
+	return $false
+}
+
 # 一次性将 GitHub 的 pull/<n>/head 映射到 origin/pr/<n>（不扩展 remote.origin.fetch）。
 function script:git_fetch_pull_request($Pr) {
 	if ($Pr -notmatch '^[0-9]+$') {

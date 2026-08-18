@@ -69,6 +69,17 @@ git_parse_pr_number() {
 	printf '%s\n' "$number"
 }
 
+# 检测是否为远程 URL（http(s)/ssh/git/ftp/file 协议，或 scp-like 的 user@host:path）。
+git_is_remote_url() {
+	local target="$1"
+	[ -n "$target" ] || return 1
+	case "$target" in
+		http://*|https://*|ssh://*|git://*|git+ssh://*|ftp://*|file://*) return 0 ;;
+		*@*:*) return 0 ;;
+	esac
+	return 1
+}
+
 # 一次性将 GitHub 的 pull/<n>/head 映射到 origin/pr/<n>（不扩展 remote.origin.fetch）。
 git_fetch_pull_request() {
 	local pr="$1"
