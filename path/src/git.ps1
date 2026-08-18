@@ -72,7 +72,7 @@ function script:git_fetch_remote_branch($Branch) {
 		$global:LastExitCode = 1
 		return
 	}
-	invoke_repo_git fetch origin --prune "+refs/heads/${Branch}:refs/remotes/origin/${Branch}"
+	git_fetch_with_fallback "+refs/heads/${Branch}:refs/remotes/origin/${Branch}"
 }
 
 # Return PR number if target names a GitHub pull request (pr/N, pull/N, #N, or github.com/…/pull/N URL); else $null.
@@ -91,7 +91,7 @@ function script:git_fetch_pull_request($Pr) {
 		$global:LastExitCode = 1
 		return
 	}
-	invoke_repo_git fetch origin --prune "+refs/pull/${Pr}/head:refs/remotes/origin/pr/${Pr}"
+	git_fetch_with_fallback "+refs/pull/${Pr}/head:refs/remotes/origin/pr/${Pr}"
 }
 
 # Repair a missing/corrupt $FOUNT_DIR repo: init, wire origin, then fetch master
@@ -131,6 +131,44 @@ function script:git_supplement_repo {
 		Remove-Item -LiteralPath "$FOUNT_DIR/.git" -Recurse -Force -ErrorAction SilentlyContinue
 	}
 	$global:LastExitCode = 1
+}
+
+# Fetch the given refspec(s) against origin, reusing git_supplement_repo's regional
+# mirror fallback and low-speed timeout for existing repos. When origin is one of the
+# known fount URLs, try each mirror in turn with -c http.lowSpeed* settings and restore
+# the original URL afterward; a custom origin (fork/self-hosted) is fetched as-is with
+# the same low-speed timeout, never rewritten. Refs are content-addressed, so fetching
+# from a mirror is indistinguishable to later readers.
+function script:git_fetch_with_fallback {
+	$originUrl = invoke_repo_git config --get remote.origin.url 2>$null
+	if ($LastExitCode -ne 0) { $originUrl = $null }
+	if ($originUrl -in @(
+			'https://github.com/steve02081504/fount.git',
+			'https://gh-proxy.org/github.com/steve02081504/fount.git',
+			'https://gitclone.com/github.com/steve02081504/fount.git'
+		)) {
+		$candidates = @($originUrl, 'https://github.com/steve02081504/fount.git')
+		if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+			$candidates += 'https://gh-proxy.org/github.com/steve02081504/fount.git'
+			$candidates += 'https://gitclone.com/github.com/steve02081504/fount.git'
+		}
+		foreach ($url in $candidates) {
+			if ($url -ne $originUrl) {
+				invoke_repo_git remote set-url origin $url
+				if ($LastExitCode -ne 0) { continue }
+			}
+			invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin --prune @args
+			if ($LastExitCode -eq 0) {
+				if ($url -ne $originUrl) { invoke_repo_git remote set-url origin $originUrl }
+				$global:LastExitCode = 0
+				return
+			}
+		}
+		invoke_repo_git remote set-url origin $originUrl
+		$global:LastExitCode = 1
+		return
+	}
+	invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin --prune @args
 }
 
 function script:git_backup_uncommitted {

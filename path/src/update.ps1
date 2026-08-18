@@ -98,7 +98,7 @@ function script:fount_update_to_ref($Target) {
 	}
 
 	# Bare ref → FETCH_HEAD; enough to resolve a commit/tag object.
-	invoke_repo_git fetch origin $Target 2>$null | Out-Null
+	git_fetch_with_fallback $Target 2>$null | Out-Null
 	$commit = invoke_repo_git rev-parse --verify "${Target}^{commit}" 2>$null
 	if ($LastExitCode -ne 0 -or -not $commit) {
 		Write-Warning (Get-I18n -key 'update.unknownTarget' -params @{ target = $Target })

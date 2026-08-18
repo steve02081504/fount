@@ -48,7 +48,7 @@ git_remote_branch_status() {
 git_fetch_remote_branch() {
 	local branch="$1"
 	git_valid_branch_name "$branch" || return 1
-	invoke_repo_git fetch origin --prune "+refs/heads/${branch}:refs/remotes/origin/${branch}"
+	git_fetch_with_fallback "+refs/heads/${branch}:refs/remotes/origin/${branch}"
 }
 
 # Echo PR number if target names a GitHub pull request (pr/N, pull/N, #N, or github.com/…/pull/N URL); else return 1.
@@ -73,7 +73,7 @@ git_parse_pr_number() {
 git_fetch_pull_request() {
 	local pr="$1"
 	[[ "$pr" =~ ^[0-9]+$ ]] || return 1
-	invoke_repo_git fetch origin --prune "+refs/pull/${pr}/head:refs/remotes/origin/pr/${pr}"
+	git_fetch_with_fallback "+refs/pull/${pr}/head:refs/remotes/origin/pr/${pr}"
 }
 
 # Repair a missing/corrupt $FOUNT_DIR repo: init, wire origin, then fetch master
@@ -106,6 +106,39 @@ git_supplement_repo() {
 		rm -rf "$FOUNT_DIR/.git"
 	fi
 	return 1
+}
+
+# Fetch the given refspec(s) against origin, reusing git_supplement_repo's regional
+# mirror fallback and low-speed timeout for existing repos. When origin is one of the
+# known fount URLs, try each mirror in turn with -c http.lowSpeed* settings and restore
+# the original URL afterward; a custom origin (fork/self-hosted) is fetched as-is with
+# the same low-speed timeout, never rewritten. Refs are content-addressed, so fetching
+# from a mirror is indistinguishable to later readers.
+git_fetch_with_fallback() {
+	local origin_url url
+	origin_url=$(invoke_repo_git config --get remote.origin.url 2>/dev/null) || origin_url=
+	case "$origin_url" in
+	https://github.com/steve02081504/fount.git|https://gh-proxy.org/github.com/steve02081504/fount.git|https://gitclone.com/github.com/steve02081504/fount.git)
+		local candidates=("$origin_url" "https://github.com/steve02081504/fount.git")
+		if [[ "${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}" =~ _(CN|KP|RU)(\.|@|$) ]]; then
+			candidates+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
+		fi
+		for url in "${candidates[@]}"; do
+			if [ "$url" != "$origin_url" ]; then
+				invoke_repo_git remote set-url origin "$url" || continue
+			fi
+			if invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin --prune "$@"; then
+				if [ "$url" != "$origin_url" ]; then
+					invoke_repo_git remote set-url origin "$origin_url"
+				fi
+				return 0
+			fi
+		done
+		invoke_repo_git remote set-url origin "$origin_url"
+		return 1
+		;;
+	esac
+	invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin --prune "$@"
 }
 
 git_backup_uncommitted() {

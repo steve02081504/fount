@@ -209,7 +209,7 @@ fount_update_to_ref() {
 	fi
 
 	# Bare ref → FETCH_HEAD; enough to resolve a commit/tag object.
-	invoke_repo_git fetch origin "$target" 2>/dev/null || true
+	git_fetch_with_fallback "$target" 2>/dev/null || true
 	commit=$(invoke_repo_git rev-parse --verify "${target}^{commit}" 2>/dev/null) || {
 		print_i18n_yellow 'update.unknownTarget' 'target' "$target" >&2
 		return 1
