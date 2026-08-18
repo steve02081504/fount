@@ -395,7 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "Оскільки файл `.noupdate` існує, оновлення fount пропускається",
 				"switchingToBranch": "Перемикання на гілку «${branch}»…",
-				"switchingToRemote": "Перехід на стандартну гілку \"${url}\" віддаленого \"${branch}\"...",
+				"switchingToRemote": "Перехід на гілку за замовчуванням «${branch}» віддаленого репозиторію «${url}»…",
 				"removedNoUpdate": "`.noupdate` видалено; автоматичні оновлення відновлено.",
 				"pinningToCommit": "Закріплення на коміті `${ref}` і створення `.noupdate`…",
 				"pinningToPullRequest": "Закріплення на pull request #${pr} і створення `.noupdate`…",

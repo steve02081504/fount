@@ -395,7 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "⏭️ ⛲ ⏫",
 				"switchingToBranch": "🔀🌿 '${branch}'…",
-				"switchingToRemote": "正在切换到远程「${url}」的默认分支「${branch}」…",
+				"switchingToRemote": "🔀🌐 '${url}' ➡️🌿 '${branch}'…",
 				"removedNoUpdate": "🗑️ `.noupdate` ➡️ ▶️⏫",
 				"pinningToCommit": "📌 `${ref}` ➕ `.noupdate`…",
 				"pinningToPullRequest": "📌 PR#${pr} ➕ `.noupdate`…",

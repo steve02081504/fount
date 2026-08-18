@@ -395,7 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "Þar sem `.noupdate` skráin er til er leturuppfærslunni sleppt",
 				"switchingToBranch": "Skiptir yfir á grein '${branch}'…",
-				"switchingToRemote": "Skiptir yfir í sjálfgefna útibú „${url}“ á fjarstýringu „${branch}“...",
+				"switchingToRemote": "Skiptir yfir í sjálfgefnu greinina '${branch}' á fjarræna geymslunni '${url}'…",
 				"removedNoUpdate": "`.noupdate` fjarlægt; sjálfvirkar uppfærslur hafnar aftur.",
 				"pinningToCommit": "Festir á commit `${ref}` og býr til `.noupdate`…",
 				"pinningToPullRequest": "Festir á pull request #${pr} og býr til `.noupdate`…",

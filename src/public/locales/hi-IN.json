@@ -395,7 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "चूँकि `.noupdate` फ़ाइल मौजूद है, इसलिए fount अपडेट छोड़ दिया गया है",
 				"switchingToBranch": "शाखा '${branch}' पर स्विच किया जा रहा है…",
-				"switchingToRemote": "दूरस्थ \"${url}\" की डिफ़ॉल्ट शाखा \"${branch}\" पर स्विच किया जा रहा है...",
+				"switchingToRemote": "दूरस्थ '${url}' की डिफ़ॉल्ट शाखा '${branch}' पर स्विच किया जा रहा है…",
 				"removedNoUpdate": "`.noupdate` हटाया गया; स्वचालित अपडेट फिर से शुरू हो गए।",
 				"pinningToCommit": "कमिट `${ref}` पर पिन किया जा रहा है और `.noupdate` बनाया जा रहा है…",
 				"pinningToPullRequest": "पुल अनुरोध #${pr} पर पिन किया जा रहा है और `.noupdate` बनाया जा रहा है…",

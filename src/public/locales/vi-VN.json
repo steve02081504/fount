@@ -395,7 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "Vì tệp `.noupdate` tồn tại nên bản cập nhật fount bị bỏ qua",
 				"switchingToBranch": "Đang chuyển sang nhánh «${branch}»…",
-				"switchingToRemote": "Đang chuyển sang nhánh mặc định \"${url}\" của điều khiển từ xa \"${branch}\"...",
+				"switchingToRemote": "Đang chuyển sang nhánh mặc định «${branch}» của kho lưu trữ từ xa «${url}»…",
 				"removedNoUpdate": "Đã xóa `.noupdate`; cập nhật tự động đã được khôi phục.",
 				"pinningToCommit": "Đang ghim vào commit `${ref}` và tạo `.noupdate`…",
 				"pinningToPullRequest": "Đang ghim vào pull request #${pr} và tạo `.noupdate`…",

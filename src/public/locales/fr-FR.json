@@ -395,7 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "Étant donné que le fichier `.noupdate` existe, la mise à jour des founts est ignorée",
 				"switchingToBranch": "Basculement vers la branche « ${branch} »…",
-				"switchingToRemote": "Passage à la branche par défaut \"${url}\" de la télécommande \"${branch}\"...",
+				"switchingToRemote": "Passage à la branche par défaut « ${branch} » du dépôt distant « ${url} »…",
 				"removedNoUpdate": "`.noupdate` supprimé ; mises à jour automatiques réactivées.",
 				"pinningToCommit": "Fixation au commit `${ref}` et création de `.noupdate`…",
 				"pinningToPullRequest": "Fixation sur la pull request n° ${pr} et création de `.noupdate`…",
