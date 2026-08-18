@@ -133,9 +133,9 @@ function script:git_supplement_repo {
 }
 
 # 对 origin 拉取给定的 refspec，为已存在仓库复用 git_supplement_repo 的区域镜像回退
-# 和低速超时。当 origin 是已知的 fount URL 时，用 -c http.lowSpeed* 和 -c remote.origin.url
-# 依次尝试每个镜像而不改动配置；自定义 origin（fork/自托管）则原样拉取，同样带低速超时，
-# 绝不重写。refs 是内容寻址的，因此从镜像拉取对后续读者而言与主源无异。
+# 和低速超时。用 -c http.lowSpeed* 和 -c remote.origin.url 依次尝试每个候选 URL（origin、
+# 主库及各镜像）而不改动配置；自定义 origin（fork/自托管）也以主库兜底。refs 是内容寻址的，
+# 因此从镜像拉取对后续读者而言与主源无异。
 function script:git_fetch_with_fallback {
 	$originUrl = invoke_repo_git config --get remote.origin.url 2>$null
 	if ($LastExitCode -ne 0) { $originUrl = $null }

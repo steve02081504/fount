@@ -108,9 +108,9 @@ git_supplement_repo() {
 }
 
 # 对 origin 拉取给定的 refspec，为已存在仓库复用 git_supplement_repo 的区域镜像回退
-# 和低速超时。当 origin 是已知的 fount URL 时，用 -c http.lowSpeed* 和 -c remote.origin.url
-# 依次尝试每个镜像而不改动配置；自定义 origin（fork/自托管）则原样拉取，同样带低速超时，
-# 绝不重写。refs 是内容寻址的，因此从镜像拉取对后续读者而言与主源无异。
+# 和低速超时。用 -c http.lowSpeed* 和 -c remote.origin.url 依次尝试每个候选 URL（origin、
+# 主库及各镜像）而不改动配置；自定义 origin（fork/自托管）也以主库兜底。refs 是内容寻址的，
+# 因此从镜像拉取对后续读者而言与主源无异。
 git_fetch_with_fallback() {
 	local origin_url
 	origin_url=$(invoke_repo_git config --get remote.origin.url 2>/dev/null) || origin_url=
@@ -119,15 +119,14 @@ git_fetch_with_fallback() {
 	if [[ "${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}" =~ _(CN|KP|RU)(\.|@|$) ]]; then
 		candidates+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
 	fi
-	# 去重
+	# 去重（嵌套循环，兼容 macOS 上古 bash 3.2，无关联数组）
 	local unique_candidates=()
-	local seen=()
-	local url
+	local url existing
 	for url in "${candidates[@]}"; do
-		if [ -z "${seen[$url]:-}" ]; then
-			seen["$url"]=1
-			unique_candidates+=("$url")
-		fi
+		for existing in "${unique_candidates[@]}"; do
+			[ "$existing" = "$url" ] && continue 2
+		done
+		unique_candidates+=("$url")
 	done
 	candidates=("${unique_candidates[@]}")
 	for url in "${candidates[@]}"; do
