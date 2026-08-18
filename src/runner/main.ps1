@@ -214,9 +214,8 @@ function Install-FountTree {
 	param([string]$Dir, [string]$Branch)
 	Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
 	if (Get-Command git -ErrorAction Ignore) {
-		$useMirrors = (Get-Culture).Name -match '-(CN|KP|RU)$'
 		$cloneUrls = @("https://github.com/steve02081504/fount")
-		if ($useMirrors) {
+		if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
 			$cloneUrls += "https://gh-proxy.org/github.com/steve02081504/fount"
 			$cloneUrls += "https://gitclone.com/github.com/steve02081504/fount.git"
 		}
@@ -226,18 +225,33 @@ function Install-FountTree {
 			Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
 		}
 	}
-	if (!(Test-Path $Dir)) {
+	$installFlag = Join-Path $Dir 'path/fount.ps1'
+	if (!(Test-Path $installFlag)) {
 		Remove-Item "$env:TEMP/fount-$Branch" -Force -ErrorAction Ignore -Recurse
-		try { Invoke-WebRequest https://github.com/steve02081504/fount/archive/refs/heads/$Branch.zip -OutFile $env:TEMP/fount.zip }
-		catch {
-			throw "Failed to download fount: $($_.Exception.Message)"
+		$zipUrls = @("https://github.com/steve02081504/fount/archive/refs/heads/$Branch.zip")
+		if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+			$zipUrls += "https://gh-proxy.org/https://github.com/steve02081504/fount/archive/refs/heads/$Branch.zip"
+		}
+		$lastError = $null
+		foreach ($zipUrl in $zipUrls) {
+			try {
+				Invoke-WebRequest $zipUrl -OutFile $env:TEMP/fount.zip
+				break
+			}
+			catch {
+				$lastError = $_.Exception.Message
+				Remove-Item $env:TEMP/fount.zip -Force -ErrorAction Ignore
+			}
+		}
+		if (-not (Test-Path $env:TEMP/fount.zip)) {
+			throw "Failed to download fount: $lastError"
 		}
 		Expand-Archive $env:TEMP/fount.zip $env:TEMP -Force
 		Remove-Item $env:TEMP/fount.zip -Force
 		New-Item $(Split-Path -Parent $Dir) -ItemType Directory -Force -ErrorAction Ignore
 		Move-Item "$env:TEMP/fount-$Branch" $Dir -Force
 	}
-	if (!(Test-Path $Dir)) {
+	if (!(Test-Path $installFlag)) {
 		throw "Failed to install fount"
 	}
 }

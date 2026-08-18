@@ -263,6 +263,7 @@ remove_fount_after_eula_decline() {
 
 install_fount_tree() {
 	local clone_ok="" clones=()
+	local locale_var="${LC_ALL:-${LC_MESSAGES:-$LANG}}"
 	echo -e "Installing fount into ${C_CYAN}$FOUNT_DIR${C_RESET}..."
 	rm -rf "$FOUNT_DIR"
 	mkdir -p "$(dirname "$FOUNT_DIR")"
@@ -272,7 +273,7 @@ install_fount_tree() {
 		write_taskbar_progress 25
 		echo "Cloning fount repository..."
 		clones+=("https://github.com/steve02081504/fount.git")
-		if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
+		if [[ "$locale_var" =~ _(CN|KP|RU)(\.|@|$) ]]; then
 			clones+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
 		fi
 		for clone_url in "${clones[@]}"; do
@@ -287,7 +288,6 @@ install_fount_tree() {
 			write_taskbar_progress 40
 		else
 			echo -e "${C_YELLOW}Git clone failed, falling back to zip download...${C_RESET}"
-			rm -rf "$FOUNT_DIR"
 			write_taskbar_progress 25
 		fi
 	fi
@@ -300,19 +300,29 @@ install_fount_tree() {
 		write_taskbar_progress 35
 
 		FOUNT_INSTALL_TMP=$(mktemp -d)
-		ZIP_URL="https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip"
+		zip_urls=("https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip")
+		if [[ "$locale_var" =~ _(CN|KP|RU)(\.|@|$) ]]; then
+			zip_urls+=("https://gh-proxy.org/https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip")
+		fi
 		ZIP_FILE="$FOUNT_INSTALL_TMP/fount.zip"
 
-		echo "Downloading fount from $ZIP_URL..."
-		if command -v curl &>/dev/null; then
-			curl --progress-bar -L -o "$ZIP_FILE" "$ZIP_URL"
-		else
-			wget -q --show-progress -O "$ZIP_FILE" "$ZIP_URL"
-		fi
+		zip_ok=""
+		for zip_url in "${zip_urls[@]}"; do
+			echo "Downloading fount from $zip_url..."
+			if command -v curl &>/dev/null; then
+				curl --progress-bar -L -o "$ZIP_FILE" "$zip_url"
+			else
+				wget -q --show-progress -O "$ZIP_FILE" "$zip_url"
+			fi
+			if [ $? -eq 0 ]; then
+				zip_ok=1
+				break
+			fi
+			rm -f "$ZIP_FILE"
+		done
 		write_taskbar_progress 40
 
-		# shellcheck disable=SC2181
-		if [ $? -ne 0 ]; then
+		if [ -z "$zip_ok" ]; then
 			echo -e "${C_RED}Error: Download failed.${C_RESET}" >&2
 			rm -rf "$FOUNT_INSTALL_TMP"
 			FOUNT_INSTALL_TMP=""
