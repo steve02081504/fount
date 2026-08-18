@@ -40,14 +40,14 @@ export function shellcheckReleaseAsset(version) {
 	const { os, arch } = Deno.build
 	const base = `https://github.com/koalaman/shellcheck/releases/download/v${version}/shellcheck-v${version}`
 	const binaryName = os === 'windows' ? 'shellcheck.exe' : 'shellcheck'
-	if (os === 'windows') 
+	if (os === 'windows')
 		return {
 			url: `${base}.zip`,
 			archiveName: `shellcheck-v${version}.zip`,
 			binaryName,
 			stripPrefix: null,
 		}
-	
+
 	const scArch = arch === 'aarch64' ? 'aarch64'
 		: arch === 'x86_64' ? 'x86_64'
 			: null
@@ -86,7 +86,7 @@ const exists = async (path) => {
  */
 export async function readShellcheckVersion(exe) {
 	try {
-		const result = await execFile(exe, ['--version'], { no_output_record: false })
+		const result = await execFile(exe, ['--version'])
 		if ((result.code ?? 1) !== 0) return null
 		const match = String(result.stdout ?? '').match(/version:\s*(\S+)/i)
 		return match?.[1] ?? null
@@ -146,7 +146,7 @@ async function downloadShellcheck(cacheDir, asset) {
 	const tarArgs = asset.archiveName.endsWith('.tar.gz')
 		? ['-xzf', archivePath, '-C', extractDir]
 		: ['-xf', archivePath, '-C', extractDir]
-	const tar = await execFile('tar', tarArgs, { no_output_record: false })
+	const tar = await execFile('tar', tarArgs)
 	if ((tar.code ?? 1) !== 0)
 		throw new Error(`shellcheck extract failed: ${tar.stderr || tar.stdout}`)
 
@@ -236,8 +236,7 @@ export async function runShellcheck(exe, files, extraArgs = []) {
 		env: {
 			...process.env,
 			PYTHONUTF8: '1',
-		},
-		no_output_record: false,
+		}
 	})
 	return {
 		code: result.code ?? 1,
