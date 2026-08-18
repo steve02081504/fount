@@ -18,6 +18,7 @@ import { phasesFromPlaywrightConfig, runFrontendPhases } from './phases.mjs'
  * @param {string[]} options.loadParts 启动时 load 的 part
  * @param {string} options.bootstrapPath bootstrap 模块绝对路径
  * @param {number} [options.portStep=2] 阶段间端口步长
+ * @param {import('../../../test/node/launch.mjs').FixtureCopy[]} [options.fixtureCopies] 启动前复制到隔离节点用户目录的 fixture
  * @returns {Promise<number>} 进程退出码
  */
 export async function runShellFrontendTests({
@@ -27,6 +28,7 @@ export async function runShellFrontendTests({
 	loadParts,
 	bootstrapPath,
 	portStep = 2,
+	fixtureCopies,
 }) {
 	const phases = await phasesFromPlaywrightConfig(configPath, REPO_ROOT, { portStep })
 
@@ -61,6 +63,7 @@ export async function runShellFrontendTests({
 			loadParts,
 			p2p: true,
 			bootstrap: bootstrapPath,
+			fixtureCopies,
 		}
 		if (releasePortForPhase) {
 			/**

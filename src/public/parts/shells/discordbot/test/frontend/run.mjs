@@ -15,4 +15,7 @@ process.exit(await runShellFrontendTests({
 	apiKeyPrefix: 'fount-discordbot-fe-key',
 	loadParts: ['shells/discordbot', 'shells/chat'],
 	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
+	fixtureCopies: [
+		{ from: join(testDir, 'fixtures/chars/urlChar'), to: 'chars/urlChar' },
+	],
 }))
