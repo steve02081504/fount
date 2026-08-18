@@ -372,6 +372,7 @@ export type LocaleData = {
 			update: {
 				skippingFountUpdate: string
 				switchingToBranch: string
+				switchingToRemote: string
 				removedNoUpdate: string
 				pinningToCommit: string
 				pinningToPullRequest: string
@@ -6303,6 +6304,7 @@ export type LocaleKeyParams = {
 	'fountConsole.path.update.pinningToCommit': { ref: string | number }
 	'fountConsole.path.update.pinningToPullRequest': { pr: string | number }
 	'fountConsole.path.update.switchingToBranch': { branch: string | number }
+	'fountConsole.path.update.switchingToRemote': { branch: string | number; url: string | number }
 	'fountConsole.path.update.unknownTarget': { target: string | number }
 	'fountConsole.path.version.branch.title': { branch: string | number }
 	'fountConsole.path.version.commit': { ref: string | number }

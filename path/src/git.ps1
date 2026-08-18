@@ -37,14 +37,14 @@ function script:git_ref_exists($Ref = 'HEAD') {
 	return ($LastExitCode -eq 0)
 }
 
-# Fetch origin and drop stale remote-tracking refs under the configured refspec.
-# Does not widen fetch to other branches — named targets use git_fetch_remote_branch.
+# 按配置的 refspec 拉取 origin 并清理过期的远端跟踪引用。
+# 不扩展到其他分支 —— 具名目标使用 git_fetch_remote_branch。
 function script:git_fetch_origin {
 	invoke_repo_git fetch origin --prune
 }
 
-# Reject glob metacharacters and other ref-unsafe fragments for single-branch fetch.
-# Aligns with git check-ref-format rules for refs/heads/<name> (plus apostrophe).
+# 拒绝 glob 元字符等单分支拉取不安全的片段。
+# 与 git check-ref-format 对 refs/heads/<name> 的规则一致（外加撇号）。
 function script:git_valid_branch_name($Branch) {
 	if ([string]::IsNullOrEmpty($Branch) -or $Branch -eq '@') { return $false }
 	if ($Branch -match '[\?\*\[\\:~^\s'']|\.\.|@{|//|[\x00-\x1F\x7F]') { return $false }
@@ -56,8 +56,8 @@ function script:git_valid_branch_name($Branch) {
 	return $true
 }
 
-# 0 = branch exists on origin, 1 = confirmed absent, 2 = network/other error.
-# Only call when a named ref is unknown locally — avoid on the plain-update happy path.
+# 0 = 分支在 origin 存在，1 = 确认不存在，2 = 网络/其他错误。
+# 仅当本地未知该具名引用时调用 —— 普通更新的顺利路径不要走这里。
 function script:git_remote_branch_status($Branch) {
 	if (-not (git_valid_branch_name $Branch)) { return 2 }
 	$output = invoke_repo_git ls-remote --heads origin "refs/heads/$Branch" 2>$null
@@ -66,16 +66,16 @@ function script:git_remote_branch_status($Branch) {
 	return 1
 }
 
-# One-shot map of a single head into origin/<branch> (does not change remote.origin.fetch).
+# 一次性将单个 head 映射到 origin/<branch>（不修改 remote.origin.fetch）。
 function script:git_fetch_remote_branch($Branch) {
 	if (-not (git_valid_branch_name $Branch)) {
 		$global:LastExitCode = 1
 		return
 	}
-	invoke_repo_git fetch origin --prune "+refs/heads/${Branch}:refs/remotes/origin/${Branch}"
+	git_fetch_with_fallback "+refs/heads/${Branch}:refs/remotes/origin/${Branch}"
 }
 
-# Return PR number if target names a GitHub pull request (pr/N, pull/N, #N, or github.com/…/pull/N URL); else $null.
+# 若 target 指向 GitHub pull request（pr/N、pull/N、#N 或 github.com/…/pull/N 链接），返回 PR 号；否则返回 $null。
 function script:git_parse_pr_number($Target) {
 	if ([string]::IsNullOrEmpty($Target)) { return $null }
 	if ($Target -match '^(?i)pr/([0-9]+)$') { return $Matches[1] }
@@ -85,13 +85,84 @@ function script:git_parse_pr_number($Target) {
 	return $null
 }
 
-# One-shot map of GitHub pull/<n>/head into origin/pr/<n> (does not widen remote.origin.fetch).
+# 检测是否为远程 URL（http(s)/ssh/git/ftp/file 协议，或 scp-like 的 user@host:path）。
+function script:git_is_remote_url($Target) {
+	if ([string]::IsNullOrEmpty($Target)) { return $false }
+	if ($Target -match '^(?i)(https?|ssh|git\+ssh|git|ftp|file)://') { return $true }
+	if ($Target -match '^[^/:]+@[^/:]+:') { return $true }
+	return $false
+}
+
+# 一次性将 GitHub 的 pull/<n>/head 映射到 origin/pr/<n>（不扩展 remote.origin.fetch）。
 function script:git_fetch_pull_request($Pr) {
 	if ($Pr -notmatch '^[0-9]+$') {
 		$global:LastExitCode = 1
 		return
 	}
-	invoke_repo_git fetch origin --prune "+refs/pull/${Pr}/head:refs/remotes/origin/pr/${Pr}"
+	git_fetch_with_fallback "+refs/pull/${Pr}/head:refs/remotes/origin/pr/${Pr}"
+}
+
+# 修复缺失/损坏的 $FOUNT_DIR 仓库：初始化、配置 origin，然后用 CN/KP/RU 镜像回退
+# 和低速超时拉取 master（与 runner 安装器一致）。
+# 拉取成功后 origin 保留指向实际拉取到的那个 URL。
+function script:git_supplement_repo {
+	$global:LastExitCode = 0
+	$urls = @("https://github.com/steve02081504/fount.git")
+	if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+		$urls += "https://gh-proxy.org/github.com/steve02081504/fount.git"
+		$urls += "https://gitclone.com/github.com/steve02081504/fount.git"
+	}
+	$hadGit = Test-Path -LiteralPath "$FOUNT_DIR/.git"
+	invoke_repo_git init -b master
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git config core.autocrlf false
+	if ($LastExitCode -ne 0) { return }
+	$originAdded = $false
+	foreach ($url in $urls) {
+		if ($originAdded) {
+			invoke_repo_git remote set-url origin $url
+		}
+		else {
+			invoke_repo_git remote add origin $url
+			$originAdded = $true
+		}
+		invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin master --depth 1
+		if ($LastExitCode -eq 0) {
+			$global:LastExitCode = 0
+			return
+		}
+	}
+	# 所有配置的拉取都失败了：撤销本次调用创建的 .git，以便下次运行时调用方
+	# 可重试完整的源码序列。绝不触碰已存在的仓库。
+	if (-not $hadGit) {
+		Remove-Item -LiteralPath "$FOUNT_DIR/.git" -Recurse -Force -ErrorAction SilentlyContinue
+	}
+	$global:LastExitCode = 1
+}
+
+# 对 origin 拉取给定的 refspec，为已存在仓库复用 git_supplement_repo 的区域镜像回退
+# 和低速超时。用 -c http.lowSpeed* 和 -c remote.origin.url 依次尝试每个候选 URL（origin、
+# 主库及各镜像）而不改动配置；自定义 origin（fork/自托管）也以主库兜底。refs 是内容寻址的，
+# 因此从镜像拉取对后续读者而言与主源无异。
+function script:git_fetch_with_fallback {
+	$originUrl = invoke_repo_git config --get remote.origin.url 2>$null
+	if ($LastExitCode -ne 0) { $originUrl = $null }
+	$candidates = @($originUrl, 'https://github.com/steve02081504/fount.git')
+	if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+		$candidates += @(
+			'https://gh-proxy.org/github.com/steve02081504/fount.git',
+			'https://gitclone.com/github.com/steve02081504/fount.git'
+		)
+	}
+	$candidates = $candidates | Select-Object -Unique
+	foreach ($url in $candidates) {
+		invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 -c "remote.origin.url=$url" fetch origin --prune @args
+		if ($LastExitCode -eq 0) {
+			$global:LastExitCode = 0
+			return
+		}
+	}
+	$global:LastExitCode = 1
 }
 
 function script:git_backup_uncommitted {
@@ -129,8 +200,8 @@ function script:git_sync_to_ref($Ref) {
 	invoke_repo_git reset --hard $Ref
 }
 
-# Ensure remote.origin.fetch maps refs/heads/<Branch> → origin/<Branch>.
-# Adds a single-branch refspec only — never expands to refs/heads/*.
+# 确保 remote.origin.fetch 将 refs/heads/<Branch> 映射到 origin/<Branch>。
+# 只添加单分支 refspec —— 绝不扩展为 refs/heads/*。
 function script:git_ensure_origin_fetch_branch($RemoteBranch) {
 	if (-not (git_valid_branch_name $RemoteBranch)) {
 		$global:LastExitCode = 1
@@ -146,9 +217,9 @@ function script:git_ensure_origin_fetch_branch($RemoteBranch) {
 	invoke_repo_git config --add remote.origin.fetch "+refs/heads/${RemoteBranch}:refs/remotes/origin/${RemoteBranch}"
 }
 
-# Point local branch at origin/<name> without requiring a prior wildcard fetch refspec.
-# `git branch --set-upstream-to` rejects one-shot remote-tracking refs under single-branch clones;
-# add the one head to remote.origin.fetch (not *) then set branch.*.remote / merge.
+# 将本地分支指向 origin/<name>，无需事先配置通配符拉取 refspec。
+# 单分支克隆下 `git branch --set-upstream-to` 会拒绝一次性远端跟踪引用；
+# 把该 head 加进 remote.origin.fetch（而非 *），再设置 branch.*.remote / merge。
 function script:git_track_origin_branch($Branch, $OriginRef = $null) {
 	if (-not $OriginRef) { $OriginRef = "origin/$Branch" }
 	if ($OriginRef -notlike 'origin/*') {
@@ -164,7 +235,7 @@ function script:git_track_origin_branch($Branch, $OriginRef = $null) {
 	invoke_repo_git config "branch.$Branch.merge" "refs/heads/$remoteBranch"
 }
 
-# Switch/create local branch at StartPoint (default origin/<Branch>). Does not move other branches.
+# 在 StartPoint（默认 origin/<Branch>）处切换/创建本地分支。不动其他分支。
 function script:git_checkout_branch($Branch, $StartPoint = $null) {
 	if (-not $StartPoint) { $StartPoint = "origin/$Branch" }
 	if (-not (git_ref_exists $StartPoint)) {
@@ -182,7 +253,7 @@ function script:git_checkout_branch($Branch, $StartPoint = $null) {
 	}
 }
 
-# Detach HEAD at Ref without moving the previous branch tip.
+# 在 Ref 处分离 HEAD，不动此前分支的尖端。
 function script:git_detach_to_ref($Ref) {
 	$resolved = invoke_repo_git rev-parse --verify "${Ref}^{commit}" 2>$null
 	if ($LastExitCode -ne 0 -or -not $resolved) {
@@ -250,11 +321,8 @@ function script:fount_upgrade {
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host (Get-I18n -key 'git.repoNotFound')
-		invoke_repo_git init -b master
-		invoke_repo_git config core.autocrlf false
-		invoke_repo_git remote add origin https://github.com/steve02081504/fount.git
 		Write-Host (Get-I18n -key 'git.fetchingAndResetting')
-		invoke_repo_git fetch origin master --depth 1
+		git_supplement_repo
 		if ($LastExitCode -ne 0) {
 			Write-Warning (Get-I18n -key 'git.fetchFailed')
 			Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
@@ -342,7 +410,7 @@ function script:fount_upgrade {
 	}
 }
 
-# $Kind = version.status.* suffix; $Warn = Write-Warning instead of Write-Host.
+# $Kind = version.status.* 的后缀；$Warn = 用 Write-Warning 而非 Write-Host。
 function script:fount_print_version_status($Kind, [switch]$Warn) {
 	if ($Warn) {
 		Write-Warning (Get-I18n -key 'version.status.title' -params @{ status = (Get-I18n -key "version.status.$Kind") })
@@ -352,7 +420,7 @@ function script:fount_print_version_status($Kind, [switch]$Warn) {
 	}
 }
 
-# $Branch = branch name, or HEAD for detached.
+# $Branch = 分支名，分离状态为 HEAD。
 function script:fount_print_version_branch($Branch) {
 	if ($Branch -eq 'HEAD') {
 		$Branch = Get-I18n -key 'version.branch.detached'
@@ -360,7 +428,7 @@ function script:fount_print_version_branch($Branch) {
 	Write-Host (Get-I18n -key 'version.branch.title' -params @{ branch = $Branch })
 }
 
-# Print branch, HEAD commit, and whether the current branch tip matches origin.
+# 打印分支、HEAD 提交，以及当前分支尖端是否与 origin 一致。
 function script:fount_show_version {
 	$global:LastExitCode = 0
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {

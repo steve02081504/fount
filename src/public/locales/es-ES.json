@@ -395,6 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "Debido a que el archivo `.noupdate` existe, se omite la actualización de la fount",
 				"switchingToBranch": "Cambiando a la rama «${branch}»…",
+				"switchingToRemote": "Cambiando a la rama predeterminada «${branch}» del repositorio remoto «${url}»…",
 				"removedNoUpdate": "Se eliminó `.noupdate`; actualizaciones automáticas reactivadas.",
 				"pinningToCommit": "Fijando al commit `${ref}` y creando `.noupdate`…",
 				"pinningToPullRequest": "Fijando a la pull request #${pr} y creando `.noupdate`…",

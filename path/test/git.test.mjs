@@ -302,6 +302,61 @@ foreach ($base64Name in $encoded) {
 })
 
 /**
+ * git_supplement_repo：非受限区只用 github 源，CN/KP/RU 追加镜像，
+ * 且 fetch 都带 low-speed 超时。通过 stub invoke_repo_git 做隔离断言。
+ */
+Deno.test('git_supplement_repo wires origin and fetches master with low-speed timeout', async () => {
+	const primaryUrl = 'https://github.com/steve02081504/fount.git'
+	const proxyUrl = 'https://gh-proxy.org/github.com/steve02081504/fount.git'
+	const gitcloneUrl = 'https://gitclone.com/github.com/steve02081504/fount.git'
+
+	/**
+	 * 在 stub invoke_repo_git 下跑 git_supplement_repo 并返回记录的命令序列。
+	 * `minFetch` = 第几个 fetch 调用开始成功；更早的 fetch 视为失败（模拟 github.com 慢）。
+	 * @param {string} lang LANG/LC_ALL 值，控制镜像分支
+	 * @param {number} minFetch 成功所需的最小 fetch 序号
+	 * @returns {Promise<{code: number, stdout: string, stderr: string}>} exec 结果
+	 */
+	const run = (lang, minFetch) => bash_exec(`
+		set -euo pipefail
+		. ${JSON.stringify(gitShPath)}
+		LC_ALL=${JSON.stringify(lang)} export LC_ALL
+		calls=() fetchCount=0
+		invoke_repo_git() {
+			calls+=("$*")
+			case " $* " in
+				*" fetch "*) fetchCount=$((fetchCount + 1)); [ "$fetchCount" -ge ${minFetch} ] ;;
+				*) return 0 ;;
+			esac
+		}
+		git_supplement_repo
+		printf '%s\\n' "${'$'}{calls[@]}"
+	`)
+
+	const primary = await run('en_US.UTF-8', 1)
+	assertEquals(primary.code, 0, primary.stderr || primary.stdout)
+	const primaryCalls = primary.stdout.trim().split(/\r?\n/)
+	assertStringIncludes(primaryCalls[0], 'init -b master')
+	assertStringIncludes(primaryCalls[1], 'config core.autocrlf false')
+	assertStringIncludes(primaryCalls[2], `remote add origin ${primaryUrl}`)
+	assertStringIncludes(
+		primaryCalls[3],
+		'-c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin master --depth 1',
+	)
+
+	// CN locale: primary fetch fails, then gh-proxy fails, finally gitclone succeeds.
+	const mirror = await run('zh_CN.UTF-8', 3)
+	assertEquals(mirror.code, 0, mirror.stderr || mirror.stdout)
+	const mirrorCalls = mirror.stdout.trim().split(/\r?\n/)
+	assertStringIncludes(mirrorCalls[2], `remote add origin ${primaryUrl}`)
+	assertStringIncludes(mirrorCalls[3], '-c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin master --depth 1')
+	assertStringIncludes(mirrorCalls[4], `remote set-url origin ${proxyUrl}`)
+	assertStringIncludes(mirrorCalls[5], '-c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin master --depth 1')
+	assertStringIncludes(mirrorCalls[6], `remote set-url origin ${gitcloneUrl}`)
+	assertStringIncludes(mirrorCalls[7], '-c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin master --depth 1')
+})
+
+/**
  * 单分支 clone + one-shot fetch 场景：`branch --set-upstream-to` 会 fatal；
  * git_checkout_branch 必须补上该 head 的 fetch refspec（非 *）并建好 @{u}。
  */

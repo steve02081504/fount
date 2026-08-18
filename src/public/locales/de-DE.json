@@ -395,6 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "Da die Datei `.noupdate` vorhanden ist, wird die Aktualisierung der fount übersprungen",
 				"switchingToBranch": "Wechsle zu Branch '${branch}' …",
+				"switchingToRemote": "Wechsle zum Standard-Branch '${branch}' von Remote '${url}'…",
 				"removedNoUpdate": "`.noupdate` entfernt; automatische Updates wieder aktiv.",
 				"pinningToCommit": "Commit `${ref}` wird festgesetzt und `.noupdate` erstellt …",
 				"pinningToPullRequest": "Pull Request #${pr} wird festgesetzt und `.noupdate` erstellt …",

@@ -395,6 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "因 `.noupdate` 文件存在，跳过 fount 更新",
 				"switchingToBranch": "正在切换到分支「${branch}」…",
+				"switchingToRemote": "正在切换到远程「${url}」的默认分支「${branch}」…",
 				"removedNoUpdate": "已删除 `.noupdate`，自动更新已恢复。",
 				"pinningToCommit": "正在固定到提交 `${ref}`，并创建 `.noupdate`…",
 				"pinningToPullRequest": "正在固定到拉取请求 #${pr}，并创建 `.noupdate`…",
