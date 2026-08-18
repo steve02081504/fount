@@ -87,6 +87,18 @@
 						"src/public/pages/scripts/components/jsonEditor.mjs",
 						"src/scripts/test/playwright/json_editor.mjs"
 					]
+				},
+				{
+					"name": "urlChar",
+					"expected": "10s",
+					"triggers": [
+						"src/public/parts/shells/telegrambot/test/frontend/urlChar.spec.mjs",
+						"src/public/parts/shells/telegrambot/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/telegrambot/test/frontend/fixtures/chars/urlChar/**",
+						"src/public/parts/shells/telegrambot/public/index.{html,mjs}",
+						"src/public/parts/shells/telegrambot/src/{bot.mjs,default_interface/**,endpoints.mjs}",
+						"src/public/parts/shells/telegrambot/test/frontend/run.mjs"
+					]
 				}
 			],
 			"run": [

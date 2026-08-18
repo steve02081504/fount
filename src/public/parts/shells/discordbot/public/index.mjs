@@ -123,7 +123,7 @@ async function loadBotConfig(botname, urlChar) {
 		const effectiveChar = urlChar || config.char
 		charSelectDropdown.dataset.value = effectiveChar || ''
 
-		if (effectiveChar && !Object.keys(config.config).length) {
+		if (effectiveChar && !Object.keys(config.config || {}).length) {
 			const template = await getBotConfigTemplate(effectiveChar)
 			if (template) config.config = template
 		}

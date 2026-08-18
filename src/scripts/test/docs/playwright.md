@@ -26,6 +26,8 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 
 `json_editor.mjs` → `expectJsonEditorAriaLabel(page, containerSelector, i18nKey, expect)` asserts `vanilla-jsoneditor` text-mode `.cm-content` `aria-label` matches `geti18n(key)`. Product wrappers must pass an i18n key as `createJsonEditor(..., { ariaLabel })` — see pages `AGENTS.md`.
 
+`expectJsonEditorCtrlSSave(page, containerSelector, expect)` proves the container intercepts Ctrl+S: dispatches a synthetic `keydown` on `.cm-content` with a capture-phase probe on the container (registered after the product listener, same element/phase → fires after it) and asserts `defaultPrevented`. Needed because `vanilla-jsoneditor` `stopPropagation()`s every keydown at `.jse-main`, so a bubble-phase container listener can never see Ctrl+S — the product handler must be capture-phase.
+
 ## Network diagnostics
 
 `browser_diagnostics.mjs` (wired in `createFountFixtures` / `createPagesFixtures`):

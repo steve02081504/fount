@@ -4,4 +4,5 @@
 export const phases = [
 	{ name: 'smoke', testMatch: ['smoke.spec.mjs'] },
 	{ name: 'jsonEditor', testMatch: ['jsonEditor.spec.mjs'] },
+	{ name: 'urlChar', testMatch: ['urlChar.spec.mjs'] },
 ]
