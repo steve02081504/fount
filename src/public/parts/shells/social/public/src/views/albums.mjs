@@ -8,19 +8,17 @@ import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 
 /**
  * @param {object | null} coverMediaRef 封面
- * @param {string} displayName 相册名
  * @returns {string} 封面 HTML
  */
-function renderAlbumCoverHtml(coverMediaRef, displayName) {
+function renderAlbumCoverHtml(coverMediaRef) {
 	if (coverMediaRef)
 		try {
 			const url = mediaRefUrl(coverMediaRef)
-			const alt = escapeHtml(String(coverMediaRef.alt || displayName))
-			return `<div class="album-card-cover"><img class="album-card-cover-img" src="${escapeHtml(url)}" alt="${alt}" loading="lazy" /></div>`
+			return `<div class="album-card-cover"><img class="album-card-cover-img" src="${escapeHtml(url)}" alt="" loading="lazy" /></div>`
 		}
 		catch { /* fall through */ }
 
-	return `<div class="album-card-cover album-card-cover-fallback">${escapeHtml(displayName)}</div>`
+	return ''
 }
 
 /**
@@ -64,9 +62,9 @@ export async function renderProfileAlbums(entityHash, container) {
 			: `<strong>${escapeHtml(album.name)}</strong>`
 		const coverFallback = album.virtual
 			? '<div class="album-card-cover album-card-cover-fallback" data-i18n="social.profile.albums.defaultName"></div>'
-			: renderAlbumCoverHtml(album.coverMediaRef, album.name)
+			: '<div class="album-card-cover album-card-cover-fallback"></div>'
 		card.innerHTML = `
-			${album.coverMediaRef ? renderAlbumCoverHtml(album.coverMediaRef, album.virtual ? '' : album.name) : coverFallback}
+			${album.coverMediaRef ? renderAlbumCoverHtml(album.coverMediaRef) : coverFallback}
 			<div class="album-card-meta">
 				${nameHtml}
 				<span class="muted"><span class="album-post-count">${album.postCount || 0}</span> · <span data-i18n="${escapeHtml(vis.labelKey)}"></span></span>

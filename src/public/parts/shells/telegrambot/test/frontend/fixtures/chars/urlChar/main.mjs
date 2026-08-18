@@ -5,6 +5,7 @@
 export default {
 	interfaces: {
 		telegram: {
+			/** @returns {object} 提供确定性的 Telegram 配置模板。 */
 			GetBotConfigTemplate: () => ({
 				OwnerUserID: 'URL_CHAR_TEMPLATE_OWNER',
 				MediaGroupFlushMs: 1234,

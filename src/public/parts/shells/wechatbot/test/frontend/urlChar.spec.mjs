@@ -17,11 +17,13 @@ test.describe('WeChat bot URL char template prefill', () => {
 
 	test('URL char param does not clobber a saved non-empty config', async ({ page, baseUrl }) => {
 		const botname = `url-char-saved-${Date.now()}`
-		const saved = { token: 'test-token', char: 'urlChar', config: { OwnerWeChatId: 'SAVED_OWNER' } }
-		const res = await page.request.post(`${baseUrl}/api/parts/shells:wechatbot/setbotconfig`, {
-			data: { botname, config: saved },
+		const response = await page.request.post(`${baseUrl}/api/parts/shells:wechatbot/setbotconfig`, {
+			data: {
+				botname,
+				config: { token: 'test-token', char: 'urlChar', config: { OwnerWeChatId: 'SAVED_OWNER' } },
+			},
 		})
-		expect(res.ok()).toBeTruthy()
+		expect(response.ok()).toBeTruthy()
 
 		await page.goto(`${baseUrl}/parts/shells:wechatbot/?name=${botname}&char=urlChar`, {
 			waitUntil: 'domcontentloaded',

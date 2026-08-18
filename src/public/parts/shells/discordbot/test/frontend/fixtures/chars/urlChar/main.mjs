@@ -5,10 +5,7 @@
 export default {
 	interfaces: {
 		discord: {
-			/**
-			 * 提供确定性的 Discord 配置模板。
-			 * @returns {object} 模板内容
-			 */
+			/** @returns {object} 提供确定性的 Discord 配置模板。 */
 			GetBotConfigTemplate: () => ({
 				OwnerUserName: 'URL_CHAR_TEMPLATE_OWNER',
 				OwnerUserID: 'URL_CHAR_TEMPLATE_OWNER_ID',

@@ -24,8 +24,8 @@ test.describe('Telegram bot JSON editor a11y', () => {
 
 test.describe('Telegram bot JSON editor Ctrl+S save', () => {
 	test('Ctrl+S is intercepted and saves the bot config', async ({ page, baseUrl }) => {
-		const botname = 'ctrl-s-save'
-		await page.goto(`${baseUrl}/parts/shells:telegrambot/?name=${botname}`, {
+		const botName = 'ctrl-s-save'
+		await page.goto(`${baseUrl}/parts/shells:telegrambot/?name=${botName}`, {
 			waitUntil: 'domcontentloaded',
 		})
 
@@ -42,10 +42,10 @@ test.describe('Telegram bot JSON editor Ctrl+S save', () => {
 		// 且触发 onSave → 配置持久化。
 		await expectJsonEditorCtrlSSave(page, '#config-editor', expect)
 
-		await expect.poll(() => page.evaluate(async botname => {
+		await expect.poll(() => page.evaluate(async botName => {
 			const { getBotConfig } = await import('/parts/shells:telegrambot/src/endpoints.mjs')
-			return getBotConfig(botname)
-		}, botname)).toMatchObject({
+			return getBotConfig(botName)
+		}, botName)).toMatchObject({
 			token: 'test-token',
 			config: { foo: 'bar' },
 		})
