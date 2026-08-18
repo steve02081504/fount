@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# fount self-update via git + deno upgrade
+# 通过 git + deno 升级完成 fount 自更新
 
-# Refresh origin/<branch> only. On failure, ls-remote to tell deleted vs network.
-# Sets remoteBranch=origin/<branch> on success. Falls back to master when branch is gone.
+# 只刷新 origin/<branch>。失败时用 ls-remote 区分已删除与网络问题。
+# 成功时设置 remoteBranch=origin/<branch>。分支消失时回退到 master。
 fount_resolve_upstream() {
 	local branch="$1" remote_status had_upstream
 	had_upstream=$(invoke_repo_git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null) || had_upstream=
@@ -19,7 +19,7 @@ fount_resolve_upstream() {
 	git_remote_branch_status "$branch"
 	remote_status=$?
 	if [ "$remote_status" -eq 2 ] || [ "$remote_status" -eq 0 ]; then
-		# Network error, or exists but fetch failed — never treat as deleted.
+		# 网络错误，或存在但拉取失败 —— 绝不当作已删除。
 		print_i18n_yellow 'git.fetchFailed' >&2
 		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
 		return 1
@@ -120,7 +120,7 @@ fount_upgrade() {
 	fi
 }
 
-# Foreground fount + deno upgrade.
+# 前台执行 fount + deno 升级。
 update_fount_and_deno() {
 	if [ -f "$FOUNT_DIR/.noupdate" ]; then
 		get_i18n 'update.skippingFountUpdate'
@@ -130,7 +130,7 @@ update_fount_and_deno() {
 	deno_upgrade
 }
 
-# Switch to a remote branch tip (one-shot fetch; does not widen remote.origin.fetch).
+# 切换到远端分支尖端（一次性拉取；不扩展 remote.origin.fetch）。
 fount_switch_to_branch() {
 	local target="$1"
 	get_i18n 'update.switchingToBranch' 'branch' "$target"
@@ -142,7 +142,7 @@ fount_switch_to_branch() {
 	fi
 }
 
-# Explicit target: PR → detach at head & .noupdate; branch → track tip & clear .noupdate; commit → detach & .noupdate.
+# 显式目标：PR → 分离到 head 并写 .noupdate；分支 → 跟踪尖端并清除 .noupdate；提交 → 分离并写 .noupdate。
 fount_update_to_ref() {
 	local target="$1" commit remote_status pr_number
 	install_package "git" "git" || return 0
@@ -160,7 +160,7 @@ fount_update_to_ref() {
 
 	invoke_repo_git config core.autocrlf false
 
-	# GitHub pull request tip — pin like a commit (re-run the same command to refresh).
+	# GitHub pull request 尖端 —— 像提交一样固定（重复运行同一命令即可刷新）。
 	if pr_number=$(git_parse_pr_number "$target"); then
 		get_i18n 'update.pinningToPullRequest' 'pr' "$pr_number"
 		if ! git_fetch_pull_request "$pr_number"; then
@@ -175,7 +175,7 @@ fount_update_to_ref() {
 		return
 	fi
 
-	# Known locally / already tracked — refresh that one tip, no ls-remote.
+	# 本地已知/已跟踪 —— 只刷新那一个尖端，不做 ls-remote。
 	if git_ref_exists "origin/$target" || git_ref_exists "refs/heads/$target"; then
 		if git_ref_exists "origin/$target"; then
 			fount_switch_to_branch "$target" || return 1
@@ -194,7 +194,7 @@ fount_update_to_ref() {
 		return
 	fi
 
-	# Unknown named target — ask origin once, then one-shot fetch if it is a branch.
+	# 未知具名目标 —— 先询问 origin 一次，若是分支再做一次性拉取。
 	git_remote_branch_status "$target"
 	remote_status=$?
 	if [ "$remote_status" -eq 2 ]; then
@@ -208,7 +208,7 @@ fount_update_to_ref() {
 		return
 	fi
 
-	# Bare ref → FETCH_HEAD; enough to resolve a commit/tag object.
+	# 裸 ref → FETCH_HEAD；足以解析一个 commit/tag 对象。
 	git_fetch_with_fallback "$target" 2>/dev/null || true
 	commit=$(invoke_repo_git rev-parse --verify "${target}^{commit}" 2>/dev/null) || {
 		print_i18n_yellow 'update.unknownTarget' 'target' "$target" >&2
@@ -222,7 +222,7 @@ fount_update_to_ref() {
 	deno_upgrade
 }
 
-# After the first successful deno upgrade, routine starts refresh in the background.
+# 首次成功升级 deno 后，例程改为在后台刷新。
 update_fount_and_deno_background() {
 	if [ -f "$FOUNT_DIR/.noupdate" ]; then
 		get_i18n 'update.skippingFountUpdate'
