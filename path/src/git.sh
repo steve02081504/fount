@@ -108,34 +108,34 @@ git_supplement_repo() {
 }
 
 # 对 origin 拉取给定的 refspec，为已存在仓库复用 git_supplement_repo 的区域镜像回退
-# 和低速超时。当 origin 是已知的 fount URL 时，用 -c http.lowSpeed* 设置依次尝试每个
-# 镜像并在结束后恢复原 URL；自定义 origin（fork/自托管）则原样拉取，同样带低速超时，
+# 和低速超时。当 origin 是已知的 fount URL 时，用 -c http.lowSpeed* 和 -c remote.origin.url
+# 依次尝试每个镜像而不改动配置；自定义 origin（fork/自托管）则原样拉取，同样带低速超时，
 # 绝不重写。refs 是内容寻址的，因此从镜像拉取对后续读者而言与主源无异。
 git_fetch_with_fallback() {
-	local origin_url url
+	local origin_url
 	origin_url=$(invoke_repo_git config --get remote.origin.url 2>/dev/null) || origin_url=
-	case "$origin_url" in
-	https://github.com/steve02081504/fount.git|https://gh-proxy.org/github.com/steve02081504/fount.git|https://gitclone.com/github.com/steve02081504/fount.git)
-		local candidates=("$origin_url" "https://github.com/steve02081504/fount.git")
-		if [[ "${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}" =~ _(CN|KP|RU)(\.|@|$) ]]; then
-			candidates+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
+	local candidates
+	candidates=("$origin_url" "https://github.com/steve02081504/fount.git")
+	if [[ "${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}" =~ _(CN|KP|RU)(\.|@|$) ]]; then
+		candidates+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
+	fi
+	# 去重
+	local unique_candidates=()
+	local seen=()
+	local url
+	for url in "${candidates[@]}"; do
+		if [ -z "${seen[$url]:-}" ]; then
+			seen["$url"]=1
+			unique_candidates+=("$url")
 		fi
-		for url in "${candidates[@]}"; do
-			if [ "$url" != "$origin_url" ]; then
-				invoke_repo_git remote set-url origin "$url" || continue
-			fi
-			if invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin --prune "$@"; then
-				if [ "$url" != "$origin_url" ]; then
-					invoke_repo_git remote set-url origin "$origin_url"
-				fi
-				return 0
-			fi
-		done
-		invoke_repo_git remote set-url origin "$origin_url"
-		return 1
-		;;
-	esac
-	invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin --prune "$@"
+	done
+	candidates=("${unique_candidates[@]}")
+	for url in "${candidates[@]}"; do
+		if invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 -c "remote.origin.url=$url" fetch origin --prune "$@"; then
+			return 0
+		fi
+	done
+	return 1
 }
 
 git_backup_uncommitted() {
@@ -344,4 +344,3 @@ fount_show_version() {
 		fount_print_version_status diverged yellow
 	fi
 }
-

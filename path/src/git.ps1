@@ -133,39 +133,28 @@ function script:git_supplement_repo {
 }
 
 # 对 origin 拉取给定的 refspec，为已存在仓库复用 git_supplement_repo 的区域镜像回退
-# 和低速超时。当 origin 是已知的 fount URL 时，用 -c http.lowSpeed* 设置依次尝试每个
-# 镜像并在结束后恢复原 URL；自定义 origin（fork/自托管）则原样拉取，同样带低速超时，
+# 和低速超时。当 origin 是已知的 fount URL 时，用 -c http.lowSpeed* 和 -c remote.origin.url
+# 依次尝试每个镜像而不改动配置；自定义 origin（fork/自托管）则原样拉取，同样带低速超时，
 # 绝不重写。refs 是内容寻址的，因此从镜像拉取对后续读者而言与主源无异。
 function script:git_fetch_with_fallback {
 	$originUrl = invoke_repo_git config --get remote.origin.url 2>$null
 	if ($LastExitCode -ne 0) { $originUrl = $null }
-	if ($originUrl -in @(
-			'https://github.com/steve02081504/fount.git',
+	$candidates = @($originUrl, 'https://github.com/steve02081504/fount.git')
+	if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+		$candidates += @(
 			'https://gh-proxy.org/github.com/steve02081504/fount.git',
 			'https://gitclone.com/github.com/steve02081504/fount.git'
-		)) {
-		$candidates = @($originUrl, 'https://github.com/steve02081504/fount.git')
-		if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
-			$candidates += 'https://gh-proxy.org/github.com/steve02081504/fount.git'
-			$candidates += 'https://gitclone.com/github.com/steve02081504/fount.git'
-		}
-		foreach ($url in $candidates) {
-			if ($url -ne $originUrl) {
-				invoke_repo_git remote set-url origin $url
-				if ($LastExitCode -ne 0) { continue }
-			}
-			invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin --prune @args
-			if ($LastExitCode -eq 0) {
-				if ($url -ne $originUrl) { invoke_repo_git remote set-url origin $originUrl }
-				$global:LastExitCode = 0
-				return
-			}
-		}
-		invoke_repo_git remote set-url origin $originUrl
-		$global:LastExitCode = 1
-		return
+		)
 	}
-	invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 fetch origin --prune @args
+	$candidates = $candidates | Select-Object -Unique
+	foreach ($url in $candidates) {
+		invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 -c "remote.origin.url=$url" fetch origin --prune @args
+		if ($LastExitCode -eq 0) {
+			$global:LastExitCode = 0
+			return
+		}
+	}
+	$global:LastExitCode = 1
 }
 
 function script:git_backup_uncommitted {
