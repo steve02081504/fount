@@ -32,9 +32,12 @@ function script:fount_update_to_ref($Target) {
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host (Get-I18n -key 'git.repoNotFound')
-		invoke_repo_git init -b master
-		invoke_repo_git config core.autocrlf false
-		invoke_repo_git remote add origin https://github.com/steve02081504/fount.git
+		git_supplement_repo
+		if ($LastExitCode -ne 0) {
+			Write-Warning (Get-I18n -key 'git.fetchFailed')
+			Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+			return
+		}
 	}
 
 	invoke_repo_git config core.autocrlf false

@@ -151,9 +151,11 @@ fount_update_to_ref() {
 	fi
 	if [ ! -d "$FOUNT_DIR/.git" ]; then
 		get_i18n 'git.repoNotFound'
-		invoke_repo_git init -b master
-		invoke_repo_git config core.autocrlf false
-		invoke_repo_git remote add origin https://github.com/steve02081504/fount.git || true
+		if ! git_supplement_repo; then
+			print_i18n_yellow 'git.fetchFailed' >&2
+			print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+			return 1
+		fi
 	fi
 
 	invoke_repo_git config core.autocrlf false
