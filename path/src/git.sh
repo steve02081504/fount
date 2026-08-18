@@ -81,11 +81,11 @@ git_fetch_pull_request() {
 # Leaves origin pointed at whichever URL actually fetched.
 git_supplement_repo() {
 	local urls=("https://github.com/steve02081504/fount.git") origin_added=0 url
-	if [[ "${LC_ALL:-${LC_MESSAGES:-$LANG}}" =~ _(CN|KP|RU)(\.|@|$) ]]; then
+	if [[ "${LC_ALL:-${LC_MESSAGES:-${LANG:-}}}" =~ _(CN|KP|RU)(\.|@|$) ]]; then
 		urls+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
 	fi
 	local had_git=0
-	if [ -n "${FOUNT_DIR:-}" ] && [ -d "$FOUNT_DIR/.git" ]; then had_git=1; fi
+	if [ -n "${FOUNT_DIR:-}" ] && [ -e "$FOUNT_DIR/.git" ]; then had_git=1; fi
 	invoke_repo_git init -b master || return 1
 	invoke_repo_git config core.autocrlf false || return 1
 	for url in "${urls[@]}"; do
@@ -110,7 +110,7 @@ git_supplement_repo() {
 
 git_backup_uncommitted() {
 	command -v git &>/dev/null || return 0
-	[ -d "$FOUNT_DIR/.git" ] || return 0
+	[ -e "$FOUNT_DIR/.git" ] || return 0
 	if [ -z "$(invoke_repo_git status --porcelain)" ]; then
 		return 0
 	fi
@@ -265,7 +265,7 @@ fount_show_version() {
 		print_i18n_yellow 'version.noGit' >&2
 		return 1
 	fi
-	if [ ! -d "$FOUNT_DIR/.git" ]; then
+	if [ ! -e "$FOUNT_DIR/.git" ]; then
 		print_i18n_yellow 'version.noRepo' >&2
 		return 1
 	fi

@@ -45,7 +45,7 @@ fount_upgrade() {
 	if git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then : else
 		git config --global --add safe.directory "$FOUNT_DIR"
 	fi
-	if [ ! -d "$FOUNT_DIR/.git" ]; then
+	if [ ! -e "$FOUNT_DIR/.git" ]; then
 		get_i18n 'git.repoNotFound'
 		get_i18n 'git.fetchingAndResetting'
 		if ! git_supplement_repo; then
@@ -149,7 +149,7 @@ fount_update_to_ref() {
 	if git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then : else
 		git config --global --add safe.directory "$FOUNT_DIR"
 	fi
-	if [ ! -d "$FOUNT_DIR/.git" ]; then
+	if [ ! -e "$FOUNT_DIR/.git" ]; then
 		get_i18n 'git.repoNotFound'
 		if ! git_supplement_repo; then
 			print_i18n_yellow 'git.fetchFailed' >&2
