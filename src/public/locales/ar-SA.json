@@ -395,6 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "نظرًا لوجود الملف ‎`.noupdate`، يتم تخطي تحديث fount",
 				"switchingToBranch": "جارٍ التبديل إلى الفرع «${branch}»…",
+				"switchingToRemote": "التبديل إلى الفرع الافتراضي \"${url}\" للفرع البعيد \"${branch}\"...",
 				"removedNoUpdate": "تمت إزالة `.noupdate`؛ استُعيدت التحديثات التلقائية.",
 				"pinningToCommit": "جارٍ التثبيت على الالتزام `${ref}` وإنشاء `.noupdate`…",
 				"pinningToPullRequest": "جارٍ التثبيت على طلب السحب #${pr} وإنشاء `.noupdate`…",

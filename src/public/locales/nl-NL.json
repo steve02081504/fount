@@ -395,6 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "Omdat het `.noupdate`-bestand bestaat, wordt de fount-update overgeslagen",
 				"switchingToBranch": "Schakelen naar branch '${branch}'…",
+				"switchingToRemote": "Overschakelen naar de standaardvertakking \"${url}\" van externe \"${branch}\"...",
 				"removedNoUpdate": "`.noupdate` verwijderd; automatische updates hervat.",
 				"pinningToCommit": "Vastzetten op commit `${ref}` en `.noupdate` aanmaken…",
 				"pinningToPullRequest": "Vastzetten op pull request #${pr} en `.noupdate` aanmaken…",

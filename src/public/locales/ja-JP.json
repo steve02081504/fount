@@ -395,6 +395,7 @@
 			"update": {
 				"skippingFountUpdate": "`.noupdate` ファイルが存在するため、fountの更新はスキップされます",
 				"switchingToBranch": "ブランチ「${branch}」に切り替えています…",
+				"switchingToRemote": "リモート「${url}」のデフォルトブランチ「${branch}」に切り替えています...",
 				"removedNoUpdate": "`.noupdate` を削除しました。自動更新を再開します。",
 				"pinningToCommit": "コミット `${ref}` に固定し、`.noupdate` を作成しています…",
 				"pinningToPullRequest": "プルリクエスト #${pr} に固定し、`.noupdate` を作成しています…",
