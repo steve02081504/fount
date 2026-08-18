@@ -81,8 +81,7 @@ git_fetch_pull_request() {
 # Leaves origin pointed at whichever URL actually fetched.
 git_supplement_repo() {
 	local urls=("https://github.com/steve02081504/fount.git") origin_added=0 url
-	local locale_var="${LC_ALL:-${LC_MESSAGES:-$LANG}}"
-	if [[ "$locale_var" =~ _(CN|KP|RU)(\.|@|$) ]]; then
+	if [[ "${LC_ALL:-${LC_MESSAGES:-$LANG}}" =~ _(CN|KP|RU)(\.|@|$) ]]; then
 		urls+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
 	fi
 	local had_git=0
