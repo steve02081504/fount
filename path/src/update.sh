@@ -231,6 +231,12 @@ fount_update_to_ref() {
 # `fount update <remote-url>` —— 把 origin 指到该远程并切到其默认分支（随后普通更新跟随它）。
 fount_update_to_url() {
 	local url="$1" default_branch
+	if ! default_branch=$(invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 ls-remote --symref "$url" HEAD 2>/dev/null); then
+		print_i18n_yellow 'git.fetchFailed' >&2
+		return 1
+	fi
+	default_branch=$(printf '%s\n' "$default_branch" | sed -n 's/^ref: refs\/heads\/\([^[:space:]]*\).*/\1/p' | head -n 1)
+	[ -z "$default_branch" ] && default_branch=master
 	if invoke_repo_git remote | grep -qx origin; then
 		if ! invoke_repo_git remote set-url origin "$url"; then
 			print_i18n_yellow 'git.fetchFailed' >&2
@@ -242,12 +248,6 @@ fount_update_to_url() {
 			return 1
 		fi
 	fi
-	if ! default_branch=$(invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 ls-remote --symref "$url" HEAD 2>/dev/null); then
-		print_i18n_yellow 'git.fetchFailed' >&2
-		return 1
-	fi
-	default_branch=$(printf '%s\n' "$default_branch" | sed -n 's/^ref: refs\/heads\/\([^[:space:]]*\).*/\1/p' | head -n 1)
-	[ -z "$default_branch" ] && default_branch=master
 	get_i18n 'update.switchingToRemote' 'url' "$url" 'branch' "$default_branch"
 	fount_switch_to_branch "$default_branch" || return 1
 	deno_upgrade

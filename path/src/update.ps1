@@ -121,6 +121,16 @@ function script:fount_update_to_ref($Target) {
 
 # `fount update <remote-url>` —— 把 origin 指到该远程并切到其默认分支（随后普通更新跟随它）。
 function script:fount_update_to_url($Url) {
+	$symref = invoke_repo_git -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 ls-remote --symref $Url HEAD 2>$null
+	if ($LastExitCode -ne 0) {
+		Write-Warning (Get-I18n -key 'git.fetchFailed')
+		return
+	}
+	$defaultBranch = $null
+	foreach ($line in $symref) {
+		if ($line -match '^ref:\s*refs/heads/([^\s\t]+)') { $defaultBranch = $Matches[1]; break }
+	}
+	if (-not $defaultBranch) { $defaultBranch = 'master' }
 	if (invoke_repo_git remote 2>$null -contains 'origin') {
 		invoke_repo_git remote set-url origin $Url
 	}
@@ -131,16 +141,6 @@ function script:fount_update_to_url($Url) {
 		Write-Warning (Get-I18n -key 'git.fetchFailed')
 		return
 	}
-	$symref = invoke_repo_git ls-remote --symref $Url HEAD 2>$null
-	if ($LastExitCode -ne 0) {
-		Write-Warning (Get-I18n -key 'git.fetchFailed')
-		return
-	}
-	$defaultBranch = $null
-	foreach ($line in $symref) {
-		if ($line -match '^ref:\s*refs/heads/([^\s\t]+)') { $defaultBranch = $Matches[1]; break }
-	}
-	if (-not $defaultBranch) { $defaultBranch = 'master' }
 	fount_switch_to_branch $defaultBranch
 	if ($LastExitCode -ne 0) { return }
 	deno_upgrade
