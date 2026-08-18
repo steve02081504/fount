@@ -214,8 +214,15 @@ function Install-FountTree {
 	param([string]$Dir, [string]$Branch)
 	Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
 	if (Get-Command git -ErrorAction Ignore) {
-		git clone -c core.autocrlf=false https://github.com/steve02081504/fount $Dir --depth 1 --single-branch --branch $Branch
-		if ($LastExitCode) {
+		$useMirrors = (Get-Culture).Name -match '-(CN|KP|RU)$'
+		$cloneUrls = @("https://github.com/steve02081504/fount")
+		if ($useMirrors) {
+			$cloneUrls += "https://gh-proxy.org/github.com/steve02081504/fount"
+			$cloneUrls += "https://gitclone.com/github.com/steve02081504/fount.git"
+		}
+		foreach ($url in $cloneUrls) {
+			git clone -c core.autocrlf=false -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 $url $Dir --depth 1 --single-branch --branch $Branch
+			if ($LastExitCode -eq 0) { break }
 			Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
 		}
 	}

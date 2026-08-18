@@ -262,6 +262,7 @@ remove_fount_after_eula_decline() {
 }
 
 install_fount_tree() {
+	local clone_ok="" clones=()
 	echo -e "Installing fount into ${C_CYAN}$FOUNT_DIR${C_RESET}..."
 	rm -rf "$FOUNT_DIR"
 	mkdir -p "$(dirname "$FOUNT_DIR")"
@@ -270,7 +271,18 @@ install_fount_tree() {
 	if command -v git &>/dev/null; then
 		write_taskbar_progress 25
 		echo "Cloning fount repository..."
-		if git clone -c core.autocrlf=false https://github.com/steve02081504/fount.git "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
+		clones+=("https://github.com/steve02081504/fount.git")
+		if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
+			clones+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
+		fi
+		for clone_url in "${clones[@]}"; do
+			if git clone -c core.autocrlf=false -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 "$clone_url" "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
+				clone_ok=1
+				break
+			fi
+			rm -rf "$FOUNT_DIR"
+		done
+		if [ -n "$clone_ok" ]; then
 			echo -e "${C_GREEN}Clone successful.${C_RESET}"
 			write_taskbar_progress 40
 		else
