@@ -5778,6 +5778,12 @@
 			"title": "Systeminformationen",
 			"failed": "Systeminformationen konnten nicht geladen werden"
 		},
+		"testStatus": {
+			"title": "Teststatus",
+			"running": "Test läuft",
+			"idle": "Kernel online testen (inaktiv)",
+			"queued": "Warteschlange"
+		},
 		"connectivity": {
 			"backend": "Backend-Konnektivität",
 			"frontend": "Front-End-Konnektivität"

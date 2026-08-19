@@ -5740,6 +5740,12 @@ export type LocaleData = {
 			title: string
 			failed: string
 		}
+		testStatus: {
+			title: string
+			running: string
+			idle: string
+			queued: string
+		}
 		connectivity: {
 			backend: string
 			frontend: string

@@ -5784,6 +5784,12 @@
 			"title": "Informazioni di sistema",
 			"failed": "Impossibile caricare le informazioni di sistema"
 		},
+		"testStatus": {
+			"title": "stato della prova",
+			"running": "Il test è in corso",
+			"idle": "Testare il kernel online (inattivo)",
+			"queued": "In coda"
+		},
 		"connectivity": {
 			"backend": "connettività di back-end",
 			"frontend": "connettività front-end"

@@ -5778,6 +5778,12 @@
 			"title": "시스템 정보",
 			"failed": "시스템 정보를 로드하지 못했습니다."
 		},
+		"testStatus": {
+			"title": "테스트 상태",
+			"running": "테스트가 실행 중입니다.",
+			"idle": "온라인으로 커널 테스트(유휴)",
+			"queued": "대기열"
+		},
 		"connectivity": {
 			"backend": "백엔드 연결",
 			"frontend": "프런트엔드 연결"

@@ -5778,6 +5778,12 @@
 			"title": "Thông tin hệ thống",
 			"failed": "Không tải được thông tin hệ thống"
 		},
+		"testStatus": {
+			"title": "trạng thái kiểm tra",
+			"running": "Bài kiểm tra đang chạy",
+			"idle": "Kiểm tra kernel trực tuyến (nhàn rỗi)",
+			"queued": "Xếp hàng"
+		},
 		"connectivity": {
 			"backend": "Kết nối Backend",
 			"frontend": "kết nối mặt trước"

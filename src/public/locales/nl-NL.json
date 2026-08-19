@@ -5784,6 +5784,12 @@
 			"title": "Systeeminformatie",
 			"failed": "Kan systeeminformatie niet laden"
 		},
+		"testStatus": {
+			"title": "teststatus",
+			"running": "Test loopt",
+			"idle": "Kernel online testen (inactief)",
+			"queued": "In de rij staan"
+		},
 		"connectivity": {
 			"backend": "backend-connectiviteit",
 			"frontend": "front-end connectiviteit"

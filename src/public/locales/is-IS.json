@@ -5778,6 +5778,12 @@
 			"title": "Kerfisupplýsingar",
 			"failed": "Mistókst að hlaða kerfisupplýsingum"
 		},
+		"testStatus": {
+			"title": "prófunarstaða",
+			"running": "Próf er í gangi",
+			"idle": "Prófaðu kjarna á netinu (aðgerðalaus)",
+			"queued": "Biðraðir"
+		},
 		"connectivity": {
 			"backend": "bakenda tengingu",
 			"frontend": "tenging í framhlið"

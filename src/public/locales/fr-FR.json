@@ -5784,6 +5784,12 @@
 			"title": "Informations système",
 			"failed": "Échec du chargement des informations système"
 		},
+		"testStatus": {
+			"title": "statut du test",
+			"running": "Le test est en cours",
+			"idle": "Tester le noyau en ligne (inactif)",
+			"queued": "File d'attente"
+		},
 		"connectivity": {
 			"backend": "Connectivité back-end",
 			"frontend": "connectivité frontale"

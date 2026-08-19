@@ -5784,6 +5784,12 @@
 			"title": "Informações do sistema",
 			"failed": "Falha ao carregar informações do sistema"
 		},
+		"testStatus": {
+			"title": "status do teste",
+			"running": "O teste está em execução",
+			"idle": "Teste o kernel online (inativo)",
+			"queued": "Na fila"
+		},
 		"connectivity": {
 			"backend": "conectividade de back-end",
 			"frontend": "conectividade frontal"

@@ -5777,6 +5777,12 @@
 			"title": "系統資訊",
 			"failed": "載入系統資訊失敗"
 		},
+		"testStatus": {
+			"title": "測試狀態",
+			"running": "測試正在運行中",
+			"idle": "測試核心在線（空閒）",
+			"queued": "排隊中"
+		},
 		"connectivity": {
 			"backend": "後端連線狀態",
 			"frontend": "前端連線狀態"
