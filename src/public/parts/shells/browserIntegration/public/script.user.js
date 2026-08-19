@@ -881,8 +881,8 @@ function computePageThemeColors() {
 			if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT
 			const el = node.parentElement
 			if (!el) return NodeFilter.FILTER_REJECT
-			const style = el.getBoundingClientRect()
-			if (style.width && style.height) return NodeFilter.FILTER_ACCEPT
+			const rect = el.getBoundingClientRect()
+			if (rect.width && rect.height) return NodeFilter.FILTER_ACCEPT
 			return NodeFilter.FILTER_REJECT
 		}
 	})

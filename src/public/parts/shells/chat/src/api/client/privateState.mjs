@@ -123,6 +123,26 @@ export function createPrivateStateMethods(apiContext) {
 						return { channels: next }
 					})
 				},
+				/**
+				 * 删除单个频道草稿并返回被移除附件的 fileId（用于清空或过期回收）。
+				 * @param {string} key `${groupId}:${channelId}`
+				 * @returns {Promise<{ removedFileIds: string[] }>} 被清理附件的 fileId 列表
+				 */
+				async remove(key) {
+					/** @type {string[]} */
+					const removedFileIds = []
+					await ns.update(({ channels }) => {
+						const next = { ...channels }
+						const record = next[key]
+						if (record) {
+							for (const file of record.files || [])
+								if (file?.fileId) removedFileIds.push(file.fileId)
+							delete next[key]
+						}
+						return { channels: next }
+					})
+					return { removedFileIds }
+				},
 			}
 		},
 		/**

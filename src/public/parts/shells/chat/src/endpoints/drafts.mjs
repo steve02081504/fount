@@ -4,9 +4,13 @@ import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
 
 import { chatClientFromReq } from './shared.mjs'
 
+/** 草稿保留时长：群退出 / 频道不可见后最多保留 7 年。 */
+const DRAFT_RETENTION_MS = 7 * 365 * 24 * 60 * 60 * 1000
+
 /**
  * 注册频道草稿路由。草稿按 `key = groupId:channelId` 存于用户数据层：
  * 元数据 + 附件缩略图在 `drafts`，附件完整内容（base64）在 `draftContents`（点击时懒拉取）。
+ * 频道被删除 → 调用方立即清理；群退出 / 频道不可见 → 由 lastModified 超过保留期后懒回收。
  * @param {import('npm:express').Router} router Express 路由
  * @returns {void}
  */
@@ -15,9 +19,16 @@ export function registerDraftRoutes(router) {
 		const { client } = await chatClientFromReq(req)
 		const key = String(req.params.key || '')
 		const { channels } = await client.drafts.list()
-		res.status(200).json({ channel: channels[key] || null })
+		const channel = channels[key] || null
+		if (channel && typeof channel.lastModified === 'number'
+			&& Date.now() - channel.lastModified > DRAFT_RETENTION_MS) {
+			const { removedFileIds } = await client.drafts.remove(key)
+			if (removedFileIds.length) await client.draftContents.removeMany(removedFileIds)
+			res.status(200).json({ channel: null })
+			return
+		}
+		res.status(200).json({ channel })
 	})
-
 	router.put(`${CHAT_API_PREFIX}/drafts/:key`, authenticate, async (req, res) => {
 		const { client } = await chatClientFromReq(req)
 		const key = String(req.params.key || '')
@@ -52,6 +63,7 @@ export function registerDraftRoutes(router) {
 			...body.content_warning ? { content_warning: String(body.content_warning) } : {},
 			...body.sensitive_media ? { sensitive_media: true } : {},
 			files,
+			lastModified: Date.now(),
 		}
 		const isEmpty = !record.text && !record.content_warning && !record.sensitive_media && !record.files.length
 		await client.drafts.save(key, isEmpty ? null : record)
