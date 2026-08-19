@@ -39,7 +39,7 @@ export async function loadDrafts() {
 					${previewHtml}
 					${formatTimeHtml(row.updatedAt, 'draft-row-meta')}
 				</button>
-				<button type="button" class="btn btn-ghost btn-sm btn-circle draft-row-action" data-delete-draft="${escapeHtml(row.draftId)}" data-i18n="social.drafts.delete">
+				<button type="button" class="btn btn-ghost btn-sm btn-square draft-row-action" data-delete-draft="${escapeHtml(row.draftId)}" data-i18n="social.drafts.delete">
 					<span class="icon icon-delete" aria-hidden="true"></span>
 				</button>
 			</li>

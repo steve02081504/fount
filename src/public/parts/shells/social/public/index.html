@@ -136,21 +136,21 @@
 						</div>
 						<div class="composer-toolbar">
 							<div class="composer-tools">
-								<button id="emojiPickButton" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.emojiButton">
+								<button id="emojiPickButton" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-square" data-i18n="social.composer.emojiButton">
 									<span class="icon icon-emoji" aria-hidden="true"></span>
 								</button>
-								<label class="composer-tool-btn btn btn-ghost btn-sm btn-circle media-upload-btn">
+								<label class="composer-tool-btn btn btn-ghost btn-sm btn-square media-upload-btn">
 									<span class="sr-only" data-i18n="social.composer.mediaButton"></span>
 									<span class="icon icon-media" aria-hidden="true"></span>
 									<input id="mediaInput" type="file" accept="image/*,video/*,audio/*" multiple hidden />
 								</label>
-								<button id="voiceButton" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.voiceButton">
+								<button id="voiceButton" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-square" data-i18n="social.composer.voiceButton">
 									<span class="icon icon-mic" aria-hidden="true"></span>
 								</button>
-								<button id="pollComposerToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.pollButton">
+								<button id="pollComposerToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-square" data-i18n="social.composer.pollButton">
 									<span class="icon icon-vote" aria-hidden="true"></span>
 								</button>
-								<button id="composerCwToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.cwToggle">
+								<button id="composerCwToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-square" data-i18n="social.composer.cwToggle">
 									<span class="icon icon-content-warning" aria-hidden="true"></span>
 								</button>
 								<select id="postVisibility" data-visibility-select class="select select-bordered select-sm composer-visibility rounded-box max-w-40" data-i18n="social.composer.visibility">
@@ -162,7 +162,7 @@
 									<option value="selected" data-i18n="social.composer.visibility.selected"></option>
 									<option value="private" data-i18n="social.composer.visibility.private"></option>
 								</select>
-								<button id="composerAdvancedToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.advancedToggle">
+								<button id="composerAdvancedToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-square" data-i18n="social.composer.advancedToggle">
 									<span class="icon icon-options" aria-hidden="true"></span>
 								</button>
 								<input id="postLocale" type="hidden" value="zh-CN" data-i18n="social.composer.locale" />
@@ -181,10 +181,10 @@
 						<button type="button" class="tab tab-active" role="tab" aria-selected="true" data-feed-ranking="latest" data-i18n="social.feed.tabLatest"></button>
 						<button type="button" class="tab" role="tab" aria-selected="false" data-feed-ranking="for_you" data-i18n="social.feed.tabForYou"></button>
 					</div>
-					<button type="button" id="feedSearchOpenButton" class="btn btn-ghost btn-sm btn-circle mobile-only-btn" data-i18n="social.search.open">
+					<button type="button" id="feedSearchOpenButton" class="btn btn-ghost btn-sm btn-square mobile-only-btn" data-i18n="social.search.open">
 						<span class="icon icon-search" aria-hidden="true"></span>
 					</button>
-					<button type="button" id="feedRefreshButton" class="btn btn-ghost btn-sm btn-circle tooltip" data-i18n="social.feed.refresh">
+					<button type="button" id="feedRefreshButton" class="btn btn-ghost btn-sm btn-square tooltip" data-i18n="social.feed.refresh">
 						<span class="icon icon-refresh" aria-hidden="true"></span>
 					</button>
 				</header>
@@ -253,7 +253,7 @@
 			<section id="savedView" class="view hidden">
 				<header class="view-header">
 					<h2 class="view-title" data-i18n="social.nav.saved.title"></h2>
-					<button type="button" id="createFolderButton" class="btn btn-ghost btn-sm btn-circle" data-i18n="social.saved.createFolder">
+					<button type="button" id="createFolderButton" class="btn btn-ghost btn-sm btn-square" data-i18n="social.saved.createFolder">
 						<span class="icon icon-folder-plus" aria-hidden="true"></span>
 					</button>
 				</header>
@@ -269,7 +269,7 @@
 
 			<section id="settingsView" class="view hidden">
 				<header class="view-header">
-					<button type="button" class="btn btn-ghost btn-sm btn-circle" data-view="profile" data-i18n="social.settings.back">
+					<button type="button" class="btn btn-ghost btn-sm btn-square" data-view="profile" data-i18n="social.settings.back">
 						<span class="icon icon-home" aria-hidden="true"></span>
 					</button>
 					<h2 class="view-title" data-i18n="social.settings.title"></h2>
@@ -354,7 +354,7 @@
 		</main>
 
 		<section id="videosView" class="view hidden" tabindex="-1" data-i18n="social.video.view">
-			<button type="button" class="view-back-btn btn btn-circle btn-ghost" id="videosViewBackButton" data-i18n="social.video.back">
+			<button type="button" class="view-back-btn btn btn-square btn-ghost" id="videosViewBackButton" data-i18n="social.video.back">
 				<span class="icon icon-home" aria-hidden="true"></span>
 			</button>
 			<div class="vertical-snap-view" id="videoSnapContainer"></div>
@@ -362,7 +362,7 @@
 
 		<section id="liveView" class="view hidden" aria-label="Live streams">
 			<div class="live-top-bar">
-				<button type="button" class="view-back-btn btn btn-circle btn-ghost" id="liveViewBackButton" data-i18n="social.live.back">
+				<button type="button" class="view-back-btn btn btn-square btn-ghost" id="liveViewBackButton" data-i18n="social.live.back">
 					<span class="icon icon-home" aria-hidden="true"></span>
 				</button>
 				<div id="liveScopeTabs" class="live-scope-tabs" role="tablist">
@@ -414,7 +414,7 @@
 		</nav>
 
 		<div class="fab compose-fab-wrap">
-			<button type="button" id="composeFab" class="btn btn-primary btn-lg btn-circle" data-i18n="social.composer.fab">
+			<button type="button" id="composeFab" class="btn btn-primary btn-lg btn-square" data-i18n="social.composer.fab">
 				<span class="icon icon-compose" aria-hidden="true"></span>
 			</button>
 		</div>

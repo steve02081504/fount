@@ -52,8 +52,8 @@ function createViewerRoot() {
 					<button type="button" class="btn btn-sm btn-ghost media-viewer-close"></button>
 				</div>
 			</div>
-			<button type="button" class="btn btn-circle btn-ghost media-viewer-nav media-viewer-prev">‹</button>
-			<button type="button" class="btn btn-circle btn-ghost media-viewer-nav media-viewer-next">›</button>
+			<button type="button" class="btn btn-square btn-ghost media-viewer-nav media-viewer-prev">‹</button>
+			<button type="button" class="btn btn-square btn-ghost media-viewer-nav media-viewer-next">›</button>
 			<div class="media-viewer-stage">
 				<div class="media-viewer-transform"></div>
 			</div>

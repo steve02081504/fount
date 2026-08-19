@@ -31,8 +31,12 @@ Deno.test('hasHardcodedRadius: matches rounded-full (avatar circle)', () => {
 	assertEquals(hasHardcodedRadius('rounded-full'), true)
 })
 
+Deno.test('hasHardcodedRadius: matches daisyUI btn-circle (circular button)', () => {
+	assertEquals(hasHardcodedRadius('btn btn-ghost btn-circle btn-sm'), true)
+})
+
 Deno.test('hasHardcodedRadius: does not match theme-aware or explicit square', () => {
-	for (const token of ['rounded-none', 'rounded-box', 'rounded-field', 'rounded-selector', 'rounded-btn', 'rounded-badge'])
+	for (const token of ['rounded-none', 'rounded-box', 'rounded-field', 'rounded-selector', 'rounded-btn', 'rounded-badge', 'btn-square'])
 		assertEquals(hasHardcodedRadius(token), false, `expect ${token} not to match`)
 })
 

@@ -39,13 +39,20 @@ export function isThemeRadiusExcluded(relativePath) {
 /**
  * 硬编码固定圆角类的正则（无 `g` 标志，供 `.test()` 等无状态使用）。
  * 捕获：裸 `rounded`（0.25rem）、`rounded-xs/sm/md/lg/xl/2xl/3xl/4xl`、
- * 单角前缀（`rounded-t-lg` / `rounded-l-md` 等），以及 `rounded-full`（头像等圆）
- * —— 这些都用固定值无视主题圆角方案，应改用主题感知类 `rounded-selector/field/box/btn/badge`。
- * 允许（不命中）：`rounded-none`（显式方形）及主题感知类。
+ * 单角前缀（`rounded-t-lg` / `rounded-l-md` 等）、`rounded-full`（头像等圆），
+ * 以及 daisyUI `btn-circle`（硬编码 `border-radius: 3.40282e38px` 的圆形按钮，
+ * 其悬浮阴影同样呈现圆形）—— 这些都用固定值无视主题圆角方案，
+ * 应改用主题感知类 `rounded-selector/field/box/btn/badge`（按钮用 `rounded-btn` / `btn-square`）。
+ * 允许（不命中）：`rounded-none`（显式方形）、`btn-square` 及主题感知类。
+ * 注意：`btn-square` 名字有误导性（一般人以为"纯方形"），但它其实只设置等宽等高的
+ * 【尺寸】而不碰 `border-radius`——圆角由主题的 `rounded-btn`（即 `--radius-*`）支配，
+ * 故 cyberpunk 下为方形、默认主题下为圆角方形，是"自适应按钮"而非硬方形。
+ * 它不含任何圆角硬编码，因此不应命中（检测管的是"绕过主题圆角/边框"，不是"方不方"）。
+ * 已向 daisyUI 建议改名：https://github.com/saadeghi/daisyui/issues/4687
  * @type {RegExp}
  */
 export const HARDCODED_RADIUS_PATTERN =
-	/rounded-(?:(?:tl|tr|bl|br|t|b|l|r)-)?(?:xs|sm|md|lg|xl|2xl|3xl|4xl|full)\b|\brounded(?![-\w])/u
+	/rounded-(?:(?:tl|tr|bl|br|t|b|l|r)-)?(?:xs|sm|md|lg|xl|2xl|3xl|4xl|full)\b|\brounded(?![-\w])|\bbtn-circle\b/u
 
 /** 带 `g` 标志的扫描用正则（`matchAll` 需要）。 */
 const HARDCODED_RADIUS_GLOBAL = new RegExp(HARDCODED_RADIUS_PATTERN.source, 'gu')
