@@ -360,7 +360,7 @@ export async function readPinNeighborhoodForUser(username, groupId, channelId, p
 		const { state } = await getState(username, groupId)
 		const { archiveSettingsFromGroup } = await import('../chat/archive/settings.mjs')
 		const { listChannelMessages } = await import('../chat/dag/queries.mjs')
-		const pinContext = archiveSettingsFromGroup(state.groupSettings).pinContext
+		const { pinContext } = archiveSettingsFromGroup(state.groupSettings)
 		const all = await listChannelMessages(username, groupId, channelId, {
 			includeArchive: true,
 			decrypt: false,

@@ -33,7 +33,7 @@ export function createGroup(apiContext, groupId, projection) {
 		 * @returns {object | undefined} 服务本群的 BridgeBot
 		 */
 		bridgeBot() {
-			const bridge = projection.bridge
+			const { bridge } = projection
 			if (!bridge?.platform || !bridge?.botname) return undefined
 			return {
 				platform: bridge.platform,

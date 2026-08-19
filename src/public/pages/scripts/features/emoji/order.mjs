@@ -15,7 +15,7 @@
 export const USAGE_WINDOW = 700
 
 /** pack 用量 id：`packId/emojiId`（与 inline emoji token 内段同形，无 `:[emoji:…]:` 包裹） */
-const PACK_USAGE_ID_RE = /^([\w.-]+)\/([^\r\n/]+)$/u
+const PACK_USAGE_ID_RE = /^([\w.-]+)\/([^\n\r/]+)$/u
 
 /**
  * @param {string} packId 包 id

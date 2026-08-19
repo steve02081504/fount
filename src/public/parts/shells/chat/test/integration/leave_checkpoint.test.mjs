@@ -90,7 +90,7 @@ Deno.test('joiner keeps signed checkpoint and can post after ingesting a message
 	const originalCheckpointEventId = snapBBefore.checkpoint_event_id
 	const originalCheckpointSignature = snapBBefore.checkpoint_signature
 
-	const defaultChannelId = (await stateOf(NODE_A, groupId)).groupSettings.defaultChannelId
+	const { defaultChannelId } = (await stateOf(NODE_A, groupId)).groupSettings
 	await postMessage(NODE_A, groupId, defaultChannelId, 'hello from A', [NODE_B])
 	await postMessage(NODE_A, groupId, defaultChannelId, 'hello again from A', [NODE_B])
 

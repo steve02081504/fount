@@ -165,7 +165,7 @@ Deno.test('pickArchiveMonthByReputation prefers manifest monthDigests on tie', a
 		timestamp: 1,
 		content: { content: 'a' },
 	}) + '\n'
-	const digest = digestArchiveMonthBody(body).digest
+	const { digest } = digestArchiveMonthBody(body)
 	const manifest = {
 		archivedEventIds: {},
 		monthDigests: { general: { '2024-01': digest } },

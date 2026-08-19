@@ -30,7 +30,7 @@ export function joinPowBonusFromMemberJoin(state, event) {
 	if (event?.type !== 'member_join') return 0
 	if ((state.groupSettings?.joinPolicy || '') !== 'pow') return 0
 	const content = event.content || {}
-	const powSolution = content.powSolution
+	const { powSolution } = content
 	if (!powSolution) return 0
 	const floorBits = resolvePowFloorBits(state.groupSettings)
 	if (floorBits <= 0) return 0

@@ -72,7 +72,7 @@ async function dispatchToSessionChar(username, session, event) {
  */
 export async function postBridgeGroupEvent(username, dto) {
 	const platform = dto.platform || ''
-	const platformChatId = dto.platformChatId
+	const { platformChatId } = dto
 	if (!platform || platformChatId == null) throw new Error('platform and platformChatId required')
 
 	const session = ensureVirtualBridgeSession(username, {

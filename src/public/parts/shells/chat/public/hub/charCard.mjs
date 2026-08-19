@@ -68,8 +68,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	const info = details?.info || {}
 	const charDisplayName = profile?.name || info.name || name
 	const avatarUrl = displayProfileAvatar(profile)
-	const viewerDisplayName = store.viewer.viewerDisplayName
-	const { viewerEntityHash } = store.viewer
+	const { viewerDisplayName, viewerEntityHash } = store.viewer
 	const memberList = document.getElementById('member-list')
 	const charName = escapeHtml(charDisplayName)
 	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)

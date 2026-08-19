@@ -27,7 +27,7 @@ Deno.test('Codex Call posts Responses with account id and originator fount', asy
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'pong')
 		assertEquals(mock.calls[0].url, 'https://chatgpt.com/backend-api/codex/responses')
-		const headers = mock.calls[0].init.headers
+		const { headers } = mock.calls[0].init
 		assertEquals(headers.Authorization, 'Bearer tok')
 		assertEquals(headers['ChatGPT-Account-Id'], 'acct_x')
 		assertEquals(headers['OpenAI-Beta'], 'responses=v1')

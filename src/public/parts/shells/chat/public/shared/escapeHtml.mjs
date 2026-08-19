@@ -4,7 +4,7 @@
  * @returns {string} 可安全插入属性/文本节点的片段
  */
 export function escapeHtml(text) {
-	return text.replace(/[&<>"']/g, char => ({
+	return text.replace(/["&'<>]/g, char => ({
 		'&': '&amp;',
 		'<': '&lt;',
 		'>': '&gt;',

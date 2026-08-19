@@ -273,7 +273,7 @@ export function listFrequentEmojis(username, limit = 32) {
 	/** @type {Map<string, { id: string, count: number, lastUsedAt: number, kind: string, unicode?: string, packId?: string, emojiId?: string }>} */
 	const map = new Map()
 	for (const entry of log) {
-		const id = entry.id
+		const { id } = entry
 		const prev = map.get(id)
 		const at = entry.at || 0
 		if (prev) {

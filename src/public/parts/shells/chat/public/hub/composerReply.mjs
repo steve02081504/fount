@@ -30,7 +30,7 @@ export function clearReplyTarget() {
  */
 export function setReplyTarget(target) {
 	const eventId = target?.eventId || ''
-	if (!/^[0-9a-f]{64}$/.test(eventId)) return
+	if (!/^[\da-f]{64}$/.test(eventId)) return
 	replyTarget = {
 		eventId,
 		senderName: (target.senderName || '').slice(0, 100) || '…',

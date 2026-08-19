@@ -72,7 +72,7 @@ async function rotateRoomSecretAfterModeration(username, groupId) {
 export function registerGovernanceRoutes(router, authenticate) {
 	router.get(`${GROUPS_PREFIX}/:groupId/permissions`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const groupId = req.params.groupId
+		const { groupId } = req.params
 		const subject = (req.query.pubKeyHash || '').trim()
 		const channelId = (req.query.channelId || '').trim() || 'default'
 
@@ -90,9 +90,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json(flat)
 	})
 
-	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), async (req, res) => {
-		const { state, member } = req.groupContext
-		const { channelId } = req.params
+	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), (req, res) => {
+		const { groupContext: { state, member }, params: { channelId } } = req
 		if (!state.channels[channelId])
 			throw httpError(404, 'Channel not found')
 
@@ -106,8 +105,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), async (req, res) => {
-		const { channelId } = req.params
-		const { roleId, allow, deny } = req.body
+		const { params: { channelId }, body: { roleId, allow, deny } } = req
 		if (!roleId)
 			throw httpError(400, 'roleId is required')
 
@@ -545,7 +543,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, state.channelPermissions)
 			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, state.channelPermissions)
 		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
-		const body = req.body
+		const { body } = req
 		if (!body.cabinet_id) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetBind } = await import('../../chat/cabinets/keys.mjs')
 		const event = await appendCabinetBind(username, req.params.groupId, {
