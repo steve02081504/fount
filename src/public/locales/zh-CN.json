@@ -2112,7 +2112,10 @@
 				"livePreview": "实时预览",
 				"languageVersion": "语言版本",
 				"localeHint": "点击标签切换或编辑代码；在末尾输入框回车可复制为新语言。",
-				"themeColorHint": "无自定义横幅时用于生成纹理，也用于直播声波环",
+				"themeColorHint": "无自定义横幅时用于生成纹理，也用于直播声波环；留空则使用当前主题色",
+				"themeColor": {
+					"clear": "恢复主题默认色"
+				},
 				"linksPreview": "${count} 个公开链接",
 				"unsavedHint": "关闭窗口将放弃未保存的更改",
 				"tagsLabel": "标签",

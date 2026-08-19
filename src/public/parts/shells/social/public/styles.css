@@ -2801,14 +2801,14 @@
 }
 
 .live-scope-btn.is-active {
-	background: var(--color-primary, #5865f2);
+	background: var(--color-primary);
 	border-color: transparent;
 }
 
 .live-go-broadcast-btn {
 	margin-left: auto;
-	border-color: color-mix(in srgb, var(--color-primary, #5865f2) 55%, rgba(255, 255, 255, 0.35));
-	background: color-mix(in srgb, var(--color-primary, #5865f2) 35%, rgba(0, 0, 0, 0.45));
+	border-color: color-mix(in srgb, var(--color-primary) 55%, rgba(255, 255, 255, 0.35));
+	background: color-mix(in srgb, var(--color-primary) 35%, rgba(0, 0, 0, 0.45));
 }
 
 .live-hall-grid {

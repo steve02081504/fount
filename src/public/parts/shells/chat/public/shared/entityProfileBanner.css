@@ -5,7 +5,7 @@
 .entity-profile-banner {
 	position: relative;
 	overflow: hidden;
-	background-color: var(--entity-card-accent, #5865f2);
+	background-color: var(--entity-card-accent, var(--color-primary, var(--color-base-content)));
 	background-position:
 		var(--entity-card-pattern-x, 0) var(--entity-card-pattern-y, 0),
 		center;

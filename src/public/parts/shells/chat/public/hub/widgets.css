@@ -1158,7 +1158,7 @@
 
 .call-dock-channel {
 	font-size: 12px;
-	color: var(--accent, #5865f2);
+	color: var(--accent);
 	font-weight: 500;
 }
 
@@ -1180,8 +1180,8 @@
 }
 
 .call-dock-actions .icon-button.is-active {
-	background: color-mix(in srgb, var(--accent, #5865f2) 22%, transparent);
-	color: var(--accent, #5865f2);
+	background: color-mix(in srgb, var(--accent) 22%, transparent);
+	color: var(--accent);
 }
 
 .call-dock-actions .call-hangup {
@@ -1237,13 +1237,13 @@
 	align-items: center;
 	justify-content: center;
 	font-size: 10px;
-	background: var(--accent, #5865f2);
+	background: var(--accent);
 	color: #fff;
 	overflow: hidden;
 }
 
 #header-call-button.is-active {
-	color: var(--accent, #5865f2);
+	color: var(--accent);
 }
 
 .stream-empty {

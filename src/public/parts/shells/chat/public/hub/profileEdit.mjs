@@ -57,6 +57,8 @@ let editingBannerPreview = ''
 let editingSfwBannerPreview = ''
 /** @type {boolean} */
 let editingBannerCleared = false
+/** @type {string} */
+let editingThemeColor = ''
 /** @type {boolean} */
 let editingSfwMode = false
 /** @type {{ avatar: File | null, banner: File | null }} */
@@ -131,6 +133,25 @@ function sameNormalizedText(a, b) {
  */
 function sameJsonValue(a, b) {
 	return JSON.stringify(a ?? null) === JSON.stringify(b ?? null)
+}
+
+/**
+ * 解析当前主题强调色为 hex（供主题色输入框空态显示）。
+ * 未指定主题色时卡片实际回退 `--color-primary`；这里仅让色块有个可读的展示值。
+ * @returns {string} hex 颜色
+ */
+function resolveThemePrimaryHex() {
+	try {
+		const ctx = document.createElement('canvas').getContext('2d')
+		if (ctx) {
+			ctx.fillStyle = 'var(--color-primary)'
+			ctx.fillRect(0, 0, 1, 1)
+			const { data } = ctx.getImageData(0, 0, 1, 1)
+			return '#' + Array.from(data.slice(0, 3)).map(v => v.toString(16).padStart(2, '0')).join('')
+		}
+	}
+	catch { }
+	return '#000000'
 }
 
 /**
@@ -310,6 +331,15 @@ async function ensureEditDialog() {
 		if (url instanceof HTMLInputElement)
 			// SFW 清空 = 继承普通横幅；普通清空 = 无横幅
 			url.value = activeBannerPreview()
+		renderEditPreview()
+	})
+	editDialog.querySelector('#profile-edit-theme-color')?.addEventListener('input', (event) => {
+		if (event.target instanceof HTMLInputElement) editingThemeColor = event.target.value
+	})
+	editDialog.querySelector('#profile-edit-theme-color-clear')?.addEventListener('click', () => {
+		editingThemeColor = ''
+		const color = editDialog?.querySelector('#profile-edit-theme-color')
+		if (color instanceof HTMLInputElement) color.value = resolveThemePrimaryHex()
 		renderEditPreview()
 	})
 	editDialog.querySelector('#profile-edit-tag-add')?.addEventListener('click', () => addTagFromInput())
@@ -568,7 +598,7 @@ function renderEditPreview() {
 	const status = editDialog.querySelector('#profile-edit-status')?.value || 'offline'
 	const customStatus = editDialog.querySelector('#profile-edit-custom-status')?.value?.trim()
 	const description = editDialog.querySelector('#profile-edit-description-markdown')?.value?.trim()
-	const themeColor = editDialog.querySelector('#profile-edit-theme-color')?.value || '#5865f2'
+	const themeColor = editingThemeColor
 	const links = readLinksFromForm()
 	const banner = activeBannerPreview()
 	const avatar = activeAvatarPreview()
@@ -670,9 +700,10 @@ function initEditState(entityHash, profile, { initialSfwMode = false } = {}) {
 	const handle = editDialog?.querySelector('#profile-edit-handle')
 	if (handle instanceof HTMLInputElement)
 		handle.value = profile.handle || ''
+	editingThemeColor = profile.themeColor || ''
 	const theme = editDialog?.querySelector('#profile-edit-theme-color')
 	if (theme instanceof HTMLInputElement)
-		theme.value = profile.themeColor || '#5865f2'
+		theme.value = editingThemeColor || resolveThemePrimaryHex()
 	const resetButton = editDialog?.querySelector('#profile-edit-reset-from-part')
 	if (resetButton instanceof HTMLButtonElement)
 		resetButton.hidden = !profile.charPartName
@@ -784,7 +815,7 @@ async function handleSaveProfile() {
 		const updates = {
 			localized: editingLocalized,
 			handle: editDialog.querySelector('#profile-edit-handle')?.value?.trim() || '',
-			themeColor: editDialog.querySelector('#profile-edit-theme-color')?.value || '',
+			themeColor: editingThemeColor,
 			status: editDialog.querySelector('#profile-edit-status')?.value || editingBaseProfile.status,
 			customStatus: editDialog.querySelector('#profile-edit-custom-status')?.value?.trim() || '',
 			banner,

@@ -3,7 +3,7 @@
 @import url("../shared/entityProfileCard.css");
 
 :root {
-	--profile-accent: #5865f2;
+	--profile-accent: var(--color-primary, var(--color-base-content));
 }
 
 .profile-page {
