@@ -43,7 +43,7 @@ cap-widget {
 	--cap-border-color: var(--color-base-300);
 	--cap-border-radius: var(--radius-box, 1rem);
 	--cap-color: var(--color-base-content);
-	--cap-checkbox-border: 1px solid var(--color-info);
+	--cap-checkbox-border: var(--border) solid var(--color-info);
 	--cap-checkbox-border-radius: var(--radius-field, 0.5rem);
 	--cap-checkbox-background: var(--color-base-200);
 	--cap-font: inherit;

@@ -70,7 +70,7 @@ function renderAttachmentsHtml(files, downloadLabel) {
 		else if (mime.startsWith('audio/'))
 			previewHtml = `<audio src="${safeUrl}" controls></audio>`
 		items.push(`
-			<div class="attachment" style="border: 1px solid #ccc; border-radius: var(--radius-field); padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">
+			<div class="attachment" style="border: var(--border) solid #ccc; border-radius: var(--radius-field); padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">
 				<div class="preview" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
 					${previewHtml}
 				</div>

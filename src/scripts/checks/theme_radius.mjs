@@ -24,12 +24,16 @@ export const THEMED_FRONTEND_ROOTS = Object.freeze(['src/public', '.github/pages
 export const THEME_RADIUS_SUFFIXES = ['.html', '.mjs', '.js', '.css']
 
 /**
- * 被排除的路径：测试夹具 / 测试文件里的类名是样例数据，不是真实 UI。
+ * 被排除的路径：测试夹具 / 测试文件里的类名是样例数据，不是真实 UI；
+ * `.php.html` 是 PHP 诱饵页（`src/server/web_server/php_decoy.mjs` 用静态 HTML 响应对应 `.php` 请求），
+ * 非主题化前端页面（与 html_meta 等检查一致排除）。
  * @param {string} relativePath 相对仓库根
  * @returns {boolean} 应排除则为 true
  */
 export function isThemeRadiusExcluded(relativePath) {
-	return /(?:^|\/)test\//u.test(relativePath) || /\.test\.mjs$/u.test(relativePath)
+	return /(?:^|\/)test\//u.test(relativePath)
+		|| /\.test\.mjs$/u.test(relativePath)
+		|| /\.php\.html$/u.test(relativePath)
 }
 
 /**
@@ -80,6 +84,22 @@ const HARDCODED_BORDER_WIDTH_RE =
 	/border(?:-(?:top|right|bottom|left|width))?\s*:\s*[0-9]+(?:\.[0-9]+)?px\b/gu
 
 /**
+ * 跳过指令：上一行出现 `theme-radius-ignore` 时跳过下一行，用于放行有意的粗边框 / 大圆角。
+ * 唯一指令形式，仅管下一行。参考 ESLint 下一行禁用注释。
+ * @type {RegExp}
+ */
+const RADIUS_IGNORE_DIRECTIVE = /theme-radius-ignore/u
+
+/**
+ * 判断某行是否声明了对下一行的忽略。
+ * @param {string} line 行文本
+ * @returns {boolean} 命中则为 true
+ */
+function isNextLineIgnored(line) {
+	return RADIUS_IGNORE_DIRECTIVE.test(line)
+}
+
+/**
  * 扫描单文件内容中的硬编码固定圆角。
  * @param {string} relativePath 相对仓库根
  * @param {string} content 文件文本
@@ -90,6 +110,7 @@ export function scanFileThemeRadius(relativePath, content) {
 	const issues = []
 	const lines = content.split('\n')
 	for (let index = 0; index < lines.length; index++) {
+		if (isNextLineIgnored(lines[index - 1])) continue
 		for (const match of lines[index].matchAll(HARDCODED_RADIUS_GLOBAL))
 			issues.push({ path: relativePath, line: index + 1, token: match[0] })
 		for (const match of lines[index].matchAll(CSS_BORDER_RADIUS_RE))

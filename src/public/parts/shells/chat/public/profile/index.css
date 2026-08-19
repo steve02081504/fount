@@ -68,7 +68,7 @@
 
 .profile-section {
 	overflow: hidden;
-	border: 1px solid color-mix(in srgb, var(--color-base-content) 9%, transparent);
+	border: var(--border) solid color-mix(in srgb, var(--color-base-content) 9%, transparent);
 	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--color-base-200) 94%, transparent);
 	box-shadow: 0 16px 44px rgb(0 0 0 / 10%);
@@ -113,7 +113,7 @@
 .profile-stat {
 	min-width: 0;
 	padding: 14px 15px;
-	border: 1px solid color-mix(in srgb, var(--color-base-content) 7%, transparent);
+	border: var(--border) solid color-mix(in srgb, var(--color-base-content) 7%, transparent);
 	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--color-base-300) 65%, transparent);
 }
@@ -140,7 +140,7 @@
 }
 
 .profile-item-grid>a {
-	border: 1px solid transparent;
+	border: var(--border) solid transparent;
 	background: color-mix(in srgb, var(--color-base-300) 58%, transparent);
 	transition: border-color 0.16s ease, transform 0.16s ease, background 0.16s ease;
 }
@@ -174,7 +174,7 @@
 }
 
 .profile-settings-details {
-	border-top: 1px solid color-mix(in srgb, var(--color-base-content) 9%, transparent);
+	border-top: var(--border) solid color-mix(in srgb, var(--color-base-content) 9%, transparent);
 }
 
 .profile-settings-details summary {

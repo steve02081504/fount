@@ -106,7 +106,7 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 	text-shadow: 0 1px 2px color-mix(in srgb, var(--color-neutral) 70%, transparent);
 }
 .sensitive-media-reveal {
-	border: 1px solid color-mix(in srgb, var(--color-neutral-content) 55%, transparent);
+	border: var(--border) solid color-mix(in srgb, var(--color-neutral-content) 55%, transparent);
 	background: color-mix(in srgb, var(--color-neutral) 55%, transparent);
 	color: var(--color-neutral-content);
 	border-radius: var(--radius-field);
@@ -114,7 +114,7 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 	cursor: pointer;
 }
 .content-warning-wrap {
-	border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+	border: var(--border) solid color-mix(in srgb, var(--color-primary) 35%, transparent);
 	border-radius: var(--radius-box);
 	padding: 10px 12px;
 	margin-bottom: 8px;
@@ -126,7 +126,7 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 	margin-bottom: 8px;
 }
 .content-warning-reveal {
-	border: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
+	border: var(--border) solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
 	background: var(--color-base-200);
 	color: inherit;
 	border-radius: var(--radius-field);

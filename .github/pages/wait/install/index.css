@@ -424,6 +424,7 @@ body.cool-notice-open {
 	place-items: center;
 	min-width: 4.6rem;
 	padding: 0.35rem 0.55rem;
+	/* theme-radius-ignore */
 	border: 3px solid #e11d48;
 	border-radius: var(--radius-field);
 	color: #e11d48;

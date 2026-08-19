@@ -6,7 +6,7 @@
 	overflow: auto;
 	padding: 14px;
 	border-radius: var(--radius-box);
-	border: 1px solid var(--border, #333);
+	border: var(--border) solid var(--border-color, #333);
 	background: var(--bg-panel, #1e1e1e);
 	color: var(--text-normal, #ddd);
 	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);

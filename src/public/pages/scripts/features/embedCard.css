@@ -6,7 +6,7 @@
 }
 
 .fount-embed-card {
-	border: 1px solid color-mix(in srgb, currentcolor 18%, transparent);
+	border: var(--border) solid color-mix(in srgb, currentcolor 18%, transparent);
 	border-radius: var(--radius-box);
 	overflow: hidden;
 	background: color-mix(in srgb, currentcolor 4%, transparent);
@@ -81,7 +81,7 @@
 	max-width: 100%;
 	padding: 0.1rem 0.45rem;
 	margin-inline: 0.1rem;
-	border: 1px solid color-mix(in srgb, currentcolor 16%, transparent);
+	border: var(--border) solid color-mix(in srgb, currentcolor 16%, transparent);
 	border-radius: var(--radius-field);
 	background: color-mix(in srgb, currentcolor 5%, transparent);
 	color: inherit;

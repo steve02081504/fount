@@ -48,7 +48,7 @@
 .settings-nav-group {
 	margin-top: 0.55rem;
 	padding-top: 0.55rem;
-	border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+	border-top: var(--border) solid color-mix(in srgb, currentColor 10%, transparent);
 }
 
 .settings-content {
@@ -61,7 +61,7 @@
 
 .settings-card,
 .settings-panel .card {
-	border: 1px solid color-mix(in srgb, currentColor 9%, transparent);
+	border: var(--border) solid color-mix(in srgb, currentColor 9%, transparent);
 	box-shadow: 0 0.5rem 1.8rem color-mix(in srgb, #000 9%, transparent);
 }
 
@@ -77,7 +77,7 @@
 }
 
 .settings-section+.settings-section {
-	border-top: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+	border-top: var(--border) solid color-mix(in srgb, currentColor 8%, transparent);
 }
 
 .settings-section-title {
@@ -111,7 +111,7 @@
 .settings-advanced {
 	margin-top: 0.25rem;
 	overflow: hidden;
-	border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+	border: var(--border) solid color-mix(in srgb, currentColor 14%, transparent);
 	border-radius: var(--radius-box);
 	background: color-mix(in srgb, currentColor 3%, transparent);
 }
@@ -157,7 +157,7 @@
 	display: grid;
 	gap: 0.85rem;
 	padding: 0 1rem 1rem;
-	border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+	border-top: var(--border) solid color-mix(in srgb, currentColor 10%, transparent);
 }
 
 .settings-advanced-body> :first-child {
@@ -175,7 +175,7 @@
 	place-items: center;
 	width: 1.05rem;
 	height: 1.05rem;
-	border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+	border: var(--border) solid color-mix(in srgb, currentColor 25%, transparent);
 	border-radius: var(--radius-box);
 	font-size: 0.65rem;
 	font-weight: 700;
@@ -192,13 +192,13 @@
 	gap: 0.75rem;
 	margin-top: 0.5rem;
 	padding-top: 1rem;
-	border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+	border-top: var(--border) solid color-mix(in srgb, currentColor 10%, transparent);
 }
 
 .settings-danger-zone {
 	margin-top: 0.25rem;
 	padding-top: 1rem;
-	border-top: 1px solid color-mix(in srgb, var(--color-error) 35%, transparent);
+	border-top: var(--border) solid color-mix(in srgb, var(--color-error) 35%, transparent);
 }
 
 .settings-member-row {
@@ -228,7 +228,7 @@
 
 .settings-role {
 	overflow: hidden;
-	border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+	border: var(--border) solid color-mix(in srgb, currentColor 10%, transparent);
 	border-radius: var(--radius-box);
 	background: color-mix(in srgb, currentColor 4%, transparent);
 }
@@ -258,7 +258,7 @@
 	display: grid;
 	gap: 0.75rem;
 	padding: 0 1rem 1rem;
-	border-top: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+	border-top: var(--border) solid color-mix(in srgb, currentColor 8%, transparent);
 }
 
 .settings-role-perms {
@@ -324,6 +324,6 @@
 		grid-template-columns: 1fr !important;
 		gap: 0.25rem !important;
 		padding: 0.75rem 0.5rem;
-		border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+		border-bottom: var(--border) solid color-mix(in srgb, currentColor 12%, transparent);
 	}
 }

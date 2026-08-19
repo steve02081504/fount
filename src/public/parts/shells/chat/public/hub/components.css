@@ -253,7 +253,7 @@
 	align-items: stretch;
 	height: var(--search-h);
 	min-width: 0;
-	border: 1px solid var(--border-subtle);
+	border: var(--border) solid var(--border-subtle);
 	border-radius: var(--radius-sm);
 	background: var(--bg-input);
 	transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -285,7 +285,7 @@
 	height: 100%;
 	min-height: var(--search-h, 32px);
 	padding: 0 6px 0 8px;
-	border: 1px solid var(--border-subtle);
+	border: var(--border) solid var(--border-subtle);
 	border-radius: var(--radius-sm);
 	background: var(--bg-input);
 	color: var(--text-bright);
@@ -312,7 +312,7 @@
 .search-wrap .search-scope {
 	min-height: 0;
 	border: 0;
-	border-right: 1px solid var(--border-subtle);
+	border-right: var(--border) solid var(--border-subtle);
 	border-radius: var(--radius-sm) 0 0 var(--radius-sm);
 	background: transparent;
 }
@@ -326,7 +326,7 @@
 	box-sizing: border-box;
 	height: var(--search-h, 32px);
 	background: var(--bg-input);
-	border: 1px solid var(--border-subtle);
+	border: var(--border) solid var(--border-subtle);
 	color: var(--text-bright);
 	padding: 0 12px 0 32px;
 	border-radius: var(--radius-sm);
@@ -379,7 +379,7 @@
 	max-height: 320px;
 	overflow: auto;
 	background: var(--bg-secondary);
-	border: 1px solid var(--border);
+	border: var(--border) solid var(--border-color);
 	border-radius: var(--radius-sm);
 	box-shadow: var(--shadow-md);
 	z-index: 50;
@@ -553,17 +553,17 @@ body[data-surface="discovery"] .main-header {
 
 #messages .chat-end .chat-bubble-primary {
 	background: var(--accent-soft, color-mix(in srgb, var(--accent), transparent 88%));
-	border: 1px solid color-mix(in srgb, var(--accent), transparent 70%);
+	border: var(--border) solid color-mix(in srgb, var(--accent), transparent 70%);
 }
 
 #messages .chat-start .chat-bubble-neutral {
 	background: var(--overlay-subtle);
-	border: 1px solid var(--border-subtle);
+	border: var(--border) solid var(--border-subtle);
 }
 
 /* —— 成员侧栏 —— */
 .member-bar {
-	border-left: 1px solid var(--border-subtle);
+	border-left: var(--border) solid var(--border-subtle);
 }
 
 .member-group-title {
@@ -664,7 +664,7 @@ body[data-surface="discovery"] .main-header {
 	max-width: 160px;
 	min-height: 100px;
 	padding: 6px;
-	border: 1px dashed color-mix(in srgb, var(--text-muted, #888) 45%, transparent);
+	border: var(--border) dashed color-mix(in srgb, var(--text-muted, #888) 45%, transparent);
 	border-radius: var(--radius-box);
 	overflow: hidden;
 	transition: opacity 0.25s ease, transform 0.25s ease;
@@ -783,6 +783,7 @@ body[data-surface="discovery"] .main-header {
 	align-items: center;
 	justify-content: center;
 	background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+	/* theme-radius-ignore */
 	border: 2px dashed var(--color-primary);
 	pointer-events: none;
 }
@@ -822,7 +823,7 @@ body[data-surface="discovery"] .main-header {
 	width: 88px;
 	height: 88px;
 	margin-bottom: 8px;
-	border: 1px solid color-mix(in srgb, var(--accent), transparent 72%);
+	border: var(--border) solid color-mix(in srgb, var(--accent), transparent 72%);
 	border-radius: var(--radius-box);
 	background: var(--accent-soft);
 	box-shadow: 0 16px 48px color-mix(in srgb, var(--accent), transparent 86%);
@@ -924,11 +925,11 @@ body[data-surface="discovery"] .main-header {
 }
 
 .server-bar {
-	border-right: 1px solid var(--border-subtle);
+	border-right: var(--border) solid var(--border-subtle);
 }
 
 .channel-bar {
-	border-right: 1px solid var(--border-subtle);
+	border-right: var(--border) solid var(--border-subtle);
 }
 
 /* —— @mention autocomplete —— */
@@ -938,7 +939,7 @@ body[data-surface="discovery"] .main-header {
 	right: 0;
 	bottom: calc(100% + 4px);
 	background: var(--bg-channel);
-	border: 1px solid var(--border);
+	border: var(--border) solid var(--border-color);
 	border-radius: var(--radius-box);
 	max-height: 220px;
 	overflow-y: auto;
@@ -1033,7 +1034,7 @@ body[data-surface="discovery"] .main-header {
 	width: 100%;
 	text-align: left;
 	padding: 13px 14px;
-	border: 1px solid var(--border-subtle);
+	border: var(--border) solid var(--border-subtle);
 	border-radius: var(--radius-md);
 	background: color-mix(in srgb, var(--bg-channel), transparent 18%);
 	color: inherit;
@@ -1163,7 +1164,7 @@ body[data-surface="discovery"] .main-header {
 	width: 66px;
 	height: 66px;
 	margin-bottom: 16px;
-	border: 1px solid var(--border-subtle);
+	border: var(--border) solid var(--border-subtle);
 	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--bg-channel), transparent 15%);
 	color: var(--text-muted);
@@ -1261,7 +1262,7 @@ body[data-surface="discovery"] .main-header {
 
 .discovery-card {
 	overflow: hidden;
-	border: 1px solid var(--border-subtle);
+	border: var(--border) solid var(--border-subtle);
 	border-radius: var(--radius-lg);
 	background: color-mix(in srgb, var(--bg-channel), transparent 12%);
 	box-shadow: 0 10px 30px color-mix(in srgb, var(--shadow), transparent 25%);
@@ -1291,7 +1292,7 @@ body[data-surface="discovery"] .main-header {
 	place-items: center;
 	width: 62px;
 	height: 62px;
-	border: 1px solid color-mix(in srgb, var(--accent), transparent 58%);
+	border: var(--border) solid color-mix(in srgb, var(--accent), transparent 58%);
 	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--bg-main), transparent 24%);
 	box-shadow: 0 10px 24px var(--shadow);
@@ -1359,7 +1360,7 @@ body[data-surface="discovery"] .main-header {
 	width: 82px;
 	height: 82px;
 	margin-bottom: 18px;
-	border: 1px solid color-mix(in srgb, var(--accent), transparent 68%);
+	border: var(--border) solid color-mix(in srgb, var(--accent), transparent 68%);
 	border-radius: var(--radius-box);
 	background: var(--accent-soft);
 }

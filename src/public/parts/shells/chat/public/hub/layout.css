@@ -108,6 +108,7 @@
 	position: absolute;
 	inset: 0;
 	border-radius: inherit;
+	/* theme-radius-ignore */
 	border: 2px solid transparent;
 	border-top-color: var(--on-accent);
 	animation: server-leaving-spin 0.75s linear infinite;

@@ -17,6 +17,7 @@ body {
 	transition: width 0.3s ease;
 	width: 300px;
 	max-height: 300px;
+	/* theme-radius-ignore */
 	border: 2px solid transparent;
 	/*  for highlighting */
 }
@@ -222,6 +223,7 @@ body {
 /* Highlighting Selected Item */
 .selected-item {
 	border-color: hsl(var(--color-primary, currentColor));
+	/* theme-radius-ignore */
 	border-width: 2px;
 }
 

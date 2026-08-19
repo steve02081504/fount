@@ -68,7 +68,7 @@
 	padding: 10px 12px;
 	border-radius: var(--radius-box);
 	background: var(--color-base-300);
-	border: 1px solid var(--border);
+	border: var(--border) solid var(--border-color);
 	max-width: 420px;
 }
 
@@ -182,7 +182,7 @@
 
 .message-hover-bar>.message-actions {
 	background: var(--bg-main);
-	border: 1px solid var(--border-subtle);
+	border: var(--border) solid var(--border-subtle);
 	border-radius: var(--radius-box);
 	box-shadow: 0 2px 8px var(--shadow);
 	padding: 2px;
@@ -430,7 +430,7 @@
 	width: 100%;
 	max-width: 320px;
 	padding: 8px 12px;
-	border: 1px solid var(--border);
+	border: var(--border) solid var(--border-color);
 	border-radius: var(--radius-box);
 	background: var(--color-base-300);
 	text-align: start;

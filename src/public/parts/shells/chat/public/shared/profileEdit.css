@@ -19,7 +19,7 @@
 }
 
 .profile-edit-header {
-	border-bottom: 1px solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
+	border-bottom: var(--border) solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
 }
 
 .profile-edit-title {
@@ -86,7 +86,7 @@
 .profile-edit-locales {
 	margin-bottom: 18px;
 	padding-bottom: 16px;
-	border-bottom: 1px solid color-mix(in srgb, var(--color-base-content) 9%, transparent);
+	border-bottom: var(--border) solid color-mix(in srgb, var(--color-base-content) 9%, transparent);
 }
 
 .profile-edit-locales-head {
@@ -129,7 +129,7 @@
 	gap: 6px;
 	min-height: 28px;
 	padding: 4px 8px 4px 10px;
-	border: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
+	border: var(--border) solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
 	border-radius: var(--radius-box);
 	background: transparent;
 	color: inherit;
@@ -247,7 +247,7 @@
 	align-items: center;
 	gap: 4px;
 	padding: 4px 8px;
-	border: 1px solid color-mix(in srgb, var(--color-primary) 38%, transparent);
+	border: var(--border) solid color-mix(in srgb, var(--color-primary) 38%, transparent);
 	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 	font-size: 12px;
@@ -298,7 +298,7 @@
 	width: 48px;
 	height: 40px;
 	padding: 3px;
-	border: 1px solid color-mix(in srgb, var(--color-base-content) 16%, transparent);
+	border: var(--border) solid color-mix(in srgb, var(--color-base-content) 16%, transparent);
 	border-radius: var(--radius-box);
 	background: transparent;
 	cursor: pointer;
@@ -306,7 +306,7 @@
 
 .profile-edit-actions {
 	margin: 0;
-	border-top: 1px solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
+	border-top: var(--border) solid color-mix(in srgb, var(--color-base-content) 10%, transparent);
 }
 
 @media (max-width: 640px) {

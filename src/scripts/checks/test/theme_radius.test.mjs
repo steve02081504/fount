@@ -79,9 +79,18 @@ Deno.test('scanFileThemeRadius: border-width regex ignores border-radius', () =>
 	assertEquals(issues[0].token, 'border-radius: 0.5rem')
 })
 
+Deno.test('scanFileThemeRadius: theme-radius-ignore skips the next line only', () => {
+	const text = '.a { border: 1px solid #ccc; }\n/* theme-radius-ignore */\n.b { border: 2px solid #ccc; }\n.c { border: 2px solid #ccc; }\n'
+	const issues = scanFileThemeRadius('a.css', text)
+	assertEquals(issues.length, 2)
+	assertEquals(issues[0].token, 'border: 1px')
+	assertEquals(issues[1].token, 'border: 2px')
+})
+
 Deno.test('isThemeRadiusExcluded: excludes test fixtures', () => {
 	assertEquals(isThemeRadiusExcluded('src/public/a/test/b.html'), true)
 	assertEquals(isThemeRadiusExcluded('src/public/a/b.test.mjs'), true)
+	assertEquals(isThemeRadiusExcluded('src/public/a/server-status.php.html'), true)
 	assertEquals(isThemeRadiusExcluded('src/public/a/b.html'), false)
 })
 

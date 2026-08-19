@@ -23,7 +23,7 @@
 	align-items: center;
 	gap: 4px;
 	padding: 4px 6px;
-	border-bottom: 1px solid var(--border, #333);
+	border-bottom: var(--border) solid var(--border-color, #333);
 	flex-shrink: 0;
 }
 
@@ -142,7 +142,7 @@
 .emoji-picker-footer {
 	flex-shrink: 0;
 	padding: 6px 10px 8px;
-	border-top: 1px solid var(--border, #333);
+	border-top: var(--border) solid var(--border-color, #333);
 }
 
 .emoji-picker-discover {
