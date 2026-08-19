@@ -1285,6 +1285,13 @@ export async function GetMarkdownConvertor({
 .markdown-code-block pre {
 	margin: 0;
 }
+.markdown-code-block {
+	border-radius: var(--radius-box);
+	overflow: hidden;
+}
+.markdown-code-block[open] {
+	border-radius: var(--radius-box) var(--radius-box) 0 0;
+}
 
 .markdown-body img {
 	display: inline-block;

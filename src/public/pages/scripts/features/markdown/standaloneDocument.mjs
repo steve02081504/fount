@@ -139,7 +139,15 @@ export function wrapStandaloneMarkdownDocument(messageHtml, options = {}) {
 		.markdown-code-block pre` : ''} {
 			margin: 0 !important;
 		}
-
+${hasCodeBlock ? `\
+		.markdown-code-block {
+			border-radius: var(--radius-box);
+			overflow: hidden;
+		}
+		.markdown-code-block[open] {
+			border-radius: var(--radius-box) var(--radius-box) 0 0;
+		}
+` : ''}
 		@media (max-width: 767px) {
 			.markdown-body {
 				padding: 15px;
