@@ -65,7 +65,7 @@ const collectEdgeCells = (world, edge, out) => {
  */
 const accumulateExposure = (world, roles) => {
 	const { gravity, boundary } = world
-	const exposure = boundary.exposure
+	const { exposure } = boundary
 	for (let e = 0; e < 4; e++) {
 		const delta = roles[e].nx * gravity.gx + roles[e].ny * gravity.gy
 		exposure[e] = Math.max(0, exposure[e] + delta)
@@ -84,8 +84,7 @@ const stepEdgeExchange = (world, roles) => {
 	const cells = []
 
 	for (let e = 0; e < 4; e++) {
-		const sink = roles[e].sink
-		const source = roles[e].source
+		const { sink, source } = roles[e]
 		if (sink < 0.05 && source < 0.05) continue
 		collectEdgeCells(world, e, cells)
 
@@ -124,7 +123,7 @@ const stepEdgeExchange = (world, roles) => {
 			}
 
 		if (source > 0.15 && !boundary.regurgitating)
-			for (const cell of cells) 
+			for (const cell of cells)
 				if (melt[cell] > 0.02) {
 					const take = melt[cell] * source
 					boundary.absorbedUnits += take
@@ -139,7 +138,6 @@ const stepEdgeExchange = (world, roles) => {
 					}
 					markAirIfMeltDrawCrossed(world, before, melt[cell])
 				}
-			
 	}
 }
 

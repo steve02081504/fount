@@ -377,9 +377,9 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		})
 
 		client.on(Events.TypingStart, async typing => {
-			const user = typing.user
+			const { user } = typing
 			if (!user || user.bot) return
-			const channel = typing.channel
+			const { channel } = typing
 			if (!channel) return
 			if (channel.type === ChannelType.DM) {
 				if (ownerPlatformUserId && String(user.id) !== ownerPlatformUserId) return

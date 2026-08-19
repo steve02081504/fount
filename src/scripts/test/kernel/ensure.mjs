@@ -94,7 +94,7 @@ export async function ensureTestKernel({ port = TEST_HUB_PORT } = {}) {
 export function parseNetstatListenPid(stdout, port) {
 	const token = `:${port}`
 	for (const line of stdout.split(/\r?\n/)) {
-		if (!/LISTEN/i.test(line) && !line.includes('侦听')) continue
+		if (!/listen/i.test(line) && !line.includes('侦听')) continue
 		const index = line.indexOf(token)
 		if (index < 0) continue
 		const after = line[index + token.length]

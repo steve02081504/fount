@@ -36,4 +36,3 @@ tasks.register('run', RunFountTask) {
 	group = 'application'
 	description = 'Run fount (delegates to run.sh/run.bat)'
 }
-

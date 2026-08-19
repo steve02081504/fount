@@ -338,7 +338,7 @@ export async function replicateGroupEmojisToPeer(username, groupId, peerId, slot
 	if (!slot?.sendEmojiManifest || !peerId) return
 	const packs = await listGroupPacks(username, groupId)
 	for (const pack of packs) {
-		const packId = pack.packId
+		const { packId } = pack
 		for (const entry of pack.items || []) {
 			const emojiId = String(entry?.emojiId || '').trim()
 			if (!emojiId) continue

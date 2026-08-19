@@ -172,6 +172,7 @@
 			"display": {
 				"eta": "Expected ${expected}, ≈ ${remaining} left overall",
 				"etaUnknown": "Expected ${expected}; ${count} with unknown duration left overall",
+				"explicitSelectedCount": "Explicitly selected: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "≈ ${remaining} left overall",
 				"remainingUnknown": "≈ ${remaining} left overall (${count} with unknown duration)",

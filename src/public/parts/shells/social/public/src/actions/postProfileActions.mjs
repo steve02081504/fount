@@ -76,7 +76,7 @@ export async function handlePostProfileActionsClick(target) {
 	const noteVoteButton = target.closest('[data-note-vote]')
 	if (noteVoteButton instanceof HTMLElement && noteVoteButton.dataset.noteVote) {
 		const parsed = parseActionKey(noteVoteButton.dataset.noteVote)
-		const noteId = noteVoteButton.dataset.noteId
+		const { noteId } = noteVoteButton.dataset
 		if (parsed && noteId) {
 			const helpful = noteVoteButton.dataset.helpful !== '0'
 			await runWrite('noteVote', () => votePostNote(parsed.entityHash, parsed.postId, noteId, helpful))

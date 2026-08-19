@@ -228,8 +228,7 @@ export function createPost(apiContext, entityHash, postId, snapshot = null) {
 		 */
 		async featureReply(options = {}) {
 			const signerOpts = await resolveOwnerContentSigner(apiContext, owner)
-			const replierEntityHash = options.replierEntityHash
-			const replyPostId = options.replyPostId
+			const { replierEntityHash, replyPostId } = options
 			if (!replierEntityHash || !replyPostId) throw httpError(400, 'replierEntityHash and replyPostId required')
 			return commitTimelineEvent(apiContext.username, owner, {
 				type: options.feature === false ? 'reply_unfeature' : 'reply_feature',

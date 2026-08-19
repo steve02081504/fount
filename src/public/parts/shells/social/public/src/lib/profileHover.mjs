@@ -24,7 +24,7 @@ export function entityHashFromProfileHref(href) {
 	try {
 		const url = new URL(href, location.origin)
 		const hash = url.hash.replace(/^#/, '')
-		const match = /^profile;([0-9a-f]{128})/i.exec(hash)
+		const match = /^profile;([\da-f]{128})/i.exec(hash)
 		return match ? match[1] : null
 	}
 	catch {

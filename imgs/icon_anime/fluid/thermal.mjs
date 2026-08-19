@@ -61,11 +61,11 @@ const injectSteam = (world, cell, steamMass) => {
  */
 const neighborConduct = (mat, melt, liq, ni, hasMass) => {
 	const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-	if (hasMass) 
+	if (hasMass)
 		// Mass thermal capacity ≫ air: ignore ambient air neighbors so
 		// soil melt / lava heat is not quenched in one tick.
 		return nMass ? CONDUCT : 0
-	
+
 	return nMass || mat[ni] === MAT.AIR ? AIR_CONDUCT : 0
 }
 
@@ -113,8 +113,7 @@ export const stepThermal = (world) => {
 
 	// --- Air temperature advection by gas velocity ---
 	// Reuse prevT as advect output (drop dedicated thermAdvT); read conduction from nextT.
-	const gasUx = world.gasUx
-	const gasUy = world.gasUy
+	const { gasUx, gasUy } = world
 	prevT.set(nextT)
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {

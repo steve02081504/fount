@@ -5,7 +5,10 @@
 			"name": "html_meta",
 			"expected": "2s",
 			"triggerFilter": {
-				"unignore": ["docs/readme/*.md", "docs/EULA/*.md"]
+				"unignore": [
+					"docs/readme/*.md",
+					"docs/EULA/*.md"
+				]
 			},
 			"run": [
 				"deno",
@@ -71,7 +74,9 @@
 			"name": "i18n_refs",
 			"expected": "2s",
 			"triggerFilter": {
-				"ignore": ["src/scripts/checks/**"],
+				"ignore": [
+					"src/scripts/checks/**"
+				],
 				"unignore": [
 					"src/scripts/checks/i18n_refs.mjs",
 					"src/scripts/checks/walk.mjs",
@@ -170,7 +175,10 @@
 			"name": "locale_md_align",
 			"expected": "1s",
 			"triggerFilter": {
-				"unignore": ["docs/EULA/*.md", "docs/readme/*.md"]
+				"unignore": [
+					"docs/EULA/*.md",
+					"docs/readme/*.md"
+				]
 			},
 			"run": [
 				"deno",

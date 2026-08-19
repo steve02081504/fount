@@ -104,8 +104,8 @@ Deno.test('inline {:lang} stays span>code, not block pre', async () => {
 	const html = await renderSecure('前 `内联代码{:js}` 后')
 	assertStringIncludes(html, 'data-rehype-pretty-code-figure')
 	assertStringIncludes(html, '内联代码')
-	assertMatch(html, /<span[^>]*data-rehype-pretty-code-figure[^>]*>[\s\S]*?<code[^>]*data-language="js"/)
-	assertFalse(/<span[^>]*data-rehype-pretty-code-figure[^>]*>[\s\S]*?<pre\b/i.test(html))
+	assertMatch(html, /<span[^>]*data-rehype-pretty-code-figure[^>]*>[\S\s]*?<code[^>]*data-language="js"/)
+	assertFalse(/<span[^>]*data-rehype-pretty-code-figure[^>]*>[\S\s]*?<pre\b/i.test(html))
 	assertFalse(html.includes('markdown-code-block'))
 })
 

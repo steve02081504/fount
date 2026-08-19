@@ -11,7 +11,7 @@ export const roleReducers = {
 	 */
 	role_create(state, event) {
 		withGroupId(state, event)
-		const roleId = event.content.roleId
+		const { roleId } = event.content
 		state.roles[roleId] = {
 			name: event.content.name,
 			color: event.content.color,

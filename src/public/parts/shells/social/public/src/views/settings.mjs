@@ -270,7 +270,7 @@ async function renderSafetySection(panel) {
 	await renderBlocklist(section.querySelector('#blocklistSection'))
 	section.addEventListener('click', async event => {
 		try {
-			const target = event.target
+			const { target } = event
 			if (!(target instanceof HTMLElement)) return
 			const { handleProfileNavClick } = await import('../actions/profileNavActions.mjs')
 			await handleProfileNavClick(target)

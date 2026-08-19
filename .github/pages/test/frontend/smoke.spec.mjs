@@ -89,7 +89,7 @@ test.describe('GitHub Pages smoke', () => {
 	})
 })
 
-const EULA_MD = /EULA\.[^/?#]+\.md/
+const EULA_MD = /EULA\.[^#/?]+\.md/
 const RELEASE_DOWNLOAD = /github\.com\/steve02081504\/fount\/releases\/latest\/download\/(fount\.exe|fount\.sh)/
 
 /**
@@ -99,7 +99,7 @@ const RELEASE_DOWNLOAD = /github\.com\/steve02081504\/fount\/releases\/latest\/d
  */
 async function fulfillEulaFromRepo(route) {
 	expect(route.request().url()).not.toContain('__FOUNT_')
-	const match = /EULA\.([^/?#]+)\.md/.exec(route.request().url())
+	const match = /EULA\.([^#/?]+)\.md/.exec(route.request().url())
 	const locale = match[1]
 	const body = await readFile(join(REPO_ROOT, 'docs/EULA', `EULA.${locale}.md`), 'utf8')
 	await route.fulfill({ status: 200, contentType: 'text/markdown; charset=utf-8', body })

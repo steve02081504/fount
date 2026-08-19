@@ -125,7 +125,7 @@ function applyPublishMeta(roomId, frame) {
 	if (!frame || typeof frame !== 'object') return
 	if (frame.type === 'publish_meta') {
 		const senderId = frame.senderId || ''
-		if (!/^[0-9a-f]{32}$/.test(senderId)) return
+		if (!/^[\da-f]{32}$/.test(senderId)) return
 		const map = roomPublishMeta.get(roomId) ?? new Map()
 		map.set(senderId, frame)
 		roomPublishMeta.set(roomId, map)
@@ -386,7 +386,7 @@ function handleTextControl(roomId, room, ws, data, meta) {
 
 	if (controlFrame.type === 'publish_meta' || controlFrame.type === 'publish_meta_revoke') {
 		const senderId = controlFrame.senderId || ''
-		if (!/^[0-9a-f]{32}$/.test(senderId)) return
+		if (!/^[\da-f]{32}$/.test(senderId)) return
 		if (controlFrame.type === 'publish_meta' && state.senderId && senderId !== state.senderId) return
 		applyPublishMeta(roomId, controlFrame)
 		broadcastRoomControl(roomId, JSON.stringify(controlFrame))
@@ -395,7 +395,7 @@ function handleTextControl(roomId, room, ws, data, meta) {
 
 	if (controlFrame.type !== 'hello') return
 	const senderId = controlFrame.senderId || ''
-	if (!/^[0-9a-f]{32}$/.test(senderId)) return
+	if (!/^[\da-f]{32}$/.test(senderId)) return
 	state.senderId = senderId
 	if (state.entityHash) {
 		broadcastRoster(room)

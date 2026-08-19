@@ -116,7 +116,7 @@ Deno.test('displayShouldResolve: overview waits for idle unless empty job', () =
 	}), true)
 })
 
-Deno.test('paintAccepted lists per-suite continue reasons before the wave body', () => {
+Deno.test('paintAccepted lists per-suite continue reasons when explicit count is small', () => {
 	const { logs } = captureI18n(() => paintAccepted({
 		selectionMode: 'continue',
 		goalCount: 2,
@@ -126,13 +126,36 @@ Deno.test('paintAccepted lists per-suite continue reasons before the wave body',
 		blockedCount: 0,
 		remainingMs: 12_000,
 		continueReasons: [
-			{ key: 'shells/social:pure', kind: 'imperfect_failed' },
+			{ key: 'shells/social:pure', kind: 'explicit_selected' },
 			{ key: 'checks:i18n_keys', kind: 'stale_content', matchedPaths: ['src/public/locales/zh-CN.json'] },
 		],
 	}))
 	assertEquals(logs.some(row => row.key === 'fountConsole.test.continueDefault'), true)
 	assertEquals(logs.filter(row => row.key === 'fountConsole.test.display.reason').map(row => row.params.label), [
 		'shells/social:pure',
+		'checks:i18n_keys',
+	])
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.explicitSelectedCount'), false)
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
+})
+
+Deno.test('paintAccepted aggregates explicit_selected over 7 into a count', () => {
+	const continueReasons = Array.from({ length: 8 }, (_, index) => ({ key: `suite:${index}`, kind: 'explicit_selected' }))
+	continueReasons.push({ key: 'checks:i18n_keys', kind: 'stale_content', matchedPaths: ['src/public/locales/zh-CN.json'] })
+	const { logs } = captureI18n(() => paintAccepted({
+		selectionMode: 'explicit',
+		goalCount: 9,
+		total: 20,
+		runCount: 9,
+		reuseCount: 0,
+		blockedCount: 0,
+		remainingMs: 12_000,
+		continueReasons,
+	}))
+	assertEquals(logs.filter(row => row.key === 'fountConsole.test.display.explicitSelectedCount').map(row => row.params), [
+		{ count: 8 },
+	])
+	assertEquals(logs.filter(row => row.key === 'fountConsole.test.display.reason').map(row => row.params.label), [
 		'checks:i18n_keys',
 	])
 	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)

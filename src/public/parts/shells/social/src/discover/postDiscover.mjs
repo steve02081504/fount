@@ -32,8 +32,7 @@ export async function localPostDiscoverHandler(inboundContext, query) {
 	/** @type {object[]} */
 	const rows = []
 	for (const row of posts) {
-		const entityHash = row.entityHash
-		const postId = row.postId
+		const { entityHash, postId } = row
 		if (!entityHash || !postId) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		const post = view.postById?.[postId]

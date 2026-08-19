@@ -141,7 +141,7 @@ export function noteFedArchiveMonthResponse(username, groupId, response, peerNod
  */
 export async function applyArchiveMonthWinner(username, groupId, winner) {
 	if (!winner?.channelId || !winner?.utcMonth) return { applied: false }
-	const tmpPath = winner.tmpPath
+	const { tmpPath } = winner
 	if (typeof tmpPath !== 'string' || !tmpPath.length) return { applied: false }
 
 	const { digestArchiveMonthFile } = await import('../archive/monthDigest.mjs')
@@ -336,7 +336,7 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 			penalizeArchiveServeMismatch(row.peerNodeHash)
 	}
 
-	const applied = (await applyArchiveMonthWinner(username, groupId, picked.winner)).applied
+	const { applied } = await applyArchiveMonthWinner(username, groupId, picked.winner)
 	for (const row of candidates)
 		if (row.tmpPath && row.tmpPath !== picked.winner?.tmpPath)
 			await unlink(row.tmpPath).catch(() => { })

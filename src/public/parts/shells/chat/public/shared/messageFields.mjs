@@ -78,7 +78,7 @@ export function sanitizeReplyTo(raw) {
 	if (!raw || typeof raw !== 'object') return undefined
 	const src = /** @type {Record<string, unknown>} */ raw
 	const eventId = src.eventId || ''
-	if (!/^[0-9a-f]{64}$/.test(eventId)) return undefined
+	if (!/^[\da-f]{64}$/.test(eventId)) return undefined
 	const out = {
 		eventId,
 		...src.senderName != null

@@ -172,6 +172,7 @@
 			"display": {
 				"eta": "預佔 ${expected}，總餘 ≈ ${remaining}",
 				"etaUnknown": "預佔 ${expected}，總餘含 ${count} 個未知時長",
+				"explicitSelectedCount": "顯式所選：${count}個",
 				"reason": "${label}：${reason}",
 				"remaining": "總餘 ≈ ${remaining}",
 				"remainingUnknown": "總餘 ≈ ${remaining}（另有 ${count} 個未知時長）",

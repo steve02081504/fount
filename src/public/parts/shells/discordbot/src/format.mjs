@@ -4,7 +4,7 @@ import { ChannelType } from 'npm:discord.js'
 
 import { formatEntityMentionToken } from '../../chat/public/shared/inlineTokenSyntax.mjs'
 
-const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/g
+const FOUNT_ENTITY_MENTION_RE = /@\[entity:([\da-f]{128})]/g
 
 /**
  * @param {Function} func 异步函数

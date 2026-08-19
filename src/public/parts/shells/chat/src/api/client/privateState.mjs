@@ -31,8 +31,7 @@ export function createPrivateStateMethods(apiContext) {
 				 * @returns {Promise<{ entries: object[], added: boolean }>} 写入后列表与是否新增
 				 */
 				async add(entry) {
-					const groupId = entry.groupId
-					const eventId = entry.eventId
+					const { groupId, eventId } = entry
 					let added = true
 					const next = await ns.update(({ entries }) => {
 						if (entries.some(bookmark => bookmark.groupId === groupId && bookmark.eventId === eventId)) {
@@ -50,9 +49,7 @@ export function createPrivateStateMethods(apiContext) {
 				 * @returns {Promise<{ entries: object[], removed: boolean }>} 写入后列表与是否删除
 				 */
 				async remove(entry) {
-					const groupId = entry.groupId
-					const eventId = entry.eventId
-					const href = entry.href
+					const { groupId, eventId, href } = entry
 					let removed = true
 					const next = await ns.update(({ entries }) => {
 						const filtered = entries.filter(bookmark => {

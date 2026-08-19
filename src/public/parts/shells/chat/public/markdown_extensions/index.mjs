@@ -15,7 +15,7 @@ const EMOJI_CONTENT_API = '/api/parts/shells:chat/emoji-content'
 function remarkChatDialect() {
 	return tree => {
 		visit(tree, 'text', node => {
-			let value = node.value
+			let { value } = node
 			if (value.includes('#['))
 				value = expandChannelLinksInText(value)
 			if (value.includes(':[emoji:'))

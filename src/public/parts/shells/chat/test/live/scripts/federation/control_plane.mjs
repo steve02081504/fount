@@ -14,8 +14,7 @@ import {
 
 console.log('=== Setup: open group + join ===')
 const setup = await InitializeOpenGroupJoin('FedControl', 'control-seed')
-const groupId = setup.groupId
-const channelId = setup.channelId
+const { groupId, channelId } = setup
 
 console.log('\n=== 1. Federation control plane ===')
 await testCase('A POST federation/rebind (first call must ok)', async () => {

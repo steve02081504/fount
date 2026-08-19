@@ -53,8 +53,7 @@ import { GROUPS_PREFIX, EVENT_ID_PARAM } from './path.mjs'
  */
 export function registerChannelMessageRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/threads`, authenticate, async (req, res) => {
-		const { groupId } = req.params
-		const { channelId: parentChannelId } = req.params
+		const { groupId, channelId: parentChannelId } = req.params
 		const { parentEventId } = req.body || {}
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
@@ -115,7 +114,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		)
 		const files = Array.isArray(req.body?.files) ? req.body.files : []
 		if (files.length || Array.isArray(contentToWrite.files)) {
-			;({ content: contentToWrite } = await attachFilesToContent(
+			; ({ content: contentToWrite } = await attachFilesToContent(
 				username,
 				groupId,
 				contentToWrite,
@@ -191,8 +190,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 	})
 
 	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages`, authenticate, async (req, res) => {
-		const { groupId, channelId } = req.params
-		const { since, before, limit } = req.query
+		const { params: { groupId, channelId }, query: { since, before, limit } } = req
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
@@ -212,8 +210,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 	})
 
 	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/view-log`, authenticate, async (req, res) => {
-		const { groupId, channelId } = req.params
-		const { since, before, limit } = req.query
+		const { params: { groupId, channelId }, query: { since, before, limit } } = req
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership

@@ -115,7 +115,7 @@ Deno.test({
 		const sharedCreateRaw = await sharedCreate.text()
 		assertEquals(sharedCreate.status, 200, sharedCreateRaw)
 		const sharedId = JSON.parse(sharedCreateRaw).cabinet?.cabinet_id
-		assert(sharedId && /^[0-9a-f]{64}$/.test(sharedId))
+		assert(sharedId && /^[\da-f]{64}$/.test(sharedId))
 
 		const sharedUpload = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${sharedId}/entries?${q}`, {
 			method: 'POST',

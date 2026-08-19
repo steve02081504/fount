@@ -28,8 +28,7 @@ import { GROUPS_PREFIX } from './path.mjs'
  */
 export function registerChannelStreamingRoutes(router, authenticate) {
 	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/streaming-view`, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, state, member, groupId } = req.groupContext
-		const { channelId } = req.params
+		const { groupContext: { username, state, member, groupId }, params: { channelId } } = req
 		const channel = state.channels[channelId]
 		if (!channel)
 			throw httpError(404, 'Channel not found')
@@ -59,8 +58,7 @@ export function registerChannelStreamingRoutes(router, authenticate) {
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/streaming-auth`, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, state, member, groupId } = req.groupContext
-		const { channelId } = req.params
+		const { groupContext: { username, state, member, groupId }, params: { channelId } } = req
 		const channel = state.channels[channelId]
 		if (!channel)
 			throw httpError(404, 'Channel not found')
@@ -91,8 +89,7 @@ export function registerChannelStreamingRoutes(router, authenticate) {
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/whip`, authenticate, requireGroupMember(), async (req, res) => {
-		const { state, member, groupId } = req.groupContext
-		const { channelId } = req.params
+		const { groupContext: { state, member, groupId }, params: { channelId } } = req
 		const channel = state.channels[channelId]
 		if (!channel) throw httpError(404, 'Channel not found')
 		if (channel.type !== 'streaming') throw httpError(400, 'Channel is not a streaming channel')
@@ -113,8 +110,7 @@ export function registerChannelStreamingRoutes(router, authenticate) {
 	})
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId/whip`, authenticate, requireGroupMember(), async (req, res) => {
-		const { groupId } = req.groupContext
-		const { channelId } = req.params
+		const { groupContext: { groupId }, params: { channelId } } = req
 		const { stopWhipIngest } = await import('../../chat/whip/ingest.mjs')
 		stopWhipIngest(`${groupId}:${channelId}`)
 		res.status(200).json({ ok: true })

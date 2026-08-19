@@ -90,7 +90,7 @@ Deno.test('nestAllPrefixClusters preserves SCREAMING_SNAKE remainders under perm
 		assert(Object.hasOwn(perm, 'SEND_MESSAGES'), `${fileName}: missing perm.SEND_MESSAGES`)
 		assert(Object.hasOwn(perm, 'MANAGE_CHANNELS'), `${fileName}: missing perm.MANAGE_CHANNELS`)
 		assert(!Object.hasOwn(perm, 'mANAGE_'), `${fileName}: bad key mANAGE_`)
-		assert(!Object.keys(perm).some(key => /^[a-z][A-Z0-9_]*$/.test(key) && key.includes('_')),
+		assert(!Object.keys(perm).some(key => /^[a-z][\dA-Z_]*$/.test(key) && key.includes('_')),
 			`${fileName}: unexpected mangled SCREAMING_SNAKE remainder under perm`)
 		assertEquals(scanI18nKeyStructure({ perm }), [], `${fileName}: perm structure issues`)
 	}

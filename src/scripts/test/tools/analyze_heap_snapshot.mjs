@@ -17,11 +17,10 @@ import process from 'node:process'
  */
 export function rankHeapSnapshotNodes(snapPath, { topN = 40, needle = '' } = {}) {
 	const snap = JSON.parse(readFileSync(snapPath, 'utf8'))
-	const meta = snap.snapshot.meta
+	const { meta } = snap.snapshot
 	const fieldCount = meta.node_fields.length
 	const typeNames = meta.node_types[0]
-	const nodes = snap.nodes
-	const strings = snap.strings
+	const { nodes, strings } = snap
 	const typeOffset = meta.node_fields.indexOf('type')
 	const nameOffset = meta.node_fields.indexOf('name')
 	const selfSizeOffset = meta.node_fields.indexOf('self_size')

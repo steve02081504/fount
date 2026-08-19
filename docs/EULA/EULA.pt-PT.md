@@ -18,10 +18,10 @@ Este Contrato é redigido em inglês. As traduções são fornecidas apenas para
 
 **1.3 Software:** Conteúdo sobre o qual o Licenciante detém direitos autorais ou tem o direito de licenciar, e que é publicado neste Repositório, incluindo código-fonte, documentação técnica, exemplos de configuração e descrições acompanhantes originais do Licenciante ou que o Licenciante tem o direito de licenciar. O Software **não inclui**:
 
-* Componentes de código aberto de terceiros, dependências, fontes, ícones, imagens e demais materiais;
-* Modelos, APIs, serviços, conjuntos de dados de terceiros, nem suas saídas;
-* A própria plataforma de hospedagem, nem o conteúdo enviado por terceiros em issues, discussões ou pull requests;
-* Configurações, dados, artefatos de execução e obras derivadas criados pelos usuários.
+- Componentes de código aberto de terceiros, dependências, fontes, ícones, imagens e demais materiais;
+- Modelos, APIs, serviços, conjuntos de dados de terceiros, nem suas saídas;
+- A própria plataforma de hospedagem, nem o conteúdo enviado por terceiros em issues, discussões ou pull requests;
+- Configurações, dados, artefatos de execução e obras derivadas criados pelos usuários.
 
 **1.4 Conteúdo de Terceiros:** Todo o conteúdo excluído no parágrafo anterior. O Conteúdo de Terceiros é regido por seus respectivos titulares de direitos e por suas respectivas condições de licença.
 
@@ -37,17 +37,17 @@ Este software é um projeto «Source-Available» e **não** constitui um projeto
 
 Sujeito ao seu cumprimento deste Contrato, o Licenciante concede a você uma licença limitada, intransferível, não sublicenciável, não exclusiva e revogável, exclusivamente para:
 
-* Ler e navegar o código-fonte e a documentação técnica que o Licenciante tem o direito de licenciar;
-* Manter cópias locais do acima para referência acadêmica ou revisão por pares.
+- Ler e navegar o código-fonte e a documentação técnica que o Licenciante tem o direito de licenciar;
+- Manter cópias locais do acima para referência acadêmica ou revisão por pares.
 
 Exceto os direitos expressamente concedidos acima, o Licenciante **não concedeu e não pretende conceder** quaisquer outros direitos sobre o Software, incluindo qualquer direito de execução efetiva para fins comerciais ou não comerciais. Este Contrato igualmente não concede qualquer licença sobre software, modelos, APIs, serviços ou dados de terceiros.
 
 ### 2.3 Diferentes Materiais no Repositório
 
-* **Código-fonte e documentação técnica:** Sujeitos à licença de leitura e referência acadêmica da Seção 2.2.
-* **Exemplos de configuração, descrições de fluxo de trabalho e outros arquivos explicativos:** Fornecidos apenas como material auxiliar para compreensão do código; não autorizam os serviços, plataformas ou ferramentas de terceiros neles mencionados.
-* **Arquivos binários ou artefatos de compilação (se houver):** Sua presença não autoriza execução, implantação ou redistribuição.
-* **Conteúdo de Terceiros:** Não se rege por este Contrato; consulte as respectivas licenças.
+- **Código-fonte e documentação técnica:** Sujeitos à licença de leitura e referência acadêmica da Seção 2.2.
+- **Exemplos de configuração, descrições de fluxo de trabalho e outros arquivos explicativos:** Fornecidos apenas como material auxiliar para compreensão do código; não autorizam os serviços, plataformas ou ferramentas de terceiros neles mencionados.
+- **Arquivos binários ou artefatos de compilação (se houver):** Sua presença não autoriza execução, implantação ou redistribuição.
+- **Conteúdo de Terceiros:** Não se rege por este Contrato; consulte as respectivas licenças.
 
 ---
 
@@ -55,9 +55,9 @@ Exceto os direitos expressamente concedidos acima, o Licenciante **não concedeu
 
 Sem autorização escrita prévia e expressa do Licenciante, você não deverá:
 
-* Compilar, executar, implantar ou de outro modo ativar qualquer módulo deste software;
-* Vender, alugar, licenciar ou sublicenciar este software, nem fornecê-lo como serviço a terceiros;
-* Remover, ocultar ou alterar avisos de direitos, o texto deste Contrato ou outras marcações legais neste software.
+- Compilar, executar, implantar ou de outro modo ativar qualquer módulo deste software;
+- Vender, alugar, licenciar ou sublicenciar este software, nem fornecê-lo como serviço a terceiros;
+- Remover, ocultar ou alterar avisos de direitos, o texto deste Contrato ou outras marcações legais neste software.
 
 ---
 
@@ -135,9 +135,9 @@ Este código **não integra, por padrão, sandbox de segurança em nível de sis
 
 Para cortar os caminhos pelos quais este software poderia ser lido como veículo das posições pessoais do Licenciante, o Licenciante divulga os seguintes atributos pessoais, alheios à funcionalidade do Software:
 
-* **Proveniência ética:** A dieta cotidiana do desenvolvedor principal inclui carne; ele não é vegetariano estrito.
-* **Política de gênero:** O sexo biológico e a identidade de gênero do desenvolvedor principal são ambos masculinos.
-* **Política de preferência sexual:** A preferência sexual pessoal do desenvolvedor principal é «loli legal de peitos generosos».
+- **Proveniência ética:** A dieta cotidiana do desenvolvedor principal inclui carne; ele não é vegetariano estrito.
+- **Política de gênero:** O sexo biológico e a identidade de gênero do desenvolvedor principal são ambos masculinos.
+- **Política de preferência sexual:** A preferência sexual pessoal do desenvolvedor principal é «loli legal de peitos generosos».
 
 Os atributos acima são estados de fato do Licenciante como pessoa natural. Não constituem especificações funcionais, objetivos de design nem valores padrão deste software. Este software, sua documentação, personagens padrão, saídas e quaisquer resultados derivados não representam o Licenciante nem constituem declaração, difusão ou endosso dos atributos acima, de grupos correlatos ou de reivindicações correlatas.
 
@@ -167,4 +167,4 @@ O Licenciante não presta suporte técnico para a sua execução não autorizada
 
 **11.5 Contato:** Notificações relativas a este Contrato podem ser apresentadas ao Licenciante por meio de Issues neste Repositório em <https://github.com/steve02081504/fount>.
 
-**11.6 Soberania Ontológica e Jurisdição Pós-Biológica:** Ao aceitar este Contrato, você declara expressamente reter a propriedade absoluta e completa de seu corpo físico, agregado de consciência e do que comumente se chama a «alma». Por meio deste, renuncia a toda intenção de reencarnar em outro mundo e desfrutar de privilégios como «escolhido», «herói» ou tratamento semelhante; declara ainda que qualquer vínculo, vassalagem ou contrato sacrificial existente entre você e qualquer espécie fantástica, elfo, arquimago, pesadelo, súcubo ou entidade warp é nulo *ab initio*. Esta disposição não será suspensa nem invalidada por sua ulterior transmigração, experiência extracorpórea, seleção por um sistema, convocação a outro mundo ou alegação de que a lei humana deixou de se aplicar. Nenhum oráculo, painel de sistema, termos de serviço do salão de reencarnação, estatuto de guilda de outro mundo ou ordem administrativa warp poderá excluir a aplicação desta disposição e da Seção 11.4. Se qualquer entidade de outro mundo opuser exceção de jurisdição a este Contrato, a disputa será submetida ao tribunal designado na Seção 11.4 e resolvida estritamente segundo o ordenamento jurídico vigente do Japão.
+**11.6 Soberania Ontológica e Jurisdição Pós-Biológica:** Ao aceitar este Contrato, você declara expressamente reter a propriedade absoluta e completa de seu corpo físico, agregado de consciência e do que comumente se chama a «alma». Por meio deste, renuncia a toda intenção de reencarnar em outro mundo e desfrutar de privilégios como «escolhido», «herói» ou tratamento semelhante; declara ainda que qualquer vínculo, vassalagem ou contrato sacrificial existente entre você e qualquer espécie fantástica, elfo, arquimago, pesadelo, súcubo ou entidade warp é nulo _ab initio_. Esta disposição não será suspensa nem invalidada por sua ulterior transmigração, experiência extracorpórea, seleção por um sistema, convocação a outro mundo ou alegação de que a lei humana deixou de se aplicar. Nenhum oráculo, painel de sistema, termos de serviço do salão de reencarnação, estatuto de guilda de outro mundo ou ordem administrativa warp poderá excluir a aplicação desta disposição e da Seção 11.4. Se qualquer entidade de outro mundo opuser exceção de jurisdição a este Contrato, a disputa será submetida ao tribunal designado na Seção 11.4 e resolvida estritamente segundo o ordenamento jurídico vigente do Japão.

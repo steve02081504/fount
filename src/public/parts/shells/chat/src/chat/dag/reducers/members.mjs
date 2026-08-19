@@ -87,7 +87,7 @@ function syncSessionCharsFromMembers(state) {
 	state.session.charFrequencies = {}
 	for (const member of Object.values(state.members)) {
 		if (member?.memberKind !== 'agent' || member.status !== 'active') continue
-		const charname = member.charname
+		const { charname } = member
 		if (!charname) continue
 		state.session.chars[charname] = {
 			ownerUsername: member.ownerUsername || '',
@@ -166,7 +166,7 @@ export const memberReducers = {
 		const extraRoles = allowDeclaredRoles && Array.isArray(content.roles)
 			? content.roles.filter(roleId => roleId && roleId !== '@everyone' && state.roles[roleId])
 			: []
-		const homeNodeHash = content.homeNodeHash
+		const { homeNodeHash } = content
 
 		state.members[event.sender] = {
 			memberKind,

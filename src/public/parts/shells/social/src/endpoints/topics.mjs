@@ -19,7 +19,7 @@ export function registerTopicsRoutes(router) {
 		client.followedTopics()))
 
 	router.get('/api/parts/shells\\:social/topics/:tag/posts', authenticate, socialJson(async (req, { client }) => {
-		const tag = req.params.tag
+		const { tag } = req.params
 		if (!tag) throw httpError(400, 'tag required')
 		return client.topicPosts(tag, {
 			limit: Number(req.query.limit) || 30,

@@ -36,7 +36,7 @@ export function wireHubGroupJoinedListener(onJoined) {
 	 * @returns {void}
 	 */
 	const handler = (event) => {
-		const data = event.data
+		const { data } = event
 		if (data?.type !== 'group-joined') return
 		const groupId = data.groupId || ''
 		if (groupId) onJoined(groupId)

@@ -109,7 +109,7 @@ function positionNearAnchor(card, anchor) {
 	const width = card.offsetWidth || 320
 	const height = card.offsetHeight || 360
 	let left = rect.right + 8
-	let top = rect.top
+	let { top } = rect
 	if (left + width > window.innerWidth) left = rect.left - width - 8
 	if (top + height > window.innerHeight) top = window.innerHeight - height - 10
 	if (top < 8) top = 8

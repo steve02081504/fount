@@ -26,7 +26,7 @@ Deno.test('Copilot Call uses copilot host and editor headers', async () => {
 		const result = await source.Call('hi')
 		assertEquals(result.content, 'ok')
 		assertEquals(mock.calls[0].url, 'https://api.individual.githubcopilot.com/chat/completions')
-		const headers = mock.calls[0].init.headers
+		const { headers } = mock.calls[0].init
 		assertEquals(headers.Authorization, 'Bearer tid=1;proxy-ep=proxy.individual.githubcopilot.com')
 		assertEquals(headers['Copilot-Integration-Id'], 'vscode-chat')
 		assertEquals(headers['Editor-Version'], 'vscode/1.107.0')

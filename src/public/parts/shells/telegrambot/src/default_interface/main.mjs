@@ -154,14 +154,13 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					const member = await bot.telegram.getChatMember(platformChatId, ownerId)
 					const status = member?.status
 					if (status && status !== 'left' && status !== 'kicked') {
-						const user = member.user
+						const { user } = member
 						byId.set(String(user.id), {
 							platformUserId: user.id,
 							displayName: user.first_name || user.username || String(user.id),
 						})
 					}
-				}
-				catch { /* 主人不在群或查询失败 */ }
+				} catch { /* 主人不在群或查询失败 */ }
 				return [...byId.values()]
 			},
 		}, {
@@ -296,7 +295,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			const batch = [...state.messages]
 			state.messages.length = 0
 			try {
-				const dto = await telegramMediaGroupToBridgeDto(state.context, batch, ownerUsername)
+				const dto = await telegramMediaGroupToBridgeDto(state.context, batch)
 				if (dto) await ingestDto(dto)
 				if (state.messages.length) scheduleMediaGroupFlush(state, bufferKey)
 				else telegramMediaGroupBuffers.delete(bufferKey)
@@ -383,7 +382,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		bot.on('chat_member', async context => {
 			const update = context.update?.chat_member
 			if (!update?.chat || !update.new_chat_member) return
-			const status = update.new_chat_member.status
+			const { status } = update.new_chat_member
 			if (status !== 'left' && status !== 'kicked') return
 			try {
 				await postBridgeGroupEvent(ownerUsername, {

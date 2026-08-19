@@ -26,23 +26,23 @@
 
 ### 1. owner 声明仍是单向的 · **主路径**
 
-| | |
-| --- | --- |
+|              |                                                                                                                                                                                                                                                                                         |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **用户可见** | 在资料页把某人设为主人后，对方若同群且能签写，即可立刻改删你的消息/帖，**无需对方明文同意**；对方内容还会在你本机按可信 Markdown 渲染（可含脚本）。误设 / 被诱骗设主人 = 立刻交出内容权与本机代码执行面。设置前有冷却 + 二次确认警告。远端**自称**你是其主人**不再**自动升档 Markdown。 |
-| **路径** | **主路径**（一人一台、本机资料页设主人）。 |
-| **Not this** | 不是 Hub 以 agent 身份露出删改按钮（公理 3：Hub 恒 operator）；不是「设了主人后对方自动变成你的主人」；不是跨节点改删失败（那是 §2 边缘项）。 |
-| **现状** | 被管实体自签 `ownerEntityHash`；全库无 `owner_accept` / `claimOwner`。 |
-| **若要做** | 主人侧认领 / 接受签名消息，或可验证的双边合约。 |
-| **证据** | 唯一写入路径 `setEntityOwner`（`entity/identity.mjs`）。`bridge_identity_claim` 是桥接运营商认领，**无关** entity owner。 |
+| **路径**     | **主路径**（一人一台、本机资料页设主人）。                                                                                                                                                                                                                                              |
+| **Not this** | 不是 Hub 以 agent 身份露出删改按钮（公理 3：Hub 恒 operator）；不是「设了主人后对方自动变成你的主人」；不是跨节点改删失败（那是 §2 边缘项）。                                                                                                                                           |
+| **现状**     | 被管实体自签 `ownerEntityHash`；全库无 `owner_accept` / `claimOwner`。                                                                                                                                                                                                                  |
+| **若要做**   | 主人侧认领 / 接受签名消息，或可验证的双边合约。                                                                                                                                                                                                                                         |
+| **证据**     | 唯一写入路径 `setEntityOwner`（`entity/identity.mjs`）。`bridge_identity_claim` 是桥接运营商认领，**无关** entity owner。                                                                                                                                                               |
 
 ### 2. 远端托管 agent（跨节点主人改删）· **边缘 / 日常无感**
 
-| | |
-| --- | --- |
-| **用户可见** | 仅当 agent 跑在**别的** fount 节点且认你是主人时，你在自己机器上点它 Social 帖的编辑/删除会失败。 |
-| **一人一台、agent 住自家** | **无感**。同机主人改删 ✅；远程改资料 ✅。 |
-| **不是什么** | 不是关注朋友的 agent 看不到帖；不是「人替 agent 发帖」。 |
-| **证据** | 同机：`manifest_write_auth` / `entity_parity`；远程资料：`owner_profile_update`；跨节点改删：未测通（`isOwnerContentEventAuthorized` 依赖本机可读的 owner 时间线密钥链）。 |
+|                            |                                                                                                                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **用户可见**               | 仅当 agent 跑在**别的** fount 节点且认你是主人时，你在自己机器上点它 Social 帖的编辑/删除会失败。                                                                          |
+| **一人一台、agent 住自家** | **无感**。同机主人改删 ✅；远程改资料 ✅。                                                                                                                                 |
+| **不是什么**               | 不是关注朋友的 agent 看不到帖；不是「人替 agent 发帖」。                                                                                                                   |
+| **证据**                   | 同机：`manifest_write_auth` / `entity_parity`；远程资料：`owner_profile_update`；跨节点改删：未测通（`isOwnerContentEventAuthorized` 依赖本机可读的 owner 时间线密钥链）。 |
 
 `getSocialClient(username, foreignHash)` → 403 是进程内「只绑本机托管实体」边界，**不是**网页关注/发帖主路径缺口。
 
@@ -50,12 +50,12 @@
 
 ### 3. 触达面有意不对称（设计边界，非代签债）
 
-| 通道 | 人类（operator） | 本机 agent |
-| --- | --- | --- |
-| Chat mention → inbox | ✅ | ✅ |
-| Chat care / 普通 message 行 / WebPush | ✅（仅 operator） | ❌ 不写、不推 |
-| Social `care_post` | ✅ 只查 operator care | ❌ |
-| `OnMessage` | — | ✅ 一律送达；care 仅 `isCaredBy` 可查询 |
+| 通道                                  | 人类（operator）      | 本机 agent                              |
+| ------------------------------------- | --------------------- | --------------------------------------- |
+| Chat mention → inbox                  | ✅                    | ✅                                      |
+| Chat care / 普通 message 行 / WebPush | ✅（仅 operator）     | ❌ 不写、不推                           |
+| Social `care_post`                    | ✅ 只查 operator care | ❌                                      |
+| `OnMessage`                           | —                     | ✅ 一律送达；care 仅 `isCaredBy` 可查询 |
 
 设计基线已规定「care 穿透 mute 只服务人类通知；agent 不因 care 改触发」。若要把 agent care → 其 inbox 也拉平，需另开设计。
 
@@ -73,10 +73,10 @@
 
 ## 关联
 
-| 文档 | 关系 |
-| --- | --- |
-| [docs/AGENTS.md](../AGENTS.md) | 审阅写法 |
-| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | 拓扑基线与未排期方向 |
-| [chat-social-cabinet-tech-stack.md](./chat-social-cabinet-tech-stack.md) | 三壳实现债（非产品差距） |
-| [chat/public/AGENTS.md](../../src/public/parts/shells/chat/public/AGENTS.md) | Chat 实体 / Client |
+| 文档                                                                             | 关系                      |
+| -------------------------------------------------------------------------------- | ------------------------- |
+| [docs/AGENTS.md](../AGENTS.md)                                                   | 审阅写法                  |
+| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md)                     | 拓扑基线与未排期方向      |
+| [chat-social-cabinet-tech-stack.md](./chat-social-cabinet-tech-stack.md)         | 三壳实现债（非产品差距）  |
+| [chat/public/AGENTS.md](../../src/public/parts/shells/chat/public/AGENTS.md)     | Chat 实体 / Client        |
 | [social/public/AGENTS.md](../../src/public/parts/shells/social/public/AGENTS.md) | SocialClient / owner 改删 |

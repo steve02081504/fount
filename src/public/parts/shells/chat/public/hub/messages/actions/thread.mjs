@@ -14,7 +14,7 @@ import { getMessageText } from '../render/text.mjs'
  */
 export function handleThread(button, row, channelMessage, actions) {
 	const { groupId, channelId } = actions
-	const eventId = button.dataset.eventId
+	const { eventId } = button.dataset
 	if (!eventId || !groupId || !channelId) return false
 	const title = getMessageText(channelMessage).slice(0, 40)
 		|| row?.querySelector('.message-content')?.textContent?.trim().slice(0, 40)

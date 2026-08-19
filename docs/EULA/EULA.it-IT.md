@@ -18,10 +18,10 @@ Il presente Contratto è redatto in inglese. Le traduzioni sono fornite unicamen
 
 **1.3 Software:** I contenuti di cui il Licenziante detiene il diritto d'autore o ha facoltà di concedere licenza, e che sono pubblicati in questo Repository, ivi compresi codice sorgente, documentazione tecnica, esempi di configurazione e descrizioni accompagnatorie originali del Licenziante o che il Licenziante ha diritto di licenziare. Il Software **non include**:
 
-* Componenti open-source di terzi, dipendenze, font, icone, immagini e altri materiali;
-* Modelli, API, servizi, dataset di terzi, né i relativi output;
-* La piattaforma di hosting medesima, né i contenuti inviati da terzi in issue, discussioni o pull request;
-* Configurazioni, dati, artefatti di runtime e opere derivate create dagli utenti.
+- Componenti open-source di terzi, dipendenze, font, icone, immagini e altri materiali;
+- Modelli, API, servizi, dataset di terzi, né i relativi output;
+- La piattaforma di hosting medesima, né i contenuti inviati da terzi in issue, discussioni o pull request;
+- Configurazioni, dati, artefatti di runtime e opere derivate create dagli utenti.
 
 **1.4 Contenuti di terzi:** Tutti i contenuti esclusi dal paragrafo precedente. I Contenuti di terzi sono disciplinati dai rispettivi titolari dei diritti e dalle rispettive condizioni di licenza.
 
@@ -37,17 +37,17 @@ Questo software è un progetto «Source-Available» e **non** costituisce un pro
 
 A condizione che tu rispetti il presente Contratto, il Licenziante ti concede una licenza limitata, non trasferibile, non sublicenziabile, non esclusiva e revocabile, esclusivamente per:
 
-* Leggere e consultare il codice sorgente e la documentazione tecnica che il Licenziante ha diritto di licenziare;
-* Conservare copie locali di quanto precede a fini di riferimento accademico o di peer review.
+- Leggere e consultare il codice sorgente e la documentazione tecnica che il Licenziante ha diritto di licenziare;
+- Conservare copie locali di quanto precede a fini di riferimento accademico o di peer review.
 
 Salvo i diritti espressamente concessi sopra, il Licenziante **non ha concesso e non intende concedere** alcun altro diritto sul Software, ivi compreso qualsiasi diritto di esecuzione effettiva a fini commerciali o non commerciali. Il presente Contratto non autorizza altresì software, modelli, API, servizi o dati di terzi.
 
 ### 2.3 Materiali diversi nel Repository
 
-* **Codice sorgente e documentazione tecnica:** Soggetti alla licenza di lettura e riferimento accademico di cui all'articolo 2.2.
-* **Esempi di configurazione, descrizioni di workflow e altri file esplicativi:** Forniti unicamente come materiale accessorio per la comprensione del codice; non autorizzano i servizi, le piattaforme o gli strumenti di terzi ivi menzionati.
-* **File binari o artefatti di build (se presenti):** La loro presenza non autorizza l'esecuzione, il deploy né la ridistribuzione.
-* **Contenuti di terzi:** Non disciplinati dal presente Contratto; consulta le rispettive licenze.
+- **Codice sorgente e documentazione tecnica:** Soggetti alla licenza di lettura e riferimento accademico di cui all'articolo 2.2.
+- **Esempi di configurazione, descrizioni di workflow e altri file esplicativi:** Forniti unicamente come materiale accessorio per la comprensione del codice; non autorizzano i servizi, le piattaforme o gli strumenti di terzi ivi menzionati.
+- **File binari o artefatti di build (se presenti):** La loro presenza non autorizza l'esecuzione, il deploy né la ridistribuzione.
+- **Contenuti di terzi:** Non disciplinati dal presente Contratto; consulta le rispettive licenze.
 
 ---
 
@@ -55,9 +55,9 @@ Salvo i diritti espressamente concessi sopra, il Licenziante **non ha concesso e
 
 Senza previa autorizzazione scritta ed espressa del Licenziante, non dovrai:
 
-* Compilare, eseguire, effettuare il deploy né altrimenti attivare qualsiasi modulo di questo software;
-* Vendere, locare, concedere in licenza o sublicenziare questo software, né fornirlo come servizio a terzi;
-* Rimuovere, occultare o alterare gli avvisi di diritti, il testo del presente Contratto o altre marcature legali presenti in questo software.
+- Compilare, eseguire, effettuare il deploy né altrimenti attivare qualsiasi modulo di questo software;
+- Vendere, locare, concedere in licenza o sublicenziare questo software, né fornirlo come servizio a terzi;
+- Rimuovere, occultare o alterare gli avvisi di diritti, il testo del presente Contratto o altre marcature legali presenti in questo software.
 
 ---
 
@@ -135,9 +135,9 @@ Questo codice **non integra, per impostazione predefinita, una sandbox di sicure
 
 Per interrompere le vie attraverso cui questo software potrebbe essere letto come veicolo delle posizioni personali del Licenziante, il Licenziante dichiara i seguenti attributi personali, estranei alla funzionalità del Software:
 
-* **Provenienza etica:** La dieta quotidiana dello sviluppatore principale include carne; non è vegetariano rigoroso.
-* **Politica di genere:** Il sesso biologico e l'identità di genere dello sviluppatore principale sono entrambi maschili.
-* **Politica delle preferenze sessuali:** La preferenza sessuale personale dello sviluppatore principale è la «loli legale dal seno prosperoso».
+- **Provenienza etica:** La dieta quotidiana dello sviluppatore principale include carne; non è vegetariano rigoroso.
+- **Politica di genere:** Il sesso biologico e l'identità di genere dello sviluppatore principale sono entrambi maschili.
+- **Politica delle preferenze sessuali:** La preferenza sessuale personale dello sviluppatore principale è la «loli legale dal seno prosperoso».
 
 Gli attributi suddetti sono stati di fatto del Licenziante come persona fisica. Non costituiscono specifiche funzionali, obiettivi di design né valori predefiniti di questo software. Questo software, la relativa documentazione, i personaggi predefiniti, gli output e qualsiasi risultato derivato non rappresentano il Licenziante e non costituiscono dichiarazione, diffusione o sostegno degli attributi suddetti, di gruppi correlati o di rivendicazioni correlate.
 
@@ -167,4 +167,4 @@ Il Licenziante non fornisce supporto tecnico per la tua esecuzione non autorizza
 
 **11.5 Contatto:** Le comunicazioni relative al presente Contratto possono essere rivolte al Licenziante tramite Issues in questo Repository all'indirizzo <https://github.com/steve02081504/fount>.
 
-**11.6 Sovranità ontologica e giurisdizione post-biologica:** Accettando il presente Contratto, dichiari espressamente di conservare la proprietà assoluta e completa del tuo corpo fisico, del tuo aggregato di coscienza e di ciò che è comunemente chiamato «anima». Con la presente rinunci a ogni intenzione di reincarnarti in un altro mondo e di godere di privilegi quali «prescelto», «eroe» o trattamento analogo; dichiari inoltre che qualsiasi vincolo, vassallaggio o contratto sacrificale esistente tra te e qualsiasi specie fantasy, elfo, arcimago, incubo, succube o entità warp è nullo *ab initio*. La presente disposizione non sarà sospesa né invalidata dalla tua successiva trasmigrazione, esperienza extracorporea, selezione da parte di un sistema, evocazione in un altro mondo o affermazione che la legge umana non si applichi più. Nessun oracolo, pannello di sistema, termini di servizio della sala della reincarnazione, statuto di gilda di un altro mondo o ordine amministrativo warp potrà escludere l'applicazione della presente disposizione e della Sezione 11.4. Se una tale entità di un altro mondo sollevasse eccezione di giurisdizione contro il presente Contratto, la controversia sarà devoluta al giudice indicato nella Sezione 11.4 e risolta rigorosamente secondo l'ordinamento giuridico vigente del Giappone.
+**11.6 Sovranità ontologica e giurisdizione post-biologica:** Accettando il presente Contratto, dichiari espressamente di conservare la proprietà assoluta e completa del tuo corpo fisico, del tuo aggregato di coscienza e di ciò che è comunemente chiamato «anima». Con la presente rinunci a ogni intenzione di reincarnarti in un altro mondo e di godere di privilegi quali «prescelto», «eroe» o trattamento analogo; dichiari inoltre che qualsiasi vincolo, vassallaggio o contratto sacrificale esistente tra te e qualsiasi specie fantasy, elfo, arcimago, incubo, succube o entità warp è nullo _ab initio_. La presente disposizione non sarà sospesa né invalidata dalla tua successiva trasmigrazione, esperienza extracorporea, selezione da parte di un sistema, evocazione in un altro mondo o affermazione che la legge umana non si applichi più. Nessun oracolo, pannello di sistema, termini di servizio della sala della reincarnazione, statuto di gilda di un altro mondo o ordine amministrativo warp potrà escludere l'applicazione della presente disposizione e della Sezione 11.4. Se una tale entità di un altro mondo sollevasse eccezione di giurisdizione contro il presente Contratto, la controversia sarà devoluta al giudice indicato nella Sezione 11.4 e risolta rigorosamente secondo l'ordinamento giuridico vigente del Giappone.

@@ -172,6 +172,7 @@
 			"display": {
 				"eta": "🔮 ${expected}，Σ⏳≈ ${remaining}",
 				"etaUnknown": "🔮 ${expected}，Σ⏳ ${count}×❓⏱️",
+				"explicitSelectedCount": "🎯：${count}×",
 				"reason": "${label}：${reason}",
 				"remaining": "Σ⏳≈ ${remaining}",
 				"remainingUnknown": "Σ⏳≈ ${remaining}（+ ${count}×❓⏱️）",

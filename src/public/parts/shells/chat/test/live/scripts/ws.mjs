@@ -8,7 +8,7 @@ import { createLiveShellHttp } from 'fount/scripts/test/live/wsHarness.mjs'
 const { chatApi, key: apiKey } = createLiveShellHttp()
 
 const createdGroup = await chatApi('POST', '/groups/', { name: 'WSTest' })
-const groupId = createdGroup.json.groupId
+const { groupId } = createdGroup.json
 const channelId = createdGroup.json.defaultChannelId
 const peers = await chatApi('GET', `/groups/${groupId}/peers`)
 const nodeHash = peers.json.selfNodeHash

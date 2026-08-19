@@ -1,5 +1,5 @@
 return async function ({ data, containers }) {
-	const generatorDisplay = containers.generatorDisplay
+	const { generatorDisplay } = containers
 	if (data.project && data.location) {
 		generatorDisplay.replaceChildren()
 		return

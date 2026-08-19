@@ -37,9 +37,9 @@ export const PLURAL_CONTAINER = {
 export const PREFIX_CLUSTER_MIN = 4
 
 const AFFIX_RE = /^(?:Suffix|Prefix)|(?:Suffix|Prefix)$/
-const NUMBERED_RE = /^[A-Za-z][A-Za-z]*\d+$/
+const NUMBERED_RE = /^[A-Za-z]+\d+$/
 /** SCREAMING_SNAKE / 全大写常量（如 SEND_MESSAGES）——不做驼峰前缀簇嵌套 */
-const SCREAMING_SNAKE_RE = /^[A-Z][A-Z0-9_]*$/
+const SCREAMING_SNAKE_RE = /^[A-Z][\dA-Z_]*$/
 
 /**
  * @param {string} key 键名

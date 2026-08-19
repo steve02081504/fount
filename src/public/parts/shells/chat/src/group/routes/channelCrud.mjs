@@ -87,7 +87,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels`, authenticate, requireGroupMember(), async (req, res) => {
 		const {
-			groupContext: { username, groupId },
+			groupContext: { groupId },
 			body: { type, name, description, isPrivate }
 		} = req
 		const channelName = name || ''
@@ -106,8 +106,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {
-		const { groupId, channelId } = req.params
-		const { name, description, type, isPrivate, parentChannelId } = req.body
+		const { params: { groupId, channelId }, body: { name, description, type, isPrivate, parentChannelId } } = req
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership

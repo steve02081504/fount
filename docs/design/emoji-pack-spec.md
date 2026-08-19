@@ -47,10 +47,10 @@ social：作者包 + 关注时跨壳写收藏 + 默认包链接（实体 profile
 
 ### 存储布局
 
-| 来源 | 路径 |
-| --- | --- |
-| 群包 | `{groupDir}/emoji_packs/{packId}/{manifest.json,binaries/}` |
-| 作者包 | `entities/{hash}/emoji_packs/` |
+| 来源   | 路径                                                        |
+| ------ | ----------------------------------------------------------- |
+| 群包   | `{groupDir}/emoji_packs/{packId}/{manifest.json,binaries/}` |
+| 作者包 | `entities/{hash}/emoji_packs/`                              |
 
 旧 `group_emojis/manifest.json` **不读、不迁移**；老群按空处理。
 
@@ -95,10 +95,10 @@ chat shell data 键与 HTTP 前缀均为 **`emoji_usage`**（per fount 用户）
 
 ## 默认包链接
 
-| 来源 | 字段 |
-| --- | --- |
-| 群 | `groupSettings.defaultEmojiPackId`（与 `defaultChannelId` 同位，`group_settings_update`） |
-| 作者 | 实体公开 profile `defaultEmojiPackId` |
+| 来源 | 字段                                                                                      |
+| ---- | ----------------------------------------------------------------------------------------- |
+| 群   | `groupSettings.defaultEmojiPackId`（与 `defaultChannelId` 同位，`group_settings_update`） |
+| 作者 | 实体公开 profile `defaultEmojiPackId`                                                     |
 
 **自动收敛（幂等、惰性）**：
 

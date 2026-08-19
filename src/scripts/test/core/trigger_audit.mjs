@@ -34,7 +34,7 @@ export function expandGlobBraces(pattern) {
 	if (start < 0) return [pattern]
 	let depth = 0
 	let end = -1
-	for (let index = start; index < pattern.length; index++) 
+	for (let index = start; index < pattern.length; index++)
 		if (pattern[index] === '{') depth++
 		else if (pattern[index] === '}') {
 			depth--
@@ -43,7 +43,7 @@ export function expandGlobBraces(pattern) {
 				break
 			}
 		}
-	
+
 	if (end < 0) return [pattern]
 	const inner = pattern.slice(start + 1, end)
 	const prefix = pattern.slice(0, start)
@@ -52,14 +52,14 @@ export function expandGlobBraces(pattern) {
 	const alternatives = []
 	depth = 0
 	let last = 0
-	for (let index = 0; index < inner.length; index++) 
+	for (let index = 0; index < inner.length; index++)
 		if (inner[index] === '{') depth++
 		else if (inner[index] === '}') depth--
 		else if (inner[index] === ',' && !depth) {
 			alternatives.push(inner.slice(last, index))
 			last = index + 1
 		}
-	
+
 	alternatives.push(inner.slice(last))
 	return alternatives.flatMap(alt => expandGlobBraces(prefix + alt + suffix))
 }

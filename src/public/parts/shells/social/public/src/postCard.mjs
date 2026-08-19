@@ -93,7 +93,7 @@ export async function buildPostCard(item, options = {}) {
 	const quoteHtml = quoteRef && !decryptFailed
 		? await renderQuoteBlockHtml({ ...quoteRef, text: quoteRef.text || '' })
 		: ''
-	const replyContext = item.replyContext
+	const { replyContext } = item
 	const replyContextHtml = replyContext && !decryptFailed
 		? await renderTemplateAsHtmlString('reply_context', {
 			href: escapeHtml(formatSocialPostHref(replyContext.entityHash, replyContext.postId)),

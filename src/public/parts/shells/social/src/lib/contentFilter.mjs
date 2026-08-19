@@ -64,7 +64,7 @@ export function postMatchesMutedKeywords(post, mutedKeywords) {
 	])
 	const now = Date.now()
 	for (const entry of entries) {
-		const expiresAt = entry.expiresAt
+		const { expiresAt } = entry
 		if (expiresAt != null && Number(expiresAt) > 0 && Number(expiresAt) <= now) continue
 		const pattern = entry.pattern || ''
 		if (!pattern) continue

@@ -170,7 +170,7 @@ function handlePage(parts) {
 	parts.shift()
 	const raw = parts.join('/')
 	// 拒绝协议相对 / 绝对 URL / 反斜杠混淆，仅允许同源相对路径。
-	if (!raw || raw.startsWith('//') || raw.includes('\\') || /^[a-z][a-z0-9+.-]*:/iu.test(raw)) {
+	if (!raw || raw.startsWith('//') || raw.includes('\\') || /^[a-z][\d+.a-z-]*:/iu.test(raw)) {
 		document.getElementById('message').dataset.i18n = 'protocolhandler.invalidProtocol'
 		return
 	}

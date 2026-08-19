@@ -156,8 +156,7 @@ export function registerDagRoutes(router, authenticate) {
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/fork`, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, groupId } = req.groupContext
-		const body = req.body
+		const { body, groupContext: { username, groupId } } = req
 		const result = await forkGroupFromBranch(username, groupId, {
 			tipId: body.tipId ? String(body.tipId) : undefined,
 			name: body.name ? String(body.name) : undefined,
@@ -224,8 +223,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/events/signed`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const { groupId } = req.params
-		const events = req.body.events
+		const { params: { groupId }, body: { events } } = req
 		if (!Array.isArray(events))
 			throw httpError(400, 'events array required')
 		res.status(200).json(await ingestSignedEvents(username, groupId, events))
@@ -233,8 +231,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/events/local`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const { groupId } = req.params
-		const events = req.body.events
+		const { params: { groupId }, body: { events } } = req
 		if (!Array.isArray(events))
 			throw httpError(400, 'events array required')
 

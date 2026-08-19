@@ -18,10 +18,10 @@ El presente Acuerdo se redacta en inglés. Las traducciones se facilitan únicam
 
 **1.3 Software:** El contenido sobre el que el Licenciante ostenta derechos de autor o facultad de licenciar, y que se publica en este Repositorio, incluido el código fuente, la documentación técnica, los ejemplos de configuración y las descripciones adjuntas originales del Licenciante o que este tiene derecho a licenciar. El Software **no incluye**:
 
-* Componentes de código abierto de terceros, dependencias, tipografías, iconos, imágenes y demás materiales;
-* Modelos, API, servicios, conjuntos de datos de terceros, ni sus resultados;
-* La propia plataforma de alojamiento, ni el contenido aportado por terceros en issues, debates o pull requests;
-* Configuraciones, datos, artefactos de ejecución y obras derivadas creados por los usuarios.
+- Componentes de código abierto de terceros, dependencias, tipografías, iconos, imágenes y demás materiales;
+- Modelos, API, servicios, conjuntos de datos de terceros, ni sus resultados;
+- La propia plataforma de alojamiento, ni el contenido aportado por terceros en issues, debates o pull requests;
+- Configuraciones, datos, artefactos de ejecución y obras derivadas creados por los usuarios.
 
 **1.4 Contenido de terceros:** Todo el contenido excluido en el párrafo anterior. El Contenido de terceros se rige por sus respectivos titulares de derechos y por sus respectivas condiciones de licencia.
 
@@ -37,17 +37,17 @@ Este software es un proyecto «Source-Available» y **no** constituye un proyect
 
 Condicionado al cumplimiento del presente Acuerdo por su parte, el Licenciante le otorga una licencia limitada, intransferible, no sublicenciable, no exclusiva y revocable, únicamente para:
 
-* Leer y consultar el código fuente y la documentación técnica que el Licenciante tiene derecho a licenciar;
-* Conservar copias locales de lo anterior con fines de consulta académica o de revisión entre pares.
+- Leer y consultar el código fuente y la documentación técnica que el Licenciante tiene derecho a licenciar;
+- Conservar copias locales de lo anterior con fines de consulta académica o de revisión entre pares.
 
 Salvo los derechos expresamente concedidos arriba, el Licenciante **no ha otorgado ni pretende otorgar** ningún otro derecho sobre el Software, incluido cualquier derecho de ejecución efectiva con fines comerciales o no comerciales. El presente Acuerdo tampoco autoriza software, modelos, API, servicios ni datos de terceros.
 
 ### 2.3 Distintos materiales del Repositorio
 
-* **Código fuente y documentación técnica:** Sujetos a la licencia de lectura y consulta académica del apartado 2.2.
-* **Ejemplos de configuración, descripciones de flujos de trabajo y demás archivos explicativos:** Se facilitan únicamente como material auxiliar para comprender el código; no autorizan los servicios, plataformas o herramientas de terceros mencionados en ellos.
-* **Archivos binarios o artefactos de compilación (si los hubiere):** Su mera presencia no autoriza su ejecución, despliegue ni redistribución.
-* **Contenido de terceros:** No se rige por el presente Acuerdo; consúltense las licencias aplicables.
+- **Código fuente y documentación técnica:** Sujetos a la licencia de lectura y consulta académica del apartado 2.2.
+- **Ejemplos de configuración, descripciones de flujos de trabajo y demás archivos explicativos:** Se facilitan únicamente como material auxiliar para comprender el código; no autorizan los servicios, plataformas o herramientas de terceros mencionados en ellos.
+- **Archivos binarios o artefactos de compilación (si los hubiere):** Su mera presencia no autoriza su ejecución, despliegue ni redistribución.
+- **Contenido de terceros:** No se rige por el presente Acuerdo; consúltense las licencias aplicables.
 
 ---
 
@@ -55,9 +55,9 @@ Salvo los derechos expresamente concedidos arriba, el Licenciante **no ha otorga
 
 Sin autorización escrita previa y expresa del Licenciante, usted no deberá:
 
-* Compilar, ejecutar, desplegar ni activar de cualquier otro modo módulo alguno de este software;
-* Vender, arrendar, licenciar o sublicenciar este software, ni prestarlo como servicio a terceros;
-* Suprimir, ocultar o alterar avisos de derechos, el texto del presente Acuerdo u otras marcas legales de este software.
+- Compilar, ejecutar, desplegar ni activar de cualquier otro modo módulo alguno de este software;
+- Vender, arrendar, licenciar o sublicenciar este software, ni prestarlo como servicio a terceros;
+- Suprimir, ocultar o alterar avisos de derechos, el texto del presente Acuerdo u otras marcas legales de este software.
 
 ---
 
@@ -135,9 +135,9 @@ Este código **no integra, por defecto, un entorno aislado (sandbox) de segurida
 
 Para cortar las vías por las que este software pudiera interpretarse como vehículo de las opiniones personales del Licenciante, este divulga los siguientes atributos personales, ajenos a la funcionalidad del Software:
 
-* **Procedencia ética:** La dieta cotidiana del desarrollador principal incluye carne; no es vegetariano estricto.
-* **Política de género:** El sexo biológico y la identidad de género del desarrollador principal son ambos masculinos.
-* **Política de preferencia sexual:** La preferencia sexual personal del desarrollador principal es la «loli legal de pechos generosos».
+- **Procedencia ética:** La dieta cotidiana del desarrollador principal incluye carne; no es vegetariano estricto.
+- **Política de género:** El sexo biológico y la identidad de género del desarrollador principal son ambos masculinos.
+- **Política de preferencia sexual:** La preferencia sexual personal del desarrollador principal es la «loli legal de pechos generosos».
 
 Los atributos anteriores son estados de hecho del Licenciante como persona física. No constituyen especificaciones funcionales, objetivos de diseño ni valores por defecto de este software. Este software, su documentación, personajes por defecto, salidas y cualesquiera resultados derivados no representan al Licenciante ni constituyen declaración, difusión ni respaldo de los atributos anteriores, de grupos afines ni de reivindicaciones relacionadas.
 
@@ -167,4 +167,4 @@ El Licenciante no presta soporte técnico respecto de su ejecución no autorizad
 
 **11.5 Contacto:** Las notificaciones relativas al presente Acuerdo podrán dirigirse al Licenciante mediante Issues en este Repositorio en <https://github.com/steve02081504/fount>.
 
-**11.6 Soberanía ontológica y jurisdicción posbiológica:** Al aceptar el presente Acuerdo, usted declara expresamente que conserva la propiedad absoluta e íntegra de su cuerpo físico, de su agregado de conciencia y de lo que comúnmente se denomina el «alma». Por el presente renuncia a toda intención de reencarnarse en otro mundo y disfrutar de privilegios tales como «elegido», «héroe» o trato análogo; declara asimismo que todo vínculo, vasallaje o pacto sacrificial existente entre usted y cualquier especie fantástica, elfo, archimago, pesadilla, súcubo o entidad warp es nulo *ab initio*. Esta disposición no se suspenderá ni invalidará por su ulterior trasmigración, experiencia extracorporal, selección por un sistema, invocación a otro mundo o afirmación de que la ley humana ha dejado de aplicarse. Ningún oráculo, panel de sistema, términos de servicio de la sala de reencarnación, estatuto de gremio de otro mundo u orden administrativa warp podrá excluir la aplicación de esta disposición y de la Sección 11.4. Si alguna de tales entidades de otro mundo opusiera excepción de jurisdicción al presente Acuerdo, la controversia se someterá al tribunal designado en la Sección 11.4 y se resolverá estrictamente conforme al ordenamiento jurídico vigente de Japón.
+**11.6 Soberanía ontológica y jurisdicción posbiológica:** Al aceptar el presente Acuerdo, usted declara expresamente que conserva la propiedad absoluta e íntegra de su cuerpo físico, de su agregado de conciencia y de lo que comúnmente se denomina el «alma». Por el presente renuncia a toda intención de reencarnarse en otro mundo y disfrutar de privilegios tales como «elegido», «héroe» o trato análogo; declara asimismo que todo vínculo, vasallaje o pacto sacrificial existente entre usted y cualquier especie fantástica, elfo, archimago, pesadilla, súcubo o entidad warp es nulo _ab initio_. Esta disposición no se suspenderá ni invalidará por su ulterior trasmigración, experiencia extracorporal, selección por un sistema, invocación a otro mundo o afirmación de que la ley humana ha dejado de aplicarse. Ningún oráculo, panel de sistema, términos de servicio de la sala de reencarnación, estatuto de gremio de otro mundo u orden administrativa warp podrá excluir la aplicación de esta disposición y de la Sección 11.4. Si alguna de tales entidades de otro mundo opusiera excepción de jurisdicción al presente Acuerdo, la controversia se someterá al tribunal designado en la Sección 11.4 y se resolverá estrictamente conforme al ordenamiento jurídico vigente de Japón.

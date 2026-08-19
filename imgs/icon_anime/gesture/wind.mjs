@@ -134,7 +134,7 @@ export const windPointer = (gesture, { x, y, right }) => {
 export const tickWindGesture = (gesture) => {
 	if (!gesture.down) return
 
-	const strokes = gesture.strokes
+	const { strokes } = gesture
 	for (let index = 0; index < strokes.length;)
 		if (--strokes[index].life <= 0) {
 			freeStroke(strokes[index])

@@ -131,7 +131,7 @@ export async function maybeEncryptPostContent(username, entityHash, postKeyId, c
 			? { ...visibilitySpecToContentFields(normalizeVisibilitySpec(visibilityOrSpec)), ...content }
 			: { ...content, ...normalizeVisibilitySpec(visibilityOrSpec) },
 	)
-	const visibility = spec.visibility
+	const { visibility } = spec
 
 	if (visibility === 'public' || visibility === 'unlisted')
 		return { ...content, ...visibilitySpecToContentFields(spec) }

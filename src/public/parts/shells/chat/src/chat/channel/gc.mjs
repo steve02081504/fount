@@ -79,7 +79,7 @@ function lastActivityByChannel(events) {
  * @returns {string[]} 待 GC 频道 id
  */
 export function findStaleUnreachableChannels(state, events, nowMs = Date.now()) {
-	const channels = state.channels
+	const { channels } = state
 	const defaultId = state.groupSettings?.defaultChannelId || 'default'
 	const reachable = reachableFromDefault(channels, defaultId)
 	const lastAct = lastActivityByChannel(events)

@@ -195,7 +195,7 @@ export async function navigateGroupChannelHash(page, groupId, channelId) {
  */
 export function isChannelMessagePost(response, groupId, channelId) {
 	if (response.request().method() !== 'POST' || response.status() < 200 || response.status() >= 300) return false
-	const pathname = new URL(response.url()).pathname
+	const { pathname } = new URL(response.url())
 	const expected = `/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages`
 	return pathname === expected
 }
@@ -283,7 +283,7 @@ export function messageTextFromPostResponse(postJson) {
  * @param {object} [options] - 可选项。
  * @returns {Promise<{ channelId: string, name: string }>} 新建频道信息。
  */
-export async function createTestChannel(baseUrl, apiKey, groupId, options = {}) {
+export function createTestChannel(baseUrl, apiKey, groupId, options = {}) {
 	const name = options.name ?? `pw-ch-${Date.now()}`
 	return withApiRequest(async req => {
 		const res = await req.post(
@@ -343,7 +343,7 @@ export async function pickEmojiFromPicker(page, emoji = '👍') {
  * @param {{ groupId: string, channelId?: string, text?: string }} options - 目标群/频道与预览正文。
  * @returns {Promise<{ eventId: string, text: string, groupId: string, channelId: string }>} 种子数据。
  */
-export async function seedMentionInbox(baseUrl, apiKey, options) {
+export function seedMentionInbox(baseUrl, apiKey, options) {
 	const key = encodeURIComponent(apiKey)
 	return withApiRequest(async req => {
 		const res = await req.post(

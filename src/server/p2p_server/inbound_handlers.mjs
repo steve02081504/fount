@@ -64,7 +64,7 @@ export async function resolveUsernameForPartpath(preferredUsername, partpath) {
 export function registerP2PInboundHandlers() {
 	registerRpcInboundHandler('part_invoke', async (ctx, message) => {
 		// partpath 已在 wire/part ingress 校验
-		const partpath = message.partpath
+		const { partpath } = message
 		if (!partpath || !isPlainObject(message.invoke)) return null
 		const username = await resolveUsernameForPartpath(ctx.replicaUsername, partpath)
 		if (!username) return null
@@ -74,7 +74,7 @@ export function registerP2PInboundHandlers() {
 	})
 
 	registerDeliveryInboundHandler('part_timeline_put', async (ctx, message) => {
-		const partpath = message.partpath
+		const { partpath } = message
 		if (!partpath) return
 		const username = await resolveUsernameForPartpath(ctx.replicaUsername, partpath)
 		if (!username) return

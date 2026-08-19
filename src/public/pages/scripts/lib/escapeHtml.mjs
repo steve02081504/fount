@@ -5,7 +5,7 @@
  * @returns {string} 转义后的 HTML 片段
  */
 export function escapeHtml(text) {
-	return String(text ?? '').replace(/[&<>"']/g, char => ({
+	return String(text ?? '').replace(/["&'<>]/g, char => ({
 		'&': '&amp;',
 		'<': '&lt;',
 		'>': '&gt;',

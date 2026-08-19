@@ -36,7 +36,7 @@ const takeStats = (pool, id) => {
 /** `labelComponents` 返回壳。 */
 const LABEL_OUT = {
 	/** @type {(ComponentStats | undefined)[]} */
-	components: /** @type {(ComponentStats | undefined)[]} */ [],
+	components: /** @type {(ComponentStats | undefined)[]} */[],
 	nextId: 1,
 	seedComponentId: 0,
 }
@@ -63,9 +63,7 @@ const LABEL_OUT = {
  */
 export const labelComponents = (world, opts) => {
 	const { worldW: W, worldH: H } = world
-	const accept = opts.accept
-	const labels = opts.labels
-	const onCell = opts.onCell
+	const { accept, labels, onCell } = opts
 	const poolKey = opts.poolKey ?? 'componentPool'
 	const pool = /** @type {ComponentStats[]} */ world.scratch[poolKey] ??= []
 	const listKey = `${poolKey}List`

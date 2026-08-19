@@ -86,7 +86,7 @@ function notificationMessageAttrs(row) {
 	const secondaryLabel = actors.length > 1
 		? authorLabel(actors[1].entityHash)
 		: primaryLabel
-	const type = row.type
+	const { type } = row
 	if (actorCount <= 1)
 		return { i18n: `social.notifications.${type}`, author: primaryLabel }
 	if (actorCount === 2 && type !== 'follow')
@@ -242,7 +242,7 @@ export function mergeIncomingNotification(notification) {
 	const toolbar = document.getElementById('notificationsToolbar')
 	if (toolbar) toolbar.classList.remove('hidden')
 	const seenAt = getNotificationsSeenAt()
-	const aggregateKey = notification.aggregateKey
+	const { aggregateKey } = notification
 	const existing = aggregateKey
 		? container.querySelector(`.notification-card[data-aggregate-key="${CSS.escape(aggregateKey)}"]`)
 		: null

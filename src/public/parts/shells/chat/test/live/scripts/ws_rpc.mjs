@@ -15,7 +15,7 @@ const who = await rootApi('GET', '/api/whoami')
 if (who.status !== 200 || !who.json?.username)
 	finishLiveWs(false, `server unreachable or auth failed (whoami ${who.status})`)
 
-const username = who.json.username
+const { username } = who.json
 const charList = await rootApi('GET', '/api/getlist/chars')
 const charname = pickPreferredChar(charList.json, PREFERRED_CHARS)
 if (!charname) failLiveWsPrecondition('no chars in getlist/chars (test_streamer fixture missing?)')

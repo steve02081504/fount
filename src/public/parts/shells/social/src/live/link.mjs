@@ -44,8 +44,7 @@ export async function inviteLiveLink(username, entityHash, liveId, target) {
 	const session = loadLiveSession(username, entityHash, liveId)
 	if (!session || session.status !== 'live') throw httpError(404, 'not live')
 	if (session.link) throw httpError(409, 'already linked')
-	const peerEntityHash = target.peerEntityHash
-	const peerLiveId = target.peerLiveId
+	const { peerEntityHash, peerLiveId } = target
 	if (!peerEntityHash || !peerLiveId) throw httpError(400, 'peer required')
 	if (peerEntityHash === entityHash && peerLiveId === liveId)
 		throw httpError(400, 'cannot link self')
@@ -94,8 +93,7 @@ export async function inviteLiveLink(username, entityHash, liveId, target) {
  * @returns {Promise<object>} accept / reject
  */
 export async function handleLiveLinkInviteRpc(username, rpc) {
-	const peerEntityHash = rpc.peerEntityHash
-	const peerLiveId = rpc.peerLiveId
+	const { peerEntityHash, peerLiveId } = rpc
 	const session = loadLiveSession(username, peerEntityHash, peerLiveId)
 	if (!session || session.status !== 'live')
 		return { type: 'live_link_accept', ok: false, reason: 'not_live' }
@@ -103,8 +101,7 @@ export async function handleLiveLinkInviteRpc(username, rpc) {
 		return { type: 'live_link_accept', ok: false, reason: 'already_linked' }
 
 	const linkSecret = createLinkSecret()
-	const fromEntityHash = rpc.fromEntityHash
-	const fromLiveId = rpc.fromLiveId
+	const { fromEntityHash, fromLiveId } = rpc
 
 	pushFeedUpdate(username, {
 		type: 'live_link_invite',

@@ -18,10 +18,10 @@
 
 **1.3 Hugbúnaður:** Efni sem leyfisveitandi á höfundarrétt að eða hefur rétt til að veita leyfi fyrir, og er birt í þessari geymslu, þar á meðal frumkóði, tæknileg skjölun, stillingardæmi og fylgiskýringar sem eru frumverk leyfisveitanda eða sem leyfisveitandi hefur rétt til að veita leyfi fyrir. Hugbúnaðurinn **felur ekki í sér**:
 
-* Opinn hugbúnað þriðja aðila, háðni, letur, táknmyndir, myndir og annað efni;
-* Módel, API, þjónustur, gagnasöfn þriðja aðila, eða úttak þeirra;
-* Sjálfan hýsingarvettvanginn, og efni sem þriðju aðilar senda inn í issues, umræður eða pull requests;
-* Stillingar, gögn, keyrsluafurðir og afleidd verk sem notendur búa til.
+- Opinn hugbúnað þriðja aðila, háðni, letur, táknmyndir, myndir og annað efni;
+- Módel, API, þjónustur, gagnasöfn þriðja aðila, eða úttak þeirra;
+- Sjálfan hýsingarvettvanginn, og efni sem þriðju aðilar senda inn í issues, umræður eða pull requests;
+- Stillingar, gögn, keyrsluafurðir og afleidd verk sem notendur búa til.
 
 **1.4 Efni þriðja aðila:** Allt efni sem útilokað er í undanfarandi málsgrein. Efni þriðja aðila lýtur réttindahöfum sínum og viðeigandi leyfisskilmálum.
 
@@ -37,17 +37,17 @@
 
 Að því tilskildu að þú fylgir þessum samningi veitir leyfisveitandi þér óframseljanlegt, óundirleyfisbært, óeinkaréttarlegt, afturkallanlegt takmarkað leyfi eingöngu til:
 
-* Að lesa og skoða frumkóða og tæknilega skjölun sem leyfisveitandi hefur rétt til að veita leyfi fyrir;
-* Að geyma staðbundin afrit af ofangreindu til fræðilegrar tilvísunar eða jafningjarýni.
+- Að lesa og skoða frumkóða og tæknilega skjölun sem leyfisveitandi hefur rétt til að veita leyfi fyrir;
+- Að geyma staðbundin afrit af ofangreindu til fræðilegrar tilvísunar eða jafningjarýni.
 
 Að undanskildum réttindum sem sérstaklega eru veitt hér að ofan hefur leyfisveitandi **ekki veitt og hyggst ekki veita** nein önnur réttindi yfir hugbúnaðinum, þar á meðal neinn rétt til raunverulegrar keyrslu í viðskiptalegum eða óviðskiptalegum tilgangi. Þessi samningur heimilar heldur ekki neinn hugbúnað, módel, API, þjónustu eða gögn þriðja aðila.
 
 ### 2.3 Mismunandi efni í geymslunni
 
-* **Frumkóði og tæknileg skjölun:** Lýtur lestrar- og fræðilegu tilvísunarleyfi samkvæmt grein 2.2.
-* **Stillingardæmi, verkflæðislýsingar og önnur skýringarskjöl:** Veitt eingöngu sem aukagögn til að skilja kóðann; teljast ekki heimild fyrir þjónustur, vettvanga eða verkfæri þriðja aðila sem þar er getið.
-* **Tvíundarskrár eða byggingarafurðir (ef einhverjar):** Tilvist þeirra heimilar ekki keyrslu, uppsetningu eða endurdreifingu.
-* **Efni þriðja aðila:** Lýtur ekki þessum samningi; skoðaðu viðeigandi leyfi.
+- **Frumkóði og tæknileg skjölun:** Lýtur lestrar- og fræðilegu tilvísunarleyfi samkvæmt grein 2.2.
+- **Stillingardæmi, verkflæðislýsingar og önnur skýringarskjöl:** Veitt eingöngu sem aukagögn til að skilja kóðann; teljast ekki heimild fyrir þjónustur, vettvanga eða verkfæri þriðja aðila sem þar er getið.
+- **Tvíundarskrár eða byggingarafurðir (ef einhverjar):** Tilvist þeirra heimilar ekki keyrslu, uppsetningu eða endurdreifingu.
+- **Efni þriðja aðila:** Lýtur ekki þessum samningi; skoðaðu viðeigandi leyfi.
 
 ---
 
@@ -55,9 +55,9 @@ Að undanskildum réttindum sem sérstaklega eru veitt hér að ofan hefur leyfi
 
 Án fyrirfram skýrrar skriflegrar heimildar leyfisveitanda mátt þú ekki:
 
-* Þýða, keyra, setja upp eða á annan hátt virkja neina einingu þessa hugbúnaðar;
-* Selja, leigja, veita leyfi eða undirleyfi fyrir þessum hugbúnaði, eða veita hann sem þjónustu til þriðja aðila;
-* Fjarlægja, hylja eða breyta réttindatilkynningum, texta þessa samnings eða öðrum lagalegum merkingum í þessum hugbúnaði.
+- Þýða, keyra, setja upp eða á annan hátt virkja neina einingu þessa hugbúnaðar;
+- Selja, leigja, veita leyfi eða undirleyfi fyrir þessum hugbúnaði, eða veita hann sem þjónustu til þriðja aðila;
+- Fjarlægja, hylja eða breyta réttindatilkynningum, texta þessa samnings eða öðrum lagalegum merkingum í þessum hugbúnaði.
 
 ---
 
@@ -135,9 +135,9 @@ Há nafnleynd og ritskoðunarþol sem þessi hugbúnaður getur búið yfir geta
 
 Til að rjúfa leiðir þar sem þessi hugbúnaður gæti verið lesinn sem burðaráss fyrir persónulegar skoðanir leyfisveitanda birtir leyfisveitandi eftirfarandi persónulega eiginleika sem tengjast ekki virkni hugbúnaðarins:
 
-* **Siðferðileg uppruni:** Daglegt mataræði kjarnahönnuðarins inniheldur kjöt; hann er ekki strangur grænmetisæta.
-* **Kynjapólitík:** Líffræðilegt kyn og kynvitund aðalhönnuðarins eru bæði karlkyns.
-* **Kynhneigðarpólitík:** Persónuleg kynhneigð aðalhönnuðarins er „stórbrjóstuð lögleg loli“.
+- **Siðferðileg uppruni:** Daglegt mataræði kjarnahönnuðarins inniheldur kjöt; hann er ekki strangur grænmetisæta.
+- **Kynjapólitík:** Líffræðilegt kyn og kynvitund aðalhönnuðarins eru bæði karlkyns.
+- **Kynhneigðarpólitík:** Persónuleg kynhneigð aðalhönnuðarins er „stórbrjóstuð lögleg loli“.
 
 Ofangreindir eiginleikar eru staðreyndir um leyfisveitanda sem náttúrulegan einstakling. Þeir eru ekki virkniskilgreiningar, hönnunarmarkmið eða sjálfgefin gildi þessa hugbúnaðar. Þessi hugbúnaður, skjölun hans, sjálfgefnar persónur, úttak og öll afleidd niðurstaða tákna ekki leyfisveitanda og fela ekki í sér yfirlýsingu, dreifingu eða stuðning við ofangreinda eiginleika, tengda hópa eða tengdar fullyrðingar.
 
@@ -167,4 +167,4 @@ Leyfisveitandi veitir ekki tækniaðstoð vegna óheimillar keyrslu þinnar. Lag
 
 **11.5 Samskipti:** Tilkynningar varðandi þennan samning má senda leyfisveitanda í gegnum Issues í þessari geymslu á <https://github.com/steve02081504/fount>.
 
-**11.6 Verufræðilegt fullveldi og dómsvald eftir líffræði:** Með því að samþykkja þennan samning lýsir þú skýrt yfir að þú heldur algjöru og fullkomnu eignarhaldi á líkamlegum líkama þínum, meðvitundarsamstæðu þinni og því sem almennt kallast „sál“. Þú afsalar þér hér með allri áætlun um að endurfæðast í annan heim og njóta forréttinda á borð við „útvalinn“, „hetju“ eða svipaða meðferð; þú lýsir jafnframt yfir að hvert það band, þegnskaparsamband eða fórnarsamningur sem kann að vera milli þín og fantasíutegundar, álfs, æðsta galdramanns, martraðar, succubus eða warp-veru sé ógilt *ab initio*. Þetta ákvæði verður hvorki frestað né ógilt vegna síðari flutnings þíns milli heima, líkamslausrar reynslu, vals af kerfi, köllunar til annars heims eða fullyrðingar um að mannleg lög eigi ekki lengur við. Engin véfrétt, kerfisborð, þjónustuskilmálar endurfæðingarsalar, gildisskrá annars heims eða stjórnvaldsfyrirmæli úr warp geta útilokað beitingu þessa ákvæðis og greinar 11.4. Ef slík veru úr öðrum heimi ber fram dómsvaldsandmæli gegn þessum samningi skal þeim ágreiningi beint til dómstólsins sem grein 11.4 tilgreinir og hann leystur stranglega samkvæmt gildandi réttarkerfi Japans.
+**11.6 Verufræðilegt fullveldi og dómsvald eftir líffræði:** Með því að samþykkja þennan samning lýsir þú skýrt yfir að þú heldur algjöru og fullkomnu eignarhaldi á líkamlegum líkama þínum, meðvitundarsamstæðu þinni og því sem almennt kallast „sál“. Þú afsalar þér hér með allri áætlun um að endurfæðast í annan heim og njóta forréttinda á borð við „útvalinn“, „hetju“ eða svipaða meðferð; þú lýsir jafnframt yfir að hvert það band, þegnskaparsamband eða fórnarsamningur sem kann að vera milli þín og fantasíutegundar, álfs, æðsta galdramanns, martraðar, succubus eða warp-veru sé ógilt _ab initio_. Þetta ákvæði verður hvorki frestað né ógilt vegna síðari flutnings þíns milli heima, líkamslausrar reynslu, vals af kerfi, köllunar til annars heims eða fullyrðingar um að mannleg lög eigi ekki lengur við. Engin véfrétt, kerfisborð, þjónustuskilmálar endurfæðingarsalar, gildisskrá annars heims eða stjórnvaldsfyrirmæli úr warp geta útilokað beitingu þessa ákvæðis og greinar 11.4. Ef slík veru úr öðrum heimi ber fram dómsvaldsandmæli gegn þessum samningi skal þeim ágreiningi beint til dómstólsins sem grein 11.4 tilgreinir og hann leystur stranglega samkvæmt gildandi réttarkerfi Japans.

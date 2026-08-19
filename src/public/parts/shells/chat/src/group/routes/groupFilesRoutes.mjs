@@ -3,7 +3,6 @@
  * 【职责】群文件 HTTP 路由（chunks/files CRUD、下载状态）。
  * 【关联】chat/files/groupFiles.mjs；由 governance.mjs mount。
  */
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { appendFileDeleteEvent, appendFileUploadEvent } from '../../chat/dag/channelOperations.mjs'
@@ -32,13 +31,13 @@ import { GROUPS_PREFIX } from './path.mjs'
  * @param {(req: import('npm:express').Request) => { username: string }} getUserByReq 解析用户
  * @param {(username: string, groupId: string) => Promise<{ state: object }>} getState 物化状态
  * @param {(state: object, member: object, permission: string, channelId: string) => boolean} canInChannel 权限检查
- * @param {typeof import('../../../../../../../permissions/chat.mjs').PERMISSIONS} PERMISSIONS 权限常量
+ * @param {typeof import('../../permissions/chat.mjs').PERMISSIONS} PERMISSIONS 权限常量
  * @returns {void}
  */
 export function registerGroupFileRoutes(router, authenticate, getUserByReq, getState, canInChannel, PERMISSIONS) {
 	router.post(`${GROUPS_PREFIX}/:groupId/chunks/have`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const groupId = req.params.groupId
+		const { groupId } = req.params
 		const { state } = await getState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))
 			return res.status(403).json({ error: 'Not a member' })
@@ -72,7 +71,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 
 	router.post(`${GROUPS_PREFIX}/:groupId/chunks`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const groupId = req.params.groupId
+		const { groupId } = req.params
 		const { fileId, data } = parseChunkBody(req.body)
 		const { state } = await getState(username, groupId)
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
@@ -106,8 +105,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 
 	router.post(`${GROUPS_PREFIX}/:groupId/files`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const groupId = req.params.groupId
-		const { body } = req
+		const { body, params: { groupId } } = req
 		const fileId = body.fileId?.trim()
 		if (!fileId) return res.status(400).json({ error: 'fileId required' })
 		assertFileUploadBody(body)
@@ -150,7 +148,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/files/:fileId`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const groupId = req.params.groupId
+		const { groupId } = req.params
 		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
@@ -169,7 +167,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 
 	router.get(`${GROUPS_PREFIX}/:groupId/files/:fileId/meta`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const groupId = req.params.groupId
+		const { groupId } = req.params
 		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))
@@ -201,7 +199,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 
 	router.get(`${GROUPS_PREFIX}/:groupId/files/:fileId/download-status`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const groupId = req.params.groupId
+		const { groupId } = req.params
 		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))
@@ -218,7 +216,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 
 	router.post(`${GROUPS_PREFIX}/:groupId/files/:fileId/download-resume`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const groupId = req.params.groupId
+		const { groupId } = req.params
 		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))

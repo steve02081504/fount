@@ -19,7 +19,7 @@ import { collapseTasteWeights, loadTaste, resolveTasteAlias } from './store.mjs'
  * @returns {Promise<object>} 签名事件
  */
 export async function publishTagName(username, entityHash, input) {
-	const tagHash = input.tagHash
+	const { tagHash } = input
 	const locale = String(input.locale || '').trim()
 	const label = String(input.label || '').trim().slice(0, 64)
 	const actor = entityHash

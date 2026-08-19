@@ -162,7 +162,7 @@ function judgeSuiteWithSubtests(suite, entry, committedChanged, uncommittedHashe
 		|| isTriggerHashStale(entry.triggerHash, sharedTriggerHash)
 	/** @type {Record<string, Verdict>} */
 	const subVerdicts = {}
-	for (const subtest of suite.subtests) 
+	for (const subtest of suite.subtests)
 		subVerdicts[subtest.name] = judgeSubtest(
 			suite,
 			subtest,
@@ -171,7 +171,7 @@ function judgeSuiteWithSubtests(suite, entry, committedChanged, uncommittedHashe
 			committedChangedByKey?.get(`${suiteKey(suite.manifestId, suite.name)}#${subtest.name}`) ?? committedChanged,
 			uncommittedHashes,
 		)
-	
+
 	const aggregate = aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash)
 	// suite 级失败（如 watchdog 终止）无法归因到任何子测试时，聚合会得出 green/noisy
 	// 而掩盖失败；此时整套判 red（subtestsToRun 留空 → plan 全量重跑）。

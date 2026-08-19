@@ -13,7 +13,7 @@ import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
  * @returns {Promise<void>}
  */
 export async function openEntityProfileCard(entityHash) {
-	if (!/^[0-9a-f]{128}$/i.test(entityHash)) return
+	if (!/^[\da-f]{128}$/i.test(entityHash)) return
 	const { showEntityProfilePopup } = await import('/parts/shells:chat/shared/entityProfilePopup.mjs')
 	await showEntityProfilePopup({
 		entityHash,

@@ -13,8 +13,7 @@ import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 function renderAlbumCoverHtml(coverMediaRef) {
 	if (coverMediaRef) try {
 		return `<div class="album-card-cover"><img class="album-card-cover-img" src="${escapeHtml(mediaRefUrl(coverMediaRef))}" alt="" loading="lazy" /></div>`
-	}
-	catch { /* fall through */ }
+	} catch { /* fall through */ }
 
 	return ''
 }
@@ -85,7 +84,7 @@ export async function renderProfileAlbums(entityHash, container) {
  */
 export async function openAlbumDetail(entityHash, albumId, backContainer = null) {
 	const detail = await getAlbumDetail(entityHash, albumId)
-	const album = detail.album
+	const { album } = detail
 	const items = detail.items || []
 	const isSelf = viewerEntityHash() === entityHash
 	const panel = backContainer || document.getElementById('profileAlbumsPanel')

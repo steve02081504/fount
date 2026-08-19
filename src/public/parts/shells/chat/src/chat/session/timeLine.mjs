@@ -11,10 +11,6 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-
-
-
-
 import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
@@ -66,7 +62,7 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 
 	if (newTimeLineIndex >= chatMetadata.timeLines.length) {
 		const previousEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
-		const timeSlice = previousEntry.extension.timeSlice
+		const { timeSlice } = previousEntry.extension
 		const greeting_type = timeSlice.greeting_type
 			|| previousEntry.extension?.greetingType
 			|| (previousEntry.extension?.chat?.isGreeting ? 'single' : undefined)

@@ -95,7 +95,7 @@ export async function resolveWorld(groupId, channelId, replicaUsername) {
 
 	const distribution = bind.distribution || 'hosted'
 	const owner = bind.ownerUsername || replicaUsername
-	const worldname = bind.worldname
+	const { worldname } = bind
 
 	if (distribution === 'local') {
 		const world = await loadPart(replicaUsername, `worlds/${worldname}`).catch(ignoreMissingPartLoadError)

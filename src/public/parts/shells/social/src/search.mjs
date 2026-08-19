@@ -84,8 +84,7 @@ export async function searchPosts(username, options = {}) {
 		items.sort((left, right) => compareFeedItems(left, right) * -1)
 
 	if (options.cursor) {
-		const cursor = options.cursor
-		const index = items.findIndex(item => searchItemCursorKey(item) === cursor)
+		const index = items.findIndex(item => searchItemCursorKey(item) === options.cursor)
 		items = index >= 0 ? items.slice(index + 1) : []
 	}
 

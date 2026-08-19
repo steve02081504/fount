@@ -72,7 +72,7 @@ if (values.watch && (values.all || values.force || positionals.length)) {
  * @returns {string[]} 非空 token 列表
  */
 function splitSelectors(raw) {
-	return raw.split(/[,\s]+/).map(token => token.trim()).filter(Boolean)
+	return raw.split(/[\s,]+/).map(token => token.trim()).filter(Boolean)
 }
 
 /**

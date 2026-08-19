@@ -41,7 +41,7 @@ export function openProps() {
 		const el = document.getElementById(id)
 		const fresh = el.cloneNode(true)
 		el.replaceWith(fresh)
-		const clickable = stamp?.entity_hash && /^[0-9a-f]{128}$/i.test(stamp.entity_hash)
+		const clickable = stamp?.entity_hash && /^[\da-f]{128}$/i.test(stamp.entity_hash)
 		fresh.classList.toggle('link', clickable)
 		fresh.classList.toggle('link-hover', clickable)
 		fresh.classList.toggle('cursor-pointer', clickable)

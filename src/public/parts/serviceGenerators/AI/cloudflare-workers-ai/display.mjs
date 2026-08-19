@@ -1,5 +1,5 @@
 return async function ({ data, containers }) {
-	const generatorDisplay = containers.generatorDisplay
+	const { generatorDisplay } = containers
 	if (data.account_id && data.apikey) {
 		generatorDisplay.replaceChildren()
 		return

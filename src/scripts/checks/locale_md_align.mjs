@@ -22,7 +22,7 @@ export const SHAPE_KEYS = Object.freeze([
 ])
 
 const LOCALE_MD_NAME = /^(.+)\.(.+)\.md$/
-const AUTOLINK = /<https?:[^>\s]+>/gi
+const AUTOLINK = /<https?:[^\s>]+>/gi
 const MD_IMAGE = /!\[[^\]]*]\([^)]*\)/g
 const MD_LINK = /\[[^\]]*]\([^)]*\)/g
 const INLINE_CODE = /`[^`]+`/g
@@ -77,12 +77,12 @@ export function countEmphasis(text) {
 	let rest = text
 	let bold = 0
 	let italic = 0
-	rest = rest.replace(/\*\*\*([\s\S]*?)\*\*\*/g, () => { bold++; italic++; return '\0' })
-	rest = rest.replace(/___([\s\S]*?)___/g, () => { bold++; italic++; return '\0' })
-	rest = rest.replace(/\*\*([\s\S]*?)\*\*/g, () => { bold++; return '\0' })
-	rest = rest.replace(/__([\s\S]*?)__/g, () => { bold++; return '\0' })
-	rest = rest.replace(/\*([\s\S]*?)\*/g, () => { italic++; return '\0' })
-	rest = rest.replace(/_([\s\S]*?)_/g, () => { italic++; return '\0' })
+	rest = rest.replace(/\*{3}([\S\s]*?)\*{3}/g, () => { bold++; italic++; return '\0' })
+	rest = rest.replace(/___([\S\s]*?)___/g, () => { bold++; italic++; return '\0' })
+	rest = rest.replace(/\*\*([\S\s]*?)\*\*/g, () => { bold++; return '\0' })
+	rest = rest.replace(/__([\S\s]*?)__/g, () => { bold++; return '\0' })
+	rest = rest.replace(/\*([\S\s]*?)\*/g, () => { italic++; return '\0' })
+	rest = rest.replace(/_([\S\s]*?)_/g, () => { italic++; return '\0' })
 	return { bold, italic }
 }
 

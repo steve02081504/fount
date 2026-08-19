@@ -66,7 +66,7 @@ Deno.test('WorldChatHost postSystemMessage localData triggerCharReply', async ()
 	await addchar(groupId, CHAR, username)
 	await resolveWorld(groupId, channelId, username)
 
-	const host = replicatedWorldHookState.host
+	const { host } = replicatedWorldHookState
 	assert(host, 'ChatHostConnected wired host')
 
 	await host.localData.set('inventory', { gold: 42 })

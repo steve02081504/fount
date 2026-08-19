@@ -29,7 +29,7 @@ export async function suggestMentions(username, query = '', limit = 20, viewerEn
 	 * @returns {void}
 	 */
 	function pushSuggestion(suggestion) {
-		const entityHash = suggestion.entityHash
+		const { entityHash } = suggestion
 		if (!entityHash || seen.has(entityHash)) return
 		if (textRe && !entityHash.includes(needle)
 			&& !textRe.test(suggestion.displayName || '')

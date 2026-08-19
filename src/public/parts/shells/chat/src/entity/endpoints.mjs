@@ -198,7 +198,7 @@ export function registerEntityEndpoints(router) {
 			return res.status(200).json(result)
 		}
 		catch (error) {
-			if (error?.status === 403 || /Permission denied|not declared owner/i.test(String(error?.message || '')))
+			if (error?.status === 403 || /permission denied|not declared owner/i.test(String(error?.message || '')))
 				throw httpError(403, error.message || 'Permission denied')
 			throw error
 		}

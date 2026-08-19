@@ -37,15 +37,15 @@ function auditEventParams(event, state) {
 	const content = event.content || {}
 	const channelId = content.channelId || event.channelId || ''
 	const roleId = content.roleId || ''
-	const target = 
+	const target =
 		content.targetPubKeyHash
 		|| content.to
 		|| content.targetEntityHash
 		|| content.targetId
 		|| ''
-	
+
 	const targetEventId = content.targetId || ''
-	const claim = content.claim
+	const { claim } = content
 	return {
 		channelId,
 		channelName: channelId ? state.channels[channelId]?.name || channelId : '',

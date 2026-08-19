@@ -37,7 +37,7 @@ export const FEDERATION_ALBUM_EVENT_TYPES = new Set([
  * @returns {boolean} 是否可联邦导出
  */
 export function isTimelineEventVisibleForFederation(event, ownerEntityHash, requesterContext, canViewPost) {
-	const type = event.type
+	const { type } = event
 	if (FEDERATION_PRIVATE_EVENT_TYPES.has(type)) return false
 	if (FEDERATION_REACTION_EVENT_TYPES.has(type))
 		return requesterContext.publishReactions !== false

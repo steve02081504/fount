@@ -66,7 +66,7 @@ export function resolveSelector(token, knownManifestIds) {
 
 	if (trimmed.includes(':')) {
 		const colon = trimmed.indexOf(':')
-		const rest = trimmed.slice(colon + 1).split(/[,\s]+/).map(s => s.trim()).filter(Boolean)
+		const rest = trimmed.slice(colon + 1).split(/[\s,]+/).map(s => s.trim()).filter(Boolean)
 		const { suiteSelectors, subtestSelectors } = parseSuiteSubtestParts(rest)
 		return {
 			manifestId: trimmed.slice(0, colon),
@@ -86,7 +86,7 @@ export function resolveSelector(token, knownManifestIds) {
 		if (!suitePart) return { manifestId, suiteSelectors: [], subtestSelectors: {} }
 		/** @type {string[]} */
 		const slashParts = []
-		for (const chunk of suitePart.split(/[,\s]+/).map(s => s.trim()).filter(Boolean)) {
+		for (const chunk of suitePart.split(/[\s,]+/).map(s => s.trim()).filter(Boolean)) {
 			const slash = chunk.indexOf('/')
 			if (slash < 0) slashParts.push(chunk)
 			else slashParts.push(`${chunk.slice(0, slash)}:${chunk.slice(slash + 1)}`)

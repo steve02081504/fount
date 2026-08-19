@@ -90,8 +90,8 @@ export default {
 				const presentation = resolvePackPresentation(pack, locales, pack.infoDefaults || {})
 				const items = (pack.items || pack.entries || []).map(entry => {
 					const labels = resolveEmojiItemLabels(entry, locales)
-					const packId = pack.packId
-					const emojiId = entry.emojiId
+					const { packId } = pack
+					const { emojiId } = entry
 					return {
 						kind: 'pack',
 						packId,

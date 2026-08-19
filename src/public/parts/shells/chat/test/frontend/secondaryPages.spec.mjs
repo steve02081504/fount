@@ -40,7 +40,7 @@ test.describe('Chat secondary pages', () => {
 			buffer: Buffer.from(JSON.stringify(archive), 'utf8'),
 		})
 		await page.waitForURL(/\/parts\/shells:chat\/hub\/#group:/, { timeout: 60_000 })
-		const hash = new URL(page.url()).hash
+		const { hash } = new URL(page.url())
 		expect(hash).toMatch(new RegExp(`#group:${groupId}:imported_`))
 	})
 

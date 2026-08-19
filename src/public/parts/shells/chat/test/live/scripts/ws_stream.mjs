@@ -91,7 +91,7 @@ ws.onopen = () => {
 function onWsMessage(ev) {
 	let wire
 	try { wire = JSON.parse(ev.data) } catch { return }
-	const type = wire.type
+	const { type } = wire
 	received.push(type)
 
 	if (type === 'stream_chunk' && (!wire.channelId || wire.channelId === cid)) {

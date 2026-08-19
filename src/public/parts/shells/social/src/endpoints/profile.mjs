@@ -39,7 +39,7 @@ export function registerProfileRoutes(router) {
 		client.profileFollowers(routeEntityHash(req.params))))
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/replies/:postId', authenticate, socialJson(async (req, { client }) => {
-		const postId = req.params.postId
+		const { postId } = req.params
 		if (!postId) throw httpError(400, 'invalid params')
 		return client.profileReplies(routeEntityHash(req.params), postId)
 	}))

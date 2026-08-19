@@ -57,7 +57,7 @@ Deno.test('postChannelMessage image attaches files without inline markers', asyn
 	const { loadFileManifest, readManifestPlaintext, readManifestPlaintextStream } = await import('npm:@steve02081504/fount-p2p/files/evfs')
 	const { buffer: consumeStream } = await import('node:stream/consumers')
 	const entityHash = groupEntityHash(groupId)
-	const fileId = row.content.files[0].fileId
+	const { fileId } = row.content.files[0]
 	const manifest = await loadFileManifest(entityHash, `chat/${fileId}`)
 	assert(manifest, `EVFS manifest missing for chat/${fileId}`)
 	const plain = await readManifestPlaintext(username, manifest, { username })

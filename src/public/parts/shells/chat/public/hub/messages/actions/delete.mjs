@@ -19,7 +19,7 @@ import { toastMessageActionFailed } from './actionError.mjs'
  */
 export async function handleDelete(button, row, channelMessage, actions) {
 	const { groupId, channelId, reload } = actions
-	const eventId = button.dataset.eventId
+	const { eventId } = button.dataset
 	if (!eventId || !groupId || !channelId) return false
 	const text = getMessageText(channelMessage)
 		|| row?.querySelector('.message-content')?.textContent?.trim()

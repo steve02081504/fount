@@ -9,7 +9,7 @@ import { canonicalCallbackUrl, withQuery } from '../../src/portHook.mjs'
 
 Deno.test('PKCE verifier is base64url and challenge is S256', async () => {
 	const { verifier, challenge } = generatePKCE()
-	assertEquals(/^[A-Za-z0-9_-]+$/.test(verifier), true)
+	assertEquals(/^[\w-]+$/.test(verifier), true)
 	assertEquals(verifier.includes('='), false)
 	const { createHash } = await import('node:crypto')
 	assertEquals(
@@ -22,7 +22,7 @@ Deno.test('PKCE verifier is base64url and challenge is S256', async () => {
 Deno.test('randomState is hex', () => {
 	const firstState = randomState()
 	const secondState = randomState()
-	assertEquals(/^[0-9a-f]+$/.test(firstState), true)
+	assertEquals(/^[\da-f]+$/.test(firstState), true)
 	assertNotEquals(firstState, secondState)
 })
 

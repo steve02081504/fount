@@ -141,7 +141,7 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 		const { username, groupId, state, member } = req.groupContext
 		const channelId = governanceChannelId(state)
 		ensureCanInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId, 'MANAGE_MESSAGES required')
-		const packId = req.params.packId
+		const { packId } = req.params
 		const ok = await deletePack(username, groupId, packId)
 		if (!ok) throw httpError(404, 'pack not found')
 		if (state.groupSettings?.defaultEmojiPackId === packId)
@@ -154,8 +154,7 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/emoji-packs/:packId/emojis`, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, groupId, state, member } = req.groupContext
-		const { packId } = req.params
+		const { groupContext: { username, groupId, state, member }, params: { packId } } = req
 		const channelId = governanceChannelId(state)
 		ensureCanInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId, 'MANAGE_MESSAGES required')
 		const file = pickUploadedFile(req, 'emoji')
@@ -182,8 +181,7 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 	})
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/emoji-packs/:packId/emojis/:emojiId`, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, groupId, state, member } = req.groupContext
-		const { packId, emojiId } = req.params
+		const { groupContext: { username, groupId, state, member }, params: { packId, emojiId } } = req
 		const channelId = governanceChannelId(state)
 		ensureCanInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId, 'MANAGE_MESSAGES required')
 		const ok = await deletePackEmoji(username, groupId, packId, emojiId)
@@ -191,7 +189,7 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 		res.status(200).json({ packId, emojiId, deleted: true })
 	})
 
-	router.get(`${GROUPS_PREFIX}/:groupId/emoji-packs/:packId/emojis/:emojiId/data`, authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/emoji-packs/:packId/emojis/:emojiId/data`, authenticate, (req, res) => {
 		const { username } = getUserByReq(req)
 		const { groupId, packId, emojiId } = req.params
 		return sendEmojiContentResponse(req, res, username, groupId, emojiId, packId)

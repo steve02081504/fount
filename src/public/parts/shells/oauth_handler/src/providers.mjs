@@ -32,12 +32,12 @@ export function copilotBaseUrl(token, enterpriseDomain) {
  * @returns {boolean} 内网则为 true。
  */
 function isInternalHostname(hostname) {
-	const host = hostname.replace(/^\[|\]$/g, '').toLowerCase()
+	const host = hostname.replace(/^\[|]$/g, '').toLowerCase()
 	if (host === 'localhost' || host.endsWith('.localhost') || host === 'localhost.localdomain') return true
 	if (host === '::1' || host === '0.0.0.0' || host === '::' || host === '[::1]') return true
 	if (host.includes(':')) {
 		if (host === '::1' || host.startsWith('fe80:') || host.startsWith('fc') || host.startsWith('fd')) return true
-		const mapped = host.match(/:ffff:(\d{1,3}(?:\.\d{1,3}){3})$/)
+		const mapped = host.match(/:f{4}:(\d{1,3}(?:\.\d{1,3}){3})$/)
 		if (mapped) return isInternalHostname(mapped[1])
 		return false
 	}

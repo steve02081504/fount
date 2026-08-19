@@ -21,7 +21,7 @@ export function refreshChannelView() {
 	refreshChannelMessagesView(getMessageText)
 	const dividerId = store.messages.firstUnreadEventId
 	if (!dividerId) return
-	const channelMessages = store.messages.channelMessages
+	const { channelMessages } = store.messages
 	const idx = channelMessages.findIndex(row => row.eventId === dividerId)
 	if (idx <= 0) return
 	if (channelMessages[idx - 1]?.type === 'unread_divider') return

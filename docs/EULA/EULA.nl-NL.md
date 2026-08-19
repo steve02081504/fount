@@ -18,10 +18,10 @@ Deze Overeenkomst is in het Engels opgesteld. Vertalingen worden uitsluitend ter
 
 **1.3 Software:** Inhoud waarop de Licentiegever auteursrecht heeft of die hij mag licentiëren, en die in deze Repository is gepubliceerd, met inbegrip van broncode, technische documentatie, configuratievoorbeelden en begeleidende beschrijvingen die van de Licentiegever afkomstig zijn of die hij mag licentiëren. De Software **omvat niet**:
 
-* Open-sourcecomponenten van derden, afhankelijkheden, lettertypen, pictogrammen, afbeeldingen en overig materiaal;
-* Modellen, API's, diensten, datasets van derden, noch de output daarvan;
-* Het hostingplatform zelf, noch door derden ingediende inhoud in issues, discussies of pull requests;
-* Door gebruikers gemaakte configuraties, gegevens, runtime-artefacten en afgeleide werken.
+- Open-sourcecomponenten van derden, afhankelijkheden, lettertypen, pictogrammen, afbeeldingen en overig materiaal;
+- Modellen, API's, diensten, datasets van derden, noch de output daarvan;
+- Het hostingplatform zelf, noch door derden ingediende inhoud in issues, discussies of pull requests;
+- Door gebruikers gemaakte configuraties, gegevens, runtime-artefacten en afgeleide werken.
 
 **1.4 Inhoud van derden:** Alle inhoud die in de voorgaande alinea is uitgesloten. Inhoud van derden valt onder de desbetreffende rechthebbenden en hun respectieve licentievoorwaarden.
 
@@ -37,17 +37,17 @@ Deze software is een «Source-Available»-project en **is geen** «Open-Source»
 
 Onder voorbehoud van uw naleving van deze Overeenkomst verleent de Licentiegever u een niet-overdraagbare, niet-sublicentieerbare, niet-exclusieve, herroepbare beperkte licentie, uitsluitend om:
 
-* Broncode en technische documentatie te lezen en te raadplegen die de Licentiegever mag licentiëren;
-* Lokale kopieën van het voorgaande te bewaren ten behoeve van academische raadpleging of peer review.
+- Broncode en technische documentatie te lezen en te raadplegen die de Licentiegever mag licentiëren;
+- Lokale kopieën van het voorgaande te bewaren ten behoeve van academische raadpleging of peer review.
 
 Behoudens de hierboven uitdrukkelijk verleende rechten heeft de Licentiegever **geen andere rechten op de Software verleend en beoogt hij die ook niet te verlenen**, met inbegrip van enig recht op feitelijke uitvoering voor commerciële of niet-commerciële doeleinden. Deze Overeenkomst verleent evenmin enige licentie op software, modellen, API's, diensten of gegevens van derden.
 
 ### 2.3 Verschillende materialen in de Repository
 
-* **Broncode en technische documentatie:** Onderworpen aan de lees- en academische raadplegingslicentie van artikel 2.2.
-* **Configuratievoorbeelden, workflowbeschrijvingen en andere toelichtende bestanden:** Uitsluitend verstrekt als bijkomend materiaal ter begrip van de code; zij machtigen niet de daarin genoemde diensten, platforms of tools van derden.
-* **Binaire bestanden of build-artefacten (indien aanwezig):** Hun aanwezigheid machtigt niet tot uitvoering, implementatie of herdistributie.
-* **Inhoud van derden:** Niet onderworpen aan deze Overeenkomst; raadpleeg de desbetreffende licenties.
+- **Broncode en technische documentatie:** Onderworpen aan de lees- en academische raadplegingslicentie van artikel 2.2.
+- **Configuratievoorbeelden, workflowbeschrijvingen en andere toelichtende bestanden:** Uitsluitend verstrekt als bijkomend materiaal ter begrip van de code; zij machtigen niet de daarin genoemde diensten, platforms of tools van derden.
+- **Binaire bestanden of build-artefacten (indien aanwezig):** Hun aanwezigheid machtigt niet tot uitvoering, implementatie of herdistributie.
+- **Inhoud van derden:** Niet onderworpen aan deze Overeenkomst; raadpleeg de desbetreffende licenties.
 
 ---
 
@@ -55,9 +55,9 @@ Behoudens de hierboven uitdrukkelijk verleende rechten heeft de Licentiegever **
 
 Zonder voorafgaande uitdrukkelijke schriftelijke toestemming van de Licentiegever mag u niet:
 
-* Modules van deze software compileren, uitvoeren, implementeren of anderszins activeren;
-* Deze software verkopen, verhuren, licentiëren of sublicentiëren, noch deze als dienst aan derden verstrekken;
-* Rechtsvermeldingen, de tekst van deze Overeenkomst of andere juridische markeringen in deze software verwijderen, verbergen of wijzigen.
+- Modules van deze software compileren, uitvoeren, implementeren of anderszins activeren;
+- Deze software verkopen, verhuren, licentiëren of sublicentiëren, noch deze als dienst aan derden verstrekken;
+- Rechtsvermeldingen, de tekst van deze Overeenkomst of andere juridische markeringen in deze software verwijderen, verbergen of wijzigen.
 
 ---
 
@@ -135,9 +135,9 @@ Deze code integreert standaard **geen beveiligingssandbox of machtigingsisolatie
 
 Om de wegen af te snijden waarlangs deze software als voertuig van de persoonlijke standpunten van de Licentiegever zou kunnen worden gelezen, openbaart de Licentiegever de volgende persoonlijke attributen, die geen verband houden met de functionaliteit van de Software:
 
-* **Ethische herkomst:** Het dagelijkse dieet van de kernontwikkelaar bevat vlees; hij is geen strikte vegetariër.
-* **Genderpolitiek:** Het biologische geslacht en de genderidentiteit van de hoofdontwikkelaar zijn beide mannelijk.
-* **Seksuele-voorkeurspolitiek:** De persoonlijke seksuele voorkeur van de hoofdontwikkelaar is «legale loli met weelderige borsten».
+- **Ethische herkomst:** Het dagelijkse dieet van de kernontwikkelaar bevat vlees; hij is geen strikte vegetariër.
+- **Genderpolitiek:** Het biologische geslacht en de genderidentiteit van de hoofdontwikkelaar zijn beide mannelijk.
+- **Seksuele-voorkeurspolitiek:** De persoonlijke seksuele voorkeur van de hoofdontwikkelaar is «legale loli met weelderige borsten».
 
 De voorgaande attributen zijn feitelijke toestanden van de Licentiegever als natuurlijke persoon. Zij vormen geen functionele specificaties, ontwerpdoelen of standaardwaarden van deze software. Deze software, haar documentatie, standaardpersonages, output en afgeleide resultaten vertegenwoordigen de Licentiegever niet en vormen geen verklaring, verspreiding of goedkeuring van de voorgaande attributen, verwante groepen of verwante claims.
 
@@ -167,4 +167,4 @@ De Licentiegever biedt geen technische ondersteuning voor uw ongeautoriseerde ui
 
 **11.5 Contact:** Kennisgevingen met betrekking tot deze Overeenkomst kunnen aan de Licentiegever worden gericht via Issues in deze Repository op <https://github.com/steve02081504/fount>.
 
-**11.6 Ontologische soevereiniteit en post-biologische jurisdictie:** Door deze Overeenkomst te aanvaarden, verklaart u uitdrukkelijk dat u het absolute en volledige eigendom behoudt van uw fysieke lichaam, bewustzijnsaggregaat en wat gewoonlijk de «ziel» wordt genoemd. U doet hierbij afstand van elke intentie om in een andere wereld te reïncarneren en privileges te genieten zoals «uitverkorene», «held» of soortgelijke behandeling; u verklaart voorts dat elke bestaande band, vazalrelatie of offercontract tussen u en enige fantasiesoort, elf, aartsmagiër, nachtmerrie, succubus of warp-entiteit nietig is *ab initio*. Deze bepaling wordt niet opgeschort of ongeldig door uw latere transmigratie, buitenlichamelijke ervaring, selectie door een systeem, oproeping naar een andere wereld of bewering dat menselijk recht niet langer van toepassing is. Geen orakel, systeempaneel, servicevoorwaarden van de reïncarnatiehal, statuut van een anderewereldgilde of warp-administratief bevel mag de toepassing van deze bepaling en artikel 11.4 uitsluiten. Indien een dergelijke anderewereldentiteit een bevoegdheidsverweer tegen deze Overeenkomst opwerpt, wordt dat geschil voorgelegd aan de in artikel 11.4 aangewezen rechter en strikt beslecht volgens het huidige rechtssysteem van Japan.
+**11.6 Ontologische soevereiniteit en post-biologische jurisdictie:** Door deze Overeenkomst te aanvaarden, verklaart u uitdrukkelijk dat u het absolute en volledige eigendom behoudt van uw fysieke lichaam, bewustzijnsaggregaat en wat gewoonlijk de «ziel» wordt genoemd. U doet hierbij afstand van elke intentie om in een andere wereld te reïncarneren en privileges te genieten zoals «uitverkorene», «held» of soortgelijke behandeling; u verklaart voorts dat elke bestaande band, vazalrelatie of offercontract tussen u en enige fantasiesoort, elf, aartsmagiër, nachtmerrie, succubus of warp-entiteit nietig is _ab initio_. Deze bepaling wordt niet opgeschort of ongeldig door uw latere transmigratie, buitenlichamelijke ervaring, selectie door een systeem, oproeping naar een andere wereld of bewering dat menselijk recht niet langer van toepassing is. Geen orakel, systeempaneel, servicevoorwaarden van de reïncarnatiehal, statuut van een anderewereldgilde of warp-administratief bevel mag de toepassing van deze bepaling en artikel 11.4 uitsluiten. Indien een dergelijke anderewereldentiteit een bevoegdheidsverweer tegen deze Overeenkomst opwerpt, wordt dat geschil voorgelegd aan de in artikel 11.4 aangewezen rechter en strikt beslecht volgens het huidige rechtssysteem van Japan.

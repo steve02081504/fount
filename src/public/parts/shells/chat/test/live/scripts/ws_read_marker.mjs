@@ -8,7 +8,7 @@ import { createLiveShellHttp, waitForWsFrame } from 'fount/scripts/test/live/wsH
 const { chatApi, key: apiKey } = createLiveShellHttp()
 
 const createdGroup = await chatApi('POST', '/groups/', { name: 'WSReadMarker' })
-const groupId = createdGroup.json.groupId
+const { groupId } = createdGroup.json
 const channelId = createdGroup.json.defaultChannelId
 const peers = await chatApi('GET', `/groups/${groupId}/peers`)
 const nodeHash = peers.json.selfNodeHash

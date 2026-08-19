@@ -208,8 +208,7 @@ export const stepGas = (world, opts) => {
 
 	const { worldW: W, worldH: H, regionId, regions, gravity } = world
 	const n = W * H
-	const gasUx = world.gasUx
-	const gasUy = world.gasUy
+	const { gasUx, gasUy } = world
 	const nextUx = scratch(world, 'gasNextUx', n, Float32Array)
 	const nextUy = scratch(world, 'gasNextUy', n, Float32Array)
 	const blocked = scratch(world, 'gasBlocked', n, Uint8Array)

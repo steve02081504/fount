@@ -52,7 +52,7 @@ Deno.test('unregisterBridgeOperations clears registry and outbound handlers', as
 		platformChatId: 'clear-1',
 		botname: 'clear-bot',
 	})
-	const groupId = session.groupId
+	const { groupId } = session
 	/** @type {object[]} */
 	const outboundLines = []
 	registerBridgeOperations(username, 'mock', 'clear-bot', {

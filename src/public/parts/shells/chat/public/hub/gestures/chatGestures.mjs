@@ -166,7 +166,7 @@ function ensureSwipeDelegation(container) {
 		}
 		if (deltaX <= 0) return
 		const eventId = target.getAttribute('data-message-id') || ''
-		if (!/^[0-9a-f]{64}$/.test(eventId)) return
+		if (!/^[\da-f]{64}$/.test(eventId)) return
 		const { setReplyTarget } = await import('../composerReply.mjs')
 		const { authorPresentationKeys } = await import('../core/domUtils.mjs')
 		const authorKey = target.getAttribute('data-char-id')

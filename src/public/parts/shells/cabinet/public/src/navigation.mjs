@@ -31,7 +31,7 @@ export function locationHashFor(cabinetId, parentId = null) {
 		return parentId ? `${base}/${parentId}` : base
 	}
 	const cabinet = cabinets.find(row => row.cabinet_id === cabinetId) || currentCabinet
-	const shared = cabinet?.type === 'shared' || (/^[0-9a-f]{64}$/i.test(cabinetId) && !cabinetId.includes(':'))
+	const shared = cabinet?.type === 'shared' || (/^[\da-f]{64}$/i.test(cabinetId) && !cabinetId.includes(':'))
 	const base = shared ? `shared:${cabinetId}` : `cabinet:${cabinetId}`
 	return parentId ? `${base}/${parentId}` : base
 }

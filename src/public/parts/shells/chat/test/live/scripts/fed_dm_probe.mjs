@@ -40,10 +40,9 @@ async function getWhoamiUser(node) {
  */
 async function buildDmIntro(node) {
 	const user = await getWhoamiUser(node)
-	const dataPath = node.dataPath
 	const helper = joinPath(fileURLToPath(new URL('.', import.meta.url)), 'federation', 'dm_intro_helper.mjs')
 	const repoRoot = process.env.FOUNT_TEST_REPO_ROOT
-	const argv = [...denoLiveRun(helper), '--data-path', dataPath, '--user', user]
+	const argv = [...denoLiveRun(helper), '--data-path', node.dataPath, '--user', user]
 	const cmd = new Deno.Command(argv[0], {
 		args: argv.slice(1),
 		cwd: repoRoot,
