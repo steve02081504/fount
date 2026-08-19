@@ -139,16 +139,23 @@ function paintSelectionSummary(message) {
 }
 
 /**
- * 打印续跑原因。
+ * 打印续跑原因（显式指名超过 7 个时聚合为计数，其余逐套件列出）。
  * @param {object} message 内核 accepted 载荷
  * @returns {void}
  */
 function paintContinueReasons(message) {
-	for (const row of message.continueReasons ?? [])
+	const rows = message.continueReasons ?? []
+	const explicitRows = rows.filter(row => row.kind === 'explicit_selected')
+	const aggregateExplicit = explicitRows.length > 7
+	if (aggregateExplicit)
+		console.logI18n('fountConsole.test.display.explicitSelectedCount', { count: explicitRows.length })
+	for (const row of rows) {
+		if (aggregateExplicit && row.kind === 'explicit_selected') continue
 		console.logI18n('fountConsole.test.display.reason', {
 			label: row.key,
 			reason: formatContinueReasonLabel(row),
 		})
+	}
 }
 
 /**

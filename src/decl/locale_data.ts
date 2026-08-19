@@ -6328,6 +6328,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.denoPanic.published': { url: string | number }
 	'fountConsole.test.display.eta': { expected: string | number; remaining: string | number }
 	'fountConsole.test.display.etaUnknown': { count: string | number; expected: string | number }
+	'fountConsole.test.display.explicitSelectedCount': { count: string | number }
 	'fountConsole.test.display.failureLog': { label: string | number }
 	'fountConsole.test.display.queued': { count: string | number }
 	'fountConsole.test.display.reason': { label: string | number; reason: string | number }
