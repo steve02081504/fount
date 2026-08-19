@@ -182,10 +182,8 @@ export function resolveBrowserImportSpec(repoRoot, importerFile, spec) {
 
 	// part public：按浏览器 URL 解析（`../` 爬出 public 会落到 `/scripts/…`，不是 FS 相对路径）
 	const browserBase = partPublicBrowserPath(repoRoot, importerFile)
-	if (browserBase) {
-		const { pathname } = new URL(spec, `https://fount.local${browserBase}`)
-		return mapBrowserPathnameToFile(repoRoot, pathname)
-	}
+	if (browserBase)
+		return mapBrowserPathnameToFile(repoRoot, new URL(spec, `https://fount.local${browserBase}`).pathname)
 
 	const base = path.resolve(path.dirname(importerFile), spec)
 	const candidates = [base, `${base}.mjs`, `${base}.js`, `${base}.ts`, path.join(base, 'index.mjs')]

@@ -352,8 +352,8 @@ export async function buildProfileFeedItems(username, entityHash, options = {}) 
 	items.sort((left, right) => compareFeedItems(left, right) * -1)
 
 	let start = 0
-	if (options.cursor) {
-		const { cursor } = options
+	const { cursor } = options
+	if (cursor) {
 		const index = items.findIndex(item => item.postId === cursor)
 		start = index >= 0 ? index + 1 : 0
 	}
