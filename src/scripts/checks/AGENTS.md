@@ -20,6 +20,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `text_lf` | UTF-8 text (fatal decode, no NUL) must be LF; under `fount test` scopes to triggered files when set |
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
 | `locale_md_align` | Parallel `Stem.locale.md` families (`docs/EULA`, `docs/readme`): same line count; per-line heading / hr / quote / fence / list marker / bold / italic / link / image / inline-code counts vs `en-UK`. Same suite: EULA / README / `list.csv` / `locales/*.json` locale **ids** must be one set |
+| `theme_radius` | Themed frontend (`src/public/**` + `.github/pages/**`, excl. `test/`) must not hardcode radius: Tailwind fixed classes (`rounded`, `rounded-sm/md/lg/xl/2xl/3xl`, corner variants, **`rounded-full`** avatar circles) or CSS `border-radius: <长度>` — use theme-aware `rounded-selector` / `rounded-field` / `rounded-box` / `rounded-btn` / `rounded-badge` (CSS → `var(--radius-*)`). Avatar circle must follow theme (square under cyberpunk) |
 
 `listRepoFiles` (`walk.mjs`): default is `git ls-files` (+ untracked, exclude-standard); pass `ignore` to force a filesystem walk. Empty/omitted suffixes = all files.
 
