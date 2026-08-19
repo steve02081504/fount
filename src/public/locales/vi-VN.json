@@ -172,7 +172,7 @@
 			"display": {
 				"eta": "Dự kiến ${expected}, tổng còn ≈ ${remaining}",
 				"etaUnknown": "Dự kiến ${expected}; tổng còn ${count} mục thời lượng chưa biết",
-				"explicitSelectedCount": "Đặt tên rõ ràng: ${count}",
+				"explicitSelectedCount": "Được chọn rõ ràng: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "Tổng còn ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} còn lại tổng cộng (thêm ${count} thời lượng chưa biết)",

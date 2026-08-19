@@ -172,7 +172,7 @@
 			"display": {
 				"eta": "見込み ${expected}、全体残り ≈ ${remaining}",
 				"etaUnknown": "見込み ${expected}、全体残りに未知の所要時間 ${count} 件",
-				"explicitSelectedCount": "明示的な命名: ${count}",
+				"explicitSelectedCount": "明示的に選択: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "全体残り ≈ ${remaining}",
 				"remainingUnknown": "全体残り ≈ ${remaining}（別途未知の所要時間 ${count} 件）",

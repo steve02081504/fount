@@ -172,7 +172,7 @@
 			"display": {
 				"eta": "Verwacht ${expected}, totaal ≈ ${remaining} resterend",
 				"etaUnknown": "Verwacht ${expected}; ${count} met onbekende duur resterend in totaal",
-				"explicitSelectedCount": "Expliciete naamgeving: ${count}",
+				"explicitSelectedCount": "Expliciet geselecteerd: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "Totaal ≈ ${remaining} resterend",
 				"remainingUnknown": "≈ ${remaining} resterend in totaal (${count} met onbekende duur extra)",

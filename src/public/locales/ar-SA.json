@@ -172,7 +172,7 @@
 			"display": {
 				"eta": "متوقع ${expected}، الإجمالي المتبقي ≈ ${remaining}",
 				"etaUnknown": "متوقع ${expected}؛ يتبقى ${count} بمدة غير معروفة إجمالًا",
-				"explicitSelectedCount": "تسمية صريحة: ${count}",
+				"explicitSelectedCount": "تم تحديده صراحةً: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "الإجمالي المتبقي ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} متبقي إجمالًا (${count} بمدة غير معروفة إضافية)",

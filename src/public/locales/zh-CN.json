@@ -172,7 +172,7 @@
 			"display": {
 				"eta": "预计占用 ${expected}，总剩余 ≈ ${remaining}",
 				"etaUnknown": "预计占用 ${expected}，总剩余含 ${count} 个未知时长",
-				"explicitSelectedCount": "显式指名：${count}个",
+				"explicitSelectedCount": "显式选中的套件：${count} 个",
 				"reason": "${label}：${reason}",
 				"remaining": "总剩余 ≈ ${remaining}",
 				"remainingUnknown": "总剩余 ≈ ${remaining}（另有 ${count} 个未知时长）",

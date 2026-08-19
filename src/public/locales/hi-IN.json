@@ -172,7 +172,7 @@
 			"display": {
 				"eta": "अनुमानित ${expected}, कुल शेष ≈ ${remaining}",
 				"etaUnknown": "अनुमानित ${expected}; कुल ${count} अज्ञात अवधि शेष",
-				"explicitSelectedCount": "स्पष्ट नामकरण: ${count}",
+				"explicitSelectedCount": "स्पष्ट रूप से चयनित: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "कुल शेष ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} कुल शेष (${count} अतिरिक्त अज्ञात अवधि)",

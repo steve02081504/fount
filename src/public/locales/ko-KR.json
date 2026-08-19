@@ -172,7 +172,7 @@
 			"display": {
 				"eta": "예상 ${expected}, 전체 남음 ≈ ${remaining}",
 				"etaUnknown": "예상 ${expected}, 전체 남음에 미지 소요 ${count}건",
-				"explicitSelectedCount": "명시적 이름: ${count}",
+				"explicitSelectedCount": "명시적으로 선택됨: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "전체 남음 ≈ ${remaining}",
 				"remainingUnknown": "전체 남음 ≈ ${remaining} (미지 소요 ${count}건 추가)",

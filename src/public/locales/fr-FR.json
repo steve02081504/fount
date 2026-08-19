@@ -172,7 +172,7 @@
 			"display": {
 				"eta": "Prévu ${expected}, total ≈ ${remaining} restant",
 				"etaUnknown": "Prévu ${expected}, total restant inclut ${count} durée(s) inconnue(s)",
-				"explicitSelectedCount": "Dénomination explicite : ${count}",
+				"explicitSelectedCount": "Sélectionnés explicitement : ${count}",
 				"reason": "${label} : ${reason}",
 				"remaining": "Total ≈ ${remaining} restant",
 				"remainingUnknown": "≈ ${remaining} restant au total (${count} durée(s) inconnue(s) en plus)",
