@@ -751,6 +751,117 @@ const icons = {
 	error: 'https://api.iconify.design/line-md/alert.svg',
 }
 
+/** 边框色与背景反色的混合占比（0-1）。 */
+const BORDER_INVERSE_RATIO = 0.3
+
+/**
+ * 将 getComputedStyle 返回的 rgb()/rgba() 字符串解析为 {r,g,b,a}。
+ * @param {string} colorStr - 颜色字符串。
+ * @returns {{r:number,g:number,b:number,a:number}|null} 解析后的颜色，解析失败时返回 null。
+ */
+function parseRgbColor(colorStr) {
+	const match = String(colorStr).match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/)
+	if (!match) return null
+	const [, r, g, b, aRaw = '1'] = match
+	return { r: +r, g: +g, b: +b, a: +aRaw }
+}
+
+/**
+ * 计算元素最接近的不透明背景色（向上回溯祖先直到找到非透明背景）。
+ * @param {HTMLElement} el - 目标元素。
+ * @returns {{r:number,g:number,b:number}|null} 有效背景色，找不到时返回 null。
+ */
+function getEffectiveBackgroundColor(el) {
+	let node = el
+	while (node) {
+		const bg = parseRgbColor(getComputedStyle(node).backgroundColor)
+		if (bg && bg.a > 0) return { r: bg.r, g: bg.g, b: bg.b }
+		node = node.parentElement
+	}
+	return null
+}
+
+/**
+ * 按权重平均一组颜色。
+ * @param {{color:{r:number,g:number,b:number}, weight:number}[]} entries - 颜色与权重。
+ * @returns {{r:number,g:number,b:number}} 加权平均颜色。
+ */
+function averageColors(entries) {
+	let r = 0, g = 0, b = 0, total = 0
+	for (const { color, weight } of entries) {
+		r += color.r * weight
+		g += color.g * weight
+		b += color.b * weight
+		total += weight
+	}
+	return total ? { r: Math.round(r / total), g: Math.round(g / total), b: Math.round(b / total) } : { r: 0, g: 0, b: 0 }
+}
+
+/**
+ * 根据背景色计算边框色：背景色与自身反色按占比混合。
+ * @param {{r:number,g:number,b:number}} bg - 背景色。
+ * @param {number} ratio - 反色占比（0-1）。
+ * @returns {{r:number,g:number,b:number}} 边框色。
+ */
+function borderColorFromBackground(bg, ratio) {
+	return {
+		r: Math.round(bg.r * (1 - ratio) + (255 - bg.r) * ratio),
+		g: Math.round(bg.g * (1 - ratio) + (255 - bg.g) * ratio),
+		b: Math.round(bg.b * (1 - ratio) + (255 - bg.b) * ratio)
+	}
+}
+
+/**
+ * 计算页面平均文字颜色与平均背景颜色。
+ * @returns {{text:{r:number,g:number,b:number}, background:{r:number,g:number,b:number}}|null} 页面主题颜色，无可计算内容时返回 null。
+ */
+function computePageThemeColors() {
+	const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+		/**
+		 * 决定文本节点是否纳入统计。
+		 * @param {Text} node - 文本节点。
+		 * @returns {number} NodeFilter.FILTER_ACCEPT 或 NodeFilter.FILTER_REJECT。
+		 */
+		acceptNode(node) {
+			if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT
+			const el = node.parentElement
+			if (!el) return NodeFilter.FILTER_REJECT
+			const style = getComputedStyle(el)
+			if (style.display === 'none' || style.visibility === 'hidden') return NodeFilter.FILTER_REJECT
+			return NodeFilter.FILTER_ACCEPT
+		}
+	})
+	const textColorEntries = []
+	const bgColorEntries = []
+	let textNode
+	// eslint-disable-next-line no-cond-assign
+	while (textNode = walker.nextNode()) {
+		const el = textNode.parentElement
+		const weight = textNode.textContent.trim().length
+		const color = parseRgbColor(getComputedStyle(el).color)
+		if (color) textColorEntries.push({ color, weight })
+		const bg = getEffectiveBackgroundColor(el)
+		if (bg) bgColorEntries.push({ color: bg, weight })
+	}
+	if (!textColorEntries.length || !bgColorEntries.length) return null
+	return { text: averageColors(textColorEntries), background: averageColors(bgColorEntries) }
+}
+
+/**
+ * 将页面平均主题色应用到 toast 容器（写为 fount 前缀的 CSS 变量），使弹窗融入宿主页面。
+ * @param {HTMLElement} container - toast 容器元素。
+ * @returns {void}
+ */
+function applyPageThemeToToast(container) {
+	const theme = computePageThemeColors()
+	if (!theme) return
+	const { text, background } = theme
+	const border = borderColorFromBackground(background, BORDER_INVERSE_RATIO)
+	container.style.setProperty('--fount-toast-text', `rgb(${text.r} ${text.g} ${text.b})`)
+	container.style.setProperty('--fount-toast-background', `rgb(${background.r} ${background.g} ${background.b})`)
+	container.style.setProperty('--fount-toast-border', `rgb(${border.r} ${border.g} ${border.b})`)
+}
+
 /**
  * 确保 toast 容器存在并返回它。
  * @returns {HTMLElement} - toast 容器元素。
@@ -806,8 +917,9 @@ function addToastStyles() {
 	align-items: start;
 	padding: 1rem;
 	border-radius: var(--radius-box);
-	background-color: #333;
-	color: white;
+	background-color: var(--fount-toast-background, #333);
+	color: var(--fount-toast-text, white);
+	border: 1px solid var(--fount-toast-border, rgba(0, 0, 0, 0.2));
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	font-size: 0.875rem;
 	line-height: 1.25rem;
@@ -920,6 +1032,7 @@ async function base_showToast(type, message, duration = 4000) {
 		message = String(message)
 	}
 	const container = ensureToastContainer()
+	applyPageThemeToToast(container)
 	const alertId = `fount-browserIntegration-alert-${Date.now()}`
 	const alertDiv = document.createElement('div')
 	if (type == 'custom') {
