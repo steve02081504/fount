@@ -65,7 +65,7 @@ export function createJsonlInboxStore(rootDir) {
 	async function listPage(options = {}) {
 		const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
 		const cursor = options.cursor ? String(options.cursor) : null
-		const rowCursor = options.rowCursor
+		const { rowCursor } = options
 		const pageCursor = options.pageCursor || rowCursor
 		const transform = options.transform || (rows => rows)
 		const filter = options.filter || (() => true)

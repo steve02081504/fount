@@ -39,7 +39,7 @@ export const worldStateReducers = {
 
 		const bucket = ensureWorldStateBucket(state, worldname.trim())
 		const existing = bucket[key.trim()]
-		const hlc = event.hlc
+		const { hlc } = event
 		if (!hlc || compareHlcJson(hlc, existing?.hlc) < 0) return state
 
 		if (action === 'delete')

@@ -69,7 +69,7 @@ export function handleVoteClosedWire(wireMessage, channelId) {
 		button.disabled = true
 	const tally = wireMessage.tally || {}
 	for (const button of block.querySelectorAll('.vote-option')) {
-		const choice = button.dataset.choice
+		const { choice } = button.dataset
 		const count = Number(tally[choice]) || 0
 		const meta = button.querySelector('.vote-option-meta')
 		if (meta) {

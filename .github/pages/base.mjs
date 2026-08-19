@@ -185,7 +185,7 @@ if (!is_hidden_page) {
  */
 export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.getItem('fountHostUrl') ?? 'http://localhost:8931') {
 	const host = new URL(hostUrl.includes('://') ? hostUrl : `http://${hostUrl}`)
-	const href = new URL('/parts/shells/home' + host.search + host.hash, host).href
+	const { href } = new URL('/parts/shells/home' + host.search + host.hash, host)
 	if (HTMLScriptElement.supports?.('speculationrules')) {
 		const specScript = document.createElement('script')
 		specScript.type = 'speculationrules'

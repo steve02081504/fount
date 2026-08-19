@@ -40,7 +40,7 @@ export function createMessagePipeline({
 
 	container.addEventListener('scroll', () => {
 		if (Date.now() < programmaticScrollUntil) return
-		const scrollTop = container.scrollTop
+		const { scrollTop } = container
 		const scrollingUp = scrollTop < lastScrollTop
 		lastScrollTop = scrollTop
 		shouldAutoScroll = scrollTop >=

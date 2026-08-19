@@ -156,8 +156,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		? await resolveDeclaredOwnerEntityHash(replicaUsername, memberId)
 		: null
 
-	let ReplyToCharname = options.ReplyToCharname
-	let ReplyToUid = options.ReplyToUid
+	let { ReplyToCharname, ReplyToUid } = options
 	if (ReplyToCharname == null && ReplyToUid == null)
 		for (let index = chatLogForRequest.length - 1; index >= 0; index--) {
 			const replyTo = chatLogForRequest[index]?.extension?.chat?.replyTo

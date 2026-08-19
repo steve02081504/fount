@@ -168,7 +168,7 @@ export async function buildVirtualBridgeOnMessageEvent(username, session, channe
 function extractMentionsFromText(text) {
 	/** @type {string[]} */
 	const entityHashes = []
-	const re = /@\[entity:([0-9a-f]{128})\]/gi
+	const re = /@\[entity:([\da-f]{128})]/gi
 	let match
 	while (match = re.exec(text))
 		entityHashes.push(match[1])

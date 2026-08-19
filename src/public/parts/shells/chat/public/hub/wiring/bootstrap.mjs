@@ -48,7 +48,7 @@ function wireComposerControls() {
 function wireModeTabsEarly() {
 	document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 		el.addEventListener('click', () => {
-			const mode = el.dataset.mode
+			const { mode } = el.dataset
 			if (mode) void import('../mode.mjs').then(({ setMode }) => setMode(mode))
 		})
 	})

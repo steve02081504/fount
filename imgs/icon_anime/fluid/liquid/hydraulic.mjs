@@ -66,7 +66,7 @@ const bindSurfScratch = (world, surf) => {
  * @param {SurfSoa} surf 自由面 SoA
  */
 const pushSurface = (world, x, y, component, pressure, phi, surf) => {
-	const n = surf.n
+	const { n } = surf
 	if (n >= surf.x.length) {
 		const { prefix } = surf
 		surf.x = growScratch(world, `${prefix}X`, n + 1, Int32Array)
@@ -138,7 +138,7 @@ const onLiquidCell = (world, cell, x, y, id) => {
 	if (!isLiquidFreeSurface(world, x, y, upW)) return
 	const up = /** @type {{ dx: number, dy: number, w: number }} */ ctx.up
 	const depth = /** @type {Float32Array} */ ctx.depth
-	const W = ctx.W
+	const { W } = ctx
 	let airP = pressureAt(world, x, y)
 	if (up.w > 0) {
 		const ax = x + up.dx
@@ -180,7 +180,7 @@ const acceptMeltCell = (world, cell) =>
 const onMeltCell = (world, cell, x, y, id) => {
 	const ctx = MELT_LABEL_CTX
 	const upW = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ ctx.upW
-	const W = ctx.W
+	const { W } = ctx
 	let free = true
 	for (let i = 0; i < upW.n; i++) {
 		const ax = x + upW.dx[i]
@@ -195,7 +195,7 @@ const onMeltCell = (world, cell, x, y, id) => {
 	if (!free) return
 	const up = /** @type {{ dx: number, dy: number, w: number }} */ ctx.up
 	const depth = /** @type {Float32Array} */ ctx.depth
-	const surf = ctx.surf
+	const { surf } = ctx
 	let airP = pressureAt(world, x, y)
 	if (up.w > 0) {
 		const ax = x + up.dx

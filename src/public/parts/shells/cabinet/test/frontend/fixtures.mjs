@@ -64,6 +64,6 @@ export async function createFolderViaApi(baseUrl, apiKey, name) {
 	})
 	const raw = await res.text()
 	if (!res.ok) throw new Error(raw)
-	const entry = JSON.parse(raw).entry
+	const { entry } = JSON.parse(raw)
 	return { id: entry.id, name: entry.name, cabinet_id: cabinetId }
 }

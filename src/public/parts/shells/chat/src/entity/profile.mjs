@@ -31,7 +31,7 @@ const MANUAL_STATUSES = new Set(['online', 'idle', 'dnd', 'invisible', 'away', '
 const PROFILE_JSON = 'profile.json'
 const PUBLIC_PROFILE_PATH = 'profile.json'
 /** handle：2–32 位小写 `[a-z0-9_.-]`；空串表示清除。不要求全局唯一。 */
-const HANDLE_RE = /^[a-z0-9_.-]{2,32}$/
+const HANDLE_RE = /^[\d._a-z-]{2,32}$/
 const THEME_COLOR_RE = /^#[\da-f]{6}$/i
 
 /** entityHash → 负缓存截止时间（仅远端拉取失败）；有界 LRU + TTL */

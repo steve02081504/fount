@@ -323,7 +323,7 @@ function allocMermaidSvgId(seed = '') {
  */
 function extractMermaidDiagramId(html) {
 	return html.match(/<svg\b[^>]*\bid="(mermaid-[^"]+)"/i)?.[1]
-		?? html.match(/#((?:mermaid-)[a-zA-Z0-9-]+)\s*[{.]/)?.[1]
+		?? html.match(/#(mermaid-[\dA-Za-z-]+)\s*[.{]/)?.[1]
 }
 
 /**

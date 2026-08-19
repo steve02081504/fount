@@ -50,7 +50,7 @@ export async function handleFeedbackSubmitCancel(button, actions) {
  */
 export function handleFeedbackPrompt(button, type) {
 	const messageRow = /** @type {HTMLElement | null} */ button.closest('.message, .char-entry')
-	const eventId = button.dataset.eventId
+	const { eventId } = button.dataset
 	if (!eventId) return false
 	void showFeedbackReasonInput(messageRow, eventId, type)
 	return true

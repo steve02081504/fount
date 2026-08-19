@@ -173,7 +173,7 @@ export function setEndpoints(router) {
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/entries`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		const body = req.body
+		const { body } = req
 		const unlock = unlockToken(req, body)
 		if (body.plaintext_base64)
 			return res.status(200).json({
@@ -241,7 +241,7 @@ export function setEndpoints(router) {
 
 	router.get(`${PREFIX}/cabinets/:cabinetId/zip`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		const cabinetId = req.params.cabinetId
+		const { cabinetId } = req.params
 		const result = await zipCabinetFolder(username, entityHash, cabinetId, {
 			folder_id: req.query.parent_id || req.query.folder_id,
 			unlock_token: unlockToken(req),

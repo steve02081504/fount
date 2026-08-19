@@ -22,7 +22,7 @@ import { toastMessageActionFailed } from './actionError.mjs'
  */
 export async function handleEdit(button, actions) {
 	const { groupId, channelId, reload } = actions
-	const eventId = button.dataset.eventId
+	const { eventId } = button.dataset
 	if (!eventId || !groupId || !channelId) return false
 	const messageRow = button.closest('.message')
 	if (messageRow?.querySelector('.message-edit-area')) return true

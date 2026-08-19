@@ -140,8 +140,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const active = memberKey != null
 		const member = memberKey ? state.members[memberKey] : undefined
 
-		let { channels } = state
-		let channelPermissions = state.channelPermissions
+		let { channels, channelPermissions } = state
 		const groupSettings = { ...state.groupSettings }
 
 		if (active) {

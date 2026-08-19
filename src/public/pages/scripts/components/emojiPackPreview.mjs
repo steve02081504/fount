@@ -25,7 +25,7 @@ function positionNearAnchor(card, anchor) {
 	const rect = anchor.getBoundingClientRect()
 	const width = card.offsetWidth || 340
 	const height = card.offsetHeight || 280
-	let left = rect.left
+	let { left } = rect
 	let top = rect.bottom + 8
 	if (left + width > window.innerWidth - 8) left = window.innerWidth - width - 8
 	if (top + height > window.innerHeight - 8) top = rect.top - height - 8
@@ -154,7 +154,7 @@ async function resolveCollection(pack, provider) {
 export async function showEmojiPackPreview(anchor, options) {
 	if (!(anchor instanceof HTMLElement) || !options?.pack) return
 	const card = ensureCard()
-	const pack = options.pack
+	const { pack } = options
 	const provider = options.provider || pack.sourceProvider || null
 	const preferredLangs = loadPreferredLangs()
 	const locales = preferredLangs.length ? preferredLangs : [primaryLocale()]
@@ -231,7 +231,7 @@ export async function showEmojiPackPreview(anchor, options) {
 			})
 	}
 	else if (sourcePreview?.kind === 'entity') {
-		const entityHash = sourcePreview.entityHash
+		const { entityHash } = sourcePreview
 		metaEl.hidden = false
 		metaEl.textContent = geti18n('chat.emoji.previewAuthorMeta') || entityHash.slice(0, 8)
 		appendAction(actions, 'chat.emoji.followAuthor', 'btn btn-primary btn-sm', async () => {

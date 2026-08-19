@@ -413,7 +413,7 @@ export async function runPostCheckpointMaintenance(username, groupId, checkpoint
 			console.error('channel_gc:', error)
 		}
 
-	const groupSettings = state.groupSettings
+	const { groupSettings } = state
 	const archiveSettings = archiveSettingsFromGroup(groupSettings)
 
 	try {

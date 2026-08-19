@@ -95,7 +95,7 @@ export async function renderGroupInviteBlock(message) {
 export async function renderMessageRefBlockHtml(message, messagesByEventId) {
 	const replyTo = chatExtensionOf(message?.content)?.replyTo
 	if (!replyTo?.eventId) return ''
-	const eventId = replyTo.eventId
+	const { eventId } = replyTo
 	const parent = messagesByEventId?.get(eventId)
 	let author = replyTo.senderName || ''
 	let previewText = replyTo.preview || ''

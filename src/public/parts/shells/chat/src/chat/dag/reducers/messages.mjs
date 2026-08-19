@@ -28,7 +28,7 @@ export const messageReducers = {
 				channelId,
 			}
 
-		const content = event.content
+		const { content } = event
 		if (content?.type === 'vote') {
 			state.voteBallots ??= {}
 			const deadlineMs = content.deadline == null || content.deadline === ''

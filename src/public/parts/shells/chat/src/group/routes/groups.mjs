@@ -45,7 +45,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const body = req.body
+		const { body } = req
 		const template = body.template || ''
 		if (template === 'dm') {
 			const myPubKeyHex = body.myPubKeyHex || ''
@@ -153,9 +153,8 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/branch`, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, groupId } = req.groupContext
-		const body = req.body
-		let delta = body.delta
+		const { body, groupContext: { username, groupId } } = req
+		let { delta } = body
 		if (body.latest === true) delta = Number.POSITIVE_INFINITY
 		if (typeof delta !== 'number' || Number.isNaN(delta))
 			return res.status(400).json({ error: 'delta or latest required' })

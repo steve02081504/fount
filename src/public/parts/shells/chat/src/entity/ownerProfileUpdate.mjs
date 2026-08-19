@@ -105,7 +105,7 @@ function parsePokeOrAckEnvelope(envelope) {
 	const ts = Number(envelope.ts)
 	if (!isEntityHash128(targetEntityHash)) return null
 	if (ownerEntityHash && !isEntityHash128(ownerEntityHash)) return null
-	if (contentHash && !/^[0-9a-f]{64}$/.test(contentHash)) return null
+	if (contentHash && !/^[\da-f]{64}$/.test(contentHash)) return null
 	if (!Number.isFinite(ts) || ts <= 0) return null
 	return { targetEntityHash, ownerEntityHash, ts, contentHash }
 }
@@ -388,7 +388,7 @@ export async function pullOwnerProfileUpdate(username, targetEntityHash) {
 	if (payloadTarget !== target) return { applied: false }
 	if (payloadOwner !== ownerEntityHash) return { applied: false }
 	if (!Number.isFinite(ts) || ts <= 0) return { applied: false }
-	if (!/^[0-9a-f]{64}$/.test(contentHash)) return { applied: false }
+	if (!/^[\da-f]{64}$/.test(contentHash)) return { applied: false }
 
 	const expectedHash = hashOwnerProfileUpdateBody({
 		targetEntityHash: target,

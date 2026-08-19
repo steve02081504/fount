@@ -20,7 +20,7 @@ export { setIO }
 /** 用户中止本会话：一旦 abort 保持到进程结束。 */
 const userAc = new AbortController()
 /** @type {AbortSignal} */
-export const signal = userAc.signal
+export const { signal } = userAc
 
 /**
  * 标记用户中止（幂等）。一般由 Ctrl+C / 长按 ESC 触发；宿主也可显式调用。

@@ -55,7 +55,7 @@ function groupHasBootstrapGenesis(state) {
  * @param {string | null} [introducerNodeHash] 邀请人 nodeHash（写入 join 深链）
  * @returns {Promise<string>} 本地化剪贴板文本
  */
-async function buildInviteClipboardText(username, groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
+function buildInviteClipboardText(username, groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
 	const url = wrapProtocolHttpsUrl(formatJoinRunUri({
 		groupId,
 		inviteCode: code,
@@ -78,8 +78,8 @@ async function buildInviteClipboardText(username, groupId, code, roomSecret, int
  * @returns {void}
  */
 export function registerMembershipRoutes(router, authenticate) {
-	router.get(`${GROUPS_PREFIX}/:groupId/members/page/:pageIdx`, authenticate, requireGroupMember(), async (req, res) => {
-		const { groupId, state } = req.groupContext
+	router.get(`${GROUPS_PREFIX}/:groupId/members/page/:pageIdx`, authenticate, requireGroupMember(), (req, res) => {
+		const { state } = req.groupContext
 		const pageIndex = Math.max(0, Number(req.params.pageIdx) || 0)
 
 		const activeMembers = Object.entries(state.members).filter(([, member]) => member?.status === 'active')
@@ -156,8 +156,7 @@ export function registerMembershipRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/join`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const { groupId } = req.params
-		const { inviteCode, pow, introducerPubKeyHash, introducerNodeHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
+		const { params: { groupId }, body: { inviteCode, pow, introducerPubKeyHash, introducerNodeHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag, powAnchorRef, powAnchors } } = req
 		if (!!dmIntroNonce !== !!dmIntroSignatureHex)
 			throw httpError(400, 'provide both dmIntroNonce and dmIntroSignatureHex for DM link proof or omit both')
 		const { state } = await getState(username, groupId)
