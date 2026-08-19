@@ -754,6 +754,17 @@ const icons = {
 /** 边框色与背景反色的混合占比（0-1）。 */
 const BORDER_INVERSE_RATIO = 0.3
 
+/** 语义变体基准色（基于白色背景设计的品牌色）。 */
+const SEMANTIC_COLORS = {
+	info: { r: 0x3B, g: 0x82, b: 0xF6 },
+	success: { r: 0x22, g: 0xC5, b: 0x5E },
+	warning: { r: 0xF5, g: 0x9E, b: 0x0B },
+	error: { r: 0xEF, g: 0x44, b: 0x44 },
+}
+
+const WHITE = { r: 255, g: 255, b: 255 }
+const BLACK = { r: 0, g: 0, b: 0 }
+
 /**
  * 将 getComputedStyle 返回的 rgb()/rgba() 字符串解析为 {r,g,b,a}。
  * @param {string} colorStr - 颜色字符串。
@@ -812,6 +823,53 @@ function borderColorFromBackground(bg, ratio) {
 }
 
 /**
+ * 将单个通道取模环绕到 0-255 范围。
+ * @param {number} value - 输入通道值。
+ * @returns {number} 环绕后的通道值。
+ */
+function wrapColorChannel(value) {
+	return ((value % 256) + 256) % 256
+}
+
+/**
+ * 将每个通道取模环绕到 0-255 范围。
+ * @param {{r:number,g:number,b:number}} color - 输入颜色。
+ * @returns {{r:number,g:number,b:number}} 环绕后的颜色。
+ */
+function wrapColor(color) {
+	return {
+		r: wrapColorChannel(color.r),
+		g: wrapColorChannel(color.g),
+		b: wrapColorChannel(color.b)
+	}
+}
+
+/**
+ * 判断颜色是否属于亮色（基于感知亮度）。
+ * @param {{r:number,g:number,b:number}} color - 输入颜色。
+ * @returns {boolean} 亮色返回 true。
+ */
+function isLightColor(color) {
+	return (0.299 * color.r + 0.587 * color.g + 0.114 * color.b) > 128
+}
+
+/**
+ * 将语义基准色适配到页面背景：语义色 - 偏移基色 + 背景色。
+ * 亮色页面偏移基色为白（略压暗以融入亮背景），暗色页面偏移基色为黑（略提亮以融入暗背景）。
+ * @param {{r:number,g:number,b:number}} semantic - 语义基准色。
+ * @param {{r:number,g:number,b:number}} background - 页面平均背景色。
+ * @returns {{r:number,g:number,b:number}} 适配后的语义背景色。
+ */
+function adaptSemanticColor(semantic, background) {
+	const base = isLightColor(background) ? WHITE : BLACK
+	return wrapColor({
+		r: semantic.r - base.r + background.r,
+		g: semantic.g - base.g + background.g,
+		b: semantic.b - base.b + background.b
+	})
+}
+
+/**
  * 计算页面平均文字颜色与平均背景颜色。
  * @returns {{text:{r:number,g:number,b:number}, background:{r:number,g:number,b:number}}|null} 页面主题颜色，无可计算内容时返回 null。
  */
@@ -837,7 +895,8 @@ function computePageThemeColors() {
 	// eslint-disable-next-line no-cond-assign
 	while (textNode = walker.nextNode()) {
 		const el = textNode.parentElement
-		const weight = textNode.textContent.trim().length
+		const rect = el.getBoundingClientRect()
+		const weight = rect.width * rect.height
 		const color = parseRgbColor(getComputedStyle(el).color)
 		if (color) textColorEntries.push({ color, weight })
 		const bg = getEffectiveBackgroundColor(el)
@@ -860,6 +919,12 @@ function applyPageThemeToToast(container) {
 	container.style.setProperty('--fount-toast-text', `rgb(${text.r} ${text.g} ${text.b})`)
 	container.style.setProperty('--fount-toast-background', `rgb(${background.r} ${background.g} ${background.b})`)
 	container.style.setProperty('--fount-toast-border', `rgb(${border.r} ${border.g} ${border.b})`)
+	for (const [variant, semantic] of Object.entries(SEMANTIC_COLORS)) {
+		const adaptedBg = adaptSemanticColor(semantic, background)
+		const adaptedText = adaptSemanticColor(text, background)
+		container.style.setProperty(`--fount-toast-${variant}-background`, `rgb(${adaptedBg.r} ${adaptedBg.g} ${adaptedBg.b})`)
+		container.style.setProperty(`--fount-toast-${variant}-text`, `rgb(${adaptedText.r} ${adaptedText.g} ${adaptedText.b})`)
+	}
 }
 
 /**
@@ -932,10 +997,10 @@ function addToastStyles() {
 	flex-shrink: 0;
 	margin-right: 0.75rem;
 }
-.fount-browserIntegration-alert-info { background-color: #3B82F6; color: white; }
-.fount-browserIntegration-alert-success { background-color: #22C55E; color: white; }
-.fount-browserIntegration-alert-warning { background-color: #F59E0B; color: white; }
-.fount-browserIntegration-alert-error { background-color: #EF4444; color: white; }
+.fount-browserIntegration-alert-info { background-color: var(--fount-toast-info-background, #3B82F6); color: var(--fount-toast-info-text, white); }
+.fount-browserIntegration-alert-success { background-color: var(--fount-toast-success-background, #22C55E); color: var(--fount-toast-success-text, white); }
+.fount-browserIntegration-alert-warning { background-color: var(--fount-toast-warning-background, #F59E0B); color: var(--fount-toast-warning-text, white); }
+.fount-browserIntegration-alert-error { background-color: var(--fount-toast-error-background, #EF4444); color: var(--fount-toast-error-text, white); }
 
 @keyframes fount-browserIntegration-animate-fade-in-up {
 	from { opacity: 0; transform: translateY(20px); }
