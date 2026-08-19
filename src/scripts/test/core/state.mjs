@@ -836,4 +836,3 @@ export async function writeStateMarkdown(repoRoot, allSuites, state, staleKeys) 
 	await writeFile(path, buildStateMarkdown(allSuites, state, staleKeys), 'utf8')
 	return path
 }
-

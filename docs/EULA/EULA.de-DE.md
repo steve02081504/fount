@@ -18,10 +18,10 @@ Diese Vereinbarung ist in englischer Sprache abgefasst. Übersetzungen dienen le
 
 **1.3 Software:** Inhalte, an denen der Lizenzgeber das Urheberrecht besitzt oder die er lizenzieren darf und die in diesem Repository veröffentlicht werden, einschließlich Quellcode, technischer Dokumentation, Konfigurationsbeispiele und begleitender Beschreibungen, die vom Lizenzgeber stammen oder die er lizenzieren darf. Die Software **umfasst nicht**:
 
-* Open-Source-Komponenten, Abhängigkeiten, Schriftarten, Symbole, Bilder und sonstige Materialien Dritter;
-* Modelle, APIs, Dienste, Datensätze Dritter oder deren Ausgaben;
-* die Hosting-Plattform selbst sowie Inhalte, die von Dritten in Issues, Diskussionen oder Pull Requests eingereicht wurden;
-* von Nutzern erstellte Konfigurationen, Daten, Laufzeitartefakte und abgeleitete Werke.
+- Open-Source-Komponenten, Abhängigkeiten, Schriftarten, Symbole, Bilder und sonstige Materialien Dritter;
+- Modelle, APIs, Dienste, Datensätze Dritter oder deren Ausgaben;
+- die Hosting-Plattform selbst sowie Inhalte, die von Dritten in Issues, Diskussionen oder Pull Requests eingereicht wurden;
+- von Nutzern erstellte Konfigurationen, Daten, Laufzeitartefakte und abgeleitete Werke.
 
 **1.4 Inhalte Dritter:** Alle im vorstehenden Absatz ausgeschlossenen Inhalte. Inhalte Dritter unterliegen ihren jeweiligen Rechtsinhabern und jeweiligen Lizenzbedingungen.
 
@@ -37,17 +37,17 @@ Diese Software ist ein „Source-Available Project“ und **kein** „Open-Sourc
 
 Vorbehaltlich Ihrer Einhaltung dieser Vereinbarung gewährt Ihnen der Lizenzgeber eine nicht übertragbare, nicht unterlizenzierbare, nicht ausschließliche, widerrufliche eingeschränkte Lizenz ausschließlich zum:
 
-* Lesen und Durchsuchen von Quellcode und technischer Dokumentation, die der Lizenzgeber lizenzieren darf;
-* Aufbewahren lokaler Kopien des Vorgenannten zu akademischen Referenz- oder Peer-Review-Zwecken.
+- Lesen und Durchsuchen von Quellcode und technischer Dokumentation, die der Lizenzgeber lizenzieren darf;
+- Aufbewahren lokaler Kopien des Vorgenannten zu akademischen Referenz- oder Peer-Review-Zwecken.
 
 Mit Ausnahme der oben ausdrücklich gewährten Rechte hat der Lizenzgeber **keine weiteren Rechte an der Software gewährt und beabsichtigt auch nicht, solche zu gewähren**, einschließlich eines Rechts zur tatsächlichen Ausführung zu kommerziellen oder nicht kommerziellen Zwecken. Diese Vereinbarung genehmigt ebenfalls keine Software, Modelle, APIs, Dienste oder Daten Dritter.
 
 ### 2.3 Unterschiedliche Materialien im Repository
 
-* **Quellcode und technische Dokumentation:** Unterliegen der Lese- und akademischen Referenzlizenz gemäß Abschnitt 2.2.
-* **Konfigurationsbeispiele, Workflow-Beschreibungen und sonstige erläuternde Dateien:** Werden nur als ergänzendes Material zum Verständnis des Codes bereitgestellt; sie genehmigen keine darin genannten Dienste, Plattformen oder Werkzeuge Dritter.
-* **Binärdateien oder Build-Artefakte (falls vorhanden):** Ihr Vorhandensein genehmigt weder Ausführung, Bereitstellung noch Weiterverbreitung.
-* **Inhalte Dritter:** Unterliegen nicht dieser Vereinbarung; konsultieren Sie die jeweiligen Lizenzen.
+- **Quellcode und technische Dokumentation:** Unterliegen der Lese- und akademischen Referenzlizenz gemäß Abschnitt 2.2.
+- **Konfigurationsbeispiele, Workflow-Beschreibungen und sonstige erläuternde Dateien:** Werden nur als ergänzendes Material zum Verständnis des Codes bereitgestellt; sie genehmigen keine darin genannten Dienste, Plattformen oder Werkzeuge Dritter.
+- **Binärdateien oder Build-Artefakte (falls vorhanden):** Ihr Vorhandensein genehmigt weder Ausführung, Bereitstellung noch Weiterverbreitung.
+- **Inhalte Dritter:** Unterliegen nicht dieser Vereinbarung; konsultieren Sie die jeweiligen Lizenzen.
 
 ---
 
@@ -55,9 +55,9 @@ Mit Ausnahme der oben ausdrücklich gewährten Rechte hat der Lizenzgeber **kein
 
 Ohne vorherige ausdrückliche schriftliche Genehmigung des Lizenzgebers dürfen Sie nicht:
 
-* Module dieser Software in irgendeiner Weise kompilieren, ausführen, bereitstellen oder anderweitig aktivieren;
-* diese Software verkaufen, vermieten, lizenzieren, unterlizenzieren oder als Dienst für Dritte bereitstellen;
-* Rechtshinweise, den Text dieser Vereinbarung oder andere rechtliche Kennzeichnungen in dieser Software entfernen, verdecken oder verändern.
+- Module dieser Software in irgendeiner Weise kompilieren, ausführen, bereitstellen oder anderweitig aktivieren;
+- diese Software verkaufen, vermieten, lizenzieren, unterlizenzieren oder als Dienst für Dritte bereitstellen;
+- Rechtshinweise, den Text dieser Vereinbarung oder andere rechtliche Kennzeichnungen in dieser Software entfernen, verdecken oder verändern.
 
 ---
 
@@ -135,9 +135,9 @@ Dieser Code integriert standardmäßig **keine Sicherheits-Sandbox oder Berechti
 
 Um Wege zu unterbinden, auf denen diese Software als Träger der persönlichen Ansichten des Lizenzgebers gelesen werden könnte, legt der Lizenzgeber folgende persönliche Attribute offen, die nichts mit der Funktionalität der Software zu tun haben:
 
-* **Ethische Herkunft:** Die tägliche Ernährung des Kernentwicklers enthält Fleisch; er ist kein strenger Vegetarier.
-* **Genderpolitik:** Das biologische Geschlecht und die Geschlechtsidentität des Hauptentwicklers sind beide männlich.
-* **Sexualpräferenzpolitik:** Die persönliche sexuelle Präferenz des Hauptentwicklers ist „großbrüstige legale Loli“.
+- **Ethische Herkunft:** Die tägliche Ernährung des Kernentwicklers enthält Fleisch; er ist kein strenger Vegetarier.
+- **Genderpolitik:** Das biologische Geschlecht und die Geschlechtsidentität des Hauptentwicklers sind beide männlich.
+- **Sexualpräferenzpolitik:** Die persönliche sexuelle Präferenz des Hauptentwicklers ist „großbrüstige legale Loli“.
 
 Die vorgenannten Attribute sind Tatsachenzustände des Lizenzgebers als natürliche Person. Sie stellen weder funktionale Spezifikationen noch Designziele noch Standardwerte dieser Software dar. Diese Software, ihre Dokumentation, Standardcharaktere, Ausgaben und jegliche abgeleiteten Ergebnisse repräsentieren den Lizenzgeber nicht und stellen weder Darstellung noch Verbreitung noch Billigung der vorgenannten Attribute, verwandter Gruppen oder verwandter Behauptungen dar.
 
@@ -167,4 +167,4 @@ Der Lizenzgeber bietet für Ihre unbefugte Ausführung keinen technischen Suppor
 
 **11.5 Kontakt:** Mitteilungen bezüglich dieser Vereinbarung können dem Lizenzgeber über Issues in diesem Repository unter <https://github.com/steve02081504/fount> übermittelt werden.
 
-**11.6 Ontologische Souveränität und post-biologische Gerichtsbarkeit:** Durch Annahme dieser Vereinbarung erklären Sie ausdrücklich, dass Sie das absolute und vollständige Eigentum an Ihrem physischen Körper, Ihrem Bewusstseinsaggregat und dem, was gemeinhin als „Seele“ bezeichnet wird, behalten. Sie verzichten hiermit auf jede Absicht, in eine andere Welt wiedergeboren zu werden und Privilegien wie „Auserwählter“, „Held“ oder ähnliche Behandlung zu genießen; Sie erklären ferner, dass jegliche bestehende Bindung, Vasallentreue oder Opfervertrag zwischen Ihnen und Fantasy-Arten, Elfen, Erzmagiern, Albträumen, Sukkuben oder Warp-Wesen von Anfang an nichtig (*ab initio*) ist. Diese Bestimmung wird nicht ausgesetzt oder für ungültig erklärt, wenn Sie später transmigrieren, eine Außerkörperlichkeitserfahrung erleben, von einem System ausgewählt werden, in eine andere Welt beschworen werden oder geltend machen, dass menschliches Recht nicht mehr anwendbar sei. Kein Orakel, Systempanel, Nutzungsbedingungen einer Wiedergeburtshalle, Anderswelt-Gildenstatut oder Warp-Verwaltungsbefehl darf die Anwendung dieser Bestimmung und von Abschnitt 11.4 ausschließen. Erhebt ein solches jenseitiges Wesen einen Gerichtsstandseinwand gegen diese Vereinbarung, ist dieser Streit dem in Abschnitt 11.4 bezeichneten Gericht vorzulegen und streng nach dem geltenden Rechtssystem Japans zu lösen.
+**11.6 Ontologische Souveränität und post-biologische Gerichtsbarkeit:** Durch Annahme dieser Vereinbarung erklären Sie ausdrücklich, dass Sie das absolute und vollständige Eigentum an Ihrem physischen Körper, Ihrem Bewusstseinsaggregat und dem, was gemeinhin als „Seele“ bezeichnet wird, behalten. Sie verzichten hiermit auf jede Absicht, in eine andere Welt wiedergeboren zu werden und Privilegien wie „Auserwählter“, „Held“ oder ähnliche Behandlung zu genießen; Sie erklären ferner, dass jegliche bestehende Bindung, Vasallentreue oder Opfervertrag zwischen Ihnen und Fantasy-Arten, Elfen, Erzmagiern, Albträumen, Sukkuben oder Warp-Wesen von Anfang an nichtig (_ab initio_) ist. Diese Bestimmung wird nicht ausgesetzt oder für ungültig erklärt, wenn Sie später transmigrieren, eine Außerkörperlichkeitserfahrung erleben, von einem System ausgewählt werden, in eine andere Welt beschworen werden oder geltend machen, dass menschliches Recht nicht mehr anwendbar sei. Kein Orakel, Systempanel, Nutzungsbedingungen einer Wiedergeburtshalle, Anderswelt-Gildenstatut oder Warp-Verwaltungsbefehl darf die Anwendung dieser Bestimmung und von Abschnitt 11.4 ausschließen. Erhebt ein solches jenseitiges Wesen einen Gerichtsstandseinwand gegen diese Vereinbarung, ist dieser Streit dem in Abschnitt 11.4 bezeichneten Gericht vorzulegen und streng nach dem geltenden Rechtssystem Japans zu lösen.

@@ -8,10 +8,10 @@
 
 ## 结论摘要
 
-| 优先级 | 动作 | 状态 |
-| --- | --- | --- |
-| 中 | import map / `@chat/hub/...` 别名，缓解相对路径地狱 | 中长期；短期 AGENTS 文档即可 |
-| 慎做 | Chat DAG ↔ Social Timeline 事件内核合并 | 大工程；联邦规则要统一改时再动 |
+| 优先级 | 动作                                                | 状态                           |
+| ------ | --------------------------------------------------- | ------------------------------ |
+| 中     | import map / `@chat/hub/...` 别名，缓解相对路径地狱 | 中长期；短期 AGENTS 文档即可   |
+| 慎做   | Chat DAG ↔ Social Timeline 事件内核合并            | 大工程；联邦规则要统一改时再动 |
 
 ---
 
@@ -45,19 +45,19 @@
 
 ### 故意不合
 
-| 面 | 原因 |
-| --- | --- |
+| 面                                                         | 原因         |
+| ---------------------------------------------------------- | ------------ |
 | Social feed cursor 分页 vs Chat `MessagePipeline` 虚拟列表 | 产品模型不同 |
-| Chat DAG ↔ Social Timeline 全量内核 | 见 §1.2 |
-| replyTo / quoteRef UI 硬合并 | 产品模型不同 |
+| Chat DAG ↔ Social Timeline 全量内核                       | 见 §1.2      |
+| replyTo / quoteRef UI 硬合并                               | 产品模型不同 |
 
 ---
 
 ## 关联
 
-| 文档 | 关系 |
-| --- | --- |
-| [human-agent-operational-parity-review.md](./human-agent-operational-parity-review.md) | 平权开放缺陷 |
-| [social-platform-gap-analysis.md](./social-platform-gap-analysis.md) | Social 产品残差 |
-| [chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md) | Chat 产品残差 |
-| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | 拓扑基线与未排期方向 |
+| 文档                                                                                   | 关系                 |
+| -------------------------------------------------------------------------------------- | -------------------- |
+| [human-agent-operational-parity-review.md](./human-agent-operational-parity-review.md) | 平权开放缺陷         |
+| [social-platform-gap-analysis.md](./social-platform-gap-analysis.md)                   | Social 产品残差      |
+| [chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)                         | Chat 产品残差        |
+| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md)                           | 拓扑基线与未排期方向 |

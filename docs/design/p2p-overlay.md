@@ -20,15 +20,15 @@
 
 ## 已拍板决策
 
-| 决策 | 内容 |
-| --- | --- |
-| 传输后端 | 裸 `RTCPeerConnection` + `node-datachannel`；`simple-peer`、werift 已移除 |
-| Windows ICE | 生产路径固定依赖 ICE server；mDNS 策略 `drop` |
-| 逻辑链接 | 一 nodeHash 一链接；物理断了走重发现 / 重建 |
-| 握手授权 | challenge-response + DTLS 指纹绑定；**仅**去掉 room password / `identity_announce` 作为 overlay 隐式授权——不表示从传输加密或遗留兼容面抹掉口令。subfounts 对齐仍部分：`joinRoom` 仍用 password（= `roomSecret`）做传输加密 |
-| 群授权 | `groupProofs` 从握手中移除；群授权后置到 `group:` scope authorizer |
-| Gossip | 群内在 overlay 就位前保留一跳 gossip 补位 |
-| 轮换 | kick / ban 事件自动轮换 `roomSecret` |
+| 决策        | 内容                                                                                                                                                                                                                       |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 传输后端    | 裸 `RTCPeerConnection` + `node-datachannel`；`simple-peer`、werift 已移除                                                                                                                                                  |
+| Windows ICE | 生产路径固定依赖 ICE server；mDNS 策略 `drop`                                                                                                                                                                              |
+| 逻辑链接    | 一 nodeHash 一链接；物理断了走重发现 / 重建                                                                                                                                                                                |
+| 握手授权    | challenge-response + DTLS 指纹绑定；**仅**去掉 room password / `identity_announce` 作为 overlay 隐式授权——不表示从传输加密或遗留兼容面抹掉口令。subfounts 对齐仍部分：`joinRoom` 仍用 password（= `roomSecret`）做传输加密 |
+| 群授权      | `groupProofs` 从握手中移除；群授权后置到 `group:` scope authorizer                                                                                                                                                         |
+| Gossip      | 群内在 overlay 就位前保留一跳 gossip 补位                                                                                                                                                                                  |
+| 轮换        | kick / ban 事件自动轮换 `roomSecret`                                                                                                                                                                                       |
 
 ## 运行时要点
 
@@ -54,18 +54,18 @@
 
 ## 模块职责
 
-| 区域 | 路径 | 职责 |
-| --- | --- | --- |
-| Link 协议 | `src/scripts/p2p/link/` | 分帧、握手、SDP 指纹、channel mux、RTC 封装 |
-| 链接注册表 | `src/scripts/p2p/link_registry.mjs` | discovery 编排、按 level 直连；`sendToNodeLink` 才 overlay 回退（Mailbox 另路） |
-| 群链接集 | `src/scripts/p2p/group_link_set.mjs` | 群活跃成员链接集、roomSecret、discovery 生命周期 |
-| Overlay | `src/scripts/p2p/overlay/index.mjs` | `route_req` / `route_resp` / `relay` 多跳路由 |
-| 发现 | `src/scripts/p2p/discovery/` | provider 注册与调度 |
-| Mailbox | `src/scripts/p2p/mailbox/` | 离线定向投递 |
-| TrustGraph | `src/scripts/p2p/trust_graph_send.mjs` 等 | 探索 fanout、信誉 |
-| Chat 联邦 | `shells/chat/src/chat/federation/` | `group:` scope authorizer、DAG sync、partition 抽象 |
-| Server 胶水 | `src/server/p2p_server/` | Node 启动、HTTP `/api/p2p/*` |
-| 类型 | `src/decl/p2pAPI.ts` | fount 侧 P2P API 声明 |
+| 区域        | 路径                                      | 职责                                                                            |
+| ----------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
+| Link 协议   | `src/scripts/p2p/link/`                   | 分帧、握手、SDP 指纹、channel mux、RTC 封装                                     |
+| 链接注册表  | `src/scripts/p2p/link_registry.mjs`       | discovery 编排、按 level 直连；`sendToNodeLink` 才 overlay 回退（Mailbox 另路） |
+| 群链接集    | `src/scripts/p2p/group_link_set.mjs`      | 群活跃成员链接集、roomSecret、discovery 生命周期                                |
+| Overlay     | `src/scripts/p2p/overlay/index.mjs`       | `route_req` / `route_resp` / `relay` 多跳路由                                   |
+| 发现        | `src/scripts/p2p/discovery/`              | provider 注册与调度                                                             |
+| Mailbox     | `src/scripts/p2p/mailbox/`                | 离线定向投递                                                                    |
+| TrustGraph  | `src/scripts/p2p/trust_graph_send.mjs` 等 | 探索 fanout、信誉                                                               |
+| Chat 联邦   | `shells/chat/src/chat/federation/`        | `group:` scope authorizer、DAG sync、partition 抽象                             |
+| Server 胶水 | `src/server/p2p_server/`                  | Node 启动、HTTP `/api/p2p/*`                                                    |
+| 类型        | `src/decl/p2pAPI.ts`                      | fount 侧 P2P API 声明                                                           |
 
 npm 包侧：`transport/link_registry.mjs`、`transport/group_link_set.mjs`、`trust_graph/send.mjs`、`node/network.mjs` 等（详见 `src/server/p2p_server/AGENTS.md`）。
 
@@ -86,15 +86,15 @@ npm 包侧：`transport/link_registry.mjs`、`transport/group_link_set.mjs`、`t
 
 约束：
 
-| 项 | 上限 |
-| --- | --- |
-| 单帧 chunk | 15360B |
-| 单消息重组后 | 8MiB |
-| 每 peer 未完成消息条数 | 32 |
-| 每 peer 未完成消息合计字节 | 16MiB |
-| 全节点未完成消息合计字节 | 64MiB |
-| 未完成超时（按 `lastSeenAt`） | 30s |
-| 已完成 msgId LRU | 4096 |
+| 项                            | 上限   |
+| ----------------------------- | ------ |
+| 单帧 chunk                    | 15360B |
+| 单消息重组后                  | 8MiB   |
+| 每 peer 未完成消息条数        | 32     |
+| 每 peer 未完成消息合计字节    | 16MiB  |
+| 全节点未完成消息合计字节      | 64MiB  |
+| 未完成超时（按 `lastSeenAt`） | 30s    |
+| 已完成 msgId LRU              | 4096   |
 
 准入：接纳该分片会使「条数 / peer 字节 / 全局字节」任一超限 → 拒收该分片（新 `msgId` 不建槽；已有槽因本片超限则丢弃该未完成消息）。驱逐：超时按 `lastSeenAt` 剪枝；字节/条数压力下优先淘汰最旧 `lastSeenAt` 的未完成消息。已完成 msgId 仍只走 LRU，不参与字节预算。
 
@@ -108,12 +108,12 @@ npm 包侧：`transport/link_registry.mjs`、`transport/group_link_set.mjs`、`t
 { "scope": "link" | "node" | "group:<groupId>" | "overlay", "action": "...", "payload": {} }
 ```
 
-| scope | 用途 |
-| --- | --- |
-| `link` | 握手、心跳；只在 link 层消费 |
-| `node` | 定向业务消息 |
+| scope        | 用途                             |
+| ------------ | -------------------------------- |
+| `link`       | 握手、心跳；只在 link 层消费     |
+| `node`       | 定向业务消息                     |
 | `group:<id>` | 群联邦消息；派发前强制过成员授权 |
-| `overlay` | 路由发现、中继、错误控制 |
+| `overlay`    | 路由发现、中继、错误控制         |
 
 ### 握手
 

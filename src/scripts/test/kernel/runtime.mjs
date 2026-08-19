@@ -112,7 +112,7 @@ export class TestKernel {
 		this.#loop = null
 		this.#watcher = null
 		/** 内核关闭时回调（由 server 接 HTTP 停机）。 */
-		this.onClose = () => {}
+		this.onClose = () => { }
 	}
 
 	#wake
@@ -377,7 +377,7 @@ export class TestKernel {
 			job.pending.add(item.id)
 			await this.#reportEnsure(job, slot.suite, reason)
 		}
-		for (const slot of wave.plan.slots) 
+		for (const slot of wave.plan.slots)
 			if (slot.action === 'reuse') {
 				const prev = this.state.suites[slot.key]
 				const fp = this.#fingerprintFor(slot.suite, wave.fingerprints)
@@ -410,7 +410,7 @@ export class TestKernel {
 			}
 			else if (slot.action === 'skipped')
 				await this.#recordSkipped(slot, job.id)
-		
+
 		await this.#flushReportEstimate(job)
 		if (!job.pending.size)
 			await this.#finishJob(job)
@@ -814,7 +814,7 @@ export class TestKernel {
 	 * @returns {Promise<void>}
 	 */
 	async #admitReady() {
-		for (;;) {
+		for (; ;) {
 			const picked = this.queues.peekReady(item => this.#isHardReady(item))
 			if (!picked) break
 			const suite = this.catalog.byKey.get(picked.item.key)

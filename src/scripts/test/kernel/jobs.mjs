@@ -291,7 +291,7 @@ export function acceptedFromWave(wave, counts = {}) {
 	const outdatedCount = counts.outdatedCount
 		?? (mode === 'outdated' ? goalCount
 			: mode === 'continue' ? Math.max(0, goalCount - imperfectCount)
-			: 0)
+				: 0)
 	return {
 		runCount: counts.runCount ?? 0,
 		reuseCount: counts.reuseCount ?? 0,

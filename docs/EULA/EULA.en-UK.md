@@ -18,10 +18,10 @@ This Agreement is prepared in English. Translations are provided for convenience
 
 **1.3 Software:** Content in which the Licensor holds copyright or has the right to license, and which is published in this Repository, including source code, technical documentation, configuration examples and accompanying descriptions that are original to the Licensor or that the Licensor has the right to license. The Software **does not include**:
 
-* Third-party open-source components, dependencies, fonts, icons, images and other materials;
-* Third-party models, APIs, services, datasets, or their outputs;
-* The hosting platform itself, and content submitted by third parties in issues, discussions or pull requests;
-* Configuration, data, runtime artefacts and derivative works created by users.
+- Third-party open-source components, dependencies, fonts, icons, images and other materials;
+- Third-party models, APIs, services, datasets, or their outputs;
+- The hosting platform itself, and content submitted by third parties in issues, discussions or pull requests;
+- Configuration, data, runtime artefacts and derivative works created by users.
 
 **1.4 Third-Party Content:** All content excluded in the preceding paragraph. Third-Party Content is governed by its respective rights holders and their respective licence terms.
 
@@ -37,17 +37,17 @@ This software is a "Source-Available Project" and **is not** an "Open-Source Pro
 
 Subject to your compliance with this Agreement, the Licensor grants you a non-transferable, non-sublicensable, non-exclusive, revocable limited licence solely to:
 
-* Read and browse source code and technical documentation that the Licensor has the right to license;
-* Keep local copies of the foregoing for academic reference or peer review.
+- Read and browse source code and technical documentation that the Licensor has the right to license;
+- Keep local copies of the foregoing for academic reference or peer review.
 
 Except for the rights expressly granted above, the Licensor **has not granted and does not intend to grant** any other rights in the Software, including any right of actual execution for commercial or non-commercial use. This Agreement likewise does not authorise any third-party software, models, APIs, services or data.
 
 ### 2.3 Different Materials in the Repository
 
-* **Source code and technical documentation:** Subject to the read-and-academic-reference licence in Section 2.2.
-* **Configuration examples, workflow descriptions and other explanatory files:** Provided only as ancillary material for understanding the code; they do not authorise any third-party services, platforms or tools mentioned in them.
-* **Binary files or build artefacts (if any):** Their presence does not authorise running, deploying or redistributing them.
-* **Third-Party Content:** Not governed by this Agreement; consult the relevant licences.
+- **Source code and technical documentation:** Subject to the read-and-academic-reference licence in Section 2.2.
+- **Configuration examples, workflow descriptions and other explanatory files:** Provided only as ancillary material for understanding the code; they do not authorise any third-party services, platforms or tools mentioned in them.
+- **Binary files or build artefacts (if any):** Their presence does not authorise running, deploying or redistributing them.
+- **Third-Party Content:** Not governed by this Agreement; consult the relevant licences.
 
 ---
 
@@ -55,9 +55,9 @@ Except for the rights expressly granted above, the Licensor **has not granted an
 
 Without the Licensor's prior express written authorisation, you shall not:
 
-* Compile, run, deploy, or otherwise activate any module of this software in any manner;
-* Sell, lease, license or sublicense this software, or provide it as a service to third parties;
-* Remove, obscure or alter rights notices, the text of this Agreement, or other legal markings in this software.
+- Compile, run, deploy, or otherwise activate any module of this software in any manner;
+- Sell, lease, license or sublicense this software, or provide it as a service to third parties;
+- Remove, obscure or alter rights notices, the text of this Agreement, or other legal markings in this software.
 
 ---
 
@@ -135,9 +135,9 @@ This code **does not, by default, integrate a system-level security sandbox or p
 
 To cut off paths by which this software might be read as a vehicle for the Licensor's personal views, the Licensor discloses the following personal attributes, which are unrelated to the Software's functionality:
 
-* **Ethical provenance:** The core developer's daily diet includes meat; they are not a strict vegetarian.
-* **Gender politics:** The principal developer's biological sex and gender identity are both male.
-* **Sexual-preference politics:** The principal developer's personal sexual preference is "large-breasted legal loli".
+- **Ethical provenance:** The core developer's daily diet includes meat; they are not a strict vegetarian.
+- **Gender politics:** The principal developer's biological sex and gender identity are both male.
+- **Sexual-preference politics:** The principal developer's personal sexual preference is "large-breasted legal loli".
 
 The foregoing attributes are factual states of the Licensor as a natural person. They are not functional specifications, design goals or default values of this software. This software, its documentation, default characters, outputs and any derivative results do not represent the Licensor and do not constitute statements, dissemination or endorsement of the foregoing attributes, related groups or related claims.
 
@@ -167,4 +167,4 @@ The Licensor provides no technical support for your unauthorised execution. Lega
 
 **11.5 Contact:** Notices relating to this Agreement may be submitted to the Licensor via Issues in this Repository at <https://github.com/steve02081504/fount>.
 
-**11.6 Ontological Sovereignty and Post-Biological Jurisdiction:** By accepting this Agreement, you expressly declare that you retain absolute and complete ownership of your physical body, conscious aggregate, and what is commonly called the "soul". You hereby waive any intention to be reincarnated into another world and enjoy privileges such as "chosen one", "hero", or similar treatment; you further declare that any existing bond, vassalage or sacrificial contract between you and any fantasy species, elf, archmage, nightmare, succubus or warp entity is void *ab initio*. This provision shall not be suspended or invalidated by your later transmigration, out-of-body experience, selection by a system, summoning to another world, or claim that human law no longer applies. No oracle, system panel, reincarnation-hall terms of service, otherworld guild charter, or warp administrative order may exclude the application of this provision and Section 11.4. If any such otherworldly entity raises a jurisdictional objection to this Agreement, that dispute shall be submitted to the court designated in Section 11.4 and resolved strictly under the current legal system of Japan.
+**11.6 Ontological Sovereignty and Post-Biological Jurisdiction:** By accepting this Agreement, you expressly declare that you retain absolute and complete ownership of your physical body, conscious aggregate, and what is commonly called the "soul". You hereby waive any intention to be reincarnated into another world and enjoy privileges such as "chosen one", "hero", or similar treatment; you further declare that any existing bond, vassalage or sacrificial contract between you and any fantasy species, elf, archmage, nightmare, succubus or warp entity is void _ab initio_. This provision shall not be suspended or invalidated by your later transmigration, out-of-body experience, selection by a system, summoning to another world, or claim that human law no longer applies. No oracle, system panel, reincarnation-hall terms of service, otherworld guild charter, or warp administrative order may exclude the application of this provision and Section 11.4. If any such otherworldly entity raises a jurisdictional objection to this Agreement, that dispute shall be submitted to the court designated in Section 11.4 and resolved strictly under the current legal system of Japan.

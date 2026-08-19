@@ -18,10 +18,10 @@ Le présent Contrat est rédigé en anglais. Les traductions sont fournies à ti
 
 **1.3 Logiciel :** Le contenu dont le Concédant détient le droit d'auteur ou le droit de concéder une licence, et qui est publié dans ce Dépôt, y compris le code source, la documentation technique, les exemples de configuration et les descriptions accompagnantes créés par le Concédant ou que le Concédant a le droit de concéder. Le Logiciel **n'inclut pas** :
 
-* les composants open source, dépendances, polices, icônes, images et autres matériaux de tiers ;
-* les modèles, API, services, jeux de données de tiers ou leurs sorties ;
-* la plateforme d'hébergement elle-même, ainsi que le contenu soumis par des tiers dans les issues, discussions ou pull requests ;
-* les configurations, données, artefacts d'exécution et œuvres dérivées créés par les utilisateurs.
+- les composants open source, dépendances, polices, icônes, images et autres matériaux de tiers ;
+- les modèles, API, services, jeux de données de tiers ou leurs sorties ;
+- la plateforme d'hébergement elle-même, ainsi que le contenu soumis par des tiers dans les issues, discussions ou pull requests ;
+- les configurations, données, artefacts d'exécution et œuvres dérivées créés par les utilisateurs.
 
 **1.4 Contenu de tiers :** L'ensemble du contenu exclu au paragraphe précédent. Le Contenu de tiers est régi par ses titulaires de droits respectifs et leurs conditions de licence respectives.
 
@@ -37,17 +37,17 @@ Ce logiciel est un « Source-Available Project » et **ne constitue pas** un « 
 
 Sous réserve de votre respect du présent Contrat, le Concédant vous accorde une licence limitée, non transférable, non sous-licenciable, non exclusive et révocable, uniquement pour :
 
-* lire et parcourir le code source et la documentation technique que le Concédant a le droit de concéder ;
-* conserver des copies locales des éléments susmentionnés à des fins de référence académique ou d'examen par les pairs.
+- lire et parcourir le code source et la documentation technique que le Concédant a le droit de concéder ;
+- conserver des copies locales des éléments susmentionnés à des fins de référence académique ou d'examen par les pairs.
 
 À l'exception des droits expressément accordés ci-dessus, le Concédant **n'a accordé et n'entend pas accorder** d'autres droits sur le Logiciel, y compris tout droit d'exécution effective à des fins commerciales ou non commerciales. Le présent Contrat n'autorise pas non plus de logiciels, modèles, API, services ou données de tiers.
 
 ### 2.3 Différents matériaux dans le Dépôt
 
-* **Code source et documentation technique :** Soumis à la licence de lecture et de référence académique de l'article 2.2.
-* **Exemples de configuration, descriptions de flux de travail et autres fichiers explicatifs :** Fournis uniquement comme matériel accessoire pour comprendre le code ; ils n'autorisent pas les services, plateformes ou outils de tiers qui y sont mentionnés.
-* **Fichiers binaires ou artefacts de compilation (le cas échéant) :** Leur présence n'autorise ni l'exécution, ni le déploiement, ni la redistribution.
-* **Contenu de tiers :** Non régi par le présent Contrat ; consultez les licences applicables.
+- **Code source et documentation technique :** Soumis à la licence de lecture et de référence académique de l'article 2.2.
+- **Exemples de configuration, descriptions de flux de travail et autres fichiers explicatifs :** Fournis uniquement comme matériel accessoire pour comprendre le code ; ils n'autorisent pas les services, plateformes ou outils de tiers qui y sont mentionnés.
+- **Fichiers binaires ou artefacts de compilation (le cas échéant) :** Leur présence n'autorise ni l'exécution, ni le déploiement, ni la redistribution.
+- **Contenu de tiers :** Non régi par le présent Contrat ; consultez les licences applicables.
 
 ---
 
@@ -55,9 +55,9 @@ Sous réserve de votre respect du présent Contrat, le Concédant vous accorde u
 
 Sans autorisation écrite préalable et expresse du Concédant, vous ne devez pas :
 
-* compiler, exécuter, déployer ou activer de quelque manière que ce soit un module de ce logiciel ;
-* vendre, louer, concéder sous licence, sous-licencier ce logiciel, ou le fournir en tant que service à des tiers ;
-* supprimer, masquer ou altérer les mentions de droits, le texte du présent Contrat ou d'autres marquages juridiques dans ce logiciel.
+- compiler, exécuter, déployer ou activer de quelque manière que ce soit un module de ce logiciel ;
+- vendre, louer, concéder sous licence, sous-licencier ce logiciel, ou le fournir en tant que service à des tiers ;
+- supprimer, masquer ou altérer les mentions de droits, le texte du présent Contrat ou d'autres marquages juridiques dans ce logiciel.
 
 ---
 
@@ -135,9 +135,9 @@ Ce code **n'intègre pas par défaut de bac à sable de sécurité ni d'isolatio
 
 Afin de couper les voies par lesquelles ce logiciel pourrait être interprété comme un vecteur des positions personnelles du Concédant, le Concédant divulgue les attributs personnels suivants, sans rapport avec les fonctionnalités du Logiciel :
 
-* **Origine éthique :** L'alimentation quotidienne du développeur principal comprend de la viande ; il n'est pas végétarien strict.
-* **Politique de genre :** Le sexe biologique et l'identité de genre du développeur principal sont tous deux masculins.
-* **Politique des préférences sexuelles :** La préférence sexuelle personnelle du développeur principal est « loli légale à forte poitrine ».
+- **Origine éthique :** L'alimentation quotidienne du développeur principal comprend de la viande ; il n'est pas végétarien strict.
+- **Politique de genre :** Le sexe biologique et l'identité de genre du développeur principal sont tous deux masculins.
+- **Politique des préférences sexuelles :** La préférence sexuelle personnelle du développeur principal est « loli légale à forte poitrine ».
 
 Les attributs susmentionnés sont des états de fait du Concédant en tant que personne physique. Ils ne constituent ni les spécifications fonctionnelles, ni les objectifs de conception, ni les valeurs par défaut de ce logiciel. Ce logiciel, sa documentation, ses personnages par défaut, ses sorties et tout résultat dérivé ne représentent pas le Concédant et ne constituent ni déclaration, ni diffusion, ni endorsement des attributs susmentionnés, des groupes connexes ou des revendications connexes.
 
@@ -167,4 +167,4 @@ Le Concédant ne fournit aucun support technique pour votre exécution non autor
 
 **11.5 Contact :** Les notifications relatives au présent Contrat peuvent être adressées au Concédant via les Issues de ce Dépôt sur <https://github.com/steve02081504/fount>.
 
-**11.6 Souveraineté ontologique et juridiction post-biologique :** En acceptant le présent Contrat, vous déclarez expressément conserver la propriété absolue et complète de votre corps physique, de votre agrégat de conscience et de ce que l'on appelle communément l'« âme ». Vous renoncez par les présentes à toute intention d'être réincarné dans un autre monde et de jouir de privilèges tels que « l'élu », « le héros » ou un traitement similaire ; vous déclarez en outre que tout lien, vassalité ou contrat sacrificiel existant entre vous et toute espèce fantastique, elfe, archimage, cauchemar, succube ou entité warp est nul *ab initio*. La présente disposition ne sera ni suspendue ni invalidée par votre transmigration ultérieure, expérience hors du corps, sélection par un système, invocation vers un autre monde ou affirmation que le droit humain ne s'applique plus. Aucun oracle, panneau système, conditions de service de salle de réincarnation, charte de guilde d'un autre monde ou ordre administratif warp ne peut exclure l'application de la présente disposition et de l'article 11.4. Si une telle entité d'un autre monde soulève une exception de compétence à l'encontre du présent Contrat, ce litige sera soumis au tribunal désigné à l'article 11.4 et résolu strictement selon le système juridique en vigueur au Japon.
+**11.6 Souveraineté ontologique et juridiction post-biologique :** En acceptant le présent Contrat, vous déclarez expressément conserver la propriété absolue et complète de votre corps physique, de votre agrégat de conscience et de ce que l'on appelle communément l'« âme ». Vous renoncez par les présentes à toute intention d'être réincarné dans un autre monde et de jouir de privilèges tels que « l'élu », « le héros » ou un traitement similaire ; vous déclarez en outre que tout lien, vassalité ou contrat sacrificiel existant entre vous et toute espèce fantastique, elfe, archimage, cauchemar, succube ou entité warp est nul _ab initio_. La présente disposition ne sera ni suspendue ni invalidée par votre transmigration ultérieure, expérience hors du corps, sélection par un système, invocation vers un autre monde ou affirmation que le droit humain ne s'applique plus. Aucun oracle, panneau système, conditions de service de salle de réincarnation, charte de guilde d'un autre monde ou ordre administratif warp ne peut exclure l'application de la présente disposition et de l'article 11.4. Si une telle entité d'un autre monde soulève une exception de compétence à l'encontre du présent Contrat, ce litige sera soumis au tribunal désigné à l'article 11.4 et résolu strictement selon le système juridique en vigueur au Japon.
