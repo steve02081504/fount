@@ -66,7 +66,8 @@ Deno.test('inspectHtmlDocument reports meta / main / drawer / aside issues', () 
 })
 
 Deno.test('repo full HTML documents pass html meta checks', async () => {
-	const files = await listRepoFiles(REPO_ROOT, ['.html'])
+	// PHP 诱饵页刻意还原 2002 年 Apache 页面，不属于 fount UI，跳过现代 meta 检查。
+	const files = (await listRepoFiles(REPO_ROOT, ['.html'])).filter(rel => !/\.php\.html$/u.test(rel))
 	/** @type {string[]} */
 	const failures = []
 	let checked = 0
