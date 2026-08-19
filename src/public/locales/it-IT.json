@@ -2112,7 +2112,6 @@
 				"livePreview": "Anteprima dal vivo",
 				"languageVersion": "Versione linguistica",
 				"localeHint": "Fare clic sull'etichetta per cambiare o modificare il codice; premere Invio nella casella di input alla fine per copiarlo in una nuova lingua.",
-				"themeColorHint": "Utilizzato per generare texture quando non è presente un banner personalizzato e utilizzato anche per loop di onde sonore dal vivo",
 				"linksPreview": "${count} collegamenti pubblici",
 				"unsavedHint": "Chiudendo la finestra verranno eliminate le modifiche non salvate",
 				"tagsLabel": "Etichetta",
@@ -2172,6 +2171,9 @@
 					"url": {
 						"placeholder": "https://… o fonte://…"
 					}
+				},
+				"themeColor": {
+					"hint": "Utilizzato per generare texture quando non è presente un banner personalizzato e utilizzato anche per loop di onde sonore dal vivo"
 				}
 			},
 			"profilePopup": {

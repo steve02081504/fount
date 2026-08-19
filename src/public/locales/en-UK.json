@@ -2112,7 +2112,6 @@
 				"livePreview": "Live preview",
 				"languageVersion": "Language version",
 				"localeHint": "Click the label to switch or edit the code; press Enter in the input box at the end to copy it to a new language.",
-				"themeColorHint": "Used to generate textures when there is no custom banner, and also used for live sound wave loops",
 				"linksPreview": "${count} public links",
 				"unsavedHint": "Closing the window will discard unsaved changes",
 				"tagsLabel": "Label",
@@ -2172,6 +2171,9 @@
 					"url": {
 						"placeholder": "https://… or fount://…"
 					}
+				},
+				"themeColor": {
+					"hint": "Used to generate textures when there is no custom banner, and also used for live sound wave loops"
 				}
 			},
 			"profilePopup": {

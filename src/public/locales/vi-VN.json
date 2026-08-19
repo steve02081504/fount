@@ -2112,7 +2112,6 @@
 				"livePreview": "Xem trước trực tiếp",
 				"languageVersion": "Phiên bản ngôn ngữ",
 				"localeHint": "Nhấp vào nhãn để chuyển đổi hoặc chỉnh sửa mã; nhấn Enter vào hộp nhập ở cuối để sao chép nó sang ngôn ngữ mới.",
-				"themeColorHint": "Được sử dụng để tạo họa tiết khi không có biểu ngữ tùy chỉnh và cũng được sử dụng cho các vòng lặp sóng âm thanh trực tiếp",
 				"linksPreview": "${count} liên kết công khai",
 				"unsavedHint": "Đóng cửa sổ sẽ loại bỏ những thay đổi chưa được lưu",
 				"tagsLabel": "Nhãn",
@@ -2172,6 +2171,9 @@
 					"url": {
 						"placeholder": "https://… hoặc fount://…"
 					}
+				},
+				"themeColor": {
+					"hint": "Được sử dụng để tạo họa tiết khi không có biểu ngữ tùy chỉnh và cũng được sử dụng cho các vòng lặp sóng âm thanh trực tiếp"
 				}
 			},
 			"profilePopup": {

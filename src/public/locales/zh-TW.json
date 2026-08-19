@@ -2111,7 +2111,6 @@
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
 				"localeHint": "點選標籤切換或編輯程式碼；在末尾輸入框回車可複製為新語言。",
-				"themeColorHint": "無自訂橫幅時用於生成紋理，也用於直播聲波環",
 				"linksPreview": "${count} 個公開連結",
 				"unsavedHint": "關閉視窗將放棄未儲存的更改",
 				"tagsLabel": "標籤",
@@ -2171,6 +2170,9 @@
 					"url": {
 						"placeholder": "https://… 或 fount://…"
 					}
+				},
+				"themeColor": {
+					"hint": "無自訂橫幅時用於生成紋理，也用於直播聲波環"
 				}
 			},
 			"profilePopup": {

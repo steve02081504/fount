@@ -2112,7 +2112,6 @@
 				"livePreview": "실시간 미리보기",
 				"languageVersion": "언어 버전",
 				"localeHint": "코드를 전환하거나 편집하려면 라벨을 클릭하세요. 마지막 입력 상자에서 Enter를 누르면 새 언어로 복사됩니다.",
-				"themeColorHint": "커스텀 배너가 없을 때 텍스처를 생성하는데 사용되며, 라이브 음파 루프에도 사용됩니다.",
 				"linksPreview": "${count} 공개 링크",
 				"unsavedHint": "창을 닫으면 저장되지 않은 변경사항이 삭제됩니다.",
 				"tagsLabel": "라벨",
@@ -2172,6 +2171,9 @@
 					"url": {
 						"placeholder": "https://… 또는 fount://…"
 					}
+				},
+				"themeColor": {
+					"hint": "커스텀 배너가 없을 때 텍스처를 생성하는데 사용되며, 라이브 음파 루프에도 사용됩니다."
 				}
 			},
 			"profilePopup": {

@@ -2112,7 +2112,6 @@
 				"livePreview": "Live-Vorschau",
 				"languageVersion": "Sprachversion",
 				"localeHint": "Klicken Sie auf die Beschriftung, um den Code zu ändern oder zu bearbeiten. Drücken Sie am Ende im Eingabefeld die Eingabetaste, um es in eine neue Sprache zu kopieren.",
-				"themeColorHint": "Wird zum Generieren von Texturen verwendet, wenn kein benutzerdefiniertes Banner vorhanden ist, und wird auch für Live-Schallwellenschleifen verwendet",
 				"linksPreview": "${count} Öffentliche Links",
 				"unsavedHint": "Durch das Schließen des Fensters werden nicht gespeicherte Änderungen verworfen",
 				"tagsLabel": "Etikett",
@@ -2172,6 +2171,9 @@
 					"url": {
 						"placeholder": "https://… oder fount://…"
 					}
+				},
+				"themeColor": {
+					"hint": "Wird zum Generieren von Texturen verwendet, wenn kein benutzerdefiniertes Banner vorhanden ist, und wird auch für Live-Schallwellenschleifen verwendet"
 				}
 			},
 			"profilePopup": {

@@ -2112,7 +2112,6 @@
 				"livePreview": "Live-voorbeeld",
 				"languageVersion": "Taalversie",
 				"localeHint": "Klik op het label om de code te wijzigen of te bewerken; druk op Enter in het invoervak ​​aan het einde om het naar een nieuwe taal te kopiëren.",
-				"themeColorHint": "Wordt gebruikt om texturen te genereren als er geen aangepaste banner is, en wordt ook gebruikt voor live geluidsgolfloops",
 				"linksPreview": "${count} openbare links",
 				"unsavedHint": "Als je het venster sluit, worden niet-opgeslagen wijzigingen verwijderd",
 				"tagsLabel": "Label",
@@ -2172,6 +2171,9 @@
 					"url": {
 						"placeholder": "https://… of bron://…"
 					}
+				},
+				"themeColor": {
+					"hint": "Wordt gebruikt om texturen te genereren als er geen aangepaste banner is, en wordt ook gebruikt voor live geluidsgolfloops"
 				}
 			},
 			"profilePopup": {
