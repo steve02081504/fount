@@ -83,7 +83,7 @@ function rehypeSpoiler() {
 					tagName: 'span',
 					properties: {
 						className: ['spoiler'],
-						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: 3px;',
+						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: var(--radius-field);',
 						onclick: 'this.removeAttribute("style"); this.removeAttribute("onclick");'
 					},
 					children: [{ type: 'text', value: spoilerText }]
@@ -109,7 +109,7 @@ function rehypeSpoiler() {
 					tagName: 'span',
 					properties: {
 						className: ['spoiler'],
-						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: 3px;',
+						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: var(--radius-field);',
 						onclick: 'this.removeAttribute("style"); this.removeAttribute("onclick");'
 					},
 					children: [{ type: 'text', value: spoilerText }]
@@ -1304,7 +1304,7 @@ export async function GetMarkdownConvertor({
 .markdown-body span[data-rehype-pretty-code-figure] > code {
 	display: inline;
 	padding: 0.2em 0.4em;
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 }
 
 [color-scheme*="light"] [style*="--shiki-light"][style*="--shiki-dark"] {

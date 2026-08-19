@@ -9,7 +9,7 @@
 	right: 0;
 	background: var(--bg-channel);
 	border: 1px solid var(--border);
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	padding: 12px;
 	box-shadow: 0 8px 16px var(--shadow);
 	z-index: 50;
@@ -42,7 +42,7 @@
 	border: none;
 	cursor: pointer;
 	padding: 6px;
-	border-radius: 4px;
+	border-radius: var(--radius-field);
 	font-size: 22px;
 	line-height: 1;
 }
@@ -214,7 +214,7 @@
 
 /* === 服务器栏顶部模式切换 === */
 .server-item.mode-active {
-	border-radius: 16px;
+	border-radius: var(--radius-box);
 	background: var(--accent);
 	color: var(--on-accent);
 }
@@ -246,7 +246,7 @@
 .info-avatar {
 	width: 56px;
 	height: 56px;
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	background: var(--bg-channel);
 	border: 4px solid var(--bg-member);
 	display: flex;
@@ -291,7 +291,7 @@
 .status-dot {
 	width: 10px;
 	height: 10px;
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	display: inline-block;
 	flex-shrink: 0;
 	border: 2px solid var(--popover-bg, var(--bg-channel));
@@ -447,7 +447,7 @@
 	padding: 10px 12px;
 	max-height: 160px;
 	overflow: auto;
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	background: var(--bg-main);
 	color: var(--text-muted);
 	font-size: 11px;
@@ -467,7 +467,7 @@
 	height: 17px;
 	flex: 0 0 auto;
 	border: 1px solid var(--border);
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	color: var(--text-muted);
 	font-size: 10px !important;
 	font-weight: 750;
@@ -506,7 +506,7 @@
 	gap: 14px;
 	padding: 12px;
 	border: 1px solid color-mix(in srgb, var(--color-warning), transparent 60%);
-	border-radius: 10px;
+	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--color-warning), transparent 91%);
 }
 
@@ -608,7 +608,7 @@
 	padding: 8px;
 	background: var(--popover-bg, var(--bg-channel));
 	border: 1px solid var(--border);
-	border-radius: 10px;
+	border-radius: var(--radius-box);
 	box-shadow: 0 12px 32px var(--shadow-strong);
 }
 
@@ -635,7 +635,7 @@
 .saved-line {
 	display: flex;
 	align-items: center;
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 	transition: background 0.12s ease;
 }
 
@@ -711,7 +711,7 @@
 	height: 22px;
 	margin-right: 4px;
 	border: none;
-	border-radius: 4px;
+	border-radius: var(--radius-field);
 	background: transparent;
 	color: var(--text-muted);
 	cursor: pointer;
@@ -757,7 +757,7 @@
 	font-size: 12px;
 	color: color-mix(in srgb, var(--text-normal), var(--text-muted) 14%);
 	padding: 6px 8px;
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 	cursor: pointer;
 	text-decoration: none;
 	border: none;
@@ -872,7 +872,7 @@
 	z-index: 2;
 	font-size: 11px;
 	padding: 2px 6px;
-	border-radius: 4px;
+	border-radius: var(--radius-field);
 	border: 1px solid var(--border);
 	background: var(--overlay);
 	color: var(--text-bright);
@@ -888,7 +888,7 @@
 .markdown-reveal-button {
 	font-size: 12px;
 	padding: 6px 10px;
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 	border: 1px dashed var(--border);
 	background: transparent;
 	color: var(--text-muted);
@@ -916,7 +916,7 @@
 	margin-left: 4px;
 	padding: 0 6px;
 	font-size: 11px;
-	border-radius: 4px;
+	border-radius: var(--radius-field);
 	border: 1px solid var(--border-subtle);
 	background: transparent;
 	color: var(--text-muted);
@@ -942,7 +942,7 @@
 	width: 100%;
 	min-height: 360px;
 	border: 0;
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	background: var(--media-bg);
 }
 
@@ -963,7 +963,7 @@
 .pinned-message-chip {
 	font-size: 12px;
 	padding: 4px 10px;
-	border-radius: 12px;
+	border-radius: var(--radius-box);
 	border: none;
 	cursor: pointer;
 	background: var(--accent-soft);
@@ -1026,7 +1026,7 @@
 .streaming-av-preset-sel {
 	font-size: 13px;
 	padding: 4px 8px;
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 	border: 1px solid var(--border, #333);
 	background: var(--media-bg);
 	color: inherit;
@@ -1039,7 +1039,7 @@
 
 .streaming-av-tile {
 	position: relative;
-	border-radius: 10px;
+	border-radius: var(--radius-box);
 	overflow: hidden;
 	background: #0a0a0c;
 	min-height: 120px;
@@ -1091,7 +1091,7 @@
 	width: 42%;
 	height: 42%;
 	transform: translate(-50%, -50%);
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	object-fit: cover;
 	z-index: 1;
 	display: flex;
@@ -1110,7 +1110,7 @@
 	line-height: 1.2;
 	color: #fff;
 	background: rgba(0, 0, 0, 0.55);
-	border-radius: 4px;
+	border-radius: var(--radius-field);
 	padding: 2px 6px;
 	max-width: calc(100% - 12px);
 	overflow: hidden;
@@ -1202,7 +1202,7 @@
 
 .call-block {
 	border: 1px solid var(--border);
-	border-radius: 10px;
+	border-radius: var(--radius-box);
 	padding: 10px 12px;
 	background: var(--media-bg, rgba(0, 0, 0, 0.08));
 	max-width: 360px;
@@ -1229,7 +1229,7 @@
 .call-avatar {
 	width: 28px;
 	height: 28px;
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -1255,7 +1255,7 @@
 .list-editor {
 	margin: 12px 16px 16px;
 	padding: 12px;
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	background: var(--bg-channel);
 	border: 1px solid var(--border-subtle);
 }
@@ -1298,7 +1298,7 @@
 }
 
 .reaction-chip {
-	border-radius: 999px;
+	border-radius: var(--radius-box);
 	min-height: 22px;
 	padding: 0 7px;
 	font-size: 12px;
@@ -1378,7 +1378,7 @@
 	flex-direction: column;
 	gap: 0.5rem;
 	padding: 0.75rem;
-	border-radius: 0.75rem;
+	border-radius: var(--radius-box);
 	border: 1px solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
 	background: color-mix(in oklab, var(--color-base-200) 70%, transparent);
 	transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -1446,7 +1446,7 @@
 	gap: 4px;
 	padding: 4px 8px;
 	background: var(--bg-tertiary);
-	border-radius: 4px;
+	border-radius: var(--radius-field);
 	font-size: 13px;
 	color: var(--text-bright);
 }

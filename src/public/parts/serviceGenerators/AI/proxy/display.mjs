@@ -252,7 +252,7 @@ function renderDetailCard(detailCard, entry) {
 	if (!entry) return
 
 	const card = document.createElement('div')
-	card.className = 'rounded-lg border border-base-300 bg-base-200 p-4 flex flex-col gap-2'
+	card.className = 'rounded-box border border-base-300 bg-base-200 p-4 flex flex-col gap-2'
 
 	const title = document.createElement('h4')
 	title.className = 'text-base font-semibold'
@@ -356,7 +356,7 @@ function renderSearchResults(resultsList, entries, selectedEntry, onSelect) {
 	for (const entry of entries) {
 		const row = document.createElement('button')
 		row.type = 'button'
-		row.className = 'flex flex-col gap-1 rounded-lg px-3 py-2 text-left hover:bg-base-300 transition-colors'
+		row.className = 'flex flex-col gap-1 rounded-box px-3 py-2 text-left hover:bg-base-300 transition-colors'
 		if (selectedEntry?.modelId === entry.modelId && selectedEntry?.providerId === entry.providerId)
 			row.classList.add('bg-primary/10', 'ring-1', 'ring-primary/30')
 

@@ -611,7 +611,7 @@ async function openEditor(themeData) {
 		colors.forEach((c, idx) => {
 			const dot = document.createElement('div')
 			dot.className =
-				'w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform ring-1 ring-base-content/20'
+				'w-8 h-8 rounded-box cursor-pointer hover:scale-110 transition-transform ring-1 ring-base-content/20'
 			dot.style.backgroundColor = c
 			/**
 			 * 点击调色板颜色点时，将其应用到主色输入框。

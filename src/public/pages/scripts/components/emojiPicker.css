@@ -42,7 +42,7 @@
 	width: 32px;
 	height: 32px;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	background: transparent;
 	cursor: pointer;
 	display: grid;
@@ -60,7 +60,7 @@
 .emoji-rail-avatar {
 	width: 24px;
 	height: 24px;
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	object-fit: cover;
 }
 
@@ -111,7 +111,7 @@
 	width: 36px;
 	height: 36px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 	background: transparent;
 	cursor: pointer;
 	font-size: 22px;

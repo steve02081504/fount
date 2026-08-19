@@ -7,7 +7,7 @@
 
 .fount-embed-card {
 	border: 1px solid color-mix(in srgb, currentcolor 18%, transparent);
-	border-radius: 0.5rem;
+	border-radius: var(--radius-box);
 	overflow: hidden;
 	background: color-mix(in srgb, currentcolor 4%, transparent);
 }
@@ -30,7 +30,7 @@
 	width: 7rem;
 	height: 4.5rem;
 	object-fit: cover;
-	border-radius: 0.35rem;
+	border-radius: var(--radius-field);
 	background: color-mix(in srgb, currentcolor 8%, transparent);
 }
 
@@ -82,7 +82,7 @@
 	padding: 0.1rem 0.45rem;
 	margin-inline: 0.1rem;
 	border: 1px solid color-mix(in srgb, currentcolor 16%, transparent);
-	border-radius: 0.35rem;
+	border-radius: var(--radius-field);
 	background: color-mix(in srgb, currentcolor 5%, transparent);
 	color: inherit;
 	text-decoration: none;
@@ -99,7 +99,7 @@
 	width: 0.9rem;
 	height: 0.9rem;
 	flex: 0 0 auto;
-	border-radius: 0.15rem;
+	border-radius: var(--radius-field);
 }
 
 .fount-embed-chip-site {

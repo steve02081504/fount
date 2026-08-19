@@ -5,7 +5,7 @@
 	max-height: min(480px, calc(100vh - 16px));
 	overflow: auto;
 	padding: 14px;
-	border-radius: 12px;
+	border-radius: var(--radius-box);
 	border: 1px solid var(--border, #333);
 	background: var(--bg-panel, #1e1e1e);
 	color: var(--text-normal, #ddd);
@@ -27,7 +27,7 @@
 .emoji-pack-preview-avatar-fallback {
 	width: 48px;
 	height: 48px;
-	border-radius: 12px;
+	border-radius: var(--radius-box);
 	flex: 0 0 auto;
 	object-fit: cover;
 }
@@ -72,7 +72,7 @@
 .emoji-pack-preview-tag {
 	font-size: 11px;
 	padding: 2px 8px;
-	border-radius: 999px;
+	border-radius: var(--radius-box);
 	background: var(--bg-hover, rgba(255, 255, 255, 0.08));
 }
 

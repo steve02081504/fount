@@ -100,7 +100,7 @@
 .char-list-avatar {
 	width: 36px;
 	height: 36px;
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	flex-shrink: 0;
 	display: flex;
 	align-items: center;
@@ -201,7 +201,7 @@
 .member-avatar {
 	width: 40px;
 	height: 40px;
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -665,7 +665,7 @@ body[data-surface="discovery"] .main-header {
 	min-height: 100px;
 	padding: 6px;
 	border: 1px dashed color-mix(in srgb, var(--text-muted, #888) 45%, transparent);
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	overflow: hidden;
 	transition: opacity 0.25s ease, transform 0.25s ease;
 }
@@ -695,7 +695,7 @@ body[data-surface="discovery"] .main-header {
 	width: 64px;
 	height: 64px;
 	object-fit: cover;
-	border-radius: 4px;
+	border-radius: var(--radius-field);
 	cursor: zoom-in;
 }
 
@@ -726,7 +726,7 @@ body[data-surface="discovery"] .main-header {
 	text-overflow: ellipsis;
 	color: var(--text-normal, inherit);
 	background-color: color-mix(in srgb, var(--bg-main, #000) 55%, transparent);
-	border-radius: 2px;
+	border-radius: var(--radius-field);
 }
 
 .attachment .attachment-alt-input {
@@ -793,7 +793,7 @@ body[data-surface="discovery"] .main-header {
 
 .chat-file-drop-card {
 	padding: 18px 28px;
-	border-radius: 12px;
+	border-radius: var(--radius-box);
 	background: var(--color-base-100);
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 	font-weight: 600;
@@ -823,7 +823,7 @@ body[data-surface="discovery"] .main-header {
 	height: 88px;
 	margin-bottom: 8px;
 	border: 1px solid color-mix(in srgb, var(--accent), transparent 72%);
-	border-radius: 28px;
+	border-radius: var(--radius-box);
 	background: var(--accent-soft);
 	box-shadow: 0 16px 48px color-mix(in srgb, var(--accent), transparent 86%);
 }
@@ -939,7 +939,7 @@ body[data-surface="discovery"] .main-header {
 	bottom: calc(100% + 4px);
 	background: var(--bg-channel);
 	border: 1px solid var(--border);
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	max-height: 220px;
 	overflow-y: auto;
 	z-index: 20;
@@ -1056,7 +1056,7 @@ body[data-surface="discovery"] .main-header {
 	place-items: center;
 	width: 40px;
 	height: 40px;
-	border-radius: 13px;
+	border-radius: var(--radius-box);
 	background: var(--accent-soft);
 	color: var(--accent);
 	font-size: 14px;
@@ -1164,7 +1164,7 @@ body[data-surface="discovery"] .main-header {
 	height: 66px;
 	margin-bottom: 16px;
 	border: 1px solid var(--border-subtle);
-	border-radius: 22px;
+	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--bg-channel), transparent 15%);
 	color: var(--text-muted);
 }
@@ -1198,7 +1198,7 @@ body[data-surface="discovery"] .main-header {
 	.inbox-row-avatar {
 		width: 34px;
 		height: 34px;
-		border-radius: 11px;
+		border-radius: var(--radius-box);
 	}
 
 	.inbox-row-chevron {
@@ -1292,7 +1292,7 @@ body[data-surface="discovery"] .main-header {
 	width: 62px;
 	height: 62px;
 	border: 1px solid color-mix(in srgb, var(--accent), transparent 58%);
-	border-radius: 20px;
+	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--bg-main), transparent 24%);
 	box-shadow: 0 10px 24px var(--shadow);
 }
@@ -1360,7 +1360,7 @@ body[data-surface="discovery"] .main-header {
 	height: 82px;
 	margin-bottom: 18px;
 	border: 1px solid color-mix(in srgb, var(--accent), transparent 68%);
-	border-radius: 27px;
+	border-radius: var(--radius-box);
 	background: var(--accent-soft);
 }
 

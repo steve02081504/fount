@@ -240,7 +240,7 @@
 	font-family: inherit;
 	font-size: 12px;
 	padding: 2px 6px;
-	border-radius: 4px;
+	border-radius: var(--radius-field);
 	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
 	background: transparent;
 	color: inherit;
@@ -259,7 +259,7 @@
 .log-level-btn {
 	font-size: 11px;
 	padding: 1px 7px;
-	border-radius: 3px;
+	border-radius: var(--radius-field);
 	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
 	background: transparent;
 	cursor: pointer;
@@ -301,7 +301,7 @@
 .log-clear-btn {
 	font-size: 11px;
 	padding: 1px 7px;
-	border-radius: 3px;
+	border-radius: var(--radius-field);
 	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
 	background: transparent;
 	cursor: pointer;

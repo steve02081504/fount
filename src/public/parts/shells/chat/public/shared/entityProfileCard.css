@@ -51,7 +51,7 @@
 
 .entity-profile-card-orb {
 	position: absolute;
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	background: rgb(255 255 255 / 10%);
 	filter: blur(1px);
 }
@@ -88,7 +88,7 @@
 	height: 88px;
 	overflow: hidden;
 	border: 6px solid var(--popover-bg, var(--color-base-200));
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	font-size: 30px;
 	font-weight: 820;
 	box-shadow: 0 6px 18px rgb(0 0 0 / 28%);
@@ -113,7 +113,7 @@
 .profile-popup-actions .btn {
 	min-height: 30px;
 	height: 30px;
-	border-radius: 9px;
+	border-radius: var(--radius-box);
 	padding-inline: 10px;
 	font-size: 11px;
 }
@@ -143,7 +143,7 @@
 	width: 16px;
 	height: 16px;
 	border: 4px solid var(--popover-bg, var(--color-base-200));
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 }
 
 .profile-popup-status-dot[data-status="online"] {
@@ -235,7 +235,7 @@
 .profile-tag {
 	padding: 4px 8px;
 	border: 1px solid color-mix(in srgb, var(--entity-card-accent) 38%, transparent);
-	border-radius: 999px;
+	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--entity-card-accent) 10%, transparent);
 	font-size: 10px;
 }
@@ -255,7 +255,7 @@
 	max-width: 100%;
 	padding: 5px 9px;
 	overflow: hidden;
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--text-normal, var(--color-base-content)) 7%, transparent);
 	color: var(--text-bright, var(--color-base-content));
 	font-size: 11px;
@@ -276,7 +276,7 @@
 	flex-wrap: wrap;
 	gap: 7px;
 	padding: 8px 10px;
-	border-radius: 9px;
+	border-radius: var(--radius-box);
 	font-size: 11px;
 	line-height: 1.4;
 }
@@ -402,11 +402,11 @@
 }
 
 .entity-profile-card--preview {
-	border-radius: 16px;
+	border-radius: var(--radius-box);
 }
 
 @media (max-width: 420px) {
 	.profile-popup {
-		border-radius: 16px;
+		border-radius: var(--radius-box);
 	}
 }

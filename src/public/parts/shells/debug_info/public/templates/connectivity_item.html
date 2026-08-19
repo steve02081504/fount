@@ -1,4 +1,4 @@
-<li class="flex justify-between items-center p-2 bg-base-200 rounded">
+<li class="flex justify-between items-center p-2 bg-base-200 rounded-field">
 	<span>${name}</span>
 	<span class="badge ${status === 'ok' ? 'badge-success' : 'badge-error'}" ${status !=='ok' ? 'data-i18n="debug_info.failed"' : '' }>
 		${status === 'ok' ? duration + 'ms' : ''}

@@ -98,7 +98,7 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 	justify-content: center;
 	gap: 0.5rem;
 	background: color-mix(in srgb, var(--color-neutral) 45%, transparent);
-	border-radius: 16px;
+	border-radius: var(--radius-box);
 }
 .sensitive-media-label {
 	font-weight: 600;
@@ -109,13 +109,13 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 	border: 1px solid color-mix(in srgb, var(--color-neutral-content) 55%, transparent);
 	background: color-mix(in srgb, var(--color-neutral) 55%, transparent);
 	color: var(--color-neutral-content);
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 	padding: 4px 12px;
 	cursor: pointer;
 }
 .content-warning-wrap {
 	border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	padding: 10px 12px;
 	margin-bottom: 8px;
 	background: color-mix(in srgb, var(--color-primary) 8%, transparent);
@@ -129,7 +129,7 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 	border: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
 	background: var(--color-base-200);
 	color: inherit;
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 	padding: 4px 10px;
 	cursor: pointer;
 }

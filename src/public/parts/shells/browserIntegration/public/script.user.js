@@ -805,7 +805,7 @@ function addToastStyles() {
 	display: flex;
 	align-items: start;
 	padding: 1rem;
-	border-radius: 0.5rem;
+	border-radius: var(--radius-box);
 	background-color: #333;
 	color: white;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;

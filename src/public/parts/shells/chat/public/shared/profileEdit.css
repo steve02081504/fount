@@ -130,7 +130,7 @@
 	min-height: 28px;
 	padding: 4px 8px 4px 10px;
 	border: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
-	border-radius: 999px;
+	border-radius: var(--radius-box);
 	background: transparent;
 	color: inherit;
 	font-size: 12px;
@@ -178,7 +178,7 @@
 	height: 28px;
 	min-height: 28px;
 	padding: 0 10px;
-	border-radius: 999px;
+	border-radius: var(--radius-box);
 	font-size: 12px;
 }
 
@@ -223,7 +223,7 @@
 	width: 48px;
 	height: 48px;
 	overflow: hidden;
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	font-size: 17px;
 	font-weight: 800;
 }
@@ -248,7 +248,7 @@
 	gap: 4px;
 	padding: 4px 8px;
 	border: 1px solid color-mix(in srgb, var(--color-primary) 38%, transparent);
-	border-radius: 999px;
+	border-radius: var(--radius-box);
 	background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 	font-size: 12px;
 }
@@ -299,7 +299,7 @@
 	height: 40px;
 	padding: 3px;
 	border: 1px solid color-mix(in srgb, var(--color-base-content) 16%, transparent);
-	border-radius: 9px;
+	border-radius: var(--radius-box);
 	background: transparent;
 	cursor: pointer;
 }

@@ -105,7 +105,7 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 .fount-logprob-root{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;white-space:pre-wrap}
 .fount-logprob-token{position:relative;display:inline;vertical-align:baseline;--fount-logprob-confidence-percent:50%;--err:${useThemeStyles ? 'var(--color-error, #ef4444)' : '#ef4444'};--ok:${useThemeStyles ? 'var(--color-success, #22c55e)' : '#22c55e'};--token-underline:color-mix(in oklab,var(--err) calc(100% - var(--fount-logprob-confidence-percent)),var(--ok) var(--fount-logprob-confidence-percent));border-bottom:2px solid var(--token-underline)}
 .fount-logprob-token-value{white-space:pre;opacity:0.95}
-.fount-logprob-token-tip{display:none;position:absolute;left:50%;top:-6px;transform:translate(-50%,-100%);z-index:9999;background:${useThemeStyles ? 'var(--color-base-100, #111)' : '#111'};color:${useThemeStyles ? 'var(--color-base-content, #fff)' : '#fff'};border:1px solid ${useThemeStyles ? 'color-mix(in oklab, var(--color-base-content, #fff) 16%, transparent)' : 'rgba(255,255,255,0.15)'};padding:6px 8px;border-radius:8px;max-width:360px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;font-size:12px;box-shadow:0 4px 18px rgba(0,0,0,0.35)}
+.fount-logprob-token-tip{display:none;position:absolute;left:50%;top:-6px;transform:translate(-50%,-100%);z-index:9999;background:${useThemeStyles ? 'var(--color-base-100, #111)' : '#111'};color:${useThemeStyles ? 'var(--color-base-content, #fff)' : '#fff'};border:1px solid ${useThemeStyles ? 'color-mix(in oklab, var(--color-base-content, #fff) 16%, transparent)' : 'rgba(255,255,255,0.15)'};padding:6px 8px;border-radius:var(--radius-box);max-width:360px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;font-size:12px;box-shadow:0 4px 18px rgba(0,0,0,0.35)}
 .fount-logprob-token:hover .fount-logprob-token-tip{display:block}
 .fount-logprob-token-tip .fount-logprob-meta{display:block;opacity:0.95;margin-bottom:4px}
 .fount-logprob-token-tip .fount-logprob-cand{display:block;opacity:0.9}
@@ -113,7 +113,7 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 .fount-logprob-token-tip .fount-logprob-key{white-space:pre;overflow:hidden;text-overflow:ellipsis}
 .fount-logprob-token-tip .fount-logprob-sep{text-align:center}
 .fount-logprob-token-tip .fount-logprob-val{text-align:right}
-.fount-logprob-token-tip .fount-logprob-chosen{font-weight:700;background:${useThemeStyles ? 'color-mix(in oklab, var(--color-base-content, #fff) 8%, transparent)' : 'rgba(255,255,255,0.08)'};border-radius:4px;padding-inline:2px}
+.fount-logprob-token-tip .fount-logprob-chosen{font-weight:700;background:${useThemeStyles ? 'color-mix(in oklab, var(--color-base-content, #fff) 8%, transparent)' : 'rgba(255,255,255,0.08)'};border-radius:var(--radius-field);padding-inline:2px}
 .fount-logprob-footer{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;font-size:12px;opacity:0.75;margin-top:6px;white-space:pre-wrap}
 </style>`
 
