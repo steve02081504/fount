@@ -264,7 +264,7 @@ fount 構築於一強大且可拓展之架構之上。後臺用 [Deno](https://d
 ### Linux/macOS/Android：敕令行之低語 – _一行敕令，即刻啟程_
 
 ```bash
-# 若需要，定义环境变量 $FOUNT_DIR 来指定 fount 目录
+# 如需，可設環境變數 $FOUNT_DIR 以定 fount 目錄
 install_package() { _command_name="$1"; _package_list=${2:-$_command_name}; _has_sudo=""; _installed_pkg_name="" ; if command -v "$_command_name" >/dev/null 2>&1; then return 0; fi; if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then _has_sudo="sudo"; fi; for _package in $_package_list; do if command -v apt-get >/dev/null 2>&1; then $_has_sudo apt-get update -y; $_has_sudo apt-get install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pacman >/dev/null 2>&1; then $_has_sudo pacman -Syy --noconfirm; $_has_sudo pacman -S --needed --noconfirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v dnf >/dev/null 2>&1; then $_has_sudo dnf install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v yum >/dev/null 2>&1; then $_has_sudo yum install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v zypper >/dev/null 2>&1; then $_has_sudo zypper install -y --no-confirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v apk >/dev/null 2>&1; then if [ "$(id -u)" -eq 0 ]; then apk add --update "$_package"; else $_has_sudo apk add --update "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v brew >/dev/null 2>&1; then if ! brew list --formula "$_package"; then brew install "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pkg >/dev/null 2>&1; then pkg install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v snap >/dev/null 2>&1; then $_has_sudo snap install "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; done; if command -v "$_command_name" >/dev/null 2>&1; then case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in *";$_installed_pkg_name;"*) ;; *) if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then FOUNT_AUTO_INSTALLED_PACKAGES="$_installed_pkg_name"; else FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$_installed_pkg_name"; fi; ;; esac; return 0; else echo "Error: Failed to install '$_command_name' from any source." >&2; return 1; fi; }
 install_package "bash" "bash gnu-bash"; install_package "curl"
 export FOUNT_AUTO_INSTALLED_PACKAGES
@@ -272,7 +272,7 @@ curl -fsSL https://steve02081504.github.io/fount/install.sh | bash
 . "$HOME/.profile"
 ```
 
-若君欲稍作停頓，於盛大冒險之前整理思緒（一次預演）：
+若君欲稍駐，於啟程前整思緒（預演）：
 
 ```bash
 install_package() { _command_name="$1"; _package_list=${2:-$_command_name}; _has_sudo=""; _installed_pkg_name="" ; if command -v "$_command_name" >/dev/null 2>&1; then return 0; fi; if [ "$(id -u)" -ne 0 ] && command -v sudo >/dev/null 2>&1; then _has_sudo="sudo"; fi; for _package in $_package_list; do if command -v apt-get >/dev/null 2>&1; then $_has_sudo apt-get update -y; $_has_sudo apt-get install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pacman >/dev/null 2>&1; then $_has_sudo pacman -Syy --noconfirm; $_has_sudo pacman -S --needed --noconfirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v dnf >/dev/null 2>&1; then $_has_sudo dnf install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v yum >/dev/null 2>&1; then $_has_sudo yum install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v zypper >/dev/null 2>&1; then $_has_sudo zypper install -y --no-confirm "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v apk >/dev/null 2>&1; then if [ "$(id -u)" -eq 0 ]; then apk add --update "$_package"; else $_has_sudo apk add --update "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v brew >/dev/null 2>&1; then if ! brew list --formula "$_package"; then brew install "$_package"; fi; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v pkg >/dev/null 2>&1; then pkg install -y "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; if command -v snap >/dev/null 2>&1; then $_has_sudo snap install "$_package"; if command -v "$_command_name" >/dev/null 2>&1; then _installed_pkg_name="$_package"; break; fi; fi; done; if command -v "$_command_name" >/dev/null 2>&1; then case ";$FOUNT_AUTO_INSTALLED_PACKAGES;" in *";$_installed_pkg_name;"*) ;; *) if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then FOUNT_AUTO_INSTALLED_PACKAGES="$_installed_pkg_name"; else FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$_installed_pkg_name"; fi; ;; esac; return 0; else echo "Error: Failed to install '$_command_name' from any source." >&2; return 1; fi; }
@@ -289,7 +289,7 @@ curl -fsSL https://steve02081504.github.io/fount/install.sh | bash -s init
 - **PowerShell 之力：**
 
   ```powershell
-  # 若需要，定义环境变量 $env:FOUNT_DIR 来指定 fount 目录
+  # 如需，可設環境變數 $env:FOUNT_DIR 以定 fount 目錄
   irm https://steve02081504.github.io/fount/install.ps1 | iex
   ```
 
@@ -320,20 +320,20 @@ docker pull ghcr.io/steve02081504/fount
 fount remove
 ```
 
-## 遭遇陰影？不必驚慌
+## 途遇陰影？毋須驚惶
 
-若君於旅途中遇任何困難，請通問吾。吾隨時準備供助，並致力於在 10 分鐘到 24 小時內解決大多數問題。
+若君於途中有難，請以通問吾。吾隨時備援，力於十分至廿四時之間解君之困。
 
 - **GitHub Issues：** 藉 [GitHub Issues](https://github.com/steve02081504/fount/issues) 報任何闕或提新功用之議。
 - **Telegram 雅集：** 入吾[充滿活力之 Telegram 雅集](https://t.me/GentianAphrodite)，以得實時之支援與清談。
 
-君之聲終將被聞。唯需重啟 fount，陰影便會消散。
+君聲終必見聞。唯重啟 fount，陰翳即散。
 
 ---
 
 ## 徽章與鏈：令創作閃耀，令世界觸手可及
 
-fount 之世不止是文字與碼，它更是一場目視與連接之盛宴。吾為君備了精美之徽章與便捷之鏈，令君之創作在此份光彩中熠熠生輝。
+fount 之世，非惟文字與碼，實目視與連接之盛筵。吾為君備精美之徽章、便捷之鏈，令君之作於此光中熠熠生輝。
 
 ### fount 徽章：榮耀之印記
 
@@ -357,38 +357,38 @@ fount 之世不止是文字與碼，它更是一場目視與連接之盛宴。�
 | RGB  |  `rgb(14, 60, 92)`   |
 | HSL  | `hsl(205, 74%, 21%)` |
 
-君亦可以用[徽章添加器](https://steve02081504.github.io/fount/badges/)，將任何shields.io之徽章帶上 fount 之 logo
+君亦可藉[徽章添加器](https://steve02081504.github.io/fount/badges/)，為任何 shields.io 之徽章添 fount 之 logo
 
-### 自動安置鏈：指尖上之魔法
+### 自動安置鏈：指端之魔
 
-想像一下，他用者唯需輕輕一點，就能將君之創作直接安置到其 fount 之世中。唯需將君之器 zip 鏈或 Git 卷宗鏈與 fount 之規儀鏈組合即可。
+設想他用者唯輕一點，即能將君之作徑置其 fount 之世。唯需以君之器 zip 鏈或 Git 卷宗鏈，合 fount 之規儀鏈而成。
 
 `https://steve02081504.github.io/fount/protocol?url=fount://run/shells/install/install;<君之器鏈>`
 
 ---
 
-## 薦之瀏覽器：為了一場完美之邂逅
+## 薦之瀏覽器：以求美善之遇
 
-fount 之前臺由今世 Web 機巧織成，但並非所有瀏覽器都能與其靈魂產生完美之共鳴。為了一場最沉靜、最流暢之體驗，吾薦與 fount 之步調最為和諧之伴侶：
+fount 前臺以今世 Web 機巧織成，然非所有瀏覽器皆能與之共鳴無間。欲得至靜至暢之驗，吾薦與 fount 步調最諧之侶：
 
-- [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/)：其與 fount 之精神同步，能供最出色之性能與兼容，令每一次相談都如詩般流暢。
+- [**Google Chrome**](https://www.google.com/chrome/) / [**Microsoft Edge**](https://www.microsoft.com/edge/) / [**Opera**](https://www.opera.com/)：其與 fount 精神相契，能供至優之性能與兼容，令每度相談如詩之流暢。
 
-而有些瀏覽器，其走在不同之路上，與 fount 之相遇或會帶有些許不協調之微音：
+然有瀏覽器，行於殊途，與 fount 之遇或生些許不諧之音：
 
-- **Mozilla Firefox**：它像一位固執之漫遊者，對新機巧之接納總是不緊不慢，有時甚至選擇永遠停留於過去。此份堅持，卻或致一些遺憾：
-  - 由於缺少對 [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules) 之支持，fount 之每次冷啟動和規儀處理都會比應有的慢上 1-2 秒，這些是被悄然偷走之時光。
-  - 對 [CSS `anchor` 定位](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning)支持之缺失，會令部分頁之靈窗沾染上一絲不完美之塵埃，破壞了那份本該純粹之心情。
-  - 對 [`blocking="render"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script) 支持之缺席，則或致 fount 頁於載入時閃爍，傷害君之目。
-  - 據後臺之闕報，唯有於 Firefox 之世裡，fount 頁有時會陷入神秘之誤或呈現怪異之樣貌——當那種情況發生時，試試刷新，或能驅散迷霧。
+- **Mozilla Firefox**：其若一固執之漫遊者，納新機巧常不疾不徐，甚至寧終止於往昔。此份執守，或致憾事：
+  - 因乏 [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules) 之持，fount 每度冷啟與規儀之務，皆比應有慢一至二秒，此乃悄然被竊之光陰。
+  - 對 [CSS `anchor` 定位](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_anchor_positioning)之乏持，或令部分頁之靈窗染上些許不完美之塵，壞卻本當純粹之趣。
+  - 對 [`blocking="render"`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script) 之乏持，則或致 fount 頁載入時爍動，傷君之目。
+  - 據後臺闕報，唯於 Firefox 之世，fount 頁或偶陷奇誤或現怪貌——若遇此，試一刷新，或可散迷霧。
 
-- **Apple Safari**：它對「新興」（數年前）Web 常制之支持，或比 Firefox 多了一絲親近，但終究不多。
-  - 同樣缺少對 [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules) 之支持，這意味著 fount 之啟動依然會帶有些許遲緩，浪費君寶貴之片刻。
+- **Apple Safari**：其於「新興」（數年前）Web 常制之持，或較 Firefox 稍近，然終亦有限。
+  - 亦乏 [`speculationrules`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/speculationrules) 之持，意即 fount 之啟仍稍遲緩，耗君寶貴之頃。
 
-- **Brave**：它基於 Chromium，但其強大之隱私之盾，有時或會無意中遮蔽 fount 之某些光芒，影響部分功用之正常運作。
+- **Brave**：其基於 Chromium，然其強之隱私之盾，時或無意間蔽 fount 之光芒，礙部分功用之常運。
 
 ---
 
-### 見證成長：fount 之 Star 歷史
+### 見成長：fount 之星史
 
 [![Star History Chart](https://starchart.cc/steve02081504/fount.svg?variant=adaptive)](https://github.com/steve02081504/fount/stargazers)
 
@@ -398,8 +398,8 @@ fount 之前臺由今世 Web 機巧織成，但並非所有瀏覽器都能與其
 
 ### 結語：工匠之觸
 
-於 AI 之低語之外，fount 供一種更深層次之連——_工匠之觸_。於吾之雅集中，君會發現大量預先製作之化身與人設模板，_每一個都是精心雕琢之基礎，等待著君獨特之願景去喚醒_。
+於 AI 之低語之外，fount 供一更深之連——_工匠之觸_。於吾雅集中，君當見大量預製之化身與人設模板，_每一皆精心雕琢之基，以待君獨特之願而醒_。
 
-fount 令君能以一種自然、身臨其境且深刻個性化之法，去創造並與 AI 化身互動。無論君是經驗豐富之創作者，抑剛剛開始君之旅，fount 都歡迎君之至。
+fount 令君能以至自然、身臨其境且深個性化之法，造並與 AI 化身互。無論君為積年之創者，抑初啟君之旅，fount 皆迎君之至。
 
-入吾**友好之雅集**，於一成熟之臺和一專注之隊的支援下，發現將生命注入君想像力之魔力。
+入吾**友善之雅集**，藉一成熟之臺與一專注之隊之援，悟以生命注君想像之魔力。
