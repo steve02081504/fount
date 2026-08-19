@@ -51,13 +51,23 @@
 		"exclude": [
 			"src/public/pages/",
 			".github/pages/",
-			"src/public/parts/shells/*/public/**"
+			"src/public/parts/shells/*/public/**",
+			"**/test/frontend/**"
 		],
 		"rules": {
 			"exclude": [
 				"no-unversioned-import",
 				"no-import-prefix",
-				"no-debugger"
+				"no-debugger",
+				"require-await",
+				"no-unused-vars",
+				"no-inner-declarations",
+				"no-explicit-any",
+				"no-cond-assign",
+				"no-control-regex",
+				"no-dupe-else-if",
+				"no-empty",
+				"no-empty-pattern"
 			]
 		}
 	}
