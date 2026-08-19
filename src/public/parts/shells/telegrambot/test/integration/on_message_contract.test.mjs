@@ -145,7 +145,7 @@ function makeMessageContext(overrides = {}) {
 	const chatType = overrides.chatType || 'private'
 	const chatId = overrides.chatId ?? (chatType === 'private' ? fromId : -100123)
 	const text = overrides.text ?? 'hello'
-	const entities = overrides.entities
+	const { entities } = overrides
 	const message = {
 		message_id: overrides.messageId || 501,
 		date: Math.floor(Date.now() / 1000),

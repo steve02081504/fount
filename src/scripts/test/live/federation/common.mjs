@@ -301,7 +301,7 @@ export async function TestFedHasChannel(node, groupId, channelId) {
  */
 async function createOpenFedGroup(name, seedText) {
 	const group = (await Api(FedA, 'POST', '/groups/', { name, description: 'L4 fed probe' })).json
-	const groupId = group.groupId
+	const { groupId } = group
 	const channelId = group.defaultChannelId
 	await Api(FedA, 'PUT', `/groups/${groupId}/settings`, { joinPolicy: 'open' })
 	const invite = (await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: ms('1h') })).json
@@ -370,7 +370,7 @@ export async function WarmupFedNodeLinks(nodes) {
 	}
 	if (identities.length < 2)
 		throw new Error(`WarmupFedNodeLinks: need ≥2 federation identities, got ${identities.length}`)
-	for (const { node, nodeHash } of identities)
+	for (const { node } of identities)
 		for (const { node: peer, nodeHash: peerHash } of identities) {
 			if (peer.name === node.name) continue
 			const connected = await P2pApi(node, 'POST', '/federation/connect-node', { targetNodeHash: peerHash })

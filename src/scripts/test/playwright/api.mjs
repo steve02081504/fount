@@ -42,7 +42,7 @@ export async function fetchViewerEntityHash(baseUrl, apiKey, options = {}) {
 			}
 			catch (err) {
 				lastErr = err
-				if (attempt === retries || !/ECONNRESET|ECONNREFUSED|socket hang up/i.test(String(err)))
+				if (attempt === retries || !/econnreset|econnrefused|socket hang up/i.test(String(err)))
 					throw err
 				await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)))
 			}

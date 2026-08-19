@@ -82,7 +82,7 @@ class FeedStreamMaxHeap {
 
 	/** @param {number} heapIndex 堆下标 */
 	#siftUp(heapIndex) {
-		const streams = this.streams
+		const { streams } = this
 		let index = heapIndex
 		while (index > 0) {
 			const parent = (index - 1) >> 1
@@ -94,7 +94,7 @@ class FeedStreamMaxHeap {
 
 	/** @param {number} heapIndex 堆下标 */
 	#siftDown(heapIndex) {
-		const streams = this.streams
+		const { streams } = this
 		const heapLength = this.heap.length
 		let index = heapIndex
 		while (true) {

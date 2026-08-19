@@ -15,7 +15,7 @@ import {
 
 console.log('=== Setup: open group + join ===')
 const setup = await InitializeOpenGroupJoin('FedRepOwner', 'rep-owner-seed')
-const groupId = setup.groupId
+const { groupId } = setup
 
 let resolvedTarget = null
 const found = await WaitFedConverged(FedA, groupId, async () => {

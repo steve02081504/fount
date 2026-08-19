@@ -415,7 +415,7 @@ const LAUNCH_PORT_RACE_RETRIES = 5
 function isLaunchPortRaceError(error) {
 	if (error instanceof PortCollisionError) return true
 	const text = String(error?.message ?? error ?? '')
-	return /EADDRINUSE|address already in use/i.test(text)
+	return /eaddrinuse|address already in use/i.test(text)
 }
 
 /**
@@ -459,15 +459,15 @@ export async function launchNode(options = {}) {
 
 /**
  * 单次启动尝试（无端口争用重试）。
- * @param {object} [options={}] 同 {@link launchNode}
+ * @param {{
+ * 	releasePort?: () => Promise<void>,
+ * 	commitPort?: () => Promise<void>,
+ * 	port?: number,
+ * }} [options={}] 同 {@link launchNode}
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
 async function launchNodeOnce(options = {}) {
-	/** @type {(() => Promise<void>) | undefined} */
-	let releasePort = options.releasePort
-	/** @type {(() => Promise<void>) | undefined} */
-	let commitPort = options.commitPort
-	let port = options.port
+	let { releasePort, commitPort, port } = options
 	/** @type {TestPortBlock | undefined} */
 	let selfHeld
 	if (port == null) {

@@ -179,7 +179,7 @@ export async function buildForYouFeed(username, options = {}) {
 
 	let start = 0
 	if (options.cursor) {
-		const cursor = options.cursor
+		const { cursor } = options
 		const index = candidates.findIndex(row => forYouCursorKey({ score: row.score, postId: row.post.id }) === cursor)
 		start = index >= 0 ? index + 1 : 0
 	}

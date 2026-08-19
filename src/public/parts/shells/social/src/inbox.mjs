@@ -43,11 +43,11 @@ export function parseNotificationTypesFilter(typesParam) {
 export function notificationSnippet(text, maxLen = SNIPPET_MAX_LEN) {
 	if (!text) return null
 	const plain = String(text)
-		.replace(/```[\s\S]*?```/g, ' ')
+		.replace(/```[\S\s]*?```/g, ' ')
 		.replace(/`[^`]*`/g, ' ')
-		.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
-		.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-		.replace(/[#>*_\-\n\r]+/g, ' ')
+		.replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
+		.replace(/\[([^\]]*)]\([^)]*\)/g, '$1')
+		.replace(/[\n\r#*>_\-]+/g, ' ')
 		.replace(/\s+/g, ' ')
 		.trim()
 	if (!plain) return null
@@ -78,7 +78,7 @@ export function notificationCursor(row) {
  * @returns {string} 聚合键
  */
 export function computeAggregateKey(row, viewerEntityHash) {
-	const type = row.type
+	const { type } = row
 	if (type === 'like' || type === 'repost') {
 		const target = row.targetEntityHash || viewerEntityHash || ''
 		return `${type}:${target}:${row.targetPostId ?? ''}`
@@ -206,12 +206,11 @@ export function normalizeNotificationRow(type, actorEntityHash, at, postId, targ
 
 /**
  * @param {string} username replica
- * @param {string} timelineOwner 事件 timeline owner
  * @param {object} event 签名事件
  * @param {object} row 推导出的通知行
  * @returns {Promise<string | null>} 摘要
  */
-async function resolveNotificationSnippet(username, timelineOwner, event, row) {
+async function resolveNotificationSnippet(username, event, row) {
 	if (event.type === 'post')
 		return notificationSnippet(event.content?.text || '')
 	if (event.type === 'like' || event.type === 'repost') {
@@ -426,7 +425,7 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 			})
 			if (!allowed) continue
 		}
-		const snippet = await resolveNotificationSnippet(username, timelineOwner, event, row)
+		const snippet = await resolveNotificationSnippet(username, event, row)
 		const mutedKeywords = await loadMutedKeywords(username, row.recipient)
 		const filterPost = {
 			content: {

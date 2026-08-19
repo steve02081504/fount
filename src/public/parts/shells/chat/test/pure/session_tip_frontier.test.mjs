@@ -12,7 +12,7 @@ import { computeFederatableDagTipIds, isFederatableDagEvent } from '../../src/ch
  * @returns {string} 64 hex
  */
 function hex64(label) {
-	const base = label.replace(/[^0-9a-f]/giu, '').toLowerCase() || '0'
+	const base = label.replace(/[^\da-f]/giu, '').toLowerCase() || '0'
 	return base.padEnd(64, '0').slice(0, 64)
 }
 

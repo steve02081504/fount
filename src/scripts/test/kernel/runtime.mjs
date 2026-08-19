@@ -297,7 +297,7 @@ export class TestKernel {
 		const job = this.jobs.get(jobId)
 		if (!job || job.released) return
 		job.released = true
-		const prepared = job.prepared
+		const { prepared } = job
 		if (!prepared?.activate) return
 		await this.#activateWave(job, prepared)
 		this.wake()
@@ -356,7 +356,7 @@ export class TestKernel {
 	 * @returns {Promise<void>}
 	 */
 	async #activateWave(job, prepared) {
-		const wave = prepared.wave
+		const { wave } = prepared
 		await this.#beginReport(job, wave)
 		const imperfectKeys = wave.selection?.imperfectKeys ?? new Set()
 		const runSlots = wave.plan.slots.filter(slot => slot.action === 'run')
@@ -495,7 +495,7 @@ export class TestKernel {
 		const tasks = this.#estimateTasks()
 		for (const slot of plan.slots) {
 			if (slot.action !== 'run') continue
-			const suite = slot.suite
+			const { suite } = slot
 			if (!suite) continue
 			tasks.push(buildEstimateTask(suite, this.state.suites[slot.key], {
 				id: `wave:${slot.key}`,
@@ -524,7 +524,7 @@ export class TestKernel {
 		for (const [key, running] of this.running) {
 			const suite = this.catalog.byKey.get(key)
 			if (!suite) continue
-			const item = running.item
+			const { item } = running
 			const meanCheck = this.moduleCheck.meanDurationMs()
 			const checkElapsed = this.moduleCheck.heldTicket ? now - this.moduleCheck.heldAt : 0
 			tasks.push(buildEstimateTask(suite, this.state.suites[key], {
@@ -844,7 +844,7 @@ export class TestKernel {
 	 * @returns {Promise<void>}
 	 */
 	async #runItem(item, suite, release) {
-		const key = item.key
+		const { key } = item
 		const abort = new AbortController()
 		this.running.set(key, { item, abort, startedAt: Date.now(), checkDone: false })
 		this.#syncKeepAwake()
@@ -1177,7 +1177,7 @@ export class TestKernel {
 	 * @returns {Promise<{ reportPath: string | null, allReusedHint: boolean }>} 收口信息
 	 */
 	async #finishReport(job) {
-		const report = job.report
+		const { report } = job
 		if (!report) return { reportPath: null, allReusedHint: false }
 		const slots = report.slots.filter(slot => slot.state === 'done')
 		const allReusedHint = job.exitCode !== 0 && slots.length > 0

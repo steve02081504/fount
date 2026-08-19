@@ -168,7 +168,7 @@ export async function upsertDraft(username, entityHash, raw = {}) {
 		throw httpError(400, 'draft is empty')
 	const data = await loadDrafts(username, entityHash)
 	const now = Date.now()
-	const draftId = raw.draftId
+	const { draftId } = raw
 	if (draftId) {
 		const idx = data.drafts.findIndex(row => row.draftId === draftId)
 		if (idx < 0) throw httpError(404, 'draft not found')

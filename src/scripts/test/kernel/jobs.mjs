@@ -175,7 +175,7 @@ export async function expandJobWave(params) {
 	}
 
 	const committedChangedByKey = await buildCommittedChangedByKey(repoRoot, allSuites, state)
-	const issueStates = options.issueStates
+	const { issueStates } = options
 	const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes, issueStates)
 
 	const fingerprints = { commitHash, uncommittedHash, uncommittedFiles, uncommittedHashes, committedChangedByKey, nested }

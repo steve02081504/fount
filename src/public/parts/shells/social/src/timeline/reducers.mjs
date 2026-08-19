@@ -217,7 +217,7 @@ function reduceAlbumPostRemove(state, event) {
  * @returns {object} 更新后状态
  */
 function reducePostEdit(state, event) {
-	const targetPostId = event.content.targetPostId
+	const { targetPostId } = event.content
 	if (!targetPostId) return state
 	const list = state.postEdits.get(targetPostId) || []
 	list.push(event)

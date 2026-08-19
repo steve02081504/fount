@@ -1,9 +1,9 @@
 /** 分词器版本；变更后索引需重建。 */
 export const TOKENIZER_VERSION = 1
 
-const CJK_RE = /[\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]+/g
-const HASHTAG_RE = /#[\w\u4e00-\u9fff\u3400-\u4dbf\u3040-\u309f\u30a0-\u30ff\uac00-\ud7af]+/gi
-const WORD_RE = /[a-z0-9]+/gi
+const CJK_RE = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]+/g
+const HASHTAG_RE = /#[\w\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]+/gi
+const WORD_RE = /[\da-z]+/gi
 
 /**
  * @param {string} segment CJK 连续段

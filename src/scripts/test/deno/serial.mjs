@@ -188,7 +188,7 @@ async function runPool(files, { stopOnFailure }) {
 			catch (error) {
 				if (!(error instanceof ModuleCheckMissedReadyError)) throw error
 				const rel = toRepoRelative(REPO_ROOT, file)
-				const result = error.result
+				const { result } = error
 				const exitCode = result?.code ?? (result?.signal ? 1 : 0)
 				if (exitCode)
 					recordResult(file, exitCode, result?.output, result?.signal)

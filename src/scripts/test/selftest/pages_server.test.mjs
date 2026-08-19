@@ -144,7 +144,7 @@ Deno.test('pages serve icon_anime demo same-origin assets', async () => {
 		const html = await response.text()
 		const hrefs = [
 			...html.matchAll(/\b(?:src|href)="([^"]+)"/g),
-			...html.matchAll(/\bfrom\s+['"]([^'"]+)['"]/g),
+			...html.matchAll(/\bfrom\s+["']([^"']+)["']/g),
 		].map(match => match[1]).filter(href => href.startsWith('/') || href.startsWith('.'))
 		assert(hrefs.length, html)
 		for (const href of hrefs) {

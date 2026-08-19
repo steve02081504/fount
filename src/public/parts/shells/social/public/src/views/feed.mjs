@@ -239,13 +239,13 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 			try {
 				const nearbyPromise = getTrendingHashtags({ scope: 'nearby' })
 					.then(data => {
-						const tags = data.tags
+						const { tags } = data
 						trendingCacheByScope.nearby = tags
 						return tags
 					}, () => trendingCacheByScope.nearby || [])
 				const localPromise = getTrendingHashtags({ scope: 'local' })
 					.then(data => {
-						const tags = data.tags
+						const { tags } = data
 						trendingCacheByScope.local = tags
 						return tags
 					}, () => trendingCacheByScope.local || [])
@@ -275,8 +275,7 @@ export async function prependFeedItem(item, options = {}) {
 	if (!feedView || feedView.classList.contains('hidden')) return false
 	const list = document.getElementById('feedList')
 	if (!list) return false
-	const postId = item.postId
-	const entityHash = item.entityHash
+	const { postId, entityHash } = item
 	if (state.suppressedFeedPostIds.has(postId)) return false
 	const insertKey = `${entityHash}:${postId}`
 	// 已在列表：在 cursor 门闩之前返回，避免本机 force 插入后 WS 再弹「有新帖」

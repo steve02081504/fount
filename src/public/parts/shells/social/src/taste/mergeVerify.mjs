@@ -82,8 +82,7 @@ export async function localTagStats(username, entityHash, tasteHint = null) {
  * @returns {{ ok: boolean, confidence: number, reason?: string }} 验证结果
  */
 export function verifyTagMergeClaimWithStats(stats, claim) {
-	const from = claim.from
-	const to = claim.to
+	const { from, to } = claim
 	if (!from || !to || from === to) return { ok: false, confidence: 0, reason: 'malformed' }
 
 	const { usage, audiences } = stats

@@ -48,7 +48,7 @@ async function getWhoamiUser(node) {
  */
 async function buildDmIntro(node) {
 	const user = await getWhoamiUser(node)
-	const dataPath = node.dataPath
+	const { dataPath } = node
 	const repoRoot = process.env.FOUNT_TEST_REPO_ROOT
 	if (!repoRoot) throw new Error('FOUNT_TEST_REPO_ROOT required for dm intro helper')
 	const helper = joinPath(fileURLToPath(new URL('.', import.meta.url)), 'dm_intro_helper.mjs')

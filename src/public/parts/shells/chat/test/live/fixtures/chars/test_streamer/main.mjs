@@ -125,7 +125,7 @@ export default {
 				const replyPreviewUpdater = args.generation_options?.replyPreviewUpdater
 				const text = config.testText
 				const delay = config.charDelay
-				const initialDelay = config.initialDelay
+				const { initialDelay } = config
 				const signal = args.generation_options?.signal
 
 				if (initialDelay > 0) {

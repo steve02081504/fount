@@ -24,8 +24,7 @@ function emptySaved() {
  * @returns {Promise<object>} 带 preview / authorName 的引用
  */
 async function enrichPostRef(username, ref) {
-	const entityHash = ref.entityHash
-	const postId = ref.postId
+	const { entityHash, postId } = ref
 	const base = { entityHash, postId }
 	const view = await getTimelineMaterialized(username, entityHash)
 	const post = view.postById?.[postId]
@@ -141,7 +140,7 @@ export async function createSavedFolder(username, entityHash, name) {
 export async function removeSavedPost(username, entityHash, postRef, folderId = undefined) {
 	const data = await loadSavedPosts(username, entityHash)
 	const postEntityHash = postRef.entityHash
-	const postId = postRef.postId
+	const { postId } = postRef
 
 	if (folderId) {
 		const folder = data.folders[folderId]

@@ -331,7 +331,7 @@ export function renderMediaPreview(container, refs, onChange, options = {}) {
 				try {
 					const { hasSpeechRecognitionSource, recognizeBuffer } = await import('/scripts/features/speechRecognition.mjs')
 					if (!await hasSpeechRecognitionSource()) return
-					const file = ref.file
+					const { file } = ref
 					if (!(file instanceof Blob)) return
 					const result = await recognizeBuffer({
 						audio: file,
