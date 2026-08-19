@@ -1,14 +1,16 @@
 /**
- * 主题圆角感知检测：主题化前端不得硬编码固定圆角。
+ * 主题样式感知检测：主题化前端不得硬编码受主题控制的圆角 / 边框宽度。
  * 覆盖 `src/public/**`（应用本体）与 `.github/pages/**`（GitHub Pages 静态站）。
- * daisyUI 主题用 `--radius-selector` / `--radius-field` / `--radius-box` 表达各自的圆角方案
- * （如 cyberpunk 全为 0，即方形）。
- * 两类违反：
+ * daisyUI 主题用 `--radius-selector` / `--radius-field` / `--radius-box` 表达圆角方案、
+ * `--border` 表达边框宽度（如 cyberpunk 圆角全为 0，即方形）。
+ * 违反种类：
  * - Tailwind 固定圆角类：`rounded` / `rounded-sm/md/lg/xl/2xl/3xl` / `rounded-full`（头像等圆）
  *   及单角前缀变体，应改用 `rounded-selector` / `rounded-field` / `rounded-box`
  *   （或 `rounded-btn` / `rounded-badge` 等主题感知类）。
  * - CSS 直接硬编码 `border-radius: <固定长度>`（未用 `var(--radius-*)` / `var(--rounded-*)`）。
- *   头像等圆形元素也应随主题变化（cyberpunk 下应为方形）。
+ * - 自定义硬编码圆角变量 `--radius-*: <固定长度>`：另立圆角体系，消费者 `var(--radius-md)`
+ *   即绕过主题（如 chat `vars.css` 的 `--radius-sm/md/lg`），应改用 `var(--radius-box)` 等。
+ * - CSS 硬编码边框宽度 `border: <px>` / `border-<侧>: <px>` / `border-width: <px>`：绕过 `--border`。
  */
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -63,6 +65,21 @@ const CSS_BORDER_RADIUS_RE =
 	/border-radius\s*:\s*(?![^;}]*var\(\s*--(?:radius|rounded)-)[0-9.]+(?:px|rem|em|%)\b[^;}]*/gu
 
 /**
+ * 自定义 `--radius-*: <固定长度>` 变量定义。
+ * daisyUI 主题用 `--radius-selector/field/box` 表达圆角方案；自定义 `--radius-md: 10px` 等
+ * 会另立一套硬编码圆角体系（如 chat `vars.css` 的 `--radius-sm/md/lg`），消费者 `var(--radius-md)`
+ * 即绕过主题。主题感知写法应为 `--radius-md: var(--radius-box)`。
+ */
+const CUSTOM_RADIUS_VAR_RE = /--radius-[a-zA-Z0-9-]+\s*:\s*[0-9.]+(?:px|rem|em|%)\b/gu
+
+/**
+ * 硬编码边框宽度（绕过主题 `--border`）：
+ * `border: <长度>` / `border-<侧>: <长度>` / `border-width: <长度>`（不含 `border-radius`）。
+ */
+const HARDCODED_BORDER_WIDTH_RE =
+	/border(?:-(?:top|right|bottom|left|width))?\s*:\s*[0-9]+(?:\.[0-9]+)?px\b/gu
+
+/**
  * 扫描单文件内容中的硬编码固定圆角。
  * @param {string} relativePath 相对仓库根
  * @param {string} content 文件文本
@@ -76,6 +93,10 @@ export function scanFileThemeRadius(relativePath, content) {
 		for (const match of lines[index].matchAll(HARDCODED_RADIUS_GLOBAL))
 			issues.push({ path: relativePath, line: index + 1, token: match[0] })
 		for (const match of lines[index].matchAll(CSS_BORDER_RADIUS_RE))
+			issues.push({ path: relativePath, line: index + 1, token: match[0].trim() })
+		for (const match of lines[index].matchAll(CUSTOM_RADIUS_VAR_RE))
+			issues.push({ path: relativePath, line: index + 1, token: match[0].trim() })
+		for (const match of lines[index].matchAll(HARDCODED_BORDER_WIDTH_RE))
 			issues.push({ path: relativePath, line: index + 1, token: match[0].trim() })
 	}
 	return issues

@@ -56,6 +56,29 @@ Deno.test('scanFileThemeRadius: flags hardcoded CSS border-radius', () => {
 	assertEquals(issues[0], { path: 'a.css', line: 1, token: 'border-radius: 0.5rem' })
 })
 
+Deno.test('scanFileThemeRadius: flags custom hardcoded --radius-* var definitions', () => {
+	const text = ':root { --radius-sm: 6px; --radius-md: 10px; --radius-lg: var(--radius-box); }\n'
+	const issues = scanFileThemeRadius('a.css', text)
+	assertEquals(issues.length, 2)
+	assertEquals(issues[0].token, '--radius-sm: 6px')
+	assertEquals(issues[1].token, '--radius-md: 10px')
+})
+
+Deno.test('scanFileThemeRadius: flags hardcoded border width', () => {
+	const text = '.a { border: 1px solid #ccc; }\n.b { border-bottom: 2px solid var(--border); }\n'
+	const issues = scanFileThemeRadius('a.css', text)
+	assertEquals(issues.length, 2)
+	assertEquals(issues[0].token, 'border: 1px')
+	assertEquals(issues[1].token, 'border-bottom: 2px')
+})
+
+Deno.test('scanFileThemeRadius: border-width regex ignores border-radius', () => {
+	const text = '.a { border-radius: 0.5rem; border-top-left-radius: 8px; }\n'
+	const issues = scanFileThemeRadius('a.css', text)
+	assertEquals(issues.length, 1)
+	assertEquals(issues[0].token, 'border-radius: 0.5rem')
+})
+
 Deno.test('isThemeRadiusExcluded: excludes test fixtures', () => {
 	assertEquals(isThemeRadiusExcluded('src/public/a/test/b.html'), true)
 	assertEquals(isThemeRadiusExcluded('src/public/a/b.test.mjs'), true)
