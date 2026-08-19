@@ -6,7 +6,7 @@ on:
     paths:
       - 'src/runner/**'
       - 'path/**'
-      - '.github/path-ci/**'
+      - 'path/CI/**'
       - '.github/workflows/test_running.yaml'
     tags-ignore:
       - '*'
@@ -41,7 +41,7 @@ jobs:
           export FOUNT_ACCEPT_EULA=1
           curl -fsSL "https://raw.githubusercontent.com/steve02081504/fount/refs/heads/${FOUNT_BRANCH}/src/runner/main.sh" | bash -s -- init
           ci=$(mktemp -d)
-          cp -R "$FOUNT_DIR/.github/path-ci/." "$ci/"
+          cp -R "$FOUNT_DIR/path/CI/." "$ci/"
           bash "$ci/run-remove-assert.sh" "$FOUNT_DIR/path/fount.sh"
 
       - name: test script (pwsh)
@@ -57,7 +57,7 @@ jobs:
           fountInstaller init
           $ci = Join-Path $env:TEMP "fount-remove-assert-$PID"
           New-Item -ItemType Directory -Path $ci | Out-Null
-          Copy-Item -Recurse -Force "$env:FOUNT_DIR\.github\path-ci\*" $ci
+          Copy-Item -Recurse -Force "$env:FOUNT_DIR\path\CI\*" $ci
           & (Join-Path $ci 'run-remove-assert.ps1') -Fount (Join-Path $env:FOUNT_DIR 'path\fount.ps1')
           if ($LastExitCode) { exit $LastExitCode }
 
@@ -74,7 +74,7 @@ jobs:
           fountInstaller init
           $ci = Join-Path ([IO.Path]::GetTempPath()) "fount-remove-assert-$PID"
           New-Item -ItemType Directory -Path $ci | Out-Null
-          Copy-Item -Recurse -Force "$env:FOUNT_DIR/.github/path-ci/*" $ci
+          Copy-Item -Recurse -Force "$env:FOUNT_DIR/path/CI/*" $ci
           & (Join-Path $ci 'run-remove-assert.ps1') -Fount (Join-Path $env:FOUNT_DIR 'path/fount.ps1')
           if ($LastExitCode) { exit $LastExitCode }
 
@@ -98,23 +98,23 @@ jobs:
 
       - name: Install CI entry hooks
         shell: bash
-        run: bash .github/path-ci/install-hooks.sh "$GITHUB_WORKSPACE"
+        run: bash path/CI/install-hooks.sh "$GITHUB_WORKSPACE"
 
       - name: path smoke (bash)
         shell: bash
-        run: bash .github/path-ci/run-smoke.sh
+        run: bash path/CI/run-smoke.sh
 
       - name: path smoke (pwsh)
         if: runner.os == 'Windows'
         shell: powershell
-        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\.github\path-ci\run-smoke.ps1"
+        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\path\CI\run-smoke.ps1"
 
       - name: path smoke (pwsh)
         if: runner.os != 'Windows'
         shell: pwsh
-        run: pwsh -NoProfile -File .github/path-ci/run-smoke.ps1
+        run: pwsh -NoProfile -File path/CI/run-smoke.ps1
 
       - name: Restore entry hooks
         if: always()
         shell: bash
-        run: bash .github/path-ci/restore-hooks.sh "$GITHUB_WORKSPACE"
+        run: bash path/CI/restore-hooks.sh "$GITHUB_WORKSPACE"
