@@ -388,7 +388,7 @@ body.scroll-lock {
 	position: absolute;
 	inset: 3px;
 	z-index: -1;
-	border-radius: calc(1rem - 2px);
+	border-radius: calc(var(--radius-box) - 2px);
 	background:
 		radial-gradient(120% 180% at 0% 0%, color-mix(in oklab, var(--color-warning) 28%, transparent), transparent 55%),
 		radial-gradient(90% 140% at 100% 120%, color-mix(in oklab, var(--color-primary) 22%, transparent), transparent 50%),

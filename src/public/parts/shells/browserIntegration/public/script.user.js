@@ -779,7 +779,7 @@ function parseRgbColor(colorStr) {
 	const match = String(colorStr).match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/)
 	if (!match) return null
 	const [, r, g, b, aRaw = '1'] = match
-	return { r: +r, g: +g, b: +b, a: (+aRaw) * 255 }
+	return { r: +r, g: +g, b: +b, a: +aRaw * 255 }
 }
 
 /**
@@ -798,17 +798,13 @@ function getEffectiveBackgroundColor(el) {
 }
 
 /**
- * 对颜色通道执行指定操作（如加法、减法、平均等）。
+ * 通过颜色合并函数计算各通道值（如加法、减法、平均等）。
  * @param {function(...number): number} action - 对通道值执行的操作。
  * @param {...Color} colors - 输入颜色。
  * @returns {Color} 操作后的颜色。
  */
-function margeColor(action, ...colors) {
+function mergeColor(action, ...colors) {
 	const result = {}
-	if (Object(action) instanceof Number) {
-		const scale = action
-		action = (...number) => number.reduce((a, b) => a + b, 0) * scale
-	}
 	for(const channel of ['r', 'g', 'b', 'a'])
 		result[channel] = action(...colors.map(color => color[channel] ?? 255))
 	return result
@@ -823,9 +819,9 @@ function averageColors(entries) {
 	let total = 0
 	const colors = entries.map(({ color, weight }) => {
 		total += weight
-		return margeColor(weight, color)
+		return mergeColor(num => num * weight, color)
 	})
-	return margeColor(1 / total, ...colors)
+	return mergeColor((...values) => values.reduce((a, b) => a + b, 0) / total, ...colors)
 }
 
 /**
@@ -835,7 +831,7 @@ function averageColors(entries) {
  * @returns {Color} 边框色。
  */
 function borderColorFromBackground(bg, ratio) {
-	return margeColor(num => Math.round(num * (1 - ratio) + (255 - num) * ratio), bg)
+	return mergeColor(num => Math.round(num * (1 - ratio) + (255 - num) * ratio), bg)
 }
 
 /**
@@ -864,7 +860,7 @@ function isLightColor(color) {
  * @returns {{r:number,g:number,b:number}} 适配后的语义背景色。
  */
 function adaptSemanticColor(semantic, background) {
-	return margeColor((semantic, base, background) => wrapColorChannel(
+	return mergeColor((semantic, base, background) => wrapColorChannel(
 		semantic - base + background
 	), semantic, isLightColor(background) ? WHITE : BLACK, background)
 }
@@ -886,7 +882,7 @@ function computePageThemeColors() {
 			const el = node.parentElement
 			if (!el) return NodeFilter.FILTER_REJECT
 			const style = el.getBoundingClientRect()
-			if (rect.width && rect.height) return NodeFilter.FILTER_ACCEPT
+			if (style.width && style.height) return NodeFilter.FILTER_ACCEPT
 			return NodeFilter.FILTER_REJECT
 		}
 	})

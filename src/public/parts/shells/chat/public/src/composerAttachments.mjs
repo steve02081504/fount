@@ -11,6 +11,7 @@ import { hasSpeechRecognitionSource, recognizeBuffer } from '/scripts/features/s
 import { setCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
 import { entityFileUrl, fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 import { onElementRemoved } from '/scripts/lib/onElementRemoved.mjs'
+import { ensureDraftFileContent } from './endpoints/drafts.mjs'
 import { parseEvfsRef } from './lib/evfsRef.mjs'
 import { arrayBufferToBase64 } from './lib/federationUpload.mjs'
 import { processTimeStampForId } from './lib/timestampId.mjs'
@@ -184,8 +185,17 @@ async function appendLocalImagePreview(attachmentElement, file, mime, composing,
 		src: previewUrl,
 		alt: file.name,
 	})
-	previewImg.addEventListener('click', () => {
-		openMediaViewer([{ src: previewImg.src, name: file.name, mimeType: mime }], 0)
+	previewImg.addEventListener('click', async () => {
+		let src = previewImg.src
+		if (file.draftKey && typeof file.buffer !== 'string') {
+			try {
+				await ensureDraftFileContent(file)
+			}
+			catch { /* 保留缩略图 */ }
+			if (typeof file.buffer === 'string')
+				src = objectUrlFromLocalBuffer(file.buffer, mime || 'image/*', attachmentElement)
+		}
+		openMediaViewer([{ src, name: file.name, mimeType: mime }], 0)
 	})
 	previewContainer.appendChild(previewImg)
 
@@ -268,6 +278,8 @@ async function appendGroupFileImagePreview(previewContainer, file, mime, groupId
 function bindImageEditHandler(attachmentElement, file, previewContainer) {
 	attachmentElement.querySelector('.attachment-edit-button')?.addEventListener('click', async () => {
 		try {
+			await ensureDraftFileContent(file)
+			if (typeof file.buffer !== 'string') return
 			const { openImageEditor } = await import('/scripts/components/imageEditor.mjs')
 			const blob = base64ToBlob(file.buffer.replace(/^data:[^;]+;base64,/, ''), file.mime_type)
 			const edited = await openImageEditor(new File([blob], file.name, { type: file.mime_type }), {
@@ -301,6 +313,8 @@ function bindSpeechRecognitionHandler(attachmentElement, file) {
 		.querySelector('.speech-recognition-button')
 		?.addEventListener('click', async () => {
 			try {
+				await ensureDraftFileContent(file)
+				if (typeof file.buffer !== 'string') return
 				const bytes = typeof file.buffer === 'string'
 					? Uint8Array.from(atob(file.buffer), c => c.charCodeAt(0))
 					: new Uint8Array(file.buffer)
@@ -364,7 +378,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles, {
 	const isVideo = mime.startsWith('video/')
 	const composing = !!selectedFiles
 	const showSpeechRecognitionButton = isAudio && composing && await speechRecognitionConfigured()
-	const showEditButton = isImage && composing && !!file.buffer
+	const showEditButton = isImage && composing && (!!file.buffer || !!file.thumbnail)
 	let attachmentElement = await renderTemplate('attachment_preview', {
 		file,
 		index,
@@ -385,11 +399,15 @@ export async function renderAttachmentPreview(file, index, selectedFiles, {
 	}
 
 	const previewContainer = attachmentElement.querySelector('.preview-container')
-	const localBuffer = typeof file.buffer === 'string' && file.buffer.length ? file.buffer : null
+	const localBuffer = typeof file.buffer === 'string' && file.buffer.length
+		? file.buffer
+		: typeof file.thumbnail === 'string' && file.thumbnail.length ? file.thumbnail : null
 	if (isImage && localBuffer) {
 		await appendLocalImagePreview(attachmentElement, file, mime, composing, previewContainer, localBuffer)
 		bindImageEditHandler(attachmentElement, file, previewContainer)
 	}
+	else if (isImage && file.draftKey && file.fileId)
+		await appendFileIconPreview(previewContainer, file)
 	else if (isImage && file.fileId && groupId)
 		await appendGroupFileImagePreview(previewContainer, file, mime, groupId)
 	else if (isVideo)
@@ -417,7 +435,8 @@ export async function renderAttachmentPreview(file, index, selectedFiles, {
  * 下载附件（EVFS ref / base64 字符串 / 原始 buffer）。
  * @param {object} file 文件描述
  */
-export function downloadFile(file) {
+export async function downloadFile(file) {
+	await ensureDraftFileContent(file)
 	const link = document.createElement('a')
 	if (file.url) link.href = file.url
 	else if (typeof file.buffer === 'string') {

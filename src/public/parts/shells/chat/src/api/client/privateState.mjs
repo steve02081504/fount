@@ -97,5 +97,68 @@ export function createPrivateStateMethods(apiContext) {
 				groups: stored.groups || {},
 			}))
 		},
+		/**
+		 * @returns {{ list: Function, save: Function }} 频道草稿（元数据 + 缩略图，不含附件内容）
+		 */
+		get drafts() {
+			const ns = createChatShellJsonNamespace(apiContext, 'drafts', stored => ({
+				channels: stored.channels && typeof stored.channels === 'object' ? stored.channels : {},
+			}))
+			return {
+				/**
+				 * @returns {Promise<{ channels: Record<string, object> }>} 全部频道草稿
+				 */
+				list: () => ns.list(),
+				/**
+				 * 保存/更新（record 为 null 时删除）单个频道草稿。
+				 * @param {string} key `${groupId}:${channelId}`
+				 * @param {object | null} [record] 草稿记录
+				 * @returns {Promise<{ channels: Record<string, object> }>} 写入后的草稿表
+				 */
+				async save(key, record) {
+					return ns.update(({ channels }) => {
+						const next = { ...channels }
+						if (record == null) delete next[key]
+						else next[key] = record
+						return { channels: next }
+					})
+				},
+			}
+		},
+		/**
+		 * @returns {{ list: Function, put: Function, removeMany: Function }} 草稿附件内容（base64）
+		 */
+		get draftContents() {
+			const ns = createChatShellJsonNamespace(apiContext, 'draftContents', stored => ({
+				files: stored.files && typeof stored.files === 'object' ? stored.files : {},
+			}))
+			return {
+				/**
+				 * @returns {Promise<{ files: Record<string, string> }>} 全部附件内容
+				 */
+				list: () => ns.list(),
+				/**
+				 * 写入单个附件内容。
+				 * @param {string} fileId 附件 ID
+				 * @param {string} content base64 内容
+				 * @returns {Promise<{ files: Record<string, string> }>} 写入后的附件表
+				 */
+				async put(fileId, content) {
+					return ns.update(({ files }) => ({ files: { ...files, [fileId]: content } }))
+				},
+				/**
+				 * 批量删除附件内容。
+				 * @param {string[]} fileIds 附件 ID 列表
+				 * @returns {Promise<{ files: Record<string, string> }>} 删除后的附件表
+				 */
+				async removeMany(fileIds) {
+					return ns.update(({ files }) => {
+						const next = { ...files }
+						for (const fileId of fileIds) delete next[fileId]
+						return { files: next }
+					})
+				},
+			}
+		},
 	}
 }

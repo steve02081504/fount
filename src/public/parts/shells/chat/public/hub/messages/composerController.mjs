@@ -38,7 +38,7 @@ function getSingleLineHeight(input) {
 	probe.style.top = '0'
 	probe.style.visibility = 'hidden'
 	probe.tabIndex = -1
-	input.parentNode?.appendChild(probe)
+	input.parentNode.appendChild(probe)
 	const height = probe.scrollHeight
 	probe.remove()
 	input.dataset.singleLineHeight = String(height)

@@ -24,7 +24,8 @@ export const THEMED_FRONTEND_ROOTS = ['src/public', '.github/pages']
 export const THEME_RADIUS_SUFFIXES = ['.html', '.mjs', '.js', '.css']
 
 /**
- * 被排除的路径：测试夹具 / 测试文件里的类名是样例数据，不是真实 UI；
+ * 被排除的路径：测试夹具 / 测试文件里的类名是样例数据，不是真实 UI
+ * （按项目 `.test` / `.spec` 命名约定排除，覆盖支持后缀）；
  * `.php.html` 是 PHP 诱饵页（`src/server/web_server/php_decoy.mjs` 用静态 HTML 响应对应 `.php` 请求），
  * 非主题化前端页面（与 html_meta 等检查一致排除）。
  * @param {string} relativePath 相对仓库根
@@ -32,7 +33,7 @@ export const THEME_RADIUS_SUFFIXES = ['.html', '.mjs', '.js', '.css']
  */
 export function isThemeRadiusExcluded(relativePath) {
 	return /(?:^|\/)test\//u.test(relativePath)
-		|| /\.test\.mjs$/u.test(relativePath)
+		|| /\.(?:test|spec)\.(?:html|mjs|js|css)$/u.test(relativePath)
 		|| /\.php\.html$/u.test(relativePath)
 }
 
@@ -71,17 +72,80 @@ export function hasHardcodedRadius(text) {
  * @typedef {{ path: string, line: number, token: string }} ThemeRadiusIssue 命中条目
  */
 
-/** CSS 声明中 `border-radius:` 的固定值：非 `var(--radius-*)` / `var(--rounded-*)` 的长度（px/rem/em/%…）。 */
-const CSS_BORDER_RADIUS_RE =
-	/border-radius\s*:\s*(?![^;}]*var\(\s*--(?:radius|rounded)-)[0-9.]+(?:px|rem|em|%)(?![-\w])[^;}]*/gu
+/** `border-radius:` 声明头。 */
+const BORDER_RADIUS_DECL_RE = /border-radius\s*:/gu
 
 /**
- * 自定义 `--radius-*: <固定长度>` 变量定义。
+ * 自定义 `--radius-*:` 声明头。
  * daisyUI 主题用 `--radius-selector/field/box` 表达圆角方案；自定义 `--radius-md: 10px` 等
  * 会另立一套硬编码圆角体系（如 chat `vars.css` 的 `--radius-sm/md/lg`），消费者 `var(--radius-md)`
  * 即绕过主题。主题感知写法应为 `--radius-md: var(--radius-box)`。
  */
-const CUSTOM_RADIUS_VAR_RE = /--radius-[a-zA-Z0-9-]+\s*:\s*[0-9.]+(?:px|rem|em|%)(?![-\w])/gu
+const CUSTOM_RADIUS_VAR_DECL_RE = /--radius-[\w-]+\s*:/gu
+
+/** 主题圆角变量引用前缀：`var(--radius-*)` / `var(--rounded-*)`（含 `var(--radius-sm, 6px)` 等 fallback）。 */
+const THEME_RADIUS_VAR_PREFIX = /^var\(\s*--(?:radius|rounded)-/u
+
+/** CSS 长度值：十进制数字 + 常见长度单位（px/rem/em/%/ch/vw/vh/vmin/vmax/cm/mm/in/pt/pc/ex），或裸数字（如 `0`）。 */
+const CSS_LENGTH_RE = /^(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)(?:px|rem|em|%|ch|vw|vh|vmin|vmax|cm|mm|in|pt|pc|ex)?$/u
+
+/**
+ * 判断单个圆角组件是否为硬编码固定值：非零长度或 `calc(...)`。
+ * 合法的方形角 `0`（无单位或带单位）视为主题无关的安全值，不命中。
+ * @param {string} component 单个圆角值组件
+ * @returns {boolean} 命中则为 true
+ */
+function isHardcodedRadiusComponent(component) {
+	component = component.trim()
+	if (THEME_RADIUS_VAR_PREFIX.test(component)) return false
+	if (/^calc\(/u.test(component))
+		// calc(...) 内含主题圆角变量（如 `calc(var(--radius-box) - 2px)`）即为主题感知；
+		// 否则（如 `calc(1rem - 2px)`）是硬编码圆角。
+		return !/var\(\s*--(?:radius|rounded)-/u.test(component)
+	if (CSS_LENGTH_RE.test(component)) return parseFloat(component) !== 0
+	return false
+}
+
+/**
+ * 将 CSS 声明值拆成组件（按顶层空白切分，忽略 `var()` / `calc()` 括号内的空白）。
+ * @param {string} value 声明值
+ * @returns {string[]} 组件列表
+ */
+function splitCssComponents(value) {
+	const components = []
+	let current = ''
+	let depth = 0
+	for (const ch of value) {
+		if (ch === '(') depth++
+		if (ch === ')') depth--
+		if (/\s/u.test(ch) && depth === 0) {
+			if (current) components.push(current)
+			current = ''
+		}
+		else current += ch
+	}
+	if (current) components.push(current)
+	return components
+}
+
+/**
+ * 扫描某类圆角声明（`border-radius:` / 自定义 `--radius-*:`）中的硬编码值。
+ * 按声明值逐组件解析，仅当声明完全由主题变量（或合法方形角 `0`）组成时跳过；
+ * 出现任一硬编码非零长度或 `calc(...)`（含与主题变量混用）即上报。
+ * @param {string} content 文件文本
+ * @param {RegExp} declRe 声明头正则
+ * @param {string} relativePath 相对仓库根
+ * @param {ThemeRadiusIssue[]} issues 收集命中
+ */
+function scanRadiusDeclaration(content, declRe, relativePath, issues) {
+	for (const decl of content.matchAll(declRe)) {
+		let value = ''
+		for (let index = decl.index + decl[0].length; index < content.length && content[index] !== ';' && content[index] !== '}'; index++)
+			value += content[index]
+		if (splitCssComponents(value).some(isHardcodedRadiusComponent))
+			issues.push({ path: relativePath, line: lineNumberAt(content, decl.index), token: `${decl[0].trim()} ${value.trim()}` })
+	}
+}
 
 /**
  * 硬编码边框宽度（绕过主题 `--border`）：
@@ -114,7 +178,7 @@ function isNextLineIgnored(line) {
  */
 function lineNumberAt(content, index) {
 	let line = 1
-	for (let i = 0; i < index; i++) if (content[i] === '\n') line++
+	for (let offset = 0; offset < index; offset++) if (content[offset] === '\n') line++
 	return line
 }
 
@@ -132,11 +196,9 @@ export function scanFileThemeRadius(relativePath, content) {
 	for (let index = 0; index < lines.length; index++)
 		for (const match of lines[index].matchAll(HARDCODED_RADIUS_GLOBAL))
 			issues.push({ path: relativePath, line: index + 1, token: match[0] })
-	// 可跨行的 CSS 声明对完整内容匹配，再从偏移推出行号。
-	for (const match of content.matchAll(CSS_BORDER_RADIUS_RE))
-		issues.push({ path: relativePath, line: lineNumberAt(content, match.index), token: match[0].trim() })
-	for (const match of content.matchAll(CUSTOM_RADIUS_VAR_RE))
-		issues.push({ path: relativePath, line: lineNumberAt(content, match.index), token: match[0].trim() })
+	// 可跨行的 CSS 声明对完整内容匹配，再从偏移推出行号；逐组件判断是否全为主题变量。
+	scanRadiusDeclaration(content, BORDER_RADIUS_DECL_RE, relativePath, issues)
+	scanRadiusDeclaration(content, CUSTOM_RADIUS_VAR_DECL_RE, relativePath, issues)
 	// 仅硬编码边框宽度受 `theme-radius-ignore` 豁免；圆角类、border-radius、--radius-* 一律上报。
 	const ignoredBorderWidthLines = new Set()
 	for (let index = 0; index < lines.length - 1; index++)

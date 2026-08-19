@@ -1,114 +1,91 @@
 /**
  * 【文件】public/hub/composerDraft.mjs
- * 【职责】频道草稿的防抖写入、切频道恢复与发送后清空；草稿（文本 + 内容警告 + 附件）按频道持久化到 IndexedDB。
- * 【原理】切换频道前 flushDraft 落盘，进入频道时 loadDraft 恢复；发送成功后 clearDraft 删除。
+ * 【职责】频道草稿的防抖写入、切频道恢复与发送后清空；草稿（文本 + 内容警告 + 附件）按频道持久化到后端 chat shell 用户数据层。
+ * 【原理】切换频道前 flushDraft 落盘，进入频道时 loadDraft 恢复；附件仅回传缩略图，点击时才懒拉取完整内容。
  */
+import {
+	deleteDraft,
+	draftKey,
+	getDraft,
+	saveDraft as saveDraftRemote,
+} from '../src/endpoints/drafts.mjs'
+
 import { setComposerExtrasVisible } from './composerExtras.mjs'
 
 const DRAFT_DEBOUNCE_MS = 500
-const DB_NAME = 'fount.chat.drafts'
-const STORE_NAME = 'drafts'
-const DB_VERSION = 1
 
 /** @type {ReturnType<typeof setTimeout> | null} */
 let draftTimer = null
 
-/** @type {Promise<IDBDatabase> | null} */
-let dbOpenPromise = null
-
-/** @type {Promise<void>} 串行化写入，避免并发 put/delete 乱序 */
-let writeChain = Promise.resolve()
+/**
+ * 为图片附件生成小尺寸 base64 缩略图（无缩略图且持有完整 buffer 时才生成）。
+ * @param {object} file 附件对象
+ * @returns {Promise<string | null>} 缩略图 dataURL 或 null
+ */
+async function makeThumbnail(file) {
+	if (file.thumbnail) return file.thumbnail
+	if (typeof file.buffer !== 'string' || !file.buffer) return null
+	if (!(file.mime_type || '').startsWith('image/')) return null
+	try {
+		const img = new Image()
+		img.src = `data:${file.mime_type};base64,${file.buffer.replace(/^data:[^;]+;base64,/, '')}`
+		await img.decode()
+		const MAX = 128
+		const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight))
+		const canvas = document.createElement('canvas')
+		canvas.width = Math.max(1, Math.round(img.naturalWidth * scale))
+		canvas.height = Math.max(1, Math.round(img.naturalHeight * scale))
+		canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height)
+		return canvas.toDataURL('image/jpeg', 0.7)
+	}
+	catch { return null }
+}
 
 /**
- * @returns {Promise<IDBDatabase>} IndexedDB 句柄
+ * 构造可落盘的附件快照：保留完整 buffer 与缩略图，但 fileId 幂等。
+ * @param {object[]} files 附件
+ * @returns {Promise<object[]>} 附件快照
  */
-function openDb() {
-	dbOpenPromise ??= new Promise((resolve, reject) => {
-		const request = indexedDB.open(DB_NAME, DB_VERSION)
-		request.addEventListener('upgradeneeded', () => {
-			const db = request.result
-			if (!db.objectStoreNames.contains(STORE_NAME))
-				db.createObjectStore(STORE_NAME, { keyPath: 'key' })
+async function snapshotFiles(files) {
+	const snapshot = []
+	for (const file of files || []) {
+		if (!file.thumbnail && file.buffer) file.thumbnail = await makeThumbnail(file)
+		snapshot.push({
+			fileId: file.fileId || crypto.randomUUID(),
+			name: file.name,
+			mime_type: file.mime_type,
+			size: file.size,
+			...file.description ? { description: file.description } : {},
+			...file.buffer ? { buffer: file.buffer } : {},
+			...file.thumbnail ? { thumbnail: file.thumbnail } : {},
 		})
-		request.addEventListener('success', () => {
-			const db = request.result
-			db.addEventListener('versionchange', () => {
-				db.close()
-				dbOpenPromise = null
-			})
-			resolve(db)
-		})
-		request.addEventListener('error', () => {
-			dbOpenPromise = null
-			reject(request.error)
-		})
-	})
-	return dbOpenPromise
+	}
+	return snapshot
 }
 
 /**
- * @template T
- * @param {(objectStore: IDBObjectStore) => IDBRequest} run 事务操作
- * @param {IDBTransactionMode} [mode='readonly'] 模式
- * @returns {Promise<T>} 请求结果
- */
-async function withStore(run, mode = 'readonly') {
-	const db = await openDb()
-	return new Promise((resolve, reject) => {
-		const transaction = db.transaction(STORE_NAME, mode)
-		const objectStore = transaction.objectStore(STORE_NAME)
-		const request = run(objectStore)
-		request.addEventListener('success', () => resolve(request.result))
-		request.addEventListener('error', () => reject(request.error))
-	})
-}
-
-/**
- * @param {string} groupId 群组 ID
- * @param {string} channelId 频道 ID
- * @returns {string} IndexedDB 草稿键名
- */
-function draftKey(groupId, channelId) {
-	return `${groupId}:${channelId}`
-}
-
-/**
- * 深拷贝附件为可序列化快照（buffer 为 base64 字符串）。
- * @param {object[]} [files] 附件
- * @returns {object[]} 附件快照
- */
-function snapshotFiles(files) {
-	return (files || []).map(file => ({
-		name: file.name,
-		mime_type: file.mime_type,
-		...file.size != null ? { size: file.size } : {},
-		...file.buffer != null ? { buffer: file.buffer } : {},
-		...file.description ? { description: file.description } : {},
-	}))
-}
-
-/**
- * 将草稿写入 IndexedDB；全部为空时删除记录。写入串行化且吞掉 IndexedDB 错误。
+ * 将草稿写入后端（全部为空时删除）。吞掉后端错误。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
  * @param {{ text?: string, content_warning?: string, sensitive_media?: boolean, files?: object[] }} draft 草稿内容
  * @returns {Promise<void>} 完成（成功或静默失败）
  */
-function writeDraftPayload(groupId, channelId, draft) {
-	const key = draftKey(groupId, channelId)
-	const record = {
-		key,
-		text: draft.text || '',
-		...draft.content_warning ? { content_warning: draft.content_warning } : {},
-		...draft.sensitive_media ? { sensitive_media: true } : {},
-		files: snapshotFiles(draft.files),
+async function writeDraftPayload(groupId, channelId, draft) {
+	try {
+		const key = draftKey(groupId, channelId)
+		const files = await snapshotFiles(draft.files)
+		const isEmpty = !(draft.text || '') && !draft.content_warning && !draft.sensitive_media && !files.length
+		if (isEmpty) await deleteDraft(key)
+		else 
+			await saveDraftRemote(key, {
+				text: draft.text || '',
+				...draft.content_warning ? { content_warning: draft.content_warning } : {},
+				...draft.sensitive_media ? { sensitive_media: true } : {},
+				files,
+			})
+		
 	}
-	const isEmpty = !record.text && !record.content_warning && !record.sensitive_media && !record.files.length
-	const op = isEmpty
-		? withStore(objectStore => objectStore.delete(key), 'readwrite')
-		: withStore(objectStore => objectStore.put(record), 'readwrite')
-	writeChain = writeChain.then(() => op.catch(() => { /* IndexedDB 不可用时静默 */ }))
-	return writeChain
+	catch { /* 后端不可用时静默 */ }
 }
 
 /**
@@ -144,28 +121,14 @@ export function saveDraft(groupId, channelId, draft) {
 }
 
 /**
- * @param {string} groupId 群组 ID
- * @param {string} channelId 频道 ID
- * @returns {Promise<{ text: string, content_warning?: string, sensitive_media?: boolean, files: object[] } | null>} 草稿记录
- */
-async function readDraft(groupId, channelId) {
-	await writeChain
-	try {
-		return await withStore(objectStore => objectStore.get(draftKey(groupId, channelId)))
-	}
-	catch {
-		return null
-	}
-}
-
-/**
- * 恢复草稿附件到 composer 预览区与 selectedFiles。
+ * 恢复草稿附件到 composer 预览区与 selectedFiles（仅缩略图，点击时懒拉取内容）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
  * @param {object[]} files 附件快照
+ * @param {string} key 频道草稿键
  * @returns {Promise<void>}
  */
-async function restoreDraftFiles(groupId, channelId, files) {
+async function restoreDraftFiles(groupId, channelId, files, key) {
 	const { clearSelectedFiles, selectedFiles } = await import('./composerFiles.mjs')
 	clearSelectedFiles()
 	if (!files?.length) return
@@ -173,9 +136,10 @@ async function restoreDraftFiles(groupId, channelId, files) {
 	if (!(preview instanceof HTMLElement)) return
 	const { renderAttachmentPreview } = await import('../src/composerAttachments.mjs')
 	for (const file of files) {
-		selectedFiles.push(file)
+		const restored = { ...file, draftKey: key }
+		selectedFiles.push(restored)
 		const el = await renderAttachmentPreview(
-			file,
+			restored,
 			selectedFiles.length - 1,
 			selectedFiles,
 			{
@@ -189,7 +153,7 @@ async function restoreDraftFiles(groupId, channelId, files) {
 }
 
 /**
- * 加载草稿到 DOM 控件，并恢复该频道附件。
+ * 加载草稿到 DOM 控件，并恢复该频道附件（缩略图）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
  * @returns {Promise<void>}
@@ -207,7 +171,8 @@ export async function loadDraft(groupId, channelId) {
 	if (sensitiveMediaInput instanceof HTMLInputElement) sensitiveMediaInput.checked = false
 	setComposerExtrasVisible(false)
 
-	const draft = await readDraft(groupId, channelId)
+	const key = draftKey(groupId, channelId)
+	const draft = await getDraft(key).catch(() => null)
 	if (draft) {
 		if (input instanceof HTMLTextAreaElement && draft.text) {
 			input.value = draft.text
@@ -220,7 +185,7 @@ export async function loadDraft(groupId, channelId) {
 		if (draft.content_warning || draft.sensitive_media)
 			setComposerExtrasVisible(true)
 	}
-	await restoreDraftFiles(groupId, channelId, draft?.files || [])
+	await restoreDraftFiles(groupId, channelId, draft?.files || [], key)
 }
 
 /**
@@ -235,7 +200,7 @@ export function clearDraft(groupId, channelId) {
 		clearTimeout(draftTimer)
 		draftTimer = null
 	}
-	void writeDraftPayload(groupId, channelId, {})
+	void deleteDraft(draftKey(groupId, channelId)).catch(() => { /* empty */ })
 }
 
 /**
