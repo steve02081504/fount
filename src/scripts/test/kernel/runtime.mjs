@@ -58,6 +58,11 @@ export function ignoreWatchPath(rel) {
 	return false
 }
 
+/** watch 闲置（无触发套件的改动）多久后自动补跑一次 --all（毫秒；默认 2 小时）。 */
+export const DEFAULT_IDLE_ALL_MS = 2 * 60 * 60 * 1000
+/** 自动补跑 --all 的合成 viewer id（不与真实 viewer 冲突）。 */
+export const IDLE_ALL_VIEWER_ID = 'kernel:idle-all'
+
 /**
  * 测试内核。
  */
@@ -70,6 +75,7 @@ export class TestKernel {
 	 * @param {number} [options.prepSettleMs] 预备静置毫秒
 	 * @param {boolean} [options.writeReport] 是否写活报告
 	 * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
+	 * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
 	 */
 	constructor({
 		repoRoot,
@@ -78,7 +84,12 @@ export class TestKernel {
 		prepSettleMs = DEFAULT_PREP_SETTLE_MS,
 		writeReport = true,
 		moduleCheckHoldTimeoutMs,
+		idleAllMs = DEFAULT_IDLE_ALL_MS,
 	}) {
+		this.idleAllMs = idleAllMs
+		/** 最近一次触发某套件的改动时间（watch 闲置判定起点）。 */
+		this.lastTriggeringChangeAt = Date.now()
+		this.#idleAllInFlight = false
 		this.repoRoot = repoRoot
 		this.autoExit = autoExit
 		this.watchFsEnabled = watchFs
@@ -119,6 +130,7 @@ export class TestKernel {
 	#loop
 	#watcher
 	#closeDone
+	#idleAllInFlight
 
 	/** 唤醒调度循环。 */
 	wake() {
@@ -213,13 +225,18 @@ export class TestKernel {
 	noteFileChange(rel) {
 		if (ignoreWatchPath(rel)) return
 		if (rel.endsWith('/test/manifest.json') || rel === 'test/manifest.json') {
+			this.lastTriggeringChangeAt = Date.now()
 			void this.#onManifestChange(rel)
 			return
 		}
 		if (!this.catalog) return
+		let triggered = false
 		for (const suite of this.catalog.allSuites)
-			if (suiteTriggeredFiles(suite, [rel]).length)
+			if (suiteTriggeredFiles(suite, [rel]).length) {
 				this.queues.hitPrep(suiteKey(suite.manifestId, suite.name), `fs:${rel}`)
+				triggered = true
+			}
+		if (triggered) this.lastTriggeringChangeAt = Date.now()
 		this.wake()
 	}
 
@@ -784,18 +801,63 @@ export class TestKernel {
 				if (this.jobs.size === 0)
 					this.viewers.broadcast({ type: 'idle', remainingMs: 0, unknownCount: 0 })
 			}
+			this.#maybeFireIdleAll()
 			if (this.#shouldExit()) {
 				this.issueCache.pruneOlderThan()
 				await this.close()
 				break
 			}
 			const waitPrep = this.queues.nextPrepWaitMs()
+			const idleAllDueAt = this.#idleAllDueAt()
 			const waiters = [this.#wake.promise]
 			if (waitPrep != null)
 				waiters.push(new Promise(resolve => setTimeout(resolve, waitPrep)))
+			if (idleAllDueAt != null)
+				waiters.push(new Promise(resolve => setTimeout(resolve, Math.max(0, idleAllDueAt - Date.now()))))
 			await Promise.race(waiters)
 		}
 		await this.#drainRunning()
+	}
+
+	/**
+	 * 距自动补跑 --all 的到期时刻；不适用（无 watch / 在跑 / 已在途）则为 null。
+	 * @returns {number | null} 到期时刻（ms）
+	 */
+	#idleAllDueAt() {
+		if (this.#idleAllInFlight) return null
+		if (this.viewers.watchCount() === 0) return null
+		if (this.jobs.size > 0 || !this.queues.pendingEmpty() || this.running.size > 0) return null
+		return this.lastTriggeringChangeAt + this.idleAllMs
+	}
+
+	/**
+	 * watch 闲置满窗口后自动补跑一次 --all（仅一次，跑完重置静置计时）。
+	 * 提交在循环 await 链之外进行，避免与 CLI 提交路径一样卡住子进程 spawn。
+	 * @returns {void}
+	 */
+	#maybeFireIdleAll() {
+		const dueAt = this.#idleAllDueAt()
+		if (dueAt == null || Date.now() < dueAt) return
+		this.#idleAllInFlight = true
+		void this.#runIdleAll().catch(() => {
+			this.#idleAllInFlight = false
+			this.lastTriggeringChangeAt = Date.now()
+		})
+	}
+
+	/**
+	 * 真正提交并激活 --all job。
+	 * @returns {Promise<void>}
+	 */
+	async #runIdleAll() {
+		const submitted = await this.submitJob({ runAll: true }, IDLE_ALL_VIEWER_ID)
+		if (submitted.jobId && this.jobs.has(submitted.jobId))
+			await this.releaseJob(submitted.jobId)
+		else {
+			this.#idleAllInFlight = false
+			this.lastTriggeringChangeAt = Date.now()
+			this.wake()
+		}
 	}
 
 	/**
@@ -1100,6 +1162,10 @@ export class TestKernel {
 			exitCode: job.exitCode,
 			...finished,
 		})
+		if (job.viewerId === IDLE_ALL_VIEWER_ID) {
+			this.#idleAllInFlight = false
+			this.lastTriggeringChangeAt = Date.now()
+		}
 		this.jobs.delete(job.id)
 		this.wake()
 	}
@@ -1120,6 +1186,21 @@ export class TestKernel {
 	 */
 	waitClosed() {
 		return this.#loop ?? Promise.resolve()
+	}
+
+	/**
+	 * 当前测试运行状态快照（供 debug_info 等外部查询）。
+	 * @returns {{ active: boolean, idle: boolean, runningSuites: { key: string, elapsedMs: number }[], queuedSuites: string[] }} 状态
+	 */
+	statusSnapshot() {
+		const now = Date.now()
+		const runningSuites = [...this.running].map(([key, running]) => ({
+			key,
+			elapsedMs: now - (running.startedAt ?? now),
+		}))
+		const queuedSuites = [...this.queues.cli, ...this.queues.fs].map(item => item.key)
+		const active = runningSuites.length > 0 || queuedSuites.length > 0
+		return { active, idle: !active, runningSuites, queuedSuites }
 	}
 
 	/**

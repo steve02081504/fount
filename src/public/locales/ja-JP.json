@@ -5778,6 +5778,12 @@
 			"title": "システム情報",
 			"failed": "システム情報のロードに失敗しました"
 		},
+		"testStatus": {
+			"title": "テスト状況",
+			"running": "テスト実行中",
+			"idle": "テストカーネル接続中（アイドル）",
+			"queued": "待機中"
+		},
 		"connectivity": {
 			"backend": "バックエンド接続",
 			"frontend": "フロントエンド接続"

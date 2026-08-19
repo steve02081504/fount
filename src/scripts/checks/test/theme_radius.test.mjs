@@ -140,35 +140,51 @@ Deno.test('isThemeRadiusExcluded: excludes .test/.spec across supported suffixes
 })
 
 Deno.test('scanFileThemeRadius: flags ch/vw/vh and calc border-radius', () => {
-	const text = '.a { border-radius: 12ch; }\n.b { border-radius: 5vw; }\n.c { border-radius: calc(8px + 2px); }\n'
-	const issues = scanFileThemeRadius('a.css', text)
+	const issues = scanFileThemeRadius('a.css', '.a { border-radius: 12ch; }\n.b { border-radius: 5vw; }\n.c { border-radius: calc(8px + 2px); }\n')
 	assertEquals(issues.length, 3)
 	assertEquals(issues.map(issue => issue.token).sort(), ['border-radius: 12ch', 'border-radius: 5vw', 'border-radius: calc(8px + 2px)'].sort())
 })
 
 Deno.test('scanFileThemeRadius: theme-relative calc() with radius var is not flagged', () => {
-	const text = '.a { border-radius: calc(var(--radius-box) - 2px); }\n'
-	assertEquals(scanFileThemeRadius('a.css', text).length, 0)
+	assertEquals(scanFileThemeRadius('a.css', '.a { border-radius: calc(var(--radius-box) - 2px); }\n').length, 0)
 })
 
 Deno.test('scanFileThemeRadius: unitless zero corners and theme vars are not flagged', () => {
-	const text = '.a { border-radius: 0; }\n.b { border-radius: 0 0 var(--radius-box) var(--radius-box); }\n.c { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }\n'
-	assertEquals(scanFileThemeRadius('a.css', text).length, 0)
+	assertEquals(scanFileThemeRadius('a.css', '.a { border-radius: 0; }\n.b { border-radius: 0 0 var(--radius-box) var(--radius-box); }\n.c { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }\n').length, 0)
 })
 
 Deno.test('scanFileThemeRadius: flags mixed fixed length with theme var', () => {
-	const text = '.a { border-radius: var(--radius-box) 8px; }\n.b { border-radius: 10px / var(--radius-field); }\n'
-	const issues = scanFileThemeRadius('a.css', text)
+	const issues = scanFileThemeRadius('a.css', '.a { border-radius: var(--radius-box) 8px; }\n.b { border-radius: 10px / var(--radius-field); }\n')
 	assertEquals(issues.length, 2)
 	assertEquals(issues[0].token, 'border-radius: var(--radius-box) 8px')
 	assertEquals(issues[1].token, 'border-radius: 10px / var(--radius-field)')
 })
 
 Deno.test('scanFileThemeRadius: --radius-* var accepts zero and theme-var values', () => {
-	const text = ':root { --radius-a: 0; --radius-b: var(--radius-field); --radius-c: 6px; }\n'
-	const issues = scanFileThemeRadius('a.css', text)
+	const issues = scanFileThemeRadius('a.css', ':root { --radius-a: 0; --radius-b: var(--radius-field); --radius-c: 6px; }\n')
 	assertEquals(issues.length, 1)
 	assertEquals(issues[0].token, '--radius-c: 6px')
+})
+
+Deno.test('hasHardcodedRadius: flags hardcoded arbitrary-value radius', () => {
+	assertEquals(hasHardcodedRadius('rounded-[8px]'), true)
+	assertEquals(hasHardcodedRadius('rounded-[1.25rem]'), true)
+	assertEquals(hasHardcodedRadius('rounded-[calc(8px + 2px)]'), true)
+})
+
+Deno.test('hasHardcodedRadius: allows zero and theme-var arbitrary-value radius', () => {
+	assertEquals(hasHardcodedRadius('rounded-[0]'), false)
+	assertEquals(hasHardcodedRadius('rounded-[0px]'), false)
+	assertEquals(hasHardcodedRadius('rounded-[var(--radius-box)]'), false)
+	assertEquals(hasHardcodedRadius('rounded-[var(--rounded-field)]'), false)
+	assertEquals(hasHardcodedRadius('rounded-[calc(var(--radius-box) - 2px)]'), false)
+	assertEquals(hasHardcodedRadius('rounded-[var(--radius-sm) 0 0 var(--radius-sm)]'), false)
+})
+
+Deno.test('scanFileThemeRadius: flags hardcoded arbitrary-value radius, skips theme-var', () => {
+	const issues = scanFileThemeRadius('a.html', '<div class="rounded-[8px] rounded-[var(--radius-box)]"></div>\n')
+	assertEquals(issues.length, 1)
+	assertEquals(issues[0], { path: 'a.html', line: 1, token: 'rounded-[8px]' })
 })
 
 Deno.test('repo: no hardcoded fixed-radius classes in themed frontend (incl. .github/pages)', async () => {

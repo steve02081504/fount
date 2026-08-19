@@ -5778,6 +5778,12 @@
 			"title": "系统信息",
 			"failed": "加载系统信息失败"
 		},
+		"testStatus": {
+			"title": "测试状态",
+			"running": "测试正在运行中",
+			"idle": "测试内核在线（空闲）",
+			"queued": "排队中"
+		},
 		"connectivity": {
 			"backend": "后端连通性",
 			"frontend": "前端连通性"

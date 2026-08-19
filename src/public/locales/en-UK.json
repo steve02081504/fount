@@ -5778,6 +5778,12 @@
 			"title": "System Information",
 			"failed": "Failed to load system info"
 		},
+		"testStatus": {
+			"title": "Test Status",
+			"running": "Tests Running",
+			"idle": "Test Kernel Online (Idle)",
+			"queued": "Queued"
+		},
 		"connectivity": {
 			"backend": "Backend Connectivity",
 			"frontend": "Frontend Connectivity"

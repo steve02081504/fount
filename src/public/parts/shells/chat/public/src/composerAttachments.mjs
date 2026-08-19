@@ -186,15 +186,15 @@ async function appendLocalImagePreview(attachmentElement, file, mime, composing,
 		alt: file.name,
 	})
 	previewImg.addEventListener('click', async () => {
-		let src = previewImg.src
-		if (file.draftKey && typeof file.buffer !== 'string') {
+		if (file.draftKey && typeof file.buffer !== 'string') 
 			try {
 				await ensureDraftFileContent(file)
 			}
 			catch { /* 保留缩略图 */ }
-			if (typeof file.buffer === 'string')
-				src = objectUrlFromLocalBuffer(file.buffer, mime || 'image/*', attachmentElement)
-		}
+		
+		const src = typeof file.buffer === 'string'
+			? objectUrlFromLocalBuffer(file.buffer, mime || 'image/*', attachmentElement)
+			: previewImg.src
 		openMediaViewer([{ src, name: file.name, mimeType: mime }], 0)
 	})
 	previewContainer.appendChild(previewImg)
@@ -315,9 +315,7 @@ function bindSpeechRecognitionHandler(attachmentElement, file) {
 			try {
 				await ensureDraftFileContent(file)
 				if (typeof file.buffer !== 'string') return
-				const bytes = typeof file.buffer === 'string'
-					? Uint8Array.from(atob(file.buffer), c => c.charCodeAt(0))
-					: new Uint8Array(file.buffer)
+				const bytes = Uint8Array.from(atob(file.buffer), c => c.charCodeAt(0))
 				const result = await recognizeBuffer({
 					audio: bytes,
 					mime_type: file.mime_type,

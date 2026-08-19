@@ -5,6 +5,7 @@
  * 仅在输入区可见的禁用态（只读频道 / 疑似移出）传 `{ placeholder }` 对象键。
  * inbox / discovery / friends idle 等 surface 会隐藏 `.input-area`，无需解释文案。
  */
+import { onThemeChange } from '../../../../../scripts/theme/index.mjs'
 import { store } from '../core/state.mjs'
 
 const COMPOSER_TOOL_IDS = [
@@ -16,6 +17,12 @@ const COMPOSER_TOOL_IDS = [
 	'send-button',
 	'composer-more-button',
 ]
+
+// 主题切换会改变排版与间距，缓存的单行高度随之失效，需在下次对齐计算前清掉。
+onThemeChange(() => {
+	const input = document.getElementById('message-input')
+	if (input) delete input.dataset.singleLineHeight
+})
 
 /**
  * 计算文本框单行高度（含 padding），作为判断多行的阈值。
@@ -29,9 +36,9 @@ function getSingleLineHeight(input) {
 	probe.value = 'M'
 	probe.removeAttribute('id')
 	probe.removeAttribute('name')
-	const cs = getComputedStyle(input)
+	const computedStyle = getComputedStyle(input)
 	for (const prop of ['font-family', 'font-size', 'font-weight', 'line-height', 'letter-spacing', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right', 'border-top-width', 'border-bottom-width', 'box-sizing'])
-		probe.style.setProperty(prop, cs.getPropertyValue(prop))
+		probe.style.setProperty(prop, computedStyle.getPropertyValue(prop))
 	probe.style.height = 'auto'
 	probe.style.position = 'fixed'
 	probe.style.left = '-9999px'

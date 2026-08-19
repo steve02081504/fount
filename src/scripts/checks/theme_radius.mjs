@@ -58,14 +58,32 @@ export const HARDCODED_RADIUS_PATTERN =
 /** 带 `g` 标志的扫描用正则（`matchAll` 需要）。 */
 const HARDCODED_RADIUS_GLOBAL = new RegExp(HARDCODED_RADIUS_PATTERN.source, 'gu')
 
+/** Tailwind 任意值圆角类 `rounded-[…]`（捕获括号内容）。 */
+const ARBITRARY_RADIUS_GLOBAL = /rounded-\[([^\]]*)\]/gu
+
 /**
- * 判断文本是否包含硬编码固定圆角类。
+ * 判断 Tailwind 任意值圆角类 `rounded-[…]` 的括号内容是否为硬编码固定值。
+ * 仅允许 `0`（无单位或带单位）或引用 `--radius-*` / `--rounded-*` 主题变量
+ * （含这些变量的 `calc(...)` 计算表达式）——与 `isHardcodedRadiusComponent` 判据一致。
+ * Tailwind 用 `_` 表示空格，展开后逐组件判定。
+ * @param {string} content 方括号内内容
+ * @returns {boolean} 硬编码则为 true
+ */
+function isHardcodedArbitraryRadius(content) {
+	return splitCssComponents(content.replaceAll('_', ' ')).some(isHardcodedRadiusComponent)
+}
+
+/**
+ * 判断文本是否包含硬编码固定圆角类或硬编码任意值圆角类。
  * @param {string} text 目标文本
  * @returns {boolean} 包含则为 true
  */
 export function hasHardcodedRadius(text) {
 	HARDCODED_RADIUS_PATTERN.lastIndex = 0
-	return HARDCODED_RADIUS_PATTERN.test(text)
+	if (HARDCODED_RADIUS_PATTERN.test(text)) return true
+	for (const match of text.matchAll(ARBITRARY_RADIUS_GLOBAL))
+		if (isHardcodedArbitraryRadius(match[1])) return true
+	return false
 }
 
 /**
@@ -193,9 +211,13 @@ export function scanFileThemeRadius(relativePath, content) {
 	const issues = []
 	const lines = content.split('\n')
 	// 硬编码固定圆角类按行扫描（HTML/MJS 中为单词 token，无跨行可能）。
-	for (let index = 0; index < lines.length; index++)
+	for (let index = 0; index < lines.length; index++) {
 		for (const match of lines[index].matchAll(HARDCODED_RADIUS_GLOBAL))
 			issues.push({ path: relativePath, line: index + 1, token: match[0] })
+		for (const match of lines[index].matchAll(ARBITRARY_RADIUS_GLOBAL))
+			if (isHardcodedArbitraryRadius(match[1]))
+				issues.push({ path: relativePath, line: index + 1, token: match[0] })
+	}
 	// 可跨行的 CSS 声明对完整内容匹配，再从偏移推出行号；逐组件判断是否全为主题变量。
 	scanRadiusDeclaration(content, BORDER_RADIUS_DECL_RE, relativePath, issues)
 	scanRadiusDeclaration(content, CUSTOM_RADIUS_VAR_DECL_RE, relativePath, issues)

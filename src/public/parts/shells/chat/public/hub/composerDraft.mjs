@@ -11,6 +11,7 @@ import {
 } from '../src/endpoints/drafts.mjs'
 
 import { setComposerExtrasVisible } from './composerExtras.mjs'
+import { selectedFiles } from './composerFiles.mjs'
 
 const DRAFT_DEBOUNCE_MS = 500
 
@@ -50,8 +51,9 @@ async function snapshotFiles(files) {
 	const snapshot = []
 	for (const file of files || []) {
 		if (!file.thumbnail && file.buffer) file.thumbnail = await makeThumbnail(file)
+		file.fileId = file.fileId || crypto.randomUUID()
 		snapshot.push({
-			fileId: file.fileId || crypto.randomUUID(),
+			fileId: file.fileId,
 			name: file.name,
 			mime_type: file.mime_type,
 			size: file.size,
@@ -209,9 +211,6 @@ export function clearDraft(groupId, channelId) {
  * @returns {void}
  */
 export function wireDraftAutoSave(getCtx) {
-	let selectedFilesRef = null
-	void import('./composerFiles.mjs').then(m => { selectedFilesRef = m.selectedFiles })
-
 	/**
 	 * @returns {{ text: string, content_warning: string, sensitive_media: boolean, files: object[] }} 草稿字段快照
 	 */
@@ -223,7 +222,7 @@ export function wireDraftAutoSave(getCtx) {
 			text: input instanceof HTMLTextAreaElement ? input.value : '',
 			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
 			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
-			files: selectedFilesRef ? selectedFilesRef.map(file => ({ ...file })) : [],
+			files: selectedFiles,
 		}
 	}
 

@@ -819,7 +819,7 @@ function averageColors(entries) {
 	let total = 0
 	const colors = entries.map(({ color, weight }) => {
 		total += weight
-		return mergeColor(num => num * weight, color)
+		return mergeColor(channel => channel * weight, color)
 	})
 	return mergeColor((...values) => values.reduce((a, b) => a + b, 0) / total, ...colors)
 }
@@ -831,7 +831,7 @@ function averageColors(entries) {
  * @returns {Color} 边框色。
  */
 function borderColorFromBackground(bg, ratio) {
-	return mergeColor(num => Math.round(num * (1 - ratio) + (255 - num) * ratio), bg)
+	return mergeColor(channel => Math.round(channel * (1 - ratio) + (255 - channel) * ratio), bg)
 }
 
 /**

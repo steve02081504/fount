@@ -4,7 +4,7 @@ import { initTranslations } from '/scripts/i18n/index.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { ping } from '/scripts/endpoints/base.mjs'
-import { getAutoUpdateEnabled, getSystemInfo, postRestart } from './src/endpoints.mjs'
+import { getAutoUpdateEnabled, getSystemInfo, getTestStatus, postRestart } from './src/endpoints.mjs'
 import { mountTemplate, renderTemplate } from './templates.mjs'
 
 applyTheme()
@@ -16,6 +16,11 @@ const versionIndicator = document.getElementById('version-indicator'),
 	systemInfoTable = document.getElementById('system-info-table'),
 	backendChecks = document.getElementById('backend-checks'),
 	frontendChecks = document.getElementById('frontend-checks'),
+	testStatusCard = document.getElementById('test-status-card'),
+	testStatusToggle = document.getElementById('test-status-toggle'),
+	testStatusBadge = document.getElementById('test-status-badge'),
+	testStatusList = document.getElementById('test-status-list'),
+	testStatusChevron = document.getElementById('test-status-chevron'),
 	copyButton = document.getElementById('copy-button'),
 	updateButton = document.getElementById('update-button'),
 	updateButtonIcon = document.getElementById('update-button-icon'),
@@ -137,6 +142,76 @@ async function checkFrontendConnectivity() {
 	}
 }
 
+const TEST_POLL_INTERVAL = 2000
+let testStatusOpen = false
+let testStatusTimer = null
+
+/**
+ * 展开/收起测试状态列表。
+ */
+testStatusToggle.addEventListener('click', () => {
+	testStatusOpen = !testStatusOpen
+	testStatusList.classList.toggle('hidden', !testStatusOpen)
+	testStatusToggle.setAttribute('aria-expanded', String(testStatusOpen))
+	testStatusChevron?.classList.toggle('rotate-180', testStatusOpen)
+})
+
+/**
+ * 渲染 fount test 内核状态卡片。
+ * @param {object | null} status 状态；内核离线为 null。
+ */
+async function renderTestStatus(status) {
+	const online = status?.online === true
+	testStatusCard.classList.toggle('hidden', !online)
+	if (!online) return
+	testStatusBadge.className = `badge badge-lg gap-2 ${status.active ? 'badge-success' : 'badge-ghost'}`
+	testStatusBadge.dataset.i18n = status.active ? 'debug_info.testStatus.running' : 'debug_info.testStatus.idle'
+	if (!status.active) {
+		testStatusList.replaceChildren()
+		return
+	}
+	const items = [
+		...status.runningSuites.map(({ key, elapsedMs }) => ({
+			key,
+			state: 'running',
+			sec: Math.max(1, Math.floor(elapsedMs / 1000)),
+		})),
+		...status.queuedSuites.map(key => ({ key, state: 'queued' })),
+	]
+	await mountTemplate(testStatusList, 'test_status_list', { items })
+}
+
+/**
+ * 轮询一次测试状态。
+ */
+async function pollTestStatus() {
+	let status = null
+	try {
+		status = await getTestStatus()
+	} catch { /* 内核离线 */ }
+	try {
+		await renderTestStatus(status)
+	} catch (error) {
+		console.error('Failed to render test status:', error)
+	}
+}
+
+/**
+ * 启动测试状态轮询（仅页面可见时）。
+ */
+function startTestStatusPolling() {
+	if (testStatusTimer) return
+	testStatusTimer = setInterval(pollTestStatus, TEST_POLL_INTERVAL)
+}
+
+/**
+ * 停止测试状态轮询。
+ */
+function stopTestStatusPolling() {
+	clearInterval(testStatusTimer)
+	testStatusTimer = null
+}
+
 const UPDATE_ICON = 'https://api.iconify.design/mdi/update.svg'
 const LOADING_ICON = 'https://api.iconify.design/line-md/loading-twotone-loop.svg'
 const UPTODATE_ICON = 'https://api.iconify.design/line-md/confirm.svg'
@@ -256,11 +331,15 @@ function stopPollTimer() {
 }
 
 document.addEventListener('visibilitychange', () => {
-	if (document.hidden)
+	if (document.hidden) {
 		stopPollTimer()
+		stopTestStatusPolling()
+	}
 	else {
 		if (Date.now() - lastVersionCheckTime >= VERSION_POLL_INTERVAL) pollVersionInfo()
 		startPollTimer()
+		pollTestStatus()
+		startTestStatusPolling()
 	}
 })
 
@@ -270,3 +349,5 @@ pollVersionInfo()
 fetchSystemInfo()
 checkFrontendConnectivity()
 fetchAutoUpdateStatus()
+pollTestStatus()
+startTestStatusPolling()

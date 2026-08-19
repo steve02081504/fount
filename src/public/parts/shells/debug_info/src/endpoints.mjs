@@ -6,6 +6,9 @@ import { autoUpdateEnabled } from '../../../../../server/autoupdate.mjs'
 import { restartor } from '../../../../../server/server.mjs'
 import { openEditor } from '../../userSettings/src/editorCommand.mjs'
 
+/** fount test 内核（测试 hub）固定端口，见 `src/scripts/test/hub/index.mjs`。 */
+const TEST_KERNEL_STATUS_URL = 'http://127.0.0.1:8903/status'
+
 /**
  * 设置端点。
  * @param {Object} router - Express 路由器。
@@ -65,6 +68,22 @@ export function setEndpoints(router) {
 		}
 
 		res.status(200).json(info)
+	})
+
+	router.get('/api/parts/shells\\:debug_info/test_status', authenticate, async (req, res) => {
+		/** @type {object | null} */
+		let status = null
+		try {
+			const response = await fetch(TEST_KERNEL_STATUS_URL, { signal: AbortSignal.timeout(2000) })
+			if (response.ok) status = await response.json()
+		} catch { /* 内核未在跑 */ }
+		res.status(200).json(status ?? {
+			online: false,
+			active: false,
+			idle: true,
+			runningSuites: [],
+			queuedSuites: [],
+		})
 	})
 
 	router.post('/api/parts/shells\\:debug_info/open_source', authenticate, async (req, res) => {

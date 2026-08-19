@@ -63,7 +63,7 @@ export async function getDraftFileContent(key, fileId) {
  * @returns {Promise<object>} 已加载 buffer 的附件对象
  */
 export async function ensureDraftFileContent(file) {
-	if (!file || typeof file.buffer === 'string' || !file.draftKey || !file.fileId) return file
+	if (typeof file.buffer === 'string' || !file.draftKey || !file.fileId) return file
 	file.buffer = await getDraftFileContent(file.draftKey, file.fileId)
 	return file
 }

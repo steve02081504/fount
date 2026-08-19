@@ -26,3 +26,7 @@
 
 ### POST /api/parts/shells:debug_info/open_source
 - 用途：在本机打开源码目录（依赖本机环境）。
+
+### GET /api/parts/shells:debug_info/test_status
+- 用途：查询 fount test 内核（测试 hub，`127.0.0.1:8903`）是否在跑及每个测试套件的运行状态。
+- 返回：`{ online, active, idle, runningSuites: [{ key, elapsedMs }], queuedSuites: [key] }`；内核离线时 `online: false`。

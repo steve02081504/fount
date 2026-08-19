@@ -28,3 +28,13 @@ export async function getSystemInfo() {
 	if (!res.ok) throw new Error(`HTTP ${res.status}`)
 	return res.json()
 }
+
+/**
+ * 获取 fount test 内核运行状态。
+ * @returns {Promise<object>} 测试状态。
+ */
+export async function getTestStatus() {
+	const res = await fetch(`${BASE}/test_status`)
+	if (!res.ok) throw new Error(`HTTP ${res.status}`)
+	return res.json()
+}

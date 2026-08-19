@@ -257,7 +257,7 @@ export async function sendMessagePayload(contentObj, files = [], { clearComposer
 export async function sendCurrentMessage(text) {
 	/** @type {object[]} 发送用附件（草稿恢复项先懒拉取完整内容，并剥离内部字段） */
 	const files = []
-	for (const file of [...selectedFiles]) {
+	for (const file of selectedFiles.slice()) {
 		await ensureDraftFileContent(file)
 		files.push({
 			name: file.name,

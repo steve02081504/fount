@@ -1,0 +1,10 @@
+${items.map(item => `
+<li class="flex justify-between items-center gap-2 p-2 bg-base-200 rounded-field">
+	<span class="font-mono text-sm truncate" title="${item.key}">${item.key}</span>
+	<span class="badge gap-1 shrink-0 ${item.state === 'running' ? 'badge-success' : 'badge-ghost'}">
+		${item.state === 'running'
+			? `<span data-i18n="debug_info.testStatus.running"></span><span>${item.sec}s</span>`
+			: '<span data-i18n="debug_info.testStatus.queued"></span>'}
+	</span>
+</li>
+`).join('')}

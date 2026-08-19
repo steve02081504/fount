@@ -25,6 +25,7 @@ import { TestKernel } from './runtime.mjs'
  * @param {number} [options.prepSettleMs] 预备静置毫秒
  * @param {boolean} [options.writeReport] 是否写活报告
  * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
+ * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
  * @returns {Promise<{ url: string, kernel: TestKernel, close: () => Promise<void> }>} 句柄
  */
 export async function startTestKernel({
@@ -35,8 +36,9 @@ export async function startTestKernel({
 	prepSettleMs,
 	writeReport = true,
 	moduleCheckHoldTimeoutMs,
+	idleAllMs,
 } = {}) {
-	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs })
+	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs, idleAllMs })
 	await kernel.start()
 
 	const app = express()
@@ -51,6 +53,10 @@ export async function startTestKernel({
 	app.use(createHealthRouter({ kernel: true }))
 	app.use(createGithubIssueRouter(kernel.issueCache))
 	app.use(createSharedStoreRouter())
+
+	app.get('/status', (request, response) => {
+		response.json({ ...kernel.statusSnapshot(), online: true })
+	})
 
 	app.post('/module-check/acquire', async (request, response) => {
 		const abort = new AbortController()
