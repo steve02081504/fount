@@ -1619,7 +1619,7 @@
 
 /* Notifications */
 .inbox-filter-tabs {
-	padding: 0 1rem 0.75rem;
+	padding: 0.375rem 1rem;
 	border-bottom: var(--border) solid var(--border-color);
 }
 
