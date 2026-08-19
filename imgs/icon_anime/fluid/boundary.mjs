@@ -84,7 +84,7 @@ const stepEdgeExchange = (world, roles) => {
 	const cells = []
 
 	for (let e = 0; e < 4; e++) {
-		const { sink, source } = roles.e
+		const { sink, source } = roles[e]
 		if (sink < 0.05 && source < 0.05) continue
 		collectEdgeCells(world, e, cells)
 

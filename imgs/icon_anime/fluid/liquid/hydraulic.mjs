@@ -195,7 +195,6 @@ const onMeltCell = (world, cell, x, y, id) => {
 	if (!free) return
 	const up = /** @type {{ dx: number, dy: number, w: number }} */ ctx.up
 	const depth = /** @type {Float32Array} */ ctx.depth
-	const { surf } = ctx
 	let airP = pressureAt(world, x, y)
 	if (up.w > 0) {
 		const ax = x + up.dx
@@ -203,7 +202,7 @@ const onMeltCell = (world, cell, x, y, id) => {
 		if (inWorld(world, ax, ay) && !isLiquidBarrier(world.mat[ay * W + ax]))
 			airP = pressureAt(world, ax, ay)
 	}
-	pushSurface(world, x, y, id, airP, hydraulicPhi(airP, depth[cell]), surf)
+	pushSurface(world, x, y, id, airP, hydraulicPhi(airP, depth[cell]), ctx.surf)
 }
 
 /**

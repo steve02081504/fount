@@ -216,18 +216,14 @@ export const stepParticles = (world, onHit, state) => {
 		// Side wrap when leaving edges with wrap role.
 		if (nx < 0 || nx >= W) {
 			const nb = neighborCoord(world, px | 0, py | 0, nx < 0 ? -1 : 1, 0, (life | 0) + i)
-			const { wrapped, out } = nb
-			const nbX = nb.x
-			if (wrapped) nx = nbX + (nx - Math.floor(nx))
-			else if (out)
+			if (nb.wrapped) nx = nb.x + (nx - Math.floor(nx))
+			else if (nb.out)
 				continue
 		}
 		if (ny < 0 || ny >= H) {
 			const nb = neighborCoord(world, px | 0, py | 0, 0, ny < 0 ? -1 : 1, (life | 0) + i + 17)
-			const { wrapped, out } = nb
-			const nbY = nb.y
-			if (wrapped) ny = nbY + (ny - Math.floor(ny))
-			else if (out)
+			if (nb.wrapped) ny = nb.y + (ny - Math.floor(ny))
+			else if (nb.out)
 				continue
 		}
 
