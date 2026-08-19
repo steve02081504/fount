@@ -23,6 +23,7 @@ export async function loadDrafts() {
 	if (!drafts.length) {
 		panel.replaceChildren(await buildEmptyState({
 			modClass: ' empty-state--saved empty-state--compact',
+			iconClass: 'icon-draft',
 			titleKey: 'social.empty.drafts',
 			hintKey: 'social.drafts.emptyHint',
 		}))
