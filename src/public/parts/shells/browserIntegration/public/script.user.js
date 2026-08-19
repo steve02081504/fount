@@ -893,7 +893,6 @@ function computePageThemeColors() {
 	const textColorEntries = []
 	const bgColorEntries = []
 	let textNode
-	// eslint-disable-next-line no-cond-assign
 	while (textNode = walker.nextNode()) {
 		const el = textNode.parentElement
 		const rect = el.getBoundingClientRect()
@@ -904,8 +903,7 @@ function computePageThemeColors() {
 		if (bg) bgColorEntries.push({ color: bg, weight })
 	}
 	if (!textColorEntries.length || !bgColorEntries.length) return null
-	pageThemeCache = { text: averageColors(textColorEntries), background: averageColors(bgColorEntries) }
-	return pageThemeCache
+	return pageThemeCache = { text: averageColors(textColorEntries), background: averageColors(bgColorEntries) }
 }
 
 /**

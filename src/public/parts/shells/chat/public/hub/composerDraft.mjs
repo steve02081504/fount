@@ -118,7 +118,10 @@ export function saveDraft(groupId, channelId, draft) {
 export function applyDraft(groupId, channelId) {
 	if (!groupId || !channelId) return
 	const input = document.getElementById('message-input')
-	if (input instanceof HTMLTextAreaElement) input.value = ''
+	if (input instanceof HTMLTextAreaElement) {
+		input.value = ''
+		input.style.height = 'auto'
+	}
 	const contentWarningInput = document.getElementById('content-warning')
 	if (contentWarningInput instanceof HTMLInputElement) contentWarningInput.value = ''
 	const sensitiveMediaInput = document.getElementById('sensitive-media')
