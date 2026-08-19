@@ -2112,6 +2112,10 @@
 				"livePreview": "Forskoðun í beinni",
 				"languageVersion": "Tungumálaútgáfa",
 				"localeHint": "Smelltu á merkimiðann til að skipta um eða breyta kóðanum; ýttu á Enter í innsláttarreitnum í lokin til að afrita það á nýtt tungumál.",
+				"themeColor": {
+					"clear": "Endurheimtu sjálfgefinn lit þema",
+					"hint": "Notað til að búa til áferð þegar það er enginn sérsniðinn Fánar, og einnig notað fyrir lifandi hljóðbylgjulykkjur"
+				},
 				"linksPreview": "${count} opinberir tenglar",
 				"unsavedHint": "Ef glugganum er lokað verður óvistuðum breytingum fleygt",
 				"tagsLabel": "Merki",
@@ -2171,9 +2175,6 @@
 					"url": {
 						"placeholder": "Https://… eða uppspretta://…"
 					}
-				},
-				"themeColor": {
-					"hint": "Notað til að búa til áferð þegar það er enginn sérsniðinn Fánar, og einnig notað fyrir lifandi hljóðbylgjulykkjur"
 				}
 			},
 			"profilePopup": {

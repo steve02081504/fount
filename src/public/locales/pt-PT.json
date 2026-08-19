@@ -2112,6 +2112,10 @@
 				"livePreview": "Visualização ao vivo",
 				"languageVersion": "Versão do idioma",
 				"localeHint": "Clique no rótulo para alternar ou editar o código; pressione Enter na caixa de entrada no final para copiá-lo para um novo idioma.",
+				"themeColor": {
+					"clear": "Restaurar a cor padrão do tema",
+					"hint": "Usado para gerar texturas quando não há banner personalizado e também usado para loops de ondas sonoras ao vivo"
+				},
 				"linksPreview": "${count} links públicos",
 				"unsavedHint": "Fechar a janela descartará as alterações não salvas",
 				"tagsLabel": "Rótulo",
@@ -2171,9 +2175,6 @@
 					"url": {
 						"placeholder": "Https://… ou fount://…"
 					}
-				},
-				"themeColor": {
-					"hint": "Usado para gerar texturas quando não há banner personalizado e também usado para loops de ondas sonoras ao vivo"
 				}
 			},
 			"profilePopup": {

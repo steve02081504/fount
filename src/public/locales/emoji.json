@@ -2112,6 +2112,10 @@
 				"livePreview": "⏱️👀",
 				"languageVersion": "🗣️🔢",
 				"localeHint": "👆🏷️🔄✏️；📤↩️ ➡️ 🆕🗣️",
+				"themeColor": {
+					"clear": "恢复主题默认色",
+					"hint": "🚫🖼️ ➡️ 🎨🌊；📡🔊💫"
+				},
 				"linksPreview": "${count} 🔗🌐",
 				"unsavedHint": "✖️ ➡️ 🚫💾✏️",
 				"tagsLabel": "🏷️",
@@ -2171,9 +2175,6 @@
 					"url": {
 						"placeholder": "https://… ⛲://…"
 					}
-				},
-				"themeColor": {
-					"hint": "🚫🖼️ ➡️ 🎨🌊；📡🔊💫"
 				}
 			},
 			"profilePopup": {

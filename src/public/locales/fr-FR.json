@@ -2112,6 +2112,10 @@
 				"livePreview": "Aperçu en direct",
 				"languageVersion": "Version linguistique",
 				"localeHint": "Cliquez sur l'étiquette pour changer ou modifier le code ; appuyez sur Entrée dans la zone de saisie à la fin pour le copier dans une nouvelle langue.",
+				"themeColor": {
+					"clear": "Restaurer la couleur par défaut du thème",
+					"hint": "Utilisé pour générer des textures lorsqu'il n'y a pas de bannière personnalisée, et également utilisé pour les boucles d'ondes sonores en direct"
+				},
 				"linksPreview": "${count} liens publics",
 				"unsavedHint": "Fermer la fenêtre annulera les modifications non enregistrées.",
 				"tagsLabel": "Étiquette",
@@ -2171,9 +2175,6 @@
 					"url": {
 						"placeholder": "https://… ou font://…"
 					}
-				},
-				"themeColor": {
-					"hint": "Utilisé pour générer des textures lorsqu'il n'y a pas de bannière personnalisée, et également utilisé pour les boucles d'ondes sonores en direct"
 				}
 			},
 			"profilePopup": {

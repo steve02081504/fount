@@ -2112,6 +2112,10 @@
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
 				"localeHint": "觸標籤以切換或修符碼；於末尾輸入框回車可謄錄為新語言。",
+				"themeColor": {
+					"clear": "恢复主题默认色",
+					"hint": "無自定義橫幅時用於生成紋理，亦用於現影聲波環"
+				},
 				"linksPreview": "${count} 個公開鏈接",
 				"unsavedHint": "闔窗則變更盡棄",
 				"tagsLabel": "標籤",
@@ -2171,9 +2175,6 @@
 					"url": {
 						"placeholder": "https://… 或 fount://…"
 					}
-				},
-				"themeColor": {
-					"hint": "無自定義橫幅時用於生成紋理，亦用於現影聲波環"
 				}
 			},
 			"profilePopup": {
