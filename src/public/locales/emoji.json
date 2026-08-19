@@ -2113,8 +2113,8 @@
 				"languageVersion": "🗣️🔢",
 				"localeHint": "👆🏷️🔄✏️；📤↩️ ➡️ 🆕🗣️",
 				"themeColor": {
-					"clear": "恢复主题默认色",
-					"hint": "🚫🖼️ ➡️ 🎨🌊；📡🔊💫"
+					"clear": "♻️🎨",
+					"hint": "🚫🖼️ ➡️ 🎨🌊；📡🔊💫；⬜➡️🎨"
 				},
 				"linksPreview": "${count} 🔗🌐",
 				"unsavedHint": "✖️ ➡️ 🚫💾✏️",

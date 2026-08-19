@@ -2114,7 +2114,7 @@
 				"localeHint": "Smelltu á merkimiðann til að skipta um eða breyta kóðanum; ýttu á Enter í innsláttarreitnum í lokin til að afrita það á nýtt tungumál.",
 				"themeColor": {
 					"clear": "Endurheimtu sjálfgefinn lit þema",
-					"hint": "Notað til að búa til áferð þegar það er enginn sérsniðinn Fánar, og einnig notað fyrir lifandi hljóðbylgjulykkjur"
+					"hint": "Notað til að búa til áferð þegar enginn sérsniðinn borði er til staðar, og einnig fyrir beinar hljóðbylgjulykkjur. Skilið eftir autt til að nota núverandi þemalit."
 				},
 				"linksPreview": "${count} opinberir tenglar",
 				"unsavedHint": "Ef glugganum er lokað verður óvistuðum breytingum fleygt",

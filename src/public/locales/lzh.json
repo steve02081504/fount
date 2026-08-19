@@ -2113,8 +2113,8 @@
 				"languageVersion": "語言版本",
 				"localeHint": "觸標籤以切換或修符碼；於末尾輸入框回車可謄錄為新語言。",
 				"themeColor": {
-					"clear": "恢复主题默认色",
-					"hint": "無自定義橫幅時用於生成紋理，亦用於現影聲波環"
+					"clear": "還原本色",
+					"hint": "無自訂橫幅時用於生成紋理，亦用於現影聲波環；留空則用現行主題色"
 				},
 				"linksPreview": "${count} 個公開鏈接",
 				"unsavedHint": "闔窗則變更盡棄",

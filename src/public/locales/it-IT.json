@@ -2114,7 +2114,7 @@
 				"localeHint": "Fare clic sull'etichetta per cambiare o modificare il codice; premere Invio nella casella di input alla fine per copiarlo in una nuova lingua.",
 				"themeColor": {
 					"clear": "Ripristina il colore predefinito del tema",
-					"hint": "Utilizzato per generare texture quando non è presente un banner personalizzato e utilizzato anche per loop di onde sonore dal vivo"
+					"hint": "Serve a generare texture quando non è presente un banner personalizzato e anche per i loop di onde sonore dal vivo. Lascia vuoto per usare il colore attuale del tema."
 				},
 				"linksPreview": "${count} collegamenti pubblici",
 				"unsavedHint": "Chiudendo la finestra verranno eliminate le modifiche non salvate",

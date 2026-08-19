@@ -2113,8 +2113,8 @@
 				"languageVersion": "Versión de idioma",
 				"localeHint": "Haz clic en la etiqueta para cambiar o editar el código; presione Entrar en el cuadro de entrada al final para copiarlo a un nuevo idioma.",
 				"themeColor": {
-					"clear": "Restaurar el color predeterminado del tema",
-					"hint": "Se utiliza para generar texturas cuando no hay un banner personalizado y también se utiliza para bucles de ondas de sonido en vivo."
+					"clear": "Restablecer el color predeterminado del tema",
+					"hint": "Se usa para generar texturas cuando no hay un banner personalizado y también para bucles de ondas de sonido en vivo. Déjalo vacío para usar el color actual del tema."
 				},
 				"linksPreview": "${count} enlaces públicos",
 				"unsavedHint": "Cerrar la ventana descartará los cambios no guardados.",

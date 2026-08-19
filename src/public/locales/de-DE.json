@@ -2113,8 +2113,8 @@
 				"languageVersion": "Sprachversion",
 				"localeHint": "Klicken Sie auf die Beschriftung, um den Code zu ändern oder zu bearbeiten. Drücken Sie am Ende im Eingabefeld die Eingabetaste, um es in eine neue Sprache zu kopieren.",
 				"themeColor": {
-					"clear": "Stellen Sie die Standardfarbe des Themes wieder her",
-					"hint": "Wird zum Generieren von Texturen verwendet, wenn kein benutzerdefiniertes Banner vorhanden ist, und wird auch für Live-Schallwellenschleifen verwendet"
+					"clear": "Standardfarbe des Themes wiederherstellen",
+					"hint": "Wird verwendet, um Texturen zu erzeugen, wenn kein benutzerdefiniertes Banner vorhanden ist, sowie für Live-Schallwellenschleifen. Leer lassen, um die aktuelle Theme-Farbe zu verwenden."
 				},
 				"linksPreview": "${count} Öffentliche Links",
 				"unsavedHint": "Durch das Schließen des Fensters werden nicht gespeicherte Änderungen verworfen",
