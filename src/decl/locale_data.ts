@@ -2074,7 +2074,10 @@ export type LocaleData = {
 				livePreview: string
 				languageVersion: string
 				localeHint: string
-				themeColorHint: string
+				themeColor: {
+					clear: string
+					hint: string
+				}
 				linksPreview: string
 				unsavedHint: string
 				tagsLabel: string
