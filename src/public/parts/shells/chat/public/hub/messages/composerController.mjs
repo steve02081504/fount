@@ -18,6 +18,38 @@ const COMPOSER_TOOL_IDS = [
 ]
 
 /**
+ * 计算文本框单行高度（含 padding），作为判断多行的阈值。
+ * @param {HTMLTextAreaElement} input 消息输入框
+ * @returns {number} 单行高度
+ */
+function getSingleLineHeight(input) {
+	const cached = input.dataset.singleLineHeight
+	if (cached) return Number(cached)
+	const savedValue = input.value
+	const savedHeight = input.style.height
+	input.style.height = 'auto'
+	input.value = 'M'
+	const height = input.scrollHeight
+	input.value = savedValue
+	input.style.height = savedHeight
+	input.dataset.singleLineHeight = String(height)
+	return height
+}
+
+/**
+ * 根据输入框行高切换主行对齐方式：单行居中，多行贴底。
+ * @returns {void}
+ */
+export function syncComposerAlignment() {
+	const row = document.getElementById('composer-main-row')
+	const input = document.getElementById('message-input')
+	if (!(row instanceof HTMLElement) || !(input instanceof HTMLTextAreaElement)) return
+	const threshold = getSingleLineHeight(input)
+	if (threshold <= 0) return
+	row.classList.toggle('is-multiline', input.scrollHeight > threshold + 1)
+}
+
+/**
  * 启用/禁用 composer 工具控件（button 用 disabled；details/summary 用 inert + aria-disabled）。
  * @param {HTMLElement} el 控件
  * @param {boolean} enabled 是否可用
@@ -82,6 +114,7 @@ export function enableComposer() {
 		if (el) setComposerToolEnabled(el, true)
 	}
 	refreshHubHeaderButtons()
+	syncComposerAlignment()
 }
 
 /**

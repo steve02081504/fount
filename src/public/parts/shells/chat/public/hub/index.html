@@ -220,7 +220,7 @@
 					</div>
 					<div class="input-area composer-wrap">
 						<fieldset class="fieldset bg-base-200 border border-base-300 rounded-box px-3 py-2 min-h-11 shadow-sm transition-[border-color,box-shadow] focus-within:border-primary/40 focus-within:shadow-md">
-							<div class="flex items-end gap-2 relative min-h-9">
+							<div id="composer-main-row" class="flex items-center gap-2 relative min-h-9">
 								<details class="dropdown dropdown-top composer-more" inert>
 									<summary class="icon-button btn btn-ghost btn-square btn-sm list-none btn-disabled" id="composer-more-button" data-i18n="chat.hub.composerMore" aria-disabled="true">
 										<img src="https://api.iconify.design/mdi/plus.svg" alt="" aria-hidden="true" />
@@ -252,8 +252,8 @@
 								<button type="button" class="composer-stop-button btn btn-error btn-sm !h-9 !w-9 !min-h-0 rounded-box" id="stop-generation-button" data-i18n="chat.hub.stopGenerateTitle" hidden>
 									<img src="https://api.iconify.design/mdi/stop.svg" width="14" height="14" alt="" aria-hidden="true" />
 								</button>
-								<button type="button" class="btn btn-primary btn-sm !h-8 !w-9 !min-h-0 rounded-field" id="send-button" data-i18n="chat.hub.send.title" disabled>
-									<img src="https://api.iconify.design/line-md/telegram.svg" alt="" aria-hidden="true" />
+								<button type="button" class="btn btn-primary btn-sm !h-10 !w-10 !min-h-0 rounded-field" id="send-button" data-i18n="chat.hub.send.title" disabled>
+									<img src="https://api.iconify.design/line-md/telegram.svg" class="w-6 h-6" alt="" aria-hidden="true" />
 								</button>
 								<div class="emoji-picker" id="emoji-picker"></div>
 							</div>

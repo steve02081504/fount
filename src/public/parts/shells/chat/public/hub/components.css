@@ -427,6 +427,20 @@
 	opacity: 0.85;
 }
 
+/* 输入框单行时居中对齐，多行时工具/发送按钮贴底 */
+#composer-main-row {
+	align-items: center;
+}
+
+#composer-main-row.is-multiline {
+	align-items: flex-end;
+}
+
+#send-button :is(img, svg) {
+	width: 24px;
+	height: 24px;
+}
+
 body[data-surface="friends"] #header-search-wrap,
 body[data-surface="friends"] #toggle-members-button,
 body[data-surface="friends"] .input-area,
