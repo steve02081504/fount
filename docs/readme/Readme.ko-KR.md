@@ -55,6 +55,18 @@ fount는 다양한 컴포넌트를 로드하여 서비스를 제공하는, 프�
 
 </details>
 
+---
+
+빠른 시작:
+
+```sh
+npx the-fount
+```
+
+다른 방법은 [설치](#installation)를 참고하세요.
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">상상이 생명을 얻는 순간</p>

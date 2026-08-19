@@ -55,6 +55,18 @@ fount は、各種パーツを読み込んでサービスを提供する、プ�
 
 </details>
 
+---
+
+クイックスタート：
+
+```sh
+npx the-fount
+```
+
+その他の方法は[インストール](#installation)をご覧ください。
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">心に通じ、想いより生ず</p>

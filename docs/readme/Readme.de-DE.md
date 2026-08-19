@@ -55,6 +55,18 @@ Für codebezogene Fragen siehe [deepwiki](https://deepwiki.com/steve02081504/fou
 
 </details>
 
+---
+
+Schnellstart:
+
+```sh
+npx the-fount
+```
+
+Weitere Optionen findest du unter [Installation](#installation).
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Ein Geistesblitz, aus Gedanken geboren</p>

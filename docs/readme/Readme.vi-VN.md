@@ -55,6 +55,18 @@ Dùng [SSP](https://ssp.shillest.net/) khi bạn:
 
 </details>
 
+---
+
+Khởi động nhanh:
+
+```sh
+npx the-fount
+```
+
+Xem [cài đặt](#installation) để biết các tùy chọn khác.
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Từ Ý Niệm, đến Tri Kỷ</p>

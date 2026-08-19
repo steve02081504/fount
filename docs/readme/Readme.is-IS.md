@@ -55,6 +55,18 @@ Notaðu [SSP](https://ssp.shillest.net/) þegar þú:
 
 </details>
 
+---
+
+Snögg byrjun:
+
+```sh
+npx the-fount
+```
+
+Sjá [uppsetning](#installation) fyrir aðra valkosti.
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Neisti Hugans, Lifandi Félagi</p>

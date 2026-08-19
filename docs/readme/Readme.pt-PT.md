@@ -55,6 +55,18 @@ Use [SSP](https://ssp.shillest.net/) quando você:
 
 </details>
 
+---
+
+Início rápido:
+
+```sh
+npx the-fount
+```
+
+Consulte [instalação](#installation) para outras opções.
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Onde a Imaginação Ganha Vida</p>

@@ -1,0 +1,46 @@
+{
+	"name": "the-fount",
+	"version": "0.0.4",
+	"description": "a programmable, standardised, modular, customisable agent framework.",
+	"author": "steve02081504",
+	"homepage": "https://steve02081504.github.io/fount",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/steve02081504/fount.git"
+	},
+	"bin": {
+		"the-fount": "main.mjs"
+	},
+	"dependencies": {
+		"@steve02081504/exec": "latest"
+	},
+	"keywords": [
+		"agent",
+		"AI",
+		"fount",
+		"p2p",
+		"agents",
+		"AI-character",
+		"AI-chatbot",
+		"AI-chatbot-framework",
+		"AI-companion",
+		"bluetooth-le",
+		"character",
+		"characterai",
+		"characters",
+		"desktop-pet",
+		"fount-repo",
+		"nostr",
+		"p2p-chat",
+		"role-playing",
+		"roleplay",
+		"sillytavern",
+		"tavernai",
+		"text-adventure",
+		"text-generation-webui",
+		"chatbot",
+		"telegram-bot",
+		"discord-bot",
+		"wechat-bot"
+	]
+}

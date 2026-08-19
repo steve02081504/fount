@@ -6,7 +6,7 @@
 	"homepage": "https://steve02081504.github.io/fount",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/steve02081504/fount.git"
+		"url": "git+https://github.com/steve02081504/fount.git"
 	},
 	"bin": {
 		"fount": "path/fount.mjs"
@@ -31,6 +31,37 @@
 		"stop": "node path/fount.mjs shutdown",
 		"restart": "node path/fount.mjs reboot",
 		"dev": "node path/fount.mjs debug",
-		"uninstall": "node path/fount.mjs remove"
-	}
+		"uninstall": "node path/fount.mjs remove",
+
+		"publish": "cd ./src/runner/npm && npm publish"
+	},
+	"keywords": [
+		"agent",
+		"AI",
+		"fount",
+		"p2p",
+		"agents",
+		"AI-character",
+		"AI-chatbot",
+		"AI-chatbot-framework",
+		"AI-companion",
+		"bluetooth-le",
+		"character",
+		"characterai",
+		"characters",
+		"desktop-pet",
+		"fount-repo",
+		"nostr",
+		"p2p-chat",
+		"role-playing",
+		"roleplay",
+		"sillytavern",
+		"tavernai",
+		"text-adventure",
+		"text-generation-webui",
+		"chatbot",
+		"telegram-bot",
+		"discord-bot",
+		"wechat-bot"
+	]
 }
