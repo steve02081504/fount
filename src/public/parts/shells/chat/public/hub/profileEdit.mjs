@@ -142,9 +142,12 @@ function sameJsonValue(a, b) {
  */
 function resolveThemePrimaryHex() {
 	try {
+		const probe = document.createElement('div')
+		probe.style.color = 'var(--color-primary)'
+		const color = getComputedStyle(probe).color
 		const ctx = document.createElement('canvas').getContext('2d')
 		if (ctx) {
-			ctx.fillStyle = 'var(--color-primary)'
+			ctx.fillStyle = color
 			ctx.fillRect(0, 0, 1, 1)
 			const { data } = ctx.getImageData(0, 0, 1, 1)
 			return '#' + Array.from(data.slice(0, 3)).map(v => v.toString(16).padStart(2, '0')).join('')

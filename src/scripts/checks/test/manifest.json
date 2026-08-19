@@ -238,7 +238,8 @@
 				"src/scripts/checks/theme_radius.mjs",
 				"src/scripts/checks/test/theme_radius.test.mjs",
 				"src/scripts/checks/walk.mjs",
-				"src/public/**/*.{html,mjs,js}"
+				"src/public/**/*.{html,mjs,js,css}",
+				".github/pages/**/*.{html,mjs,js,css}"
 			]
 		}
 	]

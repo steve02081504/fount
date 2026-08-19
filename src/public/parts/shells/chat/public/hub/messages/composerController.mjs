@@ -25,13 +25,22 @@ const COMPOSER_TOOL_IDS = [
 function getSingleLineHeight(input) {
 	const cached = input.dataset.singleLineHeight
 	if (cached) return Number(cached)
-	const savedValue = input.value
-	const savedHeight = input.style.height
-	input.style.height = 'auto'
-	input.value = 'M'
-	const height = input.scrollHeight
-	input.value = savedValue
-	input.style.height = savedHeight
+	const probe = input.cloneNode()
+	probe.value = 'M'
+	probe.removeAttribute('id')
+	probe.removeAttribute('name')
+	const cs = getComputedStyle(input)
+	for (const prop of ['font-family', 'font-size', 'font-weight', 'line-height', 'letter-spacing', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right', 'border-top-width', 'border-bottom-width', 'box-sizing'])
+		probe.style.setProperty(prop, cs.getPropertyValue(prop))
+	probe.style.height = 'auto'
+	probe.style.position = 'fixed'
+	probe.style.left = '-9999px'
+	probe.style.top = '0'
+	probe.style.visibility = 'hidden'
+	probe.tabIndex = -1
+	input.parentNode?.appendChild(probe)
+	const height = probe.scrollHeight
+	probe.remove()
 	input.dataset.singleLineHeight = String(height)
 	return height
 }
@@ -43,7 +52,6 @@ function getSingleLineHeight(input) {
 export function syncComposerAlignment() {
 	const row = document.getElementById('composer-main-row')
 	const input = document.getElementById('message-input')
-	if (!(row instanceof HTMLElement) || !(input instanceof HTMLTextAreaElement)) return
 	const threshold = getSingleLineHeight(input)
 	if (threshold <= 0) return
 	row.classList.toggle('is-multiline', input.scrollHeight > threshold + 1)

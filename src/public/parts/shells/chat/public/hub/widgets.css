@@ -1030,7 +1030,7 @@
 	font-size: 13px;
 	padding: 4px 8px;
 	border-radius: var(--radius-field);
-	border: var(--border) solid var(--border-color, #333);
+	border: var(--border) solid var(--border-color);
 	background: var(--media-bg);
 	color: inherit;
 }

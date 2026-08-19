@@ -743,6 +743,7 @@ window.addEventListener('fount-host-info', async (e) => {
 // --- Toast Notifications ---
 
 let toastContainer = null
+let pageThemeCache = null
 
 const icons = {
 	info: 'https://api.iconify.design/line-md/alert-circle.svg',
@@ -766,60 +767,75 @@ const WHITE = { r: 255, g: 255, b: 255 }
 const BLACK = { r: 0, g: 0, b: 0 }
 
 /**
+ * @typedef {{r:number,g:number,b:number,a?:number}} Color rgba的范围在0-255之间的颜色（a可能是小数）
+ */
+
+/**
  * 将 getComputedStyle 返回的 rgb()/rgba() 字符串解析为 {r,g,b,a}。
  * @param {string} colorStr - 颜色字符串。
- * @returns {{r:number,g:number,b:number,a:number}|null} 解析后的颜色，解析失败时返回 null。
+ * @returns {Color|null} 解析后的颜色，解析失败时返回 null。
  */
 function parseRgbColor(colorStr) {
 	const match = String(colorStr).match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/)
 	if (!match) return null
 	const [, r, g, b, aRaw = '1'] = match
-	return { r: +r, g: +g, b: +b, a: +aRaw }
+	return { r: +r, g: +g, b: +b, a: (+aRaw) * 255 }
 }
 
 /**
  * 计算元素最接近的不透明背景色（向上回溯祖先直到找到非透明背景）。
  * @param {HTMLElement} el - 目标元素。
- * @returns {{r:number,g:number,b:number}|null} 有效背景色，找不到时返回 null。
+ * @returns {Color|null} 有效背景色，找不到时返回 null。
  */
 function getEffectiveBackgroundColor(el) {
 	let node = el
 	while (node) {
 		const bg = parseRgbColor(getComputedStyle(node).backgroundColor)
-		if (bg && bg.a > 0) return { r: bg.r, g: bg.g, b: bg.b }
+		if (bg?.a) return bg
 		node = node.parentElement
 	}
 	return null
 }
 
 /**
+ * 对颜色通道执行指定操作（如加法、减法、平均等）。
+ * @param {function(...number): number} action - 对通道值执行的操作。
+ * @param {...Color} colors - 输入颜色。
+ * @returns {Color} 操作后的颜色。
+ */
+function margeColor(action, ...colors) {
+	const result = {}
+	if (Object(action) instanceof Number) {
+		const scale = action
+		action = (...number) => number.reduce((a, b) => a + b, 0) * scale
+	}
+	for(const channel of ['r', 'g', 'b', 'a'])
+		result[channel] = action(...colors.map(color => color[channel] ?? 255))
+	return result
+}
+
+/**
  * 按权重平均一组颜色。
- * @param {{color:{r:number,g:number,b:number}, weight:number}[]} entries - 颜色与权重。
- * @returns {{r:number,g:number,b:number}} 加权平均颜色。
+ * @param {{color:Color, weight:number}[]} entries - 颜色与权重。
+ * @returns {Color} 加权平均颜色。
  */
 function averageColors(entries) {
-	let r = 0, g = 0, b = 0, total = 0
-	for (const { color, weight } of entries) {
-		r += color.r * weight
-		g += color.g * weight
-		b += color.b * weight
+	let total = 0
+	const colors = entries.map(({ color, weight }) => {
 		total += weight
-	}
-	return total ? { r: Math.round(r / total), g: Math.round(g / total), b: Math.round(b / total) } : { r: 0, g: 0, b: 0 }
+		return margeColor(weight, color)
+	})
+	return margeColor(1 / total, ...colors)
 }
 
 /**
  * 根据背景色计算边框色：背景色与自身反色按占比混合。
- * @param {{r:number,g:number,b:number}} bg - 背景色。
+ * @param {Color} bg - 背景色。
  * @param {number} ratio - 反色占比（0-1）。
- * @returns {{r:number,g:number,b:number}} 边框色。
+ * @returns {Color} 边框色。
  */
 function borderColorFromBackground(bg, ratio) {
-	return {
-		r: Math.round(bg.r * (1 - ratio) + (255 - bg.r) * ratio),
-		g: Math.round(bg.g * (1 - ratio) + (255 - bg.g) * ratio),
-		b: Math.round(bg.b * (1 - ratio) + (255 - bg.b) * ratio)
-	}
+	return margeColor(num => Math.round(num * (1 - ratio) + (255 - num) * ratio), bg)
 }
 
 /**
@@ -829,19 +845,6 @@ function borderColorFromBackground(bg, ratio) {
  */
 function wrapColorChannel(value) {
 	return ((value % 256) + 256) % 256
-}
-
-/**
- * 将每个通道取模环绕到 0-255 范围。
- * @param {{r:number,g:number,b:number}} color - 输入颜色。
- * @returns {{r:number,g:number,b:number}} 环绕后的颜色。
- */
-function wrapColor(color) {
-	return {
-		r: wrapColorChannel(color.r),
-		g: wrapColorChannel(color.g),
-		b: wrapColorChannel(color.b)
-	}
 }
 
 /**
@@ -861,12 +864,9 @@ function isLightColor(color) {
  * @returns {{r:number,g:number,b:number}} 适配后的语义背景色。
  */
 function adaptSemanticColor(semantic, background) {
-	const base = isLightColor(background) ? WHITE : BLACK
-	return wrapColor({
-		r: semantic.r - base.r + background.r,
-		g: semantic.g - base.g + background.g,
-		b: semantic.b - base.b + background.b
-	})
+	return margeColor((semantic, base, background) => wrapColorChannel(
+		semantic - base + background
+	), semantic, isLightColor(background) ? WHITE : BLACK, background)
 }
 
 /**
@@ -874,6 +874,7 @@ function adaptSemanticColor(semantic, background) {
  * @returns {{text:{r:number,g:number,b:number}, background:{r:number,g:number,b:number}}|null} 页面主题颜色，无可计算内容时返回 null。
  */
 function computePageThemeColors() {
+	if (pageThemeCache) return pageThemeCache
 	const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
 		/**
 		 * 决定文本节点是否纳入统计。
@@ -884,9 +885,9 @@ function computePageThemeColors() {
 			if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT
 			const el = node.parentElement
 			if (!el) return NodeFilter.FILTER_REJECT
-			const style = getComputedStyle(el)
-			if (style.display === 'none' || style.visibility === 'hidden') return NodeFilter.FILTER_REJECT
-			return NodeFilter.FILTER_ACCEPT
+			const style = el.getBoundingClientRect()
+			if (rect.width && rect.height) return NodeFilter.FILTER_ACCEPT
+			return NodeFilter.FILTER_REJECT
 		}
 	})
 	const textColorEntries = []
@@ -903,7 +904,8 @@ function computePageThemeColors() {
 		if (bg) bgColorEntries.push({ color: bg, weight })
 	}
 	if (!textColorEntries.length || !bgColorEntries.length) return null
-	return { text: averageColors(textColorEntries), background: averageColors(bgColorEntries) }
+	pageThemeCache = { text: averageColors(textColorEntries), background: averageColors(bgColorEntries) }
+	return pageThemeCache
 }
 
 /**
@@ -919,9 +921,9 @@ function applyPageThemeToToast(container) {
 	container.style.setProperty('--fount-toast-text', `rgb(${text.r} ${text.g} ${text.b})`)
 	container.style.setProperty('--fount-toast-background', `rgb(${background.r} ${background.g} ${background.b})`)
 	container.style.setProperty('--fount-toast-border', `rgb(${border.r} ${border.g} ${border.b})`)
+	const adaptedText = adaptSemanticColor(text, background)
 	for (const [variant, semantic] of Object.entries(SEMANTIC_COLORS)) {
 		const adaptedBg = adaptSemanticColor(semantic, background)
-		const adaptedText = adaptSemanticColor(text, background)
 		container.style.setProperty(`--fount-toast-${variant}-background`, `rgb(${adaptedBg.r} ${adaptedBg.g} ${adaptedBg.b})`)
 		container.style.setProperty(`--fount-toast-${variant}-text`, `rgb(${adaptedText.r} ${adaptedText.g} ${adaptedText.b})`)
 	}
@@ -981,10 +983,10 @@ function addToastStyles() {
 	display: flex;
 	align-items: start;
 	padding: 1rem;
-	border-radius: var(--radius-box);
+	border-radius: var(--radius-box, 0.5rem);
 	background-color: var(--fount-toast-background, #333);
 	color: var(--fount-toast-text, white);
-	border: 1px solid var(--fount-toast-border, rgba(0, 0, 0, 0.2));
+	border: var(--border, 1px) solid var(--fount-toast-border, rgba(0, 0, 0, 0.2));
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	font-size: 0.875rem;
 	line-height: 1.25rem;

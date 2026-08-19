@@ -205,7 +205,7 @@ export function openMediaLightbox(mediaRoot, startIndex = 0) {
 	dialog.className = 'modal media-lightbox-modal'
 	dialog.innerHTML = `
 		<div class="modal-box media-lightbox-box">
-			<button type="button" class="btn btn-sm btn-square btn-ghost media-lightbox-close" data-lightbox-close aria-label="close">✕</button>
+			<button type="button" class="btn btn-sm btn-square btn-ghost media-lightbox-close" data-lightbox-close data-i18n="social.dialog.close">✕</button>
 			<img class="media-lightbox-img" alt="" />
 			<p class="media-lightbox-alt"></p>
 			<div class="media-lightbox-nav">

@@ -75,7 +75,7 @@ function renderAttachmentsHtml(files, downloadLabel) {
 					${previewHtml}
 				</div>
 				<div class="file-name" style="font-size: 0.8em; margin-top: 5px; word-wrap: break-word;">${name}</div>
-				<a href="${safeUrl}" download="${name}" class="download-button" style="margin-top: 5px; display: inline-block; padding: 5px 10px; background-color: var(--color-info); color: white; text-decoration: none; border-radius: var(--radius-field);">${escapeHtml(downloadLabel)}</a>
+				<a href="${safeUrl}" download="${name}" class="download-button" style="margin-top: 5px; display: inline-block; padding: 5px 10px; background-color: var(--color-info); color: var(--color-info-content); text-decoration: none; border-radius: var(--radius-field);">${escapeHtml(downloadLabel)}</a>
 			</div>`)
 	}
 	if (!items.length) return ''

@@ -83,6 +83,37 @@ Deno.test('scanFileThemeRadius: border-width regex ignores border-radius', () =>
 	assertEquals(issues[0].token, 'border-radius: 0.5rem')
 })
 
+Deno.test('scanFileThemeRadius: flags percentage border-radius and --radius-* var', () => {
+	const text = '.a { border-radius: 50%; }\n:root { --radius-avatar: 50%; }\n'
+	const issues = scanFileThemeRadius('a.css', text)
+	assertEquals(issues.length, 2)
+	assertEquals(issues[0], { path: 'a.css', line: 1, token: 'border-radius: 50%' })
+	assertEquals(issues[1], { path: 'a.css', line: 2, token: '--radius-avatar: 50%' })
+})
+
+Deno.test('scanFileThemeRadius: detects multiline border-radius / border / --radius-*', () => {
+	const text = '.a {\n\tborder-radius:\n\t\t50%;\n}\n.b {\n\tborder:\n\t\t2px solid #ccc;\n}\n:root {\n\t--radius-sm:\n\t\t6px;\n}\n'
+	const issues = scanFileThemeRadius('a.css', text)
+	assertEquals(issues.length, 3)
+	const tokens = issues.map(issue => issue.token.replaceAll('\n', ' ').replace(/\s+/g, ' ').trim()).sort()
+	assertEquals(tokens, ['--radius-sm: 6px', 'border: 2px', 'border-radius: 50%'].sort())
+	assertEquals(issues.map(issue => issue.line).sort((a, b) => a - b), [2, 6, 10])
+})
+
+Deno.test('scanFileThemeRadius: theme-radius-ignore exempts only the next border-width line', () => {
+	const text = '.a { border-radius: 8px; }\n/* theme-radius-ignore */\n.b { border: 2px solid #ccc; }\n.c { border: 2px solid #ccc; }\n'
+	const issues = scanFileThemeRadius('a.css', text)
+	const tokens = issues.map(issue => `${issue.line}:${issue.token}`)
+	assertEquals(tokens, ['1:border-radius: 8px', '4:border: 2px'])
+})
+
+Deno.test('scanFileThemeRadius: theme-radius-ignore does not exempt radius matches', () => {
+	const text = '/* theme-radius-ignore */\n.b { border-radius: 8px; }\n'
+	const issues = scanFileThemeRadius('a.css', text)
+	assertEquals(issues.length, 1)
+	assertEquals(issues[0].token, 'border-radius: 8px')
+})
+
 Deno.test('scanFileThemeRadius: theme-radius-ignore skips the next line only', () => {
 	const text = '.a { border: 1px solid #ccc; }\n/* theme-radius-ignore */\n.b { border: 2px solid #ccc; }\n.c { border: 2px solid #ccc; }\n'
 	const issues = scanFileThemeRadius('a.css', text)
@@ -100,8 +131,6 @@ Deno.test('isThemeRadiusExcluded: excludes test fixtures', () => {
 
 Deno.test('repo: no hardcoded fixed-radius classes in themed frontend (incl. .github/pages)', async () => {
 	const { issues } = await scanThemeRadius(REPO_ROOT)
-	if (issues.length) {
-		const sample = issues.slice(0, 12).map(i => `${i.path}:${i.line} ${i.token}`).join('\n')
-		assert(false, `主题化前端存在硬编码固定圆角类 (${issues.length}):\n${sample}`)
-	}
+	if (issues.length)
+		assert(false, `主题化前端存在硬编码固定圆角类 (${issues.length}):\n${issues.slice(0, 12).map(issue => `${issue.path}:${issue.line} ${issue.token}`).join('\n')}`)
 })

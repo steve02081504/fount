@@ -18,7 +18,7 @@ import { join } from 'node:path'
 import { listRepoFiles } from './walk.mjs'
 
 /** 主题化前端根：主题化应用本体 + GitHub Pages 静态站。 */
-export const THEMED_FRONTEND_ROOTS = Object.freeze(['src/public', '.github/pages'])
+export const THEMED_FRONTEND_ROOTS = ['src/public', '.github/pages']
 
 /** 扫描的后缀。 */
 export const THEME_RADIUS_SUFFIXES = ['.html', '.mjs', '.js', '.css']
@@ -73,7 +73,7 @@ export function hasHardcodedRadius(text) {
 
 /** CSS 声明中 `border-radius:` 的固定值：非 `var(--radius-*)` / `var(--rounded-*)` 的长度（px/rem/em/%…）。 */
 const CSS_BORDER_RADIUS_RE =
-	/border-radius\s*:\s*(?![^;}]*var\(\s*--(?:radius|rounded)-)[0-9.]+(?:px|rem|em|%)\b[^;}]*/gu
+	/border-radius\s*:\s*(?![^;}]*var\(\s*--(?:radius|rounded)-)[0-9.]+(?:px|rem|em|%)(?![-\w])[^;}]*/gu
 
 /**
  * 自定义 `--radius-*: <固定长度>` 变量定义。
@@ -81,21 +81,21 @@ const CSS_BORDER_RADIUS_RE =
  * 会另立一套硬编码圆角体系（如 chat `vars.css` 的 `--radius-sm/md/lg`），消费者 `var(--radius-md)`
  * 即绕过主题。主题感知写法应为 `--radius-md: var(--radius-box)`。
  */
-const CUSTOM_RADIUS_VAR_RE = /--radius-[a-zA-Z0-9-]+\s*:\s*[0-9.]+(?:px|rem|em|%)\b/gu
+const CUSTOM_RADIUS_VAR_RE = /--radius-[a-zA-Z0-9-]+\s*:\s*[0-9.]+(?:px|rem|em|%)(?![-\w])/gu
 
 /**
  * 硬编码边框宽度（绕过主题 `--border`）：
  * `border: <长度>` / `border-<侧>: <长度>` / `border-width: <长度>`（不含 `border-radius`）。
  */
 const HARDCODED_BORDER_WIDTH_RE =
-	/border(?:-(?:top|right|bottom|left|width))?\s*:\s*[0-9]+(?:\.[0-9]+)?px\b/gu
+	/border(?:-(?:top|right|bottom|left|width))?\s*:\s*[0-9]+(?:\.[0-9]+)?px(?![-\w])/gu
 
 /**
- * 跳过指令：上一行出现 `theme-radius-ignore` 时跳过下一行，用于放行有意的粗边框 / 大圆角。
- * 唯一指令形式，仅管下一行。参考 ESLint 下一行禁用注释。
+ * 跳过指令：上一行恰好是 `/* theme-radius-ignore *&#47;` 注释时，跳过下一行的硬编码边框宽度，
+ * 用于放行有意的粗边框。唯一指令形式，仅管下一行。参考 ESLint 下一行禁用注释。
  * @type {RegExp}
  */
-const RADIUS_IGNORE_DIRECTIVE = /theme-radius-ignore/u
+const RADIUS_IGNORE_DIRECTIVE = /^\s*\/\*\s*theme-radius-ignore\s*\*\/\s*$/u
 
 /**
  * 判断某行是否声明了对下一行的忽略。
@@ -104,6 +104,18 @@ const RADIUS_IGNORE_DIRECTIVE = /theme-radius-ignore/u
  */
 function isNextLineIgnored(line) {
 	return RADIUS_IGNORE_DIRECTIVE.test(line)
+}
+
+/**
+ * 计算某个匹配偏移量对应的行号（1 起）。
+ * @param {string} content 文件文本
+ * @param {number} index 匹配起始偏移
+ * @returns {number} 行号
+ */
+function lineNumberAt(content, index) {
+	let line = 1
+	for (let i = 0; i < index; i++) if (content[i] === '\n') line++
+	return line
 }
 
 /**
@@ -116,16 +128,23 @@ export function scanFileThemeRadius(relativePath, content) {
 	/** @type {ThemeRadiusIssue[]} */
 	const issues = []
 	const lines = content.split('\n')
-	for (let index = 0; index < lines.length; index++) {
-		if (isNextLineIgnored(lines[index - 1])) continue
+	// 硬编码固定圆角类按行扫描（HTML/MJS 中为单词 token，无跨行可能）。
+	for (let index = 0; index < lines.length; index++)
 		for (const match of lines[index].matchAll(HARDCODED_RADIUS_GLOBAL))
 			issues.push({ path: relativePath, line: index + 1, token: match[0] })
-		for (const match of lines[index].matchAll(CSS_BORDER_RADIUS_RE))
-			issues.push({ path: relativePath, line: index + 1, token: match[0].trim() })
-		for (const match of lines[index].matchAll(CUSTOM_RADIUS_VAR_RE))
-			issues.push({ path: relativePath, line: index + 1, token: match[0].trim() })
-		for (const match of lines[index].matchAll(HARDCODED_BORDER_WIDTH_RE))
-			issues.push({ path: relativePath, line: index + 1, token: match[0].trim() })
+	// 可跨行的 CSS 声明对完整内容匹配，再从偏移推出行号。
+	for (const match of content.matchAll(CSS_BORDER_RADIUS_RE))
+		issues.push({ path: relativePath, line: lineNumberAt(content, match.index), token: match[0].trim() })
+	for (const match of content.matchAll(CUSTOM_RADIUS_VAR_RE))
+		issues.push({ path: relativePath, line: lineNumberAt(content, match.index), token: match[0].trim() })
+	// 仅硬编码边框宽度受 `theme-radius-ignore` 豁免；圆角类、border-radius、--radius-* 一律上报。
+	const ignoredBorderWidthLines = new Set()
+	for (let index = 0; index < lines.length - 1; index++)
+		if (isNextLineIgnored(lines[index])) ignoredBorderWidthLines.add(index + 2)
+	for (const match of content.matchAll(HARDCODED_BORDER_WIDTH_RE)) {
+		const line = lineNumberAt(content, match.index)
+		if (ignoredBorderWidthLines.has(line)) continue
+		issues.push({ path: relativePath, line, token: match[0].trim() })
 	}
 	return issues
 }
@@ -136,13 +155,12 @@ export function scanFileThemeRadius(relativePath, content) {
  * @returns {Promise<{ files: string[], issues: ThemeRadiusIssue[] }>} 命中文件与问题列表
  */
 export async function scanThemeRadius(repoRoot) {
-	const paths = (await Promise.all(
-		THEMED_FRONTEND_ROOTS.map(under => listRepoFiles(repoRoot, THEME_RADIUS_SUFFIXES, { under })),
-	)).flat()
-		.filter(path => !isThemeRadiusExcluded(path))
 	/** @type {ThemeRadiusIssue[]} */
 	const issues = []
-	for (const relativePath of paths) {
+	for (const relativePath of (await Promise.all(
+		THEMED_FRONTEND_ROOTS.map(under => listRepoFiles(repoRoot, THEME_RADIUS_SUFFIXES, { under })),
+	)).flat()
+		.filter(path => !isThemeRadiusExcluded(path))) {
 		let content
 		try {
 			content = await readFile(join(repoRoot, relativePath), 'utf8')

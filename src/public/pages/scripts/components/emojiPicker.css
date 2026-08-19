@@ -23,7 +23,7 @@
 	align-items: center;
 	gap: 4px;
 	padding: 4px 6px;
-	border-bottom: var(--border) solid var(--border-color, #333);
+	border-bottom: var(--border) solid var(--border-color);
 	flex-shrink: 0;
 }
 
