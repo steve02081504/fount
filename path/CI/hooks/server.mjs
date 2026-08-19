@@ -1,5 +1,5 @@
 /**
- * CI 专用桩：由 `.github/path-ci/install-hooks.sh` 临时替换 `src/server/index.mjs`；本地不用。
+ * CI 专用桩：由 `path/CI/install-hooks.sh` 临时替换 `src/server/index.mjs`；本地不用。
  */
 import fs from 'node:fs'
 import process from 'node:process'
