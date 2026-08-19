@@ -152,11 +152,11 @@
 				"summary": "✍️ ${suitesUpdated} 📦⏱️（manifest ${filesChanged}）；⏭️ ${skipped} 🚫📏／✅🆕"
 			},
 			"list": {
-				"incompatible": "用法：fount test --list [<groups>...]（不能同时使用其他开关）",
+				"incompatible": "📖：`fount test --list` [<groups>…]（🚫+⚙️）",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": "（预计 ${expected}）"
+				"expected": "（🔮 ${expected}）"
 			},
 			"kernel": {
 				"incompatible": "📖：`fount test --kernel shutdown|reboot`（🚫+⚙️）",
