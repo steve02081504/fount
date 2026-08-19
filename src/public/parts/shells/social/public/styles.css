@@ -556,13 +556,23 @@
 .feed-search-input {
 	flex: 1;
 	width: 100%;
-	padding: 0.65rem 2.5rem;
+	padding: 0.65rem 1.2rem 0.65rem 1.95rem;
 	border: none;
 	border-radius: var(--radius-box);
 	background: var(--bg-soft);
 	color: var(--text);
 	font: inherit;
 	outline: none;
+}
+
+/* Remove the native search cancel/result icons so the custom clear button is the only one. */
+.feed-search-input::-webkit-search-cancel-button,
+.feed-search-input::-webkit-search-decoration,
+.feed-search-input::-webkit-search-results-button,
+.feed-search-input::-webkit-search-results-decoration {
+	-webkit-appearance: none;
+	appearance: none;
+	display: none;
 }
 
 .feed-search-input:focus {
