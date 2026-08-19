@@ -170,6 +170,9 @@ Deno.test('hasHardcodedRadius: flags hardcoded arbitrary-value radius', () => {
 	assertEquals(hasHardcodedRadius('rounded-[8px]'), true)
 	assertEquals(hasHardcodedRadius('rounded-[1.25rem]'), true)
 	assertEquals(hasHardcodedRadius('rounded-[calc(8px + 2px)]'), true)
+	assertEquals(hasHardcodedRadius('rounded-t-[8px]'), true)
+	assertEquals(hasHardcodedRadius('rounded-tr-[1.25rem]'), true)
+	assertEquals(hasHardcodedRadius('rounded-b-[calc(8px + 2px)]'), true)
 })
 
 Deno.test('hasHardcodedRadius: allows zero and theme-var arbitrary-value radius', () => {
@@ -179,6 +182,9 @@ Deno.test('hasHardcodedRadius: allows zero and theme-var arbitrary-value radius'
 	assertEquals(hasHardcodedRadius('rounded-[var(--rounded-field)]'), false)
 	assertEquals(hasHardcodedRadius('rounded-[calc(var(--radius-box) - 2px)]'), false)
 	assertEquals(hasHardcodedRadius('rounded-[var(--radius-sm) 0 0 var(--radius-sm)]'), false)
+	assertEquals(hasHardcodedRadius('rounded-t-[0px]'), false)
+	assertEquals(hasHardcodedRadius('rounded-tr-[var(--radius-box)]'), false)
+	assertEquals(hasHardcodedRadius('rounded-l-[calc(var(--radius-box) - 2px)]'), false)
 })
 
 Deno.test('scanFileThemeRadius: flags hardcoded arbitrary-value radius, skips theme-var', () => {

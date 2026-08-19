@@ -151,6 +151,13 @@
 				"incompatible": "Gebruik: fount test --update-estimates [<groups>...] (niet te combineren met andere schakelaars)",
 				"summary": "Verwachte duur bijgewerkt voor ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ${skipped} overgeslagen zonder baseline of al actueel"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "Gebruik: fount test --kernel shutdown|reboot (kan niet worden gecombineerd met andere opties)",
 				"unknownAction": "Onbekende kernelactie: ${action} (verwacht: shutdown of reboot)",
@@ -5785,10 +5792,10 @@
 			"failed": "Kan systeeminformatie niet laden"
 		},
 		"testStatus": {
-			"title": "teststatus",
-			"running": "Test loopt",
-			"idle": "Kernel online testen (inactief)",
-			"queued": "In de rij staan"
+			"title": "Teststatus",
+			"running": "Test draait",
+			"idle": "Kernel online (inactief)",
+			"queued": "In de wachtrij"
 		},
 		"connectivity": {
 			"backend": "backend-connectiviteit",

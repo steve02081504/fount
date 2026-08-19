@@ -1,10 +1,10 @@
 {
 	"info": {
 		"en-UK": {
-			"name": "iFlytek RTASR Standard Generator",
+			"name": "iFlytek LFASR Fast Generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek standard RTASR streaming recognition.",
-			"description_markdown": "iFlytek standard RTASR streaming recognition.",
+			"description": "Fast batch speech recognition via iFlytek OST.",
+			"description_markdown": "Fast batch speech recognition via iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -14,10 +14,10 @@
 			]
 		},
 		"zh-CN": {
-			"name": "讯飞 RTASR Standard 生成器",
+			"name": "讯飞 LFASR Fast 生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞标准 RTASR 流式识别。",
-			"description_markdown": "讯飞标准 RTASR 流式识别。",
+			"description": "讯飞 OST 快速批量语音识别。",
+			"description_markdown": "讯飞 OST 快速批量语音识别。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -27,10 +27,10 @@
 			]
 		},
 		"ar-SA": {
-			"name": "مولّد iFlytek RTASR Standard",
+			"name": "مولّد iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
-			"description_markdown": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
+			"description": "تعرف على كلام بالدُفعات السريع عبر iFlytek OST.",
+			"description_markdown": "تعرف على كلام بالدُفعات السريع عبر iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -40,10 +40,10 @@
 			]
 		},
 		"de-DE": {
-			"name": "iFlytek RTASR Standard-Generator",
+			"name": "iFlytek LFASR Fast-Generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Streaming-RTASR-Standarderkennung von iFlytek.",
-			"description_markdown": "Streaming-RTASR-Standarderkennung von iFlytek.",
+			"description": "Schnelle Batch-Spracherkennung über iFlytek OST.",
+			"description_markdown": "Schnelle Batch-Spracherkennung über iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -53,10 +53,10 @@
 			]
 		},
 		"emoji": {
-			"name": "🎙️🏭 📐📡",
+			"name": "🎙️🏭 ⚡📦",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "📐📡🎙️➡️📝",
-			"description_markdown": "📐📡🎙️➡️📝",
+			"description": "📦⚡✈️",
+			"description_markdown": "📦⚡✈️",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -66,10 +66,10 @@
 			]
 		},
 		"es-ES": {
-			"name": "Generador iFlytek RTASR Standard",
+			"name": "Generador iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconocimiento en streaming RTASR estándar de iFlytek.",
-			"description_markdown": "Reconocimiento en streaming RTASR estándar de iFlytek.",
+			"description": "Reconocimiento de voz por lotes rápido vía iFlytek OST.",
+			"description_markdown": "Reconocimiento de voz por lotes rápido vía iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -79,10 +79,10 @@
 			]
 		},
 		"fr-FR": {
-			"name": "Générateur iFlytek RTASR Standard",
+			"name": "Générateur iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconnaissance en streaming RTASR standard iFlytek.",
-			"description_markdown": "Reconnaissance en streaming RTASR standard iFlytek.",
+			"description": "Reconnaissance vocale par lots rapide via iFlytek OST.",
+			"description_markdown": "Reconnaissance vocale par lots rapide via iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -92,10 +92,10 @@
 			]
 		},
 		"hi-IN": {
-			"name": "iFlytek RTASR Standard जनरेटर",
+			"name": "iFlytek LFASR Fast जनरेटर",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
-			"description_markdown": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
+			"description": "iFlytek OST पर तेज़ बैच आवाज़ पहचान।",
+			"description_markdown": "iFlytek OST पर तेज़ बैच आवाज़ पहचान।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -105,10 +105,10 @@
 			]
 		},
 		"is-IS": {
-			"name": "iFlytek RTASR Standard rafall",
+			"name": "iFlytek LFASR Fast rafall",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek staðlað RTASR streymisgreining.",
-			"description_markdown": "iFlytek staðlað RTASR streymisgreining.",
+			"description": "Hröð runu-talgreining með iFlytek OST.",
+			"description_markdown": "Hröð runu-talgreining með iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -118,10 +118,10 @@
 			]
 		},
 		"it-IT": {
-			"name": "Generatore iFlytek RTASR Standard",
+			"name": "Generatore iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Riconoscimento in streaming RTASR standard iFlytek.",
-			"description_markdown": "Riconoscimento in streaming RTASR standard iFlytek.",
+			"description": "Riconoscimento vocale in batch veloce tramite iFlytek OST.",
+			"description_markdown": "Riconoscimento vocale in batch veloce tramite iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -131,10 +131,10 @@
 			]
 		},
 		"ja-JP": {
-			"name": "iFlytek RTASR Standard ジェネレーター",
+			"name": "iFlytek LFASR Fast ジェネレーター",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 標準 RTASR ストリーミング認識。",
-			"description_markdown": "iFlytek 標準 RTASR ストリーミング認識。",
+			"description": "iFlytek OST 高速バッチ音声認識。",
+			"description_markdown": "iFlytek OST 高速バッチ音声認識。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -144,10 +144,10 @@
 			]
 		},
 		"ko-KR": {
-			"name": "iFlytek RTASR Standard 생성기",
+			"name": "iFlytek LFASR Fast 생성기",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 표준 RTASR 스트리밍 인식.",
-			"description_markdown": "iFlytek 표준 RTASR 스트리밍 인식.",
+			"description": "iFlytek OST 고속 배치 음성 인식.",
+			"description_markdown": "iFlytek OST 고속 배치 음성 인식.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -157,10 +157,10 @@
 			]
 		},
 		"lzh": {
-			"name": "訊飛 RTASR Standard 生成器",
+			"name": "訊飛 LFASR Fast 生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛標準 RTASR 流式識別。",
-			"description_markdown": "訊飛標準 RTASR 流式識別。",
+			"description": "訊飛 OST 快速批量語音識別。",
+			"description_markdown": "訊飛 OST 快速批量語音識別。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -170,10 +170,10 @@
 			]
 		},
 		"nl-NL": {
-			"name": "iFlytek RTASR Standard-generator",
+			"name": "iFlytek LFASR Fast-generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek standaard RTASR-streamingherkenning.",
-			"description_markdown": "iFlytek standaard RTASR-streamingherkenning.",
+			"description": "Snelle batch-spraakherkenning via iFlytek OST.",
+			"description_markdown": "Snelle batch-spraakherkenning via iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -183,10 +183,10 @@
 			]
 		},
 		"pt-PT": {
-			"name": "Gerador iFlytek RTASR Standard",
+			"name": "Gerador iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconhecimento em streaming RTASR padrão iFlytek.",
-			"description_markdown": "Reconhecimento em streaming RTASR padrão iFlytek.",
+			"description": "Reconhecimento de fala em lote rápido via iFlytek OST.",
+			"description_markdown": "Reconhecimento de fala em lote rápido via iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -196,10 +196,10 @@
 			]
 		},
 		"ru-RU": {
-			"name": "Генератор iFlytek RTASR Standard",
+			"name": "Генератор iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Стандартное потоковое распознавание RTASR iFlytek.",
-			"description_markdown": "Стандартное потоковое распознавание RTASR iFlytek.",
+			"description": "Быстрое пакетное распознавание речи через iFlytek OST.",
+			"description_markdown": "Быстрое пакетное распознавание речи через iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -209,10 +209,10 @@
 			]
 		},
 		"uk-UA": {
-			"name": "Генератор iFlytek RTASR Standard",
+			"name": "Генератор iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Стандартне потокове розпізнавання RTASR iFlytek.",
-			"description_markdown": "Стандартне потокове розпізнавання RTASR iFlytek.",
+			"description": "Швидке пакетне розпізнавання мови через iFlytek OST.",
+			"description_markdown": "Швидке пакетне розпізнавання мови через iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -222,10 +222,10 @@
 			]
 		},
 		"vi-VN": {
-			"name": "Trình tạo iFlytek RTASR Standard",
+			"name": "Trình tạo iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Nhận dạng streaming RTASR chuẩn iFlytek.",
-			"description_markdown": "Nhận dạng streaming RTASR chuẩn iFlytek.",
+			"description": "Nhận dạng giọng nói theo lô nhanh qua iFlytek OST.",
+			"description_markdown": "Nhận dạng giọng nói theo lô nhanh qua iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -235,10 +235,10 @@
 			]
 		},
 		"zh-TW": {
-			"name": "訊飛 RTASR Standard 產生器",
+			"name": "訊飛 LFASR Fast 產生器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛標準 RTASR 串流辨識。",
-			"description_markdown": "訊飛標準 RTASR 串流辨識。",
+			"description": "訊飛 OST 快速批次語音辨識。",
+			"description_markdown": "訊飛 OST 快速批次語音辨識。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -250,10 +250,10 @@
 	},
 	"product_info": {
 		"en-UK": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek standard RTASR streaming recognition.",
-			"description_markdown": "iFlytek standard RTASR streaming recognition.",
+			"description": "Fast batch speech recognition via iFlytek OST.",
+			"description_markdown": "Fast batch speech recognition via iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -261,13 +261,13 @@
 				"speech recognition",
 				"generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"zh-CN": {
-			"name": "讯飞 RTASR Standard",
+			"name": "讯飞 LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞标准 RTASR 流式识别。",
-			"description_markdown": "讯飞标准 RTASR 流式识别。",
+			"description": "讯飞 OST 快速批量语音识别。",
+			"description_markdown": "讯飞 OST 快速批量语音识别。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -275,13 +275,13 @@
 				"语音识别",
 				"生成器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ar-SA": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
-			"description_markdown": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
+			"description": "تعرف على كلام بالدُفعات السريع عبر iFlytek OST.",
+			"description_markdown": "تعرف على كلام بالدُفعات السريع عبر iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -289,13 +289,13 @@
 				"التعرف على الكلام",
 				"مولد"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"de-DE": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Streaming-RTASR-Standarderkennung von iFlytek.",
-			"description_markdown": "Streaming-RTASR-Standarderkennung von iFlytek.",
+			"description": "Schnelle Batch-Spracherkennung über iFlytek OST.",
+			"description_markdown": "Schnelle Batch-Spracherkennung über iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -303,13 +303,13 @@
 				"Spracherkennung",
 				"Generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"emoji": {
-			"name": "🎙️ 📐📡",
+			"name": "🎙️ ⚡📦",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "📐📡🎙️➡️📝",
-			"description_markdown": "📐📡🎙️➡️📝",
+			"description": "📦⚡✈️",
+			"description_markdown": "📦⚡✈️",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -317,13 +317,13 @@
 				"🎙️",
 				"🏭"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"es-ES": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconocimiento en streaming RTASR estándar de iFlytek.",
-			"description_markdown": "Reconocimiento en streaming RTASR estándar de iFlytek.",
+			"description": "Reconocimiento de voz por lotes rápido vía iFlytek OST.",
+			"description_markdown": "Reconocimiento de voz por lotes rápido vía iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -331,13 +331,13 @@
 				"reconocimiento de voz",
 				"generador"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"fr-FR": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconnaissance en streaming RTASR standard iFlytek.",
-			"description_markdown": "Reconnaissance en streaming RTASR standard iFlytek.",
+			"description": "Reconnaissance vocale par lots rapide via iFlytek OST.",
+			"description_markdown": "Reconnaissance vocale par lots rapide via iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -345,13 +345,13 @@
 				"reconnaissance vocale",
 				"générateur"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"hi-IN": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
-			"description_markdown": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
+			"description": "iFlytek OST पर तेज़ बैच आवाज़ पहचान।",
+			"description_markdown": "iFlytek OST पर तेज़ बैच आवाज़ पहचान।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -359,13 +359,13 @@
 				"आवाज़ पहचान",
 				"जनरेटर"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"is-IS": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek staðlað RTASR streymisgreining.",
-			"description_markdown": "iFlytek staðlað RTASR streymisgreining.",
+			"description": "Hröð runu-talgreining með iFlytek OST.",
+			"description_markdown": "Hröð runu-talgreining með iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -373,13 +373,13 @@
 				"talgreining",
 				"rafall"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"it-IT": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Riconoscimento in streaming RTASR standard iFlytek.",
-			"description_markdown": "Riconoscimento in streaming RTASR standard iFlytek.",
+			"description": "Riconoscimento vocale in batch veloce tramite iFlytek OST.",
+			"description_markdown": "Riconoscimento vocale in batch veloce tramite iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -387,13 +387,13 @@
 				"riconoscimento vocale",
 				"generatore"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ja-JP": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 標準 RTASR ストリーミング認識。",
-			"description_markdown": "iFlytek 標準 RTASR ストリーミング認識。",
+			"description": "iFlytek OST 高速バッチ音声認識。",
+			"description_markdown": "iFlytek OST 高速バッチ音声認識。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -401,13 +401,13 @@
 				"音声認識",
 				"ジェネレーター"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ko-KR": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 표준 RTASR 스트리밍 인식.",
-			"description_markdown": "iFlytek 표준 RTASR 스트리밍 인식.",
+			"description": "iFlytek OST 고속 배치 음성 인식.",
+			"description_markdown": "iFlytek OST 고속 배치 음성 인식.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -415,13 +415,13 @@
 				"음성 인식",
 				"생성기"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"lzh": {
-			"name": "訊飛 RTASR Standard",
+			"name": "訊飛 LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛標準 RTASR 流式識別。",
-			"description_markdown": "訊飛標準 RTASR 流式識別。",
+			"description": "訊飛 OST 快速批量語音識別。",
+			"description_markdown": "訊飛 OST 快速批量語音識別。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -429,13 +429,13 @@
 				"語音識別",
 				"生成器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"nl-NL": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek standaard RTASR-streamingherkenning.",
-			"description_markdown": "iFlytek standaard RTASR-streamingherkenning.",
+			"description": "Snelle batch-spraakherkenning via iFlytek OST.",
+			"description_markdown": "Snelle batch-spraakherkenning via iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -443,13 +443,13 @@
 				"spraakherkenning",
 				"generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"pt-PT": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconhecimento em streaming RTASR padrão iFlytek.",
-			"description_markdown": "Reconhecimento em streaming RTASR padrão iFlytek.",
+			"description": "Reconhecimento de fala em lote rápido via iFlytek OST.",
+			"description_markdown": "Reconhecimento de fala em lote rápido via iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -457,13 +457,13 @@
 				"reconhecimento de fala",
 				"gerador"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ru-RU": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Стандартное потоковое распознавание RTASR iFlytek.",
-			"description_markdown": "Стандартное потоковое распознавание RTASR iFlytek.",
+			"description": "Быстрое пакетное распознавание речи через iFlytek OST.",
+			"description_markdown": "Быстрое пакетное распознавание речи через iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -471,13 +471,13 @@
 				"распознавание речи",
 				"генератор"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"uk-UA": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Стандартне потокове розпізнавання RTASR iFlytek.",
-			"description_markdown": "Стандартне потокове розпізнавання RTASR iFlytek.",
+			"description": "Швидке пакетне розпізнавання мови через iFlytek OST.",
+			"description_markdown": "Швидке пакетне розпізнавання мови через iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -485,13 +485,13 @@
 				"розпізнавання мови",
 				"генератор"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"vi-VN": {
-			"name": "iFlytek RTASR Standard",
+			"name": "iFlytek LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Nhận dạng streaming RTASR chuẩn iFlytek.",
-			"description_markdown": "Nhận dạng streaming RTASR chuẩn iFlytek.",
+			"description": "Nhận dạng giọng nói theo lô nhanh qua iFlytek OST.",
+			"description_markdown": "Nhận dạng giọng nói theo lô nhanh qua iFlytek OST.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -499,13 +499,13 @@
 				"nhận dạng giọng nói",
 				"trình tạo"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"zh-TW": {
-			"name": "訊飛 RTASR Standard",
+			"name": "訊飛 LFASR Fast",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛標準 RTASR 串流辨識。",
-			"description_markdown": "訊飛標準 RTASR 串流辨識。",
+			"description": "訊飛 OST 快速批次語音辨識。",
+			"description_markdown": "訊飛 OST 快速批次語音辨識。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -513,7 +513,7 @@
 				"語音辨識",
 				"產生器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		}
 	}
 }

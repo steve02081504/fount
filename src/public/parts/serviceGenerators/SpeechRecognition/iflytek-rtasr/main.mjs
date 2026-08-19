@@ -2,16 +2,16 @@
  * @typedef {import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionSource_t} SpeechRecognitionSource_t
  */
 
+import { formatUtcPlus8, signSortedParamsHmacSha1 } from '../shared/iflytekAuth.mjs'
 import { attenuatePcm16 } from '../shared/pcm.mjs'
 import { buildSourceInfo, extractRtasrText, openWs, runRecognizeInput } from '../shared/recognizeHelpers.mjs'
-import { hmacSha1Base64, md5Hex } from '../shared/xfyunAuth.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
 const FRAME_SIZE = 1280
 
 /**
- * 讯飞实时转写标准版流式语音识别生成器。
+ * 讯飞实时转写（办公版）流式语音识别生成器。
  * @type {import('../../../../../decl/SpeechRecognitionSourceGenerator.ts').SpeechRecognitionSourceGenerator_t}
  */
 export default {
@@ -28,10 +28,11 @@ export default {
 }
 
 const configTemplate = {
-	name: 'xfyun-rtasr-std',
+	name: 'iflytek-rtasr',
 	app_id: '',
 	api_key: '',
-	lang: 'cn',
+	api_secret: '',
+	lang: 'autodialect',
 	pd: '',
 }
 
@@ -63,13 +64,14 @@ function sleep(ms, signal) {
  */
 async function GetSource(config) {
 	const appId = config.app_id
-	const apiKey = config.api_key
+	const accessKeyId = config.api_key
+	const secretKey = config.api_secret
 	const lang = config.lang || config.language || configTemplate.lang
 	const pd = config.pd || ''
 
 	return {
 		type: 'speech-recognition',
-		info: buildSourceInfo(product_info, { name: config.name || 'Xfyun RTASR Std', provider: 'xfyun' }),
+		info: buildSourceInfo(product_info, { name: config.name || 'iFlytek RTASR', provider: 'iflytek' }),
 		is_paid: true,
 		extension: {},
 		/**
@@ -77,12 +79,19 @@ async function GetSource(config) {
 		 * @returns {Promise<import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionResult_t>} 结果
 		 */
 		Recognize: async (options) => {
-			const ts = String(Math.floor(Date.now() / 1000))
-			const signa = hmacSha1Base64(apiKey, md5Hex(appId + ts))
-			const q = new URLSearchParams({ appid: appId, ts, signa })
-			if (lang) q.set('lang', lang)
-			if (pd) q.set('pd', pd)
-			const ws = await openWs(`wss://rtasr.xfyun.cn/v1/ws?${q}`, { binaryType: 'arraybuffer' })
+			const params = {
+				appId,
+				accessKeyId,
+				utc: formatUtcPlus8(),
+				lang,
+				audio_encode: 'pcm_s16le',
+				samplerate: '16000',
+			}
+			if (pd) params.pd = pd
+			const signature = signSortedParamsHmacSha1(params, secretKey)
+			const q = new URLSearchParams({ ...params, signature })
+			const ws = await openWs(`wss://office-api-ast-dx.iflyaisol.com/ast/communicate/v1?${q}`, { binaryType: 'arraybuffer' })
+			let sid
 
 			let lastText = ''
 			/** @type {(v: string) => void} */
@@ -127,14 +136,15 @@ async function GetSource(config) {
 				try { msg = JSON.parse(raw) }
 				catch { return }
 				if (msg.action === 'error' || (msg.code && msg.code !== '0')) {
-					fail(new Error(`讯飞RTASR标准版错误 ${msg.code}: ${msg.desc || ''}`))
+					fail(new Error(`讯飞RTASR错误 ${msg.code}: ${msg.desc || ''}`))
 					return
 				}
-				if (msg.action === 'started') return
-				if (!msg.data) return
-				let resultData
-				try { resultData = JSON.parse(msg.data) }
-				catch { return }
+				if (msg.action === 'started') {
+					sid = msg.sid
+					return
+				}
+				const resultData = typeof msg.data === 'string' ? JSON.parse(msg.data || '{}') : msg.data
+				if (!resultData) return
 				const piece = extractRtasrText(resultData)
 				const isFinal = !!resultData.ls
 				if (piece) lastText += piece
@@ -163,7 +173,7 @@ async function GetSource(config) {
 							if (offset < pcm.byteLength) await sleep(40, options.signal)
 						}
 						if (isLast)
-							ws.send('{"end": "true"}')
+							ws.send(JSON.stringify(sid ? { end: true, sessionId: sid } : { end: true }))
 					},
 				})
 				const text = await finalPromise

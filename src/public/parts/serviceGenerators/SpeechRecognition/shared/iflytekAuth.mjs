@@ -3,6 +3,8 @@
  */
 import { createHash, createHmac } from 'node:crypto'
 
+import { ms } from 'fount/scripts/ms.mjs'
+
 /**
  * HMAC-SHA256 后 Base64。
  * @param {string} secret 密钥
@@ -46,7 +48,7 @@ export function sha256Base64(body) {
  * @param {{ host: string, path: string, apiKey: string, apiSecret: string }} opts 参数
  * @returns {string} wss URL
  */
-export function buildXfyunHmacSha256WsUrl({ host, path, apiKey, apiSecret }) {
+export function buildIflytekHmacSha256WsUrl({ host, path, apiKey, apiSecret }) {
 	const date = new Date().toUTCString()
 	const signOrigin = `host: ${host}\ndate: ${date}\nGET ${path} HTTP/1.1`
 	const signature = hmacSha256Base64(apiSecret, signOrigin)
@@ -74,7 +76,7 @@ export function signSortedParamsHmacSha1(params, secret) {
  * @returns {string} 时间串
  */
 export function formatUtcPlus8() {
-	const d = new Date(Date.now() + 8 * 3600 * 1000)
+	const d = new Date(Date.now() + ms('8h'))
 	/**
 	 * 补零到两位。
 	 * @param {number} n 数字

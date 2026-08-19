@@ -151,6 +151,13 @@
 				"incompatible": "उपयोग: fount test --update-estimates [<groups>...] (अन्य फ़्लैग के साथ उपयोग नहीं कर सकते)",
 				"summary": "${suitesUpdated} suite की अपेक्षित अवधि अपडेट (${filesChanged} manifest); बेसलाइन नहीं या पहले से अद्यतन — ${skipped} छोड़े"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "उपयोग: fount test --kernel shutdown|reboot (अन्य विकल्पों के साथ उपयोग नहीं किया जा सकता)",
 				"unknownAction": "अज्ञात कर्नेल क्रिया: ${action} (shutdown या reboot अपेक्षित)",
@@ -5781,8 +5788,8 @@
 		"testStatus": {
 			"title": "परीक्षण की स्थिति",
 			"running": "परीक्षण चल रहा है",
-			"idle": "कर्नेल का ऑनलाइन परीक्षण करें (निष्क्रिय)",
-			"queued": "कतार"
+			"idle": "कर्नेल ऑनलाइन (निष्क्रिय)",
+			"queued": "कतार में"
 		},
 		"connectivity": {
 			"backend": "बैकएंड कनेक्टिविटी",

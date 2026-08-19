@@ -8,6 +8,7 @@
 import { randomUUID } from 'node:crypto'
 import { access, mkdir } from 'node:fs/promises'
 
+import { ms } from 'fount/scripts/ms.mjs'
 import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { DEFAULT_STREAM_GENERATING_IDLE_MS } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
@@ -170,7 +171,7 @@ export async function createGroup(username, body) {
 			wantIdsBudget: 16,
 			batterySaver: false,
 			eventRetentionDepth: 200_000,
-			eventRetentionMs: 365 * 24 * 3600 * 1000,
+			eventRetentionMs: ms('365d'),
 			messageContentRetentionMs: 0,
 			...body.joinPolicy ? { joinPolicy: body.joinPolicy } : {},
 			...body.enableGroupFederation ? {

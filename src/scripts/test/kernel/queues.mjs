@@ -1,9 +1,10 @@
 /**
  * 测试内核待运行队列：CLI 同优先级 LIFO、FS LIFO、预备 debounce。
  */
+import { ms } from '../../ms.mjs'
 
 /** 预备队列默认静置时长（毫秒）。 */
-export const DEFAULT_PREP_SETTLE_MS = 3 * 60 * 1000
+export const DEFAULT_PREP_SETTLE_MS = ms('3m')
 
 /**
  * 队列项。
@@ -84,6 +85,24 @@ export class TestQueues {
 	hitPrep(key, reason = 'fs_change') {
 		this.fs = this.fs.filter(item => item.key !== key)
 		this.prep.set(key, { key, lastHit: this.now(), reason })
+	}
+
+	/**
+	 * 直接入 FS 队头（不经预备 debounce；idle-all 等即时触发用）。
+	 * @param {string} key suite 键
+	 * @param {string} [reason] 原因
+	 * @returns {QueueItem} 入队项
+	 */
+	enqueueFs(key, reason = 'fs_change') {
+		const item = {
+			id: this.#nextId(),
+			key,
+			source: 'fs',
+			reason,
+			enqueuedAt: this.now(),
+		}
+		this.fs.unshift(item)
+		return item
 	}
 
 	/**

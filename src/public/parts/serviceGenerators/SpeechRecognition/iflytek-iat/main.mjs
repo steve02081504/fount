@@ -2,9 +2,9 @@
  * @typedef {import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionSource_t} SpeechRecognitionSource_t
  */
 
+import { buildIflytekHmacSha256WsUrl } from '../shared/iflytekAuth.mjs'
 import { bytesToBase64, normalizeLang } from '../shared/pcm.mjs'
 import { buildSourceInfo, openWs, runRecognizeInput } from '../shared/recognizeHelpers.mjs'
-import { buildXfyunHmacSha256WsUrl } from '../shared/xfyunAuth.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -28,7 +28,7 @@ export default {
 }
 
 const configTemplate = {
-	name: 'xfyun-iat',
+	name: 'iflytek-iat',
 	app_id: '',
 	api_key: '',
 	api_secret: '',
@@ -64,7 +64,7 @@ async function GetSource(config) {
 
 	return {
 		type: 'speech-recognition',
-		info: buildSourceInfo(product_info, { name: config.name || 'Xfyun IAT Speech Recognition', provider: 'xfyun' }),
+		info: buildSourceInfo(product_info, { name: config.name || 'iFlytek IAT Speech Recognition', provider: 'iflytek' }),
 		is_paid: true,
 		extension: {},
 		/**
@@ -72,7 +72,7 @@ async function GetSource(config) {
 		 * @returns {Promise<import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionResult_t>} 结果
 		 */
 		Recognize: async (options) => {
-			const url = buildXfyunHmacSha256WsUrl({
+			const url = buildIflytekHmacSha256WsUrl({
 				host: 'iat-api.xfyun.cn',
 				path: '/v2/iat',
 				apiKey,

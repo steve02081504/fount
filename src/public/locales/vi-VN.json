@@ -151,6 +151,13 @@
 				"incompatible": "Cách dùng: fount test --update-estimates [<groups>...] (không dùng cùng cờ khác)",
 				"summary": "Đã cập nhật thời lượng dự kiến cho ${suitesUpdated} suite (${filesChanged} manifest); bỏ qua ${skipped} không có baseline hoặc đã mới nhất"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "Cách dùng: fount test --kernel shutdown|reboot (không thể dùng cùng các tùy chọn khác)",
 				"unknownAction": "Thao tác kernel không hợp lệ: ${action} (cần shutdown hoặc reboot)",
@@ -5779,10 +5786,10 @@
 			"failed": "Không tải được thông tin hệ thống"
 		},
 		"testStatus": {
-			"title": "trạng thái kiểm tra",
-			"running": "Bài kiểm tra đang chạy",
-			"idle": "Kiểm tra kernel trực tuyến (nhàn rỗi)",
-			"queued": "Xếp hàng"
+			"title": "Trạng thái kiểm tra",
+			"running": "Đang chạy kiểm tra",
+			"idle": "Kernel trực tuyến (rảnh)",
+			"queued": "Trong hàng đợi"
 		},
 		"connectivity": {
 			"backend": "Kết nối Backend",

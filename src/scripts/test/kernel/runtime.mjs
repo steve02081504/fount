@@ -4,6 +4,7 @@
 import { randomUUID } from 'node:crypto'
 import { watch } from 'node:fs'
 
+import { ms } from '../../ms.mjs'
 import { CPU_BUDGET_PCT } from '../core/baseline.mjs'
 import { getHeadCommitHash } from '../core/changed.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
@@ -58,10 +59,8 @@ export function ignoreWatchPath(rel) {
 	return false
 }
 
-/** watch 闲置（无触发套件的改动）多久后自动补跑一次 --all（毫秒；默认 2 小时）。 */
-export const DEFAULT_IDLE_ALL_MS = 2 * 60 * 60 * 1000
-/** 自动补跑 --all 的合成 viewer id（不与真实 viewer 冲突）。 */
-export const IDLE_ALL_VIEWER_ID = 'kernel:idle-all'
+/** watch 闲置多久后自动补跑一次 --all（毫秒；默认 2 小时）。 */
+export const DEFAULT_IDLE_ALL_MS = ms('2h')
 
 /**
  * 测试内核。
@@ -87,9 +86,9 @@ export class TestKernel {
 		idleAllMs = DEFAULT_IDLE_ALL_MS,
 	}) {
 		this.idleAllMs = idleAllMs
-		/** 最近一次触发某套件的改动时间（watch 闲置判定起点）。 */
-		this.lastTriggeringChangeAt = Date.now()
-		this.#idleAllInFlight = false
+		/** 运行队列最近一次清空的时间（watch 闲置计时起点）。 */
+		this.lastIdleAt = Date.now()
+		this.#wasIdle = false
 		this.repoRoot = repoRoot
 		this.autoExit = autoExit
 		this.watchFsEnabled = watchFs
@@ -130,7 +129,7 @@ export class TestKernel {
 	#loop
 	#watcher
 	#closeDone
-	#idleAllInFlight
+	#wasIdle
 
 	/** 唤醒调度循环。 */
 	wake() {
@@ -225,18 +224,13 @@ export class TestKernel {
 	noteFileChange(rel) {
 		if (ignoreWatchPath(rel)) return
 		if (rel.endsWith('/test/manifest.json') || rel === 'test/manifest.json') {
-			this.lastTriggeringChangeAt = Date.now()
 			void this.#onManifestChange(rel)
 			return
 		}
 		if (!this.catalog) return
-		let triggered = false
 		for (const suite of this.catalog.allSuites)
-			if (suiteTriggeredFiles(suite, [rel]).length) {
+			if (suiteTriggeredFiles(suite, [rel]).length)
 				this.queues.hitPrep(suiteKey(suite.manifestId, suite.name), `fs:${rel}`)
-				triggered = true
-			}
-		if (triggered) this.lastTriggeringChangeAt = Date.now()
 		this.wake()
 	}
 
@@ -773,6 +767,13 @@ export class TestKernel {
 	 */
 	async #runLoop() {
 		while (!this.closed) {
+			// watch 闲置计时从运行队列清空这一刻起算（不是从改动或内核启动）。
+			if (this.queues.allEmpty() && this.running.size === 0) {
+				if (!this.#wasIdle) this.lastIdleAt = Date.now()
+				this.#wasIdle = true
+			}
+			else
+				this.#wasIdle = false
 			const promoted = this.queues.promotePrep()
 			for (const item of promoted)
 				this.viewers.broadcast({
@@ -787,6 +788,8 @@ export class TestKernel {
 				this.#notifyJobWaits()
 			await this.#admitReady()
 			this.#notifyJobWaits()
+			// 闲置满窗口时把全部套件入队；紧随其后的 ready 短路会重入本轮并调度它们。
+			this.#maybeFireIdleAll()
 			// `#admitReady` is async: even a sync body yields once. A job enqueued in
 			// that gap would otherwise miss this tick and sleep until an unrelated wake.
 			if (
@@ -801,7 +804,6 @@ export class TestKernel {
 				if (this.jobs.size === 0)
 					this.viewers.broadcast({ type: 'idle', remainingMs: 0, unknownCount: 0 })
 			}
-			this.#maybeFireIdleAll()
 			if (this.#shouldExit()) {
 				this.issueCache.pruneOlderThan()
 				await this.close()
@@ -820,44 +822,30 @@ export class TestKernel {
 	}
 
 	/**
-	 * 距自动补跑 --all 的到期时刻；不适用（无 watch / 在跑 / 已在途）则为 null。
+	 * 距自动补跑 --all 的到期时刻；不适用（无 watch / 仍在跑）则为 null。
 	 * @returns {number | null} 到期时刻（ms）
 	 */
 	#idleAllDueAt() {
-		if (this.#idleAllInFlight) return null
 		if (this.viewers.watchCount() === 0) return null
-		if (this.jobs.size > 0 || !this.queues.pendingEmpty() || this.running.size > 0) return null
-		return this.lastTriggeringChangeAt + this.idleAllMs
+		if (this.jobs.size > 0 || !this.queues.allEmpty() || this.running.size > 0) return null
+		return this.lastIdleAt + this.idleAllMs
 	}
 
 	/**
-	 * watch 闲置满窗口后自动补跑一次 --all（仅一次，跑完重置静置计时）。
-	 * 提交在循环 await 链之外进行，避免与 CLI 提交路径一样卡住子进程 spawn。
+	 * watch 闲置满窗口后把全部套件直接塞进运行队列（等价一次 --all）。
+	 * 只入队、不走 expandJobWave 的 git/exec 选择管线；跑完队列清空后计时自动重置。
 	 * @returns {void}
 	 */
 	#maybeFireIdleAll() {
 		const dueAt = this.#idleAllDueAt()
 		if (dueAt == null || Date.now() < dueAt) return
-		this.#idleAllInFlight = true
-		void this.#runIdleAll().catch(() => {
-			this.#idleAllInFlight = false
-			this.lastTriggeringChangeAt = Date.now()
-		})
-	}
-
-	/**
-	 * 真正提交并激活 --all job。
-	 * @returns {Promise<void>}
-	 */
-	async #runIdleAll() {
-		const submitted = await this.submitJob({ runAll: true }, IDLE_ALL_VIEWER_ID)
-		if (submitted.jobId && this.jobs.has(submitted.jobId))
-			await this.releaseJob(submitted.jobId)
-		else {
-			this.#idleAllInFlight = false
-			this.lastTriggeringChangeAt = Date.now()
-			this.wake()
+		for (const suite of this.catalog.allSuites)
+			this.queues.enqueueFs(suiteKey(suite.manifestId, suite.name), 'idle_all')
+		for (const suite of this.catalog.allSuites) {
+			const key = suiteKey(suite.manifestId, suite.name)
+			this.viewers.broadcast({ type: 'queue-append', key, reason: 'idle_all', ...this.#remainingState() })
 		}
+		this.wake()
 	}
 
 	/**
@@ -1162,10 +1150,6 @@ export class TestKernel {
 			exitCode: job.exitCode,
 			...finished,
 		})
-		if (job.viewerId === IDLE_ALL_VIEWER_ID) {
-			this.#idleAllInFlight = false
-			this.lastTriggeringChangeAt = Date.now()
-		}
 		this.jobs.delete(job.id)
 		this.wake()
 	}
@@ -1198,7 +1182,11 @@ export class TestKernel {
 			key,
 			elapsedMs: now - (running.startedAt ?? now),
 		}))
-		const queuedSuites = [...this.queues.cli, ...this.queues.fs].map(item => item.key)
+		const queuedSuites = [
+			...this.queues.cli.map(item => item.key),
+			...this.queues.fs.map(item => item.key),
+			...this.queues.prep.keys(),
+		]
 		const active = runningSuites.length > 0 || queuedSuites.length > 0
 		return { active, idle: !active, runningSuites, queuedSuites }
 	}

@@ -151,6 +151,13 @@
 				"incompatible": "Utilização: fount test --update-estimates [<groups>...] (não pode ser usado com outros interruptores)",
 				"summary": "Durações previstas atualizadas em ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ignoradas ${skipped} sem baseline ou já atualizadas"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "Uso: fount test --kernel shutdown|reboot (não pode ser usado com outras opções)",
 				"unknownAction": "Ação de kernel desconhecida: ${action} (esperado shutdown ou reboot)",
@@ -5785,9 +5792,9 @@
 			"failed": "Falha ao carregar informações do sistema"
 		},
 		"testStatus": {
-			"title": "status do teste",
-			"running": "O teste está em execução",
-			"idle": "Teste o kernel online (inativo)",
+			"title": "Estado do teste",
+			"running": "Teste em execução",
+			"idle": "Kernel online (inativo)",
 			"queued": "Na fila"
 		},
 		"connectivity": {

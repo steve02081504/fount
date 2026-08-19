@@ -241,6 +241,27 @@
 				"src/public/**/*.{html,mjs,js,css}",
 				".github/pages/**/*.{html,mjs,js,css}"
 			]
+		},
+		{
+			"name": "ms_literal",
+			"expected": "2s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/ms_literal.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/ms_literal.mjs",
+				"src/scripts/checks/test/ms_literal.test.mjs",
+				"src/scripts/checks/walk.mjs",
+				"src/scripts/ms.mjs",
+				"**/*.{mjs,js,ts}"
+			]
 		}
 	]
 }

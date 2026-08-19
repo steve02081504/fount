@@ -817,21 +817,21 @@ function mergeColor(action, ...colors) {
  */
 function averageColors(entries) {
 	let total = 0
-	const colors = entries.map(({ color, weight }) => {
-		total += weight
-		return mergeColor(channel => channel * weight, color)
-	})
-	return mergeColor((...values) => values.reduce((a, b) => a + b, 0) / total, ...colors)
+	for (const { weight } of entries) total += weight
+	return mergeColor(
+		(...values) => values.reduce((a, b) => a + b, 0) / total,
+		...entries.map(({ color, weight }) => mergeColor(channel => channel * weight, color)),
+	)
 }
 
 /**
  * 根据背景色计算边框色：背景色与自身反色按占比混合。
- * @param {Color} bg - 背景色。
+ * @param {Color} background - 背景色。
  * @param {number} ratio - 反色占比（0-1）。
  * @returns {Color} 边框色。
  */
-function borderColorFromBackground(bg, ratio) {
-	return mergeColor(channel => Math.round(channel * (1 - ratio) + (255 - channel) * ratio), bg)
+function borderColorFromBackground(background, ratio) {
+	return mergeColor(channel => Math.round(channel * (1 - ratio) + (255 - channel) * ratio), background)
 }
 
 /**

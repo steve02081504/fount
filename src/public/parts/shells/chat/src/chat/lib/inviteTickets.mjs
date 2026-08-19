@@ -12,9 +12,11 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
+import { ms } from 'fount/scripts/ms.mjs'
+
 import { groupDir } from './paths.mjs'
 
-const DEFAULT_TTL_MS = 60 * 60 * 1000
+const DEFAULT_TTL_MS = ms('1h')
 
 /** @typedef {'valid' | 'invalid' | 'unverifiable'} InviteVerdict */
 

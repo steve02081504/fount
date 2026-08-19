@@ -71,13 +71,11 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/api/parts/shells\\:debug_info/test_status', authenticate, async (req, res) => {
-		/** @type {object | null} */
-		let status = null
 		try {
 			const response = await fetch(TEST_KERNEL_STATUS_URL, { signal: AbortSignal.timeout(2000) })
-			if (response.ok) status = await response.json()
+			if (response.ok) return res.status(200).json(await response.json())
 		} catch { /* 内核未在跑 */ }
-		res.status(200).json(status ?? {
+		res.status(200).json({
 			online: false,
 			active: false,
 			idle: true,

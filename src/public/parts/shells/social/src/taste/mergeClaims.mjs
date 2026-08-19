@@ -6,6 +6,7 @@ import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 
+import { ms } from 'fount/scripts/ms.mjs'
 import { getNodeDir } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
@@ -15,7 +16,7 @@ import { localTagStats, verifyTagMergeClaimWithStats } from './mergeVerify.mjs'
 import { loadTaste, mutateTaste, resolveTasteAlias } from './store.mjs'
 
 const CLAIM_INBOX_MAX = 500
-const CLAIM_TTL_MS = 7 * 24 * 60 * 60 * 1000
+const CLAIM_TTL_MS = ms('7d')
 const CLAIM_PER_SOURCE_MAX = 20
 
 /**

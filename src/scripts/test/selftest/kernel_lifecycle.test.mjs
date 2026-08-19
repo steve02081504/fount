@@ -9,6 +9,7 @@ import { join } from 'node:path'
 import { assertEquals, assertRejects } from 'jsr:@std/assert'
 import { execFile } from 'npm:@steve02081504/exec'
 
+import { ms } from '../../ms.mjs'
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { startTestHub, testHubUrl } from '../hub/index.mjs'
 import { kernelHealthy, parseNetstatListenPid, rebootTestKernel, shutdownTestKernel } from '../kernel/ensure.mjs'
@@ -457,6 +458,13 @@ Deno.test('GET /status reports running and queued suites', async () => {
 		assertEquals(activeBody.runningSuites[0]?.key, runningKey)
 		assertEquals(typeof activeBody.runningSuites[0]?.elapsedMs, 'number')
 		assertEquals(activeBody.queuedSuites, [queuedKey])
+
+		const prepKey = 'testkit:__status_prep__'
+		handle.kernel.queues.hitPrep(prepKey, 'fs_change')
+		const prep = await fetch(`${handle.url}/status`)
+		const prepBody = await prep.json()
+		assertEquals(prepBody.active, true)
+		assertEquals(prepBody.queuedSuites.includes(prepKey), true)
 	}
 	finally {
 		handle.kernel.running.delete('testkit:__status__')
@@ -842,7 +850,7 @@ Deno.test('promoted FS queue does not emit job-wait before discarding a blocked 
 	}
 })
 
-Deno.test('noteFileChange resets the idle clock only on a triggering change', async () => {
+Deno.test('idle clock starts when the run queue empties, not on a file change', async () => {
 	const root = join(tmpdir(), `fount-kernel-idle-clock-${Date.now()}`)
 	await mkdir(root, { recursive: true })
 	try {
@@ -859,26 +867,46 @@ Deno.test('noteFileChange resets the idle clock only on a triggering change', as
 			autoExit: false,
 			watchFs: false,
 			writeReport: false,
-			idleAllMs: 100,
+			idleAllMs: ms('1h'),
+			prepSettleMs: 0,
 		})
 		try {
-			const rel = 'src/scripts/test/selftest/idle_clock.mjs'
+			const triggeringPath = 'src/scripts/test/selftest/idle_clock.mjs'
 			const suite = {
 				manifestId: 'testkit',
 				name: '__idle_clock__',
 				run: ['true'],
-				triggers: [rel],
+				triggers: [triggeringPath],
 				dependencies: [],
 				heavy: false,
 			}
 			handle.kernel.catalog.allSuites.push(suite)
 			handle.kernel.catalog.byKey.set('testkit:__idle_clock__', suite)
-			const before = handle.kernel.lastTriggeringChangeAt
+			await new Promise(resolve => setTimeout(resolve, 20))
+			const before = handle.kernel.lastIdleAt
+			// 未命中任何套件的改动不得重置闲置计时。
 			handle.kernel.noteFileChange('docs/unrelated.md')
-			assertEquals(handle.kernel.lastTriggeringChangeAt, before)
-			await new Promise(resolve => setTimeout(resolve, 5))
-			handle.kernel.noteFileChange(rel)
-			assertEquals(handle.kernel.lastTriggeringChangeAt > before, true)
+			await new Promise(resolve => setTimeout(resolve, 20))
+			assertEquals(handle.kernel.lastIdleAt, before)
+			// 有工作在跑时队列非空；跑完清空后计时才重置。
+			handle.kernel.queues.enqueueFs('testkit:__idle_clock__', 'test')
+			handle.kernel.wake()
+			await awaitWithTimeout(
+				new Promise((resolve, reject) => {
+					const deadline = Date.now() + 4000
+					/**
+					 * 轮询直到闲置计时重置或超时。
+					 * @returns {void}
+					 */
+					const check = () => {
+						if (handle.kernel.lastIdleAt > before) return resolve()
+						if (Date.now() > deadline) return reject(new Error('idle clock did not reset after the run queue emptied'))
+						setTimeout(check, 20)
+					}
+					check()
+				}),
+				'idle clock did not reset after the run queue emptied',
+			)
 		}
 		finally {
 			await handle.close()

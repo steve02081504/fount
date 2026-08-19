@@ -4,12 +4,13 @@
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import { ms } from 'fount/scripts/ms.mjs'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
 import { groupDir } from '../chat/lib/paths.mjs'
 
 /** 共识窗口：窗口内收到的 shun 才计入。 */
-export const SHUN_CONSENSUS_WINDOW_MS = 5 * 60 * 1000
+export const SHUN_CONSENSUS_WINDOW_MS = ms('5m')
 
 /**
  * @param {string} username 用户

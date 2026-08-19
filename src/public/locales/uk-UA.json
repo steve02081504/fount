@@ -151,6 +151,13 @@
 				"incompatible": "Використання: fount test --update-estimates [<groups>...] (не можна використовувати з іншими прапорцями)",
 				"summary": "Оновлено очікувані тривалості для ${suitesUpdated} набор(ів) (${filesChanged} manifest); пропущено ${skipped} без базової лінії або вже актуально"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "Використання: fount test --kernel shutdown|reboot (не можна поєднувати з іншими параметрами)",
 				"unknownAction": "Невідома дія ядра: ${action} (очікується shutdown або reboot)",
@@ -5779,10 +5786,10 @@
 			"failed": "Не вдалося завантажити інформацію про систему"
 		},
 		"testStatus": {
-			"title": "статус тесту",
+			"title": "Статус тесту",
 			"running": "Тест виконується",
-			"idle": "Перевірте ядро ​​онлайн (неактивний)",
-			"queued": "Постановка в чергу"
+			"idle": "Тестове ядро онлайн (неактивне)",
+			"queued": "У черзі"
 		},
 		"connectivity": {
 			"backend": "Серверне підключення",

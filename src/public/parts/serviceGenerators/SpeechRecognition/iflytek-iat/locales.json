@@ -1,10 +1,10 @@
 {
 	"info": {
 		"en-UK": {
-			"name": "iFlytek LFASR Fast Generator",
+			"name": "iFlytek IAT Speech Recognition Generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Fast batch speech recognition via iFlytek OST.",
-			"description_markdown": "Fast batch speech recognition via iFlytek OST.",
+			"description": "Classic iFlytek IAT streaming dictation.",
+			"description_markdown": "Classic iFlytek IAT streaming dictation.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -14,10 +14,10 @@
 			]
 		},
 		"zh-CN": {
-			"name": "讯飞 LFASR Fast 生成器",
+			"name": "讯飞 IAT 语音识别生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞 OST 快速批量语音识别。",
-			"description_markdown": "讯飞 OST 快速批量语音识别。",
+			"description": "讯飞经典 IAT 流式听写。",
+			"description_markdown": "讯飞经典 IAT 流式听写。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -27,10 +27,10 @@
 			]
 		},
 		"ar-SA": {
-			"name": "مولّد iFlytek LFASR Fast",
+			"name": "مولّد التعرف على الكلام iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "تعرف على كلام بالدُفعات السريع عبر iFlytek OST.",
-			"description_markdown": "تعرف على كلام بالدُفعات السريع عبر iFlytek OST.",
+			"description": "الإملاء الصوتي المتدفق الكلاسيكي من iFlytek IAT.",
+			"description_markdown": "الإملاء الصوتي المتدفق الكلاسيكي من iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -40,10 +40,10 @@
 			]
 		},
 		"de-DE": {
-			"name": "iFlytek LFASR Fast-Generator",
+			"name": "iFlytek IAT-Spracherkennungsgenerator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Schnelle Batch-Spracherkennung über iFlytek OST.",
-			"description_markdown": "Schnelle Batch-Spracherkennung über iFlytek OST.",
+			"description": "Klassisches iFlytek IAT-Streaming-Diktat.",
+			"description_markdown": "Klassisches iFlytek IAT-Streaming-Diktat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -53,10 +53,10 @@
 			]
 		},
 		"emoji": {
-			"name": "🎙️🏭 ⚡📦",
+			"name": "🎙️🏭 ✍️✈️",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "📦⚡✈️",
-			"description_markdown": "📦⚡✈️",
+			"description": "✈️✍️🎙️➡️📝",
+			"description_markdown": "✈️✍️🎙️➡️📝",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -66,10 +66,10 @@
 			]
 		},
 		"es-ES": {
-			"name": "Generador iFlytek LFASR Fast",
+			"name": "Generador de reconocimiento de voz iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconocimiento de voz por lotes rápido vía iFlytek OST.",
-			"description_markdown": "Reconocimiento de voz por lotes rápido vía iFlytek OST.",
+			"description": "Dictado en streaming clásico de iFlytek IAT.",
+			"description_markdown": "Dictado en streaming clásico de iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -79,10 +79,10 @@
 			]
 		},
 		"fr-FR": {
-			"name": "Générateur iFlytek LFASR Fast",
+			"name": "Générateur de reconnaissance vocale iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconnaissance vocale par lots rapide via iFlytek OST.",
-			"description_markdown": "Reconnaissance vocale par lots rapide via iFlytek OST.",
+			"description": "Dictée en streaming classique iFlytek IAT.",
+			"description_markdown": "Dictée en streaming classique iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -92,10 +92,10 @@
 			]
 		},
 		"hi-IN": {
-			"name": "iFlytek LFASR Fast जनरेटर",
+			"name": "iFlytek IAT आवाज़ पहचान जनरेटर",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek OST पर तेज़ बैच आवाज़ पहचान।",
-			"description_markdown": "iFlytek OST पर तेज़ बैच आवाज़ पहचान।",
+			"description": "iFlytek IAT क्लासिक स्ट्रीमिंग डिक्टेशन।",
+			"description_markdown": "iFlytek IAT क्लासिक स्ट्रीमिंग डिक्टेशन।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -105,10 +105,10 @@
 			]
 		},
 		"is-IS": {
-			"name": "iFlytek LFASR Fast rafall",
+			"name": "iFlytek IAT talgreiningarrafall",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Hröð runu-talgreining með iFlytek OST.",
-			"description_markdown": "Hröð runu-talgreining með iFlytek OST.",
+			"description": "Klassískt iFlytek IAT streymisúrskrift.",
+			"description_markdown": "Klassískt iFlytek IAT streymisúrskrift.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -118,10 +118,10 @@
 			]
 		},
 		"it-IT": {
-			"name": "Generatore iFlytek LFASR Fast",
+			"name": "Generatore di riconoscimento vocale iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Riconoscimento vocale in batch veloce tramite iFlytek OST.",
-			"description_markdown": "Riconoscimento vocale in batch veloce tramite iFlytek OST.",
+			"description": "Dettatura in streaming classica iFlytek IAT.",
+			"description_markdown": "Dettatura in streaming classica iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -131,10 +131,10 @@
 			]
 		},
 		"ja-JP": {
-			"name": "iFlytek LFASR Fast ジェネレーター",
+			"name": "iFlytek IAT 音声認識ジェネレーター",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek OST 高速バッチ音声認識。",
-			"description_markdown": "iFlytek OST 高速バッチ音声認識。",
+			"description": "iFlytek クラシック IAT ストリーミング音声入力。",
+			"description_markdown": "iFlytek クラシック IAT ストリーミング音声入力。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -144,10 +144,10 @@
 			]
 		},
 		"ko-KR": {
-			"name": "iFlytek LFASR Fast 생성기",
+			"name": "iFlytek IAT 음성 인식 생성기",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek OST 고속 배치 음성 인식.",
-			"description_markdown": "iFlytek OST 고속 배치 음성 인식.",
+			"description": "iFlytek 클래식 IAT 스트리밍 받아쓰기.",
+			"description_markdown": "iFlytek 클래식 IAT 스트리밍 받아쓰기.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -157,10 +157,10 @@
 			]
 		},
 		"lzh": {
-			"name": "訊飛 LFASR Fast 生成器",
+			"name": "訊飛 IAT 語音識別生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛 OST 快速批量語音識別。",
-			"description_markdown": "訊飛 OST 快速批量語音識別。",
+			"description": "訊飛經典 IAT 流式聽寫。",
+			"description_markdown": "訊飛經典 IAT 流式聽寫。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -170,10 +170,10 @@
 			]
 		},
 		"nl-NL": {
-			"name": "iFlytek LFASR Fast-generator",
+			"name": "iFlytek IAT-spraakherkenningsgenerator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Snelle batch-spraakherkenning via iFlytek OST.",
-			"description_markdown": "Snelle batch-spraakherkenning via iFlytek OST.",
+			"description": "Klassiek iFlytek IAT-streamingdictee.",
+			"description_markdown": "Klassiek iFlytek IAT-streamingdictee.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -183,10 +183,10 @@
 			]
 		},
 		"pt-PT": {
-			"name": "Gerador iFlytek LFASR Fast",
+			"name": "Gerador de reconhecimento de fala iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconhecimento de fala em lote rápido via iFlytek OST.",
-			"description_markdown": "Reconhecimento de fala em lote rápido via iFlytek OST.",
+			"description": "Ditado em streaming clássico iFlytek IAT.",
+			"description_markdown": "Ditado em streaming clássico iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -196,10 +196,10 @@
 			]
 		},
 		"ru-RU": {
-			"name": "Генератор iFlytek LFASR Fast",
+			"name": "Генератор распознавания речи iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Быстрое пакетное распознавание речи через iFlytek OST.",
-			"description_markdown": "Быстрое пакетное распознавание речи через iFlytek OST.",
+			"description": "Классическая потоковая диктовка iFlytek IAT.",
+			"description_markdown": "Классическая потоковая диктовка iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -209,10 +209,10 @@
 			]
 		},
 		"uk-UA": {
-			"name": "Генератор iFlytek LFASR Fast",
+			"name": "Генератор розпізнавання мови iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Швидке пакетне розпізнавання мови через iFlytek OST.",
-			"description_markdown": "Швидке пакетне розпізнавання мови через iFlytek OST.",
+			"description": "Класичне потокове диктування iFlytek IAT.",
+			"description_markdown": "Класичне потокове диктування iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -222,10 +222,10 @@
 			]
 		},
 		"vi-VN": {
-			"name": "Trình tạo iFlytek LFASR Fast",
+			"name": "Trình tạo nhận dạng giọng nói iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Nhận dạng giọng nói theo lô nhanh qua iFlytek OST.",
-			"description_markdown": "Nhận dạng giọng nói theo lô nhanh qua iFlytek OST.",
+			"description": "Chép lời streaming cổ điển iFlytek IAT.",
+			"description_markdown": "Chép lời streaming cổ điển iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -235,10 +235,10 @@
 			]
 		},
 		"zh-TW": {
-			"name": "訊飛 LFASR Fast 產生器",
+			"name": "訊飛 IAT 語音辨識產生器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛 OST 快速批次語音辨識。",
-			"description_markdown": "訊飛 OST 快速批次語音辨識。",
+			"description": "訊飛經典 IAT 串流聽寫。",
+			"description_markdown": "訊飛經典 IAT 串流聽寫。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -250,10 +250,10 @@
 	},
 	"product_info": {
 		"en-UK": {
-			"name": "iFlytek LFASR Fast",
+			"name": "iFlytek IAT Speech Recognition",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Fast batch speech recognition via iFlytek OST.",
-			"description_markdown": "Fast batch speech recognition via iFlytek OST.",
+			"description": "Classic iFlytek IAT streaming dictation.",
+			"description_markdown": "Classic iFlytek IAT streaming dictation.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -261,13 +261,13 @@
 				"speech recognition",
 				"generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"zh-CN": {
-			"name": "讯飞 LFASR Fast",
+			"name": "讯飞 IAT 语音识别",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞 OST 快速批量语音识别。",
-			"description_markdown": "讯飞 OST 快速批量语音识别。",
+			"description": "讯飞经典 IAT 流式听写。",
+			"description_markdown": "讯飞经典 IAT 流式听写。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -275,13 +275,13 @@
 				"语音识别",
 				"生成器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ar-SA": {
-			"name": "iFlytek LFASR Fast",
+			"name": "التعرف على الكلام iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "تعرف على كلام بالدُفعات السريع عبر iFlytek OST.",
-			"description_markdown": "تعرف على كلام بالدُفعات السريع عبر iFlytek OST.",
+			"description": "الإملاء الصوتي المتدفق الكلاسيكي من iFlytek IAT.",
+			"description_markdown": "الإملاء الصوتي المتدفق الكلاسيكي من iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -289,13 +289,13 @@
 				"التعرف على الكلام",
 				"مولد"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"de-DE": {
-			"name": "iFlytek LFASR Fast",
+			"name": "iFlytek IAT-Spracherkennung",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Schnelle Batch-Spracherkennung über iFlytek OST.",
-			"description_markdown": "Schnelle Batch-Spracherkennung über iFlytek OST.",
+			"description": "Klassisches iFlytek IAT-Streaming-Diktat.",
+			"description_markdown": "Klassisches iFlytek IAT-Streaming-Diktat.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -303,13 +303,13 @@
 				"Spracherkennung",
 				"Generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"emoji": {
-			"name": "🎙️ ⚡📦",
+			"name": "🎙️ ✍️✈️",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "📦⚡✈️",
-			"description_markdown": "📦⚡✈️",
+			"description": "✈️✍️🎙️➡️📝",
+			"description_markdown": "✈️✍️🎙️➡️📝",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -317,13 +317,13 @@
 				"🎙️",
 				"🏭"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"es-ES": {
-			"name": "iFlytek LFASR Fast",
+			"name": "Reconocimiento de voz iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconocimiento de voz por lotes rápido vía iFlytek OST.",
-			"description_markdown": "Reconocimiento de voz por lotes rápido vía iFlytek OST.",
+			"description": "Dictado en streaming clásico de iFlytek IAT.",
+			"description_markdown": "Dictado en streaming clásico de iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -331,13 +331,13 @@
 				"reconocimiento de voz",
 				"generador"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"fr-FR": {
-			"name": "iFlytek LFASR Fast",
+			"name": "Reconnaissance vocale iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconnaissance vocale par lots rapide via iFlytek OST.",
-			"description_markdown": "Reconnaissance vocale par lots rapide via iFlytek OST.",
+			"description": "Dictée en streaming classique iFlytek IAT.",
+			"description_markdown": "Dictée en streaming classique iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -345,13 +345,13 @@
 				"reconnaissance vocale",
 				"générateur"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"hi-IN": {
-			"name": "iFlytek LFASR Fast",
+			"name": "iFlytek IAT आवाज़ पहचान",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek OST पर तेज़ बैच आवाज़ पहचान।",
-			"description_markdown": "iFlytek OST पर तेज़ बैच आवाज़ पहचान।",
+			"description": "iFlytek IAT क्लासिक स्ट्रीमिंग डिक्टेशन।",
+			"description_markdown": "iFlytek IAT क्लासिक स्ट्रीमिंग डिक्टेशन।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -359,13 +359,13 @@
 				"आवाज़ पहचान",
 				"जनरेटर"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"is-IS": {
-			"name": "iFlytek LFASR Fast",
+			"name": "iFlytek IAT talgreining",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Hröð runu-talgreining með iFlytek OST.",
-			"description_markdown": "Hröð runu-talgreining með iFlytek OST.",
+			"description": "Klassískt iFlytek IAT streymisúrskrift.",
+			"description_markdown": "Klassískt iFlytek IAT streymisúrskrift.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -373,13 +373,13 @@
 				"talgreining",
 				"rafall"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"it-IT": {
-			"name": "iFlytek LFASR Fast",
+			"name": "Riconoscimento vocale iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Riconoscimento vocale in batch veloce tramite iFlytek OST.",
-			"description_markdown": "Riconoscimento vocale in batch veloce tramite iFlytek OST.",
+			"description": "Dettatura in streaming classica iFlytek IAT.",
+			"description_markdown": "Dettatura in streaming classica iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -387,13 +387,13 @@
 				"riconoscimento vocale",
 				"generatore"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ja-JP": {
-			"name": "iFlytek LFASR Fast",
+			"name": "iFlytek IAT 音声認識",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek OST 高速バッチ音声認識。",
-			"description_markdown": "iFlytek OST 高速バッチ音声認識。",
+			"description": "iFlytek クラシック IAT ストリーミング音声入力。",
+			"description_markdown": "iFlytek クラシック IAT ストリーミング音声入力。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -401,13 +401,13 @@
 				"音声認識",
 				"ジェネレーター"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ko-KR": {
-			"name": "iFlytek LFASR Fast",
+			"name": "iFlytek IAT 음성 인식",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek OST 고속 배치 음성 인식.",
-			"description_markdown": "iFlytek OST 고속 배치 음성 인식.",
+			"description": "iFlytek 클래식 IAT 스트리밍 받아쓰기.",
+			"description_markdown": "iFlytek 클래식 IAT 스트리밍 받아쓰기.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -415,13 +415,13 @@
 				"음성 인식",
 				"생성기"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"lzh": {
-			"name": "訊飛 LFASR Fast",
+			"name": "訊飛 IAT 語音識別",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛 OST 快速批量語音識別。",
-			"description_markdown": "訊飛 OST 快速批量語音識別。",
+			"description": "訊飛經典 IAT 流式聽寫。",
+			"description_markdown": "訊飛經典 IAT 流式聽寫。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -429,13 +429,13 @@
 				"語音識別",
 				"生成器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"nl-NL": {
-			"name": "iFlytek LFASR Fast",
+			"name": "iFlytek IAT-spraakherkenning",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Snelle batch-spraakherkenning via iFlytek OST.",
-			"description_markdown": "Snelle batch-spraakherkenning via iFlytek OST.",
+			"description": "Klassiek iFlytek IAT-streamingdictee.",
+			"description_markdown": "Klassiek iFlytek IAT-streamingdictee.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -443,13 +443,13 @@
 				"spraakherkenning",
 				"generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"pt-PT": {
-			"name": "iFlytek LFASR Fast",
+			"name": "Reconhecimento de fala iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconhecimento de fala em lote rápido via iFlytek OST.",
-			"description_markdown": "Reconhecimento de fala em lote rápido via iFlytek OST.",
+			"description": "Ditado em streaming clássico iFlytek IAT.",
+			"description_markdown": "Ditado em streaming clássico iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -457,13 +457,13 @@
 				"reconhecimento de fala",
 				"gerador"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ru-RU": {
-			"name": "iFlytek LFASR Fast",
+			"name": "Распознавание речи iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Быстрое пакетное распознавание речи через iFlytek OST.",
-			"description_markdown": "Быстрое пакетное распознавание речи через iFlytek OST.",
+			"description": "Классическая потоковая диктовка iFlytek IAT.",
+			"description_markdown": "Классическая потоковая диктовка iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -471,13 +471,13 @@
 				"распознавание речи",
 				"генератор"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"uk-UA": {
-			"name": "iFlytek LFASR Fast",
+			"name": "Розпізнавання мови iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Швидке пакетне розпізнавання мови через iFlytek OST.",
-			"description_markdown": "Швидке пакетне розпізнавання мови через iFlytek OST.",
+			"description": "Класичне потокове диктування iFlytek IAT.",
+			"description_markdown": "Класичне потокове диктування iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -485,13 +485,13 @@
 				"розпізнавання мови",
 				"генератор"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"vi-VN": {
-			"name": "iFlytek LFASR Fast",
+			"name": "Nhận dạng giọng nói iFlytek IAT",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Nhận dạng giọng nói theo lô nhanh qua iFlytek OST.",
-			"description_markdown": "Nhận dạng giọng nói theo lô nhanh qua iFlytek OST.",
+			"description": "Chép lời streaming cổ điển iFlytek IAT.",
+			"description_markdown": "Chép lời streaming cổ điển iFlytek IAT.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -499,13 +499,13 @@
 				"nhận dạng giọng nói",
 				"trình tạo"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"zh-TW": {
-			"name": "訊飛 LFASR Fast",
+			"name": "訊飛 IAT 語音辨識",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛 OST 快速批次語音辨識。",
-			"description_markdown": "訊飛 OST 快速批次語音辨識。",
+			"description": "訊飛經典 IAT 串流聽寫。",
+			"description_markdown": "訊飛經典 IAT 串流聽寫。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -513,7 +513,7 @@
 				"語音辨識",
 				"產生器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		}
 	}
 }

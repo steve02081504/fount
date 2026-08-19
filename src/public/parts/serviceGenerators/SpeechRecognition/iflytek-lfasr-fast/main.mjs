@@ -2,9 +2,9 @@
  * @typedef {import('../../../../../decl/SpeechRecognitionSource.ts').SpeechRecognitionSource_t} SpeechRecognitionSource_t
  */
 
+import { hmacSha256Base64, sha256Base64 } from '../shared/iflytekAuth.mjs'
 import { concatUint8, pcmToWav } from '../shared/pcm.mjs'
 import { buildSourceInfo, recognizeByBuffering } from '../shared/recognizeHelpers.mjs'
-import { hmacSha256Base64, sha256Base64 } from '../shared/xfyunAuth.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -31,7 +31,7 @@ export default {
 }
 
 const configTemplate = {
-	name: 'xfyun-lfasr-fast',
+	name: 'iflytek-lfasr-fast',
 	app_id: '',
 	api_key: '',
 	api_secret: '',
@@ -233,7 +233,7 @@ async function GetSource(config) {
 
 	return {
 		type: 'speech-recognition',
-		info: buildSourceInfo(product_info, { name: config.name || 'Xfyun LFASR Fast', provider: 'xfyun' }),
+		info: buildSourceInfo(product_info, { name: config.name || 'iFlytek LFASR Fast', provider: 'iflytek' }),
 		is_paid: true,
 		extension: {},
 		/**

@@ -151,6 +151,13 @@
 				"incompatible": "Использование: fount test --update-estimates [<groups>...] (нельзя использовать с другими флагами)",
 				"summary": "Обновлены ожидаемые длительности для ${suitesUpdated} набор(ов) (${filesChanged} manifest); пропущено ${skipped} без базовой линии или уже актуально"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "Использование: fount test --kernel shutdown|reboot (нельзя сочетать с другими параметрами)",
 				"unknownAction": "Неизвестное действие ядра: ${action} (ожидается shutdown или reboot)",
@@ -5779,10 +5786,10 @@
 			"failed": "Не удалось загрузить информацию о системе."
 		},
 		"testStatus": {
-			"title": "статус теста",
-			"running": "Тест запущен",
-			"idle": "Тестирование ядра онлайн (в режиме ожидания)",
-			"queued": "Очередь"
+			"title": "Статус теста",
+			"running": "Идёт тест",
+			"idle": "Ядро онлайн (в режиме ожидания)",
+			"queued": "В очереди"
 		},
 		"connectivity": {
 			"backend": "подключение к серверной части",

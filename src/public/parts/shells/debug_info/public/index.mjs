@@ -201,14 +201,30 @@ async function pollTestStatus() {
  */
 function startTestStatusPolling() {
 	if (testStatusTimer) return
-	testStatusTimer = setInterval(pollTestStatus, TEST_POLL_INTERVAL)
+	pollTestStatus()
+	scheduleNextTestStatusPoll()
+}
+
+/**
+ * 调度下一次轮询；等待上次请求完成后才计算间隔，避免请求重叠。
+ */
+function scheduleNextTestStatusPoll() {
+	if (document.hidden) {
+		testStatusTimer = null
+		return
+	}
+	testStatusTimer = setTimeout(async () => {
+		testStatusTimer = null
+		await pollTestStatus()
+		scheduleNextTestStatusPoll()
+	}, TEST_POLL_INTERVAL)
 }
 
 /**
  * 停止测试状态轮询。
  */
 function stopTestStatusPolling() {
-	clearInterval(testStatusTimer)
+	clearTimeout(testStatusTimer)
 	testStatusTimer = null
 }
 
@@ -338,7 +354,6 @@ document.addEventListener('visibilitychange', () => {
 	else {
 		if (Date.now() - lastVersionCheckTime >= VERSION_POLL_INTERVAL) pollVersionInfo()
 		startPollTimer()
-		pollTestStatus()
 		startTestStatusPolling()
 	}
 })
@@ -349,5 +364,4 @@ pollVersionInfo()
 fetchSystemInfo()
 checkFrontendConnectivity()
 fetchAutoUpdateStatus()
-pollTestStatus()
 startTestStatusPolling()

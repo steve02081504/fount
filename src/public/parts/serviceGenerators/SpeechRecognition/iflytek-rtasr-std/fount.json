@@ -1,4 +1,4 @@
 {
 	"type": "serviceGenerators/SpeechRecognition",
-	"dirname": "xfyun-lfasr-llm"
+	"dirname": "iflytek-rtasr-std"
 }

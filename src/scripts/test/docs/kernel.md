@@ -14,7 +14,7 @@ On Windows the Node `listening` callback can fire before bind (`address()` is `n
 
 `fount test --watch` is a viewer WS (`watch: true`, refcounted). Idle does not keep-awake. The kernel always fs-watches the repo (excludes `.git` / `node_modules` / `debug_logs/` / `data/test/`).
 
-With a `--watch` viewer connected, the kernel auto-runs `--all` once after **2 hours** with no triggering file change (a change that matches some suite's `triggers`, or a `test/manifest.json` edit). The idle clock starts at kernel start and resets on any triggering change or after an auto-run finishes; the auto-run itself is suppressed while any job is in flight. Tunable for tests via `idleAllMs` (`DEFAULT_IDLE_ALL_MS`).
+With a `--watch` viewer connected, the kernel auto-runs all suites once after **2 hours** with the run queue empty (measured from the moment the queue last drained, not from any file change — a 2-hour run never triggers an immediate `--all` on finish). The auto-run just enqueues every suite straight into the run queue (no `expandJobWave` / git selection); the idle clock restarts once that run drains. Tunable for tests via `idleAllMs` (`DEFAULT_IDLE_ALL_MS = ms('2h')`).
 
 CLI job queue is LIFO among equal `priority` (later enqueued items first; imperfect stays `priority` 0). FS-triggered queue is LIFO. Auto-exit only after **all viewers disconnect** and no jobs remain — an empty CLI job must still deliver `accepted` / `job-done` before the kernel goes away.
 

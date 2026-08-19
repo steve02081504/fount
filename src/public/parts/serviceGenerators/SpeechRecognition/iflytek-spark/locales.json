@@ -1,10 +1,10 @@
 {
 	"info": {
 		"en-UK": {
-			"name": "iFlytek RTASR Speech Recognition Generator",
+			"name": "iFlytek Spark Speech Recognition Generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek office RTASR streaming recognition.",
-			"description_markdown": "iFlytek office RTASR streaming recognition.",
+			"description": "Streaming dictation powered by the iFlytek Spark large model.",
+			"description_markdown": "Streaming dictation powered by the iFlytek Spark large model.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -14,10 +14,10 @@
 			]
 		},
 		"zh-CN": {
-			"name": "讯飞 RTASR 语音识别生成器",
+			"name": "讯飞星火语音识别生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞办公 RTASR 流式识别。",
-			"description_markdown": "讯飞办公 RTASR 流式识别。",
+			"description": "讯飞星火大模型流式听写。",
+			"description_markdown": "讯飞星火大模型流式听写。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -27,10 +27,10 @@
 			]
 		},
 		"ar-SA": {
-			"name": "مولّد التعرف على الكلام iFlytek RTASR",
+			"name": "مولّد التعرف على الكلام iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "تعرف على كلام متدفق RTASR المكتبي من iFlytek.",
-			"description_markdown": "تعرف على كلام متدفق RTASR المكتبي من iFlytek.",
+			"description": "إملاء صوتي متدفق بنموذج iFlytek Spark الكبير.",
+			"description_markdown": "إملاء صوتي متدفق بنموذج iFlytek Spark الكبير.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -40,10 +40,10 @@
 			]
 		},
 		"de-DE": {
-			"name": "iFlytek RTASR-Spracherkennungsgenerator",
+			"name": "iFlytek Spark-Spracherkennungsgenerator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek Office-RTASR-Streaming-Erkennung.",
-			"description_markdown": "iFlytek Office-RTASR-Streaming-Erkennung.",
+			"description": "Streaming-Diktat mit dem iFlytek Spark-Großmodell.",
+			"description_markdown": "Streaming-Diktat mit dem iFlytek Spark-Großmodell.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -53,10 +53,10 @@
 			]
 		},
 		"emoji": {
-			"name": "🎙️🏭 💼📡",
+			"name": "🎙️🏭 ✨✈️",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "💼📡🎙️➡️📝",
-			"description_markdown": "💼📡🎙️➡️📝",
+			"description": "✨✈️🎙️➡️📝",
+			"description_markdown": "✨✈️🎙️➡️📝",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -66,10 +66,10 @@
 			]
 		},
 		"es-ES": {
-			"name": "Generador de reconocimiento de voz iFlytek RTASR",
+			"name": "Generador de reconocimiento de voz iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconocimiento en streaming RTASR de oficina de iFlytek.",
-			"description_markdown": "Reconocimiento en streaming RTASR de oficina de iFlytek.",
+			"description": "Dictado en streaming con el gran modelo iFlytek Spark.",
+			"description_markdown": "Dictado en streaming con el gran modelo iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -79,10 +79,10 @@
 			]
 		},
 		"fr-FR": {
-			"name": "Générateur de reconnaissance vocale iFlytek RTASR",
+			"name": "Générateur de reconnaissance vocale iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconnaissance en streaming RTASR bureautique iFlytek.",
-			"description_markdown": "Reconnaissance en streaming RTASR bureautique iFlytek.",
+			"description": "Dictée en streaming avec le grand modèle iFlytek Spark.",
+			"description_markdown": "Dictée en streaming avec le grand modèle iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -92,10 +92,10 @@
 			]
 		},
 		"hi-IN": {
-			"name": "iFlytek RTASR आवाज़ पहचान जनरेटर",
+			"name": "iFlytek Spark आवाज़ पहचान जनरेटर",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek ऑफिस RTASR स्ट्रीमिंग पहचान।",
-			"description_markdown": "iFlytek ऑफिस RTASR स्ट्रीमिंग पहचान।",
+			"description": "iFlytek Spark बड़े मॉडल पर स्ट्रीमिंग डिक्टेशन।",
+			"description_markdown": "iFlytek Spark बड़े मॉडल पर स्ट्रीमिंग डिक्टेशन।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -105,10 +105,10 @@
 			]
 		},
 		"is-IS": {
-			"name": "iFlytek RTASR talgreiningarrafall",
+			"name": "iFlytek Spark talgreiningarrafall",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek skrifstofu-RTASR streymisgreining.",
-			"description_markdown": "iFlytek skrifstofu-RTASR streymisgreining.",
+			"description": "Streymisúrskrift með iFlytek Spark stóra líkani.",
+			"description_markdown": "Streymisúrskrift með iFlytek Spark stóra líkani.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -118,10 +118,10 @@
 			]
 		},
 		"it-IT": {
-			"name": "Generatore di riconoscimento vocale iFlytek RTASR",
+			"name": "Generatore di riconoscimento vocale iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Riconoscimento in streaming RTASR office iFlytek.",
-			"description_markdown": "Riconoscimento in streaming RTASR office iFlytek.",
+			"description": "Dettatura in streaming con il grande modello iFlytek Spark.",
+			"description_markdown": "Dettatura in streaming con il grande modello iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -131,10 +131,10 @@
 			]
 		},
 		"ja-JP": {
-			"name": "iFlytek RTASR 音声認識ジェネレーター",
+			"name": "iFlytek Spark 音声認識ジェネレーター",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek オフィス RTASR ストリーミング認識。",
-			"description_markdown": "iFlytek オフィス RTASR ストリーミング認識。",
+			"description": "iFlytek Spark 大モデルによるストリーミング音声入力。",
+			"description_markdown": "iFlytek Spark 大モデルによるストリーミング音声入力。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -144,10 +144,10 @@
 			]
 		},
 		"ko-KR": {
-			"name": "iFlytek RTASR 음성 인식 생성기",
+			"name": "iFlytek Spark 음성 인식 생성기",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 오피스 RTASR 스트리밍 인식.",
-			"description_markdown": "iFlytek 오피스 RTASR 스트리밍 인식.",
+			"description": "iFlytek Spark 대형 모델 스트리밍 받아쓰기.",
+			"description_markdown": "iFlytek Spark 대형 모델 스트리밍 받아쓰기.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -157,10 +157,10 @@
 			]
 		},
 		"lzh": {
-			"name": "訊飛 RTASR 語音識別生成器",
+			"name": "訊飛星火語音識別生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛辦公 RTASR 流式識別。",
-			"description_markdown": "訊飛辦公 RTASR 流式識別。",
+			"description": "訊飛星火大模型流式聽寫。",
+			"description_markdown": "訊飛星火大模型流式聽寫。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -170,10 +170,10 @@
 			]
 		},
 		"nl-NL": {
-			"name": "iFlytek RTASR-spraakherkenningsgenerator",
+			"name": "iFlytek Spark-spraakherkenningsgenerator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek office RTASR-streamingherkenning.",
-			"description_markdown": "iFlytek office RTASR-streamingherkenning.",
+			"description": "Streamingdictee met het iFlytek Spark-grootmodel.",
+			"description_markdown": "Streamingdictee met het iFlytek Spark-grootmodel.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -183,10 +183,10 @@
 			]
 		},
 		"pt-PT": {
-			"name": "Gerador de reconhecimento de fala iFlytek RTASR",
+			"name": "Gerador de reconhecimento de fala iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconhecimento em streaming RTASR office iFlytek.",
-			"description_markdown": "Reconhecimento em streaming RTASR office iFlytek.",
+			"description": "Ditado em streaming com o grande modelo iFlytek Spark.",
+			"description_markdown": "Ditado em streaming com o grande modelo iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -196,10 +196,10 @@
 			]
 		},
 		"ru-RU": {
-			"name": "Генератор распознавания речи iFlytek RTASR",
+			"name": "Генератор распознавания речи iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Офисное потоковое распознавание RTASR iFlytek.",
-			"description_markdown": "Офисное потоковое распознавание RTASR iFlytek.",
+			"description": "Потоковое диктант на большой модели iFlytek Spark.",
+			"description_markdown": "Потоковое диктант на большой модели iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -209,10 +209,10 @@
 			]
 		},
 		"uk-UA": {
-			"name": "Генератор розпізнавання мови iFlytek RTASR",
+			"name": "Генератор розпізнавання мови iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Офісне потокове розпізнавання RTASR iFlytek.",
-			"description_markdown": "Офісне потокове розпізнавання RTASR iFlytek.",
+			"description": "Потокове диктування на великій моделі iFlytek Spark.",
+			"description_markdown": "Потокове диктування на великій моделі iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -222,10 +222,10 @@
 			]
 		},
 		"vi-VN": {
-			"name": "Trình tạo nhận dạng giọng nói iFlytek RTASR",
+			"name": "Trình tạo nhận dạng giọng nói iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Nhận dạng streaming RTASR văn phòng iFlytek.",
-			"description_markdown": "Nhận dạng streaming RTASR văn phòng iFlytek.",
+			"description": "Chép lời streaming với mô hình lớn iFlytek Spark.",
+			"description_markdown": "Chép lời streaming với mô hình lớn iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -235,10 +235,10 @@
 			]
 		},
 		"zh-TW": {
-			"name": "訊飛 RTASR 語音辨識產生器",
+			"name": "訊飛星火語音辨識產生器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛辦公 RTASR 串流辨識。",
-			"description_markdown": "訊飛辦公 RTASR 串流辨識。",
+			"description": "訊飛星火大模型串流聽寫。",
+			"description_markdown": "訊飛星火大模型串流聽寫。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -250,10 +250,10 @@
 	},
 	"product_info": {
 		"en-UK": {
-			"name": "iFlytek RTASR Speech Recognition",
+			"name": "iFlytek Spark Speech Recognition",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek office RTASR streaming recognition.",
-			"description_markdown": "iFlytek office RTASR streaming recognition.",
+			"description": "Streaming dictation powered by the iFlytek Spark large model.",
+			"description_markdown": "Streaming dictation powered by the iFlytek Spark large model.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -261,13 +261,13 @@
 				"speech recognition",
 				"generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"zh-CN": {
-			"name": "讯飞 RTASR 语音识别",
+			"name": "讯飞星火语音识别",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞办公 RTASR 流式识别。",
-			"description_markdown": "讯飞办公 RTASR 流式识别。",
+			"description": "讯飞星火大模型流式听写。",
+			"description_markdown": "讯飞星火大模型流式听写。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -275,13 +275,13 @@
 				"语音识别",
 				"生成器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ar-SA": {
-			"name": "التعرف على الكلام iFlytek RTASR",
+			"name": "التعرف على الكلام iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "تعرف على كلام متدفق RTASR المكتبي من iFlytek.",
-			"description_markdown": "تعرف على كلام متدفق RTASR المكتبي من iFlytek.",
+			"description": "إملاء صوتي متدفق بنموذج iFlytek Spark الكبير.",
+			"description_markdown": "إملاء صوتي متدفق بنموذج iFlytek Spark الكبير.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -289,13 +289,13 @@
 				"التعرف على الكلام",
 				"مولد"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"de-DE": {
-			"name": "iFlytek RTASR-Spracherkennung",
+			"name": "iFlytek Spark-Spracherkennung",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek Office-RTASR-Streaming-Erkennung.",
-			"description_markdown": "iFlytek Office-RTASR-Streaming-Erkennung.",
+			"description": "Streaming-Diktat mit dem iFlytek Spark-Großmodell.",
+			"description_markdown": "Streaming-Diktat mit dem iFlytek Spark-Großmodell.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -303,13 +303,13 @@
 				"Spracherkennung",
 				"Generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"emoji": {
-			"name": "🎙️ 💼📡",
+			"name": "🎙️ ✨✈️",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "💼📡🎙️➡️📝",
-			"description_markdown": "💼📡🎙️➡️📝",
+			"description": "✨✈️🎙️➡️📝",
+			"description_markdown": "✨✈️🎙️➡️📝",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -317,13 +317,13 @@
 				"🎙️",
 				"🏭"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"es-ES": {
-			"name": "Reconocimiento de voz iFlytek RTASR",
+			"name": "Reconocimiento de voz iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconocimiento en streaming RTASR de oficina de iFlytek.",
-			"description_markdown": "Reconocimiento en streaming RTASR de oficina de iFlytek.",
+			"description": "Dictado en streaming con el gran modelo iFlytek Spark.",
+			"description_markdown": "Dictado en streaming con el gran modelo iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -331,13 +331,13 @@
 				"reconocimiento de voz",
 				"generador"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"fr-FR": {
-			"name": "Reconnaissance vocale iFlytek RTASR",
+			"name": "Reconnaissance vocale iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconnaissance en streaming RTASR bureautique iFlytek.",
-			"description_markdown": "Reconnaissance en streaming RTASR bureautique iFlytek.",
+			"description": "Dictée en streaming avec le grand modèle iFlytek Spark.",
+			"description_markdown": "Dictée en streaming avec le grand modèle iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -345,13 +345,13 @@
 				"reconnaissance vocale",
 				"générateur"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"hi-IN": {
-			"name": "iFlytek RTASR आवाज़ पहचान",
+			"name": "iFlytek Spark आवाज़ पहचान",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek ऑफिस RTASR स्ट्रीमिंग पहचान।",
-			"description_markdown": "iFlytek ऑफिस RTASR स्ट्रीमिंग पहचान।",
+			"description": "iFlytek Spark बड़े मॉडल पर स्ट्रीमिंग डिक्टेशन।",
+			"description_markdown": "iFlytek Spark बड़े मॉडल पर स्ट्रीमिंग डिक्टेशन।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -359,13 +359,13 @@
 				"आवाज़ पहचान",
 				"जनरेटर"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"is-IS": {
-			"name": "iFlytek RTASR talgreining",
+			"name": "iFlytek Spark talgreining",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek skrifstofu-RTASR streymisgreining.",
-			"description_markdown": "iFlytek skrifstofu-RTASR streymisgreining.",
+			"description": "Streymisúrskrift með iFlytek Spark stóra líkani.",
+			"description_markdown": "Streymisúrskrift með iFlytek Spark stóra líkani.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -373,13 +373,13 @@
 				"talgreining",
 				"rafall"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"it-IT": {
-			"name": "Riconoscimento vocale iFlytek RTASR",
+			"name": "Riconoscimento vocale iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Riconoscimento in streaming RTASR office iFlytek.",
-			"description_markdown": "Riconoscimento in streaming RTASR office iFlytek.",
+			"description": "Dettatura in streaming con il grande modello iFlytek Spark.",
+			"description_markdown": "Dettatura in streaming con il grande modello iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -387,13 +387,13 @@
 				"riconoscimento vocale",
 				"generatore"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ja-JP": {
-			"name": "iFlytek RTASR 音声認識",
+			"name": "iFlytek Spark 音声認識",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek オフィス RTASR ストリーミング認識。",
-			"description_markdown": "iFlytek オフィス RTASR ストリーミング認識。",
+			"description": "iFlytek Spark 大モデルによるストリーミング音声入力。",
+			"description_markdown": "iFlytek Spark 大モデルによるストリーミング音声入力。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -401,13 +401,13 @@
 				"音声認識",
 				"ジェネレーター"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ko-KR": {
-			"name": "iFlytek RTASR 음성 인식",
+			"name": "iFlytek Spark 음성 인식",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 오피스 RTASR 스트리밍 인식.",
-			"description_markdown": "iFlytek 오피스 RTASR 스트리밍 인식.",
+			"description": "iFlytek Spark 대형 모델 스트리밍 받아쓰기.",
+			"description_markdown": "iFlytek Spark 대형 모델 스트리밍 받아쓰기.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -415,13 +415,13 @@
 				"음성 인식",
 				"생성기"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"lzh": {
-			"name": "訊飛 RTASR 語音識別",
+			"name": "訊飛星火語音識別",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛辦公 RTASR 流式識別。",
-			"description_markdown": "訊飛辦公 RTASR 流式識別。",
+			"description": "訊飛星火大模型流式聽寫。",
+			"description_markdown": "訊飛星火大模型流式聽寫。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -429,13 +429,13 @@
 				"語音識別",
 				"生成器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"nl-NL": {
-			"name": "iFlytek RTASR-spraakherkenning",
+			"name": "iFlytek Spark-spraakherkenning",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek office RTASR-streamingherkenning.",
-			"description_markdown": "iFlytek office RTASR-streamingherkenning.",
+			"description": "Streamingdictee met het iFlytek Spark-grootmodel.",
+			"description_markdown": "Streamingdictee met het iFlytek Spark-grootmodel.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -443,13 +443,13 @@
 				"spraakherkenning",
 				"generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"pt-PT": {
-			"name": "Reconhecimento de fala iFlytek RTASR",
+			"name": "Reconhecimento de fala iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Reconhecimento em streaming RTASR office iFlytek.",
-			"description_markdown": "Reconhecimento em streaming RTASR office iFlytek.",
+			"description": "Ditado em streaming com o grande modelo iFlytek Spark.",
+			"description_markdown": "Ditado em streaming com o grande modelo iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -457,13 +457,13 @@
 				"reconhecimento de fala",
 				"gerador"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ru-RU": {
-			"name": "Распознавание речи iFlytek RTASR",
+			"name": "Распознавание речи iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Офисное потоковое распознавание RTASR iFlytek.",
-			"description_markdown": "Офисное потоковое распознавание RTASR iFlytek.",
+			"description": "Потоковое диктант на большой модели iFlytek Spark.",
+			"description_markdown": "Потоковое диктант на большой модели iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -471,13 +471,13 @@
 				"распознавание речи",
 				"генератор"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"uk-UA": {
-			"name": "Розпізнавання мови iFlytek RTASR",
+			"name": "Розпізнавання мови iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Офісне потокове розпізнавання RTASR iFlytek.",
-			"description_markdown": "Офісне потокове розпізнавання RTASR iFlytek.",
+			"description": "Потокове диктування на великій моделі iFlytek Spark.",
+			"description_markdown": "Потокове диктування на великій моделі iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -485,13 +485,13 @@
 				"розпізнавання мови",
 				"генератор"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"vi-VN": {
-			"name": "Nhận dạng giọng nói iFlytek RTASR",
+			"name": "Nhận dạng giọng nói iFlytek Spark",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Nhận dạng streaming RTASR văn phòng iFlytek.",
-			"description_markdown": "Nhận dạng streaming RTASR văn phòng iFlytek.",
+			"description": "Chép lời streaming với mô hình lớn iFlytek Spark.",
+			"description_markdown": "Chép lời streaming với mô hình lớn iFlytek Spark.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -499,13 +499,13 @@
 				"nhận dạng giọng nói",
 				"trình tạo"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"zh-TW": {
-			"name": "訊飛 RTASR 語音辨識",
+			"name": "訊飛星火語音辨識",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛辦公 RTASR 串流辨識。",
-			"description_markdown": "訊飛辦公 RTASR 串流辨識。",
+			"description": "訊飛星火大模型串流聽寫。",
+			"description_markdown": "訊飛星火大模型串流聽寫。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -513,7 +513,7 @@
 				"語音辨識",
 				"產生器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		}
 	}
 }

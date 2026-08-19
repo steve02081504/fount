@@ -151,6 +151,13 @@
 				"incompatible": "用法：fount test --update-estimates [<groups>...]（不可同用他開關）",
 				"summary": "已回寫 ${suitesUpdated} 套件之預計時長（manifest ${filesChanged}），跳過 ${skipped} 無基線或已新"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "用法：fount test --kernel shutdown|reboot（不可同用他參）",
 				"unknownAction": "未知內核之操：${action}（當為 shutdown 或 reboot）",
@@ -5779,10 +5786,10 @@
 			"failed": "系統資訊取錄有失"
 		},
 		"testStatus": {
-			"title": "测试状态",
-			"running": "测试正在运行中",
-			"idle": "测试内核在线（空闲）",
-			"queued": "排队中"
+			"title": "測試狀態",
+			"running": "測試運行中",
+			"idle": "內核在線（空閒）",
+			"queued": "排隊中"
 		},
 		"connectivity": {
 			"backend": "後端連通",

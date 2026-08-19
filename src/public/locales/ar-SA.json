@@ -151,6 +151,13 @@
 				"incompatible": "الاستخدام: fount test --update-estimates [<groups>...] (لا يمكن استخدامه مع أي مفاتيح أخرى)",
 				"summary": "تم تحديث المدد المتوقعة لـ ${suitesUpdated} حزمة (${filesChanged} manifest)؛ تم تخطي ${skipped} بلا خط أساس أو محدّثة مسبقاً"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "الاستخدام: fount test --kernel shutdown|reboot (لا يمكن دمجه مع خيارات أخرى)",
 				"unknownAction": "إجراء kernel غير معروف: ${action} (المتوقع shutdown أو reboot)",
@@ -5780,9 +5787,9 @@
 		},
 		"testStatus": {
 			"title": "حالة الاختبار",
-			"running": "الاختبار قيد التشغيل",
-			"idle": "اختبار النواة على الإنترنت (خاملاً)",
-			"queued": "الطابور"
+			"running": "جارٍ تشغيل الاختبارات",
+			"idle": "النواة متصلة (خاملة)",
+			"queued": "في قائمة الانتظار"
 		},
 		"connectivity": {
 			"backend": "اتصال الواجهة الخلفية",

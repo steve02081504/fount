@@ -1,10 +1,10 @@
 {
 	"info": {
 		"en-UK": {
-			"name": "iFlytek LFASR Generator",
+			"name": "iFlytek RTASR Standard Generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Standard batch LFASR from iFlytek.",
-			"description_markdown": "Standard batch LFASR from iFlytek.",
+			"description": "iFlytek standard RTASR streaming recognition.",
+			"description_markdown": "iFlytek standard RTASR streaming recognition.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -14,10 +14,10 @@
 			]
 		},
 		"zh-CN": {
-			"name": "讯飞 LFASR 生成器",
+			"name": "讯飞 RTASR Standard 生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞批量 LFASR 标准版。",
-			"description_markdown": "讯飞批量 LFASR 标准版。",
+			"description": "讯飞标准 RTASR 流式识别。",
+			"description_markdown": "讯飞标准 RTASR 流式识别。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -27,10 +27,10 @@
 			]
 		},
 		"ar-SA": {
-			"name": "مولّد iFlytek LFASR",
+			"name": "مولّد iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR بالدُفعات الإصدار القياسي من iFlytek.",
-			"description_markdown": "LFASR بالدُفعات الإصدار القياسي من iFlytek.",
+			"description": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
+			"description_markdown": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -40,10 +40,10 @@
 			]
 		},
 		"de-DE": {
-			"name": "iFlytek LFASR-Generator",
+			"name": "iFlytek RTASR Standard-Generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Batch-LFASR, iFlytek-Standardversion.",
-			"description_markdown": "Batch-LFASR, iFlytek-Standardversion.",
+			"description": "Streaming-RTASR-Standarderkennung von iFlytek.",
+			"description_markdown": "Streaming-RTASR-Standarderkennung von iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -53,10 +53,10 @@
 			]
 		},
 		"emoji": {
-			"name": "🎙️🏭 📦✈️",
+			"name": "🎙️🏭 📐📡",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "📦✈️🎙️",
-			"description_markdown": "📦✈️🎙️",
+			"description": "📐📡🎙️➡️📝",
+			"description_markdown": "📐📡🎙️➡️📝",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -66,10 +66,10 @@
 			]
 		},
 		"es-ES": {
-			"name": "Generador iFlytek LFASR",
+			"name": "Generador iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR por lotes versión estándar de iFlytek.",
-			"description_markdown": "LFASR por lotes versión estándar de iFlytek.",
+			"description": "Reconocimiento en streaming RTASR estándar de iFlytek.",
+			"description_markdown": "Reconocimiento en streaming RTASR estándar de iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -79,10 +79,10 @@
 			]
 		},
 		"fr-FR": {
-			"name": "Générateur iFlytek LFASR",
+			"name": "Générateur iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR par lots version standard iFlytek.",
-			"description_markdown": "LFASR par lots version standard iFlytek.",
+			"description": "Reconnaissance en streaming RTASR standard iFlytek.",
+			"description_markdown": "Reconnaissance en streaming RTASR standard iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -92,10 +92,10 @@
 			]
 		},
 		"hi-IN": {
-			"name": "iFlytek LFASR जनरेटर",
+			"name": "iFlytek RTASR Standard जनरेटर",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek स्टैंडर्ड बैच LFASR।",
-			"description_markdown": "iFlytek स्टैंडर्ड बैच LFASR।",
+			"description": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
+			"description_markdown": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -105,10 +105,10 @@
 			]
 		},
 		"is-IS": {
-			"name": "iFlytek LFASR rafall",
+			"name": "iFlytek RTASR Standard rafall",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Staðlað runu-LFASR frá iFlytek.",
-			"description_markdown": "Staðlað runu-LFASR frá iFlytek.",
+			"description": "iFlytek staðlað RTASR streymisgreining.",
+			"description_markdown": "iFlytek staðlað RTASR streymisgreining.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -118,10 +118,10 @@
 			]
 		},
 		"it-IT": {
-			"name": "Generatore iFlytek LFASR",
+			"name": "Generatore iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR in batch versione standard iFlytek.",
-			"description_markdown": "LFASR in batch versione standard iFlytek.",
+			"description": "Riconoscimento in streaming RTASR standard iFlytek.",
+			"description_markdown": "Riconoscimento in streaming RTASR standard iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -131,10 +131,10 @@
 			]
 		},
 		"ja-JP": {
-			"name": "iFlytek LFASR ジェネレーター",
+			"name": "iFlytek RTASR Standard ジェネレーター",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 標準版バッチ LFASR。",
-			"description_markdown": "iFlytek 標準版バッチ LFASR。",
+			"description": "iFlytek 標準 RTASR ストリーミング認識。",
+			"description_markdown": "iFlytek 標準 RTASR ストリーミング認識。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -144,10 +144,10 @@
 			]
 		},
 		"ko-KR": {
-			"name": "iFlytek LFASR 생성기",
+			"name": "iFlytek RTASR Standard 생성기",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 표준 배치 LFASR.",
-			"description_markdown": "iFlytek 표준 배치 LFASR.",
+			"description": "iFlytek 표준 RTASR 스트리밍 인식.",
+			"description_markdown": "iFlytek 표준 RTASR 스트리밍 인식.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -157,10 +157,10 @@
 			]
 		},
 		"lzh": {
-			"name": "訊飛 LFASR 生成器",
+			"name": "訊飛 RTASR Standard 生成器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛批量 LFASR 標準版。",
-			"description_markdown": "訊飛批量 LFASR 標準版。",
+			"description": "訊飛標準 RTASR 流式識別。",
+			"description_markdown": "訊飛標準 RTASR 流式識別。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -170,10 +170,10 @@
 			]
 		},
 		"nl-NL": {
-			"name": "iFlytek LFASR-generator",
+			"name": "iFlytek RTASR Standard-generator",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Standaard batch-LFASR van iFlytek.",
-			"description_markdown": "Standaard batch-LFASR van iFlytek.",
+			"description": "iFlytek standaard RTASR-streamingherkenning.",
+			"description_markdown": "iFlytek standaard RTASR-streamingherkenning.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -183,10 +183,10 @@
 			]
 		},
 		"pt-PT": {
-			"name": "Gerador iFlytek LFASR",
+			"name": "Gerador iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR em lote versão padrão iFlytek.",
-			"description_markdown": "LFASR em lote versão padrão iFlytek.",
+			"description": "Reconhecimento em streaming RTASR padrão iFlytek.",
+			"description_markdown": "Reconhecimento em streaming RTASR padrão iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -196,10 +196,10 @@
 			]
 		},
 		"ru-RU": {
-			"name": "Генератор iFlytek LFASR",
+			"name": "Генератор iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Стандартный пакетный LFASR iFlytek.",
-			"description_markdown": "Стандартный пакетный LFASR iFlytek.",
+			"description": "Стандартное потоковое распознавание RTASR iFlytek.",
+			"description_markdown": "Стандартное потоковое распознавание RTASR iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -209,10 +209,10 @@
 			]
 		},
 		"uk-UA": {
-			"name": "Генератор iFlytek LFASR",
+			"name": "Генератор iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Стандартний пакетний LFASR iFlytek.",
-			"description_markdown": "Стандартний пакетний LFASR iFlytek.",
+			"description": "Стандартне потокове розпізнавання RTASR iFlytek.",
+			"description_markdown": "Стандартне потокове розпізнавання RTASR iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -222,10 +222,10 @@
 			]
 		},
 		"vi-VN": {
-			"name": "Trình tạo iFlytek LFASR",
+			"name": "Trình tạo iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR theo lô phiên bản chuẩn iFlytek.",
-			"description_markdown": "LFASR theo lô phiên bản chuẩn iFlytek.",
+			"description": "Nhận dạng streaming RTASR chuẩn iFlytek.",
+			"description_markdown": "Nhận dạng streaming RTASR chuẩn iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -235,10 +235,10 @@
 			]
 		},
 		"zh-TW": {
-			"name": "訊飛 LFASR 產生器",
+			"name": "訊飛 RTASR Standard 產生器",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛批次 LFASR 標準版。",
-			"description_markdown": "訊飛批次 LFASR 標準版。",
+			"description": "訊飛標準 RTASR 串流辨識。",
+			"description_markdown": "訊飛標準 RTASR 串流辨識。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -250,10 +250,10 @@
 	},
 	"product_info": {
 		"en-UK": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Standard batch LFASR from iFlytek.",
-			"description_markdown": "Standard batch LFASR from iFlytek.",
+			"description": "iFlytek standard RTASR streaming recognition.",
+			"description_markdown": "iFlytek standard RTASR streaming recognition.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -261,13 +261,13 @@
 				"speech recognition",
 				"generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"zh-CN": {
-			"name": "讯飞 LFASR",
+			"name": "讯飞 RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "讯飞批量 LFASR 标准版。",
-			"description_markdown": "讯飞批量 LFASR 标准版。",
+			"description": "讯飞标准 RTASR 流式识别。",
+			"description_markdown": "讯飞标准 RTASR 流式识别。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -275,13 +275,13 @@
 				"语音识别",
 				"生成器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ar-SA": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR بالدُفعات الإصدار القياسي من iFlytek.",
-			"description_markdown": "LFASR بالدُفعات الإصدار القياسي من iFlytek.",
+			"description": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
+			"description_markdown": "تعرف على كلام متدفق RTASR القياسي من iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -289,13 +289,13 @@
 				"التعرف على الكلام",
 				"مولد"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"de-DE": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Batch-LFASR, iFlytek-Standardversion.",
-			"description_markdown": "Batch-LFASR, iFlytek-Standardversion.",
+			"description": "Streaming-RTASR-Standarderkennung von iFlytek.",
+			"description_markdown": "Streaming-RTASR-Standarderkennung von iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -303,13 +303,13 @@
 				"Spracherkennung",
 				"Generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"emoji": {
-			"name": "🎙️ 📦✈️",
+			"name": "🎙️ 📐📡",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "📦✈️🎙️",
-			"description_markdown": "📦✈️🎙️",
+			"description": "📐📡🎙️➡️📝",
+			"description_markdown": "📐📡🎙️➡️📝",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -317,13 +317,13 @@
 				"🎙️",
 				"🏭"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"es-ES": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR por lotes versión estándar de iFlytek.",
-			"description_markdown": "LFASR por lotes versión estándar de iFlytek.",
+			"description": "Reconocimiento en streaming RTASR estándar de iFlytek.",
+			"description_markdown": "Reconocimiento en streaming RTASR estándar de iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -331,13 +331,13 @@
 				"reconocimiento de voz",
 				"generador"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"fr-FR": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR par lots version standard iFlytek.",
-			"description_markdown": "LFASR par lots version standard iFlytek.",
+			"description": "Reconnaissance en streaming RTASR standard iFlytek.",
+			"description_markdown": "Reconnaissance en streaming RTASR standard iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -345,13 +345,13 @@
 				"reconnaissance vocale",
 				"générateur"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"hi-IN": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek स्टैंडर्ड बैच LFASR।",
-			"description_markdown": "iFlytek स्टैंडर्ड बैच LFASR।",
+			"description": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
+			"description_markdown": "iFlytek स्टैंडर्ड RTASR स्ट्रीमिंग पहचान।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -359,13 +359,13 @@
 				"आवाज़ पहचान",
 				"जनरेटर"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"is-IS": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Staðlað runu-LFASR frá iFlytek.",
-			"description_markdown": "Staðlað runu-LFASR frá iFlytek.",
+			"description": "iFlytek staðlað RTASR streymisgreining.",
+			"description_markdown": "iFlytek staðlað RTASR streymisgreining.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -373,13 +373,13 @@
 				"talgreining",
 				"rafall"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"it-IT": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR in batch versione standard iFlytek.",
-			"description_markdown": "LFASR in batch versione standard iFlytek.",
+			"description": "Riconoscimento in streaming RTASR standard iFlytek.",
+			"description_markdown": "Riconoscimento in streaming RTASR standard iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -387,13 +387,13 @@
 				"riconoscimento vocale",
 				"generatore"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ja-JP": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 標準版バッチ LFASR。",
-			"description_markdown": "iFlytek 標準版バッチ LFASR。",
+			"description": "iFlytek 標準 RTASR ストリーミング認識。",
+			"description_markdown": "iFlytek 標準 RTASR ストリーミング認識。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -401,13 +401,13 @@
 				"音声認識",
 				"ジェネレーター"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ko-KR": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "iFlytek 표준 배치 LFASR.",
-			"description_markdown": "iFlytek 표준 배치 LFASR.",
+			"description": "iFlytek 표준 RTASR 스트리밍 인식.",
+			"description_markdown": "iFlytek 표준 RTASR 스트리밍 인식.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -415,13 +415,13 @@
 				"음성 인식",
 				"생성기"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"lzh": {
-			"name": "訊飛 LFASR",
+			"name": "訊飛 RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛批量 LFASR 標準版。",
-			"description_markdown": "訊飛批量 LFASR 標準版。",
+			"description": "訊飛標準 RTASR 流式識別。",
+			"description_markdown": "訊飛標準 RTASR 流式識別。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -429,13 +429,13 @@
 				"語音識別",
 				"生成器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"nl-NL": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Standaard batch-LFASR van iFlytek.",
-			"description_markdown": "Standaard batch-LFASR van iFlytek.",
+			"description": "iFlytek standaard RTASR-streamingherkenning.",
+			"description_markdown": "iFlytek standaard RTASR-streamingherkenning.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -443,13 +443,13 @@
 				"spraakherkenning",
 				"generator"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"pt-PT": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR em lote versão padrão iFlytek.",
-			"description_markdown": "LFASR em lote versão padrão iFlytek.",
+			"description": "Reconhecimento em streaming RTASR padrão iFlytek.",
+			"description_markdown": "Reconhecimento em streaming RTASR padrão iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -457,13 +457,13 @@
 				"reconhecimento de fala",
 				"gerador"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"ru-RU": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Стандартный пакетный LFASR iFlytek.",
-			"description_markdown": "Стандартный пакетный LFASR iFlytek.",
+			"description": "Стандартное потоковое распознавание RTASR iFlytek.",
+			"description_markdown": "Стандартное потоковое распознавание RTASR iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -471,13 +471,13 @@
 				"распознавание речи",
 				"генератор"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"uk-UA": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "Стандартний пакетний LFASR iFlytek.",
-			"description_markdown": "Стандартний пакетний LFASR iFlytek.",
+			"description": "Стандартне потокове розпізнавання RTASR iFlytek.",
+			"description_markdown": "Стандартне потокове розпізнавання RTASR iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -485,13 +485,13 @@
 				"розпізнавання мови",
 				"генератор"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"vi-VN": {
-			"name": "iFlytek LFASR",
+			"name": "iFlytek RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "LFASR theo lô phiên bản chuẩn iFlytek.",
-			"description_markdown": "LFASR theo lô phiên bản chuẩn iFlytek.",
+			"description": "Nhận dạng streaming RTASR chuẩn iFlytek.",
+			"description_markdown": "Nhận dạng streaming RTASR chuẩn iFlytek.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -499,13 +499,13 @@
 				"nhận dạng giọng nói",
 				"trình tạo"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		},
 		"zh-TW": {
-			"name": "訊飛 LFASR",
+			"name": "訊飛 RTASR Standard",
 			"avatar": "https://api.iconify.design/mdi/microphone.svg",
-			"description": "訊飛批次 LFASR 標準版。",
-			"description_markdown": "訊飛批次 LFASR 標準版。",
+			"description": "訊飛標準 RTASR 串流辨識。",
+			"description_markdown": "訊飛標準 RTASR 串流辨識。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "https://www.xfyun.cn/",
@@ -513,7 +513,7 @@
 				"語音辨識",
 				"產生器"
 			],
-			"provider": "xfyun"
+			"provider": "iflytek"
 		}
 	}
 }

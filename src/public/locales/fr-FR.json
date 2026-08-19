@@ -151,6 +151,13 @@
 				"incompatible": "Utilisation : fount test --update-estimates [<groups>...] (incompatible avec tout autre commutateur)",
 				"summary": "Durées prévues mises à jour pour ${suitesUpdated} suite(s) (${filesChanged} manifest(s)) ; ${skipped} ignorée(s) sans baseline ou déjà à jour"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "Utilisation : fount test --kernel shutdown|reboot (ne peut pas être combiné avec d'autres options)",
 				"unknownAction": "Action du noyau inconnue : ${action} (attendu : shutdown ou reboot)",
@@ -5785,10 +5792,10 @@
 			"failed": "Échec du chargement des informations système"
 		},
 		"testStatus": {
-			"title": "statut du test",
-			"running": "Le test est en cours",
-			"idle": "Tester le noyau en ligne (inactif)",
-			"queued": "File d'attente"
+			"title": "Statut du test",
+			"running": "Test en cours",
+			"idle": "Noyau en ligne (inactif)",
+			"queued": "En file d'attente"
 		},
 		"connectivity": {
 			"backend": "Connectivité back-end",

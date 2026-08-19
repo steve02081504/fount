@@ -3,6 +3,8 @@
  * 【职责】频道草稿的防抖写入、切频道恢复与发送后清空；草稿（文本 + 内容警告 + 附件）按频道持久化到后端 chat shell 用户数据层。
  * 【原理】切换频道前 flushDraft 落盘，进入频道时 loadDraft 恢复；附件仅回传缩略图，点击时才懒拉取完整内容。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+
 import {
 	deleteDraft,
 	draftKey,
@@ -15,8 +17,39 @@ import { selectedFiles } from './composerFiles.mjs'
 
 const DRAFT_DEBOUNCE_MS = 500
 
-/** @type {ReturnType<typeof setTimeout> | null} */
-let draftTimer = null
+/** @type {Map<string, ReturnType<typeof setTimeout>>} 每个草稿键独立的防抖计时器 */
+const draftTimers = new Map()
+
+/** @type {Map<string, Promise<void>>} 每个草稿键的写/删操作队列尾部，串行化同键操作 */
+const draftOpQueues = new Map()
+
+/**
+ * 取消防抖计时器（仅当前草稿键）。
+ * @param {string} key 草稿键
+ * @returns {void}
+ */
+function cancelDraftTimer(key) {
+	const timer = draftTimers.get(key)
+	if (timer) clearTimeout(timer)
+	draftTimers.delete(key)
+}
+
+/**
+ * 将操作按草稿键串行排队，保证同键写入/删除顺序执行（不同键互不影响）。
+ * 前一个操作失败不会阻塞后续操作；返回的 promise 承载本次操作结果。
+ * @param {string} key 草稿键
+ * @param {() => Promise<void>} op 操作
+ * @returns {Promise<void>} 本次操作完成（或失败）
+ */
+function enqueueDraftOp(key, op) {
+	const prev = draftOpQueues.get(key) ?? Promise.resolve()
+	const next = prev.catch(() => {}).then(op)
+	draftOpQueues.set(key, next)
+	next.catch(() => {}).finally(() => {
+		if (draftOpQueues.get(key) === next) draftOpQueues.delete(key)
+	})
+	return next
+}
 
 /**
  * 为图片附件生成小尺寸 base64 缩略图（无缩略图且持有完整 buffer 时才生成）。
@@ -66,28 +99,24 @@ async function snapshotFiles(files) {
 }
 
 /**
- * 将草稿写入后端（全部为空时删除）。吞掉后端错误。
+ * 将草稿写入后端（全部为空时删除）。远端失败向上抛出，由调用方经聊天错误路径报告。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
  * @param {{ text?: string, content_warning?: string, sensitive_media?: boolean, files?: object[] }} draft 草稿内容
- * @returns {Promise<void>} 完成（成功或静默失败）
+ * @returns {Promise<void>} 完成（远端失败则 reject）
  */
 async function writeDraftPayload(groupId, channelId, draft) {
-	try {
-		const key = draftKey(groupId, channelId)
-		const files = await snapshotFiles(draft.files)
-		const isEmpty = !(draft.text || '') && !draft.content_warning && !draft.sensitive_media && !files.length
-		if (isEmpty) await deleteDraft(key)
-		else 
-			await saveDraftRemote(key, {
-				text: draft.text || '',
-				...draft.content_warning ? { content_warning: draft.content_warning } : {},
-				...draft.sensitive_media ? { sensitive_media: true } : {},
-				files,
-			})
-		
-	}
-	catch { /* 后端不可用时静默 */ }
+	const key = draftKey(groupId, channelId)
+	const files = await snapshotFiles(draft.files)
+	const isEmpty = !(draft.text || '') && !draft.content_warning && !draft.sensitive_media && !files.length
+	if (isEmpty) await deleteDraft(key)
+	else
+		await saveDraftRemote(key, {
+			text: draft.text || '',
+			...draft.content_warning ? { content_warning: draft.content_warning } : {},
+			...draft.sensitive_media ? { sensitive_media: true } : {},
+			files,
+		})
 }
 
 /**
@@ -99,11 +128,10 @@ async function writeDraftPayload(groupId, channelId, draft) {
  */
 export function flushDraft(groupId, channelId, draft) {
 	if (!groupId || !channelId) return Promise.resolve()
-	if (draftTimer) {
-		clearTimeout(draftTimer)
-		draftTimer = null
-	}
-	return writeDraftPayload(groupId, channelId, draft)
+	const key = draftKey(groupId, channelId)
+	cancelDraftTimer(key)
+	return enqueueDraftOp(key, () => writeDraftPayload(groupId, channelId, draft))
+		.catch(handleError('chat.hub.operationFailed'))
 }
 
 /**
@@ -115,11 +143,13 @@ export function flushDraft(groupId, channelId, draft) {
  */
 export function saveDraft(groupId, channelId, draft) {
 	if (!groupId || !channelId) return
-	if (draftTimer) clearTimeout(draftTimer)
-	draftTimer = setTimeout(() => {
-		draftTimer = null
-		void writeDraftPayload(groupId, channelId, draft)
-	}, DRAFT_DEBOUNCE_MS)
+	const key = draftKey(groupId, channelId)
+	cancelDraftTimer(key)
+	draftTimers.set(key, setTimeout(() => {
+		draftTimers.delete(key)
+		void enqueueDraftOp(key, () => writeDraftPayload(groupId, channelId, draft))
+			.catch(handleError('chat.hub.operationFailed'))
+	}, DRAFT_DEBOUNCE_MS))
 }
 
 /**
@@ -163,31 +193,45 @@ async function restoreDraftFiles(groupId, channelId, files, key) {
 export async function loadDraft(groupId, channelId) {
 	if (!groupId || !channelId) return
 	const input = document.getElementById('message-input')
+	const contentWarningInput = document.getElementById('content-warning')
+	const sensitiveMediaInput = document.getElementById('sensitive-media')
+	const key = draftKey(groupId, channelId)
+
+	let draft
+	try {
+		draft = await getDraft(key)
+	}
+	catch (error) {
+		// 网络或 5xx 失败：保留现有输入与附件，向用户报告，不当作无草稿处理。
+		handleError('chat.hub.operationFailed')(error)
+		return
+	}
+
+	// 仅在服务端确认（返回记录或无记录）后重置控件；失败路径已提前返回。
 	if (input instanceof HTMLTextAreaElement) {
 		input.value = ''
 		input.style.height = 'auto'
 	}
-	const contentWarningInput = document.getElementById('content-warning')
 	if (contentWarningInput instanceof HTMLInputElement) contentWarningInput.value = ''
-	const sensitiveMediaInput = document.getElementById('sensitive-media')
 	if (sensitiveMediaInput instanceof HTMLInputElement) sensitiveMediaInput.checked = false
 	setComposerExtrasVisible(false)
 
-	const key = draftKey(groupId, channelId)
-	const draft = await getDraft(key).catch(() => null)
-	if (draft) {
-		if (input instanceof HTMLTextAreaElement && draft.text) {
-			input.value = draft.text
-			input.dispatchEvent(new Event('input', { bubbles: true }))
-		}
-		if (contentWarningInput instanceof HTMLInputElement && draft.content_warning)
-			contentWarningInput.value = draft.content_warning
-		if (sensitiveMediaInput instanceof HTMLInputElement && draft.sensitive_media)
-			sensitiveMediaInput.checked = true
-		if (draft.content_warning || draft.sensitive_media)
-			setComposerExtrasVisible(true)
+	if (!draft) {
+		await restoreDraftFiles(groupId, channelId, [], key)
+		return
 	}
-	await restoreDraftFiles(groupId, channelId, draft?.files || [], key)
+
+	if (input instanceof HTMLTextAreaElement && draft.text) {
+		input.value = draft.text
+		input.dispatchEvent(new Event('input', { bubbles: true }))
+	}
+	if (contentWarningInput instanceof HTMLInputElement && draft.content_warning)
+		contentWarningInput.value = draft.content_warning
+	if (sensitiveMediaInput instanceof HTMLInputElement && draft.sensitive_media)
+		sensitiveMediaInput.checked = true
+	if (draft.content_warning || draft.sensitive_media)
+		setComposerExtrasVisible(true)
+	await restoreDraftFiles(groupId, channelId, draft.files || [], key)
 }
 
 /**
@@ -198,11 +242,10 @@ export async function loadDraft(groupId, channelId) {
  */
 export function clearDraft(groupId, channelId) {
 	if (!groupId || !channelId) return
-	if (draftTimer) {
-		clearTimeout(draftTimer)
-		draftTimer = null
-	}
-	void deleteDraft(draftKey(groupId, channelId)).catch(() => { /* empty */ })
+	const key = draftKey(groupId, channelId)
+	cancelDraftTimer(key)
+	void enqueueDraftOp(key, () => deleteDraft(key))
+		.catch(handleError('chat.hub.operationFailed'))
 }
 
 /**

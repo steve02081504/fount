@@ -151,6 +151,13 @@
 				"incompatible": "Verwendung: fount test --update-estimates [<groups>...] (nicht mit anderen Schaltern kombinierbar)",
 				"summary": "Erwartete Laufzeiten für ${suitesUpdated} Suite(s) aktualisiert (${filesChanged} Manifest(e)); ${skipped} ohne Baseline oder bereits aktuell übersprungen"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "Verwendung: fount test --kernel shutdown|reboot (nicht mit anderen Optionen kombinierbar)",
 				"unknownAction": "Unbekannte Kernel-Aktion: ${action} (erwartet: shutdown oder reboot)",
@@ -5780,9 +5787,9 @@
 		},
 		"testStatus": {
 			"title": "Teststatus",
-			"running": "Test läuft",
-			"idle": "Kernel online testen (inaktiv)",
-			"queued": "Warteschlange"
+			"running": "Tests laufen",
+			"idle": "Testkernel ist online (inaktiv)",
+			"queued": "In der Warteschlange"
 		},
 		"connectivity": {
 			"backend": "Backend-Konnektivität",

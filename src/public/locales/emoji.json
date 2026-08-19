@@ -5779,10 +5779,10 @@
 			"failed": "❌🖥️ℹ️"
 		},
 		"testStatus": {
-			"title": "测试状态",
-			"running": "测试正在运行中",
-			"idle": "测试内核在线（空闲）",
-			"queued": "排队中"
+			"title": "🧪📊",
+			"running": "🔄🧪",
+			"idle": "💤🧪",
+			"queued": "⏳🧪"
 		},
 		"connectivity": {
 			"backend": "🔌🔙",

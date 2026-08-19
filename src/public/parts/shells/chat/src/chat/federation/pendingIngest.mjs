@@ -8,6 +8,7 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
+import { ms } from 'fount/scripts/ms.mjs'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
@@ -17,7 +18,7 @@ import { pendingIngestPath } from '../lib/paths.mjs'
 export const MAX_PENDING_INGEST_ROWS = 1000
 
 /** 入队后超过该毫秒未重放成功则丢弃。 */
-export const PENDING_INGEST_TTL_MS = 10 * 60 * 1000
+export const PENDING_INGEST_TTL_MS = ms('10m')
 
 /**
  * @param {object} row 队列行

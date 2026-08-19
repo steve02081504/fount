@@ -151,6 +151,13 @@
 				"incompatible": "用法：fount test --update-estimates [<groups>...]（不能同时使用其他开关）",
 				"summary": "已回写 ${suitesUpdated} 个套件的预计时长（${filesChanged} 个 manifest），跳过 ${skipped} 个无基线或已是最新"
 			},
+			"list": {
+				"incompatible": "用法：fount test --list [<groups>...]（不能同时使用其他开关）",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": "（预计 ${expected}）"
+			},
 			"kernel": {
 				"incompatible": "用法：fount test --kernel shutdown|reboot（不可与其他参数同时使用）",
 				"unknownAction": "未知内核操作：${action}（应为 shutdown 或 reboot）",

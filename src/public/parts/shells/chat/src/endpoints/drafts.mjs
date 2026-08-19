@@ -1,3 +1,5 @@
+import { ms } from 'fount/scripts/ms.mjs'
+
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate } from '../../../../../../server/auth/index.mjs'
 import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
@@ -5,7 +7,7 @@ import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
 import { chatClientFromReq } from './shared.mjs'
 
 /** 草稿保留时长：群退出 / 频道不可见后最多保留 7 年。 */
-const DRAFT_RETENTION_MS = 7 * 365 * 24 * 60 * 60 * 1000
+const DRAFT_RETENTION_MS = 7 * ms('365d')
 
 /**
  * 注册频道草稿路由。草稿按 `key = groupId:channelId` 存于用户数据层：

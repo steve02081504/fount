@@ -151,6 +151,13 @@
 				"incompatible": "Uso: fount test --update-estimates [<groups>...] (no se puede usar con ningún otro conmutador)",
 				"summary": "Duraciones previstas actualizadas en ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); omitidas ${skipped} sin baseline o ya actualizadas"
 			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
+			},
 			"kernel": {
 				"incompatible": "Uso: fount test --kernel shutdown|reboot (no se puede combinar con otras opciones)",
 				"unknownAction": "Acción de kernel desconocida: ${action} (se esperaba shutdown o reboot)",
@@ -5785,10 +5792,10 @@
 			"failed": "No se pudo cargar la información del sistema"
 		},
 		"testStatus": {
-			"title": "estado de la prueba",
-			"running": "La prueba se está ejecutando",
-			"idle": "Probar el kernel en línea (inactivo)",
-			"queued": "hacer cola"
+			"title": "Estado de la prueba",
+			"running": "Prueba en ejecución",
+			"idle": "El kernel de pruebas está en línea (inactivo)",
+			"queued": "En cola"
 		},
 		"connectivity": {
 			"backend": "Conectividad Backend",
