@@ -1185,12 +1185,12 @@
 }
 
 .call-dock-actions .call-hangup {
-	color: #f23f42;
+	color: var(--color-error);
 }
 
 .call-dock-actions .call-hangup:hover:not(:disabled) {
-	background: color-mix(in srgb, #f23f42 22%, transparent);
-	color: #ff6b6e;
+	background: color-mix(in srgb, var(--color-error) 22%, transparent);
+	color: var(--color-error);
 }
 
 .call-dock-actions .call-hangup :is(img, svg) {

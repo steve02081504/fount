@@ -1276,7 +1276,7 @@ export async function GetMarkdownConvertor({
 	markdown_style.textContent = /* css */ `\
 .markdown-body {
 	color: var(--color-base-content);
-	background-color: #11451400;
+	background-color: transparent;
 }
 
 .markdown-body .join-item,

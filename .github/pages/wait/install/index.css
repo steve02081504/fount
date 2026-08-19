@@ -425,16 +425,16 @@ body.cool-notice-open {
 	min-width: 4.6rem;
 	padding: 0.35rem 0.55rem;
 	/* theme-radius-ignore */
-	border: 3px solid #e11d48;
+	border: 3px solid var(--color-error);
 	border-radius: var(--radius-field);
-	color: #e11d48;
+	color: var(--color-error);
 	font-size: 0.78rem;
 	font-weight: 800;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	text-decoration: line-through;
 	text-decoration-thickness: 0.18em;
-	box-shadow: 0 0 0 3px color-mix(in oklab, #e11d48 18%, transparent);
+	box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-error) 18%, transparent);
 	animation: cool-notice-badge 1.6s ease-in-out infinite;
 }
 
