@@ -53,8 +53,6 @@ export function createFederationCollect(waitMs, expectedCount, onSettled) {
 	let settled = false
 	/** @type {object[]} */
 	const candidates = []
-	/** @type {ReturnType<typeof setTimeout>} */
-	let timer
 
 	/**
 	 * @param {object[]} list 候选列表
@@ -72,7 +70,8 @@ export function createFederationCollect(waitMs, expectedCount, onSettled) {
 	let resolve
 	const promise = new Promise(res => { resolve = res })
 
-	timer = setTimeout(() => finish(candidates), waitMs)
+	/** @type {ReturnType<typeof setTimeout>} */
+	const timer = setTimeout(() => finish(candidates), waitMs)
 
 	const pending = {
 		candidates,

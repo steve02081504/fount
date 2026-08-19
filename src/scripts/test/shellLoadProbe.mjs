@@ -14,10 +14,10 @@ import {
 
 const IMPORT_RE = /\b(?:import|export)\s+(?:[^"';]+?\s+from\s+)?["']([^"']+)["']/gu
 const DYNAMIC_IMPORT_RE = /\bimport\s*\(\s*["']([^"']+)["']\s*\)/gu
-const NAMED_IMPORT_RE = /\bimport\s+(?:type\s+)?(?:[$A-Z_a-z][\w$]*\s*,\s*)?{([^}]+)}\s*from\s*["']([^"']+)["']/gu
+const NAMED_IMPORT_RE = /\bimport\s+(?:type\s+)?(?:[$A-Z_a-z][\w$]*\s*,\s*)?\{([^}]+)\}\s*from\s*["']([^"']+)["']/gu
 const EXPORT_DECL_RE = /\bexport\s+(?:async\s+)?(?:function\*?|class|const|let|var)\s+([$A-Z_a-z][\w$]*)/gu
-const EXPORT_DESTRUCTURE_RE = /\bexport\s+(?:const|let|var)\s*{([^}]+)}/gu
-const EXPORT_LIST_RE = /\bexport\s*{([^}]+)}\s*(?:from\s*["']([^"']+)["'])?/gu
+const EXPORT_DESTRUCTURE_RE = /\bexport\s+(?:const|let|var)\s*\{([^}]+)\}/gu
+const EXPORT_LIST_RE = /\bexport\s*\{([^}]+)\}\s*(?:from\s*["']([^"']+)["'])?/gu
 const EXPORT_STAR_RE = /\bexport\s*\*\s*(?:as\s+([$A-Z_a-z][\w$]*)\s+)?from\s*["']([^"']+)["']/gu
 const EXPORT_DEFAULT_RE = /\bexport\s+default\b/u
 
