@@ -172,6 +172,7 @@
 			"display": {
 				"eta": "Ожидается ${expected}, всего осталось ≈ ${remaining}",
 				"etaUnknown": "Ожидается ${expected}; всего осталось ${count} с неизвестной длительностью",
+				"explicitSelectedCount": "Явное именование: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "Всего осталось ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} осталось всего (ещё ${count} с неизвестной длительностью)",

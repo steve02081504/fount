@@ -172,6 +172,7 @@
 			"display": {
 				"eta": "Очікується ${expected}, загалом залишилось ≈ ${remaining}",
 				"etaUnknown": "Очікується ${expected}; загалом залишилось ${count} з невідомою тривалістю",
+				"explicitSelectedCount": "Явне найменування: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "Загалом залишилось ≈ ${remaining}",
 				"remainingUnknown": "≈ ${remaining} залишилось загалом (ще ${count} з невідомою тривалістю)",

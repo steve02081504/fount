@@ -171,6 +171,7 @@
 			"display": {
 				"eta": "預計佔用 ${expected}，總剩餘 ≈ ${remaining}",
 				"etaUnknown": "預計佔用 ${expected}，總剩餘含 ${count} 個未知時長",
+				"explicitSelectedCount": "明確指名：${count}個",
 				"reason": "${label}：${reason}",
 				"remaining": "總剩餘 ≈ ${remaining}",
 				"remainingUnknown": "總剩餘 ≈ ${remaining}（另有 ${count} 個未知時長）",

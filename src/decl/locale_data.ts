@@ -155,6 +155,7 @@ export type LocaleData = {
 			display: {
 				eta: string
 				etaUnknown: string
+				explicitSelectedCount: string
 				reason: string
 				remaining: string
 				remainingUnknown: string

@@ -172,6 +172,7 @@
 			"display": {
 				"eta": "Áætlað ${expected}, samtals ≈ ${remaining} eftir",
 				"etaUnknown": "Áætlað ${expected}; ${count} með óþekktri lengd eftir samtals",
+				"explicitSelectedCount": "Skýrt nafn: ${count}",
 				"reason": "${label}: ${reason}",
 				"remaining": "Samtals ≈ ${remaining} eftir",
 				"remainingUnknown": "≈ ${remaining} eftir samtals (${count} með óþekktri lengd aukalega)",
