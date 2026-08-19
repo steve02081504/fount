@@ -134,6 +134,13 @@ export type LocaleData = {
 				incompatible: string
 				summary: string
 			}
+			list: {
+				incompatible: string
+				header: string
+				suite: string
+				subtest: string
+				expected: string
+			}
 			kernel: {
 				incompatible: string
 				unknownAction: string
@@ -6353,6 +6360,10 @@ export type LocaleKeyParams = {
 	'fountConsole.test.federationCleanupPre': { output: string | number }
 	'fountConsole.test.heapSnapshotSaved': { path: string | number }
 	'fountConsole.test.kernel.unknownAction': { action: string | number }
+	'fountConsole.test.list.expected': { expected: string | number }
+	'fountConsole.test.list.header': { manifestId: string | number }
+	'fountConsole.test.list.subtest': { name: string | number }
+	'fountConsole.test.list.suite': { expected: string | number; name: string | number }
 	'fountConsole.test.manifestMatched': { ids: string | number }
 	'fountConsole.test.moduleCheck.missedReady': { label: string | number }
 	'fountConsole.test.noRealRunPlanned': { blocked: string | number; reused: string | number; skipped: string | number }

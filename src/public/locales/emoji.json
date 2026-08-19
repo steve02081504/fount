@@ -151,6 +151,13 @@
 				"incompatible": "📖：`fount test --update-estimates` [<groups>…]（🚫+🚩）",
 				"summary": "✍️ ${suitesUpdated} 📦⏱️（manifest ${filesChanged}）；⏭️ ${skipped} 🚫📏／✅🆕"
 			},
+			"list": {
+				"incompatible": "用法：fount test --list [<groups>...]（不能同时使用其他开关）",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": "（预计 ${expected}）"
+			},
 			"kernel": {
 				"incompatible": "📖：`fount test --kernel shutdown|reboot`（🚫+⚙️）",
 				"unknownAction": "❓🧠 ${action}（`shutdown`|`reboot`）",
