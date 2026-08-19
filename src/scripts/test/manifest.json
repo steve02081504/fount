@@ -385,7 +385,9 @@
 			"name": "trigger_audit",
 			"expected": "2s",
 			"triggerFilter": {
-				"unignore": ["**/test/manifest.json"]
+				"unignore": [
+					"**/test/manifest.json"
+				]
 			},
 			"run": [
 				"deno",

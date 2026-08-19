@@ -23,11 +23,11 @@ world 在 chat 里原先隐含 **单一主机托管**：`homeNodeHash` 不在本
 
 ## 三种分布形态
 
-| distribution | 运行位置 | 共享状态 | 隐藏真相 | 典型 |
-| --- | --- | --- | --- | --- |
-| `local` | 每个 replica 本机 | 无（各自为政） | 无 | 默认 fount world |
-| `replicated` | 每个 replica 本机 | DAG `world_state` 事件 | 无（共享状态全员可见） | 规则型 RPG |
-| `hosted` | `homeNodeHash` 单机 | 主机私有，按需播报 | 有（主机独占） | 狼人杀 / 跑团 DM |
+| distribution | 运行位置            | 共享状态               | 隐藏真相               | 典型             |
+| ------------ | ------------------- | ---------------------- | ---------------------- | ---------------- |
+| `local`      | 每个 replica 本机   | 无（各自为政）         | 无                     | 默认 fount world |
+| `replicated` | 每个 replica 本机   | DAG `world_state` 事件 | 无（共享状态全员可见） | 规则型 RPG       |
+| `hosted`     | `homeNodeHash` 单机 | 主机私有，按需播报     | 有（主机独占）         | 狼人杀 / 跑团 DM |
 
 三形态共用同一套 `WorldAPI.interfaces.chat.*` 钩子，差别只在**钩子在哪台机器上执行、共享状态经过哪条通道**。
 
@@ -66,11 +66,11 @@ world 在 chat 里原先隐含 **单一主机托管**：`homeNodeHash` 不在本
 
 `session_world_bind` / `session_world_bind_channel` 的 content 携带 `distribution`（绑定者从本地加载的 world part 读出后写入）：
 
-| distribution | homeNodeHash |
-| --- | --- |
-| `hosted` | 必填 |
+| distribution | homeNodeHash                                     |
+| ------------ | ------------------------------------------------ |
+| `hosted`     | 必填                                             |
 | `replicated` | 必填（语义：种子主机 / 未安装者的回退 RPC 目标） |
-| `local` | 可缺省；有也只作「推荐安装来源」提示 |
+| `local`      | 可缺省；有也只作「推荐安装来源」提示             |
 
 校验（`sessionEventValidate.mjs`）按 distribution 分支；缺省视为 `hosted`，存量事件无需迁移。
 
@@ -120,15 +120,15 @@ DAG 事件 `world_state`，content：`{ worldname, action: 'set'|'delete', key, 
 
 ## 与现有钩子的关系
 
-| 钩子 | local / replicated | hosted |
-| --- | --- | --- |
-| `GetPrompt` / `GetGroupPrompt` / `TweakPrompt` | 本机实例执行 | RPC 到主机（**TweakPrompt 就地 mutation 经 JSON 边界丢失**；不做钩子代理修补） |
-| `GetChatPlugins` | 本机返回活对象，merge 进本机 char 的 `plugins`（本机同名优先） | **仅主机侧**真 part 生效；远端代理不挂此钩子（活对象不可 RPC） |
-| `GetChatLogForViewer` | 本机执行；每台机器给自己托管的 viewer 出视图 | RPC 到主机（主机知道全部真相） |
-| `AddChatLogEntry` / `AfterAddChatLogEntry` | 每 replica 本机各触发一次，副作用需本机幂等 | 各 replica 转发主机 |
-| `GetSpeakingOrder` | 仅在**回复触发发起机**上生效；需要全群强一致轮转应选 hosted | 主机权威裁决 |
-| `GetGreeting` / `GetGroupGreeting` | 本机执行 | RPC 到主机 |
-| `MessageEdit` / `MessageDelete` | 本机执行 | RPC 到主机 |
+| 钩子                                           | local / replicated                                             | hosted                                                                         |
+| ---------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `GetPrompt` / `GetGroupPrompt` / `TweakPrompt` | 本机实例执行                                                   | RPC 到主机（**TweakPrompt 就地 mutation 经 JSON 边界丢失**；不做钩子代理修补） |
+| `GetChatPlugins`                               | 本机返回活对象，merge 进本机 char 的 `plugins`（本机同名优先） | **仅主机侧**真 part 生效；远端代理不挂此钩子（活对象不可 RPC）                 |
+| `GetChatLogForViewer`                          | 本机执行；每台机器给自己托管的 viewer 出视图                   | RPC 到主机（主机知道全部真相）                                                 |
+| `AddChatLogEntry` / `AfterAddChatLogEntry`     | 每 replica 本机各触发一次，副作用需本机幂等                    | 各 replica 转发主机                                                            |
+| `GetSpeakingOrder`                             | 仅在**回复触发发起机**上生效；需要全群强一致轮转应选 hosted    | 主机权威裁决                                                                   |
+| `GetGreeting` / `GetGroupGreeting`             | 本机执行                                                       | RPC 到主机                                                                     |
+| `MessageEdit` / `MessageDelete`                | 本机执行                                                       | RPC 到主机                                                                     |
 
 ### `GetChatPlugins`
 
@@ -164,19 +164,19 @@ world 可向**当前频道**所有本机生成的 char 注入插件活对象（�
 
 ## 实现索引
 
-| 主题 | 路径 |
-| --- | --- |
-| 类型声明 | `src/decl/worldAPI.ts` |
-| 内置极小 world | `src/public/parts/shells/chat/src/chat/session/builtinParts.mjs` |
-| resolveWorld 三分支 | `src/public/parts/shells/chat/src/chat/session/resolvePart.mjs` |
-| GetChatPlugins merge | `src/public/parts/shells/chat/src/chat/session/chatRequest.mjs` |
-| 本机插件名单 | `src/public/parts/shells/chat/src/chat/session/localPlugins.mjs` |
-| bind 校验 | `src/public/parts/shells/chat/src/chat/dag/sessionEventValidate.mjs` |
-| WorldChatHost | `src/public/parts/shells/chat/src/chat/session/worldHost.mjs` |
-| world_state reducer | `src/public/parts/shells/chat/src/chat/dag/reducers/worldState.mjs` |
-| 入站清扫 | `src/public/parts/shells/chat/src/chat/dag/remoteIngest.mjs` |
-| 默认 fount world | `default/templates/user/worlds/fount/main.mjs` |
-| replicated fixture | `src/public/parts/shells/chat/test/fixtures/worlds/replicated_world/` |
+| 主题                 | 路径                                                                  |
+| -------------------- | --------------------------------------------------------------------- |
+| 类型声明             | `src/decl/worldAPI.ts`                                                |
+| 内置极小 world       | `src/public/parts/shells/chat/src/chat/session/builtinParts.mjs`      |
+| resolveWorld 三分支  | `src/public/parts/shells/chat/src/chat/session/resolvePart.mjs`       |
+| GetChatPlugins merge | `src/public/parts/shells/chat/src/chat/session/chatRequest.mjs`       |
+| 本机插件名单         | `src/public/parts/shells/chat/src/chat/session/localPlugins.mjs`      |
+| bind 校验            | `src/public/parts/shells/chat/src/chat/dag/sessionEventValidate.mjs`  |
+| WorldChatHost        | `src/public/parts/shells/chat/src/chat/session/worldHost.mjs`         |
+| world_state reducer  | `src/public/parts/shells/chat/src/chat/dag/reducers/worldState.mjs`   |
+| 入站清扫             | `src/public/parts/shells/chat/src/chat/dag/remoteIngest.mjs`          |
+| 默认 fount world     | `default/templates/user/worlds/fount/main.mjs`                        |
+| replicated fixture   | `src/public/parts/shells/chat/test/fixtures/worlds/replicated_world/` |
 
 测试：`test/pure/world_distribution_validate.test.mjs`、`test/integration/world_distribution.test.mjs`、`test/integration/world_state.test.mjs`、`test/integration/world_chat_host.test.mjs`（均在 chat shell `test/manifest.json`）。
 

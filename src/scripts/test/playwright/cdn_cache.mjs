@@ -176,7 +176,7 @@ async function fetchCacheAndFulfill(route, dir, method, url) {
 	}
 	catch (error) {
 		// 页面收尾 / context 关闭时 APIResponse 可能已 disposed
-		if (!/disposed|Target closed|has been closed/i.test(String(error?.message || error))) throw error
+		if (!/disposed|target closed|has been closed/i.test(String(error?.message || error))) throw error
 		try {
 			await route.abort('failed')
 		}

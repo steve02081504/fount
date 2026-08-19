@@ -12,13 +12,13 @@ import {
 	urlPartKeyToPartpath,
 } from '../part_paths.mjs'
 
-const IMPORT_RE = /\b(?:import|export)\s+(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]/gu
-const DYNAMIC_IMPORT_RE = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/gu
-const NAMED_IMPORT_RE = /\bimport\s+(?:type\s+)?(?:[A-Za-z_$][\w$]*\s*,\s*)?\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/gu
-const EXPORT_DECL_RE = /\bexport\s+(?:async\s+)?(?:function\*?|class|const|let|var)\s+([A-Za-z_$][\w$]*)/gu
+const IMPORT_RE = /\b(?:import|export)\s+(?:[^"';]+?\s+from\s+)?["']([^"']+)["']/gu
+const DYNAMIC_IMPORT_RE = /\bimport\s*\(\s*["']([^"']+)["']\s*\)/gu
+const NAMED_IMPORT_RE = /\bimport\s+(?:type\s+)?(?:[$A-Z_a-z][\w$]*\s*,\s*)?\{([^}]+)\}\s*from\s*["']([^"']+)["']/gu
+const EXPORT_DECL_RE = /\bexport\s+(?:async\s+)?(?:function\*?|class|const|let|var)\s+([$A-Z_a-z][\w$]*)/gu
 const EXPORT_DESTRUCTURE_RE = /\bexport\s+(?:const|let|var)\s*\{([^}]+)\}/gu
-const EXPORT_LIST_RE = /\bexport\s*\{([^}]+)\}\s*(?:from\s*['"]([^'"]+)['"])?/gu
-const EXPORT_STAR_RE = /\bexport\s*\*\s*(?:as\s+([A-Za-z_$][\w$]*)\s+)?from\s*['"]([^'"]+)['"]/gu
+const EXPORT_LIST_RE = /\bexport\s*\{([^}]+)\}\s*(?:from\s*["']([^"']+)["'])?/gu
+const EXPORT_STAR_RE = /\bexport\s*\*\s*(?:as\s+([$A-Z_a-z][\w$]*)\s+)?from\s*["']([^"']+)["']/gu
 const EXPORT_DEFAULT_RE = /\bexport\s+default\b/u
 
 /**
@@ -44,7 +44,7 @@ function partPublicRoot(repoRoot, partPath) {
  */
 function stripComments(source) {
 	return source
-		.replace(/\/\*[\s\S]*?\*\//gu, '')
+		.replace(/\/\*[\S\s]*?\*\//gu, '')
 		.replace(/(^|[^:\\])\/\/.*$/gmu, '$1')
 }
 
@@ -118,12 +118,12 @@ export function parseObjectPatternBindings(clause) {
 		const part = raw.trim()
 		if (!part) continue
 		if (part.startsWith('...')) {
-			const rest = part.slice(3).trim().match(/^[A-Za-z_$][\w$]*/u)?.[0]
+			const rest = part.slice(3).trim().match(/^[$A-Z_a-z][\w$]*/u)?.[0]
 			if (rest) names.push(rest)
 			continue
 		}
 		const colonParts = splitTopLevel(splitTopLevel(part, '=')[0].trim(), ':')
-		const ident = (colonParts.length > 1 ? colonParts.slice(1).join(':') : colonParts[0]).trim().match(/^[A-Za-z_$][\w$]*/u)?.[0]
+		const ident = (colonParts.length > 1 ? colonParts.slice(1).join(':') : colonParts[0]).trim().match(/^[$A-Z_a-z][\w$]*/u)?.[0]
 		if (ident) names.push(ident)
 	}
 	return names
@@ -182,10 +182,8 @@ export function resolveBrowserImportSpec(repoRoot, importerFile, spec) {
 
 	// part public：按浏览器 URL 解析（`../` 爬出 public 会落到 `/scripts/…`，不是 FS 相对路径）
 	const browserBase = partPublicBrowserPath(repoRoot, importerFile)
-	if (browserBase) {
-		const pathname = new URL(spec, `https://fount.local${browserBase}`).pathname
-		return mapBrowserPathnameToFile(repoRoot, pathname)
-	}
+	if (browserBase)
+		return mapBrowserPathnameToFile(repoRoot, new URL(spec, `https://fount.local${browserBase}`).pathname)
 
 	const base = path.resolve(path.dirname(importerFile), spec)
 	const candidates = [base, `${base}.mjs`, `${base}.js`, `${base}.ts`, path.join(base, 'index.mjs')]

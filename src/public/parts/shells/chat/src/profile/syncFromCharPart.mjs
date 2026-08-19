@@ -194,7 +194,7 @@ async function materializePartAvatar(username, charname, avatarRaw) {
 	if (!isAvatarImageUrl(raw)) return { kind: 'emoji', value: raw }
 
 	if (raw.startsWith('data:')) {
-		const match = raw.match(/^data:([^;,]+)?(?:;base64)?,(.+)$/i)
+		const match = raw.match(/^data:([^,;]+)(?:;base64)?,(.+)$/i)
 		if (!match) return null
 		const mimeType = match[1] || 'image/png'
 		const payload = match[2]

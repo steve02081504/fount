@@ -176,7 +176,7 @@ export const neighborCoord = (world, x, y, dx, dy, discretePickSalt) => {
 		return NEIGHBOR
 	}
 
-	const wrap = roles[crossed].wrap
+	const { wrap } = roles[crossed]
 	const outFrac = 1 - wrap
 
 	if (discretePickSalt !== undefined) {

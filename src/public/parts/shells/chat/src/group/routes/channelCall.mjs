@@ -14,8 +14,7 @@ import { GROUPS_PREFIX } from './path.mjs'
  */
 export function registerChannelCallRoutes(router, authenticate) {
 	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/call-status`, authenticate, requireGroupMember(), async (req, res) => {
-		const { groupId } = req.groupContext
-		const { channelId } = req.params
+		const { groupContext: { groupId }, params: { channelId } } = req
 		res.status(200).json(getCallStatus(groupId, channelId))
 	})
 }

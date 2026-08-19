@@ -48,7 +48,7 @@ export async function getConvertor({
 	allowDangerousHtml = true,
 	isStandalone = false,
 } = {}) {
-	const version = (await loadRegisteredMarkdownExtensions()).version
+	const { version } = await loadRegisteredMarkdownExtensions()
 	const key = `${allowDangerousHtml ? 'trusted' : 'secure'}:${isStandalone ? 'solo' : 'app'}:${version}`
 	if (!convertorCache.has(key))
 		convertorCache.set(key, GetMarkdownConvertor({ allowDangerousHtml, isStandalone }))

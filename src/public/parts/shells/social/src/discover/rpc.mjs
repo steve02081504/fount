@@ -87,7 +87,7 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 		}
 		case 'social_note_pull_request': {
 			const target = rpc.targetEntityHash
-			const postId = rpc.postId
+			const { postId } = rpc
 			const afterAuthor = rpc.afterAuthor
 				? rpc.afterAuthor
 				: null

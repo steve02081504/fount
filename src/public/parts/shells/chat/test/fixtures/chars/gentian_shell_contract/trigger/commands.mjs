@@ -17,7 +17,7 @@ export async function handleOwnerCommands({
 	if (/^龙胆.{0,2}自裁.{0,2}$/.test(content) || /龙胆.*自裁/.test(content)) {
 		await message.reply({ content: '啊，咱死了～' })
 		const group = await client.group(groupId)
-		const bridge = group.bridge
+		const { bridge } = group
 		if (bridge?.platform && bridge?.botname) {
 			const { requireBridgeOperation } = await import('fount/public/parts/shells/chat/src/chat/bridge/operations.mjs')
 			await requireBridgeOperation(username, bridge, 'stopSelf')()

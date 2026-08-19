@@ -94,7 +94,7 @@ Deno.test('unmentioned post still invokes OnMessage with event shape', async () 
 		type: 'post',
 		content: { text: 'plain post without mentions', visibility: 'public' },
 	}, { fanout: false })
-	const events = socialOnMessageProbe.events
+	const { events } = socialOnMessageProbe
 	assert(events.length >= 1, 'OnMessage invoked for unmentioned visible post')
 	const hit = events.find(row => row.viewerEntityHash === agentHash)
 	assert(hit, 'probe agent received event')

@@ -200,7 +200,7 @@ export function stripInlineImageMarkers(text) {
 	if (!INLINE_IMAGE_MARKER_RE.test(text)) return text
 	INLINE_IMAGE_MARKER_RE.lastIndex = 0
 	return text
-		.replace(/(\n)?\[image:[^\]|]+\|[^\]]+\](\n)?/g, (match, before, after) => before && after ? '\n' : '')
+		.replace(/(\n)?\[image:[^\]|]+\|[^\]]+](\n)?/g, (match, before, after) => before && after ? '\n' : '')
 		.replace(/^\n+|\n+$/g, '')
 }
 

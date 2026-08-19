@@ -33,7 +33,7 @@ export function postMatchesQuery(post, query) {
 	const norm = normalizeSearchQuery(query)
 	if (norm.kind === 'none' || norm.value.length < 2) return false
 	if (!post?.content?.text) return false
-	const text = post.content.text
+	const { text } = post.content
 	if (norm.kind === 'hashtag')
 		return extractHashtagsFromText(text).some(tag => hashtagEquals(tag, norm.value))
 	if (new RegExp(escapeRegExp(norm.value), 'iu').test(text)) return true

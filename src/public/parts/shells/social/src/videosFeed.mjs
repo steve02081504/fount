@@ -64,8 +64,7 @@ export async function buildVideosFeed(username, options = {}) {
 	try {
 		const explore = await discoverPosts(username, { n: 40, mediaOnly: true })
 		for (const row of explore.posts || []) {
-			const entityHash = row.entityHash
-			const postId = row.postId
+			const { entityHash, postId } = row
 			if (!entityHash || !postId) continue
 			const key = `${entityHash}:${postId}`
 			if (scored.has(key)) continue

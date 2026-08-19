@@ -109,7 +109,7 @@ export function bindVisibilityPicker(root) {
 	 * @returns {void}
 	 */
 	const sync = () => {
-		const value = select.value
+		const { value } = select
 		const allow = picker.querySelector('[data-visibility-allow]')
 		const except = picker.querySelector('[data-visibility-except]')
 		if (allow instanceof HTMLElement)

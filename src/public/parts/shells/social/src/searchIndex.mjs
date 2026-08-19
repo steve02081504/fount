@@ -98,24 +98,6 @@ async function rebuildTrendingCounts(username) {
 }
 
 /**
- * 读取话题计数；文件缺失返回空，形状不对则扔掉重建。
- * @param {string} username replica
- * @returns {Promise<Record<string, number>>} 话题计数
- */
-async function loadTrendingCounts(username) {
-	return withAsyncMutex(`social-trending:${username}`, async () => {
-		const raw = await readTrendingFile(username)
-		if (raw == null) return {}
-		const parsed = parseTrendingCounts(raw)
-		if (parsed) return { ...parsed }
-
-		const counts = await rebuildTrendingCounts(username)
-		await writeTrendingCounts(username, counts)
-		return counts
-	})
-}
-
-/**
  * @param {string} username replica
  * @param {string[]} tags 话题
  * @param {number} delta 增量
@@ -196,7 +178,7 @@ async function ensureTimelineIndexed(username, ownerEntityHash) {
 			ts: Number(post.hlc?.wall || Date.now()),
 			fields: postIndexFields(ownerEntityHash, post.id, content),
 		})
-		const replyTo = content.replyTo
+		const { replyTo } = content
 		if (replyTo?.entityHash && replyTo?.postId)
 			await indexReplyRef(username, ownerEntityHash, post.id, replyTo.entityHash, replyTo.postId, Number(post.hlc?.wall || Date.now()))
 		pendingTags.push(...extractHashtagsFromText(content.text))
@@ -324,7 +306,7 @@ export async function indexTimelineEventForSearch(username, entityHash, row) {
 	const tags = extractHashtagsFromText(content.text)
 	if (tags.length) await bumpTrendingTags(username, tags, 1)
 
-	const replyTo = content.replyTo
+	const { replyTo } = content
 	if (replyTo?.entityHash && replyTo?.postId)
 		await indexReplyRef(username, owner, postId, replyTo.entityHash, replyTo.postId, Number(row.hlc?.wall || Date.now()))
 }

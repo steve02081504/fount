@@ -58,7 +58,7 @@ export function dismissEntityProfilePopup() {
  * @returns {Promise<void>}
  */
 async function paintSharedPopup(popup, entity) {
-	const entityHash = entity.entityHash
+	const { entityHash } = entity
 	const data = entityHash ? await getEntityProfile(entityHash).catch(() => null) : null
 	const profile = data?.profile ? cachedProfileFromApi(data.profile, entityHash) : null
 	const name = aliasForEntity(entityHash) || profile?.name || entity.displayName || '?'

@@ -26,7 +26,7 @@ const { values } = parseArgsOrExit({
 })
 
 const dataPath = values['data-path']
-const user = values.user
+const { user } = values
 if (!dataPath || !user) {
 	console.error('usage: --data-path <dir> --user <username>')
 	process.exit(2)

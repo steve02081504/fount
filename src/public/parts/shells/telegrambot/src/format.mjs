@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import { formatEntityMentionToken } from '../../chat/public/shared/inlineTokenSyntax.mjs'
 
-const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/g
+const FOUNT_ENTITY_MENTION_RE = /@\[entity:([\da-f]{128})]/g
 
 /**
  * Telegram bot 信息类型
@@ -855,10 +855,9 @@ export async function telegramMessageToBridgeDto(context, message, botInfo, owne
  * 相册合并为单条 bridge DTO。
  * @param {import('npm:telegraf').Context} context Telegraf 上下文
  * @param {TelegramMessageType[]} messages 相册分片
- * @param {string} ownerUsername replica
  * @returns {Promise<object | null>} bridge DTO
  */
-export async function telegramMediaGroupToBridgeDto(context, messages, ownerUsername) {
+export async function telegramMediaGroupToBridgeDto(context, messages) {
 	if (!messages?.length) return null
 	const sorted = [...messages].sort((a, b) => a.message_id - b.message_id)
 	const primary = sorted[0]
@@ -877,7 +876,7 @@ export async function telegramMediaGroupToBridgeDto(context, messages, ownerUser
 			})
 	}
 	if (!text.trim() && !resolvedFiles.length) return null
-	const from = primary.from
+	const { from } = primary
 	const baseName = [
 		from.first_name,
 		from.last_name,

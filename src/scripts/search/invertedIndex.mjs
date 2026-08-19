@@ -207,9 +207,9 @@ export async function patchShardMeta(indexDir, shardKey, patch) {
  * @returns {Promise<void>}
  */
 export async function indexDocument(indexDir, shardKey, doc) {
-	const id = doc.id
+	const { id } = doc
 	if (!id) return
-	const text = doc.text
+	const { text } = doc
 	const tokens = tokenizeForQuery(text)
 
 	await shardMutex(`${indexDir}:${shardKey}`, () => withGoneParentOk(indexDir, async () => {

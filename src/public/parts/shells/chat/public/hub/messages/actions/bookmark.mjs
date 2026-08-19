@@ -14,7 +14,7 @@ import { getMessageText } from '../render/text.mjs'
  */
 export async function handleBookmark(button, actions) {
 	const { groupId, channelId } = actions
-	const eventId = button.dataset.eventId
+	const { eventId } = button.dataset
 	if (!eventId || !groupId || !channelId) return false
 	button.disabled = true
 	try {

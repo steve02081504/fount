@@ -415,28 +415,32 @@ const LAUNCH_PORT_RACE_RETRIES = 5
 function isLaunchPortRaceError(error) {
 	if (error instanceof PortCollisionError) return true
 	const text = String(error?.message ?? error ?? '')
-	return /EADDRINUSE|address already in use/i.test(text)
+	return /eaddrinuse|address already in use/i.test(text)
 }
 
 /**
+ * @typedef {object} LaunchNodeOptions 启动 headless fount 测试节点的选项
+ * @property {number} [port] 监听端口；省略则从 28931 (TEST_PORT_BASE) 起扫描空闲口
+ * @property {string} [dataPath] 数据目录；省略则 mkdtemp
+ * @property {string} [username='CI-user'] 用户名
+ * @property {string} [apiKey] API key；省略则按 port 生成
+ * @property {FixtureCopy[]} [fixtureCopies] 启动前复制到用户目录的 fixture
+ * @property {import('./boot.mjs').TestStarts} [starts] 精确透传给测试 worker 内部 `init()` 的 `starts`
+ * @property {boolean} [needsOutput] 透传给测试 worker 内部 `init()` 的 `needs_output`
+ * @property {string[]} [loadParts] 启动后要 load 的 partpath
+ * @property {boolean} [p2p=false] `starts.P2P` 简写；`starts` 已给出时忽略
+ * @property {boolean} [minP2pNode=false] 无 WebRTC 栈时初始化离线 P2P 身份
+ * @property {string} [bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
+ * @property {boolean} [keepData=false] stop 时是否保留 data 目录
+ * @property {boolean} [captureOutput=false] ready 后是否缓存 stdout/stderr 供断言
+ * @property {() => Promise<void>} [releasePort] spawn 前释放该端口的 listen hold
+ * @property {() => Promise<void>} [commitPort] 子进程就绪后释放跨进程租约
+ * @property {Record<string, string>} [extraEnv] 额外注入子进程的环境变量（不影响父进程 process.env）
+ */
+
+/**
  * 启动一个 headless fount 测试节点子进程。
- * @param {object} [options={}] 启动选项
- * @param {number} [options.port] 监听端口；省略则从 28931 (TEST_PORT_BASE) 起扫描空闲口
- * @param {string} [options.dataPath] 数据目录；省略则 mkdtemp
- * @param {string} [options.username='CI-user'] 用户名
- * @param {string} [options.apiKey] API key；省略则按 port 生成
- * @param {FixtureCopy[]} [options.fixtureCopies] 启动前复制到用户目录的 fixture
- * @param {import('./boot.mjs').TestStarts} [options.starts] 精确透传给测试 worker 内部 `init()` 的 `starts`
- * @param {boolean} [options.needsOutput] 透传给测试 worker 内部 `init()` 的 `needs_output`
- * @param {string[]} [options.loadParts] 启动后要 load 的 partpath
- * @param {boolean} [options.p2p=false] `starts.P2P` 简写；`starts` 已给出时忽略
- * @param {boolean} [options.minP2pNode=false] 无 WebRTC 栈时初始化离线 P2P 身份
- * @param {string} [options.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
- * @param {boolean} [options.keepData=false] stop 时是否保留 data 目录
- * @param {boolean} [options.captureOutput=false] ready 后是否缓存 stdout/stderr 供断言
- * @param {() => Promise<void>} [options.releasePort] spawn 前释放该端口的 listen hold
- * @param {() => Promise<void>} [options.commitPort] 子进程就绪后释放跨进程租约
- * @param {Record<string, string>} [options.extraEnv] 额外注入子进程的环境变量（不影响父进程 process.env）
+ * @param {LaunchNodeOptions} [options={}] 启动选项
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
 export async function launchNode(options = {}) {
@@ -459,15 +463,11 @@ export async function launchNode(options = {}) {
 
 /**
  * 单次启动尝试（无端口争用重试）。
- * @param {object} [options={}] 同 {@link launchNode}
+ * @param {LaunchNodeOptions} [options={}] 同 {@link launchNode}
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
 async function launchNodeOnce(options = {}) {
-	/** @type {(() => Promise<void>) | undefined} */
-	let releasePort = options.releasePort
-	/** @type {(() => Promise<void>) | undefined} */
-	let commitPort = options.commitPort
-	let port = options.port
+	let { releasePort, commitPort, port } = options
 	/** @type {TestPortBlock | undefined} */
 	let selfHeld
 	if (port == null) {

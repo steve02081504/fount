@@ -178,8 +178,8 @@ export async function buildForYouFeed(username, options = {}) {
 	candidates.sort((left, right) => right.score - left.score || right.post.id.localeCompare(left.post.id))
 
 	let start = 0
-	if (options.cursor) {
-		const cursor = options.cursor
+	const { cursor } = options
+	if (cursor) {
 		const index = candidates.findIndex(row => forYouCursorKey({ score: row.score, postId: row.post.id }) === cursor)
 		start = index >= 0 ? index + 1 : 0
 	}

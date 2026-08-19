@@ -348,7 +348,7 @@ async function buildChatLogEntryFromDagMessage(
 	if (content.sensitive_media) entry.sensitive_media = content.sensitive_media
 
 	entry.role = content.role || 'user'
-	const charId = line.charId
+	const { charId } = line
 	const snapshot = chatExtensionOf(content)?.sessionSnapshot
 	const channelForSnapshot = resolveChannelId(sourceChannelId, resolveChannelId(line.channelId))
 	let slice = baseSlice.copy()

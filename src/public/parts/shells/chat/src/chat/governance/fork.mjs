@@ -60,7 +60,7 @@ export async function forkGroupFromBranch(username, sourceGroupId, options = {})
 		throw new Error('branch tip not found in source DAG')
 
 	const forkName = options.name?.trim() || `${state.groupMeta?.name || sourceGroupId} (fork)`
-	const entityHash = options.entityHash
+	const { entityHash } = options
 
 	const plannedGroupId = randomUUID()
 	const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, plannedGroupId, entityHash)

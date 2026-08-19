@@ -22,7 +22,7 @@ async function loadSvgText(url) {
  * @returns {Promise<DocumentFragmentOrElement>} - 处理后的 DOM。
  */
 export async function svgInliner(DOM) {
-	const svgs = DOM.querySelectorAll(`img[src$=".svg"]:not([svg-inliner-ignore])`)
+	const svgs = DOM.querySelectorAll('img[src$=".svg"]:not([svg-inliner-ignore])')
 	await Promise.all([...svgs].map(async img => {
 		const url = img.getAttribute('src')
 		const data = await loadSvgText(url)

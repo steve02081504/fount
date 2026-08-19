@@ -311,7 +311,7 @@ Deno.test('register then unregister writes and clears shortcuts.vdf plus grid im
 	const shortcuts = await loadShortcutsFile(user.shortcuts)
 	assertEquals(shortcuts.entries.length, 1)
 	assertEquals(shortcuts.entries[0].appName, 'fount')
-	const appId = shortcuts.entries[0].appId
+	const { appId } = shortcuts.entries[0]
 	assertEquals(appId, steamShortcutAppId(steamLaunchPaths(fountDir, 'linux').exe, 'fount'))
 	assert(existsSync(join(user.grid, `${appId}p.png`)))
 	assert(existsSync(join(user.grid, `${appId}_hero.png`)))

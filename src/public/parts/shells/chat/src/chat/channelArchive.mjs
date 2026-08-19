@@ -113,8 +113,7 @@ function attachArchiveAttachments(portable, state, files) {
  * @returns {Promise<object>} portable 消息
  */
 async function portableFromHotRow(username, groupId, channelId, row, state, flags = {}) {
-	let content = row.content
-	let decryptView = row.decryptView
+	let { content, decryptView } = row
 	if (!decryptView?.failed && content) {
 		const result = await decryptEventContent(username, groupId, channelId, content)
 		if (result.ok && result.content)

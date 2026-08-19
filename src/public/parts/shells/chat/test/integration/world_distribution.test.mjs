@@ -40,7 +40,7 @@ async function seedWorldFixture(dataRoot, username, worldname) {
  * @returns {Promise<void>}
  */
 async function mirrorSessionWorldBind(stateOf, appendSessionWorldBind, fromNode, toNode, groupId) {
-	const world = (await stateOf(fromNode, groupId)).session.world
+	const { world } = (await stateOf(fromNode, groupId)).session
 	await appendSessionWorldBind(toNode, groupId, world.worldname, {
 		distribution: world.distribution,
 		ownerUsername: world.ownerUsername,
@@ -94,7 +94,7 @@ Deno.test('world distribution: local 本机执行 + 未装回退 BUILTIN + hoste
 		await mirrorSessionWorldBind(stateOf, appendSessionWorldBind, NODE_A, NODE_B, groupId)
 
 		for (const node of [NODE_A, NODE_B]) {
-			const session = (await stateOf(node, groupId)).session
+			const { session } = await stateOf(node, groupId)
 			assertEquals(session.world.distribution, 'local')
 			assertEquals(session.world.worldname, LOCAL_WORLD)
 		}
@@ -117,7 +117,7 @@ Deno.test('world distribution: local 本机执行 + 未装回退 BUILTIN + hoste
 	await t.step('hosted 回归：未声明 distribution 的 world 折叠为 hosted', async () => {
 		await appendSessionWorldBind(NODE_A, groupId, HOSTED_WORLD)
 
-		const session = (await stateOf(NODE_A, groupId)).session
+		const { session } = await stateOf(NODE_A, groupId)
 		assertEquals(session.world.distribution, 'hosted')
 		assertEquals(session.world.worldname, HOSTED_WORLD)
 
@@ -168,7 +168,7 @@ Deno.test('world distribution replicated: 本机执行 + 未装节点走 remoteW
 	await mirrorSessionWorldBind(stateOf, appendSessionWorldBind, NODE_A, NODE_B, groupId)
 
 	await t.step('replicated bind 写入 distribution', async () => {
-		const session = (await stateOf(NODE_A, groupId)).session
+		const { session } = await stateOf(NODE_A, groupId)
 		assertEquals(session.world.distribution, 'replicated')
 		assertEquals(session.world.worldname, REPLICATED_WORLD)
 	})

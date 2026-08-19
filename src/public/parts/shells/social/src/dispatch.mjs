@@ -220,8 +220,7 @@ export async function dispatchSocialMessage(username, authorEntityHash, post) {
  * @returns {Promise<{ ok: boolean }>} RPC 处理结果
  */
 export async function processSocialPostNotifyRpc(hostingUsername, rpc) {
-	const post = rpc.post
-	const authorEntityHash = rpc.authorEntityHash
+	const { post, authorEntityHash } = rpc
 	if (post?.type !== 'post' || !authorEntityHash) return { ok: false }
 
 	const { isRemoteTimelinePushAdmitted } = await import('./federation/push_admission.mjs')

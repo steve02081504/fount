@@ -39,7 +39,7 @@ function compileAllowPattern(pattern) {
 		return new RegExp(pattern)
 	}
 	catch {
-		return new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+		return new RegExp(pattern.replace(/[$()*+.?[\\\]^{|}]/g, '\\$&'))
 	}
 }
 
@@ -78,7 +78,7 @@ const NOISE_RULES = [
 	{ name: 'Error', pattern: /Error:/ },
 	{ name: 'WARN', pattern: /\bWARN\b/ },
 	{ name: 'rejection', pattern: /\brejection\b/i },
-	{ name: 'browser_network', pattern: /\[browser:network\]/ },
+	{ name: 'browser_network', pattern: /\[browser:network]/ },
 ]
 
 const IMBALANCE_HIT = 'noise_allow_imbalance'

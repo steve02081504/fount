@@ -109,7 +109,7 @@ const sinkOut = (mass, flowX, flowY, cell, dx, dy, amount, world) => {
  */
 const transferNeighbor = (world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, nbX, nbY, wrappedFrac, outFrac) => {
 	if (move <= 1e-8) return
-	const mass = phase.mass
+	const { mass } = phase
 	const crossed = wrappedFrac > 0 || outFrac > 0
 	if (!crossed) {
 		transferToCell(world, phase, flowX, flowY, mass, W, cell, x, y, nbX, nbY, move)
@@ -131,7 +131,7 @@ const transferNeighbor = (world, phase, flowX, flowY, W, cell, x, y, dx, dy, mov
 export const stepPhaseTransport = (world, phase, opts) => {
 	const { worldW: W, worldH: H } = world
 	const n = W * H
-	const mass = phase.mass
+	const { mass } = phase
 	const flowX = scratch(world, phase.flowScratchX, n, Float32Array)
 	const flowY = scratch(world, phase.flowScratchY, n, Float32Array)
 	flowX.fill(0)
@@ -146,8 +146,7 @@ export const stepPhaseTransport = (world, phase, opts) => {
 	const { pAt, markDirty } = pressure
 
 	const viscBuf = scratch(world, 'phaseVisc', n, Float32Array)
-	const vx = phase.vx
-	const vy = phase.vy
+	const { vx, vy } = phase
 
 	// --- Settle along gravity-weighted down neighbors ---
 	for (let si = 0; si < n; si++) {
@@ -173,8 +172,7 @@ export const stepPhaseTransport = (world, phase, opts) => {
 			const nb = neighborCoord(world, x, y, dx, dy)
 			const nbX = nb.x
 			const nbY = nb.y
-			const wrappedFrac = nb.wrappedFrac
-			const outFrac = nb.outFrac
+			const { wrappedFrac, outFrac } = nb
 			const crossed = wrappedFrac > 0 || outFrac > 0
 			let dstMass = 0
 			let room = LIQ_FULL
@@ -233,8 +231,7 @@ export const stepPhaseTransport = (world, phase, opts) => {
 				const nb = neighborCoord(world, x, y, dx, dy)
 				const nbX = nb.x
 				const nbY = nb.y
-				const wrappedFrac = nb.wrappedFrac
-				const outFrac = nb.outFrac
+				const { wrappedFrac, outFrac } = nb
 				const crossed = wrappedFrac > 0 || outFrac > 0
 				if (!crossed) {
 					const target = nbY * W + nbX

@@ -7,7 +7,7 @@ import { mountTemplate, renderTemplateAsHtmlString } from '../templates.mjs'
 
 import { grantableChannelOverridePermissions } from './constants.mjs'
 
-const ROLE_COLOR_RE = /^#[0-9a-f]{3}([0-9a-f]{3})?$/i
+const ROLE_COLOR_RE = /^#[\da-f]{3}([\da-f]{3})?$/i
 
 /**
  * @param {string | undefined} color CSS 颜色

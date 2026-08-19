@@ -497,7 +497,7 @@ async function runFriendsEntitySearch(input, resultsHost) {
 	/** @type {FriendsSearchHit[]} */
 	const hits = [...localChars]
 	for (const entity of data.entities || []) {
-		const charPartName = entity.charPartName
+		const { charPartName } = entity
 		if (charPartName) {
 			if (seenChars.has(charPartName)) continue
 			seenChars.add(charPartName)

@@ -465,7 +465,7 @@ function renderContinuousPicker(host, sections, handlers) {
 		const groupButton = event.target.closest('[data-group-emoji-ref]')
 		if (groupButton) {
 			const ref = groupButton.dataset.groupEmojiRef || ''
-			const packId = groupButton.dataset.packId
+			const { packId } = groupButton.dataset
 			const emojiId = groupButton.dataset.groupEmojiId
 			if (packId && emojiId)
 				void handlers.usage?.record?.({ kind: 'pack', packId, emojiId })

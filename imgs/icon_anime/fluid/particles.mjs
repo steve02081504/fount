@@ -10,7 +10,8 @@ import { MAT, LIQ_DRAW, isLiquidBarrier } from './mat.mjs'
 import { pushParticle } from './particle_pool.mjs'
 import { markAirIfDrawCrossed, markAirIfFillCrossed, strongestUp, inWorld, impartLiquidMomentum, cellRoom, cellFill } from './world/index.mjs'
 
-/** @typedef {import('./world/index.mjs').FluidWorld} FluidWorld
+/**
+ * @typedef {import('./world/index.mjs').FluidWorld} FluidWorld
  * @typedef {import('./particle_pool.mjs').ParticlePool} ParticlePool
  */
 
@@ -215,20 +216,14 @@ export const stepParticles = (world, onHit, state) => {
 		// Side wrap when leaving edges with wrap role.
 		if (nx < 0 || nx >= W) {
 			const nb = neighborCoord(world, px | 0, py | 0, nx < 0 ? -1 : 1, 0, (life | 0) + i)
-			const wrapped = nb.wrapped
-			const out = nb.out
-			const nbX = nb.x
-			if (wrapped) nx = nbX + (nx - Math.floor(nx))
-			else if (out)
+			if (nb.wrapped) nx = nb.x + (nx - Math.floor(nx))
+			else if (nb.out)
 				continue
 		}
 		if (ny < 0 || ny >= H) {
 			const nb = neighborCoord(world, px | 0, py | 0, 0, ny < 0 ? -1 : 1, (life | 0) + i + 17)
-			const wrapped = nb.wrapped
-			const out = nb.out
-			const nbY = nb.y
-			if (wrapped) ny = nbY + (ny - Math.floor(ny))
-			else if (out)
+			if (nb.wrapped) ny = nb.y + (ny - Math.floor(ny))
+			else if (nb.out)
 				continue
 		}
 

@@ -9,7 +9,7 @@ const g = await chatApiJson('POST', '/groups/', {
 	defaultChannelName: '综合',
 })
 console.log(JSON.stringify(g, null, 2))
-const groupId = g.groupId
+const { groupId } = g
 const channelId = g.defaultChannelId
 console.log(`groupId=${groupId} channelId=${channelId}`)
 

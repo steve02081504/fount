@@ -19,7 +19,7 @@ import { showOwnerConfirmDialog } from './ownerConfirmDialog.mjs'
 function normalizeOwnerInput(raw) {
 	const value = raw.trim()
 	if (!value) return null
-	if (!/^[0-9a-f]{128}$/u.test(value)) throw new Error('invalid ownerEntityHash')
+	if (!/^[\da-f]{128}$/u.test(value)) throw new Error('invalid ownerEntityHash')
 	return value
 }
 

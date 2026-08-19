@@ -28,7 +28,7 @@ export function initTopicView() {
 	document.getElementById('topicView')?.addEventListener('click', async event => {
 		const followButton = event.target.closest('#topicFollowButton')
 		if (!followButton) return
-		const tag = followButton.dataset.tag
+		const { tag } = followButton.dataset
 		if (!tag) return
 		const isFollowed = followButton.dataset.followed === 'true'
 		try {

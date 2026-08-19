@@ -104,7 +104,7 @@ export async function renderMessageMarkdownForPaint(messageId, markdown, {
  * @returns {number} 近似可见字数
  */
 function visibleMarkdownLength(markdown) {
-	return markdown.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').length
+	return markdown.replace(/\[([^\]]*)]\([^)]*\)/g, '$1').length
 }
 
 /**

@@ -177,7 +177,7 @@ const achievementsRegistryWatchers = new Map()
 function parseAchievementsRegistryData(raw) {
 	if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
 	if ('achievements' in raw && raw.achievements) {
-		const achievements = raw.achievements
+		const { achievements } = raw
 		return /** @type {object} */ achievements
 	}
 	if (!('achievements' in raw)) {

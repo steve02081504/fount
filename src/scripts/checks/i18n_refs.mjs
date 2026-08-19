@@ -173,7 +173,7 @@ export function extractI18nRefsFromSource(text) {
 		confirmAction: 'string',
 	}
 	// 仅前端 features/errorHandlers 的工厂形式：首参是 i18n key；后端 scripts/errorHandlers 首参是 error。
-	if (/\bimport\s*\{[^}]*\bhandleError\b[^}]*\}\s*from\s*['"][^'"]*features\/errorHandlers\.mjs['"]/.test(text))
+	if (/\bimport\s*{[^}]*\bhandleError\b[^}]*}\s*from\s*["'][^"']*features\/errorHandlers\.mjs["']/.test(text))
 		apis.handleError = 'string'
 
 	for (const [name, binding] of Object.entries(apis)) {
@@ -207,7 +207,7 @@ export function extractFountConsolePathKeys(text) {
 	 * @returns {number} 1-based 行号
 	 */
 	const lineAt = (index) => text.slice(0, index).split('\n').length
-	for (const match of text.matchAll(/\b(?:Get-I18n\s+-key|get_i18n|print_i18n(?:_red|_yellow|_green)?)\s+'(?:([^']+))'/g))
+	for (const match of text.matchAll(/\b(?:Get-I18n\s+-key|get_i18n|print_i18n(?:_red|_yellow|_green)?)\s+'([^']+)'/g))
 		refs.push({ key: match[1], line: lineAt(match.index ?? 0) })
 	return refs
 }

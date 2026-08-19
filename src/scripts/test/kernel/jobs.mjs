@@ -175,7 +175,7 @@ export async function expandJobWave(params) {
 	}
 
 	const committedChangedByKey = await buildCommittedChangedByKey(repoRoot, allSuites, state)
-	const issueStates = options.issueStates
+	const { issueStates } = options
 	const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes, issueStates)
 
 	const fingerprints = { commitHash, uncommittedHash, uncommittedFiles, uncommittedHashes, committedChangedByKey, nested }
@@ -291,7 +291,7 @@ export function acceptedFromWave(wave, counts = {}) {
 	const outdatedCount = counts.outdatedCount
 		?? (mode === 'outdated' ? goalCount
 			: mode === 'continue' ? Math.max(0, goalCount - imperfectCount)
-			: 0)
+				: 0)
 	return {
 		runCount: counts.runCount ?? 0,
 		reuseCount: counts.reuseCount ?? 0,

@@ -55,7 +55,7 @@ export function applySafeContentHeaders(res, options = {}) {
 		return { contentType: declared, inline: true }
 	}
 	res.setHeader('Content-Type', 'application/octet-stream')
-	const name = String(options.filename || 'download').replace(/["\r\n]/g, '') || 'download'
+	const name = String(options.filename || 'download').replace(/[\n\r"]/g, '') || 'download'
 	res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(name)}`)
 	return { contentType: 'application/octet-stream', inline: false }
 }

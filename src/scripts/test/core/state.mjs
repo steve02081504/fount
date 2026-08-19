@@ -719,7 +719,7 @@ export async function upsertSuiteRun({
  * @returns {string} mermaid 节点 id
  */
 function mermaidNodeId(key) {
-	return key.replace(/[/\\:.-]/g, '_')
+	return key.replace(/[./:\\-]/g, '_')
 }
 
 /**
@@ -836,4 +836,3 @@ export async function writeStateMarkdown(repoRoot, allSuites, state, staleKeys) 
 	await writeFile(path, buildStateMarkdown(allSuites, state, staleKeys), 'utf8')
 	return path
 }
-

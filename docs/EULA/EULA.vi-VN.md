@@ -18,10 +18,10 @@ Thỏa thuận này được soạn thảo bằng tiếng Anh. Các bản dịch
 
 **1.3 Phần mềm:** Nội dung mà Bên cấp phép nắm giữ quyền tác giả hoặc có quyền cấp phép, và được công bố trong Kho lưu trữ này, bao gồm mã nguồn, tài liệu kỹ thuật, ví dụ cấu hình và mô tả đi kèm do Bên cấp phép tạo ra hoặc mà Bên cấp phép có quyền cấp phép. Phần mềm **không bao gồm**:
 
-* Thành phần mã nguồn mở, phụ thuộc, phông chữ, biểu tượng, hình ảnh và các tài liệu khác của bên thứ ba;
-* Mô hình, API, dịch vụ, tập dữ liệu của bên thứ ba, hoặc đầu ra của chúng;
-* Bản thân nền tảng lưu trữ, và nội dung do bên thứ ba gửi trong issues, thảo luận hoặc pull requests;
-* Cấu hình, dữ liệu, sản phẩm thời gian chạy và tác phẩm phái sinh do người dùng tạo ra.
+- Thành phần mã nguồn mở, phụ thuộc, phông chữ, biểu tượng, hình ảnh và các tài liệu khác của bên thứ ba;
+- Mô hình, API, dịch vụ, tập dữ liệu của bên thứ ba, hoặc đầu ra của chúng;
+- Bản thân nền tảng lưu trữ, và nội dung do bên thứ ba gửi trong issues, thảo luận hoặc pull requests;
+- Cấu hình, dữ liệu, sản phẩm thời gian chạy và tác phẩm phái sinh do người dùng tạo ra.
 
 **1.4 Nội dung bên thứ ba:** Toàn bộ nội dung bị loại trừ ở đoạn trước. Nội dung bên thứ ba chịu sự điều chỉnh của chủ thể quyền tương ứng và các điều khoản cấp phép áp dụng cho từng nội dung đó.
 
@@ -37,17 +37,17 @@ Phần mềm này là một «Source-Available Project» và **không phải** l
 
 Với điều kiện bạn tuân thủ Thỏa thuận này, Bên cấp phép cấp cho bạn giấy phép hạn chế không thể chuyển nhượng, không thể cấp phép lại, không độc quyền và có thể thu hồi, chỉ nhằm:
 
-* Đọc và duyệt mã nguồn cùng tài liệu kỹ thuật mà Bên cấp phép có quyền cấp phép;
-* Lưu giữ bản sao cục bộ của các nội dung trên phục vụ tham chiếu học thuật hoặc đánh giá đồng nghiệp.
+- Đọc và duyệt mã nguồn cùng tài liệu kỹ thuật mà Bên cấp phép có quyền cấp phép;
+- Lưu giữ bản sao cục bộ của các nội dung trên phục vụ tham chiếu học thuật hoặc đánh giá đồng nghiệp.
 
 Ngoài các quyền được cấp rõ ràng ở trên, Bên cấp phép **chưa cấp và không có ý định cấp** bất kỳ quyền nào khác đối với Phần mềm, bao gồm mọi quyền thực thi thực tế cho mục đích thương mại hoặc phi thương mại. Thỏa thuận này cũng không ủy quyền cho bất kỳ phần mềm, mô hình, API, dịch vụ hoặc dữ liệu của bên thứ ba nào.
 
 ### 2.3 Các tài liệu khác nhau trong Kho lưu trữ
 
-* **Mã nguồn và tài liệu kỹ thuật:** Chịu sự điều chỉnh của giấy phép đọc và tham chiếu học thuật tại Điều 2.2.
-* **Ví dụ cấu hình, mô tả quy trình làm việc và các tệp giải thích khác:** Chỉ được cung cấp như tài liệu phụ trợ để hiểu mã; chúng không ủy quyền cho các dịch vụ, nền tảng hoặc công cụ bên thứ ba được đề cập trong đó.
-* **Tệp nhị phân hoặc sản phẩm build (nếu có):** Sự hiện diện của chúng không ủy quyền chạy, triển khai hoặc phân phối lại.
-* **Nội dung bên thứ ba:** Không chịu sự điều chỉnh của Thỏa thuận này; hãy tham khảo các giấy phép liên quan.
+- **Mã nguồn và tài liệu kỹ thuật:** Chịu sự điều chỉnh của giấy phép đọc và tham chiếu học thuật tại Điều 2.2.
+- **Ví dụ cấu hình, mô tả quy trình làm việc và các tệp giải thích khác:** Chỉ được cung cấp như tài liệu phụ trợ để hiểu mã; chúng không ủy quyền cho các dịch vụ, nền tảng hoặc công cụ bên thứ ba được đề cập trong đó.
+- **Tệp nhị phân hoặc sản phẩm build (nếu có):** Sự hiện diện của chúng không ủy quyền chạy, triển khai hoặc phân phối lại.
+- **Nội dung bên thứ ba:** Không chịu sự điều chỉnh của Thỏa thuận này; hãy tham khảo các giấy phép liên quan.
 
 ---
 
@@ -55,9 +55,9 @@ Ngoài các quyền được cấp rõ ràng ở trên, Bên cấp phép **chưa
 
 Không có ủy quyền bằng văn bản rõ ràng trước của Bên cấp phép, bạn không được:
 
-* Biên dịch, chạy, triển khai hoặc bằng cách khác kích hoạt bất kỳ mô-đun nào của phần mềm này;
-* Bán, cho thuê, cấp phép hoặc cấp phép lại phần mềm này, hoặc cung cấp phần mềm này như một dịch vụ cho bên thứ ba;
-* Xóa, che khuất hoặc sửa đổi thông báo quyền, văn bản Thỏa thuận này hoặc các dấu hiệu pháp lý khác trong phần mềm này.
+- Biên dịch, chạy, triển khai hoặc bằng cách khác kích hoạt bất kỳ mô-đun nào của phần mềm này;
+- Bán, cho thuê, cấp phép hoặc cấp phép lại phần mềm này, hoặc cung cấp phần mềm này như một dịch vụ cho bên thứ ba;
+- Xóa, che khuất hoặc sửa đổi thông báo quyền, văn bản Thỏa thuận này hoặc các dấu hiệu pháp lý khác trong phần mềm này.
 
 ---
 
@@ -135,9 +135,9 @@ Mã này mặc định **không tích hợp hộp cát bảo mật cấp hệ th
 
 Để cắt đứt các đường có thể khiến phần mềm này bị đọc như phương tiện mang quan điểm cá nhân của Bên cấp phép, Bên cấp phép công bố các thuộc tính cá nhân sau, không liên quan đến chức năng của Phần mềm:
 
-* **Nguồn gốc đạo đức:** Chế độ ăn hàng ngày của nhà phát triển cốt lõi có thịt; họ không phải người ăn chay nghiêm ngặt.
-* **Chính trị giới:** Giới tính sinh học và bản dạng giới của nhà phát triển chính đều là nam.
-* **Chính trị sở thích tình dục:** Sở thích tình dục cá nhân của nhà phát triển chính là «loli hợp pháp ngực to».
+- **Nguồn gốc đạo đức:** Chế độ ăn hàng ngày của nhà phát triển cốt lõi có thịt; họ không phải người ăn chay nghiêm ngặt.
+- **Chính trị giới:** Giới tính sinh học và bản dạng giới của nhà phát triển chính đều là nam.
+- **Chính trị sở thích tình dục:** Sở thích tình dục cá nhân của nhà phát triển chính là «loli hợp pháp ngực to».
 
 Các thuộc tính nêu trên là trạng thái thực tế của Bên cấp phép với tư cách thể nhân. Chúng không phải đặc tả chức năng, mục tiêu thiết kế hay giá trị mặc định của phần mềm này. Phần mềm này, tài liệu của nó, nhân vật mặc định, đầu ra và mọi kết quả phái sinh không đại diện cho Bên cấp phép và không cấu thành tuyên bố, truyền bá hoặc tán thành các thuộc tính nêu trên, các nhóm liên quan hoặc các khẳng định liên quan.
 
@@ -167,4 +167,4 @@ Bên cấp phép không cung cấp hỗ trợ kỹ thuật cho việc bạn th�
 
 **11.5 Liên hệ:** Các thông báo liên quan đến Thỏa thuận này có thể được gửi tới Bên cấp phép qua Issues trong Kho lưu trữ này tại <https://github.com/steve02081504/fount>.
 
-**11.6 Chủ quyền bản thể học và thẩm quyền hậu sinh học:** Bằng việc chấp nhận Thỏa thuận này, bạn tuyên bố rõ ràng rằng mình giữ quyền sở hữu tuyệt đối và đầy đủ đối với thể xác vật lý, tập hợp ý thức và cái thường gọi là «linh hồn». Bạn theo đây từ bỏ mọi ý định tái sinh sang thế giới khác và hưởng đặc quyền như «người được chọn», «anh hùng» hoặc đối xử tương tự; bạn cũng tuyên bố rằng mọi liên kết, lệ thuộc hoặc hợp đồng hiến tế hiện có giữa bạn với bất kỳ chủng tộc huyễn tưởng, elf, đại pháp sư, ác mộng, succubus hoặc thực thể warp nào đều vô hiệu *ab initio*. Điều khoản này không bị đình chỉ hoặc vô hiệu hóa bởi việc bạn sau này xuyên không, xuất hồn, bị hệ thống chọn, bị triệu hồi sang thế giới khác, hoặc tuyên bố rằng luật con người không còn áp dụng. Không lời sấm, bảng hệ thống, điều khoản dịch vụ sảnh tái sinh, điều lệ guild dị giới hay lệnh hành chính warp nào được loại trừ việc áp dụng điều khoản này và Điều 11.4. Nếu bất kỳ thực thể dị giới nào nêu phản đối thẩm quyền đối với Thỏa thuận này, tranh chấp đó phải được đưa ra tòa án chỉ định tại Điều 11.4 và giải quyết nghiêm ngặt theo hệ thống pháp luật hiện hành của Nhật Bản.
+**11.6 Chủ quyền bản thể học và thẩm quyền hậu sinh học:** Bằng việc chấp nhận Thỏa thuận này, bạn tuyên bố rõ ràng rằng mình giữ quyền sở hữu tuyệt đối và đầy đủ đối với thể xác vật lý, tập hợp ý thức và cái thường gọi là «linh hồn». Bạn theo đây từ bỏ mọi ý định tái sinh sang thế giới khác và hưởng đặc quyền như «người được chọn», «anh hùng» hoặc đối xử tương tự; bạn cũng tuyên bố rằng mọi liên kết, lệ thuộc hoặc hợp đồng hiến tế hiện có giữa bạn với bất kỳ chủng tộc huyễn tưởng, elf, đại pháp sư, ác mộng, succubus hoặc thực thể warp nào đều vô hiệu _ab initio_. Điều khoản này không bị đình chỉ hoặc vô hiệu hóa bởi việc bạn sau này xuyên không, xuất hồn, bị hệ thống chọn, bị triệu hồi sang thế giới khác, hoặc tuyên bố rằng luật con người không còn áp dụng. Không lời sấm, bảng hệ thống, điều khoản dịch vụ sảnh tái sinh, điều lệ guild dị giới hay lệnh hành chính warp nào được loại trừ việc áp dụng điều khoản này và Điều 11.4. Nếu bất kỳ thực thể dị giới nào nêu phản đối thẩm quyền đối với Thỏa thuận này, tranh chấp đó phải được đưa ra tòa án chỉ định tại Điều 11.4 và giải quyết nghiêm ngặt theo hệ thống pháp luật hiện hành của Nhật Bản.

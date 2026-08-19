@@ -13,7 +13,7 @@ export const CJK_RE = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p
  * 本地 `.md` 链接目标（可选尖括号、片段与标题）：
  * `](path.md)`、`](<path.md#frag>)`、`](path.md "title")`。
  */
-const MD_LINK_RE = /\]\(\s*(?:<([^>\n#]+?\.md)(?:#[^>\s]*)?>|([^)\s#]+?\.md)(?:#[^)\s]*)?)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/gi
+const MD_LINK_RE = /]\(\s*(?:<([^\n#>]+?\.md)(?:#[^\s>]*)?>|([^\s#)]+?\.md)(?:#[^\s)]*)?)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/gi
 
 /** 人类面向、允许中文的 docs 子目录前缀 */
 const HUMAN_FACING_DOCS_PREFIXES = ['docs/design/', 'docs/review/', 'docs/issues/', 'docs/readme/']
@@ -30,7 +30,7 @@ export function localMdLinkTargets(text) {
 	let match
 	while (match = MD_LINK_RE.exec(text)) {
 		const target = match[1] || match[2]
-		if (!target || /^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('//')) continue
+		if (!target || /^[a-z][\d+.a-z-]*:/i.test(target) || target.startsWith('//')) continue
 		targets.push(target)
 	}
 	return targets
@@ -73,7 +73,7 @@ export function isAgentsAuxDocPlacementOk(relativePath) {
  * @returns {string|null} 仓库相对 posix 路径；外部 URL 为 null
  */
 export function resolveMdLink(fromRelativePath, target) {
-	if (/^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('//')) return null
+	if (/^[a-z][\d+.a-z-]*:/i.test(target) || target.startsWith('//')) return null
 	const normalized = fromRelativePath.replace(/\\/g, '/')
 	const slash = normalized.lastIndexOf('/')
 	const fromDirectory = slash === -1 ? '' : normalized.slice(0, slash)

@@ -242,7 +242,7 @@ export function createVirtualBridgeChannel(apiContext, groupId, channelId) {
 export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions) {
 	const eventId = String(entry.extension?.chat?.virtualEventId || entry.eventId || '')
 	const channelId = entry.extension?.chat?.channelId || entry.channelId || 'default'
-	const content = entry.content
+	const { content } = entry
 	const authorHash = String(
 		entry.uid
 		|| entry.extension?.chat?.bridge?.authorEntityHash

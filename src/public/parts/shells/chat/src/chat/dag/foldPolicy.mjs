@@ -14,7 +14,7 @@ export const FOLDABLE_PROCESS_EVENT_TYPES = new Set([
  * @returns {boolean} true = 从 DAG 删除
  */
 export function shouldDropDagEvent(event, archivedMessageIds, protectedHotIds, dagFoldAfterArchive, tipIds = null) {
-	const type = event.type
+	const { type } = event
 	if (FOLDABLE_PROCESS_EVENT_TYPES.has(type)) return true
 	if (type === 'message') {
 		const id = String(event.id).trim()

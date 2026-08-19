@@ -7,7 +7,7 @@ const { chatApiJson } = await createSingleNodeProbe()
 
 console.log('=== 1. Create group ===')
 const g = await chatApiJson('POST', '/groups/', { name: 'AI测试群', defaultChannelName: '综合' })
-const groupId = g.groupId
+const { groupId } = g
 const channelId = g.defaultChannelId
 console.log(`groupId=${groupId} channelId=${channelId}`)
 

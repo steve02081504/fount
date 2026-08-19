@@ -270,8 +270,8 @@ export function fileNameFromHtmlTitle(html, fallback = 'export') {
 		?.trim()
 		|| fallback
 	const safe = title
-		.replaceAll(/[<>:"/\\|?*\u0000-\u001f]/g, '_')
-		.replaceAll(/[. ]+$/g, '')
+		.replaceAll(/[\u0000-\u001f"*/:<>?\\|]/g, '_')
+		.replaceAll(/[ .]+$/g, '')
 		.trim()
 		.slice(0, 120)
 		|| fallback

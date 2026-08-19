@@ -332,7 +332,6 @@ export async function buildHomeFeed(username, options = {}) {
  */
 export async function buildProfileFeedItems(username, entityHash, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
-	entityHash = entityHash
 	if (!isEntityHash128(entityHash))
 		return { entityHash, items: [], nextCursor: null }
 
@@ -353,8 +352,8 @@ export async function buildProfileFeedItems(username, entityHash, options = {}) 
 	items.sort((left, right) => compareFeedItems(left, right) * -1)
 
 	let start = 0
-	if (options.cursor) {
-		const cursor = options.cursor
+	const { cursor } = options
+	if (cursor) {
 		const index = items.findIndex(item => item.postId === cursor)
 		start = index >= 0 ? index + 1 : 0
 	}
@@ -373,7 +372,6 @@ export async function buildProfileFeedItems(username, entityHash, options = {}) 
  * @returns {Promise<{ entityHash: string, items: object[] }>} 点赞过的帖子列表
  */
 export async function buildLikedFeedItems(username, entityHash, options = {}) {
-	entityHash = entityHash
 	if (!isEntityHash128(entityHash))
 		return { entityHash, items: [] }
 
