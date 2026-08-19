@@ -55,6 +55,18 @@ fount 是一個可程式化的標準化組件化客製化 Agent 運行平台，�
 
 </details>
 
+---
+
+快速上手：
+
+```sh
+npx the-fount
+```
+
+其他安裝方式請參閱[安裝](#installation)。
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">靈犀一點，應念而生</p>

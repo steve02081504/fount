@@ -35,6 +35,28 @@
 		},
 		{
 			"icon": {
+				"color": "terminal.ansiGreen",
+				"id": "checklist"
+			},
+			"label": "fount test watch",
+			"type": "shell",
+			"windows": {
+				"command": "powershell -NoProfile -File ./path/fount.ps1 test --watch"
+			},
+			"linux": {
+				"command": "sh ./path/fount.sh test --watch"
+			},
+			"osx": {
+				"command": "sh ./path/fount.sh test --watch"
+			},
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"icon": {
 				"color": "terminal.ansiYellow",
 				"id": "check"
 			},

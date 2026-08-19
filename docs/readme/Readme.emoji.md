@@ -55,6 +55,18 @@
 
 </details>
 
+---
+
+⚡🚀:
+
+```sh
+npx the-fount
+```
+
+🔀 ➡️ [🛠️](#installation)
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">✨👆 ➡️ 💭🐣</p>
@@ -154,7 +166,7 @@
   ⛲ ➡️ Windows / macOS / Linux / Android 🕊️▶️, 📥 / Docker 🤸.
 
 - **🕊️ AI 🔌: 🤗♾️**
-  ⛲ AI 🔌 ➡️ *👉* + *🤸*. AI 🔌🐣, 🎨 JavaScript ➡️ *❓* AI — OpenAI, Claude, [Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), [Evolink](https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral…… 🌊0️⃣1️⃣ ➡️ 🔬 regex, 📞 API 📚, 📎🎬. ⛲ 🐣 API 🏊 ➡️ 🧠📨🗺️. 📨🧩 ➡️ *🫵* 💭, 0️⃣1️⃣💪.
+  ⛲ AI 🔌 ➡️ _👉_ + _🤸_. AI 🔌🐣, 🎨 JavaScript ➡️ _❓_ AI — OpenAI, Claude, [Atlas Cloud](https://www.atlascloud.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), [Evolink](https://evolink.ai/?utm_source=github&utm_medium=link&utm_campaign=fount), OpenRouter, NovelAI, Horde, Ooba, Tabby, Mistral…… 🌊0️⃣1️⃣ ➡️ 🔬 regex, 📞 API 📚, 📎🎬. ⛲ 🐣 API 🏊 ➡️ 🧠📨🗺️. 📨🧩 ➡️ _🫵_ 💭, 0️⃣1️⃣💪.
   ![🖼️](https://github.com/user-attachments/assets/f283d1de-c531-4b7a-bf43-3cbe0c48b7b9)
 
 🎭🌊 😵 / 🔍😴📖 ➡️ [**🌱😊👥**](https://t.me/GentianAphrodite) 🤗. 🧠👯 ⚓, 👨‍💻 + 🎨 🤝🧠 + 🎨.
@@ -196,7 +208,7 @@
   1️⃣💬 🎭💭 ➡️ 🧠 AI 🤝 🐣 💯🎭. ✂️🐣😫, 🎯✨ + 🎭🤝.
 
 - **0️⃣1️⃣🪄, ⬇️💭🤚**
-  ⛲, 0️⃣1️⃣ ➡️ 🆕🪄. 👥🗺️ + AI 💡, 📚 😲😊. 0️⃣1️⃣ ➡️ 🎭🧩, 👀 + 🛠️😌, 🎭💬 ➡️ *🫵* 🧩🧵.
+  ⛲, 0️⃣1️⃣ ➡️ 🆕🪄. 👥🗺️ + AI 💡, 📚 😲😊. 0️⃣1️⃣ ➡️ 🎭🧩, 👀 + 🛠️😌, 🎭💬 ➡️ _🫵_ 🧩🧵.
 
 - **📦🪄▶️: 📋💎**
   ⛲👥 📦🎭 + 👤🎭📋. "🌱🗺️", 😊✏️🎨, 🌟🐣📍.
@@ -229,7 +241,7 @@
 - **shells (🤝🖥️):** ⛲👻🚪, 🎭 🐙 ➡️ 🖥️⬆️.
 - **ImportHandlers (📥🤲):** ⛲🤗✋, 🌉 🎭📄↔️.
 - **AIsources (AI 🔌):** 🎭💭 ⚡.
-- **AIsourceGenerators (AI 🔌🐣):** ⛲🧪🧙, JavaScript 💪, 📋 + 🧩 ➡️ *❓* 💭 AI 🔌.
+- **AIsourceGenerators (AI 🔌🐣):** ⛲🧪🧙, JavaScript 💪, 📋 + 🧩 ➡️ _❓_ 💭 AI 🔌.
 
 ![🖼️](https://github.com/user-attachments/assets/8487a04a-7040-4844-81a6-705687856757)
 
@@ -340,10 +352,10 @@ fount remove
 [![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
 
 | 🌈📄 |         0️⃣1️⃣         |
-| :------: | :------------------: |
-|   HEX    |      `#0e3c5c`       |
-|   RGB    |  `rgb(14, 60, 92)`   |
-|   HSL    | `hsl(205, 74%, 21%)` |
+| :--: | :------------------: |
+| HEX  |      `#0e3c5c`       |
+| RGB  |  `rgb(14, 60, 92)`   |
+| HSL  | `hsl(205, 74%, 21%)` |
 
 [🏅➕](https://steve02081504.github.io/fount/badges/) ➡️ shields.io 🏅 + ⛲ logo
 

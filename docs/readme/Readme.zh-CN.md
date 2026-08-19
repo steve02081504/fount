@@ -55,6 +55,18 @@ fount是一个可编程的标准化组件化客制化智能体运行平台，加
 
 </details>
 
+---
+
+快速上手：
+
+```sh
+npx the-fount
+```
+
+其他安装方式请参阅[安装](#installation)。
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">灵犀一点，应念而生</p>

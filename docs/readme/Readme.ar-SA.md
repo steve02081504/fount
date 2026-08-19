@@ -55,6 +55,18 @@ fount منصة تشغيل وكلاء قابلة للبرمجة ومعيارية 
 
 </details>
 
+---
+
+بداية سريعة:
+
+```sh
+npx the-fount
+```
+
+راجع [التثبيت](#installation) للخيارات الأخرى.
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">رفيقٌ من نسيج الخيال</p>

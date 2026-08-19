@@ -55,6 +55,18 @@ fount者，可程式、有常制、分器而組、可客製之智靈運行臺也
 
 </details>
 
+---
+
+速啟：
+
+```sh
+npx the-fount
+```
+
+餘法見[安裝](#installation)。
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">靈犀一點，應念而生</p>
@@ -339,11 +351,11 @@ fount 之世不止是文字與碼，它更是一場目視與連接之盛宴。�
 
 [![fount character](https://steve02081504.github.io/fount/badges/fount_character.svg)](https://github.com/topics/fount-character)
 
-| 色式 |         碼         |
-| :------: | :------------------: |
-|   HEX    |      `#0e3c5c`       |
-|   RGB    |  `rgb(14, 60, 92)`   |
-|   HSL    | `hsl(205, 74%, 21%)` |
+| 色式 |          碼          |
+| :--: | :------------------: |
+| HEX  |      `#0e3c5c`       |
+| RGB  |  `rgb(14, 60, 92)`   |
+| HSL  | `hsl(205, 74%, 21%)` |
 
 君亦可以用[徽章添加器](https://steve02081504.github.io/fount/badges/)，將任何shields.io之徽章帶上 fount 之 logo
 

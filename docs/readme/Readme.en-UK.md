@@ -55,6 +55,18 @@ Use [SSP](https://ssp.shillest.net/) when you:
 
 </details>
 
+---
+
+Quick start:
+
+```sh
+npx the-fount
+```
+
+See [installation](#installation) for other options.
+
+---
+
 <h1 align="center">⛲fount💪</h1>
 
 > <p align="center">Imagination, Given Voice.</p>

@@ -201,6 +201,7 @@ test_browser() {
 	return 0
 }
 
+# shellcheck disable=SC2329 # cleanup中有调用
 uninstall_auto_packages() {
 	local package has_sudo=""
 	if [[ $(id -u) -ne 0 ]] && command -v sudo &>/dev/null; then has_sudo="sudo"; fi
@@ -314,6 +315,7 @@ install_fount_tree() {
 			else
 				wget -q --show-progress -O "$ZIP_FILE" "$zip_url"
 			fi
+			# shellcheck disable=SC2181
 			if [ $? -eq 0 ]; then
 				zip_ok=1
 				break
