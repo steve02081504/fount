@@ -1,103 +1,137 @@
 /**
  * 【文件】public/hub/composerDraft.mjs
- * 【职责】频道草稿的防抖写入、切频道恢复与发送后清空；附件按频道暂存在内存。
+ * 【职责】频道草稿的防抖写入、切频道恢复与发送后清空；草稿（文本 + 内容警告 + 附件）按频道持久化到 IndexedDB。
+ * 【原理】切换频道前 flushDraft 落盘，进入频道时 loadDraft 恢复；发送成功后 clearDraft 删除。
  */
 import { setComposerExtrasVisible } from './composerExtras.mjs'
 
 const DRAFT_DEBOUNCE_MS = 500
+const DB_NAME = 'fount.chat.drafts'
+const STORE_NAME = 'drafts'
+const DB_VERSION = 1
 
 /** @type {ReturnType<typeof setTimeout> | null} */
 let draftTimer = null
 
-/** @type {Map<string, object[]>} `${groupId}:${channelId}` → 附件快照 */
-const draftFilesByChannel = new Map()
+/** @type {Promise<IDBDatabase> | null} */
+let dbOpenPromise = null
+
+/** @type {Promise<void>} 串行化写入，避免并发 put/delete 乱序 */
+let writeChain = Promise.resolve()
+
+/**
+ * @returns {Promise<IDBDatabase>} IndexedDB 句柄
+ */
+function openDb() {
+	dbOpenPromise ??= new Promise((resolve, reject) => {
+		const request = indexedDB.open(DB_NAME, DB_VERSION)
+		request.addEventListener('upgradeneeded', () => {
+			const db = request.result
+			if (!db.objectStoreNames.contains(STORE_NAME))
+				db.createObjectStore(STORE_NAME, { keyPath: 'key' })
+		})
+		request.addEventListener('success', () => {
+			const db = request.result
+			db.addEventListener('versionchange', () => {
+				db.close()
+				dbOpenPromise = null
+			})
+			resolve(db)
+		})
+		request.addEventListener('error', () => {
+			dbOpenPromise = null
+			reject(request.error)
+		})
+	})
+	return dbOpenPromise
+}
+
+/**
+ * @template T
+ * @param {(objectStore: IDBObjectStore) => IDBRequest} run 事务操作
+ * @param {IDBTransactionMode} [mode='readonly'] 模式
+ * @returns {Promise<T>} 请求结果
+ */
+async function withStore(run, mode = 'readonly') {
+	const db = await openDb()
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(STORE_NAME, mode)
+		const objectStore = transaction.objectStore(STORE_NAME)
+		const request = run(objectStore)
+		request.addEventListener('success', () => resolve(request.result))
+		request.addEventListener('error', () => reject(request.error))
+	})
+}
 
 /**
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @returns {string} localStorage 草稿键名
+ * @returns {string} IndexedDB 草稿键名
  */
 function draftKey(groupId, channelId) {
-	return `fount.chat.draft:${groupId}:${channelId}`
-}
-
-/**
- * @param {string} groupId 群
- * @param {string} channelId 频道
- * @returns {string} 内存附件键
- */
-function filesKey(groupId, channelId) {
 	return `${groupId}:${channelId}`
 }
 
 /**
- * 切走频道前把当前附件写入内存草稿。
- * @param {string} groupId 群
- * @param {string} channelId 频道
- * @param {object[]} files 附件
- * @returns {void}
+ * 深拷贝附件为可序列化快照（buffer 为 base64 字符串）。
+ * @param {object[]} [files] 附件
+ * @returns {object[]} 附件快照
  */
-export function stashDraftFiles(groupId, channelId, files) {
-	if (!groupId || !channelId) return
-	const key = filesKey(groupId, channelId)
-	if (!files?.length) {
-		draftFilesByChannel.delete(key)
-		return
-	}
-	draftFilesByChannel.set(key, files.map(file => ({ ...file })))
+function snapshotFiles(files) {
+	return (files || []).map(file => ({
+		name: file.name,
+		mime_type: file.mime_type,
+		...file.size != null ? { size: file.size } : {},
+		...file.buffer != null ? { buffer: file.buffer } : {},
+		...file.description ? { description: file.description } : {},
+	}))
 }
 
 /**
- * @param {string} groupId 群
- * @param {string} channelId 频道
- * @returns {object[]} 附件快照（浅拷贝数组与文件对象）
- */
-export function peekDraftFiles(groupId, channelId) {
-	if (!groupId || !channelId) return []
-	const files = draftFilesByChannel.get(filesKey(groupId, channelId))
-	return files?.map(file => ({ ...file })) ?? []
-}
-
-/**
+ * 将草稿写入 IndexedDB；全部为空时删除记录。写入串行化且吞掉 IndexedDB 错误。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @param {{ text: string, content_warning?: string, sensitive_media?: boolean }} draft 草稿内容
- * @returns {void}
+ * @param {{ text?: string, content_warning?: string, sensitive_media?: boolean, files?: object[] }} draft 草稿内容
+ * @returns {Promise<void>} 完成（成功或静默失败）
  */
 function writeDraftPayload(groupId, channelId, draft) {
-	try {
-		const payload = { text: draft.text || '' }
-		if (draft.content_warning) payload.content_warning = draft.content_warning
-		if (draft.sensitive_media) payload.sensitive_media = true
-		if (!payload.text && !payload.content_warning && !payload.sensitive_media)
-			localStorage.removeItem(draftKey(groupId, channelId))
-		else
-			localStorage.setItem(draftKey(groupId, channelId), JSON.stringify(payload))
+	const key = draftKey(groupId, channelId)
+	const record = {
+		key,
+		text: draft.text || '',
+		...draft.content_warning ? { content_warning: draft.content_warning } : {},
+		...draft.sensitive_media ? { sensitive_media: true } : {},
+		files: snapshotFiles(draft.files),
 	}
-	catch { /* localStorage 满了静默忽略 */ }
+	const isEmpty = !record.text && !record.content_warning && !record.sensitive_media && !record.files.length
+	const op = isEmpty
+		? withStore(objectStore => objectStore.delete(key), 'readwrite')
+		: withStore(objectStore => objectStore.put(record), 'readwrite')
+	writeChain = writeChain.then(() => op.catch(() => { /* IndexedDB 不可用时静默 */ }))
+	return writeChain
 }
 
 /**
  * 立即写入草稿（切频道前调用）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @param {{ text: string, content_warning?: string, sensitive_media?: boolean }} draft 草稿内容
- * @returns {void}
+ * @param {{ text?: string, content_warning?: string, sensitive_media?: boolean, files?: object[] }} draft 草稿内容
+ * @returns {Promise<void>} 落盘完成
  */
 export function flushDraft(groupId, channelId, draft) {
-	if (!groupId || !channelId) return
+	if (!groupId || !channelId) return Promise.resolve()
 	if (draftTimer) {
 		clearTimeout(draftTimer)
 		draftTimer = null
 	}
-	writeDraftPayload(groupId, channelId, draft)
+	return writeDraftPayload(groupId, channelId, draft)
 }
 
 /**
  * 保存草稿（防抖）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @param {{ text: string, content_warning?: string, sensitive_media?: boolean }} draft 草稿内容
+ * @param {{ text?: string, content_warning?: string, sensitive_media?: boolean, files?: object[] }} draft 草稿内容
  * @returns {void}
  */
 export function saveDraft(groupId, channelId, draft) {
@@ -105,61 +139,38 @@ export function saveDraft(groupId, channelId, draft) {
 	if (draftTimer) clearTimeout(draftTimer)
 	draftTimer = setTimeout(() => {
 		draftTimer = null
-		writeDraftPayload(groupId, channelId, draft)
+		void writeDraftPayload(groupId, channelId, draft)
 	}, DRAFT_DEBOUNCE_MS)
 }
 
 /**
- * 将 localStorage 草稿应用到 composer DOM。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @returns {void}
+ * @returns {Promise<{ text: string, content_warning?: string, sensitive_media?: boolean, files: object[] } | null>} 草稿记录
  */
-export function applyDraft(groupId, channelId) {
-	if (!groupId || !channelId) return
-	const input = document.getElementById('message-input')
-	if (input instanceof HTMLTextAreaElement) {
-		input.value = ''
-		input.style.height = 'auto'
-	}
-	const contentWarningInput = document.getElementById('content-warning')
-	if (contentWarningInput instanceof HTMLInputElement) contentWarningInput.value = ''
-	const sensitiveMediaInput = document.getElementById('sensitive-media')
-	if (sensitiveMediaInput instanceof HTMLInputElement) sensitiveMediaInput.checked = false
-	setComposerExtrasVisible(false)
-
+async function readDraft(groupId, channelId) {
+	await writeChain
 	try {
-		const raw = localStorage.getItem(draftKey(groupId, channelId))
-		if (!raw) return
-		const draft = JSON.parse(raw)
-		if (input instanceof HTMLTextAreaElement && draft.text) {
-			input.value = draft.text
-			input.dispatchEvent(new Event('input', { bubbles: true }))
-		}
-		if (contentWarningInput instanceof HTMLInputElement && draft.content_warning)
-			contentWarningInput.value = draft.content_warning
-		if (sensitiveMediaInput instanceof HTMLInputElement && draft.sensitive_media)
-			sensitiveMediaInput.checked = true
-		if (draft.content_warning || draft.sensitive_media)
-			setComposerExtrasVisible(true)
+		return await withStore(objectStore => objectStore.get(draftKey(groupId, channelId)))
 	}
-	catch { /* JSON 解析失败忽略 */ }
+	catch {
+		return null
+	}
 }
 
 /**
- * 恢复该频道内存附件到 composer 预览区。
+ * 恢复草稿附件到 composer 预览区与 selectedFiles。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
+ * @param {object[]} files 附件快照
  * @returns {Promise<void>}
  */
-export async function restoreDraftFiles(groupId, channelId) {
-	if (!groupId || !channelId) return
+async function restoreDraftFiles(groupId, channelId, files) {
 	const { clearSelectedFiles, selectedFiles } = await import('./composerFiles.mjs')
 	clearSelectedFiles()
-
-	const files = peekDraftFiles(groupId, channelId)
+	if (!files?.length) return
 	const preview = document.getElementById('attachment-preview')
-	if (!files.length || !(preview instanceof HTMLElement)) return
+	if (!(preview instanceof HTMLElement)) return
 	const { renderAttachmentPreview } = await import('../src/composerAttachments.mjs')
 	for (const file of files) {
 		selectedFiles.push(file)
@@ -178,14 +189,38 @@ export async function restoreDraftFiles(groupId, channelId) {
 }
 
 /**
- * 加载草稿到 DOM 控件，并恢复该频道内存附件。
+ * 加载草稿到 DOM 控件，并恢复该频道附件。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
  * @returns {Promise<void>}
  */
 export async function loadDraft(groupId, channelId) {
-	applyDraft(groupId, channelId)
-	await restoreDraftFiles(groupId, channelId)
+	if (!groupId || !channelId) return
+	const input = document.getElementById('message-input')
+	if (input instanceof HTMLTextAreaElement) {
+		input.value = ''
+		input.style.height = 'auto'
+	}
+	const contentWarningInput = document.getElementById('content-warning')
+	if (contentWarningInput instanceof HTMLInputElement) contentWarningInput.value = ''
+	const sensitiveMediaInput = document.getElementById('sensitive-media')
+	if (sensitiveMediaInput instanceof HTMLInputElement) sensitiveMediaInput.checked = false
+	setComposerExtrasVisible(false)
+
+	const draft = await readDraft(groupId, channelId)
+	if (draft) {
+		if (input instanceof HTMLTextAreaElement && draft.text) {
+			input.value = draft.text
+			input.dispatchEvent(new Event('input', { bubbles: true }))
+		}
+		if (contentWarningInput instanceof HTMLInputElement && draft.content_warning)
+			contentWarningInput.value = draft.content_warning
+		if (sensitiveMediaInput instanceof HTMLInputElement && draft.sensitive_media)
+			sensitiveMediaInput.checked = true
+		if (draft.content_warning || draft.sensitive_media)
+			setComposerExtrasVisible(true)
+	}
+	await restoreDraftFiles(groupId, channelId, draft?.files || [])
 }
 
 /**
@@ -200,21 +235,20 @@ export function clearDraft(groupId, channelId) {
 		clearTimeout(draftTimer)
 		draftTimer = null
 	}
-	draftFilesByChannel.delete(filesKey(groupId, channelId))
-	try {
-		localStorage.removeItem(draftKey(groupId, channelId))
-	}
-	catch { /* empty */ }
+	void writeDraftPayload(groupId, channelId, {})
 }
 
 /**
- * 在 composer 输入、CW、sensitive 变化时接线草稿自动保存。
+ * 在 composer 输入、CW、sensitive 变化时接线草稿自动保存（含附件快照）。
  * @param {() => { groupId: string | null, channelId: string | null }} getCtx 获取当前频道上下文
  * @returns {void}
  */
 export function wireDraftAutoSave(getCtx) {
+	let selectedFilesRef = null
+	void import('./composerFiles.mjs').then(m => { selectedFilesRef = m.selectedFiles })
+
 	/**
-	 * @returns {{ text: string, content_warning: string, sensitive_media: boolean }} 草稿字段快照
+	 * @returns {{ text: string, content_warning: string, sensitive_media: boolean, files: object[] }} 草稿字段快照
 	 */
 	const readFields = () => {
 		const input = document.getElementById('message-input')
@@ -224,6 +258,7 @@ export function wireDraftAutoSave(getCtx) {
 			text: input instanceof HTMLTextAreaElement ? input.value : '',
 			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
 			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
+			files: selectedFilesRef ? selectedFilesRef.map(file => ({ ...file })) : [],
 		}
 	}
 

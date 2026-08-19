@@ -35,15 +35,15 @@ export async function selectChannel(channelId) {
 	const prevChannelId = store.context.currentChannelId
 	if (prevGroupId && prevChannelId && prevChannelId !== channelId) {
 		const { selectedFiles } = await import('../composerFiles.mjs')
-		const { stashDraftFiles, flushDraft } = await import('../composerDraft.mjs')
-		stashDraftFiles(prevGroupId, prevChannelId, selectedFiles)
+		const { flushDraft } = await import('../composerDraft.mjs')
 		const input = document.getElementById('message-input')
 		const contentWarningInput = document.getElementById('content-warning')
 		const sensitiveMediaInput = document.getElementById('sensitive-media')
-		flushDraft(prevGroupId, prevChannelId, {
+		await flushDraft(prevGroupId, prevChannelId, {
 			text: input instanceof HTMLTextAreaElement ? input.value : '',
 			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
 			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
+			files: selectedFiles,
 		})
 	}
 	const channel = store.context.currentState?.channels?.[channelId]
