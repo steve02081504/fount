@@ -96,6 +96,12 @@ jobs:
         with:
           deno-version: canary
 
+      - name: Apply repo deno version pin
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/workflows/scripts/apply_deno_version.sh
+
       - name: Install CI entry hooks
         shell: bash
         run: bash path/CI/install-hooks.sh "$GITHUB_WORKSPACE"
