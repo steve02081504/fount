@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="${1:?repo root}"
-DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)"
+DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)"
 
 install_one() {
 	local src="$1"
