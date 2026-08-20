@@ -110,7 +110,7 @@ Deno.test('scanFileMsLiteral: ignores a commented multiplication expression insi
 })
 
 Deno.test('scanFileMsLiteral: closing brace right after a comment is not skipped', () => {
-	const issues = scanFileMsLiteral('a.mjs', 'const a = `${/* note */} 5 * 60 * 1000`;\n')
+	const issues = scanFileMsLiteral('a.mjs', 'const templateValue = `${/* note */} 5 * 60 * 1000`;\n')
 	assertEquals(issues.length, 0)
 })
 

@@ -31,7 +31,7 @@ async function probeFountNetwork() {
 	const connected = peers.filter(peer => peer.connected)
 	if (!connected.length)
 		return { ok: false, peersKnown: peers.length, activeLinks: 0, error: peers.length ? 'no active neighbor link' : 'no peer health data yet' }
-	const rtts = connected.map(peer => peer.rttMs ?? peer.avgRttMs).filter(v => v != null)
+	const rtts = connected.map(peer => peer.rttMs ?? peer.avgRttMs).filter(rttMs => rttMs != null)
 	return {
 		ok: true,
 		peersKnown: peers.length,

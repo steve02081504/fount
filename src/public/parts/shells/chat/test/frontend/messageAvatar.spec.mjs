@@ -53,7 +53,7 @@ test.describe('Chat message avatar grouping', () => {
 	test('a tall single message keeps its avatar stuck at the visible bottom', async ({ page, groupChannel }) => {
 		const { groupId, channelId } = groupChannel
 		const timestamp = Date.now()
-		const text = `tall-avatar ${timestamp}\n${Array.from({ length: 90 }, (_, i) => `line ${i}`).join('\n')}`
+		const text = `tall-avatar ${timestamp}\n${Array.from({ length: 90 }, (_, index) => `line ${index}`).join('\n')}`
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		const row = await expectMessageInChat(page, text)
 		await expect(row).toHaveClass(/last-in-group/)
@@ -61,9 +61,10 @@ test.describe('Chat message avatar grouping', () => {
 
 		// 滚动到消息下段（约 3/4 处），消息底边仍在可视区之下：
 		// sticky 应把头像钉在可视区底部；若包含块被网格限制在消息中段则头像会停在中段/移出可视区。
-		const box = await page.evaluate(() => {
+		const messageId = await row.getAttribute('data-message-id')
+		const box = await page.evaluate((messageId) => {
 			const container = document.querySelector('#messages')
-			const r = container.querySelector('.message-row.last-in-group')
+			const r = container.querySelector(`.message-row.last-in-group[data-message-id="${messageId}"]`)
 			container.scrollTop = r.offsetTop + r.offsetHeight * 0.75
 			const a = r.querySelector('.chat-image')
 			const rect = a.getBoundingClientRect()
@@ -76,7 +77,7 @@ test.describe('Chat message avatar grouping', () => {
 				avatarH: rect.height,
 				alignSelf: window.getComputedStyle(a).alignSelf,
 			}
-		})
+		}, messageId)
 		await expect(avatar).toBeVisible()
 		const avatarBottom = box.avatarY + box.avatarH
 

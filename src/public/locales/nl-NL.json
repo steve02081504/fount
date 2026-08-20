@@ -5804,7 +5804,7 @@
 		"loading": "Laden...",
 		"checking": "Controleren...",
 		"failed": "Mislukt",
-		"linksCount": "${count} actieve verbindingen",
+		"linksCount": "Actieve verbindingen: ${count}",
 		"copySuccess": "Foutopsporingsrapport gekopieerd naar klembord",
 		"copyFailed": "Kopieer rapport mislukt",
 		"alreadyLatest": "Al de nieuwste versie",

@@ -23,8 +23,12 @@ function script:deno_upgrade([string]$Channel) {
 	# 仓库 pin 文件优先：e.g. `pr 36606` / `canary` / `2.9.5`
 	$pinned = deno_pinned_spec
 	if ($pinned) {
-		$pinArgs = @($pinned -split '\s+')
-		$errorOut = deno upgrade -q @pinArgs 2>&1
+		if ($pinned -match '^pr\s+([0-9]+)$') {
+			$errorOut = deno upgrade -q 'pr' $Matches[1] 2>&1
+		}
+		else {
+			$errorOut = deno upgrade -q $pinned 2>&1
+		}
 		if ($LastExitCode) {
 			Write-Warning (Get-I18n -key 'deno.upgradeFailed')
 			return

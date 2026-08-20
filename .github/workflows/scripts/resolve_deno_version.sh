@@ -12,8 +12,10 @@ pr_upgrade=""
 if [ -f "$FILE" ]; then
 	spec=$(awk 'NR==1{ sub(/^[[:space:]]+/, ""); sub(/[[:space:]]+$/, ""); print }' "$FILE")
 	if [ -n "$spec" ]; then
-		if [[ "$spec" == pr\ * ]]; then
+		if [[ "$spec" =~ ^pr[[:space:]]+[0-9]+$ ]]; then
 			pr_upgrade="$spec"
+		elif [[ "$spec" == pr* ]]; then
+			exit 1
 		else
 			deno_version="$spec"
 		fi

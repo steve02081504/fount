@@ -149,6 +149,7 @@ install_deno() {
 
 deno_pinned_spec() {
 	if [ -f "$FOUNT_DIR/.deno-version" ]; then
+		local spec
 		spec=$(awk 'NR==1{ sub(/^[[:space:]]+/, ""); sub(/[[:space:]]+$/, ""); print }' "$FOUNT_DIR/.deno-version")
 		if [ -n "$spec" ]; then
 			printf '%s\n' "$spec"
@@ -166,11 +167,11 @@ base_deno_upgrade() {
 	fi
 
 	# 仓库 pin 文件优先：e.g. `pr 36606` / `canary` / `2.9.5`
-	local pinned upgrade_args errorOut deno_upgrade_exit_code
+	local pinned upgrade_args deno_upgrade_exit_code
 	pinned=$(deno_pinned_spec)
 	if [ -n "$pinned" ]; then
 		read -r -a upgrade_args <<<"$pinned"
-		errorOut=$(deno upgrade -q "${upgrade_args[@]}" 2> >(tee /dev/stderr))
+		run_deno upgrade -q "${upgrade_args[@]}" 2> >(tee /dev/stderr)
 		deno_upgrade_exit_code=$?
 		if [[ $deno_upgrade_exit_code -ne 0 ]]; then
 			if [[ $IN_TERMUX -eq 1 ]]; then

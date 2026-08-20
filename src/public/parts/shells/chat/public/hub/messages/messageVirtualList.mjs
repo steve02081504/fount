@@ -146,11 +146,10 @@ export function initChannelVirtualList(container) {
  */
 export function fixMessageGrouping(container) {
 	for (const row of container.querySelectorAll('.message-row[data-author-key]')) {
-		const next = row.nextElementSibling
-		const sameGroup = next?.matches('.message-row[data-author-key]')
-			&& next.dataset.authorKey === row.dataset.authorKey
-			&& !next.classList.contains('first-in-group')
-		row.classList.toggle('last-in-group', !sameGroup)
+		const nextRow = row.nextElementSibling
+		row.classList.toggle('last-in-group', !(nextRow?.matches('.message-row[data-author-key]')
+			&& nextRow.dataset.authorKey === row.dataset.authorKey
+			&& !nextRow.classList.contains('first-in-group')))
 	}
 }
 
