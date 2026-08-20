@@ -42,6 +42,9 @@ EXPOSE 16698
 RUN find . -type f \( -name "*.sh" -o -name "*.fish" -o -name "*.zsh" \) -print0 | xargs -0 chmod +x
 RUN find ./path -maxdepth 1 -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
 
+# 应用仓库固定的 deno 版本（.deno-version），确保镜像内 deno 与源码 pin 一致
+RUN if [ -s /app/.deno-version ]; then deno upgrade $(awk 'NR==1{ gsub(/^[[:space:]]+|[[:space:]]+$/, ""); print }' /app/.deno-version) || echo "Warning: failed to apply .deno-version pin; keeping base deno"; fi
+
 # 安装依赖并忽略错误
 RUN /app/run.sh init || true
 RUN rm -rf /.dockerenv
