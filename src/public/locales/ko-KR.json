@@ -152,11 +152,11 @@
 				"summary": "${suitesUpdated}개 suite의 예상 시간을 갱신함(manifest ${filesChanged}개). 기준선 없음 또는 이미 최신이라 ${skipped}개 건너뜀"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "사용법: fount test --list [<groups>...] (다른 플래그와 함께 사용할 수 없음)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (${expected} 예상)"
 			},
 			"kernel": {
 				"incompatible": "사용법: fount test --kernel shutdown|reboot (다른 옵션과 함께 사용할 수 없음)",

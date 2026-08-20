@@ -58,8 +58,8 @@ export const HARDCODED_RADIUS_PATTERN =
 /** 带 `g` 标志的扫描用正则（`matchAll` 需要）。 */
 const HARDCODED_RADIUS_GLOBAL = new RegExp(HARDCODED_RADIUS_PATTERN.source, 'gu')
 
-/** Tailwind 任意值圆角类 `rounded-[…]` 及方向前缀变体 `rounded-t-[…]` / `rounded-tr-[…]` / 逻辑方向 `rounded-s-[…]` 等（捕获括号内容）。 */
-const ARBITRARY_RADIUS_GLOBAL = /rounded-(?:(?:tl|tr|bl|br|t|b|l|r|s|e|ss|se|es|ee)-)?\[([^\]]*)\]/gu
+/** Tailwind 任意值圆角类 `rounded-[…]` 及方向前缀变体 `rounded-t-[…]` / `rounded-tr-[…]` / 逻辑方向 `rounded-s-[…]` 等（捕获括号内容）。左侧需词边界，避免命中 `unrounded-[…]` / `not-rounded-[…]` 等标识符嵌入。 */
+const ARBITRARY_RADIUS_GLOBAL = /(?<![\w-])rounded-(?:(?:tl|tr|bl|br|t|b|l|r|s|e|ss|se|es|ee)-)?\[([^\]]*)\]/gu
 
 /**
  * 判断 Tailwind 任意值圆角类 `rounded-[…]` 的括号内容是否为硬编码固定值。

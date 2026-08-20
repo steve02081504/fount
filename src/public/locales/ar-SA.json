@@ -152,11 +152,11 @@
 				"summary": "تم تحديث المدد المتوقعة لـ ${suitesUpdated} حزمة (${filesChanged} manifest)؛ تم تخطي ${skipped} بلا خط أساس أو محدّثة مسبقاً"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "الاستخدام: fount test --list [<groups>...] (لا يمكن استخدامه مع أي مفاتيح أخرى)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (المتوقع ${expected})"
 			},
 			"kernel": {
 				"incompatible": "الاستخدام: fount test --kernel shutdown|reboot (لا يمكن دمجه مع خيارات أخرى)",

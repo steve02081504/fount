@@ -151,11 +151,11 @@
 				"summary": "已回寫 ${suitesUpdated} 個套件的預計時長（${filesChanged} 個 manifest），跳過 ${skipped} 個無基線或已是最新"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "用法：fount test --list [<groups>...]（不能同時使用其他開關）",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": "（預期 ${expected}）"
 			},
 			"kernel": {
 				"incompatible": "用法：fount test --kernel shutdown|reboot（不可與其他參數同時使用）",

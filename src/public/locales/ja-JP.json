@@ -152,11 +152,11 @@
 				"summary": "${suitesUpdated} 件の suite の予想時間を更新（manifest ${filesChanged} 件）。ベースラインなしまたは最新のため ${skipped} 件をスキップ"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "使い方: fount test --list [<groups>...]（他のフラグとは併用できません）",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (期待される ${expected})"
 			},
 			"kernel": {
 				"incompatible": "使い方: fount test --kernel shutdown|reboot（他のオプションと併用できません）",

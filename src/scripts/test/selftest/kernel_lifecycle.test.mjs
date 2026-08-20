@@ -462,10 +462,9 @@ Deno.test('GET /status reports running and queued suites', async () => {
 
 		const prepKey = 'testkit:__status_prep__'
 		handle.kernel.queues.hitPrep(prepKey, 'fs_change')
-		const prep = await fetch(`${handle.url}/status`)
-		const prepBody = await prep.json()
-		assertEquals(prepBody.active, true)
-		assertEquals(prepBody.queuedSuites.includes(prepKey), true)
+		const statusBody = await (await fetch(`${handle.url}/status`)).json()
+		assertEquals(statusBody.active, true)
+		assertEquals(statusBody.queuedSuites.includes(prepKey), true)
 	}
 	finally {
 		handle.kernel.running.delete('testkit:__status__')

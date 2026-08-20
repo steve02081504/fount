@@ -156,7 +156,7 @@
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (esperado ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Uso: fount test --kernel shutdown|reboot (no se puede combinar con otras opciones)",

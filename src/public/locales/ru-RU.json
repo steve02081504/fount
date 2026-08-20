@@ -152,11 +152,11 @@
 				"summary": "Обновлены ожидаемые длительности для ${suitesUpdated} набор(ов) (${filesChanged} manifest); пропущено ${skipped} без базовой линии или уже актуально"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "Использование: fount test --list [<groups>...] (нельзя использовать с другими флагами)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (ожидается ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Использование: fount test --kernel shutdown|reboot (нельзя сочетать с другими параметрами)",

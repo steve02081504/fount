@@ -152,11 +152,11 @@
 				"summary": "Verwachte duur bijgewerkt voor ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ${skipped} overgeslagen zonder baseline of al actueel"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "Gebruik: fount test --list [<groups>...] (niet te combineren met andere schakelaars)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (verwacht ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Gebruik: fount test --kernel shutdown|reboot (kan niet worden gecombineerd met andere opties)",

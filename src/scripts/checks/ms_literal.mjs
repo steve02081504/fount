@@ -68,7 +68,8 @@ function lineNumberAt(content, index) {
  */
 
 /**
- * 掩掉注释、JSDoc、字符串字面量与模板字符串，只保留可执行的 JS/TS 代码 token。
+ * 掩掉注释、JSDoc、字符串字面量与模板字符串的字面文本，只保留可执行的 JS/TS 代码 token；
+ * 模板字符串的 `${...}` 插值表达式（含嵌套模板）保留，可继续扫描其中的代码。
  * 非代码位置以空格占位，保持与原文偏移一致，便于复用 MS_PRODUCT_CHAIN 匹配与行号定位。
  * @param {string} content 文件文本
  * @returns {string} 仅含代码 token 的掩码文本
@@ -91,21 +92,100 @@ function maskNonCode(content) {
 			for (let i = index; i < stop; i++) keep[i] = false
 			index = stop
 		}
-		else if (ch === '\'' || ch === '"' || ch === '`') {
-			let end = index + 1
-			while (end < len) {
-				if (content[end] === '\\') { end += 2; continue }
-				if (content[end] === ch) { end++; break }
-				end++
-			}
-			for (let i = index; i < Math.min(end, len); i++) keep[i] = false
-			index = end
-		}
+		else if (ch === '\'' || ch === '"')
+			index = skipSimpleString(content, index, ch, keep)
+		else if (ch === '`')
+			index = skipTemplateString(content, index, keep)
 		else index++
 	}
 	let masked = ''
 	for (let i = 0; i < len; i++) masked += keep[i] ? content[i] : ' '
 	return masked
+}
+
+/**
+ * 跳过单引号/双引号字符串字面量（含转义），全部掩去。
+ * @param {string} content 文件文本
+ * @param {number} index 起始引号偏移
+ * @param {string} quote 引号字符（`'` 或 `"`）
+ * @param {boolean[]} keep 掩码数组（原地修改）
+ * @returns {number} 字符串结束后的偏移
+ */
+function skipSimpleString(content, index, quote, keep) {
+	const len = content.length
+	let end = index + 1
+	while (end < len) {
+		if (content[end] === '\\') { end += 2; continue }
+		if (content[end] === quote) { end++; break }
+		end++
+	}
+	for (let i = index; i < Math.min(end, len); i++) keep[i] = false
+	return end
+}
+
+/**
+ * 跳过模板字符串：掩去字面文本，但保留 `${...}` 插值表达式（可含嵌套模板）供扫描。
+ * 处理 `\` `` ` `` 与 `\${` 转义。
+ * @param {string} content 文件文本
+ * @param {number} index 起始反引号偏移
+ * @param {boolean[]} keep 掩码数组（原地修改）
+ * @returns {number} 结束反引号后的偏移
+ */
+function skipTemplateString(content, index, keep) {
+	const len = content.length
+	let i = index + 1
+	keep[index] = false
+	while (i < len) {
+		const c = content[i]
+		if (c === '\\') {
+			keep[i] = false
+			if (i + 1 < len) keep[i + 1] = false
+			i += 2
+			continue
+		}
+		if (c === '`') {
+			keep[i] = false
+			return i + 1
+		}
+		if (c === '$' && content[i + 1] === '{') {
+			keep[i] = false
+			keep[i + 1] = false
+			i = skipTemplateInterpolation(content, i + 2, keep)
+			continue
+		}
+		keep[i] = false
+		i++
+	}
+	return i
+}
+
+/**
+ * 扫描模板插值 `...` 直到匹配的 `}`：保留其中代码，正确处理嵌套 `{}`、
+ * 字符串字面量与嵌套模板。
+ * @param {string} content 文件文本
+ * @param {number} index `${` 之后的偏移
+ * @param {boolean[]} keep 掩码数组（原地修改）
+ * @returns {number} 结束 `}` 后的偏移
+ */
+function skipTemplateInterpolation(content, index, keep) {
+	const len = content.length
+	let depth = 1
+	let i = index
+	while (i < len && depth > 0) {
+		const c = content[i]
+		if (c === '{') depth++
+		else if (c === '}') depth--
+		else if (c === '\'' || c === '"') {
+			i = skipSimpleString(content, i, c, keep)
+			continue
+		}
+		else if (c === '`') {
+			i = skipTemplateString(content, i, keep)
+			continue
+		}
+		i++
+	}
+	return i
 }
 
 /**
@@ -117,8 +197,7 @@ function maskNonCode(content) {
 export function scanFileMsLiteral(relativePath, content) {
 	/** @type {MsLiteralIssue[]} */
 	const issues = []
-	const masked = maskNonCode(content)
-	for (const match of masked.matchAll(MS_PRODUCT_CHAIN)) {
+	for (const match of maskNonCode(content).matchAll(MS_PRODUCT_CHAIN)) {
 		const chain = match[1]
 		if (!isMsProduct(chain)) continue
 		issues.push({ path: relativePath, line: lineNumberAt(content, match.index), token: chain })

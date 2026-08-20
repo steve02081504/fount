@@ -198,10 +198,12 @@ function printSuiteList(suites) {
 	for (const manifestId of sortManifestIds([...byManifest.keys()], suites)) {
 		console.log(geti18n('fountConsole.test.list.header', { manifestId }))
 		for (const suite of byManifest.get(manifestId)) {
-			const expected = suite.expectedMs != null
-				? geti18n('fountConsole.test.list.expected', { expected: formatDuration(suite.expectedMs) })
-				: ''
-			console.log(geti18n('fountConsole.test.list.suite', { name: suite.name, expected }))
+			console.log(geti18n('fountConsole.test.list.suite', {
+				name: suite.name,
+				expected: suite.expectedMs != null
+					? geti18n('fountConsole.test.list.expected', { expected: formatDuration(suite.expectedMs) })
+					: '',
+			}))
 			for (const subtest of suite.subtests ?? [])
 				console.log(geti18n('fountConsole.test.list.subtest', { name: subtest.name }))
 		}

@@ -93,9 +93,9 @@ Deno.test('enqueueFs removes pending prep and existing fs entries for the same k
 	queues.enqueueFs('a', 'idle_all')
 	assertEquals(queues.prep.has('a'), false)
 	assertEquals(queues.fs.filter(item => item.key === 'a').length, 1)
-	queues.enqueueFs('a', 'idle_all')
+	queues.enqueueFs('a', 'fs_change')
 	assertEquals(queues.fs.filter(item => item.key === 'a').length, 1)
-	assertEquals(queues.fs[0].reason, 'idle_all')
+	assertEquals(queues.fs[0].reason, 'fs_change')
 })
 
 Deno.test('CLI and FS duplicates are kept until CLI completes', () => {

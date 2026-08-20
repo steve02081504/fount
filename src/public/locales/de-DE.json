@@ -152,11 +152,11 @@
 				"summary": "Erwartete Laufzeiten für ${suitesUpdated} Suite(s) aktualisiert (${filesChanged} Manifest(e)); ${skipped} ohne Baseline oder bereits aktuell übersprungen"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "Verwendung: fount test --list [<groups>...] (nicht mit anderen Schaltern kombinierbar)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (erwartet ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Verwendung: fount test --kernel shutdown|reboot (nicht mit anderen Optionen kombinierbar)",

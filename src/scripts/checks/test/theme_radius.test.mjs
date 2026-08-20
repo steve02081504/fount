@@ -166,6 +166,14 @@ Deno.test('scanFileThemeRadius: --radius-* var accepts zero and theme-var values
 	assertEquals(issues[0].token, '--radius-c: 6px')
 })
 
+Deno.test('hasHardcodedRadius: does not match radius classes embedded in identifiers', () => {
+	assertEquals(hasHardcodedRadius('unrounded-[8px]'), false)
+	assertEquals(hasHardcodedRadius('not-rounded-[8px]'), false)
+	assertEquals(hasHardcodedRadius('rounded-[8px]'), true)
+	assertEquals(hasHardcodedRadius('rounded-t-[8px]'), true)
+	assertEquals(hasHardcodedRadius('rounded-tr-[var(--radius-box)]'), false)
+})
+
 Deno.test('hasHardcodedRadius: flags hardcoded arbitrary-value radius', () => {
 	assertEquals(hasHardcodedRadius('rounded-[8px]'), true)
 	assertEquals(hasHardcodedRadius('rounded-[1.25rem]'), true)

@@ -67,7 +67,7 @@ Deno.test('scanFileMsLiteral: reports line numbers across lines', () => {
 })
 
 Deno.test('scanFileMsLiteral: ignores ms products in comments, JSDoc, strings, and template literals', () => {
-	const text = [
+	const issues = scanFileMsLiteral('a.mjs', [
 		'// 5 * 60 * 1000',
 		'/* 24 * 60 * 60 * 1000 */',
 		'/** 7 * 24 * 60 * 60 * 1000 */',
@@ -75,15 +75,25 @@ Deno.test('scanFileMsLiteral: ignores ms products in comments, JSDoc, strings, a
 		'const t = "30 * 24 * 60 * 60 * 1000";',
 		'const u = `8 * 3600 * 1000`;',
 		'const ok = 5 * 60 * 1000;',
-	].join('\n')
-	const issues = scanFileMsLiteral('a.mjs', text)
+	].join('\n'))
 	assertEquals(issues.length, 1)
 	assertEquals(issues[0], { path: 'a.mjs', line: 7, token: '5 * 60 * 1000' })
 })
 
+Deno.test('scanFileMsLiteral: flags ms products inside template literal interpolations', () => {
+	const issues = scanFileMsLiteral('a.mjs', [
+		'const a = `timeout ${5 * 60 * 1000}ms`;',
+		'const b = `${prefix}${24 * 60 * 60 * 1000}`;',
+		'const c = `${`nested ${7 * 24 * 60 * 60 * 1000}`}`;',
+	].join('\n'))
+	assertEquals(issues.length, 3)
+	assertEquals(issues[0].token, '5 * 60 * 1000')
+	assertEquals(issues[1].token, '24 * 60 * 60 * 1000')
+	assertEquals(issues[2].token, '7 * 24 * 60 * 60 * 1000')
+})
+
 Deno.test('scanFileMsLiteral: still flags code across a masked comment boundary', () => {
-	const text = 'const a = 5 * 60 * 1000; // 30 * 24 * 60 * 60 * 1000\n'
-	const issues = scanFileMsLiteral('a.mjs', text)
+	const issues = scanFileMsLiteral('a.mjs', 'const a = 5 * 60 * 1000; // 30 * 24 * 60 * 60 * 1000\n')
 	assertEquals(issues.length, 1)
 	assertEquals(issues[0].token, '5 * 60 * 1000')
 })
