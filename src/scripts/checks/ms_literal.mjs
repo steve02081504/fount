@@ -176,14 +176,16 @@ function skipTemplateInterpolation(content, index, keep) {
 		if (c === '/' && content[i + 1] === '/') {
 			const end = content.indexOf('\n', i)
 			const stop = end === -1 ? len : end
-			for (let k = i; k < stop; k++) keep[k] = false
+			for (let offset = i; offset < stop; offset++) keep[offset] = false
 			i = stop
+			continue
 		}
 		else if (c === '/' && content[i + 1] === '*') {
 			const end = content.indexOf('*/', i + 2)
 			const stop = end === -1 ? len : end + 2
-			for (let k = i; k < stop; k++) keep[k] = false
+			for (let offset = i; offset < stop; offset++) keep[offset] = false
 			i = stop
+			continue
 		}
 		else if (c === '{') depth++
 		else if (c === '}') depth--

@@ -1,6 +1,6 @@
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
-import { initTranslations } from '/scripts/i18n/index.mjs'
+import { geti18n, initTranslations } from '/scripts/i18n/index.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { ping } from '/scripts/endpoints/base.mjs'
@@ -108,7 +108,11 @@ async function fetchSystemInfo() {
 		await mountTemplate(systemInfoTable, 'system_info_table', { rows })
 
 		debugData.connectivity.backend = connectivity
-		await mountTemplate(backendChecks, 'connectivity_list', { checks: connectivity })
+		await mountTemplate(backendChecks, 'connectivity_list', {
+			checks: connectivity.map(check => check.activeLinks != null
+				? { ...check, linksText: geti18n('debug_info.linksCount', { count: check.activeLinks }) }
+				: check),
+		})
 	} catch (error) {
 		console.error('System info fetch failed:', error)
 		systemInfoTable.innerHTML = '<tr><td colspan="2" class="text-error text-center" data-i18n="debug_info.systemInfo.failed"></td></tr>'
@@ -220,7 +224,7 @@ function scheduleTestStatusRender() {
 	queueMicrotask(() => {
 		testStatusRenderQueued = false
 		const status = buildTestStatus()
-		testStatusRenderChain = testStatusRenderChain.then(() => renderTestStatus(status))
+		testStatusRenderChain = testStatusRenderChain.then(() => renderTestStatus(status)).catch(() => {})
 	})
 }
 

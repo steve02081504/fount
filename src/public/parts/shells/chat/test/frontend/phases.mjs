@@ -16,6 +16,7 @@ export const phases = [
 			'attachments.spec.mjs',
 			'navigation.spec.mjs',
 			'messageActions.spec.mjs',
+			'messageAvatar.spec.mjs',
 			'unread.spec.mjs',
 			'inbox.spec.mjs',
 			'mobilePane.spec.mjs',

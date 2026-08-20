@@ -94,9 +94,9 @@ Deno.test('scanFileMsLiteral: flags ms products inside template literal interpol
 
 Deno.test('scanFileMsLiteral: ignores comments inside template interpolations', () => {
 	const issues = scanFileMsLiteral('a.mjs', [
-		'const a = `${5 * 60 * 1000 // 30 * 24 * 60 * 60 * 1000\n}`;',
-		'const b = `${/* 24 * 60 * 60 * 1000 */ 5 * 60 * 1000}`;',
-		'const c = `${/* } */ 7 * 24 * 60 * 60 * 1000}`;',
+		'const lineCommentValue = `${5 * 60 * 1000 // 30 * 24 * 60 * 60 * 1000\n}`;',
+		'const blockCommentValue = `${/* 24 * 60 * 60 * 1000 */ 5 * 60 * 1000}`;',
+		'const braceCommentValue = `${/* } */ 7 * 24 * 60 * 60 * 1000}`;',
 	].join('\n'))
 	assertEquals(issues.length, 3)
 	assertEquals(issues[0].token, '5 * 60 * 1000')
@@ -106,6 +106,11 @@ Deno.test('scanFileMsLiteral: ignores comments inside template interpolations', 
 
 Deno.test('scanFileMsLiteral: ignores a commented multiplication expression inside interpolation', () => {
 	const issues = scanFileMsLiteral('a.mjs', 'const a = `${/* 24 * 60 * 60 * 1000 */ 1}`;\n')
+	assertEquals(issues.length, 0)
+})
+
+Deno.test('scanFileMsLiteral: closing brace right after a comment is not skipped', () => {
+	const issues = scanFileMsLiteral('a.mjs', 'const a = `${/* note */} 5 * 60 * 1000`;\n')
 	assertEquals(issues.length, 0)
 })
 

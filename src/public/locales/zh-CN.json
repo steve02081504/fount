@@ -5798,6 +5798,7 @@
 		"loading": "加载中...",
 		"checking": "检查中...",
 		"failed": "失败",
+		"linksCount": "${count} 条活动连接",
 		"copySuccess": "调试报告已复制到剪贴板",
 		"copyFailed": "复制报告失败",
 		"alreadyLatest": "当前已是最新版本",

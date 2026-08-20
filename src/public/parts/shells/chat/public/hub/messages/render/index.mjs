@@ -328,7 +328,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 
 	return {
 		html: await renderMessageRowShell({
-			rowClass: `message ${isFirst ? 'first-in-group' : ''}${isLast ? 'last-in-group' : ''}${message.pending ? ' message-pending' : ''}${message.sendFailed ? ' message-send-failed' : ''}`.trim(),
+			rowClass: `message ${isFirst ? 'first-in-group ' : ''}${isLast ? 'last-in-group ' : ''}${message.pending ? 'message-pending ' : ''}${message.sendFailed ? 'message-send-failed ' : ''}`.trim(),
 			align,
 			bubbleClass,
 			rowAttrs,
