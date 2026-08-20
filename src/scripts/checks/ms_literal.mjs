@@ -161,7 +161,7 @@ function skipTemplateString(content, index, keep) {
 
 /**
  * 扫描模板插值 `...` 直到匹配的 `}`：保留其中代码，正确处理嵌套 `{}`、
- * 字符串字面量与嵌套模板。
+ * 注释、字符串字面量与嵌套模板。
  * @param {string} content 文件文本
  * @param {number} index `${` 之后的偏移
  * @param {boolean[]} keep 掩码数组（原地修改）
@@ -173,7 +173,19 @@ function skipTemplateInterpolation(content, index, keep) {
 	let i = index
 	while (i < len && depth > 0) {
 		const c = content[i]
-		if (c === '{') depth++
+		if (c === '/' && content[i + 1] === '/') {
+			const end = content.indexOf('\n', i)
+			const stop = end === -1 ? len : end
+			for (let k = i; k < stop; k++) keep[k] = false
+			i = stop
+		}
+		else if (c === '/' && content[i + 1] === '*') {
+			const end = content.indexOf('*/', i + 2)
+			const stop = end === -1 ? len : end + 2
+			for (let k = i; k < stop; k++) keep[k] = false
+			i = stop
+		}
+		else if (c === '{') depth++
 		else if (c === '}') depth--
 		else if (c === '\'' || c === '"') {
 			i = skipSimpleString(content, i, c, keep)

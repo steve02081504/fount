@@ -827,6 +827,7 @@ export class TestKernel {
 	 */
 	#idleAllDueAt() {
 		if (this.viewers.watchCount() === 0) return null
+		if (this.catalog.allSuites.length === 0) return null
 		if (this.jobs.size > 0 || !this.queues.allEmpty() || this.running.size > 0) return null
 		return this.lastIdleAt + this.idleAllMs
 	}
@@ -837,11 +838,6 @@ export class TestKernel {
 	 * @returns {void}
 	 */
 	#maybeFireIdleAll() {
-		if (this.catalog.allSuites.length === 0) {
-			// 目录为空则无事可入队；重置闲置计时，避免每轮循环都因到期而连续 wake() 空转。
-			this.lastIdleAt = Date.now()
-			return
-		}
 		const dueAt = this.#idleAllDueAt()
 		if (dueAt == null || Date.now() < dueAt) return
 		for (const suite of this.catalog.allSuites)

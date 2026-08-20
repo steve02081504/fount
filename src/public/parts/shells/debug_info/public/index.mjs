@@ -147,6 +147,12 @@ let testStatusOpen = false
 const runningSuites = new Map()
 /** @type {Set<string>} 排队套件 key。 */
 const queuedSuites = new Set()
+/** @type {boolean} 内核是否在线（随 snapshot 更新）。 */
+let testStatusOnline = false
+/** @type {boolean} 是否已调度一次合并且重的渲染。 */
+let testStatusRenderQueued = false
+/** @type {Promise<void>} 串行化渲染链，避免旧快照覆盖新状态。 */
+let testStatusRenderChain = Promise.resolve()
 /** @type {WebSocket | null} */
 let testStatusWs = null
 /** @type {number | null} */
@@ -195,12 +201,27 @@ async function renderTestStatus(status) {
 function buildTestStatus() {
 	const active = runningSuites.size > 0 || queuedSuites.size > 0
 	return {
-		online: true,
+		online: testStatusOnline,
 		active,
 		idle: !active,
 		runningSuites: [...runningSuites].map(([key, startMs]) => ({ key, elapsedMs: Date.now() - startMs })),
 		queuedSuites: [...queuedSuites],
 	}
+}
+
+/**
+ * 调度一次合并且串行的测试状态渲染：同一轮微任务内的多次状态变更合并为一次，
+ * 渲染沿 promise 链串行执行，保证后置状态不被更早的异步挂载完成所覆盖。
+ * @returns {void}
+ */
+function scheduleTestStatusRender() {
+	if (testStatusRenderQueued) return
+	testStatusRenderQueued = true
+	queueMicrotask(() => {
+		testStatusRenderQueued = false
+		const status = buildTestStatus()
+		testStatusRenderChain = testStatusRenderChain.then(() => renderTestStatus(status))
+	})
 }
 
 /**
@@ -212,35 +233,36 @@ function applyTestStatusMessage(message) {
 	switch (message.type) {
 		case 'snapshot': {
 			if (message.online === true) testStatusAttempt = 0
+			testStatusOnline = message.online === true
 			runningSuites.clear()
 			queuedSuites.clear()
 			for (const { key, elapsedMs } of message.runningSuites || [])
 				runningSuites.set(key, Date.now() - elapsedMs)
 			for (const key of message.queuedSuites || []) queuedSuites.add(key)
-			void renderTestStatus(message)
+			scheduleTestStatusRender()
 			break
 		}
 		case 'queue-append':
 			queuedSuites.add(message.key)
-			void renderTestStatus(buildTestStatus())
+			scheduleTestStatusRender()
 			break
 		case 'queue-remove':
 			queuedSuites.delete(message.key)
-			void renderTestStatus(buildTestStatus())
+			scheduleTestStatusRender()
 			break
 		case 'suite-start':
 			queuedSuites.delete(message.key)
 			runningSuites.set(message.key, Date.now())
-			void renderTestStatus(buildTestStatus())
+			scheduleTestStatusRender()
 			break
 		case 'suite-end':
 			runningSuites.delete(message.key)
-			void renderTestStatus(buildTestStatus())
+			scheduleTestStatusRender()
 			break
 		case 'idle':
 			runningSuites.clear()
 			queuedSuites.clear()
-			void renderTestStatus(buildTestStatus())
+			scheduleTestStatusRender()
 			break
 		default:
 			break
@@ -263,9 +285,10 @@ function connectTestStatusWs() {
 	ws.addEventListener('close', () => {
 		if (testStatusWs !== ws) return
 		testStatusWs = null
+		testStatusOnline = false
 		runningSuites.clear()
 		queuedSuites.clear()
-		void renderTestStatus({ online: false, active: false, idle: true, runningSuites: [], queuedSuites: [] })
+		scheduleTestStatusRender()
 		scheduleTestStatusReconnect()
 	})
 	ws.addEventListener('error', () => { if (testStatusWs === ws) ws.close() })

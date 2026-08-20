@@ -25,23 +25,19 @@ const KERNEL_PROBE_INTERVAL = 10000
  * @returns {Promise<{ ok: boolean, peersKnown: number, activeLinks: number, peer?: string, rttMs?: number | null, error?: string }>} 探测结果
  */
 async function probeFountNetwork() {
-	try {
-		const tracker = getPeerHealthTracker()
-		if (!tracker) return { ok: false, peersKnown: 0, activeLinks: 0, error: 'p2p not initialized' }
-		const peers = tracker.listPeerHealth()
-		const connected = peers.filter(peer => peer.connected)
-		if (!connected.length)
-			return { ok: false, peersKnown: peers.length, activeLinks: 0, error: peers.length ? 'no active neighbor link' : 'no peer health data yet' }
-		const rtts = connected.map(peer => peer.rttMs ?? peer.avgRttMs).filter(v => typeof v === 'number' && Number.isFinite(v))
-		return {
-			ok: true,
-			peersKnown: peers.length,
-			activeLinks: connected.length,
-			peer: connected[0].nodeHash,
-			rttMs: rtts.length ? Math.min(...rtts) : null,
-		}
-	} catch (error) {
-		return { ok: false, peersKnown: 0, activeLinks: 0, error: String(error?.message || error) }
+	const tracker = getPeerHealthTracker()
+	if (!tracker) return { ok: false, peersKnown: 0, activeLinks: 0, error: 'p2p not initialized' }
+	const peers = tracker.listPeerHealth()
+	const connected = peers.filter(peer => peer.connected)
+	if (!connected.length)
+		return { ok: false, peersKnown: peers.length, activeLinks: 0, error: peers.length ? 'no active neighbor link' : 'no peer health data yet' }
+	const rtts = connected.map(peer => peer.rttMs ?? peer.avgRttMs).filter(v => typeof v === 'number' && Number.isFinite(v))
+	return {
+		ok: true,
+		peersKnown: peers.length,
+		activeLinks: connected.length,
+		peer: connected[0].nodeHash,
+		rttMs: rtts.length ? Math.min(...rtts) : null,
 	}
 }
 
@@ -91,19 +87,25 @@ export function setEndpoints(router) {
 
 		const checkResults = await Promise.all(checks.map(async (check) => {
 			try {
+				if (check.kind === 'fount') {
+					const result = await probeFountNetwork()
+					return {
+						...check,
+						status: result.ok ? 'ok' : 'error',
+						peersKnown: result.peersKnown,
+						activeLinks: result.activeLinks,
+						rttMs: result.rttMs,
+						duration: result.rttMs,
+						error: result.error,
+					}
+				}
 				const start = Date.now()
-				const response = check.kind === 'fount'
-					? await probeFountNetwork()
-					: await fetch(check.url, { method: check.method || 'HEAD', signal: AbortSignal.timeout(5000) })
-				const duration = check.kind === 'fount'
-					? response.rttMs ?? (Date.now() - start)
-					: Date.now() - start
+				const response = await fetch(check.url, { method: check.method || 'HEAD', signal: AbortSignal.timeout(5000) })
 				return {
 					...check,
 					status: response.ok ? 'ok' : 'error',
-					duration,
 					statusCode: response.status,
-					error: response.error,
+					duration: Date.now() - start,
 				}
 			} catch (error) {
 				return { ...check, status: 'error', error: error.message }
@@ -194,7 +196,8 @@ export function setEndpoints(router) {
 		}
 
 		/**
-		 *
+		 * 停止内核离线重探定时器（若在运行）。
+		 * @returns {void}
 		 */
 		const stopKernelProbe = () => {
 			clearInterval(probeTimer)
@@ -202,7 +205,8 @@ export function setEndpoints(router) {
 		}
 
 		/**
-		 *
+		 * 客户端断开时收尾：标记关闭、停止重探并关闭内核订阅。
+		 * @returns {void}
 		 */
 		const cleanup = () => {
 			closed = true

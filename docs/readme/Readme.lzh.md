@@ -327,7 +327,7 @@ fount remove
 - **GitHub Issues：** 藉 [GitHub Issues](https://github.com/steve02081504/fount/issues) 報任何闕或提新功用之議。
 - **Telegram 雅集：** 入吾[充滿活力之 Telegram 雅集](https://t.me/GentianAphrodite)，以得實時之支援與清談。
 
-君聲終必見聞。唯重啟 fount，陰翳即散。
+君聲終必見聞。若遇陰翳，首試重啟 fount；若重啟後仍不散，懇請於 GitHub Issues 相告，吾必為君解困。
 
 ---
 
