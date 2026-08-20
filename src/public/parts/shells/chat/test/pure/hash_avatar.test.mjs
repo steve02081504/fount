@@ -8,6 +8,7 @@ import {
 	hashAvatarRgb,
 	hashAvatarStyle,
 	isFirstMessageInAuthorGroup,
+	isLastMessageInAuthorGroup,
 	MESSAGE_AVATAR_GROUP_GAP_MS,
 } from 'fount/public/parts/shells/chat/public/shared/hashAvatar.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
@@ -76,6 +77,30 @@ Deno.test('isFirstMessageInAuthorGroup: same author within 30min hides repeat av
 
 Deno.test('isFirstMessageInAuthorGroup: first message always shows avatar', () => {
 	assertEquals(isFirstMessageInAuthorGroup('alice', null, 0, 0), true)
+})
+
+Deno.test('isLastMessageInAuthorGroup: no next message always shows avatar', () => {
+	assertEquals(isLastMessageInAuthorGroup('alice', null, 0, 0), true)
+})
+
+Deno.test('isLastMessageInAuthorGroup: same author within 30min hides repeat avatar', () => {
+	const t = 1_000_000
+	assertEquals(isLastMessageInAuthorGroup('alice', 'alice', t, t + 60_000), false)
+	assertEquals(
+		isLastMessageInAuthorGroup('alice', 'alice', t, t + MESSAGE_AVATAR_GROUP_GAP_MS + 1),
+		true,
+	)
+})
+
+Deno.test('isLastMessageInAuthorGroup: author change breaks group', () => {
+	const host = 'f'.repeat(64)
+	assertEquals(isLastMessageInAuthorGroup('alice', host, 1000, 1500), true)
+	assertEquals(isLastMessageInAuthorGroup(host, 'alice', 1000, 1500), true)
+})
+
+Deno.test('isLastMessageInAuthorGroup: char vs human same sender still breaks group', () => {
+	const host = 'f'.repeat(64)
+	assertEquals(isLastMessageInAuthorGroup('test_streamer', host, 1000, 1500), true)
 })
 
 Deno.test('isAvatarImageUrl distinguishes URL from emoji avatar', async () => {

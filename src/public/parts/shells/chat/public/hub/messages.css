@@ -24,7 +24,7 @@
 }
 
 /* 连续同作者：隐藏重复头像（chat-image）与头部 */
-.chat.message-row:not(.first-in-group) .chat-image {
+.chat.message-row:not(.last-in-group) .chat-image {
 	visibility: hidden;
 	height: 0;
 	margin: 0;
@@ -36,6 +36,13 @@
 
 .chat.message-row.first-in-group {
 	margin-top: 1.25rem;
+}
+
+/* 分组末条消息：共享头像 sticky 在可视区底部，但不高出消息块本身 */
+.chat.message-row.last-in-group .chat-image {
+	position: sticky;
+	bottom: 0;
+	z-index: 1;
 }
 
 /* 系统消息：与聊天气泡正文左缘对齐（列表 padding + 头像 + 间距） */

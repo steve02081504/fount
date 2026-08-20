@@ -8,7 +8,7 @@ import { channelMessageKind, chatExtensionOf } from '../../../shared/channelCont
 import { isEntityHash128 } from '../../../shared/entityHash.mjs'
 import { firstEmojiTokenInText } from '../../../shared/inlineTokenSyntax.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { isFirstMessageInAuthorGroup } from '/parts/shells:chat/shared/hashAvatar.mjs'
+import { isFirstMessageInAuthorGroup, isLastMessageInAuthorGroup } from '/parts/shells:chat/shared/hashAvatar.mjs'
 import {
 	attributionFromHubMessage,
 } from '/parts/shells:chat/shared/attribution.mjs'
@@ -143,14 +143,17 @@ function renderForwardedFromHtml(forwardedFrom) {
  * @param {number} prevTime 上一条时间戳
  * @param {object[]} [allMessages] 频道全部行
  * @param {object} [renderOpts] 反应渲染选项
+ * @param {string|null} [nextAuthorKey] 下一条作者键（charId ?? sender）
+ * @param {number} [nextTime] 下一条时间戳
  * @returns {Promise<{ html: string, sender: string|null, time: number }>} 单条 HTML 与分组游标
  */
-export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime, allMessages = [], renderOpts = {}) {
+export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime, allMessages = [], renderOpts = {}, nextAuthorKey = null, nextTime = 0) {
 	const generating = isChannelMessageGenerating(message)
 	const sender = message.sender ?? '?'
 	const time = Number(message.timestamp) || Number(message.hlc?.wall) || 0
 	const authorKey = message.charId ?? sender
 	const isFirst = isFirstMessageInAuthorGroup(authorKey, prevAuthorKey, time, prevTime)
+	const isLast = isLastMessageInAuthorGroup(authorKey, nextAuthorKey, time, nextTime)
 	const isOwn = isOwnViewerMessage(message, renderOpts)
 	const align = isOwn ? 'chat-end' : 'chat-start'
 	const bubbleClass = isOwn ? 'chat-bubble-primary' : 'chat-bubble-neutral'
@@ -325,7 +328,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 
 	return {
 		html: await renderMessageRowShell({
-			rowClass: `message ${isFirst ? 'first-in-group' : ''}${message.pending ? ' message-pending' : ''}${message.sendFailed ? ' message-send-failed' : ''}`.trim(),
+			rowClass: `message ${isFirst ? 'first-in-group' : ''}${isLast ? 'last-in-group' : ''}${message.pending ? ' message-pending' : ''}${message.sendFailed ? ' message-send-failed' : ''}`.trim(),
 			align,
 			bubbleClass,
 			rowAttrs,
