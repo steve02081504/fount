@@ -67,14 +67,24 @@ test.describe('Chat message avatar grouping', () => {
 			container.scrollTop = r.offsetTop + r.offsetHeight * 0.75
 			const a = r.querySelector('.chat-image')
 			const rect = a.getBoundingClientRect()
+			const rowRect = r.getBoundingClientRect()
+			const containerRect = container.getBoundingClientRect()
 			return {
-				containerBottom: container.getBoundingClientRect().bottom,
+				containerBottom: containerRect.bottom,
+				rowBottom: rowRect.bottom,
 				avatarY: rect.y,
 				avatarH: rect.height,
+				alignSelf: window.getComputedStyle(a).alignSelf,
 			}
 		})
 		await expect(avatar).toBeVisible()
 		const avatarBottom = box.avatarY + box.avatarH
-		expect(avatarBottom).toBeGreaterThan(box.containerBottom - 120)
+
+		// 确保仍在 sticky 阶段：消息底边依然在可视区之下。
+		expect(box.rowBottom).toBeGreaterThan(box.containerBottom + 20)
+		// 头像底边应贴在可视区底部附近。
+		expect(avatarBottom).toBeGreaterThanOrEqual(box.containerBottom - 20)
+		// 回归：`.avatar` 的 `align-self: center` 不得覆盖底部对齐，否则头像会停在消息中段。
+		expect(box.alignSelf).toBe('flex-end')
 	})
 })
