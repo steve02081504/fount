@@ -19,18 +19,6 @@ test.describe('Chat message avatar grouping', () => {
 			rows.push(await expectMessageInChat(page, text))
 
 		// 连续同作者（30min 内）合并为一组：整组只显示一个共享头像
-		const debug = await page.locator('#messages .message-row').evaluateAll(rows =>
-			rows.map(row => {
-				const img = row.querySelector('.chat-image')
-				const cs = img ? getComputedStyle(img) : null
-				return {
-					cls: row.className,
-					vis: cs?.visibility,
-					pos: cs?.position,
-				}
-			}),
-		)
-		console.error('AVATAR_DEBUG ' + JSON.stringify(debug, null, 2))
 		await expect(page.locator('#messages .chat-image:visible')).toHaveCount(1, { timeout: 30_000 })
 
 		// 头像落在末条消息行，且 sticky 在可视区底部
@@ -60,5 +48,33 @@ test.describe('Chat message avatar grouping', () => {
 		await expect(row).toHaveClass(/first-in-group/)
 		await expect(row).toHaveClass(/last-in-group/)
 		await expect(row.locator('.chat-image')).toBeVisible()
+	})
+
+	test('a tall single message keeps its avatar stuck at the visible bottom', async ({ page, groupChannel }) => {
+		const { groupId, channelId } = groupChannel
+		const timestamp = Date.now()
+		const text = `tall-avatar ${timestamp}\n${Array.from({ length: 90 }, (_, i) => `line ${i}`).join('\n')}`
+		await sendMessageViaComposer(page, groupId, channelId, text)
+		const row = await expectMessageInChat(page, text)
+		await expect(row).toHaveClass(/last-in-group/)
+		const avatar = row.locator('.chat-image')
+
+		// 滚动到消息下段（约 3/4 处），消息底边仍在可视区之下：
+		// sticky 应把头像钉在可视区底部；若包含块被网格限制在消息中段则头像会停在中段/移出可视区。
+		const box = await page.evaluate(() => {
+			const container = document.querySelector('#messages')
+			const r = container.querySelector('.message-row.last-in-group')
+			container.scrollTop = r.offsetTop + r.offsetHeight * 0.75
+			const a = r.querySelector('.chat-image')
+			const rect = a.getBoundingClientRect()
+			return {
+				containerBottom: container.getBoundingClientRect().bottom,
+				avatarY: rect.y,
+				avatarH: rect.height,
+			}
+		})
+		await expect(avatar).toBeVisible()
+		const avatarBottom = box.avatarY + box.avatarH
+		expect(avatarBottom).toBeGreaterThan(box.containerBottom - 120)
 	})
 })

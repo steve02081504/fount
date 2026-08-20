@@ -767,10 +767,11 @@
 				},
 				{
 					"name": "messageAvatar",
-					"expected": "40s",
+					"expected": "50s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/messageAvatar.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/messageSurface.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/messageVirtualList.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/render/index.mjs",
 						"src/public/parts/shells/chat/public/hub/messages.css",
 						"src/public/parts/shells/chat/public/shared/hashAvatar.mjs"

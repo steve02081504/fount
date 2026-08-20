@@ -38,11 +38,14 @@
 	margin-top: 1.25rem;
 }
 
-/* 分组末条消息：共享头像 sticky 在可视区底部，但不高出消息块本身 */
+/* 分组末条消息：共享头像 sticky 在可视区底部，但不高出消息块本身。
+   DaisyUI 默认 `grid-row: span 2` 会把头像的 sticky 包含块限制在消息上半段，
+   改为跨越全部网格行，使包含块=整条消息，sticky 才能贴到底。 */
 .chat.message-row.last-in-group .chat-image {
 	position: sticky;
 	bottom: 0;
 	z-index: 1;
+	grid-row: 1 / -1;
 }
 
 /* 系统消息：与聊天气泡正文左缘对齐（列表 padding + 头像 + 间距） */

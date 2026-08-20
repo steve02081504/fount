@@ -137,11 +137,30 @@ export function initChannelVirtualList(container) {
 }
 
 /**
+ * 修复消息分组头像标记：`last-in-group` 依赖「下一条消息」，增量追加时
+ * 上一条已渲染的消息不会自动重画，会残留错误的末条头像。这里按 DOM 相邻关系
+ * 回填：某行是末条，当且仅当它没有同作者的下一条（下一条是 `first-in-group`
+ * 即新分组，`first-in-group` 只依赖已知的上一条，故恒正确）。
+ * @param {HTMLElement} container 消息列表容器
+ * @returns {void}
+ */
+export function fixMessageGrouping(container) {
+	for (const row of container.querySelectorAll('.message-row[data-author-key]')) {
+		const next = row.nextElementSibling
+		const sameGroup = next?.matches('.message-row[data-author-key]')
+			&& next.dataset.authorKey === row.dataset.authorKey
+			&& !next.classList.contains('first-in-group')
+		row.classList.toggle('last-in-group', !sameGroup)
+	}
+}
+
+/**
  * @param {HTMLElement} container 消息列表容器
  * @param {boolean} [shouldScroll=false] 是否滚动到底部
  * @returns {void}
  */
 export function decorateRenderedMessages(container, shouldScroll = false) {
+	fixMessageGrouping(container)
 	bindMessageSurface(container, {
 		groupId: store.context.currentGroupId,
 		channelId: store.context.currentChannelId,
