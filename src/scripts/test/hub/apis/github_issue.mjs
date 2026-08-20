@@ -4,13 +4,14 @@
 import { execFile } from 'npm:@steve02081504/exec'
 import { Router } from 'npm:express'
 
+import { ms } from '../../../ms.mjs'
 import { parseGithubIssueUrl } from '../../core/github_issue.mjs'
 
 /** `gh issue view` 有界超时（毫秒）。 */
 const GH_ISSUE_VIEW_TIMEOUT_MS = 15_000
 
 /** 队列清空时丢掉超过此时长的缓存。 */
-export const ISSUE_CACHE_PRUNE_MS = 60 * 60 * 1000
+export const ISSUE_CACHE_PRUNE_MS = ms('1h')
 
 /**
  * @param {unknown} value gh `closedAt`

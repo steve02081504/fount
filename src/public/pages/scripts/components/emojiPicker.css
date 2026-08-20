@@ -23,7 +23,7 @@
 	align-items: center;
 	gap: 4px;
 	padding: 4px 6px;
-	border-bottom: 1px solid var(--border, #333);
+	border-bottom: var(--border) solid var(--border-color);
 	flex-shrink: 0;
 }
 
@@ -42,7 +42,7 @@
 	width: 32px;
 	height: 32px;
 	border: none;
-	border-radius: 8px;
+	border-radius: var(--radius-box);
 	background: transparent;
 	cursor: pointer;
 	display: grid;
@@ -60,7 +60,7 @@
 .emoji-rail-avatar {
 	width: 24px;
 	height: 24px;
-	border-radius: 50%;
+	border-radius: var(--radius-box);
 	object-fit: cover;
 }
 
@@ -111,7 +111,7 @@
 	width: 36px;
 	height: 36px;
 	border: none;
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 	background: transparent;
 	cursor: pointer;
 	font-size: 22px;
@@ -142,7 +142,7 @@
 .emoji-picker-footer {
 	flex-shrink: 0;
 	padding: 6px 10px 8px;
-	border-top: 1px solid var(--border, #333);
+	border-top: var(--border) solid var(--border-color, #333);
 }
 
 .emoji-picker-discover {

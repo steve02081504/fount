@@ -147,6 +147,16 @@ install_deno() {
 	touch "$AUTO_INSTALLED_DENO_FLAG"
 }
 
+deno_pinned_spec() {
+	if [ -f "$FOUNT_DIR/.deno-version" ]; then
+		local spec
+		spec=$(awk 'NR==1{ sub(/^[[:space:]]+/, ""); sub(/[[:space:]]+$/, ""); print }' "$FOUNT_DIR/.deno-version")
+		if [ -n "$spec" ]; then
+			printf '%s\n' "$spec"
+		fi
+	fi
+}
+
 base_deno_upgrade() {
 	local force_channel="${1:-}"
 	local deno_version_before
@@ -154,6 +164,32 @@ base_deno_upgrade() {
 	if [[ -z "$deno_version_before" ]]; then
 		print_i18n_red 'deno.notWorking' >&2
 		return 1
+	fi
+
+	# 仓库 pin 文件优先：e.g. `pr 36606` / `canary` / `2.9.5`
+	local pinned upgrade_args deno_upgrade_exit_code
+	pinned=$(deno_pinned_spec)
+	if [ -n "$pinned" ]; then
+		read -r -a upgrade_args <<<"$pinned"
+		run_deno upgrade -q "${upgrade_args[@]}" 2> >(tee /dev/stderr)
+		deno_upgrade_exit_code=$?
+		if [[ $deno_upgrade_exit_code -ne 0 ]]; then
+			if [[ $IN_TERMUX -eq 1 ]]; then
+				get_i18n 'deno.upgradeFailedTermux'
+				rm -rf "$HOME/.deno"
+				install_deno
+				run_deno upgrade -q "${upgrade_args[@]}" 2> >(tee /dev/stderr)
+				deno_upgrade_exit_code=$?
+				if [[ $deno_upgrade_exit_code -ne 0 ]]; then
+					return 1
+				fi
+				return 0
+			else
+				print_i18n_yellow 'deno.upgradeFailed' >&2
+				return 1
+			fi
+		fi
+		return 0
 	fi
 
 	if [[ -z "$force_channel" ]] && upgrade_package "deno" "deno"; then

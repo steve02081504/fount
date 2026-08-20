@@ -145,11 +145,18 @@
 			"replHint": "Enter 行 · Shift+Enter 換行"
 		},
 		"test": {
-			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\n擇器（空格分多組；逗號分同組多 suite；/ 與 : 同）：\n  名稱              該組諸 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測或測試檔\n\n無精配則按前綴展（shells → shells/chat、shells/social），glob（*、?、**）亦可。\n\n預設（裸 fount test）一次規畫失利／未竟／含噪與過期項並行之；失利惟阻其依賴之槽，收口統一非零。非全量，全量用 --all。\n\n--watch      持續監視，隊空亦不退出（Ctrl+C 止）；不可同帶 --all / --force / --update-estimates 或擇器\n--all        範圍內諸 suite\n--force      強制重跑，不沿上次果\n--update-estimates  按現庫均耗回寫諸 manifest 之 expected；可帶擇器；不跑測\n--kernel     shutdown 止測試核；reboot 止而復起；不得並用他參\n\n例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n擇器（空格分多組；逗號分同組多 suite；/ 與 : 同）：\n  名稱              該組諸 suite（如 shells/chat）\n  名稱:suite        指定 suite\n  名稱:suite:子項   指定子測或測試檔\n\n無精配則按前綴展（shells → shells/chat、shells/social），glob（*、?、**）亦可。\n\n預設（裸 fount test）一次規畫失利／未竟／含噪與過期項並行之；失利惟阻其依賴之槽，收口統一非零。非全量，全量用 --all。\n\n--watch      持續監視，隊空亦不退出（Ctrl+C 止）；不可同帶 --all / --force / --update-estimates 或擇器\n--all        範圍內諸 suite\n--force      強制重跑，不沿上次果\n--update-estimates  按現庫均耗回寫諸 manifest 之 expected；可帶擇器；不跑測\n--list        列諸測試套件（可帶擇器縮小範圍）；不啓測試核，不跑測\n--kernel     shutdown 止測試核；reboot 止而復起；不得並用他參\n\n例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "用法：fount test --watch（不可同用他參）",
 			"updateEstimates": {
 				"incompatible": "用法：fount test --update-estimates [<groups>...]（不可同用他開關）",
 				"summary": "已回寫 ${suitesUpdated} 套件之預計時長（manifest ${filesChanged}），跳過 ${skipped} 無基線或已新"
+			},
+			"list": {
+				"incompatible": "用法：fount test --list [<groups>...]（不可同用他開關）",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": "（預期 ${expected}）"
 			},
 			"kernel": {
 				"incompatible": "用法：fount test --kernel shutdown|reboot（不可同用他參）",
@@ -1219,8 +1226,8 @@
 			}
 		},
 		"sessionSettings": {
-			"unnamedTitle": "未命名群聊",
-			"modeGroup": "群聊",
+			"unnamedTitle": "未名群談",
+			"modeGroup": "群談",
 			"modeSingle": "單角色",
 			"modeEmpty": "空群組",
 			"subtitleRoles": "化身 ${count} 具在此清談中",
@@ -1237,7 +1244,7 @@
 			"defaults": {
 				"groupMetaName": "未命名群組",
 				"defaultChannelName": "綜合",
-				"dmChatName": "聊天",
+				"dmChatName": "相談",
 				"dmDmName": "密談",
 				"threadName": "子苑"
 			},
@@ -1255,11 +1262,11 @@
 					"member_leave": "成員離開",
 					"member_kick": "踢出成員",
 					"member_ban": "封禁成員",
-					"member_unban": "解除封禁",
+					"member_unban": "解封",
 					"role_create": "立角色",
 					"role_update": "修角色",
 					"role_delete": "刪角色",
-					"role_assign": "分配角色",
+					"role_assign": "授以角色",
 					"role_revoke": "撤銷角色",
 					"channel_create": "立分苑",
 					"channel_update": "修分苑",
@@ -1283,7 +1290,7 @@
 					"member_leave": "成員離開群組",
 					"member_kick": "踢出成員 ${target}",
 					"member_ban": "封禁成員 ${target}",
-					"member_unban": "解除封禁 ${target}",
+					"member_unban": "解封 ${target}",
 					"role_create": "立角色 ${roleName}",
 					"role_update": "修角色 ${roleName}",
 					"role_delete": "刪角色 ${roleName}",
@@ -1308,8 +1315,8 @@
 					"file_delete": "刪文牘 ${fileName}"
 				},
 				"col": {
-					"actor": "操作者",
-					"summary": "摘要",
+					"actor": "操者",
+					"summary": "概要",
 					"time": "時間",
 					"type": "類型"
 				}
@@ -1333,7 +1340,7 @@
 			"chatNotLoaded": "主清談未載：宜先於主界面開啟與該群同 ID 之會話，而後復試",
 			"newGroupName": "新群組",
 			"trustAuthor": {
-				"textContent": "信任",
+				"textContent": "信之",
 				"title": "信任此作者（聽許危險織文）"
 			},
 			"trustAuthorOk": "已信任此作者並敷彩富文本",
@@ -1403,17 +1410,17 @@
 				"placeholder": "己群"
 			},
 			"moreActions": {
-				"title": "更多操作"
+				"title": "餘事"
 			},
 			"shareExternalOk": "已傳並謄錄鏈接",
 			"shareExternalFailed": "傳未遂，請察通衢",
 			"ownerSuccession": {
-				"main": "發起繼任投票",
+				"main": "起繼任票",
 				"autoSignHint": "提交後由本機在該群籤名種子自聯署，無需輸入私鑰。多掌事群需過半掌事各自在本機提交同一選票（同 ballotId 與候選人）。",
 				"candidateLabel": "繼任者公鑰符",
 				"description": "將群最高管理權限（MANAGE_ADMINS）轉移給所定之客。僅掌事可操作。",
 				"needHash": "請入繼位者之公鑰符 (PubKey Hash)",
-				"selfButton": "提名自己"
+				"selfButton": "自舉"
 			},
 			"channelType": {
 				"label": "分苑類型",
@@ -1425,7 +1432,7 @@
 				"archive": {
 					"adminOnly": "本機尚無該群冷歸檔簿牒。",
 					"colChannel": "分苑",
-					"colMonth": "月份",
+					"colMonth": "月",
 					"colSize": "大小",
 					"delete": {
 						"before": "刪此月之前",
@@ -1494,9 +1501,9 @@
 				"message": {
 					"rateLimit": "札限速（條/分鐘/實體）",
 					"retention": "札正文自毀",
-					"retention1y": "1 年以前",
-					"retention30d": "30 天以前",
-					"retention90d": "90 天以前",
+					"retention1y": "一年前",
+					"retention30d": "三十日前",
+					"retention90d": "九十日前",
 					"retentionForever": "永久保留（僅壓縮脈絡事件）",
 					"retentionHint": "常制不自行毀可見舊錄。啟後僅裁本地 messages 熱緩存；終態帖於冷歸檔與 checkpoint 中保留。"
 				},
@@ -1515,7 +1522,7 @@
 					"governanceDenied": "君無權限修群治理樞機。",
 					"rolesDenied": "君無 MANAGE_ROLES 權限，難以編輯角色。",
 					"notMember": "君已不是本群成員；本機群簿牒已在離群後自行清理。",
-					"basicTitle": "群治理",
+					"basicTitle": "群治",
 					"profileSectionTitle": "群簿牒",
 					"profileSectionHint": "名稱、簡介與入群方式，將寫入群元目。",
 					"behaviorSectionTitle": "運行行為",
@@ -1524,7 +1531,7 @@
 					"mediaSectionTitle": "通話與文牘",
 					"nameLabel": "群組名稱",
 					"descriptionLabel": "群組描述",
-					"joinPolicyLabel": "入群策略",
+					"joinPolicyLabel": "入群之策",
 					"joinInviteOnly": "僅邀請",
 					"joinPow": "須 PoW 驗",
 					"powDifficultyLabel": "PoW 難度",
@@ -1599,7 +1606,7 @@
 					},
 					"emojis": {
 						"create": {
-							"pack": "新建表情包",
+							"pack": "新造表情包",
 							"packFailed": "立未遂：${error}",
 							"packOk": "表情包已立",
 							"packPrompt": "表情包 ID"
@@ -1655,7 +1662,7 @@
 						"MANAGE_CHANNELS": "管理分苑",
 						"MANAGE_FILES": "管理文牘",
 						"MANAGE_MESSAGES": "掌札",
-						"MANAGE_ROLES": "管理角色",
+						"MANAGE_ROLES": "掌角色",
 						"MANAGE_ADMINS": "酌掌事",
 						"PIN_MESSAGES": "高懸之札",
 						"SEND_MESSAGES": "發札",
@@ -1665,7 +1672,7 @@
 						"VIEW_CHANNEL": "查看分苑"
 					},
 					"kick": {
-						"main": "踢出",
+						"main": "逐出",
 						"confirm": "定欲逐 ${name} ？",
 						"failed": "踢出成員未遂: ${error}",
 						"selfNodeWarning": "警：該成員與君共用同一節點身份，逐出後君亦將離群。定欲續行？",
@@ -1676,7 +1683,7 @@
 						"audit": "審計日誌",
 						"channelPermissions": "分苑權限",
 						"emojis": "表情",
-						"general": "基本",
+						"general": "大體",
 						"members": "成員",
 						"permissions": "角色權限",
 						"storage": "庫藏與歸檔"
@@ -1765,22 +1772,22 @@
 			},
 			"vote": {
 				"blockHeading": "[${prefix}] ${question}",
-				"blockHeadingTagged": "[投票] ${question}",
-				"cast": "投票",
-				"castLine": "[${prefix}] 投票：${choice}",
-				"castLineTagged": "[投票] 投票：${choice}",
-				"create": "發起投票",
-				"createFailed": "立投票未遂",
-				"deadline": "截止",
+				"blockHeadingTagged": "[票] ${question}",
+				"cast": "票",
+				"castLine": "[${prefix}] 票：${choice}",
+				"castLineTagged": "[票] 票：${choice}",
+				"create": "起票",
+				"createFailed": "立投未遂",
+				"deadline": "屆期",
 				"deadlineLineClosed": "截止：${date} [已終]",
 				"deadlineLineOpen": "截止：${date}",
-				"ended": "已終",
+				"ended": "已止",
 				"for": "投 ${option}",
 				"optionsPreview": "[${prefix}] ${options}",
-				"optionsPreviewTagged": "[投票] ${options}",
-				"promptDeadline": "截止時間（留空不限時，格式 2026-01-01 23:59）",
-				"tooFewOptions": "至少須兩個選項",
-				"total": "共 ${n} 票"
+				"optionsPreviewTagged": "[票] ${options}",
+				"promptDeadline": "止時（留空不限，格式 2026-01-01 23:59）",
+				"tooFewOptions": "須兩項以上",
+				"total": "凡 ${n} 票"
 			},
 			"edit": {
 				"cancel": "罷 (Esc)",
@@ -1817,7 +1824,7 @@
 			}
 		},
 		"hub": {
-			"title": "聊天",
+			"title": "相談",
 			"redirectToHub": "正入清談 Hub…",
 			"homeTooltip": {
 				"title": "返主頁",
@@ -1853,23 +1860,23 @@
 					"mentionDescription": "他員於群聊中 @ 君後，札將彙於此。",
 					"mentionTitle": "暫時無人提及君",
 					"messageDescription": "諸群聊與分苑之札言，將現於此。",
-					"messageTitle": "收件箱空空如也",
-					"voteDescription": "所參投票既終，結果將彙於此。",
-					"voteTitle": "無已終之投票"
+					"messageTitle": "收件箱空無一物",
+					"voteDescription": "所參票既終，結果將彙於此。",
+					"voteTitle": "無已終之票"
 				},
 				"tabs": {
 					"care": "特別關心",
 					"mention": "提及",
 					"message": "諸札",
-					"voteClosed": "投票已終"
+					"voteClosed": "票已終"
 				}
 			},
 			"notifyPrefs": {
 				"title": "通知樞機",
-				"mode": "通知模式",
+				"mode": "告示之式",
 				"modeAll": "諸札",
 				"modeMentions": "僅 @ 與提及",
-				"modeNothing": "不通知",
+				"modeNothing": "不告",
 				"suppressEveryone": "忽略 @everyone 與 @here",
 				"suppressRoles": "忽略角色組 @",
 				"mute": "靜音",
@@ -1904,8 +1911,8 @@
 				"aria-label": "索書",
 				"noResults": "無結果",
 				"failed": "尋蹤未遂",
-				"scopeGroup": "本群",
-				"scopeAll": "全部群"
+				"scopeGroup": "此群",
+				"scopeAll": "諸群"
 			},
 			"membersTitle": {
 				"title": "成員"
@@ -1915,12 +1922,12 @@
 				"aria-label": "返名錄"
 			},
 			"moreActions": {
-				"title": "更多",
-				"aria-label": "更多操作"
+				"title": "餘事",
+				"aria-label": "餘事"
 			},
 			"composerMore": {
-				"title": "更多附件",
-				"aria-label": "更多附件"
+				"title": "餘件",
+				"aria-label": "餘件"
 			},
 			"settingsTitle": {
 				"title": "樞機"
@@ -1949,9 +1956,9 @@
 			},
 			"confirmDeleteLong": "此札較長，允刪？",
 			"forceReply": "強制回復",
-			"removeChar": "移除角色",
+			"removeChar": "去角色",
 			"newGroupWith": "＋ 與 ${name} 立對話",
-			"meAuthor": "我",
+			"meAuthor": "吾",
 			"feedbackReasonPrompt": "惡緣由（可選）",
 			"feedbackReasonInput": {
 				"placeholder": "惡緣由（可選）"
@@ -2022,7 +2029,7 @@
 				"title": "諸邦遠端作者"
 			},
 			"trustAuthor": {
-				"textContent": "信任作者",
+				"textContent": "信此作者",
 				"title": "信任此作者（聽許危險之 Markdown/HTML 渲染）"
 			},
 			"stickerInline": "貼紙",
@@ -2036,7 +2043,7 @@
 			"settingsModalTitle": "樞機",
 			"modalClose": "闔",
 			"cancel": "止",
-			"bookmarkLocal": "本地",
+			"bookmarkLocal": "本機",
 			"groupsSection": "群組",
 			"ungrouped": "未分組",
 			"defaultCategory": "對話",
@@ -2057,7 +2064,7 @@
 			},
 			"trustOk": "已信任該作者",
 			"trustAuthorDialog": {
-				"title": "信任此作者",
+				"title": "信此作者",
 				"subtitle": "作者：${author}",
 				"warningTitle": "履冰之舉",
 				"warningBody": "信之後，彼所發札將於君瀏覽器中以全墨記敷彩（含織文／符法）。若彼於其所運 fount 上構惡意內容，君閱時或害本機。唯信君所識且願擔險之諸邦節點。",
@@ -2065,13 +2072,13 @@
 				"duration3h": "3 小時",
 				"duration7d": "7 天",
 				"duration1Month": "1 個月",
-				"durationForever": "永久",
+				"durationForever": "永世",
 				"confirmCooldown": "已知其險（${seconds}）",
 				"confirmFirst": "吾已知其險，續行",
 				"confirmSecond": "再觸以終允",
 				"cancel": "止"
 			},
-			"quickActions": "快捷操作",
+			"quickActions": "捷徑之務",
 			"advancedSettings": "樞機之制（角色／世界／機巧）",
 			"advancedSettingsDescription": "於新標籤啟 Hub 中此群之全設",
 			"dangerZone": "危險區域",
@@ -2112,7 +2119,10 @@
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
 				"localeHint": "觸標籤以切換或修符碼；於末尾輸入框回車可謄錄為新語言。",
-				"themeColorHint": "無自定義橫幅時用於生成紋理，亦用於現影聲波環",
+				"themeColor": {
+					"clear": "還原本色",
+					"hint": "無自訂橫幅時用於生成紋理，亦用於現影聲波環；留空則用現行主題色"
+				},
 				"linksPreview": "${count} 個公開鏈接",
 				"unsavedHint": "闔窗則變更盡棄",
 				"tagsLabel": "標籤",
@@ -2360,7 +2370,7 @@
 				"emptyAction": "尋角色或客",
 				"emptyDescription": "索本機靈偶或他驛之客，亦可於群中開成員簿牒卡以啟密談。",
 				"emptyTitle": "啟一新對話",
-				"header": "好友",
+				"header": "知交",
 				"restartConfirm": "將斷與「${name}」之契，另闢密談，可？",
 				"restartFailed": "立密談未遂：${error}",
 				"restartOk": "已啟新密談",
@@ -2373,10 +2383,10 @@
 					"pin": "設為別名",
 					"tooShort": "至少輸入二字"
 				},
-				"tag": "好友",
+				"tag": "知交",
 				"tooltip": {
-					"title": "好友",
-					"tip": "好友"
+					"title": "知交",
+					"tip": "知交"
 				}
 			},
 			"channel": {
@@ -2445,7 +2455,7 @@
 						"title": "上一條時間線"
 					},
 					"regen": {
-						"title": "重新生成"
+						"title": "再生成"
 					},
 					"unpin": {
 						"title": "撤懸"
@@ -2473,7 +2483,7 @@
 					"placeholder": "群札… Ctrl+Enter 發送",
 					"aria-label": "入言"
 				},
-				"prefixVote": "投票"
+				"prefixVote": "票"
 			},
 			"session": {
 				"deleteFailed": "刪未遂：${error}",
@@ -2617,7 +2627,7 @@
 			},
 			"group": {
 				"context": {
-					"manage": "管理群",
+					"manage": "治群",
 					"notifyPrefs": "通知樞機",
 					"invite": "邀請他人",
 					"inviteCopied": "邀請鏈接已謄錄到剪貼板",
@@ -2629,7 +2639,7 @@
 					"setAliasPrompt": "為「${name}」立本地別名（留空清除）：",
 					"aliasSaved": "群別名已更",
 					"leave": {
-						"main": "退出群",
+						"main": "離群",
 						"batch": "退出所選群（${count}）",
 						"batchOk": "已退出 ${count} 個群",
 						"batchPartial": "${failed} / ${total} 個群退出未遂，名錄已重覽",
@@ -2650,7 +2660,7 @@
 				},
 				"joinRequired": "難以啟該群組，宜以邀請鏈接或邀請碼載入",
 				"tag": "群組",
-				"unnamed": "未命名群 ·${suffix}"
+				"unnamed": "未名群 ·${suffix}"
 			},
 			"block": {
 				"author": {
@@ -2679,25 +2689,25 @@
 				"participants": "${n} 人",
 				"peerCount": "${n}",
 				"screenFailed": "屏幕共享未遂：${error}",
-				"screenShare": "共享屏幕",
+				"screenShare": "共屏",
 				"screenStop": "止共享",
 				"startedAt": "開始於 ${time}"
 			},
 			"vote": {
 				"closed": "已結束",
 				"count": "${count} 票 · ${pct}%",
-				"createFailed": "立投票未遂：${error}",
+				"createFailed": "立票未遂：${error}",
 				"deadline": "截止：${date}",
 				"minOptions": "至少須 2 個選項",
-				"modalSubmit": "立投票",
-				"modalTitle": "發起投票",
+				"modalSubmit": "立票",
+				"modalTitle": "起票",
 				"noOptions": "無選項",
 				"optionDefault": "讚成,反對",
 				"promptDeadlineHours": "截止（小時，留空=無截止）",
 				"promptOptions": "選項（用逗號分隔，至少兩項）",
-				"promptQuestion": "投票標題",
+				"promptQuestion": "票標",
 				"title": {
-					"title": "發起投票"
+					"title": "起票"
 				},
 				"total": "共 ${total} 票"
 			},
@@ -2752,7 +2762,7 @@
 			"list": {
 				"channelEmpty": "名錄為空。",
 				"editorTitle": "編輯名錄條目（JSON 數組）",
-				"itemUntitled": "未命名",
+				"itemUntitled": "未名",
 				"jsonInvalid": "JSON 無效：${message}",
 				"saveFailed": "存未遂",
 				"saveToDag": "存到 DAG",
@@ -2760,7 +2770,7 @@
 			},
 			"save": {
 				"emoji": {
-					"title": "存表情"
+					"title": "藏表情"
 				},
 				"emojiFailed": "存表情未遂：${error}",
 				"emojiOk": "表情已存到簿牒庫",
@@ -2856,7 +2866,7 @@
 			"pin": {
 				"previewInvite": "[邀請] ${groupName}",
 				"previewSticker": "[貼紙]",
-				"previewVote": "[投票] ${question}",
+				"previewVote": "[票] ${question}",
 				"unpinSidebar": {
 					"title": "撤懸"
 				}
@@ -2873,7 +2883,7 @@
 				"pins": "暫無高懸"
 			},
 			"trustedAuthorBadge": {
-				"textContent": "已信任",
+				"textContent": "已信",
 				"title": "已信任此作者，聽許危險之 Markdown/HTML 渲染"
 			},
 			"attachment": {
@@ -3002,8 +3012,8 @@
 					"aria-label": "刪"
 				},
 				"more": {
-					"title": "更多",
-					"aria-label": "更多"
+					"title": "餘",
+					"aria-label": "餘"
 				},
 				"recognize": {
 					"title": "語音轉文",
@@ -3375,7 +3385,7 @@
 						"alt": "改"
 					},
 					"more": {
-						"title": "更多"
+						"title": "餘"
 					},
 					"moreIcon": {
 						"alt": "更多"
@@ -4363,8 +4373,8 @@
 			},
 			"mediaButton": "添媒體",
 			"pollButton": {
-				"title": "發起投票",
-				"aria-label": "發起投票"
+				"title": "起票",
+				"aria-label": "起票"
 			},
 			"cwToggle": {
 				"title": "戒語",
@@ -4466,14 +4476,14 @@
 			"tabsLabel": {
 				"aria-label": "言序"
 			},
-			"tabLatest": "最新",
+			"tabLatest": "新",
 			"tabForYou": "推薦",
 			"repostedBy": "${author} 轉述之",
 			"decryptFailed": "難以解密此信",
 			"revealContent": "示其內容",
 			"sensitiveMedia": "敏感媒體",
 			"showMore": "展開",
-			"showLess": "收起",
+			"showLess": "斂",
 			"replayDivider": "已閱畢，建覽",
 			"trending": {
 				"title": "熱門話題",
@@ -4498,7 +4508,7 @@
 			"repost": "${author} 轉述君之言",
 			"follow": "${author} 已注視君",
 			"care_post": "${author} 新發言（特別關心）",
-			"poll_closed": "${author} 之投票已終",
+			"poll_closed": "${author} 之票已終",
 			"post_note": "${author} 為君言補訊",
 			"live_started": "${author} 開現影",
 			"view": "查看",
@@ -4680,7 +4690,7 @@
 			},
 			"submit": "尋蹤",
 			"clear": {
-				"aria-label": "清除"
+				"aria-label": "清"
 			},
 			"empty": "無契合之言",
 			"tooShort": "請入二字以上",
@@ -4692,10 +4702,10 @@
 			"viewTitle": "尋蹤",
 			"loading": "方尋蹤…",
 			"loadFailed": "尋蹤未遂：${error}",
-			"sortRecent": "最新",
+			"sortRecent": "新",
 			"sortPopular": "熱門",
 			"scopeLocal": "本機",
-			"scopeNearby": "附近",
+			"scopeNearby": "鄰近",
 			"filter": {
 				"author": {
 					"placeholder": "作者",
@@ -4742,16 +4752,16 @@
 				"aria-label": "撤貶"
 			},
 			"repost": "轉述",
-			"quote": "引用",
+			"quote": "引",
 			"delete": "刪",
 			"edit": "修",
 			"save": {
-				"title": "收藏",
-				"aria-label": "收藏"
+				"title": "藏",
+				"aria-label": "藏"
 			},
 			"saved": {
-				"title": "已收藏",
-				"aria-label": "已收藏"
+				"title": "已藏",
+				"aria-label": "已藏"
 			},
 			"translate": "翻譯",
 			"dm": "發密信",
@@ -4772,9 +4782,9 @@
 			"downloadHtml": "拓存 HTML",
 			"copied": "已謄錄",
 			"more": {
-				"aria-label": "更多"
+				"aria-label": "餘"
 			},
-			"share": "分享",
+			"share": "分",
 			"likeFailed": "善未遂：${error}",
 			"dislikeFailed": "惡未遂：${error}",
 			"repostFailed": "轉述未遂：${error}",
@@ -4806,17 +4816,17 @@
 			"add": "補充訊息",
 			"prompt": "寫一條讀者補充（社區筆記）",
 			"listTitle": "全部補充訊息",
-			"helpful": "有用",
+			"helpful": "益",
 			"unhelpful": "無用",
 			"more": "全部 ${n} 條",
 			"empty": "暫無補充訊息"
 		},
 		"poll": {
 			"multi": "容許多選",
-			"apply": "應用投票",
-			"closed": "投票已終",
-			"deadline": "截止：${deadline}",
-			"deadlineLabel": "投票限期",
+			"apply": "用票",
+			"closed": "票已終",
+			"deadline": "屆期：${deadline}",
+			"deadlineLabel": "限期",
 			"options": {
 				"placeholder": "每行一選項（至少 2 項）"
 			}
@@ -4840,8 +4850,8 @@
 				"aria-label": "收件箱篩選"
 			},
 			"tabs": {
-				"all": "全部",
-				"mention": "提及",
+				"all": "諸",
+				"mention": "喚",
 				"reply": "回復",
 				"like": "讚",
 				"follow": "關注",
@@ -4919,7 +4929,7 @@
 		"open": "啟",
 		"download": "拓存",
 		"downloadZip": "拓存帙",
-		"rename": "重命名",
+		"rename": "改名",
 		"copy": "謄錄",
 		"cut": "裁下",
 		"paste": "附錄",
@@ -4936,7 +4946,7 @@
 		"save": "存",
 		"showHidden": "示隱",
 		"name": "名稱",
-		"descriptionField": "描述",
+		"descriptionField": "述",
 		"attrHidden": "隱",
 		"attrSystem": "系統（刪需確認）",
 		"previewUrl": "預覽圖 URL",
@@ -4951,7 +4961,7 @@
 		"statusCount": "${count} 項，已選 ${selected}",
 		"renamePrompt": "新名稱",
 		"visibilityPrompt": "可見性（public/unlisted/followers/private/selected）",
-		"cabinetActionPrompt": "操作：rename / delete / visibility",
+		"cabinetActionPrompt": "務：rename / delete / visibility",
 		"confirmDeleteCabinet": "允刪此藏經閣？",
 		"confirmDelete": "允刪所選項目？",
 		"confirmDeleteSystem": "所選含系統文牘，允刪？",
@@ -5269,7 +5279,7 @@
 			"valentine": "情人",
 			"halloween": "萬聖",
 			"garden": "庭院",
-			"forest": "森林",
+			"forest": "林",
 			"aqua": "滄海",
 			"lofi": "清歡",
 			"pastel": "淡彩",
@@ -5286,9 +5296,9 @@
 			"night": "月夜",
 			"coffee": "醇香",
 			"winter": "寒冬",
-			"dim": "昏暗",
+			"dim": "幽",
 			"nord": "北歐",
-			"sunset": "日落",
+			"sunset": "夕照",
 			"caramellatte": "焦糖乳飲",
 			"abyss": "深淵",
 			"silk": "絲絨"
@@ -5700,7 +5710,7 @@
 		}
 	},
 	"achievements": {
-		"title": "成就",
+		"title": "功業",
 		"description": "探君泉源之旅之里程與成就。每一功績，皆是君獨特敘事中之一步。",
 		"pageHeader": "功成名就之堂",
 		"pageDescription": "君之功績與里程，盡列於此，以供閱覽。",
@@ -5736,13 +5746,13 @@
 		"logs": {
 			"openSourceFailed": "啟閱原始碼卷未遂：${message}",
 			"toolbar": {
-				"clear": "清空",
+				"clear": "清",
 				"filter": {
 					"placeholder": "依文篩之…"
 				}
 			},
 			"levels": {
-				"all": "全部",
+				"all": "諸",
 				"log": "常錄",
 				"info": "訊息",
 				"warn": "警示",
@@ -5775,6 +5785,12 @@
 			"title": "系統資訊",
 			"failed": "系統資訊取錄有失"
 		},
+		"testStatus": {
+			"title": "測試狀態",
+			"running": "測試運行中",
+			"idle": "內核在線（空閒）",
+			"queued": "排隊中"
+		},
 		"connectivity": {
 			"backend": "後端連通",
 			"frontend": "前端連通"
@@ -5782,6 +5798,7 @@
 		"loading": "方取錄…",
 		"checking": "方稽考…",
 		"failed": "敗",
+		"linksCount": "${count} 條在線連接",
 		"copySuccess": "糾錯報告已謄於剪貼板",
 		"copyFailed": "謄錄未遂",
 		"alreadyLatest": "已為最新，無須更易。",
@@ -5853,7 +5870,7 @@
 				"title": "畫筆粗細",
 				"aria-label": "畫筆粗細"
 			},
-			"crop": "裁剪",
+			"crop": "裁",
 			"image": "修",
 			"mosaic": "打碼"
 		},

@@ -2,6 +2,7 @@ import { primaryLocale } from '../../../../../scripts/i18n/index.mjs'
 import { channelMessage } from '../../shared/channelContent.mjs'
 import { ensureChatExtension } from '../../shared/messageFields.mjs'
 import { retainLocalAttachmentBuffers } from '../../shared/retainLocalAttachmentBuffers.mjs'
+import { ensureDraftFileContent } from '../../src/endpoints/drafts.mjs'
 import { sendGroupMessage } from '../../src/endpoints/groupChannel.mjs'
 import { clearComposerExtras, getContentWarning, getSensitiveMedia } from '../composerExtras.mjs'
 import { clearSelectedFiles, selectedFiles } from '../composerFiles.mjs'
@@ -254,7 +255,18 @@ export async function sendMessagePayload(contentObj, files = [], { clearComposer
  * @returns {Promise<object>} 落盘后的 DAG `message` 事件
  */
 export async function sendCurrentMessage(text) {
-	const files = [...selectedFiles]
+	/** @type {object[]} 发送用附件（草稿恢复项先懒拉取完整内容，并剥离内部字段） */
+	const files = []
+	for (const file of selectedFiles.slice()) {
+		await ensureDraftFileContent(file)
+		files.push({
+			name: file.name,
+			mime_type: file.mime_type,
+			size: file.size,
+			...file.description ? { description: file.description } : {},
+			...file.buffer != null ? { buffer: file.buffer } : {},
+		})
+	}
 	const contentObj = buildComposerContent(text)
 	clearReplyTarget()
 	return sendMessagePayload(contentObj, files, { clearComposer: true })

@@ -17,6 +17,7 @@ body {
 	transition: width 0.3s ease;
 	width: 300px;
 	max-height: 300px;
+	/* theme-radius-ignore */
 	border: 2px solid transparent;
 	/*  for highlighting */
 }
@@ -160,7 +161,7 @@ body {
 	justify-content: center;
 	padding: 1rem;
 	background-color: color-mix(in srgb, var(--color-base-200), transparent 20%);
-	border-radius: 1rem;
+	border-radius: var(--radius-box);
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 	margin-bottom: 1rem;
 }
@@ -222,6 +223,7 @@ body {
 /* Highlighting Selected Item */
 .selected-item {
 	border-color: hsl(var(--color-primary, currentColor));
+	/* theme-radius-ignore */
 	border-width: 2px;
 }
 

@@ -4,7 +4,7 @@ import { initTranslations } from '/scripts/i18n/index.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { ping } from '/scripts/endpoints/base.mjs'
-import { getAutoUpdateEnabled, getSystemInfo, postRestart } from './src/endpoints.mjs'
+import { createTestStatusWs, getAutoUpdateEnabled, getSystemInfo, postRestart } from './src/endpoints.mjs'
 import { mountTemplate, renderTemplate } from './templates.mjs'
 
 applyTheme()
@@ -16,6 +16,11 @@ const versionIndicator = document.getElementById('version-indicator'),
 	systemInfoTable = document.getElementById('system-info-table'),
 	backendChecks = document.getElementById('backend-checks'),
 	frontendChecks = document.getElementById('frontend-checks'),
+	testStatusCard = document.getElementById('test-status-card'),
+	testStatusToggle = document.getElementById('test-status-toggle'),
+	testStatusBadge = document.getElementById('test-status-badge'),
+	testStatusList = document.getElementById('test-status-list'),
+	testStatusChevron = document.getElementById('test-status-chevron'),
 	copyButton = document.getElementById('copy-button'),
 	updateButton = document.getElementById('update-button'),
 	updateButtonIcon = document.getElementById('update-button-icon'),
@@ -137,6 +142,191 @@ async function checkFrontendConnectivity() {
 	}
 }
 
+let testStatusOpen = false
+/** @type {Map<string, number>} 运行中套件 key → 开始时间戳。 */
+const runningSuites = new Map()
+/** @type {Set<string>} 排队套件 key。 */
+const queuedSuites = new Set()
+/** @type {boolean} 内核是否在线（随 snapshot 更新）。 */
+let testStatusOnline = false
+/** @type {boolean} 是否已调度一次合并且重的渲染。 */
+let testStatusRenderQueued = false
+/** @type {Promise<void>} 串行化渲染链，避免旧快照覆盖新状态。 */
+let testStatusRenderChain = Promise.resolve()
+/** @type {WebSocket | null} */
+let testStatusWs = null
+/** @type {number | null} */
+let testStatusReconnectTimer = null
+let testStatusAttempt = 0
+
+/**
+ * 展开/收起测试状态列表。
+ */
+testStatusToggle.addEventListener('click', () => {
+	testStatusOpen = !testStatusOpen
+	testStatusList.classList.toggle('hidden', !testStatusOpen)
+	testStatusToggle.setAttribute('aria-expanded', String(testStatusOpen))
+	testStatusChevron?.classList.toggle('rotate-180', testStatusOpen)
+})
+
+/**
+ * 渲染 fount test 内核状态卡片。
+ * @param {object | null} status 状态；内核离线为 null。
+ */
+async function renderTestStatus(status) {
+	const online = status?.online === true
+	testStatusCard.classList.toggle('hidden', !online)
+	if (!online) return
+	testStatusBadge.className = `badge badge-lg gap-2 ${status.active ? 'badge-success' : 'badge-ghost'}`
+	testStatusBadge.dataset.i18n = status.active ? 'debug_info.testStatus.running' : 'debug_info.testStatus.idle'
+	if (!status.active) {
+		testStatusList.replaceChildren()
+		return
+	}
+	const items = [
+		...status.runningSuites.map(({ key, elapsedMs }) => ({
+			key,
+			state: 'running',
+			sec: Math.max(1, Math.floor(elapsedMs / 1000)),
+		})),
+		...status.queuedSuites.map(key => ({ key, state: 'queued' })),
+	]
+	await mountTemplate(testStatusList, 'test_status_list', { items })
+}
+
+/**
+ * 由本地运行的套件状态构建快照。
+ * @returns {object} 与 `/status` 形状一致的状态对象。
+ */
+function buildTestStatus() {
+	const active = runningSuites.size > 0 || queuedSuites.size > 0
+	return {
+		online: testStatusOnline,
+		active,
+		idle: !active,
+		runningSuites: [...runningSuites].map(([key, startMs]) => ({ key, elapsedMs: Date.now() - startMs })),
+		queuedSuites: [...queuedSuites],
+	}
+}
+
+/**
+ * 调度一次合并且串行的测试状态渲染：同一轮微任务内的多次状态变更合并为一次，
+ * 渲染沿 promise 链串行执行，保证后置状态不被更早的异步挂载完成所覆盖。
+ * @returns {void}
+ */
+function scheduleTestStatusRender() {
+	if (testStatusRenderQueued) return
+	testStatusRenderQueued = true
+	queueMicrotask(() => {
+		testStatusRenderQueued = false
+		const status = buildTestStatus()
+		testStatusRenderChain = testStatusRenderChain.then(() => renderTestStatus(status)).catch(() => {})
+	})
+}
+
+/**
+ * 应用一条 WS 消息（初始快照或内核实时事件）更新套件状态并重绘。
+ * @param {object} message 消息
+ * @returns {void}
+ */
+function applyTestStatusMessage(message) {
+	switch (message.type) {
+		case 'snapshot': {
+			if (message.online === true) testStatusAttempt = 0
+			testStatusOnline = message.online === true
+			runningSuites.clear()
+			queuedSuites.clear()
+			for (const { key, elapsedMs } of message.runningSuites || [])
+				runningSuites.set(key, Date.now() - elapsedMs)
+			for (const key of message.queuedSuites || []) queuedSuites.add(key)
+			scheduleTestStatusRender()
+			break
+		}
+		case 'queue-append':
+			queuedSuites.add(message.key)
+			scheduleTestStatusRender()
+			break
+		case 'queue-remove':
+			queuedSuites.delete(message.key)
+			scheduleTestStatusRender()
+			break
+		case 'suite-start':
+			queuedSuites.delete(message.key)
+			runningSuites.set(message.key, Date.now())
+			scheduleTestStatusRender()
+			break
+		case 'suite-end':
+			runningSuites.delete(message.key)
+			scheduleTestStatusRender()
+			break
+		case 'idle':
+			runningSuites.clear()
+			queuedSuites.clear()
+			scheduleTestStatusRender()
+			break
+		default:
+			break
+	}
+}
+
+/**
+ * 建立测试状态 WebSocket（仅页面可见时）。
+ * @returns {void}
+ */
+function connectTestStatusWs() {
+	if (testStatusWs) return
+	const ws = createTestStatusWs()
+	testStatusWs = ws
+	ws.addEventListener('message', (event) => {
+		let message
+		try { message = JSON.parse(String(event.data)) } catch { return }
+		applyTestStatusMessage(message)
+	})
+	ws.addEventListener('close', () => {
+		if (testStatusWs !== ws) return
+		testStatusWs = null
+		testStatusOnline = false
+		runningSuites.clear()
+		queuedSuites.clear()
+		scheduleTestStatusRender()
+		scheduleTestStatusReconnect()
+	})
+	ws.addEventListener('error', () => { if (testStatusWs === ws) ws.close() })
+}
+
+/**
+ * 调度重连（指数退避，仅页面可见时）。
+ * @returns {void}
+ */
+function scheduleTestStatusReconnect() {
+	if (document.hidden) return
+	const delay = Math.min(1500 * 2 ** testStatusAttempt++, 10000)
+	testStatusReconnectTimer = setTimeout(() => {
+		testStatusReconnectTimer = null
+		connectTestStatusWs()
+	}, delay)
+}
+
+/**
+ * 启动测试状态流（若未在跑）。
+ * @returns {void}
+ */
+function startTestStatusStream() {
+	if (testStatusWs || testStatusReconnectTimer) return
+	connectTestStatusWs()
+}
+
+/**
+ * 停止测试状态流（页面隐藏时）。
+ * @returns {void}
+ */
+function stopTestStatusStream() {
+	clearTimeout(testStatusReconnectTimer)
+	testStatusReconnectTimer = null
+	testStatusWs?.close()
+	testStatusWs = null
+}
+
 const UPDATE_ICON = 'https://api.iconify.design/mdi/update.svg'
 const LOADING_ICON = 'https://api.iconify.design/line-md/loading-twotone-loop.svg'
 const UPTODATE_ICON = 'https://api.iconify.design/line-md/confirm.svg'
@@ -256,11 +446,14 @@ function stopPollTimer() {
 }
 
 document.addEventListener('visibilitychange', () => {
-	if (document.hidden)
+	if (document.hidden) {
 		stopPollTimer()
+		stopTestStatusStream()
+	}
 	else {
 		if (Date.now() - lastVersionCheckTime >= VERSION_POLL_INTERVAL) pollVersionInfo()
 		startPollTimer()
+		startTestStatusStream()
 	}
 })
 
@@ -270,3 +463,4 @@ pollVersionInfo()
 fetchSystemInfo()
 checkFrontendConnectivity()
 fetchAutoUpdateStatus()
+startTestStatusStream()

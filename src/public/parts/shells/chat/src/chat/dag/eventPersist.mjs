@@ -5,6 +5,7 @@
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
  * 【关联】`materialize.mjs`、`events/meta.mjs`、`../ws/groupWsRpc.mjs`、`./messageFanout.mjs`、`../session/chatRequest.mjs`。
  */
+import { ms } from 'fount/scripts/ms.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
@@ -145,7 +146,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 					kind: 'member_join_introducer',
 					weight: 0.35,
 					groupId,
-					ttlMs: 7 * 24 * 60 * 60 * 1000,
+					ttlMs: ms('7d'),
 				})
 			}
 		}

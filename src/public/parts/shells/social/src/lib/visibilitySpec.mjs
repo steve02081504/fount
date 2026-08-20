@@ -2,6 +2,7 @@
  * Social 可见性档位规范化、偏序与读侧判定核心。
  */
 
+import { ms } from 'fount/scripts/ms.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
 /** @typedef {'public' | 'unlisted' | 'followers' | 'followers_since' | 'selected' | 'private'} SocialVisibility */
@@ -18,8 +19,8 @@ export const SOCIAL_VISIBILITIES = new Set([
 
 /** UI 预设 → 规范档位 */
 export const VISIBILITY_UI_PRESETS = {
-	followers_7d: { visibility: 'followers_since', minFollowMs: 7 * 24 * 60 * 60 * 1000 },
-	followers_30d: { visibility: 'followers_since', minFollowMs: 30 * 24 * 60 * 60 * 1000 },
+	followers_7d: { visibility: 'followers_since', minFollowMs: ms('7d') },
+	followers_30d: { visibility: 'followers_since', minFollowMs: ms('30d') },
 }
 
 /** 偏序基数：越大越严 */

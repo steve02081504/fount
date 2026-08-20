@@ -5,7 +5,7 @@
 				<h2 class="profile-edit-title" data-i18n="chat.profile.edit"></h2>
 				<p class="profile-edit-subtitle" data-i18n="chat.hub.profileEdit.previewHint"></p>
 			</div>
-			<button type="button" class="btn btn-circle btn-ghost btn-sm" id="profile-edit-close" data-i18n="chat.hub.profileEdit.close">✕</button>
+			<button type="button" class="btn btn-square btn-ghost btn-sm" id="profile-edit-close" data-i18n="chat.hub.profileEdit.close">✕</button>
 		</header>
 		<div class="profile-edit-scroll">
 			<div class="profile-edit-layout">
@@ -50,8 +50,9 @@
 						<div class="form-control profile-edit-field card card-border bg-base-100 p-3">
 							<label class="label py-1" for="profile-edit-theme-color"><span class="label-text" data-i18n="chat.profile.themeColorLabel"></span></label>
 							<div class="profile-edit-color-row">
-								<input type="color" id="profile-edit-theme-color" class="profile-edit-color-input" value="#5865f2" />
-								<span class="text-xs opacity-60" data-i18n="chat.hub.profileEdit.themeColorHint"></span>
+								<input type="color" id="profile-edit-theme-color" class="profile-edit-color-input" />
+								<button type="button" class="btn btn-ghost btn-sm" id="profile-edit-theme-color-clear" data-i18n="chat.hub.profileEdit.themeColor.clear"></button>
+								<span class="text-xs opacity-60" data-i18n="chat.hub.profileEdit.themeColor.hint"></span>
 							</div>
 						</div>
 						<div class="form-control profile-edit-field card card-border bg-base-100 p-3">

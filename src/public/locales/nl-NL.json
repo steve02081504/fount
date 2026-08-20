@@ -145,11 +145,18 @@
 			"replHint": "Enter om uit te voeren · Shift+Enter voor nieuwe regel"
 		},
 		"test": {
-			"help": "Gebruik: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelectors (groepen gescheiden door spaties; suites binnen een groep door komma's; / en : equivalent):\n  naam              alle suites in die groep (bijv. shells/chat)\n  naam:suite        een specifieke suite\n  naam:suite:item   een specifieke subtest of testbestand\n\nZonder exacte match uitbreiden op prefix (shells → shells/chat, shells/social); globs (*, ?, **) ook ondersteund.\n\nStandaard (alleen fount test): plant mislukkingen/onvoltooid/ruis en verouderd in één ronde en voert uit; mislukkingen blokkeren alleen afhankelijken — niet-nul exit aan het eind. Nooit volledige repo — gebruik --all daarvoor.\n\n--watch      blijft kijken; blijft actief ook als de wachtrij leeg is (Ctrl+C om te stoppen); niet te combineren met --all, --force, --update-estimates of selectors\n--all        alle suites in bereik\n--force      geforceerde run; hergebruikt geen vorige resultaten\n--update-estimates  schrijft expected in elk manifest terug op basis van huidige DB-gemiddelden; optionele selectors; voert geen tests uit\n--kernel     shutdown stopt de testkernel; reboot stopt en start opnieuw; niet te combineren met andere argumenten\n\nvoorbeelden:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "Gebruik: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelectors (groepen gescheiden door spaties; suites binnen een groep door komma's; / en : equivalent):\n  naam              alle suites in die groep (bijv. shells/chat)\n  naam:suite        een specifieke suite\n  naam:suite:item   een specifieke subtest of testbestand\n\nZonder exacte match uitbreiden op prefix (shells → shells/chat, shells/social); globs (*, ?, **) ook ondersteund.\n\nStandaard (alleen fount test): plant mislukkingen/onvoltooid/ruis en verouderd in één ronde en voert uit; mislukkingen blokkeren alleen afhankelijken — niet-nul exit aan het eind. Nooit volledige repo — gebruik --all daarvoor.\n\n--watch      blijft kijken; blijft actief ook als de wachtrij leeg is (Ctrl+C om te stoppen); niet te combineren met --all, --force, --update-estimates of selectors\n--all        alle suites in bereik\n--force      geforceerde run; hergebruikt geen vorige resultaten\n--update-estimates  schrijft expected in elk manifest terug op basis van huidige DB-gemiddelden; optionele selectors; voert geen tests uit\n--list        geeft een overzicht van de testsuites (kan selectors gebruiken om de reikwijdte te verkleinen); start de kernel niet en voert geen tests uit\n--kernel     shutdown stopt de testkernel; reboot stopt en start opnieuw; niet te combineren met andere argumenten\n\nvoorbeelden:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Gebruik: fount test --watch (niet te combineren met andere opties)",
 			"updateEstimates": {
 				"incompatible": "Gebruik: fount test --update-estimates [<groups>...] (niet te combineren met andere schakelaars)",
 				"summary": "Verwachte duur bijgewerkt voor ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); ${skipped} overgeslagen zonder baseline of al actueel"
+			},
+			"list": {
+				"incompatible": "Gebruik: fount test --list [<groups>...] (niet te combineren met andere schakelaars)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (verwacht ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Gebruik: fount test --kernel shutdown|reboot (kan niet worden gecombineerd met andere opties)",
@@ -2112,7 +2119,10 @@
 				"livePreview": "Live-voorbeeld",
 				"languageVersion": "Taalversie",
 				"localeHint": "Klik op het label om de code te wijzigen of te bewerken; druk op Enter in het invoervak ​​aan het einde om het naar een nieuwe taal te kopiëren.",
-				"themeColorHint": "Wordt gebruikt om texturen te genereren als er geen aangepaste banner is, en wordt ook gebruikt voor live geluidsgolfloops",
+				"themeColor": {
+					"clear": "Herstel de standaardkleur van het thema",
+					"hint": "Wordt gebruikt om texturen te genereren als er geen aangepaste banner is, en ook voor live geluidsgolfloops. Laat leeg om de huidige themakleur te gebruiken."
+				},
 				"linksPreview": "${count} openbare links",
 				"unsavedHint": "Als je het venster sluit, worden niet-opgeslagen wijzigingen verwijderd",
 				"tagsLabel": "Label",
@@ -5781,6 +5791,12 @@
 			"title": "Systeeminformatie",
 			"failed": "Kan systeeminformatie niet laden"
 		},
+		"testStatus": {
+			"title": "Teststatus",
+			"running": "Test draait",
+			"idle": "Kernel online (inactief)",
+			"queued": "In de wachtrij"
+		},
 		"connectivity": {
 			"backend": "backend-connectiviteit",
 			"frontend": "front-end connectiviteit"
@@ -5788,6 +5804,7 @@
 		"loading": "Laden...",
 		"checking": "Controleren...",
 		"failed": "Mislukt",
+		"linksCount": "Actieve verbindingen: ${count}",
 		"copySuccess": "Foutopsporingsrapport gekopieerd naar klembord",
 		"copyFailed": "Kopieer rapport mislukt",
 		"alreadyLatest": "Al de nieuwste versie",

@@ -10,11 +10,12 @@ import process from 'node:process'
 
 import { execFile, where_command } from 'npm:@steve02081504/exec'
 
+import { ms } from '../../src/scripts/ms.mjs'
 import { testDataRoot } from '../../src/scripts/test/core/paths.mjs'
 import { REPO_ROOT } from '../../src/scripts/test/core/repo_root.mjs'
 
 /** latest.json 复用窗口（ms）。 */
-const LATEST_CACHE_MS = 24 * 60 * 60 * 1000
+const LATEST_CACHE_MS = ms('1d')
 const RELEASES_LATEST = 'https://api.github.com/repos/koalaman/shellcheck/releases/latest'
 
 /**

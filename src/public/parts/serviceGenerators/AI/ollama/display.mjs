@@ -107,7 +107,7 @@ function renderModels(div, model_ids) {
 	list.className = 'flex flex-wrap gap-2 mt-2'
 	for (const id of model_ids) {
 		const code = document.createElement('code')
-		code.className = 'p-1 bg-base-300 rounded cursor-pointer hover:bg-primary hover:text-primary-content'
+		code.className = 'p-1 bg-base-300 rounded-field cursor-pointer hover:bg-primary hover:text-primary-content'
 		code.textContent = id
 		code.addEventListener('click', () => {
 			navigator.clipboard.writeText(id)

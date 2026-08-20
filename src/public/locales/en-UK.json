@@ -145,11 +145,18 @@
 			"replHint": "Enter to run · Shift+Enter for a new line"
 		},
 		"test": {
-			"help": "usage: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelectors (space-separated groups; comma-separated suites within a group; / and : are equivalent):\n  name              all suites in that group (e.g. shells/chat)\n  name:suite        a specific suite\n  name:suite:item   a specific subtest or test file\n\nWith no exact match, expands by prefix (shells → shells/chat, shells/social); globs (*, ?, **) also supported.\n\nDefault (bare fount test): plans failures/incomplete and stale items in one pass and runs them; failures only block their dependents — non-zero exit at the end. Never full-repo — use --all for that.\n\n--watch      keep watching; stays up even when the queue is empty (Ctrl+C to quit); cannot combine with --all, --force, --update-estimates, or selectors\n--all        all suites in scope\n--force      force a real run; do not reuse last results\n--update-estimates  rewrite each manifest's expected duration from current DB averages; optional selectors; does not run tests\n--kernel     shutdown stops the test kernel; reboot stops then starts it; cannot combine with other arguments\n\nexamples:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "usage: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelectors (space-separated groups; comma-separated suites within a group; / and : are equivalent):\n  name              all suites in that group (e.g. shells/chat)\n  name:suite        a specific suite\n  name:suite:item   a specific subtest or test file\n\nWith no exact match, expands by prefix (shells → shells/chat, shells/social); globs (*, ?, **) also supported.\n\nDefault (bare fount test): plans failures/incomplete and stale items in one pass and runs them; failures only block their dependents — non-zero exit at the end. Never full-repo — use --all for that.\n\n--watch      keep watching; stays up even when the queue is empty (Ctrl+C to quit); cannot combine with --all, --force, --update-estimates, or selectors\n--all        all suites in scope\n--force      force a real run; do not reuse last results\n--update-estimates  rewrite each manifest's expected duration from current DB averages; optional selectors; does not run tests\n--list        list test suites (optional selectors to narrow scope); does not start the kernel or run tests\n--kernel     shutdown stops the test kernel; reboot stops then starts it; cannot combine with other arguments\n\nexamples:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "usage: fount test --watch (cannot be used with any other options)",
 			"updateEstimates": {
 				"incompatible": "usage: fount test --update-estimates [<groups>...] (cannot be used with any other flags)",
 				"summary": "Updated expected durations for ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); skipped ${skipped} with no baseline or already up to date"
+			},
+			"list": {
+				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (expected ${expected})"
 			},
 			"kernel": {
 				"incompatible": "usage: fount test --kernel shutdown|reboot (cannot be used with any other flags)",
@@ -2112,7 +2119,10 @@
 				"livePreview": "Live preview",
 				"languageVersion": "Language version",
 				"localeHint": "Click the label to switch or edit the code; press Enter in the input box at the end to copy it to a new language.",
-				"themeColorHint": "Used to generate textures when there is no custom banner, and also used for live sound wave loops",
+				"themeColor": {
+					"clear": "Restore the theme's default colour",
+					"hint": "Generates the texture when there is no custom banner, and is also used for live sound-wave loops. Leave empty to use the current theme colour."
+				},
 				"linksPreview": "${count} public links",
 				"unsavedHint": "Closing the window will discard unsaved changes",
 				"tagsLabel": "Label",
@@ -5775,6 +5785,12 @@
 			"title": "System Information",
 			"failed": "Failed to load system info"
 		},
+		"testStatus": {
+			"title": "Test Status",
+			"running": "Tests Running",
+			"idle": "Test Kernel Online (Idle)",
+			"queued": "Queued"
+		},
 		"connectivity": {
 			"backend": "Backend Connectivity",
 			"frontend": "Frontend Connectivity"
@@ -5782,6 +5798,7 @@
 		"loading": "Loading...",
 		"checking": "Checking...",
 		"failed": "Failed",
+		"linksCount": "${count} active connections",
 		"copySuccess": "Debug report copied to clipboard",
 		"copyFailed": "Failed to copy report",
 		"alreadyLatest": "Already the latest version",

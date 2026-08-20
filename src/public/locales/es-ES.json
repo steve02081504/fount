@@ -145,11 +145,18 @@
 			"replHint": "Enter para ejecutar · Shift+Enter para nueva línea"
 		},
 		"test": {
-			"help": "Uso: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelectores (grupos separados por espacios; suites del mismo grupo por comas; / y : equivalentes):\n  nombre            todas las suites del grupo (p. ej. shells/chat)\n  nombre:suite      una suite concreta\n  nombre:suite:ítem un subtest o archivo de prueba concreto\n\nSin coincidencia exacta, se expande por prefijo (shells → shells/chat, shells/social); también admite globs (*, ?, **).\n\nPor defecto (fount test sin más): planifica fallos/incompletos y obsoletos en un solo paso y los ejecuta; los fallos solo bloquean a sus dependientes — salida distinta de cero al final. Nunca todo el repositorio — usa --all para eso.\n\n--watch      vigilancia continua; no sale aunque la cola esté vacía (Ctrl+C para salir); no se combina con --all, --force, --update-estimates ni selectores\n--all        todas las suites del ámbito\n--force      ejecución forzada; no reutiliza resultados previos\n--update-estimates  reescribe expected en cada manifest según promedios actuales de la base; selectores opcionales; no ejecuta pruebas\n--kernel     shutdown detiene el kernel de pruebas; reboot lo detiene y lo vuelve a levantar; no se combina con otros argumentos\n\nejemplos:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "Uso: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelectores (grupos separados por espacios; suites del mismo grupo por comas; / y : equivalentes):\n  nombre            todas las suites del grupo (p. ej. shells/chat)\n  nombre:suite      una suite concreta\n  nombre:suite:ítem un subtest o archivo de prueba concreto\n\nSin coincidencia exacta, se expande por prefijo (shells → shells/chat, shells/social); también admite globs (*, ?, **).\n\nPor defecto (fount test sin más): planifica fallos/incompletos y obsoletos en un solo paso y los ejecuta; los fallos solo bloquean a sus dependientes — salida distinta de cero al final. Nunca todo el repositorio — usa --all para eso.\n\n--watch      vigilancia continua; no sale aunque la cola esté vacía (Ctrl+C para salir); no se combina con --all, --force, --update-estimates ni selectores\n--all        todas las suites del ámbito\n--force      ejecución forzada; no reutiliza resultados previos\n--update-estimates  reescribe expected en cada manifest según promedios actuales de la base; selectores opcionales; no ejecuta pruebas\n--list        enumera los conjuntos de pruebas (puede usar selectores para limitar el alcance); no inicia el kernel ni ejecuta las pruebas\n--kernel     shutdown detiene el kernel de pruebas; reboot lo detiene y lo vuelve a levantar; no se combina con otros argumentos\n\nejemplos:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Uso: fount test --watch (no se puede usar con ninguna otra opción)",
 			"updateEstimates": {
 				"incompatible": "Uso: fount test --update-estimates [<groups>...] (no se puede usar con ningún otro conmutador)",
 				"summary": "Duraciones previstas actualizadas en ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); omitidas ${skipped} sin baseline o ya actualizadas"
+			},
+			"list": {
+				"incompatible": "Uso: fount test --list [<groups>...] (no se puede usar con ninguna otra opción)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (esperado ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Uso: fount test --kernel shutdown|reboot (no se puede combinar con otras opciones)",
@@ -2112,7 +2119,10 @@
 				"livePreview": "Vista previa en vivo",
 				"languageVersion": "Versión de idioma",
 				"localeHint": "Haz clic en la etiqueta para cambiar o editar el código; presione Entrar en el cuadro de entrada al final para copiarlo a un nuevo idioma.",
-				"themeColorHint": "Se utiliza para generar texturas cuando no hay un banner personalizado y también se utiliza para bucles de ondas de sonido en vivo.",
+				"themeColor": {
+					"clear": "Restablecer el color predeterminado del tema",
+					"hint": "Se usa para generar texturas cuando no hay un banner personalizado y también para bucles de ondas de sonido en vivo. Déjalo vacío para usar el color actual del tema."
+				},
 				"linksPreview": "${count} enlaces públicos",
 				"unsavedHint": "Cerrar la ventana descartará los cambios no guardados.",
 				"tagsLabel": "Etiqueta",
@@ -5781,6 +5791,12 @@
 			"title": "Información del sistema",
 			"failed": "No se pudo cargar la información del sistema"
 		},
+		"testStatus": {
+			"title": "Estado de la prueba",
+			"running": "Prueba en ejecución",
+			"idle": "El kernel de pruebas está en línea (inactivo)",
+			"queued": "En cola"
+		},
 		"connectivity": {
 			"backend": "Conectividad Backend",
 			"frontend": "Conectividad Frontend"
@@ -5788,6 +5804,7 @@
 		"loading": "Cargando...",
 		"checking": "Comprobando...",
 		"failed": "Fallido",
+		"linksCount": "${count} conexiones activas",
 		"copySuccess": "Informe de depuración copiado al portapapeles",
 		"copyFailed": "Error al copiar el informe",
 		"alreadyLatest": "Ya es la última versión",

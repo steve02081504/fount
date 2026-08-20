@@ -5,6 +5,7 @@
  * 仅在输入区可见的禁用态（只读频道 / 疑似移出）传 `{ placeholder }` 对象键。
  * inbox / discovery / friends idle 等 surface 会隐藏 `.input-area`，无需解释文案。
  */
+import { onThemeChange } from '../../../../../scripts/theme/index.mjs'
 import { store } from '../core/state.mjs'
 
 const COMPOSER_TOOL_IDS = [
@@ -16,6 +17,52 @@ const COMPOSER_TOOL_IDS = [
 	'send-button',
 	'composer-more-button',
 ]
+
+// 主题切换会改变排版与间距，缓存的单行高度随之失效，需在下次对齐计算前清掉。
+onThemeChange(() => {
+	const input = document.getElementById('message-input')
+	if (input) delete input.dataset.singleLineHeight
+})
+
+/**
+ * 计算文本框单行高度（含 padding），作为判断多行的阈值。
+ * @param {HTMLTextAreaElement} input 消息输入框
+ * @returns {number} 单行高度
+ */
+function getSingleLineHeight(input) {
+	const cached = input.dataset.singleLineHeight
+	if (cached) return Number(cached)
+	const probe = input.cloneNode()
+	probe.value = 'M'
+	probe.removeAttribute('id')
+	probe.removeAttribute('name')
+	const computedStyle = getComputedStyle(input)
+	for (const prop of ['font-family', 'font-size', 'font-weight', 'line-height', 'letter-spacing', 'padding-top', 'padding-bottom', 'padding-left', 'padding-right', 'border-top-width', 'border-bottom-width', 'box-sizing'])
+		probe.style.setProperty(prop, computedStyle.getPropertyValue(prop))
+	probe.style.height = 'auto'
+	probe.style.position = 'fixed'
+	probe.style.left = '-9999px'
+	probe.style.top = '0'
+	probe.style.visibility = 'hidden'
+	probe.tabIndex = -1
+	input.parentNode.appendChild(probe)
+	const height = probe.scrollHeight
+	probe.remove()
+	input.dataset.singleLineHeight = String(height)
+	return height
+}
+
+/**
+ * 根据输入框行高切换主行对齐方式：单行居中，多行贴底。
+ * @returns {void}
+ */
+export function syncComposerAlignment() {
+	const row = document.getElementById('composer-main-row')
+	const input = document.getElementById('message-input')
+	const threshold = getSingleLineHeight(input)
+	if (threshold <= 0) return
+	row.classList.toggle('is-multiline', input.scrollHeight > threshold + 1)
+}
 
 /**
  * 启用/禁用 composer 工具控件（button 用 disabled；details/summary 用 inert + aria-disabled）。
@@ -82,6 +129,7 @@ export function enableComposer() {
 		if (el) setComposerToolEnabled(el, true)
 	}
 	refreshHubHeaderButtons()
+	syncComposerAlignment()
 }
 
 /**

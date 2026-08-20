@@ -3,6 +3,7 @@
  * 点踩为负向证据；所有计数信任加权；禁止裸全局计数。
  */
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
@@ -20,7 +21,7 @@ import { loadTaste, mutateTaste, resolveTasteAlias, tasteWeightOf } from './stor
 
 const JACCARD_MERGE = 0.45
 const SENIORITY_MIN_POSTS = 2
-const CLUSTER_STALE_MS = 6 * 60 * 60 * 1000
+const CLUSTER_STALE_MS = ms('6h')
 const MAX_POSTS_SCAN = 400
 const REACTION_PULL_ON_REBUILD = 30
 const LOCAL_MERGE_MIN_FIT = 0.55

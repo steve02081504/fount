@@ -45,7 +45,7 @@ export function buildReasoningDetailsMarkdown(sourceResult, renderOptions = {}) 
 	].filter(Boolean).join('\n\n')
 
 	return `\
-<details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-lg border border-base-content/20 bg-base-200/30"${open ? ' open' : ''}>
+<details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-box border border-base-content/20 bg-base-200/30"${open ? ' open' : ''}>
 
 	${reasoningSummaryHtml(renderOptions)}
 

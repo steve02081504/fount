@@ -6,9 +6,10 @@
  * 【数据结构】lastActivityByChannel Map；返回 channelId 列表。
  * 【关联】dag/materialize、channel_delete、scripts/p2p/event_types。
  */
+import { ms } from 'fount/scripts/ms.mjs'
 import { CHANNEL_GC_EXCLUDED_EVENT_TYPES } from '../dag/eventTypes.mjs'
 
-const GC_IDLE_MS = 30 * 24 * 3600 * 1000
+const GC_IDLE_MS = ms('30d')
 
 const CHANNEL_ACTIVITY_TYPES = new Set([
 	'message',

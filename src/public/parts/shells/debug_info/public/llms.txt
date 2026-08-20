@@ -16,7 +16,7 @@
 ## API
 
 ### GET /api/parts/shells:debug_info/system_info
-- 用途：服务器 / 运行环境系统信息。
+- 用途：服务器 / 运行环境系统信息，兼作后端连通性检查（npm Registry / Deno Land / jsDelivr / JSR / fount Network）。fount Network 读取节点常态链路维护中实测的邻居健康（`peer_health` 的 `listPeerHealth`）：有任一活跃邻居链路即判为连通，并显示最近一次实测 RTT；不主动建链探测。
 
 ### GET /api/parts/shells:debug_info/auto_update_enabled
 - 用途：当前是否启用自动更新。
@@ -26,3 +26,7 @@
 
 ### POST /api/parts/shells:debug_info/open_source
 - 用途：在本机打开源码目录（依赖本机环境）。
+
+### WS /ws/parts/shells:debug_info/test_status
+- 用途：订阅 fount test 内核运行状态。fount 后端先推一条 `{ type: 'snapshot', online, active, idle, runningSuites: [{ key, elapsedMs }], queuedSuites: [key] }`，随后转发内核实时事件（`queue-append` / `queue-remove` / `suite-start` / `suite-end` / `idle`）。
+- 前端连接始终保持：内核离线时不主动断开，后端每 10s 慢速重探一次并推送新快照，恢复上线即重建内核订阅；仅在客户端真正断开时前端才退避重连。

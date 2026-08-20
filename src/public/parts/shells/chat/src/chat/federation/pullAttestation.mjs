@@ -3,6 +3,7 @@
  */
 import { Buffer } from 'node:buffer'
 
+import { ms } from 'fount/scripts/ms.mjs'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { publicKeyFromSeed, sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 
@@ -10,7 +11,7 @@ import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 
 /** @typedef {import('npm:@steve02081504/fount-p2p/schemas/federation_pull').PullAttestation} PullAttestation */
 
-const ATTESTATION_MAX_SKEW_MS = 5 * 60 * 1000
+const ATTESTATION_MAX_SKEW_MS = ms('5m')
 const PULL_MEMBER_STATUSES = new Set(['active', 'left', 'kicked'])
 
 /**

@@ -70,12 +70,12 @@ function renderAttachmentsHtml(files, downloadLabel) {
 		else if (mime.startsWith('audio/'))
 			previewHtml = `<audio src="${safeUrl}" controls></audio>`
 		items.push(`
-			<div class="attachment" style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">
+			<div class="attachment" style="border: var(--border) solid var(--color-base-300); border-radius: var(--radius-field); padding: 10px; margin: 5px; display: inline-block; text-align: center; max-width: 200px;">
 				<div class="preview" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
 					${previewHtml}
 				</div>
 				<div class="file-name" style="font-size: 0.8em; margin-top: 5px; word-wrap: break-word;">${name}</div>
-				<a href="${safeUrl}" download="${name}" class="download-button" style="margin-top: 5px; display: inline-block; padding: 5px 10px; background-color: #007bff; color: white; text-decoration: none; border-radius: 3px;">${escapeHtml(downloadLabel)}</a>
+				<a href="${safeUrl}" download="${name}" class="download-button" style="margin-top: 5px; display: inline-block; padding: 5px 10px; background-color: var(--color-info); color: var(--color-info-content); text-decoration: none; border-radius: var(--radius-field);">${escapeHtml(downloadLabel)}</a>
 			</div>`)
 	}
 	if (!items.length) return ''
@@ -139,7 +139,15 @@ export function wrapStandaloneMarkdownDocument(messageHtml, options = {}) {
 		.markdown-code-block pre` : ''} {
 			margin: 0 !important;
 		}
-
+${hasCodeBlock ? `\
+		.markdown-code-block {
+			border-radius: var(--radius-box);
+			overflow: hidden;
+		}
+		.markdown-code-block[open] {
+			border-radius: var(--radius-box) var(--radius-box) 0 0;
+		}
+` : ''}
 		@media (max-width: 767px) {
 			.markdown-body {
 				padding: 15px;

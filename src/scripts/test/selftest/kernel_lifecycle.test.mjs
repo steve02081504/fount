@@ -9,7 +9,9 @@ import { join } from 'node:path'
 import { assertEquals, assertRejects } from 'jsr:@std/assert'
 import { execFile } from 'npm:@steve02081504/exec'
 
+import { ms } from '../../ms.mjs'
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
+import { waitUntil } from '../core/wait.mjs'
 import { startTestHub, testHubUrl } from '../hub/index.mjs'
 import { kernelHealthy, parseNetstatListenPid, rebootTestKernel, shutdownTestKernel } from '../kernel/ensure.mjs'
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
@@ -423,6 +425,53 @@ Deno.test('POST /shutdown rejects Origin-bearing requests', async () => {
 	}
 })
 
+Deno.test('GET /status reports running and queued suites', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 12,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+	})
+	try {
+		const idle = await fetch(`${handle.url}/status`)
+		assertEquals(idle.status, 200)
+		const idleBody = await idle.json()
+		assertEquals(idleBody.online, true)
+		assertEquals(idleBody.active, false)
+		assertEquals(idleBody.idle, true)
+		assertEquals(idleBody.runningSuites.length, 0)
+		assertEquals(idleBody.queuedSuites.length, 0)
+
+		const runningKey = 'testkit:__status__'
+		handle.kernel.running.set(runningKey, {
+			item: { key: runningKey },
+			startedAt: Date.now(),
+			checkDone: true,
+		})
+		const queuedKey = 'testkit:__status_q__'
+		handle.kernel.queues.enqueueCli({ key: queuedKey, viewerId: 'v', jobId: 'status' })
+
+		const active = await fetch(`${handle.url}/status`)
+		const activeBody = await active.json()
+		assertEquals(activeBody.online, true)
+		assertEquals(activeBody.active, true)
+		assertEquals(activeBody.idle, false)
+		assertEquals(activeBody.runningSuites[0]?.key, runningKey)
+		assertEquals(typeof activeBody.runningSuites[0]?.elapsedMs, 'number')
+		assertEquals(activeBody.queuedSuites, [queuedKey])
+
+		const prepKey = 'testkit:__status_prep__'
+		handle.kernel.queues.hitPrep(prepKey, 'fs_change')
+		const statusBody = await (await fetch(`${handle.url}/status`)).json()
+		assertEquals(statusBody.active, true)
+		assertEquals(statusBody.queuedSuites.includes(prepKey), true)
+	}
+	finally {
+		handle.kernel.running.delete('testkit:__status__')
+		await handle.close()
+	}
+})
+
 Deno.test('shutdownTestKernel returns already_down when nothing is listening', async () => {
 	assertEquals(await shutdownTestKernel({ port: CONTROL_PORT + 1, timeoutMs: 1000 }), 'already_down')
 })
@@ -798,5 +847,118 @@ Deno.test('promoted FS queue does not emit job-wait before discarding a blocked 
 	finally {
 		releaseBusy()
 		await handle.close()
+	}
+})
+
+Deno.test('idle clock starts when the run queue empties, not on a file change', async () => {
+	const root = join(tmpdir(), `fount-kernel-idle-clock-${Date.now()}`)
+	await mkdir(root, { recursive: true })
+	try {
+		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
+		assertEquals(init.code, 0)
+		const commit = await execFile('git', [
+			'-c', 'user.email=t@t', '-c', 'user.name=t',
+			'commit', '--allow-empty', '-m', 'init',
+		], { cwd: root })
+		assertEquals(commit.code, 0)
+		const handle = await startTestKernel({
+			port: CONTROL_PORT + 20,
+			repoRoot: root,
+			autoExit: false,
+			watchFs: false,
+			writeReport: false,
+			idleAllMs: ms('1h'),
+			prepSettleMs: 0,
+		})
+		try {
+			const triggeringPath = 'src/scripts/test/selftest/idle_clock.mjs'
+			const suite = {
+				manifestId: 'testkit',
+				name: '__idle_clock__',
+				run: ['true'],
+				triggers: [triggeringPath],
+				dependencies: [],
+				heavy: false,
+			}
+			handle.kernel.catalog.allSuites.push(suite)
+			handle.kernel.catalog.byKey.set('testkit:__idle_clock__', suite)
+			await new Promise(resolve => setTimeout(resolve, 20))
+			const before = handle.kernel.lastIdleAt
+			// 未命中任何套件的改动不得重置闲置计时。
+			handle.kernel.noteFileChange('docs/unrelated.md')
+			await new Promise(resolve => setTimeout(resolve, 20))
+			assertEquals(handle.kernel.lastIdleAt, before)
+			// 有工作在跑时队列非空；跑完清空后计时才重置。
+			handle.kernel.queues.enqueueFs('testkit:__idle_clock__', 'test')
+			handle.kernel.wake()
+			await waitUntil(() => handle.kernel.lastIdleAt > before, 4000)
+		}
+		finally {
+			await handle.close()
+		}
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('watch idle fires an automatic --all run after the idle window', async () => {
+	const root = join(tmpdir(), `fount-kernel-idle-all-${Date.now()}`)
+	await mkdir(root, { recursive: true })
+	try {
+		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
+		assertEquals(init.code, 0)
+		const commit = await execFile('git', [
+			'-c', 'user.email=t@t', '-c', 'user.name=t',
+			'commit', '--allow-empty', '-m', 'init',
+		], { cwd: root })
+		assertEquals(commit.code, 0)
+		const handle = await startTestKernel({
+			port: CONTROL_PORT + 21,
+			repoRoot: root,
+			autoExit: false,
+			watchFs: false,
+			writeReport: false,
+			idleAllMs: 200,
+		})
+		try {
+			const key = 'testkit:__idle_all__'
+			handle.kernel.catalog.allSuites.push({
+				manifestId: 'testkit',
+				name: '__idle_all__',
+				run: ['true'],
+				triggers: [],
+				dependencies: [],
+				heavy: false,
+			})
+			handle.kernel.catalog.byKey.set(key, {
+				manifestId: 'testkit',
+				name: '__idle_all__',
+				run: ['true'],
+				triggers: [],
+				dependencies: [],
+				heavy: false,
+			})
+			const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+			await new Promise((resolve, reject) => {
+				ws.addEventListener('open', resolve, { once: true })
+				ws.addEventListener('error', reject, { once: true })
+			})
+			const started = new Promise(resolve => {
+				ws.addEventListener('message', event => {
+					const message = JSON.parse(String(event.data))
+					if (message.type === 'suite-start' && message.key === key) resolve()
+				})
+			})
+			ws.send(JSON.stringify({ type: 'hello', watch: true }))
+			await awaitWithTimeout(started, 'idle-all did not run its suite', 4000)
+			ws.close()
+		}
+		finally {
+			await handle.close()
+		}
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
 	}
 })

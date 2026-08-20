@@ -145,11 +145,18 @@
 			"replHint": "Enter للتشغيل · Shift+Enter لسطر جديد"
 		},
 		"test": {
-			"help": "الاستخدام: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nالمحددات (المجموعات مفصولة بمسافات؛ الحزم في المجموعة نفسها بفواصل؛ / و : متكافئان):\n  الاسم             كل حزم المجموعة (مثل shells/chat)\n  الاسم:suite       حزمة محددة\n  الاسم:suite:عنصر اختبار فرعي أو ملف اختبار محدد\n\nعند عدم وجود تطابق تام، يتم التوسيع حسب البادئة (shells → shells/chat، shells/social)؛ كما يدعم glob (*، ?، **).\n\nالافتراضي (fount test فقط): يخطط للفشل/غير المكتمل والقديم في مرور واحد وينفذه؛ الفشل يحجب التبعيات فقط — خروج غير صفري في النهاية. لا يشغّل المستودع كاملاً — استخدم --all لذلك.\n\n--watch      مراقبة مستمرة؛ يبقى نشطاً حتى مع طابور فارغ (Ctrl+C للخروج)؛ لا يُجمع مع --all أو --force أو --update-estimates أو المحددات\n--all        كل الحزم ضمن النطاق\n--force      تشغيل إجباري؛ لا يعيد استخدام النتائج السابقة\n--update-estimates  يعيد كتابة expected في كل manifest من متوسطات قاعدة البيانات الحالية؛ محددات اختيارية؛ لا يشغّل الاختبارات\n--kernel     shutdown يوقف نواة الاختبار؛ reboot يوقفها ثم يعيد تشغيلها؛ لا يُجمع مع وسائط أخرى\n\nأمثلة:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "الاستخدام: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nالمحددات (المجموعات مفصولة بمسافات؛ الحزم في المجموعة نفسها بفواصل؛ / و : متكافئان):\n  الاسم             كل حزم المجموعة (مثل shells/chat)\n  الاسم:suite       حزمة محددة\n  الاسم:suite:عنصر اختبار فرعي أو ملف اختبار محدد\n\nعند عدم وجود تطابق تام، يتم التوسيع حسب البادئة (shells → shells/chat، shells/social)؛ كما يدعم glob (*، ?، **).\n\nالافتراضي (fount test فقط): يخطط للفشل/غير المكتمل والقديم في مرور واحد وينفذه؛ الفشل يحجب التبعيات فقط — خروج غير صفري في النهاية. لا يشغّل المستودع كاملاً — استخدم --all لذلك.\n\n--watch      مراقبة مستمرة؛ يبقى نشطاً حتى مع طابور فارغ (Ctrl+C للخروج)؛ لا يُجمع مع --all أو --force أو --update-estimates أو المحددات\n--all        كل الحزم ضمن النطاق\n--force      تشغيل إجباري؛ لا يعيد استخدام النتائج السابقة\n--update-estimates  يعيد كتابة expected في كل manifest من متوسطات قاعدة البيانات الحالية؛ محددات اختيارية؛ لا يشغّل الاختبارات\n--list        يسرد مجموعات الاختبار (يمكن استخدام المحددات لتضييق النطاق)؛ لا يبدأ النواة ولا يشغّل الاختبارات\n--kernel     shutdown يوقف نواة الاختبار؛ reboot يوقفها ثم يعيد تشغيلها؛ لا يُجمع مع وسائط أخرى\n\nأمثلة:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "الاستخدام: fount test --watch (لا يمكن استخدامه مع أي خيارات أخرى)",
 			"updateEstimates": {
 				"incompatible": "الاستخدام: fount test --update-estimates [<groups>...] (لا يمكن استخدامه مع أي مفاتيح أخرى)",
 				"summary": "تم تحديث المدد المتوقعة لـ ${suitesUpdated} حزمة (${filesChanged} manifest)؛ تم تخطي ${skipped} بلا خط أساس أو محدّثة مسبقاً"
+			},
+			"list": {
+				"incompatible": "الاستخدام: fount test --list [<groups>...] (لا يمكن استخدامه مع أي مفاتيح أخرى)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (المتوقع ${expected})"
 			},
 			"kernel": {
 				"incompatible": "الاستخدام: fount test --kernel shutdown|reboot (لا يمكن دمجه مع خيارات أخرى)",
@@ -2112,7 +2119,10 @@
 				"livePreview": "معاينة حية",
 				"languageVersion": "نسخة اللغة",
 				"localeHint": "انقر فوق الملصق لتبديل الرمز أو تحريره؛ اضغط على Enter في مربع الإدخال في النهاية لنسخه إلى لغة جديدة.",
-				"themeColorHint": "يستخدم لإنشاء الأنسجة عندما لا يكون هناك شعار مخصص، ويستخدم أيضًا في حلقات الموجات الصوتية الحية",
+				"themeColor": {
+					"clear": "استعادة اللون الافتراضي للموضوع",
+					"hint": "يُستخدم لتوليد النسيج عند عدم وجود شعار مخصص، وأيضًا في حلقات الموجات الصوتية الحية. اتركه فارغًا لاستخدام لون السمة الحالي."
+				},
 				"linksPreview": "${count} روابط عامة",
 				"unsavedHint": "سيؤدي إغلاق النافذة إلى تجاهل التغييرات غير المحفوظة",
 				"tagsLabel": "ملصق",
@@ -5775,6 +5785,12 @@
 			"title": "معلومات النظام",
 			"failed": "فشل تحميل معلومات النظام"
 		},
+		"testStatus": {
+			"title": "حالة الاختبار",
+			"running": "جارٍ تشغيل الاختبارات",
+			"idle": "النواة متصلة (خاملة)",
+			"queued": "في قائمة الانتظار"
+		},
 		"connectivity": {
 			"backend": "اتصال الواجهة الخلفية",
 			"frontend": "اتصال الواجهة الأمامية"
@@ -5782,6 +5798,7 @@
 		"loading": "تحميل...",
 		"checking": "جارٍ التحقق...",
 		"failed": "فشل",
+		"linksCount": "${count} اتصالات نشطة",
 		"copySuccess": "تم نسخ تقرير التصحيح إلى الحافظة",
 		"copyFailed": "فشل نسخ التقرير",
 		"alreadyLatest": "بالفعل أحدث إصدار",

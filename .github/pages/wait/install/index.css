@@ -78,7 +78,7 @@ body.scroll-lock {
 /* Theme Preview Styles */
 .theme-preview-card {
 	overflow: hidden;
-	border-radius: 0.5rem;
+	border-radius: var(--radius-box);
 	transition: transform 0.2s;
 	min-height: 70px;
 }
@@ -285,7 +285,7 @@ body.scroll-lock {
 .utm-welcome-message code {
 	display: inline-block;
 	padding: 0.1em 0.45em;
-	border-radius: 0.4em;
+	border-radius: var(--radius-field);
 	font-weight: 600;
 	color: var(--color-primary);
 	background: color-mix(in oklab, var(--color-primary) 12%, var(--color-base-200));
@@ -364,7 +364,7 @@ body.scroll-lock {
 	bottom: var(--cool-notice-pad);
 	overflow: hidden;
 	isolation: isolate;
-	border-radius: 1rem;
+	border-radius: var(--radius-box);
 	color: var(--color-base-content);
 	background: transparent;
 	box-shadow:
@@ -388,7 +388,7 @@ body.scroll-lock {
 	position: absolute;
 	inset: 3px;
 	z-index: -1;
-	border-radius: calc(1rem - 2px);
+	border-radius: calc(var(--radius-box) - 2px);
 	background:
 		radial-gradient(120% 180% at 0% 0%, color-mix(in oklab, var(--color-warning) 28%, transparent), transparent 55%),
 		radial-gradient(90% 140% at 100% 120%, color-mix(in oklab, var(--color-primary) 22%, transparent), transparent 50%),
@@ -424,16 +424,17 @@ body.cool-notice-open {
 	place-items: center;
 	min-width: 4.6rem;
 	padding: 0.35rem 0.55rem;
-	border: 3px solid #e11d48;
-	border-radius: 0.35rem;
-	color: #e11d48;
+	/* theme-radius-ignore */
+	border: 3px solid var(--color-error);
+	border-radius: var(--radius-field);
+	color: var(--color-error);
 	font-size: 0.78rem;
 	font-weight: 800;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	text-decoration: line-through;
 	text-decoration-thickness: 0.18em;
-	box-shadow: 0 0 0 3px color-mix(in oklab, #e11d48 18%, transparent);
+	box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-error) 18%, transparent);
 	animation: cool-notice-badge 1.6s ease-in-out infinite;
 }
 

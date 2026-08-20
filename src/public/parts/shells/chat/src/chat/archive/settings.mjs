@@ -1,3 +1,5 @@
+import { ms } from 'fount/scripts/ms.mjs'
+
 /**
  * 群设置中的帖子归档/热区参数解析。
  */
@@ -23,7 +25,7 @@ export function archiveSettingsFromGroup(groupSettings = {}) {
 }
 
 /** 归档分桶允许的 wall 与本地时钟最大偏差（约 1 个自然月） */
-export const ARCHIVE_MONTH_WALL_MAX_SKEW_MS = 32 * 24 * 60 * 60 * 1000
+export const ARCHIVE_MONTH_WALL_MAX_SKEW_MS = ms('32d')
 
 /**
  * 将不可信 HLC wall 钳制到可信窗口，防止恶意分桶碎片化。

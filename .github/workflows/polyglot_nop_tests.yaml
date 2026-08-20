@@ -1,5 +1,8 @@
 name: Polyglot NOP Tests
 
+env:
+  FOUNT_ACCEPT_EULA: "1"
+
 on:
   workflow_dispatch:
   pull_request:
@@ -291,6 +294,12 @@ jobs:
           curl -fsSL https://deno.land/install.sh | sh
           echo "$HOME/.deno/bin" >> "$GITHUB_PATH"
 
+      - name: Apply repo deno version pin
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/workflows/scripts/apply_deno_version.sh
+
       - name: Run Deno launcher (nop)
         shell: bash
         run: deno run -A ./path/fount.mjs nop
@@ -386,6 +395,12 @@ jobs:
         run: |
           curl -fsSL https://deno.land/install.sh | sh
           echo "$HOME/.deno/bin" >> "$GITHUB_PATH"
+
+      - name: Apply repo deno version pin
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/workflows/scripts/apply_deno_version.sh
 
       - name: Run deno task (nop)
         shell: bash
@@ -776,6 +791,8 @@ jobs:
               build: .
               image: fount-ci
               command: ["nop"]
+              environment:
+                FOUNT_ACCEPT_EULA: "1"
           EOF
 
       - name: Run docker compose up (nop)

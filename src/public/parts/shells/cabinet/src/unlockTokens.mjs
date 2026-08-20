@@ -1,9 +1,11 @@
 import { randomBytes } from 'node:crypto'
 
+import { ms } from 'fount/scripts/ms.mjs'
+
 /** @type {Map<string, { folder_key: Buffer, cabinet_id: string, folder_id: string, entity_hash: string, expires_at: number }>} */
 const tokens = new Map()
 
-const TTL_MS = 15 * 60 * 1000
+const TTL_MS = ms('15m')
 
 /**
  * @returns {void}

@@ -145,11 +145,18 @@
 			"replHint": "Enter zum Ausführen · Shift+Enter für Zeilenumbruch"
 		},
 		"test": {
-			"help": "Verwendung: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelektoren (Gruppen durch Leerzeichen getrennt; Suites in einer Gruppe durch Komma; / und : gleichwertig):\n  Name              alle Suites der Gruppe (z. B. shells/chat)\n  Name:suite        bestimmte Suite\n  Name:suite:Eintrag bestimmter Subtest oder Testdatei\n\nOhne exakte Übereinstimmung per Präfix erweitern (shells → shells/chat, shells/social); Globs (*, ?, **) unterstützt.\n\nStandard (nur fount test): plant Fehler/Unvollständiges und Veraltetes in einem Durchlauf und führt sie aus; Fehler blockieren nur abhängige Slots — am Ende nicht-null Exit. Der Standardbefehl führt nicht das komplette Repository aus; für einen vollständigen Lauf --all verwenden.\n\n--watch      dauerhaft beobachten; bleibt aktiv, auch wenn die Warteschlange leer ist (Ctrl+C beendet); nicht mit --all, --force, --update-estimates oder Selektoren kombinierbar\n--all        führt alle Suites aus\n--force      erzwingt echten Lauf; letzte Ergebnisse nicht wiederverwenden\n--update-estimates  schreibt expected in jedem Manifest aus aktuellen DB-Durchschnittszeiten zurück; optionale Selektoren; führt keine Tests aus\n--kernel     shutdown beendet den Testkernel; reboot beendet und startet neu; nicht mit anderen Argumenten kombinierbar\n\nBeispiele:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "Verwendung: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSelektoren (Gruppen durch Leerzeichen getrennt; Suites in einer Gruppe durch Komma; / und : gleichwertig):\n  Name              alle Suites der Gruppe (z. B. shells/chat)\n  Name:suite        bestimmte Suite\n  Name:suite:Eintrag bestimmter Subtest oder Testdatei\n\nOhne exakte Übereinstimmung per Präfix erweitern (shells → shells/chat, shells/social); Globs (*, ?, **) unterstützt.\n\nStandard (nur fount test): plant Fehler/Unvollständiges und Veraltetes in einem Durchlauf und führt sie aus; Fehler blockieren nur abhängige Slots — am Ende nicht-null Exit. Der Standardbefehl führt nicht das komplette Repository aus; für einen vollständigen Lauf --all verwenden.\n\n--watch      dauerhaft beobachten; bleibt aktiv, auch wenn die Warteschlange leer ist (Ctrl+C beendet); nicht mit --all, --force, --update-estimates oder Selektoren kombinierbar\n--all        führt alle Suites aus\n--force      erzwingt echten Lauf; letzte Ergebnisse nicht wiederverwenden\n--update-estimates  schreibt expected in jedem Manifest aus aktuellen DB-Durchschnittszeiten zurück; optionale Selektoren; führt keine Tests aus\n--list        listet die Test-Suites auf (kann Selektoren verwenden, um den Umfang einzugrenzen); startet den Kernel nicht und führt keine Tests aus\n--kernel     shutdown beendet den Testkernel; reboot beendet und startet neu; nicht mit anderen Argumenten kombinierbar\n\nBeispiele:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Verwendung: fount test --watch (nicht mit anderen Optionen kombinierbar)",
 			"updateEstimates": {
 				"incompatible": "Verwendung: fount test --update-estimates [<groups>...] (nicht mit anderen Schaltern kombinierbar)",
 				"summary": "Erwartete Laufzeiten für ${suitesUpdated} Suite(s) aktualisiert (${filesChanged} Manifest(e)); ${skipped} ohne Baseline oder bereits aktuell übersprungen"
+			},
+			"list": {
+				"incompatible": "Verwendung: fount test --list [<groups>...] (nicht mit anderen Schaltern kombinierbar)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (erwartet ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Verwendung: fount test --kernel shutdown|reboot (nicht mit anderen Optionen kombinierbar)",
@@ -2112,7 +2119,10 @@
 				"livePreview": "Live-Vorschau",
 				"languageVersion": "Sprachversion",
 				"localeHint": "Klicken Sie auf die Beschriftung, um den Code zu ändern oder zu bearbeiten. Drücken Sie am Ende im Eingabefeld die Eingabetaste, um es in eine neue Sprache zu kopieren.",
-				"themeColorHint": "Wird zum Generieren von Texturen verwendet, wenn kein benutzerdefiniertes Banner vorhanden ist, und wird auch für Live-Schallwellenschleifen verwendet",
+				"themeColor": {
+					"clear": "Standardfarbe des Themes wiederherstellen",
+					"hint": "Wird verwendet, um Texturen zu erzeugen, wenn kein benutzerdefiniertes Banner vorhanden ist, sowie für Live-Schallwellenschleifen. Leer lassen, um die aktuelle Theme-Farbe zu verwenden."
+				},
 				"linksPreview": "${count} Öffentliche Links",
 				"unsavedHint": "Durch das Schließen des Fensters werden nicht gespeicherte Änderungen verworfen",
 				"tagsLabel": "Etikett",
@@ -5775,6 +5785,12 @@
 			"title": "Systeminformationen",
 			"failed": "Systeminformationen konnten nicht geladen werden"
 		},
+		"testStatus": {
+			"title": "Teststatus",
+			"running": "Tests laufen",
+			"idle": "Testkernel ist online (inaktiv)",
+			"queued": "In der Warteschlange"
+		},
 		"connectivity": {
 			"backend": "Backend-Konnektivität",
 			"frontend": "Front-End-Konnektivität"
@@ -5782,6 +5798,7 @@
 		"loading": "Laden...",
 		"checking": "Überprüfung...",
 		"failed": "Fehlgeschlagen",
+		"linksCount": "${count} aktive Verbindungen",
 		"copySuccess": "Debug-Bericht in die Zwischenablage kopiert",
 		"copyFailed": "Fehler beim Kopieren des Berichts",
 		"alreadyLatest": "Bereits die neueste Version",

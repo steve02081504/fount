@@ -83,7 +83,7 @@ function rehypeSpoiler() {
 					tagName: 'span',
 					properties: {
 						className: ['spoiler'],
-						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: 3px;',
+						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: var(--radius-field);',
 						onclick: 'this.removeAttribute("style"); this.removeAttribute("onclick");'
 					},
 					children: [{ type: 'text', value: spoilerText }]
@@ -109,7 +109,7 @@ function rehypeSpoiler() {
 					tagName: 'span',
 					properties: {
 						className: ['spoiler'],
-						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: 3px;',
+						style: 'background-color: var(--color-base-content); color: transparent; user-select: none; cursor: pointer; border-radius: var(--radius-field);',
 						onclick: 'this.removeAttribute("style"); this.removeAttribute("onclick");'
 					},
 					children: [{ type: 'text', value: spoilerText }]
@@ -1276,7 +1276,7 @@ export async function GetMarkdownConvertor({
 	markdown_style.textContent = /* css */ `\
 .markdown-body {
 	color: var(--color-base-content);
-	background-color: #11451400;
+	background-color: transparent;
 }
 
 .markdown-body .join-item,
@@ -1284,6 +1284,13 @@ export async function GetMarkdownConvertor({
 .markdown-code-block,
 .markdown-code-block pre {
 	margin: 0;
+}
+.markdown-code-block {
+	border-radius: var(--radius-box);
+	overflow: hidden;
+}
+.markdown-code-block[open] {
+	border-radius: var(--radius-box) var(--radius-box) 0 0;
 }
 
 .markdown-body img {
@@ -1304,7 +1311,7 @@ export async function GetMarkdownConvertor({
 .markdown-body span[data-rehype-pretty-code-figure] > code {
 	display: inline;
 	padding: 0.2em 0.4em;
-	border-radius: 6px;
+	border-radius: var(--radius-field);
 }
 
 [color-scheme*="light"] [style*="--shiki-light"][style*="--shiki-dark"] {

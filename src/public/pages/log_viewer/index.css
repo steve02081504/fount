@@ -9,7 +9,7 @@
 	justify-content: space-between;
 	padding: 1px 8px 1px 6px;
 	min-height: 20px;
-	border-bottom: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 7%, transparent);
+	border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content, currentColor) 7%, transparent);
 	gap: 8px;
 	line-height: 1.5;
 	position: relative;
@@ -21,6 +21,7 @@
 
 .log-level-warn {
 	background-color: color-mix(in oklch, var(--color-warning, #f59e0b) 8%, transparent);
+	/* theme-radius-ignore */
 	border-left: 3px solid var(--color-warning, #f59e0b);
 }
 
@@ -30,6 +31,7 @@
 
 .log-level-error {
 	background-color: color-mix(in oklch, var(--color-error, #ef4444) 8%, transparent);
+	/* theme-radius-ignore */
 	border-left: 3px solid var(--color-error, #ef4444);
 }
 
@@ -38,6 +40,7 @@
 }
 
 .log-level-info {
+	/* theme-radius-ignore */
 	border-left: 3px solid var(--color-info, #3b82f6);
 }
 
@@ -47,6 +50,7 @@
 
 .log-row.log-level-log,
 .log-row.log-level-stdout {
+	/* theme-radius-ignore */
 	border-left: 3px solid transparent;
 }
 
@@ -230,7 +234,7 @@
 	align-items: center;
 	gap: 6px;
 	padding: 4px 6px;
-	border-bottom: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 10%, transparent);
+	border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content, currentColor) 10%, transparent);
 	flex-wrap: wrap;
 }
 
@@ -240,8 +244,8 @@
 	font-family: inherit;
 	font-size: 12px;
 	padding: 2px 6px;
-	border-radius: 4px;
-	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
+	border-radius: var(--radius-field);
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
 	background: transparent;
 	color: inherit;
 	outline: none;
@@ -259,8 +263,8 @@
 .log-level-btn {
 	font-size: 11px;
 	padding: 1px 7px;
-	border-radius: 3px;
-	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
+	border-radius: var(--radius-field);
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
 	background: transparent;
 	cursor: pointer;
 	opacity: 0.65;
@@ -301,8 +305,8 @@
 .log-clear-btn {
 	font-size: 11px;
 	padding: 1px 7px;
-	border-radius: 3px;
-	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
+	border-radius: var(--radius-field);
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content, currentColor) 20%, transparent);
 	background: transparent;
 	cursor: pointer;
 	opacity: 0.65;
@@ -317,7 +321,7 @@
 /* REPL 输入（贴日志区底部，风格对齐 CLI log_viewer） */
 .repl-panel {
 	flex-shrink: 0;
-	border-top: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 12%, transparent);
+	border-top: var(--border) solid color-mix(in oklch, var(--color-base-content, currentColor) 12%, transparent);
 	background: color-mix(in oklch, var(--color-base-content, currentColor) 2.5%, var(--color-base-100, #fff));
 }
 
@@ -355,7 +359,7 @@
 .repl-frame-line {
 	flex: 1;
 	min-width: 8px;
-	border-top: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 22%, transparent);
+	border-top: var(--border) solid color-mix(in oklch, var(--color-base-content, currentColor) 22%, transparent);
 	margin: 0 4px;
 	height: 0;
 	align-self: center;
@@ -472,7 +476,7 @@
 	list-style: none;
 	font: inherit;
 	background: var(--color-base-100, #fff);
-	border: 1px solid color-mix(in oklch, var(--color-base-content, currentColor) 18%, transparent);
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content, currentColor) 18%, transparent);
 	border-radius: var(--radius-box, 0.5rem);
 	box-shadow: 0 4px 16px color-mix(in oklch, var(--color-base-content, currentColor) 12%, transparent);
 	max-height: 12rem;
