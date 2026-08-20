@@ -5798,7 +5798,7 @@
 		"loading": "⏳…",
 		"checking": "🔎…",
 		"failed": "❌",
-		"linksCount": "${count} 条活动连接",
+		"linksCount": "${count} 🔗",
 		"copySuccess": "✅📋",
 		"copyFailed": "❌📋",
 		"alreadyLatest": "👍",
