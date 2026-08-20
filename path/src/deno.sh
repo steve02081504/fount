@@ -178,7 +178,12 @@ base_deno_upgrade() {
 				get_i18n 'deno.upgradeFailedTermux'
 				rm -rf "$HOME/.deno"
 				install_deno
-				return $?
+				run_deno upgrade -q "${upgrade_args[@]}" 2> >(tee /dev/stderr)
+				deno_upgrade_exit_code=$?
+				if [[ $deno_upgrade_exit_code -ne 0 ]]; then
+					return 1
+				fi
+				return 0
 			else
 				print_i18n_yellow 'deno.upgradeFailed' >&2
 				return 1

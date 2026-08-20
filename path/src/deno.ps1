@@ -24,10 +24,10 @@ function script:deno_upgrade([string]$Channel) {
 	$pinned = deno_pinned_spec
 	if ($pinned) {
 		if ($pinned -match '^pr\s+([0-9]+)$') {
-			$errorOut = deno upgrade -q 'pr' $Matches[1] 2>&1
+			deno upgrade -q 'pr' $Matches[1] 2>&1 | Out-Null
 		}
 		else {
-			$errorOut = deno upgrade -q $pinned 2>&1
+			deno upgrade -q $pinned 2>&1 | Out-Null
 		}
 		if ($LastExitCode) {
 			Write-Warning (Get-I18n -key 'deno.upgradeFailed')

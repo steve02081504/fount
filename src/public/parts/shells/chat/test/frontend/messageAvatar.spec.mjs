@@ -59,13 +59,13 @@ test.describe('Chat message avatar grouping', () => {
 		await expect(row).toHaveClass(/last-in-group/)
 		const avatar = row.locator('.chat-image')
 
-		// 滚动到消息下段（约 3/4 处），消息底边仍在可视区之下：
+		// 滚动到消息底边（略低于可视区底缘），消息底边仍在可视区之下：
 		// sticky 应把头像钉在可视区底部；若包含块被网格限制在消息中段则头像会停在中段/移出可视区。
 		const messageId = await row.getAttribute('data-message-id')
 		const box = await page.evaluate((messageId) => {
 			const container = document.querySelector('#messages')
 			const r = container.querySelector(`.message-row.last-in-group[data-message-id="${messageId}"]`)
-			container.scrollTop = r.offsetTop + r.offsetHeight * 0.75
+			container.scrollTop = (r.offsetTop + r.offsetHeight) - container.clientHeight - 40
 			const a = r.querySelector('.chat-image')
 			const rect = a.getBoundingClientRect()
 			const rowRect = r.getBoundingClientRect()
