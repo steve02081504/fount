@@ -10,6 +10,24 @@ import {
 } from './fixtures.mjs'
 
 test.describe('Chat hub navigation', () => {
+	test('rapid inbox/group switching keeps surface consistent', async ({ page, baseUrl, apiKey }) => {
+		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		const groupItem = page.locator(`#server-list .server-item[data-group-id="${groupId}"]`)
+		await expect(groupItem).toBeVisible({ timeout: 60_000 })
+		// 快速在 inbox 与群之间来回点击，触发 selectGroup 异步竞态
+		for (let i = 0; i < 3; i++) {
+			await page.locator('.server-inbox').click()
+			await groupItem.click()
+		}
+		await page.locator('.server-inbox').click()
+		// 最终应稳定落在 inbox：surface 正确、频道栏隐藏、inbox 面板可见
+		await expect(page).toHaveURL(/#inbox/)
+		await expect(page.locator('.inbox-panel')).toBeVisible({ timeout: 60_000 })
+		await expect(page.locator('body')).toHaveAttribute('data-surface', 'inbox')
+		await expect(page.locator('#channel-bar')).toBeHidden()
+		await expect(page.locator('.main-header')).toBeHidden()
+	})
+
 	test('switches between groups and friends mode', async ({ page, baseUrl, apiKey }) => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await page.locator('.server-item[data-mode="friends"]').click()
