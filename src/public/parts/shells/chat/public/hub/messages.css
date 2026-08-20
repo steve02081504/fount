@@ -30,7 +30,7 @@
 	margin: 0;
 }
 
-.chat.message-row:not(.first-in-group) .chat-header {
+#messages .chat.message-row:not(.first-in-group) .chat-header {
 	display: none;
 }
 
