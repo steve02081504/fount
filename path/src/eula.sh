@@ -128,10 +128,14 @@ ensure_fount_config() {
 confirm_fount_eula() {
 	if fount_eula_env_accepted; then return 0; fi
 	if [[ -n "${EULA_ACCEPT_FILE:-}" && -f "$EULA_ACCEPT_FILE" ]]; then return 0; fi
-	if [[ ! -r /dev/tty ]]; then
+	# Open the controlling terminal once. With no usable tty (e.g. a CI runner
+	# where /dev/tty exists but has no controlling session) this fails with
+	# ENXIO — the only reliable signal before we loop for input. fd 9 keeps it
+	# compatible with macOS' ancient bash 3.2 (no dynamic {fd} allocation).
+	if ! exec 9</dev/tty; then
 		print_i18n_red 'eula.required' >&2
 		echo "$FOUNT_EULA_URL" >&2
-		return 1
+		exit 1
 	fi
 	get_i18n 'eula.prompt'
 	if [ -t 1 ]; then
@@ -143,17 +147,20 @@ confirm_fount_eula() {
 	local key=""
 	while true; do
 		if [[ -f "$EULA_ACCEPT_FILE" ]]; then
+			exec 9<&-
 			echo Y
 			return 0
 		fi
-		if read -r -t 1 -n 1 -s key </dev/tty 2>/dev/null; then
+		if read -r -t 1 -n 1 -s key <&9; then
 			case "$key" in
 			y | Y)
 				: >"$EULA_ACCEPT_FILE"
+				exec 9<&-
 				echo Y
 				return 0
 				;;
 			n | N)
+				exec 9<&-
 				echo N
 				return 1
 				;;
