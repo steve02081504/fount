@@ -33,10 +33,13 @@ test.describe('Chat message avatar grouping', () => {
 		await expect(rows[1]).not.toHaveClass(/last-in-group/)
 		await expect(rows[1].locator('.chat-image')).toBeHidden()
 
-		// 昵称行只出现在分组首条消息
+		// 昵称行只出现在分组首条消息（first-in-group 仅作分组标记校验）
 		await expect(rows[0]).toHaveClass(/first-in-group/)
+		await expect(rows[0].locator('.message-author')).toBeVisible()
 		await expect(rows[1]).not.toHaveClass(/first-in-group/)
+		await expect(rows[1].locator('.message-author')).toBeHidden()
 		await expect(rows[2]).not.toHaveClass(/first-in-group/)
+		await expect(rows[2].locator('.message-author')).toBeHidden()
 	})
 
 	test('single message carries both first-in-group and last-in-group with a visible avatar', async ({ page, groupChannel }) => {
@@ -64,18 +67,18 @@ test.describe('Chat message avatar grouping', () => {
 		const messageId = await row.getAttribute('data-message-id')
 		const box = await page.evaluate((messageId) => {
 			const container = document.querySelector('#messages')
-			const r = container.querySelector(`.message-row.last-in-group[data-message-id="${messageId}"]`)
-			container.scrollTop = (r.offsetTop + r.offsetHeight) - container.clientHeight - 40
-			const a = r.querySelector('.chat-image')
-			const rect = a.getBoundingClientRect()
-			const rowRect = r.getBoundingClientRect()
+			const messageRow = container.querySelector(`.message-row.last-in-group[data-message-id="${messageId}"]`)
+			container.scrollTop = (messageRow.offsetTop + messageRow.offsetHeight) - container.clientHeight - 40
+			const avatarElement = messageRow.querySelector('.chat-image')
+			const rect = avatarElement.getBoundingClientRect()
+			const rowRect = messageRow.getBoundingClientRect()
 			const containerRect = container.getBoundingClientRect()
 			return {
 				containerBottom: containerRect.bottom,
 				rowBottom: rowRect.bottom,
 				avatarY: rect.y,
 				avatarH: rect.height,
-				alignSelf: window.getComputedStyle(a).alignSelf,
+				alignSelf: window.getComputedStyle(avatarElement).alignSelf,
 			}
 		}, messageId)
 		await expect(avatar).toBeVisible()

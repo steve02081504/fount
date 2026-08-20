@@ -1,8 +1,8 @@
 ﻿function script:deno_pinned_spec {
 	$pinFile = Join-Path $FOUNT_DIR '.deno-version'
 	if (Test-Path -LiteralPath $pinFile) {
-		$spec = (Get-Content -LiteralPath $pinFile -TotalCount 1).Trim()
-		if ($spec) { return $spec }
+		$spec = Get-Content -LiteralPath $pinFile -TotalCount 1
+		if ($spec) { return $spec.Trim() }
 	}
 	return $null
 }
