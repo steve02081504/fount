@@ -157,7 +157,7 @@ export async function init(start_config) {
 		}
 		if (start_config.needs_output) logoPromise = runSimpleWorker('logogener')
 		starts.Base = Object(starts.Base)
-		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate', 'Tips']) starts.Base[base] ??= true
+		for (const base of ['Jobs', 'Timers', 'Idle', 'AutoUpdate', 'HeapGrowthMonitor', 'Tips']) starts.Base[base] ??= true
 		console.freshLineI18n('server start', 'fountConsole.server.start')
 	}
 
@@ -364,6 +364,8 @@ export async function init(start_config) {
 			import('./timers.mjs').then(({ startTimerHeartbeat }) => startTimerHeartbeat())
 		if (starts.Base.AutoUpdate)
 			import('./autoupdate.mjs').then(({ enableAutoUpdate }) => enableAutoUpdate())
+		if (starts.Base.HeapGrowthMonitor)
+			import('./heapGrowthMonitor.mjs').then(({ startHeapGrowthMonitor }) => startHeapGrowthMonitor({ config, data_path, getMemoryUsage }))
 		import('./idle.mjs').then(({ startIdleCheck, onIdle }) => {
 			if (starts.Base.Idle) startIdleCheck()
 			onIdle(setDefaultStuff)

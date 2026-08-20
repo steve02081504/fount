@@ -49,6 +49,15 @@
 				"restarting": "发现新版本，正在重启更新..."
 			}
 		},
+		"heapGrowth": {
+			"alreadyReported": "本次提交 ${commit} 已上报过堆增长，跳过",
+			"snapshotSaved": "堆快照已保存：${path}",
+			"analysisFailed": "堆快照分析失败：${error}",
+			"ghUnavailable": "gh 不可用，跳过自动上报（提交 ${commit}）",
+			"publishFailed": "上报堆增长 issue 失败（提交 ${commit}）",
+			"published": "已上报堆增长 issue：${url}",
+			"reportFailed": "堆增长上报处理失败：${error}"
+		},
 		"jobs": {
 			"restartingJob": "正在重启用户 ${username} 的 ${partpath} 任务：${uid}",
 			"pausingJob": "正在暂停用户 ${username} 的 ${partpath} 任务：${uid}",

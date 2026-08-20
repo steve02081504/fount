@@ -32,6 +32,15 @@ export type LocaleData = {
 				restarting: string
 			}
 		}
+		heapGrowth: {
+			alreadyReported: string
+			snapshotSaved: string
+			analysisFailed: string
+			ghUnavailable: string
+			publishFailed: string
+			published: string
+			reportFailed: string
+		}
 		jobs: {
 			restartingJob: string
 			pausingJob: string
@@ -6284,6 +6293,13 @@ export type LocaleKeyParams = {
 	'fountConsole.auth.refreshTokenError': { error: string | number }
 	'fountConsole.auth.tokenVerifyError': { error: string | number }
 	'fountConsole.botStarted': { botusername: string | number; charname: string | number; platform: string | number }
+	'fountConsole.heapGrowth.alreadyReported': { commit: string | number }
+	'fountConsole.heapGrowth.analysisFailed': { error: string | number }
+	'fountConsole.heapGrowth.ghUnavailable': { commit: string | number }
+	'fountConsole.heapGrowth.publishFailed': { commit: string | number }
+	'fountConsole.heapGrowth.published': { url: string | number }
+	'fountConsole.heapGrowth.reportFailed': { error: string | number }
+	'fountConsole.heapGrowth.snapshotSaved': { path: string | number }
 	'fountConsole.ipc.invokePartLog': { invokedata: string | number; partpath: string | number; username: string | number }
 	'fountConsole.ipc.parseResponseFailed': { error: string | number }
 	'fountConsole.ipc.processMessageError': { error: string | number }
