@@ -94,6 +94,8 @@ export class TestQueues {
 	 * @returns {QueueItem} 入队项
 	 */
 	enqueueFs(key, reason = 'fs_change') {
+		this.prep.delete(key)
+		this.fs = this.fs.filter(item => item.key !== key)
 		const item = {
 			id: this.#nextId(),
 			key,

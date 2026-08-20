@@ -38,12 +38,12 @@ function cancelDraftTimer(key) {
  * 将操作按草稿键串行排队，保证同键写入/删除顺序执行（不同键互不影响）。
  * 前一个操作失败不会阻塞后续操作；返回的 promise 承载本次操作结果。
  * @param {string} key 草稿键
- * @param {() => Promise<void>} op 操作
+ * @param {() => Promise<void>} operation 操作
  * @returns {Promise<void>} 本次操作完成（或失败）
  */
-function enqueueDraftOp(key, op) {
+function enqueueDraftOp(key, operation) {
 	const prev = draftOpQueues.get(key) ?? Promise.resolve()
-	const next = prev.catch(() => {}).then(op)
+	const next = prev.catch(() => {}).then(operation)
 	draftOpQueues.set(key, next)
 	next.catch(() => {}).finally(() => {
 		if (draftOpQueues.get(key) === next) draftOpQueues.delete(key)
@@ -108,7 +108,7 @@ async function snapshotFiles(files) {
 async function writeDraftPayload(groupId, channelId, draft) {
 	const key = draftKey(groupId, channelId)
 	const files = await snapshotFiles(draft.files)
-	const isEmpty = !(draft.text || '') && !draft.content_warning && !draft.sensitive_media && !files.length
+	const isEmpty = !(draft.text || '') && !files.length
 	if (isEmpty) await deleteDraft(key)
 	else
 		await saveDraftRemote(key, {
@@ -265,7 +265,7 @@ export function wireDraftAutoSave(getCtx) {
 			text: input instanceof HTMLTextAreaElement ? input.value : '',
 			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
 			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
-			files: selectedFiles,
+			files: [...selectedFiles].map(file => ({ ...file, fileId: file.fileId || crypto.randomUUID() })),
 		}
 	}
 

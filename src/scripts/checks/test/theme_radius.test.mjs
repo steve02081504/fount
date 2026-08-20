@@ -187,6 +187,20 @@ Deno.test('hasHardcodedRadius: allows zero and theme-var arbitrary-value radius'
 	assertEquals(hasHardcodedRadius('rounded-l-[calc(var(--radius-box) - 2px)]'), false)
 })
 
+Deno.test('hasHardcodedRadius: flags hardcoded logical-direction arbitrary-value radius', () => {
+	assertEquals(hasHardcodedRadius('rounded-s-[8px]'), true)
+	assertEquals(hasHardcodedRadius('rounded-e-[8px]'), true)
+	assertEquals(hasHardcodedRadius('rounded-ss-[8px]'), true)
+	assertEquals(hasHardcodedRadius('rounded-se-[8px]'), true)
+	assertEquals(hasHardcodedRadius('rounded-es-[8px]'), true)
+	assertEquals(hasHardcodedRadius('rounded-ee-[8px]'), true)
+})
+
+Deno.test('hasHardcodedRadius: allows theme-var logical-direction arbitrary-value radius', () => {
+	assertEquals(hasHardcodedRadius('rounded-s-[var(--radius-box)]'), false)
+	assertEquals(hasHardcodedRadius('rounded-ee-[calc(var(--radius-box) - 2px)]'), false)
+})
+
 Deno.test('scanFileThemeRadius: flags hardcoded arbitrary-value radius, skips theme-var', () => {
 	const issues = scanFileThemeRadius('a.html', '<div class="rounded-[8px] rounded-[var(--radius-box)]"></div>\n')
 	assertEquals(issues.length, 1)

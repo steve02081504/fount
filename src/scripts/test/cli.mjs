@@ -65,7 +65,7 @@ if (values['update-estimates'] && (values.watch || values.all || values.force ||
 	process.exit(2)
 }
 
-if (values.list && (values.watch || values.all || values.force)) {
+if (values.list && (values.watch || values.all || values.force || values.kernel)) {
 	console.error(geti18n('fountConsole.test.list.incompatible'))
 	process.exit(2)
 }

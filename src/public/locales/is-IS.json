@@ -152,11 +152,11 @@
 				"summary": "Uppfærði áætlaðan tíma fyrir ${suitesUpdated} suite (${filesChanged} manifest); sleppti ${skipped} án grunnlínu eða þegar uppfært"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "Notkun: fount test --list [<groups>...] (ekki hægt með öðrum rofum)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (vænt ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Notkun: fount test --kernel shutdown|reboot (ekki hægt að nota með öðrum valkostum)",

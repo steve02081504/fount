@@ -152,11 +152,11 @@
 				"summary": "Đã cập nhật thời lượng dự kiến cho ${suitesUpdated} suite (${filesChanged} manifest); bỏ qua ${skipped} không có baseline hoặc đã mới nhất"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "Cách dùng: fount test --list [<groups>...] (không dùng cùng cờ khác)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (dự kiến ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Cách dùng: fount test --kernel shutdown|reboot (không thể dùng cùng các tùy chọn khác)",

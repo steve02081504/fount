@@ -860,9 +860,10 @@ function isLightColor(color) {
  * @returns {{r:number,g:number,b:number}} 适配后的语义背景色。
  */
 function adaptSemanticColor(semantic, background) {
-	return mergeColor((semantic, base, background) => wrapColorChannel(
-		semantic - base + background
-	), semantic, isLightColor(background) ? WHITE : BLACK, background)
+	return wrapColorChannel(mergeColor(
+		(semantic, base, background) => semantic - base + background,
+		semantic, isLightColor(background) ? WHITE : BLACK, background
+	))
 }
 
 /**

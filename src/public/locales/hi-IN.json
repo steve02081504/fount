@@ -152,11 +152,11 @@
 				"summary": "${suitesUpdated} suite की अपेक्षित अवधि अपडेट (${filesChanged} manifest); बेसलाइन नहीं या पहले से अद्यतन — ${skipped} छोड़े"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "उपयोग: fount test --list [<groups>...] (अन्य फ़्लैग के साथ उपयोग नहीं कर सकते)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (अपेक्षित ${expected})"
 			},
 			"kernel": {
 				"incompatible": "उपयोग: fount test --kernel shutdown|reboot (अन्य विकल्पों के साथ उपयोग नहीं किया जा सकता)",

@@ -12,12 +12,11 @@ import {
 } from '../ms_literal.mjs'
 
 Deno.test('scanFileMsLiteral: flags minute / hour / day products', () => {
-	const text = [
+	const issues = scanFileMsLiteral('a.mjs', [
 		'const a = 5 * 60 * 1000;',
 		'const b = 2 * 60 * 60 * 1000;',
 		'const c = 24 * 60 * 60 * 1000;',
-	].join('\n')
-	const issues = scanFileMsLiteral('a.mjs', text)
+	].join('\n'))
 	assertEquals(issues.length, 3)
 	assertEquals(issues[0], { path: 'a.mjs', line: 1, token: '5 * 60 * 1000' })
 	assertEquals(issues[1], { path: 'a.mjs', line: 2, token: '2 * 60 * 60 * 1000' })
@@ -25,52 +24,68 @@ Deno.test('scanFileMsLiteral: flags minute / hour / day products', () => {
 })
 
 Deno.test('scanFileMsLiteral: flags weeks / months / years and hour/day aliases', () => {
-	const text = [
+	assertEquals(scanFileMsLiteral('a.mjs', [
 		'7 * 24 * 60 * 60 * 1000',
 		'30 * 24 * 60 * 60 * 1000',
 		'365 * 24 * 3600 * 1000',
 		'8 * 3600 * 1000',
 		'7 * 86400 * 1000',
-	].join('\n')
-	assertEquals(scanFileMsLiteral('a.mjs', text).length, 5)
+	].join('\n')).length, 5)
 })
 
 Deno.test('scanFileMsLiteral: does not flag variable / byte / exponent products', () => {
-	const text = [
+	assertEquals(scanFileMsLiteral('a.mjs', [
 		'json.expires_in * 1000',
 		'const bytes = 1000 * MiB;',
 		'1000 * 2 ** Math.min(n, 5)',
 		'width * height',
-	].join('\n')
-	assertEquals(scanFileMsLiteral('a.mjs', text).length, 0)
+	].join('\n')).length, 0)
 })
 
 Deno.test('scanFileMsLiteral: does not flag a bare seconds factor or non-ms products', () => {
-	const text = [
+	assertEquals(scanFileMsLiteral('a.mjs', [
 		'const s = 5 * 1000;',      // 秒，无时间单位因子 → 不判为手算产物
 		'const m = 1000 * 1000;',   // 一千万，非毫秒
-	].join('\n')
-	assertEquals(scanFileMsLiteral('a.mjs', text).length, 0)
+	].join('\n')).length, 0)
 })
 
 Deno.test('scanFileMsLiteral: does not match inside identifiers', () => {
-	const text = 'const foo1000 = 60 * 60 * 1000;\n'
-	const issues = scanFileMsLiteral('a.mjs', text)
+	const issues = scanFileMsLiteral('a.mjs', 'const foo1000 = 60 * 60 * 1000;\n')
 	assertEquals(issues.length, 1)
 	assertEquals(issues[0].token, '60 * 60 * 1000')
 })
 
 Deno.test('scanFileMsLiteral: flags embedded sub-chain after a variable multiplier', () => {
-	const text = 'const ms = EXPIRY_DAYS * 24 * 60 * 60 * 1000;\n'
-	const issues = scanFileMsLiteral('a.mjs', text)
+	const issues = scanFileMsLiteral('a.mjs', 'const ms = EXPIRY_DAYS * 24 * 60 * 60 * 1000;\n')
 	assertEquals(issues.length, 1)
 	assertEquals(issues[0].token, '24 * 60 * 60 * 1000')
 })
 
 Deno.test('scanFileMsLiteral: reports line numbers across lines', () => {
-	const text = 'const a = 1;\nconst b = 5 * 60 * 1000;\nconst c = 2;\n'
-	const issues = scanFileMsLiteral('a.mjs', text)
+	const issues = scanFileMsLiteral('a.mjs', 'const a = 1;\nconst b = 5 * 60 * 1000;\nconst c = 2;\n')
 	assertEquals(issues[0].line, 2)
+})
+
+Deno.test('scanFileMsLiteral: ignores ms products in comments, JSDoc, strings, and template literals', () => {
+	const text = [
+		'// 5 * 60 * 1000',
+		'/* 24 * 60 * 60 * 1000 */',
+		'/** 7 * 24 * 60 * 60 * 1000 */',
+		'const s = "365 * 24 * 3600 * 1000";',
+		'const t = "30 * 24 * 60 * 60 * 1000";',
+		'const u = `8 * 3600 * 1000`;',
+		'const ok = 5 * 60 * 1000;',
+	].join('\n')
+	const issues = scanFileMsLiteral('a.mjs', text)
+	assertEquals(issues.length, 1)
+	assertEquals(issues[0], { path: 'a.mjs', line: 7, token: '5 * 60 * 1000' })
+})
+
+Deno.test('scanFileMsLiteral: still flags code across a masked comment boundary', () => {
+	const text = 'const a = 5 * 60 * 1000; // 30 * 24 * 60 * 60 * 1000\n'
+	const issues = scanFileMsLiteral('a.mjs', text)
+	assertEquals(issues.length, 1)
+	assertEquals(issues[0].token, '5 * 60 * 1000')
 })
 
 Deno.test('isMsLiteralScanned: skips browser, tests, specs, and the ms helper', () => {

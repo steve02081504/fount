@@ -152,7 +152,7 @@
 				"summary": "Оновлено очікувані тривалості для ${suitesUpdated} набор(ів) (${filesChanged} manifest); пропущено ${skipped} без базової лінії або вже актуально"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "Використання: fount test --list [<groups>...] (не можна використовувати з іншими прапорцями)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",

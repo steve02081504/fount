@@ -152,7 +152,7 @@
 				"summary": "Duraciones previstas actualizadas en ${suitesUpdated} suite(s) (${filesChanged} manifest(s)); omitidas ${skipped} sin baseline o ya actualizadas"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "Uso: fount test --list [<groups>...] (no se puede usar con ninguna otra opción)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",

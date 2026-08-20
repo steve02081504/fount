@@ -11,6 +11,7 @@ import { execFile } from 'npm:@steve02081504/exec'
 
 import { ms } from '../../ms.mjs'
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
+import { waitUntil } from '../core/wait.mjs'
 import { startTestHub, testHubUrl } from '../hub/index.mjs'
 import { kernelHealthy, parseNetstatListenPid, rebootTestKernel, shutdownTestKernel } from '../kernel/ensure.mjs'
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
@@ -891,22 +892,7 @@ Deno.test('idle clock starts when the run queue empties, not on a file change', 
 			// 有工作在跑时队列非空；跑完清空后计时才重置。
 			handle.kernel.queues.enqueueFs('testkit:__idle_clock__', 'test')
 			handle.kernel.wake()
-			await awaitWithTimeout(
-				new Promise((resolve, reject) => {
-					const deadline = Date.now() + 4000
-					/**
-					 * 轮询直到闲置计时重置或超时。
-					 * @returns {void}
-					 */
-					const check = () => {
-						if (handle.kernel.lastIdleAt > before) return resolve()
-						if (Date.now() > deadline) return reject(new Error('idle clock did not reset after the run queue emptied'))
-						setTimeout(check, 20)
-					}
-					check()
-				}),
-				'idle clock did not reset after the run queue emptied',
-			)
+			await waitUntil(() => handle.kernel.lastIdleAt > before, 4000)
 		}
 		finally {
 			await handle.close()

@@ -86,6 +86,18 @@ Deno.test('enqueueFs pushes straight into the FS queue head, bypassing prep debo
 	assertEquals(queues.pendingEmpty(), false)
 })
 
+Deno.test('enqueueFs removes pending prep and existing fs entries for the same key', () => {
+	const clock = mutableClock()
+	const queues = new TestQueues({ prepSettleMs: 10_000, now: clock.now })
+	queues.hitPrep('a')
+	queues.enqueueFs('a', 'idle_all')
+	assertEquals(queues.prep.has('a'), false)
+	assertEquals(queues.fs.filter(item => item.key === 'a').length, 1)
+	queues.enqueueFs('a', 'idle_all')
+	assertEquals(queues.fs.filter(item => item.key === 'a').length, 1)
+	assertEquals(queues.fs[0].reason, 'idle_all')
+})
+
 Deno.test('CLI and FS duplicates are kept until CLI completes', () => {
 	const clock = mutableClock()
 	const queues = new TestQueues({ prepSettleMs: 1, now: clock.now })

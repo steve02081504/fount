@@ -152,11 +152,11 @@
 				"summary": "Durate previste aggiornate per ${suitesUpdated} suite (${filesChanged} manifest); saltate ${skipped} senza baseline o già aggiornate"
 			},
 			"list": {
-				"incompatible": "usage: fount test --list [<groups>...] (cannot be used with any other flags)",
+				"incompatible": "Uso: fount test --list [<groups>...] (non utilizzabile con altri flag)",
 				"header": "${manifestId}",
 				"suite": "  ${name}${expected}",
 				"subtest": "    :${name}",
-				"expected": " (expected ${expected})"
+				"expected": " (previsto ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Utilizzo: fount test --kernel shutdown|reboot (non può essere usato insieme ad altre opzioni)",

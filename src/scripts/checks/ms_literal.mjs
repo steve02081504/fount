@@ -68,6 +68,47 @@ function lineNumberAt(content, index) {
  */
 
 /**
+ * 掩掉注释、JSDoc、字符串字面量与模板字符串，只保留可执行的 JS/TS 代码 token。
+ * 非代码位置以空格占位，保持与原文偏移一致，便于复用 MS_PRODUCT_CHAIN 匹配与行号定位。
+ * @param {string} content 文件文本
+ * @returns {string} 仅含代码 token 的掩码文本
+ */
+function maskNonCode(content) {
+	const keep = new Array(content.length).fill(true)
+	const len = content.length
+	let index = 0
+	while (index < len) {
+		const ch = content[index]
+		if (ch === '/' && content[index + 1] === '/') {
+			const end = content.indexOf('\n', index)
+			const stop = end === -1 ? len : end
+			for (let i = index; i < stop; i++) keep[i] = false
+			index = stop
+		}
+		else if (ch === '/' && content[index + 1] === '*') {
+			const end = content.indexOf('*/', index + 2)
+			const stop = end === -1 ? len : end + 2
+			for (let i = index; i < stop; i++) keep[i] = false
+			index = stop
+		}
+		else if (ch === '\'' || ch === '"' || ch === '`') {
+			let end = index + 1
+			while (end < len) {
+				if (content[end] === '\\') { end += 2; continue }
+				if (content[end] === ch) { end++; break }
+				end++
+			}
+			for (let i = index; i < Math.min(end, len); i++) keep[i] = false
+			index = end
+		}
+		else index++
+	}
+	let masked = ''
+	for (let i = 0; i < len; i++) masked += keep[i] ? content[i] : ' '
+	return masked
+}
+
+/**
  * 扫描单文件内容中的手算毫秒乘积。
  * @param {string} relativePath 相对仓库根
  * @param {string} content 文件文本
@@ -76,7 +117,8 @@ function lineNumberAt(content, index) {
 export function scanFileMsLiteral(relativePath, content) {
 	/** @type {MsLiteralIssue[]} */
 	const issues = []
-	for (const match of content.matchAll(MS_PRODUCT_CHAIN)) {
+	const masked = maskNonCode(content)
+	for (const match of masked.matchAll(MS_PRODUCT_CHAIN)) {
 		const chain = match[1]
 		if (!isMsProduct(chain)) continue
 		issues.push({ path: relativePath, line: lineNumberAt(content, match.index), token: chain })
