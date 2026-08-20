@@ -1,6 +1,6 @@
 .drop-area {
-	border: 2px dashed #ccc;
-	border-radius: 8px;
+	border: var(--border) dashed var(--border-color);
+	border-radius: var(--radius-box);
 	padding: 20px;
 	text-align: center;
 	cursor: pointer;
@@ -15,5 +15,5 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 8px;
-	border-bottom: 1px solid #eee;
+	border-bottom: var(--border) solid var(--border-color);
 }

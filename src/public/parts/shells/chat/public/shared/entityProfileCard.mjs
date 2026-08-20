@@ -21,6 +21,21 @@ const ENTITY_PROFILE_CARD_STYLESHEET = '/parts/shells:chat/shared/entityProfileC
 const ENTITY_PROFILE_BANNER_STYLESHEET = '/parts/shells:chat/shared/entityProfileBanner.css'
 
 /**
+ * 未指定 profile 主题色时，按当前使用主题生成的默认强调色。
+ * @constant {string}
+ */
+const THEME_DEFAULT_ACCENT = 'var(--color-primary, var(--color-base-content))'
+
+/**
+ * 取实体卡强调色；未指定主题色时回退为当前主题的默认强调色。
+ * @param {string | undefined | null} themeColor profile 主题色
+ * @returns {string} 强调色值
+ */
+function entityAccentColor(themeColor) {
+	return themeColor || THEME_DEFAULT_ACCENT
+}
+
+/**
  * 跨壳弹出人物卡时按需挂载共享样式。
  * @returns {void}
  */
@@ -46,7 +61,7 @@ export function paintEntityProfileBanner(host, bannerEl, options) {
 	const entityHash = options.entityHash || ''
 	const pattern = entityProfilePattern(entityHash)
 	host.dataset.profilePattern = pattern.variant
-	host.style.setProperty('--entity-card-accent', options.themeColor || '#5865f2')
+	host.style.setProperty('--entity-card-accent', entityAccentColor(options.themeColor))
 	host.style.setProperty('--entity-card-pattern-angle', `${pattern.angle}deg`)
 	host.style.setProperty('--entity-card-pattern-size', `${pattern.size}px`)
 	host.style.setProperty('--entity-card-pattern-x', `${pattern.offsetX}px`)
@@ -148,7 +163,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	root.dataset.entityHash = entityHash
 	const pattern = entityProfilePattern(entityHash || name)
 	root.dataset.profilePattern = pattern.variant
-	root.style.setProperty('--entity-card-accent', normalized.themeColor || '#5865f2')
+	root.style.setProperty('--entity-card-accent', entityAccentColor(normalized.themeColor))
 	root.style.setProperty('--entity-card-pattern-angle', `${pattern.angle}deg`)
 	root.style.setProperty('--entity-card-pattern-size', `${pattern.size}px`)
 	root.style.setProperty('--entity-card-pattern-x', `${pattern.offsetX}px`)
@@ -159,7 +174,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 		paintEntityProfileBanner(root, bannerElement, {
 			entityHash: entityHash || name,
 			banner,
-			themeColor: normalized.themeColor || '#5865f2',
+			themeColor: normalized.themeColor,
 		})
 
 	const nameElement = root.querySelector('[data-entity-profile-name]')

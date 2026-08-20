@@ -4,6 +4,7 @@
  *   fount test [--watch]
  *   fount test [--all] [--force] [<groups>...]
  *   fount test --update-estimates [<groups>...]
+ *   fount test --list [<groups>...]
  *   fount test --kernel shutdown|reboot
  *
  * 选择器：名称 / 名称:suite / 名称:suite:子项（空格多组，逗号多 suite；/ 与 : 等价）
@@ -14,6 +15,8 @@ import process from 'node:process'
 
 import { console, geti18n } from '../i18n/bare.mjs'
 
+import { sortManifestIds } from './core/dependencies.mjs'
+import { formatDuration } from './core/format_duration.mjs'
 import {
 	filterSuites,
 	listManifestIds,
@@ -36,6 +39,7 @@ const { positionals, values } = parseArgsOrExit({
 		force: { type: 'boolean', default: false },
 		watch: { type: 'boolean', default: false },
 		'update-estimates': { type: 'boolean', default: false },
+		list: { type: 'boolean', default: false },
 		kernel: { type: 'string' },
 		help: { type: 'boolean', short: 'h', default: false },
 	},
@@ -56,8 +60,13 @@ if (values.kernel && !KERNEL_ACTIONS.has(values.kernel)) {
 	process.exit(2)
 }
 
-if (values['update-estimates'] && (values.watch || values.all || values.force)) {
+if (values['update-estimates'] && (values.watch || values.all || values.force || values.list)) {
 	console.error(geti18n('fountConsole.test.updateEstimates.incompatible'))
+	process.exit(2)
+}
+
+if (values.list && (values.watch || values.all || values.force || values.kernel)) {
+	console.error(geti18n('fountConsole.test.list.incompatible'))
 	process.exit(2)
 }
 
@@ -174,6 +183,33 @@ async function loadCliSelection() {
 	return { allSuites, knownIds, parsed }
 }
 
+/**
+ * 按 manifest id 分组并打印套件清单。
+ * @param {import('./core/manifest.mjs').SuiteDef[]} suites 要列出的 suite
+ * @returns {void}
+ */
+function printSuiteList(suites) {
+	const byManifest = new Map()
+	for (const suite of suites) {
+		const group = byManifest.get(suite.manifestId) ?? []
+		group.push(suite)
+		byManifest.set(suite.manifestId, group)
+	}
+	for (const manifestId of sortManifestIds([...byManifest.keys()], suites)) {
+		console.log(geti18n('fountConsole.test.list.header', { manifestId }))
+		for (const suite of byManifest.get(manifestId)) {
+			console.log(geti18n('fountConsole.test.list.suite', {
+				name: suite.name,
+				expected: suite.expectedMs != null
+					? geti18n('fountConsole.test.list.expected', { expected: formatDuration(suite.expectedMs) })
+					: '',
+			}))
+			for (const subtest of suite.subtests ?? [])
+				console.log(geti18n('fountConsole.test.list.subtest', { name: subtest.name }))
+		}
+	}
+}
+
 process.exit(await (async () => {
 	if (values.kernel === 'shutdown') {
 		const status = await shutdownTestKernel()
@@ -201,6 +237,17 @@ process.exit(await (async () => {
 			state: await readState(REPO_ROOT),
 		})
 		console.logI18n('fountConsole.test.updateEstimates.summary', result)
+		return 0
+	}
+
+	if (values.list) {
+		const { allSuites, knownIds, parsed } = await loadCliSelection()
+		const suites = parsed.groups ? suitesFromGroups(allSuites, parsed.groups, knownIds) : allSuites
+		if (parsed.groups && !suites.length) {
+			console.error(geti18n('fountConsole.test.noMatchingSuites'))
+			process.exit(2)
+		}
+		printSuiteList(suites)
 		return 0
 	}
 

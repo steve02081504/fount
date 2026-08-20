@@ -141,15 +141,29 @@ export function entityProfilePattern(seed) {
 export const MESSAGE_AVATAR_GROUP_GAP_MS = 30 * 60 * 1000
 
 /**
- * 是否为本作者分组的首条消息（应显示头像与昵称行）。
+ * 是否为本作者分组的首条消息（应显示昵称行）。
  * @param {string} authorKey 当前作者键（charId ?? sender）
  * @param {string | null | undefined} prevAuthorKey 上一条作者键
  * @param {number} time 当前消息时间戳（ms）
  * @param {number} prevTime 上一条时间戳（ms）
- * @returns {boolean} 是否显示头像与昵称行
+ * @returns {boolean} 是否显示昵称行
  */
 export function isFirstMessageInAuthorGroup(authorKey, prevAuthorKey, time, prevTime) {
 	if (!prevAuthorKey) return true
 	if (authorKey !== prevAuthorKey) return true
 	return (time - prevTime) > MESSAGE_AVATAR_GROUP_GAP_MS
+}
+
+/**
+ * 是否为本作者分组的末条消息（应显示共享头像，且头像 sticky 在可视区底部）。
+ * @param {string} authorKey 当前作者键（charId ?? sender）
+ * @param {string | null | undefined} nextAuthorKey 下一条作者键
+ * @param {number} time 当前消息时间戳（ms）
+ * @param {number} nextTime 下一条时间戳（ms）
+ * @returns {boolean} 是否显示头像
+ */
+export function isLastMessageInAuthorGroup(authorKey, nextAuthorKey, time, nextTime) {
+	if (!nextAuthorKey) return true
+	if (authorKey !== nextAuthorKey) return true
+	return (nextTime - time) > MESSAGE_AVATAR_GROUP_GAP_MS
 }

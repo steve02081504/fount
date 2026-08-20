@@ -1,5 +1,7 @@
 import { Buffer } from 'node:buffer'
 
+import { ms } from 'fount/scripts/ms.mjs'
+
 /**
  * 从 Codex JWT 取出 ChatGPT account id。
  * @param {string} accessToken - access token。
@@ -197,7 +199,7 @@ export async function exchangeAnthropicCode(code, state, verifier) {
 	return {
 		access: json.access_token,
 		refresh: json.refresh_token,
-		expires: Date.now() + json.expires_in * 1000 - 5 * 60 * 1000,
+		expires: Date.now() + json.expires_in * 1000 - ms('5m'),
 	}
 }
 
@@ -221,7 +223,7 @@ export async function refreshAnthropicToken(credentials) {
 	return {
 		access: json.access_token,
 		refresh: json.refresh_token,
-		expires: Date.now() + json.expires_in * 1000 - 5 * 60 * 1000,
+		expires: Date.now() + json.expires_in * 1000 - ms('5m'),
 	}
 }
 
@@ -314,7 +316,7 @@ export async function refreshCopilotToken(githubToken, enterpriseUrl) {
 	return {
 		access: json.token,
 		refresh: githubToken,
-		expires: json.expires_at * 1000 - 5 * 60 * 1000,
+		expires: json.expires_at * 1000 - ms('5m'),
 		enterpriseUrl: domain === 'github.com' ? undefined : domain,
 	}
 }

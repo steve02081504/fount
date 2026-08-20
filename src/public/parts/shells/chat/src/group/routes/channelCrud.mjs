@@ -154,6 +154,10 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			timestamp: Date.now(),
 			content: { channelId },
 		})
+		// 频道被删除 → 立即清理该频道草稿及其附件内容
+		const { client } = await chatClientFromReq(req)
+		const { removedFileIds } = await client.drafts.remove(`${groupId}:${channelId}`)
+		if (removedFileIds.length) await client.draftContents.removeMany(removedFileIds)
 		res.status(200).json({ channelId, deleted: true })
 	})
 

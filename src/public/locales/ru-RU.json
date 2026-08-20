@@ -145,11 +145,18 @@
 			"replHint": "Enter — выполнить · Shift+Enter — новая строка"
 		},
 		"test": {
-			"help": "Использование: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nСелекторы (группы через пробел; наборы в группе через запятую; / и : эквивалентны):\n  имя               все наборы группы (напр. shells/chat)\n  имя:suite         конкретный набор\n  имя:suite:элемент конкретный подтест или файл теста\n\nБез точного совпадения — расширение по префиксу (shells → shells/chat, shells/social); поддерживаются glob (*, ?, **).\n\nПо умолчанию (просто fount test): планирует сбои/незавершённые и устаревшие за один проход и выполняет; сбои блокируют только зависимые слоты — ненулевой выход в конце. Не весь репозиторий — для этого --all.\n\n--watch      непрерывное наблюдение; не завершается даже при пустой очереди (Ctrl+C для выхода); нельзя сочетать с --all, --force, --update-estimates или селекторами\n--all        все наборы в области\n--force      принудительный запуск; не переиспользует прошлые результаты\n--update-estimates  перезаписывает expected в каждом manifest по текущим средним из БД; селекторы опциональны; тесты не запускает\n--kernel     shutdown останавливает тестовое ядро; reboot останавливает и поднимает снова; нельзя сочетать с другими аргументами\n\nпримеры:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "Использование: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nСелекторы (группы через пробел; наборы в группе через запятую; / и : эквивалентны):\n  имя               все наборы группы (напр. shells/chat)\n  имя:suite         конкретный набор\n  имя:suite:элемент конкретный подтест или файл теста\n\nБез точного совпадения — расширение по префиксу (shells → shells/chat, shells/social); поддерживаются glob (*, ?, **).\n\nПо умолчанию (просто fount test): планирует сбои/незавершённые и устаревшие за один проход и выполняет; сбои блокируют только зависимые слоты — ненулевой выход в конце. Не весь репозиторий — для этого --all.\n\n--watch      непрерывное наблюдение; не завершается даже при пустой очереди (Ctrl+C для выхода); нельзя сочетать с --all, --force, --update-estimates или селекторами\n--all        все наборы в области\n--force      принудительный запуск; не переиспользует прошлые результаты\n--update-estimates  перезаписывает expected в каждом manifest по текущим средним из БД; селекторы опциональны; тесты не запускает\n--list        выводит список наборов тестов (можно использовать селекторы для сужения вывода); не запускает ядро и не выполняет тесты\n--kernel     shutdown останавливает тестовое ядро; reboot останавливает и поднимает снова; нельзя сочетать с другими аргументами\n\nпримеры:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Использование: fount test --watch (нельзя использовать с другими параметрами)",
 			"updateEstimates": {
 				"incompatible": "Использование: fount test --update-estimates [<groups>...] (нельзя использовать с другими флагами)",
 				"summary": "Обновлены ожидаемые длительности для ${suitesUpdated} набор(ов) (${filesChanged} manifest); пропущено ${skipped} без базовой линии или уже актуально"
+			},
+			"list": {
+				"incompatible": "Использование: fount test --list [<groups>...] (нельзя использовать с другими флагами)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (ожидается ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Использование: fount test --kernel shutdown|reboot (нельзя сочетать с другими параметрами)",
@@ -2112,7 +2119,10 @@
 				"livePreview": "Предварительный просмотр в реальном времени",
 				"languageVersion": "Языковая версия",
 				"localeHint": "Нажмите на метку, чтобы переключить или отредактировать код; нажмите Enter в поле ввода в конце, чтобы скопировать его на новый язык.",
-				"themeColorHint": "Используется для создания текстур при отсутствии специального баннера, а также для циклов живых звуковых волн.",
+				"themeColor": {
+					"clear": "Вернуть цвет темы по умолчанию",
+					"hint": "Используется для создания текстур при отсутствии пользовательского баннера, а также для циклов живых звуковых волн. Оставьте пустым, чтобы использовать текущий цвет темы."
+				},
 				"linksPreview": "${count} общедоступных ссылок",
 				"unsavedHint": "Закрыть окна приведет к отмене несохраненных изменений.",
 				"tagsLabel": "Этикетка",
@@ -5775,6 +5785,12 @@
 			"title": "Информация о системе",
 			"failed": "Не удалось загрузить информацию о системе."
 		},
+		"testStatus": {
+			"title": "Статус теста",
+			"running": "Идёт тест",
+			"idle": "Ядро онлайн (в режиме ожидания)",
+			"queued": "В очереди"
+		},
 		"connectivity": {
 			"backend": "подключение к серверной части",
 			"frontend": "интерфейсное соединение"
@@ -5782,6 +5798,7 @@
 		"loading": "Загрузка...",
 		"checking": "Проверка...",
 		"failed": "Ошибка",
+		"linksCount": "Активных подключений: ${count}",
 		"copySuccess": "Отчет об отладке скопирован в буфер обмена.",
 		"copyFailed": "Копировать отчет не удалось",
 		"alreadyLatest": "Уже последняя версия",

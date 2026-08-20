@@ -13,7 +13,7 @@ Core: [@steve02081504/fount-p2p](https://www.npmjs.com/package/@steve02081504/fo
 - **Deno / shell / server**: `npm:@steve02081504/fount-p2p/...`
 - **Browser**: `https://esm.sh/@steve02081504/fount-p2p/...`
 - **Archive tunables**: `npm:@steve02081504/fount-p2p/dag/tunables.json` → `shells/chat/src/chat/lib/archive.tunables.json`
-- **fount network only**: `startNode` / `ensureLinkToNode` / `sendToNodeLink` / public rooms (`link_registry`, `user_room`, `group_link_set`, `node_scope`, `room_scopes`, `remote_user_room`) + `node/network`. Do **not** import `transport/*`. Chat fanout / ICE / wire helpers: `shells/chat/src/chat/federation/` and `…/lib/iceServers.mjs`.
+- **fount network only**: `startNode` / `ensureLinkToNode` / `sendToNodeLink` / public rooms (`link_registry`, `user_room`, `group_link_set`, `node_scope`, `room_scopes`, `remote_user_room`) + `node/network`. **Peer health (read-only)**: `transport/peer_health` → `createPeerHealthTracker`, wired once in `p2p_server/index.mjs` after `initNode`; consume via `getPeerHealthTracker()` (never build a synthetic ping). Do **not** import other `transport/*`. Chat fanout / ICE / wire helpers: `shells/chat/src/chat/federation/` and `…/lib/iceServers.mjs`.
 
 ## fount-side responsibilities
 

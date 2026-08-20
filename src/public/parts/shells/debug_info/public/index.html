@@ -66,6 +66,20 @@
 			</div>
 		</div>
 
+		<!-- Test Status -->
+		<div id="test-status-card" class="card bg-base-100 shadow-xl hidden">
+			<div class="card-body">
+				<button id="test-status-toggle" type="button" class="card-title text-left w-full flex items-center justify-between gap-2 cursor-pointer" aria-expanded="false">
+					<span class="flex items-center gap-2">
+						<span data-i18n="debug_info.testStatus.title"></span>
+						<span id="test-status-badge" class="badge badge-lg gap-2"></span>
+					</span>
+					<span id="test-status-chevron" class="transition-transform">▾</span>
+				</button>
+				<ul id="test-status-list" class="mt-2 space-y-2 hidden"></ul>
+			</div>
+		</div>
+
 		<!-- Connectivity -->
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 			<!-- Backend Connectivity -->

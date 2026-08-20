@@ -500,7 +500,7 @@ export function createVirtualList({
 			pruneQueue()
 			updateDynamicBufferSize()
 			if (scrollTo)
-				newElement?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+				container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' })
 			onRenderComplete()
 		} finally {
 			state.isLoading = false

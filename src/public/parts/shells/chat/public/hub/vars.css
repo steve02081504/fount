@@ -18,7 +18,7 @@
 
 	--hover: color-mix(in srgb, var(--color-base-content), transparent 96%);
 	--active: color-mix(in srgb, var(--color-base-content), transparent 92%);
-	--border: var(--color-base-300);
+	--border-color: var(--color-base-300);
 	--border-subtle: color-mix(in srgb, var(--color-base-content), transparent 94%);
 	--message-hover: color-mix(in srgb, var(--color-base-content), transparent 93%);
 
@@ -52,8 +52,8 @@
 	--gradient: linear-gradient(135deg, var(--color-primary) 0%, var(--accent-hover) 100%);
 	--media-bg: var(--color-neutral);
 
-	--radius-sm: 6px;
-	--radius-md: 10px;
-	--radius-lg: 12px;
+	--radius-sm: var(--radius-field);
+	--radius-md: var(--radius-box);
+	--radius-lg: var(--radius-box);
 	--message-max-width: 52rem;
 }

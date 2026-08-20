@@ -151,6 +151,13 @@
 				"incompatible": "📖：`fount test --update-estimates` [<groups>…]（🚫+🚩）",
 				"summary": "✍️ ${suitesUpdated} 📦⏱️（manifest ${filesChanged}）；⏭️ ${skipped} 🚫📏／✅🆕"
 			},
+			"list": {
+				"incompatible": "📖：`fount test --list` [<groups>…]（🚫+⚙️）",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": "（🔮 ${expected}）"
+			},
 			"kernel": {
 				"incompatible": "📖：`fount test --kernel shutdown|reboot`（🚫+⚙️）",
 				"unknownAction": "❓🧠 ${action}（`shutdown`|`reboot`）",
@@ -2112,7 +2119,10 @@
 				"livePreview": "⏱️👀",
 				"languageVersion": "🗣️🔢",
 				"localeHint": "👆🏷️🔄✏️；📤↩️ ➡️ 🆕🗣️",
-				"themeColorHint": "🚫🖼️ ➡️ 🎨🌊；📡🔊💫",
+				"themeColor": {
+					"clear": "♻️🎨",
+					"hint": "🚫🖼️ ➡️ 🎨🌊；📡🔊💫；⬜➡️🎨"
+				},
 				"linksPreview": "${count} 🔗🌐",
 				"unsavedHint": "✖️ ➡️ 🚫💾✏️",
 				"tagsLabel": "🏷️",
@@ -5775,6 +5785,12 @@
 			"title": "🖥️ℹ️",
 			"failed": "❌🖥️ℹ️"
 		},
+		"testStatus": {
+			"title": "🧪📊",
+			"running": "🔄🧪",
+			"idle": "💤🧪",
+			"queued": "⏳🧪"
+		},
 		"connectivity": {
 			"backend": "🔌🔙",
 			"frontend": "🔌🔜"
@@ -5782,6 +5798,7 @@
 		"loading": "⏳…",
 		"checking": "🔎…",
 		"failed": "❌",
+		"linksCount": "${count} 🔗",
 		"copySuccess": "✅📋",
 		"copyFailed": "❌📋",
 		"alreadyLatest": "👍",

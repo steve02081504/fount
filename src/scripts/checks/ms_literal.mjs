@@ -1,0 +1,243 @@
+/**
+ * 手算毫秒乘积检测：Deno 运行时源码里出现 `N * 60 * 1000`、`N * 24 * 60 * 60 * 1000`、
+ * `N * 3600 * 1000` 等数值字面量连乘时应改用 `ms('...')`（`src/scripts/ms.mjs`），
+ * 避免手算换算错误、便于统一维护。
+ * 判定：`*` 连接的数字字面量链，含因子 `1000` 且至少含一个时间单位因子
+ * （`60` / `24` / `3600` / `86400` / `7` / `30` / `365`）。
+ * 作用域：能 `import ms` 的 Deno 运行时代码（`src/scripts/**`、`src/server/**`、
+ * `path/**`、part 的 `src/` 与服务端 `shared/` 等）。浏览器侧（`src/public/pages/`、
+ * 各 part 的 `public/`、`.github/pages/`）无法拿到 `src/scripts/ms.mjs` 的服务，不纳入；
+ * `*.test.mjs` / `*.spec.mjs` 及 ms 帮助函数本身也不纳入。
+ */
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
+
+import { listRepoFiles } from './walk.mjs'
+
+/** 扫描的后缀。 */
+export const MS_LITERAL_SUFFIXES = ['.mjs', '.js', '.ts']
+
+/** 时间单位换算因子（除 `1000` 外，把一个乘积判定为毫秒的关键因子）。 */
+export const MS_TIME_UNIT_FACTORS = new Set(['60', '24', '3600', '86400', '7', '30', '365'])
+
+/** 数字字面量 `*` 连乘链（`g` 标志，供 `matchAll`）。 */
+const MS_PRODUCT_CHAIN = /(?<![.\w$])(\d+(?:\s*\*\s*\d+)+)/gu
+
+/**
+ * 该路径是否属于能被 ms 帮助函数扫描的 Deno 运行时代码。
+ * @param {string} relativePath 相对仓库根
+ * @returns {boolean} 应跳过则为 true
+ */
+export function isMsLiteralScanned(relativePath) {
+	if (relativePath === 'src/scripts/ms.mjs'
+		|| relativePath === 'src/scripts/checks/ms_literal.mjs')
+		return false
+	if (/\.(?:test|spec)\.(?:mjs|js|ts)$/u.test(relativePath)) return false
+	// 浏览器侧无法 import src/scripts/ms.mjs。
+	if (relativePath.startsWith('src/public/pages/')) return false
+	if (relativePath.startsWith('.github/pages/')) return false
+	if (relativePath.startsWith('src/public/parts/') && relativePath.slice('src/public/parts/'.length).includes('/public/')) return false
+	return true
+}
+
+/**
+ * 判定一条数字字面量连乘链是否为手算毫秒乘积。
+ * @param {string} chain `*` 连接的原始文本
+ * @returns {boolean} 是毫秒乘积则为 true
+ */
+function isMsProduct(chain) {
+	const factors = chain.split('*').map(factor => factor.trim())
+	if (!factors.includes('1000')) return false
+	return factors.some(factor => MS_TIME_UNIT_FACTORS.has(factor))
+}
+
+/**
+ * 计算某个匹配偏移量对应的行号（1 起）。
+ * @param {string} content 文件文本
+ * @param {number} index 匹配起始偏移
+ * @returns {number} 行号
+ */
+function lineNumberAt(content, index) {
+	let line = 1
+	for (let offset = 0; offset < index; offset++) if (content[offset] === '\n') line++
+	return line
+}
+
+/**
+ * @typedef {{ path: string, line: number, token: string }} MsLiteralIssue 命中条目
+ */
+
+/**
+ * 掩掉注释、JSDoc、字符串字面量与模板字符串的字面文本，只保留可执行的 JS/TS 代码 token；
+ * 模板字符串的 `${...}` 插值表达式（含嵌套模板）保留，可继续扫描其中的代码。
+ * 非代码位置以空格占位，保持与原文偏移一致，便于复用 MS_PRODUCT_CHAIN 匹配与行号定位。
+ * @param {string} content 文件文本
+ * @returns {string} 仅含代码 token 的掩码文本
+ */
+function maskNonCode(content) {
+	const keep = new Array(content.length).fill(true)
+	const len = content.length
+	let index = 0
+	while (index < len) {
+		const ch = content[index]
+		if (ch === '/' && content[index + 1] === '/') {
+			const end = content.indexOf('\n', index)
+			const stop = end === -1 ? len : end
+			for (let i = index; i < stop; i++) keep[i] = false
+			index = stop
+		}
+		else if (ch === '/' && content[index + 1] === '*') {
+			const end = content.indexOf('*/', index + 2)
+			const stop = end === -1 ? len : end + 2
+			for (let i = index; i < stop; i++) keep[i] = false
+			index = stop
+		}
+		else if (ch === '\'' || ch === '"')
+			index = skipSimpleString(content, index, ch, keep)
+		else if (ch === '`')
+			index = skipTemplateString(content, index, keep)
+		else index++
+	}
+	let masked = ''
+	for (let i = 0; i < len; i++) masked += keep[i] ? content[i] : ' '
+	return masked
+}
+
+/**
+ * 跳过单引号/双引号字符串字面量（含转义），全部掩去。
+ * @param {string} content 文件文本
+ * @param {number} index 起始引号偏移
+ * @param {string} quote 引号字符（`'` 或 `"`）
+ * @param {boolean[]} keep 掩码数组（原地修改）
+ * @returns {number} 字符串结束后的偏移
+ */
+function skipSimpleString(content, index, quote, keep) {
+	const len = content.length
+	let end = index + 1
+	while (end < len) {
+		if (content[end] === '\\') { end += 2; continue }
+		if (content[end] === quote) { end++; break }
+		end++
+	}
+	for (let i = index; i < Math.min(end, len); i++) keep[i] = false
+	return end
+}
+
+/**
+ * 跳过模板字符串：掩去字面文本，但保留 `${...}` 插值表达式（可含嵌套模板）供扫描。
+ * 处理 `\` `` ` `` 与 `\${` 转义。
+ * @param {string} content 文件文本
+ * @param {number} index 起始反引号偏移
+ * @param {boolean[]} keep 掩码数组（原地修改）
+ * @returns {number} 结束反引号后的偏移
+ */
+function skipTemplateString(content, index, keep) {
+	const len = content.length
+	let i = index + 1
+	keep[index] = false
+	while (i < len) {
+		const c = content[i]
+		if (c === '\\') {
+			keep[i] = false
+			if (i + 1 < len) keep[i + 1] = false
+			i += 2
+			continue
+		}
+		if (c === '`') {
+			keep[i] = false
+			return i + 1
+		}
+		if (c === '$' && content[i + 1] === '{') {
+			keep[i] = false
+			keep[i + 1] = false
+			i = skipTemplateInterpolation(content, i + 2, keep)
+			continue
+		}
+		keep[i] = false
+		i++
+	}
+	return i
+}
+
+/**
+ * 扫描模板插值 `...` 直到匹配的 `}`：保留其中代码，正确处理嵌套 `{}`、
+ * 注释、字符串字面量与嵌套模板。
+ * @param {string} content 文件文本
+ * @param {number} index `${` 之后的偏移
+ * @param {boolean[]} keep 掩码数组（原地修改）
+ * @returns {number} 结束 `}` 后的偏移
+ */
+function skipTemplateInterpolation(content, index, keep) {
+	const len = content.length
+	let depth = 1
+	let i = index
+	while (i < len && depth > 0) {
+		const c = content[i]
+		if (c === '/' && content[i + 1] === '/') {
+			const end = content.indexOf('\n', i)
+			const stop = end === -1 ? len : end
+			for (let offset = i; offset < stop; offset++) keep[offset] = false
+			i = stop
+			continue
+		}
+		else if (c === '/' && content[i + 1] === '*') {
+			const end = content.indexOf('*/', i + 2)
+			const stop = end === -1 ? len : end + 2
+			for (let offset = i; offset < stop; offset++) keep[offset] = false
+			i = stop
+			continue
+		}
+		else if (c === '{') depth++
+		else if (c === '}') depth--
+		else if (c === '\'' || c === '"') {
+			i = skipSimpleString(content, i, c, keep)
+			continue
+		}
+		else if (c === '`') {
+			i = skipTemplateString(content, i, keep)
+			continue
+		}
+		i++
+	}
+	return i
+}
+
+/**
+ * 扫描单文件内容中的手算毫秒乘积。
+ * @param {string} relativePath 相对仓库根
+ * @param {string} content 文件文本
+ * @returns {MsLiteralIssue[]} 命中条目
+ */
+export function scanFileMsLiteral(relativePath, content) {
+	/** @type {MsLiteralIssue[]} */
+	const issues = []
+	for (const match of maskNonCode(content).matchAll(MS_PRODUCT_CHAIN)) {
+		const chain = match[1]
+		if (!isMsProduct(chain)) continue
+		issues.push({ path: relativePath, line: lineNumberAt(content, match.index), token: chain })
+	}
+	return issues
+}
+
+/**
+ * 扫描仓库 Deno 运行时源码中的手算毫秒乘积（全量）。
+ * @param {string} repoRoot 仓库根
+ * @returns {Promise<{ files: string[], issues: MsLiteralIssue[] }>} 命中文件与问题列表
+ */
+export async function scanMsLiteral(repoRoot) {
+	/** @type {MsLiteralIssue[]} */
+	const issues = []
+	for (const relativePath of await listRepoFiles(repoRoot, MS_LITERAL_SUFFIXES)) {
+		if (!isMsLiteralScanned(relativePath)) continue
+		let content
+		try {
+			content = await readFile(join(repoRoot, relativePath), 'utf8')
+		}
+		catch (error) {
+			if (error?.code === 'ENOENT') continue
+			throw error
+		}
+		issues.push(...scanFileMsLiteral(relativePath, content))
+	}
+	return { files: [...new Set(issues.map(issue => issue.path))].sort(), issues }
+}

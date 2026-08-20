@@ -9,6 +9,7 @@ import { openDialogFromTemplate } from '../../src/templates.mjs'
 import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'
 import { store } from '../core/state.mjs'
+import { syncComposerAlignment } from '../messages/composerController.mjs'
 import { registerFountUserApi } from '../fountUser.mjs'
 import { reportTyping } from '../stream/outbound.mjs'
 
@@ -34,6 +35,7 @@ function wireComposerControls() {
 	bindComposerSubmit(messageInput, () => { void submitComposerLazy() })
 	messageInput.addEventListener('input', () => {
 		resizeMessageInput(messageInput)
+		syncComposerAlignment()
 		if (messageInput.value.trim())
 			reportTyping(store.context?.currentChannelId || 'default')
 	})

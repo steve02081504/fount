@@ -1,3 +1,4 @@
+import { ms } from 'fount/scripts/ms.mjs'
 import { runTimelineMaintenance } from 'npm:@steve02081504/fount-p2p/timeline/retention_runner'
 
 import { timelineEventsPath } from '../paths.mjs'
@@ -13,7 +14,7 @@ export const SOCIAL_TIMELINE_ANCHOR_TYPES = new Set([
 ])
 
 const DEFAULT_RETENTION_DEPTH = 200_000
-const DEFAULT_RETENTION_MS = 365 * 24 * 3600 * 1000
+const DEFAULT_RETENTION_MS = ms('365d')
 const DEFAULT_COMPACT_TRIGGER = 100_000
 
 /**

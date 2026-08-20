@@ -1,3 +1,5 @@
+import { ms } from 'fount/scripts/ms.mjs'
+
 /** §7.2 默认群设置（`defaultChannelId` 由建群时单独填入）。 */
 export const DEFAULT_GROUP_SETTINGS = {
 	joinPolicy: 'invite-only',
@@ -24,7 +26,7 @@ export const DEFAULT_GROUP_SETTINGS = {
 	batterySaver: false,
 	autoReplyFrequency: 0,
 	eventRetentionDepth: 200_000,
-	eventRetentionMs: 365 * 24 * 3600 * 1000,
+	eventRetentionMs: ms('365d'),
 	/** 0 = 不自动删除消息正文；>0 时按毫秒裁 `messages/*.jsonl` */
 	messageContentRetentionMs: 0,
 	compactTriggerEventDepth: 100_000,

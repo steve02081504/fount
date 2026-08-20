@@ -61,6 +61,7 @@ export async function renderMessageRowElement(message, index, allMessages, rende
 	if (message.type === 'unread_divider')
 		return renderTemplate('hub/messages/unread_divider', {})
 	const prev = index > 0 ? allMessages[index - 1] : null
+	const next = index < allMessages.length - 1 ? allMessages[index + 1] : null
 	const lastId = allMessages.at(-1)?.eventId
 	try {
 		const block = await renderChannelMessageBlock(
@@ -69,6 +70,8 @@ export async function renderMessageRowElement(message, index, allMessages, rende
 			prev?.type === 'unread_divider' ? 0 : prev?.timestamp || prev?.hlc?.wall || 0,
 			allMessages,
 			{ ...renderOpts, lastMessageEventId: lastId },
+			next?.type === 'unread_divider' ? null : next?.charId ?? next?.sender ?? null,
+			next?.type === 'unread_divider' ? 0 : next?.timestamp || next?.hlc?.wall || 0,
 		)
 		const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(block.html)
 		return frag.firstElementChild

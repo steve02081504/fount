@@ -8,6 +8,7 @@ import { authenticate } from '../../../../../server/auth/index.mjs'
 
 import { registerBridgeRoutes } from './endpoints/bridge.mjs'
 import { registerDiscoveryRoutes } from './endpoints/discovery.mjs'
+import { registerDraftRoutes } from './endpoints/drafts.mjs'
 import { registerGlobalSearchRoutes } from './endpoints/globalSearch.mjs'
 import { registerGroupsRuntimeRoutes } from './endpoints/groups/runtime.mjs'
 import { registerInboxRoutes } from './endpoints/inbox.mjs'
@@ -34,6 +35,7 @@ export function setEndpoints(router) {
 
 	registerPrefsRoutes(router)
 	registerTranslateRoutes(router)
+	registerDraftRoutes(router)
 	registerSpeechRecognitionRoutes(router)
 	registerTranslationPrefsRoutes(router)
 	registerBridgeRoutes(router)

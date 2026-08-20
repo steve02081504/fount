@@ -1,9 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import { mkdir, readdir, readFile, unlink, writeFile } from 'node:fs/promises'
 
+import { ms } from 'fount/scripts/ms.mjs'
 import { cabinetDir, sharedCabinetDir } from './paths.mjs'
 
-const TTL_MS = 2 * 60 * 60 * 1000
+const TTL_MS = ms('2h')
 
 /**
  * @param {string} username 用户

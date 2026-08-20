@@ -1,5 +1,7 @@
+import { ms } from 'fount/scripts/ms.mjs'
+
 const sessions = new Map()
-const TTL_MS = 15 * 60 * 1000
+const TTL_MS = ms('15m')
 
 /**
  * 丢掉一条 pending 登录并释放 hook / 轮询。

@@ -76,7 +76,7 @@ export function renderVisibilityPickerHtml(options = {}) {
 	const showExcept = ['public', 'unlisted', 'followers', 'followers_7d', 'followers_30d'].includes(selected) ? '' : ' hidden'
 	return `
 		<div class="visibility-picker" data-visibility-picker>
-			<select data-visibility-select id="${escapeHtml(idPrefix)}Visibility" class="select select-bordered select-sm composer-visibility rounded-full max-w-40">
+			<select data-visibility-select id="${escapeHtml(idPrefix)}Visibility" class="select select-bordered select-sm composer-visibility rounded-box max-w-40">
 				${optionHtml}
 			</select>
 			<input data-visibility-allow type="text" class="input input-bordered input-sm visibility-allow${showAllow}"

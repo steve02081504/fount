@@ -1,167 +1,177 @@
 /**
  * 【文件】public/hub/composerDraft.mjs
- * 【职责】频道草稿的防抖写入、切频道恢复与发送后清空；附件按频道暂存在内存。
+ * 【职责】频道草稿的防抖写入、切频道恢复与发送后清空；草稿（文本 + 内容警告 + 附件）按频道持久化到后端 chat shell 用户数据层。
+ * 【原理】切换频道前 flushDraft 落盘，进入频道时 loadDraft 恢复；附件仅回传缩略图，点击时才懒拉取完整内容。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+
+import {
+	deleteDraft,
+	draftKey,
+	getDraft,
+	saveDraft as saveDraftRemote,
+} from '../src/endpoints/drafts.mjs'
+
 import { setComposerExtrasVisible } from './composerExtras.mjs'
+import { selectedFiles } from './composerFiles.mjs'
 
 const DRAFT_DEBOUNCE_MS = 500
 
-/** @type {ReturnType<typeof setTimeout> | null} */
-let draftTimer = null
+/** @type {Map<string, ReturnType<typeof setTimeout>>} 每个草稿键独立的防抖计时器 */
+const draftTimers = new Map()
 
-/** @type {Map<string, object[]>} `${groupId}:${channelId}` → 附件快照 */
-const draftFilesByChannel = new Map()
-
-/**
- * @param {string} groupId 群组 ID
- * @param {string} channelId 频道 ID
- * @returns {string} localStorage 草稿键名
- */
-function draftKey(groupId, channelId) {
-	return `fount.chat.draft:${groupId}:${channelId}`
-}
+/** @type {Map<string, Promise<void>>} 每个草稿键的写/删操作队列尾部，串行化同键操作 */
+const draftOpQueues = new Map()
 
 /**
- * @param {string} groupId 群
- * @param {string} channelId 频道
- * @returns {string} 内存附件键
- */
-function filesKey(groupId, channelId) {
-	return `${groupId}:${channelId}`
-}
-
-/**
- * 切走频道前把当前附件写入内存草稿。
- * @param {string} groupId 群
- * @param {string} channelId 频道
- * @param {object[]} files 附件
+ * 取消防抖计时器（仅当前草稿键）。
+ * @param {string} key 草稿键
  * @returns {void}
  */
-export function stashDraftFiles(groupId, channelId, files) {
-	if (!groupId || !channelId) return
-	const key = filesKey(groupId, channelId)
-	if (!files?.length) {
-		draftFilesByChannel.delete(key)
-		return
-	}
-	draftFilesByChannel.set(key, files.map(file => ({ ...file })))
+function cancelDraftTimer(key) {
+	const timer = draftTimers.get(key)
+	if (timer) clearTimeout(timer)
+	draftTimers.delete(key)
 }
 
 /**
- * @param {string} groupId 群
- * @param {string} channelId 频道
- * @returns {object[]} 附件快照（浅拷贝数组与文件对象）
+ * 将操作按草稿键串行排队，保证同键写入/删除顺序执行（不同键互不影响）。
+ * 前一个操作失败不会阻塞后续操作；返回的 promise 承载本次操作结果。
+ * @param {string} key 草稿键
+ * @param {() => Promise<void>} operation 操作
+ * @returns {Promise<void>} 本次操作完成（或失败）
  */
-export function peekDraftFiles(groupId, channelId) {
-	if (!groupId || !channelId) return []
-	const files = draftFilesByChannel.get(filesKey(groupId, channelId))
-	return files?.map(file => ({ ...file })) ?? []
+function enqueueDraftOp(key, operation) {
+	const prev = draftOpQueues.get(key) ?? Promise.resolve()
+	const next = prev.catch(() => {}).then(operation)
+	draftOpQueues.set(key, next)
+	next.catch(() => {}).finally(() => {
+		if (draftOpQueues.get(key) === next) draftOpQueues.delete(key)
+	})
+	return next
 }
 
 /**
- * @param {string} groupId 群组 ID
- * @param {string} channelId 频道 ID
- * @param {{ text: string, content_warning?: string, sensitive_media?: boolean }} draft 草稿内容
- * @returns {void}
+ * 为图片附件生成小尺寸 base64 缩略图（无缩略图且持有完整 buffer 时才生成）。
+ * @param {object} file 附件对象
+ * @returns {Promise<string | null>} 缩略图 dataURL 或 null
  */
-function writeDraftPayload(groupId, channelId, draft) {
+async function makeThumbnail(file) {
+	if (file.thumbnail) return file.thumbnail
+	if (typeof file.buffer !== 'string' || !file.buffer) return null
+	if (!(file.mime_type || '').startsWith('image/')) return null
 	try {
-		const payload = { text: draft.text || '' }
-		if (draft.content_warning) payload.content_warning = draft.content_warning
-		if (draft.sensitive_media) payload.sensitive_media = true
-		if (!payload.text && !payload.content_warning && !payload.sensitive_media)
-			localStorage.removeItem(draftKey(groupId, channelId))
-		else
-			localStorage.setItem(draftKey(groupId, channelId), JSON.stringify(payload))
+		const img = new Image()
+		img.src = `data:${file.mime_type};base64,${file.buffer.replace(/^data:[^;]+;base64,/, '')}`
+		await img.decode()
+		const MAX = 128
+		const scale = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight))
+		const canvas = document.createElement('canvas')
+		canvas.width = Math.max(1, Math.round(img.naturalWidth * scale))
+		canvas.height = Math.max(1, Math.round(img.naturalHeight * scale))
+		canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height)
+		return canvas.toDataURL('image/jpeg', 0.7)
 	}
-	catch { /* localStorage 满了静默忽略 */ }
+	catch { return null }
+}
+
+/**
+ * 构造可落盘的附件快照：保留完整 buffer 与缩略图，但 fileId 幂等。
+ * @param {object[]} files 附件
+ * @returns {Promise<object[]>} 附件快照
+ */
+async function snapshotFiles(files) {
+	const snapshot = []
+	for (const file of files || []) {
+		if (!file.thumbnail && file.buffer) file.thumbnail = await makeThumbnail(file)
+		file.fileId = file.fileId || crypto.randomUUID()
+		snapshot.push({
+			fileId: file.fileId,
+			name: file.name,
+			mime_type: file.mime_type,
+			size: file.size,
+			...file.description ? { description: file.description } : {},
+			...file.buffer ? { buffer: file.buffer } : {},
+			...file.thumbnail ? { thumbnail: file.thumbnail } : {},
+		})
+	}
+	return snapshot
+}
+
+/**
+ * 将草稿写入后端（全部为空时删除）。远端失败向上抛出，由调用方经聊天错误路径报告。
+ * @param {string} groupId 群组 ID
+ * @param {string} channelId 频道 ID
+ * @param {{ text?: string, content_warning?: string, sensitive_media?: boolean, files?: object[] }} draft 草稿内容
+ * @returns {Promise<void>} 完成（远端失败则 reject）
+ */
+async function writeDraftPayload(groupId, channelId, draft) {
+	const key = draftKey(groupId, channelId)
+	const files = await snapshotFiles(draft.files)
+	const isEmpty = !(draft.text || '') && !files.length
+	if (isEmpty) await deleteDraft(key)
+	else
+		await saveDraftRemote(key, {
+			text: draft.text || '',
+			...draft.content_warning ? { content_warning: draft.content_warning } : {},
+			...draft.sensitive_media ? { sensitive_media: true } : {},
+			files,
+		})
 }
 
 /**
  * 立即写入草稿（切频道前调用）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @param {{ text: string, content_warning?: string, sensitive_media?: boolean }} draft 草稿内容
- * @returns {void}
+ * @param {{ text?: string, content_warning?: string, sensitive_media?: boolean, files?: object[] }} draft 草稿内容
+ * @returns {Promise<void>} 落盘完成
  */
 export function flushDraft(groupId, channelId, draft) {
-	if (!groupId || !channelId) return
-	if (draftTimer) {
-		clearTimeout(draftTimer)
-		draftTimer = null
-	}
-	writeDraftPayload(groupId, channelId, draft)
+	if (!groupId || !channelId) return Promise.resolve()
+	const key = draftKey(groupId, channelId)
+	cancelDraftTimer(key)
+	return enqueueDraftOp(key, () => writeDraftPayload(groupId, channelId, draft))
+		.catch(handleError('chat.hub.operationFailed'))
 }
 
 /**
  * 保存草稿（防抖）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @param {{ text: string, content_warning?: string, sensitive_media?: boolean }} draft 草稿内容
+ * @param {{ text?: string, content_warning?: string, sensitive_media?: boolean, files?: object[] }} draft 草稿内容
  * @returns {void}
  */
 export function saveDraft(groupId, channelId, draft) {
 	if (!groupId || !channelId) return
-	if (draftTimer) clearTimeout(draftTimer)
-	draftTimer = setTimeout(() => {
-		draftTimer = null
-		writeDraftPayload(groupId, channelId, draft)
-	}, DRAFT_DEBOUNCE_MS)
+	const key = draftKey(groupId, channelId)
+	cancelDraftTimer(key)
+	draftTimers.set(key, setTimeout(() => {
+		draftTimers.delete(key)
+		void enqueueDraftOp(key, () => writeDraftPayload(groupId, channelId, draft))
+			.catch(handleError('chat.hub.operationFailed'))
+	}, DRAFT_DEBOUNCE_MS))
 }
 
 /**
- * 将 localStorage 草稿应用到 composer DOM。
+ * 恢复草稿附件到 composer 预览区与 selectedFiles（仅缩略图，点击时懒拉取内容）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
- * @returns {void}
- */
-export function applyDraft(groupId, channelId) {
-	if (!groupId || !channelId) return
-	const input = document.getElementById('message-input')
-	if (input instanceof HTMLTextAreaElement) input.value = ''
-	const contentWarningInput = document.getElementById('content-warning')
-	if (contentWarningInput instanceof HTMLInputElement) contentWarningInput.value = ''
-	const sensitiveMediaInput = document.getElementById('sensitive-media')
-	if (sensitiveMediaInput instanceof HTMLInputElement) sensitiveMediaInput.checked = false
-	setComposerExtrasVisible(false)
-
-	try {
-		const raw = localStorage.getItem(draftKey(groupId, channelId))
-		if (!raw) return
-		const draft = JSON.parse(raw)
-		if (input instanceof HTMLTextAreaElement && draft.text) {
-			input.value = draft.text
-			input.dispatchEvent(new Event('input', { bubbles: true }))
-		}
-		if (contentWarningInput instanceof HTMLInputElement && draft.content_warning)
-			contentWarningInput.value = draft.content_warning
-		if (sensitiveMediaInput instanceof HTMLInputElement && draft.sensitive_media)
-			sensitiveMediaInput.checked = true
-		if (draft.content_warning || draft.sensitive_media)
-			setComposerExtrasVisible(true)
-	}
-	catch { /* JSON 解析失败忽略 */ }
-}
-
-/**
- * 恢复该频道内存附件到 composer 预览区。
- * @param {string} groupId 群组 ID
- * @param {string} channelId 频道 ID
+ * @param {object[]} files 附件快照
+ * @param {string} key 频道草稿键
  * @returns {Promise<void>}
  */
-export async function restoreDraftFiles(groupId, channelId) {
-	if (!groupId || !channelId) return
+async function restoreDraftFiles(groupId, channelId, files, key) {
 	const { clearSelectedFiles, selectedFiles } = await import('./composerFiles.mjs')
 	clearSelectedFiles()
-
-	const files = peekDraftFiles(groupId, channelId)
+	if (!files?.length) return
 	const preview = document.getElementById('attachment-preview')
-	if (!files.length || !(preview instanceof HTMLElement)) return
+	if (!(preview instanceof HTMLElement)) return
 	const { renderAttachmentPreview } = await import('../src/composerAttachments.mjs')
 	for (const file of files) {
-		selectedFiles.push(file)
+		const restored = { ...file, draftKey: key }
+		selectedFiles.push(restored)
 		const el = await renderAttachmentPreview(
-			file,
+			restored,
 			selectedFiles.length - 1,
 			selectedFiles,
 			{
@@ -175,14 +185,53 @@ export async function restoreDraftFiles(groupId, channelId) {
 }
 
 /**
- * 加载草稿到 DOM 控件，并恢复该频道内存附件。
+ * 加载草稿到 DOM 控件，并恢复该频道附件（缩略图）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
  * @returns {Promise<void>}
  */
 export async function loadDraft(groupId, channelId) {
-	applyDraft(groupId, channelId)
-	await restoreDraftFiles(groupId, channelId)
+	if (!groupId || !channelId) return
+	const input = document.getElementById('message-input')
+	const contentWarningInput = document.getElementById('content-warning')
+	const sensitiveMediaInput = document.getElementById('sensitive-media')
+	const key = draftKey(groupId, channelId)
+
+	let draft
+	try {
+		draft = await getDraft(key)
+	}
+	catch (error) {
+		// 网络或 5xx 失败：保留现有输入与附件，向用户报告，不当作无草稿处理。
+		handleError('chat.hub.operationFailed')(error)
+		return
+	}
+
+	// 仅在服务端确认（返回记录或无记录）后重置控件；失败路径已提前返回。
+	if (input instanceof HTMLTextAreaElement) {
+		input.value = ''
+		input.style.height = 'auto'
+	}
+	if (contentWarningInput instanceof HTMLInputElement) contentWarningInput.value = ''
+	if (sensitiveMediaInput instanceof HTMLInputElement) sensitiveMediaInput.checked = false
+	setComposerExtrasVisible(false)
+
+	if (!draft) {
+		await restoreDraftFiles(groupId, channelId, [], key)
+		return
+	}
+
+	if (input instanceof HTMLTextAreaElement && draft.text) {
+		input.value = draft.text
+		input.dispatchEvent(new Event('input', { bubbles: true }))
+	}
+	if (contentWarningInput instanceof HTMLInputElement && draft.content_warning)
+		contentWarningInput.value = draft.content_warning
+	if (sensitiveMediaInput instanceof HTMLInputElement && draft.sensitive_media)
+		sensitiveMediaInput.checked = true
+	if (draft.content_warning || draft.sensitive_media)
+		setComposerExtrasVisible(true)
+	await restoreDraftFiles(groupId, channelId, draft.files || [], key)
 }
 
 /**
@@ -193,25 +242,20 @@ export async function loadDraft(groupId, channelId) {
  */
 export function clearDraft(groupId, channelId) {
 	if (!groupId || !channelId) return
-	if (draftTimer) {
-		clearTimeout(draftTimer)
-		draftTimer = null
-	}
-	draftFilesByChannel.delete(filesKey(groupId, channelId))
-	try {
-		localStorage.removeItem(draftKey(groupId, channelId))
-	}
-	catch { /* empty */ }
+	const key = draftKey(groupId, channelId)
+	cancelDraftTimer(key)
+	void enqueueDraftOp(key, () => deleteDraft(key))
+		.catch(handleError('chat.hub.operationFailed'))
 }
 
 /**
- * 在 composer 输入、CW、sensitive 变化时接线草稿自动保存。
+ * 在 composer 输入、CW、sensitive 变化时接线草稿自动保存（含附件快照）。
  * @param {() => { groupId: string | null, channelId: string | null }} getCtx 获取当前频道上下文
  * @returns {void}
  */
 export function wireDraftAutoSave(getCtx) {
 	/**
-	 * @returns {{ text: string, content_warning: string, sensitive_media: boolean }} 草稿字段快照
+	 * @returns {{ text: string, content_warning: string, sensitive_media: boolean, files: object[] }} 草稿字段快照
 	 */
 	const readFields = () => {
 		const input = document.getElementById('message-input')
@@ -221,6 +265,7 @@ export function wireDraftAutoSave(getCtx) {
 			text: input instanceof HTMLTextAreaElement ? input.value : '',
 			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
 			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
+			files: [...selectedFiles].map(file => ({ ...file, fileId: file.fileId || crypto.randomUUID() })),
 		}
 	}
 

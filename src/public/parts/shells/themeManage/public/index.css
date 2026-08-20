@@ -1,6 +1,6 @@
 .theme-preview-card {
 	overflow: hidden;
-	border-radius: 0.5rem;
+	border-radius: var(--radius-box);
 	transition: transform 0.2s;
 	min-height: 70px;
 }

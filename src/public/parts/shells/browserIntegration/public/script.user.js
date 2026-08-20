@@ -743,12 +743,185 @@ window.addEventListener('fount-host-info', async (e) => {
 // --- Toast Notifications ---
 
 let toastContainer = null
+let pageThemeCache = null
 
 const icons = {
 	info: 'https://api.iconify.design/line-md/alert-circle.svg',
 	success: 'https://api.iconify.design/line-md/confirm-circle.svg',
 	warning: 'https://api.iconify.design/line-md/alert.svg',
 	error: 'https://api.iconify.design/line-md/alert.svg',
+}
+
+/** 边框色与背景反色的混合占比（0-1）。 */
+const BORDER_INVERSE_RATIO = 0.3
+
+/** 语义变体基准色（基于白色背景设计的品牌色）。 */
+const SEMANTIC_COLORS = {
+	info: { r: 0x3B, g: 0x82, b: 0xF6 },
+	success: { r: 0x22, g: 0xC5, b: 0x5E },
+	warning: { r: 0xF5, g: 0x9E, b: 0x0B },
+	error: { r: 0xEF, g: 0x44, b: 0x44 },
+}
+
+const WHITE = { r: 255, g: 255, b: 255 }
+const BLACK = { r: 0, g: 0, b: 0 }
+
+/**
+ * @typedef {{r:number,g:number,b:number,a?:number}} Color rgba的范围在0-255之间的颜色（a可能是小数）
+ */
+
+/**
+ * 将 getComputedStyle 返回的 rgb()/rgba() 字符串解析为 {r,g,b,a}。
+ * @param {string} colorStr - 颜色字符串。
+ * @returns {Color|null} 解析后的颜色，解析失败时返回 null。
+ */
+function parseRgbColor(colorStr) {
+	const match = String(colorStr).match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/)
+	if (!match) return null
+	const [, r, g, b, aRaw = '1'] = match
+	return { r: +r, g: +g, b: +b, a: +aRaw * 255 }
+}
+
+/**
+ * 计算元素最接近的不透明背景色（向上回溯祖先直到找到非透明背景）。
+ * @param {HTMLElement} el - 目标元素。
+ * @returns {Color|null} 有效背景色，找不到时返回 null。
+ */
+function getEffectiveBackgroundColor(el) {
+	let node = el
+	while (node) {
+		const bg = parseRgbColor(getComputedStyle(node).backgroundColor)
+		if (bg?.a) return bg
+		node = node.parentElement
+	}
+	return null
+}
+
+/**
+ * 通过颜色合并函数计算各通道值（如加法、减法、平均等）。
+ * @param {function(...number): number} action - 对通道值执行的操作。
+ * @param {...Color} colors - 输入颜色。
+ * @returns {Color} 操作后的颜色。
+ */
+function mergeColor(action, ...colors) {
+	const result = {}
+	for(const channel of ['r', 'g', 'b', 'a'])
+		result[channel] = action(...colors.map(color => color[channel] ?? 255))
+	return result
+}
+
+/**
+ * 按权重平均一组颜色。
+ * @param {{color:Color, weight:number}[]} entries - 颜色与权重。
+ * @returns {Color} 加权平均颜色。
+ */
+function averageColors(entries) {
+	let total = 0
+	for (const { weight } of entries) total += weight
+	return mergeColor(
+		(...values) => values.reduce((a, b) => a + b, 0) / total,
+		...entries.map(({ color, weight }) => mergeColor(channel => channel * weight, color)),
+	)
+}
+
+/**
+ * 根据背景色计算边框色：背景色与自身反色按占比混合。
+ * @param {Color} background - 背景色。
+ * @param {number} ratio - 反色占比（0-1）。
+ * @returns {Color} 边框色。
+ */
+function borderColorFromBackground(background, ratio) {
+	return mergeColor(channel => Math.round(channel * (1 - ratio) + (255 - channel) * ratio), background)
+}
+
+/**
+ * 将单个通道取模环绕到 0-255 范围。
+ * @param {number} value - 输入通道值。
+ * @returns {number} 环绕后的通道值。
+ */
+function wrapColorChannel(value) {
+	return ((value % 256) + 256) % 256
+}
+
+/**
+ * 判断颜色是否属于亮色（基于感知亮度）。
+ * @param {{r:number,g:number,b:number}} color - 输入颜色。
+ * @returns {boolean} 亮色返回 true。
+ */
+function isLightColor(color) {
+	return (0.299 * color.r + 0.587 * color.g + 0.114 * color.b) > 128
+}
+
+/**
+ * 将语义基准色适配到页面背景：语义色 - 偏移基色 + 背景色。
+ * 亮色页面偏移基色为白（略压暗以融入亮背景），暗色页面偏移基色为黑（略提亮以融入暗背景）。
+ * @param {{r:number,g:number,b:number}} semantic - 语义基准色。
+ * @param {{r:number,g:number,b:number}} background - 页面平均背景色。
+ * @returns {{r:number,g:number,b:number}} 适配后的语义背景色。
+ */
+function adaptSemanticColor(semantic, background) {
+	return wrapColorChannel(mergeColor(
+		(semantic, base, background) => semantic - base + background,
+		semantic, isLightColor(background) ? WHITE : BLACK, background
+	))
+}
+
+/**
+ * 计算页面平均文字颜色与平均背景颜色。
+ * @returns {{text:{r:number,g:number,b:number}, background:{r:number,g:number,b:number}}|null} 页面主题颜色，无可计算内容时返回 null。
+ */
+function computePageThemeColors() {
+	if (pageThemeCache) return pageThemeCache
+	const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+		/**
+		 * 决定文本节点是否纳入统计。
+		 * @param {Text} node - 文本节点。
+		 * @returns {number} NodeFilter.FILTER_ACCEPT 或 NodeFilter.FILTER_REJECT。
+		 */
+		acceptNode(node) {
+			if (!node.textContent.trim()) return NodeFilter.FILTER_REJECT
+			const el = node.parentElement
+			if (!el) return NodeFilter.FILTER_REJECT
+			const rect = el.getBoundingClientRect()
+			if (rect.width && rect.height) return NodeFilter.FILTER_ACCEPT
+			return NodeFilter.FILTER_REJECT
+		}
+	})
+	const textColorEntries = []
+	const bgColorEntries = []
+	let textNode
+	while (textNode = walker.nextNode()) {
+		const el = textNode.parentElement
+		const rect = el.getBoundingClientRect()
+		const weight = rect.width * rect.height
+		const color = parseRgbColor(getComputedStyle(el).color)
+		if (color) textColorEntries.push({ color, weight })
+		const bg = getEffectiveBackgroundColor(el)
+		if (bg) bgColorEntries.push({ color: bg, weight })
+	}
+	if (!textColorEntries.length || !bgColorEntries.length) return null
+	return pageThemeCache = { text: averageColors(textColorEntries), background: averageColors(bgColorEntries) }
+}
+
+/**
+ * 将页面平均主题色应用到 toast 容器（写为 fount 前缀的 CSS 变量），使弹窗融入宿主页面。
+ * @param {HTMLElement} container - toast 容器元素。
+ * @returns {void}
+ */
+function applyPageThemeToToast(container) {
+	const theme = computePageThemeColors()
+	if (!theme) return
+	const { text, background } = theme
+	const border = borderColorFromBackground(background, BORDER_INVERSE_RATIO)
+	container.style.setProperty('--fount-toast-text', `rgb(${text.r} ${text.g} ${text.b})`)
+	container.style.setProperty('--fount-toast-background', `rgb(${background.r} ${background.g} ${background.b})`)
+	container.style.setProperty('--fount-toast-border', `rgb(${border.r} ${border.g} ${border.b})`)
+	const adaptedText = adaptSemanticColor(text, background)
+	for (const [variant, semantic] of Object.entries(SEMANTIC_COLORS)) {
+		const adaptedBg = adaptSemanticColor(semantic, background)
+		container.style.setProperty(`--fount-toast-${variant}-background`, `rgb(${adaptedBg.r} ${adaptedBg.g} ${adaptedBg.b})`)
+		container.style.setProperty(`--fount-toast-${variant}-text`, `rgb(${adaptedText.r} ${adaptedText.g} ${adaptedText.b})`)
+	}
 }
 
 /**
@@ -805,9 +978,10 @@ function addToastStyles() {
 	display: flex;
 	align-items: start;
 	padding: 1rem;
-	border-radius: 0.5rem;
-	background-color: #333;
-	color: white;
+	border-radius: var(--radius-box, 0.5rem);
+	background-color: var(--fount-toast-background, #333);
+	color: var(--fount-toast-text, white);
+	border: var(--border, 1px) solid var(--fount-toast-border, rgba(0, 0, 0, 0.2));
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	font-size: 0.875rem;
 	line-height: 1.25rem;
@@ -820,10 +994,10 @@ function addToastStyles() {
 	flex-shrink: 0;
 	margin-right: 0.75rem;
 }
-.fount-browserIntegration-alert-info { background-color: #3B82F6; color: white; }
-.fount-browserIntegration-alert-success { background-color: #22C55E; color: white; }
-.fount-browserIntegration-alert-warning { background-color: #F59E0B; color: white; }
-.fount-browserIntegration-alert-error { background-color: #EF4444; color: white; }
+.fount-browserIntegration-alert-info { background-color: var(--fount-toast-info-background, #3B82F6); color: var(--fount-toast-info-text, white); }
+.fount-browserIntegration-alert-success { background-color: var(--fount-toast-success-background, #22C55E); color: var(--fount-toast-success-text, white); }
+.fount-browserIntegration-alert-warning { background-color: var(--fount-toast-warning-background, #F59E0B); color: var(--fount-toast-warning-text, white); }
+.fount-browserIntegration-alert-error { background-color: var(--fount-toast-error-background, #EF4444); color: var(--fount-toast-error-text, white); }
 
 @keyframes fount-browserIntegration-animate-fade-in-up {
 	from { opacity: 0; transform: translateY(20px); }
@@ -920,6 +1094,7 @@ async function base_showToast(type, message, duration = 4000) {
 		message = String(message)
 	}
 	const container = ensureToastContainer()
+	applyPageThemeToToast(container)
 	const alertId = `fount-browserIntegration-alert-${Date.now()}`
 	const alertDiv = document.createElement('div')
 	if (type == 'custom') {

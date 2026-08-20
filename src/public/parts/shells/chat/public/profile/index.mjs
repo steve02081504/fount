@@ -155,7 +155,7 @@ async function renderProfile(profile) {
 		if (profileCardHost && !currentProfileCard.isConnected)
 			profileCardHost.appendChild(currentProfileCard)
 	}
-	document.documentElement.style.setProperty('--profile-accent', profile.themeColor || '#5865f2')
+	document.documentElement.style.setProperty('--profile-accent', profile.themeColor || 'var(--color-primary, var(--color-base-content))')
 
 	const displayStatus = profile.effectiveStatus || profile.status || 'offline'
 

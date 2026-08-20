@@ -53,7 +53,9 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 | GET / PUT / POST / DELETE | `P/bookmarks` | 书签 `{ entries: [{ groupId, channelId, eventId, title?, href? }] }`；POST 增一条，DELETE 删一条 |
 | GET | `P/inbox?kinds=&limit=&cursor=` | 收件箱 `{ items[], nextCursor, unreadCount }`（newest-first） |
 | GET / PUT | `P/inbox/seen` | 已读水位；PUT body `{ at }` → `{ seenAt }` |
-| GET / PUT | `P/group-folders` | Hub 侧栏文件夹 `{ folders }` |
+| GET / PUT / DELETE | `P/group-folders` | Hub 侧栏文件夹 `{ folders }` |
+| GET / PUT / DELETE | `P/drafts/:key` | 频道草稿（未发送内容）`key = groupId:channelId`；`{ text, content_warning?, sensitive_media?, files: [{ fileId, name, mime_type, size, description?, thumbnail? }], lastModified }`；GET 仅返回元数据+缩略图，附件完整内容经 `P/drafts/:key/files/:fileId` 懒拉取；频道被删除时服务端立即清草稿，群退出/频道不可见则保留草稿，超 7 年（lastModified）懒回收 |
+| GET | `P/drafts/:key/files/:fileId` | 懒拉取草稿附件完整内容 `{ buffer }`（点击缩略图时调用） |
 | GET / PUT | `P/aliases` | petname `{ entities, groups }` |
 | GET / PUT | `P/notify-prefs` | 通知偏好 |
 | GET / PUT | `P/translation-prefs` | `{ prefs: { autoTranslate, targetLocale?, excludeLocales? } }` |

@@ -4,6 +4,7 @@
  */
 import { readFile } from 'node:fs/promises'
 
+import { ms } from 'fount/scripts/ms.mjs'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { enforceDagRetention } from 'npm:@steve02081504/fount-p2p/timeline/retention_runner'
 
@@ -21,7 +22,7 @@ import { eventsPath, snapshotPath } from '../lib/paths.mjs'
 export async function enforceEventRetention(username, groupId, checkpointHint = null, groupSettings = {}) {
 	const eventsFilePath = eventsPath(username, groupId)
 	const maxDepth = Math.max(256, Number(groupSettings.eventRetentionDepth) || 200_000)
-	const maxMs = Math.max(3_600_000, Number(groupSettings.eventRetentionMs) || 365 * 24 * 3600 * 1000)
+	const maxMs = Math.max(ms('1h'), Number(groupSettings.eventRetentionMs) || ms('365d'))
 	return enforceDagRetention({
 		eventsFilePath,
 		/**

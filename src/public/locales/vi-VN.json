@@ -145,11 +145,18 @@
 			"replHint": "Enter để chạy · Shift+Enter để xuống dòng"
 		},
 		"test": {
-			"help": "Cách dùng: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nBộ chọn (nhóm cách nhau bằng dấu cách; suite trong cùng nhóm bằng dấu phẩy; / và : tương đương):\n  tên               mọi suite trong nhóm (vd. shells/chat)\n  tên:suite         một suite cụ thể\n  tên:suite:mục     một subtest hoặc tệp kiểm thử cụ thể\n\nKhông khớp chính xác thì mở rộng theo tiền tố (shells → shells/chat, shells/social); hỗ trợ glob (*, ?, **).\n\nMặc định (fount test trần): lên kế hoạch thất bại/chưa xong và mục cũ trong một lượt rồi chạy; thất bại chỉ chặn slot phụ thuộc — thoát khác không ở cuối. Không bao giờ toàn repo — dùng --all cho việc đó.\n\n--watch      theo dõi liên tục; không thoát dù hàng đợi trống (Ctrl+C để thoát); không kết hợp với --all, --force, --update-estimates hoặc bộ chọn\n--all        mọi suite trong phạm vi\n--force      chạy cưỡng bức; không tái dùng kết quả trước\n--update-estimates  ghi lại expected trong mỗi manifest theo trung bình DB hiện tại; bộ chọn tùy chọn; không chạy kiểm thử\n--kernel     shutdown dừng kernel kiểm thử; reboot dừng rồi khởi động lại; không dùng cùng đối số khác\n\nví dụ:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "Cách dùng: fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nBộ chọn (nhóm cách nhau bằng dấu cách; suite trong cùng nhóm bằng dấu phẩy; / và : tương đương):\n  tên               mọi suite trong nhóm (vd. shells/chat)\n  tên:suite         một suite cụ thể\n  tên:suite:mục     một subtest hoặc tệp kiểm thử cụ thể\n\nKhông khớp chính xác thì mở rộng theo tiền tố (shells → shells/chat, shells/social); hỗ trợ glob (*, ?, **).\n\nMặc định (fount test trần): lên kế hoạch thất bại/chưa xong và mục cũ trong một lượt rồi chạy; thất bại chỉ chặn slot phụ thuộc — thoát khác không ở cuối. Không bao giờ toàn repo — dùng --all cho việc đó.\n\n--watch      theo dõi liên tục; không thoát dù hàng đợi trống (Ctrl+C để thoát); không kết hợp với --all, --force, --update-estimates hoặc bộ chọn\n--all        mọi suite trong phạm vi\n--force      chạy cưỡng bức; không tái dùng kết quả trước\n--update-estimates  ghi lại expected trong mỗi manifest theo trung bình DB hiện tại; bộ chọn tùy chọn; không chạy kiểm thử\n--list        liệt kê các bộ kiểm thử (có thể dùng bộ chọn để thu hẹp phạm vi); không khởi động kernel và không chạy kiểm thử\n--kernel     shutdown dừng kernel kiểm thử; reboot dừng rồi khởi động lại; không dùng cùng đối số khác\n\nví dụ:\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Cách dùng: fount test --watch (không dùng cùng tùy chọn khác)",
 			"updateEstimates": {
 				"incompatible": "Cách dùng: fount test --update-estimates [<groups>...] (không dùng cùng cờ khác)",
 				"summary": "Đã cập nhật thời lượng dự kiến cho ${suitesUpdated} suite (${filesChanged} manifest); bỏ qua ${skipped} không có baseline hoặc đã mới nhất"
+			},
+			"list": {
+				"incompatible": "Cách dùng: fount test --list [<groups>...] (không dùng cùng cờ khác)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (dự kiến ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Cách dùng: fount test --kernel shutdown|reboot (không thể dùng cùng các tùy chọn khác)",
@@ -2112,7 +2119,10 @@
 				"livePreview": "Xem trước trực tiếp",
 				"languageVersion": "Phiên bản ngôn ngữ",
 				"localeHint": "Nhấp vào nhãn để chuyển đổi hoặc chỉnh sửa mã; nhấn Enter vào hộp nhập ở cuối để sao chép nó sang ngôn ngữ mới.",
-				"themeColorHint": "Được sử dụng để tạo họa tiết khi không có biểu ngữ tùy chỉnh và cũng được sử dụng cho các vòng lặp sóng âm thanh trực tiếp",
+				"themeColor": {
+					"clear": "Khôi phục màu mặc định của chủ đề",
+					"hint": "Được dùng để tạo họa tiết khi không có biểu ngữ tùy chỉnh, đồng thời dùng cho các vòng lặp sóng âm thanh trực tiếp. Để trống để dùng màu chủ đề hiện tại."
+				},
 				"linksPreview": "${count} liên kết công khai",
 				"unsavedHint": "Đóng cửa sổ sẽ loại bỏ những thay đổi chưa được lưu",
 				"tagsLabel": "Nhãn",
@@ -5775,6 +5785,12 @@
 			"title": "Thông tin hệ thống",
 			"failed": "Không tải được thông tin hệ thống"
 		},
+		"testStatus": {
+			"title": "Trạng thái kiểm tra",
+			"running": "Đang chạy kiểm tra",
+			"idle": "Kernel trực tuyến (rảnh)",
+			"queued": "Trong hàng đợi"
+		},
 		"connectivity": {
 			"backend": "Kết nối Backend",
 			"frontend": "kết nối mặt trước"
@@ -5782,6 +5798,7 @@
 		"loading": "đang tải...",
 		"checking": "Đang kiểm tra...",
 		"failed": "Thất bại",
+		"linksCount": "${count} kết nối đang hoạt động",
 		"copySuccess": "Đã sao chép báo cáo gỡ lỗi vào bảng nhớ tạm",
 		"copyFailed": "Sao chép báo cáo không thành công",
 		"alreadyLatest": "Đã là phiên bản mới nhất",

@@ -144,7 +144,7 @@ function buildSavedRow(ref, folderId, badge = {}) {
 		${folderBadge}
 	</span>
 </a>
-<button type="button" class="btn btn-ghost btn-sm btn-circle saved-row-action" data-remove-saved="${escapeHtml(actionKey)}"${folderId ? ` data-saved-folder="${escapeHtml(folderId)}"` : ''} data-i18n="social.saved.remove">
+<button type="button" class="btn btn-ghost btn-sm btn-square saved-row-action" data-remove-saved="${escapeHtml(actionKey)}"${folderId ? ` data-saved-folder="${escapeHtml(folderId)}"` : ''} data-i18n="social.saved.remove">
 	<span class="icon icon-bookmark-off" aria-hidden="true"></span>
 </button>
 `
@@ -163,10 +163,10 @@ function buildSavedSection(title, count, opts = {}) {
 	const actions = opts.folderId
 		? `
 			<div class="saved-folder-actions">
-				<button type="button" class="btn btn-ghost btn-sm btn-circle saved-icon-btn" data-rename-folder="${escapeHtml(opts.folderId)}" data-i18n="social.saved.renameFolder">
+				<button type="button" class="btn btn-ghost btn-sm btn-square saved-icon-btn" data-rename-folder="${escapeHtml(opts.folderId)}" data-i18n="social.saved.renameFolder">
 					<span class="icon icon-edit" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="btn btn-ghost btn-sm btn-circle text-error saved-icon-btn saved-icon-btn-danger" data-delete-folder="${escapeHtml(opts.folderId)}" data-i18n="social.saved.deleteFolder">
+				<button type="button" class="btn btn-ghost btn-sm btn-square text-error saved-icon-btn saved-icon-btn-danger" data-delete-folder="${escapeHtml(opts.folderId)}" data-i18n="social.saved.deleteFolder">
 					<span class="icon icon-delete" aria-hidden="true"></span>
 				</button>
 			</div>

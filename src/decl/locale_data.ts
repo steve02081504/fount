@@ -134,6 +134,13 @@ export type LocaleData = {
 				incompatible: string
 				summary: string
 			}
+			list: {
+				incompatible: string
+				header: string
+				suite: string
+				subtest: string
+				expected: string
+			}
 			kernel: {
 				incompatible: string
 				unknownAction: string
@@ -2074,7 +2081,10 @@ export type LocaleData = {
 				livePreview: string
 				languageVersion: string
 				localeHint: string
-				themeColorHint: string
+				themeColor: {
+					clear: string
+					hint: string
+				}
 				linksPreview: string
 				unsavedHint: string
 				tagsLabel: string
@@ -5737,6 +5747,12 @@ export type LocaleData = {
 			title: string
 			failed: string
 		}
+		testStatus: {
+			title: string
+			running: string
+			idle: string
+			queued: string
+		}
 		connectivity: {
 			backend: string
 			frontend: string
@@ -5744,6 +5760,7 @@ export type LocaleData = {
 		loading: string
 		checking: string
 		failed: string
+		linksCount: string
 		copySuccess: string
 		copyFailed: string
 		alreadyLatest: string
@@ -6250,6 +6267,7 @@ export type LocaleKeyParams = {
 	'chat.stickers.sticker.count': { count: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat.voiceRecording.speechRecognitionFailed': { error: string | number }
+	'debug_info.linksCount': { count: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }
 	'deskpet.toasts.stop_failed': { charname: string | number; message: string | number }
@@ -6344,6 +6362,10 @@ export type LocaleKeyParams = {
 	'fountConsole.test.federationCleanupPre': { output: string | number }
 	'fountConsole.test.heapSnapshotSaved': { path: string | number }
 	'fountConsole.test.kernel.unknownAction': { action: string | number }
+	'fountConsole.test.list.expected': { expected: string | number }
+	'fountConsole.test.list.header': { manifestId: string | number }
+	'fountConsole.test.list.subtest': { name: string | number }
+	'fountConsole.test.list.suite': { expected: string | number; name: string | number }
 	'fountConsole.test.manifestMatched': { ids: string | number }
 	'fountConsole.test.moduleCheck.missedReady': { label: string | number }
 	'fountConsole.test.noRealRunPlanned': { blocked: string | number; reused: string | number; skipped: string | number }

@@ -24,7 +24,7 @@ export function openImageEditor(file, labels = {}) {
 		<input type="color" data-brush-color value="#ff0000" data-i18n="${escapeHtml(labels.brushColorI18n || 'util.imageEditor.brushColor')}" />
 		<input type="range" min="2" max="48" value="12" data-brush-size data-i18n="${escapeHtml(labels.brushSizeI18n || 'util.imageEditor.brushSize')}" />
 	</div>
-	<div class="overflow-auto max-h-[70vh] border border-base-300 rounded-lg">
+	<div class="overflow-auto max-h-[70vh] border border-base-300 rounded-box">
 		<canvas></canvas>
 	</div>
 	<div class="modal-action">

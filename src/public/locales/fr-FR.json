@@ -145,11 +145,18 @@
 			"replHint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne"
 		},
 		"test": {
-			"help": "Utilisation : fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSélecteurs (groupes séparés par des espaces ; suites d'un même groupe par des virgules ; / et : équivalents) :\n  nom               toutes les suites du groupe (ex. shells/chat)\n  nom:suite         une suite précise\n  nom:suite:élément un sous-test ou fichier de test précis\n\nSans correspondance exacte, expansion par préfixe (shells → shells/chat, shells/social) ; globs (*, ?, **) pris en charge.\n\nPar défaut (fount test seul) : planifie échecs/incomplets et obsolètes en un passage et les exécute ; les échecs ne bloquent que leurs dépendants — sortie non nulle en fin de course. Jamais tout le dépôt — utiliser --all pour cela.\n\n--watch      surveillance continue ; reste actif même si la file est vide (Ctrl+C pour quitter) ; incompatible avec --all, --force, --update-estimates ou des sélecteurs\n--all        toutes les suites dans la portée\n--force      exécution forcée ; ne réutilise pas les derniers résultats\n--update-estimates  réécrit expected dans chaque manifest à partir des moyennes actuelles de la base ; sélecteurs optionnels ; n'exécute pas les tests\n--kernel     shutdown arrête le noyau de test ; reboot l'arrête puis le relance ; incompatible avec les autres arguments\n\nexemples :\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "Utilisation : fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\nSélecteurs (groupes séparés par des espaces ; suites d'un même groupe par des virgules ; / et : équivalents) :\n  nom               toutes les suites du groupe (ex. shells/chat)\n  nom:suite         une suite précise\n  nom:suite:élément un sous-test ou fichier de test précis\n\nSans correspondance exacte, expansion par préfixe (shells → shells/chat, shells/social) ; globs (*, ?, **) pris en charge.\n\nPar défaut (fount test seul) : planifie échecs/incomplets et obsolètes en un passage et les exécute ; les échecs ne bloquent que leurs dépendants — sortie non nulle en fin de course. Jamais tout le dépôt — utiliser --all pour cela.\n\n--watch      surveillance continue ; reste actif même si la file est vide (Ctrl+C pour quitter) ; incompatible avec --all, --force, --update-estimates ou des sélecteurs\n--all        toutes les suites dans la portée\n--force      exécution forcée ; ne réutilise pas les derniers résultats\n--update-estimates  réécrit expected dans chaque manifest à partir des moyennes actuelles de la base ; sélecteurs optionnels ; n'exécute pas les tests\n--list        répertorie les suites de tests (peut utiliser des sélecteurs pour restreindre la portée) ; ne démarre pas le noyau et n'exécute aucun test\n--kernel     shutdown arrête le noyau de test ; reboot l'arrête puis le relance ; incompatible avec les autres arguments\n\nexemples :\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "Utilisation : fount test --watch (incompatible avec toute autre option)",
 			"updateEstimates": {
 				"incompatible": "Utilisation : fount test --update-estimates [<groups>...] (incompatible avec tout autre commutateur)",
 				"summary": "Durées prévues mises à jour pour ${suitesUpdated} suite(s) (${filesChanged} manifest(s)) ; ${skipped} ignorée(s) sans baseline ou déjà à jour"
+			},
+			"list": {
+				"incompatible": "Utilisation : fount test --list [<groups>...] (ne peut pas être utilisé avec d'autres options)",
+				"header": "${manifestId}",
+				"suite": "  ${name}${expected}",
+				"subtest": "    :${name}",
+				"expected": " (prévu ${expected})"
 			},
 			"kernel": {
 				"incompatible": "Utilisation : fount test --kernel shutdown|reboot (ne peut pas être combiné avec d'autres options)",
@@ -2112,7 +2119,10 @@
 				"livePreview": "Aperçu en direct",
 				"languageVersion": "Version linguistique",
 				"localeHint": "Cliquez sur l'étiquette pour changer ou modifier le code ; appuyez sur Entrée dans la zone de saisie à la fin pour le copier dans une nouvelle langue.",
-				"themeColorHint": "Utilisé pour générer des textures lorsqu'il n'y a pas de bannière personnalisée, et également utilisé pour les boucles d'ondes sonores en direct",
+				"themeColor": {
+					"clear": "Rétablir la couleur par défaut du thème",
+					"hint": "Sert à générer des textures lorsqu'il n'y a pas de bannière personnalisée, ainsi qu'aux boucles d'ondes sonores en direct. Laisser vide pour utiliser la couleur actuelle du thème."
+				},
 				"linksPreview": "${count} liens publics",
 				"unsavedHint": "Fermer la fenêtre annulera les modifications non enregistrées.",
 				"tagsLabel": "Étiquette",
@@ -5781,6 +5791,12 @@
 			"title": "Informations système",
 			"failed": "Échec du chargement des informations système"
 		},
+		"testStatus": {
+			"title": "Statut du test",
+			"running": "Test en cours",
+			"idle": "Noyau en ligne (inactif)",
+			"queued": "En file d'attente"
+		},
 		"connectivity": {
 			"backend": "Connectivité back-end",
 			"frontend": "connectivité frontale"
@@ -5788,6 +5804,7 @@
 		"loading": "Chargement...",
 		"checking": "Vérification...",
 		"failed": "Échec",
+		"linksCount": "${count} connexions actives",
 		"copySuccess": "Rapport de débogage copié dans le presse-papiers",
 		"copyFailed": "Échec de la copie du rapport",
 		"alreadyLatest": "Déjà la dernière version",

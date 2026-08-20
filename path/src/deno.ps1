@@ -1,4 +1,13 @@
-﻿function script:deno_upgrade([string]$Channel) {
+﻿function script:deno_pinned_spec {
+	$pinFile = Join-Path $FOUNT_DIR '.deno-version'
+	if (Test-Path -LiteralPath $pinFile) {
+		$spec = Get-Content -LiteralPath $pinFile -TotalCount 1
+		if ($spec) { return $spec.Trim() }
+	}
+	return $null
+}
+
+function script:deno_upgrade([string]$Channel) {
 	$deno_ver = deno -V
 	if (!$deno_ver) {
 		deno upgrade -q
@@ -6,6 +15,26 @@
 	}
 	if (!$deno_ver) {
 		Write-Error (Get-I18n -key 'deno.notWorking') -ErrorAction Ignore
+		return
+	}
+
+	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
+
+	# 仓库 pin 文件优先：e.g. `pr 36606` / `canary` / `2.9.5`
+	$pinned = deno_pinned_spec
+	if ($pinned) {
+		if ($pinned -match '^pr\s+([0-9]+)$') {
+			deno upgrade -q 'pr' $Matches[1] 2>&1 | Out-Null
+		}
+		else {
+			deno upgrade -q $pinned 2>&1 | Out-Null
+		}
+		if ($LastExitCode) {
+			Write-Warning (Get-I18n -key 'deno.upgradeFailed')
+			return
+		}
+		New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+		Set-Content $upgradedFlag "1"
 		return
 	}
 
@@ -18,7 +47,6 @@
 	}
 	if ($Channel) { $deno_update_channel = $Channel }
 
-	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
 	$errorOut = deno upgrade -q $deno_update_channel 2>&1
 	if ($LastExitCode) {
 		if ($errorOut.ToString().Contains('USAGE')) { # wtf deno 1.0?

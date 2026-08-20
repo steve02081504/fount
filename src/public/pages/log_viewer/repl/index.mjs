@@ -255,7 +255,7 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 			li.className = 'block w-full'
 			const button = document.createElement('button')
 			button.type = 'button'
-			button.className = `block w-full text-left px-2 py-0.5 rounded${i === completionIndex ? ' bg-primary text-primary-content' : ''}`
+			button.className = `block w-full text-left px-2 py-0.5 rounded-field${i === completionIndex ? ' bg-primary text-primary-content' : ''}`
 			button.textContent = completionItems[i]
 			button.addEventListener('mousedown', (e) => {
 				e.preventDefault()
