@@ -30,11 +30,11 @@ export async function getSystemInfo() {
 }
 
 /**
- * 获取 fount test 内核运行状态。
- * @returns {Promise<object>} 测试状态。
+ * 建立测试状态 WebSocket：fount 后端会先推一条 `snapshot`（含 `online`/`active`/`runningSuites`/`queuedSuites`），
+ * 随后转发测试内核的实时事件（`queue-append` / `suite-start` / `suite-end` / `idle` 等），取代 HTTP 轮询。
+ * @returns {WebSocket} WebSocket 连接。
  */
-export async function getTestStatus() {
-	const res = await fetch(`${BASE}/test_status`)
-	if (!res.ok) throw new Error(`HTTP ${res.status}`)
-	return res.json()
+export function createTestStatusWs() {
+	const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+	return new WebSocket(`${protocol}//${window.location.host}/ws/parts/shells:debug_info/test_status`)
 }

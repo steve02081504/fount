@@ -27,6 +27,9 @@
 ### POST /api/parts/shells:debug_info/open_source
 - 用途：在本机打开源码目录（依赖本机环境）。
 
-### GET /api/parts/shells:debug_info/test_status
-- 用途：查询 fount test 内核（测试 hub，`127.0.0.1:8903`）是否在跑及每个测试套件的运行状态。
-- 返回：`{ online, active, idle, runningSuites: [{ key, elapsedMs }], queuedSuites: [key] }`；内核离线时 `online: false`。
+### GET /api/parts/shells:debug_info/system_info
+- 额外用途：后端连通性检查（npm Registry / Deno Land / jsDelivr / JSR / fount Network）。fount Network 检测 P2P 网络实际连通性：优先复用已活跃邻居链路，否则向已知邻居发起一次 `ensureLinkToNode` 握手（成功后即关闭）。
+
+### WS /ws/parts/shells:debug_info/test_status
+- 用途：订阅 fount test 内核运行状态。fount 后端先推一条 `{ type: 'snapshot', online, active, idle, runningSuites: [{ key, elapsedMs }], queuedSuites: [key] }`，随后转发内核实时事件（`queue-append` / `queue-remove` / `suite-start` / `suite-end` / `idle`）。
+- 前端连接始终保持：内核离线时不主动断开，后端每 10s 慢速重探一次并推送新快照，恢复上线即重建内核订阅；仅在客户端真正断开时前端才退避重连。

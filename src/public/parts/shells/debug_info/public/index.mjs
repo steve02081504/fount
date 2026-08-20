@@ -4,7 +4,7 @@ import { initTranslations } from '/scripts/i18n/index.mjs'
 import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
 import { ping } from '/scripts/endpoints/base.mjs'
-import { getAutoUpdateEnabled, getSystemInfo, getTestStatus, postRestart } from './src/endpoints.mjs'
+import { createTestStatusWs, getAutoUpdateEnabled, getSystemInfo, postRestart } from './src/endpoints.mjs'
 import { mountTemplate, renderTemplate } from './templates.mjs'
 
 applyTheme()
@@ -142,9 +142,16 @@ async function checkFrontendConnectivity() {
 	}
 }
 
-const TEST_POLL_INTERVAL = 2000
 let testStatusOpen = false
-let testStatusTimer = null
+/** @type {Map<string, number>} 运行中套件 key → 开始时间戳。 */
+const runningSuites = new Map()
+/** @type {Set<string>} 排队套件 key。 */
+const queuedSuites = new Set()
+/** @type {WebSocket | null} */
+let testStatusWs = null
+/** @type {number | null} */
+let testStatusReconnectTimer = null
+let testStatusAttempt = 0
 
 /**
  * 展开/收起测试状态列表。
@@ -182,50 +189,119 @@ async function renderTestStatus(status) {
 }
 
 /**
- * 轮询一次测试状态。
+ * 由本地运行的套件状态构建快照。
+ * @returns {object} 与 `/status` 形状一致的状态对象。
  */
-async function pollTestStatus() {
-	let status = null
-	try {
-		status = await getTestStatus()
-	} catch { /* 内核离线 */ }
-	try {
-		await renderTestStatus(status)
-	} catch (error) {
-		console.error('Failed to render test status:', error)
+function buildTestStatus() {
+	const active = runningSuites.size > 0 || queuedSuites.size > 0
+	return {
+		online: true,
+		active,
+		idle: !active,
+		runningSuites: [...runningSuites].map(([key, startMs]) => ({ key, elapsedMs: Date.now() - startMs })),
+		queuedSuites: [...queuedSuites],
 	}
 }
 
 /**
- * 启动测试状态轮询（仅页面可见时）。
+ * 应用一条 WS 消息（初始快照或内核实时事件）更新套件状态并重绘。
+ * @param {object} message 消息
+ * @returns {void}
  */
-function startTestStatusPolling() {
-	if (testStatusTimer) return
-	pollTestStatus()
-	scheduleNextTestStatusPoll()
-}
-
-/**
- * 调度下一次轮询；等待上次请求完成后才计算间隔，避免请求重叠。
- */
-function scheduleNextTestStatusPoll() {
-	if (document.hidden) {
-		testStatusTimer = null
-		return
+function applyTestStatusMessage(message) {
+	switch (message.type) {
+		case 'snapshot': {
+			if (message.online === true) testStatusAttempt = 0
+			runningSuites.clear()
+			queuedSuites.clear()
+			for (const { key, elapsedMs } of message.runningSuites || [])
+				runningSuites.set(key, Date.now() - elapsedMs)
+			for (const key of message.queuedSuites || []) queuedSuites.add(key)
+			void renderTestStatus(message)
+			break
+		}
+		case 'queue-append':
+			queuedSuites.add(message.key)
+			void renderTestStatus(buildTestStatus())
+			break
+		case 'queue-remove':
+			queuedSuites.delete(message.key)
+			void renderTestStatus(buildTestStatus())
+			break
+		case 'suite-start':
+			queuedSuites.delete(message.key)
+			runningSuites.set(message.key, Date.now())
+			void renderTestStatus(buildTestStatus())
+			break
+		case 'suite-end':
+			runningSuites.delete(message.key)
+			void renderTestStatus(buildTestStatus())
+			break
+		case 'idle':
+			runningSuites.clear()
+			queuedSuites.clear()
+			void renderTestStatus(buildTestStatus())
+			break
+		default:
+			break
 	}
-	testStatusTimer = setTimeout(async () => {
-		testStatusTimer = null
-		await pollTestStatus()
-		scheduleNextTestStatusPoll()
-	}, TEST_POLL_INTERVAL)
 }
 
 /**
- * 停止测试状态轮询。
+ * 建立测试状态 WebSocket（仅页面可见时）。
+ * @returns {void}
  */
-function stopTestStatusPolling() {
-	clearTimeout(testStatusTimer)
-	testStatusTimer = null
+function connectTestStatusWs() {
+	if (testStatusWs) return
+	const ws = createTestStatusWs()
+	testStatusWs = ws
+	ws.addEventListener('message', (event) => {
+		let message
+		try { message = JSON.parse(String(event.data)) } catch { return }
+		applyTestStatusMessage(message)
+	})
+	ws.addEventListener('close', () => {
+		if (testStatusWs !== ws) return
+		testStatusWs = null
+		runningSuites.clear()
+		queuedSuites.clear()
+		void renderTestStatus({ online: false, active: false, idle: true, runningSuites: [], queuedSuites: [] })
+		scheduleTestStatusReconnect()
+	})
+	ws.addEventListener('error', () => { if (testStatusWs === ws) ws.close() })
+}
+
+/**
+ * 调度重连（指数退避，仅页面可见时）。
+ * @returns {void}
+ */
+function scheduleTestStatusReconnect() {
+	if (document.hidden) return
+	const delay = Math.min(1500 * 2 ** testStatusAttempt++, 10000)
+	testStatusReconnectTimer = setTimeout(() => {
+		testStatusReconnectTimer = null
+		connectTestStatusWs()
+	}, delay)
+}
+
+/**
+ * 启动测试状态流（若未在跑）。
+ * @returns {void}
+ */
+function startTestStatusStream() {
+	if (testStatusWs || testStatusReconnectTimer) return
+	connectTestStatusWs()
+}
+
+/**
+ * 停止测试状态流（页面隐藏时）。
+ * @returns {void}
+ */
+function stopTestStatusStream() {
+	clearTimeout(testStatusReconnectTimer)
+	testStatusReconnectTimer = null
+	testStatusWs?.close()
+	testStatusWs = null
 }
 
 const UPDATE_ICON = 'https://api.iconify.design/mdi/update.svg'
@@ -349,12 +425,12 @@ function stopPollTimer() {
 document.addEventListener('visibilitychange', () => {
 	if (document.hidden) {
 		stopPollTimer()
-		stopTestStatusPolling()
+		stopTestStatusStream()
 	}
 	else {
 		if (Date.now() - lastVersionCheckTime >= VERSION_POLL_INTERVAL) pollVersionInfo()
 		startPollTimer()
-		startTestStatusPolling()
+		startTestStatusStream()
 	}
 })
 
@@ -364,4 +440,4 @@ pollVersionInfo()
 fetchSystemInfo()
 checkFrontendConnectivity()
 fetchAutoUpdateStatus()
-startTestStatusPolling()
+startTestStatusStream()
