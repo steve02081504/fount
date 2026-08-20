@@ -1,12 +1,11 @@
 import os from 'node:os'
 
-import { loadNetwork } from 'npm:@steve02081504/fount-p2p/node/network'
-import { closeLink, ensureLinkToNode, listLinks } from 'npm:@steve02081504/fount-p2p/transport/link_registry'
 import { WebSocket } from 'npm:ws'
 
 import { is_local_ip_from_req } from '../../../../../scripts/ratelimit.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { autoUpdateEnabled } from '../../../../../server/autoupdate.mjs'
+import { getPeerHealthTracker } from '../../../../../server/p2p_server/index.mjs'
 import { restartor } from '../../../../../server/server.mjs'
 import { openEditor } from '../../userSettings/src/editorCommand.mjs'
 
@@ -21,40 +20,26 @@ const KERNEL_OFFLINE = { online: false, active: false, idle: true, runningSuites
 const KERNEL_PROBE_INTERVAL = 10000
 
 /**
- * 竞速等待一个 Promise，超时返回 null。
- * @template T
- * @param {Promise<T>} promise 目标 Promise
- * @param {number} ms 超时毫秒
- * @returns {Promise<T | null>} 结果；超时为 null。
- */
-function withTimeout(promise, ms) {
-	return Promise.race([
-		promise,
-		new Promise(resolve => setTimeout(() => resolve(null), ms)),
-	])
-}
-
-/**
- * 探测 fount P2P 网络连通性：优先复用已活跃的邻居链路；否则主动向已知邻居发起一次
- * 链路握手（`ensureLinkToNode`），成功后随即关闭刚建立的链路避免留驻。
- * @returns {Promise<{ ok: boolean, peersKnown: number, activeLinks: number, peer?: string, error?: string }>} 探测结果
+ * 读取 fount P2P 网络连通性：消费节点常态链路维护中实测的邻居健康（`peer_health`），
+ * 不主动建链探测。有任一活跃邻居链路即判为连通，并取最近一次实测 RTT。
+ * @returns {Promise<{ ok: boolean, peersKnown: number, activeLinks: number, peer?: string, rttMs?: number | null, error?: string }>} 探测结果
  */
 async function probeFountNetwork() {
 	try {
-		const { trustedPeers, explorePeers } = loadNetwork()
-		const candidates = [...new Set([...trustedPeers, ...explorePeers])]
-		const existingLinks = listLinks().map(link => link.nodeHash)
-		if (existingLinks.length)
-			return { ok: true, peersKnown: candidates.length, activeLinks: existingLinks.length, peer: existingLinks[0] }
-
-		for (const hash of candidates.slice(0, 3)) {
-			const link = await withTimeout(ensureLinkToNode(hash), 4000)
-			if (link) {
-				await closeLink(hash, 'debug-connectivity-probe').catch(() => { })
-				return { ok: true, peersKnown: candidates.length, activeLinks: 0, peer: hash }
-			}
+		const tracker = getPeerHealthTracker()
+		if (!tracker) return { ok: false, peersKnown: 0, activeLinks: 0, error: 'p2p not initialized' }
+		const peers = tracker.listPeerHealth()
+		const connected = peers.filter(peer => peer.connected)
+		if (!connected.length)
+			return { ok: false, peersKnown: peers.length, activeLinks: 0, error: peers.length ? 'no active neighbor link' : 'no peer health data yet' }
+		const rtts = connected.map(peer => peer.rttMs ?? peer.avgRttMs).filter(v => typeof v === 'number' && Number.isFinite(v))
+		return {
+			ok: true,
+			peersKnown: peers.length,
+			activeLinks: connected.length,
+			peer: connected[0].nodeHash,
+			rttMs: rtts.length ? Math.min(...rtts) : null,
 		}
-		return { ok: false, peersKnown: candidates.length, activeLinks: 0, error: candidates.length ? 'no neighbor reachable' : 'no peers known' }
 	} catch (error) {
 		return { ok: false, peersKnown: 0, activeLinks: 0, error: String(error?.message || error) }
 	}
@@ -110,7 +95,9 @@ export function setEndpoints(router) {
 				const response = check.kind === 'fount'
 					? await probeFountNetwork()
 					: await fetch(check.url, { method: check.method || 'HEAD', signal: AbortSignal.timeout(5000) })
-				const duration = Date.now() - start
+				const duration = check.kind === 'fount'
+					? response.rttMs ?? (Date.now() - start)
+					: Date.now() - start
 				return {
 					...check,
 					status: response.ok ? 'ok' : 'error',
