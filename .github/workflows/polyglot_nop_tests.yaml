@@ -291,6 +291,10 @@ jobs:
           curl -fsSL https://deno.land/install.sh | sh
           echo "$HOME/.deno/bin" >> "$GITHUB_PATH"
 
+      - name: Apply repo deno version pin
+        shell: bash
+        run: bash .github/workflows/scripts/apply_deno_version.sh
+
       - name: Run Deno launcher (nop)
         shell: bash
         run: deno run -A ./path/fount.mjs nop
@@ -386,6 +390,10 @@ jobs:
         run: |
           curl -fsSL https://deno.land/install.sh | sh
           echo "$HOME/.deno/bin" >> "$GITHUB_PATH"
+
+      - name: Apply repo deno version pin
+        shell: bash
+        run: bash .github/workflows/scripts/apply_deno_version.sh
 
       - name: Run deno task (nop)
         shell: bash
