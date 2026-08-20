@@ -5804,6 +5804,7 @@
 		"loading": "Caricamento...",
 		"checking": "Controllo...",
 		"failed": "Fallito",
+		"linksCount": "${count} connessioni attive",
 		"copySuccess": "Rapporto di debug copiato negli appunti",
 		"copyFailed": "Copia rapporto non riuscita",
 		"alreadyLatest": "Già l'ultima versione",

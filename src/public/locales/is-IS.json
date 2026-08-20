@@ -5798,6 +5798,7 @@
 		"loading": "hleður...",
 		"checking": "Athugar...",
 		"failed": "Mistókst",
+		"linksCount": "${count} virkar tengingar",
 		"copySuccess": "Villuleitarskýrsla afrituð á klippiborð",
 		"copyFailed": "Afritun skýrslu mistókst",
 		"alreadyLatest": "Nú þegar nýjasta útgáfan",

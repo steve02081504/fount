@@ -5798,6 +5798,7 @@
 		"loading": "로드 중...",
 		"checking": "확인 중...",
 		"failed": "실패",
+		"linksCount": "${count}개의 활성 연결",
 		"copySuccess": "디버그 보고서가 클립보드에 복사되었습니다.",
 		"copyFailed": "보고서 복사 실패",
 		"alreadyLatest": "이미 최신 버전입니다",

@@ -5797,6 +5797,7 @@
 		"loading": "載入中...",
 		"checking": "檢查中...",
 		"failed": "失敗",
+		"linksCount": "${count} 條活動連接",
 		"copySuccess": "除錯報告已複製到剪貼簿",
 		"copyFailed": "複製報告失敗",
 		"alreadyLatest": "目前已是最新版本",

@@ -5798,6 +5798,7 @@
 		"loading": "Laden...",
 		"checking": "Überprüfung...",
 		"failed": "Fehlgeschlagen",
+		"linksCount": "${count} aktive Verbindungen",
 		"copySuccess": "Debug-Bericht in die Zwischenablage kopiert",
 		"copyFailed": "Fehler beim Kopieren des Berichts",
 		"alreadyLatest": "Bereits die neueste Version",

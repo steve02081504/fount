@@ -5804,6 +5804,7 @@
 		"loading": "Cargando...",
 		"checking": "Comprobando...",
 		"failed": "Fallido",
+		"linksCount": "${count} conexiones activas",
 		"copySuccess": "Informe de depuración copiado al portapapeles",
 		"copyFailed": "Error al copiar el informe",
 		"alreadyLatest": "Ya es la última versión",

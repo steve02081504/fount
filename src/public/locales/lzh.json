@@ -5798,6 +5798,7 @@
 		"loading": "方取錄…",
 		"checking": "方稽考…",
 		"failed": "敗",
+		"linksCount": "${count} 条活动连接",
 		"copySuccess": "糾錯報告已謄於剪貼板",
 		"copyFailed": "謄錄未遂",
 		"alreadyLatest": "已為最新，無須更易。",

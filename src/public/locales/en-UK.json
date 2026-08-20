@@ -5798,6 +5798,7 @@
 		"loading": "Loading...",
 		"checking": "Checking...",
 		"failed": "Failed",
+		"linksCount": "${count} active connections",
 		"copySuccess": "Debug report copied to clipboard",
 		"copyFailed": "Failed to copy report",
 		"alreadyLatest": "Already the latest version",

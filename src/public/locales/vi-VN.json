@@ -5798,6 +5798,7 @@
 		"loading": "đang tải...",
 		"checking": "Đang kiểm tra...",
 		"failed": "Thất bại",
+		"linksCount": "${count} kết nối đang hoạt động",
 		"copySuccess": "Đã sao chép báo cáo gỡ lỗi vào bảng nhớ tạm",
 		"copyFailed": "Sao chép báo cáo không thành công",
 		"alreadyLatest": "Đã là phiên bản mới nhất",

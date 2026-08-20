@@ -5760,6 +5760,7 @@ export type LocaleData = {
 		loading: string
 		checking: string
 		failed: string
+		linksCount: string
 		copySuccess: string
 		copyFailed: string
 		alreadyLatest: string
@@ -6266,6 +6267,7 @@ export type LocaleKeyParams = {
 	'chat.stickers.sticker.count': { count: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat.voiceRecording.speechRecognitionFailed': { error: string | number }
+	'debug_info.linksCount': { count: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }
 	'deskpet.toasts.stop_failed': { charname: string | number; message: string | number }

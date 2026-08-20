@@ -5798,6 +5798,7 @@
 		"loading": "تحميل...",
 		"checking": "جارٍ التحقق...",
 		"failed": "فشل",
+		"linksCount": "${count} اتصالات نشطة",
 		"copySuccess": "تم نسخ تقرير التصحيح إلى الحافظة",
 		"copyFailed": "فشل نسخ التقرير",
 		"alreadyLatest": "بالفعل أحدث إصدار",

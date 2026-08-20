@@ -5804,6 +5804,7 @@
 		"loading": "Chargement...",
 		"checking": "Vérification...",
 		"failed": "Échec",
+		"linksCount": "${count} connexions actives",
 		"copySuccess": "Rapport de débogage copié dans le presse-papiers",
 		"copyFailed": "Échec de la copie du rapport",
 		"alreadyLatest": "Déjà la dernière version",
