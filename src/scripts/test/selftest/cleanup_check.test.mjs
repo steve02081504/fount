@@ -43,6 +43,7 @@ Deno.test('findCleanupLeaks returns empty on non-Windows', () => {
 })
 
 /**
+ * 断言实际值不等于期望值。
  * @param {unknown} actual 实际值
  * @param {unknown} expected 期望值
  * @returns {void}

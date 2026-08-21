@@ -150,7 +150,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 */
 	function onCleanupLeak(message) {
 		console.errorI18n('fountConsole.test.cleanupLeak', {
-			paths: (message.leaks ?? []).join('\n'),
+			paths: message.leaks.join('\n'),
 		})
 	}
 

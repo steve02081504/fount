@@ -26,9 +26,10 @@ export function inGitHubActions() {
 
 /**
  * 扫描遗留的 ms-playwright / fount 临时目录。
+ * @param {string[]} [baseline] 起始基线路径（debug job 启动时记录），返回中剔除其中已存在者
  * @returns {string[]} 残留路径（空 = 干净）
  */
-export function findCleanupLeaks() {
+export function findCleanupLeaks(baseline = []) {
 	if (!isWindows() || inGitHubActions()) return []
 	/** @type {string[]} */
 	const leaks = []
@@ -47,5 +48,5 @@ export function findCleanupLeaks() {
 	for (const entry of tempEntries)
 		if (/^fount[-_]/.test(entry))
 			leaks.push(join(tmpdir(), entry))
-	return leaks
+	return leaks.filter(leak => !baseline.includes(leak))
 }

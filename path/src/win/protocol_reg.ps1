@@ -11,8 +11,7 @@
 		"$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
 	}
 	if (Test-Path -LiteralPath $shellExe) {
-		$fountPs1 = Join-Path $FOUNT_DIR 'path\fount.ps1'
-		$command = "`"$shellExe`" -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File `"$fountPs1`" protocolhandle `"%1`""
+		$command = "`"$shellExe`" -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File `"$(Join-Path $FOUNT_DIR 'path\fount.ps1')`" protocolhandle `"%1`""
 	}
 	else {
 		$command = "`"$FOUNT_DIR\path\fount.bat`" protocolhandle `"%1`""

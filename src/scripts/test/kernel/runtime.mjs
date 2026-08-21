@@ -285,6 +285,7 @@ export class TestKernel {
 			released: false,
 		}
 		this.jobs.set(jobId, job)
+		if (spec.debug) job.cleanupBaseline = findCleanupLeaks()
 		const prepared = await this.#prepareWave(job)
 		job.prepared = prepared
 		if (!prepared.activate) {
@@ -873,6 +874,7 @@ export class TestKernel {
 	}
 
 	/**
+	 * 放行就绪的 suite 进入运行（debug 串行下暂停）。
 	 * @returns {Promise<void>}
 	 */
 	async #admitReady() {
@@ -1161,13 +1163,13 @@ export class TestKernel {
 	 * @returns {Promise<boolean>} 是否发现残留
 	 */
 	async #checkCleanupLeak(job, { stopJob = false } = {}) {
-		const leaks = findCleanupLeaks()
+		const leaks = findCleanupLeaks(job.cleanupBaseline)
 		if (!leaks.length) return false
 		job.exitCode = CLEANUP_LEAK_EXIT_CODE
 		this.viewers.broadcast({ type: 'cleanup-leak', jobId: job.id, leaks })
 		if (!stopJob) return true
 		// debug 单步：丢弃该 job 其余待跑项并取消在跑项。
-		for (const item of this.queues.removeViewer(job.viewerId)) {
+		for (const item of this.queues.removeJob(job.id)) {
 			job.pending.delete(item.id)
 			this.viewers.broadcast({
 				type: 'queue-remove',
