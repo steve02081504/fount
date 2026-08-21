@@ -43,7 +43,7 @@ export function findCleanupLeaks(baseline = []) {
 		tempEntries = readdirSync(tmpdir())
 	}
 	catch {
-		return leaks
+		return leaks.filter(leak => !baseline.includes(leak))
 	}
 	for (const entry of tempEntries)
 		if (/^fount[-_]/.test(entry))
