@@ -31,7 +31,14 @@ import { isPrivateChatActive } from './privateShell.mjs'
  */
 export async function selectChannel(channelId) {
 	const { disableComposer, enableComposer } = await import('../messages/composerController.mjs')
-	const prevGroupId = store.context.currentGroupId
+	const selectedGroupId = store.context.currentGroupId
+	/**
+	 * 本次频道切换是否仍为当前目标。
+	 * @returns {boolean} 用户未切走则 true
+	 */
+	const stillCurrent = () => store.context.currentMode === 'groups' && store.context.currentGroupId === selectedGroupId
+	if (!stillCurrent()) return
+	const prevGroupId = selectedGroupId
 	const prevChannelId = store.context.currentChannelId
 	if (prevGroupId && prevChannelId && prevChannelId !== channelId) {
 		const { selectedFiles } = await import('../composerFiles.mjs')
@@ -46,6 +53,7 @@ export async function selectChannel(channelId) {
 			files: selectedFiles,
 		})
 	}
+	if (!stillCurrent()) return
 	const channel = store.context.currentState?.channels?.[channelId]
 	if (!channel) {
 		setState('context.currentChannelId', null)
@@ -100,8 +108,11 @@ export async function selectChannel(channelId) {
 		/** @returns {object | null} 当前群 state（读取文件加密模式） */
 		getCurrentState: () => store.context.currentState,
 	})
+	if (!stillCurrent()) return
 	await loadDraft(store.context.currentGroupId, channelId)
+	if (!stillCurrent()) return
 	await loadMessages()
+	if (!stillCurrent()) return
 	if (store.context.currentGroupId && store.context.currentChannelId && channelType === 'text')
 		connectGroupWebSocket(store.context.currentGroupId, store.context.currentChannelId)
 	updateStatusBanners()

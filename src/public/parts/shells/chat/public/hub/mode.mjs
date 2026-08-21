@@ -70,8 +70,7 @@ export async function setMode(mode) {
 	if (mode === 'friends')
 		setPinsBookmarksWrapVisible(false)
 
-	const keepPrivateGroupSession = mode === 'friends'
-		&& (store.privateGroup.groupId || store.friendChatEntering)
+	const keepPrivateGroupSession = mode === 'friends' && store.friendChatEntering
 	if (!keepPrivateGroupSession) {
 		cancelScheduledChannelRefresh()
 		closeGroupWebSocket()

@@ -118,6 +118,11 @@ function channelIdFromHashOr(groupId, fallback) {
 export async function selectGroup(groupId, presetChannelId = null) {
 	if (!groupId) return
 	const channelId = channelIdFromHashOr(groupId, presetChannelId)
+	/**
+	 * 本次选择是否仍为当前目标。
+	 * @returns {boolean} 用户未切走则 true
+	 */
+	const stillCurrent = () => store.context.currentMode === 'groups' && store.context.currentGroupId === groupId
 	clearPinPreviewCache()
 	clearPrivateGroupState()
 	resetFilesDrawerWire()
@@ -129,14 +134,20 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	updateHash(groupId, channelId)
 	const { setMode } = await import('../mode.mjs')
 	await setMode('groups')
+	if (!stillCurrent()) return
 	await loadGroups()
+	if (!stillCurrent()) return
 	try {
 		let state = await getGroupState(groupId)
+		if (!stillCurrent()) return
 		const memberState = await ensureGroupMembership(groupId, state)
 		if (!memberState) return
+		if (!stillCurrent()) return
 		state = memberState
 		state = await syncGroupStateForHub(groupId, state, channelId)
+		if (!stillCurrent()) return
 		await paintGroupHubChrome(state)
+		if (!stillCurrent()) return
 		await activateGroupChannel(state, channelIdFromHashOr(groupId, channelId))
 	}
 	catch (error) {

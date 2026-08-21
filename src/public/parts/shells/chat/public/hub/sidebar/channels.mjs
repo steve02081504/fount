@@ -21,7 +21,7 @@ import { selectChannel } from './selectChannel.mjs'
  */
 export async function renderChannelList(state) {
 	const container = getChannelListContainer()
-	if (!container) return
+	if (!container || !state) return
 	const channels = state.channels || {}
 	const channelIds = Object.keys(channels)
 	if (!channelIds.length) {
