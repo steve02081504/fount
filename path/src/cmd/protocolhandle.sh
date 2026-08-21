@@ -5,8 +5,7 @@ cmd_protocolhandle() {
 	shift
 	local protocolUrl="$1"
 	if [[ "$protocolUrl" == "fount://nop/" ]]; then
-		shift
-		"$0" "$@"
+		"$0" background keepalive
 		exit $?
 	fi
 	if [ -z "$protocolUrl" ]; then

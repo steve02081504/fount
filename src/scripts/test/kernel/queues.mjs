@@ -199,6 +199,20 @@ export class TestQueues {
 	}
 
 	/**
+	 * 移出某 job 的 CLI 项（不动其他 job 的同 viewer 项）。
+	 * @param {string} jobId job
+	 * @returns {QueueItem[]} 被移出的项
+	 */
+	removeJob(jobId) {
+		const kept = []
+		const removed = []
+		for (const item of this.cli)
+			(item.jobId === jobId ? removed : kept).push(item)
+		this.cli = kept
+		return removed
+	}
+
+	/**
 	 * CLI 项完成：去掉 FS 队列中相同 key。
 	 * @param {string} key suite 键
 	 * @returns {QueueItem[]} 被移出的 FS 项

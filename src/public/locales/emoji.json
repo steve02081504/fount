@@ -392,7 +392,8 @@
 				"subtestFilter": "🚫🔬🔽：${suite} → ${names}",
 				"suite": "🚫 📦: ${name}",
 				"suiteSelector": "🚫📦📛：${ids}"
-			}
+			},
+			"cleanupLeak": "🧹🧪🕵️❌：📁🧹⏳🔍：\n${paths}\n🧹➕🔄。"
 		},
 		"path": {
 			"protocol": {

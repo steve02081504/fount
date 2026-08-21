@@ -354,6 +354,7 @@ export function jobCommand(spec = {}) {
 	const parts = ['fount test']
 	if (spec.runAll) parts.push('--all')
 	if (spec.force) parts.push('--force')
+	if (spec.debug) parts.push('--debug')
 	if (spec.groups?.length)
 		for (const group of spec.groups) {
 			const manifest = group.manifestSelectors?.[0]

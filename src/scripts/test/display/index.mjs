@@ -145,6 +145,16 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	}
 
 	/**
+	 * @param {object} message cleanup-leak
+	 * @returns {void}
+	 */
+	function onCleanupLeak(message) {
+		console.errorI18n('fountConsole.test.cleanupLeak', {
+			paths: message.leaks.join('\n'),
+		})
+	}
+
+	/**
 	 * @param {object} message job-done
 	 * @returns {void}
 	 */
@@ -166,6 +176,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		['queue-append', onQueue],
 		['queue-remove', onQueue],
 		['job-wait', onJobWait],
+		['cleanup-leak', onCleanupLeak],
 		['job-done', onJobDone],
 	])
 

@@ -392,7 +392,8 @@
 				"subtestFilter": "filtro de subtest desconocido: ${suite} → ${names}",
 				"suite": "Suite desconocida: ${name}",
 				"suiteSelector": "selector de suite desconocido: ${ids}"
-			}
+			},
+			"cleanupLeak": "Error al detectar residuos de prueba: las siguientes rutas deberían haberse limpiado, pero siguen existiendo:\n${paths}\nPor favor, límpialas y vuelve a intentarlo."
 		},
 		"path": {
 			"protocol": {

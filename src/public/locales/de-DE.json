@@ -392,7 +392,8 @@
 				"subtestFilter": "Unbekannter Subtest-Filter: ${suite} → ${names}",
 				"suite": "Unbekannte Suite: ${name}",
 				"suiteSelector": "Unbekannte Suite-Angabe: ${ids}"
-			}
+			},
+			"cleanupLeak": "Die Erkennung von Testrückständen ist fehlgeschlagen: Die folgenden Pfade hätten bereinigt werden müssen, sind aber weiterhin vorhanden:\n${paths}\nBitte bereinigen Sie diese und versuchen Sie es erneut."
 		},
 		"path": {
 			"protocol": {

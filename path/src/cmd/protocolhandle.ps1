@@ -7,8 +7,8 @@
 		exit 1
 	}
 	if ($protocolUrl -eq 'fount://nop/') {
-		Start-WTfountCmd
-		return
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') background keepalive
+		exit $LastExitCode
 	}
 	$encodedUrl = [uri]::EscapeDataString($protocolUrl)
 	$targetUrl = "https://steve02081504.github.io/fount/protocol/?url=$encodedUrl"

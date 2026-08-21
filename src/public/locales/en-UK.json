@@ -392,7 +392,8 @@
 				"subtestFilter": "Unknown subtest filter: ${suite} → ${names}",
 				"suite": "unknown suite: ${name}",
 				"suiteSelector": "Unknown suite: ${ids}"
-			}
+			},
+			"cleanupLeak": "Test residue detection failed: the following paths should have been cleaned up, but they still exist:\n${paths}\nPlease clean them up and try again."
 		},
 		"path": {
 			"protocol": {

@@ -392,7 +392,8 @@
 				"subtestFilter": "Filtragem de subteste desconhecido: ${suite} → ${names}",
 				"suite": "Suite desconhecida: ${name}",
 				"suiteSelector": "Designação de suíte desconhecida: ${ids}"
-			}
+			},
+			"cleanupLeak": "Falha na deteção de resíduos de teste: os seguintes caminhos deveriam ter sido limpos, mas ainda existem:\n${paths}\nLimpe-os e tente novamente."
 		},
 		"path": {
 			"protocol": {
