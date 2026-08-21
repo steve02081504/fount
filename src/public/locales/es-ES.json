@@ -393,7 +393,7 @@
 				"suite": "Suite desconocida: ${name}",
 				"suiteSelector": "selector de suite desconocido: ${ids}"
 			},
-			"cleanupLeak": "Error en la detección de residuos de prueba: las siguientes rutas deben limpiarse, pero aún existen:\n${paths}\nPor favor, limpia e inténtalo de nuevo."
+			"cleanupLeak": "Error al detectar residuos de prueba: las siguientes rutas deberían haberse limpiado, pero siguen existiendo:\n${paths}\nPor favor, límpialas y vuelve a intentarlo."
 		},
 		"path": {
 			"protocol": {

@@ -393,7 +393,7 @@
 				"suite": "Suite không xác định: ${name}",
 				"suiteSelector": "Chỉ định suite không xác định: ${ids}"
 			},
-			"cleanupLeak": "Phát hiện dư lượng thử nghiệm không thành công: Các đường dẫn sau cần được làm sạch nhưng vẫn tồn tại:\n${paths}\nHãy dọn dẹp và thử lại."
+			"cleanupLeak": "Không phát hiện được dư lượng thử nghiệm: các đường dẫn sau lẽ ra phải được làm sạch nhưng vẫn còn tồn tại:\n${paths}\nHãy dọn dẹp chúng và thử lại."
 		},
 		"path": {
 			"protocol": {

@@ -393,7 +393,7 @@
 				"suite": "未識套件：${name}",
 				"suiteSelector": "未識 suite 指名：${ids}"
 			},
-			"cleanupLeak": "测试残留检测失败：以下路径应被清理但仍存在：\n${paths}\n请清理后重试。"
+			"cleanupLeak": "測試殘留之察未成：下列路徑宜淨而未去：\n${paths}\n請淨之，再試可也。"
 		},
 		"path": {
 			"protocol": {

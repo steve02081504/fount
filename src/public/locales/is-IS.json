@@ -393,7 +393,7 @@
 				"suite": "Óþekktur pakki: ${name}",
 				"suiteSelector": "Óþekkt suite-tilnefni: ${ids}"
 			},
-			"cleanupLeak": "Uppgötvun prófunarleifa mistókst: Eftirfarandi slóðir ættu að vera hreinsaðar en eru enn til:\n${paths}\nVinsamlegast hreinsaðu til og reyndu aftur."
+			"cleanupLeak": "Uppgötvun prófunarleifa mistókst: Eftirfarandi slóðir hefðu átt að vera hreinsaðar, en þær eru enn til:\n${paths}\nVinsamlegast hreinsaðu þær og reyndu aftur."
 		},
 		"path": {
 			"protocol": {

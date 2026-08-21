@@ -393,7 +393,7 @@
 				"suite": "suite sconosciuta: ${name}",
 				"suiteSelector": "Designazione suite sconosciuta: ${ids}"
 			},
-			"cleanupLeak": "Rilevamento residui del test non riuscito: i seguenti percorsi dovrebbero essere puliti ma esistono ancora:\n${paths}\nPer favore pulisci e riprova."
+			"cleanupLeak": "Rilevamento dei residui del test non riuscito: i seguenti percorsi avrebbero dovuto essere puliti, ma esistono ancora:\n${paths}\nTi preghiamo di pulirli e riprovare."
 		},
 		"path": {
 			"protocol": {

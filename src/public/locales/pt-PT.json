@@ -393,7 +393,7 @@
 				"suite": "Suite desconhecida: ${name}",
 				"suiteSelector": "Designação de suíte desconhecida: ${ids}"
 			},
-			"cleanupLeak": "Falha na detecção de resíduos de teste: os seguintes caminhos deveriam ser limpos, mas ainda existem:\n${paths}\nLimpe e tente novamente."
+			"cleanupLeak": "Falha na deteção de resíduos de teste: os seguintes caminhos deveriam ter sido limpos, mas ainda existem:\n${paths}\nLimpe-os e tente novamente."
 		},
 		"path": {
 			"protocol": {

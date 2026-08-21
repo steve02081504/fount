@@ -392,7 +392,7 @@
 				"suite": "未知的套件：${name}",
 				"suiteSelector": "未知的 suite 指名：${ids}"
 			},
-			"cleanupLeak": "測試殘留檢測失敗：以下路徑應清理但仍存在：\n${paths}\n請清理後重試。"
+			"cleanupLeak": "測試殘留物偵測失敗：以下路徑本應清理卻仍存在：\n${paths}\n請清理後再試。"
 		},
 		"path": {
 			"protocol": {

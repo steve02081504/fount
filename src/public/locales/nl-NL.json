@@ -393,7 +393,7 @@
 				"suite": "Onbekende suite: ${name}",
 				"suiteSelector": "Onbekende suite-selector: ${ids}"
 			},
-			"cleanupLeak": "Detectie van testresiduen is mislukt: de volgende paden moeten worden opgeschoond, maar bestaan nog steeds:\n${paths}\nMaak het schoon en probeer het opnieuw."
+			"cleanupLeak": "Detectie van testresiduen is mislukt: de volgende paden hadden moeten worden opgeschoond, maar bestaan nog steeds:\n${paths}\nMaak ze schoon en probeer het opnieuw."
 		},
 		"path": {
 			"protocol": {
