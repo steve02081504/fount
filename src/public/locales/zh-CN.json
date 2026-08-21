@@ -145,7 +145,7 @@
 			"replHint": "enter 运行 · shift+enter 换行"
 		},
 		"test": {
-			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n选择器（空格分隔多组；逗号分隔同组多个 suite；/ 与 : 等价）：\n  名称              该组全部 suite（如 shells/chat）\n  名称:suite        指定 suite\n  名称:suite:子项   指定子测试或测试文件\n\n无精确匹配时按前缀展开（shells → shells/chat、shells/social），并支持 glob（*、?、**）。\n\n默认（裸 fount test）一次规划失败/未完成/含噪声与过期项并跑完；失败只挡住依赖它的槽，收口统一非零。不会全量，全量用 --all。\n\n--watch      持续监视，队列空也不退出（Ctrl+C 结束）；不能同时带 --all / --force / --update-estimates 或选择器\n--all        范围内全部 suite\n--force      强制重跑，不沿用上次结果\n--update-estimates  按现状库平均耗时回写各 manifest 的 expected；可带选择器；不跑测试\n--list        列出测试套件（可带选择器缩小范围）；不启动内核，不跑测试\n--kernel     shutdown 关闭测试内核；reboot 关掉再拉起；不能同时带其他参数\n\n示例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
+			"help": "用法：fount test [--watch]\n       fount test [--all] [--force] [<groups>...]\n       fount test --update-estimates [<groups>...]\n       fount test --list [<groups>...]\n       fount test --kernel shutdown|reboot\n\n选择器（空格分隔多组；逗号分隔同组多个 suite；/ 与 : 等价）：\n  名称              该组全部 suite（如 shells/chat）\n  名称:suite        指定 suite\n  名称:suite:子项   指定子测试或测试文件\n\n无精确匹配时按前缀展开（shells → shells/chat、shells/social），并支持 glob（*、?、**）。\n\n默认（裸 fount test）一次规划失败/未完成/含噪声与过期项并跑完；失败只挡住依赖它的槽，收口统一非零。不会全量，全量用 --all。\n\n--debug      单步串行：每个 suite 为一步，单步跑完后检查残留物，发现则报错退出\n--watch      持续监视，队列空也不退出（Ctrl+C 结束）；不能同时带 --all / --force / --update-estimates 或选择器\n--all        范围内全部 suite\n--force      强制重跑，不沿用上次结果\n--update-estimates  按现状库平均耗时回写各 manifest 的 expected；可带选择器；不跑测试\n--list        列出测试套件（可带选择器缩小范围）；不启动内核，不跑测试\n--kernel     shutdown 关闭测试内核；reboot 关掉再拉起；不能同时带其他参数\n\n示例：\n  fount test\n  fount test --watch\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend\n  fount test --update-estimates\n  fount test --update-estimates shells/chat\n  fount test --kernel shutdown\n  fount test --kernel reboot",
 			"watchNoGroups": "用法：fount test --watch（不能同时使用其他参数）",
 			"updateEstimates": {
 				"incompatible": "用法：fount test --update-estimates [<groups>...]（不能同时使用其他开关）",
@@ -392,7 +392,8 @@
 				"subtestFilter": "未知的子测试过滤：${suite} → ${names}",
 				"suite": "未知的套件：${name}",
 				"suiteSelector": "未知的 suite 指名：${ids}"
-			}
+			},
+			"cleanupLeak": "测试残留检测失败：以下路径应被清理但仍存在：\n${paths}\n请清理后重试。"
 		},
 		"path": {
 			"protocol": {

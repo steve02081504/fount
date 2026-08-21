@@ -7,6 +7,7 @@ import { watch } from 'node:fs'
 import { ms } from '../../ms.mjs'
 import { CPU_BUDGET_PCT } from '../core/baseline.mjs'
 import { getHeadCommitHash } from '../core/changed.mjs'
+import { CLEANUP_LEAK_EXIT_CODE, findCleanupLeaks } from '../core/cleanup_check.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { buildEstimateTask, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
@@ -862,10 +863,22 @@ export class TestKernel {
 	}
 
 	/**
+	 * 当前是否有 debug job 在跑（单步串行：任一一套在跑时不再放行）。
+	 * @returns {boolean} 是否处于 debug 串行
+	 */
+	#debugSerialActive() {
+		for (const job of this.jobs.values())
+			if (job.spec?.debug) return true
+		return false
+	}
+
+	/**
 	 * @returns {Promise<void>}
 	 */
 	async #admitReady() {
 		for (; ;) {
+			const debugSerial = this.#debugSerialActive()
+			if (debugSerial && this.running.size > 0) break
 			const picked = this.queues.peekReady(item => this.#isHardReady(item))
 			if (!picked) break
 			const suite = this.catalog.byKey.get(picked.item.key)
@@ -1010,8 +1023,12 @@ export class TestKernel {
 			}
 			if (endEvent)
 				this.viewers.broadcast({ ...endEvent, ...this.#remainingState() })
-			if (item.jobId)
+			if (item.jobId) {
+				const job = this.jobs.get(item.jobId)
+				if (job?.spec?.debug)
+					await this.#checkCleanupLeak(job, { stopJob: true })
 				await this.#onJobItemDone(item)
+			}
 			this.wake()
 		}
 	}
@@ -1137,12 +1154,44 @@ export class TestKernel {
 	}
 
 	/**
+	 * 检查并处理残留物；发现残留时置 job 退出码并广播 cleanup-leak。
+	 * @param {object} job job
+	 * @param {object} [options] 选项
+	 * @param {boolean} [options.stopJob] 是否随后丢弃该 job 其余待跑（debug 单步）
+	 * @returns {Promise<boolean>} 是否发现残留
+	 */
+	async #checkCleanupLeak(job, { stopJob = false } = {}) {
+		const leaks = findCleanupLeaks()
+		if (!leaks.length) return false
+		job.exitCode = CLEANUP_LEAK_EXIT_CODE
+		this.viewers.broadcast({ type: 'cleanup-leak', jobId: job.id, leaks })
+		if (!stopJob) return true
+		// debug 单步：丢弃该 job 其余待跑项并取消在跑项。
+		for (const item of this.queues.removeViewer(job.viewerId)) {
+			job.pending.delete(item.id)
+			this.viewers.broadcast({
+				type: 'queue-remove',
+				key: item.key,
+				reason: 'cleanup_leak',
+				...this.#remainingState(),
+			})
+		}
+		for (const [key, running] of this.running)
+			if (running.item.jobId === job.id)
+				running.abort.abort('cleanup_leak')
+		this.wake()
+		return true
+	}
+
+	/**
 	 * @param {object} job job
 	 * @returns {Promise<void>}
 	 */
 	async #finishJob(job) {
 		if (job.finishing) return
 		job.finishing = true
+		if (!job.spec?.debug)
+			await this.#checkCleanupLeak(job, { stopJob: false })
 		const finished = await this.#finishReport(job)
 		job.done.resolve(job.exitCode)
 		this.viewers.broadcast({

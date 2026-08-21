@@ -625,10 +625,11 @@
 				"./src/scripts/test/selftest/kernel_lifecycle.test.mjs",
 				"./src/scripts/test/selftest/display.test.mjs",
 				"./src/scripts/test/selftest/jobs.test.mjs",
-				"./src/scripts/test/selftest/viewers.test.mjs"
+				"./src/scripts/test/selftest/viewers.test.mjs",
+				"./src/scripts/test/selftest/cleanup_check.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,jobs.test.mjs,viewers.test.mjs,fixtures.mjs}",
+				"src/scripts/test/selftest/{skip_because.test.mjs,queues.test.mjs,module_check.test.mjs,nested_git.test.mjs,issue_cache.test.mjs,kernel_lifecycle.test.mjs,kernel_fixtures.mjs,display.test.mjs,jobs.test.mjs,viewers.test.mjs,cleanup_check.test.mjs,fixtures.mjs}",
 				"src/scripts/test/core/skip_because.mjs",
 				"src/scripts/test/module_check_ready.mjs",
 				"src/scripts/test/env.mjs",

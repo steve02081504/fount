@@ -2,7 +2,7 @@
  * fount test CLI
  *
  *   fount test [--watch]
- *   fount test [--all] [--force] [<groups>...]
+ *   fount test [--all] [--force] [--debug] [<groups>...]
  *   fount test --update-estimates [<groups>...]
  *   fount test --list [<groups>...]
  *   fount test --kernel shutdown|reboot
@@ -37,6 +37,7 @@ const { positionals, values } = parseArgsOrExit({
 	options: {
 		all: { type: 'boolean', default: false },
 		force: { type: 'boolean', default: false },
+		debug: { type: 'boolean', default: false },
 		watch: { type: 'boolean', default: false },
 		'update-estimates': { type: 'boolean', default: false },
 		list: { type: 'boolean', default: false },
@@ -50,7 +51,7 @@ if (values.help || positionals.includes('help')) {
 	process.exit(0)
 }
 
-if (values.kernel && (values.watch || values.all || values.force || values['update-estimates'] || positionals.length)) {
+if (values.kernel && (values.watch || values.all || values.force || values.debug || values['update-estimates'] || positionals.length)) {
 	console.error(geti18n('fountConsole.test.kernel.incompatible'))
 	process.exit(2)
 }
@@ -60,17 +61,17 @@ if (values.kernel && !KERNEL_ACTIONS.has(values.kernel)) {
 	process.exit(2)
 }
 
-if (values['update-estimates'] && (values.watch || values.all || values.force || values.list)) {
+if (values['update-estimates'] && (values.watch || values.all || values.force || values.debug || values.list)) {
 	console.error(geti18n('fountConsole.test.updateEstimates.incompatible'))
 	process.exit(2)
 }
 
-if (values.list && (values.watch || values.all || values.force || values.kernel)) {
+if (values.list && (values.watch || values.all || values.force || values.debug || values.kernel)) {
 	console.error(geti18n('fountConsole.test.list.incompatible'))
 	process.exit(2)
 }
 
-if (values.watch && (values.all || values.force || positionals.length)) {
+if (values.watch && (values.all || values.force || values.debug || positionals.length)) {
 	console.error(geti18n('fountConsole.test.watchNoGroups'))
 	process.exit(2)
 }
@@ -260,6 +261,7 @@ process.exit(await (async () => {
 		job: {
 			runAll: values.all,
 			force: values.force,
+			debug: values.debug,
 			groups: parsed.groups,
 		},
 	})

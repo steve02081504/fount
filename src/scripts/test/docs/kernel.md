@@ -18,6 +18,10 @@ With a `--watch` viewer connected, the kernel auto-runs all suites once after **
 
 CLI job queue is LIFO among equal `priority` (later enqueued items first; imperfect stays `priority` 0). FS-triggered queue is LIFO. Auto-exit only after **all viewers disconnect** and no jobs remain — an empty CLI job must still deliver `accepted` / `job-done` before the kernel goes away.
 
+## Debug single-step + residue check
+
+`--debug` runs a job's suites one at a time (each suite = one step; the kernel admits at most one running suite while any debug job is active). After each step, and for a whole non-debug run on Windows outside GitHub Actions, the kernel verifies no `%LOCALAPPDATA%\ms-playwright` or `%LOCALAPPDATA%\Temp\fount[-_]*` residue remains (`core/cleanup_check.mjs`). A leak broadcasts `cleanup-leak` (display prints the paths), sets the job exit code `3`, and in debug stops the rest of the job.
+
 ## Display
 
 Display must not import `env.mjs` (orchestrator heap-snapshot path). Heap snapshots: [heap-snapshots.md](heap-snapshots.md). CLI `cli.mjs` imports `mark.mjs` first so `FOUNT_TEST` is set before i18n.
