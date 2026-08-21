@@ -392,7 +392,8 @@
 				"subtestFilter": "Filtraggio sottotest sconosciuto: ${suite} → ${names}",
 				"suite": "suite sconosciuta: ${name}",
 				"suiteSelector": "Designazione suite sconosciuta: ${ids}"
-			}
+			},
+			"cleanupLeak": "Rilevamento residui del test non riuscito: i seguenti percorsi dovrebbero essere puliti ma esistono ancora:\n${paths}\nPer favore pulisci e riprova."
 		},
 		"path": {
 			"protocol": {

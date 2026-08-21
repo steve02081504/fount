@@ -392,7 +392,8 @@
 				"subtestFilter": "Óþekkt undirprófssía: ${suite} → ${names}",
 				"suite": "Óþekktur pakki: ${name}",
 				"suiteSelector": "Óþekkt suite-tilnefni: ${ids}"
-			}
+			},
+			"cleanupLeak": "Uppgötvun prófunarleifa mistókst: Eftirfarandi slóðir ættu að vera hreinsaðar en eru enn til:\n${paths}\nVinsamlegast hreinsaðu til og reyndu aftur."
 		},
 		"path": {
 			"protocol": {

@@ -391,7 +391,8 @@
 				"subtestFilter": "未知的子測試過濾：${suite} → ${names}",
 				"suite": "未知的套件：${name}",
 				"suiteSelector": "未知的 suite 指名：${ids}"
-			}
+			},
+			"cleanupLeak": "測試殘留檢測失敗：以下路徑應清理但仍存在：\n${paths}\n請清理後重試。"
 		},
 		"path": {
 			"protocol": {

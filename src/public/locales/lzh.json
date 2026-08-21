@@ -392,7 +392,8 @@
 				"subtestFilter": "未識子測試過濾：${suite} → ${names}",
 				"suite": "未識套件：${name}",
 				"suiteSelector": "未識 suite 指名：${ids}"
-			}
+			},
+			"cleanupLeak": "测试残留检测失败：以下路径应被清理但仍存在：\n${paths}\n请清理后重试。"
 		},
 		"path": {
 			"protocol": {

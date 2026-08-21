@@ -392,7 +392,8 @@
 				"subtestFilter": "Filtre de sous-test inconnu : ${suite} → ${names}",
 				"suite": "Suite inconnue : ${name}",
 				"suiteSelector": "Sélecteur de suite inconnu : ${ids}"
-			}
+			},
+			"cleanupLeak": "Échec de la détection des résidus de test : les chemins suivants doivent être nettoyés mais existent toujours :\n${paths}\nVeuillez nettoyer et réessayer."
 		},
 		"path": {
 			"protocol": {

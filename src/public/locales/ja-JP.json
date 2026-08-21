@@ -392,7 +392,8 @@
 				"subtestFilter": "不明なサブテストのフィルタリング: ${suite} → ${names}",
 				"suite": "不明なスイート: ${name}",
 				"suiteSelector": "不明なスイートの指定: ${ids}"
-			}
+			},
+			"cleanupLeak": "テスト残留物の検出に失敗しました: 次のパスはクリーンアップする必要がありますが、まだ存在しています:\n${paths}\nクリーンアップして再試行してください。"
 		},
 		"path": {
 			"protocol": {

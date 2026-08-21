@@ -392,7 +392,8 @@
 				"subtestFilter": "Lọc subtest không xác định: ${suite} → ${names}",
 				"suite": "Suite không xác định: ${name}",
 				"suiteSelector": "Chỉ định suite không xác định: ${ids}"
-			}
+			},
+			"cleanupLeak": "Phát hiện dư lượng thử nghiệm không thành công: Các đường dẫn sau cần được làm sạch nhưng vẫn tồn tại:\n${paths}\nHãy dọn dẹp và thử lại."
 		},
 		"path": {
 			"protocol": {
