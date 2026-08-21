@@ -34,6 +34,7 @@ alwaysApply: false
 - **`FOUNT_TEST_SUBTESTS`**: ambient env merges when CLI selects a suite without `:subtest` (CLI wins; not for dependsOn-only or wave goals without suiteSelectors).
 - **`FOUNT_TEST_TRIGGERED_FILES`**: temp file of repo-relative paths that matched this wave's triggers (empty = unconstrained). Protocol: [protocol.mjs](core/protocol.mjs).
 - **`--force`**: disable reuse of fresh green/noisy/red.
+- **`--debug`**: single-step serial — each suite is one step, runs one at a time. After each step, and for a whole non-debug run on Windows outside GitHub Actions, verifies no `%LOCALAPPDATA%\ms-playwright` or `%LOCALAPPDATA%\Temp\fount[-_]*` residue; a leak sets exit code `3` (`core/cleanup_check.mjs`).
 - **`dependsOn`**: downstream `blocked(by)` when a dependency is not green-capable. Optimistic overlap: [resource-scheduling.md](docs/resource-scheduling.md).
 - **Live driver**: `live/runner.mjs` — ephemeral nodes, `FOUNT_TEST_NODE_*`, teardown after. Launch/ping failures → exit 1. Non-worker `env.mjs` sets `process.exitCode = 1` on unhandled rejection/exception — else a logged rejection exits 0 (**passed with noise**).
 - **Test hub**: kernel binds Express+WS on `http://127.0.0.1:8903`, sets `FOUNT_TEST_HUB_URL`. Playwright injects `fount.test.hubUrl`. No hub → issue still open / store miss.
