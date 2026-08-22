@@ -565,8 +565,7 @@ async function setStoredData(host, uuid, protocol, apikey) {
  * @returns {Promise<void>}
  */
 async function storeApiKey(apikey) {
-	fountDataCache = fountDataCache ? { ...fountDataCache, apikey } : { apikey }
-	await GM.setValue('fount_apikey', apikey)
+	await GM.setValue('fount_apikey', fountDataCache.apikey = apikey)
 }
 
 /**
