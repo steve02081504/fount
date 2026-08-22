@@ -39,8 +39,14 @@ async function populateLanguageSelector() {
 		 *
 		 */
 		button.onclick = async () => {
-			await setLanguage([locale])
-			document.activeElement?.blur()
+			try {
+				await setLanguage([locale])
+				document.activeElement?.blur()
+			}
+			catch (error) {
+				Sentry.captureException(error)
+				console.error('Failed to switch language:', error)
+			}
 		}
 
 		li.appendChild(button)

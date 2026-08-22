@@ -10,24 +10,24 @@
 export function ensureClosedTrailingCodeFence(text) {
 	const lines = text.split('\n')
 	let fenceChar = ''
-	let fenceLen = 0
+	let fenceLength = 0
 	let fenceStart = -1
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i].replace(/^ {0,3}/, '')
-		const m = line.match(/^(`{3,}|~{3,})([^\n]*)$/)
-		if (!m) continue
-		const char = m[1][0]
-		const info = m[2]
+	for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+		const line = lines[lineIndex].replace(/^ {0,3}/, '')
+		const fenceMatch = line.match(/^(`{3,}|~{3,})([^\n]*)$/)
+		if (!fenceMatch) continue
+		const char = fenceMatch[1][0]
+		const info = fenceMatch[2]
 		if (!fenceChar) {
 			// 反引号围栏的 info 串不得含反引号，否则不是开围栏
 			if (char === '`' && info.includes('`')) continue
 			fenceChar = char
-			fenceLen = m[1].length
-			fenceStart = i
+			fenceLength = fenceMatch[1].length
+			fenceStart = lineIndex
 		}
-		else if (char === fenceChar && m[1].length >= fenceLen && /^\s*$/.test(info)) {
+		else if (char === fenceChar && fenceMatch[1].length >= fenceLength && /^\s*$/.test(info)) {
 			fenceChar = ''
-			fenceLen = 0
+			fenceLength = 0
 			fenceStart = -1
 		}
 	}
@@ -35,5 +35,6 @@ export function ensureClosedTrailingCodeFence(text) {
 	const content = lines.slice(fenceStart + 1).join('\n')
 	if (content.trim() === '')
 		return lines.slice(0, fenceStart).join('\n')
-	return `${text}\n${fenceChar.repeat(fenceLen)}`
+	const separator = text.endsWith('\n') ? '' : '\n'
+	return `${text}${separator}${fenceChar.repeat(fenceLength)}`
 }

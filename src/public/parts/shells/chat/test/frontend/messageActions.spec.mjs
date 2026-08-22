@@ -310,5 +310,23 @@ test.describe('Chat message actions', () => {
 			const s = getComputedStyle(el)
 			return { opacity: s.opacity }
 		})).toEqual({ opacity: '0' })
+
+		// 键盘聚焦（行内箭头按钮触发 :focus-within）时显示
+		await arrow.focus()
+		await expect.poll(() => page.evaluate(() => {
+			const el = document.querySelector('.char-timeline-arrow.left')
+			if (!el) return null
+			const s = getComputedStyle(el)
+			return { opacity: s.opacity, pointerEvents: s.pointerEvents }
+		})).toEqual({ opacity: '0.9', pointerEvents: 'auto' })
+
+		// 移除焦点后恢复隐藏
+		await page.mouse.click(0, 0)
+		await expect.poll(() => page.evaluate(() => {
+			const el = document.querySelector('.char-timeline-arrow.left')
+			if (!el) return null
+			const s = getComputedStyle(el)
+			return { opacity: s.opacity, pointerEvents: s.pointerEvents }
+		})).toEqual({ opacity: '0', pointerEvents: 'none' })
 	})
 })

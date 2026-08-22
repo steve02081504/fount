@@ -1,3 +1,4 @@
+import { fetchViewerEntityHash } from 'fount/scripts/test/playwright/api.mjs'
 import { waitForHubReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
@@ -42,20 +43,24 @@ test.describe('Chat deep links', () => {
 		await expect(page.locator('#messages .loading')).toHaveCount(0, { timeout: 60_000 })
 	})
 
-	test('char sidebar shows a non-blank viewer name while async profile loads', async ({ page, baseUrl }) => {
+	test('char sidebar shows a non-blank viewer name while async profile loads', async ({ page, baseUrl, apiKey }) => {
 		// 回归：角色私聊侧栏的 viewer 成员名依赖异步 `store.viewer.viewerDisplayName`，
 		// profile 拉取未完成时渲染为纯空白。需回退到当前群 viewer 成员 displayName。
-		// 拦截并保持 viewer profile 请求 pending，验证空白回退；释放后验证最终态。
+		// 仅拦截 viewer 自身 profile 请求（用 viewer entityHash 精确匹配，不误拦角色资料请求），
+		// 验证空白回退；释放后验证最终态。
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		let releaseProfile
+		let viewerProfileIntercepted = false
 		const profileBlocked = new Promise(resolve => { releaseProfile = resolve })
 		await page.route('**/api/parts/shells:chat/entities/*', async route => {
 			const { pathname } = new URL(route.request().url())
 			const segment = pathname.split('/').filter(Boolean).pop()
-			const isProfileGet = route.request().method() === 'GET' && /^[\da-f]{128}$/i.test(segment)
-			if (!isProfileGet) {
+			const isViewerProfileGet = route.request().method() === 'GET' && segment === viewerEntityHash
+			if (!isViewerProfileGet) {
 				await route.continue()
 				return
 			}
+			viewerProfileIntercepted = true
 			await profileBlocked
 			await route.continue()
 		})
@@ -66,6 +71,9 @@ test.describe('Chat deep links', () => {
 		await waitForHubReady(page)
 		const viewerItem = page.locator('#member-list .member-item:not([data-char])')
 		await expect(viewerItem).toHaveCount(1, { timeout: 60_000 })
+
+		// 确认拦截到的是预期的 viewer 自身资料请求（而非角色资料请求）
+		await expect.poll(() => viewerProfileIntercepted).toBe(true)
 
 		// viewer profile 仍 pending：成员名应回退到群成员 displayName，而非空白
 		await expect(viewerItem.locator('.member-name')).toHaveText(/\S/, { timeout: 60_000 })

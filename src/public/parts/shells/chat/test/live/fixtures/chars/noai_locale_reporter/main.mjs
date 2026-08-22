@@ -58,10 +58,8 @@ export default {
 			SetData: async () => { },
 		},
 		chat: {
-			/** @param {object} arg 含 locales */
 			/** @returns {object} 问候语 */
 			GetGreeting: () => ({ content: '你好！我是本地化回复器。' }),
-			/** @param {object} arg 含 locales */
 			/** @returns {object} 群问候语 */
 			GetGroupGreeting: () => ({ content: '大家好！我是本地化回复器。' }),
 			/** @returns {Promise<object>} 角色提示词结构 */

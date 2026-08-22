@@ -4,9 +4,7 @@ import { createSingleNodeProbe } from 'fount/scripts/test/live/singleNode/helper
 const { chatApiJson, testCase, completeLiveScript } = await createSingleNodeProbe()
 
 console.log('=== Setup: create group & add char noai_locale_reporter ===')
-const group = await chatApiJson('POST', '/groups/', { name: 'AI测试群', defaultChannelName: '综合' })
-const { groupId } = group
-const channelId = group.defaultChannelId
+const { groupId, defaultChannelId: channelId } = await chatApiJson('POST', '/groups/', { name: 'AI测试群', defaultChannelName: '综合' })
 await chatApiJson('POST', `/groups/${groupId}/char`, { charname: 'noai_locale_reporter' })
 
 await testCase('AI char reply follows user message locale (zh-CN) and is not marked edited', async () => {
