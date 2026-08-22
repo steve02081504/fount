@@ -624,20 +624,78 @@ async function makeApiRequest(host, protocol, endpoint, options = {}) {
 	}
 }
 
+// --- 跨页面互斥锁 ---
+// 所有标签页共享同一份 GM 存储，故以其为锁介质，防止多个页面同时刷新 API 密钥而刷出一长串新 key。
+
+/**
+ * 互斥锁的存储键。
+ * @constant {string}
+ */
+const MUTEX_KEY = 'fount_apikey_mutex'
+/**
+ * 锁的持有期限（毫秒），超过则视为过期可被抢占。
+ * @constant {number}
+ */
+const MUTEX_LOCK_DURATION_MS = 15000
+/**
+ * 尝试获取锁的总超时（毫秒）。
+ * @constant {number}
+ */
+const MUTEX_ACQUIRE_TIMEOUT_MS = 10000
+
+/**
+ * 跨页面获取互斥锁并执行给定操作。
+ * 通过 GM 存储记录持锁令牌与过期时间，写后回读校验是否抢锁成功，失败则短暂退避重试。
+ * @template T
+ * @param {function(): Promise<T>} critical - 临界区内要执行的操作。
+ * @returns {Promise<T>} - 临界区操作的结果。
+ */
+async function withMutex(critical) {
+	const token = crypto.randomUUID()
+	const deadline = Date.now() + MUTEX_ACQUIRE_TIMEOUT_MS
+	while (Date.now() < deadline) {
+		const now = Date.now()
+		const current = await GM.getValue(MUTEX_KEY, null)
+		if (!current || current.expiry < now) {
+			await GM.setValue(MUTEX_KEY, { token, expiry: now + MUTEX_LOCK_DURATION_MS })
+			const check = await GM.getValue(MUTEX_KEY, null)
+			if (check?.token === token) {
+				try { return await critical() }
+				finally { if ((await GM.getValue(MUTEX_KEY, null))?.token === token) await GM.setValue(MUTEX_KEY, null) }
+			}
+		}
+		await new Promise(resolve => setTimeout(resolve, 200))
+	}
+	throw new Error('Timed out acquiring fount apikey mutex.')
+}
+
 /**
  * 从 fount 主机请求新的 API 密钥。
+ * 整个过程持有跨页面互斥锁：先重读已存储的 key，若已被其他标签页刷新为可用 key 则直接复用，
+ * 否则才创建新 key，从而避免多个标签页在 401 时各自生成新 key。
  * @param {string} host - fount 主机。
  * @param {string} protocol - 协议（http: 或 https:）。
- * @returns {Promise<string>} - 解析为新 API 密钥的 Promise。
+ * @returns {Promise<string>} - 可用（新或复用）的 API 密钥。
  */
 async function requestNewApiKey(host, protocol) {
-	const { apiKey } = await makeApiRequest(host, protocol, '/api/apikey/create', {
-		method: 'POST',
-		data: { description: 'Browser Integration Userscript' },
-		authType: 'session'
+	return withMutex(async () => {
+		fountDataCache = null
+		const { apikey: storedApikey } = await getStoredData()
+		if (storedApikey) try {
+			// 重读后先用已有 key 探测，若已可用则复用，避免重复创建。
+			await makeApiRequest(host, protocol, '/api/whoami')
+			console.log('fount userscript: Reusing an already-valid API key.')
+			return storedApikey
+		} catch (_) { }
+
+		const { apiKey } = await makeApiRequest(host, protocol, '/api/apikey/create', {
+			method: 'POST',
+			data: { description: 'Browser Integration Userscript' },
+			authType: 'session'
+		})
+		if (!apiKey) throw new Error('Server did not return a new API key.')
+		return apiKey
 	})
-	if (!apiKey) throw new Error('Server did not return a new API key.')
-	return apiKey
 }
 
 /**
