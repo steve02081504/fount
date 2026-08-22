@@ -379,6 +379,7 @@ export type LocaleData = {
 				suite: string
 				suiteSelector: string
 			}
+			cleanupLeak: string
 		}
 		path: {
 			protocol: {
@@ -6353,6 +6354,7 @@ export type LocaleKeyParams = {
 	'fountConsole.server.showUrl.https': { url: string | number }
 	'fountConsole.test.available': { ids: string | number }
 	'fountConsole.test.blocked': { deps: string | number; label: string | number }
+	'fountConsole.test.cleanupLeak': { paths: string | number }
 	'fountConsole.test.continueDefault': { count: string | number; imperfect: string | number; outdated: string | number }
 	'fountConsole.test.continueImperfect': { count: string | number }
 	'fountConsole.test.denoPanic.alreadyReported': { signature: string | number }
