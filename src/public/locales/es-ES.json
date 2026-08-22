@@ -521,10 +521,10 @@
 				"editorRemoved": "Configuración de fount eliminada de los atajos del terminal del editor: `${path}`"
 			},
 			"remove": {
-				"confirmPrompt": "El directorio de instalación de la fuente está a punto de eliminarse del disco: `${path}`\nConfirme que este es efectivamente el directorio que desea eliminar.",
-				"yn": "[T/N]",
+				"confirmPrompt": "El directorio de instalación de fount está a punto de eliminarse del disco: `${path}`\nConfirme que es efectivamente el directorio que desea eliminar.",
+				"yn": "[S/N]",
 				"aborted": "Cancelado, no se eliminó nada.",
-				"externalMountWarning": "Advertencia: ¡la fuente está ubicada en un soporte externo/compartido (`${target}`)!\nEste directorio puede existir en el host o en la máquina virtual al mismo tiempo. `fount remove` lo eliminará juntos, así que tenga cuidado.",
+				"externalMountWarning": "Advertencia: fount está ubicado en un soporte externo/compartido (`${target}`)!\nEste directorio puede existir a la vez en el host o en la máquina virtual. `fount remove` lo eliminará también allí, así que tenga mucho cuidado.",
 				"nonInteractiveRequiresForce": "La eliminación no se puede confirmar en un entorno no interactivo. Si está seguro de que desea eliminar `fount` (${path}), use `fount remove --force` para omitir la confirmación.",
 				"fountUninstallationComplete": "Se completó la desinstalación de la fount.",
 				"fountInstallationDirRemoved": "Se ha eliminado el directorio de instalación de la fount.",
