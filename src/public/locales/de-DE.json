@@ -6017,9 +6017,9 @@
 		}
 	},
 	"pro_cancel_screen": {
-		"title": "Fountain Pro-Abonnement gekündigt",
-		"description": "Erfahren Sie, wie Sie Ihr Fountain Pro-Abonnement kündigen und den Grund für die Kündigung angeben.",
-		"intro": "Tut mir leid, dich gehen zu sehen. Können Sie uns den Grund für die Abmeldung nennen, um fount pro noch besser zu machen?",
+		"title": "Ihr fount pro-Abonnement wurde gekündigt",
+		"description": "Erfahren Sie, wie Sie Ihr fount pro-Abonnement kündigen können, und nennen Sie uns den Grund für Ihre Kündigung.",
+		"intro": "Schade, dass Sie gehen. Damit wir fount pro weiter verbessern können: Würden Sie uns verraten, warum Sie abbestellt haben?",
 		"language_selector": {
 			"button": {
 				"aria-label": "Sprache auswählen"
@@ -6029,12 +6029,12 @@
 			}
 		},
 		"form": {
-			"reason_label": "Grund für die Abmeldung",
-			"reason_placeholder": "Zum Beispiel: Der Preis ist zu hoch/die Funktion ist nicht verfügbar/sie ist vorübergehend nicht verfügbar...",
-			"submit": "Grund für die Einreichung"
+			"reason_label": "Grund für die Kündigung",
+			"reason_placeholder": "Zum Beispiel: zu teuer, Funktionen, die ich nicht nutze, oder vorerst nicht mehr benötigt...",
+			"submit": "Grund absenden"
 		},
 		"result": {
-			"title": "Der Grund, den Sie für die Abmeldung angegeben haben"
+			"title": "Ihr abgesendeter Grund"
 		}
 	},
 	"oauth_handler": {

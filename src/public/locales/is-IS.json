@@ -6017,24 +6017,24 @@
 		}
 	},
 	"pro_cancel_screen": {
-		"title": "Fountain pro áskrift hætt",
-		"description": "Lærðu hvernig á að segja upp Fountain Pro áskriftinni þinni og fylltu út ástæðuna fyrir uppsögninni.",
-		"intro": "Leitt að sjá þig fara. Til að gera fount pro betri, geturðu sagt okkur ástæðuna fyrir því að þú hættir áskriftinni?",
+		"title": "fount pro áskriftinni þinni hefur verið sagt upp",
+		"description": "Lærðu hvernig þú segir upp fount pro áskriftina þína og deildu ástæðunni fyrir uppsögninni.",
+		"intro": "Leiðinlegt að sjá þig fara. Til að hjálpa okkur að bæta fount pro, gætirðu sagt okkur hvers vegna þú hættir áskriftinni?",
 		"language_selector": {
 			"button": {
 				"aria-label": "Veldu tungumál"
 			},
 			"search": {
-				"placeholder": "Leita tungumál..."
+				"placeholder": "Leita að tungumáli..."
 			}
 		},
 		"form": {
-			"reason_label": "Ástæða afskráningar",
-			"reason_placeholder": "Til dæmis: verðið er of hátt/aðgerðin er ekki tiltæk/hún er tímabundið ekki tiltæk...",
-			"submit": "Ástæða fyrir uppgjöf"
+			"reason_label": "Ástæða uppsagnar",
+			"reason_placeholder": "Til dæmis: of dýrt, aðgerðir sem ég nota ekki, eða ekki lengur þörf á að svo stöddu...",
+			"submit": "Senda ástæðu"
 		},
 		"result": {
-			"title": "Ástæðan fyrir því að þú sendir inn áskrift"
+			"title": "Ástæðan sem þú sendir"
 		}
 	},
 	"oauth_handler": {

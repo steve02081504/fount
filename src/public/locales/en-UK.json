@@ -6017,24 +6017,24 @@
 		}
 	},
 	"pro_cancel_screen": {
-		"title": "fountain pro subscription canceled",
-		"description": "Learn how to cancel your fountain pro subscription and fill in the reason for cancellation.",
-		"intro": "Sorry to see you go. In order to make fount pro better, can you tell us the reason for unsubscribing?",
+		"title": "Your fount pro subscription has been cancelled",
+		"description": "Learn how to cancel your fount pro subscription and share the reason for your cancellation.",
+		"intro": "Sorry to see you go. To help us improve fount pro, could you tell us why you're cancelling?",
 		"language_selector": {
 			"button": {
 				"aria-label": "Select language"
 			},
 			"search": {
-				"placeholder": "Search language..."
+				"placeholder": "Search languages..."
 			}
 		},
 		"form": {
-			"reason_label": "Reason for unsubscribing",
-			"reason_placeholder": "For example: the price is too high/the function is not available/it is temporarily unavailable...",
-			"submit": "Reason for submission"
+			"reason_label": "Reason for cancelling",
+			"reason_placeholder": "For example: too expensive, features I don't use, or no longer needed...",
+			"submit": "Submit reason"
 		},
 		"result": {
-			"title": "The reason you submitted for unsubscribing"
+			"title": "Your submitted reason"
 		}
 	},
 	"oauth_handler": {

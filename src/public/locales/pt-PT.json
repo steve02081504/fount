@@ -6023,24 +6023,24 @@
 		}
 	},
 	"pro_cancel_screen": {
-		"title": "assinatura do Fountain Pro cancelada",
-		"description": "Saiba como cancelar sua assinatura do Fountain Pro e preencha o motivo do cancelamento.",
-		"intro": "Lamento ver você partir. Para melhorar o font pro, você pode nos dizer o motivo do cancelamento da assinatura?",
+		"title": "A sua subscrição fount pro foi cancelada",
+		"description": "Saiba como cancelar a sua subscrição fount pro e partilhe o motivo do cancelamento.",
+		"intro": "Lamentamos vê-lo partir. Para nos ajudar a melhorar o fount pro, poderia dizer-nos por que cancelou a subscrição?",
 		"language_selector": {
 			"button": {
 				"aria-label": "Selecione o idioma"
 			},
 			"search": {
-				"placeholder": "Idioma de pesquisa..."
+				"placeholder": "Procurar um idioma..."
 			}
 		},
 		"form": {
-			"reason_label": "Motivo para cancelar a assinatura",
-			"reason_placeholder": "Por exemplo: o preço é muito alto/a função não está disponível/está temporariamente indisponível...",
-			"submit": "Motivo da submissão"
+			"reason_label": "Motivo do cancelamento",
+			"reason_placeholder": "Por exemplo: demasiado caro, funcionalidades que não uso ou de que, por agora, já não preciso...",
+			"submit": "Enviar motivo"
 		},
 		"result": {
-			"title": "O motivo pelo qual você enviou para cancelar a assinatura"
+			"title": "O motivo que enviou"
 		}
 	},
 	"oauth_handler": {

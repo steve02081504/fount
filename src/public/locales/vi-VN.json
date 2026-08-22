@@ -6017,9 +6017,9 @@
 		}
 	},
 	"pro_cancel_screen": {
-		"title": "đăng ký đài phun nước chuyên nghiệp đã bị hủy",
-		"description": "Tìm hiểu cách hủy đăng ký đài phun nước chuyên nghiệp của bạn và điền lý do hủy.",
-		"intro": "Rất tiếc khi thấy bạn đi. Để làm cho fount pro tốt hơn, bạn có thể cho chúng tôi biết lý do hủy đăng ký không?",
+		"title": "Đăng ký fount pro của bạn đã bị hủy",
+		"description": "Tìm hiểu cách hủy đăng ký fount pro của bạn và chia sẻ lý do hủy.",
+		"intro": "Rất tiếc khi bạn rời đi. Để giúp chúng tôi cải thiện fount pro, bạn có thể cho biết lý do hủy đăng ký không?",
 		"language_selector": {
 			"button": {
 				"aria-label": "Chọn ngôn ngữ"
@@ -6030,11 +6030,11 @@
 		},
 		"form": {
 			"reason_label": "Lý do hủy đăng ký",
-			"reason_placeholder": "Ví dụ: giá quá cao/chức năng không có/tạm thời không có…",
-			"submit": "Lý do nộp hồ sơ"
+			"reason_placeholder": "Ví dụ: quá đắt, các tính năng tôi không dùng, hoặc tạm thời không còn cần...",
+			"submit": "Gửi lý do"
 		},
 		"result": {
-			"title": "Lý do bạn gửi để hủy đăng ký"
+			"title": "Lý do bạn đã gửi"
 		}
 	},
 	"oauth_handler": {

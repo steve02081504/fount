@@ -6033,7 +6033,7 @@
 			"submit": "提交原因"
 		},
 		"result": {
-			"title": "你提交的取消訂閱原因"
+			"title": "你提交的退訂原因"
 		}
 	},
 	"oauth_handler": {

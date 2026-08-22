@@ -6017,24 +6017,24 @@
 		}
 	},
 	"pro_cancel_screen": {
-		"title": "Fountain Pro サブスクリプションがキャンセルされました",
-		"description": "Fountain Pro のサブスクリプションをキャンセルし、キャンセルの理由を入力する方法をご覧ください。",
-		"intro": "行ってしまうのは残念だ。 Fount Pro をより良いものにするために、購読を解除した理由を教えていただけますか?",
+		"title": "fount pro のサブスクリプションが解約されました",
+		"description": "fount pro のサブスクリプションを解約する方法と、解約理由の記入についてご案内します。",
+		"intro": "ご利用いただきありがとうございました。今後の改善のため、解約された理由を教えていただけますか?",
 		"language_selector": {
 			"button": {
-				"aria-label": "言語を選択してください"
+				"aria-label": "言語を選択"
 			},
 			"search": {
 				"placeholder": "言語を検索..."
 			}
 		},
 		"form": {
-			"reason_label": "購読解除の理由",
-			"reason_placeholder": "例：価格が高すぎる／機能が使えない／一時的に利用できない…。",
-			"submit": "提出理由"
+			"reason_label": "解約理由",
+			"reason_placeholder": "例：価格が高い／使っていない機能がある／今は必要ない…",
+			"submit": "送信する"
 		},
 		"result": {
-			"title": "購読解除を送信した理由"
+			"title": "送信した解約理由"
 		}
 	},
 	"oauth_handler": {

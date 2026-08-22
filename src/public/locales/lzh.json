@@ -6017,24 +6017,24 @@
 		}
 	},
 	"pro_cancel_screen": {
-		"title": "fount pro 订阅已取消",
-		"description": "了解如何取消 fount pro 订阅并填写退订原因。",
-		"intro": "很遗憾看到你离开。为了让 fount pro 变得更好，可以告诉我们退订的原因吗？",
+		"title": "fount pro 訂閱已罷",
+		"description": "欲知 fount pro 訂閱罷之之法，且書退訂之由。",
+		"intro": "君去殊悵然。欲使 fount pro 益善，敢問何故退訂？",
 		"language_selector": {
 			"button": {
-				"aria-label": "选择语言"
+				"aria-label": "擇言語"
 			},
 			"search": {
-				"placeholder": "搜索语言..."
+				"placeholder": "搜言語..."
 			}
 		},
 		"form": {
-			"reason_label": "退订原因",
-			"reason_placeholder": "例如：价格太高 / 功能用不上 / 暂时用不到了……",
-			"submit": "提交原因"
+			"reason_label": "退訂之由",
+			"reason_placeholder": "例如：價太高／無用其能／暫無所需……",
+			"submit": "呈上"
 		},
 		"result": {
-			"title": "你提交的退订原因"
+			"title": "君所呈退訂之由"
 		}
 	},
 	"oauth_handler": {

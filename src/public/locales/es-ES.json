@@ -6023,24 +6023,24 @@
 		}
 	},
 	"pro_cancel_screen": {
-		"title": "Suscripción a Fountain Pro cancelada",
-		"description": "Aprenda cómo cancelar su suscripción a Fountain Pro y complete el motivo de la cancelación.",
-		"intro": "Lamento verte partir. Para mejorar fount pro, ¿puede decirnos el motivo de la cancelación de la suscripción?",
+		"title": "Su suscripción a fount pro ha sido cancelada",
+		"description": "Descubra cómo cancelar su suscripción a fount pro y comparta el motivo de la cancelación.",
+		"intro": "Sentimos que se vaya. Para ayudarnos a mejorar fount pro, ¿podría contarnos por qué se da de baja?",
 		"language_selector": {
 			"button": {
 				"aria-label": "Seleccionar idioma"
 			},
 			"search": {
-				"placeholder": "Idioma de búsqueda..."
+				"placeholder": "Buscar idioma..."
 			}
 		},
 		"form": {
-			"reason_label": "Razón para darse de baja",
-			"reason_placeholder": "Por ejemplo: el precio es demasiado alto/la función no está disponible/no está disponible temporalmente...",
-			"submit": "Motivo de la presentación"
+			"reason_label": "Motivo de la baja",
+			"reason_placeholder": "Por ejemplo: demasiado caro, funciones que no utilizo o que ya no necesito por ahora...",
+			"submit": "Enviar motivo"
 		},
 		"result": {
-			"title": "El motivo por el que envió la cancelación de la suscripción"
+			"title": "El motivo que envió"
 		}
 	},
 	"oauth_handler": {

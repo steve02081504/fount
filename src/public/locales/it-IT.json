@@ -6023,24 +6023,24 @@
 		}
 	},
 	"pro_cancel_screen": {
-		"title": "Abbonamento Fountain Pro annullato",
-		"description": "Scopri come annullare il tuo abbonamento Fountain Pro e inserisci il motivo della cancellazione.",
-		"intro": "Mi dispiace vederti andare via. Per migliorare Fount Pro, puoi dirci il motivo della cancellazione?",
+		"title": "Il tuo abbonamento a fount pro è stato annullato",
+		"description": "Scopri come annullare il tuo abbonamento a fount pro e condividi il motivo dell'annullamento.",
+		"intro": "Ci dispiace vederti andare via. Per aiutarci a migliorare fount pro, potresti dirci perché ti sei disiscritto?",
 		"language_selector": {
 			"button": {
 				"aria-label": "Seleziona la lingua"
 			},
 			"search": {
-				"placeholder": "Cerca lingua..."
+				"placeholder": "Cerca una lingua..."
 			}
 		},
 		"form": {
-			"reason_label": "Motivo dell'annullamento dell'iscrizione",
-			"reason_placeholder": "Ad esempio: il prezzo è troppo alto/la funzione non è disponibile/è temporaneamente non disponibile...",
-			"submit": "Motivo della presentazione"
+			"reason_label": "Motivo per cui ti sei disiscritto",
+			"reason_placeholder": "Ad esempio: troppo costoso, funzioni che non uso o che per ora non mi servono...",
+			"submit": "Invia il motivo"
 		},
 		"result": {
-			"title": "Il motivo che hai inviato per annullare l'iscrizione"
+			"title": "Il motivo che hai inviato"
 		}
 	},
 	"oauth_handler": {
