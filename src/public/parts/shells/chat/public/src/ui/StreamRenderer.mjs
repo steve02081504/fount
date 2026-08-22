@@ -10,6 +10,44 @@
 import { renderMarkdownAsString } from '../../../../scripts/features/markdown/index.mjs'
 import { scrubHtmlActivePayload } from '../../../../scripts/lib/sanitizeHtml.mjs'
 
+/**
+ * 流式预览专用：修正以未闭合围栏代码块结尾的 markdown，避免渲染出末尾空代码块。
+ * 流式 rAF 平滑会逐字截取目标串，可能恰好停在开围栏之后：remark 会把其后所有内容
+ * （含 reasoning 的 details 闭合标签与正文）吞进代码块，破坏结构并留下空代码块。
+ * 此处若结尾围栏内容为空则整行去掉，否则补一个闭合围栏。正文完整时原样返回。
+ * @param {string} text - 待渲染文本。
+ * @returns {string} 修正后的文本。
+ */
+function ensureClosedTrailingCodeFence(text) {
+	const lines = String(text ?? '').split('\n')
+	let fenceChar = ''
+	let fenceLen = 0
+	let fenceStart = -1
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].replace(/^ {0,3}/, '')
+		const m = line.match(/^(`{3,}|~{3,})([^\n]*)$/)
+		if (!m) continue
+		const char = m[1][0]
+		const info = m[2]
+		if (!fenceChar) {
+			if (char === '`' && info.includes('`')) continue
+			fenceChar = char
+			fenceLen = m[1].length
+			fenceStart = i
+		}
+		else if (char === fenceChar && m[1].length >= fenceLen && /^\s*$/.test(info)) {
+			fenceChar = ''
+			fenceLen = 0
+			fenceStart = -1
+		}
+	}
+	if (!fenceChar) return text
+	const content = lines.slice(fenceStart + 1).join('\n')
+	if (content.trim() === '')
+		return lines.slice(0, fenceStart).join('\n')
+	return `${text}\n${fenceChar.repeat(fenceLen)}`
+}
+
 /** Hub 流式消息 Markdown 渲染器。 */
 export class StreamRenderer {
 	/** @type {HTMLElement} */
@@ -107,7 +145,7 @@ export class StreamRenderer {
 		if (this.#displayedText === this.#lastRendered) return
 		const text = this.#displayedText
 		this.#lastRendered = text
-		const html = await renderMarkdownAsString(text, this.#markdownCache, {
+		const html = await renderMarkdownAsString(ensureClosedTrailingCodeFence(text), this.#markdownCache, {
 			allowDangerousHtml: this.#allowDangerousHtml,
 		})
 		this.#bodyElement.replaceChildren(scrubHtmlActivePayload(html))

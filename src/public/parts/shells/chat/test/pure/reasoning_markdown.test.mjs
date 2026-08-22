@@ -13,7 +13,7 @@ Deno.test('buildReasoningDetailsMarkdown keeps code-fence angle brackets raw', (
 			reasoning_content: 'Use `Array<T>` or:\n\n```ts\nconst x: Array<number> = []\n```',
 		},
 	})
-	assertStringIncludes(markdown, '<details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-lg border border-base-content/20 bg-base-200/30">')
+	assertStringIncludes(markdown, '<details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-box border border-base-content/20 bg-base-200/30">')
 	assertStringIncludes(markdown, '</details>')
 	assertStringIncludes(markdown, 'Array<T>')
 	assertStringIncludes(markdown, 'Array<number>')
@@ -27,7 +27,7 @@ Deno.test('buildReasoningDetailsMarkdown separates HTML block from body with bla
 		extension: { reasoning_content: 'step one' },
 	}, { open: true })
 	const lines = markdown.split('\n')
-	assertEquals(lines[0], '<details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-lg border border-base-content/20 bg-base-200/30" open>')
+	assertEquals(lines[0], '<details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-box border border-base-content/20 bg-base-200/30" open>')
 	assertEquals(lines[1], '')
 	assertStringIncludes(lines[2], '<summary class="fount-reasoning-summary collapse-title')
 	assertEquals(lines[3], '')
@@ -51,4 +51,41 @@ Deno.test('buildReasoningDetailsMarkdown joins summary items with blank lines', 
 
 Deno.test('buildReasoningDetailsMarkdown returns empty when no reasoning', () => {
 	assertEquals(buildReasoningDetailsMarkdown({ content: 'x', extension: {} }), '')
+})
+
+Deno.test('buildReasoningDetailsMarkdown drops empty trailing unclosed fence (streaming)', () => {
+	const markdown = buildReasoningDetailsMarkdown({
+		content: '',
+		extension: { reasoning_content: '步骤：\n\n```\n' },
+	}, { open: true })
+	assertStringIncludes(markdown, '步骤：')
+	assertEquals(markdown.includes('```'), false)
+	assertStringIncludes(markdown, '</details>')
+})
+
+Deno.test('buildReasoningDetailsMarkdown closes non-empty trailing unclosed fence (streaming)', () => {
+	const markdown = buildReasoningDetailsMarkdown({
+		content: '',
+		extension: { reasoning_content: '```\ncode line' },
+	}, { open: true })
+	assertStringIncludes(markdown, '```\ncode line\n```')
+	assertStringIncludes(markdown, '</details>')
+})
+
+Deno.test('buildReasoningDetailsMarkdown leaves complete body untouched', () => {
+	const markdown = buildReasoningDetailsMarkdown({
+		content: '',
+		extension: { reasoning_content: '```\ncode\n```' },
+	})
+	assertStringIncludes(markdown, '```\ncode\n```')
+})
+
+Deno.test('buildReasoningDetailsMarkdown keeps final (non-streaming) body raw', () => {
+	const raw = '步骤：\n\n```\ncode line'
+	const markdown = buildReasoningDetailsMarkdown({
+		content: '',
+		extension: { reasoning_content: raw },
+	})
+	assertStringIncludes(markdown, raw)
+	assertEquals(markdown.includes(`${raw}\n` + '```'), false)
 })
