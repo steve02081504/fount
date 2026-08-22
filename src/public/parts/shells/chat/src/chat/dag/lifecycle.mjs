@@ -8,8 +8,8 @@
 import { randomUUID } from 'node:crypto'
 import { access, mkdir } from 'node:fs/promises'
 
-import { ms } from 'fount/scripts/ms.mjs'
 import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 import { DEFAULT_STREAM_GENERATING_IDLE_MS } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
