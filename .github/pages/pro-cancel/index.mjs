@@ -17,12 +17,13 @@ const cancelForm = document.getElementById('cancel-form')
 const reasonInput = document.getElementById('reason-input')
 const resultSection = document.getElementById('result-section')
 const resultText = document.getElementById('result-text')
+let latestLanguageSwitchRequest = 0
 
 /**
  * 填充语言选择器。
- * @returns {Promise<void>}
+ * @returns {void}
  */
-async function populateLanguageSelector() {
+function populateLanguageSelector() {
 	languageSelector.innerHTML = ''
 	const locales = getAvailableLocales()
 	const localeNames = getLocaleNames()
@@ -39,8 +40,10 @@ async function populateLanguageSelector() {
 		 *
 		 */
 		button.onclick = async () => {
+			const requestId = ++latestLanguageSwitchRequest
 			try {
 				await setLanguage([locale])
+				if (requestId !== latestLanguageSwitchRequest) return
 				document.activeElement?.blur()
 			}
 			catch (error) {
@@ -83,7 +86,7 @@ async function populateLanguageSelector() {
  */
 async function main() {
 	await initTranslations('pro_cancel_screen')
-	await populateLanguageSelector()
+	populateLanguageSelector()
 
 	cancelForm.addEventListener('submit', (event) => {
 		event.preventDefault()
