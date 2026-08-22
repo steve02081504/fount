@@ -6022,6 +6022,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "Il tuo abbonamento a fount pro è stato annullato",
+		"description": "Scopri come annullare il tuo abbonamento a fount pro e condividi il motivo dell'annullamento.",
+		"intro": "Ci dispiace vederti andare via. Per aiutarci a migliorare fount pro, potresti dirci perché ti sei disiscritto?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Seleziona la lingua"
+			},
+			"search": {
+				"placeholder": "Cerca una lingua...",
+				"aria-label": "Cerca una lingua"
+			}
+		},
+		"form": {
+			"reason_label": "Motivo per cui ti sei disiscritto",
+			"reason_placeholder": "Ad esempio: troppo costoso, funzioni che non uso o che per ora non mi servono...",
+			"submit": "Invia il motivo"
+		},
+		"result": {
+			"title": "Il motivo che hai inviato"
+		}
+	},
 	"oauth_handler": {
 		"title": "Accesso OAuth",
 		"description": "Completa l'accesso OAuth per l'origine AI. Lo scambio dei token viene completato lato server.",

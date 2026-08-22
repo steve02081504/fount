@@ -7,6 +7,7 @@
  * 【关联】dag/materialize、channel_delete、scripts/p2p/event_types。
  */
 import { ms } from 'fount/scripts/ms.mjs'
+
 import { CHANNEL_GC_EXCLUDED_EVENT_TYPES } from '../dag/eventTypes.mjs'
 
 const GC_IDLE_MS = ms('30d')

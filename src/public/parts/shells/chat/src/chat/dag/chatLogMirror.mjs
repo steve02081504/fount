@@ -231,7 +231,7 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 				targetId,
 				targetSender: sender,
 				newContent,
-				extension: { chat: { entryId: entry.id } },
+				extension: { chat: { entryId: entry.id, generationFinalize: true } },
 			},
 		})
 	}

@@ -1,4 +1,5 @@
 import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i18n/bare.mjs'
+import { ensureClosedTrailingCodeFence } from '../../../../../pages/scripts/features/markdown/codeFence.mjs'
 
 /**
  * HTML 转义，防止 XSS。
@@ -28,6 +29,7 @@ function reasoningSummaryHtml(renderOptions = {}) {
  * 从 reasoning_content / reasoning_summary 构建 Markdown（含 CommonMark HTML 块），置于 content_for_show 开头。
  * - `<summary>` 标题（i18n 文案）做 HTML 转义；`reasoning_summary` 与正文均原样输出（含 `<gamma>` 等标记），由下游 Markdown 管线处理。
  * - `<details>` 开/闭与正文之间必须有空行，否则 CommonMark 会把整段当单一 HTML 块，正文中的 Markdown 不生效。
+ * - 流式（renderOptions.open 为 true）时正文经 ensureClosedTrailingCodeFence 处理：未闭合的围栏不会破坏 `<details>` 结构或产生末尾空代码块；完整（非流式）正文原样输出。
  * @param {{content: string, extension?: any}} sourceResult - 原始响应结果。
  * @param {{ open?: boolean, locales?: string[], supported_functions?: { fount_i18nkeys?: boolean } }} [renderOptions] - 渲染选项。open 为 true 时默认展开（适用于流式预览）。
  * @returns {string} Markdown 字符串，若无推理内容则返回空字符串。
@@ -39,10 +41,11 @@ export function buildReasoningDetailsMarkdown(sourceResult, renderOptions = {}) 
 	if (!reasoningContent && !reasoningSummary.length) return ''
 
 	const open = renderOptions.open ?? false
-	const body = [
+	const rawBody = [
 		reasoningContent,
 		...reasoningSummary,
 	].filter(Boolean).join('\n\n')
+	const body = open ? ensureClosedTrailingCodeFence(rawBody) : rawBody
 
 	return `\
 <details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-box border border-base-content/20 bg-base-200/30"${open ? ' open' : ''}>

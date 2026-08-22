@@ -7,6 +7,7 @@
  * `<details>`）。写入一律 `replaceChildren(scrubHtmlActivePayload(html))`
  *（template 内剥 `on*` / 危险 URL），与信任档无关。
  */
+import { ensureClosedTrailingCodeFence } from '../../../../scripts/features/markdown/codeFence.mjs'
 import { renderMarkdownAsString } from '../../../../scripts/features/markdown/index.mjs'
 import { scrubHtmlActivePayload } from '../../../../scripts/lib/sanitizeHtml.mjs'
 
@@ -107,7 +108,7 @@ export class StreamRenderer {
 		if (this.#displayedText === this.#lastRendered) return
 		const text = this.#displayedText
 		this.#lastRendered = text
-		const html = await renderMarkdownAsString(text, this.#markdownCache, {
+		const html = await renderMarkdownAsString(ensureClosedTrailingCodeFence(text), this.#markdownCache, {
 			allowDangerousHtml: this.#allowDangerousHtml,
 		})
 		this.#bodyElement.replaceChildren(scrubHtmlActivePayload(html))

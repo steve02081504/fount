@@ -6016,6 +6016,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "Đăng ký fount pro của bạn đã bị hủy",
+		"description": "Tìm hiểu cách hủy đăng ký fount pro của bạn và chia sẻ lý do hủy.",
+		"intro": "Rất tiếc khi bạn rời đi. Để giúp chúng tôi cải thiện fount pro, bạn có thể cho biết lý do hủy đăng ký không?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Chọn ngôn ngữ"
+			},
+			"search": {
+				"placeholder": "Tìm kiếm ngôn ngữ...",
+				"aria-label": "Tìm kiếm ngôn ngữ"
+			}
+		},
+		"form": {
+			"reason_label": "Lý do hủy đăng ký",
+			"reason_placeholder": "Ví dụ: quá đắt, các tính năng tôi không dùng, hoặc tạm thời không còn cần...",
+			"submit": "Gửi lý do"
+		},
+		"result": {
+			"title": "Lý do bạn đã gửi"
+		}
+	},
 	"oauth_handler": {
 		"title": "Đăng nhập OAuth",
 		"description": "Hoàn tất đăng nhập OAuth cho nguồn AI. Việc trao đổi mã thông báo được hoàn thành ở phía máy chủ.",

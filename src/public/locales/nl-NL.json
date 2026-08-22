@@ -6022,6 +6022,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "Uw fount pro-abonnement is geannuleerd",
+		"description": "Lees hoe u uw fount pro-abonnement kunt opzeggen en deel de reden van uw opzegging.",
+		"intro": "Jammer dat u ons verlaat. Kunt u ons, om fount pro beter te maken, vertellen waarom u uw abonnement opzegt?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Selecteer taal"
+			},
+			"search": {
+				"placeholder": "Taal zoeken...",
+				"aria-label": "Taal zoeken"
+			}
+		},
+		"form": {
+			"reason_label": "Reden van opzegging",
+			"reason_placeholder": "Bijvoorbeeld: te duur, functies die ik niet gebruik, of voorlopig niet meer nodig...",
+			"submit": "Reden versturen"
+		},
+		"result": {
+			"title": "De reden die u heeft verstuurd"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth-login",
 		"description": "Voltooi de OAuth-login voor de AI-bron. De tokenuitwisseling wordt aan de serverzijde voltooid.",

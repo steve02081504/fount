@@ -61,15 +61,13 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 
 	const chatMetadata = await getGroupRuntime(groupId, replicaUsername)
 	const timeSlice = chatMetadata.LastTimeSlice
-	const locales = [...new Set([
-		...getUserByUsername(replicaUsername)?.locales ?? [],
-		...localhostLocales,
-	])]
+	const userLocales = getUserByUsername(replicaUsername)?.locales ?? []
+	const partLocales = [...new Set([...userLocales, ...localhostLocales])]
 
 	const charPart = charname ? await resolveChar(groupId, charname, replicaUsername) : undefined
 	const playerPart = timeSlice.player
-	const userinfo = await getPartInfo(playerPart, locales) || {}
-	const charinfo = charPart ? await getPartInfo(charPart, locales) || {} : {}
+	const userinfo = await getPartInfo(playerPart, partLocales) || {}
+	const charinfo = charPart ? await getPartInfo(charPart, partLocales) || {} : {}
 	const UserCharname = userinfo.name || timeSlice.player_id || replicaUsername
 
 	const { state } = await getState(replicaUsername, groupId)
@@ -146,6 +144,17 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	const chatLogForRequest = [...prelude, ...channelEntries].sort((a, b) =>
 		new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
 
+	// 用户消息的实际语言（UI locale）按出现次数排序，作为 user.locales 之后的次要提示：
+	// 操作者显式语言优先，群聊里其它成员的语言也允许参与，但按频次排列。
+	const messageLocaleCounts = new Map()
+	for (const entry of chatLogForRequest)
+		if (entry.role === 'user' && entry.locale)
+			messageLocaleCounts.set(entry.locale, (messageLocaleCounts.get(entry.locale) || 0) + 1)
+
+	const locales = [...new Set([...userLocales, ...[...messageLocaleCounts.entries()]
+		.sort((a, b) => b[1] - a[1])
+		.map(([locale]) => locale), ...localhostLocales])]
+
 	const UserUid = await getOperatorEntityHash(replicaUsername)
 	const memberId = charname
 		? await ensureLocalAgentEntityHash(replicaUsername, charname)
@@ -165,7 +174,6 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			ReplyToUid = replyTo.senderEntityHash || undefined
 			break
 		}
-
 
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const chatReplyRequest = {

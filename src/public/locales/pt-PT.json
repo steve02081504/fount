@@ -6022,6 +6022,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "A sua subscrição fount pro foi cancelada",
+		"description": "Saiba como cancelar a sua subscrição fount pro e partilhe o motivo do cancelamento.",
+		"intro": "Lamentamos vê-lo partir. Para nos ajudar a melhorar o fount pro, poderia dizer-nos por que cancelou a subscrição?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Selecione o idioma"
+			},
+			"search": {
+				"placeholder": "Procurar um idioma...",
+				"aria-label": "Procurar um idioma"
+			}
+		},
+		"form": {
+			"reason_label": "Motivo do cancelamento",
+			"reason_placeholder": "Por exemplo: demasiado caro, funcionalidades que não uso ou de que, por agora, já não preciso...",
+			"submit": "Enviar motivo"
+		},
+		"result": {
+			"title": "O motivo que enviou"
+		}
+	},
 	"oauth_handler": {
 		"title": "Início de sessão OAuth",
 		"description": "Conclua o início de sessão OAuth para a fonte de IA. A troca de tokens é concluída no lado do servidor.",

@@ -7,8 +7,10 @@
  */
 import { getPartDetails } from '/scripts/endpoints/parts.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { aliasForEntity } from '../shared/aliases.mjs'
 import { createEntityProfileCardElement } from '../shared/entityProfileCard.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
+import { resolveViewerSidebarDisplayName } from '../shared/viewerDisplay.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../src/templates.mjs'
 
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
@@ -69,6 +71,15 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	const charDisplayName = profile?.name || info.name || name
 	const avatarUrl = displayProfileAvatar(profile)
 	const { viewerDisplayName, viewerEntityHash } = store.viewer
+	const currentState = store.context.currentState
+	const viewerMember = (currentState?.members || [])
+		.find(member => member.memberKey === currentState?.viewerMemberPubKeyHash)
+	const myDisplayName = resolveViewerSidebarDisplayName({
+		viewerDisplayName,
+		entityHash: viewerEntityHash,
+		memberDisplayName: viewerMember?.displayName,
+		alias: aliasForEntity(viewerEntityHash),
+	})
 	const memberList = document.getElementById('member-list')
 	const charName = escapeHtml(charDisplayName)
 	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)
@@ -81,11 +92,11 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		charAvatarHtml: charAvatarInner,
 		avatarBg: avatarColor(charAvatarSeed),
 		avatarTextColor: avatarTextColor(charAvatarSeed),
-		viewerDisplayName: viewerDisplayName ? escapeHtml(viewerDisplayName) : '',
+		viewerDisplayName: escapeHtml(myDisplayName),
 		viewerEntityHash: viewerEntityHash ? escapeHtml(viewerEntityHash) : '',
 		myAvatarBg: viewerEntityHash ? avatarColor(viewerEntityHash) : '',
 		myAvatarTextColor: viewerEntityHash ? avatarTextColor(viewerEntityHash) : '',
-		myAvatarInitial: viewerDisplayName ? escapeHtml(avatarInitial(viewerDisplayName)) : '',
+		myAvatarInitial: escapeHtml(avatarInitial(myDisplayName)),
 	})
 	if (generation !== charInfoCardRenderGeneration) return
 

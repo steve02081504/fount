@@ -6016,6 +6016,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "fount pro のサブスクリプションが解約されました",
+		"description": "fount pro のサブスクリプションを解約する方法と、解約理由の記入についてご案内します。",
+		"intro": "ご利用いただきありがとうございました。今後の改善のため、解約された理由を教えていただけますか?",
+		"language_selector": {
+			"button": {
+				"aria-label": "言語を選択"
+			},
+			"search": {
+				"placeholder": "言語を検索...",
+				"aria-label": "言語を検索"
+			}
+		},
+		"form": {
+			"reason_label": "解約理由",
+			"reason_placeholder": "例：価格が高い／使っていない機能がある／今は必要ない…",
+			"submit": "送信する"
+		},
+		"result": {
+			"title": "送信した解約理由"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth ログイン",
 		"description": "AI プロバイダの OAuth ログインを完了します。トークン交換はサーバー側で行います。",

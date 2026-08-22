@@ -70,6 +70,7 @@ async function loadPartAddons(partpath) {
 			const eval_result = await async_eval(displayScript, {
 				geti18n, partpath,
 				parturl: '/parts/' + encodeURIComponent(partpath).replaceAll('%2F', ':'),
+				hosturl: location.origin,
 				element: partDisplayContainer,
 				cache: displayCaches[partpath] ??= {},
 			})

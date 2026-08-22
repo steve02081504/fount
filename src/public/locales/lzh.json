@@ -6016,6 +6016,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "fount pro 訂閱已罷",
+		"description": "欲知 fount pro 訂閱罷之法，且書退訂之由。",
+		"intro": "君去殊悵然。欲使 fount pro 益善，敢問何故退訂？",
+		"language_selector": {
+			"button": {
+				"aria-label": "擇言語"
+			},
+			"search": {
+				"placeholder": "搜言語...",
+				"aria-label": "搜言語"
+			}
+		},
+		"form": {
+			"reason_label": "退訂之由",
+			"reason_placeholder": "例如：價太高／無用其能／暫無所需……",
+			"submit": "呈上"
+		},
+		"result": {
+			"title": "君所呈退訂之由"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth 登入",
 		"description": "成 AI 源之 OAuth 登入。Token 交換於伺服端完成。",

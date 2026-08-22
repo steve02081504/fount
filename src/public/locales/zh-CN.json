@@ -6016,6 +6016,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "fount pro 订阅已取消",
+		"description": "了解如何取消 fount pro 订阅并填写退订原因。",
+		"intro": "很遗憾看到你离开。为了让 fount pro 变得更好，可以告诉我们退订的原因吗？",
+		"language_selector": {
+			"button": {
+				"aria-label": "选择语言"
+			},
+			"search": {
+				"placeholder": "搜索语言...",
+				"aria-label": "搜索语言"
+			}
+		},
+		"form": {
+			"reason_label": "退订原因",
+			"reason_placeholder": "例如：价格太高 / 功能用不上 / 暂时用不到了……",
+			"submit": "提交原因"
+		},
+		"result": {
+			"title": "你提交的退订原因"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth 登录",
 		"description": "完成 AI 源的 OAuth 登录。令牌交换在服务端完成。",

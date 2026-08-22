@@ -17,5 +17,6 @@ process.exit(await runShellFrontendTests({
 	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
 	fixtureCopies: [
 		{ from: join(testDir, '../fixtures/chars', 'on_message_yes'), to: 'chars/on_message_yes' },
+		{ from: join(testDir, '../live/fixtures/chars', 'noai_locale_reporter'), to: 'chars/noai_locale_reporter' },
 	],
 }))
