@@ -687,8 +687,7 @@ async function withMutex(critical) {
 		const current = await GM.getValue(MUTEX_KEY, null)
 		if (!current || current.expiry < now) {
 			await GM.setValue(MUTEX_KEY, { token, expiry: now + MUTEX_LOCK_DURATION_MS })
-			const check = await GM.getValue(MUTEX_KEY, null)
-			if (check?.token === token) {
+			if ((await GM.getValue(MUTEX_KEY, null))?.token === token) {
 				try { return await critical() }
 				finally {
 					// 仅当锁仍由本次会话持有才清除，避免误删其他标签页刚抢到的锁。
