@@ -6022,6 +6022,27 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "assinatura do Fountain Pro cancelada",
+		"description": "Saiba como cancelar sua assinatura do Fountain Pro e preencha o motivo do cancelamento.",
+		"intro": "Lamento ver você partir. Para melhorar o font pro, você pode nos dizer o motivo do cancelamento da assinatura?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Selecione o idioma"
+			},
+			"search": {
+				"placeholder": "Idioma de pesquisa..."
+			}
+		},
+		"form": {
+			"reason_label": "Motivo para cancelar a assinatura",
+			"reason_placeholder": "Por exemplo: o preço é muito alto/a função não está disponível/está temporariamente indisponível...",
+			"submit": "Motivo da submissão"
+		},
+		"result": {
+			"title": "O motivo pelo qual você enviou para cancelar a assinatura"
+		}
+	},
 	"oauth_handler": {
 		"title": "Início de sessão OAuth",
 		"description": "Conclua o início de sessão OAuth para a fonte de IA. A troca de tokens é concluída no lado do servidor.",

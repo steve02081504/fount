@@ -5978,6 +5978,27 @@ export type LocaleData = {
 			}
 		}
 	}
+	pro_cancel_screen: {
+		title: string
+		description: string
+		intro: string
+		language_selector: {
+			button: {
+				'aria-label': string
+			}
+			search: {
+				placeholder: string
+			}
+		}
+		form: {
+			reason_label: string
+			reason_placeholder: string
+			submit: string
+		}
+		result: {
+			title: string
+		}
+	}
 	oauth_handler: {
 		title: string
 		description: string

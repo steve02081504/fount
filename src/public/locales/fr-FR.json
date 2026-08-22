@@ -6022,6 +6022,27 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "abonnement fontaine pro annulé",
+		"description": "Découvrez comment annuler votre abonnement Fountain Pro et indiquez le motif de l'annulation.",
+		"intro": "Désolé de te voir partir. Afin d'améliorer Font Pro, pouvez-vous nous indiquer la raison de votre désabonnement ?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Sélectionnez la langue"
+			},
+			"search": {
+				"placeholder": "Langue de recherche..."
+			}
+		},
+		"form": {
+			"reason_label": "Raison du désabonnement",
+			"reason_placeholder": "Par exemple : le prix est trop élevé/la fonction n'est pas disponible/elle est temporairement indisponible...",
+			"submit": "Raison de la soumission"
+		},
+		"result": {
+			"title": "La raison pour laquelle vous avez soumis votre désabonnement"
+		}
+	},
 	"oauth_handler": {
 		"title": "Connexion OAuth",
 		"description": "Complétez la connexion OAuth pour la source AI. L'échange des jetons s'effectue côté serveur.",

@@ -6016,6 +6016,27 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "تم إلغاء اشتراك Fountain Pro",
+		"description": "تعرف على كيفية إلغاء اشتراكك في Fountain Pro واكتب سبب الإلغاء.",
+		"intro": "آسف لرؤيتك تذهب. لكي نجعل Fount pro أفضل، هل يمكنك أن تخبرنا عن سبب إلغاء الاشتراك؟",
+		"language_selector": {
+			"button": {
+				"aria-label": "اختر اللغة"
+			},
+			"search": {
+				"placeholder": "لغة البحث..."
+			}
+		},
+		"form": {
+			"reason_label": "سبب إلغاء الاشتراك",
+			"reason_placeholder": "على سبيل المثال: السعر مرتفع جدًا/الوظيفة غير متاحة/غير متاحة مؤقتًا...",
+			"submit": "سبب التقديم"
+		},
+		"result": {
+			"title": "سبب تقديمك لإلغاء الاشتراك"
+		}
+	},
 	"oauth_handler": {
 		"title": "تسجيل OAuth",
 		"description": "أكمل تسجيل دخول OAuth لمصدر الذكاء الاصطناعي. اكتمل تبادل التوكن على جانب الخادم.",

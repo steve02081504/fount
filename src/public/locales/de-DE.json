@@ -6016,6 +6016,27 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "Fountain Pro-Abonnement gekündigt",
+		"description": "Erfahren Sie, wie Sie Ihr Fountain Pro-Abonnement kündigen und den Grund für die Kündigung angeben.",
+		"intro": "Tut mir leid, dich gehen zu sehen. Können Sie uns den Grund für die Abmeldung nennen, um fount pro noch besser zu machen?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Sprache auswählen"
+			},
+			"search": {
+				"placeholder": "Sprache suchen..."
+			}
+		},
+		"form": {
+			"reason_label": "Grund für die Abmeldung",
+			"reason_placeholder": "Zum Beispiel: Der Preis ist zu hoch/die Funktion ist nicht verfügbar/sie ist vorübergehend nicht verfügbar...",
+			"submit": "Grund für die Einreichung"
+		},
+		"result": {
+			"title": "Der Grund, den Sie für die Abmeldung angegeben haben"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth-Anmeldung",
 		"description": "Vervollständigen Sie die OAuth-Anmeldung für die AI-Quelle. Der Token-Austausch wird serverseitig abgeschlossen.",

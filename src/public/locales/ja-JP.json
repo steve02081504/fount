@@ -6016,6 +6016,27 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "Fountain Pro サブスクリプションがキャンセルされました",
+		"description": "Fountain Pro のサブスクリプションをキャンセルし、キャンセルの理由を入力する方法をご覧ください。",
+		"intro": "行ってしまうのは残念だ。 Fount Pro をより良いものにするために、購読を解除した理由を教えていただけますか?",
+		"language_selector": {
+			"button": {
+				"aria-label": "言語を選択してください"
+			},
+			"search": {
+				"placeholder": "言語を検索..."
+			}
+		},
+		"form": {
+			"reason_label": "購読解除の理由",
+			"reason_placeholder": "例：価格が高すぎる／機能が使えない／一時的に利用できない…。",
+			"submit": "提出理由"
+		},
+		"result": {
+			"title": "購読解除を送信した理由"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth ログイン",
 		"description": "AI プロバイダの OAuth ログインを完了します。トークン交換はサーバー側で行います。",

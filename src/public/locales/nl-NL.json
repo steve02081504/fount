@@ -6022,6 +6022,27 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "Fountain Pro-abonnement geannuleerd",
+		"description": "Leer hoe u uw Fountain Pro-abonnement kunt opzeggen en vul de reden van opzegging in.",
+		"intro": "Het spijt me je te zien gaan. Kunt u ons, om font pro beter te maken, de reden voor het uitschrijven vertellen?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Selecteer taal"
+			},
+			"search": {
+				"placeholder": "Zoektaal..."
+			}
+		},
+		"form": {
+			"reason_label": "Reden van afmelding",
+			"reason_placeholder": "Bijvoorbeeld: de prijs is te hoog/de functie is niet beschikbaar/deze is tijdelijk niet beschikbaar...",
+			"submit": "Reden van indiening"
+		},
+		"result": {
+			"title": "De reden waarom u zich heeft afgemeld"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth-login",
 		"description": "Voltooi de OAuth-login voor de AI-bron. De tokenuitwisseling wordt aan de serverzijde voltooid.",

@@ -6016,6 +6016,27 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "Fountain Pro 구독이 취소되었습니다.",
+		"description": "Fountain Pro 구독을 취소하는 방법을 알아보고 취소 이유를 입력하세요.",
+		"intro": "가셨다니 안타깝습니다. 더 좋은 fount pro를 만들기 위해 구독을 취소하는 이유를 알려주실 수 있나요?",
+		"language_selector": {
+			"button": {
+				"aria-label": "언어 선택"
+			},
+			"search": {
+				"placeholder": "검색 언어..."
+			}
+		},
+		"form": {
+			"reason_label": "구독 취소 이유",
+			"reason_placeholder": "예: 가격이 너무 높음/기능을 사용할 수 없음/일시적으로 사용할 수 없음...",
+			"submit": "제출 이유"
+		},
+		"result": {
+			"title": "구독 취소를 제출한 이유"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth 로그인",
 		"description": "AI 소스에 대한 OAuth 로그인을 완료합니다. 토큰 교환은 서버 측에서 완료됩니다.",
