@@ -36,7 +36,11 @@ export async function selectChannel(channelId) {
 	 * 本次频道切换是否仍为当前目标。
 	 * @returns {boolean} 用户未切走则 true
 	 */
-	const stillCurrent = () => store.context.currentMode === 'groups' && store.context.currentGroupId === selectedGroupId
+	const stillCurrent = () => store.context.currentGroupId === selectedGroupId && (
+		store.context.currentMode === 'groups' || (
+			store.context.currentMode === 'friends' && !!store.privateGroup.groupId
+		)
+	)
 	if (!stillCurrent()) return
 	const prevGroupId = selectedGroupId
 	const prevChannelId = store.context.currentChannelId
