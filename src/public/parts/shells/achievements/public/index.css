@@ -1,4 +1,5 @@
 .achievement-card {
+	--shake-intensity: 0;
 	transition: all 0.3s ease;
 }
 
@@ -62,7 +63,6 @@
 }
 
 .achievement-card.shaking {
-	--shake-intensity: 0;
 	animation-name: shake;
 	animation-duration: 0.5s;
 	animation-timing-function: ease-in-out;
