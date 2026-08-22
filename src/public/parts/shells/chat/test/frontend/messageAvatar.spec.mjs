@@ -73,7 +73,12 @@ test.describe('Chat message avatar grouping', () => {
 			const containerRect = container.getBoundingClientRect()
 			const rowRect = messageRow.getBoundingClientRect()
 			const rowBottomInContent = rowRect.bottom - containerRect.top + container.scrollTop
+			// `#messages` 有 `scroll-behavior: smooth`，直接赋值 scrollTop 会触发平滑动画，
+			// 立即读 getBoundingClientRect 会拿到滚动前的位置。这里临时切回瞬时滚动再测。
+			const prevScrollBehavior = container.style.scrollBehavior
+			container.style.scrollBehavior = 'auto'
 			container.scrollTop = rowBottomInContent - container.clientHeight - 40
+			container.style.scrollBehavior = prevScrollBehavior
 			const avatarElement = messageRow.querySelector('.chat-image')
 			const rect = avatarElement.getBoundingClientRect()
 			const rowRectAfter = messageRow.getBoundingClientRect()
