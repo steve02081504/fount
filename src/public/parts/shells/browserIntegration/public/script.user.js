@@ -642,7 +642,11 @@ const MUTEX_ACQUIRE_TIMEOUT_MS = 10000
  * @returns {Promise<T>} - 临界区操作的结果。
  */
 function withMutex(critical) {
-	return navigator.locks.request('fount_apikey_mutex', { timeout: MUTEX_ACQUIRE_TIMEOUT_MS }, critical)
+	const controller = new AbortController()
+	const timeoutId = setTimeout(() => controller.abort(), MUTEX_ACQUIRE_TIMEOUT_MS)
+	return navigator.locks.request('fount_apikey_mutex', { signal: controller.signal }, critical).finally(
+		() => clearTimeout(timeoutId)
+	)
 }
 
 /**
