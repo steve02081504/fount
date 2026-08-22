@@ -521,6 +521,11 @@
 				"editorRemoved": "Configurazione fount rimossa dalle scorciatoie del terminale dell'editor: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "La directory di installazione dei font sta per essere eliminata dal disco: `${path}`\nConferma che questa è effettivamente la directory da eliminare.",
+				"yn": "[Sì/No]",
+				"aborted": "Annullato, nulla eliminato.",
+				"externalMountWarning": "Attenzione: il font si trova su un mount esterno/condiviso (`${target}`)!\nQuesta directory può esistere contemporaneamente nell'host o nella macchina virtuale. \"rimozione font\" lo eliminerà insieme, quindi fai attenzione.",
+				"nonInteractiveRequiresForce": "L'eliminazione non può essere confermata in un ambiente non interattivo. Se sei sicuro di voler rimuovere `fount` (${path}), usa `fountremove --force` per saltare la conferma.",
 				"fountUninstallationComplete": "disinstallazione di fount completata.",
 				"fountInstallationDirRemoved": "La directory di installazione di fount è stata rimossa.",
 				"protocolHandlerRemoved": "Il gestore del protocollo `fount://` è stato rimosso.",

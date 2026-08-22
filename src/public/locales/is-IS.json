@@ -521,6 +521,11 @@
 				"editorRemoved": "fount-stillingum fjarlægt úr lyklaborðsviðmóti skels ritlis: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "Verið er að eyða uppsetningarmöppunni fyrir leturgerð af disknum: `${path}`\nVinsamlegast staðfestu að þetta sé örugglega skráin sem á að eyða.",
+				"yn": "[J/N]",
+				"aborted": "Hætt við, engu eytt.",
+				"externalMountWarning": "Viðvörun: uppsprettur er staðsettur á ytri/samnýttu festingu (`${target}`)!\nÞessi mappa gæti verið til í vélinni eða sýndarvélinni á sama tíma. `font remove` mun eyða því saman, svo farðu varlega.",
+				"nonInteractiveRequiresForce": "Ekki er hægt að staðfesta eyðingu í ekki gagnvirku umhverfi. Ef þú ert viss um að þú viljir fjarlægja `font` (${path}), notaðu `font remove --force` til að sleppa staðfestingu.",
 				"fountUninstallationComplete": "Fjarlægingu lindarinnar lokið.",
 				"fountInstallationDirRemoved": "Uppsetningarskrá leturgerðarinnar hefur verið fjarlægð.",
 				"protocolHandlerRemoved": "The `fount://` samskiptareglur hefur verið fjarlægður.",

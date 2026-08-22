@@ -521,6 +521,11 @@
 				"editorRemoved": "Configuration fount supprimée des raccourcis du terminal de l'éditeur : `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "Le répertoire d'installation des polices est sur le point d'être supprimé du disque : `${path}`\nVeuillez confirmer qu'il s'agit bien du répertoire à supprimer.",
+				"yn": "[O/N]",
+				"aborted": "Annulé, rien de supprimé.",
+				"externalMountWarning": "Attention : la police est située sur un support externe/partagé (\"${target}`) !\nCe répertoire peut exister simultanément sur l'hôte ou la machine virtuelle. `font Remove` le supprimera ensemble, alors soyez prudent.",
+				"nonInteractiveRequiresForce": "La suppression ne peut pas être confirmée dans un environnement non interactif. Si vous êtes sûr de vouloir supprimer « fount » (${path}), utilisez « fount remove --force » pour ignorer la confirmation.",
 				"fountUninstallationComplete": "désinstallation des founts terminée.",
 				"fountInstallationDirRemoved": "Le répertoire d'installation des founts a été supprimé.",
 				"protocolHandlerRemoved": "Le gestionnaire de protocole `fount://` a été supprimé.",

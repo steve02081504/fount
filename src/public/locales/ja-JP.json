@@ -521,6 +521,11 @@
 				"editorRemoved": "エディターのターミナルキーバインドから fount の設定を削除しました: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "fount インストール ディレクトリがディスクから削除されようとしています: `${path}`\nこれが本当に削除するディレクトリであることを確認してください。",
+				"yn": "[はい/いいえ]",
+				"aborted": "キャンセルされました。何も削除されませんでした。",
+				"externalMountWarning": "警告: フォントは外部/共有マウント (`${target}`) 上にあります。\nこのディレクトリはホストまたは仮想マシンに同時に存在する可能性があります。 `fount Remove`を実行すると一緒に削除されてしまうので注意してください。",
+				"nonInteractiveRequiresForce": "非対話型環境では削除の確認はできません。確実に `fount` (${path}) を削除したい場合は、`fount Remove --force` を使用して確認をスキップします。",
 				"fountUninstallationComplete": "fountのアンインストールが完了しました。",
 				"fountInstallationDirRemoved": "fount のインストール ディレクトリは削除されました。",
 				"protocolHandlerRemoved": "`fount://` プロトコル ハンドラーは削除されました。",
