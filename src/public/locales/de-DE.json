@@ -522,7 +522,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "Das fount-Installationsverzeichnis wird gleich von der Festplatte gelöscht: „${path}“.\nBitte bestätigen Sie, dass es sich wirklich um das zu löschende Verzeichnis handelt.",
-				"yn": "[J/N]",
+				"yn": "[Y/N]",
 				"aborted": "Abgebrochen, es wurde nichts gelöscht.",
 				"externalMountWarning": "Warnung: fount befindet sich auf einem externen/gemeinsam genutzten Mount (`${target}`)!\nDieses Verzeichnis kann gleichzeitig auf dem Host oder der virtuellen Maschine vorhanden sein. `fount remove` löscht es auch dort, seien Sie daher besonders vorsichtig.",
 				"nonInteractiveRequiresForce": "In einer nicht interaktiven Umgebung kann die Löschung nicht bestätigt werden. Wenn Sie sicher sind, dass Sie `fount` (${path}) entfernen möchten, verwenden Sie `fount remove --force`, um die Bestätigung zu überspringen.",

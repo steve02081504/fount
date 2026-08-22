@@ -683,8 +683,8 @@ async function requestNewApiKey(host, protocol) {
 		const { apikey: storedApikey } = await getStoredData()
 		if (storedApikey) try {
 			// 重读后先用已有 key 探测，若已可用则复用，避免重复创建。
-			await makeApiRequest(host, protocol, '/api/whoami')
-			console.log('fount userscript: Reusing an already-valid API key.')
+			// isRetry：探测失败时不做二次刷新（本就在刷新流程内），直接走创建新 key 分支。
+			await makeApiRequest(host, protocol, '/api/whoami', { isRetry: true })
 			return storedApikey
 		} catch (_) { }
 

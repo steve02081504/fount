@@ -522,7 +522,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "O diretório de instalação do fount está prestes a ser excluído do disco: `${path}`\nConfirme que este é realmente o diretório que deseja excluir.",
-				"yn": "[S/N]",
+				"yn": "[Y/N]",
 				"aborted": "Cancelado, nada foi excluído.",
 				"externalMountWarning": "Aviso: o fount está localizado numa montagem externa/partilhada (`${target}`)!\nEste diretório pode existir simultaneamente no host ou na máquina virtual. O `fount remove` irá excluí-lo também aí, por isso tenha muito cuidado.",
 				"nonInteractiveRequiresForce": "A exclusão não pode ser confirmada num ambiente não interativo. Se tiver a certeza de que deseja remover o `fount` (${path}), use `fount remove --force` para ignorar a confirmação.",

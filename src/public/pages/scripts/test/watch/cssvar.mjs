@@ -5,12 +5,30 @@
  * 2. 未使用：同源样式表显式声明 `--x`，但测试期间从未被任何 `var()` 引用。
  *    提示要么补测试覆盖该用例，要么移除死变量。
  */
+import { wake } from './loop.mjs'
 import { createReporter } from './reporter.mjs'
 
 const reporter = createReporter('[test:cssvar]')
 
 let dirty = true
 let drainPassDone = false
+
+/** `var(--x[, fallback])` 引用（含 fallback）的提取：用于 unused 判定。 */
+const VAR_REFERENCE_RE = /\bvar\(\s*(--[a-zA-Z0-9-]+)/g
+/** 无 fallback 的 `var(--x)` 提取：用于 undefined 判定。 */
+const VAR_BARE_RE = /var\(\s*(--[a-zA-Z0-9-]+)\s*\)/g
+
+/** 跨扫描累计：测试期间所有被引用的 CSS 变量（含 fallback），保留已移除临时节点的引用。 */
+const referenced = new Set()
+
+/**
+ * DOM 变化后置脏并唤醒，确保首轮扫描后仍会重扫。
+ * @returns {void}
+ */
+function markDirty() {
+	dirty = true
+	wake()
+}
 
 /**
  * drain 覆盖是否完成。
@@ -33,49 +51,53 @@ function beginDrain() {
  * 遍历样式规则，收集用到 CSS 变量的声明与显式声明的变量名。
  * 跨域样式表（CDN daisyUI / tailwind）的规则无法读取，跳过。
  * @param {CSSRuleList} rules 规则列表
- * @param {Set<string>} usages 收集 `var(--x)` 用法（变量名含 `--`）
+ * @param {Set<string>} bareReferences 收集无 fallback 的 `var(--x)` 用法（用于 undefined 判定）
  * @param {Set<string>} declared 收集 `--x: ...` 显式声明的变量名
  * @returns {void}
  */
-function collectRules(rules, usages, declared) {
+function collectRules(rules, bareReferences, declared) {
 	for (const rule of rules)
 		try {
-			if (rule.style && rule.style.length) {
+			if (rule.style?.length) {
 				const cssText = rule.style.cssText
-				for (const match of cssText.matchAll(/var\(\s*--([a-zA-Z0-9-]+)\s*\)/g))
-					usages.add(`--${match[1]}`)
+				for (const match of cssText.matchAll(VAR_REFERENCE_RE))
+					referenced.add(match[1])
+				for (const match of cssText.matchAll(VAR_BARE_RE))
+					bareReferences.add(match[1])
 				for (let i = 0; i < rule.style.length; i++) {
 					const prop = rule.style[i]
 					if (prop.startsWith('--')) declared.add(prop)
 				}
 			}
-			if (rule.cssRules) collectRules(rule.cssRules, usages, declared)
+			if (rule.cssRules) collectRules(rule.cssRules, bareReferences, declared)
 		}
 		catch { /* 跨域规则不可读 */ }
 }
 
 /**
- * 收集元素 inline `style` 里的 `var(--x)` 引用（JS 模板注入的样式），归入 usages。
+ * 收集元素 inline `style` 里的 `var(--x)` 引用（JS 模板注入的样式），归入累计引用。
  * 只统计"被引用"，不含 `setProperty('--x',…)` 这类定义。
- * @param {Set<string>} usages 已收集的用法集合（变量名含 `--`）
+ * @param {Set<string>} bareReferences 收集无 fallback 的 `var(--x)` 用法（用于 undefined 判定）
  * @returns {void}
  */
-function collectInlineUsages(usages) {
+function collectInlineUsages(bareReferences) {
 	for (const el of document.querySelectorAll('[style]')) {
 		const inline = el.getAttribute('style')
 		if (!inline) continue
-		for (const match of inline.matchAll(/var\(\s*--([a-zA-Z0-9-]+)\s*\)/g))
-			usages.add(`--${match[1]}`)
+		for (const match of inline.matchAll(VAR_REFERENCE_RE))
+			referenced.add(match[1])
+		for (const match of inline.matchAll(VAR_BARE_RE))
+			bareReferences.add(match[1])
 	}
 }
 
 /**
  * 扫描 CSS 变量健康问题。
- * @returns {{ undefined: string[], unused: string[] }} 未定义 / 未使用变量列表
+ * @returns {{ undefinedVars: string[], unusedVars: string[] }} 未定义 / 未使用变量列表
  */
 function findCssVarIssues() {
 	/** @type {Set<string>} */
-	const usages = new Set()
+	const bareReferences = new Set()
 	/** @type {Set<string>} */
 	const declared = new Set()
 	for (const sheet of document.styleSheets)
@@ -85,38 +107,34 @@ function findCssVarIssues() {
 		try {
 			const href = sheet.href
 			if (href && new URL(href, location.href).origin === location.origin)
-				collectRules(sheet.cssRules, usages, declared)
+				collectRules(sheet.cssRules, bareReferences, declared)
 		}
 		catch { /* 跨域样式表跳过 */ }
-	collectInlineUsages(usages)
+	collectInlineUsages(bareReferences)
 
 	const rootStyle = getComputedStyle(document.documentElement)
-	const undefinedVars = new Set()
 	/** @type {Set<string>} */
-	const elementScanned = new Set()
-	for (const name of usages) {
+	const undefinedVars = new Set()
+	for (const name of bareReferences) {
 		if (rootStyle.getPropertyValue(name).trim()) continue
 		if (declared.has(name)) continue
-		if (elementScanned.has(name)) continue
-		elementScanned.add(name)
-		if (!isDefinedOnAnyElement(name))
-			undefinedVars.add(name)
+		undefinedVars.add(name)
 	}
+	// 单次遍历元素：每元素仅一次 getComputedStyle，从候选集中消解已定义变量，
+	// 确保最终只报告全页面都未定义的变量。
+	/** @type {Set<string>} */
+	const definedOnElement = new Set()
+	for (const el of document.querySelectorAll('*')) {
+		if (definedOnElement.size === undefinedVars.size) break
+		const style = getComputedStyle(el)
+		for (const name of undefinedVars)
+			if (!definedOnElement.has(name) && style.getPropertyValue(name).trim())
+				definedOnElement.add(name)
+	}
+	for (const name of definedOnElement) undefinedVars.delete(name)
 
-	const unusedVars = [...declared].filter(name => !usages.has(name)).sort()
-	return { undefined: [...undefinedVars].sort(), unused: unusedVars }
-}
-
-/**
- * 判断某个 CSS 变量是否在任意元素上可解析。
- * @param {string} name 变量名（含 `--`）
- * @returns {boolean} 已定义则为 true
- */
-function isDefinedOnAnyElement(name) {
-	for (const el of document.querySelectorAll('*'))
-		if (getComputedStyle(el).getPropertyValue(name).trim())
-			return true
-	return false
+	const unusedVars = [...declared].filter(name => !referenced.has(name)).sort()
+	return { undefinedVars: [...undefinedVars].sort(), unusedVars }
 }
 
 /**
@@ -128,7 +146,7 @@ async function run({ draining }) {
 	if (!dirty && !(draining && !drainPassDone)) return true
 	dirty = false
 	try {
-		const { undefined: undefinedVars, unused: unusedVars } = findCssVarIssues()
+		const { undefinedVars, unusedVars } = findCssVarIssues()
 		for (const name of undefinedVars)
 			reporter.report(
 				`undefined-css-var\t${name}`,
@@ -155,3 +173,8 @@ const CSS_VAR_SCAN_MS = 500
 
 /** @type {import('./loop.mjs').WatchTask} */
 export const task = { name: 'cssvar', delayMs: CSS_VAR_SCAN_MS, run, covered, beginDrain }
+
+/**
+ * 导出 markDirty，供 mutations 观察者在 DOM 变化时联动置脏并重扫。
+ */
+export { markDirty }

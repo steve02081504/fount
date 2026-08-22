@@ -522,7 +522,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "fount 설치 디렉터리를 디스크에서 삭제하려고 합니다: `${path}`\n이것이 정말로 삭제할 디렉터리인지 확인해 주십시오.",
-				"yn": "[예/아니요]",
+				"yn": "[Y/N]",
 				"aborted": "취소되었으며 아무것도 삭제되지 않았습니다.",
 				"externalMountWarning": "경고: fount가 외부/공유 마운트(`${target}`)에 있습니다!\n이 디렉터리는 호스트나 가상 머신에 동시에 존재할 수 있습니다. `fount remove`를 실행하면 거기에도 삭제되므로 각별히 주의하시기 바랍니다.",
 				"nonInteractiveRequiresForce": "비대화형 환경에서는 삭제를 확인할 수 없습니다. `fount`(${path})를 확실히 제거하려면 `fount remove --force`를 사용하여 확인을 건너뛰세요.",

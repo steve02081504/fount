@@ -24,6 +24,9 @@ import { connectGroupWebSocket } from '../stream/index.mjs'
 import { rebindFederationRoomQuiet } from './federationRoom.mjs'
 import { isPrivateChatActive } from './privateShell.mjs'
 
+/** 每次 selectChannel 调用递增的请求令牌，用于拦截过期请求。 */
+let selectChannelRequestSeq = 0
+
 /**
  * 切换当前频道并加载消息、连接 WebSocket。
  * @param {string} channelId 频道 ID
@@ -32,13 +35,14 @@ import { isPrivateChatActive } from './privateShell.mjs'
 export async function selectChannel(channelId) {
 	const { disableComposer, enableComposer } = await import('../messages/composerController.mjs')
 	const selectedGroupId = store.context.currentGroupId
+	const seq = ++selectChannelRequestSeq
 	/**
-	 * 本次频道切换是否仍为当前目标。
+	 * 本次频道切换是否仍为当前目标（请求令牌最新、群未变、模式仍有效）。
 	 * @returns {boolean} 用户未切走则 true
 	 */
-	const stillCurrent = () => store.context.currentGroupId === selectedGroupId && (
-		store.context.currentMode === 'groups' || (
-			store.context.currentMode === 'friends' && !!store.privateGroup.groupId
+	const stillCurrent = () => seq === selectChannelRequestSeq && (
+		store.context.currentGroupId === selectedGroupId && (
+			store.context.currentMode === 'groups' || isPrivateChatActive()
 		)
 	)
 	if (!stillCurrent()) return
@@ -112,11 +116,11 @@ export async function selectChannel(channelId) {
 		/** @returns {object | null} 当前群 state（读取文件加密模式） */
 		getCurrentState: () => store.context.currentState,
 	})
-	if (!stillCurrent()) return
+	if (!stillCurrent() || store.context.currentChannelId !== channelId) return
 	await loadDraft(store.context.currentGroupId, channelId)
-	if (!stillCurrent()) return
+	if (!stillCurrent() || store.context.currentChannelId !== channelId) return
 	await loadMessages()
-	if (!stillCurrent()) return
+	if (!stillCurrent() || store.context.currentChannelId !== channelId) return
 	if (store.context.currentGroupId && store.context.currentChannelId && channelType === 'text')
 		connectGroupWebSocket(store.context.currentGroupId, store.context.currentChannelId)
 	updateStatusBanners()

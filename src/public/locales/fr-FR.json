@@ -522,7 +522,7 @@
 			},
 			"remove": {
 				"confirmPrompt": "Le répertoire d'installation de fount est sur le point d'être supprimé du disque : `${path}`\nVeuillez confirmer qu'il s'agit bien du répertoire à supprimer.",
-				"yn": "[O/N]",
+				"yn": "[Y/N]",
 				"aborted": "Annulé, rien n'a été supprimé.",
 				"externalMountWarning": "Attention : fount est situé sur un support externe/partagé (`${target}`) !\nCe répertoire peut exister simultanément sur l'hôte ou la machine virtuelle. `fount remove` le supprimera aussi là-bas, soyez donc particulièrement prudent.",
 				"nonInteractiveRequiresForce": "La suppression ne peut pas être confirmée dans un environnement non interactif. Si vous êtes certain de vouloir supprimer `fount` (${path}), utilisez `fount remove --force` pour ignorer la confirmation.",

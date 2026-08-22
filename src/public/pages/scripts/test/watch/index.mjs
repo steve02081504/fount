@@ -1,5 +1,5 @@
 /**
- * 测试环境页面监视入口：组装 loop + a11y + locale，bootstrap 后开闸。
+ * 测试环境页面监视入口：组装 loop + a11y + cssvar + locale，bootstrap 后开闸。
  * Playwright 只认 `fount.test.watch`（`kick` / `drain` / `holdLocale` / `releaseLocale` / `started`）。
  */
 import { requestRefresh, task as a11yTask } from './a11y.mjs'

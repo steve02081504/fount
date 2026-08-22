@@ -9,8 +9,6 @@ import { runShellFrontendTests } from 'fount/scripts/test/playwright/shell_front
 
 const testDir = dirname(fileURLToPath(import.meta.url))
 
-const fixtureCharsRoot = join(testDir, '../fixtures/chars')
-
 process.exit(await runShellFrontendTests({
 	configPath: join(testDir, 'playwright.config.mjs'),
 	testUsername: 'chat-fe-user',
@@ -18,6 +16,6 @@ process.exit(await runShellFrontendTests({
 	loadParts: ['shells/chat', 'shells/social'],
 	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
 	fixtureCopies: [
-		{ from: join(fixtureCharsRoot, 'on_message_yes'), to: 'chars/on_message_yes' },
+		{ from: join(testDir, '../fixtures/chars', 'on_message_yes'), to: 'chars/on_message_yes' },
 	],
 }))
