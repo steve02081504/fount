@@ -14,9 +14,9 @@ let dirty = true
 let drainPassDone = false
 
 /** `var(--x[, fallback])` 引用（含 fallback）的提取：用于 unused 判定。 */
-const VAR_REFERENCE_RE = /\bvar\(\s*(--[a-zA-Z0-9-]+)/g
+const VAR_REFERENCE_RE = /\bvar\(\s*(--[a-zA-Z0-9_-]+)/g
 /** 无 fallback 的 `var(--x)` 提取：用于 undefined 判定。 */
-const VAR_BARE_RE = /var\(\s*(--[a-zA-Z0-9-]+)\s*\)/g
+const VAR_BARE_RE = /var\(\s*(--[a-zA-Z0-9_-]+)\s*\)/g
 
 /** 跨扫描累计：测试期间所有被引用的 CSS 变量（含 fallback），保留已移除临时节点的引用。 */
 const referenced = new Set()
@@ -64,9 +64,9 @@ function collectRules(rules, bareReferences, declared) {
 					referenced.add(match[1])
 				for (const match of cssText.matchAll(VAR_BARE_RE))
 					bareReferences.add(match[1])
-				for (let i = 0; i < rule.style.length; i++) {
-					const prop = rule.style[i]
-					if (prop.startsWith('--')) declared.add(prop)
+				for (let index = 0; index < rule.style.length; index++) {
+					const property = rule.style[index]
+					if (property.startsWith('--')) declared.add(property)
 				}
 			}
 			if (rule.cssRules) collectRules(rule.cssRules, bareReferences, declared)
@@ -81,8 +81,8 @@ function collectRules(rules, bareReferences, declared) {
  * @returns {void}
  */
 function collectInlineUsages(bareReferences) {
-	for (const el of document.querySelectorAll('[style]')) {
-		const inline = el.getAttribute('style')
+	for (const element of document.querySelectorAll('[style]')) {
+		const inline = element.getAttribute('style')
 		if (!inline) continue
 		for (const match of inline.matchAll(VAR_REFERENCE_RE))
 			referenced.add(match[1])
@@ -117,16 +117,15 @@ function findCssVarIssues() {
 	const undefinedVars = new Set()
 	for (const name of bareReferences) {
 		if (rootStyle.getPropertyValue(name).trim()) continue
-		if (declared.has(name)) continue
 		undefinedVars.add(name)
 	}
 	// 单次遍历元素：每元素仅一次 getComputedStyle，从候选集中消解已定义变量，
 	// 确保最终只报告全页面都未定义的变量。
 	/** @type {Set<string>} */
 	const definedOnElement = new Set()
-	for (const el of document.querySelectorAll('*')) {
+	for (const element of document.querySelectorAll('*')) {
 		if (definedOnElement.size === undefinedVars.size) break
-		const style = getComputedStyle(el)
+		const style = getComputedStyle(element)
 		for (const name of undefinedVars)
 			if (!definedOnElement.has(name) && style.getPropertyValue(name).trim())
 				definedOnElement.add(name)

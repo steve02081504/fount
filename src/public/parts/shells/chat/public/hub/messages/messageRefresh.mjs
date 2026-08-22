@@ -273,9 +273,10 @@ export async function refreshChannelViewDom(container, scrollBottom = false) {
 }
 
 /**
+ * @param {(() => boolean) | undefined} [isCurrent] 本次频道选择的有效性守卫；为假则立即停止后续副作用
  * @returns {Promise<void>}
  */
-export async function loadMessages() {
+export async function loadMessages(isCurrent) {
 	store.messages.channelSearchQuery = null
 	const searchInput = document.getElementById('header-search')
 	if (searchInput instanceof HTMLInputElement) searchInput.value = ''
@@ -303,6 +304,7 @@ export async function loadMessages() {
 			await mountTemplate(container, 'hub/empty/loading', {})
 	}
 	if (await loadNonTextChannel(container, channel)) return
+	if (isCurrent && !isCurrent()) return
 	try {
 		store.messages.composerPendingId = null
 		store.messages.channelOlderExhausted = false
@@ -311,6 +313,7 @@ export async function loadMessages() {
 			channelId,
 			{ limit: 50 },
 		)
+		if (isCurrent && !isCurrent()) return
 		store.messages.channelReactions = reactions || {}
 		store.messages.reactionsEtag = reactionsSignature(reactions)
 		store.messages.channelMessagesSource = messages
@@ -341,11 +344,13 @@ export async function loadMessages() {
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
 		if (!softReload && !store.messages.firstUnreadEventId) scrollToBottom()
 		await markCurrentChannelRead().catch(handleError('chat.hub.operationFailed'))
+		if (isCurrent && !isCurrent()) return
 		refreshChannelPinsBar().catch(handleError('chat.hub.operationFailed'))
 		saveChannelViewCache()
 		try {
 			const { fetchMemberReadMarkers } = await import('../memberReadMarkers.mjs')
 			await fetchMemberReadMarkers(groupId, channelId)
+			if (isCurrent && !isCurrent()) return
 		}
 		catch (error) {
 			handleError('chat.hub.operationFailed')(error)

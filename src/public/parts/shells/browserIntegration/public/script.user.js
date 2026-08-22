@@ -625,18 +625,8 @@ async function makeApiRequest(host, protocol, endpoint, options = {}) {
 }
 
 // --- 跨页面互斥锁 ---
-// 所有标签页共享同一份 GM 存储，故以其为锁介质，防止多个页面同时刷新 API 密钥而刷出一长串新 key。
+// 用 Web Locks API 做原子跨标签页互斥锁，防止多个页面同时刷新 API 密钥而刷出一长串新 key。
 
-/**
- * 互斥锁的存储键。
- * @constant {string}
- */
-const MUTEX_KEY = 'fount_apikey_mutex'
-/**
- * 锁的持有期限（毫秒），超过则视为过期可被抢占。
- * @constant {number}
- */
-const MUTEX_LOCK_DURATION_MS = 15000
 /**
  * 尝试获取锁的总超时（毫秒）。
  * @constant {number}
@@ -645,28 +635,14 @@ const MUTEX_ACQUIRE_TIMEOUT_MS = 10000
 
 /**
  * 跨页面获取互斥锁并执行给定操作。
- * 通过 GM 存储记录持锁令牌与过期时间，写后回读校验是否抢锁成功，失败则短暂退避重试。
+ * 使用 Web Locks API 的原子跨标签页互斥锁（同一来源的标签页共享锁），
+ * 保证同一时刻只有一个临界区执行，避免并发 401 时各页面竞态重复创建 API 密钥。
  * @template T
  * @param {function(): Promise<T>} critical - 临界区内要执行的操作。
  * @returns {Promise<T>} - 临界区操作的结果。
  */
-async function withMutex(critical) {
-	const token = crypto.randomUUID()
-	const deadline = Date.now() + MUTEX_ACQUIRE_TIMEOUT_MS
-	while (Date.now() < deadline) {
-		const now = Date.now()
-		const current = await GM.getValue(MUTEX_KEY, null)
-		if (!current || current.expiry < now) {
-			await GM.setValue(MUTEX_KEY, { token, expiry: now + MUTEX_LOCK_DURATION_MS })
-			const check = await GM.getValue(MUTEX_KEY, null)
-			if (check?.token === token) {
-				try { return await critical() }
-				finally { if ((await GM.getValue(MUTEX_KEY, null))?.token === token) await GM.setValue(MUTEX_KEY, null) }
-			}
-		}
-		await new Promise(resolve => setTimeout(resolve, 200))
-	}
-	throw new Error('Timed out acquiring fount apikey mutex.')
+function withMutex(critical) {
+	return navigator.locks.request('fount_apikey_mutex', { timeout: MUTEX_ACQUIRE_TIMEOUT_MS }, critical)
 }
 
 /**
@@ -680,21 +656,32 @@ async function withMutex(critical) {
 async function requestNewApiKey(host, protocol) {
 	return withMutex(async () => {
 		fountDataCache = null
-		const { apikey: storedApikey } = await getStoredData()
-		if (storedApikey) try {
-			// 重读后先用已有 key 探测，若已可用则复用，避免重复创建。
-			// isRetry：探测失败时不做二次刷新（本就在刷新流程内），直接走创建新 key 分支。
-			await makeApiRequest(host, protocol, '/api/whoami', { isRetry: true })
-			return storedApikey
-		} catch (_) { }
-
-		const { apiKey } = await makeApiRequest(host, protocol, '/api/apikey/create', {
-			method: 'POST',
-			data: { description: 'Browser Integration Userscript' },
-			authType: 'session'
-		})
-		if (!apiKey) throw new Error('Server did not return a new API key.')
-		return apiKey
+		const { apikey: storedApikey, uuid } = await getStoredData()
+		let finalApiKey = null
+		if (storedApikey)
+			try {
+				// 重读后先用已有 key 探测，若已可用则复用，避免重复创建。
+				// isRetry：探测失败时不做二次刷新（本就在刷新流程内），直接走创建新 key 分支。
+				await makeApiRequest(host, protocol, '/api/whoami', { isRetry: true })
+				finalApiKey = storedApikey
+			} catch (error) {
+				// 仅当旧 key 确为 401（凭据失效）才创建新 key；
+				// 超时、网络、解析、5xx 等非凭据错误直接抛出，不当作无效凭据。
+				if (!/status: 401\b/.test(error.message)) throw error
+			}
+		if (!finalApiKey) {
+			const { apiKey } = await makeApiRequest(host, protocol, '/api/apikey/create', {
+				method: 'POST',
+				data: { description: 'Browser Integration Userscript' },
+				authType: 'session'
+			})
+			if (!apiKey) throw new Error('Server did not return a new API key.')
+			finalApiKey = apiKey
+		}
+		// 复用或创建后都在释放互斥锁前持久化最终 key，
+		// 避免并发页面读到旧 key 而重复创建或互相覆盖。
+		await setStoredData(host, uuid, protocol, finalApiKey)
+		return finalApiKey
 	})
 }
 
@@ -708,8 +695,6 @@ function refreshApiKey(host, protocol) {
 	apiKeyRefreshPromise ??= (async () => {
 		try {
 			const newApiKey = await requestNewApiKey(host, protocol)
-			const { uuid } = await getStoredData()
-			await setStoredData(host, uuid, protocol, newApiKey)
 			lastRefreshTimestamp = Date.now()
 			console.log('fount userscript: Successfully refreshed and stored new API key.')
 			return newApiKey

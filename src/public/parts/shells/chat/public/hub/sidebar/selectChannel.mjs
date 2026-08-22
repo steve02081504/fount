@@ -45,6 +45,11 @@ export async function selectChannel(channelId) {
 			store.context.currentMode === 'groups' || isPrivateChatActive()
 		)
 	)
+	/**
+	 * 本次目标频道是否仍为当前选中频道。
+	 * @returns {boolean} 仍为本次要切换的频道则 true
+	 */
+	const isChannelCurrent = () => stillCurrent() && store.context.currentChannelId === channelId
 	if (!stillCurrent()) return
 	const prevGroupId = selectedGroupId
 	const prevChannelId = store.context.currentChannelId
@@ -116,11 +121,10 @@ export async function selectChannel(channelId) {
 		/** @returns {object | null} 当前群 state（读取文件加密模式） */
 		getCurrentState: () => store.context.currentState,
 	})
-	if (!stillCurrent() || store.context.currentChannelId !== channelId) return
-	await loadDraft(store.context.currentGroupId, channelId)
-	if (!stillCurrent() || store.context.currentChannelId !== channelId) return
-	await loadMessages()
-	if (!stillCurrent() || store.context.currentChannelId !== channelId) return
+	if (!isChannelCurrent()) return
+	await loadDraft(store.context.currentGroupId, channelId, isChannelCurrent)
+	await loadMessages(isChannelCurrent)
+	if (!isChannelCurrent()) return
 	if (store.context.currentGroupId && store.context.currentChannelId && channelType === 'text')
 		connectGroupWebSocket(store.context.currentGroupId, store.context.currentChannelId)
 	updateStatusBanners()
