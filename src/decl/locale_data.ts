@@ -498,6 +498,11 @@ export type LocaleData = {
 				editorRemoved: string
 			}
 			remove: {
+				confirmPrompt: string
+				yn: string
+				aborted: string
+				externalMountWarning: string
+				nonInteractiveRequiresForce: string
 				fountUninstallationComplete: string
 				fountInstallationDirRemoved: string
 				protocolHandlerRemoved: string
@@ -6308,7 +6313,10 @@ export type LocaleKeyParams = {
 	'fountConsole.path.install.permissionDeniedAsRoot': { path: string | number }
 	'fountConsole.path.install.permissionDeniedNotRoot': { path: string | number }
 	'fountConsole.path.protocol.registerFailed': { message: string | number }
+	'fountConsole.path.remove.confirmPrompt': { path: string | number }
+	'fountConsole.path.remove.externalMountWarning': { target: string | number }
 	'fountConsole.path.remove.moduleRemoved': { module: string | number }
+	'fountConsole.path.remove.nonInteractiveRequiresForce': { path: string | number }
 	'fountConsole.path.remove.remove.backgroundRunnerFailed': { message: string | number }
 	'fountConsole.path.remove.remove.denoFailed': { message: string | number }
 	'fountConsole.path.remove.remove.moduleFailed': { message: string | number; module: string | number }

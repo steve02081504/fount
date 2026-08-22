@@ -64,6 +64,13 @@ trap_taskbar_clear() {
 	trap 'write_taskbar_progress_clear' EXIT INT TERM
 }
 
+# 打开一次控制终端到 fd 9。没有可用 tty 时（例如 CI runner 上 /dev/tty 存在但没有控制会话）
+# 会以 ENXIO 失败——这是我们在轮询输入前的唯一可靠信号。fd 9 是为了兼容 macOS 上古的
+# bash 3.2（不支持动态 {fd} 分配）。调用方从 fd 9 读取提示，用 `exec 9<&-` 关闭。
+open_controlling_tty() {
+	exec 9</dev/tty 2>/dev/null
+}
+
 # Restore title + clear taskbar progress on EXIT/INT/TERM. Optional extra cleanup function name.
 trap_terminal_teardown() {
 	FOUNT_TERMINAL_TEARDOWN_TITLE=$(get_title)

@@ -7,7 +7,6 @@
  */
 import { renderTemplate } from '/parts/shells:chat/src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
 
@@ -293,7 +292,7 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 }
 
 /**
- * 渲染「此实体为 xxx 所有」节点（owner 需 HTML 插值，故用 geti18n；不改全局 templatePath）。
+ * 渲染「此实体为 xxx 所有」节点（owner 为 HTML 插值，走 dataset 参数 + data-i18n，随语种切换自动重译）。
  * @param {string | null | undefined} ownerEntityHash 主人
  * @param {{ ownerName?: string | null, linkHref?: string | null }} [options] 选项
  * @returns {HTMLElement | null} 节点；无主人时为 null
@@ -305,11 +304,11 @@ export function renderOwnedByBox(ownerEntityHash, options = {}) {
 		|| aliasForEntity(owner)
 		|| entityHashLabel(owner)
 	const href = options.linkHref || formatSocialProfileHref(owner)
-	const ownerLink = `<a class="entity-owned-by-link link link-hover" href="${escapeHtml(href)}" data-entity-owned-by-link="${escapeHtml(owner)}">${escapeHtml(label)}</a>`
 	const box = document.createElement('div')
 	box.className = 'entity-owned-by-box'
 	box.dataset.entityOwnedBy = owner
-	box.innerHTML = geti18n('chat.entityProfile.ownedBy', { owner: ownerLink })
+	box.dataset.i18n = 'chat.entityProfile.ownedBy'
+	box.dataset.owner = `<a class="entity-owned-by-link link link-hover" href="${escapeHtml(href)}" data-entity-owned-by-link="${escapeHtml(owner)}">${escapeHtml(label)}</a>`
 	return box
 }
 
@@ -387,5 +386,4 @@ export function paintEntityProfileExtras(root, options = {}) {
 			warnHost.replaceChildren()
 			warnHost.hidden = true
 		}
-
 }

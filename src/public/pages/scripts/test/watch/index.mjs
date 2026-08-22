@@ -1,8 +1,9 @@
 /**
- * 测试环境页面监视入口：组装 loop + a11y + locale，bootstrap 后开闸。
+ * 测试环境页面监视入口：组装 loop + a11y + cssvar + locale，bootstrap 后开闸。
  * Playwright 只认 `fount.test.watch`（`kick` / `drain` / `holdLocale` / `releaseLocale` / `started`）。
  */
 import { requestRefresh, task as a11yTask } from './a11y.mjs'
+import { task as cssvarTask } from './cssvar.mjs'
 import { bootstrap, task as localeTask } from './locale.mjs'
 import { holdLocale, releaseLocale } from './locale_hold.mjs'
 import { drain, register, start, started } from './loop.mjs'
@@ -12,6 +13,7 @@ globalThis.fount ??= {}
 globalThis.fount.test ??= {}
 
 register(a11yTask)
+register(cssvarTask)
 register(localeTask)
 observe(document.documentElement, {
 	subtree: true,

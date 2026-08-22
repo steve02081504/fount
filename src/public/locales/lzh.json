@@ -521,6 +521,11 @@
 				"editorRemoved": "已自編輯器終端按鍵對應移除 fount 設定：`${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "將自磁碟刪除 fount 安裝目錄：`${path}`\n請確以此即應刪之目錄。",
+				"yn": "[Y/N] ",
+				"aborted": "已作罷，未刪何物。",
+				"externalMountWarning": "告：fount 居於外置/共享掛載（`${target}`）之上！\n此目錄或同時見於宿主機或虛擬機中，`fount remove` 將一併刪之，慎之。",
+				"nonInteractiveRequiresForce": "非交互之境，不能確認刪除。若確欲移除 `fount`（${path}），可加 `fount remove --force` 以略過確認。",
 				"fountUninstallationComplete": "fount 已拔",
 				"fountInstallationDirRemoved": "fount 置目錄已移除",
 				"protocolHandlerRemoved": "`fount://` 協議已移除",

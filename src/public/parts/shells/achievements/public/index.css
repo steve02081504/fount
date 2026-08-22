@@ -17,6 +17,10 @@
 	opacity: 1;
 }
 
+:root {
+	--shake-intensity: 0;
+}
+
 @keyframes shake {
 
 	0%,

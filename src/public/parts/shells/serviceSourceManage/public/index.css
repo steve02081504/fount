@@ -6,7 +6,7 @@
 .file-list-item {
 	cursor: pointer;
 	padding: 0.5rem;
-	border-bottom: var(--border) solid var(--border-color);
+	border-bottom: var(--border) solid color-mix(in srgb, var(--color-base-content) 25%, transparent);
 	transition: background-color 0.2s;
 	display: flex;
 	justify-content: space-between;

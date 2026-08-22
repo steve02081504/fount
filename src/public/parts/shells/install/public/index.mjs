@@ -21,19 +21,36 @@ const importButton = document.getElementById('import-button')
 
 let selectedFiles = []
 
-// 切换标签页
-fileImportTab.addEventListener('click', () => {
-	fileImportTab.classList.add('tab-active')
-	textImportTab.classList.remove('tab-active')
-	fileImportContent.classList.remove('hidden')
-	textImportContent.classList.add('hidden')
-})
+const tabs = [fileImportTab, textImportTab]
 
-textImportTab.addEventListener('click', () => {
-	textImportTab.classList.add('tab-active')
-	fileImportTab.classList.remove('tab-active')
-	textImportContent.classList.remove('hidden')
-	fileImportContent.classList.add('hidden')
+/**
+ * 切换标签页（roving tabIndex + aria-selected + 面板显隐 + 焦点移动）。
+ * @param {HTMLElement} active - 激活的标签。
+ */
+function switchTab(active) {
+	for (const tab of tabs) {
+		const isActive = tab === active
+		tab.classList.toggle('tab-active', isActive)
+		tab.setAttribute('aria-selected', String(isActive))
+		tab.tabIndex = isActive ? 0 : -1
+		if (isActive) tab.focus()
+	}
+	fileImportContent.classList.toggle('hidden', active !== fileImportTab)
+	textImportContent.classList.toggle('hidden', active !== textImportTab)
+}
+
+for (const tab of tabs)
+	tab.addEventListener('click', () => switchTab(tab))
+
+document.querySelector('[role="tablist"]').addEventListener('keydown', event => {
+	const currentIndex = tabs.indexOf(document.activeElement)
+	if (currentIndex === -1) return
+	let nextIndex
+	if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length
+	else if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length
+	else return
+	event.preventDefault()
+	switchTab(tabs[nextIndex])
 })
 
 // 文件拖放处理

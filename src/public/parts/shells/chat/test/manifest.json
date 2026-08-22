@@ -709,7 +709,11 @@
 					"expected": "24s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/deepLink.spec.mjs",
-						"src/public/parts/shells/chat/public/shared/runUri.mjs"
+						"src/public/parts/shells/chat/test/frontend/run.mjs",
+						"src/public/parts/shells/chat/public/shared/runUri.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/selectChannel.mjs",
+						"src/public/parts/shells/chat/public/hub/friendChat.mjs",
+						"src/public/parts/shells/chat/test/fixtures/chars/on_message_yes/**"
 					]
 				},
 				{

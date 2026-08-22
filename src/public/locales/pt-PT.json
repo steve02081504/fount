@@ -521,6 +521,11 @@
 				"editorRemoved": "Configuração fount removida dos atalhos do terminal do editor: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "O diretório de instalação do fount está prestes a ser eliminado do disco: `${path}`\nConfirme que este é realmente o diretório que deseja eliminar.",
+				"yn": "[Y/N]",
+				"aborted": "Cancelado, nada foi eliminado.",
+				"externalMountWarning": "Aviso: o fount está localizado numa montagem externa/partilhada (`${target}`)!\nEste diretório pode existir simultaneamente no host ou na máquina virtual. O `fount remove` irá eliminá-lo também aí, por isso tenha muito cuidado.",
+				"nonInteractiveRequiresForce": "A eliminação não pode ser confirmada num ambiente não interativo. Se tiver a certeza de que deseja remover o `fount` (${path}), use `fount remove --force` para ignorar a confirmação.",
 				"fountUninstallationComplete": "desinstalação da fount concluída.",
 				"fountInstallationDirRemoved": "O diretório de instalação da fount foi removido.",
 				"protocolHandlerRemoved": "O manipulador de protocolo `fount://` foi removido.",

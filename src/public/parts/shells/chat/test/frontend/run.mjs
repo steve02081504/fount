@@ -15,4 +15,7 @@ process.exit(await runShellFrontendTests({
 	apiKeyPrefix: 'fount-chat-fe-key',
 	loadParts: ['shells/chat', 'shells/social'],
 	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
+	fixtureCopies: [
+		{ from: join(testDir, '../fixtures/chars', 'on_message_yes'), to: 'chars/on_message_yes' },
+	],
 }))

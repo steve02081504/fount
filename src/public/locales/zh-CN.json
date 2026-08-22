@@ -521,6 +521,11 @@
 				"editorRemoved": "已从编辑器终端按键映射移除 fount 配置：`${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "即将从磁盘删除 fount 安装目录：`${path}`\n请确认这确实是要删除的目录。",
+				"yn": "[Y/N] ",
+				"aborted": "已取消，未删除任何内容。",
+				"externalMountWarning": "警告：fount 位于外部/共享挂载（`${target}`）上！\n该目录可能同时存在于宿主机或虚拟机中，`fount remove` 会一并删除，请格外小心。",
+				"nonInteractiveRequiresForce": "无法在非交互式环境中确认删除。若确定要移除 `fount`（${path}），请使用 `fount remove --force` 跳过确认。",
 				"fountUninstallationComplete": "fount 卸载完成。",
 				"fountInstallationDirRemoved": "fount 安装目录已移除。",
 				"protocolHandlerRemoved": "`fount://` 协议处理器已移除。",

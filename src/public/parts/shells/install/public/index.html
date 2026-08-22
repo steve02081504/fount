@@ -25,17 +25,17 @@
 <body class="flex flex-col h-screen">
 	<div class="navbar bg-base-100" role="navigation" data-i18n="import.tabs.tabsLabel">
 		<div class="navbar-start">
-			<ul class="menu menu-horizontal p-0">
-				<li id="file-import-tab" class="tab tab-active" data-i18n="import.tabs.fileImport"></li>
-				<li id="text-import-tab" class="tab" data-i18n="import.tabs.textImport"></li>
-			</ul>
+			<div class="tabs tabs-box" role="tablist" data-i18n="import.tabs.tabsLabel">
+				<button type="button" id="file-import-tab" class="tab tab-active" role="tab" aria-selected="true" aria-controls="file-import-content" tabindex="0" data-i18n="import.tabs.fileImport"></button>
+				<button type="button" id="text-import-tab" class="tab" role="tab" aria-selected="false" aria-controls="text-import-content" tabindex="-1" data-i18n="import.tabs.textImport"></button>
+			</div>
 		</div>
 	</div>
 
 	<main id="import-content" class="p-4 flex flex-col flex-grow overflow-auto">
 		<h1 class="sr-only" data-i18n="import.title"></h1>
 		<!-- 文件导入内容 -->
-		<div id="file-import-content" class="flex flex-col h-full">
+		<div id="file-import-content" role="tabpanel" aria-labelledby="file-import-tab" class="flex flex-col h-full">
 			<div id="drop-area" class="drop-area flex flex-col items-center justify-center">
 				<img src="https://api.iconify.design/line-md/upload-outline-loop.svg" width="50" height="50" class="text-icon" data-i18n="import.dropArea.icon" />
 				<span data-i18n="import.dropArea"></span>
@@ -46,7 +46,7 @@
 		</div>
 
 		<!-- 文本导入内容 -->
-		<div id="text-import-content" class="hidden flex flex-col">
+		<div id="text-import-content" role="tabpanel" aria-labelledby="text-import-tab" class="hidden flex flex-col">
 			<textarea id="text-input" class="textarea textarea-bordered w-full flex-grow" data-i18n="import.textArea"></textarea>
 		</div>
 	</main>

@@ -3,12 +3,14 @@
  * 自持 observer；忽略期间 takeRecords 丢弃突变。
  */
 import { markDirty } from './a11y.mjs'
+import { markDirty as markCssvarDirty } from './cssvar.mjs'
 
 let depth = 0
 
 const observer = new MutationObserver(() => {
 	if (depth > 0) return
 	markDirty()
+	markCssvarDirty()
 })
 
 /**
