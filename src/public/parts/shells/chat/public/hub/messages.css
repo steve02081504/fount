@@ -318,15 +318,19 @@
 	border: none;
 	background: var(--color-base-300);
 	color: var(--color-base-content);
-	opacity: 0.35;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
 	cursor: pointer;
-	transition: opacity 0.15s;
+	transition: opacity 0.15s, visibility 0.15s;
 }
 
 .char-entry:hover .char-timeline-arrow,
 .chat.message-row[data-char-id]:hover .char-timeline-arrow,
-.chat.message-row[data-char-id].timeline-arrows-active .char-timeline-arrow {
+.chat.message-row[data-char-id]:focus-within .char-timeline-arrow {
 	opacity: 0.9;
+	visibility: visible;
+	pointer-events: auto;
 }
 
 .char-timeline-arrow.left {

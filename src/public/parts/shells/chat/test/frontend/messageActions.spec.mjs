@@ -1,11 +1,73 @@
 import {
+	withApiRequest,
+} from 'fount/scripts/test/playwright/api.mjs'
+
+import {
 	test,
 	expect,
+	waitForHub,
 	sendMessageViaComposer,
 	expectMessageInChat,
 	messageRowByText,
 	pickEmojiFromPicker,
 } from './fixtures.mjs'
+
+/**
+ * 通过 API 向测试群添加角色。
+ * @param {string} baseUrl 测试根 URL
+ * @param {string} apiKey API 密钥
+ * @param {string} groupId 群 ID
+ * @param {string} charname 角色名
+ * @returns {Promise<void>} 无返回值
+ */
+async function addCharToGroup(baseUrl, apiKey, groupId, charname) {
+	await withApiRequest(async req => {
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/char?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: { charname } },
+		)
+		if (!res.ok()) throw new Error(`addChar failed: ${res.status()}`)
+	})
+}
+
+/**
+ * 通过 API 向频道发送带指定 locale 的用户消息。
+ * @param {string} baseUrl 测试根 URL
+ * @param {string} apiKey API 密钥
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} text 消息正文
+ * @param {string} locale 消息 locale
+ * @returns {Promise<void>} 无返回值
+ */
+async function sendApiMessage(baseUrl, apiKey, groupId, channelId, text, locale) {
+	await withApiRequest(async req => {
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: { content: { content: text, locale } } },
+		)
+		if (!res.ok()) throw new Error(`sendApiMessage failed: ${res.status()}`)
+	})
+}
+
+/**
+ * 通过 API 触发频道内角色回复。
+ * @param {string} baseUrl 测试根 URL
+ * @param {string} apiKey API 密钥
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} charname 角色名
+ * @returns {Promise<void>} 无返回值
+ */
+async function triggerCharReply(baseUrl, apiKey, groupId, channelId, charname) {
+	await withApiRequest(async req => {
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/trigger-reply?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: { charname } },
+		)
+		if (!res.ok()) throw new Error(`trigger-reply failed: ${res.status()}`)
+	})
+}
 
 test.describe('Chat message actions', () => {
 	test.setTimeout(600_000)
@@ -173,5 +235,63 @@ test.describe('Chat message actions', () => {
 		await expect(bookmarkRow).toBeVisible({ timeout: 30_000 })
 		await bookmarkRow.click()
 		await expect(row).toHaveClass(/ring-primary/, { timeout: 30_000 })
+	})
+
+	test('char reply: no edited label, respects zh-CN locale', async ({ page, groupChannel, apiKey, baseUrl }) => {
+		const { groupId, channelId } = groupChannel
+		await addCharToGroup(baseUrl, apiKey, groupId, 'noai_locale_reporter')
+		await sendApiMessage(baseUrl, apiKey, groupId, channelId, '请说点什么', 'zh-CN')
+		await triggerCharReply(baseUrl, apiKey, groupId, channelId, 'noai_locale_reporter')
+
+		const row = await expectMessageInChat(page, '【中文回复】')
+		await expect(row).toHaveAttribute('data-char-id', /./)
+
+		// 生成终稿不应被标记为已编辑
+		await expect(row.locator('[data-i18n="chat.hub.editedLabel"]')).toHaveCount(0, { timeout: 30_000 })
+	})
+
+	test('char timeline arrows are hidden by default and shown only on hover', async ({ page, baseUrl }) => {
+		await waitForHub(page, baseUrl)
+		await expect(page.locator('#messages')).toBeVisible({ timeout: 60_000 })
+		// 直接在消息容器注入末条角色消息，避免依赖完整角色回复流（isTwoPartyCharDialogue/WS 时序）。
+		await page.locator('#messages').evaluate(container => {
+			container.innerHTML = ''
+			const row = document.createElement('div')
+			row.className = 'chat message-row'
+			row.dataset.charId = 'ar'.repeat(32)
+			row.innerHTML = '<span class="message-content">行</span>'
+			container.appendChild(row)
+			const left = document.createElement('button')
+			left.type = 'button'
+			left.className = 'char-timeline-arrow left'
+			left.setAttribute('aria-hidden', 'true')
+			left.textContent = '❮'
+			row.appendChild(left)
+		})
+		const arrow = page.locator('#messages .message-row[data-char-id] .char-timeline-arrow.left')
+
+		// 默认隐藏（opacity 0 且 visibility hidden，pointer-events none）
+		await expect.poll(() => page.evaluate(() => {
+			const el = document.querySelector('.char-timeline-arrow.left')
+			if (!el) return null
+			const s = getComputedStyle(el)
+			return { opacity: s.opacity, visibility: s.visibility, pointerEvents: s.pointerEvents }
+		})).toEqual({ opacity: '0', visibility: 'hidden', pointerEvents: 'none' })
+
+		// 悬停时显示
+		await page.locator('#messages .message-row[data-char-id]').hover()
+		await expect.poll(() => page.evaluate(() => {
+			const el = document.querySelector('.char-timeline-arrow.left')
+			const s = getComputedStyle(el)
+			return { opacity: s.opacity, visibility: s.visibility, pointerEvents: s.pointerEvents }
+		})).toEqual({ opacity: '0.9', visibility: 'visible', pointerEvents: 'auto' })
+
+		// 移开后恢复隐藏
+		await page.mouse.move(0, 0)
+		await expect.poll(() => page.evaluate(() => {
+			const el = document.querySelector('.char-timeline-arrow.left')
+			const s = getComputedStyle(el)
+			return { opacity: s.opacity, visibility: s.visibility }
+		})).toEqual({ opacity: '0', visibility: 'hidden' })
 	})
 })
