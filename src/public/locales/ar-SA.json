@@ -521,6 +521,11 @@
 				"editorRemoved": "تمت إزالة إعدادات fount من اختصارات طرفية المحرّر: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "دليل تثبيت fount على وشك الحذف من القرص: `${path}`\nيرجى التأكد من أن هذا هو بالفعل الدليل الذي تريد حذفه.",
+				"yn": "[Y/N]",
+				"aborted": "تم الإلغاء، لم يُحذف أي شيء.",
+				"externalMountWarning": "تحذير: يقع fount على قاعدة خارجية/مشتركة (`${target}`)!\nقد يكون هذا الدليل موجودًا أيضًا على المضيف أو في جهاز افتراضي آخر. سيؤدي `fount remove` إلى حذفه هناك أيضًا، لذا يرجى توخي الحذر الشديد.",
+				"nonInteractiveRequiresForce": "لا يمكن تأكيد الحذف في بيئة غير تفاعلية. إذا كنت متأكدًا من رغبتك في إزالة `fount` (${path})، فاستخدم `fount remove --force` لتخطي التأكيد.",
 				"fountUninstallationComplete": "اكتملت عملية إلغاء التثبيت.",
 				"fountInstallationDirRemoved": "تمت إزالة دليل التثبيت fount.",
 				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول `fount://`.",

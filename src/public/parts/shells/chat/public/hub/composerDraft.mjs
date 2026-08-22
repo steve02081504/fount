@@ -158,16 +158,19 @@ export function saveDraft(groupId, channelId, draft) {
  * @param {string} channelId 频道 ID
  * @param {object[]} files 附件快照
  * @param {string} key 频道草稿键
+ * @param {(() => boolean) | undefined} [isCurrent] 本次频道选择的有效性守卫；为假则立即停止副作用
  * @returns {Promise<void>}
  */
-async function restoreDraftFiles(groupId, channelId, files, key) {
+async function restoreDraftFiles(groupId, channelId, files, key, isCurrent) {
 	const { clearSelectedFiles, selectedFiles } = await import('./composerFiles.mjs')
 	clearSelectedFiles()
 	if (!files?.length) return
+	if (isCurrent && !isCurrent()) return
 	const preview = document.getElementById('attachment-preview')
 	if (!(preview instanceof HTMLElement)) return
 	const { renderAttachmentPreview } = await import('../src/composerAttachments.mjs')
 	for (const file of files) {
+		if (isCurrent && !isCurrent()) return
 		const restored = { ...file, draftKey: key }
 		selectedFiles.push(restored)
 		const el = await renderAttachmentPreview(
@@ -188,9 +191,10 @@ async function restoreDraftFiles(groupId, channelId, files, key) {
  * 加载草稿到 DOM 控件，并恢复该频道附件（缩略图）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
+ * @param {(() => boolean) | undefined} [isCurrent] 本次频道选择的有效性守卫；为假则立即停止副作用
  * @returns {Promise<void>}
  */
-export async function loadDraft(groupId, channelId) {
+export async function loadDraft(groupId, channelId, isCurrent) {
 	if (!groupId || !channelId) return
 	const input = document.getElementById('message-input')
 	const contentWarningInput = document.getElementById('content-warning')
@@ -207,6 +211,9 @@ export async function loadDraft(groupId, channelId) {
 		return
 	}
 
+	// 服务端返回前用户可能已切走频道，失效则不再触碰 composer/DOM。
+	if (isCurrent && !isCurrent()) return
+
 	// 仅在服务端确认（返回记录或无记录）后重置控件；失败路径已提前返回。
 	if (input instanceof HTMLTextAreaElement) {
 		input.value = ''
@@ -217,7 +224,7 @@ export async function loadDraft(groupId, channelId) {
 	setComposerExtrasVisible(false)
 
 	if (!draft) {
-		await restoreDraftFiles(groupId, channelId, [], key)
+		await restoreDraftFiles(groupId, channelId, [], key, isCurrent)
 		return
 	}
 
@@ -231,7 +238,7 @@ export async function loadDraft(groupId, channelId) {
 		sensitiveMediaInput.checked = true
 	if (draft.content_warning || draft.sensitive_media)
 		setComposerExtrasVisible(true)
-	await restoreDraftFiles(groupId, channelId, draft.files || [], key)
+	await restoreDraftFiles(groupId, channelId, draft.files || [], key, isCurrent)
 }
 
 /**

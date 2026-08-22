@@ -63,10 +63,9 @@ body.scroll-lock {
 }
 
 .feature-section {
-	--ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 	opacity: 0;
 	transform: translateY(30px);
-	transition: opacity 0.8s var(--ease-out-quad), transform 0.8s var(--ease-out-quad);
+	transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 	transition-delay: 0.2s;
 }
 
@@ -88,7 +87,7 @@ body.scroll-lock {
 }
 
 .selected-theme {
-	outline: 4px solid oklch(var(--p));
+	outline: 4px solid var(--color-primary);
 	outline-offset: 2px;
 }
 

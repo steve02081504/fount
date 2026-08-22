@@ -4,7 +4,7 @@
 set -euo pipefail
 here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
 out=$(mktemp)
-if "$1" remove >"$out" 2>&1; then
+if "$1" remove --force >"$out" 2>&1; then
 	exit_code=0
 else
 	exit_code=$?

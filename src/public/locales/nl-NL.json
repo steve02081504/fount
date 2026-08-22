@@ -521,6 +521,11 @@
 				"editorRemoved": "fount-configuratie verwijderd uit terminaltoetsen van editor: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "De fount-installatiemap staat op het punt om van de schijf te worden verwijderd: `${path}`\nBevestig dat dit inderdaad de map is die je wilt verwijderen.",
+				"yn": "[Y/N]",
+				"aborted": "Geannuleerd, er is niets verwijderd.",
+				"externalMountWarning": "Waarschuwing: fount bevindt zich op een externe/gedeelde mount (`${target}`)!\nDeze map kan tegelijkertijd op de host of op de virtuele machine bestaan. `fount remove` verwijdert hem daar ook, dus wees extra voorzichtig.",
+				"nonInteractiveRequiresForce": "Verwijdering kan niet worden bevestigd in een niet-interactieve omgeving. Als je zeker weet dat je `fount` (${path}) wilt verwijderen, gebruik dan `fount remove --force` om de bevestiging over te slaan.",
 				"fountUninstallationComplete": "Het verwijderen van de fount is voltooid.",
 				"fountInstallationDirRemoved": "De font-installatiemap is verwijderd.",
 				"protocolHandlerRemoved": "De protocolhandler `fount://` is verwijderd.",

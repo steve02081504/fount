@@ -521,6 +521,11 @@
 				"editorRemoved": "Đã xóa cấu hình fount khỏi phím tắt terminal của trình soạn thảo: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "Thư mục cài đặt fount sắp bị xóa khỏi đĩa: `${path}`\nVui lòng xác nhận đây thực sự là thư mục bạn muốn xóa.",
+				"yn": "[Y/N]",
+				"aborted": "Đã hủy, không có gì bị xóa.",
+				"externalMountWarning": "Cảnh báo: fount nằm trên mount ngoài/dùng chung (`${target}`)!\nThư mục này cũng có thể tồn tại trên máy chủ hoặc máy ảo khác. `fount remove` sẽ xóa nó ở đó luôn, vì vậy hãy cẩn thận hơn.",
+				"nonInteractiveRequiresForce": "Việc xóa không thể được xác nhận trong môi trường không tương tác. Nếu bạn chắc chắn muốn xóa `fount` (${path}), hãy sử dụng `fount remove --force` để bỏ qua xác nhận.",
 				"fountUninstallationComplete": "quá trình gỡ cài đặt fount đã hoàn tất.",
 				"fountInstallationDirRemoved": "Thư mục cài đặt fount đã bị xóa.",
 				"protocolHandlerRemoved": "Trình xử lý giao thức `fount://` đã bị xóa.",
