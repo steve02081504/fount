@@ -21,20 +21,21 @@ const importButton = document.getElementById('import-button')
 
 let selectedFiles = []
 
-// 切换标签页
-fileImportTab.addEventListener('click', () => {
-	fileImportTab.classList.add('tab-active')
-	textImportTab.classList.remove('tab-active')
-	fileImportContent.classList.remove('hidden')
-	textImportContent.classList.add('hidden')
-})
+/**
+ * 切换标签页。
+ * @param {HTMLElement} active - 激活的标签。
+ */
+function switchTab(active) {
+	fileImportTab.classList.toggle('tab-active', active === fileImportTab)
+	textImportTab.classList.toggle('tab-active', active === textImportTab)
+	fileImportTab.setAttribute('aria-selected', String(active === fileImportTab))
+	textImportTab.setAttribute('aria-selected', String(active === textImportTab))
+	fileImportContent.classList.toggle('hidden', active !== fileImportTab)
+	textImportContent.classList.toggle('hidden', active !== textImportTab)
+}
 
-textImportTab.addEventListener('click', () => {
-	textImportTab.classList.add('tab-active')
-	fileImportTab.classList.remove('tab-active')
-	textImportContent.classList.remove('hidden')
-	fileImportContent.classList.add('hidden')
-})
+fileImportTab.addEventListener('click', () => switchTab(fileImportTab))
+textImportTab.addEventListener('click', () => switchTab(textImportTab))
 
 // 文件拖放处理
 dropArea.addEventListener('dragover', event => {
