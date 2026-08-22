@@ -607,6 +607,24 @@
 			]
 		},
 		{
+			"name": "code_fence",
+			"expected": 100,
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/code_fence.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/code_fence.test.mjs",
+				"src/public/pages/scripts/features/markdown/codeFence.mjs"
+			]
+		},
+		{
 			"name": "kernel",
 			"expected": "17s",
 			"run": [

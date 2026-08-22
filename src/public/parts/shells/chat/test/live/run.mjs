@@ -46,6 +46,7 @@ function chatFedNodeConfig(index, context, extra = {}) {
 			? {
 				fixtureCopies: [
 					{ from: join(chatFixtures, 'test_streamer'), to: 'chars/test_streamer' },
+					{ from: join(chatFixtures, 'noai_locale_reporter'), to: 'chars/noai_locale_reporter' },
 					{ from: join(liveFixtures, 'worlds/test_world'), to: 'worlds/test_world' },
 					{ from: join(liveFixtures, 'personas/test_persona'), to: 'personas/test_persona' },
 				],

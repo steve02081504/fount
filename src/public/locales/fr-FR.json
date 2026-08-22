@@ -6022,6 +6022,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "Votre abonnement fount pro a été annulé",
+		"description": "Découvrez comment annuler votre abonnement fount pro et partagez la raison de votre annulation.",
+		"intro": "Nous sommes désolés de vous voir partir. Pour nous aider à améliorer fount pro, pourriez-vous nous indiquer pourquoi vous vous désabonnez ?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Sélectionner la langue"
+			},
+			"search": {
+				"placeholder": "Rechercher une langue...",
+				"aria-label": "Rechercher une langue"
+			}
+		},
+		"form": {
+			"reason_label": "Motif du désabonnement",
+			"reason_placeholder": "Par exemple : trop cher, des fonctionnalités dont je ne me sers pas, ou plus nécessaire pour le moment...",
+			"submit": "Envoyer le motif"
+		},
+		"result": {
+			"title": "Votre motif envoyé"
+		}
+	},
 	"oauth_handler": {
 		"title": "Connexion OAuth",
 		"description": "Complétez la connexion OAuth pour la source AI. L'échange des jetons s'effectue côté serveur.",

@@ -6016,6 +6016,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "fount pro 📄❌ 🚫",
+		"description": "🔎📖 ❓ fount pro 📄❌ + ✍️ ✋🤷",
+		"intro": "👋😢. ✊ fount pro 👍📈, 💬 👉 🤷❓",
+		"language_selector": {
+			"button": {
+				"aria-label": "🌐"
+			},
+			"search": {
+				"placeholder": "🔍🌐...",
+				"aria-label": "🔍🌐"
+			}
+		},
+		"form": {
+			"reason_label": "🤷",
+			"reason_placeholder": "💸💸 / 🔧❌🔨 / ⏳🙅...",
+			"submit": "📨"
+		},
+		"result": {
+			"title": "👉📨🤷"
+		}
+	},
 	"oauth_handler": {
 		"title": "🔑 OAuth",
 		"description": "🔑➡️✅",

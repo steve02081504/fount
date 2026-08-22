@@ -6016,6 +6016,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "Ihr fount pro-Abonnement wurde gekündigt",
+		"description": "Erfahren Sie, wie Sie Ihr fount pro-Abonnement kündigen können, und nennen Sie uns den Grund für Ihre Kündigung.",
+		"intro": "Schade, dass Sie gehen. Damit wir fount pro weiter verbessern können: Würden Sie uns verraten, warum Sie abbestellt haben?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Sprache auswählen"
+			},
+			"search": {
+				"placeholder": "Sprache suchen...",
+				"aria-label": "Sprache suchen"
+			}
+		},
+		"form": {
+			"reason_label": "Grund für die Kündigung",
+			"reason_placeholder": "Zum Beispiel: zu teuer, Funktionen, die ich nicht nutze, oder vorerst nicht mehr benötigt...",
+			"submit": "Grund absenden"
+		},
+		"result": {
+			"title": "Ihr abgesendeter Grund"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth-Anmeldung",
 		"description": "Vervollständigen Sie die OAuth-Anmeldung für die AI-Quelle. Der Token-Austausch wird serverseitig abgeschlossen.",

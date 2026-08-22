@@ -9,8 +9,8 @@ import { openDialogFromTemplate } from '../../src/templates.mjs'
 import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'
 import { store } from '../core/state.mjs'
-import { syncComposerAlignment } from '../messages/composerController.mjs'
 import { registerFountUserApi } from '../fountUser.mjs'
+import { syncComposerAlignment } from '../messages/composerController.mjs'
 import { reportTyping } from '../stream/outbound.mjs'
 
 /** @returns {Promise<void>} 惰性加载 messages 图并提交 composer */

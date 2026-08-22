@@ -6016,6 +6016,28 @@
 			}
 		}
 	},
+	"pro_cancel_screen": {
+		"title": "fount pro áskriftinni þinni hefur verið sagt upp",
+		"description": "Lærðu hvernig þú segir upp fount pro áskriftina þína og deildu ástæðunni fyrir uppsögninni.",
+		"intro": "Leiðinlegt að sjá þig fara. Til að hjálpa okkur að bæta fount pro, gætirðu sagt okkur hvers vegna þú hættir áskriftinni?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Veldu tungumál"
+			},
+			"search": {
+				"placeholder": "Leita að tungumáli...",
+				"aria-label": "Leita að tungumáli"
+			}
+		},
+		"form": {
+			"reason_label": "Ástæða uppsagnar",
+			"reason_placeholder": "Til dæmis: of dýrt, aðgerðir sem ég nota ekki, eða ekki lengur þörf á að svo stöddu...",
+			"submit": "Senda ástæðu"
+		},
+		"result": {
+			"title": "Ástæðan sem þú sendir"
+		}
+	},
 	"oauth_handler": {
 		"title": "OAuth-innskráning",
 		"description": "Ljúktu við OAuth innskráninguna fyrir gervigreindargjafann. Token-skiptum er lokið á miðlarahlið.",
