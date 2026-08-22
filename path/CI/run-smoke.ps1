@@ -3,7 +3,6 @@
 # Windows hosts use Windows PowerShell 5.1 (`powershell`); non-Windows keeps `pwsh`.
 
 $ErrorActionPreference = 'Stop'
-if ($PSNativeCommandUseErrorActionPreference) { $PSNativeCommandUseErrorActionPreference = $false }
 
 $Root = if ($env:FOUNT_REPO_ROOT) { $env:FOUNT_REPO_ROOT } else { (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path }
 Set-Location $Root
@@ -25,7 +24,18 @@ function Assert-OutputContains {
 
 function Invoke-FountCapture {
 	param([Parameter(ValueFromRemainingArguments = $true)][string[]]$FountArgs)
-	$output = & $Fount @FountArgs 2>&1 | Out-String
+	# PS 5.1 (Windows) turns a native command's stderr into a terminating NativeCommandError
+	# under $ErrorActionPreference = 'Stop' when merged via 2>&1 (e.g. deno's skipped-optional-dep
+	# warning). Scope 'Continue' around the fount call so that warning is never fatal, then
+	# restore so the outer script keeps 'Stop' for the assertions below.
+	$prevEAP = $ErrorActionPreference
+	$ErrorActionPreference = 'Continue'
+	try {
+		$output = & $Fount @FountArgs 2>&1 | Out-String
+	}
+	finally {
+		$ErrorActionPreference = $prevEAP
+	}
 	if ($LastExitCode -ne 0) {
 		throw "fount $($FountArgs -join ' ') exited with $LastExitCode`n--- captured output ---`n$output"
 	}
