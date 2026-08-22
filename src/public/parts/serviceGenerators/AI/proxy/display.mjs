@@ -1,9 +1,10 @@
-import { escapeRegExp } from '../../../../../scripts/regex.mjs'
-
 /* global cache */
 const MODELS_DEV_API = 'https://models.dev/api.json'
 const SEARCH_RESULT_LIMIT = 60
 const SEARCH_DEBOUNCE_MS = 150
+
+/* global hosturl */
+const { escapeRegExp } = await import(`${hosturl}/scripts/lib/regex.mjs`)
 
 /**
  * 将 models.dev 的 provider API 基址转为 OpenAI 兼容的 chat completions URL。
