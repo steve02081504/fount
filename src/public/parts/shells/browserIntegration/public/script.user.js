@@ -516,7 +516,10 @@ async function getStoredData() {
 	const protocol = await GM.getValue('fount_protocol', 'http:')
 	const apikey = await GM.getValue('fount_apikey', null)
 	const starred = await GM.getValue('has_github_star', false)
-	return fountDataCache = { host, uuid, protocol, apikey }
+	// 异步读取期间缓存可能已被其它流程写入（如密钥刷新）。此时丢弃本次陈旧快照，
+	// 避免旧值在缓存清空后回写并覆盖新写入的 key。
+	if (fountDataCache) return fountDataCache
+	return fountDataCache = { host, uuid, protocol, apikey, starred }
 }
 
 /**
@@ -552,6 +555,18 @@ async function setStoredData(host, uuid, protocol, apikey) {
 	const newHostEntry = { host, protocol }
 	const updatedHosts = [newHostEntry, ...previousHosts.filter(p => p.host !== host)]
 	await GM.setValue('fount_previous_hosts', updatedHosts.slice(0, 13))
+}
+
+/**
+ * 仅持久化 API key（更新内存缓存与 GM 存储），不重写完整主机配置。
+ * 供密钥刷新流程使用：需要同步更新 host/uuid/protocol 的主机切换流程由调用方在验证完成后统一写回，
+ * 避免刷新流程用调用方 host 与锁内旧 uuid 写回不匹配的配置。
+ * @param {string} apikey - 新的 API 密钥。
+ * @returns {Promise<void>}
+ */
+async function storeApiKey(apikey) {
+	fountDataCache = fountDataCache ? { ...fountDataCache, apikey } : { apikey }
+	await GM.setValue('fount_apikey', apikey)
 }
 
 /**
@@ -625,8 +640,21 @@ async function makeApiRequest(host, protocol, endpoint, options = {}) {
 }
 
 // --- 跨页面互斥锁 ---
-// 用 Web Locks API 做原子跨标签页互斥锁，防止多个页面同时刷新 API 密钥而刷出一长串新 key。
+// 所有标签页共享同一份 GM 存储，故以其为锁介质（读写同一键），保证多个页面不会同时刷新 API 密钥而刷出一长串新 key。
+// 刻意不用 Web Locks API（navigator.locks）：Web Locks 与 crypto.randomUUID 都只在安全上下文（HTTPS / localhost）可用，
+// 而本脚本 @match *://*/* 且必须兼容通过纯 HTTP 访问的 fount 主机（如局域网 http://<IP>:8931），
+// 在普通 HTTP 页面上这两者都会抛出/返回 undefined。GM 存储不受安全上下文限制，是唯一在所有页面都可靠的跨标签页互斥介质。
 
+/**
+ * 互斥锁的存储键。
+ * @constant {string}
+ */
+const MUTEX_KEY = 'fount_apikey_mutex'
+/**
+ * 锁的持有期限（毫秒），超过则视为过期可被抢占。
+ * @constant {number}
+ */
+const MUTEX_LOCK_DURATION_MS = 15000
 /**
  * 尝试获取锁的总超时（毫秒）。
  * @constant {number}
@@ -634,19 +662,43 @@ async function makeApiRequest(host, protocol, endpoint, options = {}) {
 const MUTEX_ACQUIRE_TIMEOUT_MS = 10000
 
 /**
+ * 生成锁令牌。
+ * crypto.randomUUID 仅在安全上下文（HTTPS）可用，故在纯 HTTP 页面退化为随机字符串，
+ * 保证令牌在任何页面都能生成。
+ * @returns {string} - 唯一的锁令牌。
+ */
+function mutexToken() {
+	return crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+}
+
+/**
  * 跨页面获取互斥锁并执行给定操作。
- * 使用 Web Locks API 的原子跨标签页互斥锁（同一来源的标签页共享锁），
- * 保证同一时刻只有一个临界区执行，避免并发 401 时各页面竞态重复创建 API 密钥。
+ * 用 GM 存储记录持锁令牌与过期时间，写后回读校验是否抢锁成功（相当于 CAS），失败则短暂退避重试。
+ * 正常退出或临界区抛错时都释放锁（仅在仍由本次会话持有时清除），故无需手动 try/finally。
  * @template T
  * @param {function(): Promise<T>} critical - 临界区内要执行的操作。
  * @returns {Promise<T>} - 临界区操作的结果。
  */
-function withMutex(critical) {
-	const controller = new AbortController()
-	const timeoutId = setTimeout(() => controller.abort(), MUTEX_ACQUIRE_TIMEOUT_MS)
-	return navigator.locks.request('fount_apikey_mutex', { signal: controller.signal }, critical).finally(
-		() => clearTimeout(timeoutId)
-	)
+async function withMutex(critical) {
+	const token = mutexToken()
+	const deadline = Date.now() + MUTEX_ACQUIRE_TIMEOUT_MS
+	while (Date.now() < deadline) {
+		const now = Date.now()
+		const current = await GM.getValue(MUTEX_KEY, null)
+		if (!current || current.expiry < now) {
+			await GM.setValue(MUTEX_KEY, { token, expiry: now + MUTEX_LOCK_DURATION_MS })
+			const check = await GM.getValue(MUTEX_KEY, null)
+			if (check?.token === token) {
+				try { return await critical() }
+				finally {
+					// 仅当锁仍由本次会话持有才清除，避免误删其他标签页刚抢到的锁。
+					if ((await GM.getValue(MUTEX_KEY, null))?.token === token) await GM.setValue(MUTEX_KEY, null)
+				}
+			}
+		}
+		await new Promise(resolve => setTimeout(resolve, 200))
+	}
+	throw new Error('Timed out acquiring fount apikey mutex.')
 }
 
 /**
@@ -660,7 +712,7 @@ function withMutex(critical) {
 async function requestNewApiKey(host, protocol) {
 	return withMutex(async () => {
 		fountDataCache = null
-		const { apikey: storedApikey, uuid } = await getStoredData()
+		const { apikey: storedApikey } = await getStoredData()
 		let finalApiKey = null
 		if (storedApikey)
 			try {
@@ -684,7 +736,8 @@ async function requestNewApiKey(host, protocol) {
 		}
 		// 复用或创建后都在释放互斥锁前持久化最终 key，
 		// 避免并发页面读到旧 key 而重复创建或互相覆盖。
-		await setStoredData(host, uuid, protocol, finalApiKey)
+		// 仅更新 apikey，不重写 host/uuid/protocol：主机切换流程会在验证后统一写回完整配置。
+		await storeApiKey(finalApiKey)
 		return finalApiKey
 	})
 }
