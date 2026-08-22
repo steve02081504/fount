@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="Your fount pro subscription has been cancelled" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/pro-cancel/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="See why fount pro was cancelled and share the reason behind your departure." />
+	<meta name="description" content="See why fount pro was cancelled and share the reason behind your departure." />
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<link rel="icon" type="image/png" href="https://steve02081504.github.io/fount/imgs/icon.png" />
+	<link rel="icon" type="image/ico" href="https://steve02081504.github.io/fount/imgs/icon.ico" />
+	<title data-i18n="pro_cancel_screen.title"></title>
+	<script blocking="render" type="module" src="../preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../base.css" type="text/css" />
+</head>
+
+<body class="min-h-screen bg-base-200 flex items-center justify-center p-4">
+
+	<div class="absolute top-0 left-0 p-4 z-50">
+		<div class="dropdown dropdown-bottom dropdown-start">
+			<button tabindex="0" role="button" class="btn btn-ghost btn-square" data-i18n="pro_cancel_screen.language_selector.button">
+				<img src="https://api.iconify.design/heroicons/language.svg" class="w-6 h-6" alt="" />
+			</button>
+			<div tabindex="0" class="dropdown-content z-[1] rounded-box w-64 shadow-md bg-base-100/30">
+				<div class="card-body p-0">
+					<div class="w-full p-3">
+						<input type="text" id="language-search" class="input input-bordered w-full" data-i18n="pro_cancel_screen.language_selector.search" />
+					</div>
+					<div class="flex-1 p-3 pt-0">
+						<ul id="language-selector" class="menu p-0 max-h-60 overflow-y-auto">
+							<!-- Languages will be populated here -->
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<main class="w-full max-w-lg">
+		<div class="card bg-base-100 shadow-xl">
+			<div class="card-body">
+				<h1 class="card-title text-2xl font-bold" data-i18n="pro_cancel_screen.title"></h1>
+				<p class="text-base-content/70" data-i18n="pro_cancel_screen.intro"></p>
+
+				<form id="cancel-form" class="mt-4 space-y-4">
+					<label class="form-control w-full">
+						<div class="label">
+							<span class="label-text" data-i18n="pro_cancel_screen.form.reason_label"></span>
+						</div>
+						<textarea id="reason-input" class="textarea textarea-bordered h-28 w-full" data-i18n="pro_cancel_screen.form.reason_placeholder"></textarea>
+					</label>
+					<button type="submit" class="btn btn-primary w-full" data-i18n="pro_cancel_screen.form.submit"></button>
+				</form>
+
+				<div id="result-section" class="hidden mt-6 border-t border-base-300 pt-4">
+					<h2 class="text-sm font-semibold text-base-content/70" data-i18n="pro_cancel_screen.result.title"></h2>
+					<div id="result-text" class="mt-2 whitespace-pre-wrap break-words rounded-box bg-base-200 p-3 text-base-content"></div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+</html>
