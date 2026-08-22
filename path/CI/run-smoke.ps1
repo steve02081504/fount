@@ -4,6 +4,13 @@
 
 $ErrorActionPreference = 'Stop'
 
+# pwsh 7.3+ turns stderr from native commands (deno install / fount server) into a
+# terminating NativeCommandError when $PSNativeCommandUseErrorActionPreference is
+# true and stderr is redirected (we do 2>&1 to capture output). deno writes harmless
+# warnings to stderr (e.g. skipped optional deps), so disable that so a warning never
+# kills a native call under $ErrorActionPreference = 'Stop'.
+if ($PSNativeCommandUseErrorActionPreference) { $PSNativeCommandUseErrorActionPreference = $false }
+
 $Root = if ($env:FOUNT_REPO_ROOT) { $env:FOUNT_REPO_ROOT } else { (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path }
 Set-Location $Root
 
