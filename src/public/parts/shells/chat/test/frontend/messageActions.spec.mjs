@@ -51,6 +51,22 @@ async function sendApiMessage(baseUrl, apiKey, groupId, channelId, text, locale)
 }
 
 /**
+ * 通过 /api/getlocaledata 确定性设置操作者首选语言（user.locales 优先于消息 locale）。
+ * @param {string} baseUrl 测试根 URL
+ * @param {string} apiKey API 密钥
+ * @param {string} locale 首选 locale
+ * @returns {Promise<void>} 无返回值
+ */
+async function setUserLocale(baseUrl, apiKey, locale) {
+	await withApiRequest(async req => {
+		const res = await req.get(
+			`${baseUrl}/api/getlocaledata?preferred=${encodeURIComponent(locale)}&fount-apikey=${encodeURIComponent(apiKey)}`,
+		)
+		if (!res.ok()) throw new Error(`setUserLocale failed: ${res.status()}`)
+	})
+}
+
+/**
  * 通过 API 触发频道内角色回复。
  * @param {string} baseUrl 测试根 URL
  * @param {string} apiKey API 密钥
@@ -240,6 +256,7 @@ test.describe('Chat message actions', () => {
 	test('char reply: no edited label, respects zh-CN locale', async ({ page, groupChannel, apiKey, baseUrl }) => {
 		const { groupId, channelId } = groupChannel
 		await addCharToGroup(baseUrl, apiKey, groupId, 'noai_locale_reporter')
+		await setUserLocale(baseUrl, apiKey, 'zh-CN')
 		await sendApiMessage(baseUrl, apiKey, groupId, channelId, '请说点什么', 'zh-CN')
 		await triggerCharReply(baseUrl, apiKey, groupId, channelId, 'noai_locale_reporter')
 

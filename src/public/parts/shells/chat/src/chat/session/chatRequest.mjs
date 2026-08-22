@@ -147,10 +147,10 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	// 用户消息的实际语言（UI locale）按出现次数排序，作为 user.locales 之后的次要提示：
 	// 操作者显式语言优先，群聊里其它成员的语言也允许参与，但按频次排列。
 	const messageLocaleCounts = new Map()
-	for (const entry of chatLogForRequest) {
+	for (const entry of chatLogForRequest)
 		if (entry.role === 'user' && entry.locale)
 			messageLocaleCounts.set(entry.locale, (messageLocaleCounts.get(entry.locale) || 0) + 1)
-	}
+
 	const messageLocales = [...messageLocaleCounts.entries()]
 		.sort((a, b) => b[1] - a[1])
 		.map(([locale]) => locale)
@@ -175,7 +175,6 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			ReplyToUid = replyTo.senderEntityHash || undefined
 			break
 		}
-
 
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const chatReplyRequest = {
