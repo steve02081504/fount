@@ -54,16 +54,16 @@ export default {
 		config: {
 			/** @returns {object} 空配置 */
 			GetData: () => ({}),
-			/** @param {object} _data 配置字段 */
-			SetData: async _data => { },
+			/** @returns {Promise<void>} 无操作 */
+			SetData: async () => { },
 		},
 		chat: {
 			/** @param {object} arg 含 locales */
 			/** @returns {object} 问候语 */
-			GetGreeting: () => [{ content: '你好！我是本地化回复器。' }][0],
+			GetGreeting: () => ({ content: '你好！我是本地化回复器。' }),
 			/** @param {object} arg 含 locales */
 			/** @returns {object} 群问候语 */
-			GetGroupGreeting: () => [{ content: '大家好！我是本地化回复器。' }][0],
+			GetGroupGreeting: () => ({ content: '大家好！我是本地化回复器。' }),
 			/** @returns {Promise<object>} 角色提示词结构 */
 			GetPrompt: async () => ({
 				text: [{ content: '你是一个本地化回复器。', important: 0 }],

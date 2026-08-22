@@ -6031,7 +6031,8 @@
 				"aria-label": "Selecteer taal"
 			},
 			"search": {
-				"placeholder": "Taal zoeken..."
+				"placeholder": "Taal zoeken...",
+				"aria-label": "Taal zoeken"
 			}
 		},
 		"form": {

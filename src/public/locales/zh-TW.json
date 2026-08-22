@@ -6024,7 +6024,8 @@
 				"aria-label": "選擇語言"
 			},
 			"search": {
-				"placeholder": "搜尋語言..."
+				"placeholder": "搜尋語言...",
+				"aria-label": "搜尋語言"
 			}
 		},
 		"form": {

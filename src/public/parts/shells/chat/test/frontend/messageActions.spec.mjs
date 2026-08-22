@@ -21,12 +21,12 @@ import {
  * @returns {Promise<void>} 无返回值
  */
 async function addCharToGroup(baseUrl, apiKey, groupId, charname) {
-	await withApiRequest(async req => {
-		const res = await req.post(
+	await withApiRequest(async request => {
+		const response = await request.post(
 			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/char?fount-apikey=${encodeURIComponent(apiKey)}`,
 			{ data: { charname } },
 		)
-		if (!res.ok()) throw new Error(`addChar failed: ${res.status()}`)
+		if (!response.ok()) throw new Error(`addChar failed: ${response.status()}`)
 	})
 }
 
@@ -41,12 +41,12 @@ async function addCharToGroup(baseUrl, apiKey, groupId, charname) {
  * @returns {Promise<void>} 无返回值
  */
 async function sendApiMessage(baseUrl, apiKey, groupId, channelId, text, locale) {
-	await withApiRequest(async req => {
-		const res = await req.post(
+	await withApiRequest(async request => {
+		const response = await request.post(
 			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages?fount-apikey=${encodeURIComponent(apiKey)}`,
 			{ data: { content: { content: text, locale } } },
 		)
-		if (!res.ok()) throw new Error(`sendApiMessage failed: ${res.status()}`)
+		if (!response.ok()) throw new Error(`sendApiMessage failed: ${response.status()}`)
 	})
 }
 
@@ -58,11 +58,11 @@ async function sendApiMessage(baseUrl, apiKey, groupId, channelId, text, locale)
  * @returns {Promise<void>} 无返回值
  */
 async function setUserLocale(baseUrl, apiKey, locale) {
-	await withApiRequest(async req => {
-		const res = await req.get(
+	await withApiRequest(async request => {
+		const response = await request.get(
 			`${baseUrl}/api/getlocaledata?preferred=${encodeURIComponent(locale)}&fount-apikey=${encodeURIComponent(apiKey)}`,
 		)
-		if (!res.ok()) throw new Error(`setUserLocale failed: ${res.status()}`)
+		if (!response.ok()) throw new Error(`setUserLocale failed: ${response.status()}`)
 	})
 }
 
@@ -76,12 +76,12 @@ async function setUserLocale(baseUrl, apiKey, locale) {
  * @returns {Promise<void>} 无返回值
  */
 async function triggerCharReply(baseUrl, apiKey, groupId, channelId, charname) {
-	await withApiRequest(async req => {
-		const res = await req.post(
+	await withApiRequest(async request => {
+		const response = await request.post(
 			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/trigger-reply?fount-apikey=${encodeURIComponent(apiKey)}`,
 			{ data: { charname } },
 		)
-		if (!res.ok()) throw new Error(`trigger-reply failed: ${res.status()}`)
+		if (!response.ok()) throw new Error(`trigger-reply failed: ${response.status()}`)
 	})
 }
 
@@ -287,28 +287,28 @@ test.describe('Chat message actions', () => {
 		})
 		const arrow = page.locator('#messages .message-row[data-char-id] .char-timeline-arrow.left')
 
-		// 默认隐藏（opacity 0 且 visibility hidden，pointer-events none）
+		// 默认隐藏（opacity 0，pointer-events none；visibility 不在其中，箭头仍可进入键盘 Tab 序）
 		await expect.poll(() => page.evaluate(() => {
 			const el = document.querySelector('.char-timeline-arrow.left')
 			if (!el) return null
 			const s = getComputedStyle(el)
-			return { opacity: s.opacity, visibility: s.visibility, pointerEvents: s.pointerEvents }
-		})).toEqual({ opacity: '0', visibility: 'hidden', pointerEvents: 'none' })
+			return { opacity: s.opacity, pointerEvents: s.pointerEvents }
+		})).toEqual({ opacity: '0', pointerEvents: 'none' })
 
 		// 悬停时显示
 		await page.locator('#messages .message-row[data-char-id]').hover()
 		await expect.poll(() => page.evaluate(() => {
 			const el = document.querySelector('.char-timeline-arrow.left')
 			const s = getComputedStyle(el)
-			return { opacity: s.opacity, visibility: s.visibility, pointerEvents: s.pointerEvents }
-		})).toEqual({ opacity: '0.9', visibility: 'visible', pointerEvents: 'auto' })
+			return { opacity: s.opacity, pointerEvents: s.pointerEvents }
+		})).toEqual({ opacity: '0.9', pointerEvents: 'auto' })
 
 		// 移开后恢复隐藏
 		await page.mouse.move(0, 0)
 		await expect.poll(() => page.evaluate(() => {
 			const el = document.querySelector('.char-timeline-arrow.left')
 			const s = getComputedStyle(el)
-			return { opacity: s.opacity, visibility: s.visibility }
-		})).toEqual({ opacity: '0', visibility: 'hidden' })
+			return { opacity: s.opacity }
+		})).toEqual({ opacity: '0' })
 	})
 })

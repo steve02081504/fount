@@ -76,7 +76,7 @@ Deno.test('buildReasoningDetailsMarkdown leaves complete body untouched', () => 
 	const markdown = buildReasoningDetailsMarkdown({
 		content: '',
 		extension: { reasoning_content: '```\ncode\n```' },
-	})
+	}, { open: true })
 	assertStringIncludes(markdown, '```\ncode\n```')
 })
 

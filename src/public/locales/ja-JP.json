@@ -6025,7 +6025,8 @@
 				"aria-label": "言語を選択"
 			},
 			"search": {
-				"placeholder": "言語を検索..."
+				"placeholder": "言語を検索...",
+				"aria-label": "言語を検索"
 			}
 		},
 		"form": {

@@ -5988,6 +5988,7 @@ export type LocaleData = {
 			}
 			search: {
 				placeholder: string
+				'aria-label': string
 			}
 		}
 		form: {

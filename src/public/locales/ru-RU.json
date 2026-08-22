@@ -6025,7 +6025,8 @@
 				"aria-label": "Выберите язык"
 			},
 			"search": {
-				"placeholder": "Поиск языка..."
+				"placeholder": "Поиск языка...",
+				"aria-label": "Поиск языка"
 			}
 		},
 		"form": {

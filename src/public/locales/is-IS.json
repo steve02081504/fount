@@ -6025,7 +6025,8 @@
 				"aria-label": "Veldu tungumál"
 			},
 			"search": {
-				"placeholder": "Leita að tungumáli..."
+				"placeholder": "Leita að tungumáli...",
+				"aria-label": "Leita að tungumáli"
 			}
 		},
 		"form": {

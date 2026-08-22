@@ -6025,7 +6025,8 @@
 				"aria-label": "Select language"
 			},
 			"search": {
-				"placeholder": "Search languages..."
+				"placeholder": "Search languages...",
+				"aria-label": "Search languages"
 			}
 		},
 		"form": {

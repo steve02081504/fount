@@ -6031,7 +6031,8 @@
 				"aria-label": "Selecione o idioma"
 			},
 			"search": {
-				"placeholder": "Procurar um idioma..."
+				"placeholder": "Procurar um idioma...",
+				"aria-label": "Procurar um idioma"
 			}
 		},
 		"form": {

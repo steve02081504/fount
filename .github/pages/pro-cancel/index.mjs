@@ -1,9 +1,5 @@
 /**
  * fount pro 订阅取消页：填写退订原因并在提交后展示（仅前端演示）。
- * 此页面存在的唯一原因：
- * Grok Bot credits
- * Cancel your AI subscription and get a month of free Grok Bot.
- * You need an existing Cursor account and two screenshots: the cancellation email and the subscription payment history. Each screenshot has to show the full browser including the url bar.
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
@@ -35,25 +31,17 @@ async function populateLanguageSelector() {
 	for (const locale of locales) {
 		const localeName = localeNames.get(locale) || locale
 		const li = document.createElement('li')
-		const button = document.createElement('div')
-		button.role = 'button'
-		button.tabIndex = 0
+		const button = document.createElement('button')
+		button.type = 'button'
 		button.className = 'locale-item-button'
 		button.textContent = localeName
-
 		/**
-		 * 选择该语言并应用。
-		 * @param {Event} e - 点击或键盘事件。
-		 * @returns {Promise<void>}
+		 *
 		 */
-		const select = async (e) => {
-			if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return
-			e.preventDefault()
+		button.onclick = async () => {
 			await setLanguage([locale])
 			document.activeElement?.blur()
 		}
-		button.onclick = select
-		button.onkeydown = select
 
 		li.appendChild(button)
 		languageSelector.appendChild(li)
@@ -91,9 +79,9 @@ async function main() {
 	await initTranslations('pro_cancel_screen')
 	await populateLanguageSelector()
 
-	cancelForm.addEventListener('submit', (e) => {
-		e.preventDefault()
-		resultText.textContent = reasonInput.value.trim() || ''
+	cancelForm.addEventListener('submit', (event) => {
+		event.preventDefault()
+		resultText.textContent = reasonInput.value.trim()
 		resultSection.classList.remove('hidden')
 		resultText.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 	})

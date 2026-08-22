@@ -151,10 +151,9 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		if (entry.role === 'user' && entry.locale)
 			messageLocaleCounts.set(entry.locale, (messageLocaleCounts.get(entry.locale) || 0) + 1)
 
-	const messageLocales = [...messageLocaleCounts.entries()]
+	const locales = [...new Set([...userLocales, ...[...messageLocaleCounts.entries()]
 		.sort((a, b) => b[1] - a[1])
-		.map(([locale]) => locale)
-	const locales = [...new Set([...userLocales, ...messageLocales, ...localhostLocales])]
+		.map(([locale]) => locale), ...localhostLocales])]
 
 	const UserUid = await getOperatorEntityHash(replicaUsername)
 	const memberId = charname

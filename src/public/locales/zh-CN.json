@@ -6025,7 +6025,8 @@
 				"aria-label": "选择语言"
 			},
 			"search": {
-				"placeholder": "搜索语言..."
+				"placeholder": "搜索语言...",
+				"aria-label": "搜索语言"
 			}
 		},
 		"form": {

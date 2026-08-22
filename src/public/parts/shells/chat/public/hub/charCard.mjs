@@ -92,11 +92,11 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		charAvatarHtml: charAvatarInner,
 		avatarBg: avatarColor(charAvatarSeed),
 		avatarTextColor: avatarTextColor(charAvatarSeed),
-		viewerDisplayName: myDisplayName ? escapeHtml(myDisplayName) : '',
+		viewerDisplayName: escapeHtml(myDisplayName),
 		viewerEntityHash: viewerEntityHash ? escapeHtml(viewerEntityHash) : '',
 		myAvatarBg: viewerEntityHash ? avatarColor(viewerEntityHash) : '',
 		myAvatarTextColor: viewerEntityHash ? avatarTextColor(viewerEntityHash) : '',
-		myAvatarInitial: myDisplayName ? escapeHtml(avatarInitial(myDisplayName)) : '',
+		myAvatarInitial: escapeHtml(avatarInitial(myDisplayName)),
 	})
 	if (generation !== charInfoCardRenderGeneration) return
 

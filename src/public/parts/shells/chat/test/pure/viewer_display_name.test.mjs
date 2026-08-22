@@ -32,6 +32,21 @@ Deno.test('别名优先于成员 displayName', () => {
 	}), '某人')
 })
 
+Deno.test('viewerDisplayName 为纯空白但成员 displayName 存在时回退成员名', () => {
+	assertEquals(resolveViewerSidebarDisplayName({
+		viewerDisplayName: '   ',
+		entityHash: ENTITY,
+		memberDisplayName: 'steve02081504',
+	}), 'steve02081504')
+})
+
+Deno.test('viewerDisplayName 为纯空白且无成员名时回退 entityHash 短码', () => {
+	assertEquals(resolveViewerSidebarDisplayName({
+		viewerDisplayName: '\t\n ',
+		entityHash: ENTITY,
+	}), '82cf4d7f…6235')
+})
+
 Deno.test('成员名与别名皆缺时回退 entityHash 短码（绝不为空）', () => {
 	assertEquals(resolveViewerSidebarDisplayName({
 		viewerDisplayName: null,

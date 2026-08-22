@@ -6025,7 +6025,8 @@
 				"aria-label": "🌐"
 			},
 			"search": {
-				"placeholder": "🔍🌐..."
+				"placeholder": "🔍🌐...",
+				"aria-label": "🔍🌐"
 			}
 		},
 		"form": {

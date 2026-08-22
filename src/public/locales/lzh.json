@@ -6018,14 +6018,15 @@
 	},
 	"pro_cancel_screen": {
 		"title": "fount pro 訂閱已罷",
-		"description": "欲知 fount pro 訂閱罷之之法，且書退訂之由。",
+		"description": "欲知 fount pro 訂閱罷之法，且書退訂之由。",
 		"intro": "君去殊悵然。欲使 fount pro 益善，敢問何故退訂？",
 		"language_selector": {
 			"button": {
 				"aria-label": "擇言語"
 			},
 			"search": {
-				"placeholder": "搜言語..."
+				"placeholder": "搜言語...",
+				"aria-label": "搜言語"
 			}
 		},
 		"form": {

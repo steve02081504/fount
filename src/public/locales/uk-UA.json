@@ -6025,7 +6025,8 @@
 				"aria-label": "Виберіть мову"
 			},
 			"search": {
-				"placeholder": "Пошук мови..."
+				"placeholder": "Пошук мови...",
+				"aria-label": "Пошук мови"
 			}
 		},
 		"form": {
