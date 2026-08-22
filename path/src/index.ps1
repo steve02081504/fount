@@ -27,7 +27,7 @@ if ($env:OSTYPE -match '^(msys|cygwin)') {
 
 # 剥离本轮新增的 NativeCommandError：stderr 被 2>&1 捕获后（如 deno 跳过的可选依赖警告）
 # 会在 PowerShell 里生成 NativeCommandError 记录，属非致命信息，不应触发 $ErrorCount 差异退出。
-function script:Pop-NativeCommandError([int]$SinceCount) {
+function script:Pop-NativeCommandErrors([int]$SinceCount) {
 	while ($Error.Count -gt $SinceCount -and $Error[0].FullyQualifiedErrorId -eq 'NativeCommandError') {
 		$Error.RemoveAt(0)
 	}
@@ -49,7 +49,7 @@ try {
 		Remove-Item Env:\FOUNT_CLICK -Force -ErrorAction Ignore
 		require win/wt
 		Start-WTfountCmd @args
-		Pop-NativeCommandError $ErrorCount
+		Pop-NativeCommandErrors $ErrorCount
 		if ($ErrorCount -ne $Error.Count) { exit 1 }
 		exit 0
 	}
@@ -57,7 +57,7 @@ try {
 	$cmd = $args[0]
 	if (-not (Test-Path -Path "$FOUNT_DIR/data/config.json") -and $cmd -ne 'remove') {
 		Ensure-FountConfig
-		Pop-NativeCommandError $ErrorCount
+		Pop-NativeCommandErrors $ErrorCount
 		if ($ErrorCount -ne $Error.Count) { exit 1 }
 	}
 	if ($cmd -and $cmd -match '^[a-z]+$') {
@@ -65,7 +65,7 @@ try {
 		if (Test-Path -LiteralPath $commandFile) {
 			. $commandFile
 			& "cmd_$cmd" @args
-			Pop-NativeCommandError $ErrorCount
+			Pop-NativeCommandErrors $ErrorCount
 			if ($ErrorCount -ne $Error.Count) { exit 1 }
 			exit $LastExitCode
 		}
@@ -74,7 +74,7 @@ try {
 	require cmd/default
 	cmd_default @args
 
-	Pop-NativeCommandError $ErrorCount
+	Pop-NativeCommandErrors $ErrorCount
 	if ($ErrorCount -ne $Error.Count) { exit 1 }
 	exit $LastExitCode
 } finally {
