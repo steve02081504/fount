@@ -19,6 +19,7 @@ export const channelReducers = {
 			parentEventId: event.content.parentEventId || null,
 			syncScope: event.content.syncScope || 'group',
 			isPrivate: event.content.isPrivate || false,
+			category: event.content.category || null,
 			subRoomId: event.content.subRoomId || null,
 			createdAt: event.timestamp,
 		}

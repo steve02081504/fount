@@ -8,6 +8,8 @@
 import { hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
+import { effectiveChannelPermissions } from '../chat/dag/groupMaterializedState.mjs'
+
 /**
  * @param {object} state 物化群状态
  * @param {string} identifier 成员键、pubKeyHash（64 hex）、entityHash（128 hex）或 agent charname
@@ -96,7 +98,7 @@ export async function resolveActiveMemberKeyForLocalReplica(replicaUsername, gro
  * @returns {boolean} 是否具备权限
  */
 export function canInChannel(state, member, permission, channelId) {
-	return hasPermission(member, permission, state.roles, channelId, state.channelPermissions)
+	return hasPermission(member, permission, state.roles, channelId, effectiveChannelPermissions(state, channelId))
 }
 
 /**

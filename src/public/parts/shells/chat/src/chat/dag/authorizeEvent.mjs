@@ -244,6 +244,22 @@ export async function checkEventPermission(state, event, senderHash, options = {
 				return { ok: false, reason: 'channel allow exceeds grantor permissions' }
 			return { ok: true }
 		}
+		case 'category_create':
+		case 'category_update':
+		case 'category_delete':
+			return govPerms[PERMISSIONS.MANAGE_CHANNELS]
+				? { ok: true }
+				: { ok: false, reason: 'MANAGE_CHANNELS required' }
+		case 'category_permissions_update': {
+			if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_CHANNELS]))
+				return { ok: false, reason: 'MANAGE_ROLES or MANAGE_CHANNELS required' }
+			const allow = event.content?.allow
+			if (permissionsGrantSuperuser(allow))
+				return { ok: false, reason: 'category allow cannot include ADMIN or MANAGE_ADMINS' }
+			if (permissionsExceedGrantor(govPerms, allow))
+				return { ok: false, reason: 'category allow exceeds grantor permissions' }
+			return { ok: true }
+		}
 		case 'channel_key_rotate':
 		case 'channel_key_rotate_batch':
 			return channelPerms[PERMISSIONS.MANAGE_CHANNELS] || govPerms[PERMISSIONS.MANAGE_CHANNELS]

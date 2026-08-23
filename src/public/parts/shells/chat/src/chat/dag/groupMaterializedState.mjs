@@ -107,6 +107,8 @@ export function emptyMaterializedState() {
 		channelKeyGeneration: {},
 		channelKeyWraps: {},
 		channels: {},
+		categories: {},
+		categoryPermissions: {},
 		fileFolders: {},
 		cabinets: {},
 		groupMeta: { name: '', description: '', avatar: null },
@@ -150,6 +152,8 @@ export function materializeFromCheckpoint(checkpoint) {
 		channelKeyGeneration: structuredClone(membersRecord.channelKeyGeneration || {}),
 		channelKeyWraps: structuredClone(membersRecord.channelKeyWraps || {}),
 		channels: structuredClone(membersRecord.channels),
+		categories: structuredClone(membersRecord.categories || {}),
+		categoryPermissions: structuredClone(membersRecord.categoryPermissions || {}),
 		fileFolders: structuredClone(membersRecord.fileFolders),
 		cabinets: structuredClone(membersRecord.cabinets || {}),
 		groupMeta: structuredClone(membersRecord.groupMeta),
@@ -233,8 +237,43 @@ export function checkpointSignerPubKeyHashes(state) {
 }
 
 /**
+ * 合并分类与频道的角色覆写：频道覆写叠加在分类覆写之上（Discord 语义）。
+ * @param {object | undefined} categoryOverrides 分类角色覆写（roleId → {allow, deny}）
+ * @param {object | undefined} channelOverrides 频道角色覆写（roleId → {allow, deny}）
+ * @returns {Record<string, { allow: object, deny: object }>} 合并后的角色覆写
+ */
+function mergeCategoryChannelOverrides(categoryOverrides, channelOverrides) {
+	const catOverrides = categoryOverrides || {}
+	const chanOverrides = channelOverrides || {}
+	/** @type {Record<string, { allow: object, deny: object }>} */
+	const merged = {}
+	for (const roleId of new Set([...Object.keys(catOverrides), ...Object.keys(chanOverrides)])) {
+		const cat = catOverrides[roleId] || {}
+		const chan = chanOverrides[roleId] || {}
+		merged[roleId] = {
+			allow: { ...cat.allow, ...chan.allow },
+			deny: { ...cat.deny, ...chan.deny },
+		}
+	}
+	return merged
+}
+
+/**
+ * 某频道的有效角色覆写表（分类覆写叠加频道覆写），供权限求值使用。
+ * 返回值以 `channelId` 为键，可直接传给 `calculateMemberPermissions` / `hasPermission`。
+ * @param {object} state 物化群状态
+ * @param {string} channelId 频道 ID
+ * @returns {Record<string, Record<string, { allow: object, deny: object }>>} 有效覆写表
+ */
+export function effectiveChannelPermissions(state, channelId) {
+	const categoryId = state.channels?.[channelId]?.category
+	const categoryOverrides = categoryId ? state.categoryPermissions?.[categoryId] : undefined
+	return { [channelId]: mergeCategoryChannelOverrides(categoryOverrides, state.channelPermissions?.[channelId]) }
+}
+
+/**
  * 某成员在某频道上的有效权限表（用于发送前 gate）。
- * @param {object} state 物化状态
+ * @param {object} state 物化群状态
  * @param {string} senderPubKeyHash 发送方 pubKeyHash（hex）
  * @param {string} channelId 频道 ID
  * @returns {Record<string, boolean>} 权限键 → 是否允许
@@ -248,6 +287,6 @@ export function memberChannelPermissions(state, senderPubKeyHash, channelId) {
 		state.members[memberKey],
 		state.roles,
 		channelId,
-		state.channelPermissions
+		effectiveChannelPermissions(state, channelId)
 	)
 }

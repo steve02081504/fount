@@ -20,6 +20,7 @@ import {
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 import { runTriggerPipeline } from '../session/triggerPipeline.mjs'
 
+import { effectiveChannelPermissions } from './groupMaterializedState.mjs'
 import { getState } from './materialize.mjs'
 
 /**
@@ -46,7 +47,7 @@ export function buildMentionsFromMessageLine(channelId, messageLine, state, opti
 	const senderKey = String(messageLine?.sender || '').trim()
 	const sender = state?.members?.[senderKey]
 	const canMentionEveryone = sender?.status === 'active'
-		&& hasPermission(sender, PERMISSIONS.MENTION_EVERYONE, state.roles, channelId, state.channelPermissions)
+		&& hasPermission(sender, PERMISSIONS.MENTION_EVERYONE, state.roles, channelId, effectiveChannelPermissions(state, channelId))
 	return buildMentionsStructure(text, {
 		canMentionEveryone,
 		ingress: options.ingress === 'backfill' ? 'backfill' : 'live',

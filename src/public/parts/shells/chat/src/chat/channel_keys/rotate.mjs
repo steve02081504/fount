@@ -3,6 +3,8 @@ import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/h
 import { generateChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
 import { wrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
+import { effectiveChannelPermissions } from '../dag/groupMaterializedState.mjs'
+
 /**
  * @param {object} state 物化群状态
  * @param {string} channelId 频道 ID
@@ -17,7 +19,7 @@ export function listChannelViewerPubKeys(state, channelId) {
 			member,
 			state.roles || {},
 			channelId,
-			state.channelPermissions || {},
+			effectiveChannelPermissions(state, channelId),
 		)
 		if (perms[PERMISSIONS.VIEW_CHANNEL]) viewers.push(pubKeyHash.trim())
 	}

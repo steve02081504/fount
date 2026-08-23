@@ -87,12 +87,15 @@ export function registerChannelCrudRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels`, authenticate, requireGroupMember(), async (req, res) => {
 		const {
-			groupContext: { groupId },
-			body: { type, name, description, isPrivate }
+			groupContext: { groupId, state },
+			body: { type, name, description, isPrivate, category }
 		} = req
 		const channelName = name || ''
 		if (!channelName)
 			throw httpError(400, 'Channel name is required')
+		const categoryId = category ? String(category).trim() : null
+		if (categoryId && !state.categories?.[categoryId])
+			throw httpError(404, 'Category not found')
 
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).createChannel({
@@ -101,12 +104,13 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			description: description ?? '',
 			channelId: prefixedRandomId('channel_'),
 			isPrivate: isPrivate || false,
+			category: categoryId,
 		})
 		res.status(201).json({ channelId: channel.id })
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {
-		const { params: { groupId, channelId }, body: { name, description, type, isPrivate, parentChannelId } } = req
+		const { params: { groupId, channelId }, body: { name, description, type, isPrivate, parentChannelId, category } } = req
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
@@ -127,6 +131,12 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			updates.isPrivate = Boolean(isPrivate)
 		if (parentChannelId !== undefined)
 			updates.parentChannelId = parentChannelId || null
+		if (category !== undefined) {
+			const categoryId = category ? String(category).trim() : null
+			if (categoryId && !state.categories?.[categoryId])
+				throw httpError(404, 'Category not found')
+			updates.category = categoryId
+		}
 
 		if (Object.keys(updates).length === 0)
 			throw httpError(400, 'No channel updates provided')

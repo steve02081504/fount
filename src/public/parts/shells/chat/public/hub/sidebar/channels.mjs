@@ -4,6 +4,7 @@
  */
 import { mountTemplate, renderTemplate } from '../../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { showCategoryContextMenu, showChannelListCreateMenu } from '../categoryContextMenu.mjs'
 import { showChannelContextMenu } from '../channelContextMenu.mjs'
 import { buildChannelTree, channelTypeIconHtml } from '../channels.mjs'
 import { store } from '../core/state.mjs'
@@ -11,8 +12,11 @@ import { isThreadChannel } from '../threadDrawer.mjs'
 import { formatUnreadBadgeHtml, getChannelUnreadCount } from '../unread.mjs'
 
 import { showCreateChannelModal } from './createChannel.mjs'
-import { getChannelListContainer } from './privateShell.mjs'
+import { getChannelListContainer, isPrivateChatActive } from './privateShell.mjs'
 import { selectChannel } from './selectChannel.mjs'
+
+/** @type {WeakSet<HTMLElement>} 已挂容器空白区右键的容器 */
+const listMenuBoundContainers = new WeakSet()
 
 /**
  * 渲染频道树列表。
@@ -30,17 +34,25 @@ export async function renderChannelList(state) {
 	}
 	const { ordered } = buildChannelTree(channels)
 	const visible = ordered.filter(({ channel }) => !isThreadChannel(channel))
+	const categories = state.categories || {}
 	const groupsByCat = {}
 	for (const { id, channel, depth } of visible) {
-		const category = channel.category || ''
-		const categoryI18n = channel.category ? '' : 'chat.hub.defaultCategory'
-		const catKey = category || '__default__'
-		if (!groupsByCat[catKey]) groupsByCat[catKey] = { category, categoryI18n, channels: [] }
+		const categoryId = channel.category || ''
+		const category = categoryId ? categories[categoryId]?.name || categoryId : ''
+		const categoryI18n = categoryId ? '' : 'chat.hub.defaultCategory'
+		const catKey = categoryId || '__default__'
+		if (!groupsByCat[catKey]) groupsByCat[catKey] = { category, categoryI18n, categoryId, channels: [] }
 		groupsByCat[catKey].channels.push({ id, depth, ...channel })
 	}
 	container.replaceChildren()
+	if (!isPrivateChatActive() && !listMenuBoundContainers.has(container)) {
+		listMenuBoundContainers.add(container)
+		container.addEventListener('contextmenu', (event) => {
+			showChannelListCreateMenu(event)
+		})
+	}
 	for (const catKey of Object.keys(groupsByCat)) {
-		const { category, categoryI18n, channels } = groupsByCat[catKey]
+		const { category, categoryI18n, categoryId, channels } = groupsByCat[catKey]
 		const isCollapsed = store.sidebar.collapsedCategories.has(catKey)
 		container.appendChild(await renderTemplate('hub/nav/channel_category', {
 			collapsedClass: isCollapsed ? 'collapsed' : '',
@@ -81,6 +93,13 @@ export async function renderChannelList(state) {
 			void import('./index.mjs').then(({ renderHubChannelSidebar }) =>
 				renderHubChannelSidebar(store.context.currentState),
 			)
+		})
+		el.addEventListener('contextmenu', (event) => {
+			const categoryId = el.dataset.cat
+			if (categoryId && categoryId !== '__default__') {
+				const name = categories[categoryId]?.name || categoryId
+				showCategoryContextMenu(event, categoryId, name)
+			}
 		})
 	})
 	container.querySelectorAll('.channel-item').forEach(el => {

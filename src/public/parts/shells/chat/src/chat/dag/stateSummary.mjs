@@ -22,7 +22,11 @@ export function buildStateSummaryContent(state, anchorEventId, events = []) {
 		anchorEventId,
 		membersRoot: state.membersRoot ?? null,
 		channelPermissionsHash: createHash('sha256')
-			.update(canonicalStringify(state.channelPermissions || {}))
+			.update(canonicalStringify({
+				channelPermissions: state.channelPermissions || {},
+				categories: state.categories || {},
+				categoryPermissions: state.categoryPermissions || {},
+			}))
 			.digest('hex'),
 		tipsHash: computeLocalTipsHash(tipIds),
 		materializedAt: Date.now(),

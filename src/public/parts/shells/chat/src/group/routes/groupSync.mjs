@@ -231,6 +231,8 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			channels,
 			roles: state.roles,
 			channelPermissions,
+			categories: state.categories,
+			categoryPermissions: state.categoryPermissions,
 			members: activeMembers,
 			bannedMembers: bannedMembersList,
 			memberCount: activeMembers.length,

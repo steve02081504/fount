@@ -1,0 +1,3 @@
+${categories.map(cat => `
+<option value="${escapeHtml(cat.id)}" ${cat.id === selectedCategory ? 'selected' : ''}>${escapeHtml(cat.name)}</option>
+`).join('')}

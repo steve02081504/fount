@@ -12,6 +12,7 @@ import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/h
 
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { friendBindingMatches } from '../../../public/shared/friendBinding.mjs'
+import { effectiveChannelPermissions } from '../../chat/dag/groupMaterializedState.mjs'
 import { createGroup, removeLocalGroupReplica } from '../../chat/dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../../chat/dag/localSigner.mjs'
 import { createEcdhDmGroup } from '../../chat/dm/index.mjs'
@@ -167,7 +168,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 	router.delete(`${GROUPS_PREFIX}/:groupId`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId, state, member } = req.groupContext
 		const permissionsChannelId = governanceChannelId(state)
-		const perms = calculateMemberPermissions(member, state.roles, permissionsChannelId, state.channelPermissions)
+		const perms = calculateMemberPermissions(member, state.roles, permissionsChannelId, effectiveChannelPermissions(state, permissionsChannelId))
 		if (!perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ADMINS])
 			return res.status(403).json({ error: 'Only admins can delete the group' })
 

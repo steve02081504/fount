@@ -1601,7 +1601,13 @@
 						"stateDeny": "拒绝",
 						"stateNeutral": "继承",
 						"updateFailed": "更新频道权限失败：${error}",
-						"updated": "频道权限已更新"
+						"updated": "频道权限已更新",
+						"alignToCategory": "对齐到分类权限",
+						"aligned": "已对齐到分类权限",
+						"categoryChanged": "频道分类已更新",
+						"categoryManage": "分类管理",
+						"channelCategory": "分类",
+						"noCategory": "无分类"
 					},
 					"advanced": {
 						"description": "网络、存储、限速和加密参数；不确定时请保持默认",
@@ -2338,6 +2344,12 @@
 				"success": "频道已创建",
 				"title": "新建频道"
 			},
+			"newCategory": {
+				"button": "新建分类",
+				"failed": "创建分类失败",
+				"success": "分类已创建",
+				"title": "新建分类"
+			},
 			"discovery": {
 				"description": "浏览来自联邦网络的公开群组，挑选感兴趣的社区并加入。",
 				"empty": "暂无推荐群；打开联邦同步后会从邻居同步发现列表",
@@ -2415,6 +2427,7 @@
 					"exportFailed": "导出失败：${error}"
 				},
 				"name": "频道名称",
+				"category": "分类",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2428,6 +2441,28 @@
 				"typeList": "列表/论坛频道",
 				"typeStreaming": "流媒体频道",
 				"typeText": "聊天频道"
+			},
+			"category": {
+				"context": {
+					"createIn": "在此分类创建频道",
+					"delete": "删除分类",
+					"deleteConfirm": "确定删除分类「${name}」吗？其下频道将回到未分类。",
+					"deleteOk": "分类已删除",
+					"perms": "分类权限",
+					"rename": "重命名分类",
+					"renameOk": "分类已重命名",
+					"renamePrompt": "新分类名"
+				},
+				"name": "分类名称",
+				"nameInput": {
+					"placeholder": "媒体"
+				},
+				"perm": {
+					"loadFailed": "加载分类权限失败：${error}",
+					"title": "分类权限",
+					"updateFailed": "更新分类权限失败：${error}",
+					"updated": "分类权限已更新"
+				}
 			},
 			"message": {
 				"action": {

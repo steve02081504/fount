@@ -12,7 +12,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { escapeRegExp } from '/scripts/lib/regex.mjs'
-import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
+import { aliasForEntity, aliasForGroup, setEntityAlias } from '../shared/aliases.mjs'
 import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
 import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
 import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAvatar.mjs'
@@ -26,6 +26,7 @@ import { promptText } from '/scripts/features/promptDialog.mjs'
 import { getCharDetails } from './charCard.mjs'
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
+import { groupDisplayName } from './core/domUtils.mjs'
 import { store } from './core/state.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
 import { resolveFriendBinding } from './friendBindings.mjs'
@@ -33,6 +34,7 @@ import { dispatchFriendChat, enterFriendChat, onEnterFriendChat } from './friend
 import { fetchAuthorProfile } from './presence.mjs'
 import { restartPrivateGroup } from './privateGroup.mjs'
 import { loadGroups } from './serverBar.mjs'
+import { selectGroup } from './sidebar/index.mjs'
 
 /**
  * 好友侧栏行。
@@ -141,7 +143,31 @@ export async function loadFriendsList() {
 		if (ta !== tb) return tb - ta
 		return a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' })
 	})
-	return rows
+
+	// 多人聊天群放在好友（DM）会话下方，便于新开对话置顶、群聊靠底。
+	const dmRows = rows
+	const groupRows = store.sidebar.groups
+		.filter(group => !resolveFriendBinding(group))
+		.map(group => ({
+			groupId: group.groupId,
+			key: group.groupId,
+			kind: 'group',
+			displayName: group.name || group.groupId,
+			binding: null,
+			session: {
+				groupId: group.groupId,
+				lastMessageContent: '',
+				lastMessageTime: group.lastMessageTime,
+			},
+		}))
+	groupRows.sort((a, b) => {
+		const ta = new Date(a.session.lastMessageTime || 0).getTime()
+		const tb = new Date(b.session.lastMessageTime || 0).getTime()
+		if (ta !== tb) return tb - ta
+		return a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' })
+	})
+
+	return [...dmRows, ...groupRows]
 }
 
 /**
@@ -162,6 +188,22 @@ async function friendRowTemplateData(friend, details) {
 			: friend.displayName,
 		fallbackLabel: friend.charname || friend.groupId,
 	})
+	if (friend.kind === 'group') {
+		const seed = friend.groupId
+		const groupName = await groupDisplayName(friend.groupId, friend.displayName)
+		const resolvedName = aliasForGroup(friend.groupId) || groupName
+		return {
+			kind: 'group',
+			name: friend.groupId,
+			groupId: friend.groupId,
+			entityHash: '',
+			displayName: resolvedName,
+			subtitle: '',
+			activeClass: store.context.currentGroupId === friend.groupId ? ' active' : '',
+			...listAvatarTemplateFields(seed, resolvedName),
+		}
+	}
+
 	if (!friend.charname) {
 		const seed = friend.key || friend.groupId
 		return {
@@ -327,6 +369,10 @@ export async function renderFriendsColumn(friends) {
 		const { groupId } = el.dataset
 		const row = friends.find(f => f.groupId === groupId)
 		if (!row) return
+		if (row.kind === 'group') {
+			el.addEventListener('click', () => void selectGroup(row.groupId))
+			return
+		}
 		el.addEventListener('click', () => void enterFriendChat({ groupId: row.groupId, binding: row.binding }))
 		el.addEventListener('contextmenu', (event) => showFriendContextMenu(event, row))
 		bindFriendProfileHover(el, {

@@ -11,6 +11,7 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../../public/shared/runUri.mjs'
+import { effectiveChannelPermissions } from '../../chat/dag/groupMaterializedState.mjs'
 import { leaveManyGroupsForUser } from '../../chat/dag/leaveMany.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
@@ -117,7 +118,7 @@ export function registerMembershipRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 		const permissionsChannelId = governanceChannelId(state)
-		const perms = calculateMemberPermissions(member, state.roles, permissionsChannelId, state.channelPermissions)
+		const perms = calculateMemberPermissions(member, state.roles, permissionsChannelId, effectiveChannelPermissions(state, permissionsChannelId))
 		if (!perms[PERMISSIONS.INVITE_MEMBERS] && !perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ADMINS])
 			throw httpError(403, 'INVITE_MEMBERS denied')
 		const ttlMs = Number(req.body?.ttlMs)
