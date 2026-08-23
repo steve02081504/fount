@@ -116,6 +116,9 @@ function findCssVarIssues() {
 	/** @type {Set<string>} */
 	const undefinedVars = new Set()
 	for (const name of bareReferences) {
+		// 同源样式表里已有 `--x: ...` 声明即视为已定义（即使声明规则当前无匹配元素，
+		// 如组件作用域变量在其组件未挂载/已卸载时），避免把「组件根已定义」误报为 undefined。
+		if (declared.has(name)) continue
 		if (rootStyle.getPropertyValue(name).trim()) continue
 		undefinedVars.add(name)
 	}
