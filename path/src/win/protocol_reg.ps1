@@ -1,14 +1,14 @@
 ﻿function script:Register-FountProtocol {
 	$protocolName = "fount"
 	$protocolDescription = (Get-I18n -key 'protocol.description')
-	$shellExe = if (Get-Command pwsh -ErrorAction SilentlyContinue) {
-		(Get-Command pwsh).Source
-	}
-	elseif (Get-Command powershell.exe -ErrorAction SilentlyContinue) {
+	$shellExe = if (Get-Command powershell.exe -ErrorAction SilentlyContinue) {
 		(Get-Command powershell.exe).Source
 	}
-	else {
+	elseif (Test-Path -LiteralPath "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe") {
 		"$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+	}
+	elseif (Get-Command pwsh -ErrorAction SilentlyContinue) {
+		(Get-Command pwsh).Source
 	}
 	if (Test-Path -LiteralPath $shellExe) {
 		$command = "`"$shellExe`" -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File `"$(Join-Path $FOUNT_DIR 'path\fount.ps1')`" protocolhandle `"%1`""

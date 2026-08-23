@@ -41,6 +41,19 @@ Deno.test('channel_create stores links/permBlockId; delete removes links subtree
 	if (state.channels['ch-1b']) throw new Error('channel_delete did not remove nested link child')
 })
 
+Deno.test('channel_create with parentChannelId appends the child to the parent links', () => {
+	let state = emptyMaterializedState()
+	state = channelReducers.channel_create(state, {
+		timestamp: 1,
+		content: { channelId: 'cat-1', type: 'category', name: '媒体', links: [], permBlockId: null },
+	})
+	state = channelReducers.channel_create(state, {
+		timestamp: 2,
+		content: { channelId: 'ch-1', type: 'text', name: 'general', permBlockId: 'cat-1', parentChannelId: 'cat-1' },
+	})
+	assertEquals(state.channels['cat-1'].links, ['ch-1'], 'parent channel should gain the created child in its links')
+})
+
 Deno.test('permBlockId strong reference: child follows parent block, detach copies on update', () => {
 	let state = emptyMaterializedState()
 
