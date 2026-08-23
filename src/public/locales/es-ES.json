@@ -1601,7 +1601,10 @@
 						"stateDeny": "rechazar",
 						"stateNeutral": "heredar",
 						"updateFailed": "No se pudieron actualizar los permisos del canal: ${error}",
-						"updated": "Permisos del canal actualizados"
+						"updated": "Permisos del canal actualizados",
+						"syncedWarning": "Los permisos de este canal se sincronizan desde el canal principal y las configuraciones individuales se desacoplarán primero.",
+						"syncToDefault": "Sincronización con permisos del canal raíz",
+						"synced": "Sincronizado con los permisos del canal raíz"
 					},
 					"advanced": {
 						"description": "Parámetros de red, almacenamiento, límite de velocidad y cifrado; por favor mantenga los valores predeterminados si no está seguro",
@@ -2338,6 +2341,12 @@
 				"success": "Canal creado",
 				"title": "Crear nuevo canal"
 			},
+			"newCategory": {
+				"button": "Nueva categoría",
+				"failed": "No se pudo crear la categoría",
+				"success": "Categoría creada",
+				"title": "Nueva categoría"
+			},
 			"discovery": {
 				"description": "Explore grupos públicos de la red de la federación, elija una comunidad de interés y únase.",
 				"empty": "Actualmente no existe ningún grupo recomendado; Después de activar la sincronización de federación, la lista de descubrimiento se sincronizará desde los vecinos.",
@@ -2415,6 +2424,9 @@
 					"exportFailed": "Exportación fallida: ${error}"
 				},
 				"name": "Nombre del canal",
+				"unnamed": "Sin nombre",
+				"parent": "canal principal",
+				"noParent": "Sin canal principal (directorio raíz)",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2428,6 +2440,31 @@
 				"typeList": "Lista/canal del foro",
 				"typeStreaming": "canal de transmisión",
 				"typeText": "canal de chat"
+			},
+			"category": {
+				"context": {
+					"createIn": "Crear un canal en esta categoría",
+					"delete": "Eliminar categoría",
+					"deleteConfirm": "¿Está seguro de que desea eliminar la categoría \"${name}\"? El canal debajo volverá a Sin categoría.",
+					"deleteOk": "Categoría eliminada",
+					"perms": "Permisos de clasificación",
+					"rename": "Cambiar nombre de categoría",
+					"renameOk": "La categoría ha sido renombrada",
+					"renamePrompt": "Nuevo nombre de categoría"
+				},
+				"name": "Nombre de categoría",
+				"nameInput": {
+					"placeholder": "medios de comunicación"
+				},
+				"perm": {
+					"loadFailed": "No se pudieron cargar los permisos de categoría: ${error}",
+					"title": "Permisos de clasificación",
+					"updateFailed": "No se pudieron actualizar los permisos de categoría: ${error}",
+					"updated": "Se han actualizado los permisos de categoría.",
+					"syncedWarning": "Este permiso de categoría se sincroniza desde el canal principal y las configuraciones individuales se desacoplarán primero.",
+					"syncToDefault": "Sincronización con permisos del canal raíz",
+					"synced": "Sincronizado con los permisos del canal raíz"
+				}
 			},
 			"message": {
 				"action": {

@@ -1601,7 +1601,10 @@
 						"stateDeny": "Deny",
 						"stateNeutral": "Inherit",
 						"updateFailed": "Failed to update channel permissions: ${error}",
-						"updated": "Channel permissions updated"
+						"updated": "Channel permissions updated",
+						"syncedWarning": "The permissions of this channel are being synchronized from the parent channel, and individual settings will be decoupled first.",
+						"syncToDefault": "Sync to root channel permissions",
+						"synced": "Synced to root channel permissions"
 					},
 					"advanced": {
 						"description": "Network, storage, speed limit and encryption parameters; please keep the defaults if you are unsure",
@@ -2338,6 +2341,12 @@
 				"success": "Channel created",
 				"title": "Create new channel"
 			},
+			"newCategory": {
+				"button": "New category",
+				"failed": "Failed to create category",
+				"success": "Category created",
+				"title": "New category"
+			},
 			"discovery": {
 				"description": "Browse public groups from the federation network, pick a community of interest and join.",
 				"empty": "There is currently no For youed group; after turning on federation synchronisation, the discovery list will be synchronized from neighbors.",
@@ -2415,6 +2424,9 @@
 					"exportFailed": "Export failed: ${error}"
 				},
 				"name": "Channel name",
+				"unnamed": "Unnamed",
+				"parent": "parent channel",
+				"noParent": "No parent channel (root directory)",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2428,6 +2440,31 @@
 				"typeList": "List/Forum Channel",
 				"typeStreaming": "Streaming channel",
 				"typeText": "chat channel"
+			},
+			"category": {
+				"context": {
+					"createIn": "Create a channel in this category",
+					"delete": "Delete category",
+					"deleteConfirm": "Are you sure you want to delete the category \"${name}\"? The channel below it will return to Uncategorized.",
+					"deleteOk": "Category deleted",
+					"perms": "Classification permissions",
+					"rename": "Rename category",
+					"renameOk": "Category has been renamed",
+					"renamePrompt": "New category name"
+				},
+				"name": "Category name",
+				"nameInput": {
+					"placeholder": "media"
+				},
+				"perm": {
+					"loadFailed": "Failed to load category permissions: ${error}",
+					"title": "Classification permissions",
+					"updateFailed": "Failed to update category permissions: ${error}",
+					"updated": "Category permissions have been updated",
+					"syncedWarning": "This category permission is being synchronized from the parent channel, and individual settings will be decoupled first.",
+					"syncToDefault": "Sync to root channel permissions",
+					"synced": "Synced to root channel permissions"
+				}
 			},
 			"message": {
 				"action": {

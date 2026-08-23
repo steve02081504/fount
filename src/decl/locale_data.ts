@@ -1564,6 +1564,9 @@ export type LocaleData = {
 						stateNeutral: string
 						updateFailed: string
 						updated: string
+						syncedWarning: string
+						syncToDefault: string
+						synced: string
 					}
 					advanced: {
 						description: string
@@ -2300,6 +2303,12 @@ export type LocaleData = {
 				success: string
 				title: string
 			}
+			newCategory: {
+				button: string
+				failed: string
+				success: string
+				title: string
+			}
 			discovery: {
 				description: string
 				empty: string
@@ -2377,6 +2386,9 @@ export type LocaleData = {
 					exportFailed: string
 				}
 				name: string
+				unnamed: string
+				parent: string
+				noParent: string
 				nameInput: {
 					placeholder: string
 				}
@@ -2390,6 +2402,31 @@ export type LocaleData = {
 				typeList: string
 				typeStreaming: string
 				typeText: string
+			}
+			category: {
+				context: {
+					createIn: string
+					delete: string
+					deleteConfirm: string
+					deleteOk: string
+					perms: string
+					rename: string
+					renameOk: string
+					renamePrompt: string
+				}
+				name: string
+				nameInput: {
+					placeholder: string
+				}
+				perm: {
+					loadFailed: string
+					title: string
+					updateFailed: string
+					updated: string
+					syncedWarning: string
+					syncToDefault: string
+					synced: string
+				}
 			}
 			message: {
 				action: {
@@ -6185,6 +6222,9 @@ export type LocaleKeyParams = {
 	'chat.hub.call.peerCount': { n: string | number }
 	'chat.hub.call.screenFailed': { error: string | number }
 	'chat.hub.call.startedAt': { time: string | number }
+	'chat.hub.category.context.deleteConfirm': { name: string | number }
+	'chat.hub.category.perm.loadFailed': { error: string | number }
+	'chat.hub.category.perm.updateFailed': { error: string | number }
 	'chat.hub.channel.context.deleteConfirm': { name: string | number }
 	'chat.hub.channel.context.exportFailed': { error: string | number }
 	'chat.hub.char.chat.composer.placeholder': { name: string | number }

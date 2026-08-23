@@ -1601,7 +1601,10 @@
 						"stateDeny": "Hafna",
 						"stateNeutral": "Erfa",
 						"updateFailed": "Mistókst að uppfæra rásarheimildir: ${error}",
-						"updated": "Rásarheimildir uppfærðar"
+						"updated": "Rásarheimildir uppfærðar",
+						"syncedWarning": "Verið er að samstilla heimildir þessarar rásar frá móðurrásinni og aðskildar stillingar verða fyrst aftengdar.",
+						"syncToDefault": "Samstilltu við rótarrásarheimildir",
+						"synced": "Samstillt við rótarrásarheimildir"
 					},
 					"advanced": {
 						"description": "Netkerfi, geymsla, hraðatakmarkanir og dulkóðunarbreytur; ef þú ert ekki viss skaltu halda sjálfgefnum stillingum.",
@@ -2338,6 +2341,12 @@
 				"success": "Rás búin til",
 				"title": "Búa til nýja rás"
 			},
+			"newCategory": {
+				"button": "Nýr flokkur",
+				"failed": "Mistókst að búa til flokk",
+				"success": "Flokkur búinn til",
+				"title": "Nýr flokkur"
+			},
 			"discovery": {
 				"description": "Skoðaðu opinbera hópa frá sambandsnetinu, veldu áhugasamfélag og vertu með.",
 				"empty": "Það er enginn ráðlagður hópur sem stendur; eftir að kveikt er á sambandssamstillingu verður uppgötvunarlistinn samstilltur frá nágrönnum.",
@@ -2415,6 +2424,9 @@
 					"exportFailed": "Útflutningur mistókst: ${error}"
 				},
 				"name": "Heiti rásar",
+				"unnamed": "Ónefndur",
+				"parent": "móðurrás",
+				"noParent": "Engin móðurrás (rótarskrá)",
 				"nameInput": {
 					"placeholder": "Almennt"
 				},
@@ -2428,6 +2440,31 @@
 				"typeList": "Listi/spjallrás",
 				"typeStreaming": "Streymisrás",
 				"typeText": "Spjallrás"
+			},
+			"category": {
+				"context": {
+					"createIn": "Búðu til rás í þessum flokki",
+					"delete": "Eyða flokki",
+					"deleteConfirm": "Ertu viss um að þú viljir eyða flokknum \"${name}\"? Rásin fyrir neðan hana mun fara aftur í Óflokkað.",
+					"deleteOk": "Flokkur eytt",
+					"perms": "Flokkunarheimildir",
+					"rename": "Endurnefna flokk",
+					"renameOk": "Flokkur hefur verið endurnefndur",
+					"renamePrompt": "Nýtt flokksheiti"
+				},
+				"name": "Nafn flokks",
+				"nameInput": {
+					"placeholder": "fjölmiðla"
+				},
+				"perm": {
+					"loadFailed": "Mistókst að hlaða flokkaheimildum: ${error}",
+					"title": "Flokkunarheimildir",
+					"updateFailed": "Mistókst að uppfæra heimildir fyrir flokka: ${error}",
+					"updated": "Flokksheimildir hafa verið uppfærðar",
+					"syncedWarning": "Verið er að samstilla þessa flokksheimild frá móðurrásinni og einstakar stillingar verða fyrst aftengdar.",
+					"syncToDefault": "Samstilltu við rótarrásarheimildir",
+					"synced": "Samstillt við rótarrásarheimildir"
+				}
 			},
 			"message": {
 				"action": {

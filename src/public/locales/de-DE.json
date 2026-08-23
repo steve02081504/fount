@@ -1601,7 +1601,10 @@
 						"stateDeny": "Ablehnen",
 						"stateNeutral": "Erben",
 						"updateFailed": "Kanalberechtigungen konnten nicht aktualisiert werden: ${error}",
-						"updated": "Kanalberechtigungen aktualisiert"
+						"updated": "Kanalberechtigungen aktualisiert",
+						"syncedWarning": "Die Berechtigungen dieses Kanals werden mit dem übergeordneten Kanal synchronisiert und einzelne Einstellungen werden zunächst entkoppelt.",
+						"syncToDefault": "Mit Root-Kanalberechtigungen synchronisieren",
+						"synced": "Synchronisiert mit Root-Channel-Berechtigungen"
 					},
 					"advanced": {
 						"description": "Netzwerk-, Speicher-, Geschwindigkeitsbegrenzungs- und Verschlüsselungsparameter; Bitte behalten Sie die Standardeinstellungen bei, wenn Sie sich nicht sicher sind",
@@ -2338,6 +2341,12 @@
 				"success": "Kanal erstellt",
 				"title": "Neuen Kanal erstellen"
 			},
+			"newCategory": {
+				"button": "Neue Kategorie",
+				"failed": "Kategorie konnte nicht erstellt werden",
+				"success": "Kategorie erstellt",
+				"title": "Neue Kategorie"
+			},
 			"discovery": {
 				"description": "Durchsuchen Sie Öffentliche Gruppen im Verbundnetzwerk, wählen Sie eine InteressengeMeinschaft aus und treten Sie bei.",
 				"empty": "Derzeit gibt es keine empfohlene Gruppe. Nach dem Aktivieren der Verbundsynchronisierung wird die Erkennungsliste von Nachbarn synchronisiert.",
@@ -2415,6 +2424,9 @@
 					"exportFailed": "Export fehlgeschlagen: ${error}"
 				},
 				"name": "Kanalname",
+				"unnamed": "Unbenannt",
+				"parent": "übergeordneter Kanal",
+				"noParent": "Kein übergeordneter Kanal (Stammverzeichnis)",
 				"nameInput": {
 					"placeholder": "Allgemein"
 				},
@@ -2428,6 +2440,31 @@
 				"typeList": "Liste/Forumkanal",
 				"typeStreaming": "Streaming-Kanal",
 				"typeText": "Chat-Kanal"
+			},
+			"category": {
+				"context": {
+					"createIn": "Erstellen Sie einen Kanal in dieser Kategorie",
+					"delete": "Kategorie löschen",
+					"deleteConfirm": "Sind Sie sicher, dass Sie die Kategorie „${name}“ löschen möchten? Der Kanal darunter kehrt zu „Nicht kategorisiert“ zurück.",
+					"deleteOk": "Kategorie gelöscht",
+					"perms": "Klassifizierungsberechtigungen",
+					"rename": "Kategorie umbenennen",
+					"renameOk": "Kategorie wurde umbenannt",
+					"renamePrompt": "Neuer Kategoriename"
+				},
+				"name": "Kategoriename",
+				"nameInput": {
+					"placeholder": "Medien"
+				},
+				"perm": {
+					"loadFailed": "Kategorieberechtigungen konnten nicht geladen werden: ${error}",
+					"title": "Klassifizierungsberechtigungen",
+					"updateFailed": "Kategorieberechtigungen konnten nicht aktualisiert werden: ${error}",
+					"updated": "Die Kategorieberechtigungen wurden aktualisiert",
+					"syncedWarning": "Diese Kategorieberechtigung wird vom übergeordneten Kanal synchronisiert und einzelne Einstellungen werden zunächst entkoppelt.",
+					"syncToDefault": "Mit Root-Kanalberechtigungen synchronisieren",
+					"synced": "Synchronisiert mit Root-Channel-Berechtigungen"
+				}
 			},
 			"message": {
 				"action": {

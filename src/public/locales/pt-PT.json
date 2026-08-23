@@ -1601,7 +1601,10 @@
 						"stateDeny": "Rejeitar",
 						"stateNeutral": "Herdar",
 						"updateFailed": "Falha ao update channel permissions: ${error}",
-						"updated": "Permissões do canal atualizadas"
+						"updated": "Permissões do canal atualizadas",
+						"syncedWarning": "As permissões deste canal estão sendo sincronizadas do canal pai e as configurações separadas serão desacopladas primeiro.",
+						"syncToDefault": "Sincronizar com permissões do canal raiz",
+						"synced": "Sincronizado com permissões do canal raiz"
 					},
 					"advanced": {
 						"description": "Parâmetros de rede, armazenamento, limite de velocidade e encriptação; mantenha os padrões se não tiver certeza",
@@ -2338,6 +2341,12 @@
 				"success": "Canal criado",
 				"title": "Criar new channel"
 			},
+			"newCategory": {
+				"button": "Nova categoria",
+				"failed": "Falha ao criar categoria",
+				"success": "Categoria criada",
+				"title": "Nova categoria"
+			},
 			"discovery": {
 				"description": "Navegue por grupos públicos da rede da federação, escolha uma comunidade de interesse e participe.",
 				"empty": "Atualmente não existe nenhum grupo recomendado; depois de ativar a sincronização da federação, a lista de descoberta será sincronizada dos vizinhos.",
@@ -2415,6 +2424,9 @@
 					"exportFailed": "Exportar failed: ${error}"
 				},
 				"name": "Nome do canal",
+				"unnamed": "Sem nome",
+				"parent": "canal pai",
+				"noParent": "Nenhum canal pai (diretório raiz)",
 				"nameInput": {
 					"placeholder": "Em geral"
 				},
@@ -2428,6 +2440,31 @@
 				"typeList": "Lista/Canal do Fórum",
 				"typeStreaming": "Canal de streaming",
 				"typeText": "Canal de bate-papo"
+			},
+			"category": {
+				"context": {
+					"createIn": "Crie um canal nesta categoria",
+					"delete": "Excluir categoria",
+					"deleteConfirm": "Tem certeza de que deseja excluir a categoria \"${name}\"? O canal abaixo retornará para Sem categoria.",
+					"deleteOk": "Categoria excluída",
+					"perms": "Permissões de classificação",
+					"rename": "Renomear categoria",
+					"renameOk": "Categoria foi renomeada",
+					"renamePrompt": "Novo nome de categoria"
+				},
+				"name": "Nome da categoria",
+				"nameInput": {
+					"placeholder": "mídia"
+				},
+				"perm": {
+					"loadFailed": "Falha ao carregar permissões de categoria: ${error}",
+					"title": "Permissões de classificação",
+					"updateFailed": "Falha ao atualizar as permissões da categoria: ${error}",
+					"updated": "As permissões de categoria foram atualizadas",
+					"syncedWarning": "Esta permissão de categoria está sendo sincronizada do canal pai e as configurações individuais serão desacopladas primeiro.",
+					"syncToDefault": "Sincronizar com permissões do canal raiz",
+					"synced": "Sincronizado com permissões do canal raiz"
+				}
 			},
 			"message": {
 				"action": {

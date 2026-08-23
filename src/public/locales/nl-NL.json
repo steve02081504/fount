@@ -1601,7 +1601,10 @@
 						"stateDeny": "Afwijzen",
 						"stateNeutral": "Erven",
 						"updateFailed": "Kan kanaalrechten niet updaten: ${error}",
-						"updated": "Kanaalrechten bijgewerkt"
+						"updated": "Kanaalrechten bijgewerkt",
+						"syncedWarning": "De rechten van dit kanaal worden gesynchroniseerd met het bovenliggende kanaal, en afzonderlijke instellingen worden eerst ontkoppeld.",
+						"syncToDefault": "Synchroniseren met rootkanaalrechten",
+						"synced": "Gesynchroniseerd met rootkanaalrechten"
 					},
 					"advanced": {
 						"description": "Netwerk-, opslag-, snelheidslimiet- en encryptieparameters; Bewaar de standaardinstellingen als je het niet zeker weet",
@@ -2338,6 +2341,12 @@
 				"success": "Kanaal gemaakt",
 				"title": "Nieuw kanaal maken"
 			},
+			"newCategory": {
+				"button": "Nieuwe categorie",
+				"failed": "Kan categorie niet maken",
+				"success": "Categorie aangemaakt",
+				"title": "Nieuwe categorie"
+			},
 			"discovery": {
 				"description": "Blader door openbare groepen uit het federatienetwerk, kies een interessante community en sluit je aan.",
 				"empty": "Er is momenteel geen aanbevolen groep; nadat federatiesynchronisatie is ingeschakeld, wordt de ontdekkingslijst gesynchroniseerd vanaf de buren.",
@@ -2415,6 +2424,9 @@
 					"exportFailed": "Exporteren mislukt: ${error}"
 				},
 				"name": "Kanaalnaam",
+				"unnamed": "Naamloos",
+				"parent": "ouderkanaal",
+				"noParent": "Geen ouderkanaal (hoofdmap)",
 				"nameInput": {
 					"placeholder": "Algemeen"
 				},
@@ -2428,6 +2440,31 @@
 				"typeList": "Lijst/Forumkanaal",
 				"typeStreaming": "Streamingkanaal",
 				"typeText": "chat kanaal"
+			},
+			"category": {
+				"context": {
+					"createIn": "Maak een kanaal in deze categorie",
+					"delete": "Categorie verwijderen",
+					"deleteConfirm": "Weet u zeker dat u de categorie \"${name}\" wilt verwijderen? Het kanaal eronder keert terug naar Uncategorized.",
+					"deleteOk": "Categorie verwijderd",
+					"perms": "Classificatierechten",
+					"rename": "Categorie hernoemen",
+					"renameOk": "Categorie is hernoemd",
+					"renamePrompt": "Nieuwe categorienaam"
+				},
+				"name": "Categorienaam",
+				"nameInput": {
+					"placeholder": "media"
+				},
+				"perm": {
+					"loadFailed": "Kan categorierechten niet laden: ${error}",
+					"title": "Classificatierechten",
+					"updateFailed": "Kan categorierechten niet updaten: ${error}",
+					"updated": "Categorierechten zijn bijgewerkt",
+					"syncedWarning": "Deze categorietoestemming wordt gesynchroniseerd vanaf het bovenliggende kanaal en individuele instellingen worden eerst ontkoppeld.",
+					"syncToDefault": "Synchroniseren met rootkanaalrechten",
+					"synced": "Gesynchroniseerd met rootkanaalrechten"
+				}
 			},
 			"message": {
 				"action": {

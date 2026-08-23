@@ -1601,7 +1601,10 @@
 						"stateDeny": "từ chối",
 						"stateNeutral": "kế thừa",
 						"updateFailed": "Không thể cập nhật quyền kênh: ${error}",
-						"updated": "Đã cập nhật quyền của kênh"
+						"updated": "Đã cập nhật quyền của kênh",
+						"syncedWarning": "Các quyền của kênh này đang được đồng bộ hóa từ kênh chính và các cài đặt riêng biệt sẽ được tách riêng trước tiên.",
+						"syncToDefault": "Đồng bộ hóa với quyền của kênh gốc",
+						"synced": "Đã đồng bộ hóa với quyền của kênh gốc"
 					},
 					"advanced": {
 						"description": "Các thông số mạng, lưu trữ, giới hạn tốc độ và mã hóa; vui lòng giữ mặc định nếu bạn không chắc chắn",
@@ -2338,6 +2341,12 @@
 				"success": "Đã tạo kênh",
 				"title": "Tạo kênh mới"
 			},
+			"newCategory": {
+				"button": "Danh mục mới",
+				"failed": "Không tạo được danh mục",
+				"success": "Đã tạo danh mục",
+				"title": "Danh mục mới"
+			},
 			"discovery": {
 				"description": "Duyệt qua các nhóm công cộng từ mạng liên kết, chọn một cộng đồng quan tâm và tham gia.",
 				"empty": "Hiện tại không có nhóm được đề xuất; sau khi bật đồng bộ hóa liên kết, danh sách khám phá sẽ được đồng bộ hóa từ các nước láng giềng.",
@@ -2415,6 +2424,9 @@
 					"exportFailed": "Xuất không thành công: ${error}"
 				},
 				"name": "Tên kênh",
+				"unnamed": "Vô danh",
+				"parent": "kênh mẹ",
+				"noParent": "Không có kênh mẹ (thư mục gốc)",
 				"nameInput": {
 					"placeholder": "tổng quan"
 				},
@@ -2428,6 +2440,31 @@
 				"typeList": "Danh sách/Kênh diễn đàn",
 				"typeStreaming": "kênh phát trực tuyến",
 				"typeText": "kênh trò chuyện"
+			},
+			"category": {
+				"context": {
+					"createIn": "Tạo một kênh trong danh mục này",
+					"delete": "Xóa danh mục",
+					"deleteConfirm": "Bạn có chắc chắn muốn xóa danh mục \"${name}\" không? Kênh bên dưới sẽ trở về Uncategorized.",
+					"deleteOk": "Đã xóa danh mục",
+					"perms": "Quyền phân loại",
+					"rename": "Đổi tên danh mục",
+					"renameOk": "Chuyên mục đã được đổi tên",
+					"renamePrompt": "Tên danh mục mới"
+				},
+				"name": "Tên danh mục",
+				"nameInput": {
+					"placeholder": "phương tiện truyền thông"
+				},
+				"perm": {
+					"loadFailed": "Không tải được quyền danh mục: ${error}",
+					"title": "Quyền phân loại",
+					"updateFailed": "Không cập nhật được quyền danh mục: ${error}",
+					"updated": "Quyền danh mục đã được cập nhật",
+					"syncedWarning": "Quyền danh mục này đang được đồng bộ hóa từ kênh chính và các cài đặt riêng lẻ sẽ được tách riêng trước tiên.",
+					"syncToDefault": "Đồng bộ hóa với quyền của kênh gốc",
+					"synced": "Đã đồng bộ hóa với quyền của kênh gốc"
+				}
 			},
 			"message": {
 				"action": {

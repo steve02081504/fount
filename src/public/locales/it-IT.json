@@ -1601,7 +1601,10 @@
 						"stateDeny": "rifiutare",
 						"stateNeutral": "ereditare",
 						"updateFailed": "Impossibile aggiornare le autorizzazioni del canale: ${error}",
-						"updated": "Autorizzazioni del canale aggiornate"
+						"updated": "Autorizzazioni del canale aggiornate",
+						"syncedWarning": "Le autorizzazioni di questo canale vengono sincronizzate dal canale principale e le impostazioni individuali verranno prima disaccoppiate.",
+						"syncToDefault": "Sincronizza con i permessi del canale root",
+						"synced": "Sincronizzato con i permessi del canale root"
 					},
 					"advanced": {
 						"description": "Parametri di rete, archiviazione, limite di velocità e crittografia; ti preghiamo di mantenere le impostazioni predefinite se non sei sicuro",
@@ -2338,6 +2341,12 @@
 				"success": "Canale creato",
 				"title": "Crea nuovo canale"
 			},
+			"newCategory": {
+				"button": "Nuova categoria",
+				"failed": "Impossibile creare la categoria",
+				"success": "Categoria creata",
+				"title": "Nuova categoria"
+			},
 			"discovery": {
 				"description": "Sfoglia i gruppi pubblici dalla rete della federazione, scegli una comunità di interesse e unisciti.",
 				"empty": "Al momento non esiste alcun gruppo Per te; dopo aver attivato la sincronizzazione della federazione, l'elenco di rilevamento verrà sincronizzato dai vicini.",
@@ -2415,6 +2424,9 @@
 					"exportFailed": "Esportazione non riuscita: ${error}"
 				},
 				"name": "Nome del canale",
+				"unnamed": "Senza nome",
+				"parent": "canale principale",
+				"noParent": "Nessun canale principale (directory root)",
 				"nameInput": {
 					"placeholder": "generale"
 				},
@@ -2428,6 +2440,31 @@
 				"typeList": "Canale elenco/forum",
 				"typeStreaming": "Canale in streaming",
 				"typeText": "canale di chat"
+			},
+			"category": {
+				"context": {
+					"createIn": "Crea un canale in questa categoria",
+					"delete": "Elimina categoria",
+					"deleteConfirm": "Sei sicuro di voler eliminare la categoria \"${name}\"? Il canale sottostante tornerà a Senza categoria.",
+					"deleteOk": "Categoria eliminata",
+					"perms": "Autorizzazioni di classificazione",
+					"rename": "Rinomina categoria",
+					"renameOk": "La categoria è stata rinominata",
+					"renamePrompt": "Nuovo nome della categoria"
+				},
+				"name": "Nome della categoria",
+				"nameInput": {
+					"placeholder": "media"
+				},
+				"perm": {
+					"loadFailed": "Impossibile caricare le autorizzazioni della categoria: ${error}",
+					"title": "Autorizzazioni di classificazione",
+					"updateFailed": "Impossibile aggiornare le autorizzazioni della categoria: ${error}",
+					"updated": "Le autorizzazioni delle categorie sono state aggiornate",
+					"syncedWarning": "Questa autorizzazione di categoria viene sincronizzata dal canale principale e le impostazioni individuali verranno prima disaccoppiate.",
+					"syncToDefault": "Sincronizza con i permessi del canale root",
+					"synced": "Sincronizzato con i permessi del canale root"
+				}
 			},
 			"message": {
 				"action": {

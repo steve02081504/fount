@@ -1600,7 +1600,10 @@
 						"stateDeny": "拒絕",
 						"stateNeutral": "繼承",
 						"updateFailed": "更新頻道許可權失敗：${error}",
-						"updated": "頻道許可權已更新"
+						"updated": "頻道許可權已更新",
+						"syncedWarning": "此頻道權限正同步自上級頻道，單獨設定將先脫鉤。",
+						"syncToDefault": "同步到根頻道權限",
+						"synced": "已同步至根頻道權限"
 					},
 					"advanced": {
 						"description": "網路、儲存、限速和加密引數；不確定時請保持預設",
@@ -2337,6 +2340,12 @@
 				"success": "頻道已建立",
 				"title": "新建頻道"
 			},
+			"newCategory": {
+				"button": "新分類",
+				"failed": "建立分類失敗",
+				"success": "分類已建立",
+				"title": "新分類"
+			},
 			"discovery": {
 				"description": "瀏覽來自聯邦網路的公開群組，挑選感興趣的社群並加入。",
 				"empty": "暫無推薦群；開啟聯邦同步後會從鄰居同步發現列表",
@@ -2414,6 +2423,9 @@
 					"exportFailed": "匯出失敗：${error}"
 				},
 				"name": "頻道名稱",
+				"unnamed": "未命名",
+				"parent": "父頻道",
+				"noParent": "無父頻道（根目錄）",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2427,6 +2439,31 @@
 				"typeList": "列表/論壇頻道",
 				"typeStreaming": "流媒體頻道",
 				"typeText": "聊天頻道"
+			},
+			"category": {
+				"context": {
+					"createIn": "在此分類建立頻道",
+					"delete": "刪除分類",
+					"deleteConfirm": "確定刪除分類「${name}」嗎？其下頻道將回到未分類。",
+					"deleteOk": "分類已刪除",
+					"perms": "分類權限",
+					"rename": "重新命名分類",
+					"renameOk": "分類已重新命名",
+					"renamePrompt": "新分類名"
+				},
+				"name": "分類名稱",
+				"nameInput": {
+					"placeholder": "媒體"
+				},
+				"perm": {
+					"loadFailed": "載入分類權限失敗：${error}",
+					"title": "分類權限",
+					"updateFailed": "更新分類權限失敗：${error}",
+					"updated": "分類權限已更新",
+					"syncedWarning": "此分類權限正同步自上級頻道，單獨設定將先脫鉤。",
+					"syncToDefault": "同步到根頻道權限",
+					"synced": "已同步至根頻道權限"
+				}
 			},
 			"message": {
 				"action": {
