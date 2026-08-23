@@ -1602,7 +1602,7 @@
 						"stateNeutral": "kế thừa",
 						"updateFailed": "Không thể cập nhật quyền kênh: ${error}",
 						"updated": "Đã cập nhật quyền của kênh",
-						"syncedWarning": "Các quyền của kênh này đang được đồng bộ hóa từ kênh chính và các cài đặt riêng biệt sẽ được tách riêng trước tiên.",
+						"syncedWarning": "Quyền của kênh này được đồng bộ từ kênh mẹ; các thay đổi riêng lẻ sẽ tách chúng trước.",
 						"syncToDefault": "Đồng bộ hóa với quyền của kênh gốc",
 						"synced": "Đã đồng bộ hóa với quyền của kênh gốc"
 					},
@@ -2424,7 +2424,7 @@
 					"exportFailed": "Xuất không thành công: ${error}"
 				},
 				"name": "Tên kênh",
-				"unnamed": "Vô danh",
+				"unnamed": "Không tên",
 				"parent": "kênh mẹ",
 				"noParent": "Không có kênh mẹ (thư mục gốc)",
 				"nameInput": {
@@ -2445,23 +2445,23 @@
 				"context": {
 					"createIn": "Tạo một kênh trong danh mục này",
 					"delete": "Xóa danh mục",
-					"deleteConfirm": "Bạn có chắc chắn muốn xóa danh mục \"${name}\" không? Kênh bên dưới sẽ trở về Uncategorized.",
+					"deleteConfirm": "Bạn có chắc chắn muốn xóa danh mục \"${name}\" không? Các kênh bên trong sẽ trở về Không phân loại.",
 					"deleteOk": "Đã xóa danh mục",
-					"perms": "Quyền phân loại",
+					"perms": "Quyền của danh mục",
 					"rename": "Đổi tên danh mục",
-					"renameOk": "Chuyên mục đã được đổi tên",
+					"renameOk": "Danh mục đã được đổi tên",
 					"renamePrompt": "Tên danh mục mới"
 				},
 				"name": "Tên danh mục",
 				"nameInput": {
-					"placeholder": "phương tiện truyền thông"
+					"placeholder": "phương tiện"
 				},
 				"perm": {
 					"loadFailed": "Không tải được quyền danh mục: ${error}",
-					"title": "Quyền phân loại",
+					"title": "Quyền của danh mục",
 					"updateFailed": "Không cập nhật được quyền danh mục: ${error}",
 					"updated": "Quyền danh mục đã được cập nhật",
-					"syncedWarning": "Quyền danh mục này đang được đồng bộ hóa từ kênh chính và các cài đặt riêng lẻ sẽ được tách riêng trước tiên.",
+					"syncedWarning": "Quyền của danh mục này được đồng bộ từ kênh mẹ; các thay đổi riêng lẻ sẽ tách chúng trước.",
 					"syncToDefault": "Đồng bộ hóa với quyền của kênh gốc",
 					"synced": "Đã đồng bộ hóa với quyền của kênh gốc"
 				}
@@ -2805,7 +2805,7 @@
 			"list": {
 				"channelEmpty": "Danh sách trống.",
 				"editorTitle": "Chỉnh sửa các mục danh sách (mảng JSON)",
-				"itemUntitled": "Vô danh",
+				"itemUntitled": "Không tên",
 				"jsonInvalid": "JSON không hợp lệ: ${message}",
 				"saveFailed": "Lưu không thành công",
 				"saveToDag": "Lưu vào DAG",

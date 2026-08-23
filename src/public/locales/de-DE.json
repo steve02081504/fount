@@ -1602,9 +1602,9 @@
 						"stateNeutral": "Erben",
 						"updateFailed": "Kanalberechtigungen konnten nicht aktualisiert werden: ${error}",
 						"updated": "Kanalberechtigungen aktualisiert",
-						"syncedWarning": "Die Berechtigungen dieses Kanals werden mit dem übergeordneten Kanal synchronisiert und einzelne Einstellungen werden zunächst entkoppelt.",
-						"syncToDefault": "Mit Root-Kanalberechtigungen synchronisieren",
-						"synced": "Synchronisiert mit Root-Channel-Berechtigungen"
+						"syncedWarning": "Die Berechtigungen dieses Kanals werden vom übergeordneten Kanal übernommen. Einzelne Änderungen entkoppeln sie zunächst.",
+						"syncToDefault": "Mit den Root-Kanalberechtigungen synchronisieren",
+						"synced": "Mit den Root-Kanalberechtigungen synchronisiert"
 					},
 					"advanced": {
 						"description": "Netzwerk-, Speicher-, Geschwindigkeitsbegrenzungs- und Verschlüsselungsparameter; Bitte behalten Sie die Standardeinstellungen bei, wenn Sie sich nicht sicher sind",
@@ -2425,8 +2425,8 @@
 				},
 				"name": "Kanalname",
 				"unnamed": "Unbenannt",
-				"parent": "übergeordneter Kanal",
-				"noParent": "Kein übergeordneter Kanal (Stammverzeichnis)",
+				"parent": "Übergeordneter Kanal",
+				"noParent": "Kein übergeordneter Kanal (Root)",
 				"nameInput": {
 					"placeholder": "Allgemein"
 				},
@@ -2445,9 +2445,9 @@
 				"context": {
 					"createIn": "Erstellen Sie einen Kanal in dieser Kategorie",
 					"delete": "Kategorie löschen",
-					"deleteConfirm": "Sind Sie sicher, dass Sie die Kategorie „${name}“ löschen möchten? Der Kanal darunter kehrt zu „Nicht kategorisiert“ zurück.",
+					"deleteConfirm": "Sind Sie sicher, dass Sie die Kategorie „${name}“ löschen möchten? Die Kanäle darunter kehren zu „Nicht kategorisiert“ zurück.",
 					"deleteOk": "Kategorie gelöscht",
-					"perms": "Klassifizierungsberechtigungen",
+					"perms": "Kategorieberechtigungen",
 					"rename": "Kategorie umbenennen",
 					"renameOk": "Kategorie wurde umbenannt",
 					"renamePrompt": "Neuer Kategoriename"
@@ -2458,12 +2458,12 @@
 				},
 				"perm": {
 					"loadFailed": "Kategorieberechtigungen konnten nicht geladen werden: ${error}",
-					"title": "Klassifizierungsberechtigungen",
+					"title": "Kategorieberechtigungen",
 					"updateFailed": "Kategorieberechtigungen konnten nicht aktualisiert werden: ${error}",
 					"updated": "Die Kategorieberechtigungen wurden aktualisiert",
-					"syncedWarning": "Diese Kategorieberechtigung wird vom übergeordneten Kanal synchronisiert und einzelne Einstellungen werden zunächst entkoppelt.",
-					"syncToDefault": "Mit Root-Kanalberechtigungen synchronisieren",
-					"synced": "Synchronisiert mit Root-Channel-Berechtigungen"
+					"syncedWarning": "Die Berechtigungen dieser Kategorie werden vom übergeordneten Kanal übernommen. Einzelne Änderungen entkoppeln sie zunächst.",
+					"syncToDefault": "Mit den Root-Kanalberechtigungen synchronisieren",
+					"synced": "Mit den Root-Kanalberechtigungen synchronisiert"
 				}
 			},
 			"message": {

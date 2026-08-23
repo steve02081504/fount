@@ -1602,8 +1602,8 @@
 						"stateNeutral": "heredar",
 						"updateFailed": "No se pudieron actualizar los permisos del canal: ${error}",
 						"updated": "Permisos del canal actualizados",
-						"syncedWarning": "Los permisos de este canal se sincronizan desde el canal principal y las configuraciones individuales se desacoplarán primero.",
-						"syncToDefault": "Sincronización con permisos del canal raíz",
+						"syncedWarning": "Los permisos de este canal se sincronizan con el canal superior; los cambios individuales los desvincularán primero.",
+						"syncToDefault": "Sincronizar con los permisos del canal raíz",
 						"synced": "Sincronizado con los permisos del canal raíz"
 					},
 					"advanced": {
@@ -2425,8 +2425,8 @@
 				},
 				"name": "Nombre del canal",
 				"unnamed": "Sin nombre",
-				"parent": "canal principal",
-				"noParent": "Sin canal principal (directorio raíz)",
+				"parent": "canal superior",
+				"noParent": "Sin canal superior (raíz)",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2445,9 +2445,9 @@
 				"context": {
 					"createIn": "Crear un canal en esta categoría",
 					"delete": "Eliminar categoría",
-					"deleteConfirm": "¿Está seguro de que desea eliminar la categoría \"${name}\"? El canal debajo volverá a Sin categoría.",
+					"deleteConfirm": "¿Está seguro de que desea eliminar la categoría \"${name}\"? Los canales que contiene volverán a Sin categoría.",
 					"deleteOk": "Categoría eliminada",
-					"perms": "Permisos de clasificación",
+					"perms": "Permisos de la categoría",
 					"rename": "Cambiar nombre de categoría",
 					"renameOk": "La categoría ha sido renombrada",
 					"renamePrompt": "Nuevo nombre de categoría"
@@ -2458,11 +2458,11 @@
 				},
 				"perm": {
 					"loadFailed": "No se pudieron cargar los permisos de categoría: ${error}",
-					"title": "Permisos de clasificación",
-					"updateFailed": "No se pudieron actualizar los permisos de categoría: ${error}",
-					"updated": "Se han actualizado los permisos de categoría.",
-					"syncedWarning": "Este permiso de categoría se sincroniza desde el canal principal y las configuraciones individuales se desacoplarán primero.",
-					"syncToDefault": "Sincronización con permisos del canal raíz",
+					"title": "Permisos de la categoría",
+					"updateFailed": "No se pudieron actualizar los permisos de la categoría: ${error}",
+					"updated": "Se han actualizado los permisos de la categoría.",
+					"syncedWarning": "Los permisos de esta categoría se sincronizan con el canal superior; los cambios individuales los desvincularán primero.",
+					"syncToDefault": "Sincronizar con los permisos del canal raíz",
 					"synced": "Sincronizado con los permisos del canal raíz"
 				}
 			},

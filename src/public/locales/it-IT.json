@@ -1602,9 +1602,9 @@
 						"stateNeutral": "ereditare",
 						"updateFailed": "Impossibile aggiornare le autorizzazioni del canale: ${error}",
 						"updated": "Autorizzazioni del canale aggiornate",
-						"syncedWarning": "Le autorizzazioni di questo canale vengono sincronizzate dal canale principale e le impostazioni individuali verranno prima disaccoppiate.",
-						"syncToDefault": "Sincronizza con i permessi del canale root",
-						"synced": "Sincronizzato con i permessi del canale root"
+						"syncedWarning": "Le autorizzazioni di questo canale vengono sincronizzate dal canale padre; le impostazioni individuali le scollegheranno prima.",
+						"syncToDefault": "Sincronizza con i permessi del canale radice",
+						"synced": "Sincronizzato con i permessi del canale radice"
 					},
 					"advanced": {
 						"description": "Parametri di rete, archiviazione, limite di velocità e crittografia; ti preghiamo di mantenere le impostazioni predefinite se non sei sicuro",
@@ -2425,8 +2425,8 @@
 				},
 				"name": "Nome del canale",
 				"unnamed": "Senza nome",
-				"parent": "canale principale",
-				"noParent": "Nessun canale principale (directory root)",
+				"parent": "canale padre",
+				"noParent": "Nessun canale padre (radice)",
 				"nameInput": {
 					"placeholder": "generale"
 				},
@@ -2445,9 +2445,9 @@
 				"context": {
 					"createIn": "Crea un canale in questa categoria",
 					"delete": "Elimina categoria",
-					"deleteConfirm": "Sei sicuro di voler eliminare la categoria \"${name}\"? Il canale sottostante tornerà a Senza categoria.",
+					"deleteConfirm": "Sei sicuro di voler eliminare la categoria \"${name}\"? I canali al suo interno torneranno a Senza categoria.",
 					"deleteOk": "Categoria eliminata",
-					"perms": "Autorizzazioni di classificazione",
+					"perms": "Permessi della categoria",
 					"rename": "Rinomina categoria",
 					"renameOk": "La categoria è stata rinominata",
 					"renamePrompt": "Nuovo nome della categoria"
@@ -2458,12 +2458,12 @@
 				},
 				"perm": {
 					"loadFailed": "Impossibile caricare le autorizzazioni della categoria: ${error}",
-					"title": "Autorizzazioni di classificazione",
+					"title": "Permessi della categoria",
 					"updateFailed": "Impossibile aggiornare le autorizzazioni della categoria: ${error}",
 					"updated": "Le autorizzazioni delle categorie sono state aggiornate",
-					"syncedWarning": "Questa autorizzazione di categoria viene sincronizzata dal canale principale e le impostazioni individuali verranno prima disaccoppiate.",
-					"syncToDefault": "Sincronizza con i permessi del canale root",
-					"synced": "Sincronizzato con i permessi del canale root"
+					"syncedWarning": "Le autorizzazioni di questa categoria vengono sincronizzate dal canale padre; le impostazioni individuali le scollegheranno prima.",
+					"syncToDefault": "Sincronizza con i permessi del canale radice",
+					"synced": "Sincronizzato con i permessi del canale radice"
 				}
 			},
 			"message": {

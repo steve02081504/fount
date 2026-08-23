@@ -1602,7 +1602,7 @@
 						"stateNeutral": "Erfa",
 						"updateFailed": "Mistókst að uppfæra rásarheimildir: ${error}",
 						"updated": "Rásarheimildir uppfærðar",
-						"syncedWarning": "Verið er að samstilla heimildir þessarar rásar frá móðurrásinni og aðskildar stillingar verða fyrst aftengdar.",
+						"syncedWarning": "Heimildir þessarar rásar eru samstilltar við móðurrásina; einstakar breytingar aftengja þær fyrst.",
 						"syncToDefault": "Samstilltu við rótarrásarheimildir",
 						"synced": "Samstillt við rótarrásarheimildir"
 					},
@@ -2424,7 +2424,7 @@
 					"exportFailed": "Útflutningur mistókst: ${error}"
 				},
 				"name": "Heiti rásar",
-				"unnamed": "Ónefndur",
+				"unnamed": "Nafnlaus",
 				"parent": "móðurrás",
 				"noParent": "Engin móðurrás (rótarskrá)",
 				"nameInput": {
@@ -2445,23 +2445,23 @@
 				"context": {
 					"createIn": "Búðu til rás í þessum flokki",
 					"delete": "Eyða flokki",
-					"deleteConfirm": "Ertu viss um að þú viljir eyða flokknum \"${name}\"? Rásin fyrir neðan hana mun fara aftur í Óflokkað.",
+					"deleteConfirm": "Ertu viss um að þú viljir eyða flokknum \"${name}\"? Rásirnar inni í henni fara aftur í Óflokkað.",
 					"deleteOk": "Flokkur eytt",
-					"perms": "Flokkunarheimildir",
+					"perms": "Flokkaheimildir",
 					"rename": "Endurnefna flokk",
 					"renameOk": "Flokkur hefur verið endurnefndur",
-					"renamePrompt": "Nýtt flokksheiti"
+					"renamePrompt": "Nýtt flokksnafn"
 				},
 				"name": "Nafn flokks",
 				"nameInput": {
 					"placeholder": "fjölmiðla"
 				},
 				"perm": {
-					"loadFailed": "Mistókst að hlaða flokkaheimildum: ${error}",
-					"title": "Flokkunarheimildir",
-					"updateFailed": "Mistókst að uppfæra heimildir fyrir flokka: ${error}",
+					"loadFailed": "Mistókst að hlaða flokkaheimildir: ${error}",
+					"title": "Flokkaheimildir",
+					"updateFailed": "Mistókst að uppfæra flokkaheimildir: ${error}",
 					"updated": "Flokksheimildir hafa verið uppfærðar",
-					"syncedWarning": "Verið er að samstilla þessa flokksheimild frá móðurrásinni og einstakar stillingar verða fyrst aftengdar.",
+					"syncedWarning": "Heimildir þessa flokks eru samstilltar við móðurrásina; einstakar breytingar aftengja þær fyrst.",
 					"syncToDefault": "Samstilltu við rótarrásarheimildir",
 					"synced": "Samstillt við rótarrásarheimildir"
 				}
@@ -2805,7 +2805,7 @@
 			"list": {
 				"channelEmpty": "Listinn er tómur.",
 				"editorTitle": "Breyta listaatriðum (JSON fylki)",
-				"itemUntitled": "Ónefndur",
+				"itemUntitled": "Nafnlaus",
 				"jsonInvalid": "Ógilt JSON: ${message}",
 				"saveFailed": "Vistun mistókst",
 				"saveToDag": "Vistaðu í DAG",

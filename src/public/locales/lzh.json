@@ -1602,9 +1602,9 @@
 						"stateNeutral": "繼承",
 						"updateFailed": "更分苑權限未遂：${error}",
 						"updated": "分苑權限已更",
-						"syncedWarning": "此频道权限正同步自上级频道，单独设置将先脱钩。",
-						"syncToDefault": "同步到根频道权限",
-						"synced": "已同步到根频道权限"
+						"syncedWarning": "此分苑之權悉承於上級分苑，獨設者當先脫其系。",
+						"syncToDefault": "復歸根苑之權",
+						"synced": "已歸根苑之權"
 					},
 					"advanced": {
 						"description": "通衢、庫藏、限速與加密之參；未明則守常制",
@@ -2342,10 +2342,10 @@
 				"title": "立分苑"
 			},
 			"newCategory": {
-				"button": "新建分类",
-				"failed": "创建分类失败",
-				"success": "分类已创建",
-				"title": "新建分类"
+				"button": "立新類",
+				"failed": "立類未遂",
+				"success": "新類已立",
+				"title": "立新類"
 			},
 			"discovery": {
 				"description": "覽諸邦公開之群，擇所好之社而載入。",
@@ -2424,9 +2424,9 @@
 					"exportFailed": "導出未遂：${error}"
 				},
 				"name": "分苑名稱",
-				"unnamed": "未命名",
-				"parent": "父频道",
-				"noParent": "无父频道（根目录）",
+				"unnamed": "無名",
+				"parent": "上級分苑",
+				"noParent": "無上級分苑（根苑）",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2443,27 +2443,27 @@
 			},
 			"category": {
 				"context": {
-					"createIn": "在此分类创建频道",
-					"delete": "删除分类",
-					"deleteConfirm": "确定删除分类「${name}」吗？其下频道将回到未分类。",
-					"deleteOk": "分类已删除",
-					"perms": "分类权限",
-					"rename": "重命名分类",
-					"renameOk": "分类已重命名",
-					"renamePrompt": "新分类名"
+					"createIn": "於此類中立方苑",
+					"delete": "刪此類",
+					"deleteConfirm": "定欲毀此類「${name}」？其下分苑將歸於未分類。",
+					"deleteOk": "此類已刪",
+					"perms": "此類之權",
+					"rename": "重命名此類",
+					"renameOk": "此類已重命名",
+					"renamePrompt": "新類名"
 				},
-				"name": "分类名称",
+				"name": "類名",
 				"nameInput": {
-					"placeholder": "媒体"
+					"placeholder": "media"
 				},
 				"perm": {
-					"loadFailed": "加载分类权限失败：${error}",
-					"title": "分类权限",
-					"updateFailed": "更新分类权限失败：${error}",
-					"updated": "分类权限已更新",
-					"syncedWarning": "此分类权限正同步自上级频道，单独设置将先脱钩。",
-					"syncToDefault": "同步到根频道权限",
-					"synced": "已同步到根频道权限"
+					"loadFailed": "載此類之權未遂：${error}",
+					"title": "此類之權",
+					"updateFailed": "更此類之權未遂：${error}",
+					"updated": "此類之權已更",
+					"syncedWarning": "此類之權悉承於上級分苑，獨設者當先脫其系。",
+					"syncToDefault": "復歸根苑之權",
+					"synced": "已歸根苑之權"
 				}
 			},
 			"message": {

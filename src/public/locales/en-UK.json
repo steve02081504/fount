@@ -1602,7 +1602,7 @@
 						"stateNeutral": "Inherit",
 						"updateFailed": "Failed to update channel permissions: ${error}",
 						"updated": "Channel permissions updated",
-						"syncedWarning": "The permissions of this channel are being synchronized from the parent channel, and individual settings will be decoupled first.",
+						"syncedWarning": "This channel’s permissions are synced from its parent channel; individual changes will detach them first.",
 						"syncToDefault": "Sync to root channel permissions",
 						"synced": "Synced to root channel permissions"
 					},
@@ -2425,8 +2425,8 @@
 				},
 				"name": "Channel name",
 				"unnamed": "Unnamed",
-				"parent": "parent channel",
-				"noParent": "No parent channel (root directory)",
+				"parent": "Parent channel",
+				"noParent": "No parent channel (root)",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2445,11 +2445,11 @@
 				"context": {
 					"createIn": "Create a channel in this category",
 					"delete": "Delete category",
-					"deleteConfirm": "Are you sure you want to delete the category \"${name}\"? The channel below it will return to Uncategorized.",
+					"deleteConfirm": "Are you sure you want to delete the category \"${name}\"? The channels under it will become Uncategorized.",
 					"deleteOk": "Category deleted",
-					"perms": "Classification permissions",
+					"perms": "Category permissions",
 					"rename": "Rename category",
-					"renameOk": "Category has been renamed",
+					"renameOk": "Category renamed",
 					"renamePrompt": "New category name"
 				},
 				"name": "Category name",
@@ -2458,10 +2458,10 @@
 				},
 				"perm": {
 					"loadFailed": "Failed to load category permissions: ${error}",
-					"title": "Classification permissions",
+					"title": "Category permissions",
 					"updateFailed": "Failed to update category permissions: ${error}",
-					"updated": "Category permissions have been updated",
-					"syncedWarning": "This category permission is being synchronized from the parent channel, and individual settings will be decoupled first.",
+					"updated": "Category permissions updated",
+					"syncedWarning": "This category’s permissions are synced from the parent channel; individual changes will detach them first.",
 					"syncToDefault": "Sync to root channel permissions",
 					"synced": "Synced to root channel permissions"
 				}

@@ -1602,9 +1602,9 @@
 						"stateNeutral": "↩️",
 						"updateFailed": "📺🔐🔄❌：${error}",
 						"updated": "📺🔐🔄✅",
-						"syncedWarning": "此频道权限正同步自上级频道，单独设置将先脱钩。",
-						"syncToDefault": "同步到根频道权限",
-						"synced": "已同步到根频道权限"
+						"syncedWarning": "📺🔑⏬👆❌↩️",
+						"syncToDefault": "🔑⏬🌱",
+						"synced": "🔑✅🌱"
 					},
 					"advanced": {
 						"description": "🌐💾🐢🔐⚙️；🤷 ➡️ ⭐",
@@ -2342,10 +2342,10 @@
 				"title": "🆕📺"
 			},
 			"newCategory": {
-				"button": "新建分类",
-				"failed": "创建分类失败",
-				"success": "分类已创建",
-				"title": "新建分类"
+				"button": "🆕🗂️",
+				"failed": "➕🗂️❌",
+				"success": "🗂️✅🎉",
+				"title": "🆕🗂️"
 			},
 			"discovery": {
 				"description": "👀🌐👥 ➕ 🔍🏛️",
@@ -2424,9 +2424,9 @@
 					"exportFailed": "📤❌：${error}"
 				},
 				"name": "📺🏷️",
-				"unnamed": "未命名",
-				"parent": "父频道",
-				"noParent": "无父频道（根目录）",
+				"unnamed": "❓📺",
+				"parent": "🔺📺",
+				"noParent": "🌱📺",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2443,27 +2443,27 @@
 			},
 			"category": {
 				"context": {
-					"createIn": "在此分类创建频道",
-					"delete": "删除分类",
-					"deleteConfirm": "确定删除分类「${name}」吗？其下频道将回到未分类。",
-					"deleteOk": "分类已删除",
-					"perms": "分类权限",
-					"rename": "重命名分类",
-					"renameOk": "分类已重命名",
-					"renamePrompt": "新分类名"
+					"createIn": "➕📺🗂️",
+					"delete": "🗑️🗂️",
+					"deleteConfirm": "🗑️🗂️「${name}」❓🚫↩️",
+					"deleteOk": "🗂️✅",
+					"perms": "🗂️🔑",
+					"rename": "✏️🗂️",
+					"renameOk": "🗂️✏️✅",
+					"renamePrompt": "🗂️✏️"
 				},
-				"name": "分类名称",
+				"name": "🗂️🏷️",
 				"nameInput": {
-					"placeholder": "媒体"
+					"placeholder": "media"
 				},
 				"perm": {
-					"loadFailed": "加载分类权限失败：${error}",
-					"title": "分类权限",
-					"updateFailed": "更新分类权限失败：${error}",
-					"updated": "分类权限已更新",
-					"syncedWarning": "此分类权限正同步自上级频道，单独设置将先脱钩。",
-					"syncToDefault": "同步到根频道权限",
-					"synced": "已同步到根频道权限"
+					"loadFailed": "🗂️🔑⏳❌${error}",
+					"title": "🗂️🔑",
+					"updateFailed": "🗂️🔑✏️❌${error}",
+					"updated": "🗂️🔑✅",
+					"syncedWarning": "🗂️🔑⏬👆❌↩️",
+					"syncToDefault": "🔑⏬🌱",
+					"synced": "🔑✅🌱"
 				}
 			},
 			"message": {

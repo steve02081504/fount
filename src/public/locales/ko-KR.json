@@ -1602,9 +1602,9 @@
 						"stateNeutral": "상속",
 						"updateFailed": "채널 권한을 업데이트하지 못했습니다: ${error}",
 						"updated": "채널 권한이 업데이트되었습니다.",
-						"syncedWarning": "이 채널의 권한은 상위 채널과 동기화되고 있으며, 별도의 설정이 먼저 분리됩니다.",
-						"syncToDefault": "루트 채널 권한과 동기화",
-						"synced": "루트 채널 권한과 동기화됨"
+						"syncedWarning": "이 채널의 권한은 상위 채널에서 동기화됩니다. 개별 설정을 바꾸면 먼저 연결이 해제됩니다.",
+						"syncToDefault": "루트 채널 권한으로 동기화",
+						"synced": "루트 채널 권한으로 동기화됨"
 					},
 					"advanced": {
 						"description": "네트워크, 스토리지, 속도 제한 및 암호화 매개변수 확실하지 않은 경우 기본값을 유지하세요.",
@@ -2445,25 +2445,25 @@
 				"context": {
 					"createIn": "이 카테고리에 채널 만들기",
 					"delete": "카테고리 삭제",
-					"deleteConfirm": "\"${name}\" 카테고리를 삭제하시겠습니까? 그 아래 채널은 분류되지 않음으로 돌아갑니다.",
+					"deleteConfirm": "\"${name}\" 카테고리를 삭제하시겠습니까? 그 아래 채널은 미분류로 돌아갑니다.",
 					"deleteOk": "카테고리가 삭제되었습니다.",
-					"perms": "분류 권한",
+					"perms": "카테고리 권한",
 					"rename": "카테고리 이름 바꾸기",
 					"renameOk": "카테고리 이름이 변경되었습니다.",
 					"renamePrompt": "새 카테고리 이름"
 				},
 				"name": "카테고리 이름",
 				"nameInput": {
-					"placeholder": "메디아"
+					"placeholder": "미디어"
 				},
 				"perm": {
 					"loadFailed": "카테고리 권한을 로드하지 못했습니다: ${error}",
-					"title": "분류 권한",
+					"title": "카테고리 권한",
 					"updateFailed": "카테고리 권한을 업데이트하지 못했습니다: ${error}",
 					"updated": "카테고리 권한이 업데이트되었습니다.",
-					"syncedWarning": "이 카테고리 권한은 상위 채널에서 동기화되고 있으며, 개별 설정이 먼저 분리됩니다.",
-					"syncToDefault": "루트 채널 권한과 동기화",
-					"synced": "루트 채널 권한과 동기화됨"
+					"syncedWarning": "이 카테고리의 권한은 상위 채널에서 동기화됩니다. 개별 설정을 바꾸면 먼저 연결이 해제됩니다.",
+					"syncToDefault": "루트 채널 권한으로 동기화",
+					"synced": "루트 채널 권한으로 동기화됨"
 				}
 			},
 			"message": {

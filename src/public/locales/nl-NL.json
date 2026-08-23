@@ -1602,9 +1602,9 @@
 						"stateNeutral": "Erven",
 						"updateFailed": "Kan kanaalrechten niet updaten: ${error}",
 						"updated": "Kanaalrechten bijgewerkt",
-						"syncedWarning": "De rechten van dit kanaal worden gesynchroniseerd met het bovenliggende kanaal, en afzonderlijke instellingen worden eerst ontkoppeld.",
-						"syncToDefault": "Synchroniseren met rootkanaalrechten",
-						"synced": "Gesynchroniseerd met rootkanaalrechten"
+						"syncedWarning": "De rechten van dit kanaal worden gesynchroniseerd met het bovenliggende kanaal. Afzonderlijke wijzigingen koppelen ze eerst los.",
+						"syncToDefault": "Synchroniseren met rechten van het rootkanaal",
+						"synced": "Gesynchroniseerd met rechten van het rootkanaal"
 					},
 					"advanced": {
 						"description": "Netwerk-, opslag-, snelheidslimiet- en encryptieparameters; Bewaar de standaardinstellingen als je het niet zeker weet",
@@ -2425,8 +2425,8 @@
 				},
 				"name": "Kanaalnaam",
 				"unnamed": "Naamloos",
-				"parent": "ouderkanaal",
-				"noParent": "Geen ouderkanaal (hoofdmap)",
+				"parent": "Bovenliggend kanaal",
+				"noParent": "Geen bovenliggend kanaal (root)",
 				"nameInput": {
 					"placeholder": "Algemeen"
 				},
@@ -2445,11 +2445,11 @@
 				"context": {
 					"createIn": "Maak een kanaal in deze categorie",
 					"delete": "Categorie verwijderen",
-					"deleteConfirm": "Weet u zeker dat u de categorie \"${name}\" wilt verwijderen? Het kanaal eronder keert terug naar Uncategorized.",
+					"deleteConfirm": "Weet u zeker dat u de categorie \"${name}\" wilt verwijderen? De kanalen erin keren terug naar Niet gecategoriseerd.",
 					"deleteOk": "Categorie verwijderd",
-					"perms": "Classificatierechten",
+					"perms": "Categorierechten",
 					"rename": "Categorie hernoemen",
-					"renameOk": "Categorie is hernoemd",
+					"renameOk": "Categorie hernoemd",
 					"renamePrompt": "Nieuwe categorienaam"
 				},
 				"name": "Categorienaam",
@@ -2458,12 +2458,12 @@
 				},
 				"perm": {
 					"loadFailed": "Kan categorierechten niet laden: ${error}",
-					"title": "Classificatierechten",
+					"title": "Categorierechten",
 					"updateFailed": "Kan categorierechten niet updaten: ${error}",
 					"updated": "Categorierechten zijn bijgewerkt",
-					"syncedWarning": "Deze categorietoestemming wordt gesynchroniseerd vanaf het bovenliggende kanaal en individuele instellingen worden eerst ontkoppeld.",
-					"syncToDefault": "Synchroniseren met rootkanaalrechten",
-					"synced": "Gesynchroniseerd met rootkanaalrechten"
+					"syncedWarning": "De rechten van deze categorie worden gesynchroniseerd met het bovenliggende kanaal. Afzonderlijke wijzigingen koppelen ze eerst los.",
+					"syncToDefault": "Synchroniseren met rechten van het rootkanaal",
+					"synced": "Gesynchroniseerd met rechten van het rootkanaal"
 				}
 			},
 			"message": {

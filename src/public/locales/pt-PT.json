@@ -1602,7 +1602,7 @@
 						"stateNeutral": "Herdar",
 						"updateFailed": "Falha ao update channel permissions: ${error}",
 						"updated": "Permissões do canal atualizadas",
-						"syncedWarning": "As permissões deste canal estão sendo sincronizadas do canal pai e as configurações separadas serão desacopladas primeiro.",
+						"syncedWarning": "As permissões deste canal são sincronizadas a partir do canal pai; as alterações individuais desvinculam-nas primeiro.",
 						"syncToDefault": "Sincronizar com permissões do canal raiz",
 						"synced": "Sincronizado com permissões do canal raiz"
 					},
@@ -2445,9 +2445,9 @@
 				"context": {
 					"createIn": "Crie um canal nesta categoria",
 					"delete": "Excluir categoria",
-					"deleteConfirm": "Tem certeza de que deseja excluir a categoria \"${name}\"? O canal abaixo retornará para Sem categoria.",
+					"deleteConfirm": "Tem certeza de que deseja excluir a categoria \"${name}\"? Os canais no seu interior voltarão a Sem categoria.",
 					"deleteOk": "Categoria excluída",
-					"perms": "Permissões de classificação",
+					"perms": "Permissões da categoria",
 					"rename": "Renomear categoria",
 					"renameOk": "Categoria foi renomeada",
 					"renamePrompt": "Novo nome de categoria"
@@ -2457,11 +2457,11 @@
 					"placeholder": "mídia"
 				},
 				"perm": {
-					"loadFailed": "Falha ao carregar permissões de categoria: ${error}",
-					"title": "Permissões de classificação",
+					"loadFailed": "Falha ao carregar as permissões da categoria: ${error}",
+					"title": "Permissões da categoria",
 					"updateFailed": "Falha ao atualizar as permissões da categoria: ${error}",
-					"updated": "As permissões de categoria foram atualizadas",
-					"syncedWarning": "Esta permissão de categoria está sendo sincronizada do canal pai e as configurações individuais serão desacopladas primeiro.",
+					"updated": "As permissões da categoria foram atualizadas",
+					"syncedWarning": "As permissões desta categoria são sincronizadas a partir do canal pai; as alterações individuais desvinculam-nas primeiro.",
 					"syncToDefault": "Sincronizar com permissões do canal raiz",
 					"synced": "Sincronizado com permissões do canal raiz"
 				}

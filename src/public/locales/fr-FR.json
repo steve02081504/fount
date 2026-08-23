@@ -1602,7 +1602,7 @@
 						"stateNeutral": "hériter",
 						"updateFailed": "Échec de la mise à jour des autorisations de la chaîne : ${error}",
 						"updated": "Autorisations de chaîne mises à jour",
-						"syncedWarning": "Les autorisations de ce canal sont synchronisées à partir du canal parent et les paramètres individuels seront d'abord découplés.",
+						"syncedWarning": "Les autorisations de ce canal sont synchronisées avec le canal parent ; des réglages individuels les en détacheront d'abord.",
 						"syncToDefault": "Synchroniser avec les autorisations du canal racine",
 						"synced": "Synchronisé avec les autorisations du canal racine"
 					},
@@ -2424,9 +2424,9 @@
 					"exportFailed": "Échec de l'exportation : ${error}"
 				},
 				"name": "Nom de la chaîne",
-				"unnamed": "Anonyme",
-				"parent": "canal parent",
-				"noParent": "Pas de canal parent (répertoire racine)",
+				"unnamed": "Sans nom",
+				"parent": "Canal parent",
+				"noParent": "Aucun canal parent (racine)",
 				"nameInput": {
 					"placeholder": "général"
 				},
@@ -2445,11 +2445,11 @@
 				"context": {
 					"createIn": "Créer une chaîne dans cette catégorie",
 					"delete": "Supprimer la catégorie",
-					"deleteConfirm": "Êtes-vous sûr de vouloir supprimer la catégorie « ${name} » ? La chaîne en dessous reviendra à Non classé.",
+					"deleteConfirm": "Êtes-vous sûr de vouloir supprimer la catégorie « ${name} » ? Les canaux qu’elle contient reviendront à « Sans catégorie ».",
 					"deleteOk": "Catégorie supprimée",
-					"perms": "Autorisations de classification",
+					"perms": "Autorisations de la catégorie",
 					"rename": "Renommer la catégorie",
-					"renameOk": "La catégorie a été renommée",
+					"renameOk": "Catégorie renommée",
 					"renamePrompt": "Nouveau nom de catégorie"
 				},
 				"name": "Nom de la catégorie",
@@ -2457,11 +2457,11 @@
 					"placeholder": "médias"
 				},
 				"perm": {
-					"loadFailed": "Échec du chargement des autorisations de catégorie : ${error}",
-					"title": "Autorisations de classification",
-					"updateFailed": "Échec de la mise à jour des autorisations de catégorie : ${error}",
-					"updated": "Les autorisations de catégorie ont été mises à jour",
-					"syncedWarning": "Cette autorisation de catégorie est synchronisée à partir du canal parent et les paramètres individuels seront d'abord découplés.",
+					"loadFailed": "Échec du chargement des autorisations de la catégorie : ${error}",
+					"title": "Autorisations de la catégorie",
+					"updateFailed": "Échec de la mise à jour des autorisations de la catégorie : ${error}",
+					"updated": "Les autorisations de la catégorie ont été mises à jour",
+					"syncedWarning": "Les autorisations de cette catégorie sont synchronisées avec le canal parent ; des réglages individuels les en détacheront d'abord.",
 					"syncToDefault": "Synchroniser avec les autorisations du canal racine",
 					"synced": "Synchronisé avec les autorisations du canal racine"
 				}
@@ -2805,7 +2805,7 @@
 			"list": {
 				"channelEmpty": "La liste est vide.",
 				"editorTitle": "Modifier les éléments de la liste (tableau JSON)",
-				"itemUntitled": "Anonyme",
+				"itemUntitled": "Sans nom",
 				"jsonInvalid": "JSON non valide : ${message}",
 				"saveFailed": "Échec de l'enregistrement",
 				"saveToDag": "Enregistrer dans DAG",
