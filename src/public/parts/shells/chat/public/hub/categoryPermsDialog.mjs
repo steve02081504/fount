@@ -90,8 +90,11 @@ async function fillRolePermsIfEmpty(permsEl, roleId, permissions, grantablePerms
  */
 export async function showCategoryPermsDialog(groupId, categoryId, categoryName) {
 	let permissions = {}
+	let permBlockId = null
 	try {
-		permissions = await getCategoryPermissions(groupId, categoryId)
+		const data = await getCategoryPermissions(groupId, categoryId)
+		permissions = data.permissions || {}
+		permBlockId = data.permBlockId || null
 	}
 	catch (error) {
 		handleError('chat.hub.category.perm.loadFailed')(error)
@@ -101,7 +104,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 	const grantorPerms = await fetchViewerChannelPermissions(state, groupId)
 	const grantablePerms = grantableChannelOverridePermissions(grantorPerms)
 
-	await openDialogFromTemplate('channel_category_perm_dialog', { categoryName }, {
+	await openDialogFromTemplate('channel_category_perm_dialog', { categoryName, permBlockId }, {
 		activateScripts: false,
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框
@@ -109,6 +112,18 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 		 */
 		onReady: async dialog => {
 			dialog.querySelector('#category-perm-close')?.addEventListener('click', () => dialog.close())
+			dialog.querySelector('#category-perm-sync')?.addEventListener('click', async () => {
+				try {
+					const { syncCategoryPermissions } = await import('../src/endpoints/groupCategory.mjs')
+					await syncCategoryPermissions(groupId, categoryId)
+					showToastI18n('success', 'chat.hub.category.perm.synced')
+					await showCategoryPermsDialog(groupId, categoryId, categoryName)
+					dialog.close()
+				}
+				catch (error) {
+					handleError('chat.hub.category.perm.updateFailed')(error)
+				}
+			})
 
 			const body = dialog.querySelector('#category-perm-body')
 			if (!body) return
@@ -163,7 +178,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 				const nextState = stateBtn.getAttribute('data-state')
 				if (!roleId || !perm || !nextState || !grantablePerms.includes(perm)) return
 				try {
-					const current = await getCategoryPermissions(groupId, categoryId)
+					const current = (await getCategoryPermissions(groupId, categoryId)).permissions
 					const allow = { ...current[roleId]?.allow }
 					const deny = { ...current[roleId]?.deny }
 					delete allow[perm]

@@ -19,7 +19,7 @@ import { selectChannel } from './selectChannel.mjs'
 const listMenuBoundContainers = new WeakSet()
 
 /**
- * 渲染频道树列表。
+ * 渲染频道树列表（沿 links；`type:category` 频道渲染为可折叠分类头，无分类频道显示在根目录）。
  * @param {object} state 群组状态
  * @returns {Promise<void>}
  */
@@ -34,16 +34,6 @@ export async function renderChannelList(state) {
 	}
 	const { ordered } = buildChannelTree(channels)
 	const visible = ordered.filter(({ channel }) => !isThreadChannel(channel))
-	const categories = state.categories || {}
-	const groupsByCat = {}
-	for (const { id, channel, depth } of visible) {
-		const categoryId = channel.category || ''
-		const category = categoryId ? categories[categoryId]?.name || categoryId : ''
-		const categoryI18n = categoryId ? '' : 'chat.hub.defaultCategory'
-		const catKey = categoryId || '__default__'
-		if (!groupsByCat[catKey]) groupsByCat[catKey] = { category, categoryI18n, categoryId, channels: [] }
-		groupsByCat[catKey].channels.push({ id, depth, ...channel })
-	}
 	container.replaceChildren()
 	if (!isPrivateChatActive() && !listMenuBoundContainers.has(container)) {
 		listMenuBoundContainers.add(container)
@@ -51,40 +41,76 @@ export async function renderChannelList(state) {
 			showChannelListCreateMenu(event)
 		})
 	}
-	for (const catKey of Object.keys(groupsByCat)) {
-		const { category, categoryI18n, categoryId, channels } = groupsByCat[catKey]
-		const isCollapsed = store.sidebar.collapsedCategories.has(catKey)
-		container.appendChild(await renderTemplate('hub/nav/channel_category', {
-			collapsedClass: isCollapsed ? 'collapsed' : '',
-			category: escapeHtml(catKey),
-			categoryName: escapeHtml(category),
-			categoryI18nAttr: categoryI18n ? ` data-i18n="${categoryI18n}"` : '',
-		}))
-		if (!isCollapsed) {
-			const listHost = container.querySelector(`.category[data-cat="${CSS.escape(catKey)}"] + .category-channels`)
-			const sortedChannels = [...channels].sort((left, right) => {
-				const leftSeq = Number(state.channels?.[left.id]?.messageSeq) || 0
-				const rightSeq = Number(state.channels?.[right.id]?.messageSeq) || 0
-				return rightSeq - leftSeq
+
+	/** @type {Map<string, string[]>} 父频道 id → 有序子频道 id */
+	const byParent = new Map()
+	for (const { channel } of visible)
+		if (Array.isArray(channel.links))
+			byParent.set(channel.id, channel.links.filter(childId => channels[childId]))
+	const childIds = new Set([...byParent.values()].flat())
+	/** 根节点：未被任何频道链接指向的频道 */
+	const roots = visible.filter(({ id }) => !childIds.has(id))
+
+	/**
+	 * 递归渲染某频道及其链接子树。
+	 * @param {HTMLElement} parent 追加到的父元素
+	 * @param {string} channelId 频道 id
+	 * @param {number} depth 缩进深度
+	 * @returns {Promise<void>}
+	 */
+	const renderNode = async (parent, channelId, depth) => {
+		const channel = channels[channelId]
+		if (!channel || isThreadChannel(channel)) return
+		const children = (byParent.get(channelId) || []).filter(childId => !isThreadChannel(channels[childId]))
+		if (channel.type === 'category') {
+			const catKey = channelId
+			const isCollapsed = store.sidebar.collapsedCategories.has(catKey)
+			const header = await renderTemplate('hub/nav/channel_category', {
+				collapsedClass: isCollapsed ? 'collapsed' : '',
+				category: escapeHtml(catKey),
+				categoryName: escapeHtml(channel.name || channelId),
+				categoryI18nAttr: '',
 			})
-			for (const channel of sortedChannels) {
-				const active = channel.id === store.context.currentChannelId ? 'active' : ''
-				const nested = channel.depth > 0 ? ' channel-nested' : ''
-				const groupId = store.context.currentGroupId
-				listHost.appendChild(await renderTemplate('hub/nav/channel_item', {
-					activeClass: active ? 'active' : '',
-					nestedClass: nested,
-					channelId: channel.id,
-					paddingLeft: String(12 + channel.depth * 14),
-					iconHtml: await channelTypeIconHtml(channel.type || 'text'),
-					channelName: escapeHtml(channel.name || channel.id),
-					unreadBadgeHtml: groupId
-						? formatUnreadBadgeHtml(getChannelUnreadCount(groupId, channel.id))
-						: '',
-				}))
+			parent.appendChild(header)
+			if (!isCollapsed) {
+				const listHost = header.querySelector('.category-channels')
+				if (listHost) for (const childId of children) await renderNode(listHost, childId, depth + 1)
 			}
+			return
+		}
+		const active = channelId === store.context.currentChannelId ? 'active' : ''
+		const nested = depth > 0 ? ' channel-nested' : ''
+		const groupId = store.context.currentGroupId
+		const item = await renderTemplate('hub/nav/channel_item', {
+			activeClass: active ? 'active' : '',
+			nestedClass: nested,
+			channelId,
+			paddingLeft: String(12 + depth * 14),
+			iconHtml: await channelTypeIconHtml(channel.type || 'text'),
+			channelName: escapeHtml(channel.name || channelId),
+			unreadBadgeHtml: groupId
+				? formatUnreadBadgeHtml(getChannelUnreadCount(groupId, channelId))
+				: '',
+		})
+		parent.appendChild(item)
+		if (children.length) {
+			const listHost = document.createElement('ul')
+			listHost.className = 'menu menu-sm w-full px-1 gap-0.5 category-channels'
+			parent.appendChild(listHost)
+			for (const childId of children) await renderNode(listHost, childId, depth + 1)
 		}
 	}
+
+	const categoryRoots = roots.filter(({ channel }) => channel.type === 'category')
+	const channelRoots = roots.filter(({ channel }) => channel.type !== 'category')
+	for (const root of categoryRoots)
+		await renderNode(container, root.id, 0)
+	const rootList = document.createElement('ul')
+	rootList.className = 'menu menu-sm w-full px-1 gap-0.5 category-channels'
+	container.appendChild(rootList)
+	for (const root of channelRoots)
+		await renderNode(rootList, root.id, 0)
+
 	container.querySelectorAll('.category').forEach(el => {
 		el.addEventListener('click', () => {
 			const category = el.dataset.cat
@@ -96,8 +122,8 @@ export async function renderChannelList(state) {
 		})
 		el.addEventListener('contextmenu', (event) => {
 			const categoryId = el.dataset.cat
-			if (categoryId && categoryId !== '__default__') {
-				const name = categories[categoryId]?.name || categoryId
+			if (categoryId) {
+				const name = channels[categoryId]?.name || categoryId
 				showCategoryContextMenu(event, categoryId, name)
 			}
 		})

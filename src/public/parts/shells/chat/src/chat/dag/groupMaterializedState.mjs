@@ -107,8 +107,6 @@ export function emptyMaterializedState() {
 		channelKeyGeneration: {},
 		channelKeyWraps: {},
 		channels: {},
-		categories: {},
-		categoryPermissions: {},
 		fileFolders: {},
 		cabinets: {},
 		groupMeta: { name: '', description: '', avatar: null },
@@ -152,8 +150,6 @@ export function materializeFromCheckpoint(checkpoint) {
 		channelKeyGeneration: structuredClone(membersRecord.channelKeyGeneration || {}),
 		channelKeyWraps: structuredClone(membersRecord.channelKeyWraps || {}),
 		channels: structuredClone(membersRecord.channels),
-		categories: structuredClone(membersRecord.categories || {}),
-		categoryPermissions: structuredClone(membersRecord.categoryPermissions || {}),
 		fileFolders: structuredClone(membersRecord.fileFolders),
 		cabinets: structuredClone(membersRecord.cabinets || {}),
 		groupMeta: structuredClone(membersRecord.groupMeta),
@@ -237,38 +233,37 @@ export function checkpointSignerPubKeyHashes(state) {
 }
 
 /**
- * 合并分类与频道的角色覆写：频道覆写叠加在分类覆写之上（Discord 语义）。
- * @param {object | undefined} categoryOverrides 分类角色覆写（roleId → {allow, deny}）
- * @param {object | undefined} channelOverrides 频道角色覆写（roleId → {allow, deny}）
- * @returns {Record<string, { allow: object, deny: object }>} 合并后的角色覆写
+ * 解析某频道的权限块来源：沿 `permBlockId` 指针上溯（循环保护），返回拥有自己覆写的源频道 id。
+ * `permBlockId === null` 的频道拥有自己的块；沿链到 `null` 或缺失频道即终止。
+ * @param {object} state 物化群状态
+ * @param {string} channelId 频道 ID
+ * @returns {string} 拥有权限覆写的源频道 id
  */
-function mergeCategoryChannelOverrides(categoryOverrides, channelOverrides) {
-	const catOverrides = categoryOverrides || {}
-	const chanOverrides = channelOverrides || {}
-	/** @type {Record<string, { allow: object, deny: object }>} */
-	const merged = {}
-	for (const roleId of new Set([...Object.keys(catOverrides), ...Object.keys(chanOverrides)])) {
-		const cat = catOverrides[roleId] || {}
-		const chan = chanOverrides[roleId] || {}
-		merged[roleId] = {
-			allow: { ...cat.allow, ...chan.allow },
-			deny: { ...cat.deny, ...chan.deny },
-		}
+export function resolvePermBlockOwner(state, channelId) {
+	let current = channelId
+	const seen = new Set()
+	while (current && !seen.has(current)) {
+		seen.add(current)
+		const channel = state.channels?.[current]
+		if (!channel) break
+		const syncTo = channel.permBlockId
+		if (!syncTo) break
+		current = syncTo
 	}
-	return merged
+	return current
 }
 
 /**
- * 某频道的有效角色覆写表（分类覆写叠加频道覆写），供权限求值使用。
+ * 某频道的有效角色覆写表：沿 `permBlockId` 指针解析到源频道，取其拥有的覆写块。
  * 返回值以 `channelId` 为键，可直接传给 `calculateMemberPermissions` / `hasPermission`。
  * @param {object} state 物化群状态
  * @param {string} channelId 频道 ID
  * @returns {Record<string, Record<string, { allow: object, deny: object }>>} 有效覆写表
  */
 export function effectiveChannelPermissions(state, channelId) {
-	const categoryId = state.channels?.[channelId]?.category
-	const categoryOverrides = categoryId ? state.categoryPermissions?.[categoryId] : undefined
-	return { [channelId]: mergeCategoryChannelOverrides(categoryOverrides, state.channelPermissions?.[channelId]) }
+	const ownerId = resolvePermBlockOwner(state, channelId)
+	const overrides = ownerId ? state.channelPermissions?.[ownerId] : undefined
+	return { [channelId]: overrides || {} }
 }
 
 /**

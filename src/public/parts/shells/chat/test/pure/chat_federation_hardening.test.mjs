@@ -433,8 +433,8 @@ Deno.test('channel GC skips reachable stale child', () => {
 	const state = {
 		groupSettings: { defaultChannelId: 'default' },
 		channels: {
-			default: { id: 'default' },
-			child: { id: 'child', parentChannelId: 'default' },
+			default: { id: 'default', links: ['child'] },
+			child: { id: 'child' },
 		},
 	}
 	const events = [{

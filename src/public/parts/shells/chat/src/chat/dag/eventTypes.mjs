@@ -34,10 +34,6 @@ export const CHAT_EVENT_TYPE_DEFS = {
 	channel_update: { aclGated: true, governance: true },
 	channel_delete: { aclGated: true, governance: true },
 	channel_permissions_update: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
-	category_create: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
-	category_update: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
-	category_delete: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
-	category_permissions_update: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	channel_key_rotate: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	channel_key_rotate_batch: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	state_summary: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
@@ -113,10 +109,6 @@ export const CHANNEL_ADMIN_EVENT_TYPES = new Set([
 	'channel_update',
 	'channel_delete',
 	'channel_permissions_update',
-	'category_create',
-	'category_update',
-	'category_delete',
-	'category_permissions_update',
 ])
 
 /**

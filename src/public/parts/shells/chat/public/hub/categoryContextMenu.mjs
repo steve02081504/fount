@@ -104,7 +104,7 @@ export function showCategoryContextMenu(event, categoryId, categoryName) {
 	])
 	menu.querySelector('[data-action="create-in-category"]')?.addEventListener('click', () => {
 		close()
-		void showCreateChannelModal({ category: categoryId })
+		void showCreateChannelModal({ parentChannelId: categoryId })
 	})
 	menu.querySelector('[data-action="rename-category"]')?.addEventListener('click', () => {
 		close()

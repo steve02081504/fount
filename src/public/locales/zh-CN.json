@@ -1602,12 +1602,9 @@
 						"stateNeutral": "继承",
 						"updateFailed": "更新频道权限失败：${error}",
 						"updated": "频道权限已更新",
-						"alignToCategory": "对齐到分类权限",
-						"aligned": "已对齐到分类权限",
-						"categoryChanged": "频道分类已更新",
-						"categoryManage": "分类管理",
-						"channelCategory": "分类",
-						"noCategory": "无分类"
+						"syncedWarning": "此频道权限正同步自上级频道，单独设置将先脱钩。",
+						"syncToDefault": "同步到根频道权限",
+						"synced": "已同步到根频道权限"
 					},
 					"advanced": {
 						"description": "网络、存储、限速和加密参数；不确定时请保持默认",
@@ -2427,7 +2424,8 @@
 					"exportFailed": "导出失败：${error}"
 				},
 				"name": "频道名称",
-				"category": "分类",
+				"parent": "父频道",
+				"noParent": "无父频道（根目录）",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2461,7 +2459,10 @@
 					"loadFailed": "加载分类权限失败：${error}",
 					"title": "分类权限",
 					"updateFailed": "更新分类权限失败：${error}",
-					"updated": "分类权限已更新"
+					"updated": "分类权限已更新",
+					"syncedWarning": "此分类权限正同步自上级频道，单独设置将先脱钩。",
+					"syncToDefault": "同步到根频道权限",
+					"synced": "已同步到根频道权限"
 				}
 			},
 			"message": {

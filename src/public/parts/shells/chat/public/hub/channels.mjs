@@ -34,7 +34,7 @@ export async function channelTypeIconHtml(type) {
 }
 
 /**
- * 将频道按 `parentChannelId` 建树（允许环：未入树的节点补在末尾）。
+ * 将频道沿 `links` 建树（父→子单向；允许环/自指：未入树的节点补在末尾）。
  * @param {Record<string, object>} channels 频道表
  * @returns {{ ordered: { id: string, channel: object, depth: number }[] }} 扁平有序频道行
  */
@@ -42,20 +42,18 @@ export function buildChannelTree(channels) {
 	/** @type {{ id: string, channel: object }[]} */
 	const nodes = Object.entries(channels || {}).map(([id, channel]) => ({ id, channel }))
 	const childIds = new Set()
-	for (const { id, channel } of nodes) {
-		const parentId = channel?.parentChannelId
-		if (parentId && channels[parentId]) childIds.add(id)
-	}
+	for (const { channel } of nodes)
+		for (const childId of channel?.links || [])
+			if (channels[childId]) childIds.add(childId)
 	const roots = nodes.filter(node => !childIds.has(node.id))
 	/** @type {Map<string, string[]>} */
 	const byParent = new Map()
-	for (const { id, channel } of nodes) {
-		const parentId = channel?.parentChannelId
-		if (parentId && channels[parentId]) {
-			if (!byParent.has(parentId)) byParent.set(parentId, [])
-			byParent.get(parentId).push(id)
-		}
-	}
+	for (const { id, channel } of nodes)
+		for (const childId of channel?.links || [])
+			if (channels[childId]) {
+				if (!byParent.has(id)) byParent.set(id, [])
+				byParent.get(id).push(childId)
+			}
 	/**
 	 * @param {string} channelId 频道 id
 	 * @param {number} depth 缩进深度

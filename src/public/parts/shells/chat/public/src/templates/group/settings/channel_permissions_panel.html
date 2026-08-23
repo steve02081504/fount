@@ -1,8 +1,8 @@
+${channels.length ? `
 <div class="card bg-base-200 settings-card">
 	<div class="card-body">
 		<h2 class="card-title" data-i18n="chat.group.settings.page.tabs.channelPermissions"></h2>
 		<p class="text-sm opacity-70" data-i18n="chat.group.settings.page.channelPerms.hint"></p>
-		${channels.length ? `
 		<div class="flex flex-col lg:flex-row gap-4">
 			<div class="lg:w-52 shrink-0">
 				<div class="text-xs font-semibold opacity-60 mb-2" data-i18n="chat.group.settings.page.channelPerms.selectChannel"></div>
@@ -15,15 +15,11 @@
 					</li>
 					`).join('')}
 				</ul>
-				<div class="text-xs font-semibold opacity-60 mt-4 mb-2" data-i18n="chat.group.settings.page.channelPerms.channelCategory"></div>
-				<div class="space-y-2">
-					<select class="select select-bordered select-xs w-full" data-action="change-channel-category">
-						<option value="" ${selectedChannelCategoryId ? '' : 'selected'} data-i18n="chat.group.settings.page.channelPerms.noCategory"></option>
-						${categories.map(cat => `
-						<option value="${escapeHtml(cat.id)}" ${cat.id === selectedChannelCategoryId ? 'selected' : ''}>${escapeHtml(cat.name)}</option>
-						`).join('')}
-					</select>
-					<button type="button" class="btn btn-ghost btn-xs w-full" data-action="align-to-category" ${selectedChannelCategoryId ? '' : 'disabled'} data-i18n="chat.group.settings.page.channelPerms.alignToCategory"></button>
+				${permBlockId ? `
+				<div class="alert alert-warning mt-3 px-3 py-2 text-xs" data-i18n="chat.group.settings.page.channelPerms.syncedWarning"></div>
+				` : ''}
+				<div class="space-y-2 mt-3">
+					<button type="button" class="btn btn-ghost btn-xs w-full" data-action="sync-to-default" data-i18n="chat.group.settings.page.channelPerms.syncToDefault"></button>
 				</div>
 			</div>
 			<div class="flex-1 min-w-0 space-y-3">
@@ -44,24 +40,6 @@
 				`).join('')}
 			</div>
 		</div>
-		` : `<p class="text-sm opacity-60" data-i18n="chat.group.settings.page.channelPerms.noChannels"></p>`}
-		<div class="mt-6">
-			<div class="text-sm font-semibold opacity-70 mb-2" data-i18n="chat.group.settings.page.channelPerms.categoryManage"></div>
-			<div class="flex flex-wrap gap-2">
-				<button type="button" class="btn btn-ghost btn-xs" data-action="create-category" data-i18n="chat.hub.newCategory.button"></button>
-			</div>
-			${categories.length ? `
-			<ul class="menu menu-sm bg-base-300 rounded-box p-1 mt-2">
-				${categories.map(cat => `
-				<li class="flex items-center gap-2">
-					<span class="truncate flex-1">${escapeHtml(cat.name)}</span>
-					<button type="button" class="btn btn-ghost btn-xs" data-action="category-perms" data-category-id="${escapeHtml(cat.id)}" data-i18n="chat.hub.category.context.perms"></button>
-					<button type="button" class="btn btn-ghost btn-xs" data-action="rename-category" data-category-id="${escapeHtml(cat.id)}" data-category-name="${escapeHtml(cat.name)}" data-i18n="chat.hub.category.context.rename"></button>
-					<button type="button" class="btn btn-ghost btn-xs text-error" data-action="delete-category" data-category-id="${escapeHtml(cat.id)}" data-category-name="${escapeHtml(cat.name)}" data-i18n="chat.hub.category.context.delete"></button>
-				</li>
-				`).join('')}
-			</ul>
-			` : ''}
-		</div>
 	</div>
 </div>
+` : `<p class="text-sm opacity-60" data-i18n="chat.group.settings.page.channelPerms.noChannels"></p>`}

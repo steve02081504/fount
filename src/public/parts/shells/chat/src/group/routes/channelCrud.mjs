@@ -88,14 +88,11 @@ export function registerChannelCrudRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/channels`, authenticate, requireGroupMember(), async (req, res) => {
 		const {
 			groupContext: { groupId, state },
-			body: { type, name, description, isPrivate, category }
+			body: { type, name, description, isPrivate }
 		} = req
 		const channelName = name || ''
 		if (!channelName)
 			throw httpError(400, 'Channel name is required')
-		const categoryId = category ? String(category).trim() : null
-		if (categoryId && !state.categories?.[categoryId])
-			throw httpError(404, 'Category not found')
 
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).createChannel({
@@ -104,13 +101,13 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			description: description ?? '',
 			channelId: prefixedRandomId('channel_'),
 			isPrivate: isPrivate || false,
-			category: categoryId,
+			permBlockId: state.groupSettings?.defaultChannelId || null,
 		})
 		res.status(201).json({ channelId: channel.id })
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {
-		const { params: { groupId, channelId }, body: { name, description, type, isPrivate, parentChannelId, category } } = req
+		const { params: { groupId, channelId }, body: { name, description, type, isPrivate, links, permBlockId } } = req
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
@@ -129,14 +126,15 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			updates.type = type
 		if (isPrivate !== undefined)
 			updates.isPrivate = Boolean(isPrivate)
-		if (parentChannelId !== undefined)
-			updates.parentChannelId = parentChannelId || null
-		if (category !== undefined) {
-			const categoryId = category ? String(category).trim() : null
-			if (categoryId && !state.categories?.[categoryId])
-				throw httpError(404, 'Category not found')
-			updates.category = categoryId
+		if (links !== undefined) {
+			if (!Array.isArray(links))
+				throw httpError(400, 'links must be an array of channel ids')
+			for (const linkId of links)
+				ensureChannel(state, linkId)
+			updates.links = links
 		}
+		if (permBlockId !== undefined)
+			updates.permBlockId = permBlockId || null
 
 		if (Object.keys(updates).length === 0)
 			throw httpError(400, 'No channel updates provided')

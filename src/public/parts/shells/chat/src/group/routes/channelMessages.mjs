@@ -58,15 +58,13 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
 		ensureChannel(state, parentChannelId)
+		const parent = state.channels[parentChannelId] || {}
 
 		const normalizedParentEventId = parentEventId ? parentEventId : null
 		if (normalizedParentEventId)
-			for (const [channelId, channel] of Object.entries(state.channels || {}))
-				if (
-					channel?.parentChannelId === parentChannelId
-					&& (channel.parentEventId || '') === normalizedParentEventId
-				) {
-					res.status(200).json({ channelId })
+			for (const childId of parent.links || [])
+				if (state.channels?.[childId]?.parentEventId === normalizedParentEventId) {
+					res.status(200).json({ channelId: childId })
 					return
 				}
 
@@ -79,10 +77,16 @@ export function registerChannelMessageRoutes(router, authenticate) {
 				type: 'text',
 				name: normalizedParentEventId ? `thread:${normalizedParentEventId.slice(0, 12)}` : 'Thread',
 				description: '',
-				parentChannelId,
+				links: [],
+				permBlockId: parent.permBlockId || null,
 				parentEventId: normalizedParentEventId,
 				syncScope: 'channel',
 			},
+		})
+		await appendSignedLocalEvent(username, groupId, {
+			type: 'channel_update',
+			timestamp: Date.now(),
+			content: { channelId: parentChannelId, updates: { links: [...parent.links || [], newChannelId] } },
 		})
 		res.status(201).json({ channelId: newChannelId })
 	})

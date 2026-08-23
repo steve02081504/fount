@@ -67,7 +67,7 @@ export async function buildConversationContext(username, groupId, channelId) {
 		channel: {
 			channelId,
 			name: channel?.name || channelId,
-			kind: channel?.parentChannelId && channel?.parentEventId ? 'thread' : 'text',
+			kind: channel?.parentEventId ? 'thread' : 'text',
 		},
 	}
 }

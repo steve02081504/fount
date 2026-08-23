@@ -150,6 +150,8 @@ export async function createGroup(username, body) {
 			channelId: initialChannelId,
 			type: body.defaultChannelType || 'text',
 			name: body.defaultChannelName || await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
+			links: [],
+			permBlockId: null,
 			syncScope: 'group',
 		},
 	})

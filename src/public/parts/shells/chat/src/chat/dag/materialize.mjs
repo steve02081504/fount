@@ -413,6 +413,19 @@ export async function runPostCheckpointMaintenance(username, groupId, checkpoint
 			console.error('channel_gc:', error)
 		}
 
+	// 权限块回收：频道已删且无任何频道强引用其块（permBlockId 指向）时清除该覆写块。
+	try {
+		const referencedBlocks = new Set()
+		for (const channel of Object.values(state.channels || {}))
+			if (channel?.permBlockId) referencedBlocks.add(channel.permBlockId)
+		for (const ownerId of Object.keys(state.channelPermissions || {}))
+			if (!state.channels?.[ownerId] && !referencedBlocks.has(ownerId))
+				delete state.channelPermissions[ownerId]
+	}
+	catch (error) {
+		console.error('perm_block_gc:', error)
+	}
+
 	const { groupSettings } = state
 	const archiveSettings = archiveSettingsFromGroup(groupSettings)
 

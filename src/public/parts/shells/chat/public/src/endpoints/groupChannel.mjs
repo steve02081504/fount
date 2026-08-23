@@ -408,28 +408,24 @@ export async function createChannelThread(groupId, channelId, parentEventId) {
  * 创建群频道。
  * @param {string} groupId 群 ID
  * @param {string} name 频道名称
- * @param {string} [type] 频道类型 text | list | streaming
+ * @param {string} [type] 频道类型 text | list | streaming | category
  * @param {object} [options] 其他字段
- * @param {string|null} [options.category] 归属分类 id（null 表示无分类）
  * @returns {Promise<string>} 新频道 ID
  */
 export async function createChannel(groupId, name, type = 'text', options = {}) {
+	void options
 	const data = await groupFetch(groupPath(groupId, 'channels'), {
 		method: 'POST',
-		json: {
-			name,
-			type,
-			...options.category != null && { category: options.category },
-		},
+		json: { name, type },
 	})
 	return data.channelId
 }
 
 /**
- * 更新群频道元数据。
+ * 更新群频道元数据（含 links / permBlockId）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @param {object} updates name / description / type / category 等
+ * @param {object} updates name / description / type / links / permBlockId 等
  * @returns {Promise<void>} 无
  */
 export async function updateChannel(groupId, channelId, updates) {

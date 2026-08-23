@@ -424,28 +424,25 @@ Deno.test('thread channel_create allowed with CREATE_THREADS on parent channel',
 			channelId: 'thread_1',
 			name: 'thread',
 			type: 'text',
-			parentChannelId: 'private',
 			parentEventId: HUMAN_MSG,
 		},
 	}
-	assertEquals((await checkEventPermission(state, event, MODERATOR)).ok, true)
+	// channel_create 仅要求 MANAGE_CHANNELS；链接父子关系走父频道的 channel_update
+	const result = await checkEventPermission(state, event, MODERATOR)
+	assertEquals(result.ok, false)
+	assertEquals(result.reason, 'MANAGE_CHANNELS denied')
 })
 
-Deno.test('thread channel_create denied without CREATE_THREADS', async () => {
+Deno.test('channel_update links requires CREATE_THREADS or MANAGE_CHANNELS on parent', async () => {
 	const state = baseState()
 	const event = {
-		type: 'channel_create',
-		content: {
-			channelId: 'thread_1',
-			name: 'thread',
-			type: 'text',
-			parentChannelId: 'default',
-			parentEventId: HUMAN_MSG,
-		},
+		type: 'channel_update',
+		channelId: 'default',
+		content: { channelId: 'default', updates: { links: ['thread_1'] } },
 	}
 	const result = await checkEventPermission(state, event, STRANGER)
 	assertEquals(result.ok, false)
-	assertEquals(result.reason, 'CREATE_THREADS or MANAGE_CHANNELS required')
+	assertEquals(result.reason, 'CREATE_THREADS or MANAGE_CHANNELS required to update links')
 })
 
 Deno.test('assertEventPermission throws HttpError 403', async () => {

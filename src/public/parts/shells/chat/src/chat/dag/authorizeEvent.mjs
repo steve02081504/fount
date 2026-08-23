@@ -218,22 +218,26 @@ export async function checkEventPermission(state, event, senderHash, options = {
 			return { ok: true }
 		}
 		case 'channel_create': {
-			const parentChannelId = String(event.content?.parentChannelId || '').trim()
-			if (parentChannelId) {
-				const parentPerms = memberChannelPermissions(state, sender, parentChannelId)
-				return parentPerms[PERMISSIONS.CREATE_THREADS] || parentPerms[PERMISSIONS.MANAGE_CHANNELS]
-					? { ok: true }
-					: { ok: false, reason: 'CREATE_THREADS or MANAGE_CHANNELS required' }
-			}
 			return channelPerms[PERMISSIONS.MANAGE_CHANNELS]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_CHANNELS denied' }
 		}
-		case 'channel_update':
 		case 'channel_delete':
 			return channelPerms[PERMISSIONS.MANAGE_CHANNELS]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_CHANNELS denied' }
+		case 'channel_update': {
+			const updates = event.content?.updates || {}
+			if (Array.isArray(updates.links)) {
+				const parentPerms = memberChannelPermissions(state, sender, channelId)
+				if (!(parentPerms[PERMISSIONS.CREATE_THREADS] || parentPerms[PERMISSIONS.MANAGE_CHANNELS]))
+					return { ok: false, reason: 'CREATE_THREADS or MANAGE_CHANNELS required to update links' }
+			}
+			if (Object.hasOwn(updates, 'permBlockId'))
+				if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_CHANNELS]))
+					return { ok: false, reason: 'MANAGE_ROLES or MANAGE_CHANNELS required to sync permissions' }
+			return { ok: true }
+		}
 		case 'channel_permissions_update': {
 			if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_CHANNELS]))
 				return { ok: false, reason: 'MANAGE_ROLES or MANAGE_CHANNELS required' }
@@ -242,22 +246,6 @@ export async function checkEventPermission(state, event, senderHash, options = {
 				return { ok: false, reason: 'channel allow cannot include ADMIN or MANAGE_ADMINS' }
 			if (permissionsExceedGrantor(govPerms, allow))
 				return { ok: false, reason: 'channel allow exceeds grantor permissions' }
-			return { ok: true }
-		}
-		case 'category_create':
-		case 'category_update':
-		case 'category_delete':
-			return govPerms[PERMISSIONS.MANAGE_CHANNELS]
-				? { ok: true }
-				: { ok: false, reason: 'MANAGE_CHANNELS required' }
-		case 'category_permissions_update': {
-			if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_CHANNELS]))
-				return { ok: false, reason: 'MANAGE_ROLES or MANAGE_CHANNELS required' }
-			const allow = event.content?.allow
-			if (permissionsGrantSuperuser(allow))
-				return { ok: false, reason: 'category allow cannot include ADMIN or MANAGE_ADMINS' }
-			if (permissionsExceedGrantor(govPerms, allow))
-				return { ok: false, reason: 'category allow exceeds grantor permissions' }
 			return { ok: true }
 		}
 		case 'channel_key_rotate':

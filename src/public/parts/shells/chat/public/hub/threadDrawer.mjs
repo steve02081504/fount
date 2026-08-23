@@ -31,27 +31,26 @@ export function isThreadDrawerOpen() {
 }
 
 /**
- * 判断频道是否为子线程。
+ * 判断频道是否为子线程（子线程带 `parentEventId` 标识来源消息）。
  * @param {object} channel 频道物化对象
  * @returns {boolean} 是否为子线程频道
  */
 export function isThreadChannel(channel) {
-	return !!(channel?.parentChannelId && channel?.parentEventId)
+	return !!channel?.parentEventId
 }
 
 /**
- * 在群 state 中查找已存在的子线程频道 ID。
+ * 在群 state 中查找已存在的子线程频道 ID（沿父频道 `links` 查找）。
  * @param {Record<string, object>} channels 频道表
  * @param {string} parentChannelId 父频道 ID
  * @param {string} parentEventId 父消息事件 ID
  * @returns {string | null} 已存在的子线程频道 ID
  */
 function findThreadChannelId(channels, parentChannelId, parentEventId) {
-	for (const [id, ch] of Object.entries(channels)) {
-		if (ch?.parentChannelId !== parentChannelId) continue
-		if (ch?.parentEventId && ch.parentEventId === parentEventId)
-			return id
-	}
+	const parent = channels[parentChannelId]
+	for (const childId of parent?.links || [])
+		if (channels[childId]?.parentEventId === parentEventId)
+			return childId
 	return null
 }
 

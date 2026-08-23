@@ -24,8 +24,10 @@ export function buildStateSummaryContent(state, anchorEventId, events = []) {
 		channelPermissionsHash: createHash('sha256')
 			.update(canonicalStringify({
 				channelPermissions: state.channelPermissions || {},
-				categories: state.categories || {},
-				categoryPermissions: state.categoryPermissions || {},
+				channels: Object.fromEntries(
+					Object.entries(state.channels || {})
+						.map(([id, ch]) => [id, { permBlockId: ch?.permBlockId ?? null }])
+				),
 			}))
 			.digest('hex'),
 		tipsHash: computeLocalTipsHash(tipIds),

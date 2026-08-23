@@ -1,10 +1,8 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { confirmI18n, i18nElement } from '/scripts/i18n/index.mjs'
+import { i18nElement } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
-import { promptText } from '/scripts/features/promptDialog.mjs'
 import { getChannelPermissions, putChannelPermissions } from '../endpoints/channelPerms.mjs'
-import { deleteCategory, getCategoryPermissions, updateCategory } from '../endpoints/groupCategory.mjs'
-import { updateChannel } from '../endpoints/groupChannel.mjs'
+import { syncCategoryPermissions } from '../endpoints/groupCategory.mjs'
 import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../templates.mjs'
 
@@ -31,44 +29,6 @@ function channelPermTriState(allow, deny, perm) {
 	if (deny?.[perm]) return 'deny'
 	if (allow?.[perm]) return 'allow'
 	return 'neutral'
-}
-
-/**
- * 分类相关操作后刷新 context.state，供面板重新渲染。
- * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
- * @returns {Promise<void>}
- */
-async function refreshCategoryState(context) {
-	const { getGroupState } = await import('../endpoints/groupCore.mjs')
-	context.state = await getGroupState(context.groupId)
-}
-
-/**
- * 将当前频道的权限覆写对齐到其分类（逐角色复制分类覆写，多余角色清空）。
- * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
- * @returns {Promise<void>}
- */
-async function alignChannelToCategory(context) {
-	const channelId = context.selectedChannelPermsId
-	const categoryId = context.state.channels?.[channelId]?.category
-	if (!channelId || !categoryId) return
-	try {
-		const categoryPerms = await getCategoryPermissions(context.groupId, categoryId)
-		const channelPerms = await getChannelPermissions(context.groupId, channelId)
-		const roleIds = new Set([
-			...Object.keys(categoryPerms || {}),
-			...Object.keys(channelPerms || {}),
-		])
-		for (const roleId of roleIds) {
-			const override = categoryPerms?.[roleId] || {}
-			await putChannelPermissions(context.groupId, channelId, roleId, override.allow || {}, override.deny || {})
-		}
-		showToastI18n('success', 'chat.group.settings.page.channelPerms.aligned')
-		await renderChannelPermissionsPanel(context)
-	}
-	catch (error) {
-		handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
-	}
 }
 
 /**
@@ -144,6 +104,7 @@ export async function renderChannelPermissionsPanel(context) {
 		context.selectedChannelPermsId = channels[0].id
 
 	let permissions = {}
+	let permBlockId = null
 	try {
 		permissions = await getChannelPermissions(context.groupId, context.selectedChannelPermsId)
 	}
@@ -167,19 +128,13 @@ export async function renderChannelPermissionsPanel(context) {
 		}
 	})
 
-	const categories = Object.values(context.state.categories || {})
-		.map(cat => ({ id: cat.id, name: cat.name || cat.id }))
-	const selectedChannel = context.state.channels?.[context.selectedChannelPermsId]
-	const selectedChannelCategoryId = selectedChannel?.category || ''
-	const selectedChannelCategoryName = categories.find(cat => cat.id === selectedChannelCategoryId)?.name || ''
+	permBlockId = context.state.channels?.[context.selectedChannelPermsId]?.permBlockId || null
 
 	await mountTemplate(container, 'group/settings/channel_permissions_panel', {
 		channels,
 		selectedChannelId: context.selectedChannelPermsId,
 		rolePanels,
-		categories,
-		selectedChannelCategoryId,
-		selectedChannelCategoryName,
+		permBlockId,
 	})
 
 	for (const details of container.querySelectorAll('details.settings-role[open]')) {
@@ -196,20 +151,6 @@ export async function renderChannelPermissionsPanel(context) {
 		void fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
 	}, { signal })
 
-	container.addEventListener('change', async event => {
-		const categorySelect = event.target.closest('[data-action="change-channel-category"]')
-		if (!categorySelect || !context.selectedChannelPermsId) return
-		const category = categorySelect.value || null
-		try {
-			await updateChannel(context.groupId, context.selectedChannelPermsId, { category })
-			showToastI18n('success', 'chat.group.settings.page.channelPerms.categoryChanged')
-			await renderChannelPermissionsPanel(context)
-		}
-		catch (error) {
-			handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
-		}
-	}, { signal })
-
 	container.addEventListener('click', async event => {
 		const selectCh = event.target.closest('[data-action="select-channel"]')
 		if (selectCh) {
@@ -217,54 +158,16 @@ export async function renderChannelPermissionsPanel(context) {
 			await renderChannelPermissionsPanel(context)
 			return
 		}
-		const createCategoryBtn = event.target.closest('[data-action="create-category"]')
-		if (createCategoryBtn) {
-			const { showCreateCategoryModal } = await import('../../hub/sidebar/createCategory.mjs')
-			await showCreateCategoryModal()
-			return
-		}
-		const categoryPermsBtn = event.target.closest('[data-action="category-perms"]')
-		if (categoryPermsBtn?.dataset.categoryId) {
-			const { showCategoryPermsDialog } = await import('../../hub/categoryPermsDialog.mjs')
-			await showCategoryPermsDialog(context.groupId, categoryPermsBtn.dataset.categoryId, categoryPermsBtn.dataset.categoryName || '')
-			return
-		}
-		const renameCategoryBtn = event.target.closest('[data-action="rename-category"]')
-		if (renameCategoryBtn?.dataset.categoryId) {
-			const name = renameCategoryBtn.dataset.categoryName || ''
-			const next = await promptText('chat.hub.category.context.renamePrompt', name, { name })
-			if (next == null) return
-			const trimmed = next.trim()
-			if (!trimmed || trimmed === name) return
+		const syncBtn = event.target.closest('[data-action="sync-to-default"]')
+		if (syncBtn && context.selectedChannelPermsId) {
 			try {
-				await updateCategory(context.groupId, renameCategoryBtn.dataset.categoryId, { name: trimmed })
-				showToastI18n('success', 'chat.hub.category.context.renameOk')
-				await refreshCategoryState(context)
+				await syncCategoryPermissions(context.groupId, context.selectedChannelPermsId)
+				showToastI18n('success', 'chat.group.settings.page.channelPerms.synced')
 				await renderChannelPermissionsPanel(context)
 			}
 			catch (error) {
 				handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
 			}
-			return
-		}
-		const deleteCategoryBtn = event.target.closest('[data-action="delete-category"]')
-		if (deleteCategoryBtn?.dataset.categoryId) {
-			const name = deleteCategoryBtn.dataset.categoryName || ''
-			if (!confirmI18n('chat.hub.category.context.deleteConfirm', { name })) return
-			try {
-				await deleteCategory(context.groupId, deleteCategoryBtn.dataset.categoryId)
-				showToastI18n('success', 'chat.hub.category.context.deleteOk')
-				await refreshCategoryState(context)
-				await renderChannelPermissionsPanel(context)
-			}
-			catch (error) {
-				handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
-			}
-			return
-		}
-		const alignBtn = event.target.closest('[data-action="align-to-category"]')
-		if (alignBtn) {
-			await alignChannelToCategory(context)
 			return
 		}
 		const clearRoleOverrideButton = event.target.closest('[data-action="clear-role-override"]')

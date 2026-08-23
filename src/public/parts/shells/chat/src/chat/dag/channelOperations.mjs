@@ -32,11 +32,11 @@ export async function createChannel(username, groupId, options) {
 			type: options.type || 'text',
 			name: options.name || channelId,
 			description: options.description,
-			parentChannelId: options.parentChannelId,
+			links: options.links,
+			permBlockId: options.permBlockId || null,
 			parentEventId: options.parentEventId || null,
 			syncScope: options.syncScope || 'group',
 			isPrivate: !!options.isPrivate,
-			category: options.category || null,
 			subRoomId: options.subRoomId,
 			manualItems: options.manualItems,
 		},
@@ -44,6 +44,39 @@ export async function createChannel(username, groupId, options) {
 	const { appendChannelKeyRotate } = await import('../channel_keys/schedule.mjs')
 	await appendChannelKeyRotate(username, groupId, channelId)
 	return created
+}
+
+/**
+ * 更新父频道的子频道链接列表（增删/重排；单向父→子）。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} channelId 父频道 ID
+ * @param {string[]} links 新的有序子频道 id 列表
+ * @returns {Promise<object>} 签名事件
+ */
+export async function updateChannelLinks(username, groupId, channelId, links) {
+	return appendSignedLocalEvent(username, groupId, {
+		type: 'channel_update',
+		timestamp: Date.now(),
+		content: { channelId, updates: { links: [...links] } },
+	})
+}
+
+/**
+ * 同步/脱钩频道权限块：`null` 表示脱钩为自有块，否则强引用跟随源频道块。
+ * 脱钩时由调用方先把当前有效父块复制进本频道覆写。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} channelId 目标频道 ID
+ * @param {string | null} permBlockId 跟随的源频道 id，或 null 表示脱钩
+ * @returns {Promise<object>} 签名事件
+ */
+export async function syncChannelPerms(username, groupId, channelId, permBlockId) {
+	return appendSignedLocalEvent(username, groupId, {
+		type: 'channel_update',
+		timestamp: Date.now(),
+		content: { channelId, updates: { permBlockId } },
+	})
 }
 
 /**
