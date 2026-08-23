@@ -314,6 +314,20 @@
 	overflow-y: auto;
 }
 
+/* 频道列表虚拟滚动：壳撑满容器，内部滚动区承载 createVirtualList */
+.channel-list-virtual-shell {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+}
+
+.channel-list-virtual {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+
 .channel-list::-webkit-scrollbar {
 	width: 8px;
 }

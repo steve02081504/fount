@@ -9,7 +9,8 @@ export const store = {
 		groupFoldersState: { folders: [] },
 		/** 侧栏可见群 ID 顺序（与 `renderServerBar` 一致，供 Shift 多选） */
 		sidebarGroupOrder: [],
-		collapsedCategories: new Set(),
+		/** 分类折叠状态：groupId → 已折叠分类 id 集合（经 localStorage 持久化） */
+		collapsedCategories: new Map(),
 	},
 	federation: {
 		dagTips: [],
