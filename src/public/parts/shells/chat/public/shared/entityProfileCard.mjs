@@ -188,7 +188,6 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 			seed: entityHash || name,
 			label: name,
 			avatar,
-			emojiFontSize: '30px',
 			letterClass: 'avatar-letter',
 		})
 

@@ -53,7 +53,6 @@ export async function refreshViewerHubPresentation() {
 		seed: entityHash,
 		label,
 		avatar: displayProfileAvatar(profile),
-		emojiFontSize: '18px',
 	})
 }
 

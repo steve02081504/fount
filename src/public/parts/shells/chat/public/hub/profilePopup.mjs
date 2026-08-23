@@ -203,7 +203,6 @@ export async function showProfilePopup(entity) {
 			seed: entity.entityHash || stubName,
 			label: stubName,
 			avatar: null,
-			emojiFontSize: '30px',
 			letterClass: 'avatar-letter',
 		})
 	}

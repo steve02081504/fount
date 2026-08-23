@@ -78,6 +78,7 @@ export function avatarInitial(name) {
 
 /**
  * 列表行头像模板字段（friends / sidebar 等）。
+ * 头像一律按 URL 处理；非 URL 交给浏览器自行处理（404 正常），由数据层保证为 URL。
  * @param {string} seed 色种子
  * @param {string} label 展示名
  * @param {string} [avatarUrl] 头像 URL
@@ -87,9 +88,7 @@ export function avatarInitial(name) {
 export function listAvatarTemplateFields(seed, label, avatarUrl = '', imgClass = 'char-list-avatar-img') {
 	const url = avatarUrl.trim()
 	const avatarInner = url
-		? isAvatarImageUrl(url)
-			? `<img src="${escapeHtml(url)}" alt="" class="${imgClass}" svg-inliner-ignore />`
-			: escapeHtml(url)
+		? `<img src="${escapeHtml(url)}" alt="" class="${imgClass}" svg-inliner-ignore />`
 		: escapeHtml(avatarInitial(label))
 	return {
 		avatarBg: avatarColor(seed),

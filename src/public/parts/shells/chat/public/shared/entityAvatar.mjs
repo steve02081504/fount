@@ -8,7 +8,6 @@ import {
 	avatarInitial,
 	displayProfileAvatar,
 	hashAvatarStyle,
-	isAvatarImageUrl,
 } from './hashAvatar.mjs'
 
 /**
@@ -23,6 +22,7 @@ export function entityAvatarUrl(_entityHash, profile) {
 
 /**
  * 渲染实体头像 HTML（图片优先，失败或无图时用 hash 文字头像）。
+ * 头像一律按 URL 处理；非 URL 交给浏览器自行处理（404 正常），由数据层保证为 URL。
  * @param {string} entityHash 实体 hash
  * @param {object} [profile] 可选资料
  * @param {string} [sizeClass=''] 尺寸 class
@@ -37,9 +37,6 @@ export function renderAvatarHtml(entityHash, profile, sizeClass = '') {
 	const avatar = displayProfileAvatar(profile)
 	if (!avatar)
 		return `<div class="${cls}" style="background:${background};color:${color}">${initial}</div>`
-
-	if (!isAvatarImageUrl(avatar))
-		return `<div class="${cls}" style="background:${background};color:${color};font-size:1.1em">${escapeHtml(avatar)}</div>`
 
 	// 首字母垫底；成功加载后由 CSS（:has(.is-loaded)）隐藏字母，失败则去掉 img 露出字母。
 	return `<div class="${cls}" style="background:${background};color:${color}">`
