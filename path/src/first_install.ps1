@@ -4,7 +4,7 @@
 			run shutdown
 		}
 		if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
-			if (Get-Command git -ErrorAction Ignore) {
+			if ((Get-Command git -ErrorAction Ignore) -and (Test-Path -Path "$FOUNT_DIR/.git")) {
 				invoke_repo_git config core.autocrlf false
 				$hasHead = git_ref_exists
 				git_fetch_origin 2>$null
@@ -23,6 +23,10 @@
 		}
 		Write-TaskbarProgress -Percent 70
 		Write-Host (Get-I18n -key 'install.installingDependencies')
+		# 仓库 pin 了 deno 版本（.deno-version）时先按其升级，避免首装用到错误的 deno 版本导致依赖解析失败
+		if (deno_pinned_spec) {
+			deno_upgrade
+		}
 		deno install --prod --reload --allow-scripts -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
 		$global:LastExitCode = 0
 		Write-TaskbarProgress -Percent 85
@@ -37,10 +41,10 @@
 		}
 		New-InstallerDir # For data/desktop.ini
 		if (-not (Test-Path "$FOUNT_DIR/data/desktop.ini")) {
-			Copy-Item "$FOUNT_DIR/default/default_desktop.ini" "$FOUNT_DIR/data/desktop.ini" -Force
+			Copy-Item "$FOUNT_DIR/default/default_desktop.ini" "$FOUNT_DIR/data/desktop.ini" -Force -ErrorAction SilentlyContinue
 		}
 		if (-not (Test-Path "$FOUNT_DIR/node_modules/desktop.ini")) {
-			Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force
+			Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force -ErrorAction SilentlyContinue
 		}
 		Set-FountFileAttributes
 
