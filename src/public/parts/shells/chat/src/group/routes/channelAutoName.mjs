@@ -16,7 +16,6 @@ import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
 import {
 	appendChannelLink,
 	createChannel,
-	syncChannelPerms,
 	updateChannel,
 } from '../../chat/dag/channelOperations.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
@@ -140,10 +139,9 @@ export function registerChannelAutoNameRoutes(router, authenticate) {
 			const { name, category } = parseAutoNameResult(String(result?.content || ''))
 			if (!name) continue
 
-			if (channels[channelId]?.name !== name)
-				await updateChannel(username, groupId, channelId, { name })
+			let categoryId = null
 			if (category) {
-				let categoryId = categoryIdByName.get(category)
+				categoryId = categoryIdByName.get(category)
 				if (!categoryId) {
 					const created = await createChannel(username, groupId, {
 						type: 'category',
@@ -156,11 +154,16 @@ export function registerChannelAutoNameRoutes(router, authenticate) {
 						categoryNames.push(category)
 					}
 				}
-				if (categoryId) {
-					await appendChannelLink(username, groupId, categoryId, channelId)
-					await syncChannelPerms(username, groupId, channelId, categoryId)
-				}
 			}
+
+			// 单事件提交子频道侧更新（名称 + 权限块），父频道 links 另成一条，避免多次可部分成功的操作。
+			const updates = {}
+			if (channels[channelId]?.name !== name) updates.name = name
+			if (categoryId) updates.permBlockId = categoryId
+			if (Object.keys(updates).length)
+				await updateChannel(username, groupId, channelId, updates)
+			if (categoryId)
+				await appendChannelLink(username, groupId, categoryId, channelId)
 			renamed.push(channelId)
 		}
 

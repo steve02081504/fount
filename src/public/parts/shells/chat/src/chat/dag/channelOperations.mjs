@@ -93,23 +93,6 @@ export async function removeChannelLink(username, groupId, parentChannelId, chil
 }
 
 /**
- * 同步/脱钩频道权限块：`null` 表示脱钩为自有块，否则强引用跟随源频道块。
- * 脱钩时由调用方先把当前有效父块复制进本频道覆写。
- * @param {string} username 用户名
- * @param {string} groupId 群组 ID
- * @param {string} channelId 目标频道 ID
- * @param {string | null} permBlockId 跟随的源频道 id，或 null 表示脱钩
- * @returns {Promise<object>} 签名事件
- */
-export async function syncChannelPerms(username, groupId, channelId, permBlockId) {
-	return appendSignedLocalEvent(username, groupId, {
-		type: 'channel_update',
-		timestamp: Date.now(),
-		content: { channelId, updates: { permBlockId } },
-	})
-}
-
-/**
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {string} channelId 目标频道 ID

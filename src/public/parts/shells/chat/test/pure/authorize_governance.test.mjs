@@ -433,6 +433,36 @@ Deno.test('thread channel_create allowed with CREATE_THREADS on parent channel',
 	assertEquals(result.reason, 'MANAGE_CHANNELS denied')
 })
 
+Deno.test('channel_create authorized against parentChannelId, not default channel', async () => {
+	// MODERATOR 仅在 category 频道有 MANAGE_CHANNELS（频道覆写），默认频道无该位。
+	const state = baseState({
+		channels: {
+			default: { type: 'text' },
+			private: { type: 'text' },
+			category: { type: 'category' },
+		},
+		channelPermissions: {
+			category: {
+				moderator: { allow: { MANAGE_CHANNELS: true, VIEW_CHANNEL: true }, deny: {} },
+			},
+		},
+	})
+	// 无父频道 → 回退默认频道；MODERATOR 在默认频道无 MANAGE_CHANNELS → 拒绝
+	const event = {
+		type: 'channel_create',
+		content: { channelId: 'plain_1', name: 'plain', type: 'text' },
+	}
+	const denied = await checkEventPermission(state, event, MODERATOR)
+	assertEquals(denied.ok, false)
+	assertEquals(denied.reason, 'MANAGE_CHANNELS denied')
+	// 携带父频道 → 按父频道判定；MODERATOR 在 category 有 MANAGE_CHANNELS → 允许
+	const childEvent = {
+		type: 'channel_create',
+		content: { channelId: 'child_1', name: 'child', type: 'text', parentChannelId: 'category' },
+	}
+	assertEquals((await checkEventPermission(state, childEvent, MODERATOR)).ok, true)
+})
+
 Deno.test('channel_update links requires CREATE_THREADS or MANAGE_CHANNELS on parent', async () => {
 	const state = baseState()
 	const event = {

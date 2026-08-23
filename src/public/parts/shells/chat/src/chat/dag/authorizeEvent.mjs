@@ -218,7 +218,9 @@ export async function checkEventPermission(state, event, senderHash, options = {
 			return { ok: true }
 		}
 		case 'channel_create': {
-			return channelPerms[PERMISSIONS.MANAGE_CHANNELS]
+			// 新频道尚未存在，按其父频道（缺省回退默认频道）判定 MANAGE_CHANNELS。
+			const parentChannelId = event.content?.parentChannelId || state.groupSettings?.defaultChannelId || 'default'
+			return memberChannelPermissions(state, sender, parentChannelId)[PERMISSIONS.MANAGE_CHANNELS]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_CHANNELS denied' }
 		}

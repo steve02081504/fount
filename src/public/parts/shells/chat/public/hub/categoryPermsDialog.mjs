@@ -5,7 +5,7 @@
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { getChannelPermBlock, putChannelPermBlock } from '../src/endpoints/groupChannel.mjs'
-import { fillRolePermsIfEmpty, permRowsHtml, safeRoleColor, sortedRoleIds } from '../src/groupSettings/channelPermsUi.mjs'
+import { fillRolePermsIfEmpty, safeRoleColor, sortedRoleIds } from '../src/groupSettings/channelPermsUi.mjs'
 import { grantableChannelOverridePermissions } from '../src/groupSettings/constants.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 import { mountTemplate, openDialogFromTemplate } from '../src/templates.mjs'
@@ -128,10 +128,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 					else if (nextState === 'deny') deny[perm] = true
 					await putChannelPermBlock(groupId, categoryId, roleId, allow, deny)
 					showToastI18n('success', 'chat.hub.category.perm.updated')
-					permissions[roleId] = { allow, deny }
-					const permsEl = group.closest('.settings-role-perms')
-					if (permsEl)
-						permsEl.innerHTML = await permRowsHtml(roleId, allow, deny, grantablePerms)
+					await renderRolePanels(body)
 				}
 				catch (error) {
 					handleError('chat.hub.category.perm.updateFailed')(error)
