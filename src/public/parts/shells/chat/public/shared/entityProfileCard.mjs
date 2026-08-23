@@ -12,7 +12,7 @@ import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { entityHashLabel, formatEntityAtId, isEntityHash128 } from './entityHash.mjs'
-import { displayProfileAvatar, entityProfilePattern, isAvatarImageUrl } from './hashAvatar.mjs'
+import { displayProfileAvatar, entityProfilePattern } from './hashAvatar.mjs'
 import { safeProfileLink } from './safeProfileLink.mjs'
 import { mountTrustedMarkdown } from './trustedMarkdown.mjs'
 
@@ -65,7 +65,7 @@ export function paintEntityProfileBanner(host, bannerEl, options) {
 	host.style.setProperty('--entity-card-pattern-size', `${pattern.size}px`)
 	host.style.setProperty('--entity-card-pattern-x', `${pattern.offsetX}px`)
 	host.style.setProperty('--entity-card-pattern-y', `${pattern.offsetY}px`)
-	const bannerUrl = isAvatarImageUrl(options.banner) ? (options.banner || '').trim() : ''
+	const bannerUrl = options.banner || ''
 	bannerEl.classList.add('entity-profile-banner')
 	bannerEl.classList.toggle('entity-profile-banner--image', !!bannerUrl)
 	bannerEl.classList.toggle('profile-popup-banner--image', !!bannerUrl)

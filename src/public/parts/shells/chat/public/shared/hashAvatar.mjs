@@ -97,15 +97,6 @@ export function listAvatarTemplateFields(seed, label, avatarUrl = '', imgClass =
 }
 
 /**
- * @param {string} value 头像字段
- * @returns {boolean} 是否为可加载的图片 URL
- */
-export function isAvatarImageUrl(value) {
-	const raw = value.trim()
-	return raw.startsWith('http') || raw.startsWith('/') || raw.startsWith('data:')
-}
-
-/**
  * 资料头像字段（有什么显示什么；空则调用方画 hash 字母）。
  * @param {{ avatar?: string } | null | undefined} profile 资料
  * @returns {string} 头像 URL / emoji；无则为空

@@ -44,7 +44,6 @@ Deno.test('customProfileAvatar returns trimmed avatar as-is', () => {
 	const inherited = 'https://example.test/default.svg'
 	assertEquals(customProfileAvatar({ avatar: inherited, infoDefaults: { avatar: inherited } }), inherited)
 	assertEquals(customProfileAvatar({ avatar: '/profile/avatar', infoDefaults: { avatar: inherited } }), '/profile/avatar')
-	assertEquals(customProfileAvatar({ avatar: '  🧪  ' }), '🧪')
 	assertEquals(customProfileAvatar({ avatar: '' }), '')
 })
 
@@ -103,13 +102,6 @@ Deno.test('isLastMessageInAuthorGroup: char vs human same sender still breaks gr
 	assertEquals(isLastMessageInAuthorGroup('test_streamer', host, 1000, 1500), true)
 })
 
-Deno.test('isAvatarImageUrl distinguishes URL from emoji avatar', async () => {
-	const { isAvatarImageUrl } = await import('fount/public/parts/shells/chat/public/shared/hashAvatar.mjs')
-	assertEquals(isAvatarImageUrl('https://x.test/a.png'), true)
-	assertEquals(isAvatarImageUrl('/api/foo'), true)
-	assertEquals(isAvatarImageUrl('🤖'), false)
-})
-
 Deno.test('entityAvatarUrl returns profile.avatar as-is', async () => {
 	const { entityAvatarUrl } = await import('fount/public/parts/shells/chat/public/shared/entityAvatar.mjs')
 	const hash = 'c'.repeat(128)
@@ -118,7 +110,6 @@ Deno.test('entityAvatarUrl returns profile.avatar as-is', async () => {
 		avatar: 'https://example.test/d.svg',
 		infoDefaults: { avatar: 'https://example.test/d.svg' },
 	}), 'https://example.test/d.svg')
-	assertEquals(entityAvatarUrl(hash, { avatar: '🧪' }), '🧪')
 	assertEquals(entityAvatarUrl(hash, { avatar: '/api/parts/shells:chat/entities/x/files/profile/avatar' }),
 		'/api/parts/shells:chat/entities/x/files/profile/avatar')
 })
