@@ -3,8 +3,6 @@
  * 【职责】频道 / 分类权限面板共用的角色权限行渲染原语：角色排序、颜色白名单、三态判定、
  *   权限行 HTML 渲染与懒填。供 channelPermsTab.mjs 与 categoryPermsDialog.mjs 复用。
  */
-import { i18nElement } from '/scripts/i18n/index.mjs'
-
 import { renderTemplateAsHtmlString } from '../templates.mjs'
 
 const ROLE_COLOR_RE = /^#[\da-f]{3}([\da-f]{3})?$/i
@@ -78,5 +76,4 @@ export async function fillRolePermsIfEmpty(permsEl, roleId, permissions, grantab
 	if (permsEl.childElementCount) return
 	const override = permissions[roleId]
 	permsEl.innerHTML = await permRowsHtml(roleId, override?.allow, override?.deny, grantablePerms)
-	i18nElement(permsEl, { skip_report: true })
 }

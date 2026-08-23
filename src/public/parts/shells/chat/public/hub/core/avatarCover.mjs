@@ -5,7 +5,6 @@ import {
 	avatarColor,
 	avatarInitial,
 	avatarTextColor,
-	isAvatarImageUrl,
 } from '/parts/shells:chat/shared/hashAvatar.mjs'
 
 /**
@@ -30,8 +29,8 @@ export function paintHashAvatarHost(host, { seed, label, letterId, letterClass =
 }
 
 /**
- * 在 hash 占位基础上应用 profile.avatar：有效 URL 按图加载（失败回退字母），
- * 非 URL（如 emoji）按现有头像契约直接渲染为表情文本。
+ * 在 hash 占位基础上应用 profile.avatar（一律按 URL 图处理）。
+ * 非 URL 的头像值交给浏览器自行处理（404 正常），应由数据层保证头像为 URL。
  * `label` 只用于字母占位；图旁通常已有显示名，默认空 alt，避免 image-redundant-alt。
  * @param {HTMLElement} host 圆形容器
  * @param {{ seed?: string, label?: string, alt?: string, avatar?: string | null, letterId?: string, letterClass?: string }} options 绘制选项
@@ -49,11 +48,6 @@ export function applyProfileAvatarToHost(host, options) {
 	const letter = paintHashAvatarHost(host, { seed, label, letterId, letterClass })
 	const avatarVal = (avatar || '').trim()
 	if (!avatarVal) return
-
-	if (!isAvatarImageUrl(avatarVal)) {
-		letter.textContent = avatarVal
-		return
-	}
 
 	const img = document.createElement('img')
 	img.src = avatarVal

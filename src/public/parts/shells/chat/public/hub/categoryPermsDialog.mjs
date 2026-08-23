@@ -3,7 +3,6 @@
  * 【职责】频道分类权限编辑对话框（分类作为独立对象，权限按角色 allow/deny 覆写）。
  */
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { i18nElement } from '../../../../scripts/i18n/index.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { getChannelPermBlock, putChannelPermBlock } from '../src/endpoints/groupChannel.mjs'
 import { fillRolePermsIfEmpty, permRowsHtml, safeRoleColor, sortedRoleIds } from '../src/groupSettings/channelPermsUi.mjs'
@@ -81,13 +80,6 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 				try {
 					const { syncChannelPermBlock } = await import('../src/endpoints/groupChannel.mjs')
 					permBlockId = await syncChannelPermBlock(groupId, categoryId)
-					if (permBlockId && !dialog.querySelector('[data-i18n="chat.hub.category.perm.syncedWarning"]')) {
-						const alert = document.createElement('div')
-						alert.className = 'alert alert-warning px-3 py-2 text-xs mb-3'
-						alert.dataset.i18n = 'chat.hub.category.perm.syncedWarning'
-						body.before(alert)
-						i18nElement(alert)
-					}
 					showToastI18n('success', 'chat.hub.category.perm.synced')
 					await renderRolePanels(body)
 				}
@@ -138,10 +130,8 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 					showToastI18n('success', 'chat.hub.category.perm.updated')
 					permissions[roleId] = { allow, deny }
 					const permsEl = group.closest('.settings-role-perms')
-					if (permsEl) {
+					if (permsEl)
 						permsEl.innerHTML = await permRowsHtml(roleId, allow, deny, grantablePerms)
-						i18nElement(permsEl, { skip_report: true })
-					}
 				}
 				catch (error) {
 					handleError('chat.hub.category.perm.updateFailed')(error)
