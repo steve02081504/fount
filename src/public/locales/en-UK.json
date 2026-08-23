@@ -2461,7 +2461,7 @@
 					"title": "Category permissions",
 					"updateFailed": "Failed to update category permissions: ${error}",
 					"updated": "Category permissions updated",
-					"syncedWarning": "This category’s permissions are synced from the parent channel; individual changes will detach them first.",
+					"syncedWarning": "The permissions for this category are synced from the parent channel; individual changes will detach them first.",
 					"syncToDefault": "Sync to root channel permissions",
 					"synced": "Synced to root channel permissions"
 				}

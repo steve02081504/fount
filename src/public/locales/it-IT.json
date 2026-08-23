@@ -2447,7 +2447,7 @@
 					"delete": "Elimina categoria",
 					"deleteConfirm": "Sei sicuro di voler eliminare la categoria \"${name}\"? I canali al suo interno torneranno a Senza categoria.",
 					"deleteOk": "Categoria eliminata",
-					"perms": "Permessi della categoria",
+					"perms": "Autorizzazioni della categoria",
 					"rename": "Rinomina categoria",
 					"renameOk": "La categoria è stata rinominata",
 					"renamePrompt": "Nuovo nome della categoria"
@@ -2458,9 +2458,9 @@
 				},
 				"perm": {
 					"loadFailed": "Impossibile caricare le autorizzazioni della categoria: ${error}",
-					"title": "Permessi della categoria",
+					"title": "Autorizzazioni della categoria",
 					"updateFailed": "Impossibile aggiornare le autorizzazioni della categoria: ${error}",
-					"updated": "Le autorizzazioni delle categorie sono state aggiornate",
+					"updated": "Le autorizzazioni della categoria sono state aggiornate",
 					"syncedWarning": "Le autorizzazioni di questa categoria vengono sincronizzate dal canale padre; le impostazioni individuali le scollegheranno prima.",
 					"syncToDefault": "Sincronizza con i permessi del canale radice",
 					"synced": "Sincronizzato con i permessi del canale radice"

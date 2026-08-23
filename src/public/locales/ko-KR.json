@@ -2426,7 +2426,7 @@
 				"name": "채널 이름",
 				"unnamed": "이름 없음",
 				"parent": "상위 채널",
-				"noParent": "상위 채널 없음(루트 디렉터리)",
+				"noParent": "상위 채널 없음(루트 채널)",
 				"nameInput": {
 					"placeholder": "일반적인"
 				},

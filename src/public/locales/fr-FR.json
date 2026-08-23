@@ -2443,7 +2443,7 @@
 			},
 			"category": {
 				"context": {
-					"createIn": "Créer une chaîne dans cette catégorie",
+					"createIn": "Créer un canal dans cette catégorie",
 					"delete": "Supprimer la catégorie",
 					"deleteConfirm": "Êtes-vous sûr de vouloir supprimer la catégorie « ${name} » ? Les canaux qu’elle contient reviendront à « Sans catégorie ».",
 					"deleteOk": "Catégorie supprimée",

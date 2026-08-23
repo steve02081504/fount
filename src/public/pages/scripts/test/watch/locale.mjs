@@ -198,20 +198,20 @@ async function normalizeCycleLocale(locale) {
 /**
  * 收集可见（未被 locale 检查跳过）且包含指定字符的叶子元素的 CSS 选择器。
  * 便于定位「本该本地化却漏出他语言字符」的具体元素，而非仅靠人工猜。
- * @param {string} ch 匹配字符
+ * @param {string} character 匹配字符
  * @returns {string[]} 形如 `span#id.cls[data-i18n="key"]` 的选择器列表
  */
-function collectLeakingSelectors(ch) {
+function collectLeakingSelectors(character) {
 	const selectors = new Set()
 	const skip = `${LOCALE_CHECK_SKIP_SELECTOR}, [aria-hidden="true"], [inert]`
-	for (const el of document.querySelectorAll('body *')) {
-		if (el.childElementCount !== 0) continue
-		if (!(el.textContent || '').includes(ch)) continue
-		if (el.closest(skip)) continue
-		const parts = [el.tagName.toLowerCase()]
-		if (el.id) parts.push(`#${CSS.escape(el.id)}`)
-		for (const cls of el.classList) parts.push(`.${CSS.escape(cls)}`)
-		if (el.dataset.i18n) parts.push(`[data-i18n="${CSS.escape(el.dataset.i18n)}"]`)
+	for (const element of document.querySelectorAll('body *')) {
+		if (element.childElementCount !== 0) continue
+		if (!(element.textContent || '').includes(character)) continue
+		if (element.closest(skip)) continue
+		const parts = [element.tagName.toLowerCase()]
+		if (element.id) parts.push(`#${CSS.escape(element.id)}`)
+		for (const className of element.classList) parts.push(`.${CSS.escape(className)}`)
+		if (element.dataset.i18n) parts.push(`[data-i18n="${CSS.escape(element.dataset.i18n)}"]`)
 		selectors.add(parts.join(''))
 	}
 	return [...selectors]

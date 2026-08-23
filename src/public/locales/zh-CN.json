@@ -2426,7 +2426,7 @@
 				"name": "频道名称",
 				"unnamed": "未命名",
 				"parent": "父频道",
-				"noParent": "无父频道（根目录）",
+				"noParent": "无父频道（根频道）",
 				"nameInput": {
 					"placeholder": "general"
 				},
