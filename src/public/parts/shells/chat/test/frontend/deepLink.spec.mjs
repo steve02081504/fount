@@ -51,6 +51,7 @@ test.describe('Chat deep links', () => {
 		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		let releaseProfile
 		let viewerProfileIntercepted = false
+		let blockedCount = 0
 		const profileBlocked = new Promise(resolve => { releaseProfile = resolve })
 		await page.route('**/api/parts/shells:chat/entities/*', async route => {
 			const { pathname } = new URL(route.request().url())
@@ -61,8 +62,19 @@ test.describe('Chat deep links', () => {
 				return
 			}
 			viewerProfileIntercepted = true
+			// 只阻塞首个 viewer 资料请求；重试/后续请求直接放行，避免同 route 二次 continue 竞态。
+			if (blockedCount++ > 0) {
+				await route.continue()
+				return
+			}
 			await profileBlocked
-			await route.continue()
+			// 释放时请求可能已被浏览器中止/重试而提前结算，continue 抛「already handled」属良性，吞掉即可。
+			try {
+				await route.continue()
+			}
+			catch (error) {
+				if (!String(error?.message).includes('already handled')) throw error
+			}
 		})
 
 		await page.goto(`${baseUrl}/parts/shells:chat/hub/?char=on_message_yes`, {

@@ -11,8 +11,9 @@ import { aliasForEntity } from '../shared/aliases.mjs'
 import { createEntityProfileCardElement } from '../shared/entityProfileCard.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveViewerSidebarDisplayName } from '../shared/viewerDisplay.mjs'
-import { mountTemplate, renderTemplateAsHtmlString } from '../src/templates.mjs'
+import { mountTemplate } from '../src/templates.mjs'
 
+import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { store } from './core/state.mjs'
 import {
@@ -43,18 +44,6 @@ export async function getCharDetails(name) {
 }
 
 /**
- * 生成成员头像 HTML（图片或首字母）。
- * @param {string} name - 角色名
- * @param {string} avatarUrl - 头像 URL，空则显示首字母
- * @returns {string} 头像区域 HTML
- */
-async function charAvatarHtml(name, avatarUrl) {
-	return avatarUrl
-		? renderTemplateAsHtmlString('hub/chat/entry_avatar_img', { src: escapeHtml(avatarUrl), alt: escapeHtml(name) })
-		: escapeHtml(avatarInitial(name))
-}
-
-/**
  * @param {string} name 角色名
  * @param {object|null} [details] 预取的角色详情
  * @param {{ active: boolean }} mode 是否已进入私聊
@@ -82,14 +71,13 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	})
 	const memberList = document.getElementById('member-list')
 	const charName = escapeHtml(charDisplayName)
-	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)
 	if (generation !== charInfoCardRenderGeneration) return
 	const charAvatarSeed = entityHash || name
 	const sidebarTpl = active ? 'hub/char/member_sidebar_active' : 'hub/char/member_sidebar_preview'
 
 	await mountTemplate(memberList, sidebarTpl, {
 		charName,
-		charAvatarHtml: charAvatarInner,
+		charAvatarHtml: '',
 		avatarBg: avatarColor(charAvatarSeed),
 		avatarTextColor: avatarTextColor(charAvatarSeed),
 		viewerDisplayName: escapeHtml(myDisplayName),
@@ -99,6 +87,16 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		myAvatarInitial: escapeHtml(avatarInitial(myDisplayName)),
 	})
 	if (generation !== charInfoCardRenderGeneration) return
+
+	// 角色头像走共用渲染（URL 图 / 表情文本 / hash 字母），与消息·成员·资料卡一致，
+	// 不在此重写「URL or 表情」判定。
+	const charAvatarHost = memberList.querySelector('.member-item-char .member-avatar')
+	if (charAvatarHost instanceof HTMLElement)
+		await applyProfileAvatarToHost(charAvatarHost, {
+			seed: charAvatarSeed,
+			label: charDisplayName,
+			avatar: avatarUrl,
+		})
 
 	const descriptionElement = memberList.querySelector('.char-description-md')
 	if (descriptionElement instanceof HTMLElement)

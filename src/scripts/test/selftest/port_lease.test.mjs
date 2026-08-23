@@ -47,10 +47,11 @@ await lease?.release()
 			stdio: ['ignore', 'pipe', 'pipe'],
 		})
 		let out = ''
+		let err = ''
 		child.stdout.on('data', chunk => { out += String(chunk) })
-		child.stderr.on('data', chunk => { out += String(chunk) })
+		child.stderr.on('data', chunk => { err += String(chunk) })
 		const code = await new Promise(resolve => child.once('exit', resolve))
-		assertEquals(code, 0, out)
+		assertEquals(code, 0, out + err)
 		assertEquals(out.trim(), 'blocked')
 	}
 	finally {
