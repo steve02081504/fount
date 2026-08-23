@@ -90,9 +90,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			groupContext: { groupId, state },
 			body: { type, name, description, isPrivate }
 		} = req
-		const channelName = name || ''
-		if (!channelName)
-			throw httpError(400, 'Channel name is required')
+		const channelName = typeof name === 'string' ? name : ''
 
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).createChannel({

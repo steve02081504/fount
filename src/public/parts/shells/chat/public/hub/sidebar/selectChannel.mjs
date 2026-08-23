@@ -99,7 +99,8 @@ export async function selectChannel(channelId) {
 	warmCharEntityHashCache().catch(handleError('chat.hub.warmCharCacheFailed'))
 	const titleEl = document.getElementById('channel-name-display')
 	delete titleEl.dataset.i18n
-	titleEl.textContent = channel.name || channelId
+	const { channelDisplayName } = await import('./channelDisplayName.mjs')
+	titleEl.textContent = channelDisplayName(channel)
 	titleEl.setAttribute('user-content', '')
 	const headerIcon = document.querySelector('.main-header-icon')
 	const { renderHubChannelSidebar } = await import('./index.mjs')

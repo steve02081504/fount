@@ -264,7 +264,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 				content: {
 					channelId: newChannelId,
 					type: options.type || 'text',
-					name: options.name || newChannelId,
+					name: options.name ?? '',
 					description: options.description,
 					...options.isPrivate != null ? { isPrivate: Boolean(options.isPrivate) } : {},
 					...options.permBlockId != null ? { permBlockId: options.permBlockId } : {},

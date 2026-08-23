@@ -405,6 +405,15 @@ export async function createChannelThread(groupId, channelId, parentEventId) {
 }
 
 /**
+ * 触发 DM 群空名频道自动命名/分类（后端调默认 AI 源并重命名/移动）。
+ * @param {string} groupId 群 ID
+ * @returns {Promise<{ skipped: boolean, renamed: string[] }>} 是否跳过与已重命名频道 id 列表
+ */
+export async function autoNameChannels(groupId) {
+	return groupFetch(groupPath(groupId, 'channels', 'auto-name'), { method: 'POST', json: {} })
+}
+
+/**
  * 创建群频道。
  * @param {string} groupId 群 ID
  * @param {string} name 频道名称

@@ -11,9 +11,18 @@ import { store } from '../core/state.mjs'
 import { isThreadChannel } from '../threadDrawer.mjs'
 import { formatUnreadBadgeHtml, getChannelUnreadCount } from '../unread.mjs'
 
-import { showCreateChannelModal } from './createChannel.mjs'
+import { channelDisplayName } from './channelDisplayName.mjs'
+import { quickCreateChannel, showCreateChannelModal } from './createChannel.mjs'
 import { getChannelListContainer, isPrivateChatActive } from './privateShell.mjs'
 import { selectChannel } from './selectChannel.mjs'
+
+/**
+ * @param {{ name?: string }} [channel] 频道元数据
+ * @returns {boolean} 频道是否已有非空名称
+ */
+function hasChannelName(channel) {
+	return !!(channel?.name && String(channel.name).trim())
+}
 
 /** @type {WeakSet<HTMLElement>} 已挂容器空白区右键的容器 */
 const listMenuBoundContainers = new WeakSet()
@@ -68,7 +77,7 @@ export async function renderChannelList(state) {
 			const header = await renderTemplate('hub/nav/channel_category', {
 				collapsedClass: isCollapsed ? 'collapsed' : '',
 				category: escapeHtml(catKey),
-				categoryName: escapeHtml(channel.name || channelId),
+				categoryName: escapeHtml(channelDisplayName(channel)),
 				categoryI18nAttr: '',
 			})
 			parent.appendChild(header)
@@ -87,7 +96,7 @@ export async function renderChannelList(state) {
 			channelId,
 			paddingLeft: String(12 + depth * 14),
 			iconHtml: await channelTypeIconHtml(channel.type || 'text'),
-			channelName: escapeHtml(channel.name || channelId),
+			channelName: escapeHtml(channelDisplayName(channel)),
 			unreadBadgeHtml: groupId
 				? formatUnreadBadgeHtml(getChannelUnreadCount(groupId, channelId))
 				: '',
@@ -103,6 +112,8 @@ export async function renderChannelList(state) {
 
 	const categoryRoots = roots.filter(({ channel }) => channel.type === 'category')
 	const channelRoots = roots.filter(({ channel }) => channel.type !== 'category')
+	if (isPrivateChatActive())
+		channelRoots.sort((a, b) => Number(hasChannelName(a.channel)) - Number(hasChannelName(b.channel)))
 	for (const root of categoryRoots)
 		await renderNode(container, root.id, 0)
 	const rootList = document.createElement('ul')
@@ -143,7 +154,10 @@ export async function renderChannelList(state) {
 		addChannelButton.type = 'button'
 		addChannelButton.className = 'btn btn-ghost btn-sm w-[calc(100%-8px)] mx-1 mt-1 channel-create-button'
 		addChannelButton.dataset.i18n = 'chat.hub.newChannel.button'
-		addChannelButton.addEventListener('click', () => void showCreateChannelModal())
+		addChannelButton.addEventListener('click', () => {
+			if (isPrivateChatActive()) void quickCreateChannel()
+			else void showCreateChannelModal()
+		})
 		container.appendChild(addChannelButton)
 	}
 }

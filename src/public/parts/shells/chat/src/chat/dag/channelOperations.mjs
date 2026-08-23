@@ -30,7 +30,7 @@ export async function createChannel(username, groupId, options) {
 		content: {
 			channelId,
 			type: options.type || 'text',
-			name: options.name || channelId,
+			name: options.name ?? '',
 			description: options.description,
 			links: options.links,
 			permBlockId: options.permBlockId || null,

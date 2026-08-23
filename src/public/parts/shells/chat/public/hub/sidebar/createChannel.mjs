@@ -3,13 +3,43 @@
  * 【职责】新建频道对话框与入树刷新（可选在父频道下创建并链接）。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { createChannel, updateChannel } from '../../src/endpoints/groupChannel.mjs'
+import { autoNameChannels, createChannel, updateChannel } from '../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { openDialogFromTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store, setState } from '../core/state.mjs'
 
 import { selectChannel } from './selectChannel.mjs'
+
+/**
+ * 刷新当前群侧栏频道树。
+ * @returns {Promise<void>}
+ */
+async function refreshChannelSidebar() {
+	setState('context.currentState', await getGroupState(store.context.currentGroupId))
+	const { renderHubChannelSidebar } = await import('./index.mjs')
+	await renderHubChannelSidebar(store.context.currentState)
+}
+
+/**
+ * DM 群快速新建频道：空名创建（显示"未命名"、置顶），随后若有默认 AI 源则自动命名/分类。
+ * @returns {Promise<void>}
+ */
+export async function quickCreateChannel() {
+	const groupId = store.context.currentGroupId
+	if (!groupId) return
+	try {
+		const channelId = await createChannel(groupId, '')
+		await refreshChannelSidebar()
+		await selectChannel(channelId)
+		await autoNameChannels(groupId).catch(() => null)
+		await refreshChannelSidebar()
+		showToastI18n('success', 'chat.hub.newChannel.success')
+	}
+	catch (error) {
+		handleError('chat.hub.newChannel.failed')(error)
+	}
+}
 
 /**
  * 弹出新建频道对话框。
@@ -62,9 +92,7 @@ export async function showCreateChannelModal(options = {}) {
 						await updateChannel(groupId, channelId, { permBlockId: resolvedParent })
 					}
 					close()
-					setState('context.currentState', await getGroupState(groupId))
-					const { renderHubChannelSidebar } = await import('./index.mjs')
-					await renderHubChannelSidebar(store.context.currentState)
+					await refreshChannelSidebar()
 					await selectChannel(channelId)
 					showToastI18n('success', 'chat.hub.newChannel.success')
 				}
