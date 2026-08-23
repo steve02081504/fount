@@ -76,6 +76,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **ImportHandlers / easynew / OpenAI prompt-cache mock**: [fixtures-mocks.md](docs/fixtures-mocks.md).
 - **Platform bot / OnMessage contract**: [domain-harness.md](docs/domain-harness.md#platform-bot--onmessage-contract).
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.
+- **Manual single-file runs**: use the harness args — `deno test --no-check -c ./deno.json` (plus `--allow-scripts --allow-all`) from the repo root. A bare `deno test` (no `-c`) fails type-check on `src/public/decl/*.ts` (needs the import map). **Do not trust `RUST_BACKTRACE`**: when it is set (`1`), deno appends a backtrace to every reported error whose tail can bottom out in `aws_lc_*_jent_entropy_switch_notime_impl` — that is diagnostic noise, not a native crash. Unset it (or `Remove-Item Env:RUST_BACKTRACE`) before diagnosing an "aws_lc crash".
 - Single-node: `{ p2p: false, minP2pNode: true }`. Domain traps: [domain-harness.md](docs/domain-harness.md).
 - **Teardown crashes after green**: Windows napi / Linux fatal signals with `N passed | 0 failed` → `[serial] ok … (deno teardown crash after pass)`, not suite red.
 
