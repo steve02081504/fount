@@ -248,7 +248,27 @@ let sharedTestDataDir = null
 let sharedTestBootPromise = null
 
 /**
+ * 把本模块自建的共享 dataDir 追加登记到父进程回收清单（serial.mjs 读后删除）。
+ * Deno 的 deno test 子进程不会运行 node exit 钩子（denoland/deno#36670），
+ * 因此回收放在能存活的父进程，靠本清单完成进程内流程回收。
+ * @param {string} dataDir 本模块自建的 dataDir
+ * @returns {void}
+ */
+function registerSelfCreatedTestDataDir(dataDir) {
+	const outPath = process.env.FOUNT_TEST_DATA_DIRS_OUT
+	if (!outPath) return
+	try {
+		fs.appendFileSync(outPath, `${dataDir}\n`, 'utf8')
+	}
+	catch {
+		// 父进程无法接收时忽略；内核 #checkCleanupLeak 仍会兜底报残留。
+	}
+}
+
+/**
  * 进程级共享测试 dataDir（首次调用时创建或采纳 preferred）。
+ * 本模块自建的目录会被登记到 FOUNT_TEST_DATA_DIRS_OUT，由父进程（serial.mjs）回收；
+ * 外部传入的 preferred 由调用方负责。
  * @param {string} [preferred] 首次调用时的首选路径
  * @returns {string} 共享 dataDir
  */
@@ -256,6 +276,8 @@ export function ensureSharedTestDataDir(preferred) {
 	if (!sharedTestDataDir) {
 		sharedTestDataDir = preferred ?? join(tmpdir(), `fount_test_${Date.now().toString(36)}`)
 		assertDisposableDataPath(sharedTestDataDir)
+		if (preferred == null)
+			registerSelfCreatedTestDataDir(sharedTestDataDir)
 	}
 	return sharedTestDataDir
 }

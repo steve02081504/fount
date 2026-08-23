@@ -8,7 +8,8 @@
  */
 import 'fount/scripts/test/env.mjs'
 
-import { readdirSync, statSync } from 'node:fs'
+import { readdirSync, readFileSync, rmSync, statSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
@@ -160,6 +161,37 @@ function recordResult(file, code, output, signal = null) {
 }
 
 /**
+ * 为该子进程独占的共享 dataDir 回收清单分配临时路径并返回。
+ * deno test 子进程不会运行 node exit 钩子（denoland/deno#36670），
+ * 自建的 fount_test_* 目录由本父进程（serial.mjs）在读清单后删除。
+ * @returns {string} 独占回收清单绝对路径
+ */
+function allocDataDirsOutPath() {
+	const suffix = Math.random().toString(36).slice(2, 8)
+	return join(tmpdir(), `fount_data_dirs_${process.pid}_${suffix}.tmp`)
+}
+
+/**
+ * 读取回收清单并删除其中登记的自建共享 dataDir，随后删除清单文件。
+ * @param {string} outPath 回收清单绝对路径
+ * @returns {void}
+ */
+function cleanSelfCreatedDataDirs(outPath) {
+	try {
+		const data = readFileSync(outPath, 'utf8')
+		for (const line of data.split('\n')) {
+			const dir = line.trim()
+			if (dir && dir.includes('fount_test_'))
+				rmSync(dir, { recursive: true, force: true })
+		}
+	}
+	catch {
+		// 清单不存在/读失败：内核 #checkCleanupLeak 仍会兜底报残留。
+	}
+	rmSync(outPath, { force: true })
+}
+
+/**
  * worker-pool 消费游标，并发跑文件列表。
  * @param {string[]} files 待跑文件
  * @param {{ stopOnFailure: boolean }} options 失败是否停止调度
@@ -178,10 +210,12 @@ async function runPool(files, { stopOnFailure }) {
 			const file = files[index]
 			// DENO_JOBS=1：单文件内 Deno.test 默认并行会叠多个 launchNode，与 hold→release→spawn TOCTOU 互抢端口。
 			let code, output, signal
+			const dataDirsOut = allocDataDirsOutPath()
 			try {
 				({ code, output, signal } = await withModuleCheckTicket(ticket =>
 					runCaptured(withDenoModuleCheckPreload(['deno', ...denoBase, file], ticket), {
 						DENO_JOBS: '1',
+						FOUNT_TEST_DATA_DIRS_OUT: dataDirsOut,
 						...moduleCheckTicketEnv(ticket),
 					})))
 			}
@@ -199,6 +233,9 @@ async function runPool(files, { stopOnFailure }) {
 				stopped = true
 				await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)
 				return
+			}
+			finally {
+				cleanSelfCreatedDataDirs(dataDirsOut)
 			}
 			const isFail = recordResult(file, code, output, signal)
 			if (isFail && stopOnFailure) {
