@@ -98,10 +98,20 @@ export async function selectChannel(channelId) {
 	showHubMainPane()
 	warmCharEntityHashCache().catch(handleError('chat.hub.warmCharCacheFailed'))
 	const titleEl = document.getElementById('channel-name-display')
-	delete titleEl.dataset.i18n
 	const { channelDisplayName } = await import('./channelDisplayName.mjs')
 	titleEl.textContent = channelDisplayName(channel)
-	titleEl.setAttribute('user-content', '')
+	// `#channel-name-display` 常驻复用：两个分支都需清掉对方此前可能残留的状态。
+	// - 有真实名字：user-content（locale 扫描跳过）；此前可能残留 data-i18n（mode.mjs/privateShell 等设置）。
+	// - 空名回退：data-i18n 随语言重译；此前可能残留 user-content（上一真实名字渲染留下，若不清会使其被 locale 扫描跳过）。
+	// removeAttribute 对从未设置的属性是安全无操作，但在此处是必要清理而非冗余。
+	if ((channel?.name || '').trim()) {
+		delete titleEl.dataset.i18n
+		titleEl.setAttribute('user-content', '')
+	}
+	else {
+		titleEl.removeAttribute('user-content')
+		titleEl.dataset.i18n = 'chat.hub.channel.unnamed'
+	}
 	const headerIcon = document.querySelector('.main-header-icon')
 	const { renderHubChannelSidebar } = await import('./index.mjs')
 	const [, iconHtml] = await Promise.all([

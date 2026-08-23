@@ -3,6 +3,7 @@
  */
 import { isLocaleHeld } from './locale_hold.mjs'
 import {
+	LOCALE_CHECK_SKIP_SELECTOR,
 	SCRIPT_FORBIDDEN,
 	ariaLabelLocaleProblem,
 	collectAriaLabelsForLocaleCheck,
@@ -195,6 +196,28 @@ async function normalizeCycleLocale(locale) {
 }
 
 /**
+ * 收集可见（未被 locale 检查跳过）且包含指定字符的叶子元素的 CSS 选择器。
+ * 便于定位「本该本地化却漏出他语言字符」的具体元素，而非仅靠人工猜。
+ * @param {string} ch 匹配字符
+ * @returns {string[]} 形如 `span#id.cls[data-i18n="key"]` 的选择器列表
+ */
+function collectLeakingSelectors(ch) {
+	const selectors = new Set()
+	const skip = `${LOCALE_CHECK_SKIP_SELECTOR}, [aria-hidden="true"], [inert]`
+	for (const el of document.querySelectorAll('body *')) {
+		if (el.childElementCount !== 0) continue
+		if (!(el.textContent || '').includes(ch)) continue
+		if (el.closest(skip)) continue
+		const parts = [el.tagName.toLowerCase()]
+		if (el.id) parts.push(`#${CSS.escape(el.id)}`)
+		for (const cls of el.classList) parts.push(`.${CSS.escape(cls)}`)
+		if (el.dataset.i18n) parts.push(`[data-i18n="${CSS.escape(el.dataset.i18n)}"]`)
+		selectors.add(parts.join(''))
+	}
+	return [...selectors]
+}
+
+/**
  * 对各任务执行脚本检查并记入 seen。
  * @param {string} locale 当前主 locale
  * @returns {Promise<void>} 检查完成
@@ -215,6 +238,13 @@ async function scriptCheck(locale) {
 				'forbidden-script',
 				match[0],
 				snippet,
+			)
+			const selectors = collectLeakingSelectors(match[0])
+			if (selectors.length) reporter.report(
+				`locale-leak-elem\t${locale}\t${selectors.join(', ')}`,
+				locale,
+				'leak-elem',
+				selectors.join(', '),
 			)
 		}
 	}

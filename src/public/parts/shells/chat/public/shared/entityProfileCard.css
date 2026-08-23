@@ -8,8 +8,14 @@
 	backdrop-filter: blur(7px);
 }
 
+/* 组件根：--entity-card-* 默认值定义在稳定的 `.profile-popup`（模板即存在），
+ * 由 JS paint 再逐卡 setProperty 覆盖；避免 JS 写入 data-profile-pattern 前的渲染间隙被 cssvar 判为未定义。 */
 .profile-popup {
-	--entity-card-accent: var(--color-primary);
+	--entity-card-accent: var(--color-primary, var(--color-base-content));
+	--entity-card-pattern-angle: 45deg;
+	--entity-card-pattern-size: 28px;
+	--entity-card-pattern-x: 0;
+	--entity-card-pattern-y: 0;
 	position: relative;
 	width: min(340px, calc(100vw - 32px));
 	max-height: calc(100dvh - 32px);
