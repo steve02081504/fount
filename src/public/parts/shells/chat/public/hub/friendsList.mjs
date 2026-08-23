@@ -148,12 +148,11 @@ export async function loadFriendsList() {
 	const groupRows = await Promise.all(store.sidebar.groups
 		.filter(group => !resolveFriendBinding(group))
 		.map(async group => {
-			const displayName = await groupDisplayName(group.groupId, group.name || group.groupId)
 			return {
 				groupId: group.groupId,
 				key: group.groupId,
 				kind: 'group',
-				displayName,
+				displayName: await groupDisplayName(group.groupId, group.name || group.groupId),
 				binding: null,
 				session: {
 					groupId: group.groupId,
@@ -179,17 +178,6 @@ export async function loadFriendsList() {
  * @returns {Promise<object>} `chars_column` 单项模板数据
  */
 async function friendRowTemplateData(friend, details) {
-	const rawDesc = friend.session.lastMessageContent || ''
-	const subtitle = rawDesc.length > 52 ? `${rawDesc.slice(0, 52)}…` : rawDesc
-	const active = store.privateGroup.groupId === friend.groupId
-	const displayName = resolveDisplayName({
-		entityHash: friend.key,
-		alias: aliasForEntity(friend.key),
-		profileName: friend.charname
-			? details?.info?.name || friend.displayName
-			: friend.displayName,
-		fallbackLabel: friend.charname || friend.groupId,
-	})
 	if (friend.kind === 'group') {
 		const groupName = friend.displayName
 		return {
@@ -203,6 +191,18 @@ async function friendRowTemplateData(friend, details) {
 			...listAvatarTemplateFields(friend.groupId, groupName),
 		}
 	}
+
+	const rawDesc = friend.session.lastMessageContent || ''
+	const subtitle = rawDesc.length > 52 ? `${rawDesc.slice(0, 52)}…` : rawDesc
+	const active = store.privateGroup.groupId === friend.groupId
+	const displayName = resolveDisplayName({
+		entityHash: friend.key,
+		alias: aliasForEntity(friend.key),
+		profileName: friend.charname
+			? details?.info?.name || friend.displayName
+			: friend.displayName,
+		fallbackLabel: friend.charname || friend.groupId,
+	})
 
 	if (!friend.charname) {
 		const seed = friend.key || friend.groupId
