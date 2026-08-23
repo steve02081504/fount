@@ -145,19 +145,22 @@ export async function loadFriendsList() {
 	})
 
 	// 多人聊天群放在好友（DM）会话下方，便于新开对话置顶、群聊靠底。
-	const groupRows = store.sidebar.groups
+	const groupRows = await Promise.all(store.sidebar.groups
 		.filter(group => !resolveFriendBinding(group))
-		.map(group => ({
-			groupId: group.groupId,
-			key: group.groupId,
-			kind: 'group',
-			displayName: group.name || group.groupId,
-			binding: null,
-			session: {
+		.map(async group => {
+			const displayName = await groupDisplayName(group.groupId, group.name || group.groupId)
+			return {
 				groupId: group.groupId,
-				lastMessageContent: '',
-				lastMessageTime: group.lastMessageTime,
-			},
+				key: group.groupId,
+				kind: 'group',
+				displayName,
+				binding: null,
+				session: {
+					groupId: group.groupId,
+					lastMessageContent: '',
+					lastMessageTime: group.lastMessageTime,
+				},
+			}
 		}))
 	groupRows.sort((a, b) => {
 		const ta = new Date(a.session.lastMessageTime || 0).getTime()
@@ -188,8 +191,7 @@ async function friendRowTemplateData(friend, details) {
 		fallbackLabel: friend.charname || friend.groupId,
 	})
 	if (friend.kind === 'group') {
-		const seed = friend.groupId
-		const groupName = await groupDisplayName(friend.groupId, friend.displayName)
+		const groupName = friend.displayName
 		return {
 			kind: 'group',
 			name: friend.groupId,
@@ -198,7 +200,7 @@ async function friendRowTemplateData(friend, details) {
 			displayName: groupName,
 			subtitle: '',
 			activeClass: store.context.currentGroupId === friend.groupId ? ' active' : '',
-			...listAvatarTemplateFields(seed, groupName),
+			...listAvatarTemplateFields(friend.groupId, groupName),
 		}
 	}
 

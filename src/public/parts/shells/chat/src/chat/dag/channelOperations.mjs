@@ -36,6 +36,7 @@ export async function createChannel(username, groupId, options, appendOptions = 
 			links: options.links,
 			permBlockId: options.permBlockId || null,
 			parentEventId: options.parentEventId || null,
+			parentChannelId: options.parentChannelId || null,
 			syncScope: options.syncScope || 'group',
 			isPrivate: !!options.isPrivate,
 			subRoomId: options.subRoomId,

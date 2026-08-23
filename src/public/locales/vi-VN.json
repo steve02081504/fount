@@ -2426,7 +2426,7 @@
 				"name": "Tên kênh",
 				"unnamed": "Không tên",
 				"parent": "kênh mẹ",
-				"noParent": "Không có kênh mẹ (thư mục gốc)",
+				"noParent": "Không có kênh mẹ (kênh gốc)",
 				"nameInput": {
 					"placeholder": "tổng quan"
 				},
@@ -2445,7 +2445,7 @@
 				"context": {
 					"createIn": "Tạo một kênh trong danh mục này",
 					"delete": "Xóa danh mục",
-					"deleteConfirm": "Bạn có chắc chắn muốn xóa danh mục \"${name}\" không? Các kênh bên trong sẽ trở về Không phân loại.",
+					"deleteConfirm": "Bạn có chắc chắn muốn xóa danh mục \"${name}\" không? Các kênh bên trong sẽ trở về Không được nhóm.",
 					"deleteOk": "Đã xóa danh mục",
 					"perms": "Quyền của danh mục",
 					"rename": "Đổi tên danh mục",

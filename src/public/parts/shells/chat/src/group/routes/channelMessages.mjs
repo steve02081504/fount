@@ -22,8 +22,7 @@ import {
 	findChannelMessageRow,
 } from '../../chat/channel/messageMutations.mjs'
 import { attachFilesToContent } from '../../chat/channel/postMessage.mjs'
-import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
-import { appendChannelLink } from '../../chat/dag/channelOperations.mjs'
+import { createChannel } from '../../chat/dag/channelOperations.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import {
 	loadGroupMemberReadMarkers,
@@ -70,21 +69,17 @@ export function registerChannelMessageRoutes(router, authenticate) {
 				}
 
 		const newChannelId = `thread_${Date.now()}_${randomUUID().slice(0, 8)}`
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'channel_create',
-			timestamp: Date.now(),
-			content: {
-				channelId: newChannelId,
-				type: 'text',
-				name: normalizedParentEventId ? `thread:${normalizedParentEventId.slice(0, 12)}` : 'Thread',
-				description: '',
-				links: [],
-				permBlockId: parent.permBlockId || null,
-				parentEventId: normalizedParentEventId,
-				syncScope: 'channel',
-			},
+		await createChannel(username, groupId, {
+			channelId: newChannelId,
+			type: 'text',
+			name: normalizedParentEventId ? `thread:${normalizedParentEventId.slice(0, 12)}` : 'Thread',
+			description: '',
+			links: [],
+			permBlockId: parentChannelId,
+			parentEventId: normalizedParentEventId,
+			parentChannelId,
+			syncScope: 'channel',
 		})
-		await appendChannelLink(username, groupId, parentChannelId, newChannelId)
 		res.status(201).json({ channelId: newChannelId })
 	})
 

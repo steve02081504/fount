@@ -2445,7 +2445,7 @@
 				"context": {
 					"createIn": "在此分类创建频道",
 					"delete": "删除分类",
-					"deleteConfirm": "确定删除分类「${name}」吗？其下频道将回到未分类。",
+					"deleteConfirm": "确定删除分类「${name}」吗？其下频道将回到未分组。",
 					"deleteOk": "分类已删除",
 					"perms": "分类权限",
 					"rename": "重命名分类",

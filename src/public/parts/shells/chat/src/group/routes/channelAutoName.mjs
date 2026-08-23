@@ -16,6 +16,7 @@ import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
 import {
 	appendChannelLink,
 	createChannel,
+	syncChannelPerms,
 	updateChannel,
 } from '../../chat/dag/channelOperations.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
@@ -155,8 +156,10 @@ export function registerChannelAutoNameRoutes(router, authenticate) {
 						categoryNames.push(category)
 					}
 				}
-				if (categoryId)
+				if (categoryId) {
 					await appendChannelLink(username, groupId, categoryId, channelId)
+					await syncChannelPerms(username, groupId, channelId, categoryId)
+				}
 			}
 			renamed.push(channelId)
 		}

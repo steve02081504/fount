@@ -2445,9 +2445,9 @@
 				"context": {
 					"createIn": "Búðu til rás í þessum flokki",
 					"delete": "Eyða flokki",
-					"deleteConfirm": "Ertu viss um að þú viljir eyða flokknum \"${name}\"? Rásirnar inni í henni fara aftur í Óflokkað.",
+					"deleteConfirm": "Ertu viss um að þú viljir eyða flokknum \"${name}\"? Rásirnar inni í henni fara aftur í Ekki flokkað.",
 					"deleteOk": "Flokkur eytt",
-					"perms": "Flokkaheimildir",
+					"perms": "Flokksheimildir",
 					"rename": "Endurnefna flokk",
 					"renameOk": "Flokkur hefur verið endurnefndur",
 					"renamePrompt": "Nýtt flokksnafn"
@@ -2457,9 +2457,9 @@
 					"placeholder": "fjölmiðla"
 				},
 				"perm": {
-					"loadFailed": "Mistókst að hlaða flokkaheimildir: ${error}",
-					"title": "Flokkaheimildir",
-					"updateFailed": "Mistókst að uppfæra flokkaheimildir: ${error}",
+					"loadFailed": "Mistókst að hlaða flokksheimildir: ${error}",
+					"title": "Flokksheimildir",
+					"updateFailed": "Mistókst að uppfæra flokksheimildir: ${error}",
 					"updated": "Flokksheimildir hafa verið uppfærðar",
 					"syncedWarning": "Heimildir þessa flokks eru samstilltar við móðurrásina; einstakar breytingar aftengja þær fyrst.",
 					"syncToDefault": "Samstilltu við rótarrásarheimildir",

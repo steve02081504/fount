@@ -10,6 +10,7 @@ import { renderTemplateAsHtmlString } from '../templates.mjs'
 const ROLE_COLOR_RE = /^#[\da-f]{3}([\da-f]{3})?$/i
 
 /**
+ * 将角色颜色规范为白名单内的 hex，否则返回默认灰。
  * @param {string | undefined} color CSS 颜色
  * @returns {string} 白名单内 hex 或默认灰
  */
@@ -19,6 +20,7 @@ export function safeRoleColor(color) {
 }
 
 /**
+ * 根据 allow/deny 位图计算某权限的三态结果。
  * @param {Record<string, boolean> | undefined} allow 允许位图
  * @param {Record<string, boolean> | undefined} deny 拒绝位图
  * @param {string} perm 权限键
@@ -31,6 +33,7 @@ export function permTriState(allow, deny, perm) {
 }
 
 /**
+ * 按默认优先、再按 position 对角色表排序并返回角色 id 列表。
  * @param {Record<string, object>} roles 角色表
  * @returns {string[]} 排序后的角色 id（@everyone / isDefault 优先，再按 position）
  */
@@ -46,6 +49,7 @@ export function sortedRoleIds(roles) {
 }
 
 /**
+ * 渲染某角色的权限行 HTML 字符串。
  * @param {string} roleId 角色 id
  * @param {Record<string, boolean> | undefined} allow 允许位图
  * @param {Record<string, boolean> | undefined} deny 拒绝位图

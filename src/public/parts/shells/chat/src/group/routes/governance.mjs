@@ -141,7 +141,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 	// 一键同步：子频道权限块强引用父频道块（body.permBlockId 为父频道 id，缺省为根频道）。
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions/sync`, authenticate, requireGroupMember(), async (req, res) => {
 		const { params: { channelId }, body: { permBlockId } } = req
-		const { username, state, groupId } = req.groupContext
+		const { username, state, member, groupId } = req.groupContext
 		if (!state.channels[channelId])
 			throw httpError(404, 'Channel not found')
 		const target = permBlockId || state.groupSettings?.defaultChannelId || null
@@ -154,6 +154,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 			if (resolvePermBlockOwner(state, target) === channelId)
 				throw httpError(400, 'permBlockId forms a cycle')
 		}
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId))
+			throw httpError(403, 'No permission to manage channels')
 
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'channel_update',

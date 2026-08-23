@@ -3,6 +3,7 @@
  * 【职责】频道列表空白区 / 分类头的右键菜单：新建频道、新建分类，及分类的创建/重命名/删除/权限入口。
  */
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { i18nElement } from '../../../../scripts/i18n/index.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
@@ -53,6 +54,7 @@ function mountMenu(event, items) {
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
 	menu.innerHTML = items.join('')
+	i18nElement(menu)
 	document.body.appendChild(menu)
 	positionContextMenu(menu, { x: event.clientX, y: event.clientY, minWidth: 192 })
 	openMenuElement = menu

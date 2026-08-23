@@ -2445,7 +2445,7 @@
 				"context": {
 					"createIn": "Crea un canale in questa categoria",
 					"delete": "Elimina categoria",
-					"deleteConfirm": "Sei sicuro di voler eliminare la categoria \"${name}\"? I canali al suo interno torneranno a Senza categoria.",
+					"deleteConfirm": "Sei sicuro di voler eliminare la categoria \"${name}\"? I canali al suo interno torneranno a Non raggruppato.",
 					"deleteOk": "Categoria eliminata",
 					"perms": "Autorizzazioni della categoria",
 					"rename": "Rinomina categoria",

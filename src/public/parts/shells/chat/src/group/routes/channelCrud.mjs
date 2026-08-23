@@ -7,7 +7,6 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
-import { appendChannelLink } from '../../chat/dag/channelOperations.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 
@@ -88,7 +87,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels`, authenticate, requireGroupMember(), async (req, res) => {
 		const {
-			groupContext: { groupId, state, username },
+			groupContext: { groupId, state },
 			body: { type, name, description, isPrivate, parentChannelId }
 		} = req
 		const channelName = name ?? ''
@@ -101,10 +100,9 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			description: description ?? '',
 			channelId: prefixedRandomId('channel_'),
 			isPrivate: isPrivate || false,
+			parentChannelId: parentChannelId || null,
 			permBlockId: parentChannelId || state.groupSettings?.defaultChannelId || null,
 		})
-		if (parentChannelId)
-			await appendChannelLink(username, groupId, parentChannelId, channel.id)
 		res.status(201).json({ channelId: channel.id })
 	})
 

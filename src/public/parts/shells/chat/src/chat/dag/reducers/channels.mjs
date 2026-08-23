@@ -25,6 +25,13 @@ export const channelReducers = {
 			subRoomId: event.content.subRoomId || null,
 			createdAt: event.timestamp,
 		}
+		// 携带父频道 id 时，将新频道追加到父频道的子链接末尾（单向父→子）。
+		const parentChannelId = event.content.parentChannelId || null
+		if (parentChannelId && state.channels[parentChannelId]) {
+			const parentLinks = state.channels[parentChannelId].links || []
+			if (!parentLinks.includes(event.content.channelId))
+				state.channels[parentChannelId].links = [...parentLinks, event.content.channelId]
+		}
 		return state
 	},
 

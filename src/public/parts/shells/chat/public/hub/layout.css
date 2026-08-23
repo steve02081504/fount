@@ -328,19 +328,6 @@
 	overflow-y: auto;
 }
 
-.channel-list::-webkit-scrollbar {
-	width: 8px;
-}
-
-.channel-list::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-.channel-list::-webkit-scrollbar-thumb {
-	background: var(--bg-server);
-	border-radius: var(--radius-field);
-}
-
 .category {
 	padding: 18px 12px 6px 16px;
 	font-size: 11px;

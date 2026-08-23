@@ -2443,7 +2443,7 @@
 			},
 			"category": {
 				"context": {
-					"createIn": "於此類中立方苑",
+					"createIn": "於此類中立分苑",
 					"delete": "刪此類",
 					"deleteConfirm": "定欲毀此類「${name}」？其下分苑將歸於未分類。",
 					"deleteOk": "此類已刪",

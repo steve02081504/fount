@@ -2457,9 +2457,9 @@
 					"placeholder": "media"
 				},
 				"perm": {
-					"loadFailed": "🗂️🔑⏳❌${error}",
+					"loadFailed": "🗂️🔑⏳❌：${error}",
 					"title": "🗂️🔑",
-					"updateFailed": "🗂️🔑✏️❌${error}",
+					"updateFailed": "🗂️🔑✏️❌：${error}",
 					"updated": "🗂️🔑✅",
 					"syncedWarning": "🗂️🔑⏬👆❌↩️",
 					"syncToDefault": "🔑⏬🌱",

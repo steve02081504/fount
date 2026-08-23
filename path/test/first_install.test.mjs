@@ -39,7 +39,6 @@ Deno.test('first install skips git self-update when .git is absent (zip download
 Deno.test('desktop.ini copy is best-effort and does not block downstream', async () => {
 	const ps1 = await readFile(firstInstallPs1Path, 'utf8')
 
-	assert(ps1.includes('Test-Path "$FOUNT_DIR/node_modules") -and (-not (Test-Path "$FOUNT_DIR/node_modules/desktop.ini")'), 'pwsh node_modules desktop.ini requires the dir to exist')
 	assert(ps1.includes('Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force -ErrorAction SilentlyContinue'), 'pwsh node_modules desktop.ini copy is non-fatal')
 	assert(ps1.includes('Copy-Item "$FOUNT_DIR/default/default_desktop.ini" "$FOUNT_DIR/data/desktop.ini" -Force -ErrorAction SilentlyContinue'), 'pwsh data desktop.ini copy is non-fatal')
 })

@@ -2445,7 +2445,7 @@
 				"context": {
 					"createIn": "Create a channel in this category",
 					"delete": "Delete category",
-					"deleteConfirm": "Are you sure you want to delete the category \"${name}\"? The channels under it will become Uncategorized.",
+					"deleteConfirm": "Are you sure you want to delete the category \"${name}\"? The channels under it will become Not grouped.",
 					"deleteOk": "Category deleted",
 					"perms": "Category permissions",
 					"rename": "Rename category",

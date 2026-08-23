@@ -191,6 +191,8 @@ export interface Channel {
 	syncScope: 'group' | 'channel'
 	isPrivate: boolean
 	subRoomId?: string | null
+	/** Reducer 保存的父事件 id；用于线程路由识别已有线程 */
+	parentEventId?: string | null
 	createdAt: number
 	manualItems?: ListItem[]
 }

@@ -1602,7 +1602,7 @@
 						"stateNeutral": "Erven",
 						"updateFailed": "Kan kanaalrechten niet updaten: ${error}",
 						"updated": "Kanaalrechten bijgewerkt",
-						"syncedWarning": "De rechten van dit kanaal worden gesynchroniseerd met het bovenliggende kanaal. Afzonderlijke wijzigingen koppelen ze eerst los.",
+						"syncedWarning": "De rechten van dit kanaal worden gesynchroniseerd met het bovenliggende kanaal. Bij afzonderlijke wijzigingen wordt de synchronisatie eerst verbroken.",
 						"syncToDefault": "Synchroniseren met rechten van het rootkanaal",
 						"synced": "Gesynchroniseerd met rechten van het rootkanaal"
 					},
@@ -2461,7 +2461,7 @@
 					"title": "Categorierechten",
 					"updateFailed": "Kan categorierechten niet updaten: ${error}",
 					"updated": "Categorierechten zijn bijgewerkt",
-					"syncedWarning": "De rechten van deze categorie worden gesynchroniseerd met het bovenliggende kanaal. Afzonderlijke wijzigingen koppelen ze eerst los.",
+					"syncedWarning": "De rechten van deze categorie worden gesynchroniseerd met het bovenliggende kanaal. Bij afzonderlijke wijzigingen wordt de synchronisatie eerst verbroken.",
 					"syncToDefault": "Synchroniseren met rechten van het rootkanaal",
 					"synced": "Gesynchroniseerd met rechten van het rootkanaal"
 				}
