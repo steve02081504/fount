@@ -1603,8 +1603,8 @@
 						"updateFailed": "Không thể cập nhật quyền kênh: ${error}",
 						"updated": "Đã cập nhật quyền của kênh",
 						"syncedWarning": "Quyền của kênh này được đồng bộ từ kênh mẹ; các thay đổi riêng lẻ sẽ tách chúng trước.",
-						"syncToDefault": "Đồng bộ hóa với quyền của kênh mẹ",
-						"synced": "Đã đồng bộ hóa với quyền của kênh mẹ"
+						"syncToDefault": "Đồng bộ hóa với quyền của kênh gốc",
+						"synced": "Đã đồng bộ hóa với quyền của kênh gốc"
 					},
 					"advanced": {
 						"description": "Các thông số mạng, lưu trữ, giới hạn tốc độ và mã hóa; vui lòng giữ mặc định nếu bạn không chắc chắn",
@@ -2462,8 +2462,8 @@
 					"updateFailed": "Không cập nhật được quyền danh mục: ${error}",
 					"updated": "Quyền danh mục đã được cập nhật",
 					"syncedWarning": "Quyền của danh mục này được đồng bộ từ kênh mẹ; các thay đổi riêng lẻ sẽ tách chúng trước.",
-					"syncToDefault": "Đồng bộ hóa với quyền của kênh mẹ",
-					"synced": "Đã đồng bộ hóa với quyền của kênh mẹ"
+					"syncToDefault": "Đồng bộ hóa với quyền của kênh gốc",
+					"synced": "Đã đồng bộ hóa với quyền của kênh gốc"
 				}
 			},
 			"message": {

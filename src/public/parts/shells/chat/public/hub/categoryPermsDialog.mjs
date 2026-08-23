@@ -22,19 +22,20 @@ import { store } from './core/state.mjs'
 export async function showCategoryPermsDialog(groupId, categoryId, categoryName) {
 	let permissions = {}
 	let permBlockId = null
+	let state = null
+	let grantablePerms = []
 	try {
 		const data = await getChannelPermBlock(groupId, categoryId)
 		permissions = data.permissions || {}
 		permBlockId = data.permBlockId || null
+		state = store.context.currentState
+		const grantorPerms = await fetchViewerChannelPermissions(state, groupId)
+		grantablePerms = grantableChannelOverridePermissions(grantorPerms)
 	}
 	catch (error) {
 		handleError('chat.hub.category.perm.loadFailed')(error)
 		return
 	}
-
-	const state = store.context.currentState
-	const grantorPerms = await fetchViewerChannelPermissions(state, groupId)
-	const grantablePerms = grantableChannelOverridePermissions(grantorPerms)
 
 	/**
 	 * 重拉权限并重绘对话框主体（角色面板 + 已打开角色的权限行）。
@@ -88,15 +89,20 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 				}
 			})
 
-			await renderRolePanels(body)
+			try {
+				await renderRolePanels(body)
+			}
+			catch (error) {
+				handleError('chat.hub.category.perm.loadFailed')(error)
+			}
 
 			body.addEventListener('toggle', event => {
 				const details = event.target
 				if (!(details instanceof HTMLDetailsElement) || !details.open) return
 				const permsEl = details.querySelector('.settings-role-perms')
 				if (!(permsEl instanceof HTMLElement)) return
-				void fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
-			})
+				fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
+			}, { capture: true })
 
 			body.addEventListener('click', async event => {
 				const clearBtn = event.target.closest('[data-action="clear-role-override"]')
