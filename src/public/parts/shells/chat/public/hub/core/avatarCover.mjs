@@ -34,9 +34,9 @@ export function paintHashAvatarHost(host, { seed, label, letterId, letterClass =
  * `label` 只用于字母占位；图旁通常已有显示名，默认空 alt，避免 image-redundant-alt。
  * @param {HTMLElement} host 圆形容器
  * @param {{ seed?: string, label?: string, alt?: string, avatar?: string | null, letterId?: string, letterClass?: string }} options 绘制选项
- * @returns {Promise<void>}
+ * @returns {void}
  */
-export async function applyProfileAvatarToHost(host, options) {
+export function applyProfileAvatarToHost(host, options) {
 	const {
 		seed,
 		label,

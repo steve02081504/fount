@@ -178,26 +178,19 @@ export interface ChannelPermissionOverride {
 	deny: Partial<PermissionFlags>
 }
 
-/** 频道分类（独立对象，频道通过 `Channel.category` 归属；权限按分类继承）。 */
-export interface Category {
-	id: string
-	name: string
-	position: number
-	createdAt: number
-}
-
-/** 群频道元数据（文本、列表或流媒体）。 */
+/** 群频道元数据（文本、列表、流媒体或分类）。分类以 `type === 'category'` 表示。 */
 export interface Channel {
 	id: string
-	type: 'text' | 'list' | 'streaming'
+	type: 'text' | 'list' | 'streaming' | 'category'
 	name: string
 	description: string
-	parentChannelId: string | null
+	/** 子频道 id 有序列表（父→子单向） */
+	links: string[]
+	/** 跟随的权限块源频道 id；null 表示自有权限块 */
+	permBlockId: string | null
 	syncScope: 'group' | 'channel'
 	isPrivate: boolean
-	/** 所属频道分类 id（无分类为 null） */
-	category: string | null
-	subRoomId?: string
+	subRoomId?: string | null
 	createdAt: number
 	manualItems?: ListItem[]
 }
@@ -355,8 +348,6 @@ export interface GroupStateCore {
 	channelKeyGeneration: Record<string, number>
 	channelKeyWraps: Record<string, { generation: number }>
 	channels: Record<string, Channel>
-	categories: Record<string, Category>
-	categoryPermissions: Record<string, Record<string, ChannelPermissionOverride>>
 	fileFolders: Record<string, FileFolder>
 	groupMeta: GroupMeta
 	groupSettings: GroupSettings

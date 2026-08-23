@@ -199,7 +199,7 @@ export async function showProfilePopup(entity) {
 	const avatarElement = popup.querySelector('[data-entity-profile-avatar]')
 	if (avatarElement instanceof HTMLElement) {
 		const { applyProfileAvatarToHost } = await import('./core/avatarCover.mjs')
-		await applyProfileAvatarToHost(avatarElement, {
+		applyProfileAvatarToHost(avatarElement, {
 			seed: entity.entityHash || stubName,
 			label: stubName,
 			avatar: null,

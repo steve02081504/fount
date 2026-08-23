@@ -178,11 +178,10 @@ function allocDataDirsOutPath() {
  */
 function cleanSelfCreatedDataDirs(outPath) {
 	try {
-		const data = readFileSync(outPath, 'utf8')
-		for (const line of data.split('\n')) {
-			const dir = line.trim()
-			if (dir && dir.includes('fount_test_'))
-				rmSync(dir, { recursive: true, force: true })
+		for (const line of readFileSync(outPath, 'utf8').split('\n')) {
+			const dataDir = line.trim()
+			if (dataDir)
+				rmSync(dataDir, { recursive: true, force: true })
 		}
 	}
 	catch {

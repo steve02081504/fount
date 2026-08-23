@@ -1,22 +1,6 @@
-import { withGroupId } from './state.mjs'
+import { resolvePermBlockOwner } from '../permBlockOwner.mjs'
 
-/**
- * 沿 `permBlockId` 指针解析频道权限块源（循环保护）。
- * @param {object} state 物化群状态
- * @param {string} channelId 频道 ID
- * @returns {string} 拥有权限覆写的源频道 id
- */
-function resolvePermBlockOwnerLocal(state, channelId) {
-	let current = channelId
-	const seen = new Set()
-	while (current && !seen.has(current)) {
-		seen.add(current)
-		const channel = state.channels?.[current]
-		if (!channel || !channel.permBlockId) break
-		current = channel.permBlockId
-	}
-	return current
-}
+import { withGroupId } from './state.mjs'
 
 /** @type {Record<string, (state: object, event: object) => object>} */
 export const channelReducers = {
@@ -57,9 +41,9 @@ export const channelReducers = {
 		const channel = state.channels[channelId]
 		if (!channel) return state
 		if (updates.permBlockId === null && channel.permBlockId) {
-			const owner = resolvePermBlockOwnerLocal(state, channelId)
+			const owner = resolvePermBlockOwner(state, channelId)
 			const block = state.channelPermissions?.[owner]
-			if (block) state.channelPermissions[channelId] = JSON.parse(JSON.stringify(block))
+			if (block) state.channelPermissions[channelId] = structuredClone(block)
 		}
 		Object.assign(channel, updates)
 		return state
@@ -86,6 +70,13 @@ export const channelReducers = {
 					stack.push(childId)
 				}
 		}
+		// 先给引用被删权限块的频道复制其有效块：在 channelPermissions 删除前保留既有覆写。
+		for (const channel of Object.values(state.channels))
+			if (channel && channel.permBlockId && toDelete.has(channel.permBlockId)) {
+				const owner = resolvePermBlockOwner(state, channel.permBlockId)
+				const block = state.channelPermissions?.[owner]
+				if (block) state.channelPermissions[channel.id] = structuredClone(block)
+			}
 		for (const id of toDelete) {
 			delete state.channels[id]
 			delete state.channelPermissions[id]

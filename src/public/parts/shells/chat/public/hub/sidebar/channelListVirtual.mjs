@@ -22,9 +22,6 @@ import { selectChannel } from './selectChannel.mjs'
 
 const COLLAPSE_LS_PREFIX = 'fount.chat.collapsedCategories.'
 
-/** @type {WeakSet<HTMLElement>} 已挂滚动容器空白区右键的容器 */
-const listMenuBoundContainers = new WeakSet()
-
 /** @type {ReturnType<typeof createVirtualList> | null} 当前虚拟列表实例 */
 let virtualList = null
 /** @type {{ id: string, kind: 'category' | 'channel', channel: object, depth: number, collapsed: boolean }[]} 当前可见行 */
@@ -119,6 +116,8 @@ export function buildVisibleChannelRows(channels, groupId) {
 			}
 	const roots = entries.filter(([id]) => !childIds.has(id)).map(([id]) => id)
 	const rows = []
+	/** 已展开的频道 id，防环（root → a → b → a 等）导致无限递归。 */
+	const visited = new Set()
 	/**
 	 * 递归产出某父频道的子行（含孙）。
 	 * @param {string} parentId 父频道 id
@@ -126,7 +125,10 @@ export function buildVisibleChannelRows(channels, groupId) {
 	 * @returns {void}
 	 */
 	const emitChildren = (parentId, depth) => {
+		if (visited.has(parentId)) return
+		visited.add(parentId)
 		for (const childId of byParent.get(parentId) || []) {
+			if (visited.has(childId)) continue
 			const child = channels[childId]
 			if (!child || isThreadChannel(child)) continue
 			if (child.type === 'category') {
@@ -143,7 +145,7 @@ export function buildVisibleChannelRows(channels, groupId) {
 	const categoryRoots = roots.filter(id => channels[id]?.type === 'category')
 	const channelRoots = roots.filter(id => channels[id]?.type !== 'category')
 	if (isPrivateChatActive())
-		channelRoots.sort((a, b) => Number(hasChannelName(channels[a])) - Number(hasChannelName(channels[b])))
+		channelRoots.sort((a, b) => Number(hasChannelName(channels[b])) - Number(hasChannelName(channels[a])))
 	for (const id of categoryRoots) {
 		const collapsed = isCategoryCollapsed(groupId, id)
 		rows.push({ id, kind: 'category', channel: channels[id], depth: 0, collapsed })
@@ -165,7 +167,8 @@ export function buildVisibleChannelRows(channels, groupId) {
  */
 function renderCategoryRow(row) {
 	const groupId = store.context.currentGroupId
-	const el = document.createElement('div')
+	const el = document.createElement('button')
+	el.type = 'button'
 	el.className = `category${row.collapsed ? ' collapsed' : ''}`
 	el.dataset.cat = row.id
 	const arrow = document.createElement('img')
@@ -262,12 +265,11 @@ export async function renderChannelListVirtual(container, state) {
 	shell.appendChild(scroll)
 	container.appendChild(shell)
 
-	if (!isPrivateChatActive() && !listMenuBoundContainers.has(scroll)) {
-		listMenuBoundContainers.add(scroll)
+	if (!isPrivateChatActive()) 
 		scroll.addEventListener('contextmenu', (event) => {
 			showChannelListCreateMenu(event)
 		})
-	}
+	
 
 	const canManageChannels = Object.values(state.channelCaps || {})
 		.some(cap => cap?.canEditList)
@@ -309,7 +311,5 @@ export async function renderChannelListVirtual(container, state) {
 		 * @returns {string} 行键
 		 */
 		getItemKey: row => (row.kind === 'category' ? 'cat:' : 'ch:') + row.id,
-		/** 渲染完成回调（行内已自绑定交互，此处无需额外装饰）。 */
-		onRenderComplete: () => {},
 	})
 }

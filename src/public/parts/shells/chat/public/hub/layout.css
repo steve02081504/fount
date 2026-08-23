@@ -311,7 +311,7 @@
 }
 
 .channel-list {
-	overflow-y: auto;
+	overflow: hidden;
 }
 
 /* 频道列表虚拟滚动：壳撑满容器，内部滚动区承载 createVirtualList */

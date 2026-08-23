@@ -87,13 +87,12 @@ export function avatarInitial(name) {
  */
 export function listAvatarTemplateFields(seed, label, avatarUrl = '', imgClass = 'char-list-avatar-img') {
 	const url = avatarUrl.trim()
-	const avatarInner = url
-		? `<img src="${escapeHtml(url)}" alt="" class="${imgClass}" svg-inliner-ignore />`
-		: escapeHtml(avatarInitial(label))
 	return {
 		avatarBg: avatarColor(seed),
 		avatarTextColor: avatarTextColor(seed),
-		avatarInner,
+		avatarInner: url
+			? `<img src="${escapeHtml(url)}" alt="" class="${imgClass}" svg-inliner-ignore />`
+			: escapeHtml(avatarInitial(label)),
 	}
 }
 

@@ -418,16 +418,57 @@ export async function autoNameChannels(groupId) {
  * @param {string} groupId 群 ID
  * @param {string} name 频道名称
  * @param {string} [type] 频道类型 text | list | streaming | category
- * @param {object} [options] 其他字段
+ * @param {string | null} [parentChannelId] 父频道 id（建后服务端原子地追加父频道 links 并继承权限块）
  * @returns {Promise<string>} 新频道 ID
  */
-export async function createChannel(groupId, name, type = 'text', options = {}) {
-	void options
+export async function createChannel(groupId, name, type = 'text', parentChannelId = null) {
 	const data = await groupFetch(groupPath(groupId, 'channels'), {
 		method: 'POST',
-		json: { name, type },
+		json: { name, type, parentChannelId },
 	})
 	return data.channelId
+}
+
+/**
+ * 读取某频道有效权限块（跟随 `permBlockId` 链到源频道）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @returns {Promise<{ permissions: Record<string, { allow?: Record<string, boolean>, deny?: Record<string, boolean> }>, permBlockId: string | null }>} 各角色权限覆写与块来源
+ */
+export async function getChannelPermBlock(groupId, channelId) {
+	const data = await groupFetch(groupPath(groupId, 'channels', channelId, 'permissions'), { method: 'GET' })
+	return { permissions: data.permissions || {}, permBlockId: data.permBlockId || null }
+}
+
+/**
+ * 更新某频道的单个角色权限覆写（已同步频道会先脱钩复制）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} roleId 角色 ID
+ * @param {Record<string, boolean>} allow 允许位图
+ * @param {Record<string, boolean>} deny 拒绝位图
+ * @returns {Promise<void>} 无
+ */
+export async function putChannelPermBlock(groupId, channelId, roleId, allow, deny) {
+	await groupFetch(groupPath(groupId, 'channels', channelId, 'permissions'), {
+		method: 'PUT',
+		json: { roleId, allow, deny },
+	})
+}
+
+/**
+ * 一键同步：子频道权限块强引用父频道块（`permBlockId` 缺省为群根频道）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 目标频道 ID
+ * @param {string | null} [permBlockId] 跟随的源频道 id；null 表示同步到根频道
+ * @returns {Promise<string | null>} 生效的 permBlockId
+ */
+export async function syncChannelPermBlock(groupId, channelId, permBlockId = null) {
+	const data = await groupFetch(groupPath(groupId, 'channels', channelId, 'permissions', 'sync'), {
+		method: 'PUT',
+		json: { permBlockId },
+	})
+	return data.permBlockId ?? null
 }
 
 /**

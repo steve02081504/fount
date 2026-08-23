@@ -257,12 +257,7 @@ let sharedTestBootPromise = null
 function registerSelfCreatedTestDataDir(dataDir) {
 	const outPath = process.env.FOUNT_TEST_DATA_DIRS_OUT
 	if (!outPath) return
-	try {
-		fs.appendFileSync(outPath, `${dataDir}\n`, 'utf8')
-	}
-	catch {
-		// 父进程无法接收时忽略；内核 #checkCleanupLeak 仍会兜底报残留。
-	}
+	fs.appendFileSync(outPath, `${dataDir}\n`, 'utf8')
 }
 
 /**

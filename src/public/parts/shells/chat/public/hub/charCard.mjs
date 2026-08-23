@@ -92,7 +92,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	// 不在此重写「URL or 表情」判定。
 	const charAvatarHost = memberList.querySelector('.member-item-char .member-avatar')
 	if (charAvatarHost instanceof HTMLElement)
-		await applyProfileAvatarToHost(charAvatarHost, {
+		applyProfileAvatarToHost(charAvatarHost, {
 			seed: charAvatarSeed,
 			label: charDisplayName,
 			avatar: avatarUrl,

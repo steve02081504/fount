@@ -43,6 +43,7 @@ export function applyTestHeapCapToDenoRun(command) {
  * @property {string[]} [onlyFiles] FOUNT_TEST_ONLY：范围过滤（少用）
  * @property {string[]} [triggeredFiles] 本波次命中 trigger 的变更路径（写入临时文件后经 env 传路径）
  * @property {string} [moduleCheckTicket] 模组检查租约
+ * @property {boolean} [inParallel] 与其它套件并发运行（置 FOUNT_TEST_IN_PARALLEL 跳过残留扫描）
  */
 
 /**
@@ -56,7 +57,7 @@ export function applyTestHeapCapToDenoRun(command) {
  * @returns {{ command: string[], env: Record<string, string> }} 命令与环境
  */
 export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, triggeredFilesPath, globalBudget) {
-	const { firstFiles, subtests, onlyFiles, moduleCheckTicket } = options ?? {}
+	const { firstFiles, subtests, onlyFiles, moduleCheckTicket, inParallel } = options ?? {}
 	const env = {
 		FOUNT_TEST: '1',
 		FOUNT_TEST_KEEP_GOING: '1',
@@ -68,6 +69,7 @@ export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, tr
 		FOUNT_TEST_SUBTESTS: subtests?.length ? subtests.join('\n') : '',
 		FOUNT_TEST_TRIGGERED_FILES: triggeredFilesPath || '',
 		RUST_BACKTRACE: 'full',
+		...inParallel ? { FOUNT_TEST_IN_PARALLEL: '1' } : {},
 		...moduleCheckTicketEnv(moduleCheckTicket),
 	}
 	if (suiteUsesSerialRunner(suite) && globalBudget)

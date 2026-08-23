@@ -147,6 +147,13 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const target = permBlockId || state.groupSettings?.defaultChannelId || null
 		if (target && !state.channels[target])
 			throw httpError(404, 'Target channel not found')
+		if (target === channelId)
+			throw httpError(400, 'permBlockId cannot reference self')
+		if (target) {
+			const { resolvePermBlockOwner } = await import('../../chat/dag/groupMaterializedState.mjs')
+			if (resolvePermBlockOwner(state, target) === channelId)
+				throw httpError(400, 'permBlockId forms a cycle')
+		}
 
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'channel_update',

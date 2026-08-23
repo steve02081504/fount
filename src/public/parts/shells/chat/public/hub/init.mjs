@@ -49,7 +49,7 @@ export async function refreshViewerHubPresentation() {
 	const myAvatar = document.getElementById('my-avatar')
 	const myName = document.getElementById('my-name')
 	myName.textContent = label
-	await applyProfileAvatarToHost(myAvatar, {
+	applyProfileAvatarToHost(myAvatar, {
 		seed: entityHash,
 		label,
 		avatar: displayProfileAvatar(profile),

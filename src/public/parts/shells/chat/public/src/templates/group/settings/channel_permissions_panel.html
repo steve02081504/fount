@@ -18,9 +18,7 @@ ${channels.length ? `
 				${permBlockId ? `
 				<div class="alert alert-warning mt-3 px-3 py-2 text-xs" data-i18n="chat.group.settings.page.channelPerms.syncedWarning"></div>
 				` : ''}
-				<div class="space-y-2 mt-3">
-					<button type="button" class="btn btn-ghost btn-xs w-full" data-action="sync-to-default" data-i18n="chat.group.settings.page.channelPerms.syncToDefault"></button>
-				</div>
+				<button type="button" class="btn btn-ghost btn-xs w-full mt-3" data-action="sync-to-default" data-i18n="chat.group.settings.page.channelPerms.syncToDefault"></button>
 			</div>
 			<div class="flex-1 min-w-0 space-y-3">
 				${rolePanels.map(panel => `

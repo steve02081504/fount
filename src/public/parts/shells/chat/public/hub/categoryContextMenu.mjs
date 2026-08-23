@@ -3,16 +3,15 @@
  * 【职责】频道列表空白区 / 分类头的右键菜单：新建频道、新建分类，及分类的创建/重命名/删除/权限入口。
  */
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
-import { promptText } from '/scripts/features/promptDialog.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
-import { deleteCategory, updateCategory } from '../src/endpoints/groupCategory.mjs'
-import { getGroupState } from '../src/endpoints/groupCore.mjs'
+import { updateChannel, deleteChannel } from '../src/endpoints/groupChannel.mjs'
 
-import { store, setState } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { showCreateCategoryModal } from './sidebar/createCategory.mjs'
-import { showCreateChannelModal } from './sidebar/createChannel.mjs'
+import { refreshChannelSidebar, showCreateChannelModal } from './sidebar/createChannel.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null
@@ -25,15 +24,20 @@ function dismiss() {
 }
 
 /**
- * 分类变更后重新拉群状态并渲染侧栏。
+ * 执行一次分类变更并刷新侧栏；成功后提示，fount 故障交给 handleError。
+ * @param {() => Promise<unknown>} mutation 分类变更操作
+ * @param {string} successKey 成功 toast 的 i18n 键
  * @returns {Promise<void>}
  */
-async function refreshSidebarAfterCategoryChange() {
-	const groupId = store.context.currentGroupId
-	if (!groupId) return
-	setState('context.currentState', await getGroupState(groupId))
-	const { renderHubChannelSidebar } = await import('./sidebar/index.mjs')
-	await renderHubChannelSidebar(store.context.currentState)
+async function applyCategoryMutation(mutation, successKey) {
+	try {
+		await mutation()
+		showToastI18n('success', successKey)
+		await refreshChannelSidebar()
+	}
+	catch (error) {
+		handleError('chat.hub.operationFailed')(error)
+	}
 }
 
 /**
@@ -113,14 +117,10 @@ export function showCategoryContextMenu(event, categoryId, categoryName) {
 			if (next == null) return
 			const trimmed = next.trim()
 			if (!trimmed || trimmed === categoryName) return
-			try {
-				await updateCategory(groupId, categoryId, { name: trimmed })
-				showToastI18n('success', 'chat.hub.category.context.renameOk')
-				await refreshSidebarAfterCategoryChange()
-			}
-			catch (error) {
-				showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
-			}
+			await applyCategoryMutation(
+				() => updateChannel(groupId, categoryId, { name: trimmed }),
+				'chat.hub.category.context.renameOk',
+			)
 		})()
 	})
 	menu.querySelector('[data-action="category-perms"]')?.addEventListener('click', () => {
@@ -133,15 +133,11 @@ export function showCategoryContextMenu(event, categoryId, categoryName) {
 	menu.querySelector('[data-action="delete-category"]')?.addEventListener('click', () => {
 		close()
 		void (async () => {
-			if (!confirmI18n('chat.hub.category.context.deleteConfirm', { name: categoryName })) return
-			try {
-				await deleteCategory(groupId, categoryId)
-				showToastI18n('success', 'chat.hub.category.context.deleteOk')
-				await refreshSidebarAfterCategoryChange()
-			}
-			catch (error) {
-				showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
-			}
+			if (!await confirmAction('chat.hub.category.context.deleteConfirm', { name: categoryName })) return
+			await applyCategoryMutation(
+				() => deleteChannel(groupId, categoryId),
+				'chat.hub.category.context.deleteOk',
+			)
 		})()
 	})
 }

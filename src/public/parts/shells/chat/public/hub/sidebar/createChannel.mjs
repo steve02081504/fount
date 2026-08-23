@@ -3,9 +3,9 @@
  * 【职责】新建频道对话框与入树刷新（可选在父频道下创建并链接）。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { autoNameChannels, createChannel, updateChannel } from '../../src/endpoints/groupChannel.mjs'
+import { autoNameChannels, createChannel } from '../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
-import { openDialogFromTemplate } from '../../src/templates.mjs'
+import { openDialogFromTemplate, renderTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store, setState } from '../core/state.mjs'
 
@@ -15,7 +15,7 @@ import { selectChannel } from './selectChannel.mjs'
  * 刷新当前群侧栏频道树。
  * @returns {Promise<void>}
  */
-async function refreshChannelSidebar() {
+export async function refreshChannelSidebar() {
 	setState('context.currentState', await getGroupState(store.context.currentGroupId))
 	const { renderHubChannelSidebar } = await import('./index.mjs')
 	await renderHubChannelSidebar(store.context.currentState)
@@ -56,25 +56,20 @@ export async function showCreateChannelModal(options = {}) {
 		 * @param {HTMLDialogElement} dialog 对话框
 		 * @returns {void}
 		 */
-		onReady: async dialog => {
+		onReady: dialog => {
 			/** @returns {void} */
 			const close = () => dialog.close()
 			dialog.querySelector('#new-channel-cancel')?.addEventListener('click', close)
 			const parentSelect = dialog.querySelector('#new-channel-parent')
-			if (parentSelect) {
+			const wrap = dialog.querySelector('#new-channel-parent-wrap')
+			if (parentSelect instanceof HTMLSelectElement && wrap instanceof HTMLElement) {
 				const categoryChannels = Object.values(store.context.currentState?.channels || {})
 					.filter(ch => ch?.type === 'category')
-				if (categoryChannels.length) {
-					parentSelect.classList.remove('hidden')
-					const wrap = dialog.querySelector('#new-channel-parent-wrap')
-					wrap?.classList.remove('hidden')
-					const selected = options.parentChannelId || ''
-					parentSelect.innerHTML = [
-						'<option value="" data-i18n="chat.hub.channel.noParent"></option>',
-						...categoryChannels.map(ch =>
-							`<option value="${ch.id}" ${ch.id === selected ? 'selected' : ''}>${ch.name || ch.id}</option>`),
-					].join('')
-				}
+				parentSelect.innerHTML = `<option value="" data-i18n="chat.hub.channel.noParent"></option>${renderTemplate('channel_category_options', {
+					categories: categoryChannels.map(ch => ({ id: ch.id, name: ch.name || ch.id })),
+					selectedCategory: options.parentChannelId || '',
+				})}`
+				if (categoryChannels.length) wrap.classList.remove('hidden')
 			}
 			dialog.querySelector('#new-channel-create')?.addEventListener('click', async () => {
 				const name = dialog.querySelector('#new-channel-name')?.value?.trim()
@@ -82,15 +77,7 @@ export async function showCreateChannelModal(options = {}) {
 				const parentChannelId = dialog.querySelector('#new-channel-parent')?.value || null
 				if (!name) return
 				try {
-					const channelId = await createChannel(groupId, name, type, {})
-					const resolvedParent = parentChannelId || options.parentChannelId || null
-					if (resolvedParent) {
-						const parent = store.context.currentState?.channels?.[resolvedParent]
-						const links = [...parent?.links || [], channelId]
-						await updateChannel(groupId, resolvedParent, { links })
-						// 子频道默认同步父频道权限块
-						await updateChannel(groupId, channelId, { permBlockId: resolvedParent })
-					}
+					const channelId = await createChannel(groupId, name, type, parentChannelId)
 					close()
 					await refreshChannelSidebar()
 					await selectChannel(channelId)

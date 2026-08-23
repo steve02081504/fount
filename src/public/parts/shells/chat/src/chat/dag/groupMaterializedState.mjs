@@ -2,6 +2,7 @@ import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shel
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { materializeGroupSettings } from './groupSettings.mjs'
+import { resolvePermBlockOwner } from './permBlockOwner.mjs'
 import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
 import { createEmptySessionState } from './reducers/state.mjs'
 
@@ -232,26 +233,8 @@ export function checkpointSignerPubKeyHashes(state) {
 	return adminPubKeyHashes(state)
 }
 
-/**
- * 解析某频道的权限块来源：沿 `permBlockId` 指针上溯（循环保护），返回拥有自己覆写的源频道 id。
- * `permBlockId === null` 的频道拥有自己的块；沿链到 `null` 或缺失频道即终止。
- * @param {object} state 物化群状态
- * @param {string} channelId 频道 ID
- * @returns {string} 拥有权限覆写的源频道 id
- */
-export function resolvePermBlockOwner(state, channelId) {
-	let current = channelId
-	const seen = new Set()
-	while (current && !seen.has(current)) {
-		seen.add(current)
-		const channel = state.channels?.[current]
-		if (!channel) break
-		const syncTo = channel.permBlockId
-		if (!syncTo) break
-		current = syncTo
-	}
-	return current
-}
+/** 沿 `permBlockId` 指针解析权限块来源（循环保护）；自 {@link permBlockOwner.mjs} 再导出。 */
+export { resolvePermBlockOwner }
 
 /**
  * 某频道的有效角色覆写表：沿 `permBlockId` 指针解析到源频道，取其拥有的覆写块。

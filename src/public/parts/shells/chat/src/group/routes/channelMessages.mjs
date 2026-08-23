@@ -23,6 +23,7 @@ import {
 } from '../../chat/channel/messageMutations.mjs'
 import { attachFilesToContent } from '../../chat/channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
+import { appendChannelLink } from '../../chat/dag/channelOperations.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import {
 	loadGroupMemberReadMarkers,
@@ -83,11 +84,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 				syncScope: 'channel',
 			},
 		})
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'channel_update',
-			timestamp: Date.now(),
-			content: { channelId: parentChannelId, updates: { links: [...parent.links || [], newChannelId] } },
-		})
+		await appendChannelLink(username, groupId, parentChannelId, newChannelId)
 		res.status(201).json({ channelId: newChannelId })
 	})
 

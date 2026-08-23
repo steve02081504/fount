@@ -7,6 +7,7 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
+import { appendChannelLink } from '../../chat/dag/channelOperations.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 
@@ -87,10 +88,11 @@ export function registerChannelCrudRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels`, authenticate, requireGroupMember(), async (req, res) => {
 		const {
-			groupContext: { groupId, state },
-			body: { type, name, description, isPrivate }
+			groupContext: { groupId, state, username },
+			body: { type, name, description, isPrivate, parentChannelId }
 		} = req
-		const channelName = typeof name === 'string' ? name : ''
+		const channelName = name ?? ''
+		if (parentChannelId) ensureChannel(state, parentChannelId)
 
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).createChannel({
@@ -99,8 +101,10 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			description: description ?? '',
 			channelId: prefixedRandomId('channel_'),
 			isPrivate: isPrivate || false,
-			permBlockId: state.groupSettings?.defaultChannelId || null,
+			permBlockId: parentChannelId || state.groupSettings?.defaultChannelId || null,
 		})
+		if (parentChannelId)
+			await appendChannelLink(username, groupId, parentChannelId, channel.id)
 		res.status(201).json({ channelId: channel.id })
 	})
 
@@ -129,10 +133,39 @@ export function registerChannelCrudRoutes(router, authenticate) {
 				throw httpError(400, 'links must be an array of channel ids')
 			for (const linkId of links)
 				ensureChannel(state, linkId)
+			if (links.includes(channelId))
+				throw httpError(400, 'links cannot reference self')
+			// 环检测：沿 links 从本频道可达处遍历，若回到本频道则拒绝，防止互链成环。
+			const seen = new Set()
+			const stack = [...links]
+			while (stack.length) {
+				const id = stack.pop()
+				if (id === channelId)
+					throw httpError(400, 'links form a cycle')
+				if (seen.has(id)) continue
+				seen.add(id)
+				stack.push(...state.channels?.[id]?.links || [])
+			}
 			updates.links = links
 		}
-		if (permBlockId !== undefined)
-			updates.permBlockId = permBlockId || null
+		if (permBlockId !== undefined) {
+			const target = permBlockId || null
+			if (target) {
+				ensureChannel(state, target)
+				if (target === channelId)
+					throw httpError(400, 'permBlockId cannot reference self')
+				// 环检测：沿 permBlockId 从 target 上溯，若回到本频道则成环。
+				let cursor = target
+				const seen = new Set()
+				while (cursor && !seen.has(cursor)) {
+					if (cursor === channelId)
+						throw httpError(400, 'permBlockId forms a cycle')
+					seen.add(cursor)
+					cursor = state.channels?.[cursor]?.permBlockId || null
+				}
+			}
+			updates.permBlockId = target
+		}
 
 		if (Object.keys(updates).length === 0)
 			throw httpError(400, 'No channel updates provided')

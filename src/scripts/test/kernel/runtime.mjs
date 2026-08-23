@@ -131,6 +131,8 @@ export class TestKernel {
 	#watcher
 	#closeDone
 	#wasIdle
+	/** 本 run 是否曾与其它套件并发（>1 套件同时在跑）；用于残留扫描判定。 */
+	#inParallel
 
 	/** 唤醒调度循环。 */
 	wake() {
@@ -373,11 +375,6 @@ export class TestKernel {
 		await this.#beginReport(job, wave)
 		const imperfectKeys = wave.selection?.imperfectKeys ?? new Set()
 		const runSlots = wave.plan.slots.filter(slot => slot.action === 'run')
-		// 多套件并行（会并发占用系统临时目录）时，全局残留扫描不可靠：置 env 跳过本 kernel 与
-		// 所有子进程/内嵌 kernel 的扫描；env 经 childEnv() 透传给 suite 子进程。
-		// 串行波次则清除，避免前一个并行 run 的标记污染后续串行 run 的残留检测。
-		if (runSlots.length > 1) process.env.FOUNT_TEST_IN_PARALLEL = '1'
-		else delete process.env.FOUNT_TEST_IN_PARALLEL
 		runSlots.sort((a, b) => Number(imperfectKeys.has(b.key)) - Number(imperfectKeys.has(a.key)))
 		for (const slot of runSlots) {
 			const reason = wave.continueReasons?.get?.(slot.key)
@@ -917,6 +914,7 @@ export class TestKernel {
 	async #runItem(item, suite, release) {
 		const { key } = item
 		const abort = new AbortController()
+		if (this.running.size > 0) this.#inParallel = true
 		this.running.set(key, { item, abort, startedAt: Date.now(), checkDone: false })
 		this.#syncKeepAwake()
 		const expectedMs = expectedRunDurationMs(suite, this.state.suites[key], item.subtests)
@@ -956,6 +954,7 @@ export class TestKernel {
 						: undefined,
 					moduleCheckTicket: ticket,
 					triggeredFiles: suiteTriggeredFiles(suite, changedFilesForRun(fingerprints, key)),
+					inParallel: this.running.size > 1,
 				},
 				this.globalBudget,
 				false,
@@ -1016,6 +1015,7 @@ export class TestKernel {
 		finally {
 			if (ticket) this.moduleCheck.abandon(ticket)
 			this.running.delete(key)
+			if (this.running.size === 0) this.#inParallel = false
 			this.#syncKeepAwake()
 			release()
 			if (item.source === 'cli') {
@@ -1199,7 +1199,7 @@ export class TestKernel {
 		job.finishing = true
 		// 残留扫描只在可靠时运行：串行（无其它在跑套件）且本 run 非并行聚合
 		// （并行时其它套件可能正写入临时目录，且该 env 会传给子进程/内嵌 kernel）。
-		if (!job.spec?.debug && this.running.size === 0 && process.env.FOUNT_TEST_IN_PARALLEL !== '1')
+		if (!job.spec?.debug && this.running.size === 0 && !this.#inParallel && process.env.FOUNT_TEST_IN_PARALLEL !== '1')
 			await this.#checkCleanupLeak(job, { stopJob: false })
 		const finished = await this.#finishReport(job)
 		job.done.resolve(job.exitCode)

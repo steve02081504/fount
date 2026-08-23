@@ -5,7 +5,6 @@ import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
 import { normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
 import { listVirtualBridgeTyping, recordVirtualBridgeTyping } from '../chat/bridge/typing.mjs'
 import { asUploadBuffer, postChannelMessage } from '../chat/channel/postMessage.mjs'
-import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
 import { scheduleVoteDeadlines } from '../chat/lib/voteDeadlineWatcher.mjs'
 import { broadcastSignedGroupVolatile } from '../chat/session/broadcast.mjs'
@@ -257,20 +256,12 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 		 * @returns {Promise<object>} 新建 Channel（由 Group.createChannel 使用）
 		 */
 		async _createSibling(options) {
-			const newChannelId = options.channelId || randomUUID()
-			const created = await appendSignedLocalEvent(apiContext.username, groupId, {
-				type: 'channel_create',
-				timestamp: Date.now(),
-				content: {
-					channelId: newChannelId,
-					type: options.type || 'text',
-					name: options.name ?? '',
-					description: options.description,
-					...options.isPrivate != null ? { isPrivate: Boolean(options.isPrivate) } : {},
-					...options.permBlockId != null ? { permBlockId: options.permBlockId } : {},
-				},
+			const { createChannel: appendCreateChannel } = await import('../chat/dag/channelOperations.mjs')
+			const created = await appendCreateChannel(apiContext.username, groupId, {
+				...options,
+				channelId: options.channelId || randomUUID(),
 			}, signOptions)
-			const resolvedId = created.content?.channelId || newChannelId
+			const resolvedId = created.content?.channelId || options.channelId
 			const { channel } = await buildConversationContext(apiContext.username, groupId, resolvedId)
 			return createChannel(apiContext, groupId, resolvedId, channel)
 		},

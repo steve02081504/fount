@@ -26,7 +26,7 @@ export function buildStateSummaryContent(state, anchorEventId, events = []) {
 				channelPermissions: state.channelPermissions || {},
 				channels: Object.fromEntries(
 					Object.entries(state.channels || {})
-						.map(([id, ch]) => [id, { permBlockId: ch?.permBlockId ?? null }])
+						.map(([id, channel]) => [id, { permBlockId: channel?.permBlockId ?? null }])
 				),
 			}))
 			.digest('hex'),

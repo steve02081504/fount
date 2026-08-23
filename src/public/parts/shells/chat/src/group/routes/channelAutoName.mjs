@@ -14,9 +14,9 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { loadAnyPreferredDefaultPart } from '../../../../../../../server/parts_loader.mjs'
 import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
 import {
+	appendChannelLink,
 	createChannel,
 	updateChannel,
-	updateChannelLinks,
 } from '../../chat/dag/channelOperations.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
 import { readChannelMessagesForUser } from '../queries.mjs'
@@ -53,12 +53,11 @@ function parseAutoNameResult(content) {
 
 /**
  * 为单个空名频道构造命名请求 prompt（XML 输出格式，参照内置插件标签式结构）。
- * @param {string} channelId 频道 id
  * @param {string} context 频道上下文
  * @param {string[]} categoryNames 现有分类名
  * @returns {string} prompt 文本
  */
-function buildChannelPrompt(channelId, context, categoryNames) {
+function buildChannelPrompt(context, categoryNames) {
 	return [
 		'你是频道整理助手。下面是一个未命名频道的内容摘要，以及该群现有的频道分类列表。',
 		'请为该频道生成一个简短的频道名（<=20字）和合适的分类名。',
@@ -105,17 +104,14 @@ export function registerChannelAutoNameRoutes(router, authenticate) {
 			return
 		}
 
-		const categoryNames = Object.values(channels)
-			.filter(ch => ch?.type === 'category')
-			.map(ch => String(ch?.name || '').trim())
-			.filter(Boolean)
-
 		/** @type {Map<string, string>} 分类名 → 频道 id（含本次新建，供复用） */
 		const categoryIdByName = new Map(
 			Object.entries(channels)
 				.filter(([, ch]) => ch?.type === 'category' && String(ch?.name || '').trim())
 				.map(([id, ch]) => [String(ch.name).trim(), id]),
 		)
+		/** 现有分类名（与 categoryIdByName 键同步）。 */
+		const categoryNames = [...categoryIdByName.keys()]
 
 		/** @type {string[]} */
 		const renamed = []
@@ -124,7 +120,7 @@ export function registerChannelAutoNameRoutes(router, authenticate) {
 			const texts = lines.map(line => messageLineShowText(line, { onlyMessageTypes: true })).filter(Boolean)
 			const context = buildChannelContext(texts)
 
-			const promptText = buildChannelPrompt(channelId, context, categoryNames)
+			const promptText = buildChannelPrompt(context, categoryNames)
 			const promptStruct = {
 				chat_log: [],
 				char_prompt: { text: [] },
@@ -154,12 +150,13 @@ export function registerChannelAutoNameRoutes(router, authenticate) {
 						channelId: prefixedRandomId('channel_'),
 					})
 					categoryId = created.content?.channelId || null
-					if (categoryId) categoryIdByName.set(category, categoryId)
+					if (categoryId) {
+						categoryIdByName.set(category, categoryId)
+						categoryNames.push(category)
+					}
 				}
-				if (categoryId) {
-					const links = [...channels[categoryId]?.links || [], channelId]
-					await updateChannelLinks(username, groupId, categoryId, links)
-				}
+				if (categoryId)
+					await appendChannelLink(username, groupId, categoryId, channelId)
 			}
 			renamed.push(channelId)
 		}

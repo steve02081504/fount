@@ -3,11 +3,12 @@
  * 【职责】新建频道分类对话框与入树刷新。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { createCategory } from '../../src/endpoints/groupCategory.mjs'
-import { getGroupState } from '../../src/endpoints/groupCore.mjs'
+import { createChannel } from '../../src/endpoints/groupChannel.mjs'
 import { openDialogFromTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { store, setState } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
+
+import { refreshChannelSidebar } from './createChannel.mjs'
 
 /**
  * 弹出新建分类对话框。
@@ -30,11 +31,9 @@ export async function showCreateCategoryModal() {
 				const name = dialog.querySelector('#new-category-name')?.value?.trim()
 				if (!name) return
 				try {
-					await createCategory(groupId, name)
+					await createChannel(groupId, name, 'category')
 					close()
-					setState('context.currentState', await getGroupState(groupId))
-					const { renderHubChannelSidebar } = await import('./index.mjs')
-					await renderHubChannelSidebar(store.context.currentState)
+					await refreshChannelSidebar()
 					showToastI18n('success', 'chat.hub.newCategory.success')
 				}
 				catch (error) {

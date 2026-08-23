@@ -184,7 +184,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 
 	const avatarElement = root.querySelector('[data-entity-profile-avatar]')
 	if (avatarElement instanceof HTMLElement)
-		await applyProfileAvatarToHost(avatarElement, {
+		applyProfileAvatarToHost(avatarElement, {
 			seed: entityHash || name,
 			label: name,
 			avatar,

@@ -59,15 +59,13 @@ Deno.test('permBlockId strong reference: child follows parent block, detach copi
 	})
 	if (resolvePermBlockOwner(state, 'child') !== 'root') throw new Error('child should resolve to parent block owner')
 
-	const inherited = effectiveChannelPermissions(state, 'child')['child']
-	if (!inherited['@everyone']?.allow.SEND_MESSAGES) throw new Error('child should inherit parent block')
+	if (!effectiveChannelPermissions(state, 'child')['child']['@everyone']?.allow.SEND_MESSAGES) throw new Error('child should inherit parent block')
 
 	// 父块改 → 子自动跟随（强引用运行时解析）
 	state = channelReducers.channel_permissions_update(state, {
 		content: { channelId: 'root', roleId: '@everyone', allow: { SEND_MESSAGES: true, STREAM: true }, deny: {} },
 	})
-	const followed = effectiveChannelPermissions(state, 'child')['child']
-	if (!followed['@everyone']?.allow.STREAM) throw new Error('child should follow parent block update')
+	if (!effectiveChannelPermissions(state, 'child')['child']['@everyone']?.allow.STREAM) throw new Error('child should follow parent block update')
 
 	// 脱钩（permBlockId -> null）→ 复制当前有效块进自有覆写
 	state = channelReducers.channel_update(state, {
@@ -83,8 +81,7 @@ Deno.test('permBlockId strong reference: child follows parent block, detach copi
 	state = channelReducers.channel_permissions_update(state, {
 		content: { channelId: 'root', roleId: '@everyone', allow: {}, deny: { STREAM: true } },
 	})
-	const detached = effectiveChannelPermissions(state, 'child')['child']
-	if (detached['@everyone']?.allow.STREAM !== true) throw new Error('detached child should not follow parent after detach')
+	if (effectiveChannelPermissions(state, 'child')['child']['@everyone']?.allow.STREAM !== true) throw new Error('detached child should not follow parent after detach')
 })
 
 Deno.test('permBlock resolution through the real permission evaluator', () => {
@@ -112,8 +109,7 @@ Deno.test('permBlock resolution through the real permission evaluator', () => {
 		content: { channelId: 'ch-read', type: 'text', name: 'read', permBlockId: 'root' },
 	})
 
-	const perms = memberChannelPermissions(state, sender, 'ch-read')
-	assertEquals(perms[PERMISSIONS.SEND_MESSAGES], false, 'parent deny should be inherited via strong ref')
+	assertEquals(memberChannelPermissions(state, sender, 'ch-read')[PERMISSIONS.SEND_MESSAGES], false, 'parent deny should be inherited via strong ref')
 
 	// 频道自身 override 覆盖父块 deny（先脱钩复制再覆写）
 	state = channelReducers.channel_update(state, {
@@ -126,8 +122,7 @@ Deno.test('permBlock resolution through the real permission evaluator', () => {
 	assertEquals(overridden[PERMISSIONS.SEND_MESSAGES], true, 'channel allow should override parent deny after detach')
 	assertEquals(overridden[PERMISSIONS.VIEW_CHANNEL], true, 'default role VIEW_CHANNEL should persist')
 
-	const direct = calculateMemberPermissions(state.members[sender], state.roles, 'ch-read', effectiveChannelPermissions(state, 'ch-read'))
-	assertEquals(direct[PERMISSIONS.SEND_MESSAGES], true, 'direct eval should match')
+	assertEquals(calculateMemberPermissions(state.members[sender], state.roles, 'ch-read', effectiveChannelPermissions(state, 'ch-read'))[PERMISSIONS.SEND_MESSAGES], true, 'direct eval should match')
 })
 
 Deno.test('channel_delete resets permBlockId of channels referencing deleted block', () => {

@@ -20,9 +20,10 @@ import { setStreamingSession } from './streamingState.mjs'
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} options 频道参数
+ * @param {object} [appendOptions] 透传给 `appendSignedLocalEvent` 的附加参数（如 `{ entityHash }`）
  * @returns {Promise<object>} 签名事件
  */
-export async function createChannel(username, groupId, options) {
+export async function createChannel(username, groupId, options, appendOptions = {}) {
 	const channelId = options.channelId || randomUUID()
 	const created = await appendSignedLocalEvent(username, groupId, {
 		type: 'channel_create',
@@ -40,7 +41,7 @@ export async function createChannel(username, groupId, options) {
 			subRoomId: options.subRoomId,
 			manualItems: options.manualItems,
 		},
-	})
+	}, appendOptions)
 	const { appendChannelKeyRotate } = await import('../channel_keys/schedule.mjs')
 	await appendChannelKeyRotate(username, groupId, channelId)
 	return created
@@ -60,6 +61,34 @@ export async function updateChannelLinks(username, groupId, channelId, links) {
 		timestamp: Date.now(),
 		content: { channelId, updates: { links: [...links] } },
 	})
+}
+
+/**
+ * 基于当前 state 向父频道的 `links` 末尾追加一个子频道 id。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} parentChannelId 父频道 ID
+ * @param {string} childId 子频道 id
+ * @returns {Promise<object>} 签名事件
+ */
+export async function appendChannelLink(username, groupId, parentChannelId, childId) {
+	const { state } = await getState(username, groupId)
+	const links = [...state.channels?.[parentChannelId]?.links || [], childId]
+	return updateChannelLinks(username, groupId, parentChannelId, links)
+}
+
+/**
+ * 基于当前 state 从父频道的 `links` 中移除一个子频道 id。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} parentChannelId 父频道 ID
+ * @param {string} childId 子频道 id
+ * @returns {Promise<object>} 签名事件
+ */
+export async function removeChannelLink(username, groupId, parentChannelId, childId) {
+	const { state } = await getState(username, groupId)
+	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id !== childId)
+	return updateChannelLinks(username, groupId, parentChannelId, links)
 }
 
 /**

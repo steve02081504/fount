@@ -12,7 +12,7 @@ import { showToastI18n } from '/scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { escapeRegExp } from '/scripts/lib/regex.mjs'
-import { aliasForEntity, aliasForGroup, setEntityAlias } from '../shared/aliases.mjs'
+import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
 import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
 import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAvatar.mjs'
@@ -145,7 +145,6 @@ export async function loadFriendsList() {
 	})
 
 	// 多人聊天群放在好友（DM）会话下方，便于新开对话置顶、群聊靠底。
-	const dmRows = rows
 	const groupRows = store.sidebar.groups
 		.filter(group => !resolveFriendBinding(group))
 		.map(group => ({
@@ -167,7 +166,7 @@ export async function loadFriendsList() {
 		return a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' })
 	})
 
-	return [...dmRows, ...groupRows]
+	return [...rows, ...groupRows]
 }
 
 /**
@@ -191,16 +190,15 @@ async function friendRowTemplateData(friend, details) {
 	if (friend.kind === 'group') {
 		const seed = friend.groupId
 		const groupName = await groupDisplayName(friend.groupId, friend.displayName)
-		const resolvedName = aliasForGroup(friend.groupId) || groupName
 		return {
 			kind: 'group',
 			name: friend.groupId,
 			groupId: friend.groupId,
 			entityHash: '',
-			displayName: resolvedName,
+			displayName: groupName,
 			subtitle: '',
 			activeClass: store.context.currentGroupId === friend.groupId ? ' active' : '',
-			...listAvatarTemplateFields(seed, resolvedName),
+			...listAvatarTemplateFields(seed, groupName),
 		}
 	}
 
