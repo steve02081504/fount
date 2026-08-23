@@ -1,43 +1,40 @@
-import process from 'node:process'
-
 import { sleep } from 'fount/scripts/test/core/wait.mjs'
 import { createSingleNodeProbe } from 'fount/scripts/test/live/singleNode/helpers.mjs'
 
-const { chatApiJson } = await createSingleNodeProbe()
+const { chatApiJson, testCase, completeLiveScript } = await createSingleNodeProbe()
 
-console.log('=== 1. Create group ===')
-const g = await chatApiJson('POST', '/groups/', { name: 'AI测试群', defaultChannelName: '综合' })
-const { groupId } = g
-const channelId = g.defaultChannelId
-console.log(`groupId=${groupId} channelId=${channelId}`)
+console.log('=== Setup: create group & add char noai_locale_reporter ===')
+const { groupId, defaultChannelId: channelId } = await chatApiJson('POST', '/groups/', { name: 'AI测试群', defaultChannelName: '综合' })
+await chatApiJson('POST', `/groups/${groupId}/char`, { charname: 'noai_locale_reporter' })
 
-console.log('\n=== 2. Add char test_streamer ===')
-await chatApiJson('POST', `/groups/${groupId}/char`, { charname: 'test_streamer' })
+await testCase('AI char reply follows user message locale (zh-CN) and is not marked edited', async () => {
+	await chatApiJson('POST', `/groups/${groupId}/channels/${channelId}/messages`, {
+		content: { content: '请说点什么', locale: 'zh-CN' },
+	})
+	await chatApiJson('POST', `/groups/${groupId}/channels/${channelId}/trigger-reply`, { charname: 'noai_locale_reporter' })
 
-console.log('\n=== 3. Send user message ===')
-await chatApiJson('POST', `/groups/${groupId}/channels/${channelId}/messages`, {
-	content: { content: '请说点什么' },
+	let reply = null
+	for (let attemptIndex = 0; attemptIndex < 10; attemptIndex++) {
+		await sleep(2000)
+		const list = await chatApiJson('GET', `/groups/${groupId}/channels/${channelId}/messages?limit=20`)
+		const charRows = list.messages?.filter(row => row.charId && !row.content?.is_generating) ?? []
+		if (charRows.length >= 1) {
+			reply = charRows[charRows.length - 1]
+			break
+		}
+		console.log(`poll #${attemptIndex} (${list.messages?.length ?? 0} messages, waiting for char...)`)
+	}
+	if (!reply) return false
+	if (reply.wasEdited) {
+		console.log('  note  char reply marked as edited (wasEdited=true)')
+		return false
+	}
+	if (String(reply.content?.content || '') !== '【中文回复】') {
+		console.log(`  note  char reply not localized: ${String(reply.content?.content || '').slice(0, 60)}`)
+		return false
+	}
+	return true
 })
 
-console.log('\n=== 4. Trigger char reply ===')
-await chatApiJson('POST', `/groups/${groupId}/channels/${channelId}/trigger-reply`, { charname: 'test_streamer' })
-
-console.log('\n=== 5. Poll for char reply (<=20s) ===')
-let charReply = false
-for (let i = 0; i < 10; i++) {
-	await sleep(2000)
-	const list = await chatApiJson('GET', `/groups/${groupId}/channels/${channelId}/messages?limit=20`)
-	const charRows = list.messages?.filter(row => row.charId && !row.content?.is_generating) ?? []
-	if (charRows.length >= 1) {
-		charReply = true
-		console.log(`  ok    char reply after poll #${i}`)
-		break
-	}
-	console.log(`poll #${i} (${list.messages?.length ?? 0} messages, waiting for char...)`)
-}
-if (!charReply) {
-	console.log('  FAIL  no char reply within timeout')
-	process.exit(1)
-}
-
 console.log('\n=== PASS smoke_ai ===')
+completeLiveScript()

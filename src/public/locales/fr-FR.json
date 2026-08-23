@@ -521,6 +521,11 @@
 				"editorRemoved": "Configuration fount supprimée des raccourcis du terminal de l'éditeur : `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "Le répertoire d'installation de fount est sur le point d'être supprimé du disque : `${path}`\nVeuillez confirmer qu'il s'agit bien du répertoire à supprimer.",
+				"yn": "[Y/N]",
+				"aborted": "Annulé, rien n'a été supprimé.",
+				"externalMountWarning": "Attention : fount est situé sur un support externe/partagé (`${target}`) !\nCe répertoire peut exister simultanément sur l'hôte ou la machine virtuelle. `fount remove` le supprimera aussi là-bas, soyez donc particulièrement prudent.",
+				"nonInteractiveRequiresForce": "La suppression ne peut pas être confirmée dans un environnement non interactif. Si vous êtes certain de vouloir supprimer `fount` (${path}), utilisez `fount remove --force` pour ignorer la confirmation.",
 				"fountUninstallationComplete": "désinstallation des founts terminée.",
 				"fountInstallationDirRemoved": "Le répertoire d'installation des founts a été supprimé.",
 				"protocolHandlerRemoved": "Le gestionnaire de protocole `fount://` a été supprimé.",
@@ -6015,6 +6020,28 @@
 			"next": {
 				"aria-label": "Média suivant"
 			}
+		}
+	},
+	"pro_cancel_screen": {
+		"title": "Votre abonnement fount pro a été annulé",
+		"description": "Découvrez comment annuler votre abonnement fount pro et partagez la raison de votre annulation.",
+		"intro": "Nous sommes désolés de vous voir partir. Pour nous aider à améliorer fount pro, pourriez-vous nous indiquer pourquoi vous vous désabonnez ?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Sélectionner la langue"
+			},
+			"search": {
+				"placeholder": "Rechercher une langue...",
+				"aria-label": "Rechercher une langue"
+			}
+		},
+		"form": {
+			"reason_label": "Motif du désabonnement",
+			"reason_placeholder": "Par exemple : trop cher, des fonctionnalités dont je ne me sers pas, ou plus nécessaire pour le moment...",
+			"submit": "Envoyer le motif"
+		},
+		"result": {
+			"title": "Votre motif envoyé"
 		}
 	},
 	"oauth_handler": {

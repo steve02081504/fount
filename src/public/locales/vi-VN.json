@@ -521,6 +521,11 @@
 				"editorRemoved": "Đã xóa cấu hình fount khỏi phím tắt terminal của trình soạn thảo: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "Thư mục cài đặt fount sắp bị xóa khỏi đĩa: `${path}`\nVui lòng xác nhận đây thực sự là thư mục bạn muốn xóa.",
+				"yn": "[Y/N]",
+				"aborted": "Đã hủy, không có gì bị xóa.",
+				"externalMountWarning": "Cảnh báo: fount nằm trên mount ngoài/dùng chung (`${target}`)!\nThư mục này cũng có thể tồn tại trên máy chủ hoặc máy ảo khác. `fount remove` sẽ xóa nó ở đó luôn, vì vậy hãy cẩn thận hơn.",
+				"nonInteractiveRequiresForce": "Việc xóa không thể được xác nhận trong môi trường không tương tác. Nếu bạn chắc chắn muốn xóa `fount` (${path}), hãy sử dụng `fount remove --force` để bỏ qua xác nhận.",
 				"fountUninstallationComplete": "quá trình gỡ cài đặt fount đã hoàn tất.",
 				"fountInstallationDirRemoved": "Thư mục cài đặt fount đã bị xóa.",
 				"protocolHandlerRemoved": "Trình xử lý giao thức `fount://` đã bị xóa.",
@@ -6009,6 +6014,28 @@
 			"next": {
 				"aria-label": "Tiếp theo"
 			}
+		}
+	},
+	"pro_cancel_screen": {
+		"title": "Đăng ký fount pro của bạn đã bị hủy",
+		"description": "Tìm hiểu cách hủy đăng ký fount pro của bạn và chia sẻ lý do hủy.",
+		"intro": "Rất tiếc khi bạn rời đi. Để giúp chúng tôi cải thiện fount pro, bạn có thể cho biết lý do hủy đăng ký không?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Chọn ngôn ngữ"
+			},
+			"search": {
+				"placeholder": "Tìm kiếm ngôn ngữ...",
+				"aria-label": "Tìm kiếm ngôn ngữ"
+			}
+		},
+		"form": {
+			"reason_label": "Lý do hủy đăng ký",
+			"reason_placeholder": "Ví dụ: quá đắt, các tính năng tôi không dùng, hoặc tạm thời không còn cần...",
+			"submit": "Gửi lý do"
+		},
+		"result": {
+			"title": "Lý do bạn đã gửi"
 		}
 	},
 	"oauth_handler": {

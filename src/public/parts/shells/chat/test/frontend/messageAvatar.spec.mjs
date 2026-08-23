@@ -68,14 +68,24 @@ test.describe('Chat message avatar grouping', () => {
 		const box = await page.evaluate((messageId) => {
 			const container = document.querySelector('#messages')
 			const messageRow = container.querySelector(`.message-row.last-in-group[data-message-id="${messageId}"]`)
-			container.scrollTop = (messageRow.offsetTop + messageRow.offsetHeight) - container.clientHeight - 40
+			// 行在内容坐标系的底边（getBoundingClientRect + 当前 scrollTop，与 offsetParent 无关），
+			// 由此下卷 40px，确保消息底边稳定落在可视区之下 —— 避免 offsetTop 相对偏移父节点导致的误夹。
+			const containerRect = container.getBoundingClientRect()
+			const rowRect = messageRow.getBoundingClientRect()
+			const rowBottomInContent = rowRect.bottom - containerRect.top + container.scrollTop
+			// `#messages` 有 `scroll-behavior: smooth`，直接赋值 scrollTop 会触发平滑动画，
+			// 立即读 getBoundingClientRect 会拿到滚动前的位置。这里临时切回瞬时滚动再测。
+			const prevScrollBehavior = container.style.scrollBehavior
+			container.style.scrollBehavior = 'auto'
+			container.scrollTop = rowBottomInContent - container.clientHeight - 40
+			container.style.scrollBehavior = prevScrollBehavior
 			const avatarElement = messageRow.querySelector('.chat-image')
 			const rect = avatarElement.getBoundingClientRect()
-			const rowRect = messageRow.getBoundingClientRect()
-			const containerRect = container.getBoundingClientRect()
+			const rowRectAfter = messageRow.getBoundingClientRect()
+			const containerRectAfter = container.getBoundingClientRect()
 			return {
-				containerBottom: containerRect.bottom,
-				rowBottom: rowRect.bottom,
+				containerBottom: containerRectAfter.bottom,
+				rowBottom: rowRectAfter.bottom,
 				avatarY: rect.y,
 				avatarH: rect.height,
 				alignSelf: window.getComputedStyle(avatarElement).alignSelf,

@@ -54,7 +54,11 @@
 			"src/public/parts/shells/chat/test/live/scripts/smoke_chat.mjs"
 		],
 		"liveSmokeAi": [
-			"src/public/parts/shells/chat/test/live/scripts/smoke_ai.mjs"
+			"src/public/parts/shells/chat/test/live/scripts/smoke_ai.mjs",
+			"src/public/parts/shells/chat/test/live/fixtures/chars/noai_locale_reporter/**",
+			"src/public/parts/shells/chat/src/chat/session/chatRequest.mjs",
+			"src/public/parts/shells/chat/src/chat/dag/chatLogMirror.mjs",
+			"src/public/parts/shells/chat/public/shared/messageMerge.mjs"
 		],
 		"liveE2eSingle": [
 			"src/public/parts/shells/chat/test/live/scripts/e2e_single.mjs"
@@ -709,7 +713,11 @@
 					"expected": "24s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/deepLink.spec.mjs",
-						"src/public/parts/shells/chat/public/shared/runUri.mjs"
+						"src/public/parts/shells/chat/test/frontend/run.mjs",
+						"src/public/parts/shells/chat/public/shared/runUri.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/selectChannel.mjs",
+						"src/public/parts/shells/chat/public/hub/friendChat.mjs",
+						"src/public/parts/shells/chat/test/fixtures/chars/on_message_yes/**"
 					]
 				},
 				{
@@ -759,10 +767,17 @@
 				},
 				{
 					"name": "messageActions",
-					"expected": "2m44s",
+					"expected": "3m30s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/messageActions.spec.mjs",
-						"src/public/parts/shells/chat/public/hub/messages/**"
+						"src/public/parts/shells/chat/test/frontend/run.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/**",
+						"src/public/parts/shells/chat/public/hub/gestures/chatGestures.mjs",
+						"src/public/parts/shells/chat/public/hub/messages.css",
+						"src/public/parts/shells/chat/src/chat/dag/chatLogMirror.mjs",
+						"src/public/parts/shells/chat/src/chat/session/chatRequest.mjs",
+						"src/public/parts/shells/chat/public/shared/messageMerge.mjs",
+						"src/public/parts/shells/chat/test/live/fixtures/chars/noai_locale_reporter/**"
 					]
 				},
 				{

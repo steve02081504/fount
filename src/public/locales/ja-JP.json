@@ -521,6 +521,11 @@
 				"editorRemoved": "エディターのターミナルキーバインドから fount の設定を削除しました: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "fount のインストール ディレクトリをディスクから削除しようとしています: `${path}`\nこれが本当に削除するディレクトリであることを確認してください。",
+				"yn": "[Y/N]",
+				"aborted": "キャンセルされました。何も削除されませんでした。",
+				"externalMountWarning": "警告: fount は外部/共有マウント (`${target}`) 上にあります。\nこのディレクトリはホストまたは仮想マシンに同時に存在する可能性があります。`fount remove` を実行するとそこも一緒に削除されてしまうため、十分に注意してください。",
+				"nonInteractiveRequiresForce": "非対話型環境では削除を確認できません。`fount` (${path}) を確実に削除したい場合は、`fount remove --force` を使用して確認をスキップします。",
 				"fountUninstallationComplete": "fountのアンインストールが完了しました。",
 				"fountInstallationDirRemoved": "fount のインストール ディレクトリは削除されました。",
 				"protocolHandlerRemoved": "`fount://` プロトコル ハンドラーは削除されました。",
@@ -6009,6 +6014,28 @@
 			"next": {
 				"aria-label": "次へ"
 			}
+		}
+	},
+	"pro_cancel_screen": {
+		"title": "fount pro のサブスクリプションが解約されました",
+		"description": "fount pro のサブスクリプションを解約する方法と、解約理由の記入についてご案内します。",
+		"intro": "ご利用いただきありがとうございました。今後の改善のため、解約された理由を教えていただけますか?",
+		"language_selector": {
+			"button": {
+				"aria-label": "言語を選択"
+			},
+			"search": {
+				"placeholder": "言語を検索...",
+				"aria-label": "言語を検索"
+			}
+		},
+		"form": {
+			"reason_label": "解約理由",
+			"reason_placeholder": "例：価格が高い／使っていない機能がある／今は必要ない…",
+			"submit": "送信する"
+		},
+		"result": {
+			"title": "送信した解約理由"
 		}
 	},
 	"oauth_handler": {

@@ -521,6 +521,11 @@
 				"editorRemoved": "fount-configuratie verwijderd uit terminaltoetsen van editor: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "De fount-installatiemap staat op het punt om van de schijf te worden verwijderd: `${path}`\nBevestig dat dit inderdaad de map is die je wilt verwijderen.",
+				"yn": "[Y/N]",
+				"aborted": "Geannuleerd, er is niets verwijderd.",
+				"externalMountWarning": "Waarschuwing: fount bevindt zich op een externe/gedeelde mount (`${target}`)!\nDeze map kan tegelijkertijd op de host of op de virtuele machine bestaan. `fount remove` verwijdert hem daar ook, dus wees extra voorzichtig.",
+				"nonInteractiveRequiresForce": "Verwijdering kan niet worden bevestigd in een niet-interactieve omgeving. Als je zeker weet dat je `fount` (${path}) wilt verwijderen, gebruik dan `fount remove --force` om de bevestiging over te slaan.",
 				"fountUninstallationComplete": "Het verwijderen van de fount is voltooid.",
 				"fountInstallationDirRemoved": "De font-installatiemap is verwijderd.",
 				"protocolHandlerRemoved": "De protocolhandler `fount://` is verwijderd.",
@@ -6015,6 +6020,28 @@
 			"next": {
 				"aria-label": "Volgend item"
 			}
+		}
+	},
+	"pro_cancel_screen": {
+		"title": "Uw fount pro-abonnement is geannuleerd",
+		"description": "Lees hoe u uw fount pro-abonnement kunt opzeggen en deel de reden van uw opzegging.",
+		"intro": "Jammer dat u ons verlaat. Kunt u ons, om fount pro beter te maken, vertellen waarom u uw abonnement opzegt?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Selecteer taal"
+			},
+			"search": {
+				"placeholder": "Taal zoeken...",
+				"aria-label": "Taal zoeken"
+			}
+		},
+		"form": {
+			"reason_label": "Reden van opzegging",
+			"reason_placeholder": "Bijvoorbeeld: te duur, functies die ik niet gebruik, of voorlopig niet meer nodig...",
+			"submit": "Reden versturen"
+		},
+		"result": {
+			"title": "De reden die u heeft verstuurd"
 		}
 	},
 	"oauth_handler": {

@@ -521,6 +521,11 @@
 				"editorRemoved": "fount-stillingum fjarlægt úr lyklaborðsviðmóti skels ritlis: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "Verið er að eyða uppsetningarmöppunni fyrir fount af disknum: `${path}`\nVinsamlegast staðfestu að þetta sé örugglega mappan sem þú ætlar að fjarlægja.",
+				"yn": "[Y/N]",
+				"aborted": "Hætt við, ekkert var eytt.",
+				"externalMountWarning": "Viðvörun: fount er á ytri/samnýttum tengistað (`${target}`)!\nÞessi mappa gæti líka verið til í vélinni eða annarri sýndarvél. `fount remove` mun eyða henni þar líka, svo vertu sérstaklega varkár.",
+				"nonInteractiveRequiresForce": "Ekki er hægt að staðfesta eyðingu í ekki gagnvirku umhverfi. Ef þú ert viss um að þú viljir fjarlægja `fount` (${path}), notaðu `fount remove --force` til að sleppa staðfestingu.",
 				"fountUninstallationComplete": "Fjarlægingu lindarinnar lokið.",
 				"fountInstallationDirRemoved": "Uppsetningarskrá leturgerðarinnar hefur verið fjarlægð.",
 				"protocolHandlerRemoved": "The `fount://` samskiptareglur hefur verið fjarlægður.",
@@ -6009,6 +6014,28 @@
 			"next": {
 				"aria-label": "Næsti miðill"
 			}
+		}
+	},
+	"pro_cancel_screen": {
+		"title": "fount pro áskriftinni þinni hefur verið sagt upp",
+		"description": "Lærðu hvernig þú segir upp fount pro áskriftina þína og deildu ástæðunni fyrir uppsögninni.",
+		"intro": "Leiðinlegt að sjá þig fara. Til að hjálpa okkur að bæta fount pro, gætirðu sagt okkur hvers vegna þú hættir áskriftinni?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Veldu tungumál"
+			},
+			"search": {
+				"placeholder": "Leita að tungumáli...",
+				"aria-label": "Leita að tungumáli"
+			}
+		},
+		"form": {
+			"reason_label": "Ástæða uppsagnar",
+			"reason_placeholder": "Til dæmis: of dýrt, aðgerðir sem ég nota ekki, eða ekki lengur þörf á að svo stöddu...",
+			"submit": "Senda ástæðu"
+		},
+		"result": {
+			"title": "Ástæðan sem þú sendir"
 		}
 	},
 	"oauth_handler": {

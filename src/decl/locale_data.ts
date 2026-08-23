@@ -507,6 +507,11 @@ export type LocaleData = {
 				editorRemoved: string
 			}
 			remove: {
+				confirmPrompt: string
+				yn: string
+				aborted: string
+				externalMountWarning: string
+				nonInteractiveRequiresForce: string
 				fountUninstallationComplete: string
 				fountInstallationDirRemoved: string
 				protocolHandlerRemoved: string
@@ -5982,6 +5987,28 @@ export type LocaleData = {
 			}
 		}
 	}
+	pro_cancel_screen: {
+		title: string
+		description: string
+		intro: string
+		language_selector: {
+			button: {
+				'aria-label': string
+			}
+			search: {
+				placeholder: string
+				'aria-label': string
+			}
+		}
+		form: {
+			reason_label: string
+			reason_placeholder: string
+			submit: string
+		}
+		result: {
+			title: string
+		}
+	}
 	oauth_handler: {
 		title: string
 		description: string
@@ -6324,7 +6351,10 @@ export type LocaleKeyParams = {
 	'fountConsole.path.install.permissionDeniedAsRoot': { path: string | number }
 	'fountConsole.path.install.permissionDeniedNotRoot': { path: string | number }
 	'fountConsole.path.protocol.registerFailed': { message: string | number }
+	'fountConsole.path.remove.confirmPrompt': { path: string | number }
+	'fountConsole.path.remove.externalMountWarning': { target: string | number }
 	'fountConsole.path.remove.moduleRemoved': { module: string | number }
+	'fountConsole.path.remove.nonInteractiveRequiresForce': { path: string | number }
 	'fountConsole.path.remove.remove.backgroundRunnerFailed': { message: string | number }
 	'fountConsole.path.remove.remove.denoFailed': { message: string | number }
 	'fountConsole.path.remove.remove.moduleFailed': { message: string | number; module: string | number }

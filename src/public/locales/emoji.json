@@ -521,6 +521,11 @@
 				"editorRemoved": "✅ 👋 ⛲ ⌨️ @ 📝🖥️ `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "🗑️ ⛲ 📁: `${path}`\n✅ ❓",
+				"yn": "[Y/N]",
+				"aborted": "⛔ 🚫",
+				"externalMountWarning": "⚠️ ⛲ 🔗/🌍 `${target}`\n🛑 🖥️/📦 `fount remove` 🗑️",
+				"nonInteractiveRequiresForce": "❌ 🔒 💬 ❓ ⛲ `${path}`\n👉 `fount remove --force`",
 				"fountUninstallationComplete": "✅ ⛲ 👋💯",
 				"fountInstallationDirRemoved": "✅ ⛲ 📁 👋",
 				"protocolHandlerRemoved": "✅ 👋 🔗⛲://",
@@ -6009,6 +6014,28 @@
 			"next": {
 				"aria-label": "➡️"
 			}
+		}
+	},
+	"pro_cancel_screen": {
+		"title": "fount pro 📄❌ 🚫",
+		"description": "🔎📖 ❓ fount pro 📄❌ + ✍️ ✋🤷",
+		"intro": "👋😢. ✊ fount pro 👍📈, 💬 👉 🤷❓",
+		"language_selector": {
+			"button": {
+				"aria-label": "🌐"
+			},
+			"search": {
+				"placeholder": "🔍🌐...",
+				"aria-label": "🔍🌐"
+			}
+		},
+		"form": {
+			"reason_label": "🤷",
+			"reason_placeholder": "💸💸 / 🔧❌🔨 / ⏳🙅...",
+			"submit": "📨"
+		},
+		"result": {
+			"title": "👉📨🤷"
 		}
 	},
 	"oauth_handler": {

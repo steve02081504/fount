@@ -1,5 +1,5 @@
 .drop-area {
-	border: var(--border) dashed var(--border-color);
+	border: var(--border) dashed color-mix(in srgb, var(--color-base-content) 25%, transparent);
 	border-radius: var(--radius-box);
 	padding: 20px;
 	text-align: center;
@@ -15,5 +15,5 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 8px;
-	border-bottom: var(--border) solid var(--border-color);
+	border-bottom: var(--border) solid color-mix(in srgb, var(--color-base-content) 25%, transparent);
 }

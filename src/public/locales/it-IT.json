@@ -521,6 +521,11 @@
 				"editorRemoved": "Configurazione fount rimossa dalle scorciatoie del terminale dell'editor: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "La directory di installazione di fount sta per essere eliminata dal disco: `${path}`\nConferma che questa sia effettivamente la directory da eliminare.",
+				"yn": "[Y/N]",
+				"aborted": "Annullato, non è stato eliminato nulla.",
+				"externalMountWarning": "Attenzione: fount si trova su un mount esterno/condiviso (`${target}`)!\nQuesta directory può esistere contemporaneamente sull'host o sulla macchina virtuale. `fount remove` la eliminerà anche lì, presta quindi molta attenzione.",
+				"nonInteractiveRequiresForce": "L'eliminazione non può essere confermata in un ambiente non interattivo. Se sei certo di voler rimuovere `fount` (${path}), usa `fount remove --force` per saltare la conferma.",
 				"fountUninstallationComplete": "disinstallazione di fount completata.",
 				"fountInstallationDirRemoved": "La directory di installazione di fount è stata rimossa.",
 				"protocolHandlerRemoved": "Il gestore del protocollo `fount://` è stato rimosso.",
@@ -6015,6 +6020,28 @@
 			"next": {
 				"aria-label": "Elemento multimediale successivo"
 			}
+		}
+	},
+	"pro_cancel_screen": {
+		"title": "Il tuo abbonamento a fount pro è stato annullato",
+		"description": "Scopri come annullare il tuo abbonamento a fount pro e condividi il motivo dell'annullamento.",
+		"intro": "Ci dispiace vederti andare via. Per aiutarci a migliorare fount pro, potresti dirci perché ti sei disiscritto?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Seleziona la lingua"
+			},
+			"search": {
+				"placeholder": "Cerca una lingua...",
+				"aria-label": "Cerca una lingua"
+			}
+		},
+		"form": {
+			"reason_label": "Motivo per cui ti sei disiscritto",
+			"reason_placeholder": "Ad esempio: troppo costoso, funzioni che non uso o che per ora non mi servono...",
+			"submit": "Invia il motivo"
+		},
+		"result": {
+			"title": "Il motivo che hai inviato"
 		}
 	},
 	"oauth_handler": {

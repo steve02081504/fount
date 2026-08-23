@@ -106,7 +106,7 @@ function script:Ensure-FountConfig {
 	if (-not (Test-FountConsoleInput)) {
 		$Host.UI.WriteErrorLine((Get-I18n -key 'eula.required'))
 		$Host.UI.WriteErrorLine($script:FountEulaUrl)
-		& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove --force
 		exit 1
 	}
 	$script:FountEulaAcceptFile = Join-Path ([IO.Path]::GetTempPath()) "fount-eula-accepted-$PID"
@@ -118,7 +118,7 @@ function script:Ensure-FountConfig {
 	if (-not (Confirm-FountEula -AcceptFile $script:FountEulaAcceptFile)) {
 		Write-Host (Get-I18n -key 'eula.declined')
 		Stop-FountStatusServer
-		& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') remove --force
 		exit 1
 	}
 	Copy-FountDefaultConfig

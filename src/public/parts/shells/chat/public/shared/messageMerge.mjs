@@ -65,7 +65,8 @@ export function applyMessageEditToRow(row, editContent) {
 	const content = mergeMessageContent(row.content, patchContent)
 	if ('is_generating' in patchContent)
 		content.is_generating = !!patchContent.is_generating
-	return { ...row, content, wasEdited: true }
+	const isGenerationFinalize = !!editContent?.extension?.chat?.generationFinalize
+	return { ...row, content, wasEdited: !isGenerationFinalize }
 }
 
 /**
@@ -144,7 +145,8 @@ export function mergeChannelMessagesForDisplay(messages) {
 				const content = mergeMessageContent(row.content, patchContent)
 				if ('is_generating' in patchContent)
 					content.is_generating = !!patchContent.is_generating
-				merged.push(withFeedback(attachDecryptView({ ...row, content, wasEdited: true }), feedback))
+				const isGenerationFinalize = !!patch?.extension?.chat?.generationFinalize
+				merged.push(withFeedback(attachDecryptView({ ...row, content, wasEdited: !isGenerationFinalize }), feedback))
 				continue
 			}
 		}

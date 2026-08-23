@@ -332,6 +332,7 @@ async function loadGeneratorAddons(generatorName) {
 				geti18n,
 				partpath,
 				parturl: '/parts/' + encodeURIComponent(partpath).replaceAll('%2F', ':'),
+				hosturl: location.origin,
 				sourceName: activeFile,
 				serviceSourcePath: currentServiceSourcePath,
 				element: generatorDisplayContainer,

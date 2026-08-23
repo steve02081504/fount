@@ -47,7 +47,7 @@ export function notificationSnippet(text, maxLen = SNIPPET_MAX_LEN) {
 		.replace(/`[^`]*`/g, ' ')
 		.replace(/!\[[^\]]*]\([^)]*\)/g, ' ')
 		.replace(/\[([^\]]*)]\([^)]*\)/g, '$1')
-		.replace(/[\n\r#*>_\-]+/g, ' ')
+		.replace(/[\n\r#*>_-]+/g, ' ')
 		.replace(/\s+/g, ' ')
 		.trim()
 	if (!plain) return null

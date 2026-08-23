@@ -521,6 +521,11 @@
 				"editorRemoved": "Configuración de fount eliminada de los atajos del terminal del editor: `${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "El directorio de instalación de fount está a punto de eliminarse del disco: `${path}`\nConfirme que es efectivamente el directorio que desea eliminar.",
+				"yn": "[Y/N]",
+				"aborted": "Cancelado, no se eliminó nada.",
+				"externalMountWarning": "Advertencia: fount está ubicado en un soporte externo/compartido (`${target}`)!\nEste directorio puede existir a la vez en el host o en la máquina virtual. `fount remove` lo eliminará también allí, así que tenga mucho cuidado.",
+				"nonInteractiveRequiresForce": "La eliminación no se puede confirmar en un entorno no interactivo. Si está seguro de que desea eliminar `fount` (${path}), use `fount remove --force` para omitir la confirmación.",
 				"fountUninstallationComplete": "Se completó la desinstalación de la fount.",
 				"fountInstallationDirRemoved": "Se ha eliminado el directorio de instalación de la fount.",
 				"protocolHandlerRemoved": "Se ha eliminado el controlador de protocolo `fount://`.",
@@ -6015,6 +6020,28 @@
 			"next": {
 				"aria-label": "Medio siguiente"
 			}
+		}
+	},
+	"pro_cancel_screen": {
+		"title": "Su suscripción a fount pro ha sido cancelada",
+		"description": "Descubra cómo cancelar su suscripción a fount pro y comparta el motivo de la cancelación.",
+		"intro": "Sentimos que se vaya. Para ayudarnos a mejorar fount pro, ¿podría contarnos por qué se da de baja?",
+		"language_selector": {
+			"button": {
+				"aria-label": "Seleccionar idioma"
+			},
+			"search": {
+				"placeholder": "Buscar idioma...",
+				"aria-label": "Buscar idioma"
+			}
+		},
+		"form": {
+			"reason_label": "Motivo de la baja",
+			"reason_placeholder": "Por ejemplo: demasiado caro, funciones que no utilizo o que ya no necesito por ahora...",
+			"submit": "Enviar motivo"
+		},
+		"result": {
+			"title": "El motivo que envió"
 		}
 	},
 	"oauth_handler": {

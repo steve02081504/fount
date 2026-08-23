@@ -520,6 +520,11 @@
 				"editorRemoved": "已從編輯器終端機按鍵對應移除 fount 設定：`${path}`"
 			},
 			"remove": {
+				"confirmPrompt": "即將從磁碟刪除 fount 安裝目錄：`${path}`\n請確認這確實是要刪除的目錄。",
+				"yn": "[Y/N]",
+				"aborted": "已取消，未刪除任何內容。",
+				"externalMountWarning": "警告：fount 位於外部/共享掛載（`${target}`）上！\n目錄可能也存在於主機或其他虛擬機器中，`fount remove` 會一併刪除，請格外小心。",
+				"nonInteractiveRequiresForce": "無法在非互動式環境中確認刪除。若確定要移除 `fount`（${path}），請使用 `fount remove --force` 略過確認。",
 				"fountUninstallationComplete": "fount 解除安裝完成。",
 				"fountInstallationDirRemoved": "fount 安裝目錄已移除。",
 				"protocolHandlerRemoved": "`fount://` 協定處理器已移除。",
@@ -6008,6 +6013,28 @@
 			"next": {
 				"aria-label": "下一張"
 			}
+		}
+	},
+	"pro_cancel_screen": {
+		"title": "fount pro 訂閱已取消",
+		"description": "了解如何取消 fount pro 訂閱並填寫退訂原因。",
+		"intro": "很遺憾看到你離開。為了讓 fount pro 變得更好，可以告訴我們退訂的原因嗎？",
+		"language_selector": {
+			"button": {
+				"aria-label": "選擇語言"
+			},
+			"search": {
+				"placeholder": "搜尋語言...",
+				"aria-label": "搜尋語言"
+			}
+		},
+		"form": {
+			"reason_label": "退訂原因",
+			"reason_placeholder": "例如：價格太高 / 功能用不上 / 暫時用不到了…",
+			"submit": "提交原因"
+		},
+		"result": {
+			"title": "你提交的退訂原因"
 		}
 	},
 	"oauth_handler": {
