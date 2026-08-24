@@ -1712,7 +1712,7 @@
 						"overridden": "Overschreven",
 						"clearOverride": "Alles terugzetten naar overnemen",
 						"noRoles": "Er zijn momenteel geen rollen om te configureren",
-						"updateFailed": "Bijwerken van groepsmachtigingen is mislukt",
+						"updateFailed": "Bijwerken van groepsmachtigingen is mislukt: ${error}",
 						"updated": "Groepsmachtigingen bijgewerkt"
 					}
 				},

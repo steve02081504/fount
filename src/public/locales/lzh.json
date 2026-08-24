@@ -1712,7 +1712,7 @@
 						"overridden": "已覆",
 						"clearOverride": "清覆",
 						"noRoles": "今暫無可設之角色",
-						"updateFailed": "群權限更未遂",
+						"updateFailed": "群權限更未遂：${error}",
 						"updated": "群權限已更"
 					}
 				},

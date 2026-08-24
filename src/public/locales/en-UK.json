@@ -1712,7 +1712,7 @@
 						"overridden": "Overridden",
 						"clearOverride": "Clear override",
 						"noRoles": "No roles available to configure",
-						"updateFailed": "Failed to update group permissions",
+						"updateFailed": "Failed to update group permissions: ${error}",
 						"updated": "Group permissions updated"
 					}
 				},

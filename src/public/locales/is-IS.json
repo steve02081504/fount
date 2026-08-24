@@ -1712,7 +1712,7 @@
 						"overridden": "Yfirskrifað",
 						"clearOverride": "Endurstilla allt í erfa",
 						"noRoles": "Engin hlutverk til að stilla eins og er",
-						"updateFailed": "Mistókst að uppfæra hópheimildir",
+						"updateFailed": "Mistókst að uppfæra hópheimildir: ${error}",
 						"updated": "Hópheimildir hafa verið uppfærðar"
 					}
 				},

@@ -1712,7 +1712,7 @@
 						"overridden": "Anulado",
 						"clearOverride": "Restablecer anulación",
 						"noRoles": "No hay roles configurables por el momento",
-						"updateFailed": "No se pudieron actualizar los permisos de grupo",
+						"updateFailed": "No se pudieron actualizar los permisos de grupo: ${error}",
 						"updated": "Permisos de grupo actualizados"
 					}
 				},

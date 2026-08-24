@@ -1711,7 +1711,7 @@
 						"overridden": "已覆蓋",
 						"clearOverride": "清除覆蓋",
 						"noRoles": "暫無可配置角色",
-						"updateFailed": "群組權限更新失敗",
+						"updateFailed": "群組權限更新失敗：${error}",
 						"updated": "群組權限已更新"
 					}
 				},

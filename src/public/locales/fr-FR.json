@@ -1712,7 +1712,7 @@
 						"overridden": "Remplacé",
 						"clearOverride": "Annuler le remplacement",
 						"noRoles": "Aucun rôle configurable pour le moment",
-						"updateFailed": "Échec de la mise à jour des autorisations de groupe",
+						"updateFailed": "Échec de la mise à jour des autorisations de groupe : ${error}",
 						"updated": "Autorisations de groupe mises à jour"
 					}
 				},

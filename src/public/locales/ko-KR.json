@@ -1712,7 +1712,7 @@
 						"overridden": "재정의됨",
 						"clearOverride": "모두 상속으로 재설정",
 						"noRoles": "구성할 역할이 없습니다.",
-						"updateFailed": "그룹 권한 업데이트에 실패했습니다.",
+						"updateFailed": "그룹 권한 업데이트에 실패했습니다: ${error}",
 						"updated": "그룹 권한이 업데이트되었습니다."
 					}
 				},

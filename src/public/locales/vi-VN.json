@@ -1712,7 +1712,7 @@
 						"overridden": "Đã ghi đè",
 						"clearOverride": "Xóa ghi đè",
 						"noRoles": "Hiện chưa có vai trò nào để cấu hình",
-						"updateFailed": "Cập nhật quyền của nhóm không thành công",
+						"updateFailed": "Cập nhật quyền của nhóm không thành công: ${error}",
 						"updated": "Đã cập nhật quyền của nhóm"
 					}
 				},

@@ -1712,7 +1712,7 @@
 						"overridden": "上書き済み",
 						"clearOverride": "上書きを解除",
 						"noRoles": "設定できるロールがありません",
-						"updateFailed": "グループ権限の更新に失敗しました",
+						"updateFailed": "グループ権限の更新に失敗しました: ${error}",
 						"updated": "グループ権限を更新しました"
 					}
 				},
