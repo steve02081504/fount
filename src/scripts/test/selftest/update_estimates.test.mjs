@@ -8,9 +8,9 @@ import { join } from 'node:path'
 
 import { assertEquals } from 'jsr:@std/assert'
 
-import { formatExpected, parseExpectedMs, roundExpectedMs } from '../core/expected.mjs'
+import { formatExpected, isExpectedDrift, parseExpectedMs, roundExpectedMs } from '../core/expected.mjs'
 import { suiteKey } from '../core/state.mjs'
-import { updateManifestEstimates } from '../core/update_estimates.mjs'
+import { applyDriftPatchToManifest, driftedEstimatePatch, updateManifestEstimates } from '../core/update_estimates.mjs'
 
 import { makeStateEntry, makeSuite } from './fixtures.mjs'
 
@@ -108,6 +108,83 @@ Deno.test('updateManifestEstimates writes suite and subtest expected after name'
 		assertEquals(written.suites[1].subtests[0].expected, '20s')
 		assertEquals(written.suites[1].subtests[1].expected, '30s')
 		assertEquals(Object.keys(written.suites[1].subtests[0])[1], 'expected')
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
+})
+
+Deno.test('isExpectedDrift only fires above the threshold relative to the larger', () => {
+	assertEquals(isExpectedDrift(16_000, 16_000), false)
+	assertEquals(isExpectedDrift(16_000, 16_900), false)
+	assertEquals(isExpectedDrift(16_000, 14_999), false)
+	assertEquals(isExpectedDrift(16_000, 17_601), true)
+	assertEquals(isExpectedDrift(16_000, 14_300), true)
+	assertEquals(isExpectedDrift(null, 16_000), true)
+	assertEquals(isExpectedDrift(16_000, null), false)
+	assertEquals(isExpectedDrift(16_000, undefined), false)
+	assertEquals(isExpectedDrift(16_347, 17_600), true)
+	assertEquals(isExpectedDrift(16_347, 17_499), false)
+})
+
+Deno.test('driftedEstimatePatch only includes drifted suite and subtest fields', () => {
+	const suite = makeSuite('demo', 'frontend', {
+		expectedMs: 90_000,
+		subtests: [
+			{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [], expectedMs: 20_000 },
+			{ name: 'feed', spec: 'feed.spec.mjs', triggers: [], expectedMs: 30_000 },
+		],
+	})
+	const entry = makeStateEntry({
+		baselineDurationMs: 120_000,
+		subtests: {
+			smoke: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 21_000, triggerHash: null },
+			feed: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 33_000, triggerHash: null },
+		},
+	})
+	const patch = driftedEstimatePatch(suite, entry)
+	// suite 90s→120s 漂移；smoke 20s→21s 未漂移；feed 30s→33s 未漂移
+	assertEquals(patch, { expected: '2m' })
+})
+
+Deno.test('driftedEstimatePatch returns null when nothing drifts or no baseline', () => {
+	const suite = makeSuite('demo', 'pure', { expectedMs: 16_000 })
+	const fresh = makeStateEntry({ baselineDurationMs: 16_200 })
+	assertEquals(driftedEstimatePatch(suite, fresh), null)
+	assertEquals(driftedEstimatePatch(suite, undefined), null)
+})
+
+Deno.test('applyDriftPatchToManifest writes only drifted fields and serializes same-path writes', async () => {
+	const repoRoot = await makeRepoRoot()
+	try {
+		const rel = 'src/parts/demo/test/manifest.json'
+		const abs = join(repoRoot, rel)
+		await mkdir(join(abs, '..'), { recursive: true })
+		await writeFile(abs, `${JSON.stringify({
+			id: 'demo',
+			suites: [
+				{ name: 'pure', expected: '16s', run: ['deno'] },
+				{ name: 'frontend', expected: '90s', run: ['deno'], subtests: [{ name: 'smoke', expected: '20s' }] },
+			],
+		}, null, '\t')}\n`, 'utf8')
+
+		const pure = makeSuite('demo', 'pure', { manifestPath: rel, expectedMs: 16_000 })
+		const frontend = makeSuite('demo', 'frontend', {
+			manifestPath: rel,
+			expectedMs: 90_000,
+			subtests: [{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [], expectedMs: 20_000 }],
+		})
+		// 并发写同一 manifest：一个漂移、一个不漂移。
+		const [pureChanged, frontendChanged] = await Promise.all([
+			applyDriftPatchToManifest(repoRoot, pure, { expected: '2m' }),
+			applyDriftPatchToManifest(repoRoot, frontend, { subtests: { smoke: '25s' } }),
+		])
+		assertEquals(pureChanged, true)
+		assertEquals(frontendChanged, true)
+		const written = JSON.parse(await readFile(abs, 'utf8'))
+		assertEquals(written.suites[0].expected, '2m')
+		assertEquals(written.suites[1].expected, '90s')
+		assertEquals(written.suites[1].subtests[0].expected, '25s')
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })

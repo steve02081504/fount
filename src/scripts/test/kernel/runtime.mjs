@@ -12,6 +12,8 @@ import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { buildEstimateTask, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
 import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
+import { parseExpectedMs } from '../core/expected.mjs'
+import { applyDriftPatchToManifest, driftedEstimatePatch } from '../core/update_estimates.mjs'
 import {
 	formatSkipBecauseUrls,
 	isSkipBecauseBlocking,
@@ -76,6 +78,7 @@ export class TestKernel {
 	 * @param {boolean} [options.writeReport] 是否写活报告
 	 * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
 	 * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
+	 * @param {boolean} [options.autoUpdateExpected] 跑完是否按漂移自动回写 manifest `expected`
 	 */
 	constructor({
 		repoRoot,
@@ -85,8 +88,10 @@ export class TestKernel {
 		writeReport = true,
 		moduleCheckHoldTimeoutMs,
 		idleAllMs = DEFAULT_IDLE_ALL_MS,
+		autoUpdateExpected = true,
 	}) {
 		this.idleAllMs = idleAllMs
+		this.autoUpdateExpected = autoUpdateExpected
 		/** 运行队列最近一次清空的时间（watch 闲置计时起点）。 */
 		this.lastIdleAt = Date.now()
 		this.#wasIdle = false
@@ -273,6 +278,7 @@ export class TestKernel {
 	 * @returns {Promise<object>} accepted 字段 + jobId
 	 */
 	async submitJob(spec, viewerId) {
+		this.#cancelIdleAll('new_job')
 		const jobId = randomUUID()
 		const job = {
 			id: jobId,
@@ -857,6 +863,31 @@ export class TestKernel {
 	}
 
 	/**
+	 * 新任务提交时抢占进行中的 idle_all：清空未开始的 idle_all 队列项，并中止正在跑的 idle_all。
+	 * 中止后重置闲置计时，避免刚取消又立即重触发。
+	 * @param {string} reason 抢占原因
+	 * @returns {void}
+	 */
+	#cancelIdleAll(reason = 'new_job') {
+		const removed = this.queues.removeIdleAll()
+		const runningIdle = [...this.running]
+			.filter(([, running]) => running.item?.reason === 'idle_all' && !running.item?.jobId)
+		if (!removed.length && !runningIdle.length) return
+		for (const item of removed)
+			this.viewers.broadcast({
+				type: 'queue-remove',
+				key: item.key,
+				reason,
+				...this.#remainingState(),
+			})
+		for (const [, running] of runningIdle)
+			running.abort?.abort(reason)
+		this.lastIdleAt = Date.now()
+		this.#wasIdle = false
+		this.wake()
+	}
+
+	/**
 	 * @returns {boolean} 是否该退出
 	 */
 	#shouldExit() {
@@ -986,6 +1017,8 @@ export class TestKernel {
 				subtestTriggerHashes: hashes.subtestTriggerHashes,
 			})
 			await writeState(this.repoRoot, this.state)
+			if (this.autoUpdateExpected)
+				await this.#autoUpdateExpected(suite, this.state.suites[key])
 			this.sessionPassed.set(key, result.passed)
 			await this.#reportResult(job, suite, this.state.suites[key])
 			if (!result.passed && job) job.exitCode = 1
@@ -1211,6 +1244,36 @@ export class TestKernel {
 		})
 		this.jobs.delete(job.id)
 		this.wake()
+	}
+
+	/**
+	 * 套件跑完后若 manifest `expected` 与现状基线漂移超过阈值，回写 manifest 并同步内存。
+	 * @param {import('../core/manifest.mjs').SuiteDef} suite suite
+	 * @param {import('../core/state.mjs').SuiteStateEntry} entry 现状条目
+	 * @returns {Promise<void>}
+	 */
+	async #autoUpdateExpected(suite, entry) {
+		try {
+			const patch = driftedEstimatePatch(suite, entry)
+			if (!patch) return
+			if (!await applyDriftPatchToManifest(this.repoRoot, suite, patch)) return
+			const def = this.catalog.byKey.get(suiteKey(suite.manifestId, suite.name))
+			if (!def) return
+			if (patch.expected != null) {
+				const parsed = parseExpectedMs(patch.expected)
+				if (parsed != null) def.expectedMs = parsed
+			}
+			for (const [name, value] of Object.entries(patch.subtests ?? {})) {
+				const parsed = parseExpectedMs(value)
+				if (parsed == null) continue
+				const subtest = def.subtests?.find(st => st.name === name)
+				if (subtest) subtest.expectedMs = parsed
+			}
+			this.viewers.broadcast({ type: 'expected-drift', key: suiteKey(suite.manifestId, suite.name), ...this.#remainingState() })
+		}
+		catch (error) {
+			console.warn(`expected-drift update failed for ${suiteKey(suite.manifestId, suite.name)}: ${String(error?.message ?? error)}`)
+		}
 	}
 
 	/**

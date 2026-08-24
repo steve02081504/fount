@@ -581,6 +581,48 @@ Deno.test('kernel close aborts running suites', async () => {
 	}
 })
 
+Deno.test('submitJob cancels queued and running idle_all items', async () => {
+	const handle = await startTestKernel({
+		port: CONTROL_PORT + 22,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+		autoUpdateExpected: false,
+	})
+	try {
+		const k = handle.kernel
+		const abort = new AbortController()
+		k.running.set('testkit:__idle_run__', {
+			item: { key: 'testkit:__idle_run__', reason: 'idle_all' },
+			abort,
+			startedAt: Date.now(),
+			checkDone: true,
+		})
+		k.queues.enqueueFs('testkit:__idle_q__', 'idle_all')
+		k.queues.enqueueFs('testkit:__normal__', 'fs_change')
+		// 提交一个必空 job（不激活波次）也会在开头触发抢占。
+		const preemptJob = () => k.submitJob({
+			groups: [{
+				manifestSelectors: ['testkit'],
+				suiteSelectors: ['__no_such_suite__'],
+				subtestSelectors: {},
+			}],
+		}, 'v-preempt')
+		await preemptJob()
+		assertEquals(k.queues.fs.map(item => item.key), ['testkit:__normal__'])
+		assertEquals(abort.signal.aborted, true)
+		assertEquals(String(abort.signal.reason), 'new_job')
+		// 无 idle_all 可取消时不再误重置闲置计时。
+		const before = k.lastIdleAt
+		await preemptJob()
+		assertEquals(k.lastIdleAt, before)
+	}
+	finally {
+		handle.kernel.running.delete('testkit:__idle_run__')
+		await handle.close()
+	}
+})
+
 Deno.test('rebootTestKernel starts a kernel when none is running', async () => {
 	const port = CONTROL_PORT + 4
 	try {

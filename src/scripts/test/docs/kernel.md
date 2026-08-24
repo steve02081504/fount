@@ -16,6 +16,10 @@ On Windows the Node `listening` callback can fire before bind (`address()` is `n
 
 With a `--watch` viewer connected, the kernel auto-runs all suites once after **2 hours** with the run queue empty (measured from the moment the queue last drained, not from any file change — a 2-hour run never triggers an immediate `--all` on finish). The auto-run just enqueues every suite straight into the run queue (no `expandJobWave` / git selection); the idle clock restarts once that run drains. Tunable for tests via `idleAllMs` (`DEFAULT_IDLE_ALL_MS = ms('2h')`).
 
+Any new job submitted via `submitJob` **preempts** idle_all: it clears all not-yet-started `idle_all` FS queue items and aborts any running `idle_all` suite (reason `new_job`), then resets the idle clock so it does not immediately re-fire. A `fount test` typed mid-idle-all therefore takes over the machine without waiting out the whole auto-run.
+
+After a suite finishes, if its manifest `expected` (or any subtest `expected`) drifts more than **10%** from the state baseline (relative to the larger, after grid rounding; a missing manifest value with a baseline counts as drift), the kernel rewrites the manifest in place and broadcasts `expected-drift`. Same-manifest concurrent writes are serialized; the in-memory `expectedMs` is synced without a full catalog reload. `--update-estimates` remains the full, unconditional rewrite; the drift check is the incremental safety net. Disable with `autoUpdateExpected: false`.
+
 CLI job queue is LIFO among equal `priority` (later enqueued items first; imperfect stays `priority` 0). FS-triggered queue is LIFO. Auto-exit only after **all viewers disconnect** and no jobs remain — an empty CLI job must still deliver `accepted` / `job-done` before the kernel goes away.
 
 ## Debug single-step + residue check

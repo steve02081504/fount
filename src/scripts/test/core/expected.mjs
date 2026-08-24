@@ -71,6 +71,28 @@ export function formatExpected(msVal) {
 }
 
 /**
+ * 自动回写 `expected` 的漂移阈值（相对较大者）。
+ */
+export const EXPECTED_DRIFT_THRESHOLD = 0.10
+
+/**
+ * 判断 manifest `expected` 与现状基线是否漂移超过阈值。
+ * manifest 缺失但基线存在视为漂移（补齐）。比较基于网格化后的值，避免舍入抖动。
+ * @param {number | null | undefined} manifestMs manifest `expected`（毫秒）
+ * @param {number | null | undefined} baselineMs 现状基线（毫秒）
+ * @param {number} [threshold] 相对漂移阈值（默认 EXPECTED_DRIFT_THRESHOLD）
+ * @returns {boolean} 是否应更新
+ */
+export function isExpectedDrift(manifestMs, baselineMs, threshold = EXPECTED_DRIFT_THRESHOLD) {
+	const roundedBase = roundExpectedMs(baselineMs)
+	if (roundedBase == null) return false
+	const roundedManifest = roundExpectedMs(manifestMs)
+	if (roundedManifest == null) return true
+	const denom = Math.max(roundedManifest, roundedBase)
+	return denom > 0 && Math.abs(roundedManifest - roundedBase) / denom > threshold
+}
+
+/**
  * 由 suite 级 expected 与全部子测试 expected 反推固定开销。
  * 任一子测试缺 expected 则无法推断。
  * @param {import('./manifest.mjs').SuiteDef} suite suite

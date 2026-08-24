@@ -26,6 +26,7 @@ import { TestKernel } from './runtime.mjs'
  * @param {boolean} [options.writeReport] 是否写活报告
  * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
  * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
+ * @param {boolean} [options.autoUpdateExpected] 跑完是否按漂移自动回写 manifest `expected`
  * @returns {Promise<{ url: string, kernel: TestKernel, close: () => Promise<void> }>} 句柄
  */
 export async function startTestKernel({
@@ -37,8 +38,9 @@ export async function startTestKernel({
 	writeReport = true,
 	moduleCheckHoldTimeoutMs,
 	idleAllMs,
+	autoUpdateExpected,
 } = {}) {
-	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs, idleAllMs })
+	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs, idleAllMs, autoUpdateExpected })
 	await kernel.start()
 
 	const app = express()
