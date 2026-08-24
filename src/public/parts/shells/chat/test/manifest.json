@@ -450,7 +450,7 @@
 		},
 		{
 			"name": "fed_dm",
-			"expected": "5m55s",
+			"expected": "8m14s",
 			"dependsOn": [
 				"fed_core"
 			],

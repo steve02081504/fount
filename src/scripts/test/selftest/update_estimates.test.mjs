@@ -149,15 +149,15 @@ Deno.test('driftedEstimatePatch only includes drifted suite and subtest fields',
 		],
 	})
 	const entry = makeStateEntry({
-		baselineDurationMs: 120_000,
+		baselineDurationMs: 240_000,
 		subtests: {
 			smoke: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 21_000, triggerHash: null },
 			feed: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 33_000, triggerHash: null },
 		},
 	})
 	const patch = driftedEstimatePatch(suite, entry)
-	// suite 90s→120s 漂移；smoke 20s→21s 未漂移；feed 30s→33s 未漂移
-	assertEquals(patch, { expected: '2m' })
+	// suite 90s→240s 漂移；smoke 20s→21s 未漂移；feed 30s→33s 未漂移
+	assertEquals(patch, { expected: '4m' })
 })
 
 Deno.test('driftedEstimatePatch returns null when nothing drifts or no baseline', () => {
