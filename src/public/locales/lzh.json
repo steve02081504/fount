@@ -1696,7 +1696,7 @@
 						"members": "成員",
 						"permissions": "角色權限",
 						"storage": "庫藏與歸檔",
-						"groupPermissions": "群权限"
+						"groupPermissions": "群權限"
 					},
 					"key": {
 						"managementTip": "輪換後須重新向成員分發新符鑰。只有懷疑符鑰泄露時才應手動操作。",
@@ -1707,13 +1707,13 @@
 						"rotateOk": "符鑰已輪換"
 					},
 					"groupPerms": {
-						"denied": "没有管理群权限的权限",
-						"hint": "为群级治理权限（踢出、封禁、管理角色、管理管理员、邀请成员）按角色设置覆盖。",
-						"overridden": "已覆盖",
-						"clearOverride": "清除覆盖",
-						"noRoles": "暂无可配置角色",
-						"updateFailed": "群权限更新失败",
-						"updated": "群权限已更新"
+						"denied": "無權掌管群權限",
+						"hint": "為群級治理之權（逐出、封禁、掌職、掌轄、邀員）按角色設覆。",
+						"overridden": "已覆",
+						"clearOverride": "清覆",
+						"noRoles": "今暫無可設之角色",
+						"updateFailed": "群權限更未遂",
+						"updated": "群權限已更"
 					}
 				},
 				"pinContext": "高懸鄰域（±N 鄰帖）",

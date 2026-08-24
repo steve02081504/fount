@@ -1707,13 +1707,13 @@
 						"rotateOk": "La llave ha sido rotada"
 					},
 					"groupPerms": {
-						"denied": "Sin permiso para administrar permisos de grupo",
-						"hint": "Establezca anulaciones por rol para permisos de gobierno a nivel de grupo (expulsar, prohibir, administrar roles, administrar administradores, invitar a miembros).",
-						"overridden": "Cubierto",
-						"clearOverride": "borrar sobrescritura",
-						"noRoles": "Actualmente no hay ningún rol para configurar",
-						"updateFailed": "Error en la actualización de permisos de grupo",
-						"updated": "Se han actualizado los permisos de grupo."
+						"denied": "No tienes permiso para gestionar los permisos de grupo",
+						"hint": "Establece anulaciones por rol para los permisos de gobernanza del grupo (expulsar, bloquear, gestionar roles, gestionar administradores, invitar miembros).",
+						"overridden": "Anulado",
+						"clearOverride": "Borrar anulación",
+						"noRoles": "No hay roles configurables por el momento",
+						"updateFailed": "No se pudieron actualizar los permisos de grupo",
+						"updated": "Permisos de grupo actualizados"
 					}
 				},
 				"pinContext": "Barrio superior (±N vecinos)",

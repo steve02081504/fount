@@ -1707,13 +1707,13 @@
 						"rotateOk": "La chiave è stata ruotata"
 					},
 					"groupPerms": {
-						"denied": "Nessuna autorizzazione per gestire le autorizzazioni del gruppo",
-						"hint": "Imposta le sostituzioni in base al ruolo per le autorizzazioni di governance a livello di gruppo (espulsione, ban, gestione dei ruoli, gestione degli amministratori, invito dei membri).",
-						"overridden": "Coperto",
-						"clearOverride": "sovrascrittura chiara",
-						"noRoles": "Al momento non esiste alcun ruolo da configurare",
+						"denied": "Non hai il permesso di gestire le autorizzazioni del gruppo",
+						"hint": "Imposta sostituzioni per ruolo per le autorizzazioni di governance del gruppo (espulsione, ban, gestione dei ruoli, gestione degli amministratori, invito dei membri).",
+						"overridden": "Sostituito",
+						"clearOverride": "Annulla sostituzione",
+						"noRoles": "Al momento non ci sono ruoli da configurare",
 						"updateFailed": "Aggiornamento delle autorizzazioni del gruppo non riuscito",
-						"updated": "Le autorizzazioni del gruppo sono state aggiornate"
+						"updated": "Autorizzazioni del gruppo aggiornate"
 					}
 				},
 				"pinContext": "Quartiere principale (± N vicini)",

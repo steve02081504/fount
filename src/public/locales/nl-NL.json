@@ -1707,13 +1707,13 @@
 						"rotateOk": "Sleutel is gedraaid"
 					},
 					"groupPerms": {
-						"denied": "Geen toestemming om groepsrechten te beheren",
-						"hint": "Stel overschrijvingen per rol in voor bestuursmachtigingen op groepsniveau (kicken, verbannen, rollen beheren, beheerders beheren, leden uitnodigen).",
-						"overridden": "Overdekt",
-						"clearOverride": "duidelijk overschrijven",
-						"noRoles": "Er is momenteel geen rol om te configureren",
-						"updateFailed": "Updaten van groepsrechten is mislukt",
-						"updated": "Groepsrechten zijn bijgewerkt"
+						"denied": "Je hebt geen toestemming om groepsmachtigingen te beheren",
+						"hint": "Stel per rol overschrijvingen in voor beheersrechten op groepsniveau (kicken, verbannen, rollen beheren, beheerders beheren, leden uitnodigen).",
+						"overridden": "Overschreven",
+						"clearOverride": "Overschrijving wissen",
+						"noRoles": "Er zijn momenteel geen rollen om te configureren",
+						"updateFailed": "Bijwerken van groepsmachtigingen is mislukt",
+						"updated": "Groepsmachtigingen bijgewerkt"
 					}
 				},
 				"pinContext": "Topbuurt (±N buren)",

@@ -1707,13 +1707,13 @@
 						"rotateOk": "Schlüssel wurde gedreht"
 					},
 					"groupPerms": {
-						"denied": "Keine Berechtigung zum Verwalten von Gruppenberechtigungen",
-						"hint": "Legen Sie Überschreibungen nach Rolle für Governance-Berechtigungen auf Gruppenebene fest (kündigen, sperren, Rollen verwalten, Administratoren verwalten, Mitglieder einladen).",
-						"overridden": "Bedeckt",
-						"clearOverride": "klar überschreiben",
-						"noRoles": "Derzeit gibt es keine zu konfigurierende Rolle",
-						"updateFailed": "Die Aktualisierung der Gruppenberechtigung ist fehlgeschlagen",
-						"updated": "Gruppenberechtigungen wurden aktualisiert"
+						"denied": "Du hast keine Berechtigung, Gruppenberechtigungen zu verwalten",
+						"hint": "Legen Sie Überschreibungen pro Rolle für Governance-Berechtigungen auf Gruppenebene fest (kicken, sperren, Rollen verwalten, Administratoren verwalten, Mitglieder einladen).",
+						"overridden": "Überschrieben",
+						"clearOverride": "Überschreibung aufheben",
+						"noRoles": "Derzeit gibt es keine zu konfigurierenden Rollen",
+						"updateFailed": "Aktualisierung der Gruppenberechtigungen fehlgeschlagen",
+						"updated": "Gruppenberechtigungen aktualisiert"
 					}
 				},
 				"pinContext": "Top-Nachbarschaft (±N Nachbarn)",

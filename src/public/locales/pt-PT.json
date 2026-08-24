@@ -1707,13 +1707,13 @@
 						"rotateOk": "A chave foi girada"
 					},
 					"groupPerms": {
-						"denied": "Sem permissão para gerenciar permissões de grupo",
-						"hint": "Defina substituições por função para permissões de governança em nível de grupo (expulsar, banir, gerenciar funções, gerenciar administradores, convidar membros).",
-						"overridden": "Abordado",
-						"clearOverride": "limpar substituição",
-						"noRoles": "Atualmente não há função para configurar",
-						"updateFailed": "Falha na atualização da permissão do grupo",
-						"updated": "As permissões do grupo foram atualizadas"
+						"denied": "Não tem permissão para gerir as permissões do grupo",
+						"hint": "Defina substituições por função para as permissões de governação do grupo (expulsar, bloquear, gerir funções, gerir administradores, convidar membros).",
+						"overridden": "Substituído",
+						"clearOverride": "Limpar substituição",
+						"noRoles": "Não há funções configuráveis de momento",
+						"updateFailed": "Falha ao atualizar as permissões do grupo",
+						"updated": "Permissões do grupo atualizadas"
 					}
 				},
 				"pinContext": "Bairro principal (±N vizinhos)",

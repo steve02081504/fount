@@ -1708,12 +1708,12 @@
 					},
 					"groupPerms": {
 						"denied": "Engin heimild til að stjórna hópheimildum",
-						"hint": "Stilltu hnekkingar eftir hlutverkum fyrir stjórnunarheimildir á hópstigi (sparka, banna, stjórna hlutverkum, stjórna stjórnendum, bjóða meðlimum).",
-						"overridden": "Yfirbyggð",
-						"clearOverride": "hreinsa yfirskrift",
-						"noRoles": "Sem stendur er ekkert hlutverk til að stilla",
-						"updateFailed": "Ekki tókst að uppfæra hópheimildir",
-						"updated": "Hópheimildir hafa verið uppfærðar"
+						"hint": "Stilltu hnekkingar eftir hlutverkum fyrir stjórnunarheimildir á hópsstigi (sparka, banna, stjórna hlutverkum, stjórna stjórnendum, bjóða félagsmönnum).",
+						"overridden": "Hnekkt",
+						"clearOverride": "Hreinsa hnekki",
+						"noRoles": "Engin hlutverk til að stilla eins og er",
+						"updateFailed": "Mistókst að uppfæra hópheimildir",
+						"updated": "Hópheimildum hefur verið uppfært"
 					}
 				},
 				"pinContext": "Efsta hverfi (±N nágrannar)",

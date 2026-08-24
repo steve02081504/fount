@@ -1707,13 +1707,13 @@
 						"rotateOk": "Chìa khóa đã được xoay"
 					},
 					"groupPerms": {
-						"denied": "Không có quyền quản lý quyền của nhóm",
-						"hint": "Đặt ghi đè theo vai trò cho quyền quản trị cấp nhóm (kick, cấm, quản lý vai trò, quản lý quản trị viên, mời thành viên).",
-						"overridden": "che phủ",
-						"clearOverride": "ghi đè rõ ràng",
-						"noRoles": "Hiện tại không có vai trò nào để định cấu hình",
+						"denied": "Bạn không có quyền quản lý quyền của nhóm",
+						"hint": "Đặt ghi đè theo vai trò cho quyền quản trị cấp nhóm (đá, cấm, quản lý vai trò, quản lý quản trị viên, mời thành viên).",
+						"overridden": "Đã ghi đè",
+						"clearOverride": "Xóa ghi đè",
+						"noRoles": "Hiện chưa có vai trò nào để cấu hình",
 						"updateFailed": "Cập nhật quyền của nhóm không thành công",
-						"updated": "Quyền của nhóm đã được cập nhật"
+						"updated": "Đã cập nhật quyền của nhóm"
 					}
 				},
 				"pinContext": "Vùng lân cận hàng đầu (±N vùng lân cận)",
