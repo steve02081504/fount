@@ -1,7 +1,6 @@
 /**
  * 把理想调度投影包装成发给消费端的 `schedule-update` 事件。
  */
-import { formatDuration } from '../core/format_duration.mjs'
 
 /**
  * schedule-update 原因枚举。
@@ -65,7 +64,7 @@ export function formatScheduleReason(reason) {
 }
 
 /**
- * 消费端是否应展示本次变化：与上次展示时刻相差 ≥5%，或在跑项集合变化。
+ * 消费端是否应展示本次变化：与上次展示时刻相差 ≥5%。
  * @param {number | null | undefined} lastDisplayedAt 上次展示的 lastCompletionAt
  * @param {number | null} nextAt 本次 lastCompletionAt
  * @param {number} [deltaThresholdPct=5] 百分比阈值
@@ -73,16 +72,7 @@ export function formatScheduleReason(reason) {
  */
 export function shouldDisplayScheduleChange(lastDisplayedAt, nextAt, deltaThresholdPct = 5) {
 	if (nextAt == null) return true
-	if (lastDisplayedAt == null || lastDisplayedAt == null) return true
+	if (lastDisplayedAt == null) return true
 	const delta = Math.abs(nextAt - lastDisplayedAt)
 	return delta / Math.max(1, lastDisplayedAt) > deltaThresholdPct / 100
-}
-
-/**
- * 由 lastCompletionMs 输出「总剩余 ≈ X」文案片段。
- * @param {number | null} ms 毫秒
- * @returns {string} 文案
- */
-export function formatRemainingText(ms) {
-	return ms == null || !Number.isFinite(ms) ? '未知' : formatDuration(Math.max(0, ms))
 }

@@ -166,6 +166,8 @@ export function buildEstimateTask(suite, entry, {
 	id,
 	elapsedMs = 0,
 	running = false,
+	jobId = null,
+	source,
 } = {}) {
 	const key = suiteKey(suite.manifestId, suite.name)
 	const resources = resolveSuiteResources(suite, entry)
@@ -184,6 +186,8 @@ export function buildEstimateTask(suite, entry, {
 		heavy: !!suite.heavy,
 		moduleCheckMs: reused ? 0 : moduleCheckMs,
 		deps: (suite.dependencies ?? []).map(dep => suiteKey(dep.manifestId, dep.name)),
+		jobId,
+		source,
 	}
 }
 

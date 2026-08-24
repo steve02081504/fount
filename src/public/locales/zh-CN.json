@@ -191,7 +191,11 @@
 						"0": "排队等待中"
 					}
 				},
-				"failureLog": "\n—— ${label}：失败日志 ——"
+				"failureLog": "\n—— ${label}：失败日志 ——",
+				"schedule": {
+					"reason": "（${reason}）",
+					"running": "正在运行 ${key}，剩余 ${remaining}"
+				}
 			},
 			"passed": "通过：${label}",
 			"passedWithNoise": "通过：${label}（含有噪声）",

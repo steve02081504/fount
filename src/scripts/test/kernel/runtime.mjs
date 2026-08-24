@@ -353,7 +353,7 @@ export class TestKernel {
 			return {
 				runCount: 0,
 				activate: false,
-				accepted: acceptedFromWave(wave, { runCount: 0, reuseCount: 0, blockedCount: 0, remainingMs: 0 }),
+				accepted: acceptedFromWave(wave, { runCount: 0, reuseCount: 0, blockedCount: 0 }),
 			}
 		}
 		job.fingerprints = wave.fingerprints
@@ -1221,9 +1221,9 @@ export class TestKernel {
 				type: 'queue-remove',
 				key: item.key,
 				reason: 'cleanup_leak',
-				...this.#remainingState(),
 			})
 		}
+		this.#broadcastSchedule('queue_removed', 'cleanup_leak')
 		for (const [key, running] of this.running)
 			if (running.item.jobId === job.id)
 				running.abort.abort('cleanup_leak')
@@ -1277,7 +1277,8 @@ export class TestKernel {
 				const subtest = def.subtests?.find(st => st.name === name)
 				if (subtest) subtest.expectedMs = parsed
 			}
-			this.viewers.broadcast({ type: 'expected-drift', key: suiteKey(suite.manifestId, suite.name), ...this.#remainingState() })
+			this.viewers.broadcast({ type: 'expected-drift', key: suiteKey(suite.manifestId, suite.name) })
+			this.#broadcastSchedule('expected_drift', suiteKey(suite.manifestId, suite.name))
 		}
 		catch (error) {
 			console.warn(`expected-drift update failed for ${suiteKey(suite.manifestId, suite.name)}: ${String(error?.message ?? error)}`)
@@ -1427,9 +1428,9 @@ export class TestKernel {
 				type: 'queue-remove',
 				key: item.key,
 				reason: 'viewer_gone',
-				...this.#remainingState(),
 			})
 		}
+		this.#broadcastSchedule('queue_removed', 'viewer_gone')
 		for (const [, running] of this.running)
 			if (running.item.viewerId === viewerId) {
 				const stillWanted = this.queues.cli.some(item => item.key === running.item.key)

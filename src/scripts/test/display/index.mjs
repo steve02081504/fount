@@ -11,7 +11,8 @@ import { beginTestProgress, finishTestProgress } from '../core/progress.mjs'
 import { testHubUrl } from '../hub/index.mjs'
 
 import { displayShouldResolve, resolveDisplayMode } from './mode.mjs'
-import { formatRemainingLabel, paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd, splitSuiteKey, suiteEndHasFailureOutput } from './paint.mjs'
+import { paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd, splitSuiteKey, suiteEndHasFailureOutput } from './paint.mjs'
+import { paintScheduleUpdate } from './schedule.mjs'
 
 /**
  * @typedef {object} DisplayOptions
@@ -44,6 +45,8 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	const failureLogs = []
 	/** @type {number | null} */
 	let lastAheadCount = null
+	/** 上次展示的 lastCompletionMs（5% 阈值用）。 */
+	let lastCompletionMs = null
 
 	beginTestProgress()
 
@@ -93,16 +96,22 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 */
 	function onSuiteStart(message) {
 		const expected = formatMs(message.expectedMs)
-		const remaining = formatRemainingLabel(message)
 		const { manifestId, name } = splitSuiteKey(message.key)
 		console.logI18n('fountConsole.test.runningSuite.base', { manifestId, name })
-		if ((message.unknownCount ?? 0) > 0 && (message.remainingMs == null || !Number.isFinite(message.remainingMs)))
-			console.logI18n('fountConsole.test.display.etaUnknown', {
-				expected,
-				count: message.unknownCount,
-			})
-		else
-			console.logI18n('fountConsole.test.display.eta', { expected, remaining })
+		console.logI18n('fountConsole.test.runningSuite.expected', { expected })
+	}
+
+	/**
+	 * @param {object} message schedule-update
+	 * @returns {void}
+	 */
+	function onScheduleUpdate(message) {
+		const next = message.lastCompletionMs
+		const changed = lastCompletionMs == null || next == null
+			|| Math.abs(next - lastCompletionMs) / Math.max(1, lastCompletionMs) > 0.05
+		if (!changed) return
+		paintScheduleUpdate(message, lastCompletionMs)
+		lastCompletionMs = next
 	}
 
 	/**
@@ -130,7 +139,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		if (!watch) return
 		console.logI18n(
 			message.type === 'queue-append' ? 'fountConsole.test.queue.append' : 'fountConsole.test.queue.remove',
-			{ label: message.key, reason: message.reason || '', remaining: formatRemainingLabel(message) },
+			{ label: message.key, reason: message.reason || '' },
 		)
 	}
 
@@ -173,6 +182,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		['log', onLog],
 		['suite-start', onSuiteStart],
 		['suite-end', onSuiteEnd],
+		['schedule-update', onScheduleUpdate],
 		['queue-append', onQueue],
 		['queue-remove', onQueue],
 		['job-wait', onJobWait],
