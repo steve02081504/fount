@@ -40,7 +40,7 @@ function baseState() {
 }
 
 Deno.test('canInChannel: group permission evaluates against group scope, not caller channelId', () => {
-	let state = baseState()
+	const state = baseState()
 	// 在群权限 deny 掉 moderator 的 MANAGE_ROLES；频道层面无 deny。
 	state.channelPermissions.secret = {
 		moderator: { allow: {}, deny: { MANAGE_ROLES: true } },
@@ -52,7 +52,7 @@ Deno.test('canInChannel: group permission evaluates against group scope, not cal
 })
 
 Deno.test('canInChannel: channel-level permission honors the passed channelId override', () => {
-	let state = baseState()
+	const state = baseState()
 	// secret 跟随根块：在根块上 deny 掉 SEND_MESSAGES（secret 与 default 均受影响）。
 	state.channelPermissions.root = {
 		moderator: { allow: {}, deny: { SEND_MESSAGES: true } },
