@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— Journal d'échecs : ${label} ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "(${reason})",
+					"running": "En cours : ${key}, reste ${remaining}"
 				}
 			},
 			"passed": "Réussi : ${label}",

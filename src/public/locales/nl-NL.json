@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— Foutlogboek: ${label} ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "(${reason})",
+					"running": "${key} wordt uitgevoerd, nog ${remaining}"
 				}
 			},
 			"passed": "Geslaagd: ${label}",

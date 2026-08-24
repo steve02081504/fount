@@ -194,7 +194,7 @@
 				"failureLog": "\n—— ${label}：失利錄 ——",
 				"schedule": {
 					"reason": "（${reason}）",
-					"running": "正在运行 ${key}，剩余 ${remaining}"
+					"running": "運作 ${key}，餘 ${remaining}"
 				}
 			},
 			"passed": "通過：${label}",

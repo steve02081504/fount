@@ -147,7 +147,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "3m15s",
+			"expected": "2m11s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -190,7 +190,7 @@
 		},
 		{
 			"name": "smoke_chat",
-			"expected": "18s",
+			"expected": "50s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -450,7 +450,7 @@
 		},
 		{
 			"name": "fed_dm",
-			"expected": "2m16s",
+			"expected": "5m55s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -472,7 +472,7 @@
 		},
 		{
 			"name": "fed_archive_month",
-			"expected": "2m43s",
+			"expected": "4m2s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -516,7 +516,7 @@
 		},
 		{
 			"name": "fed_ban",
-			"expected": "2m32s",
+			"expected": "5m24s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -583,7 +583,7 @@
 		},
 		{
 			"name": "fed_emoji_nearcache",
-			"expected": "59s",
+			"expected": "3m30s",
 			"dependsOn": [
 				"fed_core",
 				"fed_emoji"
@@ -650,7 +650,7 @@
 		},
 		{
 			"name": "fed_reputation_owner",
-			"expected": "3m7s",
+			"expected": "4m14s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -756,7 +756,7 @@
 				},
 				{
 					"name": "dmChannelContext",
-					"expected": "7m52s",
+					"expected": "5m42s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/dmChannelContext.spec.mjs",
 						"src/public/parts/shells/chat/test/fixtures/worlds/write_path_hooks/**",
@@ -825,7 +825,7 @@
 				},
 				{
 					"name": "hubE2E",
-					"expected": "19s",
+					"expected": "17s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/hubE2E.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/**"

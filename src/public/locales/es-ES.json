@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— Registro de fallos: ${label} ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "(${reason})",
+					"running": "Ejecutando ${key}, quedan ${remaining}"
 				}
 			},
 			"passed": "Aprobado: ${label}",

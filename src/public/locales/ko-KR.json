@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— ${label} 실패 로그 ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "（${reason}）",
+					"running": "${key} 실행 중, 남은 시간 ${remaining}"
 				}
 			},
 			"passed": "경로: ${label}",

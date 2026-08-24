@@ -89,7 +89,7 @@
 		},
 		{
 			"name": "continue_reason",
-			"expected": 800,
+			"expected": 600,
 			"run": [
 				"deno",
 				"test",
@@ -208,7 +208,7 @@
 		},
 		{
 			"name": "resources_scheduler",
-			"expected": 800,
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -337,7 +337,7 @@
 		},
 		{
 			"name": "estimate",
-			"expected": "2s",
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -626,7 +626,7 @@
 		},
 		{
 			"name": "kernel",
-			"expected": "42s",
+			"expected": "37s",
 			"run": [
 				"deno",
 				"test",

@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— ${label} — bilanaskrá ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "(${reason})",
+					"running": "Keyrir ${key}, ${remaining} eftir"
 				}
 			},
 			"passed": "Staðið: ${label}",

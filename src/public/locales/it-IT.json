@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— Registro errori di ${label} ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "(${reason})",
+					"running": "In esecuzione: ${key}, restano ${remaining}"
 				}
 			},
 			"passed": "Superato: ${label}",

@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— Fehlerprotokoll: ${label} ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "(${reason})",
+					"running": "Läuft: ${key}, noch ${remaining}"
 				}
 			},
 			"passed": "Bestanden: ${label}",

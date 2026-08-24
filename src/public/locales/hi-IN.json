@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— ${label} की विफलता लॉग ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "(${reason})",
+					"running": "${key} चल रहा है, ${remaining} शेष"
 				}
 			},
 			"passed": "पास: ${label}",

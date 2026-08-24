@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— ${label} の失敗ログ ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "（${reason}）",
+					"running": "${key} を実行中、残り ${remaining}"
 				}
 			},
 			"passed": "合格: ${label}",

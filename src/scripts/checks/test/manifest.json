@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "html_meta",
-			"expected": "2s",
+			"expected": "7s",
 			"triggerFilter": {
 				"unignore": [
 					"docs/readme/*.md",
@@ -51,7 +51,7 @@
 		},
 		{
 			"name": "i18n_keys",
-			"expected": 600,
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -173,7 +173,7 @@
 		},
 		{
 			"name": "locale_md_align",
-			"expected": "1s",
+			"expected": 700,
 			"triggerFilter": {
 				"unignore": [
 					"docs/EULA/*.md",
@@ -223,7 +223,7 @@
 		},
 		{
 			"name": "theme_radius",
-			"expected": "2s",
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",

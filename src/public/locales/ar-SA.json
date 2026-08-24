@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— سجل فشل ${label} ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "（${reason}）",
+					"running": "جارٍ تشغيل ${key}، بقي ${remaining}"
 				}
 			},
 			"passed": "نجح: ${label}",

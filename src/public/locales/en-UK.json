@@ -193,8 +193,8 @@
 				},
 				"failureLog": "\n—— ${label} — failure log ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "(${reason})",
+					"running": "Running ${key}, ${remaining} left"
 				}
 			},
 			"passed": "PASSED: ${label}",
