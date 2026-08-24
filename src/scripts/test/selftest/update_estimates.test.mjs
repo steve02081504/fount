@@ -6,7 +6,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { assertEquals } from 'jsr:@std/assert'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { expectedDriftToleranceMs, formatExpected, isExpectedDrift, parseExpectedMs, roundExpectedMs } from '../core/expected.mjs'
 import { suiteKey } from '../core/state.mjs'
@@ -114,17 +114,30 @@ Deno.test('updateManifestEstimates writes suite and subtest expected after name'
 	}
 })
 
-Deno.test('isExpectedDrift only fires above the threshold relative to the larger', () => {
-	assertEquals(isExpectedDrift(16_000, 16_000), false)
-	assertEquals(isExpectedDrift(16_000, 16_900), false)
-	assertEquals(isExpectedDrift(16_000, 14_999), false)
-	assertEquals(isExpectedDrift(16_000, 17_601), true)
-	assertEquals(isExpectedDrift(16_000, 14_300), true)
-	assertEquals(isExpectedDrift(null, 16_000), true)
-	assertEquals(isExpectedDrift(16_000, null), false)
-	assertEquals(isExpectedDrift(16_000, undefined), false)
-	assertEquals(isExpectedDrift(16_347, 17_600), true)
-	assertEquals(isExpectedDrift(16_347, 17_499), false)
+Deno.test('expectedDriftToleranceMs grows sub-linearly and matches the anchor points', () => {
+	// 幂函数 37·scale^0.656：500ms→~2s，4min→~3min，30min→~6min。
+	assertEquals(expectedDriftToleranceMs(0), 0)
+	assert(expectedDriftToleranceMs(500) > 1_000 && expectedDriftToleranceMs(500) < 3_000)
+	assert(expectedDriftToleranceMs(240_000) > 60_000 && expectedDriftToleranceMs(240_000) < 300_000)
+	assert(expectedDriftToleranceMs(1_800_000) > 120_000 && expectedDriftToleranceMs(1_800_000) < 600_000)
+	// 单调、亚线性（规模×10 时容差远小于×10）。
+	const ten = expectedDriftToleranceMs(100_000) * 10
+	assert(expectedDriftToleranceMs(1_000_000) < ten)
+})
+
+Deno.test('isExpectedDrift fires when the gap exceeds the continuous tolerance at the larger scale', () => {
+	// 空值 / 缺失：语义不变。
+	assertEquals(isExpectedDrift(null, 240_000), true)
+	assertEquals(isExpectedDrift(240_000, null), false)
+	assertEquals(isExpectedDrift(240_000, undefined), false)
+	// 零漂移。
+	assertEquals(isExpectedDrift(240_000, 240_000), false)
+	// 容差以较大值为基准连续给出。
+	const tol = expectedDriftToleranceMs(240_000)
+	// 超出容差 → 漂移。
+	assertEquals(isExpectedDrift(240_000 - tol - 10_000, 240_000), true)
+	// 未超容差 → 不漂移。
+	assertEquals(isExpectedDrift(240_000 - Math.floor(tol) + 10_000, 240_000), false)
 })
 
 Deno.test('driftedEstimatePatch only includes drifted suite and subtest fields', () => {

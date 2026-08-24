@@ -583,7 +583,7 @@
 		},
 		{
 			"name": "fed_emoji_nearcache",
-			"expected": "3m30s",
+			"expected": "4m30s",
 			"dependsOn": [
 				"fed_core",
 				"fed_emoji"
