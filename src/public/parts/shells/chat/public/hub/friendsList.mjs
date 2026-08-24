@@ -370,7 +370,14 @@ export async function renderFriendsColumn(friends) {
 		const row = friends.find(f => f.groupId === groupId)
 		if (!row) return
 		if (row.kind === 'group') {
-			el.addEventListener('click', () => void selectGroup(row.groupId).catch(handleError('chat.hub.load.groupFailed')))
+			el.addEventListener('click', async () => {
+				try {
+					await selectGroup(row.groupId)
+				}
+				catch (error) {
+					handleError('chat.hub.load.groupFailed')(error)
+				}
+			})
 			return
 		}
 		el.addEventListener('click', () => void enterFriendChat({ groupId: row.groupId, binding: row.binding }))

@@ -96,12 +96,17 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 				handleError('chat.hub.category.perm.loadFailed')(error)
 			}
 
-			body.addEventListener('toggle', event => {
+			body.addEventListener('toggle', async event => {
 				const details = event.target
 				if (!(details instanceof HTMLDetailsElement) || !details.open) return
 				const permsEl = details.querySelector('.settings-role-perms')
 				if (!(permsEl instanceof HTMLElement)) return
-				fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
+				try {
+					await fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
+				}
+				catch (error) {
+					handleError('chat.hub.category.perm.loadFailed')(error)
+				}
 			}, { capture: true })
 
 			body.addEventListener('click', async event => {
