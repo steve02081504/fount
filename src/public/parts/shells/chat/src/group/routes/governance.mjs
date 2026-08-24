@@ -583,7 +583,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const member = state.members[memberKey]
 		const gov = governanceChannelId(state)
 		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, effectiveChannelPermissions(state, gov))
-			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, effectiveChannelPermissions(state, gov))
+			|| canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, gov)
 		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const { body } = req
 		if (!body.cabinet_id) throw httpError(400, 'cabinet_id required')
@@ -602,7 +602,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const member = state.members[memberKey]
 		const gov = governanceChannelId(state)
 		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, effectiveChannelPermissions(state, gov))
-			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, effectiveChannelPermissions(state, gov))
+			|| canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, gov)
 		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const cabinetId = req.body.cabinet_id || ''
 		if (!cabinetId) throw httpError(400, 'cabinet_id required')
