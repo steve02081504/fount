@@ -7,7 +7,6 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { base64ToBytes } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
 import { BLOB_STORAGE_LOCATOR_RE, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
@@ -24,6 +23,8 @@ import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p
 import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manifest/normalize'
 import { penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
+
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 import { groupEntityHash } from '../../../public/shared/groupEntityHash.mjs'
 import { getState } from '../dag/materialize.mjs'

@@ -6,8 +6,9 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
 
 
 import {

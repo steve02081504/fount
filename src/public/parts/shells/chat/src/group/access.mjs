@@ -5,8 +5,9 @@
  * 【数据结构】物化 state（members、roles、channels、channelPermissions）、PERMISSIONS 常量。
  * 【关联】被 group/routes/*、queries.mjs、localAuthz.mjs 引用；依赖 chat/dag/materialize、chat/lib/paths。
  */
-import { hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+
+import { hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { effectiveChannelPermissions } from '../chat/dag/groupMaterializedState.mjs'
 

@@ -4,8 +4,9 @@
  * 离线 harness 下 fanout 自然为 0（P2P 关闭）；setFollow 仍走 commitTimelineEvent。
  */
 /* global Deno */
-import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 
 import { createTestSession } from '../harness.mjs'
 

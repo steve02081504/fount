@@ -5,8 +5,9 @@
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 
 const bootstrapPath = join(dirname(fileURLToPath(import.meta.url)), '../node_bootstrap.mjs')
 

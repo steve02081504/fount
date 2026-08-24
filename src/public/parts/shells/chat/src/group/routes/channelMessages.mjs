@@ -5,8 +5,9 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'

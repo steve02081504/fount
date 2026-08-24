@@ -3,9 +3,10 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { decryptUtf8ForMember, encryptUtf8ForMember } from 'npm:@steve02081504/fount-p2p/crypto/key'
+
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'

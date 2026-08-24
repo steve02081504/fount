@@ -7,9 +7,10 @@ import { rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
+import { assertEquals } from 'jsr:@std/assert'
+
 import { indexDocument, queryIndex, removeDocument, patchShardMeta } from 'fount/scripts/search/invertedIndex.mjs'
 import { tokenizeForIndex, tokenizeForQuery } from 'fount/scripts/search/tokenize.mjs'
-import { assertEquals } from 'jsr:@std/assert'
 
 Deno.test('tokenize mixes cjk bigrams and latin words', () => {
 	const tokens = tokenizeForIndex('你好世界 hello #tag')

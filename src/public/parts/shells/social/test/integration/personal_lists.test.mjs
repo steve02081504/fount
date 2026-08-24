@@ -2,9 +2,10 @@
  * 个人 block / hide 写路径。
  */
 /* global Deno */
-import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert } from 'jsr:@std/assert'
 import { setPersonalHidden } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
 import { createTestSession } from '../harness.mjs'

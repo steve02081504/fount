@@ -5,7 +5,6 @@
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
  * 【关联】`materialize.mjs`、`events/meta.mjs`、`../ws/groupWsRpc.mjs`、`./messageFanout.mjs`、`../session/chatRequest.mjs`。
  */
-import { ms } from 'fount/scripts/ms.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
@@ -17,6 +16,8 @@ import {
 	applySubjectiveSlashFromEvent,
 	seedMemberReputationFromIntroducer,
 } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { rotateBoundCabinetKeys, tryImportCabinetKeyWraps } from '../cabinets/keys.mjs'
 import {

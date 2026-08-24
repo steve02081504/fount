@@ -3,8 +3,6 @@
  */
 /* global Deno */
 
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { ms } from 'fount/scripts/ms.mjs'
 import { assertEquals } from 'jsr:@std/assert'
 import {
 	pubKeyHash,
@@ -24,6 +22,9 @@ import {
 	parseJoinSnapshotRequest,
 	parsePullResponseEnvelope,
 } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
+
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 
 import { findStaleUnreachableChannels } from '../../src/chat/channel/gc.mjs'

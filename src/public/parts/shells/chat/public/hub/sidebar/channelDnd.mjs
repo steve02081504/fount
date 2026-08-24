@@ -12,7 +12,6 @@ import { confirmAction } from '/scripts/features/promptDialog.mjs'
 import { buildMoveLinks, computeMoveOperation, DROP_PLACEMENT } from '../../shared/channelReorder.mjs'
 import { updateChannel } from '../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
-
 import { store } from '../core/state.mjs'
 
 /** 拖拽确认豁免窗口（毫秒）：成功执行一次移动后，此窗口内再次拖拽不再弹确认。 */

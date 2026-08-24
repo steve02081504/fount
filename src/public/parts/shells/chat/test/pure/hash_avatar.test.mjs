@@ -1,4 +1,6 @@
 /* global Deno */
+import { assert, assertEquals } from 'jsr:@std/assert'
+
 import {
 	avatarColor,
 	avatarInitial,
@@ -11,7 +13,6 @@ import {
 	isLastMessageInAuthorGroup,
 	MESSAGE_AVATAR_GROUP_GAP_MS,
 } from 'fount/public/parts/shells/chat/public/shared/hashAvatar.mjs'
-import { assert, assertEquals } from 'jsr:@std/assert'
 
 
 const SEED = 'a'.repeat(128)

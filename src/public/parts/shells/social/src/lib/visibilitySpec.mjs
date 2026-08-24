@@ -2,8 +2,9 @@
  * Social 可见性档位规范化、偏序与读侧判定核心。
  */
 
-import { ms } from 'fount/scripts/ms.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 /** @typedef {'public' | 'unlisted' | 'followers' | 'followers_since' | 'selected' | 'private'} SocialVisibility */
 
