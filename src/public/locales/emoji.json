@@ -1696,7 +1696,7 @@
 						"members": "👥",
 						"permissions": "🎭🔐",
 						"storage": "💾📦",
-						"groupPermissions": "群权限"
+						"groupPermissions": "👥🔐"
 					},
 					"key": {
 						"managementTip": "🔄📤🆕🔑➡️👤🔑💧✋🔄",
@@ -1707,13 +1707,13 @@
 						"rotateOk": "🔑🔄✅"
 					},
 					"groupPerms": {
-						"denied": "没有管理群权限的权限",
-						"hint": "为群级治理权限（踢出、封禁、管理角色、管理管理员、邀请成员）按角色设置覆盖。",
-						"overridden": "已覆盖",
-						"clearOverride": "清除覆盖",
-						"noRoles": "暂无可配置角色",
-						"updateFailed": "群权限更新失败",
-						"updated": "群权限已更新"
+						"denied": "🫵🚫👥⚙️🔐，🚫✏️👥🔐",
+						"hint": "👥⚙️ · 👢🔨 · 🎭⚙️ · 🛡️⚙️ · 📨👤 → ↩️🎭🔐",
+						"overridden": "⚠️",
+						"clearOverride": "↩️🔄",
+						"noRoles": "📭🎭",
+						"updateFailed": "👥🔐🔄❌",
+						"updated": "👥🔐🔄✅"
 					}
 				},
 				"pinContext": "📌±N📨",
@@ -2451,7 +2451,7 @@
 				"typeStreaming": "🌊📺",
 				"typeText": "💬📺",
 				"readonlyRoot": {
-					"placeholder": "根频道不能发送消息/文件"
+					"placeholder": "🏠📺🔒💬📁"
 				}
 			},
 			"category": {

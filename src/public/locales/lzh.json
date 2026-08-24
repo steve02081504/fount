@@ -2451,7 +2451,7 @@
 				"typeStreaming": "觀影閣",
 				"typeText": "聊天分苑",
 				"readonlyRoot": {
-					"placeholder": "根频道不能发送消息/文件"
+					"placeholder": "根苑禁發訊息與文牘"
 				}
 			},
 			"category": {

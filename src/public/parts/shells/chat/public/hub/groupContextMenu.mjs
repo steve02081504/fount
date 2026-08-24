@@ -95,7 +95,7 @@ async function applyLeaveGroupsLocal(groupIds) {
 	if (touchesCurrent) {
 		if (store.privateGroup.groupId && leaving.has(store.privateGroup.groupId))
 			clearPrivateGroupState()
-		const next = store.sidebar.groups.find(g => !leaving.has(g.groupId))?.groupId
+		const next = orderedSidebarGroupIds().find(id => !leaving.has(id))
 		if (next) await selectGroup(next)
 		else {
 			store.context.currentGroupId = null
