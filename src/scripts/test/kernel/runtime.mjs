@@ -23,10 +23,12 @@ import {
 	skipBecauseEntriesForRun,
 } from '../core/skip_because.mjs'
 import {
+	readModuleCheckStats,
 	refreshEntryFingerprint,
 	suiteKey,
 	suiteTriggeredFiles,
 	upsertSuiteRun,
+	writeModuleCheckStats,
 	writeState,
 } from '../core/state.mjs'
 import { applyDriftPatchToManifest, driftedEstimatePatch } from '../core/update_estimates.mjs'
@@ -112,6 +114,9 @@ export class TestKernel {
 		this.moduleCheck = new ModuleCheckGate({
 			...moduleCheckHoldTimeoutMs == null ? {} : { holdTimeoutMs: moduleCheckHoldTimeoutMs },
 			onHoldTimeout: this.markModuleCheckDone.bind(this),
+			onUpdate: (totalMs, count) => {
+				void writeModuleCheckStats(this.repoRoot, { totalMs, count })
+			},
 		})
 		this.issueCache = new GithubIssueCache()
 		this.viewers = new ViewerHub()
@@ -177,6 +182,12 @@ export class TestKernel {
 	 */
 	async start() {
 		await this.reloadCatalog()
+		// 恢复历史模块检查均值，避免调度 ETA 每次从兜底值重新收敛。
+		const mc = await readModuleCheckStats(this.repoRoot)
+		if (mc.count > 0) {
+			this.moduleCheck.durationTotalMs = mc.totalMs
+			this.moduleCheck.durationCount = mc.count
+		}
 		if (this.watchFsEnabled)
 			this.#watcher = watch(this.repoRoot, { recursive: true }, (_event, filename) => {
 				if (!filename) return
@@ -239,8 +250,14 @@ export class TestKernel {
 	 */
 	markModuleCheckDone(ticket) {
 		if (!ticket) return
+		let changed = false
 		for (const running of this.running.values())
-			if (running.ticket === ticket) running.checkDone = true
+			if (running.ticket === ticket && !running.checkDone) {
+				running.checkDone = true
+				changed = true
+			}
+		// 模块检查均值已更新 → 立即重建理想调度，让 ETA 随新均值收敛，而非等下一个 suite 启动。
+		if (changed) this.#broadcastSchedule('module_check_ready')
 	}
 
 	/**
@@ -538,7 +555,8 @@ export class TestKernel {
 			tasks.push(buildEstimateTask(suite, this.state.suites[item.key], {
 				id: item.id,
 				subtestsToRun: item.subtests,
-				moduleCheckMs: this.moduleCheck.meanDurationMs(),
+				// 只有 Deno 套件会走模块检查互斥窗；其它 run（node/Playwright/true）不计。
+				moduleCheckMs: suite.run?.[0] === 'deno' ? this.moduleCheck.meanDurationMs() : 0,
 				jobId: item.jobId ?? null,
 				source: item.source,
 			}))
@@ -549,12 +567,13 @@ export class TestKernel {
 			const { item } = running
 			const meanCheck = this.moduleCheck.meanDurationMs()
 			const checkElapsed = this.moduleCheck.heldTicket ? now - this.moduleCheck.heldAt : 0
+			const isDeno = suite.run?.[0] === 'deno'
 			tasks.push(buildEstimateTask(suite, this.state.suites[key], {
 				id: item.id ?? `run:${key}`,
 				subtestsToRun: item.subtests,
 				elapsedMs: now - (running.startedAt ?? now),
 				running: true,
-				moduleCheckMs: running.checkDone ? 0 : Math.max(0, meanCheck - checkElapsed),
+				moduleCheckMs: !isDeno ? 0 : running.checkDone ? 0 : Math.max(0, meanCheck - checkElapsed),
 				jobId: item.jobId ?? null,
 				source: item.source,
 			}))

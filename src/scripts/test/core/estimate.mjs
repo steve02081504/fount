@@ -494,6 +494,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 				usedMemBytes += task.memMb * MiB
 				usedCpuPct += task.cpuPct
 			}
+			checkFreeAt = Math.max(checkFreeAt, task.moduleCheckMs ?? 0)
 			continue
 		}
 		const duration = taskDurationMs(task)

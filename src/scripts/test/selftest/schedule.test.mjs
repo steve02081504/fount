@@ -20,9 +20,10 @@ import { shouldDisplayScheduleChange } from '../kernel/schedule_event.mjs'
  * @param {boolean} [spec.blocked] 阻塞
  * @param {boolean} [spec.reused] 复用
  * @param {string} [spec.id] 实例 id
+ * @param {number} [spec.moduleCheckMs] 模组检查互斥时长
  * @returns {import('../kernel/schedule.mjs').ScheduleTask} 任务
  */
-function task({ key, durationMs, elapsedMs = 0, running = false, memMb = 400, cpuPct = 15, heavy = false, deps = [], jobId = null, source = 'cli', blocked = false, reused = false, id }) {
+function task({ key, durationMs, elapsedMs = 0, running = false, memMb = 400, cpuPct = 15, heavy = false, deps = [], jobId = null, source = 'cli', blocked = false, reused = false, id, moduleCheckMs = 0 }) {
 	return {
 		id: id ?? key,
 		key,
@@ -37,6 +38,7 @@ function task({ key, durationMs, elapsedMs = 0, running = false, memMb = 400, cp
 		deps,
 		jobId,
 		source,
+		moduleCheckMs,
 	}
 }
 
@@ -124,6 +126,44 @@ Deno.test('consumer projection exposes running items with remaining', () => {
 	assertEquals(job1.running.length, 1)
 	assertEquals(job1.running[0].key, 'a')
 	assertEquals(job1.running[0].endAt, 7000)
+})
+
+Deno.test('many light suites with zero module-check mean pack fully in parallel', () => {
+	// 低 CPU 占用让 31 个套件全部并行；无模块检查时 makespan ≈ 单套件时长
+	const suites = Array.from({ length: 31 }, (_, i) =>
+		task({ key: `shells/chat:s${i}`, durationMs: 136_000, memMb: 200, cpuPct: 1 }))
+	const { makespanMs } = buildTimeline(suites, ROOMY)
+	assertEquals(makespanMs, 136_000)
+})
+
+Deno.test('module-check mean serializes the spawn window across suites', () => {
+	// 同批套件，但每个 spawn 前要串行占用 40s 模块检查互斥窗口 → makespan 大幅拉长
+	const suites = Array.from({ length: 31 }, (_, i) =>
+		task({ key: `shells/chat:s${i}`, durationMs: 136_000, moduleCheckMs: 40_000, memMb: 200, cpuPct: 1 }))
+	const { makespanMs } = buildTimeline(suites, ROOMY)
+	assertEquals(makespanMs, 31 * 40_000 + 136_000)
+})
+
+Deno.test('module-check mean does not double-count the spawn window for running tasks', () => {
+	// 一个正在跑且已完成模块检查的任务，moduleCheckMs 应为 0，不再推进互斥窗口；
+	// 因此 b 的模块检查可从 t=0 立即开始，b.startAt = 0，make span = 40000 + 1000
+	const { slots, makespanMs } = buildTimeline([
+		task({ key: 'a', durationMs: 1000, moduleCheckMs: 0, running: true }),
+		task({ key: 'b', durationMs: 1000, moduleCheckMs: 40_000 }),
+	], ROOMY)
+	assertEquals(makespanMs, 41_000)
+	assertEquals(slots.find(s => s.key === 'b').startAt, 0)
+})
+
+Deno.test('queued task startAt reflects module-check spawn delay, not admission time', () => {
+	// a 的模块检查占用 0-200；b 的 spawnAt 只能从 200 开始，而不是被接纳的 0
+	const { slots } = buildTimeline([
+		task({ key: 'a', durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
+		task({ key: 'b', durationMs: 1000, moduleCheckMs: 200, memMb: 10, cpuPct: 5 }),
+	], ROOMY)
+	const b = slots.find(s => s.key === 'b')
+	assertEquals(b.startAt, 200)
+	assertEquals(b.endAt, 1400)
 })
 
 Deno.test('shouldDisplayScheduleChange only above 5%', () => {

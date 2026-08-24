@@ -167,12 +167,13 @@ export function buildTimeline(tasks, { memBudgetBytes, cpuBudgetPct }) {
 
 	/**
 	 * @param {ScheduleTask} task 任务
+	 * @param {number} startTime 开始时刻（可能晚于当前 time，受模块检查互斥窗限制）
 	 * @param {number} endTime 结束时刻
 	 */
-	function occupy(task, endTime) {
+	function occupy(task, startTime, endTime) {
 		const id = task.id ?? task.key
 		depthById.set(id, maxCompletedDepth() + 1)
-		startById.set(id, time)
+		startById.set(id, startTime)
 		endById.set(id, endTime)
 		if (task.heavy) {
 			exclusiveRunning = true
@@ -191,7 +192,7 @@ export function buildTimeline(tasks, { memBudgetBytes, cpuBudgetPct }) {
 		const spawnAt = Math.max(time, checkFreeAt)
 		const checkEnd = spawnAt + (task.moduleCheckMs ?? 0)
 		checkFreeAt = checkEnd
-		occupy(task, checkEnd + effectiveMs(task))
+		occupy(task, spawnAt, checkEnd + effectiveMs(task))
 	}
 
 	/**
@@ -262,6 +263,7 @@ export function buildTimeline(tasks, { memBudgetBytes, cpuBudgetPct }) {
 				usedMemBytes += task.memMb * MiB
 				usedCpuPct += task.cpuPct
 			}
+			checkFreeAt = Math.max(checkFreeAt, task.moduleCheckMs ?? 0)
 			continue
 		}
 		const duration = effectiveMs(task)
@@ -270,7 +272,7 @@ export function buildTimeline(tasks, { memBudgetBytes, cpuBudgetPct }) {
 			endById.set(id, 0)
 			continue
 		}
-		occupy(task, duration)
+		occupy(task, 0, duration)
 		checkFreeAt = Math.max(checkFreeAt, task.moduleCheckMs ?? 0)
 	}
 

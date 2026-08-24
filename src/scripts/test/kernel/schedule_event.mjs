@@ -56,6 +56,7 @@ export function formatScheduleReason(reason) {
 		case 'queue_appended': return '新任务入队'
 		case 'queue_removed': return '任务取消'
 		case 'prep_promoted': return '预备晋升'
+		case 'module_check_ready': return '模块检查就绪'
 		case 'dependency_ready': return '依赖就绪'
 		case 'resource_budget_changed': return '资源预算变化'
 		case 'job_queued': return '新任务排队'
