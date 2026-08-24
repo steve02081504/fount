@@ -53,12 +53,11 @@ Deno.test('canInChannel: group permission evaluates against group scope, not cal
 
 Deno.test('canInChannel: channel-level permission honors the passed channelId override', () => {
 	let state = baseState()
-	state.channelPermissions.secret = {
+	// secret 跟随根块：在根块上 deny 掉 SEND_MESSAGES（secret 与 default 均受影响）。
+	state.channelPermissions.root = {
 		moderator: { allow: {}, deny: { SEND_MESSAGES: true } },
 	}
 	const member = state.members[MOD]
-	// 非治理权限仍受传入频道自身覆写影响。
+	// 频道权限按调用方传入频道求值；secret 同步根块，故被 deny。
 	assertEquals(canInChannel(state, member, PERMISSIONS.SEND_MESSAGES, 'secret'), false)
-	// 治理频道 default 上的 SEND_MESSAGES 未被 deny。
-	assertEquals(canInChannel(state, member, PERMISSIONS.SEND_MESSAGES, 'default'), true)
 })

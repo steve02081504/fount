@@ -24,6 +24,7 @@ export function buildStateSummaryContent(state, anchorEventId, events = []) {
 		channelPermissionsHash: createHash('sha256')
 			.update(canonicalStringify({
 				channelPermissions: state.channelPermissions || {},
+				groupPermissions: state.groupPermissions || {},
 				channels: Object.fromEntries(
 					Object.entries(state.channels || {})
 						.map(([id, channel]) => [id, { permissionBlockId: channel?.permissionBlockId ?? null }])
