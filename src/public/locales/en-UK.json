@@ -191,7 +191,11 @@
 						"0": "Waiting in queue"
 					}
 				},
-				"failureLog": "\n—— ${label} — failure log ——"
+				"failureLog": "\n—— ${label} — failure log ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "PASSED: ${label}",
 			"passedWithNoise": "PASSED: ${label} (with noise)",

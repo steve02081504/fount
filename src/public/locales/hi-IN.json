@@ -191,7 +191,11 @@
 						"0": "कतार में"
 					}
 				},
-				"failureLog": "\n—— ${label} की विफलता लॉग ——"
+				"failureLog": "\n—— ${label} की विफलता लॉग ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "पास: ${label}",
 			"passedWithNoise": "उत्तीर्ण: ${label} (शोर शामिल है)",

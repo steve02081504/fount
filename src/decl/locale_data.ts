@@ -169,6 +169,10 @@ export type LocaleData = {
 				remainingOnlyUnknown: string
 				queued: LocaleSwitchLeaf
 				failureLog: string
+				schedule: {
+					reason: string
+					running: string
+				}
 			}
 			passed: string
 			passedWithNoise: string
@@ -6200,6 +6204,7 @@ export type LocaleKeyParams = {
 	'chat.group.settings.page.emojis.deleteFailed': { error: string | number }
 	'chat.group.settings.page.emojis.packGroupOption': { packId: string | number }
 	'chat.group.settings.page.emojis.uploadFailed': { error: string | number }
+	'chat.group.settings.page.groupPerms.updateFailed': { error: string | number }
 	'chat.group.settings.page.gshGenerationNearLimit': { generation: string | number; maxGenerations: string | number }
 	'chat.group.settings.page.invite.clipboard': { code: string | number; groupId: string | number; url: string | number }
 	'chat.group.settings.page.invite.expires': { date: string | number }
@@ -6449,6 +6454,8 @@ export type LocaleKeyParams = {
 	'fountConsole.test.display.remaining': { remaining: string | number }
 	'fountConsole.test.display.remainingOnlyUnknown': { count: string | number }
 	'fountConsole.test.display.remainingUnknown': { count: string | number; remaining: string | number }
+	'fountConsole.test.display.schedule.reason': { reason: string | number }
+	'fountConsole.test.display.schedule.running': { key: string | number; remaining: string | number }
 	'fountConsole.test.failed': { label: string | number }
 	'fountConsole.test.failedWithCode': { code: string | number; label: string | number }
 	'fountConsole.test.failuresCleared': { manifestId: string | number }

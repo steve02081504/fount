@@ -191,7 +191,11 @@
 						"0": "待機中"
 					}
 				},
-				"failureLog": "\n—— ${label} の失敗ログ ——"
+				"failureLog": "\n—— ${label} の失敗ログ ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "合格: ${label}",
 			"passedWithNoise": "合格: ${label}（ノイズあり）",

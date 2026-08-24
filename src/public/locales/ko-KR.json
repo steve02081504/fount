@@ -191,7 +191,11 @@
 						"0": "대기 중"
 					}
 				},
-				"failureLog": "\n—— ${label} 실패 로그 ——"
+				"failureLog": "\n—— ${label} 실패 로그 ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "경로: ${label}",
 			"passedWithNoise": "통과: ${label}(노이즈 포함)",

@@ -191,7 +191,11 @@
 						"0": "⏳"
 					}
 				},
-				"failureLog": "\n—— ❌📋 ${label} ——"
+				"failureLog": "\n—— ❌📋 ${label} ——",
+				"schedule": {
+					"reason": "（${reason}）",
+					"running": "正在运行 ${key}，剩余 ${remaining}"
+				}
 			},
 			"passed": "✅: ${label}",
 			"passedWithNoise": "✅: ${label} (🔊)",

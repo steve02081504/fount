@@ -191,7 +191,11 @@
 						"0": "Í biðröð"
 					}
 				},
-				"failureLog": "\n—— ${label} — bilanaskrá ——"
+				"failureLog": "\n—— ${label} — bilanaskrá ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "Staðið: ${label}",
 			"passedWithNoise": "Staðið: ${label} (með hávaða)",

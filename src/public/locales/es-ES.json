@@ -191,7 +191,11 @@
 						"0": "En cola"
 					}
 				},
-				"failureLog": "\n—— Registro de fallos: ${label} ——"
+				"failureLog": "\n—— Registro de fallos: ${label} ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "Aprobado: ${label}",
 			"passedWithNoise": "Aprobado: ${label} (con ruido)",

@@ -191,7 +191,11 @@
 						"0": "في الطابور"
 					}
 				},
-				"failureLog": "\n—— سجل فشل ${label} ——"
+				"failureLog": "\n—— سجل فشل ${label} ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "نجح: ${label}",
 			"passedWithNoise": "نجح: ${label} (يحتوي ضوضاء)",

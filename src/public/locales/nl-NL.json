@@ -191,7 +191,11 @@
 						"0": "In de wachtrij"
 					}
 				},
-				"failureLog": "\n—— Foutlogboek: ${label} ——"
+				"failureLog": "\n—— Foutlogboek: ${label} ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "Geslaagd: ${label}",
 			"passedWithNoise": "Geslaagd: ${label} (met ruis)",

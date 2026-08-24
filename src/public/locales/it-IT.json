@@ -191,7 +191,11 @@
 						"0": "In coda"
 					}
 				},
-				"failureLog": "\n—— Registro errori di ${label} ——"
+				"failureLog": "\n—— Registro errori di ${label} ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "Superato: ${label}",
 			"passedWithNoise": "SUPERATO: ${label} (con rumore)",

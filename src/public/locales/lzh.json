@@ -191,7 +191,11 @@
 						"0": "候列中"
 					}
 				},
-				"failureLog": "\n—— ${label}：失利錄 ——"
+				"failureLog": "\n—— ${label}：失利錄 ——",
+				"schedule": {
+					"reason": "（${reason}）",
+					"running": "正在运行 ${key}，剩余 ${remaining}"
+				}
 			},
 			"passed": "通過：${label}",
 			"passedWithNoise": "通過：${label}（含有噪聲）",

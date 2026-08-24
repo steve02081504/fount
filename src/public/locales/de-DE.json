@@ -191,7 +191,11 @@
 						"0": "In der Warteschlange"
 					}
 				},
-				"failureLog": "\n—— Fehlerprotokoll: ${label} ——"
+				"failureLog": "\n—— Fehlerprotokoll: ${label} ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "Bestanden: ${label}",
 			"passedWithNoise": "Bestanden: ${label} (mit Rauschen)",

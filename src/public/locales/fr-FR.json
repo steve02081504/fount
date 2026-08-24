@@ -191,7 +191,11 @@
 						"0": "En file d'attente"
 					}
 				},
-				"failureLog": "\n—— Journal d'échecs : ${label} ——"
+				"failureLog": "\n—— Journal d'échecs : ${label} ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "Réussi : ${label}",
 			"passedWithNoise": "Réussi : ${label} (bruit détecté)",
