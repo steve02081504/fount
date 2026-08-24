@@ -94,15 +94,18 @@ export async function resolveActiveMemberKeyForLocalReplica(replicaUsername, gro
 /**
  * @param {object} state 物化群状态
  * @param {object} member 成员记录
- * @param {string} permission 权限键
+ * @param {string | string[]} permission 权限键或权限键数组（任一满足即 true）
  * @param {string} channelId 频道 ID
- * @returns {boolean} 是否具备权限
+ * @returns {boolean} 是否具备任一权限
  */
 export function canInChannel(state, member, permission, channelId) {
-	// 群级治理权限按群权限 scope 求值；频道权限按调用方传入频道求值。
-	if (isGroupPermission(permission))
-		return hasPermission(member, permission, state.roles, GROUP_SCOPE_ID, effectiveGroupPermissions(state))
-	return hasPermission(member, permission, state.roles, channelId, effectiveChannelPermissions(state, channelId))
+	for (const key of Array.isArray(permission) ? permission : [permission])
+		// 群级治理权限按群权限 scope 求值；频道权限按调用方传入频道求值。
+		if (isGroupPermission(key)
+			? hasPermission(member, key, state.roles, GROUP_SCOPE_ID, effectiveGroupPermissions(state))
+			: hasPermission(member, key, state.roles, channelId, effectiveChannelPermissions(state, channelId)))
+			return true
+	return false
 }
 
 /**
@@ -120,9 +123,7 @@ export function governanceChannelId(state) {
  * @returns {boolean} 是否可签发 reputation_slash（治理频道 ADMIN 或 MANAGE_ROLES）
  */
 export function canGovSlash(state, member) {
-	const channelId = governanceChannelId(state)
-	return canInChannel(state, member, PERMISSIONS.ADMIN, channelId)
-		|| canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, channelId)
+	return canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ROLES], governanceChannelId(state))
 }
 
 /** 重导出 isEntityHash128 与 PERMISSIONS。 */

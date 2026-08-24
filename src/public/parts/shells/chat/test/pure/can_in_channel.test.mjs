@@ -61,3 +61,13 @@ Deno.test('canInChannel: channel-level permission honors the passed channelId ov
 	// 频道权限按调用方传入频道求值；secret 同步根块，故被 deny。
 	assertEquals(canInChannel(state, member, PERMISSIONS.SEND_MESSAGES, 'secret'), false)
 })
+
+Deno.test('canInChannel: array of permissions is satisfied when any granted (mixed scope)', () => {
+	const state = baseState()
+	const member = state.members[MOD]
+	// moderator 有 MANAGE_ROLES（群权限）与 SEND_MESSAGES（频道权限）。
+	// 数组中仅一个满足即 true。
+	assertEquals(canInChannel(state, member, [PERMISSIONS.MANAGE_ROLES, PERMISSIONS.KICK_MEMBERS], 'secret'), true)
+	// 全部不满足 → false。
+	assertEquals(canInChannel(state, member, [PERMISSIONS.KICK_MEMBERS, PERMISSIONS.BAN_MEMBERS], 'secret'), false)
+})

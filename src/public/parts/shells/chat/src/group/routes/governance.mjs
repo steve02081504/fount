@@ -14,7 +14,7 @@ import { verifyOwnerSuccessionThreshold } from 'npm:@steve02081504/fount-p2p/gov
 import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { applyVolatileSlashAlert, buildUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
-import { calculateMemberPermissions, GROUP_SCOPE_ID, hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { calculateMemberPermissions, GROUP_SCOPE_ID, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
@@ -461,9 +461,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const activeCount = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 		const governanceChannel = governanceChannelId(state)
 		const isDmPair = activeCount === 2
-		if (!isDmPair
-			&& !canInChannel(state, member, PERMISSIONS.ADMIN, governanceChannel)
-			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannel))
+		if (!isDmPair && !canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ROLES], governanceChannel))
 			throw httpError(403, 'file_master_key_rotate requires ADMIN or MANAGE_ROLES')
 
 		const keyEntry = await getCurrentFileMasterKey(username, groupId)
@@ -606,9 +604,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const { username, state, memberKey } = await resolveGroupMember(req, res, req.params.groupId)
 		const member = state.members[memberKey]
 		const gov = governanceChannelId(state)
-		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, effectiveChannelPermissions(state, gov))
-			|| canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, gov)
-		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], gov))
+			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const { body } = req
 		if (!body.cabinet_id) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetBind } = await import('../../chat/cabinets/keys.mjs')
@@ -625,9 +622,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const { username, state, memberKey } = await resolveGroupMember(req, res, req.params.groupId)
 		const member = state.members[memberKey]
 		const gov = governanceChannelId(state)
-		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, effectiveChannelPermissions(state, gov))
-			|| canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, gov)
-		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], gov))
+			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const cabinetId = req.body.cabinet_id || ''
 		if (!cabinetId) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetUnbind } = await import('../../chat/cabinets/keys.mjs')

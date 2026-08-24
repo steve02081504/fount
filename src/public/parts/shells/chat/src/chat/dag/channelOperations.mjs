@@ -205,9 +205,7 @@ export async function appendKeyRotateEvent(username, groupId, body) {
 	const member = state.members?.[sender]
 	const activeCount = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 	const isDmPair = activeCount === 2
-	if (!isDmPair
-		&& !canInChannel(state, member, PERMISSIONS.ADMIN, permissionsChannelId)
-		&& !canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, permissionsChannelId))
+	if (!isDmPair && !canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ROLES], permissionsChannelId))
 		throw new Error('file_master_key_rotate requires ADMIN, MANAGE_ROLES, or DM membership')
 	return appendEvent(username, groupId, {
 		type: 'file_master_key_rotate',

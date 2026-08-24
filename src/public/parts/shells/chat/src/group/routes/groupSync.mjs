@@ -211,15 +211,12 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (active)
 			for (const channelId of Object.keys(channels))
 				channelCaps[channelId] = {
-					canEditList: canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId)
-						|| canInChannel(state, member, PERMISSIONS.CREATE_THREADS, channelId),
-					canCreateThreads: canInChannel(state, member, PERMISSIONS.CREATE_THREADS, channelId)
-						|| canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId),
+					canEditList: canInChannel(state, member, [PERMISSIONS.MANAGE_CHANNELS, PERMISSIONS.CREATE_THREADS], channelId),
+					canCreateThreads: canInChannel(state, member, [PERMISSIONS.CREATE_THREADS, PERMISSIONS.MANAGE_CHANNELS], channelId),
 					canStream: canInChannel(state, member, PERMISSIONS.STREAM, channelId),
 					canManageMessages: canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId),
 					canAddReactions: canInChannel(state, member, PERMISSIONS.ADD_REACTIONS, channelId),
-					canPinMessages: canInChannel(state, member, PERMISSIONS.PIN_MESSAGES, channelId)
-						|| canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId),
+					canPinMessages: canInChannel(state, member, [PERMISSIONS.PIN_MESSAGES, PERMISSIONS.MANAGE_MESSAGES], channelId),
 				}
 
 
@@ -305,8 +302,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 		const channelId = governanceChannelId(state)
-		if (!canInChannel(state, member, PERMISSIONS.ADMIN, channelId)
-			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, channelId))
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], channelId))
 			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		if (!isGroupFederationActive(state.groupSettings))
 			throw httpError(409, 'federation not active; invite a member first')
@@ -327,8 +323,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 		const channelId = governanceChannelId(state)
-		if (!canInChannel(state, member, PERMISSIONS.ADMIN, channelId)
-			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, channelId))
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], channelId))
 			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const { setFederationTuning } = await import('../../chat/federation/tuning.mjs')
 		const patch = await setFederationTuning(username, groupId, req.body)

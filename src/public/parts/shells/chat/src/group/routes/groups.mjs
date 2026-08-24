@@ -168,8 +168,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 	router.delete(`${GROUPS_PREFIX}/:groupId`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId, state, member } = req.groupContext
 		const permissionsChannelId = governanceChannelId(state)
-		if (!canInChannel(state, member, PERMISSIONS.ADMIN, permissionsChannelId)
-			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, permissionsChannelId))
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], permissionsChannelId))
 			return res.status(403).json({ error: 'Only admins can delete the group' })
 
 		await removeLocalGroupReplica(username, groupId)

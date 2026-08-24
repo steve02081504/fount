@@ -117,9 +117,7 @@ export function registerMembershipRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 		const permissionsChannelId = governanceChannelId(state)
-		if (!canInChannel(state, member, PERMISSIONS.INVITE_MEMBERS, permissionsChannelId)
-			&& !canInChannel(state, member, PERMISSIONS.ADMIN, permissionsChannelId)
-			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, permissionsChannelId))
+		if (!canInChannel(state, member, [PERMISSIONS.INVITE_MEMBERS, PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], permissionsChannelId))
 			throw httpError(403, 'INVITE_MEMBERS denied')
 		const ttlMs = Number(req.body?.ttlMs)
 		const ticket = await mintGroupInviteTicket(username, groupId, {
