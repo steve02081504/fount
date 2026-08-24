@@ -235,9 +235,8 @@ export async function checkEventPermission(state, event, senderHash, options = {
 		case 'channel_update': {
 			const updates = event.content?.updates || {}
 			const targetChannelId = event.content?.channelId || channelId
-			const updateKeys = Object.keys(updates)
-			const supportedUpdateFields = new Set(['name', 'description', 'type', 'isPrivate', 'links', 'permBlockId'])
-			if (updateKeys.some(key => !supportedUpdateFields.has(key)))
+			const supportedUpdateFields = ['name', 'description', 'type', 'isPrivate', 'links', 'permBlockId']
+			if (Object.keys(updates).some(key => !supportedUpdateFields.includes(key)))
 				return { ok: false, reason: 'unsupported channel_update fields' }
 			if (Array.isArray(updates.links)) {
 				const targetPerms = memberChannelPermissions(state, sender, targetChannelId)

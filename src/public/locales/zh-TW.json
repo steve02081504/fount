@@ -2466,7 +2466,7 @@
 					"title": "分類權限",
 					"updateFailed": "更新分類權限失敗：${error}",
 					"updated": "分類權限已更新",
-					"syncedWarning": "此分類權限正同步自上級頻道，單獨設定將先脫鉤。",
+					"syncedWarning": "此分類權限正同步自根頻道，單獨設定將先脫鉤。",
 					"syncToDefault": "同步到根頻道權限",
 					"synced": "已同步至根頻道權限"
 				}

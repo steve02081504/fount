@@ -2426,7 +2426,7 @@
 				"name": "Nome do canal",
 				"unnamed": "Sem nome",
 				"parent": "canal pai",
-				"noParent": "Nenhum canal pai (diretório raiz)",
+				"noParent": "Nenhum canal pai (canal raiz)",
 				"nameInput": {
 					"placeholder": "Em geral"
 				},
@@ -2467,7 +2467,7 @@
 					"title": "Permissões da categoria",
 					"updateFailed": "Falha ao atualizar as permissões da categoria: ${error}",
 					"updated": "As permissões da categoria foram atualizadas",
-					"syncedWarning": "As permissões desta categoria são sincronizadas a partir do canal pai; as alterações individuais desvinculam-nas primeiro.",
+					"syncedWarning": "As permissões desta categoria são sincronizadas a partir do canal raiz; as alterações individuais desvinculam-nas primeiro.",
 					"syncToDefault": "Sincronizar com permissões do canal raiz",
 					"synced": "Sincronizado com permissões do canal raiz"
 				}

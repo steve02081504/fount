@@ -24,12 +24,12 @@ function dismiss() {
 }
 
 /**
- * 判断当前 viewer 是否可在频道树中管理频道（任一频道的 canEditList 即视为可管理）。
- * @param {object} [state] 群组状态；缺省取 store.context.currentState
- * @returns {boolean} 可管理频道为 true
+ * 判断当前 viewer 是否可管理频道（任一频道 canEditList 即视为可管理）。
+ * @param {object} [state] 群组状态
+ * @returns {boolean} 是否可管理
  */
 export function canEditChannelList(state = store.context.currentState) {
-	return Object.values(state?.channelCaps || {}).some(cap => cap?.canEditList)
+	return Object.values(state?.channelCaps || {}).some(capability => capability?.canEditList)
 }
 
 /**
@@ -74,8 +74,7 @@ function mountMenu(event, items) {
  * @returns {void}
  */
 export function showChannelListCreateMenu(event) {
-	const canManageChannels = canEditChannelList()
-	if (!canManageChannels) return
+	if (!canEditChannelList()) return
 	const { close, menu } = mountMenu(event, [
 		'<li><button type="button" class="w-full text-left" data-action="create-channel" data-i18n="chat.hub.newChannel.button"></button></li>',
 		'<li><button type="button" class="w-full text-left" data-action="create-category" data-i18n="chat.hub.newCategory.button"></button></li>',

@@ -2467,7 +2467,7 @@
 					"title": "Kategorieberechtigungen",
 					"updateFailed": "Kategorieberechtigungen konnten nicht aktualisiert werden: ${error}",
 					"updated": "Die Kategorieberechtigungen wurden aktualisiert",
-					"syncedWarning": "Die Berechtigungen dieser Kategorie werden vom übergeordneten Kanal übernommen. Einzelne Änderungen entkoppeln sie zunächst.",
+					"syncedWarning": "Die Berechtigungen dieser Kategorie werden vom Root-Kanal übernommen. Einzelne Änderungen entkoppeln sie zunächst.",
 					"syncToDefault": "Mit den Root-Kanalberechtigungen synchronisieren",
 					"synced": "Mit den Root-Kanalberechtigungen synchronisiert"
 				}

@@ -225,7 +225,6 @@ export async function renderChannelListVirtual(container, state) {
 	if (!container || !state) return
 	const channels = state.channels || {}
 	const groupId = store.context.currentGroupId
-	const canManageChannels = canEditChannelList(state)
 
 	/**
 	 * 渲染新建频道按钮（DM 在外部固定槽位，普通群在传入容器内部底部）。
@@ -233,7 +232,7 @@ export async function renderChannelListVirtual(container, state) {
 	 * @returns {void}
 	 */
 	function renderCreateButton(hostElement) {
-		if (!canManageChannels || !groupId) return
+		if (!canEditChannelList(state) || !groupId) return
 		const addChannelButton = document.createElement('button')
 		addChannelButton.type = 'button'
 		addChannelButton.className = 'btn btn-ghost btn-sm w-[calc(100%-8px)] mx-1 mt-1 channel-create-button'
