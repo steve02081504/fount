@@ -3,6 +3,8 @@
  * 覆盖：建群/建 DM 默认文字频道正确落盘；根频道硬编码禁止发消息/文件。
  */
 /* global Deno */
+import { Buffer } from 'node:buffer'
+
 import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { createIntegrationBoot } from '../harness.mjs'

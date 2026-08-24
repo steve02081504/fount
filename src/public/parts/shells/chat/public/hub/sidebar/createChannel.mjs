@@ -3,12 +3,12 @@
  * 【职责】新建频道对话框与入树刷新（可选在父频道下创建并链接）。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { findParentChannelId } from '../../shared/channelReorder.mjs'
 import { autoNameChannels, createChannel, updateChannel } from '../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { openDialogFromTemplate, renderTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store, setState } from '../core/state.mjs'
-import { findParentChannelId } from '../../shared/channelReorder.mjs'
 
 import { selectChannel } from './selectChannel.mjs'
 

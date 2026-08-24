@@ -145,7 +145,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const { username, state, member, groupId } = req.groupContext
 		if (!state.channels[channelId])
 			throw httpError(404, 'Channel not found')
-		const target = permBlockId || state.groupSettings?.defaultChannelId || null
+		const target = permBlockId || state.groupSettings?.rootChannelId || null
 		if (target && !state.channels[target])
 			throw httpError(404, 'Target channel not found')
 		if (target === channelId)

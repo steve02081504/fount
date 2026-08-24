@@ -109,26 +109,24 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 				}
 			}, { capture: true })
 
-			// 同一 roleId 的权限写入串行排队：读取最新快照后再提交，避免并发请求互相覆盖；不同 roleId 并行。
+			// 对话框级权限写入串行排队：所有角色读最新快照后再提交，避免共享 permissions 快照被并发响应覆盖。
 			/**
-			 * 按 roleId 串行化权限写入（读最新快照 + 提交 + 重绘），避免并发覆盖。
-			 * @param {string} roleId 角色 ID
+			 * 串行化权限写入（读最新快照 + 提交 + 重绘），失败后继续处理后续任务。
 			 * @param {() => Promise<void>} op 读提交操作
 			 * @returns {Promise<void>}
 			 */
-			const enqueuePermOp = (roleId, op) => {
-				const prev = permQueues.get(roleId) ?? Promise.resolve()
-				const next = prev.catch(() => {}).then(op)
-				permQueues.set(roleId, next)
+			const enqueuePermOp = op => {
+				const next = permQueue.catch(() => {}).then(op)
+				permQueue = next
 				return next
 			}
-			const permQueues = new Map()
+			let permQueue = Promise.resolve()
 
 			body.addEventListener('click', async event => {
 				const clearBtn = event.target.closest('[data-action="clear-role-override"]')
 				if (clearBtn?.dataset.roleId) {
 					try {
-						await enqueuePermOp(clearBtn.dataset.roleId, async () => {
+						await enqueuePermOp(async () => {
 							await putChannelPermBlock(groupId, categoryId, clearBtn.dataset.roleId, {}, {})
 							await renderRolePanels(body)
 						})
@@ -148,7 +146,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 				const nextState = stateBtn.getAttribute('data-state')
 				if (!roleId || !perm || !nextState || !grantablePerms.includes(perm)) return
 				try {
-					await enqueuePermOp(roleId, async () => {
+					await enqueuePermOp(async () => {
 						const allow = { ...permissions[roleId]?.allow }
 						const deny = { ...permissions[roleId]?.deny }
 						delete allow[perm]

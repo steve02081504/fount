@@ -1,7 +1,5 @@
 /* global Deno */
-import { assertEquals } from 'jsr:@std/assert'
-
-import { assertThrows } from 'jsr:@std/assert'
+import { assertEquals, assertThrows } from 'jsr:@std/assert'
 
 import { emptyMaterializedState } from '../../src/chat/dag/groupMaterializedState.mjs'
 import { ROOT_CHANNEL_ID, assertNotRootChannel } from '../../src/chat/dag/groupSettings.mjs'

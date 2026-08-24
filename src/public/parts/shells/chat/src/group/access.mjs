@@ -99,7 +99,9 @@ export async function resolveActiveMemberKeyForLocalReplica(replicaUsername, gro
  * @returns {boolean} 是否具备权限
  */
 export function canInChannel(state, member, permission, channelId) {
-	return hasPermission(member, permission, state.roles, channelId, effectiveChannelPermissions(state, channelId))
+	// MANAGE_ROLES 是治理权限，应按治理频道上的 allow/deny 覆写求值，而非调用方传入的频道。
+	const effectiveChannelId = permission === PERMISSIONS.MANAGE_ROLES ? governanceChannelId(state) : channelId
+	return hasPermission(member, permission, state.roles, effectiveChannelId, effectiveChannelPermissions(state, effectiveChannelId))
 }
 
 /**

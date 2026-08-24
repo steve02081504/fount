@@ -12,7 +12,6 @@ import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/co
 import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { assertNotRootChannel } from '../dag/groupSettings.mjs'
 import { unlockAchievement } from '../../../../achievements/src/api.mjs'
 import {
 	channelMessage,
@@ -20,6 +19,7 @@ import {
 } from '../../../public/shared/channelContent.mjs'
 import { ensureChatExtension, sanitizeAlt } from '../../../public/shared/messageFields.mjs'
 import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
+import { assertNotRootChannel } from '../dag/groupSettings.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
