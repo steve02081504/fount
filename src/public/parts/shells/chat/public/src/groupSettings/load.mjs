@@ -6,6 +6,7 @@ import { resolveViewerSettingsCapabilities } from '../groupViewerPermissions.mjs
 import { renderArchiveStoragePanel } from './archiveTab.mjs'
 import { ensureChannelPermissionsPanel } from './channelPermsTab.mjs'
 import { ensureGroupEmojisPanel } from './emojisTab.mjs'
+import { ensureGroupPermissionsPanel, renderGroupPermissionsPanel } from './groupPermsTab.mjs'
 import { renderGroupSettings } from './generalTab.mjs'
 import { renderMembers } from './membersTab.mjs'
 import { renderPermissionSettings } from './permissionsTab.mjs'
@@ -27,6 +28,7 @@ export async function loadGroupSettings(context, groupId) {
 	await renderGroupSettings(context)
 	await renderArchiveStoragePanel(context)
 	await renderPermissionSettings(context)
+	await renderGroupPermissionsPanel(context)
 	await renderMembers(context)
 }
 
@@ -42,6 +44,7 @@ export async function updateSettingsTabsVisibility(context) {
 		members: context.settingsCaps.isMember,
 		emojis: context.settingsCaps.isMember,
 		permissions: context.settingsCaps.canManageRoles,
+		'group-perms': context.settingsCaps.canManageRoles,
 		'channel-perms': context.settingsCaps.canManageChannelPerms,
 		storage: context.settingsCaps.canManageArchive || context.settingsCaps.canImportChannel,
 		audit: context.settingsCaps.canViewAudit,
@@ -69,4 +72,4 @@ export async function ensureAuditLogPanel(context) {
 }
 
 /** 重导出群设置面板 ensure 函数。 */
-export { ensureChannelPermissionsPanel, ensureGroupEmojisPanel }
+export { ensureChannelPermissionsPanel, ensureGroupEmojisPanel, ensureGroupPermissionsPanel }
