@@ -327,7 +327,7 @@ function buildRunMarkdown(summary, completed) {
 
 	lines.push(
 		'',
-		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/report.md` }),
+		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/` }),
 		'',
 	)
 
