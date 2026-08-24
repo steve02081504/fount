@@ -472,7 +472,7 @@
 		},
 		{
 			"name": "fed_archive_month",
-			"expected": "4m2s",
+			"expected": "4m45s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -650,7 +650,7 @@
 		},
 		{
 			"name": "fed_reputation_owner",
-			"expected": "4m14s",
+			"expected": "4m54s",
 			"dependsOn": [
 				"fed_core"
 			],
