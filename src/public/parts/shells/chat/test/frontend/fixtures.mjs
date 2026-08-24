@@ -310,6 +310,7 @@ export function createFriendChatGroup(baseUrl, apiKey, charname, options = {}) {
 	return createChatTestGroup(baseUrl, apiKey, {
 		name: options.name ?? `pw-friend-${Date.now()}`,
 		friendBinding: { charname },
+		...options.forceNew ? { forceNew: true } : {},
 	})
 }
 

@@ -9,6 +9,7 @@ import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { openDialogFromTemplate, renderTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store, setState } from '../core/state.mjs'
+import { updateHash } from '../core/urlHash.mjs'
 
 import { selectChannel } from './selectChannel.mjs'
 
@@ -60,6 +61,8 @@ export async function quickCreateChannel() {
 	if (!groupId) return
 	try {
 		const channelId = await createChannel(groupId, '')
+		// 创建完成立即落 hash：侧栏刷新（含异步渲染）会让测试在 count 变化时读 URL，必须赶在渲染前同步新频道。
+		updateHash(groupId, channelId)
 		const rootChannelId = store.context.currentState?.groupSettings?.rootChannelId || null
 		if (rootChannelId) await moveChannelToTop(groupId, channelId, rootChannelId)
 		await refreshChannelSidebar()

@@ -14,7 +14,7 @@ export function orderedSidebarGroupIds() {
 		: store.sidebar.groups.map(g => g.groupId)
 	return ordered.filter(id => {
 		const group = groupById.get(id)
-		return group ? !isFriendBoundGroup(group) : true
+		return group ? !isFriendBoundGroup(group) : false
 	})
 }
 

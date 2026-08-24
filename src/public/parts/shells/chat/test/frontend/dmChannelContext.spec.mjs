@@ -41,7 +41,7 @@ async function openChannelListContextMenu(page) {
  * @returns {Promise<{ groupId: string, defaultChannelId: string }>} DM 群信息
  */
 async function createDmWithGreeting(baseUrl, apiKey) {
-	const { groupId, defaultChannelId } = await createFriendChatGroup(baseUrl, apiKey, 'on_message_yes')
+	const { groupId, defaultChannelId } = await createFriendChatGroup(baseUrl, apiKey, 'on_message_yes', { forceNew: true })
 	await withApiRequest(async req => {
 		const key = encodeURIComponent(apiKey)
 		const groupPath = encodeURIComponent(groupId)

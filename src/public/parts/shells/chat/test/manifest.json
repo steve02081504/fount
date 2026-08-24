@@ -756,7 +756,7 @@
 				},
 				{
 					"name": "dmChannelContext",
-					"expected": "4m14s",
+					"expected": "1m56s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/dmChannelContext.spec.mjs",
 						"src/public/parts/shells/chat/test/fixtures/worlds/write_path_hooks/**",

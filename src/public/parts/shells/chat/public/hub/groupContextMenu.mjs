@@ -19,6 +19,7 @@ import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMen
 import { groupDisplayName } from './core/domUtils.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
+import { getSidebarGroups } from './friendBindings.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds, orderedSidebarGroupIds } from './groupSelection.mjs'
 import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
@@ -95,7 +96,7 @@ async function applyLeaveGroupsLocal(groupIds) {
 	if (touchesCurrent) {
 		if (store.privateGroup.groupId && leaving.has(store.privateGroup.groupId))
 			clearPrivateGroupState()
-		const next = orderedSidebarGroupIds().find(id => !leaving.has(id))
+		const next = getSidebarGroups().map(g => g.groupId).find(id => !leaving.has(id))
 		if (next) await selectGroup(next)
 		else {
 			store.context.currentGroupId = null
