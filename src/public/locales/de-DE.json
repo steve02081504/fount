@@ -1712,7 +1712,7 @@
 						"overridden": "Überschrieben",
 						"clearOverride": "Überschreibung aufheben",
 						"noRoles": "Derzeit gibt es keine zu konfigurierenden Rollen",
-						"updateFailed": "Aktualisierung der Gruppenberechtigungen fehlgeschlagen",
+						"updateFailed": "Aktualisierung der Gruppenberechtigungen fehlgeschlagen: ${error}",
 						"updated": "Gruppenberechtigungen aktualisiert"
 					}
 				},

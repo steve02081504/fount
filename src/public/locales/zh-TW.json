@@ -1706,7 +1706,7 @@
 						"rotateOk": "金鑰已輪換"
 					},
 					"groupPerms": {
-						"denied": "沒有管理群組權限的權限",
+						"denied": "你沒有管理群組權限",
 						"hint": "為群組層級治理權限（踢出、封鎖、管理角色、管理管理員、邀請成員）依角色設定覆蓋。",
 						"overridden": "已覆蓋",
 						"clearOverride": "清除覆蓋",
@@ -2450,7 +2450,7 @@
 				"typeStreaming": "流媒體頻道",
 				"typeText": "聊天頻道",
 				"readonlyRoot": {
-					"placeholder": "根頻道不能傳送訊息/文件"
+					"placeholder": "根頻道不能傳送訊息/檔案"
 				}
 			},
 			"category": {

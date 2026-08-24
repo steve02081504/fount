@@ -1,31 +1,51 @@
 /**
  * 【文件】group/routes/channelAutoName.mjs
- * 【职责】DM 群空名频道自动命名/分类：对每个空名频道逐一读取最近消息并交给本机默认 AI 源，
- *   要求以 XML 标签输出频道名与分类名，随后重命名并移动到分类（分类缺失则自动创建）。
+ * 【职责】DM 群空名频道自动命名/分类与 greeting-only 占位频道清理：新建频道后由
+ *   `scheduleDmChannelAutoNameAndCleanup` 触发，对根级每个无名频道截取最近 13 条消息：
+ *   全部为问候语则删除，否则交给本机默认 AI 源以 XML 标签命名并归入分类（分类缺失则自动创建）。
  * 【原理】仅在 DM 群（`groupKindFromState === 'dm'` 或带 friendBinding）执行；无默认 AI 源时
- *   `{ skipped: true }`。每个空名频道独立调用一次 `StructCall`，输出格式参照内置插件用
- *   `<标签>…</标签>` 包裹结构化字段（`<channel-name>` / `<category-name>`）。
+ *   跳过命名。异步总结用 `autoNamingInFlight` Map 去重（键 `groupId:channelId`），失败即从
+ *   Map 移除，待下次新建频道时再触发；清理/命名产出的 DAG 事件经群 WS 广播给前端。
  * 【关联】parts_loader.loadAnyPreferredDefaultPart、queries.readChannelMessagesForUser、
- *   dag/channelOperations、decl/AIsource。
+ *   dag/channelOperations、dag/append、decl/AIsource。
  */
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { loadAnyPreferredDefaultPart } from '../../../../../../../server/parts_loader.mjs'
 import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
+import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import {
 	appendChannelLink,
 	createChannel,
+	deleteChannel,
 	updateChannel,
 } from '../../chat/dag/channelOperations.mjs'
+import { getState } from '../../chat/dag/materialize.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
 import { readChannelMessagesForUser } from '../queries.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
 
-/** 每个空名频道最多读取的消息条数 */
-const CONTEXT_MESSAGE_COUNT = 20
+/** 每个空名频道最多读取的消息条数（判断 greeting-only 也复用此阈值：取最近 13 条）。 */
+const CONTEXT_MESSAGE_COUNT = 13
+/** 每个空名频道送入 AI 的上下文最大字符数 */
+const CONTEXT_MAX_CHARS = 4000
+
+/** 正在异步命名/分类的空名频道（键 `groupId:channelId`），防重复触发。 */
+const autoNamingInFlight = new Map()
+
+/**
+ * 判断一条频道消息是否为问候语（world greeting / 角色开场）。
+ * @param {object} message 频道消息行
+ * @returns {boolean} 是问候语为 true
+ */
+function isGreetingOnlyMessage(message) {
+	return !!(message?.content?.extension?.chat?.isGreeting
+		|| message?.content?.extension?.timeSlice?.greeting_type)
+}
+
 /** 每个空名频道送入 AI 的上下文最大字符数 */
 const CONTEXT_MAX_CHARS = 4000
 

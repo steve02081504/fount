@@ -1712,7 +1712,7 @@
 						"overridden": "Substituído",
 						"clearOverride": "Limpar substituição",
 						"noRoles": "Não há funções configuráveis de momento",
-						"updateFailed": "Falha ao atualizar as permissões do grupo",
+						"updateFailed": "Falha ao atualizar as permissões do grupo: ${error}",
 						"updated": "Permissões do grupo atualizadas"
 					}
 				},

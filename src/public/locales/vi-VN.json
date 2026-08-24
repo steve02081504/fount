@@ -1695,7 +1695,7 @@
 						"general": "nền tảng",
 						"members": "thành viên",
 						"permissions": "Quyền của vai trò",
-						"storage": "Lưu trữ và lưu trữ",
+						"storage": "Lưu trữ và lưu trữ lạnh",
 						"groupPermissions": "Quyền của nhóm"
 					},
 					"key": {

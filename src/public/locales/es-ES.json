@@ -1710,7 +1710,7 @@
 						"denied": "No tienes permiso para gestionar los permisos de grupo",
 						"hint": "Establece anulaciones por rol para los permisos de gobernanza del grupo (expulsar, bloquear, gestionar roles, gestionar administradores, invitar miembros).",
 						"overridden": "Anulado",
-						"clearOverride": "Borrar anulación",
+						"clearOverride": "Restablecer anulación",
 						"noRoles": "No hay roles configurables por el momento",
 						"updateFailed": "No se pudieron actualizar los permisos de grupo",
 						"updated": "Permisos de grupo actualizados"

@@ -1695,7 +1695,7 @@
 						"general": "Grunnur",
 						"members": "Meðlimir",
 						"permissions": "Hlutverkaheimildir",
-						"storage": "Geymsla og geymsluset",
+						"storage": "Geymsla og skjalasafn",
 						"groupPermissions": "Hópheimildir"
 					},
 					"key": {
@@ -1709,8 +1709,8 @@
 					"groupPerms": {
 						"denied": "Engin heimild til að stjórna hópheimildum",
 						"hint": "Stilltu hnekkingar eftir hlutverkum fyrir stjórnunarheimildir á hópsstigi (sparka, banna, stjórna hlutverkum, stjórna stjórnendum, bjóða félagsmönnum).",
-						"overridden": "Hnekkt",
-						"clearOverride": "Hreinsa hnekki",
+						"overridden": "Yfirskrifað",
+						"clearOverride": "Endurstilla allt í erfa",
 						"noRoles": "Engin hlutverk til að stilla eins og er",
 						"updateFailed": "Mistókst að uppfæra hópheimildir",
 						"updated": "Hópheimildum hefur verið uppfært"
@@ -2480,7 +2480,7 @@
 					"title": "Flokksheimildir",
 					"updateFailed": "Mistókst að uppfæra flokksheimildir: ${error}",
 					"updated": "Flokksheimildir hafa verið uppfærðar",
-					"syncedWarning": "Heimildir þessa flokks eru samstilltar við móðurrásina; einstakar breytingar aftengja þær fyrst.",
+					"syncedWarning": "Heimildir þessarar rásar eru samstilltar við rótarrásina; einstakar breytingar aftengja þær fyrst.",
 					"syncToDefault": "Samstilltu við rótarrásarheimildir",
 					"synced": "Samstillt við rótarrásarheimildir"
 				}

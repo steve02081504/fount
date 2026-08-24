@@ -1710,7 +1710,7 @@
 						"denied": "Je hebt geen toestemming om groepsmachtigingen te beheren",
 						"hint": "Stel per rol overschrijvingen in voor beheersrechten op groepsniveau (kicken, verbannen, rollen beheren, beheerders beheren, leden uitnodigen).",
 						"overridden": "Overschreven",
-						"clearOverride": "Overschrijving wissen",
+						"clearOverride": "Alles terugzetten naar overnemen",
 						"noRoles": "Er zijn momenteel geen rollen om te configureren",
 						"updateFailed": "Bijwerken van groepsmachtigingen is mislukt",
 						"updated": "Groepsmachtigingen bijgewerkt"
@@ -2449,7 +2449,7 @@
 				"type": "Kanaaltype",
 				"typeList": "Lijst/Forumkanaal",
 				"typeStreaming": "Streamingkanaal",
-				"typeText": "chat kanaal",
+				"typeText": "Tekstkanaal",
 				"readonlyRoot": {
 					"placeholder": "Rootkanaal kan geen berichten/bestanden verzenden"
 				}

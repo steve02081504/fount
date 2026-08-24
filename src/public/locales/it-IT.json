@@ -1709,10 +1709,10 @@
 					"groupPerms": {
 						"denied": "Non hai il permesso di gestire le autorizzazioni del gruppo",
 						"hint": "Imposta sostituzioni per ruolo per le autorizzazioni di governance del gruppo (espulsione, ban, gestione dei ruoli, gestione degli amministratori, invito dei membri).",
-						"overridden": "Sostituito",
-						"clearOverride": "Annulla sostituzione",
+						"overridden": "Sovrascritto",
+						"clearOverride": "Rimuovi sovrascrittura",
 						"noRoles": "Al momento non ci sono ruoli da configurare",
-						"updateFailed": "Aggiornamento delle autorizzazioni del gruppo non riuscito",
+						"updateFailed": "Aggiornamento delle autorizzazioni del gruppo non riuscito: ${error}",
 						"updated": "Autorizzazioni del gruppo aggiornate"
 					}
 				},
@@ -2466,9 +2466,9 @@
 					"renamePrompt": "Nuovo nome della categoria"
 				},
 				"reorder": {
-					"after": "Spostare « ${source} » dopo « ${target} »?",
-					"before": "Spostare « ${source} » prima di « ${target} »?",
-					"into": "Spostare « ${source} » dentro « ${target} »?",
+					"after": "Spostare «${source}» dopo «${target}»?",
+					"before": "Spostare «${source}» prima di «${target}»?",
+					"into": "Spostare «${source}» dentro «${target}»?",
 					"toRoot": "Spostare « ${source} » alla radice?"
 				},
 				"name": "Nome della categoria",
