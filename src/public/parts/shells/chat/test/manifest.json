@@ -755,6 +755,19 @@
 					]
 				},
 				{
+					"name": "dmChannelContext",
+					"expected": "45s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/dmChannelContext.spec.mjs",
+						"src/public/parts/shells/chat/test/fixtures/worlds/write_path_hooks/**",
+						"src/public/parts/shells/chat/test/fixtures/chars/on_message_yes/**",
+						"src/public/parts/shells/chat/public/hub/sidebar/channelListVirtual.mjs",
+						"src/public/parts/shells/chat/public/hub/categoryContextMenu.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/createChannel.mjs",
+						"src/public/parts/shells/chat/src/group/routes/channelCrud.mjs"
+					]
+				},
+				{
 					"name": "mobilePane",
 					"expected": "55s",
 					"triggers": [

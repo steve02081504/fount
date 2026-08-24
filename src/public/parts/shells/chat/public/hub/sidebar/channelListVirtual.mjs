@@ -266,10 +266,7 @@ export async function renderChannelListVirtual(container, state) {
 	shell.appendChild(scroll)
 	container.appendChild(shell)
 
-	scroll.addEventListener('contextmenu', (event) => {
-		if (isPrivateChatActive()) return
-		showChannelListCreateMenu(event)
-	})
+	scroll.addEventListener('contextmenu', showChannelListCreateMenu)
 
 	renderCreateButton(shell)
 

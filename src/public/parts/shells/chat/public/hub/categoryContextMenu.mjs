@@ -11,7 +11,8 @@ import { updateChannel, deleteChannel } from '../src/endpoints/groupChannel.mjs'
 
 import { store } from './core/state.mjs'
 import { showCreateCategoryModal } from './sidebar/createCategory.mjs'
-import { refreshChannelSidebar, showCreateChannelModal } from './sidebar/createChannel.mjs'
+import { quickCreateChannel, refreshChannelSidebar, showCreateChannelModal } from './sidebar/createChannel.mjs'
+import { isPrivateChatActive } from './sidebar/privateShell.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null
@@ -81,7 +82,8 @@ export function showChannelListCreateMenu(event) {
 	])
 	menu.querySelector('[data-action="create-channel"]')?.addEventListener('click', () => {
 		close()
-		void showCreateChannelModal()
+		if (isPrivateChatActive()) void quickCreateChannel()
+		else void showCreateChannelModal()
 	})
 	menu.querySelector('[data-action="create-category"]')?.addEventListener('click', () => {
 		close()

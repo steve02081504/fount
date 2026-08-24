@@ -314,6 +314,39 @@ export function createFriendChatGroup(baseUrl, apiKey, charname, options = {}) {
 }
 
 /**
+ * 通过 API 获取当前用户加入的所有群列表行。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @returns {Promise<Array<{ groupId: string, friendBinding?: object | null }>>} 群列表行。
+ */
+export function listChatGroups(baseUrl, apiKey) {
+	return withApiRequest(async req => {
+		const res = await req.get(
+			`${baseUrl}/api/parts/shells:chat/groups/?fount-apikey=${encodeURIComponent(apiKey)}`,
+		)
+		if (!res.ok()) throw new Error(`listGroups failed: ${res.status()}`)
+		return res.json()
+	})
+}
+
+/**
+ * 通过 API 删除一个本地群 replica（需 ADMIN）。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {string} groupId - 群 ID。
+ * @returns {Promise<object>} 删除响应 JSON。
+ */
+export function deleteChatGroup(baseUrl, apiKey, groupId) {
+	return withApiRequest(async req => {
+		const res = await req.delete(
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}?fount-apikey=${encodeURIComponent(apiKey)}`,
+		)
+		if (!res.ok()) throw new Error(`deleteGroup failed: ${res.status()}`)
+		return res.json()
+	})
+}
+
+/**
  * 定位包含指定正文的消息行。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} text - 消息正文片段。

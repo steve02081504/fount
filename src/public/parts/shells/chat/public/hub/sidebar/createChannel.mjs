@@ -58,13 +58,16 @@ export async function quickCreateChannel() {
 	const groupId = store.context.currentGroupId
 	if (!groupId) return
 	try {
-		const channelId = await createChannel(groupId, '')
+		const { channelId, cleaned } = await createChannel(groupId, '')
 		const rootChannelId = store.context.currentState?.groupSettings?.rootChannelId || null
 		if (rootChannelId) await moveChannelToTop(groupId, channelId, rootChannelId)
 		await refreshChannelSidebar()
 		await selectChannel(channelId)
-		await autoNameChannels(groupId).catch(() => null)
-		await refreshChannelSidebar()
+		// DM 群新建频道时后端已清理 greeting-only 占位频道 → 跳过 AI 命名/分类。
+		if (!cleaned) {
+			await autoNameChannels(groupId).catch(() => null)
+			await refreshChannelSidebar()
+		}
 		showToastI18n('success', 'chat.hub.newChannel.success')
 	}
 	catch (error) {
@@ -108,7 +111,7 @@ export async function showCreateChannelModal(options = {}) {
 				const parentChannelId = dialog.querySelector('#new-channel-parent')?.value || null
 				if (!name) return
 				try {
-					const channelId = await createChannel(groupId, name, type, parentChannelId)
+					const { channelId } = await createChannel(groupId, name, type, parentChannelId)
 					const targetParentId = parentChannelId || inferCreateParent()
 					if (targetParentId) await moveChannelToTop(groupId, channelId, targetParentId)
 					close()
