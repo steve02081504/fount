@@ -157,6 +157,8 @@ export function registerGroupSyncRoutes(router, authenticate) {
 
 			if (groupSettings.defaultChannelId && !(groupSettings.defaultChannelId in channels))
 				groupSettings.defaultChannelId = Object.keys(channels)[0] || null
+			if (groupSettings.rootChannelId && !(groupSettings.rootChannelId in channels))
+				groupSettings.rootChannelId = null
 		}
 
 		const activeMemberRows = Object.entries(state.members)

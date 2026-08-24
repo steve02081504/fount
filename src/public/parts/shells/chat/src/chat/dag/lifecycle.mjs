@@ -19,6 +19,7 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { syncEntityProfileFromPersona } from '../../profile/syncFromPersona.mjs'
+import { ROOT_CHANNEL_ID } from './groupSettings.mjs'
 import { DEFAULT_HLC_MAX_SKEW_MS } from '../events/hlcPolicy.mjs'
 import { isGroupFederationActive } from '../federation/groupFederation.mjs'
 import { ensureFederationRoom, teardownFederationRoomForGroup } from '../federation/room.mjs'
@@ -142,6 +143,20 @@ export async function createGroup(username, body) {
 	})
 
 	const initialChannelId = body.defaultChannelId || 'default'
+	// 隐藏根容器频道：category 类型、空名，承载所有顶层频道的顺序（defaultChannel 挂其下）。
+	await genesisAppend({
+		type: 'channel_create',
+		sender: owner,
+		timestamp: Date.now(),
+		content: {
+			channelId: ROOT_CHANNEL_ID,
+			type: 'category',
+			name: '',
+			links: [initialChannelId],
+			permBlockId: null,
+			syncScope: 'group',
+		},
+	})
 	await genesisAppend({
 		type: 'channel_create',
 		sender: owner,
@@ -151,7 +166,8 @@ export async function createGroup(username, body) {
 			type: body.defaultChannelType || 'text',
 			name: body.defaultChannelName || await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
 			links: [],
-			permBlockId: null,
+			parentChannelId: ROOT_CHANNEL_ID,
+			permBlockId: ROOT_CHANNEL_ID,
 			syncScope: 'group',
 		},
 	})
@@ -162,6 +178,7 @@ export async function createGroup(username, body) {
 		timestamp: Date.now(),
 		content: {
 			defaultChannelId: initialChannelId,
+			rootChannelId: ROOT_CHANNEL_ID,
 			streamGeneratingIdleMs: DEFAULT_STREAM_GENERATING_IDLE_MS,
 			hlcMaxSkewMs: DEFAULT_HLC_MAX_SKEW_MS,
 			streamingSfuWss: null,

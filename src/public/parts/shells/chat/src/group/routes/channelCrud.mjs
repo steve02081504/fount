@@ -91,7 +91,8 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			body: { type, name, description, isPrivate, parentChannelId }
 		} = req
 		const channelName = name ?? ''
-		if (parentChannelId) ensureChannel(state, parentChannelId)
+		const parentId = parentChannelId || state.groupSettings?.rootChannelId || null
+		if (parentId) ensureChannel(state, parentId)
 
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).createChannel({
@@ -100,8 +101,8 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			description: description ?? '',
 			channelId: prefixedRandomId('channel_'),
 			isPrivate: isPrivate || false,
-			parentChannelId: parentChannelId || null,
-			permBlockId: parentChannelId || state.groupSettings?.defaultChannelId || null,
+			parentChannelId: parentId,
+			permBlockId: parentId || state.groupSettings?.defaultChannelId || null,
 		})
 		res.status(201).json({ channelId: channel.id })
 	})
@@ -185,6 +186,8 @@ export function registerChannelCrudRoutes(router, authenticate) {
 
 		if (state.groupSettings.defaultChannelId === channelId)
 			throw httpError(400, 'Cannot delete default channel')
+		if (state.groupSettings.rootChannelId === channelId)
+			throw httpError(400, 'Cannot delete root channel')
 
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'channel_delete',

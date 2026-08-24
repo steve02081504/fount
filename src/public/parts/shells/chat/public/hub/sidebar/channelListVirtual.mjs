@@ -16,8 +16,9 @@ import { store } from '../core/state.mjs'
 import { isThreadChannel } from '../threadDrawer.mjs'
 import { formatUnreadBadgeHtml, getChannelUnreadCount } from '../unread.mjs'
 
+import { bindCategoryDrag } from './channelDnd.mjs'
 import { channelDisplayName } from './channelDisplayName.mjs'
-import { quickCreateChannel, showCreateChannelModal } from './createChannel.mjs'
+import { quickCreateChannel, refreshChannelSidebar, showCreateChannelModal } from './createChannel.mjs'
 import { isPrivateChatActive } from './privateShell.mjs'
 import { selectChannel } from './selectChannel.mjs'
 
@@ -93,34 +94,16 @@ export function isCategoryCollapsed(groupId, categoryPath) {
 }
 
 /**
- * @param {object} channel 频道元数据
- * @returns {boolean} 频道是否已有非空名称
- */
-function hasChannelName(channel) {
-	return !!(channel?.name && String(channel.name).trim())
-}
-
-/**
  * 沿 `links` 把频道树展开为可见行（分类折叠时裁剪其子树；线程频道跳过）。
+ * 根容器频道 `rootChannelId` 自身不渲染，只渲染其子树；顶层顺序由 root 的 `links` 承载。
  * 折叠判定用「展开路径」而非频道 id：同一 id 出现在不同父节点下独立折叠。
  * 防环沿单条根→叶路径做，允许同一 id 分处不同分支，但同分支内不重复，避免 b→d→b→d… 无限递归。
  * @param {Record<string, object>} channels 频道表
+ * @param {string} rootChannelId 根容器频道 id
  * @param {string} groupId 群 ID（用于折叠判定）
  * @returns {{ id: string, path: string, kind: 'category' | 'channel', channel: object, depth: number, collapsed: boolean }[]} 可见行
  */
-export function buildVisibleChannelRows(channels, groupId) {
-	const entries = Object.entries(channels || {})
-	/** @type {Map<string, string[]>} 父频道 id → 有序子频道 id */
-	const byParent = new Map()
-	const childIds = new Set()
-	for (const [id, channel] of entries)
-		for (const childId of channel?.links || [])
-			if (channels[childId]) {
-				childIds.add(childId)
-				if (!byParent.has(id)) byParent.set(id, [])
-				byParent.get(id).push(childId)
-			}
-	const roots = entries.filter(([id]) => !childIds.has(id)).map(([id]) => id)
+export function buildVisibleChannelRows(channels, rootChannelId, groupId) {
 	const rows = []
 	/**
 	 * 递归产出某父频道的子行（含孙）。
@@ -131,9 +114,9 @@ export function buildVisibleChannelRows(channels, groupId) {
 	 * @returns {void}
 	 */
 	const emitChildren = (parentId, depth, parentPath, ancestors) => {
-		for (const childId of byParent.get(parentId) || []) {
+		for (const childId of channels?.[parentId]?.links || []) {
 			if (ancestors.has(childId)) continue
-			const child = channels[childId]
+			const child = channels?.[childId]
 			if (!child || isThreadChannel(child)) continue
 			const childPath = parentPath + PATH_SEP + childId
 			if (child.type === 'category') {
@@ -148,21 +131,7 @@ export function buildVisibleChannelRows(channels, groupId) {
 			}
 		}
 	}
-	const categoryRoots = roots.filter(id => channels[id]?.type === 'category')
-	const channelRoots = roots.filter(id => channels[id]?.type !== 'category')
-	if (isPrivateChatActive())
-		channelRoots.sort((a, b) => Number(hasChannelName(channels[b])) - Number(hasChannelName(channels[a])))
-	for (const id of categoryRoots) {
-		const collapsed = isCategoryCollapsed(groupId, id)
-		rows.push({ id, path: id, kind: 'category', channel: channels[id], depth: 0, collapsed })
-		if (!collapsed) emitChildren(id, 1, id, new Set([id]))
-	}
-	for (const id of channelRoots) {
-		const channel = channels[id]
-		if (!channel || isThreadChannel(channel)) continue
-		rows.push({ id, path: id, kind: 'channel', channel, depth: 0 })
-		emitChildren(id, 1, id, new Set([id]))
-	}
+	emitChildren(rootChannelId, 0, rootChannelId, new Set([rootChannelId]))
 	return rows
 }
 
@@ -197,6 +166,7 @@ function renderCategoryRow(row) {
 		const nameText = row.channel?.name || row.id
 		showCategoryContextMenu(event, row.id, nameText)
 	})
+	bindCategoryDrag(el, row, { groupId, onExecuted: refreshChannelSidebar })
 	return el
 }
 
@@ -238,7 +208,7 @@ async function renderChannelRow(row) {
  */
 function refreshVirtualList() {
 	if (!currentState) return
-	currentRows = buildVisibleChannelRows(currentState.channels || {}, store.context.currentGroupId)
+	currentRows = buildVisibleChannelRows(currentState.channels || {}, currentState.groupSettings?.rootChannelId || null, store.context.currentGroupId)
 	void virtualList?.refresh()
 }
 
@@ -254,14 +224,36 @@ export async function renderChannelListVirtual(container, state) {
 	if (!container || !state) return
 	const channels = state.channels || {}
 	const groupId = store.context.currentGroupId
+	const canManageChannels = Object.values(state.channelCaps || {})
+		.some(cap => cap?.canEditList)
+
+	/** 渲染新建频道按钮（DM 在外部固定槽位，普通群在传入容器内部底部）。 */
+	function renderCreateButton(hostElement) {
+		if (!canManageChannels || !groupId) return
+		const addChannelButton = document.createElement('button')
+		addChannelButton.type = 'button'
+		addChannelButton.className = 'btn btn-ghost btn-sm w-[calc(100%-8px)] mx-1 mt-1 channel-create-button'
+		addChannelButton.dataset.i18n = 'chat.hub.newChannel.button'
+		addChannelButton.addEventListener('click', () => {
+			if (isPrivateChatActive()) void quickCreateChannel()
+			else void showCreateChannelModal()
+		})
+		if (isPrivateChatActive()) {
+			const host = document.getElementById('dm-new-channel-button-host')
+			if (host) host.replaceChildren(addChannelButton)
+		}
+		else if (hostElement) hostElement.appendChild(addChannelButton)
+	}
+
 	if (!Object.keys(channels).length) {
 		currentState = state
 		currentRows = []
 		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.no.channels' })
+		renderCreateButton(container)
 		return
 	}
 	currentState = state
-	currentRows = buildVisibleChannelRows(channels, groupId)
+	currentRows = buildVisibleChannelRows(channels, state.groupSettings?.rootChannelId || null, groupId)
 
 	container.replaceChildren()
 	const shell = document.createElement('div')
@@ -271,25 +263,11 @@ export async function renderChannelListVirtual(container, state) {
 	shell.appendChild(scroll)
 	container.appendChild(shell)
 
-	if (!isPrivateChatActive()) 
-		scroll.addEventListener('contextmenu', (event) => {
-			showChannelListCreateMenu(event)
-		})
-	
+	scroll.addEventListener('contextmenu', (event) => {
+		showChannelListCreateMenu(event)
+	})
 
-	const canManageChannels = Object.values(state.channelCaps || {})
-		.some(cap => cap?.canEditList)
-	if (canManageChannels && groupId) {
-		const addChannelButton = document.createElement('button')
-		addChannelButton.type = 'button'
-		addChannelButton.className = 'btn btn-ghost btn-sm w-[calc(100%-8px)] mx-1 mt-1 channel-create-button'
-		addChannelButton.dataset.i18n = 'chat.hub.newChannel.button'
-		addChannelButton.addEventListener('click', () => {
-			if (isPrivateChatActive()) void quickCreateChannel()
-			else void showCreateChannelModal()
-		})
-		shell.appendChild(addChannelButton)
-	}
+	renderCreateButton(shell)
 
 	virtualList = createVirtualList({
 		container: scroll,

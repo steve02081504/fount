@@ -3,12 +3,13 @@
  * 【职责】新建频道对话框与入树刷新（可选在父频道下创建并链接）。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { autoNameChannels, createChannel } from '../../src/endpoints/groupChannel.mjs'
+import { autoNameChannels, createChannel, updateChannel } from '../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { openDialogFromTemplate, renderTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store, setState } from '../core/state.mjs'
 
+import { findParentChannelId } from '../shared/channelReorder.mjs'
 import { selectChannel } from './selectChannel.mjs'
 
 /**
@@ -22,7 +23,35 @@ export async function refreshChannelSidebar() {
 }
 
 /**
- * DM 群快速新建频道：空名创建（显示"未命名"、置顶），随后若有默认 AI 源则自动命名/分类。
+ * 把已创建的频道移动到指定父频道的 links 最上方（新建频道默认追加到父末尾，此处置顶）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 新频道 id
+ * @param {string} parentChannelId 目标父频道 id
+ * @returns {Promise<void>}
+ */
+async function moveChannelToTop(groupId, channelId, parentChannelId) {
+	const state = await getGroupState(groupId)
+	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id !== channelId)
+	links.unshift(channelId)
+	await updateChannel(groupId, parentChannelId, { links })
+}
+
+/**
+ * 普通群新建频道的目标父：当前选中的分类 → 其父 → 根容器。
+ * @returns {string | null} 目标父频道 id
+ */
+function inferCreateParent() {
+	const state = store.context.currentState
+	const rootChannelId = state?.groupSettings?.rootChannelId || null
+	const currentChannelId = store.context.currentChannelId
+	const current = currentChannelId ? state?.channels?.[currentChannelId] : null
+	if (current?.type === 'category') return currentChannelId
+	if (current) return findParentChannelId(state?.channels || {}, rootChannelId, currentChannelId)
+	return rootChannelId
+}
+
+/**
+ * DM 群快速新建频道：空名创建（显示"未命名"、置顶根级），随后若有默认 AI 源则自动命名/分类。
  * @returns {Promise<void>}
  */
 export async function quickCreateChannel() {
@@ -30,6 +59,8 @@ export async function quickCreateChannel() {
 	if (!groupId) return
 	try {
 		const channelId = await createChannel(groupId, '')
+		const rootChannelId = store.context.currentState?.groupSettings?.rootChannelId || null
+		if (rootChannelId) await moveChannelToTop(groupId, channelId, rootChannelId)
 		await refreshChannelSidebar()
 		await selectChannel(channelId)
 		await autoNameChannels(groupId).catch(() => null)
@@ -78,6 +109,8 @@ export async function showCreateChannelModal(options = {}) {
 				if (!name) return
 				try {
 					const channelId = await createChannel(groupId, name, type, parentChannelId)
+					const targetParentId = parentChannelId || inferCreateParent()
+					if (targetParentId) await moveChannelToTop(groupId, channelId, targetParentId)
 					close()
 					await refreshChannelSidebar()
 					await selectChannel(channelId)

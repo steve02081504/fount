@@ -1,5 +1,8 @@
 import { ms } from 'fount/scripts/ms.mjs'
 
+/** 根容器频道 id：隐藏的 category，作为所有顶层频道的父，承载根级顺序。 */
+export const ROOT_CHANNEL_ID = 'root'
+
 /** §7.2 默认群设置（`defaultChannelId` 由建群时单独填入）。 */
 export const DEFAULT_GROUP_SETTINGS = {
 	joinPolicy: 'invite-only',
@@ -49,6 +52,8 @@ export const DEFAULT_GROUP_SETTINGS = {
 	discoveryBlurb: null,
 	/** 加群时自动进收藏的默认表情包；空则回落 packId===groupId */
 	defaultEmojiPackId: null,
+	/** 根容器频道 id（隐藏 category；旧群缺省为 null 时回退到 defaultChannelId） */
+	rootChannelId: null,
 }
 
 /**

@@ -161,6 +161,42 @@ export async function renderCharInfoCardActive(name, details) {
 }
 
 /**
+ * 渲染已进入私聊的用户（非角色）信息卡：在信息卡宿主绘制对端实体资料。
+ * @param {string} entityHash 对端实体 hash
+ * @param {string} [displayName] 展示名回退
+ * @returns {Promise<void>}
+ */
+export async function renderUserInfoCardActive(entityHash, displayName) {
+	const generation = ++charInfoCardRenderGeneration
+	const groupId = store.context.currentGroupId || undefined
+	const profile = entityHash ? await loadEntityProfile(entityHash, { groupId }) : null
+	if (generation !== charInfoCardRenderGeneration) return
+
+	const infoCardHost = document.getElementById('info-card-host')
+	infoCardHost.replaceChildren()
+	const card = await createEntityProfileCardElement('sidebar')
+	if (generation !== charInfoCardRenderGeneration) return
+	infoCardHost.appendChild(card)
+
+	const entity = {
+		entityHash,
+		charname: null,
+		pubKeyHex: null,
+		pubKeyHash: null,
+		displayName: profile?.name || displayName || entityHash,
+	}
+	if (profile)
+		await paintEntityProfileUi(card, profile)
+	else {
+		const nameElement = card.querySelector('[data-entity-profile-name]')
+		if (nameElement) nameElement.textContent = entity.displayName
+	}
+	if (generation !== charInfoCardRenderGeneration) return
+
+	await wireEntityProfileCardActions(card, entity, { profile })
+}
+
+/**
  * 渲染角色预览信息卡（含「开始聊天」按钮）。
  * @param {string} name - 角色名
  * @param {object|null} [details] - 预取的角色详情，可省略字段

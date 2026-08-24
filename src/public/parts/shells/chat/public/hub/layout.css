@@ -356,6 +356,27 @@
 	transition: transform 0.15s ease;
 }
 
+.category.dragging {
+	opacity: 0.4;
+}
+
+.channel-drag-ghost {
+	position: fixed;
+	z-index: 9999;
+	pointer-events: none;
+	max-width: 240px;
+	padding: 6px 12px;
+	border-radius: 8px;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-bright);
+	background: var(--base-200, rgba(0, 0, 0, 0.8));
+	box-shadow: 0 6px 20px rgb(0 0 0 / 30%);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 /* .channel-item 交互样式见 components.css */
 
 .channel-icon {

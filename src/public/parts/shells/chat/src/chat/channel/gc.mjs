@@ -81,7 +81,9 @@ function lastActivityByChannel(events) {
  */
 export function findStaleUnreachableChannels(state, events, nowMs = Date.now()) {
 	const { channels } = state
-	const rootId = state.groupSettings?.defaultChannelId || 'default'
+	const rootId = state.groupSettings?.rootChannelId
+		|| state.groupSettings?.defaultChannelId
+		|| 'default'
 	const reachable = reachableFromRoot(channels, rootId)
 	const lastAct = lastActivityByChannel(events)
 	/** @type {string[]} */

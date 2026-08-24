@@ -65,6 +65,8 @@ export const channelReducers = {
 	channel_delete(state, event) {
 		withGroupId(state, event)
 		const { channelId } = event.content
+		// 根容器承载整棵频道树，删除它会级联清空全部频道；防御性拒绝。
+		if (state.groupSettings?.rootChannelId === channelId) return state
 		const toDelete = new Set([channelId])
 		const stack = [channelId]
 		while (stack.length) {
