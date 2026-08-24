@@ -95,8 +95,11 @@ export function computeMoveOperation(channels, rootChannelId, sourceId, targetId
  * @returns {{ sourceLinks?: string[], targetLinks: string[] }} 新的 links（源父与目标父不同才含 sourceLinks）
  */
 export function buildMoveLinks(channels, op, sourceId) {
-	const targetLinks = (channels?.[op.targetParentId]?.links || []).filter(id => id !== sourceId)
-	targetLinks.splice(op.targetIndex, 0, sourceId)
+	const original = channels?.[op.targetParentId]?.links || []
+	const targetLinks = original.filter(id => id !== sourceId)
+	const sourceOriginalIndex = original.indexOf(sourceId)
+	const insertIndex = sourceOriginalIndex >= 0 && sourceOriginalIndex < op.targetIndex ? op.targetIndex - 1 : op.targetIndex
+	targetLinks.splice(insertIndex, 0, sourceId)
 	if (op.sourceParentId === op.targetParentId)
 		return { targetLinks }
 	return {
