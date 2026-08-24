@@ -31,7 +31,13 @@ export class ResourceRunGate {
 	 * @param {number} memBudgetBytes 机器内存预算
 	 * @param {(suite: SuiteDef) => SuiteStateEntry | undefined} [lookupEntry] 现状库查询
 	 */
-	constructor(memBudgetBytes, lookupEntry = () => undefined) {
+	/**
+	 * @param {number} memBudgetBytes 机器内存预算
+	 * @param {(suite: SuiteDef) => SuiteStateEntry | undefined} [lookupEntry] 现状库查询
+	 * @param {object} [options] 选项
+	 * @param {(state: { usedMemBytes: number, usedCpuPct: number, exclusiveRunning: boolean }) => void} [options.onChange] 占用状态变化回调
+	 */
+	constructor(memBudgetBytes, lookupEntry = () => undefined, { onChange = () => { } } = {}) {
 		this.memBudgetBytes = memBudgetBytes
 		this.cpuBudgetPct = CPU_BUDGET_PCT
 		this.lookupEntry = lookupEntry
@@ -41,6 +47,16 @@ export class ResourceRunGate {
 		this.exclusiveRunning = false
 		/** @type {GateWaiter[]} */
 		this.waiters = []
+		this.onChange = onChange
+	}
+
+	/** 占用状态变化后通知（供理想调度重建时间表）。 */
+	#notifyChange() {
+		this.onChange({
+			usedMemBytes: this.usedMemBytes,
+			usedCpuPct: this.usedCpuPct,
+			exclusiveRunning: this.exclusiveRunning,
+		})
 	}
 
 	/**
@@ -79,12 +95,14 @@ export class ResourceRunGate {
 	#admit(w) {
 		if (w.suite.heavy) {
 			this.exclusiveRunning = true
+			this.#notifyChange()
 			w.resolve(() => this.#releaseExclusive())
 			return
 		}
 		const need = this.#needs(w.suite)
 		this.usedMemBytes += resourcesMemBytes(need)
 		this.usedCpuPct += need.cpuPct
+		this.#notifyChange()
 		w.resolve(() => this.#releaseSlot(need))
 	}
 
@@ -146,12 +164,14 @@ export class ResourceRunGate {
 		if (suite.heavy) {
 			if (this.usedMemBytes !== 0 || this.usedCpuPct !== 0) return null
 			this.exclusiveRunning = true
+			this.#notifyChange()
 			return () => this.#releaseExclusive()
 		}
 		const need = this.#needs(suite)
 		if (!this.#canFit(need)) return null
 		this.usedMemBytes += resourcesMemBytes(need)
 		this.usedCpuPct += need.cpuPct
+		this.#notifyChange()
 		return () => this.#releaseSlot(need)
 	}
 
@@ -160,7 +180,7 @@ export class ResourceRunGate {
 	 * @param {SuiteDef} suite 待运行 suite
 	 * @returns {Promise<() => void>} 释放函数
 	 */
-	async acquire(suite) {
+		async acquire(suite) {
 		return new Promise(resolve => {
 			this.waiters.push({ suite, resolve })
 			this.#tryAdmit()
@@ -170,6 +190,7 @@ export class ResourceRunGate {
 	/** 释放 heavy 独占槽位。 */
 	#releaseExclusive() {
 		this.exclusiveRunning = false
+		this.#notifyChange()
 		this.#tryAdmit()
 	}
 
@@ -180,6 +201,7 @@ export class ResourceRunGate {
 	#releaseSlot(need) {
 		this.usedMemBytes -= resourcesMemBytes(need)
 		this.usedCpuPct -= need.cpuPct
+		this.#notifyChange()
 		this.#tryAdmit()
 	}
 }

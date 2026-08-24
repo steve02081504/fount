@@ -151,7 +151,7 @@
 		},
 		{
 			"name": "text_lf",
-			"expected": "2s",
+			"expected": "3s",
 			"triggerFilter": {
 				"ignoreDefaults": false
 			},

@@ -3,7 +3,6 @@
  */
 import { randomUUID } from 'node:crypto'
 import { watch } from 'node:fs'
-import { appendFile, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { console } from '../../i18n/bare.mjs'
@@ -12,7 +11,7 @@ import { CPU_BUDGET_PCT } from '../core/baseline.mjs'
 import { getHeadCommitHash } from '../core/changed.mjs'
 import { CLEANUP_LEAK_EXIT_CODE, findCleanupLeaks } from '../core/cleanup_check.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
-import { buildEstimateTask, clampRemainingMs, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
+import { buildEstimateTask, expectedRunDurationMs } from '../core/estimate.mjs'
 import { parseExpectedMs } from '../core/expected.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
 import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
@@ -49,6 +48,8 @@ import {
 import { ModuleCheckGate } from './module_check.mjs'
 import { attachGitRoots } from './nested_git.mjs'
 import { DEFAULT_PREP_SETTLE_MS, TestQueues } from './queues.mjs'
+import { buildTimeline, projectConsumer } from './schedule.mjs'
+import { buildScheduleUpdate } from './schedule_event.mjs'
 import { ViewerHub } from './viewers.mjs'
 
 /**
@@ -67,6 +68,12 @@ export function ignoreWatchPath(rel) {
 
 /** watch 闲置多久后自动补跑一次 --all（毫秒；默认 2 小时）。 */
 export const DEFAULT_IDLE_ALL_MS = ms('2h')
+
+/** 资源预算周期刷新间隔（毫秒）。 */
+export const BUDGET_REFRESH_MS = 5000
+
+/** 预算变化触发时间表重建的相对阈值。 */
+export const BUDGET_CHANGE_THRESHOLD = 0.10
 
 /**
  * 测试内核。
@@ -113,20 +120,19 @@ export class TestKernel {
 		this.gate = new ResourceRunGate(
 			this.globalBudget.memBytes,
 			suite => this.state?.suites[suiteKey(suite.manifestId, suite.name)],
+			{ onChange: () => this.#broadcastSchedule('gate_state_changed') },
 		)
+		/** 资源预算周期刷新计时器。 */
+		this.budgetTimer = null
 		/** @type {Map<string, object>} */
 		this.jobs = new Map()
 		/** @type {Map<string, { item: object, abort: AbortController }>} */
 		this.running = new Map()
-		/** @type {Map<string, boolean>} */
-		this.sessionPassed = new Map()
-		/** @type {Set<string>} */
-		this.sessionSkipped = new Set()
-		/** 上次剩余估算（ms）及其时刻、待运行项数；用于“除插队外单调递减”钳制。 */
-		this.#lastRemainingMs = null
-		this.#lastEstimateAt = 0
-		this.#lastPending = 0
-		this.closed = false
+	/** @type {Map<string, boolean>} */
+	this.sessionPassed = new Map()
+	/** @type {Set<string>} */
+	this.sessionSkipped = new Set()
+	this.closed = false
 		this.#closeDone = null
 		this.seenViewer = false
 		this.catalog = null
@@ -143,9 +149,6 @@ export class TestKernel {
 	#watcher
 	#closeDone
 	#wasIdle
-	#lastRemainingMs
-	#lastEstimateAt
-	#lastPending
 
 	/** 唤醒调度循环。 */
 	wake() {
@@ -174,6 +177,7 @@ export class TestKernel {
 				if (!filename) return
 				this.noteFileChange(String(filename).replace(/\\/g, '/'))
 			})
+		this.budgetTimer = setInterval(() => this.#refreshBudget(), BUDGET_REFRESH_MS)
 		this.#loop = this.#runLoop()
 	}
 
@@ -184,6 +188,8 @@ export class TestKernel {
 	async close() {
 		if (this.#closeDone) return this.#closeDone
 		this.closed = true
+		if (this.budgetTimer) clearInterval(this.budgetTimer)
+		this.budgetTimer = null
 		this.#watcher?.close()
 		this.moduleCheck.close()
 		const queued = this.queues.drain()
@@ -275,8 +281,8 @@ export class TestKernel {
 						type: 'queue-remove',
 						key,
 						reason: 'manifest_removed',
-						...this.#remainingState(),
 					})
+				this.#broadcastSchedule('queue_removed', key)
 			}
 		this.wake()
 	}
@@ -363,7 +369,6 @@ export class TestKernel {
 			else if (slot.action === 'blocked') blockedCount++
 			else if (slot.action === 'skipped') skippedCount++
 			else runCount++
-		const remaining = this.#remainingFromPlan(wave.plan)
 		return {
 			runCount,
 			activate: true,
@@ -373,8 +378,6 @@ export class TestKernel {
 				reuseCount,
 				blockedCount,
 				skippedCount,
-				remainingMs: remaining.remainingMs,
-				unknownCount: remaining.unknownCount,
 			}),
 		}
 	}
@@ -427,7 +430,6 @@ export class TestKernel {
 					passed: prev?.status !== 'failed',
 					reused: true,
 					status: prev?.status,
-					...this.#remainingState(),
 				})
 			}
 			else if (slot.action === 'blocked') {
@@ -439,13 +441,13 @@ export class TestKernel {
 					jobId: job.id,
 					passed: false,
 					blockedBy: slot.blockedBy ?? [],
-					...this.#remainingState(),
 				})
 			}
 			else if (slot.action === 'skipped')
 				await this.#recordSkipped(slot, job.id)
 
 		await this.#flushReportEstimate(job)
+		this.#broadcastSchedule('initial')
 		if (!job.pending.size)
 			await this.#finishJob(job)
 	}
@@ -516,36 +518,13 @@ export class TestKernel {
 			jobId,
 			passed: true,
 			skippedBy,
-			...this.#remainingState(),
 		})
 	}
 
 	/**
-	 * 本波真跑槽 + 当前在跑/已排队（含等待调度的占用）。
-	 * @param {import('../core/plan.mjs').RunPlan} plan 计划
-	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
+	 * @returns {import('../core/estimate.mjs').EstimateTask[]} 队列+在跑的预估任务（带消费归属）
 	 */
-	#remainingFromPlan(plan) {
-		const tasks = this.#estimateTasks()
-		let pendingExtra = 0
-		for (const slot of plan.slots) {
-			if (slot.action !== 'run') continue
-			const { suite } = slot
-			if (!suite) continue
-			pendingExtra++
-			tasks.push(buildEstimateTask(suite, this.state.suites[slot.key], {
-				id: `wave:${slot.key}`,
-				subtestsToRun: slot.subtestsToRun,
-				moduleCheckMs: this.moduleCheck.meanDurationMs(),
-			}))
-		}
-		return this.#snapshotFromTasks(tasks, { pendingExtra })
-	}
-
-	/**
-	 * @returns {import('../core/estimate.mjs').EstimateTask[]} 队列+在跑的预估任务
-	 */
-	#estimateTasks() {
+	#scheduleTasks() {
 		const now = Date.now()
 		const tasks = []
 		for (const item of [...this.queues.cli, ...this.queues.fs]) {
@@ -555,6 +534,8 @@ export class TestKernel {
 				id: item.id,
 				subtestsToRun: item.subtests,
 				moduleCheckMs: this.moduleCheck.meanDurationMs(),
+				jobId: item.jobId ?? null,
+				source: item.source,
 			}))
 		}
 		for (const [key, running] of this.running) {
@@ -569,73 +550,43 @@ export class TestKernel {
 				elapsedMs: now - (running.startedAt ?? now),
 				running: true,
 				moduleCheckMs: running.checkDone ? 0 : Math.max(0, meanCheck - checkElapsed),
+				jobId: item.jobId ?? null,
+				source: item.source,
 			}))
 		}
 		return tasks
 	}
 
 	/**
-	 * @param {import('../core/estimate.mjs').EstimateTask[]} tasks 任务
-	 * @param {object} [options] 选项
-	 * @param {number} [options.pendingExtra=0] 已规划但尚未入队的 run 槽数（首屏 accepted）
-	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
-	 */
-	#snapshotFromTasks(tasks, { pendingExtra = 0 } = {}) {
-		if (!tasks.length) return { remainingMs: 0, unknownCount: 0 }
-		const estimate = summarizeEstimate(tasks, {
-			memBudgetBytes: this.globalBudget.memBytes,
-			cpuBudgetPct: CPU_BUDGET_PCT,
-			speculative: false,
-		})
-		const next = this.#clampRemaining({ remainingMs: estimate.etaMs, unknownCount: estimate.unknownCount }, pendingExtra)
-		this.#debugEstimate(tasks, estimate, next)
-		return next
-	}
-
-	/**
-	 * `FOUNT_TEST_DEBUG_ESTIMATE=1` 时把每次估算快照追加到 `debug_logs/test_estimate.log`，
-	 * 便于诊断首屏 vs 运行中 makespan 跳变与钳制。
-	 * @param {import('../core/estimate.mjs').EstimateTask[]} tasks 任务
-	 * @param {object} estimate 原始估算
-	 * @param {{ remainingMs: number | null, unknownCount: number }} clamped 钳制后剩余
+	 * 重建理想时间表并给每个 viewer 投影发送 `schedule-update`。
+	 * @param {import('./schedule_event.mjs').ScheduleChangeReason} reason 变化原因
+	 * @param {string} [detail] 原因细节
 	 * @returns {void}
 	 */
-	#debugEstimate(tasks, estimate, clamped) {
-		if (process.env.FOUNT_TEST_DEBUG_ESTIMATE !== '1') return
-		const rows = tasks.map(task => `${task.id ?? task.key}:${task.durationMs ?? '?'}${task.reused ? 'R' : ''}${task.blocked ? 'B' : ''}${task.running ? '*' : ''}`)
-		void mkdir(join(this.repoRoot, 'debug_logs'), { recursive: true })
-			.then(() => appendFile(join(this.repoRoot, 'debug_logs', 'test_estimate.log'),
-				`${new Date().toISOString()} makespan=${Math.round(estimate.makespanMs)} gap=${estimate.gapCount} unknown=${estimate.unknownCount} eta=${clamped.remainingMs ?? 'null'} tasks=[${rows.join(', ')}]\n`, 'utf8'))
-			.catch(() => { })
+	#broadcastSchedule(reason, detail = '') {
+		const tasks = this.#scheduleTasks()
+		const timeline = tasks.length
+			? buildTimeline(tasks, { memBudgetBytes: this.globalBudget.memBytes, cpuBudgetPct: CPU_BUDGET_PCT })
+			: null
+		for (const viewer of this.viewers.values()) {
+			const projection = timeline
+				? projectConsumer(timeline.slots, { watch: viewer.watch, jobId: viewer.jobId })
+				: { running: [], lastCompletionAt: 0, unknownCount: 0 }
+			this.viewers.send(viewer.id, buildScheduleUpdate(projection, viewer, reason, detail))
+		}
 	}
 
 	/**
-	 * 除真实插队（待运行项增多）外，剩余时间只许随墙钟递减，不允许回弹。
-	 * 估算模型的装箱/依赖会在任务推进时重排，可能把晚 admit 的长耗时套件插到末尾使
-	 * makespan 虚增——这里以“上次剩余 − 已过墙钟”为下限钳住，避免控制台越跑越长。
-	 * @param {{ remainingMs: number | null, unknownCount: number }} next 本次估算
-	 * @param {number} pendingExtra 尚未入队的规划 run 槽数
-	 * @returns {{ remainingMs: number | null, unknownCount: number }} 钳制后的剩余
+	 * 周期刷新资源预算；变化超阈值时重建时间表并广播。
+	 * @returns {void}
 	 */
-	#clampRemaining(next, pendingExtra) {
-		const now = Date.now()
-		const pending = this.queues.cli.length + this.queues.fs.length + pendingExtra
-		next.remainingMs = clampRemainingMs(next.remainingMs, {
-			ms: this.#lastRemainingMs,
-			at: this.#lastEstimateAt,
-			pending: this.#lastPending,
-		}, now, pending)
-		this.#lastRemainingMs = next.remainingMs
-		this.#lastEstimateAt = now
-		this.#lastPending = pending
-		return next
-	}
-
-	/**
-	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
-	 */
-	#remainingState() {
-		return this.#snapshotFromTasks(this.#estimateTasks())
+	#refreshBudget() {
+		const next = computeGlobalBudget()
+		const prev = this.globalBudget
+		const delta = Math.abs(next.memBytes - prev.memBytes) / Math.max(1, prev.memBytes)
+		if (delta < BUDGET_CHANGE_THRESHOLD && next.cores === prev.cores) return
+		this.globalBudget = next
+		this.#broadcastSchedule('resource_budget_changed')
 	}
 
 	/**
@@ -672,7 +623,6 @@ export class TestKernel {
 				type: 'job-wait',
 				jobId: viewer.jobId,
 				aheadCount,
-				...this.#remainingState(),
 			})
 		}
 	}
@@ -683,7 +633,7 @@ export class TestKernel {
 	 */
 	async #flushReportEstimate(job) {
 		if (!job?.report) return
-		const tasks = this.#estimateTasks()
+		const tasks = this.#scheduleTasks()
 		await job.report.setEstimatePlan(
 			new Map(tasks.map(task => [task.key, task])),
 			{ memBudgetBytes: this.globalBudget.memBytes, cpuBudgetPct: CPU_BUDGET_PCT, speculative: false },
@@ -790,8 +740,8 @@ export class TestKernel {
 				jobId: item.jobId,
 				passed: false,
 				blockedBy,
-				...this.#remainingState(),
 			})
+			this.#broadcastSchedule('blocked', item.key)
 			for (const gone of removed)
 				if (gone.jobId)
 					await this.#onJobItemDone(gone)
@@ -824,6 +774,7 @@ export class TestKernel {
 				this.sessionSkipped.add(item.key)
 				this.sessionPassed.set(item.key, true)
 			}
+			this.#broadcastSchedule('skipped', item.key)
 			for (const gone of removed)
 				if (gone.jobId)
 					await this.#onJobItemDone(gone)
@@ -848,8 +799,9 @@ export class TestKernel {
 					type: 'queue-append',
 					key: item.key,
 					reason: item.reason,
-					...this.#remainingState(),
 				})
+			if (promoted.length)
+				this.#broadcastSchedule('prep_promoted')
 			await this.#discardBlocked()
 			await this.#discardSkipped()
 			if (promoted.length)
@@ -870,7 +822,7 @@ export class TestKernel {
 			if (this.queues.pendingEmpty() && !this.running.size) {
 				this.issueCache.pruneOlderThan()
 				if (this.jobs.size === 0)
-					this.viewers.broadcast({ type: 'idle', remainingMs: 0, unknownCount: 0 })
+					this.viewers.broadcast({ type: 'idle' })
 			}
 			if (this.#shouldExit()) {
 				this.issueCache.pruneOlderThan()
@@ -912,8 +864,9 @@ export class TestKernel {
 			this.queues.enqueueFs(suiteKey(suite.manifestId, suite.name), 'idle_all')
 		for (const suite of this.catalog.allSuites) {
 			const key = suiteKey(suite.manifestId, suite.name)
-			this.viewers.broadcast({ type: 'queue-append', key, reason: 'idle_all', ...this.#remainingState() })
+			this.viewers.broadcast({ type: 'queue-append', key, reason: 'idle_all' })
 		}
+		this.#broadcastSchedule('queue_appended')
 		this.wake()
 	}
 
@@ -933,8 +886,8 @@ export class TestKernel {
 				type: 'queue-remove',
 				key: item.key,
 				reason,
-				...this.#remainingState(),
 			})
+		this.#broadcastSchedule('queue_removed', reason)
 		for (const [, running] of runningIdle)
 			running.abort?.abort(reason)
 		this.lastIdleAt = Date.now()
@@ -1011,8 +964,8 @@ export class TestKernel {
 			key,
 			jobId: item.jobId,
 			expectedMs,
-			...this.#remainingState(),
 		})
+		this.#broadcastSchedule('suite_started', key)
 		this.#notifyJobWaits()
 		/** @type {object | null} */
 		let endEvent = null
@@ -1113,11 +1066,11 @@ export class TestKernel {
 						type: 'queue-remove',
 						key: fsItem.key,
 						reason: 'cli_complete',
-						...this.#remainingState(),
 					})
 			}
 			if (endEvent)
-				this.viewers.broadcast({ ...endEvent, ...this.#remainingState() })
+				this.viewers.broadcast(endEvent)
+			this.#broadcastSchedule(endEvent?.passed === false ? 'suite_failed' : 'suite_completed', key)
 			if (item.jobId) {
 				const job = this.jobs.get(item.jobId)
 				if (job?.spec?.debug)
