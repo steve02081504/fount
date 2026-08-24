@@ -8,6 +8,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+
 import { canInChannel, governanceChannelId } from '../../group/access.mjs'
 
 import { appendEvent, appendSignedLocalEvent } from './append.mjs'

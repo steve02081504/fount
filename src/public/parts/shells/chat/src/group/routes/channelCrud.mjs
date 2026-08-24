@@ -9,8 +9,8 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
-import { scheduleDmChannelAutoNameAndCleanup } from './channelAutoName.mjs'
 
+import { scheduleDmChannelAutoNameAndCleanup } from './channelAutoName.mjs'
 import {
 	ensureChannel,
 	requireGroupMember,

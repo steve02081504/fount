@@ -46,9 +46,6 @@ function isGreetingOnlyMessage(message) {
 		|| message?.content?.extension?.timeSlice?.greeting_type)
 }
 
-/** 每个空名频道送入 AI 的上下文最大字符数 */
-const CONTEXT_MAX_CHARS = 4000
-
 /**
  * 将频道最近消息聚合成一个上下文块：合并为一条文本（超长时截断并标注省略）。
  * @param {string[]} texts 消息正文数组（旧→新）
