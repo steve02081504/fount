@@ -231,7 +231,6 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			channels,
 			roles: state.roles,
 			channelPermissions,
-			groupPermissions: state.groupPermissions || {},
 			members: activeMembers,
 			bannedMembers: bannedMembersList,
 			memberCount: activeMembers.length,
@@ -250,6 +249,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (active) {
 			const session = await getMaterializedSession(username, groupId)
 			meta.charPartNames = Object.keys(session.chars || {})
+			meta.groupPermissions = state.groupPermissions || {}
 		}
 		if (active && canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, null)) {
 			meta.reputationLedger = state.reputationLedger.slice(-50)

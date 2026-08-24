@@ -80,8 +80,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 			return res.status(403).json({ error: 'Not a member' })
 		assertNotRootChannel(req.body.channelId, 'upload file')
 		const member = state.members[memberKey]
-		const permChannelId = uploadPermissionChannelId(state, req.body.channelId)
-		if (!canInChannel(state, member, [PERMISSIONS.UPLOAD_FILES, PERMISSIONS.MANAGE_FILES], permChannelId))
+		if (!canInChannel(state, member, [PERMISSIONS.UPLOAD_FILES, PERMISSIONS.MANAGE_FILES], uploadPermissionChannelId(state, req.body.channelId)))
 			return res.status(403).json({ error: 'No permission to upload files' })
 
 		const ceMode = normalizeCeMode(req.body.ceMode)
@@ -117,8 +116,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 			return res.status(403).json({ error: 'Not a member' })
 		assertNotRootChannel(body.channelId, 'upload file')
 		const member = state.members[memberKey]
-		const permChannelId = uploadPermissionChannelId(state, body.channelId)
-		if (!canInChannel(state, member, [PERMISSIONS.UPLOAD_FILES, PERMISSIONS.MANAGE_FILES], permChannelId))
+		if (!canInChannel(state, member, [PERMISSIONS.UPLOAD_FILES, PERMISSIONS.MANAGE_FILES], uploadPermissionChannelId(state, body.channelId)))
 			return res.status(403).json({ error: 'No permission to upload files' })
 
 		const keyEntry = await getCurrentFileMasterKey(username, groupId)

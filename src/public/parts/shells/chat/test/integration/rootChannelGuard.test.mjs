@@ -11,15 +11,13 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 Deno.test('newGroup without defaultChannelId creates root + default text channel', async () => {
 	const username = `root-genesis-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
-	await ensureServer()
+	await createIntegrationBoot({ username, minP2pNode: true }).ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
 	const { ROOT_CHANNEL_ID } = await import('../../src/chat/dag/groupSettings.mjs')
 
-	const groupId = await newGroup(username, { name: 'genesis' })
-	const { state } = await getState(username, groupId)
+	const { state } = await getState(username, await newGroup(username, { name: 'genesis' }))
 
 	const root = state.channels[ROOT_CHANNEL_ID]
 	assert(root, 'root channel must exist')
@@ -39,8 +37,7 @@ Deno.test('newGroup without defaultChannelId creates root + default text channel
 
 Deno.test('DM default channel is unnamed (empty name)', async () => {
 	const username = `root-dm-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
-	await ensureServer()
+	await createIntegrationBoot({ username, minP2pNode: true }).ensureServer()
 
 	const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 	const { randomKeyPair } = await import('npm:@steve02081504/fount-p2p/crypto')
@@ -53,13 +50,12 @@ Deno.test('DM default channel is unnamed (empty name)', async () => {
 	const { state } = await getState(username, dm.groupId)
 	const def = state.channels[dm.defaultChannelId]
 	assert(def, 'DM default channel must exist')
-	assertEquals(String(def.name || ''), '')
+	assertEquals(def.name, '')
 })
 
 Deno.test('postChannelMessage to root channel is rejected even for admin', async () => {
 	const username = `root-post-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
-	await ensureServer()
+	await createIntegrationBoot({ username, minP2pNode: true }).ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')

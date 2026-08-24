@@ -11,6 +11,7 @@ const OWNER = 'a'.repeat(64)
 const MODERATOR = 'b'.repeat(64)
 
 /**
+ * 构造最小可判权物化状态：默认频道 + 预置 owner/moderator 角色与群权限字段。
  * @returns {object} 最小可判权物化状态（含群权限字段）
  */
 function baseState() {
@@ -49,7 +50,7 @@ Deno.test('group permissions evaluate against group scope, independent of channe
 
 Deno.test('group_permissions_update requires MANAGE_ROLES or MANAGE_ADMINS', async () => {
 	const state = baseState()
-	// moderator 无 MANAGE_ROLES / MANAGE_ADMINS → 拒。
+	// 普通成员（无 MANAGE_ROLES / MANAGE_ADMINS）→ 拒。
 	const stranger = 'c'.repeat(64)
 	state.members[stranger] = { status: 'active', roles: ['@everyone'], memberKind: 'user' }
 	const result = await checkEventPermission(state, {
@@ -57,6 +58,21 @@ Deno.test('group_permissions_update requires MANAGE_ROLES or MANAGE_ADMINS', asy
 		content: { roleId: 'moderator', allow: { KICK_MEMBERS: true }, deny: {} },
 	}, stranger)
 	assertEquals(result.ok, false)
+	// 持有 MANAGE_ROLES 的 moderator → 允许。
+	const moderatorResult = await checkEventPermission(state, {
+		type: 'group_permissions_update',
+		content: { roleId: 'moderator', allow: { KICK_MEMBERS: true }, deny: {} },
+	}, MODERATOR)
+	assertEquals(moderatorResult.ok, true)
+	// 仅持有 MANAGE_ADMINS 的成员 → 可通过门控（空覆写内容不触发 grantor 限制）。
+	const adminMember = 'd'.repeat(64)
+	state.roles.admin = { permissions: { MANAGE_ADMINS: true } }
+	state.members[adminMember] = { status: 'active', roles: ['admin'], memberKind: 'user' }
+	const adminResult = await checkEventPermission(state, {
+		type: 'group_permissions_update',
+		content: { roleId: 'moderator', allow: {}, deny: {} },
+	}, adminMember)
+	assertEquals(adminResult.ok, true)
 	// owner（ADMIN 超管）→ 允许。
 	const ownerResult = await checkEventPermission(state, {
 		type: 'group_permissions_update',

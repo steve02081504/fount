@@ -76,9 +76,8 @@ Deno.test({
 		const stateResponse = await chatFetch(node, 'GET', `/groups/${created.groupId}/state`)
 		const state = await stateResponse.json().catch(() => ({}))
 		assertEquals(stateResponse.status, 200, JSON.stringify(state))
-		const stateMeta = state.meta || {}
 		assertEquals(
-			stateMeta.channels?.[created.defaultChannelId]?.name,
+			(state.meta || {}).channels?.[created.defaultChannelId]?.name,
 			'',
 			'friend group default channel must be unnamed (empty) so AI can auto-name it',
 		)

@@ -40,9 +40,11 @@ Deno.test('buildFriendRows dedupes by entityHash keeping the newer session', () 
 
 Deno.test('buildFriendRows sorts by lastMessageTime desc then displayName', () => {
 	const rows = buildFriendRows([
-		{ groupId: 'g-old', name: 'Old', friendBinding: { entityHash: 'b'.repeat(128) }, lastMessageTime: '2026-08-01T00:00:00Z' },
+		{ groupId: 'g-old-b', name: 'Bravo', friendBinding: { entityHash: 'b'.repeat(128) }, lastMessageTime: '2026-08-01T00:00:00Z' },
+		{ groupId: 'g-old-a', name: 'Alpha', friendBinding: { entityHash: 'a'.repeat(128) }, lastMessageTime: '2026-08-01T00:00:00Z' },
 		{ groupId: 'g-new', name: 'New', friendBinding: { entityHash: 'c'.repeat(128) }, lastMessageTime: '2026-08-03T00:00:00Z' },
 		{ groupId: 'g-tie', name: 'AAA', friendBinding: { entityHash: 'd'.repeat(128) }, lastMessageTime: '2026-08-02T00:00:00Z' },
 	])
-	assertEquals(rows.map(r => r.groupId), ['g-new', 'g-tie', 'g-old'])
+	// 时间倒序；同一时间（08-01）的两行按 displayName 升序（Alpha 在 Bravo 前）。
+	assertEquals(rows.map(r => r.groupId), ['g-new', 'g-tie', 'g-old-a', 'g-old-b'])
 })
