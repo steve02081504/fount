@@ -18,6 +18,23 @@ import {
 const HUB_INIT_TIMEOUT = ms('3m')
 
 /**
+ * 在频道列表空白区派发带真实坐标的右键事件（Playwright dispatchEvent 只建泛型 Event，
+ * 不携带 clientX/clientY，菜单会以 NaN 定位而落到视口外）。
+ * @param {import('npm:@playwright/test').Page} page Playwright 页面
+ * @returns {Promise<void>} 无返回值
+ */
+async function openChannelListContextMenu(page) {
+	await page.locator('.channel-list-virtual').evaluate(el => {
+		el.dispatchEvent(new MouseEvent('contextmenu', {
+			bubbles: true,
+			cancelable: true,
+			clientX: 100,
+			clientY: 100,
+		}))
+	})
+}
+
+/**
  * 通过 API 创建 DM 群并在默认频道注入一条 world-greeting（仅含问候语）。
  * @param {string} baseUrl 测试根 URL
  * @param {string} apiKey API 密钥
@@ -58,12 +75,7 @@ test.describe('DM channel list context menu', () => {
 		expect(initialChannelId).toBeTruthy()
 		await expect(page.locator('.channel-list-virtual')).toBeVisible({ timeout: 30_000 })
 
-		await page.locator('.channel-list-virtual').dispatchEvent('contextmenu', {
-			bubbles: true,
-			cancelable: true,
-			clientX: 100,
-			clientY: 100,
-		})
+		await openChannelListContextMenu(page)
 		await expect(page.locator('[data-action="create-channel"]')).toBeVisible()
 		await expect(page.locator('[data-action="create-category"]')).toBeVisible()
 
@@ -92,12 +104,7 @@ test.describe('DM channel list context menu', () => {
 		await expectMessageInChat(page, 'world-greeting')
 		await expect(page.locator('.channel-list-virtual')).toBeVisible({ timeout: 30_000 })
 
-		await page.locator('.channel-list-virtual').dispatchEvent('contextmenu', {
-			bubbles: true,
-			cancelable: true,
-			clientX: 100,
-			clientY: 100,
-		})
+		await openChannelListContextMenu(page)
 		await expect(page.locator('[data-action="create-channel"]')).toBeVisible()
 		await page.locator('[data-action="create-channel"]').click()
 

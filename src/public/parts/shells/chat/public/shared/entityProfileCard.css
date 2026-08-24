@@ -10,6 +10,17 @@
 
 /* 组件根：--entity-card-* 默认值定义在稳定的 `.profile-popup`（模板即存在），
  * 由 JS paint 再逐卡 setProperty 覆盖；避免 JS 写入 data-profile-pattern 前的渲染间隙被 cssvar 判为未定义。 */
+/* :root 兜底：独立页（social 资料页 / chat 编辑预览）可能没有 .profile-popup 祖先，
+ * 但 `.entity-profile-banner` / 卡片仍引用这些变量；补全局默认，防止 cssvar watch 判未定义。
+ * 优先级低于 .profile-popup 与 JS setProperty，故不影响 profile-popup 内的视觉。 */
+:root {
+	--entity-card-accent: var(--color-primary, var(--color-base-content));
+	--entity-card-pattern-angle: 45deg;
+	--entity-card-pattern-size: 28px;
+	--entity-card-pattern-x: 0;
+	--entity-card-pattern-y: 0;
+}
+
 .profile-popup {
 	--entity-card-accent: var(--color-primary, var(--color-base-content));
 	--entity-card-pattern-angle: 45deg;
