@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 import { assertEquals } from 'jsr:@std/assert'
 
-import { formatExpected, isExpectedDrift, parseExpectedMs, roundExpectedMs } from '../core/expected.mjs'
+import { expectedDriftToleranceMs, formatExpected, isExpectedDrift, parseExpectedMs, roundExpectedMs } from '../core/expected.mjs'
 import { suiteKey } from '../core/state.mjs'
 import { applyDriftPatchToManifest, driftedEstimatePatch, updateManifestEstimates } from '../core/update_estimates.mjs'
 

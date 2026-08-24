@@ -190,7 +190,7 @@
 		},
 		{
 			"name": "smoke_chat",
-			"expected": "50s",
+			"expected": "40s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -214,7 +214,7 @@
 		},
 		{
 			"name": "smoke_ai",
-			"expected": "20s",
+			"expected": "38s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -238,7 +238,7 @@
 		},
 		{
 			"name": "e2e_single",
-			"expected": "26s",
+			"expected": "36s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -286,7 +286,7 @@
 		},
 		{
 			"name": "ws",
-			"expected": "24s",
+			"expected": "19s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -756,7 +756,7 @@
 				},
 				{
 					"name": "dmChannelContext",
-					"expected": "5m42s",
+					"expected": "4m14s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/dmChannelContext.spec.mjs",
 						"src/public/parts/shells/chat/test/fixtures/worlds/write_path_hooks/**",

@@ -4,7 +4,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { EXPECTED_DRIFT_THRESHOLD, formatExpected, isExpectedDrift, parseExpectedMs, roundExpectedMs } from './expected.mjs'
+import { formatExpected, isExpectedDrift, parseExpectedMs, roundExpectedMs } from './expected.mjs'
 import { suiteKey } from './state.mjs'
 
 /**
@@ -85,22 +85,21 @@ function applyEstimatePatch(jsonSuite, patch) {
 }
 
 /**
- * 由现状抽出仅漂移超过阈值的补丁（未漂移的字段不包含）。
+ * 由现状抽出仅漂移超过容差的补丁（未漂移的字段不包含）。
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状
- * @param {number} [threshold] 相对漂移阈值
  * @returns {{ expected?: string | number, subtests: Record<string, string | number> } | null} 漂移补丁；无基线或全未漂移则 null
  */
-export function driftedEstimatePatch(suite, entry, threshold = EXPECTED_DRIFT_THRESHOLD) {
+export function driftedEstimatePatch(suite, entry) {
 	const base = estimatePatchFromState(suite, entry)
 	if (!base) return null
 	/** @type {{ expected?: string | number, subtests: Record<string, string | number> }} */
 	const out = {}
-	if (base.expected != null && isExpectedDrift(suite.expectedMs, parseExpectedMs(base.expected), threshold))
+	if (base.expected != null && isExpectedDrift(suite.expectedMs, parseExpectedMs(base.expected)))
 		out.expected = base.expected
 	for (const [name, target] of Object.entries(base.subtests)) {
 		const manifestMs = suite.subtests?.find(subtest => subtest.name === name)?.expectedMs ?? null
-		if (isExpectedDrift(manifestMs, parseExpectedMs(target), threshold)) {
+		if (isExpectedDrift(manifestMs, parseExpectedMs(target))) {
 			;(out.subtests ??= {})[name] = target
 		}
 	}
