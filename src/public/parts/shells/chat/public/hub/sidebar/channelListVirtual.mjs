@@ -16,8 +16,8 @@ import { store } from '../core/state.mjs'
 import { isThreadChannel } from '../threadDrawer.mjs'
 import { formatUnreadBadgeHtml, getChannelUnreadCount } from '../unread.mjs'
 
-import { bindCategoryDrag } from './channelDnd.mjs'
 import { channelDisplayName } from './channelDisplayName.mjs'
+import { bindCategoryDrag } from './channelDnd.mjs'
 import { quickCreateChannel, refreshChannelSidebar, showCreateChannelModal } from './createChannel.mjs'
 import { isPrivateChatActive } from './privateShell.mjs'
 import { selectChannel } from './selectChannel.mjs'
@@ -227,7 +227,11 @@ export async function renderChannelListVirtual(container, state) {
 	const canManageChannels = Object.values(state.channelCaps || {})
 		.some(cap => cap?.canEditList)
 
-	/** 渲染新建频道按钮（DM 在外部固定槽位，普通群在传入容器内部底部）。 */
+	/**
+	 * 渲染新建频道按钮（DM 在外部固定槽位，普通群在传入容器内部底部）。
+	 * @param {HTMLElement} hostElement 挂载容器
+	 * @returns {void}
+	 */
 	function renderCreateButton(hostElement) {
 		if (!canManageChannels || !groupId) return
 		const addChannelButton = document.createElement('button')

@@ -81,7 +81,7 @@ export function computeMoveOperation(channels, rootChannelId, sourceId, targetId
 		if (isInSubtree(channels, sourceId, targetParentId)) return null
 		const links = (channels?.[targetParentId]?.links || []).filter(id => id !== sourceId)
 		const at = links.indexOf(targetId)
-		targetIndex = at < 0 ? (after ? links.length : 0) : after ? at + 1 : at
+		targetIndex = at < 0 ? after ? links.length : 0 : after ? at + 1 : at
 	}
 
 	return { sourceParentId, targetParentId, targetIndex, placement }

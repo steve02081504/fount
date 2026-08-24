@@ -12,6 +12,7 @@ import { confirmAction } from '/scripts/features/promptDialog.mjs'
 import { buildMoveLinks, computeMoveOperation, DROP_PLACEMENT } from '../shared/channelReorder.mjs'
 import { updateChannel } from '../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../src/endpoints/groupCore.mjs'
+
 import { store } from './core/state.mjs'
 
 /** 拖拽确认豁免窗口（毫秒）：成功执行一次移动后，此窗口内再次拖拽不再弹确认。 */
@@ -127,10 +128,15 @@ export function bindCategoryDrag(element, row, { groupId, onExecuted }) {
 	/** @type {(e: Event) => void} click 抑制器 */
 	let onClickBlocker = null
 
-	/** 计算指针当前悬停的落点。 */
+	/**
+	 * 计算指针当前悬停的落点。
+	 * @param {number} clientX 落点横坐标
+	 * @param {number} clientY 落点纵坐标
+	 * @returns {{ targetId: string | null, placement: string }} 落点信息
+	 */
 	function resolveDrop(clientX, clientY) {
 		const container = document.querySelector('.channel-list-virtual')
-		const candidates = [...(container?.querySelectorAll('.channel-item, .category') || [])]
+		const candidates = [...container?.querySelectorAll('.channel-item, .category') || []]
 		const top = container?.getBoundingClientRect().top || 0
 		// 根级空白：指针越过当前最后一个行下方，或落在列表上半部空白区。
 		if (clientY > top + (container?.clientHeight || 0)) return { targetId: null, placement: DROP_PLACEMENT.ROOT }
@@ -155,7 +161,11 @@ export function bindCategoryDrag(element, row, { groupId, onExecuted }) {
 		return { targetId: null, placement: DROP_PLACEMENT.ROOT }
 	}
 
-	/** 结束拖拽并结算。 */
+	/**
+	 * 结束拖拽并结算。
+	 * @param {PointerEvent} event 拖拽事件
+	 * @returns {Promise<void>}
+	 */
 	async function endDrag(event) {
 		cleanup()
 		if (!dragging) return
@@ -180,7 +190,10 @@ export function bindCategoryDrag(element, row, { groupId, onExecuted }) {
 		element.classList.remove('dragging')
 	}
 
-	/** 开始拖拽：创建幽灵、隐藏源行、注册全局监听。 */
+	/**
+	 * 开始拖拽：创建幽灵、隐藏源行、注册全局监听。
+	 * @param {PointerEvent} event 拖拽事件
+	 */
 	function startDrag(event) {
 		dragging = true
 		element.classList.add('dragging')
@@ -191,10 +204,22 @@ export function bindCategoryDrag(element, row, { groupId, onExecuted }) {
 		positionGhost(event.clientX, event.clientY)
 		if (navigator.vibrate) navigator.vibrate(50)
 
+		/**
+		 * 处理指针移动事件
+		 * @param {PointerEvent} e 移动事件
+		 */
 		onPointerMove = (e) => {
 			positionGhost(e.clientX, e.clientY)
 		}
+		/**
+		 * 处理指针释放事件
+		 * @param {PointerEvent} e 释放事件
+		 */
 		onPointerUp = (e) => { void endDrag(e) }
+		/**
+		 * 处理点击阻止事件
+		 * @param {PointerEvent} e 点击事件
+		 */
 		onClickBlocker = (e) => { e.stopPropagation(); e.preventDefault() }
 		document.addEventListener('pointermove', onPointerMove)
 		document.addEventListener('pointerup', onPointerUp)
@@ -202,7 +227,12 @@ export function bindCategoryDrag(element, row, { groupId, onExecuted }) {
 		element.setPointerCapture?.(event.pointerId)
 	}
 
-	/** @param {number} x @param {number} y 移动幽灵元素 */
+	/**
+	 * 移动幽灵元素
+	 * @param {number} x 横坐标
+	 * @param {number} y 纵坐标
+	 * @returns {void}
+	 */
 	function positionGhost(x, y) {
 		if (!ghost) return
 		const w = element.getBoundingClientRect().width
@@ -213,11 +243,10 @@ export function bindCategoryDrag(element, row, { groupId, onExecuted }) {
 	element.addEventListener('pointerdown', (event) => {
 		if (event.button !== 0 && event.pointerType === 'mouse') return
 		downPoint = { x: event.clientX, y: event.clientY, t: Date.now() }
-		if (event.pointerType === 'touch') {
+		if (event.pointerType === 'touch')
 			longPressTimer = setTimeout(() => {
 				if (downPoint) startDrag(event)
 			}, LONG_PRESS_MS)
-		}
 	})
 	element.addEventListener('pointermove', (event) => {
 		if (dragging) return

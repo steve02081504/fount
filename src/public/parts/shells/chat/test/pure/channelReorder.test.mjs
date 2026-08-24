@@ -11,7 +11,10 @@ import {
 
 const ROOT = 'root'
 
-/** 构造一个频道树：root 下 [catA, catB, ch]，catA 下 [catA1]。 */
+/**
+ * 构造一个频道树：root 下 [catA, catB, ch]，catA 下 [catA1]。
+ * @returns {Record<string, { type: string, name: string, links: string[] }>} 频道表
+ */
 function makeChannels() {
 	return {
 		[ROOT]: { type: 'category', name: '', links: ['catA', 'catB', 'ch'] },
