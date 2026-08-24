@@ -81,12 +81,16 @@ function listBlockingDeps(key, planned, verdicts, byKey) {
  * @param {Verdict | undefined} verdict 裁决
  * @param {boolean} force 强制
  * @param {boolean} [hasExplicitSubtestFilter] CLI 显式子测试/文件过滤
+ * @param {import('../runner/continue_reason.mjs').GoalEvidence | undefined} [goalEvidence] 目标证据
  * @returns {boolean} 必须真跑
  */
-function goalMustRun(isGoal, verdict, force, hasExplicitSubtestFilter = false) {
+function goalMustRun(isGoal, verdict, force, hasExplicitSubtestFilter = false, goalEvidence) {
 	if (!isGoal) return false
 	if (force) return true
 	if (hasExplicitSubtestFilter) return true
+	// 上层失败的一层下游：不得因未改动而复用，必须真跑（由运行时决定真跑或被 blocked）。
+	// 否则上游失败被重新验证时，下游沿用旧绿结果掩盖级联失败。
+	if (goalEvidence?.kind === 'imperfect_dependent') return true
 	if (!verdict) return true
 	if (verdict.kind === 'unknown' || verdict.kind === 'red' || verdict.kind === 'noisy')
 		return true
@@ -188,7 +192,7 @@ export function buildPlan(
 			continue
 		}
 
-		if (!goalMustRun(isGoal, verdict, force, hasExplicitFilter) && !suite.skipBecause?.length && !suite.subtests?.some(st => st.skipBecause?.length) && verdictReusable(verdict, false)) {
+		if (!goalMustRun(isGoal, verdict, force, hasExplicitFilter, goalEvidenceByKey.get(key)) && !suite.skipBecause?.length && !suite.subtests?.some(st => st.skipBecause?.length) && verdictReusable(verdict, false)) {
 			planned.set(key, { ...base, action: 'reuse' })
 			continue
 		}

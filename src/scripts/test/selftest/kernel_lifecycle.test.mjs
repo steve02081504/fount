@@ -2,7 +2,7 @@
  * 内核单例、退出、空波次与依赖丢弃。
  */
 /* global Deno */
-import { mkdir, readFile, rm } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -582,46 +582,73 @@ Deno.test('kernel close aborts running suites', async () => {
 })
 
 Deno.test('submitJob cancels queued and running idle_all items', async () => {
-	const handle = await startTestKernel({
-		port: CONTROL_PORT + 22,
-		autoExit: false,
-		watchFs: false,
-		writeReport: false,
-		autoUpdateExpected: false,
-	})
+	const root = join(tmpdir(), `fount-kernel-preempt-${Date.now()}`)
+	await mkdir(root, { recursive: true })
+	const rel = 'src/parts/demo/test/manifest.json'
 	try {
-		const k = handle.kernel
-		const abort = new AbortController()
-		k.running.set('testkit:__idle_run__', {
-			item: { key: 'testkit:__idle_run__', reason: 'idle_all' },
-			abort,
-			startedAt: Date.now(),
-			checkDone: true,
+		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
+		assertEquals(init.code, 0)
+		const commit = await execFile('git', [
+			'-c', 'user.email=t@t', '-c', 'user.name=t',
+			'commit', '--allow-empty', '-m', 'init',
+		], { cwd: root })
+		assertEquals(commit.code, 0)
+		const abs = join(root, rel)
+		await mkdir(join(abs, '..'), { recursive: true })
+		await writeFile(abs, `${JSON.stringify({
+			id: 'demo',
+			suites: [{ name: 'pure', run: ['true'], triggers: ['src/parts/demo/**'] }],
+		}, null, '\t')}\n`, 'utf8')
+
+		const handle = await startTestKernel({
+			port: CONTROL_PORT + 22,
+			repoRoot: root,
+			autoExit: false,
+			watchFs: false,
+			writeReport: false,
+			autoUpdateExpected: false,
 		})
-		k.queues.enqueueFs('testkit:__idle_q__', 'idle_all')
-		k.queues.enqueueFs('testkit:__normal__', 'fs_change')
-		// 提交一个必空 job（不激活波次）也会在开头触发抢占。
-		const preemptJob = () => k.submitJob({
-			groups: [{
-				manifestSelectors: ['testkit'],
-				suiteSelectors: ['__no_such_suite__'],
-				subtestSelectors: {},
-			}],
-		}, 'v-preempt')
-		await preemptJob()
-		assertEquals(k.queues.fs.map(item => item.key), ['testkit:__normal__'])
-		assertEquals(abort.signal.aborted, true)
-		assertEquals(String(abort.signal.reason), 'new_job')
-		// 清空 running/队列后，无 idle_all 可取消时不再误重置闲置计时。
-		k.running.delete('testkit:__idle_run__')
-		k.queues.fs = []
-		const before = k.lastIdleAt
-		await preemptJob()
-		assertEquals(k.lastIdleAt, before)
+		try {
+			const k = handle.kernel
+			const abort = new AbortController()
+			k.running.set('demo:pure', {
+				item: { key: 'demo:pure', reason: 'idle_all' },
+				abort,
+				startedAt: Date.now(),
+				checkDone: true,
+			})
+			k.queues.enqueueFs('demo:pure', 'idle_all')
+			k.queues.enqueueFs('demo:normal', 'fs_change')
+			// 提交一个命不中任何 suite 的空 job（不激活波次）也会在开头触发抢占。
+			/**
+			 * 提交命不中任何 suite 的空 job。
+			 * @returns {Promise<object>} submitted 结果
+			 */
+			const preemptJob = () => k.submitJob({
+				groups: [{
+					manifestSelectors: ['demo'],
+					suiteSelectors: ['__no_such_suite__'],
+					subtestSelectors: {},
+				}],
+			}, 'v-preempt')
+			await preemptJob()
+			assertEquals(k.queues.fs.map(item => item.key), ['demo:normal'])
+			assertEquals(abort.signal.aborted, true)
+			assertEquals(String(abort.signal.reason), 'new_job')
+			// 清空 running/队列后，无 idle_all 可取消时不再误重置闲置计时。
+			k.running.delete('demo:pure')
+			k.queues.fs = []
+			const before = k.lastIdleAt
+			await preemptJob()
+			assertEquals(k.lastIdleAt, before)
+		}
+		finally {
+			handle.kernel.running.delete('demo:pure')
+			await handle.close()
+		}
 	}
 	finally {
-		handle.kernel.running.delete('testkit:__idle_run__')
-		await handle.close()
+		await rm(root, { recursive: true, force: true })
 	}
 })
 

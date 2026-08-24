@@ -346,3 +346,37 @@ Deno.test('skip_tree leftover failed omits stale and blocked descendants', () =>
 	})
 	assertEquals(selection.action, 'exit')
 })
+
+Deno.test('imperfect_dependent below a failed upstream must run, not reuse', () => {
+	const all = [
+		makeSuite('shells/chat', 'fed_core'),
+		makeSuite('shells/chat', 'fed_ban', { dependsOn: ['fed_core'] }),
+	]
+	const state = {
+		suites: {
+			'shells/chat:fed_core': makeStateEntry({ status: 'failed' }),
+			'shells/chat:fed_ban': makeStateEntry({ status: 'passed' }),
+		},
+	}
+	const committedChangedByKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), []]))
+	const verdicts = buildVerdicts(all, state, committedChangedByKey, new Map())
+	assertEquals(verdicts.get('shells/chat:fed_core')?.kind, 'red')
+	assertEquals(verdicts.get('shells/chat:fed_ban')?.kind, 'green')
+
+	const selection = selectImperfectWave({
+		verdicts,
+		state,
+		allSuites: all,
+		scope: all,
+		commitHash: 'abc',
+		uncommittedHash: null,
+	})
+	assertEquals([...selection.goalKeys].sort(), ['shells/chat:fed_ban', 'shells/chat:fed_core'])
+	assertEquals(selection.goalEvidenceByKey.get('shells/chat:fed_ban')?.kind, 'imperfect_dependent')
+
+	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
+	const plan = buildPlan(selection.goalKeys, verdicts, byKey, all, selection.goalEvidenceByKey)
+	const fedBan = plan.slots.find(slot => slot.key === 'shells/chat:fed_ban')
+	// 上层失败的一层下游：不得因未改动而 reuse，必须 run（由运行时决定是否真跑或被 blocked）
+	assertEquals(fedBan?.action, 'run')
+})

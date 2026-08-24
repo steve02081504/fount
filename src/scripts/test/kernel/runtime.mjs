@@ -4,16 +4,16 @@
 import { randomUUID } from 'node:crypto'
 import { watch } from 'node:fs'
 
+import { console } from '../../i18n/bare.mjs'
 import { ms } from '../../ms.mjs'
 import { CPU_BUDGET_PCT } from '../core/baseline.mjs'
 import { getHeadCommitHash } from '../core/changed.mjs'
 import { CLEANUP_LEAK_EXIT_CODE, findCleanupLeaks } from '../core/cleanup_check.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { buildEstimateTask, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
+import { parseExpectedMs } from '../core/expected.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
 import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
-import { parseExpectedMs } from '../core/expected.mjs'
-import { applyDriftPatchToManifest, driftedEstimatePatch } from '../core/update_estimates.mjs'
 import {
 	formatSkipBecauseUrls,
 	isSkipBecauseBlocking,
@@ -29,6 +29,7 @@ import {
 	upsertSuiteRun,
 	writeState,
 } from '../core/state.mjs'
+import { applyDriftPatchToManifest, driftedEstimatePatch } from '../core/update_estimates.mjs'
 import { GithubIssueCache, probeGithubIssue } from '../hub/apis/github_issue.mjs'
 import { formatContinueReasonLabel } from '../runner/continue_reason.mjs'
 import { RunReportWriter } from '../runner/report.mjs'
