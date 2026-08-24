@@ -1,10 +1,20 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
+import { assertThrows } from 'jsr:@std/assert'
+
 import { emptyMaterializedState } from '../../src/chat/dag/groupMaterializedState.mjs'
-import { ROOT_CHANNEL_ID } from '../../src/chat/dag/groupSettings.mjs'
+import { ROOT_CHANNEL_ID, assertNotRootChannel } from '../../src/chat/dag/groupSettings.mjs'
 import { channelReducers } from '../../src/chat/dag/reducers/channels.mjs'
 import { governanceReducers } from '../../src/chat/dag/reducers/governance.mjs'
+
+Deno.test('assertNotRootChannel rejects root, allows normal channels', () => {
+	assertThrows(() => assertNotRootChannel(ROOT_CHANNEL_ID, 'message'), /root channel/i)
+	assertThrows(() => assertNotRootChannel('root', 'upload file'), /root channel/i)
+	// 普通频道不应被拦截。
+	assertNotRootChannel('default')
+	assertNotRootChannel('channel_abc')
+})
 
 Deno.test('materializeGroupSettings defaults rootChannelId to null', () => {
 	const state = emptyMaterializedState()
