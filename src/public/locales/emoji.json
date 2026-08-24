@@ -2453,10 +2453,10 @@
 					"renamePrompt": "🗂️✏️"
 				},
 				"reorder": {
-					"after": "将「${source}」移到「${target}」之后？",
-					"before": "将「${source}」移到「${target}」之前？",
-					"into": "将「${source}」移入「${target}」？",
-					"toRoot": "将「${source}」移到根级？"
+					"after": "🔄「${source}」⬇️「${target}」❓",
+					"before": "🔄「${source}」⬆️「${target}」❓",
+					"into": "🔄「${source}」📥「${target}」❓",
+					"toRoot": "🔄「${source}」📥🏠❓"
 				},
 				"name": "🗂️🏷️",
 				"nameInput": {
