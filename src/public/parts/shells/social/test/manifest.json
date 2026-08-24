@@ -265,7 +265,7 @@
 				},
 				{
 					"name": "composer",
-					"expected": "3m15s",
+					"expected": "1m48s",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/composer.spec.mjs",
 						"src/public/parts/shells/social/public/index.html",

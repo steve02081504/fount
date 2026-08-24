@@ -51,7 +51,7 @@
 		},
 		{
 			"name": "i18n_keys",
-			"expected": 700,
+			"expected": 600,
 			"run": [
 				"deno",
 				"test",
