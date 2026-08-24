@@ -102,8 +102,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (!canView && !canManageChannels)
 			throw httpError(403, 'No permission to view channel permissions')
 
-		const { resolvePermBlockOwner } = await import('../../chat/dag/groupMaterializedState.mjs')
-		const ownerId = resolvePermBlockOwner(state, channelId)
+		const { resolvePermissionBlockOwner } = await import('../../chat/dag/groupMaterializedState.mjs')
+		const ownerId = resolvePermissionBlockOwner(state, channelId)
 		const permissions = ownerId ? state.channelPermissions?.[ownerId] || {} : {}
 		res.status(200).json({ permissions, permBlockId: state.channels[channelId]?.permBlockId || null })
 	})
@@ -151,8 +151,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (target === channelId)
 			throw httpError(400, 'permBlockId cannot reference self')
 		if (target) {
-			const { resolvePermBlockOwner } = await import('../../chat/dag/groupMaterializedState.mjs')
-			if (resolvePermBlockOwner(state, target) === channelId)
+			const { resolvePermissionBlockOwner } = await import('../../chat/dag/groupMaterializedState.mjs')
+			if (resolvePermissionBlockOwner(state, target) === channelId)
 				throw httpError(400, 'permBlockId forms a cycle')
 		}
 		if (!canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId))
@@ -174,7 +174,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			groupContext: { username, state, member, groupId }
 		} = req
 
-		const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), effectiveChannelPermissions(state, governanceChannelId(state)))
+		const canManageRoles = canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state))
 		if (!canManageRoles)
 			throw httpError(403, 'No permission to manage roles')
 
@@ -207,7 +207,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 
-		const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), effectiveChannelPermissions(state, governanceChannelId(state)))
+		const canManageRoles = canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state))
 		if (!canManageRoles)
 			throw httpError(403, 'No permission to manage roles')
 
@@ -239,7 +239,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 
-		const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), effectiveChannelPermissions(state, governanceChannelId(state)))
+		const canManageRoles = canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state))
 		if (!canManageRoles)
 			throw httpError(403, 'No permission to manage roles')
 
@@ -264,7 +264,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
-		const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), effectiveChannelPermissions(state, governanceChannelId(state)))
+		const canManageRoles = canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state))
 		if (!canManageRoles)
 			throw httpError(403, 'No permission to manage roles')
 
@@ -299,7 +299,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 		const governanceChannel = governanceChannelId(state)
 		if (action === 'unban') {
-			const canUnban = hasPermission(member, PERMISSIONS.BAN_MEMBERS, state.roles, governanceChannel, effectiveChannelPermissions(state, governanceChannel))
+			const canUnban = canInChannel(state, member, PERMISSIONS.BAN_MEMBERS, governanceChannel)
 			if (!canUnban)
 				throw httpError(403, 'No permission to unban members')
 			const resolvedTargetKey = resolveMemberKey(state, targetMemberKey)
@@ -326,7 +326,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			if (!resolvedTargetKey)
 				throw httpError(404, 'Member not found')
 			const resolvedMember = state.members[resolvedTargetKey]
-			if (!hasPermission(member, PERMISSIONS.BAN_MEMBERS, state.roles, governanceChannel, effectiveChannelPermissions(state, governanceChannel)))
+			if (!canInChannel(state, member, PERMISSIONS.BAN_MEMBERS, governanceChannel))
 				throw httpError(403, 'No permission to moderate members')
 			if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')
 				throw httpError(400, 'Cannot moderate yourself')
@@ -387,10 +387,10 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const isOwnerKickOwnAgent = resolvedMember?.memberKind === 'agent'
 			&& !!(ownerEntity && callerEntity === ownerEntity)
 		const isAdminKickAgent = resolvedMember?.memberKind === 'agent'
-			&& hasPermission(member, PERMISSIONS.ADMIN, state.roles, governanceChannel, effectiveChannelPermissions(state, governanceChannel))
+			&& canInChannel(state, member, PERMISSIONS.ADMIN, governanceChannel)
 		const canModerate = resolvedMember?.memberKind === 'agent'
 			? isOwnerKickOwnAgent || isAdminKickAgent
-			: hasPermission(member, PERMISSIONS.KICK_MEMBERS, state.roles, governanceChannel, effectiveChannelPermissions(state, governanceChannel))
+			: canInChannel(state, member, PERMISSIONS.KICK_MEMBERS, governanceChannel)
 		if (!canModerate)
 			throw httpError(403, 'No permission to moderate members')
 		if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')
@@ -436,9 +436,10 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 		const activeCount = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 		const governanceChannel = governanceChannelId(state)
-		const perms = calculateMemberPermissions(member, state.roles, governanceChannel, effectiveChannelPermissions(state, governanceChannel))
 		const isDmPair = activeCount === 2
-		if (!isDmPair && !perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ROLES])
+		if (!isDmPair
+			&& !canInChannel(state, member, PERMISSIONS.ADMIN, governanceChannel)
+			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannel))
 			throw httpError(403, 'file_master_key_rotate requires ADMIN or MANAGE_ROLES')
 
 		const keyEntry = await getCurrentFileMasterKey(username, groupId)

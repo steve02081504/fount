@@ -7,9 +7,9 @@
  */
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
-import { hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { GROUP_SCOPE_ID, hasPermission, isGroupPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
-import { effectiveChannelPermissions } from '../chat/dag/groupMaterializedState.mjs'
+import { effectiveChannelPermissions, effectiveGroupPermissions } from '../chat/dag/groupMaterializedState.mjs'
 
 /**
  * @param {object} state 物化群状态
@@ -99,9 +99,10 @@ export async function resolveActiveMemberKeyForLocalReplica(replicaUsername, gro
  * @returns {boolean} 是否具备权限
  */
 export function canInChannel(state, member, permission, channelId) {
-	// MANAGE_ROLES 是治理权限，应按治理频道上的 allow/deny 覆写求值，而非调用方传入的频道。
-	const effectiveChannelId = permission === PERMISSIONS.MANAGE_ROLES ? governanceChannelId(state) : channelId
-	return hasPermission(member, permission, state.roles, effectiveChannelId, effectiveChannelPermissions(state, effectiveChannelId))
+	// 群级治理权限按群权限 scope 求值；频道权限按调用方传入频道求值。
+	if (isGroupPermission(permission))
+		return hasPermission(member, permission, state.roles, GROUP_SCOPE_ID, effectiveGroupPermissions(state))
+	return hasPermission(member, permission, state.roles, channelId, effectiveChannelPermissions(state, channelId))
 }
 
 /**

@@ -1,4 +1,4 @@
-import { resolvePermBlockOwner } from '../permBlockOwner.mjs'
+import { resolvePermissionBlockOwner } from '../permissionBlockOwner.mjs'
 
 import { withGroupId } from './state.mjs'
 
@@ -18,7 +18,7 @@ export const channelReducers = {
 			name: event.content.name,
 			description: event.content.description ?? '',
 			links: Array.isArray(event.content.links) ? [...event.content.links] : [],
-			permBlockId: event.content.permBlockId || null,
+			permissionBlockId: event.content.permissionBlockId || null,
 			parentEventId: event.content.parentEventId || null,
 			syncScope: event.content.syncScope || 'group',
 			isPrivate: event.content.isPrivate || false,
@@ -37,7 +37,7 @@ export const channelReducers = {
 
 	/**
 	 * 处理 `channel_update` 事件：合并更新已有频道字段。
-	 * 脱钩（`updates.permBlockId === null`）时把当前有效权限块复制进本频道自有覆写。
+	 * 脱钩（`updates.permissionBlockId === null`）时把当前有效权限块复制进本频道自有覆写。
 	 * @param {object} state 物化群状态
 	 * @param {object} event DAG 事件
 	 * @returns {object} 更新后的 state
@@ -47,8 +47,8 @@ export const channelReducers = {
 		const { channelId, updates } = event.content
 		const channel = state.channels[channelId]
 		if (!channel) return state
-		if (updates.permBlockId === null && channel.permBlockId) {
-			const owner = resolvePermBlockOwner(state, channelId)
+		if (updates.permissionBlockId === null && channel.permissionBlockId) {
+			const owner = resolvePermissionBlockOwner(state, channelId)
 			const block = state.channelPermissions?.[owner]
 			if (block) state.channelPermissions[channelId] = structuredClone(block)
 		}
@@ -81,8 +81,8 @@ export const channelReducers = {
 		}
 		// 先给引用被删权限块的频道复制其有效块：在 channelPermissions 删除前保留既有覆写。
 		for (const channel of Object.values(state.channels))
-			if (channel && channel.permBlockId && toDelete.has(channel.permBlockId)) {
-				const owner = resolvePermBlockOwner(state, channel.permBlockId)
+			if (channel && channel.permissionBlockId && toDelete.has(channel.permissionBlockId)) {
+				const owner = resolvePermissionBlockOwner(state, channel.permissionBlockId)
 				const block = state.channelPermissions?.[owner]
 				if (block) state.channelPermissions[channel.id] = structuredClone(block)
 			}
@@ -94,8 +94,8 @@ export const channelReducers = {
 			if (channel && Array.isArray(channel.links))
 				channel.links = channel.links.filter(id => !toDelete.has(id))
 		for (const channel of Object.values(state.channels))
-			if (channel && channel.permBlockId && toDelete.has(channel.permBlockId))
-				channel.permBlockId = null
+			if (channel && channel.permissionBlockId && toDelete.has(channel.permissionBlockId))
+				channel.permissionBlockId = null
 		return state
 	},
 
@@ -124,6 +124,21 @@ export const channelReducers = {
 		if (!state.channelPermissions[channelId])
 			state.channelPermissions[channelId] = {}
 		state.channelPermissions[channelId][event.content.roleId] = {
+			allow: event.content.allow,
+			deny: event.content.deny,
+		}
+		return state
+	},
+
+	/**
+	 * 处理 `group_permissions_update` 事件：写入群级治理权限的角色 allow/deny 覆写。
+	 * @param {object} state 物化群状态
+	 * @param {object} event DAG 事件
+	 * @returns {object} 更新后的 state
+	 */
+	group_permissions_update(state, event) {
+		withGroupId(state, event)
+		state.groupPermissions[event.content.roleId] = {
 			allow: event.content.allow,
 			deny: event.content.deny,
 		}

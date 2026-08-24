@@ -187,7 +187,7 @@ export interface Channel {
 	/** 子频道 id 有序列表（父→子单向） */
 	links: string[]
 	/** 跟随的权限块源频道 id；null 表示自有权限块 */
-	permBlockId: string | null
+	permissionBlockId: string | null
 	syncScope: 'group' | 'channel'
 	isPrivate: boolean
 	subRoomId?: string | null
@@ -347,6 +347,7 @@ export interface GroupStateCore {
 	membersPagesCount: number
 	roles: Record<string, Role>
 	channelPermissions: Record<string, Record<string, ChannelPermissionOverride>>
+	groupPermissions: Record<string, ChannelPermissionOverride>
 	channelKeyGeneration: Record<string, number>
 	channelKeyWraps: Record<string, { generation: number }>
 	channels: Record<string, Channel>

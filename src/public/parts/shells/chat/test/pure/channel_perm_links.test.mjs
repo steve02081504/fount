@@ -1,7 +1,7 @@
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { effectiveChannelPermissions, emptyMaterializedState, memberChannelPermissions, resolvePermBlockOwner } from '../../src/chat/dag/groupMaterializedState.mjs'
+import { effectiveChannelPermissions, emptyMaterializedState, memberChannelPermissions, resolvePermissionBlockOwner } from '../../src/chat/dag/groupMaterializedState.mjs'
 import { channelReducers } from '../../src/chat/dag/reducers/channels.mjs'
 import { calculateMemberPermissions, createDefaultRoles, PERMISSIONS } from '../../src/permissions/chat.mjs'
 
@@ -65,12 +65,12 @@ Deno.test('permBlockId strong reference: child follows parent block, detach copi
 		content: { channelId: 'root', roleId: '@everyone', allow: { SEND_MESSAGES: true }, deny: {} },
 	})
 
-	// 子频道强引用父块：resolvePermBlockOwner 应解析到 root
+	// 子频道强引用父块：resolvePermissionBlockOwner 应解析到 root
 	state = channelReducers.channel_create(state, {
 		timestamp: 2,
 		content: { channelId: 'child', type: 'text', name: 'child', permBlockId: 'root' },
 	})
-	if (resolvePermBlockOwner(state, 'child') !== 'root') throw new Error('child should resolve to parent block owner')
+	if (resolvePermissionBlockOwner(state, 'child') !== 'root') throw new Error('child should resolve to parent block owner')
 
 	if (!effectiveChannelPermissions(state, 'child')['child']['@everyone']?.allow.SEND_MESSAGES) throw new Error('child should inherit parent block')
 
@@ -85,7 +85,7 @@ Deno.test('permBlockId strong reference: child follows parent block, detach copi
 		content: { channelId: 'child', updates: { permBlockId: null } },
 	})
 	if (state.channels['child'].permBlockId !== null) throw new Error('child should be detached')
-	if (resolvePermBlockOwner(state, 'child') !== 'child') throw new Error('child should own its block after detach')
+	if (resolvePermissionBlockOwner(state, 'child') !== 'child') throw new Error('child should own its block after detach')
 	const copied = state.channelPermissions['child']
 	if (!copied['@everyone']?.allow.SEND_MESSAGES) throw new Error('detach should copy parent block')
 	if (!copied['@everyone']?.allow.STREAM) throw new Error('detach should copy latest parent block')

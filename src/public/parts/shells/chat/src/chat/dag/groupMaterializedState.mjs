@@ -1,9 +1,9 @@
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
-import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { calculateMemberPermissions, GROUP_SCOPE_ID, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { materializeGroupSettings } from './groupSettings.mjs'
-import { resolvePermBlockOwner } from './permBlockOwner.mjs'
+import { resolvePermissionBlockOwner } from './permissionBlockOwner.mjs'
 import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
 import { createEmptySessionState } from './reducers/state.mjs'
 
@@ -106,6 +106,7 @@ export function emptyMaterializedState() {
 		membersPagesCount: 1,
 		roles: {},
 		channelPermissions: {},
+		groupPermissions: {},
 		channelKeyGeneration: {},
 		channelKeyWraps: {},
 		channels: {},
@@ -149,6 +150,7 @@ export function materializeFromCheckpoint(checkpoint) {
 		membersPagesCount: membersRecord.membersPagesCount,
 		roles: structuredClone(membersRecord.roles),
 		channelPermissions: structuredClone(membersRecord.channelPermissions),
+		groupPermissions: structuredClone(membersRecord.groupPermissions || {}),
 		channelKeyGeneration: structuredClone(membersRecord.channelKeyGeneration || {}),
 		channelKeyWraps: structuredClone(membersRecord.channelKeyWraps || {}),
 		channels: structuredClone(membersRecord.channels),
@@ -234,20 +236,30 @@ export function checkpointSignerPubKeyHashes(state) {
 	return adminPubKeyHashes(state)
 }
 
-/** 沿 `permBlockId` 指针解析权限块来源（循环保护）；自 {@link permBlockOwner.mjs} 再导出。 */
-export { resolvePermBlockOwner }
+/** 沿 `permissionBlockId` 指针解析权限块来源（循环保护）；自 {@link permissionBlockOwner.mjs} 再导出。 */
+export { resolvePermissionBlockOwner }
 
 /**
- * 某频道的有效角色覆写表：沿 `permBlockId` 指针解析到源频道，取其拥有的覆写块。
+ * 某频道的有效角色覆写表：沿 `permissionBlockId` 指针解析到源频道，取其拥有的覆写块。
  * 返回值以 `channelId` 为键，可直接传给 `calculateMemberPermissions` / `hasPermission`。
  * @param {object} state 物化群状态
  * @param {string} channelId 频道 ID
  * @returns {Record<string, Record<string, { allow: object, deny: object }>>} 有效覆写表
  */
 export function effectiveChannelPermissions(state, channelId) {
-	const ownerId = resolvePermBlockOwner(state, channelId)
+	const ownerId = resolvePermissionBlockOwner(state, channelId)
 	const overrides = ownerId ? state.channelPermissions?.[ownerId] : undefined
 	return { [channelId]: overrides || {} }
+}
+
+/**
+ * 群级治理权限的有效角色覆写表。
+ * 返回值以 `GROUP_SCOPE_ID` 为键，可直接传给 `calculateMemberPermissions` / `hasPermission`。
+ * @param {object} state 物化群状态
+ * @returns {Record<string, Record<string, { allow: object, deny: object }>>} 群权限覆写表
+ */
+export function effectiveGroupPermissions(state) {
+	return { [GROUP_SCOPE_ID]: state.groupPermissions || {} }
 }
 
 /**
