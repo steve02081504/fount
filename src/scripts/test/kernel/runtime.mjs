@@ -3,7 +3,6 @@
  */
 import { randomUUID } from 'node:crypto'
 import { watch } from 'node:fs'
-import { join } from 'node:path'
 
 import { console } from '../../i18n/bare.mjs'
 import { ms } from '../../ms.mjs'
@@ -120,7 +119,13 @@ export class TestKernel {
 		this.gate = new ResourceRunGate(
 			this.globalBudget.memBytes,
 			suite => this.state?.suites[suiteKey(suite.manifestId, suite.name)],
-			{ onChange: () => this.#broadcastSchedule('gate_state_changed') },
+			{
+				/**
+				 * 占用状态变化 → 重建理想调度并广播 schedule-update。
+				 * @returns {void}
+				 */
+				onChange: () => this.#broadcastSchedule('gate_state_changed'),
+			},
 		)
 		/** 资源预算周期刷新计时器。 */
 		this.budgetTimer = null
@@ -128,11 +133,11 @@ export class TestKernel {
 		this.jobs = new Map()
 		/** @type {Map<string, { item: object, abort: AbortController }>} */
 		this.running = new Map()
-	/** @type {Map<string, boolean>} */
-	this.sessionPassed = new Map()
-	/** @type {Set<string>} */
-	this.sessionSkipped = new Set()
-	this.closed = false
+		/** @type {Map<string, boolean>} */
+		this.sessionPassed = new Map()
+		/** @type {Set<string>} */
+		this.sessionSkipped = new Set()
+		this.closed = false
 		this.#closeDone = null
 		this.seenViewer = false
 		this.catalog = null

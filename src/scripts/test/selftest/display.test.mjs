@@ -124,7 +124,6 @@ Deno.test('paintAccepted lists per-suite continue reasons when explicit count is
 		runCount: 2,
 		reuseCount: 0,
 		blockedCount: 0,
-		remainingMs: 12_000,
 		continueReasons: [
 			{ key: 'shells/social:pure', kind: 'explicit_selected' },
 			{ key: 'checks:i18n_keys', kind: 'stale_content', matchedPaths: ['src/public/locales/zh-CN.json'] },
@@ -136,7 +135,7 @@ Deno.test('paintAccepted lists per-suite continue reasons when explicit count is
 		'checks:i18n_keys',
 	])
 	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.explicitSelectedCount'), false)
-	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), false)
 })
 
 Deno.test('paintAccepted aggregates explicit_selected over 7 into a count', () => {
@@ -149,7 +148,6 @@ Deno.test('paintAccepted aggregates explicit_selected over 7 into a count', () =
 		runCount: 9,
 		reuseCount: 0,
 		blockedCount: 0,
-		remainingMs: 12_000,
 		continueReasons,
 	}))
 	assertEquals(logs.filter(row => row.key === 'fountConsole.test.display.explicitSelectedCount').map(row => row.params), [
@@ -158,7 +156,7 @@ Deno.test('paintAccepted aggregates explicit_selected over 7 into a count', () =
 	assertEquals(logs.filter(row => row.key === 'fountConsole.test.display.reason').map(row => row.params.label), [
 		'checks:i18n_keys',
 	])
-	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), false)
 })
 
 Deno.test('paintJobDone nothingToContinue after a finished wave', () => {
@@ -208,13 +206,12 @@ Deno.test('paintSuiteEnd overview prints remaining after FAILED without suite ou
 			key: 'shells/achievements:frontend',
 			passed: false,
 			output,
-			remainingMs: 12_000,
 		}, { stream: false }))
 	})
 	assertEquals(logs[0]?.key, 'fountConsole.test.failed')
 	assertEquals(logs[0]?.params.label, 'shells/achievements:frontend')
 	assertEquals(written.includes(output), false)
-	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), false)
 })
 
 Deno.test('paintSuiteEnd stream mode does not replay live output', () => {

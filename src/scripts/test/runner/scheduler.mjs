@@ -180,7 +180,7 @@ export class ResourceRunGate {
 	 * @param {SuiteDef} suite 待运行 suite
 	 * @returns {Promise<() => void>} 释放函数
 	 */
-		async acquire(suite) {
+	async acquire(suite) {
 		return new Promise(resolve => {
 			this.waiters.push({ suite, resolve })
 			this.#tryAdmit()

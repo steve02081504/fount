@@ -240,31 +240,6 @@ export function estimateEtaMs(makespanMs, gapCount) {
 }
 
 /**
- * 估算容差：剩余时间允许回弹的上限（毫秒）。除真实插队外，估算只许随墙钟递减。
- */
-export const REMAINING_JITTER_MS = 5000
-
-/**
- * 除真实插队（待运行项增多）外，把剩余时间钳到“上次剩余 − 已过墙钟”的下限，
- * 避免调度重排把晚 admit 的长耗时套件插到末尾使 makespan 虚增、控制台越跑越长。
- * @param {number | null} nextMs 本次估算剩余（毫秒）
- * @param {object} prev 上次估算状态
- * @param {number | null} prev.ms 上次剩余（毫秒）
- * @param {number} prev.at 上次估算时刻（ms）
- * @param {number} prev.pending 上次待运行项数
- * @param {number} now 当前时刻（ms）
- * @param {number} pendingNow 当前待运行项数
- * @returns {number | null} 钳制后的剩余（毫秒）
- */
-export function clampRemainingMs(nextMs, { ms, at, pending }, now, pendingNow) {
-	if (ms == null || nextMs == null || !Number.isFinite(nextMs)) return nextMs
-	const grew = pendingNow > pending
-	if (grew) return nextMs
-	const floor = Math.max(0, ms - (now - at))
-	return nextMs > floor + REMAINING_JITTER_MS ? floor : nextMs
-}
-
-/**
  * 虚拟并行调度模拟墙钟耗时。
  * 默认与 PlanRunCoordinator 同策略（一层乐观重叠）；`speculative: false` 只按硬就绪。
  * @param {EstimateTask[]} tasks 任务列表

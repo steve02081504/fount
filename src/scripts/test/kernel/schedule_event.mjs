@@ -31,9 +31,9 @@ export function buildScheduleUpdate(projection, viewer, reason, reasonDetail = '
 			remainingMs: slot.endAt == null ? null : Math.max(0, slot.endAt - slot.startAt),
 			waiting: slot.running,
 		})),
-		lastCompletionAt: projection.lastCompletionAt == null
-			? null
-			: new Date(now + projection.lastCompletionAt).toISOString(),
+		lastCompletionAt: Number.isFinite(projection.lastCompletionAt)
+			? new Date(now + projection.lastCompletionAt).toISOString()
+			: null,
 		lastCompletionMs: projection.lastCompletionAt,
 		unknownCount: projection.unknownCount,
 		reason,

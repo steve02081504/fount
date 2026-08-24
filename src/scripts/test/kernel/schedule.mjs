@@ -335,13 +335,15 @@ export function buildTimeline(tasks, { memBudgetBytes, cpuBudgetPct }) {
  * @returns {{ running: ScheduleSlot[], lastCompletionAt: number | null, unknownCount: number }} 投影
  */
 export function projectConsumer(slots, { watch = false, jobId = null }) {
-	/** @param {ScheduleSlot} slot 槽位 */
+	/**
+	 * @param {ScheduleSlot} slot 槽位
+	 * @returns {boolean} 是否归属
+	 */
 	const belongs = slot => watch || (jobId != null && slot.jobId === jobId)
 	const own = slots.filter(belongs)
 	const running = own.filter(slot => slot.running)
-	const lastCompletionAt = own.length
-		? Math.max(...own.map(slot => slot.endAt).filter(end => end != null))
-		: 0
+	const knownEnds = own.map(slot => slot.endAt).filter(end => end != null)
+	const lastCompletionAt = knownEnds.length ? Math.max(...knownEnds) : null
 	const unknownCount = own.filter(slot => slot.endAt == null).length
 	return { running, lastCompletionAt, unknownCount }
 }

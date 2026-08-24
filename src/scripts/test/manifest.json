@@ -89,7 +89,7 @@
 		},
 		{
 			"name": "continue_reason",
-			"expected": 700,
+			"expected": 800,
 			"run": [
 				"deno",
 				"test",
@@ -208,7 +208,7 @@
 		},
 		{
 			"name": "resources_scheduler",
-			"expected": 900,
+			"expected": 800,
 			"run": [
 				"deno",
 				"test",
@@ -383,7 +383,7 @@
 		},
 		{
 			"name": "trigger_audit",
-			"expected": "2s",
+			"expected": 900,
 			"triggerFilter": {
 				"unignore": [
 					"**/test/manifest.json"

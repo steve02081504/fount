@@ -231,13 +231,15 @@ Deno.test('accepted precedes suite-start and remaining drops the finished suite'
 				'testkit:__eta_long__',
 				'testkit:__eta_short__',
 			])
-			assertEquals(accepted?.remainingMs >= 10_000, true)
 
-			const firstEnd = events.find(message => message.type === 'suite-end')
-			const lastEnd = events.filter(message => message.type === 'suite-end').at(-1)
-			assertEquals(firstEnd?.remainingMs <= 10_000 + 1000, true)
-			assertEquals(firstEnd?.remainingMs < (accepted?.remainingMs ?? 0), true)
-			assertEquals(lastEnd?.remainingMs, 0)
+			// 剩余只随 schedule-update 提供：初始 ETA 覆盖两个 heavy 套件，结束时归零。
+			const schedules = events.filter(message => message.type === 'schedule-update')
+			assertEquals(schedules.length > 0, true)
+			const initial = schedules[0]
+			assertEquals(initial?.lastCompletionMs >= 10_000, true, `initial=${initial?.lastCompletionMs}`)
+			const last = schedules.at(-1)
+			assertEquals(last?.lastCompletionMs <= 1000, true, `last=${last?.lastCompletionMs}`)
+			assertEquals(last?.lastCompletionMs < (initial?.lastCompletionMs ?? 0), true)
 
 			const reasonsText = await readFile(triggeredReasonsMarkdownPath(root), 'utf8')
 			assertEquals(reasonsText.includes('skip_because 复检'), true)
@@ -356,16 +358,37 @@ Deno.test('accepted remaining includes already-running leftover', async () => {
 				startedAt: Date.now(),
 				checkDone: true,
 			})
-			const submitted = await handle.kernel.submitJob({
-				force: true,
-				groups: [{
-					manifestSelectors: ['testkit'],
-					suiteSelectors: ['__wait_next__'],
-					subtestSelectors: {},
-				}],
-			}, 'v-wait')
-			assertEquals(submitted.runCount, 1)
-			assertEquals(submitted.remainingMs > 50_000, true, `remainingMs=${submitted.remainingMs}`)
+			const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+			await new Promise((resolve, reject) => {
+				ws.addEventListener('open', resolve, { once: true })
+				ws.addEventListener('error', reject, { once: true })
+			})
+			/** @type {object[]} */
+			const events = []
+			const done = new Promise(resolve => {
+				ws.addEventListener('message', event => {
+					const message = JSON.parse(String(event.data))
+					events.push(message)
+					if (message.type === 'job-done') resolve()
+				})
+			})
+			ws.send(JSON.stringify({
+				type: 'hello',
+				watch: false,
+				job: {
+					groups: [{
+						manifestSelectors: ['testkit'],
+						suiteSelectors: ['__wait_next__'],
+						subtestSelectors: {},
+					}],
+				},
+			}))
+			await done
+			ws.close()
+			const accepted = events.find(message => message.type === 'accepted')
+			assertEquals(accepted?.runCount, 1)
+			const initial = events.find(message => message.type === 'schedule-update' && message.reason === 'initial')
+			assertEquals(initial?.lastCompletionMs > 50_000, true, `lastCompletionMs=${initial?.lastCompletionMs}`)
 		}
 		finally {
 			handle.kernel.running.clear()
