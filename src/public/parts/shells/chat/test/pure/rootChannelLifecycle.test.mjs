@@ -23,7 +23,7 @@ Deno.test('genesis sequence: root channel owns default channel, settings record 
 	let state = emptyMaterializedState()
 	state = channelReducers.channel_create(state, {
 		timestamp: 1,
-		content: { channelId: ROOT_CHANNEL_ID, type: 'category', name: '', links: ['default'], permBlockId: null },
+		content: { channelId: ROOT_CHANNEL_ID, type: 'category', name: '', links: ['default'], permissionBlockId: null },
 	})
 	state = channelReducers.channel_create(state, {
 		timestamp: 2,
@@ -33,7 +33,7 @@ Deno.test('genesis sequence: root channel owns default channel, settings record 
 			name: 'general',
 			links: [],
 			parentChannelId: ROOT_CHANNEL_ID,
-			permBlockId: ROOT_CHANNEL_ID,
+			permissionBlockId: ROOT_CHANNEL_ID,
 		},
 	})
 	state = governanceReducers.group_settings_update(state, {
@@ -42,16 +42,16 @@ Deno.test('genesis sequence: root channel owns default channel, settings record 
 
 	assertEquals(state.channels[ROOT_CHANNEL_ID]?.type, 'category')
 	assertEquals(state.channels[ROOT_CHANNEL_ID]?.links, ['default'])
-	assertEquals(state.channels['default']?.permBlockId, ROOT_CHANNEL_ID)
+	assertEquals(state.channels['default']?.permissionBlockId, ROOT_CHANNEL_ID)
 	assertEquals(state.groupSettings.rootChannelId, ROOT_CHANNEL_ID)
 	assertEquals(state.groupSettings.defaultChannelId, 'default')
 })
 
-Deno.test('new root-level channel appends to root links; explicit permBlockId keeps root permission block', () => {
+Deno.test('new root-level channel appends to root links; explicit permissionBlockId keeps root permission block', () => {
 	let state = emptyMaterializedState()
 	state = channelReducers.channel_create(state, {
 		timestamp: 1,
-		content: { channelId: ROOT_CHANNEL_ID, type: 'category', name: '', links: ['default'], permBlockId: null },
+		content: { channelId: ROOT_CHANNEL_ID, type: 'category', name: '', links: ['default'], permissionBlockId: null },
 	})
 	state = channelReducers.channel_create(state, {
 		timestamp: 2,
@@ -61,18 +61,18 @@ Deno.test('new root-level channel appends to root links; explicit permBlockId ke
 			name: '媒体',
 			links: [],
 			parentChannelId: ROOT_CHANNEL_ID,
-			permBlockId: ROOT_CHANNEL_ID,
+			permissionBlockId: ROOT_CHANNEL_ID,
 		},
 	})
 	assertEquals(state.channels[ROOT_CHANNEL_ID]?.links, ['default', 'catA'])
-	assertEquals(state.channels['catA']?.permBlockId, ROOT_CHANNEL_ID)
+	assertEquals(state.channels['catA']?.permissionBlockId, ROOT_CHANNEL_ID)
 })
 
 Deno.test('channel_delete of root is not applied by reducer (guard against wiping whole tree)', () => {
 	let state = emptyMaterializedState()
 	state = channelReducers.channel_create(state, {
 		timestamp: 1,
-		content: { channelId: ROOT_CHANNEL_ID, type: 'category', name: '', links: ['default'], permBlockId: null },
+		content: { channelId: ROOT_CHANNEL_ID, type: 'category', name: '', links: ['default'], permissionBlockId: null },
 	})
 	state = channelReducers.channel_create(state, {
 		timestamp: 2,
@@ -82,7 +82,7 @@ Deno.test('channel_delete of root is not applied by reducer (guard against wipin
 			name: 'general',
 			links: [],
 			parentChannelId: ROOT_CHANNEL_ID,
-			permBlockId: ROOT_CHANNEL_ID,
+			permissionBlockId: ROOT_CHANNEL_ID,
 		},
 	})
 	state = governanceReducers.group_settings_update(state, {

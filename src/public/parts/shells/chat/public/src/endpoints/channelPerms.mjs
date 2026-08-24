@@ -31,3 +31,28 @@ export async function putChannelPermissions(groupId, channelId, roleId, allow, d
 		json: { roleId, allow, deny },
 	})
 }
+
+/**
+ * 拉取群级治理权限的角色覆盖。
+ * @param {string} groupId 群 ID
+ * @returns {Promise<Record<string, { allow?: Record<string, boolean>, deny?: Record<string, boolean> }>>} 各角色群权限
+ */
+export async function getGroupPermissions(groupId) {
+	const data = await groupFetch(groupPath(groupId, 'group-permissions'), { method: 'GET' })
+	return data.permissions || {}
+}
+
+/**
+ * 更新单个角色的群级治理权限覆盖。
+ * @param {string} groupId 群 ID
+ * @param {string} roleId 角色 ID
+ * @param {Record<string, boolean>} allow 允许位图
+ * @param {Record<string, boolean>} deny 拒绝位图
+ * @returns {Promise<void>}
+ */
+export async function putGroupPermissions(groupId, roleId, allow, deny) {
+	await groupFetch(groupPath(groupId, 'group-permissions'), {
+		method: 'PUT',
+		json: { roleId, allow, deny },
+	})
+}

@@ -14,14 +14,14 @@ import { verifyOwnerSuccessionThreshold } from 'npm:@steve02081504/fount-p2p/gov
 import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { applyVolatileSlashAlert, buildUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
-import { calculateMemberPermissions, hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { calculateMemberPermissions, GROUP_SCOPE_ID, hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { appendKeyRotateEvent } from '../../chat/dag/channelOperations.mjs'
-import { adminPubKeyHashes, effectiveChannelPermissions } from '../../chat/dag/groupMaterializedState.mjs'
+import { adminPubKeyHashes, effectiveChannelPermissions, effectiveGroupPermissions } from '../../chat/dag/groupMaterializedState.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { publishVolatileToFederation } from '../../chat/federation/index.mjs'
@@ -88,8 +88,9 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (!state.channels[channelId])
 			throw httpError(404, 'Channel not found')
 
-		const flat = calculateMemberPermissions(member, state.roles, channelId, effectiveChannelPermissions(state, channelId))
-		res.status(200).json(flat)
+		const channelFlat = calculateMemberPermissions(member, state.roles, channelId, effectiveChannelPermissions(state, channelId))
+		const groupFlat = calculateMemberPermissions(member, state.roles, GROUP_SCOPE_ID, effectiveGroupPermissions(state))
+		res.status(200).json({ ...groupFlat, ...channelFlat })
 	})
 
 	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), async (req, res) => {
@@ -166,7 +167,30 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({ permissionBlockId: target })
 	})
 
+	router.get(`${GROUPS_PREFIX}/:groupId/group-permissions`, authenticate, requireGroupMember(), async (req, res) => {
+		const { groupContext: { state, member } } = req
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
+			throw httpError(403, 'No permission to view group permissions')
+		res.status(200).json({ permissions: state.groupPermissions || {} })
+	})
 
+	router.put(`${GROUPS_PREFIX}/:groupId/group-permissions`, authenticate, requireGroupMember(), async (req, res) => {
+		const { params: { groupId }, body: { roleId, allow, deny } } = req
+		if (!roleId)
+			throw httpError(400, 'roleId is required')
+		const { username, state, member } = req.groupContext
+		if (!state.roles[roleId])
+			throw httpError(404, 'Role not found')
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
+			throw httpError(403, 'No permission to manage group permissions')
+
+		await appendSignedLocalEvent(username, groupId, {
+			type: 'group_permissions_update',
+			timestamp: Date.now(),
+			content: { roleId, allow, deny },
+		})
+		res.status(200).json({})
+	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/roles`, authenticate, requireGroupMember(), async (req, res) => {
 		const {

@@ -5,23 +5,23 @@ import { effectiveChannelPermissions, emptyMaterializedState, memberChannelPermi
 import { channelReducers } from '../../src/chat/dag/reducers/channels.mjs'
 import { calculateMemberPermissions, createDefaultRoles, PERMISSIONS } from '../../src/permissions/chat.mjs'
 
-Deno.test('channel_create stores links/permBlockId; delete removes links subtree', () => {
+Deno.test('channel_create stores links/permissionBlockId; delete removes links subtree', () => {
 	let state = emptyMaterializedState()
 
 	state = channelReducers.channel_create(state, {
 		timestamp: 1,
-		content: { channelId: 'cat-1', type: 'category', name: '媒体', links: [], permBlockId: null },
+		content: { channelId: 'cat-1', type: 'category', name: '媒体', links: [], permissionBlockId: null },
 	})
 	if (state.channels['cat-1']?.type !== 'category') throw new Error('category channel not stored')
 	if (!Array.isArray(state.channels['cat-1']?.links)) throw new Error('links should default to array')
 
 	state = channelReducers.channel_create(state, {
 		timestamp: 2,
-		content: { channelId: 'ch-1', type: 'text', name: 'general', permBlockId: 'cat-1' },
+		content: { channelId: 'ch-1', type: 'text', name: 'general', permissionBlockId: 'cat-1' },
 	})
 	state = channelReducers.channel_create(state, {
 		timestamp: 3,
-		content: { channelId: 'ch-1b', type: 'text', name: 'sub', permBlockId: 'ch-1' },
+		content: { channelId: 'ch-1b', type: 'text', name: 'sub', permissionBlockId: 'ch-1' },
 	})
 
 	// 通过 channel_update 链接：cat-1 -> ch-1 -> ch-1b
@@ -45,21 +45,21 @@ Deno.test('channel_create with parentChannelId appends the child to the parent l
 	let state = emptyMaterializedState()
 	state = channelReducers.channel_create(state, {
 		timestamp: 1,
-		content: { channelId: 'cat-1', type: 'category', name: '媒体', links: [], permBlockId: null },
+		content: { channelId: 'cat-1', type: 'category', name: '媒体', links: [], permissionBlockId: null },
 	})
 	state = channelReducers.channel_create(state, {
 		timestamp: 2,
-		content: { channelId: 'ch-1', type: 'text', name: 'general', permBlockId: 'cat-1', parentChannelId: 'cat-1' },
+		content: { channelId: 'ch-1', type: 'text', name: 'general', permissionBlockId: 'cat-1', parentChannelId: 'cat-1' },
 	})
 	assertEquals(state.channels['cat-1'].links, ['ch-1'], 'parent channel should gain the created child in its links')
 })
 
-Deno.test('permBlockId strong reference: child follows parent block, detach copies on update', () => {
+Deno.test('permissionBlockId strong reference: child follows parent block, detach copies on update', () => {
 	let state = emptyMaterializedState()
 
 	state = channelReducers.channel_create(state, {
 		timestamp: 1,
-		content: { channelId: 'root', type: 'text', name: 'root', permBlockId: null },
+		content: { channelId: 'root', type: 'text', name: 'root', permissionBlockId: null },
 	})
 	state = channelReducers.channel_permissions_update(state, {
 		content: { channelId: 'root', roleId: '@everyone', allow: { SEND_MESSAGES: true }, deny: {} },
@@ -68,7 +68,7 @@ Deno.test('permBlockId strong reference: child follows parent block, detach copi
 	// 子频道强引用父块：resolvePermissionBlockOwner 应解析到 root
 	state = channelReducers.channel_create(state, {
 		timestamp: 2,
-		content: { channelId: 'child', type: 'text', name: 'child', permBlockId: 'root' },
+		content: { channelId: 'child', type: 'text', name: 'child', permissionBlockId: 'root' },
 	})
 	if (resolvePermissionBlockOwner(state, 'child') !== 'root') throw new Error('child should resolve to parent block owner')
 
@@ -80,11 +80,11 @@ Deno.test('permBlockId strong reference: child follows parent block, detach copi
 	})
 	if (!effectiveChannelPermissions(state, 'child')['child']['@everyone']?.allow.STREAM) throw new Error('child should follow parent block update')
 
-	// 脱钩（permBlockId -> null）→ 复制当前有效块进自有覆写
+	// 脱钩（permissionBlockId -> null）→ 复制当前有效块进自有覆写
 	state = channelReducers.channel_update(state, {
-		content: { channelId: 'child', updates: { permBlockId: null } },
+		content: { channelId: 'child', updates: { permissionBlockId: null } },
 	})
-	if (state.channels['child'].permBlockId !== null) throw new Error('child should be detached')
+	if (state.channels['child'].permissionBlockId !== null) throw new Error('child should be detached')
 	if (resolvePermissionBlockOwner(state, 'child') !== 'child') throw new Error('child should own its block after detach')
 	const copied = state.channelPermissions['child']
 	if (!copied['@everyone']?.allow.SEND_MESSAGES) throw new Error('detach should copy parent block')
@@ -111,7 +111,7 @@ Deno.test('permBlock resolution through the real permission evaluator', () => {
 
 	state = channelReducers.channel_create(state, {
 		timestamp: 1,
-		content: { channelId: 'root', type: 'text', name: 'root', permBlockId: null },
+		content: { channelId: 'root', type: 'text', name: 'root', permissionBlockId: null },
 	})
 	// @everyone deny SEND_MESSAGES on root
 	state = channelReducers.channel_permissions_update(state, {
@@ -119,14 +119,14 @@ Deno.test('permBlock resolution through the real permission evaluator', () => {
 	})
 	state = channelReducers.channel_create(state, {
 		timestamp: 2,
-		content: { channelId: 'ch-read', type: 'text', name: 'read', permBlockId: 'root' },
+		content: { channelId: 'ch-read', type: 'text', name: 'read', permissionBlockId: 'root' },
 	})
 
 	assertEquals(memberChannelPermissions(state, sender, 'ch-read')[PERMISSIONS.SEND_MESSAGES], false, 'parent deny should be inherited via strong ref')
 
 	// 频道自身 override 覆盖父块 deny（先脱钩复制再覆写）
 	state = channelReducers.channel_update(state, {
-		content: { channelId: 'ch-read', updates: { permBlockId: null } },
+		content: { channelId: 'ch-read', updates: { permissionBlockId: null } },
 	})
 	state = channelReducers.channel_permissions_update(state, {
 		content: { channelId: 'ch-read', roleId: '@everyone', allow: { SEND_MESSAGES: true }, deny: {} },
@@ -138,17 +138,17 @@ Deno.test('permBlock resolution through the real permission evaluator', () => {
 	assertEquals(calculateMemberPermissions(state.members[sender], state.roles, 'ch-read', effectiveChannelPermissions(state, 'ch-read'))[PERMISSIONS.SEND_MESSAGES], true, 'direct eval should match')
 })
 
-Deno.test('channel_delete resets permBlockId of channels referencing deleted block', () => {
+Deno.test('channel_delete resets permissionBlockId of channels referencing deleted block', () => {
 	let state = emptyMaterializedState()
 	state = channelReducers.channel_create(state, {
 		timestamp: 1,
-		content: { channelId: 'root', type: 'text', name: 'root', permBlockId: null },
+		content: { channelId: 'root', type: 'text', name: 'root', permissionBlockId: null },
 	})
 	state = channelReducers.channel_create(state, {
 		timestamp: 2,
-		content: { channelId: 'child', type: 'text', name: 'child', permBlockId: 'root' },
+		content: { channelId: 'child', type: 'text', name: 'child', permissionBlockId: 'root' },
 	})
 	state = channelReducers.channel_delete(state, { content: { channelId: 'root' } })
 	if (state.channels['root']) throw new Error('root should be deleted')
-	if (state.channels['child'].permBlockId !== null) throw new Error('referencing channel permBlockId should reset to null')
+	if (state.channels['child'].permissionBlockId !== null) throw new Error('referencing channel permissionBlockId should reset to null')
 })

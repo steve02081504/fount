@@ -61,6 +61,7 @@ export function buildCheckpointPayload({
 		members: JSON.parse(JSON.stringify(materialized.members || {})),
 		roles: JSON.parse(JSON.stringify(materialized.roles || {})),
 		channelPermissions: JSON.parse(JSON.stringify(materialized.channelPermissions || {})),
+		groupPermissions: JSON.parse(JSON.stringify(materialized.groupPermissions || {})),
 		channelKeyGeneration: JSON.parse(JSON.stringify(materialized.channelKeyGeneration || {})),
 		channelKeyWraps: Object.fromEntries(
 			Object.entries(materialized.channelKeyWraps || {}).map(([channelId, row]) => [
@@ -103,6 +104,7 @@ export function buildCheckpointPayload({
 			members: members_record.members,
 			roles: members_record.roles,
 			channelPermissions: members_record.channelPermissions,
+			groupPermissions: members_record.groupPermissions,
 			bannedMembers: members_record.bannedMembers,
 			bannedEntities: members_record.bannedEntities,
 			bannedNodes: members_record.bannedNodes,

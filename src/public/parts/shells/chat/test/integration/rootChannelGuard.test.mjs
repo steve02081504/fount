@@ -31,7 +31,7 @@ Deno.test('newGroup without defaultChannelId creates root + default text channel
 	const def = state.channels['default']
 	assert(def, 'default text channel must exist')
 	assertEquals(def.type, 'text')
-	assertEquals(def.permBlockId, ROOT_CHANNEL_ID)
+	assertEquals(def.permissionBlockId, ROOT_CHANNEL_ID)
 
 	assertEquals(state.groupSettings.rootChannelId, ROOT_CHANNEL_ID)
 	assertEquals(state.groupSettings.defaultChannelId, 'default')
