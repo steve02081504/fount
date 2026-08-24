@@ -11,7 +11,7 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 Deno.test('newGroup without defaultChannelId creates root + default text channel', async () => {
 	const username = `root-genesis-${crypto.randomUUID().slice(0, 8)}`
-	await createIntegrationBoot({ username, minP2pNode: true }).ensureServer()
+	await createIntegrationBoot({ username, minP2pNode: true, p2p: false }).ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
@@ -37,7 +37,7 @@ Deno.test('newGroup without defaultChannelId creates root + default text channel
 
 Deno.test('DM default channel is unnamed (empty name)', async () => {
 	const username = `root-dm-${crypto.randomUUID().slice(0, 8)}`
-	await createIntegrationBoot({ username, minP2pNode: true }).ensureServer()
+	await createIntegrationBoot({ username, minP2pNode: true, p2p: false }).ensureServer()
 
 	const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 	const { randomKeyPair } = await import('npm:@steve02081504/fount-p2p/crypto')
@@ -55,7 +55,7 @@ Deno.test('DM default channel is unnamed (empty name)', async () => {
 
 Deno.test('postChannelMessage to root channel is rejected even for admin', async () => {
 	const username = `root-post-${crypto.randomUUID().slice(0, 8)}`
-	await createIntegrationBoot({ username, minP2pNode: true }).ensureServer()
+	await createIntegrationBoot({ username, minP2pNode: true, p2p: false }).ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')

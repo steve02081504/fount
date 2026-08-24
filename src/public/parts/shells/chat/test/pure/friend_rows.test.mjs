@@ -46,5 +46,5 @@ Deno.test('buildFriendRows sorts by lastMessageTime desc then displayName', () =
 		{ groupId: 'g-tie', name: 'AAA', friendBinding: { entityHash: 'd'.repeat(128) }, lastMessageTime: '2026-08-02T00:00:00Z' },
 	])
 	// 时间倒序；同一时间（08-01）的两行按 displayName 升序（Alpha 在 Bravo 前）。
-	assertEquals(rows.map(r => r.groupId), ['g-new', 'g-tie', 'g-old-a', 'g-old-b'])
+	assertEquals(rows.map(row => row.groupId), ['g-new', 'g-tie', 'g-old-a', 'g-old-b'])
 })

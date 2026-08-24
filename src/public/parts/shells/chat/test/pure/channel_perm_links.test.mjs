@@ -181,6 +181,39 @@ Deno.test('channel_delete keeps a shared child that still has an external parent
 	if (!state.channels['parentB']?.links?.includes('shared')) throw new Error('parentB should keep its shared link')
 })
 
+Deno.test('channel_delete removes a shared child once all its parents are deleted (traversal-order independent)', () => {
+	let state = emptyMaterializedState()
+	state.groupSettings.rootChannelId = 'root'
+	state = channelReducers.channel_create(state, {
+		timestamp: 1,
+		content: { channelId: 'root', type: 'category', name: '', links: ['cat'], permissionBlockId: null },
+	})
+	state = channelReducers.channel_create(state, {
+		timestamp: 2,
+		content: { channelId: 'cat', type: 'category', name: 'C', links: ['parentB', 'shared'], permissionBlockId: null },
+	})
+	state = channelReducers.channel_create(state, {
+		timestamp: 3,
+		content: { channelId: 'parentA', type: 'category', name: 'A', links: ['shared'], permissionBlockId: null },
+	})
+	state = channelReducers.channel_create(state, {
+		timestamp: 4,
+		content: { channelId: 'parentB', type: 'category', name: 'B', links: ['shared'], permissionBlockId: null },
+	})
+	state = channelReducers.channel_create(state, {
+		timestamp: 5,
+		content: { channelId: 'shared', type: 'text', name: 'shared', permissionBlockId: null },
+	})
+	// 让 shared 的父（parentA/parentB）都经 cat 级联进入删除闭包；parentA 在 shared 之后才被收集，
+	// 若不先建完整闭包，shared 会被误判为仍被闭包外父链接而存活。
+	state.channels.cat.links = ['parentA', 'parentB']
+	state = channelReducers.channel_delete(state, { content: { channelId: 'cat' } })
+	if (state.channels['cat']) throw new Error('cat should be deleted')
+	if (state.channels['parentA']) throw new Error('parentA should be deleted')
+	if (state.channels['parentB']) throw new Error('parentB should be deleted')
+	if (state.channels['shared']) throw new Error('shared child should be deleted once all its parents are deleted')
+})
+
 Deno.test('channel_delete never cascade-deletes the root channel even via a back link', () => {
 	let state = emptyMaterializedState()
 	state.groupSettings.rootChannelId = 'root'

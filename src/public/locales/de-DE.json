@@ -1707,7 +1707,7 @@
 						"rotateOk": "Schlüssel wurde gedreht"
 					},
 					"groupPerms": {
-						"denied": "Du hast keine Berechtigung, Gruppenberechtigungen zu verwalten",
+						"denied": "Sie haben keine Berechtigung, Gruppenberechtigungen zu verwalten",
 						"hint": "Legen Sie Überschreibungen pro Rolle für Governance-Berechtigungen auf Gruppenebene fest (kicken, sperren, Rollen verwalten, Administratoren verwalten, Mitglieder einladen).",
 						"overridden": "Überschrieben",
 						"clearOverride": "Überschreibung aufheben",

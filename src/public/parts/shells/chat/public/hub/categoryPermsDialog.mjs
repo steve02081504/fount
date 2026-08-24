@@ -26,7 +26,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 	let grantablePerms = []
 	try {
 		const data = await getChannelPermissionBlock(groupId, categoryId)
-		permissions = data.permissions || {}
+		permissions = data.permissions
 		permissionBlockId = data.permissionBlockId || null
 		state = store.context.currentState
 		const grantorPerms = await fetchViewerChannelPermissions(state, groupId)
@@ -44,7 +44,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 	 */
 	const renderRolePanels = async body => {
 		const data = await getChannelPermissionBlock(groupId, categoryId)
-		permissions = data.permissions || {}
+		permissions = data.permissions
 		permissionBlockId = data.permissionBlockId || null
 		const rolePanels = sortedRoleIds(state?.roles).map(roleId => {
 			const role = state.roles[roleId] || { name: roleId, color: '#888' }

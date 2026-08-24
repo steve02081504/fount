@@ -86,7 +86,7 @@ export async function showCreateChannelModal(options = {}) {
 		 * @param {HTMLDialogElement} dialog 对话框
 		 * @returns {void}
 		 */
-		onReady: dialog => {
+		onReady: async dialog => {
 			/** @returns {void} */
 			const close = () => dialog.close()
 			dialog.querySelector('#new-channel-cancel')?.addEventListener('click', close)
@@ -95,10 +95,14 @@ export async function showCreateChannelModal(options = {}) {
 			if (parentSelect instanceof HTMLSelectElement && wrap instanceof HTMLElement) {
 				const categoryChannels = Object.values(store.context.currentState?.channels || {})
 					.filter(ch => ch?.type === 'category')
-				parentSelect.innerHTML = `<option value="" data-i18n="chat.hub.channel.noParent"></option>${renderTemplate('channel_category_options', {
+				const noParent = document.createElement('option')
+				noParent.value = ''
+				noParent.dataset.i18n = 'chat.hub.channel.noParent'
+				parentSelect.replaceChildren(noParent)
+				parentSelect.appendChild(await renderTemplate('channel_category_options', {
 					categories: categoryChannels.map(ch => ({ id: ch.id, name: ch.name || ch.id })),
 					selectedCategory: options.parentChannelId || '',
-				})}`
+				}))
 				if (categoryChannels.length) wrap.classList.remove('hidden')
 			}
 			dialog.querySelector('#new-channel-create')?.addEventListener('click', async () => {

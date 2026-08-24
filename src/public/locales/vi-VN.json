@@ -2480,7 +2480,7 @@
 					"title": "Quyền của danh mục",
 					"updateFailed": "Không cập nhật được quyền danh mục: ${error}",
 					"updated": "Quyền danh mục đã được cập nhật",
-					"syncedWarning": "Quyền của danh mục này được đồng bộ từ kênh mẹ; các thay đổi riêng lẻ sẽ tách chúng trước.",
+					"syncedWarning": "Quyền của danh mục này được đồng bộ từ kênh gốc; các thay đổi riêng lẻ sẽ tách chúng trước.",
 					"syncToDefault": "Đồng bộ hóa với quyền của kênh gốc",
 					"synced": "Đã đồng bộ hóa với quyền của kênh gốc"
 				}

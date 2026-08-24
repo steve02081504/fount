@@ -82,6 +82,7 @@ export const channelReducers = {
 		// 根容器承载整棵频道树，删除它会级联清空全部频道；防御性拒绝。
 		if (state.groupSettings?.rootChannelId === channelId) return state
 		const rootChannelId = state.groupSettings?.rootChannelId
+		// 先构建完整删除闭包：忽略外部父链接，仅跳过根容器。
 		const toDelete = new Set([channelId])
 		const stack = [channelId]
 		while (stack.length) {
@@ -91,10 +92,21 @@ export const channelReducers = {
 			for (const childId of channel.links || []) {
 				if (childId === rootChannelId) continue
 				if (toDelete.has(childId)) continue
-				// 共享子频道：若仍被删除集外的频道链接，则不级联删除。
-				if (hasExternalParent(state, childId, toDelete)) continue
 				toDelete.add(childId)
 				stack.push(childId)
+			}
+		}
+		// 闭包完整后，把仍被闭包外频道链接的「共享幸存者」及其后代移出删除集，
+		// 避免遍历顺序决定删除结果（共享子频道的所有父都在闭包内时应被删除）。
+		const externalParents = [...toDelete].filter(id =>
+			id !== channelId && hasExternalParent(state, id, toDelete))
+		for (const survivor of externalParents) {
+			const removal = [survivor]
+			while (removal.length) {
+				const id = removal.pop()
+				if (!toDelete.delete(id)) continue
+				for (const childId of state.channels[id]?.links || [])
+					if (toDelete.has(childId)) removal.push(childId)
 			}
 		}
 		// 先给引用被删权限块的频道复制其有效块：在 channelPermissions 删除前保留既有覆写。

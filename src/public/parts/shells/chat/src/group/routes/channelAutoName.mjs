@@ -142,10 +142,12 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 	if (category) {
 		categoryId = categoryIdByName.get(category)
 		if (!categoryId) {
+			const rootChannelId = state.groupSettings?.rootChannelId || null
 			const created = await createChannel(username, groupId, {
 				type: 'category',
 				name: category,
 				channelId: prefixedRandomId('channel_'),
+				parentChannelId: rootChannelId,
 			})
 			categoryId = created.content?.channelId || null
 		}

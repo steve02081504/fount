@@ -104,7 +104,7 @@ export async function updateChannel(username, groupId, channelId, patch = {}) {
 	return appendSignedLocalEvent(username, groupId, {
 		type: 'channel_update',
 		timestamp: Date.now(),
-		content: { ...patch, channelId },
+		content: { channelId, updates: patch },
 	})
 }
 

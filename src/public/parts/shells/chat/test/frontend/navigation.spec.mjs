@@ -60,9 +60,9 @@ test.describe('Chat hub navigation', () => {
 		})
 
 		// 清理其它普通群，构造「唯一普通群 + 一个 DM 群」场景（worker 串行，安全）。
-		for (const g of await listChatGroups(baseUrl, apiKey)) {
-			if (g.groupId === normalGroupId || g.groupId === dmGroupId || g.friendBinding) continue
-			await deleteChatGroup(baseUrl, apiKey, g.groupId)
+		for (const group of await listChatGroups(baseUrl, apiKey)) {
+			if (group.groupId === normalGroupId || group.groupId === dmGroupId || group.friendBinding) continue
+			await deleteChatGroup(baseUrl, apiKey, group.groupId)
 		}
 
 		await openGroupChannel(page, baseUrl, normalGroupId, channelId)

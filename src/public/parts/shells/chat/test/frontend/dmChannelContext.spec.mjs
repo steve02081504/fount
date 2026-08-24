@@ -43,7 +43,7 @@ async function createDmWithGreeting(baseUrl, apiKey) {
 }
 
 test.describe('DM channel list context menu', () => {
-	test.describe.configure({ timeout: 300_000 })
+	test.describe.configure({ timeout: ms('3m') })
 
 	test('DM list right-click opens menu and quick-creates a channel without a dialog', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:chat/hub/?char=on_message_yes`, {

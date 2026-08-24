@@ -7,6 +7,9 @@ import { mountTemplate } from '../templates.mjs'
 import { fillRolePermsIfEmpty, safeRoleColor, sortedRoleIds } from './channelPermsUi.mjs'
 import { grantableGroupOverridePermissions } from './constants.mjs'
 
+/** 群权限写队列：串行化整个面板的覆写写入，避免并发读写覆盖彼此。 */
+let groupPermsWriteQueue = Promise.resolve()
+
 /**
  * 渲染群级治理权限面板：按角色列出可配置权限覆写（denied 无权限时显示拒绝模板）。
  * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
@@ -26,12 +29,13 @@ export async function renderGroupPermissionsPanel(context) {
 	context.groupPermsController = new AbortController()
 	const { signal } = context.groupPermsController
 
-	let permissions = {}
+	let permissions
 	try {
 		permissions = await getGroupPermissions(context.groupId)
 	}
 	catch (error) {
 		handleError('chat.group.settings.page.groupPerms.updateFailed')(error)
+		return
 	}
 
 	const grantorPerms = await fetchViewerChannelPermissions(context.state, context.groupId)
@@ -66,17 +70,19 @@ export async function renderGroupPermissionsPanel(context) {
 		void fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
 	}, { signal, capture: true })
 
-	container.addEventListener('click', async event => {
+	container.addEventListener('click', event => {
 		const clearButton = event.target.closest('[data-action="clear-group-override"]')
 		if (clearButton?.dataset.roleId) {
-			try {
-				await putGroupPermissions(context.groupId, clearButton.dataset.roleId, {}, {})
-				showToastI18n('success', 'chat.group.settings.page.groupPerms.updated')
-				await renderGroupPermissionsPanel(context)
-			}
-			catch (error) {
-				handleError('chat.group.settings.page.groupPerms.updateFailed')(error)
-			}
+			const roleId = clearButton.dataset.roleId
+			groupPermsWriteQueue = groupPermsWriteQueue
+				.then(async () => {
+					await putGroupPermissions(context.groupId, roleId, {}, {})
+					showToastI18n('success', 'chat.group.settings.page.groupPerms.updated')
+					await renderGroupPermissionsPanel(context)
+				})
+				.catch(error => {
+					handleError('chat.group.settings.page.groupPerms.updateFailed')(error)
+				})
 			return
 		}
 		const stateButton = event.target.closest('[data-action="channel-perm-state"]')
@@ -88,21 +94,22 @@ export async function renderGroupPermissionsPanel(context) {
 		const nextState = stateButton.getAttribute('data-state')
 		if (!roleId || !perm || !nextState) return
 		if (!grantablePerms.includes(perm)) return
-		try {
-			const current = await getGroupPermissions(context.groupId)
-			const allow = { ...current[roleId]?.allow }
-			const deny = { ...current[roleId]?.deny }
-			delete allow[perm]
-			delete deny[perm]
-			if (nextState === 'allow') allow[perm] = true
-			else if (nextState === 'deny') deny[perm] = true
-			await putGroupPermissions(context.groupId, roleId, allow, deny)
-			showToastI18n('success', 'chat.group.settings.page.groupPerms.updated')
-			await renderGroupPermissionsPanel(context)
-		}
-		catch (error) {
-			handleError('chat.group.settings.page.groupPerms.updateFailed')(error)
-		}
+		groupPermsWriteQueue = groupPermsWriteQueue
+			.then(async () => {
+				const current = await getGroupPermissions(context.groupId)
+				const allow = { ...current[roleId]?.allow }
+				const deny = { ...current[roleId]?.deny }
+				delete allow[perm]
+				delete deny[perm]
+				if (nextState === 'allow') allow[perm] = true
+				else if (nextState === 'deny') deny[perm] = true
+				await putGroupPermissions(context.groupId, roleId, allow, deny)
+				showToastI18n('success', 'chat.group.settings.page.groupPerms.updated')
+				await renderGroupPermissionsPanel(context)
+			})
+			.catch(error => {
+				handleError('chat.group.settings.page.groupPerms.updateFailed')(error)
+			})
 	}, { signal })
 }
 

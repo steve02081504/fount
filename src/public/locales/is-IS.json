@@ -1713,7 +1713,7 @@
 						"clearOverride": "Endurstilla allt í erfa",
 						"noRoles": "Engin hlutverk til að stilla eins og er",
 						"updateFailed": "Mistókst að uppfæra hópheimildir",
-						"updated": "Hópheimildum hefur verið uppfært"
+						"updated": "Hópheimildir hafa verið uppfærðar"
 					}
 				},
 				"pinContext": "Efsta hverfi (±N nágrannar)",
@@ -2480,7 +2480,7 @@
 					"title": "Flokksheimildir",
 					"updateFailed": "Mistókst að uppfæra flokksheimildir: ${error}",
 					"updated": "Flokksheimildir hafa verið uppfærðar",
-					"syncedWarning": "Heimildir þessarar rásar eru samstilltar við rótarrásina; einstakar breytingar aftengja þær fyrst.",
+					"syncedWarning": "Heimildir þessa flokks eru samstilltar við rótarrásina; einstakar breytingar aftengja þær fyrst.",
 					"syncToDefault": "Samstilltu við rótarrásarheimildir",
 					"synced": "Samstillt við rótarrásarheimildir"
 				}
