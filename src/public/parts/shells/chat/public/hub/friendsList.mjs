@@ -15,6 +15,7 @@ import { escapeRegExp } from '/scripts/lib/regex.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
 import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
+import { buildFriendRows } from '../shared/friendRows.mjs'
 import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { searchEntities } from '../src/endpoints/entities.mjs'
@@ -26,25 +27,16 @@ import { promptText } from '/scripts/features/promptDialog.mjs'
 import { getCharDetails } from './charCard.mjs'
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
-import { groupDisplayName } from './core/domUtils.mjs'
 import { store } from './core/state.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
-import { resolveFriendBinding } from './friendBindings.mjs'
 import { dispatchFriendChat, enterFriendChat, onEnterFriendChat } from './friendChat.mjs'
 import { fetchAuthorProfile } from './presence.mjs'
 import { restartPrivateGroup } from './privateGroup.mjs'
 import { loadGroups } from './serverBar.mjs'
-import { selectGroup } from './sidebar/index.mjs'
 
 /**
  * 好友侧栏行。
- * @typedef {object} FriendRow
- * @property {string} groupId 私聊群 ID
- * @property {string} key 对端 entityHash 或去重键
- * @property {string} displayName 侧栏展示名
- * @property {string} [charname] 本地角色 part 名（用户 DM 时省略）
- * @property {import('../shared/friendBinding.mjs').FriendBinding} binding 好友绑定
- * @property {object} session 侧栏会话摘要（最后消息等）
+ * @typedef {import('../shared/friendRows.mjs').FriendRow} FriendRow
  */
 
 /**
@@ -109,66 +101,8 @@ function bindFriendProfileHover(el, target) {
  */
 export async function loadFriendsList() {
 	await loadGroups()
-	/** @type {Map<string, FriendRow>} */
-	const byEntityHash = new Map()
-	for (const group of store.sidebar.groups) {
-		const binding = resolveFriendBinding(group)
-		if (!binding) continue
-		const row = {
-			groupId: group.groupId,
-			key: binding.entityHash,
-			displayName: binding.displayName || binding.charname || group.name || group.groupId,
-			charname: binding.charname,
-			binding,
-			session: {
-				groupId: group.groupId,
-				lastMessageContent: '',
-				lastMessageTime: group.lastMessageTime,
-			},
-		}
-		const prev = byEntityHash.get(binding.entityHash)
-		if (!prev) {
-			byEntityHash.set(binding.entityHash, row)
-			continue
-		}
-		const prevTime = new Date(prev.session.lastMessageTime || 0).getTime()
-		const nextTime = new Date(row.session.lastMessageTime || 0).getTime()
-		if (nextTime >= prevTime)
-			byEntityHash.set(binding.entityHash, row)
-	}
-	const rows = [...byEntityHash.values()]
-	rows.sort((a, b) => {
-		const ta = new Date(a.session.lastMessageTime || 0).getTime()
-		const tb = new Date(b.session.lastMessageTime || 0).getTime()
-		if (ta !== tb) return tb - ta
-		return a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' })
-	})
-
-	// 多人聊天群放在好友（DM）会话下方，便于新开对话置顶、群聊靠底。
-	const groupRows = await Promise.all(store.sidebar.groups
-		.filter(group => !resolveFriendBinding(group))
-		.map(async group => {
-			return {
-				groupId: group.groupId,
-				key: group.groupId,
-				kind: 'group',
-				displayName: await groupDisplayName(group.groupId, group.name || group.groupId),
-				binding: null,
-				session: {
-					groupId: group.groupId,
-					lastMessageContent: '',
-					lastMessageTime: group.lastMessageTime,
-				},
-			}
-		}))
-	groupRows.sort((a, b) => {
-		const ta = new Date(a.session.lastMessageTime || 0).getTime()
-		const tb = new Date(b.session.lastMessageTime || 0).getTime()
-		if (ta !== tb) return tb - ta
-		return a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' })
-	})
-
-	return [...rows, ...groupRows]
+	// 好友列表只展示私聊（DM）会话；普通（多人）群归群侧栏，不混入好友列表。
+	return buildFriendRows(store.sidebar.groups)
 }
 
 /**
@@ -178,20 +112,6 @@ export async function loadFriendsList() {
  * @returns {Promise<object>} `chars_column` 单项模板数据
  */
 async function friendRowTemplateData(friend, details) {
-	if (friend.kind === 'group') {
-		const groupName = friend.displayName
-		return {
-			kind: 'group',
-			name: friend.groupId,
-			groupId: friend.groupId,
-			entityHash: '',
-			displayName: groupName,
-			subtitle: '',
-			activeClass: store.context.currentGroupId === friend.groupId ? ' active' : '',
-			...listAvatarTemplateFields(friend.groupId, groupName),
-		}
-	}
-
 	const rawDesc = friend.session.lastMessageContent || ''
 	const subtitle = rawDesc.length > 52 ? `${rawDesc.slice(0, 52)}…` : rawDesc
 	const active = store.privateGroup.groupId === friend.groupId
@@ -369,17 +289,6 @@ export async function renderFriendsColumn(friends) {
 		const { groupId } = el.dataset
 		const row = friends.find(f => f.groupId === groupId)
 		if (!row) return
-		if (row.kind === 'group') {
-			el.addEventListener('click', async () => {
-				try {
-					await selectGroup(row.groupId)
-				}
-				catch (error) {
-					handleError('chat.hub.load.groupFailed')(error)
-				}
-			})
-			return
-		}
 		el.addEventListener('click', () => void enterFriendChat({ groupId: row.groupId, binding: row.binding }))
 		el.addEventListener('contextmenu', (event) => showFriendContextMenu(event, row))
 		bindFriendProfileHover(el, {

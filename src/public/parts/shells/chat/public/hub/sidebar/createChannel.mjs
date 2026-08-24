@@ -8,7 +8,7 @@ import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { openDialogFromTemplate, renderTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store, setState } from '../core/state.mjs'
-import { findParentChannelId } from '../shared/channelReorder.mjs'
+import { findParentChannelId } from '../../shared/channelReorder.mjs'
 
 import { selectChannel } from './selectChannel.mjs'
 
