@@ -2452,8 +2452,12 @@
 					"renameOk": "Flokkur hefur verið endurnefndur",
 					"renamePrompt": "Nýtt flokksnafn"
 				},
-				"reorderAfter": null,
-				"reorderBefore": null,
+				"reorder": {
+					"after": "Færa «${source}» á eftir «${target}»?",
+					"before": "Færa «${source}» fyrir «${target}»?",
+					"into": "Færa «${source}» inn í «${target}»?",
+					"toRoot": "Færa «${source}» á rót?"
+				},
 				"name": "Nafn flokks",
 				"nameInput": {
 					"placeholder": "fjölmiðla"

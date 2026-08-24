@@ -2452,8 +2452,12 @@
 					"renameOk": "تمت إعادة تسمية الفئة",
 					"renamePrompt": "اسم الفئة الجديدة"
 				},
-				"reorderAfter": null,
-				"reorderBefore": null,
+				"reorder": {
+					"after": "نقل «${source}» بعد «${target}»؟",
+					"before": "نقل «${source}» قبل «${target}»؟",
+					"into": "نقل «${source}» إلى داخل «${target}»؟",
+					"toRoot": "نقل «${source}» إلى الجذر؟"
+				},
 				"name": "اسم الفئة",
 				"nameInput": {
 					"placeholder": "وسائط"

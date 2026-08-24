@@ -2452,8 +2452,12 @@
 					"renameOk": "Категория переименована",
 					"renamePrompt": "Новое название категории"
 				},
-				"reorderAfter": null,
-				"reorderBefore": null,
+				"reorder": {
+					"after": "Переместить «${source}» после «${target}»?",
+					"before": "Переместить «${source}» перед «${target}»?",
+					"into": "Переместить «${source}» в «${target}»?",
+					"toRoot": "Переместить «${source}» в корень?"
+				},
 				"name": "Название категории",
 				"nameInput": {
 					"placeholder": "медиа"

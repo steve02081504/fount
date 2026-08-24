@@ -41,13 +41,13 @@ export function markReorderExecuted() {
  */
 function reorderConfirmPayload(op, sourceName, channels) {
 	if (op.placement === DROP_PLACEMENT.ROOT)
-		return { i18nKey: 'chat.hub.category.reorderToRoot', params: { source: sourceName } }
+		return { i18nKey: 'chat.hub.category.reorder.toRoot', params: { source: sourceName } }
 	const targetName = channels?.[op.targetParentId]?.name || op.targetParentId
 	const i18nKey = op.placement === DROP_PLACEMENT.INTO
-		? 'chat.hub.category.reorderInto'
+		? 'chat.hub.category.reorder.into'
 		: op.placement === DROP_PLACEMENT.BEFORE
-			? 'chat.hub.category.reorderBefore'
-			: 'chat.hub.category.reorderAfter'
+			? 'chat.hub.category.reorder.before'
+			: 'chat.hub.category.reorder.after'
 	return { i18nKey, params: { source: sourceName, target: targetName } }
 }
 

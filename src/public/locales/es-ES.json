@@ -2452,8 +2452,12 @@
 					"renameOk": "La categoría ha sido renombrada",
 					"renamePrompt": "Nuevo nombre de categoría"
 				},
-				"reorderAfter": null,
-				"reorderBefore": null,
+				"reorder": {
+					"after": "¿Mover « ${source} » después de « ${target} »?",
+					"before": "¿Mover « ${source} » antes de « ${target} »?",
+					"into": "¿Mover « ${source} » dentro de « ${target} »?",
+					"toRoot": "¿Mover « ${source} » a la raíz?"
+				},
 				"name": "Nombre de categoría",
 				"nameInput": {
 					"placeholder": "medios de comunicación"

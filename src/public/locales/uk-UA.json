@@ -2452,7 +2452,12 @@
 					"renameOk": "Категорію перейменовано",
 					"renamePrompt": "Нова назва категорії"
 				},
-				"reorderAfter": null,
+				"reorder": {
+					"after": "Перемістити «${source}» після «${target}»?",
+					"before": "Перемістити «${source}» перед «${target}»?",
+					"into": "Перемістити «${source}» у «${target}»?",
+					"toRoot": "Перемістити «${source}» у корінь?"
+				},
 				"name": "Назва категорії",
 				"nameInput": {
 					"placeholder": "медіа"

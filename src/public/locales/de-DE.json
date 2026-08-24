@@ -2452,8 +2452,12 @@
 					"renameOk": "Kategorie wurde umbenannt",
 					"renamePrompt": "Neuer Kategoriename"
 				},
-				"reorderAfter": null,
-				"reorderBefore": null,
+				"reorder": {
+					"after": "« ${source} » nach « ${target} » verschieben?",
+					"before": "« ${source} » vor « ${target} » verschieben?",
+					"into": "« ${source} » in « ${target} » verschieben?",
+					"toRoot": "« ${source} » in die oberste Ebene verschieben?"
+				},
 				"name": "Kategoriename",
 				"nameInput": {
 					"placeholder": "Medien"

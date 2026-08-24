@@ -2452,8 +2452,12 @@
 					"renameOk": "श्रेणी का नाम बदल दिया गया है",
 					"renamePrompt": "नई श्रेणी का नाम"
 				},
-				"reorderAfter": null,
-				"reorderBefore": null,
+				"reorder": {
+					"after": "«${source}» को «${target}» के बाद ले जाएँ?",
+					"before": "«${source}» को «${target}» से पहले ले जाएँ?",
+					"into": "«${source}» को «${target}» के अंदर ले जाएँ?",
+					"toRoot": "«${source}» को रूट पर ले जाएँ?"
+				},
 				"name": "श्रेणी नाम",
 				"nameInput": {
 					"placeholder": "मीडिया"

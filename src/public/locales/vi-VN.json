@@ -2452,7 +2452,12 @@
 					"renameOk": "Danh mục đã được đổi tên",
 					"renamePrompt": "Tên danh mục mới"
 				},
-				"reorderAfter": null,
+				"reorder": {
+					"after": "Di chuyển «${source}» sau «${target}»?",
+					"before": "Di chuyển «${source}» trước «${target}»?",
+					"into": "Di chuyển «${source}» vào trong «${target}»?",
+					"toRoot": "Di chuyển «${source}» lên cấp gốc?"
+				},
 				"name": "Tên danh mục",
 				"nameInput": {
 					"placeholder": "phương tiện"

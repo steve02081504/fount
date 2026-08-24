@@ -2452,8 +2452,12 @@
 					"renameOk": "Catégorie renommée",
 					"renamePrompt": "Nouveau nom de catégorie"
 				},
-				"reorderAfter": null,
-				"reorderBefore": null,
+				"reorder": {
+					"after": "Déplacer « ${source} » après « ${target} » ?",
+					"before": "Déplacer « ${source} » avant « ${target} » ?",
+					"into": "Déplacer « ${source} » dans « ${target} » ?",
+					"toRoot": "Déplacer « ${source} » à la racine ?"
+				},
 				"name": "Nom de la catégorie",
 				"nameInput": {
 					"placeholder": "médias"

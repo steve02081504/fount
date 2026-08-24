@@ -2452,8 +2452,12 @@
 					"renameOk": "Category renamed",
 					"renamePrompt": "New category name"
 				},
-				"reorderAfter": null,
-				"reorderBefore": "Move \"${source}\" before \"${target}\"?",
+				"reorder": {
+					"after": "Move \"${source}\" after \"${target}\"?",
+					"before": "Move \"${source}\" before \"${target}\"?",
+					"into": "Move \"${source}\" into \"${target}\"?",
+					"toRoot": "Move \"${source}\" to root?"
+				},
 				"name": "Category name",
 				"nameInput": {
 					"placeholder": "media"

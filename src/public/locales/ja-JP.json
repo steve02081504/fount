@@ -2452,7 +2452,12 @@
 					"renameOk": "カテゴリ名を変更しました",
 					"renamePrompt": "新しいカテゴリ名"
 				},
-				"reorderAfter": null,
+				"reorder": {
+					"after": "「${source}」を「${target}」の後に移動しますか？",
+					"before": "「${source}」を「${target}」の前に移動しますか？",
+					"into": "「${source}」を「${target}」の中に移動しますか？",
+					"toRoot": "「${source}」をルートに移動しますか？"
+				},
 				"name": "カテゴリ名",
 				"nameInput": {
 					"placeholder": "メディア"

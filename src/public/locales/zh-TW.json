@@ -2451,7 +2451,12 @@
 					"renameOk": "分類已重新命名",
 					"renamePrompt": "新分類名"
 				},
-				"reorderAfter": null,
+				"reorder": {
+					"after": "將「${source}」移到「${target}」之後？",
+					"before": "將「${source}」移到「${target}」之前？",
+					"into": "將「${source}」移入「${target}」？",
+					"toRoot": "將「${source}」移到根層級？"
+				},
 				"name": "分類名稱",
 				"nameInput": {
 					"placeholder": "媒體"

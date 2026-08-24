@@ -2452,8 +2452,12 @@
 					"renameOk": "Categorie hernoemd",
 					"renamePrompt": "Nieuwe categorienaam"
 				},
-				"reorderAfter": null,
-				"reorderBefore": null,
+				"reorder": {
+					"after": "« ${source} » na « ${target} » verplaatsen?",
+					"before": "« ${source} » vóór « ${target} » verplaatsen?",
+					"into": "« ${source} » in « ${target} » verplaatsen?",
+					"toRoot": "« ${source} » naar het hoogste niveau verplaatsen?"
+				},
 				"name": "Categorienaam",
 				"nameInput": {
 					"placeholder": "media"

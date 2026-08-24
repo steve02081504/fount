@@ -2452,8 +2452,12 @@
 					"renameOk": "카테고리 이름이 변경되었습니다.",
 					"renamePrompt": "새 카테고리 이름"
 				},
-				"reorderAfter": null,
-				"reorderBefore": null,
+				"reorder": {
+					"after": "'${source}'을(를) '${target}' 뒤로 이동할까요?",
+					"before": "'${source}'을(를) '${target}' 앞으로 이동할까요?",
+					"into": "'${source}'을(를) '${target}' 안으로 이동할까요?",
+					"toRoot": "'${source}'을(를) 루트로 이동할까요?"
+				},
 				"name": "카테고리 이름",
 				"nameInput": {
 					"placeholder": "미디어"
