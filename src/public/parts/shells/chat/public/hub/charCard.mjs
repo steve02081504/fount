@@ -5,6 +5,7 @@
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/template、core/domUtils、core/state、entityProfile、entityResolve、presence
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { getPartDetails } from '/scripts/endpoints/parts.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
@@ -168,32 +169,36 @@ export async function renderCharInfoCardActive(name, details) {
  */
 export async function renderUserInfoCardActive(entityHash, displayName) {
 	const generation = ++charInfoCardRenderGeneration
-	const groupId = store.context.currentGroupId || undefined
-	const profile = entityHash ? await loadEntityProfile(entityHash, { groupId }) : null
-	if (generation !== charInfoCardRenderGeneration) return
+	try {
+		const profile = entityHash ? await loadEntityProfile(entityHash, { groupId: store.context.currentGroupId || undefined }) : null
+		if (generation !== charInfoCardRenderGeneration) return
 
-	const infoCardHost = document.getElementById('info-card-host')
-	infoCardHost.replaceChildren()
-	const card = await createEntityProfileCardElement('sidebar')
-	if (generation !== charInfoCardRenderGeneration) return
-	infoCardHost.appendChild(card)
+		const infoCardHost = document.getElementById('info-card-host')
+		infoCardHost.replaceChildren()
+		const card = await createEntityProfileCardElement('sidebar')
+		if (generation !== charInfoCardRenderGeneration) return
+		infoCardHost.appendChild(card)
 
-	const entity = {
-		entityHash,
-		charname: null,
-		pubKeyHex: null,
-		pubKeyHash: null,
-		displayName: profile?.name || displayName || entityHash,
+		const entity = {
+			entityHash,
+			charname: null,
+			pubKeyHex: null,
+			pubKeyHash: null,
+			displayName: profile?.name || displayName || entityHash,
+		}
+		if (profile)
+			await paintEntityProfileUi(card, profile)
+		else {
+			const nameElement = card.querySelector('[data-entity-profile-name]')
+			if (nameElement) nameElement.textContent = entity.displayName
+		}
+		if (generation !== charInfoCardRenderGeneration) return
+
+		await wireEntityProfileCardActions(card, entity, { profile })
 	}
-	if (profile)
-		await paintEntityProfileUi(card, profile)
-	else {
-		const nameElement = card.querySelector('[data-entity-profile-name]')
-		if (nameElement) nameElement.textContent = entity.displayName
+	catch (error) {
+		handleError('chat.hub.operationFailed')(error)
 	}
-	if (generation !== charInfoCardRenderGeneration) return
-
-	await wireEntityProfileCardActions(card, entity, { profile })
 }
 
 /**

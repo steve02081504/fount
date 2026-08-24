@@ -5,7 +5,7 @@
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { getChannelPermBlock, putChannelPermBlock } from '../src/endpoints/groupChannel.mjs'
-import { fillRolePermsIfEmpty, safeRoleColor, sortedRoleIds } from '../src/groupSettings/channelPermsUi.mjs'
+import { fillRolePermsIfEmpty, permRowsHtml, safeRoleColor, sortedRoleIds } from '../src/groupSettings/channelPermsUi.mjs'
 import { grantableChannelOverridePermissions } from '../src/groupSettings/constants.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 import { mountTemplate, openDialogFromTemplate } from '../src/templates.mjs'
@@ -58,7 +58,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 				open: roleId === '@everyone' || role.isDefault || hasOverride,
 			}
 		})
-		await mountTemplate(body, 'hub/category_perm_roles', { rolePanels })
+		await mountTemplate(body, 'hub/category_perm_roles', { rolePanels, permBlockId })
 
 		for (const details of body.querySelectorAll('details.settings-role[open]')) {
 			const permsEl = details.querySelector('.settings-role-perms')
@@ -138,8 +138,11 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 					if (nextState === 'allow') allow[perm] = true
 					else if (nextState === 'deny') deny[perm] = true
 					await putChannelPermBlock(groupId, categoryId, roleId, allow, deny)
+					permissions[roleId] = { allow, deny }
 					showToastI18n('success', 'chat.hub.category.perm.updated')
-					await renderRolePanels(body)
+					const rolePermsEl = body.querySelector(`details.settings-role[data-role-panel="${roleId}"] .settings-role-perms`)
+					if (rolePermsEl instanceof HTMLElement)
+						rolePermsEl.innerHTML = await permRowsHtml(roleId, allow, deny, grantablePerms)
 				}
 				catch (error) {
 					handleError('chat.hub.category.perm.updateFailed')(error)

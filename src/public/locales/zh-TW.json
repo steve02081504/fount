@@ -2425,7 +2425,7 @@
 				"name": "頻道名稱",
 				"unnamed": "未命名",
 				"parent": "父頻道",
-				"noParent": "無父頻道（根目錄）",
+				"noParent": "無父頻道（根層級）",
 				"nameInput": {
 					"placeholder": "general"
 				},

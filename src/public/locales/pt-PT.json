@@ -2453,10 +2453,10 @@
 					"renamePrompt": "Novo nome de categoria"
 				},
 				"reorder": {
-					"after": "Mover « ${source} » para depois de « ${target} »?",
-					"before": "Mover « ${source} » para antes de « ${target} »?",
-					"into": "Mover « ${source} » para dentro de « ${target} »?",
-					"toRoot": "Mover « ${source} » para a raiz?"
+					"after": "Mover «${source}» para depois de «${target}»?",
+					"before": "Mover «${source}» para antes de «${target}»?",
+					"into": "Mover «${source}» para dentro de «${target}»?",
+					"toRoot": "Mover «${source}» para a raiz?"
 				},
 				"name": "Nome da categoria",
 				"nameInput": {

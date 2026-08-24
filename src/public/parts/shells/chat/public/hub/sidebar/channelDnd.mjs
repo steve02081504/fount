@@ -9,11 +9,11 @@
 
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { confirmAction } from '/scripts/features/promptDialog.mjs'
-import { buildMoveLinks, computeMoveOperation, DROP_PLACEMENT } from '../shared/channelReorder.mjs'
-import { updateChannel } from '../src/endpoints/groupChannel.mjs'
-import { getGroupState } from '../src/endpoints/groupCore.mjs'
+import { buildMoveLinks, computeMoveOperation, DROP_PLACEMENT } from '../../shared/channelReorder.mjs'
+import { updateChannel } from '../../src/endpoints/groupChannel.mjs'
+import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 
-import { store } from './core/state.mjs'
+import { store } from '../core/state.mjs'
 
 /** 拖拽确认豁免窗口（毫秒）：成功执行一次移动后，此窗口内再次拖拽不再弹确认。 */
 const REORDER_EXEMPT_MS = 3 * 60 * 1000
@@ -24,12 +24,12 @@ let lastReorderAt = 0
  * 距上次确认移动是否仍在豁免窗口内。
  * @returns {boolean} 豁免期内为 true
  */
-export function isReorderConfirmExempt() {
+function isReorderConfirmExempt() {
 	return Date.now() - lastReorderAt < REORDER_EXEMPT_MS
 }
 
 /** 标记一次移动已确认执行（刷新豁免计时起点）。 */
-export function markReorderExecuted() {
+function markReorderExecuted() {
 	lastReorderAt = Date.now()
 }
 
@@ -93,8 +93,7 @@ async function applyMove(groupId, sourceId, op, onExecuted) {
 		await executeMove(groupId, sourceId, op, onExecuted)
 		return
 	}
-	const { state } = store.context.currentState || {}
-	const channels = state?.channels || {}
+	const channels = store.context.currentState?.channels || {}
 	const sourceName = channels?.[sourceId]?.name || sourceId
 	const { i18nKey, params } = reorderConfirmPayload(op, sourceName, channels)
 	if (!await confirmAction(i18nKey, params)) return
@@ -155,9 +154,6 @@ export function bindCategoryDrag(element, row, { groupId, onExecuted }) {
 			break
 		}
 		if (best) return best
-		// 落点超出最后一个行下方视为根级。
-		const last = candidates[candidates.length - 1]
-		if (last && clientY > last.getBoundingClientRect().bottom) return { targetId: null, placement: DROP_PLACEMENT.ROOT }
 		return { targetId: null, placement: DROP_PLACEMENT.ROOT }
 	}
 
@@ -171,9 +167,8 @@ export function bindCategoryDrag(element, row, { groupId, onExecuted }) {
 		if (!dragging) return
 		dragging = false
 		const { targetId, placement } = resolveDrop(event.clientX, event.clientY)
-		const { state } = store.context.currentState || {}
-		const channels = state?.channels || {}
-		const rootChannelId = state?.groupSettings?.rootChannelId || null
+		const channels = store.context.currentState?.channels || {}
+		const rootChannelId = store.context.currentState?.groupSettings?.rootChannelId || null
 		if (!rootChannelId) return
 		const op = computeMoveOperation(channels, rootChannelId, row.id, targetId, placement)
 		if (!op) return

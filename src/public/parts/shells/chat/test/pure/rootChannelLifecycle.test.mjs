@@ -39,7 +39,7 @@ Deno.test('genesis sequence: root channel owns default channel, settings record 
 	assertEquals(state.groupSettings.defaultChannelId, 'default')
 })
 
-Deno.test('new root-level channel appends to root links; permBlockId defaults to root', () => {
+Deno.test('new root-level channel appends to root links; explicit permBlockId keeps root permission block', () => {
 	let state = emptyMaterializedState()
 	state = channelReducers.channel_create(state, {
 		timestamp: 1,
@@ -82,7 +82,6 @@ Deno.test('channel_delete of root is not applied by reducer (guard against wipin
 	})
 	const stateBefore = structuredClone(state)
 	state = channelReducers.channel_delete(state, { content: { channelId: ROOT_CHANNEL_ID } })
-	// 保护：删除根容器时不应级联清空（联邦恶意/误删防御）。
-	assertEquals(state.channels[ROOT_CHANNEL_ID], stateBefore.channels[ROOT_CHANNEL_ID])
-	assertEquals(state.channels['default'], stateBefore.channels['default'])
+	// 保护：删除根容器时不应级联清空（联邦恶意/误删防御），reducer 应为完全无操作。
+	assertEquals(state, stateBefore)
 })

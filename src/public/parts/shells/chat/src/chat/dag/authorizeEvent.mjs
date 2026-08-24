@@ -233,14 +233,22 @@ export async function checkEventPermission(state, event, senderHash, options = {
 				: { ok: false, reason: 'MANAGE_CHANNELS denied' }
 		case 'channel_update': {
 			const updates = event.content?.updates || {}
+			const targetChannelId = event.content?.channelId || channelId
+			const updateKeys = Object.keys(updates)
+			const supportedUpdateFields = new Set(['name', 'description', 'type', 'isPrivate', 'links', 'permBlockId'])
+			if (updateKeys.some(key => !supportedUpdateFields.has(key)))
+				return { ok: false, reason: 'unsupported channel_update fields' }
 			if (Array.isArray(updates.links)) {
-				const parentPerms = memberChannelPermissions(state, sender, channelId)
-				if (!(parentPerms[PERMISSIONS.CREATE_THREADS] || parentPerms[PERMISSIONS.MANAGE_CHANNELS]))
+				const targetPerms = memberChannelPermissions(state, sender, targetChannelId)
+				if (!(targetPerms[PERMISSIONS.CREATE_THREADS] || targetPerms[PERMISSIONS.MANAGE_CHANNELS]))
 					return { ok: false, reason: 'CREATE_THREADS or MANAGE_CHANNELS required to update links' }
 			}
 			if (Object.hasOwn(updates, 'permBlockId'))
 				if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_CHANNELS]))
 					return { ok: false, reason: 'MANAGE_ROLES or MANAGE_CHANNELS required to sync permissions' }
+			if (['name', 'description', 'type', 'isPrivate'].some(key => Object.hasOwn(updates, key)))
+				if (!memberChannelPermissions(state, sender, targetChannelId)[PERMISSIONS.MANAGE_CHANNELS])
+					return { ok: false, reason: 'MANAGE_CHANNELS required for channel metadata updates' }
 			return { ok: true }
 		}
 		case 'channel_permissions_update': {

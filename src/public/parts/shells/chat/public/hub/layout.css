@@ -370,7 +370,7 @@
 	font-size: 12px;
 	font-weight: 600;
 	color: var(--text-bright);
-	background: var(--base-200, rgba(0, 0, 0, 0.8));
+	background: var(--color-base-200);
 	box-shadow: 0 6px 20px rgb(0 0 0 / 30%);
 	white-space: nowrap;
 	overflow: hidden;

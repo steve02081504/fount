@@ -24,6 +24,15 @@ function dismiss() {
 }
 
 /**
+ * 判断当前 viewer 是否可在频道树中管理频道（任一频道的 canEditList 即视为可管理）。
+ * @param {object} [state] 群组状态；缺省取 store.context.currentState
+ * @returns {boolean} 可管理频道为 true
+ */
+export function canEditChannelList(state = store.context.currentState) {
+	return Object.values(state?.channelCaps || {}).some(cap => cap?.canEditList)
+}
+
+/**
  * 执行一次分类变更并刷新侧栏；成功后提示，fount 故障交给 handleError。
  * @param {() => Promise<unknown>} mutation 分类变更操作
  * @param {string} successKey 成功 toast 的 i18n 键
@@ -65,8 +74,7 @@ function mountMenu(event, items) {
  * @returns {void}
  */
 export function showChannelListCreateMenu(event) {
-	const canManageChannels = Object.values(store.context.currentState?.channelCaps || {})
-		.some(cap => cap?.canEditList)
+	const canManageChannels = canEditChannelList()
 	if (!canManageChannels) return
 	const { close, menu } = mountMenu(event, [
 		'<li><button type="button" class="w-full text-left" data-action="create-channel" data-i18n="chat.hub.newChannel.button"></button></li>',
@@ -92,8 +100,7 @@ export function showChannelListCreateMenu(event) {
 export function showCategoryContextMenu(event, categoryId, categoryName) {
 	const groupId = store.context.currentGroupId
 	if (!groupId || !categoryId) return
-	const canManageChannels = Object.values(store.context.currentState?.channelCaps || {})
-		.some(cap => cap?.canEditList)
+	const canManageChannels = canEditChannelList()
 	const { close, menu } = mountMenu(event, [
 		'<li><button type="button" class="w-full text-left" data-action="create-in-category" data-i18n="chat.hub.category.context.createIn"></button></li>',
 		canManageChannels

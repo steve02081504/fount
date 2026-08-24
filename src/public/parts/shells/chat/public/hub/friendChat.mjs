@@ -229,7 +229,7 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	}
 	else if (binding.entityHash) {
 		const { renderUserInfoCardActive } = await import('./charCard.mjs')
-		await renderUserInfoCardActive(binding.entityHash, displayName)
+		renderUserInfoCardActive(binding.entityHash, displayName)
 	}
 	else
 		document.getElementById('info-card-host').innerHTML = ''

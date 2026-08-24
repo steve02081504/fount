@@ -2453,10 +2453,10 @@
 					"renamePrompt": "Neuer Kategoriename"
 				},
 				"reorder": {
-					"after": "« ${source} » nach « ${target} » verschieben?",
-					"before": "« ${source} » vor « ${target} » verschieben?",
-					"into": "« ${source} » in « ${target} » verschieben?",
-					"toRoot": "« ${source} » in die oberste Ebene verschieben?"
+					"after": "„${source}“ nach „${target}“ verschieben?",
+					"before": "„${source}“ vor „${target}“ verschieben?",
+					"into": "„${source}“ in „${target}“ verschieben?",
+					"toRoot": "„${source}“ in die oberste Ebene verschieben?"
 				},
 				"name": "Kategoriename",
 				"nameInput": {

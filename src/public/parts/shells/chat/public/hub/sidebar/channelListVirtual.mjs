@@ -9,7 +9,7 @@
 import { mountTemplate, renderTemplate } from '../../src/templates.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { createVirtualList } from '/scripts/lib/virtualList.mjs'
-import { showCategoryContextMenu, showChannelListCreateMenu } from '../categoryContextMenu.mjs'
+import { canEditChannelList, showCategoryContextMenu, showChannelListCreateMenu } from '../categoryContextMenu.mjs'
 import { showChannelContextMenu } from '../channelContextMenu.mjs'
 import { channelTypeIconHtml } from '../channels.mjs'
 import { store } from '../core/state.mjs'
@@ -146,6 +146,7 @@ function renderCategoryRow(row) {
 	el.type = 'button'
 	el.className = `category${row.collapsed ? ' collapsed' : ''}`
 	el.dataset.cat = row.id
+	el.setAttribute('aria-expanded', String(!row.collapsed))
 	const arrow = document.createElement('img')
 	arrow.src = 'https://api.iconify.design/mdi/chevron-down.svg'
 	arrow.className = 'category-arrow'
@@ -224,8 +225,7 @@ export async function renderChannelListVirtual(container, state) {
 	if (!container || !state) return
 	const channels = state.channels || {}
 	const groupId = store.context.currentGroupId
-	const canManageChannels = Object.values(state.channelCaps || {})
-		.some(cap => cap?.canEditList)
+	const canManageChannels = canEditChannelList(state)
 
 	/**
 	 * 渲染新建频道按钮（DM 在外部固定槽位，普通群在传入容器内部底部）。
@@ -268,6 +268,7 @@ export async function renderChannelListVirtual(container, state) {
 	container.appendChild(shell)
 
 	scroll.addEventListener('contextmenu', (event) => {
+		if (isPrivateChatActive()) return
 		showChannelListCreateMenu(event)
 	})
 

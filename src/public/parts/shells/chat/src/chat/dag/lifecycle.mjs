@@ -142,7 +142,9 @@ export async function createGroup(username, body) {
 		},
 	})
 
-	const initialChannelId = body.defaultChannelId || 'default'
+	// 默认频道 id 不得与隐藏根容器频道冲突，否则根 links 与 rootChannelId/defaultChannelId 不变量被破坏。
+	const requestedDefaultChannelId = body.defaultChannelId || 'default'
+	const initialChannelId = requestedDefaultChannelId !== ROOT_CHANNEL_ID ? requestedDefaultChannelId : 'default'
 	// 隐藏根容器频道：category 类型、空名，承载所有顶层频道的顺序（defaultChannel 挂其下）。
 	await genesisAppend({
 		type: 'channel_create',
