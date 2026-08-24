@@ -1,6 +1,6 @@
 /**
  * 将本地 char part 的多语言 info 写入 agent 实体 profile（联邦可见）。
- * 头像若为图片则下载并 publish 到 EVFS `profile/avatar`。
+ * 头像若为图片则下载并 publish 到 EVFS `profile/avatar`；emoji/文本直接写入 localized。
  */
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
@@ -10,6 +10,7 @@ import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identit
 
 import { primaryLocaleForUser } from '../../../../../../scripts/locale.mjs'
 import { baseloadPart, GetPartPath } from '../../../../../../server/parts_loader.mjs'
+import { isAvatarImageUrl } from '../../public/shared/hashAvatar.mjs'
 import { normalizeLocalizedMap } from '../entity/localized.mjs'
 import { resolveAgentCharPartName } from '../entity/member.mjs'
 import { getProfile, updateProfile, uploadAvatar } from '../entity/profile.mjs'
@@ -185,11 +186,12 @@ function pickPartSfwAvatar(info) {
  * @param {string} username replica
  * @param {string} charname 角色 part 名
  * @param {string} avatarRaw part info.avatar
- * @returns {Promise<{ buffer: Buffer, mimeType: string, filename: string } | null>} 待上传的图片字节
+ * @returns {Promise<{ kind: 'emoji', value: string } | { buffer: Buffer, mimeType: string, filename: string } | null>} emoji 文本或待上传的图片字节
  */
 async function materializePartAvatar(username, charname, avatarRaw) {
 	const raw = avatarRaw || ''
 	if (!raw) return null
+	if (!isAvatarImageUrl(raw)) return { kind: 'emoji', value: raw }
 
 	if (raw.startsWith('data:')) {
 		const match = raw.match(/^data:([^,;]+)(?:;base64)?,(.+)$/i)
@@ -250,7 +252,7 @@ async function loadCharPartInfoMap(username, charname) {
 
 /**
  * @param {Record<string, object>} localized profile localized
- * @param {{ buffer: Buffer, mimeType: string, filename: string }} materialized 头像
+ * @param {{ kind: 'emoji', value: string } | { buffer: Buffer, mimeType: string, filename: string }} materialized 头像
  * @param {string} username replica
  * @param {string} hash entityHash
  * @param {{ sfw?: boolean }} [options] SFW 时写 sfw_avatar
@@ -258,6 +260,14 @@ async function loadCharPartInfoMap(username, charname) {
  */
 async function applyMaterializedAvatar(localized, materialized, username, hash, options = {}) {
 	const sfw = !!options.sfw
+	if (materialized.kind === 'emoji') {
+		for (const key of Object.keys(localized))
+			localized[key] = sfw
+				? { ...localized[key], sfw_avatar: materialized.value }
+				: { ...localized[key], avatar: materialized.value }
+		await updateProfile(username, hash, { localized }, { skipPresentation: true })
+		return
+	}
 	await updateProfile(username, hash, { localized }, { skipPresentation: true })
 	await uploadAvatar(username, hash, materialized.buffer, materialized.filename, materialized.mimeType, { sfw })
 }
@@ -296,7 +306,13 @@ export async function syncAgentProfileFromCharPart(username, entityHash, options
 	if (!options.force && (needsAvatarBackfill || needsSfwAvatarBackfill)) {
 		if (needsAvatarBackfill) {
 			if (!materialized && !sfwMaterialized) return null
-			if (materialized)
+			if (materialized?.kind === 'emoji') {
+				const localized = { ...existing }
+				for (const key of Object.keys(localized))
+					localized[key] = { ...localized[key], avatar: materialized.value }
+				await updateProfile(username, hash, { localized }, { skipPresentation: true })
+			}
+			else if (materialized)
 				await uploadAvatar(username, hash, materialized.buffer, materialized.filename, materialized.mimeType)
 		}
 		else if (!sfwMaterialized) return null
