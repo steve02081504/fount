@@ -2451,6 +2451,7 @@
 					"renameOk": "分類已重新命名",
 					"renamePrompt": "新分類名"
 				},
+				"reorderAfter": null,
 				"name": "分類名稱",
 				"nameInput": {
 					"placeholder": "媒體"

@@ -2452,6 +2452,8 @@
 					"renameOk": "श्रेणी का नाम बदल दिया गया है",
 					"renamePrompt": "नई श्रेणी का नाम"
 				},
+				"reorderAfter": null,
+				"reorderBefore": null,
 				"name": "श्रेणी नाम",
 				"nameInput": {
 					"placeholder": "मीडिया"

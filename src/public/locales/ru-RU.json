@@ -2452,6 +2452,8 @@
 					"renameOk": "Категория переименована",
 					"renamePrompt": "Новое название категории"
 				},
+				"reorderAfter": null,
+				"reorderBefore": null,
 				"name": "Название категории",
 				"nameInput": {
 					"placeholder": "медиа"

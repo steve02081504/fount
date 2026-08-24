@@ -2452,6 +2452,7 @@
 					"renameOk": "カテゴリ名を変更しました",
 					"renamePrompt": "新しいカテゴリ名"
 				},
+				"reorderAfter": null,
 				"name": "カテゴリ名",
 				"nameInput": {
 					"placeholder": "メディア"

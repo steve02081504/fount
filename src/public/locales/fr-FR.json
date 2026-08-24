@@ -2452,6 +2452,8 @@
 					"renameOk": "Catégorie renommée",
 					"renamePrompt": "Nouveau nom de catégorie"
 				},
+				"reorderAfter": null,
+				"reorderBefore": null,
 				"name": "Nom de la catégorie",
 				"nameInput": {
 					"placeholder": "médias"

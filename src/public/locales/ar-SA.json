@@ -2452,6 +2452,8 @@
 					"renameOk": "تمت إعادة تسمية الفئة",
 					"renamePrompt": "اسم الفئة الجديدة"
 				},
+				"reorderAfter": null,
+				"reorderBefore": null,
 				"name": "اسم الفئة",
 				"nameInput": {
 					"placeholder": "وسائط"

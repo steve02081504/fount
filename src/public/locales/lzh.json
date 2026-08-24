@@ -2452,6 +2452,10 @@
 					"renameOk": "此類已重命名",
 					"renamePrompt": "新類名"
 				},
+				"reorderAfter": "将「${source}」移到「${target}」之后？",
+				"reorderBefore": "将「${source}」移到「${target}」之前？",
+				"reorderInto": "将「${source}」移入「${target}」？",
+				"reorderToRoot": "将「${source}」移到根级？",
 				"name": "類名",
 				"nameInput": {
 					"placeholder": "media"

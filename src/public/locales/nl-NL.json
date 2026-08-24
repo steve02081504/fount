@@ -2452,6 +2452,8 @@
 					"renameOk": "Categorie hernoemd",
 					"renamePrompt": "Nieuwe categorienaam"
 				},
+				"reorderAfter": null,
+				"reorderBefore": null,
 				"name": "Categorienaam",
 				"nameInput": {
 					"placeholder": "media"

@@ -2452,6 +2452,7 @@
 					"renameOk": "Danh mục đã được đổi tên",
 					"renamePrompt": "Tên danh mục mới"
 				},
+				"reorderAfter": null,
 				"name": "Tên danh mục",
 				"nameInput": {
 					"placeholder": "phương tiện"

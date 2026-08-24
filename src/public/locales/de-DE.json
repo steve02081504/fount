@@ -2452,6 +2452,8 @@
 					"renameOk": "Kategorie wurde umbenannt",
 					"renamePrompt": "Neuer Kategoriename"
 				},
+				"reorderAfter": null,
+				"reorderBefore": null,
 				"name": "Kategoriename",
 				"nameInput": {
 					"placeholder": "Medien"

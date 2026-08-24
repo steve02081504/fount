@@ -2452,6 +2452,8 @@
 					"renameOk": "Category renamed",
 					"renamePrompt": "New category name"
 				},
+				"reorderAfter": null,
+				"reorderBefore": "Move \"${source}\" before \"${target}\"?",
 				"name": "Category name",
 				"nameInput": {
 					"placeholder": "media"

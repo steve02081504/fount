@@ -2452,6 +2452,8 @@
 					"renameOk": "카테고리 이름이 변경되었습니다.",
 					"renamePrompt": "새 카테고리 이름"
 				},
+				"reorderAfter": null,
+				"reorderBefore": null,
 				"name": "카테고리 이름",
 				"nameInput": {
 					"placeholder": "미디어"

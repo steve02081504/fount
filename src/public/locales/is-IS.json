@@ -2452,6 +2452,8 @@
 					"renameOk": "Flokkur hefur verið endurnefndur",
 					"renamePrompt": "Nýtt flokksnafn"
 				},
+				"reorderAfter": null,
+				"reorderBefore": null,
 				"name": "Nafn flokks",
 				"nameInput": {
 					"placeholder": "fjölmiðla"

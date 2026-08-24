@@ -2452,6 +2452,7 @@
 					"renameOk": "Категорію перейменовано",
 					"renamePrompt": "Нова назва категорії"
 				},
+				"reorderAfter": null,
 				"name": "Назва категорії",
 				"nameInput": {
 					"placeholder": "медіа"

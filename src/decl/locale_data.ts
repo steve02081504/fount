@@ -2414,6 +2414,10 @@ export type LocaleData = {
 					renameOk: string
 					renamePrompt: string
 				}
+				reorderAfter: string
+				reorderBefore: string
+				reorderInto: string
+				reorderToRoot: string
 				name: string
 				nameInput: {
 					placeholder: string
@@ -6225,6 +6229,10 @@ export type LocaleKeyParams = {
 	'chat.hub.category.context.deleteConfirm': { name: string | number }
 	'chat.hub.category.perm.loadFailed': { error: string | number }
 	'chat.hub.category.perm.updateFailed': { error: string | number }
+	'chat.hub.category.reorderAfter': { source: string | number; target: string | number }
+	'chat.hub.category.reorderBefore': { source: string | number; target: string | number }
+	'chat.hub.category.reorderInto': { source: string | number; target: string | number }
+	'chat.hub.category.reorderToRoot': { source: string | number }
 	'chat.hub.channel.context.deleteConfirm': { name: string | number }
 	'chat.hub.channel.context.exportFailed': { error: string | number }
 	'chat.hub.char.chat.composer.placeholder': { name: string | number }

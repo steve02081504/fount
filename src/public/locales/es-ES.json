@@ -2452,6 +2452,8 @@
 					"renameOk": "La categoría ha sido renombrada",
 					"renamePrompt": "Nuevo nombre de categoría"
 				},
+				"reorderAfter": null,
+				"reorderBefore": null,
 				"name": "Nombre de categoría",
 				"nameInput": {
 					"placeholder": "medios de comunicación"
