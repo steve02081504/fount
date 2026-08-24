@@ -91,6 +91,8 @@ export async function selectChannel(channelId) {
 	// surface/composer 必须在 showHubMainPane 之前落好：mobile 主屏一开，groups surface 会把 .input-area display:none
 	if (channelType === 'list' || channelType === 'streaming')
 		disableComposer(channelType === 'list' ? 'chat.hub.channel.readonlyList' : 'chat.hub.channel.readonlyStream')
+	else if (store.context.currentState?.groupSettings?.rootChannelId === channelId)
+		disableComposer('chat.hub.channel.readonlyRoot')
 	else if (store.context.currentState?.suspectedRemoved)
 		disableComposer('chat.hub.composerSuspectedRemoved')
 	else

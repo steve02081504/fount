@@ -144,7 +144,8 @@ export async function createGroup(username, body) {
 	})
 
 	// 默认频道 id 不得与隐藏根容器频道冲突，否则根 links 与 rootChannelId/defaultChannelId 不变量被破坏。
-	const initialChannelId = body.defaultChannelId !== ROOT_CHANNEL_ID ? body.defaultChannelId : 'default'
+	const defaultChannelId = body.defaultChannelId || 'default'
+	const initialChannelId = defaultChannelId !== ROOT_CHANNEL_ID ? defaultChannelId : 'default'
 	// 隐藏根容器频道：category 类型、空名，承载所有顶层频道的顺序（defaultChannel 挂其下）。
 	await genesisAppend({
 		type: 'channel_create',
@@ -166,7 +167,7 @@ export async function createGroup(username, body) {
 		content: {
 			channelId: initialChannelId,
 			type: body.defaultChannelType || 'text',
-			name: body.defaultChannelName || await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
+			name: body.defaultChannelName ?? await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
 			links: [],
 			parentChannelId: ROOT_CHANNEL_ID,
 			permBlockId: ROOT_CHANNEL_ID,

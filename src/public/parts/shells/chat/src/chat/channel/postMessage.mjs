@@ -12,6 +12,7 @@ import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/co
 import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { assertNotRootChannel } from '../dag/groupSettings.mjs'
 import { unlockAchievement } from '../../../../achievements/src/api.mjs'
 import {
 	channelMessage,
@@ -246,6 +247,7 @@ export async function attachFilesToContent(username, groupId, content, files, ma
  * @returns {Promise<{ event: object, fileIds: string[] }>} DAG 消息事件
  */
 export async function postChannelMessage(username, groupId, channelId, payload = {}) {
+	assertNotRootChannel(channelId)
 	const maxBytes = Number(payload.maxDagPayloadBytes) || 262_144
 	const origin = payload.origin || 'human'
 

@@ -2439,7 +2439,10 @@
 				"type": "频道类型",
 				"typeList": "列表/论坛频道",
 				"typeStreaming": "流媒体频道",
-				"typeText": "聊天频道"
+				"typeText": "聊天频道",
+				"readonlyRoot": {
+					"placeholder": "根频道不能发送消息/文件"
+				}
 			},
 			"category": {
 				"context": {

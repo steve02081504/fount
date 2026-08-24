@@ -24,6 +24,7 @@ import {
 } from '../../chat/channel/messageMutations.mjs'
 import { attachFilesToContent } from '../../chat/channel/postMessage.mjs'
 import { createChannel } from '../../chat/dag/channelOperations.mjs'
+import { assertNotRootChannel } from '../../chat/dag/groupSettings.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import {
 	loadGroupMemberReadMarkers,
@@ -55,6 +56,7 @@ import { GROUPS_PREFIX, EVENT_ID_PARAM } from './path.mjs'
 export function registerChannelMessageRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/threads`, authenticate, async (req, res) => {
 		const { groupId, channelId: parentChannelId } = req.params
+		assertNotRootChannel(parentChannelId)
 		const { parentEventId } = req.body || {}
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
@@ -89,6 +91,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const eventId = req.params.eventId || ''
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
+		assertNotRootChannel(channelId)
 		const rawContent = req.body?.content
 		if (!rawContent || typeof rawContent !== 'object' || Array.isArray(rawContent))
 			throw httpError(400, 'content object required')
@@ -147,6 +150,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { type, content } = req.body || {}
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
+		assertNotRootChannel(channelId)
 		if (!['up', 'down'].includes(type))
 			throw httpError(400, 'type must be up or down')
 
@@ -342,6 +346,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
+		assertNotRootChannel(channelId)
 		const { content: rawContent, generated, files: rawFiles } = req.body || {}
 
 		const membership = await resolveGroupMember(req, res, groupId)

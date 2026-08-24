@@ -74,6 +74,7 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 		ownerPubKeyHash,
 		secretKey,
 		entityHash,
+		defaultChannelName: '',
 		enableGroupFederation: true,
 	})
 	const { groupId } = result

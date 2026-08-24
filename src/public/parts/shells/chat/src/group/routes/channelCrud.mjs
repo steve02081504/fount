@@ -130,8 +130,10 @@ export function registerChannelCrudRoutes(router, authenticate) {
 		if (links !== undefined) {
 			if (!Array.isArray(links))
 				throw httpError(400, 'links must be an array of channel ids')
-			for (const linkId of links)
+			for (const linkId of links) {
+				if (!linkId) continue
 				ensureChannel(state, linkId)
+			}
 			if (links.includes(channelId))
 				throw httpError(400, 'links cannot reference self')
 			// 环检测：沿 links 从本频道可达处遍历，若回到本频道则拒绝，防止互链成环。

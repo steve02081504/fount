@@ -31,7 +31,7 @@ export async function refreshChannelSidebar() {
  */
 async function moveChannelToTop(groupId, channelId, parentChannelId) {
 	const state = await getGroupState(groupId)
-	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id !== channelId)
+	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id && id !== channelId)
 	links.unshift(channelId)
 	await updateChannel(groupId, parentChannelId, { links })
 }

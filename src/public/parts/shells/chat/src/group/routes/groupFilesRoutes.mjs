@@ -6,6 +6,7 @@
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { appendFileDeleteEvent, appendFileUploadEvent } from '../../chat/dag/channelOperations.mjs'
+import { assertNotRootChannel } from '../../chat/dag/groupSettings.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { hasCiphertextBlob, getCiphertextBlob } from '../../chat/files/blobStore.mjs'
 import { loadDownloadTask, summarizeDownloadTask } from '../../chat/files/downloadTasks.mjs'
@@ -77,6 +78,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 		if (!memberKey)
 			return res.status(403).json({ error: 'Not a member' })
+		assertNotRootChannel(req.body.channelId, 'upload file')
 		const member = state.members[memberKey]
 		const permChannelId = uploadPermissionChannelId(state, req.body.channelId)
 		if (!canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, permChannelId)
@@ -114,6 +116,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 		if (!memberKey)
 			return res.status(403).json({ error: 'Not a member' })
+		assertNotRootChannel(body.channelId, 'upload file')
 		const member = state.members[memberKey]
 		const permChannelId = uploadPermissionChannelId(state, body.channelId)
 		if (!canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, permChannelId)
