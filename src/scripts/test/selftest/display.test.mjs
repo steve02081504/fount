@@ -8,7 +8,7 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
 import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
-import { paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd } from '../display/paint.mjs'
+import { formatFailureOutput, paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd } from '../display/paint.mjs'
 import { acceptedFromWave } from '../kernel/jobs.mjs'
 
 /**
@@ -229,19 +229,23 @@ Deno.test('paintSuiteEnd stream mode does not replay live output', () => {
 	assertEquals(written, '')
 })
 
+Deno.test('formatFailureOutput strips markers and appends trailing newline', () => {
+	assertEquals(formatFailureOutput('Error: still failing'), 'Error: still failing\n')
+	assertEquals(formatFailureOutput('a\nb\n'), 'a\nb\n')
+	assertEquals(formatFailureOutput(''), '')
+})
+
 Deno.test('paintJobDone reprints failed suite logs after the report path', () => {
 	const output = 'Error: still failing\n'
-	let written = ''
 	const { logs } = captureI18n(() => {
-		written = captureStdout(() => paintJobDone({
+		paintJobDone({
 			reportPath: 'data/test/report.md',
 			exitCode: 1,
 			failureLogs: [{ key: 'shells/achievements:frontend', output }],
-		}))
+		})
 	})
 	assertEquals(logs.at(-1)?.key, 'fountConsole.test.display.failureLog')
 	assertEquals(logs.at(-1)?.params.label, 'shells/achievements:frontend')
-	assertEquals(written.includes('Error: still failing'), true)
 })
 
 Deno.test('paintJobWait names queue depth not another suite', () => {

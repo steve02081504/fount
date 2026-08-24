@@ -1,6 +1,7 @@
 /**
  * 把内核 accepted / job-done 事件画成终端文案（旧 runner 的操作员输出）。
  */
+import { writeSync } from 'node:fs'
 import process from 'node:process'
 
 import { console, geti18n } from '../../i18n/bare.mjs'
@@ -30,13 +31,30 @@ export function suiteEndHasFailureOutput(msg) {
 }
 
 /**
+ * 把套件输出尾部规范化为可打印文本（去噪声标记、保证结尾换行）。
+ * @param {string} output 套件输出尾部
+ * @returns {string} 去标记、带结尾换行的文本（空输入返回空串）
+ */
+export function formatFailureOutput(output) {
+	const text = stripNoiseMarkers(output)
+	if (!text) return ''
+	return text.endsWith('\n') ? text : `${text}\n`
+}
+
+/**
  * @param {string} output 套件输出尾部
  * @returns {void}
  */
 function writeFailureOutput(output) {
-	const text = stripNoiseMarkers(output)
+	const text = formatFailureOutput(output)
 	if (!text) return
-	process.stdout.write(text.endsWith('\n') ? text : `${text}\n`)
+	// 同步写 fd 1：process.exit 前丢弃异步缓冲会导致失败日志内容丢失（标题仍在）。
+	try {
+		writeSync(1, text)
+	}
+	catch {
+		process.stdout.write(text)
+	}
 }
 
 /**
