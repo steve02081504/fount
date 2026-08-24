@@ -333,7 +333,7 @@ export async function startTestServer(options) {
 			port: options.port ?? HEADLESS_CONFIG_PORT,
 			username: options.username,
 			web: false,
-			p2p: false,
+			p2p: options.p2p ?? false,
 			minP2pNode: options.minP2pNode ?? false,
 			loadParts: options.loadParts,
 			afterInit: options.afterInit,

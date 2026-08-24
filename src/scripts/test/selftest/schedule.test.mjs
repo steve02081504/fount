@@ -47,14 +47,14 @@ const ROOMY = { memBudgetBytes: 64 * 1024 * MiB, cpuBudgetPct: 100 }
 
 Deno.test('heavy suites run exclusively (serial)', () => {
 	const { slots, makespanMs } = buildTimeline([
-		task({ key: 'a', durationMs: 1000, heavy: true }),
-		task({ key: 'b', durationMs: 1000, heavy: true }),
+		task({ key: 'heavy_a', durationMs: 1000, heavy: true }),
+		task({ key: 'heavy_b', durationMs: 1000, heavy: true }),
 	], ROOMY)
 	assertEquals(makespanMs, 2000)
-	const a = slots.find(s => s.key === 'a')
-	const b = slots.find(s => s.key === 'b')
-	assertEquals(a.endAt, 1000)
-	assertEquals(b.startAt, 1000)
+	const heavyA = slots.find(s => s.key === 'heavy_a')
+	const heavyB = slots.find(s => s.key === 'heavy_b')
+	assertEquals(heavyA.endAt, 1000)
+	assertEquals(heavyB.startAt, 1000)
 })
 
 Deno.test('independent light suites pack in parallel within budget', () => {
@@ -75,13 +75,13 @@ Deno.test('light suites exceed CPU budget and serialize', () => {
 
 Deno.test('dependency chain delays downstream to after upstream ends', () => {
 	const { slots, makespanMs } = buildTimeline([
-		task({ key: 'a', durationMs: 1000 }),
-		task({ key: 'b', durationMs: 1000, deps: ['a'] }),
+		task({ key: 'upstream', durationMs: 1000 }),
+		task({ key: 'downstream', durationMs: 1000, deps: ['upstream'] }),
 	], ROOMY)
 	assertEquals(makespanMs, 2000)
-	const a = slots.find(s => s.key === 'a')
-	const b = slots.find(s => s.key === 'b')
-	assertEquals(b.startAt >= a.endAt, true)
+	const upstreamSuite = slots.find(s => s.key === 'upstream')
+	const downstreamSuite = slots.find(s => s.key === 'downstream')
+	assertEquals(downstreamSuite.startAt >= upstreamSuite.endAt, true)
 })
 
 Deno.test('running anchor subtracts elapsed from remaining', () => {

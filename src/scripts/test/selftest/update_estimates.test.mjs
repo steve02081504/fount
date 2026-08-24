@@ -157,10 +157,10 @@ Deno.test('driftedEstimatePatch returns null when nothing drifts or no baseline'
 Deno.test('applyDriftPatchToManifest writes only drifted fields and serializes same-path writes', async () => {
 	const repoRoot = await makeRepoRoot()
 	try {
-		const rel = 'src/parts/demo/test/manifest.json'
-		const abs = join(repoRoot, rel)
-		await mkdir(join(abs, '..'), { recursive: true })
-		await writeFile(abs, `${JSON.stringify({
+		const manifestPath = 'src/parts/demo/test/manifest.json'
+		const manifestAbsolutePath = join(repoRoot, manifestPath)
+		await mkdir(join(manifestAbsolutePath, '..'), { recursive: true })
+		await writeFile(manifestAbsolutePath, `${JSON.stringify({
 			id: 'demo',
 			suites: [
 				{ name: 'pure', expected: '16s', run: ['deno'] },
@@ -168,9 +168,9 @@ Deno.test('applyDriftPatchToManifest writes only drifted fields and serializes s
 			],
 		}, null, '\t')}\n`, 'utf8')
 
-		const pure = makeSuite('demo', 'pure', { manifestPath: rel, expectedMs: 16_000 })
+		const pure = makeSuite('demo', 'pure', { manifestPath, expectedMs: 16_000 })
 		const frontend = makeSuite('demo', 'frontend', {
-			manifestPath: rel,
+			manifestPath,
 			expectedMs: 90_000,
 			subtests: [{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [], expectedMs: 20_000 }],
 		})
@@ -181,7 +181,7 @@ Deno.test('applyDriftPatchToManifest writes only drifted fields and serializes s
 		])
 		assertEquals(pureChanged, true)
 		assertEquals(frontendChanged, true)
-		const written = JSON.parse(await readFile(abs, 'utf8'))
+		const written = JSON.parse(await readFile(manifestAbsolutePath, 'utf8'))
 		assertEquals(written.suites[0].expected, '2m')
 		assertEquals(written.suites[1].expected, '90s')
 		assertEquals(written.suites[1].subtests[0].expected, '25s')

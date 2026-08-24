@@ -101,7 +101,7 @@ export async function showCreateChannelModal(options = {}) {
 				parentSelect.replaceChildren(noParent)
 				parentSelect.appendChild(await renderTemplate('channel_category_options', {
 					categories: categoryChannels.map(ch => ({ id: ch.id, name: ch.name || ch.id })),
-					selectedCategory: options.parentChannelId || '',
+					selectedCategory: options.parentChannelId ?? inferCreateParent() ?? '',
 				}))
 				if (categoryChannels.length) wrap.classList.remove('hidden')
 			}
@@ -111,8 +111,9 @@ export async function showCreateChannelModal(options = {}) {
 				const parentChannelId = dialog.querySelector('#new-channel-parent')?.value || null
 				if (!name) return
 				try {
-					const channelId = await createChannel(groupId, name, type, parentChannelId)
-					const targetParentId = parentChannelId || inferCreateParent()
+					const rootChannelId = store.context.currentState?.groupSettings?.rootChannelId || null
+					const targetParentId = parentChannelId || rootChannelId
+					const channelId = await createChannel(groupId, name, type, targetParentId)
 					if (targetParentId) await moveChannelToTop(groupId, channelId, targetParentId)
 					close()
 					await refreshChannelSidebar()

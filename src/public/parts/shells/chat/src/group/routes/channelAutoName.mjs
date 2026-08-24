@@ -36,6 +36,24 @@ const CONTEXT_MAX_CHARS = 4000
 /** 正在异步命名/分类的空名频道（键 `groupId:channelId`），防重复触发。 */
 const autoNamingInFlight = new Map()
 
+/** 每群分类 find-or-create 互斥锁：并发 autoName 共享，避免同群并发创建同名分类。 */
+const categoryCreateLocks = new Map()
+
+/**
+ * 串行执行 groupId 下的分类临界区（前序完成/失败后才放行）。
+ * @param {string} groupId 群 id
+ * @param {() => Promise<string | null>} fn 临界区（返回分类频道 id 或 null）
+ * @returns {Promise<string | null>} fn 结果
+ */
+async function withCategoryCreateLock(groupId, fn) {
+	const prev = categoryCreateLocks.get(groupId) ?? Promise.resolve(null)
+	const run = prev.then(fn).finally(() => {
+		if (categoryCreateLocks.get(groupId) === run) categoryCreateLocks.delete(groupId)
+	})
+	categoryCreateLocks.set(groupId, run)
+	return run
+}
+
 /**
  * 判断一条频道消息是否为问候语（world greeting / 角色开场）。
  * @param {object} message 频道消息行
@@ -140,16 +158,24 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 
 	let categoryId = null
 	if (category) {
-		categoryId = categoryIdByName.get(category)
+		const categoryName = String(category).trim()
+		categoryId = categoryIdByName.get(categoryName)
 		if (!categoryId) {
-			const rootChannelId = state.groupSettings?.rootChannelId || null
-			const created = await createChannel(username, groupId, {
-				type: 'category',
-				name: category,
-				channelId: prefixedRandomId('channel_'),
-				parentChannelId: rootChannelId,
+			// 锁内按「群 + 规范化分类名」原子查找或创建：复用并发中已建的同名分类，避免重复建类。
+			categoryId = await withCategoryCreateLock(groupId, async () => {
+				const latest = await getState(username, groupId)
+				const existing = Object.entries(latest.state.channels || {})
+					.find(([, ch]) => ch?.type === 'category' && String(ch?.name || '').trim() === categoryName)
+				if (existing) return existing[0]
+				const rootChannelId = latest.state.groupSettings?.rootChannelId || null
+				const created = await createChannel(username, groupId, {
+					type: 'category',
+					name: category,
+					channelId: prefixedRandomId('channel_'),
+					parentChannelId: rootChannelId,
+				})
+				return created.content?.channelId || null
 			})
-			categoryId = created.content?.channelId || null
 		}
 	}
 

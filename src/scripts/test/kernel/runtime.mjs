@@ -600,7 +600,7 @@ export class TestKernel {
 		for (const viewer of this.viewers.values()) {
 			const projection = timeline
 				? projectConsumer(timeline.slots, { watch: viewer.watch, jobId: viewer.jobId })
-				: { running: [], lastCompletionAt: 0, unknownCount: 0 }
+				: { running: [], lastCompletionAt: null, unknownCount: 0 }
 			this.viewers.send(viewer.id, buildScheduleUpdate(projection, viewer, reason, detail))
 		}
 	}
@@ -615,6 +615,8 @@ export class TestKernel {
 		const delta = Math.abs(next.memBytes - prev.memBytes) / Math.max(1, prev.memBytes)
 		if (delta < BUDGET_CHANGE_THRESHOLD && next.cores === prev.cores) return
 		this.globalBudget = next
+		// 同步闸门内存预算，使准入决策与 ETA 使用同一份当前预算。
+		this.gate.memBudgetBytes = next.memBytes
 		this.#broadcastSchedule('resource_budget_changed')
 	}
 
@@ -1037,6 +1039,17 @@ export class TestKernel {
 			)
 			if (ticket && this.moduleCheck.consumeMissedReady(ticket)) {
 				endEvent = await this.#finishMissedReady(item, suite)
+				return
+			}
+			// 被新任务抢占的 idle_all：视为未运行而非失败——不写失败状态、不改 sessionPassed、不广播失败 suite-end。
+			if (result.terminated && result.terminateReason === 'new_job') {
+				endEvent = {
+					type: 'suite-end',
+					key,
+					jobId: item.jobId,
+					passed: true,
+					reused: true,
+				}
 				return
 			}
 			const running = this.running.get(key)

@@ -186,8 +186,9 @@ export function buildPlan(
 			continue
 		}
 
-		// 显式子测试过滤后无交集 → 无事可做，复用
-		if (suite.subtests?.length && Array.isArray(subtestsToRun) && !subtestsToRun.length && !force) {
+		// 显式子测试过滤后无交集 → 无事可做，复用（但 imperfect_dependent 等必须真跑的除外）。
+		if (suite.subtests?.length && Array.isArray(subtestsToRun) && !subtestsToRun.length && !force
+			&& !goalMustRun(isGoal, verdict, force, hasExplicitFilter, goalEvidenceByKey.get(key))) {
 			planned.set(key, { ...base, action: 'reuse' })
 			continue
 		}

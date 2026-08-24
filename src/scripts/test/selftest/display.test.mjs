@@ -7,6 +7,7 @@ import process from 'node:process'
 import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
+import { formatNoiseAllowBegin, formatNoiseAllowEnd } from '../core/output_filter.mjs'
 import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
 import { formatFailureOutput, paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd } from '../display/paint.mjs'
 import { acceptedFromWave } from '../kernel/jobs.mjs'
@@ -230,6 +231,7 @@ Deno.test('formatFailureOutput strips markers and appends trailing newline', () 
 	assertEquals(formatFailureOutput('Error: still failing'), 'Error: still failing\n')
 	assertEquals(formatFailureOutput('a\nb\n'), 'a\nb\n')
 	assertEquals(formatFailureOutput(''), '')
+	assertEquals(formatFailureOutput(`${formatNoiseAllowBegin('.*')}\nError: still failing\n${formatNoiseAllowEnd()}`), 'Error: still failing\n')
 })
 
 Deno.test('paintJobDone reprints failed suite logs after the report path', () => {

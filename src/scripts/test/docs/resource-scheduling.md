@@ -25,7 +25,7 @@ ETA simulation (`simulateParallelMakespanMs`) uses the same one-layer hard-ancho
 
 Full-run ETA prefers the measured suite wall baseline (`baselineDurationMs`) over the Σ-subtest + overhead estimate, because internally-parallel suites (e.g. a Playwright process running multiple spec files) would otherwise be double-counted. Subtest subsets still sum per-subtest timings.
 
-Displayed "remaining" is monotonic: apart from real queue insertions (`cli`/`fs`/`prep` growth), it only decreases at wall-clock rate and never jumps up. Re-packing can otherwise wedge a late-admitted long suite onto the critical path and make the estimate grow — `kernel/runtime.mjs #clampRemaining` clamps to `last − elapsed` (tolerance `REMAINING_JITTER_MS`). `idle_all` never counts as insertion (it only fires on an empty queue).
+Displayed "remaining"/ETA is not monotonic: it is recomputed from an ideal timeline rebuilt from real current state (queues + running + budget) each time a scheduling-affecting change happens, so the total can legitimately go up or down as state changes — e.g. re-packing, a late-admitted long suite landing on the critical path, or new insertions (`cli`/`fs`/`prep`). There is no monotonic clamp; every such change broadcasts a `schedule-update` carrying a per-consumer projection (`running` + `lastCompletionMs` + a `reason`), and consumers paint on a ~5% change vs last shown. `idle_all` does count as an insertion: it enqueues every suite and broadcasts `queue-append` (reason `idle_all`) for each, then participates in the broadcast/plan like any other queue growth; a new job preempts it via `queue-remove`.
 
 ## Ordering
 

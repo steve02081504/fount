@@ -44,14 +44,14 @@ Deno.test('kernel auto-exits when queues empty and no watch WS', async () => {
 		watchFs: false,
 		writeReport: false,
 	})
-	const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+	const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 	await new Promise((resolve, reject) => {
-		ws.addEventListener('open', resolve, { once: true })
-		ws.addEventListener('error', reject, { once: true })
+		socket.addEventListener('open', resolve, { once: true })
+		socket.addEventListener('error', reject, { once: true })
 	})
-	ws.send(JSON.stringify({ type: 'hello', watch: false }))
+	socket.send(JSON.stringify({ type: 'hello', watch: false }))
 	await new Promise(resolve => setTimeout(resolve, 50))
-	ws.close()
+	socket.close()
 	await handle.closed
 })
 
@@ -88,22 +88,22 @@ Deno.test('watch WS keeps kernel alive until disconnect', async () => {
 		watchFs: false,
 		writeReport: false,
 	})
-	const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+	const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 	await new Promise((resolve, reject) => {
-		ws.addEventListener('open', resolve, { once: true })
-		ws.addEventListener('error', reject, { once: true })
+		socket.addEventListener('open', resolve, { once: true })
+		socket.addEventListener('error', reject, { once: true })
 	})
 	const accepted = new Promise(resolve => {
-		ws.addEventListener('message', event => {
+		socket.addEventListener('message', event => {
 			const message = JSON.parse(String(event.data))
 			if (message.type === 'accepted') resolve()
 		}, { once: true })
 	})
-	ws.send(JSON.stringify({ type: 'hello', watch: true }))
+	socket.send(JSON.stringify({ type: 'hello', watch: true }))
 	await accepted
 	assertEquals(handle.kernel.viewers.watchCount(), 1)
 	assertEquals(handle.kernel.closed, false)
-	ws.close()
+	socket.close()
 	await handle.closed
 })
 
@@ -125,25 +125,25 @@ Deno.test('empty default job announces empty, does not write in-progress report,
 			watchFs: false,
 			writeReport: true,
 		})
-		const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 		await new Promise((resolve, reject) => {
-			ws.addEventListener('open', resolve, { once: true })
-			ws.addEventListener('error', reject, { once: true })
+			socket.addEventListener('open', resolve, { once: true })
+			socket.addEventListener('error', reject, { once: true })
 		})
 		const accepted = new Promise(resolve => {
-			ws.addEventListener('message', event => {
+			socket.addEventListener('message', event => {
 				const message = JSON.parse(String(event.data))
 				if (message.type === 'accepted') resolve(message)
 			})
 		})
-		ws.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
+		socket.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
 		const message = await accepted
 		assertEquals(message.empty, true)
 		assertEquals(message.runCount, 0)
 		assertEquals(message.code, 0)
 		assertEquals(message.error, null)
 		await assertRejects(() => readFile(reportMarkdownPath(root), 'utf8'))
-		ws.close()
+		socket.close()
 		await handle.closed
 	}
 	finally {
@@ -203,23 +203,23 @@ Deno.test('accepted precedes suite-start and remaining drops the finished suite'
 				logPath: null,
 			}
 
-			const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+			const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 			await new Promise((resolve, reject) => {
-				ws.addEventListener('open', resolve, { once: true })
-				ws.addEventListener('error', reject, { once: true })
+				socket.addEventListener('open', resolve, { once: true })
+				socket.addEventListener('error', reject, { once: true })
 			})
 			/** @type {object[]} */
 			const events = []
 			const done = new Promise(resolve => {
-				ws.addEventListener('message', event => {
+				socket.addEventListener('message', event => {
 					const message = JSON.parse(String(event.data))
 					events.push(message)
 					if (message.type === 'job-done') resolve()
 				})
 			})
-			ws.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
+			socket.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
 			await done
-			ws.close()
+			socket.close()
 
 			const types = events.map(message => message.type)
 			assertEquals(types.indexOf('accepted') >= 0, true)
@@ -358,21 +358,21 @@ Deno.test('accepted remaining includes already-running leftover', async () => {
 				startedAt: Date.now(),
 				checkDone: true,
 			})
-			const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+			const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 			await new Promise((resolve, reject) => {
-				ws.addEventListener('open', resolve, { once: true })
-				ws.addEventListener('error', reject, { once: true })
+				socket.addEventListener('open', resolve, { once: true })
+				socket.addEventListener('error', reject, { once: true })
 			})
 			/** @type {object[]} */
 			const events = []
 			const done = new Promise(resolve => {
-				ws.addEventListener('message', event => {
+				socket.addEventListener('message', event => {
 					const message = JSON.parse(String(event.data))
 					events.push(message)
 					if (message.type === 'job-done') resolve()
 				})
 			})
-			ws.send(JSON.stringify({
+			socket.send(JSON.stringify({
 				type: 'hello',
 				watch: false,
 				job: {
@@ -384,7 +384,7 @@ Deno.test('accepted remaining includes already-running leftover', async () => {
 				},
 			}))
 			await done
-			ws.close()
+			socket.close()
 			const accepted = events.find(message => message.type === 'accepted')
 			assertEquals(accepted?.runCount, 1)
 			const initial = events.find(message => message.type === 'schedule-update' && message.reason === 'initial')
@@ -607,7 +607,7 @@ Deno.test('kernel close aborts running suites', async () => {
 Deno.test('submitJob cancels queued and running idle_all items', async () => {
 	const root = join(tmpdir(), `fount-kernel-preempt-${Date.now()}`)
 	await mkdir(root, { recursive: true })
-	const rel = 'src/parts/demo/test/manifest.json'
+	const manifestPath = 'src/parts/demo/test/manifest.json'
 	try {
 		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
 		assertEquals(init.code, 0)
@@ -616,9 +616,9 @@ Deno.test('submitJob cancels queued and running idle_all items', async () => {
 			'commit', '--allow-empty', '-m', 'init',
 		], { cwd: root })
 		assertEquals(commit.code, 0)
-		const abs = join(root, rel)
-		await mkdir(join(abs, '..'), { recursive: true })
-		await writeFile(abs, `${JSON.stringify({
+		const manifestPathAbs = join(root, manifestPath)
+		await mkdir(join(manifestPathAbs, '..'), { recursive: true })
+		await writeFile(manifestPathAbs, `${JSON.stringify({
 			id: 'demo',
 			suites: [{ name: 'pure', run: ['true'], triggers: ['src/parts/demo/**'] }],
 		}, null, '\t')}\n`, 'utf8')
@@ -632,22 +632,22 @@ Deno.test('submitJob cancels queued and running idle_all items', async () => {
 			autoUpdateExpected: false,
 		})
 		try {
-			const k = handle.kernel
+			const kernel = handle.kernel
 			const abort = new AbortController()
-			k.running.set('demo:pure', {
+			kernel.running.set('demo:pure', {
 				item: { key: 'demo:pure', reason: 'idle_all' },
 				abort,
 				startedAt: Date.now(),
 				checkDone: true,
 			})
-			k.queues.enqueueFs('demo:pure', 'idle_all')
-			k.queues.enqueueFs('demo:normal', 'fs_change')
+			kernel.queues.enqueueFs('demo:pure', 'idle_all')
+			kernel.queues.enqueueFs('demo:normal', 'fs_change')
 			// 提交一个命不中任何 suite 的空 job（不激活波次）也会在开头触发抢占。
 			/**
 			 * 提交命不中任何 suite 的空 job。
 			 * @returns {Promise<object>} submitted 结果
 			 */
-			const preemptJob = () => k.submitJob({
+			const preemptJob = () => kernel.submitJob({
 				groups: [{
 					manifestSelectors: ['demo'],
 					suiteSelectors: ['__no_such_suite__'],
@@ -655,18 +655,66 @@ Deno.test('submitJob cancels queued and running idle_all items', async () => {
 				}],
 			}, 'v-preempt')
 			await preemptJob()
-			assertEquals(k.queues.fs.map(item => item.key), ['demo:normal'])
+			assertEquals(kernel.queues.fs.map(item => item.key), ['demo:normal'])
 			assertEquals(abort.signal.aborted, true)
 			assertEquals(String(abort.signal.reason), 'new_job')
 			// 清空 running/队列后，无 idle_all 可取消时不再误重置闲置计时。
-			k.running.delete('demo:pure')
-			k.queues.fs = []
-			const before = k.lastIdleAt
+			kernel.running.delete('demo:pure')
+			kernel.queues.fs = []
+			const before = kernel.lastIdleAt
 			await preemptJob()
-			assertEquals(k.lastIdleAt, before)
+			assertEquals(kernel.lastIdleAt, before)
 		}
 		finally {
 			handle.kernel.running.delete('demo:pure')
+			await handle.close()
+		}
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('autoUpdateExpected false does not auto-rewrite manifest after run', async () => {
+	const root = join(tmpdir(), `fount-kernel-no-autoupdate-${Date.now()}`)
+	await mkdir(root, { recursive: true })
+	const manifestPath = 'src/parts/demo/test/manifest.json'
+	const manifestPathAbs = join(root, manifestPath)
+	try {
+		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
+		assertEquals(init.code, 0)
+		const commit = await execFile('git', [
+			'-c', 'user.email=t@t', '-c', 'user.name=t',
+			'commit', '--allow-empty', '-m', 'init',
+		], { cwd: root })
+		assertEquals(commit.code, 0)
+		await mkdir(join(manifestPathAbs, '..'), { recursive: true })
+		await writeFile(manifestPathAbs, `${JSON.stringify({
+			id: 'demo',
+			suites: [{ name: 'pure', run: ['true'], triggers: ['src/parts/demo/**'] }],
+		}, null, '\t')}\n`, 'utf8')
+
+		const handle = await startTestKernel({
+			port: CONTROL_PORT + 30,
+			repoRoot: root,
+			autoExit: false,
+			watchFs: false,
+			writeReport: false,
+			autoUpdateExpected: false,
+		})
+		try {
+			assertEquals(handle.kernel.autoUpdateExpected, false)
+			const kernel = handle.kernel
+			kernel.queues.enqueueFs('demo:pure', 'fs_change')
+			kernel.wake()
+			await waitUntil(() => kernel.running.size === 0 && kernel.queues.allEmpty(), 10_000)
+
+			const json = JSON.parse(await readFile(manifestPathAbs, 'utf8'))
+			const jsonSuite = json.suites.find(suite => suite.name === 'pure')
+			assertEquals(jsonSuite.expected, undefined)
+		}
+		finally {
+			handle.kernel.running.clear()
 			await handle.close()
 		}
 	}
@@ -1033,20 +1081,20 @@ Deno.test('watch idle fires an automatic --all run after the idle window', async
 				dependencies: [],
 				heavy: false,
 			})
-			const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+			const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 			await new Promise((resolve, reject) => {
-				ws.addEventListener('open', resolve, { once: true })
-				ws.addEventListener('error', reject, { once: true })
+				socket.addEventListener('open', resolve, { once: true })
+				socket.addEventListener('error', reject, { once: true })
 			})
 			const started = new Promise(resolve => {
-				ws.addEventListener('message', event => {
+				socket.addEventListener('message', event => {
 					const message = JSON.parse(String(event.data))
 					if (message.type === 'suite-start' && message.key === key) resolve()
 				})
 			})
-			ws.send(JSON.stringify({ type: 'hello', watch: true }))
+			socket.send(JSON.stringify({ type: 'hello', watch: true }))
 			await awaitWithTimeout(started, 'idle-all did not run its suite', 4000)
-			ws.close()
+			socket.close()
 		}
 		finally {
 			await handle.close()

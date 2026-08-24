@@ -135,7 +135,9 @@ export function applyDriftPatchToManifest(repoRoot, suite, patch) {
 		await writeFile(abs, `${JSON.stringify(manifest, null, '\t')}\n`, 'utf8')
 		return true
 	})
-	const tracked = run.finally(() => {
+	// 队尾 promise 需在前序成功或失败后都兑现，否则前序写失败会让后续任务拿到的 prev 进入 rejected，
+	// 既跳过后续写入，又使无人消费的队尾产生未处理拒绝。
+	const tracked = run.catch(() => false).finally(() => {
 		if (manifestWriteQueues.get(path) === tracked) manifestWriteQueues.delete(path)
 	})
 	manifestWriteQueues.set(path, tracked)

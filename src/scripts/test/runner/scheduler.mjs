@@ -28,10 +28,7 @@ import {
  */
 export class ResourceRunGate {
 	/**
-	 * @param {number} memBudgetBytes 机器内存预算
-	 * @param {(suite: SuiteDef) => SuiteStateEntry | undefined} [lookupEntry] 现状库查询
-	 */
-	/**
+	 * 创建资源运行门。
 	 * @param {number} memBudgetBytes 机器内存预算
 	 * @param {(suite: SuiteDef) => SuiteStateEntry | undefined} [lookupEntry] 现状库查询
 	 * @param {object} [options] 选项

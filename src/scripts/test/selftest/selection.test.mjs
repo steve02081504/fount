@@ -348,7 +348,7 @@ Deno.test('skip_tree leftover failed omits stale and blocked descendants', () =>
 })
 
 Deno.test('imperfect_dependent below a failed upstream must run, not reuse', () => {
-	const all = [
+	const allSuites = [
 		makeSuite('shells/chat', 'fed_core'),
 		makeSuite('shells/chat', 'fed_ban', { dependsOn: ['fed_core'] }),
 	]
@@ -358,25 +358,47 @@ Deno.test('imperfect_dependent below a failed upstream must run, not reuse', () 
 			'shells/chat:fed_ban': makeStateEntry({ status: 'passed' }),
 		},
 	}
-	const committedChangedByKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), []]))
-	const verdicts = buildVerdicts(all, state, committedChangedByKey, new Map())
+	const committedChangedByKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), []]))
+	const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, new Map())
 	assertEquals(verdicts.get('shells/chat:fed_core')?.kind, 'red')
 	assertEquals(verdicts.get('shells/chat:fed_ban')?.kind, 'green')
 
 	const selection = selectImperfectWave({
 		verdicts,
 		state,
-		allSuites: all,
-		scope: all,
+		allSuites,
+		scope: allSuites,
 		commitHash: 'abc',
 		uncommittedHash: null,
 	})
 	assertEquals([...selection.goalKeys].sort(), ['shells/chat:fed_ban', 'shells/chat:fed_core'])
 	assertEquals(selection.goalEvidenceByKey.get('shells/chat:fed_ban')?.kind, 'imperfect_dependent')
 
-	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
-	const plan = buildPlan(selection.goalKeys, verdicts, byKey, all, selection.goalEvidenceByKey)
+	const byKey = new Map(allSuites.map(suite => [suiteKey(suite.manifestId, suite.name), suite]))
+	const plan = buildPlan(selection.goalKeys, verdicts, byKey, allSuites, selection.goalEvidenceByKey)
 	const fedBan = plan.slots.find(slot => slot.key === 'shells/chat:fed_ban')
 	// 上层失败的一层下游：不得因未改动而 reuse，必须 run（由运行时决定是否真跑或被 blocked）
 	assertEquals(fedBan?.action, 'run')
+})
+
+Deno.test('imperfect_dependent with subtests and fresh green must run, not reuse', () => {
+	const fedCore = makeSuite('shells/chat', 'fed_core')
+	const fedBan = makeSuite('shells/chat', 'fed_ban', {
+		dependsOn: ['fed_core'],
+		subtests: [{ name: 'a', triggers: ['x'] }, { name: 'b', triggers: ['y'] }],
+	})
+	const key = suiteKey('shells/chat', 'fed_ban')
+	const byKey = new Map([
+		[suiteKey('shells/chat', 'fed_core'), fedCore],
+		[key, fedBan],
+	])
+	// 无显式过滤、fresh green 且 subtestsToRun 为空——仅有 imperfect_dependent 证据，也必须真跑。
+	const verdicts = new Map([
+		[suiteKey('shells/chat', 'fed_core'), { kind: 'green', reason: 'fresh', subtestsToRun: [] }],
+		[key, { kind: 'green', reason: 'fresh', subtestsToRun: [] }],
+	])
+	const evidence = new Map([[key, { kind: 'imperfect_dependent', upstream: 'shells/chat:fed_core' }]])
+	const plan = buildPlan(new Set([key]), verdicts, byKey, [fedCore, fedBan], evidence)
+	const fedBanSlot = plan.slots.find(slot => slot.key === key)
+	assertEquals(fedBanSlot?.action, 'run')
 })
