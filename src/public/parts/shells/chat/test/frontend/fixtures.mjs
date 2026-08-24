@@ -298,6 +298,22 @@ export function createTestChannel(baseUrl, apiKey, groupId, options = {}) {
 }
 
 /**
+ * 通过 API 创建好友绑定（DM）群：对端角色会出现在好友列表，不进入群侧栏。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {string} charname - 对端本地角色 part 名。
+ * @param {object} [options] - 可选项。
+ * @param {string} [options.name] - 群名。
+ * @returns {Promise<{ groupId: string, defaultChannelId: string, channelId: string }>} 新建 DM 群信息。
+ */
+export function createFriendChatGroup(baseUrl, apiKey, charname, options = {}) {
+	return createChatTestGroup(baseUrl, apiKey, {
+		name: options.name ?? `pw-friend-${Date.now()}`,
+		friendBinding: { charname },
+	})
+}
+
+/**
  * 定位包含指定正文的消息行。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} text - 消息正文片段。

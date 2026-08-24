@@ -19,7 +19,7 @@ import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMen
 import { groupDisplayName } from './core/domUtils.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
-import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
+import { clearGroupSelection, contextMenuTargetGroupIds, orderedSidebarGroupIds } from './groupSelection.mjs'
 import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { renderServerBar } from './serverBar.mjs'
