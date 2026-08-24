@@ -279,8 +279,7 @@ export async function ensureGroup(username, groupId, options = {}) {
 			groupId,
 			name: options.name || await geti18nForUser(username, 'chat.group.defaults.dmChatName'),
 			description: options.description,
-			defaultChannelName: options.defaultChannelName
-				|| await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
+			defaultChannelName: options.defaultChannelName ?? await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
 			ownerPubKeyHash,
 			secretKey,
 		})

@@ -72,6 +72,17 @@ Deno.test({
 		assert(typeof created.friendBinding?.entityHash === 'string'
 			&& created.friendBinding.entityHash.length === 128)
 
+		const stateResponse = await chatFetch(node, 'GET', `/groups/${created.groupId}/state`)
+		const state = await stateResponse.json().catch(() => ({}))
+		assertEquals(stateResponse.status, 200, JSON.stringify(state))
+		const defaultChannelId = state.groupSettings?.defaultChannelId
+		assert(defaultChannelId, 'defaultChannelId must be set')
+		assertEquals(
+			state.channels?.[defaultChannelId]?.name,
+			'',
+			'friend group default channel must be unnamed (empty) so AI can auto-name it',
+		)
+
 		const viewerAfter = await (await chatFetch(node, 'GET', '/viewer')).json()
 		assert(
 			(viewerAfter.agents || []).some(row =>

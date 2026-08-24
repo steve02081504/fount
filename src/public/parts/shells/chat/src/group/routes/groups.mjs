@@ -105,7 +105,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			const { client } = await chatClientFromReq(req)
 			const group = await client.createGroup({
 				name: body.name || 'New Group',
-				defaultChannelName: body.defaultChannelName,
+				defaultChannelName: body.defaultChannelName ?? (friendBinding ? '' : undefined),
 				joinPolicy,
 			})
 			const { loadGroupState } = await import('../../api/internal.mjs')
