@@ -194,7 +194,7 @@
 				"failureLog": "\n—— ❌📋 ${label} ——",
 				"schedule": {
 					"reason": "（${reason}）",
-					"running": "正在运行 ${key}，剩余 ${remaining}"
+					"running": "🏃 ${key} ⏳ ${remaining}"
 				}
 			},
 			"passed": "✅: ${label}",
