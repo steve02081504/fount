@@ -194,7 +194,7 @@
 				"failureLog": "\n—— Registro de fallos: ${label} ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "Ejecutando ${key}, quedan ${remaining}"
+					"running": "Ejecutando ${key}, cantidad restante: ${remaining}"
 				}
 			},
 			"passed": "Aprobado: ${label}",

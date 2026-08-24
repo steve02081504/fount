@@ -2455,7 +2455,7 @@
 				"typeStreaming": "chaîne de diffusion en continu",
 				"typeText": "canal de discussion",
 				"readonlyRoot": {
-					"placeholder": "Le canal racine ne peut pas envoyer de messages/fichiers"
+					"placeholder": "Le canal racine n'autorise pas l'envoi de messages/fichiers"
 				}
 			},
 			"category": {

@@ -191,7 +191,11 @@
 						"0": "В очереди"
 					}
 				},
-				"failureLog": "\n—— Журнал сбоев: ${label} ——"
+				"failureLog": "\n—— Журнал сбоев: ${label} ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "Выполняется ${key}, осталось ${remaining}"
+				}
 			},
 			"passed": "ПРОЙДЕНО: ${label}",
 			"passedWithNoise": "ПРОЙДЕНО: ${label} (с шумом)",

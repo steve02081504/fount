@@ -2455,7 +2455,7 @@
 				"typeStreaming": "ストリーミングチャンネル",
 				"typeText": "チャットチャンネル",
 				"readonlyRoot": {
-					"placeholder": "ルートチャネルはメッセージ/ファイルを送信できません"
+					"placeholder": "ルートチャンネルはメッセージ/ファイルを送信できません"
 				}
 			},
 			"category": {

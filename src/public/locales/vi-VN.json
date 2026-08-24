@@ -191,7 +191,11 @@
 						"0": "Đang chờ"
 					}
 				},
-				"failureLog": "\n—— Nhật ký lỗi: ${label} ——"
+				"failureLog": "\n—— Nhật ký lỗi: ${label} ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "Đang chạy ${key}, còn ${remaining}"
+				}
 			},
 			"passed": "ĐẠT: ${label}",
 			"passedWithNoise": "ĐẠT: ${label} (có nhiễu)",

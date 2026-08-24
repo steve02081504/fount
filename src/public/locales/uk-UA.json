@@ -191,7 +191,11 @@
 						"0": "У черзі"
 					}
 				},
-				"failureLog": "\n—— Журнал збоїв: ${label} ——"
+				"failureLog": "\n—— Журнал збоїв: ${label} ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "Виконується ${key}, залишилось ${remaining}"
+				}
 			},
 			"passed": "Пройдено: ${label}",
 			"passedWithNoise": "Пройдено: ${label} (з шумом)",

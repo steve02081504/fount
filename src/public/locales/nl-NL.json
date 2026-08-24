@@ -194,7 +194,7 @@
 				"failureLog": "\n—— Foutlogboek: ${label} ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "${key} wordt uitgevoerd, nog ${remaining}"
+					"running": "${key} wordt uitgevoerd, ${remaining} te gaan"
 				}
 			},
 			"passed": "Geslaagd: ${label}",
