@@ -21,8 +21,8 @@ export const DROP_PLACEMENT = {
  * @returns {string} 父频道 id
  */
 export function findParentChannelId(channels, rootChannelId, channelId) {
-	for (const channel of Object.values(channels || {}))
-		if (channel?.links?.includes(channelId)) return channel.id
+	for (const [id, channel] of Object.entries(channels || {}))
+		if (channel?.links?.includes(channelId)) return id
 	return rootChannelId
 }
 
@@ -79,7 +79,7 @@ export function computeMoveOperation(channels, rootChannelId, sourceId, targetId
 		const after = placement === DROP_PLACEMENT.AFTER
 		targetParentId = findParentChannelId(channels, rootChannelId, targetId)
 		if (isInSubtree(channels, sourceId, targetParentId)) return null
-		const links = (channels?.[targetParentId]?.links || []).filter(id => id !== sourceId)
+		const links = channels?.[targetParentId]?.links || []
 		const at = links.indexOf(targetId)
 		targetIndex = at < 0 ? after ? links.length : 0 : after ? at + 1 : at
 	}

@@ -366,7 +366,7 @@
 	pointer-events: none;
 	max-width: 240px;
 	padding: 6px 12px;
-	border-radius: 8px;
+	border-radius: var(--radius-sm);
 	font-size: 12px;
 	font-weight: 600;
 	color: var(--text-bright);
