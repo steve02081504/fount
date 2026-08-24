@@ -24,7 +24,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "24s",
+			"expected": "41s",
 			"trigger": [
 				"shellBackend",
 				"shellPureTests",
@@ -43,7 +43,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "1m23s",
+			"expected": "43s",
 			"dependsOn": [
 				"server:live"
 			],

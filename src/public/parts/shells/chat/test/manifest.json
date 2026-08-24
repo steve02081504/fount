@@ -494,7 +494,7 @@
 		},
 		{
 			"name": "fed_mailbox",
-			"expected": "4m29s",
+			"expected": "5m33s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -516,7 +516,7 @@
 		},
 		{
 			"name": "fed_ban",
-			"expected": "5m24s",
+			"expected": "7m32s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -560,7 +560,7 @@
 		},
 		{
 			"name": "fed_emoji_nonmember",
-			"expected": "1m38s",
+			"expected": "1m28s",
 			"dependsOn": [
 				"fed_core",
 				"fed_emoji"

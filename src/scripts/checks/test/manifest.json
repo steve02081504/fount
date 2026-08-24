@@ -173,7 +173,7 @@
 		},
 		{
 			"name": "locale_md_align",
-			"expected": 700,
+			"expected": 600,
 			"triggerFilter": {
 				"unignore": [
 					"docs/EULA/*.md",
