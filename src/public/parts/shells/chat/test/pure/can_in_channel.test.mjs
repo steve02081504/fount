@@ -31,12 +31,12 @@ function baseState() {
 		['root', 'category', '', null, null],
 		['default', 'text', 'general', 'root', 'root'],
 		['secret', 'text', 'secret', 'root', 'root'],
-	]) {
+	])
 		channelReducers.channel_create(state, {
 			timestamp: 1,
 			content: { channelId: id, type, name, links: [], parentChannelId: parent, permissionBlockId },
 		})
-	}
+
 	return state
 }
 
