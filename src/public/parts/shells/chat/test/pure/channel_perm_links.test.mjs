@@ -152,3 +152,48 @@ Deno.test('channel_delete resets permissionBlockId of channels referencing delet
 	if (state.channels['root']) throw new Error('root should be deleted')
 	if (state.channels['child'].permissionBlockId !== null) throw new Error('referencing channel permissionBlockId should reset to null')
 })
+
+Deno.test('channel_delete keeps a shared child that still has an external parent', () => {
+	let state = emptyMaterializedState()
+	state = channelReducers.channel_create(state, {
+		timestamp: 1,
+		content: { channelId: 'parentA', type: 'category', name: 'A', links: [], permissionBlockId: null },
+	})
+	state = channelReducers.channel_create(state, {
+		timestamp: 2,
+		content: { channelId: 'parentB', type: 'category', name: 'B', links: [], permissionBlockId: null },
+	})
+	state = channelReducers.channel_create(state, {
+		timestamp: 3,
+		content: { channelId: 'shared', type: 'text', name: 'shared', permissionBlockId: null },
+	})
+	// parentA 与 parentB 都链接 shared（共享子频道）。
+	state = channelReducers.channel_update(state, {
+		content: { channelId: 'parentA', updates: { links: ['shared'] } },
+	})
+	state = channelReducers.channel_update(state, {
+		content: { channelId: 'parentB', updates: { links: ['shared'] } },
+	})
+	// 删除 parentA：shared 仍被删除集外的 parentB 链接，不应级联删除。
+	state = channelReducers.channel_delete(state, { content: { channelId: 'parentA' } })
+	if (!state.channels['shared']) throw new Error('shared child should survive when it still has an external parent')
+	if (state.channels['parentA']) throw new Error('parentA should be deleted')
+	if (!state.channels['parentB']?.links?.includes('shared')) throw new Error('parentB should keep its shared link')
+})
+
+Deno.test('channel_delete never cascade-deletes the root channel even via a back link', () => {
+	let state = emptyMaterializedState()
+	state.groupSettings.rootChannelId = 'root'
+	state = channelReducers.channel_create(state, {
+		timestamp: 1,
+		content: { channelId: 'root', type: 'category', name: '', links: ['child'], permissionBlockId: null },
+	})
+	state = channelReducers.channel_create(state, {
+		timestamp: 2,
+		content: { channelId: 'child', type: 'category', name: 'child', links: ['root'], permissionBlockId: null },
+	})
+	// child 意外链接回 root；删除 child 不应把根容器级联删除。
+	state = channelReducers.channel_delete(state, { content: { channelId: 'child' } })
+	if (!state.channels['root']) throw new Error('root channel must never be cascade-deleted via links')
+	if (state.channels['child']) throw new Error('child should be deleted')
+})
