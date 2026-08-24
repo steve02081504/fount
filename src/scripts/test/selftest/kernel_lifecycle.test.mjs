@@ -612,7 +612,9 @@ Deno.test('submitJob cancels queued and running idle_all items', async () => {
 		assertEquals(k.queues.fs.map(item => item.key), ['testkit:__normal__'])
 		assertEquals(abort.signal.aborted, true)
 		assertEquals(String(abort.signal.reason), 'new_job')
-		// 无 idle_all 可取消时不再误重置闲置计时。
+		// 清空 running/队列后，无 idle_all 可取消时不再误重置闲置计时。
+		k.running.delete('testkit:__idle_run__')
+		k.queues.fs = []
 		const before = k.lastIdleAt
 		await preemptJob()
 		assertEquals(k.lastIdleAt, before)
