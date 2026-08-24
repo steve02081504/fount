@@ -1695,7 +1695,8 @@
 						"general": "Básico",
 						"members": "Membro",
 						"permissions": "Permissões de função",
-						"storage": "Armazenamento e arquivamento"
+						"storage": "Armazenamento e arquivamento",
+						"groupPermissions": "Permissões de grupo"
 					},
 					"key": {
 						"managementTip": "Novas chaves precisam ser redistribuídas aos membros após a rotação. A ação manual só deve ser tomada se suspeitar que uma chave foi comprometida.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "Tem a certeza de que deseja rodar manualmente a chave mestra destes ficheiros de grupo? Os novos membros precisam de ressincronizar a chave dos ficheiros históricos.",
 						"rotateFailed": "Falha na rotação de chave: ${error}",
 						"rotateOk": "A chave foi girada"
+					},
+					"groupPerms": {
+						"denied": "Sem permissão para gerenciar permissões de grupo",
+						"hint": "Defina substituições por função para permissões de governança em nível de grupo (expulsar, banir, gerenciar funções, gerenciar administradores, convidar membros).",
+						"overridden": "Abordado",
+						"clearOverride": "limpar substituição",
+						"noRoles": "Atualmente não há função para configurar",
+						"updateFailed": "Falha na atualização da permissão do grupo",
+						"updated": "As permissões do grupo foram atualizadas"
 					}
 				},
 				"pinContext": "Bairro principal (±N vizinhos)",
@@ -2439,7 +2449,10 @@
 				"type": "Tipo de canal",
 				"typeList": "Lista/Canal do Fórum",
 				"typeStreaming": "Canal de streaming",
-				"typeText": "Canal de bate-papo"
+				"typeText": "Canal de bate-papo",
+				"readonlyRoot": {
+					"placeholder": "O canal raiz não pode enviar mensagens/arquivos"
+				}
 			},
 			"category": {
 				"context": {

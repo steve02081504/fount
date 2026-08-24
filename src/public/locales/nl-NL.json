@@ -1695,7 +1695,8 @@
 						"general": "Basis",
 						"members": "Leden",
 						"permissions": "Rolmachtigingen",
-						"storage": "Opslag en archivering"
+						"storage": "Opslag en archivering",
+						"groupPermissions": "Groepsmachtigingen"
 					},
 					"key": {
 						"managementTip": "Nieuwe sleutels moeten na rotatie opnieuw onder de leden worden verdeeld. Handmatige actie mag alleen worden ondernomen als je vermoedt dat een sleutel is aangetast.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "Weet je zeker dat je de hoofdsleutel van dit groepsbestand handmatig wilt roteren? Nieuwe leden moeten de sleutel van het geschiedenisbestand opnieuw synchroniseren.",
 						"rotateFailed": "Sleutelroulatie mislukt: ${error}",
 						"rotateOk": "Sleutel is gedraaid"
+					},
+					"groupPerms": {
+						"denied": "Geen toestemming om groepsrechten te beheren",
+						"hint": "Stel overschrijvingen per rol in voor bestuursmachtigingen op groepsniveau (kicken, verbannen, rollen beheren, beheerders beheren, leden uitnodigen).",
+						"overridden": "Overdekt",
+						"clearOverride": "duidelijk overschrijven",
+						"noRoles": "Er is momenteel geen rol om te configureren",
+						"updateFailed": "Updaten van groepsrechten is mislukt",
+						"updated": "Groepsrechten zijn bijgewerkt"
 					}
 				},
 				"pinContext": "Topbuurt (±N buren)",
@@ -2439,7 +2449,10 @@
 				"type": "Kanaaltype",
 				"typeList": "Lijst/Forumkanaal",
 				"typeStreaming": "Streamingkanaal",
-				"typeText": "chat kanaal"
+				"typeText": "chat kanaal",
+				"readonlyRoot": {
+					"placeholder": "Rootkanaal kan geen berichten/bestanden verzenden"
+				}
 			},
 			"category": {
 				"context": {

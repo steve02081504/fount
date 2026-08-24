@@ -1695,7 +1695,8 @@
 						"general": "Basic",
 						"members": "Mitglied",
 						"permissions": "Rollenberechtigungen",
-						"storage": "Speicherung und Archivierung"
+						"storage": "Speicherung und Archivierung",
+						"groupPermissions": "Gruppenberechtigungen"
 					},
 					"key": {
 						"managementTip": "Neue Schlüssel müssen nach der Rotation an die Mitglieder neu verteilt werden. Manuelle Maßnahmen sollten nur dann ergriffen werden, wenn Sie den Verdacht haben, dass ein Schlüssel kompromittiert wurde.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "Sind Sie sicher, dass Sie den Hauptschlüssel dieser Gruppendatei manuell rotieren möchten? Neue Mitglieder müssen den Verlaufsdateischlüssel neu synchronisieren.",
 						"rotateFailed": "Schlüsselrotation fehlgeschlagen: ${error}",
 						"rotateOk": "Schlüssel wurde gedreht"
+					},
+					"groupPerms": {
+						"denied": "Keine Berechtigung zum Verwalten von Gruppenberechtigungen",
+						"hint": "Legen Sie Überschreibungen nach Rolle für Governance-Berechtigungen auf Gruppenebene fest (kündigen, sperren, Rollen verwalten, Administratoren verwalten, Mitglieder einladen).",
+						"overridden": "Bedeckt",
+						"clearOverride": "klar überschreiben",
+						"noRoles": "Derzeit gibt es keine zu konfigurierende Rolle",
+						"updateFailed": "Die Aktualisierung der Gruppenberechtigung ist fehlgeschlagen",
+						"updated": "Gruppenberechtigungen wurden aktualisiert"
 					}
 				},
 				"pinContext": "Top-Nachbarschaft (±N Nachbarn)",
@@ -2439,7 +2449,10 @@
 				"type": "Kanaltyp",
 				"typeList": "Liste/Forumkanal",
 				"typeStreaming": "Streaming-Kanal",
-				"typeText": "Chat-Kanal"
+				"typeText": "Chat-Kanal",
+				"readonlyRoot": {
+					"placeholder": "Der Root-Kanal kann keine Nachrichten/Dateien senden"
+				}
 			},
 			"category": {
 				"context": {

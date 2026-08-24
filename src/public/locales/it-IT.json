@@ -1695,7 +1695,8 @@
 						"general": "di base",
 						"members": "Membri",
 						"permissions": "Autorizzazioni del ruolo",
-						"storage": "Conservazione e archiviazione"
+						"storage": "Conservazione e archiviazione",
+						"groupPermissions": "Autorizzazioni di gruppo"
 					},
 					"key": {
 						"managementTip": "Le nuove chiavi devono essere ridistribuite ai membri dopo la rotazione. L'azione manuale dovrebbe essere intrapresa solo se si sospetta che una chiave sia stata compromessa.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "Sei sicuro di voler ruotare manualmente la chiave principale di questo file di gruppo? I nuovi membri devono risincronizzare la chiave del file di cronologia.",
 						"rotateFailed": "Rotazione della chiave non riuscita: ${error}",
 						"rotateOk": "La chiave è stata ruotata"
+					},
+					"groupPerms": {
+						"denied": "Nessuna autorizzazione per gestire le autorizzazioni del gruppo",
+						"hint": "Imposta le sostituzioni in base al ruolo per le autorizzazioni di governance a livello di gruppo (espulsione, ban, gestione dei ruoli, gestione degli amministratori, invito dei membri).",
+						"overridden": "Coperto",
+						"clearOverride": "sovrascrittura chiara",
+						"noRoles": "Al momento non esiste alcun ruolo da configurare",
+						"updateFailed": "Aggiornamento delle autorizzazioni del gruppo non riuscito",
+						"updated": "Le autorizzazioni del gruppo sono state aggiornate"
 					}
 				},
 				"pinContext": "Quartiere principale (± N vicini)",
@@ -2439,7 +2449,10 @@
 				"type": "Tipo di canale",
 				"typeList": "Canale elenco/forum",
 				"typeStreaming": "Canale in streaming",
-				"typeText": "canale di chat"
+				"typeText": "canale di chat",
+				"readonlyRoot": {
+					"placeholder": "Il canale root non può inviare messaggi/file"
+				}
 			},
 			"category": {
 				"context": {

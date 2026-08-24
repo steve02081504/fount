@@ -1695,7 +1695,8 @@
 						"general": "nền tảng",
 						"members": "thành viên",
 						"permissions": "Quyền của vai trò",
-						"storage": "Lưu trữ và lưu trữ"
+						"storage": "Lưu trữ và lưu trữ",
+						"groupPermissions": "Quyền của nhóm"
 					},
 					"key": {
 						"managementTip": "Khóa mới cần được phân phối lại cho các thành viên sau khi luân chuyển. Chỉ nên thực hiện thao tác thủ công nếu bạn nghi ngờ khóa đã bị xâm phạm.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "Bạn có chắc chắn muốn xoay khóa chính của tệp nhóm này theo cách thủ công không? Thành viên mới cần đồng bộ lại khóa tệp lịch sử.",
 						"rotateFailed": "Xoay khóa không thành công: ${error}",
 						"rotateOk": "Chìa khóa đã được xoay"
+					},
+					"groupPerms": {
+						"denied": "Không có quyền quản lý quyền của nhóm",
+						"hint": "Đặt ghi đè theo vai trò cho quyền quản trị cấp nhóm (kick, cấm, quản lý vai trò, quản lý quản trị viên, mời thành viên).",
+						"overridden": "che phủ",
+						"clearOverride": "ghi đè rõ ràng",
+						"noRoles": "Hiện tại không có vai trò nào để định cấu hình",
+						"updateFailed": "Cập nhật quyền của nhóm không thành công",
+						"updated": "Quyền của nhóm đã được cập nhật"
 					}
 				},
 				"pinContext": "Vùng lân cận hàng đầu (±N vùng lân cận)",
@@ -2439,7 +2449,10 @@
 				"type": "Loại kênh",
 				"typeList": "Danh sách/Kênh diễn đàn",
 				"typeStreaming": "kênh phát trực tuyến",
-				"typeText": "kênh trò chuyện"
+				"typeText": "kênh trò chuyện",
+				"readonlyRoot": {
+					"placeholder": "Kênh gốc không thể gửi tin nhắn/tập tin"
+				}
 			},
 			"category": {
 				"context": {

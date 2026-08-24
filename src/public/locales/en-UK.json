@@ -1695,7 +1695,8 @@
 						"general": "basic",
 						"members": "Members",
 						"permissions": "Role permissions",
-						"storage": "Storage and archiving"
+						"storage": "Storage and archiving",
+						"groupPermissions": "Group permissions"
 					},
 					"key": {
 						"managementTip": "New keys need to be redistributed to members after rotation. Manual action should only be taken if you suspect a key has been compromised.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "Are you sure you want to manually rotate the master key of this Group files? New members need to resynchronize the history file key.",
 						"rotateFailed": "Key rotation failed: ${error}",
 						"rotateOk": "Key has been rotated"
+					},
+					"groupPerms": {
+						"denied": "No permission to manage group permissions",
+						"hint": "Set overrides by role for group-level governance permissions (kick, ban, manage roles, manage admins, invite members).",
+						"overridden": "Covered",
+						"clearOverride": "clear overwrite",
+						"noRoles": "There is currently no role to configure",
+						"updateFailed": "Group permission update failed",
+						"updated": "Group permissions have been updated"
 					}
 				},
 				"pinContext": "Top neighborhood (±N neighbors)",
@@ -2439,7 +2449,10 @@
 				"type": "Channel type",
 				"typeList": "List/Forum Channel",
 				"typeStreaming": "Streaming channel",
-				"typeText": "chat channel"
+				"typeText": "chat channel",
+				"readonlyRoot": {
+					"placeholder": "Root channel cannot send messages/files"
+				}
 			},
 			"category": {
 				"context": {

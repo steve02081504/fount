@@ -1658,6 +1658,7 @@ export type LocaleData = {
 						members: string
 						permissions: string
 						storage: string
+						groupPermissions: string
 					}
 					key: {
 						managementTip: string
@@ -1666,6 +1667,15 @@ export type LocaleData = {
 						rotateConfirm: string
 						rotateFailed: string
 						rotateOk: string
+					}
+					groupPerms: {
+						denied: string
+						hint: string
+						overridden: string
+						clearOverride: string
+						noRoles: string
+						updateFailed: string
+						updated: string
 					}
 				}
 				pinContext: string
@@ -2402,6 +2412,9 @@ export type LocaleData = {
 				typeList: string
 				typeStreaming: string
 				typeText: string
+				readonlyRoot: {
+					placeholder: string
+				}
 			}
 			category: {
 				context: {

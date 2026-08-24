@@ -1695,7 +1695,8 @@
 						"general": "basique",
 						"members": "Membres",
 						"permissions": "Autorisations de rôle",
-						"storage": "Stockage et archivage"
+						"storage": "Stockage et archivage",
+						"groupPermissions": "Autorisations de groupe"
 					},
 					"key": {
 						"managementTip": "Les nouvelles clés doivent être redistribuées aux membres après la rotation. Une action manuelle ne doit être entreprise que si vous pensez qu’une clé a été compromise.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "Êtes-vous sûr de vouloir faire pivoter manuellement la clé principale de ce fichier de groupe ? Les nouveaux membres doivent resynchroniser la clé du fichier historique.",
 						"rotateFailed": "Échec de la rotation des clés : ${error}",
 						"rotateOk": "La clé a été tournée"
+					},
+					"groupPerms": {
+						"denied": "Aucune autorisation pour gérer les autorisations de groupe",
+						"hint": "Définissez des remplacements par rôle pour les autorisations de gouvernance au niveau du groupe (expulser, bannir, gérer les rôles, gérer les administrateurs, inviter des membres).",
+						"overridden": "Couvert",
+						"clearOverride": "effacer l'écrasement",
+						"noRoles": "Il n'y a actuellement aucun rôle à configurer",
+						"updateFailed": "Échec de la mise à jour des autorisations de groupe",
+						"updated": "Les autorisations de groupe ont été mises à jour"
 					}
 				},
 				"pinContext": "Quartier supérieur (±N voisins)",
@@ -2439,7 +2449,10 @@
 				"type": "Type de canal",
 				"typeList": "Chaîne de liste/forum",
 				"typeStreaming": "chaîne de diffusion en continu",
-				"typeText": "canal de discussion"
+				"typeText": "canal de discussion",
+				"readonlyRoot": {
+					"placeholder": "Le canal racine ne peut pas envoyer de messages/fichiers"
+				}
 			},
 			"category": {
 				"context": {

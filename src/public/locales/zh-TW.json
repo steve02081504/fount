@@ -1694,7 +1694,8 @@
 						"general": "基本",
 						"members": "成員",
 						"permissions": "角色許可權",
-						"storage": "儲存與歸檔"
+						"storage": "儲存與歸檔",
+						"groupPermissions": "群組權限"
 					},
 					"key": {
 						"managementTip": "輪換後需要重新向成員分發新金鑰。只有懷疑金鑰洩露時才應手動操作。",
@@ -1703,6 +1704,15 @@
 						"rotateConfirm": "確定手動輪換本群檔案主金鑰？新成員需重新同步歷史檔案金鑰。",
 						"rotateFailed": "金鑰輪換失敗：${error}",
 						"rotateOk": "金鑰已輪換"
+					},
+					"groupPerms": {
+						"denied": "沒有管理群組權限的權限",
+						"hint": "為群組層級治理權限（踢出、封鎖、管理角色、管理管理員、邀請成員）依角色設定覆蓋。",
+						"overridden": "已覆蓋",
+						"clearOverride": "清除覆蓋",
+						"noRoles": "暫無可配置角色",
+						"updateFailed": "群組權限更新失敗",
+						"updated": "群組權限已更新"
 					}
 				},
 				"pinContext": "置頂鄰域（±N 鄰帖）",
@@ -2438,7 +2448,10 @@
 				"type": "頻道型別",
 				"typeList": "列表/論壇頻道",
 				"typeStreaming": "流媒體頻道",
-				"typeText": "聊天頻道"
+				"typeText": "聊天頻道",
+				"readonlyRoot": {
+					"placeholder": "根頻道不能傳送訊息/文件"
+				}
 			},
 			"category": {
 				"context": {

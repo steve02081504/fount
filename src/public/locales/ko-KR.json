@@ -1695,7 +1695,8 @@
 						"general": "기본",
 						"members": "멤버",
 						"permissions": "역할 권한",
-						"storage": "저장 및 보관"
+						"storage": "저장 및 보관",
+						"groupPermissions": "그룹 권한"
 					},
 					"key": {
 						"managementTip": "교체 후 새 키를 구성원에게 재배포해야 합니다. 키가 손상되었다고 의심되는 경우에만 수동 조치를 취해야 합니다.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "이 그룹 파일의 마스터 키를 수동으로 순환하시겠습니까? 새 구성원은 기록 파일 키를 다시 동기화해야 합니다.",
 						"rotateFailed": "키 순환 실패: ${error}",
 						"rotateOk": "키가 순환되었습니다."
+					},
+					"groupPerms": {
+						"denied": "그룹 권한을 관리할 권한이 없습니다.",
+						"hint": "그룹 수준 거버넌스 권한(차단, 금지, 역할 관리, 관리자 관리, 구성원 초대)에 대한 역할별 재정의를 설정합니다.",
+						"overridden": "덮음",
+						"clearOverride": "덮어쓰기 지우기",
+						"noRoles": "현재 구성할 역할이 없습니다.",
+						"updateFailed": "그룹 권한 업데이트 실패",
+						"updated": "그룹 권한이 업데이트되었습니다."
 					}
 				},
 				"pinContext": "상위 이웃(±N 이웃)",
@@ -2439,7 +2449,10 @@
 				"type": "채널 유형",
 				"typeList": "목록/포럼 채널",
 				"typeStreaming": "스트리밍 채널",
-				"typeText": "채팅 채널"
+				"typeText": "채팅 채널",
+				"readonlyRoot": {
+					"placeholder": "루트 채널은 메시지/파일을 보낼 수 없습니다"
+				}
 			},
 			"category": {
 				"context": {

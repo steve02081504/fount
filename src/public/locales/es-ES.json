@@ -1695,7 +1695,8 @@
 						"general": "básico",
 						"members": "miembro",
 						"permissions": "Permisos de rol",
-						"storage": "Almacenamiento y archivo"
+						"storage": "Almacenamiento y archivo",
+						"groupPermissions": "Permisos de grupo"
 					},
 					"key": {
 						"managementTip": "Las nuevas claves deben redistribuirse a los miembros después de la rotación. Sólo se deben tomar medidas manuales si sospecha que una clave se ha visto comprometida.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "¿¿Seguro que quieres rotar manualmente la clave maestra de este archivo de grupo? Los nuevos miembros deben resincronizar la clave del archivo histórico.",
 						"rotateFailed": "Falló la rotación de clave: ${error}",
 						"rotateOk": "La llave ha sido rotada"
+					},
+					"groupPerms": {
+						"denied": "Sin permiso para administrar permisos de grupo",
+						"hint": "Establezca anulaciones por rol para permisos de gobierno a nivel de grupo (expulsar, prohibir, administrar roles, administrar administradores, invitar a miembros).",
+						"overridden": "Cubierto",
+						"clearOverride": "borrar sobrescritura",
+						"noRoles": "Actualmente no hay ningún rol para configurar",
+						"updateFailed": "Error en la actualización de permisos de grupo",
+						"updated": "Se han actualizado los permisos de grupo."
 					}
 				},
 				"pinContext": "Barrio superior (±N vecinos)",
@@ -2439,7 +2449,10 @@
 				"type": "tipo de canal",
 				"typeList": "Lista/canal del foro",
 				"typeStreaming": "canal de transmisión",
-				"typeText": "canal de chat"
+				"typeText": "canal de chat",
+				"readonlyRoot": {
+					"placeholder": "El canal raíz no puede enviar mensajes/archivos"
+				}
 			},
 			"category": {
 				"context": {

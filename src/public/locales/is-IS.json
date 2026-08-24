@@ -1695,7 +1695,8 @@
 						"general": "Grunnur",
 						"members": "Meðlimir",
 						"permissions": "Hlutverkaheimildir",
-						"storage": "Geymsla og geymsluset"
+						"storage": "Geymsla og geymsluset",
+						"groupPermissions": "Hópheimildir"
 					},
 					"key": {
 						"managementTip": "Nýjum lyklum þarf að endurúthluta til félagsmanna eftir skipti. Aðeins ætti að grípa til handvirkra aðgerða ef grunur leikur á að lykill hafi verið í hættu.",
@@ -1704,6 +1705,15 @@
 						"rotateConfirm": "Ertu viss um að þú viljir snúa aðallykli þessarar hópskrár handvirkt? Nýir meðlimir þurfa að endursamstilla söguskráarlykilinn.",
 						"rotateFailed": "Snúningur lykla mistókst: ${error}",
 						"rotateOk": "Lykillinn hefur verið snúinn"
+					},
+					"groupPerms": {
+						"denied": "Engin heimild til að stjórna hópheimildum",
+						"hint": "Stilltu hnekkingar eftir hlutverkum fyrir stjórnunarheimildir á hópstigi (sparka, banna, stjórna hlutverkum, stjórna stjórnendum, bjóða meðlimum).",
+						"overridden": "Yfirbyggð",
+						"clearOverride": "hreinsa yfirskrift",
+						"noRoles": "Sem stendur er ekkert hlutverk til að stilla",
+						"updateFailed": "Ekki tókst að uppfæra hópheimildir",
+						"updated": "Hópheimildir hafa verið uppfærðar"
 					}
 				},
 				"pinContext": "Efsta hverfi (±N nágrannar)",
@@ -2439,7 +2449,10 @@
 				"type": "Gerð rásar",
 				"typeList": "Listi/spjallrás",
 				"typeStreaming": "Streymisrás",
-				"typeText": "Spjallrás"
+				"typeText": "Spjallrás",
+				"readonlyRoot": {
+					"placeholder": "Rótarrás getur ekki sent skilaboð/skrár"
+				}
 			},
 			"category": {
 				"context": {
