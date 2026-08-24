@@ -7,7 +7,11 @@ import { mountTemplate } from '../templates.mjs'
 import { fillRolePermsIfEmpty, safeRoleColor, sortedRoleIds } from './channelPermsUi.mjs'
 import { grantableGroupOverridePermissions } from './constants.mjs'
 
-/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+/**
+ * 渲染群级治理权限面板：按角色列出可配置权限覆写（denied 无权限时显示拒绝模板）。
+ * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
+ * @returns {Promise<void>}
+ */
 export async function renderGroupPermissionsPanel(context) {
 	const container = document.getElementById('group-perms-container')
 	if (!container || !context.groupId || !context.state) return
@@ -60,7 +64,7 @@ export async function renderGroupPermissionsPanel(context) {
 		const permsEl = details.querySelector('.settings-role-perms')
 		if (!(permsEl instanceof HTMLElement)) return
 		void fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
-	}, { signal })
+	}, { signal, capture: true })
 
 	container.addEventListener('click', async event => {
 		const clearButton = event.target.closest('[data-action="clear-group-override"]')
@@ -102,7 +106,11 @@ export async function renderGroupPermissionsPanel(context) {
 	}, { signal })
 }
 
-/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+/**
+ * 确保群级权限面板已渲染（幂等，已就绪则跳过）。
+ * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
+ * @returns {Promise<void>}
+ */
 export async function ensureGroupPermissionsPanel(context) {
 	if (!context.groupId || context.groupPermsReady) return
 	context.groupPermsReady = true

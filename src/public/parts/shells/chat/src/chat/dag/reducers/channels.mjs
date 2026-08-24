@@ -2,6 +2,20 @@ import { resolvePermissionBlockOwner } from '../permissionBlockOwner.mjs'
 
 import { withGroupId } from './state.mjs'
 
+/**
+ * 判断某频道是否仍被删除集之外的频道链接（即共享子频道）。
+ * @param {object} state 物化群状态
+ * @param {string} channelId 目标频道 id
+ * @param {Set<string>} toDelete 即将删除的频道 id 集
+ * @returns {boolean} 存在删除集外父链接为 true
+ */
+function hasExternalParent(state, channelId, toDelete) {
+	for (const channel of Object.values(state.channels))
+		if (channel && !toDelete.has(channel.id) && channel.links?.includes(channelId))
+			return true
+	return false
+}
+
 /** @type {Record<string, (state: object, event: object) => object>} */
 export const channelReducers = {
 	/**
@@ -67,17 +81,21 @@ export const channelReducers = {
 		const { channelId } = event.content
 		// 根容器承载整棵频道树，删除它会级联清空全部频道；防御性拒绝。
 		if (state.groupSettings?.rootChannelId === channelId) return state
+		const rootChannelId = state.groupSettings?.rootChannelId
 		const toDelete = new Set([channelId])
 		const stack = [channelId]
 		while (stack.length) {
 			const id = stack.pop()
 			const channel = state.channels[id]
 			if (!channel) continue
-			for (const childId of channel.links || [])
-				if (!toDelete.has(childId)) {
-					toDelete.add(childId)
-					stack.push(childId)
-				}
+			for (const childId of channel.links || []) {
+				if (childId === rootChannelId) continue
+				if (toDelete.has(childId)) continue
+				// 共享子频道：若仍被删除集外的频道链接，则不级联删除。
+				if (hasExternalParent(state, childId, toDelete)) continue
+				toDelete.add(childId)
+				stack.push(childId)
+			}
 		}
 		// 先给引用被删权限块的频道复制其有效块：在 channelPermissions 删除前保留既有覆写。
 		for (const channel of Object.values(state.channels))

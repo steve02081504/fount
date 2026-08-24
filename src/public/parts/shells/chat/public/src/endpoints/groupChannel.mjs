@@ -422,10 +422,11 @@ export async function autoNameChannels(groupId) {
  * @returns {Promise<string>} 新频道 ID
  */
 export async function createChannel(groupId, name, type = 'text', parentChannelId = null) {
-	return groupFetch(groupPath(groupId, 'channels'), {
+	const data = await groupFetch(groupPath(groupId, 'channels'), {
 		method: 'POST',
 		json: { name, type, parentChannelId },
 	})
+	return data.channelId
 }
 
 /**

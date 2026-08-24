@@ -201,11 +201,10 @@ export async function appendKeyRotateEvent(username, groupId, body) {
 		throw new Error('new_key_nonce required')
 	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
 	const { state } = await getState(username, groupId)
-	const permissionsChannelId = governanceChannelId(state)
 	const member = state.members?.[sender]
 	const activeCount = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 	const isDmPair = activeCount === 2
-	if (!isDmPair && !canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ROLES], permissionsChannelId))
+	if (!isDmPair && !canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ROLES], governanceChannelId(state)))
 		throw new Error('file_master_key_rotate requires ADMIN, MANAGE_ROLES, or DM membership')
 	return appendEvent(username, groupId, {
 		type: 'file_master_key_rotate',

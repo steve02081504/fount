@@ -62,6 +62,7 @@ export const SUPERUSER_PERMISSIONS = [
 export const GROUP_SCOPE_ID = '@group'
 
 /**
+ * 判断权限键是否属于群级治理权限（可用于群权限覆写）。
  * @param {string} permission 权限键
  * @returns {boolean} 是否群级治理权限
  */
@@ -70,6 +71,7 @@ export function isGroupPermission(permission) {
 }
 
 /**
+ * 判断权限键是否属于频道级权限（可用于频道权限覆写）。
  * @param {string} permission 权限键
  * @returns {boolean} 是否频道级权限
  */

@@ -198,8 +198,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			groupContext: { username, state, member, groupId }
 		} = req
 
-		const canManageRoles = canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state))
-		if (!canManageRoles)
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
 			throw httpError(403, 'No permission to manage roles')
 
 		const roleName = name?.trim()
@@ -231,8 +230,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 
-		const canManageRoles = canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state))
-		if (!canManageRoles)
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
 			throw httpError(403, 'No permission to manage roles')
 
 		const role = state.roles[roleId]
@@ -263,8 +261,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 
-		const canManageRoles = canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state))
-		if (!canManageRoles)
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
 			throw httpError(403, 'No permission to manage roles')
 
 		const role = state.roles[roleId]
@@ -288,8 +285,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
-		const canManageRoles = canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state))
-		if (!canManageRoles)
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
 			throw httpError(403, 'No permission to manage roles')
 
 		const role = state.roles[roleId]

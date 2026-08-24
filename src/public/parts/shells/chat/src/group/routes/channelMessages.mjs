@@ -132,6 +132,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const eventId = req.params.eventId || ''
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
+		assertNotRootChannel(channelId)
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership

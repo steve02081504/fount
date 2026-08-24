@@ -88,9 +88,9 @@ export async function renderChannelPermissionsPanel(context) {
 		const syncBtn = event.target.closest('[data-action="sync-to-default"]')
 		if (syncBtn && context.selectedChannelPermsId) {
 			try {
-				const permissionBlockId = await syncChannelPermissionBlock(context.groupId, context.selectedChannelPermsId)
 				if (context.state.channels?.[context.selectedChannelPermsId])
-					context.state.channels[context.selectedChannelPermsId].permissionBlockId = permissionBlockId
+					context.state.channels[context.selectedChannelPermsId].permissionBlockId =
+						await syncChannelPermissionBlock(context.groupId, context.selectedChannelPermsId)
 				showToastI18n('success', 'chat.group.settings.page.channelPerms.synced')
 				await renderChannelPermissionsPanel(context)
 			}

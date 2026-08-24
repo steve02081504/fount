@@ -4,7 +4,7 @@
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { findParentChannelId } from '../../shared/channelReorder.mjs'
-import { autoNameChannels, createChannel, updateChannel } from '../../src/endpoints/groupChannel.mjs'
+import { createChannel, updateChannel } from '../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { openDialogFromTemplate, renderTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
@@ -51,23 +51,19 @@ function inferCreateParent() {
 }
 
 /**
- * DM 群快速新建频道：空名创建（显示"未命名"、置顶根级），随后若有默认 AI 源则自动命名/分类。
+ * DM 群快速新建频道：空名创建（显示"未命名"、置顶根级）。后端异步处理该频道及其余根级无名频道的
+ * 命名/分类与 greeting-only 占位清理，前端只关注创建结束。
  * @returns {Promise<void>}
  */
 export async function quickCreateChannel() {
 	const groupId = store.context.currentGroupId
 	if (!groupId) return
 	try {
-		const { channelId, cleaned } = await createChannel(groupId, '')
+		const channelId = await createChannel(groupId, '')
 		const rootChannelId = store.context.currentState?.groupSettings?.rootChannelId || null
 		if (rootChannelId) await moveChannelToTop(groupId, channelId, rootChannelId)
 		await refreshChannelSidebar()
 		await selectChannel(channelId)
-		// DM 群新建频道时后端已清理 greeting-only 占位频道 → 跳过 AI 命名/分类。
-		if (!cleaned) {
-			await autoNameChannels(groupId).catch(() => null)
-			await refreshChannelSidebar()
-		}
 		showToastI18n('success', 'chat.hub.newChannel.success')
 	}
 	catch (error) {
@@ -111,7 +107,7 @@ export async function showCreateChannelModal(options = {}) {
 				const parentChannelId = dialog.querySelector('#new-channel-parent')?.value || null
 				if (!name) return
 				try {
-					const { channelId } = await createChannel(groupId, name, type, parentChannelId)
+					const channelId = await createChannel(groupId, name, type, parentChannelId)
 					const targetParentId = parentChannelId || inferCreateParent()
 					if (targetParentId) await moveChannelToTop(groupId, channelId, targetParentId)
 					close()

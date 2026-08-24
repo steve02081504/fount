@@ -77,12 +77,28 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 			const body = dialog.querySelector('#category-perm-body')
 			if (!body) return
 			dialog.querySelector('#category-perm-close')?.addEventListener('click', () => dialog.close())
+
+			// 对话框级权限写入串行排队：所有角色读最新快照后再提交，避免共享 permissions 快照被并发响应覆盖。
+			/**
+			 * 串行化权限写入（读最新快照 + 提交 + 重绘），失败后继续处理后续任务。
+			 * @param {() => Promise<void>} op 读提交操作
+			 * @returns {Promise<void>}
+			 */
+			const enqueuePermOp = op => {
+				const next = permQueue.catch(() => {}).then(op)
+				permQueue = next
+				return next
+			}
+			let permQueue = Promise.resolve()
+
 			dialog.querySelector('#category-perm-sync')?.addEventListener('click', async () => {
 				try {
-					const { syncChannelPermissionBlock } = await import('../src/endpoints/groupChannel.mjs')
-					permissionBlockId = await syncChannelPermissionBlock(groupId, categoryId)
+					await enqueuePermOp(async () => {
+						const { syncChannelPermissionBlock } = await import('../src/endpoints/groupChannel.mjs')
+						permissionBlockId = await syncChannelPermissionBlock(groupId, categoryId)
+						await renderRolePanels(body)
+					})
 					showToastI18n('success', 'chat.hub.category.perm.synced')
-					await renderRolePanels(body)
 				}
 				catch (error) {
 					handleError('chat.hub.category.perm.updateFailed')(error)
@@ -108,19 +124,6 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 					handleError('chat.hub.category.perm.loadFailed')(error)
 				}
 			}, { capture: true })
-
-			// 对话框级权限写入串行排队：所有角色读最新快照后再提交，避免共享 permissions 快照被并发响应覆盖。
-			/**
-			 * 串行化权限写入（读最新快照 + 提交 + 重绘），失败后继续处理后续任务。
-			 * @param {() => Promise<void>} op 读提交操作
-			 * @returns {Promise<void>}
-			 */
-			const enqueuePermOp = op => {
-				const next = permQueue.catch(() => {}).then(op)
-				permQueue = next
-				return next
-			}
-			let permQueue = Promise.resolve()
 
 			body.addEventListener('click', async event => {
 				const clearBtn = event.target.closest('[data-action="clear-role-override"]')

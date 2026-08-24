@@ -257,7 +257,9 @@ export async function checkEventPermission(state, event, senderHash, options = {
 			const supportedUpdateFields = ['name', 'description', 'type', 'isPrivate', 'links', 'permissionBlockId']
 			if (Object.keys(updates).some(key => !supportedUpdateFields.includes(key)))
 				return { ok: false, reason: 'unsupported channel_update fields' }
-			if (Array.isArray(updates.links)) {
+			if (Object.hasOwn(updates, 'links')) {
+				if (!Array.isArray(updates.links))
+					return { ok: false, reason: 'links must be an array' }
 				const targetPerms = memberChannelPermissions(state, sender, targetChannelId)
 				if (!(targetPerms[PERMISSIONS.CREATE_THREADS] || targetPerms[PERMISSIONS.MANAGE_CHANNELS]))
 					return { ok: false, reason: 'CREATE_THREADS or MANAGE_CHANNELS required to update links' }
@@ -273,25 +275,29 @@ export async function checkEventPermission(state, event, senderHash, options = {
 		case 'channel_permissions_update': {
 			if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_CHANNELS]))
 				return { ok: false, reason: 'MANAGE_ROLES or MANAGE_CHANNELS required' }
-			const allow = event.content?.allow
-			if (permissionsGrantSuperuser(allow))
-				return { ok: false, reason: 'channel allow cannot include ADMIN or MANAGE_ADMINS' }
-			if (containsGroupPermission(allow))
-				return { ok: false, reason: 'channel allow cannot include group-level permissions' }
-			if (permissionsExceedGrantor(govPerms, allow))
-				return { ok: false, reason: 'channel allow exceeds grantor permissions' }
+			const { allow, deny } = event.content || {}
+			for (const [kind, perms] of [['allow', allow], ['deny', deny]]) {
+				if (permissionsGrantSuperuser(perms))
+					return { ok: false, reason: `channel ${kind} cannot include ADMIN or MANAGE_ADMINS` }
+				if (containsGroupPermission(perms))
+					return { ok: false, reason: `channel ${kind} cannot include group-level permissions` }
+				if (permissionsExceedGrantor(govPerms, perms))
+					return { ok: false, reason: `channel ${kind} exceeds grantor permissions` }
+			}
 			return { ok: true }
 		}
 		case 'group_permissions_update': {
 			if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_ADMINS]))
 				return { ok: false, reason: 'MANAGE_ROLES or MANAGE_ADMINS required' }
-			const allow = event.content?.allow
-			if (permissionsGrantSuperuser(allow))
-				return { ok: false, reason: 'group allow cannot include ADMIN or MANAGE_ADMINS' }
-			if (containsChannelPermission(allow))
-				return { ok: false, reason: 'group allow cannot include channel-level permissions' }
-			if (permissionsExceedGrantor(govPerms, allow))
-				return { ok: false, reason: 'group allow exceeds grantor permissions' }
+			const { allow, deny } = event.content || {}
+			for (const [kind, perms] of [['allow', allow], ['deny', deny]]) {
+				if (permissionsGrantSuperuser(perms))
+					return { ok: false, reason: `group ${kind} cannot include ADMIN or MANAGE_ADMINS` }
+				if (containsChannelPermission(perms))
+					return { ok: false, reason: `group ${kind} cannot include channel-level permissions` }
+				if (permissionsExceedGrantor(govPerms, perms))
+					return { ok: false, reason: `group ${kind} exceeds grantor permissions` }
+			}
 			return { ok: true }
 		}
 		case 'channel_key_rotate':

@@ -105,6 +105,12 @@ export function buildCheckpointPayload({
 			roles: members_record.roles,
 			channelPermissions: members_record.channelPermissions,
 			groupPermissions: members_record.groupPermissions,
+			channelPermissionBlockIds: Object.fromEntries(
+				Object.entries(members_record.channels || {}).map(([channelId, channel]) => [
+					channelId,
+					{ permissionBlockId: channel?.permissionBlockId ?? null },
+				]),
+			),
 			bannedMembers: members_record.bannedMembers,
 			bannedEntities: members_record.bannedEntities,
 			bannedNodes: members_record.bannedNodes,

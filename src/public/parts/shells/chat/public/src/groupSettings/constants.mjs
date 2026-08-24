@@ -8,7 +8,7 @@ export const ALL_PERMISSIONS = [
 
 /** 群级治理权限：可写入群权限覆写。 */
 export const GROUP_PERMISSIONS = [
-	'KICK_MEMBERS', 'BAN_MEMBERS', 'MANAGE_ROLES', 'MANAGE_ADMINS', 'INVITE_MEMBERS',
+	'KICK_MEMBERS', 'BAN_MEMBERS', 'MANAGE_ROLES', 'INVITE_MEMBERS',
 ]
 
 /** 频道级权限：可写入频道权限覆写。 */

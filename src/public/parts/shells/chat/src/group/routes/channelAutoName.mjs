@@ -94,6 +94,131 @@ function buildChannelPrompt(context, categoryNames) {
 }
 
 /**
+ * 为单个空名频道异步命名/分类：读取最近消息 → AI StructCall → 必要时创建分类 → 更新频道并归入分类。
+ * 失败由调用方捕获并放行（下次新建频道再触发）。
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 空名频道 id
+ * @returns {Promise<boolean>} 是否成功命名
+ */
+async function autoNameChannelAsync(username, groupId, channelId) {
+	const aiSource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI')
+	if (!aiSource) return false
+	const { state } = await getState(username, groupId)
+	const channels = state.channels || {}
+	const channel = channels[channelId]
+	if (!channel || channel.type !== 'text' || String(channel.name || '').trim()) return false
+
+	/** @type {Map<string, string>} 分类名 → 频道 id（含本次新建，供复用） */
+	const categoryIdByName = new Map(
+		Object.entries(channels)
+			.filter(([, ch]) => ch?.type === 'category' && String(ch?.name || '').trim())
+			.map(([id, ch]) => [String(ch.name).trim(), id]),
+	)
+	/** 现有分类名（与 categoryIdByName 键同步）。 */
+	const categoryNames = [...categoryIdByName.keys()]
+
+	const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: CONTEXT_MESSAGE_COUNT })
+	const texts = lines.map(line => messageLineShowText(line, { onlyMessageTypes: true })).filter(Boolean)
+	const context = buildChannelContext(texts)
+
+	const promptText = buildChannelPrompt(context, categoryNames)
+	const promptStruct = {
+		chat_log: [],
+		char_prompt: { text: [] },
+		user_prompt: {
+			text: [{ content: promptText, description: '', important: 1 }],
+			additional_chat_log: [],
+			extension: {},
+		},
+		world_prompt: { text: [] },
+		other_chars_prompts: {},
+		other_personas_prompts: {},
+		plugin_prompts: {},
+	}
+
+	const result = await aiSource.StructCall(promptStruct)
+	const { name, category } = parseAutoNameResult(String(result?.content || ''))
+	if (!name) return false
+
+	let categoryId = null
+	if (category) {
+		categoryId = categoryIdByName.get(category)
+		if (!categoryId) {
+			const created = await createChannel(username, groupId, {
+				type: 'category',
+				name: category,
+				channelId: prefixedRandomId('channel_'),
+			})
+			categoryId = created.content?.channelId || null
+		}
+	}
+
+	// 单事件提交子频道侧更新（名称 + 权限块），父频道 links 另成一条，避免多次可部分成功的操作。
+	const updates = {}
+	if (channel.name !== name) updates.name = name
+	if (categoryId) updates.permissionBlockId = categoryId
+	if (Object.keys(updates).length)
+		await updateChannel(username, groupId, channelId, updates)
+	if (categoryId)
+		await appendChannelLink(username, groupId, categoryId, channelId)
+	return true
+}
+
+/**
+ * DM 群新建频道后异步清理/命名根级无名频道：
+ *   截取每个无名频道最近 13 条消息，全为问候语则删除，否则启动异步 AI 命名（Map 去重，失败放行）。
+ *   若被删除频道是默认频道，先改默认频道为刚创建的新频道。
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {string} newChannelId 刚创建的新频道 id
+ * @param {object} state 物化群状态
+ * @returns {Promise<void>}
+ */
+export async function scheduleDmChannelAutoNameAndCleanup(username, groupId, newChannelId, state) {
+	const isDm = groupKindFromState(state) === 'dm' || !!state.groupMeta?.friendBinding
+	if (!isDm) return
+	const rootChannelId = state.groupSettings?.rootChannelId
+	if (!rootChannelId) return
+	const candidates = (state.channels?.[rootChannelId]?.links || [])
+		.filter(id => id !== newChannelId)
+		.filter(id => {
+			const channel = state.channels?.[id]
+			return channel?.type === 'text' && !String(channel?.name || '').trim()
+		})
+	if (!candidates.length) return
+
+	const toDelete = []
+	const toName = []
+	for (const channelId of candidates) {
+		const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: CONTEXT_MESSAGE_COUNT })
+		if (!lines.length) continue
+		if (lines.every(isGreetingOnlyMessage)) toDelete.push(channelId)
+		else toName.push(channelId)
+	}
+
+	const defaultChannelId = state.groupSettings?.defaultChannelId
+	if (toDelete.includes(defaultChannelId))
+		await appendSignedLocalEvent(username, groupId, {
+			type: 'group_settings_update',
+			timestamp: Date.now(),
+			content: { defaultChannelId: newChannelId },
+		})
+
+	for (const channelId of toDelete)
+		await deleteChannel(username, groupId, channelId).catch(() => {})
+
+	for (const channelId of toName) {
+		const key = `${groupId}:${channelId}`
+		if (autoNamingInFlight.has(key)) continue
+		autoNamingInFlight.set(key, true)
+		autoNameChannelAsync(username, groupId, channelId)
+			.catch(() => {})
+			.finally(() => autoNamingInFlight.delete(key))
+	}
+}
+
+/**
  * 注册空名频道自动命名 HTTP 路由。
  * @param {import('npm:websocket-express').Router} router Express 路由
  * @param {import('npm:express').RequestHandler} authenticate 鉴权中间件
@@ -105,88 +230,10 @@ export function registerChannelAutoNameRoutes(router, authenticate) {
 			groupContext: { groupId, state, username },
 		} = req
 
-		const isDm = groupKindFromState(state) === 'dm' || !!state.groupMeta?.friendBinding
-		if (!isDm)
+		if (!(groupKindFromState(state) === 'dm' || !!state.groupMeta?.friendBinding))
 			throw httpError(403, 'auto-name is only allowed in DM groups')
 
-		const aiSource = await loadAnyPreferredDefaultPart(username, 'serviceSources/AI')
-		if (!aiSource) {
-			res.status(200).json({ skipped: true, renamed: [] })
-			return
-		}
-
-		const channels = state.channels || {}
-		const emptyChannels = Object.entries(channels)
-			.filter(([, ch]) => ch?.type === 'text' && !String(ch?.name || '').trim())
-			.map(([id]) => id)
-		if (!emptyChannels.length) {
-			res.status(200).json({ skipped: false, renamed: [] })
-			return
-		}
-
-		/** @type {Map<string, string>} 分类名 → 频道 id（含本次新建，供复用） */
-		const categoryIdByName = new Map(
-			Object.entries(channels)
-				.filter(([, ch]) => ch?.type === 'category' && String(ch?.name || '').trim())
-				.map(([id, ch]) => [String(ch.name).trim(), id]),
-		)
-		/** 现有分类名（与 categoryIdByName 键同步）。 */
-		const categoryNames = [...categoryIdByName.keys()]
-
-		/** @type {string[]} */
-		const renamed = []
-		for (const channelId of emptyChannels) {
-			const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: CONTEXT_MESSAGE_COUNT })
-			const texts = lines.map(line => messageLineShowText(line, { onlyMessageTypes: true })).filter(Boolean)
-			const context = buildChannelContext(texts)
-
-			const promptText = buildChannelPrompt(context, categoryNames)
-			const promptStruct = {
-				chat_log: [],
-				char_prompt: { text: [] },
-				user_prompt: {
-					text: [{ content: promptText, description: '', important: 1 }],
-					additional_chat_log: [],
-					extension: {},
-				},
-				world_prompt: { text: [] },
-				other_chars_prompts: {},
-				other_personas_prompts: {},
-				plugin_prompts: {},
-			}
-
-			const result = await aiSource.StructCall(promptStruct)
-			const { name, category } = parseAutoNameResult(String(result?.content || ''))
-			if (!name) continue
-
-			let categoryId = null
-			if (category) {
-				categoryId = categoryIdByName.get(category)
-				if (!categoryId) {
-					const created = await createChannel(username, groupId, {
-						type: 'category',
-						name: category,
-						channelId: prefixedRandomId('channel_'),
-					})
-					categoryId = created.content?.channelId || null
-					if (categoryId) {
-						categoryIdByName.set(category, categoryId)
-						categoryNames.push(category)
-					}
-				}
-			}
-
-			// 单事件提交子频道侧更新（名称 + 权限块），父频道 links 另成一条，避免多次可部分成功的操作。
-			const updates = {}
-			if (channels[channelId]?.name !== name) updates.name = name
-			if (categoryId) updates.permissionBlockId = categoryId
-			if (Object.keys(updates).length)
-				await updateChannel(username, groupId, channelId, updates)
-			if (categoryId)
-				await appendChannelLink(username, groupId, categoryId, channelId)
-			renamed.push(channelId)
-		}
-
-		res.status(200).json({ skipped: false, renamed })
+		await scheduleDmChannelAutoNameAndCleanup(username, groupId, '', state)
+		res.status(200).json({ skipped: false, renamed: [] })
 	})
 }

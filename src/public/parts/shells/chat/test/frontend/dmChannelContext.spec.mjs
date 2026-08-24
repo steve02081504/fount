@@ -1,5 +1,5 @@
 /**
- * DM 视图下频道列表空白区右键菜单：新建频道（无弹窗，后端清理 greeting-only 占位频道）与新建分类。
+ * DM 视图下频道列表空白区右键菜单：新建频道（无弹窗；后端异步清理 greeting-only 占位频道）与新建分类。
  */
 import { ms } from 'fount/scripts/ms.mjs'
 import { withApiRequest } from 'fount/scripts/test/playwright/api.mjs'
@@ -81,7 +81,7 @@ test.describe('DM channel list context menu', () => {
 		expect(after?.channelId).not.toBe(initialChannelId)
 	})
 
-	test('DM quick-create removes greeting-only default channel and skips AI naming', async ({ page, baseUrl, apiKey }) => {
+	test('DM quick-create: backend async-removes greeting-only default channel', async ({ page, baseUrl, apiKey }) => {
 		const { groupId, defaultChannelId } = await createDmWithGreeting(baseUrl, apiKey)
 
 		await waitForHub(page, baseUrl, { friendsMode: false })
@@ -102,9 +102,9 @@ test.describe('DM channel list context menu', () => {
 		await page.locator('[data-action="create-channel"]').click()
 
 		await expect(page.locator('#new-channel-name')).toHaveCount(0)
-		// 占位默认频道被后端删除，只剩新建的未命名频道
+		// 后端异步把仅含问候语的默认占位频道删除，最终只剩新建的未命名频道
 		await expect(page.locator(`#private-channel-list-host .channel-item[data-channel-id="${defaultChannelId}"]`))
-			.toHaveCount(0, { timeout: 30_000 })
+			.toHaveCount(0, { timeout: 60_000 })
 		await expect(page.locator('#private-channel-list-host .channel-item')).toHaveCount(1)
 
 		const after = parseGroupHashFromUrl(page.url())

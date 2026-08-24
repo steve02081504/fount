@@ -7,11 +7,9 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
-import { deleteChannel } from '../../chat/dag/channelOperations.mjs'
-import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
-import { readChannelMessagesForUser } from '../queries.mjs'
+import { scheduleDmChannelAutoNameAndCleanup } from './channelAutoName.mjs'
 
 import {
 	ensureChannel,
@@ -20,55 +18,6 @@ import {
 } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
 
-
-/**
- * 判断一条频道消息是否「非用户消息」。DM 群中无用户消息的未命名频道即视为 greeting-only 占位频道：
- *   问候语/角色消息的 content.role 为 `char`，用户消息为 `user`。
- * @param {object} message 频道消息行
- * @returns {boolean} 是否非用户消息
- */
-function isNonUserMessage(message) {
-	return message?.content?.role !== 'user'
-}
-
-/**
- * DM 群新建频道时清理「仅含问候语」的根级未命名占位频道：
- *   命中占位频道后，若其中包含当前默认频道则先改默认频道，再删除占位频道，
- *   并返回是否发生过清理（供前端跳过 AI 自动命名/分类）。
- * @param {string} username 用户名
- * @param {string} groupId 群 ID
- * @param {object} state 物化群状态
- * @param {string} newChannelId 刚创建的新频道 ID
- * @returns {Promise<boolean>} 是否清除了 greeting-only 占位频道
- */
-async function cleanGreetingOnlyDmPlaceholders(username, groupId, state, newChannelId) {
-	if (groupKindFromState(state) !== 'dm' && !state.groupMeta?.friendBinding) return false
-	const rootChannelId = state.groupSettings?.rootChannelId
-	if (!rootChannelId) return false
-	const candidates = (state.channels?.[rootChannelId]?.links || [])
-		.filter(id => id !== newChannelId)
-		.filter(id => {
-			const channel = state.channels?.[id]
-			return channel?.type === 'text' && !String(channel?.name || '').trim()
-		})
-	const placeholders = []
-	for (const channelId of candidates) {
-		const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
-		if (!lines.length) continue
-		if (lines.every(isNonUserMessage)) placeholders.push(channelId)
-	}
-	if (!placeholders.length) return false
-	const defaultChannelId = state.groupSettings?.defaultChannelId
-	if (placeholders.includes(defaultChannelId))
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'group_settings_update',
-			timestamp: Date.now(),
-			content: { defaultChannelId: newChannelId },
-		})
-	for (const channelId of placeholders)
-		await deleteChannel(username, groupId, channelId)
-	return true
-}
 
 /**
  * 注册频道 频道与群元数据 CRUD HTTP 路由。
@@ -156,8 +105,9 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			parentChannelId: parentId,
 			permissionBlockId: parentId || state.groupSettings?.defaultChannelId || null,
 		})
-		const cleaned = await cleanGreetingOnlyDmPlaceholders(username, groupId, state, channel.id)
-		res.status(201).json({ channelId: channel.id, cleaned })
+		// DM 群根级无名频道的 greeting-only 清理与 AI 命名/分类在后端异步进行，创建接口只发射并遗忘。
+		scheduleDmChannelAutoNameAndCleanup(username, groupId, channel.id, state).catch(() => {})
+		res.status(201).json({ channelId: channel.id })
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {

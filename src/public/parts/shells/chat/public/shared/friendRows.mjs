@@ -15,21 +15,21 @@ import { normalizeFriendBinding } from './friendBinding.mjs'
  * @property {string} displayName 侧栏展示名
  * @property {string} [charname] 本地角色 part 名（用户 DM 时省略）
  * @property {import('./friendBinding.mjs').FriendBinding} binding 好友绑定
- * @property {object} session 侧栏会话摘要（最后消息等）
+ * @property {{ groupId: string, lastMessageContent?: string, lastMessageTime?: string | number }} session 侧栏会话摘要（最后消息等）
  */
 
 /**
  * 由群摘要构建好友（DM）侧栏行。
  * 仅含带 friendBinding 的群；普通（多人）群被排除——它们由调用方按群侧栏展示。
  * 同一对端多个群时保留最后消息时间更新的那个。
- * @param {Array<{ groupId: string, name?: string, friendBinding?: unknown, lastMessageTime?: string | number }>} groups 群摘要
+ * @param {Array<{ groupId: string, name?: string, friendBinding: unknown, lastMessageTime?: string | number, lastMessageContent?: string }>} groups 群摘要
  * @returns {FriendRow[]} 好友行（最后消息时间倒序，同时间按展示名）
  */
 export function buildFriendRows(groups) {
 	/** @type {Map<string, FriendRow>} */
 	const byEntityHash = new Map()
-	for (const group of groups || []) {
-		const binding = normalizeFriendBinding(group?.friendBinding)
+	for (const group of groups) {
+		const binding = normalizeFriendBinding(group.friendBinding)
 		if (!binding) continue
 		const row = {
 			groupId: group.groupId,
@@ -39,7 +39,7 @@ export function buildFriendRows(groups) {
 			binding,
 			session: {
 				groupId: group.groupId,
-				lastMessageContent: '',
+				lastMessageContent: group.lastMessageContent,
 				lastMessageTime: group.lastMessageTime,
 			},
 		}
@@ -54,11 +54,11 @@ export function buildFriendRows(groups) {
 			byEntityHash.set(binding.entityHash, row)
 	}
 	const rows = [...byEntityHash.values()]
-	rows.sort((a, b) => {
-		const ta = new Date(a.session.lastMessageTime || 0).getTime()
-		const tb = new Date(b.session.lastMessageTime || 0).getTime()
-		if (ta !== tb) return tb - ta
-		return a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' })
+	rows.sort((leftRow, rightRow) => {
+		const leftTimestamp = new Date(leftRow.session.lastMessageTime || 0).getTime()
+		const rightTimestamp = new Date(rightRow.session.lastMessageTime || 0).getTime()
+		if (leftTimestamp !== rightTimestamp) return rightTimestamp - leftTimestamp
+		return leftRow.displayName.localeCompare(rightRow.displayName, undefined, { sensitivity: 'base' })
 	})
 	return rows
 }

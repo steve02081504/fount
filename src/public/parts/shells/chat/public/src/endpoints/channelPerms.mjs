@@ -39,7 +39,7 @@ export async function putChannelPermissions(groupId, channelId, roleId, allow, d
  */
 export async function getGroupPermissions(groupId) {
 	const data = await groupFetch(groupPath(groupId, 'group-permissions'), { method: 'GET' })
-	return data.permissions || {}
+	return data.permissions
 }
 
 /**
