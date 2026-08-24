@@ -7,10 +7,10 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { governanceChannelId } from '../../group/access.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { canInChannel, governanceChannelId } from '../../group/access.mjs'
 
 import { appendEvent, appendSignedLocalEvent } from './append.mjs'
-import { memberChannelPermissions } from './groupMaterializedState.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
 import { setStreamingSession } from './streamingState.mjs'
@@ -34,7 +34,7 @@ export async function createChannel(username, groupId, options, appendOptions = 
 			name: options.name ?? '',
 			description: options.description,
 			links: options.links,
-			permBlockId: options.permBlockId || null,
+			permissionBlockId: options.permissionBlockId || null,
 			parentEventId: options.parentEventId || null,
 			parentChannelId: options.parentChannelId || null,
 			syncScope: options.syncScope || 'group',
@@ -202,10 +202,12 @@ export async function appendKeyRotateEvent(username, groupId, body) {
 	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
 	const { state } = await getState(username, groupId)
 	const permissionsChannelId = governanceChannelId(state)
-	const perms = memberChannelPermissions(state, sender, permissionsChannelId)
-	const activeCount = Object.values(state.members).filter(member => member?.status === 'active').length
+	const member = state.members?.[sender]
+	const activeCount = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 	const isDmPair = activeCount === 2
-	if (!isDmPair && !perms.ADMIN && !perms.MANAGE_ROLES)
+	if (!isDmPair
+		&& !canInChannel(state, member, PERMISSIONS.ADMIN, permissionsChannelId)
+		&& !canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, permissionsChannelId))
 		throw new Error('file_master_key_rotate requires ADMIN, MANAGE_ROLES, or DM membership')
 	return appendEvent(username, groupId, {
 		type: 'file_master_key_rotate',

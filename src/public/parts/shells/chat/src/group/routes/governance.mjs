@@ -105,7 +105,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const { resolvePermissionBlockOwner } = await import('../../chat/dag/groupMaterializedState.mjs')
 		const ownerId = resolvePermissionBlockOwner(state, channelId)
 		const permissions = ownerId ? state.channelPermissions?.[ownerId] || {} : {}
-		res.status(200).json({ permissions, permBlockId: state.channels[channelId]?.permBlockId || null })
+		res.status(200).json({ permissions, permissionBlockId: state.channels[channelId]?.permissionBlockId || null })
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), async (req, res) => {
@@ -124,11 +124,11 @@ export function registerGovernanceRoutes(router, authenticate) {
 			throw httpError(403, 'No permission to manage channels')
 
 		// 已同步（强引用父块）的频道单独设权限时先脱钩：channel_update 会复制当前有效块进自有覆写。
-		if (state.channels[channelId]?.permBlockId)
+		if (state.channels[channelId]?.permissionBlockId)
 			await appendSignedLocalEvent(username, groupId, {
 				type: 'channel_update',
 				timestamp: Date.now(),
-				content: { channelId, updates: { permBlockId: null } },
+				content: { channelId, updates: { permissionBlockId: null } },
 			})
 
 		await appendSignedLocalEvent(username, groupId, {
@@ -139,21 +139,21 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({})
 	})
 
-	// 一键同步：子频道权限块强引用父频道块（body.permBlockId 为父频道 id，缺省为根频道）。
+	// 一键同步：子频道权限块强引用父频道块（body.permissionBlockId 为父频道 id，缺省为根频道）。
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions/sync`, authenticate, requireGroupMember(), async (req, res) => {
-		const { params: { channelId }, body: { permBlockId } } = req
+		const { params: { channelId }, body: { permissionBlockId } } = req
 		const { username, state, member, groupId } = req.groupContext
 		if (!state.channels[channelId])
 			throw httpError(404, 'Channel not found')
-		const target = permBlockId || state.groupSettings?.rootChannelId || null
+		const target = permissionBlockId || state.groupSettings?.rootChannelId || null
 		if (target && !state.channels[target])
 			throw httpError(404, 'Target channel not found')
 		if (target === channelId)
-			throw httpError(400, 'permBlockId cannot reference self')
+			throw httpError(400, 'permissionBlockId cannot reference self')
 		if (target) {
 			const { resolvePermissionBlockOwner } = await import('../../chat/dag/groupMaterializedState.mjs')
 			if (resolvePermissionBlockOwner(state, target) === channelId)
-				throw httpError(400, 'permBlockId forms a cycle')
+				throw httpError(400, 'permissionBlockId forms a cycle')
 		}
 		if (!canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId))
 			throw httpError(403, 'No permission to manage channels')
@@ -161,9 +161,9 @@ export function registerGovernanceRoutes(router, authenticate) {
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'channel_update',
 			timestamp: Date.now(),
-			content: { channelId, updates: { permBlockId: target } },
+			content: { channelId, updates: { permissionBlockId: target } },
 		})
-		res.status(200).json({ permBlockId: target })
+		res.status(200).json({ permissionBlockId: target })
 	})
 
 

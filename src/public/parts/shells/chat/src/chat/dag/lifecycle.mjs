@@ -156,7 +156,7 @@ export async function createGroup(username, body) {
 			type: 'category',
 			name: '',
 			links: [initialChannelId],
-			permBlockId: null,
+			permissionBlockId: null,
 			syncScope: 'group',
 		},
 	})
@@ -170,7 +170,7 @@ export async function createGroup(username, body) {
 			name: body.defaultChannelName ?? await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
 			links: [],
 			parentChannelId: ROOT_CHANNEL_ID,
-			permBlockId: ROOT_CHANNEL_ID,
+			permissionBlockId: ROOT_CHANNEL_ID,
 			syncScope: 'group',
 		},
 	})

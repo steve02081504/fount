@@ -1,4 +1,4 @@
-${permBlockId ? `<div class="alert alert-warning px-3 py-2 text-xs mb-3" data-i18n="chat.hub.category.perm.syncedWarning"></div>` : ''}
+${permissionBlockId ? `<div class="alert alert-warning px-3 py-2 text-xs mb-3" data-i18n="chat.hub.category.perm.syncedWarning"></div>` : ''}
 ${rolePanels.map(panel => `
 <details class="settings-role" data-role-panel="${escapeHtml(panel.roleId)}" ${panel.open ? 'open' : ''}>
 	<summary>

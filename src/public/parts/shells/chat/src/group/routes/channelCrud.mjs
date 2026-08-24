@@ -102,13 +102,13 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			channelId: prefixedRandomId('channel_'),
 			isPrivate: isPrivate || false,
 			parentChannelId: parentId,
-			permBlockId: parentId || state.groupSettings?.defaultChannelId || null,
+			permissionBlockId: parentId || state.groupSettings?.defaultChannelId || null,
 		})
 		res.status(201).json({ channelId: channel.id })
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {
-		const { params: { groupId, channelId }, body: { name, description, type, isPrivate, links, permBlockId } } = req
+		const { params: { groupId, channelId }, body: { name, description, type, isPrivate, links, permissionBlockId } } = req
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
@@ -149,23 +149,23 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			}
 			updates.links = links
 		}
-		if (permBlockId !== undefined) {
-			const target = permBlockId || null
+		if (permissionBlockId !== undefined) {
+			const target = permissionBlockId || null
 			if (target) {
 				ensureChannel(state, target)
 				if (target === channelId)
-					throw httpError(400, 'permBlockId cannot reference self')
-				// 环检测：沿 permBlockId 从 target 上溯，若回到本频道则成环。
+					throw httpError(400, 'permissionBlockId cannot reference self')
+				// 环检测：沿 permissionBlockId 从 target 上溯，若回到本频道则成环。
 				let cursor = target
 				const seen = new Set()
 				while (cursor && !seen.has(cursor)) {
 					if (cursor === channelId)
-						throw httpError(400, 'permBlockId forms a cycle')
+						throw httpError(400, 'permissionBlockId forms a cycle')
 					seen.add(cursor)
-					cursor = state.channels?.[cursor]?.permBlockId || null
+					cursor = state.channels?.[cursor]?.permissionBlockId || null
 				}
 			}
-			updates.permBlockId = target
+			updates.permissionBlockId = target
 		}
 
 		if (Object.keys(updates).length === 0)

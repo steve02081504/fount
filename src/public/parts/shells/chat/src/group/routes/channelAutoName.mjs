@@ -159,7 +159,7 @@ export function registerChannelAutoNameRoutes(router, authenticate) {
 			// 单事件提交子频道侧更新（名称 + 权限块），父频道 links 另成一条，避免多次可部分成功的操作。
 			const updates = {}
 			if (channels[channelId]?.name !== name) updates.name = name
-			if (categoryId) updates.permBlockId = categoryId
+			if (categoryId) updates.permissionBlockId = categoryId
 			if (Object.keys(updates).length)
 				await updateChannel(username, groupId, channelId, updates)
 			if (categoryId)

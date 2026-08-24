@@ -78,7 +78,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 			name: normalizedParentEventId ? `thread:${normalizedParentEventId.slice(0, 12)}` : 'Thread',
 			description: '',
 			links: [],
-			permBlockId: parentChannelId,
+			permissionBlockId: parentChannelId,
 			parentEventId: normalizedParentEventId,
 			parentChannelId,
 			syncScope: 'channel',

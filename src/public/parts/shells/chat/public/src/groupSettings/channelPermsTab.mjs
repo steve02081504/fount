@@ -1,7 +1,7 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { getChannelPermissions, putChannelPermissions } from '../endpoints/channelPerms.mjs'
-import { syncChannelPermBlock } from '../endpoints/groupChannel.mjs'
+import { syncChannelPermissionBlock } from '../endpoints/groupChannel.mjs'
 import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
 import { mountTemplate } from '../templates.mjs'
 
@@ -61,7 +61,7 @@ export async function renderChannelPermissionsPanel(context) {
 		channels,
 		selectedChannelId: context.selectedChannelPermsId,
 		rolePanels,
-		permBlockId: context.state.channels?.[context.selectedChannelPermsId]?.permBlockId || null,
+		permissionBlockId: context.state.channels?.[context.selectedChannelPermsId]?.permissionBlockId || null,
 	})
 
 	for (const details of container.querySelectorAll('details.settings-role[open]')) {
@@ -88,9 +88,9 @@ export async function renderChannelPermissionsPanel(context) {
 		const syncBtn = event.target.closest('[data-action="sync-to-default"]')
 		if (syncBtn && context.selectedChannelPermsId) {
 			try {
-				const permBlockId = await syncChannelPermBlock(context.groupId, context.selectedChannelPermsId)
+				const permissionBlockId = await syncChannelPermissionBlock(context.groupId, context.selectedChannelPermsId)
 				if (context.state.channels?.[context.selectedChannelPermsId])
-					context.state.channels[context.selectedChannelPermsId].permBlockId = permBlockId
+					context.state.channels[context.selectedChannelPermsId].permissionBlockId = permissionBlockId
 				showToastI18n('success', 'chat.group.settings.page.channelPerms.synced')
 				await renderChannelPermissionsPanel(context)
 			}

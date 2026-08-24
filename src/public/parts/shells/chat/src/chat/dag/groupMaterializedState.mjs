@@ -281,3 +281,22 @@ export function memberChannelPermissions(state, senderPubKeyHash, channelId) {
 		effectiveChannelPermissions(state, channelId)
 	)
 }
+
+/**
+ * 某成员在群级治理 scope 上的有效权限表（含超管位与群管理位）。
+ * @param {object} state 物化群状态
+ * @param {string} senderPubKeyHash 发送方 pubKeyHash（hex）
+ * @returns {Record<string, boolean>} 权限键 → 是否允许
+ */
+export function memberGroupPermissions(state, senderPubKeyHash) {
+	const memberKey = String(senderPubKeyHash)
+	if (state.members[memberKey]?.status !== 'active')
+		return Object.fromEntries(Object.values(PERMISSIONS).map(permission => [permission, false]))
+
+	return calculateMemberPermissions(
+		state.members[memberKey],
+		state.roles,
+		GROUP_SCOPE_ID,
+		effectiveGroupPermissions(state)
+	)
+}

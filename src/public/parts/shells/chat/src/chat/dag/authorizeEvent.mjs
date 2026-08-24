@@ -8,15 +8,14 @@
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { CHANNEL_PERMISSIONS, GROUP_PERMISSIONS, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { governanceChannelId } from '../../group/access.mjs'
 import { isVoteBallotClosed } from '../lib/voteBallots.mjs'
 
 import { verifyEntityActivePubKeyBelongs, verifyMemberJoinBinding } from './entityBinding.mjs'
 import { FEDERATION_ACL_GATED_EVENT_TYPES } from './eventTypes.mjs'
-import { manageAdminsPubKeyHashes, memberChannelPermissions } from './groupMaterializedState.mjs'
+import { manageAdminsPubKeyHashes, memberChannelPermissions, memberGroupPermissions } from './groupMaterializedState.mjs'
 import { resolveTargetMemberKey } from './reducers/members.mjs'
 
 
@@ -73,6 +72,26 @@ export function eventChannelId(event) {
 function permissionsGrantSuperuser(perms) {
 	if (!perms || typeof perms !== 'object') return false
 	return !!(perms[PERMISSIONS.ADMIN] || perms[PERMISSIONS.MANAGE_ADMINS])
+}
+
+/**
+ * 覆写表是否含群级治理权限（频道覆写不可写入）。
+ * @param {Record<string, boolean> | null | undefined} perms 权限位
+ * @returns {boolean} 含群级权限为 true
+ */
+function containsGroupPermission(perms) {
+	if (!perms || typeof perms !== 'object') return false
+	return GROUP_PERMISSIONS.some(permission => perms[permission])
+}
+
+/**
+ * 覆写表是否含频道级权限（群覆写不可写入）。
+ * @param {Record<string, boolean> | null | undefined} perms 权限位
+ * @returns {boolean} 含频道级权限为 true
+ */
+function containsChannelPermission(perms) {
+	if (!perms || typeof perms !== 'object') return false
+	return CHANNEL_PERMISSIONS.some(permission => perms[permission])
 }
 
 /**
@@ -161,7 +180,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 
 	const channelId = eventChannelId(event)
 	const channelPerms = memberChannelPermissions(state, sender, channelId)
-	const govPerms = memberChannelPermissions(state, sender, governanceChannelId(state))
+	const govPerms = memberGroupPermissions(state, sender)
 
 	switch (type) {
 		case 'member_owner_update':
@@ -235,7 +254,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 		case 'channel_update': {
 			const updates = event.content?.updates || {}
 			const targetChannelId = event.content?.channelId || channelId
-			const supportedUpdateFields = ['name', 'description', 'type', 'isPrivate', 'links', 'permBlockId']
+			const supportedUpdateFields = ['name', 'description', 'type', 'isPrivate', 'links', 'permissionBlockId']
 			if (Object.keys(updates).some(key => !supportedUpdateFields.includes(key)))
 				return { ok: false, reason: 'unsupported channel_update fields' }
 			if (Array.isArray(updates.links)) {
@@ -243,7 +262,7 @@ export async function checkEventPermission(state, event, senderHash, options = {
 				if (!(targetPerms[PERMISSIONS.CREATE_THREADS] || targetPerms[PERMISSIONS.MANAGE_CHANNELS]))
 					return { ok: false, reason: 'CREATE_THREADS or MANAGE_CHANNELS required to update links' }
 			}
-			if (Object.hasOwn(updates, 'permBlockId'))
+			if (Object.hasOwn(updates, 'permissionBlockId'))
 				if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_CHANNELS]))
 					return { ok: false, reason: 'MANAGE_ROLES or MANAGE_CHANNELS required to sync permissions' }
 			if (['name', 'description', 'type', 'isPrivate'].some(key => Object.hasOwn(updates, key)))
@@ -257,8 +276,22 @@ export async function checkEventPermission(state, event, senderHash, options = {
 			const allow = event.content?.allow
 			if (permissionsGrantSuperuser(allow))
 				return { ok: false, reason: 'channel allow cannot include ADMIN or MANAGE_ADMINS' }
+			if (containsGroupPermission(allow))
+				return { ok: false, reason: 'channel allow cannot include group-level permissions' }
 			if (permissionsExceedGrantor(govPerms, allow))
 				return { ok: false, reason: 'channel allow exceeds grantor permissions' }
+			return { ok: true }
+		}
+		case 'group_permissions_update': {
+			if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_ADMINS]))
+				return { ok: false, reason: 'MANAGE_ROLES or MANAGE_ADMINS required' }
+			const allow = event.content?.allow
+			if (permissionsGrantSuperuser(allow))
+				return { ok: false, reason: 'group allow cannot include ADMIN or MANAGE_ADMINS' }
+			if (containsChannelPermission(allow))
+				return { ok: false, reason: 'group allow cannot include channel-level permissions' }
+			if (permissionsExceedGrantor(govPerms, allow))
+				return { ok: false, reason: 'group allow exceeds grantor permissions' }
 			return { ok: true }
 		}
 		case 'channel_key_rotate':

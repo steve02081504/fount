@@ -4,7 +4,7 @@
  */
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { getChannelPermBlock, putChannelPermBlock } from '../src/endpoints/groupChannel.mjs'
+import { getChannelPermissionBlock, putChannelPermissionBlock } from '../src/endpoints/groupChannel.mjs'
 import { fillRolePermsIfEmpty, safeRoleColor, sortedRoleIds } from '../src/groupSettings/channelPermsUi.mjs'
 import { grantableChannelOverridePermissions } from '../src/groupSettings/constants.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
@@ -21,13 +21,13 @@ import { store } from './core/state.mjs'
  */
 export async function showCategoryPermsDialog(groupId, categoryId, categoryName) {
 	let permissions = {}
-	let permBlockId = null
+	let permissionBlockId = null
 	let state = null
 	let grantablePerms = []
 	try {
-		const data = await getChannelPermBlock(groupId, categoryId)
+		const data = await getChannelPermissionBlock(groupId, categoryId)
 		permissions = data.permissions || {}
-		permBlockId = data.permBlockId || null
+		permissionBlockId = data.permissionBlockId || null
 		state = store.context.currentState
 		const grantorPerms = await fetchViewerChannelPermissions(state, groupId)
 		grantablePerms = grantableChannelOverridePermissions(grantorPerms)
@@ -43,9 +43,9 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 	 * @returns {Promise<void>}
 	 */
 	const renderRolePanels = async body => {
-		const data = await getChannelPermBlock(groupId, categoryId)
+		const data = await getChannelPermissionBlock(groupId, categoryId)
 		permissions = data.permissions || {}
-		permBlockId = data.permBlockId || null
+		permissionBlockId = data.permissionBlockId || null
 		const rolePanels = sortedRoleIds(state?.roles).map(roleId => {
 			const role = state.roles[roleId] || { name: roleId, color: '#888' }
 			const override = permissions[roleId]
@@ -58,7 +58,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 				open: roleId === '@everyone' || role.isDefault || hasOverride,
 			}
 		})
-		await mountTemplate(body, 'hub/category_perm_roles', { rolePanels, permBlockId })
+		await mountTemplate(body, 'hub/category_perm_roles', { rolePanels, permissionBlockId })
 
 		for (const details of body.querySelectorAll('details.settings-role[open]')) {
 			const permsEl = details.querySelector('.settings-role-perms')
@@ -67,7 +67,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 		}
 	}
 
-	await openDialogFromTemplate('channel_category_perm_dialog', { categoryName, permBlockId }, {
+	await openDialogFromTemplate('channel_category_perm_dialog', { categoryName, permissionBlockId }, {
 		activateScripts: false,
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框
@@ -79,8 +79,8 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 			dialog.querySelector('#category-perm-close')?.addEventListener('click', () => dialog.close())
 			dialog.querySelector('#category-perm-sync')?.addEventListener('click', async () => {
 				try {
-					const { syncChannelPermBlock } = await import('../src/endpoints/groupChannel.mjs')
-					permBlockId = await syncChannelPermBlock(groupId, categoryId)
+					const { syncChannelPermissionBlock } = await import('../src/endpoints/groupChannel.mjs')
+					permissionBlockId = await syncChannelPermissionBlock(groupId, categoryId)
 					showToastI18n('success', 'chat.hub.category.perm.synced')
 					await renderRolePanels(body)
 				}
@@ -127,7 +127,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 				if (clearBtn?.dataset.roleId) {
 					try {
 						await enqueuePermOp(async () => {
-							await putChannelPermBlock(groupId, categoryId, clearBtn.dataset.roleId, {}, {})
+							await putChannelPermissionBlock(groupId, categoryId, clearBtn.dataset.roleId, {}, {})
 							await renderRolePanels(body)
 						})
 						showToastI18n('success', 'chat.hub.category.perm.updated')
@@ -153,7 +153,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 						delete deny[perm]
 						if (nextState === 'allow') allow[perm] = true
 						else if (nextState === 'deny') deny[perm] = true
-						await putChannelPermBlock(groupId, categoryId, roleId, allow, deny)
+						await putChannelPermissionBlock(groupId, categoryId, roleId, allow, deny)
 						await renderRolePanels(body)
 					})
 					showToastI18n('success', 'chat.hub.category.perm.updated')

@@ -430,14 +430,14 @@ export async function createChannel(groupId, name, type = 'text', parentChannelI
 }
 
 /**
- * 读取某频道有效权限块（跟随 `permBlockId` 链到源频道）。
+ * 读取某频道有效权限块（跟随 `permissionBlockId` 链到源频道）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @returns {Promise<{ permissions: Record<string, { allow?: Record<string, boolean>, deny?: Record<string, boolean> }>, permBlockId: string | null }>} 各角色权限覆写与块来源
+ * @returns {Promise<{ permissions: Record<string, { allow?: Record<string, boolean>, deny?: Record<string, boolean> }>, permissionBlockId: string | null }>} 各角色权限覆写与块来源
  */
-export async function getChannelPermBlock(groupId, channelId) {
+export async function getChannelPermissionBlock(groupId, channelId) {
 	const data = await groupFetch(groupPath(groupId, 'channels', channelId, 'permissions'), { method: 'GET' })
-	return { permissions: data.permissions || {}, permBlockId: data.permBlockId || null }
+	return { permissions: data.permissions || {}, permissionBlockId: data.permissionBlockId || null }
 }
 
 /**
@@ -449,7 +449,7 @@ export async function getChannelPermBlock(groupId, channelId) {
  * @param {Record<string, boolean>} deny 拒绝位图
  * @returns {Promise<void>} 无
  */
-export async function putChannelPermBlock(groupId, channelId, roleId, allow, deny) {
+export async function putChannelPermissionBlock(groupId, channelId, roleId, allow, deny) {
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'permissions'), {
 		method: 'PUT',
 		json: { roleId, allow, deny },
@@ -457,25 +457,25 @@ export async function putChannelPermBlock(groupId, channelId, roleId, allow, den
 }
 
 /**
- * 一键同步：子频道权限块强引用父频道块（`permBlockId` 缺省为群根频道）。
+ * 一键同步：子频道权限块强引用父频道块（`permissionBlockId` 缺省为群根频道）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 目标频道 ID
- * @param {string | null} [permBlockId] 跟随的源频道 id；null 表示同步到根频道
- * @returns {Promise<string | null>} 生效的 permBlockId
+ * @param {string | null} [permissionBlockId] 跟随的源频道 id；null 表示同步到根频道
+ * @returns {Promise<string | null>} 生效的 permissionBlockId
  */
-export async function syncChannelPermBlock(groupId, channelId, permBlockId = null) {
+export async function syncChannelPermissionBlock(groupId, channelId, permissionBlockId = null) {
 	const data = await groupFetch(groupPath(groupId, 'channels', channelId, 'permissions', 'sync'), {
 		method: 'PUT',
-		json: { permBlockId },
+		json: { permissionBlockId },
 	})
-	return data.permBlockId ?? null
+	return data.permissionBlockId ?? null
 }
 
 /**
- * 更新群频道元数据（含 links / permBlockId）。
+ * 更新群频道元数据（含 links / permissionBlockId）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @param {object} updates name / description / type / links / permBlockId 等
+ * @param {object} updates name / description / type / links / permissionBlockId 等
  * @returns {Promise<void>} 无
  */
 export async function updateChannel(groupId, channelId, updates) {
