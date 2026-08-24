@@ -494,7 +494,7 @@
 		},
 		{
 			"name": "fed_mailbox",
-			"expected": "2m47s",
+			"expected": "4m29s",
 			"dependsOn": [
 				"fed_core"
 			],

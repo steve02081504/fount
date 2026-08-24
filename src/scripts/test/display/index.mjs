@@ -47,8 +47,59 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	let lastAheadCount = null
 	/** 上次展示的 lastCompletionMs（5% 阈值用）。 */
 	let lastCompletionMs = null
+	/** 进度条起始时刻（job 接受时）。 */
+	let progressStartedAt = null
+	/** 进度刷新定时器（链式 setTimeout，间隔随总时间变化）。 */
+	let progressTimer = null
 
 	beginTestProgress()
+
+	/**
+	 * 当前总时间（已过 + 预估剩余）。
+	 * @returns {number | null} 总毫秒；剩余未知时为 null
+	 */
+	function currentTotalMs() {
+		if (progressStartedAt == null) return null
+		const elapsed = Date.now() - progressStartedAt
+		return lastCompletionMs == null ? null : Math.max(1, elapsed + lastCompletionMs)
+	}
+
+	/**
+	 * 按 已过时间/(已过时间+预估剩余) 刷新任务栏进度。
+	 * @returns {void}
+	 */
+	function setTimeProgress() {
+		if (progressStartedAt == null) return
+		const total = currentTotalMs()
+		if (total == null) {
+			SetTaskbarProgress(undefined)
+			return
+		}
+		const elapsed = Date.now() - progressStartedAt
+		SetTaskbarProgress(Math.min(100, Math.floor((elapsed / total) * 100)))
+	}
+
+	/**
+	 * 计算下一次刷新间隔：Max(200ms, 总时间×1%)。
+	 * @returns {number} 毫秒
+	 */
+	function nextRefreshDelay() {
+		const total = currentTotalMs()
+		return total == null ? 200 : Math.max(200, Math.round(total * 0.01))
+	}
+
+	/**
+	 * 立即刷新一次，并按当前总时间安排下一次刷新。
+	 * @returns {void}
+	 */
+	function scheduleProgressRefresh() {
+		if (progressTimer != null) clearTimeout(progressTimer)
+		setTimeProgress()
+		progressTimer = setTimeout(() => {
+			progressTimer = null
+			scheduleProgressRefresh()
+		}, nextRefreshDelay())
+	}
 
 	/**
 	 * 非 watch 只画本 job；hello/accepted 之前丢掉带 jobId 的外来事件。
@@ -74,6 +125,10 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		paintAccepted(message)
 		if (message.reportPath)
 			console.logI18n('fountConsole.test.reportPath', { path: message.reportPath })
+		if (progressStartedAt == null) {
+			progressStartedAt = Date.now()
+			scheduleProgressRefresh()
+		}
 	}
 
 	/**
@@ -112,6 +167,8 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		if (!changed) return
 		paintScheduleUpdate(message, lastCompletionMs)
 		lastCompletionMs = next
+		// 总时间更新：顺道刷新一次并重置计时。
+		if (progressStartedAt != null) scheduleProgressRefresh()
 	}
 
 	/**
@@ -120,7 +177,6 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 */
 	function onSuiteEnd(message) {
 		finished++
-		if (runCount) SetTaskbarProgress(Math.min(100, Math.floor((finished / runCount) * 100)))
 		if (displayMode !== 'stream' && suiteEndHasFailureOutput(message))
 			failureLogs.push({ key: message.key, output: message.output })
 		paintSuiteEnd(message, { stream: displayMode === 'stream' })
@@ -213,6 +269,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	process.off('SIGINT', onSig)
 	process.off('SIGTERM', onSig)
 	if (ws.readyState === WebSocket.OPEN) ws.close()
+	if (progressTimer != null) clearTimeout(progressTimer)
 	finishTestProgress(exitCode)
 	return exitCode
 }
