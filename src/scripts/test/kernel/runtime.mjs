@@ -3,6 +3,7 @@
  */
 import { randomUUID } from 'node:crypto'
 import { watch } from 'node:fs'
+import { appendFile, mkdir } from 'node:fs/promises'
 
 import { console } from '../../i18n/bare.mjs'
 import { ms } from '../../ms.mjs'
@@ -120,6 +121,10 @@ export class TestKernel {
 		this.sessionPassed = new Map()
 		/** @type {Set<string>} */
 		this.sessionSkipped = new Set()
+		/** 上次剩余估算（ms）及其时刻、待运行项数；用于“除插队外单调递减”钳制。 */
+		this.#lastRemainingMs = null
+		this.#lastEstimateAt = 0
+		this.#lastPending = 0
 		this.closed = false
 		this.#closeDone = null
 		this.seenViewer = false
@@ -137,6 +142,9 @@ export class TestKernel {
 	#watcher
 	#closeDone
 	#wasIdle
+	#lastRemainingMs
+	#lastEstimateAt
+	#lastPending
 
 	/** 唤醒调度循环。 */
 	wake() {
@@ -518,17 +526,19 @@ export class TestKernel {
 	 */
 	#remainingFromPlan(plan) {
 		const tasks = this.#estimateTasks()
+		let pendingExtra = 0
 		for (const slot of plan.slots) {
 			if (slot.action !== 'run') continue
 			const { suite } = slot
 			if (!suite) continue
+			pendingExtra++
 			tasks.push(buildEstimateTask(suite, this.state.suites[slot.key], {
 				id: `wave:${slot.key}`,
 				subtestsToRun: slot.subtestsToRun,
 				moduleCheckMs: this.moduleCheck.meanDurationMs(),
 			}))
 		}
-		return this.#snapshotFromTasks(tasks)
+		return this.#snapshotFromTasks(tasks, { pendingExtra })
 	}
 
 	/**
@@ -565,16 +575,65 @@ export class TestKernel {
 
 	/**
 	 * @param {import('../core/estimate.mjs').EstimateTask[]} tasks 任务
+	 * @param {object} [options] 选项
+	 * @param {number} [options.pendingExtra=0] 已规划但尚未入队的 run 槽数（首屏 accepted）
 	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
 	 */
-	#snapshotFromTasks(tasks) {
+	#snapshotFromTasks(tasks, { pendingExtra = 0 } = {}) {
 		if (!tasks.length) return { remainingMs: 0, unknownCount: 0 }
 		const estimate = summarizeEstimate(tasks, {
 			memBudgetBytes: this.globalBudget.memBytes,
 			cpuBudgetPct: CPU_BUDGET_PCT,
 			speculative: false,
 		})
-		return { remainingMs: estimate.etaMs, unknownCount: estimate.unknownCount }
+		const next = this.#clampRemaining({ remainingMs: estimate.etaMs, unknownCount: estimate.unknownCount }, pendingExtra)
+		this.#debugEstimate(tasks, estimate, next)
+		return next
+	}
+
+	/**
+	 * `FOUNT_TEST_DEBUG_ESTIMATE=1` 时把每次估算快照追加到 `debug_logs/test_estimate.log`，
+	 * 便于诊断首屏 vs 运行中 makespan 跳变与钳制。
+	 * @param {import('../core/estimate.mjs').EstimateTask[]} tasks 任务
+	 * @param {object} estimate 原始估算
+	 * @param {{ remainingMs: number | null, unknownCount: number }} clamped 钳制后剩余
+	 * @returns {void}
+	 */
+	#debugEstimate(tasks, estimate, clamped) {
+		if (process.env.FOUNT_TEST_DEBUG_ESTIMATE !== '1') return
+		const rows = tasks.map(task => `${task.id ?? task.key}:${task.durationMs ?? '?'}${task.reused ? 'R' : ''}${task.blocked ? 'B' : ''}${task.running ? '*' : ''}`)
+		void mkdir(join(this.repoRoot, 'debug_logs'), { recursive: true })
+			.then(() => appendFile(join(this.repoRoot, 'debug_logs', 'test_estimate.log'),
+				`${new Date().toISOString()} makespan=${Math.round(estimate.makespanMs)} gap=${estimate.gapCount} unknown=${estimate.unknownCount} eta=${clamped.remainingMs ?? 'null'} tasks=[${rows.join(', ')}]\n`, 'utf8'))
+			.catch(() => { })
+	}
+
+	/**
+	 * 除真实插队（待运行项增多）外，剩余时间只许随墙钟递减，不允许回弹。
+	 * 估算模型的装箱/依赖会在任务推进时重排，可能把晚 admit 的长耗时套件插到末尾使
+	 * makespan 虚增——这里以“上次剩余 − 已过墙钟”为下限钳住，避免控制台越跑越长。
+	 * @param {{ remainingMs: number | null, unknownCount: number }} next 本次估算
+	 * @param {number} pendingExtra 尚未入队的规划 run 槽数
+	 * @returns {{ remainingMs: number | null, unknownCount: number }} 钳制后的剩余
+	 */
+	#clampRemaining(next, pendingExtra) {
+		const now = Date.now()
+		const pending = this.queues.cli.length + this.queues.fs.length + pendingExtra
+		const grew = pending > this.#lastPending
+		const ms = next.remainingMs
+		if (this.#lastRemainingMs == null || ms == null || !Number.isFinite(ms)) {
+			this.#lastRemainingMs = ms
+			this.#lastEstimateAt = now
+			this.#lastPending = pending
+			return next
+		}
+		const floor = Math.max(0, this.#lastRemainingMs - (now - this.#lastEstimateAt))
+		if (!grew && ms > floor + 5000)
+			next.remainingMs = floor
+		this.#lastRemainingMs = next.remainingMs
+		this.#lastEstimateAt = now
+		this.#lastPending = pending
+		return next
 	}
 
 	/**

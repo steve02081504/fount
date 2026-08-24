@@ -89,7 +89,7 @@
 		},
 		{
 			"name": "continue_reason",
-			"expected": 600,
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -163,7 +163,7 @@
 		},
 		{
 			"name": "protocol_order",
-			"expected": 700,
+			"expected": "2s",
 			"run": [
 				"deno",
 				"test",
@@ -208,7 +208,7 @@
 		},
 		{
 			"name": "resources_scheduler",
-			"expected": 700,
+			"expected": 900,
 			"run": [
 				"deno",
 				"test",
@@ -337,7 +337,7 @@
 		},
 		{
 			"name": "estimate",
-			"expected": 800,
+			"expected": "2s",
 			"run": [
 				"deno",
 				"test",
@@ -362,7 +362,7 @@
 		},
 		{
 			"name": "update_estimates",
-			"expected": 600,
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -626,7 +626,7 @@
 		},
 		{
 			"name": "kernel",
-			"expected": "17s",
+			"expected": "53s",
 			"run": [
 				"deno",
 				"test",

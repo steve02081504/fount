@@ -108,7 +108,30 @@ Deno.test('expectedRunDurationMs sums overhead and selected subtests', () => {
 	})
 	assertEquals(expectedRunDurationMs(suite, entry, ['feed']), 30_000)
 	assertEquals(expectedRunDurationMs(suite, entry, ['feed', 'profile']), 60_000)
-	assertEquals(expectedRunDurationMs(suite, entry), 75_000)
+	// 全量跑用实测墙钟基线（已含内部并行），而非 Σ 子测试
+	assertEquals(expectedRunDurationMs(suite, entry), 90_000)
+})
+
+Deno.test('expectedRunDurationMs prefers baseline over inflated subtest sum on full run', () => {
+	// 内部并行套件（如 frontend）Σ 子测试远超实测墙钟：双计造成 ETA 高估。
+	const suite = makeSuite('shells/social', 'frontend', {
+		subtests: [
+			{ name: 'dmChannel', spec: 'dmChannel.spec.mjs', triggers: [] },
+			{ name: 'navigation', spec: 'navigation.spec.mjs', triggers: [] },
+		],
+	})
+	const entry = makeStateEntry({
+		baselineDurationMs: 600_000,
+		baselineOverheadMs: 140_000,
+		subtests: {
+			dmChannel: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 605_000, triggerHash: null },
+			navigation: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 172_000, triggerHash: null },
+		},
+	})
+	// 旧行为返回 605_000 + 172_000 + 140_000 = 917_000，明显高估
+	assertEquals(expectedRunDurationMs(suite, entry), 600_000)
+	// 子集仍按子测试求和
+	assertEquals(expectedRunDurationMs(suite, entry, ['dmChannel']), 745_000)
 })
 
 Deno.test('expectedRunDurationMs falls back to known mean for missing subtest', () => {
@@ -119,6 +142,7 @@ Deno.test('expectedRunDurationMs falls back to known mean for missing subtest', 
 		],
 	})
 	const entry = makeStateEntry({
+		baselineDurationMs: null,
 		baselineOverheadMs: 5_000,
 		subtests: {
 			feed: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 20_000, triggerHash: null },
