@@ -76,7 +76,16 @@ Deno.test('ModuleCheckGate meanDurationMs falls back to default when no samples'
 
 Deno.test('ModuleCheckGate onUpdate fires with running total/count and seeds initial stats', async () => {
 	const updates = []
-	const gate = new ModuleCheckGate({ initialTotal: 40_000, initialCount: 1, onUpdate: (total, count) => updates.push([total, count]) })
+	const gate = new ModuleCheckGate({
+		initialTotal: 40_000,
+		initialCount: 1,
+		/**
+		 * 收集每次 ready 后的累计值。
+		 * @param {number} total 累计时长
+		 * @param {number} count 次数
+		 */
+		onUpdate: (total, count) => { updates.push([total, count]) },
+	})
 	assertEquals(gate.meanDurationMs(), 40_000)
 	const ticket = await gate.acquire()
 	await new Promise(resolve => setTimeout(resolve, 5))

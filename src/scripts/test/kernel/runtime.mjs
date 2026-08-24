@@ -114,6 +114,11 @@ export class TestKernel {
 		this.moduleCheck = new ModuleCheckGate({
 			...moduleCheckHoldTimeoutMs == null ? {} : { holdTimeoutMs: moduleCheckHoldTimeoutMs },
 			onHoldTimeout: this.markModuleCheckDone.bind(this),
+			/**
+			 * 每次模块检查完成即持久化累计时长，供调度 ETA 跨内核复用。
+			 * @param {number} totalMs 累计时长
+			 * @param {number} count 次数
+			 */
 			onUpdate: (totalMs, count) => {
 				void writeModuleCheckStats(this.repoRoot, { totalMs, count })
 			},
