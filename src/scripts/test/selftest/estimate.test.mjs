@@ -5,9 +5,11 @@ import { MiB } from '../core/concurrency.mjs'
 import {
 	buildEstimateTask,
 	buildEstimateTasksFromPlan,
+	clampRemainingMs,
 	estimateEtaMs,
 	expectedRunDurationMs,
 	GAP_OVERHEAD_MS,
+	REMAINING_JITTER_MS,
 	serialSumMs,
 	simulateParallelMakespanMs,
 	summarizeEstimate,
@@ -163,6 +165,30 @@ Deno.test('expectedRunDurationMs uses manifest expected when state has no timing
 	})
 	assertEquals(expectedRunDurationMs(suite, undefined, ['feed']), 30_000)
 	assertEquals(expectedRunDurationMs(suite, undefined), 75_000)
+})
+
+Deno.test('clampRemainingMs never grows without queue insertion', () => {
+	const prev = { ms: 60_000, at: 1000, pending: 3 }
+	// 时间流逝 10s，剩余合理降到 50s；即便重排算高也钳回下限
+	assertEquals(clampRemainingMs(200_000, prev, 11_000, 3), 50_000)
+	// 未到阈值的小幅抖动不钳
+	assertEquals(clampRemainingMs(50_500, prev, 1000, 3), 50_500)
+	// 正常递减原样通过
+	assertEquals(clampRemainingMs(45_000, prev, 11_000, 3), 45_000)
+})
+
+Deno.test('clampRemainingMs allows growth only on real insertion', () => {
+	const prev = { ms: 60_000, at: 1000, pending: 3 }
+	// 待运行项增多（新测试插队）→ 允许上涨
+	assertEquals(clampRemainingMs(200_000, prev, 1000, 5), 200_000)
+	// 无插队但已过墙钟 → 仍钳住
+	assertEquals(clampRemainingMs(200_000, prev, 6000, 3), 55_000)
+})
+
+Deno.test('clampRemainingMs resets on first estimate or null', () => {
+	assertEquals(clampRemainingMs(30_000, { ms: null, at: 0, pending: 0 }, 5, 1), 30_000)
+	assertEquals(clampRemainingMs(null, { ms: 60_000, at: 1000, pending: 3 }, 6000, 3), null)
+	assertEquals(REMAINING_JITTER_MS, 5000)
 })
 
 Deno.test('estimateEtaMs adds gap overhead per critical path slot', () => {

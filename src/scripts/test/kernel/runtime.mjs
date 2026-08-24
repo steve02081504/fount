@@ -4,6 +4,7 @@
 import { randomUUID } from 'node:crypto'
 import { watch } from 'node:fs'
 import { appendFile, mkdir } from 'node:fs/promises'
+import { join } from 'node:path'
 
 import { console } from '../../i18n/bare.mjs'
 import { ms } from '../../ms.mjs'
@@ -11,7 +12,7 @@ import { CPU_BUDGET_PCT } from '../core/baseline.mjs'
 import { getHeadCommitHash } from '../core/changed.mjs'
 import { CLEANUP_LEAK_EXIT_CODE, findCleanupLeaks } from '../core/cleanup_check.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
-import { buildEstimateTask, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
+import { buildEstimateTask, clampRemainingMs, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
 import { parseExpectedMs } from '../core/expected.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
 import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
@@ -619,17 +620,11 @@ export class TestKernel {
 	#clampRemaining(next, pendingExtra) {
 		const now = Date.now()
 		const pending = this.queues.cli.length + this.queues.fs.length + pendingExtra
-		const grew = pending > this.#lastPending
-		const ms = next.remainingMs
-		if (this.#lastRemainingMs == null || ms == null || !Number.isFinite(ms)) {
-			this.#lastRemainingMs = ms
-			this.#lastEstimateAt = now
-			this.#lastPending = pending
-			return next
-		}
-		const floor = Math.max(0, this.#lastRemainingMs - (now - this.#lastEstimateAt))
-		if (!grew && ms > floor + 5000)
-			next.remainingMs = floor
+		next.remainingMs = clampRemainingMs(next.remainingMs, {
+			ms: this.#lastRemainingMs,
+			at: this.#lastEstimateAt,
+			pending: this.#lastPending,
+		}, now, pending)
 		this.#lastRemainingMs = next.remainingMs
 		this.#lastEstimateAt = now
 		this.#lastPending = pending
