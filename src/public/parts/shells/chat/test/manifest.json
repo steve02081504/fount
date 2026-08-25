@@ -765,7 +765,8 @@
 						"src/public/parts/shells/chat/public/hub/sidebar/channelListVirtual.mjs",
 						"src/public/parts/shells/chat/public/hub/categoryContextMenu.mjs",
 						"src/public/parts/shells/chat/public/hub/sidebar/createChannel.mjs",
-						"src/public/parts/shells/chat/src/group/routes/channelCrud.mjs"
+						"src/public/parts/shells/chat/src/group/routes/channelCrud.mjs",
+						"src/public/parts/shells/chat/public/src/endpoints/groupChannel.mjs"
 					]
 				},
 				{

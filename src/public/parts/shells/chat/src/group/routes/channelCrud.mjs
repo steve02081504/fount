@@ -122,6 +122,17 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			throw httpError(400, 'parentChannelId required and cannot be self')
 		ensureChannel(state, parentId)
 		ensureChannel(state, channelId)
+		// 环检测：沿 channelId 现有子链遍历，若 parentId 可达则置顶会成环。
+		const seen = new Set()
+		const stack = [...state.channels?.[channelId]?.links || []]
+		while (stack.length) {
+			const id = stack.pop()
+			if (id === parentId)
+				throw httpError(400, 'promote forms a channel cycle')
+			if (seen.has(id)) continue
+			seen.add(id)
+			stack.push(...state.channels?.[id]?.links || [])
+		}
 		const event = await prependChannelLink(username, groupId, parentId, channelId)
 		res.status(200).json({ event })
 	})

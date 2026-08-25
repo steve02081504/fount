@@ -723,6 +723,49 @@ Deno.test('viewer_gone 不写失败状态：fresh 保持未跑、已失败保持
 	}
 })
 
+Deno.test('viewer_gone 在 moduleCheck 租约等待中被断开：视为未运行而非失败', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 23,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+		autoUpdateExpected: false,
+	})
+	const kernel = handle.kernel
+	const key = 'testkit:waitingLease'
+	/** @type {string | null} */
+	let heldTicket = null
+	try {
+		// 预占 moduleCheck 租约，使后续 deno suite 在 acquire 处排队等待。
+		heldTicket = await kernel.moduleCheck.acquire()
+		const suite = {
+			manifestId: 'testkit',
+			name: 'waitingLease',
+			run: ['deno', 'run', '--allow-scripts', '--allow-all', 'nope.mjs'],
+			triggers: [],
+			dependencies: [],
+			heavy: false,
+		}
+		kernel.catalog.allSuites.push(suite)
+		kernel.catalog.byKey.set(key, suite)
+		const entry = enqueueDummyJob(kernel, { key, jobId: 'waitingLease-job' })
+		kernel.wake()
+		// 确认任务在 acquire 处排队（未真正拉起 deno 子进程）。
+		await waitUntil(() => kernel.moduleCheck.waiting > 0)
+		kernel.dropViewer('v')
+		await awaitJob(entry.job, 'job waitingLease 未收尾')
+		const event = entry.end()
+		assertEquals(event?.passed, true)
+		assertEquals(event?.reused, true)
+		// 等待租约期间被断开 → 不写失败状态、不推进指纹。
+		assertEquals(kernel.state.suites[key], undefined)
+	}
+	finally {
+		if (heldTicket) kernel.moduleCheck.abandon(heldTicket)
+		await handle.close()
+	}
+})
+
 Deno.test('autoUpdateExpected false does not auto-rewrite manifest after run', async () => {
 	const root = join(tmpdir(), `fount-kernel-no-autoupdate-${Date.now()}`)
 	await mkdir(root, { recursive: true })

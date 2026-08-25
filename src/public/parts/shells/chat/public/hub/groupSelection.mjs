@@ -9,8 +9,6 @@ import { isFriendBoundGroup } from './friendBindings.mjs'
  */
 export function orderedSidebarGroupIds() {
 	const groupById = new Map(store.sidebar.groups.map(group => [group.groupId, group]))
-	/** @returns {string[]} 当前可见且非好友绑定的群 ID 序列 */
-	const visibleGroups = () => store.sidebar.groups.filter(group => !isFriendBoundGroup(group)).map(group => group.groupId)
 	const ordered = (store.sidebar.sidebarGroupOrder.length
 		? [...store.sidebar.sidebarGroupOrder]
 		: store.sidebar.groups.map(group => group.groupId)
@@ -19,7 +17,7 @@ export function orderedSidebarGroupIds() {
 		return group ? !isFriendBoundGroup(group) : false
 	})
 	// sidebarGroupOrder 可能含已删除/好友绑定 ID 而被过滤为空；仍有可见群时回退到当前顺序。
-	return ordered.length ? ordered : visibleGroups()
+	return ordered.length ? ordered : store.sidebar.groups.filter(group => !isFriendBoundGroup(group)).map(group => group.groupId)
 }
 
 /**

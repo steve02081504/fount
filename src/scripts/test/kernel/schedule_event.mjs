@@ -1,6 +1,7 @@
 /**
  * 把理想调度投影包装成发给消费端的 `schedule-update` 事件。
  */
+import { geti18n } from '../../i18n/bare.mjs'
 
 /**
  * schedule-update 原因枚举。
@@ -46,22 +47,9 @@ export function buildScheduleUpdate(projection, viewer, reason, reasonDetail = '
  * @returns {string} 可读原因标签
  */
 export function formatScheduleReason(reason) {
-	switch (reason) {
-		case 'initial': return '计划就绪'
-		case 'suite_started': return '开始运行'
-		case 'suite_completed': return '套件完成'
-		case 'suite_failed': return '套件失败'
-		case 'blocked': return '依赖失败，阻塞'
-		case 'skipped': return '依赖跳过'
-		case 'queue_appended': return '新任务入队'
-		case 'queue_removed': return '任务取消'
-		case 'prep_promoted': return '预备晋升'
-		case 'module_check_ready': return '模块检查就绪'
-		case 'dependency_ready': return '依赖就绪'
-		case 'resource_budget_changed': return '资源预算变化'
-		case 'job_queued': return '新任务排队'
-		default: return reason || '进度更新'
-	}
+	const label = geti18n(`fountConsole.test.display.schedule.reasons.${reason}`)
+	if (label != null) return label
+	return reason || geti18n('fountConsole.test.display.schedule.reasons.progress')
 }
 
 /**

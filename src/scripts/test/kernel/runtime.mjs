@@ -1103,6 +1103,17 @@ export class TestKernel {
 				endEvent = await this.#finishMissedReady(item, suite)
 				return
 			}
+			// 等待 moduleCheck 租约期间被 viewer 断开/抢占：视为未运行而非失败，与 terminated 分支一致。
+			if (abort.signal.aborted && NOT_RUN_TERMINATE_REASONS.includes(String(abort.signal.reason))) {
+				endEvent = {
+					type: 'suite-end',
+					key,
+					jobId: item.jobId,
+					passed: true,
+					reused: true,
+				}
+				return
+			}
 			const job = item.jobId ? this.jobs.get(item.jobId) : undefined
 			if (job) job.exitCode = 1
 			this.sessionPassed.set(key, false)

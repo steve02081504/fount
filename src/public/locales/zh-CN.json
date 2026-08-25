@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "模组检查未发 ready 进程已退出：${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} 前端测试须通过 test/frontend/run.mjs 启动（自启隔离节点），勿对本地开发实例或真实用户数据运行。",
+				"isolatedUser": "测试须使用隔离用户 \"${expectedUsername}\"，当前为 \"${data.username}\"。请通过 run.mjs 启动，勿指向生产/开发 fount。"
+			},
 			"queue": {
 				"append": "入队：${label}（${reason}）剩余 ≈ ${remaining}",
 				"remove": "移出：${label}（${reason}）剩余 ≈ ${remaining}"
@@ -194,7 +198,23 @@
 				"failureLog": "\n—— ${label}：失败日志 ——",
 				"schedule": {
 					"reason": "（${reason}）",
-					"running": "正在运行 ${key}，剩余 ${remaining}"
+					"running": "正在运行 ${key}，剩余 ${remaining}",
+					"reasons": {
+						"initial": "计划就绪",
+						"suite_started": "开始运行",
+						"suite_completed": "套件完成",
+						"suite_failed": "套件失败",
+						"blocked": "依赖失败，阻塞",
+						"skipped": "依赖跳过",
+						"queue_appended": "新任务入队",
+						"queue_removed": "任务取消",
+						"prep_promoted": "预备晋升",
+						"module_check_ready": "模块检查就绪",
+						"dependency_ready": "依赖就绪",
+						"resource_budget_changed": "资源预算变化",
+						"job_queued": "新任务排队",
+						"progress": "进度更新"
+					}
 				}
 			},
 			"passed": "通过：${label}",
