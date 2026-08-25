@@ -95,7 +95,7 @@ Deno.test('detectNoiseHits marks browser:network as browser_network', () => {
 	assertEquals(detectNoiseHits('all green'), [])
 })
 
-Deno.test('detectNoiseHits marks [i18n:missing] as i18n_missing', () => {
+Deno.test('detectNoiseHits marks the i18n missing marker as i18n_missing', () => {
 	assertEquals(detectNoiseHits('[i18n:missing] Translation key "foo.bar" not found.'), ['i18n_missing'])
 	assertEquals(detectNoiseHits('ok\nmissing key [i18n:missing] foo.bar\nmore'), ['i18n_missing'])
 })

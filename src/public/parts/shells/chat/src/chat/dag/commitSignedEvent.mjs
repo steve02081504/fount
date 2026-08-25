@@ -51,25 +51,34 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opti
 	}
 
 	let publishLeaveBeforeRebuild = false
+	let publishBanBeforePersist = false
 	const committed = await withGroupWriteLock(username, groupId, async () => {
 		if (wirePayload instanceof Function) wirePayload = wirePayload()
 		wirePayload = await wirePayload
 		// 退群联邦出站须在 broadcastAndPersist 之前完成：完整 checkpoint 重建会 maybePurgeLocalReplicaIfLeft
 		// 删掉 events.jsonl 并 teardown slot，晚于 rebuild 的 publish 读不到 leave 帧。
 		publishLeaveBeforeRebuild = options.publishFederation && wirePayload.type === 'member_leave'
+		publishBanBeforePersist = options.publishFederation && wirePayload.type === 'member_ban'
 		const path = eventsPath(username, groupId)
 		const idNorm = String(wirePayload.id).trim()
 		const previous = await readJsonl(path, { sanitize: stripDagEventLocalExtensions })
 		if (previous.some(existing => String(existing.id).trim() === idNorm)) return false
 		await appendJsonlSynced(path, wirePayload)
 		await recordEventReceivedAt(username, groupId, wirePayload.id, Date.now())
-		if (!publishLeaveBeforeRebuild)
+		if (!publishLeaveBeforeRebuild && !publishBanBeforePersist)
 			await broadcastAndPersist(username, groupId, wirePayload, persistOpts)
 		return true
 	})
 	if (!committed) return 'dup'
 
-	if (publishLeaveBeforeRebuild) {
+	if (publishBanBeforePersist) {
+		// Publish before the ban hook blocks the target peer, so third-party replicas can relay the event.
+		await publishSignedEvent(username, groupId, wirePayload, options, { forceAwait: true })
+		await withGroupWriteLock(username, groupId, async () => {
+			await broadcastAndPersist(username, groupId, wirePayload, persistOpts)
+		})
+	}
+	else if (publishLeaveBeforeRebuild) {
 		await publishSignedEvent(username, groupId, wirePayload, options, { forceAwait: true })
 		await withGroupWriteLock(username, groupId, async () => {
 			await broadcastAndPersist(username, groupId, wirePayload, persistOpts)
