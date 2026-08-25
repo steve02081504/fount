@@ -190,7 +190,11 @@
 						"0": "排隊等待中"
 					}
 				},
-				"failureLog": "\n—— ${label}：失敗日誌 ——"
+				"failureLog": "\n—— ${label}：失敗日誌 ——",
+				"schedule": {
+					"reason": null,
+					"running": null
+				}
 			},
 			"passed": "透過：${label}",
 			"passedWithNoise": "透過：${label}（含有噪聲）",
