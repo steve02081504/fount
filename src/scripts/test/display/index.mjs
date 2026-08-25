@@ -79,8 +79,8 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		if (progressStartedAt == null || lastCompletionAt == null) return null
 		const target = lastCompletionAt
 		if (target <= progressStartedAt) return 100
-		const pct = Math.floor(((Date.now() - progressStartedAt) / (target - progressStartedAt)) * 100)
-		return Math.min(100, Math.max(0, pct))
+		const percentage = Math.floor(((Date.now() - progressStartedAt) / (target - progressStartedAt)) * 100)
+		return Math.min(100, Math.max(0, percentage))
 	}
 
 	/**
@@ -89,12 +89,12 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 */
 	function setTimeProgress() {
 		if (progressStartedAt == null) return
-		const pct = currentPercent()
-		if (pct == null) {
+		const percentage = currentPercent()
+		if (percentage == null) {
 			if (shownPct != null) writeTaskbar(shownPct)
 			return
 		}
-		shownPct = shownPct == null ? pct : Math.max(shownPct, pct)
+		shownPct = shownPct == null ? percentage : Math.max(shownPct, percentage)
 		writeTaskbar(shownPct)
 	}
 
@@ -187,14 +187,14 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 * @returns {void}
 	 */
 	function onScheduleUpdate(message) {
-		const next = message.lastCompletionAt ? Date.parse(message.lastCompletionAt) : null
-		const prev = lastCompletionAt
+		const nextCompletionAt = message.lastCompletionAt ? Date.parse(message.lastCompletionAt) : null
+		const previousCompletionAt = lastCompletionAt
 		// 相对 5% 或绝对 ≥500ms 之一变化才重印剩余文案，避免接近结束时高频重画。
-		const changed = prev == null || next == null
-			|| Math.abs(next - prev) / Math.max(1, prev) > 0.05
-			|| Math.abs(next - prev) >= 500
-		lastCompletionAt = next
-		if (changed) paintScheduleUpdate(message, prev)
+		const changed = previousCompletionAt == null || nextCompletionAt == null
+			|| Math.abs(nextCompletionAt - previousCompletionAt) / Math.max(1, previousCompletionAt) > 0.05
+			|| Math.abs(nextCompletionAt - previousCompletionAt) >= 500
+		lastCompletionAt = nextCompletionAt
+		if (changed) paintScheduleUpdate(message, previousCompletionAt)
 		// 任务栏进度始终随计时推进（单调不回退），顺道刷新一次并重置计时。
 		if (progressStartedAt != null) scheduleProgressRefresh()
 	}

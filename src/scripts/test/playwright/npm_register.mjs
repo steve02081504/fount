@@ -14,7 +14,7 @@ registerHooks({
 		if (specifier.startsWith('npm:')) {
 			let pkg = specifier.slice('npm:'.length)
 			const versioned = pkg.match(/^((?:@[^/]+\/)?[^@/]+)@/)
-			if (versioned) pkg = versioned[1]
+			if (versioned) pkg = pkg.replace(/^((?:@[^/]+\/)?[^@/]+)@[^/]+/, versioned[1])
 			return nextResolve(pkg, context)
 		}
 		return nextResolve(specifier, context)

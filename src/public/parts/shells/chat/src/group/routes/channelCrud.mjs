@@ -123,15 +123,15 @@ export function registerChannelCrudRoutes(router, authenticate) {
 		ensureChannel(state, parentId)
 		ensureChannel(state, channelId)
 		// 环检测：沿 channelId 现有子链遍历，若 parentId 可达则置顶会成环。
-		const seen = new Set()
-		const stack = [...state.channels?.[channelId]?.links || []]
-		while (stack.length) {
-			const id = stack.pop()
-			if (id === parentId)
+		const visitedChannelIds = new Set()
+		const pendingChannelIds = [...state.channels?.[channelId]?.links || []]
+		while (pendingChannelIds.length) {
+			const linkedChannelId = pendingChannelIds.pop()
+			if (linkedChannelId === parentId)
 				throw httpError(400, 'promote forms a channel cycle')
-			if (seen.has(id)) continue
-			seen.add(id)
-			stack.push(...state.channels?.[id]?.links || [])
+			if (visitedChannelIds.has(linkedChannelId)) continue
+			visitedChannelIds.add(linkedChannelId)
+			pendingChannelIds.push(...state.channels?.[linkedChannelId]?.links || [])
 		}
 		const event = await prependChannelLink(username, groupId, parentId, channelId)
 		res.status(200).json({ event })
@@ -167,15 +167,15 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			if (links.includes(channelId))
 				throw httpError(400, 'links cannot reference self')
 			// 环检测：沿 links 从本频道可达处遍历，若回到本频道则拒绝，防止互链成环。
-			const seen = new Set()
-			const stack = [...links]
-			while (stack.length) {
-				const id = stack.pop()
-				if (id === channelId)
+			const visitedChannelIds = new Set()
+			const pendingChannelIds = [...links]
+			while (pendingChannelIds.length) {
+				const linkedChannelId = pendingChannelIds.pop()
+				if (linkedChannelId === channelId)
 					throw httpError(400, 'links form a cycle')
-				if (seen.has(id)) continue
-				seen.add(id)
-				stack.push(...state.channels?.[id]?.links || [])
+				if (visitedChannelIds.has(linkedChannelId)) continue
+				visitedChannelIds.add(linkedChannelId)
+				pendingChannelIds.push(...state.channels?.[linkedChannelId]?.links || [])
 			}
 			updates.links = links
 		}

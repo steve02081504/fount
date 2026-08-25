@@ -44,7 +44,14 @@ function captureI18n(fn) {
 	}
 	console.logI18n = logSpy
 	console.errorI18n = errSpy
-	const result = fn()
+	let result
+	try {
+		result = fn()
+	}
+	catch (error) {
+		restore()
+		throw error
+	}
 	if (result && typeof result.then === 'function')
 		return result.finally(restore).then(() => ({ logs, errors }))
 	restore()

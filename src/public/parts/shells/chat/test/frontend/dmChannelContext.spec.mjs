@@ -91,14 +91,14 @@ test.describe('DM channel list context menu', () => {
 		// 后端经 WS 推送 channel_create 会先于 POST 响应把新频道渲染进侧栏（count 先变为 2），
 		// quickCreate 的导航（落 hash）紧随 POST 响应之后；故此处等 URL 落到新频道而非 count 变化。
 		await page.waitForFunction(
-			initial => {
+			initialChannelId => {
 				const hash = location.hash.slice(1)
 				if (!hash.startsWith('group:')) return false
 				const rest = hash.slice('group:'.length)
-				const sep = rest.indexOf(':')
-				if (sep < 0) return false
-				const channelId = rest.slice(sep + 1)
-				return channelId && channelId !== initial
+				const separatorIndex = rest.indexOf(':')
+				if (separatorIndex < 0) return false
+				const channelId = rest.slice(separatorIndex + 1)
+				return channelId && channelId !== initialChannelId
 			},
 			initialChannelId,
 			{ timeout: 30_000 },
