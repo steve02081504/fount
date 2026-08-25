@@ -430,6 +430,20 @@ export async function createChannel(groupId, name, type = 'text', parentChannelI
 }
 
 /**
+ * 将频道在父频道下原子地置顶（服务端单事件重排，保留并发新增的兄弟频道）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} parentChannelId 父频道 id
+ * @returns {Promise<object>} 产生的链上事件
+ */
+export async function promoteChannel(groupId, channelId, parentChannelId) {
+	return groupFetch(groupPath(groupId, 'channels', channelId, 'promote'), {
+		method: 'POST',
+		json: { parentChannelId },
+	})
+}
+
+/**
  * 读取某频道有效权限块（跟随 `permissionBlockId` 链到源频道）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID

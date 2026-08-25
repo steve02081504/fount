@@ -4,7 +4,7 @@
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { findParentChannelId } from '../../shared/channelReorder.mjs'
-import { createChannel, updateChannel } from '../../src/endpoints/groupChannel.mjs'
+import { createChannel, promoteChannel } from '../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { openDialogFromTemplate, renderTemplate } from '../../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
@@ -36,10 +36,7 @@ export async function refreshChannelSidebar() {
  * @returns {Promise<void>}
  */
 async function moveChannelToTop(groupId, channelId, parentChannelId) {
-	const state = await getGroupState(groupId)
-	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id && id !== channelId)
-	links.unshift(channelId)
-	await updateChannel(groupId, parentChannelId, { links })
+	await promoteChannel(groupId, channelId, parentChannelId)
 }
 
 /**
@@ -71,7 +68,7 @@ export async function quickCreateChannel() {
 		const rootChannelId = store.context.currentState?.groupSettings?.rootChannelId || null
 		if (rootChannelId) await moveChannelToTop(groupId, channelId, rootChannelId)
 		await refreshChannelSidebar()
-		await selectChannel(channelId)
+		if (store.context.currentGroupId === groupId) await selectChannel(channelId)
 		showToastI18n('success', 'chat.hub.newChannel.success')
 	}
 	catch (error) {
@@ -126,7 +123,7 @@ export async function showCreateChannelModal(options = {}) {
 					if (targetParentId) await moveChannelToTop(groupId, channelId, targetParentId)
 					close()
 					await refreshChannelSidebar()
-					await selectChannel(channelId)
+					if (store.context.currentGroupId === groupId) await selectChannel(channelId)
 					showToastI18n('success', 'chat.hub.newChannel.success')
 				}
 				catch (error) {

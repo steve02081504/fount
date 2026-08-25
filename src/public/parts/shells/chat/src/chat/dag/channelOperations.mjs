@@ -66,7 +66,7 @@ export async function updateChannelLinks(username, groupId, channelId, links) {
 }
 
 /**
- * 基于当前 state 向父频道的 `links` 末尾追加一个子频道 id。
+ * 基于当前 state 向父频道的 `links` 末尾追加一个子频道 id（已存在则移动到末尾）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {string} parentChannelId 父频道 ID
@@ -75,7 +75,23 @@ export async function updateChannelLinks(username, groupId, channelId, links) {
  */
 export async function appendChannelLink(username, groupId, parentChannelId, childId) {
 	const { state } = await getState(username, groupId)
-	const links = [...state.channels?.[parentChannelId]?.links || [], childId]
+	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id !== childId)
+	links.push(childId)
+	return updateChannelLinks(username, groupId, parentChannelId, links)
+}
+
+/**
+ * 基于当前 state 向父频道的 `links` 首部放置一个子频道 id（置顶；已存在则移动到首部）。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} parentChannelId 父频道 ID
+ * @param {string} childId 子频道 id
+ * @returns {Promise<object>} 签名事件
+ */
+export async function prependChannelLink(username, groupId, parentChannelId, childId) {
+	const { state } = await getState(username, groupId)
+	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id !== childId)
+	links.unshift(childId)
 	return updateChannelLinks(username, groupId, parentChannelId, links)
 }
 

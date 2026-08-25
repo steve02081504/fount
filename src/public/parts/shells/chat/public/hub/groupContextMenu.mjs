@@ -96,15 +96,19 @@ async function applyLeaveGroupsLocal(groupIds) {
 		if (store.privateGroup.groupId && leaving.has(store.privateGroup.groupId))
 			clearPrivateGroupState()
 		// 退群前刷新群列表：确保好友绑定群的 friendBinding 是最新值（否则 DM 群会被当作普通群选中）。
+		const leavingGroupId = store.context.currentGroupId
 		await loadGroups().catch(handleError('chat.hub.load.groupFailed'))
-		const next = orderedSidebarGroupIds().find(id => !leaving.has(id))
-		if (next) await selectGroup(next)
-		else {
-			store.context.currentGroupId = null
-			store.context.currentChannelId = null
-			store.context.currentState = null
-			const { setMode } = await import('./mode.mjs')
-			await setMode('friends')
+		// 刷新期间用户可能已切换当前群：仅当仍停留在原退群群时才接管选择，避免覆盖用户的新选择。
+		if (store.context.currentGroupId === leavingGroupId) {
+			const next = orderedSidebarGroupIds().find(id => !leaving.has(id))
+			if (next) await selectGroup(next)
+			else {
+				store.context.currentGroupId = null
+				store.context.currentChannelId = null
+				store.context.currentState = null
+				const { setMode } = await import('./mode.mjs')
+				await setMode('friends')
+			}
 		}
 	}
 	clearGroupSelection()

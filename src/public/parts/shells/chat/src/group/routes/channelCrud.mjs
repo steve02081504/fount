@@ -7,6 +7,7 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
+import { prependChannelLink } from '../../chat/dag/channelOperations.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 
@@ -108,6 +109,21 @@ export function registerChannelCrudRoutes(router, authenticate) {
 		// DM 群根级无名频道的 greeting-only 清理与 AI 命名/分类在后端异步进行，创建接口只发射并遗忘。
 		scheduleDmChannelAutoNameAndCleanup(username, groupId, channel.id, state).catch(() => {})
 		res.status(201).json({ channelId: channel.id })
+	})
+
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/promote`, authenticate, requireGroupMember(), async (req, res) => {
+		const {
+			groupContext: { groupId, state, username },
+			params: { channelId },
+			body: { parentChannelId }
+		} = req
+		const parentId = parentChannelId || state.groupSettings?.rootChannelId || null
+		if (!parentId || parentId === channelId)
+			throw httpError(400, 'parentChannelId required and cannot be self')
+		ensureChannel(state, parentId)
+		ensureChannel(state, channelId)
+		const event = await prependChannelLink(username, groupId, parentId, channelId)
+		res.status(200).json({ event })
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {

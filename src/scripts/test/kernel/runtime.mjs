@@ -582,10 +582,13 @@ export class TestKernel {
 			// 仅持有检查租约的任务计入剩余检查时长；其余（已完成检查或正在执行）为 0，避免把全局互斥窗误算到其它任务。
 			const holdsCheck = isDeno && !running.checkDone && running.ticket === this.moduleCheck.heldTicket
 			const checkElapsed = holdsCheck ? now - this.moduleCheck.heldAt : 0
+			const elapsedMs = now - (running.startedAt ?? now)
 			tasks.push(buildEstimateTask(suite, this.state.suites[key], {
 				id: item.id ?? `run:${key}`,
 				subtestsToRun: item.subtests,
-				elapsedMs: now - (running.startedAt ?? now),
+				// 分离执行耗时与模块检查耗时：elapsedMs 只计入执行（不含已耗的检查时间），
+				// 剩余检查时长由 moduleCheckMs 单独给出，避免 schedule 叠加时重复扣减已包含的检查时间。
+				elapsedMs: holdsCheck ? Math.max(0, elapsedMs - checkElapsed) : elapsedMs,
 				running: true,
 				moduleCheckMs: holdsCheck ? Math.max(0, meanCheck - checkElapsed) : 0,
 				jobId: item.jobId ?? null,
