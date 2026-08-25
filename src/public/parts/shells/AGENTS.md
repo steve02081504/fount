@@ -40,4 +40,4 @@ alwaysApply: false
 
 Bot shells: from `src/*.mjs` use **5** `../` to reach `src/scripts` / `src/server` / sibling `shells/chat`. From `src/default_interface/*.mjs` use **6** `../` to `src/*`, and **`../../../chat/...`** (not `../../chat`) to chat.
 
-Cross-shell `public/shared` renames: bot integration triggers watch `chat/public/shared/**`; `module_graph_probe` + `shellLoadProbe.missingNamed` fail on stale named imports.
+Cross-shell `public/shared` renames: bot integration triggers watch only the shared modules each bot imports (`chat/public/shared/{channelContent,inlineTokenSyntax,messageFields}.mjs`) — extend that closure if a bot starts importing another shared module; `module_graph_probe` + `shellLoadProbe.missingNamed` fail on stale named imports.
