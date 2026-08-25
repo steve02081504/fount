@@ -37,15 +37,19 @@ function captureI18n(fn) {
 	 * @returns {void}
 	 */
 	function errSpy(key, params) { errors.push({ key, params }) }
-	console.logI18n = logSpy
-	console.errorI18n = errSpy
-	try {
-		fn()
-	}
-	finally {
+	/**
+	 *
+	 */
+	const restore = () => {
 		console.logI18n = logOrig
 		console.errorI18n = errOrig
 	}
+	console.logI18n = logSpy
+	console.errorI18n = errSpy
+	const result = fn()
+	if (result && typeof result.then === 'function')
+		return result.finally(restore).then(() => ({ logs, errors }))
+	restore()
 	return { logs, errors }
 }
 
@@ -237,7 +241,7 @@ Deno.test('formatFailureOutput strips markers and appends trailing newline', () 
 
 Deno.test('paintJobDone reprints failed suite logs after the report path', async () => {
 	const output = 'Error: still failing\n'
-	const { logs } = captureI18n(async () => {
+	const { logs } = await captureI18n(async () => {
 		await allowNoise('Error: still failing', () => {
 			paintJobDone({
 				reportPath: 'data/test/report.md',
