@@ -311,7 +311,7 @@ export async function deleteGroupData(username, groupId) {
  * @returns {Promise<void>}
  */
 async function preserveLocalReplicaAfterForcedRemoval(username, groupId) {
-	const { saveGroupShunState } = await import('../groupShunState.mjs')
+	const { saveGroupShunState } = await import('../../group/groupShunState.mjs')
 	await saveGroupShunState(username, groupId, { replicaRetained: true })
 }
 
@@ -325,7 +325,7 @@ async function preserveLocalReplicaAfterForcedRemoval(username, groupId) {
  * @returns {Promise<boolean>} 是否已删除本机目录
  */
 export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
-	const { loadGroupShunState, saveGroupShunState } = await import('../groupShunState.mjs')
+	const { loadGroupShunState, saveGroupShunState } = await import('../../group/groupShunState.mjs')
 	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state)) {
 		// 重新入群后清除遗留的“已保留副本”标记。
 		const shunState = await loadGroupShunState(username, groupId)
