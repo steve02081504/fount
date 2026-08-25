@@ -77,6 +77,12 @@ export const BUDGET_REFRESH_MS = 5000
 export const BUDGET_CHANGE_THRESHOLD = 0.10
 
 /**
+ * 终止原因：视为"未运行"而非失败——新任务抢占 idle_all / viewer 断开。
+ * 满足时 #runItem 早返回，不写状态、不改 sessionPassed、不推进指纹、不广播失败 suite-end。
+ */
+export const NOT_RUN_TERMINATE_REASONS = ['new_job', 'viewer_gone']
+
+/**
  * 测试内核。
  */
 export class TestKernel {
@@ -1053,8 +1059,8 @@ export class TestKernel {
 				endEvent = await this.#finishMissedReady(item, suite)
 				return
 			}
-			// 被新任务抢占的 idle_all：视为未运行而非失败——不写失败状态、不改 sessionPassed、不广播失败 suite-end。
-			if (result.terminated && result.terminateReason === 'new_job') {
+			// 被新任务抢占的 idle_all / viewer 断开终止：视为未运行而非失败——不写失败状态、不改 sessionPassed、不广播失败 suite-end。
+			if (result.terminated && NOT_RUN_TERMINATE_REASONS.includes(result.terminateReason)) {
 				endEvent = {
 					type: 'suite-end',
 					key,
