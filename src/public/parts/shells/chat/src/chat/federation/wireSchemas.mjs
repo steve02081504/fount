@@ -63,6 +63,17 @@ export function parseGossipRequest(payload) {
 }
 
 /**
+ * @param {unknown} payload fed_verify_membership 载荷
+ * @returns {{ nodeHash: string } | null} 解析结果
+ */
+export function parseFedVerifyMembership(payload) {
+	if (!isPlainObject(payload)) return null
+	const nodeHash = normalizeHex64(payload.nodeHash)
+	if (!isHex64(nodeHash)) return null
+	return { nodeHash }
+}
+
+/**
  * @param {unknown} payload fed_shun 载荷
  * @param {string} groupId 群 ID
  * @returns {{ groupId: string, nodeHash: string, reason: string } | null} 解析结果

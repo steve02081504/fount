@@ -176,6 +176,11 @@
 						<button type="button" id="shun-keep-history-button" class="btn btn-xs btn-outline" data-i18n="chat.hub.banners.suspectedRemovedKeep"></button>
 						<button type="button" id="shun-leave-button" class="btn btn-xs btn-error btn-outline" data-i18n="chat.hub.banners.suspectedRemovedLeave"></button>
 					</div>
+					<div id="shun-verifying-banner" class="alert alert-info rounded-none py-2 text-sm flex flex-wrap items-center gap-2" hidden>
+						<span class="loading loading-spinner loading-sm" aria-hidden="true"></span>
+						<span id="shun-verifying-banner-text" data-i18n="chat.hub.banners.shunVerifying"></span>
+						<progress id="shun-verifying-progress" class="progress progress-primary w-32" value="0" max="0"></progress>
+					</div>
 					<div id="fork-banner" class="alert alert-warning rounded-none py-2 text-sm flex-col items-stretch gap-2" hidden>
 						<span id="fork-banner-text"></span>
 						<div class="fork-actions">

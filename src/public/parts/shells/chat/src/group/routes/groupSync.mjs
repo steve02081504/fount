@@ -274,6 +274,8 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			suspectedRemoved: shunState.suspectedRemoved,
 			shunnedBy: shunState.shunnedBy,
 			shunBannerDismissed: shunState.bannerDismissed,
+			shunVerifying: !shunState.suspectedRemoved && (shunState.shunnedBy?.length ?? 0) > 0,
+			shunTotal: shunState.knownPeerCount ?? 0,
 		}
 
 		const federation = {

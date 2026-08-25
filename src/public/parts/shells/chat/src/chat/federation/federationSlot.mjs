@@ -14,6 +14,7 @@ const FED_ACTION_SPECS = {
 	channel_history_want: [2, 'channel_history_want'],
 	fed_volatile: [10, 'sendFedVolatile'],
 	fed_tip_ping: [3, 'sendTipPing'],
+	fed_verify_membership: [4, 'sendVerifyMembership'],
 	fed_partition_bridge: [5, 'fed_partition_bridge'],
 	fed_bootstrap_request: [2, 'sendBootstrapRequest'],
 	fed_bootstrap_response: [2, 'sendBootstrapResponse'],
