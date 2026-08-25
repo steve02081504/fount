@@ -115,14 +115,13 @@ Deno.test('updateManifestEstimates writes suite and subtest expected after name'
 })
 
 Deno.test('expectedDriftToleranceMs grows sub-linearly and matches the anchor points', () => {
-	// 幂函数 37·scale^0.656：500ms→~2s，4min→~3min，30min→~6min。
+	// 幂函数 37·scale^0.656：500ms→~2s，4min→~2min，30min→~8min。
 	assertEquals(expectedDriftToleranceMs(0), 0)
 	assert(expectedDriftToleranceMs(500) > 1_000 && expectedDriftToleranceMs(500) < 3_000)
 	assert(expectedDriftToleranceMs(240_000) > 60_000 && expectedDriftToleranceMs(240_000) < 300_000)
 	assert(expectedDriftToleranceMs(1_800_000) > 120_000 && expectedDriftToleranceMs(1_800_000) < 600_000)
 	// 单调、亚线性（规模×10 时容差远小于×10）。
-	const ten = expectedDriftToleranceMs(100_000) * 10
-	assert(expectedDriftToleranceMs(1_000_000) < ten)
+	assert(expectedDriftToleranceMs(1_000_000) < expectedDriftToleranceMs(100_000) * 10)
 })
 
 Deno.test('isExpectedDrift fires when the gap exceeds the continuous tolerance at the larger scale', () => {
@@ -133,11 +132,11 @@ Deno.test('isExpectedDrift fires when the gap exceeds the continuous tolerance a
 	// 零漂移。
 	assertEquals(isExpectedDrift(240_000, 240_000), false)
 	// 容差以较大值为基准连续给出。
-	const tol = expectedDriftToleranceMs(240_000)
+	const toleranceMs = expectedDriftToleranceMs(240_000)
 	// 超出容差 → 漂移。
-	assertEquals(isExpectedDrift(240_000 - tol - 10_000, 240_000), true)
+	assertEquals(isExpectedDrift(240_000 - toleranceMs - 10_000, 240_000), true)
 	// 未超容差 → 不漂移。
-	assertEquals(isExpectedDrift(240_000 - Math.floor(tol) + 10_000, 240_000), false)
+	assertEquals(isExpectedDrift(240_000 - Math.floor(toleranceMs) + 10_000, 240_000), false)
 })
 
 Deno.test('driftedEstimatePatch only includes drifted suite and subtest fields', () => {

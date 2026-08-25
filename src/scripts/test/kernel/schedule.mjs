@@ -272,7 +272,8 @@ export function buildTimeline(tasks, { memBudgetBytes, cpuBudgetPct }) {
 			endById.set(id, 0)
 			continue
 		}
-		occupy(task, 0, duration)
+		// 在跑任务还持有检查租约时，剩余检查时长一并计入其完成时刻（检查等待 + 执行）。
+		occupy(task, 0, duration + (task.moduleCheckMs ?? 0))
 		checkFreeAt = Math.max(checkFreeAt, task.moduleCheckMs ?? 0)
 	}
 

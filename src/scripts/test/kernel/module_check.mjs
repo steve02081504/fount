@@ -10,7 +10,7 @@ import { ms } from '../../ms.mjs'
 export const MODULE_CHECK_HOLD_TIMEOUT_MS = ms('10m')
 
 /**
- * 无任何实测样本时的模块检查均值兜底（秒）。
+ * 无任何实测样本时的模块检查均值兜底（毫秒）。
  * 避免调度 ETA 一开始把 spawn→ready 互斥窗当成 0，导致「2 分钟 → 24 分钟」的跳变。
  */
 export const DEFAULT_MODULE_CHECK_MS = 40_000

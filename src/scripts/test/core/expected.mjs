@@ -72,8 +72,8 @@ export function formatExpected(msVal) {
 
 /**
  * 自动回写 `expected` 的漂移容差（连续函数，毫秒）。
- * 随规模亚线性增长：500ms 级容差约 2s，4min 级约 3min，30min 级约 6min。
- * 拟合自 {500→2000, 240000→180000, 1800000→360000} 的幂函数。
+ * 随规模亚线性增长：500ms 级容差约 2s，4min 级约 2min，30min 级约 8min。
+ * 拟合自 {500→2181, 240000→125205, 1800000→469527} 的幂函数。
  * @param {number} scaleMs 基准规模（两个值中较大者，毫秒）
  * @returns {number} 允许的漂移量（毫秒）
  */
@@ -95,8 +95,7 @@ export function isExpectedDrift(manifestMs, baselineMs) {
 	if (roundedBase == null) return false
 	const roundedManifest = roundExpectedMs(manifestMs)
 	if (roundedManifest == null) return true
-	const scale = Math.max(roundedManifest, roundedBase)
-	return scale > 0 && Math.abs(roundedManifest - roundedBase) > expectedDriftToleranceMs(scale)
+	return Math.abs(roundedManifest - roundedBase) > expectedDriftToleranceMs(Math.max(roundedManifest, roundedBase))
 }
 
 /**

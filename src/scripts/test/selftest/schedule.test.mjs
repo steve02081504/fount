@@ -155,6 +155,15 @@ Deno.test('module-check mean does not double-count the spawn window for running 
 	assertEquals(slots.find(s => s.key === 'b').startAt, 0)
 })
 
+Deno.test('running task endAt includes its remaining module-check time', () => {
+	// 正在跑且仍持有检查租约的任务：完成时刻 = 剩余执行 + 剩余检查，且互斥窗持续到剩余检查结束。
+	const { slots, makespanMs } = buildTimeline([
+		task({ key: 'a', durationMs: 10_000, elapsedMs: 3000, moduleCheckMs: 2000, running: true }),
+	], ROOMY)
+	assertEquals(slots.find(s => s.key === 'a').endAt, 9000)
+	assertEquals(makespanMs, 9000)
+})
+
 Deno.test('queued task startAt reflects module-check spawn delay, not admission time', () => {
 	// a 的模块检查占用 0-200；b 的 spawnAt 只能从 200 开始，而不是被接纳的 0
 	const { slots } = buildTimeline([

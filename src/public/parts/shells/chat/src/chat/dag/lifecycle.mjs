@@ -331,7 +331,8 @@ export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
  */
 export async function removeLocalGroupReplica(username, groupId, options = {}) {
 	const { markGroupReplicaPurging } = await import('./replicaPurge.mjs')
-	// 先读状态并释放文件引用，避免在 purging 标记生效后触发 WAL 修复读取 signer（会误抛"正在被清除"）。
+	// 先打 purging 标记阻断并发写入；getState 走 skipWalRepair，不会触发会读 signer 的 WAL 修复。
+	markGroupReplicaPurging(username, groupId)
 	const state = options.state ?? (await getState(username, groupId, { skipLeftPurge: true, skipWalRepair: true })).state
 	const fileIndex = state.messageOverlay?.fileIndex
 	const fileMetas = fileIndex instanceof Map
@@ -339,8 +340,6 @@ export async function removeLocalGroupReplica(username, groupId, options = {}) {
 		: Object.values(state.fileIndex || {})
 	for (const meta of fileMetas)
 		if (meta && !meta.deleted) await releaseFileStorageRefs(username, meta)
-	// 真正开始删盘前才打 purging 标记，阻断并发写入。
-	markGroupReplicaPurging(username, groupId)
 
 	// 删盘前 await 联邦 slot 的 leave（带短超时），杜绝删盘后 werift 持连泄漏。
 	await teardownFederationRoomForGroup(username, groupId)

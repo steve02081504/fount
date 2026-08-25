@@ -19,8 +19,7 @@ import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMen
 import { groupDisplayName } from './core/domUtils.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
-import { getSidebarGroups } from './friendBindings.mjs'
-import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
+import { clearGroupSelection, contextMenuTargetGroupIds, orderedSidebarGroupIds } from './groupSelection.mjs'
 import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { loadGroups, renderServerBar } from './serverBar.mjs'
@@ -98,7 +97,7 @@ async function applyLeaveGroupsLocal(groupIds) {
 			clearPrivateGroupState()
 		// 退群前刷新群列表：确保好友绑定群的 friendBinding 是最新值（否则 DM 群会被当作普通群选中）。
 		await loadGroups().catch(handleError('chat.hub.load.groupFailed'))
-		const next = getSidebarGroups().map(g => g.groupId).find(id => !leaving.has(id))
+		const next = orderedSidebarGroupIds().find(id => !leaving.has(id))
 		if (next) await selectGroup(next)
 		else {
 			store.context.currentGroupId = null

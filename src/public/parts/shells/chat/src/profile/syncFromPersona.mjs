@@ -17,16 +17,17 @@ import {
 /**
  * @param {string} replicaUsername replica 登录名
  * @param {string} groupId 群 ID
+ * @param {string} [entityHash] 同步目标实体；缺省按 operator（`getGroupMemberEntityHash`）
  * @returns {Promise<void>}
  */
-export async function syncEntityProfileFromPersona(replicaUsername, groupId) {
-	const entityHash = await getGroupMemberEntityHash(replicaUsername, groupId)
-	if (!isWritableLocalEntity(entityHash)) return
+export async function syncEntityProfileFromPersona(replicaUsername, groupId, entityHash) {
+	const targetEntityHash = entityHash ?? await getGroupMemberEntityHash(replicaUsername, groupId)
+	if (!isWritableLocalEntity(targetEntityHash)) return
 	try {
 		const locales = localesForUser(replicaUsername)
 		const presentation = await resolvePersonaPresentation(replicaUsername, groupId)
-		const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
-		const profile = await getProfile(entityHash, replicaUsername, { groupId, skipPresentation: true })
+		const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, targetEntityHash, locales)
+		const profile = await getProfile(targetEntityHash, replicaUsername, { groupId, skipPresentation: true })
 		const localized = normalizeLocalizedMap(profile.localized)
 		const primary = locales[0]
 		const slice = localized[primary] || {}
@@ -42,7 +43,7 @@ export async function syncEntityProfileFromPersona(replicaUsername, groupId) {
 		}
 		if (changed) {
 			localized[primary] = next
-			await updateProfile(replicaUsername, entityHash, { localized }, { groupId, skipPresentation: true })
+			await updateProfile(replicaUsername, targetEntityHash, { localized }, { groupId, skipPresentation: true })
 		}
 	}
 	catch (error) {

@@ -238,6 +238,7 @@ export async function bootInProcess(options) {
  * @property {string} [dataDir] 数据目录（进程内首次启动生效，之后忽略）
  * @property {number} [port=HEADLESS_CONFIG_PORT] config.json 端口（web: false 集成测试占位，不绑定 TCP）
  * @property {boolean} [minP2pNode=false] 初始化离线 node
+ * @property {boolean} [p2p=false] 是否启动 P2P
  * @property {string[]} [loadParts] loadPart 列表
  * @property {(username: string) => Promise<void>} [afterInit] init 后钩子
  */

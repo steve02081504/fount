@@ -18,9 +18,14 @@ import { selectChannel } from './selectChannel.mjs'
  * @returns {Promise<void>}
  */
 export async function refreshChannelSidebar() {
-	setState('context.currentState', await getGroupState(store.context.currentGroupId))
+	const groupId = store.context.currentGroupId
+	if (!groupId) return
+	const state = await getGroupState(groupId)
+	if (store.context.currentGroupId !== groupId) return
+	setState('context.currentState', state)
 	const { renderHubChannelSidebar } = await import('./index.mjs')
-	await renderHubChannelSidebar(store.context.currentState)
+	if (store.context.currentGroupId !== groupId) return
+	await renderHubChannelSidebar(state)
 }
 
 /**
@@ -96,8 +101,9 @@ export async function showCreateChannelModal(options = {}) {
 			const parentSelect = dialog.querySelector('#new-channel-parent')
 			const wrap = dialog.querySelector('#new-channel-parent-wrap')
 			if (parentSelect instanceof HTMLSelectElement && wrap instanceof HTMLElement) {
+				const rootChannelId = store.context.currentState?.groupSettings?.rootChannelId || null
 				const categoryChannels = Object.values(store.context.currentState?.channels || {})
-					.filter(ch => ch?.type === 'category')
+					.filter(ch => ch?.type === 'category' && ch.id !== rootChannelId)
 				const noParent = document.createElement('option')
 				noParent.value = ''
 				noParent.dataset.i18n = 'chat.hub.channel.noParent'

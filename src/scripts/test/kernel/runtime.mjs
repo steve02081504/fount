@@ -116,11 +116,16 @@ export class TestKernel {
 			onHoldTimeout: this.markModuleCheckDone.bind(this),
 			/**
 			 * 每次模块检查完成即持久化累计时长，供调度 ETA 跨内核复用。
+			 * 写入经持久有序 Promise 链串行化：后续写入等待前一次完成，避免并发覆盖同一状态文件。
 			 * @param {number} totalMs 累计时长
 			 * @param {number} count 次数
 			 */
 			onUpdate: (totalMs, count) => {
-				void writeModuleCheckStats(this.repoRoot, { totalMs, count })
+				this.#moduleCheckWriteChain = this.#moduleCheckWriteChain
+					.then(() => writeModuleCheckStats(this.repoRoot, { totalMs, count }))
+					.catch(error => {
+						console.warn(`module-check stats write failed: ${String(error?.message ?? error)}`)
+					})
 			},
 		})
 		this.issueCache = new GithubIssueCache()
@@ -164,6 +169,8 @@ export class TestKernel {
 	#watcher
 	#closeDone
 	#wasIdle
+	/** @type {Promise<void>} 模块检查累计记录写入链（串行化持久化）。 */
+	#moduleCheckWriteChain = Promise.resolve()
 
 	/** 唤醒调度循环。 */
 	wake() {
@@ -571,14 +578,16 @@ export class TestKernel {
 			if (!suite) continue
 			const { item } = running
 			const meanCheck = this.moduleCheck.meanDurationMs()
-			const checkElapsed = this.moduleCheck.heldTicket ? now - this.moduleCheck.heldAt : 0
 			const isDeno = suite.run?.[0] === 'deno'
+			// 仅持有检查租约的任务计入剩余检查时长；其余（已完成检查或正在执行）为 0，避免把全局互斥窗误算到其它任务。
+			const holdsCheck = isDeno && !running.checkDone && running.ticket === this.moduleCheck.heldTicket
+			const checkElapsed = holdsCheck ? now - this.moduleCheck.heldAt : 0
 			tasks.push(buildEstimateTask(suite, this.state.suites[key], {
 				id: item.id ?? `run:${key}`,
 				subtestsToRun: item.subtests,
 				elapsedMs: now - (running.startedAt ?? now),
 				running: true,
-				moduleCheckMs: !isDeno ? 0 : running.checkDone ? 0 : Math.max(0, meanCheck - checkElapsed),
+				moduleCheckMs: holdsCheck ? Math.max(0, meanCheck - checkElapsed) : 0,
 				jobId: item.jobId ?? null,
 				source: item.source,
 			}))

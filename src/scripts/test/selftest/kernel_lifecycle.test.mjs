@@ -607,7 +607,7 @@ Deno.test('kernel close aborts running suites', async () => {
 Deno.test('submitJob cancels queued and running idle_all items', async () => {
 	const root = join(tmpdir(), `fount-kernel-preempt-${Date.now()}`)
 	await mkdir(root, { recursive: true })
-	const manifestPath = 'src/parts/demo/test/manifest.json'
+	const manifestFilePath = join(root, 'src/parts/demo/test/manifest.json')
 	try {
 		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
 		assertEquals(init.code, 0)
@@ -616,9 +616,8 @@ Deno.test('submitJob cancels queued and running idle_all items', async () => {
 			'commit', '--allow-empty', '-m', 'init',
 		], { cwd: root })
 		assertEquals(commit.code, 0)
-		const manifestPathAbs = join(root, manifestPath)
-		await mkdir(join(manifestPathAbs, '..'), { recursive: true })
-		await writeFile(manifestPathAbs, `${JSON.stringify({
+		await mkdir(join(root, 'src/parts/demo/test'), { recursive: true })
+		await writeFile(manifestFilePath, `${JSON.stringify({
 			id: 'demo',
 			suites: [{ name: 'pure', run: ['true'], triggers: ['src/parts/demo/**'] }],
 		}, null, '\t')}\n`, 'utf8')
@@ -678,8 +677,7 @@ Deno.test('submitJob cancels queued and running idle_all items', async () => {
 Deno.test('autoUpdateExpected false does not auto-rewrite manifest after run', async () => {
 	const root = join(tmpdir(), `fount-kernel-no-autoupdate-${Date.now()}`)
 	await mkdir(root, { recursive: true })
-	const manifestPath = 'src/parts/demo/test/manifest.json'
-	const manifestPathAbs = join(root, manifestPath)
+	const manifestFilePath = join(root, 'src/parts/demo/test/manifest.json')
 	try {
 		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
 		assertEquals(init.code, 0)
@@ -688,10 +686,10 @@ Deno.test('autoUpdateExpected false does not auto-rewrite manifest after run', a
 			'commit', '--allow-empty', '-m', 'init',
 		], { cwd: root })
 		assertEquals(commit.code, 0)
-		await mkdir(join(manifestPathAbs, '..'), { recursive: true })
-		await writeFile(manifestPathAbs, `${JSON.stringify({
+		await mkdir(join(root, 'src/parts/demo/test'), { recursive: true })
+		await writeFile(manifestFilePath, `${JSON.stringify({
 			id: 'demo',
-			suites: [{ name: 'pure', run: ['true'], triggers: ['src/parts/demo/**'] }],
+			suites: [{ name: 'pure', run: ['deno', 'eval', ''], triggers: ['src/parts/demo/**'] }],
 		}, null, '\t')}\n`, 'utf8')
 
 		const handle = await startTestKernel({
@@ -709,7 +707,7 @@ Deno.test('autoUpdateExpected false does not auto-rewrite manifest after run', a
 			kernel.wake()
 			await waitUntil(() => kernel.running.size === 0 && kernel.queues.allEmpty(), 10_000)
 
-			const json = JSON.parse(await readFile(manifestPathAbs, 'utf8'))
+			const json = JSON.parse(await readFile(manifestFilePath, 'utf8'))
 			const jsonSuite = json.suites.find(suite => suite.name === 'pure')
 			assertEquals(jsonSuite.expected, undefined)
 		}

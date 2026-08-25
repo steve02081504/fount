@@ -275,7 +275,7 @@ export async function performMemberJoin(username, groupId, options = {}) {
 		try {
 			// 发布加入者 entity profile 到 EVFS，让远端成员能验证 member_join 的活跃钥归属。
 			const { syncEntityProfileFromPersona } = await import('../../profile/syncFromPersona.mjs')
-			await syncEntityProfileFromPersona(username, groupId)
+			await syncEntityProfileFromPersona(username, groupId, entityHash)
 		}
 		catch (error) {
 			console.warn('performMemberJoin: profile sync failed', error)

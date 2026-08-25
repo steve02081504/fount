@@ -8,11 +8,11 @@ import { isFriendBoundGroup } from './friendBindings.mjs'
  * @returns {string[]} 侧栏可见群 ID（内存顺序，与 serverBar 渲染一致）
  */
 export function orderedSidebarGroupIds() {
-	const groupById = new Map(store.sidebar.groups.map(g => [g.groupId, g]))
-	const ordered = store.sidebar.sidebarGroupOrder.length
+	const groupById = new Map(store.sidebar.groups.map(group => [group.groupId, group]))
+	return (store.sidebar.sidebarGroupOrder.length
 		? [...store.sidebar.sidebarGroupOrder]
-		: store.sidebar.groups.map(g => g.groupId)
-	return ordered.filter(id => {
+		: store.sidebar.groups.map(group => group.groupId)
+	).filter(id => {
 		const group = groupById.get(id)
 		return group ? !isFriendBoundGroup(group) : false
 	})

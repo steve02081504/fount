@@ -42,12 +42,15 @@ const categoryCreateLocks = new Map()
 /**
  * 串行执行 groupId 下的分类临界区（前序完成/失败后才放行）。
  * @param {string} groupId 群 id
- * @param {() => Promise<string | null>} fn 临界区（返回分类频道 id 或 null）
- * @returns {Promise<string | null>} fn 结果
+ * @param {() => Promise<string | null>} createCategory 临界区（返回分类频道 id 或 null）
+ * @returns {Promise<string | null>} 临界区结果
  */
-async function withCategoryCreateLock(groupId, fn) {
-	const prev = categoryCreateLocks.get(groupId) ?? Promise.resolve(null)
-	const run = prev.then(fn).finally(() => {
+async function withCategoryCreateLock(groupId, createCategory) {
+	const previous = categoryCreateLocks.get(groupId) ?? Promise.resolve()
+	const run = (async () => {
+		try { await previous } catch { /* 前序失败也继续执行本次临界区 */ }
+		return createCategory()
+	})().finally(() => {
 		if (categoryCreateLocks.get(groupId) === run) categoryCreateLocks.delete(groupId)
 	})
 	categoryCreateLocks.set(groupId, run)
@@ -166,7 +169,7 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 			categoryId = await withCategoryCreateLock(groupId, async () => {
 				const latest = await getState(username, groupId)
 				const existing = Object.entries(latest.state.channels || {})
-					.find(([, ch]) => ch?.type === 'category' && String(ch?.name || '').trim() === categoryName)
+					.find(([, channel]) => channel?.type === 'category' && String(channel?.name || '').trim() === categoryName)
 				if (existing) return existing[0]
 				const rootChannelId = latest.state.groupSettings?.rootChannelId || null
 				const created = await createChannel(username, groupId, {
@@ -238,9 +241,11 @@ export async function scheduleDmChannelAutoNameAndCleanup(username, groupId, new
 		const key = `${groupId}:${channelId}`
 		if (autoNamingInFlight.has(key)) continue
 		autoNamingInFlight.set(key, true)
-		autoNameChannelAsync(username, groupId, channelId)
-			.catch(() => {})
-			.finally(() => autoNamingInFlight.delete(key))
+		void (async () => {
+			try { await autoNameChannelAsync(username, groupId, channelId) }
+			catch { /* 命名失败放行，待下次新建频道再触发 */ }
+			finally { autoNamingInFlight.delete(key) }
+		})()
 	}
 }
 
