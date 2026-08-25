@@ -37,9 +37,7 @@ function captureI18n(fn) {
 	 * @returns {void}
 	 */
 	function errSpy(key, params) { errors.push({ key, params }) }
-	/**
-	 *
-	 */
+	/** 恢复原始 console.logI18n / console.errorI18n。 */
 	const restore = () => {
 		console.logI18n = logOrig
 		console.errorI18n = errOrig
