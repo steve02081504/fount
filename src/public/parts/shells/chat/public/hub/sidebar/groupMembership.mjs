@@ -74,6 +74,7 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
  */
 function canAutoJoinGroup(state, pendingJoin, inviteCode) {
 	if (state.isMember) return false
+	if (state.replicaRetained) return false
 	if (state.hasLocalReplica) return true
 	if (inviteCode) return true
 	if (pendingJoin.fedBootstrap) return true

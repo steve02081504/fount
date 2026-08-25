@@ -274,6 +274,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			suspectedRemoved: shunState.suspectedRemoved,
 			shunnedBy: shunState.shunnedBy,
 			shunBannerDismissed: shunState.bannerDismissed,
+			replicaRetained: shunState.replicaRetained,
 			shunVerifying: !shunState.suspectedRemoved && (shunState.knownPeerCount ?? 0) > 0 && (shunState.shunnedBy?.length ?? 0) > 0,
 			shunTotal: shunState.knownPeerCount ?? 0,
 		}

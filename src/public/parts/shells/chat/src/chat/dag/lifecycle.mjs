@@ -303,24 +303,21 @@ export async function deleteGroupData(username, groupId) {
 }
 
 /**
- * 强制移除（member_kick / member_ban）后保留本机副本：就地软化为 active 并清掉本机封禁记录，
- * 使被移除方仍可只读本地历史、自判出局（suspectedRemoved），直至用户决定“留念/删除”。
- * 注意：只影响本机物化视图，不向群内改写任何 DAG 事件。
- * @param {object} state 已物化群状态（就地修改）
- * @param {string} memberKey 本机成员键
+ * 强制移除（member_kick / member_ban）后保留本机副本：不改动成员 status、不清本机封禁记录，
+ * 只在本机 shun 状态打上“已保留副本”标记，使被移除方仍被视作非活跃成员（只读/不写），
+ * 直至用户决定“留念/删除”。不向群内改写任何 DAG 事件。
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
  * @returns {Promise<void>}
  */
-async function preserveLocalReplicaAfterForcedRemoval(state, memberKey) {
-	const record = state.members?.[memberKey]
-	if (!record) return
-	record.status = 'active'
-	const { clearBanForMember } = await import('./reducers/members.mjs')
-	clearBanForMember(state, memberKey)
+async function preserveLocalReplicaAfterForcedRemoval(username, groupId) {
+	const { saveGroupShunState } = await import('../groupShunState.mjs')
+	await saveGroupShunState(username, groupId, { replicaRetained: true })
 }
 
 /**
  * 物化后发现本机签名身份已非活跃成员时，处理本机副本去留：
- * 自愿退群（member_leave）→ 立即拆除副本；强制移除（踢出/封禁）→ 保留副本并软化为 active，
+ * 自愿退群（member_leave）→ 立即拆除副本；强制移除（踢出/封禁）→ 保留副本（仅打本机标记），
  * 不静默清空本地历史，交由 shun 共识自判出局与用户“留念/删除”决定最终清盘。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
@@ -328,7 +325,14 @@ async function preserveLocalReplicaAfterForcedRemoval(state, memberKey) {
  * @returns {Promise<boolean>} 是否已删除本机目录
  */
 export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
-	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state)) return false
+	const { loadGroupShunState, saveGroupShunState } = await import('../groupShunState.mjs')
+	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state)) {
+		// 重新入群后清除遗留的“已保留副本”标记。
+		const shunState = await loadGroupShunState(username, groupId)
+		if (shunState.replicaRetained)
+			await saveGroupShunState(username, groupId, { replicaRetained: false })
+		return false
+	}
 	// 只读 peek：本函数在 getState 内被调用，resolveLocalEventSigner 会回调 getState 造成无限递归。
 	const { peekLocalSignerPubKeyHash } = await import('./localSigner.mjs')
 	const memberKey = await peekLocalSignerPubKeyHash(username, groupId)
@@ -340,7 +344,7 @@ export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
 		await removeLocalGroupReplica(username, groupId)
 		return true
 	}
-	await preserveLocalReplicaAfterForcedRemoval(state, memberKey)
+	await preserveLocalReplicaAfterForcedRemoval(username, groupId)
 	return false
 }
 
