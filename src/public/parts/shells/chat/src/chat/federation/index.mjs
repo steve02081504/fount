@@ -5,7 +5,6 @@
  * 【数据结构】signPayload 为已验签 DAG 行；catchUp 返回 tipsCollected、peerRosterSize、wantIds、eventsFilled 等统计；listFederationPeers 返回 selfNodeHash、peers 名册。
  * 【关联】room.mjs、acl.mjs、pendingRelay.mjs、gossip.mjs、archiveHandshake.mjs、peerPool.mjs、dagDependencies.mjs、registry.mjs；DAG 读写在 scripts/p2p 与 dag/ 层。
  */
-import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonlStream } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { isWantIdsInBackoff, wantIdsGroupKey } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
@@ -42,12 +41,13 @@ import {
 import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from './peerFanout.mjs'
 import { readPendingIngestRows } from './pendingIngest.mjs'
 import { enqueuePendingRelay } from './pendingRelay.mjs'
-import { EVENT_ID_HEX, forEachFederationRoomSlotInGroup, getFederationPartitionSlot } from './registry.mjs'
+import { forEachFederationRoomSlotInGroup, getFederationPartitionSlot } from './registry.mjs'
 import { ensureFederationPartitionRoom, ensureFederationRoom } from './room.mjs'
 import { getStalePeerPruneCount } from './stalePeerLog.mjs'
 import { maybeJoinSnapshotOnStaleTips } from './staleResync.mjs'
 import { markGroupOnlineSynced } from './syncState.mjs'
 import { collectRemoteTipsFromPeers } from './tipExchange.mjs'
+import { computeCatchupWantSet } from './wantSet.mjs'
 
 /** @type {Map<string, Promise<object>>} 同群并发 catchup 合并为单次执行，避免重叠读盘/补洞占满堆。 */
 const catchUpInflight = new Map()
@@ -277,35 +277,6 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	// 补齐要把 DAG 缺口补到“无悬挂父引用”为止：远端 tip 本地缺失 ∪ 本地事件 prev_event_ids 指向的本地缺失父（有叶无链）。
 	// 关键：延迟桶（pending_ingest / quarantine）里的事件同样引用尚缺的父，但它们并不在 events.jsonl 中，
 	// 若只扫 events.jsonl，则「因缺父而入延迟桶的 dag_tip_merge」其祖先永不进 wantSet——跨节点合并链补齐永久死锁。
-	/**
-	 * @param {Map<string, object>} byId 本地 id→事件
-	 * @param {object[]} deferredRows pending/quarantine 桶内事件行
-	 * @param {boolean} includeExtra 是否并入显式 extraWantIds（仅首轮）
-	 * @param {Set<string>} locallyKnown 归档/meta/checkpoint 等已见证 id
-	 * @returns {string[]} 去重后的待补 id（祖先闭包）
-	 */
-	const computeWantSet = (byId, deferredRows, includeExtra, locallyKnown) => {
-		const wantSet = new Set()
-		/**
-		 * @param {string} id 候选缺失 id
-		 * @returns {boolean} 是否仍需向邻居索要
-		 */
-		const stillNeed = id => !byId.has(id) && !locallyKnown.has(id)
-		for (const tipId of remoteTips)
-			if (stillNeed(tipId)) wantSet.add(tipId)
-		for (const event of byId.values())
-			for (const parentId of sortedPrevEventIds(event.prev_event_ids))
-				if (stillNeed(parentId)) wantSet.add(parentId)
-		for (const row of deferredRows)
-			for (const parentId of sortedPrevEventIds(row?.event?.prev_event_ids))
-				if (stillNeed(parentId)) wantSet.add(parentId)
-		if (includeExtra)
-			for (const eventId of options.extraWantIds || []) {
-				const id = eventId
-				if (EVENT_ID_HEX.test(id) && stillNeed(id)) wantSet.add(id)
-			}
-		return [...wantSet]
-	}
 	/** @returns {Promise<Map<string, object>>} 重新读盘构建 id→事件（每轮拉取落盘后调用） */
 	const reloadEventsById = async () => {
 		const byId = new Map()
@@ -341,7 +312,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	let wantIdsStillMissing = 0
 	let wantIdsRateLimited = isWantIdsInBackoff(wantIdsGroupKey(groupId))
 	for (let iteration = 0; iteration < MAX_CATCHUP_ITERATIONS; iteration++) {
-		const wantIds = computeWantSet(currentById, currentDeferred, iteration === 0, locallyKnown)
+		const wantIds = computeCatchupWantSet(remoteTips, currentById, currentDeferred, locallyKnown, options.extraWantIds)
 		if (!wantIds.length) break
 		for (const id of wantIds) wantedEver.add(id)
 		const result = await requestMissingEventsGossip(username, groupId, { wantIds, awaitGossip: true })

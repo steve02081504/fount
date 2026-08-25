@@ -39,33 +39,6 @@ function bootstrapCooldownKey(username, groupId) {
 }
 
 /**
- * @param {{ signalingAppId?: string, roomSecret?: string } | null | undefined} a 凭证 A
- * @param {{ signalingAppId?: string, roomSecret?: string } | null | undefined} b 凭证 B
- * @returns {boolean} 是否相同口令
- */
-function bootstrapCredsEqual(a, b) {
-	if (!a?.roomSecret || !b?.roomSecret) return false
-	return a.roomSecret === b.roomSecret
-		&& (a.signalingAppId || 'fount-group-fed') === (b.signalingAppId || 'fount-group-fed')
-}
-
-/**
- * @param {{ roomSecret?: string } | null | undefined} activeSlot 当前联邦槽
- * @param {{ roomSecret?: string } | null | undefined} dagCreds DAG 物化口令
- * @param {{ roomSecret?: string } | null | undefined} bootstrap 暂存 bootstrap 口令
- * @returns {boolean} slot 口令已与 DAG/bootstrap 一致，无需 mark stale
- */
-function slotCredsAlreadyInSync(activeSlot, dagCreds, bootstrap) {
-	if (dagCreds?.roomSecret && activeSlot?.roomSecret === dagCreds.roomSecret)
-		return true
-	if (bootstrap?.roomSecret && activeSlot?.roomSecret === bootstrap.roomSecret)
-		return true
-	if (bootstrapCredsEqual(dagCreds, bootstrap) && activeSlot?.roomSecret === bootstrap?.roomSecret)
-		return true
-	return false
-}
-
-/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} nodeHash 本机 nodeHash
@@ -210,13 +183,6 @@ export async function maybeRequestBootstrapAfterCatchup(username, groupId, catch
 	if (!syncFailed) return
 
 	const activeSlot = slot || getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
-	const dagCreds = roomCredentialsFromGroupSettings(await loadFederationGroupSettings(username, groupId))
-	const { peekFederationBootstrap } = await import('./bootstrapStore.mjs')
-	const bootstrap = peekFederationBootstrap(username, groupId)
-	// DAG 与当前 slot 口令一致：补洞滞后是 gossip/拓扑问题，不是换房口令问题。
-	if (slotCredsAlreadyInSync(activeSlot, dagCreds, bootstrap))
-		return
-
 	if (!activeSlot) return
 
 	const nodeHash = localNodeHash()

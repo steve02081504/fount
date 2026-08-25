@@ -9,6 +9,7 @@ import {
 	FedC,
 	InitializeOpenGroupJoinMulti,
 	pollUntil,
+	requireCase,
 	testCase,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
@@ -53,11 +54,10 @@ await testCase('A state lists B in bannedMembers', async () => {
 })
 
 console.log('\n=== 3. C receives ban via federation ===')
-await testCase('C catchup receives ban (third-party sync)', async () => {
+// 致命用例：第三方同步是步骤 4/5 的前提，失败后剩余步骤无意义，立即退出而非空跑。
+await requireCase('C catchup receives ban (third-party sync)', async () => {
 	const ok = await pollUntil(async () => {
-		for (const node of [FedA, FedC])
-			await Api(node, 'POST', `/groups/${gid}/federation/rebind`, {})
-
+		// C 已是成员：正常 catchup（gossip wantIds）即可拉取，勿每轮触发昂贵的 join-snapshot（候选分歧时曾被仲裁空转烧掉预算）。
 		await Api(FedA, 'POST', `/groups/${gid}/dag/merge-tips`, {})
 		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('8s') })
 		const ev = await Api(FedA, 'GET', `/groups/${gid}/events?limit=40`)
@@ -65,7 +65,6 @@ await testCase('C catchup receives ban (third-party sync)', async () => {
 			const banRows = ev.json.events?.filter(e => e.type === 'member_ban') ?? []
 			if (banRows.length) banEventId = banRows[banRows.length - 1].id
 		}
-		await Api(FedC, 'POST', `/groups/${gid}/federation/join-snapshot`, {})
 		const body = { waitMs: ms('10s') }
 		if (banEventId) body.extraWantIds = [banEventId]
 		await Api(FedC, 'POST', `/groups/${gid}/federation/catchup`, body)

@@ -13,7 +13,7 @@ import {
 	pollUntil,
 	TEST_PNG_BYTES,
 } from '../http.mjs'
-import { completeLiveScript, skipCase, testCase, writeLiveSummary } from '../singleNode/helpers.mjs'
+import { completeLiveScript, requireCase, skipCase, testCase, writeLiveSummary } from '../singleNode/helpers.mjs'
 
 /** live/fed 软轮询（秒）；超时返回末次结果。定义见 `http.mjs`。 */
 export { pollUntil }
@@ -481,7 +481,7 @@ export function WriteFedSummary(tag, groupId) {
 }
 
 /** 联邦脚本复用 singleNode 的 case / skip / complete。 */
-export { completeLiveScript, skipCase, testCase }
+export { completeLiveScript, requireCase, skipCase, testCase }
 
 /**
  * @returns {Promise<void>} 无

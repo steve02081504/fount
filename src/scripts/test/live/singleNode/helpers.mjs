@@ -141,6 +141,28 @@ export async function testCase(name, fn) {
 }
 
 /**
+ * 致命用例：失败立即汇总并退出，不再跑剩余无意义步骤（用于长耗时的联调套件，如 fed_ban 的第三方同步断言）。
+ * @param {string} name 名称
+ * @param {() => boolean | Promise<boolean>} fn 回调
+ * @returns {Promise<void>}
+ */
+export async function requireCase(name, fn) {
+	try {
+		const ok = await fn()
+		if (ok === false) throw new Error('failed')
+		pass++
+		console.log(`  ok    ${name}`)
+	}
+	catch (error) {
+		fail++
+		failures.push(`${name} :: ${error.message}`)
+		console.log(`  FAIL  ${name} :: ${error.message}`)
+		writeLiveSummary('FATAL')
+		process.exit(1)
+	}
+}
+
+/**
  * @param {string} name 名称
  * @param {string} why 原因说明
  * @returns {void}
