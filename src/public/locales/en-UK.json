@@ -2048,6 +2048,7 @@
 				"suspectedRemoved": "You may have been removed from this group: you have asked ${count} known nodes for verification, but all of them have been rejected. You can commemorate local history or delete this group copy.",
 				"suspectedRemovedKeep": "Keep local copy",
 				"suspectedRemovedLeave": "Delete group",
+				"shunVerifying": null,
 				"fork": {
 					"governance": "There is a fork in the permissions record and it is currently in local view.",
 					"tipLabel": "DAG leaf",

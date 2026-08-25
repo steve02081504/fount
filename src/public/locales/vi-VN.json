@@ -2048,6 +2048,7 @@
 				"suspectedRemoved": "Bạn có thể đã bị xóa khỏi nhóm này: bạn đã yêu cầu các nút đã biết ${count} xác minh nhưng tất cả chúng đều bị từ chối. Bạn có thể kỷ niệm lịch sử địa phương hoặc xóa bản sao nhóm này.",
 				"suspectedRemovedKeep": "Lấy một món quà lưu niệm",
 				"suspectedRemovedLeave": "Xóa nhóm",
+				"shunVerifying": null,
 				"fork": {
 					"governance": "Có một nhánh trong bản ghi quyền và nó hiện ở chế độ xem cục bộ.",
 					"tipLabel": "Lá DAG",

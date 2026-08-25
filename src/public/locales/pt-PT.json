@@ -2048,6 +2048,7 @@
 				"suspectedRemoved": "Pode ter sido removido deste grupo: solicitou a verificação de ${count} nós conhecidos, mas todos eles foram rejeitados. Pode comemorar a história local ou eliminar esta cópia do grupo.",
 				"suspectedRemovedKeep": "Leve uma lembrança",
 				"suspectedRemovedLeave": "Eliminar group",
+				"shunVerifying": null,
 				"fork": {
 					"governance": "Há uma bifurcação no registo de permissões e ela está atualmente na visualização local.",
 					"tipLabel": "Folha DAG",

@@ -2047,6 +2047,7 @@
 				"suspectedRemoved": "你大概已被移出本群：已向 ${count} 個認識的節點求證，均被拒之門外。可留念本地歷史，或刪除本群副本。",
 				"suspectedRemovedKeep": "留念",
 				"suspectedRemovedLeave": "刪除群",
+				"shunVerifying": null,
 				"fork": {
 					"governance": "許可權記錄存在分叉，當前為本地檢視。",
 					"tipLabel": "DAG 葉",

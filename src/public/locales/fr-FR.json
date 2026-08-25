@@ -2048,6 +2048,7 @@
 				"suspectedRemoved": "Vous avez peut-être été supprimé de ce groupe : vous avez demandé une vérification à ${count} nœuds connus, mais tous ont été rejetés. Vous pouvez commémorer l'histoire locale ou supprimer cette Copier de groupe.",
 				"suspectedRemovedKeep": "Emportez un souvenir",
 				"suspectedRemovedLeave": "Supprimer le groupe",
+				"shunVerifying": null,
 				"fork": {
 					"governance": "Il existe un fork dans l'enregistrement des autorisations et il est actuellement en vue locale.",
 					"tipLabel": "feuille DAG",

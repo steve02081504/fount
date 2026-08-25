@@ -2010,6 +2010,7 @@ export type LocaleData = {
 				suspectedRemoved: string
 				suspectedRemovedKeep: string
 				suspectedRemovedLeave: string
+				shunVerifying: string
 				fork: {
 					governance: string
 					tipLabel: string

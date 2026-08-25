@@ -2048,6 +2048,7 @@
 				"suspectedRemoved": "あなたはこのグループから削除された可能性があります。${count} 個の既知のノードに検証を依頼しましたが、すべて拒否されました。地元の歴史を記念したり、このグループのコピーを削除したりできます。",
 				"suspectedRemovedKeep": "お土産を持って行きましょう",
 				"suspectedRemovedLeave": "グループの削除",
+				"shunVerifying": null,
 				"fork": {
 					"governance": "アクセス許可レコードにフォークがあり、現在ローカル ビューにあります。",
 					"tipLabel": "DAGリーフ",

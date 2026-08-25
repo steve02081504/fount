@@ -2048,6 +2048,7 @@
 				"suspectedRemoved": "Mogelijk bent je uit deze groep verwijderd: je heeft ${count} bekende knooppunten om verificatie gevraagd, maar ze zijn allemaal afgewezen. Je kunt de lokale geschiedenis herdenken of deze groepskopie verwijderen.",
 				"suspectedRemovedKeep": "Neem een ​​souvenirtje",
 				"suspectedRemovedLeave": "Groep verwijderen",
+				"shunVerifying": null,
 				"fork": {
 					"governance": "Er zit een vork in de machtigingsrecord en deze bevindt zich momenteel in de lokale weergave.",
 					"tipLabel": "DAG-blad",
