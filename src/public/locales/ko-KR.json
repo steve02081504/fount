@@ -2048,7 +2048,7 @@
 				"suspectedRemoved": "나는 이 그룹에서 제거되었을 수 있습니다. ${count}개의 알려진 노드에 확인을 요청했지만 모두 거부되었습니다. 지역 역사를 기념하거나 이 단체 사본을 삭제할 수 있습니다.",
 				"suspectedRemovedKeep": "기념품을 가져가세요",
 				"suspectedRemovedLeave": "그룹 삭제",
-				"shunVerifying": null,
+				"shunVerifying": "구성원 자격을 확인 중입니다: 알려진 노드 ${confirmed}/${total}개가 거부했습니다",
 				"fork": {
 					"governance": "권한 레코드에 포크가 있으며 현재 로컬 보기에 있습니다.",
 					"tipLabel": "DAG 잎",

@@ -2048,7 +2048,7 @@
 				"suspectedRemoved": "Þú gætir hafa verið fjarlægður úr þessum hópi: þú hefur beðið ${count} þekkta hnúta um staðfestingu, en þeim hefur öllum verið Hafnað. Þú getur minnst staðbundinnar sögu eða eytt þessu hópeintaki.",
 				"suspectedRemovedKeep": "Fáðu minjagrip",
 				"suspectedRemovedLeave": "Eyða hóp",
-				"shunVerifying": null,
+				"shunVerifying": "Verið er að staðfesta aðild: ${confirmed}/${total} þekktir hnútar hafa hafnað",
 				"fork": {
 					"governance": "Það er gaffal í heimildaskránni og hún er nú í staðbundinni sýn.",
 					"tipLabel": "DAG lauf",

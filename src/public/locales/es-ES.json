@@ -2048,7 +2048,7 @@
 				"suspectedRemoved": "Es posible que te hayan eliminado de este grupo: has solicitado verificación a ${count} nodos conocidos, pero todos han sido rechazados. Puedes conmemorar la historia local o eliminar esta copia grupal.",
 				"suspectedRemovedKeep": "Llévate un recuerdo",
 				"suspectedRemovedLeave": "Eliminar grupo",
-				"shunVerifying": null,
+				"shunVerifying": "Verificando la membresía: ${confirmed}/${total} nodos conocidos han rechazado",
 				"fork": {
 					"governance": "Hay una bifurcación en el registro de permisos y actualmente se encuentra en la vista local.",
 					"tipLabel": "hoja de DAG",

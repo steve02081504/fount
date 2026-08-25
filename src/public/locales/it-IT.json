@@ -2048,7 +2048,7 @@
 				"suspectedRemoved": "Potresti essere stato rimosso da questo gruppo: hai chiesto la verifica a ${count} nodi conosciuti, ma sono stati tutti rifiutati. Puoi commemorare la storia locale o eliminare questa copia del gruppo.",
 				"suspectedRemovedKeep": "Conserva la copia locale",
 				"suspectedRemovedLeave": "Elimina gruppo",
-				"shunVerifying": null,
+				"shunVerifying": "Verifica dell'appartenenza in corso: ${confirmed}/${total} nodi noti hanno rifiutato",
 				"fork": {
 					"governance": "C'è un fork nel record delle autorizzazioni ed è attualmente in visualizzazione locale.",
 					"tipLabel": "Foglia DAG",

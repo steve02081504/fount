@@ -2048,7 +2048,7 @@
 				"suspectedRemoved": "Möglicherweise aus dieser Gruppe entfernt: ${count} bekannte Knoten zur Verifizierung angefragt, alle abgelehnt. Sie können an die lokale Historie erinnern oder diese Gruppenkopie löschen.",
 				"suspectedRemovedKeep": "Nehmen Sie ein Souvenir mit",
 				"suspectedRemovedLeave": "Gruppe löschen",
-				"shunVerifying": null,
+				"shunVerifying": "Mitgliedschaft wird geprüft: ${confirmed}/${total} bekannte Knoten haben abgelehnt",
 				"fork": {
 					"governance": "Es gibt eine Verzweigung im Berechtigungsdatensatz und dieser befindet sich derzeit in der lokalen Ansicht.",
 					"tipLabel": "DAG-Blatt",

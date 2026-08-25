@@ -2048,7 +2048,7 @@
 				"suspectedRemoved": "🚪👥 · 🔍🤝${count}🖥️🚫 · 📸💾／🗑️👥",
 				"suspectedRemovedKeep": "📸💾",
 				"suspectedRemovedLeave": "🗑️👥",
-				"shunVerifying": "正在核验成员身份：${confirmed}/${total} 个已知节点已拒绝",
+				"shunVerifying": "👥🔍 · ${confirmed}/${total}🖥️🚫",
 				"fork": {
 					"governance": "🔐📊🔀 · 🖥️👀",
 					"tipLabel": "📊🌳🍃",
