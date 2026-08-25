@@ -7,6 +7,7 @@ import process from 'node:process'
 import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
+import { allowNoise } from '../core/allowNoise.mjs'
 import { formatNoiseAllowBegin, formatNoiseAllowEnd } from '../core/output_filter.mjs'
 import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
 import { formatFailureOutput, paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd } from '../display/paint.mjs'
@@ -234,13 +235,15 @@ Deno.test('formatFailureOutput strips markers and appends trailing newline', () 
 	assertEquals(formatFailureOutput(`${formatNoiseAllowBegin('.*')}\nError: still failing\n${formatNoiseAllowEnd()}`), 'Error: still failing\n')
 })
 
-Deno.test('paintJobDone reprints failed suite logs after the report path', () => {
+Deno.test('paintJobDone reprints failed suite logs after the report path', async () => {
 	const output = 'Error: still failing\n'
-	const { logs } = captureI18n(() => {
-		paintJobDone({
-			reportPath: 'data/test/report.md',
-			exitCode: 1,
-			failureLogs: [{ key: 'shells/achievements:frontend', output }],
+	const { logs } = captureI18n(async () => {
+		await allowNoise('Error: still failing', () => {
+			paintJobDone({
+				reportPath: 'data/test/report.md',
+				exitCode: 1,
+				failureLogs: [{ key: 'shells/achievements:frontend', output }],
+			})
 		})
 	})
 	assertEquals(logs.at(-1)?.key, 'fountConsole.test.display.failureLog')

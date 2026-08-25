@@ -1,4 +1,5 @@
 import { ms } from 'fount/scripts/ms.mjs'
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 import {
 	Api,
 	ClearFedGroup,
@@ -79,16 +80,18 @@ await testCase('C catchup receives ban (third-party sync)', async () => {
 
 console.log('\n=== 4. B probes peers and self-judges removed ===')
 await testCase('B catchup probes shunned by A and C -> suspectedRemoved', async () => {
-	const ok = await pollUntil(async () => {
-		for (const node of [FedB, FedA, FedC])
-			await Api(node, 'POST', `/groups/${gid}/federation/rebind`, {})
+	const ok = await allowNoise('group replica is being purged', async () =>
+		pollUntil(async () => {
+			for (const node of [FedB, FedA, FedC])
+				await Api(node, 'POST', `/groups/${gid}/federation/rebind`, {})
 
-		const r = await Api(FedB, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('15s') })
-		if (r.status !== 200) return false
-		if (r.json.suspectedRemoved === true) return true
-		const s = await Api(FedB, 'GET', `/groups/${gid}/state`)
-		return s.status === 200 && s.json.viewer?.suspectedRemoved === true
-	}, 180, 4)
+			const r = await Api(FedB, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('15s') })
+			if (r.status !== 200) return false
+			if (r.json.suspectedRemoved === true) return true
+			const s = await Api(FedB, 'GET', `/groups/${gid}/state`)
+			return s.status === 200 && s.json.viewer?.suspectedRemoved === true
+		}, 180, 4),
+	)
 	if (!ok) throw new Error('B must suspect removal after shuns from known member nodes')
 	return true
 })
