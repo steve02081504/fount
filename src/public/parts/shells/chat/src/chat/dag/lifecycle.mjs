@@ -303,7 +303,25 @@ export async function deleteGroupData(username, groupId) {
 }
 
 /**
- * 物化后发现本机签名身份已非活跃成员时，拆除 replica（踢出/封禁/退群联邦同步等）。
+ * 强制移除（member_kick / member_ban）后保留本机副本：就地软化为 active 并清掉本机封禁记录，
+ * 使被移除方仍可只读本地历史、自判出局（suspectedRemoved），直至用户决定“留念/删除”。
+ * 注意：只影响本机物化视图，不向群内改写任何 DAG 事件。
+ * @param {object} state 已物化群状态（就地修改）
+ * @param {string} memberKey 本机成员键
+ * @returns {Promise<void>}
+ */
+async function preserveLocalReplicaAfterForcedRemoval(state, memberKey) {
+	const record = state.members?.[memberKey]
+	if (!record) return
+	record.status = 'active'
+	const { clearBanForMember } = await import('./reducers/members.mjs')
+	clearBanForMember(state, memberKey)
+}
+
+/**
+ * 物化后发现本机签名身份已非活跃成员时，处理本机副本去留：
+ * 自愿退群（member_leave）→ 立即拆除副本；强制移除（踢出/封禁）→ 保留副本并软化为 active，
+ * 不静默清空本地历史，交由 shun 共识自判出局与用户“留念/删除”决定最终清盘。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {object} state 已物化群状态
@@ -318,8 +336,12 @@ export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
 	const record = state.members?.[memberKey]
 	if (!record || record.status === 'active') return false
 
-	await removeLocalGroupReplica(username, groupId)
-	return true
+	if (record.status === 'left') {
+		await removeLocalGroupReplica(username, groupId)
+		return true
+	}
+	await preserveLocalReplicaAfterForcedRemoval(state, memberKey)
+	return false
 }
 
 /**
