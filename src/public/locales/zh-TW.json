@@ -192,8 +192,8 @@
 				},
 				"failureLog": "\n—— ${label}：失敗日誌 ——",
 				"schedule": {
-					"reason": null,
-					"running": null
+					"reason": "（${reason}）",
+					"running": "正在運行 ${key}，剩餘 ${remaining}"
 				}
 			},
 			"passed": "透過：${label}",
