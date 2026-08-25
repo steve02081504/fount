@@ -173,8 +173,8 @@
 				"missedReady": "模組檢未成 ready 而進程已退：${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} 前端测试须通过 test/frontend/run.mjs 启动（自启隔离节点），勿对本地开发实例或真实用户数据运行。",
-				"isolatedUser": "测试须使用隔离用户 \"${expectedUsername}\"，当前为 \"${data.username}\"。请通过 run.mjs 启动，勿指向生产/开发 fount。"
+				"isolatedRequired": "${shellLabel} 前端之測，應假 `test/frontend/run.mjs` 以行（其自舉隔離之節）。切莫施於本機開發之例，或真實用戶之據。",
+				"isolatedUser": "諸測應以隔離之用戶「${expectedUsername}」行之；今所行者乃「${username}」也。宜自 `run.mjs` 啟之，毋指生產或開發之 fount。"
 			},
 			"queue": {
 				"append": "入隊：${label}（${reason}）餘 ≈ ${remaining}",
@@ -200,22 +200,22 @@
 					"reason": "（${reason}）",
 					"running": "運作 ${key}，餘 ${remaining}",
 					"reasons": {
-						"initial": "计划就绪",
-						"suite_started": "开始运行",
-						"suite_completed": "套件完成",
-						"suite_failed": "套件失败",
-						"blocked": "依赖失败，阻塞",
-						"skipped": "依赖跳过",
-						"queue_appended": "新任务入队",
-						"queue_removed": "任务取消",
-						"prep_promoted": "预备晋升",
-						"module_check_ready": "模块检查就绪",
-						"dependency_ready": "依赖就绪",
-						"resource_budget_changed": "资源预算变化",
-						"job_queued": "新任务排队",
-						"gate_state_changed": "资源门控变化",
-						"expected_drift": "预期耗时漂移",
-						"progress": "进度更新"
+						"initial": "計劃既定",
+						"suite_started": "套件始行",
+						"suite_completed": "套件告竣",
+						"suite_failed": "套件失利",
+						"blocked": "賴敗受阻",
+						"skipped": "依賴見略",
+						"queue_appended": "新務入隊",
+						"queue_removed": "務已出隊",
+						"prep_promoted": "預備陞遷",
+						"module_check_ready": "模檢既備",
+						"dependency_ready": "依賴既成",
+						"resource_budget_changed": "資用之算有變",
+						"job_queued": "新務待列",
+						"gate_state_changed": "閘門之態有變",
+						"expected_drift": "預期時耗有移",
+						"progress": "進程所新"
 					}
 				}
 			},
