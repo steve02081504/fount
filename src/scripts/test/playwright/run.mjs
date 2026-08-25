@@ -1,5 +1,7 @@
 import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
 import process from 'node:process'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import { execFile } from 'npm:@steve02081504/exec'
 import 'npm:@playwright/test'
@@ -9,6 +11,10 @@ import { launchNode, stopNode } from '../node/launch.mjs'
 
 const require = createRequire(import.meta.url)
 const playwrightCli = require.resolve('@playwright/test/cli')
+
+// 让 Node 及其 Playwright worker 能解析 Deno 的 `npm:` 说明符（spec 导入图含 i18n/bare.mjs）。
+// 经 NODE_OPTIONS 继承到 worker 子进程。
+const npmRegisterUrl = pathToFileURL(join(dirname(fileURLToPath(import.meta.url)), 'npm_register.mjs')).href
 
 /**
  * 将 playwright CLI 参数规范为 argv 片段。
@@ -37,6 +43,8 @@ export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, pla
 	// 删除两者让 Playwright 子进程自行检测终端色彩能力。
 	delete mergedEnv.FORCE_COLOR
 	delete mergedEnv.NO_COLOR
+	// 注入 `npm:` loader，Node 主进程与其 Playwright worker 均继承此 NODE_OPTIONS。
+	mergedEnv.NODE_OPTIONS = `${mergedEnv.NODE_OPTIONS ? mergedEnv.NODE_OPTIONS + ' ' : ''}--import=${npmRegisterUrl}`
 	const nodeArgs = ['test', '-c', configPath, ...playwrightArgv(playwrightArgs)]
 	if (jsonReportPath) {
 		mergedEnv.PLAYWRIGHT_JSON_OUTPUT_FILE = jsonReportPath
