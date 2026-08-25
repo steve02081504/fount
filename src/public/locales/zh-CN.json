@@ -213,6 +213,8 @@
 						"dependency_ready": "依赖就绪",
 						"resource_budget_changed": "资源预算变化",
 						"job_queued": "新任务排队",
+						"gate_state_changed": "资源门控变化",
+						"expected_drift": "预期耗时漂移",
 						"progress": "进度更新"
 					}
 				}
