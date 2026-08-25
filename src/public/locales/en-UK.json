@@ -173,8 +173,8 @@
 				"missedReady": "Module check: process exited without ready signal: ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} The front-end test must be started through test/frontend/run.mjs (self-starting the isolated node). Do not run it on local development instances or real user data.",
-				"isolatedUser": "Tests must use the quarantine user \"${expectedUsername}\", currently \"${data.username}\". Please start through run.mjs, do not point to the production/development fount."
+				"isolatedRequired": "The ${shellLabel} front-end test must be launched through test/frontend/run.mjs, which self-starts an isolated node. Do not run it against a local development instance or real user data.",
+				"isolatedUser": "Tests must run under the isolated user \"${expectedUsername}\"; the current session is running as \"${username}\". Please launch via run.mjs instead of pointing at a production or development fount."
 			},
 			"queue": {
 				"append": "Queued: ${label} (${reason}) ≈ ${remaining} left",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— ${label} — failure log ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "Running ${key}, ${remaining} left"
+					"running": "Running ${key}, ${remaining} left",
+					"reasons": {
+						"initial": "Plan ready",
+						"suite_started": "Suite started",
+						"suite_completed": "Suite finished",
+						"suite_failed": "Suite failed",
+						"blocked": "Blocked: dependency failed",
+						"skipped": "Skipped: dependency skipped",
+						"queue_appended": "Job enqueued",
+						"queue_removed": "Job removed",
+						"prep_promoted": "Prep promoted",
+						"module_check_ready": "Module check ready",
+						"dependency_ready": "Dependencies ready",
+						"resource_budget_changed": "Resource budget changed",
+						"job_queued": "Job queued",
+						"gate_state_changed": "Resource gate changed",
+						"expected_drift": "Estimate drifted",
+						"progress": "Progress update"
+					}
 				}
 			},
 			"passed": "PASSED: ${label}",

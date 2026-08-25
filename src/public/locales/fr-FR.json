@@ -173,8 +173,8 @@
 				"missedReady": "Vérification des modules : processus terminé sans signal ready : ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} Le test frontal doit être démarré via test/frontend/run.mjs (démarrage automatique du nœud isolé). Ne l'exécutez pas sur des instances de développement locales ou sur des données utilisateur réelles.",
-				"isolatedUser": "Les tests doivent utiliser l'utilisateur de quarantaine \"${expectedUsername}\", actuellement \"${data.username}\". Veuillez commencer par run.mjs, ne pointez pas vers la police de production/développement."
+				"isolatedRequired": "Le test front-end ${shellLabel} doit être lancé via test/frontend/run.mjs (qui démarre seul un nœud isolé). Ne l'exécutez pas contre une instance de développement locale ni sur de vraies données utilisateur.",
+				"isolatedUser": "Les tests doivent s'exécuter avec l'utilisateur isolé \"${expectedUsername}\" ; la session actuelle utilise \"${username}\". Lancez-les via run.mjs et ne pointez pas vers un fount de production ou de développement."
 			},
 			"queue": {
 				"append": "Ajouté à la file : ${label} (${reason}) ≈ ${remaining} restant",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— Journal d'échecs : ${label} ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "En cours : ${key}, reste ${remaining}"
+					"running": "En cours : ${key}, reste ${remaining}",
+					"reasons": {
+						"initial": "Plan prêt",
+						"suite_started": "Suite démarrée",
+						"suite_completed": "Suite terminée",
+						"suite_failed": "Suite en échec",
+						"blocked": "Bloquée : dépendance en échec",
+						"skipped": "Ignorée : dépendance ignorée",
+						"queue_appended": "Tâche ajoutée à la file",
+						"queue_removed": "Tâche retirée de la file",
+						"prep_promoted": "Préparation promue",
+						"module_check_ready": "Vérification des modules prête",
+						"dependency_ready": "Dépendances prêtes",
+						"resource_budget_changed": "Budget des ressources modifié",
+						"job_queued": "Tâche en file d'attente",
+						"gate_state_changed": "Barrière de ressources modifiée",
+						"expected_drift": "Estimation dérivée",
+						"progress": "Progression mise à jour"
+					}
 				}
 			},
 			"passed": "Réussi : ${label}",

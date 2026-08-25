@@ -173,8 +173,8 @@
 				"missedReady": "Comprobación de módulos: proceso terminado sin señal ready: ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} La prueba de front-end debe iniciarse a través de test/frontend/run.mjs (el nodo aislado se inicia automáticamente). No lo ejecute en instancias de desarrollo local ni en datos de usuarios reales.",
-				"isolatedUser": "Las pruebas deben utilizar el usuario de cuarentena \"${expectedUsername}\", actualmente \"${data.username}\". Comience a través de run.mjs, no apunte a la fuente de producción/desarrollo."
+				"isolatedRequired": "La prueba de front-end ${shellLabel} debe iniciarse mediante test/frontend/run.mjs (que arranca por sí solo un nodo aislado). No la ejecutes contra una instancia de desarrollo local ni con datos reales de usuario.",
+				"isolatedUser": "Las pruebas deben ejecutarse con el usuario aislado \"${expectedUsername}\"; la sesión actual usa \"${username}\". Inícialas a través de run.mjs y no apuntes a un fount de producción o desarrollo."
 			},
 			"queue": {
 				"append": "En cola: ${label} (${reason}) ≈ ${remaining} restante",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— Registro de fallos: ${label} ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "Ejecutando ${key}, cantidad restante: ${remaining}"
+					"running": "Ejecutando ${key}, cantidad restante: ${remaining}",
+					"reasons": {
+						"initial": "Plan listo",
+						"suite_started": "Suite iniciada",
+						"suite_completed": "Suite finalizada",
+						"suite_failed": "Suite fallida",
+						"blocked": "Bloqueada: dependencia fallida",
+						"skipped": "Omitida: dependencia omitida",
+						"queue_appended": "Trabajo en cola",
+						"queue_removed": "Trabajo retirado",
+						"prep_promoted": "Preparación promovida",
+						"module_check_ready": "Comprobación de módulos lista",
+						"dependency_ready": "Dependencias listas",
+						"resource_budget_changed": "Presupuesto de recursos cambiado",
+						"job_queued": "Trabajo encolado",
+						"gate_state_changed": "Compuerta de recursos cambiada",
+						"expected_drift": "Estimación desviada",
+						"progress": "Progreso actualizado"
+					}
 				}
 			},
 			"passed": "Aprobado: ${label}",

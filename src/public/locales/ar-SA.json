@@ -173,8 +173,8 @@
 				"missedReady": "فحص الوحدات: انتهت العملية دون إرسال إشارة ready: ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} يجب أن يبدأ اختبار الواجهة الأمامية من خلال test/frontend/run.mjs (البدء الذاتي للعقدة المعزولة). لا تقم بتشغيله على مثيلات التطوير المحلية أو بيانات المستخدم الحقيقية.",
-				"isolatedUser": "يجب أن تستخدم الاختبارات مستخدم العزل \"${expectedUsername}\"، حاليًا \"${data.username}\". يرجى البدء من خلال run.mjs، ولا تشير إلى مصدر الإنتاج/التطوير."
+				"isolatedRequired": "يجب بدء اختبار الواجهة الأمامية ${shellLabel} من خلال test/frontend/run.mjs (الذي يُشغّل عقدة معزولة ذاتيًا). لا تُشغّله على بيئة تطوير محلية أو على بيانات مستخدمين حقيقية.",
+				"isolatedUser": "يجب أن تُنفَّذ الاختبارات ضمن المستخدم المعزول \"${expectedUsername}\"؛ الجلسة الحالية تعمل باسم \"${username}\". يُرجى البدء عبر run.mjs وعدم الإشارة إلى fount للإنتاج أو التطوير."
 			},
 			"queue": {
 				"append": "أُضيف للطابور: ${label} (${reason}) متبقٍ ≈ ${remaining}",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— سجل فشل ${label} ——",
 				"schedule": {
 					"reason": "（${reason}）",
-					"running": "جارٍ تشغيل ${key}، بقي ${remaining}"
+					"running": "جارٍ تشغيل ${key}، بقي ${remaining}",
+					"reasons": {
+						"initial": "الخطة جاهزة",
+						"suite_started": "بدأت المجموعة",
+						"suite_completed": "اكتملت المجموعة",
+						"suite_failed": "فشلت المجموعة",
+						"blocked": "محظور: فشل الاعتماد",
+						"skipped": "تم التخطي: اعتماد متخطَّى",
+						"queue_appended": "أُضيفت مهمة إلى الطابور",
+						"queue_removed": "أُزيلت مهمة من الطابور",
+						"prep_promoted": "تمت ترقية الإعداد",
+						"module_check_ready": "فحص الوحدات جاهز",
+						"dependency_ready": "الاعتمادات جاهزة",
+						"resource_budget_changed": "تغيّرت ميزانية الموارد",
+						"job_queued": "مهمة في الطابور",
+						"gate_state_changed": "تغيّرت بوابة الموارد",
+						"expected_drift": "انحرف التقدير الزمني",
+						"progress": "تحديث التقدم"
+					}
 				}
 			},
 			"passed": "نجح: ${label}",

@@ -173,8 +173,8 @@
 				"missedReady": "Modulprüfung: Prozess beendet ohne Ready-Signal: ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} Der Front-End-Test muss über test/frontend/run.mjs gestartet werden (selbststartender isolierter Knoten). Führen Sie es nicht auf lokalen Entwicklungsinstanzen oder echten Benutzerdaten aus.",
-				"isolatedUser": "Tests müssen den Quarantänebenutzer „${expectedUsername}“ verwenden, derzeit „${data.username}“. Bitte starten Sie run.mjs und verweisen Sie nicht auf die Produktions-/Entwicklungsquelle."
+				"isolatedRequired": "Der ${shellLabel}-Front-End-Test muss über test/frontend/run.mjs gestartet werden (das startet selbstständig einen isolierten Knoten). Nicht gegen lokale Entwicklungsinstanzen oder echte Benutzerdaten ausführen.",
+				"isolatedUser": "Tests müssen unter dem isolierten Benutzer „${expectedUsername}“ laufen; aktuell läuft die Sitzung als „${username}“. Bitte über run.mjs starten und nicht auf einen Produktions- oder Entwicklungs-fount zeigen."
 			},
 			"queue": {
 				"append": "Eingereiht: ${label} (${reason}) ≈ ${remaining} verbleibend",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— Fehlerprotokoll: ${label} ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "Läuft: ${key}, noch ${remaining}"
+					"running": "Läuft: ${key}, noch ${remaining}",
+					"reasons": {
+						"initial": "Plan bereit",
+						"suite_started": "Suite gestartet",
+						"suite_completed": "Suite abgeschlossen",
+						"suite_failed": "Suite fehlgeschlagen",
+						"blocked": "Blockiert: Abhängigkeit fehlgeschlagen",
+						"skipped": "Übersprungen: Abhängigkeit übersprungen",
+						"queue_appended": "Job eingereiht",
+						"queue_removed": "Job entfernt",
+						"prep_promoted": "Vorbereitung befördert",
+						"module_check_ready": "Modulprüfung bereit",
+						"dependency_ready": "Abhängigkeiten bereit",
+						"resource_budget_changed": "Ressourcenbudget geändert",
+						"job_queued": "Job in Warteschlange",
+						"gate_state_changed": "Ressourcen-Gate geändert",
+						"expected_drift": "Schätzung abgewichen",
+						"progress": "Fortschritt aktualisiert"
+					}
 				}
 			},
 			"passed": "Bestanden: ${label}",

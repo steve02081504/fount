@@ -173,8 +173,8 @@
 				"missedReady": "Controllo moduli: processo terminato senza segnale ready: ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} Il test del front-end deve essere avviato tramite test/frontend/run.mjs (avvio automatico del nodo isolato). Non eseguirlo su istanze di sviluppo locale o dati utente reali.",
-				"isolatedUser": "I test devono utilizzare l'utente in quarantena \"${expectedUsername}\", attualmente \"${data.username}\". Iniziare da run.mjs, non puntare al font di produzione/sviluppo."
+				"isolatedRequired": "Il test front-end ${shellLabel} deve essere avviato tramite test/frontend/run.mjs (che avvia da sé un nodo isolato). Non eseguirlo contro un'istanza di sviluppo locale o su dati utente reali.",
+				"isolatedUser": "I test devono essere eseguiti con l'utente isolato \"${expectedUsername}\"; la sessione corrente è avviata come \"${username}\". Avviali tramite run.mjs e non puntare a un fount di produzione o sviluppo."
 			},
 			"queue": {
 				"append": "In coda: ${label} (${reason}) ≈ ${remaining} rimanenti",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— Registro errori di ${label} ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "In esecuzione: ${key}, restano ${remaining}"
+					"running": "In esecuzione: ${key}, restano ${remaining}",
+					"reasons": {
+						"initial": "Piano pronto",
+						"suite_started": "Suite avviata",
+						"suite_completed": "Suite completata",
+						"suite_failed": "Suite fallita",
+						"blocked": "Bloccata: dipendenza fallita",
+						"skipped": "Saltata: dipendenza saltata",
+						"queue_appended": "Job accodato",
+						"queue_removed": "Job rimosso",
+						"prep_promoted": "Preparazione promossa",
+						"module_check_ready": "Controllo moduli pronto",
+						"dependency_ready": "Dipendenze pronte",
+						"resource_budget_changed": "Budget risorse modificato",
+						"job_queued": "Job in coda",
+						"gate_state_changed": "Gate risorse modificato",
+						"expected_drift": "Stima divergente",
+						"progress": "Progresso aggiornato"
+					}
 				}
 			},
 			"passed": "Superato: ${label}",

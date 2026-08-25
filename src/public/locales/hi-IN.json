@@ -173,8 +173,8 @@
 				"missedReady": "मॉड्यूल जाँच: ready सिग्नल के बिना प्रक्रिया समाप्त: ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} फ्रंट-एंड परीक्षण test/frontend/run.mjs (पृथक नोड को स्व-प्रारंभ करना) के माध्यम से शुरू किया जाना चाहिए। इसे स्थानीय विकास उदाहरणों या वास्तविक उपयोगकर्ता डेटा पर न चलाएं।",
-				"isolatedUser": "परीक्षणों में संगरोध उपयोगकर्ता \"${expectedUsername}\", वर्तमान में \"${data.username}\" का उपयोग करना चाहिए। कृपया run.mjs के माध्यम से प्रारंभ करें, उत्पादन/विकास स्रोत को इंगित न करें।"
+				"isolatedRequired": "${shellLabel} फ्रंट-एंड परीक्षण test/frontend/run.mjs के माध्यम से चलाया जाना चाहिए (यह स्वयं एक पृथक नोड प्रारंभ करता है)। इसे स्थानीय डेवलपमेंट इंस्टेंस या वास्तविक उपयोगकर्ता डेटा पर न चलाएँ।",
+				"isolatedUser": "परीक्षण पृथक उपयोगकर्ता \"${expectedUsername}\" के रूप में चलने चाहिए; वर्तमान सत्र \"${username}\" के रूप में चल रहा है। कृपया run.mjs के माध्यम से चलाएँ, न कि प्रोडक्शन या डेवलपमेंट fount की ओर इशारा करके।"
 			},
 			"queue": {
 				"append": "कतार में: ${label} (${reason}) शेष ≈ ${remaining}",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— ${label} की विफलता लॉग ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "${key} चल रहा है, ${remaining} शेष"
+					"running": "${key} चल रहा है, ${remaining} शेष",
+					"reasons": {
+						"initial": "योजना तैयार",
+						"suite_started": "सूट प्रारंभ",
+						"suite_completed": "सूट पूर्ण",
+						"suite_failed": "सूट विफल",
+						"blocked": "अवरुद्ध: निर्भरता विफल",
+						"skipped": "छोड़ा गया: निर्भरता छोड़ी गई",
+						"queue_appended": "कार्य पंक्ति में",
+						"queue_removed": "कार्य पंक्ति से हटाया गया",
+						"prep_promoted": "तैयारी उन्नत",
+						"module_check_ready": "मॉड्यूल जाँच तैयार",
+						"dependency_ready": "निर्भरताएँ तैयार",
+						"resource_budget_changed": "संसाधन बजट बदला",
+						"job_queued": "कार्य पंक्तिबद्ध",
+						"gate_state_changed": "संसाधन द्वार बदला",
+						"expected_drift": "अनुमान में विचलन",
+						"progress": "प्रगति अद्यतन"
+					}
 				}
 			},
 			"passed": "पास: ${label}",

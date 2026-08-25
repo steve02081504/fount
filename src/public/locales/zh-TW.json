@@ -172,8 +172,8 @@
 				"missedReady": "模組檢查未發 ready，程序已結束：${label}"
 			},
 			"frontend": {
-				"isolatedRequired": null,
-				"isolatedUser": "測試須使用隔離使用者 \"${expectedUsername}\"，目前為 \"${data.username}\"。請透過 run.mjs 啟動，勿指向生產/開發 fount。"
+				"isolatedRequired": "${shellLabel} 前端測試必須透過 test/frontend/run.mjs 啟動（由它自行拉起隔離節點）。請勿在本地開發執行個體或真實使用者資料上執行。",
+				"isolatedUser": "測試必須以隔離使用者 \"${expectedUsername}\" 執行，目前工作階段為 \"${username}\"。請透過 run.mjs 啟動，勿指向生產或開發所用的 fount。"
 			},
 			"queue": {
 				"append": "入隊：${label}（${reason}）剩餘 ≈ ${remaining}",
@@ -197,7 +197,25 @@
 				"failureLog": "\n—— ${label}：失敗日誌 ——",
 				"schedule": {
 					"reason": "（${reason}）",
-					"running": "正在運行 ${key}，剩餘 ${remaining}"
+					"running": "正在運行 ${key}，剩餘 ${remaining}",
+					"reasons": {
+						"initial": "計畫就緒",
+						"suite_started": "套件開始",
+						"suite_completed": "套件完成",
+						"suite_failed": "套件失敗",
+						"blocked": "依賴失敗，阻塞",
+						"skipped": "依賴被略過",
+						"queue_appended": "任務入隊",
+						"queue_removed": "任務出隊",
+						"prep_promoted": "預備任務轉正",
+						"module_check_ready": "模組檢查就緒",
+						"dependency_ready": "依賴就緒",
+						"resource_budget_changed": "資源預算變動",
+						"job_queued": "新任務排隊",
+						"gate_state_changed": "資源閘門變動",
+						"expected_drift": "預估耗時漂移",
+						"progress": "進度更新"
+					}
 				}
 			},
 			"passed": "透過：${label}",

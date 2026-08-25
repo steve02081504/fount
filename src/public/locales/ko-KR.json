@@ -173,8 +173,8 @@
 				"missedReady": "모듈 검사: ready 신호 없이 프로세스 종료: ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} 프런트엔드 테스트는 test/frontend/run.mjs를 통해 시작되어야 합니다(격리된 노드 자체 시작). 로컬 개발 인스턴스나 실제 사용자 데이터에서는 실행하지 마세요.",
-				"isolatedUser": "테스트에서는 격리 사용자 \"${expectedUsername}\"(현재 \"${data.username}\")을 사용해야 합니다. run.mjs를 통해 시작하세요. 프로덕션/개발 소스를 가리키지 마세요."
+				"isolatedRequired": "${shellLabel} 프런트엔드 테스트는 test/frontend/run.mjs를 통해 시작해야 합니다(격리 노드를 자동으로 띄웁니다). 로컬 개발 인스턴스나 실제 사용자 데이터에서는 실행하지 마세요.",
+				"isolatedUser": "테스트는 격리 사용자 \"${expectedUsername}\"로 실행해야 하며, 현재 세션은 \"${username}\"로 실행 중입니다. run.mjs를 통해 시작하고 프로덕션·개발용 fount를 가리키지 마세요."
 			},
 			"queue": {
 				"append": "대기열 추가: ${label}(${reason}) 남음 ≈ ${remaining}",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— ${label} 실패 로그 ——",
 				"schedule": {
 					"reason": "（${reason}）",
-					"running": "${key} 실행 중, 남은 시간 ${remaining}"
+					"running": "${key} 실행 중, 남은 시간 ${remaining}",
+					"reasons": {
+						"initial": "계획 준비 완료",
+						"suite_started": "스위트 시작",
+						"suite_completed": "스위트 완료",
+						"suite_failed": "스위트 실패",
+						"blocked": "의존성 실패로 차단",
+						"skipped": "의존성 건너뜀",
+						"queue_appended": "작업 추가됨",
+						"queue_removed": "작업 제거됨",
+						"prep_promoted": "준비 승격됨",
+						"module_check_ready": "모듈 검사 준비 완료",
+						"dependency_ready": "의존성 준비 완료",
+						"resource_budget_changed": "리소스 예산 변경됨",
+						"job_queued": "작업 대기열 추가됨",
+						"gate_state_changed": "리소스 게이트 변경됨",
+						"expected_drift": "예상 시간 변동",
+						"progress": "진행 상황 업데이트"
+					}
 				}
 			},
 			"passed": "경로: ${label}",

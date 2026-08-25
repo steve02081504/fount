@@ -173,8 +173,8 @@
 				"missedReady": "Kiểm tra module: tiến trình thoát mà chưa gửi tín hiệu ready: ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} Quá trình kiểm tra giao diện người dùng phải được bắt đầu thông qua test/frontend/run.mjs (tự khởi động nút bị cô lập). Không chạy nó trên các phiên bản phát triển cục bộ hoặc dữ liệu người dùng thực.",
-				"isolatedUser": "Các thử nghiệm phải sử dụng người dùng cách ly \"${expectedUsername}\", hiện tại là \"${data.username}\". Vui lòng bắt đầu thông qua run.mjs, không trỏ đến nguồn sản xuất/phát triển."
+				"isolatedRequired": "Kiểm thử giao diện ${shellLabel} phải được khởi động qua test/frontend/run.mjs (tự động tạo một nút cô lập). Đừng chạy nó trên bản phát triển cục bộ hoặc dữ liệu người dùng thật.",
+				"isolatedUser": "Kiểm thử phải chạy dưới người dùng cô lập \"${expectedUsername}\"; phiên hiện tại đang chạy với \"${username}\". Hãy khởi động qua run.mjs, đừng trỏ vào fount sản xuất hoặc phát triển."
 			},
 			"queue": {
 				"append": "Vào hàng đợi: ${label} (${reason}) còn ≈ ${remaining}",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— Nhật ký lỗi: ${label} ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "Đang chạy ${key}, còn ${remaining}"
+					"running": "Đang chạy ${key}, còn ${remaining}",
+					"reasons": {
+						"initial": "Kế hoạch sẵn sàng",
+						"suite_started": "Bộ kiểm thử bắt đầu",
+						"suite_completed": "Bộ kiểm thử hoàn tất",
+						"suite_failed": "Bộ kiểm thử thất bại",
+						"blocked": "Bị chặn: phụ thuộc thất bại",
+						"skipped": "Được bỏ qua: phụ thuộc bị bỏ qua",
+						"queue_appended": "Công việc vào hàng đợi",
+						"queue_removed": "Công việc rời hàng đợi",
+						"prep_promoted": "Chuẩn bị được thăng cấp",
+						"module_check_ready": "Kiểm tra mô-đun sẵn sàng",
+						"dependency_ready": "Phụ thuộc sẵn sàng",
+						"resource_budget_changed": "Ngân sách tài nguyên thay đổi",
+						"job_queued": "Công việc xếp hàng",
+						"gate_state_changed": "Cổng tài nguyên thay đổi",
+						"expected_drift": "Ước lượng thời gian lệch",
+						"progress": "Cập nhật tiến độ"
+					}
 				}
 			},
 			"passed": "ĐẠT: ${label}",

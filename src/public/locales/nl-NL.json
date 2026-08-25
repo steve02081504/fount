@@ -173,8 +173,8 @@
 				"missedReady": "Modulecontrole: proces beëindigd zonder ready-signaal: ${label}"
 			},
 			"frontend": {
-				"isolatedRequired": "${shellLabel} De front-end test moet worden gestart via test/frontend/run.mjs (het geïsoleerde knooppunt wordt automatisch gestart). Voer het niet uit op lokale ontwikkelingsinstanties of echte gebruikersgegevens.",
-				"isolatedUser": "Tests moeten de quarantainegebruiker \"${expectedUsername}\", momenteel \"${data.username}\" gebruiken. Begin alstublieft via run.mjs, wijs niet naar de productie-/ontwikkelingsbron."
+				"isolatedRequired": "De ${shellLabel} front-end test moet via test/frontend/run.mjs worden gestart (dat zelf een geïsoleerd knooppunt opstart). Voer hem niet uit tegen een lokale ontwikkelomgeving of echte gebruikersgegevens.",
+				"isolatedUser": "Tests moeten draaien onder de geïsoleerde gebruiker \"${expectedUsername}\"; de huidige sessie draait als \"${username}\". Start via run.mjs en wijs niet naar een productie- of ontwikkelings-fount."
 			},
 			"queue": {
 				"append": "In wachtrij: ${label} (${reason}) ≈ ${remaining} resterend",
@@ -198,7 +198,25 @@
 				"failureLog": "\n—— Foutlogboek: ${label} ——",
 				"schedule": {
 					"reason": "(${reason})",
-					"running": "${key} wordt uitgevoerd, ${remaining} te gaan"
+					"running": "${key} wordt uitgevoerd, ${remaining} te gaan",
+					"reasons": {
+						"initial": "Plan klaar",
+						"suite_started": "Suite gestart",
+						"suite_completed": "Suite voltooid",
+						"suite_failed": "Suite mislukt",
+						"blocked": "Geblokkeerd: afhankelijkheid mislukt",
+						"skipped": "Overgeslagen: afhankelijkheid overgeslagen",
+						"queue_appended": "Taak in wachtrij",
+						"queue_removed": "Taak uit wachtrij",
+						"prep_promoted": "Voorbereiding bevorderd",
+						"module_check_ready": "Modulecontrole klaar",
+						"dependency_ready": "Afhankelijkheden klaar",
+						"resource_budget_changed": "Resourcebudget gewijzigd",
+						"job_queued": "Taak in de wachtrij",
+						"gate_state_changed": "Resourcegate gewijzigd",
+						"expected_drift": "Schatting afgeweken",
+						"progress": "Voortgang bijgewerkt"
+					}
 				}
 			},
 			"passed": "Geslaagd: ${label}",
