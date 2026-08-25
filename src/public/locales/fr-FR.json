@@ -214,7 +214,7 @@
 						"resource_budget_changed": "Budget des ressources modifié",
 						"job_queued": "Tâche en file d'attente",
 						"gate_state_changed": "Barrière de ressources modifiée",
-						"expected_drift": "Estimation dérivée",
+						"expected_drift": "Dérive de l'estimation",
 						"progress": "Progression mise à jour"
 					}
 				}

@@ -206,7 +206,7 @@
 						"suite_failed": "सूट विफल",
 						"blocked": "अवरुद्ध: निर्भरता विफल",
 						"skipped": "छोड़ा गया: निर्भरता छोड़ी गई",
-						"queue_appended": "कार्य पंक्ति में",
+						"queue_appended": "कार्य पंक्ति में जोड़ा गया",
 						"queue_removed": "कार्य पंक्ति से हटाया गया",
 						"prep_promoted": "तैयारी उन्नत",
 						"module_check_ready": "मॉड्यूल जाँच तैयार",

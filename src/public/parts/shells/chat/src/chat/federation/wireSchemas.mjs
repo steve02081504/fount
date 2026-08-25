@@ -63,6 +63,7 @@ export function parseGossipRequest(payload) {
 }
 
 /**
+ * 解析 fed_verify_membership 载荷。
  * @param {unknown} payload fed_verify_membership 载荷
  * @returns {{ nodeHash: string } | null} 解析结果
  */

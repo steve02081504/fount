@@ -209,7 +209,7 @@
 						"queue_appended": "Завдання додано в чергу",
 						"queue_removed": "Завдання прибрано з черги",
 						"prep_promoted": "Підготовку підвищено",
-						"module_check_ready": "Перевірку модулів завершено",
+						"module_check_ready": "Перевірка модулів готова",
 						"dependency_ready": "Залежності готові",
 						"resource_budget_changed": "Бюджет ресурсів змінено",
 						"job_queued": "Завдання в черзі",

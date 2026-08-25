@@ -24,6 +24,10 @@ const takeOutboundShunSlot = createDedupeSlot({ maxSize: 4000, ttlMs: OUTBOUND_S
 const VERIFY_RESPONSE_SHUN_DEDUPE_MS = 1_000
 const takeVerifyShunSlot = createDedupeSlot({ maxSize: 4000, ttlMs: VERIFY_RESPONSE_SHUN_DEDUPE_MS })
 
+/** fed_verify_membership 触发的补齐限流：同 peer 的连续核验请求不会在上一轮同步完成后再次触发同步。 */
+const VERIFY_REQUEST_THROTTLE_MS = 1_500
+const takeVerifyRequestSlot = createDedupeSlot({ maxSize: 4000, ttlMs: VERIFY_REQUEST_THROTTLE_MS })
+
 /**
  * 主动探测的冷却安全网：尚无任何新鲜 shun 信号时，最多每此间隔向全员探测一次。
  * 与共识窗口解耦——窗口内的 shun 始终计入，但冷启动探测需更频繁，
@@ -177,6 +181,7 @@ export function sendFedShun(fedOut, fedShunSend, groupId, localNodeHash, request
  */
 export async function handleFedVerifyMembership(username, groupId, fromNodeHash, peerId, fedOut, fedShunSend, isBlockedPeer) {
 	if (!isHex64(fromNodeHash) || !peerId) return
+	if (!takeVerifyRequestSlot(`${groupId}:${peerId}`)) return
 	const { catchUpGroupFromPeers } = await import('./index.mjs')
 	await catchUpGroupFromPeers(username, groupId, { waitMs: 1500 })
 	const fedState = await loadFederationMaterializedState(username, groupId)

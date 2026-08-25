@@ -73,10 +73,17 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opti
 
 	if (publishBanBeforePersist) {
 		// Publish before the ban hook blocks the target peer, so third-party replicas can relay the event.
-		await publishSignedEvent(username, groupId, wirePayload, options, { forceAwait: true })
+		let publishError
+		try {
+			await publishSignedEvent(username, groupId, wirePayload, options, { forceAwait: true })
+		}
+		catch (error) {
+			publishError = error
+		}
 		await withGroupWriteLock(username, groupId, async () => {
 			await broadcastAndPersist(username, groupId, wirePayload, persistOpts)
 		})
+		if (publishError) throw publishError
 	}
 	else if (publishLeaveBeforeRebuild) {
 		await publishSignedEvent(username, groupId, wirePayload, options, { forceAwait: true })

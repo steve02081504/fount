@@ -211,9 +211,9 @@
 						"prep_promoted": "準備を昇格",
 						"module_check_ready": "モジュール検査完了",
 						"dependency_ready": "依存準備完了",
-						"resource_budget_changed": "リソース予算が変更",
+						"resource_budget_changed": "リソース予算の変更",
 						"job_queued": "ジョブをキューに追加",
-						"gate_state_changed": "リソースゲートが変更",
+						"gate_state_changed": "リソースゲートの変更",
 						"expected_drift": "見積もり時間が変動",
 						"progress": "進捗を更新"
 					}

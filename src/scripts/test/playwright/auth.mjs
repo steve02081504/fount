@@ -17,7 +17,8 @@ export async function loginWithApiKey(request, baseUrl, apiKey) {
 	}
 	catch (error) {
 		lastError = error
-		await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)))
+		if (attempt < 2)
+			await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)))
 	}
 	throw lastError
 }

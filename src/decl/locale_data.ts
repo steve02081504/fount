@@ -6259,6 +6259,7 @@ export type LocaleKeyParams = {
 	'chat.hub.banners.gshBuffer': { total: string | number }
 	'chat.hub.banners.mailboxPending': { count: string | number }
 	'chat.hub.banners.quarantine': { count: string | number }
+	'chat.hub.banners.shunVerifying': { confirmed: string | number; total: string | number }
 	'chat.hub.banners.suspectedRemoved': { count: string | number }
 	'chat.hub.block.opposingFailed': { error: string | number }
 	'chat.hub.block.opposingOk': { count: string | number }
