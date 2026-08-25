@@ -50,8 +50,9 @@ export function buildScheduleUpdate(projection, viewer, reason, reasonDetail = '
  * @returns {string} 可读原因标签
  */
 export function formatScheduleReason(reason) {
-	if (!reason) return geti18n('fountConsole.test.display.schedule.reasons.progress')
-	return geti18n(`fountConsole.test.display.schedule.reasons.${reason}`)
+	const label = geti18n(`fountConsole.test.display.schedule.reasons.${reason}`)
+	if (label != null) return label
+	return reason || geti18n('fountConsole.test.display.schedule.reasons.progress')
 }
 
 /**
