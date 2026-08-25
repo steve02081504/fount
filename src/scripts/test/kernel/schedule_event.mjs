@@ -43,13 +43,15 @@ export function buildScheduleUpdate(projection, viewer, reason, reasonDetail = '
 }
 
 /**
+ * 将 schedule 变化原因格式化为可读标签。
+ *
+ * 缺失 i18n 键由 geti18n 统一处理（测试下抛错），此处仅处理空原因回退到 progress。
  * @param {ScheduleChangeReason} reason 原因
  * @returns {string} 可读原因标签
  */
 export function formatScheduleReason(reason) {
-	const label = geti18n(`fountConsole.test.display.schedule.reasons.${reason}`)
-	if (label != null) return label
-	return reason || geti18n('fountConsole.test.display.schedule.reasons.progress')
+	if (!reason) return geti18n('fountConsole.test.display.schedule.reasons.progress')
+	return geti18n(`fountConsole.test.display.schedule.reasons.${reason}`)
 }
 
 /**

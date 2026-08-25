@@ -252,6 +252,10 @@ function createI18nArrayProxy(arr, params, terminal = false) {
 function baseGeti18n(localeData, key, params = {}, terminal = false) {
 	const translation = getNestedValue(localeData, key)
 	if (translation === undefined) {
+		// 测试框架下缺失 i18n 键直接抛错（mark.mjs 捕获并置 exitCode=1），
+		// 让新增/动态键未本地化立刻暴露为失败；产品运行时仅告警不崩溃。
+		if (process.env.FOUNT_TEST)
+			throw new Error(`Missing translation key: ${key}`)
 		console.warn(`Translation key "${key}" not found.`)
 		return undefined
 	}
