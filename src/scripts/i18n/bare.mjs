@@ -251,12 +251,8 @@ function createI18nArrayProxy(arr, params, terminal = false) {
  */
 function baseGeti18n(localeData, key, params = {}, terminal = false) {
 	const translation = getNestedValue(localeData, key)
-	if (translation === undefined) {
-		// 带可匹配标记告警（与前端 scripts/i18n 一致）：测试框架按 `[i18n:missing]`
-		// 判定噪声/失败，单次运行可暴露全部缺失键（不因首个抛错而中断）；产品运行时不影响。
-		console.warn(`[i18n:missing] Translation key "${key}" not found.`)
-		return undefined
-	}
+	if (translation === undefined)
+		return console.warn(`[i18n:missing] Translation key "${key}" not found.`)
 	return applyParamsToTranslation(translation, params, terminal)
 }
 
