@@ -5,7 +5,7 @@
 import process from 'node:process'
 
 import { console } from '../../i18n/bare.mjs'
-import { SetTaskbarProgress } from '../../taskbar_progress.mjs'
+import { ClearTaskbarProgress, SetTaskbarProgress } from '../../taskbar_progress.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import { beginTestProgress, finishTestProgress } from '../core/progress.mjs'
 import { testHubUrl } from '../hub/index.mjs'
@@ -45,56 +45,80 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	const failureLogs = []
 	/** @type {number | null} */
 	let lastAheadCount = null
-	/** 上次展示的 lastCompletionMs（5% 阈值用）。 */
-	let lastCompletionMs = null
-	/** 进度条起始时刻（job 接受时）。 */
+	/** 波次内单调的进度百分位（每次 accepted 重置）。 */
+	let shownPct = null
+	/** 上次写入任务栏的状态（去重用：值未变不重写 OSC，避免空闲抖动）。 */
+	let lastTaskbarState = null
+	/** 本波绝对完成时刻（事件 lastCompletionAt 的 epoch ms；空闲/未知为 null）。 */
+	let lastCompletionAt = null
+	/** 进度条起始时刻（每波 accepted 重置）。 */
 	let progressStartedAt = null
-	/** 进度刷新定时器（链式 setTimeout，间隔随总时间变化）。 */
+	/** 进度刷新定时器（链式 setTimeout，空闲时停住，等新事件再唤醒）。 */
 	let progressTimer = null
 
 	beginTestProgress()
 
 	/**
-	 * 当前总时间（已过 + 预估剩余）。
-	 * @returns {number | null} 总毫秒；剩余未知时为 null
+	 * 把任务栏进度写入（带去重：值未变化不重写 OSC，避免空闲时高频抖动）。
+	 * @param {'spinner' | 'clear' | number} state 要显示的状态
+	 * @returns {void}
 	 */
-	function currentTotalMs() {
-		if (progressStartedAt == null) return null
-		const elapsed = Date.now() - progressStartedAt
-		return lastCompletionMs == null ? null : Math.max(1, elapsed + lastCompletionMs)
+	function writeTaskbar(state) {
+		if (state === lastTaskbarState) return
+		lastTaskbarState = state
+		if (state === 'spinner') SetTaskbarProgress(undefined)
+		else if (state === 'clear') ClearTaskbarProgress()
+		else SetTaskbarProgress(state)
 	}
 
 	/**
-	 * 按 已过时间/(已过时间+预估剩余) 刷新任务栏进度。
+	 * 当前波次进度百分比（以绝对完成时刻为基准）。
+	 * @returns {number | null} 0..100；起点或完成目标未知时为 null
+	 */
+	function currentPercent() {
+		if (progressStartedAt == null || lastCompletionAt == null) return null
+		const target = lastCompletionAt
+		if (target <= progressStartedAt) return 100
+		const pct = Math.floor(((Date.now() - progressStartedAt) / (target - progressStartedAt)) * 100)
+		return Math.min(100, Math.max(0, pct))
+	}
+
+	/**
+	 * 按当前波次进度刷新任务栏；空闲（无完成目标）时保持上次百分比、不重写。
 	 * @returns {void}
 	 */
 	function setTimeProgress() {
 		if (progressStartedAt == null) return
-		const total = currentTotalMs()
-		if (total == null) {
-			SetTaskbarProgress(undefined)
+		const pct = currentPercent()
+		if (pct == null) {
+			if (shownPct != null) writeTaskbar(shownPct)
 			return
 		}
-		const elapsed = Date.now() - progressStartedAt
-		SetTaskbarProgress(Math.min(100, Math.floor((elapsed / total) * 100)))
+		shownPct = shownPct == null ? pct : Math.max(shownPct, pct)
+		writeTaskbar(shownPct)
 	}
 
 	/**
-	 * 计算下一次刷新间隔：Max(200ms, 总时间×1%)。
+	 * 计算下一次刷新间隔：Max(200ms, 本波总时长×1%)。
 	 * @returns {number} 毫秒
 	 */
 	function nextRefreshDelay() {
-		const total = currentTotalMs()
-		return total == null ? 200 : Math.max(200, Math.round(total * 0.01))
+		if (progressStartedAt == null || lastCompletionAt == null) return 200
+		const total = Math.max(1, lastCompletionAt - progressStartedAt)
+		return Math.max(200, Math.round(total * 0.01))
 	}
 
 	/**
-	 * 立即刷新一次，并按当前总时间安排下一次刷新。
+	 * 立即刷新一次并安排下一次；无完成目标（空闲）时停住，等新事件再唤醒。
 	 * @returns {void}
 	 */
 	function scheduleProgressRefresh() {
 		if (progressTimer != null) clearTimeout(progressTimer)
 		setTimeProgress()
+		if (progressStartedAt == null || lastCompletionAt == null) {
+			progressTimer = null
+			return
+		}
 		progressTimer = setTimeout(() => {
 			progressTimer = null
 			scheduleProgressRefresh()
@@ -125,10 +149,12 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		paintAccepted(message)
 		if (message.reportPath)
 			console.logI18n('fountConsole.test.reportPath', { path: message.reportPath })
-		if (progressStartedAt == null) {
-			progressStartedAt = Date.now()
-			scheduleProgressRefresh()
-		}
+		// 每波独立基准：进度条从本波重新起步，避免跨波累计/残留旧值。
+		progressStartedAt = Date.now()
+		shownPct = null
+		lastTaskbarState = null
+		lastCompletionAt = null
+		scheduleProgressRefresh()
 	}
 
 	/**
@@ -161,13 +187,15 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 * @returns {void}
 	 */
 	function onScheduleUpdate(message) {
-		const next = message.lastCompletionMs
-		const changed = lastCompletionMs == null || next == null
-			|| Math.abs(next - lastCompletionMs) / Math.max(1, lastCompletionMs) > 0.05
-		if (!changed) return
-		paintScheduleUpdate(message, lastCompletionMs)
-		lastCompletionMs = next
-		// 总时间更新：顺道刷新一次并重置计时。
+		const next = message.lastCompletionAt ? Date.parse(message.lastCompletionAt) : null
+		const prev = lastCompletionAt
+		// 相对 5% 或绝对 ≥500ms 之一变化才重印剩余文案，避免接近结束时高频重画。
+		const changed = prev == null || next == null
+			|| Math.abs(next - prev) / Math.max(1, prev) > 0.05
+			|| Math.abs(next - prev) >= 500
+		lastCompletionAt = next
+		if (changed) paintScheduleUpdate(message, prev)
+		// 任务栏进度始终随计时推进（单调不回退），顺道刷新一次并重置计时。
 		if (progressStartedAt != null) scheduleProgressRefresh()
 	}
 
