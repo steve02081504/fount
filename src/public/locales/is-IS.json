@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Einingapróf: ferli lauk án ready-merkis: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} Framendaprófið verður að vera ræst í gegnum test/frontend/run.mjs (sem ræsir einangraða hnútinn sjálf). Ekki keyra það á staðbundnum þróunartilvikum eða raunverulegum notendagögnum.",
+				"isolatedUser": "Próf verða að nota sóttkví notandann „${expectedUsername}“, sem stendur „${data.username}“. Vinsamlegast byrjaðu í gegnum run.mjs, ekki benda á framleiðslu-/þróunarfontinn."
+			},
 			"queue": {
 				"append": "Í biðröð: ${label} (${reason}) ≈ ${remaining} eftir",
 				"remove": "Úr biðröð: ${label} (${reason}) ≈ ${remaining} eftir"

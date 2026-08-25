@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "모듈 검사: ready 신호 없이 프로세스 종료: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} 프런트엔드 테스트는 test/frontend/run.mjs를 통해 시작되어야 합니다(격리된 노드 자체 시작). 로컬 개발 인스턴스나 실제 사용자 데이터에서는 실행하지 마세요.",
+				"isolatedUser": "테스트에서는 격리 사용자 \"${expectedUsername}\"(현재 \"${data.username}\")을 사용해야 합니다. run.mjs를 통해 시작하세요. 프로덕션/개발 소스를 가리키지 마세요."
+			},
 			"queue": {
 				"append": "대기열 추가: ${label}(${reason}) 남음 ≈ ${remaining}",
 				"remove": "대기열 제거: ${label}(${reason}) 남음 ≈ ${remaining}"

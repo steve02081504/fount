@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Controllo moduli: processo terminato senza segnale ready: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} Il test del front-end deve essere avviato tramite test/frontend/run.mjs (avvio automatico del nodo isolato). Non eseguirlo su istanze di sviluppo locale o dati utente reali.",
+				"isolatedUser": "I test devono utilizzare l'utente in quarantena \"${expectedUsername}\", attualmente \"${data.username}\". Iniziare da run.mjs, non puntare al font di produzione/sviluppo."
+			},
 			"queue": {
 				"append": "In coda: ${label} (${reason}) ≈ ${remaining} rimanenti",
 				"remove": "Rimosso dalla coda: ${label} (${reason}) ≈ ${remaining} rimanenti"

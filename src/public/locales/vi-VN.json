@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Kiểm tra module: tiến trình thoát mà chưa gửi tín hiệu ready: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} Quá trình kiểm tra giao diện người dùng phải được bắt đầu thông qua test/frontend/run.mjs (tự khởi động nút bị cô lập). Không chạy nó trên các phiên bản phát triển cục bộ hoặc dữ liệu người dùng thực.",
+				"isolatedUser": "Các thử nghiệm phải sử dụng người dùng cách ly \"${expectedUsername}\", hiện tại là \"${data.username}\". Vui lòng bắt đầu thông qua run.mjs, không trỏ đến nguồn sản xuất/phát triển."
+			},
 			"queue": {
 				"append": "Vào hàng đợi: ${label} (${reason}) còn ≈ ${remaining}",
 				"remove": "Ra khỏi hàng đợi: ${label} (${reason}) còn ≈ ${remaining}"

@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "मॉड्यूल जाँच: ready सिग्नल के बिना प्रक्रिया समाप्त: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} फ्रंट-एंड परीक्षण test/frontend/run.mjs (पृथक नोड को स्व-प्रारंभ करना) के माध्यम से शुरू किया जाना चाहिए। इसे स्थानीय विकास उदाहरणों या वास्तविक उपयोगकर्ता डेटा पर न चलाएं।",
+				"isolatedUser": "परीक्षणों में संगरोध उपयोगकर्ता \"${expectedUsername}\", वर्तमान में \"${data.username}\" का उपयोग करना चाहिए। कृपया run.mjs के माध्यम से प्रारंभ करें, उत्पादन/विकास स्रोत को इंगित न करें।"
+			},
 			"queue": {
 				"append": "कतार में: ${label} (${reason}) शेष ≈ ${remaining}",
 				"remove": "कतार से हटाया: ${label} (${reason}) शेष ≈ ${remaining}"

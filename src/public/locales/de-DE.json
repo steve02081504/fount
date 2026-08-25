@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Modulprüfung: Prozess beendet ohne Ready-Signal: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} Der Front-End-Test muss über test/frontend/run.mjs gestartet werden (selbststartender isolierter Knoten). Führen Sie es nicht auf lokalen Entwicklungsinstanzen oder echten Benutzerdaten aus.",
+				"isolatedUser": "Tests müssen den Quarantänebenutzer „${expectedUsername}“ verwenden, derzeit „${data.username}“. Bitte starten Sie run.mjs und verweisen Sie nicht auf die Produktions-/Entwicklungsquelle."
+			},
 			"queue": {
 				"append": "Eingereiht: ${label} (${reason}) ≈ ${remaining} verbleibend",
 				"remove": "Entfernt: ${label} (${reason}) ≈ ${remaining} verbleibend"

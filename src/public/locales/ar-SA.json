@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "فحص الوحدات: انتهت العملية دون إرسال إشارة ready: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} يجب أن يبدأ اختبار الواجهة الأمامية من خلال test/frontend/run.mjs (البدء الذاتي للعقدة المعزولة). لا تقم بتشغيله على مثيلات التطوير المحلية أو بيانات المستخدم الحقيقية.",
+				"isolatedUser": "يجب أن تستخدم الاختبارات مستخدم العزل \"${expectedUsername}\"، حاليًا \"${data.username}\". يرجى البدء من خلال run.mjs، ولا تشير إلى مصدر الإنتاج/التطوير."
+			},
 			"queue": {
 				"append": "أُضيف للطابور: ${label} (${reason}) متبقٍ ≈ ${remaining}",
 				"remove": "أُزيل من الطابور: ${label} (${reason}) متبقٍ ≈ ${remaining}"

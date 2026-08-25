@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Vérification des modules : processus terminé sans signal ready : ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} Le test frontal doit être démarré via test/frontend/run.mjs (démarrage automatique du nœud isolé). Ne l'exécutez pas sur des instances de développement locales ou sur des données utilisateur réelles.",
+				"isolatedUser": "Les tests doivent utiliser l'utilisateur de quarantaine \"${expectedUsername}\", actuellement \"${data.username}\". Veuillez commencer par run.mjs, ne pointez pas vers la police de production/développement."
+			},
 			"queue": {
 				"append": "Ajouté à la file : ${label} (${reason}) ≈ ${remaining} restant",
 				"remove": "Retiré de la file : ${label} (${reason}) ≈ ${remaining} restant"

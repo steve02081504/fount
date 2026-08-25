@@ -171,6 +171,10 @@
 			"moduleCheck": {
 				"missedReady": "模組檢查未發 ready，程序已結束：${label}"
 			},
+			"frontend": {
+				"isolatedRequired": null,
+				"isolatedUser": "測試須使用隔離使用者 \"${expectedUsername}\"，目前為 \"${data.username}\"。請透過 run.mjs 啟動，勿指向生產/開發 fount。"
+			},
 			"queue": {
 				"append": "入隊：${label}（${reason}）剩餘 ≈ ${remaining}",
 				"remove": "移出：${label}（${reason}）剩餘 ≈ ${remaining}"

@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "モジュールチェック: ready シグナルなしでプロセス終了: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} フロントエンド テストは、test/frontend/run.mjs を通じて開始する必要があります (分離されたノードを自己起動します)。ローカル開発インスタンスまたは実際のユーザー データでは実行しないでください。",
+				"isolatedUser": "テストでは隔離ユーザー「${expectedUsername}」（現在は「${data.username}」）を使用する必要があります。 run.mjs から開始してください。実稼働/開発フォントを指定しないでください。"
+			},
 			"queue": {
 				"append": "キュー追加: ${label}（${reason}）残り ≈ ${remaining}",
 				"remove": "キュー削除: ${label}（${reason}）残り ≈ ${remaining}"

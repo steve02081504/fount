@@ -155,6 +155,10 @@ export type LocaleData = {
 			moduleCheck: {
 				missedReady: string
 			}
+			frontend: {
+				isolatedRequired: string
+				isolatedUser: string
+			}
 			queue: {
 				append: string
 				remove: string
@@ -172,6 +176,24 @@ export type LocaleData = {
 				schedule: {
 					reason: string
 					running: string
+					reasons: {
+						initial: string
+						suite_started: string
+						suite_completed: string
+						suite_failed: string
+						blocked: string
+						skipped: string
+						queue_appended: string
+						queue_removed: string
+						prep_promoted: string
+						module_check_ready: string
+						dependency_ready: string
+						resource_budget_changed: string
+						job_queued: string
+						gate_state_changed: string
+						expected_drift: string
+						progress: string
+					}
 				}
 			}
 			passed: string
@@ -6462,6 +6484,8 @@ export type LocaleKeyParams = {
 	'fountConsole.test.failuresSaved': { count: string | number; path: string | number }
 	'fountConsole.test.federationCleanupPost': { output: string | number }
 	'fountConsole.test.federationCleanupPre': { output: string | number }
+	'fountConsole.test.frontend.isolatedRequired': { shellLabel: string | number }
+	'fountConsole.test.frontend.isolatedUser': { 'data.username': string | number; expectedUsername: string | number }
 	'fountConsole.test.heapSnapshotSaved': { path: string | number }
 	'fountConsole.test.kernel.unknownAction': { action: string | number }
 	'fountConsole.test.list.expected': { expected: string | number }

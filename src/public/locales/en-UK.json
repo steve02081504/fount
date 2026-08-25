@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Module check: process exited without ready signal: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} The front-end test must be started through test/frontend/run.mjs (self-starting the isolated node). Do not run it on local development instances or real user data.",
+				"isolatedUser": "Tests must use the quarantine user \"${expectedUsername}\", currently \"${data.username}\". Please start through run.mjs, do not point to the production/development fount."
+			},
 			"queue": {
 				"append": "Queued: ${label} (${reason}) ≈ ${remaining} left",
 				"remove": "Dequeued: ${label} (${reason}) ≈ ${remaining} left"

@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Modulecontrole: proces beëindigd zonder ready-signaal: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} De front-end test moet worden gestart via test/frontend/run.mjs (het geïsoleerde knooppunt wordt automatisch gestart). Voer het niet uit op lokale ontwikkelingsinstanties of echte gebruikersgegevens.",
+				"isolatedUser": "Tests moeten de quarantainegebruiker \"${expectedUsername}\", momenteel \"${data.username}\" gebruiken. Begin alstublieft via run.mjs, wijs niet naar de productie-/ontwikkelingsbron."
+			},
 			"queue": {
 				"append": "In wachtrij: ${label} (${reason}) ≈ ${remaining} resterend",
 				"remove": "Uit wachtrij: ${label} (${reason}) ≈ ${remaining} resterend"
