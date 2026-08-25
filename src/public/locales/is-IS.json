@@ -2486,7 +2486,7 @@
 					"createIn": "Búðu til rás í þessum flokki",
 					"delete": "Eyða flokki",
 					"deleteConfirm": "Ertu viss um að þú viljir eyða flokknum \"${name}\"? Rásirnar inni í henni fara aftur í Ekki flokkað.",
-					"deleteOk": "Flokkur eytt",
+					"deleteOk": "Flokki eytt",
 					"perms": "Flokksheimildir",
 					"rename": "Endurnefna flokk",
 					"renameOk": "Flokkur hefur verið endurnefndur",
@@ -2851,7 +2851,7 @@
 			"list": {
 				"channelEmpty": "Listinn er tómur.",
 				"editorTitle": "Breyta listaatriðum (JSON fylki)",
-				"itemUntitled": "Nafnlaus",
+				"itemUntitled": "Nafnlaust",
 				"jsonInvalid": "Ógilt JSON: ${message}",
 				"saveFailed": "Vistun mistókst",
 				"saveToDag": "Vistaðu í DAG",

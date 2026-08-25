@@ -2496,7 +2496,7 @@
 					"after": "Spostare «${source}» dopo «${target}»?",
 					"before": "Spostare «${source}» prima di «${target}»?",
 					"into": "Spostare «${source}» dentro «${target}»?",
-					"toRoot": "Spostare « ${source} » alla radice?"
+					"toRoot": "Spostare «${source}» alla radice?"
 				},
 				"name": "Nome della categoria",
 				"nameInput": {
