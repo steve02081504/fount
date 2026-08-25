@@ -674,6 +674,55 @@ Deno.test('submitJob cancels queued and running idle_all items', async () => {
 	}
 })
 
+Deno.test('viewer_gone 不写失败状态：fresh 保持未跑、已失败保持原样', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+		autoUpdateExpected: false,
+	})
+	const kernel = handle.kernel
+	/** @type {Array<{ job: object, end: () => object | null, key: string }>} */
+	const cases = []
+	try {
+		for (const [name, seeded] of [['slowFresh', undefined], ['slowFailed', { status: 'failed', commitHash: 'seed', failedFiles: [] }]]) {
+			const key = `testkit:${name}`
+			const suite = {
+				manifestId: 'testkit',
+				name,
+				run: ['node', '-e', 'setTimeout(() => {}, 60000)'],
+				triggers: [],
+				dependencies: [],
+				heavy: false,
+			}
+			kernel.catalog.allSuites.push(suite)
+			kernel.catalog.byKey.set(key, suite)
+			if (seeded) kernel.state.suites[key] = seeded
+			const entry = enqueueDummyJob(kernel, { key, jobId: `${name}-job` })
+			cases.push({ ...entry, key })
+		}
+		kernel.wake()
+		for (const { key } of cases)
+			await waitUntil(() => kernel.running.has(key))
+		// 给 runCommand 一点时间真正拉起子进程，越过启动窗口后再断开 viewer。
+		await new Promise(resolve => setTimeout(resolve, 300))
+		kernel.dropViewer('v')
+		for (const { job, end, key } of cases) {
+			await awaitJob(job, `job ${key} 未收尾`)
+			const event = end()
+			assertEquals(event?.passed, true)
+			assertEquals(event?.reused, true)
+		}
+		// 被 viewer_gone 终止的项视为未运行：不写失败状态、不推进指纹。
+		assertEquals(kernel.state.suites['testkit:slowFresh'], undefined)
+		assertEquals(kernel.state.suites['testkit:slowFailed'], { status: 'failed', commitHash: 'seed', failedFiles: [] })
+	}
+	finally {
+		await handle.close()
+	}
+})
+
 Deno.test('autoUpdateExpected false does not auto-rewrite manifest after run', async () => {
 	const root = join(tmpdir(), `fount-kernel-no-autoupdate-${Date.now()}`)
 	await mkdir(root, { recursive: true })
