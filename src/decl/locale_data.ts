@@ -6485,7 +6485,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.federationCleanupPost': { output: string | number }
 	'fountConsole.test.federationCleanupPre': { output: string | number }
 	'fountConsole.test.frontend.isolatedRequired': { shellLabel: string | number }
-	'fountConsole.test.frontend.isolatedUser': { username: string | number; expectedUsername: string | number }
+	'fountConsole.test.frontend.isolatedUser': { expectedUsername: string | number; username: string | number }
 	'fountConsole.test.heapSnapshotSaved': { path: string | number }
 	'fountConsole.test.kernel.unknownAction': { action: string | number }
 	'fountConsole.test.list.expected': { expected: string | number }
