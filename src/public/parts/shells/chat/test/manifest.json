@@ -138,7 +138,7 @@
 			"src/public/parts/shells/chat/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
 			"src/public/parts/shells/chat/public/index.html",
 			"src/public/parts/shells/chat/public/hub/index.css",
-			"src/scripts/test/playwright/**",
+			"src/scripts/test/playwright/api.mjs",
 			"src/public/pages/scripts/test/ready_gate.mjs",
 			"src/server/auth/index.mjs",
 			"src/server/web_server/endpoints.mjs"

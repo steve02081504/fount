@@ -73,7 +73,7 @@
 			"src/public/parts/shells/social/public/src/gate.mjs",
 			"src/public/parts/shells/social/public/src/endpoints/**",
 			"src/public/parts/shells/social/public/src/lib/socialWrite.mjs",
-			"src/scripts/test/playwright/**",
+			"src/scripts/test/playwright/api.mjs",
 			"src/public/pages/scripts/test/ready_gate.mjs",
 			"src/server/auth/index.mjs",
 			"src/server/web_server/endpoints.mjs"
