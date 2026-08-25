@@ -2048,7 +2048,7 @@
 				"suspectedRemoved": "Es posible que te hayan eliminado de este grupo: has solicitado verificación a ${count} nodos conocidos, pero todos han sido rechazados. Puedes conmemorar la historia local o eliminar esta copia grupal.",
 				"suspectedRemovedKeep": "Llévate un recuerdo",
 				"suspectedRemovedLeave": "Eliminar grupo",
-				"shunVerifying": "Verificando la membresía: ${confirmed}/${total} nodos conocidos han rechazado",
+				"shunVerifying": "Verificando la membresía: ${confirmed}/${total} nodos conocidos han rechazado su membresía",
 				"fork": {
 					"governance": "Hay una bifurcación en el registro de permisos y actualmente se encuentra en la vista local.",
 					"tipLabel": "hoja de DAG",
@@ -2478,7 +2478,7 @@
 				"typeStreaming": "canal de transmisión",
 				"typeText": "canal de chat",
 				"readonlyRoot": {
-					"placeholder": "El canal raíz no puede enviar mensajes/archivos"
+					"placeholder": "No puedes enviar mensajes ni archivos en el canal raíz"
 				}
 			},
 			"category": {
