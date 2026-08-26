@@ -157,7 +157,7 @@ async function handleShareAction({ copyOnly = false, expiration = null }) {
 function setButtonLoading(button, icon, isLoading) {
 	button.disabled = isLoading
 	if (isLoading)
-		icon.innerHTML = /* html */ '<img src="https://api.iconify.design/line-md/loading-loop.svg" class="h-6 w-6" />'
+		icon.innerHTML = /* html */ '<img src="https://api.iconify.design/line-md/loading-loop.svg" class="text-icon h-6 w-6" />'
 	else
 		icon.innerHTML = /* html */ ''
 }

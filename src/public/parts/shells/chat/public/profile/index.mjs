@@ -63,10 +63,10 @@ function channelTypeI18nKey(type) {
  */
 function channelTypeIconHtml(type) {
 	if (type === 'list')
-		return '<img src="https://api.iconify.design/mdi/format-list-bulleted.svg" class="w-5 h-5" alt="" aria-hidden="true" />'
+		return '<img src="https://api.iconify.design/mdi/format-list-bulleted.svg" class="text-icon w-5 h-5" alt="" aria-hidden="true" />'
 	if (type === 'voice' || type === 'streaming')
-		return '<img src="https://api.iconify.design/mdi/volume-high.svg" class="w-5 h-5" alt="" aria-hidden="true" />'
-	return '<img src="https://api.iconify.design/mdi/pound.svg" class="w-5 h-5" alt="" aria-hidden="true" />'
+		return '<img src="https://api.iconify.design/mdi/volume-high.svg" class="text-icon w-5 h-5" alt="" aria-hidden="true" />'
+	return '<img src="https://api.iconify.design/mdi/pound.svg" class="text-icon w-5 h-5" alt="" aria-hidden="true" />'
 }
 
 /**

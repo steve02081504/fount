@@ -4,16 +4,16 @@
 	${file.description ? `<p class="attachment-transcript text-xs opacity-70 mt-1" user-content>${file.description}</p>` : ''}
 	<span class="attachment-button-group ${buttonGroupJoin ? 'join' : ''}">
 		${showDownloadButton ? `
-		<button type="button" class="download-button btn btn-xs btn-primary ${buttonGroupJoin ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.download"><img src="https://api.iconify.design/line-md/download.svg" alt="" aria-hidden="true" /></button>
+		<button type="button" class="download-button btn btn-xs btn-primary ${buttonGroupJoin ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.download"><img src="https://api.iconify.design/line-md/download.svg" alt="" aria-hidden="true" class="text-icon" /></button>
 		` : ''}
 		${showSpeechRecognitionButton ? `
-		<button type="button" class="speech-recognition-button btn btn-xs btn-ghost ${buttonGroupJoin ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.recognize"><img src="https://api.iconify.design/material-symbols/speech-to-text.svg" alt="" aria-hidden="true" /></button>
+		<button type="button" class="speech-recognition-button btn btn-xs btn-ghost ${buttonGroupJoin ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.recognize"><img src="https://api.iconify.design/material-symbols/speech-to-text.svg" alt="" aria-hidden="true" class="text-icon" /></button>
 		` : ''}
 		${showEditButton ? `
-		<button type="button" class="attachment-edit-button btn btn-xs btn-ghost ${buttonGroupJoin ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.edit"><img src="https://api.iconify.design/line-md/edit.svg" alt="" aria-hidden="true" /></button>
+		<button type="button" class="attachment-edit-button btn btn-xs btn-ghost ${buttonGroupJoin ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.edit"><img src="https://api.iconify.design/line-md/edit.svg" alt="" aria-hidden="true" class="text-icon" /></button>
 		` : ''}
 		${showDeleteButton ? `
-		<button type="button" class="delete-button btn btn-xs btn-error ${buttonGroupJoin ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.delete"><img src="https://api.iconify.design/line-md/close.svg" alt="" aria-hidden="true" /></button>
+		<button type="button" class="delete-button btn btn-xs btn-error ${buttonGroupJoin ? 'join-item' : ''}" data-i18n="chat.attachment.buttons.delete"><img src="https://api.iconify.design/line-md/close.svg" alt="" aria-hidden="true" class="text-icon" /></button>
 		` : ''}
 	</span>
 </div>

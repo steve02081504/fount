@@ -27,7 +27,7 @@ ${view === 'loading' ? `
 			<h3 class="card-title">${escapeHtml(group.name)}</h3>
 			<p class="text-sm opacity-70">${group.description ? escapeHtml(group.description) : '<span data-i18n="chat.hub.no.description"></span>'}</p>
 			<div class="flex items-center gap-2 mt-2">
-				<img src="https://api.iconify.design/line-md/account.svg" class="w-4 h-4" alt="" aria-hidden="true" />
+				<img src="https://api.iconify.design/line-md/account.svg" class="text-icon w-4 h-4" alt="" aria-hidden="true" />
 				<span class="text-sm" data-i18n="chat.hub.member.countLabel" data-count="${group.memberCount || 0}"></span>
 			</div>
 		</div>
