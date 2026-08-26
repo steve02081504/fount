@@ -1,6 +1,49 @@
 import { Buffer } from 'node:buffer'
 import { spawn } from 'node:child_process'
+import { existsSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import process from 'node:process'
+
+/**
+ * 隐藏启动用的 wscript 辅助脚本：解码 base64 命令行，隐藏（窗口样式 0）孤儿化拉起目标。
+ * 共享一个临时文件即可，无需每次启动重写。
+ */
+const HIDDEN_HELPER_VBS = `\
+Function DecodeB64(ByVal s)
+	Dim xmlDoc, bnode, bytes, st
+	Set xmlDoc = CreateObject("MSXML2.DOMDocument.6.0")
+	Set bnode = xmlDoc.createElement("b64")
+	bnode.dataType = "bin.base64"
+	bnode.text = s
+	bytes = bnode.nodeTypedValue
+	Set st = CreateObject("ADODB.Stream")
+	st.Type = 1
+	st.Open
+	st.Write bytes
+	st.Position = 0
+	st.Type = 2
+	st.Charset = "utf-8"
+	DecodeB64 = st.ReadText
+	st.Close
+End Function
+Set sh = WScript.CreateObject("WScript.Shell")
+If WScript.Arguments.Count > 1 Then
+	On Error Resume Next
+	sh.CurrentDirectory = WScript.Arguments(1)
+End If
+sh.Run DecodeB64(WScript.Arguments(0)), 0, False
+`
+
+/**
+ * 确保隐藏启动用的 wscript 辅助脚本存在（共享一个临时文件）。
+ * @returns {string} 辅助脚本路径
+ */
+function ensureHiddenHelper() {
+	const path = join(tmpdir(), 'fount_launch_hidden.vbs')
+	if (!existsSync(path)) writeFileSync(path, HIDDEN_HELPER_VBS, 'utf8')
+	return path
+}
 
 /**
  * 用户主动触发的、与 fount 主进程分离的外部程序启动（编辑器、终端等）。
@@ -12,10 +55,11 @@ import process from 'node:process'
  * `cmd /c start` 起一个孤儿进程：中间 `cmd` 立即退出后父链断开，树杀追不到它。
  * 其余选项（`cwd` / `windowsHide` 等）直接转发给 `spawn`；后台进程（如测试内核）传
  * `windowsHide: true` 可避免新建的 console 被 Windows Terminal 当作新 tab 显示。
- * 注意：`cmd /c start` 不会把隐藏标志传给目标进程。若要隐藏目标，直接 spawn PowerShell
- * 会把它留在启动方 Job Object 里，`Start-Process` 出来的目标会被树杀带走；故改经
- * `cmd /c start /b` 先孤儿化，再由孤立的 PowerShell 用 `Start-Process -WindowStyle Hidden`
- * 隐藏拉起目标，二者兼得。
+ * 注意：`cmd /c start` 不会把隐藏标志传给目标进程。若要隐藏目标，cmd 在外层 `start`
+ * 孤儿化 wscript（GUI 子系统进程，无 console，不闪、无 tab），孤立的 wscript 再用
+ * `Shell.Run(cmdline, 0, False)`（窗口样式 0 = 隐藏）拉起目标——隐藏与脱离 Job Object
+ * 二者兼得，无需临时 PowerShell/ps12exe。目标本身不再套 `Start-Process`（那会让目标
+ * 留在 Job 里被树杀带走，测试内核起不来）。
  * @param {object} options 启动选项
  * @param {string} options.command 程序路径
  * @param {string[]} [options.args] 参数
@@ -30,18 +74,13 @@ export function launchDetachedProgram(options = {}) {
 	const spawnOnce = process.platform === 'win32'
 		? spawnOptions.windowsHide
 			? () => {
-				const payload = Buffer.from(JSON.stringify({ command, args, cwd: spawnOptions.cwd }), 'utf8').toString('base64')
-				const script = `$spec = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${payload}')) | ConvertFrom-Json; $start = @{ FilePath = [string]$spec.command; ArgumentList = [string[]]$spec.args; WindowStyle = 'Hidden' }; if ($spec.cwd) { $start.WorkingDirectory = [string]$spec.cwd }; Start-Process @start`
-				const powershell = process.env.SystemRoot
-					? `${process.env.SystemRoot}\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`
-					: 'powershell.exe'
-				// 直接 spawn PowerShell 会把它留在启动方的 Job Object 里，`Start-Process`
-				// 出来的目标随之被树杀带走。故经 `cmd /c start /b` 先孤儿化（父链断开），
-				// 被孤立的 PowerShell 再用隐藏窗口拉起目标——既能隐藏 tab，又能脱离 Job。
+				const b64 = Buffer.from([command, ...args].join(' '), 'utf8').toString('base64')
+				// cmd 在外层 `start` 孤儿化 wscript（GUI 子系统进程，无 console → 不闪、无 tab）；
+				// 孤立的 wscript 用 `Shell.Run(cmdline, 0, False)`（窗口样式 0 = 隐藏）拉起目标，
+				// 隐藏与脱离 Job Object 二者兼得。base64 传参避开 cmd/Shell.Run 的引号解析。
 				return spawn(process.env.ComSpec || 'cmd.exe', [
-					'/d', '/c', 'start', '', '/b', powershell,
-					'-NoLogo', '-NoProfile', '-NonInteractive',
-					'-EncodedCommand', Buffer.from(script, 'utf16le').toString('base64'),
+					'/d', '/c', 'start', '', '/b', 'wscript.exe', '//nologo',
+					ensureHiddenHelper(), b64, spawnOptions.cwd || '',
 				], { ...spawnOptions, env: mergedEnv, detached: true, stdio: 'ignore' })
 			}
 			: () => spawn(process.env.ComSpec || 'cmd.exe', ['/d', '/c', 'start', '', '/b', command, ...args], {
