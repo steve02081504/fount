@@ -135,9 +135,8 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 	}
 	if (!slot) return
 
-	const roster = slot.getRoster()
 	const targets = await pickFederationTargetPeerIds(groupId,
-		roster,
+		slot.getRoster(),
 		groupSettings,
 		nodeHash,
 	)
@@ -150,24 +149,23 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 	if (localInTarget) {
 		for (const peerId of targets) slot.send('dag_event', wireEvent, peerId)
 		if (!targets.length && !restrictedRelay) slot.send('dag_event', wireEvent, null)
-		if (options.awaitSend) await slot.fedOut.drain()
-		return
 	}
-
-	for (const peerId of targets)
-		sendPartitionBridgeFromSlot(slot, {
-			targetPartition,
-			actionName: 'dag_event',
-			payload: wireEvent,
-			peerId,
-		})
-	if (!targets.length && !restrictedRelay)
-		sendPartitionBridgeFromSlot(slot, {
-			targetPartition,
-			actionName: 'dag_event',
-			payload: wireEvent,
-			peerId: null,
-		})
+	else {
+		for (const peerId of targets)
+			sendPartitionBridgeFromSlot(slot, {
+				targetPartition,
+				actionName: 'dag_event',
+				payload: wireEvent,
+				peerId,
+			})
+		if (!targets.length && !restrictedRelay)
+			sendPartitionBridgeFromSlot(slot, {
+				targetPartition,
+				actionName: 'dag_event',
+				payload: wireEvent,
+				peerId: null,
+			})
+	}
 	if (options.awaitSend) await slot.fedOut.drain()
 }
 

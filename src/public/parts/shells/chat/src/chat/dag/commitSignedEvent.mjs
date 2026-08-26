@@ -21,15 +21,14 @@ import { withGroupWriteLock } from './groupLock.mjs'
  * @returns {Promise<void>}
  */
 async function publishSignedEvent(username, groupId, wirePayload, options, publishOpts = {}) {
+	const awaitSend = publishOpts.forceAwait || options.federationExistingSlotOnly || options.federationJoinTimeoutMs > 0
 	const publish = publishSignedEventToFederation(username, groupId, wirePayload, {
 		state: options.federationState,
 		existingSlotOnly: options.federationExistingSlotOnly,
 		joinTimeoutMs: options.federationJoinTimeoutMs,
-		awaitSend: publishOpts.forceAwait
-			|| options.federationExistingSlotOnly
-			|| options.federationJoinTimeoutMs > 0,
+		awaitSend,
 	})
-	if (publishOpts.forceAwait || options.federationExistingSlotOnly || options.federationJoinTimeoutMs > 0)
+	if (awaitSend)
 		await publish
 	else
 		void publish.catch(error => console.error('federation: background publish failed', error))

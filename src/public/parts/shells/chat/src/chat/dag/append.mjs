@@ -99,7 +99,7 @@ export async function appendEvent(username, groupId, event, secretKey, options =
 		await releaseQuarantinedEvents(username, groupId)
 		await releasePendingIngestEvents(username, groupId)
 	}
-	if (shouldRebindFederationRoomForEvent(wirePayload, { skipFederationRebind: options.skipFederationRebind })) {
+	if (shouldRebindFederationRoomForEvent(wirePayload, options)) {
 		invalidateFederationRoomCache(username, groupId)
 		// leave / leaveFast 紧接着删盘，禁止 fire-and-forget join 把目录写回来。
 		if (options.federationExistingSlotOnly !== true && wirePayload.type !== 'member_leave')
