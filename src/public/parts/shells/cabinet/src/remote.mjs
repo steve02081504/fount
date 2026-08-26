@@ -14,7 +14,7 @@ export function sanitizeRemoteCabinets(raw) {
 		cabinet_id: String(row?.cabinet_id || '').slice(0, 128),
 		name: String(row?.name || '').slice(0, 256),
 		type: 'personal',
-		visibility: row?.visibility && typeof row.visibility === 'object'
+		visibility: typeof row?.visibility === 'object'
 			? row.visibility
 			: { visibility: String(row?.visibility || 'public') },
 		created_at: Number(row?.created_at) || 0,
@@ -26,11 +26,10 @@ export function sanitizeRemoteCabinets(raw) {
  * @returns {{ at: number, entity_hash: string } | null} 清洗戳
  */
 function sanitizeRemoteStamp(stamp) {
-	if (!stamp || typeof stamp !== 'object') return null
-	const row = /** @type {{ at?: unknown, entity_hash?: unknown }} */ stamp
+	if (!stamp) return null
 	return {
-		at: Number(row.at) || 0,
-		entity_hash: String(row.entity_hash || '').slice(0, 128),
+		at: Number(stamp.at) || 0,
+		entity_hash: String(stamp.entity_hash || '').slice(0, 128),
 	}
 }
 
@@ -39,13 +38,11 @@ function sanitizeRemoteStamp(stamp) {
  * @returns {{ owner_entity_hash: string, cabinet_id: string, entry_id: string | null } | null} 清洗链接
  */
 function sanitizeRemoteLink(link) {
-	if (!link || typeof link !== 'object') return null
-	const row = /** @type {{ owner_entity_hash?: unknown, cabinet_id?: unknown, entry_id?: unknown }} */ link
-	const entryId = row.entry_id ? String(row.entry_id).slice(0, 128) : null
+	if (!link) return null
 	return {
-		owner_entity_hash: String(row.owner_entity_hash || '').slice(0, 128),
-		cabinet_id: String(row.cabinet_id || '').slice(0, 128),
-		entry_id: entryId,
+		owner_entity_hash: String(link.owner_entity_hash || '').slice(0, 128),
+		cabinet_id: String(link.cabinet_id || '').slice(0, 128),
+		entry_id: link.entry_id ? String(link.entry_id).slice(0, 128) : null,
 	}
 }
 
