@@ -152,6 +152,7 @@ export async function handleJoinSnapshotRequest(username, groupId, request, peer
  * @returns {boolean} 是否重试
  */
 export function shouldRetryJoinSnapshotPull(candidates, targets) {
+	if (targets.length === 0) return candidates.length === 0
 	return candidates.length < targets.length
 }
 

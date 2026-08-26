@@ -25,12 +25,12 @@ function dismiss() {
 }
 
 /**
- * 判断当前 viewer 是否可管理频道（任一频道 canEditList 即视为可管理）。
+ * 判断当前 viewer 是否可管理频道（任一频道 canManageChannel 即视为可管理）。
  * @param {object} [state] 群组状态
  * @returns {boolean} 是否可管理
  */
 export function canEditChannelList(state = store.context.currentState) {
-	return Object.values(state?.channelCaps || {}).some(capability => capability?.canEditList)
+	return Object.values(state?.channelCaps || {}).some(capability => capability?.canManageChannel)
 }
 
 /**

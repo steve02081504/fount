@@ -211,6 +211,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (active)
 			for (const channelId of Object.keys(channels))
 				channelCaps[channelId] = {
+					canManageChannel: canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId),
 					canEditList: canInChannel(state, member, [PERMISSIONS.MANAGE_CHANNELS, PERMISSIONS.CREATE_THREADS], channelId),
 					canCreateThreads: canInChannel(state, member, [PERMISSIONS.CREATE_THREADS, PERMISSIONS.MANAGE_CHANNELS], channelId),
 					canStream: canInChannel(state, member, PERMISSIONS.STREAM, channelId),

@@ -1,6 +1,6 @@
 /**
  * 联邦 catchup 待补集与 joinSnapshot 重试决策纯函数单测。
- * 钉住 fed_ban 步骤 3 偶发 flake 的两个根因：
+ * 钉住 catchup 重试偶发 flake 的两个根因：
  * ① extraWantIds 仅在 gossip 首轮生效——首轮若被 want-ids 限速/链路抖动，后续轮不再定向索要；
  * ② joinSnapshot 在候选分歧（全部应答但仲裁无赢家）时仍盲目重试——每轮烧 ~57s，挤垮 180s 窗口。
  */
@@ -29,17 +29,17 @@ function sampleContext() {
 }
 
 Deno.test('computeCatchupWantSet wants parents of local and deferred events', () => {
-	const ctx = sampleContext()
-	const want = computeCatchupWantSet(ctx.remoteTips, ctx.byId, ctx.deferredRows, ctx.locallyKnown, [])
+	const context = sampleContext()
+	const want = computeCatchupWantSet(context.remoteTips, context.byId, context.deferredRows, context.locallyKnown, [])
 	// remote tip + missing parents of local & deferred events
 	assertEquals(new Set(want), new Set([id('a'), id('c'), id('e')]))
 })
 
 Deno.test('computeCatchupWantSet keeps extraWantIds on every iteration (not only first)', () => {
-	const ctx = sampleContext()
+	const context = sampleContext()
 	const extra = id('f')
 	// 第二+轮（includeExtra=false）：显式索要的 id 必须仍然保留——否则首轮限速/丢包后便永不重新定向索要。
-	const want = computeCatchupWantSet(ctx.remoteTips, ctx.byId, ctx.deferredRows, ctx.locallyKnown, [extra])
+	const want = computeCatchupWantSet(context.remoteTips, context.byId, context.deferredRows, context.locallyKnown, [extra])
 	assert(want.includes(extra))
 })
 
@@ -57,4 +57,9 @@ Deno.test('shouldRetryJoinSnapshotPull retries on transport shortfall', () => {
 		[{ responderNodeHash: id('x') }],
 		[id('x'), id('y')],
 	), true)
+})
+
+Deno.test('shouldRetryJoinSnapshotPull retries broadcast when nothing answers', () => {
+	// 无目标时走广播：无人应答可能是传输抖动/静默，值得重试而非立即放弃。
+	assertEquals(shouldRetryJoinSnapshotPull([], []), true)
 })

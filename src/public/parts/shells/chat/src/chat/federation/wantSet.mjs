@@ -31,9 +31,8 @@ export function computeCatchupWantSet(remoteTips, byId, deferredRows, locallyKno
 	for (const row of deferredRows)
 		for (const parentId of sortedPrevEventIds(row?.event?.prev_event_ids))
 			if (stillNeed(parentId)) wantSet.add(parentId)
-	for (const eventId of extraWantIds || []) {
-		const id = eventId
-		if (EVENT_ID_HEX.test(id) && stillNeed(id)) wantSet.add(id)
-	}
+	for (const eventId of extraWantIds || []) 
+		if (EVENT_ID_HEX.test(eventId) && stillNeed(eventId)) wantSet.add(eventId)
+	
 	return [...wantSet]
 }

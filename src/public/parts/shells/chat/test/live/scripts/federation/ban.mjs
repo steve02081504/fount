@@ -54,7 +54,7 @@ await testCase('A state lists B in bannedMembers', async () => {
 })
 
 console.log('\n=== 3. C receives ban via federation ===')
-// 致命用例：第三方同步是步骤 4/5 的前提，失败后剩余步骤无意义，立即退出而非空跑。
+// 致命用例：第三方同步是后续 ban 验证的前提，失败后剩余验证无意义，立即退出而非空跑。
 await requireCase('C catchup receives ban (third-party sync)', async () => {
 	const ok = await pollUntil(async () => {
 		// C 已是成员：正常 catchup（gossip wantIds）即可拉取，勿每轮触发昂贵的 join-snapshot（候选分歧时曾被仲裁空转烧掉预算）。

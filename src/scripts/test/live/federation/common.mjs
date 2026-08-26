@@ -481,7 +481,9 @@ export function WriteFedSummary(tag, groupId) {
 }
 
 /** 联邦脚本复用 singleNode 的 case / skip / complete。 */
-export { completeLiveScript, requireCase, skipCase, testCase }
+export { completeLiveScript, skipCase, testCase }
+/** 致命用例：失败立即汇总并退出，不再跑剩余无意义步骤。 */
+export { requireCase }
 
 /**
  * @returns {Promise<void>} 无

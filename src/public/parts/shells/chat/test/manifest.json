@@ -407,7 +407,7 @@
 		},
 		{
 			"name": "fed_core",
-			"expected": "3m52s",
+			"expected": "1m42s",
 			"dependsOn": [
 				"server:live"
 			],
