@@ -82,7 +82,10 @@ export class RunReportWriter {
 	 */
 	async init() {
 		await mkdir(join(this.repoRoot, TEST_DATA_REL), { recursive: true })
-		return this.#flush()
+		const path = await this.#flush()
+		// 构造函数注入的 continueReason 槽位需在初始化时落盘独立文件，否则链接悬空。
+		await this.#writeTriggeredReasons()
+		return path
 	}
 
 	/**

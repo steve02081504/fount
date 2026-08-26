@@ -46,6 +46,29 @@ function ensureHiddenHelper() {
 }
 
 /**
+ * 按 Windows argv 规则引用单个命令行令牌（可执行文件路径或参数）。
+ * CommandLineToArgvW 语义：命中空白或内嵌引号时整体加引号；引号前的反斜杠翻倍，
+ * 字符串结尾的反斜杠翻倍（避免吞掉收尾引号），其余反斜杠原样保留。
+ * @param {string} part 单个令牌
+ * @returns {string} 引用后的令牌
+ */
+function quoteWindowsArg(part) {
+	if (part !== '' && !/[\s"\\]/.test(part)) return part
+	let out = '"'
+	for (let i = 0; i < part.length; i++) {
+		let backslashes = 0
+		while (i < part.length && part[i] === '\\') { backslashes++; i++ }
+		if (i >= part.length)
+			out += '\\'.repeat(backslashes * 2)
+		else if (part[i] === '"')
+			out += '\\'.repeat(backslashes * 2 + 1) + '"'
+		else
+			out += '\\'.repeat(backslashes) + part[i]
+	}
+	return out + '"'
+}
+
+/**
  * 用户主动触发的、与 fount 主进程分离的外部程序启动（编辑器、终端等）。
  * AGENTS.md 中「禁止子进程」规则的唯一定义例外入口。
  *
@@ -77,7 +100,7 @@ export function launchDetachedProgram(options = {}) {
 				// 按 Windows 命令行规则分别引用可执行文件路径与每个参数，避免含空格的路径
 				// 经 VBS 解码后仍被 Shell.Run 当作多个 token 拆分。
 				const encodedCommandLine = Buffer.from(
-					[command, ...args].map(part => `"${part.replace(/"/g, '\\"')}"`).join(' '),
+					[command, ...args].map(quoteWindowsArg).join(' '),
 					'utf8',
 				).toString('base64')
 				// cmd 在外层 `start` 孤儿化 wscript（GUI 子系统进程，无 console → 不闪、无 tab）；
