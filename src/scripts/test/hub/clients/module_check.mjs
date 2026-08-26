@@ -129,14 +129,14 @@ export async function abandonModuleCheckTicket(ticket) {
  * 在 loadPart 动态 import（如 file-type → strtok3）时争用 .deno 符号农场（denoland/deno#35804）。
  * 无 hub（手动单跑）时退化为直接执行，不做串行化。
  * @template T
- * @param {() => Promise<T>} fn 需串行执行的初始化段
+ * @param {() => Promise<T>} initializer 需串行执行的初始化段
  * @returns {Promise<T>} 结果
  */
-export async function withModuleCheckSerialized(fn) {
+export async function withModuleCheckSerialized(initializer) {
 	const ticket = await acquireModuleCheckTicket()
-	if (!ticket) return await fn()
+	if (!ticket) return await initializer()
 	try {
-		const result = await fn()
+		const result = await initializer()
 		await signalModuleCheckReady(ticket)
 		return result
 	}

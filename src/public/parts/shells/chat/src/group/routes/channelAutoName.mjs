@@ -107,7 +107,7 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 	const { state } = await getState(username, groupId)
 	const channels = state.channels || {}
 	const channel = channels[channelId]
-	if (!channel || channel.type !== 'text' || String(channel.name)) return false
+	if (!channel || channel.type !== 'text' || String(channel?.name || '')) return false
 
 	/** 现有分类名（过滤空名分类并去重）。 */
 	const categoryNames = [...new Set(

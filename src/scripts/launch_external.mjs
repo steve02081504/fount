@@ -74,13 +74,18 @@ export function launchDetachedProgram(options = {}) {
 	const spawnOnce = process.platform === 'win32'
 		? spawnOptions.windowsHide
 			? () => {
-				const b64 = Buffer.from([command, ...args].join(' '), 'utf8').toString('base64')
+				// 按 Windows 命令行规则分别引用可执行文件路径与每个参数，避免含空格的路径
+				// 经 VBS 解码后仍被 Shell.Run 当作多个 token 拆分。
+				const encodedCommandLine = Buffer.from(
+					[command, ...args].map(part => `"${part.replace(/"/g, '\\"')}"`).join(' '),
+					'utf8',
+				).toString('base64')
 				// cmd 在外层 `start` 孤儿化 wscript（GUI 子系统进程，无 console → 不闪、无 tab）；
 				// 孤立的 wscript 用 `Shell.Run(cmdline, 0, False)`（窗口样式 0 = 隐藏）拉起目标，
 				// 隐藏与脱离 Job Object 二者兼得。base64 传参避开 cmd/Shell.Run 的引号解析。
 				return spawn(process.env.ComSpec || 'cmd.exe', [
 					'/d', '/c', 'start', '', '/b', 'wscript.exe', '//nologo',
-					ensureHiddenHelper(), b64, spawnOptions.cwd || '',
+					ensureHiddenHelper(), encodedCommandLine, spawnOptions.cwd || '',
 				], { ...spawnOptions, env: mergedEnv, detached: true, stdio: 'ignore' })
 			}
 			: () => spawn(process.env.ComSpec || 'cmd.exe', ['/d', '/c', 'start', '', '/b', command, ...args], {

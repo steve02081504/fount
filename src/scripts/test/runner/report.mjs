@@ -82,9 +82,6 @@ export class RunReportWriter {
 	 */
 	async init() {
 		await mkdir(join(this.repoRoot, TEST_DATA_REL), { recursive: true })
-		// 触发原因在入队/规划时即已确定且不会随运行变化，只在建报告时写一次，
-		// 避免每次 report.md 更新都重写同一份 triggered-reasons.md。
-		await this.#writeTriggeredReasons()
 		return this.#flush()
 	}
 
@@ -133,6 +130,7 @@ export class RunReportWriter {
 		return this.#enqueue(async () => {
 			const key = suiteKey(manifestId, name)
 			let index = this.slots.findIndex(slot => suiteKey(slot.manifestId, slot.name) === key)
+			const prevReason = index >= 0 ? this.slots[index].continueReason : undefined
 			if (index < 0) {
 				this.slots.push({
 					manifestId,
@@ -153,6 +151,9 @@ export class RunReportWriter {
 					reused: false,
 				}
 			await this.#writeFiles()
+			// init 之后新增/变更槽位的触发原因需即时反映到独立文件；无变化则避免重写。
+			if (this.slots[index].continueReason && this.slots[index].continueReason !== prevReason)
+				await this.#writeTriggeredReasons()
 			return index
 		})
 	}

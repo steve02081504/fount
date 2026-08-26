@@ -38,6 +38,7 @@ function normalizeIceEntry(raw) {
 }
 
 /**
+ * 清洗并规范化 ICE 服务器列表（空或全非法时回退默认列表）。
  * @param {unknown[]} list 待清洗条目
  * @returns {{ urls: string | string[], username?: string, credential?: string }[]} 合法 ICE 列表
  */
@@ -52,6 +53,7 @@ function normalizeIceServers(list) {
 }
 
 /**
+ * 从物化群设置解析可用的 ICE 服务器列表。
  * @param {unknown} groupSettings 物化群设置
  * @returns {{ urls: string | string[], username?: string, credential?: string }[]} 合法 ICE 列表
  */

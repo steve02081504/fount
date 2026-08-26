@@ -182,7 +182,9 @@ export function registerDagRoutes(router, authenticate) {
 		const tips = state.dagTips || computeFederatableDagTipIds(
 			await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }),
 		)
-		if (tipId && !tips.includes(tipId))
+		if (!tipId)
+			throw httpError(400, 'tipId is not a valid hex ID')
+		if (!tips.includes(tipId))
 			throw httpError(400, 'tipId is not a current DAG tip')
 		await saveGovernanceBranchTip(username, groupId, tipId)
 		const refreshed = await getState(username, groupId, { forceFullReplay: false })

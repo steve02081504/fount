@@ -120,7 +120,7 @@ function reduceAlbumCreate(state, event) {
 	state.albums.set(albumId, {
 		albumId,
 		name: String(event.content?.name || albumId).slice(0, 80),
-		description: String(event.content?.description).slice(0, 500),
+		description: String(event.content?.description || '').slice(0, 500),
 		...visibilitySpecToContentFields(spec),
 		postIds: [],
 		createdEventId: event.id,
@@ -291,7 +291,7 @@ function reduceUndislike(state, event) {
 function reduceTagName(state, event) {
 	const tagHash = event.content?.tagHash
 	const locale = event.content?.locale
-	const label = String(event.content?.label).slice(0, 64)
+	const label = String(event.content?.label || '').slice(0, 64)
 	if (!tagHash || !locale || !label) return state
 	const existing = state.tagNames.get(tagHash) || {}
 	state.tagNames.set(tagHash, { ...existing, [locale]: label })

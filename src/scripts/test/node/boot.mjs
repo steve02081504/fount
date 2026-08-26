@@ -261,9 +261,9 @@ let sharedTestBootPromise = null
  * @returns {void}
  */
 export function registerSelfCreatedTestDataDir(dataDir) {
-	const outPath = process.env.FOUNT_TEST_DATA_DIRS_OUT
-	if (!outPath) return
-	fs.appendFileSync(outPath, `${dataDir}\n`, 'utf8')
+	const outputPath = process.env.FOUNT_TEST_DATA_DIRS_OUT
+	if (!outputPath) return
+	fs.appendFileSync(outputPath, `${dataDir}\n`, 'utf8')
 }
 
 /**
