@@ -10,6 +10,7 @@ import { Buffer } from 'node:buffer'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
 import { generateKeyRotationNonce, deriveNextFileMasterKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { verifyOwnerSuccessionThreshold } from 'npm:@steve02081504/fount-p2p/governance/owner_succession_ballot'
 import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { applyVolatileSlashAlert, buildUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
@@ -27,7 +28,7 @@ import { getState } from '../../chat/dag/materialize.mjs'
 import { localNodeHash } from '../../chat/federation/dagDependencies.mjs'
 import { publishVolatileToFederation } from '../../chat/federation/index.mjs'
 import { mintRoomSecret } from '../../chat/federation/roomCredentials.mjs'
-import { getCurrentFileMasterKey, appendFileMasterKey } from '../../chat/file_keys/store.mjs'
+import { appendFileMasterKey, applyFileMasterKeyRotationFromEvent, getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import {
 	blockEntriesFromBanContent,
 	buildMemberBanContent,
@@ -35,6 +36,7 @@ import {
 	unbanTargetsFromMember,
 } from '../../chat/governance/banRules.mjs'
 import { signOwnerSuccessionAsLocalAdmin } from '../../chat/governance/ownerSuccessionSign.mjs'
+import { eventsPath } from '../../chat/lib/paths.mjs'
 import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
 import {
@@ -52,11 +54,8 @@ import { GROUPS_PREFIX } from './path.mjs'
 
 /**
  * 治理操作后轮换 roomSecret：移除成员的同时把旧房口令换掉，使被封成员再也无法入房。
- * 调用方已在 ban/kick 追加时跳过重绑，本事件的 append 会在旧槽还活着时把新口令 live 送达
- * 其余成员（commitSignedEvent 对 roomSecret 事件发布先于落盘），随后由物化失效统一切到新房。
  * @param {string} username 登录名
  * @param {string} groupId 群 id
- * @returns {Promise<void>}
  */
 async function rotateRoomSecretAfterModeration(username, groupId) {
 	await appendSignedLocalEvent(username, groupId, {
@@ -67,16 +66,50 @@ async function rotateRoomSecretAfterModeration(username, groupId) {
 }
 
 /**
- * 封禁/踢出成员的远端 home 节点，使其在 roomSecret 轮换前即被联邦 fanout 排除（本地节点不封，
- * 本机上的 agent 靠 status 出局而非被踢出房间）。
+ * 封禁/踢出成员的远端 home 节点，使其在 roomSecret 轮换前即被联邦 fanout 排除（本地节点不封，本机上的 agent 靠 status 出局而非被踢出房间）。
  * @param {string} groupId 群 id
  * @param {object | undefined} member 被移除成员
- * @returns {Promise<void>}
  */
 async function blockMemberHomeNode(groupId, member) {
 	const home = member?.homeNodeHash
 	if (isHex64(home) && home !== localNodeHash())
 		await addGroupBlockedPeers(groupId, [{ scope: 'node', value: home }])
+}
+
+/**
+ * 应用踢出成员的全部幂等副作用：拉黑 peers、封远端 home 节点、轮换 roomSecret，并在提供已落盘 kick 事件时补齐缺失的 fileMasterKey。
+ * @param {string} username 登录名
+ * @param {string} groupId 群 id
+ * @param {object | undefined} resolvedMember 被移除成员
+ * @param {string} resolvedTargetKey 目标成员键
+ * @param {object | null} kickEvent 已落盘的 member_kick 事件（用于重算 fileMasterKey），可为 null
+ */
+async function applyKickSideEffects(username, groupId, resolvedMember, resolvedTargetKey, kickEvent) {
+	const blockEntries = resolvedMember?.memberKind === 'agent'
+		? [{ scope: 'entity', value: resolvedMember.entityHash }]
+		: [{ scope: 'subject', value: resolvedTargetKey }]
+	await addGroupBlockedPeers(groupId, blockEntries)
+	await blockMemberHomeNode(groupId, resolvedMember)
+	await rotateRoomSecretAfterModeration(username, groupId)
+	if (kickEvent)
+		await applyFileMasterKeyRotationFromEvent(username, groupId, kickEvent)
+}
+
+/**
+ * 从本地事件日志查找最近一条针对目标成员的 member_kick 事件（重试恢复时用于重算缺失的 fileMasterKey）。
+ * @param {string} username 登录名
+ * @param {string} groupId 群 id
+ * @param {string} targetMemberKey 目标成员键
+ * @returns {Promise<object | null>} 命中的 member_kick 事件，无则 null
+ */
+async function findMemberKickEvent(username, groupId, targetMemberKey) {
+	const events = await readJsonl(eventsPath(username, groupId))
+	for (let i = events.length - 1; i >= 0; i--) {
+		const event = events[i]
+		if (event?.type === 'member_kick' && event?.content?.targetMemberKey === targetMemberKey)
+			return event
+	}
+	return null
 }
 
 /**
@@ -363,15 +396,25 @@ export function registerGovernanceRoutes(router, authenticate) {
 				throw httpError(403, 'No permission to moderate members')
 			if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')
 				throw httpError(400, 'Cannot moderate yourself')
-			// 已封禁：幂等返回，避免重试再追加 member_ban / 再扣声誉
-			if (resolvedMember?.status === 'banned')
-				return res.status(200).json({ banned: true, reputationSlash: { ok: true, alreadyBanned: true } })
-			if (resolvedMember?.status !== 'active')
-				throw httpError(404, 'Member not found')
 
 			const banScope = req.body?.banScope?.trim()
 			if (!isBanScope(banScope))
 				throw httpError(400, 'banScope must be entity or node')
+			// 已封禁：member_ban 已落盘，补齐可能缺失的拉黑/denylist/roomSecret 副作用后幂等返回，避免重试再追加 member_ban / 再扣声誉
+			if (resolvedMember?.status === 'banned') {
+				try {
+					const banContent = buildMemberBanContent(/** @type {import('../../chat/governance/banRules.mjs').BanScope} */ banScope, resolvedMember)
+					await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
+					await addDenylistFromBanContent(banContent, groupId)
+					await rotateRoomSecretAfterModeration(username, groupId)
+				}
+				catch (error) {
+					console.error('governance: ban recovery failed to rebuild ban content', error)
+				}
+				return res.status(200).json({ banned: true, reputationSlash: { ok: true, alreadyBanned: true } })
+			}
+			if (resolvedMember?.status !== 'active')
+				throw httpError(404, 'Member not found')
 			let banContent
 			try {
 				banContent = buildMemberBanContent(/** @type {import('../../chat/governance/banRules.mjs').BanScope} */ banScope, resolvedMember)
@@ -411,9 +454,17 @@ export function registerGovernanceRoutes(router, authenticate) {
 			return res.status(200).json({ banned: true, reputationSlash })
 		}
 
-		const resolvedTargetKey = resolveActiveMemberKey(state, targetMemberKey)
-		if (!resolvedTargetKey)
-			throw httpError(404, 'Member not found')
+		let resolvedTargetKey = resolveActiveMemberKey(state, targetMemberKey)
+		let recoveryKick = false
+		if (!resolvedTargetKey) {
+			const key = resolveMemberKey(state, targetMemberKey)
+			if (key && state.members[key]?.status === 'kicked') {
+				resolvedTargetKey = key
+				recoveryKick = true
+			}
+			else
+				throw httpError(404, 'Member not found')
+		}
 		const resolvedMember = state.members[resolvedTargetKey]
 		const callerEntity = String(member?.entityHash || '').trim()
 		const ownerEntity = String(resolvedMember?.ownerEntityHash || '').trim()
@@ -429,6 +480,14 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')
 			throw httpError(400, 'Cannot moderate yourself')
 
+		// 已踢出：member_kick 已落盘，补齐可能缺失的拉黑/roomSecret/fileMasterKey 副作用后幂等返回，避免重试 404
+		if (recoveryKick) {
+			await applyKickSideEffects(username, groupId, resolvedMember, resolvedTargetKey, await findMemberKickEvent(
+				username, groupId, resolvedTargetKey
+			))
+			return res.status(200).json({})
+		}
+
 		const content = { targetMemberKey: resolvedTargetKey }
 
 		if (action === 'kick' && resolvedMember?.memberKind !== 'agent') {
@@ -443,26 +502,17 @@ export function registerGovernanceRoutes(router, authenticate) {
 					timestamp: Date.now(),
 					content,
 				}, { skipFederationRebind: true })
-				await addGroupBlockedPeers(groupId, [{ scope: 'subject', value: resolvedTargetKey }])
-				await blockMemberHomeNode(groupId, resolvedMember)
-				await rotateRoomSecretAfterModeration(username, groupId)
-				const newKey = deriveNextFileMasterKey(keyEntry.fileMasterKey, kickEvent.id, nonce)
-				await appendFileMasterKey(username, groupId, newGen, newKey)
+				await applyKickSideEffects(username, groupId, resolvedMember, resolvedTargetKey, kickEvent)
+				await appendFileMasterKey(username, groupId, newGen, deriveNextFileMasterKey(keyEntry.fileMasterKey, kickEvent.id, nonce))
 				return res.status(200).json({})
 			}
 		}
 
-		await appendSignedLocalEvent(username, groupId, {
+		await applyKickSideEffects(username, groupId, resolvedMember, resolvedTargetKey, await appendSignedLocalEvent(username, groupId, {
 			type: 'member_kick',
 			timestamp: Date.now(),
 			content,
-		}, { skipFederationRebind: true })
-		const blockEntries = resolvedMember?.memberKind === 'agent'
-			? [{ scope: 'entity', value: resolvedMember.entityHash }]
-			: [{ scope: 'subject', value: resolvedTargetKey }]
-		await addGroupBlockedPeers(groupId, blockEntries)
-		await blockMemberHomeNode(groupId, resolvedMember)
-		await rotateRoomSecretAfterModeration(username, groupId)
+		}, { skipFederationRebind: true }))
 		res.status(200).json({})
 	})
 
