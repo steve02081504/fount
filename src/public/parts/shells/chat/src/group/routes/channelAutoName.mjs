@@ -23,7 +23,7 @@ import {
 } from '../../chat/dag/channelOperations.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
-import { withLock } from '../../lib/locks.mjs'
+import { withLock } from '../lib/locks.mjs'
 import { readChannelMessagesForUser } from '../queries.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
