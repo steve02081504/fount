@@ -27,26 +27,26 @@
 		<div class="drawer-content flex h-dvh w-screen bg-[var(--bg-main)] text-[var(--text-normal)]">
 			<aside class="server-bar w-[72px] shrink-0 overflow-y-auto bg-[var(--bg-server)] py-3 flex flex-col items-center gap-2" id="server-bar" data-i18n="chat.hub.serverBar">
 				<button type="button" class="server-item" data-mode="friends" data-i18n="chat.hub.friends.tooltip">
-					<img src="https://api.iconify.design/line-md/person.svg" width="24" height="24" alt="" aria-hidden="true" />
+					<img src="https://api.iconify.design/line-md/person.svg" width="24" height="24" alt="" aria-hidden="true" class="text-icon" />
 					<span class="server-tooltip" data-i18n="chat.hub.charsTooltip.tip"></span>
 				</button>
 				<button type="button" class="server-item server-inbox" data-mode="inbox" data-i18n="chat.hub.inboxTooltip">
-					<img src="https://api.iconify.design/line-md/at.svg" width="24" height="24" alt="" aria-hidden="true" />
+					<img src="https://api.iconify.design/line-md/at.svg" width="24" height="24" alt="" aria-hidden="true" class="text-icon" />
 					<span class="unread-badge hidden" id="inbox-badge" aria-hidden="true"></span>
 					<span class="server-tooltip" data-i18n="chat.hub.inboxTooltip.tip"></span>
 				</button>
 				<div class="server-divider"></div>
 				<div id="server-list" class="flex flex-col items-center gap-2 w-full"></div>
 				<button type="button" class="server-item" id="discovery-button" data-mode="discovery" data-i18n="chat.hub.discovery.tooltip">
-					<img src="https://api.iconify.design/mdi/compass-outline.svg" width="24" height="24" alt="" aria-hidden="true" />
+					<img src="https://api.iconify.design/mdi/compass-outline.svg" width="24" height="24" alt="" aria-hidden="true" class="text-icon" />
 					<span class="server-tooltip" data-i18n="chat.hub.discovery.tooltip.tip"></span>
 				</button>
 				<button type="button" class="server-item" id="prefs-button" data-i18n="chat.hub.prefsTooltip">
-					<img src="https://api.iconify.design/line-md/cog.svg" width="24" height="24" alt="" aria-hidden="true" />
+					<img src="https://api.iconify.design/line-md/cog.svg" width="24" height="24" alt="" aria-hidden="true" class="text-icon" />
 					<span class="server-tooltip" data-i18n="chat.hub.prefsTooltip.tip"></span>
 				</button>
 				<button type="button" class="server-item server-add" id="add-server-button" data-i18n="chat.hub.addServerTooltip">
-					<img src="https://api.iconify.design/line-md/plus.svg" width="24" height="24" alt="" aria-hidden="true" />
+					<img src="https://api.iconify.design/line-md/plus.svg" width="24" height="24" alt="" aria-hidden="true" class="text-icon" />
 					<span class="server-tooltip" data-i18n="chat.hub.addServerTooltip.tip"></span>
 				</button>
 			</aside>
@@ -56,7 +56,7 @@
 				<div class="channel-bar w-60 shrink-0 bg-[var(--bg-channel)] flex flex-col" id="channel-bar" role="complementary" data-i18n="chat.hub.channel.bar">
 					<div class="channel-header h-12 min-h-12 px-4 border-b border-[var(--border-color)] shadow-sm flex items-center justify-between font-bold text-base text-[var(--text-bright)] cursor-pointer" id="group-header" data-i18n="chat.hub.group.headerMenu" aria-haspopup="menu">
 						<span id="group-name-display"></span>
-						<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
+						<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" class="text-icon" />
 					</div>
 					<div class="channel-list flex-1 overflow-y-auto py-2" id="channel-list"></div>
 					<button type="button" class="user-bar" id="user-bar" aria-haspopup="menu">
@@ -76,14 +76,14 @@
 				<div id="hub-main" class="main flex-1 min-w-0 flex flex-col bg-[var(--bg-main)]">
 					<div class="main-header h-12 min-h-12 px-4 border-b border-[var(--border-color)] shadow-sm flex items-center gap-2 z-30 relative">
 						<button type="button" class="top-back icon-button btn btn-ghost btn-square btn-sm" id="top-back-button" data-i18n="chat.hub.backToNav">
-							<img src="https://api.iconify.design/mdi/arrow-left.svg" width="18" height="18" alt="" aria-hidden="true" />
+							<img src="https://api.iconify.design/mdi/arrow-left.svg" width="18" height="18" alt="" aria-hidden="true" class="text-icon" />
 						</button>
 						<span class="main-header-icon">#</span>
 						<span class="main-header-title" id="channel-name-display"></span>
 						<div class="flex-1"></div>
 						<div class="header-pop header-desktop-only" id="pins-pop" hidden>
 							<button type="button" class="icon-button btn btn-ghost btn-square btn-sm header-pop-button" id="pins-button" data-i18n="chat.hub.pinsButton" aria-haspopup="dialog" aria-expanded="false">
-								<img src="https://api.iconify.design/mdi/pin.svg" alt="" aria-hidden="true" />
+								<img src="https://api.iconify.design/mdi/pin.svg" alt="" aria-hidden="true" class="text-icon" />
 								<span class="header-pop-count" id="pins-count" hidden></span>
 							</button>
 							<div class="header-panel" id="pins-panel" hidden role="dialog" aria-labelledby="pins-panel-title">
@@ -93,7 +93,7 @@
 						</div>
 						<div class="header-pop header-desktop-only" id="bookmarks-pop" hidden>
 							<button type="button" class="icon-button btn btn-ghost btn-square btn-sm header-pop-button" id="bookmarks-button" data-i18n="chat.hub.bookmarksButton" aria-haspopup="dialog" aria-expanded="false">
-								<img src="https://api.iconify.design/mdi/bookmark-outline.svg" alt="" aria-hidden="true" />
+								<img src="https://api.iconify.design/mdi/bookmark-outline.svg" alt="" aria-hidden="true" class="text-icon" />
 								<span class="header-pop-count" id="bookmarks-count" hidden></span>
 							</button>
 							<div class="header-panel" id="bookmarks-panel" hidden role="dialog" aria-labelledby="bookmarks-panel-title">
@@ -105,7 +105,7 @@
 							<div class="dropdown search-scope-dropdown">
 								<button type="button" tabindex="0" id="search-scope" class="search-scope" data-value="group" aria-haspopup="listbox">
 									<span class="search-scope-label" data-i18n="chat.hub.search.scopeGroup"></span>
-									<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
+									<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" class="text-icon" />
 								</button>
 								<ul tabindex="0" class="dropdown-content menu search-scope-menu bg-base-100 rounded-box z-50 p-1 shadow border border-base-300" role="listbox">
 									<li><button type="button" role="option" data-value="group" data-i18n="chat.hub.search.scopeGroup"></button></li>
@@ -113,28 +113,28 @@
 								</ul>
 							</div>
 							<input id="header-search" class="search-input" type="search" data-i18n="chat.hub.search" />
-							<img src="https://api.iconify.design/line-md/search.svg" class="search-icon" width="14" height="14" alt="" aria-hidden="true" />
+							<img src="https://api.iconify.design/line-md/search.svg" class="text-icon search-icon" width="14" height="14" alt="" aria-hidden="true" />
 							<div id="search-results" class="search-results" hidden></div>
 						</div>
 						<button type="button" class="icon-button btn btn-ghost btn-square btn-sm" id="header-call-button" data-i18n="chat.hub.call.button" hidden>
-							<img src="https://api.iconify.design/mdi/phone.svg" alt="" aria-hidden="true" />
+							<img src="https://api.iconify.design/mdi/phone.svg" alt="" aria-hidden="true" class="text-icon" />
 							<span class="header-pop-count" id="call-count" hidden></span>
 						</button>
 						<button type="button" class="icon-button btn btn-ghost btn-square btn-sm" id="toggle-members-button" data-i18n="chat.hub.membersTitle">
-							<img src="https://api.iconify.design/line-md/account.svg" alt="" aria-hidden="true" />
+							<img src="https://api.iconify.design/line-md/account.svg" alt="" aria-hidden="true" class="text-icon" />
 						</button>
 						<button type="button" class="icon-button btn btn-ghost btn-square btn-sm header-desktop-only" id="header-files-button" data-i18n="chat.hub.files.title" hidden>
-							<img src="https://api.iconify.design/line-md/document.svg" alt="" aria-hidden="true" />
+							<img src="https://api.iconify.design/line-md/document.svg" alt="" aria-hidden="true" class="text-icon" />
 						</button>
 						<details class="dropdown dropdown-end header-overflow">
 							<summary class="icon-button btn btn-ghost btn-square btn-sm list-none" id="header-more-button" data-i18n="chat.hub.moreActions">
-								<img src="https://api.iconify.design/mdi/dots-vertical.svg" alt="" aria-hidden="true" />
+								<img src="https://api.iconify.design/mdi/dots-vertical.svg" alt="" aria-hidden="true" class="text-icon" />
 							</summary>
 							<ul class="dropdown-content menu bg-base-100 rounded-box z-50 w-44 p-2 shadow border border-base-300">
-								<li><button type="button" id="overflow-pins"><img src="https://api.iconify.design/mdi/pin.svg" width="16" height="16" alt="" aria-hidden="true" /><span data-i18n="chat.hub.pinsTitle"></span></button></li>
-								<li><button type="button" id="overflow-bookmarks"><img src="https://api.iconify.design/mdi/bookmark-outline.svg" width="16" height="16" alt="" aria-hidden="true" /><span data-i18n="chat.hub.bookmarksTitle"></span></button></li>
-								<li><button type="button" id="overflow-search"><img src="https://api.iconify.design/line-md/search.svg" width="16" height="16" alt="" aria-hidden="true" /><span data-i18n="chat.hub.search.aria-label"></span></button></li>
-								<li><button type="button" id="overflow-files"><img src="https://api.iconify.design/line-md/document.svg" width="16" height="16" alt="" aria-hidden="true" /><span data-i18n="chat.hub.files.drawerTitle"></span></button></li>
+								<li><button type="button" id="overflow-pins"><img src="https://api.iconify.design/mdi/pin.svg" width="16" height="16" alt="" aria-hidden="true" class="text-icon" /><span data-i18n="chat.hub.pinsTitle"></span></button></li>
+								<li><button type="button" id="overflow-bookmarks"><img src="https://api.iconify.design/mdi/bookmark-outline.svg" width="16" height="16" alt="" aria-hidden="true" class="text-icon" /><span data-i18n="chat.hub.bookmarksTitle"></span></button></li>
+								<li><button type="button" id="overflow-search"><img src="https://api.iconify.design/line-md/search.svg" width="16" height="16" alt="" aria-hidden="true" class="text-icon" /><span data-i18n="chat.hub.search.aria-label"></span></button></li>
+								<li><button type="button" id="overflow-files"><img src="https://api.iconify.design/line-md/document.svg" width="16" height="16" alt="" aria-hidden="true" class="text-icon" /><span data-i18n="chat.hub.files.drawerTitle"></span></button></li>
 							</ul>
 						</details>
 						<div class="mobile-search-bar" id="mobile-search-bar">
@@ -142,7 +142,7 @@
 							<div class="dropdown search-scope-dropdown shrink-0">
 								<button type="button" tabindex="0" id="mobile-search-scope" class="search-scope" data-value="group" aria-haspopup="listbox">
 									<span class="search-scope-label" data-i18n="chat.hub.search.scopeGroup"></span>
-									<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
+									<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" class="text-icon" />
 								</button>
 								<ul tabindex="0" class="dropdown-content menu search-scope-menu bg-base-100 rounded-box z-50 p-1 shadow border border-base-300" role="listbox">
 									<li><button type="button" role="option" data-value="group" data-i18n="chat.hub.search.scopeGroup"></button></li>
@@ -197,7 +197,7 @@
 					<div class="main-body flex flex-1 min-h-0 min-w-0 relative">
 						<div class="messages flex-1 overflow-y-auto flex flex-col min-h-0 min-w-0" id="messages">
 							<div class="empty" aria-hidden="true">
-								<div class="empty-icon"><img src="https://api.iconify.design/line-md/chat-round.svg" class="empty-icon-img" width="48" height="48" alt="" aria-hidden="true" /></div>
+								<div class="empty-icon"><img src="https://api.iconify.design/line-md/chat-round.svg" class="text-icon empty-icon-img" width="48" height="48" alt="" aria-hidden="true" /></div>
 							</div>
 						</div>
 						<div id="thread-drawer-wrap" class="thread-drawer-wrap" hidden></div>
@@ -210,7 +210,7 @@
 							<div class="text-xs opacity-70 truncate" data-reply-preview></div>
 						</div>
 						<button type="button" class="icon-button btn btn-ghost btn-square btn-sm !h-7 !w-7" data-reply-clear data-i18n="chat.hub.replyClear" title>
-							<img src="https://api.iconify.design/mdi/close.svg" width="14" height="14" alt="" aria-hidden="true" />
+							<img src="https://api.iconify.design/mdi/close.svg" width="14" height="14" alt="" aria-hidden="true" class="text-icon" />
 						</button>
 					</div>
 					<div id="composer-extras" class="composer-extras flex flex-wrap items-center gap-2 px-4 py-1 text-sm" hidden>
@@ -228,37 +228,37 @@
 							<div id="composer-main-row" class="flex items-center gap-2 relative min-h-9">
 								<details class="dropdown dropdown-top composer-more" inert>
 									<summary class="icon-button btn btn-ghost btn-square btn-sm list-none btn-disabled" id="composer-more-button" data-i18n="chat.hub.composerMore" aria-disabled="true">
-										<img src="https://api.iconify.design/mdi/plus.svg" alt="" aria-hidden="true" />
+										<img src="https://api.iconify.design/mdi/plus.svg" alt="" aria-hidden="true" class="text-icon" />
 									</summary>
 									<ul class="dropdown-content menu bg-base-100 rounded-box z-50 w-44 p-2 shadow border border-base-300 mb-2">
-										<li><button type="button" id="composer-more-voice"><img src="https://api.iconify.design/material-symbols/mic.svg" width="16" height="16" alt="" aria-hidden="true" /><span data-i18n="chat.chatArea.voiceButton.title"></span></button></li>
-										<li><button type="button" id="composer-more-photo"><img src="https://api.iconify.design/proicons/photo.svg" width="16" height="16" alt="" aria-hidden="true" /><span data-i18n="chat.chatArea.photoButton.title"></span></button></li>
-										<li><button type="button" id="composer-more-upload"><img src="https://api.iconify.design/mdi/paperclip.svg" width="16" height="16" alt="" aria-hidden="true" /><span data-i18n="chat.hub.uploadTitle.title"></span></button></li>
-										<li><button type="button" id="composer-more-vote"><img src="https://api.iconify.design/line-md/confirm.svg" width="16" height="16" alt="" aria-hidden="true" /><span data-i18n="chat.hub.vote.title.title"></span></button></li>
+										<li><button type="button" id="composer-more-voice"><img src="https://api.iconify.design/material-symbols/mic.svg" width="16" height="16" alt="" aria-hidden="true" class="text-icon" /><span data-i18n="chat.chatArea.voiceButton.title"></span></button></li>
+										<li><button type="button" id="composer-more-photo"><img src="https://api.iconify.design/proicons/photo.svg" width="16" height="16" alt="" aria-hidden="true" class="text-icon" /><span data-i18n="chat.chatArea.photoButton.title"></span></button></li>
+										<li><button type="button" id="composer-more-upload"><img src="https://api.iconify.design/mdi/paperclip.svg" width="16" height="16" alt="" aria-hidden="true" class="text-icon" /><span data-i18n="chat.hub.uploadTitle.title"></span></button></li>
+										<li><button type="button" id="composer-more-vote"><img src="https://api.iconify.design/line-md/confirm.svg" width="16" height="16" alt="" aria-hidden="true" class="text-icon" /><span data-i18n="chat.hub.vote.title.title"></span></button></li>
 									</ul>
 								</details>
 								<button type="button" class="icon-button btn btn-ghost btn-square btn-sm composer-desktop-tool" id="voice-button" data-i18n="chat.chatArea.voiceButton" disabled>
-									<img src="https://api.iconify.design/material-symbols/mic.svg" alt="" aria-hidden="true" />
+									<img src="https://api.iconify.design/material-symbols/mic.svg" alt="" aria-hidden="true" class="text-icon" />
 								</button>
 								<button type="button" class="icon-button btn btn-ghost btn-square btn-sm composer-desktop-tool" id="photo-button" data-i18n="chat.chatArea.photoButton" disabled>
-									<img src="https://api.iconify.design/proicons/photo.svg" alt="" aria-hidden="true" />
+									<img src="https://api.iconify.design/proicons/photo.svg" alt="" aria-hidden="true" class="text-icon" />
 								</button>
 								<button type="button" class="icon-button btn btn-ghost btn-square btn-sm composer-desktop-tool" id="upload-button" data-i18n="chat.hub.uploadTitle" disabled>
-									<img src="https://api.iconify.design/mdi/paperclip.svg" alt="" aria-hidden="true" />
+									<img src="https://api.iconify.design/mdi/paperclip.svg" alt="" aria-hidden="true" class="text-icon" />
 								</button>
 								<input type="file" id="image-upload-input" multiple hidden />
 								<textarea id="message-input" class="textarea textarea-ghost flex-1 min-h-9 max-h-40 resize-none border-0 bg-transparent px-0 py-2 text-base leading-normal focus:outline-none rounded-none" rows="1" data-i18n="chat.hub.message.input" disabled user-content></textarea>
 								<button type="button" class="icon-button btn btn-ghost btn-square btn-sm" id="emoji-button" data-i18n="chat.hub.emojiTitle" disabled>
-									<img src="https://api.iconify.design/line-md/emoji-smile.svg" alt="" aria-hidden="true" />
+									<img src="https://api.iconify.design/line-md/emoji-smile.svg" alt="" aria-hidden="true" class="text-icon" />
 								</button>
 								<button type="button" class="icon-button btn btn-ghost btn-square btn-sm composer-desktop-tool" id="vote-button" data-i18n="chat.hub.vote.title" disabled>
-									<img src="https://api.iconify.design/line-md/confirm.svg" alt="" aria-hidden="true" />
+									<img src="https://api.iconify.design/line-md/confirm.svg" alt="" aria-hidden="true" class="text-icon" />
 								</button>
 								<button type="button" class="composer-stop-button btn btn-error btn-sm !h-9 !w-9 !min-h-0 rounded-box" id="stop-generation-button" data-i18n="chat.hub.stopGenerateTitle" hidden>
-									<img src="https://api.iconify.design/mdi/stop.svg" width="14" height="14" alt="" aria-hidden="true" />
+									<img src="https://api.iconify.design/mdi/stop.svg" width="14" height="14" alt="" aria-hidden="true" class="text-icon" />
 								</button>
 								<button type="button" class="btn btn-primary btn-sm !h-10 !w-10 !min-h-0 rounded-field" id="send-button" data-i18n="chat.hub.send.title" disabled>
-									<img src="https://api.iconify.design/line-md/telegram.svg" class="w-6 h-6" alt="" aria-hidden="true" />
+									<img src="https://api.iconify.design/line-md/telegram.svg" class="text-icon w-6 h-6" alt="" aria-hidden="true" />
 								</button>
 								<div class="emoji-picker" id="emoji-picker"></div>
 							</div>

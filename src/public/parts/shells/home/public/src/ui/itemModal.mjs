@@ -29,7 +29,7 @@ export function createActionButtons(part, interfacesRegistry) {
 			button.classList.add(...classes)
 			if (interfaceItem.style) button.style.cssText = interfaceItem.style
 
-			button.innerHTML = interfaceItem.button ?? /* html */ '<img src="https://api.iconify.design/line-md/question-circle.svg" />'
+			button.innerHTML = interfaceItem.button ?? /* html */ '<img src="https://api.iconify.design/line-md/question-circle.svg" class="text-icon" />'
 			button.title = geti18n(interfaceItem.info).title
 			svgInliner(button)
 
