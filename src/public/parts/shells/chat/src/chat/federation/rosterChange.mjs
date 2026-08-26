@@ -16,6 +16,5 @@ export function shouldRebindFederationRoomForEvent(event, options = {}) {
 	const type = String(event?.type || '').trim()
 	if (FEDERATION_ROSTER_EVENT_TYPES.has(type)) return true
 	if (type !== 'group_settings_update') return false
-	const roomSecret = String(event?.content?.roomSecret || '').trim()
-	return !!roomSecret
+	return !!String(event?.content?.roomSecret || '').trim()
 }

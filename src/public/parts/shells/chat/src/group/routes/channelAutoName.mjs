@@ -163,24 +163,21 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 	let categoryId = null
 	if (category) {
 		const categoryName = String(category).trim()
-		categoryId = categoryIdByName.get(categoryName)
-		if (!categoryId) {
-			// 锁内按「群 + 规范化分类名」原子查找或创建：复用并发中已建的同名分类，避免重复建类。
-			categoryId = await withCategoryCreateLock(groupId, async () => {
-				const latest = await getState(username, groupId)
-				const existing = Object.entries(latest.state.channels || {})
-					.find(([, channel]) => channel?.type === 'category' && String(channel?.name || '').trim() === categoryName)
-				if (existing) return existing[0]
-				const rootChannelId = latest.state.groupSettings?.rootChannelId || null
-				const created = await createChannel(username, groupId, {
-					type: 'category',
-					name: category,
-					channelId: prefixedRandomId('channel_'),
-					parentChannelId: rootChannelId,
-				})
-				return created.content?.channelId || null
+		// 锁内按「群 + 规范化分类名」原子查找或创建：复用并发中已建的同名分类，避免重复建类。
+		categoryId = categoryIdByName.get(categoryName) ?? await withCategoryCreateLock(groupId, async () => {
+			const latest = await getState(username, groupId)
+			const existing = Object.entries(latest.state.channels || {})
+				.find(([, channel]) => channel?.type === 'category' && String(channel?.name || '').trim() === categoryName)
+			if (existing) return existing[0]
+			const rootChannelId = latest.state.groupSettings?.rootChannelId || null
+			const created = await createChannel(username, groupId, {
+				type: 'category',
+				name: category,
+				channelId: prefixedRandomId('channel_'),
+				parentChannelId: rootChannelId,
 			})
-		}
+			return created.content?.channelId || null
+		})
 	}
 
 	// 单事件提交子频道侧更新（名称 + 权限块），父频道 links 另成一条，避免多次可部分成功的操作。
