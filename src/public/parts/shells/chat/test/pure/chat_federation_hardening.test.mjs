@@ -134,7 +134,8 @@ Deno.test('joinSnapshot wire parse', () => {
 
 Deno.test('gossip request requires attestation', () => {
 	const eventId = 'a'.repeat(64)
-	assertEquals(parseGossipRequest({ wantIds: [eventId], ttl: 2, requesterNodeHash: 'n1' }), null)
+	const requesterNodeHash = 'd'.repeat(64)
+	assertEquals(parseGossipRequest({ wantIds: [eventId], ttl: 2, requesterNodeHash }), null)
 	const sender = 'b'.repeat(64)
 	const att = {
 		requesterPubKeyHash: sender,
@@ -147,7 +148,7 @@ Deno.test('gossip request requires attestation', () => {
 	assertEquals(parseGossipRequest({
 		wantIds: [eventId],
 		ttl: 2,
-		requesterNodeHash: 'n1',
+		requesterNodeHash,
 		attestation: att,
 	})?.wantIds.length, 1)
 })
