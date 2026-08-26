@@ -94,16 +94,21 @@
 			"src/public/parts/shells/chat/test/live/scripts/federation/mailbox.mjs"
 		],
 		"fedEmoji": [
+			"src/public/parts/shells/chat/src/emojiPacks/**",
 			"src/public/parts/shells/chat/src/group/{groupPreview,emojiContentResolve}.mjs",
 			"src/public/parts/shells/chat/test/live/scripts/federation/emoji.mjs"
 		],
 		"fedEmojiGroup": [
-			"src/public/parts/shells/chat/src/group/**",
+			"src/public/parts/shells/chat/src/emojiPacks/**",
+			"src/public/parts/shells/chat/src/group/routes/groupEmojis.mjs",
+			"src/public/parts/shells/chat/src/group/{groupEmojis,emojiContentResolve,groupPreview}.mjs",
 			"src/server/registries.mjs",
 			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nonmember{,_bootstrap}.mjs"
 		],
 		"fedEmojiNearcache": [
-			"src/public/parts/shells/chat/src/group/**",
+			"src/public/parts/shells/chat/src/emojiPacks/**",
+			"src/public/parts/shells/chat/src/group/routes/groupEmojis.mjs",
+			"src/public/parts/shells/chat/src/group/{groupEmojis,emojiContentResolve}.mjs",
 			"src/public/parts/shells/chat/src/chat/files/**",
 			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nearcache.mjs"
 		],
