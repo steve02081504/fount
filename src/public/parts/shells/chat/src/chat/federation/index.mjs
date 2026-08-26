@@ -87,27 +87,11 @@ export {
 } from './volatile.mjs'
 
 /**
- * @param {object} slot 联邦槽
- * @param {unknown} payload 载荷
- * @param {string[]} targets peerId 列表
- * @param {(slot: object, payload: unknown, peerId: string | null) => void} sendFn 发送函数
- * @returns {void}
- */
-function deliverToFederationTargets(slot, payload, targets, sendFn) {
-	if (!targets.length) {
-		sendFn(slot, payload, null)
-		return
-	}
-	for (const peerId of targets)
-		sendFn(slot, payload, peerId)
-}
-
-/**
  * 将已签名事件发往稀疏池选中的邻居（无在线邻居时回退房内广播）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} signPayload 签名事件
- * @param {{ state?: object, existingSlotOnly?: boolean, joinTimeoutMs?: number }} [options] 出站选项
+ * @param {{ state?: object, existingSlotOnly?: boolean, joinTimeoutMs?: number, awaitSend?: boolean }} [options] 出站选项
  * @returns {Promise<void>}
  */
 export async function publishSignedEventToFederation(username, groupId, signPayload, options = {}) {
@@ -151,25 +135,40 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 	}
 	if (!slot) return
 
+	const roster = slot.getRoster()
 	const targets = await pickFederationTargetPeerIds(groupId,
-		slot.getRoster(),
+		roster,
 		groupSettings,
 		nodeHash,
 	)
 
+	// 治理移除事件（member_ban / roomSecret 轮换）绝不回退房内广播：广播会发给仍连在旧房的被封成员，
+	// 使 B 拿到新口令后能重新入房，封禁形同虚设；目标列表为空即不发。
+	const restrictedRelay = eventType === 'member_ban'
+		|| (eventType === 'group_settings_update' && !!signPayload.content?.roomSecret)
+
 	if (localInTarget) {
-		deliverToFederationTargets(slot, wireEvent, targets, (s, payload, peerId) => s.send('dag_event', payload, peerId))
+		for (const peerId of targets) slot.send('dag_event', wireEvent, peerId)
+		if (!targets.length && !restrictedRelay) slot.send('dag_event', wireEvent, null)
+		if (options.awaitSend) await slot.fedOut.drain()
 		return
 	}
 
-	for (const peerId of targets.length ? targets : [null])
+	for (const peerId of targets)
 		sendPartitionBridgeFromSlot(slot, {
 			targetPartition,
 			actionName: 'dag_event',
 			payload: wireEvent,
 			peerId,
 		})
-
+	if (!targets.length && !restrictedRelay)
+		sendPartitionBridgeFromSlot(slot, {
+			targetPartition,
+			actionName: 'dag_event',
+			payload: wireEvent,
+			peerId: null,
+		})
+	if (options.awaitSend) await slot.fedOut.drain()
 }
 
 /**

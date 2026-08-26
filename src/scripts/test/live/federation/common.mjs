@@ -105,10 +105,11 @@ export async function P2pApi(node, method, p2pPath, body) {
  * @param {string} method HTTP 方法
  * @param {string} shellPath shell API 路径
  * @param {object} [body] 请求体
+ * @param {{ timeoutSec?: number }} [options] 覆盖请求超时
  * @returns {Promise<import('../http.mjs').LiveHttpResponse>} shell API 响应
  */
-export async function ShellApi(node, shell, method, shellPath, body) {
-	return invokeRequest(node, method, shellPath, body, { shell })
+export async function ShellApi(node, shell, method, shellPath, body, options) {
+	return invokeRequest(node, method, shellPath, body, { shell, ...options })
 }
 
 /**
@@ -117,10 +118,11 @@ export async function ShellApi(node, shell, method, shellPath, body) {
  * @param {string} method HTTP 方法
  * @param {string} chatPath chat API 路径
  * @param {object} [body] 请求体
+ * @param {{ timeoutSec?: number }} [options] 覆盖请求超时（默认 180s，过长会拖垮有界轮询）
  * @returns {Promise<import('../http.mjs').LiveHttpResponse>} Chat API 响应
  */
-export function Api(node, method, chatPath, body) {
-	return ShellApi(node, 'chat', method, chatPath, body)
+export function Api(node, method, chatPath, body, options) {
+	return ShellApi(node, 'chat', method, chatPath, body, options)
 }
 
 /**

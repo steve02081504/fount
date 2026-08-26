@@ -57,6 +57,21 @@ export function createFedOutQueue() {
 				queueMicrotask(flush)
 			}
 		},
+		/**
+		 * 等待队列被刷空（含已调度但未执行的批次）。用于发布关键事件后、拆除槽之前，
+		 * 确保帧真正发出而不仅是入队微任务。
+		 * @returns {Promise<void>}
+		 */
+		drain() {
+			return new Promise(resolve => {
+				/** 逐微任务探测队列是否已刷空。 */
+				const tick = () => {
+					if (!scheduled && queue.length === 0) resolve()
+					else queueMicrotask(tick)
+				}
+				queueMicrotask(tick)
+			})
+		},
 	}
 }
 

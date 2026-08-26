@@ -25,11 +25,11 @@ async function publishSignedEvent(username, groupId, wirePayload, options, publi
 		state: options.federationState,
 		existingSlotOnly: options.federationExistingSlotOnly,
 		joinTimeoutMs: options.federationJoinTimeoutMs,
+		awaitSend: publishOpts.forceAwait
+			|| options.federationExistingSlotOnly
+			|| options.federationJoinTimeoutMs > 0,
 	})
-	const awaitPublish = publishOpts.forceAwait
-		|| options.federationExistingSlotOnly
-		|| options.federationJoinTimeoutMs > 0
-	if (awaitPublish)
+	if (publishOpts.forceAwait || options.federationExistingSlotOnly || options.federationJoinTimeoutMs > 0)
 		await publish
 	else
 		void publish.catch(error => console.error('federation: background publish failed', error))
@@ -50,29 +50,31 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opti
 		ingress: options.ingress,
 	}
 
-	let publishLeaveBeforeRebuild = false
-	let publishBanBeforePersist = false
+	// 需在落盘前完成联邦出站的事件：退群（checkpoint 重建会删盘/teardown slot）与 roomSecret 轮换
+	// （必须在旧房还活着时把新口令送达仍留在旧房的成员；落盘后再发旧槽已被物化失效）。
+	// member_ban 则须先落盘（denylist 挡下被封成员后再 live 发布），但发布须 force-await 确保合法第三方及时收到。
+	let publishBeforePersist = false
 	const committed = await withGroupWriteLock(username, groupId, async () => {
 		if (wirePayload instanceof Function) wirePayload = wirePayload()
 		wirePayload = await wirePayload
-		// 退群联邦出站须在 broadcastAndPersist 之前完成：完整 checkpoint 重建会 maybePurgeLocalReplicaIfLeft
-		// 删掉 events.jsonl 并 teardown slot，晚于 rebuild 的 publish 读不到 leave 帧。
-		publishLeaveBeforeRebuild = options.publishFederation && wirePayload.type === 'member_leave'
-		publishBanBeforePersist = options.publishFederation && wirePayload.type === 'member_ban'
+		publishBeforePersist = options.publishFederation && (
+			wirePayload.type === 'member_leave'
+			|| (wirePayload.type === 'group_settings_update' && !!wirePayload.content?.roomSecret)
+		)
 		const path = eventsPath(username, groupId)
 		const idNorm = String(wirePayload.id).trim()
 		const previous = await readJsonl(path, { sanitize: stripDagEventLocalExtensions })
 		if (previous.some(existing => String(existing.id).trim() === idNorm)) return false
 		await appendJsonlSynced(path, wirePayload)
 		await recordEventReceivedAt(username, groupId, wirePayload.id, Date.now())
-		if (!publishLeaveBeforeRebuild && !publishBanBeforePersist)
+		if (!publishBeforePersist)
 			await broadcastAndPersist(username, groupId, wirePayload, persistOpts)
 		return true
 	})
 	if (!committed) return 'dup'
 
-	if (publishBanBeforePersist) {
-		// Publish before the ban hook blocks the target peer, so third-party replicas can relay the event.
+	if (publishBeforePersist) {
+		// 事件既已落盘就必须物化（房间轮换/退群 side effect），live 发布失败仅降级为后续 catchup 兜底。
 		let publishError
 		try {
 			await publishSignedEvent(username, groupId, wirePayload, options, { forceAwait: true })
@@ -85,14 +87,8 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opti
 		})
 		if (publishError) throw publishError
 	}
-	else if (publishLeaveBeforeRebuild) {
-		await publishSignedEvent(username, groupId, wirePayload, options, { forceAwait: true })
-		await withGroupWriteLock(username, groupId, async () => {
-			await broadcastAndPersist(username, groupId, wirePayload, persistOpts)
-		})
-	}
 	else if (options.publishFederation)
-		await publishSignedEvent(username, groupId, wirePayload, options)
+		await publishSignedEvent(username, groupId, wirePayload, options, { forceAwait: wirePayload.type === 'member_ban' })
 
 	recordMessageRate(username, groupId, wirePayload, options.federationState?.groupSettings)
 	return 'ok'

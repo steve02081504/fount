@@ -14,7 +14,6 @@ import { eventsPath } from '../lib/paths.mjs'
 
 import {
 	setFederationBootstrap,
-	setPeerRoomHint,
 } from './bootstrapStore.mjs'
 import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { catchUpGroupFromPeers } from './index.mjs'
@@ -98,11 +97,10 @@ export async function applyFedBootstrapResponse(username, groupId, response) {
 		settingsEventId: response.settingsEventId,
 	}
 
-	setPeerRoomHint(username, groupId, {
+	setFederationBootstrap(username, groupId, {
 		...creds,
 		fromNodeId: response.responderNodeHash,
 	})
-	setFederationBootstrap(username, groupId, creds)
 
 	const existingSlot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
 	const dagCreds = roomCredentialsFromGroupSettings(

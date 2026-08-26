@@ -192,6 +192,14 @@ export function buildFederationSlot(roomContext) {
 				try { fn() }
 				catch (error) { console.error('federation: slot cleanup failed', error) }
 			cleanups.clear()
+			// 先把出站队列刷空再拆房：已入队的帧（如封禁触发的 fed_shun）必须在房间拆毁前发出，
+			// 否则 room.leave 后旧槽已死，pending 发送静默丢失（第三方将收不到被移除方该有的闭门羹）。
+			try {
+				await fedOut.drain()
+			}
+			catch (error) {
+				console.error('federation: slot outbound drain failed', error)
+			}
 			try {
 				await room?.leave?.()
 			}

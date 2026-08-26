@@ -24,8 +24,8 @@ import { appendKeyRotateEvent } from '../../chat/dag/channelOperations.mjs'
 import { adminPubKeyHashes, effectiveChannelPermissions, effectiveGroupPermissions } from '../../chat/dag/groupMaterializedState.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
+import { localNodeHash } from '../../chat/federation/dagDependencies.mjs'
 import { publishVolatileToFederation } from '../../chat/federation/index.mjs'
-import { invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
 import { mintRoomSecret } from '../../chat/federation/roomCredentials.mjs'
 import { getCurrentFileMasterKey, appendFileMasterKey } from '../../chat/file_keys/store.mjs'
 import {
@@ -51,7 +51,9 @@ import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
 
 /**
- * 治理操作后轮换 roomSecret 并失效 federation room 缓存。
+ * 治理操作后轮换 roomSecret：移除成员的同时把旧房口令换掉，使被封成员再也无法入房。
+ * 调用方已在 ban/kick 追加时跳过重绑，本事件的 append 会在旧槽还活着时把新口令 live 送达
+ * 其余成员（commitSignedEvent 对 roomSecret 事件发布先于落盘），随后由物化失效统一切到新房。
  * @param {string} username 登录名
  * @param {string} groupId 群 id
  * @returns {Promise<void>}
@@ -62,7 +64,19 @@ async function rotateRoomSecretAfterModeration(username, groupId) {
 		timestamp: Date.now(),
 		content: { roomSecret: mintRoomSecret() },
 	})
-	invalidateFederationRoomCache(username, groupId)
+}
+
+/**
+ * 封禁/踢出成员的远端 home 节点，使其在 roomSecret 轮换前即被联邦 fanout 排除（本地节点不封，
+ * 本机上的 agent 靠 status 出局而非被踢出房间）。
+ * @param {string} groupId 群 id
+ * @param {object | undefined} member 被移除成员
+ * @returns {Promise<void>}
+ */
+async function blockMemberHomeNode(groupId, member) {
+	const home = member?.homeNodeHash
+	if (isHex64(home) && home !== localNodeHash())
+		await addGroupBlockedPeers(groupId, [{ scope: 'node', value: home }])
 }
 
 /**
@@ -370,7 +384,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 				type: 'member_ban',
 				timestamp: Date.now(),
 				content: banContent,
-			})
+			}, { skipFederationRebind: true })
 			await rotateRoomSecretAfterModeration(username, groupId)
 			await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
 			await addDenylistFromBanContent(banContent, groupId)
@@ -429,11 +443,12 @@ export function registerGovernanceRoutes(router, authenticate) {
 					type: 'member_kick',
 					timestamp: Date.now(),
 					content,
-				})
+				}, { skipFederationRebind: true })
+				await addGroupBlockedPeers(groupId, [{ scope: 'subject', value: resolvedTargetKey }])
+				await blockMemberHomeNode(groupId, resolvedMember)
 				await rotateRoomSecretAfterModeration(username, groupId)
 				const newKey = deriveNextFileMasterKey(keyEntry.fileMasterKey, kickEvent.id, nonce)
 				await appendFileMasterKey(username, groupId, newGen, newKey)
-				await addGroupBlockedPeers(groupId, [{ scope: 'subject', value: resolvedTargetKey }])
 				return res.status(200).json({})
 			}
 		}
@@ -442,12 +457,13 @@ export function registerGovernanceRoutes(router, authenticate) {
 			type: 'member_kick',
 			timestamp: Date.now(),
 			content,
-		})
-		await rotateRoomSecretAfterModeration(username, groupId)
+		}, { skipFederationRebind: true })
 		const blockEntries = resolvedMember?.memberKind === 'agent'
 			? [{ scope: 'entity', value: resolvedMember.entityHash }]
 			: [{ scope: 'subject', value: resolvedTargetKey }]
 		await addGroupBlockedPeers(groupId, blockEntries)
+		await blockMemberHomeNode(groupId, resolvedMember)
+		await rotateRoomSecretAfterModeration(username, groupId)
 		res.status(200).json({})
 	})
 
