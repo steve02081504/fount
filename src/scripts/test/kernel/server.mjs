@@ -25,10 +25,11 @@ import { TestKernel } from './runtime.mjs'
  * @param {number} [options.prepSettleMs] 预备静置毫秒
  * @param {boolean} [options.writeReport] 是否写活报告
  * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
- * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
- * @param {boolean} [options.autoUpdateExpected] 跑完是否按漂移自动回写 manifest `expected`
- * @returns {Promise<{ url: string, kernel: TestKernel, close: () => Promise<void> }>} 句柄
- */
+	 * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
+	 * @param {boolean} [options.autoUpdateExpected] 跑完是否按漂移自动回写 manifest `expected`
+	 * @param {number} [options.idleExitGraceMs] 空闲且无 watcher 后自动退出的宽限毫秒
+	 * @returns {Promise<{ url: string, kernel: TestKernel, close: () => Promise<void> }>} 句柄
+	 */
 export async function startTestKernel({
 	port = TEST_HUB_PORT,
 	repoRoot = REPO_ROOT,
@@ -39,8 +40,9 @@ export async function startTestKernel({
 	moduleCheckHoldTimeoutMs,
 	idleAllMs,
 	autoUpdateExpected,
+	idleExitGraceMs,
 } = {}) {
-	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs, idleAllMs, autoUpdateExpected })
+	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs, idleAllMs, autoUpdateExpected, idleExitGraceMs })
 	await kernel.start()
 
 	const app = express()
@@ -188,7 +190,6 @@ async function onViewerMessage(kernel, viewer, rawMessage) {
 	}
 	if (message.type && message.type !== 'hello') return
 	viewer.watch = message.watch === true
-	kernel.seenViewer = true
 	if (viewer.watch || !message.job) {
 		viewer.mode = 'overview'
 		kernel.viewers.send(viewer.id, {

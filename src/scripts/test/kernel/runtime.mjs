@@ -70,6 +70,9 @@ export function ignoreWatchPath(rel) {
 /** watch 闲置多久后自动补跑一次 --all（毫秒；默认 2 小时）。 */
 export const DEFAULT_IDLE_ALL_MS = ms('2h')
 
+/** 空闲且无 watcher 后内核保持存活多久再自动退出（毫秒；默认 7 分钟）。 */
+export const DEFAULT_IDLE_EXIT_GRACE_MS = ms('7m')
+
 /** 资源预算周期刷新间隔（毫秒）。 */
 export const BUDGET_REFRESH_MS = 5000
 
@@ -96,6 +99,7 @@ export class TestKernel {
 	 * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
 	 * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
 	 * @param {boolean} [options.autoUpdateExpected] 跑完是否按漂移自动回写 manifest `expected`
+	 * @param {number} [options.idleExitGraceMs] 空闲且无 watcher 后自动退出的宽限毫秒
 	 */
 	constructor({
 		repoRoot,
@@ -106,9 +110,11 @@ export class TestKernel {
 		moduleCheckHoldTimeoutMs,
 		idleAllMs = DEFAULT_IDLE_ALL_MS,
 		autoUpdateExpected = true,
+		idleExitGraceMs = DEFAULT_IDLE_EXIT_GRACE_MS,
 	}) {
 		this.idleAllMs = idleAllMs
 		this.autoUpdateExpected = autoUpdateExpected
+		this.idleExitGraceMs = idleExitGraceMs
 		/** 运行队列最近一次清空的时间（watch 闲置计时起点）。 */
 		this.lastIdleAt = Date.now()
 		this.#wasIdle = false
@@ -160,7 +166,6 @@ export class TestKernel {
 		this.sessionSkipped = new Set()
 		this.closed = false
 		this.#closeDone = null
-		this.seenViewer = false
 		this.catalog = null
 		this.state = null
 		this.#wake = Promise.withResolvers()
@@ -175,6 +180,8 @@ export class TestKernel {
 	#watcher
 	#closeDone
 	#wasIdle
+	/** 空闲自动退出宽限的到期时刻（无 watcher、队列全空才开始计时；null = 未在计时）。 */
+	#idleExitDueAt = null
 	/** @type {Promise<void>} 模块检查累计记录写入链（串行化持久化）。 */
 	#moduleCheckWriteChain = Promise.resolve()
 
@@ -873,7 +880,15 @@ export class TestKernel {
 				if (this.jobs.size === 0)
 					this.viewers.broadcast({ type: 'idle' })
 			}
-			if (this.#shouldExit()) {
+			// 空闲自动退出宽限：仅当无 watcher 且队列全空才开始计时；期间任何新入队 / watcher 链接
+			// （会经 wake 重入本循环使 eligible 为假）都会重置计时。计时满了才关闭。
+			if (this.#idleExitEligible()) {
+				if (this.#idleExitDueAt == null)
+					this.#idleExitDueAt = Date.now() + this.idleExitGraceMs
+			}
+			else
+				this.#idleExitDueAt = null
+			if (this.#idleExitDueAt != null && Date.now() >= this.#idleExitDueAt) {
 				this.issueCache.pruneOlderThan()
 				await this.close()
 				break
@@ -885,6 +900,8 @@ export class TestKernel {
 				waiters.push(new Promise(resolve => setTimeout(resolve, waitPrep)))
 			if (idleAllDueAt != null)
 				waiters.push(new Promise(resolve => setTimeout(resolve, Math.max(0, idleAllDueAt - Date.now()))))
+			if (this.#idleExitDueAt != null)
+				waiters.push(new Promise(resolve => setTimeout(resolve, Math.max(0, this.#idleExitDueAt - Date.now()))))
 			await Promise.race(waiters)
 		}
 		await this.#drainRunning()
@@ -945,15 +962,16 @@ export class TestKernel {
 	}
 
 	/**
-	 * @returns {boolean} 是否该退出
+	 * 是否处于可自动退出的空闲态：无 watcher 消费者、队列全空（含预备）、无在跑、无活跃 job。
+	 * 满足时开始（或继续）宽限计时，直到计时满才关闭。
+	 * @returns {boolean} 是否空闲可退出
 	 */
-	#shouldExit() {
+	#idleExitEligible() {
 		return this.autoExit
-			&& this.seenViewer
-			&& this.queues.pendingEmpty()
+			&& this.queues.allEmpty()
 			&& this.running.size === 0
-			&& this.viewers.size() === 0
 			&& this.jobs.size === 0
+			&& this.viewers.watchCount() === 0
 	}
 
 	/**

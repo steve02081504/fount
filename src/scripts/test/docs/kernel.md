@@ -20,7 +20,9 @@ Any new job submitted via `submitJob` **preempts** idle_all: it clears all not-y
 
 After a suite finishes, if its manifest `expected` (or any subtest `expected`) drifts from the state baseline beyond the continuous scale-dependent tolerance (`expectedDriftToleranceMs` ≈ `37·scale^0.656` ms — ~2s at 500ms, ~2min at 4min, ~8min at 30min; relative to the larger, after grid rounding; a missing manifest value with a baseline counts as drift), the kernel rewrites the manifest in place and broadcasts `expected-drift`. Same-manifest concurrent writes are serialized; the in-memory `expectedMs` is synced without a full catalog reload. `--update-estimates` remains the full, unconditional rewrite; the drift check is the incremental safety net. Disable with `autoUpdateExpected: false`.
 
-CLI job queue is LIFO among equal `priority` (later enqueued items first; imperfect stays `priority` 0). FS-triggered queue is LIFO. Auto-exit only after **all viewers disconnect** and no jobs remain — an empty CLI job must still deliver `accepted` / `job-done` before the kernel goes away.
+CLI job queue is LIFO among equal `priority` (later enqueued items first; imperfect stays `priority` 0). FS-triggered queue is LIFO.
+
+**Idle-exit grace**: instead of exiting the moment the run finishes, the kernel stays alive for `idleExitGraceMs` (`DEFAULT_IDLE_EXIT_GRACE_MS = ms('7m')`) so consecutive `fount test` invocations reuse the same kernel. The countdown only runs when there are **no watcher consumers** and the queues are fully empty (run queues + prep). Any new job enqueue, FS/prep hit, or watcher connection resets the timer (they `wake()` the loop, which re-evaluates eligibility and clears the deadline). Override per process via `FOUNT_TEST_KERNEL_IDLE_EXIT_MS`. An empty CLI job must still deliver `accepted` / `job-done` before the kernel goes away.
 
 ## Debug single-step + residue check
 

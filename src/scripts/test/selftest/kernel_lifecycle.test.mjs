@@ -37,22 +37,32 @@ Deno.test('ignoreWatchPath drops git, node_modules, debug_logs, data/test', () =
 	assertEquals(ignoreWatchPath('data/users/u/chars/c/test/manifest.json'), false)
 })
 
-Deno.test('kernel auto-exits when queues empty and no watch WS', async () => {
+Deno.test('kernel idle-exit grace persists then exits when queues empty and no watch WS', async () => {
 	const handle = await startTestKernel({
 		port: KERNEL_PORT,
 		autoExit: true,
 		watchFs: false,
 		writeReport: false,
+		idleExitGraceMs: 120,
 	})
-	const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
-	await new Promise((resolve, reject) => {
-		socket.addEventListener('open', resolve, { once: true })
-		socket.addEventListener('error', reject, { once: true })
-	})
-	socket.send(JSON.stringify({ type: 'hello', watch: false }))
-	await new Promise(resolve => setTimeout(resolve, 50))
-	socket.close()
-	await handle.closed
+	try {
+		const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		await new Promise((resolve, reject) => {
+			socket.addEventListener('open', resolve, { once: true })
+			socket.addEventListener('error', reject, { once: true })
+		})
+		socket.send(JSON.stringify({ type: 'hello', watch: false }))
+		await new Promise(resolve => setTimeout(resolve, 50))
+		socket.close()
+		// 宽限期内仍存活。
+		await new Promise(resolve => setTimeout(resolve, 50))
+		assertEquals(handle.kernel.closed, false)
+		// 计时满后退出。
+		await awaitWithTimeout(handle.closed, 'kernel did not exit after idle-exit grace')
+	}
+	finally {
+		if (!handle.kernel.closed) await handle.close()
+	}
 })
 
 Deno.test('second kernel listen EADDRINUSE; first stays healthy', async () => {
@@ -107,6 +117,76 @@ Deno.test('watch WS keeps kernel alive until disconnect', async () => {
 	await handle.closed
 })
 
+Deno.test('idle-exit grace resets when a watcher links during the countdown', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 30,
+		autoExit: true,
+		watchFs: false,
+		writeReport: false,
+		idleExitGraceMs: 120,
+	})
+	try {
+		// 首个非 watch viewer 离开 → 宽限计时开始。
+		const first = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		await new Promise((resolve, reject) => {
+			first.addEventListener('open', resolve, { once: true })
+			first.addEventListener('error', reject, { once: true })
+		})
+		first.send(JSON.stringify({ type: 'hello', watch: false }))
+		await new Promise(resolve => setTimeout(resolve, 20))
+		first.close()
+		// 宽限期内接上 watcher → 重置计时并保持存活，超过原宽限期仍在。
+		await new Promise(resolve => setTimeout(resolve, 40))
+		const watcher = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		await new Promise((resolve, reject) => {
+			watcher.addEventListener('open', resolve, { once: true })
+			watcher.addEventListener('error', reject, { once: true })
+		})
+		watcher.send(JSON.stringify({ type: 'hello', watch: true }))
+		await new Promise(resolve => setTimeout(resolve, 250))
+		assertEquals(handle.kernel.closed, false)
+		watcher.close()
+		// watcher 离开后计时重新开始，满后退出。
+		await awaitWithTimeout(handle.closed, 'kernel did not exit after watcher left')
+	}
+	finally {
+		if (!handle.kernel.closed) await handle.close()
+	}
+})
+
+Deno.test('idle-exit grace resets when pending work arrives during the countdown', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 31,
+		autoExit: true,
+		watchFs: false,
+		writeReport: false,
+		idleExitGraceMs: 120,
+		prepSettleMs: 60_000,
+	})
+	try {
+		const first = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		await new Promise((resolve, reject) => {
+			first.addEventListener('open', resolve, { once: true })
+			first.addEventListener('error', reject, { once: true })
+		})
+		first.send(JSON.stringify({ type: 'hello', watch: false }))
+		await new Promise(resolve => setTimeout(resolve, 20))
+		first.close()
+		// 宽限期内文件命中（进入预备）→ 队列非全空 → 计时重置。
+		await new Promise(resolve => setTimeout(resolve, 40))
+		handle.kernel.queues.hitPrep('testkit:pending', 'fs_change')
+		await new Promise(resolve => setTimeout(resolve, 250))
+		assertEquals(handle.kernel.closed, false)
+		// 清空预备后重新开始计时，满后退出。
+		handle.kernel.queues.prep.delete('testkit:pending')
+		handle.kernel.wake()
+		await awaitWithTimeout(handle.closed, 'kernel did not exit after pending work cleared')
+	}
+	finally {
+		if (!handle.kernel.closed) await handle.close()
+	}
+})
+
 Deno.test('empty default job announces empty, does not write in-progress report, auto-exits after viewer leaves', async () => {
 	const root = join(tmpdir(), `fount-kernel-empty-${Date.now()}`)
 	await mkdir(root, { recursive: true })
@@ -124,6 +204,7 @@ Deno.test('empty default job announces empty, does not write in-progress report,
 			autoExit: true,
 			watchFs: false,
 			writeReport: true,
+			idleExitGraceMs: 120,
 		})
 		const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 		await new Promise((resolve, reject) => {
@@ -144,7 +225,7 @@ Deno.test('empty default job announces empty, does not write in-progress report,
 		assertEquals(message.error, null)
 		await assertRejects(() => readFile(reportMarkdownPath(root), 'utf8'))
 		socket.close()
-		await handle.closed
+		await awaitWithTimeout(handle.closed, 'kernel did not exit after idle-exit grace')
 	}
 	finally {
 		await rm(root, { recursive: true, force: true })
