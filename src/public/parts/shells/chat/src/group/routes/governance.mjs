@@ -636,7 +636,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			throw httpError(400, 'group has no admins to vote')
 
 		const ballot = { proposedOwnerPubKeyHash: targetHash, groupId, ballotId: ballotId.trim() }
-		const mergedSignatures = adminSignatures || []
+		const mergedSignatures = [...adminSignatures || []]
 		const seenAdminHashes = new Set(
 			mergedSignatures
 				.map(entry => entry?.pubKeyHex)

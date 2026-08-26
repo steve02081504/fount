@@ -43,7 +43,7 @@ export function parseArchiveMonthWireParts(raw) {
 	const out = []
 	for (const row of raw) {
 		const hash = row?.hash
-		if (!hash) return null
+		if (!isHex64(hash)) return null
 		const index = Number(row.index)
 		if (!Number.isInteger(index) || index < 0) return null
 		out.push({ hash, size: Math.max(0, Number(row.size) || 0), index })

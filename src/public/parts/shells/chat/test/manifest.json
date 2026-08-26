@@ -484,7 +484,7 @@
 		},
 		{
 			"name": "fed_archive_month",
-			"expected": "4m45s",
+			"expected": "2m14s",
 			"dependsOn": [
 				"fed_core"
 			],
