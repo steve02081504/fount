@@ -1,4 +1,4 @@
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { bumpReputationOnRelay } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
@@ -48,10 +48,8 @@ export function registerIdentityHandlers(roomContext) {
 		if (!isFederationActionAllowedUnderLoad(key, 'fed_pex', rtcLimits)) return
 		if (!isPlainObject(data)) return
 		void (async () => {
-			const remoteNode = normalizeHex64(data.nodeHash)
-			const hints = (Array.isArray(data.hints) ? data.hints : [])
-				.map(id => normalizeHex64(id))
-				.filter(isHex64)
+			const remoteNode = data.nodeHash
+			const hints = data.hints?.map?.(isHex64)?.filter?.(Boolean)
 			if (!isHex64(remoteNode) || remoteNode === nodeHash) return
 			const settings = await loadFederationGroupSettings(username, groupId)
 			await mergePexNodeHints(groupId, hints, settings)
@@ -61,7 +59,7 @@ export function registerIdentityHandlers(roomContext) {
 	})
 
 	room.onPeerJoin(peerId => {
-		const remoteNodeHash = normalizeHex64(peerId)
+		const remoteNodeHash = peerId
 		if (!isHex64(remoteNodeHash) || remoteNodeHash === nodeHash) return
 		const previousNodeId = peerToNode.get(peerId)
 		if (previousNodeId) nodeToPeer.delete(previousNodeId)

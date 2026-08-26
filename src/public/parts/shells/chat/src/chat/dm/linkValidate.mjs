@@ -5,7 +5,7 @@
  * 【数据结构】validateDmIntroLinkProof 返回 { ok, error? }；state.members 按 pubKeyHex 索引。
  * 【关联】dm/linkVerify、dm/intro、lib/dmLinkSignature、dm/index；联邦房间 dm:{sessionTag}。
  */
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { dmIntroNonceMatches } from './intro.mjs'
 import { verifyDmLinkSignature } from './linkVerify.mjs'
@@ -17,9 +17,9 @@ import { verifyDmLinkSignature } from './linkVerify.mjs'
  * @returns {string | null} 成员 id
  */
 export function findMemberIdByPubKeyHex(state, pubKeyHex) {
-	if (!PUB_KEY_HEX_64.test(normalizePubKeyHex(pubKeyHex))) return null
+	if (!PUB_KEY_HEX_64.test(pubKeyHex)) return null
 	for (const [memberId, row] of Object.entries(state.members))
-		if (normalizePubKeyHex(row?.pubKeyHex) === normalizePubKeyHex(pubKeyHex)) return memberId
+		if (row?.pubKeyHex === pubKeyHex) return memberId
 
 	return null
 }
@@ -37,7 +37,7 @@ export async function validateDmIntroLinkProof(nodeUsername, state, introPubKeyH
 	if (!await verifyDmLinkSignature(introPubKeyHex, nonceBase64Url, introSignatureHex))
 		return { ok: false, error: 'invalid dm intro link signature' }
 
-	const introPk = normalizePubKeyHex(introPubKeyHex)
+	const introPk = introPubKeyHex
 	const introMemberId = findMemberIdByPubKeyHex(state, introPk)
 	if (introMemberId && !dmIntroNonceMatches(introMemberId, nonceBase64Url))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }

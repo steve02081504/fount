@@ -202,7 +202,7 @@ async function tryUnwrapPkw(username, entityHash, wraps) {
 		const secretHex = await getEntitySecretKey(username, entityHash)
 		if (!secretHex || secretHex.length !== 64) return null
 		const keyHex = unwrapKeyEcies(wrapped, new Uint8Array(Buffer.from(secretHex, 'hex')))
-		return isHex64(keyHex) ? keyHex : null
+		return isHex64(keyHex)
 	}
 	catch {
 		return null

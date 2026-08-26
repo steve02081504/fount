@@ -51,8 +51,8 @@ export function federatedPostQueryRow(post, entityHash, nodeHash, options = {}) 
  */
 export function sanitizeFederatedPostQueryRow(raw, options = {}) {
 	if (!raw || typeof raw !== 'object') return null
-	const entityHash = String(/** @type {{ entityHash?: unknown }} */raw.entityHash || '').trim()
-	const postId = String(/** @type {{ postId?: unknown }} */raw.postId || '').trim()
+	const entityHash = /** @type {{ entityHash?: unknown }} */raw.entityHash
+	const postId = /** @type {{ postId?: unknown }} */raw.postId
 	const event = /** @type {{ event?: object }} */raw.event
 	if (!entityHash || !postId || !event) return null
 	if (!isPublicDiscoverable(event.content)) return null
@@ -62,13 +62,13 @@ export function sanitizeFederatedPostQueryRow(raw, options = {}) {
 		entityHash,
 		postId,
 		hlc: event.hlc || /** @type {{ hlc?: unknown }} */raw.hlc || null,
-		nodeHash: String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || ''),
+		nodeHash: /** @type {{ nodeHash?: unknown }} */raw.nodeHash,
 		event: {
 			...event,
 			id: postId,
 			type: 'post',
 			content: {
-				text: String(event.content?.text || '').slice(0, 2000),
+				text: event.content?.text?.slice(0, 2000),
 				mediaRefs: Array.isArray(event.content?.mediaRefs) ? event.content.mediaRefs.slice(0, 16) : [],
 				visibility: 'public',
 				tags: Array.isArray(event.content?.tags) ? event.content.tags.slice(0, 16) : undefined,

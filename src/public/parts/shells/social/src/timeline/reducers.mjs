@@ -53,7 +53,7 @@ export function createSocialTimelineState() {
 function reduceSocialMeta(state, event) {
 	Object.assign(state.socialMeta, event.content)
 	if (event.content?.recoveryPubKeyHex)
-		state.recoveryPubKeyHex = String(event.content.recoveryPubKeyHex).trim()
+		state.recoveryPubKeyHex = event.content.recoveryPubKeyHex
 	return state
 }
 
@@ -114,13 +114,13 @@ function reducePostVisibilitySet(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceAlbumCreate(state, event) {
-	const albumId = String(event.content?.albumId || event.id || '').trim()
+	const albumId = event.content?.albumId || event.id
 	if (!albumId || albumId === DEFAULT_ALBUM_ID) return state
 	const spec = normalizeVisibilitySpec(event.content)
 	state.albums.set(albumId, {
 		albumId,
-		name: String(event.content?.name || albumId).trim().slice(0, 80) || albumId,
-		description: String(event.content?.description || '').trim().slice(0, 500),
+		name: (event.content?.name || albumId).slice(0, 80) || albumId,
+		description: event.content?.description?.slice(0, 500),
 		...visibilitySpecToContentFields(spec),
 		postIds: [],
 		createdEventId: event.id,
@@ -134,16 +134,16 @@ function reduceAlbumCreate(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceAlbumUpdate(state, event) {
-	const albumId = String(event.content?.albumId || '').trim()
+	const albumId = event.content?.albumId
 	if (!albumId || albumId === DEFAULT_ALBUM_ID) return state
 	const existing = state.albums.get(albumId)
 	if (!existing) return reduceAlbumCreate(state, event)
 	const spec = normalizeVisibilitySpec({ ...existing, ...event.content })
 	const name = event.content?.name != null
-		? String(event.content.name).trim().slice(0, 80) || existing.name
+		? event.content.name.slice(0, 80) || existing.name
 		: existing.name
 	const description = event.content?.description != null
-		? String(event.content.description).trim().slice(0, 500)
+		? event.content.description.slice(0, 500)
 		: existing.description
 	state.albums.set(albumId, {
 		...existing,
@@ -160,7 +160,7 @@ function reduceAlbumUpdate(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceAlbumDelete(state, event) {
-	const albumId = String(event.content?.albumId || '').trim()
+	const albumId = event.content?.albumId
 	if (!albumId || albumId === DEFAULT_ALBUM_ID) return state
 	const album = state.albums.get(albumId)
 	if (!album) return state
@@ -180,8 +180,8 @@ function reduceAlbumDelete(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceAlbumPostAdd(state, event) {
-	const albumId = String(event.content?.albumId || '').trim()
-	const postId = String(event.content?.postId || '').trim()
+	const albumId = event.content?.albumId
+	const postId = event.content?.postId
 	if (!albumId || !postId || albumId === DEFAULT_ALBUM_ID) return state
 	const album = state.albums.get(albumId)
 	if (!album) return state
@@ -198,8 +198,8 @@ function reduceAlbumPostAdd(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceAlbumPostRemove(state, event) {
-	const albumId = String(event.content?.albumId || '').trim()
-	const postId = String(event.content?.postId || '').trim()
+	const albumId = event.content?.albumId
+	const postId = event.content?.postId
 	if (!albumId || !postId) return state
 	const album = state.albums.get(albumId)
 	if (album) album.postIds = album.postIds.filter(id => id !== postId)
@@ -289,9 +289,9 @@ function reduceUndislike(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceTagName(state, event) {
-	const tagHash = String(event.content?.tagHash || '').trim()
-	const locale = String(event.content?.locale || '').trim()
-	const label = String(event.content?.label || '').trim().slice(0, 64)
+	const tagHash = event.content?.tagHash
+	const locale = event.content?.locale
+	const label = event.content?.label?.slice(0, 64)
 	if (!tagHash || !locale || !label) return state
 	const existing = state.tagNames.get(tagHash) || {}
 	state.tagNames.set(tagHash, { ...existing, [locale]: label })
@@ -335,7 +335,7 @@ function reduceUnfollow(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceTagFollow(state, event) {
-	const tag = String(event.content?.tag || '').trim()
+	const tag = event.content?.tag
 	if (tag) state.followedTags.add(tag)
 	return state
 }
@@ -346,7 +346,7 @@ function reduceTagFollow(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceTagUnfollow(state, event) {
-	const tag = String(event.content?.tag || '').trim()
+	const tag = event.content?.tag
 	if (tag) state.followedTags.delete(tag)
 	return state
 }
@@ -357,9 +357,9 @@ function reduceTagUnfollow(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceReplyFeature(state, event) {
-	const targetPostId = String(event.content?.targetPostId || '').trim()
-	const replier = String(event.content?.replierEntityHash || '').trim()
-	const replyPostId = String(event.content?.replyPostId || '').trim()
+	const targetPostId = event.content?.targetPostId
+	const replier = event.content?.replierEntityHash
+	const replyPostId = event.content?.replyPostId
 	if (!targetPostId || !replier || !replyPostId) return state
 	const key = `${replier}:${replyPostId}`
 	const set = state.featuredReplies.get(targetPostId) || new Set()
@@ -374,9 +374,9 @@ function reduceReplyFeature(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceReplyUnfeature(state, event) {
-	const targetPostId = String(event.content?.targetPostId || '').trim()
-	const replier = String(event.content?.replierEntityHash || '').trim()
-	const replyPostId = String(event.content?.replyPostId || '').trim()
+	const targetPostId = event.content?.targetPostId
+	const replier = event.content?.replierEntityHash
+	const replyPostId = event.content?.replyPostId
 	if (!targetPostId || !replier || !replyPostId) return state
 	const set = state.featuredReplies.get(targetPostId)
 	if (!set) return state
@@ -391,7 +391,7 @@ function reduceReplyUnfeature(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceLiveStart(state, event) {
-	const liveId = String(event.content?.liveId || event.id || '').trim()
+	const liveId = event.content?.liveId || event.id
 	if (liveId) state.activeLives.set(liveId, event)
 	return state
 }
@@ -402,7 +402,7 @@ function reduceLiveStart(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceLiveEnd(state, event) {
-	const liveId = String(event.content?.liveId || '').trim()
+	const liveId = event.content?.liveId
 	if (liveId) state.activeLives.delete(liveId)
 	return state
 }
@@ -433,7 +433,7 @@ function reduceUnblock(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceEmojiPackUpsert(state, event) {
-	const packId = String(event.content?.packId || '').trim()
+	const packId = event.content?.packId
 	if (!packId) return state
 	state.emojiPacks.set(packId, {
 		packId,
@@ -457,7 +457,7 @@ function reduceEmojiPackUpsert(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceEmojiPackDelete(state, event) {
-	const packId = String(event.content?.packId || '').trim()
+	const packId = event.content?.packId
 	if (packId) state.emojiPacks.delete(packId)
 	return state
 }

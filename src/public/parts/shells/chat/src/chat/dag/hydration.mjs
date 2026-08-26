@@ -157,9 +157,8 @@ export async function reconcileContextSidecarsWithChatLog(username, groupId, cha
  * @returns {Buffer | null} 本地明文缓存
  */
 function tryReadPlaintextCache(username, contentHashHex) {
-	const h = contentHashHex || ''
-	if (!isHex64(h)) return null
-	const path = join(shellChatRoot(username), 'files', h)
+	if (!isHex64(contentHashHex)) return null
+	const path = join(shellChatRoot(username), 'files', contentHashHex)
 	if (!existsSync(path)) return null
 	try {
 		return readFileSync(path)

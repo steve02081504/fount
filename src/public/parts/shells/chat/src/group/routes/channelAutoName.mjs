@@ -144,8 +144,9 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 	let categoryId = null
 	if (category) {
 		const categoryName = String(category).trim()
-		// 锁内按「群 + 规范化分类名」原子查找或创建：复用并发中已建的同名分类，避免重复建类。
-		categoryId = categoryIdByName.get(categoryName) ?? await withLock(categoryCreateLocks, groupId, async () => {
+		// 锁内按「群 + 规范化分类名」原子查找或创建：每次都用最新状态查找，复用并发中已建的同名分类，
+		// 避免重复建类，也不因预取快照中的过期 id 误挂到已删除分类上。
+		categoryId = await withLock(categoryCreateLocks, groupId, async () => {
 			const latest = await getState(username, groupId)
 			const existing = Object.entries(latest.state.channels || {})
 				.find(([, channel]) => channel?.type === 'category' && String(channel?.name || '').trim() === categoryName)

@@ -174,7 +174,7 @@ export const memberReducers = {
 			ownerEntityHash,
 			pubKeyHash: event.sender,
 			pubKeyHex: event.senderPubKey || existing?.pubKeyHex || null,
-			homeNodeHash: homeNodeHash && isHex64(homeNodeHash) ? homeNodeHash : existing?.homeNodeHash ?? null,
+			homeNodeHash: (isHex64(homeNodeHash) || existing?.homeNodeHash) ?? null,
 			roles: isActiveReapply && existing.roles?.length ? existing.roles : ['@everyone', ...extraRoles],
 			joinedAt: isActiveReapply ? existing.joinedAt ?? event.timestamp : event.timestamp,
 			status: 'active',
@@ -190,7 +190,7 @@ export const memberReducers = {
 
 		const introducer = content.introducerPubKeyHash
 		const joiner = event.sender
-		if (introducer && isHex64(introducer) && isHex64(joiner) && introducer !== joiner
+		if (introducer && isHex64(introducer) !== isHex64(joiner)
 			&& !state.inviteEdges.some(edge => edge.from === introducer && edge.to === joiner)) {
 			const edge = { from: introducer, to: joiner, at: event.timestamp }
 			if (content.reputationEdge !== undefined)

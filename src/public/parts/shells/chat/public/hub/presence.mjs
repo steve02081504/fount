@@ -353,7 +353,7 @@ async function hoverOptionsForAuthor(authorKey, anchorElement) {
 			entityHash: resolvedEntityHash || (isEntityHash128(profileKey) ? profileKey : null),
 			charname: null,
 			pubKeyHex: null,
-			pubKeyHash: isHex64(profileKey) ? profileKey : null,
+			pubKeyHash: isHex64(profileKey),
 			displayName: fallbackName,
 		},
 		paintOptions: {

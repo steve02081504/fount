@@ -25,7 +25,7 @@ export async function resolveMessageContentRef(username, content, options = {}) 
 	const ref = chatExtensionOf(content)?.contentRef
 	if (!ref) return null
 	const loc = ref.storageLocator || ''
-	const wantHash = ref.contentHash || ''
+	const wantHash = ref.contentHash
 	if (!loc || !isHex64(wantHash)) return null
 	if (String(ref.alg || 'sha256').trim().toLowerCase() !== 'sha256') return { status: 'unavailable' }
 

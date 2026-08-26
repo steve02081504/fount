@@ -46,14 +46,14 @@ export const fileReducers = {
 			key_generation: event.content.key_generation ?? null,
 			storageLocator: event.content.storageLocator ?? null,
 			parts: Array.isArray(event.content.parts) ? event.content.parts : null,
-			uploaderPubKeyHash: isHex64(sender) ? sender : null,
+			uploaderPubKeyHash: isHex64(sender),
 			...event.content.description ? { description: String(event.content.description).slice(0, 4000) } : {},
 			...event.content.attrs ? { attrs: event.content.attrs } : {},
 			...event.content.preview ? { preview: event.content.preview } : {},
 			...event.content.created ? { created: event.content.created } : {},
 			...event.content.modified ? { modified: event.content.modified } : {
-				created: { at: event.timestamp || Date.now(), entity_hash: isHex64(sender) ? sender : '' },
-				modified: { at: event.timestamp || Date.now(), entity_hash: isHex64(sender) ? sender : '' },
+				created: { at: event.timestamp || Date.now(), entity_hash: isHex64(sender) || '' },
+				modified: { at: event.timestamp || Date.now(), entity_hash: isHex64(sender) || '' },
 			},
 		})
 		return state

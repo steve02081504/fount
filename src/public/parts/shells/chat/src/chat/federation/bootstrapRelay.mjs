@@ -92,8 +92,8 @@ export async function applyFedBootstrapResponse(username, groupId, response) {
 	if (!parsed.roomSecret) return false
 
 	const creds = {
-		signalingAppId: parsed.signalingAppId || 'fount-group-fed',
-		roomSecret: String(parsed.roomSecret),
+		signalingAppId: parsed.signalingAppId,
+		roomSecret: parsed.roomSecret,
 		settingsEventId: response.settingsEventId,
 	}
 

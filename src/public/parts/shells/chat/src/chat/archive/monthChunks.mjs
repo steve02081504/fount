@@ -42,8 +42,8 @@ export function parseArchiveMonthWireParts(raw) {
 	/** @type {Array<{ hash: string, size: number, index: number }>} */
 	const out = []
 	for (const row of raw) {
-		const hash = String(row?.hash ?? '').trim()
-		if (!isHex64(hash)) return null
+		const hash = row?.hash
+		if (!hash) return null
 		const index = Number(row.index)
 		if (!Number.isInteger(index) || index < 0) return null
 		out.push({ hash, size: Math.max(0, Number(row.size) || 0), index })
@@ -186,7 +186,7 @@ export async function materializeArchiveMonthToTempFile(parts, fetched, expected
  */
 export async function resolveArchiveMonthCandidateBody(username, groupId, slot, candidate) {
 	if (candidate.complete !== true) return null
-	const digest = candidate.digest ?? ''
+	const digest = candidate.digest
 	if (!isHex64(digest)) return null
 	const parts = candidate.parts ?? []
 	if (!parts.length) {

@@ -61,9 +61,7 @@ export async function verifyEventsSnapshotWAL(username, groupId, checkpoint, eve
 			forceFullReplay: true,
 		}
 
-	const snapshotTips = (Array.isArray(checkpoint.dag_tip_ids) ? checkpoint.dag_tip_ids : [])
-		.map(t => t)
-		.filter(isHex64)
+	const snapshotTips = checkpoint.dag_tip_ids?.filter?.(isHex64) || []
 	if (snapshotTips.length && tips.length) {
 		const tipSet = new Set(tips)
 		if (snapshotTips.length !== tips.length || snapshotTips.some(t => !tipSet.has(t)))

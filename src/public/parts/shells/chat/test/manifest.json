@@ -127,6 +127,8 @@
 		],
 		"fedBan": [
 			"src/public/parts/shells/chat/src/group/routes/governance.mjs",
+			"src/public/parts/shells/chat/src/group/lib/locks.mjs",
+			"src/public/parts/shells/chat/src/chat/governance/moderationSideEffects.mjs",
 			"src/public/parts/shells/chat/src/chat/dag/commitSignedEvent.mjs",
 			"src/public/parts/shells/chat/src/chat/federation/{rosterChange,outbound,roomCredentials}.mjs",
 			"src/public/parts/shells/chat/test/live/scripts/federation/ban.mjs",

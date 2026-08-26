@@ -117,8 +117,7 @@ export function setSyncBanner(on, options) {
  */
 export function selectedForkTipId() {
 	const value = document.getElementById('fork-tip-select')?.value?.trim()
-	if (isHex64(value)) return value
-	return store.federation.dagTips[0]
+	return isHex64(value) || store.federation.dagTips[0]
 }
 
 /** @returns {Promise<void>} */

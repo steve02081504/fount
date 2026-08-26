@@ -126,8 +126,7 @@ export function noteFedArchiveMonthResponse(username, groupId, response, peerNod
 		complete: response.complete,
 		reason: response.reason,
 		verified: Boolean(
-			response.complete
-			&& isHex64((response.digest || '').replace(/^0x/iu, '')),
+			response.complete && isHex64(response.digest),
 		),
 	})
 	tryFinishFederationCollect(pending, archiveMonthQuorumSatisfied)

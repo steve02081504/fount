@@ -3,7 +3,7 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { createDedupeSlot } from 'npm:@steve02081504/fount-p2p/federation/dedupe_slot'
 
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
@@ -106,8 +106,8 @@ export function evaluateShunConsensusPure(knownPeerNodeHashes, shunsByNode, nowM
  * @returns {{ shun: boolean, reason: 'not_a_member' | 'blocked' | null }} 是否应回闭门羹
  */
 export function resolveShunForPubKeyRequester(fedState, isBlockedPeer, requesterPubKeyHash) {
-	const pk = normalizeHex64(requesterPubKeyHash)
-	if (!pk) return { shun: false, reason: null }
+	const pk = requesterPubKeyHash
+	if (!isHex64(pk)) return { shun: false, reason: null }
 	if (isBlockedPeer(pk)) return { shun: true, reason: 'blocked' }
 	if (fedState?.bannedMembers?.has?.(pk)) return { shun: true, reason: 'not_a_member' }
 	const member = fedState?.members?.[pk]
@@ -127,8 +127,8 @@ export function resolveShunForPubKeyRequester(fedState, isBlockedPeer, requester
  * @returns {{ shun: boolean, reason: 'not_a_member' | 'blocked' | null }} 是否应回闭门羹
  */
 export function resolveShunForNodeHashRequester(fedState, isBlockedPeer, requesterNodeHash) {
-	const node = normalizeHex64(requesterNodeHash)
-	if (!node) return { shun: false, reason: null }
+	const node = requesterNodeHash
+	if (!isHex64(node)) return { shun: false, reason: null }
 	if (isBlockedPeer(node)) return { shun: true, reason: 'blocked' }
 	if (fedState?.bannedNodes?.has?.(node)) return { shun: true, reason: 'not_a_member' }
 	let matched = false
@@ -210,8 +210,7 @@ export async function handleFedVerifyMembership(username, groupId, fromNodeHash,
  * @returns {Promise<void>}
  */
 export async function pushFedShunToHomeNode(username, groupId, targetHomeNodeHash, reason = 'not_a_member') {
-	const home = targetHomeNodeHash
-	if (!isHex64(home)) return
+	if (!isHex64(targetHomeNodeHash)) return
 	const { getFederationPartitionSlot } = await import('./registry.mjs')
 	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
 	const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
@@ -253,13 +252,12 @@ export async function notifyFedShunAfterMemberBan(username, groupId, banEvent) {
  * @returns {Promise<ReturnType<typeof loadGroupShunState>>} 更新后状态
  */
 export async function recordInboundShun(username, groupId, fromNodeHash, reason) {
-	const nodeHash = normalizeHex64(fromNodeHash)
-	if (!isHex64(nodeHash)) return loadGroupShunState(username, groupId)
+	if (!isHex64(fromNodeHash)) return loadGroupShunState(username, groupId)
 	const now = Date.now()
 	// 锁内基于最新状态合并：并发的多个 shun 入站不会互相覆盖 shunsByNode。
 	return updateGroupShunState(username, groupId, prev => ({
-		shunsByNode: { ...prev.shunsByNode, [nodeHash]: now },
-		shunnedBy: [...new Set([...prev.shunnedBy, nodeHash])],
+		shunsByNode: { ...prev.shunsByNode, [fromNodeHash]: now },
+		shunnedBy: [...new Set([...prev.shunnedBy, fromNodeHash])],
 	}))
 }
 

@@ -47,7 +47,7 @@ function userEntityFromMember(member) {
 	return {
 		entityHash: isEntityHash128(entityHash) ? entityHash : null,
 		charname: null,
-		pubKeyHash: isHex64(pubKeyHash) ? pubKeyHash : null,
+		pubKeyHash: isHex64(pubKeyHash),
 		pubKeyHex: member?.pubKeyHex || null,
 		displayName,
 	}

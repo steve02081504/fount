@@ -6,7 +6,7 @@
  * 【关联】dmLinkSignature.mjs、federationSettings.mjs、runUri.mjs、signer.mjs。
  */
 
-import { normalizeHex64, HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { bytesToHex } from '../shared/digest.mjs'
 import { formatDmRunUri } from '../shared/runUri.mjs'
@@ -109,7 +109,7 @@ export async function createDmLinkAndSync(options) {
  * @returns {Promise<string>} canonical run URI
  */
 export async function createDmLink({ pubKeyHex, secretKey32, signFn, nodeUrl, nonce }) {
-	const pubKey = normalizeHex64(pubKeyHex)
+	const pubKey = pubKeyHex
 	if (!HEX_ID_64.test(pubKey)) throw new Error('invalid pubKeyHex')
 
 	const nonceBase64Url = nonce || getDmLinkNonce()

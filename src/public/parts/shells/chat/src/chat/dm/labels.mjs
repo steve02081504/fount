@@ -7,7 +7,7 @@
  */
 import { createHash } from 'node:crypto'
 
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 /**
  * 两方公钥字典序 → DM 会话标签（§14）。
@@ -16,8 +16,8 @@ import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } fro
  * @returns {{ low: string, high: string, dmSessionTag: string, dmRoomLabelPrefix: string }} DM 会话标签
  */
 export function computeDmRoomLabelFromPubKeys(aHex, bHex) {
-	const a = normalizePubKeyHex(aHex)
-	const b = normalizePubKeyHex(bHex)
+	const a = aHex
+	const b = bHex
 	if (!PUB_KEY_HEX_64.test(a) || !PUB_KEY_HEX_64.test(b))
 		throw new Error('invalid pub key hex for DM label')
 	const [low, high] = a < b ? [a, b] : [b, a]

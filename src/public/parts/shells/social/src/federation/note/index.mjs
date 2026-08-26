@@ -66,7 +66,7 @@ export async function upsertNote(username, targetEntityHash, postId, noteEventId
 				[noteId]: {
 					noteEventId: noteId,
 					authorEntityHash: entry.authorEntityHash,
-					text: String(entry.text || '').trim().slice(0, NOTE_TEXT_MAX),
+					text: entry.text?.slice(0, NOTE_TEXT_MAX),
 					at: Number(entry.at) || Date.now(),
 					...entry.event ? { event: entry.event } : {},
 				},

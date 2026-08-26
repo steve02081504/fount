@@ -13,8 +13,8 @@ const FEDERATION_ROSTER_EVENT_TYPES = new Set([
  */
 export function shouldRebindFederationRoomForEvent(event, options = {}) {
 	if (options.skipFederationRebind) return false
-	const type = String(event?.type || '').trim()
+	const type = event?.type
 	if (FEDERATION_ROSTER_EVENT_TYPES.has(type)) return true
 	if (type !== 'group_settings_update') return false
-	return !!String(event?.content?.roomSecret || '').trim()
+	return !!event?.content?.roomSecret
 }

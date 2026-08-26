@@ -7,8 +7,6 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-
 import { resolveActiveMemberKey, resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { createGroup } from '../dag/lifecycle.mjs'
@@ -60,8 +58,8 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 	const entityHash = options.entityHash || undefined
 	const { low, high, dmSessionTag, dmRoomLabelPrefix } = computeDmRoomLabelFromPubKeys(myPubKeyHex, peerPubKeyHex)
 	if (low === high) throw new Error('peer pub key must differ from mine')
-	const myPubKey = normalizePubKeyHex(myPubKeyHex)
-	const peerPubKey = normalizePubKeyHex(peerPubKeyHex)
+	const myPubKey = myPubKeyHex
+	const peerPubKey = peerPubKeyHex
 	const existing = await findDmGroupBySessionTag(username, dmSessionTag)
 	if (existing) return { ...existing, dmSessionTag }
 

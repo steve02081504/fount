@@ -56,7 +56,7 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 
 	const entry = await getGroupEmojiEntry(username, groupId, emojiId, packId)
 	const hintedHash = options.contentHash || ''
-	const contentHash = entry?.contentHash || (isHex64(hintedHash) ? hintedHash : null)
+	const contentHash = entry?.contentHash || isHex64(hintedHash)
 	const mimeType = entry?.mimeType || 'image/png'
 	const resolvedPackId = packId || local?.packId || groupId
 
@@ -155,7 +155,7 @@ export async function resolvePackEmojiContent(username, packId, emojiId, options
 
 	const entry = (entityLocated.manifest?.items || []).find(row => row?.emojiId === emojiId)
 	const hintedHash = options.contentHash || ''
-	const contentHash = entry?.contentHash || (isHex64(hintedHash) ? hintedHash : null)
+	const contentHash = entry?.contentHash || isHex64(hintedHash)
 	if (!contentHash) return null
 
 	await ensureUserRoom({ replicaUsername: username }).catch(() => null)

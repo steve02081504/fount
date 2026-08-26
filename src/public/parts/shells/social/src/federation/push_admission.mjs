@@ -63,7 +63,7 @@ async function isCoGroupMember(username, entityHash) {
 async function isFollowTargetingLocalEntity(username, event) {
 	const type = event?.type
 	if (type !== 'follow' && type !== 'unfollow') return false
-	const target = String(event?.content?.targetEntityHash || '').trim()
+	const target = event?.content?.targetEntityHash
 	if (!parseEntityHash(target)) return false
 	const resolved = await resolveSocialEntity(target)
 	return Boolean(resolved?.local && resolved.replicaUsername === username)

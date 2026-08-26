@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { resolveArchiveQuorumPeerMin } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
@@ -104,7 +104,7 @@ export async function buildSignedDiscoveryAdvertisement(username, groupId, nodeH
  * @returns {Promise<boolean>} 验签是否通过
  */
 export async function verifyDiscoveryAdvertisement(advertisement) {
-	const advertiserPubKeyHash = normalizeHex64(advertisement.advertiserPubKeyHash)
+	const advertiserPubKeyHash = advertisement.advertiserPubKeyHash
 	const signatureHex = advertisement.signature || ''
 	if (!isHex64(advertiserPubKeyHash) || !signatureHex) return false
 	const body = { ...advertisement }
@@ -129,7 +129,7 @@ export async function mergeDiscoveryAdvertisement(username, advertisement, sourc
 	const index = await loadDiscoveryIndex(username)
 	const key = entryKey({
 		groupId: advertisement.groupId,
-		advertiserPubKeyHash: normalizeHex64(advertisement.advertiserPubKeyHash),
+		advertiserPubKeyHash: advertisement.advertiserPubKeyHash,
 	})
 	let entry = index.entries.find(e => entryKey(e) === key)
 	const distinctSources = new Set([
@@ -147,7 +147,7 @@ export async function mergeDiscoveryAdvertisement(username, advertisement, sourc
 			groupId: advertisement.groupId,
 			title: advertisement.title || '',
 			blurb: advertisement.blurb || '',
-			advertiserPubKeyHash: normalizeHex64(advertisement.advertiserPubKeyHash),
+			advertiserPubKeyHash: advertisement.advertiserPubKeyHash,
 			advertiserNodeHash: advertisement.advertiserNodeHash || '',
 			signature: advertisement.signature,
 			observedAt: advertisement.observedAt || Date.now(),
@@ -158,7 +158,7 @@ export async function mergeDiscoveryAdvertisement(username, advertisement, sourc
 	if (fromNodeHash && !entry.sources.some(s => s.fromNodeHash === fromNodeHash)) {
 		entry.sources.unshift({
 			fromNodeHash,
-			fromPubKeyHash: source.fromPubKeyHash ? normalizeHex64(source.fromPubKeyHash) : undefined,
+			fromPubKeyHash: source.fromPubKeyHash || undefined,
 			seenAt: Date.now(),
 		})
 		entry.sources = entry.sources.slice(0, MAX_SOURCES_PER_ENTRY)

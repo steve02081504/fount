@@ -1,4 +1,3 @@
-import { normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 /** §16 DM Link 验签域前缀。 */
 export const DM_LINK_SIGNATURE_PREFIX = 'fount-dm-link'
 
@@ -10,6 +9,6 @@ export const DM_LINK_SIGNATURE_PREFIX = 'fount-dm-link'
  * @returns {Uint8Array} 验签消息字节
  */
 export function dmLinkSignableBytes(pubKeyHex64, nonceBase64Url) {
-	const pubKey = normalizeHex64(pubKeyHex64)
+	const pubKey = pubKeyHex64
 	return new TextEncoder().encode(`${DM_LINK_SIGNATURE_PREFIX}|${pubKey}|${nonceBase64Url}`)
 }

@@ -139,7 +139,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 		if (introducer) {
 			const introNodeHash = state.members[introducer]?.homeNodeHash
 				|| state.members[introducer]?.nodeHash
-			if (introNodeHash && isHex64(introNodeHash)) {
+			if (isHex64(introNodeHash)) {
 				mergeNetworkPeerPools({ explorePeers: [introNodeHash] })
 				applyNetworkHint({
 					nodeHash: introNodeHash,

@@ -7,7 +7,7 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { verify } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import { dmLinkSignableBytes } from '../../../public/shared/dmLinkSignature.mjs'
@@ -21,7 +21,7 @@ import { dmLinkSignableBytes } from '../../../public/shared/dmLinkSignature.mjs'
  * @returns {Promise<boolean>} 验签是否通过
  */
 export async function verifyDmLinkSignature(introPubKeyHex, nonceBase64Url, introSignatureHex) {
-	const pubKeyHex = normalizePubKeyHex(introPubKeyHex)
+	const pubKeyHex = introPubKeyHex
 	if (!PUB_KEY_HEX_64.test(pubKeyHex) || !/^[\da-f]{128}$/iu.test(introSignatureHex) || !(nonceBase64Url?.length >= 16))
 		return false
 	return verify(

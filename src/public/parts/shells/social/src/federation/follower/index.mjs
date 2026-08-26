@@ -212,7 +212,7 @@ export async function projectFollowerIndexFromTimelineEvent(replicaUsername, tim
 	if (!['follow', 'unfollow'].includes(event.type)) return
 	const owner = timelineOwnerEntityHash
 	if (!parseEntityHash(owner)) return
-	const target = String(event.content?.targetEntityHash || '').trim()
+	const target = event.content?.targetEntityHash
 	if (!parseEntityHash(target) || target === owner) return
 	await updateFollowerIndex(
 		replicaUsername,

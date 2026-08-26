@@ -229,7 +229,7 @@ export function manageAdminsPubKeyHashes(state) {
  * @returns {Set<string>} 允许签名的 pubKeyHash
  */
 export function checkpointSignerPubKeyHashes(state) {
-	const delegated = state.delegatedOwnerPubKeyHash || ''
+	const delegated = state.delegatedOwnerPubKeyHash
 	if (isHex64(delegated)) return new Set([delegated])
 	const manage = manageAdminsPubKeyHashes(state)
 	if (manage.size) return manage

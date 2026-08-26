@@ -34,7 +34,7 @@ export function evaluateArchiveHandshake(remoteSummary, localSummary, localEvent
 
 	const remoteTipsHash = remoteSummary.tipsHash || ''
 	const localTipsHash = localSummary.tipsHash || ''
-	if (isHex64(remoteTipsHash) && remoteTipsHash === localTipsHash)
+	if (isHex64(remoteTipsHash) === localTipsHash)
 		return { allow: true, strictAligned: true }
 
 	if (remoteEventCount === 0) return { allow: true, strictAligned: false }
@@ -43,13 +43,11 @@ export function evaluateArchiveHandshake(remoteSummary, localSummary, localEvent
 	const anyWantHit = wantIds.some(id => eventsById.has(id))
 
 	const localHash = localSummary.hash || ''
-	if (isHex64(remoteHash) && remoteHash === localHash)
+	if (isHex64(remoteHash) === localHash)
 		return { allow: true, strictAligned: true }
 
 	const remoteLastEventId = remoteSummary.lastEventId || ''
-	const localLastEventId = isHex64(localSummary.lastEventId)
-		? String(localSummary.lastEventId).trim()
-		: ''
+	const localLastEventId = localSummary.lastEventId || ''
 	if (isHex64(remoteLastEventId) && eventsById.has(remoteLastEventId))
 		return { allow: true, strictAligned: false }
 	if (remoteLastEventId && localLastEventId && remoteLastEventId === localLastEventId)
