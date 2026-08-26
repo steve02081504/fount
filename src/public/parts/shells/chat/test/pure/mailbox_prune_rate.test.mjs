@@ -41,7 +41,7 @@ function syntheticRecord(to, from, i, payloadSize = 64) {
 }
 
 Deno.test('takeIncomingMailboxPutSlot rate limits per source node', () => {
-	const from = 'attacker-node'
+	const from = 'c'.repeat(64)
 	let allowed = 0
 	for (let i = 0; i < 25; i++)
 		if (takeIncomingMailboxPutSlot(from, { maxPuts: 20, windowMs: ms('1m') })) allowed++
