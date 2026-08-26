@@ -9,13 +9,13 @@
  */
 
 /** 选择器可用的语义级别（与 virtual-console `LogEntry.level` 对齐）。 */
-export const LOG_SELECTOR_LEVELS = Object.freeze(['error', 'warn', 'info', 'log', 'debug'])
+export const LOG_SELECTOR_LEVELS = ['error', 'warn', 'info', 'log', 'debug']
 
 /** @type {Readonly<Record<string, string>>} */
-const LEVEL_ALIASES = Object.freeze({
+const LEVEL_ALIASES = {
 	err: 'error',
 	warning: 'warn',
-})
+}
 
 /**
  * @typedef {object} LogSelector

@@ -478,6 +478,8 @@ self.addEventListener('message', event => {
 	}
 	else if (event.data?.type === 'GET_FOUNT_VERSION')
 		event.ports[0]?.postMessage?.({ fountVersion })
+	else if (event.data?.type === 'GET_SERVER_ONLINE')
+		event.ports[0]?.postMessage?.({ serverOnline })
 })
 
 /**
@@ -620,6 +622,7 @@ const routes = [
 
 let ws = null
 let reconnectTimeout = null
+let serverOnline = false
 /** @type {string | null} */
 let fountVersion = 'unknown'
 getConfig('fountVersion').then(version => fountVersion = version)
@@ -682,6 +685,7 @@ function connectWebSocket() {
 	 * @returns {void}
 	 */
 	ws.onopen = () => {
+		serverOnline = true
 		// Reset reconnect timeout on successful connection
 		if (!reconnectTimeout) return
 		clearTimeout(reconnectTimeout)
@@ -716,6 +720,7 @@ function connectWebSocket() {
 	 * @returns {void}
 	 */
 	ws.onclose = event => {
+		serverOnline = false
 		console.warn(`[SW WS] Connection closed. Code: ${event.code}, Reason: ${event.reason}. Re-verifying and reconnecting in ${RECONNECT_DELAY / 1000}s.`)
 		ws = null
 		if (!reconnectTimeout) reconnectTimeout = setTimeout(connectWebSocket, RECONNECT_DELAY)

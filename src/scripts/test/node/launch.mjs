@@ -662,11 +662,10 @@ async function launchNodeOnce(options = {}) {
 		child.stdout.resume()
 		child.stderr.resume()
 
-		if (!readyInfo?.baseUrl) {
+		if (!readyInfo?.baseUrl)
 			// 正常走不到：EOF 已在 readyLine 内交由 earlyExit 抛 before-ready。
 			// 仅当子进程仍在运行却关闭 stdout 等极端情况才落入此兜底。
 			throw new Error(`node worker ready timed out (port ${port})\n${startupOutput}`.trimEnd())
-		}
 
 		try {
 			const pingDeadline = setTimeout(() => pingAbort.abort(), ms('2m'))
