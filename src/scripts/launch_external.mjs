@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer'
 import { spawn } from 'node:child_process'
 import process from 'node:process'
 
@@ -11,9 +12,10 @@ import process from 'node:process'
  * `cmd /c start` 起一个孤儿进程：中间 `cmd` 立即退出后父链断开，树杀追不到它。
  * 其余选项（`cwd` / `windowsHide` 等）直接转发给 `spawn`；后台进程（如测试内核）传
  * `windowsHide: true` 可避免新建的 console 被 Windows Terminal 当作新 tab 显示。
- * 注意：`cmd /c start` 不会把隐藏标志传给目标进程——曾用隐藏 PowerShell `Start-Process`
- * 来补上这层，但它在拉起 `deno.EXE` 等单文件二进制时会让目标静默退出，测试内核因此
- * 起不来；故保持 `cmd /c start`，隐藏只作用于中间 `cmd`。
+ * 注意：`cmd /c start` 不会把隐藏标志传给目标进程。若要隐藏目标，直接 spawn PowerShell
+ * 会把它留在启动方 Job Object 里，`Start-Process` 出来的目标会被树杀带走；故改经
+ * `cmd /c start /b` 先孤儿化，再由孤立的 PowerShell 用 `Start-Process -WindowStyle Hidden`
+ * 隐藏拉起目标，二者兼得。
  * @param {object} options 启动选项
  * @param {string} options.command 程序路径
  * @param {string[]} [options.args] 参数
@@ -26,12 +28,28 @@ export function launchDetachedProgram(options = {}) {
 	const { command, args = [], ...spawnOptions } = options
 	const mergedEnv = spawnOptions.env ? { ...process.env, ...spawnOptions.env } : process.env
 	const spawnOnce = process.platform === 'win32'
-		? () => spawn(process.env.ComSpec || 'cmd.exe', ['/d', '/c', 'start', '', '/b', command, ...args], {
-			...spawnOptions,
-			env: mergedEnv,
-			detached: true,
-			stdio: 'ignore',
-		})
+		? spawnOptions.windowsHide
+			? () => {
+				const payload = Buffer.from(JSON.stringify({ command, args, cwd: spawnOptions.cwd }), 'utf8').toString('base64')
+				const script = `$spec = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${payload}')) | ConvertFrom-Json; $start = @{ FilePath = [string]$spec.command; ArgumentList = [string[]]$spec.args; WindowStyle = 'Hidden' }; if ($spec.cwd) { $start.WorkingDirectory = [string]$spec.cwd }; Start-Process @start`
+				const powershell = process.env.SystemRoot
+					? `${process.env.SystemRoot}\\System32\\WindowsPowerShell\\v1.0\\powershell.exe`
+					: 'powershell.exe'
+				// 直接 spawn PowerShell 会把它留在启动方的 Job Object 里，`Start-Process`
+				// 出来的目标随之被树杀带走。故经 `cmd /c start /b` 先孤儿化（父链断开），
+				// 被孤立的 PowerShell 再用隐藏窗口拉起目标——既能隐藏 tab，又能脱离 Job。
+				return spawn(process.env.ComSpec || 'cmd.exe', [
+					'/d', '/c', 'start', '', '/b', powershell,
+					'-NoLogo', '-NoProfile', '-NonInteractive',
+					'-EncodedCommand', Buffer.from(script, 'utf16le').toString('base64'),
+				], { ...spawnOptions, env: mergedEnv, detached: true, stdio: 'ignore' })
+			}
+			: () => spawn(process.env.ComSpec || 'cmd.exe', ['/d', '/c', 'start', '', '/b', command, ...args], {
+				...spawnOptions,
+				env: mergedEnv,
+				detached: true,
+				stdio: 'ignore',
+			})
 		: () => spawn(command, args, { ...spawnOptions, env: mergedEnv, detached: true, stdio: 'ignore' })
 	return new Promise((resolve, reject) => {
 		const processRef = spawnOnce()
