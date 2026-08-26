@@ -1,10 +1,10 @@
 /**
  * 把内核 accepted / job-done 事件画成终端文案（旧 runner 的操作员输出）。
  */
+import { writeSync } from 'node:fs'
 import process from 'node:process'
 
-import { console, geti18n } from '../../i18n/bare.mjs'
-import { formatDuration } from '../core/format_duration.mjs'
+import { console } from '../../i18n/bare.mjs'
 import { stripNoiseMarkers } from '../core/output_filter.mjs'
 import { formatContinueReasonLabel } from '../runner/continue_reason.mjs'
 
@@ -30,31 +30,30 @@ export function suiteEndHasFailureOutput(msg) {
 }
 
 /**
+ * 把套件输出尾部规范化为可打印文本（去噪声标记、保证结尾换行）。
+ * @param {string} output 套件输出尾部
+ * @returns {string} 去标记、带结尾换行的文本（空输入返回空串）
+ */
+export function formatFailureOutput(output) {
+	const text = stripNoiseMarkers(output)
+	if (!text) return ''
+	return text.endsWith('\n') ? text : `${text}\n`
+}
+
+/**
  * @param {string} output 套件输出尾部
  * @returns {void}
  */
 function writeFailureOutput(output) {
-	const text = stripNoiseMarkers(output)
+	const text = formatFailureOutput(output)
 	if (!text) return
-	process.stdout.write(text.endsWith('\n') ? text : `${text}\n`)
-}
-
-/**
- * @param {object} msg 含 remainingMs / unknownCount 的事件
- * @returns {string} 可读剩余
- */
-export function formatRemainingLabel(msg) {
-	const ms = msg.remainingMs
-	const unknown = msg.unknownCount ?? 0
-	if (unknown > 0 && (ms == null || !Number.isFinite(ms)))
-		return geti18n('fountConsole.test.display.remainingOnlyUnknown', { count: unknown })
-	if (ms == null || !Number.isFinite(ms)) return '?'
-	if (unknown > 0)
-		return geti18n('fountConsole.test.display.remainingUnknown', {
-			remaining: formatDuration(ms),
-			count: unknown,
-		})
-	return formatDuration(ms)
+	// 同步写 fd 1：process.exit 前丢弃异步缓冲会导致失败日志内容丢失（标题仍在）。
+	try {
+		writeSync(1, text)
+	}
+	catch {
+		process.stdout.write(text)
+	}
 }
 
 /**
@@ -164,8 +163,6 @@ function paintContinueReasons(message) {
  * @returns {void}
  */
 function paintWaveEstimate(message) {
-	if (message.runCount || message.unknownCount || message.remainingMs != null)
-		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(message) })
 	if (!message.runCount && (message.reuseCount || message.blockedCount || message.skippedCount))
 		console.logI18n('fountConsole.test.noRealRunPlanned', {
 			reused: message.reuseCount,
@@ -228,8 +225,6 @@ export function paintSuiteEnd(message, { stream = false } = {}) {
 		console.logI18n('fountConsole.test.passedWithNoise', { label: message.key })
 	else
 		console.logI18n('fountConsole.test.passed', { label: message.key })
-	if (!stream && !message.reused && !message.blockedBy?.length && !message.skippedBy?.length)
-		console.logI18n('fountConsole.test.display.remaining', { remaining: formatRemainingLabel(message) })
 }
 
 /**

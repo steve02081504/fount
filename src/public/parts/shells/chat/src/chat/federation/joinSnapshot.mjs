@@ -145,6 +145,18 @@ export async function handleJoinSnapshotRequest(username, groupId, request, peer
 }
 
 /**
+ * 仲裁无赢家后是否值得重试：仅在「目标 peer 未全部应答」（传输抖动/静默）时重试；
+ * 若所有目标都已应答但候选分歧（如对端 checkpoint 版本不一致）则重试也不会收敛，应立即放弃。
+ * @param {object[]} candidates 收集到的候选 envelope
+ * @param {string[]} targets 本次请求的目标 peer id
+ * @returns {boolean} 是否重试
+ */
+export function shouldRetryJoinSnapshotPull(candidates, targets) {
+	if (targets.length === 0) return candidates.length === 0
+	return candidates.length < targets.length
+}
+
+/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} slot FederationSlot
@@ -156,9 +168,10 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	const roster = slot.getRoster()
+	const targets = await pickFederationTargetPeerIds(groupId, roster, groupSettings, nodeHash)
 
 	/**
-	 * @returns {Promise<object | null>} 仲裁后的赢家 envelope 或 null
+	 * @returns {Promise<{ winner: object | null, candidates: object[] }>} 仲裁赢家与收集到的候选
 	 */
 	const sendOnce = async () => {
 		const requestId = randomUUID()
@@ -172,7 +185,6 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 			attestation,
 		}
 		const waitKey = joinSnapshotWaitKey(username, groupId, requestId)
-		const targets = await pickFederationTargetPeerIds(groupId, roster, groupSettings, nodeHash)
 		const fedState = await loadFederationMaterializedState(username, groupId)
 		const activeMemberCount = fedState
 			? Object.values(fedState.members || {}).filter(m => m?.status === 'active').length
@@ -191,21 +203,21 @@ export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 		else
 			slot.send('fed_join_snapshot_request', request, null)
 		const candidates = await collectJoinSnapshotCandidates(collectPromise, pending)
-		if (!candidates.length) return null
+		if (!candidates.length) return { winner: null, candidates }
 		const picked = pickJoinSnapshotByReputation(candidates, {
 			allowSinglePeerBootstrap: !isSignedBaseCheckpoint(localArchive.checkpoint),
 			activeMemberCount,
 		})
-		if (!picked.winner) return null
+		if (!picked.winner) return { winner: null, candidates }
 		penalizeJoinSnapshotMismatches(candidates, picked.bucketKey)
-		return picked.winner
+		return { winner: picked.winner, candidates }
 	}
 
-	let envelope = await sendOnce()
-	for (let attempt = 0; !envelope && attempt < SNAPSHOT_RETRY_MAX; attempt++) {
+	let result = await sendOnce()
+	for (let attempt = 0; !result.winner && shouldRetryJoinSnapshotPull(result.candidates, targets) && attempt < SNAPSHOT_RETRY_MAX; attempt++) {
 		await sleep(SNAPSHOT_RETRY_GAP_MS)
-		envelope = await sendOnce()
+		result = await sendOnce()
 	}
-	if (!envelope) return { applied: false, channels: 0 }
-	return await applyJoinSnapshotResponse(username, groupId, envelope)
+	if (!result.winner) return { applied: false, channels: 0 }
+	return await applyJoinSnapshotResponse(username, groupId, result.winner)
 }

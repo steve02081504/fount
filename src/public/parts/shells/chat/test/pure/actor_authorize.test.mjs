@@ -2,8 +2,9 @@
  * 权限主体恒为 sender（无 acting overlay）纯测试。
  */
 /* global Deno */
-import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { checkEventPermission } from '../../src/chat/dag/authorizeEvent.mjs'
 import { emptyMaterializedState } from '../../src/chat/dag/groupMaterializedState.mjs'

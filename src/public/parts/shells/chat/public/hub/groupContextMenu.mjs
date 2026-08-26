@@ -19,10 +19,10 @@ import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMen
 import { groupDisplayName } from './core/domUtils.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
-import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
+import { clearGroupSelection, contextMenuTargetGroupIds, orderedSidebarGroupIds } from './groupSelection.mjs'
 import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
-import { renderServerBar } from './serverBar.mjs'
+import { loadGroups, renderServerBar } from './serverBar.mjs'
 import { navigateToGroupSettings, selectGroup } from './sidebar/index.mjs'
 import { closeGroupWebSocket } from './stream/index.mjs'
 
@@ -95,14 +95,20 @@ async function applyLeaveGroupsLocal(groupIds) {
 	if (touchesCurrent) {
 		if (store.privateGroup.groupId && leaving.has(store.privateGroup.groupId))
 			clearPrivateGroupState()
-		const next = store.sidebar.groups.find(g => !leaving.has(g.groupId))?.groupId
-		if (next) await selectGroup(next)
-		else {
-			store.context.currentGroupId = null
-			store.context.currentChannelId = null
-			store.context.currentState = null
-			const { setMode } = await import('./mode.mjs')
-			await setMode('friends')
+		// 退群前刷新群列表：确保好友绑定群的 friendBinding 是最新值（否则 DM 群会被当作普通群选中）。
+		const leavingGroupId = store.context.currentGroupId
+		await loadGroups().catch(handleError('chat.hub.load.groupFailed'))
+		// 刷新期间用户可能已切换当前群：仅当仍停留在原退群群时才接管选择，避免覆盖用户的新选择。
+		if (store.context.currentGroupId === leavingGroupId) {
+			const next = orderedSidebarGroupIds().find(id => !leaving.has(id))
+			if (next) await selectGroup(next)
+			else {
+				store.context.currentGroupId = null
+				store.context.currentChannelId = null
+				store.context.currentState = null
+				const { setMode } = await import('./mode.mjs')
+				await setMode('friends')
+			}
 		}
 	}
 	clearGroupSelection()
@@ -143,7 +149,6 @@ function runLeaveGroupsInBackground(groupIds) {
 			clearGroupsLeaving(ids)
 			await renderServerBar()
 			handleError('chat.hub.load.groupFailed')(error)
-			const { loadGroups } = await import('./serverBar.mjs')
 			await loadGroups()
 		}
 	})()

@@ -68,7 +68,7 @@ export function paginateActiveMembers(state, options = {}) {
  */
 export function peerPubKeyFromEntityHash(entityHash) {
 	const parsed = parseEntityHash(entityHash)
-	if (!parsed || !isHex64(parsed.subjectHash))
+	if (!isHex64(parsed?.subjectHash))
 		throw new Error('entityHash must resolve to a user pubKeyHash for DM')
 	return parsed.subjectHash
 }

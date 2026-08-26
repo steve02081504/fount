@@ -3,8 +3,9 @@
  * append / materialize / follow / unfollow / profile 读写 / post / like / repost / social_meta。
  */
 /* global Deno */
-import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 
 import { createTestSession } from '../harness.mjs'
 

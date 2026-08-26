@@ -54,7 +54,7 @@ Deno.test('overview job 仍接收本 job 的 idle', () => {
 	const mine = captureWs()
 	const viewer = hub.add(mine.ws, { mode: 'overview' })
 	viewer.jobId = 'job-b'
-	hub.broadcast({ type: 'idle', remainingMs: 0, unknownCount: 0 })
+	hub.broadcast({ type: 'idle' })
 	assertEquals(mine.events.map(event => event.type), ['idle'])
 })
 

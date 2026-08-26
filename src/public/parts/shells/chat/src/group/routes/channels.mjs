@@ -4,6 +4,7 @@
  * 【关联】被 group/endpoints.mjs 注册；子模块按资源拆分。
  */
 import { registerChannelArchiveRoutes } from './channelArchive.mjs'
+import { registerChannelAutoNameRoutes } from './channelAutoName.mjs'
 import { registerChannelCallRoutes } from './channelCall.mjs'
 import { registerChannelCrudRoutes } from './channelCrud.mjs'
 import { registerChannelMessageRoutes } from './channelMessages.mjs'
@@ -19,6 +20,7 @@ import { registerChannelVoteRoutes } from './channelVotes.mjs'
  */
 export function registerChannelRoutes(router, authenticate) {
 	registerChannelArchiveRoutes(router, authenticate)
+	registerChannelAutoNameRoutes(router, authenticate)
 	registerChannelReactionRoutes(router, authenticate)
 	registerChannelStreamingRoutes(router, authenticate)
 	registerChannelCallRoutes(router, authenticate)

@@ -7,7 +7,6 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { base64ToBytes } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
 import { BLOB_STORAGE_LOCATOR_RE, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
@@ -21,9 +20,10 @@ import {
 } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
-import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manifest/normalize'
 import { penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
+
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 import { groupEntityHash } from '../../../public/shared/groupEntityHash.mjs'
 import { getState } from '../dag/materialize.mjs'
@@ -196,9 +196,9 @@ function assertFilePartManifest(part) {
 	if (!['convergent', 'random'].includes(ceMode))
 		throw new Error('invalid part ceMode')
 	if (!isBlobLocator(part.storageLocator)) throw new Error('part storageLocator must be blob:{hash}')
-	if (!isHex64(String(part.contentHash).trim()))
+	if (!isHex64(part.contentHash))
 		throw new Error('invalid part contentHash')
-	if (!isHex64(String(part.ciphertextHash).trim()))
+	if (!isHex64(part.ciphertextHash))
 		throw new Error('invalid part ciphertextHash')
 }
 
@@ -212,7 +212,7 @@ export function assertFileUploadBody(body) {
 	if (!['convergent', 'random'].includes(ceMode))
 		throw new Error('invalid ceMode')
 	if (Array.isArray(body.parts) && body.parts.length) {
-		if (!isHex64(body.contentHash || ''))
+		if (!isHex64(body.contentHash))
 			throw new Error('invalid contentHash')
 		for (const part of body.parts) assertFilePartManifest(part)
 		return
@@ -221,9 +221,9 @@ export function assertFileUploadBody(body) {
 		if (!body[key]) throw new Error(`${key} required`)
 
 	if (!isBlobLocator(body.storageLocator)) throw new Error('storageLocator must be blob:{hash}')
-	if (!isHex64(String(body.contentHash).trim()))
+	if (!isHex64(body.contentHash))
 		throw new Error('invalid contentHash')
-	if (!isHex64(String(body.ciphertextHash).trim()))
+	if (!isHex64(body.ciphertextHash))
 		throw new Error('invalid ciphertextHash')
 }
 
@@ -340,9 +340,7 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 	if (parts?.length) {
 		const sorted = [...parts].sort((a, b) => Number(a.index ?? 0) - Number(b.index ?? 0))
 		const fileId = String(meta?.fileId || '').trim()
-		const chunkHashes = sorted
-			.map(part => String(part?.ciphertextHash || '').trim())
-			.filter(isHex64)
+		const chunkHashes = sorted.map(part => isHex64(part?.ciphertextHash)).filter(Boolean)
 		if (fileId && chunkHashes.length)
 			await ensureDownloadTask(username, groupId, fileId, chunkHashes, {
 				contentHash: String(meta?.contentHash || '').trim(),
@@ -430,7 +428,7 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 	// 单块文件也维护下载任务，使 download-status 能反映真实完成状态（本地命中或经联邦拉取后标记 done）。
 	const fileId = String(meta?.fileId || '').trim()
 	const chunkHash = String(meta?.ciphertextHash || '').trim()
-	const singleHash = isHex64(chunkHash) ? chunkHash : ciphertextHashFromLocator(meta.storageLocator)
+	const singleHash = isHex64(chunkHash) || ciphertextHashFromLocator(meta.storageLocator)
 	if (fileId && singleHash)
 		await ensureDownloadTask(username, groupId, fileId, [singleHash], {
 			contentHash: String(meta?.contentHash || '').trim(),
@@ -474,12 +472,11 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
  * @returns {Promise<Uint8Array>} 明文
  */
 export async function getDecryptedChunk(username, groupId, storageLocator, contentHashHex, options = {}, blamePeerKey) {
-	const contentHash = contentHashHex || ''
 	const ceMode = normalizeCeMode(options?.ceMode)
 	if (!isBlobLocator(storageLocator)) throw new Error('locator must be blob:{hash}')
-	if (!isHex64(contentHash)) throw new Error('content_hash required')
+	if (!isHex64(contentHashHex)) throw new Error('content_hash required')
 
-	const cached = await getPlaintextCache(username, contentHash)
+	const cached = await getPlaintextCache(username, contentHashHex)
 	if (cached) return new Uint8Array(cached)
 
 	let raw
@@ -504,15 +501,15 @@ export async function getDecryptedChunk(username, groupId, storageLocator, conte
 		if (!keyEntry?.fileMasterKey) throw new Error('missing file master key for random ceMode')
 		const contentKey = unwrapContentKey(options.wrappedKey, keyEntry.fileMasterKey, fileId)
 		if (!contentKey) throw new Error('unwrap random content key failed')
-		plain = decryptRandomCiphertext(raw, contentKey, contentHash)
+		plain = decryptRandomCiphertext(raw, contentKey, contentHashHex)
 	}
 	else
-		plain = decryptConvergentCiphertext(raw, contentHash)
+		plain = decryptConvergentCiphertext(raw, contentHashHex)
 	if (!plain) {
 		if (blamePeerKey) penalizeChunkStorageFailure(blamePeerKey).catch(handleError)
 		throw new Error('convergent blob decrypt failed')
 	}
-	cachePlaintextFile(username, contentHash, plain).catch(handleError)
+	cachePlaintextFile(username, contentHashHex, plain).catch(handleError)
 	return new Uint8Array(plain)
 }
 
@@ -603,7 +600,7 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 	const ceMode = normalizeCeMode(uploadMeta.ceMode)
 	const keyGen = uploadMeta.key_generation
 
-	/** @type {import('npm:@steve02081504/fount-p2p/files/manifest/normalize').FileManifest | null} */
+	/** @type {object | null} */
 	let manifest = null
 
 	/** @type {object[] | null} */
@@ -623,7 +620,7 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 	if (!dagParts?.length) return null
 
 	// parts[].size 必须是密文字节数（stream 解密按此截取）；先用占位，读出密文后再回填
-	manifest = normalizeFileManifest({
+	manifest = {
 		ownerEntityHash,
 		logicalPath,
 		name: uploadMeta.name || fileId,
@@ -644,7 +641,7 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 			wrappedKey: dagParts[0]?.wrappedKey,
 		},
 		meta: { groupId, fileId, dagParts },
-	})
+	}
 
 	if (!manifest) return null
 

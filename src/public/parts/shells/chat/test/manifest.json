@@ -94,16 +94,21 @@
 			"src/public/parts/shells/chat/test/live/scripts/federation/mailbox.mjs"
 		],
 		"fedEmoji": [
+			"src/public/parts/shells/chat/src/emojiPacks/**",
 			"src/public/parts/shells/chat/src/group/{groupPreview,emojiContentResolve}.mjs",
 			"src/public/parts/shells/chat/test/live/scripts/federation/emoji.mjs"
 		],
 		"fedEmojiGroup": [
-			"src/public/parts/shells/chat/src/group/**",
+			"src/public/parts/shells/chat/src/emojiPacks/**",
+			"src/public/parts/shells/chat/src/group/routes/groupEmojis.mjs",
+			"src/public/parts/shells/chat/src/group/{groupEmojis,emojiContentResolve,groupPreview}.mjs",
 			"src/server/registries.mjs",
 			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nonmember{,_bootstrap}.mjs"
 		],
 		"fedEmojiNearcache": [
-			"src/public/parts/shells/chat/src/group/**",
+			"src/public/parts/shells/chat/src/emojiPacks/**",
+			"src/public/parts/shells/chat/src/group/routes/groupEmojis.mjs",
+			"src/public/parts/shells/chat/src/group/{groupEmojis,emojiContentResolve}.mjs",
 			"src/public/parts/shells/chat/src/chat/files/**",
 			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nearcache.mjs"
 		],
@@ -121,7 +126,13 @@
 			"src/public/parts/shells/chat/test/live/scripts/federation/dm_intro_helper.mjs"
 		],
 		"fedBan": [
-			"src/public/parts/shells/chat/test/live/scripts/federation/ban.mjs"
+			"src/public/parts/shells/chat/src/group/routes/governance.mjs",
+			"src/public/parts/shells/chat/src/group/lib/locks.mjs",
+			"src/public/parts/shells/chat/src/chat/governance/moderationSideEffects.mjs",
+			"src/public/parts/shells/chat/src/chat/dag/commitSignedEvent.mjs",
+			"src/public/parts/shells/chat/src/chat/federation/{rosterChange,outbound,roomCredentials}.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/federation/ban.mjs",
+			"src/scripts/test/live/federation/common.mjs"
 		],
 		"fedControlPlane": [
 			"src/public/parts/shells/chat/test/live/scripts/federation/control_plane.mjs"
@@ -138,7 +149,8 @@
 			"src/public/parts/shells/chat/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
 			"src/public/parts/shells/chat/public/index.html",
 			"src/public/parts/shells/chat/public/hub/index.css",
-			"src/scripts/test/playwright/**",
+			"src/scripts/test/playwright/api.mjs",
+			"src/scripts/test/playwright/{config,env,fixtures,phases,ready,report,run,shell_frontend}.mjs",
 			"src/public/pages/scripts/test/ready_gate.mjs",
 			"src/server/auth/index.mjs",
 			"src/server/web_server/endpoints.mjs"
@@ -147,7 +159,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "3m15s",
+			"expected": "5m8s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -167,7 +179,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "7m56s",
+			"expected": "8m13s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -190,7 +202,7 @@
 		},
 		{
 			"name": "smoke_chat",
-			"expected": "18s",
+			"expected": "40s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -214,7 +226,7 @@
 		},
 		{
 			"name": "smoke_ai",
-			"expected": "20s",
+			"expected": "38s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -238,7 +250,7 @@
 		},
 		{
 			"name": "e2e_single",
-			"expected": "26s",
+			"expected": "36s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -286,7 +298,7 @@
 		},
 		{
 			"name": "ws",
-			"expected": "24s",
+			"expected": "19s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -406,7 +418,7 @@
 		},
 		{
 			"name": "fed_core",
-			"expected": "1m45s",
+			"expected": "1m42s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -428,7 +440,7 @@
 		},
 		{
 			"name": "fed_e2e_extended",
-			"expected": "3m3s",
+			"expected": "2m8s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -450,7 +462,7 @@
 		},
 		{
 			"name": "fed_dm",
-			"expected": "1m55s",
+			"expected": "8m14s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -472,7 +484,7 @@
 		},
 		{
 			"name": "fed_archive_month",
-			"expected": "1m12s",
+			"expected": "2m14s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -494,7 +506,7 @@
 		},
 		{
 			"name": "fed_mailbox",
-			"expected": "1m18s",
+			"expected": "5m33s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -516,7 +528,7 @@
 		},
 		{
 			"name": "fed_ban",
-			"expected": "4m45s",
+			"expected": "4m15s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -538,7 +550,7 @@
 		},
 		{
 			"name": "fed_emoji",
-			"expected": "44s",
+			"expected": "58s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -560,7 +572,7 @@
 		},
 		{
 			"name": "fed_emoji_nonmember",
-			"expected": "59s",
+			"expected": "1m28s",
 			"dependsOn": [
 				"fed_core",
 				"fed_emoji"
@@ -583,7 +595,7 @@
 		},
 		{
 			"name": "fed_emoji_nearcache",
-			"expected": "59s",
+			"expected": "2m7s",
 			"dependsOn": [
 				"fed_core",
 				"fed_emoji"
@@ -606,7 +618,7 @@
 		},
 		{
 			"name": "fed_file_transfer",
-			"expected": "50s",
+			"expected": "56s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -628,7 +640,7 @@
 		},
 		{
 			"name": "fed_control_plane",
-			"expected": "2m18s",
+			"expected": "1m15s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -650,7 +662,7 @@
 		},
 		{
 			"name": "fed_reputation_owner",
-			"expected": "2m48s",
+			"expected": "4m54s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -672,7 +684,7 @@
 		},
 		{
 			"name": "fed_entity_search",
-			"expected": "32s",
+			"expected": "45s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -694,7 +706,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "12m35s",
+			"expected": "10m13s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -703,14 +715,14 @@
 			"subtests": [
 				{
 					"name": "smoke",
-					"expected": "11s",
+					"expected": "7s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs"
 					]
 				},
 				{
 					"name": "deepLink",
-					"expected": "24s",
+					"expected": "39s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/deepLink.spec.mjs",
 						"src/public/parts/shells/chat/test/frontend/run.mjs",
@@ -722,7 +734,7 @@
 				},
 				{
 					"name": "composer",
-					"expected": "1m42s",
+					"expected": "1m12s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/composer.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/composerExtras.mjs",
@@ -732,7 +744,7 @@
 				},
 				{
 					"name": "attachments",
-					"expected": "42s",
+					"expected": "30s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/attachments.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/render/**",
@@ -747,7 +759,7 @@
 				},
 				{
 					"name": "navigation",
-					"expected": "2m12s",
+					"expected": "2m54s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/navigation.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/serverBar.mjs",
@@ -755,8 +767,22 @@
 					]
 				},
 				{
+					"name": "dmChannelContext",
+					"expected": "35s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/dmChannelContext.spec.mjs",
+						"src/public/parts/shells/chat/test/fixtures/worlds/write_path_hooks/**",
+						"src/public/parts/shells/chat/test/fixtures/chars/on_message_yes/**",
+						"src/public/parts/shells/chat/public/hub/sidebar/channelListVirtual.mjs",
+						"src/public/parts/shells/chat/public/hub/categoryContextMenu.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/createChannel.mjs",
+						"src/public/parts/shells/chat/src/group/routes/channelCrud.mjs",
+						"src/public/parts/shells/chat/public/src/endpoints/groupChannel.mjs"
+					]
+				},
+				{
 					"name": "mobilePane",
-					"expected": "55s",
+					"expected": "39s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/mobilePane.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/hubPane.mjs",
@@ -767,7 +793,7 @@
 				},
 				{
 					"name": "messageActions",
-					"expected": "3m30s",
+					"expected": "2m44s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/messageActions.spec.mjs",
 						"src/public/parts/shells/chat/test/frontend/run.mjs",
@@ -782,7 +808,7 @@
 				},
 				{
 					"name": "messageAvatar",
-					"expected": "50s",
+					"expected": "34s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/messageAvatar.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/messageSurface.mjs",
@@ -794,7 +820,7 @@
 				},
 				{
 					"name": "unread",
-					"expected": "30s",
+					"expected": "20s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/unread.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/memberReadMarkers.mjs"
@@ -802,7 +828,7 @@
 				},
 				{
 					"name": "inbox",
-					"expected": "28s",
+					"expected": "23s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/inbox.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/inbox*.mjs",
@@ -812,7 +838,7 @@
 				},
 				{
 					"name": "hubE2E",
-					"expected": "22s",
+					"expected": "17s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/hubE2E.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/**"
@@ -827,7 +853,7 @@
 				},
 				{
 					"name": "profile",
-					"expected": "43s",
+					"expected": "37s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/profile.spec.mjs",
 						"src/public/parts/shells/chat/public/profile/**",

@@ -62,7 +62,7 @@ export function buildMessagesByEventId(allMessages) {
 	/** @type {Map<string, object>} */
 	const map = new Map()
 	for (const row of allMessages) {
-		if (!row?.eventId || !isHex64(row.eventId)) continue
+		if (!isHex64(row?.eventId)) continue
 		map.set(row.eventId, row)
 	}
 	messagesByEventIdCache.set(allMessages, { length: allMessages.length, map })
@@ -75,7 +75,7 @@ export function buildMessagesByEventId(allMessages) {
  * @returns {{ messages: object[], branchInfo: Map<string, { alternatives: object[], selectedIdx: number, branchKey: string }> }} 展示序与分叉元数据
  */
 function buildDisplayChain(mergedMessages, activeBranches) {
-	const chainable = mergedMessages.filter(message => message?.eventId && isHex64(message.eventId))
+	const chainable = mergedMessages.filter(message => isHex64(message?.eventId))
 	if (!chainable.length)
 		return { messages: mergedMessages, branchInfo: new Map() }
 	if (!chainable.some(message => parentEventIds(message).length > 0))

@@ -2,6 +2,7 @@
  * icon_anime DOM 终端 Playwright fixture（无 fount 节点）。
  */
 import { test as base, expect } from '@playwright/test'
+
 import { createBrowserDiagnostics } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
 import { installCdnResponseCache } from 'fount/scripts/test/playwright/cdn_cache.mjs'
 import { assertAriaIgnoreIssues } from 'fount/scripts/test/playwright/github_issue.mjs'

@@ -123,7 +123,7 @@ export const messageReducers = {
 		const voters = state.messageOverlay.reactions.get(key)
 		if (!voters) return state
 		// 撤销者：管理员代删时为 targetPubKeyHash，否则为事件签名者本人（自取消）。
-		const voterKey = isHex64(targetPubKeyHash) ? targetPubKeyHash : event.sender
+		const voterKey = isHex64(targetPubKeyHash) || event.sender
 		voters.delete(voterKey)
 		if (!voters.size) state.messageOverlay.reactions.delete(key)
 		return state

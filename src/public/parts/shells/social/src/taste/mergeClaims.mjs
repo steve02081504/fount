@@ -6,9 +6,10 @@ import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 
-import { ms } from 'fount/scripts/ms.mjs'
 import { getNodeDir } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { collectSocialRpcMerged } from '../federation/rpc/wire.mjs'
 

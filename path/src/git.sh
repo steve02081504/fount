@@ -181,8 +181,10 @@ git_sync_to_ref() {
 		return 1
 	fi
 	git_backup_uncommitted || return 1
-	invoke_repo_git clean -fd || return 1
-	invoke_repo_git reset --hard "$ref"
+	# 先 reset 再 clean：ZIP 解压后工作树里已存在的 tracked 文件此时尚未入 index，
+	# 若先 clean 会被当作 untracked 删除（如 .esh/ 目录删除失败还会陷入反复确认）。
+	invoke_repo_git reset --hard "$ref" || return 1
+	invoke_repo_git clean -fd
 }
 
 # 确保 remote.origin.fetch 将 refs/heads/<branch> 映射到 origin/<branch>。
@@ -231,8 +233,10 @@ git_checkout_branch() {
 		return 1
 	fi
 	git_backup_uncommitted || return 1
+	# 先 checkout 再 clean：同 git_sync_to_ref，避免把已存在但未入 index 的 tracked 文件清掉。
+	# -f 覆盖工作树里与新 ref 冲突的 untracked 文件（其内容已由 git_backup_uncommitted 备份）。
+	invoke_repo_git checkout -f -B "$branch" "$start_point" || return 1
 	invoke_repo_git clean -fd || return 1
-	invoke_repo_git checkout -B "$branch" "$start_point" || return 1
 	case "$start_point" in
 	origin/*) git_track_origin_branch "$branch" "$start_point" || return 1 ;;
 	esac
@@ -246,8 +250,9 @@ git_detach_to_ref() {
 		return 1
 	}
 	git_backup_uncommitted || return 1
+	# 先 checkout 再 clean：同 git_sync_to_ref / git_checkout_branch。
+	invoke_repo_git checkout --detach -f "$resolved" || return 1
 	invoke_repo_git clean -fd || return 1
-	invoke_repo_git checkout --detach "$resolved"
 }
 
 git_reset_and_clean() {

@@ -14,6 +14,7 @@ import { store, setState, watchState } from './state.mjs'
  *   visible: () => boolean
  *   i18n?: () => string
  *   dataset?: () => Record<string, string>
+ *   progressId?: string
  * }} BannerBinding */
 
 /** @returns {boolean} 是否显示明文侧车横幅 */
@@ -123,6 +124,27 @@ function shunRemovedBannerDataset() {
 	return { count: String(count) }
 }
 
+/** @returns {boolean} 是否显示成员资格核验横幅 */
+function shunVerifyingBannerVisible() {
+	return store.context.currentMode === 'groups'
+		&& !!store.context.currentGroupId
+		&& !!store.context.currentState?.shunVerifying
+}
+
+/** @returns {string} i18n 键 */
+function shunVerifyingBannerI18n() {
+	return 'chat.hub.banners.shunVerifying'
+}
+
+/** @returns {Record<string, string>} dataset 插值 */
+function shunVerifyingBannerDataset() {
+	const confirmed = Array.isArray(store.context.currentState?.shunnedBy)
+		? store.context.currentState.shunnedBy.length
+		: 0
+	const total = Number(store.context.currentState?.shunTotal) || 0
+	return { confirmed: String(confirmed), total: String(total) }
+}
+
 /** @returns {boolean} 是否显示本地视图分叉横幅 */
 function localViewBannerVisible() {
 	const consensus = store.context.currentState?.consensusBranchTip || ''
@@ -179,6 +201,14 @@ const BANNER_BINDINGS = [
 		i18n: shunRemovedBannerI18n,
 		dataset: shunRemovedBannerDataset,
 	},
+	{
+		id: 'shun-verifying-banner',
+		textId: 'shun-verifying-banner-text',
+		visible: shunVerifyingBannerVisible,
+		i18n: shunVerifyingBannerI18n,
+		dataset: shunVerifyingBannerDataset,
+		progressId: 'shun-verifying-progress',
+	},
 ]
 
 /**
@@ -199,6 +229,14 @@ function applyBannerBinding(binding) {
 				if (k !== 'i18n') delete textElement.dataset[k]
 			for (const [k, v] of Object.entries(binding.dataset()))
 				textElement.dataset[k] = v
+		}
+	}
+	if (binding.progressId && show && binding.dataset) {
+		const progressElement = document.getElementById(binding.progressId)
+		if (progressElement) {
+			const d = binding.dataset()
+			progressElement.max = d.total ?? '0'
+			progressElement.value = d.confirmed ?? '0'
 		}
 	}
 }

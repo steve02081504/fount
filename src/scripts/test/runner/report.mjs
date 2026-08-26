@@ -82,7 +82,10 @@ export class RunReportWriter {
 	 */
 	async init() {
 		await mkdir(join(this.repoRoot, TEST_DATA_REL), { recursive: true })
-		return this.#flush()
+		const path = await this.#flush()
+		// 构造函数注入的 continueReason 槽位需在初始化时落盘独立文件，否则链接悬空。
+		await this.#writeTriggeredReasons()
+		return path
 	}
 
 	/**
@@ -130,6 +133,7 @@ export class RunReportWriter {
 		return this.#enqueue(async () => {
 			const key = suiteKey(manifestId, name)
 			let index = this.slots.findIndex(slot => suiteKey(slot.manifestId, slot.name) === key)
+			const prevReason = index >= 0 ? this.slots[index].continueReason : undefined
 			if (index < 0) {
 				this.slots.push({
 					manifestId,
@@ -150,6 +154,9 @@ export class RunReportWriter {
 					reused: false,
 				}
 			await this.#writeFiles()
+			// init 之后新增/变更槽位的触发原因需即时反映到独立文件；无变化则避免重写。
+			if (this.slots[index].continueReason && this.slots[index].continueReason !== prevReason)
+				await this.#writeTriggeredReasons()
 			return index
 		})
 	}
@@ -272,12 +279,19 @@ export class RunReportWriter {
 			slots: this.slots,
 		}
 		await writeFile(reportJsonPath(this.repoRoot), `${JSON.stringify(payload, null, '\t')}\n`, 'utf8')
-		const reasonsMarkdown = buildContinueReasonsMarkdown(payload)
+		await writeFile(reportMarkdownPath(this.repoRoot), buildRunMarkdown(payload, completed), 'utf8')
+	}
+
+	/**
+	 * 写一次触发原因分离文件（无原因则清理）。
+	 * @returns {Promise<void>}
+	 */
+	async #writeTriggeredReasons() {
+		const reasonsMarkdown = buildContinueReasonsMarkdown(this.slots)
 		if (reasonsMarkdown)
 			await writeFile(triggeredReasonsMarkdownPath(this.repoRoot), reasonsMarkdown, 'utf8')
 		else
 			await rm(triggeredReasonsMarkdownPath(this.repoRoot), { force: true })
-		await writeFile(reportMarkdownPath(this.repoRoot), buildRunMarkdown(payload, completed), 'utf8')
 	}
 }
 
@@ -327,7 +341,7 @@ function buildRunMarkdown(summary, completed) {
 
 	lines.push(
 		'',
-		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/report.md` }),
+		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/` }),
 		'',
 	)
 
@@ -442,15 +456,15 @@ function appendContinueReasonsLink(lines, summary) {
 
 /**
  * 构建触发原因独立文件正文；无原因返回空串。
- * @param {object} summary 汇总
+ * @param {ReportSlot[]} slots 报告槽位
  * @returns {string} markdown 正文
  */
-function buildContinueReasonsMarkdown(summary) {
-	const slots = summary.slots.filter(slot => slot.continueReason)
-	if (!slots.length) return ''
+function buildContinueReasonsMarkdown(slots) {
+	const withReasons = slots.filter(slot => slot.continueReason)
+	if (!withReasons.length) return ''
 
 	const lines = [`# ${geti18n('fountConsole.test.report.section.continueReasons')}`, '']
-	for (const slot of slots) {
+	for (const slot of withReasons) {
 		lines.push(`## ${slot.manifestId}:${slot.name}`, '')
 		if (slot.continueReason.kind === 'dependency_required')
 			appendDependencyReasonDetail(lines, slot.continueReason)

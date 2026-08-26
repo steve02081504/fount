@@ -51,7 +51,7 @@ export async function applyFileKeyGrant(username, groupId, grant) {
 		const encrypted = row?.encryptedKey
 		if (!Number.isFinite(gen) || gen < 0 || !encrypted) continue
 		const keyHex = unwrapKeyEcies(encrypted, signer.secretKey)
-		if (!keyHex || !isHex64(keyHex)) continue
+		if (!isHex64(keyHex)) continue
 		await appendFileMasterKey(username, groupId, Math.floor(gen), keyHex)
 		imported++
 		if (gen > maxGen) maxGen = Math.floor(gen)

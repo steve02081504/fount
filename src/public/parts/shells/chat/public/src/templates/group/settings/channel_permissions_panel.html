@@ -1,8 +1,8 @@
+${channels.length ? `
 <div class="card bg-base-200 settings-card">
 	<div class="card-body">
 		<h2 class="card-title" data-i18n="chat.group.settings.page.tabs.channelPermissions"></h2>
 		<p class="text-sm opacity-70" data-i18n="chat.group.settings.page.channelPerms.hint"></p>
-		${channels.length ? `
 		<div class="flex flex-col lg:flex-row gap-4">
 			<div class="lg:w-52 shrink-0">
 				<div class="text-xs font-semibold opacity-60 mb-2" data-i18n="chat.group.settings.page.channelPerms.selectChannel"></div>
@@ -15,6 +15,10 @@
 					</li>
 					`).join('')}
 				</ul>
+				${permissionBlockId ? `
+				<div class="alert alert-warning mt-3 px-3 py-2 text-xs" data-i18n="chat.group.settings.page.channelPerms.syncedWarning"></div>
+				` : ''}
+				<button type="button" class="btn btn-ghost btn-xs w-full mt-3" data-action="sync-to-default" data-i18n="chat.group.settings.page.channelPerms.syncToDefault"></button>
 			</div>
 			<div class="flex-1 min-w-0 space-y-3">
 				${rolePanels.map(panel => `
@@ -34,6 +38,6 @@
 				`).join('')}
 			</div>
 		</div>
-		` : `<p class="text-sm opacity-60" data-i18n="chat.group.settings.page.channelPerms.noChannels"></p>`}
 	</div>
 </div>
+` : `<p class="text-sm opacity-60" data-i18n="chat.group.settings.page.channelPerms.noChannels"></p>`}

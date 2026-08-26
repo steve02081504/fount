@@ -3,7 +3,6 @@ import { randomUUID } from 'node:crypto'
 
 import { buildFileManifestFromEnc, encryptPlaintextToParts, vaultWrapDescriptor } from 'npm:@steve02081504/fount-p2p/files/assemble'
 import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
-import { publicTransferKeyDescriptor } from 'npm:@steve02081504/fount-p2p/files/manifest/normalize'
 import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/manifest/public'
 
 import { getEntityRecoverySecretKey, getRecoveryPubKeyHex } from '../../chat/src/entity/identity.mjs'
@@ -172,7 +171,7 @@ export async function putCabinetEvfsFile(username, entityHash, options) {
 	if (visibility === 'public' || visibility === 'unlisted')
 		return storeEvfsManifest(entityHash, {
 			logicalPath, plaintext, name, mimeType, visibility,
-			transferKeyDescriptor: publicTransferKeyDescriptor(),
+			transferKeyDescriptor: { type: 'public' },
 			ceMode: 'convergent',
 		})
 

@@ -4,12 +4,14 @@
 import { randomUUID } from 'node:crypto'
 import { watch } from 'node:fs'
 
+import { console } from '../../i18n/bare.mjs'
 import { ms } from '../../ms.mjs'
 import { CPU_BUDGET_PCT } from '../core/baseline.mjs'
 import { getHeadCommitHash } from '../core/changed.mjs'
 import { CLEANUP_LEAK_EXIT_CODE, findCleanupLeaks } from '../core/cleanup_check.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
-import { buildEstimateTask, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
+import { buildEstimateTask, expectedRunDurationMs } from '../core/estimate.mjs'
+import { parseExpectedMs } from '../core/expected.mjs'
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
 import { resolveSerialOnlyFiles } from '../core/serial_files.mjs'
 import {
@@ -21,12 +23,15 @@ import {
 	skipBecauseEntriesForRun,
 } from '../core/skip_because.mjs'
 import {
+	readModuleCheckStats,
 	refreshEntryFingerprint,
 	suiteKey,
 	suiteTriggeredFiles,
 	upsertSuiteRun,
+	writeModuleCheckStats,
 	writeState,
 } from '../core/state.mjs'
+import { applyDriftPatchToManifest, driftedEstimatePatch } from '../core/update_estimates.mjs'
 import { GithubIssueCache, probeGithubIssue } from '../hub/apis/github_issue.mjs'
 import { formatContinueReasonLabel } from '../runner/continue_reason.mjs'
 import { RunReportWriter } from '../runner/report.mjs'
@@ -44,6 +49,8 @@ import {
 import { ModuleCheckGate } from './module_check.mjs'
 import { attachGitRoots } from './nested_git.mjs'
 import { DEFAULT_PREP_SETTLE_MS, TestQueues } from './queues.mjs'
+import { buildTimeline, projectConsumer } from './schedule.mjs'
+import { buildScheduleUpdate } from './schedule_event.mjs'
 import { ViewerHub } from './viewers.mjs'
 
 /**
@@ -63,6 +70,21 @@ export function ignoreWatchPath(rel) {
 /** watch 闲置多久后自动补跑一次 --all（毫秒；默认 2 小时）。 */
 export const DEFAULT_IDLE_ALL_MS = ms('2h')
 
+/** 空闲且无 watcher 后内核保持存活多久再自动退出（毫秒；默认 7 分钟）。 */
+export const DEFAULT_IDLE_EXIT_GRACE_MS = ms('7m')
+
+/** 资源预算周期刷新间隔（毫秒）。 */
+export const BUDGET_REFRESH_MS = 5000
+
+/** 预算变化触发时间表重建的相对阈值。 */
+export const BUDGET_CHANGE_THRESHOLD = 0.10
+
+/**
+ * 终止原因：视为"未运行"而非失败——新任务抢占 idle_all / viewer 断开。
+ * 满足时 #runItem 早返回，不写状态、不改 sessionPassed、不推进指纹、不广播失败 suite-end。
+ */
+export const NOT_RUN_TERMINATE_REASONS = ['new_job', 'viewer_gone']
+
 /**
  * 测试内核。
  */
@@ -76,6 +98,8 @@ export class TestKernel {
 	 * @param {boolean} [options.writeReport] 是否写活报告
 	 * @param {number} [options.moduleCheckHoldTimeoutMs] 模组检查持有超时
 	 * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
+	 * @param {boolean} [options.autoUpdateExpected] 跑完是否按漂移自动回写 manifest `expected`
+	 * @param {number} [options.idleExitGraceMs] 空闲且无 watcher 后自动退出的宽限毫秒
 	 */
 	constructor({
 		repoRoot,
@@ -85,8 +109,12 @@ export class TestKernel {
 		writeReport = true,
 		moduleCheckHoldTimeoutMs,
 		idleAllMs = DEFAULT_IDLE_ALL_MS,
+		autoUpdateExpected = true,
+		idleExitGraceMs = DEFAULT_IDLE_EXIT_GRACE_MS,
 	}) {
 		this.idleAllMs = idleAllMs
+		this.autoUpdateExpected = autoUpdateExpected
+		this.idleExitGraceMs = idleExitGraceMs
 		/** 运行队列最近一次清空的时间（watch 闲置计时起点）。 */
 		this.lastIdleAt = Date.now()
 		this.#wasIdle = false
@@ -98,6 +126,19 @@ export class TestKernel {
 		this.moduleCheck = new ModuleCheckGate({
 			...moduleCheckHoldTimeoutMs == null ? {} : { holdTimeoutMs: moduleCheckHoldTimeoutMs },
 			onHoldTimeout: this.markModuleCheckDone.bind(this),
+			/**
+			 * 每次模块检查完成即持久化累计时长，供调度 ETA 跨内核复用。
+			 * 写入经持久有序 Promise 链串行化：后续写入等待前一次完成，避免并发覆盖同一状态文件。
+			 * @param {number} totalMs 累计时长
+			 * @param {number} count 次数
+			 */
+			onUpdate: (totalMs, count) => {
+				this.#moduleCheckWriteChain = this.#moduleCheckWriteChain
+					.then(() => writeModuleCheckStats(this.repoRoot, { totalMs, count }))
+					.catch(error => {
+						console.warn(`module-check stats write failed: ${String(error?.message ?? error)}`)
+					})
+			},
 		})
 		this.issueCache = new GithubIssueCache()
 		this.viewers = new ViewerHub()
@@ -105,7 +146,16 @@ export class TestKernel {
 		this.gate = new ResourceRunGate(
 			this.globalBudget.memBytes,
 			suite => this.state?.suites[suiteKey(suite.manifestId, suite.name)],
+			{
+				/**
+				 * 占用状态变化 → 重建理想调度并广播 schedule-update。
+				 * @returns {void}
+				 */
+				onChange: () => this.#broadcastSchedule('gate_state_changed'),
+			},
 		)
+		/** 资源预算周期刷新计时器。 */
+		this.budgetTimer = null
 		/** @type {Map<string, object>} */
 		this.jobs = new Map()
 		/** @type {Map<string, { item: object, abort: AbortController }>} */
@@ -116,7 +166,6 @@ export class TestKernel {
 		this.sessionSkipped = new Set()
 		this.closed = false
 		this.#closeDone = null
-		this.seenViewer = false
 		this.catalog = null
 		this.state = null
 		this.#wake = Promise.withResolvers()
@@ -131,12 +180,26 @@ export class TestKernel {
 	#watcher
 	#closeDone
 	#wasIdle
+	/** 空闲自动退出宽限的到期时刻（无 watcher、队列全空才开始计时；null = 未在计时）。 */
+	#idleExitDueAt = null
+	/** @type {Promise<void>} 模块检查累计记录写入链（串行化持久化）。 */
+	#moduleCheckWriteChain = Promise.resolve()
 
 	/** 唤醒调度循环。 */
 	wake() {
 		const current = this.#wake
 		this.#wake = Promise.withResolvers()
 		current.resolve()
+	}
+
+	/**
+	 * viewer 连接/断开等活动后重置空闲自动退出宽限，使计时从最后一次活动起算，
+	 * 而非内核启动时刻（否则 120ms 宽限会被启动到 viewer 操作之间的时间耗尽）。
+	 * @returns {void}
+	 */
+	resetIdleExitGrace() {
+		this.#idleExitDueAt = null
+		this.wake()
 	}
 
 	/**
@@ -154,11 +217,18 @@ export class TestKernel {
 	 */
 	async start() {
 		await this.reloadCatalog()
+		// 恢复历史模块检查均值，避免调度 ETA 每次从兜底值重新收敛。
+		const mc = await readModuleCheckStats(this.repoRoot)
+		if (mc.count > 0) {
+			this.moduleCheck.durationTotalMs = mc.totalMs
+			this.moduleCheck.durationCount = mc.count
+		}
 		if (this.watchFsEnabled)
 			this.#watcher = watch(this.repoRoot, { recursive: true }, (_event, filename) => {
 				if (!filename) return
 				this.noteFileChange(String(filename).replace(/\\/g, '/'))
 			})
+		this.budgetTimer = setInterval(() => this.#refreshBudget(), BUDGET_REFRESH_MS)
 		this.#loop = this.#runLoop()
 	}
 
@@ -169,6 +239,8 @@ export class TestKernel {
 	async close() {
 		if (this.#closeDone) return this.#closeDone
 		this.closed = true
+		if (this.budgetTimer) clearInterval(this.budgetTimer)
+		this.budgetTimer = null
 		this.#watcher?.close()
 		this.moduleCheck.close()
 		const queued = this.queues.drain()
@@ -213,8 +285,14 @@ export class TestKernel {
 	 */
 	markModuleCheckDone(ticket) {
 		if (!ticket) return
+		let changed = false
 		for (const running of this.running.values())
-			if (running.ticket === ticket) running.checkDone = true
+			if (running.ticket === ticket && !running.checkDone) {
+				running.checkDone = true
+				changed = true
+			}
+		// 模块检查均值已更新 → 立即重建理想调度，让 ETA 随新均值收敛，而非等下一个 suite 启动。
+		if (changed) this.#broadcastSchedule('module_check_ready')
 	}
 
 	/**
@@ -260,8 +338,8 @@ export class TestKernel {
 						type: 'queue-remove',
 						key,
 						reason: 'manifest_removed',
-						...this.#remainingState(),
 					})
+				this.#broadcastSchedule('queue_removed', key)
 			}
 		this.wake()
 	}
@@ -273,6 +351,7 @@ export class TestKernel {
 	 * @returns {Promise<object>} accepted 字段 + jobId
 	 */
 	async submitJob(spec, viewerId) {
+		this.#cancelIdleAll('new_job')
 		const jobId = randomUUID()
 		const job = {
 			id: jobId,
@@ -331,7 +410,7 @@ export class TestKernel {
 			return {
 				runCount: 0,
 				activate: false,
-				accepted: acceptedFromWave(wave, { runCount: 0, reuseCount: 0, blockedCount: 0, remainingMs: 0 }),
+				accepted: acceptedFromWave(wave, { runCount: 0, reuseCount: 0, blockedCount: 0 }),
 			}
 		}
 		job.fingerprints = wave.fingerprints
@@ -347,7 +426,6 @@ export class TestKernel {
 			else if (slot.action === 'blocked') blockedCount++
 			else if (slot.action === 'skipped') skippedCount++
 			else runCount++
-		const remaining = this.#remainingFromPlan(wave.plan)
 		return {
 			runCount,
 			activate: true,
@@ -357,8 +435,6 @@ export class TestKernel {
 				reuseCount,
 				blockedCount,
 				skippedCount,
-				remainingMs: remaining.remainingMs,
-				unknownCount: remaining.unknownCount,
 			}),
 		}
 	}
@@ -373,6 +449,11 @@ export class TestKernel {
 		await this.#beginReport(job, wave)
 		const imperfectKeys = wave.selection?.imperfectKeys ?? new Set()
 		const runSlots = wave.plan.slots.filter(slot => slot.action === 'run')
+		// 多套件并行（会并发占用系统临时目录）时，全局残留扫描不可靠：置 env 跳过本 kernel 与
+		// 所有子进程/内嵌 kernel 的扫描；env 经 childEnv() 透传给 suite 子进程。
+		// 串行波次则清除，避免前一个并行 run 的标记污染后续串行 run 的残留检测。
+		if (runSlots.length > 1) process.env.FOUNT_TEST_IN_PARALLEL = '1'
+		else delete process.env.FOUNT_TEST_IN_PARALLEL
 		runSlots.sort((a, b) => Number(imperfectKeys.has(b.key)) - Number(imperfectKeys.has(a.key)))
 		for (const slot of runSlots) {
 			const reason = wave.continueReasons?.get?.(slot.key)
@@ -406,7 +487,6 @@ export class TestKernel {
 					passed: prev?.status !== 'failed',
 					reused: true,
 					status: prev?.status,
-					...this.#remainingState(),
 				})
 			}
 			else if (slot.action === 'blocked') {
@@ -418,13 +498,13 @@ export class TestKernel {
 					jobId: job.id,
 					passed: false,
 					blockedBy: slot.blockedBy ?? [],
-					...this.#remainingState(),
 				})
 			}
 			else if (slot.action === 'skipped')
 				await this.#recordSkipped(slot, job.id)
 
 		await this.#flushReportEstimate(job)
+		this.#broadcastSchedule('initial')
 		if (!job.pending.size)
 			await this.#finishJob(job)
 	}
@@ -495,34 +575,13 @@ export class TestKernel {
 			jobId,
 			passed: true,
 			skippedBy,
-			...this.#remainingState(),
 		})
 	}
 
 	/**
-	 * 本波真跑槽 + 当前在跑/已排队（含等待调度的占用）。
-	 * @param {import('../core/plan.mjs').RunPlan} plan 计划
-	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
+	 * @returns {import('../core/estimate.mjs').EstimateTask[]} 队列+在跑的预估任务（带消费归属）
 	 */
-	#remainingFromPlan(plan) {
-		const tasks = this.#estimateTasks()
-		for (const slot of plan.slots) {
-			if (slot.action !== 'run') continue
-			const { suite } = slot
-			if (!suite) continue
-			tasks.push(buildEstimateTask(suite, this.state.suites[slot.key], {
-				id: `wave:${slot.key}`,
-				subtestsToRun: slot.subtestsToRun,
-				moduleCheckMs: this.moduleCheck.meanDurationMs(),
-			}))
-		}
-		return this.#snapshotFromTasks(tasks)
-	}
-
-	/**
-	 * @returns {import('../core/estimate.mjs').EstimateTask[]} 队列+在跑的预估任务
-	 */
-	#estimateTasks() {
+	#scheduleTasks() {
 		const now = Date.now()
 		const tasks = []
 		for (const item of [...this.queues.cli, ...this.queues.fs]) {
@@ -531,7 +590,10 @@ export class TestKernel {
 			tasks.push(buildEstimateTask(suite, this.state.suites[item.key], {
 				id: item.id,
 				subtestsToRun: item.subtests,
-				moduleCheckMs: this.moduleCheck.meanDurationMs(),
+				// 只有 Deno 套件会走模块检查互斥窗；其它 run（node/Playwright/true）不计。
+				moduleCheckMs: suite.run?.[0] === 'deno' ? this.moduleCheck.meanDurationMs() : 0,
+				jobId: item.jobId ?? null,
+				source: item.source,
 			}))
 		}
 		for (const [key, running] of this.running) {
@@ -539,37 +601,58 @@ export class TestKernel {
 			if (!suite) continue
 			const { item } = running
 			const meanCheck = this.moduleCheck.meanDurationMs()
-			const checkElapsed = this.moduleCheck.heldTicket ? now - this.moduleCheck.heldAt : 0
+			const isDeno = suite.run?.[0] === 'deno'
+			// 仅持有检查租约的任务计入剩余检查时长；其余（已完成检查或正在执行）为 0，避免把全局互斥窗误算到其它任务。
+			const holdsCheck = isDeno && !running.checkDone && running.ticket === this.moduleCheck.heldTicket
+			const checkElapsed = holdsCheck ? now - this.moduleCheck.heldAt : 0
+			const elapsedMs = now - (running.startedAt ?? now)
 			tasks.push(buildEstimateTask(suite, this.state.suites[key], {
 				id: item.id ?? `run:${key}`,
 				subtestsToRun: item.subtests,
-				elapsedMs: now - (running.startedAt ?? now),
+				// 分离执行耗时与模块检查耗时：elapsedMs 只计入执行（不含已耗的检查时间），
+				// 剩余检查时长由 moduleCheckMs 单独给出，避免 schedule 叠加时重复扣减已包含的检查时间。
+				elapsedMs: holdsCheck ? Math.max(0, elapsedMs - checkElapsed) : elapsedMs,
 				running: true,
-				moduleCheckMs: running.checkDone ? 0 : Math.max(0, meanCheck - checkElapsed),
+				moduleCheckMs: holdsCheck ? Math.max(0, meanCheck - checkElapsed) : 0,
+				jobId: item.jobId ?? null,
+				source: item.source,
 			}))
 		}
 		return tasks
 	}
 
 	/**
-	 * @param {import('../core/estimate.mjs').EstimateTask[]} tasks 任务
-	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
+	 * 重建理想时间表并给每个 viewer 投影发送 `schedule-update`。
+	 * @param {import('./schedule_event.mjs').ScheduleChangeReason} reason 变化原因
+	 * @param {string} [detail] 原因细节
+	 * @returns {void}
 	 */
-	#snapshotFromTasks(tasks) {
-		if (!tasks.length) return { remainingMs: 0, unknownCount: 0 }
-		const estimate = summarizeEstimate(tasks, {
-			memBudgetBytes: this.globalBudget.memBytes,
-			cpuBudgetPct: CPU_BUDGET_PCT,
-			speculative: false,
-		})
-		return { remainingMs: estimate.etaMs, unknownCount: estimate.unknownCount }
+	#broadcastSchedule(reason, detail = '') {
+		const tasks = this.#scheduleTasks()
+		const timeline = tasks.length
+			? buildTimeline(tasks, { memBudgetBytes: this.globalBudget.memBytes, cpuBudgetPct: CPU_BUDGET_PCT })
+			: null
+		for (const viewer of this.viewers.values()) {
+			const projection = timeline
+				? projectConsumer(timeline.slots, { watch: viewer.watch, jobId: viewer.jobId })
+				: { running: [], lastCompletionAt: null, unknownCount: 0 }
+			this.viewers.send(viewer.id, buildScheduleUpdate(projection, viewer, reason, detail))
+		}
 	}
 
 	/**
-	 * @returns {{ remainingMs: number | null, unknownCount: number }} 剩余
+	 * 周期刷新资源预算；变化超阈值时重建时间表并广播。
+	 * @returns {void}
 	 */
-	#remainingState() {
-		return this.#snapshotFromTasks(this.#estimateTasks())
+	#refreshBudget() {
+		const next = computeGlobalBudget()
+		const prev = this.globalBudget
+		const delta = Math.abs(next.memBytes - prev.memBytes) / Math.max(1, prev.memBytes)
+		if (delta < BUDGET_CHANGE_THRESHOLD && next.cores === prev.cores) return
+		this.globalBudget = next
+		// 同步闸门内存预算，使准入决策与 ETA 使用同一份当前预算。
+		this.gate.memBudgetBytes = next.memBytes
+		this.#broadcastSchedule('resource_budget_changed')
 	}
 
 	/**
@@ -606,7 +689,6 @@ export class TestKernel {
 				type: 'job-wait',
 				jobId: viewer.jobId,
 				aheadCount,
-				...this.#remainingState(),
 			})
 		}
 	}
@@ -617,7 +699,7 @@ export class TestKernel {
 	 */
 	async #flushReportEstimate(job) {
 		if (!job?.report) return
-		const tasks = this.#estimateTasks()
+		const tasks = this.#scheduleTasks()
 		await job.report.setEstimatePlan(
 			new Map(tasks.map(task => [task.key, task])),
 			{ memBudgetBytes: this.globalBudget.memBytes, cpuBudgetPct: CPU_BUDGET_PCT, speculative: false },
@@ -724,8 +806,8 @@ export class TestKernel {
 				jobId: item.jobId,
 				passed: false,
 				blockedBy,
-				...this.#remainingState(),
 			})
+			this.#broadcastSchedule('blocked', item.key)
 			for (const gone of removed)
 				if (gone.jobId)
 					await this.#onJobItemDone(gone)
@@ -758,6 +840,7 @@ export class TestKernel {
 				this.sessionSkipped.add(item.key)
 				this.sessionPassed.set(item.key, true)
 			}
+			this.#broadcastSchedule('skipped', item.key)
 			for (const gone of removed)
 				if (gone.jobId)
 					await this.#onJobItemDone(gone)
@@ -782,8 +865,9 @@ export class TestKernel {
 					type: 'queue-append',
 					key: item.key,
 					reason: item.reason,
-					...this.#remainingState(),
 				})
+			if (promoted.length)
+				this.#broadcastSchedule('prep_promoted')
 			await this.#discardBlocked()
 			await this.#discardSkipped()
 			if (promoted.length)
@@ -804,9 +888,17 @@ export class TestKernel {
 			if (this.queues.pendingEmpty() && !this.running.size) {
 				this.issueCache.pruneOlderThan()
 				if (this.jobs.size === 0)
-					this.viewers.broadcast({ type: 'idle', remainingMs: 0, unknownCount: 0 })
+					this.viewers.broadcast({ type: 'idle' })
 			}
-			if (this.#shouldExit()) {
+			// 空闲自动退出宽限：仅当无 watcher 且队列全空才开始计时；期间任何新入队 / watcher 链接
+			// （会经 wake 重入本循环使 eligible 为假）都会重置计时。计时满了才关闭。
+			if (this.#idleExitEligible()) {
+				if (this.#idleExitDueAt == null)
+					this.#idleExitDueAt = Date.now() + this.idleExitGraceMs
+			}
+			else
+				this.#idleExitDueAt = null
+			if (this.#idleExitDueAt != null && Date.now() >= this.#idleExitDueAt) {
 				this.issueCache.pruneOlderThan()
 				await this.close()
 				break
@@ -818,6 +910,8 @@ export class TestKernel {
 				waiters.push(new Promise(resolve => setTimeout(resolve, waitPrep)))
 			if (idleAllDueAt != null)
 				waiters.push(new Promise(resolve => setTimeout(resolve, Math.max(0, idleAllDueAt - Date.now()))))
+			if (this.#idleExitDueAt != null)
+				waiters.push(new Promise(resolve => setTimeout(resolve, Math.max(0, this.#idleExitDueAt - Date.now()))))
 			await Promise.race(waiters)
 		}
 		await this.#drainRunning()
@@ -846,21 +940,48 @@ export class TestKernel {
 			this.queues.enqueueFs(suiteKey(suite.manifestId, suite.name), 'idle_all')
 		for (const suite of this.catalog.allSuites) {
 			const key = suiteKey(suite.manifestId, suite.name)
-			this.viewers.broadcast({ type: 'queue-append', key, reason: 'idle_all', ...this.#remainingState() })
+			this.viewers.broadcast({ type: 'queue-append', key, reason: 'idle_all' })
 		}
+		this.#broadcastSchedule('queue_appended')
 		this.wake()
 	}
 
 	/**
-	 * @returns {boolean} 是否该退出
+	 * 新任务提交时抢占进行中的 idle_all：清空未开始的 idle_all 队列项，并中止正在跑的 idle_all。
+	 * 中止后重置闲置计时，避免刚取消又立即重触发。
+	 * @param {string} reason 抢占原因
+	 * @returns {void}
 	 */
-	#shouldExit() {
+	#cancelIdleAll(reason = 'new_job') {
+		const removed = this.queues.removeIdleAll()
+		const runningIdle = [...this.running]
+			.filter(([, running]) => running.item?.reason === 'idle_all' && !running.item?.jobId)
+		if (!removed.length && !runningIdle.length) return
+		for (const item of removed)
+			this.viewers.broadcast({
+				type: 'queue-remove',
+				key: item.key,
+				reason,
+			})
+		this.#broadcastSchedule('queue_removed', reason)
+		for (const [, running] of runningIdle)
+			running.abort?.abort(reason)
+		this.lastIdleAt = Date.now()
+		this.#wasIdle = false
+		this.wake()
+	}
+
+	/**
+	 * 是否处于可自动退出的空闲态：无 watcher 消费者、队列全空（含预备）、无在跑、无活跃 job。
+	 * 满足时开始（或继续）宽限计时，直到计时满才关闭。
+	 * @returns {boolean} 是否空闲可退出
+	 */
+	#idleExitEligible() {
 		return this.autoExit
-			&& this.seenViewer
-			&& this.queues.pendingEmpty()
+			&& this.queues.allEmpty()
 			&& this.running.size === 0
-			&& this.viewers.size() === 0
 			&& this.jobs.size === 0
+			&& this.viewers.watchCount() === 0
 	}
 
 	/**
@@ -920,8 +1041,8 @@ export class TestKernel {
 			key,
 			jobId: item.jobId,
 			expectedMs,
-			...this.#remainingState(),
 		})
+		this.#broadcastSchedule('suite_started', key)
 		this.#notifyJobWaits()
 		/** @type {object | null} */
 		let endEvent = null
@@ -966,6 +1087,17 @@ export class TestKernel {
 				endEvent = await this.#finishMissedReady(item, suite)
 				return
 			}
+			// 被新任务抢占的 idle_all / viewer 断开终止：视为未运行而非失败——不写失败状态、不改 sessionPassed、不广播失败 suite-end。
+			if (result.terminated && NOT_RUN_TERMINATE_REASONS.includes(result.terminateReason)) {
+				endEvent = {
+					type: 'suite-end',
+					key,
+					jobId: item.jobId,
+					passed: true,
+					reused: true,
+				}
+				return
+			}
 			const running = this.running.get(key)
 			if (running) running.checkDone = true
 			const hashes = triggerHashesFromVerdict(job?.verdicts?.get(key))
@@ -981,6 +1113,8 @@ export class TestKernel {
 				subtestTriggerHashes: hashes.subtestTriggerHashes,
 			})
 			await writeState(this.repoRoot, this.state)
+			if (this.autoUpdateExpected)
+				await this.#autoUpdateExpected(suite, this.state.suites[key])
 			this.sessionPassed.set(key, result.passed)
 			await this.#reportResult(job, suite, this.state.suites[key])
 			if (!result.passed && job) job.exitCode = 1
@@ -995,6 +1129,17 @@ export class TestKernel {
 		catch (error) {
 			if (ticket && this.moduleCheck.consumeMissedReady(ticket)) {
 				endEvent = await this.#finishMissedReady(item, suite)
+				return
+			}
+			// 等待 moduleCheck 租约期间被 viewer 断开/抢占：视为未运行而非失败，与 terminated 分支一致。
+			if (abort.signal.aborted && NOT_RUN_TERMINATE_REASONS.includes(String(abort.signal.reason))) {
+				endEvent = {
+					type: 'suite-end',
+					key,
+					jobId: item.jobId,
+					passed: true,
+					reused: true,
+				}
 				return
 			}
 			const job = item.jobId ? this.jobs.get(item.jobId) : undefined
@@ -1020,11 +1165,11 @@ export class TestKernel {
 						type: 'queue-remove',
 						key: fsItem.key,
 						reason: 'cli_complete',
-						...this.#remainingState(),
 					})
 			}
 			if (endEvent)
-				this.viewers.broadcast({ ...endEvent, ...this.#remainingState() })
+				this.viewers.broadcast(endEvent)
+			this.#broadcastSchedule(endEvent?.passed === false ? 'suite_failed' : 'suite_completed', key)
 			if (item.jobId) {
 				const job = this.jobs.get(item.jobId)
 				if (job?.spec?.debug)
@@ -1175,9 +1320,9 @@ export class TestKernel {
 				type: 'queue-remove',
 				key: item.key,
 				reason: 'cleanup_leak',
-				...this.#remainingState(),
 			})
 		}
+		this.#broadcastSchedule('queue_removed', 'cleanup_leak')
 		for (const [key, running] of this.running)
 			if (running.item.jobId === job.id)
 				running.abort.abort('cleanup_leak')
@@ -1192,7 +1337,9 @@ export class TestKernel {
 	async #finishJob(job) {
 		if (job.finishing) return
 		job.finishing = true
-		if (!job.spec?.debug)
+		// 残留扫描只在可靠时运行：串行（无其它在跑套件）且本 run 非并行聚合
+		// （并行时其它套件可能正写入临时目录，且该 env 会传给子进程/内嵌 kernel）。
+		if (!job.spec?.debug && this.running.size === 0 && process.env.FOUNT_TEST_IN_PARALLEL !== '1')
 			await this.#checkCleanupLeak(job, { stopJob: false })
 		const finished = await this.#finishReport(job)
 		job.done.resolve(job.exitCode)
@@ -1204,6 +1351,37 @@ export class TestKernel {
 		})
 		this.jobs.delete(job.id)
 		this.wake()
+	}
+
+	/**
+	 * 套件跑完后若 manifest `expected` 与现状基线漂移超过阈值，回写 manifest 并同步内存。
+	 * @param {import('../core/manifest.mjs').SuiteDef} suite suite
+	 * @param {import('../core/state.mjs').SuiteStateEntry} entry 现状条目
+	 * @returns {Promise<void>}
+	 */
+	async #autoUpdateExpected(suite, entry) {
+		try {
+			const patch = driftedEstimatePatch(suite, entry)
+			if (!patch) return
+			if (!await applyDriftPatchToManifest(this.repoRoot, suite, patch)) return
+			const def = this.catalog.byKey.get(suiteKey(suite.manifestId, suite.name))
+			if (!def) return
+			if (patch.expected != null) {
+				const parsed = parseExpectedMs(patch.expected)
+				if (parsed != null) def.expectedMs = parsed
+			}
+			for (const [name, value] of Object.entries(patch.subtests ?? {})) {
+				const parsed = parseExpectedMs(value)
+				if (parsed == null) continue
+				const subtest = def.subtests?.find(st => st.name === name)
+				if (subtest) subtest.expectedMs = parsed
+			}
+			this.viewers.broadcast({ type: 'expected-drift', key: suiteKey(suite.manifestId, suite.name) })
+			this.#broadcastSchedule('expected_drift', suiteKey(suite.manifestId, suite.name))
+		}
+		catch (error) {
+			console.warn(`expected-drift update failed for ${suiteKey(suite.manifestId, suite.name)}: ${String(error?.message ?? error)}`)
+		}
 	}
 
 	/**
@@ -1349,9 +1527,9 @@ export class TestKernel {
 				type: 'queue-remove',
 				key: item.key,
 				reason: 'viewer_gone',
-				...this.#remainingState(),
 			})
 		}
+		this.#broadcastSchedule('queue_removed', 'viewer_gone')
 		for (const [, running] of this.running)
 			if (running.item.viewerId === viewerId) {
 				const stillWanted = this.queues.cli.some(item => item.key === running.item.key)
@@ -1360,6 +1538,6 @@ export class TestKernel {
 		for (const job of [...this.jobs.values()])
 			if (job.viewerId === viewerId && job.pending.size === 0 && ![...this.running.values()].some(running => running.item.jobId === job.id))
 				void this.#finishJob(job)
-		this.wake()
+		this.resetIdleExitGrace()
 	}
 }

@@ -4,7 +4,6 @@
 		"frontendShared": [
 			"src/public/parts/shells/themeManage/public/**",
 			"src/public/parts/shells/themeManage/test/frontend/**",
-			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/**"
 		]
 	},

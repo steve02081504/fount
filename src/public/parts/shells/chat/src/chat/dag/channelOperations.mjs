@@ -7,10 +7,11 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { governanceChannelId } from '../../group/access.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+
+import { canInChannel, governanceChannelId } from '../../group/access.mjs'
 
 import { appendEvent, appendSignedLocalEvent } from './append.mjs'
-import { memberChannelPermissions } from './groupMaterializedState.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
 import { setStreamingSession } from './streamingState.mjs'
@@ -20,9 +21,10 @@ import { setStreamingSession } from './streamingState.mjs'
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} options 频道参数
+ * @param {object} [appendOptions] 透传给 `appendSignedLocalEvent` 的附加参数（如 `{ entityHash }`）
  * @returns {Promise<object>} 签名事件
  */
-export async function createChannel(username, groupId, options) {
+export async function createChannel(username, groupId, options, appendOptions = {}) {
 	const channelId = options.channelId || randomUUID()
 	const created = await appendSignedLocalEvent(username, groupId, {
 		type: 'channel_create',
@@ -30,19 +32,81 @@ export async function createChannel(username, groupId, options) {
 		content: {
 			channelId,
 			type: options.type || 'text',
-			name: options.name || channelId,
+			name: options.name ?? '',
 			description: options.description,
-			parentChannelId: options.parentChannelId,
+			links: options.links,
+			permissionBlockId: options.permissionBlockId || null,
 			parentEventId: options.parentEventId || null,
+			parentChannelId: options.parentChannelId || null,
 			syncScope: options.syncScope || 'group',
 			isPrivate: !!options.isPrivate,
 			subRoomId: options.subRoomId,
 			manualItems: options.manualItems,
 		},
-	})
+	}, appendOptions)
 	const { appendChannelKeyRotate } = await import('../channel_keys/schedule.mjs')
 	await appendChannelKeyRotate(username, groupId, channelId)
 	return created
+}
+
+/**
+ * 更新父频道的子频道链接列表（增删/重排；单向父→子）。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} channelId 父频道 ID
+ * @param {string[]} links 新的有序子频道 id 列表
+ * @returns {Promise<object>} 签名事件
+ */
+export async function updateChannelLinks(username, groupId, channelId, links) {
+	return appendSignedLocalEvent(username, groupId, {
+		type: 'channel_update',
+		timestamp: Date.now(),
+		content: { channelId, updates: { links: [...links] } },
+	})
+}
+
+/**
+ * 基于当前 state 向父频道的 `links` 末尾追加一个子频道 id（已存在则移动到末尾）。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} parentChannelId 父频道 ID
+ * @param {string} childId 子频道 id
+ * @returns {Promise<object>} 签名事件
+ */
+export async function appendChannelLink(username, groupId, parentChannelId, childId) {
+	const { state } = await getState(username, groupId)
+	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id !== childId)
+	links.push(childId)
+	return updateChannelLinks(username, groupId, parentChannelId, links)
+}
+
+/**
+ * 基于当前 state 向父频道的 `links` 首部放置一个子频道 id（置顶；已存在则移动到首部）。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} parentChannelId 父频道 ID
+ * @param {string} childId 子频道 id
+ * @returns {Promise<object>} 签名事件
+ */
+export async function prependChannelLink(username, groupId, parentChannelId, childId) {
+	const { state } = await getState(username, groupId)
+	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id !== childId)
+	links.unshift(childId)
+	return updateChannelLinks(username, groupId, parentChannelId, links)
+}
+
+/**
+ * 基于当前 state 从父频道的 `links` 中移除一个子频道 id。
+ * @param {string} username 用户名
+ * @param {string} groupId 群组 ID
+ * @param {string} parentChannelId 父频道 ID
+ * @param {string} childId 子频道 id
+ * @returns {Promise<object>} 签名事件
+ */
+export async function removeChannelLink(username, groupId, parentChannelId, childId) {
+	const { state } = await getState(username, groupId)
+	const links = (state.channels?.[parentChannelId]?.links || []).filter(id => id !== childId)
+	return updateChannelLinks(username, groupId, parentChannelId, links)
 }
 
 /**
@@ -56,7 +120,7 @@ export async function updateChannel(username, groupId, channelId, patch = {}) {
 	return appendSignedLocalEvent(username, groupId, {
 		type: 'channel_update',
 		timestamp: Date.now(),
-		content: { ...patch, channelId },
+		content: { channelId, updates: patch },
 	})
 }
 
@@ -154,11 +218,10 @@ export async function appendKeyRotateEvent(username, groupId, body) {
 		throw new Error('new_key_nonce required')
 	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
 	const { state } = await getState(username, groupId)
-	const permissionsChannelId = governanceChannelId(state)
-	const perms = memberChannelPermissions(state, sender, permissionsChannelId)
-	const activeCount = Object.values(state.members).filter(member => member?.status === 'active').length
+	const member = state.members?.[sender]
+	const activeCount = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 	const isDmPair = activeCount === 2
-	if (!isDmPair && !perms.ADMIN && !perms.MANAGE_ROLES)
+	if (!isDmPair && !canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ROLES], governanceChannelId(state)))
 		throw new Error('file_master_key_rotate requires ADMIN, MANAGE_ROLES, or DM membership')
 	return appendEvent(username, groupId, {
 		type: 'file_master_key_rotate',

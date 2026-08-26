@@ -311,20 +311,21 @@
 }
 
 .channel-list {
+	overflow: hidden;
+}
+
+/* 频道列表虚拟滚动：壳撑满容器，内部滚动区承载 createVirtualList */
+.channel-list-virtual-shell {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+}
+
+.channel-list-virtual {
+	flex: 1;
+	min-height: 0;
 	overflow-y: auto;
-}
-
-.channel-list::-webkit-scrollbar {
-	width: 8px;
-}
-
-.channel-list::-webkit-scrollbar-track {
-	background: transparent;
-}
-
-.channel-list::-webkit-scrollbar-thumb {
-	background: var(--bg-server);
-	border-radius: var(--radius-field);
 }
 
 .category {
@@ -353,6 +354,27 @@
 	width: 12px;
 	height: 12px;
 	transition: transform 0.15s ease;
+}
+
+.category.dragging {
+	opacity: 0.4;
+}
+
+.channel-drag-ghost {
+	position: fixed;
+	z-index: 9999;
+	pointer-events: none;
+	max-width: 240px;
+	padding: 6px 12px;
+	border-radius: var(--radius-sm);
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-bright);
+	background: var(--color-base-200);
+	box-shadow: 0 6px 20px rgb(0 0 0 / 30%);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 /* .channel-item 交互样式见 components.css */

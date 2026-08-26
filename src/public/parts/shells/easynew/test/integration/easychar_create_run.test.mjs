@@ -2,8 +2,9 @@
  * easynew easychar 创建 → loadPart → GetGreeting / GetPrompt / GetReply（mock AI）。
  */
 /* global Deno */
-import { seedMockAiSource } from 'fount/scripts/test/fixtures/mock_ai.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { seedMockAiSource } from 'fount/scripts/test/fixtures/mock_ai.mjs'
 
 import { createEasynewBoot, createFromTemplate, MOCK_AI_NAME, PROMPT_MARKER, runEasyChar } from '../harness.mjs'
 

@@ -6,11 +6,11 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { assertEquals } from 'jsr:@std/assert'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { formatExpected, parseExpectedMs, roundExpectedMs } from '../core/expected.mjs'
+import { expectedDriftToleranceMs, formatExpected, isExpectedDrift, parseExpectedMs, roundExpectedMs } from '../core/expected.mjs'
 import { suiteKey } from '../core/state.mjs'
-import { updateManifestEstimates } from '../core/update_estimates.mjs'
+import { applyDriftPatchToManifest, driftedEstimatePatch, updateManifestEstimates } from '../core/update_estimates.mjs'
 
 import { makeStateEntry, makeSuite } from './fixtures.mjs'
 
@@ -108,6 +108,95 @@ Deno.test('updateManifestEstimates writes suite and subtest expected after name'
 		assertEquals(written.suites[1].subtests[0].expected, '20s')
 		assertEquals(written.suites[1].subtests[1].expected, '30s')
 		assertEquals(Object.keys(written.suites[1].subtests[0])[1], 'expected')
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
+})
+
+Deno.test('expectedDriftToleranceMs grows sub-linearly and matches the anchor points', () => {
+	// 幂函数 37·scale^0.656：500ms→~2s，4min→~2min，30min→~8min。
+	assertEquals(expectedDriftToleranceMs(0), 0)
+	assert(expectedDriftToleranceMs(500) > 1_000 && expectedDriftToleranceMs(500) < 3_000)
+	assert(expectedDriftToleranceMs(240_000) > 60_000 && expectedDriftToleranceMs(240_000) < 300_000)
+	assert(expectedDriftToleranceMs(1_800_000) > 120_000 && expectedDriftToleranceMs(1_800_000) < 600_000)
+	// 单调、亚线性（规模×10 时容差远小于×10）。
+	assert(expectedDriftToleranceMs(1_000_000) < expectedDriftToleranceMs(100_000) * 10)
+})
+
+Deno.test('isExpectedDrift fires when the gap exceeds the continuous tolerance at the larger scale', () => {
+	// 空值 / 缺失：语义不变。
+	assertEquals(isExpectedDrift(null, 240_000), true)
+	assertEquals(isExpectedDrift(240_000, null), false)
+	assertEquals(isExpectedDrift(240_000, undefined), false)
+	// 零漂移。
+	assertEquals(isExpectedDrift(240_000, 240_000), false)
+	// 容差以较大值为基准连续给出。
+	const toleranceMs = expectedDriftToleranceMs(240_000)
+	// 超出容差 → 漂移。
+	assertEquals(isExpectedDrift(240_000 - toleranceMs - 10_000, 240_000), true)
+	// 未超容差 → 不漂移。
+	assertEquals(isExpectedDrift(240_000 - Math.floor(toleranceMs) + 10_000, 240_000), false)
+})
+
+Deno.test('driftedEstimatePatch only includes drifted suite and subtest fields', () => {
+	const suite = makeSuite('demo', 'frontend', {
+		expectedMs: 90_000,
+		subtests: [
+			{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [], expectedMs: 20_000 },
+			{ name: 'feed', spec: 'feed.spec.mjs', triggers: [], expectedMs: 30_000 },
+		],
+	})
+	const entry = makeStateEntry({
+		baselineDurationMs: 240_000,
+		subtests: {
+			smoke: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 21_000, triggerHash: null },
+			feed: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 33_000, triggerHash: null },
+		},
+	})
+	const patch = driftedEstimatePatch(suite, entry)
+	// suite 90s→240s 漂移；smoke 20s→21s 未漂移；feed 30s→33s 未漂移
+	assertEquals(patch, { expected: '4m' })
+})
+
+Deno.test('driftedEstimatePatch returns null when nothing drifts or no baseline', () => {
+	const suite = makeSuite('demo', 'pure', { expectedMs: 16_000 })
+	const fresh = makeStateEntry({ baselineDurationMs: 16_200 })
+	assertEquals(driftedEstimatePatch(suite, fresh), null)
+	assertEquals(driftedEstimatePatch(suite, undefined), null)
+})
+
+Deno.test('applyDriftPatchToManifest writes only drifted fields and serializes same-path writes', async () => {
+	const repoRoot = await makeRepoRoot()
+	try {
+		const manifestPath = 'src/parts/demo/test/manifest.json'
+		const manifestAbsolutePath = join(repoRoot, manifestPath)
+		await mkdir(join(manifestAbsolutePath, '..'), { recursive: true })
+		await writeFile(manifestAbsolutePath, `${JSON.stringify({
+			id: 'demo',
+			suites: [
+				{ name: 'pure', expected: '16s', run: ['deno'] },
+				{ name: 'frontend', expected: '90s', run: ['deno'], subtests: [{ name: 'smoke', expected: '20s' }] },
+			],
+		}, null, '\t')}\n`, 'utf8')
+
+		const pure = makeSuite('demo', 'pure', { manifestPath, expectedMs: 16_000 })
+		const frontend = makeSuite('demo', 'frontend', {
+			manifestPath,
+			expectedMs: 90_000,
+			subtests: [{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [], expectedMs: 20_000 }],
+		})
+		// 并发写同一 manifest：一个漂移、一个不漂移。
+		const [pureChanged, frontendChanged] = await Promise.all([
+			applyDriftPatchToManifest(repoRoot, pure, { expected: '2m' }),
+			applyDriftPatchToManifest(repoRoot, frontend, { subtests: { smoke: '25s' } }),
+		])
+		assertEquals(pureChanged, true)
+		assertEquals(frontendChanged, true)
+		const written = JSON.parse(await readFile(manifestAbsolutePath, 'utf8'))
+		assertEquals(written.suites[0].expected, '2m')
+		assertEquals(written.suites[1].expected, '90s')
+		assertEquals(written.suites[1].subtests[0].expected, '25s')
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })

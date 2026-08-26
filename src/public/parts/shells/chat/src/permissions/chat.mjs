@@ -26,6 +26,59 @@ export const PERMISSIONS = {
 	BYPASS_RATE_LIMIT: 'BYPASS_RATE_LIMIT',
 }
 
+/** 群级治理权限：作用于群权限 scope，不出现在频道权限覆写中。 */
+export const GROUP_PERMISSIONS = [
+	PERMISSIONS.KICK_MEMBERS,
+	PERMISSIONS.BAN_MEMBERS,
+	PERMISSIONS.MANAGE_ROLES,
+	PERMISSIONS.MANAGE_ADMINS,
+	PERMISSIONS.INVITE_MEMBERS,
+]
+
+/** 频道级权限：可写入频道权限覆写。 */
+export const CHANNEL_PERMISSIONS = [
+	PERMISSIONS.VIEW_CHANNEL,
+	PERMISSIONS.SEND_MESSAGES,
+	PERMISSIONS.SEND_STICKERS,
+	PERMISSIONS.ADD_REACTIONS,
+	PERMISSIONS.MANAGE_MESSAGES,
+	PERMISSIONS.MANAGE_CHANNELS,
+	PERMISSIONS.STREAM,
+	PERMISSIONS.CREATE_THREADS,
+	PERMISSIONS.UPLOAD_FILES,
+	PERMISSIONS.MANAGE_FILES,
+	PERMISSIONS.PIN_MESSAGES,
+	PERMISSIONS.MENTION_EVERYONE,
+]
+
+/** 超管位：只能通过角色基础权限授予，不进入任何频道/群权限覆写。 */
+export const SUPERUSER_PERMISSIONS = [
+	PERMISSIONS.ADMIN,
+	PERMISSIONS.MANAGE_ADMINS,
+	PERMISSIONS.BYPASS_RATE_LIMIT,
+]
+
+/** 群权限 scope 求值用的固定 id（区别于频道 id）。 */
+export const GROUP_SCOPE_ID = '@group'
+
+/**
+ * 判断权限键是否属于群级治理权限（可用于群权限覆写）。
+ * @param {string} permission 权限键
+ * @returns {boolean} 是否群级治理权限
+ */
+export function isGroupPermission(permission) {
+	return GROUP_PERMISSIONS.includes(permission)
+}
+
+/**
+ * 判断权限键是否属于频道级权限（可用于频道权限覆写）。
+ * @param {string} permission 权限键
+ * @returns {boolean} 是否频道级权限
+ */
+export function isChannelPermission(permission) {
+	return CHANNEL_PERMISSIONS.includes(permission)
+}
+
 const chatEvaluator = createLayeredEvaluator({
 	order: Object.values(PERMISSIONS),
 	superuserName: PERMISSIONS.ADMIN,

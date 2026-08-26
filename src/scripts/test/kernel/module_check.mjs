@@ -10,6 +10,12 @@ import { ms } from '../../ms.mjs'
 export const MODULE_CHECK_HOLD_TIMEOUT_MS = ms('10m')
 
 /**
+ * 无任何实测样本时的模块检查均值兜底（毫秒）。
+ * 避免调度 ETA 一开始把 spawn→ready 互斥窗当成 0，导致「2 分钟 → 24 分钟」的跳变。
+ */
+export const DEFAULT_MODULE_CHECK_MS = 40_000
+
+/**
  * @param {AbortSignal} [signal] 取消信号
  * @returns {Error} AbortError
  */
@@ -26,13 +32,26 @@ export class ModuleCheckGate {
 	 * @param {object} [options] 选项
 	 * @param {number} [options.holdTimeoutMs] 持有未 ready 的上限；默认 {@link MODULE_CHECK_HOLD_TIMEOUT_MS}
 	 * @param {(ticket: string, heldMs: number) => void} [options.onHoldTimeout] 持有超时回调
+	 * @param {number} [options.defaultMeanMs] 无样本时的兜底均值；默认 {@link DEFAULT_MODULE_CHECK_MS}
+	 * @param {number} [options.initialTotal] 历史累计检查时长（持久化恢复）
+	 * @param {number} [options.initialCount] 历史检查次数（持久化恢复）
+	 * @param {(totalMs: number, count: number) => void} [options.onUpdate] 每次记录 ready 后回调（用于持久化）
 	 */
-	constructor({ holdTimeoutMs = MODULE_CHECK_HOLD_TIMEOUT_MS, onHoldTimeout } = {}) {
+	constructor({
+		holdTimeoutMs = MODULE_CHECK_HOLD_TIMEOUT_MS,
+		onHoldTimeout,
+		defaultMeanMs = DEFAULT_MODULE_CHECK_MS,
+		initialTotal = 0,
+		initialCount = 0,
+		onUpdate,
+	} = {}) {
 		/** @type {string | null} */
 		this.heldTicket = null
 		this.heldAt = 0
 		this.holdTimeoutMs = holdTimeoutMs
 		this.onHoldTimeout = onHoldTimeout
+		this.defaultMeanMs = defaultMeanMs
+		this.onUpdate = onUpdate
 		/** @type {{ resolve: (ticket: string) => void, reject: (error: Error) => void }[]} */
 		this.#waiters = []
 		/** @type {ReturnType<typeof setTimeout> | null} */
@@ -40,9 +59,9 @@ export class ModuleCheckGate {
 		/** @type {Set<string>} */
 		this.#pendingReady = new Set()
 		/** @type {number} */
-		this.durationTotalMs = 0
+		this.durationTotalMs = initialTotal
 		/** @type {number} */
-		this.durationCount = 0
+		this.durationCount = initialCount
 	}
 
 	#waiters
@@ -118,6 +137,7 @@ export class ModuleCheckGate {
 		if (recordDuration) {
 			this.durationTotalMs += duration
 			this.durationCount++
+			this.onUpdate?.(this.durationTotalMs, this.durationCount)
 		}
 		this.heldTicket = null
 		if (this.#holdTimer) {
@@ -178,11 +198,11 @@ export class ModuleCheckGate {
 	}
 
 	/**
-	 * 最近检查时长均值；无样本则 0。
+	 * 最近检查时长均值；无实测样本则用 {@link defaultMeanMs} 兜底，避免调度把互斥窗当 0。
 	 * @returns {number} 毫秒
 	 */
 	meanDurationMs() {
-		if (!this.durationCount) return 0
+		if (!this.durationCount) return this.defaultMeanMs
 		return Math.round(this.durationTotalMs / this.durationCount)
 	}
 }

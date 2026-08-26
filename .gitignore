@@ -24,11 +24,13 @@
 /.vm_data_*
 /node_modules
 /full_locales
+/.deno
 /path/deno
 /path/deno.exe
 
 # Steam 非 Steam 快捷方式用根目录 exe；英雄图/标题图按需自 imgs 渲染
 /fount.exe
+/fount.exe.old
 /imgs/steam/
 
 # 性能分析

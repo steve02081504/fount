@@ -22,34 +22,29 @@ export const DEFAULT_ICE_SERVERS = [
 
 /**
  * @param {unknown} raw 单条 ICE 配置
- * @returns {{ urls: string, username?: string, credential?: string } | null} 合法条目或 null
+ * @returns {{ urls: string | string[], username?: string, credential?: string } | null} 合法条目或 null
  */
 function normalizeIceEntry(raw) {
-	if (!raw || typeof raw !== 'object') return null
-	const urlsRaw = raw.urls
-	const urlsList = Array.isArray(urlsRaw)
-		? urlsRaw.map(u => u).filter(Boolean)
-		: [urlsRaw || ''].filter(Boolean)
-	if (!urlsList.length) return null
-	for (const u of urlsList)
-		if (!ICE_URL_RE.test(u)) return null
+	if (!raw) return null
+	const urls = [raw.urls].flat().filter(Boolean)
+	if (!urls.length || urls.some(url => !ICE_URL_RE.test(url))) return null
 	const username = raw.username != null ? String(raw.username) : undefined
 	const credential = raw.credential != null ? String(raw.credential) : undefined
-	if ((username && !credential) || (!username && credential)) return null
+	if (!!username !== !!credential) return null
 	return {
-		urls: urlsList.length === 1 ? urlsList[0] : urlsList,
+		urls: urls.length === 1 ? urls[0] : urls,
 		...username ? { username, credential } : {},
 	}
 }
 
 /**
- * @param {unknown} groupSettings 物化群设置
- * @returns {{ urls: string, username?: string, credential?: string }[]} 合法 ICE 列表
+ * 清洗并规范化 ICE 服务器列表（空或全非法时回退默认列表）。
+ * @param {unknown[]} list 待清洗条目
+ * @returns {{ urls: string | string[], username?: string, credential?: string }[]} 合法 ICE 列表
  */
-export function resolveIceServers(groupSettings) {
-	const fromSettings = groupSettings?.iceServers || []
+function normalizeIceServers(list) {
 	const out = []
-	for (const raw of fromSettings) {
+	for (const raw of list) {
 		const entry = normalizeIceEntry(raw)
 		if (entry) out.push(entry)
 		if (out.length >= MAX_ICE_SERVERS) break
@@ -58,17 +53,19 @@ export function resolveIceServers(groupSettings) {
 }
 
 /**
+ * 从物化群设置解析可用的 ICE 服务器列表。
+ * @param {unknown} groupSettings 物化群设置
+ * @returns {{ urls: string | string[], username?: string, credential?: string }[]} 合法 ICE 列表
+ */
+export function resolveIceServers(groupSettings) {
+	return normalizeIceServers(groupSettings?.iceServers || [])
+}
+
+/**
  * 校验并规范化待写入 DAG 的 iceServers 数组。
  * @param {unknown} raw 请求体字段
  * @returns {{ urls: string, username?: string, credential?: string }[]} 校验后的 ICE 列表
  */
 export function sanitizeIceServersForSettings(raw) {
-	if (!raw?.length) return [...DEFAULT_ICE_SERVERS]
-	const out = []
-	for (const item of raw) {
-		const entry = normalizeIceEntry(item)
-		if (entry) out.push(entry)
-		if (out.length >= MAX_ICE_SERVERS) break
-	}
-	return out.length ? out : [...DEFAULT_ICE_SERVERS]
+	return normalizeIceServers(raw?.length ? raw : [])
 }

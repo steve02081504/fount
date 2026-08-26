@@ -31,9 +31,9 @@ export const pendingSnapshotPulls = new Map()
  * @returns {string} 分桶键
  */
 function snapshotBucketKey(envelope, inner) {
-	const tips = String(inner?.checkpoint?.local_tips_hash || '').trim()
+	const tips = inner?.checkpoint?.local_tips_hash
 	if (isHex64(tips)) return `tips:${tips}`
-	const root = String(inner?.checkpoint?.epoch_root_hash || '').trim()
+	const root = inner?.checkpoint?.epoch_root_hash
 	if (isHex64(root)) return `root:${root}`
 	return ''
 }
@@ -60,8 +60,8 @@ export async function noteJoinSnapshotResponse(username, groupId, envelope, peer
 		envelope,
 		inner,
 		bucketKey,
-		tipsHash: inner.checkpoint.local_tips_hash || '',
-		epochRootHash: inner.checkpoint.epoch_root_hash || '',
+		tipsHash: inner.checkpoint.local_tips_hash,
+		epochRootHash: inner.checkpoint.epoch_root_hash,
 		epochId: Number(inner.checkpoint.epoch_id) || 0,
 	})
 	tryFinishFederationCollect(pending, joinSnapshotQuorumSatisfied)

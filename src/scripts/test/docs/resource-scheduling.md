@@ -23,6 +23,10 @@ No CLI concurrency knob: suite packing and `serial.mjs` inner file parallelism b
 
 ETA simulation (`simulateParallelMakespanMs`) uses the same one-layer hard-anchor overlap + promotion rules, plus a serialized module-check timeline (`t_check`).
 
+Full-run ETA prefers the measured suite wall baseline (`baselineDurationMs`) over the Σ-subtest + overhead estimate, because internally-parallel suites (e.g. a Playwright process running multiple spec files) would otherwise be double-counted. Subtest subsets still sum per-subtest timings.
+
+Displayed "remaining"/ETA is not monotonic: it is recomputed from an ideal timeline rebuilt from real current state (queues + running + budget) each time a scheduling-affecting change happens, so the total can legitimately go up or down as state changes — e.g. re-packing, a late-admitted long suite landing on the critical path, or new insertions (`cli`/`fs`/`prep`). There is no monotonic clamp; every such change broadcasts a `schedule-update` carrying a per-consumer projection (`running` + `lastCompletionMs` + a `reason`), and consumers paint on a ~5% change vs last shown. `idle_all` does count as an insertion: it enqueues every suite and broadcasts `queue-append` (reason `idle_all`) for each, then participates in the broadcast/plan like any other queue growth; a new job preempts it via `queue-remove`.
+
 ## Ordering
 
 - **Manifest list / `report.md` slots / dispatch**: same topo + tie-break (`listManifestIds` / `topoSortSuites`). Ready set re-sorted by `suiteSchedulePriority` then bin-packed. CLI queue: later equal-`priority` items first.

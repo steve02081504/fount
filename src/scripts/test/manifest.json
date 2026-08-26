@@ -138,7 +138,7 @@
 		},
 		{
 			"name": "selection",
-			"expected": 800,
+			"expected": 700,
 			"run": [
 				"deno",
 				"test",
@@ -163,7 +163,7 @@
 		},
 		{
 			"name": "protocol_order",
-			"expected": 700,
+			"expected": "2s",
 			"run": [
 				"deno",
 				"test",
@@ -208,7 +208,7 @@
 		},
 		{
 			"name": "resources_scheduler",
-			"expected": 700,
+			"expected": 600,
 			"run": [
 				"deno",
 				"test",
@@ -250,7 +250,7 @@
 		},
 		{
 			"name": "deno_panic",
-			"expected": "2s",
+			"expected": 800,
 			"run": [
 				"deno",
 				"test",
@@ -316,7 +316,7 @@
 		},
 		{
 			"name": "run_timing",
-			"expected": 700,
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -337,7 +337,7 @@
 		},
 		{
 			"name": "estimate",
-			"expected": 800,
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -362,7 +362,7 @@
 		},
 		{
 			"name": "update_estimates",
-			"expected": 600,
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -383,7 +383,7 @@
 		},
 		{
 			"name": "trigger_audit",
-			"expected": "2s",
+			"expected": 900,
 			"triggerFilter": {
 				"unignore": [
 					"**/test/manifest.json"
@@ -409,7 +409,7 @@
 		},
 		{
 			"name": "disposable_path",
-			"expected": 400,
+			"expected": 500,
 			"run": [
 				"deno",
 				"test",
@@ -510,7 +510,7 @@
 		},
 		{
 			"name": "launch_node",
-			"expected": "30s",
+			"expected": "4m15s",
 			"run": [
 				"deno",
 				"run",
@@ -626,7 +626,7 @@
 		},
 		{
 			"name": "kernel",
-			"expected": "17s",
+			"expected": "3m27s",
 			"run": [
 				"deno",
 				"test",

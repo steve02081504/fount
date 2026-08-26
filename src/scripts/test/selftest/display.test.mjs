@@ -7,8 +7,10 @@ import process from 'node:process'
 import { assertEquals } from 'jsr:@std/assert'
 
 import { console } from '../../i18n/bare.mjs'
+import { allowNoise } from '../core/allowNoise.mjs'
+import { formatNoiseAllowBegin, formatNoiseAllowEnd } from '../core/output_filter.mjs'
 import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
-import { paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd } from '../display/paint.mjs'
+import { formatFailureOutput, paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd } from '../display/paint.mjs'
 import { acceptedFromWave } from '../kernel/jobs.mjs'
 
 /**
@@ -35,15 +37,24 @@ function captureI18n(fn) {
 	 * @returns {void}
 	 */
 	function errSpy(key, params) { errors.push({ key, params }) }
-	console.logI18n = logSpy
-	console.errorI18n = errSpy
-	try {
-		fn()
-	}
-	finally {
+	/** 恢复原始 console.logI18n / console.errorI18n。 */
+	const restore = () => {
 		console.logI18n = logOrig
 		console.errorI18n = errOrig
 	}
+	console.logI18n = logSpy
+	console.errorI18n = errSpy
+	let result
+	try {
+		result = fn()
+	}
+	catch (error) {
+		restore()
+		throw error
+	}
+	if (result && typeof result.then === 'function')
+		return result.finally(restore).then(() => ({ logs, errors }))
+	restore()
 	return { logs, errors }
 }
 
@@ -124,7 +135,6 @@ Deno.test('paintAccepted lists per-suite continue reasons when explicit count is
 		runCount: 2,
 		reuseCount: 0,
 		blockedCount: 0,
-		remainingMs: 12_000,
 		continueReasons: [
 			{ key: 'shells/social:pure', kind: 'explicit_selected' },
 			{ key: 'checks:i18n_keys', kind: 'stale_content', matchedPaths: ['src/public/locales/zh-CN.json'] },
@@ -136,7 +146,7 @@ Deno.test('paintAccepted lists per-suite continue reasons when explicit count is
 		'checks:i18n_keys',
 	])
 	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.explicitSelectedCount'), false)
-	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), false)
 })
 
 Deno.test('paintAccepted aggregates explicit_selected over 7 into a count', () => {
@@ -149,7 +159,6 @@ Deno.test('paintAccepted aggregates explicit_selected over 7 into a count', () =
 		runCount: 9,
 		reuseCount: 0,
 		blockedCount: 0,
-		remainingMs: 12_000,
 		continueReasons,
 	}))
 	assertEquals(logs.filter(row => row.key === 'fountConsole.test.display.explicitSelectedCount').map(row => row.params), [
@@ -158,7 +167,7 @@ Deno.test('paintAccepted aggregates explicit_selected over 7 into a count', () =
 	assertEquals(logs.filter(row => row.key === 'fountConsole.test.display.reason').map(row => row.params.label), [
 		'checks:i18n_keys',
 	])
-	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), false)
 })
 
 Deno.test('paintJobDone nothingToContinue after a finished wave', () => {
@@ -208,13 +217,12 @@ Deno.test('paintSuiteEnd overview prints remaining after FAILED without suite ou
 			key: 'shells/achievements:frontend',
 			passed: false,
 			output,
-			remainingMs: 12_000,
 		}, { stream: false }))
 	})
 	assertEquals(logs[0]?.key, 'fountConsole.test.failed')
 	assertEquals(logs[0]?.params.label, 'shells/achievements:frontend')
 	assertEquals(written.includes(output), false)
-	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), true)
+	assertEquals(logs.some(row => row.key === 'fountConsole.test.display.remaining'), false)
 })
 
 Deno.test('paintSuiteEnd stream mode does not replay live output', () => {
@@ -229,19 +237,26 @@ Deno.test('paintSuiteEnd stream mode does not replay live output', () => {
 	assertEquals(written, '')
 })
 
-Deno.test('paintJobDone reprints failed suite logs after the report path', () => {
+Deno.test('formatFailureOutput strips markers and appends trailing newline', () => {
+	assertEquals(formatFailureOutput('Error: still failing'), 'Error: still failing\n')
+	assertEquals(formatFailureOutput('a\nb\n'), 'a\nb\n')
+	assertEquals(formatFailureOutput(''), '')
+	assertEquals(formatFailureOutput(`${formatNoiseAllowBegin('.*')}\nError: still failing\n${formatNoiseAllowEnd()}`), 'Error: still failing\n')
+})
+
+Deno.test('paintJobDone reprints failed suite logs after the report path', async () => {
 	const output = 'Error: still failing\n'
-	let written = ''
-	const { logs } = captureI18n(() => {
-		written = captureStdout(() => paintJobDone({
-			reportPath: 'data/test/report.md',
-			exitCode: 1,
-			failureLogs: [{ key: 'shells/achievements:frontend', output }],
-		}))
+	const { logs } = await captureI18n(async () => {
+		await allowNoise('Error: still failing', () => {
+			paintJobDone({
+				reportPath: 'data/test/report.md',
+				exitCode: 1,
+				failureLogs: [{ key: 'shells/achievements:frontend', output }],
+			})
+		})
 	})
 	assertEquals(logs.at(-1)?.key, 'fountConsole.test.display.failureLog')
 	assertEquals(logs.at(-1)?.params.label, 'shells/achievements:frontend')
-	assertEquals(written.includes('Error: still failing'), true)
 })
 
 Deno.test('paintJobWait names queue depth not another suite', () => {

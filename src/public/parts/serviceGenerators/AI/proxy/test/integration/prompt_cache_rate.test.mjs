@@ -7,11 +7,12 @@ import { join } from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 
+import { assert, assertEquals } from 'jsr:@std/assert'
+
 import { createIntegrationBoot } from 'fount/public/parts/shells/chat/test/harness.mjs'
 import { startOpenAIPromptCacheMock } from 'fount/scripts/test/fixtures/openai_prompt_cache_mock.mjs'
 import { ensureSharedTestDataDir } from 'fount/scripts/test/node/boot.mjs'
 import { __dirname } from 'fount/server/base.mjs'
-import { assert, assertEquals } from 'jsr:@std/assert'
 
 /** 会话轮数。 */
 const ROUNDS = 100

@@ -6,9 +6,19 @@
  * @returns {Promise<void>}
  */
 export async function loginWithApiKey(request, baseUrl, apiKey) {
-	const response = await request.post(`${baseUrl}/api/login`, {
-		data: { apiKey, deviceid: 'playwright' },
-	})
-	if (!response.ok())
-		throw new Error(`api/login failed: ${response.status()} ${await response.text()}`)
+	let lastError
+	for (let attempt = 0; attempt < 3; attempt++) try {
+		const response = await request.post(`${baseUrl}/api/login`, {
+			data: { apiKey, deviceid: 'playwright' },
+		})
+		if (!response.ok())
+			throw new Error(`api/login failed: ${response.status()} ${await response.text()}`)
+		return
+	}
+	catch (error) {
+		lastError = error
+		if (attempt < 2)
+			await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)))
+	}
+	throw lastError
 }

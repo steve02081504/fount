@@ -98,17 +98,16 @@ function decryptAesGcm(envelope, key) {
  * @returns {Promise<string | null>} 64 hex pubKey
  */
 async function resolveEntityPubKeyHex(username, entityHash) {
-	const hash = entityHash
 	try {
 		const { getEntityActivePubKey } = await import('../../../chat/src/entity/identity.mjs')
-		const pub = await getEntityActivePubKey(username, hash)
+		const pub = await getEntityActivePubKey(username, entityHash)
 		if (isHex64(pub)) return pub
 	}
 	catch { /* 非本机实体 */ }
 	try {
 		const { createFsEntityStore } = await import('npm:@steve02081504/fount-p2p/node/entity_store')
 		const { entitiesRoot } = await import('../../../chat/src/entity/store.mjs')
-		const profile = await createFsEntityStore(entitiesRoot(username)).readEntityJson(hash, 'profile.json')
+		const profile = await createFsEntityStore(entitiesRoot(username)).readEntityJson(entityHash, 'profile.json')
 		const pub = profile?.activePubKeyHex || ''
 		if (isHex64(pub)) return pub
 	}
@@ -202,7 +201,7 @@ async function tryUnwrapPkw(username, entityHash, wraps) {
 		const secretHex = await getEntitySecretKey(username, entityHash)
 		if (!secretHex || secretHex.length !== 64) return null
 		const keyHex = unwrapKeyEcies(wrapped, new Uint8Array(Buffer.from(secretHex, 'hex')))
-		return isHex64(keyHex) ? keyHex : null
+		return isHex64(keyHex)
 	}
 	catch {
 		return null

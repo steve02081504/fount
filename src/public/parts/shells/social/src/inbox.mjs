@@ -1,10 +1,11 @@
 /**
  * 【文件】inbox.mjs — 通知持久 inbox（append-only JSONL + 服务端已读水位 + 读取层聚合）。
  */
+import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
 import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { createJsonlInboxStore } from 'fount/public/parts/shells/chat/src/chat/lib/jsonlInboxStore.mjs'
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
-import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 

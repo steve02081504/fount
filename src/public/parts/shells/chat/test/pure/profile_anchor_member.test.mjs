@@ -2,8 +2,9 @@
  * 资料卡锚点成员匹配：按 entityHash 主键命中本机，不得误命中首位远端。
  */
 /* global Deno */
-import { findMemberByEntityHash } from 'fount/public/parts/shells/chat/public/shared/memberByEntityHash.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { findMemberByEntityHash } from 'fount/public/parts/shells/chat/public/shared/memberByEntityHash.mjs'
 
 const REMOTE = {
 	entityHash: '33467ca1b0403203e765b969b11a4c84b0e2cf6ab41430d8db3bfe45d486fe8640550b51b6691ccb6ac1593e854710f08830ed7ac82cd7b77227d4fa8d57dd07',

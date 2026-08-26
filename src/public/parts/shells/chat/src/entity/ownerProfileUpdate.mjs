@@ -6,7 +6,7 @@ import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 
 import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { readPublicFile } from 'npm:@steve02081504/fount-p2p/files/evfs'
 import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/manifest/public'
 import {
@@ -297,7 +297,7 @@ export async function publishOwnerProfileUpdate(username, publisherEntityHash, t
 
 	savePending(username, publisher, target, { contentHash, ts })
 
-	const targetActivePub = normalizeHex64(remote?.activePubKeyHex || '')
+	const targetActivePub = remote?.activePubKeyHex
 		|| await (async () => {
 			try {
 				return await getEntityActivePubKey(username, target)
@@ -426,9 +426,7 @@ export async function pullOwnerProfileUpdate(username, targetEntityHash) {
 
 	await writeLastAppliedTs(target, ts)
 
-	const ownerActivePub = normalizeHex64(
-		(await getProfile(ownerEntityHash, username, { skipPresentation: true, fetchRemote: true }))?.activePubKeyHex || '',
-	)
+	const ownerActivePub = (await getProfile(ownerEntityHash, username, { skipPresentation: true, fetchRemote: true }))?.activePubKeyHex || ''
 	if (isHex64(ownerActivePub)) {
 		const parsed = parseEntityHash(ownerEntityHash)
 		await publishMailboxRecord(username, ownerActivePub, {
