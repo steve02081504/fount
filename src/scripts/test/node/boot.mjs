@@ -209,24 +209,29 @@ export async function bootInProcess(options) {
 	if (options.minP2pNode)
 		await ensureMinP2pNode(options.dataPath)
 
-	if (options.loadParts?.length) {
-		const { loadPart } = await import('fount/server/parts_loader.mjs')
-		for (const part of options.loadParts)
-			await loadPart(options.username, part)
-	}
+	// loadPart（以及随后的动态 import）会解析 part 的 npm 依赖（如 file-type → strtok3），
+	// 属共享 node_modules 物化期；用模组检查互斥闸串行，避免并行 integration suite 争用 .deno 符号农场。
+	const { withModuleCheckSerialized } = await import('fount/scripts/test/hub/clients/module_check.mjs')
+	await withModuleCheckSerialized(async () => {
+		if (options.loadParts?.length) {
+			const { loadPart } = await import('fount/server/parts_loader.mjs')
+			for (const part of options.loadParts)
+				await loadPart(options.username, part)
+		}
 
-	if (starts.P2P && options.loadParts?.length) {
-		const { ensureUserRoom } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
-		await ensureUserRoom({ replicaUsername: options.username })
-	}
+		if (starts.P2P && options.loadParts?.length) {
+			const { ensureUserRoom } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
+			await ensureUserRoom({ replicaUsername: options.username })
+		}
 
-	if (options.bootstrap) {
-		const module = await import(pathToFileURL(options.bootstrap).href)
-		await module.default(options.username)
-	}
+		if (options.bootstrap) {
+			const module = await import(pathToFileURL(options.bootstrap).href)
+			await module.default(options.username)
+		}
 
-	if (options.afterInit)
-		await options.afterInit(options.username)
+		if (options.afterInit)
+			await options.afterInit(options.username)
+	})
 
 	return { dataPath: options.dataPath, username: options.username }
 }
@@ -255,7 +260,7 @@ let sharedTestBootPromise = null
  * @param {string} dataDir 本模块自建的 dataDir
  * @returns {void}
  */
-function registerSelfCreatedTestDataDir(dataDir) {
+export function registerSelfCreatedTestDataDir(dataDir) {
 	const outPath = process.env.FOUNT_TEST_DATA_DIRS_OUT
 	if (!outPath) return
 	fs.appendFileSync(outPath, `${dataDir}\n`, 'utf8')
@@ -310,14 +315,18 @@ async function registerTestUserOnRunningServer(dataDir, options) {
 	if (options.minP2pNode)
 		await ensureMinP2pNode(dataDir)
 
-	if (options.loadParts?.length) {
-		const { loadPart } = await import('fount/server/parts_loader.mjs')
-		for (const part of options.loadParts)
-			await loadPart(username, part)
-	}
+	// 与 bootInProcess 同理：loadPart 解析 part npm 依赖，属共享 node_modules 物化期，需串行。
+	const { withModuleCheckSerialized } = await import('fount/scripts/test/hub/clients/module_check.mjs')
+	await withModuleCheckSerialized(async () => {
+		if (options.loadParts?.length) {
+			const { loadPart } = await import('fount/server/parts_loader.mjs')
+			for (const part of options.loadParts)
+				await loadPart(username, part)
+		}
 
-	if (options.afterInit)
-		await options.afterInit(username)
+		if (options.afterInit)
+			await options.afterInit(username)
+	})
 }
 
 /**
@@ -397,6 +406,9 @@ export function createTestServerBoot(options) {
  */
 export async function bootHeadlessDataRoot(dataPath) {
 	fs.mkdirSync(dataPath, { recursive: true })
+	// headless server 进程存活期间锁住数据根文件，测试内 finally rm 在 Windows 上会失败留下残留。
+	// 登记到父进程回收清单，待子进程退出、文件解锁后由 serial.mjs 清理。
+	registerSelfCreatedTestDataDir(dataPath)
 	writeNodeConfig(dataPath, { port: HEADLESS_CONFIG_PORT, username: 'headless-root', emptyUsers: true })
 	if (!await initFountNode({
 		dataPath,

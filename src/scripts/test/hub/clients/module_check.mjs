@@ -124,6 +124,29 @@ export async function abandonModuleCheckTicket(ticket) {
 }
 
 /**
+ * 串行化一段会触发共享 node_modules npm 解析的初始化期（如 boot 的 loadPart）。
+ * 复用模组检查互斥闸：同进程内只有一次能同时物化 npm 依赖，避免并行 integration suite
+ * 在 loadPart 动态 import（如 file-type → strtok3）时争用 .deno 符号农场（denoland/deno#35804）。
+ * 无 hub（手动单跑）时退化为直接执行，不做串行化。
+ * @template T
+ * @param {() => Promise<T>} fn 需串行执行的初始化段
+ * @returns {Promise<T>} 结果
+ */
+export async function withModuleCheckSerialized(fn) {
+	const ticket = await acquireModuleCheckTicket()
+	if (!ticket) return await fn()
+	try {
+		const result = await fn()
+		await signalModuleCheckReady(ticket)
+		return result
+	}
+	catch (error) {
+		await abandonModuleCheckTicket(ticket)
+		throw error
+	}
+}
+
+/**
  * 父进程 spawn 前占闸；子进程 env.mjs / preload 会 ready。未 ready 就结束则报错。
  * spawn 失败只释放闸，不伪装成 missed-ready。
  * @template T
