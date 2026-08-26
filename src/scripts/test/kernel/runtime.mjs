@@ -193,6 +193,16 @@ export class TestKernel {
 	}
 
 	/**
+	 * viewer 连接/断开等活动后重置空闲自动退出宽限，使计时从最后一次活动起算，
+	 * 而非内核启动时刻（否则 120ms 宽限会被启动到 viewer 操作之间的时间耗尽）。
+	 * @returns {void}
+	 */
+	resetIdleExitGrace() {
+		this.#idleExitDueAt = null
+		this.wake()
+	}
+
+	/**
 	 * 加载 catalog。
 	 * @returns {Promise<void>}
 	 */
@@ -1528,6 +1538,6 @@ export class TestKernel {
 		for (const job of [...this.jobs.values()])
 			if (job.viewerId === viewerId && job.pending.size === 0 && ![...this.running.values()].some(running => running.item.jobId === job.id))
 				void this.#finishJob(job)
-		this.wake()
+		this.resetIdleExitGrace()
 	}
 }

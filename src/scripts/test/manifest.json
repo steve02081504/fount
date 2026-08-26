@@ -510,7 +510,7 @@
 		},
 		{
 			"name": "launch_node",
-			"expected": "1m12s",
+			"expected": "4m15s",
 			"run": [
 				"deno",
 				"run",
@@ -626,7 +626,7 @@
 		},
 		{
 			"name": "kernel",
-			"expected": "2m59s",
+			"expected": "6m15s",
 			"run": [
 				"deno",
 				"test",

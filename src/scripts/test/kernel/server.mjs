@@ -132,6 +132,7 @@ export async function startTestKernel({
 	const webSocketServer = new WebSocketServer({ server, path: '/ws/viewer' })
 	webSocketServer.on('connection', (socket) => {
 		const viewer = kernel.viewers.add(socket, { watch: false, mode: 'overview' })
+		kernel.resetIdleExitGrace()
 		socket.on('message', rawMessage => {
 			void onViewerMessage(kernel, viewer, rawMessage)
 		})
