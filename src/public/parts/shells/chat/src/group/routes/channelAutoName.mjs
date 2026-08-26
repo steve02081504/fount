@@ -48,11 +48,14 @@ const categoryCreateLocks = new Map()
 async function withCategoryCreateLock(groupId, createCategory) {
 	const previous = categoryCreateLocks.get(groupId) ?? Promise.resolve()
 	const run = (async () => {
-		try { await previous } catch { /* 前序失败也继续执行本次临界区 */ }
-		return createCategory()
-	})().finally(() => {
-		if (categoryCreateLocks.get(groupId) === run) categoryCreateLocks.delete(groupId)
-	})
+		try {
+			try { await previous } catch { /* 前序失败也继续执行本次临界区 */ }
+			return await createCategory()
+		}
+		finally {
+			if (categoryCreateLocks.get(groupId) === run) categoryCreateLocks.delete(groupId)
+		}
+	})()
 	categoryCreateLocks.set(groupId, run)
 	return run
 }
@@ -223,7 +226,10 @@ export async function scheduleDmChannelAutoNameAndCleanup(username, groupId, new
 	}
 
 	const defaultChannelId = state.groupSettings?.defaultChannelId
-	if (toDelete.includes(defaultChannelId))
+	// 仅当存在有效的替代频道 id（新建频道路径）时才更新默认频道并清理旧默认频道；
+	// 自动命名路由不提供 newChannelId（''），此时不得写入空 defaultChannelId 或删除当前默认频道。
+	const hasValidReplacement = !!newChannelId
+	if (hasValidReplacement && toDelete.includes(defaultChannelId))
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'group_settings_update',
 			timestamp: Date.now(),
@@ -231,7 +237,8 @@ export async function scheduleDmChannelAutoNameAndCleanup(username, groupId, new
 		})
 
 	for (const channelId of toDelete)
-		await deleteChannel(username, groupId, channelId).catch(() => {})
+		if (!(channelId === defaultChannelId && !hasValidReplacement))
+			await deleteChannel(username, groupId, channelId).catch(() => {})
 
 	for (const channelId of toName) {
 		const key = `${groupId}:${channelId}`

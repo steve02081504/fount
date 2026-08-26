@@ -56,20 +56,63 @@ import { GROUPS_PREFIX } from './path.mjs'
 /**
  * 治理操作后轮换 roomSecret：移除成员的同时把旧房口令换掉，使被封成员再也无法入房。
  * 与触发它的 moderation 事件绑定并持久化完成状态，重试/恢复时已完成的事件不再重复轮换。
+ * 同一 moderation 事件串行化轮换，并在生成新 secret 前从已落盘事件日志恢复已完成状态，
+ * 避免 appendSignedLocalEvent 成功（secret 已入 DAG）但侧效标记未落盘时重试再生成新 secret。
  * @param {string} username 登录名
  * @param {string} groupId 群 id
  * @param {string} [moderationEventId] 触发治理的 member_ban / member_kick 事件 id（无则按旧行为轮换）
+ * @returns {Promise<void>} 完成
  */
 async function rotateRoomSecretAfterModeration(username, groupId, moderationEventId) {
-	if (moderationEventId && await hasRoomRotatedForEvent(username, groupId, moderationEventId))
-		return
-	await appendSignedLocalEvent(username, groupId, {
-		type: 'group_settings_update',
-		timestamp: Date.now(),
-		content: { roomSecret: mintRoomSecret() },
-	})
-	if (moderationEventId)
+	if (!moderationEventId)
+		return appendSignedLocalEvent(username, groupId, {
+			type: 'group_settings_update',
+			timestamp: Date.now(),
+			content: { roomSecret: mintRoomSecret() },
+		})
+	const previous = roomRotationLocks.get(moderationEventId) ?? Promise.resolve()
+	const run = (async () => {
+		try { await previous } catch { /* 前序失败也继续执行本次轮换 */ }
+		if (await hasRoomRotatedForEvent(username, groupId, moderationEventId))
+			return
+		// 生成新 secret 前恢复已完成状态：该 moderation 事件后已有 roomSecret 轮换，则标记完成而非再轮换
+		if (await findRoomRotationAfterEvent(username, groupId, moderationEventId)) {
+			await markRoomRotatedForEvent(username, groupId, moderationEventId)
+			return
+		}
+		await appendSignedLocalEvent(username, groupId, {
+			type: 'group_settings_update',
+			timestamp: Date.now(),
+			content: { roomSecret: mintRoomSecret() },
+		})
 		await markRoomRotatedForEvent(username, groupId, moderationEventId)
+	})().finally(() => {
+		if (roomRotationLocks.get(moderationEventId) === run) roomRotationLocks.delete(moderationEventId)
+	})
+	roomRotationLocks.set(moderationEventId, run)
+	return run
+}
+
+/** 每个 moderation 事件在途的 roomSecret 轮换 promise（键：moderationEventId），串行化并发轮换。 */
+const roomRotationLocks = new Map()
+
+/**
+ * 在本地事件日志中定位指定 moderation 事件之后最近一条 roomSecret 轮换事件。
+ * 用于 appendSignedLocalEvent 成功后、侧效标记落盘前崩溃重试时，从持久事件日志恢复"已完成"状态。
+ * @param {string} username 登录名
+ * @param {string} groupId 群 id
+ * @param {string} moderationEventId 触发治理的 member_ban / member_kick 事件 id
+ * @returns {Promise<object | null>} 命中的轮换事件，无则 null
+ */
+async function findRoomRotationAfterEvent(username, groupId, moderationEventId) {
+	const events = await readJsonl(eventsPath(username, groupId))
+	let seenModeration = false
+	for (const event of events) {
+		if (event?.id === moderationEventId) { seenModeration = true; continue }
+		if (seenModeration && event?.type === 'group_settings_update' && event?.content?.roomSecret)
+			return event
+	}
+	return null
 }
 
 /**
@@ -427,11 +470,20 @@ export function registerGovernanceRoutes(router, authenticate) {
 			// 已封禁：member_ban 已落盘，补齐可能缺失的拉黑/denylist/roomSecret 副作用后幂等返回，避免重试再追加 member_ban / 再扣声誉
 			if (resolvedMember?.status === 'banned') {
 				try {
-					const banContent = buildMemberBanContent(/** @type {import('../../chat/governance/banRules.mjs').BanScope} */ banScope, resolvedMember)
-					await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
-					await addDenylistFromBanContent(banContent, groupId)
-					// 已完成轮换的该 ban 事件不再重复轮换 roomSecret；未定位到 ban 事件时按旧行为轮换
-					await rotateRoomSecretAfterModeration(username, groupId, (await findMemberBanEvent(username, groupId, resolvedTargetKey))?.id)
+					// 优先用已落盘 member_ban 事件的持久 content 补齐拉黑/denylist，并绑定其 id 串行化轮换；
+					// 未定位到 ban 事件时按旧行为从当前 banScope 重建并轮换。
+					const banEvent = await findMemberBanEvent(username, groupId, resolvedTargetKey)
+					if (banEvent?.content) {
+						await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banEvent.content))
+						await addDenylistFromBanContent(banEvent.content, groupId)
+						await rotateRoomSecretAfterModeration(username, groupId, banEvent.id)
+					}
+					else {
+						const banContent = buildMemberBanContent(/** @type {import('../../chat/governance/banRules.mjs').BanScope} */ banScope, resolvedMember)
+						await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
+						await addDenylistFromBanContent(banContent, groupId)
+						await rotateRoomSecretAfterModeration(username, groupId)
+					}
 				}
 				catch (error) {
 					console.error('governance: ban recovery failed to rebuild ban content', error)

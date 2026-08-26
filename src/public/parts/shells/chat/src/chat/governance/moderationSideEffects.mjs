@@ -16,11 +16,11 @@ import { moderationSideEffectsPath } from '../lib/paths.mjs'
  * @returns {Record<string, true>} 规范化后的完成状态映射
  */
 function normalizeModerationSideEffects(raw) {
-	const out = {}
+	const normalized = {}
 	if (raw && typeof raw === 'object')
 		for (const key of Object.keys(raw))
-			if (raw[key] === true) out[key] = true
-	return out
+			if (raw[key] === true) normalized[key] = true
+	return normalized
 }
 
 /**
@@ -35,7 +35,7 @@ export async function loadModerationSideEffects(username, groupId) {
 		return normalizeModerationSideEffects(JSON.parse(text))
 	}
 	catch (error) {
-		if (error?.code !== 'ENOENT') console.error(error)
+		if (error?.code !== 'ENOENT') throw error
 		return {}
 	}
 }
@@ -64,7 +64,7 @@ export async function markRoomRotatedForEvent(username, groupId, moderationEvent
 	if (!moderationEventId) return
 	const data = await loadModerationSideEffects(username, groupId)
 	data[moderationEventId] = true
-	const p = moderationSideEffectsPath(username, groupId)
-	await mkdir(dirname(p), { recursive: true })
-	await writeFile(p, JSON.stringify(data, null, '\t'), 'utf8')
+	const filePath = moderationSideEffectsPath(username, groupId)
+	await mkdir(dirname(filePath), { recursive: true })
+	await writeFile(filePath, JSON.stringify(data, null, '\t'), 'utf8')
 }
