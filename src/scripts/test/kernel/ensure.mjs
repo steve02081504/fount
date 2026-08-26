@@ -52,6 +52,7 @@ export async function spawnDetachedKernel(port = TEST_HUB_PORT) {
 			KERNEL_ENTRY,
 		],
 		cwd: REPO_ROOT,
+		windowsHide: true,
 		env: {
 			FOUNT_TEST: '1',
 			FOUNT_TEST_KERNEL: '1',
