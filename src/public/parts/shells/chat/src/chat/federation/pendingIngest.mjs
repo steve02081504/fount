@@ -8,9 +8,10 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { ms } from 'fount/scripts/ms.mjs'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { pendingIngestPath } from '../lib/paths.mjs'
 

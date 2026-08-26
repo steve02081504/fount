@@ -76,7 +76,7 @@ export async function applyHubContactQuery(contactRaw) {
 	await showProfilePopup({
 		entityHash: contactRaw,
 		charname: null,
-		pubKeyHex: isHex64(pubKeyHex) ? pubKeyHex : null,
+		pubKeyHex: isHex64(pubKeyHex),
 		pubKeyHash: null,
 		displayName,
 	})

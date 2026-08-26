@@ -6,8 +6,9 @@ import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 
 import { replicatedWorldHookState } from '../fixtures/probes/replicatedWorldHookState.mjs'
 import { createChatFederationSim } from '../simulation/federation.mjs'

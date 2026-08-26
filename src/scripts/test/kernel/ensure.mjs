@@ -2,13 +2,14 @@
  * 测试内核进程：health / spawn / ensure / shutdown / reboot。
  */
 /* global Deno */
-import { execFile as execFileCallback, spawn } from 'node:child_process'
+import { execFile as execFileCallback } from 'node:child_process'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 
+import { launchDetachedProgram } from '../../launch_external.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { TEST_KERNEL_HEALTH_ID } from '../hub/apis/health.mjs'
 import { TEST_HUB_PORT, testHubUrl } from '../hub/index.mjs'
@@ -43,27 +44,20 @@ export async function kernelHealthy(url) {
  * @returns {Promise<void>}
  */
 export async function spawnDetachedKernel(port = TEST_HUB_PORT) {
-	await new Promise((resolve, reject) => {
-		const child = spawn(Deno.execPath(), [
+	await launchDetachedProgram({
+		command: Deno.execPath(),
+		args: [
 			'run', '--allow-scripts', '--allow-all',
 			'-c', join(REPO_ROOT, 'deno.json'),
 			KERNEL_ENTRY,
-		], {
-			detached: true,
-			stdio: 'ignore',
-			cwd: REPO_ROOT,
-			env: {
-				...process.env,
-				FOUNT_TEST: '1',
-				FOUNT_TEST_KERNEL: '1',
-				FOUNT_TEST_HUB_PORT: String(port),
-			},
-		})
-		child.once('spawn', () => {
-			child.unref()
-			resolve()
-		})
-		child.once('error', reject)
+		],
+		cwd: REPO_ROOT,
+		windowsHide: true,
+		env: {
+			FOUNT_TEST: '1',
+			FOUNT_TEST_KERNEL: '1',
+			FOUNT_TEST_HUB_PORT: String(port),
+		},
 	})
 }
 

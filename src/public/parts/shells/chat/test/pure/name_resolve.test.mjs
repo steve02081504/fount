@@ -2,8 +2,9 @@
  * 具名层名字解析与消歧纯函数测试。
  */
 /* global Deno */
-import { disambiguateLabels, resolveDisplayName } from 'fount/public/parts/shells/chat/public/shared/nameResolve.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { disambiguateLabels, resolveDisplayName } from 'fount/public/parts/shells/chat/public/shared/nameResolve.mjs'
 
 
 const HASH = 'a'.repeat(128)

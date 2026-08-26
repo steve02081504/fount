@@ -4,7 +4,6 @@
 		"frontendShared": [
 			"src/public/parts/shells/debug_info/public/**",
 			"src/public/parts/shells/debug_info/test/frontend/**",
-			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/**"
 		]
 	},

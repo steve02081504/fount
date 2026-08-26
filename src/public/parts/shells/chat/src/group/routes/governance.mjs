@@ -7,32 +7,37 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { calculateMemberPermissions, hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
 import { generateKeyRotationNonce, deriveNextFileMasterKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { verifyOwnerSuccessionThreshold } from 'npm:@steve02081504/fount-p2p/governance/owner_succession_ballot'
 import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { applyVolatileSlashAlert, buildUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+
+import { calculateMemberPermissions, GROUP_SCOPE_ID, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { appendKeyRotateEvent } from '../../chat/dag/channelOperations.mjs'
-import { adminPubKeyHashes } from '../../chat/dag/groupMaterializedState.mjs'
+import { adminPubKeyHashes, effectiveChannelPermissions, effectiveGroupPermissions } from '../../chat/dag/groupMaterializedState.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
+import { localNodeHash } from '../../chat/federation/dagDependencies.mjs'
 import { publishVolatileToFederation } from '../../chat/federation/index.mjs'
-import { invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
 import { mintRoomSecret } from '../../chat/federation/roomCredentials.mjs'
-import { getCurrentFileMasterKey, appendFileMasterKey } from '../../chat/file_keys/store.mjs'
+import { appendFileMasterKey, applyFileMasterKeyRotationFromEvent, getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import {
 	blockEntriesFromBanContent,
 	buildMemberBanContent,
 	isBanScope,
 	unbanTargetsFromMember,
 } from '../../chat/governance/banRules.mjs'
+import { hasRoomRotatedForEvent, markRoomRotatedForEvent } from '../../chat/governance/moderationSideEffects.mjs'
 import { signOwnerSuccessionAsLocalAdmin } from '../../chat/governance/ownerSuccessionSign.mjs'
+import { eventsPath } from '../../chat/lib/paths.mjs'
 import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
 import {
@@ -43,24 +48,127 @@ import {
 	resolveActiveMemberKeyForLocalUser,
 	resolveMemberKey,
 } from '../access.mjs'
+import { withLock } from '../lib/locks.mjs'
 
 import { registerGroupFileRoutes } from './groupFilesRoutes.mjs'
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
 
 /**
- * 治理操作后轮换 roomSecret 并失效 federation room 缓存。
+ * 治理操作后轮换 roomSecret：移除成员的同时把旧房口令换掉，使被封成员再也无法入房。
+ * 与触发它的 moderation 事件绑定并持久化完成状态，重试/恢复时已完成的事件不再重复轮换。
+ * 同一 moderation 事件串行化轮换，并在生成新 secret 前从已落盘事件日志恢复已完成状态，
+ * 避免 appendSignedLocalEvent 成功（secret 已入 DAG）但侧效标记未落盘时重试再生成新 secret。
  * @param {string} username 登录名
  * @param {string} groupId 群 id
- * @returns {Promise<void>}
+ * @param {string} [moderationEventId] 触发治理的 member_ban / member_kick 事件 id（无则按旧行为轮换）
+ * @returns {Promise<void>} 完成
  */
-async function rotateRoomSecretAfterModeration(username, groupId) {
-	await appendSignedLocalEvent(username, groupId, {
-		type: 'group_settings_update',
-		timestamp: Date.now(),
-		content: { roomSecret: mintRoomSecret() },
+async function rotateRoomSecretAfterModeration(username, groupId, moderationEventId) {
+	if (!moderationEventId)
+		return appendSignedLocalEvent(username, groupId, {
+			type: 'group_settings_update',
+			timestamp: Date.now(),
+			content: { roomSecret: mintRoomSecret() },
+		})
+	// 生成新 secret 前恢复已完成状态：该 moderation 事件后已有 roomSecret 轮换，则标记完成而非再轮换
+	return withLock(roomRotationLocks, moderationEventId, async () => {
+		if (await hasRoomRotatedForEvent(username, groupId, moderationEventId)) return
+		if (await findRoomRotationAfterEvent(username, groupId, moderationEventId))
+			return await markRoomRotatedForEvent(username, groupId, moderationEventId)
+		await appendSignedLocalEvent(username, groupId, {
+			type: 'group_settings_update',
+			timestamp: Date.now(),
+			content: { roomSecret: mintRoomSecret() },
+		})
+		await markRoomRotatedForEvent(username, groupId, moderationEventId)
 	})
-	invalidateFederationRoomCache(username, groupId)
+}
+
+/** 每个 moderation 事件在途的 roomSecret 轮换 promise（键：moderationEventId），串行化并发轮换。 */
+const roomRotationLocks = new Map()
+
+/**
+ * 在本地事件日志中定位指定 moderation 事件之后最近一条 roomSecret 轮换事件。
+ * 用于 appendSignedLocalEvent 成功后、侧效标记落盘前崩溃重试时，从持久事件日志恢复"已完成"状态。
+ * @param {string} username 登录名
+ * @param {string} groupId 群 id
+ * @param {string} moderationEventId 触发治理的 member_ban / member_kick 事件 id
+ * @returns {Promise<object | null>} 命中的轮换事件，无则 null
+ */
+async function findRoomRotationAfterEvent(username, groupId, moderationEventId) {
+	const events = await readJsonl(eventsPath(username, groupId))
+	let seenModeration = false
+	for (const event of events) {
+		if (event?.id === moderationEventId) { seenModeration = true; continue }
+		if (seenModeration && event?.type === 'group_settings_update' && event?.content?.roomSecret)
+			return event
+	}
+	return null
+}
+
+/**
+ * 封禁/踢出成员的远端 home 节点，使其在 roomSecret 轮换前即被联邦 fanout 排除（本地节点不封，本机上的 agent 靠 status 出局而非被踢出房间）。
+ * @param {string} groupId 群 id
+ * @param {object | undefined} member 被移除成员
+ */
+async function blockMemberHomeNode(groupId, member) {
+	const home = member?.homeNodeHash
+	if (isHex64(home) && home !== localNodeHash())
+		await addGroupBlockedPeers(groupId, [{ scope: 'node', value: home }])
+}
+
+/**
+ * 应用踢出成员的全部幂等副作用：拉黑 peers、封远端 home 节点、轮换 roomSecret，并在提供已落盘 kick 事件时补齐缺失的 fileMasterKey。
+ * @param {string} username 登录名
+ * @param {string} groupId 群 id
+ * @param {object | undefined} resolvedMember 被移除成员
+ * @param {string} resolvedTargetKey 目标成员键
+ * @param {object | null} kickEvent 已落盘的 member_kick 事件（用于重算 fileMasterKey），可为 null
+ */
+async function applyKickSideEffects(username, groupId, resolvedMember, resolvedTargetKey, kickEvent) {
+	const blockEntries = resolvedMember?.memberKind === 'agent'
+		? [{ scope: 'entity', value: resolvedMember.entityHash }]
+		: [{ scope: 'subject', value: resolvedTargetKey }]
+	await addGroupBlockedPeers(groupId, blockEntries)
+	await blockMemberHomeNode(groupId, resolvedMember)
+	await rotateRoomSecretAfterModeration(username, groupId, kickEvent?.id)
+	if (kickEvent)
+		await applyFileMasterKeyRotationFromEvent(username, groupId, kickEvent)
+}
+
+/**
+ * 从本地事件日志查找最近一条针对目标成员的 member_kick 事件（重试恢复时用于重算缺失的 fileMasterKey）。
+ * @param {string} username 登录名
+ * @param {string} groupId 群 id
+ * @param {string} targetMemberKey 目标成员键
+ * @returns {Promise<object | null>} 命中的 member_kick 事件，无则 null
+ */
+async function findMemberKickEvent(username, groupId, targetMemberKey) {
+	const events = await readJsonl(eventsPath(username, groupId))
+	for (let eventIndex = events.length - 1; eventIndex >= 0; eventIndex--) {
+		const event = events[eventIndex]
+		if (event?.type === 'member_kick' && event?.content?.targetMemberKey === targetMemberKey)
+			return event
+	}
+	return null
+}
+
+/**
+ * 从本地事件日志查找最近一条针对目标成员的 member_ban 事件（恢复时用于绑定 roomSecret 轮换）。
+ * @param {string} username 登录名
+ * @param {string} groupId 群 id
+ * @param {string} targetMemberKey 目标成员键
+ * @returns {Promise<object | null>} 命中的 member_ban 事件，无则 null
+ */
+async function findMemberBanEvent(username, groupId, targetMemberKey) {
+	const events = await readJsonl(eventsPath(username, groupId))
+	for (let eventIndex = events.length - 1; eventIndex >= 0; eventIndex--) {
+		const event = events[eventIndex]
+		if (event?.type === 'member_ban' && event?.content?.targetMemberKey === targetMemberKey)
+			return event
+	}
+	return null
 }
 
 /**
@@ -86,11 +194,12 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (!state.channels[channelId])
 			throw httpError(404, 'Channel not found')
 
-		const flat = calculateMemberPermissions(member, state.roles, channelId, state.channelPermissions)
-		res.status(200).json(flat)
+		const channelFlat = calculateMemberPermissions(member, state.roles, channelId, effectiveChannelPermissions(state, channelId))
+		const groupFlat = calculateMemberPermissions(member, state.roles, GROUP_SCOPE_ID, effectiveGroupPermissions(state))
+		res.status(200).json({ ...groupFlat, ...channelFlat })
 	})
 
-	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), async (req, res) => {
 		const { groupContext: { state, member }, params: { channelId } } = req
 		if (!state.channels[channelId])
 			throw httpError(404, 'Channel not found')
@@ -100,8 +209,10 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (!canView && !canManageChannels)
 			throw httpError(403, 'No permission to view channel permissions')
 
-		const permissions = state.channelPermissions?.[channelId] || {}
-		res.status(200).json({ permissions })
+		const { resolvePermissionBlockOwner } = await import('../../chat/dag/groupMaterializedState.mjs')
+		const ownerId = resolvePermissionBlockOwner(state, channelId)
+		const permissions = ownerId ? state.channelPermissions?.[ownerId] || {} : {}
+		res.status(200).json({ permissions, permissionBlockId: state.channels[channelId]?.permissionBlockId || null })
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions`, authenticate, requireGroupMember(), async (req, res) => {
@@ -119,10 +230,70 @@ export function registerGovernanceRoutes(router, authenticate) {
 		if (!canManageChannels)
 			throw httpError(403, 'No permission to manage channels')
 
+		// 已同步（强引用父块）的频道单独设权限时先脱钩：channel_update 会复制当前有效块进自有覆写。
+		if (state.channels[channelId]?.permissionBlockId)
+			await appendSignedLocalEvent(username, groupId, {
+				type: 'channel_update',
+				timestamp: Date.now(),
+				content: { channelId, updates: { permissionBlockId: null } },
+			})
+
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'channel_permissions_update',
 			timestamp: Date.now(),
 			content: { channelId, roleId, allow, deny },
+		})
+		res.status(200).json({})
+	})
+
+	// 一键同步：子频道权限块强引用父频道块（body.permissionBlockId 为父频道 id，缺省为根频道）。
+	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/permissions/sync`, authenticate, requireGroupMember(), async (req, res) => {
+		const { params: { channelId }, body: { permissionBlockId } } = req
+		const { username, state, member, groupId } = req.groupContext
+		if (!state.channels[channelId])
+			throw httpError(404, 'Channel not found')
+		const target = permissionBlockId || state.groupSettings?.rootChannelId || null
+		if (target && !state.channels[target])
+			throw httpError(404, 'Target channel not found')
+		if (target === channelId)
+			throw httpError(400, 'permissionBlockId cannot reference self')
+		if (target) {
+			const { resolvePermissionBlockOwner } = await import('../../chat/dag/groupMaterializedState.mjs')
+			if (resolvePermissionBlockOwner(state, target) === channelId)
+				throw httpError(400, 'permissionBlockId forms a cycle')
+		}
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId))
+			throw httpError(403, 'No permission to manage channels')
+
+		await appendSignedLocalEvent(username, groupId, {
+			type: 'channel_update',
+			timestamp: Date.now(),
+			content: { channelId, updates: { permissionBlockId: target } },
+		})
+		res.status(200).json({ permissionBlockId: target })
+	})
+
+	router.get(`${GROUPS_PREFIX}/:groupId/group-permissions`, authenticate, requireGroupMember(), async (req, res) => {
+		const { groupContext: { state, member } } = req
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
+			throw httpError(403, 'No permission to view group permissions')
+		res.status(200).json({ permissions: state.groupPermissions || {} })
+	})
+
+	router.put(`${GROUPS_PREFIX}/:groupId/group-permissions`, authenticate, requireGroupMember(), async (req, res) => {
+		const { params: { groupId }, body: { roleId, allow, deny } } = req
+		if (!roleId)
+			throw httpError(400, 'roleId is required')
+		const { username, state, member } = req.groupContext
+		if (!state.roles[roleId])
+			throw httpError(404, 'Role not found')
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
+			throw httpError(403, 'No permission to manage group permissions')
+
+		await appendSignedLocalEvent(username, groupId, {
+			type: 'group_permissions_update',
+			timestamp: Date.now(),
+			content: { roleId, allow, deny },
 		})
 		res.status(200).json({})
 	})
@@ -133,8 +304,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			groupContext: { username, state, member, groupId }
 		} = req
 
-		const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), state.channelPermissions)
-		if (!canManageRoles)
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
 			throw httpError(403, 'No permission to manage roles')
 
 		const roleName = name?.trim()
@@ -166,8 +336,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 
-		const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), state.channelPermissions)
-		if (!canManageRoles)
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
 			throw httpError(403, 'No permission to manage roles')
 
 		const role = state.roles[roleId]
@@ -198,8 +367,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 
-		const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), state.channelPermissions)
-		if (!canManageRoles)
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
 			throw httpError(403, 'No permission to manage roles')
 
 		const role = state.roles[roleId]
@@ -223,8 +391,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
-		const canManageRoles = hasPermission(member, PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), state.channelPermissions)
-		if (!canManageRoles)
+		if (!canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, governanceChannelId(state)))
 			throw httpError(403, 'No permission to manage roles')
 
 		const role = state.roles[roleId]
@@ -258,8 +425,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 		const governanceChannel = governanceChannelId(state)
 		if (action === 'unban') {
-			const canUnban = hasPermission(member, PERMISSIONS.BAN_MEMBERS, state.roles, governanceChannel, state.channelPermissions)
-			if (!canUnban)
+			if (!canInChannel(state, member, PERMISSIONS.BAN_MEMBERS, governanceChannel))
 				throw httpError(403, 'No permission to unban members')
 			const resolvedTargetKey = resolveMemberKey(state, targetMemberKey)
 			if (!resolvedTargetKey)
@@ -285,19 +451,39 @@ export function registerGovernanceRoutes(router, authenticate) {
 			if (!resolvedTargetKey)
 				throw httpError(404, 'Member not found')
 			const resolvedMember = state.members[resolvedTargetKey]
-			if (!hasPermission(member, PERMISSIONS.BAN_MEMBERS, state.roles, governanceChannel, state.channelPermissions))
+			if (!canInChannel(state, member, PERMISSIONS.BAN_MEMBERS, governanceChannel))
 				throw httpError(403, 'No permission to moderate members')
 			if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')
 				throw httpError(400, 'Cannot moderate yourself')
-			// 已封禁：幂等返回，避免重试再追加 member_ban / 再扣声誉
-			if (resolvedMember?.status === 'banned')
-				return res.status(200).json({ banned: true, reputationSlash: { ok: true, alreadyBanned: true } })
-			if (resolvedMember?.status !== 'active')
-				throw httpError(404, 'Member not found')
 
 			const banScope = req.body?.banScope?.trim()
 			if (!isBanScope(banScope))
 				throw httpError(400, 'banScope must be entity or node')
+			// 已封禁：member_ban 已落盘，补齐可能缺失的拉黑/denylist/roomSecret 副作用后幂等返回，避免重试再追加 member_ban / 再扣声誉
+			if (resolvedMember?.status === 'banned') {
+				try {
+					// 优先用已落盘 member_ban 事件的持久 content 补齐拉黑/denylist，并绑定其 id 串行化轮换；
+					// 未定位到 ban 事件时按旧行为从当前 banScope 重建并轮换。
+					const banEvent = await findMemberBanEvent(username, groupId, resolvedTargetKey)
+					if (banEvent?.content) {
+						await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banEvent.content))
+						await addDenylistFromBanContent(banEvent.content, groupId)
+						await rotateRoomSecretAfterModeration(username, groupId, banEvent.id)
+					}
+					else {
+						const banContent = buildMemberBanContent(/** @type {import('../../chat/governance/banRules.mjs').BanScope} */ banScope, resolvedMember)
+						await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
+						await addDenylistFromBanContent(banContent, groupId)
+						await rotateRoomSecretAfterModeration(username, groupId)
+					}
+				}
+				catch (error) {
+					console.error('governance: ban recovery failed to rebuild ban content', error)
+				}
+				return res.status(200).json({ banned: true, reputationSlash: { ok: true, alreadyBanned: true } })
+			}
+			if (resolvedMember?.status !== 'active')
+				throw httpError(404, 'Member not found')
 			let banContent
 			try {
 				banContent = buildMemberBanContent(/** @type {import('../../chat/governance/banRules.mjs').BanScope} */ banScope, resolvedMember)
@@ -309,10 +495,10 @@ export function registerGovernanceRoutes(router, authenticate) {
 				type: 'member_ban',
 				timestamp: Date.now(),
 				content: banContent,
-			})
-			await rotateRoomSecretAfterModeration(username, groupId)
+			}, { skipFederationRebind: true })
 			await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
 			await addDenylistFromBanContent(banContent, groupId)
+			await rotateRoomSecretAfterModeration(username, groupId, banEvent.id)
 
 			/** @type {{ ok: boolean, error?: string, banEventId?: string }} */
 			let reputationSlash = { ok: true, banEventId: banEvent.id }
@@ -337,23 +523,39 @@ export function registerGovernanceRoutes(router, authenticate) {
 			return res.status(200).json({ banned: true, reputationSlash })
 		}
 
-		const resolvedTargetKey = resolveActiveMemberKey(state, targetMemberKey)
-		if (!resolvedTargetKey)
-			throw httpError(404, 'Member not found')
+		let resolvedTargetKey = resolveActiveMemberKey(state, targetMemberKey)
+		let recoveryKick = false
+		if (!resolvedTargetKey) {
+			const key = resolveMemberKey(state, targetMemberKey)
+			if (key && state.members[key]?.status === 'kicked') {
+				resolvedTargetKey = key
+				recoveryKick = true
+			}
+			else
+				throw httpError(404, 'Member not found')
+		}
 		const resolvedMember = state.members[resolvedTargetKey]
 		const callerEntity = String(member?.entityHash || '').trim()
 		const ownerEntity = String(resolvedMember?.ownerEntityHash || '').trim()
 		const isOwnerKickOwnAgent = resolvedMember?.memberKind === 'agent'
 			&& !!(ownerEntity && callerEntity === ownerEntity)
 		const isAdminKickAgent = resolvedMember?.memberKind === 'agent'
-			&& hasPermission(member, PERMISSIONS.ADMIN, state.roles, governanceChannel, state.channelPermissions)
+			&& canInChannel(state, member, PERMISSIONS.ADMIN, governanceChannel)
 		const canModerate = resolvedMember?.memberKind === 'agent'
 			? isOwnerKickOwnAgent || isAdminKickAgent
-			: hasPermission(member, PERMISSIONS.KICK_MEMBERS, state.roles, governanceChannel, state.channelPermissions)
+			: canInChannel(state, member, PERMISSIONS.KICK_MEMBERS, governanceChannel)
 		if (!canModerate)
 			throw httpError(403, 'No permission to moderate members')
 		if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')
 			throw httpError(400, 'Cannot moderate yourself')
+
+		// 已踢出：member_kick 已落盘，补齐可能缺失的拉黑/roomSecret/fileMasterKey 副作用后幂等返回，避免重试 404
+		if (recoveryKick) {
+			await applyKickSideEffects(username, groupId, resolvedMember, resolvedTargetKey, await findMemberKickEvent(
+				username, groupId, resolvedTargetKey
+			))
+			return res.status(200).json({})
+		}
 
 		const content = { targetMemberKey: resolvedTargetKey }
 
@@ -368,25 +570,17 @@ export function registerGovernanceRoutes(router, authenticate) {
 					type: 'member_kick',
 					timestamp: Date.now(),
 					content,
-				})
-				await rotateRoomSecretAfterModeration(username, groupId)
-				const newKey = deriveNextFileMasterKey(keyEntry.fileMasterKey, kickEvent.id, nonce)
-				await appendFileMasterKey(username, groupId, newGen, newKey)
-				await addGroupBlockedPeers(groupId, [{ scope: 'subject', value: resolvedTargetKey }])
+				}, { skipFederationRebind: true })
+				await applyKickSideEffects(username, groupId, resolvedMember, resolvedTargetKey, kickEvent)
 				return res.status(200).json({})
 			}
 		}
 
-		await appendSignedLocalEvent(username, groupId, {
+		await applyKickSideEffects(username, groupId, resolvedMember, resolvedTargetKey, await appendSignedLocalEvent(username, groupId, {
 			type: 'member_kick',
 			timestamp: Date.now(),
 			content,
-		})
-		await rotateRoomSecretAfterModeration(username, groupId)
-		const blockEntries = resolvedMember?.memberKind === 'agent'
-			? [{ scope: 'entity', value: resolvedMember.entityHash }]
-			: [{ scope: 'subject', value: resolvedTargetKey }]
-		await addGroupBlockedPeers(groupId, blockEntries)
+		}, { skipFederationRebind: true }))
 		res.status(200).json({})
 	})
 
@@ -395,9 +589,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 		const activeCount = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 		const governanceChannel = governanceChannelId(state)
-		const perms = calculateMemberPermissions(member, state.roles, governanceChannel, state.channelPermissions)
 		const isDmPair = activeCount === 2
-		if (!isDmPair && !perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ROLES])
+		if (!isDmPair && !canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ROLES], governanceChannel))
 			throw httpError(403, 'file_master_key_rotate requires ADMIN or MANAGE_ROLES')
 
 		const keyEntry = await getCurrentFileMasterKey(username, groupId)
@@ -443,10 +636,10 @@ export function registerGovernanceRoutes(router, authenticate) {
 			throw httpError(400, 'group has no admins to vote')
 
 		const ballot = { proposedOwnerPubKeyHash: targetHash, groupId, ballotId: ballotId.trim() }
-		const mergedSignatures = Array.isArray(adminSignatures) ? [...adminSignatures] : []
+		const mergedSignatures = [...adminSignatures || []]
 		const seenAdminHashes = new Set(
 			mergedSignatures
-				.map(entry => entry?.pubKeyHex?.trim())
+				.map(entry => entry?.pubKeyHex)
 				.filter(isHex64)
 				.map(hex => pubKeyHash(Buffer.from(hex, 'hex'))),
 		)
@@ -540,9 +733,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const { username, state, memberKey } = await resolveGroupMember(req, res, req.params.groupId)
 		const member = state.members[memberKey]
 		const gov = governanceChannelId(state)
-		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, state.channelPermissions)
-			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, state.channelPermissions)
-		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], gov))
+			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const { body } = req
 		if (!body.cabinet_id) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetBind } = await import('../../chat/cabinets/keys.mjs')
@@ -559,9 +751,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const { username, state, memberKey } = await resolveGroupMember(req, res, req.params.groupId)
 		const member = state.members[memberKey]
 		const gov = governanceChannelId(state)
-		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, state.channelPermissions)
-			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, state.channelPermissions)
-		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], gov))
+			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const cabinetId = req.body.cabinet_id || ''
 		if (!cabinetId) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetUnbind } = await import('../../chat/cabinets/keys.mjs')

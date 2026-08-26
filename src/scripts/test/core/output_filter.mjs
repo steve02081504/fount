@@ -79,6 +79,7 @@ const NOISE_RULES = [
 	{ name: 'WARN', pattern: /\bWARN\b/ },
 	{ name: 'rejection', pattern: /\brejection\b/i },
 	{ name: 'browser_network', pattern: /\[browser:network]/ },
+	{ name: 'i18n_missing', pattern: /\[i18n:missing]/ },
 ]
 
 const IMBALANCE_HIT = 'noise_allow_imbalance'

@@ -15,6 +15,7 @@ import { digestFileHashes } from './changed.mjs'
 import { formatDuration } from './format_duration.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from './output_filter.mjs'
 import {
+	moduleCheckStatePath,
 	safeManifestDirName,
 	safeSuiteFileName,
 	stateDir,
@@ -144,6 +145,44 @@ export async function readState(repoRoot) {
 export async function writeState(repoRoot, state) {
 	await mkdir(stateDir(repoRoot), { recursive: true })
 	await writeFile(stateFilePath(repoRoot), `${JSON.stringify(state, null, '\t')}\n`, 'utf8')
+}
+
+/**
+ * 模块检查累计时长记录。
+ * @typedef {object} ModuleCheckStats
+ * @property {number} totalMs 累计检查时长（毫秒）
+ * @property {number} count 检查次数
+ */
+
+/**
+ * 读取模块检查累计记录；文件缺失返回空计数。
+ * @param {string} repoRoot 仓库根
+ * @returns {Promise<ModuleCheckStats>} 累计记录
+ */
+export async function readModuleCheckStats(repoRoot) {
+	try {
+		const raw = await readFile(moduleCheckStatePath(repoRoot), 'utf8')
+		const data = JSON.parse(raw)
+		return {
+			totalMs: Number.isFinite(data?.totalMs) ? data.totalMs : 0,
+			count: Number.isFinite(data?.count) ? data.count : 0,
+		}
+	}
+	catch (error) {
+		if (error?.code === 'ENOENT') return { totalMs: 0, count: 0 }
+		throw error
+	}
+}
+
+/**
+ * 写入模块检查累计记录。
+ * @param {string} repoRoot 仓库根
+ * @param {ModuleCheckStats} stats 累计记录
+ * @returns {Promise<void>}
+ */
+export async function writeModuleCheckStats(repoRoot, { totalMs, count }) {
+	await mkdir(stateDir(repoRoot), { recursive: true })
+	await writeFile(moduleCheckStatePath(repoRoot), `${JSON.stringify({ totalMs, count })}\n`, 'utf8')
 }
 
 /**

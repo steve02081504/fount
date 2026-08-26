@@ -15,6 +15,7 @@ export const phases = [
 			'composer.spec.mjs',
 			'attachments.spec.mjs',
 			'navigation.spec.mjs',
+			'dmChannelContext.spec.mjs',
 			'messageActions.spec.mjs',
 			'messageAvatar.spec.mjs',
 			'unread.spec.mjs',

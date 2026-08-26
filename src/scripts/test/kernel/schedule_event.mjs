@@ -1,0 +1,70 @@
+/**
+ * 把理想调度投影包装成发给消费端的 `schedule-update` 事件。
+ */
+import { geti18n } from '../../i18n/bare.mjs'
+
+/**
+ * schedule-update 原因枚举。
+ * @typedef {string} ScheduleChangeReason
+ */
+
+/**
+ * @param {object} projection 消费端投影
+ * @param {import('./schedule.mjs').ScheduleSlot[]} projection.running 在跑项
+ * @param {number | null} projection.lastCompletionAt 本队列最后一个任务完成时刻
+ * @param {number} projection.unknownCount 未知耗时项数
+ * @param {object} viewer viewer
+ * @param {boolean} viewer.watch 是否 watch
+ * @param {string | null} viewer.jobId 归属 job
+ * @param {ScheduleChangeReason} reason 变化原因
+ * @param {string} [reasonDetail] 原因细节
+ * @returns {object} schedule-update 事件
+ */
+export function buildScheduleUpdate(projection, viewer, reason, reasonDetail = '') {
+	const now = Date.now()
+	return {
+		type: 'schedule-update',
+		watch: viewer.watch,
+		jobId: viewer.jobId,
+		running: projection.running.map(slot => ({
+			key: slot.key,
+			startedAt: new Date(now + slot.startAt).toISOString(),
+			remainingMs: slot.endAt == null ? null : Math.max(0, slot.endAt - slot.startAt),
+			waiting: slot.running,
+		})),
+		lastCompletionAt: Number.isFinite(projection.lastCompletionAt)
+			? new Date(now + projection.lastCompletionAt).toISOString()
+			: null,
+		lastCompletionMs: projection.lastCompletionAt,
+		unknownCount: projection.unknownCount,
+		reason,
+		reasonDetail,
+	}
+}
+
+/**
+ * 将 schedule 变化原因格式化为可读标签。
+ *
+ * 缺失 i18n 键由 geti18n 统一处理（测试下抛错），此处仅处理空原因回退到 progress。
+ * @param {ScheduleChangeReason} reason 原因
+ * @returns {string} 可读原因标签
+ */
+export function formatScheduleReason(reason) {
+	const label = geti18n(`fountConsole.test.display.schedule.reasons.${reason}`)
+	if (label != null) return label
+	return reason || geti18n('fountConsole.test.display.schedule.reasons.progress')
+}
+
+/**
+ * 消费端是否应展示本次变化：与上次展示时刻相差 ≥5%。
+ * @param {number | null | undefined} lastDisplayedAt 上次展示的 lastCompletionAt
+ * @param {number | null} nextAt 本次 lastCompletionAt
+ * @param {number} [deltaThresholdPct=5] 百分比阈值
+ * @returns {boolean} 是否展示
+ */
+export function shouldDisplayScheduleChange(lastDisplayedAt, nextAt, deltaThresholdPct = 5) {
+	if (nextAt == null) return true
+	if (lastDisplayedAt == null) return true
+	const delta = Math.abs(nextAt - lastDisplayedAt)
+	return delta / Math.max(1, lastDisplayedAt) > deltaThresholdPct / 100
+}

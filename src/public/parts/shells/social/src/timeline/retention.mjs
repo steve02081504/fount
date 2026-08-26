@@ -1,5 +1,6 @@
-import { ms } from 'fount/scripts/ms.mjs'
 import { runTimelineMaintenance } from 'npm:@steve02081504/fount-p2p/timeline/retention_runner'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { timelineEventsPath } from '../paths.mjs'
 

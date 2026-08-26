@@ -2,8 +2,9 @@
  * Social @ 提及解析单元测试（Deno）。
  */
 /* global Deno */
-import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 
 
 const SAMPLE_HASH = 'a'.repeat(128)

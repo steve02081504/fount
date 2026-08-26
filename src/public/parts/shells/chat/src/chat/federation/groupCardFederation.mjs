@@ -81,8 +81,8 @@ export function handleFedGroupCardData(username, groupId, data) {
 	clearTimeout(pending.timer)
 	pendingFetches.delete(key)
 	pending.resolve({
-		title: data.title || '',
-		blurb: data.blurb || '',
+		title: data.title,
+		blurb: data.blurb,
 	})
 }
 

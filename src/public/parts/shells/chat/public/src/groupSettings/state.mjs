@@ -12,8 +12,10 @@ import { disposeAuditLogPanel } from '../auditLogPanel.mjs'
  * @property {string} lastInviteClipboardText 上次复制的邀请文案
  * @property {boolean} auditPanelReady 审计日志面板是否已挂载
  * @property {boolean} channelPermsReady 频道权限面板是否已挂载
+ * @property {boolean} groupPermsReady 群权限面板是否已挂载
  * @property {boolean} emojisPanelReady 表情面板是否已挂载
  * @property {AbortController | null} channelPermsController 频道权限请求控制器
+ * @property {AbortController | null} groupPermsController 群权限请求控制器
  * @property {string | null} selectedChannelPermsId 当前编辑的频道 ID
  * @property {(groupId: string) => Promise<void>} reload 重载群 state 回调
  */
@@ -33,8 +35,10 @@ export function createGroupSettingsContext() {
 		lastInviteClipboardText: '',
 		auditPanelReady: false,
 		channelPermsReady: false,
+		groupPermsReady: false,
 		emojisPanelReady: false,
 		channelPermsController: null,
+		groupPermsController: null,
 		selectedChannelPermsId: null,
 		/** @type {(groupId: string) => Promise<void>} */
 		reload: async () => { },
@@ -49,6 +53,7 @@ export function createGroupSettingsContext() {
 export function resetPanelFlags(context) {
 	context.auditPanelReady = false
 	context.channelPermsReady = false
+	context.groupPermsReady = false
 	context.emojisPanelReady = false
 	disposeAuditLogPanel()
 }

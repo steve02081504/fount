@@ -3,8 +3,6 @@
  */
 /* global Deno */
 
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { ms } from 'fount/scripts/ms.mjs'
 import { assertEquals } from 'jsr:@std/assert'
 import {
 	pubKeyHash,
@@ -24,6 +22,9 @@ import {
 	parseJoinSnapshotRequest,
 	parsePullResponseEnvelope,
 } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
+
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 
 import { findStaleUnreachableChannels } from '../../src/chat/channel/gc.mjs'
@@ -133,7 +134,8 @@ Deno.test('joinSnapshot wire parse', () => {
 
 Deno.test('gossip request requires attestation', () => {
 	const eventId = 'a'.repeat(64)
-	assertEquals(parseGossipRequest({ wantIds: [eventId], ttl: 2, requesterNodeHash: 'n1' }), null)
+	const requesterNodeHash = 'd'.repeat(64)
+	assertEquals(parseGossipRequest({ wantIds: [eventId], ttl: 2, requesterNodeHash }), null)
 	const sender = 'b'.repeat(64)
 	const att = {
 		requesterPubKeyHash: sender,
@@ -146,7 +148,7 @@ Deno.test('gossip request requires attestation', () => {
 	assertEquals(parseGossipRequest({
 		wantIds: [eventId],
 		ttl: 2,
-		requesterNodeHash: 'n1',
+		requesterNodeHash,
 		attestation: att,
 	})?.wantIds.length, 1)
 })
@@ -433,8 +435,8 @@ Deno.test('channel GC skips reachable stale child', () => {
 	const state = {
 		groupSettings: { defaultChannelId: 'default' },
 		channels: {
-			default: { id: 'default' },
-			child: { id: 'child', parentChannelId: 'default' },
+			default: { id: 'default', links: ['child'] },
+			child: { id: 'child' },
 		},
 	}
 	const events = [{

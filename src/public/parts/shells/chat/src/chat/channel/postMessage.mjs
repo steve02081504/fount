@@ -19,6 +19,7 @@ import {
 } from '../../../public/shared/channelContent.mjs'
 import { ensureChatExtension, sanitizeAlt } from '../../../public/shared/messageFields.mjs'
 import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
+import { assertNotRootChannel } from '../dag/groupSettings.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
@@ -246,6 +247,7 @@ export async function attachFilesToContent(username, groupId, content, files, ma
  * @returns {Promise<{ event: object, fileIds: string[] }>} DAG 消息事件
  */
 export async function postChannelMessage(username, groupId, channelId, payload = {}) {
+	assertNotRootChannel(channelId)
 	const maxBytes = Number(payload.maxDagPayloadBytes) || 262_144
 	const origin = payload.origin || 'human'
 

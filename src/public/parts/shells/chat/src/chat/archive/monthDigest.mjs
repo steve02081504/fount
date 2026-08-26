@@ -45,8 +45,7 @@ export function canonicalSnapshotForDigest(snap) {
 	if (snap.hlc) body.hlc = snap.hlc
 	if (snap.reactions != null) body.reactions = snap.reactions
 	if (Array.isArray(snap.prev_event_ids))
-		body.prev_event_ids = [...snap.prev_event_ids].map(id => id).filter(isHex64)
-			.sort((a, b) => a.localeCompare(b, 'en'))
+		body.prev_event_ids = snap.prev_event_ids.filter(isHex64).sort((a, b) => a.localeCompare(b, 'en'))
 	if (snap.display)
 		body.display = {
 			name: snap.display.name ?? '',
@@ -115,9 +114,8 @@ export function digestArchiveMonthSnapshots(snapshots) {
 export function digestCanonicalMonthLines(canonicalLines) {
 	let digest = ''
 	for (const line of canonicalLines) {
-		const trimmed = line
-		if (!trimmed) continue
-		digest = rollingMonthDigestStep(digest, trimmed)
+		if (!line) continue
+		digest = rollingMonthDigestStep(digest, line)
 	}
 	return digest
 }
@@ -164,11 +162,10 @@ export async function digestArchiveMonthFile(filePath) {
 		const input = createReadStream(filePath, { encoding: 'utf8' })
 		const lines = createInterface({ input, crlfDelay: Infinity })
 		for await (const line of lines) {
-			const trimmed = line
-			if (!trimmed) continue
+			if (!line) continue
 			let snap
 			try {
-				snap = JSON.parse(trimmed)
+				snap = JSON.parse(line)
 			}
 			catch {
 				return { digest: '', snapshots: [] }
@@ -199,9 +196,8 @@ export async function digestArchiveMonthFileLinesOnly(filePath) {
 		const input = createReadStream(filePath, { encoding: 'utf8' })
 		const rl = createInterface({ input, crlfDelay: Infinity })
 		for await (const line of rl) {
-			const trimmed = line
-			if (!trimmed) continue
-			lines.push(trimmed)
+			if (!line) continue
+			lines.push(line)
 		}
 	}
 	catch {
@@ -225,10 +221,9 @@ export async function readArchiveMonthMaxEventId(filePath) {
 		const input = createReadStream(filePath, { encoding: 'utf8' })
 		const lines = createInterface({ input, crlfDelay: Infinity })
 		for await (const line of lines) {
-			const trimmed = line
-			if (!trimmed) continue
+			if (!line) continue
 			try {
-				const snap = JSON.parse(trimmed)
+				const snap = JSON.parse(line)
 				const id = snap.eventId || ''
 				if (!isHex64(id)) continue
 				if (!max || id.localeCompare(max, 'en') > 0) max = id
@@ -247,7 +242,7 @@ export async function readArchiveMonthMaxEventId(filePath) {
  */
 export function archiveAppendMonotonic(maxOnDisk, newSnapshots) {
 	if (!maxOnDisk) return true
-	const minNew = String(newSnapshots[0]?.eventId || '').trim()
+	const minNew = newSnapshots[0]?.eventId
 	if (!isHex64(minNew)) return false
 	return minNew.localeCompare(maxOnDisk, 'en') > 0
 }
@@ -280,9 +275,7 @@ export async function collectChannelMonthDigestsFromDisk(username, groupId, chan
  * @returns {string | null} 期望 digest
  */
 export function expectedMonthDigest(manifest, channelId, month) {
-	const digest = manifest.monthDigests?.[channelId]?.[month]
-	const normalized = digest || ''
-	return isHex64(normalized) ? normalized : null
+	return isHex64(manifest.monthDigests?.[channelId]?.[month])
 }
 
 /**
@@ -317,7 +310,7 @@ export function syncArchivedEventIdsFromMonthBody(manifest, channelId, month, sn
 	const idMap = manifest.archivedEventIds[channelId]
 	let added = 0
 	for (const snap of snapshots) {
-		const eventId = snap.eventId || ''
+		const eventId = snap.eventId
 		if (!isHex64(eventId)) continue
 		const wall = Number(snap.hlc?.wall)
 		const snapMonth = Number.isFinite(wall) ? archiveMonthKey(wall) : month

@@ -11,7 +11,6 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { syncEntityProfileFromPersona } from '../../profile/syncFromPersona.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
@@ -205,12 +204,7 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 		const result = await getGreeting(request, 0)
 		if (!result) return null
 		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, charname, username)
-		greetingEntry.extension = {
-			...greetingEntry.extension,
-			greetingType: timeSlice.greeting_type || greetingEntry.extension?.timeSlice?.greeting_type,
-		}
-		ensureChatExtension(greetingEntry).isGreeting = true
-		// 保留 timeSlice.greeting_type：modifyTimeLine 靠它重 roll 开场；greetingLog 也按此过滤
+		// 问候事实源统一为 timeSlice.greeting_type：modifyTimeLine 靠它重 roll 开场；greetingLog 也按此过滤
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
 	}

@@ -132,6 +132,7 @@ export async function buildCanonicalMessageContent(username, groupId, channelId,
 		const chat = ensureChatExtension(canonical)
 		if (entry?.id) chat.entryId = entry.id
 		chat.sessionSnapshot = await exportSessionSnapshot(username, groupId, channelId)
+		if (origin === 'greeting') chat.isGreeting = true
 		if (entry?.role) canonical.role = entry.role
 		if (canonical.is_generating == null && entry?.is_generating)
 			canonical.is_generating = true

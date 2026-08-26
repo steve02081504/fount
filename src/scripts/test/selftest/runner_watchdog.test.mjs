@@ -1,4 +1,5 @@
 /* global Deno */
+import { Buffer } from 'node:buffer'
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -17,12 +18,14 @@ import {
 } from '../core/state.mjs'
 import { exitCodeFromSlots, RunReportWriter } from '../runner/report.mjs'
 import {
+	appendBoundedTail,
 	DEFAULT_DURATION_TIMEOUT_MS,
 	evaluateWatchdog,
 	getDurationWatchdogLimitMs,
 	getSleepGapMs,
 	IDLE_TIMEOUT_MS,
 	MIN_DURATION_TIMEOUT_MS,
+	OUTPUT_TAIL_BYTES,
 	SLEEP_DETECT_MULTIPLIER,
 	WATCH_INTERVAL_MS,
 } from '../runner/run_command.mjs'
@@ -143,6 +146,35 @@ Deno.test('getDurationWatchdogLimitMs keeps 2x baseline for long suites', () => 
 
 Deno.test('getDurationWatchdogLimitMs falls back to default 30 minutes without baseline', () => {
 	assertEquals(getDurationWatchdogLimitMs(undefined), DEFAULT_DURATION_TIMEOUT_MS)
+})
+
+Deno.test('appendBoundedTail keeps content while under cap', () => {
+	assertEquals(appendBoundedTail('hello', ' world', 1024), 'hello world')
+})
+
+Deno.test('appendBoundedTail trims to the tail (never empty) on overflow', () => {
+	const tail = appendBoundedTail('a'.repeat(OUTPUT_TAIL_BYTES), 'b')
+	assertEquals(tail.endsWith('b'), true)
+	assertEquals(Buffer.byteLength(tail, 'utf8') <= OUTPUT_TAIL_BYTES, true)
+})
+
+Deno.test('appendBoundedTail trims on exact-edge overflow', () => {
+	const max = 8
+	const out = appendBoundedTail('aaaaaaa', 'bb', max)
+	assertEquals(Buffer.byteLength(out, 'utf8') <= max, true)
+	assertEquals(out.endsWith('bb'), true)
+})
+
+Deno.test('appendBoundedTail does not split a surrogate pair', () => {
+	const max = 8
+	// 😀 (U+1F600) 是 4 字节代理对；截断点不应切开它。
+	const out = appendBoundedTail('😀'.repeat(4), 'z', max)
+	for (const ch of out) {
+		const code = ch.charCodeAt(0)
+		if (code >= 0xDC00 && code <= 0xDFFF) throw new Error('lone low surrogate at tail start')
+	}
+	assertEquals(Buffer.byteLength(out, 'utf8') <= max, true)
+	assertEquals(out.endsWith('z'), true)
 })
 
 Deno.test('shouldRecordTimingBaseline records pass and non-terminated failure only', () => {

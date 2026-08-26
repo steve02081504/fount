@@ -2,8 +2,9 @@
  * push admission：本机被关注的 follow 推送应被接纳。
  */
 /* global Deno */
-import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert } from 'jsr:@std/assert'
+
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 
 
 import { createTestSession } from '../harness.mjs'

@@ -32,6 +32,7 @@ export const FEDERATION_WIRE_ACTION_NAMES = [
 	'fed_tip_ping',
 	'fed_tip_pong',
 	'fed_shun',
+	'fed_verify_membership',
 	'char_rpc',
 	'char_rpc_response',
 	'part_invoke',

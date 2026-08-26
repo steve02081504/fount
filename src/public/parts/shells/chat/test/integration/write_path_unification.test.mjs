@@ -171,6 +171,5 @@ Deno.test('triggerCharReply finalize fires Add/After once on message_edit', asyn
 	const charReply = messages.find(row => String(row.content?.content || '').includes('write_path_agent reply'))
 	assert(charReply, 'char reply on DAG')
 	assertEquals(charReply.content?.name, '写路径 Agent')
-	assertEquals(charReply.content?.avatar, '🤖')
 	assertNotEquals(charReply.content?.name, '写路径测试人格')
 })

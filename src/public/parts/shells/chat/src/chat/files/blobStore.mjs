@@ -78,10 +78,9 @@ async function saveBlobRefcounts(username, table) {
  * @returns {Promise<boolean>} 本节点是否已有该密文文件
  */
 export async function hasCiphertextBlob(username, ciphertextHashHex) {
-	const h = ciphertextHashHex || ''
-	if (!isHex64(h)) return false
+	if (!isHex64(ciphertextHashHex)) return false
 	try {
-		await readFile(blobPath(username, h))
+		await readFile(blobPath(username, ciphertextHashHex))
 		return true
 	}
 	catch {
@@ -96,12 +95,11 @@ export async function hasCiphertextBlob(username, ciphertextHashHex) {
  * @returns {Promise<string>} storageLocator `blob:{hash}`
  */
 export async function bumpCiphertextBlobRef(username, ciphertextHashHex) {
-	const h = ciphertextHashHex || ''
-	if (!isHex64(h)) throw new Error('invalid ciphertextHash')
+	if (!isHex64(ciphertextHashHex)) throw new Error('invalid ciphertextHash')
 	const refs = await loadBlobRefcounts(username)
-	refs[h] = (refs[h] || 0) + 1
+	refs[ciphertextHashHex] = (refs[ciphertextHashHex] || 0) + 1
 	await saveBlobRefcounts(username, refs)
-	return `blob:${h}`
+	return `blob:${ciphertextHashHex}`
 }
 
 /**
@@ -112,15 +110,14 @@ export async function bumpCiphertextBlobRef(username, ciphertextHashHex) {
  * @returns {Promise<string>} storageLocator `blob:{hash}`
  */
 export async function putCiphertextBlob(username, ciphertextHashHex, raw) {
-	const h = ciphertextHashHex || ''
-	if (!isHex64(h)) throw new Error('invalid ciphertextHash')
-	const path = blobPath(username, h)
+	if (!isHex64(ciphertextHashHex)) throw new Error('invalid ciphertextHash')
+	const path = blobPath(username, ciphertextHashHex)
 	await mkdir(join(shellChatRoot(username), 'blobs'), { recursive: true })
 	await writeFile(path, Buffer.from(raw))
 	const refs = await loadBlobRefcounts(username)
-	refs[h] = (refs[h] || 0) + 1
+	refs[ciphertextHashHex] = (refs[ciphertextHashHex] || 0) + 1
 	await saveBlobRefcounts(username, refs)
-	return `blob:${h}`
+	return `blob:${ciphertextHashHex}`
 }
 
 /**
@@ -130,10 +127,9 @@ export async function putCiphertextBlob(username, ciphertextHashHex, raw) {
  * @returns {Promise<Buffer>} 密文原始字节
  */
 export async function getCiphertextBlob(username, locator) {
-	const m = (locator || '').match(BLOB_STORAGE_LOCATOR_RE)
-	const h = String(m?.[1] || '').trim()
-	if (!isHex64(h)) throw new Error('invalid blob locator')
-	return Buffer.from(await readFile(blobPath(username, h)))
+	const hash = (locator || '').match(BLOB_STORAGE_LOCATOR_RE)?.[1]
+	if (!isHex64(hash)) throw new Error('invalid blob locator')
+	return Buffer.from(await readFile(blobPath(username, hash)))
 }
 
 /**
@@ -144,10 +140,9 @@ export async function getCiphertextBlob(username, locator) {
  * @returns {Promise<void>}
  */
 export async function cachePlaintextFile(username, contentHashHex, plaintext) {
-	const h = contentHashHex || ''
-	if (!isHex64(h)) throw new Error('invalid contentHash')
+	if (!isHex64(contentHashHex)) throw new Error('invalid contentHash')
 	await mkdir(join(shellChatRoot(username), 'files'), { recursive: true })
-	await writeFile(plainCachePath(username, h), Buffer.from(plaintext))
+	await writeFile(plainCachePath(username, contentHashHex), Buffer.from(plaintext))
 }
 
 /**
@@ -157,10 +152,9 @@ export async function cachePlaintextFile(username, contentHashHex, plaintext) {
  * @returns {Promise<Buffer | null>} 明文或 null
  */
 export async function getPlaintextCache(username, contentHashHex) {
-	const h = contentHashHex || ''
-	if (!isHex64(h)) return null
+	if (!isHex64(contentHashHex)) return null
 	try {
-		return Buffer.from(await readFile(plainCachePath(username, h)))
+		return Buffer.from(await readFile(plainCachePath(username, contentHashHex)))
 	}
 	catch {
 		return null
@@ -174,20 +168,19 @@ export async function getPlaintextCache(username, contentHashHex) {
  * @returns {Promise<boolean>} 是否已物理删除
  */
 export async function releaseCiphertextBlob(username, locator) {
-	const m = (locator || '').match(BLOB_STORAGE_LOCATOR_RE)
-	const h = String(m?.[1] || '').trim()
-	if (!isHex64(h)) return false
+	const hash = (locator || '').match(BLOB_STORAGE_LOCATOR_RE)?.[1]
+	if (!isHex64(hash)) return false
 	const refs = await loadBlobRefcounts(username)
-	const next = Math.max(0, (refs[h] || 0) - 1)
+	const next = Math.max(0, (refs[hash] || 0) - 1)
 	if (next > 0) {
-		refs[h] = next
+		refs[hash] = next
 		await saveBlobRefcounts(username, refs)
 		return false
 	}
-	delete refs[h]
+	delete refs[hash]
 	await saveBlobRefcounts(username, refs)
 	try {
-		await unlink(blobPath(username, h))
+		await unlink(blobPath(username, hash))
 	}
 	catch { /* ignore */ }
 	return true

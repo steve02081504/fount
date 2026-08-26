@@ -11,8 +11,6 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
-
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { getChatRequest } from './chatRequest.mjs'
 import { abortAllGenerations, createGenerationStream } from './generationAbort.mjs'
@@ -64,8 +62,6 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 		const previousEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 		const { timeSlice } = previousEntry.extension
 		const greeting_type = timeSlice.greeting_type
-			|| previousEntry.extension?.greetingType
-			|| (previousEntry.extension?.chat?.isGreeting ? 'single' : undefined)
 
 		const newEntry = new chatLogEntry_t()
 		newEntry.id = crypto.randomUUID()
@@ -73,10 +69,6 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 		if (greeting_type)
 			newEntry.extension.timeSlice.greeting_type = greeting_type
 		newEntry.extension.timeSlice.charname = timeSlice.charname
-		if (previousEntry.extension?.chat?.isGreeting || greeting_type) {
-			ensureChatExtension(newEntry).isGreeting = true
-			newEntry.extension.greetingType = greeting_type
-		}
 
 		newEntry.role = previousEntry.role
 		newEntry.name = previousEntry.name
@@ -141,11 +133,8 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 				Object.assign(newEntry, finalEntry)
 				newEntry.is_generating = false
 				newEntry.id = entry.id
-				if (greeting_type) {
-					ensureChatExtension(newEntry).isGreeting = true
-					newEntry.extension.greetingType = greeting_type
+				if (greeting_type)
 					newEntry.extension.timeSlice.greeting_type = greeting_type
-				}
 
 				chatMetadata.timeLines[newTimeLineIndex] = newEntry
 				chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = newEntry

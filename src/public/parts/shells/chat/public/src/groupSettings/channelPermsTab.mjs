@@ -1,81 +1,12 @@
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { i18nElement } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { getChannelPermissions, putChannelPermissions } from '../endpoints/channelPerms.mjs'
+import { syncChannelPermissionBlock } from '../endpoints/groupChannel.mjs'
 import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
-import { mountTemplate, renderTemplateAsHtmlString } from '../templates.mjs'
+import { mountTemplate } from '../templates.mjs'
 
+import { fillRolePermsIfEmpty, safeRoleColor, sortedRoleIds } from './channelPermsUi.mjs'
 import { grantableChannelOverridePermissions } from './constants.mjs'
-
-const ROLE_COLOR_RE = /^#[\da-f]{3}([\da-f]{3})?$/i
-
-/**
- * @param {string | undefined} color CSS 颜色
- * @returns {string} 白名单内 hex 或默认灰
- */
-function safeRoleColor(color) {
-	const value = (color || '').trim()
-	return ROLE_COLOR_RE.test(value) ? value : '#888888'
-}
-
-/**
- * @param {Record<string, boolean>} allow 允许位图
- * @param {Record<string, boolean>} deny 拒绝位图
- * @param {string} perm 权限键
- * @returns {'neutral' | 'allow' | 'deny'} 三态结果
- */
-function channelPermTriState(allow, deny, perm) {
-	if (deny?.[perm]) return 'deny'
-	if (allow?.[perm]) return 'allow'
-	return 'neutral'
-}
-
-/**
- * @param {Record<string, object>} roles 角色表
- * @returns {string[]} 排序后的角色 id（@everyone / isDefault 优先，再按 position）
- */
-function sortedRoleIds(roles) {
-	return Object.entries(roles || {})
-		.sort(([idA, roleA], [idB, roleB]) => {
-			const defaultA = idA === '@everyone' || roleA?.isDefault ? 0 : 1
-			const defaultB = idB === '@everyone' || roleB?.isDefault ? 0 : 1
-			if (defaultA !== defaultB) return defaultA - defaultB
-			return (roleB?.position || 0) - (roleA?.position || 0) || idA.localeCompare(idB)
-		})
-		.map(([roleId]) => roleId)
-}
-
-/**
- * @param {string} roleId 角色 id
- * @param {Record<string, boolean> | undefined} allow 允许位图
- * @param {Record<string, boolean> | undefined} deny 拒绝位图
- * @param {string[]} grantablePerms 授予者可配置位
- * @returns {Promise<string>} 权限行 HTML
- */
-async function permRowsHtml(roleId, allow, deny, grantablePerms) {
-	return (await Promise.all(grantablePerms.map(perm =>
-		renderTemplateAsHtmlString('group/settings/channel_perm_row', {
-			perm,
-			roleId,
-			state: channelPermTriState(allow, deny, perm),
-		})
-	))).join('')
-}
-
-/**
- * 懒填已打开（或刚打开）的角色权限行。
- * @param {HTMLElement} permsEl `.settings-role-perms`
- * @param {string} roleId 角色 id
- * @param {Record<string, { allow?: object, deny?: object }>} permissions 频道覆写表
- * @param {string[]} grantablePerms 授予者可配置位
- * @returns {Promise<void>}
- */
-async function fillRolePermsIfEmpty(permsEl, roleId, permissions, grantablePerms) {
-	if (permsEl.childElementCount) return
-	const override = permissions[roleId]
-	permsEl.innerHTML = await permRowsHtml(roleId, override?.allow, override?.deny, grantablePerms)
-	i18nElement(permsEl, { skip_report: true })
-}
 
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
 export async function renderChannelPermissionsPanel(context) {
@@ -130,6 +61,7 @@ export async function renderChannelPermissionsPanel(context) {
 		channels,
 		selectedChannelId: context.selectedChannelPermsId,
 		rolePanels,
+		permissionBlockId: context.state.channels?.[context.selectedChannelPermsId]?.permissionBlockId || null,
 	})
 
 	for (const details of container.querySelectorAll('details.settings-role[open]')) {
@@ -151,6 +83,20 @@ export async function renderChannelPermissionsPanel(context) {
 		if (selectCh) {
 			context.selectedChannelPermsId = selectCh.dataset.channelId || null
 			await renderChannelPermissionsPanel(context)
+			return
+		}
+		const syncBtn = event.target.closest('[data-action="sync-to-default"]')
+		if (syncBtn && context.selectedChannelPermsId) {
+			try {
+				if (context.state.channels?.[context.selectedChannelPermsId])
+					context.state.channels[context.selectedChannelPermsId].permissionBlockId =
+						await syncChannelPermissionBlock(context.groupId, context.selectedChannelPermsId)
+				showToastI18n('success', 'chat.group.settings.page.channelPerms.synced')
+				await renderChannelPermissionsPanel(context)
+			}
+			catch (error) {
+				handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
+			}
 			return
 		}
 		const clearRoleOverrideButton = event.target.closest('[data-action="clear-role-override"]')

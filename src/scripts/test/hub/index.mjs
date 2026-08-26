@@ -55,6 +55,7 @@ export async function startTestHub({ port = TEST_HUB_PORT } = {}) {
 		 * @returns {Promise<void>}
 		 */
 		close: () => new Promise((resolve, reject) => {
+			if (!server.listening) return resolve()
 			server.close(err => err ? reject(err) : resolve())
 		}),
 	}

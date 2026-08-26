@@ -5,9 +5,10 @@
  * 【数据结构】物化 state 子集、reputation 表、peers roster、snapshot/checkpoint、GSH buffer stats。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/federation、chat/governance、profile/*、access.mjs。
  */
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { applyVolatileSlashAlert, buildUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
@@ -157,6 +158,8 @@ export function registerGroupSyncRoutes(router, authenticate) {
 
 			if (groupSettings.defaultChannelId && !(groupSettings.defaultChannelId in channels))
 				groupSettings.defaultChannelId = Object.keys(channels)[0] || null
+			if (groupSettings.rootChannelId && !(groupSettings.rootChannelId in channels))
+				groupSettings.rootChannelId = null
 		}
 
 		const activeMemberRows = Object.entries(state.members)
@@ -208,15 +211,13 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (active)
 			for (const channelId of Object.keys(channels))
 				channelCaps[channelId] = {
-					canEditList: canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId)
-						|| canInChannel(state, member, PERMISSIONS.CREATE_THREADS, channelId),
-					canCreateThreads: canInChannel(state, member, PERMISSIONS.CREATE_THREADS, channelId)
-						|| canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId),
+					canManageChannel: canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId),
+					canEditList: canInChannel(state, member, [PERMISSIONS.MANAGE_CHANNELS, PERMISSIONS.CREATE_THREADS], channelId),
+					canCreateThreads: canInChannel(state, member, [PERMISSIONS.CREATE_THREADS, PERMISSIONS.MANAGE_CHANNELS], channelId),
 					canStream: canInChannel(state, member, PERMISSIONS.STREAM, channelId),
 					canManageMessages: canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId),
 					canAddReactions: canInChannel(state, member, PERMISSIONS.ADD_REACTIONS, channelId),
-					canPinMessages: canInChannel(state, member, PERMISSIONS.PIN_MESSAGES, channelId)
-						|| canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId),
+					canPinMessages: canInChannel(state, member, [PERMISSIONS.PIN_MESSAGES, PERMISSIONS.MANAGE_MESSAGES], channelId),
 				}
 
 
@@ -249,6 +250,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (active) {
 			const session = await getMaterializedSession(username, groupId)
 			meta.charPartNames = Object.keys(session.chars || {})
+			meta.groupPermissions = state.groupPermissions || {}
 		}
 		if (active && canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, null)) {
 			meta.reputationLedger = state.reputationLedger.slice(-50)
@@ -273,6 +275,9 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			suspectedRemoved: shunState.suspectedRemoved,
 			shunnedBy: shunState.shunnedBy,
 			shunBannerDismissed: shunState.bannerDismissed,
+			replicaRetained: shunState.replicaRetained,
+			shunVerifying: !shunState.suspectedRemoved && shunState.knownPeerCount > 0 && shunState.shunnedBy.length > 0,
+			shunTotal: shunState.knownPeerCount,
 		}
 
 		const federation = {
@@ -301,8 +306,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 		const channelId = governanceChannelId(state)
-		if (!canInChannel(state, member, PERMISSIONS.ADMIN, channelId)
-			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, channelId))
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], channelId))
 			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		if (!isGroupFederationActive(state.groupSettings))
 			throw httpError(409, 'federation not active; invite a member first')
@@ -323,8 +327,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 		const channelId = governanceChannelId(state)
-		if (!canInChannel(state, member, PERMISSIONS.ADMIN, channelId)
-			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, channelId))
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], channelId))
 			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const { setFederationTuning } = await import('../../chat/federation/tuning.mjs')
 		const patch = await setFederationTuning(username, groupId, req.body)

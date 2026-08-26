@@ -1,6 +1,7 @@
 /* global Deno */
-import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 
 import {
 	chatInboxCursor,

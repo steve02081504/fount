@@ -281,7 +281,6 @@ test.describe('Chat message actions', () => {
 			const left = document.createElement('button')
 			left.type = 'button'
 			left.className = 'char-timeline-arrow left'
-			left.setAttribute('aria-hidden', 'true')
 			left.textContent = '❮'
 			row.appendChild(left)
 		})

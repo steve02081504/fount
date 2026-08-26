@@ -1,6 +1,7 @@
 /* global Deno */
-import { applySfwOverlay } from 'fount/scripts/sfw.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { applySfwOverlay } from 'fount/scripts/sfw.mjs'
 
 Deno.test('applySfwOverlay copies sfw_* onto base keys', () => {
 	const out = applySfwOverlay({

@@ -1,3 +1,5 @@
+import { geti18n } from '../../i18n/bare.mjs'
+
 import { withApiRequest } from './api.mjs'
 
 /**
@@ -11,19 +13,13 @@ import { withApiRequest } from './api.mjs'
  */
 export async function assertIsolatedFrontendTest({ baseUrl, apiKey, expectedUsername, shellLabel }) {
 	if (process.env.FOUNT_TEST_ISOLATED !== '1')
-		throw new Error(
-			`${shellLabel} 前端测试须通过 test/frontend/run.mjs 启动（自启隔离节点），`
-			+ '勿对本地开发实例或真实用户数据运行。',
-		)
+		throw new Error(geti18n('fountConsole.test.frontend.isolatedRequired', { shellLabel }))
 	await withApiRequest(async api => {
 		const whoami = await api.get(`${baseUrl}/api/whoami?fount-apikey=${encodeURIComponent(apiKey)}`)
 		if (!whoami.ok())
 			throw new Error(`whoami failed: ${whoami.status()}`)
 		const data = await whoami.json()
 		if (data.username !== expectedUsername)
-			throw new Error(
-				`测试须使用隔离用户 "${expectedUsername}"，当前为 "${data.username}"。`
-				+ '请通过 run.mjs 启动，勿指向生产/开发 fount。',
-			)
+			throw new Error(geti18n('fountConsole.test.frontend.isolatedUser', { expectedUsername, username: data.username }))
 	})
 }

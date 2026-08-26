@@ -33,4 +33,4 @@ When `trickleIceOff === true`: send final offer/answer only after ICE gathering 
 
 ## Live-test relay override
 
-Live tests inject shared loopback relays via `init({ P2P: { signaling: { relayOverride, mdnsPolicy, trickleIceOff } } })` → `initP2PServer` → `initNode` (`src/scripts/test/node/p2p_signaling.mjs` + `--p2p-relay-url`). Honor `getSignalingRuntimeConfig().relayOverride` in all discovery paths.
+Live tests inject shared loopback relays via `init({ P2P: { signaling: { channels } } })` → `initP2PServer` → `initNode` (`src/scripts/test/node/p2p_signaling.mjs` + `--p2p-relay-url`). Test configs are **nostr-only**: `channels.nostr.relay` carries the loopback URLs, `lan`/`bt` are `false` (so test nodes never link real nodes on the same LAN), and `channels.webrtc` sets `iceLocalHostnamePolicy: 'rewrite-loopback'` + `trickleIceOff: true`. All discovery/link paths honor `getSignalingRuntimeConfig().channels`.

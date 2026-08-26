@@ -1,11 +1,12 @@
 import { Buffer } from 'node:buffer'
 
-import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { computeAppendHlcAndPrev, signTimelineEvent } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
+
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 import {
 	consumePendingRecoverySecret,

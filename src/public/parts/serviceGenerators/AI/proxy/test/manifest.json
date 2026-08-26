@@ -32,8 +32,7 @@
 				"src/scripts/test/fixtures/openai_prompt_cache_mock.mjs",
 				"src/scripts/test/fixtures/serviceSources/AI/proxy_openai_mock/**",
 				"src/scripts/test/{deno/serial.mjs,node/boot.mjs}",
-				"src/server/parts_loader.mjs",
-				"deno.json"
+				"src/server/parts_loader.mjs"
 			],
 			"run": [
 				"deno",

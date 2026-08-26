@@ -13,6 +13,24 @@ const { GetMarkdownConvertor } = await import('../../../../../pages/scripts/feat
 const { rehypeSanitizeUntrustedContent } = await import('../../../../../pages/scripts/features/markdown/sanitize.mjs')
 
 /**
+ * 本文件无 i18n bundle，独立代码块渲染会触发 `[i18n:missing]` 告警（噪声）；断言依赖 key 字符串回退，
+ * 不加载 bundle，故静默该告警。告警经 i18n 模块自己持有的 `console` 发出（`deno test` 运行器会替换
+ * `globalThis.console`，故须直接 patch i18n 导出的 `console`），模块顶层安装一次即可全程生效；其余 warn 照常透传。
+ */
+{
+	const i18nMod = await import('../../../../../pages/scripts/i18n/index.mjs')
+	const origWarn = i18nMod.console.warn
+	/**
+	 * 过滤 `[i18n:missing]` 噪声告警，其余告警照常透传。
+	 * @param {...any} args 原始日志参数
+	 */
+	i18nMod.console.warn = (...args) => {
+		if (/\[i18n:missing]/.test(String(args[0]))) return
+		origWarn(...args)
+	}
+}
+
+/**
  * @param {string} markdown 原文
  * @param {object} [options] GetMarkdownConvertor 选项覆盖
  * @returns {Promise<string>} HTML

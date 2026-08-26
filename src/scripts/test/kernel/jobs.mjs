@@ -313,8 +313,6 @@ export function acceptedFromWave(wave, counts = {}) {
 		knownIds: wave.knownIds ?? [],
 		available: wave.available ?? [],
 		continueReasons: counts.continueReasons ?? serializeContinueReasons(wave.continueReasons),
-		remainingMs: counts.remainingMs ?? wave.remainingMs ?? null,
-		unknownCount: counts.unknownCount ?? wave.unknownCount ?? 0,
 	}
 }
 

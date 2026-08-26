@@ -16,9 +16,11 @@ import {
 import {
 	buildStateMarkdown,
 	pruneAbsentState,
+	readModuleCheckStats,
 	readState,
 	suiteKey,
 	upsertSuiteRun,
+	writeModuleCheckStats,
 	writeState,
 } from '../core/state.mjs'
 
@@ -31,6 +33,20 @@ import { makeStateEntry, makeSuite } from './fixtures.mjs'
 async function makeRepoRoot() {
 	return await mkdtemp(join(tmpdir(), 'fount_prune_state_'))
 }
+
+Deno.test('module-check stats persist and round-trip across kernels', async () => {
+	const repoRoot = await makeRepoRoot()
+	try {
+		assertEquals(await readModuleCheckStats(repoRoot), { totalMs: 0, count: 0 })
+		await writeModuleCheckStats(repoRoot, { totalMs: 400_000, count: 10 })
+		assertEquals(await readModuleCheckStats(repoRoot), { totalMs: 400_000, count: 10 })
+		await writeModuleCheckStats(repoRoot, { totalMs: 450_000, count: 11 })
+		assertEquals(await readModuleCheckStats(repoRoot), { totalMs: 450_000, count: 11 })
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
+})
 
 Deno.test('pruneAbsentState drops removed and renamed suite entries', async () => {
 	const repoRoot = await makeRepoRoot()

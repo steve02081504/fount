@@ -2,6 +2,7 @@
  * GitHub Pages 静态站 Playwright fixture（无登录、无 fount 节点）。
  */
 import { test as base, expect } from '@playwright/test'
+
 import { createBrowserDiagnostics, waitForWatchDrain } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
 import { installCdnResponseCache } from 'fount/scripts/test/playwright/cdn_cache.mjs'
 import { requireTestBaseUrl } from 'fount/scripts/test/playwright/env.mjs'

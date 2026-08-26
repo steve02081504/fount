@@ -44,10 +44,10 @@ export function computeOpposingForkBlockTargets(events, acceptedTipId, selfPubKe
 			if (acceptedClosure.has(eventId)) continue
 			const event = byId.get(eventId)
 			if (!event || !GOVERNANCE_AUTHZ_TYPES.has(event.type)) continue
-			const sender = event.sender || ''
-			if (isHex64(sender) && sender !== self) targets.add(sender)
-			const targetHash = String(event.content?.targetPubKeyHash || '').trim()
-			if (isHex64(targetHash) && targetHash !== self) targets.add(targetHash)
+			const sender = event.sender
+			if (sender !== self && isHex64(sender)) targets.add(sender)
+			const targetHash = event.content?.targetPubKeyHash
+			if (targetHash !== self && isHex64(targetHash)) targets.add(targetHash)
 		}
 	}
 

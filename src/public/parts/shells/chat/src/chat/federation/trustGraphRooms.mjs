@@ -41,7 +41,7 @@ function isActiveMemberNodeHash(state, nodeHash) {
  */
 function isBootstrapJoinEnvelope(envelope) {
 	return envelope?.action === 'dag_event'
-		&& String(envelope?.payload?.type || '') === 'member_join'
+		&& envelope?.payload?.type === 'member_join'
 }
 
 /**
@@ -49,7 +49,7 @@ function isBootstrapJoinEnvelope(envelope) {
  * @returns {boolean} 是否允许未入群成员发送的 bootstrap/discovery 动作
  */
 function isPrememberBootstrapEnvelope(envelope) {
-	const action = String(envelope?.action || '').trim()
+	const action = envelope?.action
 	return PREMEMBER_GROUP_ACTIONS.has(action) || isBootstrapJoinEnvelope(envelope)
 }
 

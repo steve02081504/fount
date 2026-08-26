@@ -28,12 +28,9 @@ const LEAVE_FEDERATION_JOIN_TIMEOUT_MS = 4000
  */
 function prevTipIdsFromCheckpoint(checkpoint) {
 	if (!checkpoint) return []
-	const tips = (Array.isArray(checkpoint.dag_tip_ids) ? checkpoint.dag_tip_ids : [])
-		.map(t => t)
-		.filter(isHex64)
+	const tips = checkpoint.dag_tip_ids?.filter?.(isHex64) || []
 	if (tips.length) return sortedPrevEventIds(tips)
-	const anchor = checkpoint.checkpoint_event_id || ''
-	return isHex64(anchor) ? [anchor] : []
+	return [isHex64(checkpoint.checkpoint_event_id)].filter(Boolean)
 }
 
 /**

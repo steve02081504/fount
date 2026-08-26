@@ -5,8 +5,9 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
@@ -22,7 +23,8 @@ import {
 	findChannelMessageRow,
 } from '../../chat/channel/messageMutations.mjs'
 import { attachFilesToContent } from '../../chat/channel/postMessage.mjs'
-import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
+import { createChannel } from '../../chat/dag/channelOperations.mjs'
+import { assertNotRootChannel } from '../../chat/dag/groupSettings.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import {
 	loadGroupMemberReadMarkers,
@@ -54,35 +56,32 @@ import { GROUPS_PREFIX, EVENT_ID_PARAM } from './path.mjs'
 export function registerChannelMessageRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/threads`, authenticate, async (req, res) => {
 		const { groupId, channelId: parentChannelId } = req.params
+		assertNotRootChannel(parentChannelId)
 		const { parentEventId } = req.body || {}
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
 		ensureChannel(state, parentChannelId)
+		const parent = state.channels[parentChannelId] || {}
 
 		const normalizedParentEventId = parentEventId ? parentEventId : null
 		if (normalizedParentEventId)
-			for (const [channelId, channel] of Object.entries(state.channels || {}))
-				if (
-					channel?.parentChannelId === parentChannelId
-					&& (channel.parentEventId || '') === normalizedParentEventId
-				) {
-					res.status(200).json({ channelId })
+			for (const childId of parent.links || [])
+				if (state.channels?.[childId]?.parentEventId === normalizedParentEventId) {
+					res.status(200).json({ channelId: childId })
 					return
 				}
 
 		const newChannelId = `thread_${Date.now()}_${randomUUID().slice(0, 8)}`
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'channel_create',
-			timestamp: Date.now(),
-			content: {
-				channelId: newChannelId,
-				type: 'text',
-				name: normalizedParentEventId ? `thread:${normalizedParentEventId.slice(0, 12)}` : 'Thread',
-				description: '',
-				parentChannelId,
-				parentEventId: normalizedParentEventId,
-				syncScope: 'channel',
-			},
+		await createChannel(username, groupId, {
+			channelId: newChannelId,
+			type: 'text',
+			name: normalizedParentEventId ? `thread:${normalizedParentEventId.slice(0, 12)}` : 'Thread',
+			description: '',
+			links: [],
+			permissionBlockId: parentChannelId,
+			parentEventId: normalizedParentEventId,
+			parentChannelId,
+			syncScope: 'channel',
 		})
 		res.status(201).json({ channelId: newChannelId })
 	})
@@ -92,6 +91,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const eventId = req.params.eventId || ''
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
+		assertNotRootChannel(channelId)
 		const rawContent = req.body?.content
 		if (!rawContent || typeof rawContent !== 'object' || Array.isArray(rawContent))
 			throw httpError(400, 'content object required')
@@ -132,6 +132,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const eventId = req.params.eventId || ''
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
+		assertNotRootChannel(channelId)
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
@@ -150,6 +151,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { type, content } = req.body || {}
 		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
 			throw httpError(400, 'invalid eventId')
+		assertNotRootChannel(channelId)
 		if (!['up', 'down'].includes(type))
 			throw httpError(400, 'type must be up or down')
 
@@ -345,6 +347,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
+		assertNotRootChannel(channelId)
 		const { content: rawContent, generated, files: rawFiles } = req.body || {}
 
 		const membership = await resolveGroupMember(req, res, groupId)

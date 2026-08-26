@@ -152,8 +152,17 @@ export function denoPanicRecordPath(repoRoot) {
 /**
  * 用户目录嵌套 git 指纹路径。
  * @param {string} repoRoot 仓库根
- * @returns {string} data/test/state/nested_git.json
+ * @returns {string} data/test/state/nested_git.json 绝对路径
  */
 export function nestedGitStatePath(repoRoot) {
 	return join(stateDir(repoRoot), 'nested_git.json')
+}
+
+/**
+ * 模块检查时长累计记录路径（跨内核重启，供调度 ETA 使用）。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/state/module_check.json 绝对路径
+ */
+export function moduleCheckStatePath(repoRoot) {
+	return join(stateDir(repoRoot), 'module_check.json')
 }

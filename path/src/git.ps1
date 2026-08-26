@@ -195,9 +195,11 @@ function script:git_sync_to_ref($Ref) {
 	}
 	git_backup_uncommitted
 	if ($LastExitCode -ne 0) { return }
-	invoke_repo_git clean -fd
-	if ($LastExitCode -ne 0) { return }
+	# 先 reset 再 clean：ZIP 解压后工作树里已存在的 tracked 文件此时尚未入 index，
+	# 若先 clean 会被当作 untracked 删除（如 .esh/ 目录删除失败还会陷入反复确认）。
 	invoke_repo_git reset --hard $Ref
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git clean -fd
 }
 
 # 确保 remote.origin.fetch 将 refs/heads/<Branch> 映射到 origin/<Branch>。
@@ -244,9 +246,11 @@ function script:git_checkout_branch($Branch, $StartPoint = $null) {
 	}
 	git_backup_uncommitted
 	if ($LastExitCode -ne 0) { return }
-	invoke_repo_git clean -fd
+	# 先 checkout 再 clean：同 git_sync_to_ref，避免把已存在但未入 index 的 tracked 文件清掉。
+	# -f 覆盖工作树里与新 ref 冲突的 untracked 文件（其内容已由 git_backup_uncommitted 备份）。
+	invoke_repo_git checkout -f -B $Branch $StartPoint
 	if ($LastExitCode -ne 0) { return }
-	invoke_repo_git checkout -B $Branch $StartPoint
+	invoke_repo_git clean -fd
 	if ($LastExitCode -ne 0) { return }
 	if ($StartPoint -like 'origin/*') {
 		git_track_origin_branch $Branch $StartPoint
@@ -262,9 +266,11 @@ function script:git_detach_to_ref($Ref) {
 	}
 	git_backup_uncommitted
 	if ($LastExitCode -ne 0) { return }
+	# 先 checkout 再 clean：同 git_sync_to_ref / git_checkout_branch。
+	invoke_repo_git checkout --detach -f $resolved
+	if ($LastExitCode -ne 0) { return }
 	invoke_repo_git clean -fd
 	if ($LastExitCode -ne 0) { return }
-	invoke_repo_git checkout --detach $resolved
 }
 
 function script:fount_resolve_upstream($Branch) {

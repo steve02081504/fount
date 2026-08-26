@@ -6,7 +6,7 @@ export default {
 	info: {
 		'zh-CN': {
 			name: '写路径 Agent',
-			avatar: '🤖',
+			avatar: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 			description: 'write path fixture char',
 			version: '1.0.0',
 			author: 'fount',
@@ -14,7 +14,7 @@ export default {
 		},
 		'en-US': {
 			name: 'Write-path Agent',
-			avatar: '🤖',
+			avatar: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 			description: 'write path fixture char',
 			version: '1.0.0',
 			author: 'fount',

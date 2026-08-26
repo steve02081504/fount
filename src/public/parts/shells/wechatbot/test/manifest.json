@@ -11,7 +11,7 @@
 		"shellIntegrationTests": [
 			"src/public/parts/shells/wechatbot/test/integration/**",
 			"src/public/parts/shells/chat/src/chat/bridge/**",
-			"src/public/parts/shells/chat/public/shared/**",
+			"src/public/parts/shells/chat/public/shared/{channelContent,inlineTokenSyntax,messageFields}.mjs",
 			"src/public/parts/shells/wechatbot/src/**",
 			"src/public/parts/shells/chat/test/{fixtures/**,harness.mjs}",
 			"src/scripts/test/shellLoadProbe.mjs"
@@ -19,14 +19,13 @@
 		"frontendShared": [
 			"src/public/parts/shells/wechatbot/public/**",
 			"src/public/parts/shells/wechatbot/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
-			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/**"
 		]
 	},
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "16s",
+			"expected": "12s",
 			"trigger": [
 				"shellPureTests",
 				"testFramework"
@@ -44,7 +43,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "27s",
+			"expected": "20s",
 			"trigger": [
 				"shellIntegrationTests",
 				"testFramework"
@@ -62,7 +61,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "1m20s",
+			"expected": "3m18s",
 			"dependsOn": [
 				"server:live"
 			],

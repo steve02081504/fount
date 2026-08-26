@@ -209,6 +209,16 @@ export function fileMasterKeysPath(username, groupId) {
 }
 
 /**
+ * 治理副作用完成状态本地存储（记录哪些 moderation 事件已轮换 roomSecret，节点私有，不入 DAG）。
+ * @param {string} username 本地账户名
+ * @param {string} groupId 会话 / 群 ID
+ * @returns {string} `moderation_side_effects.json` 绝对路径
+ */
+export function moderationSideEffectsPath(username, groupId) {
+	return join(groupDir(username, groupId), 'moderation_side_effects.json')
+}
+
+/**
  * 频道域密钥本地存储（K_ch 代际）。
  * @param {string} username replica
  * @param {string} groupId 群 ID

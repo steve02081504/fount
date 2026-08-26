@@ -1,9 +1,10 @@
 /* global Deno */
+import { assertEquals } from 'jsr:@std/assert'
+
 import {
 	computeEffectiveStatus,
 	HEARTBEAT_STALE_MS,
 } from 'fount/public/parts/shells/chat/src/entity/presenceStatus.mjs'
-import { assertEquals } from 'jsr:@std/assert'
 
 const SELF = 'a'.repeat(128)
 

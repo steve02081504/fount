@@ -52,6 +52,19 @@ export function installMarkdownTestDom() {
 	globalThis.HTMLDivElement = window.HTMLDivElement
 	globalThis.Image = window.Image
 
+	// mermaid 渲染 HTML 标签节点时用 SVG getBBox 测量；happy-dom 未实现（返回 0 / 抛错）
+	// https://github.com/capricorn86/happy-dom/issues/2145 — 上游补齐后可删此 shim
+	Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
+		configurable: true,
+		/**
+		 * 返回零尺寸包围盒，满足 mermaid 测量 HTML 标签节点。
+		 * @returns {{ x: number, y: number, width: number, height: number }} 全零包围盒
+		 */
+		value() {
+			return { x: 0, y: 0, width: 0, height: 0 }
+		},
+	})
+
 	const realFetch = globalThis.fetch.bind(globalThis)
 	/**
 	 * 测试环境 fetch：对 registry API 返回空数组，其余透传真实 fetch。

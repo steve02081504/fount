@@ -18,6 +18,7 @@ Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics unde
 ## Live federation
 
 - Reuse `InitializeOpenGroupJoin` / `InitializeOpenGroupJoinMulti` from `live/federation/common.mjs` (`WarmupFedNodeLinks` → `rebind` → members gate → re-invite fallback). Bare create→invite→join without warmup hangs at `members>=2`.
+- Live P2P nodes run **nostr-only** via `p2p_signaling.mjs` (`testSignalingFromRelayUrls`): `channels` = nostr(loopback relay) + webrtc, `lan`/`bt` disabled. Test nodes therefore never discover/link a real node on the same LAN — do not re-enable LAN/BT for tests.
 - A `members>=2` hang is usually link/handshake/ICE — inspect logs before rerunning ([signaling.md](../../p2p/docs/signaling.md)).
 - Join invite URI (`formatJoinRunUri` / `parseJoinRunUri`): single segment `encodeURIComponent(JSON.stringify({ groupId, inviteCode, roomSecret?, … }))` after `join;` — no positional / `key=value` fields. Production room join awaits introducer dial briefly; live tests still warmup explicitly.
 - Prefer `TestFedHasMessage` / `TestFedHasReaction` over raw `GET /events?limit=…` (paged streams miss rows that already ingested).

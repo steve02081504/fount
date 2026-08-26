@@ -140,6 +140,17 @@ Deno.test('prep hit resets settle and pulls back from FS', () => {
 	assertEquals(queues.fs[0].key, 'x')
 })
 
+Deno.test('removeIdleAll drops only idle_all FS items and leaves others', () => {
+	const queues = new TestQueues()
+	queues.enqueueFs('a', 'idle_all')
+	queues.enqueueFs('b', 'fs_change')
+	queues.enqueueFs('c', 'idle_all')
+	const removed = queues.removeIdleAll()
+	assertEquals(removed.map(item => item.key).sort(), ['a', 'c'])
+	assertEquals(queues.fs.map(item => item.key), ['b'])
+	assertEquals(queues.removeIdleAll().length, 0)
+})
+
 Deno.test('removeKey drops prep and both queues', () => {
 	const clock = mutableClock()
 	const queues = new TestQueues({ prepSettleMs: 1, now: clock.now })

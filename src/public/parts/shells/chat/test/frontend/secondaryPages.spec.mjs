@@ -58,7 +58,8 @@ test.describe('Chat secondary pages', () => {
 	test('settings permissions and emojis sections load', async ({ page, baseUrl, apiKey }) => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await openGroupSettingsPage(page, baseUrl, groupId)
-		await expect(page.locator('.settings-nav-item:not(.hidden)')).toHaveCount(7)
+		// 群主/ADMIN 可见全部 8 项：general/members/permissions/group-perms/emojis/channel-perms/storage/audit
+		await expect(page.locator('.settings-nav-item:not(.hidden)')).toHaveCount(8)
 		await expect(page.locator('.settings-nav-item[data-section="general"]')).toHaveAttribute('aria-selected', 'true')
 
 		await page.locator('.settings-nav-item[data-section="permissions"]').click()

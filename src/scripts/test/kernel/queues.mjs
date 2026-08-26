@@ -241,6 +241,19 @@ export class TestQueues {
 	}
 
 	/**
+	 * 移出全部 idle_all 项（新任务抢占时调用）。
+	 * @returns {QueueItem[]} 被移出的 idle_all 项
+	 */
+	removeIdleAll() {
+		const kept = []
+		const removed = []
+		for (const item of this.fs)
+			(item.reason === 'idle_all' ? removed : kept).push(item)
+		this.fs = kept
+		return removed
+	}
+
+	/**
 	 * 移出全部预备与待运行项（内核关闭）。
 	 * @returns {QueueItem[]} 待运行项
 	 */

@@ -3,8 +3,9 @@
  * 不得渲染空白，应回退到群 viewer 成员 displayName，最后落到 entityHash 短码。
  */
 /* global Deno */
-import { resolveViewerSidebarDisplayName } from 'fount/public/parts/shells/chat/public/shared/viewerDisplay.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { resolveViewerSidebarDisplayName } from 'fount/public/parts/shells/chat/public/shared/viewerDisplay.mjs'
 
 const ENTITY = '96e6a72489ffda0e6d626ee81ce757cd96e91bf27714dcbeb5d7cfdb5f667cbb82cf4d7f9e21fbf888c7fcf8bb613731b23b82863e79eb76f8eb4693dd4e6235'
 

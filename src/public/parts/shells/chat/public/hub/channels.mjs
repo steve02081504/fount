@@ -34,53 +34,6 @@ export async function channelTypeIconHtml(type) {
 }
 
 /**
- * 将频道按 `parentChannelId` 建树（允许环：未入树的节点补在末尾）。
- * @param {Record<string, object>} channels 频道表
- * @returns {{ ordered: { id: string, channel: object, depth: number }[] }} 扁平有序频道行
- */
-export function buildChannelTree(channels) {
-	/** @type {{ id: string, channel: object }[]} */
-	const nodes = Object.entries(channels || {}).map(([id, channel]) => ({ id, channel }))
-	const childIds = new Set()
-	for (const { id, channel } of nodes) {
-		const parentId = channel?.parentChannelId
-		if (parentId && channels[parentId]) childIds.add(id)
-	}
-	const roots = nodes.filter(node => !childIds.has(node.id))
-	/** @type {Map<string, string[]>} */
-	const byParent = new Map()
-	for (const { id, channel } of nodes) {
-		const parentId = channel?.parentChannelId
-		if (parentId && channels[parentId]) {
-			if (!byParent.has(parentId)) byParent.set(parentId, [])
-			byParent.get(parentId).push(id)
-		}
-	}
-	/**
-	 * @param {string} channelId 频道 id
-	 * @param {number} depth 缩进深度
-	 * @returns {{ id: string, channel: object, depth: number }[]} 子树扁平列表
-	 */
-	function flatten(channelId, depth) {
-		const channel = channels[channelId]
-		if (!channel) return []
-		const row = [{ id: channelId, channel, depth }]
-		for (const childId of byParent.get(channelId) || [])
-			row.push(...flatten(childId, depth + 1))
-		return row
-	}
-	/** @type {{ id: string, channel: object, depth: number }[]} */
-	const ordered = []
-	for (const root of roots)
-		ordered.push(...flatten(root.id, 0))
-	for (const { id, channel } of nodes)
-		if (!ordered.some(row => row.id === id))
-			ordered.push({ id, channel, depth: 0 })
-
-	return { ordered }
-}
-
-/**
  * @param {HTMLElement} container 消息区根
  * @param {string} channelId 列表频道 id
  * @param {object} channel 频道元数据

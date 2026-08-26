@@ -11,11 +11,16 @@ import { startTestKernel } from './server.mjs'
 
 const port = Number(process.env.FOUNT_TEST_HUB_PORT) || TEST_HUB_PORT
 
+/** 空闲自动退出宽限（毫秒；默认 7 分钟）。 */
+const idleExitMs = Number(process.env.FOUNT_TEST_KERNEL_IDLE_EXIT_MS)
+const idleExitGraceMs = Number.isFinite(idleExitMs) && idleExitMs > 0 ? idleExitMs : undefined
+
 try {
 	const handle = await startTestKernel({
 		port,
 		autoExit: process.env.FOUNT_TEST_KERNEL_NO_EXIT !== '1',
 		watchFs: process.env.FOUNT_TEST_KERNEL_WATCH_FS !== '0',
+		idleExitGraceMs,
 	})
 	await handle.closed
 	process.exit(0)

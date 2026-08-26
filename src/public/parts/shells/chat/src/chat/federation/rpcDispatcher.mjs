@@ -311,7 +311,7 @@ export function createWorldRpcDispatcher(getChatRequest) {
 				case 'GetCharReply': {
 					const fn = world.interfaces?.chat?.GetCharReply
 					if (!fn) return { kind: 'method_not_found' }
-					const charname = String(list[1] || '')
+					const charname = list[1]
 					const request = list[0] || await getChatRequest(groupId, charname, inferChannelId(), { replicaUsername: owner })
 					return resultOk(method, await fn(request, charname))
 				}

@@ -61,6 +61,7 @@ export function buildCheckpointPayload({
 		members: JSON.parse(JSON.stringify(materialized.members || {})),
 		roles: JSON.parse(JSON.stringify(materialized.roles || {})),
 		channelPermissions: JSON.parse(JSON.stringify(materialized.channelPermissions || {})),
+		groupPermissions: JSON.parse(JSON.stringify(materialized.groupPermissions || {})),
 		channelKeyGeneration: JSON.parse(JSON.stringify(materialized.channelKeyGeneration || {})),
 		channelKeyWraps: Object.fromEntries(
 			Object.entries(materialized.channelKeyWraps || {}).map(([channelId, row]) => [
@@ -91,8 +92,8 @@ export function buildCheckpointPayload({
 		worldStates: JSON.parse(JSON.stringify(materialized.worldStates || {})),
 	}
 
-	const tips = (Array.isArray(dag_tip_ids) ? dag_tip_ids : []).filter(isHex64)
-	const tipsHash = isHex64(local_tips_hash) ? local_tips_hash : computeLocalTipsHash(tips)
+	const tips = dag_tip_ids?.filter?.(isHex64) || []
+	const tipsHash = isHex64(local_tips_hash) || computeLocalTipsHash(tips)
 	const epochRoot = eventIdsInEpoch.length ? merkleRoot(eventIdsInEpoch) : null
 
 	// §2.1 低功耗节点权限锚：对成员+角色+频道权限计算 SHA-256，供 batterySaver 快速校验
@@ -103,6 +104,13 @@ export function buildCheckpointPayload({
 			members: members_record.members,
 			roles: members_record.roles,
 			channelPermissions: members_record.channelPermissions,
+			groupPermissions: members_record.groupPermissions,
+			channelPermissionBlockIds: Object.fromEntries(
+				Object.entries(members_record.channels || {}).map(([channelId, channel]) => [
+					channelId,
+					{ permissionBlockId: channel?.permissionBlockId ?? null },
+				]),
+			),
 			bannedMembers: members_record.bannedMembers,
 			bannedEntities: members_record.bannedEntities,
 			bannedNodes: members_record.bannedNodes,
@@ -160,12 +168,8 @@ export function isSignedBaseCheckpoint(checkpoint) {
 export function isAdoptedBaseAuthoritative(checkpoint, localTipIds) {
 	if (!isSignedBaseCheckpoint(checkpoint)) return false
 	const anchor = checkpoint.checkpoint_event_id || ''
-	const localTips = (Array.isArray(localTipIds) ? localTipIds : [])
-		.map(t => t)
-		.filter(isHex64)
-	const snapshotTips = (Array.isArray(checkpoint.dag_tip_ids) ? checkpoint.dag_tip_ids : [])
-		.map(t => t)
-		.filter(isHex64)
+	const localTips = localTipIds?.filter?.(isHex64) || []
+	const snapshotTips = checkpoint.dag_tip_ids?.filter?.(isHex64) || []
 	const localSet = new Set(localTips)
 	const aligned = localTips.length > 0
 		&& snapshotTips.length === localTips.length

@@ -59,6 +59,8 @@ export async function fetchViewerEntityHash(baseUrl, apiKey, options = {}) {
  * @param {string} [options.name] 群名
  * @param {string} [options.description] 描述
  * @param {string} [options.defaultChannelName] 默认频道名
+ * @param {boolean} [options.forceNew] 强制新建，不复用同好友的既有 DM 群
+ * @param {{ entityHash?: string, charname?: string, displayName?: string }} [options.friendBinding] 好友绑定
  * @returns {Promise<{ groupId: string, defaultChannelId: string, channelId: string }>} 群与默认频道
  */
 export async function createChatTestGroup(baseUrl, apiKey, options = {}) {
@@ -67,6 +69,8 @@ export async function createChatTestGroup(baseUrl, apiKey, options = {}) {
 		name,
 		description: options.description ?? 'playwright frontend test',
 		...options.defaultChannelName ? { defaultChannelName: options.defaultChannelName } : {},
+		...options.friendBinding ? { friendBinding: options.friendBinding } : {},
+		...options.forceNew ? { forceNew: true } : {},
 	}
 	return withApiRequest(async req => {
 		const res = await req.post(

@@ -182,22 +182,20 @@ async function writeFollowerEntry(target, followers) {
  * @returns {Promise<void>}
  */
 export async function updateFollowerIndex(username, targetEntityHash, follow, followerEntityHash) {
-	const target = targetEntityHash
-	const follower = followerEntityHash
-	if (!follower) return
-	await queueFollowerIndexMutation(target, async () => {
-		const list = dedupeFollowerEntries(await readFollowerEntry(target))
-		const key = followerEntryKey({ replicaUsername: username, entityHash: follower })
+	if (!followerEntityHash) return
+	await queueFollowerIndexMutation(targetEntityHash, async () => {
+		const list = dedupeFollowerEntries(await readFollowerEntry(targetEntityHash))
+		const key = followerEntryKey({ replicaUsername: username, entityHash: followerEntityHash })
 		if (follow) {
 			if (!list.some(row => followerEntryKey(row) === key))
-				list.push({ replicaUsername: username, entityHash: follower })
+				list.push({ replicaUsername: username, entityHash: followerEntityHash })
 		}
 		else {
 			const next = list.filter(row => followerEntryKey(row) !== key)
-			await writeFollowerEntry(target, next)
+			await writeFollowerEntry(targetEntityHash, next)
 			return
 		}
-		await writeFollowerEntry(target, list)
+		await writeFollowerEntry(targetEntityHash, list)
 	})
 }
 
@@ -210,15 +208,14 @@ export async function updateFollowerIndex(username, targetEntityHash, follow, fo
  */
 export async function projectFollowerIndexFromTimelineEvent(replicaUsername, timelineOwnerEntityHash, event) {
 	if (!['follow', 'unfollow'].includes(event.type)) return
-	const owner = timelineOwnerEntityHash
-	if (!parseEntityHash(owner)) return
-	const target = String(event.content?.targetEntityHash || '').trim()
-	if (!parseEntityHash(target) || target === owner) return
+	if (!parseEntityHash(timelineOwnerEntityHash)) return
+	const target = event.content?.targetEntityHash
+	if (!parseEntityHash(target) || target === timelineOwnerEntityHash) return
 	await updateFollowerIndex(
 		replicaUsername,
 		target,
 		event.type === 'follow',
-		owner,
+		timelineOwnerEntityHash,
 	)
 }
 
@@ -228,9 +225,8 @@ export async function projectFollowerIndexFromTimelineEvent(replicaUsername, tim
  * @returns {Promise<FollowerIndexEntry[]>} replica + follower entityHash
  */
 export async function listKnownFollowersOf(entityHash) {
-	const target = entityHash
-	if (!parseEntityHash(target)) return []
-	return dedupeFollowerEntries(await readFollowerEntry(target))
+	if (!parseEntityHash(entityHash)) return []
+	return dedupeFollowerEntries(await readFollowerEntry(entityHash))
 }
 
 /**
@@ -263,17 +259,15 @@ export async function rebuildFollowerIndex() {
 	const scratch = {}
 	for (const username of listUsers())
 		for (const owner of (await getTimelineOwnerIndex(username)).all) {
-			const ownerKey = owner
-			if (!parseEntityHash(ownerKey)) continue
-			const view = await getTimelineMaterialized(username, ownerKey)
+			if (!parseEntityHash(owner)) continue
+			const view = await getTimelineMaterialized(username, owner)
 			for (const rawTarget of view.following || []) {
-				const target = rawTarget
-				if (!parseEntityHash(target) || target === ownerKey) continue
-				const bucketId = followerBucketId(target)
+				if (!parseEntityHash(rawTarget) || rawTarget === owner) continue
+				const bucketId = followerBucketId(rawTarget)
 				scratch[bucketId] ??= {}
-				scratch[bucketId][target] ??= new Map()
-				const entry = { replicaUsername: username, entityHash: ownerKey }
-				scratch[bucketId][target].set(followerEntryKey(entry), entry)
+				scratch[bucketId][rawTarget] ??= new Map()
+				const entry = { replicaUsername: username, entityHash: owner }
+				scratch[bucketId][rawTarget].set(followerEntryKey(entry), entry)
 			}
 		}
 

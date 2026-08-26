@@ -419,6 +419,58 @@ Deno.test('git_checkout_branch tracks one-shot origin ref under single-branch fe
 })
 
 /**
+ * ZIP 首次安装场景：git 刚 init + fetch（如 git_supplement_repo 之后），工作树里已有
+ * tracked 文件但尚未入 index（解压自 ZIP）。git_sync_to_ref 不得用 clean 把它们当
+ * untracked 删掉（历史上会误删 .esh/ 目录并陷入反复确认）。
+ */
+Deno.test('git_sync_to_ref preserves pre-existing tracked files on fresh init', async () => {
+	const result = await bash_exec(`
+		set -euo pipefail
+		temporaryDirectory=$(mktemp -d)
+		cleanup() { rm -rf "$temporaryDirectory"; }
+		trap cleanup EXIT
+
+		git init --bare -b master "$temporaryDirectory/remote.git" >/dev/null
+		git clone "$temporaryDirectory/remote.git" "$temporaryDirectory/seed" >/dev/null 2>&1
+		cd "$temporaryDirectory/seed"
+		git config user.email t@t
+		git config user.name t
+		mkdir -p .esh
+		echo keep > .esh/something.txt
+		echo data > file.txt
+		git add -A && git commit -m init >/dev/null
+		git push origin master >/dev/null
+
+		mkdir -p "$temporaryDirectory/app"
+		cd "$temporaryDirectory/app"
+		git init -b master >/dev/null
+		git remote add origin "$temporaryDirectory/remote.git"
+		git fetch origin master --depth 1 >/dev/null 2>&1
+		git config core.autocrlf false
+		# 模拟 ZIP 解压：tracked 文件进工作树，但不入 index。
+		mkdir -p .esh
+		cp "$temporaryDirectory/seed/.esh/something.txt" .esh/something.txt
+		cp "$temporaryDirectory/seed/file.txt" file.txt
+
+		FOUNT_DIR="$temporaryDirectory/app"
+		print_i18n_yellow() { :; }
+		print_i18n_green() { :; }
+		. ${JSON.stringify(gitShPath)}
+
+		git_sync_to_ref origin/master >/dev/null
+		[ -f "$FOUNT_DIR/.esh/something.txt" ] || { echo ".esh was deleted by git clean" >&2; exit 1; }
+		[ "$(cat "$FOUNT_DIR/.esh/something.txt")" = keep ] || { echo ".esh content wrong" >&2; exit 1; }
+		git -C "$FOUNT_DIR" status --porcelain | grep -q .esh/something.txt && {
+			echo ".esh still untracked after sync" >&2
+			exit 1
+		}
+		echo ok
+	`)
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertEquals(result.stdout.trim(), 'ok')
+})
+
+/**
  * fount_show_version：本地 tip / 落后 / 分离 HEAD 状态键。
  */
 Deno.test('fount_show_version reports branch sha and freshness', async () => {

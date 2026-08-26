@@ -1,4 +1,6 @@
 /* global Deno */
+import { assertEquals } from 'jsr:@std/assert'
+
 import {
 	ensureLocaleEntry,
 	renameLocaleEntry,
@@ -8,7 +10,6 @@ import {
 	normalizeLocalizedMap,
 	resolveProfilePresentation,
 } from 'fount/public/parts/shells/chat/src/entity/localized.mjs'
-import { assertEquals } from 'jsr:@std/assert'
 
 
 Deno.test('profileBannerFileUrl points at EVFS profile/banner', () => {

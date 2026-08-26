@@ -1,5 +1,5 @@
 /** 联邦线入站解析：tip ping/pong、gossip_request、channel_history、fed_shun、partition bridge。 */
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 import { parsePullAttestation } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
@@ -26,7 +26,7 @@ const CHANNEL_HISTORY_ROW_MAX_BYTES = 256 * 1024
  */
 export function parseFedTipPing(payload) {
 	if (!isPlainObject(payload)) return null
-	const nodeHash = normalizeHex64(payload.nodeHash)
+	const nodeHash = payload.nodeHash
 	if (!isHex64(nodeHash)) return null
 	return { nodeHash, tips: payload.tips, archiveSummary: payload.archiveSummary }
 }
@@ -48,18 +48,30 @@ export function parseFedTipPong(payload) {
 export function parseGossipRequest(payload) {
 	if (!isPlainObject(payload)) return null
 	const wantIds = Array.isArray(payload.wantIds)
-		? [...new Set(payload.wantIds.map(id => id).filter(id => EVENT_ID_HEX.test(id)))]
+		? [...new Set(payload.wantIds.filter(id => EVENT_ID_HEX.test(id)))]
 		: []
 	if (!wantIds.length) return null
 	const ttl = Number(payload.ttl)
-	const requesterNodeHash = payload.requesterNodeHash || ''
+	const requesterNodeHash = payload.requesterNodeHash
 	const attestation = parsePullAttestation(payload.attestation)
-	if (!Number.isFinite(ttl) || !requesterNodeHash || !attestation) return null
+	if (!Number.isFinite(ttl) || !isHex64(requesterNodeHash) || !attestation) return null
 	if (attestation.wantIds?.length) {
 		const attSet = new Set(attestation.wantIds)
 		if (wantIds.some(id => !attSet.has(id))) return null
 	}
 	return { wantIds, ttl, requesterNodeHash, archiveSummary: payload.archiveSummary, attestation }
+}
+
+/**
+ * 解析 fed_verify_membership 载荷。
+ * @param {unknown} payload fed_verify_membership 载荷
+ * @returns {{ nodeHash: string } | null} 解析结果
+ */
+export function parseFedVerifyMembership(payload) {
+	if (!isPlainObject(payload)) return null
+	const nodeHash = payload.nodeHash
+	if (!isHex64(nodeHash)) return null
+	return { nodeHash }
 }
 
 /**
@@ -69,9 +81,9 @@ export function parseGossipRequest(payload) {
  */
 export function parseFedShun(payload, groupId) {
 	if (!isPlainObject(payload)) return null
-	if ((payload.groupId || '') !== groupId) return null
-	const nodeHash = payload.nodeHash || ''
-	const reason = payload.reason || ''
+	if (payload.groupId !== groupId) return null
+	const nodeHash = payload.nodeHash
+	const reason = payload.reason
 	if (!isHex64(nodeHash) || !FED_SHUN_REASONS.has(reason)) return null
 	return { groupId, nodeHash, reason }
 }
@@ -84,11 +96,11 @@ export function parseFedShun(payload, groupId) {
  */
 export function parseChannelHistoryWant(payload, localNodeHash, groupId) {
 	if (!isPlainObject(payload)) return null
-	const requesterNodeHash = payload.requesterNodeHash || ''
-	const requestId = payload.requestId || ''
-	const channelId = payload.channelId || ''
+	const requesterNodeHash = payload.requesterNodeHash
+	const requestId = payload.requestId
+	const channelId = payload.channelId
 	const attestation = parsePullAttestation(payload.attestation)
-	if (!requesterNodeHash || !requestId || !isChannelIdValid(channelId) || requesterNodeHash === localNodeHash)
+	if (!isHex64(requesterNodeHash) || !requestId || !isChannelIdValid(channelId) || requesterNodeHash === localNodeHash)
 		return null
 	if (!attestation || attestation.groupId !== groupId || attestation.requestId !== requestId)
 		return null

@@ -3,11 +3,12 @@
  */
 import { Buffer } from 'node:buffer'
 
-import dataReader from 'fount/public/parts/ImportHandlers/SillyTavern/data_reader.mjs'
-import { PROMPT_MARKER } from 'fount/scripts/test/fixtures/mock_ai.mjs'
 import { encode as encodeText } from 'npm:png-chunk-text'
 import encodePng from 'npm:png-chunks-encode'
 import extractPng from 'npm:png-chunks-extract'
+
+import dataReader from 'fount/public/parts/ImportHandlers/SillyTavern/data_reader.mjs'
+import { PROMPT_MARKER } from 'fount/scripts/test/fixtures/mock_ai.mjs'
 
 /** 用作头像 / 卡片载体的 1×1 PNG。 */
 export const MINIMAL_PNG = Buffer.from(

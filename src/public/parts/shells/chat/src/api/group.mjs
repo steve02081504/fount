@@ -55,7 +55,7 @@ export function createGroup(apiContext, groupId, projection) {
 			return Object.entries(state.channels || {}).map(([channelId, channel]) =>
 				createChannel(apiContext, groupId, channelId, {
 					name: channel.name || channelId,
-					kind: channel.parentChannelId && channel.parentEventId ? 'thread' : 'text',
+					kind: channel.parentEventId ? 'thread' : 'text',
 				}))
 		},
 		/**

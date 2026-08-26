@@ -2,9 +2,10 @@
  * Social 治理最小集：mute / contentWarning。
  */
 /* global Deno */
-import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
 import { setPersonalMuted, isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 
 import { createTestSession } from '../harness.mjs'
 

@@ -2,6 +2,7 @@
  * 跨壳实体资料 banner 纹理（hash pattern + 自定义图）。
  * 宿主设 data-profile-pattern 与 --entity-card-* CSS 变量；banner 节点用 .entity-profile-banner。
  */
+/* --entity-card-* 默认值定义在 `.profile-popup`（entityProfileCard.css），此处只做 pattern 变体背景。 */
 .entity-profile-banner {
 	position: relative;
 	overflow: hidden;

@@ -37,7 +37,8 @@ function populateLanguageSelector() {
 		button.className = 'locale-item-button'
 		button.textContent = localeName
 		/**
-		 *
+		 * 切换界面语言并关闭语言选择器。
+		 * @returns {Promise<void>}
 		 */
 		button.onclick = async () => {
 			const requestId = ++latestLanguageSwitchRequest

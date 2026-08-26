@@ -30,7 +30,7 @@ export async function tryImportFollowApproveVault(username, entityHash, event) {
 	if (myPubHex !== targetPubKeyHex) return false
 
 	const masterKeyHex = unwrapKeyEcies(encrypted, secretKey)
-	if (!masterKeyHex || !isHex64(masterKeyHex)) return false
+	if (!isHex64(masterKeyHex)) return false
 
 	const generation = Number(event.content?.generation)
 	if (!Number.isFinite(generation) || generation < 0) return false

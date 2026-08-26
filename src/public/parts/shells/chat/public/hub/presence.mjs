@@ -353,7 +353,7 @@ async function hoverOptionsForAuthor(authorKey, anchorElement) {
 			entityHash: resolvedEntityHash || (isEntityHash128(profileKey) ? profileKey : null),
 			charname: null,
 			pubKeyHex: null,
-			pubKeyHash: isHex64(profileKey) ? profileKey : null,
+			pubKeyHash: isHex64(profileKey),
 			displayName: fallbackName,
 		},
 		paintOptions: {
@@ -394,7 +394,7 @@ export function applyAvatarsTo(rootElement) {
 			if (!profile) return
 			av.dataset.avatarLoaded = '1'
 			const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
-			void applyProfileAvatarToHost(av, {
+			applyProfileAvatarToHost(av, {
 				seed: profileKey,
 				label: resolveDisplayName({
 					entityHash,

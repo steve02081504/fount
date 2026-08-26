@@ -7,8 +7,9 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { friendBindingMatches } from '../../../public/shared/friendBinding.mjs'
@@ -21,7 +22,7 @@ import { getActiveGroupRuntime } from '../../chat/session/persistence.mjs'
 import { registerGroupRuntime } from '../../chat/session/runtime.mjs'
 import { modifyTimeLine } from '../../chat/session/timeLine.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
-import { governanceChannelId } from '../access.mjs'
+import { canInChannel, governanceChannelId } from '../access.mjs'
 import { buildGroupPreview } from '../groupPreview.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 import { enumerateJoinedFederatedGroups } from '../queries.mjs'
@@ -121,7 +122,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			description: body.description ?? '',
 			ownerPubKeyHash,
 			secretKey,
-			defaultChannelName: body.defaultChannelName,
+			defaultChannelName: body.defaultChannelName ?? (friendBinding ? '' : undefined),
 			defaultChannelId: body.defaultChannelId,
 			joinPolicy,
 			...friendBinding ? { friendBinding } : {},
@@ -167,8 +168,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 	router.delete(`${GROUPS_PREFIX}/:groupId`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId, state, member } = req.groupContext
 		const permissionsChannelId = governanceChannelId(state)
-		const perms = calculateMemberPermissions(member, state.roles, permissionsChannelId, state.channelPermissions)
-		if (!perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ADMINS])
+		if (!canInChannel(state, member, [PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], permissionsChannelId))
 			return res.status(403).json({ error: 'Only admins can delete the group' })
 
 		await removeLocalGroupReplica(username, groupId)

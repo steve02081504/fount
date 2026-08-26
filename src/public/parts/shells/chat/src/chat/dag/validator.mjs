@@ -7,7 +7,7 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { HEX_ID_64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { pubKeyHash, publicKeyFromSeed, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 import { signPayloadBytes, sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 
@@ -50,9 +50,8 @@ function memberRecord(materializedState, sender) {
  * @returns {Uint8Array | null} 32 字节公钥
  */
 function publicKeyBytesFromHex(hex) {
-	const normalized = normalizeHex64(hex)
-	if (!HEX_ID_64.test(normalized)) return null
-	return new Uint8Array(Buffer.from(normalized, 'hex'))
+	if (!HEX_ID_64.test(hex)) return null
+	return new Uint8Array(Buffer.from(hex, 'hex'))
 }
 
 /**
@@ -65,8 +64,8 @@ function publicKeyBytesFromHex(hex) {
  * @returns {Promise<void>} 校验通过则正常返回；失败抛出 `Error`
  */
 export async function validateSignature(body, signPayload, eventLike, secretKey, materializedState) {
-	const sender = body.sender?.trim() || ''
-	const signatureHex = signPayload.signature?.trim() || ''
+	const sender = body.sender
+	const signatureHex = signPayload.signature
 	const signatureBytes = signatureHex ? Buffer.from(signatureHex, 'hex') : null
 
 	if (!PUB_KEY_HASH_HEX.test(sender))

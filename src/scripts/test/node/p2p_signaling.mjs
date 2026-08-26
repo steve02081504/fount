@@ -1,4 +1,4 @@
-import { defaultSignalingRuntimeConfig } from 'npm:@steve02081504/fount-p2p/node/signaling_config'
+import { defaultSignalingRuntimeConfig, disableAllChannels } from 'npm:@steve02081504/fount-p2p/node/signaling_config'
 
 /**
  * @param {string} url relay URL
@@ -40,8 +40,14 @@ export function testSignalingFromRelayUrls(relayUrls) {
 	const relayOverride = parseLoopbackRelayOverride(raw)
 	if (!relayOverride) return defaultSignalingRuntimeConfig()
 	return {
-		relayOverride,
-		mdnsPolicy: 'rewrite-loopback',
-		trickleIceOff: true,
+		channels: disableAllChannels({
+			// 仅走 loopback 测试 relay 的 nostr；其余通道全关，避免测试节点与真实节点同机互连。
+			nostr: { relay: relayOverride },
+			// 联邦测试仍需建数据链；webrtc 只拨已发现的节点（nostr 已隔离），不会触达真实节点。
+			webrtc: {
+				iceLocalHostnamePolicy: 'rewrite-loopback',
+				trickleIceOff: true,
+			},
+		}),
 	}
 }

@@ -196,7 +196,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	const homeNodeHash = state.members?.[senderKey]?.homeNodeHash?.trim() || ''
 	const subject = {
 		pubKeyHash: senderKey,
-		nodeHash: isHex64(homeNodeHash) ? homeNodeHash : undefined,
+		nodeHash: isHex64(homeNodeHash) || undefined,
 		entityHash: isHex64(homeNodeHash) ? `${homeNodeHash}${senderKey}` : undefined,
 	}
 	if (isSubjectBannedByState(state, subject) || isSubjectBlocked(subject)) {

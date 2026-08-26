@@ -40,6 +40,7 @@
 				<button type="button" role="tab" class="settings-nav-item tab justify-start tab-active" id="nav-general" data-section="general" aria-controls="panel-general" aria-selected="true" tabindex="0" data-i18n="chat.group.settings.page.tabs.general"></button>
 				<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-members" data-section="members" aria-controls="panel-members" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.members"></button>
 				<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-permissions" data-section="permissions" aria-controls="panel-permissions" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.permissions"></button>
+				<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-group-perms" data-section="group-perms" aria-controls="panel-group-perms" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.groupPermissions"></button>
 				<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-emojis" data-section="emojis" aria-controls="panel-emojis" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.emojis"></button>
 
 				<div class="settings-nav-group hidden" data-nav-group="advanced">
@@ -70,6 +71,10 @@
 
 				<div id="panel-permissions" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-permissions" hidden>
 					<div id="permission-settings-container"></div>
+				</div>
+
+				<div id="panel-group-perms" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-group-perms" hidden>
+					<div id="group-perms-container"></div>
 				</div>
 
 				<div id="panel-channel-perms" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-channel-perms" hidden>

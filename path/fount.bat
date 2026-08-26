@@ -10,12 +10,6 @@ exit $?
 setlocal enabledelayedexpansion
 set POWERSHELL_UPDATECHECK=Off
 
-where pwsh.exe >nul 2>&1
-if not errorlevel 1 (
-	pwsh.exe -noprofile -executionpolicy bypass -file "%~dp0fount.ps1" %*
-	goto :exit_batch
-)
-
 where powershell.exe >nul 2>&1
 if not errorlevel 1 (
 	powershell.exe -noprofile -executionpolicy bypass -file "%~dp0fount.ps1" %*
@@ -49,6 +43,12 @@ if exist "%PowerShellExe32%" (
 for /f "delims=" %%i in ('where powershell.exe 2^>nul') do set PowerShellFullPathWhere=%%i
 if defined PowerShellFullPathWhere (
 	"%PowerShellFullPathWhere%" -noprofile -executionpolicy bypass -file "%~dp0fount.ps1" %*
+	goto :exit_batch
+)
+
+where pwsh.exe >nul 2>&1
+if not errorlevel 1 (
+	pwsh.exe -noprofile -executionpolicy bypass -file "%~dp0fount.ps1" %*
 	goto :exit_batch
 )
 

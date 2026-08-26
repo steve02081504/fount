@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Einingapróf: ferli lauk án ready-merkis: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "Framendaprófið ${shellLabel} verður að ræsa í gegnum test/frontend/run.mjs (sem ræsir einangraðan hnút sjálfur). Ekki keyra það gegn staðbundnu þróunarumhverfi eða raunverulegum notendagögnum.",
+				"isolatedUser": "Próf verða að keyra undir einangraða notandanum „${expectedUsername}“; núverandi seta keyrir sem „${username}“. Ræstu gjarnan í gegnum run.mjs í stað þess að benda á framleiðslu- eða þróunarfount."
+			},
 			"queue": {
 				"append": "Í biðröð: ${label} (${reason}) ≈ ${remaining} eftir",
 				"remove": "Úr biðröð: ${label} (${reason}) ≈ ${remaining} eftir"
@@ -191,7 +195,29 @@
 						"0": "Í biðröð"
 					}
 				},
-				"failureLog": "\n—— ${label} — bilanaskrá ——"
+				"failureLog": "\n—— ${label} — bilanaskrá ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "Keyrir ${key}, ${remaining} eftir",
+					"reasons": {
+						"initial": "Áætlun tilbúin",
+						"suite_started": "Safn hafið",
+						"suite_completed": "Safninu lokið",
+						"suite_failed": "Safn mistókst",
+						"blocked": "Stöðvað: háð mistókst",
+						"skipped": "Sleppt: háði sleppt",
+						"queue_appended": "Verkefni í biðröð",
+						"queue_removed": "Verkefni fjarlægt",
+						"prep_promoted": "Undirbúningur tekinn inn",
+						"module_check_ready": "Einingapróf tilbúið",
+						"dependency_ready": "Háð tilbúin",
+						"resource_budget_changed": "Fjárhagsáætlun auðlinda breytt",
+						"job_queued": "Verkefni í biðröð",
+						"gate_state_changed": "Auðlindahliði breytt",
+						"expected_drift": "Mat viknar",
+						"progress": "Framvinda uppfærð"
+					}
+				}
 			},
 			"passed": "Staðið: ${label}",
 			"passedWithNoise": "Staðið: ${label} (með hávaða)",
@@ -1601,7 +1627,10 @@
 						"stateDeny": "Hafna",
 						"stateNeutral": "Erfa",
 						"updateFailed": "Mistókst að uppfæra rásarheimildir: ${error}",
-						"updated": "Rásarheimildir uppfærðar"
+						"updated": "Rásarheimildir uppfærðar",
+						"syncedWarning": "Heimildir þessarar rásar eru samstilltar við móðurrásina; einstakar breytingar aftengja þær fyrst.",
+						"syncToDefault": "Samstilltu við rótarrásarheimildir",
+						"synced": "Samstillt við rótarrásarheimildir"
 					},
 					"advanced": {
 						"description": "Netkerfi, geymsla, hraðatakmarkanir og dulkóðunarbreytur; ef þú ert ekki viss skaltu halda sjálfgefnum stillingum.",
@@ -1692,7 +1721,8 @@
 						"general": "Grunnur",
 						"members": "Meðlimir",
 						"permissions": "Hlutverkaheimildir",
-						"storage": "Geymsla og geymsluset"
+						"storage": "Geymsla og skjalasafn",
+						"groupPermissions": "Hópheimildir"
 					},
 					"key": {
 						"managementTip": "Nýjum lyklum þarf að endurúthluta til félagsmanna eftir skipti. Aðeins ætti að grípa til handvirkra aðgerða ef grunur leikur á að lykill hafi verið í hættu.",
@@ -1701,6 +1731,15 @@
 						"rotateConfirm": "Ertu viss um að þú viljir snúa aðallykli þessarar hópskrár handvirkt? Nýir meðlimir þurfa að endursamstilla söguskráarlykilinn.",
 						"rotateFailed": "Snúningur lykla mistókst: ${error}",
 						"rotateOk": "Lykillinn hefur verið snúinn"
+					},
+					"groupPerms": {
+						"denied": "Engin heimild til að stjórna hópheimildum",
+						"hint": "Stilltu hnekkingar eftir hlutverkum fyrir stjórnunarheimildir á hópsstigi (sparka, banna, stjórna hlutverkum, stjórna stjórnendum, bjóða félagsmönnum).",
+						"overridden": "Yfirskrifað",
+						"clearOverride": "Endurstilla allt í erfa",
+						"noRoles": "Engin hlutverk til að stilla eins og er",
+						"updateFailed": "Mistókst að uppfæra hópheimildir: ${error}",
+						"updated": "Hópheimildir hafa verið uppfærðar"
 					}
 				},
 				"pinContext": "Efsta hverfi (±N nágrannar)",
@@ -2009,6 +2048,7 @@
 				"suspectedRemoved": "Þú gætir hafa verið fjarlægður úr þessum hópi: þú hefur beðið ${count} þekkta hnúta um staðfestingu, en þeim hefur öllum verið Hafnað. Þú getur minnst staðbundinnar sögu eða eytt þessu hópeintaki.",
 				"suspectedRemovedKeep": "Fáðu minjagrip",
 				"suspectedRemovedLeave": "Eyða hóp",
+				"shunVerifying": "Verið er að staðfesta aðild: ${confirmed}/${total} þekktir hnútar hafa hafnað",
 				"fork": {
 					"governance": "Það er gaffal í heimildaskránni og hún er nú í staðbundinni sýn.",
 					"tipLabel": "DAG lauf",
@@ -2338,6 +2378,12 @@
 				"success": "Rás búin til",
 				"title": "Búa til nýja rás"
 			},
+			"newCategory": {
+				"button": "Nýr flokkur",
+				"failed": "Mistókst að búa til flokk",
+				"success": "Flokkur búinn til",
+				"title": "Nýr flokkur"
+			},
 			"discovery": {
 				"description": "Skoðaðu opinbera hópa frá sambandsnetinu, veldu áhugasamfélag og vertu með.",
 				"empty": "Það er enginn ráðlagður hópur sem stendur; eftir að kveikt er á sambandssamstillingu verður uppgötvunarlistinn samstilltur frá nágrönnum.",
@@ -2415,6 +2461,9 @@
 					"exportFailed": "Útflutningur mistókst: ${error}"
 				},
 				"name": "Heiti rásar",
+				"unnamed": "Nafnlaus",
+				"parent": "móðurrás",
+				"noParent": "Engin móðurrás (rótarrás)",
 				"nameInput": {
 					"placeholder": "Almennt"
 				},
@@ -2427,7 +2476,41 @@
 				"type": "Gerð rásar",
 				"typeList": "Listi/spjallrás",
 				"typeStreaming": "Streymisrás",
-				"typeText": "Spjallrás"
+				"typeText": "Spjallrás",
+				"readonlyRoot": {
+					"placeholder": "Rótarrás getur ekki sent skilaboð/skrár"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "Búðu til rás í þessum flokki",
+					"delete": "Eyða flokki",
+					"deleteConfirm": "Ertu viss um að þú viljir eyða flokknum \"${name}\"? Rásirnar inni í henni fara aftur í Ekki flokkað.",
+					"deleteOk": "Flokki eytt",
+					"perms": "Flokksheimildir",
+					"rename": "Endurnefna flokk",
+					"renameOk": "Flokkur hefur verið endurnefndur",
+					"renamePrompt": "Nýtt flokksnafn"
+				},
+				"reorder": {
+					"after": "Færa «${source}» á eftir «${target}»?",
+					"before": "Færa «${source}» fyrir «${target}»?",
+					"into": "Færa «${source}» inn í «${target}»?",
+					"toRoot": "Færa «${source}» á rót?"
+				},
+				"name": "Nafn flokks",
+				"nameInput": {
+					"placeholder": "fjölmiðla"
+				},
+				"perm": {
+					"loadFailed": "Mistókst að hlaða flokksheimildir: ${error}",
+					"title": "Flokksheimildir",
+					"updateFailed": "Mistókst að uppfæra flokksheimildir: ${error}",
+					"updated": "Flokksheimildir hafa verið uppfærðar",
+					"syncedWarning": "Heimildir þessa flokks eru samstilltar við rótarrásina; einstakar breytingar aftengja þær fyrst.",
+					"syncToDefault": "Samstilltu við rótarrásarheimildir",
+					"synced": "Samstillt við rótarrásarheimildir"
+				}
 			},
 			"message": {
 				"action": {
@@ -2768,7 +2851,7 @@
 			"list": {
 				"channelEmpty": "Listinn er tómur.",
 				"editorTitle": "Breyta listaatriðum (JSON fylki)",
-				"itemUntitled": "Ónefndur",
+				"itemUntitled": "Nafnlaust",
 				"jsonInvalid": "Ógilt JSON: ${message}",
 				"saveFailed": "Vistun mistókst",
 				"saveToDag": "Vistaðu í DAG",

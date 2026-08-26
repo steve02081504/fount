@@ -98,7 +98,7 @@ export async function publishVolatileToFederation(groupId, payload) {
  * @returns {Promise<void>}
  */
 export async function handleIncomingFedVolatile(username, groupId, data, peerId, peerToNode, isBlockedPeer) {
-	const envelopeNode = String(data?.nodeHash || '').trim()
+	const envelopeNode = data?.nodeHash
 	if (!isPlainObject(data) || data.groupId !== groupId || !envelopeNode || !data.dedupeId || !data.payload) return
 	const { payload } = data
 	if (!isFederableVolatilePayload(payload)) return
@@ -110,7 +110,7 @@ export async function handleIncomingFedVolatile(username, groupId, data, peerId,
 	if (remoteNodeHash && isBlockedPeer(remoteNodeHash)) return
 	if (envelopeNode && isBlockedPeer(envelopeNode)) return
 
-	const dedupeKey = `${String(envelopeNode || remoteNodeHash)}:${data.dedupeId || ''}`
+	const dedupeKey = `${envelopeNode || remoteNodeHash}:${data.dedupeId}`
 	if (!takeFedVolatileDedupe(dedupeKey)) return
 
 	const { verifyStreamChunkVolatile } = await import('../ws/signing.mjs')

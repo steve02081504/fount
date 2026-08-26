@@ -2,8 +2,9 @@
  * Subfounts HTTP 路由集成测：连接码、本机分机列表、本机代码执行。
  */
 /* global Deno */
-import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 
 import { subfountFetch } from './helpers/subfount_http.mjs'
 

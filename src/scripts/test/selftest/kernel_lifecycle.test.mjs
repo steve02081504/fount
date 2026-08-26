@@ -2,7 +2,7 @@
  * 内核单例、退出、空波次与依赖丢弃。
  */
 /* global Deno */
-import { mkdir, readFile, rm } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -37,22 +37,32 @@ Deno.test('ignoreWatchPath drops git, node_modules, debug_logs, data/test', () =
 	assertEquals(ignoreWatchPath('data/users/u/chars/c/test/manifest.json'), false)
 })
 
-Deno.test('kernel auto-exits when queues empty and no watch WS', async () => {
+Deno.test('kernel idle-exit grace persists then exits when queues empty and no watch WS', async () => {
 	const handle = await startTestKernel({
 		port: KERNEL_PORT,
 		autoExit: true,
 		watchFs: false,
 		writeReport: false,
+		idleExitGraceMs: 120,
 	})
-	const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
-	await new Promise((resolve, reject) => {
-		ws.addEventListener('open', resolve, { once: true })
-		ws.addEventListener('error', reject, { once: true })
-	})
-	ws.send(JSON.stringify({ type: 'hello', watch: false }))
-	await new Promise(resolve => setTimeout(resolve, 50))
-	ws.close()
-	await handle.closed
+	try {
+		const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		await new Promise((resolve, reject) => {
+			socket.addEventListener('open', resolve, { once: true })
+			socket.addEventListener('error', reject, { once: true })
+		})
+		socket.send(JSON.stringify({ type: 'hello', watch: false }))
+		await new Promise(resolve => setTimeout(resolve, 50))
+		socket.close()
+		// 宽限期内仍存活。
+		await new Promise(resolve => setTimeout(resolve, 50))
+		assertEquals(handle.kernel.closed, false)
+		// 计时满后退出。
+		await awaitWithTimeout(handle.closed, 'kernel did not exit after idle-exit grace')
+	}
+	finally {
+		if (!handle.kernel.closed) await handle.close()
+	}
 })
 
 Deno.test('second kernel listen EADDRINUSE; first stays healthy', async () => {
@@ -87,24 +97,95 @@ Deno.test('watch WS keeps kernel alive until disconnect', async () => {
 		autoExit: true,
 		watchFs: false,
 		writeReport: false,
+		idleExitGraceMs: 120,
 	})
-	const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+	const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 	await new Promise((resolve, reject) => {
-		ws.addEventListener('open', resolve, { once: true })
-		ws.addEventListener('error', reject, { once: true })
+		socket.addEventListener('open', resolve, { once: true })
+		socket.addEventListener('error', reject, { once: true })
 	})
 	const accepted = new Promise(resolve => {
-		ws.addEventListener('message', event => {
+		socket.addEventListener('message', event => {
 			const message = JSON.parse(String(event.data))
 			if (message.type === 'accepted') resolve()
 		}, { once: true })
 	})
-	ws.send(JSON.stringify({ type: 'hello', watch: true }))
+	socket.send(JSON.stringify({ type: 'hello', watch: true }))
 	await accepted
 	assertEquals(handle.kernel.viewers.watchCount(), 1)
 	assertEquals(handle.kernel.closed, false)
-	ws.close()
+	socket.close()
 	await handle.closed
+})
+
+Deno.test('idle-exit grace resets when a watcher links during the countdown', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 30,
+		autoExit: true,
+		watchFs: false,
+		writeReport: false,
+		idleExitGraceMs: 120,
+	})
+	try {
+		// 首个非 watch viewer 离开 → 宽限计时开始。
+		const first = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		await new Promise((resolve, reject) => {
+			first.addEventListener('open', resolve, { once: true })
+			first.addEventListener('error', reject, { once: true })
+		})
+		first.send(JSON.stringify({ type: 'hello', watch: false }))
+		await new Promise(resolve => setTimeout(resolve, 20))
+		first.close()
+		// 宽限期内接上 watcher → 重置计时并保持存活，超过原宽限期仍在。
+		await new Promise(resolve => setTimeout(resolve, 40))
+		const watcher = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		await new Promise((resolve, reject) => {
+			watcher.addEventListener('open', resolve, { once: true })
+			watcher.addEventListener('error', reject, { once: true })
+		})
+		watcher.send(JSON.stringify({ type: 'hello', watch: true }))
+		await new Promise(resolve => setTimeout(resolve, 250))
+		assertEquals(handle.kernel.closed, false)
+		watcher.close()
+		// watcher 离开后计时重新开始，满后退出。
+		await awaitWithTimeout(handle.closed, 'kernel did not exit after watcher left')
+	}
+	finally {
+		if (!handle.kernel.closed) await handle.close()
+	}
+})
+
+Deno.test('idle-exit grace resets when pending work arrives during the countdown', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 31,
+		autoExit: true,
+		watchFs: false,
+		writeReport: false,
+		idleExitGraceMs: 120,
+		prepSettleMs: 60_000,
+	})
+	try {
+		const first = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		await new Promise((resolve, reject) => {
+			first.addEventListener('open', resolve, { once: true })
+			first.addEventListener('error', reject, { once: true })
+		})
+		first.send(JSON.stringify({ type: 'hello', watch: false }))
+		await new Promise(resolve => setTimeout(resolve, 20))
+		first.close()
+		// 宽限期内文件命中（进入预备）→ 队列非全空 → 计时重置。
+		await new Promise(resolve => setTimeout(resolve, 40))
+		handle.kernel.queues.hitPrep('testkit:pending', 'fs_change')
+		await new Promise(resolve => setTimeout(resolve, 250))
+		assertEquals(handle.kernel.closed, false)
+		// 清空预备后重新开始计时，满后退出。
+		handle.kernel.queues.prep.delete('testkit:pending')
+		handle.kernel.wake()
+		await awaitWithTimeout(handle.closed, 'kernel did not exit after pending work cleared')
+	}
+	finally {
+		if (!handle.kernel.closed) await handle.close()
+	}
 })
 
 Deno.test('empty default job announces empty, does not write in-progress report, auto-exits after viewer leaves', async () => {
@@ -124,27 +205,28 @@ Deno.test('empty default job announces empty, does not write in-progress report,
 			autoExit: true,
 			watchFs: false,
 			writeReport: true,
+			idleExitGraceMs: 120,
 		})
-		const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+		const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 		await new Promise((resolve, reject) => {
-			ws.addEventListener('open', resolve, { once: true })
-			ws.addEventListener('error', reject, { once: true })
+			socket.addEventListener('open', resolve, { once: true })
+			socket.addEventListener('error', reject, { once: true })
 		})
 		const accepted = new Promise(resolve => {
-			ws.addEventListener('message', event => {
+			socket.addEventListener('message', event => {
 				const message = JSON.parse(String(event.data))
 				if (message.type === 'accepted') resolve(message)
 			})
 		})
-		ws.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
+		socket.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
 		const message = await accepted
 		assertEquals(message.empty, true)
 		assertEquals(message.runCount, 0)
 		assertEquals(message.code, 0)
 		assertEquals(message.error, null)
 		await assertRejects(() => readFile(reportMarkdownPath(root), 'utf8'))
-		ws.close()
-		await handle.closed
+		socket.close()
+		await awaitWithTimeout(handle.closed, 'kernel did not exit after idle-exit grace')
 	}
 	finally {
 		await rm(root, { recursive: true, force: true })
@@ -203,23 +285,23 @@ Deno.test('accepted precedes suite-start and remaining drops the finished suite'
 				logPath: null,
 			}
 
-			const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+			const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 			await new Promise((resolve, reject) => {
-				ws.addEventListener('open', resolve, { once: true })
-				ws.addEventListener('error', reject, { once: true })
+				socket.addEventListener('open', resolve, { once: true })
+				socket.addEventListener('error', reject, { once: true })
 			})
 			/** @type {object[]} */
 			const events = []
 			const done = new Promise(resolve => {
-				ws.addEventListener('message', event => {
+				socket.addEventListener('message', event => {
 					const message = JSON.parse(String(event.data))
 					events.push(message)
 					if (message.type === 'job-done') resolve()
 				})
 			})
-			ws.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
+			socket.send(JSON.stringify({ type: 'hello', watch: false, job: {} }))
 			await done
-			ws.close()
+			socket.close()
 
 			const types = events.map(message => message.type)
 			assertEquals(types.indexOf('accepted') >= 0, true)
@@ -231,13 +313,15 @@ Deno.test('accepted precedes suite-start and remaining drops the finished suite'
 				'testkit:__eta_long__',
 				'testkit:__eta_short__',
 			])
-			assertEquals(accepted?.remainingMs >= 10_000, true)
 
-			const firstEnd = events.find(message => message.type === 'suite-end')
-			const lastEnd = events.filter(message => message.type === 'suite-end').at(-1)
-			assertEquals(firstEnd?.remainingMs <= 10_000 + 1000, true)
-			assertEquals(firstEnd?.remainingMs < (accepted?.remainingMs ?? 0), true)
-			assertEquals(lastEnd?.remainingMs, 0)
+			// 剩余只随 schedule-update 提供：初始 ETA 覆盖两个 heavy 套件，结束时归零。
+			const schedules = events.filter(message => message.type === 'schedule-update')
+			assertEquals(schedules.length > 0, true)
+			const initial = schedules[0]
+			assertEquals(initial?.lastCompletionMs >= 10_000, true, `initial=${initial?.lastCompletionMs}`)
+			const last = schedules.at(-1)
+			assertEquals(last?.lastCompletionMs <= 1000, true, `last=${last?.lastCompletionMs}`)
+			assertEquals(last?.lastCompletionMs < (initial?.lastCompletionMs ?? 0), true)
 
 			const reasonsText = await readFile(triggeredReasonsMarkdownPath(root), 'utf8')
 			assertEquals(reasonsText.includes('skip_because 复检'), true)
@@ -356,16 +440,37 @@ Deno.test('accepted remaining includes already-running leftover', async () => {
 				startedAt: Date.now(),
 				checkDone: true,
 			})
-			const submitted = await handle.kernel.submitJob({
-				force: true,
-				groups: [{
-					manifestSelectors: ['testkit'],
-					suiteSelectors: ['__wait_next__'],
-					subtestSelectors: {},
-				}],
-			}, 'v-wait')
-			assertEquals(submitted.runCount, 1)
-			assertEquals(submitted.remainingMs > 50_000, true, `remainingMs=${submitted.remainingMs}`)
+			const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+			await new Promise((resolve, reject) => {
+				socket.addEventListener('open', resolve, { once: true })
+				socket.addEventListener('error', reject, { once: true })
+			})
+			/** @type {object[]} */
+			const events = []
+			const done = new Promise(resolve => {
+				socket.addEventListener('message', event => {
+					const message = JSON.parse(String(event.data))
+					events.push(message)
+					if (message.type === 'job-done') resolve()
+				})
+			})
+			socket.send(JSON.stringify({
+				type: 'hello',
+				watch: false,
+				job: {
+					groups: [{
+						manifestSelectors: ['testkit'],
+						suiteSelectors: ['__wait_next__'],
+						subtestSelectors: {},
+					}],
+				},
+			}))
+			await done
+			socket.close()
+			const accepted = events.find(message => message.type === 'accepted')
+			assertEquals(accepted?.runCount, 1)
+			const initial = events.find(message => message.type === 'schedule-update' && message.reason === 'initial')
+			assertEquals(initial?.lastCompletionMs > 50_000, true, `lastCompletionMs=${initial?.lastCompletionMs}`)
 		}
 		finally {
 			handle.kernel.running.clear()
@@ -578,6 +683,215 @@ Deno.test('kernel close aborts running suites', async () => {
 	finally {
 		handle.kernel.running.delete('testkit:__abort__')
 		await handle.close()
+	}
+})
+
+Deno.test('submitJob cancels queued and running idle_all items', async () => {
+	const root = join(tmpdir(), `fount-kernel-preempt-${Date.now()}`)
+	await mkdir(root, { recursive: true })
+	const manifestFilePath = join(root, 'src/parts/demo/test/manifest.json')
+	try {
+		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
+		assertEquals(init.code, 0)
+		const commit = await execFile('git', [
+			'-c', 'user.email=t@t', '-c', 'user.name=t',
+			'commit', '--allow-empty', '-m', 'init',
+		], { cwd: root })
+		assertEquals(commit.code, 0)
+		await mkdir(join(root, 'src/parts/demo/test'), { recursive: true })
+		await writeFile(manifestFilePath, `${JSON.stringify({
+			id: 'demo',
+			suites: [{ name: 'pure', run: ['true'], triggers: ['src/parts/demo/**'] }],
+		}, null, '\t')}\n`, 'utf8')
+
+		const handle = await startTestKernel({
+			port: CONTROL_PORT + 22,
+			repoRoot: root,
+			autoExit: false,
+			watchFs: false,
+			writeReport: false,
+			autoUpdateExpected: false,
+		})
+		try {
+			const kernel = handle.kernel
+			const abort = new AbortController()
+			kernel.running.set('demo:pure', {
+				item: { key: 'demo:pure', reason: 'idle_all' },
+				abort,
+				startedAt: Date.now(),
+				checkDone: true,
+			})
+			kernel.queues.enqueueFs('demo:pure', 'idle_all')
+			kernel.queues.enqueueFs('demo:normal', 'fs_change')
+			// 提交一个命不中任何 suite 的空 job（不激活波次）也会在开头触发抢占。
+			/**
+			 * 提交命不中任何 suite 的空 job。
+			 * @returns {Promise<object>} submitted 结果
+			 */
+			const preemptJob = () => kernel.submitJob({
+				groups: [{
+					manifestSelectors: ['demo'],
+					suiteSelectors: ['__no_such_suite__'],
+					subtestSelectors: {},
+				}],
+			}, 'v-preempt')
+			await preemptJob()
+			assertEquals(kernel.queues.fs.map(item => item.key), ['demo:normal'])
+			assertEquals(abort.signal.aborted, true)
+			assertEquals(String(abort.signal.reason), 'new_job')
+			// 清空 running/队列后，无 idle_all 可取消时不再误重置闲置计时。
+			kernel.running.delete('demo:pure')
+			kernel.queues.fs = []
+			const before = kernel.lastIdleAt
+			await preemptJob()
+			assertEquals(kernel.lastIdleAt, before)
+		}
+		finally {
+			handle.kernel.running.delete('demo:pure')
+			await handle.close()
+		}
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test('viewer_gone 不写失败状态：fresh 保持未跑、已失败保持原样', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+		autoUpdateExpected: false,
+	})
+	const kernel = handle.kernel
+	/** @type {Array<{ job: object, end: () => object | null, key: string }>} */
+	const cases = []
+	try {
+		for (const [name, seeded] of [['slowFresh', undefined], ['slowFailed', { status: 'failed', commitHash: 'seed', failedFiles: [] }]]) {
+			const key = `testkit:${name}`
+			const suite = {
+				manifestId: 'testkit',
+				name,
+				run: ['node', '-e', 'setTimeout(() => {}, 60000)'],
+				triggers: [],
+				dependencies: [],
+				heavy: false,
+			}
+			kernel.catalog.allSuites.push(suite)
+			kernel.catalog.byKey.set(key, suite)
+			if (seeded) kernel.state.suites[key] = seeded
+			const entry = enqueueDummyJob(kernel, { key, jobId: `${name}-job` })
+			cases.push({ ...entry, key })
+		}
+		kernel.wake()
+		for (const { key } of cases)
+			await waitUntil(() => kernel.running.has(key))
+		// 给 runCommand 一点时间真正拉起子进程，越过启动窗口后再断开 viewer。
+		await new Promise(resolve => setTimeout(resolve, 300))
+		kernel.dropViewer('v')
+		for (const { job, end, key } of cases) {
+			await awaitJob(job, `job ${key} 未收尾`)
+			const event = end()
+			assertEquals(event?.passed, true)
+			assertEquals(event?.reused, true)
+		}
+		// 被 viewer_gone 终止的项视为未运行：不写失败状态、不推进指纹。
+		assertEquals(kernel.state.suites['testkit:slowFresh'], undefined)
+		assertEquals(kernel.state.suites['testkit:slowFailed'], { status: 'failed', commitHash: 'seed', failedFiles: [] })
+	}
+	finally {
+		await handle.close()
+	}
+})
+
+Deno.test('viewer_gone 在 moduleCheck 租约等待中被断开：视为未运行而非失败', async () => {
+	const handle = await startTestKernel({
+		port: KERNEL_PORT + 23,
+		autoExit: false,
+		watchFs: false,
+		writeReport: false,
+		autoUpdateExpected: false,
+	})
+	const kernel = handle.kernel
+	const key = 'testkit:waitingLease'
+	/** @type {string | null} */
+	let heldTicket = null
+	try {
+		// 预占 moduleCheck 租约，使后续 deno suite 在 acquire 处排队等待。
+		heldTicket = await kernel.moduleCheck.acquire()
+		const suite = {
+			manifestId: 'testkit',
+			name: 'waitingLease',
+			run: ['deno', 'run', '--allow-scripts', '--allow-all', 'nope.mjs'],
+			triggers: [],
+			dependencies: [],
+			heavy: false,
+		}
+		kernel.catalog.allSuites.push(suite)
+		kernel.catalog.byKey.set(key, suite)
+		const entry = enqueueDummyJob(kernel, { key, jobId: 'waitingLease-job' })
+		kernel.wake()
+		// 确认任务在 acquire 处排队（未真正拉起 deno 子进程）。
+		await waitUntil(() => kernel.moduleCheck.waiting > 0)
+		kernel.dropViewer('v')
+		await awaitJob(entry.job, 'job waitingLease 未收尾')
+		const event = entry.end()
+		assertEquals(event?.passed, true)
+		assertEquals(event?.reused, true)
+		// 等待租约期间被断开 → 不写失败状态、不推进指纹。
+		assertEquals(kernel.state.suites[key], undefined)
+	}
+	finally {
+		if (heldTicket) kernel.moduleCheck.abandon(heldTicket)
+		await handle.close()
+	}
+})
+
+Deno.test('autoUpdateExpected false does not auto-rewrite manifest after run', async () => {
+	const root = join(tmpdir(), `fount-kernel-no-autoupdate-${Date.now()}`)
+	await mkdir(root, { recursive: true })
+	const manifestFilePath = join(root, 'src/parts/demo/test/manifest.json')
+	try {
+		const init = await execFile('git', ['init', '-b', 'main'], { cwd: root })
+		assertEquals(init.code, 0)
+		const commit = await execFile('git', [
+			'-c', 'user.email=t@t', '-c', 'user.name=t',
+			'commit', '--allow-empty', '-m', 'init',
+		], { cwd: root })
+		assertEquals(commit.code, 0)
+		await mkdir(join(root, 'src/parts/demo/test'), { recursive: true })
+		await writeFile(manifestFilePath, `${JSON.stringify({
+			id: 'demo',
+			suites: [{ name: 'pure', run: ['deno', 'eval', ''], triggers: ['src/parts/demo/**'] }],
+		}, null, '\t')}\n`, 'utf8')
+
+		const handle = await startTestKernel({
+			port: CONTROL_PORT + 30,
+			repoRoot: root,
+			autoExit: false,
+			watchFs: false,
+			writeReport: false,
+			autoUpdateExpected: false,
+		})
+		try {
+			assertEquals(handle.kernel.autoUpdateExpected, false)
+			const kernel = handle.kernel
+			kernel.queues.enqueueFs('demo:pure', 'fs_change')
+			kernel.wake()
+			await waitUntil(() => kernel.running.size === 0 && kernel.queues.allEmpty(), 10_000)
+
+			const json = JSON.parse(await readFile(manifestFilePath, 'utf8'))
+			const jsonSuite = json.suites.find(suite => suite.name === 'pure')
+			assertEquals(jsonSuite.expected, undefined)
+		}
+		finally {
+			handle.kernel.running.clear()
+			await handle.close()
+		}
+	}
+	finally {
+		await rm(root, { recursive: true, force: true })
 	}
 })
 
@@ -939,20 +1253,20 @@ Deno.test('watch idle fires an automatic --all run after the idle window', async
 				dependencies: [],
 				heavy: false,
 			})
-			const ws = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
+			const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 			await new Promise((resolve, reject) => {
-				ws.addEventListener('open', resolve, { once: true })
-				ws.addEventListener('error', reject, { once: true })
+				socket.addEventListener('open', resolve, { once: true })
+				socket.addEventListener('error', reject, { once: true })
 			})
 			const started = new Promise(resolve => {
-				ws.addEventListener('message', event => {
+				socket.addEventListener('message', event => {
 					const message = JSON.parse(String(event.data))
 					if (message.type === 'suite-start' && message.key === key) resolve()
 				})
 			})
-			ws.send(JSON.stringify({ type: 'hello', watch: true }))
+			socket.send(JSON.stringify({ type: 'hello', watch: true }))
 			await awaitWithTimeout(started, 'idle-all did not run its suite', 4000)
-			ws.close()
+			socket.close()
 		}
 		finally {
 			await handle.close()

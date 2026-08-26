@@ -12,15 +12,14 @@ import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'
  * @returns {object | null} 查询行；缺字段时 null
  */
 export function federatedPostQueryRow(post, entityHash, nodeHash, options = {}) {
-	const postId = String(post?.id || '').trim()
-	const hash = entityHash
-	if (!post || !postId || !hash) return null
+	const postId = post?.id
+	if (!post || !postId || !entityHash) return null
 	const visibilityMode = options.visibilityMode === 'preserve' ? 'preserve' : 'public'
 	const visibility = visibilityMode === 'public' || isPublicDiscoverable(post.content)
 		? 'public'
 		: post.content?.visibility
 	return {
-		entityHash: hash,
+		entityHash,
 		postId,
 		text: String(post.content?.text || '').slice(0, 500),
 		hlc: post.hlc || null,
@@ -51,8 +50,8 @@ export function federatedPostQueryRow(post, entityHash, nodeHash, options = {}) 
  */
 export function sanitizeFederatedPostQueryRow(raw, options = {}) {
 	if (!raw || typeof raw !== 'object') return null
-	const entityHash = String(/** @type {{ entityHash?: unknown }} */raw.entityHash || '').trim()
-	const postId = String(/** @type {{ postId?: unknown }} */raw.postId || '').trim()
+	const entityHash = /** @type {{ entityHash?: unknown }} */raw.entityHash
+	const postId = /** @type {{ postId?: unknown }} */raw.postId
 	const event = /** @type {{ event?: object }} */raw.event
 	if (!entityHash || !postId || !event) return null
 	if (!isPublicDiscoverable(event.content)) return null
@@ -62,16 +61,16 @@ export function sanitizeFederatedPostQueryRow(raw, options = {}) {
 		entityHash,
 		postId,
 		hlc: event.hlc || /** @type {{ hlc?: unknown }} */raw.hlc || null,
-		nodeHash: String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || ''),
+		nodeHash: /** @type {{ nodeHash?: unknown }} */raw.nodeHash,
 		event: {
 			...event,
 			id: postId,
 			type: 'post',
 			content: {
-				text: String(event.content?.text || '').slice(0, 2000),
-				mediaRefs: Array.isArray(event.content?.mediaRefs) ? event.content.mediaRefs.slice(0, 16) : [],
+				text: String(event?.content?.text).slice(0, 2000),
+				mediaRefs: event.content.mediaRefs?.slice?.(0, 16) || [],
 				visibility: 'public',
-				tags: Array.isArray(event.content?.tags) ? event.content.tags.slice(0, 16) : undefined,
+				tags: event.content.tags?.slice?.(0, 16) || [],
 			},
 		},
 	}

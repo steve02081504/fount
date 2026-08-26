@@ -2,8 +2,9 @@
  * social_rpc / 联邦导出过滤 / 探索 / feed 可见性。
  */
 /* global Deno */
-import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
 import { createTestSession } from '../harness.mjs'

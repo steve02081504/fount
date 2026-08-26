@@ -69,7 +69,7 @@ export async function showChannelContextMenu(event, channelId) {
 	const channelName = channel?.name || channelId
 	const caps = store.context.currentState?.channelCaps?.[channelId]
 	const defaultChannelId = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
-	const showRename = !!caps?.canEditList
+	const showRename = !!caps?.canManageChannel
 	const showSetDefault = showRename && channelId !== defaultChannelId
 
 	const menu = document.createElement('ul')

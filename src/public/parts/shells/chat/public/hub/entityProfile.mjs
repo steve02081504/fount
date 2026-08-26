@@ -76,12 +76,11 @@ export async function paintEntityProfileUi(root, profile, extras = {}) {
 	let ownerName = null
 	if (isEntityHash128(ownerEntityHash)) {
 		ownerName = aliasForEntity(ownerEntityHash)
-		if (!ownerName)
-			try {
-				const ownerProfile = await loadEntityProfile(ownerEntityHash)
-				ownerName = ownerProfile?.name || null
-			}
-			catch { /* remote miss */ }
+		if (!ownerName) try {
+			const ownerProfile = await loadEntityProfile(ownerEntityHash)
+			ownerName = ownerProfile?.name || null
+		}
+		catch { /* remote miss */ }
 	}
 	paintEntityProfileExtras(root, {
 		ownerEntityHash,
@@ -129,31 +128,21 @@ export function wireProfileEditButton(root, entityHash, options = {}) {
 }
 
 /**
- * 将候选值规范为小写 64 hex；无效则返回空串。
- * @param {unknown} value 候选 hex
- * @returns {string} 小写 64 hex；无效为空串
- */
-function normHex(value) {
-	const normalized = value ?? ''
-	return isHex64(normalized) ? normalized : ''
-}
-
-/**
  * 解析信任作者用的成员 pubKeyHash（64 hex）。
  * @param {object} entity 实体
  * @param {object | null} profile 资料
- * @returns {string} 小写 64 hex；无法解析为空串
+ * @returns {string | null} 小写 64 hex；无法解析为 null
  */
 function resolveTrustAuthorPubKeyHash(entity, profile) {
-	const direct = normHex(entity?.pubKeyHash)
-	if (direct) return direct
+	const direct = entity?.pubKeyHash
+	if (isHex64(direct)) return direct
 	const entityHash = entity?.entityHash || ''
 	for (const member of store.context.currentState?.members || []) {
 		const memberHash = member?.entityHash || ''
-		const memberKey = normHex(member?.pubKeyHash || member?.memberKey)
-		if (entityHash && memberHash === entityHash && memberKey) return memberKey
+		const memberKey = member?.pubKeyHash || member?.memberKey
+		if (entityHash && memberHash === entityHash && isHex64(memberKey)) return memberKey
 	}
-	return normHex(profile?.activePubKeyHex)
+	return isHex64(profile?.activePubKeyHex)
 }
 
 /**
@@ -218,7 +207,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 
 	const dmButton = root.querySelector('[data-profile-popup-dm]')
 	if (dmButton instanceof HTMLButtonElement) {
-		const pubKeyHex = normHex(entity.pubKeyHex || profile?.activePubKeyHex)
+		const pubKeyHex = entity.pubKeyHex || profile?.activePubKeyHex
 		// Social「私信」只带 entityHash；有实体即可露出按钮，点下再解析活跃公钥
 		const canDm = !isSelf && (entity.charname || pubKeyHex || isEntityHash128(entityHash))
 		dmButton.hidden = !canDm

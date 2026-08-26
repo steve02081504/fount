@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Module check: process exited without ready signal: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "The ${shellLabel} front-end test must be launched through test/frontend/run.mjs, which self-starts an isolated node. Do not run it against a local development instance or real user data.",
+				"isolatedUser": "Tests must run under the isolated user \"${expectedUsername}\"; the current session is running as \"${username}\". Please launch via run.mjs instead of pointing at a production or development fount."
+			},
 			"queue": {
 				"append": "Queued: ${label} (${reason}) ≈ ${remaining} left",
 				"remove": "Dequeued: ${label} (${reason}) ≈ ${remaining} left"
@@ -191,7 +195,29 @@
 						"0": "Waiting in queue"
 					}
 				},
-				"failureLog": "\n—— ${label} — failure log ——"
+				"failureLog": "\n—— ${label} — failure log ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "Running ${key}, ${remaining} left",
+					"reasons": {
+						"initial": "Plan ready",
+						"suite_started": "Suite started",
+						"suite_completed": "Suite finished",
+						"suite_failed": "Suite failed",
+						"blocked": "Blocked: dependency failed",
+						"skipped": "Skipped: dependency skipped",
+						"queue_appended": "Job enqueued",
+						"queue_removed": "Job removed",
+						"prep_promoted": "Prep promoted",
+						"module_check_ready": "Module check ready",
+						"dependency_ready": "Dependencies ready",
+						"resource_budget_changed": "Resource budget changed",
+						"job_queued": "Job queued",
+						"gate_state_changed": "Resource gate changed",
+						"expected_drift": "Estimate drifted",
+						"progress": "Progress update"
+					}
+				}
 			},
 			"passed": "PASSED: ${label}",
 			"passedWithNoise": "PASSED: ${label} (with noise)",
@@ -1601,7 +1627,10 @@
 						"stateDeny": "Deny",
 						"stateNeutral": "Inherit",
 						"updateFailed": "Failed to update channel permissions: ${error}",
-						"updated": "Channel permissions updated"
+						"updated": "Channel permissions updated",
+						"syncedWarning": "This channel’s permissions are synced from its parent channel; individual changes will detach them first.",
+						"syncToDefault": "Sync to root channel permissions",
+						"synced": "Synced to root channel permissions"
 					},
 					"advanced": {
 						"description": "Network, storage, speed limit and encryption parameters; please keep the defaults if you are unsure",
@@ -1692,7 +1721,8 @@
 						"general": "basic",
 						"members": "Members",
 						"permissions": "Role permissions",
-						"storage": "Storage and archiving"
+						"storage": "Storage and archiving",
+						"groupPermissions": "Group permissions"
 					},
 					"key": {
 						"managementTip": "New keys need to be redistributed to members after rotation. Manual action should only be taken if you suspect a key has been compromised.",
@@ -1701,6 +1731,15 @@
 						"rotateConfirm": "Are you sure you want to manually rotate the master key of this Group files? New members need to resynchronize the history file key.",
 						"rotateFailed": "Key rotation failed: ${error}",
 						"rotateOk": "Key has been rotated"
+					},
+					"groupPerms": {
+						"denied": "You don't have permission to manage group permissions",
+						"hint": "Set per-role overrides for group-level governance permissions (kicking, banning, managing roles, managing admins, and inviting members).",
+						"overridden": "Overridden",
+						"clearOverride": "Clear override",
+						"noRoles": "No roles available to configure",
+						"updateFailed": "Failed to update group permissions: ${error}",
+						"updated": "Group permissions updated"
 					}
 				},
 				"pinContext": "Top neighborhood (±N neighbors)",
@@ -2009,6 +2048,7 @@
 				"suspectedRemoved": "You may have been removed from this group: you have asked ${count} known nodes for verification, but all of them have been rejected. You can commemorate local history or delete this group copy.",
 				"suspectedRemovedKeep": "Keep local copy",
 				"suspectedRemovedLeave": "Delete group",
+				"shunVerifying": "Verifying membership: ${confirmed}/${total} known nodes have rejected your membership",
 				"fork": {
 					"governance": "There is a fork in the permissions record and it is currently in local view.",
 					"tipLabel": "DAG leaf",
@@ -2338,6 +2378,12 @@
 				"success": "Channel created",
 				"title": "Create new channel"
 			},
+			"newCategory": {
+				"button": "New category",
+				"failed": "Failed to create category",
+				"success": "Category created",
+				"title": "New category"
+			},
 			"discovery": {
 				"description": "Browse public groups from the federation network, pick a community of interest and join.",
 				"empty": "There is currently no For youed group; after turning on federation synchronisation, the discovery list will be synchronized from neighbors.",
@@ -2415,6 +2461,9 @@
 					"exportFailed": "Export failed: ${error}"
 				},
 				"name": "Channel name",
+				"unnamed": "Unnamed",
+				"parent": "Parent channel",
+				"noParent": "No parent channel (root)",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2427,7 +2476,41 @@
 				"type": "Channel type",
 				"typeList": "List/Forum Channel",
 				"typeStreaming": "Streaming channel",
-				"typeText": "chat channel"
+				"typeText": "chat channel",
+				"readonlyRoot": {
+					"placeholder": "Root channel cannot send messages/files"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "Create a channel in this category",
+					"delete": "Delete category",
+					"deleteConfirm": "Are you sure you want to delete the category \"${name}\"? The channels under it will become Not grouped.",
+					"deleteOk": "Category deleted",
+					"perms": "Category permissions",
+					"rename": "Rename category",
+					"renameOk": "Category renamed",
+					"renamePrompt": "New category name"
+				},
+				"reorder": {
+					"after": "Move \"${source}\" after \"${target}\"?",
+					"before": "Move \"${source}\" before \"${target}\"?",
+					"into": "Move \"${source}\" into \"${target}\"?",
+					"toRoot": "Move \"${source}\" to root?"
+				},
+				"name": "Category name",
+				"nameInput": {
+					"placeholder": "media"
+				},
+				"perm": {
+					"loadFailed": "Failed to load category permissions: ${error}",
+					"title": "Category permissions",
+					"updateFailed": "Failed to update category permissions: ${error}",
+					"updated": "Category permissions updated",
+					"syncedWarning": "The permissions for this category are synced from the parent channel; individual changes will detach them first.",
+					"syncToDefault": "Sync to root channel permissions",
+					"synced": "Synced to root channel permissions"
+				}
 			},
 			"message": {
 				"action": {

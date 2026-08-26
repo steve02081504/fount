@@ -171,6 +171,10 @@
 			"moduleCheck": {
 				"missedReady": "模組檢查未發 ready，程序已結束：${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} 前端測試必須透過 test/frontend/run.mjs 啟動（由它自行拉起隔離節點）。請勿在本地開發執行個體或真實使用者資料上執行。",
+				"isolatedUser": "測試必須以隔離使用者 \"${expectedUsername}\" 執行，目前工作階段為 \"${username}\"。請透過 run.mjs 啟動，勿指向生產或開發所用的 fount。"
+			},
 			"queue": {
 				"append": "入隊：${label}（${reason}）剩餘 ≈ ${remaining}",
 				"remove": "移出：${label}（${reason}）剩餘 ≈ ${remaining}"
@@ -190,7 +194,29 @@
 						"0": "排隊等待中"
 					}
 				},
-				"failureLog": "\n—— ${label}：失敗日誌 ——"
+				"failureLog": "\n—— ${label}：失敗日誌 ——",
+				"schedule": {
+					"reason": "（${reason}）",
+					"running": "正在運行 ${key}，剩餘 ${remaining}",
+					"reasons": {
+						"initial": "計畫就緒",
+						"suite_started": "套件開始",
+						"suite_completed": "套件完成",
+						"suite_failed": "套件失敗",
+						"blocked": "依賴失敗，阻塞",
+						"skipped": "依賴被略過",
+						"queue_appended": "任務入隊",
+						"queue_removed": "任務出隊",
+						"prep_promoted": "預備任務轉正",
+						"module_check_ready": "模組檢查就緒",
+						"dependency_ready": "依賴就緒",
+						"resource_budget_changed": "資源預算變動",
+						"job_queued": "新任務排隊",
+						"gate_state_changed": "資源閘門變動",
+						"expected_drift": "預估耗時漂移",
+						"progress": "進度更新"
+					}
+				}
 			},
 			"passed": "透過：${label}",
 			"passedWithNoise": "透過：${label}（含有噪聲）",
@@ -1600,7 +1626,10 @@
 						"stateDeny": "拒絕",
 						"stateNeutral": "繼承",
 						"updateFailed": "更新頻道許可權失敗：${error}",
-						"updated": "頻道許可權已更新"
+						"updated": "頻道許可權已更新",
+						"syncedWarning": "此頻道權限正同步自上級頻道，單獨設定將先脫鉤。",
+						"syncToDefault": "同步到根頻道權限",
+						"synced": "已同步至根頻道權限"
 					},
 					"advanced": {
 						"description": "網路、儲存、限速和加密引數；不確定時請保持預設",
@@ -1691,7 +1720,8 @@
 						"general": "基本",
 						"members": "成員",
 						"permissions": "角色許可權",
-						"storage": "儲存與歸檔"
+						"storage": "儲存與歸檔",
+						"groupPermissions": "群組權限"
 					},
 					"key": {
 						"managementTip": "輪換後需要重新向成員分發新金鑰。只有懷疑金鑰洩露時才應手動操作。",
@@ -1700,6 +1730,15 @@
 						"rotateConfirm": "確定手動輪換本群檔案主金鑰？新成員需重新同步歷史檔案金鑰。",
 						"rotateFailed": "金鑰輪換失敗：${error}",
 						"rotateOk": "金鑰已輪換"
+					},
+					"groupPerms": {
+						"denied": "你沒有管理群組權限",
+						"hint": "為群組層級治理權限（踢出、封鎖、管理角色、管理管理員、邀請成員）依角色設定覆蓋。",
+						"overridden": "已覆蓋",
+						"clearOverride": "清除覆蓋",
+						"noRoles": "暫無可配置角色",
+						"updateFailed": "群組權限更新失敗：${error}",
+						"updated": "群組權限已更新"
 					}
 				},
 				"pinContext": "置頂鄰域（±N 鄰帖）",
@@ -2008,6 +2047,7 @@
 				"suspectedRemoved": "你大概已被移出本群：已向 ${count} 個認識的節點求證，均被拒之門外。可留念本地歷史，或刪除本群副本。",
 				"suspectedRemovedKeep": "留念",
 				"suspectedRemovedLeave": "刪除群",
+				"shunVerifying": "正在核驗成員身份：${confirmed}/${total} 個已知節點已拒絕",
 				"fork": {
 					"governance": "許可權記錄存在分叉，當前為本地檢視。",
 					"tipLabel": "DAG 葉",
@@ -2337,6 +2377,12 @@
 				"success": "頻道已建立",
 				"title": "新建頻道"
 			},
+			"newCategory": {
+				"button": "新分類",
+				"failed": "建立分類失敗",
+				"success": "分類已建立",
+				"title": "新分類"
+			},
 			"discovery": {
 				"description": "瀏覽來自聯邦網路的公開群組，挑選感興趣的社群並加入。",
 				"empty": "暫無推薦群；開啟聯邦同步後會從鄰居同步發現列表",
@@ -2414,6 +2460,9 @@
 					"exportFailed": "匯出失敗：${error}"
 				},
 				"name": "頻道名稱",
+				"unnamed": "未命名",
+				"parent": "父頻道",
+				"noParent": "無父頻道（根層級）",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2426,7 +2475,41 @@
 				"type": "頻道型別",
 				"typeList": "列表/論壇頻道",
 				"typeStreaming": "流媒體頻道",
-				"typeText": "聊天頻道"
+				"typeText": "聊天頻道",
+				"readonlyRoot": {
+					"placeholder": "根頻道不能傳送訊息/檔案"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "在此分類建立頻道",
+					"delete": "刪除分類",
+					"deleteConfirm": "確定刪除分類「${name}」嗎？其下頻道將回到未分類。",
+					"deleteOk": "分類已刪除",
+					"perms": "分類權限",
+					"rename": "重新命名分類",
+					"renameOk": "分類已重新命名",
+					"renamePrompt": "新分類名"
+				},
+				"reorder": {
+					"after": "將「${source}」移到「${target}」之後？",
+					"before": "將「${source}」移到「${target}」之前？",
+					"into": "將「${source}」移入「${target}」？",
+					"toRoot": "將「${source}」移到根層級？"
+				},
+				"name": "分類名稱",
+				"nameInput": {
+					"placeholder": "媒體"
+				},
+				"perm": {
+					"loadFailed": "載入分類權限失敗：${error}",
+					"title": "分類權限",
+					"updateFailed": "更新分類權限失敗：${error}",
+					"updated": "分類權限已更新",
+					"syncedWarning": "此分類權限正同步自根頻道，單獨設定將先脫鉤。",
+					"syncToDefault": "同步到根頻道權限",
+					"synced": "已同步至根頻道權限"
+				}
 			},
 			"message": {
 				"action": {

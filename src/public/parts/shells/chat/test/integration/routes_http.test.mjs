@@ -7,8 +7,9 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 
 const testDir = dirname(fileURLToPath(import.meta.url))
 const fixturesRoot = join(testDir, '../fixtures')

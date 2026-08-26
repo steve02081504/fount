@@ -8,12 +8,13 @@
 import { randomUUID } from 'node:crypto'
 import { access, mkdir } from 'node:fs/promises'
 
-import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { ms } from 'fount/scripts/ms.mjs'
 import { DEFAULT_STREAM_GENERATING_IDLE_MS } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+
+import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
@@ -37,6 +38,7 @@ import { checkEventPermission } from './authorizeEvent.mjs'
 import { buildMemberJoinBindingFields } from './entityBinding.mjs'
 import { computeFederatableDagTipIds } from './eventTypes.mjs'
 import { applyEvent, emptyMaterializedState } from './groupMaterializedState.mjs'
+import { ROOT_CHANNEL_ID } from './groupSettings.mjs'
 import { getLocalSignerForNewGroup, resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
 
@@ -141,7 +143,23 @@ export async function createGroup(username, body) {
 		},
 	})
 
-	const initialChannelId = body.defaultChannelId || 'default'
+	// 默认频道 id 不得与隐藏根容器频道冲突，否则根 links 与 rootChannelId/defaultChannelId 不变量被破坏。
+	const requestedDefaultChannelId = body.defaultChannelId || 'default'
+	const initialChannelId = requestedDefaultChannelId !== ROOT_CHANNEL_ID ? requestedDefaultChannelId : 'default'
+	// 隐藏根容器频道：category 类型、空名，承载所有顶层频道的顺序（defaultChannel 挂其下）。
+	await genesisAppend({
+		type: 'channel_create',
+		sender: owner,
+		timestamp: Date.now(),
+		content: {
+			channelId: ROOT_CHANNEL_ID,
+			type: 'category',
+			name: '',
+			links: [initialChannelId],
+			permissionBlockId: null,
+			syncScope: 'group',
+		},
+	})
 	await genesisAppend({
 		type: 'channel_create',
 		sender: owner,
@@ -149,7 +167,10 @@ export async function createGroup(username, body) {
 		content: {
 			channelId: initialChannelId,
 			type: body.defaultChannelType || 'text',
-			name: body.defaultChannelName || await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
+			name: body.defaultChannelName ?? await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
+			links: [],
+			parentChannelId: ROOT_CHANNEL_ID,
+			permissionBlockId: ROOT_CHANNEL_ID,
 			syncScope: 'group',
 		},
 	})
@@ -160,6 +181,7 @@ export async function createGroup(username, body) {
 		timestamp: Date.now(),
 		content: {
 			defaultChannelId: initialChannelId,
+			rootChannelId: ROOT_CHANNEL_ID,
 			streamGeneratingIdleMs: DEFAULT_STREAM_GENERATING_IDLE_MS,
 			hlcMaxSkewMs: DEFAULT_HLC_MAX_SKEW_MS,
 			streamingSfuWss: null,
@@ -257,8 +279,7 @@ export async function ensureGroup(username, groupId, options = {}) {
 			groupId,
 			name: options.name || await geti18nForUser(username, 'chat.group.defaults.dmChatName'),
 			description: options.description,
-			defaultChannelName: options.defaultChannelName
-				|| await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
+			defaultChannelName: options.defaultChannelName ?? await geti18nForUser(username, 'chat.group.defaults.defaultChannelName'),
 			ownerPubKeyHash,
 			secretKey,
 		})
@@ -282,14 +303,36 @@ export async function deleteGroupData(username, groupId) {
 }
 
 /**
- * 物化后发现本机签名身份已非活跃成员时，拆除 replica（踢出/封禁/退群联邦同步等）。
+ * 强制移除（member_kick / member_ban）后保留本机副本：不改动成员 status、不清本机封禁记录，
+ * 只在本机 shun 状态打上“已保留副本”标记，使被移除方仍被视作非活跃成员（只读/不写），
+ * 直至用户决定“留念/删除”。不向群内改写任何 DAG 事件。
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @returns {Promise<void>}
+ */
+async function preserveLocalReplicaAfterForcedRemoval(username, groupId) {
+	const { saveGroupShunState } = await import('../../group/groupShunState.mjs')
+	await saveGroupShunState(username, groupId, { replicaRetained: true })
+}
+
+/**
+ * 物化后发现本机签名身份已非活跃成员时，处理本机副本去留：
+ * 自愿退群（member_leave）→ 立即拆除副本；强制移除（踢出/封禁）→ 保留副本（仅打本机标记），
+ * 不静默清空本地历史，交由 shun 共识自判出局与用户“留念/删除”决定最终清盘。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {object} state 已物化群状态
  * @returns {Promise<boolean>} 是否已删除本机目录
  */
 export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
-	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state)) return false
+	const { loadGroupShunState, saveGroupShunState } = await import('../../group/groupShunState.mjs')
+	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state)) {
+		// 重新入群后清除遗留的“已保留副本”标记。
+		const shunState = await loadGroupShunState(username, groupId)
+		if (shunState.replicaRetained)
+			await saveGroupShunState(username, groupId, { replicaRetained: false })
+		return false
+	}
 	// 只读 peek：本函数在 getState 内被调用，resolveLocalEventSigner 会回调 getState 造成无限递归。
 	const { peekLocalSignerPubKeyHash } = await import('./localSigner.mjs')
 	const memberKey = await peekLocalSignerPubKeyHash(username, groupId)
@@ -297,8 +340,12 @@ export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
 	const record = state.members?.[memberKey]
 	if (!record || record.status === 'active') return false
 
-	await removeLocalGroupReplica(username, groupId)
-	return true
+	if (record.status === 'left') {
+		await removeLocalGroupReplica(username, groupId)
+		return true
+	}
+	await preserveLocalReplicaAfterForcedRemoval(username, groupId)
+	return false
 }
 
 /**
@@ -310,8 +357,9 @@ export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
  */
 export async function removeLocalGroupReplica(username, groupId, options = {}) {
 	const { markGroupReplicaPurging } = await import('./replicaPurge.mjs')
+	// 先打 purging 标记阻断并发写入；getState 走 skipWalRepair，不会触发会读 signer 的 WAL 修复。
 	markGroupReplicaPurging(username, groupId)
-	const state = options.state ?? (await getState(username, groupId, { skipLeftPurge: true })).state
+	const state = options.state ?? (await getState(username, groupId, { skipLeftPurge: true, skipWalRepair: true })).state
 	const fileIndex = state.messageOverlay?.fileIndex
 	const fileMetas = fileIndex instanceof Map
 		? [...fileIndex.values()]

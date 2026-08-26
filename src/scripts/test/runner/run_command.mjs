@@ -77,10 +77,18 @@ export const OUTPUT_TAIL_BYTES = 2 * 1024 * 1024
 export function appendBoundedTail(tail, chunk, maxBytes = OUTPUT_TAIL_BYTES) {
 	const merged = tail + chunk
 	if (Buffer.byteLength(merged, 'utf8') <= maxBytes) return merged
-	let start = merged.length
-	while (start > 0 && Buffer.byteLength(merged.slice(start), 'utf8') > maxBytes)
-		start -= Math.max(1, Math.floor((Buffer.byteLength(merged, 'utf8') - maxBytes) / 4))
-	return merged.slice(start)
+	// 从尾部保留 byteLength <= maxBytes 的最长后缀（保留最新输出）。
+	let lo = 0
+	let hi = merged.length
+	while (lo < hi) {
+		const mid = Math.floor((lo + hi) / 2)
+		if (Buffer.byteLength(merged.slice(mid), 'utf8') <= maxBytes) hi = mid
+		else lo = mid + 1
+	}
+	// 起点落在代理对低半段时前进到码点边界，避免截出孤立代理。
+	while (lo < merged.length && (merged.charCodeAt(lo) >= 0xDC00 && merged.charCodeAt(lo) <= 0xDFFF))
+		lo++
+	return merged.slice(lo)
 }
 
 /**

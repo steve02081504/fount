@@ -52,7 +52,7 @@ function waitKey(username, groupId, emojiId, packId) {
  * @returns {string} 返回值
  */
 function resolvePayloadPackId(data, groupId) {
-	const raw = String(data?.packId || '').trim()
+	const raw = data?.packId
 	if (raw && isSafePackId(raw)) return raw
 	return groupId
 }

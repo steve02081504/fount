@@ -34,6 +34,7 @@ export const CHAT_EVENT_TYPE_DEFS = {
 	channel_update: { aclGated: true, governance: true },
 	channel_delete: { aclGated: true, governance: true },
 	channel_permissions_update: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
+	group_permissions_update: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	channel_key_rotate: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	channel_key_rotate_batch: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	state_summary: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },

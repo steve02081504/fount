@@ -4,7 +4,6 @@
 		"frontendShared": [
 			"src/public/parts/shells/home/public/**",
 			"src/public/parts/shells/home/test/frontend/**",
-			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/**",
 			"src/public/pages/scripts/features/template.mjs",
 			"src/public/pages/base.mjs",

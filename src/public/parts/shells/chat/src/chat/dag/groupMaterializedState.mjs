@@ -1,7 +1,9 @@
-import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
+import { calculateMemberPermissions, GROUP_SCOPE_ID, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+
 import { materializeGroupSettings } from './groupSettings.mjs'
+import { resolvePermissionBlockOwner } from './permissionBlockOwner.mjs'
 import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
 import { createEmptySessionState } from './reducers/state.mjs'
 
@@ -104,6 +106,7 @@ export function emptyMaterializedState() {
 		membersPagesCount: 1,
 		roles: {},
 		channelPermissions: {},
+		groupPermissions: {},
 		channelKeyGeneration: {},
 		channelKeyWraps: {},
 		channels: {},
@@ -147,6 +150,7 @@ export function materializeFromCheckpoint(checkpoint) {
 		membersPagesCount: membersRecord.membersPagesCount,
 		roles: structuredClone(membersRecord.roles),
 		channelPermissions: structuredClone(membersRecord.channelPermissions),
+		groupPermissions: structuredClone(membersRecord.groupPermissions || {}),
 		channelKeyGeneration: structuredClone(membersRecord.channelKeyGeneration || {}),
 		channelKeyWraps: structuredClone(membersRecord.channelKeyWraps || {}),
 		channels: structuredClone(membersRecord.channels),
@@ -225,16 +229,42 @@ export function manageAdminsPubKeyHashes(state) {
  * @returns {Set<string>} 允许签名的 pubKeyHash
  */
 export function checkpointSignerPubKeyHashes(state) {
-	const delegated = state.delegatedOwnerPubKeyHash || ''
+	const delegated = state.delegatedOwnerPubKeyHash
 	if (isHex64(delegated)) return new Set([delegated])
 	const manage = manageAdminsPubKeyHashes(state)
 	if (manage.size) return manage
 	return adminPubKeyHashes(state)
 }
 
+/** 沿 `permissionBlockId` 指针解析权限块来源（循环保护）；自 {@link permissionBlockOwner.mjs} 再导出。 */
+export { resolvePermissionBlockOwner }
+
+/**
+ * 某频道的有效角色覆写表：沿 `permissionBlockId` 指针解析到源频道，取其拥有的覆写块。
+ * 返回值以 `channelId` 为键，可直接传给 `calculateMemberPermissions` / `hasPermission`。
+ * @param {object} state 物化群状态
+ * @param {string} channelId 频道 ID
+ * @returns {Record<string, Record<string, { allow: object, deny: object }>>} 有效覆写表
+ */
+export function effectiveChannelPermissions(state, channelId) {
+	const ownerId = resolvePermissionBlockOwner(state, channelId)
+	const overrides = ownerId ? state.channelPermissions?.[ownerId] : undefined
+	return { [channelId]: overrides || {} }
+}
+
+/**
+ * 群级治理权限的有效角色覆写表。
+ * 返回值以 `GROUP_SCOPE_ID` 为键，可直接传给 `calculateMemberPermissions` / `hasPermission`。
+ * @param {object} state 物化群状态
+ * @returns {Record<string, Record<string, { allow: object, deny: object }>>} 群权限覆写表
+ */
+export function effectiveGroupPermissions(state) {
+	return { [GROUP_SCOPE_ID]: state.groupPermissions || {} }
+}
+
 /**
  * 某成员在某频道上的有效权限表（用于发送前 gate）。
- * @param {object} state 物化状态
+ * @param {object} state 物化群状态
  * @param {string} senderPubKeyHash 发送方 pubKeyHash（hex）
  * @param {string} channelId 频道 ID
  * @returns {Record<string, boolean>} 权限键 → 是否允许
@@ -248,6 +278,25 @@ export function memberChannelPermissions(state, senderPubKeyHash, channelId) {
 		state.members[memberKey],
 		state.roles,
 		channelId,
-		state.channelPermissions
+		effectiveChannelPermissions(state, channelId)
+	)
+}
+
+/**
+ * 某成员在群级治理 scope 上的有效权限表（含超管位与群管理位）。
+ * @param {object} state 物化群状态
+ * @param {string} senderPubKeyHash 发送方 pubKeyHash（hex）
+ * @returns {Record<string, boolean>} 权限键 → 是否允许
+ */
+export function memberGroupPermissions(state, senderPubKeyHash) {
+	const memberKey = String(senderPubKeyHash)
+	if (state.members[memberKey]?.status !== 'active')
+		return Object.fromEntries(Object.values(PERMISSIONS).map(permission => [permission, false]))
+
+	return calculateMemberPermissions(
+		state.members[memberKey],
+		state.roles,
+		GROUP_SCOPE_ID,
+		effectiveGroupPermissions(state)
 	)
 }

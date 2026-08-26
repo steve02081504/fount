@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile } from 'node:fs/promises'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -33,6 +33,8 @@ function positivePickScore() {
 	return 1
 }
 
+/** 本文件创建的临时归档目录，测试结束后统一清理（避免 Windows 残留检测 exit 3）。 */
+const archiveTempDirs = []
 /**
  * 构造归档月仲裁候选文件。
  * @param {string} body 月 JSONL 正文
@@ -41,6 +43,7 @@ function positivePickScore() {
  */
 async function archiveMonthCandidate(body, peerNodeHash) {
 	const dir = await mkdtemp(join(tmpdir(), 'fount-archive-'))
+	archiveTempDirs.push(dir)
 	const tmpPath = join(dir, 'month.jsonl')
 	await writeFile(tmpPath, body)
 	return { peerNodeHash, tmpPath, complete: true }
@@ -251,4 +254,8 @@ Deno.test('pickArchiveMonthByReputation rejects sole high-rep peer in three-node
 		{ pickScore, expectedTargetCount: 2, activeMemberCount: 3 },
 	)
 	assertEquals(picked.reason, 'quorum_failed')
+})
+
+Deno.test('cleanup archive temp dirs', async () => {
+	await Promise.all(archiveTempDirs.map(dir => rm(dir, { recursive: true, force: true })))
 })

@@ -6,6 +6,7 @@
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { appendFileDeleteEvent, appendFileUploadEvent } from '../../chat/dag/channelOperations.mjs'
+import { assertNotRootChannel } from '../../chat/dag/groupSettings.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { hasCiphertextBlob, getCiphertextBlob } from '../../chat/files/blobStore.mjs'
 import { loadDownloadTask, summarizeDownloadTask } from '../../chat/files/downloadTasks.mjs'
@@ -30,7 +31,7 @@ import { GROUPS_PREFIX } from './path.mjs'
  * @param {import('npm:express').RequestHandler} authenticate 鉴权中间件
  * @param {(req: import('npm:express').Request) => { username: string }} getUserByReq 解析用户
  * @param {(username: string, groupId: string) => Promise<{ state: object }>} getState 物化状态
- * @param {(state: object, member: object, permission: string, channelId: string) => boolean} canInChannel 权限检查
+ * @param {(state: object, member: object, permission: string | string[], channelId: string) => boolean} canInChannel 权限检查
  * @param {typeof import('../../permissions/chat.mjs').PERMISSIONS} PERMISSIONS 权限常量
  * @returns {void}
  */
@@ -46,7 +47,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		if (ceMode === 'random')
 			return res.status(200).json({ ciphertextHash: null, have: false, storageLocator: null })
 
-		const ciphertextHash = req.body.ciphertextHash || ''
+		const ciphertextHash = req.body.ciphertextHash
 		if (!isHex64(ciphertextHash))
 			return res.status(400).json({ error: 'ciphertextHash required' })
 
@@ -77,10 +78,9 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 		if (!memberKey)
 			return res.status(403).json({ error: 'Not a member' })
+		assertNotRootChannel(req.body.channelId, 'upload file')
 		const member = state.members[memberKey]
-		const permChannelId = uploadPermissionChannelId(state, req.body.channelId)
-		if (!canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, permChannelId)
-			&& !canInChannel(state, member, PERMISSIONS.MANAGE_FILES, permChannelId))
+		if (!canInChannel(state, member, [PERMISSIONS.UPLOAD_FILES, PERMISSIONS.MANAGE_FILES], uploadPermissionChannelId(state, req.body.channelId)))
 			return res.status(403).json({ error: 'No permission to upload files' })
 
 		const ceMode = normalizeCeMode(req.body.ceMode)
@@ -114,10 +114,9 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 		if (!memberKey)
 			return res.status(403).json({ error: 'Not a member' })
+		assertNotRootChannel(body.channelId, 'upload file')
 		const member = state.members[memberKey]
-		const permChannelId = uploadPermissionChannelId(state, body.channelId)
-		if (!canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, permChannelId)
-			&& !canInChannel(state, member, PERMISSIONS.MANAGE_FILES, permChannelId))
+		if (!canInChannel(state, member, [PERMISSIONS.UPLOAD_FILES, PERMISSIONS.MANAGE_FILES], uploadPermissionChannelId(state, body.channelId)))
 			return res.status(403).json({ error: 'No permission to upload files' })
 
 		const keyEntry = await getCurrentFileMasterKey(username, groupId)

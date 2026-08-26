@@ -2,8 +2,9 @@
  * Social dispatch：加密帖 @ 提及与通知正文分离。
  */
 /* global Deno */
-import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 
 import { mentionSourceText, postTextForNotification } from '../../src/lib/postMentionText.mjs'
 

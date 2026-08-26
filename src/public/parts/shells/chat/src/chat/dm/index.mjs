@@ -7,8 +7,6 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-
 import { resolveActiveMemberKey, resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { createGroup } from '../dag/lifecycle.mjs'
@@ -60,8 +58,6 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 	const entityHash = options.entityHash || undefined
 	const { low, high, dmSessionTag, dmRoomLabelPrefix } = computeDmRoomLabelFromPubKeys(myPubKeyHex, peerPubKeyHex)
 	if (low === high) throw new Error('peer pub key must differ from mine')
-	const myPubKey = normalizePubKeyHex(myPubKeyHex)
-	const peerPubKey = normalizePubKeyHex(peerPubKeyHex)
 	const existing = await findDmGroupBySessionTag(username, dmSessionTag)
 	if (existing) return { ...existing, dmSessionTag }
 
@@ -74,6 +70,7 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 		ownerPubKeyHash,
 		secretKey,
 		entityHash,
+		defaultChannelName: '',
 		enableGroupFederation: true,
 	})
 	const { groupId } = result
@@ -96,20 +93,20 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 			dmRoomLabelPrefix,
 			dmPubKeyLow: low,
 			dmPubKeyHigh: high,
-			dmPeerPubKeyHex: peerPubKey,
-			dmMyPubKeyHex: myPubKey,
+			dmPeerPubKeyHex: peerPubKeyHex,
+			dmMyPubKeyHex: myPubKeyHex,
 		},
 	}, batchOpts)
 
 	const keyEntry = await getCurrentFileMasterKey(username, groupId)
 	if (keyEntry?.fileMasterKey) {
-		const fileKeyWraps = await buildFileKeyGrant(username, groupId, peerPubKey)
+		const fileKeyWraps = await buildFileKeyGrant(username, groupId, peerPubKeyHex)
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'peer_invite',
 			timestamp: Date.now(),
 			content: {
 				from: ownerPubKeyHash,
-				to: peerPubKey,
+				to: peerPubKeyHex,
 				fileKeyWraps,
 			},
 		}, batchOpts)
@@ -271,6 +268,14 @@ export async function performMemberJoin(username, groupId, options = {}) {
 		const { state: afterJoin } = await getState(username, groupId)
 		await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
 		defaultChannelId = afterJoin.groupSettings?.defaultChannelId || 'default'
+		try {
+			// 发布加入者 entity profile 到 EVFS，让远端成员能验证 member_join 的活跃钥归属。
+			const { syncEntityProfileFromPersona } = await import('../../profile/syncFromPersona.mjs')
+			await syncEntityProfileFromPersona(username, groupId, entityHash)
+		}
+		catch (error) {
+			console.warn('performMemberJoin: profile sync failed', error)
+		}
 		try {
 			const { convergeLinkedDefault, groupDefaultLinkKey, resolveGroupDefaultPackId } = await import('../../emojiUsage.mjs')
 			convergeLinkedDefault(

@@ -18,5 +18,6 @@ process.exit(await runShellFrontendTests({
 	fixtureCopies: [
 		{ from: join(testDir, '../fixtures/chars', 'on_message_yes'), to: 'chars/on_message_yes' },
 		{ from: join(testDir, '../live/fixtures/chars', 'noai_locale_reporter'), to: 'chars/noai_locale_reporter' },
+		{ from: join(testDir, '../fixtures/worlds', 'write_path_hooks'), to: 'worlds/write_path_hooks' },
 	],
 }))

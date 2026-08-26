@@ -1,10 +1,11 @@
 /**
  * Social 入站 post 分发：本机 agent OnMessage + operator care 通知 + 跨节点 post 推送。
  */
+import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 import { mentionsEntity, extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { isCaredBy } from 'fount/public/parts/shells/chat/src/chat/lib/care.mjs'
-import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
 import { primaryLocaleForUser } from '../../../../../scripts/locale.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'

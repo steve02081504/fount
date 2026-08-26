@@ -25,9 +25,9 @@ function branchPath(username, groupId) {
  */
 export async function loadGovernanceBranchTip(username, groupId) {
 	try {
-		const raw = JSON.parse(await readFile(branchPath(username, groupId), 'utf8'))
-		const tip = String(raw?.tipId || '').trim()
-		return isHex64(tip) ? tip : null
+		return isHex64(JSON.parse(
+			await readFile(branchPath(username, groupId), 'utf8')
+		)?.tipId)
 	}
 	catch {
 		return null

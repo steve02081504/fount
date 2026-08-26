@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "🔍🚫✅🚪：${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "🚧 ${shellLabel} 🧪：🚀`test/frontend/run.mjs`（🔒🕸️⚡）；🚫💻🔧／🧑💾",
+				"isolatedUser": "🧪🔒👤：“${expectedUsername}”≠“${username}”→🔄`run.mjs`；🚫🏭💻 fount"
+			},
 			"queue": {
 				"append": "📥：${label}（${reason}）⏳≈ ${remaining}",
 				"remove": "📤：${label}（${reason}）⏳≈ ${remaining}"
@@ -191,7 +195,29 @@
 						"0": "⏳"
 					}
 				},
-				"failureLog": "\n—— ❌📋 ${label} ——"
+				"failureLog": "\n—— ❌📋 ${label} ——",
+				"schedule": {
+					"reason": "（${reason}）",
+					"running": "🏃 ${key} ⏳ ${remaining}",
+					"reasons": {
+						"initial": "📋",
+						"suite_started": "▶️",
+						"suite_completed": "✅",
+						"suite_failed": "❌",
+						"blocked": "⛔",
+						"skipped": "⏭️",
+						"queue_appended": "📥",
+						"queue_removed": "📤",
+						"prep_promoted": "🏅",
+						"module_check_ready": "🔍✅",
+						"dependency_ready": "🧩✅",
+						"resource_budget_changed": "⚖️",
+						"job_queued": "🗂️",
+						"gate_state_changed": "🛂",
+						"expected_drift": "⏱️↔️",
+						"progress": "📈"
+					}
+				}
 			},
 			"passed": "✅: ${label}",
 			"passedWithNoise": "✅: ${label} (🔊)",
@@ -1601,7 +1627,10 @@
 						"stateDeny": "❌",
 						"stateNeutral": "↩️",
 						"updateFailed": "📺🔐🔄❌：${error}",
-						"updated": "📺🔐🔄✅"
+						"updated": "📺🔐🔄✅",
+						"syncedWarning": "📺🔑⏬👆❌↩️",
+						"syncToDefault": "🔑⏬🌱",
+						"synced": "🔑✅🌱"
 					},
 					"advanced": {
 						"description": "🌐💾🐢🔐⚙️；🤷 ➡️ ⭐",
@@ -1692,7 +1721,8 @@
 						"general": "📌",
 						"members": "👥",
 						"permissions": "🎭🔐",
-						"storage": "💾📦"
+						"storage": "💾📦",
+						"groupPermissions": "👥🔐"
 					},
 					"key": {
 						"managementTip": "🔄📤🆕🔑➡️👤🔑💧✋🔄",
@@ -1701,6 +1731,15 @@
 						"rotateConfirm": "✋🔄👥📁👑🔑 ✅❓🆕👤🔄📜📁🔑",
 						"rotateFailed": "🔑🔄❌：${error}",
 						"rotateOk": "🔑🔄✅"
+					},
+					"groupPerms": {
+						"denied": "🫵🚫👥⚙️🔐，🚫✏️👥🔐",
+						"hint": "👥⚙️ · 👢🔨 · 🎭⚙️ · 🛡️⚙️ · 📨👤 → ↩️🎭🔐",
+						"overridden": "⚠️",
+						"clearOverride": "↩️🔄",
+						"noRoles": "📭🎭",
+						"updateFailed": "👥🔐🔄❌：${error}",
+						"updated": "👥🔐🔄✅"
 					}
 				},
 				"pinContext": "📌±N📨",
@@ -2009,6 +2048,7 @@
 				"suspectedRemoved": "🚪👥 · 🔍🤝${count}🖥️🚫 · 📸💾／🗑️👥",
 				"suspectedRemovedKeep": "📸💾",
 				"suspectedRemovedLeave": "🗑️👥",
+				"shunVerifying": "👥🔍 · ${confirmed}/${total}🖥️🚫",
 				"fork": {
 					"governance": "🔐📊🔀 · 🖥️👀",
 					"tipLabel": "📊🌳🍃",
@@ -2338,6 +2378,12 @@
 				"success": "📺✅🎉",
 				"title": "🆕📺"
 			},
+			"newCategory": {
+				"button": "🆕🗂️",
+				"failed": "➕🗂️❌",
+				"success": "🗂️✅🎉",
+				"title": "🆕🗂️"
+			},
 			"discovery": {
 				"description": "👀🌐👥 ➕ 🔍🏛️",
 				"empty": "📭⭐👥；🌐🔄 ➡️ 🔍📋",
@@ -2415,6 +2461,9 @@
 					"exportFailed": "📤❌：${error}"
 				},
 				"name": "📺🏷️",
+				"unnamed": "❓📺",
+				"parent": "🔺📺",
+				"noParent": "🌱📺",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2427,7 +2476,41 @@
 				"type": "📺🔖",
 				"typeList": "📋🗣️📺",
 				"typeStreaming": "🌊📺",
-				"typeText": "💬📺"
+				"typeText": "💬📺",
+				"readonlyRoot": {
+					"placeholder": "🏠📺🔒💬📁"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "➕📺🗂️",
+					"delete": "🗑️🗂️",
+					"deleteConfirm": "🗑️🗂️「${name}」❓🚫↩️",
+					"deleteOk": "🗂️✅",
+					"perms": "🗂️🔑",
+					"rename": "✏️🗂️",
+					"renameOk": "🗂️✏️✅",
+					"renamePrompt": "🗂️✏️"
+				},
+				"reorder": {
+					"after": "🔄「${source}」⬇️「${target}」❓",
+					"before": "🔄「${source}」⬆️「${target}」❓",
+					"into": "🔄「${source}」📥「${target}」❓",
+					"toRoot": "🔄「${source}」📥🏠❓"
+				},
+				"name": "🗂️🏷️",
+				"nameInput": {
+					"placeholder": "media"
+				},
+				"perm": {
+					"loadFailed": "🗂️🔑⏳❌：${error}",
+					"title": "🗂️🔑",
+					"updateFailed": "🗂️🔑✏️❌：${error}",
+					"updated": "🗂️🔑✅",
+					"syncedWarning": "🗂️🔑⏬👆❌↩️",
+					"syncToDefault": "🔑⏬🌱",
+					"synced": "🔑✅🌱"
+				}
 			},
 			"message": {
 				"action": {

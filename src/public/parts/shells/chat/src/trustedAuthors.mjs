@@ -13,8 +13,8 @@ const DATANAME = 'trustedAuthors'
  */
 export function loadTrustedAuthorHashes(username) {
 	const raw = loadData(username, DATANAME)
-	const hashes = Array.isArray(raw?.hashes) ? raw.hashes : []
-	return [...new Set(hashes.map(hash => hash).filter(isHex64))]
+	const hashes = raw.hashes ??= []
+	return [...new Set(hashes.filter(isHex64))]
 }
 
 /**
@@ -23,11 +23,7 @@ export function loadTrustedAuthorHashes(username) {
  * @returns {string[]} 规范化后写入的列表
  */
 export function saveTrustedAuthorHashes(username, hashes) {
-	const normalized = [...new Set(
-		(Array.isArray(hashes) ? hashes : [])
-			.map(hash => hash)
-			.filter(isHex64),
-	)]
+	const normalized = [...new Set(hashes.filter(isHex64))]
 	const store = loadData(username, DATANAME)
 	store.hashes = normalized
 	saveData(username, DATANAME)

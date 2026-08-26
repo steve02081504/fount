@@ -72,7 +72,7 @@ Deno.test('resolveDisplaySnapshot: char message uses char part not host persona'
 	const agent = await resolveDisplaySnapshot(state, { sender, charId: CHAR }, username, groupId)
 
 	assertEquals(agent.name, '写路径 Agent')
-	assertEquals(agent.avatar, '🤖')
+	assertEquals(agent.avatar.includes('/files/profile/avatar'), true)
 	assertNotEquals(agent.name, human.name)
 	assertNotEquals(agent.avatar, human.avatar)
 	assert(human.name !== agent.name, 'human and char snapshots differ')
@@ -94,7 +94,7 @@ Deno.test('buildCanonicalMessageContent: char reply persists char name/avatar', 
 	}
 	assert(charRow, 'char reply landed on DAG')
 	assertEquals(charRow.content?.name, '写路径 Agent')
-	assertEquals(charRow.content?.avatar, '🤖')
+	assertEquals(charRow.content?.avatar.includes('/files/profile/avatar'), true)
 	assertNotEquals(charRow.content?.name, '写路径测试人格')
 
 	const canonical = await buildCanonicalMessageContent(
@@ -105,5 +105,5 @@ Deno.test('buildCanonicalMessageContent: char reply persists char name/avatar', 
 		{ charId: CHAR, origin: 'char' },
 	)
 	assertEquals(canonical.name, '写路径 Agent')
-	assertEquals(canonical.avatar, '🤖')
+	assertEquals(canonical.avatar.includes('/files/profile/avatar'), true)
 })

@@ -7,9 +7,10 @@ import { mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { assert, assertEquals } from 'jsr:@std/assert'
+
 import { REPO_ROOT } from 'fount/scripts/test/core/repo_root.mjs'
 import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
-import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { subfountFetch } from './helpers/subfount_http.mjs'
 

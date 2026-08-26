@@ -227,6 +227,10 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 		throwIfAborted(signal)
 		renderCharInfoCardActive(charname, details)
 	}
+	else if (binding.entityHash) {
+		const { renderUserInfoCardActive } = await import('./charCard.mjs')
+		renderUserInfoCardActive(binding.entityHash, displayName)
+	}
 	else
 		document.getElementById('info-card-host').innerHTML = ''
 

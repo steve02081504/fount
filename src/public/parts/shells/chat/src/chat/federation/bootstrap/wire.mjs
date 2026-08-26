@@ -1,7 +1,7 @@
 /**
  * 联邦房间凭证 bootstrap 线消息解析（入站）。
  */
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/core/object'
 
 /**
@@ -13,14 +13,14 @@ export function parseFedBootstrapRequest(payload) {
 	const requestId = payload.requestId || ''
 	const nodeHash = payload.nodeHash || ''
 	const groupId = payload.groupId || ''
-	const requesterPubKeyHash = normalizeHex64(payload.requesterPubKeyHash)
+	const requesterPubKeyHash = payload.requesterPubKeyHash
 	if (!requestId || !nodeHash || !groupId || !isHex64(requesterPubKeyHash)) return null
 	return {
 		requestId,
 		nodeHash,
 		groupId,
 		requesterPubKeyHash,
-		localTipsHash: (payload.localTipsHash || '') || undefined,
+		localTipsHash: payload.localTipsHash,
 	}
 }
 
@@ -37,6 +37,6 @@ export function parseFedBootstrapResponse(payload) {
 		requestId,
 		responderNodeHash,
 		encryptedRoomSecret: payload.encryptedRoomSecret,
-		settingsEventId: (payload.settingsEventId || '') || undefined,
+		settingsEventId: payload.settingsEventId,
 	}
 }

@@ -56,7 +56,7 @@ function commitOptsFromAppend(secretKey, state, options) {
  * @param {string} groupId 群组 ID
  * @param {object} event 待追加事件体
  * @param {Uint8Array} secretKey 签名种子
- * @param {{ state?: object, skipValidateIngestAuthz?: boolean, skipReleaseQuarantined?: boolean, publishFederation?: boolean, skipCheckpointRebuild?: boolean, skipGenesisSideEffects?: boolean, federationExistingSlotOnly?: boolean, federationJoinTimeoutMs?: number }} [options] 追加选项
+ * @param {{ state?: object, skipValidateIngestAuthz?: boolean, skipReleaseQuarantined?: boolean, publishFederation?: boolean, skipCheckpointRebuild?: boolean, skipGenesisSideEffects?: boolean, federationExistingSlotOnly?: boolean, federationJoinTimeoutMs?: number, skipFederationRebind?: boolean }} [options] 追加选项
  * @returns {Promise<object>} 写入后的完整签名载荷对象
  */
 export async function appendEvent(username, groupId, event, secretKey, options = {}) {
@@ -99,7 +99,7 @@ export async function appendEvent(username, groupId, event, secretKey, options =
 		await releaseQuarantinedEvents(username, groupId)
 		await releasePendingIngestEvents(username, groupId)
 	}
-	if (shouldRebindFederationRoomForEvent(wirePayload)) {
+	if (shouldRebindFederationRoomForEvent(wirePayload, options)) {
 		invalidateFederationRoomCache(username, groupId)
 		// leave / leaveFast 紧接着删盘，禁止 fire-and-forget join 把目录写回来。
 		if (options.federationExistingSlotOnly !== true && wirePayload.type !== 'member_leave')

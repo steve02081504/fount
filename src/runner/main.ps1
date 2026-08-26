@@ -250,6 +250,7 @@ function Install-FountTree {
 		Remove-Item $env:TEMP/fount.zip -Force
 		New-Item $(Split-Path -Parent $Dir) -ItemType Directory -Force -ErrorAction Ignore
 		Move-Item "$env:TEMP/fount-$Branch" $Dir -Force
+		Get-ChildItem -Path $Dir -Recurse -File -Filter '*.ps1' -ErrorAction SilentlyContinue | Unblock-File -ErrorAction SilentlyContinue
 	}
 	if (!(Test-Path $installFlag)) {
 		throw "Failed to install fount"

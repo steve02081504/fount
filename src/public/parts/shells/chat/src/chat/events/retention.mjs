@@ -4,9 +4,10 @@
  */
 import { readFile } from 'node:fs/promises'
 
-import { ms } from 'fount/scripts/ms.mjs'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { enforceDagRetention } from 'npm:@steve02081504/fount-p2p/timeline/retention_runner'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { PERMISSION_ANCHOR_TYPES } from '../dag/eventTypes.mjs'
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'

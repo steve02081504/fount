@@ -16,8 +16,6 @@ import { writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { setTimeout as sleep } from 'node:timers/promises'
 
-import { initTestP2pNode } from 'fount/scripts/test/node/p2p_node.mjs'
-import { testSignalingFromRelayUrls } from 'fount/scripts/test/node/p2p_signaling.mjs'
 import {
 	createGroupLinkSet,
 	isInfraRunning,
@@ -32,6 +30,9 @@ import {
 } from 'npm:@steve02081504/fount-p2p'
 import { ensureNodeDefaults, getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { ensureLinkToNode, getLink, getLinkRegistry } from 'npm:@steve02081504/fount-p2p/transport/link_registry'
+
+import { initTestP2pNode } from 'fount/scripts/test/node/p2p_node.mjs'
+import { testSignalingFromRelayUrls } from 'fount/scripts/test/node/p2p_signaling.mjs'
 
 const relayUrl = process.env.FOUNT_TEST_P2P_RELAY_URL?.trim()
 const hostPeerId = process.env.FOUNT_TEST_SUBFOUNT_HOST_PEER_ID?.trim()

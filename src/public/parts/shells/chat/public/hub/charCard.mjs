@@ -5,14 +5,16 @@
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/template、core/domUtils、core/state、entityProfile、entityResolve、presence
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { getPartDetails } from '/scripts/endpoints/parts.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { createEntityProfileCardElement } from '../shared/entityProfileCard.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveViewerSidebarDisplayName } from '../shared/viewerDisplay.mjs'
-import { mountTemplate, renderTemplateAsHtmlString } from '../src/templates.mjs'
+import { mountTemplate } from '../src/templates.mjs'
 
+import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { store } from './core/state.mjs'
 import {
@@ -43,18 +45,6 @@ export async function getCharDetails(name) {
 }
 
 /**
- * 生成成员头像 HTML（图片或首字母）。
- * @param {string} name - 角色名
- * @param {string} avatarUrl - 头像 URL，空则显示首字母
- * @returns {string} 头像区域 HTML
- */
-async function charAvatarHtml(name, avatarUrl) {
-	return avatarUrl
-		? renderTemplateAsHtmlString('hub/chat/entry_avatar_img', { src: escapeHtml(avatarUrl), alt: escapeHtml(name) })
-		: escapeHtml(avatarInitial(name))
-}
-
-/**
  * @param {string} name 角色名
  * @param {object|null} [details] 预取的角色详情
  * @param {{ active: boolean }} mode 是否已进入私聊
@@ -82,14 +72,13 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	})
 	const memberList = document.getElementById('member-list')
 	const charName = escapeHtml(charDisplayName)
-	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)
 	if (generation !== charInfoCardRenderGeneration) return
 	const charAvatarSeed = entityHash || name
 	const sidebarTpl = active ? 'hub/char/member_sidebar_active' : 'hub/char/member_sidebar_preview'
 
 	await mountTemplate(memberList, sidebarTpl, {
 		charName,
-		charAvatarHtml: charAvatarInner,
+		charAvatarHtml: '',
 		avatarBg: avatarColor(charAvatarSeed),
 		avatarTextColor: avatarTextColor(charAvatarSeed),
 		viewerDisplayName: escapeHtml(myDisplayName),
@@ -99,6 +88,16 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		myAvatarInitial: escapeHtml(avatarInitial(myDisplayName)),
 	})
 	if (generation !== charInfoCardRenderGeneration) return
+
+	// 角色头像走共用渲染（URL 图 / 表情文本 / hash 字母），与消息·成员·资料卡一致，
+	// 不在此重写「URL or 表情」判定。
+	const charAvatarHost = memberList.querySelector('.member-item-char .member-avatar')
+	if (charAvatarHost instanceof HTMLElement)
+		applyProfileAvatarToHost(charAvatarHost, {
+			seed: charAvatarSeed,
+			label: charDisplayName,
+			avatar: avatarUrl,
+		})
 
 	const descriptionElement = memberList.querySelector('.char-description-md')
 	if (descriptionElement instanceof HTMLElement)
@@ -160,6 +159,46 @@ async function renderCharInfoCardInner(name, details, { active }) {
  */
 export async function renderCharInfoCardActive(name, details) {
 	return renderCharInfoCardInner(name, details, { active: true })
+}
+
+/**
+ * 渲染已进入私聊的用户（非角色）信息卡：在信息卡宿主绘制对端实体资料。
+ * @param {string} entityHash 对端实体 hash
+ * @param {string} [displayName] 展示名回退
+ * @returns {Promise<void>}
+ */
+export async function renderUserInfoCardActive(entityHash, displayName) {
+	const generation = ++charInfoCardRenderGeneration
+	try {
+		const profile = entityHash ? await loadEntityProfile(entityHash, { groupId: store.context.currentGroupId || undefined }) : null
+		if (generation !== charInfoCardRenderGeneration) return
+
+		const infoCardHost = document.getElementById('info-card-host')
+		infoCardHost.replaceChildren()
+		const card = await createEntityProfileCardElement('sidebar')
+		if (generation !== charInfoCardRenderGeneration) return
+		infoCardHost.appendChild(card)
+
+		const entity = {
+			entityHash,
+			charname: null,
+			pubKeyHex: null,
+			pubKeyHash: null,
+			displayName: profile?.name || displayName || entityHash,
+		}
+		if (profile)
+			await paintEntityProfileUi(card, profile)
+		else {
+			const nameElement = card.querySelector('[data-entity-profile-name]')
+			if (nameElement) nameElement.textContent = entity.displayName
+		}
+		if (generation !== charInfoCardRenderGeneration) return
+
+		await wireEntityProfileCardActions(card, entity, { profile })
+	}
+	catch (error) {
+		handleError('chat.hub.operationFailed')(error)
+	}
 }
 
 /**

@@ -4,7 +4,6 @@
 		"frontendShared": [
 			"src/public/parts/shells/achievements/public/**",
 			"src/public/parts/shells/achievements/test/frontend/**",
-			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/**"
 		]
 	},

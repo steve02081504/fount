@@ -71,9 +71,9 @@ events.on('federation-settings-changed', ({ username }) => {
  * @returns {boolean} 是否为有效双钥结构
  */
 function isDualKeyIdentity(row) {
-	return isHex64(row?.recoveryPubKeyHex || '')
-		&& isHex64(row?.activePubKeyHex || '')
-		&& isHex64(row?.activeSecretKeyHex || '')
+	return isHex64(row?.recoveryPubKeyHex)
+		&& isHex64(row?.activePubKeyHex)
+		&& isHex64(row?.activeSecretKeyHex)
 }
 
 /**
@@ -90,9 +90,7 @@ function cacheFromRow(username, row) {
 		recoveryPub: row.recoveryPubKeyHex,
 		activePub: row.activePubKeyHex,
 		activeSecret: row.activeSecretKeyHex,
-		recoverySecret: isHex64(row.recoverySecretKeyHex || '')
-			? row.recoverySecretKeyHex
-			: '',
+		recoverySecret: isHex64(row.recoverySecretKeyHex) || '',
 		entityHash,
 		keyGeneration: Number(row.keyGeneration ?? 0),
 		ownerEntityHash,

@@ -6,7 +6,7 @@ export default {
 	info: {
 		'zh-CN': {
 			name: 'OnMessage Yes',
-			avatar: '🟢',
+			avatar: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 			description: 'OnMessage probe',
 			version: '1.0.0',
 			author: 'fount',

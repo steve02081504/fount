@@ -2,8 +2,9 @@
  * at-id 表述：具名 handle 时 `@handle (@hash…)`，否则 `@hash…`。
  */
 /* global Deno */
-import { formatEntityAtId, formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { formatEntityAtId, formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 
 const HASH = '459e5033' + 'a'.repeat(116) + 'a419'
 

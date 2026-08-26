@@ -1,6 +1,5 @@
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
-import { sanitizeIceServersForSettings } from '../../lib/iceServers.mjs'
 import { materializeGroupSettings } from '../groupSettings.mjs'
 
 import { recordFileMasterKeyRotation } from './files.mjs'
@@ -41,15 +40,13 @@ export const governanceReducers = {
 		const content = { ...event.content }
 		const ownerHash = content.delegatedOwnerPubKeyHash
 		delete content.delegatedOwnerPubKeyHash
-		if (content.iceServers !== undefined)
-			content.iceServers = sanitizeIceServersForSettings(content.iceServers)
 		if (Object.keys(content).length)
 			Object.assign(state.groupSettings, materializeGroupSettings({
 				...state.groupSettings,
 				...content,
 			}))
 		if (ownerHash !== undefined)
-			state.delegatedOwnerPubKeyHash = isHex64(ownerHash) ? ownerHash : null
+			state.delegatedOwnerPubKeyHash = isHex64(ownerHash)
 		return state
 	},
 

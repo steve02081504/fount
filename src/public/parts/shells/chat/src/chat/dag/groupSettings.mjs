@@ -1,5 +1,22 @@
 import { ms } from 'fount/scripts/ms.mjs'
 
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
+
+/** 根容器频道 id：隐藏的 category，作为所有顶层频道的父，承载根级顺序。 */
+export const ROOT_CHANNEL_ID = 'root'
+
+/**
+ * 硬编码：根容器频道禁止任何人（含 admin）发消息 / 文件 / 建线程。
+ * 根频道仅作隐藏分类容器，不应承载任何内容。
+ * @param {string} channelId 频道 ID
+ * @param {string} [action] 被禁止的操作（用于错误文案）
+ * @returns {void}
+ */
+export function assertNotRootChannel(channelId, action = 'message') {
+	if (channelId === ROOT_CHANNEL_ID)
+		throw httpError(403, `Cannot ${action} in root channel`)
+}
+
 /** §7.2 默认群设置（`defaultChannelId` 由建群时单独填入）。 */
 export const DEFAULT_GROUP_SETTINGS = {
 	joinPolicy: 'invite-only',
@@ -49,6 +66,8 @@ export const DEFAULT_GROUP_SETTINGS = {
 	discoveryBlurb: null,
 	/** 加群时自动进收藏的默认表情包；空则回落 packId===groupId */
 	defaultEmojiPackId: null,
+	/** 根容器频道 id（隐藏 category；旧群缺省为 null 时回退到 defaultChannelId） */
+	rootChannelId: null,
 }
 
 /**

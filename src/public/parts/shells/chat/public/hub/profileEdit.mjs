@@ -630,7 +630,7 @@ function renderEditPreview() {
 		})
 	const swatch = editDialog.querySelector('#profile-edit-avatar-swatch')
 	if (swatch instanceof HTMLElement)
-		void applyProfileAvatarToHost(swatch, {
+		applyProfileAvatarToHost(swatch, {
 			seed: editingEntityHash,
 			label: name,
 			avatar,

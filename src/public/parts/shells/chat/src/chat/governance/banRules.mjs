@@ -7,7 +7,7 @@
  * 术语：**ban**=群成员治理（member_ban）；写入 denylist 的 **deny** 为节点连接拒绝，非 Social **block**。
  */
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { memberEntityHash } from '../../entity/member.mjs'
 import { resolveTargetMemberKey } from '../dag/reducers/members.mjs'
@@ -32,12 +32,12 @@ export function isBanScope(scope) {
  * @returns {object} DAG content
  */
 export function buildMemberBanContent(banScope, memberRow) {
-	const targetMemberKey = memberRow?.pubKeyHash || ''
+	const targetMemberKey = memberRow?.pubKeyHash
 	if (!isHex64(targetMemberKey))
 		throw new Error('invalid member pubKeyHash')
 	/** @type {Record<string, string>} */
 	const content = { banScope, targetMemberKey }
-	const homeNodeHash = memberRow?.homeNodeHash || ''
+	const homeNodeHash = memberRow?.homeNodeHash
 
 	if (banScope === 'entity') {
 		const targetEntityHash = memberEntityHash(memberRow)
@@ -71,9 +71,9 @@ export function blockEntriesFromBanContent(content) {
 	}
 	const targetMemberKey = resolveTargetMemberKey(content)
 	if (isHex64(targetMemberKey)) add('subject', targetMemberKey)
-	const entityHash = String(content?.targetEntityHash || '').trim()
+	const entityHash = content?.targetEntityHash
 	if (isEntityHash128(entityHash)) add('entity', entityHash)
-	const nodeHash = normalizeHex64(content?.targetNodeHash)
+	const nodeHash = content?.targetNodeHash
 	if (isHex64(nodeHash)) add('node', nodeHash)
 	return [...entries.values()]
 }
@@ -91,8 +91,8 @@ export function unbanTargetsFromMember(state, targetMemberKey) {
 	const homeNodeHash = member?.homeNodeHash
 	const declaredEntity = memberEntityHash(member)
 	return {
-		pubKeyHash: isHex64(pubKeyHash) ? pubKeyHash : null,
+		pubKeyHash: isHex64(pubKeyHash),
 		entityHash: declaredEntity,
-		nodeHash: isHex64(homeNodeHash) ? homeNodeHash : null,
+		nodeHash: isHex64(homeNodeHash),
 	}
 }

@@ -115,9 +115,7 @@ export async function buildPostSnapshotFromRow(row, state, username, groupId) {
 	const display = await resolveDisplaySnapshot(state, row, username, groupId)
 	const content = row.content ? normalizeChannelMessage(row.content) : null
 	const pins = overlayPinsForChannel(state.messageOverlay, channelId)
-	const prevIds = Array.isArray(row.prev_event_ids)
-		? [...row.prev_event_ids].map(id => id).filter(isHex64)
-		: undefined
+	const prevIds = row.prev_event_ids?.map?.(isHex64)?.filter?.(Boolean)
 	const sender = row.sender ? String(row.sender).trim() : null
 	let sourceEntityHash = null
 	if (row.charId) {

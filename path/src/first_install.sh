@@ -7,11 +7,14 @@ fount_first_install_if_needed() {
 			install_package "git" "git git-core" || true
 		fi
 		if [[ -d "$FOUNT_DIR/node_modules" ]]; then run shutdown || true; fi
-		if [ ! -f "$FOUNT_DIR/.noupdate" ]; then
+		if [ ! -f "$FOUNT_DIR/.noupdate" ] && [ -d "$FOUNT_DIR/.git" ]; then
 			git_reset_and_clean || true
 		fi
 		write_taskbar_progress 70
 		get_i18n 'install.installingDependencies'
+		if [ -n "$(deno_pinned_spec)" ]; then
+			deno_upgrade
+		fi
 		run_deno install --prod --reload --allow-scripts -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs" || true
 		write_taskbar_progress 85
 		if ! in_container; then

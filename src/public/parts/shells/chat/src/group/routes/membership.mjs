@@ -5,7 +5,7 @@
  * 【数据结构】成员页 {members,membersPagesCount}、invite ticket、powSolution、join content（introducerPubKeyHash/reputationEdge）。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag、chat/lib/inviteTickets、access.mjs、groupSync 无关。
  */
-import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
@@ -24,7 +24,7 @@ import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../../chat/lib/replica.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
-import { governanceChannelId } from '../access.mjs'
+import { canInChannel, governanceChannelId } from '../access.mjs'
 import { suggestGroupMentions } from '../lib/mentionSuggest.mjs'
 
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
@@ -117,8 +117,7 @@ export function registerMembershipRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
 		const permissionsChannelId = governanceChannelId(state)
-		const perms = calculateMemberPermissions(member, state.roles, permissionsChannelId, state.channelPermissions)
-		if (!perms[PERMISSIONS.INVITE_MEMBERS] && !perms[PERMISSIONS.ADMIN] && !perms[PERMISSIONS.MANAGE_ADMINS])
+		if (!canInChannel(state, member, [PERMISSIONS.INVITE_MEMBERS, PERMISSIONS.ADMIN, PERMISSIONS.MANAGE_ADMINS], permissionsChannelId))
 			throw httpError(403, 'INVITE_MEMBERS denied')
 		const ttlMs = Number(req.body?.ttlMs)
 		const ticket = await mintGroupInviteTicket(username, groupId, {
