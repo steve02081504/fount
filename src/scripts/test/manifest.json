@@ -626,7 +626,7 @@
 		},
 		{
 			"name": "kernel",
-			"expected": "37s",
+			"expected": "2m59s",
 			"run": [
 				"deno",
 				"test",
