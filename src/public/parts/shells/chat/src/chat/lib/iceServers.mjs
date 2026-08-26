@@ -22,7 +22,7 @@ export const DEFAULT_ICE_SERVERS = [
 
 /**
  * @param {unknown} raw 单条 ICE 配置
- * @returns {{ urls: string, username?: string, credential?: string } | null} 合法条目或 null
+ * @returns {{ urls: string | string[], username?: string, credential?: string } | null} 合法条目或 null
  */
 function normalizeIceEntry(raw) {
 	if (!raw) return null
@@ -33,13 +33,13 @@ function normalizeIceEntry(raw) {
 	if (!!username !== !!credential) return null
 	return {
 		urls: urls.length === 1 ? urls[0] : urls,
-		...(username ? { username, credential } : {}),
+		...username ? { username, credential } : {},
 	}
 }
 
 /**
  * @param {unknown[]} list 待清洗条目
- * @returns {{ urls: string, username?: string, credential?: string }[]} 合法 ICE 列表
+ * @returns {{ urls: string | string[], username?: string, credential?: string }[]} 合法 ICE 列表
  */
 function normalizeIceServers(list) {
 	const out = []
@@ -53,7 +53,7 @@ function normalizeIceServers(list) {
 
 /**
  * @param {unknown} groupSettings 物化群设置
- * @returns {{ urls: string, username?: string, credential?: string }[]} 合法 ICE 列表
+ * @returns {{ urls: string | string[], username?: string, credential?: string }[]} 合法 ICE 列表
  */
 export function resolveIceServers(groupSettings) {
 	return normalizeIceServers(groupSettings?.iceServers || [])

@@ -1,5 +1,6 @@
 import { HLC } from 'npm:@steve02081504/fount-p2p/core/hlc'
 
+import { normalizeEntry } from '../entryModel.mjs'
 import { writeJsonFile } from '../io.mjs'
 import { sharedCabinetSnapshotPath } from '../paths.mjs'
 
@@ -48,7 +49,7 @@ export function materializeSharedOperations(operations, keys, cabinetId) {
 		if (!payload) continue
 		tips.set(entryId, {
 			hlc: operation.hlc,
-			entry: { ...payload, id: entryId },
+			entry: { ...normalizeEntry(payload, String(payload?.created?.entity_hash || '')), id: entryId },
 		})
 	}
 

@@ -12,7 +12,7 @@ import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'
  * @returns {object | null} 查询行；缺字段时 null
  */
 export function federatedPostQueryRow(post, entityHash, nodeHash, options = {}) {
-	const postId = String(post?.id || '').trim()
+	const postId = post?.id
 	if (!post || !postId || !entityHash) return null
 	const visibilityMode = options.visibilityMode === 'preserve' ? 'preserve' : 'public'
 	const visibility = visibilityMode === 'public' || isPublicDiscoverable(post.content)
@@ -67,10 +67,10 @@ export function sanitizeFederatedPostQueryRow(raw, options = {}) {
 			id: postId,
 			type: 'post',
 			content: {
-				text: event.content?.text?.slice(0, 2000),
-				mediaRefs: Array.isArray(event.content?.mediaRefs) ? event.content.mediaRefs.slice(0, 16) : [],
+				text: String(event?.content?.text).slice(0, 2000),
+				mediaRefs: event.content.mediaRefs?.slice?.(0, 16) || [],
 				visibility: 'public',
-				tags: Array.isArray(event.content?.tags) ? event.content.tags.slice(0, 16) : undefined,
+				tags: event.content.tags?.slice?.(0, 16) || [],
 			},
 		},
 	}

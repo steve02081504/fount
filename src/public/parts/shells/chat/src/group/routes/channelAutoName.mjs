@@ -107,16 +107,14 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 	const { state } = await getState(username, groupId)
 	const channels = state.channels || {}
 	const channel = channels[channelId]
-	if (!channel || channel.type !== 'text' || String(channel.name || '').trim()) return false
+	if (!channel || channel.type !== 'text' || String(channel.name)) return false
 
-	/** @type {Map<string, string>} 分类名 → 频道 id（含本次新建，供复用） */
-	const categoryIdByName = new Map(
-		Object.entries(channels)
-			.filter(([, ch]) => ch?.type === 'category' && String(ch?.name || '').trim())
-			.map(([id, ch]) => [String(ch.name).trim(), id]),
-	)
-	/** 现有分类名（与 categoryIdByName 键同步）。 */
-	const categoryNames = [...categoryIdByName.keys()]
+	/** 现有分类名（过滤空名分类并去重）。 */
+	const categoryNames = [...new Set(
+		Object.values(channels).filter(
+			ch => ch?.type === 'category'
+		).map(ch => String(ch.name)).filter(Boolean),
+	)]
 
 	const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: CONTEXT_MESSAGE_COUNT })
 	const texts = lines.map(line => messageLineShowText(line, { onlyMessageTypes: true })).filter(Boolean)
@@ -217,8 +215,8 @@ export async function scheduleDmChannelAutoNameAndCleanup(username, groupId, new
 		})
 
 	for (const channelId of toDelete) try {
-		if (!(channelId === defaultChannelId && !hasValidReplacement))
-			await deleteChannel(username, groupId, channelId)
+		if (channelId === defaultChannelId && !hasValidReplacement) continue
+		await deleteChannel(username, groupId, channelId)
 	} catch { /* 删除失败放行，继续清理其余频道 */ }
 
 	for (const channelId of toName) {

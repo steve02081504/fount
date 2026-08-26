@@ -45,7 +45,7 @@ export function canonicalSnapshotForDigest(snap) {
 	if (snap.hlc) body.hlc = snap.hlc
 	if (snap.reactions != null) body.reactions = snap.reactions
 	if (Array.isArray(snap.prev_event_ids))
-		body.prev_event_ids = snap.prev_event_ids.map(isHex64).sort((a, b) => a.localeCompare(b, 'en'))
+		body.prev_event_ids = snap.prev_event_ids.filter(isHex64).sort((a, b) => a.localeCompare(b, 'en'))
 	if (snap.display)
 		body.display = {
 			name: snap.display.name ?? '',

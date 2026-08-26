@@ -119,8 +119,8 @@ function reduceAlbumCreate(state, event) {
 	const spec = normalizeVisibilitySpec(event.content)
 	state.albums.set(albumId, {
 		albumId,
-		name: (event.content?.name || albumId).slice(0, 80) || albumId,
-		description: event.content?.description?.slice(0, 500),
+		name: String(event.content?.name || albumId).slice(0, 80),
+		description: String(event.content?.description).slice(0, 500),
 		...visibilitySpecToContentFields(spec),
 		postIds: [],
 		createdEventId: event.id,
@@ -140,10 +140,10 @@ function reduceAlbumUpdate(state, event) {
 	if (!existing) return reduceAlbumCreate(state, event)
 	const spec = normalizeVisibilitySpec({ ...existing, ...event.content })
 	const name = event.content?.name != null
-		? event.content.name.slice(0, 80) || existing.name
+		? String(event.content.name).slice(0, 80) || existing.name
 		: existing.name
 	const description = event.content?.description != null
-		? event.content.description.slice(0, 500)
+		? String(event.content.description).slice(0, 500)
 		: existing.description
 	state.albums.set(albumId, {
 		...existing,
@@ -291,7 +291,7 @@ function reduceUndislike(state, event) {
 function reduceTagName(state, event) {
 	const tagHash = event.content?.tagHash
 	const locale = event.content?.locale
-	const label = event.content?.label?.slice(0, 64)
+	const label = String(event.content?.label).slice(0, 64)
 	if (!tagHash || !locale || !label) return state
 	const existing = state.tagNames.get(tagHash) || {}
 	state.tagNames.set(tagHash, { ...existing, [locale]: label })

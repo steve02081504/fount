@@ -16,7 +16,7 @@ const NOTE_PULL_MAX_ROUNDS = 8
 function authorFromNoteEvent(event) {
 	const expectedPrefix = 'social-timeline:'
 	const groupId = event?.groupId
-	if (!groupId.startsWith(expectedPrefix)) return null
+	if (!groupId?.startsWith?.(expectedPrefix)) return null
 	const hash = groupId.slice(expectedPrefix.length)
 	return hash.length === 128 ? hash : null
 }

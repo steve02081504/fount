@@ -31,7 +31,7 @@ import { GROUPS_PREFIX } from './path.mjs'
  * @param {import('npm:express').RequestHandler} authenticate 鉴权中间件
  * @param {(req: import('npm:express').Request) => { username: string }} getUserByReq 解析用户
  * @param {(username: string, groupId: string) => Promise<{ state: object }>} getState 物化状态
- * @param {(state: object, member: object, permission: string, channelId: string) => boolean} canInChannel 权限检查
+ * @param {(state: object, member: object, permission: string | string[], channelId: string) => boolean} canInChannel 权限检查
  * @param {typeof import('../../permissions/chat.mjs').PERMISSIONS} PERMISSIONS 权限常量
  * @returns {void}
  */

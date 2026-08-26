@@ -190,7 +190,7 @@ export const memberReducers = {
 
 		const introducer = content.introducerPubKeyHash
 		const joiner = event.sender
-		if (introducer && isHex64(introducer) !== isHex64(joiner)
+		if (isHex64(introducer) && isHex64(joiner) && introducer !== joiner
 			&& !state.inviteEdges.some(edge => edge.from === introducer && edge.to === joiner)) {
 			const edge = { from: introducer, to: joiner, at: event.timestamp }
 			if (content.reputationEdge !== undefined)

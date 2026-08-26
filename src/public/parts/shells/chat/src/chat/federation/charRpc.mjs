@@ -31,10 +31,10 @@ export function parseCharRpcRequest(data) {
 	const { requestId, memberId, method, args } = data
 	if (!requestId || !memberId || !method) return null
 	return {
-		requestId,
-		memberId,
-		method,
-		args,
+		requestId: String(requestId),
+		memberId: String(memberId),
+		method: String(method),
+		args: [...args],
 	}
 }
 

@@ -26,7 +26,7 @@ export function sanitizeRemoteCabinets(raw) {
  * @returns {{ at: number, entity_hash: string } | null} 清洗戳
  */
 function sanitizeRemoteStamp(stamp) {
-	if (!stamp) return null
+	if (!stamp?.at) return null
 	return {
 		at: Number(stamp.at) || 0,
 		entity_hash: String(stamp.entity_hash || '').slice(0, 128),
@@ -38,7 +38,7 @@ function sanitizeRemoteStamp(stamp) {
  * @returns {{ owner_entity_hash: string, cabinet_id: string, entry_id: string | null } | null} 清洗链接
  */
 function sanitizeRemoteLink(link) {
-	if (!link) return null
+	if (!link?.cabinet_id) return null
 	return {
 		owner_entity_hash: String(link.owner_entity_hash || '').slice(0, 128),
 		cabinet_id: String(link.cabinet_id || '').slice(0, 128),

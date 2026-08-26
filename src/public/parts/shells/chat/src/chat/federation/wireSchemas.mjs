@@ -54,7 +54,7 @@ export function parseGossipRequest(payload) {
 	const ttl = Number(payload.ttl)
 	const requesterNodeHash = payload.requesterNodeHash
 	const attestation = parsePullAttestation(payload.attestation)
-	if (!Number.isFinite(ttl) || !requesterNodeHash || !attestation) return null
+	if (!Number.isFinite(ttl) || !isHex64(requesterNodeHash) || !attestation) return null
 	if (attestation.wantIds?.length) {
 		const attSet = new Set(attestation.wantIds)
 		if (wantIds.some(id => !attSet.has(id))) return null
@@ -100,7 +100,7 @@ export function parseChannelHistoryWant(payload, localNodeHash, groupId) {
 	const requestId = payload.requestId
 	const channelId = payload.channelId
 	const attestation = parsePullAttestation(payload.attestation)
-	if (!requesterNodeHash || !requestId || !isChannelIdValid(channelId) || requesterNodeHash === localNodeHash)
+	if (!isHex64(requesterNodeHash) || !requestId || !isChannelIdValid(channelId) || requesterNodeHash === localNodeHash)
 		return null
 	if (!attestation || attestation.groupId !== groupId || attestation.requestId !== requestId)
 		return null

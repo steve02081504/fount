@@ -49,7 +49,7 @@ export function registerIdentityHandlers(roomContext) {
 		if (!isPlainObject(data)) return
 		void (async () => {
 			const remoteNode = data.nodeHash
-			const hints = data.hints?.map?.(isHex64)?.filter?.(Boolean)
+			const hints = data.hints?.map?.(isHex64)?.filter?.(Boolean) || []
 			if (!isHex64(remoteNode) || remoteNode === nodeHash) return
 			const settings = await loadFederationGroupSettings(username, groupId)
 			await mergePexNodeHints(groupId, hints, settings)

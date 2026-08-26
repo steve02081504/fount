@@ -178,9 +178,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.put(`${GROUPS_PREFIX}/:groupId/governance-branch`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, groupId } = req.groupContext
-		const tipId = req.body.tipId != null ? String(req.body.tipId).trim() : null
-		if (!isHex64(tipId))
-			throw httpError(400, 'invalid tipId')
+		const tipId = isHex64(req.body.tipId)
 		const tips = state.dagTips || computeFederatableDagTipIds(
 			await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }),
 		)

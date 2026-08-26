@@ -97,6 +97,7 @@ Deno.test('watch WS keeps kernel alive until disconnect', async () => {
 		autoExit: true,
 		watchFs: false,
 		writeReport: false,
+		idleExitGraceMs: 120,
 	})
 	const socket = new WebSocket(`${handle.url.replace(/^http/, 'ws')}/ws/viewer`)
 	await new Promise((resolve, reject) => {

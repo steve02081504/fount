@@ -131,18 +131,18 @@ export function wireProfileEditButton(root, entityHash, options = {}) {
  * 解析信任作者用的成员 pubKeyHash（64 hex）。
  * @param {object} entity 实体
  * @param {object | null} profile 资料
- * @returns {string} 小写 64 hex；无法解析为空串
+ * @returns {string | null} 小写 64 hex；无法解析为 null
  */
 function resolveTrustAuthorPubKeyHash(entity, profile) {
 	const direct = entity?.pubKeyHash
-	if (direct) return direct
+	if (isHex64(direct)) return direct
 	const entityHash = entity?.entityHash || ''
 	for (const member of store.context.currentState?.members || []) {
 		const memberHash = member?.entityHash || ''
 		const memberKey = member?.pubKeyHash || member?.memberKey
-		if (entityHash && memberHash === entityHash && memberKey) return memberKey
+		if (entityHash && memberHash === entityHash && isHex64(memberKey)) return memberKey
 	}
-	return profile?.activePubKeyHex
+	return isHex64(profile?.activePubKeyHex)
 }
 
 /**
