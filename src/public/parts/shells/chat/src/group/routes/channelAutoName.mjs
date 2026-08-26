@@ -23,6 +23,7 @@ import {
 } from '../../chat/dag/channelOperations.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { groupKindFromState } from '../../chat/lib/notificationPreferences.mjs'
+import { withLock } from '../../lib/locks.mjs'
 import { readChannelMessagesForUser } from '../queries.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
@@ -40,34 +41,12 @@ const autoNamingInFlight = new Map()
 const categoryCreateLocks = new Map()
 
 /**
- * 串行执行 groupId 下的分类临界区（前序完成/失败后才放行）。
- * @param {string} groupId 群 id
- * @param {() => Promise<string | null>} createCategory 临界区（返回分类频道 id 或 null）
- * @returns {Promise<string | null>} 临界区结果
- */
-async function withCategoryCreateLock(groupId, createCategory) {
-	const previous = categoryCreateLocks.get(groupId) ?? Promise.resolve()
-	const run = (async () => {
-		try {
-			try { await previous } catch { /* 前序失败也继续执行本次临界区 */ }
-			return await createCategory()
-		}
-		finally {
-			if (categoryCreateLocks.get(groupId) === run) categoryCreateLocks.delete(groupId)
-		}
-	})()
-	categoryCreateLocks.set(groupId, run)
-	return run
-}
-
-/**
  * 判断一条频道消息是否为问候语（world greeting / 角色开场）。
  * @param {object} message 频道消息行
  * @returns {boolean} 是问候语为 true
  */
 function isGreetingOnlyMessage(message) {
-	return !!(message?.content?.extension?.chat?.isGreeting
-		|| message?.extension?.timeSlice?.greeting_type)
+	return message?.content?.extension?.chat?.isGreeting || message?.extension?.timeSlice?.greeting_type
 }
 
 /**
@@ -166,7 +145,7 @@ async function autoNameChannelAsync(username, groupId, channelId) {
 	if (category) {
 		const categoryName = String(category).trim()
 		// 锁内按「群 + 规范化分类名」原子查找或创建：复用并发中已建的同名分类，避免重复建类。
-		categoryId = categoryIdByName.get(categoryName) ?? await withCategoryCreateLock(groupId, async () => {
+		categoryId = categoryIdByName.get(categoryName) ?? await withLock(categoryCreateLocks, groupId, async () => {
 			const latest = await getState(username, groupId)
 			const existing = Object.entries(latest.state.channels || {})
 				.find(([, channel]) => channel?.type === 'category' && String(channel?.name || '').trim() === categoryName)
@@ -236,9 +215,10 @@ export async function scheduleDmChannelAutoNameAndCleanup(username, groupId, new
 			content: { defaultChannelId: newChannelId },
 		})
 
-	for (const channelId of toDelete)
+	for (const channelId of toDelete) try {
 		if (!(channelId === defaultChannelId && !hasValidReplacement))
-			await deleteChannel(username, groupId, channelId).catch(() => {})
+			await deleteChannel(username, groupId, channelId)
+	} catch { /* 删除失败放行，继续清理其余频道 */ }
 
 	for (const channelId of toName) {
 		const key = `${groupId}:${channelId}`

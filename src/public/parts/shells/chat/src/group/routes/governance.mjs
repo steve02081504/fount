@@ -48,6 +48,7 @@ import {
 	resolveActiveMemberKeyForLocalUser,
 	resolveMemberKey,
 } from '../access.mjs'
+import { withLock } from '../lib/locks.mjs'
 
 import { registerGroupFileRoutes } from './groupFilesRoutes.mjs'
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
@@ -70,27 +71,18 @@ async function rotateRoomSecretAfterModeration(username, groupId, moderationEven
 			timestamp: Date.now(),
 			content: { roomSecret: mintRoomSecret() },
 		})
-	const previous = roomRotationLocks.get(moderationEventId) ?? Promise.resolve()
-	const run = (async () => {
-		try { await previous } catch { /* 前序失败也继续执行本次轮换 */ }
-		if (await hasRoomRotatedForEvent(username, groupId, moderationEventId))
-			return
-		// 生成新 secret 前恢复已完成状态：该 moderation 事件后已有 roomSecret 轮换，则标记完成而非再轮换
-		if (await findRoomRotationAfterEvent(username, groupId, moderationEventId)) {
-			await markRoomRotatedForEvent(username, groupId, moderationEventId)
-			return
-		}
+	// 生成新 secret 前恢复已完成状态：该 moderation 事件后已有 roomSecret 轮换，则标记完成而非再轮换
+	return withLock(roomRotationLocks, moderationEventId, async () => {
+		if (await hasRoomRotatedForEvent(username, groupId, moderationEventId)) return
+		if (await findRoomRotationAfterEvent(username, groupId, moderationEventId))
+			return await markRoomRotatedForEvent(username, groupId, moderationEventId)
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'group_settings_update',
 			timestamp: Date.now(),
 			content: { roomSecret: mintRoomSecret() },
 		})
 		await markRoomRotatedForEvent(username, groupId, moderationEventId)
-	})().finally(() => {
-		if (roomRotationLocks.get(moderationEventId) === run) roomRotationLocks.delete(moderationEventId)
 	})
-	roomRotationLocks.set(moderationEventId, run)
-	return run
 }
 
 /** 每个 moderation 事件在途的 roomSecret 轮换 promise（键：moderationEventId），串行化并发轮换。 */
