@@ -189,7 +189,7 @@ export async function appendFinalEditWithRetry(username, groupId, eventBody, app
 export async function finalizeDagGeneratingMessage(groupId, entry, username, dagEventId) {
 	try {
 		if (!username) return
-		if (entry.extension?.chat?.isGreeting || entry.extension.timeSlice?.greeting_type) return
+		if (entry.extension.timeSlice?.greeting_type) return
 		const targetId = dagEventId ?? entry.extension?.chat?.eventId
 		if (!targetId) return
 		const text = entry.content
@@ -257,9 +257,7 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 		if (!text.trim() && !hasFiles) return
 		const { channelIdForDag, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
 		const content = await buildFinalMessageContent(username, groupId, entry, text)
-		const isGreeting = !!entry.extension?.chat?.isGreeting
-			|| !!entry.extension?.greetingType
-			|| !!entry.extension.timeSlice?.greeting_type
+		const isGreeting = !!entry.extension.timeSlice?.greeting_type
 		await commitChannelMessageEvent({
 			username,
 			groupId,

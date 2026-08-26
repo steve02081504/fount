@@ -64,8 +64,7 @@ async function withCategoryCreateLock(groupId, createCategory) {
  */
 function isGreetingOnlyMessage(message) {
 	return !!(message?.content?.extension?.chat?.isGreeting
-		|| message?.extension?.chat?.isGreeting
-		|| message?.content?.extension?.timeSlice?.greeting_type)
+		|| message?.extension?.timeSlice?.greeting_type)
 }
 
 /**
