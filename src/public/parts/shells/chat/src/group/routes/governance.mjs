@@ -35,6 +35,7 @@ import {
 	isBanScope,
 	unbanTargetsFromMember,
 } from '../../chat/governance/banRules.mjs'
+import { hasRoomRotatedForEvent, markRoomRotatedForEvent } from '../../chat/governance/moderationSideEffects.mjs'
 import { signOwnerSuccessionAsLocalAdmin } from '../../chat/governance/ownerSuccessionSign.mjs'
 import { eventsPath } from '../../chat/lib/paths.mjs'
 import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
@@ -54,15 +55,21 @@ import { GROUPS_PREFIX } from './path.mjs'
 
 /**
  * 治理操作后轮换 roomSecret：移除成员的同时把旧房口令换掉，使被封成员再也无法入房。
+ * 与触发它的 moderation 事件绑定并持久化完成状态，重试/恢复时已完成的事件不再重复轮换。
  * @param {string} username 登录名
  * @param {string} groupId 群 id
+ * @param {string} [moderationEventId] 触发治理的 member_ban / member_kick 事件 id（无则按旧行为轮换）
  */
-async function rotateRoomSecretAfterModeration(username, groupId) {
+async function rotateRoomSecretAfterModeration(username, groupId, moderationEventId) {
+	if (moderationEventId && await hasRoomRotatedForEvent(username, groupId, moderationEventId))
+		return
 	await appendSignedLocalEvent(username, groupId, {
 		type: 'group_settings_update',
 		timestamp: Date.now(),
 		content: { roomSecret: mintRoomSecret() },
 	})
+	if (moderationEventId)
+		await markRoomRotatedForEvent(username, groupId, moderationEventId)
 }
 
 /**
@@ -90,7 +97,7 @@ async function applyKickSideEffects(username, groupId, resolvedMember, resolvedT
 		: [{ scope: 'subject', value: resolvedTargetKey }]
 	await addGroupBlockedPeers(groupId, blockEntries)
 	await blockMemberHomeNode(groupId, resolvedMember)
-	await rotateRoomSecretAfterModeration(username, groupId)
+	await rotateRoomSecretAfterModeration(username, groupId, kickEvent?.id)
 	if (kickEvent)
 		await applyFileMasterKeyRotationFromEvent(username, groupId, kickEvent)
 }
@@ -104,9 +111,26 @@ async function applyKickSideEffects(username, groupId, resolvedMember, resolvedT
  */
 async function findMemberKickEvent(username, groupId, targetMemberKey) {
 	const events = await readJsonl(eventsPath(username, groupId))
-	for (let i = events.length - 1; i >= 0; i--) {
-		const event = events[i]
+	for (let eventIndex = events.length - 1; eventIndex >= 0; eventIndex--) {
+		const event = events[eventIndex]
 		if (event?.type === 'member_kick' && event?.content?.targetMemberKey === targetMemberKey)
+			return event
+	}
+	return null
+}
+
+/**
+ * 从本地事件日志查找最近一条针对目标成员的 member_ban 事件（恢复时用于绑定 roomSecret 轮换）。
+ * @param {string} username 登录名
+ * @param {string} groupId 群 id
+ * @param {string} targetMemberKey 目标成员键
+ * @returns {Promise<object | null>} 命中的 member_ban 事件，无则 null
+ */
+async function findMemberBanEvent(username, groupId, targetMemberKey) {
+	const events = await readJsonl(eventsPath(username, groupId))
+	for (let eventIndex = events.length - 1; eventIndex >= 0; eventIndex--) {
+		const event = events[eventIndex]
+		if (event?.type === 'member_ban' && event?.content?.targetMemberKey === targetMemberKey)
 			return event
 	}
 	return null
@@ -406,7 +430,8 @@ export function registerGovernanceRoutes(router, authenticate) {
 					const banContent = buildMemberBanContent(/** @type {import('../../chat/governance/banRules.mjs').BanScope} */ banScope, resolvedMember)
 					await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
 					await addDenylistFromBanContent(banContent, groupId)
-					await rotateRoomSecretAfterModeration(username, groupId)
+					// 已完成轮换的该 ban 事件不再重复轮换 roomSecret；未定位到 ban 事件时按旧行为轮换
+					await rotateRoomSecretAfterModeration(username, groupId, (await findMemberBanEvent(username, groupId, resolvedTargetKey))?.id)
 				}
 				catch (error) {
 					console.error('governance: ban recovery failed to rebuild ban content', error)
@@ -429,7 +454,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			}, { skipFederationRebind: true })
 			await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
 			await addDenylistFromBanContent(banContent, groupId)
-			await rotateRoomSecretAfterModeration(username, groupId)
+			await rotateRoomSecretAfterModeration(username, groupId, banEvent.id)
 
 			/** @type {{ ok: boolean, error?: string, banEventId?: string }} */
 			let reputationSlash = { ok: true, banEventId: banEvent.id }
@@ -503,7 +528,6 @@ export function registerGovernanceRoutes(router, authenticate) {
 					content,
 				}, { skipFederationRebind: true })
 				await applyKickSideEffects(username, groupId, resolvedMember, resolvedTargetKey, kickEvent)
-				await appendFileMasterKey(username, groupId, newGen, deriveNextFileMasterKey(keyEntry.fileMasterKey, kickEvent.id, nonce))
 				return res.status(200).json({})
 			}
 		}
