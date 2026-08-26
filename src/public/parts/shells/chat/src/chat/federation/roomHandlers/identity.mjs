@@ -59,14 +59,13 @@ export function registerIdentityHandlers(roomContext) {
 	})
 
 	room.onPeerJoin(peerId => {
-		const remoteNodeHash = peerId
-		if (!isHex64(remoteNodeHash) || remoteNodeHash === nodeHash) return
+		if (!isHex64(peerId) || peerId === nodeHash) return
 		const previousNodeId = peerToNode.get(peerId)
 		if (previousNodeId) nodeToPeer.delete(previousNodeId)
-		peerToNode.set(peerId, remoteNodeHash)
-		nodeToPeer.set(remoteNodeHash, peerId)
-		annotateRtcPeerNodeHash(key, peerId, remoteNodeHash, rtcLimits)
-		setRtcPeerSource(key, peerId, remoteNodeHash)
+		peerToNode.set(peerId, peerId)
+		nodeToPeer.set(peerId, peerId)
+		annotateRtcPeerNodeHash(key, peerId, peerId, rtcLimits)
+		setRtcPeerSource(key, peerId, peerId)
 		if (!takeRtcJoinSlot(key, peerId, rtcLimits, peerId)) return
 		fedOut.enqueue(4, () => {
 			void import('../groupEmojiFederation.mjs').then(({ replicateGroupEmojisToPeer }) => {

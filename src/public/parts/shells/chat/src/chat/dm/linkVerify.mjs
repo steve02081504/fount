@@ -21,12 +21,11 @@ import { dmLinkSignableBytes } from '../../../public/shared/dmLinkSignature.mjs'
  * @returns {Promise<boolean>} 验签是否通过
  */
 export async function verifyDmLinkSignature(introPubKeyHex, nonceBase64Url, introSignatureHex) {
-	const pubKeyHex = introPubKeyHex
-	if (!PUB_KEY_HEX_64.test(pubKeyHex) || !/^[\da-f]{128}$/iu.test(introSignatureHex) || !(nonceBase64Url?.length >= 16))
+	if (!PUB_KEY_HEX_64.test(introPubKeyHex) || !/^[\da-f]{128}$/iu.test(introSignatureHex) || !(nonceBase64Url?.length >= 16))
 		return false
 	return verify(
 		new Uint8Array(Buffer.from(introSignatureHex, 'hex')),
-		dmLinkSignableBytes(pubKeyHex, nonceBase64Url),
-		new Uint8Array(Buffer.from(pubKeyHex, 'hex')),
+		dmLinkSignableBytes(introPubKeyHex, nonceBase64Url),
+		new Uint8Array(Buffer.from(introPubKeyHex, 'hex')),
 	)
 }

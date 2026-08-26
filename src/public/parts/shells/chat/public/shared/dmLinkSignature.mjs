@@ -9,6 +9,5 @@ export const DM_LINK_SIGNATURE_PREFIX = 'fount-dm-link'
  * @returns {Uint8Array} 验签消息字节
  */
 export function dmLinkSignableBytes(pubKeyHex64, nonceBase64Url) {
-	const pubKey = pubKeyHex64
-	return new TextEncoder().encode(`${DM_LINK_SIGNATURE_PREFIX}|${pubKey}|${nonceBase64Url}`)
+	return new TextEncoder().encode(`${DM_LINK_SIGNATURE_PREFIX}|${pubKeyHex64}|${nonceBase64Url}`)
 }

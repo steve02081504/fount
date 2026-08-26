@@ -13,14 +13,13 @@ import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'
  */
 export function federatedPostQueryRow(post, entityHash, nodeHash, options = {}) {
 	const postId = String(post?.id || '').trim()
-	const hash = entityHash
-	if (!post || !postId || !hash) return null
+	if (!post || !postId || !entityHash) return null
 	const visibilityMode = options.visibilityMode === 'preserve' ? 'preserve' : 'public'
 	const visibility = visibilityMode === 'public' || isPublicDiscoverable(post.content)
 		? 'public'
 		: post.content?.visibility
 	return {
-		entityHash: hash,
+		entityHash,
 		postId,
 		text: String(post.content?.text || '').slice(0, 500),
 		hlc: post.hlc || null,

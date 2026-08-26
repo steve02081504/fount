@@ -37,14 +37,13 @@ export async function validateDmIntroLinkProof(nodeUsername, state, introPubKeyH
 	if (!await verifyDmLinkSignature(introPubKeyHex, nonceBase64Url, introSignatureHex))
 		return { ok: false, error: 'invalid dm intro link signature' }
 
-	const introPk = introPubKeyHex
-	const introMemberId = findMemberIdByPubKeyHex(state, introPk)
+	const introMemberId = findMemberIdByPubKeyHex(state, introPubKeyHex)
 	if (introMemberId && !dmIntroNonceMatches(introMemberId, nonceBase64Url))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }
 
 	const { getFederationViewForUser } = await import('../../entity/identity.mjs')
 	const fed = await getFederationViewForUser(nodeUsername)
-	if (fed.activePubKeyHex === introPk && !dmIntroNonceMatches(nodeUsername, nonceBase64Url))
+	if (fed.activePubKeyHex === introPubKeyHex && !dmIntroNonceMatches(nodeUsername, nonceBase64Url))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }
 
 	return { ok: true }

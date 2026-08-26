@@ -43,10 +43,9 @@ function normalizeEntityHashList(raw) {
 	const out = []
 	const seen = new Set()
 	for (const item of raw) {
-		const hash = item
-		if (!isEntityHash128(hash) || seen.has(hash)) continue
-		seen.add(hash)
-		out.push(hash)
+		if (!isEntityHash128(item) || seen.has(item)) continue
+		seen.add(item)
+		out.push(item)
 	}
 	return out
 }

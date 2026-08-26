@@ -106,11 +106,10 @@ export function evaluateShunConsensusPure(knownPeerNodeHashes, shunsByNode, nowM
  * @returns {{ shun: boolean, reason: 'not_a_member' | 'blocked' | null }} 是否应回闭门羹
  */
 export function resolveShunForPubKeyRequester(fedState, isBlockedPeer, requesterPubKeyHash) {
-	const pk = requesterPubKeyHash
-	if (!isHex64(pk)) return { shun: false, reason: null }
-	if (isBlockedPeer(pk)) return { shun: true, reason: 'blocked' }
-	if (fedState?.bannedMembers?.has?.(pk)) return { shun: true, reason: 'not_a_member' }
-	const member = fedState?.members?.[pk]
+	if (!isHex64(requesterPubKeyHash)) return { shun: false, reason: null }
+	if (isBlockedPeer(requesterPubKeyHash)) return { shun: true, reason: 'blocked' }
+	if (fedState?.bannedMembers?.has?.(requesterPubKeyHash)) return { shun: true, reason: 'not_a_member' }
+	const member = fedState?.members?.[requesterPubKeyHash]
 	// 已知成员但非 active（被移除）→ 闭门羹。但“从未见过该 pubKey”不等于“已出局”：入群 bootstrap 期
 	// 新成员的 member_join 尚未物化到本端时，若对未知 pubKey 回 fed_shun('not_a_member')，会让新成员因“对端
 	// 还不认识我”被 shun 共识误判出局（suspectedRemoved 自锁 5 分钟）。故未知 pubKey 一律放行不 shun，与
@@ -127,13 +126,12 @@ export function resolveShunForPubKeyRequester(fedState, isBlockedPeer, requester
  * @returns {{ shun: boolean, reason: 'not_a_member' | 'blocked' | null }} 是否应回闭门羹
  */
 export function resolveShunForNodeHashRequester(fedState, isBlockedPeer, requesterNodeHash) {
-	const node = requesterNodeHash
-	if (!isHex64(node)) return { shun: false, reason: null }
-	if (isBlockedPeer(node)) return { shun: true, reason: 'blocked' }
-	if (fedState?.bannedNodes?.has?.(node)) return { shun: true, reason: 'not_a_member' }
+	if (!isHex64(requesterNodeHash)) return { shun: false, reason: null }
+	if (isBlockedPeer(requesterNodeHash)) return { shun: true, reason: 'blocked' }
+	if (fedState?.bannedNodes?.has?.(requesterNodeHash)) return { shun: true, reason: 'not_a_member' }
 	let matched = false
 	for (const member of Object.values(fedState?.members || {})) {
-		if (member?.homeNodeHash !== node) continue
+		if (member?.homeNodeHash !== requesterNodeHash) continue
 		matched = true
 		if (member.status === 'active') return { shun: false, reason: null }
 	}
@@ -215,15 +213,15 @@ export async function pushFedShunToHomeNode(username, groupId, targetHomeNodeHas
 	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
 	const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
 	if (!slot?.sendToPeer || !slot.fedOut) return
-	const peerId = slot.getPeerIdByNodeHash?.(home)
-		|| slot.getRoster().find(peer => peer?.remoteNodeHash === home)?.peerId
+	const peerId = slot.getPeerIdByNodeHash?.(targetHomeNodeHash)
+		|| slot.getRoster().find(peer => peer?.remoteNodeHash === targetHomeNodeHash)?.peerId
 	if (!peerId) return
 	sendFedShun(
 		slot.fedOut,
 		(payload, targetPeerId) => slot.sendToPeer(targetPeerId, 'fed_shun', payload),
 		groupId,
 		localNodeHash(),
-		home,
+		targetHomeNodeHash,
 		peerId,
 		reason,
 	)

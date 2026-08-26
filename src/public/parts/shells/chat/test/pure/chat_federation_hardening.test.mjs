@@ -45,6 +45,7 @@ import {
 import { wrapPullResponseInner, unwrapPullResponseEnvelope } from '../../src/chat/federation/pullResponse.mjs'
 import { parseGossipRequest } from '../../src/chat/federation/wireSchemas.mjs'
 import {
+	DEFAULT_ICE_SERVERS,
 	resolveIceServers,
 	sanitizeIceServersForSettings,
 } from '../../src/chat/lib/iceServers.mjs'
@@ -286,7 +287,7 @@ Deno.test('HPKE pull envelope roundtrip', async () => {
 	assertEquals(Array.isArray(out?.events), true)
 })
 
-Deno.test('resolveIceServers passes group iceServers through', () => {
+Deno.test('resolveIceServers filters invalid URLs', () => {
 	const servers = resolveIceServers({
 		iceServers: [
 			{ urls: 'http://bad' },
@@ -294,15 +295,15 @@ Deno.test('resolveIceServers passes group iceServers through', () => {
 			{ urls: 'turn:turn.example.com', username: 'u', credential: 'p' },
 		],
 	})
-	assertEquals(servers.length, 3)
-	assertEquals(servers[0].urls, 'http://bad')
+	assertEquals(servers.length, 2)
+	assertEquals(servers[0].urls, 'stun:stun.example.com:3478')
 })
 
-Deno.test('sanitizeIceServers passes raw list through', () => {
+Deno.test('sanitizeIceServers requires credential pair', () => {
 	const out = sanitizeIceServersForSettings([
 		{ urls: 'turn:t.example.com', username: 'u' },
 	])
-	assertEquals(out[0]?.urls, 'turn:t.example.com')
+	assertEquals(out[0]?.urls, DEFAULT_ICE_SERVERS[0].urls)
 })
 
 Deno.test('consensus branch prefers higher governance count', () => {

@@ -56,15 +56,14 @@ export async function readNoteIndex(username, targetEntityHash, postId) {
  */
 export async function upsertNote(username, targetEntityHash, postId, noteEventId, entry) {
 	const ids = normalizePostTarget(targetEntityHash, postId)
-	const noteId = noteEventId
-	if (!ids || !isHex64(noteId)) return
+	if (!ids || !isHex64(noteEventId)) return
 	await store.withMutex(ids.target, ids.postId, async () => {
 		const current = await store.read(username, ids.target, ids.postId)
 		await store.write(username, ids.target, ids.postId, {
 			notes: {
 				...current.notes,
-				[noteId]: {
-					noteEventId: noteId,
+				[noteEventId]: {
+					noteEventId,
 					authorEntityHash: entry.authorEntityHash,
 					text: entry.text?.slice(0, NOTE_TEXT_MAX),
 					at: Number(entry.at) || Date.now(),
@@ -87,16 +86,14 @@ export async function upsertNote(username, targetEntityHash, postId, noteEventId
  */
 export async function upsertNoteVote(username, targetEntityHash, postId, noteEventId, voterEntityHash, helpful) {
 	const ids = normalizePostTarget(targetEntityHash, postId)
-	const noteId = noteEventId
-	const voter = voterEntityHash
-	if (!ids || !isHex64(noteId) || !parseEntityHash(voter)) return
+	if (!ids || !isHex64(noteEventId) || !parseEntityHash(voterEntityHash)) return
 	await store.withMutex(ids.target, ids.postId, async () => {
 		const current = await store.read(username, ids.target, ids.postId)
-		const voteMap = { ...current.votes[noteId] }
-		voteMap[voter] = helpful === true
+		const voteMap = { ...current.votes[noteEventId] }
+		voteMap[voterEntityHash] = helpful === true
 		await store.write(username, ids.target, ids.postId, {
 			notes: current.notes,
-			votes: { ...current.votes, [noteId]: voteMap },
+			votes: { ...current.votes, [noteEventId]: voteMap },
 		})
 	})
 }

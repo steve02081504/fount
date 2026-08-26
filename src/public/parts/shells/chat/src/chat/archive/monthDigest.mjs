@@ -221,10 +221,9 @@ export async function readArchiveMonthMaxEventId(filePath) {
 		const input = createReadStream(filePath, { encoding: 'utf8' })
 		const lines = createInterface({ input, crlfDelay: Infinity })
 		for await (const line of lines) {
-			const trimmed = line
-			if (!trimmed) continue
+			if (!line) continue
 			try {
-				const snap = JSON.parse(trimmed)
+				const snap = JSON.parse(line)
 				const id = snap.eventId || ''
 				if (!isHex64(id)) continue
 				if (!max || id.localeCompare(max, 'en') > 0) max = id

@@ -7,9 +7,8 @@ import { hexToBytes, sha256Hex } from './digest.mjs'
  * @returns {Promise<string>} 64 位 subjectHash（pubKeyHash）
  */
 export async function hashFromPubKeyHex(pubKeyHex) {
-	const hex = pubKeyHex
-	if (!isHex64(hex)) throw new Error('invalid pubKeyHex')
-	return sha256Hex(hexToBytes(hex).buffer)
+	if (!isHex64(pubKeyHex)) throw new Error('invalid pubKeyHex')
+	return sha256Hex(hexToBytes(pubKeyHex).buffer)
 }
 
 /** 重导出 encodeEntityHash。 */

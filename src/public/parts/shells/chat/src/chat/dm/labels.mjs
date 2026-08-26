@@ -16,11 +16,9 @@ import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/h
  * @returns {{ low: string, high: string, dmSessionTag: string, dmRoomLabelPrefix: string }} DM 会话标签
  */
 export function computeDmRoomLabelFromPubKeys(aHex, bHex) {
-	const a = aHex
-	const b = bHex
-	if (!PUB_KEY_HEX_64.test(a) || !PUB_KEY_HEX_64.test(b))
+	if (!PUB_KEY_HEX_64.test(aHex) || !PUB_KEY_HEX_64.test(bHex))
 		throw new Error('invalid pub key hex for DM label')
-	const [low, high] = a < b ? [a, b] : [b, a]
+	const [low, high] = aHex < bHex ? [aHex, bHex] : [bHex, aHex]
 	const dmSessionTag = createHash('sha256').update(`${low}:${high}`, 'utf8').digest('hex')
 	return {
 		low,

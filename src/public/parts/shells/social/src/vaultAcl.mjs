@@ -14,15 +14,14 @@ import { canViewByVisibility } from './lib/visibilitySpec.mjs'
  */
 export async function canViewVaultFile(replicaUsername, ownerEntityHash, manifest, viewerEntityHash) {
 	const visibility = manifest.meta?.visibility || 'followers'
-	const owner = ownerEntityHash
 	const viewer = viewerEntityHash
 		? viewerEntityHash
 		: await resolveOperatorEntityHash(replicaUsername)
-	if (viewer === owner) return true
+	if (viewer === ownerEntityHash) return true
 	const viewerContext = await loadViewerContext(replicaUsername, viewer)
 	return canViewByVisibility(
 		{ visibility, minFollowMs: manifest.meta?.minFollowMs, allow: manifest.meta?.allow, except: manifest.meta?.except },
 		viewerContext,
-		owner,
+		ownerEntityHash,
 	)
 }

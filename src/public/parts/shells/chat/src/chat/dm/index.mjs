@@ -58,8 +58,6 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 	const entityHash = options.entityHash || undefined
 	const { low, high, dmSessionTag, dmRoomLabelPrefix } = computeDmRoomLabelFromPubKeys(myPubKeyHex, peerPubKeyHex)
 	if (low === high) throw new Error('peer pub key must differ from mine')
-	const myPubKey = myPubKeyHex
-	const peerPubKey = peerPubKeyHex
 	const existing = await findDmGroupBySessionTag(username, dmSessionTag)
 	if (existing) return { ...existing, dmSessionTag }
 
@@ -95,20 +93,20 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 			dmRoomLabelPrefix,
 			dmPubKeyLow: low,
 			dmPubKeyHigh: high,
-			dmPeerPubKeyHex: peerPubKey,
-			dmMyPubKeyHex: myPubKey,
+			dmPeerPubKeyHex: peerPubKeyHex,
+			dmMyPubKeyHex: myPubKeyHex,
 		},
 	}, batchOpts)
 
 	const keyEntry = await getCurrentFileMasterKey(username, groupId)
 	if (keyEntry?.fileMasterKey) {
-		const fileKeyWraps = await buildFileKeyGrant(username, groupId, peerPubKey)
+		const fileKeyWraps = await buildFileKeyGrant(username, groupId, peerPubKeyHex)
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'peer_invite',
 			timestamp: Date.now(),
 			content: {
 				from: ownerPubKeyHash,
-				to: peerPubKey,
+				to: peerPubKeyHex,
 				fileKeyWraps,
 			},
 		}, batchOpts)

@@ -472,12 +472,11 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
  * @returns {Promise<Uint8Array>} 明文
  */
 export async function getDecryptedChunk(username, groupId, storageLocator, contentHashHex, options = {}, blamePeerKey) {
-	const contentHash = contentHashHex
 	const ceMode = normalizeCeMode(options?.ceMode)
 	if (!isBlobLocator(storageLocator)) throw new Error('locator must be blob:{hash}')
-	if (!isHex64(contentHash)) throw new Error('content_hash required')
+	if (!isHex64(contentHashHex)) throw new Error('content_hash required')
 
-	const cached = await getPlaintextCache(username, contentHash)
+	const cached = await getPlaintextCache(username, contentHashHex)
 	if (cached) return new Uint8Array(cached)
 
 	let raw
@@ -502,15 +501,15 @@ export async function getDecryptedChunk(username, groupId, storageLocator, conte
 		if (!keyEntry?.fileMasterKey) throw new Error('missing file master key for random ceMode')
 		const contentKey = unwrapContentKey(options.wrappedKey, keyEntry.fileMasterKey, fileId)
 		if (!contentKey) throw new Error('unwrap random content key failed')
-		plain = decryptRandomCiphertext(raw, contentKey, contentHash)
+		plain = decryptRandomCiphertext(raw, contentKey, contentHashHex)
 	}
 	else
-		plain = decryptConvergentCiphertext(raw, contentHash)
+		plain = decryptConvergentCiphertext(raw, contentHashHex)
 	if (!plain) {
 		if (blamePeerKey) penalizeChunkStorageFailure(blamePeerKey).catch(handleError)
 		throw new Error('convergent blob decrypt failed')
 	}
-	cachePlaintextFile(username, contentHash, plain).catch(handleError)
+	cachePlaintextFile(username, contentHashHex, plain).catch(handleError)
 	return new Uint8Array(plain)
 }
 
