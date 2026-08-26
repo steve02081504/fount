@@ -16,8 +16,7 @@ import {
 if (!FedC) throw new Error('fed_ban requires FOUNT_TEST_NODE_COUNT >= 3')
 
 /**
- * 有界重试：fn 返回真值即成功；否则重试至 attempts 次（间隔 intervalMs）。偶发失败在此吸收，
- * 彻底失败后抛出最后一次错误（或返回 false），由调用方（requireCase）立即结束运行，不再空跑。
+ * 有界重试：fn 返回真值即成功；否则重试至 attempts 次（间隔 intervalMs），彻底失败抛错。
  * @param {number} attempts 重试上限
  * @param {() => unknown | Promise<unknown>} fn 探测函数
  * @param {number} [intervalMs=2000] 重试间隔
@@ -127,6 +126,7 @@ await requireCase('B probes peers and self-judges removed', async () => {
 
 await requireCase('B state does not materialize ban event locally', async () => {
 	const s = await Api(FedB, 'GET', `/groups/${gid}/state`, undefined, { timeoutSec: REQ_TIMEOUT_SEC })
+	if (s.status !== 200) throw new Error(`state ${s.status}`)
 	return (s.json.meta?.bannedMembers?.filter(m => m.memberKey === bPub).length ?? 0) === 0
 })
 

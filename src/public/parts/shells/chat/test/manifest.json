@@ -124,7 +124,8 @@
 			"src/public/parts/shells/chat/src/group/routes/governance.mjs",
 			"src/public/parts/shells/chat/src/chat/dag/commitSignedEvent.mjs",
 			"src/public/parts/shells/chat/src/chat/federation/{rosterChange,outbound,roomCredentials}.mjs",
-			"src/public/parts/shells/chat/test/live/scripts/federation/ban.mjs"
+			"src/public/parts/shells/chat/test/live/scripts/federation/ban.mjs",
+			"src/scripts/test/live/federation/common.mjs"
 		],
 		"fedControlPlane": [
 			"src/public/parts/shells/chat/test/live/scripts/federation/control_plane.mjs"

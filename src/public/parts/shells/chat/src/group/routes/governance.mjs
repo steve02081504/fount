@@ -333,8 +333,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 		const governanceChannel = governanceChannelId(state)
 		if (action === 'unban') {
-			const canUnban = canInChannel(state, member, PERMISSIONS.BAN_MEMBERS, governanceChannel)
-			if (!canUnban)
+			if (!canInChannel(state, member, PERMISSIONS.BAN_MEMBERS, governanceChannel))
 				throw httpError(403, 'No permission to unban members')
 			const resolvedTargetKey = resolveMemberKey(state, targetMemberKey)
 			if (!resolvedTargetKey)
@@ -385,9 +384,9 @@ export function registerGovernanceRoutes(router, authenticate) {
 				timestamp: Date.now(),
 				content: banContent,
 			}, { skipFederationRebind: true })
-			await rotateRoomSecretAfterModeration(username, groupId)
 			await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
 			await addDenylistFromBanContent(banContent, groupId)
+			await rotateRoomSecretAfterModeration(username, groupId)
 
 			/** @type {{ ok: boolean, error?: string, banEventId?: string }} */
 			let reputationSlash = { ok: true, banEventId: banEvent.id }

@@ -1,8 +1,8 @@
 /**
  * 联邦治理轮换的重绑语义纯单测。
- * 钉住 fed_ban 步骤 3 偶发 flake 的根因：member_ban/member_kick 在 append 路径会立刻失效旧房间，
- * 使紧随其后的 group_settings_update.roomSecret 找不到旧槽 live 发布新口令，第三方从此失联。
- * 治理写入 ban/kick 时显式推迟重绑，真正的切房由配对写入的 roomSecret 更新驱动。
+ * member_ban/member_kick 在 append 路径会立刻失效旧房间，使紧随其后的 group_settings_update.roomSecret
+ * 找不到旧槽 live 发布新口令，第三方从此失联；因此治理写入 ban/kick 时显式推迟重绑，
+ * 真正的切房由配对写入的 roomSecret 轮换驱动。
  */
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
