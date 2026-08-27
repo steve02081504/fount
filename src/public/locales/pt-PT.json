@@ -217,6 +217,22 @@
 						"expected_drift": "Estimativa desviada",
 						"progress": "Progresso atualizado"
 					}
+				},
+				"dashboard": {
+					"idle": "parado",
+					"unknownCount": "+${count} desconhecido",
+					"runningCount": "Execute ${count}",
+					"passedCount": "através de ${count}",
+					"failedCount": "Falha ${count}",
+					"queuedCount": "Fila ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Restante≈${remaining}",
+					"duration": "Demorado ${duration}",
+					"cpu": "CPU${cpu}",
+					"memory": "Memória ${memory}",
+					"queueAppend": "Enfileirar ${label}(${reason})",
+					"queueRemove": "Sair ${label} (${reason})"
 				}
 			},
 			"passed": "APROVADO: ${label}",

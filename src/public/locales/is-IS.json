@@ -217,6 +217,22 @@
 						"expected_drift": "Mat viknar",
 						"progress": "Framvinda uppfærð"
 					}
+				},
+				"dashboard": {
+					"idle": "aðgerðalaus",
+					"unknownCount": "+${count} óþekkt",
+					"runningCount": "Keyra ${count}",
+					"passedCount": "í gegnum ${count}",
+					"failedCount": "Mistókst ${count}",
+					"queuedCount": "Biðröð ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Eftir≈${remaining}",
+					"duration": "Tímafrek ${duration}",
+					"cpu": "Örgjörvi ${cpu}",
+					"memory": "Minni ${memory}",
+					"queueAppend": "Biðröð ${label}(${reason})",
+					"queueRemove": "Færa út ${label} (${reason})"
 				}
 			},
 			"passed": "Staðið: ${label}",

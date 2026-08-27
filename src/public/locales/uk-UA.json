@@ -217,6 +217,22 @@
 						"expected_drift": "Оцінку часу зсунуто",
 						"progress": "Прогрес оновлено"
 					}
+				},
+				"dashboard": {
+					"idle": "непрацюючий",
+					"unknownCount": "+${count} невідомо",
+					"runningCount": "Запустіть ${count}",
+					"passedCount": "через ${count}",
+					"failedCount": "Помилка ${count}",
+					"queuedCount": "Черга ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Залишилося≈${remaining}",
+					"duration": "Тривалість ${duration}",
+					"cpu": "ЦП ${cpu}",
+					"memory": "Пам'ять ${memory}",
+					"queueAppend": "Поставити в чергу ${label}(${reason})",
+					"queueRemove": "Виїхати ${label} (${reason})"
 				}
 			},
 			"passed": "Пройдено: ${label}",

@@ -217,6 +217,22 @@
 						"expected_drift": "見積もり時間が変動",
 						"progress": "進捗を更新"
 					}
+				},
+				"dashboard": {
+					"idle": "アイドル状態",
+					"unknownCount": "+${count} 個が不明",
+					"runningCount": "${count} を実行",
+					"passedCount": "${count}経由",
+					"failedCount": "${count} 回失敗しました",
+					"queuedCount": "キュー ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "残り≈${remaining}",
+					"duration": "時間がかかる ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "メモリ ${memory}",
+					"queueAppend": "${label}(${reason}) をエンキューします",
+					"queueRemove": "${label} を退去 (${reason})"
 				}
 			},
 			"passed": "合格: ${label}",

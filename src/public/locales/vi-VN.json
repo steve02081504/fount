@@ -217,6 +217,22 @@
 						"expected_drift": "Ước lượng thời gian lệch",
 						"progress": "Cập nhật tiến độ"
 					}
+				},
+				"dashboard": {
+					"idle": "nhàn rỗi",
+					"unknownCount": "+${count} không xác định",
+					"runningCount": "Chạy ${count}",
+					"passedCount": "qua ${count}",
+					"failedCount": "Không thành công ${count}",
+					"queuedCount": "Hàng đợi ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Còn lại≈${remaining}",
+					"duration": "Tốn thời gian ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "Bộ nhớ ${memory}",
+					"queueAppend": "Xếp hàng ${label}(${reason})",
+					"queueRemove": "Di chuyển ${label} (${reason})"
 				}
 			},
 			"passed": "ĐẠT: ${label}",

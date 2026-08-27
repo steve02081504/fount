@@ -217,6 +217,22 @@
 						"expected_drift": "⏱️↔️",
 						"progress": "📈"
 					}
+				},
+				"dashboard": {
+					"idle": "空闲",
+					"unknownCount": "+${count} 未知",
+					"runningCount": "运行 ${count}",
+					"passedCount": "通过 ${count}",
+					"failedCount": "失败 ${count}",
+					"queuedCount": "排队 ${count}",
+					"reason": "（${reason}）",
+					"elapsed": "已 ${elapsed}",
+					"eta": "剩余≈${remaining}",
+					"duration": "耗时 ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "内存 ${memory}",
+					"queueAppend": "入队 ${label}（${reason}）",
+					"queueRemove": "移出 ${label}（${reason}）"
 				}
 			},
 			"passed": "✅: ${label}",

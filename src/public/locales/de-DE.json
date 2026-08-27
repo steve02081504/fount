@@ -217,6 +217,22 @@
 						"expected_drift": "Schätzung abgewichen",
 						"progress": "Fortschritt aktualisiert"
 					}
+				},
+				"dashboard": {
+					"idle": "Leerlauf",
+					"unknownCount": "+${count} unbekannt",
+					"runningCount": "Führen Sie ${count} aus",
+					"passedCount": "über ${count}",
+					"failedCount": "${count} fehlgeschlagen",
+					"queuedCount": "Warteschlange ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Verbleibend≈${remaining}",
+					"duration": "Zeitaufwändig ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "Speicher ${memory}",
+					"queueAppend": "${label}(${reason}) in die Warteschlange stellen",
+					"queueRemove": "${label} ausziehen (${reason})"
 				}
 			},
 			"passed": "Bestanden: ${label}",

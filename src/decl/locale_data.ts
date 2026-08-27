@@ -195,6 +195,22 @@ export type LocaleData = {
 						progress: string
 					}
 				}
+				dashboard: {
+					idle: string
+					unknownCount: string
+					runningCount: string
+					passedCount: string
+					failedCount: string
+					queuedCount: string
+					reason: string
+					elapsed: string
+					eta: string
+					duration: string
+					cpu: string
+					memory: string
+					queueAppend: string
+					queueRemove: string
+				}
 			}
 			passed: string
 			passedWithNoise: string
@@ -6469,6 +6485,19 @@ export type LocaleKeyParams = {
 	'fountConsole.test.denoPanic.ghUnavailable': { signature: string | number }
 	'fountConsole.test.denoPanic.publishFailed': { signature: string | number }
 	'fountConsole.test.denoPanic.published': { url: string | number }
+	'fountConsole.test.display.dashboard.cpu': { cpu: string | number }
+	'fountConsole.test.display.dashboard.duration': { duration: string | number }
+	'fountConsole.test.display.dashboard.elapsed': { elapsed: string | number }
+	'fountConsole.test.display.dashboard.eta': { remaining: string | number }
+	'fountConsole.test.display.dashboard.failedCount': { count: string | number }
+	'fountConsole.test.display.dashboard.memory': { memory: string | number }
+	'fountConsole.test.display.dashboard.passedCount': { count: string | number }
+	'fountConsole.test.display.dashboard.queueAppend': { label: string | number; reason: string | number }
+	'fountConsole.test.display.dashboard.queueRemove': { label: string | number; reason: string | number }
+	'fountConsole.test.display.dashboard.queuedCount': { count: string | number }
+	'fountConsole.test.display.dashboard.reason': { reason: string | number }
+	'fountConsole.test.display.dashboard.runningCount': { count: string | number }
+	'fountConsole.test.display.dashboard.unknownCount': { count: string | number }
 	'fountConsole.test.display.eta': { expected: string | number; remaining: string | number }
 	'fountConsole.test.display.etaUnknown': { count: string | number; expected: string | number }
 	'fountConsole.test.display.explicitSelectedCount': { count: string | number }
