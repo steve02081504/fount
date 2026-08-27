@@ -217,6 +217,22 @@
 						"expected_drift": "Stima divergente",
 						"progress": "Progresso aggiornato"
 					}
+				},
+				"dashboard": {
+					"idle": "oziare",
+					"unknownCount": "+${count} sconosciuto",
+					"runningCount": "Esegui ${count}",
+					"passedCount": "tramite ${count}",
+					"failedCount": "Non riuscito ${count}",
+					"queuedCount": "Coda ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Rimanente≈${remaining}",
+					"duration": "${duration} richiede molto tempo",
+					"cpu": "CPU${cpu}",
+					"memory": "Memoria ${memory}",
+					"queueAppend": "Accoda ${label}(${reason})",
+					"queueRemove": "Elimina ${label} (${reason})"
 				}
 			},
 			"passed": "Superato: ${label}",

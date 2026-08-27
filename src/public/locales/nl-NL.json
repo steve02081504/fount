@@ -217,6 +217,22 @@
 						"expected_drift": "Schatting afgeweken",
 						"progress": "Voortgang bijgewerkt"
 					}
+				},
+				"dashboard": {
+					"idle": "inactief",
+					"unknownCount": "+${count} onbekend",
+					"runningCount": "Voer ${count} uit",
+					"passedCount": "via ${count}",
+					"failedCount": "Mislukt ${count}",
+					"queuedCount": "Wachtrij ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Resterend≈${remaining}",
+					"duration": "Tijdrovend ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "Geheugen ${memory}",
+					"queueAppend": "${label}(${reason}) in wachtrij plaatsen",
+					"queueRemove": "Verplaats ${label} (${reason})"
 				}
 			},
 			"passed": "Geslaagd: ${label}",

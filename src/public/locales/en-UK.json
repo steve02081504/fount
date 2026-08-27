@@ -217,6 +217,22 @@
 						"expected_drift": "Estimate drifted",
 						"progress": "Progress update"
 					}
+				},
+				"dashboard": {
+					"idle": "idle",
+					"unknownCount": "+${count} unknown",
+					"runningCount": "Run ${count}",
+					"passedCount": "via ${count}",
+					"failedCount": "Failed ${count}",
+					"queuedCount": "Queue ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Remaining≈${remaining}",
+					"duration": "Time consuming ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "Memory ${memory}",
+					"queueAppend": "Enqueue ${label}(${reason})",
+					"queueRemove": "Move out ${label} (${reason})"
 				}
 			},
 			"passed": "PASSED: ${label}",

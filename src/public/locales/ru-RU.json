@@ -217,6 +217,22 @@
 						"expected_drift": "Оценка времени сместилась",
 						"progress": "Прогресс обновлён"
 					}
+				},
+				"dashboard": {
+					"idle": "праздный",
+					"unknownCount": "+${count} неизвестно",
+					"runningCount": "Запустить ${count}",
+					"passedCount": "через ${count}",
+					"failedCount": "Не удалось ${count}",
+					"queuedCount": "Очередь ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Осталось≈${remaining}",
+					"duration": "Затраты времени ${duration}",
+					"cpu": "ЦП ${cpu}",
+					"memory": "Память ${memory}",
+					"queueAppend": "Поставить в очередь ${label}(${reason})",
+					"queueRemove": "Удалить ${label} (${reason})"
 				}
 			},
 			"passed": "ПРОЙДЕНО: ${label}",

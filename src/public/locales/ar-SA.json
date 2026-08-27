@@ -217,6 +217,22 @@
 						"expected_drift": "انحرف التقدير الزمني",
 						"progress": "تحديث التقدم"
 					}
+				},
+				"dashboard": {
+					"idle": "عاطل",
+					"unknownCount": "+${count} غير معروف",
+					"runningCount": "تشغيل ${count}",
+					"passedCount": "عبر ${count}",
+					"failedCount": "فشل ${count}",
+					"queuedCount": "قائمة الانتظار ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "المتبقي≈${remaining}",
+					"duration": "مضيعة للوقت ${duration}",
+					"cpu": "وحدة المعالجة المركزية ${cpu}",
+					"memory": "الذاكرة ${memory}",
+					"queueAppend": "أدخل ${label}(${reason})",
+					"queueRemove": "أخرج ${label} (${reason})"
 				}
 			},
 			"passed": "نجح: ${label}",

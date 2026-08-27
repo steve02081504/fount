@@ -216,6 +216,22 @@
 						"expected_drift": "預估耗時漂移",
 						"progress": "進度更新"
 					}
+				},
+				"dashboard": {
+					"idle": "空閒",
+					"unknownCount": "+${count} 未知",
+					"runningCount": "運行 ${count}",
+					"passedCount": "透過 ${count}",
+					"failedCount": "失敗 ${count}",
+					"queuedCount": "排隊 ${count}",
+					"reason": "（${reason}）",
+					"elapsed": "已 ${elapsed}",
+					"eta": "剩餘≈${remaining}",
+					"duration": "耗時 ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "記憶體 ${memory}",
+					"queueAppend": "入隊 ${label}（${reason}）",
+					"queueRemove": "移出 ${label}（${reason}）"
 				}
 			},
 			"passed": "透過：${label}",

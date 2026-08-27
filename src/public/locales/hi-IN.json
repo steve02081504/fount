@@ -217,6 +217,22 @@
 						"expected_drift": "अनुमान में विचलन",
 						"progress": "प्रगति अद्यतन"
 					}
+				},
+				"dashboard": {
+					"idle": "निठल्ला",
+					"unknownCount": "+${count} अज्ञात",
+					"runningCount": "${count} चलाएँ",
+					"passedCount": "${count} के माध्यम से",
+					"failedCount": "विफल ${count}",
+					"queuedCount": "कतार ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "शेष≈${remaining}",
+					"duration": "समय लेने वाली ${duration}",
+					"cpu": "सीपीयू ${cpu}",
+					"memory": "मेमोरी ${memory}",
+					"queueAppend": "${label}(${reason}) को पंक्तिबद्ध करें",
+					"queueRemove": "${label} (${reason}) को बाहर निकालें"
 				}
 			},
 			"passed": "पास: ${label}",
