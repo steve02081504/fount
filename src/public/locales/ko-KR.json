@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "모듈 검사: ready 신호 없이 프로세스 종료: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} 프런트엔드 테스트는 test/frontend/run.mjs를 통해 시작해야 합니다(격리 노드를 자동으로 띄웁니다). 로컬 개발 인스턴스나 실제 사용자 데이터에서는 실행하지 마세요.",
+				"isolatedUser": "테스트는 격리 사용자 \"${expectedUsername}\"로 실행해야 하며, 현재 세션은 \"${username}\"로 실행 중입니다. run.mjs를 통해 시작하고 프로덕션·개발용 fount를 가리키지 마세요."
+			},
 			"queue": {
 				"append": "대기열 추가: ${label}(${reason}) 남음 ≈ ${remaining}",
 				"remove": "대기열 제거: ${label}(${reason}) 남음 ≈ ${remaining}"
@@ -191,7 +195,45 @@
 						"0": "대기 중"
 					}
 				},
-				"failureLog": "\n—— ${label} 실패 로그 ——"
+				"failureLog": "\n—— ${label} 실패 로그 ——",
+				"schedule": {
+					"reason": "（${reason}）",
+					"running": "${key} 실행 중, 남은 시간 ${remaining}",
+					"reasons": {
+						"initial": "계획 준비 완료",
+						"suite_started": "스위트 시작",
+						"suite_completed": "스위트 완료",
+						"suite_failed": "스위트 실패",
+						"blocked": "의존성 실패로 차단",
+						"skipped": "의존성 건너뜀",
+						"queue_appended": "작업 추가됨",
+						"queue_removed": "작업 제거됨",
+						"prep_promoted": "준비 승격됨",
+						"module_check_ready": "모듈 검사 준비 완료",
+						"dependency_ready": "의존성 준비 완료",
+						"resource_budget_changed": "리소스 예산 변경됨",
+						"job_queued": "작업 대기열 추가됨",
+						"gate_state_changed": "리소스 게이트 변경됨",
+						"expected_drift": "예상 시간 변동",
+						"progress": "진행 상황 업데이트"
+					}
+				},
+				"dashboard": {
+					"idle": "대기 중",
+					"unknownCount": "+${count} 미상",
+					"runningCount": "${count} 실행 중",
+					"passedCount": "${count} 통과",
+					"failedCount": "${count} 실패",
+					"queuedCount": "${count} 대기",
+					"reason": "(${reason})",
+					"elapsed": "경과 ${elapsed}",
+					"eta": "남음 ≈${remaining}",
+					"duration": "소요 ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "메모리 ${memory}",
+					"queueAppend": "대기열 추가: ${label} (${reason})",
+					"queueRemove": "대기열 제거: ${label} (${reason})"
+				}
 			},
 			"passed": "경로: ${label}",
 			"passedWithNoise": "통과: ${label}(노이즈 포함)",
@@ -1601,7 +1643,10 @@
 						"stateDeny": "거부",
 						"stateNeutral": "상속",
 						"updateFailed": "채널 권한을 업데이트하지 못했습니다: ${error}",
-						"updated": "채널 권한이 업데이트되었습니다."
+						"updated": "채널 권한이 업데이트되었습니다.",
+						"syncedWarning": "이 채널의 권한은 상위 채널에서 동기화됩니다. 개별 설정을 바꾸면 먼저 권한 상속이 해제됩니다.",
+						"syncToDefault": "루트 채널 권한으로 동기화",
+						"synced": "루트 채널 권한으로 동기화됨"
 					},
 					"advanced": {
 						"description": "네트워크, 스토리지, 속도 제한 및 암호화 매개변수 확실하지 않은 경우 기본값을 유지하세요.",
@@ -1692,7 +1737,8 @@
 						"general": "기본",
 						"members": "멤버",
 						"permissions": "역할 권한",
-						"storage": "저장 및 보관"
+						"storage": "저장 및 보관",
+						"groupPermissions": "그룹 권한"
 					},
 					"key": {
 						"managementTip": "교체 후 새 키를 구성원에게 재배포해야 합니다. 키가 손상되었다고 의심되는 경우에만 수동 조치를 취해야 합니다.",
@@ -1701,6 +1747,15 @@
 						"rotateConfirm": "이 그룹 파일의 마스터 키를 수동으로 순환하시겠습니까? 새 구성원은 기록 파일 키를 다시 동기화해야 합니다.",
 						"rotateFailed": "키 순환 실패: ${error}",
 						"rotateOk": "키가 순환되었습니다."
+					},
+					"groupPerms": {
+						"denied": "그룹 권한을 관리할 권한이 없습니다.",
+						"hint": "그룹 수준 관리 권한(추방, 차단, 역할 관리, 관리자 관리, 멤버 초대)을 역할별로 재정의합니다.",
+						"overridden": "재정의됨",
+						"clearOverride": "모두 상속으로 재설정",
+						"noRoles": "구성할 역할이 없습니다.",
+						"updateFailed": "그룹 권한 업데이트에 실패했습니다: ${error}",
+						"updated": "그룹 권한이 업데이트되었습니다."
 					}
 				},
 				"pinContext": "상위 이웃(±N 이웃)",
@@ -2009,6 +2064,7 @@
 				"suspectedRemoved": "나는 이 그룹에서 제거되었을 수 있습니다. ${count}개의 알려진 노드에 확인을 요청했지만 모두 거부되었습니다. 지역 역사를 기념하거나 이 단체 사본을 삭제할 수 있습니다.",
 				"suspectedRemovedKeep": "기념품을 가져가세요",
 				"suspectedRemovedLeave": "그룹 삭제",
+				"shunVerifying": "구성원 자격을 확인 중입니다: 알려진 노드 ${confirmed}/${total}개가 거부했습니다",
 				"fork": {
 					"governance": "권한 레코드에 포크가 있으며 현재 로컬 보기에 있습니다.",
 					"tipLabel": "DAG 잎",
@@ -2338,6 +2394,12 @@
 				"success": "채널이 생성되었습니다",
 				"title": "새 채널 만들기"
 			},
+			"newCategory": {
+				"button": "새 카테고리 만들기",
+				"failed": "카테고리를 생성하지 못했습니다.",
+				"success": "카테고리가 생성되었습니다.",
+				"title": "새로운 카테고리"
+			},
 			"discovery": {
 				"description": "연합 네트워크의 공개 그룹을 둘러보고 관심 있는 커뮤니티를 골라 가입하세요.",
 				"empty": "추천 그룹이 없습니다. 연합 동기화를 켜면 이웃에서 발견 목록이 동기화됩니다.",
@@ -2415,6 +2477,9 @@
 					"exportFailed": "내보내기 실패: ${error}"
 				},
 				"name": "채널 이름",
+				"unnamed": "이름 없음",
+				"parent": "상위 채널",
+				"noParent": "상위 채널 없음(루트 채널)",
 				"nameInput": {
 					"placeholder": "일반적인"
 				},
@@ -2427,7 +2492,41 @@
 				"type": "채널 유형",
 				"typeList": "목록/포럼 채널",
 				"typeStreaming": "스트리밍 채널",
-				"typeText": "채팅 채널"
+				"typeText": "채팅 채널",
+				"readonlyRoot": {
+					"placeholder": "루트 채널은 메시지/파일을 보낼 수 없습니다"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "이 카테고리에 채널 만들기",
+					"delete": "카테고리 삭제",
+					"deleteConfirm": "\"${name}\" 카테고리를 삭제하시겠습니까? 그 아래 채널은 미분류로 돌아갑니다.",
+					"deleteOk": "카테고리가 삭제되었습니다.",
+					"perms": "카테고리 권한",
+					"rename": "카테고리 이름 바꾸기",
+					"renameOk": "카테고리 이름이 변경되었습니다.",
+					"renamePrompt": "새 카테고리 이름"
+				},
+				"reorder": {
+					"after": "'${source}'을(를) '${target}' 뒤로 이동할까요?",
+					"before": "'${source}'을(를) '${target}' 앞으로 이동할까요?",
+					"into": "'${source}'을(를) '${target}' 안으로 이동할까요?",
+					"toRoot": "'${source}'을(를) 루트로 이동할까요?"
+				},
+				"name": "카테고리 이름",
+				"nameInput": {
+					"placeholder": "미디어"
+				},
+				"perm": {
+					"loadFailed": "카테고리 권한을 로드하지 못했습니다: ${error}",
+					"title": "카테고리 권한",
+					"updateFailed": "카테고리 권한을 업데이트하지 못했습니다: ${error}",
+					"updated": "카테고리 권한이 업데이트되었습니다.",
+					"syncedWarning": "이 카테고리의 권한은 상위 채널에서 동기화됩니다. 개별 설정을 바꾸면 먼저 권한 상속이 해제됩니다.",
+					"syncToDefault": "루트 채널 권한으로 동기화",
+					"synced": "루트 채널 권한으로 동기화됨"
+				}
 			},
 			"message": {
 				"action": {

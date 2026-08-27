@@ -6,7 +6,7 @@
  * 【关联】dmLinkSignature.mjs、federationSettings.mjs、runUri.mjs、signer.mjs。
  */
 
-import { normalizeHex64, HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { bytesToHex } from '../shared/digest.mjs'
 import { formatDmRunUri } from '../shared/runUri.mjs'
@@ -109,16 +109,15 @@ export async function createDmLinkAndSync(options) {
  * @returns {Promise<string>} canonical run URI
  */
 export async function createDmLink({ pubKeyHex, secretKey32, signFn, nodeUrl, nonce }) {
-	const pubKey = normalizeHex64(pubKeyHex)
-	if (!HEX_ID_64.test(pubKey)) throw new Error('invalid pubKeyHex')
+	if (!HEX_ID_64.test(pubKeyHex)) throw new Error('invalid pubKeyHex')
 
 	const nonceBase64Url = nonce || getDmLinkNonce()
 	const secretKey = secretKey32 instanceof Uint8Array
 		? secretKey32
 		: new Uint8Array(/** @type {ArrayBuffer} */ secretKey32)
-	const signatureBytes = await signFn(dmLinkSignableBytes(pubKey, nonceBase64Url), secretKey)
+	const signatureBytes = await signFn(dmLinkSignableBytes(pubKeyHex, nonceBase64Url), secretKey)
 	if (!(signatureBytes instanceof Uint8Array) || signatureBytes.length !== 64) throw new Error('invalid signature length')
 
 	const introSignatureHex = bytesToHex(signatureBytes)
-	return formatDmRunUri({ pubKeyHex: pubKey, nonceBase64Url, introSignatureHex, nodeUrl })
+	return formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, nodeUrl })
 }

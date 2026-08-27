@@ -69,7 +69,7 @@ export async function syncMissingArchiveMonths(username, groupId, slot, options 
 
 	/** @returns {Promise<void>} */
 	const worker = async () => {
-		for (; ;) {
+		while(true) {
 			const itemIndex = nextIndex++
 			if (itemIndex >= missing.length) return
 			const { channelId, utcMonth } = missing[itemIndex]

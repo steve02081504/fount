@@ -2,8 +2,9 @@
  * Social 可见性档位规范化、偏序与读侧判定核心。
  */
 
-import { ms } from 'fount/scripts/ms.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 /** @typedef {'public' | 'unlisted' | 'followers' | 'followers_since' | 'selected' | 'private'} SocialVisibility */
 
@@ -42,10 +43,9 @@ function normalizeEntityHashList(raw) {
 	const out = []
 	const seen = new Set()
 	for (const item of raw) {
-		const hash = String(item || '').trim()
-		if (!isEntityHash128(hash) || seen.has(hash)) continue
-		seen.add(hash)
-		out.push(hash)
+		if (!isEntityHash128(item) || seen.has(item)) continue
+		seen.add(item)
+		out.push(item)
 	}
 	return out
 }
@@ -57,10 +57,10 @@ function normalizeEntityHashList(raw) {
  */
 export function normalizeVisibilitySpec(draft = {}) {
 	const raw = typeof draft === 'string' ? { visibility: draft } : draft || {}
-	const presetKey = String(raw.visibility || raw.preset || '').trim()
+	const presetKey = raw.visibility || raw.preset
 	const preset = VISIBILITY_UI_PRESETS[presetKey]
 	let visibility = /** @type {SocialVisibility} */
-		preset ? preset.visibility : String(raw.visibility || 'public').trim()
+		preset ? preset.visibility : raw.visibility || 'public'
 
 	if (!SOCIAL_VISIBILITIES.has(visibility)) visibility = 'public'
 

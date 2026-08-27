@@ -15,6 +15,7 @@ import { escapeRegExp } from '/scripts/lib/regex.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
 import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
+import { buildFriendRows } from '../shared/friendRows.mjs'
 import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { searchEntities } from '../src/endpoints/entities.mjs'
@@ -28,7 +29,6 @@ import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMen
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
-import { resolveFriendBinding } from './friendBindings.mjs'
 import { dispatchFriendChat, enterFriendChat, onEnterFriendChat } from './friendChat.mjs'
 import { fetchAuthorProfile } from './presence.mjs'
 import { restartPrivateGroup } from './privateGroup.mjs'
@@ -36,13 +36,7 @@ import { loadGroups } from './serverBar.mjs'
 
 /**
  * 好友侧栏行。
- * @typedef {object} FriendRow
- * @property {string} groupId 私聊群 ID
- * @property {string} key 对端 entityHash 或去重键
- * @property {string} displayName 侧栏展示名
- * @property {string} [charname] 本地角色 part 名（用户 DM 时省略）
- * @property {import('../shared/friendBinding.mjs').FriendBinding} binding 好友绑定
- * @property {object} session 侧栏会话摘要（最后消息等）
+ * @typedef {import('../shared/friendRows.mjs').FriendRow} FriendRow
  */
 
 /**
@@ -107,41 +101,8 @@ function bindFriendProfileHover(el, target) {
  */
 export async function loadFriendsList() {
 	await loadGroups()
-	/** @type {Map<string, FriendRow>} */
-	const byEntityHash = new Map()
-	for (const group of store.sidebar.groups) {
-		const binding = resolveFriendBinding(group)
-		if (!binding) continue
-		const row = {
-			groupId: group.groupId,
-			key: binding.entityHash,
-			displayName: binding.displayName || binding.charname || group.name || group.groupId,
-			charname: binding.charname,
-			binding,
-			session: {
-				groupId: group.groupId,
-				lastMessageContent: '',
-				lastMessageTime: group.lastMessageTime,
-			},
-		}
-		const prev = byEntityHash.get(binding.entityHash)
-		if (!prev) {
-			byEntityHash.set(binding.entityHash, row)
-			continue
-		}
-		const prevTime = new Date(prev.session.lastMessageTime || 0).getTime()
-		const nextTime = new Date(row.session.lastMessageTime || 0).getTime()
-		if (nextTime >= prevTime)
-			byEntityHash.set(binding.entityHash, row)
-	}
-	const rows = [...byEntityHash.values()]
-	rows.sort((a, b) => {
-		const ta = new Date(a.session.lastMessageTime || 0).getTime()
-		const tb = new Date(b.session.lastMessageTime || 0).getTime()
-		if (ta !== tb) return tb - ta
-		return a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' })
-	})
-	return rows
+	// 好友列表只展示私聊（DM）会话；普通（多人）群归群侧栏，不混入好友列表。
+	return buildFriendRows(store.sidebar.groups)
 }
 
 /**
@@ -162,6 +123,7 @@ async function friendRowTemplateData(friend, details) {
 			: friend.displayName,
 		fallbackLabel: friend.charname || friend.groupId,
 	})
+
 	if (!friend.charname) {
 		const seed = friend.key || friend.groupId
 		return {

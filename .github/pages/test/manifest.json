@@ -21,7 +21,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "2m",
+			"expected": "5m12s",
 			"run": [
 				"deno",
 				"run",
@@ -35,7 +35,6 @@
 				".github/pages/**",
 				"src/public/pages/scripts/**",
 				"imgs/**",
-				"src/scripts/test/playwright/**",
 				".esh/commands/pages-server.mjs"
 			],
 			"subtests": [

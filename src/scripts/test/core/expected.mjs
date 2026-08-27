@@ -71,6 +71,34 @@ export function formatExpected(msVal) {
 }
 
 /**
+ * 自动回写 `expected` 的漂移容差（连续函数，毫秒）。
+ * 随规模亚线性增长：500ms 级容差约 2s，4min 级约 2min，30min 级约 8min。
+ * 拟合自 {500→2181, 240000→125205, 1800000→469527} 的幂函数。
+ * @param {number} scaleMs 基准规模（两个值中较大者，毫秒）
+ * @returns {number} 允许的漂移量（毫秒）
+ */
+export function expectedDriftToleranceMs(scaleMs) {
+	if (!Number.isFinite(scaleMs) || scaleMs <= 0) return 0
+	return 37 * Math.pow(scaleMs, 0.656)
+}
+
+/**
+ * 判断 manifest `expected` 与现状基线是否漂移超过容差。
+ * 容差由较大值按 `expectedDriftToleranceMs` 连续给出，而非固定相对比例。
+ * manifest 缺失但基线存在视为漂移（补齐）。比较基于网格化后的值，避免舍入抖动。
+ * @param {number | null | undefined} manifestMs manifest `expected`（毫秒）
+ * @param {number | null | undefined} baselineMs 现状基线（毫秒）
+ * @returns {boolean} 是否应更新
+ */
+export function isExpectedDrift(manifestMs, baselineMs) {
+	const roundedBase = roundExpectedMs(baselineMs)
+	if (roundedBase == null) return false
+	const roundedManifest = roundExpectedMs(manifestMs)
+	if (roundedManifest == null) return true
+	return Math.abs(roundedManifest - roundedBase) > expectedDriftToleranceMs(Math.max(roundedManifest, roundedBase))
+}
+
+/**
  * 由 suite 级 expected 与全部子测试 expected 反推固定开销。
  * 任一子测试缺 expected 则无法推断。
  * @param {import('./manifest.mjs').SuiteDef} suite suite

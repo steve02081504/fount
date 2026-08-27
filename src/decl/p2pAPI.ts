@@ -178,16 +178,21 @@ export interface ChannelPermissionOverride {
 	deny: Partial<PermissionFlags>
 }
 
-/** 群频道元数据（文本、列表或流媒体）。 */
+/** 群频道元数据（文本、列表、流媒体或分类）。分类以 `type === 'category'` 表示。 */
 export interface Channel {
 	id: string
-	type: 'text' | 'list' | 'streaming'
+	type: 'text' | 'list' | 'streaming' | 'category'
 	name: string
 	description: string
-	parentChannelId: string | null
+	/** 子频道 id 有序列表（父→子单向） */
+	links: string[]
+	/** 跟随的权限块源频道 id；null 表示自有权限块 */
+	permissionBlockId: string | null
 	syncScope: 'group' | 'channel'
 	isPrivate: boolean
-	subRoomId?: string
+	subRoomId?: string | null
+	/** Reducer 保存的父事件 id；用于线程路由识别已有线程 */
+	parentEventId?: string | null
 	createdAt: number
 	manualItems?: ListItem[]
 }
@@ -342,6 +347,7 @@ export interface GroupStateCore {
 	membersPagesCount: number
 	roles: Record<string, Role>
 	channelPermissions: Record<string, Record<string, ChannelPermissionOverride>>
+	groupPermissions: Record<string, ChannelPermissionOverride>
 	channelKeyGeneration: Record<string, number>
 	channelKeyWraps: Record<string, { generation: number }>
 	channels: Record<string, Channel>

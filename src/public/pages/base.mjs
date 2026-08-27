@@ -120,7 +120,50 @@ async function ensureWebPushSubscription() {
 
 const is_hidden_page = !window.innerHeight || !window.innerWidth
 
-if (!is_hidden_page && new Date().getDate() === 1 && new Date().getMonth() === 3)
+/**
+ * 向 Service Worker 查询服务器是否在线。
+ * @returns {Promise<boolean>} 服务器是否在线，无法查询时视为离线。
+ */
+export async function queryServerOnline() {
+	if (!navigator.serviceWorker?.controller) {
+		try {
+			await fetch('/api/ping', { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(500) })
+		}
+		catch {
+			return false
+		}
+		return true
+	}
+	return new Promise(resolve => {
+		const channel = new MessageChannel()
+		/**
+		 * 处理 Service Worker 返回的在线状态消息。
+		 * @param {MessageEvent} event - 消息事件。
+		 * @returns {void}
+		 */
+		channel.port1.onmessage = event => resolve(!!event.data?.serverOnline)
+		navigator.serviceWorker.controller.postMessage({ type: 'GET_SERVER_ONLINE' }, [channel.port2])
+	})
+}
+
+/**
+ * 通过 fount 自定义协议唤醒本地服务器。
+ * @returns {Promise<void>}
+ */
+export async function wakeServer() {
+	if (await queryServerOnline()) return
+	const iframe = document.createElement('iframe')
+	iframe.ariaHidden = true
+	iframe.style.display = 'none'
+	iframe.src = 'fount://nop/'
+	document.body.appendChild(iframe)
+}
+
+// 非根目录页面：自动检测服务器是否在线，不在线时通过 fount 协议唤醒。
+if (!is_hidden_page) if (!['', '/'].includes(window.location.pathname))
+	wakeServer()
+
+if (!is_hidden_page) if (new Date().getDate() === 1 && new Date().getMonth() === 3)
 	if (Math.random() < 0.01)
 		if (navigator.userLanguage == 'zh-CN' || navigator.userLanguage == 'zh' || navigator.language == 'zh-CN' || navigator.language == 'zh')
 			window.location.href = 'https://96110.pages.dev/CloudFlare/CF'
@@ -128,7 +171,7 @@ if (!is_hidden_page && new Date().getDate() === 1 && new Date().getMonth() === 3
 			window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
 
 // set prerender rules
-if (!is_hidden_page && HTMLScriptElement.supports?.('speculationrules')) {
+if (!is_hidden_page) if (HTMLScriptElement.supports?.('speculationrules')) {
 	const specScript = document.createElement('script')
 	specScript.type = 'speculationrules'
 	specScript.textContent = JSON.stringify({

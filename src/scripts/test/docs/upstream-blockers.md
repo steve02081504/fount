@@ -15,3 +15,5 @@ Module-check mutex only serializes spawn→JS-ready ([resource-scheduling.md](re
 ## `AbortSignal.timeout` uncaught `TimeoutError` after the consumer finished
 
 `AbortSignal.timeout(ms)` still fires an uncaught `TimeoutError` after `fetch` (or other abortable work) has already completed ([denoland/deno#36588](https://github.com/denoland/deno/issues/36588)). Long suites (`testkit:kernel`, some chat integration files) then fail with Deno’s “dangling promise / timeout handler” uncaught-error wrapper. Do not rewrite call sites to `AbortController` + `clearTimeout` while this is open — wait for Deno, then re-run `fount test testkit:kernel`.
+
+The module-check preload (`hub/clients/module_check.mjs`) uses `AbortSignal.timeout` for the ready POST, so it can strike **any** `serial.mjs` child under concurrency/load — `shells/chat:pure` has since been caught, blaming a different fast module (`http_content_headers` / `inbox_recipients` / `sfw_overlay`) on each flaky run while all its tests pass. Re-run the suite after the Deno fix; do not rewrite the preload call site in the meantime.

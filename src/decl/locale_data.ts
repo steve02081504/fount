@@ -164,6 +164,10 @@ export type LocaleData = {
 			moduleCheck: {
 				missedReady: string
 			}
+			frontend: {
+				isolatedRequired: string
+				isolatedUser: string
+			}
 			queue: {
 				append: string
 				remove: string
@@ -178,6 +182,44 @@ export type LocaleData = {
 				remainingOnlyUnknown: string
 				queued: LocaleSwitchLeaf
 				failureLog: string
+				schedule: {
+					reason: string
+					running: string
+					reasons: {
+						initial: string
+						suite_started: string
+						suite_completed: string
+						suite_failed: string
+						blocked: string
+						skipped: string
+						queue_appended: string
+						queue_removed: string
+						prep_promoted: string
+						module_check_ready: string
+						dependency_ready: string
+						resource_budget_changed: string
+						job_queued: string
+						gate_state_changed: string
+						expected_drift: string
+						progress: string
+					}
+				}
+				dashboard: {
+					idle: string
+					unknownCount: string
+					runningCount: string
+					passedCount: string
+					failedCount: string
+					queuedCount: string
+					reason: string
+					elapsed: string
+					eta: string
+					duration: string
+					cpu: string
+					memory: string
+					queueAppend: string
+					queueRemove: string
+				}
 			}
 			passed: string
 			passedWithNoise: string
@@ -1573,6 +1615,9 @@ export type LocaleData = {
 						stateNeutral: string
 						updateFailed: string
 						updated: string
+						syncedWarning: string
+						syncToDefault: string
+						synced: string
 					}
 					advanced: {
 						description: string
@@ -1664,6 +1709,7 @@ export type LocaleData = {
 						members: string
 						permissions: string
 						storage: string
+						groupPermissions: string
 					}
 					key: {
 						managementTip: string
@@ -1672,6 +1718,15 @@ export type LocaleData = {
 						rotateConfirm: string
 						rotateFailed: string
 						rotateOk: string
+					}
+					groupPerms: {
+						denied: string
+						hint: string
+						overridden: string
+						clearOverride: string
+						noRoles: string
+						updateFailed: string
+						updated: string
 					}
 				}
 				pinContext: string
@@ -1980,6 +2035,7 @@ export type LocaleData = {
 				suspectedRemoved: string
 				suspectedRemovedKeep: string
 				suspectedRemovedLeave: string
+				shunVerifying: string
 				fork: {
 					governance: string
 					tipLabel: string
@@ -2309,6 +2365,12 @@ export type LocaleData = {
 				success: string
 				title: string
 			}
+			newCategory: {
+				button: string
+				failed: string
+				success: string
+				title: string
+			}
 			discovery: {
 				description: string
 				empty: string
@@ -2386,6 +2448,9 @@ export type LocaleData = {
 					exportFailed: string
 				}
 				name: string
+				unnamed: string
+				parent: string
+				noParent: string
 				nameInput: {
 					placeholder: string
 				}
@@ -2399,6 +2464,40 @@ export type LocaleData = {
 				typeList: string
 				typeStreaming: string
 				typeText: string
+				readonlyRoot: {
+					placeholder: string
+				}
+			}
+			category: {
+				context: {
+					createIn: string
+					delete: string
+					deleteConfirm: string
+					deleteOk: string
+					perms: string
+					rename: string
+					renameOk: string
+					renamePrompt: string
+				}
+				reorder: {
+					after: string
+					before: string
+					into: string
+					toRoot: string
+				}
+				name: string
+				nameInput: {
+					placeholder: string
+				}
+				perm: {
+					loadFailed: string
+					title: string
+					updateFailed: string
+					updated: string
+					syncedWarning: string
+					syncToDefault: string
+					synced: string
+				}
 			}
 			message: {
 				action: {
@@ -6153,6 +6252,7 @@ export type LocaleKeyParams = {
 	'chat.group.settings.page.emojis.deleteFailed': { error: string | number }
 	'chat.group.settings.page.emojis.packGroupOption': { packId: string | number }
 	'chat.group.settings.page.emojis.uploadFailed': { error: string | number }
+	'chat.group.settings.page.groupPerms.updateFailed': { error: string | number }
 	'chat.group.settings.page.gshGenerationNearLimit': { generation: string | number; maxGenerations: string | number }
 	'chat.group.settings.page.invite.clipboard': { code: string | number; groupId: string | number; url: string | number }
 	'chat.group.settings.page.invite.expires': { date: string | number }
@@ -6185,6 +6285,7 @@ export type LocaleKeyParams = {
 	'chat.hub.banners.gshBuffer': { total: string | number }
 	'chat.hub.banners.mailboxPending': { count: string | number }
 	'chat.hub.banners.quarantine': { count: string | number }
+	'chat.hub.banners.shunVerifying': { confirmed: string | number; total: string | number }
 	'chat.hub.banners.suspectedRemoved': { count: string | number }
 	'chat.hub.block.opposingFailed': { error: string | number }
 	'chat.hub.block.opposingOk': { count: string | number }
@@ -6194,6 +6295,13 @@ export type LocaleKeyParams = {
 	'chat.hub.call.peerCount': { n: string | number }
 	'chat.hub.call.screenFailed': { error: string | number }
 	'chat.hub.call.startedAt': { time: string | number }
+	'chat.hub.category.context.deleteConfirm': { name: string | number }
+	'chat.hub.category.perm.loadFailed': { error: string | number }
+	'chat.hub.category.perm.updateFailed': { error: string | number }
+	'chat.hub.category.reorder.after': { source: string | number; target: string | number }
+	'chat.hub.category.reorder.before': { source: string | number; target: string | number }
+	'chat.hub.category.reorder.into': { source: string | number; target: string | number }
+	'chat.hub.category.reorder.toRoot': { source: string | number }
 	'chat.hub.channel.context.deleteConfirm': { name: string | number }
 	'chat.hub.channel.context.exportFailed': { error: string | number }
 	'chat.hub.char.chat.composer.placeholder': { name: string | number }
@@ -6393,6 +6501,19 @@ export type LocaleKeyParams = {
 	'fountConsole.test.denoPanic.ghUnavailable': { signature: string | number }
 	'fountConsole.test.denoPanic.publishFailed': { signature: string | number }
 	'fountConsole.test.denoPanic.published': { url: string | number }
+	'fountConsole.test.display.dashboard.cpu': { cpu: string | number }
+	'fountConsole.test.display.dashboard.duration': { duration: string | number }
+	'fountConsole.test.display.dashboard.elapsed': { elapsed: string | number }
+	'fountConsole.test.display.dashboard.eta': { remaining: string | number }
+	'fountConsole.test.display.dashboard.failedCount': { count: string | number }
+	'fountConsole.test.display.dashboard.memory': { memory: string | number }
+	'fountConsole.test.display.dashboard.passedCount': { count: string | number }
+	'fountConsole.test.display.dashboard.queueAppend': { label: string | number; reason: string | number }
+	'fountConsole.test.display.dashboard.queueRemove': { label: string | number; reason: string | number }
+	'fountConsole.test.display.dashboard.queuedCount': { count: string | number }
+	'fountConsole.test.display.dashboard.reason': { reason: string | number }
+	'fountConsole.test.display.dashboard.runningCount': { count: string | number }
+	'fountConsole.test.display.dashboard.unknownCount': { count: string | number }
 	'fountConsole.test.display.eta': { expected: string | number; remaining: string | number }
 	'fountConsole.test.display.etaUnknown': { count: string | number; expected: string | number }
 	'fountConsole.test.display.explicitSelectedCount': { count: string | number }
@@ -6402,12 +6523,16 @@ export type LocaleKeyParams = {
 	'fountConsole.test.display.remaining': { remaining: string | number }
 	'fountConsole.test.display.remainingOnlyUnknown': { count: string | number }
 	'fountConsole.test.display.remainingUnknown': { count: string | number; remaining: string | number }
+	'fountConsole.test.display.schedule.reason': { reason: string | number }
+	'fountConsole.test.display.schedule.running': { key: string | number; remaining: string | number }
 	'fountConsole.test.failed': { label: string | number }
 	'fountConsole.test.failedWithCode': { code: string | number; label: string | number }
 	'fountConsole.test.failuresCleared': { manifestId: string | number }
 	'fountConsole.test.failuresSaved': { count: string | number; path: string | number }
 	'fountConsole.test.federationCleanupPost': { output: string | number }
 	'fountConsole.test.federationCleanupPre': { output: string | number }
+	'fountConsole.test.frontend.isolatedRequired': { shellLabel: string | number }
+	'fountConsole.test.frontend.isolatedUser': { expectedUsername: string | number; username: string | number }
 	'fountConsole.test.heapSnapshotSaved': { path: string | number }
 	'fountConsole.test.kernel.unknownAction': { action: string | number }
 	'fountConsole.test.list.expected': { expected: string | number }

@@ -15,8 +15,8 @@ const REACTION_PULL_MAX_ROUNDS = 8
  */
 function reactorFromReactionEvent(event) {
 	const expectedPrefix = 'social-timeline:'
-	const groupId = String(event?.groupId || '')
-	if (!groupId.startsWith(expectedPrefix)) return null
+	const groupId = event?.groupId
+	if (!groupId?.startsWith?.(expectedPrefix)) return null
 	const hash = groupId.slice(expectedPrefix.length)
 	return hash.length === 128 ? hash : null
 }
@@ -29,8 +29,6 @@ function reactorFromReactionEvent(event) {
  * @returns {Promise<{ attempted: number, imported: number }>} 同步统计
  */
 export async function pullPostReactions(username, targetEntityHash, postId) {
-	const target = targetEntityHash
-	const id = postId
 	let afterReactor = null
 	let imported = 0
 	let attempted = 0
@@ -38,13 +36,13 @@ export async function pullPostReactions(username, targetEntityHash, postId) {
 	for (let round = 0; round < REACTION_PULL_MAX_ROUNDS; round++) {
 		const { data: responses, errors } = await collectSocialRpcMerged(username, {
 			type: 'social_reaction_pull_request',
-			targetEntityHash: target,
-			postId: id,
+			targetEntityHash,
+			postId,
 			afterReactor,
 			limit: REACTION_PULL_BATCH,
 		}, 3000, 8)
 		if (errors.length)
-			console.warn('social: reaction pull neighbor errors', { targetEntityHash: target, postId: id, count: errors.length })
+			console.warn('social: reaction pull neighbor errors', { targetEntityHash, postId, count: errors.length })
 
 		/** @type {object[]} */
 		const batch = []

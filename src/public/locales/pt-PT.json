@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Verificação de módulos: processo terminou sem sinal ready: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "O teste de front-end ${shellLabel} deve ser iniciado através do test/frontend/run.mjs (que inicia por si próprio um nó isolado). Não o execute contra uma instância de desenvolvimento local nem com dados reais de utilizadores.",
+				"isolatedUser": "Os testes devem ser executados com o utilizador isolado \"${expectedUsername}\"; a sessão atual está a correr como \"${username}\". Inicie-os através do run.mjs e não aponte para um fount de produção ou desenvolvimento."
+			},
 			"queue": {
 				"append": "Na fila: ${label} (${reason}) ≈ ${remaining} restantes",
 				"remove": "Removido da fila: ${label} (${reason}) ≈ ${remaining} restantes"
@@ -191,7 +195,45 @@
 						"0": "Na fila"
 					}
 				},
-				"failureLog": "\n—— Registo de falhas: ${label} ——"
+				"failureLog": "\n—— Registo de falhas: ${label} ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "A executar ${key}, restam ${remaining}",
+					"reasons": {
+						"initial": "Plano pronto",
+						"suite_started": "Suite iniciada",
+						"suite_completed": "Suite concluída",
+						"suite_failed": "Suite falhou",
+						"blocked": "Bloqueada: dependência falhou",
+						"skipped": "Ignorada: dependência ignorada",
+						"queue_appended": "Tarefa na fila",
+						"queue_removed": "Tarefa removida",
+						"prep_promoted": "Preparação promovida",
+						"module_check_ready": "Verificação de módulos pronta",
+						"dependency_ready": "Dependências prontas",
+						"resource_budget_changed": "Orçamento de recursos alterado",
+						"job_queued": "Tarefa em fila",
+						"gate_state_changed": "Portão de recursos alterado",
+						"expected_drift": "Estimativa desviada",
+						"progress": "Progresso atualizado"
+					}
+				},
+				"dashboard": {
+					"idle": "inativo",
+					"unknownCount": "+${count} desconhecido",
+					"runningCount": "Em execução: ${count}",
+					"passedCount": "Aprovados: ${count}",
+					"failedCount": "Falhados: ${count}",
+					"queuedCount": "Na fila: ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Restam ≈${remaining}",
+					"duration": "Duração: ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "Memória ${memory}",
+					"queueAppend": "Na fila: ${label} (${reason})",
+					"queueRemove": "Removido: ${label} (${reason})"
+				}
 			},
 			"passed": "APROVADO: ${label}",
 			"passedWithNoise": "APROVADO: ${label} (com ruído)",
@@ -1601,7 +1643,10 @@
 						"stateDeny": "Rejeitar",
 						"stateNeutral": "Herdar",
 						"updateFailed": "Falha ao update channel permissions: ${error}",
-						"updated": "Permissões do canal atualizadas"
+						"updated": "Permissões do canal atualizadas",
+						"syncedWarning": "As permissões deste canal são sincronizadas a partir do canal pai; as alterações individuais desvinculam-nas primeiro.",
+						"syncToDefault": "Sincronizar com permissões do canal raiz",
+						"synced": "Sincronizado com permissões do canal raiz"
 					},
 					"advanced": {
 						"description": "Parâmetros de rede, armazenamento, limite de velocidade e encriptação; mantenha os padrões se não tiver certeza",
@@ -1692,7 +1737,8 @@
 						"general": "Básico",
 						"members": "Membro",
 						"permissions": "Permissões de função",
-						"storage": "Armazenamento e arquivamento"
+						"storage": "Armazenamento e arquivamento",
+						"groupPermissions": "Permissões de grupo"
 					},
 					"key": {
 						"managementTip": "Novas chaves precisam ser redistribuídas aos membros após a rotação. A ação manual só deve ser tomada se suspeitar que uma chave foi comprometida.",
@@ -1701,6 +1747,15 @@
 						"rotateConfirm": "Tem a certeza de que deseja rodar manualmente a chave mestra destes ficheiros de grupo? Os novos membros precisam de ressincronizar a chave dos ficheiros históricos.",
 						"rotateFailed": "Falha na rotação de chave: ${error}",
 						"rotateOk": "A chave foi girada"
+					},
+					"groupPerms": {
+						"denied": "Não tem permissão para gerir as permissões do grupo",
+						"hint": "Defina substituições por função para as permissões de governação do grupo (expulsar, bloquear, gerir funções, gerir administradores, convidar membros).",
+						"overridden": "Substituído",
+						"clearOverride": "Limpar substituição",
+						"noRoles": "Não há funções configuráveis de momento",
+						"updateFailed": "Falha ao atualizar as permissões do grupo: ${error}",
+						"updated": "Permissões do grupo atualizadas"
 					}
 				},
 				"pinContext": "Bairro principal (±N vizinhos)",
@@ -2009,6 +2064,7 @@
 				"suspectedRemoved": "Pode ter sido removido deste grupo: solicitou a verificação de ${count} nós conhecidos, mas todos eles foram rejeitados. Pode comemorar a história local ou eliminar esta cópia do grupo.",
 				"suspectedRemovedKeep": "Leve uma lembrança",
 				"suspectedRemovedLeave": "Eliminar group",
+				"shunVerifying": "A verificar a adesão: ${confirmed}/${total} nós conhecidos recusaram",
 				"fork": {
 					"governance": "Há uma bifurcação no registo de permissões e ela está atualmente na visualização local.",
 					"tipLabel": "Folha DAG",
@@ -2338,6 +2394,12 @@
 				"success": "Canal criado",
 				"title": "Criar new channel"
 			},
+			"newCategory": {
+				"button": "Nova categoria",
+				"failed": "Falha ao criar categoria",
+				"success": "Categoria criada",
+				"title": "Nova categoria"
+			},
 			"discovery": {
 				"description": "Navegue por grupos públicos da rede da federação, escolha uma comunidade de interesse e participe.",
 				"empty": "Atualmente não existe nenhum grupo recomendado; depois de ativar a sincronização da federação, a lista de descoberta será sincronizada dos vizinhos.",
@@ -2415,6 +2477,9 @@
 					"exportFailed": "Exportar failed: ${error}"
 				},
 				"name": "Nome do canal",
+				"unnamed": "Sem nome",
+				"parent": "canal pai",
+				"noParent": "Nenhum canal pai (canal raiz)",
 				"nameInput": {
 					"placeholder": "Em geral"
 				},
@@ -2427,7 +2492,41 @@
 				"type": "Tipo de canal",
 				"typeList": "Lista/Canal do Fórum",
 				"typeStreaming": "Canal de streaming",
-				"typeText": "Canal de bate-papo"
+				"typeText": "Canal de bate-papo",
+				"readonlyRoot": {
+					"placeholder": "O canal raiz não pode enviar mensagens/arquivos"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "Crie um canal nesta categoria",
+					"delete": "Eliminar categoria",
+					"deleteConfirm": "Tem a certeza de que deseja eliminar a categoria \"${name}\"? Os canais no seu interior voltarão a Sem categoria.",
+					"deleteOk": "Categoria eliminada",
+					"perms": "Permissões da categoria",
+					"rename": "Renomear categoria",
+					"renameOk": "Categoria foi renomeada",
+					"renamePrompt": "Novo nome de categoria"
+				},
+				"reorder": {
+					"after": "Mover «${source}» para depois de «${target}»?",
+					"before": "Mover «${source}» para antes de «${target}»?",
+					"into": "Mover «${source}» para dentro de «${target}»?",
+					"toRoot": "Mover «${source}» para a raiz?"
+				},
+				"name": "Nome da categoria",
+				"nameInput": {
+					"placeholder": "mídia"
+				},
+				"perm": {
+					"loadFailed": "Falha ao carregar as permissões da categoria: ${error}",
+					"title": "Permissões da categoria",
+					"updateFailed": "Falha ao atualizar as permissões da categoria: ${error}",
+					"updated": "As permissões da categoria foram atualizadas",
+					"syncedWarning": "As permissões desta categoria são sincronizadas a partir do canal raiz; as alterações individuais desvinculam-nas primeiro.",
+					"syncToDefault": "Sincronizar com permissões do canal raiz",
+					"synced": "Sincronizado com permissões do canal raiz"
+				}
 			},
 			"message": {
 				"action": {

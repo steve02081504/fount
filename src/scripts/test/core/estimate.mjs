@@ -113,6 +113,14 @@ export function expectedRunDurationMs(suite, entry, subtestsToRun) {
 		: suite.subtests.map(subtest => subtest.name)
 	if (!names.length) return 0
 
+	// 全量子测试一次跑完时，实测墙钟基线已含内部并行（如 Playwright 单进程并行 spec），
+	// 比 Σ 子测试耗时 + overhead 更贴近真实墙钟；子集运行才按子测试求和。
+	if (suite.subtests.every(subtest => names.includes(subtest.name))) {
+		const baseline = getSuiteBaselineDurationMs(entry)
+		if (baseline != null && Number.isFinite(baseline) && baseline > 0)
+			return baseline
+	}
+
 	const known = suite.subtests
 		.map(subtest => subtestDurationMs(suite, entry, subtest.name))
 		.filter(ms => ms != null && Number.isFinite(ms) && ms > 0)
@@ -158,6 +166,8 @@ export function buildEstimateTask(suite, entry, {
 	id,
 	elapsedMs = 0,
 	running = false,
+	jobId = null,
+	source,
 } = {}) {
 	const key = suiteKey(suite.manifestId, suite.name)
 	const resources = resolveSuiteResources(suite, entry)
@@ -176,6 +186,8 @@ export function buildEstimateTask(suite, entry, {
 		heavy: !!suite.heavy,
 		moduleCheckMs: reused ? 0 : moduleCheckMs,
 		deps: (suite.dependencies ?? []).map(dep => suiteKey(dep.manifestId, dep.name)),
+		jobId,
+		source,
 	}
 }
 
@@ -449,12 +461,12 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 			}
 		}
 
-		for (; ;) {
+		while(true) {
 			const best = pickLight(listHardReady().filter(task => !task.heavy), true)
 			if (!best) break
 			admit(best, false)
 		}
-		for (; ;) {
+		while(true) {
 			const best = pickLight(listSpeculativeReady().filter(task => !task.heavy), true)
 			if (!best) break
 			admit(best, true)
@@ -482,6 +494,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 				usedMemBytes += task.memMb * MiB
 				usedCpuPct += task.cpuPct
 			}
+			checkFreeAt = Math.max(checkFreeAt, task.moduleCheckMs ?? 0)
 			continue
 		}
 		const duration = taskDurationMs(task)

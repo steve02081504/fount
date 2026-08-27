@@ -3,9 +3,10 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { ms } from 'fount/scripts/ms.mjs'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { publicKeyFromSeed, sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 
@@ -23,7 +24,7 @@ export function pullAttestationSignBytes(attestation) {
 		? [...attestation.wantIds].sort().join(',')
 		: ''
 	return Buffer.from(JSON.stringify({
-		requesterPubKeyHash: normalizeHex64(attestation.requesterPubKeyHash),
+		requesterPubKeyHash: attestation.requesterPubKeyHash,
 		groupId: attestation.groupId || '',
 		requestId: attestation.requestId || '',
 		timestamp: Math.floor(Number(attestation.timestamp)),
@@ -81,9 +82,8 @@ export async function verifyPullAttestation(attestation, expectedGroupId, reques
  * @returns {boolean} 是否允许拉取历史（能解策略）
  */
 export function isHistoricalPullMember(state, requesterPubKeyHash) {
-	const key = normalizeHex64(requesterPubKeyHash)
-	if (!isHex64(key)) return false
-	return PULL_MEMBER_STATUSES.has(state?.members?.[key]?.status)
+	if (!isHex64(requesterPubKeyHash)) return false
+	return PULL_MEMBER_STATUSES.has(state?.members?.[requesterPubKeyHash]?.status)
 }
 
 /**
@@ -92,9 +92,8 @@ export function isHistoricalPullMember(state, requesterPubKeyHash) {
  * @returns {string | null} 成员 Ed25519 公钥 hex
  */
 export function resolveMemberEdPubKeyHex(state, requesterPubKeyHash) {
-	const key = normalizeHex64(requesterPubKeyHash)
-	if (!isHex64(key)) return null
-	const hex = state?.members?.[key]?.pubKeyHex
+	if (!isHex64(requesterPubKeyHash)) return null
+	const hex = state?.members?.[requesterPubKeyHash]?.pubKeyHex
 	if (!hex || Buffer.from(hex, 'hex').length !== 32) return null
 	return hex
 }
@@ -132,9 +131,8 @@ export async function verifyPullAttestationSignatureForMember(state, groupId, at
  * @returns {boolean} 是否为 active 成员
  */
 export function isActivePullMember(state, requesterPubKeyHash) {
-	const key = normalizeHex64(requesterPubKeyHash)
-	if (!isHex64(key)) return false
-	return state?.members?.[key]?.status === 'active'
+	if (!isHex64(requesterPubKeyHash)) return false
+	return state?.members?.[requesterPubKeyHash]?.status === 'active'
 }
 
 /**

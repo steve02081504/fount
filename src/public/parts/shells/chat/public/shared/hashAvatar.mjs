@@ -78,6 +78,7 @@ export function avatarInitial(name) {
 
 /**
  * 列表行头像模板字段（friends / sidebar 等）。
+ * 头像一律按 URL 处理；非 URL 交给浏览器自行处理（404 正常），由数据层保证为 URL。
  * @param {string} seed 色种子
  * @param {string} label 展示名
  * @param {string} [avatarUrl] 头像 URL
@@ -93,15 +94,6 @@ export function listAvatarTemplateFields(seed, label, avatarUrl = '', imgClass =
 			? `<img src="${escapeHtml(url)}" alt="" class="${imgClass}" svg-inliner-ignore />`
 			: escapeHtml(avatarInitial(label)),
 	}
-}
-
-/**
- * @param {string} value 头像字段
- * @returns {boolean} 是否为可加载的图片 URL
- */
-export function isAvatarImageUrl(value) {
-	const raw = value.trim()
-	return raw.startsWith('http') || raw.startsWith('/') || raw.startsWith('data:')
 }
 
 /**

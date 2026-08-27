@@ -49,7 +49,7 @@ export function materializeSharedOperations(operations, keys, cabinetId) {
 		if (!payload) continue
 		tips.set(entryId, {
 			hlc: operation.hlc,
-			entry: normalizeEntry({ ...payload, id: entryId }, payload.created?.entity_hash || ''),
+			entry: { ...normalizeEntry(payload, String(payload?.created?.entity_hash || '')), id: entryId },
 		})
 	}
 

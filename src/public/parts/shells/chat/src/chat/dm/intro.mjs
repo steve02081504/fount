@@ -8,7 +8,7 @@
 import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
 
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import { assignShellData, loadShellData } from '../../../../../../../server/setting_loader.mjs'
@@ -77,17 +77,16 @@ export function dmIntroNonceMatches(username, nonceBase64Url) {
  * @returns {Promise<{ url: string, nonce: string, pubKeyHex: string, introSignatureHex: string }>} 签名后的链接
  */
 export async function buildDmIntroLink(username, pubKeyHex, secretKey32, nodeUrl) {
-	const pubKey = normalizePubKeyHex(pubKeyHex)
-	if (!PUB_KEY_HEX_64.test(pubKey)) throw new Error('pubKeyHex must be 64 hex chars')
+	if (!PUB_KEY_HEX_64.test(pubKeyHex)) throw new Error('pubKeyHex must be 64 hex chars')
 	if (!secretKey32 || secretKey32.length < 32) throw new Error('secretKeyHex required (32 bytes)')
 
 	const { nonce } = getDmIntroNonce(username)
-	const introSignatureHex = Buffer.from(await sign(dmLinkSignableBytes(pubKey, nonce), secretKey32.slice(0, 32))).toString('hex')
+	const introSignatureHex = Buffer.from(await sign(dmLinkSignableBytes(pubKeyHex, nonce), secretKey32.slice(0, 32))).toString('hex')
 	const url = formatDmRunUri({
-		pubKeyHex: pubKey,
+		pubKeyHex,
 		nonceBase64Url: nonce,
 		introSignatureHex,
 		nodeUrl,
 	})
-	return { url, nonce, pubKeyHex: pubKey, introSignatureHex }
+	return { url, nonce, pubKeyHex, introSignatureHex }
 }

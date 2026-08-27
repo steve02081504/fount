@@ -1,3 +1,4 @@
+import { ms } from 'fount/scripts/ms.mjs'
 import {
 	withApiRequest,
 } from 'fount/scripts/test/playwright/api.mjs'
@@ -260,7 +261,7 @@ test.describe('Chat message actions', () => {
 		await sendApiMessage(baseUrl, apiKey, groupId, channelId, '请说点什么', 'zh-CN')
 		await triggerCharReply(baseUrl, apiKey, groupId, channelId, 'noai_locale_reporter')
 
-		const row = await expectMessageInChat(page, '【中文回复】')
+		const row = await expectMessageInChat(page, '【中文回复】', ms('3m'))
 		await expect(row).toHaveAttribute('data-char-id', /./)
 
 		// 生成终稿不应被标记为已编辑
@@ -276,12 +277,11 @@ test.describe('Chat message actions', () => {
 			const row = document.createElement('div')
 			row.className = 'chat message-row'
 			row.dataset.charId = 'ar'.repeat(32)
-			row.innerHTML = '<span class="message-content">行</span>'
+			row.innerHTML = '<span class="message-content" user-content>行</span>'
 			container.appendChild(row)
 			const left = document.createElement('button')
 			left.type = 'button'
 			left.className = 'char-timeline-arrow left'
-			left.setAttribute('aria-hidden', 'true')
 			left.textContent = '❮'
 			row.appendChild(left)
 		})

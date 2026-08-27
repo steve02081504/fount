@@ -640,7 +640,7 @@ body[data-surface="discovery"] .main-header {
 	position: relative;
 }
 
-.composer-wrap > fieldset {
+.composer-wrap>fieldset {
 	min-width: 0;
 }
 

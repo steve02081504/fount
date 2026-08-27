@@ -5,10 +5,11 @@ import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { ensureLocalAgentEntityHash } from 'fount/public/parts/shells/chat/src/entity/member.mjs'
 import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { appendJsonlSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
+
+import { ensureLocalAgentEntityHash } from 'fount/public/parts/shells/chat/src/entity/member.mjs'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { getUserByReq, getUserDictionary } from '../../../../../../server/auth/index.mjs'

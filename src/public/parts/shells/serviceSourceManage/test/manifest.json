@@ -4,7 +4,6 @@
 		"frontendShared": [
 			"src/public/parts/shells/serviceSourceManage/public/**",
 			"src/public/parts/shells/serviceSourceManage/test/frontend/**",
-			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/**",
 			"src/public/pages/scripts/components/jsonEditor.mjs"
 		]
@@ -12,7 +11,7 @@
 	"suites": [
 		{
 			"name": "frontend",
-			"expected": "34s",
+			"expected": "1m53s",
 			"dependsOn": [
 				"server:live"
 			],

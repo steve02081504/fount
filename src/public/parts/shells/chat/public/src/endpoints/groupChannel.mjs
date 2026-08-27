@@ -405,25 +405,91 @@ export async function createChannelThread(groupId, channelId, parentEventId) {
 }
 
 /**
+ * 触发 DM 群空名频道自动命名/分类（后端调默认 AI 源并重命名/移动）。
+ * @param {string} groupId 群 ID
+ * @returns {Promise<{ skipped: boolean, renamed: string[] }>} 是否跳过与已重命名频道 id 列表
+ */
+export async function autoNameChannels(groupId) {
+	return groupFetch(groupPath(groupId, 'channels', 'auto-name'), { method: 'POST', json: {} })
+}
+
+/**
  * 创建群频道。
  * @param {string} groupId 群 ID
  * @param {string} name 频道名称
- * @param {string} [type] 频道类型 text | list | streaming
+ * @param {string} [type] 频道类型 text | list | streaming | category
+ * @param {string | null} [parentChannelId] 父频道 id（建后服务端原子地追加父频道 links 并继承权限块）
  * @returns {Promise<string>} 新频道 ID
  */
-export async function createChannel(groupId, name, type = 'text') {
+export async function createChannel(groupId, name, type = 'text', parentChannelId = null) {
 	const data = await groupFetch(groupPath(groupId, 'channels'), {
 		method: 'POST',
-		json: { name, type },
+		json: { name, type, parentChannelId },
 	})
 	return data.channelId
 }
 
 /**
- * 更新群频道元数据。
+ * 将频道在父频道下原子地置顶（服务端单事件重排，保留并发新增的兄弟频道）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @param {object} updates name / description / type 等
+ * @param {string} parentChannelId 父频道 id
+ * @returns {Promise<object>} 产生的链上事件
+ */
+export async function promoteChannel(groupId, channelId, parentChannelId) {
+	return groupFetch(groupPath(groupId, 'channels', channelId, 'promote'), {
+		method: 'POST',
+		json: { parentChannelId },
+	})
+}
+
+/**
+ * 读取某频道有效权限块（跟随 `permissionBlockId` 链到源频道）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @returns {Promise<{ permissions: Record<string, { allow?: Record<string, boolean>, deny?: Record<string, boolean> }>, permissionBlockId: string | null }>} 各角色权限覆写与块来源
+ */
+export async function getChannelPermissionBlock(groupId, channelId) {
+	const data = await groupFetch(groupPath(groupId, 'channels', channelId, 'permissions'), { method: 'GET' })
+	return { permissions: data.permissions || {}, permissionBlockId: data.permissionBlockId || null }
+}
+
+/**
+ * 更新某频道的单个角色权限覆写（已同步频道会先脱钩复制）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} roleId 角色 ID
+ * @param {Record<string, boolean>} allow 允许位图
+ * @param {Record<string, boolean>} deny 拒绝位图
+ * @returns {Promise<void>} 无
+ */
+export async function putChannelPermissionBlock(groupId, channelId, roleId, allow, deny) {
+	await groupFetch(groupPath(groupId, 'channels', channelId, 'permissions'), {
+		method: 'PUT',
+		json: { roleId, allow, deny },
+	})
+}
+
+/**
+ * 一键同步：子频道权限块强引用父频道块（`permissionBlockId` 缺省为群根频道）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 目标频道 ID
+ * @param {string | null} [permissionBlockId] 跟随的源频道 id；null 表示同步到根频道
+ * @returns {Promise<string | null>} 生效的 permissionBlockId
+ */
+export async function syncChannelPermissionBlock(groupId, channelId, permissionBlockId = null) {
+	const data = await groupFetch(groupPath(groupId, 'channels', channelId, 'permissions', 'sync'), {
+		method: 'PUT',
+		json: { permissionBlockId },
+	})
+	return data.permissionBlockId ?? null
+}
+
+/**
+ * 更新群频道元数据（含 links / permissionBlockId）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {object} updates name / description / type / links / permissionBlockId 等
  * @returns {Promise<void>} 无
  */
 export async function updateChannel(groupId, channelId, updates) {

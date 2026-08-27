@@ -39,7 +39,7 @@ Deno.test('ensureLocalAgentEntityHash syncs part info into localized profile', a
 	const profile = await getProfile(entityHash, username, { locales: ['zh-CN'] })
 	assertEquals(profile.charPartName, CHAR)
 	assertEquals(profile.name, 'OnMessage Yes')
-	assertEquals(profile.avatar, '🟢')
+	assertEquals(profile.avatar.includes('/files/profile/avatar'), true)
 	assertEquals(profile.tags, ['test'])
 	assertEquals(profile.description, 'OnMessage probe')
 	assertEquals(!!profile.localized?.['zh-CN']?.avatar, true)
@@ -51,7 +51,7 @@ Deno.test('ensureLocalAgentEntityHash syncs part info into localized profile', a
 	await syncAgentProfileFromCharPart(username, entityHash, { force: true })
 	const rebuilt = await getProfile(entityHash, username, { locales: ['zh-CN'] })
 	assertEquals(rebuilt.name, 'OnMessage Yes')
-	assertEquals(rebuilt.avatar, '🟢')
+	assertEquals(rebuilt.avatar.includes('/files/profile/avatar'), true)
 })
 
 Deno.test('loadPart during blank-profile sync does not deadlock (Load→ensure→sync)', async () => {

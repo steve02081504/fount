@@ -2,8 +2,9 @@
  * 文件柜 HTTP：柜 CRUD、条目、密码文件夹、链接。
  */
 /* global Deno */
-import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 
 
 Deno.test({

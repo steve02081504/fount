@@ -27,10 +27,10 @@ import {
 	ingestRemoteTipsForExchange,
 	tryMarkSeenFederationEvent,
 } from '../seen.mjs'
-import { handleInboundFedShun, resolveShunForNodeHashRequester, resolveShunForPubKeyRequester, sendFedShun } from '../shun.mjs'
+import { handleFedVerifyMembership, handleInboundFedShun, resolveShunForNodeHashRequester, resolveShunForPubKeyRequester, sendFedShun } from '../shun.mjs'
 import { handleIncomingFedVolatile } from '../volatile.mjs'
 import { wireAction } from '../wireAction.mjs'
-import { parseChannelHistoryWant, parseFedShun, parseFedTipPing, parseFedTipPong, parseGossipRequest } from '../wireSchemas.mjs'
+import { parseChannelHistoryWant, parseFedShun, parseFedTipPing, parseFedTipPong, parseFedVerifyMembership, parseGossipRequest } from '../wireSchemas.mjs'
 
 /**
  * DAG / gossip / 频道历史 / volatile / tip exchange handler。
@@ -158,6 +158,7 @@ export function registerSyncHandlers(roomContext) {
 	const fedTipPing = wireAction(roomContext, 'fed_tip_ping')
 	const fedTipPong = wireAction(roomContext, 'fed_tip_pong')
 	const fedShun = wireAction(roomContext, 'fed_shun')
+	const fedVerifyMembership = wireAction(roomContext, 'fed_verify_membership')
 
 	/**
 	 * 对带 attestation 的拉取请求方回闭门羹（若应拒绝）。
@@ -181,6 +182,15 @@ export function registerSyncHandlers(roomContext) {
 			const fromNode = peerToNode.get(peerId) || shun.nodeHash
 			await handleInboundFedShun(username, groupId, fromNode, shun.reason)
 		})().catch(error => console.error('federation: fed_shun failed', error))
+	})
+
+	fedVerifyMembership.on((data, peerId) => {
+		void (async () => {
+			const verify = parseFedVerifyMembership(data)
+			if (!verify) return
+			const fromNode = peerToNode.get(peerId) || verify.nodeHash
+			await handleFedVerifyMembership(username, groupId, fromNode, peerId, fedOut, fedShun.send, isBlockedPeer)
+		})().catch(error => console.error('federation: fed_verify_membership failed', error))
 	})
 
 	fedVolatile.on((data, peerId) => {

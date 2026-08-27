@@ -3,9 +3,10 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { decryptUtf8ForMember, encryptUtf8ForMember } from 'npm:@steve02081504/fount-p2p/crypto/key'
+
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
@@ -13,7 +14,6 @@ import { eventsPath } from '../lib/paths.mjs'
 
 import {
 	setFederationBootstrap,
-	setPeerRoomHint,
 } from './bootstrapStore.mjs'
 import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { catchUpGroupFromPeers } from './index.mjs'
@@ -35,33 +35,6 @@ const REQUEST_COOLDOWN_MS = 45_000
  */
 function bootstrapCooldownKey(username, groupId) {
 	return `${username}\0${groupId}`
-}
-
-/**
- * @param {{ signalingAppId?: string, roomSecret?: string } | null | undefined} a 凭证 A
- * @param {{ signalingAppId?: string, roomSecret?: string } | null | undefined} b 凭证 B
- * @returns {boolean} 是否相同口令
- */
-function bootstrapCredsEqual(a, b) {
-	if (!a?.roomSecret || !b?.roomSecret) return false
-	return a.roomSecret === b.roomSecret
-		&& (a.signalingAppId || 'fount-group-fed') === (b.signalingAppId || 'fount-group-fed')
-}
-
-/**
- * @param {{ roomSecret?: string } | null | undefined} activeSlot 当前联邦槽
- * @param {{ roomSecret?: string } | null | undefined} dagCreds DAG 物化口令
- * @param {{ roomSecret?: string } | null | undefined} bootstrap 暂存 bootstrap 口令
- * @returns {boolean} slot 口令已与 DAG/bootstrap 一致，无需 mark stale
- */
-function slotCredsAlreadyInSync(activeSlot, dagCreds, bootstrap) {
-	if (dagCreds?.roomSecret && activeSlot?.roomSecret === dagCreds.roomSecret)
-		return true
-	if (bootstrap?.roomSecret && activeSlot?.roomSecret === bootstrap.roomSecret)
-		return true
-	if (bootstrapCredsEqual(dagCreds, bootstrap) && activeSlot?.roomSecret === bootstrap?.roomSecret)
-		return true
-	return false
 }
 
 /**
@@ -119,16 +92,15 @@ export async function applyFedBootstrapResponse(username, groupId, response) {
 	if (!parsed.roomSecret) return false
 
 	const creds = {
-		signalingAppId: parsed.signalingAppId || 'fount-group-fed',
-		roomSecret: String(parsed.roomSecret),
+		signalingAppId: parsed.signalingAppId,
+		roomSecret: parsed.roomSecret,
 		settingsEventId: response.settingsEventId,
 	}
 
-	setPeerRoomHint(username, groupId, {
+	setFederationBootstrap(username, groupId, {
 		...creds,
 		fromNodeId: response.responderNodeHash,
 	})
-	setFederationBootstrap(username, groupId, creds)
 
 	const existingSlot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
 	const dagCreds = roomCredentialsFromGroupSettings(
@@ -209,13 +181,6 @@ export async function maybeRequestBootstrapAfterCatchup(username, groupId, catch
 	if (!syncFailed) return
 
 	const activeSlot = slot || getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
-	const dagCreds = roomCredentialsFromGroupSettings(await loadFederationGroupSettings(username, groupId))
-	const { peekFederationBootstrap } = await import('./bootstrapStore.mjs')
-	const bootstrap = peekFederationBootstrap(username, groupId)
-	// DAG 与当前 slot 口令一致：补洞滞后是 gossip/拓扑问题，不是换房口令问题。
-	if (slotCredsAlreadyInSync(activeSlot, dagCreds, bootstrap))
-		return
-
 	if (!activeSlot) return
 
 	const nodeHash = localNodeHash()

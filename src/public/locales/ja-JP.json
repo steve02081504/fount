@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "モジュールチェック: ready シグナルなしでプロセス終了: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} フロントエンドテストは test/frontend/run.mjs を介して起動してください（run.mjs が分離ノードを自動起動します）。ローカルの開発インスタンスや実ユーザーのデータでは実行しないでください。",
+				"isolatedUser": "テストは分離ユーザー「${expectedUsername}」で実行する必要があります（現在のセッションは「${username}」）。run.mjs 経由で起動し、本番・開発用の fount を指さないでください。"
+			},
 			"queue": {
 				"append": "キュー追加: ${label}（${reason}）残り ≈ ${remaining}",
 				"remove": "キュー削除: ${label}（${reason}）残り ≈ ${remaining}"
@@ -191,7 +195,45 @@
 						"0": "待機中"
 					}
 				},
-				"failureLog": "\n—— ${label} の失敗ログ ——"
+				"failureLog": "\n—— ${label} の失敗ログ ——",
+				"schedule": {
+					"reason": "（${reason}）",
+					"running": "${key} を実行中、残り ${remaining}",
+					"reasons": {
+						"initial": "計画準備完了",
+						"suite_started": "スイート開始",
+						"suite_completed": "スイート完了",
+						"suite_failed": "スイート失敗",
+						"blocked": "依存失敗のためブロック",
+						"skipped": "依存がスキップ",
+						"queue_appended": "ジョブを追加",
+						"queue_removed": "ジョブを除去",
+						"prep_promoted": "準備を昇格",
+						"module_check_ready": "モジュール検査完了",
+						"dependency_ready": "依存準備完了",
+						"resource_budget_changed": "リソース予算の変更",
+						"job_queued": "ジョブをキューに追加",
+						"gate_state_changed": "リソースゲートの変更",
+						"expected_drift": "見積もり時間が変動",
+						"progress": "進捗を更新"
+					}
+				},
+				"dashboard": {
+					"idle": "待機中",
+					"unknownCount": "+${count} 不明",
+					"runningCount": "${count} 実行中",
+					"passedCount": "${count} 成功",
+					"failedCount": "${count} 失敗",
+					"queuedCount": "${count} 待ち",
+					"reason": "(${reason})",
+					"elapsed": "経過 ${elapsed}",
+					"eta": "残り≈${remaining}",
+					"duration": "所要 ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "メモリ ${memory}",
+					"queueAppend": "キューに追加: ${label}（${reason}）",
+					"queueRemove": "キューから除去: ${label}（${reason}）"
+				}
 			},
 			"passed": "合格: ${label}",
 			"passedWithNoise": "合格: ${label}（ノイズあり）",
@@ -1601,7 +1643,10 @@
 						"stateDeny": "拒否する",
 						"stateNeutral": "継承する",
 						"updateFailed": "チャンネル権限を更新できませんでした: ${error}",
-						"updated": "チャンネル権限が更新されました"
+						"updated": "チャンネル権限が更新されました",
+						"syncedWarning": "このチャンネルの権限は親チャンネルから継承されています。個別に設定すると、まず継承が解除されます。",
+						"syncToDefault": "権限をルートチャンネルに同期",
+						"synced": "ルートチャンネルの権限に同期されました"
 					},
 					"advanced": {
 						"description": "ネットワーク、ストレージ、速度制限、暗号化パラメータ。不明な場合はデフォルトのままにしてください",
@@ -1692,7 +1737,8 @@
 						"general": "基本的な",
 						"members": "メンバー",
 						"permissions": "役割の権限",
-						"storage": "ストレージとアーカイブ"
+						"storage": "ストレージとアーカイブ",
+						"groupPermissions": "グループ権限"
 					},
 					"key": {
 						"managementTip": "古い鍵はフェデレーションネットワークに配布されるまで必要です。手動ローテーションは、メンバーが隔離されたドメインにいる場合のみ行ってください。",
@@ -1701,6 +1747,15 @@
 						"rotateConfirm": "このグループ ファイルのマスター キーを手動でローテーションしてもよろしいですか?新しいメンバーは履歴ファイルのキーを再同期する必要があります。",
 						"rotateFailed": "キーのローテーションが失敗しました: ${error}",
 						"rotateOk": "キーが回転されました"
+					},
+					"groupPerms": {
+						"denied": "グループ権限を管理する権限がありません",
+						"hint": "グループレベルのガバナンス権限（キック、BAN、ロール管理、管理者管理、メンバー招待）を、ロールごとに上書き設定します。",
+						"overridden": "上書き済み",
+						"clearOverride": "上書きを解除",
+						"noRoles": "設定できるロールがありません",
+						"updateFailed": "グループ権限の更新に失敗しました: ${error}",
+						"updated": "グループ権限を更新しました"
 					}
 				},
 				"pinContext": "最上位近傍 (±N 近傍)",
@@ -2009,6 +2064,7 @@
 				"suspectedRemoved": "あなたはこのグループから削除された可能性があります。${count} 個の既知のノードに検証を依頼しましたが、すべて拒否されました。地元の歴史を記念したり、このグループのコピーを削除したりできます。",
 				"suspectedRemovedKeep": "お土産を持って行きましょう",
 				"suspectedRemovedLeave": "グループの削除",
+				"shunVerifying": "メンバーシップを検証中：既知のノード ${confirmed}/${total} 個が拒否しました",
 				"fork": {
 					"governance": "アクセス許可レコードにフォークがあり、現在ローカル ビューにあります。",
 					"tipLabel": "DAGリーフ",
@@ -2338,6 +2394,12 @@
 				"success": "チャンネルが作成されました",
 				"title": "新しいチャンネルを作成する"
 			},
+			"newCategory": {
+				"button": "新しいカテゴリ",
+				"failed": "カテゴリの作成に失敗しました",
+				"success": "カテゴリが作成されました",
+				"title": "新しいカテゴリ"
+			},
 			"discovery": {
 				"description": "フェデレーション ネットワークからパブリック グループを参照し、興味のあるコミュニティを選択して参加します。",
 				"empty": "現在、推奨されるグループはありません。フェデレーション同期をオンにすると、検出リストがネイバーから同期されます。",
@@ -2415,6 +2477,9 @@
 					"exportFailed": "エクスポートに失敗しました: ${error}"
 				},
 				"name": "チャンネル名",
+				"unnamed": "無名",
+				"parent": "親チャンネル",
+				"noParent": "親チャンネルなし（ルートチャンネル）",
 				"nameInput": {
 					"placeholder": "一般的な"
 				},
@@ -2427,7 +2492,41 @@
 				"type": "チャンネルの種類",
 				"typeList": "リスト/フォーラムチャンネル",
 				"typeStreaming": "ストリーミングチャンネル",
-				"typeText": "チャットチャンネル"
+				"typeText": "チャットチャンネル",
+				"readonlyRoot": {
+					"placeholder": "ルートチャンネルはメッセージ/ファイルを送信できません"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "このカテゴリでチャンネルを作成する",
+					"delete": "カテゴリの削除",
+					"deleteConfirm": "カテゴリ「${name}」を削除してもよろしいですか？中のチャンネルは未分類に戻ります。",
+					"deleteOk": "カテゴリが削除されました",
+					"perms": "カテゴリの権限",
+					"rename": "カテゴリの名前を変更",
+					"renameOk": "カテゴリ名を変更しました",
+					"renamePrompt": "新しいカテゴリ名"
+				},
+				"reorder": {
+					"after": "「${source}」を「${target}」の後に移動しますか？",
+					"before": "「${source}」を「${target}」の前に移動しますか？",
+					"into": "「${source}」を「${target}」の中に移動しますか？",
+					"toRoot": "「${source}」をルートに移動しますか？"
+				},
+				"name": "カテゴリ名",
+				"nameInput": {
+					"placeholder": "メディア"
+				},
+				"perm": {
+					"loadFailed": "カテゴリ権限の読み込みに失敗しました: ${error}",
+					"title": "カテゴリの権限",
+					"updateFailed": "カテゴリの権限を更新できませんでした: ${error}",
+					"updated": "カテゴリの権限が更新されました",
+					"syncedWarning": "このカテゴリの権限は親チャンネルから同期されています。個別に設定すると、まず親から切り離されます。",
+					"syncToDefault": "権限をルートチャンネルに同期",
+					"synced": "ルートチャンネルの権限に同期されました"
+				}
 			},
 			"message": {
 				"action": {

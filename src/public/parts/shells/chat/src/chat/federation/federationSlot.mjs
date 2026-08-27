@@ -14,6 +14,7 @@ const FED_ACTION_SPECS = {
 	channel_history_want: [2, 'channel_history_want'],
 	fed_volatile: [10, 'sendFedVolatile'],
 	fed_tip_ping: [3, 'sendTipPing'],
+	fed_verify_membership: [4, 'sendVerifyMembership'],
 	fed_partition_bridge: [5, 'fed_partition_bridge'],
 	fed_bootstrap_request: [2, 'sendBootstrapRequest'],
 	fed_bootstrap_response: [2, 'sendBootstrapResponse'],
@@ -191,6 +192,14 @@ export function buildFederationSlot(roomContext) {
 				try { fn() }
 				catch (error) { console.error('federation: slot cleanup failed', error) }
 			cleanups.clear()
+			// 先把出站队列刷空再拆房：已入队的帧（如封禁触发的 fed_shun）必须在房间拆毁前发出，
+			// 否则 room.leave 后旧槽已死，pending 发送静默丢失（第三方将收不到被移除方该有的闭门羹）。
+			try {
+				await fedOut.drain()
+			}
+			catch (error) {
+				console.error('federation: slot outbound drain failed', error)
+			}
 			try {
 				await room?.leave?.()
 			}

@@ -1297,7 +1297,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			out += cursorTo(1, row) + ERASE_LINE
 		out += cursorTo(1, 1) + CURSOR_SAVE
 		process.stdout.write(out)
-		writeLog(await generateLogo())
+		writeLog(await generateLogo() + '\n')
 		onClearComplete?.()
 	}
 
@@ -1308,7 +1308,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 */
 	async function showInitialInfo(text) {
 		const logo = await generateLogo()
-		writeLog(logo + (logo.endsWith('\n') ? '' : '\n') + text)
+		writeLog(logo + '\n' + text)
 	}
 
 	/**

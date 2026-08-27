@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Modulprüfung: Prozess beendet ohne Ready-Signal: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "Der ${shellLabel}-Front-End-Test muss über test/frontend/run.mjs gestartet werden (das startet selbstständig einen isolierten Knoten). Nicht gegen lokale Entwicklungsinstanzen oder echte Benutzerdaten ausführen.",
+				"isolatedUser": "Tests müssen unter dem isolierten Benutzer „${expectedUsername}“ laufen; aktuell läuft die Sitzung als „${username}“. Bitte über run.mjs starten und nicht auf einen Produktions- oder Entwicklungs-fount zeigen."
+			},
 			"queue": {
 				"append": "Eingereiht: ${label} (${reason}) ≈ ${remaining} verbleibend",
 				"remove": "Entfernt: ${label} (${reason}) ≈ ${remaining} verbleibend"
@@ -191,7 +195,45 @@
 						"0": "In der Warteschlange"
 					}
 				},
-				"failureLog": "\n—— Fehlerprotokoll: ${label} ——"
+				"failureLog": "\n—— Fehlerprotokoll: ${label} ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "Läuft: ${key}, noch ${remaining}",
+					"reasons": {
+						"initial": "Plan bereit",
+						"suite_started": "Suite gestartet",
+						"suite_completed": "Suite abgeschlossen",
+						"suite_failed": "Suite fehlgeschlagen",
+						"blocked": "Blockiert: Abhängigkeit fehlgeschlagen",
+						"skipped": "Übersprungen: Abhängigkeit übersprungen",
+						"queue_appended": "Job eingereiht",
+						"queue_removed": "Job entfernt",
+						"prep_promoted": "Vorbereitung befördert",
+						"module_check_ready": "Modulprüfung bereit",
+						"dependency_ready": "Abhängigkeiten bereit",
+						"resource_budget_changed": "Ressourcenbudget geändert",
+						"job_queued": "Job in Warteschlange",
+						"gate_state_changed": "Ressourcen-Gate geändert",
+						"expected_drift": "Schätzung abgewichen",
+						"progress": "Fortschritt aktualisiert"
+					}
+				},
+				"dashboard": {
+					"idle": "Leerlauf",
+					"unknownCount": "+${count} unbekannt",
+					"runningCount": "In Arbeit: ${count}",
+					"passedCount": "Bestanden: ${count}",
+					"failedCount": "Fehlgeschlagen: ${count}",
+					"queuedCount": "Wartend: ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Noch≈${remaining}",
+					"duration": "Dauer: ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "Speicher ${memory}",
+					"queueAppend": "Eingereiht: ${label} (${reason})",
+					"queueRemove": "Entfernt: ${label} (${reason})"
+				}
 			},
 			"passed": "Bestanden: ${label}",
 			"passedWithNoise": "Bestanden: ${label} (mit Rauschen)",
@@ -1601,7 +1643,10 @@
 						"stateDeny": "Ablehnen",
 						"stateNeutral": "Erben",
 						"updateFailed": "Kanalberechtigungen konnten nicht aktualisiert werden: ${error}",
-						"updated": "Kanalberechtigungen aktualisiert"
+						"updated": "Kanalberechtigungen aktualisiert",
+						"syncedWarning": "Die Berechtigungen dieses Kanals werden vom übergeordneten Kanal übernommen. Einzelne Änderungen entkoppeln sie zunächst.",
+						"syncToDefault": "Mit den Root-Kanalberechtigungen synchronisieren",
+						"synced": "Mit den Root-Kanalberechtigungen synchronisiert"
 					},
 					"advanced": {
 						"description": "Netzwerk-, Speicher-, Geschwindigkeitsbegrenzungs- und Verschlüsselungsparameter; Bitte behalten Sie die Standardeinstellungen bei, wenn Sie sich nicht sicher sind",
@@ -1692,7 +1737,8 @@
 						"general": "Basic",
 						"members": "Mitglied",
 						"permissions": "Rollenberechtigungen",
-						"storage": "Speicherung und Archivierung"
+						"storage": "Speicherung und Archivierung",
+						"groupPermissions": "Gruppenberechtigungen"
 					},
 					"key": {
 						"managementTip": "Neue Schlüssel müssen nach der Rotation an die Mitglieder neu verteilt werden. Manuelle Maßnahmen sollten nur dann ergriffen werden, wenn Sie den Verdacht haben, dass ein Schlüssel kompromittiert wurde.",
@@ -1701,6 +1747,15 @@
 						"rotateConfirm": "Sind Sie sicher, dass Sie den Hauptschlüssel dieser Gruppendatei manuell rotieren möchten? Neue Mitglieder müssen den Verlaufsdateischlüssel neu synchronisieren.",
 						"rotateFailed": "Schlüsselrotation fehlgeschlagen: ${error}",
 						"rotateOk": "Schlüssel wurde gedreht"
+					},
+					"groupPerms": {
+						"denied": "Sie haben keine Berechtigung, Gruppenberechtigungen zu verwalten",
+						"hint": "Legen Sie Überschreibungen pro Rolle für Governance-Berechtigungen auf Gruppenebene fest (kicken, sperren, Rollen verwalten, Administratoren verwalten, Mitglieder einladen).",
+						"overridden": "Überschrieben",
+						"clearOverride": "Überschreibung aufheben",
+						"noRoles": "Derzeit gibt es keine zu konfigurierenden Rollen",
+						"updateFailed": "Aktualisierung der Gruppenberechtigungen fehlgeschlagen: ${error}",
+						"updated": "Gruppenberechtigungen aktualisiert"
 					}
 				},
 				"pinContext": "Top-Nachbarschaft (±N Nachbarn)",
@@ -2009,6 +2064,7 @@
 				"suspectedRemoved": "Möglicherweise aus dieser Gruppe entfernt: ${count} bekannte Knoten zur Verifizierung angefragt, alle abgelehnt. Sie können an die lokale Historie erinnern oder diese Gruppenkopie löschen.",
 				"suspectedRemovedKeep": "Nehmen Sie ein Souvenir mit",
 				"suspectedRemovedLeave": "Gruppe löschen",
+				"shunVerifying": "Mitgliedschaft wird geprüft: ${confirmed}/${total} bekannte Knoten haben abgelehnt",
 				"fork": {
 					"governance": "Es gibt eine Verzweigung im Berechtigungsdatensatz und dieser befindet sich derzeit in der lokalen Ansicht.",
 					"tipLabel": "DAG-Blatt",
@@ -2338,6 +2394,12 @@
 				"success": "Kanal erstellt",
 				"title": "Neuen Kanal erstellen"
 			},
+			"newCategory": {
+				"button": "Neue Kategorie",
+				"failed": "Kategorie konnte nicht erstellt werden",
+				"success": "Kategorie erstellt",
+				"title": "Neue Kategorie"
+			},
 			"discovery": {
 				"description": "Durchsuchen Sie Öffentliche Gruppen im Verbundnetzwerk, wählen Sie eine InteressengeMeinschaft aus und treten Sie bei.",
 				"empty": "Derzeit gibt es keine empfohlene Gruppe. Nach dem Aktivieren der Verbundsynchronisierung wird die Erkennungsliste von Nachbarn synchronisiert.",
@@ -2415,6 +2477,9 @@
 					"exportFailed": "Export fehlgeschlagen: ${error}"
 				},
 				"name": "Kanalname",
+				"unnamed": "Unbenannt",
+				"parent": "Übergeordneter Kanal",
+				"noParent": "Kein übergeordneter Kanal (Root)",
 				"nameInput": {
 					"placeholder": "Allgemein"
 				},
@@ -2427,7 +2492,41 @@
 				"type": "Kanaltyp",
 				"typeList": "Liste/Forumkanal",
 				"typeStreaming": "Streaming-Kanal",
-				"typeText": "Chat-Kanal"
+				"typeText": "Chat-Kanal",
+				"readonlyRoot": {
+					"placeholder": "Der Root-Kanal kann keine Nachrichten/Dateien senden"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "Erstellen Sie einen Kanal in dieser Kategorie",
+					"delete": "Kategorie löschen",
+					"deleteConfirm": "Sind Sie sicher, dass Sie die Kategorie „${name}“ löschen möchten? Die Kanäle darunter kehren zu „Nicht kategorisiert“ zurück.",
+					"deleteOk": "Kategorie gelöscht",
+					"perms": "Kategorieberechtigungen",
+					"rename": "Kategorie umbenennen",
+					"renameOk": "Kategorie wurde umbenannt",
+					"renamePrompt": "Neuer Kategoriename"
+				},
+				"reorder": {
+					"after": "„${source}“ nach „${target}“ verschieben?",
+					"before": "„${source}“ vor „${target}“ verschieben?",
+					"into": "„${source}“ in „${target}“ verschieben?",
+					"toRoot": "„${source}“ in die oberste Ebene verschieben?"
+				},
+				"name": "Kategoriename",
+				"nameInput": {
+					"placeholder": "Medien"
+				},
+				"perm": {
+					"loadFailed": "Kategorieberechtigungen konnten nicht geladen werden: ${error}",
+					"title": "Kategorieberechtigungen",
+					"updateFailed": "Kategorieberechtigungen konnten nicht aktualisiert werden: ${error}",
+					"updated": "Die Kategorieberechtigungen wurden aktualisiert",
+					"syncedWarning": "Die Berechtigungen dieser Kategorie werden vom Root-Kanal übernommen. Einzelne Änderungen entkoppeln sie zunächst.",
+					"syncToDefault": "Mit den Root-Kanalberechtigungen synchronisieren",
+					"synced": "Mit den Root-Kanalberechtigungen synchronisiert"
+				}
 			},
 			"message": {
 				"action": {

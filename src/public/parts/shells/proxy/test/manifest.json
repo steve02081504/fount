@@ -4,7 +4,6 @@
 		"frontendShared": [
 			"src/public/parts/shells/proxy/public/**",
 			"src/public/parts/shells/proxy/test/frontend/**",
-			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/**"
 		]
 	},

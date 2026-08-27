@@ -181,6 +181,10 @@
 			"moduleCheck": {
 				"missedReady": "模组检查未发 ready 进程已退出：${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "${shellLabel} 前端测试必须通过 test/frontend/run.mjs 启动（由它自行拉起隔离节点）。请勿在本地开发实例或真实用户数据上运行。",
+				"isolatedUser": "测试必须以隔离用户 \"${expectedUsername}\" 运行，当前会话为 \"${username}\"。请通过 run.mjs 启动，勿指向生产或开发所用的 fount。"
+			},
 			"queue": {
 				"append": "入队：${label}（${reason}）剩余 ≈ ${remaining}",
 				"remove": "移出：${label}（${reason}）剩余 ≈ ${remaining}"
@@ -200,7 +204,45 @@
 						"0": "排队等待中"
 					}
 				},
-				"failureLog": "\n—— ${label}：失败日志 ——"
+				"failureLog": "\n—— ${label}：失败日志 ——",
+				"schedule": {
+					"reason": "（${reason}）",
+					"running": "正在运行 ${key}，剩余 ${remaining}",
+					"reasons": {
+						"initial": "计划就绪",
+						"suite_started": "套件开始",
+						"suite_completed": "套件完成",
+						"suite_failed": "套件失败",
+						"blocked": "依赖失败，阻塞",
+						"skipped": "依赖被跳过",
+						"queue_appended": "任务入队",
+						"queue_removed": "任务出队",
+						"prep_promoted": "预备任务转正",
+						"module_check_ready": "模块检查就绪",
+						"dependency_ready": "依赖就绪",
+						"resource_budget_changed": "资源预算变动",
+						"job_queued": "新任务排队",
+						"gate_state_changed": "资源闸门变动",
+						"expected_drift": "预估耗时漂移",
+						"progress": "进度更新"
+					}
+				},
+				"dashboard": {
+					"idle": "空闲",
+					"unknownCount": "+${count} 未知",
+					"runningCount": "运行 ${count}",
+					"passedCount": "通过 ${count}",
+					"failedCount": "失败 ${count}",
+					"queuedCount": "排队 ${count}",
+					"reason": "（${reason}）",
+					"elapsed": "已 ${elapsed}",
+					"eta": "剩余≈${remaining}",
+					"duration": "耗时 ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "内存 ${memory}",
+					"queueAppend": "入队 ${label}（${reason}）",
+					"queueRemove": "移出 ${label}（${reason}）"
+				}
 			},
 			"passed": "通过：${label}",
 			"passedWithNoise": "通过：${label}（含有噪声）",
@@ -1610,7 +1652,10 @@
 						"stateDeny": "拒绝",
 						"stateNeutral": "继承",
 						"updateFailed": "更新频道权限失败：${error}",
-						"updated": "频道权限已更新"
+						"updated": "频道权限已更新",
+						"syncedWarning": "此频道权限正同步自上级频道，单独设置将先脱钩。",
+						"syncToDefault": "同步到根频道权限",
+						"synced": "已同步到根频道权限"
 					},
 					"advanced": {
 						"description": "网络、存储、限速和加密参数；不确定时请保持默认",
@@ -1701,7 +1746,8 @@
 						"general": "基本",
 						"members": "成员",
 						"permissions": "角色权限",
-						"storage": "存储与归档"
+						"storage": "存储与归档",
+						"groupPermissions": "群权限"
 					},
 					"key": {
 						"managementTip": "轮换后需要重新向成员分发新密钥。只有怀疑密钥泄露时才应手动操作。",
@@ -1710,6 +1756,15 @@
 						"rotateConfirm": "确定手动轮换本群文件主密钥？新成员需重新同步历史文件密钥。",
 						"rotateFailed": "密钥轮换失败：${error}",
 						"rotateOk": "密钥已轮换"
+					},
+					"groupPerms": {
+						"denied": "没有管理群权限的权限",
+						"hint": "为群级治理权限（踢出、封禁、管理角色、管理管理员、邀请成员）按角色设置覆盖。",
+						"overridden": "已覆盖",
+						"clearOverride": "清除覆盖",
+						"noRoles": "暂无可配置角色",
+						"updateFailed": "群权限更新失败：${error}",
+						"updated": "群权限已更新"
 					}
 				},
 				"pinContext": "置顶邻域（±N 邻帖）",
@@ -2018,6 +2073,7 @@
 				"suspectedRemoved": "你大概已被移出本群：已向 ${count} 个认识的节点求证，均被拒之门外。可留念本地历史，或删除本群副本。",
 				"suspectedRemovedKeep": "留念",
 				"suspectedRemovedLeave": "删除群",
+				"shunVerifying": "正在核验成员身份：${confirmed}/${total} 个已知节点已拒绝",
 				"fork": {
 					"governance": "权限记录存在分叉，当前为本地视图。",
 					"tipLabel": "DAG 叶",
@@ -2347,6 +2403,12 @@
 				"success": "频道已创建",
 				"title": "新建频道"
 			},
+			"newCategory": {
+				"button": "新建分类",
+				"failed": "创建分类失败",
+				"success": "分类已创建",
+				"title": "新建分类"
+			},
 			"discovery": {
 				"description": "浏览来自联邦网络的公开群组，挑选感兴趣的社区并加入。",
 				"empty": "暂无推荐群；打开联邦同步后会从邻居同步发现列表",
@@ -2424,6 +2486,9 @@
 					"exportFailed": "导出失败：${error}"
 				},
 				"name": "频道名称",
+				"unnamed": "未命名",
+				"parent": "父频道",
+				"noParent": "无父频道（根频道）",
 				"nameInput": {
 					"placeholder": "general"
 				},
@@ -2436,7 +2501,41 @@
 				"type": "频道类型",
 				"typeList": "列表/论坛频道",
 				"typeStreaming": "流媒体频道",
-				"typeText": "聊天频道"
+				"typeText": "聊天频道",
+				"readonlyRoot": {
+					"placeholder": "根频道不能发送消息/文件"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "在此分类创建频道",
+					"delete": "删除分类",
+					"deleteConfirm": "确定删除分类「${name}」吗？其下频道将回到未分组。",
+					"deleteOk": "分类已删除",
+					"perms": "分类权限",
+					"rename": "重命名分类",
+					"renameOk": "分类已重命名",
+					"renamePrompt": "新分类名"
+				},
+				"reorder": {
+					"after": "将「${source}」移到「${target}」之后？",
+					"before": "将「${source}」移到「${target}」之前？",
+					"into": "将「${source}」移入「${target}」？",
+					"toRoot": "将「${source}」移到根级？"
+				},
+				"name": "分类名称",
+				"nameInput": {
+					"placeholder": "媒体"
+				},
+				"perm": {
+					"loadFailed": "加载分类权限失败：${error}",
+					"title": "分类权限",
+					"updateFailed": "更新分类权限失败：${error}",
+					"updated": "分类权限已更新",
+					"syncedWarning": "此分类权限正同步自上级频道，单独设置将先脱钩。",
+					"syncToDefault": "同步到根频道权限",
+					"synced": "已同步到根频道权限"
+				}
 			},
 			"message": {
 				"action": {

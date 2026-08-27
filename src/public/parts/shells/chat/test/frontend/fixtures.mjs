@@ -254,11 +254,12 @@ export async function sendMessageViaComposer(page, groupId, channelId, text) {
  * 等待消息列表中出现包含指定文本的消息行。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} text - 消息正文片段。
+ * @param {number} [timeout=ms('1m')] 可见等待上限（毫秒）。
  * @returns {Promise<import('npm:@playwright/test').Locator>} 消息行定位器。
  */
-export async function expectMessageInChat(page, text) {
+export async function expectMessageInChat(page, text, timeout = ms('1m')) {
 	const row = page.locator('#messages .message:not([data-pending="1"])').filter({ hasText: text })
-	await expect(row.first()).toBeVisible({ timeout: ms('1m') })
+	await expect(row.first()).toBeVisible({ timeout })
 	await expect(row.first()).toHaveAttribute('data-message-id', /^[\da-f]{64}$/i)
 	return row.first()
 }
@@ -294,6 +295,56 @@ export function createTestChannel(baseUrl, apiKey, groupId, options = {}) {
 		const data = await res.json()
 		if (!data.channelId) throw new Error('channelId missing')
 		return { channelId: data.channelId, name }
+	})
+}
+
+/**
+ * 通过 API 创建好友绑定（DM）群：对端角色会出现在好友列表，不进入群侧栏。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {string} charname - 对端本地角色 part 名。
+ * @param {object} [options] - 可选项。
+ * @param {string} [options.name] - 群名。
+ * @returns {Promise<{ groupId: string, defaultChannelId: string, channelId: string }>} 新建 DM 群信息。
+ */
+export function createFriendChatGroup(baseUrl, apiKey, charname, options = {}) {
+	return createChatTestGroup(baseUrl, apiKey, {
+		name: options.name ?? `pw-friend-${Date.now()}`,
+		friendBinding: { charname },
+		...options.forceNew ? { forceNew: true } : {},
+	})
+}
+
+/**
+ * 通过 API 获取当前用户加入的所有群列表行。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @returns {Promise<Array<{ groupId: string, friendBinding?: object | null }>>} 群列表行。
+ */
+export function listChatGroups(baseUrl, apiKey) {
+	return withApiRequest(async req => {
+		const res = await req.get(
+			`${baseUrl}/api/parts/shells:chat/groups/?fount-apikey=${encodeURIComponent(apiKey)}`,
+		)
+		if (!res.ok()) throw new Error(`listGroups failed: ${res.status()}`)
+		return res.json()
+	})
+}
+
+/**
+ * 通过 API 删除一个本地群 replica（需 ADMIN）。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {string} groupId - 群 ID。
+ * @returns {Promise<object>} 删除响应 JSON。
+ */
+export function deleteChatGroup(baseUrl, apiKey, groupId) {
+	return withApiRequest(async req => {
+		const res = await req.delete(
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}?fount-apikey=${encodeURIComponent(apiKey)}`,
+		)
+		if (!res.ok()) throw new Error(`deleteGroup failed: ${res.status()}`)
+		return res.json()
 	})
 }
 

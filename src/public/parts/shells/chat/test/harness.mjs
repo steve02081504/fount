@@ -18,6 +18,7 @@ const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), 'fixtures')
  * @param {object} [options] harness 选项
  * @param {string} [options.username] 测试用户名
  * @param {boolean} [options.minP2pNode] 是否初始化离线 P2P node
+ * @param {boolean} [options.p2p] 是否启动 P2P（单节点保持 false）
  * @param {string[]} [options.loadParts] loadPart 列表
  * @param {(username: string) => Promise<void>} [options.afterInit] init 后钩子
  * @returns {{ ensureServer: () => Promise<{ dataDir: string, username: string }>, dataDir: string, username: string }} 集成 boot 句柄
@@ -37,6 +38,7 @@ export function createIntegrationBoot(options = {}) {
 			username,
 			dataDir,
 			minP2pNode: options.minP2pNode ?? false,
+			p2p: options.p2p ?? false,
 			loadParts,
 			afterInit,
 		}),

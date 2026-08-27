@@ -108,7 +108,11 @@ export async function enumerateJoinedFederatedGroups(username, entityHash) {
 	const rows = []
 	for (const groupId of await listUserGroups(username)) {
 		const state = await loadGroupListState(username, groupId)
-		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state)) continue
+		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state)) {
+			// 强制移除但保留本机副本的群仍列出，供用户“留念/删除”。
+			const { loadGroupShunState } = await import('./groupShunState.mjs')
+			if (!(await loadGroupShunState(username, groupId)).replicaRetained) continue
+		}
 		const { unreadCount, channelUnread } = summarizeGroupUnread(state, readMarkers[groupId] || {})
 		rows.push({
 			groupId,

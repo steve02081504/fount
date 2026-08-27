@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Modulecontrole: proces beëindigd zonder ready-signaal: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "De ${shellLabel} front-end test moet via test/frontend/run.mjs worden gestart (dat zelf een geïsoleerd knooppunt opstart). Voer hem niet uit tegen een lokale ontwikkelomgeving of echte gebruikersgegevens.",
+				"isolatedUser": "Tests moeten draaien onder de geïsoleerde gebruiker \"${expectedUsername}\"; de huidige sessie draait als \"${username}\". Start via run.mjs en wijs niet naar een productie- of ontwikkelings-fount."
+			},
 			"queue": {
 				"append": "In wachtrij: ${label} (${reason}) ≈ ${remaining} resterend",
 				"remove": "Uit wachtrij: ${label} (${reason}) ≈ ${remaining} resterend"
@@ -191,7 +195,45 @@
 						"0": "In de wachtrij"
 					}
 				},
-				"failureLog": "\n—— Foutlogboek: ${label} ——"
+				"failureLog": "\n—— Foutlogboek: ${label} ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "${key} wordt uitgevoerd, ${remaining} te gaan",
+					"reasons": {
+						"initial": "Plan klaar",
+						"suite_started": "Suite gestart",
+						"suite_completed": "Suite voltooid",
+						"suite_failed": "Suite mislukt",
+						"blocked": "Geblokkeerd: afhankelijkheid mislukt",
+						"skipped": "Overgeslagen: afhankelijkheid overgeslagen",
+						"queue_appended": "Taak in wachtrij",
+						"queue_removed": "Taak uit wachtrij",
+						"prep_promoted": "Voorbereiding bevorderd",
+						"module_check_ready": "Modulecontrole klaar",
+						"dependency_ready": "Afhankelijkheden klaar",
+						"resource_budget_changed": "Resourcebudget gewijzigd",
+						"job_queued": "Taak in de wachtrij",
+						"gate_state_changed": "Resourcegate gewijzigd",
+						"expected_drift": "Schatting afgeweken",
+						"progress": "Voortgang bijgewerkt"
+					}
+				},
+				"dashboard": {
+					"idle": "inactief",
+					"unknownCount": "+${count} onbekend",
+					"runningCount": "In uitvoering: ${count}",
+					"passedCount": "Geslaagd: ${count}",
+					"failedCount": "Mislukt: ${count}",
+					"queuedCount": "In wachtrij: ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Nog≈${remaining}",
+					"duration": "Duurde: ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "Geheugen ${memory}",
+					"queueAppend": "In wachtrij: ${label} (${reason})",
+					"queueRemove": "Verwijderd: ${label} (${reason})"
+				}
 			},
 			"passed": "Geslaagd: ${label}",
 			"passedWithNoise": "Geslaagd: ${label} (met ruis)",
@@ -1601,7 +1643,10 @@
 						"stateDeny": "Afwijzen",
 						"stateNeutral": "Erven",
 						"updateFailed": "Kan kanaalrechten niet updaten: ${error}",
-						"updated": "Kanaalrechten bijgewerkt"
+						"updated": "Kanaalrechten bijgewerkt",
+						"syncedWarning": "De rechten van dit kanaal worden gesynchroniseerd met het bovenliggende kanaal. Bij afzonderlijke wijzigingen wordt de synchronisatie eerst verbroken.",
+						"syncToDefault": "Synchroniseren met rechten van het rootkanaal",
+						"synced": "Gesynchroniseerd met rechten van het rootkanaal"
 					},
 					"advanced": {
 						"description": "Netwerk-, opslag-, snelheidslimiet- en encryptieparameters; Bewaar de standaardinstellingen als je het niet zeker weet",
@@ -1692,7 +1737,8 @@
 						"general": "Basis",
 						"members": "Leden",
 						"permissions": "Rolmachtigingen",
-						"storage": "Opslag en archivering"
+						"storage": "Opslag en archivering",
+						"groupPermissions": "Groepsmachtigingen"
 					},
 					"key": {
 						"managementTip": "Nieuwe sleutels moeten na rotatie opnieuw onder de leden worden verdeeld. Handmatige actie mag alleen worden ondernomen als je vermoedt dat een sleutel is aangetast.",
@@ -1701,6 +1747,15 @@
 						"rotateConfirm": "Weet je zeker dat je de hoofdsleutel van dit groepsbestand handmatig wilt roteren? Nieuwe leden moeten de sleutel van het geschiedenisbestand opnieuw synchroniseren.",
 						"rotateFailed": "Sleutelroulatie mislukt: ${error}",
 						"rotateOk": "Sleutel is gedraaid"
+					},
+					"groupPerms": {
+						"denied": "Je hebt geen toestemming om groepsmachtigingen te beheren",
+						"hint": "Stel per rol overschrijvingen in voor beheersrechten op groepsniveau (kicken, verbannen, rollen beheren, beheerders beheren, leden uitnodigen).",
+						"overridden": "Overschreven",
+						"clearOverride": "Alles terugzetten naar overnemen",
+						"noRoles": "Er zijn momenteel geen rollen om te configureren",
+						"updateFailed": "Bijwerken van groepsmachtigingen is mislukt: ${error}",
+						"updated": "Groepsmachtigingen bijgewerkt"
 					}
 				},
 				"pinContext": "Topbuurt (±N buren)",
@@ -2009,6 +2064,7 @@
 				"suspectedRemoved": "Mogelijk bent je uit deze groep verwijderd: je heeft ${count} bekende knooppunten om verificatie gevraagd, maar ze zijn allemaal afgewezen. Je kunt de lokale geschiedenis herdenken of deze groepskopie verwijderen.",
 				"suspectedRemovedKeep": "Neem een ​​souvenirtje",
 				"suspectedRemovedLeave": "Groep verwijderen",
+				"shunVerifying": "Lidmaatschap wordt geverifieerd: ${confirmed}/${total} bekende knooppunten hebben geweigerd",
 				"fork": {
 					"governance": "Er zit een vork in de machtigingsrecord en deze bevindt zich momenteel in de lokale weergave.",
 					"tipLabel": "DAG-blad",
@@ -2338,6 +2394,12 @@
 				"success": "Kanaal gemaakt",
 				"title": "Nieuw kanaal maken"
 			},
+			"newCategory": {
+				"button": "Nieuwe categorie",
+				"failed": "Kan categorie niet maken",
+				"success": "Categorie aangemaakt",
+				"title": "Nieuwe categorie"
+			},
 			"discovery": {
 				"description": "Blader door openbare groepen uit het federatienetwerk, kies een interessante community en sluit je aan.",
 				"empty": "Er is momenteel geen aanbevolen groep; nadat federatiesynchronisatie is ingeschakeld, wordt de ontdekkingslijst gesynchroniseerd vanaf de buren.",
@@ -2415,6 +2477,9 @@
 					"exportFailed": "Exporteren mislukt: ${error}"
 				},
 				"name": "Kanaalnaam",
+				"unnamed": "Naamloos",
+				"parent": "Bovenliggend kanaal",
+				"noParent": "Geen bovenliggend kanaal (root)",
 				"nameInput": {
 					"placeholder": "Algemeen"
 				},
@@ -2427,7 +2492,41 @@
 				"type": "Kanaaltype",
 				"typeList": "Lijst/Forumkanaal",
 				"typeStreaming": "Streamingkanaal",
-				"typeText": "chat kanaal"
+				"typeText": "Tekstkanaal",
+				"readonlyRoot": {
+					"placeholder": "Rootkanaal kan geen berichten/bestanden verzenden"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "Maak een kanaal in deze categorie",
+					"delete": "Categorie verwijderen",
+					"deleteConfirm": "Weet u zeker dat u de categorie \"${name}\" wilt verwijderen? De kanalen erin keren terug naar Niet gecategoriseerd.",
+					"deleteOk": "Categorie verwijderd",
+					"perms": "Categorierechten",
+					"rename": "Categorie hernoemen",
+					"renameOk": "Categorie hernoemd",
+					"renamePrompt": "Nieuwe categorienaam"
+				},
+				"reorder": {
+					"after": "« ${source} » na « ${target} » verplaatsen?",
+					"before": "« ${source} » vóór « ${target} » verplaatsen?",
+					"into": "« ${source} » in « ${target} » verplaatsen?",
+					"toRoot": "« ${source} » naar het hoogste niveau verplaatsen?"
+				},
+				"name": "Categorienaam",
+				"nameInput": {
+					"placeholder": "media"
+				},
+				"perm": {
+					"loadFailed": "Kan categorierechten niet laden: ${error}",
+					"title": "Categorierechten",
+					"updateFailed": "Kan categorierechten niet updaten: ${error}",
+					"updated": "Categorierechten zijn bijgewerkt",
+					"syncedWarning": "De rechten van deze categorie worden gesynchroniseerd met het bovenliggende kanaal. Bij afzonderlijke wijzigingen wordt de synchronisatie eerst verbroken.",
+					"syncToDefault": "Synchroniseren met rechten van het rootkanaal",
+					"synced": "Gesynchroniseerd met rechten van het rootkanaal"
+				}
 			},
 			"message": {
 				"action": {

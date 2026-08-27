@@ -2,7 +2,7 @@
  * Social 时间线实体写授权（含 social_meta 创世语义）。
  */
 import { hashFromPubKeyHex } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	foldEntityKeyHistoryFromEvents as foldRotateRevokeHistory,
 	isRecoverySender,
@@ -19,11 +19,13 @@ import {
 export function foldEntityKeyHistoryFromEvents(events) {
 	let recoveryPubKeyHex = null
 	for (const event of events || []) {
-		if (event.type === 'social_meta' && isHex64(event.content?.recoveryPubKeyHex || ''))
-			recoveryPubKeyHex = normalizeHex64(event.content.recoveryPubKeyHex)
+		if (event.type === 'social_meta') {
+			const pk = event.content?.recoveryPubKeyHex
+			if (isHex64(pk)) recoveryPubKeyHex = pk
+		}
 		// gen0 rotate 的 senderPubKey 即 recovery 公钥（无 social_meta 时的引导落点）
 		if (!recoveryPubKeyHex && event.type === 'entity_key_rotate' && Number(event.content?.generation) === 0) {
-			const pk = normalizeHex64(event.senderPubKey || '')
+			const pk = event.senderPubKey
 			if (isHex64(pk)) recoveryPubKeyHex = pk
 		}
 	}
@@ -51,25 +53,24 @@ export function isEntityTimelineWriteAuthorized({
 	recoveryPubKeyHex,
 	entityKeyHistory,
 }) {
-	const normalizedSender = normalizeHex64(sender)
-	if (!isHex64(normalizedSender) || !recoveryPubKeyHex) return false
+	if (!isHex64(sender) || !recoveryPubKeyHex) return false
 
 	if (eventType === 'entity_key_rotate') {
 		const generation = Number(eventContent?.generation)
 		if (generation === 0)
-			return isRecoverySender(recoveryPubKeyHex, normalizedSender)
+			return isRecoverySender(recoveryPubKeyHex, sender)
 		const prevGen = Number(eventContent?.prevGeneration ?? generation - 1)
 		const prevActive = resolveActiveKeyAtGeneration(entityKeyHistory, prevGen)
 		if (!prevActive || isActiveGenerationRevoked(entityKeyHistory, prevGen)) return false
-		return hashFromPubKeyHex(prevActive) === normalizedSender
+		return hashFromPubKeyHex(prevActive) === sender
 	}
 
 	if (eventType === 'entity_key_revoke')
-		return isRecoverySender(recoveryPubKeyHex, normalizedSender)
+		return isRecoverySender(recoveryPubKeyHex, sender)
 
 	if (eventType === 'social_meta')
-		return isRecoverySender(recoveryPubKeyHex, normalizedSender)
-			|| isValidActiveSender(entityKeyHistory, normalizedSender)
+		return isRecoverySender(recoveryPubKeyHex, sender)
+			|| isValidActiveSender(entityKeyHistory, sender)
 
-	return isValidActiveSender(entityKeyHistory, normalizedSender)
+	return isValidActiveSender(entityKeyHistory, sender)
 }

@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Vérification des modules : processus terminé sans signal ready : ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "Le test front-end ${shellLabel} doit être lancé via test/frontend/run.mjs (qui démarre seul un nœud isolé). Ne l'exécutez pas contre une instance de développement locale ni sur de vraies données utilisateur.",
+				"isolatedUser": "Les tests doivent s'exécuter avec l'utilisateur isolé \"${expectedUsername}\" ; la session actuelle utilise \"${username}\". Lancez-les via run.mjs et ne pointez pas vers un fount de production ou de développement."
+			},
 			"queue": {
 				"append": "Ajouté à la file : ${label} (${reason}) ≈ ${remaining} restant",
 				"remove": "Retiré de la file : ${label} (${reason}) ≈ ${remaining} restant"
@@ -191,7 +195,45 @@
 						"0": "En file d'attente"
 					}
 				},
-				"failureLog": "\n—— Journal d'échecs : ${label} ——"
+				"failureLog": "\n—— Journal d'échecs : ${label} ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "En cours : ${key}, reste ${remaining}",
+					"reasons": {
+						"initial": "Plan prêt",
+						"suite_started": "Suite démarrée",
+						"suite_completed": "Suite terminée",
+						"suite_failed": "Suite en échec",
+						"blocked": "Bloquée : dépendance en échec",
+						"skipped": "Ignorée : dépendance ignorée",
+						"queue_appended": "Tâche ajoutée à la file",
+						"queue_removed": "Tâche retirée de la file",
+						"prep_promoted": "Préparation promue",
+						"module_check_ready": "Vérification des modules prête",
+						"dependency_ready": "Dépendances prêtes",
+						"resource_budget_changed": "Budget des ressources modifié",
+						"job_queued": "Tâche en file d'attente",
+						"gate_state_changed": "Barrière de ressources modifiée",
+						"expected_drift": "Dérive de l'estimation",
+						"progress": "Progression mise à jour"
+					}
+				},
+				"dashboard": {
+					"idle": "inactif",
+					"unknownCount": "+${count} inconnu",
+					"runningCount": "En cours : ${count}",
+					"passedCount": "Réussis : ${count}",
+					"failedCount": "Échecs : ${count}",
+					"queuedCount": "En attente : ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Restant ≈${remaining}",
+					"duration": "Durée : ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "Mémoire ${memory}",
+					"queueAppend": "En file : ${label} (${reason})",
+					"queueRemove": "Retiré : ${label} (${reason})"
+				}
 			},
 			"passed": "Réussi : ${label}",
 			"passedWithNoise": "Réussi : ${label} (bruit détecté)",
@@ -1601,7 +1643,10 @@
 						"stateDeny": "rejeter",
 						"stateNeutral": "hériter",
 						"updateFailed": "Échec de la mise à jour des autorisations de la chaîne : ${error}",
-						"updated": "Autorisations de chaîne mises à jour"
+						"updated": "Autorisations de chaîne mises à jour",
+						"syncedWarning": "Les autorisations de ce canal sont synchronisées avec le canal parent ; des réglages individuels les en détacheront d'abord.",
+						"syncToDefault": "Synchroniser avec les autorisations du canal racine",
+						"synced": "Synchronisé avec les autorisations du canal racine"
 					},
 					"advanced": {
 						"description": "Paramètres de réseau, de stockage, de limite de vitesse et de cryptage ; veuillez conserver les valeurs par défaut si vous n'êtes pas sûr",
@@ -1692,7 +1737,8 @@
 						"general": "basique",
 						"members": "Membres",
 						"permissions": "Autorisations de rôle",
-						"storage": "Stockage et archivage"
+						"storage": "Stockage et archivage",
+						"groupPermissions": "Autorisations de groupe"
 					},
 					"key": {
 						"managementTip": "Les nouvelles clés doivent être redistribuées aux membres après la rotation. Une action manuelle ne doit être entreprise que si vous pensez qu’une clé a été compromise.",
@@ -1701,6 +1747,15 @@
 						"rotateConfirm": "Êtes-vous sûr de vouloir faire pivoter manuellement la clé principale de ce fichier de groupe ? Les nouveaux membres doivent resynchroniser la clé du fichier historique.",
 						"rotateFailed": "Échec de la rotation des clés : ${error}",
 						"rotateOk": "La clé a été tournée"
+					},
+					"groupPerms": {
+						"denied": "Vous n'avez pas la permission de gérer les autorisations de groupe",
+						"hint": "Définissez des remplacements par rôle pour les autorisations de gouvernance au niveau du groupe (expulser, bannir, gérer les rôles, gérer les administrateurs, inviter des membres).",
+						"overridden": "Remplacé",
+						"clearOverride": "Annuler le remplacement",
+						"noRoles": "Aucun rôle configurable pour le moment",
+						"updateFailed": "Échec de la mise à jour des autorisations de groupe : ${error}",
+						"updated": "Autorisations de groupe mises à jour"
 					}
 				},
 				"pinContext": "Quartier supérieur (±N voisins)",
@@ -2009,6 +2064,7 @@
 				"suspectedRemoved": "Vous avez peut-être été supprimé de ce groupe : vous avez demandé une vérification à ${count} nœuds connus, mais tous ont été rejetés. Vous pouvez commémorer l'histoire locale ou supprimer cette Copier de groupe.",
 				"suspectedRemovedKeep": "Emportez un souvenir",
 				"suspectedRemovedLeave": "Supprimer le groupe",
+				"shunVerifying": "Vérification de l'appartenance : ${confirmed}/${total} nœuds connus ont refusé",
 				"fork": {
 					"governance": "Il existe un fork dans l'enregistrement des autorisations et il est actuellement en vue locale.",
 					"tipLabel": "feuille DAG",
@@ -2338,6 +2394,12 @@
 				"success": "Chaîne créée",
 				"title": "Créer une nouvelle chaîne"
 			},
+			"newCategory": {
+				"button": "Nouvelle catégorie",
+				"failed": "Échec de la création de la catégorie",
+				"success": "Catégorie créée",
+				"title": "Nouvelle catégorie"
+			},
 			"discovery": {
 				"description": "Parcourez les groupes publics du réseau de la fédération, choisissez une communauté d'intérêt et rejoignez-la.",
 				"empty": "Il n'y a actuellement aucun groupe recommandé ; après avoir activé la synchronisation de la fédération, la liste de découverte sera synchronisée à partir des voisins.",
@@ -2415,6 +2477,9 @@
 					"exportFailed": "Échec de l'exportation : ${error}"
 				},
 				"name": "Nom de la chaîne",
+				"unnamed": "Sans nom",
+				"parent": "Canal parent",
+				"noParent": "Aucun canal parent (racine)",
 				"nameInput": {
 					"placeholder": "général"
 				},
@@ -2427,7 +2492,41 @@
 				"type": "Type de canal",
 				"typeList": "Chaîne de liste/forum",
 				"typeStreaming": "chaîne de diffusion en continu",
-				"typeText": "canal de discussion"
+				"typeText": "canal de discussion",
+				"readonlyRoot": {
+					"placeholder": "Le canal racine n'autorise pas l'envoi de messages/fichiers"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "Créer un canal dans cette catégorie",
+					"delete": "Supprimer la catégorie",
+					"deleteConfirm": "Êtes-vous sûr de vouloir supprimer la catégorie « ${name} » ? Les canaux qu’elle contient reviendront à « Sans catégorie ».",
+					"deleteOk": "Catégorie supprimée",
+					"perms": "Autorisations de la catégorie",
+					"rename": "Renommer la catégorie",
+					"renameOk": "Catégorie renommée",
+					"renamePrompt": "Nouveau nom de catégorie"
+				},
+				"reorder": {
+					"after": "Déplacer « ${source} » après « ${target} » ?",
+					"before": "Déplacer « ${source} » avant « ${target} » ?",
+					"into": "Déplacer « ${source} » dans « ${target} » ?",
+					"toRoot": "Déplacer « ${source} » à la racine ?"
+				},
+				"name": "Nom de la catégorie",
+				"nameInput": {
+					"placeholder": "médias"
+				},
+				"perm": {
+					"loadFailed": "Échec du chargement des autorisations de la catégorie : ${error}",
+					"title": "Autorisations de la catégorie",
+					"updateFailed": "Échec de la mise à jour des autorisations de la catégorie : ${error}",
+					"updated": "Les autorisations de la catégorie ont été mises à jour",
+					"syncedWarning": "Les autorisations de cette catégorie sont synchronisées avec le canal parent ; des réglages individuels les en détacheront d'abord.",
+					"syncToDefault": "Synchroniser avec les autorisations du canal racine",
+					"synced": "Synchronisé avec les autorisations du canal racine"
+				}
 			},
 			"message": {
 				"action": {
@@ -2768,7 +2867,7 @@
 			"list": {
 				"channelEmpty": "La liste est vide.",
 				"editorTitle": "Modifier les éléments de la liste (tableau JSON)",
-				"itemUntitled": "Anonyme",
+				"itemUntitled": "Sans nom",
 				"jsonInvalid": "JSON non valide : ${message}",
 				"saveFailed": "Échec de l'enregistrement",
 				"saveToDag": "Enregistrer dans DAG",

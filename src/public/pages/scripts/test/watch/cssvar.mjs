@@ -116,6 +116,8 @@ function findCssVarIssues() {
 	/** @type {Set<string>} */
 	const undefinedVars = new Set()
 	for (const name of bareReferences) {
+		// 是否已定义仅由实际引用元素的计算样式决定（见下方单次遍历），
+		// 不因同源样式表里出现 `--x: ...` 声明（可能来自无关或未挂载的规则）而视为已定义。
 		if (rootStyle.getPropertyValue(name).trim()) continue
 		undefinedVars.add(name)
 	}

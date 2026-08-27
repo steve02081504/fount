@@ -7,6 +7,9 @@ import {
 	createGroupViaHubUi,
 	createTestChannel,
 	openGroupSettingsPage,
+	createFriendChatGroup,
+	listChatGroups,
+	deleteChatGroup,
 } from './fixtures.mjs'
 
 test.describe('Chat hub navigation', () => {
@@ -42,6 +45,40 @@ test.describe('Chat hub navigation', () => {
 		await page.setViewportSize({ width: 1280, height: 720 })
 		await page.locator(`.server-item[data-group-id="${groupId}"]`).click()
 		await expect(page.locator('#channel-list')).toBeVisible({ timeout: 30_000 })
+	})
+
+	test('leaving the only group switches to friends view instead of opening a DM as group', async ({
+		page,
+		baseUrl,
+		apiKey,
+	}) => {
+		const { groupId: normalGroupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey, {
+			name: `pw-leave-normal-${Date.now()}`,
+		})
+		const { groupId: dmGroupId } = await createFriendChatGroup(baseUrl, apiKey, 'on_message_yes', {
+			name: `pw-leave-dm-${Date.now()}`,
+		})
+
+		// 清理其它普通群，构造「唯一普通群 + 一个 DM 群」场景（worker 串行，安全）。
+		for (const group of await listChatGroups(baseUrl, apiKey)) {
+			if (group.groupId === normalGroupId || group.groupId === dmGroupId || group.friendBinding) continue
+			await deleteChatGroup(baseUrl, apiKey, group.groupId)
+		}
+
+		await openGroupChannel(page, baseUrl, normalGroupId, channelId)
+		await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(normalGroupId)}`), { timeout: 60_000 })
+		// DM 群应显示在好友列表，而非群侧栏
+		await expect(page.locator(`#server-list .server-item[data-group-id="${dmGroupId}"]`)).toHaveCount(0)
+
+		page.once('dialog', dialog => dialog.accept())
+		await page.locator(`#server-list .server-item[data-group-id="${normalGroupId}"]`).click({ button: 'right' })
+		await page.locator('.group-menu-leave').click()
+
+		// 退掉唯一普通群后应回到好友/DM 视图，而不是把 DM 群当群聊视图打开
+		await expect(page).toHaveURL(/#friends/, { timeout: 60_000 })
+		await expect(page.locator('body')).toHaveAttribute('data-surface', 'friends')
+		await expect(page.locator('.empty--friends')).toBeVisible()
+		await expect(page.locator('#message-input')).toBeDisabled()
 	})
 
 	test('creates a group via hub UI', async ({ page, baseUrl }) => {

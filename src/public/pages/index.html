@@ -20,6 +20,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
 	<script type="module" src="/base.mjs"></script>
 	<script type="module">
+		import { wakeServer } from './base.mjs'
 		import { getAnyDefaultPart } from './scripts/endpoints/parts.mjs'
 		import { redirectToLoginInfo } from './scripts/host/credentialManager.mjs'
 		import { initTranslations } from './scripts/i18n/index.mjs'
@@ -27,16 +28,7 @@
 		initTranslations('startPage')
 		const hostUrl = window.location.origin
 		const urlParams = new URLSearchParams(window.location.search)
-		if (!urlParams.get('cold_bootting')) try {
-			await fetch('/api/ping', { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(500) })
-		}
-		catch {
-			const iframe = document.createElement('iframe')
-			iframe.ariaHidden = true
-			iframe.style.display = 'none'
-			iframe.src = 'fount://nop/'
-			document.body.appendChild(iframe)
-		}
+		if (!urlParams.get('cold_bootting')) await wakeServer()
 		if (urlParams.get('userPreferredLanguages'))
 			localStorage.setItem('userPreferredLanguages', urlParams.get('userPreferredLanguages'))
 		if (urlParams.get('theme')) await setTheme(urlParams.get('theme'))

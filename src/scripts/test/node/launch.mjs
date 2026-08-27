@@ -636,6 +636,9 @@ async function launchNodeOnce(options = {}) {
 					}
 					catch { /* not json yet */ }
 				}
+				// stdout 提前 EOF：正常 worker 必已退出，交由 earlyExit 报精确的 before-ready 错误。
+				// 子进程仍在却关闭 stdout 的极端情况由 readyTimer 兜底超时。
+				await earlyExit
 				return null
 			})()
 			readyInfo = await Promise.race([
@@ -659,11 +662,10 @@ async function launchNodeOnce(options = {}) {
 		child.stdout.resume()
 		child.stderr.resume()
 
-		if (!readyInfo?.baseUrl) {
-			if (child.exitCode != null || child.killed)
-				await earlyExit
+		if (!readyInfo?.baseUrl)
+			// 正常走不到：EOF 已在 readyLine 内交由 earlyExit 抛 before-ready。
+			// 仅当子进程仍在运行却关闭 stdout 等极端情况才落入此兜底。
 			throw new Error(`node worker ready timed out (port ${port})\n${startupOutput}`.trimEnd())
-		}
 
 		try {
 			const pingDeadline = setTimeout(() => pingAbort.abort(), ms('2m'))

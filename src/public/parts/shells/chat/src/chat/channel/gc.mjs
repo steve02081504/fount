@@ -1,7 +1,7 @@
 /**
  * 【文件】channel/gc.mjs
- * 【职责】§6.2 频道 GC 候选发现：沉寂 ≥30 天且从默认频道 DAG 不可达的孤岛频道。
- * 【原理】findStaleUnreachableChannels 扫描物化 channels 与 events 可达性图，排除 CHANNEL_GC_EXCLUDED_EVENT_TYPES。
+ * 【职责】§6.2 频道 GC 候选发现：沉寂 ≥30 天且从根频道 DAG 不可达的孤岛频道。
+ * 【原理】findStaleUnreachableChannels 扫描物化 channels 与 events 可达性图（沿 links），排除 CHANNEL_GC_EXCLUDED_EVENT_TYPES。
  *   当 groupSettings.autoChannelGc !== false 时，dag/materialize 在 checkpoint 重建时每次最多自动 channel_delete 2 个候选。
  * 【数据结构】lastActivityByChannel Map；返回 channelId 列表。
  * 【关联】dag/materialize、channel_delete、scripts/p2p/event_types。
@@ -24,25 +24,24 @@ const CHANNEL_ACTIVITY_TYPES = new Set([
 ])
 
 /**
- * 从默认频道经 `parentChannelId` / `list_item_update.targetChannelId` 做可达性（含环）。
+ * 从根频道沿 `links` / `list_item_update.targetChannelId` 做可达性（含环、自指）。
  * @param {object} channels 物化频道表
- * @param {string} defaultChannelId 默认频道
+ * @param {string} rootChannelId 根频道（群默认频道）
  * @returns {Set<string>} 可达 channelId
  */
-function reachableFromDefault(channels, defaultChannelId) {
+function reachableFromRoot(channels, rootChannelId) {
 	const reachable = new Set()
-	if (!defaultChannelId || !channels?.[defaultChannelId]) return reachable
-	const stack = [defaultChannelId]
+	if (!rootChannelId || !channels?.[rootChannelId]) return reachable
+	const stack = [rootChannelId]
 	while (stack.length) {
 		const id = stack.pop()
 		if (!id || reachable.has(id)) continue
 		if (!channels[id]) continue
 		reachable.add(id)
 		const channel = channels[id]
-		if (channel.parentChannelId && channels[channel.parentChannelId])
-			stack.push(channel.parentChannelId)
+		for (const childId of channel.links || [])
+			if (childId) stack.push(childId)
 		for (const other of Object.values(channels)) {
-			if (other?.parentChannelId === id && other.id) stack.push(other.id)
 			const items = other?.manualItems
 			if (Array.isArray(items))
 				for (const it of items)
@@ -82,13 +81,15 @@ function lastActivityByChannel(events) {
  */
 export function findStaleUnreachableChannels(state, events, nowMs = Date.now()) {
 	const { channels } = state
-	const defaultId = state.groupSettings?.defaultChannelId || 'default'
-	const reachable = reachableFromDefault(channels, defaultId)
+	const rootId = state.groupSettings?.rootChannelId
+		|| state.groupSettings?.defaultChannelId
+	if (!rootId || !channels[rootId]) return []
+	const reachable = reachableFromRoot(channels, rootId)
 	const lastAct = lastActivityByChannel(events)
 	/** @type {string[]} */
 	const stale = []
 	for (const channelId of Object.keys(channels)) {
-		if (channelId === defaultId) continue
+		if (channelId === rootId) continue
 		if (reachable.has(channelId)) continue
 		// 频道自身创建时间作为活动下界：新建（无消息）频道的 lastAct 为 0，
 		// 若不计入 createdAt 会被立即判定为「沉寂 ≥30 天」而在下一次 checkpoint 重建即遭误删。

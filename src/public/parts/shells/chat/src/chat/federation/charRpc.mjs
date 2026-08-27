@@ -34,7 +34,7 @@ export function parseCharRpcRequest(data) {
 		requestId: String(requestId),
 		memberId: String(memberId),
 		method: String(method),
-		args: Array.isArray(args) ? args : [],
+		args: [...args],
 	}
 }
 

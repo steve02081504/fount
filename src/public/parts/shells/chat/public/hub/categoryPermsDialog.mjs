@@ -1,0 +1,170 @@
+/**
+ * 【文件】public/hub/categoryPermsDialog.mjs
+ * 【职责】频道分类权限编辑对话框（分类作为独立对象，权限按角色 allow/deny 覆写）。
+ */
+import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { getChannelPermissionBlock, putChannelPermissionBlock } from '../src/endpoints/groupChannel.mjs'
+import { fillRolePermsIfEmpty, safeRoleColor, sortedRoleIds } from '../src/groupSettings/channelPermsUi.mjs'
+import { grantableChannelOverridePermissions } from '../src/groupSettings/constants.mjs'
+import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
+import { mountTemplate, openDialogFromTemplate } from '../src/templates.mjs'
+
+import { store } from './core/state.mjs'
+
+/**
+ * 弹出分类权限编辑对话框。
+ * @param {string} groupId 群 ID
+ * @param {string} categoryId 分类 ID
+ * @param {string} categoryName 分类名
+ * @returns {Promise<void>}
+ */
+export async function showCategoryPermsDialog(groupId, categoryId, categoryName) {
+	let permissions = {}
+	let permissionBlockId = null
+	let state = null
+	let grantablePerms = []
+	try {
+		const data = await getChannelPermissionBlock(groupId, categoryId)
+		permissions = data.permissions
+		permissionBlockId = data.permissionBlockId || null
+		state = store.context.currentState
+		const grantorPerms = await fetchViewerChannelPermissions(state, groupId)
+		grantablePerms = grantableChannelOverridePermissions(grantorPerms)
+	}
+	catch (error) {
+		handleError('chat.hub.category.perm.loadFailed')(error)
+		return
+	}
+
+	/**
+	 * 重拉权限并重绘对话框主体（角色面板 + 已打开角色的权限行）。
+	 * @param {HTMLElement} body `#category-perm-body` 主体容器
+	 * @returns {Promise<void>}
+	 */
+	const renderRolePanels = async body => {
+		const data = await getChannelPermissionBlock(groupId, categoryId)
+		permissions = data.permissions
+		permissionBlockId = data.permissionBlockId || null
+		const rolePanels = sortedRoleIds(state?.roles).map(roleId => {
+			const role = state.roles[roleId] || { name: roleId, color: '#888' }
+			const override = permissions[roleId]
+			const hasOverride = !!(Object.keys(override?.allow || {}).length || Object.keys(override?.deny || {}).length)
+			return {
+				roleId,
+				name: role.name || roleId,
+				color: safeRoleColor(role.color),
+				hasOverride,
+				open: roleId === '@everyone' || role.isDefault || hasOverride,
+			}
+		})
+		await mountTemplate(body, 'hub/category_perm_roles', { rolePanels, permissionBlockId })
+
+		for (const details of body.querySelectorAll('details.settings-role[open]')) {
+			const permsEl = details.querySelector('.settings-role-perms')
+			if (permsEl instanceof HTMLElement)
+				await fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
+		}
+	}
+
+	await openDialogFromTemplate('channel_category_perm_dialog', { categoryName, permissionBlockId }, {
+		activateScripts: false,
+		/**
+		 * @param {HTMLDialogElement} dialog 对话框
+		 * @returns {Promise<void>}
+		 */
+		onReady: async dialog => {
+			const body = dialog.querySelector('#category-perm-body')
+			if (!body) return
+			dialog.querySelector('#category-perm-close')?.addEventListener('click', () => dialog.close())
+
+			// 对话框级权限写入串行排队：所有角色读最新快照后再提交，避免共享 permissions 快照被并发响应覆盖。
+			/**
+			 * 串行化权限写入（读最新快照 + 提交 + 重绘），失败后继续处理后续任务。
+			 * @param {() => Promise<void>} op 读提交操作
+			 * @returns {Promise<void>}
+			 */
+			const enqueuePermOp = op => {
+				const next = permQueue.catch(() => { }).then(op)
+				permQueue = next
+				return next
+			}
+			let permQueue = Promise.resolve()
+
+			dialog.querySelector('#category-perm-sync')?.addEventListener('click', async () => {
+				try {
+					await enqueuePermOp(async () => {
+						const { syncChannelPermissionBlock } = await import('../src/endpoints/groupChannel.mjs')
+						permissionBlockId = await syncChannelPermissionBlock(groupId, categoryId)
+						await renderRolePanels(body)
+					})
+					showToastI18n('success', 'chat.hub.category.perm.synced')
+				}
+				catch (error) {
+					handleError('chat.hub.category.perm.updateFailed')(error)
+				}
+			})
+
+			try {
+				await renderRolePanels(body)
+			}
+			catch (error) {
+				handleError('chat.hub.category.perm.loadFailed')(error)
+			}
+
+			body.addEventListener('toggle', async event => {
+				const details = event.target
+				if (!(details instanceof HTMLDetailsElement) || !details.open) return
+				const permsEl = details.querySelector('.settings-role-perms')
+				if (!(permsEl instanceof HTMLElement)) return
+				try {
+					await fillRolePermsIfEmpty(permsEl, details.dataset.rolePanel, permissions, grantablePerms)
+				}
+				catch (error) {
+					handleError('chat.hub.category.perm.loadFailed')(error)
+				}
+			}, { capture: true })
+
+			body.addEventListener('click', async event => {
+				const clearBtn = event.target.closest('[data-action="clear-role-override"]')
+				if (clearBtn?.dataset.roleId) {
+					try {
+						await enqueuePermOp(async () => {
+							await putChannelPermissionBlock(groupId, categoryId, clearBtn.dataset.roleId, {}, {})
+							await renderRolePanels(body)
+						})
+						showToastI18n('success', 'chat.hub.category.perm.updated')
+					}
+					catch (error) {
+						handleError('chat.hub.category.perm.updateFailed')(error)
+					}
+					return
+				}
+				const stateBtn = event.target.closest('[data-action="channel-perm-state"]')
+				if (!stateBtn) return
+				const group = stateBtn.closest('[data-role-id][data-perm]')
+				if (!group) return
+				const roleId = group.getAttribute('data-role-id')
+				const perm = group.getAttribute('data-perm')
+				const nextState = stateBtn.getAttribute('data-state')
+				if (!roleId || !perm || !nextState || !grantablePerms.includes(perm)) return
+				try {
+					await enqueuePermOp(async () => {
+						const allow = { ...permissions[roleId]?.allow }
+						const deny = { ...permissions[roleId]?.deny }
+						delete allow[perm]
+						delete deny[perm]
+						if (nextState === 'allow') allow[perm] = true
+						else if (nextState === 'deny') deny[perm] = true
+						await putChannelPermissionBlock(groupId, categoryId, roleId, allow, deny)
+						await renderRolePanels(body)
+					})
+					showToastI18n('success', 'chat.hub.category.perm.updated')
+				}
+				catch (error) {
+					handleError('chat.hub.category.perm.updateFailed')(error)
+				}
+			})
+		},
+	})
+}

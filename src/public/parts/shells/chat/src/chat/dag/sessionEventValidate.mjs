@@ -33,8 +33,7 @@ export function validateSessionEventContent(event) {
 	switch (event.type) {
 		case 'agent_reply_frequency_set': {
 			// state.members 以 64-hex pubKeyHash 为键（见 reducers/members.mjs、canonicalizeEvent）。
-			const targetMemberKey = content.targetMemberKey || ''
-			if (!isHex64(targetMemberKey))
+			if (!isHex64(content.targetMemberKey))
 				throw new Error('agent_reply_frequency_set: targetMemberKey required')
 			if (!Number.isFinite(Number(content.frequency)))
 				throw new Error('agent_reply_frequency_set: frequency required')

@@ -178,13 +178,13 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.put(`${GROUPS_PREFIX}/:groupId/governance-branch`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, groupId } = req.groupContext
-		const tipId = req.body.tipId != null ? String(req.body.tipId).trim() : null
-		if (tipId && !isHex64(tipId))
-			throw httpError(400, 'invalid tipId')
+		const tipId = isHex64(req.body.tipId)
 		const tips = state.dagTips || computeFederatableDagTipIds(
 			await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }),
 		)
-		if (tipId && !tips.includes(tipId))
+		if (!tipId)
+			throw httpError(400, 'tipId is not a valid hex ID')
+		if (!tips.includes(tipId))
 			throw httpError(400, 'tipId is not a current DAG tip')
 		await saveGovernanceBranchTip(username, groupId, tipId)
 		const refreshed = await getState(username, groupId, { forceFullReplay: false })

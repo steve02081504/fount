@@ -83,10 +83,13 @@ async function paintGroupHubChrome(state) {
  * @returns {Promise<void>}
  */
 async function activateGroupChannel(state, presetChannelId) {
-	const channelIds = Object.keys(state.channels || {})
-	const targetChannelId = presetChannelId && state.channels?.[presetChannelId]
+	const rootChannelId = state.groupSettings?.rootChannelId
+	const channelIds = Object.keys(state.channels || {}).filter(id => id !== rootChannelId)
+	const targetChannelId = presetChannelId && state.channels?.[presetChannelId] && presetChannelId !== rootChannelId
 		? presetChannelId
-		: state.groupSettings?.defaultChannelId || channelIds[0] || null
+		: state.groupSettings?.defaultChannelId !== rootChannelId
+			? state.groupSettings.defaultChannelId
+			: channelIds[0] || null
 	if (targetChannelId) await selectChannel(targetChannelId)
 	else {
 		setState('context.currentChannelId', null)

@@ -46,12 +46,13 @@ await lease?.release()
 			env: childEnv(),
 			stdio: ['ignore', 'pipe', 'pipe'],
 		})
-		let out = ''
-		child.stdout.on('data', chunk => { out += String(chunk) })
-		child.stderr.on('data', chunk => { out += String(chunk) })
+		let stdout = ''
+		let stderr = ''
+		child.stdout.on('data', chunk => { stdout += String(chunk) })
+		child.stderr.on('data', chunk => { stderr += String(chunk) })
 		const code = await new Promise(resolve => child.once('exit', resolve))
-		assertEquals(code, 0, out)
-		assertEquals(out.trim(), 'blocked')
+		assertEquals(code, 0, stdout + stderr)
+		assertEquals(stdout.trim(), 'blocked')
 	}
 	finally {
 		await held.release()

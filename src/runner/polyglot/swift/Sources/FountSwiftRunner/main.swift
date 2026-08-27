@@ -49,4 +49,3 @@ do {
 
 proc.waitUntilExit()
 exit(proc.terminationStatus)
-

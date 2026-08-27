@@ -119,8 +119,7 @@ export function ensureCanInChannelSend(state, member, permission, channelId, err
  * @returns {void}
  */
 export function ensurePinPermission(state, member, channelId) {
-	if (canInChannel(state, member, PERMISSIONS.PIN_MESSAGES, channelId)
-		|| canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId))
+	if (canInChannel(state, member, [PERMISSIONS.PIN_MESSAGES, PERMISSIONS.MANAGE_MESSAGES], channelId))
 		return
 	throw httpError(403, 'PIN_MESSAGES or MANAGE_MESSAGES required')
 }

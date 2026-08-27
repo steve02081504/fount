@@ -21,8 +21,7 @@ import { safeReadSnapshot } from './wal.mjs'
  * @returns {void}
  */
 function addKnownEventId(knownSet, id) {
-	const eventIdNorm = id || ''
-	if (isHex64(eventIdNorm)) knownSet.add(eventIdNorm)
+	if (isHex64(id)) knownSet.add(id)
 }
 
 /**
@@ -55,9 +54,9 @@ export async function loadKnownLocalDagEventIds(username, groupId) {
 	/** @type {Set<string>} */
 	const knownSet = new Set()
 	try {
-		for (const row of await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })) 
+		for (const row of await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }))
 			addKnownEventId(knownSet, row?.id)
-		
+
 	}
 	catch { /* 无 events */ }
 

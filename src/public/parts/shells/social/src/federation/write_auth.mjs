@@ -2,7 +2,7 @@
  * Social 时间线写入授权（联邦入站 untrusted 边界）。
  */
 import { hashFromPubKeyHex, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import {
 	createGenesisKeyHistory,
@@ -28,21 +28,21 @@ function bootstrapKeyChainFromEvent(parsed, sender, options) {
 	const content = options.eventContent || {}
 
 	if (type === 'social_meta') {
-		const recovery = normalizeHex64(content.recoveryPubKeyHex || '')
+		const recovery = content.recoveryPubKeyHex
 		if (!isHex64(recovery)) return null
 		if (hashFromPubKeyHex(recovery) !== parsed.subjectHash) return null
 		return { recoveryPubKeyHex: recovery, entityKeyHistory: [] }
 	}
 
 	if (type === 'entity_key_rotate' && Number(content.generation) === 0) {
-		const recovery = normalizeHex64(options.senderPubKeyHex || '')
+		const recovery = options.senderPubKeyHex
 		if (!isHex64(recovery)) return null
 		if (hashFromPubKeyHex(recovery) !== parsed.subjectHash) return null
-		if (normalizeHex64(sender) !== parsed.subjectHash) return null
-		const active = normalizeHex64(content.activePubKeyHex || '')
+		if (sender !== parsed.subjectHash) return null
+		const active = isHex64(content.activePubKeyHex)
 		return {
 			recoveryPubKeyHex: recovery,
-			entityKeyHistory: isHex64(active) ? createGenesisKeyHistory(active) : [],
+			entityKeyHistory: createGenesisKeyHistory(active),
 		}
 	}
 
@@ -67,8 +67,8 @@ async function isAuthorizedByEvfsProfile(username, entityHash, sender) {
 	catch {
 		return false
 	}
-	if (String(payload?.entityHash || '') !== entityHash) return false
-	const active = normalizeHex64(payload.activePubKeyHex || '')
+	if (payload?.entityHash !== entityHash) return false
+	const active = payload.activePubKeyHex
 	if (!isHex64(active)) return false
 	return hashFromPubKeyHex(active) === sender
 }
@@ -120,13 +120,12 @@ async function isOwnerContentEventAuthorized(entityHash, sender, options) {
 export async function isTimelineWriteAuthorized(entityHash, sender, options = {}) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed) return false
-	const normalizedSender = normalizeHex64(sender)
-	if (!isHex64(normalizedSender)) return false
+	if (!isHex64(sender)) return false
 
 	let { recoveryPubKeyHex, entityKeyHistory } = foldEntityKeyHistoryFromEvents(options.priorEvents || [])
 
 	if (!recoveryPubKeyHex || !entityKeyHistory.length) {
-		const boot = bootstrapKeyChainFromEvent(parsed, normalizedSender, options)
+		const boot = bootstrapKeyChainFromEvent(parsed, sender, options)
 		if (boot) {
 			recoveryPubKeyHex = recoveryPubKeyHex || boot.recoveryPubKeyHex
 			if (!entityKeyHistory.length && boot.entityKeyHistory.length)
@@ -135,7 +134,7 @@ export async function isTimelineWriteAuthorized(entityHash, sender, options = {}
 	}
 
 	if (recoveryPubKeyHex && isEntityTimelineWriteAuthorized({
-		sender: normalizedSender,
+		sender,
 		eventType: options.eventType || '',
 		eventContent: options.eventContent || {},
 		recoveryPubKeyHex,
@@ -143,15 +142,15 @@ export async function isTimelineWriteAuthorized(entityHash, sender, options = {}
 	}))
 		return true
 
-	if (normalizedSender === parsed.subjectHash)
+	if (sender === parsed.subjectHash)
 		return true
 
 	if ((options.eventType === 'post_delete' || options.eventType === 'post_edit')
-		&& await isOwnerContentEventAuthorized(parsed.entityHash, normalizedSender, options))
+		&& await isOwnerContentEventAuthorized(parsed.entityHash, sender, options))
 		return true
 
 	// 无先验链时：EVFS 验签 profile 的 activePubKeyHex 作 attestation 兜底
-	if (options.username && await isAuthorizedByEvfsProfile(options.username, parsed.entityHash, normalizedSender))
+	if (options.username && await isAuthorizedByEvfsProfile(options.username, parsed.entityHash, sender))
 		return true
 
 	return false

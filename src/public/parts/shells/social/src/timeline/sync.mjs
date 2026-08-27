@@ -39,14 +39,12 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 		username,
 	})
 	if (!validated.accepted) return false
-	if (validated.row.content?.mediaRefs)
-		validated.row.content.mediaRefs = sanitizeMediaRefs(validated.row.content.mediaRefs)
-	if (validated.row.content && 'sensitiveMedia' in validated.row.content)
-		validated.row.content.sensitiveMedia = validated.row.content.sensitiveMedia === true
-	if (validated.row.content?.embeds != null)
-		delete validated.row.content.embeds
-	if (validated.row.type === 'post_note' && validated.row.content)
-		validated.row.content.text = String(validated.row.content.text || '').trim().slice(0, 2000)
+	const content = validated.row.content
+	if (content?.mediaRefs) content.mediaRefs = sanitizeMediaRefs(content.mediaRefs)
+	if (content && 'sensitiveMedia' in content) content.sensitiveMedia = content.sensitiveMedia === true
+	delete content?.embeds
+	if (validated.row.type === 'post_note' && content)
+		content.text = String(content.text || '').trim().slice(0, 2000)
 	if (existing.some(row => row.id === validated.row.id)) return true
 	if (validated.row.type === 'poll_vote') {
 		const { assertPollVoteAllowed } = await import('../lib/poll.mjs')

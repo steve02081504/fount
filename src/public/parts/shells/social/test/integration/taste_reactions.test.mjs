@@ -2,8 +2,9 @@
  * dislike / reaction_index / listReactionEvents 集成测试。
  */
 /* global Deno */
-import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 
 import { createTestSession } from '../harness.mjs'
 

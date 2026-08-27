@@ -4,14 +4,13 @@
 		"frontendShared": [
 			"src/public/parts/shells/deskpet/public/**",
 			"src/public/parts/shells/deskpet/test/frontend/**",
-			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/**"
 		]
 	},
 	"suites": [
 		{
 			"name": "frontend",
-			"expected": "19s",
+			"expected": "1m43s",
 			"dependsOn": [
 				"server:live"
 			],

@@ -24,8 +24,12 @@ export class ModuleCheckMissedReadyError extends Error {
 /** 子进程 `--preload`：模块图物化后、用户代码前发 ready。 */
 export const MODULE_CHECK_PRELOAD = fileURLToPath(new URL('../../module_check_ready.mjs', import.meta.url))
 
-/** ready 请求有界超时（毫秒）。 */
-const MODULE_CHECK_READY_TIMEOUT_MS = 15_000
+/** 单次 ready 尝试的超时（毫秒）。 */
+const MODULE_CHECK_READY_ATTEMPT_TIMEOUT_MS = 10_000
+/** ready 握手总窗口（毫秒）：覆盖内核瞬时繁忙导致的偶发延迟，避免子进程被误杀。 */
+const MODULE_CHECK_READY_TOTAL_TIMEOUT_MS = 120_000
+/** 尝试间隔（毫秒）。 */
+const MODULE_CHECK_READY_RETRY_DELAY_MS = 2_000
 
 /**
  * 给 deno run/test/bench 插入 `--preload`（有 ticket 时）。
@@ -74,14 +78,24 @@ export async function acquireModuleCheckTicket() {
 export async function signalModuleCheckReady(ticket) {
 	const base = getTestHubBaseUrl()
 	if (!base || !ticket) return
-	const res = await fetch(`${base}/module-check/ready`, {
-		method: 'POST',
-		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify({ ticket }),
-		signal: AbortSignal.timeout(MODULE_CHECK_READY_TIMEOUT_MS),
-	})
-	if (!res.ok)
-		throw new Error(`module-check ready failed: ${res.status}`)
+	const deadline = Date.now() + MODULE_CHECK_READY_TOTAL_TIMEOUT_MS
+	while(true) try {
+		const res = await fetch(`${base}/module-check/ready`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ ticket }),
+			signal: AbortSignal.timeout(MODULE_CHECK_READY_ATTEMPT_TIMEOUT_MS),
+		})
+		if (!res.ok)
+			throw new Error(`module-check ready failed: ${res.status}`)
+		return
+	}
+	catch (error) {
+		// 仅重试瞬时故障（超时/网络），硬错误（非 2xx）立即抛出。
+		const transient = error?.name === 'TimeoutError' || error instanceof TypeError
+		if (!transient || Date.now() >= deadline) throw error
+		await new Promise(resolve => { setTimeout(resolve, MODULE_CHECK_READY_RETRY_DELAY_MS) })
+	}
 }
 
 /**
@@ -104,6 +118,29 @@ export async function abandonModuleCheckTicket(ticket) {
 	}
 	catch {
 		return false
+	}
+}
+
+/**
+ * 串行化一段会触发共享 node_modules npm 解析的初始化期（如 boot 的 loadPart）。
+ * 复用模组检查互斥闸：同进程内只有一次能同时物化 npm 依赖，避免并行 integration suite
+ * 在 loadPart 动态 import（如 file-type → strtok3）时争用 .deno 符号农场（denoland/deno#35804）。
+ * 无 hub（手动单跑）时退化为直接执行，不做串行化。
+ * @template T
+ * @param {() => Promise<T>} initializer 需串行执行的初始化段
+ * @returns {Promise<T>} 结果
+ */
+export async function withModuleCheckSerialized(initializer) {
+	const ticket = await acquireModuleCheckTicket()
+	if (!ticket) return await initializer()
+	try {
+		const result = await initializer()
+		await signalModuleCheckReady(ticket)
+		return result
+	}
+	catch (error) {
+		await abandonModuleCheckTicket(ticket)
+		throw error
 	}
 }
 

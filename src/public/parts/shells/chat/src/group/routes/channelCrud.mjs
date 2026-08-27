@@ -7,9 +7,11 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
+import { prependChannelLink } from '../../chat/dag/channelOperations.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { materializeFriendBinding } from '../lib/friendBinding.mjs'
 
+import { scheduleDmChannelAutoNameAndCleanup } from './channelAutoName.mjs'
 import {
 	ensureChannel,
 	requireGroupMember,
@@ -87,12 +89,12 @@ export function registerChannelCrudRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels`, authenticate, requireGroupMember(), async (req, res) => {
 		const {
-			groupContext: { groupId },
-			body: { type, name, description, isPrivate }
+			groupContext: { groupId, state, username },
+			body: { type, name, description, isPrivate, parentChannelId }
 		} = req
-		const channelName = name || ''
-		if (!channelName)
-			throw httpError(400, 'Channel name is required')
+		const channelName = name ?? ''
+		const parentId = parentChannelId || state.groupSettings?.rootChannelId || null
+		if (parentId) ensureChannel(state, parentId)
 
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).createChannel({
@@ -101,12 +103,42 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			description: description ?? '',
 			channelId: prefixedRandomId('channel_'),
 			isPrivate: isPrivate || false,
+			parentChannelId: parentId,
+			permissionBlockId: parentId || state.groupSettings?.defaultChannelId || null,
 		})
+		// DM 群根级无名频道的 greeting-only 清理与 AI 命名/分类在后端异步进行，创建接口只发射并遗忘。
+		scheduleDmChannelAutoNameAndCleanup(username, groupId, channel.id, state).catch(() => { })
 		res.status(201).json({ channelId: channel.id })
 	})
 
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/promote`, authenticate, requireGroupMember(), async (req, res) => {
+		const {
+			groupContext: { groupId, state, username },
+			params: { channelId },
+			body: { parentChannelId }
+		} = req
+		const parentId = parentChannelId || state.groupSettings?.rootChannelId || null
+		if (!parentId || parentId === channelId)
+			throw httpError(400, 'parentChannelId required and cannot be self')
+		ensureChannel(state, parentId)
+		ensureChannel(state, channelId)
+		// 环检测：沿 channelId 现有子链遍历，若 parentId 可达则置顶会成环。
+		const visitedChannelIds = new Set()
+		const pendingChannelIds = [...state.channels?.[channelId]?.links || []]
+		while (pendingChannelIds.length) {
+			const linkedChannelId = pendingChannelIds.pop()
+			if (linkedChannelId === parentId)
+				throw httpError(400, 'promote forms a channel cycle')
+			if (visitedChannelIds.has(linkedChannelId)) continue
+			visitedChannelIds.add(linkedChannelId)
+			pendingChannelIds.push(...state.channels?.[linkedChannelId]?.links || [])
+		}
+		const event = await prependChannelLink(username, groupId, parentId, channelId)
+		res.status(200).json({ event })
+	})
+
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {
-		const { params: { groupId, channelId }, body: { name, description, type, isPrivate, parentChannelId } } = req
+		const { params: { groupId, channelId }, body: { name, description, type, isPrivate, links, permissionBlockId } } = req
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
@@ -125,8 +157,46 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			updates.type = type
 		if (isPrivate !== undefined)
 			updates.isPrivate = Boolean(isPrivate)
-		if (parentChannelId !== undefined)
-			updates.parentChannelId = parentChannelId || null
+		if (links !== undefined) {
+			if (!Array.isArray(links))
+				throw httpError(400, 'links must be an array of channel ids')
+			for (const linkId of links) {
+				if (!linkId) continue
+				ensureChannel(state, linkId)
+			}
+			if (links.includes(channelId))
+				throw httpError(400, 'links cannot reference self')
+			// 环检测：沿 links 从本频道可达处遍历，若回到本频道则拒绝，防止互链成环。
+			const visitedChannelIds = new Set()
+			const pendingChannelIds = [...links]
+			while (pendingChannelIds.length) {
+				const linkedChannelId = pendingChannelIds.pop()
+				if (linkedChannelId === channelId)
+					throw httpError(400, 'links form a cycle')
+				if (visitedChannelIds.has(linkedChannelId)) continue
+				visitedChannelIds.add(linkedChannelId)
+				pendingChannelIds.push(...state.channels?.[linkedChannelId]?.links || [])
+			}
+			updates.links = links
+		}
+		if (permissionBlockId !== undefined) {
+			const target = permissionBlockId || null
+			if (target) {
+				ensureChannel(state, target)
+				if (target === channelId)
+					throw httpError(400, 'permissionBlockId cannot reference self')
+				// 环检测：沿 permissionBlockId 从 target 上溯，若回到本频道则成环。
+				let cursor = target
+				const seen = new Set()
+				while (cursor && !seen.has(cursor)) {
+					if (cursor === channelId)
+						throw httpError(400, 'permissionBlockId forms a cycle')
+					seen.add(cursor)
+					cursor = state.channels?.[cursor]?.permissionBlockId || null
+				}
+			}
+			updates.permissionBlockId = target
+		}
 
 		if (Object.keys(updates).length === 0)
 			throw httpError(400, 'No channel updates provided')
@@ -148,6 +218,8 @@ export function registerChannelCrudRoutes(router, authenticate) {
 
 		if (state.groupSettings.defaultChannelId === channelId)
 			throw httpError(400, 'Cannot delete default channel')
+		if (state.groupSettings.rootChannelId === channelId)
+			throw httpError(400, 'Cannot delete root channel')
 
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'channel_delete',

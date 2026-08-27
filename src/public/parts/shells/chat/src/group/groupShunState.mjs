@@ -4,8 +4,9 @@
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { ms } from 'fount/scripts/ms.mjs'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { groupDir } from '../chat/lib/paths.mjs'
 
@@ -32,7 +33,7 @@ function shunStateLockKey(username, groupId) {
 
 /**
  * @param {unknown} raw 磁盘 JSON
- * @returns {{ shunsByNode: Record<string, number>, suspectedRemoved: boolean, suspectedAt: number | null, shunnedBy: string[], bannerDismissed: boolean, lastProbeAt: number }} 规范化状态
+ * @returns {{ shunsByNode: Record<string, number>, suspectedRemoved: boolean, suspectedAt: number | null, shunnedBy: string[], bannerDismissed: boolean, lastProbeAt: number, knownPeerCount: number, replicaRetained: boolean }} 规范化状态
  */
 export function normalizeShunState(raw) {
 	const shunsByNode = {}
@@ -52,6 +53,8 @@ export function normalizeShunState(raw) {
 		shunnedBy,
 		bannerDismissed: !!raw?.bannerDismissed,
 		lastProbeAt: Number.isFinite(Number(raw?.lastProbeAt)) ? Number(raw.lastProbeAt) : 0,
+		knownPeerCount: Number.isFinite(Number(raw?.knownPeerCount)) ? Number(raw.knownPeerCount) : 0,
+		replicaRetained: !!raw?.replicaRetained,
 	}
 }
 

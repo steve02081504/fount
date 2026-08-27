@@ -3,7 +3,7 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { createDedupeSlot } from 'npm:@steve02081504/fount-p2p/federation/dedupe_slot'
 
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
@@ -19,6 +19,14 @@ import { signPullAttestation } from './pullAttestation.mjs'
 /** 出站 fed_shun 限流：同群同请求方 30s 内至多一发。 */
 const OUTBOUND_SHUN_DEDUPE_MS = 30_000
 const takeOutboundShunSlot = createDedupeSlot({ maxSize: 4000, ttlMs: OUTBOUND_SHUN_DEDUPE_MS })
+
+/** 核验回应的 fresh fed_shun 限流：短 TTL，保证回应及时但仍防刷。 */
+const VERIFY_RESPONSE_SHUN_DEDUPE_MS = 1_000
+const takeVerifyShunSlot = createDedupeSlot({ maxSize: 4000, ttlMs: VERIFY_RESPONSE_SHUN_DEDUPE_MS })
+
+/** fed_verify_membership 触发的补齐限流：同 peer 的连续核验请求不会在上一轮同步完成后再次触发同步。 */
+const VERIFY_REQUEST_THROTTLE_MS = 1_500
+const takeVerifyRequestSlot = createDedupeSlot({ maxSize: 4000, ttlMs: VERIFY_REQUEST_THROTTLE_MS })
 
 /**
  * 主动探测的冷却安全网：尚无任何新鲜 shun 信号时，最多每此间隔向全员探测一次。
@@ -98,11 +106,10 @@ export function evaluateShunConsensusPure(knownPeerNodeHashes, shunsByNode, nowM
  * @returns {{ shun: boolean, reason: 'not_a_member' | 'blocked' | null }} 是否应回闭门羹
  */
 export function resolveShunForPubKeyRequester(fedState, isBlockedPeer, requesterPubKeyHash) {
-	const pk = normalizeHex64(requesterPubKeyHash)
-	if (!pk) return { shun: false, reason: null }
-	if (isBlockedPeer(pk)) return { shun: true, reason: 'blocked' }
-	if (fedState?.bannedMembers?.has?.(pk)) return { shun: true, reason: 'not_a_member' }
-	const member = fedState?.members?.[pk]
+	if (!isHex64(requesterPubKeyHash)) return { shun: false, reason: null }
+	if (isBlockedPeer(requesterPubKeyHash)) return { shun: true, reason: 'blocked' }
+	if (fedState?.bannedMembers?.has?.(requesterPubKeyHash)) return { shun: true, reason: 'not_a_member' }
+	const member = fedState?.members?.[requesterPubKeyHash]
 	// 已知成员但非 active（被移除）→ 闭门羹。但“从未见过该 pubKey”不等于“已出局”：入群 bootstrap 期
 	// 新成员的 member_join 尚未物化到本端时，若对未知 pubKey 回 fed_shun('not_a_member')，会让新成员因“对端
 	// 还不认识我”被 shun 共识误判出局（suspectedRemoved 自锁 5 分钟）。故未知 pubKey 一律放行不 shun，与
@@ -119,13 +126,12 @@ export function resolveShunForPubKeyRequester(fedState, isBlockedPeer, requester
  * @returns {{ shun: boolean, reason: 'not_a_member' | 'blocked' | null }} 是否应回闭门羹
  */
 export function resolveShunForNodeHashRequester(fedState, isBlockedPeer, requesterNodeHash) {
-	const node = normalizeHex64(requesterNodeHash)
-	if (!node) return { shun: false, reason: null }
-	if (isBlockedPeer(node)) return { shun: true, reason: 'blocked' }
-	if (fedState?.bannedNodes?.has?.(node)) return { shun: true, reason: 'not_a_member' }
+	if (!isHex64(requesterNodeHash)) return { shun: false, reason: null }
+	if (isBlockedPeer(requesterNodeHash)) return { shun: true, reason: 'blocked' }
+	if (fedState?.bannedNodes?.has?.(requesterNodeHash)) return { shun: true, reason: 'not_a_member' }
 	let matched = false
 	for (const member of Object.values(fedState?.members || {})) {
-		if (member?.homeNodeHash !== node) continue
+		if (member?.homeNodeHash !== requesterNodeHash) continue
 		matched = true
 		if (member.status === 'active') return { shun: false, reason: null }
 	}
@@ -160,6 +166,40 @@ export function sendFedShun(fedOut, fedShunSend, groupId, localNodeHash, request
 }
 
 /**
+ * fed_verify_membership 应答：同步有界拉取后按最新状态决定是否回 fresh fed_shun。
+ * 绕过 30s 出站 dedupe（核验回应的意义就在新鲜时间戳），用短 TTL 槽防刷。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {string} fromNodeHash 请求方 nodeHash
+ * @param {string} peerId peer
+ * @param {{ enqueue: (priority: number, run: () => void) => void }} fedOut 出站队列
+ * @param {(payload: unknown, peerId: string) => void} fedShunSend P2P fed_shun send
+ * @param {(subject: string) => boolean} isBlockedPeer 拉黑检查
+ * @returns {Promise<void>}
+ */
+export async function handleFedVerifyMembership(username, groupId, fromNodeHash, peerId, fedOut, fedShunSend, isBlockedPeer) {
+	if (!isHex64(fromNodeHash) || !peerId) return
+	if (!takeVerifyRequestSlot(`${groupId}:${peerId}`)) return
+	const { catchUpGroupFromPeers } = await import('./index.mjs')
+	await catchUpGroupFromPeers(username, groupId, { waitMs: 1500 })
+	const fedState = await loadFederationMaterializedState(username, groupId)
+	const decision = resolveShunForNodeHashRequester(fedState, isBlockedPeer, fromNodeHash)
+	if (!decision.shun || !decision.reason) return
+	const key = `${groupId}:${fromNodeHash}:${decision.reason}`
+	if (!takeVerifyShunSlot(key)) return
+	const payload = {
+		groupId,
+		nodeHash: localNodeHash(),
+		reason: decision.reason,
+	}
+	fedOut.enqueue(4, () => {
+		if (!peerId) return
+		try { fedShunSend(payload, peerId) }
+		catch (error) { console.error('federation: fed_verify_membership shun send failed', error) }
+	})
+}
+
+/**
  * member_ban 落盘后向被封成员 home 节点主动推送 fed_shun（不等待对端探测）。
  * @param {string} username  replica 用户
  * @param {string} groupId 群 ID
@@ -168,21 +208,20 @@ export function sendFedShun(fedOut, fedShunSend, groupId, localNodeHash, request
  * @returns {Promise<void>}
  */
 export async function pushFedShunToHomeNode(username, groupId, targetHomeNodeHash, reason = 'not_a_member') {
-	const home = targetHomeNodeHash
-	if (!isHex64(home)) return
+	if (!isHex64(targetHomeNodeHash)) return
 	const { getFederationPartitionSlot } = await import('./registry.mjs')
 	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
 	const slot = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
 	if (!slot?.sendToPeer || !slot.fedOut) return
-	const peerId = slot.getPeerIdByNodeHash?.(home)
-		|| slot.getRoster().find(peer => peer?.remoteNodeHash === home)?.peerId
+	const peerId = slot.getPeerIdByNodeHash?.(targetHomeNodeHash)
+		|| slot.getRoster().find(peer => peer?.remoteNodeHash === targetHomeNodeHash)?.peerId
 	if (!peerId) return
 	sendFedShun(
 		slot.fedOut,
 		(payload, targetPeerId) => slot.sendToPeer(targetPeerId, 'fed_shun', payload),
 		groupId,
 		localNodeHash(),
-		home,
+		targetHomeNodeHash,
 		peerId,
 		reason,
 	)
@@ -211,13 +250,12 @@ export async function notifyFedShunAfterMemberBan(username, groupId, banEvent) {
  * @returns {Promise<ReturnType<typeof loadGroupShunState>>} 更新后状态
  */
 export async function recordInboundShun(username, groupId, fromNodeHash, reason) {
-	const nodeHash = normalizeHex64(fromNodeHash)
-	if (!isHex64(nodeHash)) return loadGroupShunState(username, groupId)
+	if (!isHex64(fromNodeHash)) return loadGroupShunState(username, groupId)
 	const now = Date.now()
 	// 锁内基于最新状态合并：并发的多个 shun 入站不会互相覆盖 shunsByNode。
 	return updateGroupShunState(username, groupId, prev => ({
-		shunsByNode: { ...prev.shunsByNode, [nodeHash]: now },
-		shunnedBy: [...new Set([...prev.shunnedBy, nodeHash])],
+		shunsByNode: { ...prev.shunsByNode, [fromNodeHash]: now },
+		shunnedBy: [...new Set([...prev.shunnedBy, fromNodeHash])],
 	}))
 }
 
@@ -281,14 +319,17 @@ export async function evaluateShunConsensus(username, groupId, options = {}) {
 				suspectedRemoved: false,
 				suspectedAt: null,
 				bannerDismissed: false,
+				knownPeerCount: knownPeers.length,
 			})
-		return prev
+		if (prev.knownPeerCount === knownPeers.length) return prev
+		return saveGroupShunState(username, groupId, { knownPeerCount: knownPeers.length })
 	}
 	if (prev.suspectedRemoved) return prev
 	return saveGroupShunState(username, groupId, {
 		suspectedRemoved: true,
 		suspectedAt: Date.now(),
 		shunnedBy,
+		knownPeerCount: knownPeers.length,
 	})
 }
 
@@ -307,8 +348,30 @@ export async function handleInboundFedShun(username, groupId, fromNodeHash, reas
 }
 
 /**
+ * 向已知对端逐一致函核验成员资格：对方收到后同步有界拉取并按最新状态回 fresh fed_shun。
+ * 相比广播 tip ping 探测，能把各对端的 fresh shun 收敛进同一共识窗口，并补上“对端尚未物化 ban”的缺口。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {object} slot FederationSlot
+ * @returns {Promise<void>}
+ */
+export async function requestMembershipVerification(username, groupId, slot) {
+	if (!slot?.send) return
+	const fedState = await loadFederationMaterializedState(username, groupId)
+	const selfNodeHash = localNodeHash()
+	const rosterNodeHashes = rosterNodeHashesFromSlot(slot)
+	const knownPeers = collectKnownPeerNodeHashes(fedState, selfNodeHash, rosterNodeHashes)
+	for (const nodeHash of knownPeers) {
+		const peer = slot.getRoster().find(p => p?.remoteNodeHash === nodeHash)
+		if (peer?.peerId)
+			slot.send('fed_verify_membership', { nodeHash: selfNodeHash }, peer.peerId)
+		await sleep(SHUN_PROBE_INBOUND_SETTLE_MS)
+	}
+}
+
+/**
  * catchup 收尾：按需向全员探测“是否仍被招待”，再评估共识。
- * 尚无 shun 时每轮 catchup 均可重探（P2P 会合前单次落空很常见）；有 shun 后按新鲜度/冷却节流。
+ * 尚无 shun 时每轮 catchup 均可重探（P2P 会合前单次落空很常见）；有部分 shun 时改为逐一致函核验，其余按新鲜度/冷却节流。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} slot FederationSlot
@@ -319,6 +382,7 @@ export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot
 	let shunState = await loadGroupShunState(username, groupId)
 	const now = Date.now()
 	const noShunsYet = !Object.keys(shunState.shunsByNode).length
+	const hasPartialShuns = !noShunsYet
 	const shouldProbe = !!slot?.send
 		&& !shunState.suspectedRemoved
 		&& (noShunsYet || hasFreshShun(shunState.shunsByNode, now) || now - shunState.lastProbeAt >= SHUN_PROBE_COOLDOWN_MS)
@@ -326,8 +390,12 @@ export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot
 	if (shouldProbe) {
 		await waitForRosterPeers(slot, Math.min(SHUN_PROBE_ROSTER_WAIT_MS, clampNumber(options.waitMs ?? 1800, 200, 15_000)))
 		shunState = await saveGroupShunState(username, groupId, { lastProbeAt: now })
-		await probeShunViaTipPingToRosterPeers(username, groupId, slot)
-		await probeShunFromFederationPeers(username, groupId, slot, options)
+		if (hasPartialShuns)
+			await requestMembershipVerification(username, groupId, slot)
+		else {
+			await probeShunViaTipPingToRosterPeers(username, groupId, slot)
+			await probeShunFromFederationPeers(username, groupId, slot, options)
+		}
 		await sleep(SHUN_PROBE_INBOUND_SETTLE_MS)
 		shunState = await loadGroupShunState(username, groupId)
 		rosterSnapshot = rosterNodeHashesFromSlot(slot)

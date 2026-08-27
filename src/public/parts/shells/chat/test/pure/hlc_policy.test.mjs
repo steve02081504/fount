@@ -2,8 +2,9 @@
  * HLC skew 策略单元测试（Deno）。
  */
 /* global Deno */
-import { ms } from 'fount/scripts/ms.mjs'
 import { assertEquals } from 'jsr:@std/assert'
+
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { classifyHlcSkewAction } from '../../src/chat/events/hlcPolicy.mjs'
 

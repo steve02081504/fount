@@ -15,8 +15,9 @@ import { Buffer } from 'node:buffer'
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import {
@@ -156,9 +157,8 @@ export async function reconcileContextSidecarsWithChatLog(username, groupId, cha
  * @returns {Buffer | null} 本地明文缓存
  */
 function tryReadPlaintextCache(username, contentHashHex) {
-	const h = contentHashHex || ''
-	if (!isHex64(h)) return null
-	const path = join(shellChatRoot(username), 'files', h)
+	if (!isHex64(contentHashHex)) return null
+	const path = join(shellChatRoot(username), 'files', contentHashHex)
 	if (!existsSync(path)) return null
 	try {
 		return readFileSync(path)

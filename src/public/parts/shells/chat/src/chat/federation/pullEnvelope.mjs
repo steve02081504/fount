@@ -108,7 +108,7 @@ export async function applyPullInner(username, groupId, inner, options = {}) {
 			const localCheckpoint = await safeReadJson(snapshotPath(username, groupId))
 			const remoteEpoch = Number(inner.checkpoint.epoch_id) || 0
 			const localEpoch = Number(localCheckpoint?.epoch_id) || 0
-			const remoteTips = inner.checkpoint.local_tips_hash || ''
+			const remoteTips = inner.checkpoint.local_tips_hash
 			const localTips = String(localCheckpoint?.local_tips_hash || '').trim()
 			const shouldApply = !localCheckpoint?.checkpoint_event_id
 				|| remoteEpoch > localEpoch

@@ -251,10 +251,8 @@ function createI18nArrayProxy(arr, params, terminal = false) {
  */
 function baseGeti18n(localeData, key, params = {}, terminal = false) {
 	const translation = getNestedValue(localeData, key)
-	if (translation === undefined) {
-		console.warn(`Translation key "${key}" not found.`)
-		return undefined
-	}
+	if (translation === undefined)
+		return console.warn(`[i18n:missing] Translation key "${key}" not found.`)
 	return applyParamsToTranslation(translation, params, terminal)
 }
 

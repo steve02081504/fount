@@ -6,7 +6,7 @@
 import { Buffer } from 'node:buffer'
 
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 
 const BIND_DOMAIN = 'fount-chat-member-bind'
@@ -42,13 +42,12 @@ export async function verifyMemberJoinBinding({ entityHash, memberPubKeyHash, bi
 	const eh = entityHash || ''
 	const mh = memberPubKeyHash || ''
 	const sig = (bindingSig || '').replace(/^0x/iu, '')
-	const pub = normalizeHex64(entityActivePubKeyHex || '')
-	if (!isEntityHash128(eh) || !isHex64(mh) || !SIG_HEX_RE.test(sig) || !isHex64(pub))
+	if (!isEntityHash128(eh) || !isHex64(mh) || !SIG_HEX_RE.test(sig) || !isHex64(entityActivePubKeyHex))
 		return false
 	return verify(
 		new Uint8Array(Buffer.from(sig, 'hex')),
 		memberBindMessage(eh, mh),
-		new Uint8Array(Buffer.from(pub, 'hex')),
+		new Uint8Array(Buffer.from(entityActivePubKeyHex, 'hex')),
 	)
 }
 
@@ -62,23 +61,22 @@ export async function verifyMemberJoinBinding({ entityHash, memberPubKeyHash, bi
  */
 export async function verifyEntityActivePubKeyBelongs(username, entityHash, entityActivePubKeyHex) {
 	const eh = entityHash || ''
-	const pub = normalizeHex64(entityActivePubKeyHex || '')
 	const user = username || ''
-	if (!user || !isEntityHash128(eh) || !isHex64(pub))
+	if (!user || !isEntityHash128(eh) || !isHex64(entityActivePubKeyHex))
 		return { ok: false, reason: 'invalid entity active key ownership args' }
 
 	try {
 		const { findLocalEntityActivePubKey, getEntityActivePubKey } = await import('../../entity/identity.mjs')
 		try {
 			const localActive = await getEntityActivePubKey(user, eh)
-			if (localActive === pub) return { ok: true }
+			if (localActive === entityActivePubKeyHex) return { ok: true }
 			return { ok: false, reason: 'entityActivePubKeyHex mismatch local identity' }
 		}
 		catch {
 			// 同进程其他 replica 已托管该实体（联邦仿真 / 单机多用户）
 			const hosted = findLocalEntityActivePubKey(eh)
 			if (hosted) {
-				if (hosted === pub) return { ok: true }
+				if (hosted === entityActivePubKeyHex) return { ok: true }
 				return { ok: false, reason: 'entityActivePubKeyHex mismatch local identity' }
 			}
 		}
@@ -107,8 +105,7 @@ export async function verifyEntityActivePubKeyBelongs(username, entityHash, enti
 	}
 	if (String(payload?.entityHash || '') !== eh)
 		return { ok: false, reason: 'entity profile entityHash mismatch' }
-	const active = normalizeHex64(payload.activePubKeyHex || '')
-	if (!isHex64(active) || active !== pub)
+	if (isHex64(payload.activePubKeyHex) !== entityActivePubKeyHex)
 		return { ok: false, reason: 'entityActivePubKeyHex mismatch EVFS profile' }
 	return { ok: true }
 }

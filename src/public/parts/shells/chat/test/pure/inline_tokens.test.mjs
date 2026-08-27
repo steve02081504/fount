@@ -1,4 +1,6 @@
 /* global Deno */
+import { assertEquals } from 'jsr:@std/assert'
+
 import { parseInlineTokens } from 'fount/public/parts/shells/chat/public/shared/inlineTokens.mjs'
 import {
 	formatChannelToken,
@@ -13,7 +15,6 @@ import {
 	hasEveryoneToken,
 	hasHereToken,
 } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
-import { assertEquals } from 'jsr:@std/assert'
 
 
 const HASH = 'a'.repeat(128)

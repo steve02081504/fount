@@ -172,6 +172,10 @@
 			"moduleCheck": {
 				"missedReady": "Kiểm tra module: tiến trình thoát mà chưa gửi tín hiệu ready: ${label}"
 			},
+			"frontend": {
+				"isolatedRequired": "Kiểm thử giao diện ${shellLabel} phải được khởi động qua test/frontend/run.mjs (tự động tạo một nút cô lập). Đừng chạy nó trên bản phát triển cục bộ hoặc dữ liệu người dùng thật.",
+				"isolatedUser": "Kiểm thử phải chạy dưới người dùng cô lập \"${expectedUsername}\"; phiên hiện tại đang chạy với \"${username}\". Hãy khởi động qua run.mjs, đừng trỏ vào fount sản xuất hoặc phát triển."
+			},
 			"queue": {
 				"append": "Vào hàng đợi: ${label} (${reason}) còn ≈ ${remaining}",
 				"remove": "Ra khỏi hàng đợi: ${label} (${reason}) còn ≈ ${remaining}"
@@ -191,7 +195,45 @@
 						"0": "Đang chờ"
 					}
 				},
-				"failureLog": "\n—— Nhật ký lỗi: ${label} ——"
+				"failureLog": "\n—— Nhật ký lỗi: ${label} ——",
+				"schedule": {
+					"reason": "(${reason})",
+					"running": "Đang chạy ${key}, còn ${remaining}",
+					"reasons": {
+						"initial": "Kế hoạch sẵn sàng",
+						"suite_started": "Bộ kiểm thử bắt đầu",
+						"suite_completed": "Bộ kiểm thử hoàn tất",
+						"suite_failed": "Bộ kiểm thử thất bại",
+						"blocked": "Bị chặn: phụ thuộc thất bại",
+						"skipped": "Được bỏ qua: phụ thuộc bị bỏ qua",
+						"queue_appended": "Công việc vào hàng đợi",
+						"queue_removed": "Công việc rời hàng đợi",
+						"prep_promoted": "Chuẩn bị được thăng cấp",
+						"module_check_ready": "Kiểm tra mô-đun sẵn sàng",
+						"dependency_ready": "Phụ thuộc sẵn sàng",
+						"resource_budget_changed": "Ngân sách tài nguyên thay đổi",
+						"job_queued": "Công việc xếp hàng",
+						"gate_state_changed": "Cổng tài nguyên thay đổi",
+						"expected_drift": "Ước lượng thời gian lệch",
+						"progress": "Cập nhật tiến độ"
+					}
+				},
+				"dashboard": {
+					"idle": "nhàn rỗi",
+					"unknownCount": "+${count} không xác định",
+					"runningCount": "Đang chạy: ${count}",
+					"passedCount": "Đạt: ${count}",
+					"failedCount": "Thất bại: ${count}",
+					"queuedCount": "Trong hàng đợi: ${count}",
+					"reason": "(${reason})",
+					"elapsed": "${elapsed}",
+					"eta": "Còn lại ≈${remaining}",
+					"duration": "Thời lượng: ${duration}",
+					"cpu": "CPU ${cpu}",
+					"memory": "Bộ nhớ ${memory}",
+					"queueAppend": "Vào hàng đợi: ${label} (${reason})",
+					"queueRemove": "Đã gỡ: ${label} (${reason})"
+				}
 			},
 			"passed": "ĐẠT: ${label}",
 			"passedWithNoise": "ĐẠT: ${label} (có nhiễu)",
@@ -1601,7 +1643,10 @@
 						"stateDeny": "từ chối",
 						"stateNeutral": "kế thừa",
 						"updateFailed": "Không thể cập nhật quyền kênh: ${error}",
-						"updated": "Đã cập nhật quyền của kênh"
+						"updated": "Đã cập nhật quyền của kênh",
+						"syncedWarning": "Quyền của kênh này được đồng bộ từ kênh mẹ; các thay đổi riêng lẻ sẽ tách chúng trước.",
+						"syncToDefault": "Đồng bộ hóa với quyền của kênh gốc",
+						"synced": "Đã đồng bộ hóa với quyền của kênh gốc"
 					},
 					"advanced": {
 						"description": "Các thông số mạng, lưu trữ, giới hạn tốc độ và mã hóa; vui lòng giữ mặc định nếu bạn không chắc chắn",
@@ -1692,7 +1737,8 @@
 						"general": "nền tảng",
 						"members": "thành viên",
 						"permissions": "Quyền của vai trò",
-						"storage": "Lưu trữ và lưu trữ"
+						"storage": "Lưu trữ và lưu trữ lạnh",
+						"groupPermissions": "Quyền của nhóm"
 					},
 					"key": {
 						"managementTip": "Khóa mới cần được phân phối lại cho các thành viên sau khi luân chuyển. Chỉ nên thực hiện thao tác thủ công nếu bạn nghi ngờ khóa đã bị xâm phạm.",
@@ -1701,6 +1747,15 @@
 						"rotateConfirm": "Bạn có chắc chắn muốn xoay khóa chính của tệp nhóm này theo cách thủ công không? Thành viên mới cần đồng bộ lại khóa tệp lịch sử.",
 						"rotateFailed": "Xoay khóa không thành công: ${error}",
 						"rotateOk": "Chìa khóa đã được xoay"
+					},
+					"groupPerms": {
+						"denied": "Bạn không có quyền quản lý quyền của nhóm",
+						"hint": "Đặt ghi đè theo vai trò cho quyền quản trị cấp nhóm (đá, cấm, quản lý vai trò, quản lý quản trị viên, mời thành viên).",
+						"overridden": "Đã ghi đè",
+						"clearOverride": "Xóa ghi đè",
+						"noRoles": "Hiện chưa có vai trò nào để cấu hình",
+						"updateFailed": "Cập nhật quyền của nhóm không thành công: ${error}",
+						"updated": "Đã cập nhật quyền của nhóm"
 					}
 				},
 				"pinContext": "Vùng lân cận hàng đầu (±N vùng lân cận)",
@@ -2009,6 +2064,7 @@
 				"suspectedRemoved": "Bạn có thể đã bị xóa khỏi nhóm này: bạn đã yêu cầu các nút đã biết ${count} xác minh nhưng tất cả chúng đều bị từ chối. Bạn có thể kỷ niệm lịch sử địa phương hoặc xóa bản sao nhóm này.",
 				"suspectedRemovedKeep": "Lấy một món quà lưu niệm",
 				"suspectedRemovedLeave": "Xóa nhóm",
+				"shunVerifying": "Đang xác minh tư cách thành viên: ${confirmed}/${total} nút đã biết đã từ chối",
 				"fork": {
 					"governance": "Có một nhánh trong bản ghi quyền và nó hiện ở chế độ xem cục bộ.",
 					"tipLabel": "Lá DAG",
@@ -2338,6 +2394,12 @@
 				"success": "Đã tạo kênh",
 				"title": "Tạo kênh mới"
 			},
+			"newCategory": {
+				"button": "Danh mục mới",
+				"failed": "Không tạo được danh mục",
+				"success": "Đã tạo danh mục",
+				"title": "Danh mục mới"
+			},
 			"discovery": {
 				"description": "Duyệt qua các nhóm công cộng từ mạng liên kết, chọn một cộng đồng quan tâm và tham gia.",
 				"empty": "Hiện tại không có nhóm được đề xuất; sau khi bật đồng bộ hóa liên kết, danh sách khám phá sẽ được đồng bộ hóa từ các nước láng giềng.",
@@ -2415,6 +2477,9 @@
 					"exportFailed": "Xuất không thành công: ${error}"
 				},
 				"name": "Tên kênh",
+				"unnamed": "Không tên",
+				"parent": "kênh mẹ",
+				"noParent": "Không có kênh mẹ (kênh gốc)",
 				"nameInput": {
 					"placeholder": "tổng quan"
 				},
@@ -2427,7 +2492,41 @@
 				"type": "Loại kênh",
 				"typeList": "Danh sách/Kênh diễn đàn",
 				"typeStreaming": "kênh phát trực tuyến",
-				"typeText": "kênh trò chuyện"
+				"typeText": "kênh trò chuyện",
+				"readonlyRoot": {
+					"placeholder": "Kênh gốc không thể gửi tin nhắn/tập tin"
+				}
+			},
+			"category": {
+				"context": {
+					"createIn": "Tạo một kênh trong danh mục này",
+					"delete": "Xóa danh mục",
+					"deleteConfirm": "Bạn có chắc chắn muốn xóa danh mục \"${name}\" không? Các kênh bên trong sẽ trở về Không được nhóm.",
+					"deleteOk": "Đã xóa danh mục",
+					"perms": "Quyền của danh mục",
+					"rename": "Đổi tên danh mục",
+					"renameOk": "Danh mục đã được đổi tên",
+					"renamePrompt": "Tên danh mục mới"
+				},
+				"reorder": {
+					"after": "Di chuyển «${source}» sau «${target}»?",
+					"before": "Di chuyển «${source}» trước «${target}»?",
+					"into": "Di chuyển «${source}» vào trong «${target}»?",
+					"toRoot": "Di chuyển «${source}» lên cấp gốc?"
+				},
+				"name": "Tên danh mục",
+				"nameInput": {
+					"placeholder": "phương tiện"
+				},
+				"perm": {
+					"loadFailed": "Không tải được quyền danh mục: ${error}",
+					"title": "Quyền của danh mục",
+					"updateFailed": "Không cập nhật được quyền danh mục: ${error}",
+					"updated": "Quyền danh mục đã được cập nhật",
+					"syncedWarning": "Quyền của danh mục này được đồng bộ từ kênh gốc; các thay đổi riêng lẻ sẽ tách chúng trước.",
+					"syncToDefault": "Đồng bộ hóa với quyền của kênh gốc",
+					"synced": "Đã đồng bộ hóa với quyền của kênh gốc"
+				}
 			},
 			"message": {
 				"action": {
@@ -2768,7 +2867,7 @@
 			"list": {
 				"channelEmpty": "Danh sách trống.",
 				"editorTitle": "Chỉnh sửa các mục danh sách (mảng JSON)",
-				"itemUntitled": "Vô danh",
+				"itemUntitled": "Không tên",
 				"jsonInvalid": "JSON không hợp lệ: ${message}",
 				"saveFailed": "Lưu không thành công",
 				"saveToDag": "Lưu vào DAG",

@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "html_meta",
-			"expected": "2s",
+			"expected": "7s",
 			"triggerFilter": {
 				"unignore": [
 					"docs/readme/*.md",
@@ -151,7 +151,7 @@
 		},
 		{
 			"name": "text_lf",
-			"expected": "2s",
+			"expected": "3s",
 			"triggerFilter": {
 				"ignoreDefaults": false
 			},
@@ -173,7 +173,7 @@
 		},
 		{
 			"name": "locale_md_align",
-			"expected": "1s",
+			"expected": 600,
 			"triggerFilter": {
 				"unignore": [
 					"docs/EULA/*.md",
@@ -223,7 +223,7 @@
 		},
 		{
 			"name": "theme_radius",
-			"expected": "2s",
+			"expected": "1s",
 			"run": [
 				"deno",
 				"test",
@@ -238,7 +238,8 @@
 				"src/scripts/checks/theme_radius.mjs",
 				"src/scripts/checks/test/theme_radius.test.mjs",
 				"src/scripts/checks/walk.mjs",
-				"src/public/**/*.{html,mjs,js,css}",
+				"src/public/parts/shells/**/public/**/*.{html,mjs,js,css}",
+				"src/public/pages/**/*.{html,mjs,js,css}",
 				".github/pages/**/*.{html,mjs,js,css}"
 			]
 		},

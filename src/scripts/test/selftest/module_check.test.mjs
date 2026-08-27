@@ -7,7 +7,7 @@ import { rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 
-import { assertEquals, assertRejects } from 'jsr:@std/assert'
+import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { waitUntil } from '../core/wait.mjs'
@@ -20,7 +20,7 @@ import {
 	withDenoModuleCheckPreload,
 	withModuleCheckTicket,
 } from '../hub/clients/module_check.mjs'
-import { ModuleCheckGate } from '../kernel/module_check.mjs'
+import { DEFAULT_MODULE_CHECK_MS, ModuleCheckGate } from '../kernel/module_check.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
 
 import { awaitWithTimeout, enqueueAndAwaitSkip } from './kernel_fixtures.mjs'
@@ -40,7 +40,7 @@ Deno.test('ModuleCheckGate second acquire waits until first ready', async () => 
 })
 
 Deno.test('ModuleCheckGate abandon releases waiters without recording duration', async () => {
-	const gate = new ModuleCheckGate()
+	const gate = new ModuleCheckGate({ defaultMeanMs: 0 })
 	const first = await gate.acquire()
 	let secondTicket
 	const second = gate.acquire().then(ticket => { secondTicket = ticket })
@@ -61,12 +61,38 @@ Deno.test('ModuleCheckGate abandon after ready is false', async () => {
 })
 
 Deno.test('ModuleCheckGate meanDurationMs averages recorded ready durations', async () => {
-	const gate = new ModuleCheckGate()
+	const gate = new ModuleCheckGate({ defaultMeanMs: 0 })
 	assertEquals(gate.meanDurationMs(), 0)
 	const ticket = await gate.acquire()
 	await new Promise(resolve => setTimeout(resolve, 20))
 	gate.ready(ticket)
 	assertEquals(gate.meanDurationMs() > 0, true)
+})
+
+Deno.test('ModuleCheckGate meanDurationMs falls back to default when no samples', () => {
+	const gate = new ModuleCheckGate()
+	assertEquals(gate.meanDurationMs(), DEFAULT_MODULE_CHECK_MS)
+})
+
+Deno.test('ModuleCheckGate onUpdate fires with running total/count and seeds initial stats', async () => {
+	const updates = []
+	const gate = new ModuleCheckGate({
+		initialTotal: 40_000,
+		initialCount: 1,
+		/**
+		 * 收集每次 ready 后的累计值。
+		 * @param {number} total 累计时长
+		 * @param {number} count 次数
+		 */
+		onUpdate: (total, count) => { updates.push([total, count]) },
+	})
+	assertEquals(gate.meanDurationMs(), 40_000)
+	const ticket = await gate.acquire()
+	await new Promise(resolve => setTimeout(resolve, 5))
+	gate.ready(ticket)
+	assertEquals(updates.length, 1)
+	assertEquals(updates[0][1], 2)
+	assert(gate.meanDurationMs() > 20_000)
 })
 
 Deno.test('ModuleCheckGate ignores mismatched ticket', async () => {
@@ -107,7 +133,7 @@ Deno.test('ModuleCheckGate aborted waiter does not steal the next ticket', async
 	await Promise.resolve()
 	abort.abort()
 	await awaitWithTimeout(
-		waiting.then(() => { throw new Error('aborted acquire should reject') }, () => {}),
+		waiting.then(() => { throw new Error('aborted acquire should reject') }, () => { }),
 		'aborted acquire did not reject',
 	)
 	assertEquals(stolen, undefined)
@@ -241,7 +267,7 @@ Deno.test('module-check HTTP: abandon after ready returns false', async () => {
 Deno.test('module-check HTTP: missed-ready is distinct from business errors', async () => {
 	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 3)
 	try {
-		await assertRejects(() => withModuleCheckTicket(async () => {}), ModuleCheckMissedReadyError)
+		await assertRejects(() => withModuleCheckTicket(async () => { }), ModuleCheckMissedReadyError)
 		try {
 			await withModuleCheckTicket(async () => ({ code: 1, output: 'FAILED' }))
 			throw new Error('expected throw')
@@ -375,7 +401,7 @@ Deno.test('module-check HTTP: aborted waiter does not steal the next ticket', as
 		const pending = fetch(`${handle.url}/module-check/acquire`, { method: 'POST', signal: abort.signal })
 		await waitUntil(() => handle.kernel.moduleCheck.waiting > 0, 2000, 10)
 		abort.abort()
-		await pending.catch(() => {})
+		await pending.catch(() => { })
 		await signalModuleCheckReady(first)
 		const third = await awaitWithTimeout(acquireModuleCheckTicket(), 'acquire hung after aborted waiter', 1000)
 		assertEquals(Boolean(third), true)
@@ -385,4 +411,3 @@ Deno.test('module-check HTTP: aborted waiter does not steal the next ticket', as
 		await handle.close()
 	}
 })
-

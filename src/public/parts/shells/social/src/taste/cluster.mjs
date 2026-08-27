@@ -2,10 +2,11 @@
  * 反应图信任加权 Jaccard 聚类 → 本地口味 tag。
  * 点踩为负向证据；所有计数信任加权；禁止裸全局计数。
  */
-import { handleError } from 'fount/scripts/errorHandlers.mjs'
-import { ms } from 'fount/scripts/ms.mjs'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 import { loadDwellTagBoosts } from '../engagement/dwell.mjs'
 import { socialPostKey } from '../federation/post_key.mjs'

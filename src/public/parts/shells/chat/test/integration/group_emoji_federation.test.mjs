@@ -7,8 +7,9 @@ import { mkdir, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { bootHeadlessDataRoot } from 'fount/scripts/test/node/boot.mjs'
 import { assert, assertEquals } from 'jsr:@std/assert'
+
+import { bootHeadlessDataRoot } from 'fount/scripts/test/node/boot.mjs'
 
 import {
 	handleFedEmojiData,

@@ -2,16 +2,22 @@
  * 侧栏群图标多选（Shift 范围 / Ctrl 切换）与选中样式同步。
  */
 import { store } from './core/state.mjs'
+import { isFriendBoundGroup } from './friendBindings.mjs'
 
 /**
  * @returns {string[]} 侧栏可见群 ID（内存顺序，与 serverBar 渲染一致）
  */
 export function orderedSidebarGroupIds() {
-	if (store.sidebar.sidebarGroupOrder.length)
-		return [...store.sidebar.sidebarGroupOrder]
-	return store.sidebar.groups
-		.filter(g => !g.friendBinding?.entityHash)
-		.map(g => g.groupId)
+	const groupById = new Map(store.sidebar.groups.map(group => [group.groupId, group]))
+	const ordered = (store.sidebar.sidebarGroupOrder.length
+		? [...store.sidebar.sidebarGroupOrder]
+		: store.sidebar.groups.map(group => group.groupId)
+	).filter(id => {
+		const group = groupById.get(id)
+		return group ? !isFriendBoundGroup(group) : false
+	})
+	// sidebarGroupOrder 可能含已删除/好友绑定 ID 而被过滤为空；仍有可见群时回退到当前顺序。
+	return ordered.length ? ordered : store.sidebar.groups.filter(group => !isFriendBoundGroup(group)).map(group => group.groupId)
 }
 
 /**
