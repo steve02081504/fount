@@ -124,16 +124,16 @@ const is_hidden_page = !window.innerHeight || !window.innerWidth
  * 向 Service Worker 查询服务器是否在线。
  * @returns {Promise<boolean>} 服务器是否在线，无法查询时视为离线。
  */
-export function queryServerOnline() {
-	if (!navigator.serviceWorker?.controller) return Promise(async resolve => {
+export async function queryServerOnline() {
+	if (!navigator.serviceWorker?.controller) {
 		try {
 			await fetch('/api/ping', { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(500) })
 		}
 		catch {
-			resolve(false)
+			return false
 		}
-		resolve(true)
-	})
+		return true
+	}
 	return new Promise(resolve => {
 		const channel = new MessageChannel()
 		/**
