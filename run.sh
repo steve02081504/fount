@@ -11,7 +11,7 @@ fi
 
 # 2. 捕获退出码，并为非正常退出提供用户交互
 RETURN_CODE=$?
-if [ "$RETURN_CODE" -ne 0 ] && [ "$RETURN_CODE" -ne 130 ] && [ "$RETURN_CODE" -ne 255 ] && [ -t 0 ] && [ -t 1 ]; then
+if [ "$#" -eq 0 ] && [ "$RETURN_CODE" -ne 0 ] && [ "$RETURN_CODE" -ne 130 ] && [ "$RETURN_CODE" -ne 255 ] && [ -t 0 ] && [ -t 1 ]; then
 	echo "Press Enter to continue..."
 	read -r _
 fi
