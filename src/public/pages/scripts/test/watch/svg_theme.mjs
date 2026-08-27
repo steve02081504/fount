@@ -26,6 +26,9 @@ const DRAWING_TAGS = new Set([
 	'text', 'textPath', 'tspan', 'use',
 ])
 
+/** 非绘制容器选择器：这些容器内部只作为裁剪/掩膜/渐变模板，不直接绘制到画布。 */
+const NON_DRAWING_SELECTOR = [...NON_DRAWING_TAGS].join(', ')
+
 /** 测量期间注入的样式：禁用过渡 / 动画，避免主题切换触发 transition 读到插值。 */
 const MEASURE_STYLE = '*,*::before,*::after{transition:none !important;animation:none !important}'
 
@@ -178,8 +181,10 @@ function collectSvgForegroundColors(svg) {
 	if (rootStyle.fill && rootStyle.fill !== 'none') colors.add(rootStyle.fill)
 	if (rootStyle.stroke && rootStyle.stroke !== 'none') colors.add(rootStyle.stroke)
 	for (const element of svg.querySelectorAll('*')) {
-		if (NON_DRAWING_TAGS.has(element.tagName.toLowerCase())) continue
-		if (!DRAWING_TAGS.has(element.tagName.toLowerCase())) continue
+		const tag = element.tagName.toLowerCase()
+		if (NON_DRAWING_TAGS.has(tag)) continue
+		if (!DRAWING_TAGS.has(tag)) continue
+		if (element.closest(NON_DRAWING_SELECTOR)) continue
 		const elementStyle = getComputedStyle(element)
 		colors.add(elementStyle.color)
 		if (elementStyle.fill && elementStyle.fill !== 'none') colors.add(elementStyle.fill)
@@ -229,6 +234,32 @@ function formatRgb([r, g, b]) {
 }
 
 /**
+ * 背景色是否由页面根级元素（body/html）提供。
+ * @param {[number, number, number]} background 背景色
+ * @returns {boolean} 由根级提供则为 true
+ */
+function isRootBackground(background) {
+	for (const element of [document.body, document.documentElement]) {
+		const rgb = cssColorToRgb(getComputedStyle(element).backgroundColor)
+		if (rgb && rgb.join(',') === background.join(',')) return true
+	}
+	return false
+}
+
+/**
+ * SVG 是否位于定位子树内（absolute/fixed/sticky/relative 容器）。
+ * 这类浮层常叠加在同层级绘制的动态内容（hero 动画、全屏遮罩）之上，
+ * 祖先链只能测到页面根背景，真实衬底无法仅凭祖先背景确定。
+ * @param {SVGSVGElement} svg SVG 元素
+ * @returns {boolean} 是定位浮层则为 true
+ */
+function isPositionedOverlay(svg) {
+	for (let current = svg.parentElement; current && current !== document.documentElement; current = current.parentElement)
+		if (getComputedStyle(current).position !== 'static') return true
+	return false
+}
+
+/**
  * 在指定主题下扫描 SVG 前景/背景色距问题。
  * @param {string} theme 主题名
  * @param {SVGSVGElement[]} svgs 可见 SVG 列表
@@ -240,6 +271,8 @@ function findSvgContrastIssues(theme, svgs) {
 	for (const svg of svgs) {
 		const background = elementBackgroundColor(svg)
 		if (!background) continue
+		// 浮层叠加在动态绘制内容上、祖先链只测到页面根背景时，衬底不可测，跳过以免误报。
+		if (isRootBackground(background) && isPositionedOverlay(svg)) continue
 		/** @type {Set<string>} */
 		const foregrounds = new Set()
 		for (const color of collectSvgForegroundColors(svg)) {
