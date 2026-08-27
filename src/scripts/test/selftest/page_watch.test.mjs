@@ -57,6 +57,23 @@ Deno.test('createReporter dedups by key', () => {
 	}
 })
 
+Deno.test('svg theme color distance flags near-identical pairs', async () => {
+	const {
+		colorDistance,
+		MIN_COLOR_DISTANCE,
+	} = await import('../../../public/pages/scripts/test/watch/svg_theme.mjs')
+	// daisyUI 主题基色近邻（base-100 ↔ base-200/base-300）应判为"相近"
+	assertEquals(colorDistance([255, 255, 255], [250, 250, 250]) < MIN_COLOR_DISTANCE, true)
+	assertEquals(colorDistance([255, 255, 255], [242, 242, 242]) < MIN_COLOR_DISTANCE, true)
+	// 文案色 / 鲜明前景色应与背景拉开
+	assertEquals(colorDistance([255, 255, 255], [54, 54, 54]) > MIN_COLOR_DISTANCE, true)
+	// 彩色图标（黄 / 绿）在白底上虽对比度低，但感知上仍明显区别于背景，不应误报
+	assertEquals(colorDistance([255, 255, 255], [255, 215, 0]) > MIN_COLOR_DISTANCE, true)
+	assertEquals(colorDistance([255, 255, 255], [34, 197, 94]) > MIN_COLOR_DISTANCE, true)
+	// 暗色主题下近白前景与暗底
+	assertEquals(colorDistance([29, 35, 42], [255, 255, 255]) > MIN_COLOR_DISTANCE, true)
+})
+
 Deno.test('ariaIgnoreProblem covers missing / bad / closed', () => {
 	assertEquals(ariaIgnoreProblem({ url: '', where: '#x' })?.code, 'missing-url')
 	assertEquals(ariaIgnoreProblem({ url: 'https://example.com/1', where: '#x' })?.code, 'bad-url')

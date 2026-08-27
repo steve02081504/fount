@@ -1,58 +1,24 @@
 /**
- * MutationObserver 闸门：语种轮换 / 临时隐藏文案时不喂 a11y dirty。
- * 自持 observer；忽略期间 takeRecords 丢弃突变。
+ * MutationObserver 闸门接线：注册各 watch 任务的脏标记，并转发 observe / ignore 门面。
  */
 import { markDirty } from './a11y.mjs'
 import { markDirty as markCssvarDirty } from './cssvar.mjs'
-
-let depth = 0
-
-const observer = new MutationObserver(() => {
-	if (depth > 0) return
-	markDirty()
-	markCssvarDirty()
-})
+import { ignore, ignoreAsync, observe, setDirtyHandler } from './mutation_gate.mjs'
+import { markDirty as markSvgThemeDirty } from './svg_theme.mjs'
 
 /**
- * 开始观察 DOM。
- * @param {Node} target 观察根
- * @param {MutationObserverInit} init 观察选项
+ * 非忽略期的突变回调：依次标记各 watch 任务脏。
  * @returns {void}
  */
-export function observe(target, init) {
-	observer.observe(target, init)
+function markAllDirty() {
+	markDirty()
+	markCssvarDirty()
+	markSvgThemeDirty()
 }
 
-/**
- * 同步忽略（pageText 隐藏语种扫描跳过节点）。
- * @template T
- * @param {() => T} fn 同步工作
- * @returns {T} fn 的返回值
- */
-export function ignore(fn) {
-	depth++
-	try {
-		return fn()
-	}
-	finally {
-		observer.takeRecords()
-		depth--
-	}
-}
+setDirtyHandler(markAllDirty)
 
 /**
- * 异步忽略（setLanguage / 脚本检查）。
- * @template T
- * @param {() => T | Promise<T>} fn 可能改 DOM 的工作
- * @returns {Promise<T>} fn 的返回值
+ * 转发 mutation_gate 门面，保持既有调用方（index / locale）导入不变。
  */
-export async function ignoreAsync(fn) {
-	depth++
-	try {
-		return await fn()
-	}
-	finally {
-		observer.takeRecords()
-		depth--
-	}
-}
+export { ignore, ignoreAsync, observe }
