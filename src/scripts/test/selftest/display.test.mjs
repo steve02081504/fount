@@ -9,6 +9,7 @@ import { assertEquals } from 'jsr:@std/assert'
 import { console } from '../../i18n/bare.mjs'
 import { allowNoise } from '../core/allowNoise.mjs'
 import { formatNoiseAllowBegin, formatNoiseAllowEnd } from '../core/output_filter.mjs'
+import { TestDashboard, renderBar, stripAnsi, visibleWidth, wrapByWidth } from '../display/dashboard.mjs'
 import { displayShouldResolve, resolveDisplayMode } from '../display/mode.mjs'
 import { formatFailureOutput, paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd } from '../display/paint.mjs'
 import { acceptedFromWave } from '../kernel/jobs.mjs'
@@ -268,4 +269,258 @@ Deno.test('paintJobWait names queue depth not another suite', () => {
 Deno.test('paintJobWait passes aheadCount through without a default', () => {
 	const { logs } = captureI18n(() => paintJobWait({}))
 	assertEquals(logs[0]?.params.count, undefined)
+})
+
+/**
+ * 截获仪表盘写入。
+ * @param {object} [options] 选项
+ * @param {boolean} [options.enabled] 是否启用
+ * @returns {{ out: string[], text: () => string, dashboard: TestDashboard }} 句柄
+ */
+function captureDashboard({ enabled = true } = {}) {
+	/** @type {string[]} */
+	const out = []
+	/**
+	 * 记录一次写入。
+	 * @param {string} text 文本
+	 * @returns {number} push 返回的下标
+	 */
+	const write = text => out.push(text)
+	/**
+	 * 已捕获的拼接全文。
+	 * @returns {string} 文本
+	 */
+	const text = () => out.join('')
+	const dashboard = new TestDashboard({ write, enabled, throttleMs: 0 })
+	return { out, text, dashboard }
+}
+
+Deno.test('dashboard disabled emits nothing on begin/events/end', () => {
+	const { out, dashboard } = captureDashboard({ enabled: false })
+	dashboard.begin()
+	dashboard.onSuiteStart({ key: 'checks:i18n_keys', expectedMs: 1000 })
+	dashboard.onScheduleUpdate({ running: [], lastCompletionMs: 5000, reason: 'initial' })
+	dashboard.onSuiteEnd({ key: 'checks:i18n_keys', passed: true, durationMs: 100, peakMemMb: 10, avgCpuPct: 5 })
+	dashboard.end()
+	assertEquals(out, [])
+})
+
+Deno.test('dashboard exposes enabled getter for the display gate', () => {
+	assertEquals(new TestDashboard({ enabled: true }).enabled, true)
+	assertEquals(new TestDashboard({ enabled: false }).enabled, false)
+})
+
+Deno.test('dashboard begin hides cursor and shows idle header', () => {
+	const { text, dashboard } = captureDashboard()
+	dashboard.begin()
+	assertEquals(text().includes('\x1b[?25l'), true)
+	assertEquals(text().includes('空闲'), true)
+	dashboard.end()
+})
+
+Deno.test('dashboard renders running suite with progress bar', () => {
+	const { text, dashboard } = captureDashboard()
+	dashboard.begin()
+	dashboard.onSuiteStart({ key: 'shells/chat:pure', expectedMs: 60_000 })
+	dashboard.onScheduleUpdate({
+		running: [{ key: 'shells/chat:pure', remainingMs: 60_000 }],
+		lastCompletionMs: 120_000,
+		reason: 'suite_started',
+	})
+	const out = text()
+	assertEquals(out.includes('shells/chat:pure'), true)
+	assertEquals(out.includes('░'), true)
+	assertEquals(out.includes('已 '), true)
+	assertEquals(out.includes('剩余≈'), true)
+	dashboard.end()
+})
+
+Deno.test('dashboard commits completed suite stats to scrollback', () => {
+	const { text, dashboard } = captureDashboard()
+	dashboard.begin()
+	dashboard.onSuiteStart({ key: 'shells/chat:pure', expectedMs: 60_000 })
+	dashboard.onSuiteEnd({
+		key: 'shells/chat:pure',
+		passed: true,
+		durationMs: 61_234,
+		peakMemMb: 512,
+		avgCpuPct: 42.3,
+	})
+	const out = text()
+	assertEquals(out.includes('✓'), true)
+	assertEquals(out.includes('shells/chat:pure'), true)
+	assertEquals(out.includes('耗时'), true)
+	assertEquals(out.includes('CPU 42%'), true)
+	assertEquals(out.includes('内存 512MB'), true)
+	dashboard.end()
+})
+
+Deno.test('dashboard counts failed suites with memory stats', () => {
+	const { text, dashboard } = captureDashboard()
+	dashboard.begin()
+	dashboard.onSuiteEnd({ key: 'server:live', passed: false, durationMs: 500, peakMemMb: 2048, avgCpuPct: 10 })
+	const out = text()
+	assertEquals(out.includes('✗'), true)
+	assertEquals(out.includes('2.0GB'), true)
+	assertEquals(out.includes('失败 1'), true)
+	// 失败行名字标红并带终端响铃。
+	assertEquals(out.includes('\x1b[31mserver:live\x1b[0m'), true)
+	assertEquals(out.includes('\x07'), true)
+	dashboard.end()
+})
+
+Deno.test('dashboard completed passed line keeps plain name without bell', () => {
+	const { text, dashboard } = captureDashboard()
+	dashboard.begin()
+	dashboard.onSuiteEnd({ key: 'shells/chat:pure', passed: true, durationMs: 1000, peakMemMb: 64, avgCpuPct: 12 })
+	const out = text()
+	assertEquals(out.includes('\x1b[31m'), false)
+	assertEquals(out.includes('\x07'), false)
+	assertEquals(out.includes('✓'), true)
+	dashboard.end()
+})
+
+Deno.test('dashboard commits blocked and reused suites dimly', () => {
+	const { text, dashboard } = captureDashboard()
+	dashboard.begin()
+	dashboard.onSuiteEnd({ key: 'server:live', blockedBy: ['server:pure'] })
+	dashboard.onSuiteEnd({ key: 'shells/chat:e2e', reused: true, status: 'passed' })
+	const out = text()
+	assertEquals(out.includes('阻塞'), true)
+	assertEquals(out.includes('复用'), true)
+	dashboard.end()
+})
+
+Deno.test('dashboard commits long completed result line in full, relying on terminal wrap', () => {
+	Object.defineProperty(process.stdout, 'columns', { value: 40, configurable: true })
+	Object.defineProperty(process.stdout, 'rows', { value: 24, configurable: true })
+	try {
+		const { text, dashboard } = captureDashboard()
+		dashboard.begin()
+		dashboard.onSuiteEnd({
+			key: 'shells/serviceSourceManage:frontend',
+			passed: false,
+			durationMs: 122_000,
+			peakMemMb: 139,
+			avgCpuPct: 0,
+			noiseHits: ['E01: frontend noise', 'E02: another hit'],
+		})
+		const out = text()
+		// 结果行整行输出，不因列宽截断；折行交给终端。
+		assertEquals(out.includes('（噪声：E01: frontend noise, E02: another hit）'), true)
+		assertEquals(out.includes('…'), false)
+		dashboard.end()
+	}
+	finally {
+		Object.defineProperty(process.stdout, 'columns', { value: undefined, configurable: true })
+		Object.defineProperty(process.stdout, 'rows', { value: undefined, configurable: true })
+	}
+})
+
+Deno.test('dashboard commits queue events in watch mode', () => {
+	const { text, dashboard } = captureDashboard()
+	dashboard.begin()
+	dashboard.onQueue({ type: 'queue-append', key: 'server:pure', reason: 'idle_all' })
+	dashboard.onQueue({ type: 'queue-remove', key: 'server:pure', reason: 'cli_complete' })
+	const out = text()
+	assertEquals(out.includes('入队'), true)
+	assertEquals(out.includes('移出'), true)
+	dashboard.end()
+})
+
+Deno.test('dashboard end erases status area and restores cursor', () => {
+	const { text, dashboard } = captureDashboard()
+	dashboard.begin()
+	dashboard.onSuiteStart({ key: 'checks:text_lf', expectedMs: 1000 })
+	dashboard.end()
+	const out = text()
+	assertEquals(out.includes('\x1b[2A\x1b[J'), true)
+	assertEquals(out.includes('\x1b[?25h'), true)
+})
+
+Deno.test('dashboard width helpers handle ANSI and CJK', () => {
+	assertEquals(visibleWidth('abc'), 3)
+	assertEquals(visibleWidth('中文'), 4)
+	assertEquals(visibleWidth('\x1b[32m✓\x1b[0m'), 1)
+})
+
+Deno.test('wrapByWidth folds long lines without dropping content', () => {
+	assertEquals(wrapByWidth('abc', 5), ['abc'])
+	assertEquals(wrapByWidth('abcdefghij', 5), ['abcde', 'fghij'])
+	assertEquals(wrapByWidth('中文测试', 4), ['中文', '测试'])
+	// 折行不丢字节，拼接回来仍是原文。
+	assertEquals(wrapByWidth('abcdefghij', 5).join(''), 'abcdefghij')
+	// ANSI 序列保持完整且按可见宽度折行。
+	const [first, second] = wrapByWidth('\x1b[32mabcdefghij\x1b[0m', 5)
+	assertEquals(first, '\x1b[32mabcde')
+	assertEquals(second, 'fghij\x1b[0m')
+	assertEquals(visibleWidth(first), 5)
+	assertEquals(visibleWidth(second), 5)
+})
+
+Deno.test('unknown bar is a constant-width rightward marquee, not a shrink pulse', () => {
+	// 各相位下高亮块长度恒定（向右滑动不伸缩），总格数恒为条宽。
+	assertEquals(stripAnsi(renderBar(null, 20, 0)).length, 20)
+	assertEquals((stripAnsi(renderBar(null, 20, 0)).match(/█/g) ?? []).length, 7)
+	assertEquals((stripAnsi(renderBar(null, 20, 5)).match(/█/g) ?? []).length, 7)
+	assertEquals((stripAnsi(renderBar(null, 20, 19)).match(/█/g) ?? []).length, 7)
+	assertEquals((stripAnsi(renderBar(null, 5, 0)).match(/█/g) ?? []).length, 3)
+	// 确定进度条保持原有行为。
+	assertEquals(stripAnsi(renderBar(58, 20, 0)), `${'█'.repeat(12)}${'░'.repeat(8)}`)
+	assertEquals(stripAnsi(renderBar(100, 20, 0)), '█'.repeat(20))
+})
+
+Deno.test('unknown and known running lines align to the same right edge', () => {
+	/**
+	 * 渲染一个在跑套件行并返回其剥离 ANSI 后的文本与显示宽度。
+	 * @param {number | null} expectedMs 时长基线（null 为未知进度）
+	 * @returns {{ plain: string, width: number }} 该行纯文本
+	 */
+	function runningLine(expectedMs) {
+		const { out, dashboard } = captureDashboard()
+		const key = 'shells/chat:pure'
+		dashboard.begin()
+		dashboard.onSuiteStart({ key, expectedMs })
+		dashboard.onScheduleUpdate({ running: [{ key, remainingMs: expectedMs }], lastCompletionMs: 120_000, reason: 'suite_started' })
+		const lines = out.join('').split('\r\n').map(line => stripAnsi(line)).filter(Boolean)
+		dashboard.end()
+		const plain = lines.at(-1)
+		return { plain, width: visibleWidth(plain) }
+	}
+	const known = runningLine(60_000)
+	const unknown = runningLine(null)
+	// 未知后缀恒宽 4（'   ?'），与百分数（'  0%'）对齐，右侧段不整体偏移。
+	assertEquals(known.plain.endsWith('%'), true)
+	assertEquals(unknown.plain.endsWith('   ?'), true)
+	assertEquals(unknown.width, known.width)
+})
+
+Deno.test('dashboard move-up count accounts for physical wrap after shrink', () => {
+	/**
+	 * @param {number | undefined} columns 列数（undefined 恢复默认）
+	 * @returns {void}
+	 */
+	function setCols(columns) {
+		Object.defineProperty(process.stdout, 'columns', { value: columns, configurable: true })
+	}
+	Object.defineProperty(process.stdout, 'rows', { value: 24, configurable: true })
+	setCols(200)
+	try {
+		const { out, dashboard } = captureDashboard()
+		dashboard.begin()
+		dashboard.onSuiteStart({ key: 'shells/chat:pure', expectedMs: 60_000 })
+		dashboard.onScheduleUpdate({ running: [{ key: 'shells/chat:pure', remainingMs: 60_000 }], lastCompletionMs: 120_000, reason: 'suite_started' })
+		// 宽屏渲染后缩窄到 80 列，再触发重绘：上移行数按已渲染行在当前列宽下的精确折行数
+		//（头部 1 行 + 进度行约 200 列折成 3 行 = 4）。
+		setCols(80)
+		dashboard.onScheduleUpdate({ running: [{ key: 'shells/chat:pure', remainingMs: 60_000 }], lastCompletionMs: 120_000, reason: 'suite_started' })
+		assertEquals(out.join('').includes('\x1b[4A'), true)
+		// 重绘后状态区已按 80 列折行，结束时按新宽度（2 行）擦除。
+		dashboard.end()
+		assertEquals(out.join('').includes('\x1b[2A\x1b[J\x1b[?25h'), true)
+	}
+	finally {
+		Object.defineProperty(process.stdout, 'columns', { value: undefined, configurable: true })
+		Object.defineProperty(process.stdout, 'rows', { value: undefined, configurable: true })
+	}
 })
