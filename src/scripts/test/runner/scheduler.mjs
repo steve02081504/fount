@@ -142,7 +142,7 @@ export class ResourceRunGate {
 			if (idx >= 0) this.#admit(this.waiters.splice(idx, 1)[0])
 		}
 
-		for (; ;) {
+		while(true) {
 			const bestIdx = this.#pickLightWaiterIndex(true)
 			if (bestIdx < 0) break
 			this.#admit(this.waiters.splice(bestIdx, 1)[0])

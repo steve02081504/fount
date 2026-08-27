@@ -219,20 +219,20 @@
 					}
 				},
 				"dashboard": {
-					"idle": "空闲",
+					"idle": "閒",
 					"unknownCount": "+${count} 未知",
-					"runningCount": "运行 ${count}",
-					"passedCount": "通过 ${count}",
-					"failedCount": "失败 ${count}",
-					"queuedCount": "排队 ${count}",
+					"runningCount": "運行中 ${count}",
+					"passedCount": "通過 ${count}",
+					"failedCount": "失敗 ${count}",
+					"queuedCount": "待命 ${count}",
 					"reason": "（${reason}）",
-					"elapsed": "已 ${elapsed}",
-					"eta": "剩余≈${remaining}",
-					"duration": "耗时 ${duration}",
+					"elapsed": "已歷 ${elapsed}",
+					"eta": "餘≈${remaining}",
+					"duration": "費時 ${duration}",
 					"cpu": "CPU ${cpu}",
-					"memory": "内存 ${memory}",
-					"queueAppend": "入队 ${label}（${reason}）",
-					"queueRemove": "移出 ${label}（${reason}）"
+					"memory": "內存 ${memory}",
+					"queueAppend": "入列 ${label}（${reason}）",
+					"queueRemove": "出列 ${label}（${reason}）"
 				}
 			},
 			"passed": "通過：${label}",

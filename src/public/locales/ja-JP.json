@@ -219,20 +219,20 @@
 					}
 				},
 				"dashboard": {
-					"idle": "アイドル状態",
-					"unknownCount": "+${count} 個が不明",
-					"runningCount": "${count} を実行",
-					"passedCount": "${count}経由",
-					"failedCount": "${count} 回失敗しました",
-					"queuedCount": "キュー ${count}",
+					"idle": "待機中",
+					"unknownCount": "+${count} 不明",
+					"runningCount": "${count} 実行中",
+					"passedCount": "${count} 成功",
+					"failedCount": "${count} 失敗",
+					"queuedCount": "${count} 待ち",
 					"reason": "(${reason})",
-					"elapsed": "${elapsed}",
+					"elapsed": "経過 ${elapsed}",
 					"eta": "残り≈${remaining}",
-					"duration": "時間がかかる ${duration}",
+					"duration": "所要 ${duration}",
 					"cpu": "CPU ${cpu}",
 					"memory": "メモリ ${memory}",
-					"queueAppend": "${label}(${reason}) をエンキューします",
-					"queueRemove": "${label} を退去 (${reason})"
+					"queueAppend": "キューに追加: ${label}（${reason}）",
+					"queueRemove": "キューから除去: ${label}（${reason}）"
 				}
 			},
 			"passed": "合格: ${label}",

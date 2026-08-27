@@ -340,7 +340,7 @@ export function applyPrefixNest(obj, prefix, members, preferredContainer, onMove
  */
 export function nestAllPrefixClustersWithMap(obj, path = '', map = new Map()) {
 	let count = 0
-	for (; ;) {
+	while(true) {
 		const clusters = findPrefixClusters(Object.keys(obj))
 		if (!clusters.length) break
 		const { prefix, members } = clusters[0]

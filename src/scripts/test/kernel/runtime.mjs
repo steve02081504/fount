@@ -779,7 +779,7 @@ export class TestKernel {
 	 * @returns {Promise<void>}
 	 */
 	async #discardBlocked() {
-		for (; ;) {
+		while(true) {
 			const queued = [...this.queues.cli, ...this.queues.fs]
 			let item
 			/** @type {string[] | undefined} */
@@ -819,7 +819,7 @@ export class TestKernel {
 	 * @returns {Promise<void>}
 	 */
 	async #discardSkipped() {
-		for (; ;) {
+		while(true) {
 			const queued = [...this.queues.cli, ...this.queues.fs]
 			let item
 			/** @type {string[] | undefined} */
@@ -999,7 +999,7 @@ export class TestKernel {
 	 * @returns {Promise<void>}
 	 */
 	async #admitReady() {
-		for (; ;) {
+		while(true) {
 			const debugSerial = this.#debugSerialActive()
 			if (debugSerial && this.running.size > 0) break
 			const picked = this.queues.peekReady(item => this.#isHardReady(item))

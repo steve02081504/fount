@@ -84,7 +84,6 @@ export function bridgeEntityHash(platform, platformUserId) {
 	return createHash('sha512')
 		.update(`fount-bridge:${String(platform)}:${String(platformUserId)}`)
 		.digest('hex')
-		
 }
 
 /**

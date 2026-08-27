@@ -219,20 +219,20 @@
 					}
 				},
 				"dashboard": {
-					"idle": "عاطل",
+					"idle": "خامل",
 					"unknownCount": "+${count} غير معروف",
-					"runningCount": "تشغيل ${count}",
-					"passedCount": "عبر ${count}",
-					"failedCount": "فشل ${count}",
-					"queuedCount": "قائمة الانتظار ${count}",
+					"runningCount": "قيد التشغيل: ${count}",
+					"passedCount": "ناجح: ${count}",
+					"failedCount": "فشل: ${count}",
+					"queuedCount": "في الانتظار: ${count}",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
-					"eta": "المتبقي≈${remaining}",
-					"duration": "مضيعة للوقت ${duration}",
-					"cpu": "وحدة المعالجة المركزية ${cpu}",
-					"memory": "الذاكرة ${memory}",
-					"queueAppend": "أدخل ${label}(${reason})",
-					"queueRemove": "أخرج ${label} (${reason})"
+					"eta": "المتبقي ≈${remaining}",
+					"duration": "المدة: ${duration}",
+					"cpu": "المعالج: ${cpu}",
+					"memory": "الذاكرة: ${memory}",
+					"queueAppend": "في الانتظار: ${label} (${reason})",
+					"queueRemove": "أُزيل: ${label} (${reason})"
 				}
 			},
 			"passed": "نجح: ${label}",

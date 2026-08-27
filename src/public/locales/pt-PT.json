@@ -219,20 +219,20 @@
 					}
 				},
 				"dashboard": {
-					"idle": "parado",
+					"idle": "inativo",
 					"unknownCount": "+${count} desconhecido",
-					"runningCount": "Execute ${count}",
-					"passedCount": "através de ${count}",
-					"failedCount": "Falha ${count}",
-					"queuedCount": "Fila ${count}",
+					"runningCount": "Em execução: ${count}",
+					"passedCount": "Aprovados: ${count}",
+					"failedCount": "Falhados: ${count}",
+					"queuedCount": "Na fila: ${count}",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
-					"eta": "Restante≈${remaining}",
-					"duration": "Demorado ${duration}",
-					"cpu": "CPU${cpu}",
+					"eta": "Restam ≈${remaining}",
+					"duration": "Duração: ${duration}",
+					"cpu": "CPU ${cpu}",
 					"memory": "Memória ${memory}",
-					"queueAppend": "Enfileirar ${label}(${reason})",
-					"queueRemove": "Sair ${label} (${reason})"
+					"queueAppend": "Na fila: ${label} (${reason})",
+					"queueRemove": "Removido: ${label} (${reason})"
 				}
 			},
 			"passed": "APROVADO: ${label}",

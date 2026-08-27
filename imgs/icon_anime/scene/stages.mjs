@@ -49,8 +49,7 @@ export function* hold(state = createAnimState()) {
 	state.pillars = maxPillarH
 	state.bodyReach = maxBodyD
 	state.bodyMinD = 0
-	for (; ;)
-		yield* show(state)
+	while(true) yield* show(state)
 }
 
 /**

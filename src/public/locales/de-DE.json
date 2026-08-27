@@ -221,18 +221,18 @@
 				"dashboard": {
 					"idle": "Leerlauf",
 					"unknownCount": "+${count} unbekannt",
-					"runningCount": "Führen Sie ${count} aus",
-					"passedCount": "über ${count}",
-					"failedCount": "${count} fehlgeschlagen",
-					"queuedCount": "Warteschlange ${count}",
+					"runningCount": "In Arbeit: ${count}",
+					"passedCount": "Bestanden: ${count}",
+					"failedCount": "Fehlgeschlagen: ${count}",
+					"queuedCount": "Wartend: ${count}",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
-					"eta": "Verbleibend≈${remaining}",
-					"duration": "Zeitaufwändig ${duration}",
+					"eta": "Noch≈${remaining}",
+					"duration": "Dauer: ${duration}",
 					"cpu": "CPU ${cpu}",
 					"memory": "Speicher ${memory}",
-					"queueAppend": "${label}(${reason}) in die Warteschlange stellen",
-					"queueRemove": "${label} ausziehen (${reason})"
+					"queueAppend": "Eingereiht: ${label} (${reason})",
+					"queueRemove": "Entfernt: ${label} (${reason})"
 				}
 			},
 			"passed": "Bestanden: ${label}",

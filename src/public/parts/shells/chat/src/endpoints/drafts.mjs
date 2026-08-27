@@ -55,10 +55,9 @@ export function registerDraftRoutes(router) {
 		const removedIds = [...prevIds].filter(fileId => !nextIds.has(fileId))
 		if (removedIds.length) await client.draftContents.removeMany(removedIds)
 
-		for (const file of filesIn) 
+		for (const file of filesIn)
 			if (typeof file?.buffer === 'string' && file.fileId)
 				await client.draftContents.put(String(file.fileId), file.buffer)
-		
 
 		const record = {
 			text: String(body.text || ''),

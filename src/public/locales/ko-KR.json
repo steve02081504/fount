@@ -219,20 +219,20 @@
 					}
 				},
 				"dashboard": {
-					"idle": "게으른",
-					"unknownCount": "+${count} 알 수 없음",
-					"runningCount": "${count} 실행",
-					"passedCount": "${count}을(를) 통해",
-					"failedCount": "${count}개 실패",
-					"queuedCount": "대기열 ${count}",
+					"idle": "대기 중",
+					"unknownCount": "+${count} 미상",
+					"runningCount": "${count} 실행 중",
+					"passedCount": "${count} 통과",
+					"failedCount": "${count} 실패",
+					"queuedCount": "${count} 대기",
 					"reason": "(${reason})",
-					"elapsed": "${elapsed}",
-					"eta": "남은 금액 : ${remaining}",
-					"duration": "${duration} 시간 소모",
+					"elapsed": "경과 ${elapsed}",
+					"eta": "남음 ≈${remaining}",
+					"duration": "소요 ${duration}",
 					"cpu": "CPU ${cpu}",
 					"memory": "메모리 ${memory}",
-					"queueAppend": "${label}(${reason}) 대기열에 추가",
-					"queueRemove": "${label} 이동(${reason})"
+					"queueAppend": "대기열 추가: ${label} (${reason})",
+					"queueRemove": "대기열 제거: ${label} (${reason})"
 				}
 			},
 			"passed": "경로: ${label}",

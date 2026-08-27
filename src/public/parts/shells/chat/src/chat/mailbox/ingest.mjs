@@ -84,4 +84,3 @@ export async function onFederationRoomReadyForMailbox(username, groupId) {
 	const { sender } = await resolveLocalEventSigner(username, groupId)
 	await requestMailboxFromNetwork(username, sender)
 }
-

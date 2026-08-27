@@ -85,7 +85,7 @@ export async function showCategoryPermsDialog(groupId, categoryId, categoryName)
 			 * @returns {Promise<void>}
 			 */
 			const enqueuePermOp = op => {
-				const next = permQueue.catch(() => {}).then(op)
+				const next = permQueue.catch(() => { }).then(op)
 				permQueue = next
 				return next
 			}

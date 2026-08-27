@@ -17,9 +17,9 @@ Deno.test('createFedOutQueue drains pending items before resolving', async () =>
 
 Deno.test('createFedOutQueue drains when enqueue arrives after a flush', async () => {
 	const queue = createFedOutQueue()
-	queue.enqueue(0, () => {})
+	queue.enqueue(0, () => { })
 	await queue.drain()
-	queue.enqueue(0, () => {})
+	queue.enqueue(0, () => { })
 	await queue.drain()
 	await queue.drain()
 })

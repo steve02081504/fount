@@ -33,4 +33,3 @@ export function eventMatchesLazyChannelScope(event, channelId) {
 	if (!CHANNEL_SYNC_MESSAGE_TYPES.has(eventType)) return false
 	return resolveChannelId(event.channelId) === channelId
 }
-

@@ -219,20 +219,20 @@
 					}
 				},
 				"dashboard": {
-					"idle": "निठल्ला",
+					"idle": "निष्क्रिय",
 					"unknownCount": "+${count} अज्ञात",
-					"runningCount": "${count} चलाएँ",
-					"passedCount": "${count} के माध्यम से",
-					"failedCount": "विफल ${count}",
-					"queuedCount": "कतार ${count}",
+					"runningCount": "${count} चल रहे हैं",
+					"passedCount": "${count} पास हुए",
+					"failedCount": "${count} विफल",
+					"queuedCount": "${count} कतार में",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
 					"eta": "शेष≈${remaining}",
-					"duration": "समय लेने वाली ${duration}",
-					"cpu": "सीपीयू ${cpu}",
+					"duration": "अवधि: ${duration}",
+					"cpu": "CPU ${cpu}",
 					"memory": "मेमोरी ${memory}",
-					"queueAppend": "${label}(${reason}) को पंक्तिबद्ध करें",
-					"queueRemove": "${label} (${reason}) को बाहर निकालें"
+					"queueAppend": "कतार में: ${label} (${reason})",
+					"queueRemove": "कतार से हटाया: ${label} (${reason})"
 				}
 			},
 			"passed": "पास: ${label}",
