@@ -8,12 +8,14 @@ import { bootstrap, task as localeTask } from './locale.mjs'
 import { holdLocale, releaseLocale } from './locale_hold.mjs'
 import { drain, register, start, started } from './loop.mjs'
 import { observe } from './mutations.mjs'
+import { task as svgThemeTask } from './svg_theme.mjs'
 
 globalThis.fount ??= {}
 globalThis.fount.test ??= {}
 
 register(a11yTask)
 register(cssvarTask)
+register(svgThemeTask)
 register(localeTask)
 observe(document.documentElement, {
 	subtree: true,
