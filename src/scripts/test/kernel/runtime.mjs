@@ -1124,6 +1124,8 @@ export class TestKernel {
 				jobId: item.jobId,
 				passed: result.passed,
 				durationMs: result.durationMs,
+				peakMemMb: result.peakMemMb,
+				avgCpuPct: result.avgCpuPct,
 			}, result, this.state.suites[key])
 		}
 		catch (error) {

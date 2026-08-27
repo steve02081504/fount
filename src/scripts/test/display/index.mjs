@@ -4,12 +4,15 @@
  */
 import process from 'node:process'
 
-import { console } from '../../i18n/bare.mjs'
+import supportsAnsi from 'npm:supports-ansi'
+
+import { console, geti18nForTerminal } from '../../i18n/bare.mjs'
 import { ClearTaskbarProgress, SetTaskbarProgress } from '../../taskbar_progress.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import { beginTestProgress, finishTestProgress } from '../core/progress.mjs'
 import { testHubUrl } from '../hub/index.mjs'
 
+import { TestDashboard } from './dashboard.mjs'
 import { displayShouldResolve, resolveDisplayMode } from './mode.mjs'
 import { paintAccepted, paintJobDone, paintJobWait, paintSuiteEnd, splitSuiteKey, suiteEndHasFailureOutput } from './paint.mjs'
 import { paintScheduleUpdate } from './schedule.mjs'
@@ -37,6 +40,8 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	let exitCode = 0
 	let runCount = 0
 	let displayMode = resolveDisplayMode({ watch, job })
+	/** 包管理器式仪表盘：仅 TTY + ANSI 且非 stream 模式启用。 */
+	const dashboard = new TestDashboard({ enabled: Boolean(process.stdout.isTTY && supportsAnsi) })
 	/** @type {string | null} */
 	let jobId = null
 	const done = Promise.withResolvers()
@@ -57,6 +62,15 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	let progressTimer = null
 
 	beginTestProgress()
+
+	/**
+	 * 结束本次显示：先撤仪表盘（擦状态区、恢复光标）再 resolve。
+	 * @returns {void}
+	 */
+	function resolveDone() {
+		dashboard.end()
+		done.resolve()
+	}
 
 	/**
 	 * 把任务栏进度写入（带去重：值未变化不重写 OSC，避免空闲时高频抖动）。
@@ -149,6 +163,10 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		paintAccepted(message)
 		if (message.reportPath)
 			console.logI18n('fountConsole.test.reportPath', { path: message.reportPath })
+		// 有真跑的非 stream 展示才上仪表盘（错误/空波次直接走 job-done）。
+		const beginDashboard = dashboard.enabled && displayMode !== 'stream' && !message.error && message.runCount > 0
+		if (beginDashboard)
+			dashboard.begin()
 		// 每波独立基准：进度条从本波重新起步，避免跨波累计/残留旧值。
 		progressStartedAt = Date.now()
 		shownPct = null
@@ -164,7 +182,7 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	function onLog(message) {
 		if (displayMode !== 'stream') {
 			if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
-				done.resolve()
+				resolveDone()
 			return
 		}
 		if (message.stream === 'stderr') process.stderr.write(message.chunk ?? '')
@@ -176,6 +194,10 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 * @returns {void}
 	 */
 	function onSuiteStart(message) {
+		if (dashboard.active) {
+			dashboard.onSuiteStart(message)
+			return
+		}
 		const expected = formatMs(message.expectedMs)
 		const { manifestId, name } = splitSuiteKey(message.key)
 		console.logI18n('fountConsole.test.runningSuite.base', { manifestId, name })
@@ -194,6 +216,12 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 			|| Math.abs(nextCompletionAt - previousCompletionAt) / Math.max(1, previousCompletionAt) > 0.05
 			|| Math.abs(nextCompletionAt - previousCompletionAt) >= 500
 		lastCompletionAt = nextCompletionAt
+		if (dashboard.active) {
+			dashboard.onScheduleUpdate(message)
+			// 任务栏进度始终随计时推进（单调不回退），顺道刷新一次并重置计时。
+			if (progressStartedAt != null) scheduleProgressRefresh()
+			return
+		}
 		if (changed) paintScheduleUpdate(message, previousCompletionAt)
 		// 任务栏进度始终随计时推进（单调不回退），顺道刷新一次并重置计时。
 		if (progressStartedAt != null) scheduleProgressRefresh()
@@ -207,6 +235,10 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		finished++
 		if (displayMode !== 'stream' && suiteEndHasFailureOutput(message))
 			failureLogs.push({ key: message.key, output: message.output })
+		if (dashboard.active) {
+			dashboard.onSuiteEnd(message)
+			return
+		}
 		paintSuiteEnd(message, { stream: displayMode === 'stream' })
 	}
 
@@ -217,7 +249,11 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	function onQueue(message) {
 		if (displayMode !== 'overview') {
 			if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
-				done.resolve()
+				resolveDone()
+			return
+		}
+		if (dashboard.active) {
+			dashboard.onQueue(message)
 			return
 		}
 		if (!watch) return
@@ -234,6 +270,10 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	function onJobWait(message) {
 		if (message.aheadCount === lastAheadCount) return
 		lastAheadCount = message.aheadCount
+		if (dashboard.active) {
+			dashboard.onJobWait(message)
+			return
+		}
 		paintJobWait(message)
 	}
 
@@ -242,6 +282,12 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 * @returns {void}
 	 */
 	function onCleanupLeak(message) {
+		if (dashboard.active) {
+			dashboard.commitLine(geti18nForTerminal('fountConsole.test.cleanupLeak', {
+				paths: message.leaks.join('\n'),
+			}))
+			return
+		}
 		console.errorI18n('fountConsole.test.cleanupLeak', {
 			paths: message.leaks.join('\n'),
 		})
@@ -253,12 +299,14 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 	 */
 	function onJobDone(message) {
 		exitCode = message.exitCode ?? 0
+		// 先撤仪表盘，失败日志回放回到普通滚动区。
+		dashboard.end()
 		paintJobDone({
 			...message,
 			failureLogs: displayMode === 'stream' ? [] : failureLogs,
 		})
 		if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
-			done.resolve()
+			resolveDone()
 	}
 
 	const handlers = new Map([
@@ -280,19 +328,21 @@ export async function runTestDisplay({ watch = false, job, port } = {}) {
 		const handler = handlers.get(message.type)
 		if (handler) handler(message)
 		else if (displayShouldResolve(message, { watch, displayMode, job, runCount }))
-			done.resolve()
+			resolveDone()
 	})
 
-	ws.addEventListener('close', () => done.resolve())
+	ws.addEventListener('close', () => resolveDone())
 	/** Ctrl+C / kill 时断开 WS。 */
 	const onSig = () => {
 		ws.close()
-		done.resolve()
+		resolveDone()
 	}
 	process.on('SIGINT', onSig)
 	process.on('SIGTERM', onSig)
 
 	ws.send(JSON.stringify({ type: 'hello', watch, job: watch ? undefined : job }))
+	// watch 无 accepted：连接即挂上仪表盘。
+	if (watch && dashboard.enabled) dashboard.begin()
 	await done.promise
 	process.off('SIGINT', onSig)
 	process.off('SIGTERM', onSig)
