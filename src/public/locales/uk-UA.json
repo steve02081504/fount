@@ -219,20 +219,20 @@
 					}
 				},
 				"dashboard": {
-					"idle": "непрацюючий",
+					"idle": "Простий",
 					"unknownCount": "+${count} невідомо",
-					"runningCount": "Запустіть ${count}",
-					"passedCount": "через ${count}",
-					"failedCount": "Помилка ${count}",
-					"queuedCount": "Черга ${count}",
+					"runningCount": "Виконується: ${count}",
+					"passedCount": "Успішно: ${count}",
+					"failedCount": "Провалено: ${count}",
+					"queuedCount": "У черзі: ${count}",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
-					"eta": "Залишилося≈${remaining}",
-					"duration": "Тривалість ${duration}",
-					"cpu": "ЦП ${cpu}",
+					"eta": "Залишилося ≈${remaining}",
+					"duration": "Затрачено: ${duration}",
+					"cpu": "CPU ${cpu}",
 					"memory": "Пам'ять ${memory}",
-					"queueAppend": "Поставити в чергу ${label}(${reason})",
-					"queueRemove": "Виїхати ${label} (${reason})"
+					"queueAppend": "У чергу: ${label} (${reason})",
+					"queueRemove": "Видалено: ${label} (${reason})"
 				}
 			},
 			"passed": "Пройдено: ${label}",

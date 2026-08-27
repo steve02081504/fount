@@ -111,10 +111,8 @@ export async function handleJoinSnapshotRequest(username, groupId, request, peer
 	if (shunDecision.shun) return
 	if (!await verifyPullAttestationSignatureForMember(fedState, groupId, request.attestation)) return
 	const recipientEdPubKeyHex = resolveMemberEdPubKeyHex(fedState, request.requesterPubKeyHash)
-	if (!recipientEdPubKeyHex) 
-		// 未知成员：引导期对端可能尚未 ingest 我方 member_join；静默丢弃，勿 shun 自锁。
-		return
-	
+	// 未知成员：引导期对端可能尚未 ingest 我方 member_join；静默丢弃，勿 shun 自锁。
+	if (!recipientEdPubKeyHex) return
 
 	const { readJsonl } = requireDagDeps()
 	const checkpoint = await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })

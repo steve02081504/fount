@@ -48,7 +48,7 @@ function channelRowFromPostedEvent(event) {
 function pendingRowFromComposer(contentObj, tempId, files = []) {
 	const viewerPubKeyHash = store.context.currentState?.viewerMemberPubKeyHash || null
 	const content = { ...contentObj }
-	if (files.length) 
+	if (files.length)
 		content.files = files.map(file => ({
 			fileId: '',
 			name: file.name || 'file',
@@ -57,7 +57,7 @@ function pendingRowFromComposer(contentObj, tempId, files = []) {
 			buffer: file.buffer,
 			...file.description ? { description: file.description } : {},
 		}))
-	
+
 	return {
 		eventId: tempId,
 		pending: true,

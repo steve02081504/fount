@@ -396,7 +396,7 @@
 	grid-template-rows: 1fr 1fr;
 }
 
-.message-gallery--3 > :first-child {
+.message-gallery--3> :first-child {
 	grid-row: 1 / span 2;
 }
 

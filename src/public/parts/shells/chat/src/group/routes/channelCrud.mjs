@@ -107,7 +107,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 			permissionBlockId: parentId || state.groupSettings?.defaultChannelId || null,
 		})
 		// DM 群根级无名频道的 greeting-only 清理与 AI 命名/分类在后端异步进行，创建接口只发射并遗忘。
-		scheduleDmChannelAutoNameAndCleanup(username, groupId, channel.id, state).catch(() => {})
+		scheduleDmChannelAutoNameAndCleanup(username, groupId, channel.id, state).catch(() => { })
 		res.status(201).json({ channelId: channel.id })
 	})
 

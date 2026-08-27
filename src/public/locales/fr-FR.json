@@ -221,18 +221,18 @@
 				"dashboard": {
 					"idle": "inactif",
 					"unknownCount": "+${count} inconnu",
-					"runningCount": "Exécutez ${count}",
-					"passedCount": "via ${count}",
-					"failedCount": "Échec : ${count}",
-					"queuedCount": "File d'attente ${count}",
+					"runningCount": "En cours : ${count}",
+					"passedCount": "Réussis : ${count}",
+					"failedCount": "Échecs : ${count}",
+					"queuedCount": "En attente : ${count}",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
-					"eta": "Restant≈${remaining}",
-					"duration": "Cela prend beaucoup de temps ${duration}",
-					"cpu": "Processeur ${cpu}",
+					"eta": "Restant ≈${remaining}",
+					"duration": "Durée : ${duration}",
+					"cpu": "CPU ${cpu}",
 					"memory": "Mémoire ${memory}",
-					"queueAppend": "Mettre en file d'attente ${label}(${reason})",
-					"queueRemove": "Déménager ${label} (${reason})"
+					"queueAppend": "En file : ${label} (${reason})",
+					"queueRemove": "Retiré : ${label} (${reason})"
 				}
 			},
 			"passed": "Réussi : ${label}",

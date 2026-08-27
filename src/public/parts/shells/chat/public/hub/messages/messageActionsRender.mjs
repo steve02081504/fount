@@ -54,9 +54,8 @@ function authorOwnerEntityHash(message, options) {
 	for (const member of options.groupMembers || []) {
 		const memberEntity = member?.entityHash
 		const memberKey = member?.memberKey || member?.pubKeyHash
-		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender)) 
+		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender))
 			return member?.ownerEntityHash || null
-		
 	}
 	return null
 }

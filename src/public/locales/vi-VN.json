@@ -221,18 +221,18 @@
 				"dashboard": {
 					"idle": "nhàn rỗi",
 					"unknownCount": "+${count} không xác định",
-					"runningCount": "Chạy ${count}",
-					"passedCount": "qua ${count}",
-					"failedCount": "Không thành công ${count}",
-					"queuedCount": "Hàng đợi ${count}",
+					"runningCount": "Đang chạy: ${count}",
+					"passedCount": "Đạt: ${count}",
+					"failedCount": "Thất bại: ${count}",
+					"queuedCount": "Trong hàng đợi: ${count}",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
-					"eta": "Còn lại≈${remaining}",
-					"duration": "Tốn thời gian ${duration}",
+					"eta": "Còn lại ≈${remaining}",
+					"duration": "Thời lượng: ${duration}",
 					"cpu": "CPU ${cpu}",
 					"memory": "Bộ nhớ ${memory}",
-					"queueAppend": "Xếp hàng ${label}(${reason})",
-					"queueRemove": "Di chuyển ${label} (${reason})"
+					"queueAppend": "Vào hàng đợi: ${label} (${reason})",
+					"queueRemove": "Đã gỡ: ${label} (${reason})"
 				}
 			},
 			"passed": "ĐẠT: ${label}",

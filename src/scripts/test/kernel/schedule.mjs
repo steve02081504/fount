@@ -230,7 +230,7 @@ export function buildTimeline(tasks, { memBudgetBytes, cpuBudgetPct }) {
 			const start = pickLight(light, true) ?? pickLight(light, false)
 			if (start) admit(start)
 		}
-		for (; ;) {
+		while(true) {
 			const best = pickLight(listReady().filter(task => !task.heavy), true)
 			if (!best) break
 			admit(best)

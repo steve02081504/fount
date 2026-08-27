@@ -751,4 +751,3 @@ window.addEventListener('visibilitychange', async () => {
 	if (saved_pageid && JSON.stringify(lastKnownLangs) !== JSON.stringify(preferredLangs))
 		await initTranslations()
 })
-

@@ -219,20 +219,20 @@
 					}
 				},
 				"dashboard": {
-					"idle": "праздный",
+					"idle": "Простой",
 					"unknownCount": "+${count} неизвестно",
-					"runningCount": "Запустить ${count}",
-					"passedCount": "через ${count}",
-					"failedCount": "Не удалось ${count}",
-					"queuedCount": "Очередь ${count}",
+					"runningCount": "Выполняется: ${count}",
+					"passedCount": "Успешно: ${count}",
+					"failedCount": "Провалено: ${count}",
+					"queuedCount": "В очереди: ${count}",
 					"reason": "(${reason})",
 					"elapsed": "${elapsed}",
-					"eta": "Осталось≈${remaining}",
-					"duration": "Затраты времени ${duration}",
-					"cpu": "ЦП ${cpu}",
+					"eta": "Осталось ≈${remaining}",
+					"duration": "Затрачено: ${duration}",
+					"cpu": "CPU ${cpu}",
 					"memory": "Память ${memory}",
-					"queueAppend": "Поставить в очередь ${label}(${reason})",
-					"queueRemove": "Удалить ${label} (${reason})"
+					"queueAppend": "В очередь: ${label} (${reason})",
+					"queueRemove": "Удалён: ${label} (${reason})"
 				}
 			},
 			"passed": "ПРОЙДЕНО: ${label}",

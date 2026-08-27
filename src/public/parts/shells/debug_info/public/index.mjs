@@ -220,7 +220,7 @@ function scheduleTestStatusRender() {
 	queueMicrotask(() => {
 		testStatusRenderQueued = false
 		const status = buildTestStatus()
-		testStatusRenderChain = testStatusRenderChain.then(() => renderTestStatus(status)).catch(() => {})
+		testStatusRenderChain = testStatusRenderChain.then(() => renderTestStatus(status)).catch(() => { })
 	})
 }
 

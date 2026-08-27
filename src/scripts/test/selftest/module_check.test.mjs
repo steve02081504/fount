@@ -133,7 +133,7 @@ Deno.test('ModuleCheckGate aborted waiter does not steal the next ticket', async
 	await Promise.resolve()
 	abort.abort()
 	await awaitWithTimeout(
-		waiting.then(() => { throw new Error('aborted acquire should reject') }, () => {}),
+		waiting.then(() => { throw new Error('aborted acquire should reject') }, () => { }),
 		'aborted acquire did not reject',
 	)
 	assertEquals(stolen, undefined)
@@ -267,7 +267,7 @@ Deno.test('module-check HTTP: abandon after ready returns false', async () => {
 Deno.test('module-check HTTP: missed-ready is distinct from business errors', async () => {
 	const handle = await startModuleCheckKernel(MODULE_CHECK_KERNEL_PORT + 3)
 	try {
-		await assertRejects(() => withModuleCheckTicket(async () => {}), ModuleCheckMissedReadyError)
+		await assertRejects(() => withModuleCheckTicket(async () => { }), ModuleCheckMissedReadyError)
 		try {
 			await withModuleCheckTicket(async () => ({ code: 1, output: 'FAILED' }))
 			throw new Error('expected throw')
@@ -401,7 +401,7 @@ Deno.test('module-check HTTP: aborted waiter does not steal the next ticket', as
 		const pending = fetch(`${handle.url}/module-check/acquire`, { method: 'POST', signal: abort.signal })
 		await waitUntil(() => handle.kernel.moduleCheck.waiting > 0, 2000, 10)
 		abort.abort()
-		await pending.catch(() => {})
+		await pending.catch(() => { })
 		await signalModuleCheckReady(first)
 		const third = await awaitWithTimeout(acquireModuleCheckTicket(), 'acquire hung after aborted waiter', 1000)
 		assertEquals(Boolean(third), true)
@@ -411,4 +411,3 @@ Deno.test('module-check HTTP: aborted waiter does not steal the next ticket', as
 		await handle.close()
 	}
 })
-

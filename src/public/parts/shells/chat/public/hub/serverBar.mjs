@@ -230,7 +230,7 @@ export async function loadGroups() {
 		)
 		if (liveBookmarks.length !== bookmarks.length) await saveChatBookmarks(liveBookmarks)
 	}
-	if (foldersPayload) 
+	if (foldersPayload)
 		store.sidebar.groupFoldersState = {
 			folders: foldersPayload.folders.map((folder, folderIndex) => ({
 				id: (folder.id || '') || `folder-${folderIndex}`,
@@ -240,7 +240,7 @@ export async function loadGroups() {
 				collapsed: !!folder.collapsed,
 			})),
 		}
-	
+
 	else store.sidebar.groupFoldersState = { folders: [] }
 	await renderServerBar()
 }

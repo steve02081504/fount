@@ -903,7 +903,7 @@ function getEffectiveBackgroundColor(el) {
  */
 function mergeColor(action, ...colors) {
 	const result = {}
-	for(const channel of ['r', 'g', 'b', 'a'])
+	for (const channel of ['r', 'g', 'b', 'a'])
 		result[channel] = action(...colors.map(color => color[channel] ?? 255))
 	return result
 }

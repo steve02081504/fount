@@ -218,19 +218,19 @@
 					}
 				},
 				"dashboard": {
-					"idle": "空閒",
+					"idle": "閒置",
 					"unknownCount": "+${count} 未知",
-					"runningCount": "運行 ${count}",
-					"passedCount": "透過 ${count}",
+					"runningCount": "運行中 ${count}",
+					"passedCount": "通過 ${count}",
 					"failedCount": "失敗 ${count}",
-					"queuedCount": "排隊 ${count}",
+					"queuedCount": "佇列 ${count}",
 					"reason": "（${reason}）",
-					"elapsed": "已 ${elapsed}",
+					"elapsed": "已用 ${elapsed}",
 					"eta": "剩餘≈${remaining}",
 					"duration": "耗時 ${duration}",
 					"cpu": "CPU ${cpu}",
 					"memory": "記憶體 ${memory}",
-					"queueAppend": "入隊 ${label}（${reason}）",
+					"queueAppend": "入列 ${label}（${reason}）",
 					"queueRemove": "移出 ${label}（${reason}）"
 				}
 			},

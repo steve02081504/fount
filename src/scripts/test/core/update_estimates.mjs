@@ -100,7 +100,7 @@ export function driftedEstimatePatch(suite, entry) {
 	for (const [name, target] of Object.entries(base.subtests)) {
 		const manifestMs = suite.subtests?.find(subtest => subtest.name === name)?.expectedMs ?? null
 		if (isExpectedDrift(manifestMs, parseExpectedMs(target))) {
-			;(out.subtests ??= {})[name] = target
+			; (out.subtests ??= {})[name] = target
 		}
 	}
 	if (out.expected == null && !Object.keys(out.subtests ?? {}).length) return null

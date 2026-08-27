@@ -186,12 +186,12 @@ async function appendLocalImagePreview(attachmentElement, file, mime, composing,
 		alt: file.name,
 	})
 	previewImg.addEventListener('click', async () => {
-		if (file.draftKey && typeof file.buffer !== 'string') 
+		if (file.draftKey && typeof file.buffer !== 'string')
 			try {
 				await ensureDraftFileContent(file)
 			}
 			catch { /* 保留缩略图 */ }
-		
+
 		const src = typeof file.buffer === 'string'
 			? objectUrlFromLocalBuffer(file.buffer, mime || 'image/*', attachmentElement)
 			: previewImg.src

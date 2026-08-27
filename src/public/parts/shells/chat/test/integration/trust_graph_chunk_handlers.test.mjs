@@ -17,7 +17,7 @@ Deno.test('attachTrustGraphChunkHandlers registers fed_chunk actions on room', a
 		 */
 		makeAction(name) {
 			actions.push(name)
-			return [() => {}, () => {}]
+			return [() => { }, () => { }]
 		},
 	}
 	/** @type {unknown[][]} */
@@ -35,7 +35,7 @@ Deno.test('attachTrustGraphChunkHandlers registers fed_chunk actions on room', a
 			/**
 			 * @param {unknown} data - Chunk payload passed to the enqueue hook.
 			 */
-			enqueue() {}
+			enqueue() { }
 		}, {}, 'room-key')
 		await waitUntil(
 			() => actions.includes('fed_chunk_data') || warns.some(args => String(args[0]).includes('trust-graph')),

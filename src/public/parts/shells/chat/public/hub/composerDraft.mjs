@@ -43,9 +43,9 @@ function cancelDraftTimer(key) {
  */
 function enqueueDraftOp(key, operation) {
 	const prev = draftOpQueues.get(key) ?? Promise.resolve()
-	const next = prev.catch(() => {}).then(operation)
+	const next = prev.catch(() => { }).then(operation)
 	draftOpQueues.set(key, next)
-	next.catch(() => {}).finally(() => {
+	next.catch(() => { }).finally(() => {
 		if (draftOpQueues.get(key) === next) draftOpQueues.delete(key)
 	})
 	return next

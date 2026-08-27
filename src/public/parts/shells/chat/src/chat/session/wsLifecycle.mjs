@@ -141,4 +141,3 @@ export function handleClientWsControlFrame(controlFrame) {
 		abortGenerationByMessageId(dagEventId)
 	return true
 }
-

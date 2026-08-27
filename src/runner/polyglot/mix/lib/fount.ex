@@ -26,4 +26,3 @@ defmodule Fount do
 		{:ok, pid}
 	end
 end
-

@@ -167,7 +167,7 @@ Deno.test('writeTestTriggeredFiles / readTestTriggeredFiles round-trip', async (
 		assertEquals(await readTestTriggeredFiles(''), [])
 	}
 	finally {
-		await Deno.remove(path).catch(() => {})
+		await Deno.remove(path).catch(() => { })
 		if (previous === undefined) Deno.env.delete('FOUNT_TEST_TRIGGERED_FILES')
 		else Deno.env.set('FOUNT_TEST_TRIGGERED_FILES', previous)
 	}
