@@ -254,11 +254,12 @@ export async function sendMessageViaComposer(page, groupId, channelId, text) {
  * 等待消息列表中出现包含指定文本的消息行。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} text - 消息正文片段。
+ * @param {number} [timeout=ms('1m')] 可见等待上限（毫秒）。
  * @returns {Promise<import('npm:@playwright/test').Locator>} 消息行定位器。
  */
-export async function expectMessageInChat(page, text) {
+export async function expectMessageInChat(page, text, timeout = ms('1m')) {
 	const row = page.locator('#messages .message:not([data-pending="1"])').filter({ hasText: text })
-	await expect(row.first()).toBeVisible({ timeout: ms('1m') })
+	await expect(row.first()).toBeVisible({ timeout })
 	await expect(row.first()).toHaveAttribute('data-message-id', /^[\da-f]{64}$/i)
 	return row.first()
 }

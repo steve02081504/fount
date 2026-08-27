@@ -10,7 +10,7 @@
 	"suites": [
 		{
 			"name": "frontend",
-			"expected": "32s",
+			"expected": "1m55s",
 			"dependsOn": [
 				"server:live"
 			],

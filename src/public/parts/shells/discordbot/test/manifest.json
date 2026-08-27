@@ -61,7 +61,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "1m21s",
+			"expected": "3m50s",
 			"dependsOn": [
 				"server:live"
 			],
