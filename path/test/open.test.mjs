@@ -71,7 +71,7 @@ Deno.test('cmd_open skips cold-boot page while install wait is active', async ()
 	assert(shOpen.indexOf('FOUNT_INSTALL_WAIT') < shOpen.indexOf('cold_bootting'), 'bash: skip check before cold-boot URL')
 	assert(eulaSh.includes('begin_fount_install_wait'), 'bash sets install-wait when opening wait/install')
 	assert(eulaPs1.includes('Begin-FountInstallWait'), 'pwsh sets install-wait when opening wait/install')
-	assert(eulaPs1.includes('Start-Process $script:FountInstallWaitUrl -ErrorAction Stop'), 'wait/install spawn failure must Stop')
+	assert(eulaPs1.includes('Open-BrowserUrl $script:FountInstallWaitUrl'), 'wait/install opens via Open-BrowserUrl')
 	const shEnsure = eulaSh.split('ensure_fount_config()')[1].split('confirm_fount_eula()')[0]
 	assert(shEnsure.indexOf('start_fount_status_server') < shEnsure.indexOf('begin_fount_install_wait'), '8930 is up before wait/install')
 	assert(shEnsure.indexOf('begin_fount_install_wait') < shEnsure.indexOf('FOUNT_INSTALL_WAIT_URL'), 'flag before opening wait/install')
