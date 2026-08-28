@@ -3,7 +3,7 @@
 	handle_docker_passthrough @args
 	if (-not $env:FOUNT_INSTALL_WAIT) {
 		Test-Browser
-		Start-Process 'https://steve02081504.github.io/fount/wait?cold_bootting=true'
+		Open-BrowserUrl 'https://steve02081504.github.io/fount/wait?cold_bootting=true'
 	}
 	Invoke-FountFromCmd @args
 	exit $LastExitCode
