@@ -179,7 +179,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "8m13s",
+			"expected": "18m12s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -706,7 +706,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "10m13s",
+			"expected": "19m13s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"

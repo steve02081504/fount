@@ -2,14 +2,14 @@
 	<span class="inbox-row-avatar" aria-hidden="true">${initial}</span>
 	<span class="inbox-row-content">
 		<span class="inbox-row-head">
-			<strong class="inbox-row-author">${author}</strong>
+			<strong class="inbox-row-author" user-content>${author}</strong>
 			<time class="inbox-row-time" datetime="${escapeHtml(dateTime)}" title="${escapeHtml(fullTime)}">${time}</time>
 		</span>
 		<span class="inbox-row-meta">
-			<span>${groupName}</span>
-			<span class="inbox-row-channel">#${channelName}</span>
+			<span user-content>${groupName}</span>
+			<span class="inbox-row-channel" user-content>#${channelName}</span>
 		</span>
-		<span class="inbox-row-preview">${preview}</span>
+		<span class="inbox-row-preview" user-content>${preview}</span>
 	</span>
 	<span class="inbox-row-chevron" aria-hidden="true">›</span>
 </button>
