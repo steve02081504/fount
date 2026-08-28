@@ -86,7 +86,13 @@ async function insertPendingRow(contentObj, tempId, files = []) {
 	refreshChannelView()
 	syncChannelActionsContext()
 	clearHubEmptyPlaceholder(container)
-	if (!store.messages.channelMessagePipeline) initChannelVirtualList(container)
+	// 首次创建时初始 refresh 已渲染含 pending 行的 view，直接收尾避免重复渲染
+	if (!store.messages.channelMessagePipeline) {
+		initChannelVirtualList(container)
+		await store.messages.channelMessagePipeline.refresh()
+		decorateRenderedMessages(container, true)
+		return
+	}
 	const visible = store.messages.channelMessages.find(m => String(m.eventId) === tempId)
 	if (visible) await store.messages.channelMessagePipeline.appendItem(visible, true)
 	decorateRenderedMessages(container, true)

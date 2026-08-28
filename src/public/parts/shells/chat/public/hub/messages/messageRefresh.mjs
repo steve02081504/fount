@@ -9,7 +9,6 @@ import { refreshChannelPinsBar } from '../banners.mjs'
 import { store } from '../core/state.mjs'
 import {
 	dismissVolatileStreamPreview,
-	getActiveVolatileStreamIds,
 } from '../stream/index.mjs'
 import {
 	firstUnreadEventId,
@@ -21,6 +20,7 @@ import {
 	fetchRowsForMessageEvent,
 	setPendingScrollTarget,
 } from './channelMessageStore.mjs'
+import { enqueueChannelMutation } from './channelMutationQueue.mjs'
 import {
 	scheduleDebouncedChannelRefresh,
 } from './channelRefreshScheduler.mjs'
@@ -44,7 +44,6 @@ import {
 	initChannelVirtualList,
 } from './messageVirtualList.mjs'
 import { renderMessageReactionsHtml } from './render/reactions.mjs'
-import { isChannelMessageGenerating } from './render/text.mjs'
 
 /** @type {Map<string, { messages: object[], reactions: object, reactionsEtag: string, readMarker: object | null, firstUnreadEventId: string | null }>} */
 const channelViewCache = new Map()
@@ -122,46 +121,6 @@ async function patchReactionRows(container, reactions) {
 }
 
 /**
- * @param {object} message 入站消息行
- * @param {{ scroll?: boolean }} [options] 滚动选项
- * @returns {Promise<void>}
- */
-async function applyIncomingMessage(message, { scroll = false } = {}) {
-	const container = getMessagesContainer()
-	if (!container) return
-
-	const eventId = message.eventId || ''
-	if (!eventId) return
-
-	if (getActiveVolatileStreamIds().some(streamId => eventIdsEqual(streamId, eventId)) && !isChannelMessageGenerating(message))
-		dismissVolatileStreamPreview(eventId, { notifyEnd: false })
-
-	const pendingId = store.messages.composerPendingId
-	const hadInSource = store.messages.channelMessagesSource.some(m => String(m.eventId) === eventId)
-	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(store.messages.channelMessagesSource, [message])
-	// merge 会删掉乐观 pending 行；虚拟列表若只 append 真实行会留下带 pending: id 的旧 DOM
-	const pendingReplaced = !!pendingId
-		&& !store.messages.channelMessagesSource.some(m => String(m.eventId) === pendingId)
-	refreshChannelView()
-
-	clearHubEmptyPlaceholder(container)
-	if (!store.messages.channelMessagePipeline) initChannelVirtualList(container)
-
-	const viewIdx = store.messages.channelMessages.findIndex(m => String(m.eventId) === eventId)
-	const row = viewIdx >= 0 ? store.messages.channelMessages[viewIdx] : null
-	if (pendingReplaced || !row)
-		await store.messages.channelMessagePipeline.refresh()
-	else if (hadInSource)
-		await store.messages.channelMessagePipeline.replaceItem(viewIdx, row)
-	else
-		await store.messages.channelMessagePipeline.appendItem(row, scroll)
-
-	syncChannelActionsContext()
-	updateLastMessageId()
-	decorateRenderedMessages(container, scroll)
-}
-
-/**
  * @param {object[]} batch 入站消息批次
  * @param {{ scroll?: boolean }} [options] 滚动选项
  * @returns {Promise<void>}
@@ -181,7 +140,16 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 	refreshChannelView()
 
 	clearHubEmptyPlaceholder(container)
-	if (!store.messages.channelMessagePipeline) initChannelVirtualList(container)
+	// 首次创建管道时 channelMessages 已含本批，初始 refresh 即完整渲染；
+	// 继续逐条 append/replace 会把同一批行再渲染一遍造成重复。
+	if (!store.messages.channelMessagePipeline) {
+		initChannelVirtualList(container)
+		await store.messages.channelMessagePipeline.refresh()
+		syncChannelActionsContext()
+		updateLastMessageId()
+		decorateRenderedMessages(container, scroll)
+		return
+	}
 
 	if (pendingReplaced) {
 		await store.messages.channelMessagePipeline.refresh()
@@ -236,7 +204,15 @@ async function replaceChannelMessageRow(eventId, row) {
 	const container = getMessagesContainer()
 	if (!container) return
 	clearHubEmptyPlaceholder(container)
-	if (!store.messages.channelMessagePipeline) initChannelVirtualList(container)
+	// 同 applyIncomingMessageBatch：首次创建时初始 refresh 已渲染当前 view，直接收尾
+	if (!store.messages.channelMessagePipeline) {
+		initChannelVirtualList(container)
+		await store.messages.channelMessagePipeline.refresh()
+		syncChannelActionsContext()
+		updateLastMessageId()
+		decorateRenderedMessages(container, false)
+		return
+	}
 	const viewIdx = store.messages.channelMessages.findIndex(
 		message => eventIdsEqual(message?.eventId, id),
 	)
@@ -368,7 +344,14 @@ export async function loadMessages(isCurrent) {
 /**
  * @returns {Promise<void>}
  */
-export async function refreshChannelMessagesIncremental() {
+export function refreshChannelMessagesIncremental() {
+	return enqueueChannelMutation(doRefreshChannelMessagesIncremental)
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function doRefreshChannelMessagesIncremental() {
 	const searchActive = !!store.messages.channelSearchQuery
 	if (!store.context.currentGroupId || !store.context.currentChannelId) return
 	const chType = store.context.currentState?.channels?.[store.context.currentChannelId]?.type || 'text'
@@ -433,7 +416,16 @@ export function scheduleChannelIncrementalRefresh({ immediate = false } = {}) {
  * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS 带来的 message_edit.content
  * @returns {Promise<void>}
  */
-export async function applyChannelMessageEdit(targetId, editContent = null) {
+export function applyChannelMessageEdit(targetId, editContent = null) {
+	return enqueueChannelMutation(() => doApplyChannelMessageEdit(targetId, editContent))
+}
+
+/**
+ * @param {string} targetId 目标消息 eventId
+ * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS 带来的 message_edit.content
+ * @returns {Promise<void>}
+ */
+async function doApplyChannelMessageEdit(targetId, editContent = null) {
 	const id = targetId.trim()
 	if (!id || !store.context.currentGroupId || !store.context.currentChannelId) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
@@ -443,8 +435,7 @@ export async function applyChannelMessageEdit(targetId, editContent = null) {
 			message => eventIdsEqual(message?.eventId, id),
 		)
 		if (sourceIdx >= 0) {
-			const patched = applyMessageEditToRow(store.messages.channelMessagesSource[sourceIdx], editContent)
-			await replaceChannelMessageRow(id, patched)
+			await replaceChannelMessageRow(id, applyMessageEditToRow(store.messages.channelMessagesSource[sourceIdx], editContent))
 			return
 		}
 	}
@@ -462,7 +453,15 @@ export async function applyChannelMessageEdit(targetId, editContent = null) {
  * @param {string} targetId 目标消息 eventId
  * @returns {Promise<void>}
  */
-export async function applyChannelMessageDelete(targetId) {
+export function applyChannelMessageDelete(targetId) {
+	return enqueueChannelMutation(() => doApplyChannelMessageDelete(targetId))
+}
+
+/**
+ * @param {string} targetId 目标消息 eventId
+ * @returns {Promise<void>}
+ */
+async function doApplyChannelMessageDelete(targetId) {
 	const id = targetId.trim()
 	if (!id) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })

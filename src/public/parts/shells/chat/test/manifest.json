@@ -846,6 +846,19 @@
 					]
 				},
 				{
+					"name": "generationFinalize",
+					"expected": "40s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/generationFinalize.spec.mjs",
+						"src/public/parts/shells/chat/test/live/fixtures/chars/noai_locale_reporter/**",
+						"src/public/parts/shells/chat/public/hub/messages/messageRefresh.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/channelMutationQueue.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/messageSend.mjs",
+						"src/public/parts/shells/chat/public/hub/stream/**",
+						"src/public/parts/shells/chat/public/shared/messageMerge.mjs"
+					]
+				},
+				{
 					"name": "secondaryPages",
 					"expected": "1m50s",
 					"triggers": [
