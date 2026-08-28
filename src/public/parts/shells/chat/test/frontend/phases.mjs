@@ -18,6 +18,7 @@ export const phases = [
 			'dmChannelContext.spec.mjs',
 			'messageActions.spec.mjs',
 			'messageAvatar.spec.mjs',
+			'generationFinalize.spec.mjs',
 			'unread.spec.mjs',
 			'inbox.spec.mjs',
 			'mobilePane.spec.mjs',

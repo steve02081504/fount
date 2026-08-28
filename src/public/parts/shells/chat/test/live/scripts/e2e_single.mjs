@@ -250,7 +250,10 @@ await testCase('POST dag/merge-tips', async () => {
 })
 
 await testCase('PUT governance-branch', async () => {
-	const r = await chatApi('PUT', `/groups/${gid}/governance-branch`, { tipId: null })
+	const tips = await chatApi('GET', `/groups/${gid}/dag/tips`)
+	const tipId = tips.json.tips?.[0]
+	if (!tipId) throw new Error(`no DAG tips for governance-branch (GET /dag/tips ${tips.status})`)
+	const r = await chatApi('PUT', `/groups/${gid}/governance-branch`, { tipId })
 	return r.status === 200
 })
 

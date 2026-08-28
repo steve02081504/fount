@@ -386,6 +386,13 @@ function renderContinuousPicker(host, sections, handlers) {
 		scroll.appendChild(sectionEl)
 	}
 
+	rail.addEventListener('wheel', event => {
+		if (rail.scrollWidth <= rail.clientWidth) return
+		event.preventDefault()
+		const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaMode === 2 ? event.deltaY * rail.clientWidth : event.deltaY
+		rail.scrollLeft += delta
+	}, { passive: false })
+
 	host.append(railWrap, scroll)
 
 	const footer = document.createElement('div')
