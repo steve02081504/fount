@@ -193,6 +193,26 @@ test_browser() {
 		fi
 	fi
 
+	# 已安装浏览器探测：默认关联未登记时也不误装。
+	for browser_cmd in "google-chrome" "google-chrome-stable" "chromium" "chromium-browser" "microsoft-edge" "microsoft-edge-stable" "brave-browser" "firefox"; do
+		if command -v "$browser_cmd" &>/dev/null; then
+			return 1
+		fi
+	done
+	if [ "$OS_TYPE" = "Linux" ]; then
+		for browser_path in "/usr/bin/firefox" "/usr/bin/chromium" "/usr/bin/chromium-browser" "/usr/bin/google-chrome" "/usr/bin/microsoft-edge"; do
+			if [ -x "$browser_path" ]; then
+				return 1
+			fi
+		done
+	elif [ "$OS_TYPE" = "Darwin" ]; then
+		for browser_app in "/Applications/Google Chrome.app" "/Applications/Microsoft Edge.app" "/Applications/Firefox.app" "/Applications/Brave Browser.app" "/Applications/Chromium.app"; do
+			if [ -d "$browser_app" ]; then
+				return 1
+			fi
+		done
+	fi
+
 	get_i18n 'install.browserMissing'
 	install_package "google-chrome" "google-chrome google-chrome-stable"
 	if ! command -v google-chrome &>/dev/null; then

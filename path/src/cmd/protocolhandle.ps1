@@ -20,7 +20,7 @@
 		while (-not (Test-FountRunning)) {
 			Start-Sleep -Seconds 1
 		}
-		Start-Process $targetUrl
+		Open-BrowserUrl $targetUrl
 	} -ArgumentList $targetUrl
 	Start-WTfountCmd
 	exit 0

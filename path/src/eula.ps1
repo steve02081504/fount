@@ -75,7 +75,7 @@ function script:Begin-FountInstallWait {
 
 function script:Open-FountInstallWaitPage {
 	try {
-		Start-Process $script:FountInstallWaitUrl -ErrorAction Stop
+		Open-BrowserUrl $script:FountInstallWaitUrl
 	}
 	catch {
 		$Host.UI.WriteErrorLine("$_")
