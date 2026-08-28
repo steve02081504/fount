@@ -3,7 +3,7 @@
  * 自产 style/onclick / KaTeX·Mermaid 主题不受影响；输入侧 script / javascript: / 图源 HTML·click·themeCSS 覆盖被忽略。
  */
 /* global Deno */
-import { assertEquals, assertFalse, assertMatch, assertStringIncludes } from 'jsr:@std/assert'
+import { assert, assertEquals, assertFalse, assertMatch, assertStringIncludes } from 'jsr:@std/assert'
 
 import { installMarkdownTestDom } from './markdown_test_dom.mjs'
 
@@ -230,4 +230,26 @@ Deno.test('late sanitize via extraRehypePlugins still strips converter onclick �
 Deno.test('trusted pipeline (allowDangerousHtml) keeps inline HTML', async () => {
 	const html = await renderSecure('<b>bold</b>', { allowDangerousHtml: true })
 	assertStringIncludes(html, '<b>bold</b>')
+})
+
+Deno.test('titled code block joins header alert and body as join-items under a join-vertical figure', async () => {
+	const html = await renderSecure('```powershell title="正在执行PowerShell"\necho hi\n```')
+	const doc = new DOMParser().parseFromString(`<div class="markdown-body">${html}</div>`, 'text/html')
+	const figure = doc.querySelector('figure')
+	assert(figure.classList.contains('join'))
+	assert(figure.classList.contains('join-vertical'))
+	const kids = [...figure.children]
+	const header = kids.find(k => k.classList.contains('alert'))
+	const body = kids.find(k => k.classList.contains('markdown-code-block'))
+	assert(header?.classList.contains('join-item'))
+	assert(body?.classList.contains('join-item'))
+	// 抬头在前、代码块在后：接缝处双方都应无圆角
+	assertEquals(kids[0], header)
+	assertEquals(kids[kids.length - 1], body)
+})
+
+Deno.test('injected markdown style squares code-block corners at join seams', () => {
+	const css = [...document.head.querySelectorAll('style')].map(s => s.textContent).join('\n')
+	assertMatch(css, /\.join-vertical > \.markdown-code-block:not\(:first-child\)/)
+	assertMatch(css, /\.join-vertical > \.markdown-code-block:not\(:last-child\)/)
 })
