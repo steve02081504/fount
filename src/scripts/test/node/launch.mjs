@@ -589,6 +589,7 @@ async function launchNodeOnce(options = {}) {
 			child = spawn(Deno.execPath(), spawnArgs, {
 				cwd: REPO_ROOT,
 				stdio: ['ignore', 'pipe', 'pipe'],
+				windowsHide: true,
 				env: {
 					...process.env,
 					FOUNT_TEST: '1',

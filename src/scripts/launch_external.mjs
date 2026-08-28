@@ -1,49 +1,13 @@
 import { Buffer } from 'node:buffer'
 import { spawn } from 'node:child_process'
-import { existsSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
 
 /**
- * 隐藏启动用的 wscript 辅助脚本：解码 base64 命令行，隐藏（窗口样式 0）孤儿化拉起目标。
- * 共享一个临时文件即可，无需每次启动重写。
+ * 隐藏启动用的 wscript 辅助脚本（随 fount 附带，path/src/win/hidden_launch.vbs）：
+ * 解码 base64 命令行，隐藏（窗口样式 0）孤儿化拉起目标。
  */
-const HIDDEN_HELPER_VBS = `\
-Function DecodeB64(ByVal s)
-	Dim xmlDoc, bnode, bytes, st
-	Set xmlDoc = CreateObject("MSXML2.DOMDocument.6.0")
-	Set bnode = xmlDoc.createElement("b64")
-	bnode.dataType = "bin.base64"
-	bnode.text = s
-	bytes = bnode.nodeTypedValue
-	Set st = CreateObject("ADODB.Stream")
-	st.Type = 1
-	st.Open
-	st.Write bytes
-	st.Position = 0
-	st.Type = 2
-	st.Charset = "utf-8"
-	DecodeB64 = st.ReadText
-	st.Close
-End Function
-Set sh = WScript.CreateObject("WScript.Shell")
-If WScript.Arguments.Count > 1 Then
-	On Error Resume Next
-	sh.CurrentDirectory = WScript.Arguments(1)
-End If
-sh.Run DecodeB64(WScript.Arguments(0)), 0, False
-`
-
-/**
- * 确保隐藏启动用的 wscript 辅助脚本存在（共享一个临时文件）。
- * @returns {string} 辅助脚本路径
- */
-function ensureHiddenHelper() {
-	const path = join(tmpdir(), 'fount_launch_hidden.vbs')
-	if (!existsSync(path)) writeFileSync(path, HIDDEN_HELPER_VBS, 'utf8')
-	return path
-}
+const HIDDEN_LAUNCH_VBS_PATH = join(import.meta.dirname, '..', '..', 'path', 'src', 'win', 'hidden_launch.vbs')
 
 /**
  * 按 Windows argv 规则引用单个命令行令牌（可执行文件路径或参数）。
@@ -108,7 +72,7 @@ export function launchDetachedProgram(options = {}) {
 				// 隐藏与脱离 Job Object 二者兼得。base64 传参避开 cmd/Shell.Run 的引号解析。
 				return spawn(process.env.ComSpec || 'cmd.exe', [
 					'/d', '/c', 'start', '', '/b', 'wscript.exe', '//nologo',
-					ensureHiddenHelper(), encodedCommandLine, spawnOptions.cwd || '',
+					HIDDEN_LAUNCH_VBS_PATH, encodedCommandLine,
 				], { ...spawnOptions, env: mergedEnv, detached: true, stdio: 'ignore' })
 			}
 			: () => spawn(process.env.ComSpec || 'cmd.exe', ['/d', '/c', 'start', '', '/b', command, ...args], {

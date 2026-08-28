@@ -121,10 +121,10 @@ async function ensureWebPushSubscription() {
 const is_hidden_page = !window.innerHeight || !window.innerWidth
 
 /**
- * 向 Service Worker 查询服务器是否在线。
- * @returns {Promise<boolean>} 服务器是否在线，无法查询时视为离线。
+ * 向 Service Worker 查询服务器是否适合启动。
+ * @returns {Promise<boolean>} 是否适合启动服务器。
  */
-export async function queryServerOnline() {
+export async function queryWakeServer() {
 	if (!navigator.serviceWorker?.controller) {
 		try {
 			await fetch('/api/ping', { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(500) })
@@ -141,8 +141,8 @@ export async function queryServerOnline() {
 		 * @param {MessageEvent} event - 消息事件。
 		 * @returns {void}
 		 */
-		channel.port1.onmessage = event => resolve(!!event.data?.serverOnline)
-		navigator.serviceWorker.controller.postMessage({ type: 'GET_SERVER_ONLINE' }, [channel.port2])
+		channel.port1.onmessage = event => resolve(!!event.data?.approved)
+		navigator.serviceWorker.controller.postMessage({ type: 'WAKE_SERVER_REQUEST' }, [channel.port2])
 	})
 }
 
@@ -151,7 +151,7 @@ export async function queryServerOnline() {
  * @returns {Promise<void>}
  */
 export async function wakeServer() {
-	if (await queryServerOnline()) return
+	if (await queryWakeServer()) return
 	const iframe = document.createElement('iframe')
 	iframe.ariaHidden = true
 	iframe.style.display = 'none'
