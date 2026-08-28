@@ -61,7 +61,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 - **`lib/infiniteScroll.mjs`**: `ensureScrollSentinel` / `insertBeforeScrollSentinel` / `bindInfiniteScroll` / `disconnectInfiniteScroll`. Rising-edge / replay traps: Social [ui-details.md](../parts/shells/social/public/docs/ui-details.md#feed-pagination--replay).
 - **`lib/base64.mjs`**: `arrayBufferToBase64` / `blobToBase64` — reuse; do not copy per shell.
 - **`lib/svgInliner.mjs`**: Inline `.svg` `<img>` for `currentColor`. Put `svg-inliner-ignore` on user/media avatars (inlining untrusted SVG activates scripts).
-- **`user-content`**: boolean attr on user/dynamic text & inputs. Page `watch` locale scan skips it.
+- **`user-content`**: boolean attr on user/dynamic text & inputs. Page `watch` locale scan skips it. Empty value skips the whole subtree (visible text + `aria-label`); `user-content="aria-label"` skips only that element's own `aria-label` while children stay checked.
 - **`language-check-ignore`**: boolean attr on intentional multilingual chrome (language name lists, EULA in a chosen locale). Same locale-scan skip as `user-content`; do not use `user-content` for that.
 - **`aria-ignore`**: value **must** be a GitHub issue URL. Policy: [test AGENTS](../../scripts/test/AGENTS.md) Operator tools.
 - **Incomplete UI a11y**: use `aria-hidden` / `inert` / `hidden` (not bare `opacity: 0`). Fix the product — do not soften page `watch`.
