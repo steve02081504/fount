@@ -8,7 +8,6 @@ exit $?
 
 :Batch
 setlocal enabledelayedexpansion
-set POWERSHELL_UPDATECHECK=Off
 
 where powershell.exe >nul 2>&1
 if not errorlevel 1 (
@@ -48,11 +47,12 @@ if defined PowerShellFullPathWhere (
 
 where pwsh.exe >nul 2>&1
 if not errorlevel 1 (
+	set POWERSHELL_UPDATECHECK=Off
 	pwsh.exe -noprofile -executionpolicy bypass -file "%~dp0fount.ps1" %*
 	goto :exit_batch
 )
 
-echo Error: Neither pwsh.exe nor powershell.exe found. Please ensure PowerShell is installed and accessible.
+echo Error: Neither powershell.exe nor pwsh.exe found. Please ensure PowerShell is installed and accessible.
 exit /b 1
 
 :exit_batch

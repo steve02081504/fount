@@ -230,7 +230,7 @@ Deno.test('EULA gate exits 1 when not accepted', async () => {
 	const eulaPs1 = await readFile(eulaPs1Path, 'utf8')
 	const eulaSh = await readFile(eulaShPath, 'utf8')
 	const psOpenWait = eulaPs1.split('function script:Open-FountInstallWaitPage')[1].split('function script:Stop-FountStatusServer')[0]
-	assert(psOpenWait.includes('-ErrorAction Stop'), 'pwsh wait/install spawn uses Stop')
+	assert(psOpenWait.includes('Open-BrowserUrl'), 'pwsh wait/install spawn uses Open-BrowserUrl')
 	assert(psOpenWait.includes('exit 1'), 'pwsh wait/install spawn failure exits 1')
 	const psEnsure = eulaPs1.split('function script:Ensure-FountConfig')[1].split('function script:Confirm-FountEula')[0]
 	const psNoTty = psEnsure.split('Test-FountConsoleInput')[1].split('FountEulaAcceptFile')[0]

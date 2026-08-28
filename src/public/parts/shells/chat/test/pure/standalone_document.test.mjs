@@ -35,6 +35,12 @@ Deno.test('wrapStandaloneMarkdownDocument links to GitHub when code blocks prese
 	assertStringIncludes(html, 'href="https://github.com/steve02081504/fount"')
 })
 
+Deno.test('wrapStandaloneMarkdownDocument squares code-block corners at join seams', () => {
+	const html = wrapStandaloneMarkdownDocument('<div class="markdown-code-block"><pre>code</pre></div>')
+	assertStringIncludes(html, '.join-vertical > .markdown-code-block:not(:first-child)')
+	assertStringIncludes(html, '.join-vertical > .markdown-code-block:not(:last-child)')
+})
+
 Deno.test('wrapStandaloneMarkdownDocument uses first heading of any level as title', () => {
 	const html = wrapStandaloneMarkdownDocument(
 		'<h2>🎯 ZL-31 多格式渲染压力测试</h2><p>这是一段包含粗体的正文，用于验证标题提取。</p>',

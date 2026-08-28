@@ -179,7 +179,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "8m13s",
+			"expected": "18m12s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -706,7 +706,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "10m13s",
+			"expected": "19m13s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -749,6 +749,7 @@
 						"src/public/parts/shells/chat/test/frontend/attachments.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/render/**",
 						"src/public/parts/shells/chat/public/src/composerAttachments.mjs",
+						"src/public/parts/shells/chat/public/shared/pasteFiles.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/messageSend.mjs",
 						"src/public/parts/shells/chat/src/chat/channel/postMessage.mjs",
 						"src/public/parts/shells/chat/public/shared/channelContent.mjs",
@@ -842,6 +843,19 @@
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/hubE2E.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/**"
+					]
+				},
+				{
+					"name": "generationFinalize",
+					"expected": "40s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/generationFinalize.spec.mjs",
+						"src/public/parts/shells/chat/test/live/fixtures/chars/noai_locale_reporter/**",
+						"src/public/parts/shells/chat/public/hub/messages/messageRefresh.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/channelMutationQueue.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/messageSend.mjs",
+						"src/public/parts/shells/chat/public/hub/stream/**",
+						"src/public/parts/shells/chat/public/shared/messageMerge.mjs"
 					]
 				},
 				{

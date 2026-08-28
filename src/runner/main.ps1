@@ -135,9 +135,6 @@ if ($forwardedArgs.Count -eq 0) {
 	$forwardedArgs = @("open", "keepalive")
 }
 
-$Script:Installed_winget = 0
-$Script:Installed_chrome = 0
-
 function RefreshPath {
 	$env:PATH = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
@@ -160,54 +157,13 @@ function Test-Winget {
 					Remove-Item "$env:TEMP/winget.msixbundle" -Force -ErrorAction SilentlyContinue
 				}
 			}
-			$Script:Installed_winget = 1
 			RefreshPath
 			if ($env:FOUNT_DIR -and (Test-Path $env:FOUNT_DIR)) {
 				New-Item -Path "$env:FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
 				Set-Content "$env:FOUNT_DIR/data/installer/auto_installed_winget" '1'
-				$Script:Installed_winget = 0
 			}
 		}
 	} catch { <# ignore #> }
-}
-
-function Get-Browser {
-	try {
-		$progId = (Get-ItemProperty -Path "Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" -Name "ProgId" -ErrorAction Stop).'ProgId'
-
-		if ($progId) {
-			(Get-ItemProperty -Path "Registry::HKEY_CLASSES_ROOT\$progId\shell\open\command" -Name "(default)" -ErrorAction Stop).'(default)'
-		}
-	} catch { <# ignore #> }
-}
-
-function Test-Browser {
-	if (Get-Browser) { return }
-	try {
-		Test-Winget
-		winget install --id Google.Chrome -e --source winget
-	} catch { <# ignore #> }
-	if (!(Get-Browser)) {
-		try {
-			$ChromeSetup = "ChromeSetup.exe"
-			Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/chrome_installer.exe' -OutFile "$env:TEMP\$ChromeSetup"
-			$installer = Start-Process -FilePath "$env:TEMP\$ChromeSetup" -ArgumentList '/install' -PassThru
-			do {
-				Start-Sleep -Seconds 2
-			} while (-not $installer.HasExited)
-			Remove-Item "$env:TEMP\$ChromeSetup" -ErrorAction SilentlyContinue
-		} catch { <# ignore #> }
-	}
-
-	if (Get-Browser) {
-		$Script:Installed_chrome = 1
-		RefreshPath
-		if ($env:FOUNT_DIR -and (Test-Path $env:FOUNT_DIR)) {
-			New-Item -Path "$env:FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
-			Set-Content "$env:FOUNT_DIR/data/installer/auto_installed_chrome" '1'
-			$Script:Installed_chrome = 0
-		}
-	}
 }
 
 function Install-FountTree {
@@ -250,11 +206,11 @@ function Install-FountTree {
 		Remove-Item $env:TEMP/fount.zip -Force
 		New-Item $(Split-Path -Parent $Dir) -ItemType Directory -Force -ErrorAction Ignore
 		Move-Item "$env:TEMP/fount-$Branch" $Dir -Force
-		Get-ChildItem -Path $Dir -Recurse -File -Filter '*.ps1' -ErrorAction SilentlyContinue | Unblock-File -ErrorAction SilentlyContinue
 	}
 	if (!(Test-Path $installFlag)) {
 		throw "Failed to install fount"
 	}
+	Get-ChildItem -Path $Dir -Recurse -File -Filter '*.ps1' -ErrorAction SilentlyContinue | Unblock-File -ErrorAction SilentlyContinue
 }
 
 function Remove-FountAfterEulaDecline {
@@ -288,6 +244,7 @@ try {
 		}
 		$Script:fountDir = $env:FOUNT_DIR
 		Import-FountLocale $env:FOUNT_DIR
+		. (Join-Path $env:FOUNT_DIR 'path/src/browser.ps1')
 		Write-TaskbarProgress -Percent 60
 		if (-not $script:AcceptEula) {
 			$eulaAcceptFile = Join-Path ([IO.Path]::GetTempPath()) "fount-eula-accepted-$PID"
@@ -351,13 +308,6 @@ finally {
 	}
 	if ($eulaAcceptFile) {
 		Remove-Item -LiteralPath $eulaAcceptFile -Force -ErrorAction Ignore
-	}
-	if ($Script:Installed_chrome) {
-		winget uninstall --id Google.Chrome -e --source winget
-	}
-	if ($Script:Installed_winget) {
-		Import-Module Appx
-		Remove-AppxPackage -Package Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
 	}
 }
 
