@@ -121,29 +121,45 @@ async function ensureWebPushSubscription() {
 const is_hidden_page = !window.innerHeight || !window.innerWidth
 
 /**
- * 向 Service Worker 查询服务器是否在线。
- * @returns {Promise<boolean>} 服务器是否在线，无法查询时视为离线。
+ * 等待 Service Worker 接管当前页面后返回其 controller。
+ * 新注册的 worker 尚未 claim 页面时，controller 暂时为 null，需等
+ * `navigator.serviceWorker.ready` 与 `controllerchange` 后才有可用的 controller，
+ * 以便 WAKE_SERVER_REQUEST 能送达新激活的 worker。
+ * @returns {Promise<ServiceWorker | null>} 控制当前页面的 Service Worker，无则返回 null。
  */
-export async function queryServerOnline() {
-	if (!navigator.serviceWorker?.controller) {
-		try {
-			await fetch('/api/ping', { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(500) })
-		}
-		catch {
-			return false
-		}
-		return true
+async function waitServiceWorkerController() {
+	if (!navigator.serviceWorker) return null
+	if (!navigator.serviceWorker.controller) {
+		try { await navigator.serviceWorker.ready } catch { return navigator.serviceWorker.controller }
+		if (navigator.serviceWorker.controller) return navigator.serviceWorker.controller
+		await new Promise(resolve => navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true }))
 	}
-	return new Promise(resolve => {
+	return navigator.serviceWorker.controller
+}
+
+/**
+ * 向 Service Worker 查询服务器是否适合启动。
+ * @returns {Promise<boolean>} 是否适合启动服务器。
+ */
+export async function queryWakeServer() {
+	const controller = await waitServiceWorkerController()
+	if (controller) return new Promise(resolve => {
 		const channel = new MessageChannel()
 		/**
 		 * 处理 Service Worker 返回的在线状态消息。
 		 * @param {MessageEvent} event - 消息事件。
 		 * @returns {void}
 		 */
-		channel.port1.onmessage = event => resolve(!!event.data?.serverOnline)
-		navigator.serviceWorker.controller.postMessage({ type: 'GET_SERVER_ONLINE' }, [channel.port2])
+		channel.port1.onmessage = event => resolve(!!event.data?.approved)
+		controller.postMessage({ type: 'WAKE_SERVER_REQUEST' }, [channel.port2])
 	})
+	try {
+		await fetch('/api/ping', { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(500) })
+	}
+	catch {
+		return false
+	}
+	return true
 }
 
 /**
@@ -151,7 +167,7 @@ export async function queryServerOnline() {
  * @returns {Promise<void>}
  */
 export async function wakeServer() {
-	if (await queryServerOnline()) return
+	if (await queryWakeServer()) return
 	const iframe = document.createElement('iframe')
 	iframe.ariaHidden = true
 	iframe.style.display = 'none'

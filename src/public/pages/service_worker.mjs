@@ -368,6 +368,7 @@ async function fetchAndCache(request) {
 
 		if (networkResponse.type == 'opaque');
 		else if (networkResponse && networkResponse.ok) {
+			if (!ws && new URL(request.url).origin === self.location.origin) connectWebSocket()
 			const responseToCache = networkResponse.clone()
 			const now = Date.now()
 
@@ -478,8 +479,16 @@ self.addEventListener('message', event => {
 	}
 	else if (event.data?.type === 'GET_FOUNT_VERSION')
 		event.ports[0]?.postMessage?.({ fountVersion })
-	else if (event.data?.type === 'GET_SERVER_ONLINE')
-		event.ports[0]?.postMessage?.({ serverOnline })
+	else if (event.data?.type === 'WAKE_SERVER_REQUEST') {
+		event.ports[0]?.postMessage?.({ approved: (() => {
+			if (serverOnline) return true
+			const now = Date.now()
+			try {
+				if (now - lastWakeRequestAt < WAKE_GRACE_MS) return true
+			} finally { lastWakeRequestAt = now }
+			return false
+		})() })
+	}
 })
 
 /**
@@ -628,6 +637,8 @@ let fountVersion = 'unknown'
 getConfig('fountVersion').then(version => fountVersion = version)
 
 const RECONNECT_DELAY = 5000 // 5 seconds
+const WAKE_GRACE_MS = 3 * 60 * 1000 // 3 minutes
+let lastWakeRequestAt = 0
 
 const wsMessageHandlers = {
 	/**
@@ -673,6 +684,8 @@ const wsMessageHandlers = {
  * @returns {void}
  */
 function connectWebSocket() {
+	if (ws) return
+	reconnectTimeout &&= clearTimeout(reconnectTimeout)
 	// Use a relative URL that will be resolved correctly by the browser
 	// against the service worker's origin.
 	const wsUrl = new URL('/ws/notify', self.location.href)
