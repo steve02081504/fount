@@ -16,12 +16,14 @@
 	Test-PWSHModule fount-pwsh
 	Start-Job -ScriptBlock {
 		$targetUrl = $args[0]
+		$FOUNT_DIR = $args[1]
+		. (Join-Path $FOUNT_DIR 'path/src/browser.ps1')
 		Test-Browser
 		while (-not (Test-FountRunning)) {
 			Start-Sleep -Seconds 1
 		}
 		Open-BrowserUrl $targetUrl
-	} -ArgumentList $targetUrl
+	} -ArgumentList $targetUrl, $FOUNT_DIR
 	Start-WTfountCmd
 	exit 0
 }

@@ -194,8 +194,8 @@ test_browser() {
 	fi
 
 	# 已安装浏览器探测：默认关联未登记时也不误装。
-	for browser_cmd in "google-chrome" "google-chrome-stable" "chromium" "chromium-browser" "microsoft-edge" "microsoft-edge-stable" "brave-browser" "firefox"; do
-		if command -v "$browser_cmd" &>/dev/null; then
+	for browser_command in "google-chrome" "google-chrome-stable" "chromium" "chromium-browser" "microsoft-edge" "microsoft-edge-stable" "brave-browser" "firefox"; do
+		if command -v "$browser_command" &>/dev/null; then
 			return 1
 		fi
 	done
@@ -206,8 +206,8 @@ test_browser() {
 			fi
 		done
 	elif [ "$OS_TYPE" = "Darwin" ]; then
-		for browser_app in "/Applications/Google Chrome.app" "/Applications/Microsoft Edge.app" "/Applications/Firefox.app" "/Applications/Brave Browser.app" "/Applications/Chromium.app"; do
-			if [ -d "$browser_app" ]; then
+		for browser_application in "/Applications/Google Chrome.app" "/Applications/Microsoft Edge.app" "/Applications/Firefox.app" "/Applications/Brave Browser.app" "/Applications/Chromium.app"; do
+			if [ -d "$browser_application" ]; then
 				return 1
 			fi
 		done

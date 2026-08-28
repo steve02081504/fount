@@ -31,8 +31,8 @@
 		}
 	}
 	# 3. PATH 上的浏览器命令。
-	foreach ($name in @('msedge', 'chrome', 'chromium', 'brave', 'firefox')) {
-		$command = Get-Command $name -ErrorAction SilentlyContinue
+	foreach ($browserCommandName in @('msedge', 'chrome', 'chromium', 'brave', 'firefox')) {
+		$command = Get-Command $browserCommandName -ErrorAction SilentlyContinue
 		if ($command -and $command.Source -and (Test-Path -LiteralPath $command.Source -PathType Leaf)) {
 			return $command.Source
 		}

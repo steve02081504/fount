@@ -19,8 +19,6 @@ const eulaPs1Path = join(REPO_ROOT, 'path', 'src', 'eula.ps1')
 const openPs1Path = join(REPO_ROOT, 'path', 'src', 'cmd', 'open.ps1')
 const uninstallHookPath = join(REPO_ROOT, 'path', 'src', 'packages.uninstall.60.ps1')
 
-const EDGE_PATH = 'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'
-
 Deno.test('Get-Browser finds Edge at the standard path when UserChoice is missing', async () => {
 	const result = await pwsh_exec(`
 $ErrorActionPreference = 'Stop'
@@ -31,8 +29,7 @@ function script:RefreshPath { }
 function Get-ItemProperty { throw 'no UserChoice key' }
 function Test-Path {
 	param($Path, $LiteralPath, $PathType)
-	$target = if ($PSBoundParameters.ContainsKey('LiteralPath')) { $LiteralPath } else { $Path }
-	$target -eq 'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'
+	$(if ($PSBoundParameters.ContainsKey('LiteralPath')) { $LiteralPath } else { $Path }) -eq 'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe'
 }
 function winget { $script:wingetCalled = $true; throw 'winget must not run' }
 . ${JSON.stringify(browserPs1Path)}
@@ -41,7 +38,7 @@ Test-Browser
 "$found|$script:wingetCalled"
 `)
 	assertEquals(result.code, 0, result.stderr || result.stdout)
-	assertEquals(result.stdout.trim(), `${EDGE_PATH}|False`)
+	assertEquals(result.stdout.trim(), 'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe|False')
 })
 
 Deno.test('Test-Browser installs Chrome only when no browser is found', async () => {
@@ -52,6 +49,9 @@ function script:Test-Winget { }
 function script:RefreshPath { }
 function Get-ItemProperty { throw 'no UserChoice key' }
 function Test-Path { return $false }
+function New-Item { }
+function Set-Content { }
+function Remove-Item { }
 function winget { $script:wingetCalled = $true; throw 'winget install failed' }
 function Invoke-WebRequest { throw 'chrome download failed' }
 function Start-Process { throw 'chrome installer failed' }
@@ -107,8 +107,8 @@ Deno.test('runner and path scripts share browser detection and open via Open-Bro
 	assert(eulaPs1.includes('Open-BrowserUrl $script:FountInstallWaitUrl'), 'eula opens the wait page via Open-BrowserUrl')
 	assert(openPs1.includes('Open-BrowserUrl \'https://steve02081504.github.io/fount/wait?cold_bootting=true\''), 'cmd_open opens cold-boot via Open-BrowserUrl')
 
-	assert(browserSh.includes('command -v "$browser_cmd"'), 'browser.sh probes installed browsers')
-	assert(runnerSh.includes('command -v "$browser_cmd"'), 'runner.sh probes installed browsers')
+	assert(browserSh.includes('command -v "$browser_command"'), 'browser.sh probes installed browsers')
+	assert(runnerSh.includes('command -v "$browser_command"'), 'runner.sh probes installed browsers')
 	assert(browserSh.includes('/usr/bin/firefox'), 'browser.sh probes Linux browser paths')
 	assert(runnerSh.includes('/Applications/Google Chrome.app'), 'runner.sh probes macOS browsers')
 })
