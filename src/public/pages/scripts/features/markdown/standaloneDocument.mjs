@@ -147,6 +147,14 @@ ${hasCodeBlock ? `\
 		.markdown-code-block[open] {
 			border-radius: var(--radius-box) var(--radius-box) 0 0;
 		}
+		.join-vertical > .markdown-code-block:not(:first-child) {
+			border-start-start-radius: 0;
+			border-start-end-radius: 0;
+		}
+		.join-vertical > .markdown-code-block:not(:last-child) {
+			border-end-start-radius: 0;
+			border-end-end-radius: 0;
+		}
 ` : ''}
 		@media (max-width: 767px) {
 			.markdown-body {
@@ -155,7 +163,7 @@ ${hasCodeBlock ? `\
 		}
 
 		.text-icon {
-			color: var(--color-base-content);
+			color: inherit;
 		}${hasCodeBlock ? `
 
 		[color-scheme*="light"] [style*="--shiki-light"][style*="--shiki-dark"] {

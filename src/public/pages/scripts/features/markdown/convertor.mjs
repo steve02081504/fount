@@ -1292,6 +1292,14 @@ export async function GetMarkdownConvertor({
 .markdown-code-block[open] {
 	border-radius: var(--radius-box) var(--radius-box) 0 0;
 }
+.join-vertical > .markdown-code-block:not(:first-child) {
+	border-start-start-radius: 0;
+	border-start-end-radius: 0;
+}
+.join-vertical > .markdown-code-block:not(:last-child) {
+	border-end-start-radius: 0;
+	border-end-end-radius: 0;
+}
 
 .markdown-body img {
 	display: inline-block;

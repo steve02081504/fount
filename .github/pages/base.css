@@ -9,7 +9,7 @@
 }
 
 .text-icon {
-	color: var(--color-base-content);
+	color: inherit;
 }
 
 /* View Transitions for smooth page transitions */
