@@ -8,6 +8,7 @@
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { hasSpeechRecognitionSource, recognizeBuffer } from '/scripts/features/speechRecognition.mjs'
+import { fileFromClipboardItem } from '../shared/pasteFiles.mjs'
 import { setCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
 import { entityFileUrl, fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 import { onElementRemoved } from '/scripts/lib/onElementRemoved.mjs'
@@ -137,14 +138,8 @@ export async function handlePaste(event, selectedFiles, attachmentPreviewContain
 	/** @type {File[]} */
 	const files = []
 	for (const item of items) {
-		const blob = item.getAsFile?.()
-		if (!blob) continue
-		const type = item.type || blob.type || 'application/octet-stream'
-		const ext = type.includes('/') ? type.split('/')[1].split(';')[0] : 'bin'
-		const name = blob.name && blob.name !== 'image.png'
-			? blob.name
-			: `pasted-${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext === 'plain' ? 'txt' : ext}`
-		files.push(new File([blob], name, { type }))
+		const file = await fileFromClipboardItem(item)
+		if (file) files.push(file)
 	}
 	if (!files.length) return
 	event.preventDefault?.()
