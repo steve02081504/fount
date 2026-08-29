@@ -678,7 +678,7 @@ body[data-surface="discovery"] .main-header {
 	max-width: 160px;
 	min-height: 100px;
 	padding: 6px;
-	border: var(--border) dashed color-mix(in srgb, var(--text-muted, #888) 45%, transparent);
+	border: var(--border) dashed color-mix(in srgb, var(--text-muted, var(--color-base-content)) 45%, transparent);
 	border-radius: var(--radius-box);
 	overflow: hidden;
 	transition: opacity 0.25s ease, transform 0.25s ease;
@@ -739,7 +739,7 @@ body[data-surface="discovery"] .main-header {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	color: var(--text-normal, inherit);
-	background-color: color-mix(in srgb, var(--bg-main, #000) 55%, transparent);
+	background-color: color-mix(in srgb, var(--bg-main, var(--color-base-100)) 55%, transparent);
 	border-radius: var(--radius-field);
 }
 

@@ -2836,8 +2836,8 @@
 	gap: 0.5rem;
 	padding: 0.75rem;
 	border-radius: var(--radius-box);
-	border: var(--border) solid var(--fallback-bc, #333);
-	background: var(--fallback-b1, #1a1a1a);
+	border: var(--border) solid var(--color-base-300);
+	background: var(--color-base-100);
 	text-align: left;
 	cursor: pointer;
 	color: inherit;
@@ -3095,7 +3095,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: color-mix(in srgb, var(--muted, #888) 18%, transparent);
+	background: color-mix(in srgb, var(--muted, var(--color-base-content)) 18%, transparent);
 	font-weight: 600;
 	padding: 0;
 	overflow: hidden;
