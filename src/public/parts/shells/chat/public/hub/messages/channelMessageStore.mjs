@@ -43,13 +43,16 @@ export function consumePendingScrollTarget() {
 
 /**
  * @param {object[]} rows 消息行
- * @returns {object[]} 按时间排序
+ * @returns {object[]} 按时间排序（优先 HLC，回退 wall-clock timestamp）
  */
 export function sortChannelRows(rows) {
 	return [...rows].sort((a, b) => {
-		const ta = Number(a.timestamp) || 0
-		const tb = Number(b.timestamp) || 0
+		const ta = Number(a.hlc?.wall) || Number(a.timestamp) || 0
+		const tb = Number(b.hlc?.wall) || Number(b.timestamp) || 0
 		if (ta !== tb) return ta - tb
+		const la = Number(a.hlc?.logical) || 0
+		const lb = Number(b.hlc?.logical) || 0
+		if (la !== lb) return la - lb
 		const idA = a.eventId || ''
 		const idB = b.eventId || ''
 		// pending:* 不是 hex64，不能走 compareHex64Asc

@@ -2180,6 +2180,7 @@
 				"sfwMode": "Nội dung an toàn",
 				"livePreview": "Xem trước trực tiếp",
 				"languageVersion": "Phiên bản ngôn ngữ",
+				"descriptionHint": "Hỗ trợ cú pháp Markdown; các thay đổi được phản ánh ngay trong bản xem trước bên trái.",
 				"localeHint": "Nhấp vào nhãn để chuyển đổi hoặc chỉnh sửa mã; nhấn Enter vào hộp nhập ở cuối để sao chép nó sang ngôn ngữ mới.",
 				"themeColor": {
 					"clear": "Khôi phục màu mặc định của chủ đề",
@@ -2211,7 +2212,7 @@
 					"aria-label": "Tải ảnh đại diện lên"
 				},
 				"tag": {
-					"placeholder": "Thêm sau khi nhập thẻ"
+					"placeholder": "Nhập thẻ và nhấn Enter để thêm; dùng # để thêm nhiều thẻ cùng lúc"
 				},
 				"handle": {
 					"placeholder": "Ví dụ: steve (2–32 ký tự chữ, số, dấu chấm, gạch dưới, gạch ngang)"
@@ -6113,6 +6114,108 @@
 			"next": {
 				"aria-label": "Tiếp theo"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Thanh công cụ soạn thảo"
+			},
+			"contextMenu": {
+				"aria-label": "Trình đơn soạn thảo"
+			},
+			"dockedToolbar": {
+				"aria-label": "Thanh công cụ định dạng"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Tiêu đề 1"
+				},
+				"aria-label": "Tiêu đề 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Tiêu đề 2"
+				},
+				"aria-label": "Tiêu đề 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Tiêu đề 3"
+				},
+				"aria-label": "Tiêu đề 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Danh sách gạch đầu dòng"
+				},
+				"aria-label": "Danh sách gạch đầu dòng"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Danh sách đánh số"
+				},
+				"aria-label": "Danh sách đánh số"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "In đậm"
+				},
+				"aria-label": "In đậm"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "In nghiêng"
+				},
+				"aria-label": "In nghiêng"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Gạch ngang"
+				},
+				"aria-label": "Gạch ngang"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Mã nội tuyến"
+				},
+				"aria-label": "Mã nội tuyến"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Trích dẫn"
+				},
+				"aria-label": "Trích dẫn"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Liên kết"
+				},
+				"aria-label": "Liên kết"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Đề cập"
+				},
+				"aria-label": "Đề cập"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Sao chép"
+				},
+				"aria-label": "Sao chép"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Cắt"
+				},
+				"aria-label": "Cắt"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Dán"
+				},
+				"aria-label": "Dán"
+			},
+			"linkUrl": "Địa chỉ liên kết"
 		}
 	},
 	"pro_cancel_screen": {

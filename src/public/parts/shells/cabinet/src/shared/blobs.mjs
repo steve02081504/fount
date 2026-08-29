@@ -3,8 +3,9 @@ import { randomUUID } from 'node:crypto'
 
 import { wrapContentKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { buildFileManifestFromEnc, encryptPlaintextToParts } from 'npm:@steve02081504/fount-p2p/files/assemble'
-import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk/store'
 import { loadFileManifest, readManifestPlaintext, saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
+import { fetchManifest } from 'npm:@steve02081504/fount-p2p/files/manifest/fetch'
+import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 
 import { evfsSharedBlobPath } from '../paths.mjs'
 
@@ -70,7 +71,15 @@ export async function putSharedCabinetBlob(username, cabinetId, options) {
  * @returns {Promise<Buffer>} 明文
  */
 export async function getSharedCabinetBlob(username, cabinetId, logicalPath) {
-	const manifest = await loadFileManifest(sharedCabinetEntityHash(cabinetId), logicalPath)
+	const ownerEntityHash = sharedCabinetEntityHash(cabinetId)
+	let manifest = await loadFileManifest(ownerEntityHash, logicalPath)
+	if (!manifest) {
+		// manifest 缺失 → 向本节点已知 peer 定向拉取（cabinet servicer 授权；读授权靠读密钥解密）。
+		const view = loadPeerPoolView('')
+		const targets = [...new Set([...view.trustedPeers || [], ...view.explorePeers || []])]
+		if (targets.length)
+			manifest = await fetchManifest({ username, ownerEntityHash, logicalPath, fanoutTargets: targets })
+	}
 	if (!manifest) throw new Error('blob missing')
 	const plain = await readManifestPlaintext(username, manifest)
 	if (!plain) throw new Error('decrypt failed')
@@ -89,17 +98,4 @@ export async function tryDeleteSharedBlob(cabinetId, logicalPath) {
 		await deleteEvfsManifest(sharedCabinetEntityHash(cabinetId), logicalPath)
 	}
 	catch { /* ignore */ }
-}
-
-/**
- * 确保 chunk 在本地（拉取失败则抛）。
- * @param {string} hash 密文 hash
- * @returns {Promise<Buffer>} 块
- */
-export async function ensureChunk(hash) {
-	if (await hasChunk(hash)) return getChunk(hash)
-	const { fetchChunk } = await import('npm:@steve02081504/fount-p2p/files/chunk/fetch')
-	const bytes = await fetchChunk(hash)
-	await putChunk(hash, bytes)
-	return bytes
 }

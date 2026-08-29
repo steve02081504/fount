@@ -2179,6 +2179,7 @@
 				"sfwMode": "安全內容",
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
+				"descriptionHint": "支援 Markdown 語法，修改會即時反映在左側的預覽中。",
 				"localeHint": "點選標籤切換或編輯程式碼；在末尾輸入框回車可複製為新語言。",
 				"themeColor": {
 					"clear": "恢復主題預設色",
@@ -2210,7 +2211,7 @@
 					"aria-label": "上傳頭像"
 				},
 				"tag": {
-					"placeholder": "輸入標籤後新增"
+					"placeholder": "輸入標籤後新增，可用 # 一次新增多個"
 				},
 				"handle": {
 					"placeholder": "例如 steve（2–32 位小寫字母數字._-）"
@@ -6112,6 +6113,108 @@
 			"next": {
 				"aria-label": "下一張"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "編輯器工具列"
+			},
+			"contextMenu": {
+				"aria-label": "編輯器選單"
+			},
+			"dockedToolbar": {
+				"aria-label": "格式工具列"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "一級標題"
+				},
+				"aria-label": "一級標題"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "二級標題"
+				},
+				"aria-label": "二級標題"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "三級標題"
+				},
+				"aria-label": "三級標題"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "無序清單"
+				},
+				"aria-label": "無序清單"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "有序清單"
+				},
+				"aria-label": "有序清單"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "粗體"
+				},
+				"aria-label": "粗體"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "斜體"
+				},
+				"aria-label": "斜體"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "刪除線"
+				},
+				"aria-label": "刪除線"
+			},
+			"code": {
+				"dataset": {
+					"tip": "行內程式碼"
+				},
+				"aria-label": "行內程式碼"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "引用"
+				},
+				"aria-label": "引用"
+			},
+			"link": {
+				"dataset": {
+					"tip": "連結"
+				},
+				"aria-label": "連結"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "提及"
+				},
+				"aria-label": "提及"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "複製"
+				},
+				"aria-label": "複製"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "剪下"
+				},
+				"aria-label": "剪下"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "貼上"
+				},
+				"aria-label": "貼上"
+			},
+			"linkUrl": "連結位址"
 		}
 	},
 	"pro_cancel_screen": {

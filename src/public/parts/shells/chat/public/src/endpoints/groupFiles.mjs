@@ -3,6 +3,8 @@
  * 【职责】群文件分块上传 REST：chunk 预检/注册/上传、文件事件、meta、断点续传、共享柜绑定。
  * 【关联】groupClient.mjs；src/ui/groupFileUpload.mjs、hub/files.mjs。
  */
+import { CHAT_API_CLIENT_PREFIX } from '../../shared/apiPaths.mjs'
+
 import { groupFetch, groupPath } from './groupClient.mjs'
 
 /**
@@ -53,6 +55,26 @@ export async function getGroupFileMeta(groupId, fileId) {
  */
 export async function resumeGroupFileDownload(groupId, fileId) {
 	await groupFetch(groupPath(groupId, 'files', fileId, 'download-resume'), { method: 'POST', json: {} })
+}
+
+/**
+ * 拉取并解密群文件字节（跨节点时后端按需拉取 manifest / chunk）。
+ * @param {string} groupId 群 ID
+ * @param {string} fileId 文件 ID
+ * @returns {Promise<{ buffer: ArrayBuffer, mimeType: string }>} 文件字节与 Content-Type
+ */
+export async function getGroupFileBytes(groupId, fileId) {
+	const res = await fetch(`${CHAT_API_CLIENT_PREFIX}/groups/${groupPath(groupId, 'files', fileId)}`, { credentials: 'include' })
+	if (!res.ok) {
+		const data = await res.json().catch(() => ({}))
+		const error = new Error(data.error || `HTTP ${res.status}`)
+		error.status = res.status
+		throw error
+	}
+	return {
+		buffer: await res.arrayBuffer(),
+		mimeType: res.headers.get('Content-Type') || 'application/octet-stream',
+	}
 }
 
 /**

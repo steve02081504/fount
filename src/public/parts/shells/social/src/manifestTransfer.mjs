@@ -1,5 +1,8 @@
 import {
-	registerManifestOwnerMatcher,
+	registerManifestOwner,
+	unregisterManifestOwner,
+} from 'npm:@steve02081504/fount-p2p/files/manifest/routing'
+import {
 	registerTransferKeyDependencies,
 	unregisterTransferKeyDependencies,
 } from 'npm:@steve02081504/fount-p2p/files/transfer_key_registry'
@@ -13,7 +16,7 @@ const OWNER_ID = 'social'
  * @returns {void}
  */
 export function registerSocialManifestTransfer() {
-	registerManifestOwnerMatcher(OWNER_ID, manifest => manifest.transferKeyDescriptor?.type === 'vault-wrap')
+	registerManifestOwner(OWNER_ID, manifest => manifest?.transferKeyDescriptor?.type === 'vault-wrap')
 	registerTransferKeyDependencies(OWNER_ID, {
 		/**
 		 * @param {string} replicaUsername replica
@@ -29,5 +32,6 @@ export function registerSocialManifestTransfer() {
 
 /** @returns {void} */
 export function unregisterSocialManifestTransfer() {
+	unregisterManifestOwner(OWNER_ID)
 	unregisterTransferKeyDependencies(OWNER_ID)
 }

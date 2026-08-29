@@ -2180,6 +2180,7 @@
 				"sfwMode": "Безпечний контент",
 				"livePreview": "Попередній перегляд",
 				"languageVersion": "Мовна версія",
+				"descriptionHint": "Підтримує синтаксис Markdown; зміни одразу відображаються в попередньому перегляді зліва.",
 				"localeHint": "Клацніть мітку, щоб змінити або змінити код; натисніть Enter у полі введення в кінці, щоб скопіювати його новою мовою.",
 				"themeColor": {
 					"clear": "Повернути колір теми за замовчуванням",
@@ -2211,7 +2212,7 @@
 					"aria-label": "Завантажити аватар"
 				},
 				"tag": {
-					"placeholder": "Додайте після введення тегу"
+					"placeholder": "Введіть тег і натисніть Enter, щоб додати його; використовуйте #, щоб додати одразу кілька"
 				},
 				"handle": {
 					"placeholder": "Наприклад, steve (2–32 малих буквено-цифрових символів._-)"
@@ -6113,6 +6114,108 @@
 			"next": {
 				"aria-label": "Наступне медіа"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Панель інструментів редактора"
+			},
+			"contextMenu": {
+				"aria-label": "Меню редактора"
+			},
+			"dockedToolbar": {
+				"aria-label": "Панель форматування"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Заголовок 1"
+				},
+				"aria-label": "Заголовок 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Заголовок 2"
+				},
+				"aria-label": "Заголовок 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Заголовок 3"
+				},
+				"aria-label": "Заголовок 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Маркований список"
+				},
+				"aria-label": "Маркований список"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Нумерований список"
+				},
+				"aria-label": "Нумерований список"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Жирний"
+				},
+				"aria-label": "Жирний"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Курсив"
+				},
+				"aria-label": "Курсив"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Закреслений"
+				},
+				"aria-label": "Закреслений"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Вбудований код"
+				},
+				"aria-label": "Вбудований код"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Цитата"
+				},
+				"aria-label": "Цитата"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Посилання"
+				},
+				"aria-label": "Посилання"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Згадка"
+				},
+				"aria-label": "Згадка"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Копіювати"
+				},
+				"aria-label": "Копіювати"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Вирізати"
+				},
+				"aria-label": "Вирізати"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Вставити"
+				},
+				"aria-label": "Вставити"
+			},
+			"linkUrl": "Адреса посилання"
 		}
 	},
 	"pro_cancel_screen": {

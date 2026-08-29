@@ -2,7 +2,7 @@
  * 【文件】public/hub/messages/render/blocks.mjs
  * 【职责】特殊内容块：解密占位、贴纸、群邀请、语义引用气泡。
  */
-import { resolvePackEmojiUrl } from '../../../../../../scripts/features/emoji/packIndex.mjs'
+import { resolveEmojiRefLabel, resolvePackEmojiUrl } from '../../../../../../scripts/features/emoji/packIndex.mjs'
 import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
 import { parseEmojiToken } from '../../../shared/inlineTokenSyntax.mjs'
 import { buildInviteJoinShareUrl } from '../../../src/inviteQr.mjs'
@@ -38,10 +38,13 @@ export async function renderStickerBlock(message) {
 	const content = message?.content
 	if (!content || channelMessageKind(content) !== 'sticker') return null
 	let src = content.stickerBase64 || ''
-	const refMatch = parseEmojiToken(content.emojiRef)
+	const refMatch = parseEmojiToken(content.emoji)
 	if (!src && refMatch)
 		src = await resolvePackEmojiUrl(refMatch.packId, refMatch.emojiId) || ''
-	const name = escapeHtml(content.stickerName || content.stickerId || 'sticker')
+	const fallbackLabel = content.stickerName || content.stickerId
+		? escapeHtml(content.stickerName || content.stickerId || 'sticker')
+		: escapeHtml(content.emoji ? await resolveEmojiRefLabel(content.emoji) : 'sticker')
+	const name = fallbackLabel
 	const saveButtonHtml = refMatch?.packId
 		? '<button type="button" class="save-sticker-button" data-i18n="chat.hub.save.sticker"></button>'
 		: ''

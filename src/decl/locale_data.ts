@@ -2151,6 +2151,7 @@ export type LocaleData = {
 				sfwMode: string
 				livePreview: string
 				languageVersion: string
+				descriptionHint: string
 				localeHint: string
 				themeColor: {
 					clear: string
@@ -6084,6 +6085,108 @@ export type LocaleData = {
 			next: {
 				'aria-label': string
 			}
+		}
+		markdownRichInput: {
+			toolbar: {
+				'aria-label': string
+			}
+			contextMenu: {
+				'aria-label': string
+			}
+			dockedToolbar: {
+				'aria-label': string
+			}
+			headingLarge: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			headingMedium: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			headingSmall: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			listUl: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			listOl: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			bold: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			italic: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			strike: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			code: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			quote: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			link: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			mention: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			copy: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			cut: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			paste: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			linkUrl: string
 		}
 	}
 	pro_cancel_screen: {

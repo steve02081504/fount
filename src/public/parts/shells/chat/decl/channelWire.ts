@@ -64,7 +64,7 @@ export type channelWireText_t = channelWireCommon_t & {
  */
 export type channelWireSticker_t = channelWireCommon_t & {
 	type: 'sticker'
-	emojiRef?: string
+	emoji?: string
 	stickerId?: string
 	stickerName?: string
 	stickerBase64?: string

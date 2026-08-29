@@ -145,6 +145,12 @@
 			"src/server/p2p_server/**",
 			"src/public/parts/shells/chat/test/live/scripts/federation/entity_search.mjs"
 		],
+		"fedProfileUpdate": [
+			"src/public/parts/shells/chat/src/entity/**",
+			"src/public/parts/shells/chat/public/hub/presence.mjs",
+			"src/public/parts/shells/chat/public/hub/stream/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/profile_update.mjs"
+		],
 		"frontendShared": [
 			"src/public/parts/shells/chat/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
 			"src/public/parts/shells/chat/public/index.html",
@@ -179,7 +185,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "18m12s",
+			"expected": "5m5s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -298,7 +304,7 @@
 		},
 		{
 			"name": "ws",
-			"expected": "19s",
+			"expected": "1m27s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -322,7 +328,7 @@
 		},
 		{
 			"name": "ws_read_marker",
-			"expected": "16s",
+			"expected": "1m22s",
 			"dependsOn": [
 				"server:live",
 				"ws"
@@ -346,7 +352,7 @@
 		},
 		{
 			"name": "ws_rpc",
-			"expected": "19s",
+			"expected": "1m27s",
 			"dependsOn": [
 				"server:live",
 				"ws"
@@ -705,8 +711,30 @@
 			]
 		},
 		{
+			"name": "fed_profile_update",
+			"expected": "2m30s",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedProfileUpdate"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_profile_update"
+			]
+		},
+		{
 			"name": "frontend",
-			"expected": "19m13s",
+			"expected": "10m18s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -715,7 +743,7 @@
 			"subtests": [
 				{
 					"name": "smoke",
-					"expected": "7s",
+					"expected": "1m4s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs"
 					]
@@ -738,8 +766,22 @@
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/composer.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/composerExtras.mjs",
+						"src/public/parts/shells/chat/public/hub/composerDraft.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/composerController.mjs",
 						"src/public/parts/shells/chat/public/src/composerAttachments.mjs"
+					]
+				},
+				{
+					"name": "markdownRichInput",
+					"expected": "2m1s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/markdownRichInput.spec.mjs",
+						"src/public/pages/scripts/components/markdownRichInput.mjs",
+						"src/public/parts/shells/chat/public/shared/mentionQuery.mjs",
+						"src/public/parts/shells/chat/public/hub/markdownRichInput.mjs",
+						"src/public/parts/shells/chat/public/hub/mentionAutocomplete.mjs",
+						"src/public/parts/shells/chat/public/hub/index.html",
+						"src/public/parts/shells/chat/public/hub/wiring/bootstrap.mjs"
 					]
 				},
 				{

@@ -385,8 +385,8 @@
 
 .entity-profile-card--sidebar {
 	margin: 0 12px 16px;
-	border: var(--border) solid var(--border-subtle, rgb(255 255 255 / 8%));
-	box-shadow: 0 2px 8px var(--shadow, rgb(0 0 0 / 20%));
+	border: var(--border) solid var(--border-subtle, color-mix(in srgb, var(--color-base-content) 6%, transparent));
+	box-shadow: 0 2px 8px var(--shadow, color-mix(in srgb, var(--color-neutral) 40%, transparent));
 }
 
 .entity-profile-card--sidebar .profile-popup-banner {

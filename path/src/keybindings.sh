@@ -59,4 +59,3 @@ register_terminal_keybindings() {
 	printf '%s\n' "${editor_paths[@]}" | jq -R . | jq -s '{editorKeybindings: ., windowsTerminalSettings: []}' >"$manifest"
 	get_i18n 'terminalKeybindings.registered'
 }
-

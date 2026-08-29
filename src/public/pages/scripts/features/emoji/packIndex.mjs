@@ -1,11 +1,16 @@
 /**
- * pack 内容 URL 解析与 IndexedDB 缓存。
+ * pack 内容 URL 解析与 IndexedDB 缓存（内容 + pack 元数据 label）。
  */
-import { listEmojiProviders } from './providers.mjs'
+import { loadPreferredLangs, primaryLocale } from '../../i18n/index.mjs'
+
+import { parseEmojiRef } from './emojiRef.mjs'
+import { resolveEmojiItemLabels } from './packPresentation.mjs'
+import { aggregateEmojiPacks, listEmojiProviders } from './providers.mjs'
 
 const EMOJI_DB = 'fount_emoji_pack_cache'
 const EMOJI_STORE = 'emojis'
-const EMOJI_VER = 1
+const EMOJI_META_STORE = 'packs'
+const EMOJI_VER = 2
 
 /** @type {Promise<IDBDatabase> | null} */
 let dbPromise = null
@@ -32,6 +37,8 @@ function openEmojiDb() {
 			const database = request.result
 			if (!database.objectStoreNames.contains(EMOJI_STORE))
 				database.createObjectStore(EMOJI_STORE, { keyPath: 'k' })
+			if (!database.objectStoreNames.contains(EMOJI_META_STORE))
+				database.createObjectStore(EMOJI_META_STORE, { keyPath: 'k' })
 		}
 		/**
 		 * @returns {void}
@@ -146,4 +153,110 @@ export async function resolvePackEmojiUrl(packId, emojiId, options = {}) {
 		if (url) return url
 	}
 	return null
+}
+
+/**
+ * 读取缓存 pack 元数据（items 的 emojiId → label）。
+ * @param {string} packId 包 ID
+ * @returns {Promise<Array<{ id: string, name: string, alt: string }> | null>} 缓存条目；未命中为 null
+ */
+async function getCachedPackMeta(packId) {
+	try {
+		const database = await openEmojiDb()
+		return await new Promise((resolve, reject) => {
+			const transaction = database.transaction(EMOJI_META_STORE, 'readonly')
+			const query = transaction.objectStore(EMOJI_META_STORE).get(packId)
+			/**
+			 * @returns {void}
+			 */
+			query.onsuccess = () => resolve(Array.isArray(query.result?.v) ? query.result.v : null)
+			/**
+			 * @returns {void}
+			 */
+			query.onerror = () => reject(query.error)
+		})
+	}
+	catch {
+		return null
+	}
+}
+
+/**
+ * 写入 pack 元数据缓存（best-effort；存储失败视为 miss）。
+ * @param {string} packId 包 ID
+ * @param {Array<{ id: string, name: string, alt: string }>} items label 条目
+ * @returns {Promise<void>}
+ */
+async function putCachedPackMeta(packId, items) {
+	try {
+		const database = await openEmojiDb()
+		await new Promise((resolve, reject) => {
+			const transaction = database.transaction(EMOJI_META_STORE, 'readwrite')
+			transaction.objectStore(EMOJI_META_STORE).put({ k: packId, v: items })
+			/**
+			 * @returns {void}
+			 */
+			transaction.oncomplete = () => resolve()
+			/**
+			 * @returns {void}
+			 */
+			transaction.onerror = () => reject(transaction.error)
+		})
+	}
+	catch { /* best-effort cache */ }
+}
+
+/**
+ * 将 provider 聚合出的 pack 条目写入 label 缓存（按当前语言解析 name/alt）。
+ * @param {object[]} packs provider 聚合包列表
+ * @returns {void}
+ */
+export function seedEmojiLabelIndex(packs) {
+	const locales = loadPreferredLangs().length ? loadPreferredLangs() : [primaryLocale()]
+	for (const pack of packs || []) {
+		const packId = String(pack?.packId || '').trim()
+		if (!packId) continue
+		const items = (pack.items || pack.entries || [])
+			.map(entry => {
+				const { name, alt } = resolveEmojiItemLabels(entry, locales)
+				return { id: String(entry?.emojiId || ''), name, alt }
+			})
+			.filter(item => item.id)
+		if (items.length) void putCachedPackMeta(packId, items)
+	}
+}
+
+/** @type {Promise<void> | null} */
+let metaIndexPromise = null
+
+/**
+ * 惰性补齐 label 索引：触发一次 provider 聚合并写入缓存（去重，失败静默）。
+ * @returns {Promise<void>} 补齐完成
+ */
+function ensurePackMetaIndex() {
+	if (!metaIndexPromise)
+		metaIndexPromise = aggregateEmojiPacks({})
+			.then(({ packs }) => { seedEmojiLabelIndex(packs) })
+			.catch(() => { })
+			.finally(() => { metaIndexPromise = null })
+	return metaIndexPromise
+}
+
+/**
+ * 解析 emojiRef 的显示 label（alt/name）：IndexedDB → 一次 provider 补齐 → 回落 emojiId。
+ * @param {string} emojiRef 表情引用（unicode 或 `:[emoji:packId/emojiId]:`）
+ * @returns {Promise<string>} 显示 label
+ */
+export async function resolveEmojiRefLabel(emojiRef) {
+	const parsed = parseEmojiRef(emojiRef)
+	if (!parsed) return ''
+	if (parsed.kind === 'unicode') return parsed.unicode
+	/** 从缓存读取单条 label。
+	 * @returns {Promise<string | undefined>} label
+	 */
+	const find = async () => (await getCachedPackMeta(parsed.packId))?.find(item => item.id === parsed.emojiId)?.alt
+	const hit = await find()
+	if (hit) return hit
+	await ensurePackMetaIndex()
+	return await find() || parsed.emojiId
 }

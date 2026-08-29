@@ -3,6 +3,7 @@
  * 【职责】频道消息薄聚合：重导出子模块并绑定 Hub 状态订阅。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { isTextComposer } from '/scripts/components/markdownRichInput.mjs'
 import { stopVoiceIfRecording } from '../composerFiles.mjs'
 import { store, setState, watchState } from '../core/state.mjs'
 
@@ -36,7 +37,7 @@ export async function submitComposer() {
 	catch (err) {
 		showToastI18n('error', 'chat.hub.send.failed', { error: err.message })
 		input.value = content
-		if (input instanceof HTMLTextAreaElement)
+		if (isTextComposer(input))
 			input.dispatchEvent(new Event('input', { bubbles: true }))
 	}
 }

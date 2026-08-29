@@ -1,8 +1,32 @@
 import { Buffer } from 'node:buffer'
 
 import { loadFileManifest, readManifestPlaintext, readPublicFile } from 'npm:@steve02081504/fount-p2p/files/evfs'
+import { fetchManifest } from 'npm:@steve02081504/fount-p2p/files/manifest/fetch'
 
 import { isSafeHtmlUrl } from '../../../../pages/scripts/lib/sanitizeHtml.mjs'
+
+/**
+ * 读取远端实体 manifest 明文：本地 miss 时经其 owner 节点定向拉取（public / vault-wrap 均可）。
+ * @param {string} username 本机用户
+ * @param {string} ownerEntityHash 远端实体
+ * @param {string} logicalPath EVFS 路径
+ * @returns {Promise<Buffer | null>} 明文或 null
+ */
+async function readRemoteManifest(username, ownerEntityHash, logicalPath) {
+	let manifest = await loadFileManifest(ownerEntityHash, logicalPath)
+	if (!manifest) 
+		try {
+			const { parseEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+			const ownerNode = parseEntityHash(ownerEntityHash)?.nodeHash
+			if (ownerNode)
+				manifest = await fetchManifest({ username, ownerEntityHash, logicalPath, fanoutTargets: [ownerNode] })
+		}
+		catch { manifest = null }
+	
+	if (!manifest) return null
+	const plain = await readManifestPlaintext(username, manifest)
+	return plain ? Buffer.from(plain) : null
+}
 
 /**
  * @param {unknown} raw 远端柜列表
@@ -100,10 +124,9 @@ export async function fetchRemoteCabinets(username, ownerEntityHash, viewerConte
 	catch { /* 无公开列表 */ }
 
 	try {
-		const manifest = await loadFileManifest(ownerEntityHash, 'shells/cabinet/cabinets.followers.json')
-		if (manifest) {
-			const plain = await readManifestPlaintext(username, manifest)
-			const rows = sanitizeRemoteCabinets(JSON.parse(Buffer.from(plain).toString('utf8')))
+		const plain = await readRemoteManifest(username, ownerEntityHash, 'shells/cabinet/cabinets.followers.json')
+		if (plain) {
+			const rows = sanitizeRemoteCabinets(JSON.parse(plain.toString('utf8')))
 			for (const row of rows) {
 				if (!canViewByVisibility(row.visibility, viewerContext, ownerEntityHash)) continue
 				if (!cabinets.some(existing => existing.cabinet_id === row.cabinet_id))
@@ -128,14 +151,7 @@ export async function fetchRemoteCabinetIndex(username, ownerEntityHash, cabinet
 	const { canViewByVisibility } = await import('../../social/src/lib/visibilitySpec.mjs')
 	if (cabinetMeta && !canViewByVisibility(cabinetMeta.visibility, viewerContext, ownerEntityHash))
 		throw new Error('forbidden')
-	try {
-		const buf = await readPublicFile(username, ownerEntityHash, `shells/cabinet/${cabinetId}/index.json`)
-		return sanitizeRemoteIndex(JSON.parse(Buffer.from(buf).toString('utf8')))
-	}
-	catch {
-		const manifest = await loadFileManifest(ownerEntityHash, `shells/cabinet/${cabinetId}/index.json`)
-		if (!manifest) throw new Error('index not found')
-		const plain = await readManifestPlaintext(username, manifest)
-		return sanitizeRemoteIndex(JSON.parse(Buffer.from(plain).toString('utf8')))
-	}
+	const plain = await readRemoteManifest(username, ownerEntityHash, `shells/cabinet/${cabinetId}/index.json`)
+	if (!plain) throw new Error('index not found')
+	return sanitizeRemoteIndex(JSON.parse(plain.toString('utf8')))
 }

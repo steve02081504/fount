@@ -12,6 +12,7 @@ import {
 } from 'fount/scripts/test/live/federation/common.mjs'
 
 const fileId = randomUUID()
+const plaintext = 'fed-file-payload-1234567890'
 
 console.log('=== Setup: open group + join ===')
 const setup = await InitializeOpenGroupJoin('FedFileXfer', 'file-xfer-seed')
@@ -48,6 +49,14 @@ await testCase('B sees file meta (DAG sync)', async () => pollUntil(async () => 
 	return m.status === 200 && m.json.fileId === fileId
 }, 60, 3))
 
+await testCase('B fetches file bytes via group route (manifest fetch + decrypt)', async () => {
+	// 冷路径：B 无本地 manifest / chunk → 经群 roster fetchManifest（servicer 授权）+ DAG 明文读取拉块解密。
+	const rs = await Api(FedB, 'GET', `/groups/${gid}/files/${fileId}`)
+	if (rs.status !== 200) throw new Error(`GET bytes ${rs.status}: ${rs.raw}`)
+	if (rs.raw !== plaintext) throw new Error(`bytes mismatch: got ${JSON.stringify(rs.raw)}`)
+	return true
+})
+
 await testCase('B downloads file content via federation', async () => {
 	const rs = await Api(FedB, 'POST', `/groups/${gid}/files/${fileId}/download-resume`, {})
 	if (rs.status !== 200) throw new Error(`resume ${rs.status}: ${rs.raw}`)
@@ -59,6 +68,16 @@ await testCase('B downloads file content via federation', async () => {
 		return s?.status === 'done' || s?.percent === 100 || (s?.done >= s?.total && s?.total > 0)
 	}, 150, 4)
 	return Boolean(done)
+})
+
+await testCase('B fetches file bytes via EVFS direct URL (manifest fetch fallback)', async () => {
+	// 走通用 EVFS 端点：本地 manifest miss → 群 roster 定向拉取（含群目录反查回退）。
+	const { groupEntityHash } = await import('fount/public/parts/shells/chat/public/shared/groupEntityHash.mjs')
+	const entityHash = groupEntityHash(gid)
+	const rs = await Api(FedB, 'GET', `/entities/${entityHash}/files/chat/${fileId}`)
+	if (rs.status !== 200) throw new Error(`EVFS GET ${rs.status}: ${rs.raw}`)
+	if (rs.raw !== plaintext) throw new Error(`bytes mismatch: got ${JSON.stringify(rs.raw)}`)
+	return true
 })
 
 await ClearFedGroup(gid)

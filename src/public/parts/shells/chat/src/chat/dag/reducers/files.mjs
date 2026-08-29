@@ -37,7 +37,7 @@ export const fileReducers = {
 		state.messageOverlay.fileIndex.set(event.content.fileId, {
 			name: event.content.name,
 			size: event.content.size,
-			mime_type: event.content.mime_type,
+			mime_type: event.content.mime_type ?? event.content.mimeType ?? null,
 			folderId: event.content.folderId,
 			ceMode: event.content.ceMode || 'convergent',
 			contentHash: event.content.contentHash ?? null,

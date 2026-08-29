@@ -102,12 +102,13 @@ function raceTimeout(promise, timeoutMs, label) {
  * @param {string} entityHash 128 hex
  * @param {string} logicalPath EVFS 逻辑路径
  * @param {(username: string, entityHash: string, path: string) => Promise<Uint8Array | Buffer | null>} [readPlain] 可注入（测试）
+ * @param {{ revalidate?: boolean }} [options] `revalidate` 时强制重新拉取签名 manifest，绕过本地旧缓存
  * @returns {Promise<Uint8Array | Buffer | null>} 明文或 null
  */
-async function readRemoteProfilePlain(replicaUsername, entityHash, logicalPath, readPlain) {
+async function readRemoteProfilePlain(replicaUsername, entityHash, logicalPath, readPlain, options = {}) {
 	if (readPlain) return readPlain(replicaUsername, entityHash, logicalPath)
 	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
-	return readPublicFile(replicaUsername, entityHash, logicalPath)
+	return readPublicFile(replicaUsername, entityHash, logicalPath, { revalidate: options.revalidate === true })
 }
 
 /**
@@ -218,16 +219,30 @@ function toPublicProfilePayload(stored) {
 }
 
 /**
+ * 未设置任何展示名时，把本机 fount 用户名作为默认名随 profile 发布（跨节点展示名回退）。
+ * @param {object} stored 本地 profile
+ * @param {string} loginName fount 用户名
+ * @returns {object} localized 表
+ */
+function localizedWithDefaultName(stored, loginName) {
+	const localized = stored?.localized || {}
+	if (!loginName) return localized
+	const hasAnyName = Object.values(localized).some(slice => String(slice?.name || '').trim())
+	if (hasAnyName) return localized
+	return { ...localized, '': { name: loginName } }
+}
+
+/**
  * @param {string} replicaUsername replica
  * @param {string} entityHash 128 hex
  * @param {object} stored 本地 profile
- * @returns {Promise<void>}
+ * @returns {Promise<object | null>} 已签名并落盘的 manifest（发布失败为 null）
  */
 async function publishStaticProfile(replicaUsername, entityHash, stored) {
 	const { getEntityRecoverySecretKey, getRecoveryPubKeyHex, getEntityActivePubKey } = await import('./identity.mjs')
 	const recoverySecretKeyHex = await getEntityRecoverySecretKey(replicaUsername, entityHash)
 	const recoveryPubKeyHex = await getRecoveryPubKeyHex(replicaUsername, entityHash)
-	if (!recoverySecretKeyHex || !recoveryPubKeyHex) return
+	if (!recoverySecretKeyHex || !recoveryPubKeyHex) return null
 	let activePubKeyHex = stored.activePubKeyHex || ''
 	let keyGeneration = Number(stored.keyGeneration ?? 0) || 0
 	if (!activePubKeyHex)
@@ -239,12 +254,14 @@ async function publishStaticProfile(replicaUsername, entityHash, stored) {
 		}
 		catch { /* 无本地身份则保持空 */ }
 
+	const loginName = getUserByUsername(replicaUsername)?.username || replicaUsername
 	const plaintext = Buffer.from(JSON.stringify(toPublicProfilePayload({
 		...stored,
+		localized: localizedWithDefaultName(stored, loginName),
 		activePubKeyHex,
 		keyGeneration,
 	})), 'utf8')
-	await publishPublicFile({
+	return publishPublicFile({
 		ownerEntityHash: entityHash,
 		logicalPath: PUBLIC_PROFILE_PATH,
 		plaintext,
@@ -259,18 +276,18 @@ async function publishStaticProfile(replicaUsername, entityHash, stored) {
  * 远端实体：经 EVFS 拉签名 profile 落盘（显式路径用；带负缓存与超时）。
  * @param {string} replicaUsername replica
  * @param {string} entityHash 128 hex
- * @param {{ timeoutMs?: number, readPlain?: (username: string, entityHash: string, path: string) => Promise<Uint8Array | Buffer | null> }} [options] 超时与可读注入
+ * @param {{ timeoutMs?: number, readPlain?: (username: string, entityHash: string, path: string) => Promise<Uint8Array | Buffer | null>, revalidate?: boolean }} [options] 超时、可读注入与强制重验签 manifest
  * @returns {Promise<object | null>} 落盘后的 stored profile，或 null
  */
 export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash, options = {}) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed || isWritableLocalEntity(parsed.entityHash)) return null
-	if (isRemoteProfileNegativelyCached(parsed.entityHash)) return null
+	if (!options.revalidate && isRemoteProfileNegativelyCached(parsed.entityHash)) return null
 
 	let plain
 	try {
 		plain = await raceTimeout(
-			readRemoteProfilePlain(replicaUsername, parsed.entityHash, PUBLIC_PROFILE_PATH, options.readPlain),
+			readRemoteProfilePlain(replicaUsername, parsed.entityHash, PUBLIC_PROFILE_PATH, options.readPlain, options),
 			options.timeoutMs ?? REMOTE_PROFILE_FETCH_TIMEOUT_MS,
 			'remote profile fetch timeout',
 		)
@@ -340,6 +357,7 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 		const remote = await fetchAndCacheRemoteProfile(replicaUsername, parsed.entityHash, {
 			timeoutMs: options.remoteTimeoutMs,
 			readPlain: options.readPlain,
+			revalidate: options.forceRemote === true,
 		})
 		if (remote) stored = remote
 	}
@@ -400,6 +418,27 @@ export async function recordHeartbeat(replicaUsername, entityHash) {
 	profile.lastSeenAt = Date.now()
 	await getEntityStore().writeEntityJson(entityHash, PROFILE_JSON, toStoredProfile(profile))
 	return { lastSeenAt: profile.lastSeenAt }
+}
+
+/**
+ * profile 公开发布后，向同频道节点（群）与关注者节点（TrustGraph）广播 `profile_update` 通知，
+ * 让对端强制 revalidate 拉新 manifest，而不是继续读本地旧缓存。
+ * @param {string} replicaUsername replica
+ * @param {string} entityHash 128 hex
+ * @param {object | null} manifest 已签名 public manifest（供 publishedAt / contentHash）
+ * @returns {Promise<void>}
+ */
+export async function notifyProfileUpdated(replicaUsername, entityHash, manifest) {
+	const publishedAt = Number(manifest?.meta?.publicSig?.publishedAt) || 0
+	const payload = {
+		entityHash,
+		...publishedAt > 0 ? { publishedAt } : {},
+		...manifest?.contentHash ? { contentHash: manifest.contentHash } : {},
+	}
+	const { deliverToUserRoomPeers } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
+	const { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
+	await deliverToUserRoomPeers(replicaUsername, 'profile_update', payload)
+	await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(replicaUsername, 'profile_update', payload)
 }
 
 /**
@@ -504,8 +543,10 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		|| updates.banner !== undefined
 		|| updates.sfw_banner !== undefined
 		|| updates.defaultEmojiPackId !== undefined
-	if (staticTouched)
-		await publishStaticProfile(replicaUsername, entityHash, updatedProfile)
+	if (staticTouched) {
+		const manifest = await publishStaticProfile(replicaUsername, entityHash, updatedProfile)
+		void notifyProfileUpdated(replicaUsername, entityHash, manifest).catch(() => { })
+	}
 
 	if (updates.defaultEmojiPackId !== undefined) {
 		const { ensureEntitySocialReady } = await import('../../../social/src/lib/bootstrap.mjs')

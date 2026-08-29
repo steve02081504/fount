@@ -6,9 +6,9 @@
 	overflow: auto;
 	padding: 14px;
 	border-radius: var(--radius-box);
-	border: var(--border) solid var(--border-color);
-	background: var(--bg-panel, #1e1e1e);
-	color: var(--text-normal, #ddd);
+	border: var(--border) solid var(--color-base-300);
+	background: var(--color-base-100);
+	color: var(--color-base-content);
 	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 	display: none;
 }
@@ -35,7 +35,7 @@
 .emoji-pack-preview-avatar-fallback {
 	display: grid;
 	place-items: center;
-	background: var(--bg-hover, rgba(255, 255, 255, 0.08));
+	background: color-mix(in srgb, var(--color-base-content) 8%, transparent);
 	font-size: 20px;
 	font-weight: 600;
 }
@@ -73,12 +73,12 @@
 	font-size: 11px;
 	padding: 2px 8px;
 	border-radius: var(--radius-box);
-	background: var(--bg-hover, rgba(255, 255, 255, 0.08));
+	background: color-mix(in srgb, var(--color-base-content) 8%, transparent);
 }
 
 .emoji-pack-preview-link {
 	font-size: 12px;
-	color: var(--accent, #7aa2ff);
+	color: var(--color-primary);
 	text-decoration: none;
 }
 

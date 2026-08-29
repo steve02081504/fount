@@ -102,7 +102,7 @@ async function sendPickedEmojiAsSticker(item) {
 	try {
 		await sendGroupMessage(groupId, channelId, normalizeChannelMessage({
 			type: 'sticker',
-			emojiRef: item.emojiRef,
+			emoji: item.emojiRef,
 			stickerName: item.emojiId || 'emoji',
 		}))
 		const { loadMessages } = await messagesApi()
@@ -150,7 +150,7 @@ async function wireHubPickers() {
 		await mountDockedEmojiPicker({
 			pickerElement: emojiPickerElement,
 			triggerButton: emojiButton,
-			inputElement: messageInput instanceof HTMLTextAreaElement ? messageInput : undefined,
+			inputElement: messageInput instanceof HTMLElement ? messageInput : undefined,
 			getPickerContext: hubEmojiPickerContext,
 		})
 		wireHubGroupEmojiStickerGestures(emojiPickerElement, emojiPickerElement, sendPickedEmojiAsSticker)

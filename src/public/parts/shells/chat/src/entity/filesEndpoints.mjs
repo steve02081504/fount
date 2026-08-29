@@ -66,7 +66,36 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 			throw httpError(400, 'invalid path')
 
 		const { username } = getUserByReq(req)
-		const manifest = await loadFileManifest(entityHash, logicalPath)
+		let manifest = await loadFileManifest(entityHash, logicalPath)
+		if (!manifest && username) 
+			// 本地 miss：群实体经群 roster 定向拉取；远端实体经其 owner 节点定向拉取
+			// （public / vault-wrap / file-master-key-wrap 一律支持，由 p2p fetchManifest 处理）。
+			try {
+				const { fetchManifest } = await import('npm:@steve02081504/fount-p2p/files/manifest/fetch')
+				const { isWritableLocalEntity } = await import('npm:@steve02081504/fount-p2p/node/identity')
+				const { isGroupEntityHash, groupIdFromGroupEntity } = await import('../chat/lib/groupEntity.mjs')
+				/** @type {string[]} */
+				let targets = []
+				if (isGroupEntityHash(entityHash)) {
+					const { ensureFederationRoom } = await import('../chat/federation/room.mjs')
+					const groupId = await groupIdFromGroupEntity(entityHash, username)
+					if (groupId) {
+						const slot = await ensureFederationRoom(username, groupId)
+						targets = [...new Set(
+							(slot?.getRoster?.() || []).map(peer => peer?.remoteNodeHash).filter(Boolean),
+						)]
+					}
+				}
+				else if (!isWritableLocalEntity(entityHash)) {
+					const { parseEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+					const ownerNode = parseEntityHash(entityHash)?.nodeHash
+					if (ownerNode) targets = [ownerNode]
+				}
+				if (targets.length)
+					manifest = await fetchManifest({ username, ownerEntityHash: entityHash, logicalPath, fanoutTargets: targets })
+			}
+			catch { /* 非受管实体或拉取失败，保持 404 */ }
+		
 		if (!manifest)
 			throw httpError(404, 'not found')
 		if (!await canReadManifest(username, entityHash, manifest))

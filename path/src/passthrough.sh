@@ -17,4 +17,3 @@ handle_docker_termux_passthrough() {
 		exit $?
 	fi
 }
-

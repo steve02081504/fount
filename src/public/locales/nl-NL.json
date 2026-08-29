@@ -2180,6 +2180,7 @@
 				"sfwMode": "Veilige inhoud",
 				"livePreview": "Live-voorbeeld",
 				"languageVersion": "Taalversie",
+				"descriptionHint": "Ondersteunt Markdown-syntax; wijzigingen worden meteen weergegeven in het voorbeeld links.",
 				"localeHint": "Klik op het label om de code te wijzigen of te bewerken; druk op Enter in het invoervak ​​aan het einde om het naar een nieuwe taal te kopiëren.",
 				"themeColor": {
 					"clear": "Herstel de standaardkleur van het thema",
@@ -2211,7 +2212,7 @@
 					"aria-label": "Avatar uploaden"
 				},
 				"tag": {
-					"placeholder": "Voeg toe na het invoeren van de tag"
+					"placeholder": "Typ een tag en druk op Enter om die toe te voegen; gebruik # om er meerdere tegelijk toe te voegen"
 				},
 				"handle": {
 					"placeholder": "Bijvoorbeeld Steve (2–32 alfanumerieke tekens in kleine letters._-)"
@@ -6119,6 +6120,108 @@
 			"next": {
 				"aria-label": "Volgend item"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Editorwerkbalk"
+			},
+			"contextMenu": {
+				"aria-label": "Editormenu"
+			},
+			"dockedToolbar": {
+				"aria-label": "Opmaakwerkbalk"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Kop 1"
+				},
+				"aria-label": "Kop 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Kop 2"
+				},
+				"aria-label": "Kop 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Kop 3"
+				},
+				"aria-label": "Kop 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Opsommingslijst"
+				},
+				"aria-label": "Opsommingslijst"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Genummerde lijst"
+				},
+				"aria-label": "Genummerde lijst"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Vet"
+				},
+				"aria-label": "Vet"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Cursief"
+				},
+				"aria-label": "Cursief"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Doorhalen"
+				},
+				"aria-label": "Doorhalen"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Inline-code"
+				},
+				"aria-label": "Inline-code"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Citaat"
+				},
+				"aria-label": "Citaat"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Koppeling"
+				},
+				"aria-label": "Koppeling"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Vermelding"
+				},
+				"aria-label": "Vermelding"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Kopiëren"
+				},
+				"aria-label": "Kopiëren"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Knippen"
+				},
+				"aria-label": "Knippen"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Plakken"
+				},
+				"aria-label": "Plakken"
+			},
+			"linkUrl": "Koppelingsadres"
 		}
 	},
 	"pro_cancel_screen": {

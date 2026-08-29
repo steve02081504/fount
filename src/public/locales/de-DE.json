@@ -2180,6 +2180,7 @@
 				"sfwMode": "Sichere Inhalte",
 				"livePreview": "Live-Vorschau",
 				"languageVersion": "Sprachversion",
+				"descriptionHint": "Unterstützt Markdown-Syntax; Änderungen erscheinen sofort in der Vorschau links.",
 				"localeHint": "Klicken Sie auf die Beschriftung, um den Code zu ändern oder zu bearbeiten. Drücken Sie am Ende im Eingabefeld die Eingabetaste, um es in eine neue Sprache zu kopieren.",
 				"themeColor": {
 					"clear": "Standardfarbe des Themes wiederherstellen",
@@ -2211,7 +2212,7 @@
 					"aria-label": "Avatar hochladen"
 				},
 				"tag": {
-					"placeholder": "Nach Eingabe des Tags hinzufügen"
+					"placeholder": "Tag eingeben und mit Enter hinzufügen – mit # mehrere auf einmal"
 				},
 				"handle": {
 					"placeholder": "Zum Beispiel Steve (2–32 alphanumerische Kleinbuchstaben._-)"
@@ -6113,6 +6114,108 @@
 			"next": {
 				"aria-label": "Nächstes Bild"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Editor-Symbolleiste"
+			},
+			"contextMenu": {
+				"aria-label": "Editor-Menü"
+			},
+			"dockedToolbar": {
+				"aria-label": "Formatierungssymbolleiste"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Überschrift 1"
+				},
+				"aria-label": "Überschrift 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Überschrift 2"
+				},
+				"aria-label": "Überschrift 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Überschrift 3"
+				},
+				"aria-label": "Überschrift 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Aufzählungsliste"
+				},
+				"aria-label": "Aufzählungsliste"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Nummerierte Liste"
+				},
+				"aria-label": "Nummerierte Liste"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Fett"
+				},
+				"aria-label": "Fett"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Kursiv"
+				},
+				"aria-label": "Kursiv"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Durchgestrichen"
+				},
+				"aria-label": "Durchgestrichen"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Inline-Code"
+				},
+				"aria-label": "Inline-Code"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Zitat"
+				},
+				"aria-label": "Zitat"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Link"
+				},
+				"aria-label": "Link"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Erwähnen"
+				},
+				"aria-label": "Erwähnen"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Kopieren"
+				},
+				"aria-label": "Kopieren"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Ausschneiden"
+				},
+				"aria-label": "Ausschneiden"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Einfügen"
+				},
+				"aria-label": "Einfügen"
+			},
+			"linkUrl": "Linkadresse"
 		}
 	},
 	"pro_cancel_screen": {

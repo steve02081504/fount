@@ -12,4 +12,3 @@ cmd_clean() {
 	run_deno clean -e "$FOUNT_DIR/src/server/index.mjs"
 	write_taskbar_progress_clear
 }
-

@@ -1051,7 +1051,7 @@
 
 .streaming-av-tile.is-audio-only {
 	aspect-ratio: 1;
-	background: color-mix(in srgb, var(--bg-sidebar, #1e1f22) 80%, #000);
+	background: color-mix(in srgb, var(--bg-channel, var(--color-base-200)) 80%, #000);
 }
 
 .streaming-av-tile canvas,
@@ -1207,7 +1207,7 @@
 	border: var(--border) solid var(--border-color);
 	border-radius: var(--radius-box);
 	padding: 10px 12px;
-	background: var(--media-bg, rgba(0, 0, 0, 0.08));
+	background: var(--media-bg, var(--color-neutral));
 	max-width: 360px;
 }
 
@@ -1327,6 +1327,14 @@
 .reaction-emoji {
 	font-size: 14px;
 	line-height: 1;
+}
+
+.reaction-emoji-img {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	object-fit: contain;
+	vertical-align: middle;
 }
 
 .reaction-count {

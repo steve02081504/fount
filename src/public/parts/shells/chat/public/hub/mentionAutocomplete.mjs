@@ -5,6 +5,7 @@ import { sanitizePermissiveHtml } from '/scripts/lib/sanitizeHtml.mjs'
 
 import { formatHashShort, formatEntityAtId } from '../shared/entityHash.mjs'
 import { formatEntityMentionToken, formatRoleMentionToken } from '../shared/inlineTokenSyntax.mjs'
+import { currentMentionQuery } from '../shared/mentionQuery.mjs'
 import { suggestMentions } from '../src/endpoints/mentions.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
@@ -69,10 +70,13 @@ export function attachHubMentionAutocomplete(textarea) {
 		panel.innerHTML = ''
 		if (!rows.length) {
 			panel.classList.remove('hidden')
+			// 空态不是 listbox（无 option 子元素会触犯 aria-required-children）
+			panel.removeAttribute('role')
 			panel.innerHTML = '<div class="mention-empty" data-i18n="chat.hub.mentionEmpty"></div>'
 			textarea.removeAttribute('aria-activedescendant')
 			return
 		}
+		panel.setAttribute('role', 'listbox')
 		for (const [index, row] of rows.entries()) {
 			const button = document.createElement('button')
 			button.type = 'button'
@@ -113,15 +117,7 @@ export function attachHubMentionAutocomplete(textarea) {
 	 * @returns {{ query: string, start: number, end: number } | null} 当前 @ 片段或 null
 	 */
 	function currentMention() {
-		const pos = textarea.selectionStart
-		const before = textarea.value.slice(0, pos)
-		const match = before.match(/@(?:\[([^\]]*))?$/u)
-		if (!match) return null
-		return {
-			query: match[1] ?? '',
-			start: pos - match[0].length,
-			end: pos,
-		}
+		return currentMentionQuery(textarea.value, textarea.selectionStart)
 	}
 
 	/**

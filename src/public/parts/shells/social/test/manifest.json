@@ -125,7 +125,7 @@
 		},
 		{
 			"name": "smoke_social",
-			"expected": "16s",
+			"expected": "1m45s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -195,7 +195,7 @@
 		},
 		{
 			"name": "cross_shell_emoji",
-			"expected": "52s",
+			"expected": "2m57s",
 			"dependsOn": [
 				"server:live",
 				"smoke_social",
@@ -221,7 +221,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "9m8s",
+			"expected": "15m22s",
 			"dependsOn": [
 				"server:live",
 				"smoke_social",

@@ -2180,6 +2180,7 @@
 				"sfwMode": "😇",
 				"livePreview": "⏱️👀",
 				"languageVersion": "🗣️🔢",
+				"descriptionHint": "📝✨；✏️ ➡️ 👀📍⬅️",
 				"localeHint": "👆🏷️🔄✏️；📤↩️ ➡️ 🆕🗣️",
 				"themeColor": {
 					"clear": "♻️🎨",
@@ -2211,7 +2212,7 @@
 					"aria-label": "⬆️🖼️👤"
 				},
 				"tag": {
-					"placeholder": "📤🏷️ ➕"
+					"placeholder": "📝🏷️➕；# ➕🔢"
 				},
 				"handle": {
 					"placeholder": "steve（2–32 🔤_-）"
@@ -6113,6 +6114,108 @@
 			"next": {
 				"aria-label": "➡️"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "🧰"
+			},
+			"contextMenu": {
+				"aria-label": "☰️"
+			},
+			"dockedToolbar": {
+				"aria-label": "🎨🧰"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "#️⃣1️⃣"
+				},
+				"aria-label": "#️⃣1️⃣"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "#️⃣2️⃣"
+				},
+				"aria-label": "#️⃣2️⃣"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "#️⃣3️⃣"
+				},
+				"aria-label": "#️⃣3️⃣"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "🔘"
+				},
+				"aria-label": "🔘"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "1️⃣"
+				},
+				"aria-label": "1️⃣"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "🅱️"
+				},
+				"aria-label": "🅱️"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "𝐼"
+				},
+				"aria-label": "𝐼"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "🚫"
+				},
+				"aria-label": "🚫"
+			},
+			"code": {
+				"dataset": {
+					"tip": "💻"
+				},
+				"aria-label": "💻"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "💬"
+				},
+				"aria-label": "💬"
+			},
+			"link": {
+				"dataset": {
+					"tip": "🔗"
+				},
+				"aria-label": "🔗"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "📣"
+				},
+				"aria-label": "📣"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "📋"
+				},
+				"aria-label": "📋"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "✂️"
+				},
+				"aria-label": "✂️"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "📥"
+				},
+				"aria-label": "📥"
+			},
+			"linkUrl": "🔗📍"
 		}
 	},
 	"pro_cancel_screen": {

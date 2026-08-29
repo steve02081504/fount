@@ -2180,6 +2180,7 @@
 				"sfwMode": "一般コンテンツ",
 				"livePreview": "ライブプレビュー",
 				"languageVersion": "言語バージョン",
+				"descriptionHint": "Markdown 構文に対応。変更は左側のプレビューに即座に反映されます。",
 				"localeHint": "ラベルをクリックしてコードを切り替えるか編集します。最後に入力ボックスで Enter キーを押して、新しい言語にコピーします。",
 				"themeColor": {
 					"clear": "テーマの既定色に戻す",
@@ -2211,7 +2212,7 @@
 					"aria-label": "アバターをアップロード"
 				},
 				"tag": {
-					"placeholder": "タグ入力後に追加"
+					"placeholder": "タグを入力して Enter で追加。# で複数まとめて追加できます"
 				},
 				"handle": {
 					"placeholder": "たとえば、steve (2 ～ 32 文字の小文字の英数字。_-)"
@@ -6113,6 +6114,108 @@
 			"next": {
 				"aria-label": "次へ"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "エディターツールバー"
+			},
+			"contextMenu": {
+				"aria-label": "エディターメニュー"
+			},
+			"dockedToolbar": {
+				"aria-label": "書式設定ツールバー"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "見出し 1"
+				},
+				"aria-label": "見出し 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "見出し 2"
+				},
+				"aria-label": "見出し 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "見出し 3"
+				},
+				"aria-label": "見出し 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "箇条書きリスト"
+				},
+				"aria-label": "箇条書きリスト"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "番号付きリスト"
+				},
+				"aria-label": "番号付きリスト"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "太字"
+				},
+				"aria-label": "太字"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "斜体"
+				},
+				"aria-label": "斜体"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "取り消し線"
+				},
+				"aria-label": "取り消し線"
+			},
+			"code": {
+				"dataset": {
+					"tip": "インラインコード"
+				},
+				"aria-label": "インラインコード"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "引用"
+				},
+				"aria-label": "引用"
+			},
+			"link": {
+				"dataset": {
+					"tip": "リンク"
+				},
+				"aria-label": "リンク"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "メンション"
+				},
+				"aria-label": "メンション"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "コピー"
+				},
+				"aria-label": "コピー"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "切り取り"
+				},
+				"aria-label": "切り取り"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "貼り付け"
+				},
+				"aria-label": "貼り付け"
+			},
+			"linkUrl": "リンクのURL"
 		}
 	},
 	"pro_cancel_screen": {

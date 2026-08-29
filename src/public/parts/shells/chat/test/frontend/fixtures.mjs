@@ -246,7 +246,7 @@ export async function sendMessageViaComposer(page, groupId, channelId, text) {
 	await page.locator('#message-input').fill(text)
 	await page.locator('#send-button').click()
 	const postJson = await (await postPromise).json()
-	await expect(page.locator('#message-input')).toHaveValue('')
+	await expect(page.locator('#message-input')).toHaveJSProperty('value', '')
 	return postJson
 }
 
@@ -374,17 +374,16 @@ export async function openGroupSettingsPage(page, baseUrl, groupId) {
 	await expect(page.locator('body[data-settings-loaded="1"]')).toBeVisible({ timeout: ms('1m') })
 }
 /**
- * 通过 emoji-picker 浮层选取 Unicode 表情（避免穿透 shadow DOM）。
+ * 通过共享浮动 emoji picker（`#fount-shared-emoji-picker`）选取 Unicode 表情。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} [emoji='👍'] - 要选中的 emoji。
  * @returns {Promise<void>} 无返回值。
  */
 export async function pickEmojiFromPicker(page, emoji = '👍') {
-	await expect(page.locator('#emoji-picker-popup emoji-picker')).toBeVisible({ timeout: ms('30s') })
-	await page.locator('#emoji-picker-popup emoji-picker').evaluate((el, unicode) => {
-		el.dispatchEvent(new CustomEvent('emoji-click', { detail: { unicode } }))
-	}, emoji)
-	await expect(page.locator('#emoji-picker-popup')).toHaveCount(0, { timeout: ms('10s') })
+	const picker = page.locator('#fount-shared-emoji-picker')
+	await expect(picker).toBeVisible({ timeout: ms('30s') })
+	await picker.locator(`[data-emoji="${emoji}"]`).first().click()
+	await expect(picker).toHaveCount(0, { timeout: ms('10s') })
 }
 
 /**

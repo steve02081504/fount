@@ -2180,6 +2180,7 @@
 				"sfwMode": "淨域",
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
+				"descriptionHint": "可解 Markdown 語法，所改即時現於左側預覽。",
 				"localeHint": "觸標籤以切換或修符碼；於末尾輸入框回車可謄錄為新語言。",
 				"themeColor": {
 					"clear": "還原本色",
@@ -2211,7 +2212,7 @@
 					"aria-label": "上傳容像"
 				},
 				"tag": {
-					"placeholder": "輸入標籤後添"
+					"placeholder": "輸入標籤後即添；以 # 可一次多添。"
 				},
 				"handle": {
 					"placeholder": "例如 steve（2–32 位小寫字母數字._-）"
@@ -6113,6 +6114,108 @@
 			"next": {
 				"aria-label": "下一項"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "編輯之具欄"
+			},
+			"contextMenu": {
+				"aria-label": "編輯之選單"
+			},
+			"dockedToolbar": {
+				"aria-label": "格式工具欄"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "一級標題"
+				},
+				"aria-label": "一級標題"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "二級標題"
+				},
+				"aria-label": "二級標題"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "三級標題"
+				},
+				"aria-label": "三級標題"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "無序列表"
+				},
+				"aria-label": "無序列表"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "有序列表"
+				},
+				"aria-label": "有序列表"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "加粗"
+				},
+				"aria-label": "加粗"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "斜體"
+				},
+				"aria-label": "斜體"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "刪除線"
+				},
+				"aria-label": "刪除線"
+			},
+			"code": {
+				"dataset": {
+					"tip": "行內代碼"
+				},
+				"aria-label": "行內代碼"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "引用"
+				},
+				"aria-label": "引用"
+			},
+			"link": {
+				"dataset": {
+					"tip": "連結"
+				},
+				"aria-label": "連結"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "提及"
+				},
+				"aria-label": "提及"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "謄錄"
+				},
+				"aria-label": "謄錄"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "剪下"
+				},
+				"aria-label": "剪下"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "貼上"
+				},
+				"aria-label": "貼上"
+			},
+			"linkUrl": "連結之址"
 		}
 	},
 	"pro_cancel_screen": {

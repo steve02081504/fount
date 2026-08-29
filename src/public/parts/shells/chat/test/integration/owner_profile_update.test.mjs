@@ -198,3 +198,49 @@ Deno.test('updateEntityProfileAsActor local path returns profile', async () => {
 		Error,
 	)
 })
+
+Deno.test('updateEntityProfileAsActor persists string banner URL', async () => {
+	await ensureServer()
+	const { ensureOperatorIdentity } = await import('../../src/entity/identity.mjs')
+	const { updateEntityProfileAsActor } = await import('../../src/entity/ownerProfileUpdate.mjs')
+	const { getProfile } = await import('../../src/entity/profile.mjs')
+	const op = await ensureOperatorIdentity(username)
+	const bannerUrl = `/api/parts/shells:chat/entities/${op.entityHash}/files/profile/sfw_banner`
+	await updateEntityProfileAsActor(username, op.entityHash, op.entityHash, { banner: bannerUrl })
+	const after = await getProfile(op.entityHash, username, { skipPresentation: true })
+	assertEquals(after.banner, bannerUrl)
+	await updateEntityProfileAsActor(username, op.entityHash, op.entityHash, { banner: '' })
+})
+
+Deno.test('publishOwnerProfileUpdate keeps string banner in payload', async () => {
+	await ensureStubChar('owner_banner_string_char')
+	const { ensureAgentEntityIdentity, ensureOperatorIdentity } = await import('../../src/entity/identity.mjs')
+	const { publishOwnerProfileUpdate, ownedProfileUpdatePath } = await import(
+		'../../src/entity/ownerProfileUpdate.mjs'
+	)
+	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+
+	const op = await ensureOperatorIdentity(username)
+	const agent = await ensureAgentEntityIdentity(username, 'owner_banner_string_char')
+	const bannerUrl = `/api/parts/shells:chat/entities/${agent.entityHash}/files/profile/banner`
+	await publishOwnerProfileUpdate(username, op.entityHash, agent.entityHash, { banner: bannerUrl })
+	const plain = await readPublicFile(username, op.entityHash, ownedProfileUpdatePath(agent.entityHash, 'profile.json'))
+	const payload = JSON.parse(plain.toString('utf8'))
+	assertEquals(payload.updates.banner, bannerUrl)
+})
+
+Deno.test('published profile falls back to fount username as display name', async () => {
+	await ensureServer()
+	const { ensureOperatorIdentity } = await import('../../src/entity/identity.mjs')
+	const { updateProfile } = await import('../../src/entity/profile.mjs')
+	const op = await ensureOperatorIdentity(username)
+	// 清空既有展示名再触发发布，验证未设置名时以 fount 用户名兜底。
+	await updateProfile(username, op.entityHash, { themeColor: '#aabbcc', localized: {} }, { skipPresentation: true })
+	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+	const { Buffer } = await import('node:buffer')
+	const plain = await readPublicFile(username, op.entityHash, 'profile.json')
+	assertEquals(Boolean(plain), true)
+	const payload = JSON.parse(Buffer.from(plain).toString('utf8'))
+	const name = Object.values(payload.localized || {}).map(slice => slice?.name).find(Boolean)
+	assertEquals(name, username)
+})

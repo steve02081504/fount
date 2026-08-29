@@ -54,10 +54,24 @@ test.describe('Chat profile page', () => {
 		await expect(page.locator('#profile-edit-links')).toBeVisible()
 		await expect(page.locator('#profile-edit-links textarea')).toHaveCount(0)
 
+		await expect(page.locator('#profile-edit-color-swatch')).not.toHaveClass(/has-color/)
+		await page.locator('#profile-edit-theme-color').fill('#a01bff')
+		await expect(page.locator('#profile-edit-color-swatch')).toHaveClass(/has-color/)
+		await page.locator('#profile-edit-theme-color-clear').click()
+		await expect(page.locator('#profile-edit-color-swatch')).not.toHaveClass(/has-color/)
+
 		await page.locator('#profile-edit-tag-input').fill('original')
 		await page.locator('#profile-edit-tag-add').click()
 		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toContainText('#original')
 		await expect(page.locator('#profile-edit-live-preview [data-entity-profile-tags]')).toContainText('#original')
+
+		await page.locator('#profile-edit-tag-input').fill('#男 #萝莉控 #游手好闲')
+		await page.locator('#profile-edit-tag-add').click()
+		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toHaveCount(4)
+		for (const tag of ['男', '萝莉控', '游手好闲']) 
+			await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip').filter({ hasText: `#${tag}` })).toHaveCount(1)
+		
+		await expect(page.locator('#profile-edit-live-preview [data-entity-profile-tags]')).toContainText('#萝莉控')
 
 		const firstRow = page.locator('#profile-edit-links .profile-edit-link-row').first()
 		await firstRow.locator('input').nth(0).fill('Example Site')
@@ -67,6 +81,11 @@ test.describe('Chat profile page', () => {
 
 		await page.locator('#profile-edit-link-add').click()
 		await expect(page.locator('#profile-edit-links .profile-edit-link-row')).toHaveCount(2)
+
+		const secondRow = page.locator('#profile-edit-links .profile-edit-link-row').nth(1)
+		await secondRow.locator('input').nth(1).fill('https://github.com/steve02081504')
+		await expect(secondRow.locator('input').nth(0)).toHaveValue('github')
+		await expect(page.locator('#profile-edit-live-preview [data-entity-profile-links] a').last()).toHaveText('github')
 
 		const { Buffer } = await import('node:buffer')
 		const tinyPng = Buffer.from(
