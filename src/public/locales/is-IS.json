@@ -2180,7 +2180,7 @@
 				"sfwMode": "Vinnustaðavænt",
 				"livePreview": "Forskoðun í beinni",
 				"languageVersion": "Tungumálaútgáfa",
-				"descriptionHint": "Styður Markdown setningafræði, breytingar munu endurspeglast í forskoðuninni til vinstri í rauntíma",
+				"descriptionHint": "Styður Markdown málskipan; breytingar birtast strax í forskoðuninni til vinstri.",
 				"localeHint": "Smelltu á merkimiðann til að skipta um eða breyta kóðanum; ýttu á Enter í innsláttarreitnum í lokin til að afrita það á nýtt tungumál.",
 				"themeColor": {
 					"clear": "Endurheimtu sjálfgefinn lit þema",
@@ -2212,7 +2212,7 @@
 					"aria-label": "Hlaða upp avatari"
 				},
 				"tag": {
-					"placeholder": "Bæta við eftir að hafa slegið inn merkið"
+					"placeholder": "Sláðu inn merki og ýttu á Enter til að bæta því við; notaðu # til að bæta við mörgum í einu"
 				},
 				"handle": {
 					"placeholder": "Til dæmis steve (2–32 lágstafir alfanumerískir stafir._-)"
@@ -6121,6 +6121,39 @@
 			},
 			"contextMenu": {
 				"aria-label": "Valmynd ritstjóra"
+			},
+			"dockedToolbar": {
+				"aria-label": "Sniðstika"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Fyrirsögn 1"
+				},
+				"aria-label": "Fyrirsögn 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Fyrirsögn 2"
+				},
+				"aria-label": "Fyrirsögn 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Fyrirsögn 3"
+				},
+				"aria-label": "Fyrirsögn 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Punktalisti"
+				},
+				"aria-label": "Punktalisti"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Númeraður listi"
+				},
+				"aria-label": "Númeraður listi"
 			},
 			"bold": {
 				"dataset": {

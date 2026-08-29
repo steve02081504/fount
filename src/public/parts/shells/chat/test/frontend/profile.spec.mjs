@@ -68,9 +68,9 @@ test.describe('Chat profile page', () => {
 		await page.locator('#profile-edit-tag-input').fill('#男 #萝莉控 #游手好闲')
 		await page.locator('#profile-edit-tag-add').click()
 		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toHaveCount(4)
-		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toContainText('#男')
-		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toContainText('#萝莉控')
-		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toContainText('#游手好闲')
+		for (const tag of ['男', '萝莉控', '游手好闲']) 
+			await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip').filter({ hasText: `#${tag}` })).toHaveCount(1)
+		
 		await expect(page.locator('#profile-edit-live-preview [data-entity-profile-tags]')).toContainText('#萝莉控')
 
 		const firstRow = page.locator('#profile-edit-links .profile-edit-link-row').first()
@@ -81,6 +81,11 @@ test.describe('Chat profile page', () => {
 
 		await page.locator('#profile-edit-link-add').click()
 		await expect(page.locator('#profile-edit-links .profile-edit-link-row')).toHaveCount(2)
+
+		const secondRow = page.locator('#profile-edit-links .profile-edit-link-row').nth(1)
+		await secondRow.locator('input').nth(1).fill('https://github.com/steve02081504')
+		await expect(secondRow.locator('input').nth(0)).toHaveValue('github')
+		await expect(page.locator('#profile-edit-live-preview [data-entity-profile-links] a').last()).toHaveText('github')
 
 		const { Buffer } = await import('node:buffer')
 		const tinyPng = Buffer.from(
@@ -114,8 +119,8 @@ test.describe('Chat profile page', () => {
 		await page.locator('#profile-edit-save').click()
 		await expect(page.locator('#profile-edit-modal')).toBeHidden({ timeout: 20_000 })
 		await expect(page.locator('#profile-card-host [data-entity-profile-tags]')).toContainText('#original', { timeout: 20_000 })
-		await expect(page.locator('#profile-card-host [data-entity-profile-links] a')).toHaveText('Example Site')
-		await expect(page.locator('#profile-card-host [data-entity-profile-links] a')).toHaveAttribute('href', 'https://example.com/')
+		await expect(page.locator('#profile-card-host [data-entity-profile-links] a').first()).toHaveText('Example Site')
+		await expect(page.locator('#profile-card-host [data-entity-profile-links] a').first()).toHaveAttribute('href', 'https://example.com/')
 	})
 })
 

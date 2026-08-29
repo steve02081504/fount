@@ -2180,7 +2180,7 @@
 				"sfwMode": "Conteúdo Seguro",
 				"livePreview": "Visualização ao vivo",
 				"languageVersion": "Versão do idioma",
-				"descriptionHint": null,
+				"descriptionHint": "Suporta sintaxe Markdown; as alterações são refletidas em tempo real na pré-visualização à esquerda.",
 				"localeHint": "Clique no rótulo para alternar ou editar o código; pressione Enter na caixa de entrada no final para copiá-lo para um novo idioma.",
 				"themeColor": {
 					"clear": "Restaurar a cor padrão do tema",
@@ -2212,7 +2212,7 @@
 					"aria-label": "Carregar avatar"
 				},
 				"tag": {
-					"placeholder": "Adicionar after entering tag"
+					"placeholder": "Escreva uma etiqueta e prima Enter para a adicionar; use # para adicionar várias de uma vez"
 				},
 				"handle": {
 					"placeholder": "Por exemplo Steve (2–32 caracteres alfanuméricos minúsculos._-)"
@@ -6129,7 +6129,37 @@
 				"aria-label": "Menu do editor"
 			},
 			"dockedToolbar": {
-				"aria-label": null
+				"aria-label": "Barra de ferramentas de formatação"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Título 1"
+				},
+				"aria-label": "Título 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Título 2"
+				},
+				"aria-label": "Título 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Título 3"
+				},
+				"aria-label": "Título 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Lista com marcadores"
+				},
+				"aria-label": "Lista com marcadores"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Lista numerada"
+				},
+				"aria-label": "Lista numerada"
 			},
 			"bold": {
 				"dataset": {

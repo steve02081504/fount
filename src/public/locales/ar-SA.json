@@ -2180,7 +2180,7 @@
 				"sfwMode": "محتوى آمن",
 				"livePreview": "معاينة حية",
 				"languageVersion": "نسخة اللغة",
-				"descriptionHint": null,
+				"descriptionHint": "يدعم صيغة Markdown، وتظهر التعديلات فورًا في المعاينة على اليسار.",
 				"localeHint": "انقر فوق الملصق لتبديل الرمز أو تحريره؛ اضغط على Enter في مربع الإدخال في النهاية لنسخه إلى لغة جديدة.",
 				"themeColor": {
 					"clear": "استعادة اللون الافتراضي للموضوع",
@@ -2212,7 +2212,7 @@
 					"aria-label": "رفع صورة الملف الشخصي"
 				},
 				"tag": {
-					"placeholder": "أضف بعد إدخال العلامة"
+					"placeholder": "اكتب وسماً ثم اضغط Enter لإضافته؛ استخدم # لإضافة عدة وسوم دفعة واحدة"
 				},
 				"handle": {
 					"placeholder": "على سبيل المثال ستيف (2–32 حرفًا أبجديًا رقميًا صغيرًا._-)"
@@ -6123,7 +6123,37 @@
 				"aria-label": "قائمة المحرر"
 			},
 			"dockedToolbar": {
-				"aria-label": null
+				"aria-label": "شريط أدوات التنسيق"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "عنوان 1"
+				},
+				"aria-label": "عنوان 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "عنوان 2"
+				},
+				"aria-label": "عنوان 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "عنوان 3"
+				},
+				"aria-label": "عنوان 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "قائمة نقطية"
+				},
+				"aria-label": "قائمة نقطية"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "قائمة مرقمة"
+				},
+				"aria-label": "قائمة مرقمة"
 			},
 			"bold": {
 				"dataset": {
