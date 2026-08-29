@@ -288,20 +288,78 @@
 }
 
 .profile-edit-color-row {
-	display: grid;
-	grid-template-columns: 48px minmax(0, 1fr);
-	gap: 12px;
+	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
+	gap: 12px;
+}
+
+.profile-edit-color-swatch-wrap {
+	position: relative;
+	display: block;
+	width: 48px;
+	height: 36px;
+}
+
+.profile-edit-color-swatch {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	border: var(--border) solid color-mix(in srgb, var(--color-base-content) 16%, transparent);
+	border-radius: var(--radius-box);
+	background-color: #fff;
+	background-image:
+		linear-gradient(45deg, #cbcbcb 25%, transparent 25%),
+		linear-gradient(-45deg, #cbcbcb 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, #cbcbcb 75%),
+		linear-gradient(-45deg, transparent 75%, #cbcbcb 75%);
+	background-size: 10px 10px;
+	background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+}
+
+.profile-edit-color-swatch.has-color {
+	background-image: none;
+	background-color: var(--swatch-color, transparent);
+}
+
+.profile-edit-color-swatch-wrap:focus-within {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
 .profile-edit-color-input {
-	width: 48px;
-	height: 40px;
-	padding: 3px;
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.profile-edit-field.card .label-text-alt {
+	margin-top: 6px;
+	line-height: 1.5;
+}
+
+.profile-edit-field .fount-markdown-rich-input-docked-toolbar {
+	margin-bottom: 8px;
+}
+
+.profile-edit-description-input {
+	min-height: 120px;
+	max-height: 260px;
+	padding: 10px 12px;
 	border: var(--border) solid color-mix(in srgb, var(--color-base-content) 16%, transparent);
 	border-radius: var(--radius-box);
-	background: transparent;
-	cursor: pointer;
+	background: var(--color-base-100, #fff);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.profile-edit-description-input:focus-within {
+	border-color: var(--color-primary);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
 .profile-edit-actions {

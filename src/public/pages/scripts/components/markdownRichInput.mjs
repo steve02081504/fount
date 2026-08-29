@@ -30,11 +30,16 @@ const WRAP_SYNTAX = {
 
 /** 浮动工具栏 / 右键菜单项（i18n 键 → 动作）。 */
 const ACTION_I18N = {
+	headingLarge: 'util.markdownRichInput.headingLarge',
+	headingMedium: 'util.markdownRichInput.headingMedium',
+	headingSmall: 'util.markdownRichInput.headingSmall',
 	bold: 'util.markdownRichInput.bold',
 	italic: 'util.markdownRichInput.italic',
 	strike: 'util.markdownRichInput.strike',
 	code: 'util.markdownRichInput.code',
 	quote: 'util.markdownRichInput.quote',
+	listUl: 'util.markdownRichInput.listUl',
+	listOl: 'util.markdownRichInput.listOl',
 	link: 'util.markdownRichInput.link',
 	mention: 'util.markdownRichInput.mention',
 	copy: 'util.markdownRichInput.copy',
@@ -44,16 +49,30 @@ const ACTION_I18N = {
 
 /** 动作对应的 iconify（mdi）图标。 */
 const ACTION_ICON = {
+	headingLarge: 'https://api.iconify.design/mdi/format-header-1.svg',
+	headingMedium: 'https://api.iconify.design/mdi/format-header-2.svg',
+	headingSmall: 'https://api.iconify.design/mdi/format-header-3.svg',
 	bold: 'https://api.iconify.design/mdi/format-bold.svg',
 	italic: 'https://api.iconify.design/mdi/format-italic.svg',
 	strike: 'https://api.iconify.design/mdi/format-strikethrough-variant.svg',
 	code: 'https://api.iconify.design/mdi/code-tags.svg',
 	quote: 'https://api.iconify.design/mdi/format-quote-open.svg',
+	listUl: 'https://api.iconify.design/mdi/format-list-bulleted.svg',
+	listOl: 'https://api.iconify.design/mdi/format-list-numbered.svg',
 	link: 'https://api.iconify.design/mdi/link-variant.svg',
 	mention: 'https://api.iconify.design/mdi/at.svg',
 	copy: 'https://api.iconify.design/mdi/content-copy.svg',
 	cut: 'https://api.iconify.design/mdi/content-cut.svg',
 	paste: 'https://api.iconify.design/mdi/content-paste.svg',
+}
+
+/** 块级前缀动作：前缀 → 光标所在行应用的前缀。 */
+const BLOCK_PREFIX = {
+	headingLarge: '# ',
+	headingMedium: '## ',
+	headingSmall: '### ',
+	listUl: '- ',
+	listOl: '1. ',
 }
 
 /**
@@ -77,6 +96,7 @@ function makeActionIcon(action) {
  *   chip 显示名解析（mention / link）；返回 null 走内置兜底
  * @param {boolean} [options.enableToolbar=true] 是否启用选中文字浮动工具栏
  * @param {boolean} [options.enableContextMenu=true] 是否启用右键菜单
+ * @param {boolean} [options.enableDockedToolbar=false] 是否启用停靠格式工具栏（插入到元素前，常显）
  * @returns {object} 组件控制句柄
  */
 export function createMarkdownRichInput(element, options = {}) {
@@ -84,6 +104,7 @@ export function createMarkdownRichInput(element, options = {}) {
 		resolveTokenLabel,
 		enableToolbar = true,
 		enableContextMenu = true,
+		enableDockedToolbar = false,
 	} = options
 
 	if (!(element instanceof HTMLElement) || element.classList.contains('fount-markdown-rich-input'))
@@ -99,6 +120,12 @@ export function createMarkdownRichInput(element, options = {}) {
 	let disabled = element.hasAttribute('disabled')
 	/** @type {Array<{ node: Node, kind: 'text'|'br'|'chip', raw?: string, start: number, end: number }>} */
 	let segments = []
+	/** 撤销/重做历史（rawText 快照）上限。 */
+	const HISTORY_LIMIT = 100
+	/** @type {string[]} 撤销/重做历史（rawText 快照）。 */
+	let history = []
+	/** @type {number} 当前历史索引。 */
+	let historyIndex = -1
 
 	/**
 	 * 应用禁用状态（contenteditable / inert / class）。
@@ -110,6 +137,7 @@ export function createMarkdownRichInput(element, options = {}) {
 		else element.removeAttribute('inert')
 		element.toggleAttribute('aria-disabled', disabled)
 		element.classList.toggle('is-disabled', disabled)
+		if (dockedToolbar) dockedToolbar.toggleAttribute('hidden', disabled)
 		if (disabled) element.blur()
 	}
 
@@ -477,21 +505,92 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
-	 * 设置原始文本（光标到末尾）。
+	 * 设置原始文本（光标到末尾）。重设后清空撤销/重做历史。
 	 * @param {string} value 原始文本
 	 * @returns {void}
 	 */
 	function setRawText(value) {
 		const text = value == null ? '' : String(value)
 		rawText = text.trim() ? text : ''
+		history = [rawText]
+		historyIndex = 0
 		render()
 		setSelection(rawText.length, rawText.length)
+	}
+
+	// ---- 撤销 / 重做 ----
+
+	/**
+	 * 提交一次内容变更：写入撤销历史并派发 input 事件（供草稿保存 / 预览等接线使用）。
+	 * 内容未变化时仅派发事件，不新增历史记录。
+	 * @returns {void}
+	 */
+	function commitChange() {
+		if (rawText !== history[historyIndex]) {
+			history = history.slice(0, historyIndex + 1)
+			history.push(rawText)
+			if (history.length > HISTORY_LIMIT) history.shift()
+			historyIndex = history.length - 1
+		}
+		element.dispatchEvent(new Event('input', { bubbles: true }))
+	}
+
+	/**
+	 * 恢复当前 historyIndex 对应的状态并派发 input。
+	 * @returns {void}
+	 */
+	function applyHistoryState() {
+		rawText = history[historyIndex]
+		rebuildDom()
+		setSelection(rawText.length, rawText.length)
+		element.dispatchEvent(new Event('input', { bubbles: true }))
+	}
+
+	/**
+	 * 撤销到上一历史状态。
+	 * @returns {void}
+	 */
+	function undo() {
+		if (disabled || composing || historyIndex <= 0) return
+		historyIndex--
+		applyHistoryState()
+	}
+
+	/**
+	 * 重做到下一历史状态。
+	 * @returns {void}
+	 */
+	function redo() {
+		if (disabled || composing || historyIndex >= history.length - 1) return
+		historyIndex++
+		applyHistoryState()
+	}
+
+	/**
+	 * Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y：撤销 / 重做。
+	 * @param {KeyboardEvent} event 键盘事件
+	 * @returns {void}
+	 */
+	function onKeyDown(event) {
+		if (disabled || composing) return
+		const mod = event.ctrlKey || event.metaKey
+		if (!mod) return
+		const key = event.key.toLowerCase()
+		if (key === 'z') {
+			event.preventDefault()
+			if (event.shiftKey) redo()
+			else undo()
+		}
+		else if (key === 'y') {
+			event.preventDefault()
+			redo()
+		}
 	}
 
 	// ---- 事件 ----
 
 	/**
-	 * 输入事件：序列化 DOM 并重建。
+	 * 输入事件：序列化 DOM 并重建，随后提交变更（撤销历史 + input 事件）。
 	 * 纯空白结果（浏览器全选删除残留的 `<br>` 等）归一为空，让占位符恢复显示。
 	 * @returns {void}
 	 */
@@ -503,6 +602,7 @@ export function createMarkdownRichInput(element, options = {}) {
 		const offsets = getOffsets()
 		rebuildDom()
 		setSelection(offsets.start, offsets.end)
+		commitChange()
 	}
 
 	/**
@@ -516,6 +616,7 @@ export function createMarkdownRichInput(element, options = {}) {
 		const offsets = getOffsets()
 		rebuildDom()
 		setSelection(offsets.start, offsets.end)
+		commitChange()
 	}
 
 	/**
@@ -529,23 +630,37 @@ export function createMarkdownRichInput(element, options = {}) {
 			event.preventDefault()
 			const { start, end } = getOffsets()
 			setRangeText('\n', start, end, 'end')
-			element.dispatchEvent(new Event('input', { bubbles: true }))
+			commitChange()
 		}
 	}
 
 	/**
-	 * 粘贴：以纯文本插入。
+	 * 在光标/选区处插入粘贴文本：选中内容时粘贴 http(s) 链接自动转成 markdown 链接。
+	 * @param {string} text 剪贴板纯文本
+	 * @returns {void}
+	 */
+	function insertPastedText(text) {
+		if (!text) return
+		const { start, end } = getOffsets()
+		const selected = rawText.slice(start, end)
+		const url = text.trim()
+		const isHttpUrl = /^https?:\/\/\S+$/i.test(url)
+		const replacement = selected && start < end && isHttpUrl
+			? `[${selected}](${/[\s()]/.test(url) ? `<${url}>` : url})`
+			: text
+		setRangeText(replacement, start, end, 'end')
+		commitChange()
+	}
+
+	/**
+	 * 粘贴：以纯文本插入（选中内容 + http(s) 链接 → markdown 链接）。
 	 * @param {ClipboardEvent} event 粘贴事件
 	 * @returns {void}
 	 */
 	function onPaste(event) {
 		if (disabled) return
 		event.preventDefault()
-		const text = event.clipboardData?.getData('text/plain') ?? ''
-		if (!text) return
-		const { start, end } = getOffsets()
-		setRangeText(text, start, end, 'end')
-		element.dispatchEvent(new Event('input', { bubbles: true }))
+		insertPastedText(event.clipboardData?.getData('text/plain') ?? '')
 	}
 
 	// ---- 浮动工具栏 ----
@@ -573,7 +688,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
-	 * 获取（惰性创建）工具栏元素。
+	 * 获取（惰性创建）工具栏元素。浮动工具栏是 `position: fixed` 覆盖层，
+	 * 用 `<nav>` 地标包裹，避免 axe `region` 规则判定「内容不在地标内」。
 	 * @returns {HTMLDivElement} 工具栏元素
 	 */
 	function getToolbar() {
@@ -587,7 +703,10 @@ export function createMarkdownRichInput(element, options = {}) {
 				runAction(action)
 				hideToolbar()
 			}))
-		document.body.appendChild(toolbar)
+		const wrapper = document.createElement('nav')
+		setElementI18n(wrapper, 'util.markdownRichInput.toolbar')
+		wrapper.appendChild(toolbar)
+		document.body.appendChild(wrapper)
 		return toolbar
 	}
 
@@ -597,6 +716,40 @@ export function createMarkdownRichInput(element, options = {}) {
 	 */
 	function hideToolbar() {
 		if (toolbar) toolbar.classList.add('hidden')
+	}
+
+	/** 停靠工具栏动作列表（常显，比浮动工具栏更全）。 */
+	const DOCKED_TOOLBAR_ACTIONS = ['headingLarge', 'headingMedium', 'headingSmall', 'bold', 'italic', 'strike', 'code', 'quote', 'listUl', 'listOl', 'link']
+
+	/** @type {HTMLDivElement | null} */
+	let dockedToolbar = null
+
+	/**
+	 * 获取（惰性创建）停靠工具栏，插入到输入元素之前。
+	 * @returns {HTMLDivElement} 工具栏元素
+	 */
+	function getDockedToolbar() {
+		if (dockedToolbar) return dockedToolbar
+		dockedToolbar = document.createElement('div')
+		dockedToolbar.className = 'fount-markdown-rich-input-docked-toolbar'
+		dockedToolbar.setAttribute('role', 'toolbar')
+		setElementI18n(dockedToolbar, 'util.markdownRichInput.dockedToolbar')
+		for (const action of DOCKED_TOOLBAR_ACTIONS)
+			dockedToolbar.appendChild(makeActionButton(action, 'fount-markdown-rich-input-toolbar-btn', () => {
+				runAction(action)
+				element.focus()
+			}))
+		if (element.parentNode)
+			element.parentNode.insertBefore(dockedToolbar, element)
+		return dockedToolbar
+	}
+
+	/**
+	 * 启用停靠工具栏（幂等）。
+	 * @returns {void}
+	 */
+	function mountDockedToolbar() {
+		getDockedToolbar().toggleAttribute('hidden', disabled)
 	}
 
 	/**
@@ -669,6 +822,35 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
+	 * 光标所在行已有的 markdown 块级前缀（heading / 列表）。
+	 * @param {string} line 行文本
+	 * @returns {string | null} 前缀标记（如 `##` / `-`），无则为 null
+	 */
+	function matchLinePrefix(line) {
+		const match = line.match(/^(#{1,6})\s+/) || line.match(/^([-*+])\s+/) || line.match(/^(\d+\.)\s+/)
+		return match ? match[1] : null
+	}
+
+	/**
+	 * 光标所在行切换 / 替换块级前缀（heading / 列表）。
+	 * @param {string} prefix 要应用的前缀（含尾随空格，如 `## ` / `- `）
+	 * @returns {void}
+	 */
+	function toggleBlockPrefix(prefix) {
+		const { start, end } = getOffsets()
+		const lineStart = rawText.lastIndexOf('\n', start - 1) + 1
+		const lineEndRaw = rawText.indexOf('\n', end)
+		const lineEnd = lineEndRaw === -1 ? rawText.length : lineEndRaw
+		const line = rawText.slice(lineStart, lineEnd)
+		const existing = matchLinePrefix(line)
+		const inner = existing ? line.slice(existing.length).replace(/^\s+/, '') : line
+		const replacement = existing === prefix.trim() ? inner : prefix + inner
+		rawText = rawText.slice(0, lineStart) + replacement + rawText.slice(lineEnd)
+		render()
+		setSelection(lineStart, lineStart + replacement.length)
+	}
+
+	/**
 	 * 将选区转为引用块。
 	 * @returns {void}
 	 */
@@ -704,7 +886,6 @@ export function createMarkdownRichInput(element, options = {}) {
 		const { start, end } = getOffsets()
 		setRangeText('@', start, end, 'end')
 		element.focus()
-		element.dispatchEvent(new Event('input', { bubbles: true }))
 	}
 
 	/**
@@ -724,7 +905,6 @@ export function createMarkdownRichInput(element, options = {}) {
 		copySelection()
 		const { start, end } = getOffsets()
 		setRangeText('', start, end, 'end')
-		element.dispatchEvent(new Event('input', { bubbles: true }))
 	}
 
 	/**
@@ -732,16 +912,17 @@ export function createMarkdownRichInput(element, options = {}) {
 	 * @returns {void}
 	 */
 	function pasteFromClipboard() {
-		void navigator.clipboard?.readText().then(text => {
-			if (!text) return
-			const { start, end } = getOffsets()
-			setRangeText(text, start, end, 'end')
-			element.dispatchEvent(new Event('input', { bubbles: true }))
-		})
+		void navigator.clipboard?.readText().then(insertPastedText)
 	}
 
 	/** 工具栏 / 右键菜单动作 → 执行器。 */
 	const ACTION_RUNNERS = {
+		/** @returns {void} 光标行切到一级标题。 */
+		headingLarge: () => toggleBlockPrefix(BLOCK_PREFIX.headingLarge),
+		/** @returns {void} 光标行切到二级标题。 */
+		headingMedium: () => toggleBlockPrefix(BLOCK_PREFIX.headingMedium),
+		/** @returns {void} 光标行切到三级标题。 */
+		headingSmall: () => toggleBlockPrefix(BLOCK_PREFIX.headingSmall),
 		/** @returns {void} 包裹/取消加粗语法。 */
 		bold: () => toggleWrap(...WRAP_SYNTAX.bold),
 		/** @returns {void} 包裹/取消斜体语法。 */
@@ -751,8 +932,12 @@ export function createMarkdownRichInput(element, options = {}) {
 		/** @returns {void} 包裹/取消行内代码语法。 */
 		code: () => toggleWrap(...WRAP_SYNTAX.code),
 		quote: quoteSelection,
-		/** @returns {void} 将选区包成链接。 */
-		link: () => void linkSelection(),
+		/** @returns {void} 光标行切到无序列表。 */
+		listUl: () => toggleBlockPrefix(BLOCK_PREFIX.listUl),
+		/** @returns {void} 光标行切到有序列表。 */
+		listOl: () => toggleBlockPrefix(BLOCK_PREFIX.listOl),
+		/** @returns {Promise<void>} 将选区包成链接。 */
+		link: linkSelection,
 		mention: insertMentionTrigger,
 		copy: copySelection,
 		cut: cutSelection,
@@ -760,12 +945,15 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
-	 * 执行工具栏 / 右键菜单动作。
+	 * 执行工具栏 / 右键菜单动作，完成后提交内容变更（撤销历史 + input 事件）。
 	 * @param {string} action 动作名
-	 * @returns {void}
+	 * @returns {Promise<void>} 完成
 	 */
-	function runAction(action) {
-		ACTION_RUNNERS[action]?.()
+	async function runAction(action) {
+		const runner = ACTION_RUNNERS[action]
+		if (!runner) return
+		await runner()
+		commitChange()
 	}
 
 	// ---- 右键菜单 ----
@@ -846,6 +1034,7 @@ export function createMarkdownRichInput(element, options = {}) {
 	element.addEventListener('compositionstart', () => { composing = true })
 	element.addEventListener('compositionend', onCompositionEnd)
 	element.addEventListener('beforeinput', onBeforeInput)
+	element.addEventListener('keydown', onKeyDown)
 	element.addEventListener('paste', onPaste)
 	element.addEventListener('focus', placeCaretWhenEmpty)
 	element.addEventListener('click', placeCaretWhenEmpty)
@@ -939,6 +1128,7 @@ export function createMarkdownRichInput(element, options = {}) {
 
 	applyDisabled()
 	setRawText(element.textContent || '')
+	if (enableDockedToolbar) mountDockedToolbar()
 
 	return {
 		element,
@@ -966,6 +1156,12 @@ export function createMarkdownRichInput(element, options = {}) {
 		setRangeText,
 		setSelection,
 		/**
+		 * 执行格式动作（heading/bold/italic/quote/code/list/link 等），供外部停靠工具栏复用。
+		 * @param {string} action 动作名
+		 * @returns {void}
+		 */
+		runAction,
+		/**
 		 * 销毁组件，恢复为纯文本节点。
 		 * @returns {void}
 		 */
@@ -974,6 +1170,8 @@ export function createMarkdownRichInput(element, options = {}) {
 			document.removeEventListener('selectionchange', updateToolbar)
 			hideToolbar()
 			closeContextMenu()
+			dockedToolbar?.remove()
+			dockedToolbar = null
 			element.replaceChildren(document.createTextNode(rawText))
 			element.classList.remove('fount-markdown-rich-input')
 		},
@@ -1131,6 +1329,22 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 .fount-markdown-rich-input-context-item .text-icon {
 	width: 1.2em;
 	height: 1.2em;
+}
+.fount-markdown-rich-input-docked-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	align-items: center;
+	padding: 4px 6px;
+	border-radius: var(--radius-box);
+	background: var(--color-base-100, #fff);
+	border: var(--border) solid var(--color-base-300, #d0d7de);
+}
+.fount-markdown-rich-input-docked-toolbar[hidden] {
+	display: none;
+}
+.fount-markdown-rich-input-docked-toolbar .fount-markdown-rich-input-toolbar-btn:hover {
+	background: var(--color-base-200, #eef1f4);
 }
 `,
 }))

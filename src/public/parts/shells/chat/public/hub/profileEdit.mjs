@@ -1,13 +1,13 @@
 /**
  * 【文件】public/hub/profileEdit.mjs
  * 【职责】Hub 内资料编辑模态：头像/横幅上传、昵称/简介/标签/链接表单与提交；SFW 双槽编辑。
- * 【原理】`openHubProfileEdit` 弹出编辑对话框并绑定保存/取消；编辑模式 toggle 切换基线 / sfw_* 字段槽，打开时按查看者 `user.sfw` 初始化。
+ * 【原理】`openHubProfileEdit` 弹出编辑对话框并绑定保存/取消；编辑模式 toggle 切换基线 / sfw_* 字段槽，默认编辑基线（SFW 为覆盖层）。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/endpoints/entities、../src/profileLocaleEditor、core/state、presence。
  */
-import { getUserSetting } from '/scripts/endpoints/base.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, primaryLocale } from '../../../../scripts/i18n/index.mjs'
+import { createMarkdownRichInput, isTextComposer } from '/scripts/components/markdownRichInput.mjs'
 import {
 	configureEntityProfileCard,
 	paintEntityProfileCard,
@@ -21,7 +21,6 @@ import {
 } from '../src/endpoints/entities.mjs'
 import {
 	normalizeProfileLinks,
-	normalizeProfileTag,
 	normalizeProfileTags,
 	readLinksEditor,
 	renderLinksEditor,
@@ -337,7 +336,10 @@ async function ensureEditDialog() {
 		renderEditPreview()
 	})
 	editDialog.querySelector('#profile-edit-theme-color')?.addEventListener('input', (event) => {
-		if (event.target instanceof HTMLInputElement) editingThemeColor = event.target.value
+		if (event.target instanceof HTMLInputElement) {
+			editingThemeColor = event.target.value
+			renderEditPreview()
+		}
 	})
 	editDialog.querySelector('#profile-edit-theme-color-clear')?.addEventListener('click', () => {
 		editingThemeColor = ''
@@ -358,6 +360,10 @@ async function ensureEditDialog() {
 	})
 	editDialog.querySelector('.profile-edit-form')?.addEventListener('input', renderEditPreview)
 	editDialog.querySelector('.profile-edit-form')?.addEventListener('change', renderEditPreview)
+
+	const descInput = editDialog.querySelector('#profile-edit-description-markdown')
+	if (descInput instanceof HTMLElement && !descInput.classList.contains('fount-markdown-rich-input'))
+		createMarkdownRichInput(descInput, { enableDockedToolbar: true })
 	return editDialog
 }
 
@@ -457,10 +463,11 @@ function renameLocale(oldKey, newKey) {
 function addTagFromInput() {
 	const input = editDialog?.querySelector('#profile-edit-tag-input')
 	if (!(input instanceof HTMLInputElement)) return
-	const tag = normalizeProfileTag(input.value)
-	if (!tag) return
-	if (!editingTags.includes(tag))
-		editingTags = [...editingTags, tag]
+	const nextTags = normalizeProfileTags(
+		input.value.split('#').map(part => part.trim()),
+	)
+	if (!nextTags.length) return
+	editingTags = normalizeProfileTags([...editingTags, ...nextTags])
 	input.value = ''
 	paintTagsEditor()
 	renderEditPreview()
@@ -547,7 +554,7 @@ function loadActiveLocaleForm() {
 	if (editingSfwMode) {
 		if (nameElement instanceof HTMLInputElement)
 			nameElement.value = coalesceSfwString(slice.sfw_name, slice.name)
-		if (desc instanceof HTMLTextAreaElement) {
+		if (isTextComposer(desc)) {
 			const baseMd = slice.description_markdown ?? slice.description ?? ''
 			const sfwMd = slice.sfw_description_markdown ?? slice.sfw_description ?? ''
 			desc.value = coalesceSfwString(sfwMd, baseMd)
@@ -566,7 +573,7 @@ function loadActiveLocaleForm() {
 	else {
 		if (nameElement instanceof HTMLInputElement)
 			nameElement.value = slice.name ?? ''
-		if (desc instanceof HTMLTextAreaElement)
+		if (isTextComposer(desc))
 			desc.value = slice.description_markdown ?? slice.description ?? ''
 		editingTags = normalizeProfileTags(
 			Array.isArray(slice.tags) ? slice.tags : defaults.tags ?? [],
@@ -578,12 +585,22 @@ function loadActiveLocaleForm() {
 	if (!editingLinks.length) editingLinks = [{ name: '', url: '', icon: '' }]
 	paintTagsEditor()
 	paintLinksEditor()
-	const hint = editDialog?.querySelector('[data-profile-default-name]')
-	if (hint)
-		hint.textContent = defaults.name
-			? `${defaults.name} (${defaults.tags?.join(', ') || ''})`.replace(/\s+\(\)$/, '')
-			: ''
+	const nameInput = editDialog?.querySelector('#profile-edit-name')
+	if (nameInput instanceof HTMLInputElement)
+		nameInput.placeholder = defaults.name || ''
 	renderEditPreview()
+}
+
+/**
+ * 刷新主题色色块：无自定义色时显示灰白棋盘格（表示「默认」），否则显示所选颜色。
+ * @returns {void}
+ */
+function paintThemeColorSwatch() {
+	const swatch = editDialog?.querySelector('#profile-edit-color-swatch')
+	if (!(swatch instanceof HTMLElement)) return
+	swatch.classList.toggle('has-color', !!editingThemeColor)
+	if (editingThemeColor) swatch.style.setProperty('--swatch-color', editingThemeColor)
+	else swatch.style.removeProperty('--swatch-color')
 }
 
 /**
@@ -636,6 +653,7 @@ function renderEditPreview() {
 			avatar,
 			letterClass: 'profile-preview-avatar-letter',
 		})
+	paintThemeColorSwatch()
 }
 
 /** @returns {void} */
@@ -860,7 +878,6 @@ export async function openHubProfileEdit(entityHash, options = {}) {
 		return
 	}
 	onSavedCallback = options.onSaved || null
-	const initialSfwMode = !!await getUserSetting('sfw').catch(() => false)
-	initEditState(entityHash, data.profile, { initialSfwMode })
+	initEditState(entityHash, data.profile, { initialSfwMode: false })
 	dialog.showModal()
 }

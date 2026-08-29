@@ -2180,6 +2180,7 @@
 				"sfwMode": "安全内容",
 				"livePreview": "实时预览",
 				"languageVersion": "语言版本",
+				"descriptionHint": "支持 Markdown 语法，修改会实时反映在左侧预览中",
 				"localeHint": "点击标签切换或编辑代码；在末尾输入框回车可复制为新语言。",
 				"themeColor": {
 					"clear": "恢复主题默认色",
@@ -2211,7 +2212,7 @@
 					"aria-label": "上传头像"
 				},
 				"tag": {
-					"placeholder": "输入标签后添加"
+					"placeholder": "输入标签后添加，可用 # 一次添加多个"
 				},
 				"handle": {
 					"placeholder": "例如 steve（2–32 位小写字母数字._-）"
@@ -6120,6 +6121,39 @@
 			},
 			"contextMenu": {
 				"aria-label": "编辑器菜单"
+			},
+			"dockedToolbar": {
+				"aria-label": "格式工具栏"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "一级标题"
+				},
+				"aria-label": "一级标题"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "二级标题"
+				},
+				"aria-label": "二级标题"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "三级标题"
+				},
+				"aria-label": "三级标题"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "无序列表"
+				},
+				"aria-label": "无序列表"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "有序列表"
+				},
+				"aria-label": "有序列表"
 			},
 			"bold": {
 				"dataset": {

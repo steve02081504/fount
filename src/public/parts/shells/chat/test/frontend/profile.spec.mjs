@@ -54,10 +54,24 @@ test.describe('Chat profile page', () => {
 		await expect(page.locator('#profile-edit-links')).toBeVisible()
 		await expect(page.locator('#profile-edit-links textarea')).toHaveCount(0)
 
+		await expect(page.locator('#profile-edit-color-swatch')).not.toHaveClass(/has-color/)
+		await page.locator('#profile-edit-theme-color').fill('#a01bff')
+		await expect(page.locator('#profile-edit-color-swatch')).toHaveClass(/has-color/)
+		await page.locator('#profile-edit-theme-color-clear').click()
+		await expect(page.locator('#profile-edit-color-swatch')).not.toHaveClass(/has-color/)
+
 		await page.locator('#profile-edit-tag-input').fill('original')
 		await page.locator('#profile-edit-tag-add').click()
 		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toContainText('#original')
 		await expect(page.locator('#profile-edit-live-preview [data-entity-profile-tags]')).toContainText('#original')
+
+		await page.locator('#profile-edit-tag-input').fill('#男 #萝莉控 #游手好闲')
+		await page.locator('#profile-edit-tag-add').click()
+		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toHaveCount(4)
+		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toContainText('#男')
+		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toContainText('#萝莉控')
+		await expect(page.locator('#profile-edit-tags .profile-edit-tag-chip')).toContainText('#游手好闲')
+		await expect(page.locator('#profile-edit-live-preview [data-entity-profile-tags]')).toContainText('#萝莉控')
 
 		const firstRow = page.locator('#profile-edit-links .profile-edit-link-row').first()
 		await firstRow.locator('input').nth(0).fill('Example Site')

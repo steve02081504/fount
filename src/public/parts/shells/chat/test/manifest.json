@@ -734,7 +734,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "19m13s",
+			"expected": "10m18s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -743,7 +743,7 @@
 			"subtests": [
 				{
 					"name": "smoke",
-					"expected": "7s",
+					"expected": "1m4s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs"
 					]
