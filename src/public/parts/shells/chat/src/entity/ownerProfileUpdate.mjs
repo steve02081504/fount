@@ -562,6 +562,9 @@ export function unregisterOwnerProfileUpdateMailbox() {
 export async function updateEntityProfileAsActor(username, actorEntityHash, targetEntityHash, updates, options = {}) {
 	const { isWritableLocalEntityForUser } = await import('./http.mjs')
 	const { avatar, banner, ...fields } = updates
+	// banner 支持两种形态：文件 buffer（走 EVFS 上传并回写字段）或文本 URL（直写 profile 字段）。
+	// 文本 URL 需放回字段更新，否则会被上面解构丢掉。
+	if (typeof banner === 'string') fields.banner = banner
 	const target = String(targetEntityHash)
 	const actor = String(actorEntityHash)
 	const operatorHash = await resolveOperatorEntityHashForUser(username)
