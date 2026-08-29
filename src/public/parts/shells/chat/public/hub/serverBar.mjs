@@ -118,19 +118,25 @@ async function appendHubServerItem(parent, group, notifyPrefs = {}) {
 	parent.appendChild(el)
 }
 
+/** 渲染代际号：并发 `renderServerBar` 时仅最新代际落地，避免「先清空再逐个 await append」交错出双份列表或旧数据覆盖新数据。 */
+let serverBarRenderSeq = 0
+
 /** 渲染左侧服务器/群组列表。 @returns {Promise<void>} */
 export async function renderServerBar() {
+	const seq = ++serverBarRenderSeq
 	store.sidebar.sidebarGroupOrder = computeOrderedSidebarGroupIds()
 
 	const list = document.getElementById('server-list')
-	list.replaceChildren()
 	const sidebarGroups = getSidebarGroups()
 	if (!sidebarGroups.length) {
-		list.appendChild(await renderTemplate('hub/server/bar_empty', {}))
+		const empty = await renderTemplate('hub/server/bar_empty', {})
+		if (seq !== serverBarRenderSeq) return
+		list.replaceChildren(empty)
 		return
 	}
 
-	list.appendChild(await renderTemplate('hub/server/bar_header', {}))
+	const frag = document.createDocumentFragment()
+	frag.appendChild(await renderTemplate('hub/server/bar_header', {}))
 
 	const byId = new Map(sidebarGroups.map(g => [g.groupId, g]))
 	const used = new Set()
@@ -150,9 +156,9 @@ export async function renderServerBar() {
 				folderName: escapeHtml(folder.name),
 				folderNameI18nAttr: folder.nameIsDefault ? ' data-i18n="chat.hub.folder.default"' : '',
 			})
-			list.appendChild(folderElement)
+			frag.appendChild(folderElement)
 			if (!collapsed) {
-				const itemsHost = list.querySelector(`.folder-wrap[data-folder-idx="${folderIndex}"] .folder-items`)
+				const itemsHost = folderElement.querySelector('.folder-items')
 				for (const groupId of folder.groupIds) {
 					const group = byId.get(groupId)
 					if (!group) continue
@@ -166,11 +172,14 @@ export async function renderServerBar() {
 		}
 		const ungrouped = sidebarGroups.filter(g => !used.has(g.groupId))
 		for (const group of ungrouped)
-			await appendHubServerItem(list, group, notifyPrefs)
+			await appendHubServerItem(frag, group, notifyPrefs)
 	}
 	else
 		for (const group of sidebarGroups)
-			await appendHubServerItem(list, group, notifyPrefs)
+			await appendHubServerItem(frag, group, notifyPrefs)
+
+	if (seq !== serverBarRenderSeq) return
+	list.replaceChildren(frag)
 
 	list.querySelectorAll('.server-item[data-group-id]').forEach(el => {
 		el.addEventListener('click', (event) => {

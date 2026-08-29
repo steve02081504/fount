@@ -3,12 +3,13 @@
  * 【职责】消息反应（emoji）点击委托：在频道视图容器上切换添加/移除反应并刷新反应条。
  * 【原理】`wireMessageReactions` 监听 `.message-reaction` 点击，更新行内反应计数与选中态。依赖 `render/reactions.renderMessageReactionsHtml` 已渲染的按钮；本地乐观更新后可触发频道刷新。
  * 【数据结构】见函数入参与返回值 JSDoc。
- * 【关联】../../../../../scripts/i18n、../../src/ui/channelDisplay、../../src/ui/emojiPicker、../../src/ui/reactionHandlers
+ * 【关联】../../../../../scripts/i18n、/scripts/components/emojiPicker（共享浮动选择器）、../../src/ui/channelDisplay、../../src/ui/reactionHandlers
  */
 import { promptI18n } from '../../../../../scripts/i18n/index.mjs'
+import { mountEmojiPicker } from '/scripts/components/emojiPicker.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { tallyReactionVotersFromMap } from '../../src/ui/channelDisplay.mjs'
-import { showEmojiPicker } from '../../src/ui/emojiPicker.mjs'
 import { createReactionHandlers } from '../../src/ui/reactionHandlers.mjs'
 
 /** 已绑定过事件的按钮元素集合，避免 wireMessageReactions 多次调用重复绑定。 */
@@ -92,9 +93,13 @@ export function wireMessageReactions(container, channelView) {
 		if (!isDagEventId(eventId)) return
 		addReactionButton.addEventListener('click', event => {
 			event.stopPropagation()
-			void showEmojiPicker(event, emoji => {
-				void toggleReaction(eventId, emoji, false).then(() => reload())
-			})
+			void mountEmojiPicker(addReactionButton, token => {
+				if (!token || token.startsWith(':[emoji:')) {
+					showToastI18n('info', 'chat.hub.reactionUnicodeOnly')
+					return
+				}
+				void toggleReaction(eventId, token, false).then(() => reload())
+			}, { groupId, channelId })
 		})
 	})
 }

@@ -194,10 +194,12 @@ test.describe('Chat message actions', () => {
 		const { groupId, channelId } = groupChannel
 		const text = `react-target ${Date.now()}`
 		await sendMessageViaComposer(page, groupId, channelId, text)
-		const row = await expectMessageInChat(page, text)
-		await row.locator('.reactions [data-action="addReaction"]').click()
+		await expectMessageInChat(page, text)
+		const rows = page.locator('#messages .message').filter({ hasText: text })
+		await rows.locator('.reactions [data-action="addReaction"]').first().click()
 		await pickEmojiFromPicker(page, '👍')
-		await expect(row.locator('.reactions [data-action="reaction"]')).toBeVisible({ timeout: 60_000 })
+		await expect(rows.locator('.reactions [data-action="reaction"]').first()).toBeVisible({ timeout: 60_000 })
+		await expect(rows).toHaveCount(1, { timeout: 60_000 })
 	})
 
 	test('opens thread drawer and replies', async ({ page, groupChannel }) => {

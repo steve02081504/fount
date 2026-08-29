@@ -2268,6 +2268,7 @@
 			"gshDecryptPending": "等待频道密钥（generation ${gen}）",
 			"gshDecryptFailed": "无频道密钥，无法解密此消息",
 			"reactionFailed": "回应操作失败",
+			"reactionUnicodeOnly": "反应仅支持 Unicode 表情",
 			"createModal": {
 				"title": "创建群组",
 				"subtitle": "群组是你和朋友一起聊天的私密空间",
