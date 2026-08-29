@@ -6119,6 +6119,75 @@
 			"next": {
 				"aria-label": "Volgend item"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Editorwerkbalk"
+			},
+			"contextMenu": {
+				"aria-label": "Editormenu"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Vet"
+				},
+				"aria-label": "Vet"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Cursief"
+				},
+				"aria-label": "Cursief"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Doorhalen"
+				},
+				"aria-label": "Doorhalen"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Inline-code"
+				},
+				"aria-label": "Inline-code"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Citaat"
+				},
+				"aria-label": "Citaat"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Koppeling"
+				},
+				"aria-label": "Koppeling"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Vermelding"
+				},
+				"aria-label": "Vermelding"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Kopiëren"
+				},
+				"aria-label": "Kopiëren"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Knippen"
+				},
+				"aria-label": "Knippen"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Plakken"
+				},
+				"aria-label": "Plakken"
+			},
+			"linkUrl": "Koppelingsadres"
 		}
 	},
 	"pro_cancel_screen": {

@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "次へ"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "エディターツールバー"
+			},
+			"contextMenu": {
+				"aria-label": "エディターメニュー"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "太字"
+				},
+				"aria-label": "太字"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "斜体"
+				},
+				"aria-label": "斜体"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "取り消し線"
+				},
+				"aria-label": "取り消し線"
+			},
+			"code": {
+				"dataset": {
+					"tip": "インラインコード"
+				},
+				"aria-label": "インラインコード"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "引用"
+				},
+				"aria-label": "引用"
+			},
+			"link": {
+				"dataset": {
+					"tip": "リンク"
+				},
+				"aria-label": "リンク"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "メンション"
+				},
+				"aria-label": "メンション"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "コピー"
+				},
+				"aria-label": "コピー"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "切り取り"
+				},
+				"aria-label": "切り取り"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "貼り付け"
+				},
+				"aria-label": "貼り付け"
+			},
+			"linkUrl": "リンクのURL"
 		}
 	},
 	"pro_cancel_screen": {

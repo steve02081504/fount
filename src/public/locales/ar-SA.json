@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "التالي"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "شريط أدوات المحرر"
+			},
+			"contextMenu": {
+				"aria-label": "قائمة المحرر"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "عريض"
+				},
+				"aria-label": "عريض"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "مائل"
+				},
+				"aria-label": "مائل"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "يتوسطه خط"
+				},
+				"aria-label": "يتوسطه خط"
+			},
+			"code": {
+				"dataset": {
+					"tip": "كود مضمن"
+				},
+				"aria-label": "كود مضمن"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "اقتباس"
+				},
+				"aria-label": "اقتباس"
+			},
+			"link": {
+				"dataset": {
+					"tip": "رابط"
+				},
+				"aria-label": "رابط"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "إشارة"
+				},
+				"aria-label": "إشارة"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "نسخ"
+				},
+				"aria-label": "نسخ"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "قص"
+				},
+				"aria-label": "قص"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "لصق"
+				},
+				"aria-label": "لصق"
+			},
+			"linkUrl": "عنوان الرابط"
 		}
 	},
 	"pro_cancel_screen": {

@@ -6119,6 +6119,75 @@
 			"next": {
 				"aria-label": "Próximo"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Barra de ferramentas do editor"
+			},
+			"contextMenu": {
+				"aria-label": "Menu do editor"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Negrito"
+				},
+				"aria-label": "Negrito"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Itálico"
+				},
+				"aria-label": "Itálico"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Rasurado"
+				},
+				"aria-label": "Rasurado"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Código em linha"
+				},
+				"aria-label": "Código em linha"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Citação"
+				},
+				"aria-label": "Citação"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Ligação"
+				},
+				"aria-label": "Ligação"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Menção"
+				},
+				"aria-label": "Menção"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Copiar"
+				},
+				"aria-label": "Copiar"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Cortar"
+				},
+				"aria-label": "Cortar"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Colar"
+				},
+				"aria-label": "Colar"
+			},
+			"linkUrl": "Endereço da ligação"
 		}
 	},
 	"pro_cancel_screen": {

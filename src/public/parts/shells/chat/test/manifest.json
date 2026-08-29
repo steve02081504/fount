@@ -185,7 +185,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "18m12s",
+			"expected": "5m5s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -766,6 +766,7 @@
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/composer.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/composerExtras.mjs",
+						"src/public/parts/shells/chat/public/hub/composerDraft.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/composerController.mjs",
 						"src/public/parts/shells/chat/public/src/composerAttachments.mjs"
 					]

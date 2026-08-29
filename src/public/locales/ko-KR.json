@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "다음 미디어"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "편집기 도구 모음"
+			},
+			"contextMenu": {
+				"aria-label": "편집기 메뉴"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "굵게"
+				},
+				"aria-label": "굵게"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "기울임꼴"
+				},
+				"aria-label": "기울임꼴"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "취소선"
+				},
+				"aria-label": "취소선"
+			},
+			"code": {
+				"dataset": {
+					"tip": "인라인 코드"
+				},
+				"aria-label": "인라인 코드"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "인용"
+				},
+				"aria-label": "인용"
+			},
+			"link": {
+				"dataset": {
+					"tip": "링크"
+				},
+				"aria-label": "링크"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "멘션"
+				},
+				"aria-label": "멘션"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "복사"
+				},
+				"aria-label": "복사"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "잘라내기"
+				},
+				"aria-label": "잘라내기"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "붙여넣기"
+				},
+				"aria-label": "붙여넣기"
+			},
+			"linkUrl": "링크 주소"
 		}
 	},
 	"pro_cancel_screen": {

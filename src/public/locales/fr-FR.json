@@ -6119,6 +6119,75 @@
 			"next": {
 				"aria-label": "Média suivant"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Barre d'outils de l'éditeur"
+			},
+			"contextMenu": {
+				"aria-label": "Menu de l'éditeur"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Gras"
+				},
+				"aria-label": "Gras"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Italique"
+				},
+				"aria-label": "Italique"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Barré"
+				},
+				"aria-label": "Barré"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Code en ligne"
+				},
+				"aria-label": "Code en ligne"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Citation"
+				},
+				"aria-label": "Citation"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Lien"
+				},
+				"aria-label": "Lien"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Mentionner"
+				},
+				"aria-label": "Mentionner"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Copier"
+				},
+				"aria-label": "Copier"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Couper"
+				},
+				"aria-label": "Couper"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Coller"
+				},
+				"aria-label": "Coller"
+			},
+			"linkUrl": "Adresse du lien"
 		}
 	},
 	"pro_cancel_screen": {

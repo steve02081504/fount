@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "Næsti miðill"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Verkfærastika ritstjóra"
+			},
+			"contextMenu": {
+				"aria-label": "Valmynd ritstjóra"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Djarft"
+				},
+				"aria-label": "Djarft"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Skáletrun"
+				},
+				"aria-label": "Skáletrun"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Yfirstrikað"
+				},
+				"aria-label": "Yfirstrikað"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Innbyggður kóði"
+				},
+				"aria-label": "Innbyggður kóði"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Tilvitnun"
+				},
+				"aria-label": "Tilvitnun"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Tengill"
+				},
+				"aria-label": "Tengill"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Nefna"
+				},
+				"aria-label": "Nefna"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Afrita"
+				},
+				"aria-label": "Afrita"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Klippa"
+				},
+				"aria-label": "Klippa"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Líma"
+				},
+				"aria-label": "Líma"
+			},
+			"linkUrl": "Tengilslóð"
 		}
 	},
 	"pro_cancel_screen": {

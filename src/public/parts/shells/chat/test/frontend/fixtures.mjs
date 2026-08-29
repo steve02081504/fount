@@ -246,7 +246,7 @@ export async function sendMessageViaComposer(page, groupId, channelId, text) {
 	await page.locator('#message-input').fill(text)
 	await page.locator('#send-button').click()
 	const postJson = await (await postPromise).json()
-	await expect(page.locator('#message-input')).toHaveValue('')
+	await expect(page.locator('#message-input')).toHaveJSProperty('value', '')
 	return postJson
 }
 

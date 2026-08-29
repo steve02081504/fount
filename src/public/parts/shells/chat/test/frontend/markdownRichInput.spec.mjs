@@ -25,7 +25,7 @@ test.describe('Markdown rich input', () => {
 		const input = page.locator('#message-input')
 		await input.click()
 		await page.keyboard.type('hello')
-		await expect(input).toHaveValue('hello')
+		await expect(input).toHaveJSProperty('value', 'hello')
 	})
 
 	test('clearing text restores placeholder', async ({ page, groupChannel: _ }) => {
@@ -37,7 +37,7 @@ test.describe('Markdown rich input', () => {
 		await expect(placeholder).toHaveCount(0)
 		await page.keyboard.press('Control+A')
 		await page.keyboard.press('Delete')
-		await expect(input).toHaveValue('')
+		await expect(input).toHaveJSProperty('value', '')
 		await expect(placeholder).toHaveCount(1)
 	})
 
@@ -53,7 +53,7 @@ test.describe('Markdown rich input', () => {
 		const raw = `@[entity:${ENTITY_HASH}]`
 		await input.fill(raw)
 		await expect(input.locator('.fount-markdown-rich-input-chip.fount-markdown-rich-input-mention')).toHaveCount(1)
-		await expect(input).toHaveValue(raw)
+		await expect(input).toHaveJSProperty('value', raw)
 	})
 
 	test('custom emoji token renders inline emoji element', async ({ page, groupChannel: _ }) => {

@@ -6116,10 +6116,10 @@
 		},
 		"markdownRichInput": {
 			"toolbar": {
-				"aria-label": "编辑器工具栏"
+				"aria-label": "編輯之具欄"
 			},
 			"contextMenu": {
-				"aria-label": "编辑器菜单"
+				"aria-label": "編輯之選單"
 			},
 			"bold": {
 				"dataset": {
@@ -6129,21 +6129,21 @@
 			},
 			"italic": {
 				"dataset": {
-					"tip": "斜体"
+					"tip": "斜體"
 				},
-				"aria-label": "斜体"
+				"aria-label": "斜體"
 			},
 			"strike": {
 				"dataset": {
-					"tip": "删除线"
+					"tip": "刪除線"
 				},
-				"aria-label": "删除线"
+				"aria-label": "刪除線"
 			},
 			"code": {
 				"dataset": {
-					"tip": "行内代码"
+					"tip": "行內代碼"
 				},
-				"aria-label": "行内代码"
+				"aria-label": "行內代碼"
 			},
 			"quote": {
 				"dataset": {
@@ -6153,9 +6153,9 @@
 			},
 			"link": {
 				"dataset": {
-					"tip": "链接"
+					"tip": "連結"
 				},
-				"aria-label": "链接"
+				"aria-label": "連結"
 			},
 			"mention": {
 				"dataset": {
@@ -6165,23 +6165,23 @@
 			},
 			"copy": {
 				"dataset": {
-					"tip": "复制"
+					"tip": "謄錄"
 				},
-				"aria-label": "复制"
+				"aria-label": "謄錄"
 			},
 			"cut": {
 				"dataset": {
-					"tip": "剪切"
+					"tip": "剪下"
 				},
-				"aria-label": "剪切"
+				"aria-label": "剪下"
 			},
 			"paste": {
 				"dataset": {
-					"tip": "粘贴"
+					"tip": "貼上"
 				},
-				"aria-label": "粘贴"
+				"aria-label": "貼上"
 			},
-			"linkUrl": "链接地址"
+			"linkUrl": "連結之址"
 		}
 	},
 	"pro_cancel_screen": {
