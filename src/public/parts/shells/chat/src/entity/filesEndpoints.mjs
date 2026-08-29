@@ -66,6 +66,9 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 			throw httpError(400, 'invalid path')
 
 		const { username } = getUserByReq(req)
+		// 跨节点定向目标（owner 节点 / 群 roster）：manifest miss 与 chunk miss 都复用，避免走 node-scope 大扇出
+		/** @type {string[]} */
+		let fanoutTargets = []
 		let manifest = await loadFileManifest(entityHash, logicalPath)
 		if (!manifest && username) 
 			// 本地 miss：群实体经群 roster 定向拉取；远端实体经其 owner 节点定向拉取
@@ -74,14 +77,12 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 				const { fetchManifest } = await import('npm:@steve02081504/fount-p2p/files/manifest/fetch')
 				const { isWritableLocalEntity } = await import('npm:@steve02081504/fount-p2p/node/identity')
 				const { isGroupEntityHash, groupIdFromGroupEntity } = await import('../chat/lib/groupEntity.mjs')
-				/** @type {string[]} */
-				let targets = []
 				if (isGroupEntityHash(entityHash)) {
 					const { ensureFederationRoom } = await import('../chat/federation/room.mjs')
 					const groupId = await groupIdFromGroupEntity(entityHash, username)
 					if (groupId) {
 						const slot = await ensureFederationRoom(username, groupId)
-						targets = [...new Set(
+						fanoutTargets = [...new Set(
 							(slot?.getRoster?.() || []).map(peer => peer?.remoteNodeHash).filter(Boolean),
 						)]
 					}
@@ -89,10 +90,10 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 				else if (!isWritableLocalEntity(entityHash)) {
 					const { parseEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 					const ownerNode = parseEntityHash(entityHash)?.nodeHash
-					if (ownerNode) targets = [ownerNode]
+					if (ownerNode) fanoutTargets = [ownerNode]
 				}
-				if (targets.length)
-					manifest = await fetchManifest({ username, ownerEntityHash: entityHash, logicalPath, fanoutTargets: targets })
+				if (fanoutTargets.length)
+					manifest = await fetchManifest({ username, ownerEntityHash: entityHash, logicalPath, fanoutTargets })
 			}
 			catch { /* 非受管实体或拉取失败，保持 404 */ }
 		
@@ -104,7 +105,10 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		if (String(req.query?.manifest || '') === '1')
 			return res.status(200).json({ manifest })
 
-		const plain = await readManifestPlaintextStream(username, manifest, { username })
+		const plain = await readManifestPlaintextStream(username, manifest, {
+			username,
+			...fanoutTargets.length ? { fanoutTargets } : {},
+		})
 		if (!plain) throw httpError(404, 'chunk unavailable')
 		applySafeContentHeaders(res, {
 			mimeType: manifest.mimeType,

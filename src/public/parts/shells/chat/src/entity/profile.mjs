@@ -108,7 +108,12 @@ function raceTimeout(promise, timeoutMs, label) {
 async function readRemoteProfilePlain(replicaUsername, entityHash, logicalPath, readPlain, options = {}) {
 	if (readPlain) return readPlain(replicaUsername, entityHash, logicalPath)
 	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
-	return readPublicFile(replicaUsername, entityHash, logicalPath, { revalidate: options.revalidate === true })
+	const ownerNode = parseEntityHash(entityHash)?.nodeHash
+	return readPublicFile(replicaUsername, entityHash, logicalPath, {
+		revalidate: options.revalidate === true,
+		// 定向到 owner 节点拉 manifest+chunk，避免 node-scope 大扇出在拨号/超时上丢请求
+		...ownerNode ? { fanoutTargets: [ownerNode] } : {},
+	})
 }
 
 /**

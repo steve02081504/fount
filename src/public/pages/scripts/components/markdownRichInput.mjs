@@ -118,6 +118,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	let rawText = ''
 	let composing = false
 	let disabled = element.hasAttribute('disabled')
+	/** 空态光标锚点（可编辑零宽文本），让光标停在可编辑位置而非占位符边界。 */
+	const caretAnchors = new WeakSet()
 	/** @type {Array<{ node: Node, kind: 'text'|'br'|'chip', raw?: string, start: number, end: number }>} */
 	let segments = []
 	/** 撤销/重做历史（rawText 快照）上限。 */
@@ -149,7 +151,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	 * @returns {string} 原始文本
 	 */
 	function serializeNode(node) {
-		if (node.nodeType === Node.TEXT_NODE) return node.nodeValue
+		if (node.nodeType === Node.TEXT_NODE)
+			return caretAnchors.has(node) ? node.nodeValue.replace(/\u200B/g, '') : node.nodeValue
 		if (!(node instanceof HTMLElement)) return ''
 		if (node.dataset.emptySlot != null) return ''
 		if (node.dataset.raw != null) return node.dataset.raw
@@ -171,14 +174,11 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
-	 * 计算子节点在原始文本中的长度。
+	 * 计算子节点在原始文本中的长度（即其序列化文本长度）。
 	 * @param {Node} child 子节点
 	 * @returns {number} 长度
 	 */
 	function childNodeLength(child) {
-		if (child.nodeType === Node.TEXT_NODE) return child.nodeValue.length
-		if (child instanceof HTMLElement && child.dataset.emptySlot != null) return 0
-		if (child instanceof HTMLElement && child.dataset.raw != null) return child.dataset.raw.length
 		return serializeNode(child).length
 	}
 
@@ -328,16 +328,21 @@ export function createMarkdownRichInput(element, options = {}) {
 		segments = []
 		element.replaceChildren()
 		if (!rawText) {
+			// 空态结构：可编辑零宽锚点 + 不可编辑占位符 + `<br>`。
+			// 锚点让光标停在可编辑文本位置（Linux 浏览器渲染稳定，避免闪烁），视觉上仍在占位符之前；
+			// 占位符留在文档流中，随内容撑高输入框。
+			const anchor = document.createTextNode('\u200B')
+			caretAnchors.add(anchor)
 			const placeholder = document.createElement('span')
 			placeholder.className = 'fount-markdown-rich-input-placeholder'
 			placeholder.setAttribute('contenteditable', 'false')
 			placeholder.dataset.emptySlot = '1'
 			placeholder.textContent = element.getAttribute('placeholder') ?? ''
-			element.appendChild(placeholder)
 			const br = document.createElement('br')
 			br.dataset.emptySlot = '1'
-			element.appendChild(br)
+			element.append(anchor, placeholder, br)
 			segments = [
+				{ node: anchor, kind: 'text', start: 0, end: 0 },
 				{ node: placeholder, kind: 'br', start: 0, end: 0 },
 				{ node: br, kind: 'br', start: 0, end: 1 },
 			]
@@ -395,7 +400,7 @@ export function createMarkdownRichInput(element, options = {}) {
 		let acc = 0
 		for (const child of element.childNodes) {
 			if (child === node) {
-				if (node.nodeType === Node.TEXT_NODE) return acc + offset
+				if (node.nodeType === Node.TEXT_NODE) return acc + Math.min(offset, childNodeLength(node))
 				return offset > 0 ? acc + childNodeLength(child) : acc
 			}
 			acc += childNodeLength(child)
@@ -1017,8 +1022,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
-	 * 空态聚焦/点击时光标落到开头（而非占位符视觉结束处）。
-	 * 先重建 DOM：浏览器编辑（select-all 删除等）可能已移除占位符节点，
+	 * 空态聚焦/点击时光标落到占位符前（可编辑零宽锚点上）。
+	 * 先重建 DOM：浏览器编辑（select-all 删除等）可能已移除锚点/占位节点，
 	 * 而 segments 仍指向它，直接 setSelection 会因节点脱离文档抛 InvalidNodeTypeError。
 	 * @returns {void}
 	 */
@@ -1045,13 +1050,6 @@ export function createMarkdownRichInput(element, options = {}) {
 		setTimeout(closeContextMenu, 0)
 	})
 	element.addEventListener('contextmenu', showContextMenu)
-
-	// i18n / 频道切换会改 `placeholder` 属性，同步到占位节点文本。
-	const placeholderObserver = new MutationObserver(() => {
-		const span = element.querySelector('[data-empty-slot="1"]')
-		if (span instanceof HTMLSpanElement) span.textContent = element.getAttribute('placeholder') ?? ''
-	})
-	placeholderObserver.observe(element, { attributes: true, attributeFilter: ['placeholder'] })
 
 	// ---- 对外接口 ----
 
@@ -1166,7 +1164,6 @@ export function createMarkdownRichInput(element, options = {}) {
 		 * @returns {void}
 		 */
 		destroy: () => {
-			placeholderObserver.disconnect()
 			document.removeEventListener('selectionchange', updateToolbar)
 			hideToolbar()
 			closeContextMenu()

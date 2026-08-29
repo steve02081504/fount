@@ -29,6 +29,8 @@ Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/s
 - `fount update <sha>` — detach + create `.noupdate`.
 - `fount update pr/<n>` (also `pull/<n>`, `#<n>`, or a GitHub PR URL) — fetch `refs/pull/<n>/head` into `origin/pr/<n>`, detach, create `.noupdate`. Re-run to refresh the tip.
 - `fount update <remote-url>` — point `origin` at that URL and check out its default branch (tracking it), clearing `.noupdate`; subsequent plain updates follow it. Detected before branch names via `git_is_remote_url` (http(s)/ssh/git/ftp/file URLs and scp-like `user@host:path`).
+- If the current upstream is confirmed gone on origin (not a network error), fall back to tracking `master`.
+- Git / bash / Deno-template traps: [docs/git-notes.md](docs/git-notes.md).
 
 ## Temporary deno version pin
 
@@ -39,8 +41,6 @@ A committed `.deno-version` at the repo root (single line, e.g. `pr 36606` / `ca
 - CI `polyglot_nop_tests` uses `install.sh` (latest-only), so it always applies the pin via `.github/workflows/scripts/apply_deno_version.sh` after install.
 
 Missing/empty `.deno-version` → unchanged behavior: CI installs `canary`, keepalive pulls its default channel.
-- If the current upstream is confirmed gone on origin (not a network error), fall back to tracking `master`.
-- Git / bash / Deno-template traps: [docs/git-notes.md](docs/git-notes.md).
 
 ## Termux
 

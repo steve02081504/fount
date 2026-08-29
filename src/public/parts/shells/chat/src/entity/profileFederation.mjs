@@ -6,7 +6,7 @@
  * 【原理】发送端见 `profile.mjs` 的 `notifyProfileUpdated`；接收端复用
  * `fetchAndCacheRemoteProfile({ revalidate: true })`（fount-p2p 0.0.40 起阻塞等 fanout 取新）。
  */
-import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { registerNodeScopeWireHook } from 'npm:@steve02081504/fount-p2p/transport/node_scope/wire'
 
@@ -27,9 +27,13 @@ let unregisterHook = null
 async function revalidateProfileMedia(username, entityHash) {
 	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
 	const store = getEntityStore()
+	const ownerNode = parseEntityHash(entityHash)?.nodeHash
 	await Promise.all(PROFILE_MEDIA_PATHS.map(async (logicalPath) => {
 		if (!await store.statManifest(entityHash, logicalPath)) return
-		await readPublicFile(username, entityHash, logicalPath, { revalidate: true }).catch(() => { })
+		await readPublicFile(username, entityHash, logicalPath, {
+			revalidate: true,
+			...ownerNode ? { fanoutTargets: [ownerNode] } : {},
+		}).catch(() => { })
 	}))
 }
 

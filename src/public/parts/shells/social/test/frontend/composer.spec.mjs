@@ -6,7 +6,6 @@ import {
 	findPostCard,
 	createTestGroup,
 	TINY_PNG_BUFFER,
-	waitForFeedLoad,
 	postIdFromResponse,
 	openPostMoreMenu,
 	publishPostViaComposer,
@@ -72,6 +71,24 @@ test.describe('Social composer', () => {
 		await expectPostInFeed(page, postId)
 	})
 
+	test('published post renders exactly once via WS increment, no full feed reload', async ({ page, publishPost }) => {
+		let fullFeedLoads = 0
+		page.on('request', req => {
+			if (req.method() !== 'GET') return
+			const url = new URL(req.url())
+			if (url.pathname === '/api/parts/shells:social/feed' && !url.searchParams.has('cursor'))
+				fullFeedLoads++
+		})
+		const { postId } = await publishPost(`ws-once ${Date.now()}`)
+		const cards = page.locator(`#feedList [data-post-id="${postId}"]`)
+		// 只靠 WS 增量插入（prependFeedItem）落卡，不应触发全量 /feed 重载
+		await expect(cards).toBeVisible({ timeout: 30_000 })
+		await expect(cards).toHaveCount(1)
+		await page.waitForTimeout(1500)
+		await expect(cards).toHaveCount(1)
+		expect(fullFeedLoads).toBe(0)
+	})
+
 	test('quote preview opens from post card', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`quote-src ${Date.now()}`)
 		const card = await findPostCard(page, postId)
@@ -103,9 +120,10 @@ test.describe('Social composer', () => {
 			return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
 		}, { timeout: 60_000 })
 		await page.locator('#postButton').click()
-		const [postResponse] = await Promise.all([postResponsePromise, waitForFeedLoad(page)])
+		const postResponse = await postResponsePromise
 		const childId = postIdFromResponse(await postResponse.json())
-		await expect(page.locator('#postText')).toHaveValue('')
+		// 发帖后不再全量重载 feed：新帖由 WS 增量插入（见 expectPostInFeed）
+		await expect.poll(() => page.evaluate(() => document.getElementById('postText')?.value ?? '')).toBe('')
 		await expectPostInFeed(page, childId)
 	})
 
@@ -119,7 +137,7 @@ test.describe('Social composer', () => {
 		await page.locator('#postText').fill('@')
 		await expect(page.locator('.mention-panel .mention-option').first()).toBeVisible({ timeout: 20_000 })
 		await page.locator('.mention-panel .mention-option').first().click()
-		const value = await page.locator('#postText').inputValue()
+		const value = await page.evaluate(() => document.getElementById('postText').value)
 		expect(value).toMatch(/^@\[entity:[\da-f]{128}\]$/iu)
 	})
 
@@ -188,7 +206,7 @@ test.describe('Social composer', () => {
 		await expect(gridButton).toBeVisible({ timeout: 30_000 })
 		await expect(gridButton).toHaveAttribute('title', /\S/)
 		await gridButton.click()
-		await expect(page.locator('#postText')).not.toHaveValue('hello ')
+		await expect.poll(() => page.evaluate(() => document.getElementById('postText').value)).not.toBe('hello ')
 	})
 
 	test('media upload shows preview and publishes image post', async ({ page, publishPost }) => {
