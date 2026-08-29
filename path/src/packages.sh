@@ -208,4 +208,3 @@ uninstall_package() {
 	echo -e "${C_YELLOW}Failed to remove ${package_name}. It might not be installed or managed by a recognized package manager.${C_RESET}" >&2
 	return 1
 }
-

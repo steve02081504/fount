@@ -16,4 +16,3 @@ urlencode() {
 	done
 	echo "${encoded}"
 }
-

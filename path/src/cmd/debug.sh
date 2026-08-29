@@ -6,4 +6,3 @@ cmd_debug() {
 	"$0" keepalive debug "$@"
 	exit $?
 }
-

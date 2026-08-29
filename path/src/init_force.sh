@@ -212,4 +212,3 @@ EOF
 	invoke_fount_init_force "$FOUNT_DIR"
 	exit $?
 }
-

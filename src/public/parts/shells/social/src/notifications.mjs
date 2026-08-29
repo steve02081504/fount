@@ -1,4 +1,3 @@
-
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 
 import { readInboxNotifications, notificationCursor } from './inbox.mjs'

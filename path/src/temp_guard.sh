@@ -23,4 +23,3 @@ check_temp_guard() {
 		exit 1
 	fi
 }
-

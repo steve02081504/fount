@@ -233,4 +233,3 @@ deno_upgrade() {
 	mkdir -p "$(dirname "$upgraded_flag")"
 	touch "$upgraded_flag"
 }
-

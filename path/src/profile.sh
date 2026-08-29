@@ -19,4 +19,3 @@ ensure_fount_path() {
 		export PATH="$PATH:$FOUNT_DIR/path"
 	fi
 }
-

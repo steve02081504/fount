@@ -27,4 +27,3 @@ cmd_background() {
 	unset FOUNT_BACKGROUND
 	exit 0
 }
-

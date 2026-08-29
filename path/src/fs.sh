@@ -20,4 +20,3 @@ assert_dir_writable() {
 		exit 1
 	fi
 }
-

@@ -23,4 +23,3 @@ cmd_protocolhandle() {
 	"$0" "$@"
 	exit $?
 }
-
