@@ -68,7 +68,7 @@ export async function createOpenAICompatibleSource({
 			const enableLogprobsShow = config.model_arguments?.logprobs && supported_functions?.html
 			const enableHtmlShow = supported_functions?.html ?? false
 			const useThemeStyles = supported_functions?.fount_themes ?? false
-			const messages = buildMessagesFromPromptStruct(prompt_struct, config, configTemplate)
+			const messages = await buildMessagesFromPromptStruct(prompt_struct, config, configTemplate)
 			const result = {
 				content: '',
 				files: [...base_result?.files || []],

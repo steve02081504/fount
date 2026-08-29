@@ -1,16 +1,18 @@
 import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct/index.mjs'
 
+import { buildFileContentParts } from './fileContentParts.mjs'
+
 /**
  * 将 prompt_struct 转成 OpenAI 兼容消息数组。
  * @param {import('../../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct - 结构化提示。
  * @param {object} config - 当前服务配置。
  * @param {object} configTemplate - 配置模板（默认值）。
- * @returns {Array<{role: 'user'|'assistant'|'system', content: string | object[]}>} OpenAI 格式消息数组。
+ * @returns {Promise<Array<{role: 'user'|'assistant'|'system', content: string | object[]}>>} OpenAI 格式消息数组。
  */
-export function buildMessagesFromPromptStruct(prompt_struct, config, configTemplate) {
+export async function buildMessagesFromPromptStruct(prompt_struct, config, configTemplate) {
 	const ignoreFiles = config.convert_config?.ignoreFiles ?? configTemplate.convert_config.ignoreFiles
 
-	let messages = mergeStructPromptChatLog(prompt_struct).map(chatLogEntry => {
+	let messages = await Promise.all(mergeStructPromptChatLog(prompt_struct).map(async chatLogEntry => {
 		const uid = chatLogEntry.id ||= Math.random().toString(36).slice(2, 10)
 		let textContent = `\
 <message "${uid}">
@@ -41,48 +43,22 @@ ${chatLogEntry.content}
 				message.content = textContent
 				return message
 			}
-			const contentParts = [{ type: 'text', text: textContent }]
-
-			for (const file of chatLogEntry.files) {
-				if (!file.mime_type) continue
-
-				if (file.mime_type.startsWith('image/'))
-					contentParts.push({
-						type: 'image_url',
-						image_url: {
-							url: `data:${file.mime_type};base64,${file.buffer.toString('base64')}`,
-						},
-					})
-				else if (file.mime_type.startsWith('audio/')) {
-					const formatMap = {
-						'audio/wav': 'wav',
-						'audio/wave': 'wav',
-						'audio/x-wav': 'wav',
-						'audio/mpeg': 'mp3',
-						'audio/mp3': 'mp3',
-						'audio/mp4': 'mp4',
-						'audio/m4a': 'm4a',
-						'audio/webm': 'webm',
-						'audio/ogg': 'ogg',
-					}
-					const format = formatMap[file.mime_type.toLowerCase()] || 'wav'
-
-					contentParts.push({
-						type: 'input_audio',
-						input_audio: {
-							data: file.buffer.toString('base64'),
-							format,
-						},
-					})
-				}
+			const { parts, skipped } = await buildFileContentParts(chatLogEntry.files, textContent)
+			if (parts.length > 1)
+				message.content = parts
+			if (skipped.length) {
+				const notices = skipped.map(name =>
+					`[System Notice: can't show you about file '${name}' because its bytes are unavailable, but you may be able to access it by using code tools if you have.]`)
+				const noticeText = '\n' + notices.join('\n')
+				if (Array.isArray(message.content))
+					message.content.push({ type: 'text', text: noticeText })
+				else
+					message.content += noticeText
 			}
-
-			if (contentParts.length > 1)
-				message.content = contentParts
 		}
 
 		return message
-	})
+	}))
 
 	const system_prompt = structPromptToSingleNoChatLog(prompt_struct)
 	const systemPromptAtDepth = config.system_prompt_at_depth ?? configTemplate.system_prompt_at_depth

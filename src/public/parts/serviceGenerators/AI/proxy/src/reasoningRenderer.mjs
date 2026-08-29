@@ -30,9 +30,10 @@ function reasoningSummaryHtml(renderOptions = {}) {
  * - `<summary>` 标题（i18n 文案）做 HTML 转义；`reasoning_summary` 与正文均原样输出（含 `<gamma>` 等标记），由下游 Markdown 管线处理。
  * - `<details>` 开/闭与正文之间必须有空行，否则 CommonMark 会把整段当单一 HTML 块，正文中的 Markdown 不生效。
  * - 流式（renderOptions.open 为 true）时正文经 ensureClosedTrailingCodeFence 处理：未闭合的围栏不会破坏 `<details>` 结构或产生末尾空代码块；完整（非流式）正文原样输出。
+ * - 返回值末尾始终包含 `\n\n`（一个空行），调用方可直接通过字符串加法拼接正文，无需额外 join 逻辑。
  * @param {{content: string, extension?: any}} sourceResult - 原始响应结果。
  * @param {{ open?: boolean, locales?: string[], supported_functions?: { fount_i18nkeys?: boolean } }} [renderOptions] - 渲染选项。open 为 true 时默认展开（适用于流式预览）。
- * @returns {string} Markdown 字符串，若无推理内容则返回空字符串。
+ * @returns {string} Markdown 字符串，若无推理内容则返回空字符串。非空时末尾为 `\n\n`。
  */
 export function buildReasoningDetailsMarkdown(sourceResult, renderOptions = {}) {
 	const reasoningContent = sourceResult.extension?.reasoning_content ?? ''
@@ -59,5 +60,6 @@ export function buildReasoningDetailsMarkdown(sourceResult, renderOptions = {}) 
 	</div>
 
 </details>
+
 `
 }
