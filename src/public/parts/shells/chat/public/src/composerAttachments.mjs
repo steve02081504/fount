@@ -9,6 +9,7 @@ import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { hasSpeechRecognitionSource, recognizeBuffer } from '/scripts/features/speechRecognition.mjs'
 import { fileFromClipboardItem } from '../shared/pasteFiles.mjs'
+
 import { setCachedSpeechRecognitionTranscript } from '/scripts/features/speechRecognitionCache.mjs'
 import { entityFileUrl, fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 import { onElementRemoved } from '/scripts/lib/onElementRemoved.mjs'

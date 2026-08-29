@@ -218,6 +218,20 @@ function toPublicProfilePayload(stored) {
 }
 
 /**
+ * 未设置任何展示名时，把本机 fount 用户名作为默认名随 profile 发布（跨节点展示名回退）。
+ * @param {object} stored 本地 profile
+ * @param {string} loginName fount 用户名
+ * @returns {object} localized 表
+ */
+function localizedWithDefaultName(stored, loginName) {
+	const localized = stored?.localized || {}
+	if (!loginName) return localized
+	const hasAnyName = Object.values(localized).some(slice => String(slice?.name || '').trim())
+	if (hasAnyName) return localized
+	return { ...localized, '': { name: loginName } }
+}
+
+/**
  * @param {string} replicaUsername replica
  * @param {string} entityHash 128 hex
  * @param {object} stored 本地 profile
@@ -239,8 +253,10 @@ async function publishStaticProfile(replicaUsername, entityHash, stored) {
 		}
 		catch { /* 无本地身份则保持空 */ }
 
+	const loginName = getUserByUsername(replicaUsername)?.username || replicaUsername
 	const plaintext = Buffer.from(JSON.stringify(toPublicProfilePayload({
 		...stored,
+		localized: localizedWithDefaultName(stored, loginName),
 		activePubKeyHex,
 		keyGeneration,
 	})), 'utf8')
