@@ -2180,7 +2180,7 @@
 				"sfwMode": "😇",
 				"livePreview": "⏱️👀",
 				"languageVersion": "🗣️🔢",
-				"descriptionHint": "支持 Markdown 语法，修改会实时反映在左侧预览中",
+				"descriptionHint": "📝✨；✏️ ➡️ 👀📍⬅️",
 				"localeHint": "👆🏷️🔄✏️；📤↩️ ➡️ 🆕🗣️",
 				"themeColor": {
 					"clear": "♻️🎨",
@@ -2212,7 +2212,7 @@
 					"aria-label": "⬆️🖼️👤"
 				},
 				"tag": {
-					"placeholder": "📤🏷️ ➕"
+					"placeholder": "📝🏷️➕；# ➕🔢"
 				},
 				"handle": {
 					"placeholder": "steve（2–32 🔤_-）"
@@ -6123,37 +6123,37 @@
 				"aria-label": "☰️"
 			},
 			"dockedToolbar": {
-				"aria-label": "格式工具栏"
+				"aria-label": "🎨🧰"
 			},
 			"headingLarge": {
 				"dataset": {
-					"tip": "一级标题"
+					"tip": "#️⃣1️⃣"
 				},
-				"aria-label": "一级标题"
+				"aria-label": "#️⃣1️⃣"
 			},
 			"headingMedium": {
 				"dataset": {
-					"tip": "二级标题"
+					"tip": "#️⃣2️⃣"
 				},
-				"aria-label": "二级标题"
+				"aria-label": "#️⃣2️⃣"
 			},
 			"headingSmall": {
 				"dataset": {
-					"tip": "三级标题"
+					"tip": "#️⃣3️⃣"
 				},
-				"aria-label": "三级标题"
+				"aria-label": "#️⃣3️⃣"
 			},
 			"listUl": {
 				"dataset": {
-					"tip": "无序列表"
+					"tip": "🔘"
 				},
-				"aria-label": "无序列表"
+				"aria-label": "🔘"
 			},
 			"listOl": {
 				"dataset": {
-					"tip": "有序列表"
+					"tip": "1️⃣"
 				},
-				"aria-label": "有序列表"
+				"aria-label": "1️⃣"
 			},
 			"bold": {
 				"dataset": {

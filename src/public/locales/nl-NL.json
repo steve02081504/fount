@@ -2180,7 +2180,7 @@
 				"sfwMode": "Veilige inhoud",
 				"livePreview": "Live-voorbeeld",
 				"languageVersion": "Taalversie",
-				"descriptionHint": null,
+				"descriptionHint": "Ondersteunt Markdown-syntax; wijzigingen worden meteen weergegeven in het voorbeeld links.",
 				"localeHint": "Klik op het label om de code te wijzigen of te bewerken; druk op Enter in het invoervak ​​aan het einde om het naar een nieuwe taal te kopiëren.",
 				"themeColor": {
 					"clear": "Herstel de standaardkleur van het thema",
@@ -2212,7 +2212,7 @@
 					"aria-label": "Avatar uploaden"
 				},
 				"tag": {
-					"placeholder": "Voeg toe na het invoeren van de tag"
+					"placeholder": "Typ een tag en druk op Enter om die toe te voegen; gebruik # om er meerdere tegelijk toe te voegen"
 				},
 				"handle": {
 					"placeholder": "Bijvoorbeeld Steve (2–32 alfanumerieke tekens in kleine letters._-)"
@@ -6129,7 +6129,37 @@
 				"aria-label": "Editormenu"
 			},
 			"dockedToolbar": {
-				"aria-label": null
+				"aria-label": "Opmaakwerkbalk"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Kop 1"
+				},
+				"aria-label": "Kop 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Kop 2"
+				},
+				"aria-label": "Kop 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Kop 3"
+				},
+				"aria-label": "Kop 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Opsommingslijst"
+				},
+				"aria-label": "Opsommingslijst"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Genummerde lijst"
+				},
+				"aria-label": "Genummerde lijst"
 			},
 			"bold": {
 				"dataset": {

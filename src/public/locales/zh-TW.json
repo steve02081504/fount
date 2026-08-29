@@ -2179,7 +2179,7 @@
 				"sfwMode": "安全內容",
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
-				"descriptionHint": null,
+				"descriptionHint": "支援 Markdown 語法，修改會即時反映在左側的預覽中。",
 				"localeHint": "點選標籤切換或編輯程式碼；在末尾輸入框回車可複製為新語言。",
 				"themeColor": {
 					"clear": "恢復主題預設色",
@@ -2211,7 +2211,7 @@
 					"aria-label": "上傳頭像"
 				},
 				"tag": {
-					"placeholder": "輸入標籤後新增"
+					"placeholder": "輸入標籤後新增，可用 # 一次新增多個"
 				},
 				"handle": {
 					"placeholder": "例如 steve（2–32 位小寫字母數字._-）"
@@ -6120,6 +6120,39 @@
 			},
 			"contextMenu": {
 				"aria-label": "編輯器選單"
+			},
+			"dockedToolbar": {
+				"aria-label": "格式工具列"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "一級標題"
+				},
+				"aria-label": "一級標題"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "二級標題"
+				},
+				"aria-label": "二級標題"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "三級標題"
+				},
+				"aria-label": "三級標題"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "無序清單"
+				},
+				"aria-label": "無序清單"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "有序清單"
+				},
+				"aria-label": "有序清單"
 			},
 			"bold": {
 				"dataset": {

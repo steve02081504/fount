@@ -2180,7 +2180,7 @@
 				"sfwMode": "一般コンテンツ",
 				"livePreview": "ライブプレビュー",
 				"languageVersion": "言語バージョン",
-				"descriptionHint": null,
+				"descriptionHint": "Markdown 構文に対応。変更は左側のプレビューに即座に反映されます。",
 				"localeHint": "ラベルをクリックしてコードを切り替えるか編集します。最後に入力ボックスで Enter キーを押して、新しい言語にコピーします。",
 				"themeColor": {
 					"clear": "テーマの既定色に戻す",
@@ -2212,7 +2212,7 @@
 					"aria-label": "アバターをアップロード"
 				},
 				"tag": {
-					"placeholder": "タグ入力後に追加"
+					"placeholder": "タグを入力して Enter で追加。# で複数まとめて追加できます"
 				},
 				"handle": {
 					"placeholder": "たとえば、steve (2 ～ 32 文字の小文字の英数字。_-)"
@@ -6124,6 +6124,36 @@
 			},
 			"dockedToolbar": {
 				"aria-label": "書式設定ツールバー"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "見出し 1"
+				},
+				"aria-label": "見出し 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "見出し 2"
+				},
+				"aria-label": "見出し 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "見出し 3"
+				},
+				"aria-label": "見出し 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "箇条書きリスト"
+				},
+				"aria-label": "箇条書きリスト"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "番号付きリスト"
+				},
+				"aria-label": "番号付きリスト"
 			},
 			"bold": {
 				"dataset": {

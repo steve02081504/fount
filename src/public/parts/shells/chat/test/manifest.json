@@ -773,7 +773,7 @@
 				},
 				{
 					"name": "markdownRichInput",
-					"expected": "40s",
+					"expected": "2m1s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/markdownRichInput.spec.mjs",
 						"src/public/pages/scripts/components/markdownRichInput.mjs",

@@ -2180,7 +2180,7 @@
 				"sfwMode": "Safe for Work",
 				"livePreview": "Live preview",
 				"languageVersion": "Language version",
-				"descriptionHint": null,
+				"descriptionHint": "Supports Markdown syntax; changes are reflected live in the preview on the left.",
 				"localeHint": "Click the label to switch or edit the code; press Enter in the input box at the end to copy it to a new language.",
 				"themeColor": {
 					"clear": "Restore the theme's default colour",
@@ -2212,7 +2212,7 @@
 					"aria-label": "Upload avatar"
 				},
 				"tag": {
-					"placeholder": "Add after entering tag"
+					"placeholder": "Type a tag and press Enter to add it; use # to add several at once"
 				},
 				"handle": {
 					"placeholder": "For example steve (2–32 lowercase alphanumeric characters._-)"
@@ -6123,7 +6123,37 @@
 				"aria-label": "Editor menu"
 			},
 			"dockedToolbar": {
-				"aria-label": null
+				"aria-label": "Formatting toolbar"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Heading 1"
+				},
+				"aria-label": "Heading 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Heading 2"
+				},
+				"aria-label": "Heading 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Heading 3"
+				},
+				"aria-label": "Heading 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Bulleted list"
+				},
+				"aria-label": "Bulleted list"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Numbered list"
+				},
+				"aria-label": "Numbered list"
 			},
 			"bold": {
 				"dataset": {

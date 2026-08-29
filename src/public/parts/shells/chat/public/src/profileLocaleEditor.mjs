@@ -206,6 +206,25 @@ export function renderTagsEditor(host, tags, onChange) {
 }
 
 /**
+ * 从 URL 提取简洁网站名（如 github.com → github），供链接编辑时自动填入名称。
+ * @param {string} value 原始 URL
+ * @returns {string} 网站名；解析失败返回空串
+ */
+function siteNameFromUrl(value) {
+	let url
+	try {
+		url = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(value) ? value : `https://${value}`)
+	}
+	catch {
+		return ''
+	}
+	const parts = url.hostname.toLowerCase().split('.').filter(Boolean)
+	if (parts[0] === 'www') parts.shift()
+	if (!parts.length) return ''
+	return parts.length > 1 ? parts[parts.length - 2] : parts[0]
+}
+
+/**
  * 渲染链接动态行编辑器。
  * @param {HTMLElement} host 行容器
  * @param {ProfileLink[]} links 当前链接（可含尚未填完的空行）
@@ -249,7 +268,12 @@ export function renderLinksEditor(host, links, onChange) {
 			onChange(readLinksEditor(host, { keepEmpty: true }))
 		}
 		nameInput.addEventListener('input', commit)
-		urlInput.addEventListener('input', commit)
+		urlInput.addEventListener('input', () => {
+			const site = siteNameFromUrl(urlInput.value)
+			if (site && !nameInput.value.trim().toLowerCase().includes(site))
+				nameInput.value = site
+			commit()
+		})
 		remove.addEventListener('click', () => {
 			const next = readLinksEditor(host, { keepEmpty: true }).filter((_, i) => i !== index)
 			onChange(next, { rebuild: true })

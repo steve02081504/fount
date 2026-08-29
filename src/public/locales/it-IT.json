@@ -2180,7 +2180,7 @@
 				"sfwMode": "Contenuto sicuro",
 				"livePreview": "Anteprima dal vivo",
 				"languageVersion": "Versione linguistica",
-				"descriptionHint": "Supporta la sintassi Markdown, le modifiche si rifletteranno nell'anteprima a sinistra in tempo reale",
+				"descriptionHint": "Supporta la sintassi Markdown; le modifiche vengono mostrate subito nell’anteprima a sinistra.",
 				"localeHint": "Fare clic sull'etichetta per cambiare o modificare il codice; premere Invio nella casella di input alla fine per copiarlo in una nuova lingua.",
 				"themeColor": {
 					"clear": "Ripristina il colore predefinito del tema",
@@ -2212,7 +2212,7 @@
 					"aria-label": "Carica avatar"
 				},
 				"tag": {
-					"placeholder": "Aggiungi dopo aver inserito il tag"
+					"placeholder": "Digita un tag e premi Invio per aggiungerlo; usa # per aggiungerne più d'uno alla volta"
 				},
 				"handle": {
 					"placeholder": "Ad esempio steve (2–32 caratteri alfanumerici minuscoli._-)"
@@ -6127,6 +6127,39 @@
 			},
 			"contextMenu": {
 				"aria-label": "Menu dell'editor"
+			},
+			"dockedToolbar": {
+				"aria-label": "Barra degli strumenti di formattazione"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Titolo 1"
+				},
+				"aria-label": "Titolo 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Titolo 2"
+				},
+				"aria-label": "Titolo 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Titolo 3"
+				},
+				"aria-label": "Titolo 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Elenco puntato"
+				},
+				"aria-label": "Elenco puntato"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Elenco numerato"
+				},
+				"aria-label": "Elenco numerato"
 			},
 			"bold": {
 				"dataset": {
