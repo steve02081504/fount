@@ -13,6 +13,7 @@ export const phases = [
 		name: 'ui',
 		testMatch: [
 			'composer.spec.mjs',
+			'markdownRichInput.spec.mjs',
 			'attachments.spec.mjs',
 			'navigation.spec.mjs',
 			'dmChannelContext.spec.mjs',

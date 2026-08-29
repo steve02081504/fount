@@ -5,6 +5,7 @@ import { sanitizePermissiveHtml } from '/scripts/lib/sanitizeHtml.mjs'
 
 import { formatHashShort, formatEntityAtId } from '../shared/entityHash.mjs'
 import { formatEntityMentionToken, formatRoleMentionToken } from '../shared/inlineTokenSyntax.mjs'
+import { currentMentionQuery } from '../shared/mentionQuery.mjs'
 import { suggestMentions } from '../src/endpoints/mentions.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
@@ -113,15 +114,7 @@ export function attachHubMentionAutocomplete(textarea) {
 	 * @returns {{ query: string, start: number, end: number } | null} 当前 @ 片段或 null
 	 */
 	function currentMention() {
-		const pos = textarea.selectionStart
-		const before = textarea.value.slice(0, pos)
-		const match = before.match(/@(?:\[([^\]]*))?$/u)
-		if (!match) return null
-		return {
-			query: match[1] ?? '',
-			start: pos - match[0].length,
-			end: pos,
-		}
+		return currentMentionQuery(textarea.value, textarea.selectionStart)
 	}
 
 	/**

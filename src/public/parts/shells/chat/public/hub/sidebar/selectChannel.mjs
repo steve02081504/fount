@@ -3,6 +3,7 @@
  * 【职责】切换频道：composer、草稿、消息加载、群 WS。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { isTextComposer } from '/scripts/components/markdownRichInput.mjs'
 import { updateChannelListItems } from '../../src/endpoints/groupChannel.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
@@ -61,7 +62,7 @@ export async function selectChannel(channelId) {
 		const contentWarningInput = document.getElementById('content-warning')
 		const sensitiveMediaInput = document.getElementById('sensitive-media')
 		await flushDraft(prevGroupId, prevChannelId, {
-			text: input instanceof HTMLTextAreaElement ? input.value : '',
+			text: isTextComposer(input) ? input.value : '',
 			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
 			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
 			files: selectedFiles,

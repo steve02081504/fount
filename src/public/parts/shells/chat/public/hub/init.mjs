@@ -150,7 +150,7 @@ async function wireHubPickers() {
 		await mountDockedEmojiPicker({
 			pickerElement: emojiPickerElement,
 			triggerButton: emojiButton,
-			inputElement: messageInput instanceof HTMLTextAreaElement ? messageInput : undefined,
+			inputElement: messageInput instanceof HTMLElement ? messageInput : undefined,
 			getPickerContext: hubEmojiPickerContext,
 		})
 		wireHubGroupEmojiStickerGestures(emojiPickerElement, emojiPickerElement, sendPickedEmojiAsSticker)

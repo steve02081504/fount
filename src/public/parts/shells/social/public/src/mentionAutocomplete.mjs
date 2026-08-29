@@ -3,6 +3,7 @@
  */
 
 import { formatEntityMentionToken } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
+import { currentMentionQuery } from '/parts/shells:chat/shared/mentionQuery.mjs'
 import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { sanitizePermissiveHtml } from '/scripts/lib/sanitizeHtml.mjs'
@@ -107,15 +108,7 @@ export function attachMentionAutocomplete(textarea) {
 	 * @returns {{ query: string, start: number, end: number } | null} 当前 @ 片段
 	 */
 	function currentMention() {
-		const pos = textarea.selectionStart
-		const before = textarea.value.slice(0, pos)
-		const match = before.match(/@(?:\[([^\]]*))?$/u)
-		if (!match) return null
-		return {
-			query: match[1] ?? '',
-			start: pos - match[0].length,
-			end: pos,
-		}
+		return currentMentionQuery(textarea.value, textarea.selectionStart)
 	}
 
 	/**

@@ -9,6 +9,7 @@ import { confirmAction } from '../../../../scripts/features/promptDialog.mjs'
 import { appendRecognizedText, hasSpeechRecognitionSource, recognizeBuffer } from '../../../../scripts/features/speechRecognition.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { startVoiceRecording } from '../../../../scripts/features/voiceRecord.mjs'
+import { isTextComposer } from '/scripts/components/markdownRichInput.mjs'
 import { handleFilesSelect } from '../src/composerAttachments.mjs'
 import { renderTemplate } from '../src/templates.mjs'
 
@@ -86,7 +87,7 @@ export function pickPhoto() {
  */
 function restoreComposerBase() {
 	const input = document.getElementById('message-input')
-	if (!(input instanceof HTMLTextAreaElement)) return null
+	if (!isTextComposer(input)) return null
 	const base = input.dataset.speechRecognitionBase ?? ''
 	delete input.dataset.speechRecognitionBase
 	input.value = base
@@ -117,7 +118,7 @@ async function maybeRecognizeVoiceAttachment(fileObj, attachmentElement, rawFile
 			 */
 			onPreview: (partial) => {
 				const input = document.getElementById('message-input')
-				if (input instanceof HTMLTextAreaElement) {
+				if (isTextComposer(input)) {
 					const base = input.dataset.speechRecognitionBase ?? input.value
 					input.dataset.speechRecognitionBase = base
 					input.value = base
