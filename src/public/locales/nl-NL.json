@@ -2180,6 +2180,7 @@
 				"sfwMode": "Veilige inhoud",
 				"livePreview": "Live-voorbeeld",
 				"languageVersion": "Taalversie",
+				"descriptionHint": null,
 				"localeHint": "Klik op het label om de code te wijzigen of te bewerken; druk op Enter in het invoervak ​​aan het einde om het naar een nieuwe taal te kopiëren.",
 				"themeColor": {
 					"clear": "Herstel de standaardkleur van het thema",
@@ -6126,6 +6127,9 @@
 			},
 			"contextMenu": {
 				"aria-label": "Editormenu"
+			},
+			"dockedToolbar": {
+				"aria-label": null
 			},
 			"bold": {
 				"dataset": {

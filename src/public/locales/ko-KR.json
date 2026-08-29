@@ -2180,6 +2180,7 @@
 				"sfwMode": "일반 콘텐츠",
 				"livePreview": "실시간 미리보기",
 				"languageVersion": "언어 버전",
+				"descriptionHint": null,
 				"localeHint": "코드를 전환하거나 편집하려면 라벨을 클릭하세요. 마지막 입력 상자에서 Enter를 누르면 새 언어로 복사됩니다.",
 				"themeColor": {
 					"clear": "테마 기본 색상으로 되돌리기",
@@ -6120,6 +6121,9 @@
 			},
 			"contextMenu": {
 				"aria-label": "편집기 메뉴"
+			},
+			"dockedToolbar": {
+				"aria-label": null
 			},
 			"bold": {
 				"dataset": {

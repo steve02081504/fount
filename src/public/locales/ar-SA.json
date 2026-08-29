@@ -2180,6 +2180,7 @@
 				"sfwMode": "محتوى آمن",
 				"livePreview": "معاينة حية",
 				"languageVersion": "نسخة اللغة",
+				"descriptionHint": null,
 				"localeHint": "انقر فوق الملصق لتبديل الرمز أو تحريره؛ اضغط على Enter في مربع الإدخال في النهاية لنسخه إلى لغة جديدة.",
 				"themeColor": {
 					"clear": "استعادة اللون الافتراضي للموضوع",
@@ -6120,6 +6121,9 @@
 			},
 			"contextMenu": {
 				"aria-label": "قائمة المحرر"
+			},
+			"dockedToolbar": {
+				"aria-label": null
 			},
 			"bold": {
 				"dataset": {

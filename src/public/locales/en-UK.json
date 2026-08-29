@@ -2180,6 +2180,7 @@
 				"sfwMode": "Safe for Work",
 				"livePreview": "Live preview",
 				"languageVersion": "Language version",
+				"descriptionHint": null,
 				"localeHint": "Click the label to switch or edit the code; press Enter in the input box at the end to copy it to a new language.",
 				"themeColor": {
 					"clear": "Restore the theme's default colour",
@@ -6120,6 +6121,9 @@
 			},
 			"contextMenu": {
 				"aria-label": "Editor menu"
+			},
+			"dockedToolbar": {
+				"aria-label": null
 			},
 			"bold": {
 				"dataset": {

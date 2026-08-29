@@ -2180,6 +2180,7 @@
 				"sfwMode": "सुरक्षित सामग्री",
 				"livePreview": "लाइव पूर्वावलोकन",
 				"languageVersion": "भाषा संस्करण",
+				"descriptionHint": null,
 				"localeHint": "कोड बदलने या संपादित करने के लिए लेबल पर क्लिक करें; इसे नई भाषा में कॉपी करने के लिए अंत में इनपुट बॉक्स में Enter दबाएँ।",
 				"themeColor": {
 					"clear": "थीम का डिफ़ॉल्ट रंग वापस करें",
@@ -6120,6 +6121,9 @@
 			},
 			"contextMenu": {
 				"aria-label": "संपादक मेनू"
+			},
+			"dockedToolbar": {
+				"aria-label": null
 			},
 			"bold": {
 				"dataset": {
