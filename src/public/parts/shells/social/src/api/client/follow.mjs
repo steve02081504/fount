@@ -111,6 +111,7 @@ export function createFollowMethods(apiContext) {
  */
 async function setFollowRelation(apiContext, target, follow) {
 	const hash = normalizeTarget(target)
+	await ensureEntitySocialReady(apiContext.username, apiContext.entityHash)
 	await setFollow(apiContext.username, apiContext.entityHash, hash, follow)
 	if (follow) {
 		await dispatchFollowEvent(apiContext.username, apiContext.entityHash, hash)

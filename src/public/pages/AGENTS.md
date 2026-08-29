@@ -64,7 +64,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 - **`user-content`**: boolean attr on user/dynamic text & inputs. Page `watch` locale scan skips it. Empty value skips the whole subtree (visible text + `aria-label`); `user-content="aria-label"` skips only that element's own `aria-label` while children stay checked.
 - **`language-check-ignore`**: boolean attr on intentional multilingual chrome (language name lists, EULA in a chosen locale). Same locale-scan skip as `user-content`; do not use `user-content` for that.
 - **`aria-ignore`**: value **must** be a GitHub issue URL. Policy: [test AGENTS](../../scripts/test/AGENTS.md) Operator tools.
-- **Incomplete UI a11y**: use `aria-hidden` / `inert` / `hidden` (not bare `opacity: 0`). Fix the product — do not soften page `watch`.
+- **Incomplete UI a11y**: use `aria-hidden` / `inert` / `hidden` (not bare `opacity: 0`). Fix the product — do not soften page `watch`. Floating `position: fixed` overlays with region-role (`role="toolbar"` etc.) appended to `document.body` trip the axe `region` rule (`[test:a11y] … not contained by landmarks`); wrap them in a `<nav>` landmark (see `markdownRichInput.mjs` `getToolbar`).
 - **`credentialManager.mjs`** / **`host/urlDataTransfer.mjs`**: credential encryption/transfer; Catbox via `host/catbox.mjs`.
 
 ## P2P (Browser)

@@ -223,6 +223,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 			const chip = document.createElement('span')
 			chip.className = 'profile-tag'
 			chip.textContent = `#${String(tag).replace(/^#+/, '')}`
+			chip.setAttribute('user-content', '')
 			return chip
 		}))
 		tagsHost.hidden = !tagsHost.childElementCount

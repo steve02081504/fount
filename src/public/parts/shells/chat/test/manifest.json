@@ -773,7 +773,7 @@
 				},
 				{
 					"name": "markdownRichInput",
-					"expected": "40s",
+					"expected": "2m1s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/markdownRichInput.spec.mjs",
 						"src/public/pages/scripts/components/markdownRichInput.mjs",
@@ -909,7 +909,7 @@
 				},
 				{
 					"name": "profile",
-					"expected": "37s",
+					"expected": "2m5s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/profile.spec.mjs",
 						"src/public/parts/shells/chat/public/profile/**",

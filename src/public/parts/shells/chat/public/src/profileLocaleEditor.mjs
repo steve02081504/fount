@@ -192,6 +192,7 @@ export function renderTagsEditor(host, tags, onChange) {
 		chip.className = 'profile-edit-tag-chip'
 		const label = document.createElement('span')
 		label.textContent = `#${tag}`
+		label.setAttribute('user-content', '')
 		const remove = document.createElement('button')
 		remove.type = 'button'
 		remove.className = 'profile-edit-tag-remove'
@@ -203,6 +204,25 @@ export function renderTagsEditor(host, tags, onChange) {
 		chip.append(label, remove)
 		host.append(chip)
 	}
+}
+
+/**
+ * 从 URL 提取简洁网站名（如 github.com → github），供链接编辑时自动填入名称。
+ * @param {string} value 原始 URL
+ * @returns {string} 网站名；解析失败返回空串
+ */
+function siteNameFromUrl(value) {
+	let url
+	try {
+		url = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(value) ? value : `https://${value}`)
+	}
+	catch {
+		return ''
+	}
+	const parts = url.hostname.toLowerCase().split('.').filter(Boolean)
+	if (parts[0] === 'www') parts.shift()
+	if (!parts.length) return ''
+	return parts.length > 1 ? parts[parts.length - 2] : parts[0]
 }
 
 /**
@@ -249,7 +269,12 @@ export function renderLinksEditor(host, links, onChange) {
 			onChange(readLinksEditor(host, { keepEmpty: true }))
 		}
 		nameInput.addEventListener('input', commit)
-		urlInput.addEventListener('input', commit)
+		urlInput.addEventListener('input', () => {
+			const site = siteNameFromUrl(urlInput.value)
+			if (site && !nameInput.value.trim().toLowerCase().includes(site))
+				nameInput.value = site
+			commit()
+		})
 		remove.addEventListener('click', () => {
 			const next = readLinksEditor(host, { keepEmpty: true }).filter((_, i) => i !== index)
 			onChange(next, { rebuild: true })

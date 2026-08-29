@@ -2180,7 +2180,7 @@
 				"sfwMode": "सुरक्षित सामग्री",
 				"livePreview": "लाइव पूर्वावलोकन",
 				"languageVersion": "भाषा संस्करण",
-				"descriptionHint": null,
+				"descriptionHint": "Markdown सिंटैक्स समर्थित है; बदलाव बाईं ओर के पूर्वावलोकन में तुरंत दिखते हैं।",
 				"localeHint": "कोड बदलने या संपादित करने के लिए लेबल पर क्लिक करें; इसे नई भाषा में कॉपी करने के लिए अंत में इनपुट बॉक्स में Enter दबाएँ।",
 				"themeColor": {
 					"clear": "थीम का डिफ़ॉल्ट रंग वापस करें",
@@ -2212,7 +2212,7 @@
 					"aria-label": "अवतार अपलोड करें"
 				},
 				"tag": {
-					"placeholder": "टैग डालने के बाद जोड़ें"
+					"placeholder": "टैग टाइप करें और Enter दबाकर जोड़ें; # से एक साथ कई टैग जोड़ें"
 				},
 				"handle": {
 					"placeholder": "उदाहरण के लिए स्टीव (2-32 लोअरकेस अल्फ़ान्यूमेरिक वर्ण।_-)"
@@ -6123,7 +6123,37 @@
 				"aria-label": "संपादक मेनू"
 			},
 			"dockedToolbar": {
-				"aria-label": null
+				"aria-label": "स्वरूपण टूलबार"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "शीर्षक 1"
+				},
+				"aria-label": "शीर्षक 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "शीर्षक 2"
+				},
+				"aria-label": "शीर्षक 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "शीर्षक 3"
+				},
+				"aria-label": "शीर्षक 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "बुलेट सूची"
+				},
+				"aria-label": "बुलेट सूची"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "क्रमांकित सूची"
+				},
+				"aria-label": "क्रमांकित सूची"
 			},
 			"bold": {
 				"dataset": {

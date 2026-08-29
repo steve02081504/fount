@@ -2180,7 +2180,7 @@
 				"sfwMode": "Contenu sûr",
 				"livePreview": "Aperçu en direct",
 				"languageVersion": "Version linguistique",
-				"descriptionHint": null,
+				"descriptionHint": "Prend en charge la syntaxe Markdown ; les modifications apparaissent en direct dans l’aperçu de gauche.",
 				"localeHint": "Cliquez sur l'étiquette pour changer ou modifier le code ; appuyez sur Entrée dans la zone de saisie à la fin pour le copier dans une nouvelle langue.",
 				"themeColor": {
 					"clear": "Rétablir la couleur par défaut du thème",
@@ -2212,7 +2212,7 @@
 					"aria-label": "Téléverser un avatar"
 				},
 				"tag": {
-					"placeholder": "Ajouter après avoir saisi la balise"
+					"placeholder": "Saisissez une balise puis appuyez sur Entrée pour l'ajouter ; utilisez # pour en ajouter plusieurs d'un coup"
 				},
 				"handle": {
 					"placeholder": "Par exemple Steve (2 à 32 caractères alphanumériques minuscules._-)"
@@ -6129,7 +6129,37 @@
 				"aria-label": "Menu de l'éditeur"
 			},
 			"dockedToolbar": {
-				"aria-label": null
+				"aria-label": "Barre d'outils de mise en forme"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "Titre 1"
+				},
+				"aria-label": "Titre 1"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "Titre 2"
+				},
+				"aria-label": "Titre 2"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "Titre 3"
+				},
+				"aria-label": "Titre 3"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "Liste à puces"
+				},
+				"aria-label": "Liste à puces"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "Liste numérotée"
+				},
+				"aria-label": "Liste numérotée"
 			},
 			"bold": {
 				"dataset": {
