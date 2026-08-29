@@ -14,7 +14,7 @@ test.describe('Markdown rich input', () => {
 			const sel = globalThis.getSelection()
 			if (!sel || sel.rangeCount === 0) return null
 			return {
-				atStart: sel.anchorNode === node && sel.anchorOffset === 0,
+				atStart: sel.anchorNode === node.firstChild && sel.anchorOffset === 0,
 				offset: sel.anchorOffset,
 			}
 		})

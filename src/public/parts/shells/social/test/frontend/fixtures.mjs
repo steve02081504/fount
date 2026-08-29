@@ -200,7 +200,11 @@ export async function publishPostViaComposer(page, text, api = {}) {
 		page.locator('#postButton').click(),
 	])
 	const postJson = await postResponse.json()
-	await expect(page.locator('#postText')).toHaveValue('', { timeout: ms('30s') })
+	// #postText 是富文本 contenteditable div（非 textarea），经组件 value getter 读取原始文本
+	await expect.poll(
+		() => page.evaluate(() => document.getElementById('postText')?.value ?? ''),
+		{ timeout: ms('30s') },
+	).toBe('')
 	return postJson
 }
 
