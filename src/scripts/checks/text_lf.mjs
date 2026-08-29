@@ -5,7 +5,7 @@
  * 开头不得为 LF（开头检查先跳过 UTF-8 BOM）。
  * 判定文本：整文件可 fatal UTF-8 解码且不含 NUL；空文件豁免。
  */
-import { readFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { readTestTriggeredFiles } from '../test/core/protocol.mjs'
@@ -147,6 +147,67 @@ export async function resolveTextLfScanPaths(repoRoot, options = {}) {
 	if (triggered.length && scoped.length)
 		return [...new Set(scoped)].sort()
 	return listRepoFiles(repoRoot, null, { under: options.under })
+}
+
+/**
+ * 修复单文件为合规换行（调用方已确认是 UTF-8 文本）。
+ * 归一化 CRLF/孤立 CR 为 LF、去掉开头（跳过 BOM 后）LF、
+ * 结尾恰一个 LF（单行 .svg 则去掉结尾 LF；全空则保持空）。
+ * @param {string} relativePath 相对仓库根
+ * @param {Uint8Array} bytes 文件原始字节
+ * @returns {Uint8Array | null} 修复后的字节；原字节已合规则 null
+ */
+export function fixFileTextLf(relativePath, bytes) {
+	if (!bytes.length) return null
+	const bom = bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf
+	/** @type {number[]} */
+	const body = []
+	for (let index = bom ? 3 : 0; index < bytes.length; index++) {
+		const byte = bytes[index]
+		if (byte === 13) {
+			body.push(10)
+			if (bytes[index + 1] === 10) index++
+		}
+		else body.push(byte)
+	}
+	while (body[0] === 10) body.shift()
+	if (body.length) {
+		while (body[body.length - 1] === 10) body.pop()
+		const lfFree = !body.includes(10)
+		if (!(lfFree && relativePath.toLowerCase().endsWith('.svg'))) body.push(10)
+	}
+	const fixed = new Uint8Array((bom ? 3 : 0) + body.length)
+	if (bom) fixed.set([0xef, 0xbb, 0xbf])
+	fixed.set(body, bom ? 3 : 0)
+	if (fixed.length === bytes.length && fixed.every((byte, index) => byte === bytes[index])) return null
+	return fixed
+}
+
+/**
+ * 扫描并自动修复仓库中 UTF-8 文本文件的换行问题。
+ * @param {string} repoRoot 仓库根
+ * @param {{ under?: string, triggeredFiles?: string[] }} [options] 选项
+ * @returns {Promise<string[]>} 被改写的相对路径（正斜杠、已排序）
+ */
+export async function fixTextLf(repoRoot, options = {}) {
+	/** @type {string[]} */
+	const fixed = []
+	for (const relativePath of await resolveTextLfScanPaths(repoRoot, options)) {
+		let bytes
+		try {
+			bytes = new Uint8Array(await readFile(join(repoRoot, relativePath)))
+		}
+		catch (error) {
+			if (error?.code === 'ENOENT') continue
+			throw error
+		}
+		if (!isUtf8Text(bytes)) continue
+		const fixedBytes = fixFileTextLf(relativePath, bytes)
+		if (!fixedBytes) continue
+		await writeFile(join(repoRoot, relativePath), fixedBytes)
+		fixed.push(relativePath)
+	}
+	return fixed.sort()
 }
 
 /**
