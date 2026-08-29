@@ -7,17 +7,20 @@
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 /**
- * 稳定比较两条 DAG 边（时间戳升序，其次 eventId 字典序）。
+ * 稳定比较两条 DAG 边（HLC wall/logical 升序，回退 wall-clock timestamp，其次 eventId 字典序）。
  * @param {object} left 消息行
  * @param {object} right 消息行
  * @returns {number} sort 比较值
  */
 function compareSiblingOrder(left, right) {
-	const leftTime = Number(left?.timestamp)
-	const rightTime = Number(right?.timestamp)
+	const leftTime = Number(left?.hlc?.wall) || Number(left?.timestamp)
+	const rightTime = Number(right?.hlc?.wall) || Number(right?.timestamp)
 	const normalizedLeft = Number.isFinite(leftTime) ? leftTime : 0
 	const normalizedRight = Number.isFinite(rightTime) ? rightTime : 0
 	if (normalizedLeft !== normalizedRight) return normalizedLeft - normalizedRight
+	const leftLogical = Number(left?.hlc?.logical) || 0
+	const rightLogical = Number(right?.hlc?.logical) || 0
+	if (leftLogical !== rightLogical) return leftLogical - rightLogical
 	return String(left?.eventId ?? '').localeCompare(String(right?.eventId ?? ''), 'und')
 }
 

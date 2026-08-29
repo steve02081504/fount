@@ -55,18 +55,27 @@ export function linesIncludingOverlaysForTargets(lines, eventIds) {
 
 /**
  * 将单条 message_edit 的 content 应用到已合并的展示行。
+ * 生成终稿（generationFinalize）时用编辑行的 timestamp/hlc 更新行排序键，
+ * 否则 AI 回复会一直按「开始生成时刻」排位（排在生成期间到达的其它消息之前）。
  * @param {object} row 展示用 message 行
  * @param {{ newContent?: object }} editContent message_edit.content
+ * @param {{ timestamp?: number, hlc?: object }} [sortMeta] 编辑行自身的排序元数据
  * @returns {object} 更新后的行
  */
-export function applyMessageEditToRow(row, editContent) {
+export function applyMessageEditToRow(row, editContent, sortMeta = {}) {
 	const patchContent = editContent?.newContent
 	if (!row || !patchContent) return row
 	const content = mergeMessageContent(row.content, patchContent)
 	if ('is_generating' in patchContent)
 		content.is_generating = !!patchContent.is_generating
 	const isGenerationFinalize = !!editContent?.extension?.chat?.generationFinalize
-	return { ...row, content, wasEdited: !isGenerationFinalize }
+	const sortPatch = isGenerationFinalize
+		? {
+			...Number.isFinite(Number(sortMeta.timestamp)) ? { timestamp: Number(sortMeta.timestamp) } : {},
+			...sortMeta.hlc ? { hlc: sortMeta.hlc } : {},
+		}
+		: {}
+	return { ...row, ...sortPatch, content, wasEdited: !isGenerationFinalize }
 }
 
 /**
@@ -118,7 +127,7 @@ export function mergeChannelMessagesForDisplay(messages) {
 	for (const row of messages) {
 		const targetId = overlayTargetId(row)
 		if (!targetId) continue
-		if (row.type === 'message_edit') edits.set(targetId, row.content)
+		if (row.type === 'message_edit') edits.set(targetId, row)
 		if (row.type === 'message_delete') deleted.add(targetId)
 		if (row.type === 'message_feedback') feedbackByTarget.set(targetId, row)
 	}
@@ -139,14 +148,10 @@ export function mergeChannelMessagesForDisplay(messages) {
 		if (targetId && deleted.has(targetId)) continue
 		const feedback = targetId ? feedbackByTarget.get(targetId) : null
 		if (targetId && edits.has(targetId)) {
-			const patch = edits.get(targetId)
-			const patchContent = patch?.newContent
+			const editRow = edits.get(targetId)
+			const patchContent = editRow?.content?.newContent
 			if (patchContent) {
-				const content = mergeMessageContent(row.content, patchContent)
-				if ('is_generating' in patchContent)
-					content.is_generating = !!patchContent.is_generating
-				const isGenerationFinalize = !!patch?.extension?.chat?.generationFinalize
-				merged.push(withFeedback(attachDecryptView({ ...row, content, wasEdited: !isGenerationFinalize }), feedback))
+				merged.push(withFeedback(attachDecryptView(applyMessageEditToRow(row, editRow.content, editRow)), feedback))
 				continue
 			}
 		}

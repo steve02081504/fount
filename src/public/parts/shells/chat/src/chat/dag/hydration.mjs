@@ -12,8 +12,6 @@
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { Buffer } from 'node:buffer'
-import { existsSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
 
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
@@ -30,11 +28,11 @@ import { memberEntityHash } from '../../entity/member.mjs'
 import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import { isChannelKeyEncryptedContent } from '../channel_keys/content.mjs'
+import { getPlaintextCache } from '../files/blobStore.mjs'
 import { fileMetaFromState, getDecryptedFile } from '../files/groupFiles.mjs'
 import { deriveMessageAttribution } from '../lib/attribution.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { gcLogContextSidecars } from '../lib/contextSidecar.mjs'
-import { shellChatRoot } from '../lib/paths.mjs'
 import { chatLogEntry_t } from '../session/models.mjs'
 import { buildTimeSliceFromSessionSnapshot } from '../session/runtime.mjs'
 
@@ -154,18 +152,11 @@ export async function reconcileContextSidecarsWithChatLog(username, groupId, cha
 /**
  * @param {string} username replica
  * @param {string} contentHashHex 明文哈希
- * @returns {Buffer | null} 本地明文缓存
+ * @returns {Promise<Buffer | null>} 本地明文缓存
  */
 function tryReadPlaintextCache(username, contentHashHex) {
-	if (!isHex64(contentHashHex)) return null
-	const path = join(shellChatRoot(username), 'files', contentHashHex)
-	if (!existsSync(path)) return null
-	try {
-		return readFileSync(path)
-	}
-	catch {
-		return null
-	}
+	if (!isHex64(contentHashHex)) return Promise.resolve(null)
+	return getPlaintextCache(username, contentHashHex)
 }
 
 /**
@@ -192,11 +183,11 @@ export function hydrateWireFiles(username, groupId, state, wireFiles) {
 		/**
 		 * @returns {Promise<Buffer>} 解密后的附件字节
 		 */
-		const ensureBuffer = () => {
-			if (bufferCache) return Promise.resolve(bufferCache)
+		const ensureBuffer = async () => {
+			if (bufferCache) return bufferCache
 			if (loadPromise) return loadPromise
 			const meta = fileMetaFromState(state, fileId)
-			const cached = meta?.contentHash ? tryReadPlaintextCache(username, meta.contentHash) : null
+			const cached = meta?.contentHash ? await tryReadPlaintextCache(username, meta.contentHash) : null
 			if (cached) {
 				bufferCache = cached
 				return Promise.resolve(bufferCache)

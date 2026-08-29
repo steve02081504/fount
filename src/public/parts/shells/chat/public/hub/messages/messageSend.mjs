@@ -213,6 +213,8 @@ export async function sendMessagePayload(contentObj, files = [], { clearComposer
 		throw new Error('no channel selected')
 	await waitForGroupWebSocketOpen(sendGroupId, sendChannelId)
 	const tempId = `pending:${crypto.randomUUID()}`
+	// 发送幂等：clientMessageId 随 payload 落盘，重试/离线队列重发同 id 时服务端返回既有事件
+	ensureChatExtension(contentObj).clientMessageId = tempId.slice('pending:'.length)
 	await insertPendingRow(contentObj, tempId, files)
 	try {
 		const event = await sendGroupMessage(sendGroupId, sendChannelId, contentObj, files)

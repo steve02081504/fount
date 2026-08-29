@@ -25,6 +25,7 @@ import {
 	scheduleDebouncedChannelRefresh,
 } from './channelRefreshScheduler.mjs'
 import { loadNonTextChannel } from './channelTypeRouter.mjs'
+import { classifyIncomingBatch } from './incomingBatch.mjs'
 import { bindReactions, messageRenderOpts, refreshReactionPerms, syncChannelActionsContext } from './messageContext.mjs'
 import {
 	getMessagesContainer,
@@ -133,8 +134,8 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 	}
 
 	const pendingId = store.messages.composerPendingId
-	const oldIds = new Set(store.messages.channelMessagesSource.map(row => row.eventId || ''))
-	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(store.messages.channelMessagesSource, batch)
+	const oldSource = store.messages.channelMessagesSource
+	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(oldSource, batch)
 	const pendingReplaced = !!pendingId
 		&& !store.messages.channelMessagesSource.some(m => String(m.eventId) === pendingId)
 	refreshChannelView()
@@ -159,19 +160,7 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 		return
 	}
 
-	const replaceRows = []
-	const appendRows = []
-	for (const message of batch) {
-		const eventId = String(message?.eventId || '')
-		if (!eventId) continue
-		const viewIndex = store.messages.channelMessages.findIndex(row => String(row.eventId) === eventId)
-		if (viewIndex < 0) continue
-		const row = store.messages.channelMessages[viewIndex]
-		if (oldIds.has(eventId))
-			replaceRows.push({ index: viewIndex, row })
-		else
-			appendRows.push(row)
-	}
+	const { replaceRows, appendRows } = classifyIncomingBatch(batch, oldSource, store.messages.channelMessages)
 
 	for (const { index, row } of replaceRows)
 		await store.messages.channelMessagePipeline.replaceItem(index, row)
@@ -414,18 +403,20 @@ export function scheduleChannelIncrementalRefresh({ immediate = false } = {}) {
 /**
  * @param {string} targetId 目标消息 eventId
  * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS 带来的 message_edit.content
+ * @param {object} [sortMeta] 编辑行自身排序元数据（timestamp/hlc，供生成终稿更新排序键）
  * @returns {Promise<void>}
  */
-export function applyChannelMessageEdit(targetId, editContent = null) {
-	return enqueueChannelMutation(() => doApplyChannelMessageEdit(targetId, editContent))
+export function applyChannelMessageEdit(targetId, editContent = null, sortMeta = null) {
+	return enqueueChannelMutation(() => doApplyChannelMessageEdit(targetId, editContent, sortMeta))
 }
 
 /**
  * @param {string} targetId 目标消息 eventId
  * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS 带来的 message_edit.content
+ * @param {object} [sortMeta] 编辑行自身排序元数据（timestamp/hlc）
  * @returns {Promise<void>}
  */
-async function doApplyChannelMessageEdit(targetId, editContent = null) {
+async function doApplyChannelMessageEdit(targetId, editContent = null, sortMeta = null) {
 	const id = targetId.trim()
 	if (!id || !store.context.currentGroupId || !store.context.currentChannelId) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
@@ -435,7 +426,7 @@ async function doApplyChannelMessageEdit(targetId, editContent = null) {
 			message => eventIdsEqual(message?.eventId, id),
 		)
 		if (sourceIdx >= 0) {
-			await replaceChannelMessageRow(id, applyMessageEditToRow(store.messages.channelMessagesSource[sourceIdx], editContent))
+			await replaceChannelMessageRow(id, applyMessageEditToRow(store.messages.channelMessagesSource[sourceIdx], editContent, sortMeta))
 			return
 		}
 	}
