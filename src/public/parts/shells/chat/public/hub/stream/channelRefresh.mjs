@@ -55,13 +55,14 @@ export function dispatchChannelOverlayRefresh(eventChannelId, mainChannelId) {
 
 /**
  * @param {string} targetId 目标消息 eventId
- * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS message_edit.content
+ * @param {{ newContent?: object, fileCount?: number } | null} editContent WS message_edit.content
+ * @param {object} [sortMeta] 编辑行自身排序元数据（timestamp/hlc，供生成终稿更新排序键）
  * @returns {Promise<void>}
  */
-export async function dispatchChannelMessageEdit(targetId, editContent = null) {
+export async function dispatchChannelMessageEdit(targetId, editContent = null, sortMeta = null) {
 	if (store.context.currentGroupId && store.context.currentChannelId) {
 		const { applyChannelMessageEdit } = await import('../messages/messages.mjs')
-		await applyChannelMessageEdit(targetId, editContent)
+		await applyChannelMessageEdit(targetId, editContent, sortMeta)
 	}
 	await refreshActiveThreadIfOpen()
 }

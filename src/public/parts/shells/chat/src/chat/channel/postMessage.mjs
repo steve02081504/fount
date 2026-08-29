@@ -229,6 +229,40 @@ export async function attachFilesToContent(username, groupId, content, files, ma
 	return { content, fileIds }
 }
 
+/** 幂等查重的最近消息扫描上限（条）。 */
+const CLIENT_MESSAGE_ID_DEDUP_SCAN_LIMIT = 500
+
+/**
+ * 按 `extension.chat.clientMessageId` 查最近已落盘的本机消息（发送幂等）。
+ * 客户端重试 / 离线队列重发同一 payload 时复用同一 clientMessageId，命中即返回既有事件，避免重复落盘。
+ * @param {string} username 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} clientMessageId 客户端消息唯一 ID
+ * @returns {Promise<object | null>} 既有 message 行（含 `id`），无则为 null
+ */
+export async function findHumanMessageByClientId(username, groupId, channelId, clientMessageId) {
+	const want = String(clientMessageId || '').trim()
+	if (!want) return null
+	try {
+		const { readJsonl } = await import('npm:@steve02081504/fount-p2p/dag/storage')
+		const { stripDagEventLocalExtensions } = await import('npm:@steve02081504/fount-p2p/dag/strip_extensions')
+		const { messagesPath } = await import('../lib/paths.mjs')
+		const { resolveLocalEventSigner } = await import('../dag/localSigner.mjs')
+		const { sender } = await resolveLocalEventSigner(username, groupId)
+		const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: stripDagEventLocalExtensions })
+		for (let index = lines.length - 1; index >= Math.max(0, lines.length - CLIENT_MESSAGE_ID_DEDUP_SCAN_LIMIT); index--) {
+			const line = lines[index]
+			if (line.type !== 'message') continue
+			if (line.sender !== sender) continue
+			if (String(line.content?.extension?.chat?.clientMessageId ?? '').trim() === want)
+				return { ...line, id: line.eventId }
+		}
+	}
+	catch { /* 文件缺失或不可读时跳过幂等 */ }
+	return null
+}
+
 /**
  * 向频道发送消息：可选 BeforeUserSend → 附件 → messageCommit。
  * @param {string} username 所有者
@@ -267,6 +301,18 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 	let files = Array.isArray(payload.files) ? payload.files : undefined
 	if (origin === 'human')
 		({ content, files } = await applyBeforeUserSend(username, groupId, channelId, content, files))
+
+	// 发送幂等：客户端重试/离线队列重发同一 clientMessageId 时返回既有事件，避免重复落盘
+	if (origin === 'human') {
+		const clientMessageId = content?.extension?.chat?.clientMessageId
+		if (clientMessageId) {
+			const existing = await findHumanMessageByClientId(username, groupId, channelId, clientMessageId)
+			if (existing) {
+				const fileIds = (existing.content?.files || []).map(file => String(file.fileId || '')).filter(Boolean)
+				return { event: existing, fileIds }
+			}
+		}
+	}
 
 	const { content: finalized, fileIds } = await attachFilesToContent(username, groupId, content, files, maxBytes)
 	content = finalized
