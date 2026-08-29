@@ -24,7 +24,7 @@ export async function addPackToCollection(packId) {
  */
 export async function saveStickerFromMessage(content) {
 	if (content?.type !== 'sticker') throw new Error('no sticker in message')
-	const parsed = parseEmojiToken(content.emojiRef)
-	if (!parsed?.packId) throw new Error('sticker requires emojiRef')
+	const parsed = parseEmojiToken(content.emoji)
+	if (!parsed?.packId) throw new Error('sticker requires emoji')
 	return addPackToCollection(parsed.packId)
 }

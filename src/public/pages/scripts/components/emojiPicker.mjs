@@ -8,7 +8,7 @@ import {
 	trimUsageLog,
 	USAGE_WINDOW,
 } from '../features/emoji/order.mjs'
-import { resolvePackEmojiUrl } from '../features/emoji/packIndex.mjs'
+import { resolvePackEmojiUrl, seedEmojiLabelIndex } from '../features/emoji/packIndex.mjs'
 import { aggregateEmojiPacks } from '../features/emoji/providers.mjs'
 import {
 	loadUnicodeEmojiByGroup,
@@ -132,6 +132,7 @@ async function buildSections(context = {}) {
 		return { byGroup: {}, order: [] }
 	})
 	const { packs, usage, collection } = await packsPromise
+	seedEmojiLabelIndex(packs)
 	const usagePayload = usage ? await usage.load() : { log: [], lastUsedAtByPack: {} }
 	const log = trimUsageLog(usagePayload.log || [], USAGE_WINDOW)
 	const collectionIds = new Set((await collection?.list())?.packIds || [])
@@ -166,7 +167,7 @@ async function buildSections(context = {}) {
 		const packById = new Map(packs.map(p => [p.packId, p]))
 		/** @type {object[]} */
 		const items = []
-		for (const { parsed } of recent) {
+		for (const { usageId, parsed } of recent) {
 			if (parsed.kind === 'unicode') {
 				items.push({ kind: 'unicode', unicode: parsed.unicode, name: parsed.unicode })
 				continue
@@ -182,7 +183,7 @@ async function buildSections(context = {}) {
 					kind: 'pack',
 					packId: parsed.packId,
 					emojiId: parsed.emojiId,
-					emojiRef: `:[emoji:${parsed.packId}/${parsed.emojiId}]:`,
+					emojiRef: usageId,
 					name: parsed.emojiId,
 					previewUrl,
 				})

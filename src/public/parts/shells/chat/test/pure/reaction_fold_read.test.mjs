@@ -99,3 +99,24 @@ Deno.test('aggregate handles multi-codepoint emoji containing colons', () => {
 	const reactions = aggregateReactionsForMessages(state, CHANNEL, [messageEventId])
 	assertEquals(reactions[messageEventId]?.[':custom:emoji:']?.voters, [VOTER_A])
 })
+
+Deno.test('aggregate round-trips pack emojiRef tokens as reaction keys', () => {
+	const packToken = ':[emoji:pack_x/happy_1]:'
+	const state = freshState()
+	messageReducers.reaction_add(state, {
+		type: 'reaction_add',
+		sender: VOTER_A,
+		channelId: CHANNEL,
+		content: { targetId: messageEventId, emoji: packToken },
+	})
+	const reactions = aggregateReactionsForMessages(state, CHANNEL, [messageEventId])
+	assertEquals(reactions[messageEventId]?.[packToken]?.voters, [VOTER_A])
+
+	messageReducers.reaction_remove(state, {
+		type: 'reaction_remove',
+		sender: VOTER_A,
+		channelId: CHANNEL,
+		content: { targetId: messageEventId, emoji: packToken, targetPubKeyHash: VOTER_A },
+	})
+	assertEquals(aggregateReactionsForMessages(state, CHANNEL, [messageEventId]), {})
+})

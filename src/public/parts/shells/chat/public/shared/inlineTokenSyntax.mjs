@@ -31,6 +31,19 @@ export function parseEmojiToken(ref) {
 }
 
 /**
+ * 解析任意 emojiRef（unicode 字形或 `:[emoji:packId/emojiId]:`）。
+ * @param {string} emojiRef 表情引用
+ * @returns {{ kind: 'pack', packId: string, emojiId: string } | { kind: 'unicode', unicode: string } | null} 解析结果
+ */
+export function parseEmojiRef(emojiRef) {
+	const ref = String(emojiRef || '').trim()
+	if (!ref) return null
+	const pack = parseEmojiToken(ref)
+	if (pack) return { kind: 'pack', packId: pack.packId, emojiId: pack.emojiId }
+	return { kind: 'unicode', unicode: ref }
+}
+
+/**
  * 正文中首个 emoji token。
  * @param {string} text 正文
  * @returns {{ packId: string, emojiId: string } | null} 首个匹配
