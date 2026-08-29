@@ -1,3 +1,5 @@
+import { Buffer } from 'node:buffer'
+
 import { ms } from 'fount/scripts/ms.mjs'
 import {
 	withApiRequest,
@@ -49,6 +51,40 @@ async function sendApiMessage(baseUrl, apiKey, groupId, channelId, text, locale)
 		)
 		if (!response.ok()) throw new Error(`sendApiMessage failed: ${response.status()}`)
 	})
+}
+
+/**
+ * 通过 API 建群 emoji pack、上传一张 1×1 PNG 并加入用户收藏。
+ * @param {string} baseUrl 测试根 URL
+ * @param {string} apiKey API 密钥
+ * @param {string} groupId 群 ID
+ * @returns {Promise<string>} packId
+ */
+async function seedPackEmoji(baseUrl, apiKey, groupId) {
+	const key = encodeURIComponent(apiKey)
+	const packId = `e2e_pack_${Date.now().toString(36)}`
+	const png = Buffer.from(
+		'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+		'base64',
+	)
+	await withApiRequest(async request => {
+		const created = await request.post(
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/emoji-packs?fount-apikey=${key}`,
+			{ data: { packId } },
+		)
+		if (!created.ok()) throw new Error(`create pack failed: ${created.status()}`)
+		const uploaded = await request.post(
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/emoji-packs/${encodeURIComponent(packId)}/emojis?fount-apikey=${key}`,
+			{ multipart: { emoji: { name: 'react.png', mimeType: 'image/png', buffer: png } } },
+		)
+		if (!uploaded.ok()) throw new Error(`upload emoji failed: ${uploaded.status()}`)
+		const favorited = await request.post(
+			`${baseUrl}/api/parts/shells:chat/emoji-usage/collection/packs?fount-apikey=${key}`,
+			{ data: { packId } },
+		)
+		if (!favorited.ok()) throw new Error(`favorite pack failed: ${favorited.status()}`)
+	})
+	return packId
 }
 
 /**
@@ -200,6 +236,23 @@ test.describe('Chat message actions', () => {
 		await pickEmojiFromPicker(page, '👍')
 		await expect(rows.locator('.reactions [data-action="reaction"]').first()).toBeVisible({ timeout: 60_000 })
 		await expect(rows).toHaveCount(1, { timeout: 60_000 })
+	})
+
+	test('adds pack emoji reaction to a message', async ({ page, groupChannel, baseUrl, apiKey }) => {
+		const { groupId, channelId } = groupChannel
+		const packId = await seedPackEmoji(baseUrl, apiKey, groupId)
+		const text = `react-pack-target ${Date.now()}`
+		await sendMessageViaComposer(page, groupId, channelId, text)
+		await expectMessageInChat(page, text)
+		const rows = page.locator('#messages .message').filter({ hasText: text })
+		await rows.locator('.reactions [data-action="addReaction"]').first().click()
+		const picker = page.locator('#fount-shared-emoji-picker')
+		await expect(picker).toBeVisible({ timeout: 60_000 })
+		await picker.locator('[data-group-emoji-ref]').first().click()
+		await expect(picker).toHaveCount(0, { timeout: 10_000 })
+		const chip = rows.locator('.reactions [data-action="reaction"]').first()
+		await expect(chip.locator('.reaction-emoji-img')).toBeVisible({ timeout: 60_000 })
+		await expect(chip).toHaveAttribute('data-emoji', new RegExp(`:\\[emoji:${packId}/[^\\]/]+\\]:`), { timeout: 60_000 })
 	})
 
 	test('opens thread drawer and replies', async ({ page, groupChannel }) => {

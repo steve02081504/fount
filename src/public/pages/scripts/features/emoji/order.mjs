@@ -9,23 +9,22 @@
  * 5. Unicode 原生分组（由调用方追加）
  */
 
+import { formatEmojiRef, parseEmojiRef } from './emojiRef.mjs'
+
 /**
  * 使用统计窗口大小（条数）。
  */
 export const USAGE_WINDOW = 700
 
-/** pack 用量 id：`packId/emojiId`（与 inline emoji token 内段同形，无 `:[emoji:…]:` 包裹） */
-const PACK_USAGE_ID_RE = /^([\w.-]+)\/([^\n\r/]+)$/u
-
 /**
  * @param {string} packId 包 id
  * @param {string} emojiId 表情 id
- * @returns {string} 日志 id
+ * @returns {string} 日志 id（emojiRef token）
  */
 export function packEmojiUsageId(packId, emojiId) {
 	const pid = packId.trim()
 	const eid = emojiId.trim()
-	return pid && eid ? `${pid}/${eid}` : ''
+	return pid && eid ? formatEmojiRef(pid, eid) : ''
 }
 
 /**
@@ -63,15 +62,11 @@ export function countUsageInWindow(log) {
 }
 
 /**
- * @param {string} usageId `packId/emojiId` 或 unicode 字形
+ * @param {string} usageId emojiRef（unicode 字形或 `:[emoji:packId/emojiId]:`）
  * @returns {{ kind: 'pack', packId: string, emojiId: string } | { kind: 'unicode', unicode: string } | null} 解析结果
  */
 export function parseUsageId(usageId) {
-	const id = usageId.trim()
-	if (!id) return null
-	const pack = PACK_USAGE_ID_RE.exec(id)
-	if (pack) return { kind: 'pack', packId: pack[1], emojiId: pack[2] }
-	return { kind: 'unicode', unicode: id }
+	return parseEmojiRef(usageId)
 }
 
 /**

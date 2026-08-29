@@ -5,7 +5,7 @@
  * { log: [{ id, at }], lastUsedAtByPack: {}, collection: { packIds: [], emojiIds: [] },
  *   linkedDefaults: { 'group:…'|`entity:…`: packId } }
  *
- * log.id：pack 为 `packId/emojiId`；unicode 为字形本身。
+ * log.id：pack 为 `:[emoji:packId/emojiId]:`（emojiRef）；unicode 为字形本身。
  */
 import { assignShellData, loadShellData } from '../../../../../server/setting_loader.mjs'
 import {
@@ -141,7 +141,7 @@ export function recordEmojiUsage(username, item) {
 export function recordEmojiUsageFromMessageContent(username, content) {
 	if (!content || typeof content !== 'object') return
 	if (channelMessageKind(content) === 'sticker') {
-		const parsed = parseEmojiToken(content.emojiRef || '')
+		const parsed = parseEmojiToken(content.emoji || '')
 		if (parsed)
 			recordEmojiUsage(username, { kind: 'pack', packId: parsed.packId, emojiId: parsed.emojiId })
 		return

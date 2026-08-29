@@ -106,13 +106,13 @@ function normalizeTextContent(input) {
  * @returns {Record<string, unknown>} sticker wire
  */
 function normalizeStickerContent(input) {
-	const emojiRef = input.emojiRef || ''
+	const emoji = input.emoji || ''
 	const stickerBase64 = input.stickerBase64 || ''
-	if (!emojiRef && !stickerBase64) throw new Error('sticker requires emojiRef or stickerBase64')
-	const compactEmoji = !!parseEmojiToken(emojiRef)
+	if (!emoji && !stickerBase64) throw new Error('sticker requires emoji or stickerBase64')
+	const compactEmoji = !!parseEmojiToken(emoji)
 	return withDisplayFields(input, {
 		type: 'sticker',
-		...compactEmoji || emojiRef ? { emojiRef } : {},
+		...compactEmoji || emoji ? { emoji } : {},
 		...!compactEmoji && stickerBase64 ? { stickerBase64 } : {},
 		stickerId: input.stickerId || '',
 		stickerName: input.stickerName || '',
@@ -213,7 +213,7 @@ export function messageAgentText(content) {
 	const type = content?.type
 	if (type === 'vote') return content.question || ''
 	if (type === 'call') return content.status === 'ended' ? 'Call ended' : 'Call in progress'
-	if (type === 'sticker') return String(content.emojiRef || content.stickerName || '')
+	if (type === 'sticker') return String(content.emoji || content.stickerName || '')
 	if (type === 'group_invite') return String(content.groupName || content.groupId || '')
 	if (type && type !== 'text') return ''
 	return stripInlineImageMarkers(String(content?.content ?? ''))

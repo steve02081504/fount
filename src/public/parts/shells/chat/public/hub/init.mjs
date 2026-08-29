@@ -102,7 +102,7 @@ async function sendPickedEmojiAsSticker(item) {
 	try {
 		await sendGroupMessage(groupId, channelId, normalizeChannelMessage({
 			type: 'sticker',
-			emojiRef: item.emojiRef,
+			emoji: item.emojiRef,
 			stickerName: item.emojiId || 'emoji',
 		}))
 		const { loadMessages } = await messagesApi()

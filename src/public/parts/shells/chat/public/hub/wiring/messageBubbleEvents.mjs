@@ -28,7 +28,7 @@ export async function handleMessageBubbleClick(event) {
 		const messageId = messageRow?.getAttribute('data-message-id')
 		const channelMessage = store.messages.channelMessages.find(entry => String(entry.eventId) === messageId)
 		if (!channelMessage?.content) return true
-		if (!parseEmojiToken(channelMessage.content.emojiRef)?.packId) return true
+		if (!parseEmojiToken(channelMessage.content.emoji)?.packId) return true
 		try {
 			await saveStickerFromMessage(channelMessage.content)
 			showToastI18n('success', 'chat.hub.save.stickerOk')

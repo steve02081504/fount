@@ -25,10 +25,11 @@ Deno.test('trimUsageLog keeps last N', () => {
 	assertEquals(trimUsageLog(log, 3).map(e => e.id), ['2', '3', '4'])
 })
 
-Deno.test('parseUsageId pack vs unicode', () => {
-	assertEquals(parseUsageId('p1/a'), { kind: 'pack', packId: 'p1', emojiId: 'a' })
+Deno.test('parseUsageId pack token vs unicode', () => {
+	assertEquals(parseUsageId(':[emoji:p1/a]:'), { kind: 'pack', packId: 'p1', emojiId: 'a' })
 	assertEquals(parseUsageId('😀'), { kind: 'unicode', unicode: '😀' })
 	assertEquals(parseUsageId(''), null)
+	assertEquals(parseUsageId('p1/a'), { kind: 'unicode', unicode: 'p1/a' })
 })
 
 Deno.test('recentEmojisFromLog sorts by count', () => {

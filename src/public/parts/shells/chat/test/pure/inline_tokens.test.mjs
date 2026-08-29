@@ -7,6 +7,8 @@ import {
 	formatEmojiToken,
 	formatEntityMentionToken,
 	formatRoleMentionToken,
+	parseEmojiRef,
+	parseEmojiToken,
 } from 'fount/public/parts/shells/chat/public/shared/inlineTokenSyntax.mjs'
 import {
 	buildMentionsStructure,
@@ -74,4 +76,14 @@ Deno.test('role and everyone token helpers', () => {
 	assertEquals(hasEveryoneToken(text), true)
 	assertEquals(hasHereToken(text), true)
 	assertEquals(extractMentionRoleIds(text), ['x'])
+})
+
+Deno.test('parseEmojiRef distinguishes pack token vs unicode', () => {
+	const token = formatEmojiToken('pack_1', 'sad')
+	assertEquals(parseEmojiToken(token), { packId: 'pack_1', emojiId: 'sad' })
+	assertEquals(parseEmojiRef(token), { kind: 'pack', packId: 'pack_1', emojiId: 'sad' })
+	assertEquals(parseEmojiRef('👍'), { kind: 'unicode', unicode: '👍' })
+	assertEquals(parseEmojiRef('  '), null)
+	assertEquals(parseEmojiRef(''), null)
+	assertEquals(parseEmojiRef('p1/a'), { kind: 'unicode', unicode: 'p1/a' })
 })

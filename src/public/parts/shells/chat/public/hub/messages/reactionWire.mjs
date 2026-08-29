@@ -7,7 +7,6 @@
  */
 import { promptI18n } from '../../../../../scripts/i18n/index.mjs'
 import { mountEmojiPicker } from '/scripts/components/emojiPicker.mjs'
-import { showToastI18n } from '/scripts/features/toast.mjs'
 import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { tallyReactionVotersFromMap } from '../../src/ui/channelDisplay.mjs'
 import { createReactionHandlers } from '../../src/ui/reactionHandlers.mjs'
@@ -72,10 +71,11 @@ export function wireMessageReactions(container, channelView) {
 					voterKey => voterKey !== viewerMemberId && voterKey !== 'local',
 				)
 				if (!otherVoters.length) return
+				const emojiLabel = reactionButton.getAttribute('data-emoji-label') || emoji
 				const pick = otherVoters.length === 1
 					? otherVoters[0]
 					: promptI18n('chat.hub.reactionRemovePrompt', {
-						emoji,
+						emoji: emojiLabel,
 						candidates: otherVoters.join('\n'),
 					})
 				if (!pick || !otherVoters.includes(pick)) return
@@ -94,10 +94,7 @@ export function wireMessageReactions(container, channelView) {
 		addReactionButton.addEventListener('click', event => {
 			event.stopPropagation()
 			void mountEmojiPicker(addReactionButton, token => {
-				if (!token || token.startsWith(':[emoji:')) {
-					showToastI18n('info', 'chat.hub.reactionUnicodeOnly')
-					return
-				}
+				if (!token) return
 				void toggleReaction(eventId, token, false).then(() => reload())
 			}, { groupId, channelId })
 		})

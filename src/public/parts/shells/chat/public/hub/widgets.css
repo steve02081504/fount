@@ -1329,6 +1329,14 @@
 	line-height: 1;
 }
 
+.reaction-emoji-img {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	object-fit: contain;
+	vertical-align: middle;
+}
+
 .reaction-count {
 	font-weight: 600;
 }
