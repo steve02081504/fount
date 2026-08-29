@@ -154,7 +154,7 @@ async function paintProfilePopup(popup, entity) {
 	const { entityHash } = entity
 	const groupId = store.context.currentGroupId || undefined
 	const profile = entityHash
-		? await loadEntityProfile(entityHash, { bypassCache: true, groupId })
+		? await loadEntityProfile(entityHash, { bypassCache: true, groupId, forceRemote: true })
 		: null
 
 	if (profile)

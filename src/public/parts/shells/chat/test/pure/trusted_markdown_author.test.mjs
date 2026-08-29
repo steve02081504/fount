@@ -57,6 +57,25 @@ Deno.test('isTrustedMarkdownAuthor: declared master without trust list', async (
 	}), true)
 })
 
+Deno.test('isTrustedMarkdownAuthor: local node prefix', async () => {
+	const localAgent = `${NODE}${'f'.repeat(64)}`
+	// authorPubKeyHash 恒为 64 hex 签名者 pubKeyHash（≠ entityHash）；须经 authorEntityHash 升档
+	assertEquals(await isTrustedMarkdownAuthor('signer-pubkey-hex', {
+		selfEntityHash: SELF,
+		nodeHash: NODE,
+		authorEntityHash: localAgent,
+	}), true)
+})
+
+Deno.test('isTrustedMarkdownAuthor: remote authorEntityHash does not elevate', async () => {
+	// pubKeyHash 传空串可跳过 IndexedDB 信任表（纯测环境无 indexedDB）
+	assertEquals(await isTrustedMarkdownAuthor('', {
+		selfEntityHash: SELF,
+		nodeHash: NODE,
+		authorEntityHash: STRANGER,
+	}), false)
+})
+
 Deno.test('spoofed ownerEntityHash does not elevate via self/master gates', () => {
 	assertEquals(isSelfOrLocalAgentEntity(STRANGER, {
 		selfEntityHash: SELF,

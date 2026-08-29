@@ -42,6 +42,10 @@ import {
 	registerOwnerProfileUpdateMailbox,
 	unregisterOwnerProfileUpdateMailbox,
 } from './src/entity/ownerProfileUpdate.mjs'
+import {
+	registerChatProfileUpdateHandler,
+	unregisterChatProfileUpdateHandler,
+} from './src/entity/profileFederation.mjs'
 import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from './src/entity/viewerResolve.mjs'
 import { registerChatRoutes } from './src/registerRoutes.mjs'
 
@@ -95,6 +99,7 @@ export default {
 		registerChatFederationRoomProvider()
 		registerChatMailboxConsumer()
 		registerOwnerProfileUpdateMailbox()
+		registerChatProfileUpdateHandler()
 		if (loadCount === 1) {
 			registerChatRoutes(router)
 			void import('./src/chat/call/session.mjs').then(m => m.reconcileAllOrphanedCalls())
@@ -121,6 +126,7 @@ export default {
 			unregisterChatFederationRoomProvider()
 			unregisterChatMailboxConsumer()
 			unregisterOwnerProfileUpdateMailbox()
+			unregisterChatProfileUpdateHandler()
 		}
 	},
 	interfaces: {
