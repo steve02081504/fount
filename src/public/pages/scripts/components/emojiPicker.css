@@ -48,13 +48,13 @@
 	display: grid;
 	place-items: center;
 	padding: 0;
-	color: var(--text-normal, #ddd);
+	color: var(--color-base-content);
 }
 
 .emoji-rail-item:hover,
 .emoji-rail-jump:hover,
 .emoji-rail-item.emoji-rail-active {
-	background: var(--bg-hover, rgba(255, 255, 255, 0.08));
+	background: color-mix(in srgb, var(--color-base-content) 8%, transparent);
 }
 
 .emoji-rail-avatar {
@@ -84,8 +84,8 @@
 	padding: 8px 4px 4px;
 	font-size: 12px;
 	font-weight: 600;
-	color: var(--text-muted, #999);
-	background: var(--bg-panel, var(--bg-channel, #1e1e1e));
+	color: color-mix(in srgb, var(--color-base-content) 68%, transparent);
+	background: var(--color-base-200);
 }
 
 .emoji-section-header.emoji-section-header-pack {
@@ -98,7 +98,7 @@
 }
 
 .emoji-section-header.emoji-section-header-pack:hover {
-	color: var(--text-normal, #ddd);
+	color: var(--color-base-content);
 }
 
 .emoji-grid {
@@ -122,7 +122,7 @@
 }
 
 .emoji-grid-button:hover {
-	background: var(--bg-hover, rgba(255, 255, 255, 0.08));
+	background: color-mix(in srgb, var(--color-base-content) 8%, transparent);
 }
 
 .group-emoji-img {
@@ -135,19 +135,19 @@
 	grid-column: 1 / -1;
 	text-align: center;
 	padding: 1.5rem;
-	color: var(--text-muted, #999);
+	color: color-mix(in srgb, var(--color-base-content) 68%, transparent);
 	font-size: 13px;
 }
 
 .emoji-picker-footer {
 	flex-shrink: 0;
 	padding: 6px 10px 8px;
-	border-top: var(--border) solid var(--border-color, #333);
+	border-top: var(--border) solid var(--color-base-300);
 }
 
 .emoji-picker-discover {
 	font-size: 12px;
-	color: var(--accent, #7aa2f7);
+	color: var(--color-primary);
 	text-decoration: none;
 }
 
