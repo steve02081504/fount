@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "下一項"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "编辑器工具栏"
+			},
+			"contextMenu": {
+				"aria-label": "编辑器菜单"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "加粗"
+				},
+				"aria-label": "加粗"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "斜体"
+				},
+				"aria-label": "斜体"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "删除线"
+				},
+				"aria-label": "删除线"
+			},
+			"code": {
+				"dataset": {
+					"tip": "行内代码"
+				},
+				"aria-label": "行内代码"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "引用"
+				},
+				"aria-label": "引用"
+			},
+			"link": {
+				"dataset": {
+					"tip": "链接"
+				},
+				"aria-label": "链接"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "提及"
+				},
+				"aria-label": "提及"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "复制"
+				},
+				"aria-label": "复制"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "剪切"
+				},
+				"aria-label": "剪切"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "粘贴"
+				},
+				"aria-label": "粘贴"
+			},
+			"linkUrl": "链接地址"
 		}
 	},
 	"pro_cancel_screen": {
