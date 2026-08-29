@@ -1,9 +1,8 @@
 /**
  * 【文件】public/src/groupFileBlob.mjs
- * 【职责】群加密文件经 groupEntityHash EVFS 解密下载为 Blob URL。
+ * 【职责】群加密文件下载为 Blob URL（经群文件字节路由；跨节点按需拉取 manifest / chunk）。
  */
-import { fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
-import { groupEntityHash } from '../shared/groupEntityHash.mjs'
+import { getGroupFileBytes } from './endpoints/groupFiles.mjs'
 
 
 /**
@@ -24,7 +23,6 @@ export async function fetchGroupFileAsBlobUrl(groupId, fileId) {
  * @returns {Promise<Blob>} 明文 Blob
  */
 export async function fetchGroupFileAsBlob(groupId, fileId) {
-	const entityHash = groupEntityHash(groupId)
-	const { buffer, mimeType } = await fetchEvfsFile(entityHash, `chat/${fileId}`)
+	const { buffer, mimeType } = await getGroupFileBytes(groupId, fileId)
 	return new Blob([buffer], { type: mimeType || 'application/octet-stream' })
 }

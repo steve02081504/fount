@@ -3,10 +3,20 @@
  * 【职责】群文件 HTTP 路由（chunks/files CRUD、下载状态）。
  * 【关联】chat/files/groupFiles.mjs；由 governance.mjs mount。
  */
-import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { Buffer } from 'node:buffer'
+import { Readable } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
 
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { loadFileManifest, readManifestPlaintextStream } from 'npm:@steve02081504/fount-p2p/files/evfs'
+import { fetchManifest } from 'npm:@steve02081504/fount-p2p/files/manifest/fetch'
+
+import { applySafeContentHeaders } from '../../../../../../../scripts/http_content.mjs'
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { groupEntityHash } from '../../../public/shared/groupEntityHash.mjs'
 import { appendFileDeleteEvent, appendFileUploadEvent } from '../../chat/dag/channelOperations.mjs'
 import { assertNotRootChannel } from '../../chat/dag/groupSettings.mjs'
+import { ensureFederationRoom } from '../../chat/federation/room.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { hasCiphertextBlob, getCiphertextBlob } from '../../chat/files/blobStore.mjs'
 import { loadDownloadTask, summarizeDownloadTask } from '../../chat/files/downloadTasks.mjs'
@@ -237,5 +247,60 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 			fileId,
 			status: summarizeDownloadTask(task),
 		})
+	})
+
+	router.get(`${GROUPS_PREFIX}/:groupId/files/:fileId`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const { groupId } = req.params
+		const fileId = decodeURIComponent(req.params.fileId)
+		const { state } = await getState(username, groupId)
+		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))
+			return res.status(403).json({ error: 'Not a member' })
+		const meta = fileMetaFromState(state, fileId)
+		if (!meta || meta.deleted)
+			return res.status(404).json({ error: 'File not found' })
+
+		const entityHash = groupEntityHash(groupId)
+		const logicalPath = `chat/${fileId}`
+		let manifest = await loadFileManifest(entityHash, logicalPath)
+		if (!manifest) 
+			// 跨节点：manifest 未落本地 → 向群 roster 定向拉取（p2p fetchManifest 非 public 支持）。
+			try {
+				const slot = await ensureFederationRoom(username, groupId)
+				const targets = [...new Set(
+					(slot?.getRoster?.() || []).map(peer => peer?.remoteNodeHash).filter(Boolean),
+				)]
+				if (targets.length)
+					manifest = await fetchManifest({ username, ownerEntityHash: entityHash, logicalPath, fanoutTargets: targets })
+			}
+			catch (error) {
+				console.error('[group files] manifest fetch failed', error)
+			}
+		
+		let stream = null
+		if (manifest)
+			stream = await readManifestPlaintextStream(username, manifest, { username }).catch(() => null)
+		if (!stream && meta?.contentHash) 
+			// 兜底：manifest 缺失但 DAG fileIndex 元数据完整 → 直接按 fileIndex 解密（含联邦 chunk 拉取）。
+			try {
+				const buf = await getDecryptedFile(username, groupId, { ...meta, fileId }, undefined)
+				stream = Readable.from([Buffer.from(buf)])
+			}
+			catch { /* 保持 404 */ }
+		
+		if (!stream)
+			throw httpError(404, 'chunk unavailable')
+		applySafeContentHeaders(res, {
+			mimeType: String(meta.mimeType || 'application/octet-stream'),
+			filename: String(meta.name || fileId),
+		})
+		res.setHeader('Content-Length', String(Number(meta.size) || 0))
+		res.status(200)
+		try {
+			await pipeline(stream, res)
+		}
+		catch (error) {
+			if (!res.writableEnded) res.destroy(error)
+		}
 	})
 }

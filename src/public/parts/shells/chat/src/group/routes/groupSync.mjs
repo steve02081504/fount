@@ -173,7 +173,13 @@ export function registerGroupSyncRoutes(router, authenticate) {
 				displayName = memberRow.charname || ''
 			if (entityHash && !displayName)
 				try {
-					const profile = await getProfile(entityHash, username, { groupId, locales: profileLocales })
+					const profile = await getProfile(entityHash, username, {
+						groupId,
+						locales: profileLocales,
+						// 远端成员未缓存 profile 时拉取一次（短超时；失败进负缓存 60s，不阻塞后续 /state）。
+						fetchRemote: true,
+						remoteTimeoutMs: 1500,
+					})
 					displayName = profile.name || ''
 				}
 				catch {

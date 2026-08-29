@@ -198,3 +198,19 @@ Deno.test('updateEntityProfileAsActor local path returns profile', async () => {
 		Error,
 	)
 })
+
+Deno.test('published profile falls back to fount username as display name', async () => {
+	await ensureServer()
+	const { ensureOperatorIdentity } = await import('../../src/entity/identity.mjs')
+	const { updateProfile } = await import('../../src/entity/profile.mjs')
+	const op = await ensureOperatorIdentity(username)
+	// 清空既有展示名再触发发布，验证未设置名时以 fount 用户名兜底。
+	await updateProfile(username, op.entityHash, { themeColor: '#aabbcc', localized: {} }, { skipPresentation: true })
+	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+	const { Buffer } = await import('node:buffer')
+	const plain = await readPublicFile(username, op.entityHash, 'profile.json')
+	assertEquals(Boolean(plain), true)
+	const payload = JSON.parse(Buffer.from(plain).toString('utf8'))
+	const name = Object.values(payload.localized || {}).map(slice => slice?.name).find(Boolean)
+	assertEquals(name, username)
+})

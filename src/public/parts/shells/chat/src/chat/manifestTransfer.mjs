@@ -1,8 +1,11 @@
 import { Buffer } from 'node:buffer'
 
 import {
+	registerManifestOwner,
+	unregisterManifestOwner,
+} from 'npm:@steve02081504/fount-p2p/files/manifest/routing'
+import {
 	registerDagManifestPlaintextReader,
-	registerManifestOwnerMatcher,
 	registerTransferKeyDependencies,
 	unregisterTransferKeyDependencies,
 } from 'npm:@steve02081504/fount-p2p/files/transfer_key_registry'
@@ -17,7 +20,7 @@ const OWNER_ID = 'chat'
  * @returns {void}
  */
 export function registerChatManifestTransfer() {
-	registerManifestOwnerMatcher(OWNER_ID, manifest => Array.isArray(manifest.meta?.dagParts) && !!manifest.meta?.groupId)
+	registerManifestOwner(OWNER_ID, manifest => Array.isArray(manifest?.meta?.dagParts) && !!manifest?.meta?.groupId)
 	registerTransferKeyDependencies(OWNER_ID, {
 		/**
 		 * @param {string} replicaUsername replica
@@ -56,5 +59,6 @@ export function registerChatManifestTransfer() {
 
 /** @returns {void} */
 export function unregisterChatManifestTransfer() {
+	unregisterManifestOwner(OWNER_ID)
 	unregisterTransferKeyDependencies(OWNER_ID)
 }

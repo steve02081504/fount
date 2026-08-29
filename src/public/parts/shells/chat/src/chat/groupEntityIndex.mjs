@@ -44,7 +44,20 @@ export async function resolveGroupIdFromIndex(username, entityHash) {
 	const want = entityHash || ''
 	if (!want) return null
 	const data = loadJsonFileIfExists(groupEntityIndexPath(username), null)
-	return data?.byEntityHash?.[want] || null
+	const fromIndex = data?.byEntityHash?.[want]
+	if (fromIndex) return fromIndex
+	// 索引缺失（如从未上传文件的对端节点）→ 扫描群目录反查。
+	try {
+		const { readdir } = await import('node:fs/promises')
+		const root = path.join(getUserDictionary(username), 'shells', 'chat', 'groups')
+		const entries = await readdir(root, { withFileTypes: true }).catch(() => [])
+		for (const entry of entries) {
+			if (!entry.isDirectory()) continue
+			if (groupEntityHash(entry.name) === want) return entry.name
+		}
+	}
+	catch { /* 无群目录 */ }
+	return null
 }
 
 /**
