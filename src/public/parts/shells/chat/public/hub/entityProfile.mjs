@@ -43,7 +43,7 @@ export function profileDescriptionText(profile) {
 
 /**
  * @param {string} entityHash 128 位 entityHash
- * @param {{ bypassCache?: boolean, groupId?: string }} [options] 选项
+ * @param {{ bypassCache?: boolean, groupId?: string, forceRemote?: boolean }} [options] 选项；`forceRemote` 跳过远端负缓存并强制 revalidate 重拉
  * @returns {Promise<object|null>} 解析后的 profile 或 null
  */
 export async function loadEntityProfile(entityHash, options = {}) {
@@ -51,7 +51,9 @@ export async function loadEntityProfile(entityHash, options = {}) {
 		const cached = await fetchUserProfile(entityHash, { groupId: options.groupId })
 		if (cached) return cached
 	}
-	const data = await getEntityProfile(entityHash, options.groupId || store.context.currentGroupId)
+	const data = await getEntityProfile(entityHash, options.groupId || store.context.currentGroupId, {
+		forceRemote: options.forceRemote,
+	})
 	if (!data?.profile) return null
 	return cachedProfileFromApi(data.profile, entityHash)
 }

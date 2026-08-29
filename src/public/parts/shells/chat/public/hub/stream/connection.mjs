@@ -9,6 +9,7 @@ import { store } from '../core/state.mjs'
 import * as conn from './connectionState.mjs'
 import { handleChannelMessageWire } from './handlers/channelMessage.mjs'
 import { handleDagEventWire } from './handlers/dagEvent.mjs'
+import { handleProfileUpdateWire } from './handlers/profileUpdate.mjs'
 import { handleVolatileStreamWire } from './handlers/streamChunk.mjs'
 import { attachGroupWebSocketErrorHandlers } from './outbound.mjs'
 import { resetVolatileStreamState } from './volatileSlots.mjs'
@@ -69,6 +70,7 @@ export function waitForGroupWebSocketOpen(groupId, channelId, { timeoutMs = 8000
  */
 function handleGroupHubWireMessage(wireMessage, channelId) {
 	if (!wireMessage?.type) return
+	if (handleProfileUpdateWire(wireMessage)) return
 	if (handleChannelMessageWire(wireMessage, channelId)) return
 	handleDagEventWire(wireMessage, channelId)
 }

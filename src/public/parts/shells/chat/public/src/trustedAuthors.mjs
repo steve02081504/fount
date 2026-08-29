@@ -200,7 +200,7 @@ export function isViewerDeclaredOwner(pubKeyHash, {
  * @returns {Promise<boolean>} 是否可信
  */
 export async function isTrustedMarkdownAuthor(pubKeyHash, options = {}) {
-	if (isSelfOrLocalAgentEntity(pubKeyHash, options)) return true
+	if (isSelfOrLocalAgentEntity(options.authorEntityHash || pubKeyHash, options)) return true
 	if (isViewerDeclaredOwner(pubKeyHash, options)) return true
 	return isTrustedAuthor(pubKeyHash)
 }
