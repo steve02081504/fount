@@ -2180,6 +2180,7 @@
 				"sfwMode": "Sichere Inhalte",
 				"livePreview": "Live-Vorschau",
 				"languageVersion": "Sprachversion",
+				"descriptionHint": null,
 				"localeHint": "Klicken Sie auf die Beschriftung, um den Code zu ändern oder zu bearbeiten. Drücken Sie am Ende im Eingabefeld die Eingabetaste, um es in eine neue Sprache zu kopieren.",
 				"themeColor": {
 					"clear": "Standardfarbe des Themes wiederherstellen",
@@ -6120,6 +6121,9 @@
 			},
 			"contextMenu": {
 				"aria-label": "Editor-Menü"
+			},
+			"dockedToolbar": {
+				"aria-label": null
 			},
 			"bold": {
 				"dataset": {

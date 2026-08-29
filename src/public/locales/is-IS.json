@@ -2180,6 +2180,7 @@
 				"sfwMode": "Vinnustaðavænt",
 				"livePreview": "Forskoðun í beinni",
 				"languageVersion": "Tungumálaútgáfa",
+				"descriptionHint": "Styður Markdown setningafræði, breytingar munu endurspeglast í forskoðuninni til vinstri í rauntíma",
 				"localeHint": "Smelltu á merkimiðann til að skipta um eða breyta kóðanum; ýttu á Enter í innsláttarreitnum í lokin til að afrita það á nýtt tungumál.",
 				"themeColor": {
 					"clear": "Endurheimtu sjálfgefinn lit þema",

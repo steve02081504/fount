@@ -2180,6 +2180,7 @@
 				"sfwMode": "Contenuto sicuro",
 				"livePreview": "Anteprima dal vivo",
 				"languageVersion": "Versione linguistica",
+				"descriptionHint": "Supporta la sintassi Markdown, le modifiche si rifletteranno nell'anteprima a sinistra in tempo reale",
 				"localeHint": "Fare clic sull'etichetta per cambiare o modificare il codice; premere Invio nella casella di input alla fine per copiarlo in una nuova lingua.",
 				"themeColor": {
 					"clear": "Ripristina il colore predefinito del tema",

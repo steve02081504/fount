@@ -2180,6 +2180,7 @@
 				"sfwMode": "Nội dung an toàn",
 				"livePreview": "Xem trước trực tiếp",
 				"languageVersion": "Phiên bản ngôn ngữ",
+				"descriptionHint": null,
 				"localeHint": "Nhấp vào nhãn để chuyển đổi hoặc chỉnh sửa mã; nhấn Enter vào hộp nhập ở cuối để sao chép nó sang ngôn ngữ mới.",
 				"themeColor": {
 					"clear": "Khôi phục màu mặc định của chủ đề",
@@ -6120,6 +6121,9 @@
 			},
 			"contextMenu": {
 				"aria-label": "Trình đơn soạn thảo"
+			},
+			"dockedToolbar": {
+				"aria-label": null
 			},
 			"bold": {
 				"dataset": {

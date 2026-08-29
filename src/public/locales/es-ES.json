@@ -2180,6 +2180,7 @@
 				"sfwMode": "Contenido seguro",
 				"livePreview": "Vista previa en vivo",
 				"languageVersion": "Versión de idioma",
+				"descriptionHint": null,
 				"localeHint": "Haz clic en la etiqueta para cambiar o editar el código; presione Entrar en el cuadro de entrada al final para copiarlo a un nuevo idioma.",
 				"themeColor": {
 					"clear": "Restablecer el color predeterminado del tema",
@@ -6126,6 +6127,9 @@
 			},
 			"contextMenu": {
 				"aria-label": "Menú del editor"
+			},
+			"dockedToolbar": {
+				"aria-label": "Barra de herramientas de formato"
 			},
 			"bold": {
 				"dataset": {

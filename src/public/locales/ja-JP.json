@@ -2180,6 +2180,7 @@
 				"sfwMode": "一般コンテンツ",
 				"livePreview": "ライブプレビュー",
 				"languageVersion": "言語バージョン",
+				"descriptionHint": null,
 				"localeHint": "ラベルをクリックしてコードを切り替えるか編集します。最後に入力ボックスで Enter キーを押して、新しい言語にコピーします。",
 				"themeColor": {
 					"clear": "テーマの既定色に戻す",
@@ -6120,6 +6121,9 @@
 			},
 			"contextMenu": {
 				"aria-label": "エディターメニュー"
+			},
+			"dockedToolbar": {
+				"aria-label": "書式設定ツールバー"
 			},
 			"bold": {
 				"dataset": {

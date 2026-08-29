@@ -2180,6 +2180,7 @@
 				"sfwMode": "淨域",
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
+				"descriptionHint": "支持 Markdown 语法，修改会实时反映在左侧预览中",
 				"localeHint": "觸標籤以切換或修符碼；於末尾輸入框回車可謄錄為新語言。",
 				"themeColor": {
 					"clear": "還原本色",
@@ -6120,6 +6121,39 @@
 			},
 			"contextMenu": {
 				"aria-label": "編輯之選單"
+			},
+			"dockedToolbar": {
+				"aria-label": "格式工具栏"
+			},
+			"headingLarge": {
+				"dataset": {
+					"tip": "一级标题"
+				},
+				"aria-label": "一级标题"
+			},
+			"headingMedium": {
+				"dataset": {
+					"tip": "二级标题"
+				},
+				"aria-label": "二级标题"
+			},
+			"headingSmall": {
+				"dataset": {
+					"tip": "三级标题"
+				},
+				"aria-label": "三级标题"
+			},
+			"listUl": {
+				"dataset": {
+					"tip": "无序列表"
+				},
+				"aria-label": "无序列表"
+			},
+			"listOl": {
+				"dataset": {
+					"tip": "有序列表"
+				},
+				"aria-label": "有序列表"
 			},
 			"bold": {
 				"dataset": {

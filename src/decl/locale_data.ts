@@ -2142,6 +2142,7 @@ export type LocaleData = {
 				sfwMode: string
 				livePreview: string
 				languageVersion: string
+				descriptionHint: string
 				localeHint: string
 				themeColor: {
 					clear: string
@@ -6081,6 +6082,39 @@ export type LocaleData = {
 				'aria-label': string
 			}
 			contextMenu: {
+				'aria-label': string
+			}
+			dockedToolbar: {
+				'aria-label': string
+			}
+			headingLarge: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			headingMedium: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			headingSmall: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			listUl: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			listOl: {
+				dataset: {
+					tip: string
+				}
 				'aria-label': string
 			}
 			bold: {

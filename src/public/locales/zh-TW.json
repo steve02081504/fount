@@ -2179,6 +2179,7 @@
 				"sfwMode": "安全內容",
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
+				"descriptionHint": null,
 				"localeHint": "點選標籤切換或編輯程式碼；在末尾輸入框回車可複製為新語言。",
 				"themeColor": {
 					"clear": "恢復主題預設色",
