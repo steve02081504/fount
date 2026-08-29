@@ -359,9 +359,10 @@
 	flex-direction: column;
 	gap: 6px;
 	margin-top: 6px;
-	max-width: min(100%, 420px);
+	max-width: 420px;
 }
 
+/* 单图/单视频 */
 .message-inline-image--single,
 .message-inline-video--single {
 	display: block;
@@ -379,10 +380,12 @@
 	filter: saturate(0.85);
 }
 
+/* 画廊 */
 .message-gallery {
 	display: grid;
 	gap: 4px;
-	width: min(100%, 360px);
+	width: 360px;
+	max-width: 100%;
 	border-radius: var(--radius-box);
 	overflow: hidden;
 }
