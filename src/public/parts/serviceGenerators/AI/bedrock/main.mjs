@@ -142,7 +142,7 @@ async function GetSource(config) {
 		 */
 		StructCall: async (prompt_struct, options = {}) => {
 			const { base_result = {}, replyPreviewUpdater, signal } = options
-			const messages = buildMessagesFromPromptStruct(prompt_struct, config, configTemplate)
+			const messages = await buildMessagesFromPromptStruct(prompt_struct, config, configTemplate)
 			const result = {
 				content: '',
 				files: [...base_result?.files || []],
