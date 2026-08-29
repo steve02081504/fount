@@ -51,4 +51,3 @@ source_uninstall_hooks() {
 			done | sort -t "$(printf '\t')" -k1,1nr -k2,2 | cut -f2-
 	)
 }
-

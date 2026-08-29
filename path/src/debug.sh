@@ -42,4 +42,3 @@ debug_on() {
 		fi
 	fi
 }
-

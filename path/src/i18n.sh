@@ -227,4 +227,3 @@ print_i18n() {
 print_i18n_red()    { print_i18n --color "0;31" "$@"; }
 print_i18n_yellow() { print_i18n --color "0;33" "$@"; }
 print_i18n_green()  { print_i18n --color "0;32" "$@"; }
-

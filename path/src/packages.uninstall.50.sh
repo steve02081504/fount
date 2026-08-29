@@ -18,4 +18,3 @@ if [ -f "$AUTO_INSTALLED_DENO_FLAG" ]; then
 fi
 set_title "𝓯𝓸"
 write_taskbar_progress 60
-

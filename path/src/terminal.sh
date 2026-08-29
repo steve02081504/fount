@@ -85,4 +85,3 @@ trap_terminal_teardown() {
 	}
 	trap '_terminal_teardown' EXIT INT TERM
 }
-

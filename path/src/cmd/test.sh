@@ -40,4 +40,3 @@ cmd_test() {
 	test_exit=$?
 	exit $test_exit
 }
-

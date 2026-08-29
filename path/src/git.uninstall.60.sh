@@ -6,4 +6,3 @@ fi
 
 set_title "𝓯𝓸𝓾"
 write_taskbar_progress 45
-

@@ -479,7 +479,7 @@ self.addEventListener('message', event => {
 	}
 	else if (event.data?.type === 'GET_FOUNT_VERSION')
 		event.ports[0]?.postMessage?.({ fountVersion })
-	else if (event.data?.type === 'WAKE_SERVER_REQUEST') {
+	else if (event.data?.type === 'WAKE_SERVER_REQUEST')
 		event.ports[0]?.postMessage?.({ approved: (() => {
 			if (serverOnline) return true
 			const now = Date.now()
@@ -488,7 +488,6 @@ self.addEventListener('message', event => {
 			} finally { lastWakeRequestAt = now }
 			return false
 		})() })
-	}
 })
 
 /**
