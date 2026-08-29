@@ -43,7 +43,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "20s",
+			"expected": "1m58s",
 			"trigger": [
 				"shellIntegrationTests",
 				"testFramework"

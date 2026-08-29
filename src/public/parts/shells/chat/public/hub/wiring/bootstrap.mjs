@@ -10,6 +10,7 @@ import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'
 import { store } from '../core/state.mjs'
 import { registerFountUserApi } from '../fountUser.mjs'
+import { installHubRichInput } from '../markdownRichInput.mjs'
 import { syncComposerAlignment } from '../messages/composerController.mjs'
 import { reportTyping } from '../stream/outbound.mjs'
 
@@ -19,11 +20,12 @@ function submitComposerLazy() {
 }
 
 /**
- * 按内容高度调整主输入框（上限见 CSS `max-h-40`）。
+ * 按内容高度调整主输入框（上限见 CSS `max-h-40`）。富文本 composer 由组件自动撑高。
  * @param {HTMLTextAreaElement} textarea 消息输入框
  * @returns {void}
  */
 function resizeMessageInput(textarea) {
+	if (!(textarea instanceof HTMLTextAreaElement)) return
 	textarea.style.height = 'auto'
 	textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`
 }
@@ -32,6 +34,7 @@ function resizeMessageInput(textarea) {
 function wireComposerControls() {
 	const messageInput = /** @type {HTMLTextAreaElement | null} */ document.getElementById('message-input')
 	if (!messageInput) return
+	installHubRichInput()
 	bindComposerSubmit(messageInput, () => { void submitComposerLazy() })
 	messageInput.addEventListener('input', () => {
 		resizeMessageInput(messageInput)

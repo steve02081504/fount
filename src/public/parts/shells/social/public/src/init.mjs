@@ -213,8 +213,10 @@ export async function bootstrap() {
 			void loadSearchView()
 		})
 		const postText = document.getElementById('postText')
+		const { installSocialRichInput } = await import('./markdownRichInput.mjs')
+		installSocialRichInput()
 		wireEmojiPickerButton(document.getElementById('emojiPickButton'), token => {
-			if (!(postText instanceof HTMLTextAreaElement)) return
+			if (!(postText instanceof HTMLElement)) return
 			const start = postText.selectionStart ?? postText.value.length
 			const end = postText.selectionEnd ?? start
 			postText.value = postText.value.slice(0, start) + token + postText.value.slice(end)

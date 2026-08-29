@@ -4,6 +4,7 @@
  * 【原理】切换频道前 flushDraft 落盘，进入频道时 loadDraft 恢复；附件仅回传缩略图，点击时才懒拉取完整内容。
  */
 import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { isTextComposer } from '/scripts/components/markdownRichInput.mjs'
 
 import {
 	deleteDraft,
@@ -215,9 +216,10 @@ export async function loadDraft(groupId, channelId, isCurrent) {
 	if (isCurrent && !isCurrent()) return
 
 	// 仅在服务端确认（返回记录或无记录）后重置控件；失败路径已提前返回。
-	if (input instanceof HTMLTextAreaElement) {
+	if (isTextComposer(input)) {
 		input.value = ''
-		input.style.height = 'auto'
+		if (input instanceof HTMLTextAreaElement)
+			input.style.height = 'auto'
 	}
 	if (contentWarningInput instanceof HTMLInputElement) contentWarningInput.value = ''
 	if (sensitiveMediaInput instanceof HTMLInputElement) sensitiveMediaInput.checked = false
@@ -228,7 +230,7 @@ export async function loadDraft(groupId, channelId, isCurrent) {
 		return
 	}
 
-	if (input instanceof HTMLTextAreaElement && draft.text) {
+	if (isTextComposer(input) && draft.text) {
 		input.value = draft.text
 		input.dispatchEvent(new Event('input', { bubbles: true }))
 	}
@@ -269,7 +271,7 @@ export function wireDraftAutoSave(getCtx) {
 		const contentWarningInput = document.getElementById('content-warning')
 		const sensitiveMediaInput = document.getElementById('sensitive-media')
 		return {
-			text: input instanceof HTMLTextAreaElement ? input.value : '',
+			text: isTextComposer(input) ? input.value : '',
 			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
 			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
 			files: [...selectedFiles].map(file => ({ ...file, fileId: file.fileId || crypto.randomUUID() })),

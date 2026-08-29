@@ -3,6 +3,7 @@ import { clearCwSensitive } from '/parts/shells:chat/shared/composerAttachmentFi
 
 import { getOwnAlbums } from './endpoints/albums.mjs'
 import { getChatGroups } from './endpoints/chatBridge.mjs'
+import { isTextComposer } from '/scripts/components/markdownRichInput.mjs'
 import { renderQuoteBlockHtml } from './lib/display.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
 import { state } from './state.mjs'
@@ -262,7 +263,7 @@ export async function addComposerMedia(files) {
  */
 export async function clearComposer(options = {}) {
 	const postText = document.getElementById('postText')
-	if (postText instanceof HTMLTextAreaElement)
+	if (isTextComposer(postText))
 		postText.value = ''
 	setComposerContentWarningOpen(false)
 	clearCwSensitive(SOCIAL_CW_IDS)
@@ -312,7 +313,7 @@ export async function loadDraftIntoComposer(row) {
 	state.activeDraftId = row?.draftId || null
 
 	const postText = document.getElementById('postText')
-	if (postText instanceof HTMLTextAreaElement)
+	if (isTextComposer(postText))
 		postText.value = String(body.text || '')
 
 	if (body.contentWarning) {
