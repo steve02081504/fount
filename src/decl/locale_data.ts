@@ -6076,6 +6076,75 @@ export type LocaleData = {
 				'aria-label': string
 			}
 		}
+		markdownRichInput: {
+			toolbar: {
+				'aria-label': string
+			}
+			contextMenu: {
+				'aria-label': string
+			}
+			bold: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			italic: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			strike: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			code: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			quote: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			link: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			mention: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			copy: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			cut: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			paste: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			linkUrl: string
+		}
 	}
 	pro_cancel_screen: {
 		title: string
