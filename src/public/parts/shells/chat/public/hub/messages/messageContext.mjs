@@ -4,17 +4,26 @@
  */
 import { store } from '../core/state.mjs'
 
+import { enqueueChannelMutation } from './channelMutationQueue.mjs'
 import { setChannelMessageActionsContext } from './messageActionsState.mjs'
 import { isTwoPartyCharDialogue } from './messageShared.mjs'
 import { buildChannelRenderOpts } from './messageSurface.mjs'
 import { wireMessageReactions } from './reactionWire.mjs'
 
 /** 模块级频道重载（避免 messageRefresh ↔ callers 层层传 loadMessages）。
+ * 与增量刷新 / 编辑 / 删除共用 `enqueueChannelMutation` 串行队列：否则并发写
+ * channelMessagesSource / 虚拟列表 DOM 会交错出重复行或互相覆盖（如加反应时
+ * reload 与 WS reaction_add 增量刷新同时触发）。
  * @returns {Promise<void>}
  */
-export async function reloadChannel() {
-	const { loadMessages } = await import('./messageRefresh.mjs')
-	return loadMessages()
+export function reloadChannel() {
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
+	return enqueueChannelMutation(async () => {
+		if (groupId !== store.context.currentGroupId || channelId !== store.context.currentChannelId) return
+		const { loadMessages } = await import('./messageRefresh.mjs')
+		return loadMessages()
+	})
 }
 
 /**
