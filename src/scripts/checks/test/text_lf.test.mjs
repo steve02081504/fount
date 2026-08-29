@@ -9,6 +9,8 @@ import {
 	detectFinalNewline,
 	detectLeadingLf,
 	detectNonLfLineEndings,
+	fixFileTextLf,
+	fixTextLf,
 	isUtf8Text,
 	resolveTextLfScanPaths,
 	scanFileTextLf,
@@ -101,6 +103,49 @@ Deno.test('scanFileTextLf: single-line svg must not end with LF; other files nee
 	assertEquals(scanFileTextLf('multi.mjs', encoder.encode('a\nb\n\n'))[0].kind, 'extra-final-newlines')
 })
 
+Deno.test('fixFileTextLf: compliant files return null', () => {
+	assertEquals(fixFileTextLf('ok.mjs', encoder.encode('a\nexport {}\n')), null)
+	assertEquals(fixFileTextLf('empty.txt', new Uint8Array([])), null)
+	assertEquals(fixFileTextLf('icon.svg', encoder.encode('<svg></svg>')), null)
+	assertEquals(
+		fixFileTextLf('ok-bom.mjs', new Uint8Array([0xef, 0xbb, 0xbf, ...encoder.encode('a\nb\n')])),
+		null,
+	)
+})
+
+Deno.test('fixFileTextLf: non-LF and boundary fixes', () => {
+	assertEquals(fixFileTextLf('bad.mjs', encoder.encode('export {}\r\n')), encoder.encode('export {}\n'))
+	assertEquals(fixFileTextLf('bad.mjs', encoder.encode('a\rb')), encoder.encode('a\nb\n'))
+	assertEquals(fixFileTextLf('no-final.mjs', encoder.encode('a\nb')), encoder.encode('a\nb\n'))
+	assertEquals(fixFileTextLf('extra-final.mjs', encoder.encode('a\nb\n\n')), encoder.encode('a\nb\n'))
+	assertEquals(fixFileTextLf('leading.mjs', encoder.encode('\nexport {}\n')), encoder.encode('export {}\n'))
+	assertEquals(
+		fixFileTextLf('leading-bom.mjs', new Uint8Array([0xef, 0xbb, 0xbf, 10, ...encoder.encode('export {}')])),
+		new Uint8Array([0xef, 0xbb, 0xbf, ...encoder.encode('export {}\n')]),
+	)
+})
+
+Deno.test('fixFileTextLf: single-line svg drops trailing LF; other files keep exactly one', () => {
+	assertEquals(fixFileTextLf('icon.svg', encoder.encode('<svg></svg>\n')), encoder.encode('<svg></svg>'))
+	assertEquals(fixFileTextLf('icon.svg', encoder.encode('<svg></svg>\n\n')), encoder.encode('<svg></svg>'))
+	assertEquals(fixFileTextLf('multi.svg', encoder.encode('<svg>\n<g></g>\n')), null)
+	assertEquals(fixFileTextLf('single.txt', encoder.encode('abc')), encoder.encode('abc\n'))
+	assertEquals(fixFileTextLf('single.mjs', encoder.encode('export {}')), encoder.encode('export {}\n'))
+	assertEquals(fixFileTextLf('single.txt', encoder.encode('abc\n')), null)
+	assertEquals(fixFileTextLf('single.txt', encoder.encode('abc\n\n')), encoder.encode('abc\n'))
+	assertEquals(fixFileTextLf('icon.svg', encoder.encode('<svg></svg>\n<g></g>')), encoder.encode('<svg></svg>\n<g></g>\n'))
+	assertEquals(fixFileTextLf('multi.mjs', encoder.encode('a\nb')), encoder.encode('a\nb\n'))
+	assertEquals(fixFileTextLf('multi.mjs', encoder.encode('a\nb\n')), null)
+	assertEquals(fixFileTextLf('multi.mjs', encoder.encode('a\nb\n\n')), encoder.encode('a\nb\n'))
+})
+
+Deno.test('fixTextLf rewrites only violated files under scope', async () => {
+	const fixed = await fixTextLf(REPO_ROOT, { triggeredFiles: [] })
+	const { issues } = await scanTextLf(REPO_ROOT, { triggeredFiles: [] })
+	assertEquals(issues, [], `自动修复后仓库仍有 text_lf 问题:\n${issues.slice(0, 12).map(issue => `${issue.path} (${issue.kind})`).join('\n')}`)
+	assert(Array.isArray(fixed), '返回被改写路径数组')
+})
+
 Deno.test('resolveTextLfScanPaths scopes to triggered non-own files', async () => {
 	assertEquals(
 		await resolveTextLfScanPaths(REPO_ROOT, {
@@ -137,8 +182,11 @@ Deno.test('resolveTextLfScanPaths falls back to full scan when triggered is own-
 	assert(paths.length > TEXT_LF_OWN_PATHS.length)
 })
 
-Deno.test('repo: UTF-8 text files use LF, correct final LF, no leading LF', async () => {
+Deno.test('repo: UTF-8 text files use LF, correct final LF, no leading LF (auto-fix)', async () => {
+	const fixed = await fixTextLf(REPO_ROOT, { triggeredFiles: [] })
 	const { issues } = await scanTextLf(REPO_ROOT, { triggeredFiles: [] })
+	if (fixed.length)
+		console.log(`自动修复 ${fixed.length} 个文件的换行:\n${fixed.join('\n')}`)
 	if (issues.length) {
 		const sample = issues.slice(0, 12).map(issue => `${issue.path} (${issue.kind})`).join('\n')
 		assert(false, `文本文件须使用 LF 换行、结尾 LF 符合规则且开头不为 LF (${issues.length}):\n${sample}`)
