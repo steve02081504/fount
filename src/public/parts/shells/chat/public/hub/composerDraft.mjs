@@ -109,7 +109,7 @@ async function snapshotFiles(files) {
 async function writeDraftPayload(groupId, channelId, draft) {
 	const key = draftKey(groupId, channelId)
 	const files = await snapshotFiles(draft.files)
-	const isEmpty = !(draft.text || '') && !files.length
+	const isEmpty = !(draft.text || '').trim() && !files.length
 	if (isEmpty) await deleteDraft(key)
 	else
 		await saveDraftRemote(key, {
@@ -230,7 +230,8 @@ export async function loadDraft(groupId, channelId, isCurrent) {
 		return
 	}
 
-	if (isTextComposer(input) && draft.text) {
+	// 纯空白（如空 composer 里敲 Enter 留下的 `\n`）不构成草稿文本，避免吃掉输入框占位符。
+	if (isTextComposer(input) && draft.text?.trim()) {
 		input.value = draft.text
 		input.dispatchEvent(new Event('input', { bubbles: true }))
 	}

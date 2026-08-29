@@ -6116,72 +6116,72 @@
 		},
 		"markdownRichInput": {
 			"toolbar": {
-				"aria-label": "编辑器工具栏"
+				"aria-label": "🧰"
 			},
 			"contextMenu": {
-				"aria-label": "编辑器菜单"
+				"aria-label": "☰️"
 			},
 			"bold": {
 				"dataset": {
-					"tip": "加粗"
+					"tip": "🅱️"
 				},
-				"aria-label": "加粗"
+				"aria-label": "🅱️"
 			},
 			"italic": {
 				"dataset": {
-					"tip": "斜体"
+					"tip": "𝐼"
 				},
-				"aria-label": "斜体"
+				"aria-label": "𝐼"
 			},
 			"strike": {
 				"dataset": {
-					"tip": "删除线"
+					"tip": "🚫"
 				},
-				"aria-label": "删除线"
+				"aria-label": "🚫"
 			},
 			"code": {
 				"dataset": {
-					"tip": "行内代码"
+					"tip": "💻"
 				},
-				"aria-label": "行内代码"
+				"aria-label": "💻"
 			},
 			"quote": {
 				"dataset": {
-					"tip": "引用"
+					"tip": "💬"
 				},
-				"aria-label": "引用"
+				"aria-label": "💬"
 			},
 			"link": {
 				"dataset": {
-					"tip": "链接"
+					"tip": "🔗"
 				},
-				"aria-label": "链接"
+				"aria-label": "🔗"
 			},
 			"mention": {
 				"dataset": {
-					"tip": "提及"
+					"tip": "📣"
 				},
-				"aria-label": "提及"
+				"aria-label": "📣"
 			},
 			"copy": {
 				"dataset": {
-					"tip": "复制"
+					"tip": "📋"
 				},
-				"aria-label": "复制"
+				"aria-label": "📋"
 			},
 			"cut": {
 				"dataset": {
-					"tip": "剪切"
+					"tip": "✂️"
 				},
-				"aria-label": "剪切"
+				"aria-label": "✂️"
 			},
 			"paste": {
 				"dataset": {
-					"tip": "粘贴"
+					"tip": "📥"
 				},
-				"aria-label": "粘贴"
+				"aria-label": "📥"
 			},
-			"linkUrl": "链接地址"
+			"linkUrl": "🔗📍"
 		}
 	},
 	"pro_cancel_screen": {

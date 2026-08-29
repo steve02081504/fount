@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "Tiếp theo"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Thanh công cụ soạn thảo"
+			},
+			"contextMenu": {
+				"aria-label": "Trình đơn soạn thảo"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "In đậm"
+				},
+				"aria-label": "In đậm"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "In nghiêng"
+				},
+				"aria-label": "In nghiêng"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Gạch ngang"
+				},
+				"aria-label": "Gạch ngang"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Mã nội tuyến"
+				},
+				"aria-label": "Mã nội tuyến"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Trích dẫn"
+				},
+				"aria-label": "Trích dẫn"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Liên kết"
+				},
+				"aria-label": "Liên kết"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Đề cập"
+				},
+				"aria-label": "Đề cập"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Sao chép"
+				},
+				"aria-label": "Sao chép"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Cắt"
+				},
+				"aria-label": "Cắt"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Dán"
+				},
+				"aria-label": "Dán"
+			},
+			"linkUrl": "Địa chỉ liên kết"
 		}
 	},
 	"pro_cancel_screen": {

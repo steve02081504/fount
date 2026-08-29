@@ -1,5 +1,8 @@
 import { Buffer } from 'node:buffer'
 
+import { ms } from 'fount/scripts/ms.mjs'
+import { withApiRequest } from 'fount/scripts/test/playwright/api.mjs'
+
 import {
 	test,
 	expect,
@@ -34,7 +37,29 @@ test.describe('Chat composer', () => {
 		).catch(() => null)
 		await page.locator('#send-button').click()
 		expect(await postPromise).toBeNull()
-		await expect(page.locator('#message-input')).toHaveValue('')
+		await expect(page.locator('#message-input')).toHaveJSProperty('value', '')
+	})
+
+	test('placeholder stays visible with whitespace-only draft', async ({ page, groupChannel, baseUrl, apiKey }) => {
+		const { groupId, channelId } = groupChannel
+		const input = page.locator('#message-input')
+		const placeholder = input.locator('.fount-markdown-rich-input-placeholder')
+		await expect(placeholder).toBeVisible()
+		await expect(placeholder).toHaveText(/\S/)
+
+		// 空 composer 中敲 Enter 会在草稿里留下一个 `\n`；该草稿不应吃掉输入框占位符。
+		const key = `${groupId}:${channelId}`
+		const res = await withApiRequest(req => req.put(
+			`${baseUrl}/api/parts/shells:chat/drafts/${encodeURIComponent(key)}?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: { text: '\n', files: [] } },
+		))
+		expect(res.ok()).toBe(true)
+
+		await page.reload({ waitUntil: 'domcontentloaded' })
+		await expect(input).toBeEnabled({ timeout: ms('1m') })
+		await expect(input).toHaveJSProperty('value', '')
+		await expect(placeholder).toBeVisible()
+		await expect(placeholder).toHaveText(/\S/)
 	})
 
 	test('published message appears in channel', async ({ page, groupChannel }) => {

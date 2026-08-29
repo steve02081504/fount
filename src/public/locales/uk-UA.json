@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "Наступне медіа"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Панель інструментів редактора"
+			},
+			"contextMenu": {
+				"aria-label": "Меню редактора"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Жирний"
+				},
+				"aria-label": "Жирний"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Курсив"
+				},
+				"aria-label": "Курсив"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Закреслений"
+				},
+				"aria-label": "Закреслений"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Вбудований код"
+				},
+				"aria-label": "Вбудований код"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Цитата"
+				},
+				"aria-label": "Цитата"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Посилання"
+				},
+				"aria-label": "Посилання"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Згадка"
+				},
+				"aria-label": "Згадка"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Копіювати"
+				},
+				"aria-label": "Копіювати"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Вирізати"
+				},
+				"aria-label": "Вирізати"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Вставити"
+				},
+				"aria-label": "Вставити"
+			},
+			"linkUrl": "Адреса посилання"
 		}
 	},
 	"pro_cancel_screen": {

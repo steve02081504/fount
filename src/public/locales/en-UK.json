@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "Next media"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Editor toolbar"
+			},
+			"contextMenu": {
+				"aria-label": "Editor menu"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Bold"
+				},
+				"aria-label": "Bold"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Italic"
+				},
+				"aria-label": "Italic"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Strikethrough"
+				},
+				"aria-label": "Strikethrough"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Inline code"
+				},
+				"aria-label": "Inline code"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Quote"
+				},
+				"aria-label": "Quote"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Link"
+				},
+				"aria-label": "Link"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Mention"
+				},
+				"aria-label": "Mention"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Copy"
+				},
+				"aria-label": "Copy"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Cut"
+				},
+				"aria-label": "Cut"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Paste"
+				},
+				"aria-label": "Paste"
+			},
+			"linkUrl": "Link address"
 		}
 	},
 	"pro_cancel_screen": {

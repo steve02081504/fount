@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "Следующее изображение"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Панель инструментов редактора"
+			},
+			"contextMenu": {
+				"aria-label": "Меню редактора"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Полужирный"
+				},
+				"aria-label": "Полужирный"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Курсив"
+				},
+				"aria-label": "Курсив"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Зачёркнутый"
+				},
+				"aria-label": "Зачёркнутый"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Встроенный код"
+				},
+				"aria-label": "Встроенный код"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Цитата"
+				},
+				"aria-label": "Цитата"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Ссылка"
+				},
+				"aria-label": "Ссылка"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Упоминание"
+				},
+				"aria-label": "Упоминание"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Копировать"
+				},
+				"aria-label": "Копировать"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Вырезать"
+				},
+				"aria-label": "Вырезать"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Вставить"
+				},
+				"aria-label": "Вставить"
+			},
+			"linkUrl": "Адрес ссылки"
 		}
 	},
 	"pro_cancel_screen": {

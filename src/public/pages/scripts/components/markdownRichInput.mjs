@@ -468,6 +468,8 @@ export function createMarkdownRichInput(element, options = {}) {
 		const st = Math.max(0, Math.min(rawText.length, start))
 		const en = Math.max(st, Math.min(rawText.length, end))
 		rawText = rawText.slice(0, st) + text + rawText.slice(en)
+		// 空 composer 里敲 Enter 会插入 `\n`，归一为空避免占位符被吃掉/落盘成空草稿
+		if (!rawText.trim()) rawText = ''
 		render()
 		if (selectionMode === 'select') setSelection(st, st + text.length)
 		else if (selectionMode === 'start') setSelection(st, st)
@@ -480,7 +482,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	 * @returns {void}
 	 */
 	function setRawText(value) {
-		rawText = value == null ? '' : String(value)
+		const text = value == null ? '' : String(value)
+		rawText = text.trim() ? text : ''
 		render()
 		setSelection(rawText.length, rawText.length)
 	}
@@ -489,13 +492,14 @@ export function createMarkdownRichInput(element, options = {}) {
 
 	/**
 	 * 输入事件：序列化 DOM 并重建。
+	 * 纯空白结果（浏览器全选删除残留的 `<br>` 等）归一为空，让占位符恢复显示。
 	 * @returns {void}
 	 */
 	function onInput() {
 		if (disabled || composing) return
 		const next = serializeDom()
 		if (next === rawText) return
-		rawText = next
+		rawText = next.trim() ? next : ''
 		const offsets = getOffsets()
 		rebuildDom()
 		setSelection(offsets.start, offsets.end)
@@ -507,7 +511,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	 */
 	function onCompositionEnd() {
 		composing = false
-		rawText = serializeDom()
+		const text = serializeDom()
+		rawText = text.trim() ? text : ''
 		const offsets = getOffsets()
 		rebuildDom()
 		setSelection(offsets.start, offsets.end)
@@ -825,10 +830,13 @@ export function createMarkdownRichInput(element, options = {}) {
 
 	/**
 	 * 空态聚焦/点击时光标落到开头（而非占位符视觉结束处）。
+	 * 先重建 DOM：浏览器编辑（select-all 删除等）可能已移除占位符节点，
+	 * 而 segments 仍指向它，直接 setSelection 会因节点脱离文档抛 InvalidNodeTypeError。
 	 * @returns {void}
 	 */
 	function placeCaretWhenEmpty() {
 		if (disabled || rawText || composing) return
+		rebuildDom()
 		setSelection(0, 0)
 	}
 

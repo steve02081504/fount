@@ -1,6 +1,7 @@
 import { memberEntityHash } from '../../entity/member.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
+import { getLocalNodeHash } from '../lib/replica.mjs'
 import { groupKindFromState } from '../lib/notificationPreferences.mjs'
 
 import { dispatchCharError } from './charError.mjs'
@@ -40,9 +41,10 @@ function charAgentEntityHash(members, charname) {
  * @param {{ enabled: boolean, burst: number, refill: number, frequency: number }} settings 节流配置
  * @param {boolean} isDm 是否 DM 群
  * @param {number} charCount 群内 char 数
+ * @param {number} userCount 群内活跃真人（非 agent 成员）数
  * @returns {Promise<boolean>} 发言意愿
  */
-async function resolveCharReplyWill(username, groupId, channelId, charname, event, mentioned, settings, isDm, charCount) {
+async function resolveCharReplyWill(username, groupId, channelId, charname, event, mentioned, settings, isDm, charCount, userCount) {
 	const char = await resolveChar(groupId, charname, username)
 	if (!char) return false
 	const bucketKey = autoReplyBucketKey(groupId, channelId, charname)
@@ -71,7 +73,8 @@ async function resolveCharReplyWill(username, groupId, channelId, charname, even
 		return true
 	}
 
-	if (mentioned || charCount === 1 || isDm) return true
+	// fallback（无 OnMessage）：仅 @ / DM / 单角色且单真人的私聊群自动回复；多真人群需 @ 或显式频率
+	if (mentioned || (charCount === 1 && userCount === 1) || isDm) return true
 	if (settings.frequency > 0 && !mentioned)
 		return tickAutoReplyFrequency(groupId, channelId, settings.frequency)
 	return false
@@ -106,6 +109,8 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 	const settings = await loadAutoReplySettings(username, groupId)
 	const { state } = await getState(username, groupId)
 	const isDm = groupKindFromState(state) === 'dm'
+	const userCount = Object.values(state.members || {})
+		.filter(member => member?.memberKind === 'user' && member?.status === 'active').length
 
 	/** @type {string[]} */
 	const mentionedChars = []
@@ -113,12 +118,15 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 	const willing = []
 
 	for (const charname of chars) {
+		// 非本机 char 的触发由归属节点处理；本节点跳过，避免为异地 part 强行创建本地实体身份
+		const bind = state.session?.chars?.[charname]
+		if (bind?.homeNodeHash && bind.homeNodeHash !== getLocalNodeHash()) continue
 		const agentHash = charAgentEntityHash(state.members, charname)
 		const event = await buildOnMessageEvent(username, groupId, channelId, charname, { messageLine, mentions })
 		const mentioned = agentHash ? await messageMentionsEntity(event, agentHash) : false
 		const wantsReply = await resolveCharReplyWill(
 			username, groupId, channelId, charname, event,
-			mentioned, settings, isDm, chars.length,
+			mentioned, settings, isDm, chars.length, userCount,
 		)
 		if (!wantsReply) continue
 		if (mentioned) mentionedChars.push(charname)

@@ -70,10 +70,13 @@ export function attachHubMentionAutocomplete(textarea) {
 		panel.innerHTML = ''
 		if (!rows.length) {
 			panel.classList.remove('hidden')
+			// 空态不是 listbox（无 option 子元素会触犯 aria-required-children）
+			panel.removeAttribute('role')
 			panel.innerHTML = '<div class="mention-empty" data-i18n="chat.hub.mentionEmpty"></div>'
 			textarea.removeAttribute('aria-activedescendant')
 			return
 		}
+		panel.setAttribute('role', 'listbox')
 		for (const [index, row] of rows.entries()) {
 			const button = document.createElement('button')
 			button.type = 'button'

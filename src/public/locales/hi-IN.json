@@ -6113,6 +6113,75 @@
 			"next": {
 				"aria-label": "अगला मीडिया"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "संपादक टूलबार"
+			},
+			"contextMenu": {
+				"aria-label": "संपादक मेनू"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "बोल्ड"
+				},
+				"aria-label": "बोल्ड"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "तिरछा"
+				},
+				"aria-label": "तिरछा"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "स्ट्राइकथ्रू"
+				},
+				"aria-label": "स्ट्राइकथ्रू"
+			},
+			"code": {
+				"dataset": {
+					"tip": "इनलाइन कोड"
+				},
+				"aria-label": "इनलाइन कोड"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "उद्धरण"
+				},
+				"aria-label": "उद्धरण"
+			},
+			"link": {
+				"dataset": {
+					"tip": "लिंक"
+				},
+				"aria-label": "लिंक"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "उल्लेख"
+				},
+				"aria-label": "उल्लेख"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "कॉपी"
+				},
+				"aria-label": "कॉपी"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "काटना"
+				},
+				"aria-label": "काटना"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "पेस्ट करें"
+				},
+				"aria-label": "पेस्ट करें"
+			},
+			"linkUrl": "लिंक पता"
 		}
 	},
 	"pro_cancel_screen": {

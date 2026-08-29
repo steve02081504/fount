@@ -6119,6 +6119,75 @@
 			"next": {
 				"aria-label": "Elemento multimediale successivo"
 			}
+		},
+		"markdownRichInput": {
+			"toolbar": {
+				"aria-label": "Barra degli strumenti dell'editor"
+			},
+			"contextMenu": {
+				"aria-label": "Menu dell'editor"
+			},
+			"bold": {
+				"dataset": {
+					"tip": "Grassetto"
+				},
+				"aria-label": "Grassetto"
+			},
+			"italic": {
+				"dataset": {
+					"tip": "Corsivo"
+				},
+				"aria-label": "Corsivo"
+			},
+			"strike": {
+				"dataset": {
+					"tip": "Barrato"
+				},
+				"aria-label": "Barrato"
+			},
+			"code": {
+				"dataset": {
+					"tip": "Codice in linea"
+				},
+				"aria-label": "Codice in linea"
+			},
+			"quote": {
+				"dataset": {
+					"tip": "Citazione"
+				},
+				"aria-label": "Citazione"
+			},
+			"link": {
+				"dataset": {
+					"tip": "Collegamento"
+				},
+				"aria-label": "Collegamento"
+			},
+			"mention": {
+				"dataset": {
+					"tip": "Menzione"
+				},
+				"aria-label": "Menzione"
+			},
+			"copy": {
+				"dataset": {
+					"tip": "Copia"
+				},
+				"aria-label": "Copia"
+			},
+			"cut": {
+				"dataset": {
+					"tip": "Taglia"
+				},
+				"aria-label": "Taglia"
+			},
+			"paste": {
+				"dataset": {
+					"tip": "Incolla"
+				},
+				"aria-label": "Incolla"
+			},
+			"linkUrl": "Indirizzo del collegamento"
 		}
 	},
 	"pro_cancel_screen": {
