@@ -4479,6 +4479,7 @@
 				"title": "इमोजी",
 				"aria-label": "इमोजी"
 			},
+			"mentionEmpty": "(कोई मेल खाते सदस्य नहीं हैं)",
 			"mentionSuggest": {
 				"aria-label": "मेंशन सुझाव"
 			},

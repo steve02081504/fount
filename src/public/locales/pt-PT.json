@@ -4485,6 +4485,7 @@
 				"title": "Expressão",
 				"aria-label": "Expressão"
 			},
+			"mentionEmpty": "(sem membros correspondentes)",
 			"mentionSuggest": {
 				"aria-label": "Sugestões de menção"
 			},

@@ -19,6 +19,7 @@
 		},
 		{
 			"name": "integration",
+			"expected": "26s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/bedrock/**",
 				"src/public/parts/serviceGenerators/AI/proxy/src/{convertConfig,identityTokenizer,messageBuilder,responseFormat}.mjs"

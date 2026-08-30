@@ -4485,6 +4485,7 @@
 				"title": "Émojis",
 				"aria-label": "Émojis"
 			},
+			"mentionEmpty": "(aucun membre correspondant)",
 			"mentionSuggest": {
 				"aria-label": "Suggestions de mention"
 			},

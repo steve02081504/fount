@@ -20,7 +20,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": 900,
+			"expected": "39s",
 			"triggers": [
 				"src/public/parts/serviceGenerators/AI/azure-openai-responses/**",
 				"src/public/parts/serviceGenerators/AI/codex/src/**",

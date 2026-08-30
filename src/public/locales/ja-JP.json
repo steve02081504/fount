@@ -4479,6 +4479,7 @@
 				"title": "絵文字",
 				"aria-label": "絵文字"
 			},
+			"mentionEmpty": "(一致するメンバーがいません)",
 			"mentionSuggest": {
 				"aria-label": "メンション候補"
 			},

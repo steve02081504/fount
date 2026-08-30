@@ -35,7 +35,8 @@ Deeper UI (profile card, unread/inbox/aliases, cabinet bind perms): [docs/ui-det
 - **Composer attachments**: `#attachment-preview` strip (64×64); paperclip → `addFilesFromEvent` — snapshot `FileList` with `[...files]` **before** clearing `input.value`. Bubble media only from `content.files[]`; **do not** inject `[image:…]` into message text.
 - **HTTP**: named functions in `../src/endpoints/*.mjs` only (`share.mjs` Litterbox is the sole non-endpoint exception). Global whoami/getdetails/EVFS → `/scripts/endpoints/`.
 - State: `core/state.mjs`. No hardcoded user-visible strings; `data-i18n` / `setElementI18n` + `zh-CN.json`.
-- **@-mention autocomplete**: on `<textarea>` use only `aria-controls` / `aria-activedescendant`; do not add `role="combobox"` / `aria-expanded`.
+- **@-mention autocomplete**: on `<textarea>` use only `aria-controls` / `aria-activedescendant`; do not add `role="combobox"` / `aria-expanded`. UI lives in the shared `/scripts/components/mentionAutocomplete.mjs` (`attachMentionAutocomplete(textarea, { getContext, providers, listboxPrefix, emptyI18n, accessibleLabelI18n, trailingSpace, onError })`); `hub/mentionAutocomplete.mjs` is a thin wrapper providing the context + providers. Providers run in order, first non-`null` wins; `null` = "not my context". Extension-provided `mentionSuggest` providers (from `markdown_extensions`) run first, then group members/roles, then the DM-friends/local-char fallback. A candidate row may carry `rawToken` to insert a custom token text.
+- **Global DOM context markers**: `hub/domContext.mjs` (`bindDomContext`, called from `wiring/bootstrap.mjs`) is the sole writer of `body[data-group-id]` / `body[data-channel-id]` / `body[data-channels]` (JSON array). Do not assign them ad hoc — in-page extensions read them to learn the current group/channel (see also `data-surface`, which stays owned by `refreshHubHeaderButtons`).
 
 ## Files / messages / archive
 

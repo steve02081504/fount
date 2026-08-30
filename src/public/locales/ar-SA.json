@@ -4479,6 +4479,7 @@
 				"title": "تعبير",
 				"aria-label": "تعبير"
 			},
+			"mentionEmpty": "(لا توجد أعضاء مطابقة)",
 			"mentionSuggest": {
 				"aria-label": "اقتراحات الإشارة"
 			},

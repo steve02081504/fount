@@ -4479,6 +4479,7 @@
 				"title": "sự biểu lộ",
 				"aria-label": "sự biểu lộ"
 			},
+			"mentionEmpty": "(không có thành viên phù hợp)",
 			"mentionSuggest": {
 				"aria-label": "Gợi ý nhắc đến"
 			},

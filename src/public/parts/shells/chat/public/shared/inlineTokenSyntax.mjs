@@ -21,6 +21,12 @@ export const INLINE_TOKEN_RE = new RegExp(
 	'giu',
 )
 
+/** 行内 @ 提及 token 正则（`@[entity:…]` / `@[role:…]`）。 */
+export const MENTION_TOKEN_RE = /@\[([^\]]+)\]/giu
+
+/** 行内频道/群/消息链接 token 合并正则（顺序：message → channel → group）。 */
+export const LINK_TOKEN_RE = /#\[message:([\w.-]+)\/([\w.-]+)\/([\w.-]+)\]|#\[channel:([\w.-]+)\/([\w.-]+)\]|#\[group:([\w.-]+)\]/giu
+
 /**
  * @param {string} ref `:[emoji:packId/emojiId]:`
  * @returns {{ packId: string, emojiId: string } | null} 解析结果

@@ -4485,6 +4485,7 @@
 				"title": "Emoji",
 				"aria-label": "Emoji"
 			},
+			"mentionEmpty": "(geen overeenkomende leden)",
 			"mentionSuggest": {
 				"aria-label": "Vermeldingssuggesties"
 			},

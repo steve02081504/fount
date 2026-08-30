@@ -1,5 +1,5 @@
 /**
- * @提及展示名转义：displayName / 角色名作为链接 label 拼进 Markdown 时必须转义，
+ * 提及展示名转义：displayName / 角色名作为链接 label 拼进 Markdown 时必须转义，
  * 否则恶意名称里的 raw HTML（如 `<img onerror>`）会在本机消息 trusted 档渲染时执行（XSS）。
  * `expandMentionsInMarkdown`（browser import social runUri）内部即调用此函数。
  */
