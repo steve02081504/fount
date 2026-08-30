@@ -236,8 +236,8 @@ test.describe('Social profile', () => {
 		await setUserLocale(baseUrl, apiKey, 'zh-CN')
 
 		const before = await getEntityProfile(baseUrl, apiKey, entityHash)
-		const localized = { ...before.profile?.localized || {} }
-		const zhSlice = { ...localized['zh-CN'] || {} }
+		const localized = { ...before.profile?.localized }
+		const zhSlice = { ...localized['zh-CN'] }
 		const originalName = zhSlice.name ?? ''
 		const newName = `Social Renamed ${Date.now()}`
 		await updateEntityProfile(baseUrl, apiKey, entityHash, {

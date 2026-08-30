@@ -110,7 +110,7 @@ function notificationMessageAttrs(row) {
  * @returns {string} 头像 HTML
  */
 function notificationAvatarHtml(entityHash, profile) {
-	return renderAvatarHtml(entityHash, { ...profile || {}, name: authorLabel(entityHash, profile) })
+	return renderAvatarHtml(entityHash, { ...profile, name: authorLabel(entityHash, profile) })
 }
 
 /**
