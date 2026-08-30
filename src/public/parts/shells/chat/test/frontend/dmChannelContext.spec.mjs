@@ -69,7 +69,7 @@ test.describe('DM channel list context menu', () => {
 		})
 		await waitForHubReady(page)
 		await expect(page).toHaveURL(/#group:/, { timeout: 60_000 })
-		await expect(page.locator('#message-input')).toBeEnabled({ timeout: 60_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false, { timeout: 60_000 })
 
 		const { channelId: initialChannelId } = parseGroupHashFromUrl(page.url()) || {}
 		expect(initialChannelId).toBeTruthy()

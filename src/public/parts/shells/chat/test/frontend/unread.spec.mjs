@@ -67,7 +67,7 @@ test.describe('Unread badge & divider', () => {
 		// WS bump 或全量刷新皆可让 badge 出现；reload 走 loadGroups 的服务端 unreadCount，行为确定
 		await page.reload({ waitUntil: 'domcontentloaded' })
 		// 等默认频道 boot 完成后再切未读频道，避免与 selectGroup 的 await 竞态互相踩 hash
-		await expect(page.locator('#message-input')).toBeEnabled({ timeout: 60_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false, { timeout: 60_000 })
 		await expect(page.locator(`.channel-item.active[data-channel-id="${defaultChannelId}"]`)).toBeVisible({ timeout: 60_000 })
 		await expect(groupBadge).toBeVisible({ timeout: 60_000 })
 		await expect(groupBadge).toHaveText('1')

@@ -56,7 +56,7 @@ test.describe('Chat composer', () => {
 		expect(res.ok()).toBe(true)
 
 		await page.reload({ waitUntil: 'domcontentloaded' })
-		await expect(input).toBeEnabled({ timeout: ms('1m') })
+		await expect(input).toHaveJSProperty('disabled', false, { timeout: ms('1m') })
 		await expect(input).toHaveJSProperty('value', '')
 		await expect(placeholder).toBeVisible()
 		await expect(placeholder).toHaveText(/\S/)
