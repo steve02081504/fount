@@ -1199,6 +1199,7 @@
 				"aria-label": "Jump to Unicode"
 			},
 			"discoverPacks": "Explore emoji packs →",
+			"emptyPack": "There are currently no expressions for this emoticon pack",
 			"addToCollection": "Add to favourites",
 			"addedToCollection": "Added to favourites",
 			"joinGroup": "Join group",
@@ -1560,7 +1561,6 @@
 					"description": "Manage group identity, members, permissions, and shared tools.",
 					"kicker": "Group settings",
 					"subtitle": "Manage group information, members and common functions. Low-frequency permissions, storage, and auditing tools are centralized in advanced settings.",
-					"backToChat": "Back to chat",
 					"navigationLabel": "Group settings classification",
 					"activeEmojiPackLabel": "Pack being edited",
 					"membersTitle": "Member list",
@@ -1668,7 +1668,10 @@
 						"deleteOk": "Emoji has been deleted",
 						"empty": "No custom emoji yet",
 						"hint": "Members can insert or send these emojis in chat; uninstalled images are pulled on demand through federated nodes.",
-						"packGroupOption": "${packId} (group)",
+						"packGroupOption": "Group default",
+						"idCopied": "Emoji pack ID copied",
+						"idCopy": "Copy",
+						"packCount": "${name} - ${count} items",
 						"title": "Custom group emoji",
 						"upload": "Upload emojis",
 						"uploadFailed": "Upload failed: ${error}",
@@ -1756,7 +1759,8 @@
 						"noRoles": "No roles available to configure",
 						"updateFailed": "Failed to update group permissions: ${error}",
 						"updated": "Group permissions updated"
-					}
+					},
+					"discoverySectionTitle": "federal discovery"
 				},
 				"pinContext": "Top neighborhood (±N neighbors)",
 				"rtcBudget": "RTC connection budget",

@@ -1199,6 +1199,7 @@
 				"aria-label": "Naar Unicode"
 			},
 			"discoverPacks": "Emoji-pakketten ontdekken →",
+			"emptyPack": "Er zijn momenteel geen uitdrukkingen voor dit emoticonpakket",
 			"addToCollection": "Aan favorieten toevoegen",
 			"addedToCollection": "Toegevoegd aan favorieten",
 			"joinGroup": "Lid worden",
@@ -1560,7 +1561,6 @@
 					"description": "Beheer de identiteit, leden, rechten en de tools die jullie gedeelde podium verbinden.",
 					"kicker": "Groepsbeheer",
 					"subtitle": "Beheer groepsinformatie, leden en gemeenschappelijke functies. Laagfrequente machtigingen, opslag en auditingtools zijn gecentraliseerd in geavanceerde instellingen.",
-					"backToChat": "Terug naar chat",
 					"navigationLabel": "Classificatie van groepsinstellingen",
 					"activeEmojiPackLabel": "Pakket in bewerking",
 					"membersTitle": "Ledenlijst",
@@ -1668,7 +1668,10 @@
 						"deleteOk": "Emoticon is verwijderd",
 						"empty": "Nog geen groepsuitdrukkingen",
 						"hint": "Leden kunnen deze emoticons in de chat invoegen of verzenden; verwijderde afbeeldingen worden op aanvraag opgehaald via federatieve knooppunten.",
-						"packGroupOption": "${packId} (groepsstandaard)",
+						"packGroupOption": "groepsstandaard",
+						"idCopied": "Emoji-pack-ID gekopieerd",
+						"idCopy": "Kopiëren",
+						"packCount": "${name} - ${count} items",
 						"title": "Aangepaste expressies groeperen",
 						"upload": "Emoticons uploaden",
 						"uploadFailed": "Uploaden mislukt: ${error}",
@@ -1756,7 +1759,8 @@
 						"noRoles": "Er zijn momenteel geen rollen om te configureren",
 						"updateFailed": "Bijwerken van groepsmachtigingen is mislukt: ${error}",
 						"updated": "Groepsmachtigingen bijgewerkt"
-					}
+					},
+					"discoverySectionTitle": "federale ontdekking"
 				},
 				"pinContext": "Topbuurt (±N buren)",
 				"rtcBudget": "RTC-aansluitbudget",

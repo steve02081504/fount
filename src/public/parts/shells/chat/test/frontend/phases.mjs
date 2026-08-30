@@ -27,5 +27,5 @@ export const phases = [
 	},
 	{ name: 'hub', testMatch: ['hubE2E.spec.mjs'] },
 	{ name: 'secondary', testMatch: ['secondaryPages.spec.mjs'] },
-	{ name: 'profile', testMatch: ['profile.spec.mjs'] },
+	{ name: 'profile', testMatch: ['profile.spec.mjs', 'profilePopup.spec.mjs'] },
 ]

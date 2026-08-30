@@ -1199,6 +1199,7 @@
 				"aria-label": "至 Unicode"
 			},
 			"discoverPacks": "覓表情包 →",
+			"emptyPack": "此表情包暂无表情",
 			"addToCollection": "納入收藏",
 			"addedToCollection": "已納收藏",
 			"joinGroup": "入群",
@@ -1560,7 +1561,6 @@
 					"description": "理群之身分、成員、權限與共臺之器。",
 					"kicker": "群組管理",
 					"subtitle": "掌群簿牒、成員與常用之法。低頻之權限、庫藏與審計，彙於樞機之制。",
-					"backToChat": "返聊天",
 					"navigationLabel": "群組樞機分類",
 					"activeEmojiPackLabel": "正編之表情包",
 					"membersTitle": "成員名錄",
@@ -1668,7 +1668,10 @@
 						"deleteOk": "表情已刪",
 						"empty": "暫無群表情",
 						"hint": "成員可於清談中插入或發送此等表情；未置之圖，將經諸邦節點按需拉取。",
-						"packGroupOption": "${packId} (群默設)",
+						"packGroupOption": "群默設",
+						"idCopied": "已複製表情包 ID",
+						"idCopy": "複製",
+						"packCount": "${name} - ${count}項",
 						"title": "群自定義表情",
 						"upload": "傳表情",
 						"uploadFailed": "傳未遂：${error}",
@@ -1756,7 +1759,8 @@
 						"noRoles": "今暫無可設之角色",
 						"updateFailed": "群權限更未遂：${error}",
 						"updated": "群權限已更"
-					}
+					},
+					"discoverySectionTitle": "联邦发现"
 				},
 				"pinContext": "高懸鄰域（±N 鄰帖）",
 				"rtcBudget": "RTC 通聯預算",

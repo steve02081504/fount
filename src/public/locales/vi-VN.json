@@ -1199,6 +1199,7 @@
 				"aria-label": "Tới Unicode"
 			},
 			"discoverPacks": "Khám phá gói emoji →",
+			"emptyPack": "Hiện tại không có biểu thức nào cho gói biểu tượng cảm xúc này",
 			"addToCollection": "Thêm vào yêu thích",
 			"addedToCollection": "Đã thêm vào yêu thích",
 			"joinGroup": "Tham gia nhóm",
@@ -1560,7 +1561,6 @@
 					"description": "Quản lý danh tính nhóm, thành viên, quyền hạn và các công cụ chung.",
 					"kicker": "Quản lý nhóm",
 					"subtitle": "Quản lý thông tin nhóm, thành viên và chức năng chung. Các công cụ cấp phép, lưu trữ và kiểm tra tần số thấp được tập trung trong cài đặt nâng cao.",
-					"backToChat": "Quay lại trò chuyện",
 					"navigationLabel": "Phân loại cài đặt nhóm",
 					"activeEmojiPackLabel": "Gói đang chỉnh sửa",
 					"membersTitle": "Danh sách thành viên",
@@ -1668,7 +1668,10 @@
 						"deleteOk": "Biểu tượng cảm xúc đã bị xóa",
 						"empty": "Chưa có biểu thức nhóm nào",
 						"hint": "Thành viên có thể chèn hoặc gửi các biểu tượng cảm xúc này trong cuộc trò chuyện; hình ảnh đã gỡ cài đặt được kéo theo yêu cầu thông qua các nút liên kết.",
-						"packGroupOption": "${packId} (mặc định)",
+						"packGroupOption": "mặc định",
+						"idCopied": "Đã sao chép ID bộ biểu cảm",
+						"idCopy": "Sao chép",
+						"packCount": "${name} - ${count} mục",
 						"title": "Nhóm biểu thức tùy chỉnh",
 						"upload": "Tải lên biểu tượng cảm xúc",
 						"uploadFailed": "Tải lên không thành công: ${error}",
@@ -1756,7 +1759,8 @@
 						"noRoles": "Hiện chưa có vai trò nào để cấu hình",
 						"updateFailed": "Cập nhật quyền của nhóm không thành công: ${error}",
 						"updated": "Đã cập nhật quyền của nhóm"
-					}
+					},
+					"discoverySectionTitle": "khám phá liên bang"
 				},
 				"pinContext": "Vùng lân cận hàng đầu (±N vùng lân cận)",
 				"rtcBudget": "Ngân sách kết nối RTC",

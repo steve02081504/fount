@@ -1,6 +1,7 @@
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { createMarkdownRichInput } from '/scripts/components/markdownRichInput.mjs'
 import { putGroupMeta, putGroupSettings, removeGroup } from '../endpoints/groupCore.mjs'
 import { postFederationTuning } from '../endpoints/groupFederation.mjs'
 import { rotateGroupKey, submitOwnerSuccession } from '../endpoints/groupGovernance.mjs'
@@ -169,6 +170,12 @@ export async function renderGroupSettings(context) {
 			showFedTuning: context.settingsCaps.canFedTuning,
 			showOwnerSuccession: context.settingsCaps.canOwnerSuccession,
 		})
+		const descInput = document.getElementById('group-description')
+		if (descInput instanceof HTMLElement && !descInput.classList.contains('fount-markdown-rich-input'))
+			createMarkdownRichInput(descInput, { enableDockedToolbar: true })
+		const discoveryBlurb = document.getElementById('discovery-blurb')
+		if (discoveryBlurb instanceof HTMLElement && !discoveryBlurb.classList.contains('fount-markdown-rich-input'))
+			createMarkdownRichInput(discoveryBlurb, { enableDockedToolbar: true })
 		await wireIceServersEditor(context)
 		document.getElementById('save-group-settings')?.addEventListener('click', () => {
 			void saveGroupSettings(context)

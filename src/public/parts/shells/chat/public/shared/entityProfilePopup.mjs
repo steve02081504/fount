@@ -8,7 +8,7 @@ import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { cachedProfileFromApi, getEntityProfile } from '../src/endpoints/entities.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
-import { isEntityHash128 } from './entityHash.mjs'
+import { entityHashLabel, isEntityHash128 } from './entityHash.mjs'
 import {
 	createEntityProfileCardElement,
 	paintEntityProfileCard,
@@ -110,6 +110,14 @@ export async function showEntityProfilePopup(entity) {
 
 	const popup = await createEntityProfileCardElement('popup')
 	openProfilePopupLayer(LAYER_ID, popup)
+
+	// 异步拉取资料前先填 stub 名，避免空标题窗口（a11y empty-heading）。
+	const nameElement = popup.querySelector('[data-entity-profile-name]')
+	if (nameElement instanceof HTMLElement)
+		nameElement.textContent = aliasForEntity(entity.entityHash)
+			|| entity.displayName
+			|| (entity.entityHash ? entityHashLabel(entity.entityHash) : '')
+			|| '?'
 
 	popup.querySelector('[data-profile-popup-close]')?.addEventListener('click', () => dismissEntityProfilePopup())
 	popup.querySelector('[data-profile-popup-social]')?.addEventListener('click', () => {

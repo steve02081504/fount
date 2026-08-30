@@ -170,6 +170,56 @@ export function invalidateAllUserProfileCaches() {
 	loadProfileCached.deleteMatching(() => true)
 }
 
+/** 影响 Hub 展示的资料字段（消息头像/作者名、成员列表、状态点、角色信息卡等）。 */
+const PROFILE_DISPLAY_FIELDS = [
+	'name',
+	'avatar',
+	'handle',
+	'themeColor',
+	'banner',
+	'description',
+	'description_markdown',
+	'status',
+	'customStatus',
+	'tags',
+	'links',
+]
+
+/**
+ * @param {object | null | undefined} a 旧资料
+ * @param {object | null | undefined} b 新资料
+ * @returns {boolean} 展示字段是否发生变化
+ */
+function profileDisplayChanged(a, b) {
+	for (const key of PROFILE_DISPLAY_FIELDS) {
+		const av = a?.[key]
+		const bv = b?.[key]
+		if (av === bv) continue
+		if (Array.isArray(av) && Array.isArray(bv)) {
+			if (JSON.stringify(av) !== JSON.stringify(bv)) return true
+			continue
+		}
+		return true
+	}
+	return false
+}
+
+/**
+ * 资料弹层以 forceRemote 拉取到最新资料后调用：仅当与 Hub 当前展示（缓存）不一致时，
+ * 才使缓存失效并重绘 Hub 资料面（消息头像/作者名、成员列表、好友列表等）。
+ * 资料未变化时跳过，避免每次打开弹层都全量重绘。
+ * @param {string} entityHash 128 位 entityHash
+ * @param {object | null} freshProfile 弹层最新拉取的资料
+ * @param {{ groupId?: string }} [options] 群上下文（persona 解析）
+ * @returns {Promise<void>}
+ */
+export async function refreshHubAfterPopupProfileFetch(entityHash, freshProfile, options = {}) {
+	if (!isEntityHash128(entityHash) || !freshProfile) return
+	const cached = await fetchUserProfile(entityHash, { groupId: options.groupId })
+	if (cached && !profileDisplayChanged(cached, freshProfile)) return
+	await refreshHubAfterProfileChange(entityHash)
+}
+
 /**
  * 清除容器内指定作者键的头像已加载标记。
  * @param {HTMLElement} root 容器

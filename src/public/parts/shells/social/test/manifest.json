@@ -316,7 +316,9 @@
 						"src/public/parts/shells/social/public/src/lib/profileHover.mjs",
 						"src/public/parts/shells/social/public/src/actions/{postProfileActions,profileNavActions}.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
-						"src/public/parts/shells/chat/public/shared/entityProfileCard.*"
+						"src/public/parts/shells/chat/public/shared/entityProfilePopup.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",
+						"src/public/parts/shells/chat/public/src/endpoints/entities.mjs"
 					]
 				},
 				{

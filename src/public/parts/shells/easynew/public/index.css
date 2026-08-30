@@ -1,0 +1,19 @@
+.easynew-md-input {
+	min-height: 96px;
+	max-height: 240px;
+	padding: 10px 12px;
+	border: var(--border) solid color-mix(in srgb, var(--color-base-content) 16%, transparent);
+	border-radius: var(--radius-box);
+	background: var(--color-base-100, #fff);
+	font-size: 0.875rem;
+	line-height: 1.6;
+}
+
+.easynew-md-input:focus-within {
+	border-color: var(--color-primary);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.easynew-md-input .fount-markdown-rich-input-docked-toolbar {
+	margin-bottom: 8px;
+}

@@ -13,10 +13,51 @@ const getSession = createTestSession()
 
 const append = await import('../../src/timeline/append.mjs')
 const notifications = await import('../../src/notifications.mjs')
+const inbox = await import('../../src/inbox.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
 const following = await import('../../src/following.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
 const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+
+/**
+ * 为远程实体写入本地 profile.json（模拟其已设置的头像/显示名）。
+ * @param {string} entityHash 远程实体 hash
+ * @param {string} name 显示名
+ * @param {string} avatar 头像 URL
+ * @returns {Promise<void>}
+ */
+async function seedRemoteProfile(entityHash, name, avatar) {
+	const { parseEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+	const { getEntityStore } = await import('npm:@steve02081504/fount-p2p/node/instance')
+	const parsed = parseEntityHash(entityHash)
+	await getEntityStore().writeEntityJson(entityHash, 'profile.json', {
+		entityHash,
+		nodeHash: parsed.nodeHash,
+		subjectHash: parsed.subjectHash,
+		localized: { 'zh-CN': { name, avatar } },
+		status: 'offline',
+		customStatus: '',
+		lastSeenAt: 0,
+		stats: { joinedAt: Date.now(), messageCount: 0, groupCount: 0, channelCount: 0 },
+	})
+}
+
+/**
+ * 生成一个跟随 operator 的远程关注者。
+ * @param {string} operator 收件人 entityHash
+ * @returns {Promise<string>} 关注者 entityHash
+ */
+async function seedFollowerTimeline(operator) {
+	const seed = randomSeed()
+	const subject = pubKeyHash(publicKeyFromSeed(seed))
+	const follower = encodeEntityHash('4'.repeat(64), subject)
+	const { username } = await getSession()
+	await seedRemoteTimeline(username, seed, follower, [
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
+		{ type: 'follow', content: { targetEntityHash: operator, rep_edge: 1 } },
+	])
+	return follower
+}
 
 Deno.test('buildNotifications includes like repost follow reply mention', async () => {
 	const { username, operator } = await getSession()
@@ -125,4 +166,73 @@ Deno.test('processSocialPostNotifyRpc accepts signed post payload', async () => 
 		post: { ...post, signature: '00'.repeat(64), id: 'f'.repeat(64) },
 	})
 	assertEquals(forged.ok, false)
+})
+
+Deno.test('buildNotifications enriches actor authorProfile (name/avatar)', async () => {
+	const { username, operator } = await getSession()
+	const follower = await seedFollowerTimeline(operator)
+	await seedRemoteProfile(follower, '我的朋友', 'https://example.com/friend-avatar.png')
+	await following.setFollow(username, operator, follower, true)
+	const { notifications: rows } = await notifications.buildNotifications(username, { limit: 50 })
+	const followRow = rows.find(row => row.type === 'follow' && row.actorEntityHash === follower)
+	assert(followRow, 'follow notification present')
+	assertEquals(followRow.actorEntityHash, follower)
+	assertEquals(followRow.authorProfile?.name, '我的朋友')
+	assertEquals(followRow.authorProfile?.avatar, 'https://example.com/friend-avatar.png')
+})
+
+Deno.test('appendInboxFromTimelineEvent stores authorProfile in inbox row', async () => {
+	const { username, operator } = await getSession()
+	const seed = randomSeed()
+	const subject = pubKeyHash(publicKeyFromSeed(seed))
+	const follower = encodeEntityHash('4'.repeat(64), subject)
+	await seedRemoteProfile(follower, '关注我的好友', 'https://example.com/friend2-avatar.png')
+	await seedRemoteTimeline(username, seed, follower, [
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
+		{ type: 'follow', content: { targetEntityHash: operator, rep_edge: 1 } },
+	])
+	await following.setFollow(username, operator, follower, true)
+	const { readJsonl } = await import('npm:@steve02081504/fount-p2p/dag/storage')
+	const rows = await readJsonl(inbox.inboxEventsPath(username, operator)).catch(() => [])
+	const followRow = rows.find(row => row.type === 'follow' && row.actorEntityHash === follower)
+	assert(followRow, 'inbox follow row present')
+	assertEquals(followRow.authorProfile?.name, '关注我的好友')
+	assertEquals(followRow.authorProfile?.avatar, 'https://example.com/friend2-avatar.png')
+})
+
+Deno.test('notification push copy: title is actor name, body is action phrase', () => {
+	const push = inbox.buildNotificationPushCopy(
+		{ type: 'follow', actorEntityHash: 'a'.repeat(128), snippet: null },
+		{ name: '我的好友' },
+	)
+	assertEquals(push.title, '我的好友')
+	assertEquals(push.body, '关注了你')
+})
+
+Deno.test('notification push copy: content types append snippet', () => {
+	const likePush = inbox.buildNotificationPushCopy(
+		{ type: 'like', actorEntityHash: 'a'.repeat(128), snippet: '好帖' },
+		{ name: '小明' },
+	)
+	assertEquals(likePush.title, '小明')
+	assertEquals(likePush.body, '赞了你的帖子：好帖')
+	const replyPush = inbox.buildNotificationPushCopy(
+		{ type: 'reply', actorEntityHash: 'a'.repeat(128), snippet: '原来如此' },
+		{ name: '小红' },
+	)
+	assertEquals(replyPush.title, '小红')
+	assertEquals(replyPush.body, '回复了你的帖子：原来如此')
+})
+
+Deno.test('notification push copy: falls back to short hash label without profile', async () => {
+	const seed = randomSeed()
+	const follower = encodeEntityHash('7'.repeat(64), pubKeyHash(publicKeyFromSeed(seed)))
+	const { entityHashLabel } = await import('fount/public/parts/shells/chat/public/shared/entityHash.mjs')
+	assertEquals(inbox.actorDisplayName(null, follower), entityHashLabel(follower))
+	const push = inbox.buildNotificationPushCopy(
+		{ type: 'follow', actorEntityHash: follower, snippet: null },
+		null,
+	)
+	assertEquals(push.title, entityHashLabel(follower))
+	assertEquals(push.body, '关注了你')
 })

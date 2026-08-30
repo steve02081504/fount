@@ -1199,6 +1199,7 @@
 				"aria-label": "Aller à Unicode"
 			},
 			"discoverPacks": "Explorer les packs d'émojis →",
+			"emptyPack": "Il n'y a actuellement aucune expression pour ce pack d'émoticônes",
 			"addToCollection": "Ajouter aux favoris",
 			"addedToCollection": "Ajouté aux favoris",
 			"joinGroup": "Rejoindre le groupe",
@@ -1560,7 +1561,6 @@
 					"description": "Gérez l'identité du groupe, ses membres, ses permissions et les outils qui lient votre scène partagée.",
 					"kicker": "Gestion de groupe",
 					"subtitle": "Gérez les informations du groupe, les membres et les fonctions communes. Les autorisations basse fréquence, le stockage et les outils d'audit sont centralisés dans les paramètres avancés.",
-					"backToChat": "Revenir au chat",
 					"navigationLabel": "Classification des paramètres de groupe",
 					"activeEmojiPackLabel": "Pack en cours d'édition",
 					"membersTitle": "Liste des membres",
@@ -1668,7 +1668,10 @@
 						"deleteOk": "L'émoticône a été supprimée",
 						"empty": "Aucune Émojis de groupe pour l'instant",
 						"hint": "Les membres peuvent insérer ou envoyer ces émoticônes dans le chat ; les images désinstallées sont extraites à la demande via des nœuds fédérés.",
-						"packGroupOption": "${packId} (groupe)",
+						"packGroupOption": "Par défaut",
+						"idCopied": "ID du pack d'emojis copié",
+						"idCopy": "Copier",
+						"packCount": "${name} - ${count} éléments",
 						"title": "Regrouper les expressions personnalisées",
 						"upload": "Téléverser des émojis",
 						"uploadFailed": "Échec du téléversement : ${error}",
@@ -1756,7 +1759,8 @@
 						"noRoles": "Aucun rôle configurable pour le moment",
 						"updateFailed": "Échec de la mise à jour des autorisations de groupe : ${error}",
 						"updated": "Autorisations de groupe mises à jour"
-					}
+					},
+					"discoverySectionTitle": "découverte fédérale"
 				},
 				"pinContext": "Quartier supérieur (±N voisins)",
 				"rtcBudget": "Budget connexion RTC",

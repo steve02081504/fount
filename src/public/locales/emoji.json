@@ -1199,6 +1199,7 @@
 				"aria-label": "🔤⬇️"
 			},
 			"discoverPacks": "🧭😀📦➡️",
+			"emptyPack": "此表情包暂无表情",
 			"addToCollection": "➕⭐",
 			"addedToCollection": "⭐✅",
 			"joinGroup": "➕👥",
@@ -1560,7 +1561,6 @@
 					"description": "👥⚙️📋🔐",
 					"kicker": "👥🛡️",
 					"subtitle": "👥📋➕👤🔧🔽🔐、💾📜🔧 📚▶️🔧⚙️",
-					"backToChat": "🔙💬",
 					"navigationLabel": "👥⚙️🗂️",
 					"activeEmojiPackLabel": "✏️😀📦",
 					"membersTitle": "👥📋",
@@ -1668,7 +1668,10 @@
 						"deleteOk": "😀🗑️✅",
 						"empty": "📭👥😀",
 						"hint": "👤✅💬📍／📤👥😀；🚫📥🖼️ ➡️ 🌐🔗📥⏳",
-						"packGroupOption": "${packId} 👥",
+						"packGroupOption": "👥",
+						"idCopied": "✅",
+						"idCopy": "📋",
+						"packCount": "${name} - ${count}",
 						"title": "👥😀",
 						"upload": "⬆️😀",
 						"uploadFailed": "⬆️❌：${error}",
@@ -1756,7 +1759,8 @@
 						"noRoles": "📭🎭",
 						"updateFailed": "👥🔐🔄❌：${error}",
 						"updated": "👥🔐🔄✅"
-					}
+					},
+					"discoverySectionTitle": "联邦发现"
 				},
 				"pinContext": "📌±N📨",
 				"rtcBudget": "📞🔗💰",

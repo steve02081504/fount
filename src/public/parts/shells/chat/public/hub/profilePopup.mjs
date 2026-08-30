@@ -24,7 +24,7 @@ import {
 	wireEntityProfileCardActions,
 } from './entityProfile.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
-import { fetchUserProfile, hideHoverCard } from './presence.mjs'
+import { fetchUserProfile, hideHoverCard, refreshHubAfterPopupProfileFetch } from './presence.mjs'
 
 const LAYER_ID = 'profile-popup-layer'
 
@@ -163,6 +163,12 @@ async function paintProfilePopup(popup, entity) {
 		? await loadEntityProfile(entityHash, { bypassCache: true, groupId, forceRemote: true })
 			.catch(() => fetchUserProfile(entityHash, { groupId }))
 		: null
+
+	// forceRemote 拉到了最新资料：若与消息/成员列表当前展示不一致，重绘这些资料面。
+	// 与 WS profile_update 触发同一重绘路径，保证弹层所见与列表所见一致，无需刷新页面。
+	if (profile && entityHash)
+		void refreshHubAfterPopupProfileFetch(entityHash, profile, { groupId })
+			.catch(error => console.error('[chat] profile popup refresh failed', error))
 
 	if (profile)
 		await paintEntityProfileUi(popup, profile, { attribution: entity.attribution || null })
