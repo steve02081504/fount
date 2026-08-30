@@ -5,7 +5,9 @@
  *   本模块无 DOM / store 依赖，可纯 Deno 单测。
  * 【关联】friendBinding、hub/friendsList、hub/friendBindings。
  */
+import { isEntityHash128 } from './entityHash.mjs'
 import { normalizeFriendBinding } from './friendBinding.mjs'
+import { displayProfileAvatar, listAvatarTemplateFields } from './hashAvatar.mjs'
 
 /**
  * 好友侧栏行。
@@ -61,4 +63,22 @@ export function buildFriendRows(groups) {
 		return leftRow.displayName.localeCompare(rightRow.displayName, undefined, { sensitivity: 'base' })
 	})
 	return rows
+}
+
+/**
+ * 好友行头像模板字段（friendsList 渲染 / 纯函数可测）。
+ * 有 profile 头像则渲染 `<img>`；否则回退 hash 字母占位。
+ * `avatarFor` 始终携带对端 entityHash，供 `applyAvatarsTo` 异步 hydration：
+ * DM 好友资料未缓存时先字母、profile 到位后补图（成员列表/消息区同款机制）。
+ * @param {FriendRow} friend 好友行
+ * @param {{ avatar?: string } | null | undefined} profile 对端资料（可能为 null）
+ * @param {string} displayName 展示名（字母占位首字母）
+ * @returns {{ avatarFor: string, avatarBg: string, avatarTextColor: string, avatarInner: string }} 模板字段
+ */
+export function friendAvatarTemplateFields(friend, profile, displayName) {
+	const seed = friend.key || friend.groupId
+	return {
+		avatarFor: isEntityHash128(friend.key) ? friend.key : '',
+		...listAvatarTemplateFields(seed, displayName, displayProfileAvatar(profile)),
+	}
 }

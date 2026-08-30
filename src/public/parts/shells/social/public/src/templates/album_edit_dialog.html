@@ -2,11 +2,11 @@
 	<h2 class="font-bold text-lg" data-i18n="${titleI18n}"></h2>
 	<label class="form-control">
 		<span class="label-text" data-i18n="social.profile.albums.name"></span>
-		<input type="text" class="input input-bordered" data-album-name value="${name}" />
+		<input type="text" class="input input-bordered" data-album-name value="${escapeHtml(name)}" />
 	</label>
 	<label class="form-control">
 		<span class="label-text" data-i18n="social.profile.albums.description"></span>
-		<textarea class="textarea textarea-bordered" data-album-description rows="2">${description}</textarea>
+		<textarea class="textarea textarea-bordered" data-album-description rows="2">${escapeHtml(description)}</textarea>
 	</label>
 	<div class="form-control">
 		<span class="label-text" data-i18n="social.composer.visibility.label"></span>

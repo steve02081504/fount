@@ -44,7 +44,7 @@ await testCase('A creates group (B stays non-member)', async () => {
 	const g = (await Api(FedA, 'POST', '/groups/', { name: 'FedEmojiNM', description: 'L4 fed probe' })).json
 	gid = g.groupId
 	cid = g.defaultChannelId
-	await Api(FedA, 'PUT', `/groups/${gid}/settings`, { joinPolicy: 'invite-only', discoveryPublic: true })
+	await Api(FedA, 'PUT', `/groups/${gid}/settings`, { joinPolicy: 'pow', discoveryPublic: true })
 	return Boolean(gid)
 })
 

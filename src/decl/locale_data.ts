@@ -1161,6 +1161,7 @@ export type LocaleData = {
 				'aria-label': string
 			}
 			discoverPacks: string
+			emptyPack: string
 			addToCollection: string
 			addedToCollection: string
 			joinGroup: string
@@ -1470,6 +1471,7 @@ export type LocaleData = {
 				compactTriggerDepth: string
 				discoveryBlurb: string
 				discoveryPublic: string
+				powOnlyHint: string
 				discoveryTitle: string
 				eventRetentionDepth: string
 				eventRetentionMs: string
@@ -1522,7 +1524,6 @@ export type LocaleData = {
 					description: string
 					kicker: string
 					subtitle: string
-					backToChat: string
 					navigationLabel: string
 					activeEmojiPackLabel: string
 					membersTitle: string
@@ -1631,6 +1632,9 @@ export type LocaleData = {
 						empty: string
 						hint: string
 						packGroupOption: string
+						idCopied: string
+						idCopy: string
+						packCount: string
 						title: string
 						upload: string
 						uploadFailed: string
@@ -1719,6 +1723,7 @@ export type LocaleData = {
 						updateFailed: string
 						updated: string
 					}
+					discoverySectionTitle: string
 				}
 				pinContext: string
 				rtcBudget: string
@@ -6344,7 +6349,7 @@ export type LocaleKeyParams = {
 	'chat.group.settings.page.delete.roleFailed': { error: string | number }
 	'chat.group.settings.page.emojis.create.packFailed': { error: string | number }
 	'chat.group.settings.page.emojis.deleteFailed': { error: string | number }
-	'chat.group.settings.page.emojis.packGroupOption': { packId: string | number }
+	'chat.group.settings.page.emojis.packCount': { count: string | number; name: string | number }
 	'chat.group.settings.page.emojis.uploadFailed': { error: string | number }
 	'chat.group.settings.page.groupPerms.updateFailed': { error: string | number }
 	'chat.group.settings.page.gshGenerationNearLimit': { generation: string | number; maxGenerations: string | number }

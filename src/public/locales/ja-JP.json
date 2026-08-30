@@ -1199,6 +1199,7 @@
 				"aria-label": "Unicode へ"
 			},
 			"discoverPacks": "絵文字パックを探す →",
+			"emptyPack": "この絵文字パックにはまだ表現がありません",
 			"addToCollection": "お気に入りに追加",
 			"addedToCollection": "お気に入りに追加しました",
 			"joinGroup": "グループに参加",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "低電力モード (縮小されたフェデレーション接続プールとリレー)",
 				"compactTriggerDepth": "実体化された圧縮トリガーの深さ",
 				"discoveryBlurb": "ディスカバリーの概要 (オプション)",
-				"discoveryPublic": "このグループをフェデレーション検出で公開します (グループ キーに参加せずに)",
+				"discoveryPublic": "このグループをフェデレーション検出で公開します",
+				"powOnlyHint": "PoW の参加ポリシーでのみ利用できます。オンにすると、グループがフェデレーション検出に表示され、他の人が見つけて PoW で参加を申請できます。",
 				"discoveryTitle": "ディスカバリーリストのタイトル (オプション)",
 				"eventRetentionDepth": "DAG イベント保持の深さ",
 				"eventRetentionMs": "DAG イベント保持時間",
@@ -1560,7 +1562,6 @@
 					"description": "グループの身元、メンバー、権限、そして共有スペースを支える各種ツールを管理します。",
 					"kicker": "グループ経営",
 					"subtitle": "グループ情報、メンバー、共通機能を管理します。低頻度のアクセス許可、ストレージ、監査ツールは詳細設定に一元化されています。",
-					"backToChat": "チャットに戻る",
 					"navigationLabel": "グループ設定の分類",
 					"activeEmojiPackLabel": "編集中のパック",
 					"membersTitle": "メンバーリスト",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "絵文字は削除されました",
 						"empty": "グループ式はまだありません",
 						"hint": "メンバーはチャットにこれらの絵文字を挿入または送信できます。アンインストールされたイメージは、フェデレーション ノードを通じてオンデマンドでプルされます。",
-						"packGroupOption": "${packId} (グループ既定)",
+						"packGroupOption": "グループの既定",
+						"idCopied": "絵文字パック ID をクリップボードにコピーしました",
+						"idCopy": "コピー",
+						"packCount": "${name} - ${count}個",
 						"title": "グループカスタム式",
 						"upload": "絵文字をアップロードする",
 						"uploadFailed": "アップロードに失敗しました: ${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "設定できるロールがありません",
 						"updateFailed": "グループ権限の更新に失敗しました: ${error}",
 						"updated": "グループ権限を更新しました"
-					}
+					},
+					"discoverySectionTitle": "フェデレーション検出"
 				},
 				"pinContext": "最上位近傍 (±N 近傍)",
 				"rtcBudget": "RTC 接続の予算",

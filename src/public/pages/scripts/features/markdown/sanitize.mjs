@@ -19,6 +19,8 @@ export function rehypeSanitizeUntrustedContent() {
 				parent.children.splice(index, 1)
 				return index
 			}
+			// 用户可控 `<img>` 一律禁止 svgInliner 内联（防远程 `.svg` 携带脚本的存储型 XSS）
+			if (tagName === 'img') node.properties['svg-inliner-ignore'] = ''
 			const { properties } = node
 			for (const propertyName of Object.keys(properties)) {
 				const lowerName = propertyName.toLowerCase()

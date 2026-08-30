@@ -62,7 +62,7 @@ await testCase('A creates invite-only group', async () => {
 	const g = (await Api(FedA, 'POST', '/groups/', { name: groupTitle, description: 'L4 fed probe' })).json
 	gid = g.groupId
 	cid = g.defaultChannelId
-	await Api(FedA, 'PUT', `/groups/${gid}/settings`, { joinPolicy: 'invite-only', discoveryPublic: true })
+	await Api(FedA, 'PUT', `/groups/${gid}/settings`, { joinPolicy: 'pow', discoveryPublic: true })
 	return Boolean(gid)
 })
 
@@ -136,7 +136,7 @@ await testCase('B GET /groups/:id/preview as non-member', async () => {
 	return Boolean(ok)
 })
 
-await testCase('B preview hides join for invite-only private group', async () => {
+await testCase('B preview hides join for non-member without local state', async () => {
 	const ok = await pollUntil(async () => {
 		const r = await Api(FedB, 'GET', `/groups/${gid}/preview`)
 		return r.status === 200 && r.json.canJoin === false

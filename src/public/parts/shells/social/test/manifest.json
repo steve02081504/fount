@@ -316,7 +316,9 @@
 						"src/public/parts/shells/social/public/src/lib/profileHover.mjs",
 						"src/public/parts/shells/social/public/src/actions/{postProfileActions,profileNavActions}.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
-						"src/public/parts/shells/chat/public/shared/entityProfileCard.*"
+						"src/public/parts/shells/chat/public/shared/entityProfilePopup.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",
+						"src/public/parts/shells/chat/public/src/endpoints/entities.mjs"
 					]
 				},
 				{
@@ -355,6 +357,16 @@
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/explore_notifications.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/{explore,notifications}.mjs"
+					]
+				},
+				{
+					"name": "xssInjection",
+					"expected": "30s",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/xssInjection.spec.mjs",
+						"src/public/parts/shells/social/public/src/postCard.mjs",
+						"src/public/pages/scripts/features/markdown/**",
+						"src/public/pages/scripts/lib/svgInliner.mjs"
 					]
 				}
 			],

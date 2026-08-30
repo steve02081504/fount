@@ -1199,6 +1199,7 @@
 				"aria-label": "Jump to Unicode"
 			},
 			"discoverPacks": "Explore emoji packs →",
+			"emptyPack": "This emoji pack has no expressions yet",
 			"addToCollection": "Add to favourites",
 			"addedToCollection": "Added to favourites",
 			"joinGroup": "Join group",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "Battery saver (smaller federation pool and relays)",
 				"compactTriggerDepth": "Materialized compression trigger depth",
 				"discoveryBlurb": "Discovery blurb (optional)",
-				"discoveryPublic": "Expose this group in federated discovery (without joining the group key)",
+				"discoveryPublic": "Expose this group in federated discovery",
+				"powOnlyHint": "Only available with the PoW join policy. When enabled, the group appears in federated discovery so others can find it and request to join via PoW.",
 				"discoveryTitle": "Discovery list title (optional)",
 				"eventRetentionDepth": "DAG event retention depth",
 				"eventRetentionMs": "DAG event retention time",
@@ -1560,7 +1562,6 @@
 					"description": "Manage group identity, members, permissions, and shared tools.",
 					"kicker": "Group settings",
 					"subtitle": "Manage group information, members and common functions. Low-frequency permissions, storage, and auditing tools are centralized in advanced settings.",
-					"backToChat": "Back to chat",
 					"navigationLabel": "Group settings classification",
 					"activeEmojiPackLabel": "Pack being edited",
 					"membersTitle": "Member list",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "Emoji has been deleted",
 						"empty": "No custom emoji yet",
 						"hint": "Members can insert or send these emojis in chat; uninstalled images are pulled on demand through federated nodes.",
-						"packGroupOption": "${packId} (group)",
+						"packGroupOption": "Group default pack",
+						"idCopied": "Emoji pack ID copied to clipboard",
+						"idCopy": "Copy",
+						"packCount": "${name} - ${count} items",
 						"title": "Custom group emoji",
 						"upload": "Upload emojis",
 						"uploadFailed": "Upload failed: ${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "No roles available to configure",
 						"updateFailed": "Failed to update group permissions: ${error}",
 						"updated": "Group permissions updated"
-					}
+					},
+					"discoverySectionTitle": "Federated discovery"
 				},
 				"pinContext": "Top neighborhood (±N neighbors)",
 				"rtcBudget": "RTC connection budget",

@@ -22,6 +22,11 @@
 				<select id="group-active-emoji-pack" class="select select-bordered select-sm w-full">
 					${activePackOptionsHtml}
 				</select>
+				<div class="flex items-center gap-1 mt-1 text-xs opacity-70">
+					<span data-i18n="chat.group.settings.page.emojis.create.packPrompt"></span>
+					<code id="group-active-pack-id" class="badge badge-ghost badge-sm font-mono" user-content></code>
+					<button type="button" id="group-active-pack-copy" class="btn btn-ghost btn-xs" data-i18n="chat.group.settings.page.emojis.idCopy"></button>
+				</div>
 			</div>
 			<div class="form-control w-full max-w-xs">
 				<label class="label" for="group-default-emoji-pack">
@@ -41,6 +46,11 @@
 			<select id="group-active-emoji-pack" class="select select-bordered select-sm w-full">
 				${activePackOptionsHtml}
 			</select>
+			<div class="flex items-center gap-1 mt-1 text-xs opacity-70">
+				<span data-i18n="chat.group.settings.page.emojis.create.packPrompt"></span>
+				<code id="group-active-pack-id" class="badge badge-ghost badge-sm font-mono" user-content></code>
+				<button type="button" id="group-active-pack-copy" class="btn btn-ghost btn-xs" data-i18n="chat.group.settings.page.emojis.idCopy"></button>
+			</div>
 		</div>`}
 		<div id="group-emojis-list" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 mt-3">
 			${entriesHtml}

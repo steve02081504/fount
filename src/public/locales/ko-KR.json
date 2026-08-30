@@ -1199,6 +1199,7 @@
 				"aria-label": "유니코드로"
 			},
 			"discoverPacks": "이모티콘 팩 둘러보기 →",
+			"emptyPack": "이 이모티콘 팩에는 아직 표현이 없습니다.",
 			"addToCollection": "즐겨찾기에 추가",
 			"addedToCollection": "즐겨찾기에 추가됨",
 			"joinGroup": "그룹 가입",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "절전 모드(연합 연결 풀·릴레이 축소)",
 				"compactTriggerDepth": "물리화 압축 트리거 깊이",
 				"discoveryBlurb": "검색 소개(선택 사항)",
-				"discoveryPublic": "연합 검색에서 이 그룹을 노출합니다(그룹 키에 가입하지 않음).",
+				"discoveryPublic": "연합 검색에서 이 그룹을 노출합니다",
+				"powOnlyHint": "PoW 가입 정책에서만 사용할 수 있습니다. 활성화하면 그룹이 연합 검색에 표시되어 다른 사람들이 찾아 PoW로 가입을 신청할 수 있습니다.",
 				"discoveryTitle": "검색 목록 제목(선택 사항)",
 				"eventRetentionDepth": "DAG 이벤트 보존 깊이",
 				"eventRetentionMs": "DAG 이벤트 보존 시간",
@@ -1560,7 +1562,6 @@
 					"description": "그룹의 신원, 멤버, 권한과 공유 공간을 잇는 도구를 관리합니다.",
 					"kicker": "그룹 관리",
 					"subtitle": "그룹 메시지, 멤버, 공통 기능을 관리합니다. 빈도가 낮은 권한, 저장 및 감사 도구는 고급 설정에 중앙 집중화되어 있습니다.",
-					"backToChat": "채팅으로 돌아가기",
 					"navigationLabel": "그룹 설정 분류",
 					"activeEmojiPackLabel": "편집 중인 팩",
 					"membersTitle": "멤버 목록",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "이모티콘이 삭제되었습니다.",
 						"empty": "아직 그룹 표정이 없습니다.",
 						"hint": "멤버는 채팅에 이 이모티콘을 넣거나 보낼 수 있습니다. 설치되지 않은 이미지는 연합 노드를 통해 필요할 때 가져옵니다.",
-						"packGroupOption": "${packId} (그룹 기본)",
+						"packGroupOption": "그룹 기본",
+						"idCopied": "이모지 팩 ID를 클립보드에 복사했습니다",
+						"idCopy": "복사",
+						"packCount": "${name} - ${count}개",
 						"title": "그룹 맞춤 표정식",
 						"upload": "이모티콘 업로드",
 						"uploadFailed": "업로드 실패: ${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "구성할 역할이 없습니다.",
 						"updateFailed": "그룹 권한 업데이트에 실패했습니다: ${error}",
 						"updated": "그룹 권한이 업데이트되었습니다."
-					}
+					},
+					"discoverySectionTitle": "연합 검색"
 				},
 				"pinContext": "상위 이웃(±N 이웃)",
 				"rtcBudget": "RTC 연결 예산",

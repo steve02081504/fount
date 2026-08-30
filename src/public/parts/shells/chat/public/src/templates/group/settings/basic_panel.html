@@ -16,13 +16,6 @@
 				</div>
 
 				<div class="form-control">
-					<label class="label" for="group-description">
-						<span class="label-text" data-i18n="chat.group.settings.page.descriptionLabel"></span>
-					</label>
-					<textarea id="group-description" class="textarea textarea-bordered" rows="3">${escapeHtml(currentState.groupMeta?.description ?? '')}</textarea>
-				</div>
-
-				<div class="form-control">
 					<label class="label" for="join-policy">
 						<span class="label-text" data-i18n="chat.group.settings.page.joinPolicyLabel"></span>
 					</label>
@@ -31,6 +24,30 @@
 						<option value="pow" ${currentState.groupSettings.joinPolicy==='pow' ? 'selected' : '' } data-i18n="chat.group.settings.page.joinPow"></option>
 					</select>
 				</div>
+			</div>
+
+			<div class="form-control">
+				<label class="label" for="group-description">
+					<span id="group-description-label" class="label-text" data-i18n="chat.group.settings.page.descriptionLabel"></span>
+				</label>
+				<div id="group-description" class="group-settings-description-input" aria-labelledby="group-description-label" user-content>${escapeHtml(currentState.groupMeta?.description ?? '')}</div>
+			</div>
+		</section>
+
+		<section class="settings-section">
+			<h3 class="settings-section-title" data-i18n="chat.group.settings.page.discoverySectionTitle"></h3>
+			<label class="label cursor-pointer justify-start gap-3 ${currentState.groupSettings.joinPolicy === 'pow' ? '' : 'opacity-60'}">
+				<input type="checkbox" id="discovery-public" class="checkbox" ${currentState.groupSettings.discoveryPublic ? 'checked' : '' } ${currentState.groupSettings.joinPolicy === 'pow' ? '' : 'disabled'} />
+				<span class="label-text" data-i18n="chat.group.settings.discoveryPublic"></span>
+			</label>
+			<p class="text-xs opacity-60 mt-1" data-i18n="chat.group.settings.powOnlyHint"></p>
+			<div class="form-control">
+				<label class="label" for="discovery-title"><span class="label-text" data-i18n="chat.group.settings.discoveryTitle"></span></label>
+				<input type="text" id="discovery-title" class="input input-bordered" maxlength="200" value="${escapeHtml(String(currentState.groupSettings.discoveryTitle || ''))}">
+			</div>
+			<div class="form-control">
+				<label class="label" for="discovery-blurb"><span id="discovery-blurb-label" class="label-text" data-i18n="chat.group.settings.discoveryBlurb"></span></label>
+				<div id="discovery-blurb" class="group-settings-description-input" aria-labelledby="discovery-blurb-label" user-content>${escapeHtml(String(currentState.groupSettings.discoveryBlurb || ''))}</div>
 			</div>
 		</section>
 
@@ -84,20 +101,6 @@
 							<input type="checkbox" id="battery-saver" class="checkbox" ${currentState.groupSettings.batterySaver ? 'checked' : '' } />
 							<span class="label-text" data-i18n="chat.group.settings.batterySaver"></span>
 						</label>
-
-						<label class="label cursor-pointer justify-start gap-3">
-							<input type="checkbox" id="discovery-public" class="checkbox" ${currentState.groupSettings.discoveryPublic ? 'checked' : '' } />
-							<span class="label-text" data-i18n="chat.group.settings.discoveryPublic"></span>
-						</label>
-
-						<div class="form-control">
-							<label class="label" for="discovery-title"><span class="label-text" data-i18n="chat.group.settings.discoveryTitle"></span></label>
-							<input type="text" id="discovery-title" class="input input-bordered" maxlength="200" value="${escapeHtml(String(currentState.groupSettings.discoveryTitle || ''))}">
-						</div>
-						<div class="form-control">
-							<label class="label" for="discovery-blurb"><span class="label-text" data-i18n="chat.group.settings.discoveryBlurb"></span></label>
-							<textarea id="discovery-blurb" class="textarea textarea-bordered" maxlength="500">${escapeHtml(String(currentState.groupSettings.discoveryBlurb || ''))}</textarea>
-						</div>
 					</div>
 				</section>
 

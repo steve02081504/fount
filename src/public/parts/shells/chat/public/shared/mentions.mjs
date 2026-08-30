@@ -1,5 +1,14 @@
 /** 提及解析（chat/social 共用；浏览器 / Deno / Node 均可加载）。 */
 import { parseInlineTokens } from './inlineTokens.mjs'
+import { escapeHtml } from './escapeHtml.mjs'
+
+/**
+ * @param {string} label 提及展示名（displayName / 角色名）
+ * @returns {string} 转义后的 markdown 文本（防 `<img onerror>` 之类 raw HTML 借 trusted 档执行）
+ */
+export function escapeMentionLabel(label) {
+	return escapeHtml(String(label ?? ''))
+}
 
 /**
  * @param {string} text 正文

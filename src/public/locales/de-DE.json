@@ -1199,6 +1199,7 @@
 				"aria-label": "Zu Unicode"
 			},
 			"discoverPacks": "Emoji-Pakete entdecken →",
+			"emptyPack": "Dieses Emoji-Paket enthält noch keine Ausdrücke",
 			"addToCollection": "Zu Favoriten hinzufügen",
 			"addedToCollection": "Zu Favoriten hinzugefügt",
 			"joinGroup": "Gruppe beitreten",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "Energiesparmodus (verkleinerter Verbundverbindungspool und Relay)",
 				"compactTriggerDepth": "Tiefe des materialisierten Komprimierungstriggers",
 				"discoveryBlurb": "Discovery-Einführung (optional)",
-				"discoveryPublic": "Diese Gruppe in der Verbunderkennung verfügbar machen (ohne dem Gruppenschlüssel beizutreten)",
+				"discoveryPublic": "Diese Gruppe in der Verbunderkennung verfügbar machen",
+				"powOnlyHint": "Nur mit der PoW-Beitrittsregel verfügbar. Nach dem Aktivieren erscheint die Gruppe in der Verbundsuche, sodass andere sie finden und per PoW beitreten können.",
 				"discoveryTitle": "Titel der Discovery-Liste (optional)",
 				"eventRetentionDepth": "Aufbewahrungstiefe für DAG-Ereignisse",
 				"eventRetentionMs": "Aufbewahrungszeit des DAG-Ereignisses",
@@ -1560,7 +1562,6 @@
 					"description": "Verwalten Sie Identität, Mitglieder, Berechtigungen und die Werkzeuge, die Ihre gemeinsame Bühne verbinden.",
 					"kicker": "Gruppenleitung",
 					"subtitle": "Verwalten Sie Gruppeninformationen, Mitglieder und allgemeine Funktionen. Low-Frequency-Berechtigungen, Speicher und Überwachungstools sind in erweiterten Einstellungen zentralisiert.",
-					"backToChat": "Zurück zum Chat",
 					"navigationLabel": "Klassifizierung der Gruppeneinstellungen",
 					"activeEmojiPackLabel": "Bearbeitetes Paket",
 					"membersTitle": "Mitgliederliste",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "Emoticon wurde gelöscht",
 						"empty": "Noch keine Gruppenausdrücke",
 						"hint": "Mitglieder können diese Emoticons im Chat einfügen oder senden; Deinstallierte Images werden bei Bedarf über Verbundknoten abgerufen.",
-						"packGroupOption": "${packId} (Standard)",
+						"packGroupOption": "Gruppenstandard",
+						"idCopied": "Emoji-Pack-ID in die Zwischenablage kopiert",
+						"idCopy": "Kopieren",
+						"packCount": "${name} - ${count} Elemente",
 						"title": "Benutzerdefinierte Ausdrücke gruppieren",
 						"upload": "Laden Sie Emoticons hoch",
 						"uploadFailed": "Hochladen fehlgeschlagen: ${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "Derzeit gibt es keine zu konfigurierenden Rollen",
 						"updateFailed": "Aktualisierung der Gruppenberechtigungen fehlgeschlagen: ${error}",
 						"updated": "Gruppenberechtigungen aktualisiert"
-					}
+					},
+					"discoverySectionTitle": "Verbundentdeckung"
 				},
 				"pinContext": "Top-Nachbarschaft (±N Nachbarn)",
 				"rtcBudget": "RTC-Verbindungsbudget",
