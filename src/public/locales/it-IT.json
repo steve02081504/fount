@@ -1199,6 +1199,7 @@
 				"aria-label": "Vai a Unicode"
 			},
 			"discoverPacks": "Esplora pacchetti emoji →",
+			"emptyPack": "Questo pacchetto di emoticon non contiene ancora espressioni",
 			"addToCollection": "Aggiungi ai preferiti",
 			"addedToCollection": "Aggiunto ai preferiti",
 			"joinGroup": "Unisciti al gruppo",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "Risparmio batteria (pool federativo e relè più piccoli)",
 				"compactTriggerDepth": "Profondità di innesco della compressione materializzata",
 				"discoveryBlurb": "Descrizione della scoperta (facoltativo)",
-				"discoveryPublic": "Esporre questo gruppo nell'individuazione federata (senza unirsi alla chiave del gruppo)",
+				"discoveryPublic": "Esporre questo gruppo nell'individuazione federata",
+				"powOnlyHint": "Disponibile solo con la policy di iscrizione PoW. Una volta attivata, il gruppo apparirà nell'individuazione federata, così altri potranno trovarlo e richiedere di unirsi tramite PoW.",
 				"discoveryTitle": "Titolo dell'elenco di rilevamento (facoltativo)",
 				"eventRetentionDepth": "Profondità di conservazione degli eventi DAG",
 				"eventRetentionMs": "Tempo di conservazione degli eventi DAG",
@@ -1560,7 +1562,6 @@
 					"description": "Gestisci identità, membri, permessi del gruppo e gli strumenti che legano il palcoscenico condiviso.",
 					"kicker": "Impostazioni del gruppo",
 					"subtitle": "Gestisci le informazioni del gruppo, i membri e le funzioni comuni. Le autorizzazioni a bassa frequenza, l'archiviazione e gli strumenti di controllo sono centralizzati in impostazioni avanzate.",
-					"backToChat": "Torna alla chat",
 					"navigationLabel": "Classificazione delle impostazioni del gruppo",
 					"activeEmojiPackLabel": "Pacchetto in modifica",
 					"membersTitle": "Elenco dei membri",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "L'emoji è stata eliminata",
 						"empty": "Nessuna emoji personalizzata ancora",
 						"hint": "I membri possono inserire o inviare questi emoji in chat; le immagini disinstallate vengono estratte su richiesta tramite nodi federati.",
-						"packGroupOption": "${packId} (gruppo)",
+						"packGroupOption": "Predefinito del gruppo",
+						"idCopied": "ID del pacchetto emoji copiato negli appunti",
+						"idCopy": "Copia",
+						"packCount": "${name} - ${count} elementi",
 						"title": "Emoji di gruppo personalizzati",
 						"upload": "Carica emoji",
 						"uploadFailed": "Caricamento non riuscito: ${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "Al momento non ci sono ruoli da configurare",
 						"updateFailed": "Aggiornamento delle autorizzazioni del gruppo non riuscito: ${error}",
 						"updated": "Autorizzazioni del gruppo aggiornate"
-					}
+					},
+					"discoverySectionTitle": "Individuazione federata"
 				},
 				"pinContext": "Quartiere principale (± N vicini)",
 				"rtcBudget": "Budget per la connessione RTC",

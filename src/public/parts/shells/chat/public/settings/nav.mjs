@@ -1,7 +1,9 @@
 /**
  * 【文件】public/settings/nav.mjs
- * 【职责】群设置侧栏/顶栏分区导航状态机（active、ARIA、懒加载触发）。
+ * 【职责】群设置侧栏/顶栏分区导航状态机（active、ARIA、懒加载触发、hash 持久化）。
  */
+
+import { updateSettingsHashSection } from '../src/groupSettings/shared.mjs'
 
 const LAZY_SECTIONS = {
 	emojis: null,
@@ -26,9 +28,10 @@ function visibleNavItems() {
 
 /**
  * @param {string} section 分区 id
+ * @param {{ scroll?: boolean }} [options] 激活后是否滚动导航项到可见位置（加载恢复时传 false）
  * @returns {void}
  */
-export function activateSection(section) {
+export function activateSection(section, { scroll = true } = {}) {
 	const items = Array.from(document.querySelectorAll('.settings-nav-item'))
 	const target = items.find(item => item.dataset.section === section && !item.classList.contains('hidden'))
 		|| visibleNavItems()[0]
@@ -47,7 +50,8 @@ export function activateSection(section) {
 	}
 	const lazy = LAZY_SECTIONS[nextSection]
 	if (lazy) void lazy()
-	target.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+	updateSettingsHashSection(nextSection)
+	if (scroll) target.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
 }
 
 /**

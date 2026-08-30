@@ -165,7 +165,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "5m8s",
+			"expected": "8m48s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -734,7 +734,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "10m18s",
+			"expected": "5m58s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -902,7 +902,7 @@
 				},
 				{
 					"name": "secondaryPages",
-					"expected": "1m50s",
+					"expected": "5m57s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/secondaryPages.spec.mjs"
 					]
@@ -915,6 +915,8 @@
 						"src/public/parts/shells/chat/public/profile/**",
 						"src/public/parts/shells/chat/public/hub/profileEdit.mjs",
 						"src/public/parts/shells/chat/public/hub/entityProfile.mjs",
+						"src/public/parts/shells/chat/public/hub/profilePopup.mjs",
+						"src/public/parts/shells/chat/public/hub/presence.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",
 						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfilePopup.mjs",
@@ -926,6 +928,37 @@
 						"src/public/parts/shells/chat/public/src/templates/hub/profile_{edit_modal,popup}.html",
 						"src/public/parts/shells/chat/src/entity/{profile,ownerProfileUpdate,localized,filesUrl,filesEndpoints}.mjs",
 						"src/public/parts/shells/chat/test/integration/owner_profile_update.test.mjs"
+					]
+				},
+				{
+					"name": "profilePopup",
+					"expected": "34s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/profilePopup.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/profilePopup.mjs",
+						"src/public/parts/shells/chat/public/hub/presence.mjs",
+						"src/public/parts/shells/chat/public/hub/entityProfile.mjs",
+						"src/public/parts/shells/chat/public/hub/core/avatarCover.mjs",
+						"src/public/parts/shells/chat/public/hub/core/domUtils.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/members.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/{messageSurface,messageVirtualList}.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/render/index.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",
+						"src/public/parts/shells/chat/public/shared/entityProfilePopup.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
+						"src/public/parts/shells/chat/public/src/endpoints/entities.mjs",
+						"src/public/parts/shells/chat/src/entity/{profile,ownerProfileUpdate,localized,endpoints}.mjs"
+					]
+				},
+				{
+					"name": "xssInjection",
+					"expected": "40s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/xssInjection.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/render/**",
+						"src/public/parts/shells/chat/public/shared/expandMentions.mjs",
+						"src/public/pages/scripts/features/markdown/**",
+						"src/public/pages/scripts/lib/svgInliner.mjs"
 					]
 				}
 			],

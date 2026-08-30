@@ -2,9 +2,10 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { applyProfileAvatarToHost } from '../../hub/core/avatarCover.mjs'
 import { authorDisplayLabel } from '../../hub/core/domUtils.mjs'
 import { aliasForEntity } from '../../shared/aliases.mjs'
-import { avatarInitial } from '../../shared/hashAvatar.mjs'
+import { avatarColor, avatarInitial, avatarTextColor, displayProfileAvatar } from '../../shared/hashAvatar.mjs'
 import { disambiguateLabels, resolveDisplayName } from '../../shared/nameResolve.mjs'
 import { unbanMember } from '../endpoints/groupGovernance.mjs'
 import { kickMember as kickMemberRequest } from '../endpoints/members.mjs'
@@ -104,9 +105,14 @@ export async function renderMembers(context) {
 		const roles = item.member.roles || ['@everyone']
 		const isAgent = item.member.memberKind === 'agent'
 		const roleDefs = context.state?.roles || {}
+		const avatarSeed = item.entityHash || item.memberKey || displayName
 		return {
 			memberKey: escapeHtml(item.memberKey),
 			displayName: escapeHtml(displayName),
+			avatarFor: escapeHtml(item.entityHash || ''),
+			avatarLabel: escapeHtml(displayName),
+			avatarBg: avatarColor(avatarSeed),
+			avatarTextColor: avatarTextColor(avatarSeed),
 			initial: escapeHtml(avatarInitial(displayName)),
 			rolesLabel: escapeHtml(roles.map(roleId => context.state.roles[roleId]?.name || roleId).join(' / ') || '@everyone'),
 			isAdmin: memberDisplaysAsAdmin(item.member, roleDefs),
@@ -126,6 +132,8 @@ export async function renderMembers(context) {
 		showUnbanActions: context.settingsCaps?.canUnbanMembers === true,
 	})
 
+	await applyMemberAvatars(container, context.groupId)
+
 	container.addEventListener('click', async (clickEvent) => {
 		const memberActionButton = clickEvent.target.closest('[data-action="kick"],[data-action="ban"],[data-action="unban"]')
 		if (!memberActionButton) return
@@ -133,4 +141,28 @@ export async function renderMembers(context) {
 		else if (memberActionButton.dataset.action === 'ban') await banMember(context, memberActionButton.dataset.username)
 		else await unbanMemberAction(context, memberActionButton.dataset.username)
 	}, { signal })
+}
+
+/**
+ * 为成员列表头像宿主加载真实头像：统一走 fount 资料管线（presence.fetchAuthorProfile → applyProfileAvatarToHost，与 Hub 侧栏/消息同机制）。
+ * 无 entityHash 或资料无头像时保持 hash 占位。
+ * @param {HTMLElement} container 成员列表容器
+ * @param {string | null} groupId 当前群 ID（persona 解析）
+ * @returns {Promise<void>}
+ */
+async function applyMemberAvatars(container, groupId) {
+	const { fetchAuthorProfile } = await import('../../hub/presence.mjs')
+	await Promise.all([...container.querySelectorAll('[data-avatar-for]')].map(async avatarHost => {
+		const authorKey = avatarHost.dataset.avatarFor
+		if (!authorKey || avatarHost.dataset.avatarLoaded) return
+		const profile = await fetchAuthorProfile(authorKey, { groupId: groupId || undefined })
+		if (!profile?.avatar) return
+		avatarHost.dataset.avatarLoaded = '1'
+		applyProfileAvatarToHost(avatarHost, {
+			seed: authorKey,
+			label: avatarHost.dataset.avatarLabel || authorKey,
+			avatar: displayProfileAvatar(profile),
+			letterClass: 'avatar-letter',
+		})
+	}))
 }

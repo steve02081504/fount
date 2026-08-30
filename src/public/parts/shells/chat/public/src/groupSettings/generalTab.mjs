@@ -1,6 +1,7 @@
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { createMarkdownRichInput } from '/scripts/components/markdownRichInput.mjs'
 import { putGroupMeta, putGroupSettings, removeGroup } from '../endpoints/groupCore.mjs'
 import { postFederationTuning } from '../endpoints/groupFederation.mjs'
 import { rotateGroupKey, submitOwnerSuccession } from '../endpoints/groupGovernance.mjs'
@@ -70,9 +71,10 @@ export async function saveGroupSettings(context) {
 		description: document.getElementById('group-description').value.trim(),
 	})
 
+	const joinPolicy = document.getElementById('join-policy').value
 	const gossipTtl = Number.parseInt(document.getElementById('gossip-ttl').value, 10)
 	await putGroupSettings(context.groupId, {
-		joinPolicy: document.getElementById('join-policy').value,
+		joinPolicy,
 		powDifficulty: Number.parseInt(document.getElementById('pow-difficulty').value, 10) || 4,
 		streamGeneratingIdleMs: Number.parseInt(document.getElementById('stream-generating-idle-ms').value, 10) || 150000,
 		autoReplyFrequency: Math.max(0, Number.parseInt(document.getElementById('auto-reply-frequency')?.value, 10) || 0),
@@ -103,7 +105,7 @@ export async function saveGroupSettings(context) {
 			? 'random'
 			: 'convergent',
 		iceServers: collectIceServersFromDom(),
-		discoveryPublic: !!document.getElementById('discovery-public')?.checked,
+		discoveryPublic: joinPolicy === 'pow' && !!document.getElementById('discovery-public')?.checked,
 		discoveryTitle: document.getElementById('discovery-title')?.value?.trim() || null,
 		discoveryBlurb: document.getElementById('discovery-blurb')?.value?.trim() || null,
 		autoChannelGc: !!document.getElementById('auto-channel-gc')?.checked,
@@ -126,6 +128,26 @@ export async function saveGroupSettings(context) {
 
 	showToastI18n('success', 'chat.group.settings.page.saveSuccess')
 	await context.reload(context.groupId)
+}
+
+/**
+ * 按入群策略联动“公开发现”开关：仅 PoW 群可开启，切走 pow 时自动禁用并取消勾选。
+ * @returns {void}
+ */
+function wireDiscoveryPublicSync() {
+	const policySelect = document.getElementById('join-policy')
+	const publicCheckbox = document.getElementById('discovery-public')
+	if (!(policySelect instanceof HTMLSelectElement) || !(publicCheckbox instanceof HTMLInputElement)) return
+	/** @returns {void} */
+	const sync = () => {
+		const isPow = policySelect.value === 'pow'
+		publicCheckbox.disabled = !isPow
+		if (!isPow) publicCheckbox.checked = false
+		const label = publicCheckbox.closest('label')
+		if (label) label.classList.toggle('opacity-60', !isPow)
+	}
+	policySelect.addEventListener('change', sync)
+	sync()
 }
 
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
@@ -169,10 +191,17 @@ export async function renderGroupSettings(context) {
 			showFedTuning: context.settingsCaps.canFedTuning,
 			showOwnerSuccession: context.settingsCaps.canOwnerSuccession,
 		})
+		const descInput = document.getElementById('group-description')
+		if (descInput instanceof HTMLElement && !descInput.classList.contains('fount-markdown-rich-input'))
+			createMarkdownRichInput(descInput, { enableDockedToolbar: true })
+		const discoveryBlurb = document.getElementById('discovery-blurb')
+		if (discoveryBlurb instanceof HTMLElement && !discoveryBlurb.classList.contains('fount-markdown-rich-input'))
+			createMarkdownRichInput(discoveryBlurb, { enableDockedToolbar: true })
 		await wireIceServersEditor(context)
 		document.getElementById('save-group-settings')?.addEventListener('click', () => {
 			void saveGroupSettings(context)
 		})
+		wireDiscoveryPublicSync()
 		document.getElementById('group-settings-delete-group-button')?.addEventListener('click', () => {
 			void deleteGroup(context)
 		})

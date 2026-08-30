@@ -1199,6 +1199,7 @@
 				"aria-label": "Ir para Unicode"
 			},
 			"discoverPacks": "Explorar packs de emoji →",
+			"emptyPack": "Este pacote de emoticons ainda não tem expressões",
 			"addToCollection": "Adicionar aos favoritos",
 			"addedToCollection": "Adicionado aos favoritos",
 			"joinGroup": "Entrar no grupo",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "Poupança de bateria (pool de federação e relays mais pequenos)",
 				"compactTriggerDepth": "Profundidade do gatilho de compressão materializada",
 				"discoveryBlurb": "Introdução à descoberta (opcional)",
-				"discoveryPublic": "Expor este grupo na descoberta federada (sem ingressar na chave do grupo)",
+				"discoveryPublic": "Expor este grupo na descoberta federada",
+				"powOnlyHint": "Disponível apenas com a política de adesão PoW. Quando ativada, o grupo aparecerá na descoberta federada, permitindo que outros o encontrem e solicitem adesão via PoW.",
 				"discoveryTitle": "Título da lista de descoberta (opcional)",
 				"eventRetentionDepth": "Profundidade de retenção de eventos DAG",
 				"eventRetentionMs": "Tempo de retenção de eventos DAG",
@@ -1560,7 +1562,6 @@
 					"description": "Gira a identidade do grupo, os membros, as permissões e as ferramentas que unem o palco partilhado.",
 					"kicker": "Definições de grupo",
 					"subtitle": "Gira informações do grupo, membros e funções comuns. Permissões de baixa frequência, armazenamento e ferramentas de auditoria são centralizadas em definições avançadas.",
-					"backToChat": "Voltar a chat",
 					"navigationLabel": "Classificação de definições de grupo",
 					"activeEmojiPackLabel": "Pack em edição",
 					"membersTitle": "Lista de membros",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "O emoticon foi eliminado",
 						"empty": "Ainda sem custom emoji",
 						"hint": "Os membros podem inserir ou enviar esses emoticons no chat; as imagens desinstaladas são extraídas sob demanda por meio de nós federados.",
-						"packGroupOption": "${packId} (Padrão do grupo)",
+						"packGroupOption": "Padrão do grupo",
+						"idCopied": "ID do pacote de emojis copiado para a área de transferência",
+						"idCopy": "Copiar",
+						"packCount": "${name} - ${count} itens",
 						"title": "Expressões personalizadas de grupo",
 						"upload": "Carregar emoticons",
 						"uploadFailed": "Falha no upload: ${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "Não há funções configuráveis de momento",
 						"updateFailed": "Falha ao atualizar as permissões do grupo: ${error}",
 						"updated": "Permissões do grupo atualizadas"
-					}
+					},
+					"discoverySectionTitle": "Descoberta federada"
 				},
 				"pinContext": "Bairro principal (±N vizinhos)",
 				"rtcBudget": "Orçamento de ligação RTC",

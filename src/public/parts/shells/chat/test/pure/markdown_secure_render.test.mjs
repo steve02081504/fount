@@ -219,6 +219,15 @@ flowchart TD
 	assertStringIncludes(html, 'var(--color-base')
 })
 
+Deno.test('secure render marks untrusted img with svg-inliner-ignore', async () => {
+	// markdown 语法图片应禁止 svgInliner 内联（远程 `.svg` 可携带脚本）；raw `<img>` 未信任档直接丢弃
+	const html = await renderSecure('![](https://attacker.example/poc.svg)\n\n<img src="https://attacker.example/x.svg">')
+	assertMatch(html, /<img[^>]*src="https:\/\/attacker\.example\/poc\.svg"[^>]*svg-inliner-ignore/)
+	assertFalse(html.includes('x.svg'))
+	// 内联脚本不得残留
+	assertFalse(/<script[\s>]/i.test(html))
+})
+
 Deno.test('late sanitize via extraRehypePlugins still strips converter onclick — do not do this', async () => {
 	const html = await renderSecure('```js\nconsole.log(1)\n```', {
 		extraRehypePlugins: [rehypeSanitizeUntrustedContent()],
@@ -230,6 +239,11 @@ Deno.test('late sanitize via extraRehypePlugins still strips converter onclick �
 Deno.test('trusted pipeline (allowDangerousHtml) keeps inline HTML', async () => {
 	const html = await renderSecure('<b>bold</b>', { allowDangerousHtml: true })
 	assertStringIncludes(html, '<b>bold</b>')
+})
+
+Deno.test('trusted render marks markdown img with svg-inliner-ignore', async () => {
+	const html = await renderSecure('![](https://attacker.example/poc.svg)', { allowDangerousHtml: true })
+	assertMatch(html, /<img[^>]*src="https:\/\/attacker\.example\/poc\.svg"[^>]*svg-inliner-ignore/)
 })
 
 Deno.test('titled code block joins header alert and body as join-items under a join-vertical figure', async () => {

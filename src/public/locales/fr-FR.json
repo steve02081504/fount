@@ -1199,6 +1199,7 @@
 				"aria-label": "Aller à Unicode"
 			},
 			"discoverPacks": "Explorer les packs d'émojis →",
+			"emptyPack": "Ce pack d'émoticônes ne contient encore aucune expression",
 			"addToCollection": "Ajouter aux favoris",
 			"addedToCollection": "Ajouté aux favoris",
 			"joinGroup": "Rejoindre le groupe",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "Mode faible consommation (pool de connexions de fédération et relais réduits)",
 				"compactTriggerDepth": "Profondeur de déclenchement de compression matérialisée",
 				"discoveryBlurb": "Introduction à la découverte (facultatif)",
-				"discoveryPublic": "Exposer ce groupe en découverte fédérée (sans rejoindre la clé du groupe)",
+				"discoveryPublic": "Exposer ce groupe en découverte fédérée",
+				"powOnlyHint": "Uniquement avec la règle d'adhésion PoW. Une fois activée, le groupe apparaît dans la découverte fédérée afin que d'autres puissent le trouver et demander à le rejoindre via PoW.",
 				"discoveryTitle": "Titre de la liste de découverte (facultatif)",
 				"eventRetentionDepth": "Profondeur de conservation des événements DAG",
 				"eventRetentionMs": "Temps de conservation des événements DAG",
@@ -1560,7 +1562,6 @@
 					"description": "Gérez l'identité du groupe, ses membres, ses permissions et les outils qui lient votre scène partagée.",
 					"kicker": "Gestion de groupe",
 					"subtitle": "Gérez les informations du groupe, les membres et les fonctions communes. Les autorisations basse fréquence, le stockage et les outils d'audit sont centralisés dans les paramètres avancés.",
-					"backToChat": "Revenir au chat",
 					"navigationLabel": "Classification des paramètres de groupe",
 					"activeEmojiPackLabel": "Pack en cours d'édition",
 					"membersTitle": "Liste des membres",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "L'émoticône a été supprimée",
 						"empty": "Aucune Émojis de groupe pour l'instant",
 						"hint": "Les membres peuvent insérer ou envoyer ces émoticônes dans le chat ; les images désinstallées sont extraites à la demande via des nœuds fédérés.",
-						"packGroupOption": "${packId} (groupe)",
+						"packGroupOption": "Par défaut du groupe",
+						"idCopied": "ID du pack d'emojis copié dans le presse-papiers",
+						"idCopy": "Copier",
+						"packCount": "${name} - ${count} éléments",
 						"title": "Regrouper les expressions personnalisées",
 						"upload": "Téléverser des émojis",
 						"uploadFailed": "Échec du téléversement : ${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "Aucun rôle configurable pour le moment",
 						"updateFailed": "Échec de la mise à jour des autorisations de groupe : ${error}",
 						"updated": "Autorisations de groupe mises à jour"
-					}
+					},
+					"discoverySectionTitle": "Découverte fédérée"
 				},
 				"pinContext": "Quartier supérieur (±N voisins)",
 				"rtcBudget": "Budget connexion RTC",

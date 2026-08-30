@@ -55,6 +55,20 @@ test.describe('Chat secondary pages', () => {
 		await expect(page.locator('#members-list .settings-member-row').first()).toBeVisible({ timeout: 30_000 })
 	})
 
+	test('settings page keeps selected section across reload', async ({ page, baseUrl, apiKey }) => {
+		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await openGroupSettingsPage(page, baseUrl, groupId)
+		const membersNav = page.locator('.settings-nav-item[data-section="members"]')
+		await membersNav.click()
+		await expect(membersNav).toHaveAttribute('aria-selected', 'true')
+		await expect(page).toHaveURL(new RegExp(`#settings:${encodeURIComponent(groupId)}:members`))
+		await page.reload({ waitUntil: 'domcontentloaded' })
+		await expect(page.locator('body[data-settings-loaded="1"]')).toBeVisible({ timeout: 60_000 })
+		await expect(membersNav).toHaveAttribute('aria-selected', 'true')
+		await expect(page.locator('#panel-members')).toBeVisible()
+		await expect(page.locator('#panel-members')).not.toHaveAttribute('hidden', '')
+	})
+
 	test('settings permissions and emojis sections load', async ({ page, baseUrl, apiKey }) => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await openGroupSettingsPage(page, baseUrl, groupId)

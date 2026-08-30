@@ -2,9 +2,7 @@ ${members.length ? members.map(member => `
 <div class="settings-member-row">
 	<div class="settings-member-main">
 		<div class="avatar placeholder">
-			<div class="bg-neutral text-neutral-content rounded-box w-10 h-10">
-				<span class="text-sm">${member.initial}</span>
-			</div>
+			<div class="rounded-box w-10 h-10 flex items-center justify-center font-bold text-[15px]" data-avatar-for="${member.avatarFor}" data-avatar-label="${member.avatarLabel}" style="background: ${member.avatarBg}; color: ${member.avatarTextColor};">${member.initial}</div>
 		</div>
 		<div class="min-w-0">
 			<div class="font-medium truncate">${member.displayName}</div>

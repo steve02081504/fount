@@ -1201,6 +1201,14 @@ export async function GetMarkdownConvertor({
 	for (const plugin of [...registered.remarkPlugins, ...extraRemarkPlugins])
 		processor = processor.use(plugin)
 	processor = processor.use(remarkRehype, { allowDangerousHtml })
+	// markdown 语法生成的 `<img>` 一律标记 `svg-inliner-ignore`（内联远程 `.svg` 会激活其中脚本）
+	processor = processor.use(() => {
+		return tree => {
+			visit(tree, 'element', node => {
+				if (node.tagName === 'img') node.properties['svg-inliner-ignore'] = ''
+			})
+		}
+	})
 	for (const plugin of earlyRehypePlugins)
 		processor = processor.use(plugin)
 	processor = processor

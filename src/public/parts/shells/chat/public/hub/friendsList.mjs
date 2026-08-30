@@ -15,7 +15,7 @@ import { escapeRegExp } from '/scripts/lib/regex.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
 import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
-import { buildFriendRows } from '../shared/friendRows.mjs'
+import { buildFriendRows, friendAvatarTemplateFields } from '../shared/friendRows.mjs'
 import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { searchEntities } from '../src/endpoints/entities.mjs'
@@ -30,7 +30,7 @@ import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs
 import { store } from './core/state.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
 import { dispatchFriendChat, enterFriendChat, onEnterFriendChat } from './friendChat.mjs'
-import { fetchAuthorProfile } from './presence.mjs'
+import { applyAvatarsTo, fetchAuthorProfile } from './presence.mjs'
 import { restartPrivateGroup } from './privateGroup.mjs'
 import { loadGroups } from './serverBar.mjs'
 
@@ -124,8 +124,7 @@ async function friendRowTemplateData(friend, details) {
 		fallbackLabel: friend.charname || friend.groupId,
 	})
 
-	if (!friend.charname) {
-		const seed = friend.key || friend.groupId
+	if (!friend.charname)
 		return {
 			kind: 'dm',
 			name: friend.groupId,
@@ -134,9 +133,9 @@ async function friendRowTemplateData(friend, details) {
 			displayName,
 			subtitle,
 			activeClass: active ? ' active' : '',
-			...listAvatarTemplateFields(seed, displayName),
+			// DM 好友资料常需远端拉取：先 hash 字母占位，带 avatarFor 供 applyAvatarsTo 异步补 profile 头像。
+			...friendAvatarTemplateFields(friend, null, displayName),
 		}
-	}
 
 	const entityHash = friend.key || await charAgentEntityHash(friend.charname)
 	const profile = entityHash
@@ -156,7 +155,7 @@ async function friendRowTemplateData(friend, details) {
 		displayName: resolvedName,
 		subtitle,
 		activeClass: active ? ' active' : '',
-		...listAvatarTemplateFields(entityHash || friend.key, resolvedName, displayProfileAvatar(profile)),
+		...friendAvatarTemplateFields(friend, profile, resolvedName),
 	}
 }
 
@@ -285,6 +284,7 @@ export async function renderFriendsColumn(friends) {
 		countI18nKey: 'chat.hub.friends.count',
 		items: rows,
 	})
+	applyAvatarsTo(body)
 	body.querySelectorAll('.char-list-item').forEach((el) => {
 		const { groupId } = el.dataset
 		const row = friends.find(f => f.groupId === groupId)
@@ -363,6 +363,8 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 		handle: escapeHtml(hit.subtitle),
 		showPin: isChar ? '' : '1',
 		actionI18n: isChar ? 'chat.hub.friends.search.chat' : 'chat.hub.friends.search.dm',
+		// user 命中资料常需远端拉取：带 avatarFor 供 applyAvatarsTo 异步补 profile 头像。
+		avatarFor: isEntityHash128(hit.entityHash) ? hit.entityHash : '',
 		...listAvatarTemplateFields(seed, hit.label, isChar ? hit.avatar : ''),
 	})
 	if (isChar || isEntityHash128(hit.entityHash))
@@ -497,4 +499,5 @@ async function runFriendsEntitySearch(input, resultsHost) {
 	await Promise.all(hits.map(enrichFriendsSearchHit))
 	for (const hit of hits)
 		await appendFriendsSearchHit(hit, resultsHost)
+	applyAvatarsTo(resultsHost)
 }

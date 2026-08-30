@@ -381,6 +381,12 @@ function renderContinuousPicker(host, sections, handlers) {
 		rail.appendChild(railBtn)
 		const grid = document.createElement('div')
 		grid.className = 'emoji-grid'
+		if (!section.items.length) {
+			const empty = document.createElement('div')
+			empty.className = 'emoji-grid-empty'
+			empty.dataset.i18n = 'chat.emoji.emptyPack'
+			grid.appendChild(empty)
+		}
 		for (const item of section.items)
 			appendEmojiGridItem(grid, item)
 		sectionEl.append(header, grid)

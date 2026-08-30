@@ -1,79 +1,103 @@
-.settings-page {
-	box-sizing: border-box;
-	width: min(100%, 72rem);
-	margin-inline: auto;
-	padding: 1.25rem 1.25rem 3rem;
+/* 布局外壳（settings-page/header/layout/nav 的间距与排布已用原子类，nav 状态类由 nav.mjs 切换原子类） */
+.settings-panel {
+	animation: settings-panel-in 0.22s ease;
 }
 
-.settings-header {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	align-items: start;
-	gap: 1rem;
-	margin-bottom: 1.5rem;
+/* 移动端横向导航条隐藏滚动条（tailwind scrollbar-none 只覆盖 Firefox） */
+.settings-nav::-webkit-scrollbar {
+	display: none;
 }
 
-.settings-back {
-	margin-top: 0.2rem;
-}
-
-.settings-kicker {
-	margin-bottom: 0.2rem;
-	color: var(--color-primary);
-	font-size: 0.75rem;
-	font-weight: 700;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-}
-
-.settings-subtitle {
-	margin-top: 0.35rem;
-	max-width: 44rem;
+/* —— 侧栏导航项：组件样式集中在 CSS，JS 只切换 tab-active 状态类 —— */
+.settings-nav-item {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	flex: 0 0 auto;
+	padding: 0.55rem 0.9rem;
+	border: var(--border) solid transparent;
+	border-radius: var(--radius-field);
+	background: transparent;
+	color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
 	font-size: 0.875rem;
-	opacity: 0.65;
+	font-weight: 500;
+	line-height: 1.35;
+	text-align: left;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		background 0.16s ease,
+		color 0.16s ease,
+		border-color 0.16s ease,
+		box-shadow 0.16s ease;
 }
 
-.settings-layout {
-	display: grid;
-	grid-template-columns: 13.5rem minmax(0, 1fr);
-	align-items: start;
-	gap: 1.25rem;
+.settings-nav-item:hover {
+	background: color-mix(in srgb, var(--color-base-content) 8%, transparent);
+	color: var(--color-base-content);
 }
 
-.settings-nav {
-	position: sticky;
-	top: 1rem;
+.settings-nav-item:focus-visible {
+	outline: 2px solid color-mix(in srgb, var(--color-primary) 55%, transparent);
+	outline-offset: 2px;
 }
 
-.settings-nav-group {
-	margin-top: 0.55rem;
-	padding-top: 0.55rem;
-	border-top: var(--border) solid color-mix(in srgb, currentColor 10%, transparent);
+.settings-nav-item.tab-active,
+.settings-nav-item[aria-selected="true"] {
+	border-color: color-mix(in srgb, var(--color-primary) 18%, transparent);
+	background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+	color: var(--color-primary);
+	font-weight: 650;
+	box-shadow: 0 1px 2px color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
-.settings-content {
-	min-width: 0;
+.settings-nav-item.tab-active:hover,
+.settings-nav-item[aria-selected="true"]:hover {
+	background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+	color: var(--color-primary);
+}
+
+@media (min-width: 769px) {
+	.settings-nav-item {
+		width: 100%;
+		flex: none;
+	}
+}
+
+@keyframes settings-panel-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .settings-panel>*+* {
 	margin-top: 1rem;
 }
 
+/* —— 面板卡片 —— */
 .settings-card,
 .settings-panel .card {
 	border: var(--border) solid color-mix(in srgb, currentColor 9%, transparent);
-	box-shadow: 0 0.5rem 1.8rem color-mix(in srgb, #000 9%, transparent);
+	box-shadow:
+		0 1px 3px color-mix(in srgb, currentColor 6%, transparent),
+		0 12px 28px color-mix(in srgb, currentColor 7%, transparent);
 }
 
 .settings-card .card-body,
 .settings-panel .card .card-body {
-	gap: 0.85rem;
+	gap: 1rem;
+	padding: 1.25rem 1.35rem;
 }
 
 .settings-section {
 	display: grid;
-	gap: 0.85rem;
-	padding: 0.85rem 0;
+	gap: 0.9rem;
+	padding: 1rem 0;
 }
 
 .settings-section+.settings-section {
@@ -84,17 +108,19 @@
 	margin: 0;
 	font-size: 0.95rem;
 	font-weight: 700;
+	letter-spacing: -0.01em;
 }
 
 .settings-section-hint {
 	margin: -0.35rem 0 0;
 	font-size: 0.8rem;
+	line-height: 1.5;
 	opacity: 0.6;
 }
 
 .settings-fields {
 	display: grid;
-	gap: 0.85rem;
+	gap: 0.9rem;
 	max-width: 36rem;
 }
 
@@ -105,7 +131,7 @@
 .settings-field-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.85rem;
+	gap: 0.9rem;
 }
 
 .settings-advanced {
@@ -195,6 +221,26 @@
 	border-top: var(--border) solid color-mix(in srgb, currentColor 10%, transparent);
 }
 
+.group-settings-description-input {
+	min-height: 72px;
+	max-height: 200px;
+	padding: 10px 12px;
+	border: var(--border) solid color-mix(in srgb, currentColor 16%, transparent);
+	border-radius: var(--radius-box);
+	background: var(--color-base-100, #fff);
+	font-size: 0.875rem;
+	line-height: 1.6;
+}
+
+.group-settings-description-input:focus-within {
+	border-color: var(--color-primary);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.group-settings-description-input .fount-markdown-rich-input-docked-toolbar {
+	margin-bottom: 8px;
+}
+
 .settings-danger-zone {
 	margin-top: 0.25rem;
 	padding-top: 1rem;
@@ -207,9 +253,10 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: 0.75rem;
-	padding: 0.85rem;
+	padding: 0.9rem 1rem;
+	border: var(--border) solid color-mix(in srgb, currentColor 7%, transparent);
 	border-radius: var(--radius-box);
-	background: color-mix(in srgb, currentColor 5%, transparent);
+	background: color-mix(in srgb, currentColor 4%, transparent);
 }
 
 .settings-member-main {
@@ -269,48 +316,6 @@
 }
 
 @media (max-width: 768px) {
-	.settings-page {
-		padding-inline: 1rem;
-	}
-
-	.settings-header {
-		grid-template-columns: 1fr;
-		gap: 0.5rem;
-	}
-
-	.settings-back {
-		width: fit-content;
-		margin-left: -0.75rem;
-	}
-
-	.settings-layout {
-		grid-template-columns: 1fr;
-		gap: 1rem;
-	}
-
-	.settings-nav {
-		position: static;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		gap: 0.35rem;
-		overflow-x: auto;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	.settings-nav-group {
-		display: contents;
-	}
-
-	.settings-nav-group-label {
-		display: none;
-	}
-
-	.settings-nav-item {
-		flex: 0 0 auto;
-		width: auto;
-		white-space: nowrap;
-	}
-
 	.settings-field-grid,
 	.settings-role-perms {
 		grid-template-columns: 1fr;

@@ -4,11 +4,13 @@
 import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
+import { resolveDisplayName } from 'fount/public/parts/shells/chat/public/shared/nameResolve.mjs'
 import { createJsonlInboxStore } from 'fount/public/parts/shells/chat/src/chat/lib/jsonlInboxStore.mjs'
 import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 
+import { createAuthorProfileLoader } from './lib/authorProfileSummary.mjs'
 import { postMatchesMutedKeywords } from './lib/contentFilter.mjs'
 import { loadMutedKeywords } from './mutedKeywords.mjs'
 import { canWriteTimeline } from './timeline/append.mjs'
@@ -329,6 +331,74 @@ function scheduleNotifyUser(username, payload) {
 }
 
 /**
+ * 通知动作主语的展示名（资料名 → entityHash 短码兜底，与前端 authorLabel 对齐）。
+ * @param {object | null | undefined} profile 作者资料摘要
+ * @param {string} entityHash 实体 hash
+ * @returns {string} 展示名
+ */
+export function actorDisplayName(profile, entityHash) {
+	return resolveDisplayName({ entityHash, profileName: profile?.name })
+}
+
+/**
+ * 各通知类型 Web Push 正文动作短语（SW 直出中文；与前端 data-i18n 文案平行维护）。
+ * @type {Record<string, string>}
+ */
+const NOTIFICATION_PUSH_ACTION = {
+	follow: '关注了你',
+	reply: '回复了你的帖子',
+	mention: '在动态中 @ 了你',
+	like: '赞了你的帖子',
+	repost: '转发了你的帖子',
+	post_note: '为你的帖子补充了信息',
+	care_post: '发了新动态（特别关心）',
+	live_started: '开始直播了',
+}
+
+/**
+ * 构建 Web Push / SW 通知载荷：标题 = 主语展示名，正文 = 动作短语 + 摘要。
+ * @param {object} row 通知行
+ * @param {object | null | undefined} profile 作者资料摘要
+ * @returns {{ title: string, body: string }} 载荷
+ */
+export function buildNotificationPushCopy(row, profile) {
+	const name = actorDisplayName(profile, row.actorEntityHash)
+	const action = NOTIFICATION_PUSH_ACTION[row.type] || ''
+	const snippet = String(row.snippet || '').trim()
+	const body = action
+		? snippet ? `${action}：${snippet}` : action
+		: snippet || row.type || 'fount'
+	return { title: name, body }
+}
+
+/**
+ * 为通知行附加动作主语的资料摘要（行级 + 聚合 actors 级）。
+ * @param {(entityHash: string) => Promise<object | null>} loader 作者资料摘要加载器
+ * @param {object} row 通知行
+ * @returns {Promise<object>} 附加 authorProfile 的通知行
+ */
+async function attachActorProfiles(loader, row) {
+	const actorProfile = await loader(row.actorEntityHash)
+	const out = actorProfile ? { ...row, authorProfile: actorProfile } : { ...row }
+	if (Array.isArray(out.actors))
+		out.actors = await Promise.all(out.actors.map(async actor => {
+			const profile = await loader(actor.entityHash)
+			return profile ? { ...actor, authorProfile: profile } : actor
+		}))
+	return out
+}
+
+/**
+ * 为通知行附加动作主语的资料摘要（独立调用；批量场景请用 {@link attachActorProfiles} 共享 loader）。
+ * @param {string} username 用户
+ * @param {object} row 通知行
+ * @returns {Promise<object>} 附加 authorProfile 的通知行
+ */
+export async function enrichNotificationAuthorProfile(username, row) {
+	return attachActorProfiles(createAuthorProfileLoader(username), row)
+}
+
+/**
  * operator 特别关心作者的新帖：写 care_post inbox 行并触达。
  * @param {string} username replica
  * @param {string} recipientEntityHash 收件人（operator）
@@ -344,7 +414,7 @@ export async function appendCarePostInboxRow(username, recipientEntityHash, auth
 	if (!await canWriteTimeline(username, recipient)) return
 	const at = Number(post.hlc?.wall) || Number(post.timestamp) || Date.now()
 	const textSnippet = snippet ?? notificationSnippet(post.content?.text || '')
-	const notification = {
+	const notification = await enrichNotificationAuthorProfile(username, {
 		...normalizeNotificationRow('care_post', author, at, post.id, null),
 		snippet: textSnippet,
 		aggregateKey: computeAggregateKey({
@@ -354,12 +424,13 @@ export async function appendCarePostInboxRow(username, recipientEntityHash, auth
 			targetPostId: null,
 			at,
 		}, recipient),
-	}
+	})
 	await socialInboxStore(username, recipient).append(notification)
 	pushFeedUpdate(username, { type: 'notification', notification })
+	const push = buildNotificationPushCopy(notification, notification.authorProfile)
 	scheduleNotifyUser(username, {
-		title: 'care_post',
-		body: String(textSnippet || 'care_post'),
+		title: push.title,
+		body: push.body,
 		url: '/parts/shells:social/',
 		tag: `social:care_post:${recipient}`,
 	})
@@ -382,7 +453,7 @@ export async function appendPollClosedInboxRow(username, recipientEntityHash, au
 	if (!await canWriteTimeline(username, recipient)) return
 	const at = Date.now()
 	const preview = String(poll?.options?.[0] || 'poll closed').slice(0, SNIPPET_MAX_LEN)
-	const notification = {
+	const notification = await enrichNotificationAuthorProfile(username, {
 		...normalizeNotificationRow('poll_closed', author, at, postId, null),
 		snippet: preview,
 		tally,
@@ -393,7 +464,7 @@ export async function appendPollClosedInboxRow(username, recipientEntityHash, au
 			targetPostId: null,
 			at,
 		}, recipient),
-	}
+	})
 	await socialInboxStore(username, recipient).append(notification)
 	pushFeedUpdate(username, { type: 'notification', notification })
 }
@@ -437,16 +508,17 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		}
 		if (postMatchesMutedKeywords(filterPost, mutedKeywords)) continue
 		const { recipient, ...baseRow } = row
-		const notification = {
+		const notification = await enrichNotificationAuthorProfile(username, {
 			...baseRow,
 			snippet,
 			aggregateKey: computeAggregateKey({ ...row, snippet }, recipient),
-		}
+		})
 		await socialInboxStore(username, recipient).append(notification)
 		pushFeedUpdate(username, { type: 'notification', notification })
+		const push = buildNotificationPushCopy(notification, notification.authorProfile)
 		scheduleNotifyUser(username, {
-			title: row.type,
-			body: String(snippet || row.type || ''),
+			title: push.title,
+			body: push.body,
 			url: '/parts/shells:social/',
 			tag: `social:${row.type}:${recipient}`,
 		})
@@ -462,6 +534,7 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
  */
 export async function readInboxNotifications(username, viewerEntityHash, options = {}) {
 	const types = options.types ?? null
+	const loader = createAuthorProfileLoader(username)
 	const page = await socialInboxStore(username, viewerEntityHash).listPage({
 		limit: options.limit,
 		cursor: options.cursor,
@@ -475,5 +548,9 @@ export async function readInboxNotifications(username, viewerEntityHash, options
 		 */
 		transform: rows => aggregateNotificationRows(rows, viewerEntityHash),
 	})
-	return { notifications: page.items, nextCursor: page.nextCursor, unreadCount: page.unreadCount }
+	return {
+		notifications: await Promise.all(page.items.map(row => attachActorProfiles(loader, row))),
+		nextCursor: page.nextCursor,
+		unreadCount: page.unreadCount,
+	}
 }

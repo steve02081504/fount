@@ -49,6 +49,20 @@ export function sanitizeAlt(raw) {
 	return (raw || '').trim().slice(0, ALT_MAX) || undefined
 }
 
+/** 转发链接可写入 href 的 scheme 白名单（与 `/scripts/lib/sanitizeHtml.mjs` 的 isSafeHtmlUrl 对齐）。 */
+const SAFE_SHARE_URL_SCHEMES = /^(https?:|mailto:|tel:|#|\/|about:blank#|fount:)/i
+
+/**
+ * 转发链接协议是否安全（拒 `javascript:`/`data:`/协议相对 `//`/`/\`）。
+ * @param {string} url 原始 URL
+ * @returns {boolean} 是否可安全作为 href
+ */
+function isSafeShareUrl(url) {
+	const raw = String(url ?? '').trim()
+	if (!raw || raw.startsWith('//') || raw.startsWith('/\\')) return false
+	return SAFE_SHARE_URL_SCHEMES.test(raw)
+}
+
 /**
  * @param {unknown} raw 转发元数据
  * @returns {object | undefined} 清洗后
@@ -60,12 +74,14 @@ export function sanitizeForwardedFrom(raw) {
 	const channelId = src.channelId || ''
 	const eventId = src.eventId || ''
 	if (!groupId || !channelId || !eventId) return undefined
+	const shareUrl = src.shareUrl != null ? String(src.shareUrl).trim().slice(0, 2048) : ''
 	const out = {
 		groupId,
 		channelId,
 		eventId,
 		...src.senderName != null ? { senderName: String(src.senderName).trim().slice(0, 100) } : {},
-		...src.shareUrl != null ? { shareUrl: String(src.shareUrl).trim().slice(0, 2048) } : {},
+		// 只保留安全协议（拒 `javascript:`/`data:`/`//`），否则会作为转发名 href 注入
+		...shareUrl && isSafeShareUrl(shareUrl) ? { shareUrl } : {},
 	}
 	return out
 }

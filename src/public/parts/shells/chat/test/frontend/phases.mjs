@@ -23,9 +23,10 @@ export const phases = [
 			'unread.spec.mjs',
 			'inbox.spec.mjs',
 			'mobilePane.spec.mjs',
+			'xssInjection.spec.mjs',
 		],
 	},
 	{ name: 'hub', testMatch: ['hubE2E.spec.mjs'] },
 	{ name: 'secondary', testMatch: ['secondaryPages.spec.mjs'] },
-	{ name: 'profile', testMatch: ['profile.spec.mjs'] },
+	{ name: 'profile', testMatch: ['profile.spec.mjs', 'profilePopup.spec.mjs'] },
 ]

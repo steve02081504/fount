@@ -3,6 +3,7 @@ import { initAuditLogPanel } from '../auditLogPanel.mjs'
 import { getGroupState } from '../endpoints/groupCore.mjs'
 import { resolveViewerSettingsCapabilities } from '../groupViewerPermissions.mjs'
 
+
 import { renderArchiveStoragePanel } from './archiveTab.mjs'
 import { ensureChannelPermissionsPanel } from './channelPermsTab.mjs'
 import { ensureGroupEmojisPanel } from './emojisTab.mjs'
@@ -10,6 +11,7 @@ import { renderGroupSettings } from './generalTab.mjs'
 import { ensureGroupPermissionsPanel, renderGroupPermissionsPanel } from './groupPermsTab.mjs'
 import { renderMembers } from './membersTab.mjs'
 import { renderPermissionSettings } from './permissionsTab.mjs'
+import { parseSettingsSectionFromHash } from './shared.mjs'
 import { resetPanelFlags } from './state.mjs'
 
 /**
@@ -25,6 +27,8 @@ export async function loadGroupSettings(context, groupId) {
 	context.stateJson = state
 	context.settingsCaps = await resolveViewerSettingsCapabilities(context.state, groupId)
 	await updateSettingsTabsVisibility(context)
+	const section = parseSettingsSectionFromHash()
+	if (section) activateSection(section, { scroll: false })
 	await renderGroupSettings(context)
 	await renderArchiveStoragePanel(context)
 	await renderPermissionSettings(context)
@@ -59,7 +63,7 @@ export async function updateSettingsTabsVisibility(context) {
 		.some(id => sectionVisibility[id])
 	document.querySelector('[data-nav-group="advanced"]')?.classList.toggle('hidden', !advancedVisible)
 
-	const active = document.querySelector('.settings-nav-item.tab-active')
+	const active = document.querySelector('.settings-nav-item[aria-selected="true"]')
 	if (!active || active.classList.contains('hidden'))
 		activateSection('general')
 }

@@ -7,14 +7,8 @@ import {
 } from './channelMessageStore.mjs'
 import { getMessageText } from './render/text.mjs'
 
-/**
- * @param {Record<string, Record<string, { voters?: string[] }>> | undefined} reactions 反应映射
- * @returns {string} 稳定序列化签名
- */
-export function reactionsSignature(reactions) {
-	if (!reactions || !Object.keys(reactions).length) return ''
-	return JSON.stringify(reactions, Object.keys(reactions).sort())
-}
+/** 反应映射稳定签名（新增/移除任一 emoji 或投票者都会变化），实现见 reactionSignature.mjs。 */
+export { reactionsSignature } from './reactionSignature.mjs'
 
 /** @returns {void} */
 export function refreshChannelView() {

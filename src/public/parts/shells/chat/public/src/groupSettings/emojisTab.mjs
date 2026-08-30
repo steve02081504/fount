@@ -16,6 +16,22 @@ import { fetchViewerChannelPermissions } from '../groupViewerPermissions.mjs'
 import { mountTemplate } from '../templates.mjs'
 
 /**
+ * 取 pack 的可读显示名（localized 优先，缺省回落 packId）。
+ * @param {object} pack pack 摘要
+ * @param {string} fallback 缺省名
+ * @returns {string} 显示名
+ */
+function packDisplayName(pack, fallback) {
+	const loc = pack?.localized
+	if (loc && typeof loc === 'object')
+		for (const slice of Object.values(loc)) {
+			const name = String(slice?.name || '').trim()
+			if (name) return name
+		}
+	return fallback
+}
+
+/**
  * @param {object[]} packs 群 pack 列表
  * @param {string | null} selected 当前选中 packId
  * @param {string} groupId 群 ID
@@ -26,14 +42,26 @@ function buildPackOptionsHtml(packs, selected, groupId) {
 	const ids = packs.map(p => p.packId || '').filter(Boolean)
 	if (!ids.includes(groupId)) ids.unshift(groupId)
 	const unique = [...new Set(ids)]
-	return unique.map(packId => {
+	const baseNames = new Map(unique.map(packId => {
 		const pack = packs.find(p => p.packId === packId)
-		const label = packId === groupId
-			? geti18n('chat.group.settings.page.emojis.packGroupOption', { packId }) || packId
-			: packId
+		const name = packId === groupId
+			? geti18n('chat.group.settings.page.emojis.packGroupOption')
+			: packDisplayName(pack, packId)
+		return [packId, name || packId]
+	}))
+	const nameCounts = new Map()
+	for (const name of baseNames.values()) nameCounts.set(name, (nameCounts.get(name) || 0) + 1)
+	return unique.map(packId => {
+		const baseName = baseNames.get(packId)
+		const label = nameCounts.get(baseName) > 1 && baseName !== packId
+			? `${baseName} (${packId})`
+			: baseName
+		const pack = packs.find(p => p.packId === packId)
 		const count = pack?.itemCount ?? pack?.items?.length
-		const countSuffix = Number.isFinite(count) ? ` · ${count}` : ''
-		return `<option value="${escapeHtml(packId)}"${packId === current ? ' selected' : ''}>${escapeHtml(label + countSuffix)}</option>`
+		const text = Number.isFinite(count)
+			? geti18n('chat.group.settings.page.emojis.packCount', { name: label, count })
+			: label
+		return `<option value="${escapeHtml(packId)}"${packId === current ? ' selected' : ''}>${escapeHtml(text)}</option>`
 	}).join('')
 }
 
@@ -87,6 +115,23 @@ ${del}
 		activePackOptionsHtml: packOptions,
 		defaultPackOptionsHtml: buildPackOptionsHtml(packsPayload, currentDefault, context.groupId),
 	})
+
+	const activePackIdEl = document.getElementById('group-active-pack-id')
+	if (activePackIdEl) {
+		activePackIdEl.setAttribute('user-content', '')
+		activePackIdEl.textContent = activePackId
+	}
+	const copyBtn = document.getElementById('group-active-pack-copy')
+	if (copyBtn)
+		copyBtn.addEventListener('click', async () => {
+			try {
+				await navigator.clipboard.writeText(activePackId)
+				showToastI18n('success', 'chat.group.settings.page.emojis.idCopied')
+			}
+			catch {
+				showToastI18n('error', 'chat.group.settings.page.invite.copyFailed')
+			}
+		})
 
 	const activeSelect = document.getElementById('group-active-emoji-pack')
 	if (activeSelect) {

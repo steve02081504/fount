@@ -13,6 +13,7 @@ import { INLINE_TOKEN_RE } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs
 
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
+import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { resolvePackEmojiUrl } from '/scripts/features/emoji/packIndex.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
 import { setElementI18n } from '/scripts/i18n/index.mjs'
@@ -111,6 +112,7 @@ export function createMarkdownRichInput(element, options = {}) {
 		throw new Error('markdownRichInput requires a fresh HTMLElement')
 
 	element.classList.add('fount-markdown-rich-input')
+	if (enableDockedToolbar) element.classList.add('fount-markdown-rich-input-resizable')
 	element.setAttribute('role', 'textbox')
 	element.setAttribute('aria-multiline', 'true')
 	element.spellcheck = true
@@ -708,6 +710,7 @@ export function createMarkdownRichInput(element, options = {}) {
 				runAction(action)
 				hideToolbar()
 			}))
+		void svgInliner(toolbar)
 		const wrapper = document.createElement('nav')
 		setElementI18n(wrapper, 'util.markdownRichInput.toolbar')
 		wrapper.appendChild(toolbar)
@@ -744,6 +747,7 @@ export function createMarkdownRichInput(element, options = {}) {
 				runAction(action)
 				element.focus()
 			}))
+		void svgInliner(dockedToolbar)
 		if (element.parentNode)
 			element.parentNode.insertBefore(dockedToolbar, element)
 		return dockedToolbar
@@ -984,6 +988,7 @@ export function createMarkdownRichInput(element, options = {}) {
 			button.setAttribute('role', 'menuitem')
 			contextMenu.appendChild(button)
 		}
+		void svgInliner(contextMenu)
 		document.body.appendChild(contextMenu)
 		return contextMenu
 	}
@@ -1209,6 +1214,9 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 }
 .fount-markdown-rich-input.is-disabled {
 	cursor: default;
+}
+.fount-markdown-rich-input-resizable {
+	resize: vertical;
 }
 .fount-markdown-rich-input-placeholder {
 	opacity: .55;

