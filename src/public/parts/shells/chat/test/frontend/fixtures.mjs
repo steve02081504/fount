@@ -38,7 +38,7 @@ export async function waitForHub(page, baseUrl, options = {}) {
 	await expect(page.locator('#add-server-button')).toBeVisible()
 	await waitForHubReady(page)
 	if (friendsMode && !page.url().includes('#group:'))
-		await expect(page.locator('#message-input')).toBeDisabled({ timeout: ms('90s') })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', true, { timeout: ms('90s') })
 }
 
 /**
@@ -107,7 +107,7 @@ export async function createGroupViaHubUi(page, baseUrl, options = {}) {
 	const parsed = parseGroupHashFromUrl(page.url())
 	if (!parsed) throw new Error(`group hash missing after create: ${page.url()}`)
 	if (options.waitForComposer !== false)
-		await expect(page.locator('#message-input')).toBeEnabled({ timeout: HUB_INIT_TIMEOUT })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false, { timeout: HUB_INIT_TIMEOUT })
 	return parsed
 }
 
@@ -131,7 +131,7 @@ async function waitForGroupComposerReady(page, groupId) {
 	const input = page.locator('#message-input')
 	for (let attempt = 0; attempt < 2; attempt++)
 		try {
-			await expect(input).toBeEnabled({ timeout: ms('30s') })
+			await expect(input).toHaveJSProperty('disabled', false, { timeout: ms('30s') })
 			return
 		}
 		catch {
@@ -148,7 +148,7 @@ async function waitForGroupComposerReady(page, groupId) {
 	const serverItem = page.locator(`#server-list .server-item[data-group-id="${groupId}"]`)
 	await expect(serverItem).toBeVisible({ timeout: ms('1m') })
 	await serverItem.click()
-	await expect(input).toBeEnabled({ timeout: ms('1m') })
+	await expect(input).toHaveJSProperty('disabled', false, { timeout: ms('1m') })
 }
 
 /**
@@ -183,7 +183,7 @@ export async function navigateGroupChannelHash(page, groupId, channelId) {
 		{ gid: groupId, cid: channelId },
 	)
 	await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(groupId)}`))
-	await expect(page.locator('#message-input')).toBeEnabled({ timeout: 60_000 })
+	await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false, { timeout: 60_000 })
 }
 
 /**
@@ -215,7 +215,7 @@ export async function openFreshGroupChannel(page, baseUrl, apiKey, groupOpts = {
 		if (page.url().includes(`#${hashFrag}`)) {
 			const input = page.locator('#message-input')
 			try {
-				await expect(input).toBeEnabled({ timeout: ms('15s') })
+				await expect(input).toHaveJSProperty('disabled', false, { timeout: ms('15s') })
 				return { groupId, channelId: defaultChannelId }
 			}
 			catch { /* fall through to hash nav */ }

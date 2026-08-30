@@ -59,7 +59,7 @@ test.describe('Chat hub mobile pane', () => {
 		expect(atMain.surface, `composer hidden at main-pane open: ${JSON.stringify(atMain)}`).toBe('conversation')
 		expect(atMain.display).not.toBe('none')
 		await expect(page.locator('.input-area')).toBeVisible()
-		await expect(page.locator('#message-input')).toBeEnabled()
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false)
 	})
 
 	test('member backdrop closes member overlay', async ({ page, baseUrl, apiKey }) => {

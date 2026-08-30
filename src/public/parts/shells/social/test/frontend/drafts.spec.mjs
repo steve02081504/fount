@@ -26,7 +26,7 @@ test.describe('Social composer drafts', () => {
 
 		await page.locator(`#draftsPanel [data-open-draft="${saved.draftId}"]`).click()
 		await expect(page.locator('#feedView')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#postText')).toHaveValue(text)
+		await expect(page.locator('#postText')).toHaveJSProperty('value', text)
 
 		await page.locator('.side-nav .nav-btn[data-view="drafts"]').click()
 		await page.locator(`#draftsPanel [data-delete-draft="${saved.draftId}"]`).click()
