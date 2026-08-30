@@ -4479,6 +4479,7 @@
 				"title": "Емодзі",
 				"aria-label": "Емодзі"
 			},
+			"mentionEmpty": "(немає відповідних учасників)",
 			"mentionSuggest": {
 				"aria-label": "Підказки згадок"
 			},

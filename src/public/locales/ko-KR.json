@@ -4479,6 +4479,7 @@
 				"title": "표정",
 				"aria-label": "표정"
 			},
+			"mentionEmpty": "(일치하는 멤버 없음)",
 			"mentionSuggest": {
 				"aria-label": "멘션 제안"
 			},

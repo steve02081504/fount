@@ -4479,6 +4479,7 @@
 				"title": "Broskarlar",
 				"aria-label": "Broskarlar"
 			},
+			"mentionEmpty": "(engir samsvarandi meðlimir)",
 			"mentionSuggest": {
 				"aria-label": "Tillögur að mentíunum"
 			},

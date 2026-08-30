@@ -4478,6 +4478,7 @@
 				"title": "表情",
 				"aria-label": "表情"
 			},
+			"mentionEmpty": "（無匹配成員）",
 			"mentionSuggest": {
 				"aria-label": "提及建議"
 			},

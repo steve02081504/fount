@@ -5,6 +5,24 @@ import {
 
 const ENTITY_HASH = 'f'.repeat(128)
 
+/**
+ * 自定义文件 token 解析（code shell 场景）。
+ * @param {string} raw 原始 token
+ * @returns {{ kind: 'file', body: string, name: string }} token 描述
+ */
+function parseFileToken(raw) {
+	return { kind: 'file', body: raw, name: raw.slice(6, -1) }
+}
+
+/**
+ * 自定义文件 token chip 标签。
+ * @param {{ name: string }} token token 描述
+ * @returns {string} 标签
+ */
+function fileTokenLabel(token) {
+	return token.name
+}
+
 test.describe('Markdown rich input', () => {
 	test('clicking empty composer places caret at start (before placeholder)', async ({ page, groupChannel: _ }) => {
 		const input = page.locator('#message-input')
@@ -60,6 +78,49 @@ test.describe('Markdown rich input', () => {
 		const input = page.locator('#message-input')
 		await input.fill(':[emoji:testpack/grinning]:')
 		await expect(input.locator('.fount-markdown-rich-input-chip.fount-markdown-rich-input-emoji')).toHaveCount(1)
+	})
+
+	test('inlineTokens option renders custom token chip without registered defaults', async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			document.body.appendChild(el)
+			const handle = createMarkdownRichInput(el, {
+				useRegisteredInlineTokens: false,
+				inlineTokens: [{
+					kind: 'file',
+					regex: /@file:([\w.-]+)\]/giu,
+					parse: parseFileToken,
+					resolveLabel: fileTokenLabel,
+				}],
+			})
+			handle.value = '@file:main.mjs]'
+			await new Promise(resolve => setTimeout(resolve, 0))
+			const fileChipCount = el.querySelectorAll('.fount-markdown-rich-input-file').length
+			const roundTrip = handle.value === '@file:main.mjs]'
+			handle.value = `@[entity:${'f'.repeat(128)}]`
+			await new Promise(resolve => setTimeout(resolve, 0))
+			const mentionChipCount = el.querySelectorAll('.fount-markdown-rich-input-mention').length
+			el.remove()
+			return { fileChipCount, roundTrip, mentionChipCount }
+		})
+		expect(result).toEqual({ fileChipCount: 1, roundTrip: true, mentionChipCount: 0 })
+	})
+
+	test('useRegisteredInlineTokens=false keeps registered mention token as plain text', async ({ page }) => {
+		const result = await page.evaluate(async () => {
+			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			const el = document.createElement('div')
+			document.body.appendChild(el)
+			const handle = createMarkdownRichInput(el, { useRegisteredInlineTokens: false })
+			handle.value = `@[entity:${'f'.repeat(128)}]`
+			await new Promise(resolve => setTimeout(resolve, 0))
+			const mentionChipCount = el.querySelectorAll('.fount-markdown-rich-input-mention').length
+			const roundTrip = handle.value === `@[entity:${'f'.repeat(128)}]`
+			el.remove()
+			return { mentionChipCount, roundTrip }
+		})
+		expect(result).toEqual({ mentionChipCount: 0, roundTrip: true })
 	})
 
 	test('toolbar link action wraps selection and fires input event', async ({ page, groupChannel: _ }) => {

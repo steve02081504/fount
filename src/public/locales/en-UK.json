@@ -4479,6 +4479,7 @@
 				"title": "Emoji",
 				"aria-label": "Emoji"
 			},
+			"mentionEmpty": "(no matching members)",
 			"mentionSuggest": {
 				"aria-label": "Mention suggestions"
 			},

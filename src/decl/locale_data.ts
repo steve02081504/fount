@@ -4441,6 +4441,7 @@ export type LocaleData = {
 				title: string
 				'aria-label': string
 			}
+			mentionEmpty: string
 			mentionSuggest: {
 				'aria-label': string
 			}

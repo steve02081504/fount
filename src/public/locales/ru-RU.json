@@ -4479,6 +4479,7 @@
 				"title": "Эмодзи",
 				"aria-label": "Эмодзи"
 			},
+			"mentionEmpty": "(нет подходящих участников)",
 			"mentionSuggest": {
 				"aria-label": "Подсказки упоминаний"
 			},
