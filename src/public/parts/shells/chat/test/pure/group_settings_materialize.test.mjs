@@ -16,6 +16,13 @@ Deno.test('materializeGroupSettings merges defaults without coercing maxDagPaylo
 	assertEquals(materializeGroupSettings({ joinPolicy: 'open' }).joinPolicy, 'open')
 })
 
+Deno.test('materializeGroupSettings forces discoveryPublic off unless joinPolicy is pow', () => {
+	assertEquals(materializeGroupSettings({ joinPolicy: 'invite-only', discoveryPublic: true }).discoveryPublic, false)
+	assertEquals(materializeGroupSettings({ joinPolicy: 'open', discoveryPublic: true }).discoveryPublic, false)
+	assertEquals(materializeGroupSettings({ joinPolicy: 'pow', discoveryPublic: true }).discoveryPublic, true)
+	assertEquals(materializeGroupSettings({ joinPolicy: 'pow' }).discoveryPublic, false)
+})
+
 Deno.test('validateGroupSettingsUpdateContent rejects invalid maxDagPayloadBytes', () => {
 	assertThrows(
 		() => validateGroupSettingsUpdateContent({ maxDagPayloadBytes: 0 }),

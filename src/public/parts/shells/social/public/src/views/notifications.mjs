@@ -79,12 +79,12 @@ function notificationIconClass(type) {
  */
 function notificationMessageAttrs(row) {
 	const actorCount = Number(row.actorCount) || 1
-	const primaryLabel = authorLabel(row.actorEntityHash)
+	const primaryLabel = authorLabel(row.actorEntityHash, row.authorProfile)
 	const actors = Array.isArray(row.actors) && row.actors.length
 		? row.actors
-		: [{ entityHash: row.actorEntityHash }]
+		: [{ entityHash: row.actorEntityHash, authorProfile: row.authorProfile }]
 	const secondaryLabel = actors.length > 1
-		? authorLabel(actors[1].entityHash)
+		? authorLabel(actors[1].entityHash, actors[1].authorProfile)
 		: primaryLabel
 	const { type } = row
 	if (actorCount <= 1)
@@ -104,17 +104,27 @@ function notificationMessageAttrs(row) {
 }
 
 /**
+ * 单实体头像 HTML（资料头像优先，名字字母兜底）。
+ * @param {string} entityHash 实体 hash
+ * @param {object} [profile] 资料摘要
+ * @returns {string} 头像 HTML
+ */
+function notificationAvatarHtml(entityHash, profile) {
+	return renderAvatarHtml(entityHash, { ...profile || {}, name: authorLabel(entityHash, profile) })
+}
+
+/**
  * @param {object} row 通知条目
  * @returns {string} 头像 HTML
  */
 function notificationAvatarsHtml(row) {
 	const actors = Array.isArray(row.actors) && row.actors.length
 		? row.actors.slice(0, 3)
-		: [{ entityHash: row.actorEntityHash }]
+		: [{ entityHash: row.actorEntityHash, authorProfile: row.authorProfile }]
 	if (actors.length <= 1)
-		return renderAvatarHtml(actors[0].entityHash, { name: authorLabel(actors[0].entityHash) })
+		return notificationAvatarHtml(actors[0].entityHash, actors[0].authorProfile)
 	return `<div class="notification-avatars stacked">${actors.map(actor =>
-		renderAvatarHtml(actor.entityHash, { name: authorLabel(actor.entityHash) }),
+		notificationAvatarHtml(actor.entityHash, actor.authorProfile),
 	).join('')}</div>`
 }
 
@@ -260,7 +270,7 @@ export function mergeIncomingNotification(notification) {
 			actorCount,
 			at,
 			actors: [
-				{ entityHash: notification.actorEntityHash, at: notification.at },
+				{ entityHash: notification.actorEntityHash, at: notification.at, authorProfile: notification.authorProfile },
 				...Array.isArray(notification.actors) ? notification.actors : [],
 			].slice(0, 3),
 			snippet: notification.snippet || existing.querySelector('.notification-snippet')?.textContent || null,
@@ -274,7 +284,7 @@ export function mergeIncomingNotification(notification) {
 	const card = renderNotificationCard({
 		...notification,
 		actorCount: 1,
-		actors: [{ entityHash: notification.actorEntityHash, at: notification.at }],
+		actors: [{ entityHash: notification.actorEntityHash, at: notification.at, authorProfile: notification.authorProfile }],
 	}, seenAt)
 	card.dataset.knownActors = notification.actorEntityHash
 	insertBeforeScrollSentinel(container, card)

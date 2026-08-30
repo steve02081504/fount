@@ -34,7 +34,7 @@ test.describe('Chat hub navigation', () => {
 	test('switches between groups and friends mode', async ({ page, baseUrl, apiKey }) => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await page.locator('.server-item[data-mode="friends"]').click()
-		await expect(page.locator('#message-input')).toBeDisabled({ timeout: 60_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', true, { timeout: 60_000 })
 		await expect(page.locator('.input-area')).toBeHidden()
 		await expect(page.locator('.empty--friends')).toBeVisible()
 		await page.locator('#friends-empty-search-button').click()
@@ -78,7 +78,7 @@ test.describe('Chat hub navigation', () => {
 		await expect(page).toHaveURL(/#friends/, { timeout: 60_000 })
 		await expect(page.locator('body')).toHaveAttribute('data-surface', 'friends')
 		await expect(page.locator('.empty--friends')).toBeVisible()
-		await expect(page.locator('#message-input')).toBeDisabled()
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', true)
 	})
 
 	test('creates a group via hub UI', async ({ page, baseUrl }) => {
@@ -99,7 +99,7 @@ test.describe('Chat hub navigation', () => {
 		await secondItem.click()
 		await expect(page).toHaveURL(new RegExp(`:${secondChannelId}`))
 		await expect(page.locator('#channel-name-display')).toContainText(name, { timeout: 30_000 })
-		await expect(page.locator('#message-input')).toBeEnabled({ timeout: 30_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false, { timeout: 30_000 })
 	})
 
 	test('group settings page loads from hash', async ({ page, baseUrl, apiKey }) => {
@@ -157,6 +157,10 @@ test.describe('Chat hub navigation', () => {
 		await expect(page.locator('#federation-dm-rotate')).toBeHidden()
 		await page.locator('.advanced-settings > summary').click()
 		await expect(page.locator('#federation-dm-rotate')).toBeVisible()
+		const panel = page.locator('.prefs-panel')
+		await expect.poll(() => panel.evaluate(element => element.scrollHeight > element.clientHeight)).toBe(true)
+		await panel.evaluate(element => { element.scrollTop = element.scrollHeight })
+		await expect.poll(() => panel.evaluate(element => element.scrollTop > 0)).toBe(true)
 		await page.locator('#federation-close').click()
 		await expect(prefsShell).toHaveCount(0)
 	})

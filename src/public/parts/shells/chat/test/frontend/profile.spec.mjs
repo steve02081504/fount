@@ -119,8 +119,8 @@ test.describe('Chat profile page', () => {
 		await page.locator('#profile-edit-save').click()
 		await expect(page.locator('#profile-edit-modal')).toBeHidden({ timeout: 20_000 })
 		await expect(page.locator('#profile-card-host [data-entity-profile-tags]')).toContainText('#original', { timeout: 20_000 })
-		await expect(page.locator('#profile-card-host [data-entity-profile-links] a')).toHaveText('Example Site')
-		await expect(page.locator('#profile-card-host [data-entity-profile-links] a')).toHaveAttribute('href', 'https://example.com/')
+		await expect(page.locator('#profile-card-host [data-entity-profile-links] a').first()).toHaveText('Example Site')
+		await expect(page.locator('#profile-card-host [data-entity-profile-links] a').first()).toHaveAttribute('href', 'https://example.com/')
 	})
 })
 

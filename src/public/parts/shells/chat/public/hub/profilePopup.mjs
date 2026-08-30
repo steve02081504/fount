@@ -24,7 +24,7 @@ import {
 	wireEntityProfileCardActions,
 } from './entityProfile.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
-import { hideHoverCard } from './presence.mjs'
+import { fetchUserProfile, hideHoverCard, refreshHubAfterPopupProfileFetch } from './presence.mjs'
 
 const LAYER_ID = 'profile-popup-layer'
 
@@ -39,7 +39,7 @@ export function dismissProfilePopup() {
  */
 function userEntityFromMember(member) {
 	const entityHash = member?.entityHash || ''
-	const pubKeyHash = member?.pubKeyHash || ''
+	const pubKeyHash = member?.pubKeyHash || member?.memberKey || ''
 	const displayName = aliasForEntity(entityHash)
 		|| String(member?.displayName || '').trim()
 		|| (entityHash ? entityHashLabel(entityHash) : '')
@@ -123,7 +123,7 @@ export async function resolveEntityFromAnchor(anchor) {
 	if (entityHash)
 		return entityFromEntityHash(entityHash, members)
 
-	// 无 data-entity-hash 的遗留锚点：仅用展示键做 entityHash / pubKeyHash 直通，不再跨字段猜成员
+	// 无 data-entity-hash 的遗留锚点：先用展示键反查成员表补全实体，查不到再退回 entityHash / pubKeyHash 直通
 	const memberKey = memberItem?.dataset.memberKey?.trim()
 	const avatarFor = anchor.dataset.avatarFor
 		|| anchor.closest('[data-avatar-for]')?.dataset.avatarFor
@@ -134,7 +134,12 @@ export async function resolveEntityFromAnchor(anchor) {
 
 	if (isEntityHash128(displayKey))
 		return entityFromEntityHash(displayKey, members)
-	if (isHex64(displayKey))
+	if (isHex64(displayKey)) {
+		// 与悬停卡一致：先反查成员表补全 entityHash，避免点击弹层按钮少于悬停卡
+		const member = members.find(m => (m.memberKey || m.pubKeyHash) === displayKey)
+		if (member?.entityHash && isEntityHash128(member.entityHash))
+			return entityFromEntityHash(member.entityHash, members)
+		if (member) return userEntityFromMember(member)
 		return {
 			entityHash: null,
 			charname: null,
@@ -142,6 +147,7 @@ export async function resolveEntityFromAnchor(anchor) {
 			pubKeyHex: null,
 			displayName: `${displayKey.slice(0, 8)}…${displayKey.slice(-4)}`,
 		}
+	}
 	return null
 }
 
@@ -155,7 +161,14 @@ async function paintProfilePopup(popup, entity) {
 	const groupId = store.context.currentGroupId || undefined
 	const profile = entityHash
 		? await loadEntityProfile(entityHash, { bypassCache: true, groupId, forceRemote: true })
+			.catch(() => fetchUserProfile(entityHash, { groupId }))
 		: null
+
+	// forceRemote 拉到了最新资料：若与消息/成员列表当前展示不一致，重绘这些资料面。
+	// 与 WS profile_update 触发同一重绘路径，保证弹层所见与列表所见一致，无需刷新页面。
+	if (profile && entityHash)
+		void refreshHubAfterPopupProfileFetch(entityHash, profile, { groupId })
+			.catch(error => console.error('[chat] profile popup refresh failed', error))
 
 	if (profile)
 		await paintEntityProfileUi(popup, profile, { attribution: entity.attribution || null })

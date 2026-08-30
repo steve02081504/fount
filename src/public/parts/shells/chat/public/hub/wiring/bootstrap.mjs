@@ -9,6 +9,7 @@ import { openDialogFromTemplate } from '../../src/templates.mjs'
 import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'
 import { store } from '../core/state.mjs'
+import { bindDomContext } from '../domContext.mjs'
 import { registerFountUserApi } from '../fountUser.mjs'
 import { installHubRichInput } from '../markdownRichInput.mjs'
 import { syncComposerAlignment } from '../messages/composerController.mjs'
@@ -136,6 +137,7 @@ async function showServerActionPicker() {
 /** 注册 Hub 壳层关键点击（建群、成员侧栏等），供 index 同步调用。 @returns {void} */
 export function wireBootstrap() {
 	registerFountUserApi()
+	bindDomContext()
 	wireComposerControls()
 	wireModeTabsEarly()
 	wireHashNavigation()

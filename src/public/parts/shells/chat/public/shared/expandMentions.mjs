@@ -6,6 +6,7 @@ import { aliasForEntity } from './aliases.mjs'
 import { formatHashShort } from './entityHash.mjs'
 import { parseInlineTokens } from './inlineTokens.mjs'
 import { disambiguateLabels } from './nameResolve.mjs'
+import { escapeMentionLabel } from './mentions.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 
 
@@ -75,11 +76,11 @@ export function expandMentionsInMarkdown(text, labelMap, options = {}) {
 			const hash = token.body
 			const label = labelMap.get(hash)
 				|| formatHashShort(hash, { headLen: 8, tailLen: 0, ellipsis: false })
-			parts.push(`[@${label}](${formatSocialProfileHref(hash)})`)
+			parts.push(`[@${escapeMentionLabel(label)}](${formatSocialProfileHref(hash)})`)
 		}
 		else if (token.kind === 'role') {
 			const label = roleNames.get(token.body) || token.body
-			parts.push(`@${label}`)
+			parts.push(`@${escapeMentionLabel(label)}`)
 		}
 		else if (token.kind === 'everyone')
 			parts.push(token.body === 'here' ? '@here' : '@everyone')

@@ -77,8 +77,14 @@ export function registerChannelCrudRoutes(router, authenticate) {
 	router.put(`${GROUPS_PREFIX}/:groupId/settings`, authenticate, async (req, res) => {
 		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
-		const { username } = membership
+		const { username, state } = membership
 		const { delegatedOwnerPubKeyHash, ...settingsPatch } = req.body || {}
+		// 公开发现仅限 PoW 入群策略：非 pow 群即使显式提交 discoveryPublic:true 也拒绝（materializeGroupSettings 兜底归一化）。
+		if (settingsPatch.discoveryPublic === true) {
+			const nextJoinPolicy = settingsPatch.joinPolicy ?? state.groupSettings?.joinPolicy
+			if (nextJoinPolicy !== 'pow')
+				throw httpError(400, 'discoveryPublic requires joinPolicy "pow"')
+		}
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'group_settings_update',
 			timestamp: Date.now(),

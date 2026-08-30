@@ -3,6 +3,7 @@
  */
 import { initTranslations, geti18n } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme/index.mjs'
+import { createMarkdownRichInput } from '/scripts/components/markdownRichInput.mjs'
 
 import { getTemplates, getTemplateHtml, createPart } from './src/endpoints.mjs'
 
@@ -35,6 +36,21 @@ async function loadTemplates() {
 }
 
 /**
+ * 安装模板表单内的 markdown 富文本输入框（`[data-markdown-rich-input]`，幂等）。
+ * i18n 观察器异步处理 `data-i18n`，这里先同步把 placeholder 落上，保证空态占位可见。
+ * @returns {void}
+ */
+function installRichInputs() {
+	for (const el of templateFormContainer.querySelectorAll('[data-markdown-rich-input]')) {
+		if (!(el instanceof HTMLElement) || el.classList.contains('fount-markdown-rich-input')) continue
+		const placeholderKey = el.dataset.i18n ? `${el.dataset.i18n}.placeholder` : ''
+		const placeholder = placeholderKey ? geti18n(placeholderKey) : ''
+		if (placeholder) el.setAttribute('placeholder', placeholder)
+		createMarkdownRichInput(el, { enableDockedToolbar: true })
+	}
+}
+
+/**
  * 加载模板 UI。
  * @returns {Promise<void>}
  */
@@ -48,6 +64,7 @@ async function loadTemplateUI() {
 	try {
 		const html = await getTemplateHtml(selectedTemplate)
 		templateFormContainer.innerHTML = html
+		installRichInputs()
 	}
 	catch (error) {
 		console.error(`Failed to load UI for template ${selectedTemplate}:`, error)
@@ -72,6 +89,13 @@ async function handleFormSubmit(event) {
 	try {
 		const templateForm = templateFormContainer.querySelector('form') || form
 		const formData = new FormData(templateForm)
+
+		// 富文本输入框不是表单控件，手动同步回 FormData。
+		for (const el of templateFormContainer.querySelectorAll('.fount-markdown-rich-input')) {
+			const name = el.getAttribute('name')
+			if (!name) continue
+			formData.set(name, el.value)
+		}
 
 		formData.append('templateName', templateName)
 

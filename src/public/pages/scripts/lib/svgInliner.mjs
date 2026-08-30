@@ -19,7 +19,9 @@ async function loadSvgText(url) {
 
 /**
  * currentColor 在 img 引用的外部 SVG 上无效；将未标记 ignore 的 `.svg` img inline。
- * 用户头像/贴纸等加 `svg-inliner-ignore`，保持 `<img>`。
+ * 用户头像/贴纸等加 `svg-inliner-ignore`，保持 `<img>`；用户可控正文（markdown/reaction）
+ * 也由渲染管线标记 `svg-inliner-ignore`（见 markdown convertor / sanitize），内联远程 SVG
+ * 会激活其中脚本（存储型 XSS）。
  * @param {DocumentFragmentOrElement} DOM - 要处理的 DOM。
  * @returns {Promise<DocumentFragmentOrElement>} - 处理后的 DOM。
  */

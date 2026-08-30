@@ -20,7 +20,7 @@ test.describe('Chat hub integration', () => {
 		expect(messageTextFromPostResponse(postJson)).toBe(text)
 
 		await page.locator('.server-item[data-mode="friends"]').click()
-		await expect(page.locator('#message-input')).toBeDisabled({ timeout: 30_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', true, { timeout: 30_000 })
 		await navigateGroupChannelHash(page, groupId, channelId)
 
 		await page.locator('#toggle-members-button').click()

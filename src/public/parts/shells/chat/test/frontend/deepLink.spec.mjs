@@ -17,7 +17,7 @@ test.describe('Chat deep links', () => {
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		await page.goto(`${baseUrl}/parts/shells:chat/hub/#friends`, { waitUntil: 'domcontentloaded' })
 		await waitForHubReady(page)
-		await expect(page.locator('#message-input')).toBeDisabled({ timeout: 60_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', true, { timeout: 60_000 })
 		await navigateGroupChannelHash(page, groupId, channelId)
 		await expectMessageInChat(page, text)
 	})
@@ -27,7 +27,7 @@ test.describe('Chat deep links', () => {
 		await waitForHubReady(page)
 		await expect(page).toHaveURL(/#friends/)
 		await expect(page.locator('#server-bar')).toBeVisible({ timeout: 60_000 })
-		await expect(page.locator('#message-input')).toBeDisabled({ timeout: 60_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', true, { timeout: 60_000 })
 	})
 
 	test('char deep link opens friend chat and enables composer', async ({ page, baseUrl }) => {
@@ -38,7 +38,7 @@ test.describe('Chat deep links', () => {
 		})
 		await waitForHubReady(page)
 		await expect(page).toHaveURL(/#group:/, { timeout: 60_000 })
-		await expect(page.locator('#message-input')).toBeEnabled({ timeout: 60_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false, { timeout: 60_000 })
 		// 消息区不再停留在 loading
 		await expect(page.locator('#messages .loading')).toHaveCount(0, { timeout: 60_000 })
 	})

@@ -192,6 +192,7 @@ export function renderTagsEditor(host, tags, onChange) {
 		chip.className = 'profile-edit-tag-chip'
 		const label = document.createElement('span')
 		label.textContent = `#${tag}`
+		label.setAttribute('user-content', '')
 		const remove = document.createElement('button')
 		remove.type = 'button'
 		remove.className = 'profile-edit-tag-remove'

@@ -1208,6 +1208,7 @@
 				"aria-label": "跳到 Unicode"
 			},
 			"discoverPacks": "探索表情包 →",
+			"emptyPack": "此表情包暂无表情",
 			"addToCollection": "加入我的收藏",
 			"addedToCollection": "已加入收藏",
 			"joinGroup": "加入群组",
@@ -1516,7 +1517,8 @@
 				"batterySaver": "低功耗模式（缩小联邦连接池与中继）",
 				"compactTriggerDepth": "物化压缩触发深度",
 				"discoveryBlurb": "发现简介（可选）",
-				"discoveryPublic": "在联邦发现中公开此群（不含入群密钥）",
+				"discoveryPublic": "在联邦发现中公开此群",
+				"powOnlyHint": "仅 PoW 入群策略可开启。开启后群会出现在联邦发现中，他人搜索到后可按 PoW 申请加入。",
 				"discoveryTitle": "发现列表标题（可选）",
 				"eventRetentionDepth": "DAG 事件保留深度",
 				"eventRetentionMs": "DAG 事件保留时间",
@@ -1569,7 +1571,6 @@
 					"description": "打理群组身份、成员、权限与维系共同舞台的各项工具。",
 					"kicker": "群组管理",
 					"subtitle": "管理群资料、成员和常用功能。低频的权限、存储与审计工具集中在高级设置中。",
-					"backToChat": "返回聊天",
 					"navigationLabel": "群组设置分类",
 					"activeEmojiPackLabel": "当前编辑的表情包",
 					"membersTitle": "成员列表",
@@ -1677,7 +1678,10 @@
 						"deleteOk": "表情已删除",
 						"empty": "暂无群表情",
 						"hint": "按表情包管理；成员可在聊天中插入或发送这些表情。未本地缓存的图片会经联邦按需拉取。",
-						"packGroupOption": "${packId} (群)",
+						"packGroupOption": "群默认表情包",
+						"idCopied": "已复制表情包 ID",
+						"idCopy": "复制",
+						"packCount": "${name} - ${count}项",
 						"title": "群自定义表情",
 						"upload": "上传表情",
 						"uploadFailed": "上传失败：${error}",
@@ -1765,7 +1769,8 @@
 						"noRoles": "暂无可配置角色",
 						"updateFailed": "群权限更新失败：${error}",
 						"updated": "群权限已更新"
-					}
+					},
+					"discoverySectionTitle": "联邦发现"
 				},
 				"pinContext": "置顶邻域（±N 邻帖）",
 				"rtcBudget": "RTC 连接预算",
@@ -4483,6 +4488,7 @@
 				"title": "表情",
 				"aria-label": "表情"
 			},
+			"mentionEmpty": "（无匹配成员）",
 			"mentionSuggest": {
 				"aria-label": "提及建议"
 			},

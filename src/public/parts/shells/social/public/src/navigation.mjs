@@ -206,7 +206,8 @@ export async function focusComposer({ switchToFeed = false } = {}) {
 }
 
 /**
- * 发帖成功后刷新 feed 并清空搜索状态。
+ * 发帖成功后清空搜索状态；新帖交由 WS 增量插入。
+ * 不再全量 loadFeed：其与 prependFeedItem 的异步竞争会把同一帖子渲染两次。
  * @returns {Promise<void>}
  */
 export async function afterPublishPost() {
@@ -214,7 +215,5 @@ export async function afterPublishPost() {
 	state.activeFeedSearchQuery = null
 	const searchInput = document.getElementById('feedSearchInput')
 	if (searchInput instanceof HTMLInputElement) searchInput.value = ''
-	state.feedCursor = null
-	await loadFeed(false)
 	updateFeedSearchChrome()
 }

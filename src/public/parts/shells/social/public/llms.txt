@@ -106,7 +106,7 @@ social shell 提供信息流（feed）、帖文、社交关系、直播与探索
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | `S/notifications?limit=&cursor=&types=` | `limit` 默认 30 / 上限 100，`types` 逗号分隔。响应 `{ notifications[], nextCursor, unreadCount, viewerEntityHash }`；读取层按目标聚合高频互动（`actors[]`、`actorCount`、`aggregateKey`） |
+| GET | `S/notifications?limit=&cursor=&types=` | `limit` 默认 30 / 上限 100，`types` 逗号分隔。响应 `{ notifications[], nextCursor, unreadCount, viewerEntityHash }`；读取层按目标聚合高频互动（`actors[]`、`actorCount`、`aggregateKey`）。每条行带动作主语的 `authorProfile`（`{ name, handle, avatar, infoDefaults, ownerEntityHash }`），聚合行的 `actors[]` 每项亦带 `authorProfile`；WS `type:'notification'` 推送同样携带 |
 | GET / PUT | `S/notifications/seen` | 已读水位 |
 | GET | `S/taste?locale=` | `{ privacy, clusteredAt, aliases, tags: [{ tagHash, weight, label }] }` |
 | PUT | `S/taste` | body `privacy?`（`{ publishPreferences, publishReactions }`，默认皆 true）、`tags?`（`Record<tagHash, weight>` 写 manual 覆盖，0 删除） |

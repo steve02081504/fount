@@ -28,6 +28,9 @@ import { renderProfileAlbums } from './albums.mjs'
 /** @type {Map<string, Set<string>>} entity → 已加载过的 tab */
 const profileLoadedTabs = new Map()
 
+/** 资料页加载序号：递增使过期的 loadProfileFor 渲染作废（深链/导航并发时防止旧加载覆盖新加载）。 */
+let profileLoadSeq = 0
+
 /**
  * @param {string} entityHash 实体
  * @returns {Set<string>} 已加载 tab
@@ -125,6 +128,7 @@ export async function renderProfilePosts(entityHash, container, highlightPostId 
 	const data = await getProfilePosts(entityHash, {
 		cursor: append ? state.profilePostsCursor : null,
 	})
+	if (state.profileEntityHash !== entityHash) return
 	if (!append) container.replaceChildren()
 	const items = data.items || []
 	state.profilePostsCursor = data.nextCursor || null
@@ -139,6 +143,7 @@ export async function renderProfilePosts(entityHash, container, highlightPostId 
 			card.classList.add('highlight-post')
 		return card
 	})
+	if (state.profileEntityHash !== entityHash) return
 	bindFeedVideoAutoplay(container)
 	bindProfilePostsInfiniteScroll(entityHash, container)
 	if (highlightPostId)
@@ -278,10 +283,12 @@ export async function activateProfileTab(tab, options = {}) {
  * @param {HTMLElement} host 宿主
  * @param {string} entityHash 实体
  * @param {object} profile 资料
+ * @param {number} seq 发起加载时的序号；非最新加载时不挂载卡片
  * @returns {Promise<void>}
  */
-async function mountProfileEntityCard(host, entityHash, profile) {
+async function mountProfileEntityCard(host, entityHash, profile, seq) {
 	const card = await createEntityProfileCardElement('embedded')
+	if (seq !== profileLoadSeq) return
 	card.classList.add('profile-entity-card')
 	await paintEntityProfileCard(card, profile, {
 		entityHash,
@@ -289,6 +296,7 @@ async function mountProfileEntityCard(host, entityHash, profile) {
 		nodeHash: state.viewerNodeHash,
 		viewerOwnerEntityHash: state.viewerProfile?.ownerEntityHash,
 	})
+	if (seq !== profileLoadSeq) return
 	const ownerEntityHash = profile?.ownerEntityHash || null
 	if (ownerEntityHash) {
 		let ownerName = null
@@ -299,6 +307,7 @@ async function mountProfileEntityCard(host, entityHash, profile) {
 		catch { /* remote miss */ }
 		paintEntityProfileExtras(card, { ownerEntityHash, ownerName })
 	}
+	if (seq !== profileLoadSeq) return
 	host.replaceChildren(card)
 }
 
@@ -309,10 +318,12 @@ async function mountProfileEntityCard(host, entityHash, profile) {
  * @returns {Promise<void>}
  */
 export async function loadProfileFor(entityHash, highlightPostId = null) {
+	const seq = ++profileLoadSeq
 	state.profileEntityHash = entityHash
 	state.profilePostsCursor = null
 	profileLoadedTabs.delete(entityHash)
 	const data = await getProfile(entityHash)
+	if (seq !== profileLoadSeq) return
 	const viewer = viewerEntityHash()
 	const isSelf = viewer && entityHash === viewer
 	const container = document.getElementById('profileView')
@@ -322,6 +333,7 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 	const cared = state.viewerEntityHash
 		? await isCared(state.viewerEntityHash, entityHash)
 		: false
+	if (seq !== profileLoadSeq) return
 	const headerActions = isSelf
 		? await renderTemplateAsHtmlString('profile_header_actions_self', {})
 		: await renderTemplateAsHtmlString('profile_header_actions_other', {
@@ -332,6 +344,7 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 			isCared: cared ? '1' : '0',
 			careKey: cared ? 'social.actions.careRemove' : 'social.actions.care',
 		})
+	if (seq !== profileLoadSeq) return
 
 	container.replaceChildren(await renderTemplate('profile_view', {
 		headerActions,
@@ -343,7 +356,8 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 
 	const cardHost = container.querySelector('#profileEntityCardHost')
 	if (cardHost instanceof HTMLElement)
-		await mountProfileEntityCard(cardHost, entityHash, data.profile)
+		await mountProfileEntityCard(cardHost, entityHash, data.profile, seq)
+	if (seq !== profileLoadSeq) return
 
 	await activateProfileTab('posts', { force: true })
 	if (highlightPostId) {

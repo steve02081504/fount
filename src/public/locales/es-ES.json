@@ -1199,6 +1199,7 @@
 				"aria-label": "Ir a Unicode"
 			},
 			"discoverPacks": "Explorar packs de emoji →",
+			"emptyPack": "Este paquete de emoticonos aún no tiene expresiones",
 			"addToCollection": "Añadir a favoritos",
 			"addedToCollection": "Añadido a favoritos",
 			"joinGroup": "Unirse al grupo",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "Modo de bajo consumo (grupo de conexiones de federación reducido y relé)",
 				"compactTriggerDepth": "Profundidad del disparador de compresión materializada",
 				"discoveryBlurb": "Introducción al descubrimiento (opcional)",
-				"discoveryPublic": "Exponer este grupo en descubrimiento federado (sin unirse a la clave del grupo)",
+				"discoveryPublic": "Exponer este grupo en descubrimiento federado",
+				"powOnlyHint": "Solo disponible con la política de unión PoW. Al activarlo, el grupo aparecerá en el descubrimiento federado para que otros puedan encontrarlo y solicitar unirse mediante PoW.",
 				"discoveryTitle": "Título de la lista de descubrimiento (opcional)",
 				"eventRetentionDepth": "Profundidad de retención de eventos DAG",
 				"eventRetentionMs": "Tiempo de retención de eventos DAG",
@@ -1560,7 +1562,6 @@
 					"description": "Gestiona la identidad del grupo, sus miembros, permisos y las herramientas que unen vuestro escenario compartido.",
 					"kicker": "Group management",
 					"subtitle": "Gestionar información del grupo, miembros y funciones comunes. Los permisos de baja frecuencia, el almacenamiento y las herramientas de auditoría están centralizados en ajustes avanzadas.",
-					"backToChat": "Volver al chat",
 					"navigationLabel": "Clasificación de configuración de grupo",
 					"activeEmojiPackLabel": "Pack en edición",
 					"membersTitle": "Lista de miembros",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "El emoticono ha sido eliminado.",
 						"empty": "Aún no hay expresiones grupales.",
 						"hint": "Los miembros pueden insertar o enviar estos emoticones en el chat; las imágenes desinstaladas se extraen según demanda a través de nodos federados.",
-						"packGroupOption": "${packId} (predeterminado)",
+						"packGroupOption": "Predeterminado del grupo",
+						"idCopied": "Se ha copiado el ID del paquete de emojis",
+						"idCopy": "Copiar",
+						"packCount": "${name} - ${count} elementos",
 						"title": "Agrupar expresiones personalizadas",
 						"upload": "Subir emoticones",
 						"uploadFailed": "Error de carga: ${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "No hay roles configurables por el momento",
 						"updateFailed": "No se pudieron actualizar los permisos de grupo: ${error}",
 						"updated": "Permisos de grupo actualizados"
-					}
+					},
+					"discoverySectionTitle": "Descubrimiento federado"
 				},
 				"pinContext": "Barrio superior (±N vecinos)",
 				"rtcBudget": "Presupuesto de conexión RTC",
@@ -4480,6 +4485,7 @@
 				"title": "expresión",
 				"aria-label": "expresión"
 			},
+			"mentionEmpty": "(no hay miembros coincidentes)",
 			"mentionSuggest": {
 				"aria-label": "Sugerencias de mención"
 			},

@@ -1199,6 +1199,7 @@
 				"aria-label": "🔤⬇️"
 			},
 			"discoverPacks": "🧭😀📦➡️",
+			"emptyPack": "📭",
 			"addToCollection": "➕⭐",
 			"addedToCollection": "⭐✅",
 			"joinGroup": "➕👥",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "🔋💤（📉🌐🔗📡）",
 				"compactTriggerDepth": "🧱🗜️🔝",
 				"discoveryBlurb": "🔍📝（🔘）",
-				"discoveryPublic": "🌐🔍👥（🚫➕👥🔑）",
+				"discoveryPublic": "🌐🔍👥",
+				"powOnlyHint": "🔒（🧩⚡）🔍👥",
 				"discoveryTitle": "🔍📋🏷️（🔘）",
 				"eventRetentionDepth": "🔗📊📨💾🔝",
 				"eventRetentionMs": "🔗📊📨💾⏰",
@@ -1560,7 +1562,6 @@
 					"description": "👥⚙️📋🔐",
 					"kicker": "👥🛡️",
 					"subtitle": "👥📋➕👤🔧🔽🔐、💾📜🔧 📚▶️🔧⚙️",
-					"backToChat": "🔙💬",
 					"navigationLabel": "👥⚙️🗂️",
 					"activeEmojiPackLabel": "✏️😀📦",
 					"membersTitle": "👥📋",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "😀🗑️✅",
 						"empty": "📭👥😀",
 						"hint": "👤✅💬📍／📤👥😀；🚫📥🖼️ ➡️ 🌐🔗📥⏳",
-						"packGroupOption": "${packId} 👥",
+						"packGroupOption": "👥",
+						"idCopied": "✅",
+						"idCopy": "📋",
+						"packCount": "${name} - ${count}",
 						"title": "👥😀",
 						"upload": "⬆️😀",
 						"uploadFailed": "⬆️❌：${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "📭🎭",
 						"updateFailed": "👥🔐🔄❌：${error}",
 						"updated": "👥🔐🔄✅"
-					}
+					},
+					"discoverySectionTitle": "🌐🔍"
 				},
 				"pinContext": "📌±N📨",
 				"rtcBudget": "📞🔗💰",
@@ -4474,6 +4479,7 @@
 				"title": "😀",
 				"aria-label": "😀"
 			},
+			"mentionEmpty": "（🤷📭👤）",
 			"mentionSuggest": {
 				"aria-label": "@️⃣💡"
 			},

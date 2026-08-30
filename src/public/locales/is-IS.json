@@ -1199,6 +1199,7 @@
 				"aria-label": "Fara í Unicode"
 			},
 			"discoverPacks": "Skoða broskallapakka →",
+			"emptyPack": "Þetta broskallapakki inniheldur engar tjáningar enn sem komið er",
 			"addToCollection": "Bæta í eftirlæti",
 			"addedToCollection": "Bætt í eftirlæti",
 			"joinGroup": "Ganga í hóp",
@@ -1507,7 +1508,8 @@
 				"batterySaver": "Lágstyrksstilling (minnkuð sambandstenging og gengi)",
 				"compactTriggerDepth": "Efnisbundin þjöppunarkveikjudýpt",
 				"discoveryBlurb": "Uppgötvunarkynning (valfrjálst)",
-				"discoveryPublic": "Sýndu þennan hóp í sameinuðum uppgötvun (án þess að tengjast hóplyklinum)",
+				"discoveryPublic": "Sýndu þennan hóp í sameinuðum uppgötvun",
+				"powOnlyHint": "Aðeins tiltækt með PoW-inngöngustefnunni. Þegar kveikt er á henni birtist hópurinn í sambandsuppgötvun svo aðrir geti fundið hann og sótt um inngöngu samkvæmt PoW.",
 				"discoveryTitle": "Titill uppgötvunarlista (valfrjálst)",
 				"eventRetentionDepth": "DAG viðburðar varðveislu dýpt",
 				"eventRetentionMs": "DAG varðveislutími viðburða",
@@ -1560,7 +1562,6 @@
 					"description": "Sjá um auðkenni hópsins, meðlimi, heimildir og tækin sem binda sameiginlega sviðið.",
 					"kicker": "Hópstjórn",
 					"subtitle": "Stjórna hópupplýsingum, meðlimum og sameiginlegum aðgerðum. Lágtíðniheimildir, geymsla og endurskoðunartæki eru miðlæg í háþróuðum stillingum.",
-					"backToChat": "Fara aftur í spjallið",
 					"navigationLabel": "Flokkun hópstillinga",
 					"activeEmojiPackLabel": "Pakki í breytingu",
 					"membersTitle": "Meðlimalisti",
@@ -1668,7 +1669,10 @@
 						"deleteOk": "Emoticon hefur verið eytt",
 						"empty": "Engar hóptjáningar ennþá",
 						"hint": "Meðlimir geta sett inn eða sent þessa broskörlum í spjalli; óuppsettar myndir eru dregnar á eftirspurn í gegnum sameinaða hnúta.",
-						"packGroupOption": "${packId} (hópur)",
+						"packGroupOption": "Sjálfgefið fyrir hóp",
+						"idCopied": "Auðkenni emojipakkans hefur verið afritað",
+						"idCopy": "Afrita",
+						"packCount": "${name} - ${count} atriði",
 						"title": "Sérsniðnir hópbroskarlar",
 						"upload": "Hladdu upp broskörlum",
 						"uploadFailed": "Upphleðsla mistókst: ${error}",
@@ -1756,7 +1760,8 @@
 						"noRoles": "Engin hlutverk til að stilla eins og er",
 						"updateFailed": "Mistókst að uppfæra hópheimildir: ${error}",
 						"updated": "Hópheimildir hafa verið uppfærðar"
-					}
+					},
+					"discoverySectionTitle": "Sambandsuppgötvun"
 				},
 				"pinContext": "Efsta hverfi (±N nágrannar)",
 				"rtcBudget": "RTC tengingarFramvinda",
@@ -4474,6 +4479,7 @@
 				"title": "Broskarlar",
 				"aria-label": "Broskarlar"
 			},
+			"mentionEmpty": "(engir samsvarandi meðlimir)",
 			"mentionSuggest": {
 				"aria-label": "Tillögur að mentíunum"
 			},

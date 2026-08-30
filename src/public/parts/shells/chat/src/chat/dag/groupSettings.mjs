@@ -60,7 +60,7 @@ export const DEFAULT_GROUP_SETTINGS = {
 	messageRateLimitPerMin: 10,
 	messageRateLimitWindowMs: 60_000,
 	iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-	/** 是否在联邦发现 gossip 中公开此群（不含 roomSecret） */
+	/** 是否在联邦发现中公开此群（仅 PoW 入群策略可开启） */
 	discoveryPublic: false,
 	discoveryTitle: null,
 	discoveryBlurb: null,
@@ -72,11 +72,15 @@ export const DEFAULT_GROUP_SETTINGS = {
 
 /**
  * 合并默认群设置（不做数值纠偏；非法字段由入站校验拒绝）。
+ * 联动不变量：公开发现仅允许 PoW 入群策略，非 pow 群强制不公开，
+ * 避免“可被搜到却进不来”的误导（本地 append / 联邦入站 / 重放共用此函数）。
  * @param {object} [raw] 原始群设置
  * @returns {object} 物化后的群设置
  */
 export function materializeGroupSettings(raw = {}) {
-	return { ...DEFAULT_GROUP_SETTINGS, ...raw }
+	const merged = { ...DEFAULT_GROUP_SETTINGS, ...raw }
+	if (merged.joinPolicy !== 'pow') merged.discoveryPublic = false
+	return merged
 }
 
 /**

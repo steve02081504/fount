@@ -9,11 +9,11 @@
  * - 选中文字后浮动格式工具栏 + 右键菜单（加粗 / 斜体 / 删除线 / 行内代码 / 引用 / 链接 / 提及）。
  * - IME 组合期间不重建 DOM，避免破坏拼音/输入法候选。
  */
-import { INLINE_TOKEN_RE } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
+import { getRegisteredInlineTokens, loadRegisteredMarkdownExtensions } from '/scripts/features/markdown/extensions.mjs'
 
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
-import { resolvePackEmojiUrl } from '/scripts/features/emoji/packIndex.mjs'
+import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
 import { setElementI18n } from '/scripts/i18n/index.mjs'
 
@@ -90,6 +90,26 @@ function makeActionIcon(action) {
 }
 
 /**
+ * 在原始文本中从指定偏移起查找下一个 inline token 命中。
+ * 遍历给定 token 定义，返回最早命中的项；并列时先出现的定义优先。
+ * @param {string} rawText 原始文本
+ * @param {number} fromIndex 起始偏移
+ * @param {Array<object>} tokens inline token 定义列表
+ * @returns {{ token: object, match: RegExpExecArray } | null} 命中结果
+ */
+function findNextToken(rawText, fromIndex, tokens) {
+	/** @type {{ token: object, match: RegExpExecArray } | null} */
+	let best = null
+	for (const token of tokens) {
+		const regex = new RegExp(token.regex.source, token.regex.flags.replace(/[gy]/g, '') + 'g')
+		regex.lastIndex = fromIndex
+		const match = regex.exec(rawText)
+		if (match && (!best || match.index < best.match.index)) best = { token, match }
+	}
+	return best
+}
+
+/**
  * @param {HTMLElement} element 输入框根元素
  * @param {object} [options] 选项
  * @param {(token: { kind: string, body?: string, entityHash?: string, roleId?: string, id?: string }) => Promise<string | null>} [options.resolveTokenLabel]
@@ -97,6 +117,9 @@ function makeActionIcon(action) {
  * @param {boolean} [options.enableToolbar=true] 是否启用选中文字浮动工具栏
  * @param {boolean} [options.enableContextMenu=true] 是否启用右键菜单
  * @param {boolean} [options.enableDockedToolbar=false] 是否启用停靠格式工具栏（插入到元素前，常显）
+ * @param {Array<{ kind: string, regex: RegExp, parse?: Function, resolveLabel?: Function, buildChip?: Function }>} [options.inlineTokens]
+ *   调用方直接提供的 inline token 定义（优先于注册表项；如 code shell 的 `@file:…` 文件引用）
+ * @param {boolean} [options.useRegisteredInlineTokens=true] 是否合并注册表（markdown_extensions）的 inline token；false 时仅用 `inlineTokens`
  * @returns {object} 组件控制句柄
  */
 export function createMarkdownRichInput(element, options = {}) {
@@ -105,12 +128,25 @@ export function createMarkdownRichInput(element, options = {}) {
 		enableToolbar = true,
 		enableContextMenu = true,
 		enableDockedToolbar = false,
+		inlineTokens = [],
+		useRegisteredInlineTokens = true,
 	} = options
 
 	if (!(element instanceof HTMLElement) || element.classList.contains('fount-markdown-rich-input'))
 		throw new Error('markdownRichInput requires a fresh HTMLElement')
 
+	/**
+	 * 当前生效的 inline token 定义：调用方提供项优先，其后按需合并注册表项。
+	 * @returns {Array<object>} token 定义列表
+	 */
+	function getTokens() {
+		return useRegisteredInlineTokens
+			? [...inlineTokens, ...getRegisteredInlineTokens()]
+			: inlineTokens
+	}
+
 	element.classList.add('fount-markdown-rich-input')
+	if (enableDockedToolbar) element.classList.add('fount-markdown-rich-input-resizable')
 	element.setAttribute('role', 'textbox')
 	element.setAttribute('aria-multiline', 'true')
 	element.spellcheck = true
@@ -118,7 +154,9 @@ export function createMarkdownRichInput(element, options = {}) {
 	let rawText = ''
 	let composing = false
 	let disabled = element.hasAttribute('disabled')
-	/** @type {Array<{ node: Node, kind: 'text'|'br'|'chip', raw?: string, start: number, end: number }>} */
+	/** 空态光标锚点（可编辑零宽文本），让光标停在可编辑位置而非占位符边界。 */
+	const caretAnchors = new WeakSet()
+	/** @type {Array<{ node: Node, kind: 'text'|'br'|'chip', raw?: string, start: number, end: number, token?: object }>} */
 	let segments = []
 	/** 撤销/重做历史（rawText 快照）上限。 */
 	const HISTORY_LIMIT = 100
@@ -149,7 +187,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	 * @returns {string} 原始文本
 	 */
 	function serializeNode(node) {
-		if (node.nodeType === Node.TEXT_NODE) return node.nodeValue
+		if (node.nodeType === Node.TEXT_NODE)
+			return caretAnchors.has(node) ? node.nodeValue.replace(/\u200B/g, '') : node.nodeValue
 		if (!(node instanceof HTMLElement)) return ''
 		if (node.dataset.emptySlot != null) return ''
 		if (node.dataset.raw != null) return node.dataset.raw
@@ -171,14 +210,11 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
-	 * 计算子节点在原始文本中的长度。
+	 * 计算子节点在原始文本中的长度（即其序列化文本长度）。
 	 * @param {Node} child 子节点
 	 * @returns {number} 长度
 	 */
 	function childNodeLength(child) {
-		if (child.nodeType === Node.TEXT_NODE) return child.nodeValue.length
-		if (child instanceof HTMLElement && child.dataset.emptySlot != null) return 0
-		if (child instanceof HTMLElement && child.dataset.raw != null) return child.dataset.raw.length
 		return serializeNode(child).length
 	}
 
@@ -200,46 +236,46 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
-	 * 解析原始 token 为描述对象。
-	 * @param {string} kind mention / link
-	 * @param {string} raw 原始文本
+	 * 按 token 定义解析原始 token 为描述对象。
+	 * @param {object} token token 定义
+	 * @param {string} raw 原始 token
 	 * @returns {object} token 描述
 	 */
-	function parseRawToken(kind, raw) {
-		/** @type {{ kind: string, body: string, entityHash?: string, roleId?: string, id?: string }} */
-		const token = { kind, body: raw }
-		if (kind === 'mention') {
-			const body = raw.slice(2, -1)
-			if (body.startsWith('entity:')) token.entityHash = body.slice(7)
-			else if (body.startsWith('role:')) token.roleId = body.slice(5)
-		}
-		else {
-			const channel = raw.match(/^#\[channel:([\w.-]+)\/([\w.-]+)]$/)
-			const group = raw.match(/^#\[group:([\w.-]+)]$/)
-			const message = raw.match(/^#\[message:([\w.-]+)\/([\w.-]+)\/([\w.-]+)]$/)
-			if (channel) token.id = channel[2]
-			else if (group) token.id = group[1]
-			else if (message) token.id = message[3]
-		}
-		return token
+	function parseRawTokenByDef(token, raw) {
+		return token.parse ? token.parse(raw) : { kind: token.kind, body: raw }
+	}
+
+	/**
+	 * 给标签加前缀（mention 加 @ / link 加 #）。
+	 * @param {string} kind chip 种类
+	 * @param {string} label 标签
+	 * @returns {string} 带前缀标签
+	 */
+	function prefixTokenLabel(kind, label) {
+		const text = String(label)
+		if (kind === 'mention') return `@${text.replace(/^@/, '')}`
+		if (kind === 'link') return `#${text.replace(/^#/, '')}`
+		return text
 	}
 
 	/**
 	 * 解析并回填 chip 标签。
 	 * @param {HTMLSpanElement} chip chip 元素
-	 * @param {string} kind mention / link
+	 * @param {object} token token 定义
 	 * @param {string} raw 原始 token
 	 * @returns {Promise<string | null>} 标签（含 @ / # 前缀）
 	 */
-	async function resolveChipLabel(chip, kind, raw) {
-		const token = parseRawToken(kind, raw)
-		const label = await resolveTokenLabel?.(token)
-		if (label) return kind === 'mention' ? `@${String(label).replace(/^@/, '')}` : `#${String(label).replace(/^#/, '')}`
-		if (kind === 'mention') {
-			if (token.entityHash) return `@${token.entityHash.slice(0, 8)}…`
-			if (token.roleId) return `@${token.roleId}`
+	async function resolveChipLabel(chip, token, raw) {
+		const parsed = parseRawTokenByDef(token, raw)
+		const label = await resolveTokenLabel?.(parsed)
+		if (label) return prefixTokenLabel(token.kind, String(label))
+		const extLabel = await token.resolveLabel?.(parsed)
+		if (extLabel) return prefixTokenLabel(token.kind, String(extLabel))
+		if (token.kind === 'mention') {
+			if (parsed.entityHash) return `@${parsed.entityHash.slice(0, 8)}…`
+			if (parsed.roleId) return `@${parsed.roleId}`
 		}
-		if (token.id) return `#${token.id}`
+		if (token.kind === 'link' && parsed.id) return `#${parsed.id}`
 		return null
 	}
 
@@ -250,47 +286,7 @@ export function createMarkdownRichInput(element, options = {}) {
 	 * @returns {HTMLSpanElement} chip
 	 */
 	function makePlaceholderChip(raw, kind) {
-		const chip = makeChip(raw, kind)
-		chip.dataset.pendingKind = kind
-		return chip
-	}
-
-	/**
-	 * 构造自定义表情 chip（异步补图；失败回退标签）。
-	 * @param {RegExpExecArray} match INLINE_TOKEN_RE 匹配
-	 * @returns {HTMLSpanElement} chip
-	 */
-	function buildEmojiChip(match) {
-		const raw = match[0]
-		const packId = match[8]
-		const emojiId = match[9]
-		const chip = makeChip(raw, 'emoji')
-		const label = chip.firstElementChild
-		label.textContent = `:${emojiId}:`
-		label.hidden = true
-		const img = document.createElement('img')
-		img.className = 'fount-emoji'
-		img.alt = emojiId
-		img.setAttribute('loading', 'lazy')
-		/**
-		 * 表情图加载失败回退。
-		 * @returns {void}
-		 */
-		const fallback = () => {
-			if (img.src) {
-				img.remove()
-				chip.classList.add('fount-markdown-rich-input-emoji-fallback')
-				label.hidden = false
-			}
-		}
-		img.addEventListener('error', fallback)
-		chip.appendChild(img)
-		void resolvePackEmojiUrl(packId, emojiId).then(url => {
-			if (!chip.isConnected) return
-			if (url) img.src = url
-			else fallback()
-		})
-		return chip
+		return makeChip(raw, kind)
 	}
 
 	/**
@@ -328,45 +324,44 @@ export function createMarkdownRichInput(element, options = {}) {
 		segments = []
 		element.replaceChildren()
 		if (!rawText) {
+			// 空态结构：可编辑零宽锚点 + 不可编辑占位符 + `<br>`。
+			// 锚点让光标停在可编辑文本位置（Linux 浏览器渲染稳定，避免闪烁），视觉上仍在占位符之前；
+			// 占位符留在文档流中，随内容撑高输入框。
+			const anchor = document.createTextNode('\u200B')
+			caretAnchors.add(anchor)
 			const placeholder = document.createElement('span')
 			placeholder.className = 'fount-markdown-rich-input-placeholder'
 			placeholder.setAttribute('contenteditable', 'false')
 			placeholder.dataset.emptySlot = '1'
 			placeholder.textContent = element.getAttribute('placeholder') ?? ''
-			element.appendChild(placeholder)
 			const br = document.createElement('br')
 			br.dataset.emptySlot = '1'
-			element.appendChild(br)
+			element.append(anchor, placeholder, br)
 			segments = [
+				{ node: anchor, kind: 'text', start: 0, end: 0 },
 				{ node: placeholder, kind: 'br', start: 0, end: 0 },
 				{ node: br, kind: 'br', start: 0, end: 1 },
 			]
 			return
 		}
-		INLINE_TOKEN_RE.lastIndex = 0
 		let cursor = 0
-		let match = null
-		while ((match = INLINE_TOKEN_RE.exec(rawText)) != null) {
+		let hit = null
+		while ((hit = findNextToken(rawText, cursor, getTokens())) != null) {
+			const { token, match } = hit
 			if (match.index > cursor) cursor = appendTextRun(rawText.slice(cursor, match.index), cursor)
 			const raw = match[0]
 			const start = cursor
 			const end = start + raw.length
-			let chip
-			if (match[8] != null) chip = buildEmojiChip(match)
-			else if (match[1] != null) chip = makePlaceholderChip(raw, 'mention')
-			else chip = makePlaceholderChip(raw, 'link')
+			const chip = token.buildChip?.(match, { makeChip }) ?? makePlaceholderChip(raw, token.kind)
 			element.appendChild(chip)
-			segments.push({ node: chip, kind: 'chip', raw, start, end })
+			segments.push({ node: chip, kind: 'chip', raw, start, end, token })
 			cursor = end
-			INLINE_TOKEN_RE.lastIndex = match.index + raw.length
 		}
 		if (cursor < rawText.length) appendTextRun(rawText.slice(cursor), cursor)
 		for (const seg of segments) {
 			if (seg.kind !== 'chip') continue
 			const chip = /** @type {HTMLSpanElement} */ seg.node
-			const pendingKind = chip.dataset.pendingKind
-			if (!pendingKind) continue
-			void resolveChipLabel(chip, pendingKind, seg.raw).then(label => {
+			void resolveChipLabel(chip, seg.token, seg.raw).then(label => {
 				if (!label || !chip.isConnected) return
 				chip.firstElementChild.textContent = label
 			})
@@ -395,7 +390,7 @@ export function createMarkdownRichInput(element, options = {}) {
 		let acc = 0
 		for (const child of element.childNodes) {
 			if (child === node) {
-				if (node.nodeType === Node.TEXT_NODE) return acc + offset
+				if (node.nodeType === Node.TEXT_NODE) return acc + Math.min(offset, childNodeLength(node))
 				return offset > 0 ? acc + childNodeLength(child) : acc
 			}
 			acc += childNodeLength(child)
@@ -703,6 +698,7 @@ export function createMarkdownRichInput(element, options = {}) {
 				runAction(action)
 				hideToolbar()
 			}))
+		void svgInliner(toolbar)
 		const wrapper = document.createElement('nav')
 		setElementI18n(wrapper, 'util.markdownRichInput.toolbar')
 		wrapper.appendChild(toolbar)
@@ -739,6 +735,7 @@ export function createMarkdownRichInput(element, options = {}) {
 				runAction(action)
 				element.focus()
 			}))
+		void svgInliner(dockedToolbar)
 		if (element.parentNode)
 			element.parentNode.insertBefore(dockedToolbar, element)
 		return dockedToolbar
@@ -979,6 +976,7 @@ export function createMarkdownRichInput(element, options = {}) {
 			button.setAttribute('role', 'menuitem')
 			contextMenu.appendChild(button)
 		}
+		void svgInliner(contextMenu)
 		document.body.appendChild(contextMenu)
 		return contextMenu
 	}
@@ -1017,8 +1015,8 @@ export function createMarkdownRichInput(element, options = {}) {
 	}
 
 	/**
-	 * 空态聚焦/点击时光标落到开头（而非占位符视觉结束处）。
-	 * 先重建 DOM：浏览器编辑（select-all 删除等）可能已移除占位符节点，
+	 * 空态聚焦/点击时光标落到占位符前（可编辑零宽锚点上）。
+	 * 先重建 DOM：浏览器编辑（select-all 删除等）可能已移除锚点/占位节点，
 	 * 而 segments 仍指向它，直接 setSelection 会因节点脱离文档抛 InvalidNodeTypeError。
 	 * @returns {void}
 	 */
@@ -1045,13 +1043,6 @@ export function createMarkdownRichInput(element, options = {}) {
 		setTimeout(closeContextMenu, 0)
 	})
 	element.addEventListener('contextmenu', showContextMenu)
-
-	// i18n / 频道切换会改 `placeholder` 属性，同步到占位节点文本。
-	const placeholderObserver = new MutationObserver(() => {
-		const span = element.querySelector('[data-empty-slot="1"]')
-		if (span instanceof HTMLSpanElement) span.textContent = element.getAttribute('placeholder') ?? ''
-	})
-	placeholderObserver.observe(element, { attributes: true, attributeFilter: ['placeholder'] })
 
 	// ---- 对外接口 ----
 
@@ -1129,6 +1120,10 @@ export function createMarkdownRichInput(element, options = {}) {
 	applyDisabled()
 	setRawText(element.textContent || '')
 	if (enableDockedToolbar) mountDockedToolbar()
+	if (useRegisteredInlineTokens && !getRegisteredInlineTokens().length)
+		void loadRegisteredMarkdownExtensions().then(() => {
+			if (element.isConnected && getRegisteredInlineTokens().length) render()
+		})
 
 	return {
 		element,
@@ -1166,7 +1161,6 @@ export function createMarkdownRichInput(element, options = {}) {
 		 * @returns {void}
 		 */
 		destroy: () => {
-			placeholderObserver.disconnect()
 			document.removeEventListener('selectionchange', updateToolbar)
 			hideToolbar()
 			closeContextMenu()
@@ -1212,6 +1206,9 @@ document.head.prepend(Object.assign(document.createElement('style'), {
 }
 .fount-markdown-rich-input.is-disabled {
 	cursor: default;
+}
+.fount-markdown-rich-input-resizable {
+	resize: vertical;
 }
 .fount-markdown-rich-input-placeholder {
 	opacity: .55;

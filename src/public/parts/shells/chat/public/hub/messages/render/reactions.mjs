@@ -30,7 +30,7 @@ async function renderReactionChip(emoji) {
 	])
 	if (url && EMBEDDABLE_SRC_RE.test(url))
 		return {
-			emojiHtml: `<img class="reaction-emoji-img" src="${escapeHtml(url)}" alt="" loading="lazy" />`,
+			emojiHtml: `<img class="reaction-emoji-img" src="${escapeHtml(url)}" alt="" loading="lazy" svg-inliner-ignore />`,
 			emojiLabel: escapeHtml(label),
 		}
 	return { emojiHtml: escapeHtml(label), emojiLabel: escapeHtml(label) }
