@@ -105,7 +105,6 @@ ensure_fount_config() {
 	if [[ ! -r /dev/tty ]]; then
 		print_i18n_red 'eula.required' >&2
 		echo "$FOUNT_EULA_URL" >&2
-		"$0" remove
 		exit 1
 	fi
 	install_ipc_tools
@@ -119,7 +118,6 @@ ensure_fount_config() {
 	if ! confirm_fount_eula; then
 		get_i18n 'eula.declined'
 		stop_fount_status_server
-		"$0" remove --force
 		exit 1
 	fi
 	copy_fount_default_config

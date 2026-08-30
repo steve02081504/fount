@@ -8,6 +8,18 @@
 }
 
 function script:deno_upgrade([string]$Channel) {
+	if ($IsLinux -and (Get-Command pacman -ErrorAction SilentlyContinue)) {
+		$denoBinary = readlink -f (Get-Command deno -ErrorAction Stop).Source
+		if ($LastExitCode) { return }
+		pacman -Qqo -- $denoBinary 2>&1 | Out-Null
+		if (!$LastExitCode) {
+			Write-Warning (Get-I18n -key 'deno.managedByPacman' -params @{ path = $denoBinary })
+			$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
+			New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+			Set-Content $upgradedFlag "1"
+			return
+		}
+	}
 	$deno_ver = deno -V
 	if (!$deno_ver) {
 		deno upgrade -q

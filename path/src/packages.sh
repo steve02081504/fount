@@ -70,7 +70,7 @@ install_with_manager() {
 
 	case "$manager_cmd" in
 	"apt-get")  update_args="update -y";          install_args="install -y" ;;
-	"pacman")   update_args="-Syy --noconfirm";   install_args="-S --needed --noconfirm" ;;
+	"pacman")                                   install_args="-S --needed --noconfirm" ;;
 	"dnf")      update_args="makecache";          install_args="install -y" ;;
 	"yum")      update_args="makecache fast";     install_args="install -y" ;;
 	"zypper")   update_args="refresh";            install_args="install -y --no-confirm" ;;
@@ -141,7 +141,6 @@ upgrade_with_manager() {
 
 	case "$manager_cmd" in
 	"apt-get") update_args="update -y";          upgrade_args="install --only-upgrade -y" ;;
-	"pacman")  update_args="-Sy --noconfirm";    upgrade_args="-S --noconfirm" ;;
 	"dnf")     update_args="makecache";          upgrade_args="update -y" ;;
 	"yum")     update_args="makecache fast";     upgrade_args="update -y" ;;
 	"zypper")  update_args="refresh";            upgrade_args="update -y --no-confirm" ;;
@@ -174,7 +173,6 @@ upgrade_package() {
 		if
 			upgrade_with_manager "pkg"     "$package" ||
 			upgrade_with_manager "apt-get" "$package" ||
-			upgrade_with_manager "pacman"  "$package" ||
 			upgrade_with_manager "dnf"     "$package" ||
 			upgrade_with_manager "yum"     "$package" ||
 			upgrade_with_manager "zypper"  "$package" ||

@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import * as Sentry from 'npm:@sentry/deno'
-import { exec } from 'npm:@steve02081504/exec'
+import { execFile } from 'npm:@steve02081504/exec'
 
 import { git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n/index.mjs'
@@ -10,6 +10,10 @@ import { __dirname } from './base.mjs'
 import { onIdle, offIdle } from './idle.mjs'
 import { restartor } from './server.mjs'
 import { sendEventToAll } from './web_server/event_dispatcher.mjs'
+
+/* global Deno */
+// Linux 上运行时被升级替换后，execPath() 可能追加 " (deleted)"；保留启动路径。
+const denoExecutable = Deno.execPath()
 
 /**
  * 当前的 Git 提交哈希。
@@ -74,16 +78,18 @@ async function checkUpstream() {
  * @returns {Promise<void>}
  */
 async function checkDenoUpdate() {
-	/* global Deno */
+	const denoPath = fs.realpathSync(denoExecutable)
+	if (Deno.build.os === 'linux' && await execFile('pacman', ['-Qqo', '--', denoPath])
+		.then(result => result.code === 0).catch(() => false)) return
 	const versionBefore = 'deno ' + Deno.version.deno
 
 	let channel = 'stable'
 	if (versionBefore.includes('+')) channel = 'canary'
 	else if (versionBefore.includes('-rc')) channel = 'rc'
 
-	await exec(`deno upgrade -q ${channel}`).catch(() => null)
+	await execFile(denoPath, ['upgrade', '-q', channel]).catch(() => null)
 
-	const versionAfter = (await exec('deno -V')).stdout.trim()
+	const versionAfter = (await execFile(denoPath, ['-V'])).stdout.trim()
 	if (versionAfter !== versionBefore) {
 		console.logI18n('fountConsole.server.update.restarting')
 		await restartor()

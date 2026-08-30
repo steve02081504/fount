@@ -517,6 +517,7 @@
 				"installFailedFallback": "Deno 安装失败，尝试自动安装到 fount 的 path 文件夹...",
 				"notWorking": "由于某种原因 Deno 无法工作，您可能需要前去 https://github.com/denoland/deno/issues 提问获取支持",
 				"upgradeFailed": "警告：Deno 升级可能已失败。请检查错误。",
+				"managedByPacman": "警告：Deno（${path}）由 pacman 管理，fount 不会自动升级或覆盖它。请自行使用 pacman 完整升级系统；如需指定 Deno 版本，请使用用户目录安装的 Deno。",
 				"upgradeFailedTermux": "Deno 升级命令失败，正在尝试为 Termux 重新安装 Deno...",
 				"patchMissing": "错误：修补前未找到 Deno 可执行文件。无法修补。",
 				"patchUnsupportedArch": "错误：不支持的修补架构：${arch}",
@@ -529,7 +530,7 @@
 				"prompt": "您是否接受 fount 的最终用户许可协议（EULA）？",
 				"yn": "[Y/N] ",
 				"required": "须先同意 EULA 才能继续。请设置 `FOUNT_ACCEPT_EULA=1` 后重试，或在交互式终端中运行。",
-				"declined": "您已拒绝 EULA，正在移除 fount。",
+				"declined": "您已拒绝 EULA，fount 不会启动。已下载的文件和现有数据保持不变。",
 				"statusServerFailed": "警告：无法启动安装状态服务，将在本终端提示 EULA。"
 			},
 			"install": {

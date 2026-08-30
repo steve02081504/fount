@@ -25,8 +25,8 @@ function script:handle_unix_passthrough {
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "pacman" -ErrorAction Ignore) {
-					if ($hasSudo) { sudo pacman -Syy --noconfirm > $null; sudo pacman -S --needed --noconfirm $package }
-					else { pacman -Syy --noconfirm > $null; pacman -S --needed --noconfirm $package }
+					if ($hasSudo) { sudo pacman -S --needed --noconfirm $package }
+					else { pacman -S --needed --noconfirm $package }
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "dnf" -ErrorAction Ignore) {

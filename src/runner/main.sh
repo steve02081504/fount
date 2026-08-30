@@ -28,24 +28,6 @@ write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;
 
 write_taskbar_progress 0
 
-if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
-(
-	TARGETS="github.com cdn.jsdelivr.net"
-	# 随手之劳之经验医学之clash的tun没开
-	for host in $TARGETS; do
-		if ! ping -c 1 -W 2 "$host" >/dev/null 2>&1; then
-			curl -X PATCH "http://127.0.0.1:9090/configs" \
-				-d '{"tun":{"enable":true}}' \
-				-s -o /dev/null --max-time 3
-			curl -X PATCH "http://127.0.0.1:9097/configs" \
-				-d '{"tun":{"enable":true}}' \
-				-s -o /dev/null --max-time 3
-			break
-		fi
-	done
-) >/dev/null 2>&1 &
-fi
-
 # 若是 Windows 环境，则转交 PowerShell 处理
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 	powershell.exe -noprofile -executionpolicy bypass -command "& {
@@ -57,7 +39,7 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 fi
 
 STATUS_SERVER_PID=""
-EULA_DECLINED=0
+FOUNT_INSTALL_TMP=""
 OS_TYPE=$(uname -s)
 IN_TERMUX=0
 if [[ -d "/data/data/com.termux" ]]; then
@@ -69,9 +51,6 @@ fi
 cleanup() {
 	if [[ -n "${STATUS_SERVER_PID:-}" ]]; then
 		stop_fount_status_server
-	fi
-	if [[ "${EULA_DECLINED:-0}" -eq 1 ]] && type uninstall_auto_packages &>/dev/null; then
-		uninstall_auto_packages
 	fi
 	[ -n "${FOUNT_INSTALL_TMP:-}" ] && rm -rf "$FOUNT_INSTALL_TMP"
 	write_taskbar_progress_clear
@@ -94,7 +73,7 @@ install_with_manager() {
 
 	case "$manager_cmd" in
 	"apt-get") update_args="update -y"; install_args="install -y" ;;
-	"pacman") update_args="-Syy --noconfirm"; install_args="-S --needed --noconfirm" ;;
+	"pacman") install_args="-S --needed --noconfirm" ;;
 	"dnf") update_args="makecache"; install_args="install -y" ;;
 	"yum") update_args="makecache fast"; install_args="install -y" ;;
 	"zypper") update_args="refresh"; install_args="install -y --no-confirm" ;;
@@ -221,25 +200,6 @@ test_browser() {
 	return 0
 }
 
-# shellcheck disable=SC2329 # cleanup中有调用
-uninstall_auto_packages() {
-	local package has_sudo=""
-	if [[ $(id -u) -ne 0 ]] && command -v sudo &>/dev/null; then has_sudo="sudo"; fi
-	IFS=';' read -r -a pkgs <<< "${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
-	for package in "${pkgs[@]}"; do
-		[ -z "$package" ] && continue
-		if command -v apt-get &>/dev/null; then $has_sudo apt-get purge -y "$package" >/dev/null 2>&1 && continue; fi
-		if command -v pacman &>/dev/null; then $has_sudo pacman -Rns --noconfirm "$package" >/dev/null 2>&1 && continue; fi
-		if command -v dnf &>/dev/null; then $has_sudo dnf remove -y "$package" >/dev/null 2>&1 && continue; fi
-		if command -v yum &>/dev/null; then $has_sudo yum remove -y "$package" >/dev/null 2>&1 && continue; fi
-		if command -v zypper &>/dev/null; then $has_sudo zypper remove -y --no-confirm "$package" >/dev/null 2>&1 && continue; fi
-		if command -v apk &>/dev/null; then $has_sudo apk del "$package" >/dev/null 2>&1 && continue; fi
-		if command -v brew &>/dev/null; then brew uninstall "$package" >/dev/null 2>&1 && continue; fi
-		if command -v snap &>/dev/null; then $has_sudo snap remove "$package" >/dev/null 2>&1 && continue; fi
-		if command -v pkg &>/dev/null; then pkg uninstall -y "$package" >/dev/null 2>&1 && continue; fi
-	done
-}
-
 open_install_wait_page() {
 	local URL="$FOUNT_INSTALL_WAIT_URL"
 	if [[ $IN_TERMUX -eq 1 ]]; then
@@ -252,8 +212,58 @@ open_install_wait_page() {
 	fi
 }
 
-# 默认安装目录
-FOUNT_DIR="${FOUNT_DIR:-"$HOME/.local/share/fount"}"
+# PATH registration is optional; an explicit target always takes precedence.
+if [ -z "${FOUNT_DIR:-}" ]; then
+	if command -v fount.sh &>/dev/null; then
+		FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
+	else
+		FOUNT_DIR="$HOME/.local/share/fount"
+	fi
+fi
+
+test_fount_tree() {
+	[ -f "$1/run.sh" ] && [ -f "$1/path/fount.sh" ] &&
+		[ -f "$1/path/src/i18n.sh" ] && [ -f "$1/path/src/eula.sh" ]
+}
+
+test_fount_target_empty() {
+	local entry
+	if [ ! -d "$1" ]; then
+		[ ! -e "$1" ] && [ ! -L "$1" ]
+		return $?
+	fi
+	[ -r "$1" ] && [ -x "$1" ] || return 1
+	for entry in "$1"/* "$1"/.[!.]* "$1"/..?*; do
+		if [ -e "$entry" ] || [ -L "$entry" ]; then return 1; fi
+	done
+	return 0
+}
+
+FOUNT_EXISTING_INSTALL=0
+if test_fount_tree "$FOUNT_DIR"; then
+	FOUNT_EXISTING_INSTALL=1
+elif ! test_fount_target_empty "$FOUNT_DIR"; then
+	echo "Error: $FOUNT_DIR is not an empty directory or a fount installation. Choose another FOUNT_DIR; existing files were left untouched." >&2
+	exit 1
+fi
+
+if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
+(
+	TARGETS="github.com cdn.jsdelivr.net"
+	# 随手之劳之经验医学之clash的tun没开
+	for host in $TARGETS; do
+		if ! ping -c 1 -W 2 "$host" >/dev/null 2>&1; then
+			curl -X PATCH "http://127.0.0.1:9090/configs" \
+				-d '{"tun":{"enable":true}}' \
+				-s -o /dev/null --max-time 3
+			curl -X PATCH "http://127.0.0.1:9097/configs" \
+				-d '{"tun":{"enable":true}}' \
+				-s -o /dev/null --max-time 3
+			break
+		fi
+	done
+) >/dev/null 2>&1 &
+fi
 
 import_fount_locale() {
 	FOUNT_CONSOLE_ANSI=0
@@ -274,20 +284,11 @@ if [[ "${#new_args[@]}" -eq 0 ]]; then
 	new_args=("open" "keepalive")
 fi
 
-remove_fount_after_eula_decline() {
-	if [ -f "$FOUNT_DIR/path/fount.sh" ]; then
-		"$FOUNT_DIR/path/fount.sh" remove
-	else
-		rm -rf "$FOUNT_DIR"
-	fi
-}
-
 install_fount_tree() {
-	local clone_ok="" clones=()
+	local clones=() clone_attempt=0 extracted_dir=""
 	local locale_var="${LC_ALL:-${LC_MESSAGES:-$LANG}}"
 	echo -e "Installing fount into ${C_CYAN}$FOUNT_DIR${C_RESET}..."
-	rm -rf "$FOUNT_DIR"
-	mkdir -p "$(dirname "$FOUNT_DIR")"
+	FOUNT_INSTALL_TMP=$(mktemp -d) || return 1
 	write_taskbar_progress 20
 
 	if command -v git &>/dev/null; then
@@ -298,13 +299,13 @@ install_fount_tree() {
 			clones+=("https://gh-proxy.org/github.com/steve02081504/fount.git" "https://gitclone.com/github.com/steve02081504/fount.git")
 		fi
 		for clone_url in "${clones[@]}"; do
-			if git clone -c core.autocrlf=false -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 "$clone_url" "$FOUNT_DIR" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
-				clone_ok=1
+			clone_attempt=$((clone_attempt + 1))
+			if git clone -c core.autocrlf=false -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 "$clone_url" "$FOUNT_INSTALL_TMP/clone-$clone_attempt" --depth 1 --single-branch --branch "$FOUNT_BRANCH"; then
+				extracted_dir="$FOUNT_INSTALL_TMP/clone-$clone_attempt"
 				break
 			fi
-			rm -rf "$FOUNT_DIR"
 		done
-		if [ -n "$clone_ok" ]; then
+		if [ -n "$extracted_dir" ]; then
 			echo -e "${C_GREEN}Clone successful.${C_RESET}"
 			write_taskbar_progress 40
 		else
@@ -313,14 +314,13 @@ install_fount_tree() {
 		fi
 	fi
 
-	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
+	if [ -z "$extracted_dir" ]; then
 		write_taskbar_progress 25
 		install_package "curl" "curl" || install_package "wget" "wget" || return 1
 		write_taskbar_progress 30
 		install_package "unzip" "unzip" || return 1
 		write_taskbar_progress 35
 
-		FOUNT_INSTALL_TMP=$(mktemp -d)
 		zip_urls=("https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip")
 		if [[ "$locale_var" =~ _(CN|KP|RU)(\.|@|$) ]]; then
 			zip_urls+=("https://gh-proxy.org/https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip")
@@ -340,53 +340,47 @@ install_fount_tree() {
 				zip_ok=1
 				break
 			fi
-			rm -f "$ZIP_FILE"
 		done
 		write_taskbar_progress 40
 
 		if [ -z "$zip_ok" ]; then
 			echo -e "${C_RED}Error: Download failed.${C_RESET}" >&2
-			rm -rf "$FOUNT_INSTALL_TMP"
-			FOUNT_INSTALL_TMP=""
 			return 1
 		fi
 
 		echo "Unzipping fount..."
-		if ! unzip -q -o "$ZIP_FILE" -d "$FOUNT_INSTALL_TMP"; then
+		if ! unzip -q -o "$ZIP_FILE" -d "$FOUNT_INSTALL_TMP/archive"; then
 			echo -e "${C_RED}Error: Unzip failed.${C_RESET}" >&2
-			rm -rf "$FOUNT_INSTALL_TMP"
-			FOUNT_INSTALL_TMP=""
 			return 1
 		fi
 		write_taskbar_progress 50
 
-		extracted_dir=$(find "$FOUNT_INSTALL_TMP" -maxdepth 1 -type d -name "fount-*" | head -n 1)
+		extracted_dir=$(find "$FOUNT_INSTALL_TMP/archive" -mindepth 1 -maxdepth 1 -type d -name "fount-*" | head -n 1)
 
 		if [ -z "$extracted_dir" ] || [ ! -d "$extracted_dir" ]; then
 			echo -e "${C_RED}Error: Could not find extracted fount directory in $FOUNT_INSTALL_TMP${C_RESET}" >&2
-			rm -rf "$FOUNT_INSTALL_TMP"
-			FOUNT_INSTALL_TMP=""
 			return 1
 		fi
-
-		mkdir -p "$FOUNT_DIR"
-		mv "$extracted_dir"/* "$FOUNT_DIR"
-		rm -rf "$FOUNT_INSTALL_TMP"
-		FOUNT_INSTALL_TMP=""
 	fi
 
-	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
+	if ! test_fount_tree "$extracted_dir"; then
 		write_taskbar_progress_error
 		echo -e "${C_RED}Error: fount installation failed. Main script not found.${C_RESET}" >&2
 		return 1
 	fi
+	if ! test_fount_target_empty "$FOUNT_DIR"; then
+		echo "Error: $FOUNT_DIR is no longer empty; existing files were left untouched." >&2
+		return 1
+	fi
+	# Copy contents, including dotfiles, without replacing a caller's cwd inode.
+	mkdir -p "$FOUNT_DIR" && cp -R "$extracted_dir/." "$FOUNT_DIR/" || return 1
 
 	write_taskbar_progress 60
 	echo "Setting permissions..."
 	if [[ "$OSTYPE" == "darwin"* ]]; then
 		xattr -dr com.apple.quarantine "$FOUNT_DIR" 2>/dev/null || true
 	fi
-	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -exec chmod +x {} +
+	find "$FOUNT_DIR/" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -exec chmod +x {} +
 	find "$FOUNT_DIR/path" -maxdepth 1 -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
 	[ -f "$FOUNT_DIR/path/desktop.ini" ] && chmod -x "$FOUNT_DIR/path/desktop.ini"
 	for agentsManifestPath in "$FOUNT_DIR/path/AGENTS.md" "$FOUNT_DIR/path/agents.md"; do
@@ -394,6 +388,8 @@ install_fount_tree() {
 	done
 	[ -f "$FOUNT_DIR/gradlew" ] && chmod +x "$FOUNT_DIR/gradlew"
 	[ -f "$FOUNT_DIR/gradlew.bat" ] && chmod +x "$FOUNT_DIR/gradlew.bat"
+	rm -rf "$FOUNT_INSTALL_TMP"
+	FOUNT_INSTALL_TMP=""
 	write_taskbar_progress 70
 	echo -e "${C_GREEN}fount installation complete.${C_RESET}"
 	return 0
@@ -414,9 +410,7 @@ if [[ -n "$SCRIPT_SELF_PATH" && -w "$SCRIPT_SELF_PATH" ]]; then
 	esac
 fi
 
-if command -v fount.sh &>/dev/null; then
-	# 从现有命令推断出安装目录
-	FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
+if [ "$FOUNT_EXISTING_INSTALL" -eq 1 ]; then
 	import_fount_locale
 else
 	# 检测环境
@@ -445,7 +439,6 @@ else
 		if [[ ! -r /dev/tty ]]; then
 			print_i18n_red 'eula.required' >&2
 			echo "$FOUNT_EULA_URL" >&2
-			remove_fount_after_eula_decline
 			exit 1
 		fi
 		install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
@@ -460,8 +453,6 @@ else
 		open_install_wait_page
 		if ! confirm_fount_eula; then
 			get_i18n 'eula.declined'
-			EULA_DECLINED=1
-			remove_fount_after_eula_decline
 			exit 1
 		fi
 	fi

@@ -15,12 +15,15 @@
 				"./path/test/"
 			],
 			"triggers": [
+				"deno.json",
+				"path/fount",
 				"path/**/*.{sh,ps1,mjs}",
 				"path/test/**",
 				"src/scripts/test/deno/serial.mjs",
 				"src/scripts/test/core/{repo_root,paths}.mjs",
 				"src/scripts/nicerWriteFile.mjs",
-				"src/runner/main.{ps1,sh}"
+				"src/runner/main.{ps1,sh}",
+				"src/runner/npm/main.mjs"
 			]
 		}
 	]

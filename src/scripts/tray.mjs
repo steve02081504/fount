@@ -109,9 +109,9 @@ export async function createTray() {
 
 		systray.onClick(async action => {
 			let action_id = action.seq_id
-			if (!action_id--) open(hosturl)
-			else if (!action_id--) open('https://github.com/steve02081504/fount')
-			else if (!action_id--) open('https://t.me/GentianAphrodite')
+			if (!action_id--) open(hosturl).catch(console.error)
+			else if (!action_id--) open('https://github.com/steve02081504/fount').catch(console.error)
+			else if (!action_id--) open('https://t.me/GentianAphrodite').catch(console.error)
 			else if (!action_id--) {
 				if (!process.env.FOUNT_BACKGROUND) await printTerminalImage().catch(_ => 0)
 				restartor()

@@ -104,7 +104,7 @@ install_deno_termux() {
 	yes y | pkg upgrade -y
 	pkg install -y pacman patchelf which time ldd tree
 	pacman-key --init && pacman-key --populate && pacman -Syu --noconfirm
-	pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf --noconfirm
+	pacman -S glibc-runner --assume-installed bash,patchelf,resolv-conf --noconfirm
 	add_package_to_tracker "glibc-runner" "INSTALLED_PACMAN_PACKAGES_ARRAY"
 	install_deno_from_official_script
 	set +e
@@ -159,6 +159,14 @@ deno_pinned_spec() {
 
 base_deno_upgrade() {
 	local force_channel="${1:-}"
+	if command -v pacman &>/dev/null; then
+		local deno_binary
+		deno_binary=$(readlink -f "$(command -v deno)") || return 1
+		if pacman -Qqo -- "$deno_binary" &>/dev/null; then
+			print_i18n_yellow 'deno.managedByPacman' 'path' "$deno_binary" >&2
+			return 0
+		fi
+	fi
 	local deno_version_before
 	deno_version_before=$(run_deno -V 2>&1)
 	if [[ -z "$deno_version_before" ]]; then
@@ -192,7 +200,7 @@ base_deno_upgrade() {
 		return 0
 	fi
 
-	if [[ -z "$force_channel" ]] && upgrade_package "deno" "deno"; then
+	if [[ -z "$force_channel" ]] && ! command -v pacman &>/dev/null && upgrade_package "deno" "deno"; then
 		return 0
 	fi
 
