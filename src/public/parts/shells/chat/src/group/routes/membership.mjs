@@ -10,7 +10,7 @@ import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
-import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../../public/shared/runUri.mjs'
+import { formatJoinInviteUrl } from '../../../public/shared/runUri.mjs'
 import { leaveManyGroupsForUser } from '../../chat/dag/leaveMany.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
@@ -18,6 +18,7 @@ import { computeDmRoomLabelFromPubKeys } from '../../chat/dm/labels.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
 import { getFederationSettings } from '../../chat/federation/config.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
+import { consumeChallengeWant, requestPowChallengeFromUserRoom, waitKey } from '../../chat/federation/powChallengeFederation.mjs'
 import { roomCredentialsFromGroupSettings } from '../../chat/federation/roomCredentials.mjs'
 import { collectJoinPowAnchors } from '../../chat/governance/joinPowAnchors.mjs'
 import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
@@ -49,25 +50,23 @@ function groupHasBootstrapGenesis(state) {
  * @param {string} username 签发者
  * @param {string} groupId 群 ID
  * @param {string} code 邀请码
- * @param {string} roomSecret 群房间传输密钥（写入 join 深链）
- * @param {string} introducerPubKeyHash 邀请人成员 pubKeyHash
- * @param {string | null} [powAnchorRef] PoW anchor 提示（写入 join 深链）
- * @param {string | null} [introducerNodeHash] 邀请人 nodeHash（写入 join 深链）
+ * @param {object} options 载荷字段
+ * @param {string} options.roomSecret 群房间传输密钥（写入 join 深链）
+ * @param {string} options.introducerPubKeyHash 邀请人成员 pubKeyHash
+ * @param {string} [options.introducerNodeHash] 邀请人 nodeHash（写入 join 深链）
  * @returns {Promise<string>} 本地化剪贴板文本
  */
-function buildInviteClipboardText(username, groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
-	const url = wrapProtocolHttpsUrl(formatJoinRunUri({
-		groupId,
-		inviteCode: code,
-		roomSecret,
-		introducerPubKeyHash,
-		powAnchorRef,
-		introducerNodeHash,
-	}))
+function buildInviteClipboardText(username, groupId, code, { roomSecret, introducerPubKeyHash, introducerNodeHash }) {
 	return geti18nForUser(username, 'chat.group.settings.page.invite.clipboard', {
 		groupId,
 		code,
-		url,
+		url: formatJoinInviteUrl({
+			groupId,
+			inviteCode: code,
+			roomSecret,
+			introducerPubKeyHash,
+			introducerNodeHash,
+		}),
 	})
 }
 
@@ -127,16 +126,15 @@ export function registerMembershipRoutes(router, authenticate) {
 			? roomCredentialsFromGroupSettings(state.groupSettings)
 			: await activateGroupFederation(username, groupId)
 		const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(username, groupId)
-		const powAnchors = collectJoinPowAnchors(state)
-		const powAnchorRef = powAnchors[0] ?? null
 		const clipboardText = await buildInviteClipboardText(
 			username,
 			groupId,
 			ticket.code,
-			roomCreds.roomSecret,
-			introducerPubKeyHash,
-			powAnchorRef,
-			getLocalNodeHash(),
+			{
+				roomSecret: roomCreds.roomSecret,
+				introducerPubKeyHash,
+				introducerNodeHash: getLocalNodeHash(),
+			},
 		)
 		res.status(201).json({
 			...ticket,
@@ -145,17 +143,61 @@ export function registerMembershipRoutes(router, authenticate) {
 			roomSecret: roomCreds.roomSecret,
 			introducerPubKeyHash,
 			introducerNodeHash: getLocalNodeHash(),
-			powAnchors,
-			powAnchorRef,
 			dmSessionTag: state.groupMeta?.dmKind === 'ecdh'
 				? state.groupMeta.dmSessionTag || null
 				: null,
 		})
 	})
 
+	router.get(`${GROUPS_PREFIX}/:groupId/pow-challenge`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const { groupId } = req.params
+		let state
+		try {
+			({ state } = await getState(username, groupId))
+		}
+		catch { /* 无本地 replica，走联邦 */ }
+		if (state?.groupSettings?.joinPolicy === 'pow') {
+			res.status(200).json({
+				anchors: collectJoinPowAnchors(state),
+				powFloorBits: Number(state.groupSettings?.powFloorBits) || 0,
+				powEpochMs: Number(state.groupSettings?.powEpochMs) || 0,
+			})
+			return
+		}
+		if (state) throw httpError(404, 'Group not found or not pow')
+		// 无本地 replica：优先定向引入者/发现源节点，其次 user-room fanout。
+		const introducerNodeHash = String(req.query.introducerNodeHash || '').trim() || undefined
+		let discoverySources = []
+		try {
+			const { loadDiscoveryIndex } = await import('../../chat/discovery/index.mjs')
+			const discoveryEntry = (await loadDiscoveryIndex(username)).entries.find(entry => entry.groupId === groupId)
+			discoverySources = [...new Set([
+				...(discoveryEntry?.sources || []).map(source => source.fromNodeHash).filter(Boolean),
+				discoveryEntry?.advertiserNodeHash || '',
+			].filter(Boolean))]
+		}
+		catch { /* 索引不可用 */ }
+		const candidates = [...new Set([introducerNodeHash, ...discoverySources].filter(Boolean))]
+		if (!consumeChallengeWant(waitKey(username, groupId)))
+			throw httpError(429, 'pow challenge rate limited')
+		const { ensureLinkToNode } = await import('npm:@steve02081504/fount-p2p/transport/link_registry')
+		for (const nodeHash of candidates)
+			try {
+				await ensureLinkToNode(nodeHash)
+			}
+			catch { /* dial 失败交给 fanout 兜底 */ }
+		const challenge = await requestPowChallengeFromUserRoom(username, groupId, {
+			introducerNodeHash: candidates[0],
+		})
+		if (!challenge)
+			throw httpError(404, 'Group not found or not pow')
+		res.status(200).json(challenge)
+	})
+
 	router.post(`${GROUPS_PREFIX}/:groupId/join`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const { params: { groupId }, body: { inviteCode, pow, introducerPubKeyHash, introducerNodeHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag, powAnchorRef, powAnchors } } = req
+		const { params: { groupId }, body: { inviteCode, pow, introducerPubKeyHash, introducerNodeHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag } } = req
 		if (!!dmIntroNonce !== !!dmIntroSignatureHex)
 			throw httpError(400, 'provide both dmIntroNonce and dmIntroSignatureHex for DM link proof or omit both')
 		const { state } = await getState(username, groupId)
@@ -174,8 +216,6 @@ export function registerMembershipRoutes(router, authenticate) {
 				signalingAppId,
 				roomSecret,
 				fromNodeId: introducerNodeHash,
-				powAnchorRef,
-				powAnchors,
 				dmSessionTag,
 			}
 			if (!dmSessionTag && dmIntroNonce) {

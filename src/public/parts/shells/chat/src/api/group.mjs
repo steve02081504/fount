@@ -1,10 +1,9 @@
-import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../public/shared/runUri.mjs'
+import { formatJoinInviteUrl } from '../../public/shared/runUri.mjs'
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { performLocalGroupLeave } from '../chat/dag/leaveMany.mjs'
 import { resolveLocalEventSigner } from '../chat/dag/localSigner.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../chat/federation/groupFederation.mjs'
 import { roomCredentialsFromGroupSettings } from '../chat/federation/roomCredentials.mjs'
-import { collectJoinPowAnchors } from '../chat/governance/joinPowAnchors.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
 import { mintGroupInviteTicket } from '../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../chat/lib/replica.mjs'
@@ -167,16 +166,13 @@ export function createGroup(apiContext, groupId, projection) {
 				? roomCredentialsFromGroupSettings(state.groupSettings)
 				: await activateGroupFederation(apiContext.username, groupId, apiContext.entityHash)
 			const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(apiContext.username, groupId, apiContext.entityHash)
-			const powAnchorRef = collectJoinPowAnchors(state)[0] ?? null
-			const url = wrapProtocolHttpsUrl(formatJoinRunUri({
+			return formatJoinInviteUrl({
 				groupId,
 				inviteCode: ticket.code,
 				roomSecret: roomCreds.roomSecret,
 				introducerPubKeyHash,
-				powAnchorRef,
 				introducerNodeHash: getLocalNodeHash(),
-			}))
-			return url
+			})
 		},
 		/**
 		 * @returns {Promise<void>} 退群完成

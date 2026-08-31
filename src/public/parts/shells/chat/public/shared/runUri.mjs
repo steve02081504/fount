@@ -35,7 +35,6 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
  *   inviteCode?: string
  *   roomSecret?: string
  *   introducerPubKeyHash?: string
- *   powAnchorRef?: string
  *   introducerNodeHash?: string
  * }} JoinRunPayload
  */
@@ -65,6 +64,26 @@ export function parseJoinRunPayload(raw) {
  */
 export function wrapProtocolHttpsUrl(fountRunUri) {
 	return `https://steve02081504.github.io/fount/protocol?url=${encodeURIComponent(fountRunUri)}`
+}
+
+/**
+ * 组装 join 深链分享 URL。
+ * @param {object} options 载荷
+ * @param {string} options.groupId 群 ID
+ * @param {string} [options.inviteCode] 邀请码
+ * @param {string} [options.roomSecret] 群房间密钥
+ * @param {string} [options.introducerPubKeyHash] 介绍人 pubKeyHash
+ * @param {string} [options.introducerNodeHash] 介绍人 nodeHash
+ * @returns {string} 分享 URL
+ */
+export function formatJoinInviteUrl({ groupId, inviteCode, roomSecret, introducerPubKeyHash, introducerNodeHash }) {
+	return wrapProtocolHttpsUrl(formatJoinRunUri({
+		groupId,
+		inviteCode,
+		roomSecret,
+		introducerPubKeyHash,
+		introducerNodeHash,
+	}))
 }
 
 /**
