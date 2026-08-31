@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "git",
-			"expected": "2m37s",
+			"expected": "59s",
 			"run": [
 				"deno",
 				"run",
@@ -22,8 +22,10 @@
 				"src/scripts/test/deno/serial.mjs",
 				"src/scripts/test/core/{repo_root,paths}.mjs",
 				"src/scripts/nicerWriteFile.mjs",
+				".esh/commands/sync-pkg-mgr.mjs",
 				"src/runner/main.{ps1,sh}",
-				"src/runner/npm/main.mjs"
+				"src/runner/npm/main.mjs",
+				"README.md"
 			]
 		}
 	]

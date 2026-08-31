@@ -1,9 +1,7 @@
 /** 自动更新模块的进程、文件系统和服务依赖替身。 */
 export const updateFixture = {
-	managed: false,
-	missingPacman: false,
 	termux: false,
-	upgradeFails: false,
+	updateFails: false,
 	nextVersion: '2.9.6',
 	resolvedPath: '',
 	realpathError: null,
@@ -27,12 +25,18 @@ export const __dirname = '/autoupdate-fixture'
  */
 export async function execFile(command, args) {
 	updateFixture.calls.push([command, args])
-	if (command === 'pacman') {
-		if (updateFixture.missingPacman) throw new Error('ENOENT')
-		return { code: updateFixture.managed ? 0 : 1, stdout: '' }
-	}
-	if (updateFixture.upgradeFails && args[0] === 'upgrade') throw new Error('Upgrade failed')
+	if (updateFixture.updateFails && args.some(arg => arg.includes('update-deno'))) throw new Error('Update failed')
 	return { code: 0, stdout: args[0] === '-V' ? `deno ${updateFixture.nextVersion}\n` : '' }
+}
+
+/**
+ * 记录 Windows 沿用的 PowerShell 调用字符串，不启动实际进程。
+ * @param {string} code 传给 powershell_exec 的代码。
+ * @returns {Promise<{code: number, stdout: string}>} 模拟退出码和标准输出。
+ */
+export async function powershell_exec(code) {
+	updateFixture.calls.push(['powershell_exec', code])
+	return { code: 0, stdout: '' }
 }
 
 /**
@@ -42,7 +46,6 @@ export async function execFile(command, args) {
  */
 export async function exec(command) {
 	updateFixture.calls.push(command)
-	if (updateFixture.upgradeFails && command.startsWith('deno upgrade')) throw new Error('Upgrade failed')
 	return { code: 0, stdout: command === 'deno -V' ? `deno ${updateFixture.nextVersion}\n` : '' }
 }
 

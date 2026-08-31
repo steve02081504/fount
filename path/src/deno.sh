@@ -159,14 +159,26 @@ deno_pinned_spec() {
 
 base_deno_upgrade() {
 	local force_channel="${1:-}"
-	local pacman_host=0
-	if [[ "$OSTYPE" == linux* && $IN_TERMUX -ne 1 && ! -d /data/data/com.termux ]] && command -v pacman &>/dev/null; then
-		pacman_host=1
-		local deno_binary
-		deno_binary=$(readlink -f "$(command -v deno)") || return 1
-		if pacman -Qqo -- "$deno_binary" &>/dev/null; then
-			print_i18n_yellow 'deno.managedByPacman' 'path' "$deno_binary" >&2
-			return 0
+	local deno_binary owner manager pkg
+	deno_binary=$(command -v deno 2>/dev/null)
+	if [ -n "$deno_binary" ]; then
+		deno_binary=$(resolve_realpath "$deno_binary")
+		if owner=$(pkg_owner_of "$deno_binary"); then
+			read -r manager pkg <<<"$owner"
+			if upgrade_with_manager "$manager" "$pkg"; then
+				local pinned current
+				pinned=$(deno_pinned_spec)
+				if [ -n "$pinned" ]; then
+					current=$(run_deno -V 2>&1 | sed 's/^deno //' | head -n 1)
+					if [ "$current" != "$pinned" ]; then
+						print_i18n_yellow 'deno.pinNotHonored' 'spec' "$pinned" 'manager' "$manager" >&2
+					fi
+				fi
+				return 0
+			else
+				print_i18n_yellow 'deno.managedUpgradeFailed' 'manager' "$manager" 'package' "$pkg" >&2
+				return 1
+			fi
 		fi
 	fi
 	local deno_version_before
@@ -199,10 +211,6 @@ base_deno_upgrade() {
 				return 1
 			fi
 		fi
-		return 0
-	fi
-
-	if [[ -z "$force_channel" && $pacman_host -eq 0 ]] && upgrade_package "deno" "deno"; then
 		return 0
 	fi
 

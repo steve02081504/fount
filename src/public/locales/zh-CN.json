@@ -517,11 +517,13 @@
 				"installFailedFallback": "Deno 安装失败，尝试自动安装到 fount 的 path 文件夹...",
 				"notWorking": "由于某种原因 Deno 无法工作，您可能需要前去 https://github.com/denoland/deno/issues 提问获取支持",
 				"upgradeFailed": "警告：Deno 升级可能已失败。请检查错误。",
-				"managedByPacman": "警告：Deno（${path}）由 pacman 管理，fount 不会自动升级或覆盖它。请自行使用 pacman 完整升级系统；如需指定 Deno 版本，请使用用户目录安装的 Deno。",
 				"upgradeFailedTermux": "Deno 升级命令失败，正在尝试为 Termux 重新安装 Deno...",
 				"patchMissing": "错误：修补前未找到 Deno 可执行文件。无法修补。",
 				"patchUnsupportedArch": "错误：不支持的修补架构：${arch}",
-				"patchFailed": "错误：使用 `patchelf` 修补 Deno 可执行文件失败。"
+				"patchFailed": "错误：使用 `patchelf` 修补 Deno 可执行文件失败。",
+				"managedUpgrade": "Deno 由 ${manager} 包管理器管理（包：${package}），正在通过 ${manager} 升级。",
+				"managedUpgradeFailed": "警告：通过 ${manager} 升级 Deno（包：${package}）失败，已保持现状。",
+				"pinNotHonored": "警告：Deno 由 ${manager} 包管理器管理，无法遵循 .deno-version 指定的版本（${spec}），已按包管理器的版本升级。"
 			},
 			"tempDir": {
 				"blocked": "错误：无法在临时目录中运行 `fount`\n\nfount 会与系统深度耦合，并在 `fount` 中注册 `PATH` 命令及多项系统 hook。若在临时目录运行，系统清空临时文件后，您将无法执行 `fount remove` 来移除 fount 及其 hook。\n\n请将 fount 移动到非临时目录后再运行。若您只想简短测试，请在测试完成后手动执行 `fount remove`。"
@@ -531,7 +533,6 @@
 				"yn": "[Y/N] ",
 				"required": "须先同意 EULA 才能继续。请设置 `FOUNT_ACCEPT_EULA=1` 后重试，或在交互式终端中运行。",
 				"declined": "您已拒绝 EULA，正在移除 fount。",
-				"declinedPreserved": "您已拒绝 EULA，fount 不会启动。已下载的文件和现有数据保持不变。",
 				"statusServerFailed": "警告：无法启动安装状态服务，将在本终端提示 EULA。"
 			},
 			"install": {

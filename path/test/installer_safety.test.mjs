@@ -1,4 +1,4 @@
-/** 安装器复用现有目录；下载、发布与清理由内存替身检查，不修改文件系统。 */
+/** 安装器目标保护 + 暂存安装在所有 bash 平台统一生效；EULA 拒绝仍移除安装。 */
 /* global Deno */
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url))
 const shellSource = readFileSync(new URL('../../src/runner/main.sh', import.meta.url), 'utf8')
-const shellTargetCheck = shellSource.slice(shellSource.indexOf('FOUNT_PRESERVE_INSTALL=0')).split('\nif echo ')[0]
+const shellTargetCheck = shellSource.slice(shellSource.indexOf('FOUNT_EXISTING_INSTALL=0')).split('\nif echo ')[0]
 const shellInstall = shellSource.match(/install_fount_tree\(\) \{[\s\S]*?\n\}/)[0]
 
 /**
@@ -18,7 +18,7 @@ const shellInstall = shellSource.match(/install_fount_tree\(\) \{[\s\S]*?\n\}/)[
  * @returns {import('node:child_process').SpawnSyncReturns<string>} 子进程退出状态与输出。
  */
 function runBash(script, options = {}) {
-	return spawnSync('bash', ['--noprofile', '--norc', '-c', `pacman() { :; }\nOSTYPE=linux-gnu\n${script}`], {
+	return spawnSync('bash', ['--noprofile', '--norc', '-c', `OSTYPE=linux-gnu\n${script}`], {
 		encoding: 'utf8',
 		...options,
 		env: { ...process.env, BASH_ENV: '', ...options.env },
@@ -47,7 +47,7 @@ pwd -P
 	assert.equal(result.status, 0, result.stderr)
 	assert.equal(result.stdout, `existing:1\n${workingDirectory}\n`)
 	assert.equal(statSync(workingDirectory).ino, before)
-	assert.match(shellSource, /if \[ "\$FOUNT_EXISTING_INSTALL" -eq 1 \] \|\| \{ \[ "\$FOUNT_PRESERVE_INSTALL" -eq 0 \]/)
+	assert.match(shellSource, /if \[ "\$FOUNT_EXISTING_INSTALL" -eq 1 \]; then[\s\S]*import_fount_locale/)
 })
 
 for (const descendant of ['', 'src'])
@@ -63,7 +63,6 @@ for (const descendant of ['', 'src'])
 		assert.equal(readFileSync(sentinel, 'utf8'), contents)
 		assert.equal(statSync(workingDirectory).ino, before)
 	})
-
 
 bashTest('an absent target is classified as a fresh install without creating it', () => {
 	const target = join(repositoryRoot, `.missing-install-${process.pid}`, 'fount')
@@ -85,7 +84,6 @@ bashTest('a target below a regular file is rejected before installation', () => 
 const installStubs = `
 FOUNT_DIR=/fount-target
 FOUNT_BRANCH=master
-FOUNT_PRESERVE_INSTALL=1
 FOUNT_INSTALL_TMP=
 C_CYAN= C_RESET= C_GREEN= C_YELLOW= C_RED=
 OSTYPE=linux-gnu
@@ -117,15 +115,14 @@ chmod() { printf 'unexpected chmod\\n' >&2; exit 97; }
 rm() {
 	case "$*" in
 		'-rf /fount-staging' | '-rf /fount-staging/tree') ;;
-		'-rf /fount-target') [ "$FOUNT_PRESERVE_INSTALL" = 0 ] || exit 97 ;;
+		'-rf /fount-target') printf 'unexpected target removal\\n' >&2; exit 97 ;;
 		*) printf 'unexpected removal\\n' >&2; exit 97 ;;
 	esac
 	printf 'cleanup:%s\\n' "$*"
 }
 mv() {
-	[ "$FOUNT_PRESERVE_INSTALL" = 0 ] || { printf 'unexpected directory replacement\\n' >&2; exit 97; }
-	printf 'move:%s\\n' "$*"
-	installed=1
+	printf 'unexpected directory move\\n' >&2
+	exit 97
 }
 `
 
@@ -173,40 +170,17 @@ printf 'staging:%s\\n' "$FOUNT_INSTALL_TMP"
 	assert(result.stdout.indexOf('copy:') < result.stdout.indexOf('cleanup:'))
 })
 
-for (const platform of ['darwin', 'freebsd', 'linux-without-pacman'])
-	bashTest(`${platform} retains installation discovery without the Arch target guard`, () => {
-		const result = runBash(`
-OSTYPE=${platform === 'linux-without-pacman' ? 'linux-gnu' : platform}
-command() { return 1; }
-${shellTargetCheck}
-printf 'preserve:%s existing:%s target:%s\\n' "$FOUNT_PRESERVE_INSTALL" "$FOUNT_EXISTING_INSTALL" "$FOUNT_DIR"
-`, { env: { FOUNT_DIR: join(repositoryRoot, 'path') } })
-		assert.equal(result.status, 0, result.stderr)
-		assert.equal(result.stdout, `preserve:0 existing:0 target:${join(repositoryRoot, 'path')}\n`)
-	})
-
-bashTest('other platforms retain direct clone installation without staging', () => {
-	const result = runBash(`
-${shellInstall}
-${installStubs}
-FOUNT_PRESERVE_INSTALL=0
-OSTYPE=freebsd
-LANG=C LC_ALL=C
-git() { printf 'clone:%s\\n' "$9"; installed=1; }
-install_fount_tree
-`)
-	assert.equal(result.status, 0, result.stderr)
-	assert.match(result.stdout, /cleanup:-rf \/fount-target/)
-	assert.match(result.stdout, /clone:\/fount-target/)
-	assert.doesNotMatch(result.stdout, /fount-staging|copy:|move:/)
+bashTest('every bash platform stages the install instead of replacing the target', () => {
+	assert.match(shellSource, /FOUNT_INSTALL_TMP=\$\(mktemp -d\)\s*\|\| return 1/)
+	assert.doesNotMatch(shellInstall, /rm -rf "\$FOUNT_DIR"/)
+	assert.doesNotMatch(shellInstall, /mv "\$extracted_dir"/)
+	assert.doesNotMatch(shellSource, /FOUNT_PRESERVE_INSTALL/)
 })
 
-bashTest('other platforms retain ZIP move and temporary cleanup', () => {
+bashTest('a failed publish keeps the staging cleanup and aborts the install', () => {
 	const result = runBash(`
 ${shellInstall}
 ${installStubs}
-FOUNT_PRESERVE_INSTALL=0
-OSTYPE=freebsd
 LANG=C LC_ALL=C
 command() {
 	if [ "$*" = '-v git' ]; then return 1; fi
@@ -214,29 +188,29 @@ command() {
 }
 curl() { :; }
 unzip() { :; }
+test_fount_target_empty() { return 1; }
 install_fount_tree
 `)
-	assert.equal(result.status, 0, result.stderr)
-	assert.match(result.stdout, /move:\/fount-staging\/fount-master\/\* \/fount-target/)
+	assert.equal(result.status, 1)
 	assert.match(result.stdout, /cleanup:-rf \/fount-staging/)
 	assert.doesNotMatch(result.stdout, /copy:/)
 })
 
-bashTest('the Arch EULA cleanup never invokes an uninstaller or removes its target', () => {
+bashTest('EULA refusal removes the installation and uninstalls auto-installed packages', () => {
 	const result = runBash(`
 ${shellSource.match(/remove_fount_after_eula_decline\(\) \{[\s\S]*?\n\}/)[0]}
 ${shellSource.match(/cleanup\(\) \{[\s\S]*?\n\}/)[0]}
-FOUNT_PRESERVE_INSTALL=1
 EULA_DECLINED=1
 FOUNT_DIR=/fount-target
 FOUNT_INSTALL_TMP= STATUS_SERVER_PID=
-uninstall_auto_packages() { printf 'unexpected uninstall\\n'; exit 97; }
-rm() { printf 'unexpected removal\\n'; exit 97; }
+rm() { printf 'rm:%s\\n' "$*"; }
+uninstall_auto_packages() { printf 'uninstall:%s\\n' "$*"; }
 write_taskbar_progress_clear() { :; }
+stop_fount_status_server() { :; }
 remove_fount_after_eula_decline
 cleanup
 `)
 	assert.equal(result.status, 0, result.stderr)
-	assert.equal(result.stdout, '')
-	assert(shellSource.indexOf('elif ! test_fount_target_empty') < shellSource.indexOf('curl -X PATCH'))
+	assert.match(result.stdout, /rm:-rf \/fount-target/)
+	assert.match(result.stdout, /uninstall:/)
 })

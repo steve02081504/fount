@@ -28,45 +28,41 @@ write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;
 
 write_taskbar_progress 0
 
-# Arch installations must not replace a directory still used as a process cwd.
-FOUNT_PRESERVE_INSTALL=0
+# 安装目标保护：不替换可能正被进程用作 cwd 的目录，所有 bash 平台统一走暂存安装。
 FOUNT_EXISTING_INSTALL=0
-if [[ "$OSTYPE" == linux* && ! -d /data/data/com.termux ]] && command -v pacman &>/dev/null; then
-	FOUNT_PRESERVE_INSTALL=1
-	if [ -z "${FOUNT_DIR:-}" ]; then
-		if command -v fount.sh &>/dev/null; then
-			FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
-		else
-			FOUNT_DIR="$HOME/.local/share/fount"
-		fi
+if [ -z "${FOUNT_DIR:-}" ]; then
+	if command -v fount.sh &>/dev/null; then
+		FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
+	else
+		FOUNT_DIR="$HOME/.local/share/fount"
 	fi
+fi
 
-	test_fount_tree() {
-		[ -f "$1/run.sh" ] && [ -f "$1/path/fount.sh" ] &&
-			[ -f "$1/path/src/i18n.sh" ] && [ -f "$1/path/src/eula.sh" ]
-	}
+test_fount_tree() {
+	[ -f "$1/run.sh" ] && [ -f "$1/path/fount.sh" ] &&
+		[ -f "$1/path/src/i18n.sh" ] && [ -f "$1/path/src/eula.sh" ]
+}
 
-	test_fount_target_empty() {
-		local entry="$1"
-		if [ ! -d "$1" ]; then
-			[ ! -e "$1" ] && [ ! -L "$1" ] || return 1
-			while [ ! -e "$entry" ] && [ ! -L "$entry" ]; do entry=$(dirname "$entry"); done
-			[ -d "$entry" ]
-			return $?
-		fi
-		[ -r "$1" ] && [ -x "$1" ] || return 1
-		for entry in "$1"/* "$1"/.[!.]* "$1"/..?*; do
-			if [ -e "$entry" ] || [ -L "$entry" ]; then return 1; fi
-		done
-		return 0
-	}
-
-	if test_fount_tree "$FOUNT_DIR"; then
-		FOUNT_EXISTING_INSTALL=1
-	elif ! test_fount_target_empty "$FOUNT_DIR"; then
-		echo "Error: $FOUNT_DIR is not an empty directory or a fount installation. Choose another FOUNT_DIR; existing files were left untouched." >&2
-		exit 1
+test_fount_target_empty() {
+	local entry="$1"
+	if [ ! -d "$1" ]; then
+		[ ! -e "$1" ] && [ ! -L "$1" ] || return 1
+		while [ ! -e "$entry" ] && [ ! -L "$entry" ]; do entry=$(dirname "$entry"); done
+		[ -d "$entry" ]
+		return $?
 	fi
+	[ -r "$1" ] && [ -x "$1" ] || return 1
+	for entry in "$1"/* "$1"/.[!.]* "$1"/..?*; do
+		if [ -e "$entry" ] || [ -L "$entry" ]; then return 1; fi
+	done
+	return 0
+}
+
+if test_fount_tree "$FOUNT_DIR"; then
+	FOUNT_EXISTING_INSTALL=1
+elif ! test_fount_target_empty "$FOUNT_DIR"; then
+	echo "Error: $FOUNT_DIR is not an empty directory or a fount installation. Choose another FOUNT_DIR; existing files were left untouched." >&2
+	exit 1
 fi
 
 if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
@@ -111,7 +107,7 @@ cleanup() {
 	if [[ -n "${STATUS_SERVER_PID:-}" ]]; then
 		stop_fount_status_server
 	fi
-	if [[ "$FOUNT_PRESERVE_INSTALL" -eq 0 && "${EULA_DECLINED:-0}" -eq 1 ]] && type uninstall_auto_packages &>/dev/null; then
+	if [[ "${EULA_DECLINED:-0}" -eq 1 ]] && type uninstall_auto_packages &>/dev/null; then
 		uninstall_auto_packages
 	fi
 	[ -n "${FOUNT_INSTALL_TMP:-}" ] && rm -rf "$FOUNT_INSTALL_TMP"
@@ -122,75 +118,140 @@ trap cleanup EXIT
 # 初始化自动安装的包列表
 FOUNT_AUTO_INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
 
-# 辅助函数: 智能地使用包管理器进行安装
-install_with_manager() {
-	local manager_cmd="$1"
-	local package_to_install="$2"
-	local update_args=""
-	local install_args=""
-	local has_sudo=""
+# --- 包管理：main.sh 是 bash 脚本，用 bash 版（与 path/fount 的 POSIX 版行为一致，但不作同步） ---
+FOUNT_PKG_STATE_DIR="${FOUNT_PKG_STATE_DIR:-${TMPDIR:-${TEMP:-/tmp}}/fount/package}"
 
-	if ! command -v "$manager_cmd" &>/dev/null; then return 1; fi
-	if [[ $(id -u) -ne 0 ]] && command -v sudo &>/dev/null; then has_sudo="sudo"; fi
-
-	case "$manager_cmd" in
-	"apt-get") update_args="update -y"; install_args="install -y" ;;
-	"pacman")
-		[ "$FOUNT_PRESERVE_INSTALL" -eq 0 ] && update_args="-Syy --noconfirm"
-		install_args="-S --needed --noconfirm"
-		;;
-	"dnf") update_args="makecache"; install_args="install -y" ;;
-	"yum") update_args="makecache fast"; install_args="install -y" ;;
-	"zypper") update_args="refresh"; install_args="install -y --no-confirm" ;;
-	"pkg") update_args="update -y"; install_args="install -y" ;;
-	"apk") install_args="add --update" ;;
-	"brew") has_sudo=""; install_args="install" ;;
-	"snap") has_sudo="sudo"; install_args="install" ;;
-	*) return 1 ;;
-	esac
-
-	if [[ -n "$update_args" ]]; then
-		# shellcheck disable=SC2086
-		$has_sudo "$manager_cmd" $update_args
-	fi
-	# shellcheck disable=SC2086
-	$has_sudo "$manager_cmd" $install_args "$package_to_install"
+pkg_lock_acquire() {
+	local _manager="$1" _pkg_lock_dir="$FOUNT_PKG_STATE_DIR/$1.lock" _pid="" _i=0
+	mkdir -p "$FOUNT_PKG_STATE_DIR" 2>/dev/null || return 1
+	while ! mkdir "$_pkg_lock_dir" 2>/dev/null; do
+		if [[ -f "$_pkg_lock_dir/pid" ]]; then
+			_pid=$(cat "$_pkg_lock_dir/pid" 2>/dev/null)
+			if [[ -n "$_pid" ]] && ! kill -0 "$_pid" 2>/dev/null; then
+				rm -rf "$_pkg_lock_dir"
+				continue
+			fi
+		fi
+		_i=$((_i + 1))
+		[[ "$_i" -ge $(( ${FOUNT_PKG_LOCK_TIMEOUT:-300} * 10 )) ]] && return 1
+		sleep 0.1 2>/dev/null || sleep 1
+	done
+	printf '%s\n' "$$" >"$_pkg_lock_dir/pid"
+	FOUNT_PKG_LOCK_DIR="$_pkg_lock_dir"
+	return 0
 }
 
-# 函数: 安装包
+pkg_lock_release() {
+	[[ -n "$FOUNT_PKG_LOCK_DIR" ]] || return 0
+	rm -rf "$FOUNT_PKG_LOCK_DIR"
+	FOUNT_PKG_LOCK_DIR=""
+}
+
+pkg_with_lock() {
+	local _manager="$1"
+	shift
+	pkg_lock_acquire "$_manager" || return 1
+	"$@"
+	local _rc=$?
+	pkg_lock_release
+	return $_rc
+}
+
+pkg_db_refresh_needed() {
+	local _manager="$1" _refresh_file="$FOUNT_PKG_STATE_DIR/$1.refresh" _now="" _last=""
+	[[ -f "$_refresh_file" ]] || return 0
+	_now=$(date +%s 2>/dev/null) || return 0
+	_last=$(cat "$_refresh_file" 2>/dev/null)
+	[[ -n "$_last" ]] || return 0
+	[[ "$((_now - _last))" -ge "${FOUNT_PKG_REFRESH_INTERVAL:-600}" ]]
+}
+
+pkg_db_refresh_mark() {
+	local _manager="$1"
+	mkdir -p "$FOUNT_PKG_STATE_DIR" 2>/dev/null || return 1
+	printf '%s\n' "$(date +%s 2>/dev/null)" >"$FOUNT_PKG_STATE_DIR/$_manager.refresh" 2>/dev/null
+}
+
+pkg_refresh() {
+	local _manager="$1"
+	shift
+	pkg_db_refresh_needed "$_manager" || return 0
+	pkg_lock_acquire "$_manager" || return 1
+	if pkg_db_refresh_needed "$_manager"; then
+		"$@"
+		local _rc=$?
+		pkg_db_refresh_mark "$_manager"
+		pkg_lock_release
+		return $_rc
+	fi
+	pkg_lock_release
+	return 0
+}
+
 install_package() {
 	local command_name="$1"
-	local package_list_str="${2:-$command_name}"
-	# shellcheck disable=SC2206
-	local package_list=($package_list_str)
-	local installed_pkg_name=""
+	# shellcheck disable=SC2206 # 包列表需要按空格分词
+	local -a package_list=(${2:-$command_name})
+	local has_sudo="" installed_pkg_name="" package
 
 	if command -v "$command_name" &>/dev/null; then return 0; fi
 
+	if [[ "$(id -u)" -ne 0 ]] && command -v sudo &>/dev/null; then has_sudo="sudo"; fi
+
 	for package in "${package_list[@]}"; do
-		if
-			install_with_manager "pkg" "$package" ||
-				install_with_manager "apt-get" "$package" ||
-				install_with_manager "pacman" "$package" ||
-				install_with_manager "dnf" "$package" ||
-				install_with_manager "yum" "$package" ||
-				install_with_manager "zypper" "$package" ||
-				install_with_manager "apk" "$package" ||
-				install_with_manager "brew" "$package" ||
-				install_with_manager "snap" "$package"
-		then
-			if command -v "$command_name" &>/dev/null; then
-				installed_pkg_name="$package"
-				break
+		if command -v apt-get &>/dev/null; then
+			pkg_refresh apt-get "$has_sudo" apt-get update -y
+			pkg_with_lock apt-get "$has_sudo" apt-get install -y "$package"
+			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
+		fi
+		if command -v pacman &>/dev/null; then
+			pkg_refresh pacman "$has_sudo" pacman -Syy --noconfirm
+			pkg_with_lock pacman "$has_sudo" pacman -S --needed --noconfirm "$package"
+			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
+		fi
+		if command -v dnf &>/dev/null; then
+			pkg_refresh dnf "$has_sudo" dnf makecache
+			pkg_with_lock dnf "$has_sudo" dnf install -y "$package"
+			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
+		fi
+		if command -v yum &>/dev/null; then
+			pkg_refresh yum "$has_sudo" yum makecache fast
+			pkg_with_lock yum "$has_sudo" yum install -y "$package"
+			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
+		fi
+		if command -v zypper &>/dev/null; then
+			pkg_refresh zypper "$has_sudo" zypper refresh
+			pkg_with_lock zypper "$has_sudo" zypper install -y --no-confirm "$package"
+			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
+		fi
+		if command -v apk &>/dev/null; then
+			if [[ "$(id -u)" -eq 0 ]]; then
+				pkg_with_lock apk apk add --update "$package"
+			else
+				pkg_with_lock apk "$has_sudo" apk add --update "$package"
 			fi
+			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
+		fi
+		if command -v brew &>/dev/null; then
+			if ! brew list --formula "$package" &>/dev/null; then
+				pkg_with_lock brew brew install "$package"
+			fi
+			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
+		fi
+		if command -v pkg &>/dev/null; then
+			pkg_refresh pkg "$has_sudo" pkg update -y
+			pkg_with_lock pkg "$has_sudo" pkg install -y "$package"
+			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
+		fi
+		if command -v snap &>/dev/null; then
+			pkg_with_lock snap "$has_sudo" snap install "$package"
+			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 	done
 
 	if command -v "$command_name" &>/dev/null; then
-		if [ -z "$FOUNT_AUTO_INSTALLED_PACKAGES" ]; then
-			FOUNT_AUTO_INSTALLED_PACKAGES="$installed_pkg_name"
-		else
-			FOUNT_AUTO_INSTALLED_PACKAGES="$FOUNT_AUTO_INSTALLED_PACKAGES;$installed_pkg_name"
+		if [[ ";$FOUNT_AUTO_INSTALLED_PACKAGES;" != *";$installed_pkg_name;"* ]]; then
+			FOUNT_AUTO_INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:+$FOUNT_AUTO_INSTALLED_PACKAGES;}$installed_pkg_name"
 		fi
 		export FOUNT_AUTO_INSTALLED_PACKAGES
 		return 0
@@ -319,7 +380,6 @@ if [[ "${#new_args[@]}" -eq 0 ]]; then
 fi
 
 remove_fount_after_eula_decline() {
-	[ "$FOUNT_PRESERVE_INSTALL" -eq 1 ] && return 0
 	if [ -f "$FOUNT_DIR/path/fount.sh" ]; then
 		"$FOUNT_DIR/path/fount.sh" remove
 	else
@@ -331,12 +391,8 @@ install_fount_tree() {
 	local clone_ok="" clones=() install_dir="$FOUNT_DIR"
 	local locale_var="${LC_ALL:-${LC_MESSAGES:-$LANG}}"
 	echo -e "Installing fount into ${C_CYAN}$FOUNT_DIR${C_RESET}..."
-	if [ "$FOUNT_PRESERVE_INSTALL" -eq 1 ]; then
-		FOUNT_INSTALL_TMP=$(mktemp -d) || return 1
-		install_dir="$FOUNT_INSTALL_TMP/tree"
-	else
-		rm -rf "$FOUNT_DIR"
-	fi
+	FOUNT_INSTALL_TMP=$(mktemp -d) || return 1
+	install_dir="$FOUNT_INSTALL_TMP/tree"
 	mkdir -p "$(dirname "$FOUNT_DIR")"
 	write_taskbar_progress 20
 
@@ -370,7 +426,6 @@ install_fount_tree() {
 		install_package "unzip" "unzip" || return 1
 		write_taskbar_progress 35
 
-		if [ "$FOUNT_PRESERVE_INSTALL" -eq 0 ]; then FOUNT_INSTALL_TMP=$(mktemp -d); fi
 		zip_urls=("https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip")
 		if [[ "$locale_var" =~ _(CN|KP|RU)(\.|@|$) ]]; then
 			zip_urls+=("https://gh-proxy.org/https://github.com/steve02081504/fount/archive/refs/heads/$FOUNT_BRANCH.zip")
@@ -419,22 +474,22 @@ install_fount_tree() {
 			return 1
 		fi
 
-		if [ "$FOUNT_PRESERVE_INSTALL" -eq 1 ]; then
-			install_dir="$extracted_dir"
-		else
-			mkdir -p "$FOUNT_DIR"
-			mv "$extracted_dir"/* "$FOUNT_DIR"
-			rm -rf "$FOUNT_INSTALL_TMP"
-			FOUNT_INSTALL_TMP=""
-		fi
+		install_dir="$extracted_dir"
 	fi
 
-	if [ "$FOUNT_PRESERVE_INSTALL" -eq 1 ]; then
-		test_fount_tree "$install_dir" && test_fount_target_empty "$FOUNT_DIR" || return 1
-		mkdir -p "$FOUNT_DIR" && cp -R "$install_dir/." "$FOUNT_DIR/" || return 1
+	if test_fount_tree "$install_dir" && test_fount_target_empty "$FOUNT_DIR"; then
+		mkdir -p "$FOUNT_DIR" && cp -R "$install_dir/." "$FOUNT_DIR/" || {
+			rm -rf "$FOUNT_INSTALL_TMP"
+			FOUNT_INSTALL_TMP=""
+			return 1
+		}
+	else
 		rm -rf "$FOUNT_INSTALL_TMP"
 		FOUNT_INSTALL_TMP=""
+		return 1
 	fi
+	rm -rf "$FOUNT_INSTALL_TMP"
+	FOUNT_INSTALL_TMP=""
 
 	if [ ! -f "$FOUNT_DIR/path/fount.sh" ]; then
 		write_taskbar_progress_error
@@ -475,11 +530,7 @@ if [[ -n "$SCRIPT_SELF_PATH" && -w "$SCRIPT_SELF_PATH" ]]; then
 	esac
 fi
 
-if [ "$FOUNT_EXISTING_INSTALL" -eq 1 ] || { [ "$FOUNT_PRESERVE_INSTALL" -eq 0 ] && command -v fount.sh &>/dev/null; }; then
-	# Other platforms retain PATH-based installation discovery.
-	if [ "$FOUNT_PRESERVE_INSTALL" -eq 0 ]; then
-		FOUNT_DIR="$(dirname "$(dirname "$(command -v fount.sh)")")"
-	fi
+if [ "$FOUNT_EXISTING_INSTALL" -eq 1 ]; then
 	import_fount_locale
 else
 	# 检测环境
@@ -522,11 +573,7 @@ else
 		begin_fount_install_wait
 		open_install_wait_page
 		if ! confirm_fount_eula; then
-			if [ "$FOUNT_PRESERVE_INSTALL" -eq 1 ]; then
-				get_i18n 'eula.declinedPreserved'
-			else
-				get_i18n 'eula.declined'
-			fi
+			get_i18n 'eula.declined'
 			EULA_DECLINED=1
 			remove_fount_after_eula_decline
 			exit 1

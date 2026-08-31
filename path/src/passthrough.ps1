@@ -13,6 +13,7 @@ function script:handle_docker_passthrough {
 
 function script:handle_unix_passthrough {
 	if (!$IsWindows) {
+		require pkg_common
 		function install_package($CommandName, [string[]]$PackageNames) {
 			if ((Get-Command -Name $CommandName -ErrorAction Ignore)) { return $true }
 
@@ -20,48 +21,97 @@ function script:handle_unix_passthrough {
 
 			foreach ($package in $PackageNames) {
 				if (Get-Command -Name "apt-get" -ErrorAction Ignore) {
-					if ($hasSudo) { sudo apt-get update -y > $null; sudo apt-get install -y $package }
-					else { apt-get update -y > $null; apt-get install -y $package }
+					if (Enter-FountPkgLock "apt-get") {
+						try {
+							if (Test-FountPkgRefreshNeeded "apt-get") {
+								if ($hasSudo) { sudo apt-get update -y > $null } else { apt-get update -y > $null }
+								Set-FountPkgRefresh "apt-get"
+							}
+							if ($hasSudo) { sudo apt-get install -y $package } else { apt-get install -y $package }
+						}
+						finally { Exit-FountPkgLock }
+					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "pacman" -ErrorAction Ignore) {
-					if (-not $IsLinux -or (Test-Path /data/data/com.termux)) {
-						if ($hasSudo) { sudo pacman -Syy --noconfirm > $null }
-						else { pacman -Syy --noconfirm > $null }
+					if (Enter-FountPkgLock "pacman") {
+						try {
+							if (Test-FountPkgRefreshNeeded "pacman") {
+								if ($hasSudo) { sudo pacman -Syy --noconfirm > $null }
+								else { pacman -Syy --noconfirm > $null }
+								Set-FountPkgRefresh "pacman"
+							}
+							if ($hasSudo) { sudo pacman -S --needed --noconfirm $package }
+							else { pacman -S --needed --noconfirm $package }
+						}
+						finally { Exit-FountPkgLock }
 					}
-					if ($hasSudo) { sudo pacman -S --needed --noconfirm $package }
-					else { pacman -S --needed --noconfirm $package }
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "dnf" -ErrorAction Ignore) {
-					if ($hasSudo) { sudo dnf install -y $package } else { dnf install -y $package }
+					if (Enter-FountPkgLock "dnf") {
+						try {
+							if ($hasSudo) { sudo dnf install -y $package } else { dnf install -y $package }
+						}
+						finally { Exit-FountPkgLock }
+					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "yum" -ErrorAction Ignore) {
-					if ($hasSudo) { sudo yum install -y $package } else { yum install -y $package }
+					if (Enter-FountPkgLock "yum") {
+						try {
+							if ($hasSudo) { sudo yum install -y $package } else { yum install -y $package }
+						}
+						finally { Exit-FountPkgLock }
+					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "zypper" -ErrorAction Ignore) {
-					if ($hasSudo) { sudo zypper install -y --no-confirm $package } else { zypper install -y --no-confirm $package }
+					if (Enter-FountPkgLock "zypper") {
+						try {
+							if ($hasSudo) { sudo zypper install -y --no-confirm $package } else { zypper install -y --no-confirm $package }
+						}
+						finally { Exit-FountPkgLock }
+					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "apk" -ErrorAction Ignore) {
-					if ($hasSudo) { sudo apk add --update $package } else { apk add --update $package }
+					if (Enter-FountPkgLock "apk") {
+						try {
+							if ($hasSudo) { sudo apk add --update $package } else { apk add --update $package }
+						}
+						finally { Exit-FountPkgLock }
+					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "brew" -ErrorAction Ignore) {
-					brew list --formula $package 2>$null | Out-Null
-					if ($LastExitCode -ne 0) {
-						brew install $package
+					if (Enter-FountPkgLock "brew") {
+						try {
+							brew list --formula $package 2>$null | Out-Null
+							if ($LastExitCode -ne 0) {
+								brew install $package
+							}
+						}
+						finally { Exit-FountPkgLock }
 					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "pkg" -ErrorAction Ignore) {
-					if ($hasSudo) { sudo pkg install -y $package } else { pkg install -y $package }
+					if (Enter-FountPkgLock "pkg") {
+						try {
+							if ($hasSudo) { sudo pkg install -y $package } else { pkg install -y $package }
+						}
+						finally { Exit-FountPkgLock }
+					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "snap" -ErrorAction Ignore) {
-					if ($hasSudo) { sudo snap install $package } else { snap install $package }
+					if (Enter-FountPkgLock "snap") {
+						try {
+							if ($hasSudo) { sudo snap install $package } else { snap install $package }
+						}
+						finally { Exit-FountPkgLock }
+					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 			}

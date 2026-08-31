@@ -1,33 +1,34 @@
-/** Linux 空闲更新须尊重 pacman 所有权，其他平台保持既有更新命令。 */
+/** 空闲更新直接按路径调用独立的运行时更新脚本；版本变化才重启。 */
 /* global Deno */
 import assert from 'node:assert/strict'
+import { join } from 'node:path'
 
 import { autoUpdateEnabled, disableAutoUpdate, enableAutoUpdate } from '../../autoupdate.mjs'
 
 import { idleHandlers, updateFixture } from './fixtures/autoupdate.mjs'
 
 const executablePath = '/opt/User Deno/bin/deno'
+const updateDenoScript = join('/autoupdate-fixture', 'path/src', 'update-deno.sh')
+const updateDenoScriptWin = join('/autoupdate-fixture', 'path/src', 'update-deno.ps1')
 
 /**
  * 通过真实模块的空闲回调运行更新，外部调用由限定导入范围的夹具接管。
  * @param {object} [options] 系统、所有权与版本夹具。
  * @param {string} [options.os] 运行时报告的操作系统。
  * @param {boolean} [options.termux] 是否存在 Termux 标志目录。
- * @param {boolean} [options.managed] 当前可执行文件是否由 pacman 管理。
  * @param {string} [options.version] 运行中的 Deno 版本。
  * @param {string} [options.nextVersion] 升级后查询到的 Deno 版本。
- * @param {boolean} [options.missingPacman] 是否模拟 pacman 不存在。
- * @param {boolean} [options.upgradeFails] 是否模拟升级命令失败。
+ * @param {boolean} [options.updateFails] 是否模拟更新脚本失败。
  * @param {string} [options.execPath] 运行时报告的可执行文件路径。
  * @param {string} [options.resolvedPath] 跟随符号链接后得到的真实路径。
  * @param {string|null} [options.realpathError] 路径解析抛出的错误代码。
  * @returns {Promise<{calls: Array, restarts: number, realpaths: string[]}>} 外部调用、重启计数和解析路径。
  */
-async function checkUpdate({ os = 'linux', termux = false, managed = false, version = '2.9.6', nextVersion = version, missingPacman = false, upgradeFails = false, execPath = executablePath, resolvedPath = '/opt/User Deno/bin/deno/resolved', realpathError = null } = {}) {
+async function checkUpdate({ os = 'linux', termux = false, version = '2.9.6', nextVersion = version, updateFails = false, execPath = executablePath, resolvedPath = '/opt/User Deno/bin/deno/resolved', realpathError = null } = {}) {
 	const originalBuild = Deno.build
 	const originalVersion = Deno.version
 	const originalExecPath = Deno.execPath
-	Object.assign(updateFixture, { managed, termux, nextVersion, missingPacman, upgradeFails, resolvedPath, realpathError, calls: [], restarts: 0, realpaths: [], warnings: [] })
+	Object.assign(updateFixture, { termux, nextVersion, updateFails, resolvedPath, realpathError, calls: [], restarts: 0, realpaths: [], warnings: [] })
 	try {
 		Deno.build = { ...originalBuild, os }
 		Deno.version = { ...originalVersion, deno: version }
@@ -56,51 +57,51 @@ async function checkUpdate({ os = 'linux', termux = false, managed = false, vers
 	}
 }
 
-Deno.test('idle update never overwrites pacman-owned Deno', async () => {
-	assert.deepEqual(await checkUpdate({ managed: true }), {
-		calls: [['pacman', ['-Qqo', '--', '/opt/User Deno/bin/deno/resolved']]],
+Deno.test('idle update invokes the standalone update-deno script on Linux', async () => {
+	assert.deepEqual(await checkUpdate(), {
+		calls: [
+			['bash', [updateDenoScript]],
+			['/opt/User Deno/bin/deno/resolved', ['-V']],
+		],
 		restarts: 0,
 		realpaths: [executablePath],
 	})
 })
 
-for (const [version, channel] of [['2.9.6', 'stable'], ['2.10.0+canary', 'canary'], ['2.10.0-rc.1', 'rc']])
-	Deno.test(`idle update preserves ${channel} updates for user-managed Deno`, async () => {
-		assert.deepEqual(await checkUpdate({ version }), {
-			calls: [
-				['pacman', ['-Qqo', '--', '/opt/User Deno/bin/deno/resolved']],
-				['/opt/User Deno/bin/deno/resolved', ['upgrade', '-q', channel]],
-				['/opt/User Deno/bin/deno/resolved', ['-V']],
-			],
-			restarts: 0,
-			realpaths: [executablePath],
-		})
-	})
 Deno.test('idle update restarts only after the running executable changes version', async () => {
 	assert.equal((await checkUpdate({ nextVersion: '2.9.7' })).restarts, 1)
 })
 
-Deno.test('missing pacman does not disable user-managed runtime updates', async () => {
-	assert.equal((await checkUpdate({ missingPacman: true })).calls.length, 3)
-})
-
-Deno.test('idle update checks the resolved running system executable rather than another Deno on PATH', async () => {
-	assert.deepEqual(await checkUpdate({ managed: true, resolvedPath: '/usr/lib/deno/deno' }), {
-		calls: [['pacman', ['-Qqo', '--', '/usr/lib/deno/deno']]],
+Deno.test('idle update keeps the running-executable resolution for the version check', async () => {
+	assert.deepEqual(await checkUpdate({ resolvedPath: '/usr/lib/deno/deno' }), {
+		calls: [
+			['bash', [updateDenoScript]],
+			['/usr/lib/deno/deno', ['-V']],
+		],
 		restarts: 0,
 		realpaths: [executablePath],
 	})
 })
 
-for (const managed of [true, false])
-	Deno.test(`idle update skips a deleted Linux executable without PATH fallback (pacman managed: ${managed})`, async () => {
-		assert.deepEqual(await checkUpdate({ managed, execPath: '/usr/bin/deno (deleted)', resolvedPath: '/usr/bin/deno' }), {
-			calls: [],
-			restarts: 0,
-			realpaths: ['/usr/bin/deno (deleted)'],
-		})
-		assert.deepEqual(updateFixture.warnings, ['Deno executable no longer exists; restart fount before checking runtime updates.'])
+Deno.test('a failing update script still performs the version check without crashing', async () => {
+	assert.deepEqual(await checkUpdate({ updateFails: true, nextVersion: '2.9.7' }), {
+		calls: [
+			['bash', [updateDenoScript]],
+			['/opt/User Deno/bin/deno/resolved', ['-V']],
+		],
+		restarts: 1,
+		realpaths: [executablePath],
 	})
+})
+
+Deno.test('idle update skips a deleted Linux executable without PATH fallback', async () => {
+	assert.deepEqual(await checkUpdate({ execPath: '/usr/bin/deno (deleted)', resolvedPath: '/usr/bin/deno' }), {
+		calls: [],
+		restarts: 0,
+		realpaths: ['/usr/bin/deno (deleted)'],
+	})
+	assert.deepEqual(updateFixture.warnings, ['Deno executable no longer exists; restart fount before checking runtime updates.'])
+})
 
 Deno.test('unexpected Linux executable resolution failures remain visible', async () => {
 	await assert.rejects(checkUpdate({ realpathError: 'EACCES' }), { code: 'EACCES' })
@@ -108,20 +109,30 @@ Deno.test('unexpected Linux executable resolution failures remain visible', asyn
 	assert.deepEqual(updateFixture.warnings, [])
 })
 
-for (const [name, os, termux] of [['windows', 'windows', false], ['darwin', 'darwin', false], ['Termux', 'linux', true]]) {
-	for (const [version, channel] of [['2.9.6', 'stable'], ['2.10.0+canary', 'canary'], ['2.10.0-rc.1', 'rc']])
-		Deno.test(`idle update on ${name} preserves the PATH-based ${channel} commands`, async () => {
-			assert.deepEqual(await checkUpdate({ os, termux, version }), {
-				calls: [`deno upgrade -q ${channel}`, 'deno -V'],
-				restarts: 0,
-				realpaths: [],
-			})
-		})
-	Deno.test(`idle update on ${name} preserves version checks after a failed upgrade`, async () => {
-		assert.deepEqual(await checkUpdate({ os, termux, upgradeFails: true, nextVersion: '2.9.7' }), {
-			calls: ['deno upgrade -q stable', 'deno -V'],
-			restarts: 1,
+Deno.test('idle update on macOS and Termux delegates to the POSIX script without runtime resolution', async () => {
+	for (const [name, os, termux] of [['darwin', 'darwin', false], ['Termux', 'linux', true]]) 
+		assert.deepEqual(await checkUpdate({ os, termux }), {
+			calls: [
+				['bash', [updateDenoScript]],
+				'deno -V',
+			],
+			restarts: 0,
 			realpaths: [],
 		})
+	
+})
+
+Deno.test('idle update on Windows delegates through powershell_exec to the PS script and checks PATH deno', async () => {
+	assert.deepEqual(await checkUpdate({ os: 'windows' }), {
+		calls: [
+			['powershell_exec', `& '${updateDenoScriptWin}'`],
+			'deno -V',
+		],
+		restarts: 0,
+		realpaths: [],
 	})
-}
+})
+
+Deno.test('idle update on Windows restarts when the PATH deno version changes', async () => {
+	assert.equal((await checkUpdate({ os: 'windows', nextVersion: '2.9.7' })).restarts, 1)
+})

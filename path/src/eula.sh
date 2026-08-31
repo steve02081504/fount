@@ -101,15 +101,11 @@ ensure_fount_config() {
 		copy_fount_default_config
 		return 0
 	fi
-	local preserve_install=0
-	if [[ "$OSTYPE" == linux* ]] && [ ! -d /data/data/com.termux ] && command -v pacman &>/dev/null; then
-		preserve_install=1
-	fi
 	require browser unix/ipc unix/url
 	if [ ! -r /dev/tty ]; then
 		print_i18n_red 'eula.required' >&2
 		echo "$FOUNT_EULA_URL" >&2
-		[ "$preserve_install" -eq 1 ] || "$0" remove
+		"$0" remove
 		exit 1
 	fi
 	install_ipc_tools
@@ -121,13 +117,9 @@ ensure_fount_config() {
 	begin_fount_install_wait
 	open_url_in_browser "$FOUNT_INSTALL_WAIT_URL"
 	if ! confirm_fount_eula; then
-		if [ "$preserve_install" -eq 1 ]; then
-			get_i18n 'eula.declinedPreserved'
-		else
-			get_i18n 'eula.declined'
-		fi
+		get_i18n 'eula.declined'
 		stop_fount_status_server
-		[ "$preserve_install" -eq 1 ] || "$0" remove --force
+		"$0" remove --force
 		exit 1
 	fi
 	copy_fount_default_config
