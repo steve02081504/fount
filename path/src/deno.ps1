@@ -15,15 +15,17 @@ function script:deno_upgrade([string]$Channel) {
 	$owner = if ($denoBinary) { Get-FountPkgOwner $denoBinary } else { $null }
 	if ($owner) {
 		if ((Invoke-FountManagerUpgrade $owner.Manager $owner.Package) -eq 0) {
-			$pinned = deno_pinned_spec
-			if ($pinned) {
-				$current = ((& deno -V 2>&1 | Out-String).Trim() -replace '^deno ', '')
-				if ($current -ne $pinned) {
+			$versionOut = & $denoBinary -V 2>&1 | Out-String
+			if ($LASTEXITCODE -eq 0 -and $versionOut.Trim()) {
+				$pinned = deno_pinned_spec
+				if ($pinned -and (($versionOut.Trim() -replace '^deno ', '') -ne $pinned)) {
 					Write-Warning (Get-I18n -key 'deno.pinNotHonored' -params @{ spec = $pinned; manager = $owner.Manager })
 				}
+				New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+				Set-Content $upgradedFlag "1"
+				return
 			}
-			New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
-			Set-Content $upgradedFlag "1"
+			Write-Warning (Get-I18n -key 'deno.notWorking')
 			return
 		}
 		Write-Warning (Get-I18n -key 'deno.managedUpgradeFailed' -params @{ manager = $owner.Manager; package = $owner.Package })

@@ -40,7 +40,7 @@ function script:Get-FountPkgOwner([string]$Path) {
 		}
 	}
 	if (Get-Command rpm -ErrorAction SilentlyContinue) {
-		$pkg = (& rpm -qf $Path 2>$null | Select-Object -First 1).ToString().Trim()
+		$pkg = ((& rpm -qf $Path 2>$null | Out-String) -split '\r?\n')[0].Trim()
 		if ($LASTEXITCODE -eq 0 -and $pkg) {
 			$manager = @('dnf', 'yum', 'zypper') | Where-Object { Get-Command $_ -ErrorAction SilentlyContinue } | Select-Object -First 1
 			if ($manager) { return [pscustomobject]@{ Manager = $manager; Package = $pkg } }
@@ -62,7 +62,7 @@ function script:Get-FountPkgOwner([string]$Path) {
 		}
 	}
 	if (Get-Command pkg -ErrorAction SilentlyContinue) {
-		$out = (& pkg which $Path 2>$null | Out-String).Trim()
+		$out = (& pkg which -q -- $Path 2>$null | Out-String).Trim()
 		if ($LASTEXITCODE -eq 0 -and $out) {
 			return [pscustomobject]@{ Manager = 'pkg'; Package = $out }
 		}
@@ -172,16 +172,15 @@ function script:Invoke-FountManagerUpgrade([string]$ManagerCmd, [string]$Package
 function script:Invoke-FountManagerCommand([string]$ManagerCmd, $ArgsTable, [string]$Package) {
 	if (-not $ArgsTable) { return 1 }
 	if (-not (Get-Command -Name $ManagerCmd -ErrorAction SilentlyContinue)) { return 1 }
-	$prefix = @()
-	if ((Test-FountNeedSudo) -and $ManagerCmd -ne 'brew') { $prefix = @('sudo') }
+	$needsSudo = (Test-FountNeedSudo) -and $ManagerCmd -ne 'brew'
 	if ($ManagerCmd -eq 'snap' -and -not (Get-Command sudo -ErrorAction SilentlyContinue)) { return 1 }
 	if (-not (Enter-FountPkgLock $ManagerCmd)) { return 1 }
 	try {
 		if ($ArgsTable.ContainsKey('Update') -and (Test-FountPkgRefreshNeeded $ManagerCmd)) {
-			& ($prefix + $ManagerCmd) @($ArgsTable.Update) 2>$null | Out-Null
-			Set-FountPkgRefresh $ManagerCmd
+			if ($needsSudo) { & sudo $ManagerCmd @($ArgsTable.Update) 2>$null | Out-Null } else { & $ManagerCmd @($ArgsTable.Update) 2>$null | Out-Null }
+			if ($LASTEXITCODE -eq 0) { Set-FountPkgRefresh $ManagerCmd }
 		}
-		& ($prefix + $ManagerCmd) @($ArgsTable.Run) $Package 2>$null | Out-Null
+		if ($needsSudo) { & sudo $ManagerCmd @($ArgsTable.Run) $Package 2>$null | Out-Null } else { & $ManagerCmd @($ArgsTable.Run) $Package 2>$null | Out-Null }
 		return $LASTEXITCODE
 	}
 	finally {

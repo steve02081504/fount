@@ -122,7 +122,7 @@ FOUNT_AUTO_INSTALLED_PACKAGES="${FOUNT_AUTO_INSTALLED_PACKAGES:-}"
 FOUNT_PKG_STATE_DIR="${FOUNT_PKG_STATE_DIR:-${TMPDIR:-${TEMP:-/tmp}}/fount/package}"
 
 pkg_lock_acquire() {
-	local _manager="$1" _pkg_lock_dir="$FOUNT_PKG_STATE_DIR/$1.lock" _pid="" _i=0
+	local _manager="$1" _pkg_lock_dir="$FOUNT_PKG_STATE_DIR/$1.lock" _pid="" _retry_count=0
 	mkdir -p "$FOUNT_PKG_STATE_DIR" 2>/dev/null || return 1
 	while ! mkdir "$_pkg_lock_dir" 2>/dev/null; do
 		if [[ -f "$_pkg_lock_dir/pid" ]]; then
@@ -132,8 +132,8 @@ pkg_lock_acquire() {
 				continue
 			fi
 		fi
-		_i=$((_i + 1))
-		[[ "$_i" -ge $(( ${FOUNT_PKG_LOCK_TIMEOUT:-300} * 10 )) ]] && return 1
+		_retry_count=$((_retry_count + 1))
+		[[ "$_retry_count" -ge $(( ${FOUNT_PKG_LOCK_TIMEOUT:-300} * 10 )) ]] && return 1
 		sleep 0.1 2>/dev/null || sleep 1
 	done
 	printf '%s\n' "$$" >"$_pkg_lock_dir/pid"
@@ -152,9 +152,9 @@ pkg_with_lock() {
 	shift
 	pkg_lock_acquire "$_manager" || return 1
 	"$@"
-	local _rc=$?
+	local _exit_status=$?
 	pkg_lock_release
-	return $_rc
+	return $_exit_status
 }
 
 pkg_db_refresh_needed() {
@@ -178,11 +178,14 @@ pkg_refresh() {
 	pkg_db_refresh_needed "$_manager" || return 0
 	pkg_lock_acquire "$_manager" || return 1
 	if pkg_db_refresh_needed "$_manager"; then
-		"$@"
-		local _rc=$?
-		pkg_db_refresh_mark "$_manager"
+		if "$@"; then
+			pkg_db_refresh_mark "$_manager"
+			local _exit_status=0
+		else
+			local _exit_status=$?
+		fi
 		pkg_lock_release
-		return $_rc
+		return $_exit_status
 	fi
 	pkg_lock_release
 	return 0
@@ -200,35 +203,35 @@ install_package() {
 
 	for package in "${package_list[@]}"; do
 		if command -v apt-get &>/dev/null; then
-			pkg_refresh apt-get "$has_sudo" apt-get update -y
-			pkg_with_lock apt-get "$has_sudo" apt-get install -y "$package"
+			pkg_refresh apt-get $has_sudo apt-get update -y
+			pkg_with_lock apt-get $has_sudo apt-get install -y "$package"
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 		if command -v pacman &>/dev/null; then
-			pkg_refresh pacman "$has_sudo" pacman -Syy --noconfirm
-			pkg_with_lock pacman "$has_sudo" pacman -S --needed --noconfirm "$package"
+			pkg_refresh pacman $has_sudo pacman -Syy --noconfirm
+			pkg_with_lock pacman $has_sudo pacman -S --needed --noconfirm "$package"
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 		if command -v dnf &>/dev/null; then
-			pkg_refresh dnf "$has_sudo" dnf makecache
-			pkg_with_lock dnf "$has_sudo" dnf install -y "$package"
+			pkg_refresh dnf $has_sudo dnf makecache
+			pkg_with_lock dnf $has_sudo dnf install -y "$package"
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 		if command -v yum &>/dev/null; then
-			pkg_refresh yum "$has_sudo" yum makecache fast
-			pkg_with_lock yum "$has_sudo" yum install -y "$package"
+			pkg_refresh yum $has_sudo yum makecache fast
+			pkg_with_lock yum $has_sudo yum install -y "$package"
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 		if command -v zypper &>/dev/null; then
-			pkg_refresh zypper "$has_sudo" zypper refresh
-			pkg_with_lock zypper "$has_sudo" zypper install -y --no-confirm "$package"
+			pkg_refresh zypper $has_sudo zypper refresh
+			pkg_with_lock zypper $has_sudo zypper install -y --no-confirm "$package"
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 		if command -v apk &>/dev/null; then
 			if [[ "$(id -u)" -eq 0 ]]; then
 				pkg_with_lock apk apk add --update "$package"
 			else
-				pkg_with_lock apk "$has_sudo" apk add --update "$package"
+				pkg_with_lock apk $has_sudo apk add --update "$package"
 			fi
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
@@ -239,12 +242,12 @@ install_package() {
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 		if command -v pkg &>/dev/null; then
-			pkg_refresh pkg "$has_sudo" pkg update -y
-			pkg_with_lock pkg "$has_sudo" pkg install -y "$package"
+			pkg_refresh pkg $has_sudo pkg update -y
+			pkg_with_lock pkg $has_sudo pkg install -y "$package"
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 		if command -v snap &>/dev/null; then
-			pkg_with_lock snap "$has_sudo" snap install "$package"
+			pkg_with_lock snap $has_sudo snap install "$package"
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 	done

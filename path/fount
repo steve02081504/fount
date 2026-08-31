@@ -15,7 +15,7 @@ pkg_lock_acquire() {
 	_manager="$1"
 	_pkg_lock_dir="$FOUNT_PKG_STATE_DIR/$_manager.lock"
 	mkdir -p "$FOUNT_PKG_STATE_DIR" 2>/dev/null || return 1
-	_i=0
+	_retry_count=0
 	while ! mkdir "$_pkg_lock_dir" 2>/dev/null; do
 		if [ -f "$_pkg_lock_dir/pid" ]; then
 			_pid=$(cat "$_pkg_lock_dir/pid" 2>/dev/null)
@@ -24,8 +24,8 @@ pkg_lock_acquire() {
 				continue
 			fi
 		fi
-		_i=$((_i + 1))
-		[ "$_i" -ge $(( ${FOUNT_PKG_LOCK_TIMEOUT:-300} * 10 )) ] && return 1
+		_retry_count=$((_retry_count + 1))
+		[ "$_retry_count" -ge $(( ${FOUNT_PKG_LOCK_TIMEOUT:-300} * 10 )) ] && return 1
 		sleep 0.1 2>/dev/null || sleep 1
 	done
 	printf '%s\n' "$$" >"$_pkg_lock_dir/pid"
@@ -44,9 +44,9 @@ pkg_with_lock() {
 	shift
 	pkg_lock_acquire "$_manager" || return 1
 	"$@"
-	_rc=$?
+	_exit_status=$?
 	pkg_lock_release
-	return $_rc
+	return $_exit_status
 }
 
 pkg_db_refresh_needed() {
@@ -71,11 +71,14 @@ pkg_refresh() {
 	pkg_db_refresh_needed "$_manager" || return 0
 	pkg_lock_acquire "$_manager" || return 1
 	if pkg_db_refresh_needed "$_manager"; then
-		"$@"
-		_rc=$?
-		pkg_db_refresh_mark "$_manager"
+		if "$@"; then
+			pkg_db_refresh_mark "$_manager"
+			_exit_status=0
+		else
+			_exit_status=$?
+		fi
 		pkg_lock_release
-		return $_rc
+		return $_exit_status
 	fi
 	pkg_lock_release
 	return 0

@@ -64,7 +64,8 @@ if (!$IsWindows) {
 		if (-not (Test-Path -LiteralPath $file)) { return $true }
 		$last = Get-Content -LiteralPath $file -Raw -ErrorAction SilentlyContinue
 		$last = if ($last) { try { [long]$last.Trim() } catch { 0 } } else { 0 }
-		return (([DateTimeOffset]::UtcNow.ToUnixTimeSeconds() - $last) -ge 600)
+		$refreshInterval = if ($env:FOUNT_PKG_REFRESH_INTERVAL) { [long]$env:FOUNT_PKG_REFRESH_INTERVAL } else { 600 }
+		return (([DateTimeOffset]::UtcNow.ToUnixTimeSeconds() - $last) -ge $refreshInterval)
 	}
 	function Set-FountPkgRefresh([string]$Manager) {
 		New-Item -Path $script:FountPkgStateDir -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
@@ -74,6 +75,7 @@ if (!$IsWindows) {
 		New-Item -Path $script:FountPkgStateDir -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
 		$lockDir = Join-Path $script:FountPkgStateDir "$Manager.lock"
 		$pidFile = Join-Path $lockDir 'pid'
+		$timeoutMs = if ($env:FOUNT_PKG_LOCK_TIMEOUT) { [int]$env:FOUNT_PKG_LOCK_TIMEOUT * 1000 } else { 300000 }
 		$sw = [System.Diagnostics.Stopwatch]::StartNew()
 		while ($true) {
 			try {
@@ -90,7 +92,7 @@ if (!$IsWindows) {
 						continue
 					}
 				}
-				if ($sw.ElapsedMilliseconds -ge 300000) { return $false }
+				if ($sw.ElapsedMilliseconds -ge $timeoutMs) { return $false }
 				Start-Sleep -Milliseconds 100
 			}
 		}
@@ -116,7 +118,7 @@ if (!$IsWindows) {
 					try {
 						if (Test-FountPkgRefreshNeeded "apt-get") {
 							if ($hasSudo) { sudo apt-get update -y > $null } else { apt-get update -y > $null }
-							Set-FountPkgRefresh "apt-get"
+							if ($LASTEXITCODE -eq 0) { Set-FountPkgRefresh "apt-get" }
 						}
 						if ($hasSudo) { sudo apt-get install -y $package } else { apt-get install -y $package }
 					}
@@ -130,7 +132,7 @@ if (!$IsWindows) {
 						if (Test-FountPkgRefreshNeeded "pacman") {
 							if ($hasSudo) { sudo pacman -Syy --noconfirm > $null }
 							else { pacman -Syy --noconfirm > $null }
-							Set-FountPkgRefresh "pacman"
+							if ($LASTEXITCODE -eq 0) { Set-FountPkgRefresh "pacman" }
 						}
 						if ($hasSudo) { sudo pacman -S --needed --noconfirm $package }
 						else { pacman -S --needed --noconfirm $package }
@@ -178,7 +180,7 @@ if (!$IsWindows) {
 			if (Get-Command -Name "brew" -ErrorAction Ignore) {
 				if (Enter-FountPkgLock "brew") {
 					try {
-						if (-not (brew list --formula $package -ErrorAction Ignore)) {
+						if (-not (brew list --formula $package 2>$null)) {
 							brew install $package
 						}
 					}

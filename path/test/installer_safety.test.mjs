@@ -8,8 +8,10 @@ import { fileURLToPath } from 'node:url'
 
 const repositoryRoot = fileURLToPath(new URL('../../', import.meta.url))
 const shellSource = readFileSync(new URL('../../src/runner/main.sh', import.meta.url), 'utf8')
-const shellTargetCheck = shellSource.slice(shellSource.indexOf('FOUNT_EXISTING_INSTALL=0')).split('\nif echo ')[0]
-const shellInstall = shellSource.match(/install_fount_tree\(\) \{[\s\S]*?\n\}/)[0]
+const shellTargetCheck = shellSource.match(/FOUNT_EXISTING_INSTALL=0[\s\S]*?existing files were left untouched\." >&2\n\texit 1\nfi\n/)?.[0]
+if (!shellTargetCheck) throw new Error('target-check block not found in src/runner/main.sh')
+const shellInstall = shellSource.match(/install_fount_tree\(\) \{[\s\S]*?\n\}/)?.[0]
+if (!shellInstall) throw new Error('install_fount_tree function not found in src/runner/main.sh')
 
 /**
  * 只执行选定函数与目标检查，禁用环境启动脚本。

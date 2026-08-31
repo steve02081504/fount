@@ -116,7 +116,7 @@ pkg_owner_of() {
 			;;
 		esac
 	fi
-	if command -v pkg &>/dev/null && out=$(pkg which "$path" 2>/dev/null) && [ -n "$out" ]; then
+	if command -v pkg &>/dev/null && out=$(pkg which -q -- "$path" 2>/dev/null) && [ -n "$out" ]; then
 		printf 'pkg %s\n' "$out"
 		return 0
 	fi
@@ -135,11 +135,11 @@ pkg_owner_of() {
 
 # 按包管理器名加锁：同一时刻只有一个同名包管理器在运行。
 pkg_lock_acquire() {
-	local manager="$1" state_dir pkg_lock_dir pid i
+	local manager="$1" state_dir pkg_lock_dir pid retry_count
 	state_dir=$(pkg_state_dir)
 	pkg_lock_dir="$state_dir/$manager.lock"
 	mkdir -p "$state_dir" 2>/dev/null || return 1
-	i=0
+	retry_count=0
 	while ! mkdir "$pkg_lock_dir" 2>/dev/null; do
 		if [ -f "$pkg_lock_dir/pid" ]; then
 			pid=$(cat "$pkg_lock_dir/pid" 2>/dev/null)
@@ -148,8 +148,8 @@ pkg_lock_acquire() {
 				continue
 			fi
 		fi
-		i=$((i + 1))
-		[ "$i" -ge $(( ${FOUNT_PKG_LOCK_TIMEOUT:-300} * 10 )) ] && return 1
+		retry_count=$((retry_count + 1))
+		[ "$retry_count" -ge $(( ${FOUNT_PKG_LOCK_TIMEOUT:-300} * 10 )) ] && return 1
 		sleep 0.1 2>/dev/null || sleep 1
 	done
 	printf '%s\n' "$$" >"$pkg_lock_dir/pid"
@@ -165,13 +165,13 @@ pkg_lock_release() {
 
 # 在锁内执行命令。
 with_pkg_lock() {
-	local manager="$1" rc
+	local manager="$1" exit_status
 	shift
 	pkg_lock_acquire "$manager" || return 1
 	"$@"
-	rc=$?
+	exit_status=$?
 	pkg_lock_release
-	return $rc
+	return $exit_status
 }
 
 # 数据库刷新节流：>10min 或从未刷新才返回需要刷新。
@@ -194,7 +194,7 @@ pkg_db_refresh_mark() {
 install_with_manager() {
 	local manager_cmd="$1"
 	local package_to_install="$2"
-	local update_args="" install_args="" has_sudo="" rc
+	local update_args="" install_args="" has_sudo="" exit_status
 
 	if ! command -v "$manager_cmd" &>/dev/null; then
 		return 1
@@ -224,14 +224,13 @@ install_with_manager() {
 	pkg_lock_acquire "$manager_cmd" || return 1
 	if [[ -n "$update_args" ]] && pkg_db_refresh_needed "$manager_cmd"; then
 		# shellcheck disable=SC2086
-		$has_sudo "$manager_cmd" $update_args || true
-		pkg_db_refresh_mark "$manager_cmd"
+		$has_sudo "$manager_cmd" $update_args && pkg_db_refresh_mark "$manager_cmd"
 	fi
 	# shellcheck disable=SC2086
 	$has_sudo "$manager_cmd" $install_args "$package_to_install"
-	rc=$?
+	exit_status=$?
 	pkg_lock_release
-	return $rc
+	return $exit_status
 }
 
 install_package() {
@@ -270,7 +269,7 @@ install_package() {
 upgrade_with_manager() {
 	local manager_cmd="$1"
 	local package_to_upgrade="$2"
-	local update_args="" upgrade_args="" has_sudo="" rc
+	local update_args="" upgrade_args="" has_sudo="" exit_status
 
 	if ! command -v "$manager_cmd" &>/dev/null; then
 		return 1
@@ -300,14 +299,13 @@ upgrade_with_manager() {
 	pkg_lock_acquire "$manager_cmd" || return 1
 	if [[ -n "$update_args" ]] && pkg_db_refresh_needed "$manager_cmd"; then
 		# shellcheck disable=SC2086
-		$has_sudo "$manager_cmd" $update_args >/dev/null 2>&1 || true
-		pkg_db_refresh_mark "$manager_cmd"
+		$has_sudo "$manager_cmd" $update_args >/dev/null 2>&1 && pkg_db_refresh_mark "$manager_cmd"
 	fi
 	# shellcheck disable=SC2086
 	$has_sudo "$manager_cmd" $upgrade_args "$package_to_upgrade" >/dev/null 2>&1
-	rc=$?
+	exit_status=$?
 	pkg_lock_release
-	return $rc
+	return $exit_status
 }
 
 upgrade_package() {
