@@ -6,6 +6,7 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 
 import {
 	CHAT_RUN_PART,
+	formatJoinInviteUrl,
 	formatJoinRunUri,
 	formatMessageRunUri,
 	parseJoinRunPayload,
@@ -89,6 +90,21 @@ Deno.test('parseJoinRunPayload accepts IPC decoded JSON segment', () => {
 	// protocolhandler：split(';').map(decodeURIComponent) → invocationArguments = ['join', jsonString]
 	const invocationArguments = ['join', JSON.stringify(payload)]
 	assertEquals(parseJoinRunPayload(invocationArguments[1]), payload)
+})
+
+Deno.test('formatJoinInviteUrl omits powAnchorRef', () => {
+	const url = formatJoinInviteUrl({
+		groupId: 'gid',
+		inviteCode: 'code',
+		roomSecret: 'secret',
+		introducerPubKeyHash: 'a'.repeat(64),
+		introducerNodeHash: 'b'.repeat(64),
+	})
+	assert(url.startsWith('https://steve02081504.github.io/fount/protocol?url='))
+	const runUri = decodeURIComponent(url.slice('https://steve02081504.github.io/fount/protocol?url='.length))
+	const parsed = parseJoinRunUri(runUri)
+	assertEquals(parsed.powAnchorRef, undefined)
+	assertEquals(parsed.introducerNodeHash, 'b'.repeat(64))
 })
 
 Deno.test('parseJoinRunUri rejects non-JSON legacy join segments', () => {

@@ -2,7 +2,7 @@
  * 【文件】public/hub/sidebar/groupMembership.mjs
  * 【职责】选群时的入群判定、自动 join、联邦 catch-up。
  */
-import { getGroupState, joinGroup } from '../../src/endpoints/groupCore.mjs'
+import { getGroupState, getPowChallenge, joinGroup } from '../../src/endpoints/groupCore.mjs'
 import { federationCatchUp } from '../../src/endpoints/groupFederation.mjs'
 import { broadcastHubGroupJoined } from '../../src/hubBroadcast.mjs'
 import { resolvePowForJoin } from '../../src/powJoin.mjs'
@@ -110,6 +110,21 @@ export async function ensureGroupMembership(groupId, state) {
 	const pendingJoin = consumePendingJoin(groupId)
 	const inviteCode = pendingJoin.inviteCode || inviteCodeFromUrl()
 	if (!canAutoJoinGroup(state, pendingJoin, inviteCode)) {
+		// pow discovery 群：无本地 replica / invite / fedBootstrap，动态申请 challenge 解 pow 入群。
+		const challenge = await getPowChallenge(groupId).catch(() => null)
+		if (challenge?.anchors?.length) {
+			const pow = await resolvePowForJoin(groupId, null, store.viewer.nodeHash || '', challenge)
+			await joinGroup(groupId, null, null, pow, {
+				roomSecret: challenge.roomSecret,
+				signalingAppId: challenge.signalingAppId,
+				introducerNodeHash: challenge.responderNodeHash || null,
+				introducerPubKeyHash: null,
+			})
+			const joined = await getGroupState(groupId)
+			broadcastHubGroupJoined(groupId)
+			await loadGroups()
+			return joined
+		}
 		setState('context.currentState', state)
 		store.context.currentMode = 'groups'
 		document.querySelectorAll('.server-item[data-mode]').forEach(el => {
@@ -126,7 +141,9 @@ export async function ensureGroupMembership(groupId, state) {
 		refreshHubHeaderButtons()
 		return null
 	}
-	const pow = await resolvePowForJoin(groupId, state, store.viewer.nodeHash || '')
+	const pow = state?.groupSettings?.joinPolicy === 'pow'
+		? await resolvePowForJoin(groupId, state, store.viewer.nodeHash || '', pendingJoin.fedBootstrap)
+		: null
 	await joinGroup(groupId, inviteCode, null, pow, pendingJoin.fedBootstrap)
 	const joined = await getGroupState(groupId)
 	broadcastHubGroupJoined(groupId)

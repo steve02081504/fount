@@ -185,7 +185,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "13m5s",
+			"expected": "7m2s",
 			"dependsOn": [
 				"server:live"
 			],
