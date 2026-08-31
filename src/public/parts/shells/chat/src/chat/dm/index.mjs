@@ -229,7 +229,7 @@ async function bindJoinFederation(username, groupId) {
  * @param {string} [options.dmIntroNonce] DM intro nonce
  * @param {string} [options.dmIntroSignatureHex] DM intro 签名 hex
  * @param {number} [options.reputationEdge] 入群信誉边 [-1,1]
- * @param {{ roomSecret?: string, signalingAppId?: string, dmSessionTag?: string, powAnchorRef?: string, powAnchors?: string[] }} [options.bootstrap] 首次联邦 bootstrap
+ * @param {{ roomSecret?: string, signalingAppId?: string, dmSessionTag?: string }} [options.bootstrap] 首次联邦 bootstrap
  * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群后的群信息
  */
 export async function performMemberJoin(username, groupId, options = {}) {

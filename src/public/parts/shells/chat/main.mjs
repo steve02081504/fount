@@ -21,6 +21,7 @@ import { registerChatChunkProviders, unregisterChatChunkProviders } from './src/
 import { registerChatEventTypeDefs, unregisterChatEventTypeDefs } from './src/chat/dag/eventTypes.mjs'
 import { registerChatFederationRoomProvider, unregisterChatFederationRoomProvider } from './src/chat/federation/trustGraphRooms.mjs'
 import { registerChatUserRoomEmojiHandlers, unregisterChatUserRoomEmojiHandlers } from './src/chat/federation/userRoomEmojiRegistry.mjs'
+import { registerChatUserRoomPowChallengeHandlers, unregisterChatUserRoomPowChallengeHandlers } from './src/chat/federation/userRoomPowChallengeRegistry.mjs'
 import { registerChatGroupEmojiPostEmbed, unregisterChatGroupEmojiPostEmbed } from './src/chat/groupEmojiPostEmbed.mjs'
 import { registerChatGroupEntityIndex, unregisterChatGroupEntityIndex } from './src/chat/groupEntityIndex.mjs'
 import { getGroupMemberEntityHash } from './src/chat/lib/replica.mjs'
@@ -91,6 +92,7 @@ export default {
 		registerChatEventTypeDefs()
 		registerChatGroupEmojiPostEmbed()
 		registerChatUserRoomEmojiHandlers()
+		registerChatUserRoomPowChallengeHandlers()
 		registerChatManifestAcl()
 		registerChatManifestTransfer()
 		registerChatChunkProviders()
@@ -118,6 +120,7 @@ export default {
 			unregisterChatEventTypeDefs()
 			unregisterChatGroupEmojiPostEmbed()
 			unregisterChatUserRoomEmojiHandlers()
+			unregisterChatUserRoomPowChallengeHandlers()
 			unregisterChatManifestAcl()
 			unregisterGroupMemberEntityResolver('chat')
 			unregisterChatManifestTransfer()

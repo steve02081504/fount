@@ -2,7 +2,7 @@
  * 【文件】public/src/inviteQr.mjs
  * 【职责】入群邀请 QR 与 run URI / protocol 分享链接组装。
  */
-import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../shared/runUri.mjs'
+import { formatJoinInviteUrl } from '../shared/runUri.mjs'
 
 /**
  * @param {string} url 完整入群 URL
@@ -22,11 +22,5 @@ export function inviteJoinQrImageUrl(url, size = 200) {
  * @returns {string} `https://steve02081504.github.io/fount/protocol?url=…`
  */
 export function buildInviteJoinShareUrl(groupId, inviteCode, roomSecret, introducerPubKeyHash, introducerNodeHash) {
-	return wrapProtocolHttpsUrl(formatJoinRunUri({
-		groupId,
-		inviteCode,
-		roomSecret,
-		introducerPubKeyHash,
-		introducerNodeHash,
-	}))
+	return formatJoinInviteUrl({ groupId, inviteCode, roomSecret, introducerPubKeyHash, introducerNodeHash })
 }

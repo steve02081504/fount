@@ -9,7 +9,7 @@ import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../../scripts
 import { safeUnlinkSync } from '../lib/fsSafe.mjs'
 import { federationBootstrapPath } from '../lib/paths.mjs'
 
-/** @type {Map<string, { signalingAppId: string, roomSecret: string, dmSessionTag?: string, fromNodeId?: string, setAt: number, settingsEventId?: string, powAnchorRef?: string, powAnchors?: string[] }>} */
+/** @type {Map<string, { signalingAppId: string, roomSecret: string, dmSessionTag?: string, fromNodeId?: string, setAt: number, settingsEventId?: string }>} */
 const bootstrapByKey = new Map()
 
 /** @type {Map<string, { signalingAppId: string, roomSecret: string, dmSessionTag?: string, fromNodeId: string, setAt: number, settingsEventId?: string }>} */
@@ -49,14 +49,12 @@ function sanitizeBootstrapRow(row) {
 	if (!row) return row
 	const roomSecret = stripMistakenFieldPrefix(row.roomSecret, ['roomSecret'])
 	const fromNodeId = stripMistakenFieldPrefix(row.fromNodeId, ['introducerNodeHash', 'fromNodeId'])
-	const powAnchorRef = stripMistakenFieldPrefix(row.powAnchorRef, ['powAnchorRef'])
-	if (roomSecret === row.roomSecret && fromNodeId === row.fromNodeId && powAnchorRef === row.powAnchorRef)
+	if (roomSecret === row.roomSecret && fromNodeId === row.fromNodeId)
 		return row
 	return {
 		...row,
 		roomSecret,
 		fromNodeId,
-		powAnchorRef,
 	}
 }
 
@@ -93,7 +91,7 @@ function loadBootstrapRow(username, groupId) {
 /**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {{ signalingAppId?: string, roomSecret: string, dmSessionTag?: string, fromNodeId?: string, powAnchorRef?: string, powAnchors?: string[] }} creds 邀请/bootstrap 凭证
+ * @param {{ signalingAppId?: string, roomSecret: string, dmSessionTag?: string, fromNodeId?: string }} creds 邀请/bootstrap 凭证
  * @returns {void}
  */
 export function setFederationBootstrap(username, groupId, creds) {
@@ -105,8 +103,6 @@ export function setFederationBootstrap(username, groupId, creds) {
 		fromNodeId: creds.fromNodeId || undefined,
 		setAt: Date.now(),
 		settingsEventId: creds.settingsEventId || undefined,
-		powAnchorRef: creds.powAnchorRef || undefined,
-		powAnchors: Array.isArray(creds.powAnchors) ? creds.powAnchors : undefined,
 	})
 	if (!row?.roomSecret) return
 	persistBootstrapRow(username, groupId, row)
