@@ -165,6 +165,7 @@ export function registerMembershipRoutes(router, authenticate) {
 			})
 			return
 		}
+		if (state) throw httpError(404, 'Group not found or not pow')
 		// 无本地 replica：优先定向引入者/发现源节点，其次 user-room fanout。
 		const introducerNodeHash = String(req.query.introducerNodeHash || '').trim() || undefined
 		let discoverySources = []

@@ -21,6 +21,7 @@ const CHALLENGE_WANT_MAX_PER_MIN = 30
 const pendingFetches = new Map()
 
 /**
+ * 生成用户与群的入群 PoW challenge 等待/限流键。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @returns {string} 等待键
@@ -30,6 +31,7 @@ export function waitKey(username, groupId) {
 }
 
 /**
+ * 消费一次入群 PoW challenge 配额（超出上限则拒绝）。
  * @param {string} bucketKey 限流键
  * @returns {boolean} 是否允许 want
  */
@@ -126,20 +128,29 @@ export async function requestPowChallengeFromUserRoom(username, groupId, options
 		resolvePending(null)
 	}, FETCH_TIMEOUT_MS)
 	pendingFetches.set(key, { promise, resolve: resolvePending, timer })
-	const { ensureUserRoom, deliverToUserRoomPeers } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
-	const { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
-	const payload = { groupId }
-	await ensureUserRoom({ replicaUsername: username })
-	if (options.introducerNodeHash) {
-		const { ensureLinkToNode } = await import('npm:@steve02081504/fount-p2p/transport/link_registry')
-		try {
-			await ensureLinkToNode(options.introducerNodeHash)
+	try {
+		const { ensureUserRoom, deliverToUserRoomPeers } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
+		const { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
+		const payload = { groupId }
+		await ensureUserRoom({ replicaUsername: username })
+		if (options.introducerNodeHash) {
+			const { ensureLinkToNode } = await import('npm:@steve02081504/fount-p2p/transport/link_registry')
+			try {
+				await ensureLinkToNode(options.introducerNodeHash)
+			}
+			catch { /* dial 失败交给 fanout 兜底 */ }
 		}
-		catch { /* dial 失败交给 fanout 兜底 */ }
+		const sent = await deliverToUserRoomPeers(username, 'fed_pow_challenge_want', payload)
+		if (sent <= 0)
+			await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'fed_pow_challenge_want', payload, 6)
 	}
-	const sent = await deliverToUserRoomPeers(username, 'fed_pow_challenge_want', payload)
-	if (sent <= 0)
-		await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'fed_pow_challenge_want', payload, 6)
+	catch (error) {
+		if (pendingFetches.get(key)?.promise === promise) {
+			clearTimeout(timer)
+			pendingFetches.delete(key)
+		}
+		throw error
+	}
 	return await promise
 }
 
