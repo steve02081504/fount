@@ -139,10 +139,12 @@ export async function getGroupState(groupId) {
  * @returns {Promise<{ anchors: string[], powFloorBits: number, powEpochMs: number, roomSecret?: string, signalingAppId?: string, responderNodeHash?: string }>} challenge
  */
 export async function getPowChallenge(groupId, options = {}) {
-	const query = options.introducerNodeHash
-		? `?introducerNodeHash=${encodeURIComponent(options.introducerNodeHash)}`
-		: ''
-	return groupFetch(`${groupPath(groupId, 'pow-challenge')}${query}`, { method: 'GET' })
+	return groupFetch(
+		`${groupPath(groupId, 'pow-challenge')}${options.introducerNodeHash
+			? `?introducerNodeHash=${encodeURIComponent(options.introducerNodeHash)}`
+			: ''}`,
+		{ method: 'GET' },
+	)
 }
 
 /**

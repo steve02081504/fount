@@ -5,7 +5,10 @@ import { attachUserRoomPowChallengeHandlers } from './powChallengeFederation.mjs
 /** @type {(() => void) | null} */
 let unregisterHook = null
 
-/** @returns {void} */
+/**
+ * 在 node scope 注册 user-room PoW challenge 处理器。
+ * @returns {void}
+ */
 export function registerChatUserRoomPowChallengeHandlers() {
 	if (unregisterHook) return
 	unregisterHook = registerNodeScopeWireHook((context, wire) => {
@@ -13,7 +16,10 @@ export function registerChatUserRoomPowChallengeHandlers() {
 	})
 }
 
-/** @returns {void} */
+/**
+ * 注销 user-room PoW challenge 处理器。
+ * @returns {void}
+ */
 export function unregisterChatUserRoomPowChallengeHandlers() {
 	unregisterHook?.()
 	unregisterHook = null

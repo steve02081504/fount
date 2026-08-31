@@ -67,8 +67,7 @@ export function wrapProtocolHttpsUrl(fountRunUri) {
 }
 
 /**
- * 组装 join 深链分享 URL。powAnchorRef 不再写入链接：入群 PoW anchor 由加入方
- * 在 join 时经 `/pow-challenge` 动态申请，避免链接携带易过期的静态锚。
+ * 组装 join 深链分享 URL。
  * @param {object} options 载荷
  * @param {string} options.groupId 群 ID
  * @param {string} [options.inviteCode] 邀请码

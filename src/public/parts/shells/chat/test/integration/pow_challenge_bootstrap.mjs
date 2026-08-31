@@ -18,7 +18,6 @@ async function setupPowChallenge(username) {
 	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
 	const groupId = await newGroup(username, { name: 'pow-challenge' })
-	const channelId = await getDefaultChannelId(username, groupId)
 	await appendSignedLocalEvent(username, groupId, {
 		type: 'group_settings_update',
 		timestamp: Date.now(),
@@ -31,10 +30,11 @@ async function setupPowChallenge(username) {
 	const client = await getChatClient(username)
 	const group = await client.group(groupId)
 	const inviteUrl = await group.createInvite()
-	return { groupId, channelId, inviteUrl }
+	return { groupId, channelId: await getDefaultChannelId(username, groupId), inviteUrl }
 }
 
 /**
+ * 初始化 PoW challenge 集成测试数据：建 pow+discoveryPublic 群并写入 setup JSON。
  * @param {string} username 测试用户名
  * @returns {Promise<void>}
  */

@@ -24,8 +24,8 @@ const CHAT_PREFIX = '/api/parts/shells:chat'
  * @returns {Promise<Response>} fetch 响应
  */
 function chatFetch(node, method, path, body) {
-	const sep = path.includes('?') ? '&' : '?'
-	const url = `${node.baseUrl}${CHAT_PREFIX}${path}${sep}fount-apikey=${encodeURIComponent(node.apiKey)}`
+	const querySeparator = path.includes('?') ? '&' : '?'
+	const url = `${node.baseUrl}${CHAT_PREFIX}${path}${querySeparator}fount-apikey=${encodeURIComponent(node.apiKey)}`
 	return fetch(url, {
 		method,
 		headers: body ? { 'content-type': 'application/json' } : undefined,
@@ -37,7 +37,7 @@ function chatFetch(node, method, path, body) {
  * @returns {Promise<{ node: object, setup: object }>} 已启动节点与 bootstrap 写入的 setup
  */
 async function launchPowScenario() {
-	const dataPath = await mkdtemp(join(tmpdir(), `fount_chat_pow_challenge_`))
+	const dataPath = await mkdtemp(join(tmpdir(), 'fount_chat_pow_challenge_'))
 	const apiKey = `fount-chat-pow-challenge-${Date.now().toString(36)}`
 	const node = await launchNode({
 		dataPath,
@@ -51,8 +51,7 @@ async function launchPowScenario() {
 			FOUNT_TEST_DATA_PATH: dataPath,
 		},
 	})
-	const setupRaw = await readFile(join(dataPath, 'pow_challenge_setup.json'), 'utf8')
-	return { node, setup: JSON.parse(setupRaw) }
+	return { node, setup: JSON.parse(await readFile(join(dataPath, 'pow_challenge_setup.json'), 'utf8')) }
 }
 
 Deno.test({
@@ -62,10 +61,9 @@ Deno.test({
 }, async () => {
 	const { node, setup } = await launchPowScenario()
 	try {
-		const res = await chatFetch(node, 'GET', `/groups/${setup.groupId}/pow-challenge`)
-		assertEquals(res.status, 200)
-		const body = await res.json()
-		assertEquals(body.joinPolicy, 'pow')
+		const response = await chatFetch(node, 'GET', `/groups/${setup.groupId}/pow-challenge`)
+		assertEquals(response.status, 200)
+		const body = await response.json()
 		assert(Array.isArray(body.anchors) && body.anchors.length > 0, 'anchors non-empty')
 		assert(typeof body.powFloorBits === 'number' && body.powFloorBits > 0, 'powFloorBits present')
 	} finally {

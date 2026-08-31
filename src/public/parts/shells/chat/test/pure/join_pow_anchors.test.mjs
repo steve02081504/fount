@@ -54,6 +54,13 @@ Deno.test('resolvePowForJoin returns null without anchors', async () => {
 	assertEquals(await resolvePowForJoin('g-pow', {}, 'j'.repeat(64)), null)
 })
 
+Deno.test('resolvePowForJoin rejects powFloorBits above protocol maximum', async () => {
+	assertEquals(await resolvePowForJoin('g-pow', null, 'j'.repeat(64), {
+		anchors: ['n'.repeat(64)],
+		powFloorBits: 257,
+	}), null)
+})
+
 Deno.test('resolvePowForJoin prefers stable anchor from local state', async () => {
 	const solution = await resolvePowForJoin('g-pow', {
 		groupSettings: { joinPolicy: 'pow', powFloorBits: 4 },

@@ -92,24 +92,7 @@ Deno.test('parseJoinRunPayload accepts IPC decoded JSON segment', () => {
 	assertEquals(parseJoinRunPayload(invocationArguments[1]), payload)
 })
 
-Deno.test('formatJoinInviteUrl omits powAnchorRef regardless of joinPolicy', () => {
-	for (const joinPolicy of ['invite-only', 'open', 'pow']) {
-		const url = formatJoinInviteUrl({
-			groupId: 'gid',
-			inviteCode: 'code',
-			roomSecret: 'secret',
-			introducerPubKeyHash: 'a'.repeat(64),
-			introducerNodeHash: 'b'.repeat(64),
-		})
-		assert(url.startsWith('https://steve02081504.github.io/fount/protocol?url='))
-		const runUri = decodeURIComponent(url.slice('https://steve02081504.github.io/fount/protocol?url='.length))
-		const parsed = parseJoinRunUri(runUri)
-		assertEquals(parsed.powAnchorRef, undefined, `no powAnchorRef for ${joinPolicy}`)
-		assertEquals(parsed.introducerNodeHash, 'b'.repeat(64))
-	}
-})
-
-Deno.test('formatJoinInviteUrl ignores state param (anchor no longer in URL)', () => {
+Deno.test('formatJoinInviteUrl omits powAnchorRef', () => {
 	const url = formatJoinInviteUrl({
 		groupId: 'gid',
 		inviteCode: 'code',
@@ -117,9 +100,11 @@ Deno.test('formatJoinInviteUrl ignores state param (anchor no longer in URL)', (
 		introducerPubKeyHash: 'a'.repeat(64),
 		introducerNodeHash: 'b'.repeat(64),
 	})
+	assert(url.startsWith('https://steve02081504.github.io/fount/protocol?url='))
 	const runUri = decodeURIComponent(url.slice('https://steve02081504.github.io/fount/protocol?url='.length))
 	const parsed = parseJoinRunUri(runUri)
 	assertEquals(parsed.powAnchorRef, undefined)
+	assertEquals(parsed.introducerNodeHash, 'b'.repeat(64))
 })
 
 Deno.test('parseJoinRunUri rejects non-JSON legacy join segments', () => {

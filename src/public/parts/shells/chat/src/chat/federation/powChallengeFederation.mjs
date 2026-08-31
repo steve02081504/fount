@@ -17,7 +17,7 @@ import { roomCredentialsFromGroupSettings } from './roomCredentials.mjs'
 const FETCH_TIMEOUT_MS = 14_000
 const CHALLENGE_WANT_MAX_PER_MIN = 30
 
-/** @type {Map<string, { resolve: (v: object | null) => void, timer: ReturnType<typeof setTimeout> }>} */
+/** @type {Map<string, { promise: Promise<object | null>, resolve: (v: object | null) => void, timer: ReturnType<typeof setTimeout> }>} */
 const pendingFetches = new Map()
 
 /**
@@ -25,7 +25,7 @@ const pendingFetches = new Map()
  * @param {string} groupId 群 ID
  * @returns {string} 等待键
  */
-function waitKey(username, groupId) {
+export function waitKey(username, groupId) {
 	return `${username}\0${groupId}\0pow_challenge`
 }
 
@@ -33,7 +33,7 @@ function waitKey(username, groupId) {
  * @param {string} bucketKey 限流键
  * @returns {boolean} 是否允许 want
  */
-function consumeChallengeWant(bucketKey) {
+export function consumeChallengeWant(bucketKey) {
 	return consumeWireRateBucket(bucketKey, { maxCount: CHALLENGE_WANT_MAX_PER_MIN })
 }
 
@@ -85,22 +85,25 @@ export async function handleFedPowChallengeWant(username, groupId, data, peerId,
 }
 
 /**
- * 处理入站 `fed_pow_challenge_data`：兑现等待中的 Promise。
+ * 处理入站 `fed_pow_challenge_data`：按已验证发送者兑现等待中的 Promise。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {unknown} data 载荷
+ * @param {string} senderNodeHash 发送方 nodeHash（node scope 已验证）
  * @returns {void}
  */
-export function handleFedPowChallengeData(username, groupId, data) {
+export function handleFedPowChallengeData(username, groupId, data, senderNodeHash) {
 	if (!isPlainObject(data)) return
 	if (data.groupId !== groupId) return
 	if (!Array.isArray(data.anchors) || !data.anchors.length) return
+	if (typeof senderNodeHash !== 'string' || !senderNodeHash) return
+	if (data.nodeHash && data.nodeHash !== senderNodeHash) return
 	const key = waitKey(username, groupId)
 	const pending = pendingFetches.get(key)
 	if (!pending) return
 	clearTimeout(pending.timer)
 	pendingFetches.delete(key)
-	pending.resolve({ ...data, responderNodeHash: data.nodeHash || undefined })
+	pending.resolve({ ...data, responderNodeHash: senderNodeHash })
 }
 
 /**
@@ -114,13 +117,15 @@ export function handleFedPowChallengeData(username, groupId, data) {
 export async function requestPowChallengeFromUserRoom(username, groupId, options = {}) {
 	if (!consumeChallengeWant(waitKey(username, groupId))) return null
 	const key = waitKey(username, groupId)
-	const resultPromise = new Promise(resolve => {
-		const timer = setTimeout(() => {
-			pendingFetches.delete(key)
-			resolve(null)
-		}, FETCH_TIMEOUT_MS)
-		pendingFetches.set(key, { resolve, timer })
-	})
+	const existing = pendingFetches.get(key)
+	if (existing) return existing.promise
+	let resolvePending
+	const promise = new Promise(resolve => { resolvePending = resolve })
+	const timer = setTimeout(() => {
+		pendingFetches.delete(key)
+		resolvePending(null)
+	}, FETCH_TIMEOUT_MS)
+	pendingFetches.set(key, { promise, resolve: resolvePending, timer })
 	const { ensureUserRoom, deliverToUserRoomPeers } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
 	const { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
 	const payload = { groupId }
@@ -135,7 +140,7 @@ export async function requestPowChallengeFromUserRoom(username, groupId, options
 	const sent = await deliverToUserRoomPeers(username, 'fed_pow_challenge_want', payload)
 	if (sent <= 0)
 		await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'fed_pow_challenge_want', payload, 6)
-	return await resultPromise
+	return await promise
 }
 
 /**
@@ -159,10 +164,10 @@ export function attachUserRoomPowChallengeHandlers(username, wire) {
 			new Map(),
 		).catch(error => console.warn('federation: user-room fed_pow_challenge_want failed', error))
 	})
-	wire.on('fed_pow_challenge_data', data => {
+	wire.on('fed_pow_challenge_data', (data, peerId) => {
 		if (!isPlainObject(data)) return
 		const groupId = data.groupId || ''
 		if (!groupId) return
-		handleFedPowChallengeData(username, groupId, data)
+		handleFedPowChallengeData(username, groupId, data, peerId)
 	})
 }

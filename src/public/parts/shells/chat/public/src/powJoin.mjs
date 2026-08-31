@@ -10,6 +10,9 @@ import { collectJoinPowAnchors } from '../shared/joinPowAnchors.mjs'
 /** 默认 epoch 窗口（1 小时），与 `npm:@steve02081504/fount-p2p/governance/join_pow` 一致。 */
 const JOIN_POW_DEFAULT_EPOCH_MS = 3_600_000
 
+/** 协议难度上限：SHA-256 前导零 bit 最大可达 256（与 p2p `countAchievedLeadingZeroBits` 的 0..256 一致）。 */
+const JOIN_POW_MAX_FLOOR_BITS = 256
+
 /**
  * 计算 SHA-256 hex 的实际前导零 bit 数，与 `npm:@steve02081504/fount-p2p/governance/join_pow` 的 `countAchievedLeadingZeroBits` 一致。
  * @param {string} hexHash SHA-256 hex
@@ -52,6 +55,7 @@ function hashMeetsFloor(hexHash, floorBits) {
 export async function solveJoinPow(fields, floorBits, targetBits) {
 	const floor = Math.max(1, Math.floor(Number(floorBits) || 1))
 	const target = Math.max(floor, Math.floor(Number(targetBits) || floor))
+	if (floor > JOIN_POW_MAX_FLOOR_BITS || target > JOIN_POW_MAX_FLOOR_BITS) return null
 	const epochMs = Number(fields.epochMs) || JOIN_POW_DEFAULT_EPOCH_MS
 	const epoch = Number.isFinite(fields.epoch) ? fields.epoch : Math.floor(Date.now() / epochMs)
 	let best = null
@@ -85,6 +89,7 @@ export async function resolvePowForJoin(groupId, state = null, joinerNodeHash = 
 	const anchorRef = anchors[0]
 	if (!anchorRef || !joinerNodeHash) return null
 	const floorBits = Number(bootstrap?.powFloorBits || state?.groupSettings?.powFloorBits) || 18
+	if (floorBits > JOIN_POW_MAX_FLOOR_BITS) return null
 	const epochMs = Number(bootstrap?.powEpochMs || state?.groupSettings?.powEpochMs) || JOIN_POW_DEFAULT_EPOCH_MS
 	return solveJoinPow({ groupId, anchorRef, joinerNodeHash, epochMs }, floorBits, bootstrap?.targetBits ?? floorBits)
 }

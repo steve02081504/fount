@@ -9,8 +9,8 @@ export function collectJoinPowAnchors(state) {
 	/** @type {string[]} */
 	const anchors = []
 	for (const key of ['checkpoint_event_id', 'consensusBranchTip', 'membersRoot']) {
-		const v = state?.[key]
-		if (v) anchors.push(v)
+		const anchor = state?.[key]
+		if (anchor) anchors.push(anchor)
 	}
 	const tips = Array.isArray(state?.dagTips) ? state.dagTips : []
 	for (const tip of tips)

@@ -18,7 +18,7 @@ import { computeDmRoomLabelFromPubKeys } from '../../chat/dm/labels.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
 import { getFederationSettings } from '../../chat/federation/config.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
-import { requestPowChallengeFromUserRoom } from '../../chat/federation/powChallengeFederation.mjs'
+import { consumeChallengeWant, requestPowChallengeFromUserRoom, waitKey } from '../../chat/federation/powChallengeFederation.mjs'
 import { roomCredentialsFromGroupSettings } from '../../chat/federation/roomCredentials.mjs'
 import { collectJoinPowAnchors } from '../../chat/governance/joinPowAnchors.mjs'
 import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
@@ -57,17 +57,16 @@ function groupHasBootstrapGenesis(state) {
  * @returns {Promise<string>} 本地化剪贴板文本
  */
 function buildInviteClipboardText(username, groupId, code, { roomSecret, introducerPubKeyHash, introducerNodeHash }) {
-	const url = formatJoinInviteUrl({
-		groupId,
-		inviteCode: code,
-		roomSecret,
-		introducerPubKeyHash,
-		introducerNodeHash,
-	})
 	return geti18nForUser(username, 'chat.group.settings.page.invite.clipboard', {
 		groupId,
 		code,
-		url,
+		url: formatJoinInviteUrl({
+			groupId,
+			inviteCode: code,
+			roomSecret,
+			introducerPubKeyHash,
+			introducerNodeHash,
+		}),
 	})
 }
 
@@ -171,14 +170,16 @@ export function registerMembershipRoutes(router, authenticate) {
 		let discoverySources = []
 		try {
 			const { loadDiscoveryIndex } = await import('../../chat/discovery/index.mjs')
-			const entry = (await loadDiscoveryIndex(username)).entries.find(e => e.groupId === groupId)
+			const discoveryEntry = (await loadDiscoveryIndex(username)).entries.find(entry => entry.groupId === groupId)
 			discoverySources = [...new Set([
-				...(entry?.sources || []).map(s => s.fromNodeHash).filter(Boolean),
-				entry?.advertiserNodeHash || '',
+				...(discoveryEntry?.sources || []).map(source => source.fromNodeHash).filter(Boolean),
+				discoveryEntry?.advertiserNodeHash || '',
 			].filter(Boolean))]
 		}
 		catch { /* 索引不可用 */ }
 		const candidates = [...new Set([introducerNodeHash, ...discoverySources].filter(Boolean))]
+		if (!consumeChallengeWant(waitKey(username, groupId)))
+			throw httpError(429, 'pow challenge rate limited')
 		const { ensureLinkToNode } = await import('npm:@steve02081504/fount-p2p/transport/link_registry')
 		for (const nodeHash of candidates)
 			try {
