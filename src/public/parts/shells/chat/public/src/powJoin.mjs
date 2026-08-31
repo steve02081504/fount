@@ -73,30 +73,18 @@ export async function solveJoinPow(fields, floorBits, targetBits) {
 }
 
 /**
+ * 针对已知为 pow 策略的群解算入群 PoW（调用方负责确认 joinPolicy）。
  * @param {string} groupId 群 ID
  * @param {object | null} [state] 已有群 state
  * @param {string} joinerNodeHash 入群者 nodeHash
- * @param {{ powAnchorRef?: string, powAnchors?: string[], targetBits?: number }} [bootstrap] bootstrap
- * @returns {Promise<{ anchorRef: string, joinerNodeHash: string, epoch: number, nonce: string, achievedBits: number } | null>} PoW 解；非 pow 策略或缺 anchor 为 null
+ * @param {{ anchors?: string[], powFloorBits?: number, powEpochMs?: number, targetBits?: number }} [bootstrap] challenge / bootstrap 参数
+ * @returns {Promise<{ anchorRef: string, joinerNodeHash: string, epoch: number, nonce: string, achievedBits: number } | null>} PoW 解；缺 anchor 为 null
  */
 export async function resolvePowForJoin(groupId, state = null, joinerNodeHash = '', bootstrap = null) {
-	const policy = state?.groupSettings?.joinPolicy
-	if (policy !== 'pow') return null
-	const floorBits = Number(state?.groupSettings?.powFloorBits)
-		|| Number(state?.groupSettings?.powDifficulty)
-		|| Number(state?.groupSettings?.powDifficultyBits)
-		|| 18
-	const targetBits = bootstrap?.targetBits ?? floorBits
-	const anchors = bootstrap?.powAnchors?.length
-		? bootstrap.powAnchors
-		: state ? collectJoinPowAnchors(state) : []
-	const anchorRef = bootstrap?.powAnchorRef || anchors[0]
+	const anchors = bootstrap?.anchors?.length ? bootstrap.anchors : collectJoinPowAnchors(state)
+	const anchorRef = anchors[0]
 	if (!anchorRef || !joinerNodeHash) return null
-	const epochMs = Number(state?.groupSettings?.powEpochMs) || JOIN_POW_DEFAULT_EPOCH_MS
-	return solveJoinPow({
-		groupId,
-		anchorRef,
-		joinerNodeHash,
-		epochMs,
-	}, floorBits, targetBits)
+	const floorBits = Number(bootstrap?.powFloorBits || state?.groupSettings?.powFloorBits) || 18
+	const epochMs = Number(bootstrap?.powEpochMs || state?.groupSettings?.powEpochMs) || JOIN_POW_DEFAULT_EPOCH_MS
+	return solveJoinPow({ groupId, anchorRef, joinerNodeHash, epochMs }, floorBits, bootstrap?.targetBits ?? floorBits)
 }

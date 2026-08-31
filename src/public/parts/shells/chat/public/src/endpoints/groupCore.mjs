@@ -133,6 +133,19 @@ export async function getGroupState(groupId) {
 }
 
 /**
+ * 动态申请入群 PoW challenge（仅 pow 群返回；本地无 replica 时经联邦取当前稳定锚 + 难度）。
+ * @param {string} groupId 群 ID
+ * @param {{ introducerNodeHash?: string }} [options] 优先定向的引入者节点
+ * @returns {Promise<{ anchors: string[], powFloorBits: number, powEpochMs: number, roomSecret?: string, signalingAppId?: string, responderNodeHash?: string }>} challenge
+ */
+export async function getPowChallenge(groupId, options = {}) {
+	const query = options.introducerNodeHash
+		? `?introducerNodeHash=${encodeURIComponent(options.introducerNodeHash)}`
+		: ''
+	return groupFetch(`${groupPath(groupId, 'pow-challenge')}${query}`, { method: 'GET' })
+}
+
+/**
  * 分页拉取群审计日志（需 ADMIN）。
  * @param {string} groupId 群 ID
  * @param {{ before?: string, offset?: number, limit?: number, types?: string[] }} [options] 游标/偏移与类型过滤
