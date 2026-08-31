@@ -3,7 +3,7 @@
  * 软件包管理、运行时升级和文件修改全部由内存中的 Shell 函数替身完成。
  */
 /* global Deno */
-import { deepStrictEqual, doesNotMatch, match, ok, strictEqual } from 'node:assert'
+import { deepStrictEqual, match, ok, strictEqual } from 'node:assert'
 import { spawnSync } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -40,30 +40,44 @@ function bashTest(name, test) {
 	Deno.test({ name, fn: test, ignore: Deno.build.os === 'windows' })
 }
 
+const bashPlatforms = [['Linux', 'linux-gnu', 0], ['macOS', 'darwin', 0], ['MSYS', 'msys', 0], ['Termux', 'linux-android', 1]]
+
 for (const [name, source] of [['path', packagesSh], ['runner', runnerSh]])
-	for (const status of [0, 42])
-		bashTest(`${name} pacman dependency install never refreshes databases (status ${status})`, () => {
-			const result = runBash(`
+	for (const [platform, ostype, termux] of bashPlatforms)
+		for (const status of [0, 42])
+			bashTest(`${name} pacman dependency installation on ${platform} (status ${status})`, () => {
+				const result = runBash(`
 ${source.match(/install_with_manager\(\) \{[\s\S]*?\n\}/)[0]}
+OSTYPE='${ostype}'
+IN_TERMUX=${termux}
+FOUNT_PRESERVE_INSTALL=${platform === 'Linux' ? 1 : 0}
 id() { printf '1000\\n'; }
 sudo() { printf 'sudo:%s\\n' "$*"; "$@"; }
 pacman() { printf 'pacman:%s\\n' "$*"; return ${status}; }
 install_with_manager pacman deno
 `)
-			strictEqual(result.status, status, result.stderr)
-			strictEqual(result.stdout, 'sudo:pacman -S --needed --noconfirm deno\npacman:-S --needed --noconfirm deno\n')
-		})
-
-
+				strictEqual(result.status, status, result.stderr)
+				strictEqual(result.stdout, [
+					...platform === 'Linux' ? [] : ['-Syy --noconfirm'],
+					'-S --needed --noconfirm deno'
+				].map(args => `sudo:pacman ${args}\npacman:${args}\n`).join(''))
+			})
 
 for (const [name, installPackage] of [
 	['POSIX entry', pathEntry.match(/install_package\(\) \{[\s\S]*?\n\}/)[0]],
 	['npm bootstrap', npmRunner.match(/install_package\(\) \{[^\n]+/)[0].replaceAll('\\$', '$')],
 ])
-	for (const status of [0, 42])
-		bashTest(`${name} installs missing dependencies without refreshing pacman databases (status ${status})`, () => {
-			const result = runBash(`
+	for (const [platform, system, termux] of [['Linux', 'Linux', false], ['macOS', 'Darwin', false], ['MSYS', 'MINGW_NT-10.0', false], ['Termux', 'Linux', true]])
+		for (const [installStatus, refreshStatus] of [[0, 0], [42, 0], [0, 42]])
+			bashTest(`${name} preserves ${platform} dependency behavior (install ${installStatus}, refresh ${refreshStatus})`, () => {
+				const result = runBash(`
 ${installPackage}
+uname() { printf '%s\\n' '${system}'; }
+[() {
+	if [[ "$*" == '-d /data/data/com.termux ]' ]]; then return ${termux ? 0 : 1}
+	elif [[ "$*" == '! -d /data/data/com.termux ]' ]]; then return ${termux ? 1 : 0}
+	else builtin [ "$@"; fi
+}
 command() {
 	case "$*" in
 		'-v curl') [ "$installed" = 1 ] ;;
@@ -75,19 +89,40 @@ id() { printf '1000\\n'; }
 sudo() { printf 'sudo:%s\\n' "$*"; "$@"; }
 pacman() {
 	printf 'pacman:%s\\n' "$*"
-	if [ ${status} -eq 0 ]; then installed=1; fi
-	return ${status}
+	if [ "$1" = '-Syy' ]; then return ${refreshStatus}; fi
+	if [ ${installStatus} -eq 0 ]; then installed=1; fi
+	return ${installStatus}
 }
 install_package curl
 `)
-			strictEqual(result.status, status === 0 ? 0 : 1, result.stderr)
-			strictEqual(result.stdout, 'sudo:pacman -S --needed --noconfirm curl\npacman:-S --needed --noconfirm curl\n')
-		})
+				const installAttempted = platform === 'Linux' || name === 'npm bootstrap' || refreshStatus === 0
+				strictEqual(result.status, installAttempted && installStatus === 0 ? 0 : 1, result.stderr)
+				strictEqual(result.stdout, [
+					...platform === 'Linux' ? [] : ['-Syy --noconfirm'],
+					...installAttempted ? ['-S --needed --noconfirm curl'] : [],
+				].map(args => `sudo:pacman ${args}\npacman:${args}\n`).join(''))
+			})
 
-
+for (const [platform, ostype, termux] of bashPlatforms)
+	bashTest(`pacman package upgrades are disabled only on non-Termux Linux (${platform})`, () => {
+		const result = runBash(`
+${packagesSh}
+exec 3>&1
+OSTYPE='${ostype}'
+IN_TERMUX=${termux}
+id() { printf '1000\\n'; }
+sudo() { printf 'sudo:%s\\n' "$*" >&3; "$@"; }
+pacman() { printf 'pacman:%s\\n' "$*" >&3; }
+upgrade_with_manager pacman deno
+`)
+		strictEqual(result.status, platform === 'Linux' ? 1 : 0, result.stderr)
+		strictEqual(result.stdout, platform === 'Linux' ? '' : ['-Sy --noconfirm', '-S --noconfirm deno'].map(args => `sudo:pacman ${args}\npacman:${args}\n`).join(''))
+		strictEqual(result.stderr, '')
+	})
 
 const denoStubs = `
 exec 3>&2
+OSTYPE=linux-gnu
 IN_TERMUX=0
 FOUNT_DIR=/fount
 command() {
@@ -179,7 +214,26 @@ base_deno_upgrade '${channel}'
 	})
 
 
-bashTest('non-pacman package upgrades retain manager discovery without trying pacman', () => {
+for (const [platform, ostype, termux] of bashPlatforms.filter(([name]) => name !== 'Linux'))
+	for (const [channel, pinned, expected] of [['', '', 'package-upgrade:deno deno'], ['canary', '', 'deno:upgrade -q canary'], ['canary', 'pr 36606', 'deno:upgrade -q pr 36606']])
+		bashTest(`${platform} retains baseline Deno updates (${pinned || channel || 'default'}) even with pacman available`, () => {
+			const result = runBash(`
+${denoSh}
+${denoStubs}
+OSTYPE='${ostype}'
+IN_TERMUX=${termux}
+package_status=0
+version='deno 2.9.5'
+test_pin='${pinned}'
+upgrade_package() { printf 'package-upgrade:%s\\n' "$*" >&3; }
+base_deno_upgrade '${channel}'
+`)
+			strictEqual(result.status, 0, result.stderr)
+			strictEqual(result.stdout, '')
+			strictEqual(result.stderr.trim(), expected)
+		})
+
+bashTest('package upgrades preserve the baseline manager discovery order', () => {
 	const result = runBash(`
 ${packagesSh}
 upgrade_with_manager() { printf 'manager:%s\\n' "$*"; [[ "$1" == brew ]]; }
@@ -187,7 +241,7 @@ deno() { :; }
 upgrade_package deno deno
 `)
 	strictEqual(result.status, 0, result.stderr)
-	deepStrictEqual(result.stdout.trim().split('\n'), ['pkg', 'apt-get', 'dnf', 'yum', 'zypper', 'apk', 'brew'].map(manager => `manager:${manager} deno`))
+	deepStrictEqual(result.stdout.trim().split('\n'), ['pkg', 'apt-get', 'pacman', 'dnf', 'yum', 'zypper', 'apk', 'brew'].map(manager => `manager:${manager} deno`))
 	strictEqual(result.stderr, '')
 })
 
@@ -245,10 +299,4 @@ Deno.test('PowerShell preserves package ownership and explicit-update restart se
 	ok(denoPs1.indexOf('deno.managedByPacman') < denoPs1.indexOf('deno upgrade'), 'package ownership guard precedes every self-upgrade')
 	match(keepalivePs1, /\n\s*update_fount_and_deno\s*run_server\s*\r?\n/)
 	match(runPs1, /while \(\$LastExitCode -eq 131\) \{\s*update_fount_and_deno\s*run\s*\}/)
-})
-
-Deno.test('Arch install and runtime entry points never refresh databases without a full upgrade', async () => {
-	for (const path of ['path/fount', 'path/src/packages.sh', 'path/src/deno.sh', 'path/src/passthrough.ps1', 'src/runner/main.sh', 'src/runner/main.ps1', 'src/runner/npm/main.mjs'])
-		doesNotMatch(await readFile(join(REPO_ROOT, path), 'utf8'), /-Sy+(?![a-zA-Z])/u, `${path} must not refresh pacman databases for a partial upgrade`)
-
 })

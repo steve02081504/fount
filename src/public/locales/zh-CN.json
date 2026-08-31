@@ -530,7 +530,8 @@
 				"prompt": "您是否接受 fount 的最终用户许可协议（EULA）？",
 				"yn": "[Y/N] ",
 				"required": "须先同意 EULA 才能继续。请设置 `FOUNT_ACCEPT_EULA=1` 后重试，或在交互式终端中运行。",
-				"declined": "您已拒绝 EULA，fount 不会启动。已下载的文件和现有数据保持不变。",
+				"declined": "您已拒绝 EULA，正在移除 fount。",
+				"declinedPreserved": "您已拒绝 EULA，fount 不会启动。已下载的文件和现有数据保持不变。",
 				"statusServerFailed": "警告：无法启动安装状态服务，将在本终端提示 EULA。"
 			},
 			"install": {

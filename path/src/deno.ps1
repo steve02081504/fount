@@ -8,7 +8,7 @@
 }
 
 function script:deno_upgrade([string]$Channel) {
-	if ($IsLinux -and (Get-Command pacman -ErrorAction SilentlyContinue)) {
+	if ($IsLinux -and -not (Test-Path /data/data/com.termux) -and (Get-Command pacman -ErrorAction SilentlyContinue)) {
 		$denoBinary = readlink -f (Get-Command deno -ErrorAction Stop).Source
 		if ($LastExitCode) { return }
 		pacman -Qqo -- $denoBinary 2>&1 | Out-Null

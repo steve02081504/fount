@@ -25,6 +25,10 @@ function script:handle_unix_passthrough {
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "pacman" -ErrorAction Ignore) {
+					if (-not $IsLinux -or (Test-Path /data/data/com.termux)) {
+						if ($hasSudo) { sudo pacman -Syy --noconfirm > $null }
+						else { pacman -Syy --noconfirm > $null }
+					}
 					if ($hasSudo) { sudo pacman -S --needed --noconfirm $package }
 					else { pacman -S --needed --noconfirm $package }
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }

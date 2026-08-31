@@ -2,11 +2,15 @@
 export const updateFixture = {
 	managed: false,
 	missingPacman: false,
+	termux: false,
+	upgradeFails: false,
 	nextVersion: '2.9.6',
 	resolvedPath: '',
+	realpathError: null,
 	calls: [],
 	restarts: 0,
 	realpaths: [],
+	warnings: [],
 }
 
 /** 真实自动更新模块注册的空闲回调。 */
@@ -27,7 +31,19 @@ export async function execFile(command, args) {
 		if (updateFixture.missingPacman) throw new Error('ENOENT')
 		return { code: updateFixture.managed ? 0 : 1, stdout: '' }
 	}
+	if (updateFixture.upgradeFails && args[0] === 'upgrade') throw new Error('Upgrade failed')
 	return { code: 0, stdout: args[0] === '-V' ? `deno ${updateFixture.nextVersion}\n` : '' }
+}
+
+/**
+ * 记录非 Linux 平台沿用的命令字符串，不启动实际进程。
+ * @param {string} command 要执行的完整命令。
+ * @returns {Promise<{code: number, stdout: string}>} 模拟退出码和标准输出。
+ */
+export async function exec(command) {
+	updateFixture.calls.push(command)
+	if (updateFixture.upgradeFails && command.startsWith('deno upgrade')) throw new Error('Upgrade failed')
+	return { code: 0, stdout: command === 'deno -V' ? `deno ${updateFixture.nextVersion}\n` : '' }
 }
 
 /**
@@ -64,15 +80,21 @@ export function sendEventToAll() {}
 export const console = {
 	/** 忽略预期的重启提示。 */
 	logI18n() {},
+	/**
+	 * 记录可执行文件失效的提示，不污染测试输出。
+	 * @param {string} message 更新跳过原因。
+	 */
+	warn(message) { updateFixture.warnings.push(message) },
 }
 
 /** 限定自动更新模块使用的文件系统替身。 */
 export default {
 	/**
-	 * 测试不检查上游代码，避免触发 Git 更新路径。
-	 * @returns {boolean} 始终视为没有 Git 目录。
+	 * 只模拟 Termux 标志目录，不触发 Git 更新路径。
+	 * @param {string} path 要检查的目录。
+	 * @returns {boolean} 是否存在模拟的 Termux 目录。
 	 */
-	existsSync() { return false },
+	existsSync(path) { return path === '/data/data/com.termux' && updateFixture.termux },
 	/**
 	 * 记录并解析当前运行时路径，不访问真实文件系统。
 	 * @param {string} path 运行时报告的可执行文件路径。
@@ -80,7 +102,8 @@ export default {
 	 */
 	realpathSync(path) {
 		updateFixture.realpaths.push(path)
-		if (path === '/usr/bin/deno (deleted)') throw new Error('ENOENT')
+		if (updateFixture.realpathError) throw Object.assign(new Error(updateFixture.realpathError), { code: updateFixture.realpathError })
+		if (path === '/usr/bin/deno (deleted)') throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' })
 		return updateFixture.resolvedPath
 	},
 }

@@ -31,7 +31,11 @@ install_package() {
 		if command -v apt-get >/dev/null 2>&1; then
 			$_has_sudo apt-get update -y && $_has_sudo apt-get install -y "$_package"
 		elif command -v pacman >/dev/null 2>&1; then
-			$_has_sudo pacman -S --needed --noconfirm "$_package"
+			if [ "$(uname -s)" = Linux ] && [ ! -d /data/data/com.termux ]; then
+				$_has_sudo pacman -S --needed --noconfirm "$_package"
+			else
+				$_has_sudo pacman -Syy --noconfirm && $_has_sudo pacman -S --needed --noconfirm "$_package"
+			fi
 		elif command -v dnf >/dev/null 2>&1; then
 			$_has_sudo dnf install -y "$_package"
 		elif command -v yum >/dev/null 2>&1; then

@@ -31,48 +31,6 @@ function Write-TaskbarProgressError {
 	}
 }
 
-#_if PSScript
-function Set-MissingVariablesForWindowsPowershell {
-	[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '', Justification = 'all assignments to "automatic" variables are safe in this function')]
-	param()
-	if ($PSEdition -eq "Desktop") {
-		try { $global:IsWindows = $true } catch {}
-	}
-}
-Set-MissingVariablesForWindowsPowershell
-#_endif
-
-function Test-FountTree([string]$Dir) {
-	return (Test-Path -LiteralPath "$Dir/run.bat" -PathType Leaf) -and
-		(Test-Path -LiteralPath "$Dir/path/fount.ps1" -PathType Leaf) -and
-		(Test-Path -LiteralPath "$Dir/path/src/i18n.ps1" -PathType Leaf) -and
-		(Test-Path -LiteralPath "$Dir/path/src/eula.ps1" -PathType Leaf)
-}
-
-function Test-FountInstallTarget([string]$Dir) {
-	if (Test-FountTree $Dir) { return $true }
-	$target = Get-Item -LiteralPath $Dir -Force -ErrorAction Ignore
-	if ($target -and (-not $target.PSIsContainer -or (Get-ChildItem -LiteralPath $Dir -Force -ErrorAction Stop | Select-Object -First 1))) {
-		throw "$Dir is not an empty directory or a fount installation. Choose another FOUNT_DIR; existing files were left untouched."
-	}
-	return $false
-}
-
-# PATH registration is optional; an explicit target always takes precedence.
-if (!$env:FOUNT_DIR) {
-	$launcherName = if ($env:OS -eq 'Windows_NT') { 'fount.ps1' } else { 'fount.sh' }
-	$fountCommand = Get-Command $launcherName -ErrorAction Ignore
-	if ($fountCommand) {
-		$env:FOUNT_DIR = $fountCommand.Path | Split-Path -Parent | Split-Path -Parent
-	}
-	elseif ($env:OS -eq 'Windows_NT') {
-		$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
-	}
-	else {
-		$env:FOUNT_DIR = "$HOME/.local/share/fount"
-	}
-}
-$existingInstall = Test-FountInstallTarget $env:FOUNT_DIR
 Write-TaskbarProgress -Percent 0
 
 if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
@@ -86,6 +44,15 @@ if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
 }
 
 #_if PSScript
+function Set-MissingVariablesForWindowsPowershell {
+	[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '', Justification = 'all assignments to "automatic" variables are safe in this function')]
+	param()
+	if ($PSEdition -eq "Desktop") {
+		try { $global:IsWindows = $true } catch {}
+	}
+}
+Set-MissingVariablesForWindowsPowershell
+
 if (!$IsWindows) {
 	function install_package {
 		param(
@@ -103,6 +70,10 @@ if (!$IsWindows) {
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 			if (Get-Command -Name "pacman" -ErrorAction Ignore) {
+				if (-not $IsLinux -or (Test-Path /data/data/com.termux)) {
+					if ($hasSudo) { sudo pacman -Syy --noconfirm > $null }
+					else { pacman -Syy --noconfirm > $null }
+				}
 				if ($hasSudo) { sudo pacman -S --needed --noconfirm $package }
 				else { pacman -S --needed --noconfirm $package }
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
@@ -158,6 +129,10 @@ if (!$IsWindows) {
 }
 #_endif
 
+if (!$env:FOUNT_DIR) {
+	$env:FOUNT_DIR = "$env:LOCALAPPDATA/fount"
+}
+
 $script:AcceptEula = $env:FOUNT_ACCEPT_EULA -match '^(?i)(1|true|yes)$'
 $forwardedArgs = @($args)
 if ($forwardedArgs.Count -eq 0) {
@@ -197,57 +172,59 @@ function Test-Winget {
 
 function Install-FountTree {
 	param([string]$Dir, [string]$Branch)
-	$temporaryDirectory = Join-Path ([IO.Path]::GetTempPath()) ("fount-install-" + [guid]::NewGuid().ToString('N'))
-	New-Item -Path $temporaryDirectory -ItemType Directory -ErrorAction Stop | Out-Null
-	try {
-		$sourceDirectory = $null
-		if (Get-Command git -ErrorAction Ignore) {
-			$cloneUrls = @("https://github.com/steve02081504/fount")
-			if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
-				$cloneUrls += "https://gh-proxy.org/github.com/steve02081504/fount"
-				$cloneUrls += "https://gitclone.com/github.com/steve02081504/fount.git"
-			}
-			$cloneAttempt = 0
-			foreach ($url in $cloneUrls) {
-				$cloneAttempt++
-				$cloneDirectory = Join-Path $temporaryDirectory "clone-$cloneAttempt"
-				git clone -c core.autocrlf=false -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 $url $cloneDirectory --depth 1 --single-branch --branch $Branch
-				if ($LastExitCode -eq 0) {
-					$sourceDirectory = $cloneDirectory
-					break
-				}
-			}
+	Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
+	if (Get-Command git -ErrorAction Ignore) {
+		$cloneUrls = @("https://github.com/steve02081504/fount")
+		if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+			$cloneUrls += "https://gh-proxy.org/github.com/steve02081504/fount"
+			$cloneUrls += "https://gitclone.com/github.com/steve02081504/fount.git"
 		}
-		if (-not $sourceDirectory) {
-			$zipUrls = @("https://github.com/steve02081504/fount/archive/refs/heads/$Branch.zip")
-			if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
-				$zipUrls += "https://gh-proxy.org/https://github.com/steve02081504/fount/archive/refs/heads/$Branch.zip"
-			}
-			$zipFile = Join-Path $temporaryDirectory 'fount.zip'
-			$downloaded = $false
-			$lastError = $null
-			foreach ($zipUrl in $zipUrls) {
-				try {
-					Invoke-WebRequest $zipUrl -OutFile $zipFile -ErrorAction Stop
-					$downloaded = $true
-					break
-				}
-				catch { $lastError = $_.Exception.Message }
-			}
-			if (-not $downloaded) { throw "Failed to download fount: $lastError" }
-			Expand-Archive -LiteralPath $zipFile -DestinationPath "$temporaryDirectory/archive" -ErrorAction Stop
-			$sourceDirectory = (Get-ChildItem -LiteralPath "$temporaryDirectory/archive" -Directory -Filter 'fount-*' | Select-Object -First 1).FullName
+		foreach ($url in $cloneUrls) {
+			git clone -c core.autocrlf=false -c http.lowSpeedLimit=1 -c http.lowSpeedTime=30 $url $Dir --depth 1 --single-branch --branch $Branch
+			if ($LastExitCode -eq 0) { break }
+			Remove-Item $Dir -Force -ErrorAction Ignore -Recurse
 		}
-		if (-not $sourceDirectory -or -not (Test-FountTree $sourceDirectory)) { throw "Failed to install fount" }
-		if (Test-FountInstallTarget $Dir) { throw "$Dir is no longer empty; existing files were left untouched." }
-		# Move contents, including dotfiles, without replacing a caller's cwd inode.
-		New-Item -Path $Dir -ItemType Directory -Force -ErrorAction Stop | Out-Null
-		Get-ChildItem -LiteralPath $sourceDirectory -Force | Move-Item -Destination $Dir -ErrorAction Stop
 	}
-	finally {
-		Remove-Item -LiteralPath $temporaryDirectory -Recurse -Force
+	$installFlag = Join-Path $Dir 'path/fount.ps1'
+	if (!(Test-Path $installFlag)) {
+		Remove-Item "$env:TEMP/fount-$Branch" -Force -ErrorAction Ignore -Recurse
+		$zipUrls = @("https://github.com/steve02081504/fount/archive/refs/heads/$Branch.zip")
+		if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
+			$zipUrls += "https://gh-proxy.org/https://github.com/steve02081504/fount/archive/refs/heads/$Branch.zip"
+		}
+		$lastError = $null
+		foreach ($zipUrl in $zipUrls) {
+			try {
+				Invoke-WebRequest $zipUrl -OutFile $env:TEMP/fount.zip
+				break
+			}
+			catch {
+				$lastError = $_.Exception.Message
+				Remove-Item $env:TEMP/fount.zip -Force -ErrorAction Ignore
+			}
+		}
+		if (-not (Test-Path $env:TEMP/fount.zip)) {
+			throw "Failed to download fount: $lastError"
+		}
+		Expand-Archive $env:TEMP/fount.zip $env:TEMP -Force
+		Remove-Item $env:TEMP/fount.zip -Force
+		New-Item $(Split-Path -Parent $Dir) -ItemType Directory -Force -ErrorAction Ignore
+		Move-Item "$env:TEMP/fount-$Branch" $Dir -Force
+	}
+	if (!(Test-Path $installFlag)) {
+		throw "Failed to install fount"
 	}
 	Get-ChildItem -Path $Dir -Recurse -File -Filter '*.ps1' -ErrorAction SilentlyContinue | Unblock-File -ErrorAction SilentlyContinue
+}
+
+function Remove-FountAfterEulaDecline {
+	$fountPs1 = Join-Path $env:FOUNT_DIR 'path/fount.ps1'
+	if (Test-Path -LiteralPath $fountPs1) {
+		& $fountPs1 remove
+	}
+	else {
+		Remove-Item $env:FOUNT_DIR -Force -ErrorAction Ignore -Recurse
+	}
 }
 
 function Import-FountLocale([string]$Dir) {
@@ -260,7 +237,7 @@ $statusServerJob = $null
 $fountExitCode = 1
 $eulaAcceptFile = $null
 try {
-	if (-not $existingInstall) {
+	if (!(Get-Command fount.ps1 -ErrorAction Ignore)) {
 		Write-TaskbarProgress -Percent 0
 		Install-FountTree -Dir $env:FOUNT_DIR -Branch $env:FOUNT_BRANCH
 		Write-TaskbarProgress -Percent 50
@@ -278,6 +255,7 @@ try {
 			if (-not (Test-FountConsoleInput)) {
 				$Host.UI.WriteErrorLine((Get-I18n -key 'eula.required'))
 				$Host.UI.WriteErrorLine($script:FountEulaUrl)
+				Remove-FountAfterEulaDecline
 				exit 1
 			}
 			Remove-Item -LiteralPath $eulaAcceptFile -Force -ErrorAction Ignore
@@ -287,6 +265,7 @@ try {
 			Open-FountInstallWaitPage
 			if (-not (Confirm-FountEula -AcceptFile $eulaAcceptFile)) {
 				Write-Host (Get-I18n -key 'eula.declined')
+				Remove-FountAfterEulaDecline
 				exit 1
 			}
 		}
@@ -294,7 +273,7 @@ try {
 		Write-TaskbarProgress -Percent 70
 	}
 	else {
-		$Script:fountDir = $env:FOUNT_DIR
+		$Script:fountDir = (Get-Command fount.ps1).Path | Split-Path -Parent | Split-Path -Parent
 		Import-FountLocale $Script:fountDir
 	}
 
