@@ -246,10 +246,9 @@ export const actions = {
 	 * @param {string} [root0.signalingAppId] 信令应用 ID
 	 * @param {string} [root0.introducerPubKeyHash] 邀请人成员 pubKeyHash
 	 * @param {string} [root0.introducerNodeHash] 邀请人 nodeHash
-	 * @param {string} [root0.powAnchorRef] 入群 PoW anchor 提示
 	 * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群结果
 	 */
-	join: async ({ user, groupId, inviteCode, roomSecret, signalingAppId, introducerPubKeyHash, introducerNodeHash, powAnchorRef }) =>
+	join: async ({ user, groupId, inviteCode, roomSecret, signalingAppId, introducerPubKeyHash, introducerNodeHash }) =>
 		performMemberJoin(user, groupId, {
 			inviteCode,
 			introducerPubKeyHash,
@@ -257,7 +256,6 @@ export const actions = {
 				roomSecret,
 				signalingAppId,
 				fromNodeId: introducerNodeHash,
-				powAnchorRef,
 			},
 		}),
 }
