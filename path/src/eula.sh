@@ -102,7 +102,7 @@ ensure_fount_config() {
 		return 0
 	fi
 	require browser unix/ipc unix/url
-	if [[ ! -r /dev/tty ]]; then
+	if [ ! -r /dev/tty ]; then
 		print_i18n_red 'eula.required' >&2
 		echo "$FOUNT_EULA_URL" >&2
 		"$0" remove

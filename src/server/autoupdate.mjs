@@ -1,7 +1,8 @@
 import fs from 'node:fs'
+import { join } from 'node:path'
 
 import * as Sentry from 'npm:@sentry/deno'
-import { exec } from 'npm:@steve02081504/exec'
+import { exec, execFile, powershell_exec } from 'npm:@steve02081504/exec'
 
 import { git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n/index.mjs'
@@ -71,19 +72,31 @@ async function checkUpstream() {
 
 /**
  * 检查并升级 Deno，如果版本发生变化则重启 fount。
+ * 归属检测/包管理器升级/锁/刷新节流统一委托给独立的 `path/src/update-deno.{sh,ps1}`。
  * @returns {Promise<void>}
  */
 async function checkDenoUpdate() {
 	/* global Deno */
+	let denoPath
+	if (Deno.build.os === 'linux' && !fs.existsSync('/data/data/com.termux')) 
+		try { denoPath = fs.realpathSync(Deno.execPath()) }
+		catch (error) {
+			if (error.code !== 'ENOENT') throw error
+			console.warn('Deno executable no longer exists; restart fount before checking runtime updates.')
+			return
+		}
+	
 	const versionBefore = 'deno ' + Deno.version.deno
 
-	let channel = 'stable'
-	if (versionBefore.includes('+')) channel = 'canary'
-	else if (versionBefore.includes('-rc')) channel = 'rc'
+	// 直接按路径调用独立的运行时更新脚本：归属检测/管理器升级/锁/刷新节流都在 path 层。
+	// Windows 用 powershell_exec（系统自带 powershell.exe，比 pwsh 更省资源）。
+	const updateDenoScript = join(__dirname, 'path/src', Deno.build.os === 'windows' ? 'update-deno.ps1' : 'update-deno.sh')
+	if (Deno.build.os === 'windows')
+		await powershell_exec(`& '${updateDenoScript.replaceAll('\'', '\'\'')}'`).catch(() => null)
+	else
+		await execFile('bash', [updateDenoScript]).catch(() => null)
 
-	await exec(`deno upgrade -q ${channel}`).catch(() => null)
-
-	const versionAfter = (await exec('deno -V')).stdout.trim()
+	const versionAfter = (await (denoPath ? execFile(denoPath, ['-V']) : exec('deno -V'))).stdout.trim()
 	if (versionAfter !== versionBefore) {
 		console.logI18n('fountConsole.server.update.restarting')
 		await restartor()

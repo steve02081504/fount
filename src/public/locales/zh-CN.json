@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Deno 升级命令失败，正在尝试为 Termux 重新安装 Deno...",
 				"patchMissing": "错误：修补前未找到 Deno 可执行文件。无法修补。",
 				"patchUnsupportedArch": "错误：不支持的修补架构：${arch}",
-				"patchFailed": "错误：使用 `patchelf` 修补 Deno 可执行文件失败。"
+				"patchFailed": "错误：使用 `patchelf` 修补 Deno 可执行文件失败。",
+				"managedUpgrade": "Deno 由 ${manager} 包管理器管理（包：${package}），正在通过 ${manager} 升级。",
+				"managedUpgradeFailed": "警告：通过 ${manager} 升级 Deno（包：${package}）失败，已保持现状。",
+				"pinNotHonored": "警告：Deno 由 ${manager} 包管理器管理，无法遵循 .deno-version 指定的版本（${spec}），已按包管理器的版本升级。"
 			},
 			"tempDir": {
 				"blocked": "错误：无法在临时目录中运行 `fount`\n\nfount 会与系统深度耦合，并在 `fount` 中注册 `PATH` 命令及多项系统 hook。若在临时目录运行，系统清空临时文件后，您将无法执行 `fount remove` 来移除 fount 及其 hook。\n\n请将 fount 移动到非临时目录后再运行。若您只想简短测试，请在测试完成后手动执行 `fount remove`。"

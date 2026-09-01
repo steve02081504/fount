@@ -8,6 +8,30 @@
 }
 
 function script:deno_upgrade([string]$Channel) {
+	require pkg_common
+	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
+
+	$denoBinary = if (Get-Command deno -ErrorAction SilentlyContinue) { Resolve-FountRealPath (Get-Command deno -ErrorAction SilentlyContinue).Source } else { $null }
+	$owner = if ($denoBinary) { Get-FountPkgOwner $denoBinary } else { $null }
+	if ($owner) {
+		if ((Invoke-FountManagerUpgrade $owner.Manager $owner.Package) -eq 0) {
+			$versionOut = & $denoBinary -V 2>&1 | Out-String
+			if ($LASTEXITCODE -eq 0 -and $versionOut.Trim()) {
+				$pinned = deno_pinned_spec
+				if ($pinned -and (($versionOut.Trim() -replace '^deno ', '') -ne $pinned)) {
+					Write-Warning (Get-I18n -key 'deno.pinNotHonored' -params @{ spec = $pinned; manager = $owner.Manager })
+				}
+				New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+				Set-Content $upgradedFlag "1"
+				return
+			}
+			Write-Warning (Get-I18n -key 'deno.notWorking')
+			return
+		}
+		Write-Warning (Get-I18n -key 'deno.managedUpgradeFailed' -params @{ manager = $owner.Manager; package = $owner.Package })
+		return
+	}
+
 	$deno_ver = deno -V
 	if (!$deno_ver) {
 		deno upgrade -q
@@ -17,8 +41,6 @@ function script:deno_upgrade([string]$Channel) {
 		Write-Error (Get-I18n -key 'deno.notWorking') -ErrorAction Ignore
 		return
 	}
-
-	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
 
 	# 仓库 pin 文件优先：e.g. `pr 36606` / `canary` / `2.9.5`
 	$pinned = deno_pinned_spec

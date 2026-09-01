@@ -1,4 +1,4 @@
-# PowerShell 参数补全脚本，用于 fount 的 'serviceGenerators/AI/local' 生成器。
+﻿# PowerShell 参数补全脚本，用于 fount 的 'serviceGenerators/AI/local' 生成器。
 #
 # 使用方法:
 #   fount run <username> serviceGenerators/AI/local <action> [args...]
