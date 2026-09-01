@@ -26,6 +26,25 @@
 			]
 		},
 		{
+			"name": "integration",
+			"expected": "1s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"--import-map=./src/server/test/integration/import_map.json",
+				"./src/server/test/integration/"
+			],
+			"triggers": [
+				"src/server/test/integration/**",
+				"src/server/autoupdate.mjs"
+			]
+		},
+		{
 			"name": "live",
 			"expected": "1m34s",
 			"run": [

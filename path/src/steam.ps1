@@ -1,4 +1,4 @@
-function script:Invoke-FountSteamJs([string]$Action) {
+﻿function script:Invoke-FountSteamJs([string]$Action) {
 	$errorCount = $Error.Count
 	try {
 		$output = deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/path/src/steam.mjs" $Action $FOUNT_DIR 2>&1 | Out-String
