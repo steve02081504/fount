@@ -1,4 +1,4 @@
-# PowerShell 参数补全脚本，用于 fount 的 'chat' shell。
+﻿# PowerShell 参数补全脚本，用于 fount 的 'chat' shell。
 #
 # 使用方法:
 #   fount run <username> shells/chat <command> [args...]

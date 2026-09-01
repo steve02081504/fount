@@ -1,4 +1,4 @@
-# 仅更新 Deno 运行时：归属检测→包管理器升级/deno 自升级（含锁与刷新节流）。
+﻿# 仅更新 Deno 运行时：归属检测→包管理器升级/deno 自升级（含锁与刷新节流）。
 # 由服务端空闲更新按路径直接调用，不经过 fount cmd 分派。
 $script:FOUNT_SRC = $PSScriptRoot
 if (-not $FOUNT_DIR) {

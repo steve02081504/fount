@@ -1,4 +1,4 @@
-# 包管理器共享函数：状态目录、归属检测、按管理器文件锁、数据库刷新节流、管理器安装/升级。
+﻿# 包管理器共享函数：状态目录、归属检测、按管理器文件锁、数据库刷新节流、管理器安装/升级。
 
 function script:Get-FountPkgStateDir {
 	if ($env:FOUNT_PKG_STATE_DIR) { return $env:FOUNT_PKG_STATE_DIR }
