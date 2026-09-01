@@ -25,7 +25,7 @@ function script:handle_unix_passthrough {
 						try {
 							if (Test-FountPkgRefreshNeeded "apt-get") {
 								if ($hasSudo) { sudo apt-get update -y > $null } else { apt-get update -y > $null }
-								Set-FountPkgRefresh "apt-get"
+								if ($LASTEXITCODE -eq 0) { Set-FountPkgRefresh "apt-get" }
 							}
 							if ($hasSudo) { sudo apt-get install -y $package } else { apt-get install -y $package }
 						}
