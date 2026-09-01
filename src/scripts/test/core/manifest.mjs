@@ -149,7 +149,7 @@ const MANIFEST_WALK_CONCURRENCY = 8
  * 有界并发的递归 readdir 扫描：并行兄弟目录，避免 700+ 目录逐个串行遍历。
  * 槽位只在单次 readdir 期间持有（不跨子目录等待），深目录链不会占满并发导致死锁。
  * @param {string} directory 起始目录绝对路径
- * @returns {Promise<string[]>} 找到的 manifest 绝对路径（顺序不保证）
+ * @returns {Promise<string[]>} 找到的 manifest 绝对路径（按路径排序）
  */
 async function findManifestFilesParallel(directory) {
 	/** @type {string[]} */
@@ -227,7 +227,7 @@ async function findManifestFilesParallel(directory) {
 		if (pending === 0) drainedResolve()
 	})
 	await drained
-	return found
+	return found.sort()
 }
 
 /**

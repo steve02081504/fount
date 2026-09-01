@@ -43,7 +43,11 @@ export async function listenerPid(port) {
 	try {
 		if (process.platform === 'win32')
 			return parseNetstatListenPid(String((await execFile('netstat', ['-ano', '-p', 'tcp'], { windowsHide: true })).stdout), port)
-		const pid = Number(String((await execFile('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'])).stdout).trim().split(/\s+/)[0])
+		// macOS 自带 lsof 4.90 不支持 -Q；其余平台补上 -Q，让「无匹配监听」返回 0 而非
+		// 退出码 1（否则空结果会误走下方 catch 返回 null），真实执行失败仍走 catch。
+		const args = ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t']
+		if (process.platform !== 'darwin') args.push('-Q')
+		const pid = Number(String((await execFile('lsof', args)).stdout).trim().split(/\s+/)[0])
 		return pid > 0 ? pid : 0
 	}
 	catch {

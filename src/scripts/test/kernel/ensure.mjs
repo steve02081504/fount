@@ -30,11 +30,8 @@ export async function kernelHealthy(url) {
 		// 端口确认无监听即不可健康：先查监听（netstat 快），避免 Windows 上对死端口
 		// fetch 挂满 1.5s 超时才返回，让 ensure/shutdown 轮询更快。
 		const port = Number(new URL(url).port)
-		if (port > 0) {
-			const listening = await isPortListening(port)
-			// 探查失败（null）不能当作「确认无监听」：落到下方 HTTP 健康检查判定。
-			if (listening === false) return false
-		}
+		// 探查失败（null）不能当作「确认无监听」：落到下方 HTTP 健康检查判定。
+		if (port > 0 && await isPortListening(port) === false) return false
 		const res = await fetch(`${url}/health`, { signal: AbortSignal.timeout(1500) })
 		if (!res.ok) return false
 		return (await res.json())?.kernel === TEST_KERNEL_HEALTH_ID

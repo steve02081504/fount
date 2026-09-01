@@ -58,6 +58,7 @@ function waitEvent(socket, type) {
 		 */
 		const onTimeout = () => {
 			cleanup()
+			socket.close()
 			reject(new Error(`timeout waiting for ${type}`))
 		}
 		/** @returns {void} */
@@ -81,8 +82,33 @@ async function cycleOnce(url) {
 	const cycleStart = performance.now()
 	const socket = new WebSocket(url)
 	await new Promise((resolve, reject) => {
-		socket.addEventListener('open', resolve, { once: true })
-		socket.addEventListener('error', () => reject(new Error(`cannot connect ${url}`)), { once: true })
+		/** 移除 open/error/timeout 监听并清除定时器。 @returns {void} */
+		const cleanup = () => {
+			clearTimeout(timer)
+			socket.removeEventListener('open', onOpen)
+			socket.removeEventListener('error', onError)
+			socket.removeEventListener('timeout', onTimeout)
+		}
+		/** 连接成功则完成等待。 @returns {void} */
+		const onOpen = () => {
+			cleanup()
+			resolve()
+		}
+		/** 连接失败则拒绝等待。 @returns {void} */
+		const onError = () => {
+			cleanup()
+			reject(new Error(`cannot connect ${url}`))
+		}
+		/** 握手超时：关闭 socket 并拒绝等待。 @returns {void} */
+		const onTimeout = () => {
+			cleanup()
+			socket.close()
+			reject(new Error(`timeout connecting ${url}`))
+		}
+		const timer = setTimeout(onTimeout, EVENT_TIMEOUT_MS)
+		socket.addEventListener('open', onOpen, { once: true })
+		socket.addEventListener('error', onError, { once: true })
+		socket.addEventListener('timeout', onTimeout, { once: true })
 	})
 	const connectMs = performance.now() - cycleStart
 
