@@ -2,19 +2,17 @@
  * 测试内核进程：health / spawn / ensure / shutdown / reboot。
  */
 /* global Deno */
-import { execFile as execFileCallback } from 'node:child_process'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { setTimeout as delay } from 'node:timers/promises'
 import { fileURLToPath } from 'node:url'
-import { promisify } from 'node:util'
 
 import { launchDetachedProgram } from '../../launch_external.mjs'
+import { isPortListening, listenerPid } from '../../listener.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { TEST_KERNEL_HEALTH_ID } from '../hub/apis/health.mjs'
 import { TEST_HUB_PORT, testHubUrl } from '../hub/index.mjs'
 
-const execFile = promisify(execFileCallback)
 const KERNEL_ENTRY = join(dirname(fileURLToPath(import.meta.url)), 'index.mjs')
 
 /** CLI `--kernel` 允许的操作。 */
@@ -29,6 +27,10 @@ const KILL_AFTER_MS = 2000
  */
 export async function kernelHealthy(url) {
 	try {
+		// 端口无监听即不可健康：先查监听（netstat 快），避免 Windows 上对死端口
+		// fetch 挂满 1.5s 超时才返回，让 ensure/shutdown 轮询更快。
+		const port = Number(new URL(url).port)
+		if (Number.isFinite(port) && port > 0 && !await isPortListening(port)) return false
 		const res = await fetch(`${url}/health`, { signal: AbortSignal.timeout(1500) })
 		if (!res.ok) return false
 		return (await res.json())?.kernel === TEST_KERNEL_HEALTH_ID
@@ -82,46 +84,6 @@ export async function ensureTestKernel({ port = TEST_HUB_PORT } = {}) {
 		await delay(100)
 	}
 	throw new Error(`test kernel did not become healthy at ${url}`)
-}
-
-/**
- * 从 netstat -ano 行里抠 LISTENING pid。
- * @param {string} stdout netstat 输出
- * @param {number} port 端口
- * @returns {number} pid；没有则为 0
- */
-export function parseNetstatListenPid(stdout, port) {
-	const token = `:${port}`
-	for (const line of stdout.split(/\r?\n/)) {
-		if (!/listen/i.test(line) && !line.includes('侦听')) continue
-		const index = line.indexOf(token)
-		if (index < 0) continue
-		const after = line[index + token.length]
-		if (after && after !== ' ' && after !== '\t') continue
-		const pid = Number(line.trim().split(/\s+/).at(-1))
-		if (pid > 0) return pid
-	}
-	return 0
-}
-
-/**
- * 查谁在听这个口；没有则为 0。
- * @param {number} port 端口
- * @returns {Promise<number>} pid
- */
-async function listenerPid(port) {
-	try {
-		if (process.platform === 'win32') {
-			const { stdout } = await execFile('netstat', ['-ano', '-p', 'tcp'], { windowsHide: true })
-			return parseNetstatListenPid(String(stdout), port)
-		}
-		const { stdout } = await execFile('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'])
-		const pid = Number(String(stdout).trim().split(/\s+/)[0])
-		return pid > 0 ? pid : 0
-	}
-	catch {
-		return 0
-	}
 }
 
 /**
