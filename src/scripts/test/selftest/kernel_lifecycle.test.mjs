@@ -9,11 +9,12 @@ import { join } from 'node:path'
 import { assertEquals, assertRejects } from 'jsr:@std/assert'
 import { execFile } from 'npm:@steve02081504/exec'
 
+import { parseNetstatListenPid } from '../../listener.mjs'
 import { ms } from '../../ms.mjs'
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { waitUntil } from '../core/wait.mjs'
 import { startTestHub, testHubUrl } from '../hub/index.mjs'
-import { kernelHealthy, parseNetstatListenPid, rebootTestKernel, shutdownTestKernel } from '../kernel/ensure.mjs'
+import { kernelHealthy, rebootTestKernel, shutdownTestKernel } from '../kernel/ensure.mjs'
 import { ignoreWatchPath } from '../kernel/runtime.mjs'
 import { startTestKernel } from '../kernel/server.mjs'
 

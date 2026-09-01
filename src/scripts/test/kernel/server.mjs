@@ -28,6 +28,7 @@ import { TestKernel } from './runtime.mjs'
 	 * @param {number} [options.idleAllMs] watch 闲置自动补跑 --all 的静置毫秒
 	 * @param {boolean} [options.autoUpdateExpected] 跑完是否按漂移自动回写 manifest `expected`
 	 * @param {number} [options.idleExitGraceMs] 空闲且无 watcher 后自动退出的宽限毫秒
+	 * @param {(name: string) => void} [options.onPhase] 启动相位回调（bench 工具）
 	 * @returns {Promise<{ url: string, kernel: TestKernel, close: () => Promise<void> }>} 句柄
 	 */
 export async function startTestKernel({
@@ -41,9 +42,11 @@ export async function startTestKernel({
 	idleAllMs,
 	autoUpdateExpected,
 	idleExitGraceMs,
+	onPhase = () => { },
 } = {}) {
 	const kernel = new TestKernel({ repoRoot, autoExit, watchFs, prepSettleMs, writeReport, moduleCheckHoldTimeoutMs, idleAllMs, autoUpdateExpected, idleExitGraceMs })
-	await kernel.start()
+	onPhase('kernelConstructed')
+	await kernel.start(onPhase)
 
 	const app = express()
 	app.use((request, response, next) => {
@@ -109,6 +112,7 @@ export async function startTestKernel({
 		if (response.writableEnded) queueMicrotask(go)
 		else response.once('finish', go)
 	})
+	onPhase('expressReady')
 
 	let server
 	try {
@@ -128,8 +132,10 @@ export async function startTestKernel({
 		await kernel.close()
 		throw error
 	}
+	onPhase('listening')
 
 	const webSocketServer = new WebSocketServer({ server, path: '/ws/viewer' })
+	onPhase('wsReady')
 	webSocketServer.on('connection', (socket) => {
 		const viewer = kernel.viewers.add(socket, { watch: false, mode: 'overview' })
 		kernel.resetIdleExitGrace()

@@ -4,6 +4,20 @@ install_ipc_tools() {
 	install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat"
 }
 
+# fount 服务器是否在运行：IPC ping（16698，newline 结尾 JSON），等价 pwsh 的 Test-FountRunning。
+# 需要 nc 或 socat；都没有时返回 1（调用方按“未运行”处理，回落到启动服务器）。
+test_fount_running() {
+	local cmd_json='{"type":"ping","data":{}}' response=""
+	if command -v nc >/dev/null 2>&1; then
+		response=$(printf '%s\n' "$cmd_json" | nc -w 1 localhost 16698 2>/dev/null)
+	elif command -v socat >/dev/null 2>&1; then
+		response=$(printf '%s\n' "$cmd_json" | socat -T 2 - TCP:localhost:16698,nodelay 2>/dev/null)
+	else
+		return 1
+	fi
+	[ -n "$response" ] && printf '%s' "$response" | grep -q '"status"[[:space:]]*:[[:space:]]*"ok"'
+}
+
 # Expects TARGET_URL to be exported by the caller.
 read -r -d '' BACKGROUND_IPC_JOB <<'BGJOB'
 ipc_call() {

@@ -5,24 +5,6 @@ import {
 
 const ENTITY_HASH = 'f'.repeat(128)
 
-/**
- * 自定义文件 token 解析（code shell 场景）。
- * @param {string} raw 原始 token
- * @returns {{ kind: 'file', body: string, name: string }} token 描述
- */
-function parseFileToken(raw) {
-	return { kind: 'file', body: raw, name: raw.slice(6, -1) }
-}
-
-/**
- * 自定义文件 token chip 标签。
- * @param {{ name: string }} token token 描述
- * @returns {string} 标签
- */
-function fileTokenLabel(token) {
-	return token.name
-}
-
 test.describe('Markdown rich input', () => {
 	test('clicking empty composer places caret at start (before placeholder)', async ({ page, groupChannel: _ }) => {
 		const input = page.locator('#message-input')
@@ -80,9 +62,22 @@ test.describe('Markdown rich input', () => {
 		await expect(input.locator('.fount-markdown-rich-input-chip.fount-markdown-rich-input-emoji')).toHaveCount(1)
 	})
 
-	test('inlineTokens option renders custom token chip without registered defaults', async ({ page }) => {
+	test('inlineTokens option renders custom token chip without registered defaults', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })
 		const result = await page.evaluate(async () => {
 			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
+			/**
+			 * 自定义文件 token 解析（code shell 场景）。
+			 * @param {string} raw 原始 token
+			 * @returns {{ kind: 'file', body: string, name: string }} token 描述
+			 */
+			const parseFileToken = raw => ({ kind: 'file', body: raw, name: raw.slice(6, -1) })
+			/**
+			 * 自定义文件 token chip 标签。
+			 * @param {{ name: string }} token token 描述
+			 * @returns {string} 标签
+			 */
+			const fileTokenLabel = token => token.name
 			const el = document.createElement('div')
 			document.body.appendChild(el)
 			const handle = createMarkdownRichInput(el, {
@@ -107,7 +102,8 @@ test.describe('Markdown rich input', () => {
 		expect(result).toEqual({ fileChipCount: 1, roundTrip: true, mentionChipCount: 0 })
 	})
 
-	test('useRegisteredInlineTokens=false keeps registered mention token as plain text', async ({ page }) => {
+	test('useRegisteredInlineTokens=false keeps registered mention token as plain text', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })
 		const result = await page.evaluate(async () => {
 			const { createMarkdownRichInput } = await import('/scripts/components/markdownRichInput.mjs')
 			const el = document.createElement('div')
