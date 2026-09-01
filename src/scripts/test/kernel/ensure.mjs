@@ -41,14 +41,18 @@ export async function kernelHealthy(url) {
 /**
  * 拉起 detached 内核（listen 撞端口则该进程立刻退出 0）。
  * @param {number} [port] 端口
+ * @param {object} [options] 附加选项
+ * @param {Record<string, string>} [options.env] 追加环境变量（覆盖默认）
+ * @param {string[]} [options.args] 追加 deno run 参数（插入到入口前）
  * @returns {Promise<void>}
  */
-export async function spawnDetachedKernel(port = TEST_HUB_PORT) {
+export async function spawnDetachedKernel(port = TEST_HUB_PORT, { env = {}, args = [] } = {}) {
 	await launchDetachedProgram({
 		command: Deno.execPath(),
 		args: [
 			'run', '--allow-scripts', '--allow-all',
 			'-c', join(REPO_ROOT, 'deno.json'),
+			...args,
 			KERNEL_ENTRY,
 		],
 		cwd: REPO_ROOT,
@@ -57,6 +61,7 @@ export async function spawnDetachedKernel(port = TEST_HUB_PORT) {
 			FOUNT_TEST: '1',
 			FOUNT_TEST_KERNEL: '1',
 			FOUNT_TEST_HUB_PORT: String(port),
+			...env,
 		},
 	})
 }
