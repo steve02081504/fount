@@ -99,7 +99,12 @@ function script:install_deno {
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Write-Host (Get-I18n -key 'deno.installFailedFallback')
 		$url = "https://github.com/denoland/deno/releases/latest/download/deno-" + $(if ($IsWindows) {
-				"x86_64-pc-windows-msvc.zip"
+				if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq [System.Runtime.InteropServices.Architecture]::Arm64) {
+					"aarch64-pc-windows-msvc.zip"
+				}
+				else {
+					"x86_64-pc-windows-msvc.zip"
+				}
 			}
 			elseif ($IsMacOS) {
 				if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq [System.Runtime.InteropServices.Architecture]::Arm64) {

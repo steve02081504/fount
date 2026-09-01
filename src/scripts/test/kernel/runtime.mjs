@@ -213,10 +213,13 @@ export class TestKernel {
 
 	/**
 	 * 启动调度循环与 fs watch。
+	 * @param {(name: string) => void} [onPhase] 启动相位回调（bench 工具）
 	 * @returns {Promise<void>}
 	 */
-	async start() {
+	async start(onPhase = () => { }) {
+		onPhase('catalogStart')
 		await this.reloadCatalog()
+		onPhase('catalogReady')
 		// 恢复历史模块检查均值，避免调度 ETA 每次从兜底值重新收敛。
 		const mc = await readModuleCheckStats(this.repoRoot)
 		if (mc.count > 0) {
@@ -229,6 +232,7 @@ export class TestKernel {
 				this.noteFileChange(String(filename).replace(/\\/g, '/'))
 			})
 		this.budgetTimer = setInterval(() => this.#refreshBudget(), BUDGET_REFRESH_MS)
+		onPhase('loopReady')
 		this.#loop = this.#runLoop()
 	}
 
