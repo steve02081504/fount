@@ -28,27 +28,27 @@ function script:Resolve-FountRealPath([string]$Path) {
 function script:Get-FountPkgOwner([string]$Path) {
 	if (-not $Path) { return $null }
 	if (Get-Command dpkg -ErrorAction SilentlyContinue) {
-		$out = (& dpkg -S $Path 2>$null | Out-String).Trim()
-		if ($LASTEXITCODE -eq 0 -and $out) {
-			return [pscustomobject]@{ Manager = 'apt-get'; Package = ($out -split ':')[0].Trim() }
+		$output = (& dpkg -S $Path 2>$null | Out-String).Trim()
+		if ($LASTEXITCODE -eq 0 -and $output) {
+			return [pscustomobject]@{ Manager = 'apt-get'; Package = ($output -split ':')[0].Trim() }
 		}
 	}
 	if (Get-Command pacman -ErrorAction SilentlyContinue) {
-		$pkg = (& pacman -Qqo -- $Path 2>$null | Out-String).Trim()
-		if ($LASTEXITCODE -eq 0 -and $pkg) {
-			return [pscustomobject]@{ Manager = 'pacman'; Package = $pkg }
+		$packageName = (& pacman -Qqo -- $Path 2>$null | Out-String).Trim()
+		if ($LASTEXITCODE -eq 0 -and $packageName) {
+			return [pscustomobject]@{ Manager = 'pacman'; Package = $packageName }
 		}
 	}
 	if (Get-Command rpm -ErrorAction SilentlyContinue) {
-		$pkg = ((& rpm -qf $Path 2>$null | Out-String) -split '\r?\n')[0].Trim()
-		if ($LASTEXITCODE -eq 0 -and $pkg) {
+		$packageName = ((& rpm -qf $Path 2>$null | Out-String) -split '\r?\n')[0].Trim()
+		if ($LASTEXITCODE -eq 0 -and $packageName) {
 			$manager = @('dnf', 'yum', 'zypper') | Where-Object { Get-Command $_ -ErrorAction SilentlyContinue } | Select-Object -First 1
-			if ($manager) { return [pscustomobject]@{ Manager = $manager; Package = $pkg } }
+			if ($manager) { return [pscustomobject]@{ Manager = $manager; Package = $packageName } }
 		}
 	}
 	if (Get-Command apk -ErrorAction SilentlyContinue) {
-		$out = (& apk info -W $Path 2>$null | Out-String).Trim()
-		if ($LASTEXITCODE -eq 0 -and $out -match 'owned by\s+(.+)$') {
+		$output = (& apk info -W $Path 2>$null | Out-String).Trim()
+		if ($LASTEXITCODE -eq 0 -and $output -match 'owned by\s+(.+)$') {
 			return [pscustomobject]@{ Manager = 'apk'; Package = $Matches[1].Trim() }
 		}
 	}
@@ -57,21 +57,21 @@ function script:Get-FountPkgOwner([string]$Path) {
 		if (-not $prefix) { $prefix = '/usr/local' }
 		$cellar = "$prefix/Cellar"
 		if ($Path.StartsWith("$cellar/", [StringComparison]::Ordinal)) {
-			$pkg = $Path.Substring($cellar.Length + 1).Split('/')[0]
-			return [pscustomobject]@{ Manager = 'brew'; Package = $pkg }
+			$packageName = $Path.Substring($cellar.Length + 1).Split('/')[0]
+			return [pscustomobject]@{ Manager = 'brew'; Package = $packageName }
 		}
 	}
 	if (Get-Command pkg -ErrorAction SilentlyContinue) {
-		$out = (& pkg which -q -- $Path 2>$null | Out-String).Trim()
-		if ($LASTEXITCODE -eq 0 -and $out) {
-			return [pscustomobject]@{ Manager = 'pkg'; Package = $out }
+		$output = (& pkg which -q -- $Path 2>$null | Out-String).Trim()
+		if ($LASTEXITCODE -eq 0 -and $output) {
+			return [pscustomobject]@{ Manager = 'pkg'; Package = $output }
 		}
 	}
 	if (Get-Command snap -ErrorAction SilentlyContinue) {
 		foreach ($base in @('/snap/', '/var/lib/snapd/snap/')) {
 			if ($Path.StartsWith($base, [StringComparison]::Ordinal)) {
-				$pkg = $Path.Substring($base.Length).Split('/')[0]
-				return [pscustomobject]@{ Manager = 'snap'; Package = $pkg }
+				$packageName = $Path.Substring($base.Length).Split('/')[0]
+				return [pscustomobject]@{ Manager = 'snap'; Package = $packageName }
 			}
 		}
 	}
@@ -82,8 +82,8 @@ function script:Get-FountPkgOwner([string]$Path) {
 function script:Test-FountNeedSudo {
 	if (-not (Get-Command sudo -ErrorAction SilentlyContinue)) { return $false }
 	if ($IsWindows) { return $false }
-	$uid = (& id -u 2>$null | Out-String).Trim()
-	return ($uid -ne '0')
+	$userId = (& id -u 2>$null | Out-String).Trim()
+	return ($userId -ne '0')
 }
 
 # 按包管理器名加锁：同一时刻只有一个同名包管理器在运行。返回布尔。
@@ -93,7 +93,7 @@ function script:Enter-FountPkgLock([string]$Manager) {
 	$lockDir = Join-Path $stateDir "$Manager.lock"
 	$pidFile = Join-Path $lockDir 'pid'
 	$timeoutMs = if ($env:FOUNT_PKG_LOCK_TIMEOUT) { [int]$env:FOUNT_PKG_LOCK_TIMEOUT * 1000 } else { 300000 }
-	$sw = [System.Diagnostics.Stopwatch]::StartNew()
+	$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
 	while ($true) {
 		try {
 			New-Item -Path $lockDir -ItemType Directory -ErrorAction Stop | Out-Null
@@ -109,7 +109,7 @@ function script:Enter-FountPkgLock([string]$Manager) {
 					continue
 				}
 			}
-			if ($sw.ElapsedMilliseconds -ge $timeoutMs) { return $false }
+			if ($stopwatch.ElapsedMilliseconds -ge $timeoutMs) { return $false }
 			Start-Sleep -Milliseconds 100
 		}
 	}
@@ -141,7 +141,7 @@ function script:Set-FountPkgRefresh([string]$Manager) {
 function script:Invoke-FountManagerInstall([string]$ManagerCmd, [string]$Package) {
 	$argsTable = @{
 		'apt-get' = @{ Update = @('update', '-y'); Run = @('install', '-y') }
-		'pacman'  = @{ Update = @('-Syy', '--noconfirm'); Run = @('-S', '--needed', '--noconfirm') }
+		'pacman'  = @{ Run = @('-Syu', '--needed', '--noconfirm') }
 		'dnf'     = @{ Update = @('makecache'); Run = @('install', '-y') }
 		'yum'     = @{ Update = @('makecache', 'fast'); Run = @('install', '-y') }
 		'zypper'  = @{ Update = @('refresh'); Run = @('install', '-y', '--no-confirm') }
@@ -157,7 +157,7 @@ function script:Invoke-FountManagerInstall([string]$ManagerCmd, [string]$Package
 function script:Invoke-FountManagerUpgrade([string]$ManagerCmd, [string]$Package) {
 	$argsTable = @{
 		'apt-get' = @{ Update = @('update', '-y'); Run = @('install', '--only-upgrade', '-y') }
-		'pacman'  = @{ Update = @('-Sy', '--noconfirm'); Run = @('-S', '--noconfirm') }
+		'pacman'  = @{ Run = @('-Syu', '--noconfirm') }
 		'dnf'     = @{ Update = @('makecache'); Run = @('update', '-y') }
 		'yum'     = @{ Update = @('makecache', 'fast'); Run = @('update', '-y') }
 		'zypper'  = @{ Update = @('refresh'); Run = @('update', '-y', '--no-confirm') }
@@ -173,7 +173,7 @@ function script:Invoke-FountManagerCommand([string]$ManagerCmd, $ArgsTable, [str
 	if (-not $ArgsTable) { return 1 }
 	if (-not (Get-Command -Name $ManagerCmd -ErrorAction SilentlyContinue)) { return 1 }
 	$needsSudo = (Test-FountNeedSudo) -and $ManagerCmd -ne 'brew'
-	if ($ManagerCmd -eq 'snap' -and -not (Get-Command sudo -ErrorAction SilentlyContinue)) { return 1 }
+	if ($needsSudo -and -not (Get-Command sudo -ErrorAction SilentlyContinue)) { return 1 }
 	if (-not (Enter-FountPkgLock $ManagerCmd)) { return 1 }
 	try {
 		if ($ArgsTable.ContainsKey('Update') -and (Test-FountPkgRefreshNeeded $ManagerCmd)) {

@@ -190,17 +190,17 @@ exec 3>&2
 ${packagesSh}
 id() { printf '1000\\n'; }
 sudo() { printf 'sudo:%s\\n' "$*" >&3; "$@"; }
-pacman() {
-	printf 'pacman:%s\\n' "$*" >&3
+apt-get() {
+	printf 'apt-get:%s\\n' "$*" >&3
 	return 0
 }
-install_with_manager pacman curl
-install_with_manager pacman curl
+install_with_manager apt-get curl
+install_with_manager apt-get curl
 `
 		const result = await runBash(script, env)
 		assert.equal(result.code, 0, result.stderr)
-		const refreshLines = (result.stderr.match(/pacman:-Syy --noconfirm/g) || []).length
-		const installLines = (result.stderr.match(/pacman:-S --needed --noconfirm curl/g) || []).length
+		const refreshLines = (result.stderr.match(/apt-get:update -y/g) || []).length
+		const installLines = (result.stderr.match(/apt-get:install -y curl/g) || []).length
 		assert.equal(refreshLines, 1, 'refresh must run exactly once within the interval')
 		assert.equal(installLines, 2)
 	}
@@ -210,7 +210,28 @@ install_with_manager pacman curl
 bashTest('install_with_manager refreshes again after the interval elapses', async () => {
 	const { env, stateDir, cleanup } = tempEnv()
 	try {
-		writeFileSync(join(stateDir, 'pacman.refresh'), '0')
+		writeFileSync(join(stateDir, 'apt-get.refresh'), '0')
+		const script = `
+exec 3>&2
+${packagesSh}
+id() { printf '1000\\n'; }
+sudo() { printf 'sudo:%s\\n' "$*" >&3; "$@"; }
+apt-get() {
+	printf 'apt-get:%s\\n' "$*" >&3
+	return 0
+}
+install_with_manager apt-get curl
+`
+		const result = await runBash(script, env)
+		assert.equal(result.code, 0, result.stderr)
+		assert.equal((result.stderr.match(/apt-get:update -y/g) || []).length, 1)
+	}
+	finally { cleanup() }
+})
+
+bashTest('install_with_manager runs a single atomic pacman -Syu without a separate refresh', async () => {
+	const { env, stateDir, cleanup } = tempEnv()
+	try {
 		const script = `
 exec 3>&2
 ${packagesSh}
@@ -224,7 +245,32 @@ install_with_manager pacman curl
 `
 		const result = await runBash(script, env)
 		assert.equal(result.code, 0, result.stderr)
-		assert.equal((result.stderr.match(/pacman:-Syy --noconfirm/g) || []).length, 1)
+		assert.match(result.stderr, /pacman:-Syu --needed --noconfirm curl/)
+		assert.doesNotMatch(result.stderr, /pacman:-Syy/)
+		assert.doesNotMatch(result.stderr, /pacman:-Sy\\b/)
+		assert.equal(existsSync(join(stateDir, 'pacman.refresh')), false)
+	}
+	finally { cleanup() }
+})
+
+bashTest('root without sudo can snap install directly without the sudo prefix', async () => {
+	const { env, cleanup } = tempEnv()
+	try {
+		const script = `
+exec 3>&2
+${packagesSh}
+id() { printf '0\\n'; }
+sudo() { printf 'sudo:%s\\n' "$*" >&3; "$@"; }
+snap() {
+	printf 'snap:%s\\n' "$*" >&3
+	return 0
+}
+install_with_manager snap deno
+`
+		const result = await runBash(script, env)
+		assert.equal(result.code, 0, result.stderr)
+		assert.match(result.stderr, /snap:install deno/)
+		assert.doesNotMatch(result.stderr, /sudo:snap/)
 	}
 	finally { cleanup() }
 })
@@ -244,7 +290,7 @@ sudo() { printf 'sudo:%s\\n' "$*" >&3; "$@"; }
 pacman() {
 	printf 'pacman:%s\\n' "$*" >&3
 	if [[ "$1" == '-Qqo' ]]; then printf 'deno\\n'; return "$package_status"; fi
-	if [[ "$1" == '-S' || "$1" == '-Sy' ]]; then return "$upgrade_status"; fi
+	if [[ "$1" == '-Syu' || "$1" == '-S' || "$1" == '-Sy' ]]; then return "$upgrade_status"; fi
 	return 1
 }
 deno() {
@@ -273,8 +319,7 @@ deno_upgrade
 `, env)
 		assert.equal(result.code, 0, result.stderr)
 		assert.match(result.stderr, /pacman:-Qqo -- \/launcher\/deno/)
-		assert.match(result.stderr, /pacman:-Sy --noconfirm/)
-		assert.match(result.stderr, /pacman:-S --noconfirm deno/)
+		assert.match(result.stderr, /pacman:-Syu --noconfirm deno/)
 		assert.equal(existsSync(join(fountDir, 'data/installer/deno_upgraded')), true)
 		assert.doesNotMatch(result.stderr, /deno:upgrade/)
 	}
@@ -416,7 +461,7 @@ cmd_keepalive keepalive initial-argument
 `, env)
 		assert.equal(result.code, 0, result.stderr)
 		assert.equal(result.stdout, 'run:initial-argument\napp-update\nrun:\n')
-		assert.match(result.stderr, /pacman:-S --noconfirm deno/)
+		assert.match(result.stderr, /pacman:-Syu --noconfirm deno/)
 	}
 	finally { cleanup() }
 })
@@ -444,16 +489,16 @@ Deno.test('path/fount keeps a uniform POSIX install_package with lock and thrott
 	assert.doesNotMatch(pathEntry, /uname -s.*termux/)
 	assert.match(pathEntry, /pkg_lock_acquire\(\) \{/)
 	assert.match(pathEntry, /pkg_db_refresh_needed\(\) \{/)
-	assert.match(pathEntry, /pkg_refresh pacman/)
-	assert.match(pathEntry, /pkg_with_lock pacman/)
+	assert.match(pathEntry, /pkg_with_lock pacman \$_has_sudo pacman -Syu --needed --noconfirm/)
+	assert.doesNotMatch(pathEntry, /pkg_refresh pacman/)
 })
 
 Deno.test('npm bootstrap keeps a uniform install_package without a pacman special case', () => {
 	assert.doesNotMatch(npmRunner, /uname -s.*termux/)
 	assert.match(npmRunner, /pkg_lock_acquire\(\) \{/)
 	assert.match(npmRunner, /pkg_db_refresh_needed\(\) \{/)
-	assert.match(npmRunner, /pkg_refresh pacman/)
-	assert.match(npmRunner, /pkg_with_lock pacman/)
+	assert.match(npmRunner, /pkg_with_lock pacman \$_has_sudo pacman -Syu --needed --noconfirm/)
+	assert.doesNotMatch(npmRunner, /pkg_refresh pacman/)
 })
 
 Deno.test('main.sh keeps its own bash-flavored package management outside the POSIX sync', () => {
@@ -461,8 +506,8 @@ Deno.test('main.sh keeps its own bash-flavored package management outside the PO
 	assert.doesNotMatch(runnerSh, /FOUNT_PKG_MGR/)
 	assert.match(runnerSh, /pkg_lock_acquire\(\) \{/)
 	assert.match(runnerSh, /local -a package_list/)
-	assert.match(runnerSh, /pkg_with_lock pacman/)
-	assert.match(runnerSh, /pkg_refresh pacman/)
+	assert.match(runnerSh, /pkg_with_lock pacman \$has_sudo pacman -Syu --needed --noconfirm/)
+	assert.doesNotMatch(runnerSh, /pkg_refresh pacman/)
 })
 
 Deno.test('the standalone update-deno scripts source path modules and run deno_upgrade', () => {
@@ -606,6 +651,56 @@ $trace = Get-Content -LiteralPath '${trace}' -Raw
 if ($trace -notmatch 'apt-get update -y') { throw "missing refresh: $trace" }
 if ($trace -notmatch 'apt-get install -y curl') { throw "missing install: $trace" }
 if (-not (Test-Path -LiteralPath '${stateDir}/apt-get.refresh')) { throw 'refresh not marked' }
+`)
+	assert.equal(result.code, 0, result.stderr)
+})
+
+pwshTest('root users without sudo can still run snap install and refresh', async (stateDir, run) => {
+	const pkgCommon = join(REPO_ROOT, 'path/src/pkg_common.ps1').replaceAll('\\', '/')
+	const trace = join(stateDir, 'trace.txt')
+	const result = await run(`
+. '${pkgCommon}'
+function Get-Command {
+	param([Parameter(ValueFromRemainingArguments = $true)][object[]]$Rest)
+	$name = $null
+	for ($i = 0; $i -lt $Rest.Count; $i++) {
+		if ($Rest[$i] -eq '-Name') { $name = $Rest[$i + 1]; break }
+	}
+	if ($null -eq $name -and $Rest.Count -gt 0 -and -not $Rest[0].StartsWith('-')) { $name = $Rest[0] }
+	if ($name -eq 'sudo') { return $null }
+	return Microsoft.PowerShell.Core\\Get-Command -Name $name -ErrorAction SilentlyContinue
+}
+function id { '0' }
+function sudo { throw 'sudo must not run for root' }
+function snap { $global:LASTEXITCODE = 0; $all = @(); foreach ($a in $args) { $all += $a }; "snap $($all -join ' ')" | Add-Content -LiteralPath '${trace}' }
+$rc = Invoke-FountManagerInstall 'snap' 'deno'
+if ($rc -ne 0) { throw "snap install rc=$rc" }
+$rc2 = Invoke-FountManagerUpgrade 'snap' 'deno'
+if ($rc2 -ne 0) { throw "snap refresh rc=$rc2" }
+$trace = Get-Content -LiteralPath '${trace}' -Raw
+if ($trace -notmatch 'snap install deno') { throw "missing install: $trace" }
+if ($trace -notmatch 'snap refresh deno') { throw "missing refresh: $trace" }
+`)
+	assert.equal(result.code, 0, result.stderr)
+})
+
+pwshTest('pacman install and upgrade are single atomic -Syu operations without a separate refresh', async (stateDir, run) => {
+	const pkgCommon = join(REPO_ROOT, 'path/src/pkg_common.ps1').replaceAll('\\', '/')
+	const trace = join(stateDir, 'trace.txt')
+	const result = await run(`
+. '${pkgCommon}'
+function id { '0' }
+function pacman { $global:LASTEXITCODE = 0; $all = @(); foreach ($a in $args) { $all += $a }; "pacman $($all -join ' ')" | Add-Content -LiteralPath '${trace}' }
+$rc = Invoke-FountManagerInstall 'pacman' 'curl'
+if ($rc -ne 0) { throw "install rc=$rc" }
+$rc2 = Invoke-FountManagerUpgrade 'pacman' 'deno'
+if ($rc2 -ne 0) { throw "upgrade rc=$rc2" }
+$trace = Get-Content -LiteralPath '${trace}' -Raw
+if ($trace -notmatch 'pacman -Syu --needed --noconfirm curl') { throw "missing atomic install: $trace" }
+if ($trace -notmatch 'pacman -Syu --noconfirm deno') { throw "missing atomic upgrade: $trace" }
+if ($trace -match 'pacman -Sy\\b') { throw "standalone -Sy refresh must not run: $trace" }
+if ($trace -match 'pacman -Syy\\b') { throw "standalone -Syy refresh must not run: $trace" }
+if (Test-Path -LiteralPath '${stateDir}/pacman.refresh') { throw 'pacman must not mark a separate DB refresh' }
 `)
 	assert.equal(result.code, 0, result.stderr)
 })

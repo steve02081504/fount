@@ -208,8 +208,7 @@ install_package() {
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 		if command -v pacman &>/dev/null; then
-			pkg_refresh pacman $has_sudo pacman -Syy --noconfirm
-			pkg_with_lock pacman $has_sudo pacman -S --needed --noconfirm "$package"
+			pkg_with_lock pacman $has_sudo pacman -Syu --needed --noconfirm "$package"
 			if command -v "$command_name" &>/dev/null; then installed_pkg_name="$package"; break; fi
 		fi
 		if command -v dnf &>/dev/null; then

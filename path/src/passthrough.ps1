@@ -36,13 +36,8 @@ function script:handle_unix_passthrough {
 				if (Get-Command -Name "pacman" -ErrorAction Ignore) {
 					if (Enter-FountPkgLock "pacman") {
 						try {
-							if (Test-FountPkgRefreshNeeded "pacman") {
-								if ($hasSudo) { sudo pacman -Syy --noconfirm > $null }
-								else { pacman -Syy --noconfirm > $null }
-								Set-FountPkgRefresh "pacman"
-							}
-							if ($hasSudo) { sudo pacman -S --needed --noconfirm $package }
-							else { pacman -S --needed --noconfirm $package }
+							if ($hasSudo) { sudo pacman -Syu --needed --noconfirm $package }
+							else { pacman -Syu --needed --noconfirm $package }
 						}
 						finally { Exit-FountPkgLock }
 					}
