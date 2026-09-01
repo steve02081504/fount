@@ -150,6 +150,8 @@ async function killPortListener(port) {
  */
 export async function shutdownTestKernel({ port = TEST_HUB_PORT, timeoutMs = 15_000 } = {}) {
 	const url = testHubUrl(port)
+	// 无监听即已停机：先查监听（netstat 快），避免 Windows 上对死端口 fetch 挂满健康检查超时。
+	if (await listenerPid(port) === 0) return 'already_down'
 	if (!await kernelHealthy(url)) return 'already_down'
 	const started = Date.now()
 	const deadline = started + timeoutMs
@@ -162,6 +164,9 @@ export async function shutdownTestKernel({ port = TEST_HUB_PORT, timeoutMs = 15_
 	catch { /* 内核可能在写完响应前就退出；旧内核没有这条路由 */ }
 	let killed = false
 	while (Date.now() < deadline) {
+		// 先查监听是否消失（netstat 快）：Windows 上对刚关闭端口的 fetch 会挂满健康检查超时
+		// 才返回，若只靠 kernelHealthy 轮询会白等 1.5s；监听已释放则直接判定停止。
+		if (await listenerPid(port) === 0) return 'stopped'
 		if (!await kernelHealthy(url)) return 'stopped'
 		if (!killed && Date.now() - started >= KILL_AFTER_MS) {
 			killed = true

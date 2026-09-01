@@ -142,34 +142,98 @@ const SKIP_DIR_NAMES = new Set([
 	'dist',
 ])
 
+/** 并行目录遍历并发上限（readdir 大量并发对 Windows 无益，8 足够吃满磁盘队列）。 */
+const MANIFEST_WALK_CONCURRENCY = 8
+
 /**
- * 递归查找 test/manifest.json。
+ * 有界并发的递归 readdir 扫描：并行兄弟目录，避免 700+ 目录逐个串行遍历。
+ * 槽位只在单次 readdir 期间持有（不跨子目录等待），深目录链不会占满并发导致死锁。
+ * @param {string} dir 起始目录绝对路径
+ * @returns {Promise<string[]>} 找到的 manifest 绝对路径（顺序不保证）
+ */
+async function findManifestFilesParallel(dir) {
+	/** @type {string[]} */
+	const found = []
+	let active = 0
+	/** @type {(() => void)[]} */
+	const waiters = []
+	/** 未完成的目录/stat 任务数；归零即全部完成。 */
+	let pending = 1
+	let drainedResolve
+	/** @type {Promise<void>} */
+	const drained = new Promise(resolve => { drainedResolve = resolve })
+
+	/**
+	 * 获取一个 readdir 槽位；超出并发时排队。
+	 * @returns {Promise<void>} 槽位可用
+	 */
+	const acquire = () => new Promise(resolve => {
+		if (active < MANIFEST_WALK_CONCURRENCY) {
+			active++
+			resolve()
+		}
+		else waiters.push(resolve)
+	})
+	/** @returns {void} 释放一个槽位并唤醒排队者 */
+	const release = () => {
+		active--
+		waiters.shift()?.()
+	}
+
+	/**
+	 * 遍历单个目录：readdir 结束后立即释放槽位，再派发子目录。
+	 * @param {string} path 目录绝对路径
+	 * @returns {Promise<void>} 完成
+	 */
+	const processDir = async path => {
+		await acquire()
+		let entries
+		try {
+			entries = await readdir(path, { withFileTypes: true })
+		}
+		catch {
+			release()
+			return
+		}
+		release()
+		for (const entry of entries) {
+			if (!entry.isDirectory()) continue
+			if (SKIP_DIR_NAMES.has(entry.name)) continue
+			const child = join(path, entry.name)
+			if (entry.name === 'test') {
+				const manifestPath = join(child, 'manifest.json')
+				pending++
+				stat(manifestPath).then(() => found.push(manifestPath)).catch(() => { }).finally(() => {
+					pending--
+					if (pending === 0) drainedResolve()
+				})
+				continue
+			}
+			pending++
+			void processDir(child).finally(() => {
+				pending--
+				if (pending === 0) drainedResolve()
+			})
+		}
+	}
+
+	// 根目录本身也算一个 pending：派发完成后由其 finally 递减，全部子任务归零时 drained 落地。
+	void processDir(dir).finally(() => {
+		pending--
+		if (pending === 0) drainedResolve()
+	})
+	await drained
+	return found
+}
+
+/**
+ * 递归查找 test/manifest.json（并行遍历，顺序不保证）。
  * @param {string} dir 当前目录绝对路径
  * @returns {AsyncGenerator<string>} manifest 绝对路径
  */
 async function* findManifestFiles(dir) {
-	let entries
-	try {
-		entries = await readdir(dir, { withFileTypes: true })
-	}
-	catch {
-		return
-	}
-	for (const entry of entries) {
-		if (!entry.isDirectory()) continue
-		if (SKIP_DIR_NAMES.has(entry.name)) continue
-		const path = join(dir, entry.name)
-		if (entry.name === 'test') {
-			const manifestPath = join(path, 'manifest.json')
-			try {
-				await stat(manifestPath)
-				yield manifestPath
-			}
-			catch { /* no manifest */ }
-			continue
-		}
-		yield* findManifestFiles(path)
-	}
+	for (const manifestPath of await findManifestFilesParallel(dir))
+		yield manifestPath
 }
 
 /**
