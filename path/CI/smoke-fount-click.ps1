@@ -1,4 +1,4 @@
-# FOUNT_CLICK smoke helper: script-scoped stubs + dot-source fount (exit stays in this process).
+﻿# FOUNT_CLICK smoke helper: script-scoped stubs + dot-source fount (exit stays in this process).
 # Writes capture JSON then lets fount exit; parent run-smoke.ps1 reads CapturePath.
 param(
 	[Parameter(Mandatory)][ValidateSet('Windows', 'Unix')][string]$Mode,

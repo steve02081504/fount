@@ -1,4 +1,4 @@
-# Fail if captured `fount remove` output matches remove-noise.patterns.
+﻿# Fail if captured `fount remove` output matches remove-noise.patterns.
 param(
 	[Parameter(Mandatory = $true)][string]$PatternsFile,
 	[Parameter(Mandatory = $true)][string]$OutputFile

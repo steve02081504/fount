@@ -1,4 +1,4 @@
-# PowerShell 参数补全脚本，用于 fount 的 'install' shell。
+﻿# PowerShell 参数补全脚本，用于 fount 的 'install' shell。
 #
 # 使用方法:
 #   fount run <username> shells/install <action> [args...]

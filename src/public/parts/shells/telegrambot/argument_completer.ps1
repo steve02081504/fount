@@ -1,4 +1,4 @@
-# PowerShell 参数补全脚本，用于 fount 的 'telegrambot' shell。
+﻿# PowerShell 参数补全脚本，用于 fount 的 'telegrambot' shell。
 #
 # 使用方法:
 #   fount run <username> shells/telegrambot <action> [args...]

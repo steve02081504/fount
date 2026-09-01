@@ -159,6 +159,29 @@ deno_pinned_spec() {
 
 base_deno_upgrade() {
 	local force_channel="${1:-}"
+	local deno_binary owner manager package_name
+	deno_binary=$(command -v deno 2>/dev/null)
+	if [ -n "$deno_binary" ]; then
+		deno_binary=$(resolve_realpath "$deno_binary")
+		if owner=$(pkg_owner_of "$deno_binary"); then
+			read -r manager package_name <<<"$owner"
+			if upgrade_with_manager "$manager" "$package_name"; then
+				local pinned
+				if ! run_deno -V >/dev/null 2>&1; then
+					print_i18n_red 'deno.notWorking' >&2
+					return 1
+				fi
+				pinned=$(deno_pinned_spec)
+				if [ -n "$pinned" ] && [ "$(run_deno -V 2>&1 | sed 's/^deno //' | head -n 1)" != "$pinned" ]; then
+					print_i18n_yellow 'deno.pinNotHonored' 'spec' "$pinned" 'manager' "$manager" >&2
+				fi
+				return 0
+			else
+				print_i18n_yellow 'deno.managedUpgradeFailed' 'manager' "$manager" 'package' "$package_name" >&2
+				return 1
+			fi
+		fi
+	fi
 	local deno_version_before
 	deno_version_before=$(run_deno -V 2>&1)
 	if [[ -z "$deno_version_before" ]]; then
@@ -189,10 +212,6 @@ base_deno_upgrade() {
 				return 1
 			fi
 		fi
-		return 0
-	fi
-
-	if [[ -z "$force_channel" ]] && upgrade_package "deno" "deno"; then
 		return 0
 	fi
 

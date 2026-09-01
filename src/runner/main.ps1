@@ -54,6 +54,55 @@ function Set-MissingVariablesForWindowsPowershell {
 Set-MissingVariablesForWindowsPowershell
 
 if (!$IsWindows) {
+	$script:FountPkgStateDir = $env:FOUNT_PKG_STATE_DIR
+	if (-not $script:FountPkgStateDir) {
+		$base = if ($env:TMPDIR) { $env:TMPDIR } elseif ($env:TEMP) { $env:TEMP } else { '/tmp' }
+		$script:FountPkgStateDir = Join-Path $base (Join-Path 'fount' 'package')
+	}
+	function Test-FountPkgRefreshNeeded([string]$Manager) {
+		$file = Join-Path $script:FountPkgStateDir "$Manager.refresh"
+		if (-not (Test-Path -LiteralPath $file)) { return $true }
+		$last = Get-Content -LiteralPath $file -Raw -ErrorAction SilentlyContinue
+		$last = if ($last) { try { [long]$last.Trim() } catch { 0 } } else { 0 }
+		$refreshInterval = if ($env:FOUNT_PKG_REFRESH_INTERVAL) { [long]$env:FOUNT_PKG_REFRESH_INTERVAL } else { 600 }
+		return (([DateTimeOffset]::UtcNow.ToUnixTimeSeconds() - $last) -ge $refreshInterval)
+	}
+	function Set-FountPkgRefresh([string]$Manager) {
+		New-Item -Path $script:FountPkgStateDir -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+		Set-Content -LiteralPath (Join-Path $script:FountPkgStateDir "$Manager.refresh") -Value ([DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) -Encoding ascii
+	}
+	function Enter-FountPkgLock([string]$Manager) {
+		New-Item -Path $script:FountPkgStateDir -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+		$lockDir = Join-Path $script:FountPkgStateDir "$Manager.lock"
+		$pidFile = Join-Path $lockDir 'pid'
+		$timeoutMs = if ($env:FOUNT_PKG_LOCK_TIMEOUT) { [int]$env:FOUNT_PKG_LOCK_TIMEOUT * 1000 } else { 300000 }
+		$sw = [System.Diagnostics.Stopwatch]::StartNew()
+		while ($true) {
+			try {
+				New-Item -Path $lockDir -ItemType Directory -ErrorAction Stop | Out-Null
+				Set-Content -LiteralPath $pidFile -Value $PID -Encoding ascii
+				$script:FountPkgLockDir = $lockDir
+				return $true
+			}
+			catch {
+				if (Test-Path -LiteralPath $pidFile) {
+					$heldPid = (Get-Content -LiteralPath $pidFile -Raw -ErrorAction SilentlyContinue).Trim()
+					if ($heldPid -and -not (Get-Process -Id $heldPid -ErrorAction SilentlyContinue)) {
+						Remove-Item -LiteralPath $lockDir -Force -Recurse -ErrorAction SilentlyContinue
+						continue
+					}
+				}
+				if ($sw.ElapsedMilliseconds -ge $timeoutMs) { return $false }
+				Start-Sleep -Milliseconds 100
+			}
+		}
+	}
+	function Exit-FountPkgLock {
+		if ($script:FountPkgLockDir) {
+			Remove-Item -LiteralPath $script:FountPkgLockDir -Force -Recurse -ErrorAction SilentlyContinue
+			$script:FountPkgLockDir = $null
+		}
+	}
 	function install_package {
 		param(
 			[string]$CommandName,
@@ -65,43 +114,91 @@ if (!$IsWindows) {
 
 		foreach ($package in $PackageNames) {
 			if (Get-Command -Name "apt-get" -ErrorAction Ignore) {
-				if ($hasSudo) { sudo apt-get update -y > $null; sudo apt-get install -y $package }
-				else { apt-get update -y > $null; apt-get install -y $package }
+				if (Enter-FountPkgLock "apt-get") {
+					try {
+						if (Test-FountPkgRefreshNeeded "apt-get") {
+							if ($hasSudo) { sudo apt-get update -y > $null } else { apt-get update -y > $null }
+							if ($LASTEXITCODE -eq 0) { Set-FountPkgRefresh "apt-get" }
+						}
+						if ($hasSudo) { sudo apt-get install -y $package } else { apt-get install -y $package }
+					}
+					finally { Exit-FountPkgLock }
+				}
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 			if (Get-Command -Name "pacman" -ErrorAction Ignore) {
-				if ($hasSudo) { sudo pacman -Syy --noconfirm > $null; sudo pacman -S --needed --noconfirm $package }
-				else { pacman -Syy --noconfirm > $null; pacman -S --needed --noconfirm $package }
+				if (Enter-FountPkgLock "pacman") {
+					try {
+						if ($hasSudo) { sudo pacman -Syu --needed --noconfirm $package }
+						else { pacman -Syu --needed --noconfirm $package }
+					}
+					finally { Exit-FountPkgLock }
+				}
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 			if (Get-Command -Name "dnf" -ErrorAction Ignore) {
-				if ($hasSudo) { sudo dnf install -y $package } else { dnf install -y $package }
+				if (Enter-FountPkgLock "dnf") {
+					try {
+						if ($hasSudo) { sudo dnf install -y $package } else { dnf install -y $package }
+					}
+					finally { Exit-FountPkgLock }
+				}
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 			if (Get-Command -Name "yum" -ErrorAction Ignore) {
-				if ($hasSudo) { sudo yum install -y $package } else { yum install -y $package }
+				if (Enter-FountPkgLock "yum") {
+					try {
+						if ($hasSudo) { sudo yum install -y $package } else { yum install -y $package }
+					}
+					finally { Exit-FountPkgLock }
+				}
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 			if (Get-Command -Name "zypper" -ErrorAction Ignore) {
-				if ($hasSudo) { sudo zypper install -y --no-confirm $package } else { zypper install -y --no-confirm $package }
+				if (Enter-FountPkgLock "zypper") {
+					try {
+						if ($hasSudo) { sudo zypper install -y --no-confirm $package } else { zypper install -y --no-confirm $package }
+					}
+					finally { Exit-FountPkgLock }
+				}
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 			if (Get-Command -Name "apk" -ErrorAction Ignore) {
-				if ($hasSudo) { sudo apk add --update $package } else { apk add --update $package }
+				if (Enter-FountPkgLock "apk") {
+					try {
+						if ($hasSudo) { sudo apk add --update $package } else { apk add --update $package }
+					}
+					finally { Exit-FountPkgLock }
+				}
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 			if (Get-Command -Name "brew" -ErrorAction Ignore) {
-				if (-not (brew list --formula $package -ErrorAction Ignore)) {
-					brew install $package
+				if (Enter-FountPkgLock "brew") {
+					try {
+						if (-not (brew list --formula $package 2>$null)) {
+							brew install $package
+						}
+					}
+					finally { Exit-FountPkgLock }
 				}
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 			if (Get-Command -Name "pkg" -ErrorAction Ignore) {
-				if ($hasSudo) { sudo pkg install -y $package } else { pkg install -y $package }
+				if (Enter-FountPkgLock "pkg") {
+					try {
+						if ($hasSudo) { sudo pkg install -y $package } else { pkg install -y $package }
+					}
+					finally { Exit-FountPkgLock }
+				}
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 			if (Get-Command -Name "snap" -ErrorAction Ignore) {
-				if ($hasSudo) { sudo snap install $package } else { snap install $package }
+				if (Enter-FountPkgLock "snap") {
+					try {
+						if ($hasSudo) { sudo snap install $package } else { snap install $package }
+					}
+					finally { Exit-FountPkgLock }
+				}
 				if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 			}
 		}

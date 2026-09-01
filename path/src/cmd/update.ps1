@@ -1,4 +1,4 @@
-function script:cmd_update {
+﻿function script:cmd_update {
 	require_mid
 	$target = @($args | Select-Object -Skip 1)[0]
 	if ($target) {

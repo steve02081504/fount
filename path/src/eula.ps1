@@ -1,4 +1,4 @@
-# First-run EULA gate (ensure_fount_config / Ensure-FountConfig when data/config.json is missing).
+﻿# First-run EULA gate (ensure_fount_config / Ensure-FountConfig when data/config.json is missing).
 
 $script:FountEulaUrl = 'https://steve02081504.github.io/fount/EULA/'
 $script:FountInstallWaitUrl = 'https://steve02081504.github.io/fount/wait/install/?from=runner'
