@@ -26,17 +26,23 @@ import { join } from 'node:path'
  * @returns {Stats} 统计量（空数组返回全 0）
  */
 export function stats(values) {
-	const sorted = [...values].sort((a, b) => a - b)
+	const sorted = [...values].sort((left, right) => left - right)
 	const n = sorted.length
 	if (!n)
 		return { min: 0, p25: 0, median: 0, mean: 0, p75: 0, max: 0, n }
 	/**
-	 * 取排序样本的百分位值。
-	 * @param {number} p 百分位（0–100）
+	 * 取排序样本的百分位值；rank 为小数时线性插值相邻样本。
+	 * @param {number} percentage 百分位（0–100）
 	 * @returns {number} 对应样本值
 	 */
-	const percentile = p => sorted[Math.min(n - 1, Math.max(0, Math.round((p / 100) * (n - 1))))]
-	const sum = sorted.reduce((a, b) => a + b, 0)
+	const percentile = percentage => {
+		const rank = Math.min(n - 1, Math.max(0, (percentage / 100) * (n - 1)))
+		const lower = Math.floor(rank)
+		const upper = Math.ceil(rank)
+		const fraction = rank - lower
+		return sorted[lower] + (sorted[upper] - sorted[lower]) * fraction
+	}
+	const sum = sorted.reduce((acc, value) => acc + value, 0)
 	return {
 		min: sorted[0],
 		p25: percentile(25),

@@ -50,20 +50,22 @@ async function waitHealthyAndPhases(url, phaseFile) {
  * 单次内核启动迭代。
  * @param {number} port 端口
  * @param {string} phaseFile 相位文件路径
- * @returns {Promise<{ spawnEpoch: number, healthyEpoch: number, spawnMs: number, phases: object | null, shutdownMs: number }>} 迭代结果
+ * @returns {Promise<{ spawnEpoch: number, healthyEpoch: number, spawnMs: number, phases: object, shutdownMs: number }>} 迭代结果
  */
 async function runOnce(port, phaseFile) {
-	const t0 = performance.now()
+	const startedAt = performance.now()
 	await spawnDetachedKernel(port, { env: { FOUNT_TEST_BENCH_PHASES_FILE: phaseFile } })
-	const spawnMs = performance.now() - t0
+	const spawnMs = performance.now() - startedAt
 	const url = testHubUrl(port)
 	const phases = await waitHealthyAndPhases(url, phaseFile)
+	if (phases === null)
+		throw new Error(`kernel did not become healthy within 60s at ${url}`)
 	const healthyEpoch = BENCH_ORIGIN + performance.now()
 	const shutdownStarted = performance.now()
 	await shutdownTestKernel({ port })
 	return {
 		/** 本迭代内核进程的估算起点（epoch ms）。 */
-		spawnEpoch: BENCH_ORIGIN + t0,
+		spawnEpoch: BENCH_ORIGIN + startedAt,
 		healthyEpoch,
 		spawnMs,
 		phases,
@@ -94,12 +96,12 @@ console.log('')
 await withTempDir('fount-bench-', async workDir => {
 	/** @type {object[]} */
 	const iterations = []
-	for (let i = 0; i < ITERATIONS; i++) {
-		const phaseFile = join(workDir, `kernel_phases_${i}.json`)
+	for (let iterationIndex = 0; iterationIndex < ITERATIONS; iterationIndex++) {
+		const phaseFile = join(workDir, `kernel_phases_${iterationIndex}.json`)
 		const result = await runOnce(port, phaseFile)
 		iterations.push(result)
 		const totalMs = result.healthyEpoch - result.spawnEpoch
-		console.log(`  #${i + 1}: spawn→healthy ${fmt(totalMs)}ms (shutdown ${fmt(result.shutdownMs)}ms)`)
+		console.log(`  #${iterationIndex + 1}: spawn→healthy ${fmt(totalMs)}ms (shutdown ${fmt(result.shutdownMs)}ms)`)
 	}
 
 	const totals = iterations.map(r => r.healthyEpoch - r.spawnEpoch)

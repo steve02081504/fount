@@ -16,13 +16,16 @@ import { fmt, renderTable, row } from './common.mjs'
 const ITERATIONS = Math.max(1, Number(process.argv[2]) || 5)
 const SHUTDOWN_AFTER = process.argv.includes('--shutdown')
 
+/** 单次事件等待的显式超时（毫秒）。 */
+const EVENT_TIMEOUT_MS = 5000
+
 /**
  * 等一个类型的事件。
- * @param {WebSocket} ws socket
+ * @param {WebSocket} socket socket
  * @param {string} type 事件类型
  * @returns {Promise<object>} 事件对象
  */
-function waitEvent(ws, type) {
+function waitEvent(socket, type) {
 	return new Promise((resolve, reject) => {
 		/**
 		 * 处理收到的事件，类型匹配则完成等待。
@@ -49,13 +52,23 @@ function waitEvent(ws, type) {
 			cleanup()
 			reject(new Error(`ws closed before ${type}`))
 		}
+		/**
+		 * 超时未等到则移除监听并拒绝等待。
+		 * @returns {void}
+		 */
+		const onTimeout = () => {
+			cleanup()
+			reject(new Error(`timeout waiting for ${type}`))
+		}
 		/** @returns {void} */
 		const cleanup = () => {
-			ws.removeEventListener('message', onMessage)
-			ws.removeEventListener('close', onClose)
+			clearTimeout(timer)
+			socket.removeEventListener('message', onMessage)
+			socket.removeEventListener('close', onClose)
 		}
-		ws.addEventListener('message', onMessage)
-		ws.addEventListener('close', onClose)
+		const timer = setTimeout(onTimeout, EVENT_TIMEOUT_MS)
+		socket.addEventListener('message', onMessage)
+		socket.addEventListener('close', onClose)
 	})
 }
 
@@ -65,29 +78,40 @@ function waitEvent(ws, type) {
  * @returns {Promise<{ connect: number, helloAccepted: number, close: number, total: number }>} 耗时
  */
 async function cycleOnce(url) {
-	const t0 = performance.now()
-	const ws = new WebSocket(url)
+	const cycleStart = performance.now()
+	const socket = new WebSocket(url)
 	await new Promise((resolve, reject) => {
-		ws.addEventListener('open', resolve, { once: true })
-		ws.addEventListener('error', () => reject(new Error(`cannot connect ${url}`)), { once: true })
+		socket.addEventListener('open', resolve, { once: true })
+		socket.addEventListener('error', () => reject(new Error(`cannot connect ${url}`)), { once: true })
 	})
-	const connectMs = performance.now() - t0
+	const connectMs = performance.now() - cycleStart
 
-	const accepted = waitEvent(ws, 'accepted')
+	const accepted = waitEvent(socket, 'accepted')
 	const helloStart = performance.now()
-	ws.send(JSON.stringify({ type: 'hello', watch: true }))
+	socket.send(JSON.stringify({ type: 'hello', watch: true }))
 	await accepted
 	const helloAcceptedMs = performance.now() - helloStart
 
 	const closeStart = performance.now()
-	await new Promise(resolve => {
-		if (ws.readyState === WebSocket.CLOSED) return resolve()
-		ws.addEventListener('close', resolve, { once: true })
-		ws.close()
+	await new Promise((resolve, reject) => {
+		if (socket.readyState === WebSocket.CLOSED) return resolve()
+		/** @returns {void} */
+		const onClose = () => {
+			clearTimeout(timer)
+			resolve()
+		}
+		/** @returns {void} */
+		const onTimeout = () => {
+			socket.removeEventListener('close', onClose)
+			reject(new Error('timeout waiting for close handshake'))
+		}
+		const timer = setTimeout(onTimeout, EVENT_TIMEOUT_MS)
+		socket.addEventListener('close', onClose, { once: true })
+		socket.close()
 	})
 	const closeMs = performance.now() - closeStart
 
-	return { connect: connectMs, helloAccepted: helloAcceptedMs, close: closeMs, total: performance.now() - t0 }
+	return { connect: connectMs, helloAccepted: helloAcceptedMs, close: closeMs, total: performance.now() - cycleStart }
 }
 
 const url = `${testHubUrl().replace(/^http/, 'ws')}/ws/viewer`

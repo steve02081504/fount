@@ -148,10 +148,10 @@ const MANIFEST_WALK_CONCURRENCY = 8
 /**
  * 有界并发的递归 readdir 扫描：并行兄弟目录，避免 700+ 目录逐个串行遍历。
  * 槽位只在单次 readdir 期间持有（不跨子目录等待），深目录链不会占满并发导致死锁。
- * @param {string} dir 起始目录绝对路径
+ * @param {string} directory 起始目录绝对路径
  * @returns {Promise<string[]>} 找到的 manifest 绝对路径（顺序不保证）
  */
-async function findManifestFilesParallel(dir) {
+async function findManifestFilesParallel(directory) {
 	/** @type {string[]} */
 	const found = []
 	let active = 0
@@ -174,10 +174,14 @@ async function findManifestFilesParallel(dir) {
 		}
 		else waiters.push(resolve)
 	})
-	/** @returns {void} 释放一个槽位并唤醒排队者 */
+	/**
+	 * 释放一个槽位；有排队等待者则把槽位直接转交给最先等待者，
+	 * 避免被唤醒者（自身未 acquire）再递减 active 导致并发计数失真。
+	 * @returns {void}
+	 */
 	const release = () => {
-		active--
-		waiters.shift()?.()
+		if (waiters.length) waiters.shift()()
+		else active--
 	}
 
 	/**
@@ -185,7 +189,7 @@ async function findManifestFilesParallel(dir) {
 	 * @param {string} path 目录绝对路径
 	 * @returns {Promise<void>} 完成
 	 */
-	const processDir = async path => {
+	const processDirectory = async path => {
 		await acquire()
 		let entries
 		try {
@@ -210,7 +214,7 @@ async function findManifestFilesParallel(dir) {
 				continue
 			}
 			pending++
-			void processDir(child).finally(() => {
+			void processDirectory(child).finally(() => {
 				pending--
 				if (pending === 0) drainedResolve()
 			})
@@ -218,7 +222,7 @@ async function findManifestFilesParallel(dir) {
 	}
 
 	// 根目录本身也算一个 pending：派发完成后由其 finally 递减，全部子任务归零时 drained 落地。
-	void processDir(dir).finally(() => {
+	void processDirectory(directory).finally(() => {
 		pending--
 		if (pending === 0) drainedResolve()
 	})

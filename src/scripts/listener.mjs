@@ -27,7 +27,7 @@ export function parseNetstatListenPid(stdout, port) {
 		const index = line.indexOf(token)
 		if (index < 0) continue
 		const after = line[index + token.length]
-		if (after && after !== ' ' && after !== '\t') continue
+		if (after && ![' ', '\t'].includes(after)) continue
 		const pid = Number(line.trim().split(/\s+/).at(-1))
 		if (pid > 0) return pid
 	}
@@ -37,28 +37,27 @@ export function parseNetstatListenPid(stdout, port) {
 /**
  * 查谁在听这个端口；没有则为 0。
  * @param {number} port 端口
- * @returns {Promise<number>} 监听进程 pid；无人监听或探查出错时为 0
+ * @returns {Promise<number | null>} 监听进程 pid；无人监听为 0，探查出错为 null
  */
 export async function listenerPid(port) {
 	try {
-		if (process.platform === 'win32') {
-			const { stdout } = await execFile('netstat', ['-ano', '-p', 'tcp'], { windowsHide: true })
-			return parseNetstatListenPid(String(stdout), port)
-		}
-		const { stdout } = await execFile('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'])
-		const pid = Number(String(stdout).trim().split(/\s+/)[0])
+		if (process.platform === 'win32')
+			return parseNetstatListenPid(String((await execFile('netstat', ['-ano', '-p', 'tcp'], { windowsHide: true })).stdout), port)
+		const pid = Number(String((await execFile('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'])).stdout).trim().split(/\s+/)[0])
 		return pid > 0 ? pid : 0
 	}
 	catch {
-		return 0
+		return null
 	}
 }
 
 /**
  * 端口当前是否有进程在监听。
  * @param {number} port 端口
- * @returns {Promise<boolean>} 是否在监听
+ * @returns {Promise<boolean | null>} 是否在监听；探查出错（无法判定）为 null
  */
 export async function isPortListening(port) {
-	return await listenerPid(port) !== 0
+	const pid = await listenerPid(port)
+	if (pid === null) return null
+	return pid !== 0
 }

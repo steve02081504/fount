@@ -27,14 +27,13 @@ const TRIVIAL_TEST = 'Deno.test(\'trivial\', () => {})\n'
 
 /**
  * 跑一次细粒度 suite 周期。
- * @param {import('../core/manifest.mjs').SuiteDef} suite 合成 suite
+ * @param {import('../../core/manifest.mjs').SuiteDef} suite 合成 suite
  * @returns {Promise<Record<string, number> & { exitCode: number }>} 各阶段耗时
  */
 async function cycleOnce(suite) {
-	const t = performance.now()
-	const mkStart = t
+	const cycleStart = performance.now()
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-bench-'))
-	const mkMs = performance.now() - mkStart
+	const mkMs = performance.now() - cycleStart
 
 	const failuresOut = join(tempDir, 'failures.json')
 	const timingsOut = join(tempDir, 'timings.json')
@@ -42,25 +41,32 @@ async function cycleOnce(suite) {
 	const { command, env } = buildSuiteInvocation(suite, {}, failuresOut, timingsOut, '', undefined)
 	const buildMs = performance.now() - buildStart
 
-	const childStart = performance.now()
-	const result = await runCommand(command, env, {
-		stream: false,
-		cwd: REPO_ROOT,
-		label: 'bench:trivial',
-	})
-	const childMs = performance.now() - childStart
+	let result
+	let childMs = 0
+	let readMs = 0
+	let rmMs = 0
+	try {
+		const childStart = performance.now()
+		result = await runCommand(command, env, {
+			stream: false,
+			cwd: REPO_ROOT,
+			label: 'bench:trivial',
+		})
+		childMs = performance.now() - childStart
 
-	const readStart = performance.now()
-	await readTimingsOutFile(timingsOut)
-	await readFailuresOutFile(failuresOut)
-	const readMs = performance.now() - readStart
-
-	const rmStart = performance.now()
-	await rm(tempDir, { recursive: true, force: true })
-	const rmMs = performance.now() - rmStart
+		const readStart = performance.now()
+		await readTimingsOutFile(timingsOut)
+		await readFailuresOutFile(failuresOut)
+		readMs = performance.now() - readStart
+	}
+	finally {
+		const rmStart = performance.now()
+		await rm(tempDir, { recursive: true, force: true })
+		rmMs = performance.now() - rmStart
+	}
 
 	return {
-		total: performance.now() - t,
+		total: performance.now() - cycleStart,
 		mkdtemp: mkMs,
 		build: buildMs,
 		child: childMs,
@@ -98,13 +104,17 @@ console.log('')
 /** @type {Record<string, number>[]} */
 const runs = []
 let failed = 0
-for (let i = 0; i < ITERATIONS; i++) {
-	const result = await cycleOnce(suite)
-	runs.push(result)
-	if (result.exitCode !== 0) failed++
-	console.log(`  #${i + 1}: total ${fmt(result.total)}ms  child ${fmt(result.child)}ms  exit ${result.exitCode}`)
+try {
+	for (let iterationIndex = 0; iterationIndex < ITERATIONS; iterationIndex++) {
+		const result = await cycleOnce(suite)
+		runs.push(result)
+		if (result.exitCode !== 0) failed++
+		console.log(`  #${iterationIndex + 1}: total ${fmt(result.total)}ms  child ${fmt(result.child)}ms  exit ${result.exitCode}`)
+	}
 }
-await rm(fixture.dir, { recursive: true, force: true })
+finally {
+	await rm(fixture.dir, { recursive: true, force: true })
+}
 
 if (failed) {
 	console.error(`\n${failed}/${ITERATIONS} 次 child 退出非零 — 请检查 deno 环境`)

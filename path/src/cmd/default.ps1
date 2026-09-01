@@ -12,13 +12,7 @@
 		else {
 			# 服务器已在运行则只启 log viewer，不再重复拉一个 keepalive（省一次无效服务器启动）。
 			# Test-FountRunning 来自 fount-pwsh 模块（IPC ping 16698，~100ms 快速失败）；模块缺失时按未运行回退。
-			$serverRunning = $false
-			try {
-				Import-Module fount-pwsh -ErrorAction Stop
-				$serverRunning = Test-FountRunning
-			}
-			catch { $serverRunning = $false }
-			if (-not $serverRunning) {
+			if (-not (try { Import-Module fount-pwsh -ErrorAction Stop; Test-FountRunning } catch { $false })) {
 				Write-TaskbarProgress -Percent 25
 				Set-Title "𝓯"
 				& (Join-Path $FOUNT_DIR 'path/fount.ps1') background keepalive @args

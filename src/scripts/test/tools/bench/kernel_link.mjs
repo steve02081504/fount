@@ -75,12 +75,12 @@ console.log(`\nkernel link bench — ${ITERATIONS} 次 × port ${port}`)
 console.log('')
 
 await withTempDir('fount-bench-', async workDir => {
-	/** @type {{ spawnEpoch: number, healthyEpoch: number, phases: object | null, preload: object | null, shutdownMs: number }[]} */
+	/** @type {{ spawnEpoch: number, healthyEpoch: number, phases: object, preload: object, shutdownMs: number }[]} */
 	const iterations = []
-	for (let i = 0; i < ITERATIONS; i++) {
-		const phaseFile = join(workDir, `kernel_phases_${i}.json`)
-		const preloadFile = join(workDir, `preload_${i}.json`)
-		const t0 = performance.now()
+	for (let iterationIndex = 0; iterationIndex < ITERATIONS; iterationIndex++) {
+		const phaseFile = join(workDir, `kernel_phases_${iterationIndex}.json`)
+		const preloadFile = join(workDir, `preload_${iterationIndex}.json`)
+		const startedAt = performance.now()
 		await spawnDetachedKernel(port, {
 			args: [`--preload=${PRELOAD_PROBE}`],
 			env: {
@@ -88,13 +88,15 @@ await withTempDir('fount-bench-', async workDir => {
 				FOUNT_TEST_BENCH_PRELOAD_FILE: preloadFile,
 			},
 		})
-		const spawnEpoch = BENCH_ORIGIN + t0
+		const spawnEpoch = BENCH_ORIGIN + startedAt
 		const { phases, preload } = await waitMarkers(testHubUrl(port), phaseFile, preloadFile)
+		if (phases === null || preload === null)
+			throw new Error('kernel did not write both phase markers within 60s')
 		const healthyEpoch = BENCH_ORIGIN + performance.now()
 		const shutdownStarted = performance.now()
 		await shutdownTestKernel({ port })
 		iterations.push({ spawnEpoch, healthyEpoch, phases, preload, shutdownMs: performance.now() - shutdownStarted })
-		console.log(`  #${i + 1}: spawn→healthy ${fmt(healthyEpoch - spawnEpoch)}ms（shutdown ${fmt(performance.now() - shutdownStarted)}ms）`)
+		console.log(`  #${iterationIndex + 1}: spawn→healthy ${fmt(healthyEpoch - spawnEpoch)}ms（shutdown ${fmt(performance.now() - shutdownStarted)}ms）`)
 	}
 
 	const totals = iterations.map(r => r.healthyEpoch - r.spawnEpoch)

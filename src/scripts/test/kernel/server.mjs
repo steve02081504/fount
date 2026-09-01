@@ -60,7 +60,6 @@ export async function startTestKernel({
 	app.use(createHealthRouter({ kernel: true }))
 	app.use(createGithubIssueRouter(kernel.issueCache))
 	app.use(createSharedStoreRouter())
-	onPhase('expressReady')
 
 	app.get('/status', (request, response) => {
 		response.json({ ...kernel.statusSnapshot(), online: true })
@@ -113,6 +112,7 @@ export async function startTestKernel({
 		if (response.writableEnded) queueMicrotask(go)
 		else response.once('finish', go)
 	})
+	onPhase('expressReady')
 
 	let server
 	try {
