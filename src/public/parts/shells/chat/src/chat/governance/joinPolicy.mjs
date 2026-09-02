@@ -21,6 +21,18 @@ function resolvePowFloorBits(groupSettings) {
 }
 
 /**
+ * 解析 PoW 解绑定的加入者 nodeHash：member_join 的 `content.homeNodeHash`（或事件 `node_id`）为
+ * 加入者所在节点 hash；`event.sender` 是群 DAG 成员 pubKeyHash（per-group 随机 signer），
+ * 前端解 pow 时用的是节点 hash（`store.viewer.nodeHash`），故验签必须对前者比较。
+ * @param {object} event member_join 事件
+ * @returns {string} 加入者 nodeHash
+ */
+function powJoinerNodeHash(event) {
+	const content = event?.content || {}
+	return String(content.homeNodeHash || event?.node_id || event?.sender || '').trim()
+}
+
+/**
  * 从 member_join 推导 PoW 自愿信誉加成（非 pow 群或无 solution 则 0）。
  * @param {object} state 物化群状态
  * @param {{ sender?: string, content?: object }} event DAG 事件
@@ -34,10 +46,9 @@ export function joinPowBonusFromMemberJoin(state, event) {
 	if (!powSolution) return 0
 	const floorBits = resolvePowFloorBits(state.groupSettings)
 	if (floorBits <= 0) return 0
-	const senderNodeHash = event.sender || ''
 	const { ok, achievedBits } = verifyJoinPow(powSolution, {
 		groupId: state.groupId,
-		senderNodeHash,
+		senderNodeHash: powJoinerNodeHash(event),
 		knownAnchors: collectJoinPowAnchors(state),
 		now: Date.now(),
 		difficultyBits: floorBits,
@@ -115,10 +126,9 @@ export async function validateJoinPolicy(state, event, replicaUsername, options 
 		if (joinPowExemptAsHistoricalReplay(state, event)) return
 		const floorBits = resolvePowFloorBits(state.groupSettings)
 		if (floorBits <= 0) throw new Error('pow joinPolicy requires powFloorBits >= 1')
-		const senderNodeHash = event.sender || ''
 		const { ok } = verifyJoinPow(content.powSolution, {
 			groupId: state.groupId,
-			senderNodeHash,
+			senderNodeHash: powJoinerNodeHash(event),
 			knownAnchors: collectJoinPowAnchors(state),
 			now: Date.now(),
 			difficultyBits: floorBits,

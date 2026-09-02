@@ -20,6 +20,7 @@ import { parseJoinRunPayload } from './public/shared/runUri.mjs'
 import { registerChatChunkProviders, unregisterChatChunkProviders } from './src/chat/chunkProviders.mjs'
 import { registerChatEventTypeDefs, unregisterChatEventTypeDefs } from './src/chat/dag/eventTypes.mjs'
 import { registerChatFederationRoomProvider, unregisterChatFederationRoomProvider } from './src/chat/federation/trustGraphRooms.mjs'
+import { registerChatUserRoomDiscoveryHandlers, unregisterChatUserRoomDiscoveryHandlers } from './src/chat/federation/userRoomDiscoveryRegistry.mjs'
 import { registerChatUserRoomEmojiHandlers, unregisterChatUserRoomEmojiHandlers } from './src/chat/federation/userRoomEmojiRegistry.mjs'
 import { registerChatUserRoomPowChallengeHandlers, unregisterChatUserRoomPowChallengeHandlers } from './src/chat/federation/userRoomPowChallengeRegistry.mjs'
 import { registerChatGroupEmojiPostEmbed, unregisterChatGroupEmojiPostEmbed } from './src/chat/groupEmojiPostEmbed.mjs'
@@ -92,6 +93,7 @@ export default {
 		registerChatEventTypeDefs()
 		registerChatGroupEmojiPostEmbed()
 		registerChatUserRoomEmojiHandlers()
+		registerChatUserRoomDiscoveryHandlers()
 		registerChatUserRoomPowChallengeHandlers()
 		registerChatManifestAcl()
 		registerChatManifestTransfer()
@@ -120,6 +122,7 @@ export default {
 			unregisterChatEventTypeDefs()
 			unregisterChatGroupEmojiPostEmbed()
 			unregisterChatUserRoomEmojiHandlers()
+			unregisterChatUserRoomDiscoveryHandlers()
 			unregisterChatUserRoomPowChallengeHandlers()
 			unregisterChatManifestAcl()
 			unregisterGroupMemberEntityResolver('chat')

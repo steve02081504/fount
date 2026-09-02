@@ -5,8 +5,9 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, updateStatusBanners } from './banners.mjs'
-import { store } from './core/state.mjs'
+import { setState, store } from './core/state.mjs'
 import { updateDiscoveryHash } from './core/urlHash.mjs'
+import { bumpViewEpoch, currentViewEpoch } from './core/viewEpoch.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { selectGroup } from './sidebar/index.mjs'
@@ -46,6 +47,7 @@ async function paintDiscoveryEntries(grid, entries) {
  */
 async function loadDiscoveryEntries(root) {
 	const generation = ++loadGeneration
+	const epoch = currentViewEpoch()
 	const grid = root.querySelector('[data-discovery-grid]')
 	const refreshButton = root.querySelector('[data-discovery-refresh]')
 	if (!(grid instanceof HTMLElement)) return
@@ -54,11 +56,11 @@ async function loadDiscoveryEntries(root) {
 	try {
 		await refreshDiscoveryGossip()
 		const data = await fetchDiscoveryIndex({ limit: 80 })
-		if (generation !== loadGeneration || !root.isConnected) return
+		if (generation !== loadGeneration || epoch !== currentViewEpoch() || !root.isConnected) return
 		await paintDiscoveryEntries(grid, data.entries || [])
 	}
 	catch (error) {
-		if (generation !== loadGeneration || !root.isConnected) return
+		if (generation !== loadGeneration || epoch !== currentViewEpoch() || !root.isConnected) return
 		handleError('chat.hub.discovery.loadFailed')(error)
 		await mountTemplate(grid, 'hub/empty/error', {
 			i18nKey: 'chat.hub.discovery.loadFailed',
@@ -66,7 +68,7 @@ async function loadDiscoveryEntries(root) {
 		})
 	}
 	finally {
-		if (generation === loadGeneration) {
+		if (generation === loadGeneration && epoch === currentViewEpoch()) {
 			grid.removeAttribute('aria-busy')
 			refreshButton?.removeAttribute('disabled')
 		}
@@ -75,13 +77,14 @@ async function loadDiscoveryEntries(root) {
 
 /** @returns {Promise<void>} 激活群发现主内容页。 */
 export async function activateDiscoveryView() {
+	bumpViewEpoch()
 	updateDiscoveryHash()
 	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
 	clearPrivateGroupState()
-	store.context.currentGroupId = null
-	store.context.currentChannelId = null
-	store.context.currentState = null
+	setState('context.currentGroupId', null)
+	setState('context.currentChannelId', null)
+	setState('context.currentState', null)
 	setPinsBookmarksWrapVisible(false)
 	updateStatusBanners()
 
@@ -101,7 +104,8 @@ export async function activateDiscoveryView() {
 		void loadDiscoveryEntries(root)
 	})
 	root.addEventListener('click', event => {
-		const target = event.target instanceof Element ? event.target.closest('[data-group-id]') : null
+		// 卡片按钮才可点击进入；`body[data-group-id]` 是全局上下文标记，不能当作可点击卡片命中。
+		const target = event.target instanceof Element ? event.target.closest('.discovery-card [data-group-id]') : null
 		const groupId = target?.getAttribute('data-group-id')
 		if (!groupId) return
 		void selectGroup(groupId).catch(handleError('chat.hub.load.groupFailed'))

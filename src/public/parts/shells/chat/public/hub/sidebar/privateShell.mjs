@@ -7,6 +7,7 @@ import { mountTemplate } from '../../src/templates.mjs'
 import { updateStatusBanners } from '../banners.mjs'
 import { store, setState } from '../core/state.mjs'
 import { updateFriendsHash } from '../core/urlHash.mjs'
+import { bumpViewEpoch } from '../core/viewEpoch.mjs'
 import { cancelScheduledChannelRefresh } from '../messages/channelRefreshScheduler.mjs'
 import { clearPrivateGroupState } from '../privateGroup.mjs'
 import { closeGroupWebSocket } from '../stream/index.mjs'
@@ -34,6 +35,7 @@ export function getChannelListContainer() {
  * @returns {Promise<void>}
  */
 export async function backToFriendsList() {
+	bumpViewEpoch()
 	cancelScheduledChannelRefresh()
 	const { disableComposer, refreshHubHeaderButtons } = await import('../messages/composerController.mjs')
 	const { loadFriendsList, renderFriendsColumn } = await import('../friendsList.mjs')

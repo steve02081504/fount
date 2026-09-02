@@ -10,8 +10,9 @@ import { mountTemplate, renderTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { groupDisplayName } from './core/domUtils.mjs'
-import { store } from './core/state.mjs'
+import { setState, store } from './core/state.mjs'
 import { INBOX_HASH, updateInboxHash } from './core/urlHash.mjs'
+import { bumpViewEpoch, currentViewEpoch } from './core/viewEpoch.mjs'
 import { markInboxSeen } from './inboxClient.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
@@ -126,6 +127,7 @@ async function loadInboxPage(generation = loadGeneration) {
 	if (loading) return
 	loading = true
 	const requestedCursor = nextCursor
+	const epoch = currentViewEpoch()
 	const host = document.getElementById('inbox-list')
 	if (host && !requestedCursor) host.setAttribute('aria-busy', 'true')
 	try {
@@ -134,7 +136,7 @@ async function loadInboxPage(generation = loadGeneration) {
 			cursor: requestedCursor || undefined,
 			kinds: [activeKind],
 		})
-		if (generation !== loadGeneration) return
+		if (generation !== loadGeneration || epoch !== currentViewEpoch()) return
 		const currentHost = document.getElementById('inbox-list')
 		if (!currentHost) return
 		await paintInboxRows(currentHost, data.items || [], !requestedCursor)
@@ -151,7 +153,7 @@ async function loadInboxPage(generation = loadGeneration) {
 			await paintInboxEmpty(currentHost)
 	}
 	catch (error) {
-		if (generation !== loadGeneration) return
+		if (generation !== loadGeneration || epoch !== currentViewEpoch()) return
 		handleError('chat.hub.inbox.loadFailed')(error)
 		if (host && !host.querySelector('.inbox-row')) await mountTemplate(host, 'hub/empty/error', {
 			i18nKey: 'chat.hub.inbox.loadFailed',
@@ -159,7 +161,7 @@ async function loadInboxPage(generation = loadGeneration) {
 		})
 	}
 	finally {
-		if (generation === loadGeneration) {
+		if (generation === loadGeneration && epoch === currentViewEpoch()) {
 			loading = false
 			document.getElementById('inbox-list')?.removeAttribute('aria-busy')
 		}
@@ -236,13 +238,14 @@ function wireInboxTabs(tablist) {
  * @returns {Promise<void>}
  */
 export async function activateInboxView() {
+	bumpViewEpoch()
 	updateInboxHash()
 	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
 	clearPrivateGroupState()
-	store.context.currentGroupId = null
-	store.context.currentChannelId = null
-	store.context.currentState = null
+	setState('context.currentGroupId', null)
+	setState('context.currentChannelId', null)
+	setState('context.currentState', null)
 	activeKind = 'mention'
 	nextCursor = null
 	loadGeneration++

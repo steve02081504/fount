@@ -67,7 +67,7 @@ chat shell 提供联邦群组与 DM、Hub 主壳、实体身份与 EVFS 文件�
 | GET | `P/emoji-usage/frequent?limit=` | 近期常用表情 `{ entries }` |
 | GET | `P/search?q=&limit=&cursor=` | 跨群全局消息搜索 |
 | GET | `P/mailbox/summary` | 离线 DM 存转邮箱摘要 |
-| GET / POST | `P/discovery?limit=` · `P/discovery/refresh` | 本地群发现索引 / 向联邦邻居广播发现公告 |
+| GET / POST | `P/discovery?limit=` · `P/discovery/refresh` | 本机公开群广告 ∪ 本地发现索引 / 向联邦邻居广播发现公告并主动 query 邻居公开群 |
 | GET | `P/reputation` | 全局主观信誉表（非群 scoped） |
 | PUT | `P/bridge/identity-bind` | body `{ platform, platformUserId, entityHash }`：把平台账号绑到实体 |
 | DELETE | `P/sessions/:groupId` | 删本机会话数据（角色私聊 / 本地 chat 目录），无群权限要求 |

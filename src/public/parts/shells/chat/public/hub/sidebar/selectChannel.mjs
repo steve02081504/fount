@@ -19,6 +19,7 @@ import { clearReplyTarget } from '../composerReply.mjs'
 import { warmCharEntityHashCache } from '../core/domUtils.mjs'
 import { store, setState } from '../core/state.mjs'
 import { updateHash } from '../core/urlHash.mjs'
+import { bumpViewEpoch } from '../core/viewEpoch.mjs'
 import { refreshPinsBookmarks } from '../pinsBookmarks.mjs'
 import { connectGroupWebSocket } from '../stream/index.mjs'
 
@@ -35,6 +36,7 @@ let selectChannelRequestSeq = 0
  * @returns {Promise<void>}
  */
 export async function selectChannel(channelId) {
+	bumpViewEpoch()
 	const { disableComposer, enableComposer } = await import('../messages/composerController.mjs')
 	const selectedGroupId = store.context.currentGroupId
 	const seq = ++selectChannelRequestSeq

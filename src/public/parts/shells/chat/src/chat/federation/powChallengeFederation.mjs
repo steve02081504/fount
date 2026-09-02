@@ -63,20 +63,45 @@ export async function handleFedPowChallengeWant(username, groupId, data, peerId,
 	catch {
 		return
 	}
-	if (state.groupSettings?.joinPolicy !== 'pow') return
+	// 非 pow 群：快速告知请求方「非 pow」，避免其空等 FETCH_TIMEOUT_MS 超时才回退到邀请码路径。
+	if (state.groupSettings?.joinPolicy !== 'pow') {
+		try {
+			sendChallengeData({ groupId, pow: false }, peerId)
+		}
+		catch {
+			/* ignore */
+		}
+		return
+	}
+	const discoveryPublic = Boolean(state.groupSettings?.discoveryPublic)
+	let creds = null
+	if (discoveryPublic) {
+		// 尚未激活联邦（从未建邀请）的 discoveryPublic 群：现场写 roomSecret 使加入者可 bootstrap。
+		// 必须在收集 anchors **之前**完成：activateGroupFederation 会追加 roomSecret 事件推进 tips，
+		// 若先取锚再加入者按旧锚解 pow，A 在 ingest 时锚已不在 knownAnchors → 误拒。
+		creds = roomCredentialsFromGroupSettings(state.groupSettings)
+		if (!creds) {
+			const { activateGroupFederation } = await import('./groupFederation.mjs')
+			try {
+				creds = await activateGroupFederation(username, groupId)
+			}
+			catch (error) {
+				console.warn('federation: activate federation for discoveryPublic challenge failed', error)
+			}
+		}
+		const { state: afterActivation } = await getState(username, groupId)
+		state = afterActivation
+	}
 	const payload = {
 		groupId,
 		anchors: collectJoinPowAnchors(state),
 		powFloorBits: Number(state.groupSettings?.powFloorBits) || 0,
 		powEpochMs: Number(state.groupSettings?.powEpochMs) || 0,
-		discoveryPublic: Boolean(state.groupSettings?.discoveryPublic),
+		discoveryPublic,
 	}
-	if (payload.discoveryPublic) {
-		const creds = roomCredentialsFromGroupSettings(state.groupSettings)
-		if (creds) {
-			payload.roomSecret = creds.roomSecret
-			payload.signalingAppId = creds.signalingAppId
-		}
+	if (creds) {
+		payload.roomSecret = creds.roomSecret
+		payload.signalingAppId = creds.signalingAppId
 	}
 	try {
 		sendChallengeData(payload, peerId)
@@ -97,12 +122,19 @@ export async function handleFedPowChallengeWant(username, groupId, data, peerId,
 export function handleFedPowChallengeData(username, groupId, data, senderNodeHash) {
 	if (!isPlainObject(data)) return
 	if (data.groupId !== groupId) return
-	if (!Array.isArray(data.anchors) || !data.anchors.length) return
-	if (typeof senderNodeHash !== 'string' || !senderNodeHash) return
-	if (data.nodeHash && data.nodeHash !== senderNodeHash) return
 	const key = waitKey(username, groupId)
 	const pending = pendingFetches.get(key)
 	if (!pending) return
+	// 邻居确认非 pow 群：快速以 null 结算（invite-only/open 走邀请码路径，不空等超时）。
+	if (data.pow === false) {
+		clearTimeout(pending.timer)
+		pendingFetches.delete(key)
+		pending.resolve(null)
+		return
+	}
+	if (!Array.isArray(data.anchors) || !data.anchors.length) return
+	if (typeof senderNodeHash !== 'string' || !senderNodeHash) return
+	if (data.nodeHash && data.nodeHash !== senderNodeHash) return
 	clearTimeout(pending.timer)
 	pendingFetches.delete(key)
 	pending.resolve({ ...data, responderNodeHash: senderNodeHash })

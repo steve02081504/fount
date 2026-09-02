@@ -165,7 +165,8 @@ export function registerMembershipRoutes(router, authenticate) {
 			})
 			return
 		}
-		if (state) throw httpError(404, 'Group not found or not pow')
+		// `getState` 对不存在的群返回空 state 而非抛错；须按是否有 genesis 事件判定“本地有该群副本”。
+		if (groupHasBootstrapGenesis(state)) throw httpError(404, 'Group not found or not pow')
 		// 无本地 replica：优先定向引入者/发现源节点，其次 user-room fanout。
 		const introducerNodeHash = String(req.query.introducerNodeHash || '').trim() || undefined
 		let discoverySources = []

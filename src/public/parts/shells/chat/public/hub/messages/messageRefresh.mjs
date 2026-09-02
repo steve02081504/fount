@@ -25,6 +25,10 @@ import {
 	scheduleDebouncedChannelRefresh,
 } from './channelRefreshScheduler.mjs'
 import { loadNonTextChannel } from './channelTypeRouter.mjs'
+import {
+	captureChannelViewScope,
+	isChannelViewScopeCurrent,
+} from './channelViewScope.mjs'
 import { classifyIncomingBatch } from './incomingBatch.mjs'
 import { bindReactions, messageRenderOpts, refreshReactionPerms, syncChannelActionsContext } from './messageContext.mjs'
 import {
@@ -95,10 +99,12 @@ function restoreChannelViewCache(groupId, channelId) {
  * @returns {Promise<void>}
  */
 async function patchReactionRows(container, reactions) {
+	const scope = captureChannelViewScope(store.context.currentGroupId, store.context.currentChannelId)
 	store.messages.channelReactions = reactions
 	const options = messageRenderOpts()
 	for (const message of store.messages.channelMessages) {
 		if (message.type !== 'message' || !message.eventId) continue
+		if (!isChannelViewScopeCurrent(scope)) return
 		const eventId = String(message.eventId)
 		const row = container.querySelector(messageIdSelector(eventId))
 		if (!row) continue
@@ -108,6 +114,7 @@ async function patchReactionRows(container, reactions) {
 			options.viewerMemberId,
 			{ canAddReactions: options.canAddReactions },
 		)
+		if (!isChannelViewScopeCurrent(scope)) return
 		const existing = row.querySelector('.reactions')
 		if (!html) {
 			existing?.remove()
@@ -127,14 +134,16 @@ async function patchReactionRows(container, reactions) {
  * @returns {Promise<void>}
  */
 async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
+	const scope = captureChannelViewScope(store.context.currentGroupId, store.context.currentChannelId)
 	const container = getMessagesContainer()
 	if (!container || !Array.isArray(batch) || !batch.length) {
-		if (container && scroll) scrollToBottom()
+		if (container && scroll && isChannelViewScopeCurrent(scope)) scrollToBottom()
 		return
 	}
 
 	const pendingId = store.messages.composerPendingId
 	const oldSource = store.messages.channelMessagesSource
+	if (!isChannelViewScopeCurrent(scope)) return
 	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(oldSource, batch)
 	const pendingReplaced = !!pendingId
 		&& !store.messages.channelMessagesSource.some(m => String(m.eventId) === pendingId)
@@ -144,6 +153,7 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 	// 首次创建管道时 channelMessages 已含本批，初始 refresh 即完整渲染；
 	// 继续逐条 append/replace 会把同一批行再渲染一遍造成重复。
 	if (!store.messages.channelMessagePipeline) {
+		if (!isChannelViewScopeCurrent(scope)) return
 		initChannelVirtualList(container)
 		await store.messages.channelMessagePipeline.refresh()
 		syncChannelActionsContext()
@@ -153,6 +163,7 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 	}
 
 	if (pendingReplaced) {
+		if (!isChannelViewScopeCurrent(scope)) return
 		await store.messages.channelMessagePipeline.refresh()
 		syncChannelActionsContext()
 		updateLastMessageId()
@@ -162,13 +173,16 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 
 	const { replaceRows, appendRows } = classifyIncomingBatch(batch, oldSource, store.messages.channelMessages)
 
-	for (const { index, row } of replaceRows)
+	for (const { index, row } of replaceRows) {
+		if (!isChannelViewScopeCurrent(scope)) return
 		await store.messages.channelMessagePipeline.replaceItem(index, row)
-	if (appendRows.length)
+	}
+	if (appendRows.length && isChannelViewScopeCurrent(scope))
 		await store.messages.channelMessagePipeline.appendItemsBatch(appendRows, scroll)
-	if (!replaceRows.length && !appendRows.length)
+	if (!replaceRows.length && !appendRows.length && isChannelViewScopeCurrent(scope))
 		await store.messages.channelMessagePipeline.refresh()
 
+	if (!isChannelViewScopeCurrent(scope)) return
 	syncChannelActionsContext()
 	updateLastMessageId()
 	decorateRenderedMessages(container, scroll)
@@ -180,10 +194,12 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
  * @returns {Promise<void>}
  */
 async function replaceChannelMessageRow(eventId, row) {
+	const scope = captureChannelViewScope(store.context.currentGroupId, store.context.currentChannelId)
 	const id = eventId.trim()
 	const sourceIdx = store.messages.channelMessagesSource.findIndex(
 		message => eventIdsEqual(message?.eventId, id),
 	)
+	if (!isChannelViewScopeCurrent(scope)) return
 	if (sourceIdx >= 0)
 		store.messages.channelMessagesSource[sourceIdx] = row
 	else
@@ -195,6 +211,7 @@ async function replaceChannelMessageRow(eventId, row) {
 	clearHubEmptyPlaceholder(container)
 	// 同 applyIncomingMessageBatch：首次创建时初始 refresh 已渲染当前 view，直接收尾
 	if (!store.messages.channelMessagePipeline) {
+		if (!isChannelViewScopeCurrent(scope)) return
 		initChannelVirtualList(container)
 		await store.messages.channelMessagePipeline.refresh()
 		syncChannelActionsContext()
@@ -206,10 +223,12 @@ async function replaceChannelMessageRow(eventId, row) {
 		message => eventIdsEqual(message?.eventId, id),
 	)
 	const viewRow = viewIdx >= 0 ? store.messages.channelMessages[viewIdx] : null
+	if (!isChannelViewScopeCurrent(scope)) return
 	if (viewRow && store.messages.channelMessagePipeline)
 		await store.messages.channelMessagePipeline.replaceItem(viewIdx, viewRow)
 	else if (store.messages.channelMessagePipeline)
 		await store.messages.channelMessagePipeline.refresh()
+	if (!isChannelViewScopeCurrent(scope)) return
 	syncChannelActionsContext()
 	updateLastMessageId()
 	decorateRenderedMessages(container, false)
@@ -342,8 +361,11 @@ export function refreshChannelMessagesIncremental() {
  */
 async function doRefreshChannelMessagesIncremental() {
 	const searchActive = !!store.messages.channelSearchQuery
-	if (!store.context.currentGroupId || !store.context.currentChannelId) return
-	const chType = store.context.currentState?.channels?.[store.context.currentChannelId]?.type || 'text'
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
+	const scope = captureChannelViewScope(groupId, channelId)
+	if (!groupId || !channelId) return
+	const chType = store.context.currentState?.channels?.[channelId]?.type || 'text'
 	if (chType === 'list' || chType === 'streaming') return
 
 	const container = getMessagesContainer()
@@ -358,6 +380,7 @@ async function doRefreshChannelMessagesIncremental() {
 		store.context.currentChannelId,
 		options,
 	)
+	if (!isChannelViewScopeCurrent(scope)) return
 	const reactionSig = reactionsSignature(reactions)
 	if (!messages.length && !reactionSig) return
 
@@ -366,7 +389,7 @@ async function doRefreshChannelMessagesIncremental() {
 			store.messages.reactionsEtag = reactionSig
 			store.messages.channelReactions = reactions || {}
 		}
-		if (messages.length) {
+		if (messages.length && isChannelViewScopeCurrent(scope)) {
 			store.messages.channelMessagesSource = mergeIncrementalChannelBatch(
 				store.messages.channelMessagesSource,
 				messages,
@@ -382,6 +405,7 @@ async function doRefreshChannelMessagesIncremental() {
 	if (reactionSig !== store.messages.reactionsEtag) {
 		store.messages.reactionsEtag = reactionSig
 		await patchReactionRows(container, reactions || {})
+		if (!isChannelViewScopeCurrent(scope)) return
 		if (!messages.length) return
 	}
 	store.messages.channelReactions = reactions || {}
@@ -418,7 +442,8 @@ export function applyChannelMessageEdit(targetId, editContent = null, sortMeta =
  */
 async function doApplyChannelMessageEdit(targetId, editContent = null, sortMeta = null) {
 	const id = targetId.trim()
-	if (!id || !store.context.currentGroupId || !store.context.currentChannelId) return
+	const scope = captureChannelViewScope(store.context.currentGroupId, store.context.currentChannelId)
+	if (!id || !scope.groupId || !scope.channelId) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
 
 	if (editContent?.newContent) {
@@ -426,12 +451,14 @@ async function doApplyChannelMessageEdit(targetId, editContent = null, sortMeta 
 			message => eventIdsEqual(message?.eventId, id),
 		)
 		if (sourceIdx >= 0) {
+			if (!isChannelViewScopeCurrent(scope)) return
 			await replaceChannelMessageRow(id, applyMessageEditToRow(store.messages.channelMessagesSource[sourceIdx], editContent, sortMeta))
 			return
 		}
 	}
 
-	const rows = await fetchRowsForMessageEvent(store.context.currentGroupId, store.context.currentChannelId, id)
+	const rows = await fetchRowsForMessageEvent(scope.groupId, scope.channelId, id)
+	if (!isChannelViewScopeCurrent(scope)) return
 	const row = rows.find(m => eventIdsEqual(m.eventId, id))
 	if (!row) {
 		scheduleChannelIncrementalRefresh({ immediate: true })
@@ -454,13 +481,16 @@ export function applyChannelMessageDelete(targetId) {
  */
 async function doApplyChannelMessageDelete(targetId) {
 	const id = targetId.trim()
+	const scope = captureChannelViewScope(store.context.currentGroupId, store.context.currentChannelId)
 	if (!id) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
+	if (!isChannelViewScopeCurrent(scope)) return
 	const idx = store.messages.channelMessages.findIndex(m => String(m.eventId) === id)
 	if (idx < 0) return
 	store.messages.channelMessagesSource = store.messages.channelMessagesSource.filter(m => String(m.eventId) !== id)
 	const container = getMessagesContainer()
 	refreshChannelView()
+	if (!isChannelViewScopeCurrent(scope)) return
 	if (store.messages.channelMessagePipeline)
 		await store.messages.channelMessagePipeline.deleteItem(idx)
 	syncChannelActionsContext()
