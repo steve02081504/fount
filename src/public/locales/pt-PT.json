@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "O comando de atualização do Deno falhou, tentando reinstalar o Deno para Termux...",
 				"patchMissing": "Erro: executável Deno não encontrado antes do patch. Não pode ser corrigido.",
 				"patchUnsupportedArch": "Erro: Arquitetura de patch não suportada: ${arch}",
-				"patchFailed": "Erro: Falha ao corrigir o executável Deno usando `patchelf`."
+				"patchFailed": "Erro: Falha ao corrigir o executável Deno usando `patchelf`.",
+				"managedUpgrade": "Deno é gerenciado pelo gerenciador de pacotes ${manager} (pacote: ${package}) e está sendo atualizado via ${manager}.",
+				"managedUpgradeFailed": "Aviso: a atualização do Deno (pacote: ${manager}) via ${package} falhou, deixando o status quo.",
+				"pinNotHonored": "Aviso: Deno é gerenciado pelo gerenciador de pacotes ${manager} e não pode estar em conformidade com a versão (${spec}) especificada por .deno-version. Ele foi atualizado de acordo com a versão do gerenciador de pacotes."
 			},
 			"tempDir": {
 				"blocked": "Erro: não é possível executar `fount` no diretório temporário\n\nfount acopla-se profundamente ao sistema e regista o comando `PATH` e vários hooks do sistema em `fount`. Se executado num diretório temporário, após o sistema limpar os ficheiros temporários, não poderá executar `fount remove` para remover fount e os seus hooks.\n\nMova fount para um diretório não temporário antes de executar. Se apenas quiser testar brevemente, execute manualmente `fount remove` após o teste."
@@ -5799,10 +5802,20 @@
 			"executionFailed": "Falha na execução do código: ${message}",
 			"selectSubfount": "Selecione a subfonte para executar o código..."
 		},
-		"downloadClient": {
+		"installClient": {
 			"title": "Baixar cliente de sub-fount",
 			"description": "Baixe o script do cliente de subfount autônomo para execução no dispositivo remoto.",
-			"downloadButton": "Transferir subfount.mjs"
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Copiar",
+			"copied": "Install script copied to clipboard"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Falha ao carregar o código de conexão: ${message}",

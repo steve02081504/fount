@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "فشل أمر ترقية Deno، محاولة إعادة تثبيت Deno لـ Termux...",
 				"patchMissing": "خطأ: لم يتم العثور على الملف القابل للتنفيذ Deno قبل التصحيح. لا يمكن مصححتها.",
 				"patchUnsupportedArch": "خطأ: بنية التصحيح غير مدعومة: ${arch}",
-				"patchFailed": "خطأ: فشل تصحيح Deno القابل للتنفيذ باستخدام `patchelf`."
+				"patchFailed": "خطأ: فشل تصحيح Deno القابل للتنفيذ باستخدام `patchelf`.",
+				"managedUpgrade": "تتم إدارة Deno بواسطة مدير الحزم ${manager} (الحزمة: ${package}) ويتم ترقيته عبر ${manager}.",
+				"managedUpgradeFailed": "تحذير: فشلت ترقية Deno (الحزمة: ${manager}) عبر ${package}، مما أدى إلى ترك الوضع الراهن.",
+				"pinNotHonored": "تحذير: تتم إدارة Deno بواسطة مدير الحزم ${manager} ولا يمكنه التوافق مع الإصدار (${spec}) المحدد بواسطة .deno-version. تمت ترقيته وفقًا لإصدار مدير الحزم."
 			},
 			"tempDir": {
 				"blocked": "خطأ: لا يمكن تشغيل `fount` في الدليل المؤقت\n\nيتكامل fount بعمق مع النظام ويسجل أمر `PATH` وعدة hooks للنظام في `fount`. إذا تم التشغيل في دليل مؤقت، بعد أن يمسح النظام الملفات المؤقتة، لن تتمكن من تنفيذ `fount remove` لإزالة fount وhooks الخاصة به.\n\nيرجى نقل fount إلى دليل غير مؤقت قبل التشغيل. إذا كنت تريد اختبارًا قصيرًا فقط، نفّذ `fount remove` يدويًا بعد الاختبار."
@@ -5793,10 +5796,20 @@
 			"executionFailed": "فشل تنفيذ التعليمات البرمجية: ${message}",
 			"selectSubfount": "الرجاء تحديد Subfount لتنفيذ التعليمات البرمجية..."
 		},
-		"downloadClient": {
+		"installClient": {
 			"title": "قم بتنزيل العميل الفرعي",
 			"description": "قم بتنزيل البرنامج النصي للعميل subfount المستقل لتشغيله على الجهاز البعيد.",
-			"downloadButton": "تحميل subfount.mjs"
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "نسخ",
+			"copied": "Install script copied to clipboard"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "فشل تحميل رمز الاتصال: ${message}",

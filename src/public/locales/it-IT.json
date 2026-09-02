@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Comando di aggiornamento Deno non riuscito, tentativo di reinstallare Deno per Termux...",
 				"patchMissing": "Errore: eseguibile Deno non trovato prima dell'applicazione della patch. Non può essere patchato.",
 				"patchUnsupportedArch": "Errore: architettura della patch non supportata: ${arch}",
-				"patchFailed": "Errore: impossibile applicare la patch all'eseguibile Deno utilizzando `patchelf`."
+				"patchFailed": "Errore: impossibile applicare la patch all'eseguibile Deno utilizzando `patchelf`.",
+				"managedUpgrade": "Deno è gestito dal gestore di pacchetti ${manager} (pacchetto: ${package}) ed è in fase di aggiornamento tramite ${manager}.",
+				"managedUpgradeFailed": "Avviso: l'aggiornamento di Deno (pacchetto: ${manager}) tramite ${package} non è riuscito, lasciando lo status quo.",
+				"pinNotHonored": "Attenzione: Deno è gestito dal gestore pacchetti ${manager} e non può essere conforme alla versione (${spec}) specificata da .deno-version. È stato aggiornato in base alla versione del gestore pacchetti."
 			},
 			"tempDir": {
 				"blocked": "Errore: impossibile eseguire `fount` nella directory temporanea\n\nfount è profondamente accoppiato al sistema e registra il comando `PATH` e più hook di sistema in `fount`. Se eseguito in una directory temporanea, dopo che il sistema cancella i file temporanei, non sarà possibile eseguire `fount remove` per rimuovere fount e i suoi hook.\n\nSpostare fount in una directory non temporanea prima di eseguirlo. Se si desidera solo un breve test, eseguire manualmente `fount remove` al termine del test."
@@ -5799,10 +5802,20 @@
 			"executionFailed": "Esecuzione del codice non riuscita: ${message}",
 			"selectSubfount": "Seleziona il Subfount per eseguire il codice..."
 		},
-		"downloadClient": {
+		"installClient": {
 			"title": "Scarica il client subfount",
 			"description": "Scarica lo script client subfount autonomo da eseguire sul dispositivo remoto.",
-			"downloadButton": "Scarica subfount.mjs"
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Copia",
+			"copied": "Install script copied to clipboard"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Impossibile caricare il codice di connessione: ${message}",

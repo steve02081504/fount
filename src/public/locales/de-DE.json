@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Deno-Upgrade-Befehl fehlgeschlagen, Versuch, Deno für Termux neu zu installieren ...",
 				"patchMissing": "Fehler: Die ausführbare Deno-Datei wurde vor dem Patchen nicht gefunden. Kann nicht gepatcht werden.",
 				"patchUnsupportedArch": "Fehler: Nicht unterstützte Patch-Architektur: ${arch}",
-				"patchFailed": "Fehler: Die ausführbare Datei von Deno konnte nicht mit `patchelf` gepatcht werden."
+				"patchFailed": "Fehler: Die ausführbare Datei von Deno konnte nicht mit `patchelf` gepatcht werden.",
+				"managedUpgrade": "Deno wird vom Paketmanager ${manager} verwaltet (Paket: ${package}) und wird über ${manager} aktualisiert.",
+				"managedUpgradeFailed": "Warnung: Das Upgrade von Deno (Paket: ${manager}) über ${package} ist fehlgeschlagen, der Status Quo bleibt erhalten.",
+				"pinNotHonored": "Warnung: Deno wird vom Paketmanager ${manager} verwaltet und kann nicht der durch .deno-version angegebenen Version (${spec}) entsprechen. Es wurde entsprechend der Version des Paketmanagers aktualisiert."
 			},
 			"tempDir": {
 				"blocked": "Fehler: `fount` kann nicht im temporären Verzeichnis ausgeführt werden\n\nfount ist eng mit dem System gekoppelt und registriert in `fount` den `PATH`-Befehl sowie mehrere System-Hooks. Wird fount in einem temporären Verzeichnis ausgeführt, können Sie nach dem Löschen der temporären Dateien durch das System `fount remove` nicht mehr ausführen, um fount und seine Hooks zu entfernen.\n\nBitte verschieben Sie fount vor dem Ausführen in ein nicht temporäres Verzeichnis. Wenn Sie nur kurz testen möchten, führen Sie `fount remove` nach Abschluss des Tests manuell aus."
@@ -5793,10 +5796,20 @@
 			"executionFailed": "Codeausführung fehlgeschlagen: ${message}",
 			"selectSubfount": "Bitte wählen Sie den Subfount aus, um den Code auszuführen ..."
 		},
-		"downloadClient": {
+		"installClient": {
 			"title": "Laden Sie den Subfount-Client herunter",
 			"description": "Laden Sie das eigenständige Subfount-Client-Skript herunter, um es auf dem Remote-Gerät auszuführen.",
-			"downloadButton": "Laden Sie subfount.mjs herunter"
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Kopieren",
+			"copied": "Install script copied to clipboard"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Verbindungscode konnte nicht geladen werden: ${message}",

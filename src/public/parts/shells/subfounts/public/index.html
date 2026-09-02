@@ -124,13 +124,20 @@
 			</div>
 		</div>
 
-		<!-- Download Section -->
+		<!-- Install Section -->
 		<div class="card bg-base-100 shadow-xl mt-6">
 			<div class="card-body">
-				<h2 class="card-title" data-i18n="subfounts.downloadClient.title"></h2>
-				<p data-i18n="subfounts.downloadClient.description"></p>
-				<div class="card-actions justify-end mt-4">
-					<a href="./subfount.mjs" class="btn btn-primary" download="subfount.mjs" data-i18n="subfounts.downloadClient.downloadButton"></a>
+				<h2 class="card-title" data-i18n="subfounts.installClient.title"></h2>
+				<p data-i18n="subfounts.installClient.description"></p>
+				<div class="tabs tabs-box mt-4 w-fit" role="tablist" data-i18n="subfounts.installClient.tabsLabel">
+					<button type="button" class="tab tab-active" role="tab" aria-selected="true" data-os-tab="linux" data-i18n="subfounts.installClient.tabs.linux"></button>
+					<button type="button" class="tab" role="tab" aria-selected="false" data-os-tab="macos" data-i18n="subfounts.installClient.tabs.macos"></button>
+					<button type="button" class="tab" role="tab" aria-selected="false" data-os-tab="android" data-i18n="subfounts.installClient.tabs.android"></button>
+					<button type="button" class="tab" role="tab" aria-selected="false" data-os-tab="windows" data-i18n="subfounts.installClient.tabs.windows"></button>
+				</div>
+				<div class="relative mt-4">
+					<pre class="bg-base-200 rounded-box p-4 pr-20 overflow-x-auto text-sm font-mono" id="install-script-pre"></pre>
+					<button class="btn btn-primary btn-sm absolute top-2 right-2" id="copy-install-button" data-i18n="subfounts.installClient.copyButton"></button>
 				</div>
 			</div>
 		</div>

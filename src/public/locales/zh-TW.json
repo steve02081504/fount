@@ -519,7 +519,10 @@
 				"upgradeFailedTermux": "Deno 升級指令失敗，正在嘗試為 Termux 重新安裝 Deno...",
 				"patchMissing": "錯誤：修補前未找到 Deno 執行檔。無法修補。",
 				"patchUnsupportedArch": "錯誤：不支援的修補架構：${arch}",
-				"patchFailed": "錯誤：使用 `patchelf` 修補 Deno 執行檔失敗。"
+				"patchFailed": "錯誤：使用 `patchelf` 修補 Deno 執行檔失敗。",
+				"managedUpgrade": "Deno 由 ${manager} 套件管理器管理（套件：${package}），正在透過 ${manager} 升級。",
+				"managedUpgradeFailed": "警告：透過 ${manager} 升級 Deno（套件：${package}）失敗，已維持現狀。",
+				"pinNotHonored": "警告：Deno 由 ${manager} 套件管理，無法遵循 .deno-version 指定的版本（${spec}），已按套件管理器的版本升級。"
 			},
 			"tempDir": {
 				"blocked": "錯誤：無法在臨時目錄中執行 `fount`\n\nfount 會與系統深度耦合，並在 `fount` 中註冊 `PATH` 命令及多項系統 hook。若在臨時目錄執行，系統清空臨時檔案後，您將無法執行 `fount remove` 來移除 fount 及其 hook。\n\n請將 fount 移動到非臨時目錄後再執行。若您只想簡短測試，請在測試完成後手動執行 `fount remove`。"
@@ -5792,10 +5795,20 @@
 			"executionFailed": "程式碼執行失敗: ${message}",
 			"selectSubfount": "請選擇要執行程式碼的Subfount..."
 		},
-		"downloadClient": {
+		"installClient": {
 			"title": "下載子 fount 客戶端",
 			"description": "下載獨立的子 fount 客戶端指令碼以在遠端裝置上執行。",
-			"downloadButton": "下載 subfount.mjs"
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "複製",
+			"copied": "Install script copied to clipboard"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "載入連接碼失敗: ${message}",

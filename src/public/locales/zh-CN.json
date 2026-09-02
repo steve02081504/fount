@@ -5805,10 +5805,20 @@
 			"executionFailed": "代码执行失败: ${message}",
 			"selectSubfount": "请选择要执行代码的Subfount..."
 		},
-		"downloadClient": {
-			"title": "下载子fount客户端",
-			"description": "下载独立的子fount客户端脚本以在远程设备上运行。",
-			"downloadButton": "下载 subfount.mjs"
+		"installClient": {
+			"title": "安装子fount客户端",
+			"description": "在远程设备上运行以下安装脚本，把设备接入 fount 网络。",
+			"tabsLabel": {
+				"aria-label": "选择操作系统"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "复制",
+			"copied": "安装脚本已复制到剪贴板"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "加载连接码失败: ${message}",

@@ -59,9 +59,7 @@ const pwshAvailable = (await available).pwsh || (await available).powershell
 function pwshTest(name, test) {
 	Deno.test({
 		name,
-		/**
-		 *
-		 */
+		/** 测试主体：构造临时状态目录并在 pwsh 中执行用例。 */
 		fn: async () => {
 			const root = mkdtempSync(join(tmpdir(), 'fount-pkg-pwsh-'))
 			const stateDir = join(root, 'state')
@@ -107,10 +105,10 @@ function tempEnv() {
 for (const [name, setup, expected] of [
 	['dpkg/apt', 'dpkg() { printf \'mypkg: %s\\n\' "$2"; }', 'apt-get mypkg'],
 	['pacman', 'pacman() { printf \'mypkg\\n\'; }', 'pacman mypkg'],
-	['rpm+dnf', 'rpm() { printf \'mypkg\\n\'; } dnf() { :; }', 'dnf mypkg'],
-	['rpm+yum', 'rpm() { printf \'mypkg\\n\'; } yum() { :; }', 'yum mypkg'],
-	['rpm+zypper', 'rpm() { printf \'mypkg\\n\'; } zypper() { :; }', 'zypper mypkg'],
-	['apk', 'apk() { printf \'is owned by mypkg\\n\'; }', 'apk mypkg'],
+	['rpm+dnf', 'rpm() { printf \'mypkg\\n\'; }; dnf() { :; }', 'dnf mypkg'],
+	['rpm+yum', 'rpm() { printf \'mypkg\\n\'; }; yum() { :; }', 'yum mypkg'],
+	['rpm+zypper', 'rpm() { printf \'mypkg\\n\'; }; zypper() { :; }', 'zypper mypkg'],
+	['apk', 'apk() { printf \'/usr/bin/demo is owned by mypkg\\n\'; }', 'apk mypkg'],
 	['brew', 'brew() { printf \'/usr/local\\n\'; }', 'brew deno'],
 	['pkg', 'pkg() { printf \'mypkg\\n\'; }', 'pkg mypkg'],
 	['none', '', ''],
@@ -419,7 +417,7 @@ bashTest('the standalone update-deno script upgrades an unmanaged Deno end-to-en
 	mkdirSync(stubBin, { recursive: true })
 	Deno.symlinkSync(join(REPO_ROOT, 'path'), join(fountDir, 'path'), 'dir')
 	Deno.symlinkSync(join(REPO_ROOT, 'src/public/locales'), join(fountDir, 'src/public/locales'), 'dir')
-	writeFileSync(join(stubBin, 'deno'), `#!/bin/sh\nif [ "$1" = "-V" ]; then echo "deno 2.9.5"; elif [ "$1" = "upgrade" ]; then echo "deno:upgrade $*" >>"${'$'}FOUNT_DENO_TRACE"; fi\n`)
+	writeFileSync(join(stubBin, 'deno'), `#!/bin/sh\nif [ "$1" = "-V" ]; then echo "deno 2.9.5"; elif [ "$1" = "upgrade" ]; then echo "deno:$*" >>"${'$'}FOUNT_DENO_TRACE"; fi\n`)
 	writeFileSync(join(stubBin, 'jq'), '#!/bin/sh\necho {}\n')
 	Deno.chmodSync(join(stubBin, 'deno'), 0o755)
 	Deno.chmodSync(join(stubBin, 'jq'), 0o755)
@@ -550,6 +548,10 @@ Deno.test('POSIX package-manager family stays in sync across every readme and co
 	const m = mjs.match(new RegExp(`${SH_BEGIN}\\n([\\s\\S]*?)\\n?${SH_END}\\n?`))
 	assert.ok(m, 'markers missing in src/runner/npm/main.mjs')
 	assert.equal(m[1], jsEscape(canonical).trim(), 'src/runner/npm/main.mjs out of sync — run: node .esh/commands/sync-pkg-mgr.mjs')
+	const frontendBlock = readFileSync(join(REPO_ROOT, 'src/public/parts/shells/subfounts/public/src/pkg_mgr_block.mjs'), 'utf8')
+	const frontendMatch = frontendBlock.match(new RegExp(`${SH_BEGIN}\\n([\\s\\S]*?)\\n?${SH_END}`))
+	assert.ok(frontendMatch, 'markers missing in subfounts frontend pkg_mgr_block.mjs')
+	assert.equal(frontendMatch[1], jsEscape(canonical).trim(), 'subfounts frontend pkg_mgr_block.mjs out of sync — run: node .esh/commands/sync-pkg-mgr.mjs')
 })
 
 Deno.test('deno.sh and deno.ps1 both route managed Deno through the manager upgrade', () => {

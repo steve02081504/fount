@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Команда обновления Deno не удалась, попытка переустановить Deno для Termux...",
 				"patchMissing": "Ошибка: исполняемый файл Deno не найден перед исправлением. Не подлежит исправлению.",
 				"patchUnsupportedArch": "Ошибка: неподдерживаемая архитектура исправлений: ${arch}.",
-				"patchFailed": "Ошибка: не удалось исправить исполняемый файл Deno с помощью `patchelf`."
+				"patchFailed": "Ошибка: не удалось исправить исполняемый файл Deno с помощью `patchelf`.",
+				"managedUpgrade": "Deno управляется менеджером пакетов ${manager} (пакет: ${package}) и обновляется через ${manager}.",
+				"managedUpgradeFailed": "Предупреждение: обновление Deno (пакет: ${manager}) через ${package} не удалось, оставив статус-кво.",
+				"pinNotHonored": "Предупреждение: Deno управляется менеджером пакетов ${manager} и не может соответствовать версии (${spec}), указанной в .deno-version. Он был обновлен в соответствии с версией менеджера пакетов."
 			},
 			"tempDir": {
 				"blocked": "Ошибка: невозможно запустить `fount` во временной директории\n\nfount глубоко интегрируется с системой и регистрирует команду `PATH` и несколько системных hook в `fount`. При запуске во временной директории после очистки временных файлов системой вы не сможете выполнить `fount remove` для удаления fount и его hook.\n\nПереместите fount в постоянную директорию перед запуском. Если вы хотите лишь кратко протестировать, выполните `fount remove` вручную после теста."
@@ -5793,10 +5796,20 @@
 			"executionFailed": "Не удалось выполнить код: ${message}",
 			"selectSubfount": "Пожалуйста, выберите подфонд для выполнения кода..."
 		},
-		"downloadClient": {
+		"installClient": {
 			"title": "Скачать дополнительный клиент",
 			"description": "Загрузите автономный клиентский сценарий subfountа для запуска на удаленном устройстве.",
-			"downloadButton": "Скачать subfount.mjs"
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Копировать",
+			"copied": "Install script copied to clipboard"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Не удалось загрузить код подключения: `${message}",

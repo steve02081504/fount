@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "El comando de actualización de Deno falló al intentar reinstalar Deno para Termux...",
 				"patchMissing": "Error: No se encontró el ejecutable de Deno antes de aplicar el parche. No se puede parchear.",
 				"patchUnsupportedArch": "Error: Arquitectura de parche no compatible: ${arch}",
-				"patchFailed": "Error: No se pudo parchear el ejecutable de Deno usando `patchelf`."
+				"patchFailed": "Error: No se pudo parchear el ejecutable de Deno usando `patchelf`.",
+				"managedUpgrade": "Deno es administrado por el administrador de paquetes ${manager} (paquete: ${package}) y se actualiza a través de ${manager}.",
+				"managedUpgradeFailed": "Advertencia: Error al actualizar Deno (paquete: ${manager}) a través de ${package}, lo que deja el status quo.",
+				"pinNotHonored": "Advertencia: Deno es administrado por el administrador de paquetes ${manager} y no puede cumplir con la versión (${spec}) especificada por .deno-version. Se ha actualizado según la versión del administrador de paquetes."
 			},
 			"tempDir": {
 				"blocked": "Error: no se puede ejecutar `fount` en el directorio temporal\n\nfount se acopla profundamente al sistema y registra el comando `PATH` y varios hooks del sistema en `fount`. Si se ejecuta en un directorio temporal, después de que el sistema borre los archivos temporales, no podrá ejecutar `fount remove` para eliminar fount y sus hooks.\n\nMueva fount a un directorio no temporal antes de ejecutarlo. Si solo desea probar brevemente, ejecute manualmente `fount remove` después de la prueba."
@@ -5799,10 +5802,20 @@
 			"executionFailed": "La ejecución del código falló: ${message}",
 			"selectSubfount": "Selecciona el Sub 0 para ejecutar el código..."
 		},
-		"downloadClient": {
+		"installClient": {
 			"title": "Descargar cliente de Subfount",
 			"description": "Descargue el script del cliente Subfount independiente para ejecutarlo en el dispositivo remoto.",
-			"downloadButton": "Descargar Subfount.mjs"
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Copiar",
+			"copied": "Install script copied to clipboard"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "No se pudo cargar el código de conexión: ${message}",

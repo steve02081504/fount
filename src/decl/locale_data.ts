@@ -507,6 +507,9 @@ export type LocaleData = {
 				patchMissing: string
 				patchUnsupportedArch: string
 				patchFailed: string
+				managedUpgrade: string
+				managedUpgradeFailed: string
+				pinNotHonored: string
 			}
 			tempDir: {
 				blocked: string
@@ -5764,10 +5767,20 @@ export type LocaleData = {
 			executionFailed: string
 			selectSubfount: string
 		}
-		downloadClient: {
+		installClient: {
 			title: string
 			description: string
-			downloadButton: string
+			tabsLabel: {
+				'aria-label': string
+			}
+			tabs: {
+				linux: string
+				macos: string
+				android: string
+				windows: string
+			}
+			copyButton: string
+			copied: string
 		}
 		errors: {
 			loadConnectionCodeFailed: string
@@ -6559,7 +6572,10 @@ export type LocaleKeyParams = {
 	'fountConsole.partManager.git.updateFailed': { error: string | number }
 	'fountConsole.partManager.partInited': { partpath: string | number }
 	'fountConsole.partManager.partLoaded': { partpath: string | number }
+	'fountConsole.path.deno.managedUpgrade': { manager: string | number; package: string | number }
+	'fountConsole.path.deno.managedUpgradeFailed': { manager: string | number; package: string | number }
 	'fountConsole.path.deno.patchUnsupportedArch': { arch: string | number }
+	'fountConsole.path.deno.pinNotHonored': { manager: string | number; spec: string | number }
 	'fountConsole.path.git.backupSavedTo': { path: string | number }
 	'fountConsole.path.git.noUpstreamBranch': { branch: string | number; remote: string | number }
 	'fountConsole.path.git.remoteRefUnavailable': { ref: string | number }

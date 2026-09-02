@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Не вдалося виконати команду оновлення Deno. Спроба повторно встановити Deno для Termux...",
 				"patchMissing": "Помилка: виконуваний файл Deno не знайдено перед виправленням. Не можна виправити.",
 				"patchUnsupportedArch": "Помилка: непідтримувана архітектура виправлення: ${arch}",
-				"patchFailed": "Помилка: не вдалося виправити виконуваний файл Deno за допомогою `patchelf`."
+				"patchFailed": "Помилка: не вдалося виправити виконуваний файл Deno за допомогою `patchelf`.",
+				"managedUpgrade": "Deno керується менеджером пакетів ${manager} (пакет: ${package}) і оновлюється через ${manager}.",
+				"managedUpgradeFailed": "Попередження: не вдалося оновити Deno (пакет: ${manager}) через ${package}, залишивши статус-кво.",
+				"pinNotHonored": "Попередження: Deno керується менеджером пакунків ${manager} і не може відповідати версії (${spec}), указаній у .deno-version. Він був оновлений відповідно до версії менеджера пакетів."
 			},
 			"tempDir": {
 				"blocked": "Помилка: неможливо запустити `fount` у тимчасовій директорії\n\nfount глибоко інтегрується з системою та реєструє команду `PATH` і кілька системних hook у `fount`. Якщо запускати у тимчасовій директорії, після очищення тимчасових файлів системою ви не зможете виконати `fount remove` для видалення fount і його hook.\n\nПеремістіть fount у постійну директорію перед запуском. Якщо ви хочете лише коротко протестувати, виконайте `fount remove` вручну після тесту."
@@ -5793,10 +5796,20 @@
 			"executionFailed": "Помилка виконання коду: ${message}",
 			"selectSubfount": "Будь ласка, виберіть Subfount, щоб виконати код..."
 		},
-		"downloadClient": {
+		"installClient": {
 			"title": "Завантажте клієнт субфонду",
 			"description": "Завантажте автономний клієнтський сценарій підоснови для запуску на віддаленому пристрої.",
-			"downloadButton": "Завантажте subfount.mjs"
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Копіювати",
+			"copied": "Install script copied to clipboard"
 		},
 		"errors": {
 			"loadConnectionCodeFailed": "Не вдалося завантажити код підключення: ${message}",
