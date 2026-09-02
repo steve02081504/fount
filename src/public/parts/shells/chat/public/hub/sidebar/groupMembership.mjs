@@ -67,6 +67,20 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 }
 
 /**
+ * 无法从本地 state 判定 joinPolicy 时，经联邦 pow-challenge 确认群是否为 pow 并解算入群 PoW。
+ * 非 pow 群（invite-only / open）的 challenge 返回 404 → null，调用方继续走邀请码路径。
+ * @param {string} groupId 群 ID
+ * @param {string} joinerNodeHash 入群者 nodeHash
+ * @param {string | null | undefined} introducerNodeHash 优先定向的引入者节点
+ * @returns {Promise<object | null>} PoW 解；群非 pow 或 challenge 不可用时 null
+ */
+async function resolvePowViaChallenge(groupId, joinerNodeHash, introducerNodeHash) {
+	const challenge = await getPowChallenge(groupId, { introducerNodeHash }).catch(() => null)
+	if (!challenge?.anchors?.length) return null
+	return resolvePowForJoin(groupId, null, joinerNodeHash, challenge)
+}
+
+/**
  * @param {object} state 群状态
  * @param {{ inviteCode?: string | null, fedBootstrap?: object | null }} pendingJoin session 待消费邀请
  * @param {string | null} inviteCode URL 或 pending 邀请码
@@ -141,9 +155,14 @@ export async function ensureGroupMembership(groupId, state) {
 		refreshHubHeaderButtons()
 		return null
 	}
-	const pow = state?.groupSettings?.joinPolicy === 'pow'
+	// 本地已有 replica 且已知为 pow 群：直接用本地锚解 pow；
+	// 否则回退到联邦 pow-challenge 判定——群已改为 pow 而持有改策略前旧邀请码时，
+	// 无本地 replica 的 joinPolicy 是默认 invite-only，只带 inviteCode 不带 powSolution 会被 owner 入站拒绝。
+	let pow = state?.groupSettings?.joinPolicy === 'pow'
 		? await resolvePowForJoin(groupId, state, store.viewer.nodeHash || '', pendingJoin.fedBootstrap)
 		: null
+	if (!pow)
+		pow = await resolvePowViaChallenge(groupId, store.viewer.nodeHash || '', pendingJoin.fedBootstrap?.introducerNodeHash)
 	await joinGroup(groupId, inviteCode, null, pow, pendingJoin.fedBootstrap)
 	const joined = await getGroupState(groupId)
 	broadcastHubGroupJoined(groupId)

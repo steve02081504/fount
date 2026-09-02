@@ -19,8 +19,9 @@ import { mountTemplate } from '../src/templates.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'
-import { store } from './core/state.mjs'
+import { setState, store } from './core/state.mjs'
 import { parseHash, updateFriendsHash } from './core/urlHash.mjs'
+import { bumpViewEpoch } from './core/viewEpoch.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { setActiveModeTab, setMode } from './mode.mjs'
@@ -178,9 +179,9 @@ export function onEnterFriendChat(peer) {
 	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
 	if (!peer?.entityHash) {
-		store.context.currentGroupId = null
-		store.context.currentChannelId = null
-		store.context.currentState = null
+		setState('context.currentGroupId', null)
+		setState('context.currentChannelId', null)
+		setState('context.currentState', null)
 		updateFriendsHash()
 		void setMode('friends')
 		return
@@ -266,6 +267,7 @@ export async function enterFriendChat(options = {}) {
 	const binding = options.binding || (options.groupId ? friendBindingForGroup(options.groupId) : null)
 	if (!binding?.entityHash && !binding?.charname) return
 
+	bumpViewEpoch()
 	enterFriendChatAbort?.abort()
 	const ac = new AbortController()
 	enterFriendChatAbort = ac

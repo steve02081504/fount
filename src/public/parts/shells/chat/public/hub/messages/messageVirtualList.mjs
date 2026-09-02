@@ -10,6 +10,10 @@ import {
 	consumePendingScrollTarget,
 	setPendingScrollTarget,
 } from './channelMessageStore.mjs'
+import {
+	captureChannelViewScope,
+	isChannelViewScopeCurrent,
+} from './channelViewScope.mjs'
 import { messageRenderOpts, reloadChannel } from './messageContext.mjs'
 import {
 	consumePendingHighlightEventId,
@@ -52,7 +56,8 @@ export async function loadOlderMessages() {
 
 /** @returns {Promise<number>} 新载入的更早消息条数 */
 async function doLoadOlderMessages() {
-	if (store.messages.channelOlderExhausted || !store.context.currentGroupId || !store.context.currentChannelId) return 0
+	const scope = captureChannelViewScope(store.context.currentGroupId, store.context.currentChannelId)
+	if (store.messages.channelOlderExhausted || !scope.groupId || !scope.channelId) return 0
 	const oldest = store.messages.channelMessages[0]
 	const oldestId = oldest?.eventId
 	if (!oldestId || String(oldestId).startsWith('pending:')) {
@@ -70,7 +75,7 @@ async function doLoadOlderMessages() {
 		let batch = []
 		let oldestRawEventId = null
 		try {
-			const page = await getChannelViewLog(store.context.currentGroupId, store.context.currentChannelId, {
+			const page = await getChannelViewLog(scope.groupId, scope.channelId, {
 				before,
 				limit,
 			})
@@ -82,6 +87,7 @@ async function doLoadOlderMessages() {
 			store.messages.channelOlderExhausted = true
 			return 0
 		}
+		if (!isChannelViewScopeCurrent(scope)) return 0
 		fresh = batch.filter(m => {
 			const eventId = String(m.eventId)
 			return eventId && !known.has(eventId)
@@ -97,9 +103,11 @@ async function doLoadOlderMessages() {
 	}
 	if (!fresh.length)
 		return 0
+	if (!isChannelViewScopeCurrent(scope)) return 0
 	store.messages.channelMessagesSource = [...fresh, ...store.messages.channelMessagesSource]
 	refreshChannelView()
 	const { syncChannelActionsContext } = await import('./messageContext.mjs')
+	if (!isChannelViewScopeCurrent(scope)) return 0
 	syncChannelActionsContext()
 	return fresh.length
 }

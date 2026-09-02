@@ -12,6 +12,7 @@ import {
 import { groupDisplayName } from '../core/domUtils.mjs'
 import { store, setState } from '../core/state.mjs'
 import { parseHash, updateHash } from '../core/urlHash.mjs'
+import { bumpViewEpoch, currentViewEpoch } from '../core/viewEpoch.mjs'
 import { resetFilesDrawerWire } from '../files.mjs'
 import { cancelScheduledChannelRefresh } from '../messages/channelRefreshScheduler.mjs'
 import { clearPinPreviewCache } from '../messages/pinPreview.mjs'
@@ -121,11 +122,12 @@ function channelIdFromHashOr(groupId, fallback) {
 export async function selectGroup(groupId, presetChannelId = null) {
 	if (!groupId) return
 	const channelId = channelIdFromHashOr(groupId, presetChannelId)
+	const epoch = bumpViewEpoch()
 	/**
-	 * 本次选择是否仍为当前目标。
+	 * 本次选择是否仍为当前目标（视图代际 + 模式 + 群均未变）。
 	 * @returns {boolean} 用户未切走则 true
 	 */
-	const stillCurrent = () => store.context.currentMode === 'groups' && store.context.currentGroupId === groupId
+	const stillCurrent = () => currentViewEpoch() === epoch && store.context.currentMode === 'groups' && store.context.currentGroupId === groupId
 	clearPinPreviewCache()
 	clearPrivateGroupState()
 	resetFilesDrawerWire()
@@ -134,7 +136,6 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	setState('context.currentGroupId', groupId)
 	setState('context.currentChannelId', null)
 	setState('context.currentState', null)
-	updateHash(groupId, channelId)
 	const { setMode } = await import('../mode.mjs')
 	await setMode('groups')
 	if (!stillCurrent()) return
@@ -149,6 +150,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		state = memberState
 		state = await syncGroupStateForHub(groupId, state, channelId)
 		if (!stillCurrent()) return
+		updateHash(groupId, channelId)
 		await paintGroupHubChrome(state)
 		if (!stillCurrent()) return
 		await activateGroupChannel(state, channelIdFromHashOr(groupId, channelId))

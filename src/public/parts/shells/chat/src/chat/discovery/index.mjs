@@ -1,6 +1,6 @@
 /**
  * 用户级群发现索引：合并联邦 gossip，带来源归因。
- * 广告签名 = 某成员曾声称，非群主授权；入索引需正信誉或 ≥2 独立 node（与冷归档 quorum 一致）。
+ * 广告签名 = 某成员曾声称，非群主授权；入索引不设信誉门槛，查询时按来源信誉降序排列。
  */
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
@@ -8,13 +8,11 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
+import { publicKeyFromSeed, sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
-import { resolveArchiveQuorumPeerMin } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
 
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
-import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
 import { discoveryIndexPath } from '../lib/paths.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 
@@ -76,6 +74,10 @@ function signMessage(advertisement) {
 
 /**
  * 为本机公开群构建签名广告。
+ * `advertiserPubKeyHash` 字段实际承载广告方**原始 Ed25519 公钥**（非其 sha256 摘要）：
+ * 联邦入站验签必须用原始公钥（`npm:@steve02081504/fount-p2p/crypto` 的 `verify` 不接受摘要），
+ * 而 wire schema（fount-p2p `schemas/discovery`）只白名单 `advertiserPubKeyHash` 一个 64-hex 键字段，
+ * 故复用该字段携带原始公钥；该字段仅用于签名校验与去重归因，不与 DAG 成员 pubKeyHash 比对。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} nodeHash 本机 nodeHash
@@ -85,13 +87,14 @@ export async function buildSignedDiscoveryAdvertisement(username, groupId, nodeH
 	const { state } = await getState(username, groupId)
 	if (!state.groupSettings?.discoveryPublic) return null
 	const signer = await resolveLocalEventSigner(username, groupId)
+	const advertiserPubKeyHex = Buffer.from(publicKeyFromSeed(signer.secretKey)).toString('hex')
 	const title = (state.groupSettings.discoveryTitle || state.groupMeta?.name || groupId).slice(0, 200)
 	const blurb = (state.groupSettings.discoveryBlurb || state.groupMeta?.description || '').slice(0, 500)
 	const body = {
 		groupId,
 		title,
 		blurb,
-		advertiserPubKeyHash: signer.sender,
+		advertiserPubKeyHash: advertiserPubKeyHex,
 		advertiserNodeHash: nodeHash,
 		observedAt: Date.now(),
 	}
@@ -125,23 +128,12 @@ export async function verifyDiscoveryAdvertisement(advertisement) {
 export async function mergeDiscoveryAdvertisement(username, advertisement, source) {
 	if (!await verifyDiscoveryAdvertisement(advertisement)) return
 	const fromNodeHash = source.fromNodeHash || ''
-	const nodeScore = fromNodeHash ? pickNodeScore(fromNodeHash) : 0
 	const index = await loadDiscoveryIndex(username)
 	const key = entryKey({
 		groupId: advertisement.groupId,
 		advertiserPubKeyHash: advertisement.advertiserPubKeyHash,
 	})
 	let entry = index.entries.find(e => entryKey(e) === key)
-	const distinctSources = new Set([
-		...(entry?.sources || []).map(s => s.fromNodeHash).filter(Boolean),
-		fromNodeHash,
-	].filter(Boolean))
-	const sourceMinN = Math.max(
-		Number(advertisement.memberCount) || 0,
-		distinctSources.size + 1,
-	)
-	const sourceMin = resolveArchiveQuorumPeerMin(sourceMinN, archiveTunables)
-	if (nodeScore <= 0 && distinctSources.size < sourceMin) return
 	if (!entry) {
 		entry = {
 			groupId: advertisement.groupId,
@@ -168,14 +160,25 @@ export async function mergeDiscoveryAdvertisement(username, advertisement, sourc
 }
 
 /**
+ * 条目信誉评分：取全部来源节点信誉的最高值；无来源（非联邦入站）按 0 计。
+ * @param {DiscoveryEntry} entry 条目
+ * @returns {number} 信誉评分
+ */
+function entryReputationScore(entry) {
+	const scores = (entry.sources || []).map(source =>
+		source.fromNodeHash ? pickNodeScore(source.fromNodeHash) : 0)
+	return scores.length ? Math.max(...scores) : 0
+}
+
+/**
  * @param {string} username 用户
  * @param {{ limit?: number }} [options] 分页
- * @returns {Promise<DiscoveryEntry[]>} 排序后的条目
+ * @returns {Promise<DiscoveryEntry[]>} 排序后的条目（信誉降序，同信誉按新近度）
  */
 export async function queryDiscoveryIndex(username, options = {}) {
 	const limit = Math.min(100, Math.max(1, options.limit ?? 50))
 	return [...(await loadDiscoveryIndex(username)).entries]
-		.sort((a, b) => b.observedAt - a.observedAt)
+		.sort((a, b) => entryReputationScore(b) - entryReputationScore(a) || b.observedAt - a.observedAt)
 		.slice(0, limit)
 }
 

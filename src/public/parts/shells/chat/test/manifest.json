@@ -125,6 +125,18 @@
 			"src/public/parts/shells/chat/test/live/scripts/fed_dm_probe.mjs",
 			"src/public/parts/shells/chat/test/live/scripts/federation/dm_intro_helper.mjs"
 		],
+		"fedDiscovery": [
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/discovery.mjs"
+		],
+		"fedInviteThenPow": [
+			"src/public/parts/shells/chat/src/chat/governance/**",
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/src/chat/lib/inviteTickets.mjs",
+			"src/public/parts/shells/chat/src/group/routes/{membership,groups}.mjs",
+			"src/public/parts/shells/chat/src/chat/dm/index.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/federation/invite_then_pow.mjs"
+		],
 		"fedBan": [
 			"src/public/parts/shells/chat/src/group/routes/governance.mjs",
 			"src/public/parts/shells/chat/src/group/lib/locks.mjs",
@@ -552,6 +564,50 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_ban"
+			]
+		},
+		{
+			"name": "fed_discovery",
+			"expected": "1m47s",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedDiscovery"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_discovery"
+			]
+		},
+		{
+			"name": "fed_invite_then_pow",
+			"expected": "1m50s",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedInviteThenPow"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_invite_then_pow"
 			]
 		},
 		{

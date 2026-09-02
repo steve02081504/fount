@@ -10,6 +10,8 @@ import {
 	createFriendChatGroup,
 	listChatGroups,
 	deleteChatGroup,
+	sendMessageViaComposer,
+	expectMessageInChat,
 } from './fixtures.mjs'
 
 test.describe('Chat hub navigation', () => {
@@ -201,5 +203,103 @@ test.describe('Chat hub navigation', () => {
 		await expect(page.locator('.discovery-page')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('[data-discovery-grid]')).toBeVisible()
 		await expect(page.locator('#discovery-button')).toHaveClass(/mode-active/)
+	})
+
+	test('discovery blank click does not bounce back to the previous group', async ({ page, baseUrl, apiKey }) => {
+		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		// 群发现接口在单节点测试中无联邦数据：固定空索引，保证发现面板稳定渲染空态。
+		await page.route(url => new URL(url).pathname.startsWith('/api/parts/shells:chat/discovery'), route => {
+			return route.fulfill({ status: 200, contentType: 'application/json', body: '{"entries":[]}' })
+		})
+
+		await page.locator('#discovery-button').click()
+		await expect(page).toHaveURL(/#discovery/)
+		await expect(page.locator('.discovery-page')).toBeVisible({ timeout: 30_000 })
+
+		// 进入发现视图后，body 不得残留旧群的 data-group-id 全局上下文标记。
+		await expect(page.locator('body')).not.toHaveAttribute('data-group-id', groupId)
+
+		// 点击发现页空白（hero 左上角）不应触发 selectGroup 跳回旧群。
+		const box = await page.locator('.discovery-page').boundingBox()
+		expect(box).not.toBeNull()
+		await page.mouse.click(box.x + 6, box.y + 6)
+
+		// selectGroup 走异步（loadGroups 后才写 hash）：轮询一小段窗口，断言没有跳回 #group:。
+		const startedAt = Date.now()
+		while (Date.now() - startedAt < 2_500) {
+			if (/#group:/.test(page.url())) break
+			await page.waitForTimeout(100)
+		}
+		expect(page.url()).toMatch(/#discovery/)
+		expect(page.url()).not.toMatch(/#group:/)
+		await expect(page.locator('.discovery-page')).toBeVisible()
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', true)
+	})
+
+	test('in-flight channel refresh does not leak group messages into discovery', async ({ page, groupChannel }) => {
+		const { groupId, channelId } = groupChannel
+		// 先发一条真实消息并等它渲染完成，确保 `lastMessageId` 已建立（增量刷新会带 `since` 参数）。
+		const msgText = `stale-msg-${Date.now()}`
+		await sendMessageViaComposer(page, groupId, channelId, msgText)
+		await expectMessageInChat(page, msgText)
+
+		// 群发现接口在单节点测试中无联邦数据：直接返回空索引，保证发现面板稳定渲染空态。
+		await page.route(url => new URL(url).pathname.startsWith('/api/parts/shells:chat/discovery'), route => {
+			return route.fulfill({ status: 200, contentType: 'application/json', body: '{"entries":[]}' })
+		})
+
+		// 拦截带 since 的 view-log（即增量刷新），使其停在 fetch 阶段。
+		let releaseViewLog
+		const viewLogGate = new Promise(resolve => { releaseViewLog = resolve })
+		const sinceViewLogRequest = page.waitForRequest(req =>
+			new URL(req.url()).pathname.endsWith('/view-log')
+			&& new URL(req.url()).searchParams.has('since'))
+		await page.route(url => new URL(url).pathname.endsWith('/view-log'), async route => {
+			await viewLogGate
+			await route.continue()
+		})
+
+		// 手动触发一次增量刷新（与 Hub 共享同一模块实例），其 fetch 被 gate 卡住（在途）。
+		await page.evaluate(async () => {
+			const { scheduleChannelIncrementalRefresh } = await import('/parts/shells:chat/hub/messages/messages.mjs')
+			scheduleChannelIncrementalRefresh({ immediate: true })
+		})
+		await sinceViewLogRequest
+
+		// 切到群发现：面板已挂载，增量刷新仍在途。
+		await page.locator('#discovery-button').click()
+		await expect(page).toHaveURL(/#discovery/)
+		await expect(page.locator('.discovery-page')).toBeVisible({ timeout: 30_000 })
+
+		// 放行旧视图的增量刷新：其结果不得再影响发现面板。
+		releaseViewLog()
+		await expect(page.locator('.discovery-page')).toBeVisible({ timeout: 10_000 })
+		await expect(page.locator('#messages .message')).toHaveCount(0)
+	})
+
+	test('rapid discovery/group switching keeps the final surface consistent', async ({ page, groupChannel }) => {
+		const { groupId } = groupChannel
+		const groupItem = page.locator(`#server-list .server-item[data-group-id="${groupId}"]`)
+		await expect(groupItem).toBeVisible({ timeout: 60_000 })
+		const discoveryButton = page.locator('#discovery-button')
+
+		// 快速在群发现与群之间来回切换，触发 selectGroup / activateDiscoveryView 异步竞态。
+		for (let i = 0; i < 3; i++) {
+			await discoveryButton.click()
+			await groupItem.click()
+		}
+
+		// 最终应稳定落在群视图：无发现面板，频道侧栏与 composer 正常。
+		await groupItem.click()
+		await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(groupId)}`), { timeout: 60_000 })
+		await expect(page.locator('.discovery-page')).toHaveCount(0, { timeout: 60_000 })
+		await expect(page.locator('#channel-list')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#message-input')).toHaveJSProperty('disabled', false, { timeout: 30_000 })
+
+		// 再切回发现：发现面板可见且不含频道消息行。
+		await discoveryButton.click()
+		await expect(page).toHaveURL(/#discovery/, { timeout: 30_000 })
+		await expect(page.locator('.discovery-page')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#messages .message')).toHaveCount(0)
 	})
 })
