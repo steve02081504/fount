@@ -521,9 +521,9 @@
 				"patchMissing": "Fout: Het uitvoerbare bestand van Deno is niet gevonden vóór het patchen. Kan niet worden gepatcht.",
 				"patchUnsupportedArch": "Fout: Niet-ondersteunde patcharchitectuur: ${arch}",
 				"patchFailed": "Fout: Kan het uitvoerbare bestand van Deno niet patchen met `patchelf`.",
-				"managedUpgrade": "Deno wordt beheerd door de ${manager} pakketbeheerder (pakket: ${package}) en wordt geüpgraded via ${manager}.",
-				"managedUpgradeFailed": "Waarschuwing: het upgraden van Deno (pakket: ${manager}) via ${package} is mislukt, waardoor de status quo blijft bestaan.",
-				"pinNotHonored": "Waarschuwing: Deno wordt beheerd door de ${manager} pakketbeheerder en kan niet voldoen aan de versie (${spec}) gespecificeerd door .deno-version. Het is geüpgraded volgens de versie van de pakketbeheerder."
+				"managedUpgrade": "Deno wordt beheerd door de ${manager} pakketbeheerder (pakket: ${package}) en wordt bijgewerkt via ${manager}.",
+				"managedUpgradeFailed": "Waarschuwing: het bijwerken van Deno (pakket: ${package}) via ${manager} is mislukt; de huidige versie blijft behouden.",
+				"pinNotHonored": "Waarschuwing: Deno wordt beheerd door de ${manager} pakketbeheerder, waardoor de in .deno-version opgegeven versie (${spec}) niet kan worden gevolgd. Er is bijgewerkt naar de versie van de pakketbeheerder."
 			},
 			"tempDir": {
 				"blocked": "Fout: kan `fount` niet uitvoeren in de tijdelijke map\n\nfount is diep gekoppeld aan het systeem en registreert het `PATH`-commando en meerdere systeemhooks in `fount`. Bij uitvoering in een tijdelijke map kunt u na het wissen van tijdelijke bestanden door het systeem geen `fount remove` meer uitvoeren om fount en de hooks te verwijderen.\n\nVerplaats fount naar een niet-tijdelijke map voordat u het uitvoert. Als u alleen kort wilt testen, voer `fount remove` handmatig uit na de test."
