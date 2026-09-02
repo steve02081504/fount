@@ -548,6 +548,10 @@ Deno.test('POSIX package-manager family stays in sync across every readme and co
 	const m = mjs.match(new RegExp(`${SH_BEGIN}\\n([\\s\\S]*?)\\n?${SH_END}\\n?`))
 	assert.ok(m, 'markers missing in src/runner/npm/main.mjs')
 	assert.equal(m[1], jsEscape(canonical).trim(), 'src/runner/npm/main.mjs out of sync — run: node .esh/commands/sync-pkg-mgr.mjs')
+	const frontendBlock = readFileSync(join(REPO_ROOT, 'src/public/parts/shells/subfounts/public/src/pkg_mgr_block.mjs'), 'utf8')
+	const frontendMatch = frontendBlock.match(new RegExp(`${SH_BEGIN}\\n([\\s\\S]*?)\\n?${SH_END}`))
+	assert.ok(frontendMatch, 'markers missing in subfounts frontend pkg_mgr_block.mjs')
+	assert.equal(frontendMatch[1], jsEscape(canonical).trim(), 'subfounts frontend pkg_mgr_block.mjs out of sync — run: node .esh/commands/sync-pkg-mgr.mjs')
 })
 
 Deno.test('deno.sh and deno.ps1 both route managed Deno through the manager upgrade', () => {

@@ -5793,11 +5793,6 @@
 			"executionFailed": "Помилка виконання коду: ${message}",
 			"selectSubfount": "Будь ласка, виберіть Subfount, щоб виконати код..."
 		},
-		"downloadClient": {
-			"title": "Завантажте клієнт субфонду",
-			"description": "Завантажте автономний клієнтський сценарій підоснови для запуску на віддаленому пристрої.",
-			"downloadButton": "Завантажте subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "Не вдалося завантажити код підключення: ${message}",
 			"regenerateConnectionCodeFailed": "Не вдалося повторно створити код підключення: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "Завантажте клієнт субфонду",
+			"description": "Завантажте автономний клієнтський сценарій підоснови для запуску на віддаленому пристрої.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Копіювати",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

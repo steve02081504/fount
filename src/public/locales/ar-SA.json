@@ -5793,11 +5793,6 @@
 			"executionFailed": "فشل تنفيذ التعليمات البرمجية: ${message}",
 			"selectSubfount": "الرجاء تحديد Subfount لتنفيذ التعليمات البرمجية..."
 		},
-		"downloadClient": {
-			"title": "قم بتنزيل العميل الفرعي",
-			"description": "قم بتنزيل البرنامج النصي للعميل subfount المستقل لتشغيله على الجهاز البعيد.",
-			"downloadButton": "تحميل subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "فشل تحميل رمز الاتصال: ${message}",
 			"regenerateConnectionCodeFailed": "فشل في إعادة إنشاء رمز الاتصال: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "قم بتنزيل العميل الفرعي",
+			"description": "قم بتنزيل البرنامج النصي للعميل subfount المستقل لتشغيله على الجهاز البعيد.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "نسخ",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

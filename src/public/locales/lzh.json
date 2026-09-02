@@ -5793,11 +5793,6 @@
 			"executionFailed": "符碼行之敗績: ${message}",
 			"selectSubfount": "請擇要行符碼的Subfount..."
 		},
-		"downloadClient": {
-			"title": "拓存Subfount客端",
-			"description": "拓存獨立Subfount客端腳本，以備遠端之用。",
-			"downloadButton": "拓存 subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "載連繫碼敗績: ${message}",
 			"regenerateConnectionCodeFailed": "更造連繫碼敗績: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "拓存Subfount客端",
+			"description": "拓存獨立Subfount客端腳本，以備遠端之用。",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "謄錄",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

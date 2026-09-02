@@ -5799,11 +5799,6 @@
 			"executionFailed": "Uitvoering van code mislukt: ${message}",
 			"selectSubfount": "Selecteer het subfont om de code uit te voeren..."
 		},
-		"downloadClient": {
-			"title": "subfount-client downloaden",
-			"description": "Download het zelfstandige subfount-clientscript om op het externe apparaat uit te voeren.",
-			"downloadButton": "Download subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "Kan verbindingscode niet laden: ${message}",
 			"regenerateConnectionCodeFailed": "Kan verbindingscode niet opnieuw genereren: ${message}",
@@ -5825,6 +5820,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "subfount-client downloaden",
+			"description": "Download het zelfstandige subfount-clientscript om op het externe apparaat uit te voeren.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Kopiëren",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

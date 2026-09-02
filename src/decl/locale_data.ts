@@ -5755,10 +5755,18 @@ export type LocaleData = {
 			executionFailed: string
 			selectSubfount: string
 		}
-		downloadClient: {
+		installClient: {
 			title: string
 			description: string
-			downloadButton: string
+			tabsLabel: { 'aria-label': string }
+			tabs: {
+				linux: string
+				macos: string
+				android: string
+				windows: string
+			}
+			copyButton: string
+			copied: string
 		}
 		errors: {
 			loadConnectionCodeFailed: string
