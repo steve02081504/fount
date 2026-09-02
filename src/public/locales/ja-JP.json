@@ -5793,11 +5793,6 @@
 			"executionFailed": "コードの実行に失敗しました: ${message}",
 			"selectSubfount": "実行する subfount を選択"
 		},
-		"downloadClient": {
-			"title": "サブfountクライアントをダウンロードする",
-			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
-			"downloadButton": "subfount.mjsをダウンロード"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "接続コードのロードに失敗しました: ${message}",
 			"regenerateConnectionCodeFailed": "接続コードの再生成に失敗しました: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "サブfountクライアントをダウンロードする",
+			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "コピー",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

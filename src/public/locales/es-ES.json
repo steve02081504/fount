@@ -5799,11 +5799,6 @@
 			"executionFailed": "La ejecución del código falló: ${message}",
 			"selectSubfount": "Selecciona el Sub 0 para ejecutar el código..."
 		},
-		"downloadClient": {
-			"title": "Descargar cliente de Subfount",
-			"description": "Descargue el script del cliente Subfount independiente para ejecutarlo en el dispositivo remoto.",
-			"downloadButton": "Descargar Subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "No se pudo cargar el código de conexión: ${message}",
 			"regenerateConnectionCodeFailed": "No se pudo regenerar el código de conexión: ${message}",
@@ -5825,6 +5820,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "Descargar cliente de Subfount",
+			"description": "Descargue el script del cliente Subfount independiente para ejecutarlo en el dispositivo remoto.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Copiar",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

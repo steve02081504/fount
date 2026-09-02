@@ -5793,11 +5793,6 @@
 			"executionFailed": "Việc thực thi mã không thành công: ${message}",
 			"selectSubfount": "Vui lòng chọn Subfoun để thực thi mã..."
 		},
-		"downloadClient": {
-			"title": "Tải xuống ứng dụng khách phụ",
-			"description": "Tải xuống tập lệnh máy khách phụ độc lập để chạy trên thiết bị từ xa.",
-			"downloadButton": "Tải xuống subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "Không tải được mã kết nối: ${message}",
 			"regenerateConnectionCodeFailed": "Không tạo lại được mã kết nối: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "Tải xuống ứng dụng khách phụ",
+			"description": "Tải xuống tập lệnh máy khách phụ độc lập để chạy trên thiết bị từ xa.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Sao chép",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

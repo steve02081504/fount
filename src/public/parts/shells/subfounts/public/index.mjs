@@ -6,6 +6,7 @@ import { initTranslations, setLocalizeLogic } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import * as api from './src/endpoints.mjs'
+import { INSTALL_SCRIPTS, detectOs } from './src/install_scripts.mjs'
 
 const connectionCodeInput = document.getElementById('connection-code-input'),
 	passwordInput = document.getElementById('password-input'),
@@ -19,7 +20,10 @@ const connectionCodeInput = document.getElementById('connection-code-input'),
 	executeButton = document.getElementById('execute-button'),
 	executionResult = document.getElementById('execution-result'),
 	resultAlert = document.getElementById('result-alert'),
-	resultContent = document.getElementById('result-content')
+	resultContent = document.getElementById('result-content'),
+	installScriptTabs = [...document.querySelectorAll('[data-os-tab]')],
+	installScriptPre = document.getElementById('install-script-pre'),
+	copyInstallButton = document.getElementById('copy-install-button')
 
 let connectionCode = null
 let password = null
@@ -324,6 +328,30 @@ async function executeCode() {
 executeButton.addEventListener('click', executeCode)
 
 /**
+ * 切换安装脚本的 OS tab 并显示对应脚本。
+ * @param {string} os - OS 键（linux/macos/android/windows）。
+ * @returns {void}
+ */
+function showInstallScript(os) {
+	if (!INSTALL_SCRIPTS[os]) os = 'linux'
+	for (const tab of installScriptTabs) {
+		const active = tab.dataset.osTab === os
+		tab.classList.toggle('tab-active', active)
+		tab.setAttribute('aria-selected', String(active))
+	}
+	installScriptPre.textContent = INSTALL_SCRIPTS[os]
+}
+
+for (const tab of installScriptTabs)
+	tab.addEventListener('click', () => showInstallScript(tab.dataset.osTab))
+
+copyInstallButton.addEventListener('click', () =>
+	navigator.clipboard.writeText(installScriptPre.textContent)
+		.then(() => showToastI18n('success', 'subfounts.installClient.copied'))
+		.catch(e => showToastI18n('error', 'subfounts.errors.generalError', { message: e.message }))
+)
+
+/**
  * 主要初始化函数。
  */
 async function main() {
@@ -331,6 +359,7 @@ async function main() {
 	applyTheme()
 	await Promise.all([loadConnectionCode(), loadInfraSettings()])
 	connectWebSocket()
+	showInstallScript(detectOs())
 }
 
 main()

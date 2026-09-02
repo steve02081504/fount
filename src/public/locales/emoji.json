@@ -5793,11 +5793,6 @@
 			"executionFailed": "▶️ ❌: ${message}",
 			"selectSubfount": "👆🙏💻Subfount…"
 		},
-		"downloadClient": {
-			"title": "⬇️🖇️⛲🤖",
-			"description": "⬇️ .mjs ➡️ 📱",
-			"downloadButton": "⬇️ subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "❌ 🔗🔢: ${message}",
 			"regenerateConnectionCodeFailed": "❌ 🔄 🔗🔢: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "⬇️🖇️⛲🤖",
+			"description": "⬇️ .mjs ➡️ 📱",
+			"tabsLabel": {
+				"aria-label": "🧭"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "📋",
+			"copied": "📋"
 		}
 	},
 	"achievements": {

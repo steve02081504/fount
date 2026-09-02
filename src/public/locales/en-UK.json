@@ -5793,11 +5793,6 @@
 			"executionFailed": "Code execution failed: ${message}",
 			"selectSubfount": "Please select the Subfount to execute the code..."
 		},
-		"downloadClient": {
-			"title": "Download subfount client",
-			"description": "Download the standalone subfount client script to run on the remote device.",
-			"downloadButton": "Download subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "Failed to load connection code: ${message}",
 			"regenerateConnectionCodeFailed": "Failed to regenerate connection code: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "Install subfount client",
+			"description": "Run the matching install script on the remote device to bring it into the fount network.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Copy",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

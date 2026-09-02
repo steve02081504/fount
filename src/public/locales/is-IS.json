@@ -5793,11 +5793,6 @@
 			"executionFailed": "Kóðaframkvæmd mistókst: ${message}",
 			"selectSubfount": "Vinsamlegast veldu undirstofn til að keyra kóðann..."
 		},
-		"downloadClient": {
-			"title": "Sæktu biðlara undirlindar",
-			"description": "Sæktu sjálfstætt smáforrit biðlara til að keyra á ytra tækinu.",
-			"downloadButton": "Sækja subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "Mistókst að hlaða tengikóða: ${message}",
 			"regenerateConnectionCodeFailed": "Mistókst að endurskapa tengikóða: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "Sæktu biðlara undirlindar",
+			"description": "Sæktu sjálfstætt smáforrit biðlara til að keyra á ytra tækinu.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Afrita",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

@@ -5793,11 +5793,6 @@
 			"executionFailed": "Codeausführung fehlgeschlagen: ${message}",
 			"selectSubfount": "Bitte wählen Sie den Subfount aus, um den Code auszuführen ..."
 		},
-		"downloadClient": {
-			"title": "Laden Sie den Subfount-Client herunter",
-			"description": "Laden Sie das eigenständige Subfount-Client-Skript herunter, um es auf dem Remote-Gerät auszuführen.",
-			"downloadButton": "Laden Sie subfount.mjs herunter"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "Verbindungscode konnte nicht geladen werden: ${message}",
 			"regenerateConnectionCodeFailed": "Verbindungscode konnte nicht neu generiert werden: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "Laden Sie den Subfount-Client herunter",
+			"description": "Laden Sie das eigenständige Subfount-Client-Skript herunter, um es auf dem Remote-Gerät auszuführen.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Kopieren",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

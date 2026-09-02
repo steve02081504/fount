@@ -6,7 +6,9 @@
  * （`path/fount` 经 `run.sh` 用 `/bin/sh` 运行，故必须保持 POSIX）。
  * 消费端（全部注入压缩后的单行内容）：
  * - `README.md` 与 `docs/readme/Readme.*.md`（原样压缩，供任意 shell 复制粘贴）；
- * - `src/runner/npm/main.mjs`（压缩 + JS 转义后注入 `sh_exec` 模板，模板以 `sh` 运行）。
+ * - `src/runner/npm/main.mjs`（压缩 + JS 转义后注入 `sh_exec` 模板，模板以 `sh` 运行）；
+ * - `src/public/parts/shells/subfounts/public/src/pkg_mgr_block.mjs`（压缩 + JS 转义后注入
+ *   模板字面量，供 subfounts shell 前端拼装带同步段的安装脚本）。
  *
  * `src/runner/main.sh` 是 bash 脚本，不在同步范围——它有自己独立的 bash 版包管理。
  *
@@ -101,20 +103,15 @@ export function jsEscape(code) {
 }
 
 /**
- * 把目标文件里的 FOUNT_PKG_MGR 标记块（全部）替换为指定块；无标记则迁移旧式
- * 单行 `install_package() { ... }` 定义。
+ * 把目标文件里的 FOUNT_PKG_MGR 标记块（全部）替换为指定块；无标记则报错。
  * @param {string} content 目标文件原文。
  * @param {string} block 替换后的标记块。
  * @returns {string} 替换后的内容。
  */
 export function injectBlock(content, block) {
-	if (content.includes(SH_BEGIN)) 
+	if (content.includes(SH_BEGIN))
 		return content.replace(blockRe(), () => block)
-	
-	const migrated = content.replace(/^install_package\(\) \{.*\n/gm, `${block}`)
-	if (migrated === content)
-		throw new Error('no FOUNT_PKG_MGR markers or legacy install_package definition found')
-	return migrated
+	throw new Error('no FOUNT_PKG_MGR markers found')
 }
 
 /**
@@ -140,6 +137,20 @@ export function syncPkgMgr() {
 	for (const readme of readmeTargets())
 		writeTarget(readme, canonical)
 	writeTarget('src/runner/npm/main.mjs', canonical, true)
+	writeFrontendBlock(canonical)
+}
+
+/**
+ * subfounts shell 前端消费端：把压缩规范以 JS 转义形式注入模板字面量导出。
+ * @param {string} canonical 单行压缩规范（末尾带单个换行）。
+ * @returns {void}
+ */
+export function writeFrontendBlock(canonical) {
+	const target = 'src/public/parts/shells/subfounts/public/src/pkg_mgr_block.mjs'
+	const path = join(root, target)
+	const block = `${SH_BEGIN}\n${jsEscape(canonical)}${SH_END}`
+	const module = `/**\n * FOUNT_PKG_MGR 同步段消费端 —— 由 \`node .esh/commands/sync-pkg-mgr.mjs\` 从 \`path/fount\` 自动生成，勿手改。\n * 供 subfounts shell 前端拼装可复制的安装脚本。\n */\nexport const FOUNT_PKG_MGR_BLOCK = \`${block}\`\n`
+	writeFileSync(path, module)
 }
 
 if (import.meta.main)

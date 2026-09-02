@@ -5793,11 +5793,6 @@
 			"executionFailed": "कोड निष्पादन विफल: ${message}",
 			"selectSubfount": "कृपया कोड निष्पादित करने के लिए सबफ़ाउंट का चयन करें…"
 		},
-		"downloadClient": {
-			"title": "सब-फ़ाउंट क्लाइंट डाउनलोड करें",
-			"description": "रिमोट डिवाइस पर चलाने के लिए स्टैंडअलोन सबफ़ाउंट क्लाइंट स्क्रिप्ट डाउनलोड करें।",
-			"downloadButton": "सबफ़ाउंट.एमजेएस डाउनलोड करें"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "कनेक्शन कोड लोड करने में विफल: ${message}",
 			"regenerateConnectionCodeFailed": "कनेक्शन कोड पुन: उत्पन्न करने में विफल: ${message}",
@@ -5819,6 +5814,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "सब-फ़ाउंट क्लाइंट डाउनलोड करें",
+			"description": "रिमोट डिवाइस पर चलाने के लिए स्टैंडअलोन सबफ़ाउंट क्लाइंट स्क्रिप्ट डाउनलोड करें।",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "कॉपी",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

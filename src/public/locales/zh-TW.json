@@ -5792,11 +5792,6 @@
 			"executionFailed": "程式碼執行失敗: ${message}",
 			"selectSubfount": "請選擇要執行程式碼的Subfount..."
 		},
-		"downloadClient": {
-			"title": "下載子 fount 客戶端",
-			"description": "下載獨立的子 fount 客戶端指令碼以在遠端裝置上執行。",
-			"downloadButton": "下載 subfount.mjs"
-		},
 		"errors": {
 			"loadConnectionCodeFailed": "載入連接碼失敗: ${message}",
 			"regenerateConnectionCodeFailed": "重新產生連接碼失敗: ${message}",
@@ -5818,6 +5813,21 @@
 					}
 				}
 			}
+		},
+		"installClient": {
+			"title": "下載子 fount 客戶端",
+			"description": "下載獨立的子 fount 客戶端指令碼以在遠端裝置上執行。",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "複製",
+			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {
