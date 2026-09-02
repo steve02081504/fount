@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Deno アップグレード コマンドが失敗しました。Deno for Termux を再インストールしようとしています...",
 				"patchMissing": "エラー: パッチ適用前に Deno 実行可能ファイルが見つかりませんでした。パッチを適用できません。",
 				"patchUnsupportedArch": "エラー: サポートされていないパッチ アーキテクチャ: ${arch}",
-				"patchFailed": "エラー: `patchelf` を使用して Deno 実行可能ファイルにパッチを適用できませんでした。"
+				"patchFailed": "エラー: `patchelf` を使用して Deno 実行可能ファイルにパッチを適用できませんでした。",
+				"managedUpgrade": "Deno は ${manager} パッケージ マネージャー (パッケージ: ${package}) によって管理され、${manager} 経由でアップグレードされます。",
+				"managedUpgradeFailed": "警告: ${manager} 経由での Deno (パッケージ: ${package}) のアップグレードが失敗し、現状のままです。",
+				"pinNotHonored": "警告: Deno は ${manager} パッケージ マネージャーによって管理されており、.deno-version で指定されたバージョン (${spec}) に準拠できません。パッケージマネージャーのバージョンに応じてアップグレードされています。"
 			},
 			"tempDir": {
 				"blocked": "エラー: 一時ディレクトリで `fount` を実行できません\n\nfount はシステムと深く結合し、`fount` 内で `PATH` コマンドと複数のシステム hook を登録します。一時ディレクトリで実行すると、システムが一時ファイルを消去した後、`fount remove` を実行して fount とその hook を削除できなくなります。\n\n実行前に fount を非一時ディレクトリに移動してください。短時間のテストのみの場合は、テスト完了後に手動で `fount remove` を実行してください。"
@@ -5793,6 +5796,21 @@
 			"executionFailed": "コードの実行に失敗しました: ${message}",
 			"selectSubfount": "実行する subfount を選択"
 		},
+		"installClient": {
+			"title": "サブfountクライアントをダウンロードする",
+			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "コピー",
+			"copied": "Install script copied to clipboard"
+		},
 		"errors": {
 			"loadConnectionCodeFailed": "接続コードのロードに失敗しました: ${message}",
 			"regenerateConnectionCodeFailed": "接続コードの再生成に失敗しました: ${message}",
@@ -5814,21 +5832,6 @@
 					}
 				}
 			}
-		},
-		"installClient": {
-			"title": "サブfountクライアントをダウンロードする",
-			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
-			"tabsLabel": {
-				"aria-label": "Select the operating system"
-			},
-			"tabs": {
-				"linux": "Linux",
-				"macos": "macOS",
-				"android": "Android",
-				"windows": "Windows"
-			},
-			"copyButton": "コピー",
-			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

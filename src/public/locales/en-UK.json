@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Deno upgrade command failed, trying to reinstall Deno for Termux...",
 				"patchMissing": "Error: Deno executable not found before patching. Cannot be patched.",
 				"patchUnsupportedArch": "Error: Unsupported patch architecture: ${arch}",
-				"patchFailed": "Error: Failed to patch Deno executable using `patchelf`."
+				"patchFailed": "Error: Failed to patch Deno executable using `patchelf`.",
+				"managedUpgrade": "Deno is managed by the ${manager} package manager (package: ${package}) and is being upgraded via ${manager}.",
+				"managedUpgradeFailed": "Warning: Upgrading Deno (package: ${manager}) via ${package} failed, leaving status quo.",
+				"pinNotHonored": "Warning: Deno is managed by the ${manager} package manager and cannot comply with the version (${spec}) specified by .deno-version. It has been upgraded according to the package manager's version."
 			},
 			"tempDir": {
 				"blocked": "Error: cannot run `fount` in temporary directory\n\nFount will be deeply coupled with the system and register the `PATH` command and multiple system hooks in `fount`. If running in a temporary directory, after the system clears the temporary files, you will not be able to execute `fount remove` to remove fount and its hooks.\n\nPlease move fount to a non-temporary directory before running. If you only want to test briefly, please manually execute `fount remove` after the test is completed."
@@ -5793,6 +5796,21 @@
 			"executionFailed": "Code execution failed: ${message}",
 			"selectSubfount": "Please select the Subfount to execute the code..."
 		},
+		"installClient": {
+			"title": "Install subfount client",
+			"description": "Run the matching install script on the remote device to bring it into the fount network.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Copy",
+			"copied": "Install script copied to clipboard"
+		},
 		"errors": {
 			"loadConnectionCodeFailed": "Failed to load connection code: ${message}",
 			"regenerateConnectionCodeFailed": "Failed to regenerate connection code: ${message}",
@@ -5814,21 +5832,6 @@
 					}
 				}
 			}
-		},
-		"installClient": {
-			"title": "Install subfount client",
-			"description": "Run the matching install script on the remote device to bring it into the fount network.",
-			"tabsLabel": {
-				"aria-label": "Select the operating system"
-			},
-			"tabs": {
-				"linux": "Linux",
-				"macos": "macOS",
-				"android": "Android",
-				"windows": "Windows"
-			},
-			"copyButton": "Copy",
-			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {
