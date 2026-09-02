@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Deno 晉級之命未遂，嘗試為 Termux 重裝...",
 				"patchMissing": "誤：補綴前未見 Deno 行檔，無以補綴。",
 				"patchUnsupportedArch": "誤：未援之補綴架構：${arch}",
-				"patchFailed": "誤：以 `patchelf` 補綴 Deno 行檔未遂。"
+				"patchFailed": "誤：以 `patchelf` 補綴 Deno 行檔未遂。",
+				"managedUpgrade": "Deno 由 ${manager} 包管理器管理（包：${package}），正在通过 ${manager} 升级。",
+				"managedUpgradeFailed": "警告：通过 ${manager} 升级 Deno（包：${package}）失败，已保持现状。",
+				"pinNotHonored": "警告：Deno 由 ${manager} 包管理器管理，无法遵循 .deno-version 指定的版本（${spec}），已按包管理器的版本升级。"
 			},
 			"tempDir": {
 				"blocked": "錯：權宜之所（臨時目錄），不可驅使 fount。\n\nfount 既與主機血脈相連（深耦），必勒銘於 PATH 及樞機之內。若棲於權宜之所，一旦系統蕩滌，則 fount 及其所勒之印難以盡除。\n\n請遷 fount 至常駐之所而後啟之。若僅為試手，則大功告成之際，切記親手行 fount remove 以除其跡。"
@@ -5793,6 +5796,21 @@
 			"executionFailed": "符碼行之敗績: ${message}",
 			"selectSubfount": "請擇要行符碼的Subfount..."
 		},
+		"installClient": {
+			"title": "拓存Subfount客端",
+			"description": "拓存獨立Subfount客端腳本，以備遠端之用。",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "謄錄",
+			"copied": "Install script copied to clipboard"
+		},
 		"errors": {
 			"loadConnectionCodeFailed": "載連繫碼敗績: ${message}",
 			"regenerateConnectionCodeFailed": "更造連繫碼敗績: ${message}",
@@ -5814,21 +5832,6 @@
 					}
 				}
 			}
-		},
-		"installClient": {
-			"title": "拓存Subfount客端",
-			"description": "拓存獨立Subfount客端腳本，以備遠端之用。",
-			"tabsLabel": {
-				"aria-label": "Select the operating system"
-			},
-			"tabs": {
-				"linux": "Linux",
-				"macos": "macOS",
-				"android": "Android",
-				"windows": "Windows"
-			},
-			"copyButton": "謄錄",
-			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

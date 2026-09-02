@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "❌🦕⏫ ➡️ 📱📥",
 				"patchMissing": "❌: 🚫👀 🦕🏃‍♂️ 🚫🩹",
 				"patchUnsupportedArch": "❌: 🚫🤝 🏗️: ${arch}",
-				"patchFailed": "❌: 🩹🦕 🏃‍♂️ (`patchelf`) 💥"
+				"patchFailed": "❌: 🩹🦕 🏃‍♂️ (`patchelf`) 💥",
+				"managedUpgrade": "Deno 由 ${manager} 包管理器管理（包：${package}），正在通过 ${manager} 升级。",
+				"managedUpgradeFailed": "警告：通过 ${manager} 升级 Deno（包：${package}）失败，已保持现状。",
+				"pinNotHonored": "警告：Deno 由 ${manager} 包管理器管理，无法遵循 .deno-version 指定的版本（${spec}），已按包管理器的版本升级。"
 			},
 			"tempDir": {
 				"blocked": "🚫⛲🏃‍♂️📁🕒\n\n⛲🔗🖥️➡️`PATH`&🪝 in `fount`\n🕒📁🗑️➡️🚫`fount remove`\n\n📦➡️📁✅ | 🧪➡️`fount remove`"
@@ -5793,6 +5796,21 @@
 			"executionFailed": "▶️ ❌: ${message}",
 			"selectSubfount": "👆🙏💻Subfount…"
 		},
+		"installClient": {
+			"title": "⬇️🖇️⛲🤖",
+			"description": "⬇️ .mjs ➡️ 📱",
+			"tabsLabel": {
+				"aria-label": "🧭"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "📋",
+			"copied": "📋"
+		},
 		"errors": {
 			"loadConnectionCodeFailed": "❌ 🔗🔢: ${message}",
 			"regenerateConnectionCodeFailed": "❌ 🔄 🔗🔢: ${message}",
@@ -5814,21 +5832,6 @@
 					}
 				}
 			}
-		},
-		"installClient": {
-			"title": "⬇️🖇️⛲🤖",
-			"description": "⬇️ .mjs ➡️ 📱",
-			"tabsLabel": {
-				"aria-label": "🧭"
-			},
-			"tabs": {
-				"linux": "Linux",
-				"macos": "macOS",
-				"android": "Android",
-				"windows": "Windows"
-			},
-			"copyButton": "📋",
-			"copied": "📋"
 		}
 	},
 	"achievements": {

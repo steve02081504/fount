@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "डेनो अपग्रेड कमांड विफल, टर्मक्स के लिए डेनो को पुनः स्थापित करने का प्रयास किया जा रहा है...",
 				"patchMissing": "त्रुटि: पैचिंग से पहले डेनो निष्पादन योग्य नहीं मिला। पैच नहीं किया जा सकता.",
 				"patchUnsupportedArch": "त्रुटि: असमर्थित पैच आर्किटेक्चर: ${arch}",
-				"patchFailed": "त्रुटि: `patchelf` का उपयोग करके Deno निष्पादन योग्य को पैच करने में विफल।"
+				"patchFailed": "त्रुटि: `patchelf` का उपयोग करके Deno निष्पादन योग्य को पैच करने में विफल।",
+				"managedUpgrade": "डेनो को ${manager} पैकेज मैनेजर (पैकेज: ${package}) द्वारा प्रबंधित किया जाता है और इसे ${manager} के माध्यम से अपग्रेड किया जा रहा है।",
+				"managedUpgradeFailed": "चेतावनी: ${manager} के माध्यम से Deno (पैकेज: ${package}) को अपग्रेड करना विफल रहा, यथास्थिति छोड़ दी गई।",
+				"pinNotHonored": "चेतावनी: Deno को ${manager} पैकेज मैनेजर द्वारा प्रबंधित किया जाता है और यह .deno-version द्वारा निर्दिष्ट संस्करण (${spec}) का अनुपालन नहीं कर सकता है। इसे पैकेज मैनेजर के संस्करण के अनुसार अपग्रेड किया गया है।"
 			},
 			"tempDir": {
 				"blocked": "त्रुटि: अस्थायी निर्देशिका में `fount` नहीं चलाया जा सकता\n\nfount सिस्टम के साथ गहराई से जुड़ा है और `fount` में `PATH` कमांड और कई सिस्टम hook पंजीकृत करता है। यदि अस्थायी निर्देशिका में चलाया जाए, तो सिस्टम द्वारा अस्थायी फ़ाइलें साफ़ करने के बाद, आप fount और उसके hook हटाने के लिए `fount remove` नहीं चला पाएंगे।\n\nकृपया चलाने से पहले fount को गैर-अस्थायी निर्देशिका में ले जाएं। यदि आप केवल संक्षिप्त परीक्षण करना चाहते हैं, तो परीक्षण के बाद मैन्युअल रूप से `fount remove` चलाएं।"
@@ -5793,6 +5796,21 @@
 			"executionFailed": "कोड निष्पादन विफल: ${message}",
 			"selectSubfount": "कृपया कोड निष्पादित करने के लिए सबफ़ाउंट का चयन करें…"
 		},
+		"installClient": {
+			"title": "सब-फ़ाउंट क्लाइंट डाउनलोड करें",
+			"description": "रिमोट डिवाइस पर चलाने के लिए स्टैंडअलोन सबफ़ाउंट क्लाइंट स्क्रिप्ट डाउनलोड करें।",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "कॉपी",
+			"copied": "Install script copied to clipboard"
+		},
 		"errors": {
 			"loadConnectionCodeFailed": "कनेक्शन कोड लोड करने में विफल: ${message}",
 			"regenerateConnectionCodeFailed": "कनेक्शन कोड पुन: उत्पन्न करने में विफल: ${message}",
@@ -5814,21 +5832,6 @@
 					}
 				}
 			}
-		},
-		"installClient": {
-			"title": "सब-फ़ाउंट क्लाइंट डाउनलोड करें",
-			"description": "रिमोट डिवाइस पर चलाने के लिए स्टैंडअलोन सबफ़ाउंट क्लाइंट स्क्रिप्ट डाउनलोड करें।",
-			"tabsLabel": {
-				"aria-label": "Select the operating system"
-			},
-			"tabs": {
-				"linux": "Linux",
-				"macos": "macOS",
-				"android": "Android",
-				"windows": "Windows"
-			},
-			"copyButton": "कॉपी",
-			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

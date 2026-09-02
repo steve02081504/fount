@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Deno 업그레이드 명령이 실패했습니다. Termux용 Deno를 다시 설치하는 중입니다...",
 				"patchMissing": "오류: 패치 이전에는 Deno 실행 파일을 찾을 수 없습니다. 패치할 수 없습니다.",
 				"patchUnsupportedArch": "오류: 지원되지 않는 패치 아키텍처: ${arch}",
-				"patchFailed": "오류: `patchelf`를 사용하여 Deno 실행 파일을 패치하지 못했습니다."
+				"patchFailed": "오류: `patchelf`를 사용하여 Deno 실행 파일을 패치하지 못했습니다.",
+				"managedUpgrade": "Deno는 ${manager} 패키지 관리자(패키지: ${package})에 의해 관리되며 ${manager}를 통해 업그레이드되고 있습니다.",
+				"managedUpgradeFailed": "경고: ${manager}를 통한 Deno(패키지: ${package}) 업그레이드가 실패하여 현재 상태를 유지합니다.",
+				"pinNotHonored": "경고: Deno는 ${manager} 패키지 관리자에 의해 관리되며 .deno-version에 지정된 버전(${spec})을 준수할 수 없습니다. 패키지 관리자 버전에 맞춰 업그레이드 되었습니다."
 			},
 			"tempDir": {
 				"blocked": "오류: 임시 디렉터리에서 `fount`를 실행할 수 없습니다\n\nfount는 시스템과 깊이 결합되며 `fount`에서 `PATH` 명령과 여러 시스템 hook을 등록합니다. 임시 디렉터리에서 실행하면 시스템이 임시 파일을 지운 후 `fount remove`를 실행하여 fount와 hook을 제거할 수 없습니다.\n\n실행하기 전에 fount를 비임시 디렉터리로 이동하세요. 잠깐 테스트만 하려면 테스트 완료 후 수동으로 `fount remove`를 실행하세요."
@@ -5793,6 +5796,21 @@
 			"executionFailed": "코드 실행 실패: ${message}",
 			"selectSubfount": "코드를 실행하려면 서브파운드를 선택하세요..."
 		},
+		"installClient": {
+			"title": "서브폰트 클라이언트 다운로드",
+			"description": "원격 장치에서 실행할 독립형 하위 클라이언트 스크립트를 다운로드합니다.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "복사",
+			"copied": "Install script copied to clipboard"
+		},
 		"errors": {
 			"loadConnectionCodeFailed": "연결 코드를 로드하지 못했습니다: ${message}",
 			"regenerateConnectionCodeFailed": "연결 코드를 다시 생성하지 못했습니다: ${message}",
@@ -5814,21 +5832,6 @@
 					}
 				}
 			}
-		},
-		"installClient": {
-			"title": "서브폰트 클라이언트 다운로드",
-			"description": "원격 장치에서 실행할 독립형 하위 클라이언트 스크립트를 다운로드합니다.",
-			"tabsLabel": {
-				"aria-label": "Select the operating system"
-			},
-			"tabs": {
-				"linux": "Linux",
-				"macos": "macOS",
-				"android": "Android",
-				"windows": "Windows"
-			},
-			"copyButton": "복사",
-			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {

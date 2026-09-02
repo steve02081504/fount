@@ -520,7 +520,10 @@
 				"upgradeFailedTermux": "Lệnh nâng cấp Deno không thành công, đang cố cài đặt lại Deno cho Termux...",
 				"patchMissing": "Lỗi: Không tìm thấy tệp thực thi Deno trước khi vá. Không thể vá được.",
 				"patchUnsupportedArch": "Lỗi: Cấu trúc bản vá không được hỗ trợ: ${arch}",
-				"patchFailed": "Lỗi: Không thể vá tệp thực thi Deno bằng `patchelf`."
+				"patchFailed": "Lỗi: Không thể vá tệp thực thi Deno bằng `patchelf`.",
+				"managedUpgrade": "Deno được quản lý bởi trình quản lý gói ${manager} (gói: ${package}) và đang được nâng cấp thông qua ${manager}.",
+				"managedUpgradeFailed": "Cảnh báo: Nâng cấp Deno (gói: ${manager}) qua ${package} không thành công, để nguyên trạng thái.",
+				"pinNotHonored": "Cảnh báo: Deno được quản lý bởi trình quản lý gói ${manager} và không thể tuân thủ phiên bản (${spec}) do .deno-version chỉ định. Nó đã được nâng cấp theo phiên bản của trình quản lý gói."
 			},
 			"tempDir": {
 				"blocked": "Lỗi: không thể chạy `fount` trong thư mục tạm\n\nfount liên kết sâu với hệ thống và đăng ký lệnh `PATH` cùng nhiều hook hệ thống trong `fount`. Nếu chạy trong thư mục tạm, sau khi hệ thống xóa tệp tạm, bạn sẽ không thể thực thi `fount remove` để gỡ fount và các hook của nó.\n\nVui lòng di chuyển fount sang thư mục không tạm trước khi chạy. Nếu chỉ muốn thử nhanh, hãy thực thi `fount remove` thủ công sau khi thử."
@@ -5793,6 +5796,21 @@
 			"executionFailed": "Việc thực thi mã không thành công: ${message}",
 			"selectSubfount": "Vui lòng chọn Subfoun để thực thi mã..."
 		},
+		"installClient": {
+			"title": "Tải xuống ứng dụng khách phụ",
+			"description": "Tải xuống tập lệnh máy khách phụ độc lập để chạy trên thiết bị từ xa.",
+			"tabsLabel": {
+				"aria-label": "Select the operating system"
+			},
+			"tabs": {
+				"linux": "Linux",
+				"macos": "macOS",
+				"android": "Android",
+				"windows": "Windows"
+			},
+			"copyButton": "Sao chép",
+			"copied": "Install script copied to clipboard"
+		},
 		"errors": {
 			"loadConnectionCodeFailed": "Không tải được mã kết nối: ${message}",
 			"regenerateConnectionCodeFailed": "Không tạo lại được mã kết nối: ${message}",
@@ -5814,21 +5832,6 @@
 					}
 				}
 			}
-		},
-		"installClient": {
-			"title": "Tải xuống ứng dụng khách phụ",
-			"description": "Tải xuống tập lệnh máy khách phụ độc lập để chạy trên thiết bị từ xa.",
-			"tabsLabel": {
-				"aria-label": "Select the operating system"
-			},
-			"tabs": {
-				"linux": "Linux",
-				"macos": "macOS",
-				"android": "Android",
-				"windows": "Windows"
-			},
-			"copyButton": "Sao chép",
-			"copied": "Install script copied to clipboard"
 		}
 	},
 	"achievements": {
