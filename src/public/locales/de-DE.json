@@ -522,8 +522,8 @@
 				"patchUnsupportedArch": "Fehler: Nicht unterstützte Patch-Architektur: ${arch}",
 				"patchFailed": "Fehler: Die ausführbare Datei von Deno konnte nicht mit `patchelf` gepatcht werden.",
 				"managedUpgrade": "Deno wird vom Paketmanager ${manager} verwaltet (Paket: ${package}) und wird über ${manager} aktualisiert.",
-				"managedUpgradeFailed": "Warnung: Das Upgrade von Deno (Paket: ${manager}) über ${package} ist fehlgeschlagen, der Status Quo bleibt erhalten.",
-				"pinNotHonored": "Warnung: Deno wird vom Paketmanager ${manager} verwaltet und kann nicht der durch .deno-version angegebenen Version (${spec}) entsprechen. Es wurde entsprechend der Version des Paketmanagers aktualisiert."
+				"managedUpgradeFailed": "Warnung: Die Aktualisierung von Deno (Paket: ${package}) über ${manager} ist fehlgeschlagen; die aktuelle Version bleibt erhalten.",
+				"pinNotHonored": "Warnung: Deno wird vom Paketmanager ${manager} verwaltet, daher kann die in .deno-version angegebene Version (${spec}) nicht eingehalten werden. Es wurde auf die Version des Paketmanagers aktualisiert."
 			},
 			"tempDir": {
 				"blocked": "Fehler: `fount` kann nicht im temporären Verzeichnis ausgeführt werden\n\nfount ist eng mit dem System gekoppelt und registriert in `fount` den `PATH`-Befehl sowie mehrere System-Hooks. Wird fount in einem temporären Verzeichnis ausgeführt, können Sie nach dem Löschen der temporären Dateien durch das System `fount remove` nicht mehr ausführen, um fount und seine Hooks zu entfernen.\n\nBitte verschieben Sie fount vor dem Ausführen in ein nicht temporäres Verzeichnis. Wenn Sie nur kurz testen möchten, führen Sie `fount remove` nach Abschluss des Tests manuell aus."

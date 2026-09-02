@@ -521,9 +521,9 @@
 				"patchMissing": "Villa: Deno keyrsluskrá fannst ekki fyrir plástur. Ekki hægt að plástra.",
 				"patchUnsupportedArch": "Villa: Óstuddur plásturarkitektúr: ${arch}",
 				"patchFailed": "Villa: Mistókst að laga Deno executable með `patchelf`.",
-				"managedUpgrade": "Deno er stjórnað af ${manager} pakkastjóranum (pakki: ${package}) og er verið að uppfæra í gegnum ${manager}.",
-				"managedUpgradeFailed": "Viðvörun: Mistókst að uppfæra Deno (pakka: ${manager}) í gegnum ${package}, sem skilur eftir sig óbreytt ástand.",
-				"pinNotHonored": "Viðvörun: Deno er stjórnað af ${manager} pakkastjóranum og getur ekki uppfyllt útgáfuna (${spec}) sem tilgreind er af .deno-version. Það hefur verið uppfært í samræmi við útgáfu pakkastjórans."
+				"managedUpgrade": "Deno er stjórnað af ${manager} pakkastjóranum (pakki: ${package}) og er verið að uppfæra það í gegnum ${manager}.",
+				"managedUpgradeFailed": "Viðvörun: Mistókst að uppfæra Deno (pakki: ${package}) í gegnum ${manager}; núverandi staða er óbreytt.",
+				"pinNotHonored": "Viðvörun: Deno er stjórnað af pakkastjóranum ${manager} og getur ekki uppfyllt útgáfuna (${spec}) sem tilgreind er í .deno-version. Það hefur verið uppfært í samræmi við útgáfu pakkastjórans."
 			},
 			"tempDir": {
 				"blocked": "Villa: ekki hægt að keyra `fount` í tímabundinni möppu\n\nfount tengist kerfinu djúpt og skráir `PATH` skipunina og marga kerfishooks í `fount`. Ef keyrt í tímabundinni möppu, eftir að kerfið hreinsar tímabundnar skrár, geturðu ekki keyrt `fount remove` til að fjarlægja fount og hooks þess.\n\nFærðu fount í varanlega möppu áður en þú keyrir. Ef þú vilt aðeins prófa stutt, keyrðu `fount remove` handvirkt eftir prófið."
