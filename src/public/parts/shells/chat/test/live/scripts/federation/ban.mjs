@@ -169,6 +169,8 @@ await testCase('A can still send after ban', async () => {
 	return r.status === 201
 })
 
-await ClearFedGroup(gid)
+// purge 后仍有 in-flight 异步链（signer 加载）会打印 `group replica is being purged`；
+// 窗口内留 drainMs 让尾巴落进豁免区，避免套件判 noisy。
+await allowNoise('group replica is being purged', () => ClearFedGroup(gid), { drainMs: ms('2s') })
 WriteFedSummary('FED-BAN', gid)
 completeLiveScript()

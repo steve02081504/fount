@@ -21,6 +21,8 @@ export function paintHashAvatarHost(host, { seed, label, letterId, letterClass =
 	const letter = document.createElement('span')
 	if (letterId) letter.id = letterId
 	if (letterClass) letter.className = letterClass
+	// 字母由实体 profile 展示名派生（动态用户数据），语种扫描按 user-content 跳过。
+	letter.setAttribute('user-content', '')
 	letter.textContent = avatarInitial(displayLabel)
 	host.appendChild(letter)
 	host.style.background = avatarColor(avatarSeed)

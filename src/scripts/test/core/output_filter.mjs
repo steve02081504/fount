@@ -9,8 +9,9 @@ export const NOISE_ALLOW_BEGIN = '@@FOUNT_NOISE_ALLOW_BEGIN@@'
 /** 噪声豁免窗口 end 标记（就近 LIFO 出栈，不带 regex）。 */
 export const NOISE_ALLOW_END = '@@FOUNT_NOISE_ALLOW_END@@'
 
-const NOISE_ALLOW_BEGIN_RE = new RegExp(`^${NOISE_ALLOW_BEGIN}\\t(.+)$`)
-const NOISE_ALLOW_END_RE = new RegExp(`^${NOISE_ALLOW_END}$`)
+// 行内匹配而非整行锚定：并发子进程的 stdall 按 chunk 交错，标记会被拼进行中。
+const NOISE_ALLOW_BEGIN_RE = new RegExp(`${NOISE_ALLOW_BEGIN}\\t(.+)$`)
+const NOISE_ALLOW_END_RE = new RegExp(NOISE_ALLOW_END)
 
 /**
  * 格式化噪声豁免窗口 begin 行。
@@ -63,10 +64,13 @@ export function filterTestOutput(text) {
 export function stripNoiseMarkers(text) {
 	if (!text) return text
 	return text.split(/\r?\n/)
-		.filter(line => {
+		.map(line => {
 			const plain = removeTerminalSequences(line)
-			return !NOISE_ALLOW_BEGIN_RE.test(plain) && !NOISE_ALLOW_END_RE.test(plain)
+			const stripped = plain.replace(NOISE_ALLOW_BEGIN_RE, '').split(NOISE_ALLOW_END).join('')
+			// 纯标记行剥完为空即删行；原始空行保留，维持日志形状。
+			return plain.trim() && !stripped.trim() ? null : stripped
 		})
+		.filter(line => line !== null)
 		.join('\n')
 }
 
