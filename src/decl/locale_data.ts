@@ -5324,6 +5324,8 @@ export type LocaleData = {
 			back: string
 			prev: string
 			next: string
+			toc: string
+			all_articles: string
 			pager: {
 				'aria-label': string
 			}
