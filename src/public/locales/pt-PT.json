@@ -2272,7 +2272,10 @@
 					"char": "Converse em particular com um personagem",
 					"failed": "Não foi possível abrir a mensagem privada: ${error}",
 					"user": "Enviar mensagem privada"
-				}
+				},
+				"copyDmLink": "Copiar link da conversa privada",
+				"dmLinkCopied": "Link da conversa privada copiado",
+				"dmLinkCopyFailed": "Falha ao copiar o link da conversa privada: ${error}"
 			},
 			"gshDecryptPending": "Aguardando chave do canal (geração ${gen})",
 			"gshDecryptFailed": "Não foi possível desencriptar esta mensagem sem a chave do canal",

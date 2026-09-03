@@ -2272,7 +2272,10 @@
 					"char": "✉️🎭",
 					"failed": "✉️❌：${error}",
 					"user": "📤✉️"
-				}
+				},
+				"copyDmLink": "📋✉️🔗",
+				"dmLinkCopied": "✉️🔗✅",
+				"dmLinkCopyFailed": "📋✉️🔗❌：${error}"
 			},
 			"gshDecryptPending": "⏳📺🔑（🔄#️⃣ ${gen}）",
 			"gshDecryptFailed": "🚫📺🔑 🔓🚫",

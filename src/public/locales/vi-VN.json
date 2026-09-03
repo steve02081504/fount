@@ -2272,7 +2272,10 @@
 					"char": "Trò chuyện riêng với nhân vật",
 					"failed": "Không thể mở tin nhắn riêng tư: ${error}",
 					"user": "Gửi tin nhắn riêng tư"
-				}
+				},
+				"copyDmLink": "Sao chép liên kết trò chuyện riêng tư",
+				"dmLinkCopied": "Đã sao chép liên kết trò chuyện riêng tư",
+				"dmLinkCopyFailed": "Không sao chép được liên kết trò chuyện riêng tư: ${error}"
 			},
 			"gshDecryptPending": "Đang chờ khóa kênh (thế hệ ${gen})",
 			"gshDecryptFailed": "Không thể giải mã tin nhắn này nếu không có khóa kênh",

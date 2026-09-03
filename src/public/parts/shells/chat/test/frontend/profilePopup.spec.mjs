@@ -180,4 +180,43 @@ test.describe('Chat profile popup refresh', () => {
 		await expect(messageAvatar.locator('img')).toHaveAttribute('src', newAvatar, { timeout: ms('30s') })
 		await expect(memberAvatar.locator('img')).toHaveAttribute('src', newAvatar, { timeout: ms('30s') })
 	})
+
+	test('profile popup copy link button copies entity-based DM deep link', async ({ page, baseUrl, apiKey }) => {
+		const { groupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await addCharToGroup(baseUrl, apiKey, groupId, 'on_message_yes')
+		await sendApiMessage(baseUrl, apiKey, groupId, channelId, `copy-link-seed ${Date.now()}`)
+		await triggerCharReply(baseUrl, apiKey, groupId, channelId, 'on_message_yes')
+
+		const replyRow = page.locator('#messages .message:not([data-pending="1"])').filter({ hasText: 'on_message_yes reply' })
+		await expect(replyRow.first()).toBeVisible({ timeout: ms('1m') })
+		const messageAvatar = replyRow.first().locator('.chat-image [data-avatar-for]')
+		await expect(messageAvatar).toBeVisible({ timeout: ms('30s') })
+
+		const state = await getGroupState(baseUrl, apiKey, groupId)
+		const charRow = (state.meta?.members || []).find(member => member.charname === 'on_message_yes')
+		expect(charRow?.entityHash).toMatch(/^[\da-f]{128}$/i)
+		const entityHash = charRow.entityHash
+
+		// 记录剪贴板写入（popup 的复制按钮经 navigator.clipboard.writeText 复制私聊深链）
+		await page.evaluate(() => {
+			window.__copiedTexts = []
+			/**
+			 * 记录被复制到剪贴板的文本。
+			 * @param {string} text 被写入剪贴板的文本
+			 */
+			const recordWrite = (text) => { window.__copiedTexts.push(text) }
+			navigator.clipboard.writeText = recordWrite
+		})
+
+		await messageAvatar.click()
+		const popup = page.locator('#profile-popup-layer')
+		await expect(popup).toBeVisible({ timeout: ms('30s') })
+		const copyButton = popup.locator('[data-profile-popup-copy-contact]')
+		await expect(copyButton).toBeVisible()
+		await copyButton.click()
+
+		const origin = new URL(baseUrl).origin
+		await expect.poll(() => page.evaluate(() => window.__copiedTexts), { timeout: ms('10s') })
+			.toEqual([`${origin}/parts/shells:chat/hub/?contact=${entityHash}`])
+	})
 })

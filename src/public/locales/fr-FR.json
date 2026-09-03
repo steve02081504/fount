@@ -2272,7 +2272,10 @@
 					"char": "Discutez en privé avec un personnage",
 					"failed": "Impossible d'ouvrir le message privé : ${error}",
 					"user": "Envoyer un message privé"
-				}
+				},
+				"copyDmLink": "Copier le lien de la discussion privée",
+				"dmLinkCopied": "Lien de la discussion privée copié",
+				"dmLinkCopyFailed": "Impossible de copier le lien de la discussion privée : ${error}"
 			},
 			"gshDecryptPending": "En attente de la clé de chaîne (génération ${gen})",
 			"gshDecryptFailed": "Impossible de déchiffrer ce message sans clé de chaîne",

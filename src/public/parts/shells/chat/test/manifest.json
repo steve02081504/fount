@@ -1002,6 +1002,7 @@
 						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",
 						"src/public/parts/shells/chat/public/shared/entityProfilePopup.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
+						"src/public/parts/shells/chat/public/shared/runUri.mjs",
 						"src/public/parts/shells/chat/public/src/endpoints/entities.mjs",
 						"src/public/parts/shells/chat/src/entity/{profile,ownerProfileUpdate,localized,endpoints}.mjs"
 					]
