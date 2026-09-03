@@ -1,5 +1,8 @@
+import { Buffer } from 'node:buffer'
+
 import { ms } from 'fount/scripts/ms.mjs'
 import {
+	isTransientNetError,
 	withApiRequest,
 	createChatTestGroup,
 } from 'fount/scripts/test/playwright/api.mjs'
@@ -356,6 +359,66 @@ export function deleteChatGroup(baseUrl, apiKey, groupId) {
  */
 export function messageRowByText(page, text) {
 	return page.locator('#messages .message').filter({ hasText: text }).first()
+}
+
+/**
+ * 带瞬时网络错误重试的 POST（判据复用 playwright/api.mjs 的 isTransientNetError）。
+ * @param {import('@playwright/test').APIRequestContext} request API 请求上下文
+ * @param {string} url 目标 URL
+ * @param {object} options 请求选项
+ * @param {number} [retries=2] 重试次数
+ * @returns {Promise<import('@playwright/test').APIResponse>} 最终响应
+ */
+async function postWithRetry(request, url, options, retries = 2) {
+	for (let attempt = 0;; attempt++)
+		try {
+			return await request.post(url, options)
+		}
+		catch (err) {
+			if (attempt >= retries || !isTransientNetError(err)) throw err
+			await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)))
+		}
+}
+
+/**
+ * 通过 API 建群 emoji pack、上传一张 1×1 PNG 并加入用户收藏。
+ * @param {string} baseUrl 测试根 URL
+ * @param {string} apiKey API 密钥
+ * @param {string} groupId 群 ID
+ * @param {object} [options] 可选项
+ * @param {string} [options.packId] 自定义 pack ID（默认按时间生成）
+ * @returns {Promise<{ packId: string, emojiId: string }>} pack 与上传 emoji 的 ID
+ */
+export function seedGroupEmojiPack(baseUrl, apiKey, groupId, options = {}) {
+	const key = encodeURIComponent(apiKey)
+	const packId = options.packId ?? `e2e_pack_${Date.now().toString(36)}`
+	const png = Buffer.from(
+		'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+		'base64',
+	)
+	return withApiRequest(async request => {
+		// createPack 重试可能撞上「首次请求已生效但响应丢失」的 already-exists：400 时视为已建好。
+		const created = await postWithRetry(
+			request,
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/emoji-packs?fount-apikey=${key}`,
+			{ data: { packId } },
+		)
+		if (!created.ok() && created.status() !== 400) throw new Error(`create pack failed: ${created.status()}`)
+		const uploaded = await postWithRetry(
+			request,
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/emoji-packs/${encodeURIComponent(packId)}/emojis?fount-apikey=${key}`,
+			{ multipart: { emoji: { name: 'react.png', mimeType: 'image/png', buffer: png } } },
+		)
+		if (!uploaded.ok()) throw new Error(`upload emoji failed: ${uploaded.status()}`)
+		const { emojiId } = await uploaded.json()
+		const favorited = await postWithRetry(
+			request,
+			`${baseUrl}/api/parts/shells:chat/emoji-usage/collection/packs?fount-apikey=${key}`,
+			{ data: { packId } },
+		)
+		if (!favorited.ok()) throw new Error(`favorite pack failed: ${favorited.status()}`)
+		return { packId, emojiId }
+	})
 }
 
 /**

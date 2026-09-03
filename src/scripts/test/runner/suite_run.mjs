@@ -14,6 +14,7 @@ import {
 } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { suiteUsesSerialRunner } from '../core/resources.mjs'
+import { markTempDirOrigin } from '../core/temp_origin.mjs'
 import { moduleCheckTicketEnv, withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
 
 import { runCommand } from './run_command.mjs'
@@ -134,7 +135,9 @@ export function mapTimingsToSubtests(suite, timings, ranSubtests) {
  * @returns {Promise<SuiteRunResult & { sleepInterrupted?: boolean }>} 运行结果
  */
 async function runSuiteOnce(suite, options, globalBudget, stream, watchdog) {
+	// suite 结束时 finally 清理；进程被杀时泄漏由 cleanup_check 的 fount[-_]* 全局扫描兜底抓取。
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
+	await markTempDirOrigin(tempDir, `suite ${suite.manifestId}:${suite.name} (runSuiteOnce)`)
 	const failuresOut = join(tempDir, 'failures.json')
 	const timingsOut = join(tempDir, 'timings.json')
 	const triggeredFilesPath = join(tempDir, 'triggered.txt')

@@ -115,6 +115,43 @@
 			]
 		},
 		{
+			"name": "transient_net_error",
+			"expected": 5000,
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/transient_net_error.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/transient_net_error.test.mjs",
+				"src/scripts/test/playwright/api.mjs"
+			]
+		},
+		{
+			"name": "output_filter",
+			"expected": 5000,
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/output_filter.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/output_filter.test.mjs",
+				"src/scripts/test/core/output_filter.mjs",
+				"src/scripts/test/core/allowNoise.mjs"
+			]
+		},
+		{
 			"name": "serial_files",
 			"expected": 700,
 			"run": [

@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "integration",
-			"expected": "25s",
+			"expected": "4m44s",
 			"dependsOn": [
 				"server:live"
 			],

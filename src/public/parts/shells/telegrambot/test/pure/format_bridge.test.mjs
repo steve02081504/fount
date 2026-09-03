@@ -2,9 +2,6 @@
  * telegrambot format 纯测试（DTO / 贴纸 / FormatOutboundReply 契约）。
  */
 /* global Deno */
-import { mkdtempSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
@@ -106,10 +103,8 @@ Deno.test('telegramEntitiesToAiMarkdown blockquote prefixes every line', () => {
 
 Deno.test('telegramMessageToBridgeDto remaps text_mention on later blockquote line', async () => {
 	const username = `tg-bq-${crypto.randomUUID().slice(0, 8)}`
-	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_bq_'))
 	await createTestServerBoot({
 		username,
-		dataDir,
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()
@@ -141,10 +136,8 @@ Deno.test('telegramMessageToBridgeDto remaps text_mention on later blockquote li
 
 Deno.test('telegramMessageToBridgeDto remaps same-span blockquote text_mention', async () => {
 	const username = `tg-bq1-${crypto.randomUUID().slice(0, 8)}`
-	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_bq1_'))
 	await createTestServerBoot({
 		username,
-		dataDir,
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()
@@ -231,10 +224,8 @@ Deno.test('default outbound path formats HTML and forwards sticker ids', async (
 
 Deno.test('telegramMessageToBridgeDto maps mock Telegraf message with mention rewrite', async () => {
 	const username = `tg-dto-${crypto.randomUUID().slice(0, 8)}`
-	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_dto_'))
 	await createTestServerBoot({
 		username,
-		dataDir,
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()
@@ -283,10 +274,8 @@ Deno.test('telegramMessageToBridgeDto maps mock Telegraf message with mention re
 
 Deno.test('telegramMessageToBridgeDto rewrites mention after leading emoji', async () => {
 	const username = `tg-emoji-mention-${crypto.randomUUID().slice(0, 8)}`
-	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_emoji_mention_'))
 	await createTestServerBoot({
 		username,
-		dataDir,
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()
@@ -318,10 +307,8 @@ Deno.test('telegramMessageToBridgeDto rewrites mention after leading emoji', asy
 
 Deno.test('telegramMessageToBridgeDto remaps mention offsets after earlier markdown entities', async () => {
 	const username = `tg-offset-${crypto.randomUUID().slice(0, 8)}`
-	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_offset_'))
 	await createTestServerBoot({
 		username,
-		dataDir,
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()
@@ -357,10 +344,8 @@ Deno.test('telegramMessageToBridgeDto remaps mention offsets after earlier markd
 
 Deno.test('telegramMessageToBridgeDto rewrites bold text_mention without duplicating text', async () => {
 	const username = `tg-bold-mention-${crypto.randomUUID().slice(0, 8)}`
-	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_bold_mention_'))
 	await createTestServerBoot({
 		username,
-		dataDir,
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()
@@ -407,10 +392,8 @@ Deno.test('telegramEntitiesToAiMarkdown nests text_mention inside text_link+code
 
 Deno.test('telegramMessageToBridgeDto remaps same-span code text_mention', async () => {
 	const username = `tg-code-mention-${crypto.randomUUID().slice(0, 8)}`
-	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_code_mention_'))
 	await createTestServerBoot({
 		username,
-		dataDir,
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()
@@ -442,10 +425,8 @@ Deno.test('telegramMessageToBridgeDto remaps same-span code text_mention', async
 
 Deno.test('telegramMessageToBridgeDto remaps nested text_mention under text_link+code', async () => {
 	const username = `tg-link-code-mention-${crypto.randomUUID().slice(0, 8)}`
-	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_link_code_mention_'))
 	await createTestServerBoot({
 		username,
-		dataDir,
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()
@@ -480,7 +461,6 @@ Deno.test('rewriteTelegramMentionsToFount rewrites @BotUsername mention entity',
 	const username = `tg-mention-${crypto.randomUUID().slice(0, 8)}`
 	const { dataDir } = await createTestServerBoot({
 		username,
-		dataDir: mkdtempSync(join(tmpdir(), 'fount_tg_mention_')),
 		minP2pNode: true,
 		loadParts: ['shells/chat'],
 	})()

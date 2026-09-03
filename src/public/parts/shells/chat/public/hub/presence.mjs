@@ -52,6 +52,29 @@ const loadProfileCached = memoizePromise(
 	{ max: 512 },
 )
 
+let i18nModulePromise = null
+
+/**
+ * @returns {Promise<typeof import('../../../../scripts/i18n/index.mjs')>} i18n 模块
+ */
+function loadI18n() {
+	i18nModulePromise ??= import('../../../../scripts/i18n/index.mjs')
+	return i18nModulePromise
+}
+
+/**
+ * 按页面当前语言从实体资料取展示名：localized 命中页面语言切片时优先，回退服务端解析名。
+ * @param {CachedProfile} profile 缓存资料
+ * @returns {Promise<string>} 页面语言下的展示名
+ */
+async function pageLocaleProfileName(profile) {
+	const keys = Object.keys(profile.localized || {})
+	if (!keys.length) return profile.name
+	const { pickLocalizedSlice, main_locale, loadPreferredLangs } = await loadI18n()
+	const slice = pickLocalizedSlice(profile.localized, [main_locale || loadPreferredLangs()[0]])
+	return slice?.name?.trim() || profile.name
+}
+
 /**
  * @param {HTMLElement | null} el 状态点元素
  * @param {string} [status] online | idle | dnd | invisible | offline
@@ -328,7 +351,7 @@ export async function refreshHubAfterProfileChange(entityHash) {
 }
 
 /**
- * SFW 开关变更后重绘 Hub 可见资料面。
+ * SFW 开关变更后重绘 Hub 可见资料面（含缓存失效）。
  * @returns {Promise<void>}
  */
 export async function refreshHubAfterSfwChange() {
@@ -363,6 +386,19 @@ export async function refreshHubAfterSfwChange() {
 	if (store.context.currentMode === 'friends') {
 		const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
 		await renderFriendsColumn(await loadFriendsList())
+	}
+}
+
+/**
+ * 页面语言变更后刷新资料派生展示：首字头像与作者名按新语言从 profile.localized 重新解析。
+ * 仅 in-place 更新（letter / 作者名），不重渲列表——列表用户名来源为服务端账号语言解析，不随页面语言。
+ * @returns {Promise<void>}
+ */
+export function refreshHubAfterLocaleChange() {
+	for (const host of document.querySelectorAll('#messages, #member-list')) {
+		if (!(host instanceof HTMLElement)) continue
+		host.querySelectorAll('[data-avatar-for]').forEach(av => { delete av.dataset.avatarLoaded })
+		applyAvatarsTo(host)
 	}
 }
 
@@ -440,7 +476,7 @@ export function applyAvatarsTo(rootElement) {
 		if (!authorKey) return
 		const { profileKey } = authorPresentationKeys(authorKey)
 		if (av.dataset.avatarLoaded) return
-		void fetchAuthorProfile(profileKey, { groupId: store.context.currentGroupId || undefined }).then((profile) => {
+		void fetchAuthorProfile(profileKey, { groupId: store.context.currentGroupId || undefined }).then(async (profile) => {
 			if (!profile) return
 			av.dataset.avatarLoaded = '1'
 			const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
@@ -449,7 +485,7 @@ export function applyAvatarsTo(rootElement) {
 				label: resolveDisplayName({
 					entityHash,
 					alias: entityHash ? aliasForEntity(entityHash) : '',
-					profileName: profile.name,
+					profileName: await pageLocaleProfileName(profile),
 					fallbackLabel: authorDisplayLabel(authorKey),
 				}),
 				avatar: displayProfileAvatar(profile),
@@ -478,7 +514,7 @@ export async function hydrateAuthorLabels(rootElement) {
 			au.textContent = resolveDisplayName({
 				entityHash: entityHash || undefined,
 				alias: entityHash ? aliasForEntity(entityHash) : '',
-				profileName: profile?.name,
+				profileName: profile ? await pageLocaleProfileName(profile) : undefined,
 				fallbackLabel: au.textContent?.trim()
 					|| memberDisplayNameForAuthorKey(key)
 					|| undefined,

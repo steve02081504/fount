@@ -9,6 +9,29 @@ import { createCharBoot } from '../harness.mjs'
 
 const CHAR_YES = 'on_message_yes'
 
+/**
+ * 等 probe 事件流静默（addchar 的初始 greeting 是异步落地的；
+ * 全量并发时它可能晚于后续设置到达，吃掉 token burst 或串扰 backfill 断言）。
+ * @param {object} probe onMessageProbe 单例
+ * @param {number} [quietMs] 静默窗口
+ * @param {number} [maxMs] 总等待上限
+ * @returns {Promise<void>} 静默或超时（超时视为无 greeting，照常继续）
+ */
+async function waitProbeQuiet(probe, quietMs = 1500, maxMs = 20000) {
+	const start = Date.now()
+	let lastCount = -1
+	let lastChangeAt = Date.now()
+	while (Date.now() - start < maxMs) {
+		const count = probe.events.length
+		if (count !== lastCount) {
+			lastCount = count
+			lastChangeAt = Date.now()
+		}
+		if (Date.now() - lastChangeAt >= quietMs) return
+		await new Promise(resolve => setTimeout(resolve, 100))
+	}
+}
+
 Deno.test('token bucket suppresses generation not OnMessage when exhausted', async () => {
 	const username = `tb-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbe
@@ -26,6 +49,8 @@ Deno.test('token bucket suppresses generation not OnMessage when exhausted', asy
 	const channelId = await getDefaultChannelId(username, groupId)
 	await addchar(groupId, CHAR_YES, username)
 	probe.returnValue = true
+	await waitProbeQuiet(probe)
+	probe.reset()
 
 	await appendSignedLocalEvent(username, groupId, {
 		type: 'group_settings_update',
@@ -69,6 +94,8 @@ Deno.test('backfill ingress skips trigger pipeline', async () => {
 	const channelId = await getDefaultChannelId(username, groupId)
 	await addchar(groupId, CHAR_YES, username)
 	probe.returnValue = true
+	await waitProbeQuiet(probe)
+	probe.reset()
 
 	await dispatchMessageFanout(username, groupId, channelId, {
 		type: 'message',

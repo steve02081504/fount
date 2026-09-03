@@ -12,6 +12,7 @@ import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 
 import { set_sentry_enabled } from 'fount/scripts/sentry_state.mjs'
+import { markTempDirOriginSync } from 'fount/scripts/test/core/temp_origin.mjs'
 import { set_start } from 'fount/server/base.mjs'
 import { init } from 'fount/server/server.mjs'
 
@@ -254,10 +255,12 @@ let sharedTestDataDir = null
 let sharedTestBootPromise = null
 
 /**
- * 把本模块自建的共享 dataDir 追加登记到父进程回收清单（serial.mjs 读后删除）。
+ * 把本模块管理的数据目录登记到父进程回收清单（serial.mjs 读后删除）。
  * Deno 的 deno test 子进程不会运行 node exit 钩子（denoland/deno#36670），
  * 因此回收放在能存活的父进程，靠本清单完成进程内流程回收。
- * @param {string} dataDir 本模块自建的 dataDir
+ * caller-supplied preferred 也登记：各调用方的自行清理不可靠（如 telegrambot pure 用例），
+ * serial 统一回收（force 删除对已清理者无害），避免 fount_test_* / fount_tg_* 类残留。
+ * @param {string} dataDir 本模块管理的数据目录
  * @returns {void}
  */
 export function registerSelfCreatedTestDataDir(dataDir) {
@@ -268,8 +271,7 @@ export function registerSelfCreatedTestDataDir(dataDir) {
 
 /**
  * 进程级共享测试 dataDir（首次调用时创建或采纳 preferred）。
- * 本模块自建的目录会被登记到 FOUNT_TEST_DATA_DIRS_OUT，由父进程（serial.mjs）回收；
- * 外部传入的 preferred 由调用方负责。
+ * 登记到 FOUNT_TEST_DATA_DIRS_OUT，由父进程（serial.mjs）回收，并写 origin 标记。
  * @param {string} [preferred] 首次调用时的首选路径
  * @returns {string} 共享 dataDir
  */
@@ -277,8 +279,10 @@ export function ensureSharedTestDataDir(preferred) {
 	if (!sharedTestDataDir) {
 		sharedTestDataDir = preferred ?? join(tmpdir(), `fount_test_${Date.now().toString(36)}`)
 		assertDisposableDataPath(sharedTestDataDir)
-		if (preferred == null)
-			registerSelfCreatedTestDataDir(sharedTestDataDir)
+		registerSelfCreatedTestDataDir(sharedTestDataDir)
+		markTempDirOriginSync(sharedTestDataDir, preferred == null
+			? 'boot.ensureSharedTestDataDir (self-created)'
+			: 'boot.ensureSharedTestDataDir (caller-supplied preferred)')
 	}
 	return sharedTestDataDir
 }
