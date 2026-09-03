@@ -521,9 +521,9 @@
 				"patchMissing": "Lỗi: Không tìm thấy tệp thực thi Deno trước khi vá. Không thể vá được.",
 				"patchUnsupportedArch": "Lỗi: Cấu trúc bản vá không được hỗ trợ: ${arch}",
 				"patchFailed": "Lỗi: Không thể vá tệp thực thi Deno bằng `patchelf`.",
-				"managedUpgrade": "Deno được quản lý bởi trình quản lý gói ${manager} (gói: ${package}) và đang được nâng cấp thông qua ${manager}.",
-				"managedUpgradeFailed": "Cảnh báo: Nâng cấp Deno (gói: ${manager}) qua ${package} không thành công, để nguyên trạng thái.",
-				"pinNotHonored": "Cảnh báo: Deno được quản lý bởi trình quản lý gói ${manager} và không thể tuân thủ phiên bản (${spec}) do .deno-version chỉ định. Nó đã được nâng cấp theo phiên bản của trình quản lý gói."
+				"managedUpgrade": "Deno được quản lý bởi trình quản lý gói ${manager} (gói: ${package}) và sẽ được nâng cấp thông qua ${manager}.",
+				"managedUpgradeFailed": "Cảnh báo: không thể nâng cấp Deno (gói: ${package}) qua ${manager}; giữ nguyên phiên bản hiện tại.",
+				"pinNotHonored": "Cảnh báo: Deno được quản lý bởi trình quản lý gói ${manager}, nên không thể tuân theo phiên bản (${spec}) được chỉ định trong .deno-version. Thay vào đó, nó đã được nâng cấp theo phiên bản của trình quản lý gói."
 			},
 			"tempDir": {
 				"blocked": "Lỗi: không thể chạy `fount` trong thư mục tạm\n\nfount liên kết sâu với hệ thống và đăng ký lệnh `PATH` cùng nhiều hook hệ thống trong `fount`. Nếu chạy trong thư mục tạm, sau khi hệ thống xóa tệp tạm, bạn sẽ không thể thực thi `fount remove` để gỡ fount và các hook của nó.\n\nVui lòng di chuyển fount sang thư mục không tạm trước khi chạy. Nếu chỉ muốn thử nhanh, hãy thực thi `fount remove` thủ công sau khi thử."
@@ -2272,7 +2272,10 @@
 					"char": "Trò chuyện riêng với nhân vật",
 					"failed": "Không thể mở tin nhắn riêng tư: ${error}",
 					"user": "Gửi tin nhắn riêng tư"
-				}
+				},
+				"copyDmLink": "Sao chép liên kết trò chuyện riêng tư",
+				"dmLinkCopied": "Đã sao chép liên kết trò chuyện riêng tư",
+				"dmLinkCopyFailed": "Không sao chép được liên kết trò chuyện riêng tư: ${error}"
 			},
 			"gshDecryptPending": "Đang chờ khóa kênh (thế hệ ${gen})",
 			"gshDecryptFailed": "Không thể giải mã tin nhắn này nếu không có khóa kênh",

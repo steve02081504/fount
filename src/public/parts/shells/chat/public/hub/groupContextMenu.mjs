@@ -18,7 +18,7 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { groupDisplayName } from './core/domUtils.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
-import { store } from './core/state.mjs'
+import { setState, store } from './core/state.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds, orderedSidebarGroupIds } from './groupSelection.mjs'
 import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
@@ -103,9 +103,9 @@ async function applyLeaveGroupsLocal(groupIds) {
 			const next = orderedSidebarGroupIds().find(id => !leaving.has(id))
 			if (next) await selectGroup(next)
 			else {
-				store.context.currentGroupId = null
-				store.context.currentChannelId = null
-				store.context.currentState = null
+				setState('context.currentGroupId', null)
+				setState('context.currentChannelId', null)
+				setState('context.currentState', null)
 				const { setMode } = await import('./mode.mjs')
 				await setMode('friends')
 			}

@@ -7,9 +7,22 @@
 	return $null
 }
 
+function script:mark_deno_upgraded {
+	# File IO 而非 Set-Content：并发进程写同一 flag 时 PowerShell 会报 "Stream was not readable"（FileSystemContentStream 重试路径 bug）
+	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
+	New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
+	$stream = [System.IO.File]::Open($upgradedFlag, [System.IO.FileMode]::Create, [System.IO.FileAccess]::Write, [System.IO.FileShare]::ReadWrite)
+	try {
+		$stream.SetLength(0)
+		$stream.WriteByte([byte][char]'1')
+	}
+	finally {
+		$stream.Dispose()
+	}
+}
+
 function script:deno_upgrade([string]$Channel) {
 	require pkg_common
-	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
 
 	$denoBinary = if (Get-Command deno -ErrorAction SilentlyContinue) { Resolve-FountRealPath (Get-Command deno -ErrorAction SilentlyContinue).Source } else { $null }
 	$owner = if ($denoBinary) { Get-FountPkgOwner $denoBinary } else { $null }
@@ -21,8 +34,7 @@ function script:deno_upgrade([string]$Channel) {
 				if ($pinned -and (($versionOut.Trim() -replace '^deno ', '') -ne $pinned)) {
 					Write-Warning (Get-I18n -key 'deno.pinNotHonored' -params @{ spec = $pinned; manager = $owner.Manager })
 				}
-				New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
-				Set-Content $upgradedFlag "1"
+				mark_deno_upgraded
 				return
 			}
 			Write-Warning (Get-I18n -key 'deno.notWorking')
@@ -55,8 +67,7 @@ function script:deno_upgrade([string]$Channel) {
 			Write-Warning (Get-I18n -key 'deno.upgradeFailed')
 			return
 		}
-		New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
-		Set-Content $upgradedFlag "1"
+		mark_deno_upgraded
 		return
 	}
 
@@ -79,8 +90,7 @@ function script:deno_upgrade([string]$Channel) {
 		Write-Warning (Get-I18n -key 'deno.upgradeFailed')
 		return
 	}
-	New-Item -Path (Split-Path $upgradedFlag) -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null
-	Set-Content $upgradedFlag "1"
+	mark_deno_upgraded
 }
 
 function script:install_deno {

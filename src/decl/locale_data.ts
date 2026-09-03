@@ -2244,6 +2244,9 @@ export type LocaleData = {
 					failed: string
 					user: string
 				}
+				copyDmLink: string
+				dmLinkCopied: string
+				dmLinkCopyFailed: string
 			}
 			gshDecryptPending: string
 			gshDecryptFailed: string
@@ -6486,6 +6489,7 @@ export type LocaleKeyParams = {
 	'chat.hub.profileEdit.linksPreview': { count: string | number }
 	'chat.hub.profileEdit.resetFrom.partFailed': { error: string | number }
 	'chat.hub.profilePopup.dm.failed': { error: string | number }
+	'chat.hub.profilePopup.dmLinkCopyFailed': { error: string | number }
 	'chat.hub.profilePopup.setAliasPrompt': { name: string | number }
 	'chat.hub.reactionRemovePrompt': { candidates: string | number; emoji: string | number }
 	'chat.hub.reputationSlashAlert': { target: string | number }

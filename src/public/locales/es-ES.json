@@ -521,9 +521,9 @@
 				"patchMissing": "Error: No se encontró el ejecutable de Deno antes de aplicar el parche. No se puede parchear.",
 				"patchUnsupportedArch": "Error: Arquitectura de parche no compatible: ${arch}",
 				"patchFailed": "Error: No se pudo parchear el ejecutable de Deno usando `patchelf`.",
-				"managedUpgrade": "Deno es administrado por el administrador de paquetes ${manager} (paquete: ${package}) y se actualiza a través de ${manager}.",
-				"managedUpgradeFailed": "Advertencia: Error al actualizar Deno (paquete: ${manager}) a través de ${package}, lo que deja el status quo.",
-				"pinNotHonored": "Advertencia: Deno es administrado por el administrador de paquetes ${manager} y no puede cumplir con la versión (${spec}) especificada por .deno-version. Se ha actualizado según la versión del administrador de paquetes."
+				"managedUpgrade": "Deno está administrado por el administrador de paquetes ${manager} (paquete: ${package}) y se actualiza a través de ${manager}.",
+				"managedUpgradeFailed": "Advertencia: no se pudo actualizar Deno (paquete: ${package}) a través de ${manager}; se mantiene la versión actual.",
+				"pinNotHonored": "Advertencia: Deno está administrado por el administrador de paquetes ${manager}, por lo que no se puede cumplir con la versión (${spec}) especificada en .deno-version. Se ha actualizado a la versión del administrador de paquetes."
 			},
 			"tempDir": {
 				"blocked": "Error: no se puede ejecutar `fount` en el directorio temporal\n\nfount se acopla profundamente al sistema y registra el comando `PATH` y varios hooks del sistema en `fount`. Si se ejecuta en un directorio temporal, después de que el sistema borre los archivos temporales, no podrá ejecutar `fount remove` para eliminar fount y sus hooks.\n\nMueva fount a un directorio no temporal antes de ejecutarlo. Si solo desea probar brevemente, ejecute manualmente `fount remove` después de la prueba."
@@ -2272,7 +2272,10 @@
 					"char": "Chatea en privado con un personaje.",
 					"failed": "No se puede abrir el mensaje privado: ${error}",
 					"user": "enviar mensaje privado"
-				}
+				},
+				"copyDmLink": "Copiar el enlace del chat privado",
+				"dmLinkCopied": "Enlace del chat privado copiado",
+				"dmLinkCopyFailed": "No se pudo copiar el enlace del chat privado: ${error}"
 			},
 			"gshDecryptPending": "Esperando clave de canal (generación ${gen})",
 			"gshDecryptFailed": "No se puede descifrar este mensaje sin la clave del canal",

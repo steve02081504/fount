@@ -10,6 +10,7 @@ import { mountTemplate } from '../src/templates.mjs'
 import { setPinsBookmarksWrapVisible, updateStatusBanners } from './banners.mjs'
 import { store, setState } from './core/state.mjs'
 import { updateFriendsHash } from './core/urlHash.mjs'
+import { bumpViewEpoch } from './core/viewEpoch.mjs'
 import { loadFriendsList, renderFriendsColumn } from './friendsList.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import {
@@ -41,6 +42,9 @@ export function setActiveModeTab(mode) {
  * @returns {Promise<void>}
  */
 export async function setMode(mode) {
+	// 群模式由 selectGroup 统一驱动并已递增代际；其余模式（好友/收件箱/群发现）在此递增，
+	// 使上一视图在途的异步渲染在跨视图落地前失效。
+	if (mode !== 'groups') bumpViewEpoch()
 	if (mode !== 'inbox') {
 		const { closeInboxView } = await import('./inboxView.mjs')
 		closeInboxView()

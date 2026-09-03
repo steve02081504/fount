@@ -221,7 +221,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "15m22s",
+			"expected": "23m33s",
 			"dependsOn": [
 				"server:live",
 				"smoke_social",
@@ -315,6 +315,7 @@
 						"src/public/parts/shells/social/public/src/lib/replies.mjs",
 						"src/public/parts/shells/social/public/src/lib/profileHover.mjs",
 						"src/public/parts/shells/social/public/src/actions/{postProfileActions,profileNavActions}.mjs",
+						"src/public/parts/shells/social/public/src/templates/profile_header_actions_*.html",
 						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfilePopup.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",

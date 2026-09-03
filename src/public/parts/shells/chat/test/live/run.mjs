@@ -71,6 +71,8 @@ const suites = {
 	fed_core: { fed: true, run: denoLiveRun(join(fedScripts, 'core.mjs')) },
 	fed_e2e_extended: { fed: true, run: denoLiveRun(join(fedScripts, 'e2e_extended.mjs')) },
 	fed_dm: { fed: true, run: denoLiveRun(join(fedScripts, 'dm.mjs')) },
+	fed_discovery: { fed: true, run: denoLiveRun(join(fedScripts, 'discovery.mjs')) },
+	fed_invite_then_pow: { fed: true, run: denoLiveRun(join(fedScripts, 'invite_then_pow.mjs')) },
 	fed_archive_month: { fed: true, run: denoLiveRun(join(fedScripts, 'archive_month.mjs')) },
 	fed_mailbox: { fed: true, run: denoLiveRun(join(fedScripts, 'mailbox.mjs')) },
 	fed_ban: { fed: true, fedNodes: 3, run: denoLiveRun(join(fedScripts, 'ban.mjs')) },

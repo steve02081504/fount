@@ -125,6 +125,18 @@
 			"src/public/parts/shells/chat/test/live/scripts/fed_dm_probe.mjs",
 			"src/public/parts/shells/chat/test/live/scripts/federation/dm_intro_helper.mjs"
 		],
+		"fedDiscovery": [
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/discovery.mjs"
+		],
+		"fedInviteThenPow": [
+			"src/public/parts/shells/chat/src/chat/governance/**",
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/src/chat/lib/inviteTickets.mjs",
+			"src/public/parts/shells/chat/src/group/routes/{membership,groups}.mjs",
+			"src/public/parts/shells/chat/src/chat/dm/index.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/federation/invite_then_pow.mjs"
+		],
 		"fedBan": [
 			"src/public/parts/shells/chat/src/group/routes/governance.mjs",
 			"src/public/parts/shells/chat/src/group/lib/locks.mjs",
@@ -185,7 +197,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "7m2s",
+			"expected": "14m6s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -468,7 +480,7 @@
 		},
 		{
 			"name": "fed_dm",
-			"expected": "8m14s",
+			"expected": "4m14s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -552,6 +564,50 @@
 				"./src/public/parts/shells/chat/test/live/run.mjs",
 				"--suite",
 				"fed_ban"
+			]
+		},
+		{
+			"name": "fed_discovery",
+			"expected": "1m47s",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedDiscovery"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_discovery"
+			]
+		},
+		{
+			"name": "fed_invite_then_pow",
+			"expected": "1m50s",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedInviteThenPow"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_invite_then_pow"
 			]
 		},
 		{
@@ -734,7 +790,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "5m58s",
+			"expected": "15m37s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -902,14 +958,14 @@
 				},
 				{
 					"name": "secondaryPages",
-					"expected": "5m57s",
+					"expected": "2m52s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/secondaryPages.spec.mjs"
 					]
 				},
 				{
 					"name": "profile",
-					"expected": "2m5s",
+					"expected": "41s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/profile.spec.mjs",
 						"src/public/parts/shells/chat/public/profile/**",
@@ -946,6 +1002,7 @@
 						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",
 						"src/public/parts/shells/chat/public/shared/entityProfilePopup.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
+						"src/public/parts/shells/chat/public/shared/runUri.mjs",
 						"src/public/parts/shells/chat/public/src/endpoints/entities.mjs",
 						"src/public/parts/shells/chat/src/entity/{profile,ownerProfileUpdate,localized,endpoints}.mjs"
 					]

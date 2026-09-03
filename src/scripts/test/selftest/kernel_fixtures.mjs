@@ -1,6 +1,7 @@
 /**
  * 内核自测共用：skip dummy、入队等待、假 job。
  */
+import { findCleanupLeaks } from '../core/cleanup_check.mjs'
 import { parseSkipBecause } from '../core/skip_because.mjs'
 
 /** 避开生产 8903 与 hub 自测 18903。 */
@@ -74,6 +75,9 @@ export function enqueueDummyJob(kernel, { key, jobId, endKey = key }) {
 		exitCode: 0,
 		done: Promise.withResolvers(),
 		fingerprints: { commitHash: null, uncommittedHash: null },
+		// 手工构造的 job 不走 submitJob，需自带 cleanup baseline：
+		// 否则 job 结束的残留检测会把 Temp 里非本 job 的 fount_* 目录（历史遗留 / 并行运行物）误报为泄漏。
+		cleanupBaseline: findCleanupLeaks(),
 	}
 	kernel.jobs.set(job.id, job)
 	/** @returns {object | null} 捕获的 suite-end */

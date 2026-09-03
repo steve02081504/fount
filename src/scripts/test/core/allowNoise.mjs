@@ -1,5 +1,7 @@
 /**
  * 在声明的噪声豁免窗口内执行异步操作（begin/end 标记写入 stderr，与 node stderr 按 stdall 时间序交错）。
+ * 必须用 stderr（console.error，直通）：测试内 console.log 的 stdout 会被 deno test runner 捕获，
+ * 全套满负载下偶发整行丢失，导致豁免窗口失衡（noise_allow_imbalance）。
  */
 import {
 	formatNoiseAllowBegin,

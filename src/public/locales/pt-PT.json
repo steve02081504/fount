@@ -521,9 +521,9 @@
 				"patchMissing": "Erro: executável Deno não encontrado antes do patch. Não pode ser corrigido.",
 				"patchUnsupportedArch": "Erro: Arquitetura de patch não suportada: ${arch}",
 				"patchFailed": "Erro: Falha ao corrigir o executável Deno usando `patchelf`.",
-				"managedUpgrade": "Deno é gerenciado pelo gerenciador de pacotes ${manager} (pacote: ${package}) e está sendo atualizado via ${manager}.",
-				"managedUpgradeFailed": "Aviso: a atualização do Deno (pacote: ${manager}) via ${package} falhou, deixando o status quo.",
-				"pinNotHonored": "Aviso: Deno é gerenciado pelo gerenciador de pacotes ${manager} e não pode estar em conformidade com a versão (${spec}) especificada por .deno-version. Ele foi atualizado de acordo com a versão do gerenciador de pacotes."
+				"managedUpgrade": "O Deno é gerido pelo gestor de pacotes ${manager} (pacote: ${package}) e será atualizado através de ${manager}.",
+				"managedUpgradeFailed": "Aviso: a atualização do Deno (pacote: ${package}) através de ${manager} falhou; a versão atual é mantida.",
+				"pinNotHonored": "Aviso: o Deno é gerido pelo gestor de pacotes ${manager}, pelo que não é possível respeitar a versão (${spec}) especificada no .deno-version. Foi atualizado para a versão do gestor de pacotes."
 			},
 			"tempDir": {
 				"blocked": "Erro: não é possível executar `fount` no diretório temporário\n\nfount acopla-se profundamente ao sistema e regista o comando `PATH` e vários hooks do sistema em `fount`. Se executado num diretório temporário, após o sistema limpar os ficheiros temporários, não poderá executar `fount remove` para remover fount e os seus hooks.\n\nMova fount para um diretório não temporário antes de executar. Se apenas quiser testar brevemente, execute manualmente `fount remove` após o teste."
@@ -2272,7 +2272,10 @@
 					"char": "Converse em particular com um personagem",
 					"failed": "Não foi possível abrir a mensagem privada: ${error}",
 					"user": "Enviar mensagem privada"
-				}
+				},
+				"copyDmLink": "Copiar link da conversa privada",
+				"dmLinkCopied": "Link da conversa privada copiado",
+				"dmLinkCopyFailed": "Falha ao copiar o link da conversa privada: ${error}"
 			},
 			"gshDecryptPending": "Aguardando chave do canal (geração ${gen})",
 			"gshDecryptFailed": "Não foi possível desencriptar esta mensagem sem a chave do canal",

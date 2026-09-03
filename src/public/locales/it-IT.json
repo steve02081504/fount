@@ -521,9 +521,9 @@
 				"patchMissing": "Errore: eseguibile Deno non trovato prima dell'applicazione della patch. Non può essere patchato.",
 				"patchUnsupportedArch": "Errore: architettura della patch non supportata: ${arch}",
 				"patchFailed": "Errore: impossibile applicare la patch all'eseguibile Deno utilizzando `patchelf`.",
-				"managedUpgrade": "Deno è gestito dal gestore di pacchetti ${manager} (pacchetto: ${package}) ed è in fase di aggiornamento tramite ${manager}.",
-				"managedUpgradeFailed": "Avviso: l'aggiornamento di Deno (pacchetto: ${manager}) tramite ${package} non è riuscito, lasciando lo status quo.",
-				"pinNotHonored": "Attenzione: Deno è gestito dal gestore pacchetti ${manager} e non può essere conforme alla versione (${spec}) specificata da .deno-version. È stato aggiornato in base alla versione del gestore pacchetti."
+				"managedUpgrade": "Deno è gestito dal gestore di pacchetti ${manager} (pacchetto: ${package}) e verrà aggiornato tramite ${manager}.",
+				"managedUpgradeFailed": "Avviso: l’aggiornamento di Deno (pacchetto: ${package}) tramite ${manager} non è riuscito; viene mantenuta la versione attuale.",
+				"pinNotHonored": "Attenzione: Deno è gestito dal gestore di pacchetti ${manager}, quindi non è possibile rispettare la versione (${spec}) specificata da .deno-version. È stato aggiornato alla versione del gestore di pacchetti."
 			},
 			"tempDir": {
 				"blocked": "Errore: impossibile eseguire `fount` nella directory temporanea\n\nfount è profondamente accoppiato al sistema e registra il comando `PATH` e più hook di sistema in `fount`. Se eseguito in una directory temporanea, dopo che il sistema cancella i file temporanei, non sarà possibile eseguire `fount remove` per rimuovere fount e i suoi hook.\n\nSpostare fount in una directory non temporanea prima di eseguirlo. Se si desidera solo un breve test, eseguire manualmente `fount remove` al termine del test."
@@ -2272,7 +2272,10 @@
 					"char": "Chatta in privato con un personaggio",
 					"failed": "Impossibile aprire DM: ${error}",
 					"user": "Invia messaggio"
-				}
+				},
+				"copyDmLink": "Copia il collegamento alla chat privata",
+				"dmLinkCopied": "Collegamento alla chat privata copiato",
+				"dmLinkCopyFailed": "Impossibile copiare il collegamento alla chat privata: ${error}"
 			},
 			"gshDecryptPending": "In attesa della chiave del canale (generazione ${gen})",
 			"gshDecryptFailed": "Impossibile decrittografare questo messaggio senza la chiave del canale",

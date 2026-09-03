@@ -521,9 +521,9 @@
 				"patchMissing": "エラー: パッチ適用前に Deno 実行可能ファイルが見つかりませんでした。パッチを適用できません。",
 				"patchUnsupportedArch": "エラー: サポートされていないパッチ アーキテクチャ: ${arch}",
 				"patchFailed": "エラー: `patchelf` を使用して Deno 実行可能ファイルにパッチを適用できませんでした。",
-				"managedUpgrade": "Deno は ${manager} パッケージ マネージャー (パッケージ: ${package}) によって管理され、${manager} 経由でアップグレードされます。",
-				"managedUpgradeFailed": "警告: ${manager} 経由での Deno (パッケージ: ${package}) のアップグレードが失敗し、現状のままです。",
-				"pinNotHonored": "警告: Deno は ${manager} パッケージ マネージャーによって管理されており、.deno-version で指定されたバージョン (${spec}) に準拠できません。パッケージマネージャーのバージョンに応じてアップグレードされています。"
+				"managedUpgrade": "Deno は ${manager} パッケージ マネージャー (パッケージ: ${package}) によって管理されているため、${manager} 経由でアップグレードされます。",
+				"managedUpgradeFailed": "警告: ${manager} 経由での Deno (パッケージ: ${package}) のアップグレードが失敗しました。現在のバージョンを維持します。",
+				"pinNotHonored": "警告: Deno は ${manager} パッケージ マネージャーによって管理されているため、.deno-version で指定されたバージョン (${spec}) に準拠できません。パッケージマネージャーのバージョンに合わせてアップグレードされました。"
 			},
 			"tempDir": {
 				"blocked": "エラー: 一時ディレクトリで `fount` を実行できません\n\nfount はシステムと深く結合し、`fount` 内で `PATH` コマンドと複数のシステム hook を登録します。一時ディレクトリで実行すると、システムが一時ファイルを消去した後、`fount remove` を実行して fount とその hook を削除できなくなります。\n\n実行前に fount を非一時ディレクトリに移動してください。短時間のテストのみの場合は、テスト完了後に手動で `fount remove` を実行してください。"
@@ -2272,7 +2272,10 @@
 					"char": "キャラクターとプライベートにチャットする",
 					"failed": "DM を開けません: ${error}",
 					"user": "プライベートメッセージを送信する"
-				}
+				},
+				"copyDmLink": "プライベートチャットのリンクをコピーする",
+				"dmLinkCopied": "プライベートチャットのリンクをコピーしました",
+				"dmLinkCopyFailed": "プライベートチャットのリンクをコピーできませんでした: ${error}"
 			},
 			"gshDecryptPending": "チャンネルキーを待っています (世代 ${gen})",
 			"gshDecryptFailed": "チャンネルキーがなければこのメッセージを復号化できません",

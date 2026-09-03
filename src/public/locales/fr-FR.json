@@ -521,9 +521,9 @@
 				"patchMissing": "Erreur : l'exécutable Deno est introuvable avant l'application du correctif. Ne peut pas être corrigé.",
 				"patchUnsupportedArch": "Erreur : Architecture de correctifs non prise en charge : ${arch}",
 				"patchFailed": "Erreur : échec de la correction de l'exécutable Deno à l'aide de `patchelf`.",
-				"managedUpgrade": "Deno est géré par le gestionnaire de packages ${manager} (package : ${package}) et est en cours de mise à niveau via ${manager}.",
-				"managedUpgradeFailed": "Avertissement : la mise à niveau de Deno (package : ${manager}) via ${package} a échoué, laissant le statu quo.",
-				"pinNotHonored": "Attention : Deno est géré par le gestionnaire de packages ${manager} et ne peut pas se conformer à la version (${spec}) spécifiée par .deno-version. Il a été mis à jour selon la version du gestionnaire de packages."
+				"managedUpgrade": "Deno est géré par le gestionnaire de paquets ${manager} (paquet : ${package}) et sera mis à niveau via ${manager}.",
+				"managedUpgradeFailed": "Avertissement : la mise à niveau de Deno (paquet : ${package}) via ${manager} a échoué, la version actuelle est conservée.",
+				"pinNotHonored": "Attention : Deno est géré par le gestionnaire de paquets ${manager}, la version (${spec}) spécifiée dans .deno-version ne peut donc pas être respectée. La mise à niveau a été faite vers la version du gestionnaire de paquets."
 			},
 			"tempDir": {
 				"blocked": "Erreur : impossible d'exécuter `fount` dans un répertoire temporaire\n\nfount est profondément couplé au système et enregistre la commande `PATH` et plusieurs hooks système dans `fount`. Si vous l'exécutez dans un répertoire temporaire, après que le système a effacé les fichiers temporaires, vous ne pourrez plus exécuter `fount remove` pour supprimer fount et ses hooks.\n\nVeuillez déplacer fount vers un répertoire non temporaire avant de l'exécuter. Si vous souhaitez seulement tester brièvement, exécutez manuellement `fount remove` après le test."
@@ -2272,7 +2272,10 @@
 					"char": "Discutez en privé avec un personnage",
 					"failed": "Impossible d'ouvrir le message privé : ${error}",
 					"user": "Envoyer un message privé"
-				}
+				},
+				"copyDmLink": "Copier le lien de la discussion privée",
+				"dmLinkCopied": "Lien de la discussion privée copié",
+				"dmLinkCopyFailed": "Impossible de copier le lien de la discussion privée : ${error}"
 			},
 			"gshDecryptPending": "En attente de la clé de chaîne (génération ${gen})",
 			"gshDecryptFailed": "Impossible de déchiffrer ce message sans clé de chaîne",

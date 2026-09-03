@@ -5,6 +5,7 @@
  * 模板经 `createEntityProfileCardElement`（chat bound templates）加载。
  */
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 import { cachedProfileFromApi, getEntityProfile } from '../src/endpoints/entities.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
@@ -98,6 +99,9 @@ async function paintSharedPopup(popup, entity) {
 	const socialButton = popup.querySelector('[data-profile-popup-social]')
 	if (socialButton instanceof HTMLButtonElement)
 		socialButton.hidden = !isEntityHash128(entityHash)
+	const copyButton = popup.querySelector('[data-profile-popup-copy-contact]')
+	if (copyButton instanceof HTMLButtonElement)
+		copyButton.hidden = !isEntityHash128(entityHash)
 }
 
 /**
@@ -123,6 +127,17 @@ export async function showEntityProfilePopup(entity) {
 	popup.querySelector('[data-profile-popup-social]')?.addEventListener('click', () => {
 		if (!isEntityHash128(entity.entityHash)) return
 		window.location.href = formatSocialProfileHref(entity.entityHash)
+	})
+	popup.querySelector('[data-profile-popup-copy-contact]')?.addEventListener('click', () => {
+		void (async () => {
+			if (!isEntityHash128(entity.entityHash)) return
+			const { formatChatDmHref } = await import('./runUri.mjs')
+			const href = formatChatDmHref(entity.entityHash)
+			await navigator.clipboard.writeText(`${window.location.origin}${href}`)
+			showToastI18n('success', 'chat.hub.profilePopup.dmLinkCopied')
+		})().catch(error => {
+			showToastI18n('error', 'chat.hub.profilePopup.dmLinkCopyFailed', { error: error.message })
+		})
 	})
 
 	await paintSharedPopup(popup, entity)

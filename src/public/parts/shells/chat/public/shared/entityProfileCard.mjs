@@ -140,7 +140,7 @@ export function configureEntityProfileCard(root, mode = 'popup') {
 	if (mode === 'popup') return
 	root.querySelector('[data-profile-popup-close]')?.remove()
 	if (mode === 'preview' || mode === 'embedded')
-		for (const button of root.querySelectorAll('[data-profile-popup-edit], [data-profile-popup-care], [data-profile-popup-alias], [data-profile-popup-dm], [data-profile-popup-social], [data-profile-popup-trust]'))
+		for (const button of root.querySelectorAll('[data-profile-popup-edit], [data-profile-popup-care], [data-profile-popup-alias], [data-profile-popup-dm], [data-profile-popup-social], [data-profile-popup-trust], [data-profile-popup-copy-contact]'))
 			button.remove()
 }
 

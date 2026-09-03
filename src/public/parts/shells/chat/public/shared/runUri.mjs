@@ -67,6 +67,17 @@ export function wrapProtocolHttpsUrl(fountRunUri) {
 }
 
 /**
+ * Chat hub 私聊深链：`?contact=<entityHash>`（Social「私信」同款）。
+ * 链接可能被分享给别的节点，故始终走全局 entityHash，而不是仅本机可见的 `?char=` 直达。
+ * 打开方在自己的 fount 节点访问该路径即可发起与目标实体的私聊。
+ * @param {string} entityHash 目标实体 128 位 entityHash
+ * @returns {string} hub 页浏览器路径（相对 fount 根）
+ */
+export function formatChatDmHref(entityHash) {
+	return `/parts/shells:chat/hub/?contact=${encodeURIComponent(entityHash || '')}`
+}
+
+/**
  * 组装 join 深链分享 URL。
  * @param {object} options 载荷
  * @param {string} options.groupId 群 ID

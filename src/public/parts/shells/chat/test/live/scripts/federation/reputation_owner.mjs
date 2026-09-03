@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
+import { ms } from 'fount/scripts/ms.mjs'
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 import {
 	Api,
 	ClearFedGroup,
@@ -105,6 +107,8 @@ await testCase('B state sees new owner (federation)', async () => {
 	return Boolean(ok)
 })
 
-await ClearFedGroup(groupId)
+// purge 后仍有 in-flight 异步链（signer 加载 / mailbox hook）会打印 `group replica is being purged`；
+// 窗口内留 drainMs 让尾巴落进豁免区，避免套件判 noisy。
+await allowNoise('group replica is being purged', () => ClearFedGroup(groupId), { drainMs: ms('2s') })
 WriteFedSummary('FED-REP-OWNER', groupId)
 completeLiveScript()

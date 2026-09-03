@@ -522,8 +522,8 @@
 				"patchUnsupportedArch": "Error: Unsupported patch architecture: ${arch}",
 				"patchFailed": "Error: Failed to patch Deno executable using `patchelf`.",
 				"managedUpgrade": "Deno is managed by the ${manager} package manager (package: ${package}) and is being upgraded via ${manager}.",
-				"managedUpgradeFailed": "Warning: Upgrading Deno (package: ${manager}) via ${package} failed, leaving status quo.",
-				"pinNotHonored": "Warning: Deno is managed by the ${manager} package manager and cannot comply with the version (${spec}) specified by .deno-version. It has been upgraded according to the package manager's version."
+				"managedUpgradeFailed": "Warning: Failed to upgrade Deno (package: ${package}) via ${manager}; keeping the current version.",
+				"pinNotHonored": "Warning: Deno is managed by the ${manager} package manager, so the version (${spec}) specified in .deno-version cannot be honoured. It was upgraded to the package manager’s version instead."
 			},
 			"tempDir": {
 				"blocked": "Error: cannot run `fount` in temporary directory\n\nFount will be deeply coupled with the system and register the `PATH` command and multiple system hooks in `fount`. If running in a temporary directory, after the system clears the temporary files, you will not be able to execute `fount remove` to remove fount and its hooks.\n\nPlease move fount to a non-temporary directory before running. If you only want to test briefly, please manually execute `fount remove` after the test is completed."
@@ -2272,7 +2272,10 @@
 					"char": "Chat privately with a character",
 					"failed": "Unable to open DM: ${error}",
 					"user": "Send DM"
-				}
+				},
+				"copyDmLink": "Copy private chat link",
+				"dmLinkCopied": "Private chat link copied",
+				"dmLinkCopyFailed": "Failed to copy private chat link: ${error}"
 			},
 			"gshDecryptPending": "Waiting for channel key (generation ${gen})",
 			"gshDecryptFailed": "Unable to decrypt this message without channel key",

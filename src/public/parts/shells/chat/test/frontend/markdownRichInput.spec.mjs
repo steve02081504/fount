@@ -1,6 +1,7 @@
 import {
 	test,
 	expect,
+	seedGroupEmojiPack,
 } from './fixtures.mjs'
 
 const ENTITY_HASH = 'f'.repeat(128)
@@ -56,9 +57,12 @@ test.describe('Markdown rich input', () => {
 		await expect(input).toHaveJSProperty('value', raw)
 	})
 
-	test('custom emoji token renders inline emoji element', async ({ page, groupChannel: _ }) => {
+	test('custom emoji token renders inline emoji element', async ({ page, baseUrl, apiKey, groupChannel }) => {
+		const { groupId } = groupChannel
+		// 用真实 pack：chip 会按 emojiRef 请求内容，虚构 packId 会产生 404 网络噪声。
+		const { packId, emojiId } = await seedGroupEmojiPack(baseUrl, apiKey, groupId)
 		const input = page.locator('#message-input')
-		await input.fill(':[emoji:testpack/grinning]:')
+		await input.fill(`:[emoji:${packId}/${emojiId}]:`)
 		await expect(input.locator('.fount-markdown-rich-input-chip.fount-markdown-rich-input-emoji')).toHaveCount(1)
 	})
 

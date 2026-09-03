@@ -521,9 +521,9 @@
 				"patchMissing": "오류: 패치 이전에는 Deno 실행 파일을 찾을 수 없습니다. 패치할 수 없습니다.",
 				"patchUnsupportedArch": "오류: 지원되지 않는 패치 아키텍처: ${arch}",
 				"patchFailed": "오류: `patchelf`를 사용하여 Deno 실행 파일을 패치하지 못했습니다.",
-				"managedUpgrade": "Deno는 ${manager} 패키지 관리자(패키지: ${package})에 의해 관리되며 ${manager}를 통해 업그레이드되고 있습니다.",
+				"managedUpgrade": "Deno는 ${manager} 패키지 관리자(패키지: ${package})에 의해 관리되며 ${manager}를 통해 업그레이드됩니다.",
 				"managedUpgradeFailed": "경고: ${manager}를 통한 Deno(패키지: ${package}) 업그레이드가 실패하여 현재 상태를 유지합니다.",
-				"pinNotHonored": "경고: Deno는 ${manager} 패키지 관리자에 의해 관리되며 .deno-version에 지정된 버전(${spec})을 준수할 수 없습니다. 패키지 관리자 버전에 맞춰 업그레이드 되었습니다."
+				"pinNotHonored": "경고: Deno는 ${manager} 패키지 관리자에 의해 관리되므로 .deno-version에 지정된 버전(${spec})을 준수할 수 없습니다. 패키지 관리자의 버전으로 업그레이드되었습니다."
 			},
 			"tempDir": {
 				"blocked": "오류: 임시 디렉터리에서 `fount`를 실행할 수 없습니다\n\nfount는 시스템과 깊이 결합되며 `fount`에서 `PATH` 명령과 여러 시스템 hook을 등록합니다. 임시 디렉터리에서 실행하면 시스템이 임시 파일을 지운 후 `fount remove`를 실행하여 fount와 hook을 제거할 수 없습니다.\n\n실행하기 전에 fount를 비임시 디렉터리로 이동하세요. 잠깐 테스트만 하려면 테스트 완료 후 수동으로 `fount remove`를 실행하세요."
@@ -2272,7 +2272,10 @@
 					"char": "캐릭터와 비공개 채팅",
 					"failed": "비공개 메시지를 열 수 없습니다: ${error}",
 					"user": "비공개 메시지 보내기"
-				}
+				},
+				"copyDmLink": "비공개 채팅 링크 복사",
+				"dmLinkCopied": "비공개 채팅 링크가 복사되었습니다.",
+				"dmLinkCopyFailed": "비공개 채팅 링크를 복사하지 못했습니다: ${error}"
 			},
 			"gshDecryptPending": "채널 키를 기다리는 중(${gen} 세대)",
 			"gshDecryptFailed": "채널 키가 없으면 이 메시지를 해독할 수 없습니다.",
