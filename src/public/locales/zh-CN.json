@@ -712,6 +712,10 @@
 				"title": "打开 Telegram",
 				"aria-label": "打开 Telegram"
 			},
+			"institute": {
+				"title": "fount Agent 研究院",
+				"aria-label": "fount Agent 研究院"
+			},
 			"github": {
 				"title": "打开 GitHub",
 				"aria-label": "打开 GitHub"
@@ -5328,6 +5332,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "fount Agent 研究院",
+		"description": "来自 fount 工坊的随笔：关于 Agent 设计的思考——Agent 究竟是什么、LLM 到底擅长什么，以及如何构建只在值得的地方动用智能的系统。",
+		"heading": "fount Agent 研究院",
+		"intro": "fount 项目关于 Agent 设计的系列文章——Agent 是什么、LLM 在其中扮演什么角色、哪些工作其实交给普通程序更好。可以按顺序读，也可以随意跳转，每篇都链向其余各篇。",
+		"search": {
+			"placeholder": "搜索标题、摘要或标签…",
+			"aria-label": "搜索文章",
+			"empty": "没有匹配的文章——换个关键词试试？"
+		},
+		"home": {
+			"title": "fount 主页",
+			"aria-label": "fount 主页"
+		},
+		"theme": {
+			"title": "主题",
+			"aria-label": "切换主题"
+		},
+		"language": {
+			"title": "语言",
+			"aria-label": "切换文章语言"
+		},
+		"read": "阅读",
+		"article": {
+			"loading": "正在展开书页…",
+			"back": "全部文章",
+			"prev": "上一篇",
+			"next": "下一篇",
+			"toc": "本页目录",
+			"all_articles": "全部文章",
+			"pager": {
+				"aria-label": "文章导航"
+			},
+			"load_failed": "文章加载失败，请稍后再试。",
+			"not_found": "没有这篇文章——它可能已被移动或更名。",
+			"langs_unavailable": "这篇文章暂时没有可读的版本。"
+		},
+		"footer": {
+			"text": "本文作者也是 fount 的作者。fount 是一个可自托管的 AI 伴侣平台，源代码完全公开可查——Agent、Shell、人格与记忆，都只栖居在你自己的机器上。",
+			"install": "安装 fount",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

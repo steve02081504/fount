@@ -57,6 +57,16 @@
 						".github/pages/wait/index.mjs",
 						"imgs/icon_anime/**"
 					]
+				},
+				{
+					"name": "blog",
+					"expected": "1m",
+					"triggers": [
+						".github/pages/test/frontend/blog.spec.mjs",
+						".github/pages/blog/**",
+						".github/workflows/pages.yaml",
+						"src/scripts/test/playwright/pages_server.mjs"
+					]
 				}
 			]
 		}

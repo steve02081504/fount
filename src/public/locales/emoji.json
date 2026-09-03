@@ -712,6 +712,10 @@
 				"title": "✈️",
 				"aria-label": "✈️"
 			},
+			"institute": {
+				"title": "fount Agent 🏛️",
+				"aria-label": "fount Agent 🏛️"
+			},
 			"github": {
 				"title": "🐙🐱",
 				"aria-label": "🐙🐱"
@@ -5328,6 +5332,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "fount Agent 🏛️",
+		"description": "📝🤖💡 — 🐟: Agent❓🤔, LLM🎁❓, 🛠️🧠⚖️❗",
+		"heading": "fount Agent 🏛️",
+		"intro": "🤖📚: Agent❓🤔 LLM❓🎭 🛠️💪>🧠✨. 📖⬇️🔄, 🔗🔗🔗!",
+		"search": {
+			"placeholder": "🔍📝🏷️",
+			"aria-label": "🔍📚",
+			"empty": "🔍📄🚫 😢🔁"
+		},
+		"home": {
+			"title": "🐟",
+			"aria-label": "🐟"
+		},
+		"theme": {
+			"title": "🎨",
+			"aria-label": "🎨"
+		},
+		"language": {
+			"title": "🗣️",
+			"aria-label": "🗣️"
+		},
+		"read": "📖",
+		"article": {
+			"loading": "⏳📖✨",
+			"back": "↩️📚",
+			"prev": "⬅️",
+			"next": "➡️",
+			"toc": "📑",
+			"all_articles": "📚",
+			"pager": {
+				"aria-label": "🧭"
+			},
+			"load_failed": "💥📖😵 😥🔁",
+			"not_found": "❓📄🚫🏃",
+			"langs_unavailable": "📄🚫👀😢"
+		},
+		"footer": {
+			"text": "✍️🐟🤖 — 🏠💗, 📖🔍: Agent+Shell+🎭+🧠, 🔒💻🏠.",
+			"install": "⬇️🐟",
+			"github": "🐙🐱"
 		}
 	},
 	"themeManage": {

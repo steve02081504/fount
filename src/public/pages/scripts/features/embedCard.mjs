@@ -221,5 +221,6 @@ export function ensureEmbedHydrator() {
 
 document.head.prepend(Object.assign(document.createElement('link'), {
 	rel: 'stylesheet',
-	href: '/scripts/features/embedCard.css',
+	// 相对模块挂载位置解析，兼容 GitHub Pages 的 /fount 子路径部署
+	href: new URL('./embedCard.css', import.meta.url).href,
 }))

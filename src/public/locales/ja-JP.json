@@ -712,6 +712,10 @@
 				"title": "Telegramを開く",
 				"aria-label": "Telegramを開く"
 			},
+			"institute": {
+				"title": "fount エージェント研究所",
+				"aria-label": "fount エージェント研究所"
+			},
 			"github": {
 				"title": "GitHubを開く",
 				"aria-label": "GitHubを開く"
@@ -5328,6 +5332,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "fount エージェント研究所",
+		"description": "fount ワークショップからのエッセイ: エージェント設計についての考察——エージェントとは何か、LLM の得意分野は何か、そして知能を活かすべき場面にだけ活かすシステムをどう構築するか。",
+		"heading": "fount エージェント研究所",
+		"intro": "fount プロジェクトによるエージェント設計の連載——エージェントとは何か、LLM はどのような役割を担うのか、そしてどの仕事はむしろ普通のプログラムに任せるべきか。順番に読んでも、気の向くままに読み飛ばしても構いません。各記事は他の記事へリンクしています。",
+		"search": {
+			"placeholder": "タイトル・要約・タグで検索…",
+			"aria-label": "記事を検索",
+			"empty": "一致する記事がありません。別のキーワードをお試しください。"
+		},
+		"home": {
+			"title": "fount ホーム",
+			"aria-label": "fount ホーム"
+		},
+		"theme": {
+			"title": "テーマ",
+			"aria-label": "テーマを切り替え"
+		},
+		"language": {
+			"title": "言語",
+			"aria-label": "記事の言語を切り替え"
+		},
+		"read": "読む",
+		"article": {
+			"loading": "ページをめくっています…",
+			"back": "記事一覧",
+			"prev": "前の記事",
+			"next": "次の記事",
+			"toc": "このページの目次",
+			"all_articles": "すべての記事",
+			"pager": {
+				"aria-label": "記事のナビゲーション"
+			},
+			"load_failed": "記事を読み込めませんでした。しばらくしてからもう一度お試しください。",
+			"not_found": "この記事は存在しません。移動または改名された可能性があります。",
+			"langs_unavailable": "この記事は現在読める言語の版がありません。"
+		},
+		"footer": {
+			"text": "この記事の著者は fount の作者でもあります。fount は自己ホスト型の AI コンパニオンプラットフォームで、ソースコードはすべて公開され閲覧できます——エージェントもシェルも人格も記憶も、すべてあなた自身のマシンだけにあります。",
+			"install": "fount をインストール",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

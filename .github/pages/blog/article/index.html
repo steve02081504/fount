@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="fount Agent Institute: An Essay on Agent Design" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/blog/article/" />
+	<meta property="og:type" content="article" />
+	<meta property="og:description" content="One stop along the fount Agent Institute reading path: agents as task systems, LLMs as rented cognition, and the quiet art of not asking the model for what a program already knows." />
+	<meta name="description" content="One stop along the fount Agent Institute reading path: agents as task systems, LLMs as rented cognition, and the quiet art of not asking the model for what a program already knows." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<link rel="icon" type="image/png" href="https://steve02081504.github.io/fount/imgs/icon.png" />
+	<link rel="icon" type="image/ico" href="https://steve02081504.github.io/fount/imgs/icon.ico" />
+	<title data-i18n="blog.title"></title>
+	<script blocking="render" type="module" src="../../preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../blog.css" type="text/css" />
+	<link rel="stylesheet" href="../../base.css" type="text/css" />
+</head>
+
+<body class="blog-shell bg-base-200 p-4">
+	<header class="blog-header -mx-4 px-4">
+		<nav class="navbar min-h-14 gap-2 max-w-4xl mx-auto px-0">
+			<div class="flex items-center gap-2 min-w-0">
+				<a href="../" class="btn btn-ghost btn-sm gap-1.5" data-i18n="blog.article.back"></a>
+			</div>
+			<div class="flex items-center gap-1">
+				<div id="language-dropdown" class="dropdown dropdown-end" hidden>
+					<button tabindex="0" type="button" class="btn btn-ghost btn-square" data-i18n="blog.language">
+						<img src="https://api.iconify.design/heroicons/language.svg" class="text-icon w-6 h-6" alt="" />
+					</button>
+					<div tabindex="0" class="dropdown-content z-[1] rounded-box w-56 shadow-md bg-base-100">
+						<ul id="language-menu" class="menu p-2 max-h-80 overflow-y-auto" language-check-ignore></ul>
+					</div>
+				</div>
+				<div class="dropdown dropdown-end">
+					<button tabindex="0" type="button" class="btn btn-ghost btn-square" data-i18n="blog.theme">
+						<img src="https://api.iconify.design/line-md/sunny-outline.svg" class="text-icon w-6 h-6" alt="" />
+					</button>
+					<div tabindex="0" class="dropdown-content z-[1] rounded-box w-56 shadow-md bg-base-100">
+						<ul id="theme-menu" class="menu p-2 max-h-80 overflow-y-auto" language-check-ignore></ul>
+					</div>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<main class="flex-1 w-full max-w-6xl mx-auto py-10">
+		<h1 class="sr-only" data-i18n="blog.title"></h1>
+		<div class="blog-article-layout">
+			<aside id="article-sidebar" class="blog-toc" hidden>
+				<section id="article-toc-section" class="blog-toc-section">
+					<h2 class="blog-toc-title" data-i18n="blog.article.toc"></h2>
+					<ul id="article-toc" class="blog-toc-list" user-content></ul>
+				</section>
+				<nav id="article-nav-panel" class="blog-toc-section" aria-labelledby="article-nav-title">
+					<h2 id="article-nav-title" class="blog-toc-title" data-i18n="blog.article.all_articles"></h2>
+					<ul id="article-nav" class="blog-toc-list" user-content></ul>
+				</nav>
+			</aside>
+			<div class="bg-base-100 shadow rounded-box p-6 sm:p-10 min-w-0">
+				<div id="article-status" class="flex flex-col items-center gap-3 py-16">
+					<span class="loading loading-ring loading-lg"></span>
+					<span data-i18n="blog.article.loading"></span>
+				</div>
+				<div id="article-error" class="alert alert-error" hidden>
+					<span id="article-error-text" data-i18n="blog.article.load_failed"></span>
+					<a href="../" class="btn btn-sm" data-i18n="blog.article.back"></a>
+				</div>
+				<article id="article-body" class="blog-article" user-content hidden></article>
+				<nav id="article-pager" class="blog-pager mt-14" data-i18n="blog.article.pager" user-content hidden></nav>
+			</div>
+		</div>
+	</main>
+
+	<footer class="blog-footer -mx-4 px-4 py-6" role="contentinfo">
+		<div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
+			<div class="flex items-center gap-3 flex-1 min-w-0">
+				<img src="https://steve02081504.github.io/fount/imgs/icon.svg" class="w-10 h-10 shrink-0" alt="fount" />
+				<p class="text-sm opacity-80" data-i18n="blog.footer.text"></p>
+			</div>
+			<div class="flex items-center gap-2 shrink-0">
+				<a href="../" class="btn btn-primary btn-sm" data-i18n="blog.footer.install"></a>
+				<a href="https://github.com/steve02081504/fount" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" data-i18n="blog.footer.github"></a>
+			</div>
+		</div>
+	</footer>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

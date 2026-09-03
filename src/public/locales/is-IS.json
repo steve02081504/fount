@@ -712,6 +712,10 @@
 				"title": "Telegram",
 				"aria-label": "Telegram"
 			},
+			"institute": {
+				"title": "fount rannsóknarstofnun",
+				"aria-label": "fount rannsóknarstofnun"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5328,6 +5332,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "fount rannsóknarstofnun",
+		"description": "Ritgerðir úr smiðju fount: hugleiðingar um hönnun Agent — hvað Agent er í raun, við hvað LLM er gott, og hvernig byggja eigi kerfi sem eyða greind einungis þar sem hún borgar sig.",
+		"heading": "fount rannsóknarstofnun",
+		"intro": "Greinaröð fount-verkefnisins um hönnun Agent — hvað er Agent, hvert er hlutverk LLM í því og hvaða verkefni er í raun betra að láta venjuleg forrit sjá um. Hægt er að lesa þær í röð eða hoppa að vild; hver grein tengist hinum.",
+		"search": {
+			"placeholder": "Leita að titli, ágripi eða merkjum…",
+			"aria-label": "Leita að greinum",
+			"empty": "Engar greinar fundust — prófaðu annað leitarorð?"
+		},
+		"home": {
+			"title": "Heimasíða fount",
+			"aria-label": "Heimasíða fount"
+		},
+		"theme": {
+			"title": "Þema",
+			"aria-label": "Skipta um þema"
+		},
+		"language": {
+			"title": "Tungumál",
+			"aria-label": "Skipta um tungumál greina"
+		},
+		"read": "Lesa",
+		"article": {
+			"loading": "Opna grein…",
+			"back": "Allar greinar",
+			"prev": "Fyrri",
+			"next": "Næsta",
+			"toc": "Á þessari síðu",
+			"all_articles": "Allar greinar",
+			"pager": {
+				"aria-label": "Flakk um greinar"
+			},
+			"load_failed": "Mistókst að hlaða greinina. Reyndu aftur síðar.",
+			"not_found": "Þessi grein er ekki til — hún gæti hafa verið flutt eða endurnefnd.",
+			"langs_unavailable": "Engin læsileg útgáfa er til af þessari grein sem stendur."
+		},
+		"footer": {
+			"text": "Höfundur þessarar greinar er einnig höfundur fount. fount er sjálfhýstur AI-félagavettvangur með grunnkóða sem er algjörlega opinn til skoðunar — Agent, Shell, persónuleikar og minni, allt einungis í þinni eigin vél.",
+			"install": "Setja upp fount",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {
