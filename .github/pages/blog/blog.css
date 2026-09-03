@@ -1,0 +1,417 @@
+/* fount Agent 研究院静态页样式：只使用主题变量（--color-* / --radius-* / --border），不硬编码颜色、圆角与 px 边框宽度。 */
+
+.blog-shell {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.blog-header {
+	position: sticky;
+	top: 0;
+	z-index: 30;
+	backdrop-filter: blur(0.5rem);
+	background: color-mix(in oklab, var(--color-base-200) 82%, transparent);
+	border-bottom: var(--border) solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+}
+
+.blog-title-link {
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+.blog-title-link:hover {
+	color: var(--color-primary);
+}
+
+/* --- 文章列表卡片 --- */
+
+.blog-card {
+	transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.blog-card:hover {
+	transform: translateY(-2px);
+}
+
+.blog-lang-badge {
+	text-decoration: none;
+}
+
+.blog-lang-badge:hover {
+	border-color: var(--color-primary);
+	color: var(--color-primary);
+}
+
+.blog-tag-badge {
+	cursor: pointer;
+}
+
+.blog-tag-badge:hover {
+	outline: var(--border) solid currentColor;
+}
+
+/* --- 文章正文排版（fount 全量 markdown：KaTeX / Mermaid / Shiki / HTML） --- */
+
+.blog-article {
+	line-height: 1.75;
+	font-size: 1.02rem;
+	overflow-wrap: break-word;
+}
+
+.blog-article h1 {
+	font-size: 2.1rem;
+	font-weight: 700;
+	line-height: 1.3;
+	margin: 1.25rem 0 1rem;
+}
+
+.blog-article h2 {
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.35;
+	margin: 2.1rem 0 0.85rem;
+	padding-bottom: 0.3rem;
+	border-bottom: var(--border) solid color-mix(in oklab, var(--color-base-content) 12%, transparent);
+}
+
+.blog-article h3 {
+	font-size: 1.2rem;
+	font-weight: 700;
+	margin: 1.6rem 0 0.6rem;
+}
+
+.blog-article h4,
+.blog-article h5,
+.blog-article h6 {
+	font-size: 1.05rem;
+	font-weight: 700;
+	margin: 1.3rem 0 0.5rem;
+}
+
+.blog-article p {
+	margin: 0.85rem 0;
+}
+
+.blog-article ul,
+.blog-article ol {
+	margin: 0.85rem 0;
+	padding-inline-start: 1.6rem;
+	list-style: revert;
+}
+
+.blog-article li {
+	margin: 0.3rem 0;
+}
+
+.blog-article li>p {
+	margin: 0.3rem 0;
+}
+
+.blog-article blockquote {
+	margin: 1.1rem 0;
+	padding: 0.55rem 1rem;
+	border-inline-start: 0.3rem solid var(--color-primary);
+	border-radius: var(--radius-field);
+	background: color-mix(in oklab, var(--color-primary) 8%, transparent);
+	color: color-mix(in oklab, var(--color-base-content) 85%, transparent);
+}
+
+.blog-article blockquote p {
+	margin: 0.35rem 0;
+}
+
+.blog-article a {
+	color: var(--color-primary);
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.blog-article a:hover {
+	color: var(--color-secondary);
+}
+
+.blog-article img {
+	max-width: 100%;
+	height: auto;
+}
+
+.blog-article hr {
+	margin: 2rem 0;
+	border: none;
+	border-top: var(--border) solid color-mix(in oklab, var(--color-base-content) 18%, transparent);
+}
+
+.blog-article table {
+	width: 100%;
+	margin: 1.1rem 0;
+	border-collapse: collapse;
+	font-size: 0.95rem;
+	display: block;
+	overflow-x: auto;
+}
+
+.blog-article th,
+.blog-article td {
+	padding: 0.5rem 0.75rem;
+	border: var(--border) solid color-mix(in oklab, var(--color-base-content) 15%, transparent);
+	text-align: start;
+}
+
+.blog-article th {
+	background: color-mix(in oklab, var(--color-base-content) 6%, transparent);
+	font-weight: 700;
+}
+
+.blog-article :not(pre) > code {
+	padding: 0.15em 0.4em;
+	border-radius: var(--radius-field);
+	background: color-mix(in oklab, var(--color-base-content) 8%, transparent);
+	font-weight: 600;
+}
+
+.blog-article pre {
+	margin: 1.1rem 0;
+	padding: 1rem 1.25rem;
+	overflow-x: auto;
+	border-radius: var(--radius-box);
+	border: var(--border) solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+	background: var(--color-base-200);
+}
+
+.blog-article pre code {
+	background: transparent;
+	padding: 0;
+	font-weight: inherit;
+}
+
+/* Shiki 代码块外层（fount markdown 管线产物） */
+.blog-article figure[data-rehype-pretty-code-figure] {
+	margin: 1.1rem 0;
+}
+
+.blog-article figure[data-rehype-pretty-code-figure] pre {
+	margin: 0;
+}
+
+.blog-article .katex-display {
+	overflow-x: auto;
+	overflow-y: hidden;
+	padding: 0.35rem 0;
+}
+
+.blog-article svg {
+	max-width: 100%;
+	height: auto;
+}
+
+/* mermaid 图面板：节点填充为主题 base-200，需要与衬底保持可感知色距（两种主题下都不隐身）。
+   根元素 fill 用主题色压过 mermaid 内联的 `#id { fill:#333 }`，避免暗色主题下与衬底同色。 */
+.blog-article svg[id^='mermaid-'] {
+	display: block;
+	margin: 1.1rem auto;
+	padding: 1rem;
+	box-sizing: content-box;
+	fill: var(--color-base-content) !important;
+	background: color-mix(in oklab, var(--color-base-200) 88%, var(--color-base-content));
+	border-radius: var(--radius-box);
+	border: var(--border) solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+}
+
+.blog-article kbd {
+	padding: 0.1em 0.45em;
+	border-radius: var(--radius-field);
+	border: var(--border) solid color-mix(in oklab, var(--color-base-content) 25%, transparent);
+	border-bottom-width: calc(var(--border) * 2);
+	background: var(--color-base-200);
+	font-size: 0.85em;
+}
+
+/* --- 文章页双栏布局 + wiki 侧边栏（目录 / 全部文章） --- */
+
+html {
+	scroll-behavior: smooth;
+}
+
+.blog-article h1,
+.blog-article h2,
+.blog-article h3,
+.blog-article h4,
+.blog-article h5,
+.blog-article h6 {
+	scroll-margin-top: 5rem;
+}
+
+.blog-article-layout {
+	display: grid;
+	gap: 1.5rem;
+	align-items: start;
+	grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 64rem) {
+	.blog-article-layout {
+		grid-template-columns: 15rem minmax(0, 1fr);
+	}
+}
+
+.blog-toc {
+	display: none;
+	position: sticky;
+	top: 4.75rem;
+	max-height: calc(100vh - 6rem);
+	overflow-y: auto;
+	align-self: start;
+	padding: 0.85rem;
+	border-radius: var(--radius-box);
+	border: var(--border) solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+	background: color-mix(in oklab, var(--color-base-100) 65%, transparent);
+}
+
+@media (min-width: 64rem) {
+	.blog-toc:not([hidden]) {
+		display: block;
+	}
+}
+
+.blog-toc-section {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+
+.blog-toc-section + .blog-toc-section {
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: var(--border) solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+}
+
+.blog-toc-title {
+	font-size: 0.75rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	opacity: 0.65;
+	margin: 0;
+}
+
+.blog-toc-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.blog-toc-link {
+	display: block;
+	padding: 0.3rem 0.55rem;
+	border-radius: var(--radius-field);
+	font-size: 0.88rem;
+	line-height: 1.35;
+	color: color-mix(in oklab, var(--color-base-content) 80%, transparent);
+	text-decoration: none;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.blog-toc-link:hover {
+	color: var(--color-base-content);
+	background: color-mix(in oklab, var(--color-base-content) 8%, transparent);
+}
+
+.blog-toc-link.blog-toc-h3 {
+	padding-inline-start: 1.15rem;
+	font-size: 0.82rem;
+}
+
+.blog-toc-link.blog-toc-active {
+	color: var(--color-primary);
+	background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+	font-weight: 700;
+}
+
+.blog-nav-category {
+	font-size: 0.78rem;
+	font-weight: 700;
+	opacity: 0.6;
+	padding: 0.45rem 0.55rem 0.15rem;
+}
+
+.blog-nav-link {
+	display: block;
+	padding: 0.3rem 0.55rem;
+	border-radius: var(--radius-field);
+	font-size: 0.86rem;
+	line-height: 1.35;
+	color: color-mix(in oklab, var(--color-base-content) 80%, transparent);
+	text-decoration: none;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.blog-nav-link:hover {
+	color: var(--color-base-content);
+	background: color-mix(in oklab, var(--color-base-content) 8%, transparent);
+}
+
+.blog-nav-link.blog-nav-active {
+	color: var(--color-primary);
+	background: color-mix(in oklab, var(--color-primary) 10%, transparent);
+	font-weight: 700;
+}
+
+/* --- 文章页脚导航（上一篇 / 下一篇） --- */
+
+.blog-pager {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	gap: 0.75rem;
+	align-items: stretch;
+}
+
+.blog-pager-link {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.15rem;
+	padding: 0.75rem 1rem;
+	border-radius: var(--radius-box);
+	border: var(--border) solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+	background: color-mix(in oklab, var(--color-base-100) 65%, transparent);
+	text-decoration: none;
+	min-width: 0;
+}
+
+.blog-pager-link:hover {
+	border-color: var(--color-primary);
+}
+
+.blog-pager-link.blog-pager-next {
+	grid-column: 3;
+	text-align: end;
+}
+
+.blog-pager-direction {
+	font-size: 0.78rem;
+	opacity: 0.65;
+}
+
+.blog-pager-title {
+	font-weight: 700;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--color-base-content);
+}
+
+/* --- 页脚（fount 广告位） --- */
+
+.blog-footer {
+	margin-top: auto;
+	border-top: var(--border) solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+	background: color-mix(in oklab, var(--color-base-100) 45%, transparent);
+}

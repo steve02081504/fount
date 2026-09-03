@@ -712,6 +712,10 @@
 				"title": "Telegram",
 				"aria-label": "Telegram"
 			},
+			"institute": {
+				"title": "fount onderzoeksinstituut",
+				"aria-label": "fount onderzoeksinstituut"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5334,6 +5338,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "fount onderzoeksinstituut",
+		"description": "Essays uit de werkplaats van fount: gedachten over het ontwerpen van agents — wat een agent eigenlijk is, waar een LLM goed in is en hoe je systemen bouwt die intelligentie alleen inzetten waar die het waard is.",
+		"heading": "fount onderzoeksinstituut",
+		"intro": "De artikelreeks van het fount-project over het ontwerpen van agents — wat is een agent, welke rol speelt een LLM daarin en welke taken kun je beter aan gewone programma's overlaten. Je kunt ze op volgorde lezen of vrij rondspringen; elk artikel linkt naar de andere.",
+		"search": {
+			"placeholder": "Zoek op titel, samenvatting of tags…",
+			"aria-label": "Artikelen doorzoeken",
+			"empty": "Geen overeenkomende artikelen. Probeer een ander zoekwoord?"
+		},
+		"home": {
+			"title": "fount-startpagina",
+			"aria-label": "fount-startpagina"
+		},
+		"theme": {
+			"title": "Thema",
+			"aria-label": "Thema wisselen"
+		},
+		"language": {
+			"title": "Taal",
+			"aria-label": "Taal van de artikelen wisselen"
+		},
+		"read": "Lezen",
+		"article": {
+			"loading": "Artikel wordt geopend…",
+			"back": "Alle artikelen",
+			"prev": "Vorige",
+			"next": "Volgende",
+			"toc": "Op deze pagina",
+			"all_articles": "Alle artikelen",
+			"pager": {
+				"aria-label": "Artikelnavigatie"
+			},
+			"load_failed": "Het artikel kon niet worden geladen. Probeer het later opnieuw.",
+			"not_found": "Dit artikel bestaat niet. Misschien is het verplaatst of hernoemd.",
+			"langs_unavailable": "Er is momenteel geen leesbare versie van dit artikel."
+		},
+		"footer": {
+			"text": "De auteur van dit artikel is ook de auteur van fount. fount is een zelf te hosten AI-gezelschapsplatform met volledig inzichtelijke broncode — agents, shells, persoonlijkheden en geheugen, allemaal alleen op je eigen machine.",
+			"install": "fount installeren",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

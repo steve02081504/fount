@@ -26,7 +26,8 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [docs/markdown-
 ## UI & Theming
 
 - **`base.css`**: shared page chrome. `.hidden { display: none !important }` — do not re-declare in shells; page-local `display: flex|grid` must not un-hide toggled UI.
-- **Component CSS**: inject at module import (`document.head.prepend`) — do not lazy-`ensure*` stylesheet links on first use. Registry-driven CSS (e.g. markdown extensions) stays async-load.
+- **daisyUI 5 dropdown**: while open, the trigger gets `pointer-events: none` — after a menu item click, `document.activeElement?.blur()` to close the menu before the trigger is clickable again (wait/install language selector, blog menus).
+- **Component CSS**: inject at module import (`document.head.prepend`) — do not lazy-`ensure*` stylesheet links on first use. Registry-driven CSS (e.g. markdown extensions) stays async-load. Link the stylesheet via `new URL('./<name>.css', import.meta.url).href` — a hardcoded `/scripts/…` href breaks under subpath mounts (GitHub Pages `/fount`).
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
 - **`template.mjs`**: `templatesFor(root)` returns bound `renderTemplate` / `mountTemplate` / `appendTemplate` / `renderTemplateAsHtmlString` / …. Shells expose a local `templates.mjs` that calls `templatesFor` (+ `dialogsFor` when needed); call sites import from that module — never global `usingTemplates` / `withTemplates`. HTML helpers (`createDocumentFragment*`, `createDOM*`, `activateScripts`) stay on `template.mjs`. Fetch cache keyed by full URL; failed fetches are not cached.
 - **`dialog.mjs`**: `dialogsFor(root)` → `openDialogFromTemplate` / `pickFromDialog` / …. Shared prompt/confirm templates: `/scripts/features/templates.mjs`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.

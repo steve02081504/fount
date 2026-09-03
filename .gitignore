@@ -47,3 +47,6 @@
 /src/runner/polyglot/stack/fount-stack-runner.cabal
 /stack.yaml.lock
 /project
+
+# blog 索引（tools/generate_index.py 产物）
+/.github/pages/blog/index.json

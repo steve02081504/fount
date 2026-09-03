@@ -2,6 +2,7 @@
  * GitHub Pages 本地静态服务器（与 `.esh/commands/pages-server.mjs` 同规则）。
  * 从原始路径挂载，无需复制/构建；部署流程见 `.github/workflows/pages.yaml`。
  */
+/* global Deno */
 import { watch } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -88,6 +89,16 @@ async function getHookedPagesFile(pagesRoot, relPath, cache) {
 		return { body, relPath: candidate }
 	}
 	return null
+}
+
+/**
+ * 通配绑定地址（0.0.0.0 / ::）在浏览器中不可直接访问，展示用 localhost。
+ * @param {string} host 绑定地址
+ * @returns {string} 展示用主机名
+ */
+export function pagesDisplayHost(host) {
+	if (host === '0.0.0.0' || host === '::' || host === '::ffff:0.0.0.0') return 'localhost'
+	return host
 }
 
 /**
@@ -207,6 +218,33 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
  */
 
 /**
+ * 运行博客索引生成器（对应部署管线 `.github/workflows/pages.yaml` 的同名步骤）。
+ * @param {string} projectRoot 仓库根
+ * @returns {Promise<void>} 生成完成；无博客生成器时静默跳过
+ */
+async function generateBlogIndex(projectRoot) {
+	const generator = path.join(projectRoot, '.github', 'pages', 'blog', 'tools', 'generate_index.py')
+	try {
+		await fs.access(generator)
+	}
+	catch {
+		return
+	}
+	let lastError = null
+	for (const executable of ['python3', 'python']) try {
+		const command = new Deno.Command(executable, { args: [generator], cwd: projectRoot })
+		const { success, stderr } = await command.output()
+		if (success) return
+		lastError = new Error(new TextDecoder().decode(stderr))
+	}
+	catch (error) {
+		lastError = error
+	}
+
+	throw new Error(`Failed to generate blog index: ${lastError?.message || lastError}`)
+}
+
+/**
  * 启动 GitHub Pages 本地静态服务器。
  * @param {object} [options] 选项
  * @param {number} [options.port=8080] 监听端口
@@ -215,6 +253,7 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
  * @returns {Promise<PagesServerHandle>} 服务器句柄
  */
 export async function startPagesServer({ port = 8080, projectRoot = REPO_ROOT, host = '127.0.0.1' } = {}) {
+	await generateBlogIndex(projectRoot)
 	await refreshFountGitMeta()
 	const app = createPagesApp(projectRoot)
 	const pagesWatcher = watch(path.join(projectRoot, '.github', 'pages'), { recursive: true }, (_event, filename) => {
@@ -231,7 +270,7 @@ export async function startPagesServer({ port = 8080, projectRoot = REPO_ROOT, h
 				app,
 				server,
 				port,
-				baseUrl: `http://${host}:${port}/fount`,
+				baseUrl: `http://${pagesDisplayHost(host)}:${port}/fount`,
 				/**
 				 * 关闭 HTTP server 与文件系统监视（掐断 keep-alive 后 close）。
 				 * @returns {Promise<void>}

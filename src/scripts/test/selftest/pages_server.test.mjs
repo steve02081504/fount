@@ -9,7 +9,7 @@ import { join } from 'node:path'
 import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { REPO_ROOT } from '../core/repo_root.mjs'
-import { createPagesApp } from '../playwright/pages_server.mjs'
+import { createPagesApp, pagesDisplayHost } from '../playwright/pages_server.mjs'
 
 /**
  * @param {string} marker 写入 HTML 的可辨识文本
@@ -171,4 +171,52 @@ Deno.test('pages scripts overlay serves GitHub Pages registries stub', async () 
 	finally {
 		await close()
 	}
+})
+
+Deno.test('pages serve shared scripts stylesheet with text/css', async () => {
+	const { port, close } = await listenApp(createPagesApp(REPO_ROOT))
+	try {
+		const response = await fetch(`http://127.0.0.1:${port}/fount/scripts/features/embedCard.css`)
+		assertEquals(response.ok, true)
+		assertStringIncludes(response.headers.get('content-type') || '', 'text/css')
+	}
+	finally {
+		await close()
+	}
+})
+
+Deno.test('wildcard listen hosts display as localhost in baseUrl', () => {
+	for (const host of ['0.0.0.0', '::', '::ffff:0.0.0.0'])
+		assertEquals(pagesDisplayHost(host), 'localhost', host)
+	assertEquals(pagesDisplayHost('localhost'), 'localhost')
+	assertEquals(pagesDisplayHost('127.0.0.1'), '127.0.0.1')
+})
+
+Deno.test('embedCard stylesheet href resolves beside the module (subpath-safe)', async () => {
+	const prepended = []
+	const originalDocument = globalThis.document
+	globalThis.document = {
+		head: {
+			/**
+			 * 记录追加的 link 元素。
+			 * @param {object} element 追加的元素
+			 * @returns {void}
+			 */
+			prepend: element => { prepended.push(element) },
+		},
+		/**
+		 * 创建空元素占位。
+		 * @returns {object} 空对象
+		 */
+		createElement: () => ({}),
+	}
+	try {
+		await import('../../../public/pages/scripts/features/embedCard.mjs')
+	}
+	finally {
+		globalThis.document = originalDocument
+	}
+	assertEquals(prepended.length, 1)
+	const moduleUrl = new URL('../../../public/pages/scripts/features/embedCard.mjs', import.meta.url)
+	assertEquals(prepended[0].href, new URL('./embedCard.css', moduleUrl).href)
 })

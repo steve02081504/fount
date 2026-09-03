@@ -712,6 +712,10 @@
 				"title": "Telegram",
 				"aria-label": "Telegram"
 			},
+			"institute": {
+				"title": "fount Agent Institute",
+				"aria-label": "fount Agent Institute"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5328,6 +5332,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "fount Agent Institute",
+		"description": "Notes from the fount workshop: essays on agent design — what an agent truly is, what an LLM is for, and how to build systems that spend intelligence only where it earns its keep.",
+		"heading": "fount Agent Institute",
+		"intro": "The fount project's series on agent design — what an agent is, what an LLM is for, and where plain programs do the job better. Read in order or jump around; every essay links the rest.",
+		"search": {
+			"placeholder": "Search titles, summaries and tags…",
+			"aria-label": "Search articles",
+			"empty": "No matching articles — try another keyword?"
+		},
+		"home": {
+			"title": "fount home",
+			"aria-label": "fount home"
+		},
+		"theme": {
+			"title": "Theme",
+			"aria-label": "Switch theme"
+		},
+		"language": {
+			"title": "Language",
+			"aria-label": "Switch article language"
+		},
+		"read": "Read",
+		"article": {
+			"loading": "Unfolding the page…",
+			"back": "All articles",
+			"prev": "Previous",
+			"next": "Next",
+			"toc": "On this page",
+			"all_articles": "All articles",
+			"pager": {
+				"aria-label": "Article navigation"
+			},
+			"load_failed": "This article failed to load. Please try again later.",
+			"not_found": "No such article — it may have been moved or renamed.",
+			"langs_unavailable": "No readable version of this article was found."
+		},
+		"footer": {
+			"text": "Written by the author of fount, a self-hosted AI companion platform with fully readable source code — agents, shells, personas and memory, all living on your own machine and nowhere else.",
+			"install": "Install fount",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

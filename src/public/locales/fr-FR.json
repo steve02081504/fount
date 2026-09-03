@@ -712,6 +712,10 @@
 				"title": "Ouvrir Telegram",
 				"aria-label": "Ouvrir Telegram"
 			},
+			"institute": {
+				"title": "Institut de recherche fount",
+				"aria-label": "Institut de recherche fount"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5334,6 +5338,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "Institut de recherche fount",
+		"description": "Essais issus de l'atelier fount : des réflexions sur la conception d'agents — ce qu'est vraiment un agent, à quoi sert un LLM, et comment bâtir des systèmes qui ne dépensent l'intelligence que là où elle en vaut la peine.",
+		"heading": "Institut de recherche fount",
+		"intro": "La série d'articles du projet fount sur la conception d'agents — qu'est-ce qu'un agent, quel rôle un LLM y joue-t-il, et quelles tâches sont en réalité mieux confiées à des programmes ordinaires. Vous pouvez les lire dans l'ordre ou sauter à votre guise ; chaque article renvoie aux autres.",
+		"search": {
+			"placeholder": "Rechercher un titre, un résumé ou des étiquettes…",
+			"aria-label": "Rechercher des articles",
+			"empty": "Aucun article trouvé — essayez un autre mot-clé ?"
+		},
+		"home": {
+			"title": "Accueil de fount",
+			"aria-label": "Accueil de fount"
+		},
+		"theme": {
+			"title": "Thème",
+			"aria-label": "Changer de thème"
+		},
+		"language": {
+			"title": "Langue",
+			"aria-label": "Changer la langue des articles"
+		},
+		"read": "Lire",
+		"article": {
+			"loading": "Ouverture de l'article…",
+			"back": "Tous les articles",
+			"prev": "Précédent",
+			"next": "Suivant",
+			"toc": "Sur cette page",
+			"all_articles": "Tous les articles",
+			"pager": {
+				"aria-label": "Navigation entre les articles"
+			},
+			"load_failed": "Échec du chargement de l'article. Réessayez plus tard.",
+			"not_found": "Cet article n'existe pas — il a peut-être été déplacé ou renommé.",
+			"langs_unavailable": "Aucune version lisible de cet article n'est disponible pour le moment."
+		},
+		"footer": {
+			"text": "L'auteur de cet article est aussi l'auteur de fount, une plateforme de compagnons IA auto-hébergée au code source entièrement lisible : agents, shells, personnalités et mémoire, uniquement sur votre propre machine.",
+			"install": "Installer fount",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

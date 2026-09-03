@@ -1,0 +1,44 @@
+{
+	"guide": {
+		"order": 0,
+		"name": {
+			"en-UK": "Reading guide",
+			"zh-CN": "阅读指南"
+		}
+	},
+	"foundation": {
+		"order": 1,
+		"name": {
+			"en-UK": "Definitions & architecture",
+			"zh-CN": "定义与架构"
+		}
+	},
+	"context": {
+		"order": 2,
+		"name": {
+			"en-UK": "Context engineering",
+			"zh-CN": "上下文工程"
+		}
+	},
+	"economics": {
+		"order": 3,
+		"name": {
+			"en-UK": "Cost & verification",
+			"zh-CN": "成本与验证"
+		}
+	},
+	"safety": {
+		"order": 4,
+		"name": {
+			"en-UK": "Safety & trust",
+			"zh-CN": "安全与信任"
+		}
+	},
+	"practice": {
+		"order": 5,
+		"name": {
+			"en-UK": "fount in practice",
+			"zh-CN": "fount 实践"
+		}
+	}
+}

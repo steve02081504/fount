@@ -712,6 +712,10 @@
 				"title": "텔레그램",
 				"aria-label": "텔레그램"
 			},
+			"institute": {
+				"title": "fount 에이전트 연구소",
+				"aria-label": "fount 에이전트 연구소"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5328,6 +5332,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "fount 에이전트 연구소",
+		"description": "fount 워크숍의 에세이: 에이전트 설계에 대한 고찰 — 에이전트란 무엇이며, LLM이 잘하는 것은 무엇이고, 지능을 쓸 가치가 있는 곳에만 지능을 쓰는 시스템을 어떻게 만들 것인가.",
+		"heading": "fount 에이전트 연구소",
+		"intro": "에이전트 설계에 관한 fount 프로젝트의 연재 — 에이전트란 무엇이고, 그 안에서 LLM은 어떤 역할을 하며, 어떤 작업은 차라리 일반 프로그램에 맡기는 편이 나은가. 순서대로 읽어도 되고 마음대로 건너뛰어도 됩니다. 각 글은 다른 글들과 연결되어 있습니다.",
+		"search": {
+			"placeholder": "제목, 요약 또는 태그 검색…",
+			"aria-label": "글 검색",
+			"empty": "일치하는 글이 없습니다. 다른 키워드로 시도해 보세요."
+		},
+		"home": {
+			"title": "fount 홈",
+			"aria-label": "fount 홈"
+		},
+		"theme": {
+			"title": "테마",
+			"aria-label": "테마 전환"
+		},
+		"language": {
+			"title": "언어",
+			"aria-label": "글 언어 전환"
+		},
+		"read": "읽기",
+		"article": {
+			"loading": "글을 여는 중…",
+			"back": "전체 글",
+			"prev": "이전 글",
+			"next": "다음 글",
+			"toc": "이 페이지의 목차",
+			"all_articles": "모든 글",
+			"pager": {
+				"aria-label": "글 탐색"
+			},
+			"load_failed": "글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+			"not_found": "이런 글은 없습니다. 이동되었거나 이름이 바뀌었을 수 있습니다.",
+			"langs_unavailable": "이 글은 현재 읽을 수 있는 언어 버전이 없습니다."
+		},
+		"footer": {
+			"text": "이 글의 저자는 fount의 저자이기도 합니다. fount는 자체 호스팅이 가능한 AI 컴패니언 플랫폼으로, 소스 코드가 완전히 공개되어 있습니다 — 에이전트, 셸, 성격, 기억까지 모두 여러분의 컴퓨터에만 존재합니다.",
+			"install": "fount 설치",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

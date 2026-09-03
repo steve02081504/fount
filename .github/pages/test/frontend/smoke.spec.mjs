@@ -27,6 +27,8 @@ test.describe('GitHub Pages smoke', () => {
 		}).toBe(true)
 		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('h1').first()).toBeAttached()
+		// fount Agent 研究院入口
+		await expect(page.locator('footer a[data-i18n="installer_wait_screen.footer.institute"]')).toBeVisible()
 	})
 
 	test('cool notice appears after hero intro, dismisses without storage, returns on reload', async ({ page, baseUrl }) => {

@@ -712,6 +712,10 @@
 				"title": "啟 Telegram",
 				"aria-label": "啟 Telegram"
 			},
+			"institute": {
+				"title": "fount Agent 研院",
+				"aria-label": "fount Agent 研院"
+			},
 			"github": {
 				"title": "啟 GitHub",
 				"aria-label": "啟 GitHub"
@@ -5328,6 +5332,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "fount Agent 研院",
+		"description": "出自 fount 工坊之隨筆：論 Agent 之設計——Agent 果為何物、LLM 之所長何在，及如何構惟於可值處方用其智之系統。",
+		"heading": "fount Agent 研院",
+		"intro": "fount 論 Agent 設計之系列文章——Agent 為何物、LLM 在其中職司何、何事實宜付諸常程式。可循序讀之，亦隨意跳轉；每篇皆鏈其餘。",
+		"search": {
+			"placeholder": "尋題、摘要或標籤…",
+			"aria-label": "尋文",
+			"empty": "無相合之文——試易其詞？"
+		},
+		"home": {
+			"title": "fount 首頁",
+			"aria-label": "fount 首頁"
+		},
+		"theme": {
+			"title": "風貌",
+			"aria-label": "易貌"
+		},
+		"language": {
+			"title": "言語",
+			"aria-label": "易文章言語"
+		},
+		"read": "閱",
+		"article": {
+			"loading": "方展書頁…",
+			"back": "諸篇",
+			"prev": "前篇",
+			"next": "後篇",
+			"toc": "本頁目錄",
+			"all_articles": "全部文章",
+			"pager": {
+				"aria-label": "篇目導航"
+			},
+			"load_failed": "載文不成，容後再試。",
+			"not_found": "無此文——或已遷，或已更名。",
+			"langs_unavailable": "此文暫無可讀之版。"
+		},
+		"footer": {
+			"text": "此文作者，亦 fount 之作者也。fount 者，可自架之 AI 伴侶之臺，其源碼盡可觀覽——Agent、Shell、人格、記憶，悉棲於君之機上，不外他去。",
+			"install": "安裝 fount",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

@@ -712,6 +712,10 @@
 				"title": "Telegram",
 				"aria-label": "Telegram"
 			},
+			"institute": {
+				"title": "Instituto de Investigación de fount",
+				"aria-label": "Instituto de Investigación de fount"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5334,6 +5338,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "Instituto de Investigación de fount",
+		"description": "Ensayos desde el taller de fount: reflexiones sobre el diseño de agentes — qué es realmente un agente, para qué sirve un LLM y cómo construir sistemas que solo gastan inteligencia donde merece la pena.",
+		"heading": "Instituto de Investigación de fount",
+		"intro": "La serie de artículos del proyecto fount sobre el diseño de agentes — qué es un agente, qué papel juega el LLM en él y qué tareas se resuelven mejor con programas corrientes. Puedes leerlos en orden o saltar a tu antojo; cada artículo enlaza con el resto.",
+		"search": {
+			"placeholder": "Buscar títulos, resúmenes o etiquetas…",
+			"aria-label": "Buscar artículos",
+			"empty": "No hay artículos que coincidan: ¿pruebas con otra palabra clave?"
+		},
+		"home": {
+			"title": "Inicio de fount",
+			"aria-label": "Inicio de fount"
+		},
+		"theme": {
+			"title": "Tema",
+			"aria-label": "Cambiar de tema"
+		},
+		"language": {
+			"title": "Idioma",
+			"aria-label": "Cambiar el idioma de los artículos"
+		},
+		"read": "Leer",
+		"article": {
+			"loading": "Abriendo el artículo…",
+			"back": "Todos los artículos",
+			"prev": "Anterior",
+			"next": "Siguiente",
+			"toc": "En esta página",
+			"all_articles": "Todos los artículos",
+			"pager": {
+				"aria-label": "Navegación de artículos"
+			},
+			"load_failed": "No se pudo cargar el artículo. Inténtalo de nuevo más tarde.",
+			"not_found": "Este artículo no existe: puede que se haya movido o renombrado.",
+			"langs_unavailable": "De momento no hay una versión legible de este artículo."
+		},
+		"footer": {
+			"text": "El autor de este artículo es también el autor de fount, una plataforma de acompañantes de IA autoalojada con el código fuente totalmente a la vista: agentes, shells, personalidades y memoria, todo solo en tu propia máquina.",
+			"install": "Instalar fount",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

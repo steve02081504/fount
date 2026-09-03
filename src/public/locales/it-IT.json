@@ -712,6 +712,10 @@
 				"title": "Apri Telegram",
 				"aria-label": "Apri Telegram"
 			},
+			"institute": {
+				"title": "Istituto di ricerca fount",
+				"aria-label": "Istituto di ricerca fount"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5334,6 +5338,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "Istituto di ricerca fount",
+		"description": "Saggi dall'officina di fount: riflessioni sul design degli agenti — che cos'è davvero un agente, a cosa serve un LLM e come costruire sistemi che spendono intelligenza solo dove vale la pena.",
+		"heading": "Istituto di ricerca fount",
+		"intro": "La serie di articoli del progetto fount sul design degli agenti — cos'è un agente, che ruolo gioca un LLM e quali compiti è meglio affidare a programmi ordinari. Puoi leggerli in ordine o saltare a piacimento; ogni articolo rimanda agli altri.",
+		"search": {
+			"placeholder": "Cerca titoli, riassunti o tag…",
+			"aria-label": "Cerca articoli",
+			"empty": "Nessun articolo trovato: prova con un'altra parola chiave?"
+		},
+		"home": {
+			"title": "Home di fount",
+			"aria-label": "Home di fount"
+		},
+		"theme": {
+			"title": "Tema",
+			"aria-label": "Cambia tema"
+		},
+		"language": {
+			"title": "Lingua",
+			"aria-label": "Cambia lingua degli articoli"
+		},
+		"read": "Leggi",
+		"article": {
+			"loading": "Apertura dell'articolo…",
+			"back": "Tutti gli articoli",
+			"prev": "Precedente",
+			"next": "Successivo",
+			"toc": "In questa pagina",
+			"all_articles": "Tutti gli articoli",
+			"pager": {
+				"aria-label": "Navigazione articoli"
+			},
+			"load_failed": "Impossibile caricare l'articolo. Riprova più tardi.",
+			"not_found": "Questo articolo non esiste: potrebbe essere stato spostato o rinominato.",
+			"langs_unavailable": "Per ora non esiste una versione leggibile di questo articolo."
+		},
+		"footer": {
+			"text": "L'autore di questo articolo è anche l'autore di fount, una piattaforma di compagni IA self-hosted con codice sorgente interamente consultabile: agenti, shell, personalità e memoria, solo sulla tua macchina.",
+			"install": "Installa fount",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

@@ -712,6 +712,10 @@
 				"title": "Telegram",
 				"aria-label": "Telegram"
 			},
+			"institute": {
+				"title": "fount Agent-Institut",
+				"aria-label": "fount Agent-Institut"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5328,6 +5332,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "fount Agent-Institut",
+		"description": "Aufsätze aus der fount-Werkstatt: Gedanken zum Agentendesign — was ein Agent wirklich ist, wofür ein LLM gut ist und wie man Systeme baut, die Intelligenz nur dort einsetzen, wo sie sich lohnt.",
+		"heading": "fount Agent-Institut",
+		"intro": "Die Artikelserie des fount-Projekts zum Thema Agentendesign — was ein Agent ist, welche Rolle ein LLM darin spielt und welche Aufgaben eigentlich besser in gewöhnliche Programme gehören. Sie können sie der Reihe nach lesen oder nach Belieben springen; jeder Artikel verlinkt auf die übrigen.",
+		"search": {
+			"placeholder": "Titel, Zusammenfassungen oder Tags durchsuchen…",
+			"aria-label": "Artikel durchsuchen",
+			"empty": "Keine passenden Artikel — versuchen Sie es mit einem anderen Stichwort?"
+		},
+		"home": {
+			"title": "fount-Startseite",
+			"aria-label": "fount-Startseite"
+		},
+		"theme": {
+			"title": "Theme",
+			"aria-label": "Theme wechseln"
+		},
+		"language": {
+			"title": "Sprache",
+			"aria-label": "Sprache der Artikel wechseln"
+		},
+		"read": "Lesen",
+		"article": {
+			"loading": "Artikel wird geöffnet…",
+			"back": "Alle Artikel",
+			"prev": "Vorheriger",
+			"next": "Nächster",
+			"toc": "Auf dieser Seite",
+			"all_articles": "Alle Artikel",
+			"pager": {
+				"aria-label": "Artikelnavigation"
+			},
+			"load_failed": "Der Artikel konnte nicht geladen werden. Versuchen Sie es später erneut.",
+			"not_found": "Diesen Artikel gibt es nicht — möglicherweise wurde er verschoben oder umbenannt.",
+			"langs_unavailable": "Für diesen Artikel gibt es derzeit keine lesbare Fassung."
+		},
+		"footer": {
+			"text": "Der Autor dieses Artikels ist zugleich der Autor von fount. fount ist eine selbst gehostete KI-Begleitplattform mit vollständig einsehbarem Quellcode — Agents, Shells, Persönlichkeiten und Erinnerungen, allesamt nur auf Ihrem eigenen Rechner.",
+			"install": "fount installieren",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

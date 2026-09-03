@@ -145,7 +145,7 @@ export function setTheme(theme) {
 	const cachedName = localStorage.getItem('fountCustomThemeName') // fount public中的存储key和fount实例中的不一样
 	const cachedCss = localStorage.getItem('fountCustomThemeCss')
 	const cachedMjs = localStorage.getItem('fountCustomThemeMjs')
-	if (theme_now === cachedName && cachedCss) {
+	if (theme === cachedName && cachedCss) {
 		injectCustomStyle(cachedCss)
 		if (cachedMjs) loadCustomMjs(cachedMjs)
 	}

@@ -712,6 +712,10 @@
 				"title": "Telegram",
 				"aria-label": "Telegram"
 			},
+			"institute": {
+				"title": "Instituto de Investigação da fount",
+				"aria-label": "Instituto de Investigação da fount"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5334,6 +5338,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "Instituto de Investigação da fount",
+		"description": "Ensaios da oficina da fount: reflexões sobre o design de agentes — o que é realmente um agente, para que serve um LLM e como construir sistemas que só gastam inteligência onde vale a pena.",
+		"heading": "Instituto de Investigação da fount",
+		"intro": "A série de artigos do projeto fount sobre design de agentes — o que é um agente, que papel tem um LLM nele e que tarefas é melhor deixar para programas comuns. Pode lê-los por ordem ou saltar à vontade; cada artigo liga aos restantes.",
+		"search": {
+			"placeholder": "Pesquisar títulos, resumos ou tags…",
+			"aria-label": "Pesquisar artigos",
+			"empty": "Nenhum artigo corresponde. Experimente outra palavra-chave?"
+		},
+		"home": {
+			"title": "Página inicial da fount",
+			"aria-label": "Página inicial da fount"
+		},
+		"theme": {
+			"title": "Tema",
+			"aria-label": "Mudar tema"
+		},
+		"language": {
+			"title": "Idioma",
+			"aria-label": "Mudar o idioma dos artigos"
+		},
+		"read": "Ler",
+		"article": {
+			"loading": "A abrir o artigo…",
+			"back": "Todos os artigos",
+			"prev": "Anterior",
+			"next": "Seguinte",
+			"toc": "Nesta página",
+			"all_articles": "Todos os artigos",
+			"pager": {
+				"aria-label": "Navegação de artigos"
+			},
+			"load_failed": "Não foi possível carregar o artigo. Tente novamente mais tarde.",
+			"not_found": "Este artigo não existe — pode ter sido movido ou renomeado.",
+			"langs_unavailable": "Ainda não existe uma versão legível deste artigo."
+		},
+		"footer": {
+			"text": "O autor deste artigo é também o autor da fount, uma plataforma de companheiros de IA auto-hospedada com o código-fonte totalmente consultável: agentes, shells, personalidades e memória, tudo apenas na sua própria máquina.",
+			"install": "Instalar a fount",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {

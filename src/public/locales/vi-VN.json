@@ -712,6 +712,10 @@
 				"title": "Telegram",
 				"aria-label": "Telegram"
 			},
+			"institute": {
+				"title": "Viện nghiên cứu fount",
+				"aria-label": "Viện nghiên cứu fount"
+			},
 			"github": {
 				"title": "GitHub",
 				"aria-label": "GitHub"
@@ -5328,6 +5332,49 @@
 					}
 				}
 			}
+		}
+	},
+	"blog": {
+		"title": "Viện nghiên cứu fount",
+		"description": "Các bài luận từ xưởng fount: suy ngẫm về thiết kế Agent — Agent thực chất là gì, LLM giỏi việc gì, và cách xây dựng hệ thống chỉ dùng trí thông minh vào nơi thực sự đáng giá.",
+		"heading": "Viện nghiên cứu fount",
+		"intro": "Loạt bài của dự án fount về thiết kế Agent — Agent là gì, LLM đóng vai trò gì trong đó, và công việc nào thực ra nên để cho các chương trình thông thường. Có thể đọc theo thứ tự hoặc nhảy tùy thích; mỗi bài đều liên kết đến các bài khác.",
+		"search": {
+			"placeholder": "Tìm theo tiêu đề, tóm tắt hoặc thẻ…",
+			"aria-label": "Tìm bài viết",
+			"empty": "Không tìm thấy bài viết phù hợp — thử từ khóa khác nhé?"
+		},
+		"home": {
+			"title": "Trang chủ fount",
+			"aria-label": "Trang chủ fount"
+		},
+		"theme": {
+			"title": "Giao diện",
+			"aria-label": "Đổi giao diện"
+		},
+		"language": {
+			"title": "Ngôn ngữ",
+			"aria-label": "Đổi ngôn ngữ bài viết"
+		},
+		"read": "Đọc",
+		"article": {
+			"loading": "Đang mở bài viết…",
+			"back": "Tất cả bài viết",
+			"prev": "Bài trước",
+			"next": "Bài tiếp",
+			"toc": "Trên trang này",
+			"all_articles": "Tất cả bài viết",
+			"pager": {
+				"aria-label": "Điều hướng bài viết"
+			},
+			"load_failed": "Không tải được bài viết. Vui lòng thử lại sau.",
+			"not_found": "Không có bài viết này — có thể nó đã được chuyển đi hoặc đổi tên.",
+			"langs_unavailable": "Hiện chưa có bản nào đọc được của bài viết này."
+		},
+		"footer": {
+			"text": "Tác giả bài viết này cũng chính là tác giả của fount. fount là nền tảng bạn đồng hành AI tự lưu trữ với mã nguồn công khai hoàn toàn — Agent, Shell, tính cách và ký ức, tất cả chỉ sống trên chính máy của bạn.",
+			"install": "Cài đặt fount",
+			"github": "GitHub"
 		}
 	},
 	"themeManage": {
