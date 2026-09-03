@@ -16,6 +16,7 @@ import { exec, execFile, removeTerminalSequences } from 'npm:@steve02081504/exec
 import { console } from '../../i18n/bare.mjs'
 
 import { denoPanicRecordPath } from './paths.mjs'
+import { markTempDirOrigin } from './temp_origin.mjs'
 
 /** Deno 崩溃横幅标记。 */
 const PANIC_MARKER = 'Deno has panicked. This is a bug in Deno.'
@@ -229,6 +230,7 @@ async function resolveDenoVersion(fromOutput) {
  */
 async function ghCreateIssue(repo, title, body) {
 	const dir = await mkdtemp(join(tmpdir(), 'fount-panic-'))
+	await markTempDirOrigin(dir, `deno_panic ghCreateIssue ${repo}`)
 	const bodyFile = join(dir, 'body.md')
 	try {
 		await writeFile(bodyFile, body, 'utf8')

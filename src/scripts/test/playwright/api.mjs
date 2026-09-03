@@ -3,6 +3,11 @@
  */
 import { request as playwrightRequest } from '@playwright/test'
 
+import { isTransientNetError } from './transient_error.mjs'
+
+/** 瞬时网络错误判定（node errno / premature close，按 message 首行精确 token 匹配）。 */
+export { isTransientNetError }
+
 /**
  * 创建一次性 APIRequestContext，在 fn 结束后 dispose。
  * @template T
@@ -42,8 +47,7 @@ export async function fetchViewerEntityHash(baseUrl, apiKey, options = {}) {
 			}
 			catch (err) {
 				lastErr = err
-				if (attempt === retries || !/econnreset|econnrefused|socket hang up/i.test(String(err)))
-					throw err
+				if (attempt === retries || !isTransientNetError(err)) throw err
 				await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)))
 			}
 

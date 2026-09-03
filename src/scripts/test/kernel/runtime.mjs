@@ -368,7 +368,9 @@ export class TestKernel {
 			released: false,
 		}
 		this.jobs.set(jobId, job)
-		if (spec.debug) job.cleanupBaseline = findCleanupLeaks()
+		// baseline 对所有 job 记录：并发 job（含 selftest spawn 的多个 fount test）
+		// 各自的临时目录会被彼此的 cleanup_check 误报为残留（退出码 3）。
+		job.cleanupBaseline = findCleanupLeaks()
 		const prepared = await this.#prepareWave(job)
 		job.prepared = prepared
 		if (!prepared.activate) {

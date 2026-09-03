@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
-import { formatNoiseAllowBegin, formatNoiseAllowEnd } from 'fount/scripts/test/core/output_filter.mjs'
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 
 import { seedCharFixture, waitUntil } from '../harness.mjs'
 import { createChatFederationSim } from '../simulation/federation.mjs'
@@ -135,8 +135,8 @@ Deno.test('single-char + single-human chat: fallback replies without mention', a
 Deno.test('single-char + multi-human group: fallback needs mention or autoReplyFrequency', async () => {
 	// sim 共享单 P2P node，B 节点视异地 char 为本机而尝试触发并失败（真实多节点由 skip 分支避免）；
 	// 该 `Error:` 属测试环境人工制品，用噪声豁免窗口包住，避免 integration suite 判 noisy。
-	console.log(formatNoiseAllowBegin('char part not found'))
-	try {
+	// 标记走 allowNoise（stderr 直通）：console.log 的 stdout 会被 deno test 捕获并在满负载下偶发整行丢失。
+	await allowNoise('char part not found', async () => {
 		const ctx = await setupSingleCharGroup()
 		const { modules, groupId, NODE_A, NODE_B, channelId, postMessage } = ctx
 		await joinSecondHuman(ctx)
@@ -154,7 +154,7 @@ Deno.test('single-char + multi-human group: fallback needs mention or autoReplyF
 		const agentHash = await agentEntityHash(modules, NODE_A, groupId)
 		assert(agentHash, 'agent member entityHash resolves')
 		await postMessage(NODE_B, groupId, channelId, `@[entity:${agentHash}] ping`, [NODE_A])
-		await waitUntil(async () => (await replyCount(modules, NODE_A, groupId, channelId)) >= 1, 15000, 100)
+		await waitUntil(async () => await replyCount(modules, NODE_A, groupId, channelId) >= 1, 15000, 100)
 
 		// 显式开启 autoReplyFrequency 后，未 @ 也可触发
 		await modules.append.appendSignedLocalEvent(NODE_A, groupId, {
@@ -166,9 +166,7 @@ Deno.test('single-char + multi-human group: fallback needs mention or autoReplyF
 
 		const before = await replyCount(modules, NODE_A, groupId, channelId)
 		await postMessage(NODE_B, groupId, channelId, 'frequency-driven ping', [NODE_A])
-		await waitUntil(async () => (await replyCount(modules, NODE_A, groupId, channelId)) > before, 15000, 100)
-	}
-	finally {
-		console.log(formatNoiseAllowEnd())
-	}
+		// 回复由 B→A 联邦往返后在 A 侧 fallback 触发；integration 全量并发时 15s 不够，放宽容忍满负载。
+		await waitUntil(async () => await replyCount(modules, NODE_A, groupId, channelId) > before, 30000, 100)
+	})
 })

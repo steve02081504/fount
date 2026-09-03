@@ -1,5 +1,5 @@
 /* global Deno */
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
@@ -123,19 +123,25 @@ Deno.test('childEnv forces RUST_BACKTRACE=full over external value', () => {
 })
 
 Deno.test('readPanicRecord clears records on Deno version drift', async () => {
+	// 假 repoRoot scratch：fount 前缀目录会被 cleanup_check 扫描，用后必须清理。
 	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-panic-rec-'))
-	await mkdir(join(repoRoot, 'data', 'test'), { recursive: true })
-	await writeFile(denoPanicRecordPath(repoRoot), JSON.stringify({
-		version: '2.9.0',
-		panics: { 'x:1:1': { reported: true } },
-	}), 'utf8')
+	try {
+		await mkdir(join(repoRoot, 'data', 'test'), { recursive: true })
+		await writeFile(denoPanicRecordPath(repoRoot), JSON.stringify({
+			version: '2.9.0',
+			panics: { 'x:1:1': { reported: true } },
+		}), 'utf8')
 
-	const same = await readPanicRecord(repoRoot, '2.9.0')
-	assertEquals(same.panics['x:1:1'].reported, true)
+		const same = await readPanicRecord(repoRoot, '2.9.0')
+		assertEquals(same.panics['x:1:1'].reported, true)
 
-	const drifted = await readPanicRecord(repoRoot, '2.9.1')
-	assertEquals(drifted.version, '2.9.1')
-	assertEquals(drifted.panics, {})
+		const drifted = await readPanicRecord(repoRoot, '2.9.1')
+		assertEquals(drifted.version, '2.9.1')
+		assertEquals(drifted.panics, {})
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
 })
 
 Deno.test('isDenoTeardownCrashAfterGreenTests treats Windows exit without summary as pass when no FAILED', () => {
@@ -163,6 +169,11 @@ Deno.test('isDenoTeardownCrashAfterGreenTests treats Linux SIGSEGV after green s
 
 Deno.test('readPanicRecord returns empty record when file is missing', async () => {
 	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-panic-rec-'))
-	const record = await readPanicRecord(repoRoot, '2.9.1')
-	assertEquals(record, { version: '2.9.1', panics: {} })
+	try {
+		const record = await readPanicRecord(repoRoot, '2.9.1')
+		assertEquals(record, { version: '2.9.1', panics: {} })
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
 })

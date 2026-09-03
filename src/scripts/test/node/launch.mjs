@@ -21,6 +21,7 @@ import { heapSnapshotDir } from '../core/paths.mjs'
 import { releasePortLease, tryAcquirePortLease } from '../core/port_lease.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { markTempDirOrigin } from '../core/temp_origin.mjs'
 import { buildV8FlagsArg, collectHeapSnapshots } from '../heap_snapshot.mjs'
 import { abandonModuleCheckTicket, acquireModuleCheckTicket, moduleCheckTicketEnv, withDenoModuleCheckPreload } from '../hub/clients/module_check.mjs'
 import { startTestNostrRelay, stopTestNostrRelay } from '../live/nostr_relay.mjs'
@@ -493,6 +494,10 @@ async function launchNodeOnce(options = {}) {
 	/** @type {import('node:child_process').ChildProcess | undefined} */
 	let child
 	let acceptExit = false
+	/** 失败路径回收用：keepData、数据目录、测试 relay 占用。 */
+	let keepData = false
+	let dataPath = null
+	let usedTestRelay = false
 	const pingAbort = new AbortController()
 	/**
 	 * 释放 listen hold（若尚未释放）。
@@ -516,12 +521,13 @@ async function launchNodeOnce(options = {}) {
 	try {
 		const username = options.username ?? 'CI-user'
 		const apiKey = options.apiKey ?? `fount-test-key-${port}`
-		const keepData = options.keepData ?? false
-		const dataPath = options.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
+		keepData = options.keepData ?? false
+		dataPath = options.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
+		if (options.dataPath == null)
+			await markTempDirOrigin(dataPath, `launchNode port=${port} user=${username}`)
 		const starts = options.starts ?? defaultTestStarts({ web: true, p2p: options.p2p === true })
 		/** @type {Record<string, string>} */
 		const extraEnv = { ...options.extraEnv }
-		let usedTestRelay = false
 		let p2pRelayUrl
 		if (starts.P2P === true) {
 			const { relayUrl } = await startTestNostrRelay()
@@ -650,7 +656,7 @@ async function launchNodeOnce(options = {}) {
 						void releaseTicket()
 						readline.close()
 						reject(new Error(`node worker ready timed out (port ${port})\n${startupOutput}`.trimEnd()))
-					}, ms('2m'))
+					}, ms('5m'))
 				}),
 			])
 		}
@@ -719,6 +725,11 @@ async function launchNodeOnce(options = {}) {
 		if (child) try { child.kill('SIGKILL') } catch { /* already dead */ }
 		await finishListenHold()
 		await finishPortLease()
+		// 失败路径不返回句柄：dataDir 与测试 relay 必须就地回收，否则留下 fount_node_* 类残留
+		//（keepData 显式保留除外）。preferred dataPath 同样回收——测试调用方期待失败即清。
+		if (usedTestRelay) await stopTestNostrRelay().catch(() => { })
+		if (!keepData && dataPath)
+			await rm(dataPath, { recursive: true, force: true }).catch(() => { })
 		throw error
 	}
 }

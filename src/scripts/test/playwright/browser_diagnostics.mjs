@@ -37,12 +37,24 @@ export function isIgnoredPagesProbeUrl(url) {
 }
 
 /**
- * 是否从网络诊断中丢弃（requestfailed 的 ORB/abort + Pages 探针）。
- * @param {{ kind?: string, url?: string, error?: string | null }} entry 诊断条目
+ * 是否 chat 群消息批量回读的预期 403：对未加入（或无权读取）的群发起该请求时，
+ * 服务端 ACL 正确拒绝，调用方捕获后降级（discovery 预览 / 消息行补拉场景）。
+ * @param {string | null | undefined} url 请求 URL
+ * @returns {boolean} 应忽略则为 true
+ */
+function isExpectedViewLogBatchGet403(url) {
+	if (!url) return false
+	return new URL(url).pathname.endsWith('/view-log/batch-get')
+}
+
+/**
+ * 是否从网络诊断中丢弃（requestfailed 的 ORB/abort + Pages 探针 + 预期的 discovery 403）。
+ * @param {{ kind?: string, status?: number | null, url?: string, error?: string | null }} entry 诊断条目
  * @returns {boolean} 应忽略则为 true
  */
 export function shouldIgnoreBrowserNetwork(entry) {
 	if (entry.kind === 'requestfailed' && isIgnoredBrowserNetworkError(entry.error)) return true
+	if (entry.kind === 'http' && entry.status === 403 && isExpectedViewLogBatchGet403(entry.url)) return true
 	return isIgnoredPagesProbeUrl(entry.url)
 }
 
@@ -255,7 +267,7 @@ export function createBrowserDiagnostics() {
 			const status = res.status()
 			if (status < 400) return
 			const url = res.url()
-			if (shouldIgnoreBrowserNetwork({ kind: 'http', url, error: null })) return
+			if (shouldIgnoreBrowserNetwork({ kind: 'http', status, url, error: null })) return
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'http',
 				method: res.request().method(),

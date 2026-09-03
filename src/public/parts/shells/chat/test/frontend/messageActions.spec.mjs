@@ -1,5 +1,3 @@
-import { Buffer } from 'node:buffer'
-
 import { ms } from 'fount/scripts/ms.mjs'
 import {
 	withApiRequest,
@@ -13,6 +11,7 @@ import {
 	expectMessageInChat,
 	messageRowByText,
 	pickEmojiFromPicker,
+	seedGroupEmojiPack,
 } from './fixtures.mjs'
 
 /**
@@ -61,30 +60,7 @@ async function sendApiMessage(baseUrl, apiKey, groupId, channelId, text, locale)
  * @returns {Promise<string>} packId
  */
 async function seedPackEmoji(baseUrl, apiKey, groupId) {
-	const key = encodeURIComponent(apiKey)
-	const packId = `e2e_pack_${Date.now().toString(36)}`
-	const png = Buffer.from(
-		'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-		'base64',
-	)
-	await withApiRequest(async request => {
-		const created = await request.post(
-			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/emoji-packs?fount-apikey=${key}`,
-			{ data: { packId } },
-		)
-		if (!created.ok()) throw new Error(`create pack failed: ${created.status()}`)
-		const uploaded = await request.post(
-			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/emoji-packs/${encodeURIComponent(packId)}/emojis?fount-apikey=${key}`,
-			{ multipart: { emoji: { name: 'react.png', mimeType: 'image/png', buffer: png } } },
-		)
-		if (!uploaded.ok()) throw new Error(`upload emoji failed: ${uploaded.status()}`)
-		const favorited = await request.post(
-			`${baseUrl}/api/parts/shells:chat/emoji-usage/collection/packs?fount-apikey=${key}`,
-			{ data: { packId } },
-		)
-		if (!favorited.ok()) throw new Error(`favorite pack failed: ${favorited.status()}`)
-	})
-	return packId
+	return (await seedGroupEmojiPack(baseUrl, apiKey, groupId)).packId
 }
 
 /**

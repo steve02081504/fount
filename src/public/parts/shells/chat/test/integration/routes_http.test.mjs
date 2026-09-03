@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
+import { markTempDirOrigin } from 'fount/scripts/test/core/temp_origin.mjs'
 import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 
 const testDir = dirname(fileURLToPath(import.meta.url))
@@ -40,6 +41,7 @@ function chatFetch(node, method, path, body) {
  */
 async function launchScenario(scenario, fixtureCopies) {
 	const dataPath = await mkdtemp(join(tmpdir(), `fount_chat_http_${scenario}_`))
+	await markTempDirOrigin(dataPath, `routes_http launchScenario ${scenario}`)
 	const apiKey = `fount-chat-http-${scenario}-${Date.now().toString(36)}`
 	const node = await launchNode({
 		dataPath,

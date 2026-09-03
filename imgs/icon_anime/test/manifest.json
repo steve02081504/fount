@@ -3,7 +3,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "10s",
+			"expected": "1m11s",
 			"run": [
 				"deno",
 				"run",

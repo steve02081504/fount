@@ -180,8 +180,17 @@ function cleanSelfCreatedDataDirs(outPath) {
 	try {
 		for (const line of readFileSync(outPath, 'utf8').split('\n')) {
 			const dataDir = line.trim()
-			if (dataDir)
-				rmSync(dataDir, { recursive: true, force: true })
+			if (!dataDir) continue
+			// Windows 上子进程刚退出时句柄/杀软锁释放有延迟：单目录小退避重试，失败不放弃其余目录。
+			for (let attempt = 0;; attempt++)
+				try {
+					rmSync(dataDir, { recursive: true, force: true })
+					break
+				}
+				catch {
+					if (attempt >= 3) break
+					Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 200 * (attempt + 1))
+				}
 		}
 	}
 	catch {

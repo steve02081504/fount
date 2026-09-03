@@ -107,6 +107,11 @@ function wireExternalJoinRefresh() {
 		if (data?.key !== 'sfw') return
 		void import('../presence.mjs').then(({ refreshHubAfterSfwChange }) => refreshHubAfterSfwChange())
 	})
+	void import('../../../../../scripts/i18n/index.mjs').then(({ onLanguageChange }) => {
+		onLanguageChange(() => {
+			void import('../presence.mjs').then(({ refreshHubAfterLocaleChange }) => refreshHubAfterLocaleChange())
+		})
+	})
 	void import('../../src/hubBroadcast.mjs').then(({ wireHubGroupJoinedListener }) => {
 		wireHubGroupJoinedListener(() => { scheduleHubGroupsRefresh() })
 	})

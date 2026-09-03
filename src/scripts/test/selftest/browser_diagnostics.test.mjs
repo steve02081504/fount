@@ -141,6 +141,31 @@ Deno.test('shouldIgnoreBrowserNetwork drops installer HTTP 4xx/5xx and ping fail
 	}), false)
 })
 
+Deno.test('shouldIgnoreBrowserNetwork drops only expected view-log batch-get 403', () => {
+	assertEquals(shouldIgnoreBrowserNetwork({
+		kind: 'http',
+		method: 'POST',
+		status: 403,
+		url: 'http://localhost:28935/api/parts/shells:chat/groups/x/channels/default/view-log/batch-get',
+		error: null,
+	}), true)
+	// 非 403 / 其他端点 / 损坏 URL 不豁免
+	assertEquals(shouldIgnoreBrowserNetwork({
+		kind: 'http',
+		method: 'POST',
+		status: 500,
+		url: 'http://localhost:28935/api/parts/shells:chat/groups/x/channels/default/view-log/batch-get',
+		error: null,
+	}), false)
+	assertEquals(shouldIgnoreBrowserNetwork({
+		kind: 'http',
+		method: 'POST',
+		status: 403,
+		url: 'http://localhost:28935/api/parts/shells:chat/entities/x/heartbeat',
+		error: null,
+	}), false)
+})
+
 Deno.test('isIgnoredBrowserNetworkError drops ORB and abort', () => {
 	assertEquals(isIgnoredBrowserNetworkError('net::ERR_BLOCKED_BY_ORB'), true)
 	assertEquals(isIgnoredBrowserNetworkError('net::ERR_ABORTED'), true)

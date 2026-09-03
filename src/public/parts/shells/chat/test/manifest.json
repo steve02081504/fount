@@ -197,7 +197,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "7m2s",
+			"expected": "14m6s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -480,7 +480,7 @@
 		},
 		{
 			"name": "fed_dm",
-			"expected": "8m14s",
+			"expected": "4m14s",
 			"dependsOn": [
 				"fed_core"
 			],
@@ -790,7 +790,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "5m58s",
+			"expected": "15m37s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -958,14 +958,14 @@
 				},
 				{
 					"name": "secondaryPages",
-					"expected": "5m57s",
+					"expected": "2m52s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/secondaryPages.spec.mjs"
 					]
 				},
 				{
 					"name": "profile",
-					"expected": "2m5s",
+					"expected": "41s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/profile.spec.mjs",
 						"src/public/parts/shells/chat/public/profile/**",

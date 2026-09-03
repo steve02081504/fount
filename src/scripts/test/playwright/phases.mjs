@@ -4,8 +4,7 @@
  * FOUNT_TEST_SUBTESTS：只跑指定子测试（按 spec basename / 子测试名映射）。
  * FOUNT_TEST_FIRST：失败 spec 优先；失败组有复现则跑完失败组即退。
  */
-import { mkdtemp, rm } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
+import { mkdir, mkdtemp, rm } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
@@ -21,6 +20,7 @@ import {
 	writeFailuresOutFile,
 	writeTimingsOutFile,
 } from '../core/protocol.mjs'
+import { markTempDirOrigin } from '../core/temp_origin.mjs'
 
 import { failedSpecPathsFromJsonReport, specTimingsFromJsonReport } from './report.mjs'
 import { runPlaywrightWithNode } from './run.mjs'
@@ -145,6 +145,7 @@ async function collectPhaseFailures({ jsonReportPath, repoRoot, ranSpecPaths }) 
  * @param {(port: number) => object} params.nodeOpts 节点选项工厂
  * @param {string | string[]} params.extraArgs 额外 CLI 参数（数组保留 token 边界）
  * @param {string} params.jsonReportDir JSON report 目录
+ * @param {number} params.reportIndex 本次运行内的 report 序号（文件名用短序号，spec 名拼接会超 Windows MAX_PATH）
  * @param {string} params.repoRoot 仓库根
  * @returns {Promise<{ code: number, failed: string[], timings: Record<string, number> }>} 结果
  */
@@ -158,6 +159,7 @@ async function runOnePhase({
 	nodeOpts,
 	extraArgs,
 	jsonReportDir,
+	reportIndex,
 	repoRoot,
 }) {
 	if (!specBasenames.length) return { code: 0, failed: [], timings: {} }
@@ -169,7 +171,7 @@ async function runOnePhase({
 		`--project=${phase.project}`,
 		...specBasenames,
 	].filter(Boolean)
-	const jsonReportPath = join(jsonReportDir, `${phase.project}-${specBasenames.join('_')}.json`)
+	const jsonReportPath = join(jsonReportDir, `${phase.project}-${reportIndex}.json`)
 	const code = await runPlaywrightWithNode({
 		configPath,
 		playwrightArgs,
@@ -209,7 +211,9 @@ export async function runFrontendPhases({
 	extraArgs = '',
 	failFastProjects = ['shell', 'smoke'],
 }) {
-	const jsonReportDir = await mkdtemp(join(tmpdir(), 'fount-pw-json-'))
+	// 放 data/test 而非系统 Temp：长相位期间 Temp 清理可能删掉 report，整个 phase 结果即丢。
+	const jsonReportDir = await mkdtemp(join(repoRoot, 'data', 'test', 'fount-pw-json-'))
+	await markTempDirOrigin(jsonReportDir, 'playwright phases jsonReportDir')
 	const filterList = parseTestOnlyEnv()
 	const subtestList = parseTestSubtestsEnv()
 	const firstList = parseTestFirstEnv()
@@ -230,6 +234,7 @@ export async function runFrontendPhases({
 	const failed = []
 	/** @type {Record<string, number>} */
 	const timings = {}
+	let reportSeq = 0
 
 	/**
 	 * 按 phase 顺序跑给定 path 集合中的 spec。
@@ -243,6 +248,8 @@ export async function runFrontendPhases({
 				.map((path, index) => pathSet.has(path) ? index : -1)
 				.filter(index => index >= 0)
 			if (!indexes.length) continue
+			// report 目录可能在相位间隙被外部移除：playwright 子进程写 JSON report 前必须保证存在。
+			await mkdir(jsonReportDir, { recursive: true })
 			const specBasenames = indexes.map(index => phase.specBasenames[index])
 			const specPaths = indexes.map(index => phase.specPaths[index])
 			const { code, failed: phaseFailed, timings: phaseTimings } = await runOnePhase({
@@ -255,6 +262,7 @@ export async function runFrontendPhases({
 				nodeOpts,
 				extraArgs,
 				jsonReportDir,
+				reportIndex: ++reportSeq,
 				repoRoot,
 			})
 			Object.assign(timings, phaseTimings)
