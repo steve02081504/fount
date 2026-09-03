@@ -34,7 +34,6 @@
 - **API test**: `curl "http://localhost:8931/api/whoami?fount-apikey=$env:FOUNT_API_KEY"` (PS: `$env:FOUNT_API_KEY`, bash: `$FOUNT_API_KEY`).
 - **Subagent handoff**: subagents do not inherit parent reasoning — pass task, paths, constraints, findings, expected output.
 - **No planning IDs in code**: milestone codes (`M1`/`G4`/…) only in design/review docs — never source, tests, fixtures, comments, or `llms.txt`.
-- **path CLI**: [path/AGENTS.md](path/AGENTS.md).
 
 ## Specialized Guides
 
