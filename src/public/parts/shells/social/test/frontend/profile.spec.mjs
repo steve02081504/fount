@@ -206,6 +206,30 @@ test.describe('Social profile', () => {
 		)
 	})
 
+	test('copy dm link button copies chat contact deep link', async ({ page, baseUrl }) => {
+		const dummy = DUMMY_ENTITY_HASH
+		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
+		await waitForSocialReady(page)
+		const copyButton = page.locator(`[data-copy-dm="${dummy}"]`)
+		await expect(copyButton).toBeVisible({ timeout: 20_000 })
+
+		// 记录剪贴板写入（social 的 copyTextToClipboard 经 navigator.clipboard.writeText 复制）
+		await page.evaluate(() => {
+			window.__copiedTexts = []
+			/**
+			 * 记录被复制到剪贴板的文本。
+			 * @param {string} text 被写入剪贴板的文本
+			 */
+			const recordWrite = (text) => { window.__copiedTexts.push(text) }
+			navigator.clipboard.writeText = recordWrite
+		})
+		await copyButton.click()
+
+		const origin = new URL(baseUrl).origin
+		await expect.poll(() => page.evaluate(() => window.__copiedTexts), { timeout: 10_000 })
+			.toEqual([`${origin}/parts/shells:chat/hub/?contact=${dummy}`])
+	})
+
 	test('blocklist shows blocked entity and unblocks smoke', async ({ page, baseUrl, apiKey }) => {
 		const dummy = DUMMY_ENTITY_HASH
 		const blockRes = await page.request.post(

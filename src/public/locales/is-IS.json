@@ -2272,7 +2272,10 @@
 					"char": "Spjallaðu einslega við persónu",
 					"failed": "Ekki tókst að opna einkaskilaboð: ${error}",
 					"user": "Sendið einkaskilaboð"
-				}
+				},
+				"copyDmLink": "Afritaðu einkaspjalltengil",
+				"dmLinkCopied": "Einkaspjalltengill afritaður",
+				"dmLinkCopyFailed": "Mistókst að afrita einkaspjalltengil: ${error}"
 			},
 			"gshDecryptPending": "Beðið eftir rásarlykli (kynslóð ${gen})",
 			"gshDecryptFailed": "Ekki er hægt að afkóða þessi skilaboð án rásarlykils",

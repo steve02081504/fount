@@ -6,6 +6,7 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 
 import {
 	CHAT_RUN_PART,
+	formatChatDmHref,
 	formatJoinInviteUrl,
 	formatJoinRunUri,
 	formatMessageRunUri,
@@ -121,4 +122,18 @@ Deno.test('formatMessageRunUri round-trips', () => {
 	const uri = formatMessageRunUri('gid', 'ch', 'eid')
 	assert(uri.startsWith(`fount://run/${CHAT_RUN_PART}/message;`))
 	assertEquals(parseMessageRunUri(uri), { groupId: 'gid', channelId: 'ch', eventId: 'eid' })
+})
+
+Deno.test('formatChatDmHref uses ?contact= with the entity hash', () => {
+	const hash = 'a'.repeat(128)
+	assertEquals(formatChatDmHref(hash), `/parts/shells:chat/hub/?contact=${hash}`)
+})
+
+Deno.test('formatChatDmHref encodes the entity hash', () => {
+	assertEquals(formatChatDmHref('a b'), '/parts/shells:chat/hub/?contact=a%20b')
+})
+
+Deno.test('formatChatDmHref falls back to empty ?contact= without input', () => {
+	assertEquals(formatChatDmHref(''), '/parts/shells:chat/hub/?contact=')
+	assertEquals(formatChatDmHref(), '/parts/shells:chat/hub/?contact=')
 })

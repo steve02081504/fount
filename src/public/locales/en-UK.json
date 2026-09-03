@@ -2272,7 +2272,10 @@
 					"char": "Chat privately with a character",
 					"failed": "Unable to open DM: ${error}",
 					"user": "Send DM"
-				}
+				},
+				"copyDmLink": "Copy private chat link",
+				"dmLinkCopied": "Private chat link copied",
+				"dmLinkCopyFailed": "Failed to copy private chat link: ${error}"
 			},
 			"gshDecryptPending": "Waiting for channel key (generation ${gen})",
 			"gshDecryptFailed": "Unable to decrypt this message without channel key",

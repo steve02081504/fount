@@ -2272,7 +2272,10 @@
 					"char": "Privé chatten met een personage",
 					"failed": "Kan privébericht niet openen: ${error}",
 					"user": "Stuur een privébericht"
-				}
+				},
+				"copyDmLink": "Kopieer de privéchatlink",
+				"dmLinkCopied": "Link naar privéchat gekopieerd",
+				"dmLinkCopyFailed": "Kan privéchatlink niet kopiëren: ${error}"
 			},
 			"gshDecryptPending": "Wachten op kanaalsleutel (generatie ${gen})",
 			"gshDecryptFailed": "Kan dit bericht niet ontsleutelen zonder kanaalsleutel",

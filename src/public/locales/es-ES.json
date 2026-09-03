@@ -2272,7 +2272,10 @@
 					"char": "Chatea en privado con un personaje.",
 					"failed": "No se puede abrir el mensaje privado: ${error}",
 					"user": "enviar mensaje privado"
-				}
+				},
+				"copyDmLink": "Copiar el enlace del chat privado",
+				"dmLinkCopied": "Enlace del chat privado copiado",
+				"dmLinkCopyFailed": "No se pudo copiar el enlace del chat privado: ${error}"
 			},
 			"gshDecryptPending": "Esperando clave de canal (generación ${gen})",
 			"gshDecryptFailed": "No se puede descifrar este mensaje sin la clave del canal",

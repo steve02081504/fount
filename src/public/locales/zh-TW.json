@@ -2271,7 +2271,10 @@
 					"char": "與角色私聊",
 					"failed": "無法開啟私信：${error}",
 					"user": "傳送私信"
-				}
+				},
+				"copyDmLink": "複製私聊連結",
+				"dmLinkCopied": "私聊連結已複製",
+				"dmLinkCopyFailed": "複製私聊連結失敗：${error}"
 			},
 			"gshDecryptPending": "等待頻道金鑰（generation ${gen}）",
 			"gshDecryptFailed": "無頻道金鑰，無法解密此訊息",

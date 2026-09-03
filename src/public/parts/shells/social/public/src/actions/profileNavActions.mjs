@@ -168,6 +168,14 @@ export async function handleProfileNavClick(target) {
 	if (dmButton instanceof HTMLElement && dmButton.dataset.dm)
 		window.location.href = formatChatDmFromSocial(dmButton.dataset.dm)
 
+	const copyDmButton = target.closest('[data-copy-dm]')
+	if (copyDmButton instanceof HTMLElement && copyDmButton.dataset.copyDm) {
+		const { copyTextToClipboard } = await import('./shared.mjs')
+		await copyTextToClipboard(`${window.location.origin}${formatChatDmFromSocial(copyDmButton.dataset.copyDm)}`)
+		showToastI18n('success', 'chat.hub.profilePopup.dmLinkCopied')
+		return
+	}
+
 	const profileTab = target.closest('[data-profile-tab]')
 	if (profileTab instanceof HTMLElement && profileTab.dataset.profileTab)
 		await activateProfileTab(profileTab.dataset.profileTab)

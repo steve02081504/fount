@@ -2272,7 +2272,10 @@
 					"char": "与角色私聊",
 					"failed": "无法打开私信：${error}",
 					"user": "私信"
-				}
+				},
+				"copyDmLink": "复制私聊链接",
+				"dmLinkCopied": "私聊链接已复制",
+				"dmLinkCopyFailed": "复制私聊链接失败：${error}"
 			},
 			"gshDecryptPending": "等待频道密钥（generation ${gen}）",
 			"gshDecryptFailed": "无频道密钥，无法解密此消息",

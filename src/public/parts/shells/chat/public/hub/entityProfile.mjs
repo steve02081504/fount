@@ -251,6 +251,23 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 		}
 	}
 
+	const copyLinkButton = root.querySelector('[data-profile-popup-copy-contact]')
+	if (copyLinkButton instanceof HTMLButtonElement) {
+		// 链接可能分享给别的节点，必须携带全局 entityHash 才能解析，故仅对具实体的卡露出
+		copyLinkButton.hidden = !isEntityHash128(entityHash)
+		/** 复制私聊邀请链接到剪贴板。 */
+		copyLinkButton.onclick = () => {
+			void (async () => {
+				const { formatChatDmHref } = await import('../shared/runUri.mjs')
+				const href = formatChatDmHref(entityHash)
+				await navigator.clipboard.writeText(`${window.location.origin}${href}`)
+				showToastI18n('success', 'chat.hub.profilePopup.dmLinkCopied')
+			})().catch(error => {
+				showToastI18n('error', 'chat.hub.profilePopup.dmLinkCopyFailed', { error: error.message })
+			})
+		}
+	}
+
 	const trustButton = root.querySelector('[data-profile-popup-trust]')
 	if (trustButton instanceof HTMLButtonElement) {
 		const authorPubKeyHash = resolveTrustAuthorPubKeyHash(entity, profile)

@@ -2272,7 +2272,10 @@
 					"char": "與角色密談",
 					"failed": "難以啟密信：${error}",
 					"user": "發送密信"
-				}
+				},
+				"copyDmLink": "複製密談之連結",
+				"dmLinkCopied": "密談連結已複製",
+				"dmLinkCopyFailed": "複製密談之連結未果：${error}"
 			},
 			"gshDecryptPending": "等待分苑符鑰（generation ${gen}）",
 			"gshDecryptFailed": "無分苑符鑰，難以解密此札",
