@@ -3,7 +3,7 @@
 A static, GitHub Pages-hosted blog/wiki for fount's essays on agent design (the "Agent whitepaper" series). Lives under `.github/pages/blog/`; deployed by `.github/workflows/pages.yaml` (push to `master` with `.github/pages/**` changes).
 
 - Index: `https://steve02081504.github.io/fount/blog/`
-- Article: `https://steve02081504.github.io/fount/blog/article/?article=<id>&lang=<locale>`
+- Article: `https://steve02081504.github.io/fount/blog/article/?article=<id>`
 
 ## Layout
 
@@ -70,9 +70,9 @@ The essays are written to sound like a person, not a model. When adding or editi
 
 ## Language behavior
 
-- Article language resolution: `?lang=` param (if in the article's frontmatter locales) → fount stored preference + browser languages via locale matching → first available locale. Unreadable/missing files fall through the remaining locales in order.
-- The language menu lists only the locales that actually exist for the current article — unsupported languages must not be shown.
-- The article `<article>` element carries `user-content` (the test watch locale scan must skip article text, which is intentionally multilingual); the language menu, index language badges, category headings and tags are covered by `language-check-ignore` / `user-content` for the same reason.
+- Language state lives only in the fount stored preference (`fountUserPreferredLanguages` in localStorage) — no `?lang=` URL param. Resolution: fount stored preference + browser languages via locale matching → first available locale. Unreadable/missing files fall through the remaining locales in order.
+- Both the index and the article page expose a language menu. The index menu lists `blogLangs` (union of all articles' locales); the article menu lists only the locales that actually exist for the current article. Switching writes the fount preference via `setLanguage`, so the index, the article body and the sidebar all follow; the index cards carry no per-language badges.
+- The article `<article>` element carries `user-content` (the test watch locale scan must skip article text, which is intentionally multilingual); the language menus, category headings and tags are covered by `language-check-ignore` / `user-content` for the same reason.
 
 ## Search & tags
 

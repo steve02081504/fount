@@ -1,7 +1,7 @@
 /**
  * fount Agent 研究院文章页：拉取 markdown → fount 全量渲染 → 站内链接改写 → 语言切换 / 上下篇导航。
  */
-import { geti18n, initTranslations, matchLocale, pickLocalizedSlice, setElementI18n } from '../../scripts/i18n/index.mjs'
+import { geti18n, initTranslations, pickLocalizedSlice, setElementI18n, setLanguage } from '../../scripts/i18n/index.mjs'
 import {
 	articleMarkdownUrl,
 	articleMetaIn,
@@ -11,7 +11,6 @@ import {
 	loadIndex,
 	mountLanguageMenu,
 	mountThemeMenu,
-	preferredLangCandidates,
 	resolveArticleLang,
 	rewriteArticleLinks,
 	stripArticleFrontmatter,
@@ -90,19 +89,15 @@ async function loadMarkdownText(articleEntry, lang) {
  * @returns {HTMLElement} 链接元素
  */
 function buildPagerLink(target, lang, directionKey, isNext) {
-	const langs = entryLangs(target)
-	const targetLang = langs.includes(lang)
-		? lang
-		: matchLocale([lang], langs) ?? langs[0]
 	const link = document.createElement('a')
 	link.className = isNext ? 'blog-pager-link blog-pager-next' : 'blog-pager-link'
-	link.href = articlePageUrl(target.id, targetLang)
+	link.href = articlePageUrl(target.id)
 	const direction = document.createElement('span')
 	direction.className = 'blog-pager-direction'
 	direction.textContent = geti18n(directionKey)
 	const title = document.createElement('span')
 	title.className = 'blog-pager-title'
-	title.textContent = articleMetaIn(target, targetLang).title
+	title.textContent = articleMetaIn(target, lang).title
 	link.append(direction, title)
 	return link
 }
@@ -218,6 +213,7 @@ function mountTocSpy() {
 
 /**
  * 渲染侧边栏「全部文章」导航（分类 → 文章；当前文章高亮）。
+ * 分类名与文章标题跟随当前语言（文章缺该语言时回退首个可用语言）。
  * @returns {void}
  */
 function renderArticleNav() {
@@ -228,18 +224,14 @@ function renderArticleNav() {
 		if (!articles.length) continue
 		const categoryItem = document.createElement('li')
 		categoryItem.className = 'blog-nav-category'
-		categoryItem.textContent = pickLocalizedSlice(category.name, preferredLangCandidates()) || category.id
+		categoryItem.textContent = pickLocalizedSlice(category.name, [currentLang]) || category.id
 		articleNav.appendChild(categoryItem)
 		for (const target of articles) {
-			const langs = entryLangs(target)
-			const targetLang = langs.includes(currentLang)
-				? currentLang
-				: matchLocale([currentLang], langs) ?? langs[0]
 			const li = document.createElement('li')
 			const link = document.createElement('a')
 			link.className = 'blog-nav-link'
-			link.href = articlePageUrl(target.id, targetLang)
-			link.textContent = articleMetaIn(target, targetLang).title
+			link.href = articlePageUrl(target.id)
+			link.textContent = articleMetaIn(target, currentLang).title
 			if (target === entry) {
 				link.classList.add('blog-nav-active')
 				link.setAttribute('aria-current', 'page')
@@ -265,7 +257,7 @@ async function showArticle() {
 		currentLang = lang
 		const { renderMarkdown } = await import('../../scripts/features/markdown/index.mjs')
 		const fragment = await renderMarkdown(stripArticleFrontmatter(text), {}, { allowDangerousHtml: true })
-		rewriteArticleLinks(fragment, index, currentLang)
+		rewriteArticleLinks(fragment, index)
 		buildToc(fragment)
 
 		articleBody.replaceChildren(fragment)
@@ -280,12 +272,11 @@ async function showArticle() {
 
 		const heading = fragment.querySelector('h1')?.textContent.trim() || articleMetaIn(entry, currentLang).title
 		document.title = `${heading} · ${geti18n('blog.title')}`
-		history.replaceState(null, '', `?article=${encodeURIComponent(entry.id)}&lang=${encodeURIComponent(currentLang)}`)
 
 		mountLanguageMenu(languageMenu, entryLangs(entry), currentLang, selectedLang => {
 			currentLang = selectedLang
 			window.scrollTo({ top: 0 })
-			showArticle().catch(console.error)
+			setLanguage([selectedLang]).then(() => showArticle()).catch(console.error)
 		})
 		renderPager()
 	}

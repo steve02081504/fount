@@ -32,6 +32,14 @@
 				<a href="./" class="blog-title-link text-lg truncate" data-i18n="blog.title"></a>
 			</div>
 			<div class="flex items-center gap-1">
+				<div id="language-dropdown" class="dropdown dropdown-end" hidden>
+					<button tabindex="0" type="button" class="btn btn-ghost btn-square" data-i18n="blog.language">
+						<img src="https://api.iconify.design/heroicons/language.svg" class="text-icon w-6 h-6" alt="" />
+					</button>
+					<div tabindex="0" class="dropdown-content z-[1] rounded-box w-56 shadow-md bg-base-100">
+						<ul id="language-menu" class="menu p-2 max-h-80 overflow-y-auto" language-check-ignore></ul>
+					</div>
+				</div>
 				<div class="dropdown dropdown-end">
 					<button tabindex="0" type="button" class="btn btn-ghost btn-square" data-i18n="blog.theme">
 						<img src="https://api.iconify.design/line-md/sunny-outline.svg" class="text-icon w-6 h-6" alt="" />
