@@ -81,6 +81,25 @@ export function entryLangs(entry) {
 }
 
 /**
+ * 博客全局可用语言 id 列表（所有文章可用语言的并集，保持出现顺序）。
+ * @param {blogIndex} index 博客索引
+ * @returns {string[]} 语言 id 列表
+ */
+export function blogLangs(index) {
+	return [...new Set(index.articles.flatMap(article => entryLangs(article)))]
+}
+
+/**
+ * 博客全局语言：用户首选语言匹配（fount 偏好 + 浏览器语言），否则首个可用语言。
+ * 语言状态只存于 localStorage 偏好，不随 URL 参数。
+ * @param {blogIndex} index 博客索引
+ * @returns {string} 语言 id
+ */
+export function resolveBlogLang(index) {
+	return matchLocale(preferredLangCandidates(), blogLangs(index)) ?? blogLangs(index)[0]
+}
+
+/**
  * 文章某语言的元数据（缺语言时回退首个可用语言）。
  * @param {blogArticleEntry} entry 文章条目
  * @param {string} lang 期望语言 id
@@ -92,14 +111,13 @@ export function articleMetaIn(entry, lang) {
 
 /**
  * 文章页 URL（相对 blog 模块根解析，与当前页面路径无关）。
+ * 语言不随 URL，由 fount 偏好（localStorage）决定。
  * @param {string} id 文章 id
- * @param {string} lang 语言 id
  * @returns {string} 文章页 URL
  */
-export function articlePageUrl(id, lang) {
+export function articlePageUrl(id) {
 	const url = new URL('article/', import.meta.url)
 	url.searchParams.set('article', id)
-	url.searchParams.set('lang', lang)
 	return url.href
 }
 
@@ -122,14 +140,13 @@ export function preferredLangCandidates() {
 }
 
 /**
- * 为文章选一个展示语言：`?lang=` 优先，其次用户偏好匹配，最后文章首个可用语言。
+ * 为文章选一个展示语言：用户首选匹配（fount 偏好 + 浏览器语言），否则文章首个可用语言。
+ * 语言状态只存于 localStorage 偏好，不随 URL 参数。
  * @param {blogArticleEntry} entry 文章条目
  * @returns {string} 语言 id
  */
 export function resolveArticleLang(entry) {
-	const requested = new URLSearchParams(location.search).get('lang')
 	const langs = entryLangs(entry)
-	if (requested && langs.includes(requested)) return requested
 	return matchLocale(preferredLangCandidates(), langs) ?? langs[0]
 }
 
@@ -232,22 +249,17 @@ export function stripArticleFrontmatter(markdown) {
 /**
  * 将文章内指向其他文章的相对链接改写为文章页 URL。
  * 约定写法：`[文字](article-id)` 或 `[文字](article-id#标题锚点)`。
- * 目标语言不可用时按当前语言就近回落。
+ * 目标语言由文章页按全局偏好自行解析，链接不携带语言。
  * @param {DocumentFragment} fragment 渲染后的文章片段
  * @param {blogIndex} index 博客索引
- * @param {string} currentLang 当前文章语言 id
  * @returns {void}
  */
-export function rewriteArticleLinks(fragment, index, currentLang) {
+export function rewriteArticleLinks(fragment, index) {
 	for (const a of fragment.querySelectorAll('a[href]')) {
 		const match = ARTICLE_LINK_RE.exec(a.getAttribute('href') || '')
 		if (!match) continue
 		const entry = getArticleEntry(index, match[1])
 		if (!entry) continue
-		const langs = entryLangs(entry)
-		const targetLang = langs.includes(currentLang)
-			? currentLang
-			: matchLocale([currentLang], langs) ?? langs[0]
-		a.href = articlePageUrl(entry.id, targetLang) + (match[2] || '')
+		a.href = articlePageUrl(entry.id) + (match[2] || '')
 	}
 }

@@ -15,7 +15,7 @@ tags:
 
 上一篇（[角色扮演会让 LLM 干不好正事吗？](does-roleplay-make-llms-worse)）论证了人格不是免费的，应当按需激活。这个论证只要多想五分钟，一个令人不安的推广就会浮出水面——因为 persona 只是拥挤派对上的一位客人而已。本章主张相反的默认姿态，先给一句口号，再给一个架构：
 
-> 上下文应当被激活，而不是被囤积。（Context should be activated, not merely stored.）
+> 上下文应当被激活，而不是被囤积。
 
 ## 从 persona 到上下文工程
 
@@ -34,11 +34,11 @@ tags:
 
 ```mermaid
 flowchart LR
-    subgraph Bad["Everything -> LLM"]
-        A1[("All stored info")] --> M1["LLM"]
+    subgraph Bad["一切 → LLM"]
+        A1[("全部存储的信息")] --> M1["LLM"]
     end
-    subgraph Good["Stored -> Activated -> Relevant -> LLM"]
-        A2[("Stored info")] --> R2{"Activation conditions"} --> C2["Relevant context"] --> M2["LLM"]
+    subgraph Good["存储 → 激活 → 相关 → LLM"]
+        A2[("存储的信息")] --> R2{"激活条件"} --> C2["相关上下文"] --> M2["LLM"]
     end
 ```
 
