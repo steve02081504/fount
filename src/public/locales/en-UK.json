@@ -2127,7 +2127,9 @@
 				"aria-label": "Remove bookmark"
 			},
 			"unreadDivider": "new messages",
-			"backToFriends": "Return to friends",
+			"backToFriends": {
+				"aria-label": "Return to friends"
+			},
 			"dmTopicsTitle": "Topic",
 			"participants": "Participants",
 			"startChatWith": "💬 Start chatting with ${name}",
@@ -6323,10 +6325,18 @@
 		"title": "Code",
 		"description": "AI coding sessions targeting workspaces and machines.",
 		"sessions": {
+			"panel": { "aria-label": "Sessions" },
 			"new": "New session",
-			"untitled": "Untitled session"
+			"untitled": "Untitled session",
+			"close": "Close sidebar",
+			"toggle": "Sidebar",
+			"deleteAria": "Delete session",
+			"deleteConfirm": "Delete session “${title}”? This cannot be undone.",
+			"empty": "No sessions yet",
+			"yesterday": "yesterday"
 		},
 		"workspaces": {
+			"path": { "aria-label": "Workspace path", "placeholder": "Directory path" },
 			"manage": "Workspaces",
 			"browse": "Browse…",
 			"remove": "Remove current workspace",
@@ -6337,6 +6347,7 @@
 		},
 		"machine": {
 			"local": "Local",
+			"offline": "offline",
 			"aria-label": "Select machine"
 		},
 		"char": {
@@ -6352,8 +6363,16 @@
 			"shellDefault": "Default",
 			"send": "Send",
 			"stop": "Stop",
+			"sendButton": {
+				"aria-label": "Send message"
+			},
+			"sendAria": "Send message",
+			"stopAria": "Stop generating",
+			"modeSwitched": "Switched to ${mode} mode",
 			"hint": "Type ！/! when empty for shell mode · @ to reference files · / for commands · Tab cycles modes · Ctrl+Enter sends",
 			"placeholder": "Type a command; Enter runs it (clear to leave shell mode)",
+			"placeholderNormal": "Ask anything… (@ to reference files, / for commands)",
+			"placeholderShell": "Type a shell command… (e.g. git status)",
 			"aria-label": "Message input"
 		},
 		"aiSource": {
@@ -6364,6 +6383,20 @@
 		"commands": {
 			"run": "Run"
 		},
+		"messages": {
+			"backToBottom": "Back to latest"
+		},
+		"empty": {
+			"noWorkspace": {
+				"title": "Pick a workspace",
+				"description": "Select a directory on this machine or a connected subfount. The AI reads, writes and runs code inside it.",
+				"action": "Choose workspace…"
+			},
+			"noSession": {
+				"title": "Start a new coding session",
+				"description": "Current character: ${charname}. Type a message to begin, or pick a past session on the left."
+			}
+		},
 		"error": {
 			"generic": "Something went wrong: ${error}",
 			"generate": "Failed to generate reply",
@@ -6371,7 +6404,9 @@
 			"noChar": "Select a character first"
 		},
 		"home_function_buttons": {
-			"code": "Code"
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }

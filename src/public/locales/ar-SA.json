@@ -2127,7 +2127,9 @@
 				"aria-label": "إزالة الإشارة المرجعية"
 			},
 			"unreadDivider": "أخبار جديدة",
-			"backToFriends": "العودة إلى الأصدقاء",
+			"backToFriends": {
+				"aria-label": "العودة إلى الأصدقاء"
+			},
 			"dmTopicsTitle": "عنوان",
 			"participants": "مشاركون",
 			"startChatWith": "💬 ابدأ الدردشة مع ${name}",

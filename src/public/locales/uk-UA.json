@@ -2127,7 +2127,9 @@
 				"aria-label": "Видалити закладку"
 			},
 			"unreadDivider": "Нові повідомлення",
-			"backToFriends": "Повернення до друзів",
+			"backToFriends": {
+				"aria-label": "Повернення до друзів"
+			},
 			"dmTopicsTitle": "Тема",
 			"participants": "Учасники",
 			"startChatWith": "💬 Почніть спілкуватися з ${name}",

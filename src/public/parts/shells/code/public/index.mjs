@@ -1,17 +1,20 @@
 /**
- * code shell 前端主逻辑：会话 / composer（@file、/ 命令、! shell 模式）/ 下拉与面板。
+ * code shell 前端主逻辑：会话 / composer（@file、/ 命令、! shell 模式）/ pill 选择器 / 空态引导。
  */
 import { createMarkdownRichInput } from '../../scripts/components/markdownRichInput.mjs'
 import { attachMentionAutocomplete } from '../../scripts/components/mentionAutocomplete.mjs'
 import { whoami } from '../../scripts/endpoints/base.mjs'
 import { getPartList, getAnyPreferredDefaultPart } from '../../scripts/endpoints/parts.mjs'
+import { handleError } from '../../scripts/features/errorHandlers.mjs'
 import { renderMarkdownAsString } from '../../scripts/features/markdown/index.mjs'
+import { confirmAction } from '../../scripts/features/promptDialog.mjs'
 import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { initTranslations, geti18n, onLanguageChange } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme/index.mjs'
 import { StreamRenderer } from '/parts/shells:chat/src/ui/StreamRenderer.mjs'
 
 import * as api from './src/endpoints.mjs'
+import { openDialogFromTemplate } from './src/templates.mjs'
 
 applyTheme()
 
@@ -25,34 +28,35 @@ const $ = id => document.getElementById(id)
 const elements = {
 	sessionsList: $('sessions-list'),
 	newSessionButton: $('new-session-button'),
-	machineSelect: $('machine-select'),
-	workspaceSelect: $('workspace-select'),
-	workspaceManageButton: $('workspace-manage-button'),
-	workspaceBrowseButton: $('workspace-browse-button'),
-	workspaceRemoveButton: $('workspace-remove-button'),
+	sessionsCloseButton: $('sessions-close-button'),
+	sessionsToggleButton: $('sessions-toggle-button'),
+	sessionsBackdrop: $('sessions-backdrop'),
+	sessionTitle: $('session-title'),
+	workspacePill: $('workspace-pill'),
+	workspacePillLabel: $('workspace-pill-label'),
+	workspaceMenu: $('workspace-menu'),
+	machinePill: $('machine-pill'),
+	machinePillLabel: $('machine-pill-label'),
+	machineMenu: $('machine-menu'),
 	charMenuButton: $('char-menu-button'),
+	charMenuLabel: $('char-menu-label'),
 	charSwitchButton: $('char-switch-button'),
 	charSettingsLink: $('char-settings-link'),
 	messages: $('messages'),
 	composerInput: $('composer-input'),
-	modeSelect: $('mode-select'),
-	aiSourceSelect: $('ai-source-select'),
-	shellModeControl: $('shell-mode-control'),
-	shellSelect: $('shell-select'),
+	modePill: $('mode-pill'),
+	modePillLabel: $('mode-pill-label'),
+	modeMenu: $('mode-menu'),
+	aiSourcePill: $('ai-source-pill'),
+	aiSourcePillLabel: $('ai-source-pill-label'),
+	aiSourceMenu: $('ai-source-menu'),
+	shellPillWrap: $('shell-pill-wrap'),
+	shellPill: $('shell-pill'),
+	shellPillLabel: $('shell-pill-label'),
+	shellMenu: $('shell-menu'),
 	sendButton: $('send-button'),
-	aiSourcePanel: $('ai-source-panel'),
-	aiSourceList: $('ai-source-list'),
-	folderBrowser: $('folder-browser'),
-	folderPathInput: $('folder-path-input'),
-	folderGoButton: $('folder-go-button'),
-	folderEntries: $('folder-entries'),
-	folderSelectButton: $('folder-select-button'),
-	commandParams: $('command-params'),
-	commandParamsTitle: $('command-params-title'),
-	commandParamsFields: $('command-params-fields'),
-	commandParamsRun: $('command-params-run'),
-	charSwitchDialog: $('char-switch-dialog'),
-	charSwitchList: $('char-switch-list'),
+	sendIcon: $('send-icon'),
+	composerInput: $('composer-input'),
 }
 
 /**
@@ -142,18 +146,93 @@ function newSessionObject() {
 }
 
 /**
+ * 会话相对时间展示。
+ * @param {string} iso - ISO 时间串。
+ * @returns {string} 展示文案。
+ */
+function formatSessionTime(iso) {
+	if (!iso) return ''
+	const date = new Date(iso)
+	const now = new Date()
+	if (isNaN(date.getTime())) return ''
+	const sameDay = date.toDateString() === now.toDateString()
+	if (sameDay) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+	const yesterday = new Date(now)
+	yesterday.setDate(now.getDate() - 1)
+	if (date.toDateString() === yesterday.toDateString()) return geti18n('code.sessions.yesterday')
+	return date.toLocaleDateString([], { month: '2-digit', day: '2-digit' })
+}
+
+/**
  * 渲染会话列表。
  * @returns {void}
  */
 function renderSessions() {
+	if (!state.sessions.length) {
+		const empty = document.createElement('div')
+		empty.className = 'code-sessions-empty'
+		empty.textContent = state.workspace ? geti18n('code.sessions.empty') : geti18n('code.workspaces.none')
+		elements.sessionsList.replaceChildren(empty)
+		return
+	}
 	elements.sessionsList.replaceChildren(...state.sessions.map(session => {
-		const item = document.createElement('button')
-		item.type = 'button'
+		const item = document.createElement('div')
 		item.className = 'code-session-item' + (state.session?.id === session.id ? ' active' : '')
-		item.textContent = session.title || geti18n('code.sessions.untitled')
+		item.role = 'button'
+		item.tabIndex = 0
 		item.addEventListener('click', () => void selectSession(session.id))
+		item.addEventListener('keydown', event => {
+			if (event.key === 'Enter' || event.key === ' ') {
+				event.preventDefault()
+				void selectSession(session.id)
+			}
+		})
+		const body = document.createElement('div')
+		body.className = 'code-session-item-body'
+		const title = document.createElement('span')
+		title.className = 'code-session-item-title'
+		title.textContent = session.title || geti18n('code.sessions.untitled')
+		body.appendChild(title)
+		const time = document.createElement('span')
+		time.className = 'code-session-item-time'
+		time.textContent = formatSessionTime(session.updated || session.created)
+		body.appendChild(time)
+		item.appendChild(body)
+		const del = document.createElement('button')
+		del.type = 'button'
+		del.className = 'btn btn-xs btn-ghost btn-square code-session-item-delete'
+		del.setAttribute('aria-label', geti18n('code.sessions.deleteAria'))
+		del.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>'
+		del.addEventListener('click', event => {
+			event.stopPropagation()
+			void deleteSessionFlow(session)
+		})
+		item.appendChild(del)
 		return item
 	}))
+}
+
+/**
+ * 删除会话流程（确认 → 调用后端 → 刷新）。
+ * @param {object} session - 会话。
+ * @returns {Promise<void>}
+ */
+async function deleteSessionFlow(session) {
+	if (!state.workspace) return
+	const ok = await confirmAction('code.sessions.deleteConfirm', { title: session.title || geti18n('code.sessions.untitled') })
+	if (!ok) return
+	try {
+		await api.deleteSession(target(), session.id)
+	}
+	catch (error) {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+		return
+	}
+	if (state.session?.id === session.id) {
+		state.session = null
+		renderMessages()
+	}
+	await refreshSessions()
 }
 
 /**
@@ -191,8 +270,8 @@ async function selectSession(id) {
 	state.aiSource = state.session?.ai_source ?? ''
 	state.profile = state.session?.profile || state.profile
 	updateCharMenu()
-	renderModeOptions()
-	renderAiSourceOptions()
+	renderModePillLabel()
+	renderAiSourcePillLabel()
 	renderMessages()
 	renderSessions()
 }
@@ -206,7 +285,16 @@ function startNewSession() {
 	state.sessions.unshift({ ...state.session })
 	renderSessions()
 	renderMessages()
+	closeSessionsDrawer()
 	elements.composerInput.focus()
+}
+
+/**
+ * 顶栏会话标题。
+ * @returns {void}
+ */
+function updateSessionTitle() {
+	elements.sessionTitle.textContent = state.session?.title || geti18n('code.sessions.untitled')
 }
 
 /* ---------------- 消息渲染 ---------------- */
@@ -236,12 +324,20 @@ function renderEntryBubble(entry) {
 		bubble.appendChild(name)
 	}
 	const body = document.createElement('div')
+	body.className = 'code-message-body'
 	bubble.appendChild(body)
 	if (entry.role === 'tool' || entry.role === 'system') {
 		const details = document.createElement('details')
 		details.className = 'code-tool-log'
 		const summary = document.createElement('summary')
-		summary.textContent = entry.name || entry.role
+		const chevron = document.createElement('span')
+		chevron.className = 'code-tool-log-chevron'
+		chevron.textContent = '▸'
+		const name = document.createElement('span')
+		name.className = 'code-tool-log-name'
+		name.textContent = entry.name || entry.role
+		summary.appendChild(chevron)
+		summary.appendChild(name)
 		const content = document.createElement('div')
 		content.className = 'mt-1'
 		details.appendChild(summary)
@@ -265,14 +361,99 @@ function renderEntryBubble(entry) {
 	return bubble
 }
 
+/* 贴底自动滚 */
+const SCROLL_TOLERANCE = 96
+
+/**
+ * 消息流是否接近底部。
+ * @returns {boolean} 是否贴底。
+ */
+function nearBottom() {
+	const el = elements.messages
+	return el.scrollHeight - el.scrollTop - el.clientHeight < SCROLL_TOLERANCE
+}
+
+/**
+ * 滚动消息流到底部。
+ * @returns {void}
+ */
+function scrollMessagesBottom() {
+	elements.messages.scrollTop = elements.messages.scrollHeight
+}
+
+/**
+ * 更新回到底部浮标可见性。
+ * @returns {void}
+ */
+function updateBackToBottom() {
+	backToBottom.classList.toggle('show', !nearBottom() && (state.session?.entries?.length || 0) > 0)
+}
+
+const backToBottom = document.createElement('button')
+backToBottom.type = 'button'
+backToBottom.id = 'code-back-to-bottom'
+backToBottom.className = 'code-back-to-bottom'
+backToBottom.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12l7 7 7-7"></path></svg>'
+backToBottom.addEventListener('click', scrollMessagesBottom)
+elements.messages.appendChild(backToBottom)
+
+elements.messages.addEventListener('scroll', updateBackToBottom, { passive: true })
+
+/* ---------------- 空态 ---------------- */
+
+/**
+ * 渲染空态引导（无工作区 / 新会话 / 未选角色）。
+ * @returns {void}
+ */
+function renderEmpty() {
+	const empty = document.createElement('div')
+	empty.className = 'code-empty'
+	if (!state.workspace) {
+		const icon = document.createElement('div')
+		icon.className = 'code-empty-icon'
+		icon.textContent = '🗂'
+		const title = document.createElement('div')
+		title.className = 'code-empty-title'
+		title.textContent = geti18n('code.empty.noWorkspace.title')
+		const desc = document.createElement('div')
+		desc.className = 'code-empty-description'
+		desc.textContent = geti18n('code.empty.noWorkspace.description')
+		const action = document.createElement('button')
+		action.type = 'button'
+		action.className = 'btn btn-sm btn-primary mt-1'
+		action.textContent = geti18n('code.empty.noWorkspace.action')
+		action.addEventListener('click', () => void openFolderBrowser())
+		empty.append(icon, title, desc, action)
+	}
+	else {
+		const icon = document.createElement('div')
+		icon.className = 'code-empty-icon'
+		icon.textContent = '💬'
+		const title = document.createElement('div')
+		title.className = 'code-empty-title'
+		title.textContent = geti18n('code.empty.noSession.title')
+		const desc = document.createElement('div')
+		desc.className = 'code-empty-description'
+		desc.textContent = geti18n('code.empty.noSession.description', { charname: state.charname || geti18n('code.char.none') })
+		empty.append(icon, title, desc)
+	}
+	return empty
+}
+
 /**
  * 渲染全部消息。
  * @returns {void}
  */
 function renderMessages() {
 	const entries = state.session?.entries || []
-	elements.messages.replaceChildren(...entries.map(renderEntryBubble))
-	elements.messages.scrollTop = elements.messages.scrollHeight
+	if (!entries.length) {
+		elements.messages.replaceChildren(renderEmpty(), backToBottom)
+		updateBackToBottom()
+		return
+	}
+	elements.messages.replaceChildren(...entries.map(renderEntryBubble), backToBottom)
+	scrollMessagesBottom()
+	updateSessionTitle()
 }
 
 /**
@@ -282,8 +463,9 @@ function renderMessages() {
  */
 function appendEntryBubble(entry) {
 	const bubble = renderEntryBubble(entry)
-	elements.messages.appendChild(bubble)
-	elements.messages.scrollTop = elements.messages.scrollHeight
+	elements.messages.insertBefore(bubble, backToBottom)
+	if (nearBottom()) scrollMessagesBottom()
+	updateBackToBottom()
 	return bubble
 }
 
@@ -308,6 +490,21 @@ const richInput = createMarkdownRichInput(elements.composerInput, {
 	}],
 	useRegisteredInlineTokens: false,
 })
+
+/**
+ * 更新 composer placeholder（normal / shell 模式）。
+ * @returns {void}
+ */
+function updateComposerPlaceholder() {
+	const placeholder = state.shellMode
+		? geti18n('code.composer.placeholderShell')
+		: geti18n('code.composer.placeholderNormal')
+	const node = elements.composerInput.querySelector('.fount-markdown-rich-input-placeholder')
+	if (node) node.textContent = placeholder
+	// markdownRichInput 在 focus/click 时会按 placeholder 属性重建占位符 span，
+	// 同步该属性保证重建后仍是当前模式的文案（而非 i18n 的旧 `code.composer.placeholder`）。
+	elements.composerInput.setAttribute('placeholder', placeholder)
+}
 
 /**
  * `@` 文件补全 provider：在当前工作区内按文件名子串搜索。
@@ -341,8 +538,7 @@ attachMentionAutocomplete(elements.composerInput, {
  * `/` 命令补全面板。
  */
 const slashPanel = document.createElement('div')
-slashPanel.className = 'hidden'
-slashPanel.style.cssText = 'position:absolute;z-index:60;display:flex;flex-direction:column;gap:2px;max-height:16rem;overflow:auto;'
+slashPanel.className = 'code-slash-panel hidden'
 document.body.appendChild(slashPanel)
 let slashSuggestions = []
 let slashActive = 0
@@ -366,11 +562,12 @@ function renderSlashItems() {
 	slashPanel.replaceChildren(...slashSuggestions.map((cmd, index) => {
 		const button = document.createElement('button')
 		button.type = 'button'
-		button.className = 'code-folder-entry' + (index === slashActive ? ' active' : '')
+		button.className = 'code-slash-item' + (index === slashActive ? ' active' : '')
 		const name = document.createElement('strong')
+		name.className = 'code-slash-item-name'
 		name.textContent = '/' + cmd.name
-		const desc = document.createElement('small')
-		desc.className = 'opacity-60'
+		const desc = document.createElement('span')
+		desc.className = 'code-slash-item-desc'
 		desc.textContent = cmd.description || ''
 		button.appendChild(name)
 		button.appendChild(desc)
@@ -396,7 +593,7 @@ function showSlashPanel(query) {
 	slashPanel.classList.remove('hidden')
 	const hostRect = document.querySelector('.code-composer-shell').getBoundingClientRect()
 	slashPanel.style.left = `${hostRect.left}px`
-	slashPanel.style.top = `${hostRect.top - Math.min(slashSuggestions.length * 36 + 8, 256)}px`
+	slashPanel.style.top = `${hostRect.top - 8}px`
 	slashPanel.style.minWidth = `${Math.max(240, hostRect.width / 2)}px`
 }
 
@@ -432,8 +629,8 @@ async function applySlashCommand(command) {
  * @param {object} command - 命令条目。
  * @returns {Promise<Record<string, string>|null>} 参数（取消时 null）。
  */
-function openCommandParams(command) {
-	return new Promise(resolve => {
+async function openCommandParams(command) {
+	return await new Promise(resolve => {
 		let settled = false
 		/** @type {(value: Record<string, string>|null) => void} */
 		const settle = value => {
@@ -441,40 +638,39 @@ function openCommandParams(command) {
 			settled = true
 			resolve(value)
 		}
-		elements.commandParamsTitle.textContent = '/' + command.name
-		const inputs = {}
-		elements.commandParamsFields.replaceChildren(...Object.entries(command.params || {}).map(([name, spec]) => {
-			const label = document.createElement('label')
-			label.className = 'form-control w-full mb-2'
-			const caption = document.createElement('div')
-			caption.className = 'label'
-			caption.innerHTML = `<span class="label-text">${name}${spec?.required ? ' *' : ''}${spec?.description ? ` - ${spec.description}` : ''}</span>`
-			const input = document.createElement('input')
-			input.className = 'input input-sm input-bordered w-full'
-			input.value = spec?.default || ''
-			input.setAttribute('user-content', '')
-			inputs[name] = input
-			label.appendChild(caption)
-			label.appendChild(input)
-			return label
-		}))
-		/**
-		 * 参数填写确认：收集输入并关闭对话框。
-		 * @returns {void}
-		 */
-		elements.commandParamsRun.onclick = () => {
-			/** @type {Record<string, string>} */
-			const argv = {}
-			for (const [name, input] of Object.entries(inputs)) argv[name] = input.value
-			elements.commandParams.close()
-			settle(argv)
-		}
-		/**
-		 * 对话框关闭：以取消结算。
-		 * @returns {void}
-		 */
-		elements.commandParams.onclose = () => settle(null)
-		elements.commandParams.showModal()
+		void openDialogFromTemplate('command_params', { commandName: command.name }, {
+			/** @param {HTMLDialogElement} dialog 对话框 */
+			onReady: dialog => {
+				const fields = dialog.querySelector('#command-params-fields')
+				const inputs = {}
+				fields.replaceChildren(...Object.entries(command.params || {}).map(([name, spec]) => {
+					const label = document.createElement('label')
+					label.className = 'form-control w-full mb-2'
+					const caption = document.createElement('div')
+					caption.className = 'label'
+					caption.innerHTML = `<span class="label-text">${name}${spec?.required ? ' *' : ''}${spec?.description ? ` - ${spec.description}` : ''}</span>`
+					const input = document.createElement('input')
+					input.className = 'input input-sm input-bordered w-full'
+					input.value = spec?.default || ''
+					input.setAttribute('user-content', '')
+					inputs[name] = input
+					label.appendChild(caption)
+					label.appendChild(input)
+					return label
+				}))
+				dialog.querySelector('#command-params-run').addEventListener('click', () => {
+					/** @type {Record<string, string>} */
+					const argv = {}
+					for (const [name, input] of Object.entries(inputs)) argv[name] = input.value
+					dialog.close()
+					settle(argv)
+				})
+				dialog.addEventListener('close', () => settle(null))
+			},
+		}).catch(error => {
+			showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+			settle(null)
+		})
 	})
 }
 
@@ -543,10 +739,11 @@ function startGeneratingBubble() {
 	name.className = 'code-message-name'
 	name.textContent = state.session?.charname || ''
 	const body = document.createElement('div')
+	body.className = 'code-message-body'
 	bubble.appendChild(name)
 	bubble.appendChild(body)
-	elements.messages.appendChild(bubble)
-	elements.messages.scrollTop = elements.messages.scrollHeight
+	elements.messages.insertBefore(bubble, backToBottom)
+	if (nearBottom()) scrollMessagesBottom()
 	generatingBubble = { bubble, renderer: new StreamRenderer(body, { allowDangerousHtml: false }) }
 }
 
@@ -576,19 +773,23 @@ function finishGeneration(entries, memory, aborted = false) {
 		state.session.title = (entries.find(e => e.role === 'user')?.content || '').slice(0, 40) || state.session.title
 	state.generating = false
 	updateSendButton()
+	updateSessionTitle()
 	if (aborted) showToastI18n('info', 'code.error.aborted')
 	renderSessions()
 	markSessionDirty()
 }
 
 /**
- * 更新发送按钮（生成中变停止）。
+ * 更新发送按钮（生成中变停止图标）。
  * @returns {void}
  */
 function updateSendButton() {
-	elements.sendButton.textContent = state.generating
-		? geti18n('code.composer.stop')
-		: geti18n('code.composer.send')
+	const stop = state.generating
+	elements.sendButton.classList.toggle('stop', stop)
+	elements.sendButton.setAttribute('aria-label', geti18n(stop ? 'code.composer.stopAria' : 'code.composer.sendAria'))
+	elements.sendIcon.innerHTML = stop
+		? '<rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor" stroke="none"></rect>'
+		: '<path d="M12 19V5"></path><path d="M5 12l7-7 7 7"></path>'
 }
 
 /**
@@ -634,6 +835,7 @@ async function sendMessage(content) {
  * @returns {Promise<void>}
  */
 async function execShellMode(command) {
+	if (!state.session) startNewSession()
 	const userEntry = {
 		id: crypto.randomUUID().slice(0, 8),
 		uid: 'user',
@@ -697,88 +899,198 @@ window.addEventListener('beforeunload', () => {
 		api.putSession(target(), state.session).catch(() => { })
 })
 
-/* ---------------- 机器 / 工作区 ---------------- */
+/* ---------------- 机器 / 工作区 pill ---------------- */
 
 /**
- * 渲染机器下拉。
+ * 渲染机器 pill 下拉。
  * @returns {void}
  */
-function renderMachineOptions() {
-	elements.machineSelect.replaceChildren(...state.machines.map(machine => {
-		const option = document.createElement('option')
-		option.value = String(machine.id)
-		option.textContent = machine.id === '0'
+function renderMachineMenu() {
+	elements.machineMenu.replaceChildren(...state.machines.map(machine => {
+		const li = document.createElement('li')
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'menu-item' + (String(machine.id) === state.machine ? ' active' : '')
+		button.textContent = machine.id === '0'
 			? geti18n('code.machine.local')
-			: `${machine.description || machine.deviceInfo?.hostname || `#${machine.id}`}${machine.isConnected ? '' : ' (offline)'}`
-		option.disabled = machine.id !== '0' && !machine.isConnected
-		return option
+			: `${machine.description || machine.deviceInfo?.hostname || `#${machine.id}`}${machine.isConnected ? '' : ' (' + geti18n('code.machine.offline') + ')'}`
+		button.disabled = machine.id !== '0' && !machine.isConnected
+		button.addEventListener('click', () => {
+			document.activeElement?.blur()
+			selectMachine(String(machine.id))
+		})
+		li.appendChild(button)
+		return li
 	}))
-	elements.machineSelect.value = state.machine
 }
 
 /**
- * 渲染工作区下拉。
+ * 更新机器 pill 标签。
  * @returns {void}
  */
-function renderWorkspaceOptions() {
-	const placeholder = document.createElement('option')
-	placeholder.value = ''
-	placeholder.textContent = geti18n('code.workspaces.none')
-	elements.workspaceSelect.replaceChildren(placeholder, ...state.workspaces.map(workspace => {
-		const option = document.createElement('option')
-		option.value = workspace.id
-		option.textContent = workspace.name || workspace.path
-		return option
-	}))
-	elements.workspaceSelect.value = state.workspace?.id || ''
+function renderMachinePillLabel() {
+	const machine = state.machines.find(m => String(m.id) === state.machine)
+	elements.machinePillLabel.textContent = machine?.id === '0'
+		? geti18n('code.machine.local')
+		: (machine?.description || machine?.deviceInfo?.hostname || `#${state.machine}`) + (machine?.isConnected === false ? ` (${geti18n('code.machine.offline')})` : '')
 }
 
 /**
  * 应用机器变更。
+ * @param {string} id - 机器 id。
  * @returns {Promise<void>}
  */
-async function applyMachineChange() {
-	state.machine = elements.machineSelect.value || '0'
-	setPref('machine', state.machine)
-	state.shells = await api.getMachineShells(state.machine).then(r => r.shells).catch(() => [])
-	renderShellOptions()
+async function selectMachine(id) {
+	state.machine = id
+	setPref('machine', id)
+	state.shells = await api.getMachineShells(id).then(r => r.shells).catch(() => [])
+	renderShellMenu()
+	renderShellPillLabel()
+	renderMachinePillLabel()
+	renderMachineMenu()
 }
 
 /**
- * 应用工作区变更。
+ * 渲染工作区 pill 下拉（列表 + 浏览/移除）。
+ * @returns {void}
+ */
+function renderWorkspaceMenu() {
+	elements.workspaceMenu.replaceChildren()
+	const list = state.workspaces
+	if (list.length) {
+		list.forEach(workspace => {
+			const li = document.createElement('li')
+			const button = document.createElement('button')
+			button.type = 'button'
+			button.className = 'menu-item' + (state.workspace?.id === workspace.id ? ' active' : '')
+			const name = document.createElement('span')
+			name.textContent = workspace.name || workspace.path
+			const path = document.createElement('span')
+			path.className = 'opacity-60 text-xs'
+			path.textContent = workspace.path
+			button.appendChild(name)
+			button.appendChild(path)
+			button.addEventListener('click', () => {
+				document.activeElement?.blur()
+				selectWorkspace(workspace.id)
+			})
+			li.appendChild(button)
+			elements.workspaceMenu.appendChild(li)
+		})
+		const separator = document.createElement('div')
+		separator.className = 'divider my-1'
+		elements.workspaceMenu.appendChild(separator)
+	}
+	const browseLi = document.createElement('li')
+	const browseBtn = document.createElement('button')
+	browseBtn.type = 'button'
+	browseBtn.className = 'menu-item'
+	browseBtn.textContent = geti18n('code.workspaces.browse')
+	browseBtn.addEventListener('click', () => {
+		document.activeElement?.blur()
+		void openFolderBrowser()
+	})
+	browseLi.appendChild(browseBtn)
+	elements.workspaceMenu.appendChild(browseLi)
+	if (state.workspace) {
+		const removeLi = document.createElement('li')
+		const removeBtn = document.createElement('button')
+		removeBtn.type = 'button'
+		removeBtn.className = 'menu-item text-error'
+		removeBtn.textContent = geti18n('code.workspaces.remove')
+		removeBtn.addEventListener('click', () => {
+			document.activeElement?.blur()
+			removeCurrentWorkspace()
+		})
+		removeLi.appendChild(removeBtn)
+		elements.workspaceMenu.appendChild(removeLi)
+	}
+}
+
+/**
+ * 更新工作区 pill 标签。
+ * @returns {void}
+ */
+function renderWorkspacePillLabel() {
+	elements.workspacePillLabel.textContent = state.workspace?.name || state.workspace?.path || geti18n('code.workspaces.none')
+}
+
+/**
+ * 选择工作区。
+ * @param {string} id - 工作区 id。
  * @returns {Promise<void>}
  */
-async function applyWorkspaceChange() {
-	const id = elements.workspaceSelect.value
-	state.workspace = state.workspaces.find(w => w.id === id) || null
-	if (state.workspace && state.workspace.machine !== state.machine) {
-		state.machine = state.workspace.machine
-		elements.machineSelect.value = state.machine
+async function selectWorkspace(id) {
+	const workspace = state.workspaces.find(w => w.id === id)
+	if (!workspace) return
+	state.workspace = workspace
+	if (workspace.machine !== state.machine) {
+		state.machine = String(workspace.machine)
 		setPref('machine', state.machine)
-		await applyMachineChange()
+		state.shells = await api.getMachineShells(state.machine).then(r => r.shells).catch(() => [])
+		renderMachinePillLabel()
+		renderMachineMenu()
+		renderShellMenu()
+		renderShellPillLabel()
 	}
-	setPref('workspace', state.workspace?.id || '')
+	setPref('workspace', state.workspace.id)
 	state.session = null
+	await Promise.all([refreshSessions(), refreshProfiles()])
+	renderSessions()
+	renderMessages()
+	renderWorkspacePillLabel()
+	renderWorkspaceMenu()
+}
+
+/**
+ * 移除当前工作区。
+ * @returns {Promise<void>}
+ */
+async function removeCurrentWorkspace() {
+	if (!state.workspace) return
+	state.workspaces = state.workspaces.filter(w => w.id !== state.workspace.id)
+	await api.removeWorkspace(state.workspace.id).catch(() => { })
+	state.workspace = null
+	setPref('workspace', '')
+	state.session = null
+	renderWorkspacePillLabel()
+	renderWorkspaceMenu()
 	await Promise.all([refreshSessions(), refreshProfiles()])
 	renderSessions()
 	renderMessages()
 }
 
 /**
- * 渲染 shell 下拉（! 模式）。
+ * 渲染 shell pill 下拉（! 模式）。
  * @returns {void}
  */
-function renderShellOptions() {
-	elements.shellSelect.replaceChildren(...(state.shells.length ? state.shells : ['']).map(shell => {
-		const option = document.createElement('option')
-		option.value = shell
-		option.textContent = shell || geti18n('code.composer.shellDefault')
-		return option
+function renderShellMenu() {
+	elements.shellMenu.replaceChildren(...(state.shells.length ? state.shells : ['']).map(shell => {
+		const li = document.createElement('li')
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'menu-item' + (shell === state.shell ? ' active' : '')
+		button.textContent = shell || geti18n('code.composer.shellDefault')
+		button.addEventListener('click', () => {
+			document.activeElement?.blur()
+			state.shell = shell
+			renderShellMenu()
+			renderShellPillLabel()
+		})
+		li.appendChild(button)
+		return li
 	}))
-	elements.shellSelect.disabled = state.shells.length <= 1
 }
 
-/* ---------------- profile / AI 源 ---------------- */
+/**
+ * 更新 shell pill 标签。
+ * @returns {void}
+ */
+function renderShellPillLabel() {
+	elements.shellPillLabel.textContent = state.shell || geti18n('code.composer.shellDefault')
+}
+
+/* ---------------- profile / AI 源 pill ---------------- */
 
 /**
  * 刷新 profile 与 commands。
@@ -800,33 +1112,53 @@ async function refreshProfiles() {
 			state.commands = []
 		}
 	
-	renderModeOptions()
+	renderModeMenu()
+	renderModePillLabel()
 }
 
 /**
- * 渲染 mode/profile 下拉。
+ * 渲染 mode/profile pill 下拉。
  * @returns {void}
  */
-function renderModeOptions() {
-	const names = new Set(state.profiles.map(p => p.name))
-	if (!names.has(state.profile)) state.profile = state.profiles[0]?.name || 'build'
-	elements.modeSelect.replaceChildren(...state.profiles.map(profile => {
-		const option = document.createElement('option')
-		option.value = profile.name
-		option.textContent = profile.name + (profile.source === 'builtin' ? '' : ` (${profile.source})`)
-		return option
+function renderModeMenu() {
+	elements.modeMenu.replaceChildren(...state.profiles.map(profile => {
+		const li = document.createElement('li')
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'menu-item' + (profile.name === state.profile ? ' active' : '')
+		button.textContent = profile.name + (profile.source === 'builtin' ? '' : ` (${profile.source})`)
+		button.addEventListener('click', () => {
+			document.activeElement?.blur()
+			state.profile = profile.name
+			setPref('profile', state.profile)
+			renderModeMenu()
+			renderModePillLabel()
+		})
+		li.appendChild(button)
+		return li
 	}))
-	elements.modeSelect.value = state.profile
 }
 
 /**
- * Tab 键轮换 mode（溢出归 0）。
+ * 更新 mode pill 标签。
+ * @returns {void}
+ */
+function renderModePillLabel() {
+	elements.modePillLabel.textContent = state.profile
+}
+
+/**
+ * Tab 键轮换 mode（溢出归 0），并给出可见反馈。
  * @returns {void}
  */
 function cycleMode() {
+	if (!state.profiles.length) return
 	const index = state.profiles.findIndex(p => p.name === state.profile)
 	state.profile = state.profiles[(index + 1) % state.profiles.length]?.name || 'build'
-	elements.modeSelect.value = state.profile
+	setPref('profile', state.profile)
+	renderModeMenu()
+	renderModePillLabel()
+	showToastI18n('info', 'code.composer.modeSwitched', { mode: state.profile })
 }
 
 /**
@@ -844,42 +1176,81 @@ async function refreshAiSources() {
 		state.aiSources = []
 		state.aiHidden = []
 	}
-	renderAiSourceOptions()
+	renderAiSourceMenu()
+	renderAiSourcePillLabel()
 }
 
 /**
- * 渲染 AI 源下拉。
+ * 渲染 AI 源 pill 下拉。
  * @returns {void}
  */
-function renderAiSourceOptions() {
+function renderAiSourceMenu() {
 	const visible = state.aiSources.filter(name => !state.aiHidden.includes(name))
-	const own = document.createElement('option')
-	own.value = ''
-	own.textContent = geti18n('code.aiSource.charOwn')
-	elements.aiSourceSelect.replaceChildren(own, ...visible.map(name => {
-		const option = document.createElement('option')
-		option.value = name
-		option.textContent = name + (state.aiDefaults?.includes(name) ? ' ★' : '')
-		return option
+	elements.aiSourceMenu.replaceChildren(...visible.map(name => {
+		const li = document.createElement('li')
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'menu-item' + (name === state.aiSource ? ' active' : '')
+		button.textContent = name + (state.aiDefaults?.includes(name) ? ' ★' : '')
+		button.addEventListener('click', () => {
+			document.activeElement?.blur()
+			state.aiSource = name
+			setPref('aiSource', state.aiSource)
+			renderAiSourceMenu()
+			renderAiSourcePillLabel()
+		})
+		li.appendChild(button)
+		return li
 	}), (() => {
-		const manage = document.createElement('option')
-		manage.value = '__manage__'
-		manage.textContent = geti18n('code.aiSource.manage')
-		return manage
+		const ownLi = document.createElement('li')
+		const ownBtn = document.createElement('button')
+		ownBtn.type = 'button'
+		ownBtn.className = 'menu-item' + (!state.aiSource ? ' active' : '')
+		ownBtn.textContent = geti18n('code.aiSource.charOwn')
+		ownBtn.addEventListener('click', () => {
+			document.activeElement?.blur()
+			state.aiSource = ''
+			setPref('aiSource', '')
+			renderAiSourceMenu()
+			renderAiSourcePillLabel()
+		})
+		ownLi.appendChild(ownBtn)
+		return ownLi
+	})(), (() => {
+		const separator = document.createElement('div')
+		separator.className = 'divider my-1'
+		return separator
+	})(), (() => {
+		const manageLi = document.createElement('li')
+		const manageBtn = document.createElement('button')
+		manageBtn.type = 'button'
+		manageBtn.className = 'menu-item'
+		manageBtn.textContent = geti18n('code.aiSource.manage')
+		manageBtn.addEventListener('click', () => {
+			document.activeElement?.blur()
+			void openAiSourcePanel()
+		})
+		manageLi.appendChild(manageBtn)
+		return manageLi
 	})())
-	elements.aiSourceSelect.value = state.aiSource
-	if (elements.aiSourceSelect.value !== state.aiSource) {
-		state.aiSource = ''
-		elements.aiSourceSelect.value = ''
-	}
+}
+
+/**
+ * 更新 AI 源 pill 标签。
+ * @returns {void}
+ */
+function renderAiSourcePillLabel() {
+	elements.aiSourcePillLabel.textContent = state.aiSource || geti18n('code.aiSource.charOwn')
 }
 
 /**
  * 渲染 AI 源可见性管理面板。
+ * @param {HTMLDialogElement} dialog - 已打开的对话框。
  * @returns {void}
  */
-function renderAiSourcePanel() {
-	elements.aiSourceList.replaceChildren(...state.aiSources.map(name => {
+function renderAiSourcePanel(dialog) {
+	const list = dialog.querySelector('#ai-source-list')
+	list.replaceChildren(...state.aiSources.map(name => {
 		const row = document.createElement('label')
 		row.className = 'ai-source-row'
 		const checkbox = document.createElement('input')
@@ -889,7 +1260,10 @@ function renderAiSourcePanel() {
 		checkbox.addEventListener('change', () => {
 			if (checkbox.checked) state.aiHidden = state.aiHidden.filter(n => n !== name)
 			else state.aiHidden = [...state.aiHidden, name]
-			api.setAiSourceVisibility(state.aiHidden).then(renderAiSourceOptions).catch(() => { })
+			api.setAiSourceVisibility(state.aiHidden).then(() => {
+				renderAiSourceMenu()
+				renderAiSourcePillLabel()
+			}).catch(() => { })
 		})
 		const text = document.createElement('span')
 		text.textContent = name
@@ -899,6 +1273,22 @@ function renderAiSourcePanel() {
 	}))
 }
 
+/**
+ * 打开 AI 源可见性管理面板。
+ * @returns {Promise<void>}
+ */
+async function openAiSourcePanel() {
+	try {
+		await openDialogFromTemplate('ai_source_panel', {}, {
+			/** @param {HTMLDialogElement} dialog 对话框 */
+			onReady: renderAiSourcePanel,
+		})
+	}
+	catch (error) {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
+}
+
 /* ---------------- 角色 ---------------- */
 
 /**
@@ -906,7 +1296,7 @@ function renderAiSourcePanel() {
  * @returns {void}
  */
 function updateCharMenu() {
-	elements.charMenuButton.textContent = state.charname || geti18n('code.char.none')
+	elements.charMenuLabel.textContent = state.charname || geti18n('code.char.none')
 	elements.charSettingsLink.href = `/parts/shells:config/?partpath=${encodeURIComponent('chars/' + (state.charname || ''))}`
 }
 
@@ -920,10 +1310,12 @@ async function refreshChars() {
 
 /**
  * 渲染角色切换列表。
+ * @param {HTMLDialogElement} dialog - 已打开的对话框。
  * @returns {void}
  */
-function renderCharSwitchList() {
-	elements.charSwitchList.replaceChildren(...state.chars.map(name => {
+function renderCharSwitchList(dialog) {
+	const list = dialog.querySelector('#char-switch-list')
+	list.replaceChildren(...state.chars.map(name => {
 		const option = document.createElement('button')
 		option.type = 'button'
 		option.className = 'char-option' + (name === state.charname ? ' active' : '')
@@ -932,49 +1324,63 @@ function renderCharSwitchList() {
 			state.charname = name
 			setPref('charname', name)
 			updateCharMenu()
-			elements.charSwitchDialog.close()
+			renderMessages()
+			dialog.close()
 		})
 		return option
 	}))
 }
 
+/**
+ * 打开角色切换对话框。
+ * @returns {Promise<void>}
+ */
+async function openCharSwitchDialog() {
+	try {
+		await openDialogFromTemplate('char_switch', {}, {
+			/** @param {HTMLDialogElement} dialog 对话框 */
+			onReady: renderCharSwitchList,
+		})
+	}
+	catch (error) {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
+}
+
+/* ---------------- 移动端侧栏 ---------------- */
+
+/**
+ * 打开/关闭移动端会话侧栏。
+ * @param {boolean} open - 目标开合状态。
+ * @returns {void}
+ */
+function toggleSessionsDrawer(open) {
+	const forceOpen = open ?? !document.querySelector('.code-sessions').classList.contains('open')
+	document.querySelector('.code-sessions').classList.toggle('open', forceOpen)
+	elements.sessionsBackdrop.classList.toggle('hidden', !forceOpen)
+}
+
+/**
+ * 关闭移动端会话侧栏。
+ * @returns {void}
+ */
+function closeSessionsDrawer() {
+	toggleSessionsDrawer(false)
+}
+
 /* ---------------- 事件绑定 ---------------- */
 
 elements.newSessionButton.addEventListener('click', startNewSession)
-elements.machineSelect.addEventListener('change', () => void applyMachineChange())
-elements.workspaceSelect.addEventListener('change', () => void applyWorkspaceChange())
-elements.workspaceBrowseButton.addEventListener('click', () => {
-	openFolderBrowser()
-})
-elements.workspaceRemoveButton.addEventListener('click', async () => {
-	if (!state.workspace) return
-	state.workspaces = state.workspaces.filter(w => w.id !== state.workspace.id)
-	await api.removeWorkspace(state.workspace.id).catch(() => { })
-	state.workspace = null
-	setPref('workspace', '')
-	renderWorkspaceOptions()
-	void applyWorkspaceChange()
-})
+elements.sessionsToggleButton.addEventListener('click', () => toggleSessionsDrawer())
+elements.sessionsCloseButton.addEventListener('click', () => toggleSessionsDrawer(false))
+elements.sessionsBackdrop.addEventListener('click', () => toggleSessionsDrawer(false))
+elements.workspacePill.addEventListener('click', () => renderWorkspaceMenu())
+elements.machinePill.addEventListener('click', () => renderMachineMenu())
+elements.modePill.addEventListener('click', () => renderModeMenu())
+elements.aiSourcePill.addEventListener('click', () => renderAiSourceMenu())
+elements.shellPill.addEventListener('click', () => renderShellMenu())
 elements.charSwitchButton.addEventListener('click', () => {
-	renderCharSwitchList()
-	elements.charSwitchDialog.showModal()
-})
-elements.modeSelect.addEventListener('change', () => {
-	state.profile = elements.modeSelect.value
-	setPref('profile', state.profile)
-})
-elements.aiSourceSelect.addEventListener('change', () => {
-	if (elements.aiSourceSelect.value === '__manage__') {
-		renderAiSourcePanel()
-		elements.aiSourcePanel.showModal()
-		renderAiSourceOptions()
-		return
-	}
-	state.aiSource = elements.aiSourceSelect.value
-	setPref('aiSource', state.aiSource)
-})
-elements.shellSelect.addEventListener('change', () => {
-	state.shell = elements.shellSelect.value
+	void openCharSwitchDialog()
 })
 elements.sendButton.addEventListener('click', () => {
 	if (state.generating) {
@@ -987,32 +1393,13 @@ elements.sendButton.addEventListener('click', () => {
 	if (state.shellMode) {
 		state.shellMode = false
 		document.querySelector('.code-composer-shell').classList.remove('shell-mode')
-		elements.shellModeControl.classList.add('hidden')
+		elements.shellPillWrap.classList.add('hidden')
 		suppressComposerInput = true
 		richInput.value = ''
-		void execShellMode(value.replace(/^[!！]/, ''))
+		updateComposerPlaceholder()
+		void execShellMode(value.replace(/^[!！]/, '')).catch(error => showToastI18n('error', 'code.error.generic', { error: String(error.message || error) }))
 	}
 	else void sendMessage(value)
-})
-elements.folderGoButton.addEventListener('click', () => {
-	openFolderEntries(elements.folderPathInput.value)
-})
-elements.folderSelectButton.addEventListener('click', async () => {
-	const path = elements.folderPathInput.value
-	if (!path) return
-	const machine = browseMachineId
-	const name = path.split(/[\\/]/).filter(Boolean).pop() || path
-	const data = await api.addWorkspace({ name, machine, path }).catch(error => {
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-		return null
-	})
-	if (!data) return
-	state.workspaces = data.list
-	state.workspace = state.workspaces.find(w => w.path === path && w.machine === machine) || null
-	setPref('workspace', state.workspace?.id || '')
-	renderWorkspaceOptions()
-	elements.folderBrowser.close()
-	void applyWorkspaceChange()
 })
 
 /** 程序性设置 richInput.value 引发的 input 事件抑制标志。 */
@@ -1028,7 +1415,8 @@ elements.composerInput.addEventListener('input', () => {
 	if (!state.shellMode && (value === '！' || value === '!')) {
 		state.shellMode = true
 		document.querySelector('.code-composer-shell').classList.add('shell-mode')
-		elements.shellModeControl.classList.remove('hidden')
+		elements.shellPillWrap.classList.remove('hidden')
+		updateComposerPlaceholder()
 		return
 	}
 	if (state.shellMode) {
@@ -1038,7 +1426,8 @@ elements.composerInput.addEventListener('input', () => {
 			suppressComposerInput = true
 			richInput.value = ''
 			document.querySelector('.code-composer-shell').classList.remove('shell-mode')
-			elements.shellModeControl.classList.add('hidden')
+			elements.shellPillWrap.classList.add('hidden')
+			updateComposerPlaceholder()
 		}
 		hideSlashPanel()
 		return
@@ -1078,7 +1467,7 @@ elements.composerInput.addEventListener('keydown', event => {
 		}
 	}
 	// Tab 轮换 mode
-	if (event.key === 'Tab' && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+	if (event.key === 'Tab' && !event.shiftKey && !event.ctrlKey && !event.altKey && !state.shellMode) {
 		event.preventDefault()
 		cycleMode()
 	}
@@ -1092,6 +1481,8 @@ elements.composerInput.addEventListener('keydown', event => {
 /* ---------------- 文件夹浏览器 ---------------- */
 
 let browseMachineId = '0'
+/** @type {HTMLDialogElement|null} 当前打开的浏览对话框。 */
+let browseDialog = null
 
 /**
  * 打开文件夹浏览器（当前机器）。
@@ -1099,8 +1490,32 @@ let browseMachineId = '0'
  */
 async function openFolderBrowser() {
 	browseMachineId = state.machine
-	await openFolderEntries('')
-	elements.folderBrowser.showModal()
+	try {
+		browseDialog = await openDialogFromTemplate('folder_browser', {}, {
+			// onReady：绑定浏览操作并加载根目录
+			/**
+			 * 绑定浏览操作并加载根目录。
+			 * @param {HTMLDialogElement} dialog 对话框。
+			 * @returns {Promise<void>} 根目录加载完成。
+			 */
+			onReady: dialog => {
+				dialog.querySelector('#folder-go-button').addEventListener('click', () => {
+					void openFolderEntries(dialog.querySelector('#folder-path-input').value)
+				})
+				dialog.querySelector('#folder-path-input').addEventListener('keydown', event => {
+					if (event.key === 'Enter') void openFolderEntries(event.currentTarget.value)
+				})
+				dialog.querySelector('#folder-select-button').addEventListener('click', () => {
+					void selectBrowsedFolder(dialog.querySelector('#folder-path-input').value)
+				})
+				return openFolderEntries('')
+			},
+		})
+	}
+	catch (error) {
+		browseDialog = null
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
 }
 
 /**
@@ -1109,10 +1524,12 @@ async function openFolderBrowser() {
  * @returns {Promise<void>}
  */
 async function openFolderEntries(path) {
+	const dialog = browseDialog
+	if (!dialog) return
 	try {
 		const data = await api.browseMachine(browseMachineId, path)
-		elements.folderPathInput.value = data.path
-		elements.folderEntries.replaceChildren(...data.entries.map(entry => {
+		dialog.querySelector('#folder-path-input').value = data.path
+		dialog.querySelector('#folder-entries').replaceChildren(...data.entries.map(entry => {
 			const row = document.createElement('button')
 			row.type = 'button'
 			row.className = 'code-folder-entry'
@@ -1131,7 +1548,54 @@ async function openFolderEntries(path) {
 	}
 }
 
+/**
+ * 选定当前目录为工作区。
+ * @param {string} path - 目录路径。
+ * @returns {Promise<void>}
+ */
+async function selectBrowsedFolder(path) {
+	const dialog = browseDialog
+	if (!path || !dialog) return
+	const machine = browseMachineId
+	const name = path.split(/[\\/]/).filter(Boolean).pop() || path
+	const data = await api.addWorkspace({ name, machine, path }).catch(error => {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+		return null
+	})
+	if (!data) return
+	state.workspaces = data.list
+	state.workspace = state.workspaces.find(w => w.path === path && w.machine === machine) || null
+	renderWorkspacePillLabel()
+	renderWorkspaceMenu()
+	dialog.close()
+	await selectWorkspace(state.workspace?.id || '')
+}
+
 /* ---------------- 启动 ---------------- */
+
+/**
+ * 语言切换时的动态文案重渲染。
+ * @returns {void}
+ */
+function rerenderDynamicText() {
+	renderSessions()
+	renderMachinePillLabel()
+	renderMachineMenu()
+	renderWorkspacePillLabel()
+	renderWorkspaceMenu()
+	renderShellMenu()
+	renderShellPillLabel()
+	renderModeMenu()
+	renderModePillLabel()
+	renderAiSourceMenu()
+	renderAiSourcePillLabel()
+	updateCharMenu()
+	updateSendButton()
+	updateSessionTitle()
+	updateComposerPlaceholder()
+	backToBottom.setAttribute('aria-label', geti18n('code.messages.backToBottom'))
+	if (!(state.session?.entries?.length || 0)) renderMessages()
+}
 
 /**
  * 初始化。
@@ -1141,20 +1605,10 @@ async function boot() {
 	state.username = (await whoami()).username
 	await initTranslations('code')
 	// 语言切换时重渲染动态文案（geti18n 的 textContent 不随 setLanguage 自动更新）
-	onLanguageChange(() => {
-		renderSessions()
-		renderMachineOptions()
-		renderWorkspaceOptions()
-		renderShellOptions()
-		renderModeOptions()
-		renderAiSourceOptions()
-		updateCharMenu()
-		updateSendButton()
-	})
-	const [machines, workspaces, chars] = await Promise.all([
+	onLanguageChange(rerenderDynamicText)
+	const [machines, workspaces] = await Promise.all([
 		api.getMachines().then(r => r.machines).catch(() => [{ id: '0', description: 'localhost', isConnected: true, deviceInfo: null }]),
 		api.getWorkspaces().then(r => r.list).catch(() => []),
-		refreshChars(),
 	])
 	state.machines = machines
 	state.workspaces = workspaces
@@ -1165,15 +1619,16 @@ async function boot() {
 	state.charname = getPref('charname') || await getAnyPreferredDefaultPart('chars') || null
 	state.profile = getPref('profile', 'build')
 	state.aiSource = getPref('aiSource', '')
-	renderMachineOptions()
-	renderWorkspaceOptions()
+	state.shells = await api.getMachineShells(state.machine).then(r => r.shells).catch(() => [])
+	renderMachinePillLabel()
+	renderWorkspacePillLabel()
 	updateCharMenu()
 	updateSendButton()
-	state.shells = await api.getMachineShells(state.machine).then(r => r.shells).catch(() => [])
-	renderShellOptions()
-	await Promise.all([refreshProfiles(), refreshAiSources(), refreshSessions()])
+	renderShellPillLabel()
+	await Promise.all([refreshProfiles(), refreshAiSources(), refreshSessions(), refreshChars()])
 	renderMessages()
+	rerenderDynamicText()
 	elements.composerInput.focus()
 }
 
-boot().catch(error => showToastI18n('error', 'code.error.generic', { error: String(error.message || error) }))
+boot().catch(handleError('code.error.generic'))

@@ -2127,7 +2127,9 @@
 				"aria-label": "移除书签"
 			},
 			"unreadDivider": "新消息",
-			"backToFriends": "返回好友",
+			"backToFriends": {
+				"aria-label": "返回好友"
+			},
 			"dmTopicsTitle": "话题",
 			"participants": "参与者",
 			"startChatWith": "💬 开始与 ${name} 聊天",
@@ -6323,10 +6325,18 @@
 		"title": "Code",
 		"description": "面向工作区与机器的 AI 编码会话。",
 		"sessions": {
+			"panel": { "aria-label": "会话列表" },
 			"new": "新会话",
-			"untitled": "未命名会话"
+			"untitled": "未命名会话",
+			"close": "收起侧栏",
+			"toggle": "侧栏",
+			"deleteAria": "删除会话",
+			"deleteConfirm": "删除会话「${title}」？此操作不可恢复。",
+			"empty": "还没有会话",
+			"yesterday": "昨天"
 		},
 		"workspaces": {
+			"path": { "aria-label": "工作区路径", "placeholder": "目录路径" },
 			"manage": "工作区",
 			"browse": "浏览…",
 			"remove": "移除当前工作区",
@@ -6337,6 +6347,7 @@
 		},
 		"machine": {
 			"local": "本机",
+			"offline": "离线",
 			"aria-label": "选择机器"
 		},
 		"char": {
@@ -6352,8 +6363,16 @@
 			"shellDefault": "默认",
 			"send": "发送",
 			"stop": "停止",
-			"hint": "空内容键入 ！/! 切换 shell 模式 · @ 引用文件 · / 命令 · Tab 轮换模式 · Ctrl+Enter 发送",
+			"sendButton": {
+				"aria-label": "发送消息"
+			},
+			"sendAria": "发送消息",
+			"stopAria": "停止生成",
+			"modeSwitched": "已切换到 ${mode} 模式",
+			"hint": "空内容键入 ！/! 执行 shell · @ 引用文件 · / 命令 · Tab 轮换模式 · Ctrl+Enter 发送",
 			"placeholder": "输入命令，Enter 执行（清空退出 shell 模式）",
+			"placeholderNormal": "输入消息开始…（@ 引用文件 · / 命令）",
+			"placeholderShell": "输入 shell 命令…（如 git status）",
 			"aria-label": "消息输入框"
 		},
 		"aiSource": {
@@ -6364,6 +6383,20 @@
 		"commands": {
 			"run": "执行"
 		},
+		"messages": {
+			"backToBottom": "回到最新消息"
+		},
+		"empty": {
+			"noWorkspace": {
+				"title": "选择一个工作区",
+				"description": "在本机或已连接的 subfount 上选择目录作为工作区，AI 将在此目录内读写文件与执行代码。",
+				"action": "选择工作区…"
+			},
+			"noSession": {
+				"title": "开始新的编码会话",
+				"description": "当前角色：${charname}。直接输入消息开始，或在左侧选择历史会话。"
+			}
+		},
 		"error": {
 			"generic": "出错了：${error}",
 			"generate": "生成回复失败",
@@ -6371,7 +6404,9 @@
 			"noChar": "请先选择角色"
 		},
 		"home_function_buttons": {
-			"code": "Code"
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }

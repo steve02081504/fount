@@ -2127,7 +2127,9 @@
 				"aria-label": "🗑️🔖"
 			},
 			"unreadDivider": "🆕💬",
-			"backToFriends": "🔙👫",
+			"backToFriends": {
+				"aria-label": "🔙👫"
+			},
 			"dmTopicsTitle": "#️⃣💬",
 			"participants": "👥🤝",
 			"startChatWith": "💬 ▶️ ${name}",

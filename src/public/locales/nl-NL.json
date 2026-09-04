@@ -2127,7 +2127,9 @@
 				"aria-label": "Bladwijzer verwijderen"
 			},
 			"unreadDivider": "nieuw nieuws",
-			"backToFriends": "Terug naar vrienden",
+			"backToFriends": {
+				"aria-label": "Terug naar vrienden"
+			},
 			"dmTopicsTitle": "Onderwerp",
 			"participants": "Deelnemers",
 			"startChatWith": "💬 Begin met chatten met ${name}",

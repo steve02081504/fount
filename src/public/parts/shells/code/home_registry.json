@@ -5,7 +5,7 @@
 			"info": "code.home_function_buttons.code",
 			"level": 3,
 			"url": "/parts/shells:code/",
-			"button": "<img src=\"https://api.iconify.design/line-md/terminal-box.svg\" class=\"text-icon\"/>"
+			"button": "<img src=\"https://api.iconify.design/mdi/terminal.svg\" class=\"text-icon\"/>"
 		}
 	]
 }

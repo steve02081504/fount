@@ -460,7 +460,7 @@ export async function importAndSetTheme(themeData) {
  * @returns {void}
  */
 function updateColors() {
-	// 使用 getComputedStyle 获取背景颜色的计算值 (即解析 var(--bc))
+	// 使用 getComputedStyle 获取背景颜色的计算值 (即解析 var(--color-base-content))
 	const computedStyle = getComputedStyle(document.documentElement)
 	const bcColor = computedStyle.getPropertyValue('background-color').trim()
 

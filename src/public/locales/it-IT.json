@@ -2127,7 +2127,9 @@
 				"aria-label": "Rimuovi segnalibro"
 			},
 			"unreadDivider": "nuovi messaggi",
-			"backToFriends": "Ritorno agli amici",
+			"backToFriends": {
+				"aria-label": "Ritorno agli amici"
+			},
 			"dmTopicsTitle": "Argomento",
 			"participants": "Partecipanti",
 			"startChatWith": "💬 Inizia a chattare con ${name}",

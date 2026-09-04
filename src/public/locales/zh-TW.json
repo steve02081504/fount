@@ -2126,7 +2126,9 @@
 				"aria-label": "移除書籤"
 			},
 			"unreadDivider": "新訊息",
-			"backToFriends": "返回好友",
+			"backToFriends": {
+				"aria-label": "返回好友"
+			},
 			"dmTopicsTitle": "話題",
 			"participants": "參與者",
 			"startChatWith": "💬 開始與 ${name} 聊天",

@@ -1,27 +1,46 @@
 /**
- * code shell 页面冒烟：加载、下拉与 composer 挂载。
+ * code shell 页面冒烟：加载、pill 选择器、空态引导与 shell 模式。
  */
 import { test, expect } from './fixtures.mjs'
 
 test.describe('code shell smoke', () => {
-	test('page boots with builtin modes and composer', async ({ page, baseUrl }) => {
+	test('page boots with pills and empty-state guidance', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('h1')).toHaveCount(1)
-		await expect(page.locator('#mode-select option')).toContainText(['plan'])
-		await expect(page.locator('#mode-select option')).toContainText(['build'])
-		await expect(page.locator('#machine-select option').first()).toContainText('本机')
-		await expect(page.locator('#send-button')).toHaveText('发送')
-		await expect(page.locator('#ai-source-select option').first()).toHaveText('角色自带')
+		await expect(page.locator('#machine-pill-label')).toContainText('本机')
+		await expect(page.locator('#workspace-pill-label')).toContainText('未选择工作区')
+		await expect(page.locator('#ai-source-pill-label')).toContainText('角色自带')
+		await expect(page.locator('#mode-pill-label')).toContainText('build')
+		await expect(page.locator('#send-button')).toHaveAttribute('aria-label', '发送消息')
+		await expect(page.locator('#send-button svg#send-icon')).toBeVisible()
+		await expect(page.locator('.code-empty-title')).toContainText('选择一个工作区')
+		await expect(page.locator('.code-empty-description')).toBeVisible()
+	})
+
+	test('empty state opens folder browser dialog', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
+		await page.locator('.code-empty button').click()
+		await expect(page.locator('dialog.modal:has(#folder-entries)')).toBeVisible()
+		await expect(page.locator('#folder-path-input')).toBeVisible()
 	})
 
 	test('typing ！ switches to shell mode', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
-		await expect(page.locator('#send-button')).toHaveText('发送')
+		await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
 		const composer = page.locator('#composer-input')
 		await composer.click()
 		await page.keyboard.type('！')
-		await expect(page.locator('#shell-mode-control')).toBeVisible()
+		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
 		await page.keyboard.press('Backspace')
-		await expect(page.locator('#shell-mode-control')).toBeHidden()
+		await expect(page.locator('#shell-pill-wrap')).toBeHidden()
+	})
+
+	test('workspace / machine dropdown menus render', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
+		await page.locator('#workspace-pill').click()
+		await expect(page.locator('#workspace-menu')).toBeVisible()
+		await expect(page.locator('#workspace-menu').getByText('浏览…')).toBeVisible()
+		await page.locator('#machine-pill').click()
+		await expect(page.locator('#machine-menu')).toBeVisible()
 	})
 })

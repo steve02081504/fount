@@ -1,0 +1,13 @@
+<div class="modal-box w-11/12 max-w-2xl">
+	<h2 class="text-lg font-bold" data-i18n="code.workspaces.browse"></h2>
+	<div class="py-2 flex items-center gap-2">
+		<input class="input input-sm flex-1" id="folder-path-input" data-i18n="code.workspaces.path" user-content />
+		<button class="btn btn-sm" id="folder-go-button" data-i18n="code.workspaces.go"></button>
+	</div>
+	<div id="folder-entries" class="border border-base-300 rounded-box h-72 overflow-auto py-1"></div>
+	<div class="modal-action">
+		<form method="dialog"><button class="btn btn-sm" data-i18n="util.common.cancel"></button></form>
+		<button class="btn btn-sm btn-primary" id="folder-select-button" data-i18n="code.workspaces.select"></button>
+	</div>
+</div>
+<form method="dialog" class="modal-backdrop"><button>close</button></form>

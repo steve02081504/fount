@@ -2127,7 +2127,9 @@
 				"aria-label": "Supprimer le favori"
 			},
 			"unreadDivider": "Nouveaux messages",
-			"backToFriends": "Retourner chez des amis",
+			"backToFriends": {
+				"aria-label": "Retourner chez des amis"
+			},
 			"dmTopicsTitle": "Sujet",
 			"participants": "Participants",
 			"startChatWith": "💬 Commencez à discuter avec ${name}",

@@ -2127,7 +2127,9 @@
 				"aria-label": "북마크 삭제"
 			},
 			"unreadDivider": "새로운 소식",
-			"backToFriends": "친구에게 돌아가기",
+			"backToFriends": {
+				"aria-label": "친구에게 돌아가기"
+			},
 			"dmTopicsTitle": "주제",
 			"participants": "참가자들",
 			"startChatWith": "💬 ${name}님과 채팅을 시작하세요",

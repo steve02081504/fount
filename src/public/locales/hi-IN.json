@@ -2127,7 +2127,9 @@
 				"aria-label": "बुकमार्क हटाएँ"
 			},
 			"unreadDivider": "नई खबर",
-			"backToFriends": "दोस्तों के पास लौटें",
+			"backToFriends": {
+				"aria-label": "दोस्तों के पास लौटें"
+			},
 			"dmTopicsTitle": "विषय",
 			"participants": "प्रतिभागियों",
 			"startChatWith": "💬 ${name} से चैट करना प्रारंभ करें",

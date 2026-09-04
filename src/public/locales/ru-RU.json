@@ -2127,7 +2127,9 @@
 				"aria-label": "Удалить закладку"
 			},
 			"unreadDivider": "новые новости",
-			"backToFriends": "Вернуться к друзьям",
+			"backToFriends": {
+				"aria-label": "Вернуться к друзьям"
+			},
 			"dmTopicsTitle": "тема",
 			"participants": "Участники",
 			"startChatWith": "💬 Начните общаться с ${name}",

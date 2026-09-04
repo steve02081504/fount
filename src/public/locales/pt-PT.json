@@ -2127,7 +2127,9 @@
 				"aria-label": "Remover bookmark"
 			},
 			"unreadDivider": "Novas notícias",
-			"backToFriends": "Voltar para amigos",
+			"backToFriends": {
+				"aria-label": "Voltar para amigos"
+			},
 			"dmTopicsTitle": "Tópico",
 			"participants": "Participantes",
 			"startChatWith": "💬 Comece a conversar com ${name}",

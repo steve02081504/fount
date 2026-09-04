@@ -2127,7 +2127,9 @@
 				"aria-label": "Lesezeichen entfernen"
 			},
 			"unreadDivider": "Neue Nachrichten",
-			"backToFriends": "Zurück zu Freunden",
+			"backToFriends": {
+				"aria-label": "Zurück zu Freunden"
+			},
 			"dmTopicsTitle": "Thema",
 			"participants": "Abonnent",
 			"startChatWith": "💬 Beginnen Sie mit ${name} zu chatten",

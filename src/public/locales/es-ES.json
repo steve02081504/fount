@@ -2127,7 +2127,9 @@
 				"aria-label": "Quitar marcador"
 			},
 			"unreadDivider": "mensajes nuevos",
-			"backToFriends": "volver con amigos",
+			"backToFriends": {
+				"aria-label": "volver con amigos"
+			},
 			"dmTopicsTitle": "tema",
 			"participants": "Participantes",
 			"startChatWith": "💬 Empieza a chatear con ${name}",

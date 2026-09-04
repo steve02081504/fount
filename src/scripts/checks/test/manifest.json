@@ -265,6 +265,28 @@
 			]
 		},
 		{
+			"name": "daisyui_var",
+			"expected": "1s",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/daisyui_var.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/daisyui_var.mjs",
+				"src/scripts/checks/test/daisyui_var.test.mjs",
+				"src/scripts/checks/{theme_radius.mjs,walk.mjs}",
+				"src/public/parts/shells/**/public/**/*.{html,mjs,js,css}",
+				"src/public/pages/**/*.{html,mjs,js,css}",
+				".github/pages/**/*.{html,mjs,js,css}"
+			]
+		},
+		{
 			"name": "ms_literal",
 			"expected": "2s",
 			"run": [

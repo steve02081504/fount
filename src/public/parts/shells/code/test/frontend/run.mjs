@@ -15,4 +15,9 @@ process.exit(await runShellFrontendTests({
 	apiKeyPrefix: 'fount-code-fe-key',
 	loadParts: ['shells/code'],
 	bootstrapPath: join(testDir, '../node_bootstrap.mjs'),
+	fixtureCopies: [
+		{ from: join(testDir, 'fixtures/chars/codeBuddy'), to: 'chars/codeBuddy' },
+		{ from: join(testDir, 'fixtures/chars/testAgent'), to: 'chars/testAgent' },
+		{ from: join(testDir, 'fixtures/serviceSources/AI/stubAI'), to: 'serviceSources/AI/stubAI' },
+	],
 }))

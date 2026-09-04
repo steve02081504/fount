@@ -2127,7 +2127,9 @@
 				"aria-label": "ブックマークを削除する"
 			},
 			"unreadDivider": "新しいニュース",
-			"backToFriends": "友達に戻る",
+			"backToFriends": {
+				"aria-label": "友達に戻る"
+			},
 			"dmTopicsTitle": "トピック",
 			"participants": "参加者",
 			"startChatWith": "💬 ${name} とチャットを開始",
@@ -6324,7 +6326,16 @@
 		"description": "ワークスペースとマシンを対象とする AI コーディングセッション。",
 		"sessions": {
 			"new": "新規セッション",
-			"untitled": "無題のセッション"
+			"untitled": "無題のセッション",
+			"panel": {
+				"aria-label": "セッション"
+			},
+			"close": "サイドバーを閉じる",
+			"toggle": "サイドバー",
+			"deleteAria": "セッションを削除",
+			"deleteConfirm": "セッション「${title}」を削除しますか？この操作は元に戻せません。",
+			"empty": "セッションはまだありません",
+			"yesterday": "昨日"
 		},
 		"workspaces": {
 			"manage": "ワークスペース",
@@ -6333,11 +6344,16 @@
 			"none": "ワークスペース未選択",
 			"go": "移動",
 			"select": "選択",
-			"aria-label": "ワークスペースを選択"
+			"aria-label": "ワークスペースを選択",
+			"path": {
+				"aria-label": "ワークスペースのパス",
+				"placeholder": "ディレクトリパス"
+			}
 		},
 		"machine": {
 			"local": "ローカル",
-			"aria-label": "マシンを選択"
+			"aria-label": "マシンを選択",
+			"offline": "オフライン"
 		},
 		"char": {
 			"switch": "キャラクター切替",
@@ -6354,7 +6370,15 @@
 			"stop": "停止",
 			"hint": "空欄で ！/! を入力するとシェルモード · @ でファイル参照 · / でコマンド · Tab でモード切替 · Ctrl+Enter で送信",
 			"placeholder": "コマンドを入力、Enter で実行（空にするとシェルモードを終了）",
-			"aria-label": "メッセージ入力"
+			"aria-label": "メッセージ入力",
+			"sendButton": {
+				"aria-label": "メッセージを送信"
+			},
+			"sendAria": "メッセージを送信",
+			"stopAria": "生成を停止",
+			"modeSwitched": "${mode} モードに切り替えました",
+			"placeholderNormal": "メッセージを入力…（@ でファイル参照、/ でコマンド）",
+			"placeholderShell": "シェルコマンドを入力…（例: git status）"
 		},
 		"aiSource": {
 			"panelTitle": "AI ソース表示管理",
@@ -6371,7 +6395,23 @@
 			"noChar": "先にキャラクターを選択してください"
 		},
 		"home_function_buttons": {
-			"code": "Code"
+			"code": {
+				"title": "Code"
+			}
+		},
+		"messages": {
+			"backToBottom": "最新へ戻る"
+		},
+		"empty": {
+			"noWorkspace": {
+				"title": "ワークスペースを選択",
+				"description": "このマシンまたは接続中の subfount でディレクトリをワークスペースとして選択します。AI はこのディレクトリ内でファイルの読み書きとコード実行を行います。",
+				"action": "ワークスペースを選択…"
+			},
+			"noSession": {
+				"title": "新しいコーディングセッションを開始",
+				"description": "現在のキャラクター：${charname}。メッセージを入力して開始するか、左の履歴セッションを選択してください。"
+			}
 		}
 	}
 }

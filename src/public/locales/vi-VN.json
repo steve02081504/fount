@@ -2127,7 +2127,9 @@
 				"aria-label": "Xóa dấu trang"
 			},
 			"unreadDivider": "tin tức mới",
-			"backToFriends": "Trở lại với bạn bè",
+			"backToFriends": {
+				"aria-label": "Trở lại với bạn bè"
+			},
 			"dmTopicsTitle": "đề tài",
 			"participants": "Người tham gia",
 			"startChatWith": "💬 Bắt đầu trò chuyện với ${name}",

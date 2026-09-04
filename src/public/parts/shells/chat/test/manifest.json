@@ -799,7 +799,7 @@
 			"subtests": [
 				{
 					"name": "smoke",
-					"expected": "1m4s",
+					"expected": "11s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs"
 					]

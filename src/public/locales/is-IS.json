@@ -2127,7 +2127,9 @@
 				"aria-label": "Fjarlægja bókamerki"
 			},
 			"unreadDivider": "Nýjar fréttir",
-			"backToFriends": "Farðu aftur til vina",
+			"backToFriends": {
+				"aria-label": "Farðu aftur til vina"
+			},
 			"dmTopicsTitle": "Umræðuefni",
 			"participants": "Þátttakendur",
 			"startChatWith": "💬 Byrjaðu að Spjall við ${name}",

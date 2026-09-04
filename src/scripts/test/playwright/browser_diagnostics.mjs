@@ -10,6 +10,8 @@ export const PAGE_WATCH_CONSOLE_PREFIX = '[test:'
 
 /** `scripts/i18n` 缺键警告前缀；命中则硬失败（不去重）。 */
 export const I18N_MISSING_PREFIX = '[i18n:missing]'
+/** `scripts/i18n` 子树覆盖（innerHTML/textContent 白名单外元素）警告前缀；命中则硬失败（不去重）。 */
+export const I18N_CLOBBER_PREFIX = '[i18n:clobber]'
 /**
  * 不当噪声的 Chromium 网络错误：
  * - `ERR_BLOCKED_BY_ORB`：跨源无 CORS 时掐掉响应；`<img>` 等展示往往仍正常。
@@ -134,6 +136,15 @@ export function isI18nMissingConsoleText(text) {
 }
 
 /**
+ * 文本是否为 i18n 子树覆盖警告。
+ * @param {string} text console 文本
+ * @returns {boolean} 是否 `[i18n:clobber]`
+ */
+export function isI18nClobberConsoleText(text) {
+	return text.includes(I18N_CLOBBER_PREFIX)
+}
+
+/**
  * 强制跑完 page watch drain（中日英覆盖 + 一轮 a11y）。
  * 未挂载时 `?.()` 立即返回。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
@@ -194,6 +205,7 @@ export function pageErrorFromCdpException(exceptionDetails) {
  *   pageErrors: string[],
  *   pageWatchErrors: string[],
  *   i18nMissingErrors: string[],
+ *   i18nClobberErrors: string[],
  *   flushNetworkDiagnostics: () => BrowserNetworkEntry[],
  * }} 诊断 API
  */
@@ -204,6 +216,8 @@ export function createBrowserDiagnostics() {
 	const pageWatchErrors = []
 	/** @type {string[]} */
 	const i18nMissingErrors = []
+	/** @type {string[]} */
+	const i18nClobberErrors = []
 	/** @type {Map<string, BrowserNetworkEntry>} */
 	const aggregates = new Map()
 
@@ -250,6 +264,7 @@ export function createBrowserDiagnostics() {
 			const text = msg.text()
 			if (isPageWatchConsoleText(text)) pageWatchErrors.push(text)
 			if (isI18nMissingConsoleText(text)) i18nMissingErrors.push(text)
+			if (isI18nClobberConsoleText(text)) i18nClobberErrors.push(text)
 		})
 		page.on('requestfailed', req => {
 			const error = req.failure()?.errorText || null
@@ -290,5 +305,5 @@ export function createBrowserDiagnostics() {
 		return entries
 	}
 
-	return { attach, pageErrors, pageWatchErrors, i18nMissingErrors, flushNetworkDiagnostics }
+	return { attach, pageErrors, pageWatchErrors, i18nMissingErrors, i18nClobberErrors, flushNetworkDiagnostics }
 }
