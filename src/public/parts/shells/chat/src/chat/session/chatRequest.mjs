@@ -40,6 +40,7 @@ import {
 import { chatLogEntry_t } from './models.mjs'
 import { resolveChar, resolveLocalPlugins, resolvePersona, resolveWorld } from './resolvePart.mjs'
 import { getGroupRuntime } from './runtime.mjs'
+import { getScopedCharState } from './scopedState.mjs'
 import { applyPersonaChatLogView, applyWorldChatLogView, resolveViewerRoles } from './viewerLog.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
@@ -175,6 +176,8 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			break
 		}
 
+	const scopedState = await getScopedCharState(replicaUsername, groupId, effectiveChannelId, charname)
+
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const chatReplyRequest = {
 		supported_functions: {
@@ -225,7 +228,8 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		user: playerPart,
 		other_chars,
 		other_personas,
-		chat_scoped_char_memory: charname ? timeSlice.chars_memories[charname] ??= {} : {},
+		chat_scoped_char_memory: scopedState.memory,
+		...scopedState.workdir ? { workdir: scopedState.workdir } : {},
 		plugins: localPlugins,
 		extension: {
 			groupId,

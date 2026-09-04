@@ -48,8 +48,6 @@ export class timeSlice_t {
 	player = BUILTIN_PERSONA
 	/** @type {string} */
 	player_id
-	/** @type {Record<string, any>} */
-	chars_memories = {}
 	/** @type {Record<string, number>} */
 	chars_speaking_frequency = {}
 	/** @type {string} */
@@ -68,9 +66,9 @@ export class timeSlice_t {
 			charname: undefined,
 			playername: undefined,
 			greeting_type: undefined,
+			chars_memories: undefined,
 		})
 		next.chars_speaking_frequency = structuredClone(this.chars_speaking_frequency)
-		next.chars_memories = structuredClone(this.chars_memories)
 		return next
 	}
 
@@ -84,7 +82,6 @@ export class timeSlice_t {
 			plugins: Object.keys(this.plugins),
 			world: this.world_id,
 			player: this.player_id,
-			chars_memories: this.chars_memories,
 			charname: this.charname
 		}
 	}
@@ -99,7 +96,6 @@ export class timeSlice_t {
 			plugins: Object.keys(this.plugins),
 			world: this.world_id,
 			player: this.player_id,
-			chars_memories: this.chars_memories,
 			charname: this.charname
 		}
 	}

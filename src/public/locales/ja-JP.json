@@ -6318,5 +6318,60 @@
 			"failed": "ログイン失敗：${message}",
 			"missingParams": "コールバックに code または state がありません。"
 		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "ワークスペースとマシンを対象とする AI コーディングセッション。",
+		"sessions": {
+			"new": "新規セッション",
+			"untitled": "無題のセッション"
+		},
+		"workspaces": {
+			"manage": "ワークスペース",
+			"browse": "参照…",
+			"remove": "現在のワークスペースを削除",
+			"none": "ワークスペース未選択",
+			"go": "移動",
+			"select": "選択",
+			"aria-label": "ワークスペースを選択"
+		},
+		"machine": {
+			"local": "ローカル",
+			"aria-label": "マシンを選択"
+		},
+		"char": {
+			"switch": "キャラクター切替",
+			"settings": "キャラクター設定",
+			"goodAgent": "良い agent の書き方",
+			"none": "キャラクター未選択"
+		},
+		"composer": {
+			"mode": "モード",
+			"aiSource": "AI ソース",
+			"shell": "Shell",
+			"shellDefault": "デフォルト",
+			"send": "送信",
+			"stop": "停止",
+			"hint": "空欄で ！/! を入力するとシェルモード · @ でファイル参照 · / でコマンド · Tab でモード切替 · Ctrl+Enter で送信",
+			"placeholder": "コマンドを入力、Enter で実行（空にするとシェルモードを終了）",
+			"aria-label": "メッセージ入力"
+		},
+		"aiSource": {
+			"panelTitle": "AI ソース表示管理",
+			"charOwn": "キャラクター既定",
+			"manage": "AI ソース管理…"
+		},
+		"commands": {
+			"run": "実行"
+		},
+		"error": {
+			"generic": "エラーが発生しました：${error}",
+			"generate": "返信の生成に失敗しました",
+			"aborted": "生成を中止しました",
+			"noChar": "先にキャラクターを選択してください"
+		},
+		"home_function_buttons": {
+			"code": "Code"
+		}
 	}
 }

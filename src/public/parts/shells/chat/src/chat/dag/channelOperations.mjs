@@ -131,6 +131,8 @@ export async function updateChannel(username, groupId, channelId, patch = {}) {
  * @returns {Promise<object>} 签名事件
  */
 export async function deleteChannel(username, groupId, channelId) {
+	const { clearScopedState } = await import('../session/scopedState.mjs')
+	await clearScopedState(username, groupId, channelId)
 	return appendSignedLocalEvent(username, groupId, {
 		type: 'channel_delete',
 		timestamp: Date.now(),

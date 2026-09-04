@@ -1,0 +1,30 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Code",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "AI coding sessions with workspace and machine targeting.",
+			"description_markdown": "An opencode-style AI coding workspace: chat with any character over your projects, run code and edit files on the local machine or connected subfounts.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"code",
+				"agent",
+				"developer"
+			]
+		},
+		"zh-CN": {
+			"name": "Code",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "面向工作区与机器的 AI 编码会话。",
+			"description_markdown": "opencode 风格的 AI 编码工作区：与任意角色就你的项目对话，在本机或已连接的 subfount 上执行代码与读写文件。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"编码",
+				"agent",
+				"开发者"
+			]
+		}
+	}
+}

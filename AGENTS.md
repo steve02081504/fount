@@ -15,6 +15,7 @@
 - **APIs/Types**: `@src/decl/` (`CharAPI_t` → `charAPI.ts`). Consult for required methods.
 - **Key structs**: `prompt_struct_t` (`@src/decl/prompt_struct.ts`), `chatMetadata_t` (`@src/public/parts/shells/chat/src/chat/session/models.mjs`).
 - **Registries**: `fount.json` → `registries: [{ id, level, path }]`; `GET /api/registries/:name`; helpers: `@src/server/registries.mjs` (backend), `@src/public/pages/scripts/endpoints/registries.mjs` (frontend).
+- **Shell data**: `saveShellData(username, shell, name)` has no value param — it persists the in-memory cache entry. Mutate the object returned by `loadShellData` before saving, or use `assignShellData(username, shell, name, value)` to set it in one step.
 - **Service sources**: types under `serviceSources/{AI,search,translate,SpeechRecognition}/` + generators under `serviceGenerators/...`. `SpeechRecognitionSource_t.Recognize({ audio | feed, onResult })` — stream-first feed, buffer convenience.
 
 ## Dev Guidelines

@@ -89,6 +89,15 @@ export default {
 			ReplyHandler: fileOperationsReplyHandler,
 			GetReplyPreviewUpdater: defineToolUseBlocks([
 				{
+					start: '<list-machines>',
+					end: '</list-machines>',
+					/**
+					 * 渲染待执行的 `<list-machines>` 占位。
+					 * @returns {string} 占位文本。
+					 */
+					renderPending: () => '`list-machines`',
+				},
+				{
 					start: '<view-file>',
 					end: '</view-file>',
 					renderPending: renderViewFileBlock,

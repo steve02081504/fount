@@ -1,0 +1,67 @@
+{
+	"id": "shells/code",
+	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
+		],
+		"shellBackend": [
+			"src/public/parts/shells/code/src/**",
+			"src/public/parts/shells/code/{main.mjs,fount.json,locales.json,home_registry.json}",
+			"src/public/parts/plugins/file-operations/{handler.mjs,prompt.mjs,src/**}",
+			"src/public/parts/plugins/code-execution/{handler.mjs,prompt.mjs}",
+			"src/public/parts/shells/chat/src/streaming/toolBlocks.mjs",
+			"src/public/parts/shells/easynew/parts/easychar/template/main.mjs",
+			"src/public/parts/ImportHandlers/SillyTavern/Template/main.mjs",
+			"src/scripts/test/shellLoadProbe.mjs"
+		],
+		"shellIntegrationTests": [
+			"src/public/parts/shells/code/test/integration/**"
+		],
+		"frontendShared": [
+			"src/public/parts/shells/code/public/**",
+			"src/public/parts/shells/code/test/frontend/**",
+			"src/public/pages/scripts/test/**"
+		]
+	},
+	"suites": [
+		{
+			"name": "integration",
+			"expected": "2m",
+			"dependsOn": [
+				"server:live"
+			],
+			"trigger": [
+				"shellBackend",
+				"shellIntegrationTests",
+				"testFramework"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/code/test/integration/"
+			]
+		},
+		{
+			"name": "frontend",
+			"expected": "37s",
+			"dependsOn": [
+				"server:live"
+			],
+			"trigger": "frontendShared",
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/code/test/frontend/run.mjs"
+			]
+		}
+	]
+}

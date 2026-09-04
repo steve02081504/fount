@@ -8,6 +8,22 @@ import { async_eval } from 'npm:@steve02081504/async-eval'
 import { available, shell_exec_map } from 'npm:@steve02081504/exec'
 
 import { getChatI18n, renderMarkdownCodeBlock, renderMarkdownInlineCode, defineInlineToolUses, defineToolUseBlocks } from '../../shells/chat/src/streaming/index.mjs'
+import { createArgsExecutorResolver, parseTagAttrs, resolveTarget } from '../file-operations/src/target.mjs'
+
+/**
+ * 按预览参数缓存执行器解析器（GetCodeExecutionPreviewUpdater 流式内联执行用）。
+ * @type {WeakMap<object, ReturnType<typeof createArgsExecutorResolver>>}
+ */
+const previewExecutorResolvers = new WeakMap()
+
+/**
+ * 判断标签属性是否显式指定了目标（machine / workdir）。
+ * @param {Record<string, string>} attrs - 标签属性表。
+ * @returns {boolean} 是否显式指定。
+ */
+function hasExplicitTarget(attrs) {
+	return 'machine' in attrs || 'workdir' in attrs
+}
 
 /**
  * 带语法高亮地将代码输出到控制台，失败时静默降级为普通输出。
@@ -154,6 +170,7 @@ ${code}
  */
 export async function codeExecutionReplyHandler(result, args) {
 	const { AddLongTimeLog } = args
+	const executorFor = createArgsExecutorResolver(args)
 
 	result.extension ??= {}
 	result.extension.execed_codes ??= {}
@@ -268,13 +285,13 @@ export async function codeExecutionReplyHandler(result, args) {
 	const { content } = result
 	// 将 run-* 作为步骤，按在 content 中的出现顺序排列
 	const steps = []
-	for (const m of content.matchAll(/<run-js>(?<code>[^]*?)<\/run-js>/g))
-		steps.push({ index: m.index, type: 'run', runType: 'js', code: m.groups.code, fullText: m[0] })
+	for (const m of content.matchAll(/<run-js(?<attrs>[^>]*)>(?<code>[^]*?)<\/run-js>/g))
+		steps.push({ index: m.index, type: 'run', runType: 'js', code: m.groups.code, attrs: m.groups.attrs, fullText: m[0] })
 	for (const shell_name in shell_exec_map) {
 		if (!available[shell_name]) continue
-		const re = new RegExp(`<run-${shell_name}>(?<code>[^]*?)<\\/run-${shell_name}>`, 'g')
+		const re = new RegExp(`<run-${shell_name}(?<attrs>[^>]*)>(?<code>[^]*?)<\\/run-${shell_name}>`, 'g')
 		for (const m of content.matchAll(re))
-			steps.push({ index: m.index, type: 'run', runType: shell_name, code: m.groups.code, fullText: m[0] })
+			steps.push({ index: m.index, type: 'run', runType: shell_name, code: m.groups.code, attrs: m.groups.attrs, fullText: m[0] })
 	}
 	steps.sort((a, b) => a.index - b.index)
 
@@ -297,7 +314,12 @@ export async function codeExecutionReplyHandler(result, args) {
 		}
 		if (step.runType === 'js') {
 			await logCode(`${args.Charname} running JS code:`, step.code, 'js')
-			const coderesult = await run_jscode_for_AI(step.code)
+			// 显式指定目标或请求级目标为远程机器时走执行器（无本地聊天上下文）
+			const attrs = parseTagAttrs(step.attrs)
+			const target = resolveTarget(args, attrs)
+			const coderesult = target.remote || hasExplicitTarget(attrs)
+				? await executorFor(step.attrs).execJs(step.code)
+				: await run_jscode_for_AI(step.code)
 			console.info(`${args.Charname} JS result:`, coderesult)
 			toolEntry.content = '执行结果：\n' + util.inspect(coderesult, { depth: 4 })
 			result.extension.execed_codes[step.code] = coderesult
@@ -306,7 +328,7 @@ export async function codeExecutionReplyHandler(result, args) {
 			const shell_name = step.runType
 			await logCode(`${args.Charname} running ${shell_name} code:`, step.code, shell_name)
 			let shell_result
-			try { shell_result = await shell_exec_map[shell_name](step.code, { no_ansi_terminal_sequences: true }) } catch (err) { shell_result = err }
+			try { shell_result = await executorFor(step.attrs).execShell(shell_name, step.code) } catch (err) { shell_result = err }
 			result.extension.execed_codes[step.code] = shell_result
 			if (shell_result.stdall)
 				for (const key of ['stdout', 'stderr'])
@@ -320,7 +342,7 @@ export async function codeExecutionReplyHandler(result, args) {
 
 	// inline js code
 	// 这个和其他的不一样，我们需要执行js代码并将结果以string替换代码块
-	if (content.match(/<inline-js>[^]*?<\/inline-js>/)) try {
+	if (content.match(/<inline-js[^>]*>[^]*?<\/inline-js>/)) try {
 		const original = result.content
 		const cachedResults = args.extension?.streamInlineToolsResults?.['inline-js']
 
@@ -333,11 +355,15 @@ export async function codeExecutionReplyHandler(result, args) {
 		else
 			// 古法计算
 			replacements = await Promise.all(
-				Array.from(content.matchAll(/<inline-js>(?<code>[^]*?)<\/inline-js>/g))
+				Array.from(content.matchAll(/<inline-js(?<attrs>[^>]*)>(?<code>[^]*?)<\/inline-js>/g))
 					.map(async match => {
 						const jsrunner = match.groups.code
 						await logCode(`${args.Charname} running inline JS code:`, jsrunner, 'js')
-						const coderesult = await run_jscode_for_AI(jsrunner)
+						const attrs = parseTagAttrs(match.groups.attrs)
+						const target = resolveTarget(args, attrs)
+						const coderesult = target.remote || hasExplicitTarget(attrs)
+							? await executorFor(match.groups.attrs).execJs(jsrunner)
+							: await run_jscode_for_AI(jsrunner)
 						console.info(`${args.Charname} inline JS result:`, coderesult)
 						if (coderesult.error) throw coderesult.error
 						return coderesult.result + ''
@@ -359,7 +385,7 @@ export async function codeExecutionReplyHandler(result, args) {
 			files: [],
 			charVisibility: [args.char_id],
 		})
-		result.content = result.content.replace(/<inline-js>(?<code>[^]*?)<\/inline-js>/g, () => replacements[i++])
+		result.content = result.content.replace(/<inline-js[^>]*>(?<code>[^]*?)<\/inline-js>/g, () => replacements[i++])
 	}
 	catch (error) {
 		console.error('内联js代码执行失败：', error)
@@ -380,7 +406,7 @@ export async function codeExecutionReplyHandler(result, args) {
 
 	for (const shell_name in shell_exec_map) {
 		if (!available[shell_name]) continue
-		const runner_regex = new RegExp(`<inline-${shell_name}>[^]*?<\\/inline-${shell_name}>`)
+		const runner_regex = new RegExp(`<inline-${shell_name}[^>]*>[^]*?<\\/inline-${shell_name}>`)
 		if (content.match(runner_regex)) try {
 			const original = result.content
 			const cachedResults = args.extension?.streamInlineToolsResults?.[`inline-${shell_name}`]
@@ -393,7 +419,7 @@ export async function codeExecutionReplyHandler(result, args) {
 				}))
 			else {
 				// 古法计算
-				const runner_regex_g = new RegExp(`<inline-${shell_name}>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
+				const runner_regex_g = new RegExp(`<inline-${shell_name}(?<attrs>[^>]*)>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
 				replacements = await Promise.all(
 					Array.from(content.matchAll(runner_regex_g))
 						.map(async match => {
@@ -401,7 +427,7 @@ export async function codeExecutionReplyHandler(result, args) {
 							await logCode(`${args.Charname} running inline ${shell_name} code:`, runner, shell_name)
 							let shell_result
 							try {
-								shell_result = await shell_exec_map[shell_name](runner, { no_ansi_terminal_sequences: true })
+								shell_result = await executorFor(match.groups.attrs).execShell(shell_name, runner)
 							} catch (err) {
 								shell_result = err
 							}
@@ -431,7 +457,7 @@ export async function codeExecutionReplyHandler(result, args) {
 				files: [],
 				charVisibility: [args.char_id],
 			})
-			const runner_regex_g = new RegExp(`<inline-${shell_name}>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
+			const runner_regex_g = new RegExp(`<inline-${shell_name}[^>]*>(?<code>[^]*?)<\\/inline-${shell_name}>`, 'g')
 			result.content = result.content.replace(runner_regex_g, () => replacements[i++])
 		}
 		catch (error) {
@@ -488,15 +514,23 @@ export function GetCodeExecutionPreviewUpdater(next) {
 	}
 
 	const toolDefs = [
-		['inline-js', '<inline-js>', '</inline-js>', async (code) => {
-			const coderesult = await async_eval(code, {})
+		['inline-js', /<inline-js[^>]*>/, '</inline-js>', async (code, previewArgs, meta) => {
+			const attrs = parseTagAttrs(meta?.match?.groups?.attrs)
+			const target = resolveTarget(previewArgs, attrs)
+			let coderesult
+			if (target.remote || hasExplicitTarget(attrs)) {
+				const resolver = previewExecutorResolvers.get(previewArgs) ?? previewExecutorResolvers.set(previewArgs, createArgsExecutorResolver(previewArgs)).get(previewArgs)
+				coderesult = await resolver(attrs).execJs(code)
+			}
+			else
+				coderesult = await async_eval(code, {})
 			if (coderesult.error) throw coderesult.error
 			return coderesult.result + ''
 		}, renderInlineJsPending]
 	]
 	const runBlocks = [
 		{
-			start: '<run-js>',
+			start: /<run-js[^>]*>/,
 			end: '</run-js>',
 			/**
 			 * 渲染 `<run-js>` 未闭合或待执行内容。
@@ -523,7 +557,7 @@ export function GetCodeExecutionPreviewUpdater(next) {
 			return renderMarkdownInlineCode(code, shell_name)
 		}
 		runBlocks.push({
-			start: `<run-${shell_name}>`,
+			start: new RegExp(`<run-${shell_name}[^>]*>`),
 			end: `</run-${shell_name}>`,
 			/**
 			 * 渲染 `<run-*>` shell 块未闭合或待执行内容。
@@ -535,12 +569,14 @@ export function GetCodeExecutionPreviewUpdater(next) {
 		})
 		toolDefs.push([
 			`inline-${shell_name}`,
-			`<inline-${shell_name}>`,
+			new RegExp(`<inline-${shell_name}[^>]*>`),
 			`</inline-${shell_name}>`,
-			async (code) => {
+			async (code, previewArgs, meta) => {
+				const attrs = parseTagAttrs(meta?.match?.groups?.attrs)
+				const resolver = previewExecutorResolvers.get(previewArgs) ?? previewExecutorResolvers.set(previewArgs, createArgsExecutorResolver(previewArgs)).get(previewArgs)
 				let shell_result
 				try {
-					shell_result = await shell_exec_map[shell_name](code, { no_ansi_terminal_sequences: true })
+					shell_result = await resolver(attrs).execShell(shell_name, code)
 				} catch (err) {
 					shell_result = err
 				}

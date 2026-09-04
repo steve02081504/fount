@@ -54,6 +54,7 @@ import {
 import { resolveChar, resolveWorld } from './resolvePart.mjs'
 import { invokeGroupRpc } from './rpcInvoke.mjs'
 import { getCharBind, getGroupRuntime, isLocalNode } from './runtime.mjs'
+import { saveScopedMemory, saveScopedWorkdir } from './scopedState.mjs'
 import { buildSerializableRequest } from './serializableRequest.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
@@ -321,6 +322,13 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		}
 	}
 	finally {
+		// 快照私域对象（memory / workdir 为就地 mutate 的共享引用），本地持久化；无值不落盘。
+		if (request.chat_scoped_char_memory !== undefined)
+			void saveScopedMemory(chatMetadata.username, groupId, channelForStream, request.char_id, request.chat_scoped_char_memory)
+				.catch(console.error)
+		if (request.workdir !== undefined)
+			void saveScopedWorkdir(chatMetadata.username, groupId, channelForStream, request.char_id, request.workdir)
+				.catch(console.error)
 		charReplyInFlight.delete(charReplyFlightKey(
 			groupId,
 			placeholderEntry.extension?.chat?.channelId || channelForStream,

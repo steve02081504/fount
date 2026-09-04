@@ -1,0 +1,229 @@
+/* code shell 布局：左会话栏 / 主区（顶栏 / 消息流 / composer） */
+/* daisyui 主题变量的同源 fallback（正常由 data-theme 提供；缺失时兜底亮色值） */
+:root {
+	--b1: 100% 0 0;
+	--b2: 96% 0.001 286;
+	--b3: 92% 0.002 286;
+	--bc: 21% 0.006 286;
+	--p: 58.2% 0.1612 17.9;
+	--wa: 80.8% 0.114 19.57;
+}
+
+.code-layout {
+	display: flex;
+	height: 100dvh;
+	width: 100%;
+	overflow: hidden;
+}
+
+.code-sessions {
+	display: flex;
+	flex-direction: column;
+	width: 15rem;
+	flex-shrink: 0;
+	border-right: var(--border) solid oklch(var(--bc) / 0.12);
+	background: oklch(var(--b2) / 0.5);
+}
+
+.code-sessions-head {
+	padding: 0.75rem;
+}
+
+.code-sessions-list {
+	flex: 1;
+	overflow-y: auto;
+	padding: 0 0.5rem 0.75rem;
+}
+
+.code-session-item {
+	display: block;
+	width: 100%;
+	text-align: left;
+	border-radius: var(--radius-field);
+	padding: 0.5rem 0.625rem;
+	cursor: pointer;
+	font-size: 0.8125rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.code-session-item:hover {
+	background: oklch(var(--b3) / 0.9);
+}
+
+.code-session-item.active {
+	background: oklch(var(--p) / 0.15);
+	font-weight: 600;
+}
+
+.code-main {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+}
+
+.code-topbar {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 0.75rem;
+	border-bottom: var(--border) solid oklch(var(--bc) / 0.12);
+}
+
+.code-messages {
+	flex: 1;
+	overflow-y: auto;
+	padding: 1rem 1.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.code-message {
+	max-width: 52rem;
+	width: 100%;
+	margin: 0 auto;
+	border-radius: var(--radius-box);
+	padding: 0.5rem 0.875rem;
+	font-size: 0.9375rem;
+}
+
+.code-message.role-user {
+	background: oklch(var(--p) / 0.12);
+	align-self: flex-end;
+	max-width: 80%;
+}
+
+.code-message.role-char {
+	background: oklch(var(--b2) / 0.8);
+}
+
+.code-message.role-tool,
+.code-message.role-system {
+	background: oklch(var(--b3) / 0.7);
+	font-size: 0.8125rem;
+}
+
+.code-message .code-message-name {
+	font-size: 0.75rem;
+	opacity: 0.6;
+	margin-bottom: 0.25rem;
+}
+
+.code-message.generating {
+	opacity: 0.85;
+}
+
+details.code-tool-log > summary {
+	cursor: pointer;
+	font-size: 0.75rem;
+	opacity: 0.65;
+	list-style: none;
+}
+
+details.code-tool-log[open] > summary {
+	margin-bottom: 0.35rem;
+}
+
+.code-composer {
+	padding: 0 1.25rem 0.75rem;
+}
+
+.code-composer-shell {
+	max-width: 52rem;
+	width: 100%;
+	margin: 0 auto;
+	border: var(--border) solid oklch(var(--bc) / 0.2);
+	border-radius: var(--radius-box);
+	background: oklch(var(--b1) / 0.95);
+	padding: 0.5rem 0.75rem;
+}
+
+.code-composer-shell.shell-mode {
+	border-color: oklch(var(--wa) / 0.7);
+}
+
+.code-composer-input {
+	min-height: 2.25rem;
+	max-height: 12rem;
+	overflow-y: auto;
+}
+
+.code-composer-controls {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-top: 0.375rem;
+}
+
+.code-control {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	font-size: 0.75rem;
+	opacity: 0.85;
+}
+
+.code-composer-hint {
+	max-width: 52rem;
+	margin: 0.25rem auto 0;
+	font-size: 0.6875rem;
+	opacity: 0.45;
+	text-align: center;
+}
+
+.code-folder-entry {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+	text-align: left;
+	padding: 0.375rem 0.75rem;
+	cursor: pointer;
+	font-size: 0.875rem;
+}
+
+.code-folder-entry:hover {
+	background: oklch(var(--b3) / 0.9);
+}
+
+.ai-source-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.25rem 0;
+}
+
+.char-option {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+	padding: 0.375rem 0.5rem;
+	cursor: pointer;
+	border-radius: var(--radius-field);
+}
+
+.char-option:hover {
+	background: oklch(var(--b3) / 0.9);
+}
+
+.char-option.active {
+	font-weight: 600;
+}
+
+@media (max-width: 768px) {
+	.code-sessions {
+		position: absolute;
+		z-index: 40;
+		height: 100dvh;
+		transform: translateX(-100%);
+		transition: transform 0.2s;
+	}
+
+	.code-sessions.open {
+		transform: translateX(0);
+	}
+}

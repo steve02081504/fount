@@ -66,6 +66,8 @@ return Array.from({ length: 201 }, (_, i) => toEnglishWord(i)).join(', ')
 - 在解决简单问题时使用<inline-js>，并使用大数类型。
 - 在解决复杂数学相关问题时使用<run-js>。
 - 在操作电脑、查看文件、更改设置、播放音乐时使用<run-${defaultShell}>。
+- 所有run-*/inline-*标签都支持可选属性machine="机器id"与workdir="目录"来指定目标机器和工作目录，如<run-pwsh machine="1" workdir="D:\\proj">；未指定时使用请求的默认目标，workdir相对路径基于默认工作目录解析。
+- 远程机器上的js代码没有workspace/chat_log/callback等本地上下文，需要这些能力时请在本机执行。
 - 尽量不要直接删除文件/文件夹，作为替代，考虑移动到回收站。
   * 尤其软件文件夹很可能有用户数据在其中，删除前至少通过命令检查下文件夹架构。
 - 覆写数据时也一样，在用程序删除部分数据或覆写可能的重要文件时考虑进行原文件的备份，以防误操作。

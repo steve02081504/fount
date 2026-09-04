@@ -197,7 +197,9 @@ export default {
 			 * @param {chatReplyRequest_t} args 参数
 			 */
 			GetReply: async args => {
-				if (!AIsource) return { content: getLocale(args.locales, 'noAISourceFeedback') }
+				// 请求级 AI 源覆盖：args.ai_source 已是实例化部件，有值则优先使用
+				const activeSource = args.ai_source || AIsource
+				if (!activeSource) return { content: getLocale(args.locales, 'noAISourceFeedback') }
 				// 注入角色插件
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				// 用fount提供的工具构建提示词结构
@@ -254,7 +256,7 @@ export default {
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
 					args.generation_options.base_result = result
-					await AIsource.StructCall(prompt_struct, args.generation_options)
+					await activeSource.StructCall(prompt_struct, args.generation_options)
 					let continue_regen = false
 					for (const replyHandler of [
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)

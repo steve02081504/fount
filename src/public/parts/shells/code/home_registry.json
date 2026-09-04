@@ -1,0 +1,11 @@
+{
+	"home_function_buttons": [
+		{
+			"id": "code",
+			"info": "code.home_function_buttons.code",
+			"level": 3,
+			"url": "/parts/shells:code/",
+			"button": "<img src=\"https://api.iconify.design/line-md/terminal-box.svg\" class=\"text-icon\"/>"
+		}
+	]
+}

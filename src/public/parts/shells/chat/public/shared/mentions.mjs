@@ -1,6 +1,6 @@
 /** 提及解析（chat/social 共用；浏览器 / Deno / Node 均可加载）。 */
-import { parseInlineTokens } from './inlineTokens.mjs'
 import { escapeHtml } from './escapeHtml.mjs'
+import { parseInlineTokens } from './inlineTokens.mjs'
 
 /**
  * @param {string} label 提及展示名（displayName / 角色名）

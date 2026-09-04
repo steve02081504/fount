@@ -33,8 +33,14 @@ export async function getFileOperationsPrompt(args) {
 文件的新内容
 </override-file>
 
+**列出可用机器**：
+<list-machines></list-machines>
+
 **注意事项**：
-- 文件路径可以是相对路径或绝对路径
+- 文件路径可以是相对路径或绝对路径；相对路径基于当前请求的默认工作目录（args.workdir）解析
+- 所有标签都支持可选属性 machine="机器id" 与 workdir="目录" 以指定目标机器和工作目录；未指定时使用请求默认值，workdir 相对路径基于默认工作目录解析
+- 机器 id "0" 为本机；需要确认可用的目标机器（id、备注、系统信息）时，使用 <list-machines> 查询
+- 读取文件时会自动向上查找并加载各级 AGENTS.md，以及触发（yaml 头 glob 匹配）的 .agents/docs/*.md 文档
 - 使用 <replace-file> 时，可以指定多个 <replacement> 块
 - 设置 regex="true" 可以使用正则表达式进行搜索替换
 - 文本文件会直接显示内容，二进制文件会作为附件提供

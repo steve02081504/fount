@@ -93,13 +93,13 @@ export function defineInlineToolUses(toolDefs) {
 			const cache = cacheMap[id] ??= []
 			const startPattern = start instanceof RegExp ? start.source : escapeRegExp(start)
 			const endPattern = end instanceof RegExp ? end.source : escapeRegExp(end)
-			const completeRegex = new RegExp(`(?:${startPattern})([\\s\\S]*?)(?:${endPattern})`, 'g')
+			const completeRegex = new RegExp(`(?<fountInlineStart>${startPattern})(?<fountInlineContent>[\\s\\S]*?)(?:${endPattern})`, 'g')
 			const matches = [...reply.content.matchAll(completeRegex)]
 
 			for (let index = 0; index < matches.length; index++) {
-				const matchedContent = matches[index][1]
+				const matchedContent = matches[index].groups.fountInlineContent
 				if (!(index in cache)) cache[index] = (async () => {
-					try { return cache[index] = await exec(matchedContent, args) }
+					try { return cache[index] = await exec(matchedContent, args, { match: matches[index] }) }
 					catch (error) { cache[index] = error }
 				})()
 			}
@@ -107,8 +107,9 @@ export function defineInlineToolUses(toolDefs) {
 
 			let matchIndex = 0
 			const pendingRenderer = renderPending || ((...pendingArgs) => renderToolCallingPlaceholder(pendingArgs[1]))
-			display = display.replace(completeRegex, (_, matchedContent) => {
+			display = display.replace(completeRegex, (...replaceArgs) => {
 				const item = cache[matchIndex++]
+				const matchedContent = replaceArgs.at(-1).groups.fountInlineContent
 				if (item instanceof Promise) return pendingRenderer(matchedContent, args)
 				if (item instanceof Error) return `[Error: ${item.message}]`
 				return String(item)

@@ -6318,5 +6318,60 @@
 			"failed": "登录失败：${message}",
 			"missingParams": "回调缺少 code 或 state。"
 		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "面向工作区与机器的 AI 编码会话。",
+		"sessions": {
+			"new": "新会话",
+			"untitled": "未命名会话"
+		},
+		"workspaces": {
+			"manage": "工作区",
+			"browse": "浏览…",
+			"remove": "移除当前工作区",
+			"none": "未选择工作区",
+			"go": "跳转",
+			"select": "选择工作区",
+			"aria-label": "选择工作区"
+		},
+		"machine": {
+			"local": "本机",
+			"aria-label": "选择机器"
+		},
+		"char": {
+			"switch": "切换角色",
+			"settings": "角色设置",
+			"goodAgent": "如何写一个好 agent？",
+			"none": "未选择角色"
+		},
+		"composer": {
+			"mode": "模式",
+			"aiSource": "AI 源",
+			"shell": "Shell",
+			"shellDefault": "默认",
+			"send": "发送",
+			"stop": "停止",
+			"hint": "空内容键入 ！/! 切换 shell 模式 · @ 引用文件 · / 命令 · Tab 轮换模式 · Ctrl+Enter 发送",
+			"placeholder": "输入命令，Enter 执行（清空退出 shell 模式）",
+			"aria-label": "消息输入框"
+		},
+		"aiSource": {
+			"panelTitle": "管理 AI 源显示",
+			"charOwn": "角色自带",
+			"manage": "管理 AI 源…"
+		},
+		"commands": {
+			"run": "执行"
+		},
+		"error": {
+			"generic": "出错了：${error}",
+			"generate": "生成回复失败",
+			"aborted": "已中止生成",
+			"noChar": "请先选择角色"
+		},
+		"home_function_buttons": {
+			"code": "Code"
+		}
 	}
 }

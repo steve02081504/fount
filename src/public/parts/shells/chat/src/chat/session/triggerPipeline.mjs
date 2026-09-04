@@ -1,8 +1,8 @@
 import { memberEntityHash } from '../../entity/member.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
-import { getLocalNodeHash } from '../lib/replica.mjs'
 import { groupKindFromState } from '../lib/notificationPreferences.mjs'
+import { getLocalNodeHash } from '../lib/replica.mjs'
 
 import { dispatchCharError } from './charError.mjs'
 import { getCharListOfGroup } from './partConfig.mjs'

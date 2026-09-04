@@ -1,26 +1,20 @@
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
-import os from 'node:os'
 import path from 'node:path'
-import process from 'node:process'
 
 import { escapeRegExp, parseRegexFromString } from '../../../../scripts/regex.mjs'
 
+import { collectUpwardContext, formatUpwardContext } from './src/context_files.mjs'
+import { createTargetExecutor, parseTagAttrs, resolveLocalPath, resolveTarget } from './src/target.mjs'
+
 /**
- * 解析相对路径，支持 `~` (home) 和 MSYS 风格的路径。
- * @param {string} relativePath - 要解析的相对路径。
- * @returns {string} - 解析后的绝对路径。
+ * 判定 buffer 是否大致为文本（前 8KB 无 NUL 字节）。
+ * @param {Buffer} buffer - 文件内容。
+ * @returns {boolean} 是否文本。
  */
-function resolvePath(relativePath) {
-	if (relativePath.startsWith('~'))
-		return path.resolve(path.join(os.homedir(), relativePath.slice(1)))
-	const msys_path = process.env.MSYS_ROOT_PATH
-	if (msys_path && relativePath.startsWith('/')) {
-		if (relativePath.match(/^\/[A-Za-z]\//))
-			return path.resolve(path.join(relativePath.slice(1, 2).toUpperCase() + ':\\', relativePath.slice(3)))
-		return path.resolve(path.join(msys_path, relativePath))
-	}
-	return path.resolve(relativePath)
+function looksLikeText(buffer) {
+	const sample = buffer.subarray(0, 8192)
+	return !sample.includes(0)
 }
 
 /**
@@ -39,7 +33,7 @@ async function getFileObjFormPathOrUrl(pathOrUrl) {
 		return { name, buffer, mime_type }
 	}
 	else {
-		const filePath = resolvePath(pathOrUrl)
+		const filePath = resolveLocalPath(pathOrUrl)
 		const buffer = fs.readFileSync(filePath)
 		const name = path.basename(filePath)
 		const mime_type = 'application/octet-stream' // 简化版本，不检测 MIME 类型
@@ -61,6 +55,21 @@ async function getFileObjFormPathOrUrl(pathOrUrl) {
  */
 export async function fileOperationsReplyHandler(result, args) {
 	const { AddLongTimeLog, Charname } = args
+	/** @type {Map<string, ReturnType<typeof createTargetExecutor>>} */
+	const executors = new Map()
+
+	/**
+	 * 按标签属性解析目标执行器（缺省读 args.workdir）。
+	 * @param {string|undefined} attrs - 标签属性串。
+	 * @returns {{executor: ReturnType<typeof createTargetExecutor>, target: ReturnType<typeof resolveTarget>}} 执行器与目标。
+	 */
+	function executorFor(attrs) {
+		const target = resolveTarget(args, parseTagAttrs(attrs))
+		const key = target.machine + '|' + (target.workdir || '')
+		if (!executors.has(key))
+			executors.set(key, createTargetExecutor(args.username, target))
+		return { executor: executors.get(key), target }
+	}
 
 	const { content } = result
 	let regen = false
@@ -71,11 +80,21 @@ export async function fileOperationsReplyHandler(result, args) {
 		files: [],
 	}
 
-	const view_files_matches = [...content.matchAll(/<view-file>(?<paths>[^]*?)<\/view-file>/g)]
+	const list_machines_matches = [...content.matchAll(/<list-machines(?<attrs>[^>]*)>(?<content>[^]*?)<\/list-machines>/g)]
+	if (list_machines_matches.length) {
+		const { listMachines } = await import('./src/target.mjs')
+		const machines = await listMachines(args.username)
+		const content = '可用机器列表：\n```json\n' + JSON.stringify(machines, null, 2) + '\n```'
+		AddLongTimeLog({ name: 'file-operations', role: 'tool', content, files: [] })
+		regen = true
+	}
+
+	const view_files_matches = [...content.matchAll(/<view-file(?<attrs>[^>]*)>(?<paths>[^]*?)<\/view-file>/g)]
 	if (view_files_matches.length) {
+		const attrs = view_files_matches[0].groups.attrs
 		const paths = view_files_matches.flatMap(match => match.groups.paths.split('\n').map(p => p.trim()).filter(path => path))
 		if (paths.length) {
-			const logContent = '<view-file>\n' + paths.join('\n') + '\n</view-file>\n'
+			const logContent = '<view-file>' + (attrs || '') + '\n' + paths.join('\n') + '\n</view-file>\n'
 			if (!tool_calling_log.content) {
 				tool_calling_log.content += logContent
 				AddLongTimeLog(tool_calling_log) // Add log only once if it wasn't added before
@@ -83,17 +102,33 @@ export async function fileOperationsReplyHandler(result, args) {
 			else tool_calling_log.content += logContent // Append if already added
 
 			console.info('AI查看的文件：', paths)
+			const { executor, target } = executorFor(attrs)
 			const files = []
 			let file_content = ''
 			for (const path of paths)
 				try {
-					const fileObj = await getFileObjFormPathOrUrl(path)
-					if (fileObj.mime_type.startsWith('text/')) {
-						const content = await fs.promises.readFile(resolvePath(path), 'utf-8')
-						file_content += `文件：${path}\n\`\`\`\n${content}\n\`\`\`\n`
+					if (path.startsWith('http://') || path.startsWith('https://')) {
+						const fileObj = await getFileObjFormPathOrUrl(path)
+						if (fileObj.mime_type.startsWith('text/')) {
+							const text = fileObj.buffer.toString('utf-8')
+							file_content += `文件：${path}\n\`\`\`\n${text}\n\`\`\`\n`
+						}
+						else {
+							files.push(fileObj)
+							file_content += `文件：${path}读取成功，放置于附件。\n`
+						}
+						continue
+					}
+					const buffer = await executor.readFileBuffer(path)
+					if (looksLikeText(buffer)) {
+						file_content += `文件：${path}\n\`\`\`\n${buffer.toString('utf-8')}\n\`\`\`\n`
+						// 读取文件时一并向上收集 AGENTS.md 与触发的 .agents/docs 文档
+						const context = await collectUpwardContext(executor, target.workdir, path)
+						const contextText = formatUpwardContext(context)
+						if (contextText) file_content += '随文件一并加载的上下文：\n' + contextText + '\n'
 					}
 					else {
-						files.push(fileObj)
+						files.push({ name: path.split(/[\\/]/).pop() || 'file', buffer, mime_type: 'application/octet-stream' })
 						file_content += `文件：${path}读取成功，放置于附件。\n`
 					}
 				}
@@ -111,7 +146,7 @@ export async function fileOperationsReplyHandler(result, args) {
 		regen = true
 	}
 
-	const replace_file_matches = [...content.matchAll(/<replace-file>(?<content>[^]*?)<\/replace-file>/g)]
+	const replace_file_matches = [...content.matchAll(/<replace-file(?<attrs>[^>]*)>(?<content>[^]*?)<\/replace-file>/g)]
 	for (const replace_match of replace_file_matches) {
 		const replace_file_content = replace_match.groups.content
 		const logContent = '<replace-file>' + replace_file_content + '</replace-file>\n'
@@ -176,6 +211,7 @@ export async function fileOperationsReplyHandler(result, args) {
 		}
 
 		console.info('AI替换的文件：', replace_files_data)
+		const { executor } = executorFor(replace_match.groups.attrs)
 
 		for (const replace_file of replace_files_data) {
 			const { path, replacements } = replace_file
@@ -183,7 +219,7 @@ export async function fileOperationsReplyHandler(result, args) {
 			let replace_count = 0
 			let originalContent
 			try {
-				originalContent = await fs.promises.readFile(resolvePath(path), 'utf-8')
+				originalContent = await executor.readTextFile(path)
 			}
 			catch (err) {
 				AddLongTimeLog({
@@ -227,7 +263,7 @@ export async function fileOperationsReplyHandler(result, args) {
 			if (originalContent !== modifiedContent) {
 				system_content += `\n最终文件内容：\n\`\`\`\n${modifiedContent}\n\`\`\`\n若和你的预期不一致，考虑重新替换或使用override-file覆写修正。`
 				try {
-					await fs.promises.writeFile(resolvePath(path), modifiedContent, 'utf-8')
+					await executor.writeTextFile(path, modifiedContent)
 				}
 				catch (err) {
 					system_content = `写入文件失败：${path}\n\`\`\`\n${err.stack}\n\`\`\`\n`
@@ -246,9 +282,11 @@ export async function fileOperationsReplyHandler(result, args) {
 		regen = true
 	}
 
-	const override_file_matches = [...content.matchAll(/<override-file\s+path="(?<path>[^"]+)">(?<content>[^]*?)<\/override-file>/g)]
+	const override_file_matches = [...content.matchAll(/<override-file\s+(?<attrs>[^>]*)>(?<content>[^]*?)<\/override-file>/g)]
 	for (const override_match of override_file_matches) {
-		const { path, content: overrideContent } = override_match.groups
+		const overrideAttrs = parseTagAttrs(override_match.groups.attrs)
+		const path = overrideAttrs.path
+		const overrideContent = override_match.groups.content
 		const logContent = `<override-file path="${path}">` + overrideContent + '</override-file>\n'
 		if (!tool_calling_log.content) {
 			tool_calling_log.content += logContent
@@ -258,7 +296,8 @@ export async function fileOperationsReplyHandler(result, args) {
 
 		console.info('AI写入的文件：', path, overrideContent)
 		try {
-			await fs.promises.writeFile(resolvePath(path), overrideContent.trim() + '\n', 'utf-8')
+			const { executor } = executorFor(override_match.groups.attrs)
+			await executor.writeTextFile(path, overrideContent.trim() + '\n')
 			AddLongTimeLog({
 				name: 'file-operations',
 				role: 'tool',

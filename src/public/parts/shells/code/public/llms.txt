@@ -1,0 +1,43 @@
+# code shell
+
+AI 编码会话界面（opencode 风格 web 布局）：左侧会话列表、消息流、底部 composer。与任意角色就工作区对话，可在本机或已连接 subfount 上执行代码与读写文件。
+
+## 核心概念
+
+- **工作区（workspace）**：一个目录（本机或某台 subfount 上）。保存于用户 shell data。切换工作区会切换会话列表。
+- **会话（session）**：存放在工作区 `.fount/code/sessions/<id>.json`（目标机器上），含标题/角色/profile/历史/`chat_scoped_char_memory`。前端为唯一写入方（焦点移出窗口且无生成任务时 flush）。
+- **profile（= mode）**：自带 `plan`（只读）/`build`（完整权限）∪ 全局 `{userDict}/shells/code/agents/` ∪ 工作区 `.agents/`（含 `modes/` 子目录），同名优先级：工作区 > 全局 > 自带。所选 profile 正文与工作区根 `AGENTS.md`（大小写不敏感）会注入 system 上下文最前。
+- **commands**：`commands/*.md`（全局 + 工作区 `.agents/commands/`），frontmatter：`description`、`params: { <name>: { required, default, description } }`；正文模板支持 `$argv.name`、`` !`cmd`{:shell} `` 内联 shell（默认按机器 win=pwsh/其他=bash）、`` ${js 表达式} ``（argv 可用）。
+- **触发文档**：读文件时从文件目录向上到工作区根，逐级收集 `AGENTS.md` 与 `.agents/docs/*.md`（frontmatter `glob` 匹配被读文件相对路径才触发；`glob: "*"` 常驻）。
+- **`!` shell 模式**：composer 内容为空时键入 `！`/`!` 进入，命令直接在目标机器的工作目录执行，输出作为本地消息进入会话；shell 用输入框下方下拉选择（机器仅一种 shell 时禁用）。
+- **AI 侧机器清单**：file-operations 插件支持 `<list-machines></list-machines>` 标签，返回所有可用机器的 id / 备注 / 系统信息（hostname、os）/ 连接状态；id "0" = 本机。代码执行与文件读写标签用 `machine="…"` 指定目标机器。
+- **AI 源**：composer 下方下拉；「角色自带」= 不传（角色用自己的配置）；其余在请求构建时 `loadPart` 成 `serviceSources/AI` 实例，经 `chatReplyRequest_t.ai_source` 传给角色（args.ai_source 为已实例化部件）。「管理 AI 源…」控制下拉中显示哪些源，并可跳转 serviceSourceManage。
+- **机器**：id "0" = 本机（机器标识为十进制字符串）；其他为已连接 subfount。执行/文件读写默认读请求的 `workdir`（`{ machine, path }`），AI 可在标签上用 `machine="…"` / `workdir="…"` 属性按次覆盖。
+
+## HTTP API（均需登录；base = `/api/parts/shells:code`）
+
+- `GET /machines` → `{ machines: [{ id, description, deviceInfo, isConnected }] }`（id "0" = 本机）
+- `GET /machines/:id/shells` → `{ shells: string[] }`（`!` 模式下拉与默认 shell 判定）
+- `GET /machines/:id/browse?path=` → `{ path, roots, entries: [{ name, path, isDirectory, isFile }] }`；不带 path 时返回根（Windows 盘符 / `/`）
+- `GET /workspaces` / `POST /workspaces {name?, machine, path}` / `PUT /workspaces/:id {name}` / `DELETE /workspaces/:id` → 保存的工作区 CRUD
+- `POST /exec {machine, workdir, shell?, command}` → `!` 模式执行；失败结果 `{ code: -1, stdall }`
+- `GET /files/search?machine&workdir&q=` → `{ files: string[] }`（文件名子串匹配，跳过 node_modules/.git 等；`@` 文件补全数据源）
+- `GET /file?machine&workdir&path=` → `{ content, context }`（content 为文件文本，context 为向上收集的 AGENTS.md/触发文档文本）
+- `GET /profiles?machine&workdir=` → `{ profiles: [{ name, source: builtin|global|workspace, description }], commands: [{ name, source, description, params, template }] }`
+- `POST /commands/render {machine, workdir, name, argv}` → `{ content }`（渲染命令模板；内联 shell/js 在目标机器执行；缺必填参数 400）
+- `GET /aisources` → `{ sources: string[], defaults: string[], hidden: string[] }`
+- `PUT /aisources/visibility {hidden: string[]}` → 保存 AI 源在下拉中的可见性
+- `GET /sessions?machine&workdir=` → `{ sessions: [{ id, title, charname, profile, ai_source, created, updated }] }`
+- `POST /sessions {machine, workdir, session}` / `GET /sessions/:id?machine&workdir=` / `PUT /sessions/:id {machine, workdir, session}` / `DELETE /sessions/:id?machine&workdir=` → 会话存取（写目标机器工作区）
+
+## WS API
+
+- `WS /ws/parts/shells:code/session`（登录后连接）
+  - 客户端 → `{ type: 'send', session, machine, workdir, ai_source?, profile?, content }`：触发角色 GetReply（world=code world，plugins=code-execution+file-operations，`ai_source`/`workdir` 请求级字段）。服务端流式回 `{ type: 'preview', content }`；结束回 `{ type: 'done', entries, memory }`（entries = 用户消息 + tool 日志 + 角色回复，buffer 已 base64 化）。
+  - 客户端 → `{ type: 'abort' }`：中断当前生成；服务端回 `{ type: 'aborted', entries }`。
+  - 出错回 `{ type: 'error', entries, error }`（用户消息条目仍会返回）。
+
+## 注意事项
+
+- 会话文件路径与文件内容均可能有用户数据；删除工作区不会删除其 `.fount` 数据。
+- `ai_source` 与 `workdir` 是 `chatReplyRequest_t` 的通用请求级字段，其他 shell 也可使用；远程 JS 执行没有 workspace/chat_log/callback 等本地上下文。

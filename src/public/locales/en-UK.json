@@ -6318,5 +6318,60 @@
 			"failed": "Login failed: ${message}",
 			"missingParams": "Callback is missing code or state."
 		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "AI coding sessions targeting workspaces and machines.",
+		"sessions": {
+			"new": "New session",
+			"untitled": "Untitled session"
+		},
+		"workspaces": {
+			"manage": "Workspaces",
+			"browse": "Browse…",
+			"remove": "Remove current workspace",
+			"none": "No workspace selected",
+			"go": "Go",
+			"select": "Select",
+			"aria-label": "Select workspace"
+		},
+		"machine": {
+			"local": "Local",
+			"aria-label": "Select machine"
+		},
+		"char": {
+			"switch": "Switch character",
+			"settings": "Character settings",
+			"goodAgent": "How to write a good agent?",
+			"none": "No character selected"
+		},
+		"composer": {
+			"mode": "Mode",
+			"aiSource": "AI source",
+			"shell": "Shell",
+			"shellDefault": "Default",
+			"send": "Send",
+			"stop": "Stop",
+			"hint": "Type ！/! when empty for shell mode · @ to reference files · / for commands · Tab cycles modes · Ctrl+Enter sends",
+			"placeholder": "Type a command; Enter runs it (clear to leave shell mode)",
+			"aria-label": "Message input"
+		},
+		"aiSource": {
+			"panelTitle": "Manage AI source visibility",
+			"charOwn": "Character default",
+			"manage": "Manage AI sources…"
+		},
+		"commands": {
+			"run": "Run"
+		},
+		"error": {
+			"generic": "Something went wrong: ${error}",
+			"generate": "Failed to generate reply",
+			"aborted": "Generation aborted",
+			"noChar": "Select a character first"
+		},
+		"home_function_buttons": {
+			"code": "Code"
+		}
 	}
 }

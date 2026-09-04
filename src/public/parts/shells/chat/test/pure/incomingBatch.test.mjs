@@ -6,7 +6,12 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import { classifyIncomingBatch } from '../../public/hub/messages/incomingBatch.mjs'
 
-/** @param {string} id @param {number} ts @returns {object} 消息行 */
+/**
+ * 构造消息行。
+ * @param {string} id 消息 ID
+ * @param {number} [ts] 时间戳
+ * @returns {object} 消息行
+ */
 const row = (id, ts = 0) => ({ eventId: id, timestamp: ts })
 
 Deno.test('same eventId twice in one batch appends only once', () => {
