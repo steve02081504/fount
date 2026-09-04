@@ -3,7 +3,7 @@
 A static, GitHub Pages-hosted blog/wiki for fount's essays on agent design (the "Agent whitepaper" series). Lives under `.github/pages/blog/`; deployed by `.github/workflows/pages.yaml` (push to `master` with `.github/pages/**` changes).
 
 - Index: `https://steve02081504.github.io/fount/blog/`
-- Article: `https://steve02081504.github.io/fount/blog/article/?article=<id>&lang=<locale>`
+- Article: `https://steve02081504.github.io/fount/blog/article/?article=<id>`
 
 ## Layout
 
@@ -65,14 +65,15 @@ The essays are written to sound like a person, not a model. When adding or editi
 - **Break the template.** Not every essay needs a table, a mermaid diagram, and a limitations section. Safety essays are short and diagram-free; foundation essays are longer. Vary sentence and paragraph length.
 - **Summaries are teasers, not thesis restatements.** Frontmatter `title` stays in sync with the first `#` heading; `summary` sells the essay in one sentence with voice.
 - **Each language stands alone.** `en-UK.md` is idiomatic English prose, not a mirror translation of `zh-CN.md` — same argument, own rhythm.
+- **No bilingual doubling.** Never write the same keyword or sentence once in each language (`策略（policy）`, a quote plus its translation, `（English sentence）` glosses). Technical terms appear once, as loanwords, in whatever language the article is written in. Same rule for figures and tables: a Chinese article's mermaid labels and table cells are Chinese.
 - **Tags are a shared vocabulary.** zh-CN and en-UK tags map one to one onto the same canonical concepts (e.g. 安全/safety, 金丝雀/canary); don't let the two tag sets drift apart.
 - **Real incidents are told first-person with specifics** — dates, names, what broke — and must be verifiable with the author or the repo.
 
 ## Language behavior
 
-- Article language resolution: `?lang=` param (if in the article's frontmatter locales) → fount stored preference + browser languages via locale matching → first available locale. Unreadable/missing files fall through the remaining locales in order.
-- The language menu lists only the locales that actually exist for the current article — unsupported languages must not be shown.
-- The article `<article>` element carries `user-content` (the test watch locale scan must skip article text, which is intentionally multilingual); the language menu, index language badges, category headings and tags are covered by `language-check-ignore` / `user-content` for the same reason.
+- Language state lives only in the fount stored preference (`fountUserPreferredLanguages` in localStorage) — no `?lang=` URL param. Resolution: fount stored preference + browser languages via locale matching → first available locale. Unreadable/missing files fall through the remaining locales in order.
+- Both the index and the article page expose a language menu. The index menu lists `blogLangs` (union of all articles' locales); the article menu lists only the locales that actually exist for the current article. Switching writes the fount preference via `setLanguage`, so the index, the article body and the sidebar all follow; the index cards carry no per-language badges.
+- The article `<article>` element carries `user-content` (the test watch locale scan must skip article text, which is intentionally multilingual); the language menus, category headings and tags are covered by `language-check-ignore` / `user-content` for the same reason.
 
 ## Search & tags
 

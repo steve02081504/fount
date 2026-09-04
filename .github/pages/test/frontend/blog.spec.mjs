@@ -48,39 +48,60 @@ test.describe('agent institute', () => {
 		await expect(page.locator('#search-empty')).toBeHidden()
 	})
 
+	test('index has no per-card language badges and switches language globally', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/blog/`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator(CARDS)).toHaveCount(11, { timeout: 30_000 })
+		// 卡片下不再有语言徽章
+		await expect(page.locator('.blog-lang-badge')).toHaveCount(0)
+		// 默认中文分类与标题
+		await expect(page.locator('#article-list h2').first()).toHaveText('阅读指南')
+		await expect(page.locator(CARDS).first().locator('h3')).toContainText('从哪里读起')
+
+		// 语言菜单切到 English (UK)：偏好写入 localStorage，全站语言切换
+		await page.locator('#language-dropdown .btn').click()
+		await page.locator('#language-menu button', { hasText: 'English (UK)' }).click()
+		await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('fountUserPreferredLanguages') || '[]'))).toEqual(['en-UK'])
+		await expect(page.locator('#article-list h2').first()).toHaveText('Reading guide', { timeout: 30_000 })
+		await expect(page.locator(CARDS).first().locator('h3')).toContainText('Where to Start')
+		// 卡片链接不带 lang 参数
+		await expect(page.locator(`${CARDS} h3 a`).first()).toHaveAttribute('href', /\/blog\/article\/\?article=reading-guide$/)
+	})
+
 	test('card click opens the article in the preferred language', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/blog/`, { waitUntil: 'domcontentloaded' })
 		const firstTitle = page.locator(`${CARDS} h3 a`).first()
 		await expect(firstTitle).toBeVisible({ timeout: 30_000 })
 		await firstTitle.click()
-		await expect(page).toHaveURL(/\/blog\/article\/\?article=reading-guide&lang=zh-CN$/)
+		await expect(page).toHaveURL(/\/blog\/article\/\?article=reading-guide$/)
 		await expect(page.locator('#article-body h1')).toHaveText('从哪里读起', { timeout: 30_000 })
 		await expect(page.locator('#article-pager')).toBeVisible()
 	})
 
 	test('language menu lists only available languages and switches', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots&lang=zh-CN`, { waitUntil: 'domcontentloaded' })
+		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#article-body h1')).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })
 		await page.locator('#language-dropdown .btn').click()
 		const items = page.locator('#language-menu button')
 		await expect(items).toHaveCount(2)
 		await items.filter({ hasText: 'English (UK)' }).click()
-		await expect(page).toHaveURL(/lang=en-UK$/)
+		// 语言偏好写入 localStorage，正文切为英文，URL 不带 lang
+		await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('fountUserPreferredLanguages') || '[]'))).toEqual(['en-UK'])
 		await expect(page.locator('#article-body h1')).toHaveText('Why fount Agents Are Not Chatbots', { timeout: 30_000 })
+		await expect(page).toHaveURL(/\/blog\/article\/\?article=agents-are-not-chatbots$/)
 	})
 
 	test('in-article links point to sibling articles keeping the language', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/blog/article/?article=llm-is-not-the-agent&lang=zh-CN`, { waitUntil: 'domcontentloaded' })
+		await page.goto(`${baseUrl}/blog/article/?article=llm-is-not-the-agent`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#article-body h1')).toHaveText('LLM 不是 Agent', { timeout: 30_000 })
 		const link = page.locator('#article-body a[href*="article=agents-are-not-chatbots"]').first()
 		await expect(link).toBeVisible()
 		await link.click()
-		await expect(page).toHaveURL(/article=agents-are-not-chatbots&lang=zh-CN/)
+		await expect(page).toHaveURL(/article=agents-are-not-chatbots$/)
 		await expect(page.locator('#article-body h1')).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })
 	})
 
 	test('article strips YAML frontmatter before rendering', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots&lang=zh-CN`, { waitUntil: 'domcontentloaded' })
+		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots`, { waitUntil: 'domcontentloaded' })
 		const body = page.locator('#article-body')
 		await expect(body.locator('h1').first()).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })
 		await expect(body).not.toContainText('title:')
@@ -90,7 +111,7 @@ test.describe('agent institute', () => {
 	})
 
 	test('article shows a wiki-like sidebar with table of contents and all-articles nav', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots&lang=zh-CN`, { waitUntil: 'domcontentloaded' })
+		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots`, { waitUntil: 'domcontentloaded' })
 		const sidebar = page.locator('#article-sidebar')
 		await expect(sidebar).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#article-toc-section')).toBeVisible()
@@ -122,6 +143,17 @@ test.describe('agent institute', () => {
 		await expect(page.locator('#article-nav .blog-nav-active')).toHaveText('为什么 fount 的 Agent 不是聊天机器人')
 	})
 
+	test('sidebar category names follow the article language', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('#article-body h1')).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })
+		await expect(page.locator('#article-nav .blog-nav-category').first()).toHaveText('阅读指南')
+		await page.locator('#language-dropdown .btn').click()
+		await page.locator('#language-menu button', { hasText: 'English (UK)' }).click()
+		await expect(page.locator('#article-body h1')).toHaveText('Why fount Agents Are Not Chatbots', { timeout: 30_000 })
+		// 侧边栏分类名跟随文章语言切换
+		await expect(page.locator('#article-nav .blog-nav-category').first()).toHaveText('Reading guide', { timeout: 30_000 })
+	})
+
 	test('iconify icons load without 4xx', async ({ page, baseUrl }) => {
 		/** @type {string[]} */
 		const badIcons = []
@@ -136,7 +168,7 @@ test.describe('agent institute', () => {
 		await expect(page.locator(CARDS).first()).toBeVisible({ timeout: 30_000 })
 		// 首页的主题图标确实请求过且成功
 		await expect.poll(() => iconifyStatuses.length).toBeGreaterThan(0)
-		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots&lang=zh-CN`, { waitUntil: 'domcontentloaded' })
+		await page.goto(`${baseUrl}/blog/article/?article=agents-are-not-chatbots`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#article-body h1').first()).toHaveText('为什么 fount 的 Agent 不是聊天机器人', { timeout: 30_000 })
 		// 语言 + 主题图标也成功
 		await expect.poll(() => iconifyStatuses.length).toBeGreaterThan(2)
@@ -155,7 +187,7 @@ test.describe('agent institute', () => {
 		await page.goto(`${baseUrl}/blog/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator(CARDS).first()).toBeVisible({ timeout: 30_000 })
 
-		await page.locator('header .dropdown .btn').click()
+		await page.locator('[data-i18n="blog.theme"]').click()
 		const items = page.locator('#theme-menu button')
 		const customItem = items.filter({ hasText: 'my-theme' })
 		await expect(customItem).toHaveCount(1)
@@ -167,7 +199,7 @@ test.describe('agent institute', () => {
 		await expect(page.locator('#custom-theme-style')).toHaveCount(0)
 
 		// 再切回自定义主题：样式重新注入，全程无报错
-		await page.locator('header .dropdown .btn').click()
+		await page.locator('[data-i18n="blog.theme"]').click()
 		await customItem.click()
 		await expect.poll(() => page.evaluate(() => document.documentElement.dataset.theme)).toBe('my-theme')
 		await expect(page.locator('#custom-theme-style')).toHaveCount(1)

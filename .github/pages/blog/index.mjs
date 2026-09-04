@@ -1,43 +1,46 @@
 /**
  * fount Agent 研究院首页：按生成的 index.json 渲染分类目录与文章卡片，
  * 支持按标题 / 摘要 / 标签实时搜索，标签可点击填入搜索。
+ * 语言切换是全局状态：切到某语言写入 fount 偏好（localStorage），全站跟随。
  */
 import { makeSearchable } from '../scripts/components/search.mjs'
-import { geti18n, getLocaleNames, initTranslations, pickLocalizedSlice } from '../scripts/i18n/index.mjs'
+import { geti18n, initTranslations, pickLocalizedSlice, setLanguage } from '../scripts/i18n/index.mjs'
 
 import {
 	articleMetaIn,
 	articlePageUrl,
-	entryLangs,
+	blogLangs,
 	loadIndex,
+	mountLanguageMenu,
 	mountThemeMenu,
-	preferredLangCandidates,
-	resolveArticleLang,
+	resolveBlogLang,
 } from './blog.mjs'
 
 const articleList = document.getElementById('article-list')
 const articleSearch = document.getElementById('article-search')
 const searchEmpty = document.getElementById('search-empty')
 const themeMenu = document.getElementById('theme-menu')
+const languageDropdown = document.getElementById('language-dropdown')
+const languageMenu = document.getElementById('language-menu')
+
+/** 当前博客索引。 @type {import('./blog.mjs').blogIndex | null} */
+let index = null
+/** 当前展示语言（全局状态）。 */
+let currentLang = ''
 
 /**
- * 构建语言徽章列表（每枚徽章直接以该语言打开文章；语言名列表属多语言界面元素）。
- * @param {import('./blog.mjs').blogArticleEntry} entry 文章条目
- * @returns {HTMLElement} 徽章容器
+ * 切换全局语言：写入 fount 偏好后重渲染列表与语言菜单选中态。
+ * @param {string} lang 语言 id
+ * @returns {void}
  */
-function buildLangBadges(entry) {
-	const container = document.createElement('div')
-	container.className = 'flex flex-wrap items-center gap-1.5'
-	container.setAttribute('language-check-ignore', '')
-	const names = getLocaleNames()
-	for (const lang of entryLangs(entry)) {
-		const badge = document.createElement('a')
-		badge.className = 'badge badge-outline badge-sm blog-lang-badge'
-		badge.href = articlePageUrl(entry.id, lang)
-		badge.textContent = names.get(lang) || lang
-		container.appendChild(badge)
-	}
-	return container
+function switchLanguage(lang) {
+	if (lang === currentLang) return
+	currentLang = lang
+	document.activeElement?.blur()
+	setLanguage([lang]).then(() => {
+		renderIndex()
+		mountLanguageMenu(languageMenu, blogLangs(index), currentLang, switchLanguage)
+	}).catch(console.error)
 }
 
 /**
@@ -65,13 +68,12 @@ function buildTagBadges(meta) {
 }
 
 /**
- * 构建单张文章卡片。
+ * 构建单张文章卡片（展示语言跟随全局 currentLang，文章缺该语言时回退首个可用语言）。
  * @param {import('./blog.mjs').blogArticleEntry} entry 文章条目
- * @returns {{entry: import('./blog.mjs').blogArticleEntry, lang: string, card: HTMLElement, search: object}} 卡片及其搜索数据
+ * @returns {{entry: import('./blog.mjs').blogArticleEntry, card: HTMLElement, search: object}} 卡片及其搜索数据
  */
 function buildArticleCard(entry) {
-	const lang = resolveArticleLang(entry)
-	const meta = articleMetaIn(entry, lang)
+	const meta = articleMetaIn(entry, currentLang)
 	const card = document.createElement('article')
 	card.className = 'card bg-base-100 shadow blog-card'
 
@@ -81,7 +83,7 @@ function buildArticleCard(entry) {
 	const title = document.createElement('h3')
 	title.className = 'card-title text-xl'
 	const titleLink = document.createElement('a')
-	titleLink.href = articlePageUrl(entry.id, lang)
+	titleLink.href = articlePageUrl(entry.id)
 	titleLink.textContent = meta.title
 	title.appendChild(titleLink)
 
@@ -95,11 +97,10 @@ function buildArticleCard(entry) {
 	badges.className = 'flex flex-col items-start gap-2'
 	const tagBadges = buildTagBadges(meta)
 	if (tagBadges) badges.appendChild(tagBadges)
-	badges.appendChild(buildLangBadges(entry))
 	actions.appendChild(badges)
 	const read = document.createElement('a')
 	read.className = 'btn btn-primary btn-outline btn-sm'
-	read.href = articlePageUrl(entry.id, lang)
+	read.href = articlePageUrl(entry.id)
 	read.textContent = geti18n('blog.read')
 	actions.appendChild(read)
 
@@ -107,7 +108,6 @@ function buildArticleCard(entry) {
 	card.appendChild(body)
 	return {
 		entry,
-		lang,
 		card,
 		search: { title: meta.title, summary: meta.summary, tags: meta.tags },
 	}
@@ -115,10 +115,9 @@ function buildArticleCard(entry) {
 
 /**
  * 渲染分类目录与文章卡片，并接上搜索过滤。
- * @param {import('./blog.mjs').blogIndex} index 博客索引
  * @returns {void}
  */
-function renderIndex(index) {
+function renderIndex() {
 	const sections = []
 	const cards = []
 	for (const category of index.categories) {
@@ -129,7 +128,7 @@ function renderIndex(index) {
 
 		const heading = document.createElement('h2')
 		heading.className = 'text-2xl font-bold'
-		heading.textContent = pickLocalizedSlice(category.name, preferredLangCandidates()) || category.id
+		heading.textContent = pickLocalizedSlice(category.name, [currentLang]) || category.id
 		heading.setAttribute('user-content', '')
 		section.appendChild(heading)
 
@@ -170,7 +169,7 @@ function renderIndex(index) {
 await initTranslations('blog')
 mountThemeMenu(themeMenu).catch(console.error)
 
-const index = await loadIndex().catch(error => {
+index = await loadIndex().catch(error => {
 	console.error('Failed to load blog index:', error)
 	return null
 })
@@ -181,5 +180,9 @@ if (!index?.articles?.length) {
 	alert.textContent = geti18n('blog.article.load_failed')
 	articleList.appendChild(alert)
 }
-else
-	renderIndex(index)
+else {
+	currentLang = resolveBlogLang(index)
+	languageDropdown.hidden = false
+	mountLanguageMenu(languageMenu, blogLangs(index), currentLang, switchLanguage)
+	renderIndex()
+}

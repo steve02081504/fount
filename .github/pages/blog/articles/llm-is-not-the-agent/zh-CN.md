@@ -84,36 +84,36 @@ await transfer.send(peer, bundle)                      // 发送文件
 
 ```mermaid
 flowchart TB
-    AG["Agent — task execution system"] --> OR["Orchestration"]
-    OR --> LLM["LLM: reasoning, understanding, planning"]
-    OR --> PRG["Programs: deterministic computation"]
-    OR --> TLS["Tools: the external world"]
-    OR --> MDL["Capability models"]
-    TLS --> DB[("Databases")]
-    TLS --> FLS["Files"]
-    TLS --> CALC["Calculator"]
-    TLS --> BRW["Browser"]
+    AG["Agent — 任务执行系统"] --> OR["编排"]
+    OR --> LLM["LLM：推理、理解、规划"]
+    OR --> PRG["程序：确定性计算"]
+    OR --> TLS["工具：作用于外部世界"]
+    OR --> MDL["能力模型"]
+    TLS --> DB[("数据库")]
+    TLS --> FLS["文件"]
+    TLS --> CALC["计算器"]
+    TLS --> BRW["浏览器"]
     TLS --> SHL["Shell"]
-    TLS --> API["Web APIs"]
+    TLS --> API["Web API"]
     MDL --> ASR["ASR"]
     MDL --> TTS["TTS"]
-    MDL --> EMB["Embeddings"]
+    MDL --> EMB["Embedding"]
     MDL --> RAG["RAG"]
-    MDL --> VIS["Vision, OCR"]
+    MDL --> VIS["视觉、OCR"]
 ```
 
-LLM 在这张图里是若干节点中的一个，和其他一切一样经由 orchestration 被调用。它不在中心，因为中心是任务。按部件拆开看：
+LLM 在这张图里是若干节点中的一个，和其他一切一样经由编排被调用。它不在中心，因为中心是任务。按部件拆开看：
 
 | 部件 | 贡献什么 |
 | --- | --- |
-| Orchestration | 分解任务、决策、排序、失败恢复 |
-| Programs | 确定性计算 |
-| Tools | 对外部世界的作用 |
-| Models | 认知与感知能力，LLM 包含在内 |
-| State | 任务状态、产物、记忆 |
+| 编排 | 分解任务、决策、排序、失败恢复 |
+| 程序 | 确定性计算 |
+| 工具 | 对外部世界的作用 |
+| 模型 | 认知与感知能力，LLM 包含在内 |
+| 状态 | 任务状态、产物、记忆 |
 
 ## 一行字
 
-> Agent ≠ LLM。Agent = orchestration + programs + tools + models + state。
+> Agent ≠ LLM。Agent = 编排 + 程序 + 工具 + 模型 + 状态。
 
 LLM 在这个和式里挣得了自己的位置：正是它让系统的其余部分能说人话、能在无解可算处思考。但和式不会被其中一项支配。真正难的是逐步骤地判断「这一步需要认知，还是只需要计算」——这个判断怎么做、它省钱省到什么程度，见[让程序去做](let-the-program-do-it)。
