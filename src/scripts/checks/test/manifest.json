@@ -131,6 +131,18 @@
 			]
 		},
 		{
+			"name": "update_locale_data",
+			"expected": 400,
+			"run": [
+				"python",
+				".esh/commands/update_locale_data.py",
+				"--self-test"
+			],
+			"triggers": [
+				".esh/commands/update_locale_data.py"
+			]
+		},
+		{
 			"name": "agents_md_english",
 			"expected": 700,
 			"run": [

@@ -1,6 +1,9 @@
 import os
 import json
 import sys
+import tempfile
+from contextlib import redirect_stdout
+from io import StringIO
 
 locales_dir = os.path.abspath(os.path.join(os.getcwd(), "src", "public", "locales"))
 
@@ -211,6 +214,7 @@ def list_nested_keys(obj, parent_key=""):
 
 
 def process_locale_files(script_to_run):
+	errors = 0
 	try:
 		json_files = [f for f in os.listdir(locales_dir) if f.endswith(".json")]
 
@@ -263,18 +267,79 @@ def process_locale_files(script_to_run):
 				print(f"Successfully updated {file_name}.")
 
 			except Exception as err:
+				errors += 1
 				print(f"Error processing file {file_name}: {err}", file=sys.stderr)
 
 	except Exception as err:
+		errors += 1
 		print(f"Error reading locales directory: {err}", file=sys.stderr)
+	return errors
 
 
-if __name__ == "__main__":
-	if len(sys.argv) < 2:
+def self_test() -> int:
+	"""CLI 冒烟：--help 不得被当脚本 exec + 核心增删改移排操作。"""
+	# 回归：--help/-h 应打印用法并退出 0，而不是被 exec（原报错 bad operand type for unary -: '_Helper'）
+	for flag in ("--help", "-h"):
+		out = StringIO()
+		with redirect_stdout(out):
+			code = main([flag])
+		if code != 0 or "Usage:" not in out.getvalue():
+			print(f"{flag} should print usage and exit 0, got code={code}", file=sys.stderr)
+			return 1
+
+	# 增改移删排 + 定位写入
+	data = {"a": {"c": 1, "b": 2}}
+	set_nested_value(data, "a.d", 3, after="a.b")
+	if list(data["a"]) != ["c", "b", "d"]:
+		print(f"set after= order unexpected: {list(data['a'])}", file=sys.stderr)
+		return 1
+	move_nested_key(data, "a.c", index=0)
+	if list(data["a"]) != ["c", "b", "d"]:
+		print(f"move index=0 order unexpected: {list(data['a'])}", file=sys.stderr)
+		return 1
+	set_nested_value(data, "a.c", None)
+	if "c" in data["a"]:
+		print("set(key, None) should delete", file=sys.stderr)
+		return 1
+	order_nested_keys(data, "a", "d", "b")
+	if list(data["a"]) != ["d", "b"]:
+		print(f"order result unexpected: {list(data['a'])}", file=sys.stderr)
+		return 1
+	if get_nested_value(data, "a.b") != 2 or has_nested_key(data, "a.b") is not True:
+		print("get/has mismatch", file=sys.stderr)
+		return 1
+	if has_nested_key(data, "a.missing") is not False or get_nested_value(data, "a.missing") is not None:
+		print("get/has missing mismatch", file=sys.stderr)
+		return 1
+
+	# 任一文件处理失败应让进程非零退出（脚本错误不应静默变绿）
+	global locales_dir
+	saved_dir = locales_dir
+	with tempfile.TemporaryDirectory() as tmp:
+		locales_dir = tmp
+		with open(os.path.join(tmp, "bad.json"), "w", encoding="utf-8") as f:
+			f.write("{}")
+		errors = process_locale_files("undefined_name_xyz")
+	locales_dir = saved_dir
+	if errors < 1:
+		print("process_locale_files should report per-file errors", file=sys.stderr)
+		return 1
+
+	print(json.dumps({"ok": True}))
+	return 0
+
+
+def main(argv):
+	if not argv:
 		print("Error: Please provide a script string to evaluate.", file=sys.stderr)
 		print(USAGE, file=sys.stderr)
-		sys.exit(1)
-	arg = sys.argv[1]
+		return 1
+	if argv[0] in ("-h", "--help"):
+		print(USAGE)
+		return 0
+	if argv[0] == "--self-test":
+		return self_test()
+	arg = argv[0]
 	if arg.startswith("@"):
 		script_path = arg[1:]
 		if not os.path.isabs(script_path) and not os.path.exists(script_path):
@@ -283,4 +348,15 @@ if __name__ == "__main__":
 				script_path = alt
 		with open(script_path, "r", encoding="utf-8") as f:
 			arg = f.read()
-	process_locale_files(arg)
+	try:
+		compile(arg, "<update_locale_data>", "exec")
+	except SyntaxError as err:
+		print(f"Error: script is not valid Python: {err}", file=sys.stderr)
+		print(USAGE, file=sys.stderr)
+		return 1
+	errors = process_locale_files(arg)
+	return 1 if errors else 0
+
+
+if __name__ == "__main__":
+	sys.exit(main(sys.argv[1:]))

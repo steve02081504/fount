@@ -178,17 +178,10 @@ function renderSessions() {
 	elements.sessionsList.replaceChildren(...state.sessions.map(session => {
 		const item = document.createElement('div')
 		item.className = 'code-session-item' + (state.session?.id === session.id ? ' active' : '')
-		item.role = 'button'
-		item.tabIndex = 0
-		item.addEventListener('click', () => void selectSession(session.id))
-		item.addEventListener('keydown', event => {
-			if (event.key === 'Enter' || event.key === ' ') {
-				event.preventDefault()
-				void selectSession(session.id)
-			}
-		})
-		const body = document.createElement('div')
+		const body = document.createElement('button')
+		body.type = 'button'
 		body.className = 'code-session-item-body'
+		body.addEventListener('click', () => void selectSession(session.id))
 		const title = document.createElement('span')
 		title.className = 'code-session-item-title'
 		title.textContent = session.title || geti18n('code.sessions.untitled')
@@ -317,6 +310,8 @@ function renderEntryBubble(entry) {
 	const bubble = document.createElement('div')
 	bubble.className = `code-message role-${entry.role}`
 	bubble.dataset.entryId = entry.id
+	// 消息内容为动态用户/AI 文本，跳过语种扫描整棵子树
+	bubble.setAttribute('user-content', '')
 	if (entry.role !== 'user' && entry.name) {
 		const name = document.createElement('div')
 		name.className = 'code-message-name'
@@ -463,6 +458,8 @@ function renderMessages() {
  */
 function appendEntryBubble(entry) {
 	const bubble = renderEntryBubble(entry)
+	// 首条消息到达时移除空态引导（renderMessages 只在无条目时重渲染）
+	elements.messages.querySelector('.code-empty')?.remove()
 	elements.messages.insertBefore(bubble, backToBottom)
 	if (nearBottom()) scrollMessagesBottom()
 	updateBackToBottom()
@@ -866,20 +863,22 @@ async function execShellMode(command) {
 
 /**
  * 标记会话为待持久化；焦点已移出窗口且无生成任务时立即写盘。
+ * 无工作区时会话无处落盘，跳过以免无效写盘报错。
  * @returns {void}
  */
 function markSessionDirty() {
+	if (!state.workspace) return
 	state.dirty = true
 	if (!state.generating && !document.hasFocus())
 		void flushSession()
 }
 
 /**
- * 持久化会话到工作区 `.fount/code/sessions`（生成中或无变更时跳过）。
+ * 持久化会话到工作区 `.fount/code/sessions`（生成中、无变更、无工作区时跳过）。
  * @returns {Promise<void>}
  */
 async function flushSession() {
-	if (state.generating || !state.dirty || !state.session) return
+	if (state.generating || !state.dirty || !state.session || !state.workspace) return
 	state.dirty = false
 	try {
 		await api.putSession(target(), state.session)
@@ -895,7 +894,7 @@ document.addEventListener('visibilitychange', () => {
 	if (document.hidden) void flushSession()
 })
 window.addEventListener('beforeunload', () => {
-	if (state.dirty && state.session && !state.generating)
+	if (state.dirty && state.session && state.workspace && !state.generating)
 		api.putSession(target(), state.session).catch(() => { })
 })
 
@@ -977,9 +976,11 @@ function renderWorkspaceMenu() {
 			li.appendChild(button)
 			elements.workspaceMenu.appendChild(li)
 		})
+		const separatorLi = document.createElement('li')
 		const separator = document.createElement('div')
 		separator.className = 'divider my-1'
-		elements.workspaceMenu.appendChild(separator)
+		separatorLi.appendChild(separator)
+		elements.workspaceMenu.appendChild(separatorLi)
 	}
 	const browseLi = document.createElement('li')
 	const browseBtn = document.createElement('button')
@@ -1217,9 +1218,11 @@ function renderAiSourceMenu() {
 		ownLi.appendChild(ownBtn)
 		return ownLi
 	})(), (() => {
+		const separatorLi = document.createElement('li')
 		const separator = document.createElement('div')
 		separator.className = 'divider my-1'
-		return separator
+		separatorLi.appendChild(separator)
+		return separatorLi
 	})(), (() => {
 		const manageLi = document.createElement('li')
 		const manageBtn = document.createElement('button')

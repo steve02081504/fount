@@ -16,6 +16,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
 | `update_locales` | `.esh/commands/update-locales.py --self-test` (string↔single-applicator + string↔switch) |
+| `update_locale_data` | `.esh/commands/update_locale_data.py --self-test` (`set/move/order` 核心操作 + `--help`/`-h` 不当参数回归) |
 | `agents_md_english` | `AGENTS.md` + linked `.md` English-only; non-`AGENTS.md` under `docs/` |
 | `text_lf` | UTF-8 text (fatal decode, no NUL; empty files exempt) must be LF; text ends with exactly one LF (0 or multiple fail; single-line `.svg` must instead end with no LF); no leading LF (leading UTF-8 BOM skipped); under `fount test` scopes to triggered files when set. **Auto-fix**: running this suite first rewrites violating files via `fixTextLf` (normalize line endings, fix leading/trailing LF, preserve BOM), then re-scans to verify |
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |

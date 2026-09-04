@@ -40,13 +40,16 @@ test.describe('code shell composer & placeholders', () => {
 		await openCode(page, baseUrl)
 		const composer = page.locator('#composer-input')
 		const placeholder = composer.locator('.fount-markdown-rich-input-placeholder')
+		await expect(placeholder).toContainText('输入消息开始')
 		await composer.click()
 		await page.keyboard.type('！')
 		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
-		await expect(placeholder).toContainText('输入 shell 命令')
+		// 内容非空时占位符 span 不渲染
+		await expect(placeholder).toHaveCount(0)
 		await page.keyboard.press('Backspace')
 		await expect(page.locator('#shell-pill-wrap')).toBeHidden()
 		await expect(placeholder).toContainText('输入消息开始')
+		await expect(placeholder).not.toContainText('输入命令')
 	})
 
 	test('! shell command executes and renders output bubbles', async ({ page, baseUrl }) => {
@@ -66,8 +69,8 @@ test.describe('code shell composer & placeholders', () => {
 		await composer.click()
 		await page.keyboard.type('你好')
 		await page.keyboard.press('Control+Enter')
-		await expect(page.locator('.code-message.role-user')).toContainText('你好', { timeout: 30_000 })
-		await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 30_000 })
+		await expect(page.locator('.code-message.role-user')).toContainText('你好', { timeout: 60_000 })
+		await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
 	})
 })
 

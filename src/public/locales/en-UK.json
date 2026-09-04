@@ -6325,7 +6325,9 @@
 		"title": "Code",
 		"description": "AI coding sessions targeting workspaces and machines.",
 		"sessions": {
-			"panel": { "aria-label": "Sessions" },
+			"panel": {
+				"aria-label": "Sessions"
+			},
 			"new": "New session",
 			"untitled": "Untitled session",
 			"close": "Close sidebar",
@@ -6336,7 +6338,10 @@
 			"yesterday": "yesterday"
 		},
 		"workspaces": {
-			"path": { "aria-label": "Workspace path", "placeholder": "Directory path" },
+			"path": {
+				"aria-label": "Workspace path",
+				"placeholder": "Directory path"
+			},
 			"manage": "Workspaces",
 			"browse": "Browse…",
 			"remove": "Remove current workspace",

@@ -40,6 +40,9 @@ test.describe('code shell smoke', () => {
 		await page.locator('#workspace-pill').click()
 		await expect(page.locator('#workspace-menu')).toBeVisible()
 		await expect(page.locator('#workspace-menu').getByText('浏览…')).toBeVisible()
+		// 收起 workspace 下拉再开 machine：daisyUI 焦点下拉互切存在竞态
+		await page.locator('#session-title').click()
+		await expect(page.locator('#workspace-menu')).toBeHidden()
 		await page.locator('#machine-pill').click()
 		await expect(page.locator('#machine-menu')).toBeVisible()
 	})

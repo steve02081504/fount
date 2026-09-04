@@ -70,6 +70,16 @@
 .code-session-item-body {
 	flex: 1;
 	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	text-align: left;
+	background: none;
+	border: 0;
+	padding: 0;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
 }
 
 .code-session-item-title {

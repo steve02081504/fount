@@ -107,7 +107,7 @@ async function buildCodeChatRequest({ username, session, machine, workdir, ai_so
  */
 export async function triggerCodeReply(options) {
 	const request = await buildCodeChatRequest(options)
-	const reply = await request.world.interfaces.chat.GetCharReply?.(request, request.char_id)
-		?? request.char.interfaces.chat.GetReply(request)
+	const worldReply = await request.world.interfaces.chat.GetCharReply?.(request, request.char_id)
+	const reply = worldReply ?? await request.char.interfaces.chat.GetReply(request)
 	return { reply, memory: request.chat_scoped_char_memory }
 }
