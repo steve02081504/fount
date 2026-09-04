@@ -14,8 +14,7 @@ tags:
 
 一句话版本先摆出来：
 
-> **An Agent is not an LLM that is given a task. It is a system that uses intelligence when intelligence is necessary.**
-> （Agent 不是一个被赋予任务的 LLM，而是一个只在需要智能的地方使用智能的系统。）
+> **Agent 不是一个被赋予任务的 LLM，而是一个只在需要智能的地方使用智能的系统。**
 
 [fount](https://github.com/steve02081504/fount) 就是这句话的编译目标。本文是落地现场的复盘：装了什么、装的时候改了什么、哪些观点我自己还在修。前作的地图在[从哪里读起](reading-guide)，这里不再复述一遍九连句——对每篇文章的暴行就到此为止。
 
@@ -25,15 +24,15 @@ tags:
 
 ```mermaid
 flowchart LR
-    U[User / Agent / Event] --> A[Activation]
-    A --> TC[Task Core]
-    TC --> P[Program]
+    U[用户 / Agent / 事件] --> A[激活]
+    A --> TC[任务核心]
+    TC --> P[程序]
     TC --> L[LLM]
-    TC --> T[Tools]
-    P --> AR[Artifact]
+    TC --> T[工具]
+    P --> AR[产物]
     L --> AR
     T --> AR
-    AR --> E[Environment]
+    AR --> E[环境]
 ```
 
 图里每个框，都是穿上了工程制服的理论章节：
@@ -46,7 +45,7 @@ flowchart LR
 
 ## 一切皆 part
 
-架构图很便宜；有趣的问题是运行时到底长什么样。fount 的答案是单一的组织性观念：**一切皆 part（零件）。**part 是动态加载的自包含模块，part 有类型：
+架构图很便宜；有趣的问题是运行时到底长什么样。fount 的答案是单一的组织性观念：**一切皆 part。**part 是动态加载的自包含模块，part 有类型：
 
 ```text
 src/public/parts/

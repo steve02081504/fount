@@ -90,11 +90,11 @@ fount 的 code-execution plugin 对这份考卷的回答不是更好的 prompt�
 
 决定性的观察是：一次 `sort()` 调用在这张表上的开销是零。不耗 token、不耗推理、延迟可以忽略、没有漂移、除了一行代码没有任何维护。**每把一个任务从模型搬到程序，就有一个任务从此不再消耗六种预算中的五种，对第六种也几乎无损。**
 
-## Agent Engineering is Resource Allocation
+## Agent 工程即资源分配
 
 把六种预算和对照表放在一起，构建 Agent 这门手艺就有了形状：
 
-> **Agent Engineering is Resource Allocation.**
+> **Agent 工程即资源分配。**
 
 Agent 设计的核心问题不是「如何尽可能多地使用 AI」，而是：**如何把有限资源分配给最值得由 AI 完成的部分。**实际写起来，路由逻辑往往朴素得像这样：
 

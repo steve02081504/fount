@@ -89,18 +89,18 @@ on activation(input):              # 定时器、事件、人类、Agent 或程�
 
 ```mermaid
 flowchart TB
-    subgraph CB["Chatbot-shaped product"]
+    subgraph CB["聊天机器人形态的产品"]
         direction TB
-        P["Persona"] --> D["Dialogue"]
-        D --> M["Memory"]
+        P["人格"] --> D["对话"]
+        D --> M["记忆"]
         M --> L["LLM"]
     end
-    subgraph AG["Task execution system"]
+    subgraph AG["任务执行系统"]
         direction TB
-        IN["Inputs: intents, tasks, constraints, context"] --> OR["Orchestration"]
-        OR --> EX["Execution"]
-        EX --> EF["Artefacts and world effects"]
-        OR -.->|"when cognition is needed"| LM["LLM"]
+        IN["输入：意图、任务、约束、上下文"] --> OR["编排"]
+        OR --> EX["执行"]
+        EX --> EF["产物与对世界的作用"]
+        OR -.->|"需要认知时"| LM["LLM"]
     end
 ```
 
@@ -115,14 +115,13 @@ flowchart TB
 - 「你是一名 SQL 优化器」
 - 「你是一台自动备份程序」
 
-它们看起来像四种产品，结构上却是同一个对象：施加给系统的一组任务与行为约束。每一段都规定了系统该关注什么、该如何响应、什么叫做「做完了」。女仆人设和自动备份程序并不是两种性质的东西——区别只在验收标准：前者的「做完」是「用户感到被陪伴」，后者是「文件送达」。人格是一种策略（policy），不是灵魂。
+它们看起来像四种产品，结构上却是同一个对象：施加给系统的一组任务与行为约束。每一段都规定了系统该关注什么、该如何响应、什么叫做「做完了」。女仆人设和自动备份程序并不是两种性质的东西——区别只在验收标准：前者的「做完」是「用户感到被陪伴」，后者是「文件送达」。人格是一种策略，不是灵魂。
 
 这顺便解释了为什么照聊天机器人模板做的产品，新鲜感一过就千篇一律：核心是人设的产品，只能靠增加更多人设来成长；核心是任务执行的产品，靠接受新任务来成长。人设退回它本来的位置——一台能干的机器的一种配置，而非机器本身。
 
 ## 一句话版本
 
-> An Agent is not an LLM that is given a task. It is a system that uses intelligence when intelligence is necessary.
-> （Agent 不是一个被赋予任务的 LLM，而是一个只在需要智能的地方使用智能的系统。）
+> Agent 不是一个被赋予任务的 LLM，而是一个只在需要智能的地方使用智能的系统。
 
 ## fount 里长什么样
 

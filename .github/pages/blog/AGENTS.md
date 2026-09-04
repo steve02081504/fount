@@ -65,6 +65,7 @@ The essays are written to sound like a person, not a model. When adding or editi
 - **Break the template.** Not every essay needs a table, a mermaid diagram, and a limitations section. Safety essays are short and diagram-free; foundation essays are longer. Vary sentence and paragraph length.
 - **Summaries are teasers, not thesis restatements.** Frontmatter `title` stays in sync with the first `#` heading; `summary` sells the essay in one sentence with voice.
 - **Each language stands alone.** `en-UK.md` is idiomatic English prose, not a mirror translation of `zh-CN.md` — same argument, own rhythm.
+- **No bilingual doubling.** Never write the same keyword or sentence once in each language (`策略（policy）`, a quote plus its translation, `（English sentence）` glosses). Technical terms appear once, as loanwords, in whatever language the article is written in. Same rule for figures and tables: a Chinese article's mermaid labels and table cells are Chinese.
 - **Tags are a shared vocabulary.** zh-CN and en-UK tags map one to one onto the same canonical concepts (e.g. 安全/safety, 金丝雀/canary); don't let the two tag sets drift apart.
 - **Real incidents are told first-person with specifics** — dates, names, what broke — and must be verifiable with the author or the repo.
 
