@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="The fount Agent Institute: Where Thoughts About Agents Take Root" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/blog/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Field notes from the fount workshop: essays on agent design — what an agent truly is, what an LLM is for, and how to build systems that spend intelligence only where it earns its keep." />
+	<meta name="description" content="Field notes from the fount workshop: essays on agent design — what an agent truly is, what an LLM is for, and how to build systems that spend intelligence only where it earns its keep." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<link rel="icon" type="image/svg+xml" href="https://steve02081504.github.io/fount/imgs/icon.svg" />
+	<link rel="icon" type="image/png" href="https://steve02081504.github.io/fount/imgs/icon.png" />
+	<link rel="icon" type="image/ico" href="https://steve02081504.github.io/fount/imgs/icon.ico" />
+	<title data-i18n="blog.title"></title>
+	<script blocking="render" type="module" src="../preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/themes.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="./blog.css" type="text/css" />
+	<link rel="stylesheet" href="../base.css" type="text/css" />
+</head>
+
+<body class="blog-shell bg-base-200 p-4">
+	<header class="blog-header -mx-4 px-4">
+		<nav class="navbar min-h-14 gap-2 max-w-4xl mx-auto px-0">
+			<div class="flex items-center gap-2 min-w-0">
+				<a href="../" class="btn btn-ghost btn-square" data-i18n="blog.home">
+					<img src="https://steve02081504.github.io/fount/imgs/icon.svg" class="w-6 h-6" alt="" />
+				</a>
+				<a href="./" class="blog-title-link text-lg truncate" data-i18n="blog.title"></a>
+			</div>
+			<div class="flex items-center gap-1">
+				<div id="language-dropdown" class="dropdown dropdown-end" hidden>
+					<button tabindex="0" type="button" class="btn btn-ghost btn-square" data-i18n="blog.language">
+						<img src="https://api.iconify.design/heroicons/language.svg" class="text-icon w-6 h-6" alt="" />
+					</button>
+					<div tabindex="0" class="dropdown-content z-[1] rounded-box w-56 shadow-md bg-base-100">
+						<ul id="language-menu" class="menu p-2 max-h-80 overflow-y-auto" language-check-ignore></ul>
+					</div>
+				</div>
+				<div class="dropdown dropdown-end">
+					<button tabindex="0" type="button" class="btn btn-ghost btn-square" data-i18n="blog.theme">
+						<img src="https://api.iconify.design/line-md/sunny-outline.svg" class="text-icon w-6 h-6" alt="" />
+					</button>
+					<div tabindex="0" class="dropdown-content z-[1] rounded-box w-56 shadow-md bg-base-100">
+						<ul id="theme-menu" class="menu p-2 max-h-80 overflow-y-auto" language-check-ignore></ul>
+					</div>
+				</div>
+			</div>
+		</nav>
+	</header>
+
+	<main class="flex-1 w-full max-w-4xl mx-auto py-10">
+		<h1 class="text-4xl font-bold mb-3" data-i18n="blog.heading"></h1>
+		<p class="text-lg opacity-80 mb-6 max-w-3xl" data-i18n="blog.intro"></p>
+		<input type="text" id="article-search" class="input input-bordered w-full mb-8" data-i18n="blog.search" />
+		<div id="article-list" class="flex flex-col gap-10" user-content>
+			<div class="flex justify-center py-16">
+				<span class="loading loading-ring loading-lg"></span>
+			</div>
+		</div>
+		<div id="search-empty" class="alert alert-warning mt-10" role="status" hidden>
+			<img src="https://api.iconify.design/line-md/text-box.svg" class="text-icon h-6 w-6 flex-shrink-0" alt="" />
+			<span data-i18n="blog.search.empty"></span>
+		</div>
+	</main>
+
+	<footer class="blog-footer -mx-4 px-4 py-6" role="contentinfo">
+		<div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
+			<div class="flex items-center gap-3 flex-1 min-w-0">
+				<img src="https://steve02081504.github.io/fount/imgs/icon.svg" class="w-10 h-10 shrink-0" alt="fount" />
+				<p class="text-sm opacity-80" data-i18n="blog.footer.text"></p>
+			</div>
+			<div class="flex items-center gap-2 shrink-0">
+				<a href="../" class="btn btn-primary btn-sm" data-i18n="blog.footer.install"></a>
+				<a href="https://github.com/steve02081504/fount" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" data-i18n="blog.footer.github"></a>
+			</div>
+		</div>
+	</footer>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

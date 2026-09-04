@@ -683,6 +683,10 @@ export type LocaleData = {
 				title: string
 				'aria-label': string
 			}
+			institute: {
+				title: string
+				'aria-label': string
+			}
 			github: {
 				title: string
 				'aria-label': string
@@ -5299,6 +5303,49 @@ export type LocaleData = {
 					}
 				}
 			}
+		}
+	}
+	blog: {
+		title: string
+		description: string
+		heading: string
+		intro: string
+		search: {
+			placeholder: string
+			'aria-label': string
+			empty: string
+		}
+		home: {
+			title: string
+			'aria-label': string
+		}
+		theme: {
+			title: string
+			'aria-label': string
+		}
+		language: {
+			title: string
+			'aria-label': string
+		}
+		read: string
+		article: {
+			loading: string
+			back: string
+			prev: string
+			next: string
+			toc: string
+			all_articles: string
+			pager: {
+				'aria-label': string
+			}
+			load_failed: string
+			not_found: string
+			langs_unavailable: string
+		}
+		footer: {
+			text: string
+			install: string
+			github: string
 		}
 	}
 	themeManage: {
