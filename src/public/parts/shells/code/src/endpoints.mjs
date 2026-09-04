@@ -19,9 +19,11 @@ import {
 	resolveCommandArgs,
 	searchWorkspaceFiles,
 } from './context.mjs'
+import { appendOwnHistory, getHistory } from './history.mjs'
 import { triggerCodeReply } from './request.mjs'
 import { availableShells, runShellCommand } from './runner.mjs'
 import { deleteSession, listSessions, loadSession, saveSession } from './sessions.mjs'
+import { readWorkspaceConfig } from './workspace_config.mjs'
 
 /**
  * 从请求参数解析目标工作区（machine 字符串化，"0" = 本机）。
@@ -160,6 +162,47 @@ export function setEndpoints(router) {
 		if (!command) throw httpError(400, 'command is required.')
 		const { machine, path: workdir } = parseWorkdir(req.body || {})
 		res.json(await runShellCommand({ username, machine, workdir, shell, command }))
+	})
+
+	// 输入历史（自有 + 原生 shell 历史）
+	router.get('/api/parts/shells\\:code/history', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const { machine, path: workdir } = parseWorkdir(req.query)
+		const kind = String(req.query.kind || '')
+		const shell = String(req.query.shell || '')
+		if (!['shell', 'message'].includes(kind)) throw httpError(400, 'kind must be shell or message.')
+		res.json(await getHistory(username, workdir ? { machine, path: workdir } : undefined, kind, shell))
+	})
+
+	router.post('/api/parts/shells\\:code/history', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const { machine, path: workdir } = parseWorkdir(req.body || {})
+		const { kind, command } = req.body || {}
+		if (!['shell', 'message'].includes(kind)) throw httpError(400, 'kind must be shell or message.')
+		if (!command?.trim()) throw httpError(400, 'command is required.')
+		res.json({ own: await appendOwnHistory(username, workdir ? { machine, path: workdir } : undefined, kind, command) })
+	})
+
+	// 工作区配置（.agents/fount/code.json）
+	router.get('/api/parts/shells\\:code/workspace-config', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const { machine, path: workdir } = parseWorkdir(req.query)
+		res.json(await readWorkspaceConfig(username, workdir ? { machine, path: workdir } : undefined))
+	})
+
+	// 跨工作区会话聚合（顶部对话选择器 / 右侧工作区一览）
+	router.get('/api/parts/shells\\:code/sessions/all', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const workspaces = getWorkspaces(username).list || []
+		/** @type {Array<object>} */
+		const sessions = []
+		for (const workspace of workspaces) {
+			const list = await listSessions(username, { machine: workspace.machine, path: workspace.path }).catch(() => [])
+			for (const session of list)
+				sessions.push({ ...session, workspaceId: workspace.id, workspaceName: workspace.name || workspace.path })
+		}
+		sessions.sort((a, b) => String(b.updated).localeCompare(String(a.updated)))
+		res.json({ sessions })
 	})
 
 	// 文件搜索（@ 文件补全）

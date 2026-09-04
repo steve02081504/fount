@@ -60,7 +60,7 @@
 			"noInstanceRunning": "未检测到运行中的实例，请先启动 fount。",
 			"runPartLog": "运行 ${partpath} 作为 ${username}，参数：${args}",
 			"invokePartLog": "调用 ${partpath} 作为 ${username}，参数：${invokedata}",
-			"invalidCommand": "无效的命令，请使用\"fount run <用户名> <组件路径> <参数...>\"",
+			"invalidCommand": "无效的命令，请使用\"fount run <组件路径> <参数...>\"（或 fount runas <用户名> <组件路径> 指定用户）",
 			"invalidCommandFormat": "无效的命令格式",
 			"unsupportedCommand": "不支持的命令类型",
 			"processMessageError": "处理 IPC 消息时出错：${error}",
@@ -6335,6 +6335,9 @@
 			"empty": "还没有会话",
 			"yesterday": "昨天"
 		},
+		"conversations": {
+			"open": "打开对话…"
+		},
 		"workspaces": {
 			"path": { "aria-label": "工作区路径", "placeholder": "目录路径" },
 			"manage": "工作区",
@@ -6343,6 +6346,7 @@
 			"none": "未选择工作区",
 			"go": "跳转",
 			"select": "选择工作区",
+			"overviewEmpty": "暂无会话",
 			"aria-label": "选择工作区"
 		},
 		"machine": {
@@ -6354,7 +6358,12 @@
 			"switch": "切换角色",
 			"settings": "角色设置",
 			"goodAgent": "如何写一个好 agent？",
-			"none": "未选择角色"
+			"none": "未选择角色",
+			"recommend": "推荐角色 ${charname} 未安装，是否安装？",
+			"recommendAria": "角色安装推荐",
+			"recommendInstall": "安装",
+			"recommendDismiss": "关闭",
+			"recommendInstalled": "已安装角色 ${charname}"
 		},
 		"composer": {
 			"mode": "模式",
@@ -6369,7 +6378,7 @@
 			"sendAria": "发送消息",
 			"stopAria": "停止生成",
 			"modeSwitched": "已切换到 ${mode} 模式",
-			"hint": "空内容键入 ！/! 执行 shell · @ 引用文件 · / 命令 · Tab 轮换模式 · Ctrl+Enter 发送",
+			"hint": "空内容键入 ! 切 shell · @ 引用文件 · / 命令 · ↑↓ 历史 · Tab 补全",
 			"placeholder": "输入命令，Enter 执行（清空退出 shell 模式）",
 			"placeholderNormal": "输入消息开始…（@ 引用文件 · / 命令）",
 			"placeholderShell": "输入 shell 命令…（如 git status）",
@@ -6394,7 +6403,7 @@
 			},
 			"noSession": {
 				"title": "开始新的编码会话",
-				"description": "当前角色：${charname}。直接输入消息开始，或在左侧选择历史会话。"
+				"description": "当前角色：${charname}。直接输入消息开始，或在顶部选栏打开历史会话。"
 			}
 		},
 		"error": {

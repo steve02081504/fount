@@ -1,13 +1,12 @@
 /**
- * code shell 前端主逻辑：会话 / composer（@file、/ 命令、! shell 模式）/ pill 选择器 / 空态引导。
+ * code shell 前端主逻辑：跨工作区会话选择 / 输入历史与影子补全 / 角色覆盖 / pill 选择器 / 空态引导。
  */
 import { createMarkdownRichInput } from '../../scripts/components/markdownRichInput.mjs'
 import { attachMentionAutocomplete } from '../../scripts/components/mentionAutocomplete.mjs'
 import { whoami } from '../../scripts/endpoints/base.mjs'
-import { getPartList, getAnyPreferredDefaultPart } from '../../scripts/endpoints/parts.mjs'
+import { getPartList, getAnyPreferredDefaultPart, runPart } from '../../scripts/endpoints/parts.mjs'
 import { handleError } from '../../scripts/features/errorHandlers.mjs'
 import { renderMarkdownAsString } from '../../scripts/features/markdown/index.mjs'
-import { confirmAction } from '../../scripts/features/promptDialog.mjs'
 import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { initTranslations, geti18n, onLanguageChange } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme/index.mjs'
@@ -26,20 +25,23 @@ applyTheme()
 const $ = id => document.getElementById(id)
 
 const elements = {
-	sessionsList: $('sessions-list'),
+	sessionSelect: $('session-select'),
+	sessionSelectLabel: $('session-select-label'),
+	sessionSelectMenu: $('session-select-menu'),
 	newSessionButton: $('new-session-button'),
-	sessionsCloseButton: $('sessions-close-button'),
-	sessionsToggleButton: $('sessions-toggle-button'),
-	sessionsBackdrop: $('sessions-backdrop'),
 	sessionTitle: $('session-title'),
+	workspaceOverviewPill: $('workspace-overview-pill'),
+	workspaceOverviewLabel: $('workspace-overview-label'),
+	workspaceOverviewMenu: $('workspace-overview-menu'),
 	workspacePill: $('workspace-pill'),
 	workspacePillLabel: $('workspace-pill-label'),
 	workspaceMenu: $('workspace-menu'),
 	machinePill: $('machine-pill'),
 	machinePillLabel: $('machine-pill-label'),
 	machineMenu: $('machine-menu'),
-	charMenuButton: $('char-menu-button'),
-	charMenuLabel: $('char-menu-label'),
+	charPill: $('char-pill'),
+	charPillLabel: $('char-pill-label'),
+	charMenu: $('char-menu'),
 	charSwitchButton: $('char-switch-button'),
 	charSettingsLink: $('char-settings-link'),
 	messages: $('messages'),
@@ -56,7 +58,6 @@ const elements = {
 	shellMenu: $('shell-menu'),
 	sendButton: $('send-button'),
 	sendIcon: $('send-icon'),
-	composerInput: $('composer-input'),
 }
 
 /**
@@ -68,8 +69,9 @@ const state = {
 	workspaces: [],
 	machine: '0',
 	workspace: null,
-	sessions: [],
+	allSessions: [],
 	session: null,
+	lastConversationWorkspaceId: '',
 	profiles: [],
 	commands: [],
 	aiHidden: [],
@@ -85,6 +87,20 @@ const state = {
 	generating: false,
 	dirty: false,
 }
+
+/**
+ * 输入历史状态（普通消息 / shell 各自独立）。
+ */
+const historyState = {
+	mode: null,
+	own: [],
+	native: [],
+}
+
+/**
+ * ↑/↓ 历史导航游标。
+ */
+const historyNav = { pos: null, draft: '' }
 
 const markdownCache = {}
 
@@ -138,6 +154,7 @@ function newSessionObject() {
 		charname: state.charname || '',
 		profile: state.profile,
 		ai_source: state.aiSource,
+		workspaceId: state.workspace?.id || '',
 		created: now,
 		updated: now,
 		memory: {},
@@ -164,91 +181,137 @@ function formatSessionTime(iso) {
 }
 
 /**
- * 渲染会话列表。
+ * 刷新跨工作区会话聚合（顶部选栏 / 右侧一览）。
+ * @returns {Promise<void>}
+ */
+async function refreshAllSessions() {
+	try {
+		state.allSessions = (await api.listAllSessions()).sessions
+	}
+	catch {
+		state.allSessions = []
+	}
+}
+
+/**
+ * 更新顶部会话选择标签。
  * @returns {void}
  */
-function renderSessions() {
-	if (!state.sessions.length) {
-		const empty = document.createElement('div')
-		empty.className = 'code-sessions-empty'
-		empty.textContent = state.workspace ? geti18n('code.sessions.empty') : geti18n('code.workspaces.none')
-		elements.sessionsList.replaceChildren(empty)
-		return
-	}
-	elements.sessionsList.replaceChildren(...state.sessions.map(session => {
-		const item = document.createElement('div')
-		item.className = 'code-session-item' + (state.session?.id === session.id ? ' active' : '')
-		const body = document.createElement('button')
-		body.type = 'button'
-		body.className = 'code-session-item-body'
-		body.addEventListener('click', () => void selectSession(session.id))
+function updateSessionSelectLabel() {
+	elements.sessionSelectLabel.textContent = state.session
+		? state.session.title || geti18n('code.sessions.untitled')
+		: geti18n('code.conversations.open')
+}
+
+/**
+ * 渲染顶部会话选择菜单。
+ * @returns {void}
+ */
+function renderSessionSelectMenu() {
+	elements.sessionSelectMenu.replaceChildren(...state.allSessions.slice(0, 30).map(session => {
+		const li = document.createElement('li')
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'menu-item' + (state.session?.id === session.id && state.workspace?.id === session.workspaceId ? ' active' : '')
 		const title = document.createElement('span')
-		title.className = 'code-session-item-title'
+		title.className = 'menu-item-title'
 		title.textContent = session.title || geti18n('code.sessions.untitled')
-		body.appendChild(title)
-		const time = document.createElement('span')
-		time.className = 'code-session-item-time'
-		time.textContent = formatSessionTime(session.updated || session.created)
-		body.appendChild(time)
-		item.appendChild(body)
-		const del = document.createElement('button')
-		del.type = 'button'
-		del.className = 'btn btn-xs btn-ghost btn-square code-session-item-delete'
-		del.setAttribute('aria-label', geti18n('code.sessions.deleteAria'))
-		del.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>'
-		del.addEventListener('click', event => {
-			event.stopPropagation()
-			void deleteSessionFlow(session)
+		const meta = document.createElement('span')
+		meta.className = 'opacity-60 text-xs'
+		meta.textContent = session.workspaceName + ' · ' + formatSessionTime(session.updated || session.created)
+		button.appendChild(title)
+		button.appendChild(meta)
+		button.addEventListener('click', () => {
+			document.activeElement?.blur()
+			void selectConversation(session)
 		})
-		item.appendChild(del)
-		return item
+		li.appendChild(button)
+		return li
 	}))
 }
 
 /**
- * 删除会话流程（确认 → 调用后端 → 刷新）。
- * @param {object} session - 会话。
- * @returns {Promise<void>}
+ * 渲染右侧工作区一览（各工作区 + 会话内容一览）。
+ * @returns {void}
  */
-async function deleteSessionFlow(session) {
-	if (!state.workspace) return
-	const ok = await confirmAction('code.sessions.deleteConfirm', { title: session.title || geti18n('code.sessions.untitled') })
-	if (!ok) return
-	try {
-		await api.deleteSession(target(), session.id)
+function renderWorkspaceOverviewMenu() {
+	const menu = elements.workspaceOverviewMenu
+	menu.replaceChildren()
+	for (const workspace of state.workspaces) {
+		const headerLi = document.createElement('li')
+		const header = document.createElement('div')
+		header.className = 'menu-title'
+		header.textContent = workspace.name || workspace.path
+		headerLi.appendChild(header)
+		menu.appendChild(headerLi)
+		const sessions = state.allSessions.filter(session => session.workspaceId === workspace.id).slice(0, 6)
+		if (!sessions.length) {
+			const emptyLi = document.createElement('li')
+			const empty = document.createElement('div')
+			empty.className = 'opacity-60 text-xs px-4 py-1'
+			empty.textContent = geti18n('code.workspaces.overviewEmpty')
+			emptyLi.appendChild(empty)
+			menu.appendChild(emptyLi)
+		}
+		else for (const session of sessions) {
+			const li = document.createElement('li')
+			const button = document.createElement('button')
+			button.type = 'button'
+			button.className = 'menu-item'
+			const title = document.createElement('span')
+			title.className = 'menu-item-title'
+			title.textContent = session.title || geti18n('code.sessions.untitled')
+			const time = document.createElement('span')
+			time.className = 'opacity-60 text-xs'
+			time.textContent = formatSessionTime(session.updated || session.created)
+			button.appendChild(title)
+			button.appendChild(time)
+			button.addEventListener('click', () => {
+				document.activeElement?.blur()
+				void selectConversation(session)
+			})
+			li.appendChild(button)
+			menu.appendChild(li)
+		}
 	}
-	catch (error) {
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-		return
-	}
-	if (state.session?.id === session.id) {
-		state.session = null
-		renderMessages()
-	}
-	await refreshSessions()
+	const separatorLi = document.createElement('li')
+	const separator = document.createElement('div')
+	separator.className = 'divider my-1'
+	separatorLi.appendChild(separator)
+	menu.appendChild(separatorLi)
+	const browseLi = document.createElement('li')
+	const browseBtn = document.createElement('button')
+	browseBtn.type = 'button'
+	browseBtn.className = 'menu-item'
+	browseBtn.textContent = geti18n('code.workspaces.browse')
+	browseBtn.addEventListener('click', () => {
+		document.activeElement?.blur()
+		void openFolderBrowser()
+	})
+	browseLi.appendChild(browseBtn)
+	menu.appendChild(browseLi)
 }
 
 /**
- * 刷新会话列表（从工作区读取）。
- * @returns {Promise<void>}
+ * 更新右侧工作区一览标签。
+ * @returns {void}
  */
-async function refreshSessions() {
-	if (!state.workspace) {
-		state.sessions = []
-		renderSessions()
-		return
-	}
-	try {
-		state.sessions = (await api.listSessions(target())).sessions
-	}
-	catch {
-		state.sessions = []
-	}
-	renderSessions()
+function updateWorkspaceOverviewLabel() {
+	elements.workspaceOverviewLabel.textContent = state.workspace?.name || state.workspace?.path || geti18n('code.workspaces.none')
 }
 
 /**
- * 选择会话。
+ * 选择会话（跨工作区）。
+ * @param {object} session - 聚合会话（含 workspaceId）。
+ * @returns {Promise<void>}
+ */
+async function selectConversation(session) {
+	if (state.workspace?.id !== session.workspaceId) await selectWorkspace(session.workspaceId)
+	await selectSession(session.id)
+}
+
+/**
+ * 选择会话（当前工作区内）。
  * @param {string} id - 会话 id。
  * @returns {Promise<void>}
  */
@@ -257,7 +320,11 @@ async function selectSession(id) {
 		state.session = await api.loadSession(target(), id)
 	}
 	catch {
-		state.session = state.sessions.find(s => s.id === id) || null
+		state.session = state.allSessions.find(s => s.id === id && s.workspaceId === state.workspace?.id) || null
+	}
+	if (state.session) {
+		state.session.workspaceId = state.workspace?.id
+		state.lastConversationWorkspaceId = state.workspace?.id
 	}
 	state.charname = state.session?.charname || state.charname
 	state.aiSource = state.session?.ai_source ?? ''
@@ -266,19 +333,22 @@ async function selectSession(id) {
 	renderModePillLabel()
 	renderAiSourcePillLabel()
 	renderMessages()
-	renderSessions()
+	updateSessionSelectLabel()
+	renderSessionSelectMenu()
 }
 
 /**
- * 开始新会话。
- * @returns {void}
+ * 开始新会话（默认在上一个对话的工作区）。
+ * @returns {Promise<void>}
  */
-function startNewSession() {
+async function startNewSession() {
+	const workspaceId = state.session?.workspaceId || state.lastConversationWorkspaceId
+	if (workspaceId && state.workspace?.id !== workspaceId)
+		await selectWorkspace(workspaceId)
 	state.session = newSessionObject()
-	state.sessions.unshift({ ...state.session })
-	renderSessions()
+	state.lastConversationWorkspaceId = state.workspace?.id
+	updateSessionSelectLabel()
 	renderMessages()
-	closeSessionsDrawer()
 	elements.composerInput.focus()
 }
 
@@ -342,11 +412,11 @@ function renderEntryBubble(entry) {
 			content.innerHTML = html
 		})
 	}
-	else 
+	else
 		renderMarkdownAsString(messageMarkdown(entry.content), markdownCache).then(html => {
 			body.innerHTML = html
 		})
-	
+
 	for (const file of entry.files || []) {
 		const chip = document.createElement('div')
 		chip.className = 'text-xs opacity-70'
@@ -530,6 +600,189 @@ attachMentionAutocomplete(elements.composerInput, {
 	trailingSpace: false,
 	listboxPrefix: 'code-file',
 })
+
+/* ---------------- 输入历史 / 影子补全 ---------------- */
+
+/**
+ * 合并历史条目（保持去重；已存在的本地追加优先，避免加载覆盖加载期间的本地新条目）。
+ * @param {string[]} loaded - 后端读取的历史（追加序）。
+ * @param {string[]} existing - 本地已有历史（追加序）。
+ * @returns {string[]} 合并结果。
+ */
+function mergeHistoryEntries(loaded, existing) {
+	const seen = new Set()
+	/** @type {string[]} */
+	const out = []
+	for (const entry of [...loaded, ...existing]) {
+		if (!entry || seen.has(entry)) continue
+		seen.add(entry)
+		out.push(entry)
+	}
+	return out
+}
+
+/**
+ * 加载当前模式历史。
+ * @param {'shell'|'message'} mode - 历史模式。
+ * @returns {Promise<void>}
+ */
+async function loadHistory(mode) {
+	if (mode === 'shell') {
+		const data = await api.getHistory(target(), 'shell', state.shell).catch(() => ({ own: [], native: [] }))
+		historyState.own = mergeHistoryEntries(data.own || [], historyState.own)
+		historyState.native = data.native || []
+	}
+	else if (state.workspace) {
+		const data = await api.getHistory(target(), 'message').catch(() => ({ own: [] }))
+		historyState.own = mergeHistoryEntries(data.own || [], historyState.own)
+		historyState.native = []
+	}
+	else {
+		historyState.own = mergeHistoryEntries(JSON.parse(getPref('messageHistory') || '[]'), historyState.own)
+		historyState.native = []
+	}
+	historyState.mode = mode
+}
+
+/**
+ * 确保当前模式历史已加载。
+ * @param {'shell'|'message'} mode - 历史模式。
+ * @returns {Promise<void>}
+ */
+async function ensureHistory(mode) {
+	if (historyState.mode === mode) return
+	await loadHistory(mode)
+}
+
+/**
+ * 合并后的补全候选（自有优先、newest-first、去重）。
+ * @returns {string[]} 候选列表。
+ */
+function historySuggestions() {
+	const seen = new Set()
+	/** @type {string[]} */
+	const merged = []
+	for (const entry of [...historyState.own].reverse().concat(historyState.native)) {
+		if (!entry || seen.has(entry)) continue
+		seen.add(entry)
+		merged.push(entry)
+	}
+	return merged
+}
+
+/**
+ * 自有历史（newest-first，↑/↓ 遍历用）。
+ * @returns {string[]} 历史列表。
+ */
+function ownHistoryNewest() {
+	return [...historyState.own].reverse()
+}
+
+/**
+ * 移除影子补全 span。
+ * @returns {void}
+ */
+function removeGhost() {
+	elements.composerInput.querySelector('.code-composer-ghost')?.remove()
+}
+
+/**
+ * 渲染影子补全（光标在末尾且历史存在前缀匹配时）。
+ * @returns {void}
+ */
+function updateGhost() {
+	removeGhost()
+	const value = richInput.value
+	if (!value || !historySuggestions().length) return
+	if (elements.composerInput.selectionStart !== value.length) return
+	const ghostText = historySuggestions().find(entry => entry.length > value.length && entry.startsWith(value)) || ''
+	if (!ghostText) return
+	const ghost = document.createElement('span')
+	ghost.className = 'code-composer-ghost'
+	ghost.setAttribute('contenteditable', 'false')
+	ghost.dataset.emptySlot = '1'
+	ghost.textContent = ghostText.slice(value.length)
+	elements.composerInput.appendChild(ghost)
+}
+
+/**
+ * 接受影子补全（Tab / →）。
+ * @returns {boolean} 是否已接受。
+ */
+function acceptGhost() {
+	const ghost = elements.composerInput.querySelector('.code-composer-ghost')
+	if (!ghost?.textContent) return false
+	const remainder = ghost.textContent
+	removeGhost()
+	const caret = elements.composerInput.selectionStart
+	richInput.setRangeText(remainder, caret, caret, 'end')
+	elements.composerInput.dispatchEvent(new Event('input', { bubbles: true }))
+	return true
+}
+
+/**
+ * 光标是否在第 1 行（↑ 可触发历史导航）。
+ * @returns {boolean} 是否首行。
+ */
+function isAtFirstLine() {
+	return !richInput.value.slice(0, elements.composerInput.selectionStart).includes('\n')
+}
+
+/**
+ * 光标是否在最后一行（↓ 可触发历史导航）。
+ * @returns {boolean} 是否末行。
+ */
+function isAtLastLine() {
+	return !richInput.value.slice(elements.composerInput.selectionStart).includes('\n')
+}
+
+/** 历史导航派发的 input 事件标志（避免重置导航游标）。 */
+let fromNav = false
+
+/**
+ * ↑/↓ 历史导航（仅当前模式自有历史）。
+ * pos 语义：0 = 草稿（最新边界），n = 从草稿起第 n 条历史（entries[n-1]）。
+ * @param {number} direction - -1 更旧（↑）/ +1 更新（↓）。
+ * @returns {void}
+ */
+function navHistory(direction) {
+	const entries = ownHistoryNewest()
+	if (!entries.length) return
+	if (historyNav.pos === null) {
+		historyNav.draft = richInput.value
+		historyNav.pos = 0
+	}
+	const next = Math.max(0, Math.min(entries.length, historyNav.pos - direction))
+	if (next === historyNav.pos) return
+	historyNav.pos = next
+	richInput.value = next === 0 ? historyNav.draft : entries[next - 1]
+	fromNav = true
+	elements.composerInput.dispatchEvent(new Event('input', { bubbles: true }))
+	fromNav = false
+}
+
+/**
+ * 追加一条自有历史并持久化（本地状态立即更新；无工作区时消息历史回退 localStorage）。
+ * @param {'shell'|'message'} kind - 历史类型。
+ * @param {string} command - 条目内容。
+ * @returns {void}
+ */
+function appendLocalHistory(kind, command) {
+	historyState.own = [...historyState.own.filter(entry => entry !== command), command]
+	if (!command?.trim()) return
+	if (kind === 'shell') {
+		if (state.workspace) void api.appendHistory(target(), 'shell', command).catch(() => { })
+	}
+	else if (state.workspace) 
+		void api.appendHistory(target(), 'message', command).catch(() => { })
+	
+	else {
+		const list = JSON.parse(getPref('messageHistory') || '[]')
+		setPref('messageHistory', JSON.stringify([...list.filter(entry => entry !== command), command].slice(-500)))
+	}
+}
+
+/* ---------------- `/` 命令面板 ---------------- */
 
 /**
  * `/` 命令补全面板。
@@ -772,8 +1025,10 @@ function finishGeneration(entries, memory, aborted = false) {
 	updateSendButton()
 	updateSessionTitle()
 	if (aborted) showToastI18n('info', 'code.error.aborted')
-	renderSessions()
+	updateSessionSelectLabel()
+	renderSessionSelectMenu()
 	markSessionDirty()
+	void refreshAllSessions()
 }
 
 /**
@@ -796,7 +1051,7 @@ function updateSendButton() {
  */
 async function sendMessage(content) {
 	if (!content?.trim() || state.generating) return
-	if (!state.session) startNewSession()
+	if (!state.session) await startNewSession()
 	state.session.charname = state.charname || state.session.charname
 	if (!state.session.charname) {
 		showToastI18n('error', 'code.error.noChar')
@@ -804,6 +1059,7 @@ async function sendMessage(content) {
 	}
 	state.session.profile = state.profile
 	state.session.ai_source = state.aiSource
+	appendLocalHistory('message', content)
 	state.generating = true
 	updateSendButton()
 	startGeneratingBubble()
@@ -832,7 +1088,8 @@ async function sendMessage(content) {
  * @returns {Promise<void>}
  */
 async function execShellMode(command) {
-	if (!state.session) startNewSession()
+	appendLocalHistory('shell', command)
+	if (!state.session) await startNewSession()
 	const userEntry = {
 		id: crypto.randomUUID().slice(0, 8),
 		uid: 'user',
@@ -857,6 +1114,7 @@ async function execShellMode(command) {
 	appendEntryBubble(toolEntry)
 	state.session.updated = new Date().toISOString()
 	markSessionDirty()
+	void refreshAllSessions()
 }
 
 /* ---------------- 缓存 flush ---------------- */
@@ -1036,11 +1294,19 @@ async function selectWorkspace(id) {
 	}
 	setPref('workspace', state.workspace.id)
 	state.session = null
-	await Promise.all([refreshSessions(), refreshProfiles()])
-	renderSessions()
+	historyState.mode = null
+	historyNav.pos = null
+	removeGhost()
+	await Promise.all([refreshAllSessions(), refreshProfiles()])
 	renderMessages()
 	renderWorkspacePillLabel()
 	renderWorkspaceMenu()
+	updateSessionSelectLabel()
+	renderSessionSelectMenu()
+	updateWorkspaceOverviewLabel()
+	renderWorkspaceOverviewMenu()
+	void ensureHistory(state.shellMode ? 'shell' : 'message')
+	void applyWorkspaceCharConfig()
 }
 
 /**
@@ -1054,10 +1320,14 @@ async function removeCurrentWorkspace() {
 	state.workspace = null
 	setPref('workspace', '')
 	state.session = null
+	historyState.mode = null
 	renderWorkspacePillLabel()
 	renderWorkspaceMenu()
-	await Promise.all([refreshSessions(), refreshProfiles()])
-	renderSessions()
+	updateWorkspaceOverviewLabel()
+	renderWorkspaceOverviewMenu()
+	updateSessionSelectLabel()
+	renderSessionSelectMenu()
+	await Promise.all([refreshAllSessions(), refreshProfiles()])
 	renderMessages()
 }
 
@@ -1075,6 +1345,9 @@ function renderShellMenu() {
 		button.addEventListener('click', () => {
 			document.activeElement?.blur()
 			state.shell = shell
+			// shell 变更后重读原生历史
+			historyState.mode = null
+			void ensureHistory('shell')
 			renderShellMenu()
 			renderShellPillLabel()
 		})
@@ -1102,7 +1375,7 @@ async function refreshProfiles() {
 		state.profiles = [{ name: 'plan', source: 'builtin', description: '' }, { name: 'build', source: 'builtin', description: '' }]
 		state.commands = []
 	}
-	else 
+	else
 		try {
 			const data = await api.getProfiles(target())
 			state.profiles = data.profiles
@@ -1112,7 +1385,7 @@ async function refreshProfiles() {
 			state.profiles = []
 			state.commands = []
 		}
-	
+
 	renderModeMenu()
 	renderModePillLabel()
 }
@@ -1295,11 +1568,11 @@ async function openAiSourcePanel() {
 /* ---------------- 角色 ---------------- */
 
 /**
- * 更新角色菜单显示。
+ * 更新角色 pill 显示。
  * @returns {void}
  */
 function updateCharMenu() {
-	elements.charMenuLabel.textContent = state.charname || geti18n('code.char.none')
+	elements.charPillLabel.textContent = state.charname || geti18n('code.char.none')
 	elements.charSettingsLink.href = `/parts/shells:config/?partpath=${encodeURIComponent('chars/' + (state.charname || ''))}`
 }
 
@@ -1350,38 +1623,130 @@ async function openCharSwitchDialog() {
 	}
 }
 
-/* ---------------- 移动端侧栏 ---------------- */
+/* ---------------- 工作区角色覆盖 / 推荐 ---------------- */
+
+/** 当前角色推荐卡（右下角）。 */
+let recommendationCard = null
+/** 当前角色推荐配置（语言切换时按当前语种重建卡片）。 */
+let recommendationSpec = null
 
 /**
- * 打开/关闭移动端会话侧栏。
- * @param {boolean} open - 目标开合状态。
+ * 仅移除推荐卡 DOM（保留配置，供语言切换重建）。
  * @returns {void}
  */
-function toggleSessionsDrawer(open) {
-	const forceOpen = open ?? !document.querySelector('.code-sessions').classList.contains('open')
-	document.querySelector('.code-sessions').classList.toggle('open', forceOpen)
-	elements.sessionsBackdrop.classList.toggle('hidden', !forceOpen)
+function removeRecommendationCard() {
+	recommendationCard?.remove()
+	recommendationCard = null
 }
 
 /**
- * 关闭移动端会话侧栏。
+ * 收起角色推荐卡（并清除配置，语言切换不再重建）。
  * @returns {void}
  */
-function closeSessionsDrawer() {
-	toggleSessionsDrawer(false)
+function dismissCharRecommendation() {
+	removeRecommendationCard()
+	recommendationSpec = null
+}
+
+/**
+ * 按当前语种渲染角色推荐卡。
+ * @returns {void}
+ */
+function renderCharRecommendation() {
+	removeRecommendationCard()
+	const spec = recommendationSpec
+	if (!spec?.partname) return
+	// 固定悬浮卡片需包裹 `<nav>` 地标（axe region 规则要求内容在地标内）
+	const card = document.createElement('nav')
+	card.className = 'code-char-recommend hidden'
+	card.setAttribute('aria-label', geti18n('code.char.recommendAria'))
+	const text = document.createElement('div')
+	text.className = 'code-char-recommend-text'
+	// 角色名为工作区用户数据，跳过语种扫描
+	text.setAttribute('user-content', '')
+	text.textContent = geti18n('code.char.recommend', { charname: spec.partname })
+	const actions = document.createElement('div')
+	actions.className = 'code-char-recommend-actions'
+	const installBtn = document.createElement('button')
+	installBtn.type = 'button'
+	installBtn.className = 'btn btn-xs btn-primary'
+	installBtn.textContent = geti18n('code.char.recommendInstall')
+	installBtn.addEventListener('click', () => void installRecommendedChar(spec))
+	const closeBtn = document.createElement('button')
+	closeBtn.type = 'button'
+	closeBtn.className = 'btn btn-xs btn-ghost'
+	closeBtn.textContent = geti18n('code.char.recommendDismiss')
+	closeBtn.addEventListener('click', dismissCharRecommendation)
+	actions.append(installBtn, closeBtn)
+	card.append(text, actions)
+	document.body.appendChild(card)
+	recommendationCard = card
+	requestAnimationFrame(() => card.classList.remove('hidden'))
+}
+
+/**
+ * 安装工作区推荐角色。
+ * @param {{partname: string, install_url?: string}} spec - 推荐配置。
+ * @returns {Promise<void>}
+ */
+async function installRecommendedChar(spec) {
+	try {
+		await runPart('shells/install', ['install', spec.install_url || spec.partname])
+		await refreshChars()
+		if (state.chars.includes(spec.partname)) {
+			state.charname = spec.partname
+			setPref('charname', spec.partname)
+			updateCharMenu()
+		}
+		showToastI18n('success', 'code.char.recommendInstalled', { charname: spec.partname })
+	}
+	catch (error) {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
+	finally {
+		dismissCharRecommendation()
+	}
+}
+
+/**
+ * 展示右下角角色推荐卡（未安装时）。
+ * @param {{partname: string, install_url?: string}} spec - 推荐配置。
+ * @returns {void}
+ */
+function showCharRecommendation(spec) {
+	recommendationSpec = spec
+	renderCharRecommendation()
+}
+
+/**
+ * 应用工作区角色配置（已安装自动选中；未安装右下角推荐）。
+ * @returns {Promise<void>}
+ */
+async function applyWorkspaceCharConfig() {
+	if (!state.workspace) return
+	const config = await api.getWorkspaceConfig(target()).catch(() => ({}))
+	const spec = config.char
+	if (!spec?.partname) return
+	if (state.chars.includes(spec.partname)) {
+		state.charname = spec.partname
+		setPref('charname', spec.partname)
+		updateCharMenu()
+		renderMessages()
+	}
+	else showCharRecommendation(spec)
 }
 
 /* ---------------- 事件绑定 ---------------- */
 
-elements.newSessionButton.addEventListener('click', startNewSession)
-elements.sessionsToggleButton.addEventListener('click', () => toggleSessionsDrawer())
-elements.sessionsCloseButton.addEventListener('click', () => toggleSessionsDrawer(false))
-elements.sessionsBackdrop.addEventListener('click', () => toggleSessionsDrawer(false))
+elements.newSessionButton.addEventListener('click', () => void startNewSession())
+elements.sessionSelect.addEventListener('click', renderSessionSelectMenu)
+elements.workspaceOverviewPill.addEventListener('click', renderWorkspaceOverviewMenu)
 elements.workspacePill.addEventListener('click', () => renderWorkspaceMenu())
 elements.machinePill.addEventListener('click', () => renderMachineMenu())
 elements.modePill.addEventListener('click', () => renderModeMenu())
 elements.aiSourcePill.addEventListener('click', () => renderAiSourceMenu())
 elements.shellPill.addEventListener('click', () => renderShellMenu())
+elements.charPill.addEventListener('click', () => { })
 elements.charSwitchButton.addEventListener('click', () => {
 	void openCharSwitchDialog()
 })
@@ -1394,56 +1759,53 @@ elements.sendButton.addEventListener('click', () => {
 	if (!value) return
 	richInput.value = ''
 	if (state.shellMode) {
-		state.shellMode = false
-		document.querySelector('.code-composer-shell').classList.remove('shell-mode')
-		elements.shellPillWrap.classList.add('hidden')
-		suppressComposerInput = true
-		richInput.value = ''
-		updateComposerPlaceholder()
-		void execShellMode(value.replace(/^[!！]/, '')).catch(error => showToastI18n('error', 'code.error.generic', { error: String(error.message || error) }))
+		exitShellMode()
+		void execShellMode(value).catch(error => showToastI18n('error', 'code.error.generic', { error: String(error.message || error) }))
 	}
 	else void sendMessage(value)
 })
 
-/** 程序性设置 richInput.value 引发的 input 事件抑制标志。 */
-let suppressComposerInput = false
+/**
+ * 退出 shell 模式（回到普通消息模式）。
+ * @returns {void}
+ */
+function exitShellMode() {
+	if (!state.shellMode) return
+	state.shellMode = false
+	document.querySelector('.code-composer-shell').classList.remove('shell-mode')
+	elements.shellPillWrap.classList.add('hidden')
+	updateComposerPlaceholder()
+	removeGhost()
+}
 
 elements.composerInput.addEventListener('input', () => {
-	if (suppressComposerInput) {
-		suppressComposerInput = false
-		return
-	}
+	if (!fromNav) historyNav.pos = null
 	const value = richInput.value
-	// ！/! 切 shell 执行模式：内容为空时键入全角/半角叹号；保留 ！ 作为模式提示
+	// ！/! 切 shell 执行模式：内容为空时键入叹号，进入后移除该字符，供干净命令输入
 	if (!state.shellMode && (value === '！' || value === '!')) {
 		state.shellMode = true
+		richInput.value = ''
 		document.querySelector('.code-composer-shell').classList.add('shell-mode')
 		elements.shellPillWrap.classList.remove('hidden')
 		updateComposerPlaceholder()
+		void ensureHistory('shell')
 		return
 	}
-	if (state.shellMode) {
-		// 删光内容退出 shell 模式
-		if (!value) {
-			state.shellMode = false
-			suppressComposerInput = true
-			richInput.value = ''
-			document.querySelector('.code-composer-shell').classList.remove('shell-mode')
-			elements.shellPillWrap.classList.add('hidden')
-			updateComposerPlaceholder()
-		}
+	if (state.shellMode) 
 		hideSlashPanel()
-		return
+	
+	else {
+		// / 命令面板
+		const caret = elements.composerInput.selectionStart
+		const before = value.slice(0, caret)
+		const slashMatch = before.match(/(?:^|\s)\/([^\s/]*)$/)
+		if (slashMatch) {
+			slashRange = { start: caret - slashMatch[1].length - 1, end: caret }
+			showSlashPanel(slashMatch[1])
+		}
+		else hideSlashPanel()
 	}
-	// / 命令面板
-	const caret = richInput.selectionStart
-	const before = value.slice(0, caret)
-	const slashMatch = before.match(/(?:^|\s)\/([^\s/]*)$/)
-	if (slashMatch) {
-		slashRange = { start: caret - slashMatch[1].length - 1, end: caret }
-		showSlashPanel(slashMatch[1])
-	}
-	else hideSlashPanel()
+	updateGhost()
 })
 elements.composerInput.addEventListener('keydown', event => {
 	if (!slashPanel.classList.contains('hidden')) {
@@ -1469,10 +1831,35 @@ elements.composerInput.addEventListener('keydown', event => {
 			return
 		}
 	}
-	// Tab 轮换 mode
+	// shell 模式空内容 Backspace 退出
+	if (state.shellMode && event.key === 'Backspace' && !richInput.value) {
+		event.preventDefault()
+		exitShellMode()
+		return
+	}
+	// Tab / →（光标在末尾）接受影子补全
+	if (event.key === 'Tab' || (event.key === 'ArrowRight' && elements.composerInput.selectionStart === richInput.value.length)) 
+		if (acceptGhost()) {
+			event.preventDefault()
+			return
+		}
+	
+	// Tab 轮换 mode（无影子补全且非 shell 模式）
 	if (event.key === 'Tab' && !event.shiftKey && !event.ctrlKey && !event.altKey && !state.shellMode) {
 		event.preventDefault()
 		cycleMode()
+		return
+	}
+	// ↑/↓ 边缘行历史导航
+	if (event.key === 'ArrowUp' && !event.shiftKey && !event.ctrlKey && !event.altKey && isAtFirstLine()) {
+		event.preventDefault()
+		navHistory(-1)
+		return
+	}
+	if (event.key === 'ArrowDown' && !event.shiftKey && !event.ctrlKey && !event.altKey && isAtLastLine()) {
+		event.preventDefault()
+		navHistory(1)
+		return
 	}
 	// Ctrl/Cmd+Enter 发送
 	if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
@@ -1570,6 +1957,8 @@ async function selectBrowsedFolder(path) {
 	state.workspace = state.workspaces.find(w => w.path === path && w.machine === machine) || null
 	renderWorkspacePillLabel()
 	renderWorkspaceMenu()
+	updateWorkspaceOverviewLabel()
+	renderWorkspaceOverviewMenu()
 	dialog.close()
 	await selectWorkspace(state.workspace?.id || '')
 }
@@ -1581,7 +1970,8 @@ async function selectBrowsedFolder(path) {
  * @returns {void}
  */
 function rerenderDynamicText() {
-	renderSessions()
+	renderSessionSelectMenu()
+	renderWorkspaceOverviewMenu()
 	renderMachinePillLabel()
 	renderMachineMenu()
 	renderWorkspacePillLabel()
@@ -1595,7 +1985,10 @@ function rerenderDynamicText() {
 	updateCharMenu()
 	updateSendButton()
 	updateSessionTitle()
+	updateSessionSelectLabel()
+	updateWorkspaceOverviewLabel()
 	updateComposerPlaceholder()
+	renderCharRecommendation()
 	backToBottom.setAttribute('aria-label', geti18n('code.messages.backToBottom'))
 	if (!(state.session?.entries?.length || 0)) renderMessages()
 }
@@ -1617,8 +2010,11 @@ async function boot() {
 	state.workspaces = workspaces
 	state.machine = getPref('machine', '0')
 	if (!machines.some(m => String(m.id) === state.machine && (m.id === '0' || m.isConnected))) state.machine = '0'
-	const savedWorkspace = getPref('workspace')
+	// `fount run` 打开的页面经 ?workspace= 直达目标工作区
+	const urlWorkspace = new URLSearchParams(location.search).get('workspace')
+	const savedWorkspace = urlWorkspace || getPref('workspace')
 	state.workspace = workspaces.find(w => w.id === savedWorkspace) || workspaces[0] || null
+	if (state.workspace && urlWorkspace) setPref('workspace', state.workspace.id)
 	state.charname = getPref('charname') || await getAnyPreferredDefaultPart('chars') || null
 	state.profile = getPref('profile', 'build')
 	state.aiSource = getPref('aiSource', '')
@@ -1628,9 +2024,11 @@ async function boot() {
 	updateCharMenu()
 	updateSendButton()
 	renderShellPillLabel()
-	await Promise.all([refreshProfiles(), refreshAiSources(), refreshSessions(), refreshChars()])
+	await Promise.all([refreshProfiles(), refreshAiSources(), refreshAllSessions(), refreshChars()])
 	renderMessages()
 	rerenderDynamicText()
+	void ensureHistory(state.shellMode ? 'shell' : 'message')
+	if (state.workspace) void applyWorkspaceCharConfig()
 	elements.composerInput.focus()
 }
 

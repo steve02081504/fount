@@ -9,110 +9,6 @@
 	color: var(--color-base-content);
 }
 
-/* ---------------- 侧栏（会话列表） ---------------- */
-
-.code-sessions {
-	display: flex;
-	flex-direction: column;
-	width: 16rem;
-	flex-shrink: 0;
-	border-right: var(--border) solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
-	background: color-mix(in oklch, var(--color-base-200) 55%, transparent);
-}
-
-.code-sessions-head {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 0.75rem;
-}
-
-.code-sessions-close {
-	display: none;
-}
-
-.code-sessions-list {
-	flex: 1;
-	overflow-y: auto;
-	padding: 0 0.5rem 0.75rem;
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-
-.code-sessions-empty {
-	padding: 1.25rem 0.75rem;
-	text-align: center;
-	font-size: 0.8125rem;
-	opacity: 0.6;
-}
-
-.code-session-item {
-	position: relative;
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	width: 100%;
-	text-align: left;
-	border-radius: var(--radius-field);
-	padding: 0.4375rem 0.5rem;
-	cursor: pointer;
-}
-
-.code-session-item:hover {
-	background: color-mix(in oklch, var(--color-base-300) 90%, transparent);
-}
-
-.code-session-item.active {
-	background: color-mix(in oklch, var(--color-primary) 16%, transparent);
-}
-
-.code-session-item-body {
-	flex: 1;
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	text-align: left;
-	background: none;
-	border: 0;
-	padding: 0;
-	font: inherit;
-	color: inherit;
-	cursor: pointer;
-}
-
-.code-session-item-title {
-	display: block;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-size: 0.8125rem;
-	font-weight: 500;
-}
-
-.code-session-item.active .code-session-item-title {
-	font-weight: 600;
-}
-
-.code-session-item-time {
-	display: block;
-	font-size: 0.6875rem;
-	opacity: 0.5;
-	margin-top: 0.125rem;
-}
-
-.code-session-item-delete {
-	opacity: 0;
-	transition: opacity 0.12s;
-	flex-shrink: 0;
-}
-
-.code-session-item:hover .code-session-item-delete,
-.code-session-item:focus-within .code-session-item-delete {
-	opacity: 1;
-}
-
 /* ---------------- 主区 ---------------- */
 
 .code-main {
@@ -131,8 +27,18 @@
 	z-index: 10;
 }
 
-.code-sessions-toggle {
-	display: none;
+.code-topbar-left {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	flex-shrink: 0;
+}
+
+.code-topbar-right {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	flex-shrink: 0;
 }
 
 .code-session-title {
@@ -143,12 +49,7 @@
 	white-space: nowrap;
 	font-size: 0.875rem;
 	font-weight: 600;
-}
-
-.code-topbar-actions {
-	display: flex;
-	align-items: center;
-	gap: 0.375rem;
+	text-align: center;
 }
 
 /* pill 选择器（opencode 式） */
@@ -173,6 +74,11 @@
 	border-color: color-mix(in oklch, var(--color-base-content) 30%, transparent);
 }
 
+.code-pill.code-pill-primary {
+	border-color: color-mix(in oklch, var(--color-primary) 45%, transparent);
+	background: color-mix(in oklch, var(--color-primary) 12%, transparent);
+}
+
 .code-pill .code-pill-label {
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -182,6 +88,13 @@
 .code-pill .code-pill-chevron {
 	opacity: 0.6;
 	flex-shrink: 0;
+}
+
+.menu-item-title {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* ---------------- 消息流 ---------------- */
@@ -378,6 +291,14 @@ details.code-tool-log > summary .code-tool-log-name {
 	font-size: 0.875rem;
 }
 
+/* 影子补全（bash 式 ghost） */
+.code-composer-ghost {
+	opacity: 0.45;
+	pointer-events: none;
+	user-select: none;
+	white-space: pre-wrap;
+}
+
 .code-composer-controls {
 	display: flex;
 	align-items: center;
@@ -388,13 +309,15 @@ details.code-tool-log > summary .code-tool-log-name {
 
 .code-composer-controls-main {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.375rem;
 	flex: 1;
 	min-width: 0;
 }
 
-.code-composer-shell.shell-mode .code-composer-controls-main {
+/* shell 模式：除 shell pill 外其余选择器淡出 */
+.code-composer-shell.shell-mode .code-composer-controls-main > :not(#shell-pill-wrap) {
 	opacity: 0;
 	pointer-events: none;
 }
@@ -428,6 +351,17 @@ details.code-tool-log > summary .code-tool-log-name {
 	font-size: 0.6875rem;
 	opacity: 0.5;
 	text-align: center;
+}
+
+/* 机器 / 工作区 / 角色选择行：composer 卡片下方，居中 */
+.code-composer-targets {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.375rem;
+	max-width: 52rem;
+	margin: 0.5rem auto 0;
 }
 
 /* slash 命令面板（composer 上方弹出卡片） */
@@ -472,6 +406,39 @@ details.code-tool-log > summary .code-tool-log-name {
 	white-space: nowrap;
 }
 
+/* ---------------- 角色推荐卡（右下角） ---------------- */
+
+.code-char-recommend {
+	position: fixed;
+	right: 1rem;
+	bottom: 1rem;
+	z-index: 80;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	max-width: 22rem;
+	padding: 0.625rem 0.75rem;
+	border-radius: var(--radius-box);
+	border: var(--border) solid color-mix(in oklch, var(--color-primary) 40%, transparent);
+	background: var(--color-base-100);
+	box-shadow: 0 8px 28px color-mix(in oklch, var(--color-base-content) 16%, transparent);
+}
+
+.code-char-recommend.hidden {
+	display: none;
+}
+
+.code-char-recommend-text {
+	font-size: 0.8125rem;
+	line-height: 1.4;
+}
+
+.code-char-recommend-actions {
+	display: flex;
+	gap: 0.375rem;
+	flex-shrink: 0;
+}
+
 /* ---------------- 文件夹浏览器 ---------------- */
 
 .code-folder-entry {
@@ -512,33 +479,4 @@ details.code-tool-log > summary .code-tool-log-name {
 
 .char-option.active {
 	font-weight: 600;
-}
-
-/* ---------------- 移动端 ---------------- */
-
-@media (max-width: 768px) {
-	.code-sessions {
-		position: absolute;
-		z-index: 40;
-		height: 100dvh;
-		transform: translateX(-100%);
-		transition: transform 0.2s;
-		box-shadow: 4px 0 24px color-mix(in oklch, var(--color-base-content) 12%, transparent);
-	}
-
-	.code-sessions.open {
-		transform: translateX(0);
-	}
-
-	.code-sessions-close,
-	.code-sessions-toggle {
-		display: inline-flex;
-	}
-
-	.code-backdrop {
-		position: absolute;
-		inset: 0;
-		z-index: 30;
-		background: color-mix(in oklch, var(--color-base-content) 30%, transparent);
-	}
 }

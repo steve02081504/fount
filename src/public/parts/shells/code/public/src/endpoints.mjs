@@ -147,6 +147,45 @@ export async function setAiSourceVisibility(hidden) {
 }
 
 /**
+ * 读取输入历史（自有 + 原生 shell 历史）。
+ * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {'shell'|'message'} kind - 历史类型。
+ * @param {string} [shell] - shell 名（kind 为 shell 时读取原生历史）。
+ * @returns {Promise<{own: string[], native: string[]}>} 历史列表。
+ */
+export async function getHistory(target, kind, shell = '') {
+	return requestJson(`${API_BASE}/history?machine=${target.machine}&workdir=${encodeURIComponent(target.workdir)}&kind=${kind}&shell=${encodeURIComponent(shell)}`)
+}
+
+/**
+ * 追加一条输入历史。
+ * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {'shell'|'message'} kind - 历史类型。
+ * @param {string} command - 条目内容。
+ * @returns {Promise<{own: string[]}>} 追加后的历史。
+ */
+export async function appendHistory(target, kind, command) {
+	return requestJson(`${API_BASE}/history`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...target, kind, command }) })
+}
+
+/**
+ * 读取工作区配置（.agents/fount/code.json）。
+ * @param {{machine: number, workdir: string}} target - 目标。
+ * @returns {Promise<object>} 配置对象。
+ */
+export async function getWorkspaceConfig(target) {
+	return requestJson(`${API_BASE}/workspace-config?machine=${target.machine}&workdir=${encodeURIComponent(target.workdir)}`)
+}
+
+/**
+ * 跨工作区聚合会话（顶部对话选择器 / 工作区一览）。
+ * @returns {Promise<{sessions: Array<object>}>} 聚合会话（含 workspaceId/workspaceName）。
+ */
+export async function listAllSessions() {
+	return requestJson(`${API_BASE}/sessions/all`)
+}
+
+/**
  * 列出工作区会话。
  * @param {{machine: number, workdir: string}} target - 目标。
  * @returns {Promise<{sessions: Array<object>}>} 会话摘要列表。

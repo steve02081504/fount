@@ -20,8 +20,8 @@ import { setWindowTitle } from '../scripts/title.mjs'
  * @returns {void}
  */
 function rejectTestEnvInProductionEntry() {
-	if (process.env.FOUNT_TEST === '1') {
-		console.error('FOUNT_TEST must not be set when starting production server (src/server/index.mjs)')
+	if (process.env.FOUNT_TEST) {
+		console.error('FOUNT_TEST must not be set when starting production server')
 		process.exit(1)
 	}
 }
@@ -61,8 +61,6 @@ SetTaskbarProgress(55)
 
 console.logI18n('fountConsole.server.standingBy')
 
-let args = process.argv.slice(2)
-
 /**
  * 应用程序的主配置对象。
  * @type {object}
@@ -101,17 +99,25 @@ fs.watch(__dirname, (event, filename) => {
 		else enableAutoUpdate()
 })
 
+const args = process.argv.slice(2)
+
 let command_obj
 
 // 解析命令行参数。
 if (args.length) {
-	const command = args[0]
-	args = args.slice(1)
+	const command = args.shift()
 
-	if (command == 'run') {
-		const username = args[0]
-		const partpath = args[1]
-		args = args.slice(2)
+	if (command == 'run' || command == 'runas') {
+		// `run` 始终以最后活跃的用户执行；`runas` 显式指定用户名。
+		const { getLastActiveUsername } = await import('./auth/index.mjs')
+		let username
+		if (command == 'run') username = await getLastActiveUsername()
+		else username = args.shift()
+		let partpath = args.shift()
+		// fount run code -> shells/code
+		if (!partpath.includes('/')) partpath = `shells/${partpath}`
+		// fount run /shells -> shells
+		if (partpath.startsWith('/')) partpath = partpath.slice(1)
 
 		command_obj = {
 			type: 'runpart',

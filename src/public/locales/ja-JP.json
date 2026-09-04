@@ -60,7 +60,7 @@
 			"noInstanceRunning": "実行中のインスタンスが検出されませんでした。最初に fount を開始してください。",
 			"runPartLog": "${partpath} を ${username}、引数: ${args} として実行します。",
 			"invokePartLog": "${partpath} を ${username}、パラメータ: ${invokedata} として呼び出します",
-			"invalidCommand": "無効なコマンドです。「fount run <ユーザー名> <コンポーネントパス> <パラメーター...>」を使用してください。",
+			"invalidCommand": "無効なコマンドです。「fount run <コンポーネントパス> <パラメーター...>」を使用してください（ユーザー指定は「fount runas <ユーザー名> <コンポーネントパス>」）。",
 			"invalidCommandFormat": "無効なコマンド形式です。",
 			"unsupportedCommand": "サポートされていないコマンドタイプです。",
 			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
@@ -6337,6 +6337,9 @@
 			"empty": "セッションはまだありません",
 			"yesterday": "昨日"
 		},
+		"conversations": {
+			"open": "会話を開く…"
+		},
 		"workspaces": {
 			"manage": "ワークスペース",
 			"browse": "参照…",
@@ -6344,6 +6347,7 @@
 			"none": "ワークスペース未選択",
 			"go": "移動",
 			"select": "選択",
+			"overviewEmpty": "会話はまだありません",
 			"aria-label": "ワークスペースを選択",
 			"path": {
 				"aria-label": "ワークスペースのパス",
@@ -6359,7 +6363,12 @@
 			"switch": "キャラクター切替",
 			"settings": "キャラクター設定",
 			"goodAgent": "良い agent の書き方",
-			"none": "キャラクター未選択"
+			"none": "キャラクター未選択",
+			"recommend": "推奨キャラクター ${charname} が未インストールです。インストールしますか？",
+			"recommendAria": "キャラクターインストールの推奨",
+			"recommendInstall": "インストール",
+			"recommendDismiss": "閉じる",
+			"recommendInstalled": "キャラクター ${charname} をインストールしました"
 		},
 		"composer": {
 			"mode": "モード",
@@ -6368,7 +6377,7 @@
 			"shellDefault": "デフォルト",
 			"send": "送信",
 			"stop": "停止",
-			"hint": "空欄で ！/! を入力するとシェルモード · @ でファイル参照 · / でコマンド · Tab でモード切替 · Ctrl+Enter で送信",
+			"hint": "空欄で ! を入力するとシェルモード · @ でファイル参照 · / でコマンド · ↑↓ 履歴 · Tab 補完",
 			"placeholder": "コマンドを入力、Enter で実行（空にするとシェルモードを終了）",
 			"aria-label": "メッセージ入力",
 			"sendButton": {
@@ -6410,7 +6419,7 @@
 			},
 			"noSession": {
 				"title": "新しいコーディングセッションを開始",
-				"description": "現在のキャラクター：${charname}。メッセージを入力して開始するか、左の履歴セッションを選択してください。"
+				"description": "現在のキャラクター：${charname}。メッセージを入力して開始するか、上部のセレクターから履歴セッションを選択してください。"
 			}
 		}
 	}

@@ -23,44 +23,27 @@
 </head>
 <body>
 	<div class="code-layout">
-		<aside class="code-sessions" id="sessions-panel" data-i18n="code.sessions.panel">
-			<div class="code-sessions-head">
-				<button class="btn btn-sm btn-primary w-full" id="new-session-button" data-i18n="code.sessions.new"></button>
-				<button class="btn btn-sm btn-ghost code-sessions-close" id="sessions-close-button" data-i18n="code.sessions.close"></button>
-			</div>
-			<div class="code-sessions-list" id="sessions-list"></div>
-		</aside>
-		<div class="code-backdrop hidden" id="sessions-backdrop"></div>
 		<main class="code-main">
 			<h1 class="sr-only" data-i18n="code.title"></h1>
 			<header class="code-topbar">
-				<button class="btn btn-sm btn-ghost code-sessions-toggle" id="sessions-toggle-button" data-i18n="code.sessions.toggle"></button>
+				<div class="code-topbar-left">
+					<div class="dropdown" id="session-select-wrap">
+						<button class="code-pill code-pill-primary" id="session-select" role="button" tabindex="0">
+							<span class="code-pill-label" id="session-select-label" user-content></span>
+							<span class="code-pill-chevron" aria-hidden="true">▾</span>
+						</button>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-80 p-2 shadow" id="session-select-menu"></ul>
+					</div>
+					<button class="btn btn-sm btn-primary" id="new-session-button" data-i18n="code.sessions.new"></button>
+				</div>
 				<div class="code-session-title" id="session-title" user-content></div>
-				<div class="code-topbar-actions">
-					<div class="dropdown" id="workspace-pill-wrap">
-						<button class="code-pill" id="workspace-pill" role="button" tabindex="0">
-							<span class="code-pill-label" id="workspace-pill-label"></span>
+				<div class="code-topbar-right">
+					<div class="dropdown dropdown-end" id="workspace-overview-wrap">
+						<button class="code-pill" id="workspace-overview-pill" role="button" tabindex="0">
+							<span class="code-pill-label" id="workspace-overview-label" user-content></span>
 							<span class="code-pill-chevron" aria-hidden="true">▾</span>
 						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="workspace-menu"></ul>
-					</div>
-					<div class="dropdown" id="machine-pill-wrap">
-						<button class="code-pill" id="machine-pill" role="button" tabindex="0">
-							<span class="code-pill-label" id="machine-pill-label"></span>
-							<span class="code-pill-chevron" aria-hidden="true">▾</span>
-						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="machine-menu"></ul>
-					</div>
-					<div class="dropdown dropdown-end">
-						<button class="code-pill" id="char-menu-button" role="button" tabindex="0">
-							<span class="code-pill-label" id="char-menu-label"></span>
-							<span class="code-pill-chevron" aria-hidden="true">▾</span>
-						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow">
-							<li id="char-switch-item"><button id="char-switch-button" data-i18n="code.char.switch"></button></li>
-							<li><a id="char-settings-link" data-i18n="code.char.settings" href="#"></a></li>
-							<li><a data-i18n="code.char.goodAgent" href="https://steve02081504.github.io/fount/blog/" target="_blank" rel="noopener"></a></li>
-						</ul>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-80 p-2 shadow" id="workspace-overview-menu"></ul>
 					</div>
 				</div>
 			</header>
@@ -101,6 +84,33 @@
 					</div>
 				</div>
 				<div class="code-composer-hint" id="composer-hint" data-i18n="code.composer.hint"></div>
+				<div class="code-composer-targets">
+					<div class="dropdown dropdown-top" id="workspace-pill-wrap">
+						<button class="code-pill" id="workspace-pill" role="button" tabindex="0">
+							<span class="code-pill-label" id="workspace-pill-label"></span>
+							<span class="code-pill-chevron" aria-hidden="true">▾</span>
+						</button>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="workspace-menu"></ul>
+					</div>
+					<div class="dropdown dropdown-top" id="machine-pill-wrap">
+						<button class="code-pill" id="machine-pill" role="button" tabindex="0">
+							<span class="code-pill-label" id="machine-pill-label"></span>
+							<span class="code-pill-chevron" aria-hidden="true">▾</span>
+						</button>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="machine-menu"></ul>
+					</div>
+					<div class="dropdown dropdown-top" id="char-pill-wrap">
+						<button class="code-pill" id="char-pill" role="button" tabindex="0">
+							<span class="code-pill-label" id="char-pill-label"></span>
+							<span class="code-pill-chevron" aria-hidden="true">▾</span>
+						</button>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="char-menu">
+							<li id="char-switch-item"><button id="char-switch-button" data-i18n="code.char.switch"></button></li>
+							<li><a id="char-settings-link" data-i18n="code.char.settings" href="#"></a></li>
+							<li><a data-i18n="code.char.goodAgent" href="https://steve02081504.github.io/fount/blog/" target="_blank" rel="noopener"></a></li>
+						</ul>
+					</div>
+				</div>
 			</div>
 		</main>
 	</div>

@@ -1,6 +1,8 @@
 /**
  * code shell 执行入口：`!` shell 模式命令执行。
  */
+import os from 'node:os'
+
 import { availableShells, createTargetExecutor, localDefaultShell } from '../../../plugins/file-operations/src/target.mjs'
 
 /**
@@ -20,6 +22,7 @@ export { availableShells, localDefaultShell }
 
 /**
  * 在目标机器的工作目录执行 shell 命令。
+ * 本机未指定工作区时兜底用户家目录（避免以服务器进程 cwd 如 system32 执行）。
  * @param {object} options - 执行参数。
  * @param {string} options.username - 用户名。
  * @param {string} [options.machine='0'] - 目标机器标识（"0" = 本机）。
@@ -29,7 +32,7 @@ export { availableShells, localDefaultShell }
  * @returns {Promise<shellResult_t>} 执行结果（错误时捕获为 { code: -1, stdall }）。
  */
 export async function runShellCommand({ username, machine = '0', workdir, shell, command }) {
-	const executor = createTargetExecutor(username, { machine, workdir })
+	const executor = createTargetExecutor(username, { machine, workdir: workdir || (machine === '0' ? os.homedir() : undefined) })
 	try {
 		const result = await executor.execShell(shell || null, command)
 		if (result instanceof Error)

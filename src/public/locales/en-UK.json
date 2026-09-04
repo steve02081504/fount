@@ -60,7 +60,7 @@
 			"noInstanceRunning": "No running instance detected, please start fount first.",
 			"runPartLog": "Run ${partpath} as ${username}, arguments: ${args}",
 			"invokePartLog": "Call ${partpath} as ${username}, parameter: ${invokedata}",
-			"invalidCommand": "Invalid command, please use \"fount run <username> <component path> <parameters...>\"",
+			"invalidCommand": "Invalid command, please use \"fount run <component path> <parameters...>\" (or \"fount runas <username> <component path>\" to specify a user)",
 			"invalidCommandFormat": "Invalid command format",
 			"unsupportedCommand": "Unsupported command type",
 			"processMessageError": "Error processing IPC message: ${error}",
@@ -6337,6 +6337,9 @@
 			"empty": "No sessions yet",
 			"yesterday": "yesterday"
 		},
+		"conversations": {
+			"open": "Open a conversation…"
+		},
 		"workspaces": {
 			"path": {
 				"aria-label": "Workspace path",
@@ -6348,6 +6351,7 @@
 			"none": "No workspace selected",
 			"go": "Go",
 			"select": "Select",
+			"overviewEmpty": "No conversations yet",
 			"aria-label": "Select workspace"
 		},
 		"machine": {
@@ -6359,7 +6363,12 @@
 			"switch": "Switch character",
 			"settings": "Character settings",
 			"goodAgent": "How to write a good agent?",
-			"none": "No character selected"
+			"none": "No character selected",
+			"recommend": "Recommended character ${charname} is not installed. Install it?",
+			"recommendAria": "Character install recommendation",
+			"recommendInstall": "Install",
+			"recommendDismiss": "Dismiss",
+			"recommendInstalled": "Installed character ${charname}"
 		},
 		"composer": {
 			"mode": "Mode",
@@ -6374,7 +6383,7 @@
 			"sendAria": "Send message",
 			"stopAria": "Stop generating",
 			"modeSwitched": "Switched to ${mode} mode",
-			"hint": "Type ！/! when empty for shell mode · @ to reference files · / for commands · Tab cycles modes · Ctrl+Enter sends",
+			"hint": "Type ! when empty for shell mode · @ to reference files · / for commands · ↑↓ history · Tab to complete",
 			"placeholder": "Type a command; Enter runs it (clear to leave shell mode)",
 			"placeholderNormal": "Ask anything… (@ to reference files, / for commands)",
 			"placeholderShell": "Type a shell command… (e.g. git status)",
@@ -6399,7 +6408,7 @@
 			},
 			"noSession": {
 				"title": "Start a new coding session",
-				"description": "Current character: ${charname}. Type a message to begin, or pick a past session on the left."
+				"description": "Current character: ${charname}. Type a message to begin, or pick a past session from the selector above."
 			}
 		},
 		"error": {

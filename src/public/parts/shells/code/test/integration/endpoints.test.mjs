@@ -201,3 +201,75 @@ Deno.test({
 		await stopNode(node)
 	}
 })
+
+Deno.test({
+	name: 'exec without workdir runs in the user home directory',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchCodeNode()
+	try {
+		// Windows pwsh 下 `pwd` 的表格输出会被 $OutputEncoding 前缀吞掉，改用字符串输出
+		const cmd = os.platform() === 'win32' ? 'Write-Output $PWD.Path' : 'pwd'
+		const result = await (await codeFetch(node, 'POST', '/exec', { machine: '0', command: cmd })).json()
+		const out = String(result.stdout ?? '').trim().toLowerCase()
+		const home = os.homedir().toLowerCase()
+		assert(out.includes(home), `无工作区时应在家目录执行，输出：${out}`)
+	}
+	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'history roundtrip, workspace-config and sessions/all',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchCodeNode()
+	const root = await makeWorkspace(node)
+	try {
+		// 自有历史追加 + 读取（含原生 shell 历史字段）
+		const appended = await (await codeFetch(node, 'POST', '/history', { machine: '0', workdir: root, kind: 'shell', command: 'git status' })).json()
+		assert(appended.own.includes('git status'))
+		const got = await (await codeFetch(node, 'GET', `/history?machine=0&workdir=${encodeURIComponent(root)}&kind=shell&shell=pwsh`)).json()
+		assert(got.own.includes('git status'))
+		assert(Array.isArray(got.native))
+		// message 类型历史
+		await codeFetch(node, 'POST', '/history', { machine: '0', workdir: root, kind: 'message', command: '你好' })
+		const msg = await (await codeFetch(node, 'GET', `/history?machine=0&workdir=${encodeURIComponent(root)}&kind=message`)).json()
+		assert(msg.own.includes('你好'))
+		// 非法 kind 报 400
+		assertEquals((await codeFetch(node, 'GET', `/history?machine=0&workdir=${encodeURIComponent(root)}&kind=bogus`)).status, 400)
+		// 无配置 → {}
+		const cfg = await (await codeFetch(node, 'GET', `/workspace-config?machine=0&workdir=${encodeURIComponent(root)}`)).json()
+		assertEquals(cfg, {})
+		// 写入 .agents/fount/code.json 后读回
+		await fs.mkdir(path.join(root, '.agents', 'fount'), { recursive: true })
+		await fs.writeFile(path.join(root, '.agents', 'fount', 'code.json'), JSON.stringify({ char: { partname: 'x', install_url: 'y' } }), 'utf8')
+		const cfg2 = await (await codeFetch(node, 'GET', `/workspace-config?machine=0&workdir=${encodeURIComponent(root)}`)).json()
+		assertEquals(cfg2.char.partname, 'x')
+		assertEquals(cfg2.char.install_url, 'y')
+		// 跨工作区会话聚合
+		const session = {
+			id: 'agg001',
+			title: 'agg',
+			charname: 'c',
+			profile: 'build',
+			created: new Date().toISOString(),
+			updated: new Date().toISOString(),
+			memory: {},
+			entries: [],
+		}
+		await codeFetch(node, 'POST', '/sessions', { machine: '0', workdir: root, session })
+		const all = await (await codeFetch(node, 'GET', '/sessions/all')).json()
+		const found = all.sessions.find(s => s.id === 'agg001')
+		assert(found, '聚合会话含新建会话')
+		assert(found.workspaceId, '聚合会话携带 workspaceId')
+		assert(found.workspaceName, '聚合会话携带 workspaceName')
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
+		await stopNode(node)
+	}
+})
