@@ -6320,5 +6320,11 @@
 			"failed": "Đăng nhập thất bại: ${message}",
 			"missingParams": "Callback thiếu code hoặc state."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

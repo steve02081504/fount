@@ -6326,5 +6326,11 @@
 			"failed": "Inloggen mislukt: ${message}",
 			"missingParams": "Callback mist code of state."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

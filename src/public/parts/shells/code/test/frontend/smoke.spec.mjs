@@ -4,7 +4,7 @@
 import { test, expect } from './fixtures.mjs'
 
 test.describe('code shell smoke', () => {
-	test('page boots with pills and empty-state guidance', async ({ page, baseUrl }) => {
+	test('page boots with pills, draft tab, and centered empty-state guidance', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('h1')).toHaveCount(1)
 		await expect(page.locator('#machine-pill-label')).toContainText('本机')
@@ -13,13 +13,17 @@ test.describe('code shell smoke', () => {
 		await expect(page.locator('#mode-pill-label')).toContainText('build')
 		await expect(page.locator('#send-button')).toHaveAttribute('aria-label', '发送消息')
 		await expect(page.locator('#send-button svg#send-icon')).toBeVisible()
-		await expect(page.locator('.code-empty-title')).toContainText('选择一个工作区')
-		await expect(page.locator('.code-empty-description')).toBeVisible()
+		// 空态：居中布局 + wordmark，无工作区引导走下方 workspace pill
+		await expect(page.locator('.code-main')).toHaveClass(/empty-mode/)
+		await expect(page.locator('#code-wordmark')).toBeVisible()
+		// 启动即有一个活动草稿标签
+		await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
 	})
 
-	test('empty state opens folder browser dialog', async ({ page, baseUrl }) => {
+	test('empty state opens folder browser dialog via the workspace pill', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
-		await page.locator('.code-empty button').click()
+		await page.locator('#workspace-pill').click()
+		await page.locator('#workspace-menu').getByText('浏览…').click()
 		await expect(page.locator('dialog.modal:has(#folder-entries)')).toBeVisible()
 		await expect(page.locator('#folder-path-input')).toBeVisible()
 	})
@@ -41,7 +45,7 @@ test.describe('code shell smoke', () => {
 		await expect(page.locator('#workspace-menu')).toBeVisible()
 		await expect(page.locator('#workspace-menu').getByText('浏览…')).toBeVisible()
 		// 收起 workspace 下拉再开 machine：daisyUI 焦点下拉互切存在竞态
-		await page.locator('#session-title').click()
+		await page.mouse.click(10, 300)
 		await expect(page.locator('#workspace-menu')).toBeHidden()
 		await page.locator('#machine-pill').click()
 		await expect(page.locator('#machine-menu')).toBeVisible()

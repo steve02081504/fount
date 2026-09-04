@@ -6325,34 +6325,35 @@
 		"title": "Code",
 		"description": "面向工作区与机器的 AI 编码会话。",
 		"sessions": {
-			"panel": { "aria-label": "会话列表" },
 			"new": "新会话",
 			"untitled": "未命名会话",
-			"close": "收起侧栏",
-			"toggle": "侧栏",
-			"deleteAria": "删除会话",
-			"deleteConfirm": "删除会话「${title}」？此操作不可恢复。",
-			"empty": "还没有会话",
 			"yesterday": "昨天"
 		},
-		"conversations": {
-			"open": "打开对话…"
-		},
 		"workspaces": {
-			"path": { "aria-label": "工作区路径", "placeholder": "目录路径" },
-			"manage": "工作区",
+			"path": {
+				"aria-label": "工作区路径",
+				"placeholder": "目录路径"
+			},
 			"browse": "浏览…",
 			"remove": "移除当前工作区",
 			"none": "未选择工作区",
 			"go": "跳转",
 			"select": "选择工作区",
-			"overviewEmpty": "暂无会话",
-			"aria-label": "选择工作区"
+			"overviewEmpty": "暂无会话"
+		},
+		"home": {
+			"aria-label": "工作区与会话总览"
+		},
+		"tabs": {
+			"aria-label": "会话标签",
+			"close": "关闭标签"
+		},
+		"newTab": {
+			"aria-label": "新建会话"
 		},
 		"machine": {
 			"local": "本机",
-			"offline": "离线",
-			"aria-label": "选择机器"
+			"offline": "离线"
 		},
 		"char": {
 			"switch": "切换角色",
@@ -6366,12 +6367,7 @@
 			"recommendInstalled": "已安装角色 ${charname}"
 		},
 		"composer": {
-			"mode": "模式",
-			"aiSource": "AI 源",
-			"shell": "Shell",
 			"shellDefault": "默认",
-			"send": "发送",
-			"stop": "停止",
 			"sendButton": {
 				"aria-label": "发送消息"
 			},
@@ -6394,17 +6390,6 @@
 		},
 		"messages": {
 			"backToBottom": "回到最新消息"
-		},
-		"empty": {
-			"noWorkspace": {
-				"title": "选择一个工作区",
-				"description": "在本机或已连接的 subfount 上选择目录作为工作区，AI 将在此目录内读写文件与执行代码。",
-				"action": "选择工作区…"
-			},
-			"noSession": {
-				"title": "开始新的编码会话",
-				"description": "当前角色：${charname}。直接输入消息开始，或在顶部选栏打开历史会话。"
-			}
 		},
 		"error": {
 			"generic": "出错了：${error}",

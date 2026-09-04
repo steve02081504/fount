@@ -6319,5 +6319,11 @@
 			"failed": "登入失敗：${message}",
 			"missingParams": "回調缺少 code 或 state。"
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

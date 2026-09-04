@@ -6320,5 +6320,11 @@
 			"failed": "فشل تسجيل الدخول: ${message}",
 			"missingParams": "الرد ينقصه code أو state."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

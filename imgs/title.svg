@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1662.667" height="661.333" viewBox="0 0 1247 496">
-	<style>.B{fill:#c3e1ec}.C{fill:#84a0b1}.D{fill:#426780}.E{fill:#fbfbfc}</style>
+	<style>
+		.B { fill: color-mix(in srgb, currentColor 31%, white); }
+		.C { fill: color-mix(in srgb, currentColor 65%, white); }
+		.D { fill: currentColor; }
+		.E { fill: color-mix(in srgb, currentColor 2%, white); }
+	</style>
 	<g>
 		<title>title</title>
 		<g>

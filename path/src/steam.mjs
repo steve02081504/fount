@@ -200,7 +200,7 @@ export async function renderSvgToPng({ svgPath, pngPath, width, height }) {
 	if (await pngIsFresh(pngPath, svgPath)) return pngPath
 	const { Resvg } = await import('npm:@resvg/resvg-js')
 	let svg = await readFile(svgPath, 'utf8')
-	if (height) svg = cropSvgToAspect(svg, width, height)
+	if (height) svg = cropSvgToAspect(svg, width, height).replaceAll('currentColor', '#426780')
 	const png = Buffer.from(new Resvg(svg, {
 		fitTo: { mode: 'width', value: width },
 	}).render().asPng())

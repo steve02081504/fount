@@ -6320,5 +6320,11 @@
 			"failed": "लॉगिन विफल: ${message}",
 			"missingParams": "कॉलबैक में code या state नहीं है।"
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

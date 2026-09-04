@@ -6325,39 +6325,35 @@
 		"title": "Code",
 		"description": "AI coding sessions targeting workspaces and machines.",
 		"sessions": {
-			"panel": {
-				"aria-label": "Sessions"
-			},
 			"new": "New session",
 			"untitled": "Untitled session",
-			"close": "Close sidebar",
-			"toggle": "Sidebar",
-			"deleteAria": "Delete session",
-			"deleteConfirm": "Delete session “${title}”? This cannot be undone.",
-			"empty": "No sessions yet",
 			"yesterday": "yesterday"
-		},
-		"conversations": {
-			"open": "Open a conversation…"
 		},
 		"workspaces": {
 			"path": {
 				"aria-label": "Workspace path",
 				"placeholder": "Directory path"
 			},
-			"manage": "Workspaces",
 			"browse": "Browse…",
 			"remove": "Remove current workspace",
 			"none": "No workspace selected",
 			"go": "Go",
 			"select": "Select",
-			"overviewEmpty": "No conversations yet",
-			"aria-label": "Select workspace"
+			"overviewEmpty": "No conversations yet"
+		},
+		"home": {
+			"aria-label": "Workspaces & sessions"
+		},
+		"tabs": {
+			"aria-label": "Session tabs",
+			"close": "Close tab"
+		},
+		"newTab": {
+			"aria-label": "New session"
 		},
 		"machine": {
 			"local": "Local",
-			"offline": "offline",
-			"aria-label": "Select machine"
+			"offline": "offline"
 		},
 		"char": {
 			"switch": "Switch character",
@@ -6371,12 +6367,7 @@
 			"recommendInstalled": "Installed character ${charname}"
 		},
 		"composer": {
-			"mode": "Mode",
-			"aiSource": "AI source",
-			"shell": "Shell",
 			"shellDefault": "Default",
-			"send": "Send",
-			"stop": "Stop",
 			"sendButton": {
 				"aria-label": "Send message"
 			},
@@ -6399,17 +6390,6 @@
 		},
 		"messages": {
 			"backToBottom": "Back to latest"
-		},
-		"empty": {
-			"noWorkspace": {
-				"title": "Pick a workspace",
-				"description": "Select a directory on this machine or a connected subfount. The AI reads, writes and runs code inside it.",
-				"action": "Choose workspace…"
-			},
-			"noSession": {
-				"title": "Start a new coding session",
-				"description": "Current character: ${charname}. Type a message to begin, or pick a past session from the selector above."
-			}
 		},
 		"error": {
 			"generic": "Something went wrong: ${error}",

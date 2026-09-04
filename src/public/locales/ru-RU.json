@@ -6320,5 +6320,11 @@
 			"failed": "Ошибка входа: ${message}",
 			"missingParams": "В callback нет code или state."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

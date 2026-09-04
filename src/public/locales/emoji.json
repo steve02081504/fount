@@ -6320,5 +6320,11 @@
 			"failed": "❌ ${message}",
 			"missingParams": "❓ code/state"
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

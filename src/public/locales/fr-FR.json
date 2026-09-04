@@ -6326,5 +6326,11 @@
 			"failed": "Échec de connexion : ${message}",
 			"missingParams": "Le callback n’a pas de code ou de state."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

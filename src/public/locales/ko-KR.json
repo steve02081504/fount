@@ -6320,5 +6320,11 @@
 			"failed": "로그인 실패: ${message}",
 			"missingParams": "콜백에 code 또는 state가 없습니다."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

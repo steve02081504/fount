@@ -22,7 +22,7 @@
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	padding: 0.5rem 0.75rem;
+	padding: 0.125rem 0.5rem;
 	border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
 	z-index: 10;
 }
@@ -32,24 +32,153 @@
 	align-items: center;
 	gap: 0.375rem;
 	flex-shrink: 0;
+	min-width: 0;
+	flex: 1;
 }
 
-.code-topbar-right {
+/* ---------------- 顶栏图标按钮（home / 新标签） ---------------- */
+
+.code-iconbtn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	flex-shrink: 0;
+	border-radius: var(--radius-field);
+	color: var(--color-base-content);
+	opacity: 0.75;
+	cursor: pointer;
+	transition: background-color 0.12s, opacity 0.12s;
+}
+
+.code-iconbtn:hover {
+	background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+	opacity: 1;
+}
+
+/* ---------------- 标签条（opencode 式） ---------------- */
+
+.code-tab-strip {
 	display: flex;
 	align-items: center;
 	gap: 0.375rem;
-	flex-shrink: 0;
-}
-
-.code-session-title {
 	flex: 1;
 	min-width: 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.code-tab-strip::-webkit-scrollbar {
+	display: none;
+}
+
+.code-tab {
+	position: relative;
+	display: flex;
+	align-items: center;
+	flex: 0 1 14rem;
+	min-width: 1.75rem;
+}
+
+/* 非活动标签之间的细分隔线（活动/悬停时隐藏） */
+.code-tab + .code-tab::before {
+	content: "";
+	position: absolute;
+	inset-inline-start: -0.234rem;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 1.5px;
+	height: 0.75rem;
+	border-radius: 9999px;
+	background: color-mix(in oklch, var(--color-base-content) 15%, transparent);
+}
+
+.code-tab[data-active="true"]::before,
+.code-tab:has(+ .code-tab[data-active="true"])::before,
+.code-tab:hover::before,
+.code-tab:has(+ .code-tab:hover)::before {
+	display: none;
+}
+
+.code-tab-main {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	width: 100%;
+	min-width: 0;
+	height: 1.75rem;
+	padding: 0 0.375rem;
+	border-radius: calc(var(--radius-field) * 0.75);
+	font-size: 0.8125rem;
+	color: color-mix(in oklch, var(--color-base-content) 55%, transparent);
+	cursor: pointer;
+	overflow: hidden;
+	white-space: nowrap;
+	transition: background-color 0.12s, color 0.12s;
+}
+
+.code-tab-main:hover {
+	background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+}
+
+.code-tab[data-active="true"] .code-tab-main {
+	background: color-mix(in oklch, var(--color-base-content) 10%, transparent);
+	color: var(--color-base-content);
+}
+
+.code-tab-avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1rem;
+	height: 1rem;
+	flex-shrink: 0;
+	border-radius: 0.25rem;
+	font-size: 0.625rem;
+	font-weight: 700;
+	line-height: 1;
+	color: oklch(98% 0 0);
+}
+
+.code-tab-avatar-draft {
+	color: inherit;
+	opacity: 0.7;
+	background: transparent;
+}
+
+.code-tab-title {
+	min-width: 0;
+	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-size: 0.875rem;
-	font-weight: 600;
-	text-align: center;
+	text-align: left;
+}
+
+.code-tab-close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	inset-inline-end: 0.125rem;
+	width: 1.25rem;
+	height: 1.25rem;
+	border-radius: 0.25rem;
+	opacity: 0;
+	color: inherit;
+	cursor: pointer;
+	transition: opacity 0.12s, background-color 0.12s;
+}
+
+.code-tab:hover .code-tab-close,
+.code-tab[data-active="true"] .code-tab-close {
+	opacity: 0.7;
+}
+
+.code-tab-close:hover {
+	opacity: 1;
+	background: color-mix(in oklch, var(--color-base-content) 12%, transparent);
 }
 
 /* pill 选择器（opencode 式） */
@@ -72,11 +201,6 @@
 .code-pill:hover {
 	background: color-mix(in oklch, var(--color-base-300) 90%, transparent);
 	border-color: color-mix(in oklch, var(--color-base-content) 30%, transparent);
-}
-
-.code-pill.code-pill-primary {
-	border-color: color-mix(in oklch, var(--color-primary) 45%, transparent);
-	background: color-mix(in oklch, var(--color-primary) 12%, transparent);
 }
 
 .code-pill .code-pill-label {
@@ -229,33 +353,32 @@ details.code-tool-log > summary .code-tool-log-name {
 	pointer-events: auto;
 }
 
-/* ---------------- 空态 ---------------- */
+/* ---------------- 空态（opencode 式：composer 垂直居中 + wordmark） ---------------- */
 
-.code-empty {
+/* 无会话内容时：消息区收起，composer 居中成为页面主体 */
+.code-main.empty-mode .code-messages {
+	display: none;
+}
+
+.code-main.empty-mode .code-composer {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 	justify-content: center;
-	gap: 0.75rem;
-	text-align: center;
-	padding: 2rem;
+	padding-top: 1rem;
 }
 
-.code-empty-icon {
-	font-size: 2.5rem;
-	line-height: 1;
+.code-wordmark {
+	display: none;
+	width: clamp(14rem, 30vw, 24rem);
+	height: auto;
+	margin: 0 auto 2.5rem;
+	user-select: none;
+	opacity: 0.16;
 }
 
-.code-empty-title {
-	font-size: 1rem;
-	font-weight: 600;
-}
-
-.code-empty-description {
-	font-size: 0.8125rem;
-	opacity: 0.65;
-	max-width: 26rem;
+.code-main.empty-mode .code-wordmark {
+	display: block;
 }
 
 /* ---------------- composer ---------------- */
@@ -316,10 +439,14 @@ details.code-tool-log > summary .code-tool-log-name {
 	min-width: 0;
 }
 
-/* shell 模式：除 shell pill 外其余选择器淡出 */
+/* shell 模式：除 shell pill 外其余选择器淡出；shell pill 顶到最左（淡出的 pill 仍占位，order 纠正） */
 .code-composer-shell.shell-mode .code-composer-controls-main > :not(#shell-pill-wrap) {
 	opacity: 0;
 	pointer-events: none;
+}
+
+.code-composer-shell.shell-mode #shell-pill-wrap {
+	order: -1;
 }
 
 .code-composer-send {
@@ -353,7 +480,7 @@ details.code-tool-log > summary .code-tool-log-name {
 	text-align: center;
 }
 
-/* 机器 / 工作区 / 角色选择行：composer 卡片下方，居中 */
+/* 机器 / 工作区 / 角色选择行：composer 卡片下方，居中（卡片→targets 保持 opencode 式 ~12px 节奏） */
 .code-composer-targets {
 	display: flex;
 	flex-wrap: wrap;
@@ -361,7 +488,7 @@ details.code-tool-log > summary .code-tool-log-name {
 	justify-content: center;
 	gap: 0.375rem;
 	max-width: 52rem;
-	margin: 0.5rem auto 0;
+	margin: 0.75rem auto 0;
 }
 
 /* slash 命令面板（composer 上方弹出卡片） */

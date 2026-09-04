@@ -6320,5 +6320,11 @@
 			"failed": "Anmeldung fehlgeschlagen: ${message}",
 			"missingParams": "Callback fehlt code oder state."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

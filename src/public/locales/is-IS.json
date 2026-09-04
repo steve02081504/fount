@@ -6320,5 +6320,11 @@
 			"failed": "Innskráning mistókst: ${message}",
 			"missingParams": "Callback vantar code eða state."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

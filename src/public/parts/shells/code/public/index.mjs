@@ -25,14 +25,10 @@ applyTheme()
 const $ = id => document.getElementById(id)
 
 const elements = {
-	sessionSelect: $('session-select'),
-	sessionSelectLabel: $('session-select-label'),
-	sessionSelectMenu: $('session-select-menu'),
-	newSessionButton: $('new-session-button'),
-	sessionTitle: $('session-title'),
-	workspaceOverviewPill: $('workspace-overview-pill'),
-	workspaceOverviewLabel: $('workspace-overview-label'),
-	workspaceOverviewMenu: $('workspace-overview-menu'),
+	homeToggle: $('home-toggle'),
+	homeMenu: $('home-menu'),
+	tabStrip: $('tab-strip'),
+	newTabButton: $('new-tab-button'),
 	workspacePill: $('workspace-pill'),
 	workspacePillLabel: $('workspace-pill-label'),
 	workspaceMenu: $('workspace-menu'),
@@ -71,6 +67,8 @@ const state = {
 	workspace: null,
 	allSessions: [],
 	session: null,
+	tabs: [],
+	activeTabKey: '',
 	lastConversationWorkspaceId: '',
 	profiles: [],
 	commands: [],
@@ -85,7 +83,6 @@ const state = {
 	shell: '',
 	shellMode: false,
 	generating: false,
-	dirty: false,
 }
 
 /**
@@ -140,16 +137,212 @@ function setPref(key, value) {
 	localStorage.setItem(prefPrefix() + key, value)
 }
 
-/* ---------------- 会话 ---------------- */
+/* ---------------- 标签页（opencode 式顶栏标签） ---------------- */
 
 /**
- * 当前会话的空会话工厂。
+ * 标签页唯一键（不含 type：草稿落盘转为会话标签时键保持不变）。
+ * @param {{id: string, workspaceId: string}} tab - 标签页。
+ * @returns {string} 键。
+ */
+function tabKeyOf(tab) {
+	return `t:${tab.workspaceId || ''}:${tab.id}`
+}
+
+/**
+ * 当前活动标签页。
+ * @returns {object|null} 标签页。
+ */
+function activeTab() {
+	return state.tabs.find(tab => tabKeyOf(tab) === state.activeTabKey) || null
+}
+
+/** 已打开会话对象的内存缓存（tabKey → session），切换标签不丢未保存内容。 */
+const sessionCache = new Map()
+
+/** 正在生成的会话（后台生成时可能与当前展示的会话不同）。 */
+let generatingSession = null
+
+/** 待落盘标签键（生成中暂存，完成后/失焦时 flush）。 */
+let dirtyTabKey = ''
+
+/**
+ * 从 localStorage 恢复标签页（草稿不可持久化，仅恢复会话标签）。
+ * @returns {void}
+ */
+function loadTabPrefs() {
+	try {
+		const list = JSON.parse(getPref('tabs') || '[]')
+		state.tabs = Array.isArray(list) ? list.filter(tab => tab?.type === 'session' && tab.id && tab.workspaceId) : []
+	}
+	catch {
+		state.tabs = []
+	}
+	state.activeTabKey = getPref('activeTab')
+}
+
+/**
+ * 持久化标签页列表与活动标签。
+ * @returns {void}
+ */
+function saveTabPrefs() {
+	setPref('tabs', JSON.stringify(state.tabs.filter(tab => tab.type === 'session')))
+	setPref('activeTab', state.activeTabKey)
+}
+
+/**
+ * 新建草稿标签页（未保存的新会话）。
+ * @param {string} workspaceId - 绑定的工作区 id。
+ * @returns {object} 标签页。
+ */
+function createDraftTab(workspaceId) {
+	const tab = { type: 'draft', id: crypto.randomUUID().slice(0, 8), workspaceId: workspaceId || '' }
+	state.tabs.push(tab)
+	return tab
+}
+
+/**
+ * 标签页标题。
+ * @param {object} tab - 标签页。
+ * @returns {string} 标题。
+ */
+function tabTitle(tab) {
+	if (tab.type === 'draft') return geti18n('code.sessions.new')
+	const cached = sessionCache.get(tabKeyOf(tab))
+	const summary = state.allSessions.find(session => session.id === tab.id && session.workspaceId === tab.workspaceId)
+	return cached?.title || summary?.title || geti18n('code.sessions.untitled')
+}
+
+/**
+ * 渲染标签条（活动态高亮 / hover 关闭钮 / 中键关闭）。
+ * @returns {void}
+ */
+function renderTabs() {
+	elements.tabStrip.replaceChildren(...state.tabs.map(tab => {
+		const key = tabKeyOf(tab)
+		const wrap = document.createElement('div')
+		wrap.className = 'code-tab'
+		wrap.dataset.tabKey = key
+		wrap.setAttribute('data-active', String(key === state.activeTabKey))
+		const main = document.createElement('button')
+		main.type = 'button'
+		main.className = 'code-tab-main'
+		if (tab.type === 'draft') {
+			const icon = document.createElement('span')
+			icon.className = 'code-tab-avatar code-tab-avatar-draft'
+			icon.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>'
+			main.appendChild(icon)
+		}
+		else {
+			const workspace = state.workspaces.find(w => w.id === tab.workspaceId)
+			const name = workspace?.name || workspace?.path || '?'
+			const avatar = document.createElement('span')
+			avatar.className = 'code-tab-avatar'
+			avatar.textContent = [...name][0]?.toUpperCase() || '·'
+			const hue = [...name].reduce((sum, ch) => sum + (ch.codePointAt(0) || 0), 0) % 360
+			avatar.style.background = `oklch(72% 0.11 ${hue})`
+			main.appendChild(avatar)
+		}
+		const title = document.createElement('span')
+		title.className = 'code-tab-title'
+		// 标题为工作区/会话动态文本，跳过语种扫描
+		title.setAttribute('user-content', '')
+		title.textContent = tabTitle(tab)
+		main.appendChild(title)
+		main.addEventListener('click', () => void activateTab(tab))
+		main.addEventListener('auxclick', event => {
+			if (event.button === 1) {
+				event.preventDefault()
+				void closeTab(tab)
+			}
+		})
+		const close = document.createElement('button')
+		close.type = 'button'
+		close.className = 'code-tab-close'
+		close.setAttribute('aria-label', geti18n('code.tabs.close'))
+		close.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>'
+		close.addEventListener('click', event => {
+			event.stopPropagation()
+			void closeTab(tab)
+		})
+		wrap.append(main, close)
+		return wrap
+	}))
+	saveTabPrefs()
+}
+
+/**
+ * 渲染左上角总览菜单（工作区分组会话一览 + 浏览工作区）。
+ * @returns {void}
+ */
+function renderHomeMenu() {
+	const menu = elements.homeMenu
+	menu.replaceChildren()
+	for (const workspace of state.workspaces) {
+		const headerLi = document.createElement('li')
+		const header = document.createElement('div')
+		header.className = 'menu-title'
+		header.textContent = workspace.name || workspace.path
+		headerLi.appendChild(header)
+		menu.appendChild(headerLi)
+		const sessions = state.allSessions.filter(session => session.workspaceId === workspace.id).slice(0, 8)
+		if (!sessions.length) {
+			const emptyLi = document.createElement('li')
+			const empty = document.createElement('div')
+			empty.className = 'opacity-60 text-xs px-4 py-1'
+			empty.textContent = geti18n('code.workspaces.overviewEmpty')
+			emptyLi.appendChild(empty)
+			menu.appendChild(emptyLi)
+		}
+		else for (const session of sessions) {
+			const li = document.createElement('li')
+			const button = document.createElement('button')
+			button.type = 'button'
+			button.className = 'menu-item' + (session.id === state.session?.id && session.workspaceId === state.workspace?.id ? ' active' : '')
+			const title = document.createElement('span')
+			title.className = 'menu-item-title'
+			// 会话标题为用户数据
+			title.setAttribute('user-content', '')
+			title.textContent = session.title || geti18n('code.sessions.untitled')
+			const time = document.createElement('span')
+			time.className = 'opacity-60 text-xs'
+			time.textContent = formatSessionTime(session.updated || session.created)
+			button.appendChild(title)
+			button.appendChild(time)
+			button.addEventListener('click', () => {
+				document.activeElement?.blur()
+				void openSessionTab(session)
+			})
+			li.appendChild(button)
+			menu.appendChild(li)
+		}
+	}
+	const separatorLi = document.createElement('li')
+	const separator = document.createElement('div')
+	separator.className = 'divider my-1'
+	separatorLi.appendChild(separator)
+	menu.appendChild(separatorLi)
+	const browseLi = document.createElement('li')
+	const browseBtn = document.createElement('button')
+	browseBtn.type = 'button'
+	browseBtn.className = 'menu-item'
+	browseBtn.textContent = geti18n('code.workspaces.browse')
+	browseBtn.addEventListener('click', () => {
+		document.activeElement?.blur()
+		void openFolderBrowser()
+	})
+	browseLi.appendChild(browseBtn)
+	menu.appendChild(browseLi)
+}
+
+/**
+ * 新会话空会话工厂。
+ * @param {string} [id] - 会话 id（草稿标签预生成时传入）。
  * @returns {object} 会话对象。
  */
-function newSessionObject() {
+function newSessionObject(id = crypto.randomUUID().slice(0, 8)) {
 	const now = new Date().toISOString()
 	return {
-		id: crypto.randomUUID().slice(0, 8),
+		id,
 		title: '',
 		charname: state.charname || '',
 		profile: state.profile,
@@ -181,7 +374,7 @@ function formatSessionTime(iso) {
 }
 
 /**
- * 刷新跨工作区会话聚合（顶部选栏 / 右侧一览）。
+ * 刷新跨工作区会话聚合（总览菜单 / 标签标题）。
  * @returns {Promise<void>}
  */
 async function refreshAllSessions() {
@@ -194,170 +387,147 @@ async function refreshAllSessions() {
 }
 
 /**
- * 更新顶部会话选择标签。
- * @returns {void}
+ * 找到持有某会话对象的标签键。
+ * @param {object} session - 会话对象。
+ * @returns {string} 标签键（未持有时空串）。
  */
-function updateSessionSelectLabel() {
-	elements.sessionSelectLabel.textContent = state.session
-		? state.session.title || geti18n('code.sessions.untitled')
-		: geti18n('code.conversations.open')
+function tabKeyOfSession(session) {
+	if (!session) return ''
+	const active = activeTab()
+	if (active && state.session === session) return tabKeyOf(active)
+	for (const tab of state.tabs)
+		if (sessionCache.get(tabKeyOf(tab)) === session) return tabKeyOf(tab)
+	return ''
 }
 
 /**
- * 渲染顶部会话选择菜单。
- * @returns {void}
- */
-function renderSessionSelectMenu() {
-	elements.sessionSelectMenu.replaceChildren(...state.allSessions.slice(0, 30).map(session => {
-		const li = document.createElement('li')
-		const button = document.createElement('button')
-		button.type = 'button'
-		button.className = 'menu-item' + (state.session?.id === session.id && state.workspace?.id === session.workspaceId ? ' active' : '')
-		const title = document.createElement('span')
-		title.className = 'menu-item-title'
-		title.textContent = session.title || geti18n('code.sessions.untitled')
-		const meta = document.createElement('span')
-		meta.className = 'opacity-60 text-xs'
-		meta.textContent = session.workspaceName + ' · ' + formatSessionTime(session.updated || session.created)
-		button.appendChild(title)
-		button.appendChild(meta)
-		button.addEventListener('click', () => {
-			document.activeElement?.blur()
-			void selectConversation(session)
-		})
-		li.appendChild(button)
-		return li
-	}))
-}
-
-/**
- * 渲染右侧工作区一览（各工作区 + 会话内容一览）。
- * @returns {void}
- */
-function renderWorkspaceOverviewMenu() {
-	const menu = elements.workspaceOverviewMenu
-	menu.replaceChildren()
-	for (const workspace of state.workspaces) {
-		const headerLi = document.createElement('li')
-		const header = document.createElement('div')
-		header.className = 'menu-title'
-		header.textContent = workspace.name || workspace.path
-		headerLi.appendChild(header)
-		menu.appendChild(headerLi)
-		const sessions = state.allSessions.filter(session => session.workspaceId === workspace.id).slice(0, 6)
-		if (!sessions.length) {
-			const emptyLi = document.createElement('li')
-			const empty = document.createElement('div')
-			empty.className = 'opacity-60 text-xs px-4 py-1'
-			empty.textContent = geti18n('code.workspaces.overviewEmpty')
-			emptyLi.appendChild(empty)
-			menu.appendChild(emptyLi)
-		}
-		else for (const session of sessions) {
-			const li = document.createElement('li')
-			const button = document.createElement('button')
-			button.type = 'button'
-			button.className = 'menu-item'
-			const title = document.createElement('span')
-			title.className = 'menu-item-title'
-			title.textContent = session.title || geti18n('code.sessions.untitled')
-			const time = document.createElement('span')
-			time.className = 'opacity-60 text-xs'
-			time.textContent = formatSessionTime(session.updated || session.created)
-			button.appendChild(title)
-			button.appendChild(time)
-			button.addEventListener('click', () => {
-				document.activeElement?.blur()
-				void selectConversation(session)
-			})
-			li.appendChild(button)
-			menu.appendChild(li)
-		}
-	}
-	const separatorLi = document.createElement('li')
-	const separator = document.createElement('div')
-	separator.className = 'divider my-1'
-	separatorLi.appendChild(separator)
-	menu.appendChild(separatorLi)
-	const browseLi = document.createElement('li')
-	const browseBtn = document.createElement('button')
-	browseBtn.type = 'button'
-	browseBtn.className = 'menu-item'
-	browseBtn.textContent = geti18n('code.workspaces.browse')
-	browseBtn.addEventListener('click', () => {
-		document.activeElement?.blur()
-		void openFolderBrowser()
-	})
-	browseLi.appendChild(browseBtn)
-	menu.appendChild(browseLi)
-}
-
-/**
- * 更新右侧工作区一览标签。
- * @returns {void}
- */
-function updateWorkspaceOverviewLabel() {
-	elements.workspaceOverviewLabel.textContent = state.workspace?.name || state.workspace?.path || geti18n('code.workspaces.none')
-}
-
-/**
- * 选择会话（跨工作区）。
- * @param {object} session - 聚合会话（含 workspaceId）。
+ * 打开（或聚焦）一个会话标签。
+ * @param {object} summary - 聚合会话摘要（含 workspaceId）。
  * @returns {Promise<void>}
  */
-async function selectConversation(session) {
-	if (state.workspace?.id !== session.workspaceId) await selectWorkspace(session.workspaceId)
-	await selectSession(session.id)
+async function openSessionTab(summary) {
+	let tab = state.tabs.find(item => item.type === 'session' && item.id === summary.id && item.workspaceId === summary.workspaceId)
+	if (!tab) {
+		tab = { type: 'session', id: summary.id, workspaceId: summary.workspaceId }
+		state.tabs.push(tab)
+	}
+	await activateTab(tab)
 }
 
 /**
- * 选择会话（当前工作区内）。
- * @param {string} id - 会话 id。
- * @returns {Promise<void>}
- */
-async function selectSession(id) {
-	try {
-		state.session = await api.loadSession(target(), id)
-	}
-	catch {
-		state.session = state.allSessions.find(s => s.id === id && s.workspaceId === state.workspace?.id) || null
-	}
-	if (state.session) {
-		state.session.workspaceId = state.workspace?.id
-		state.lastConversationWorkspaceId = state.workspace?.id
-	}
-	state.charname = state.session?.charname || state.charname
-	state.aiSource = state.session?.ai_source ?? ''
-	state.profile = state.session?.profile || state.profile
-	updateCharMenu()
-	renderModePillLabel()
-	renderAiSourcePillLabel()
-	renderMessages()
-	updateSessionSelectLabel()
-	renderSessionSelectMenu()
-}
-
-/**
- * 开始新会话（默认在上一个对话的工作区）。
+ * 新建会话：活动空草稿直接聚焦；否则新建草稿标签（默认在上一个对话的工作区）。
  * @returns {Promise<void>}
  */
 async function startNewSession() {
-	const workspaceId = state.session?.workspaceId || state.lastConversationWorkspaceId
-	if (workspaceId && state.workspace?.id !== workspaceId)
-		await selectWorkspace(workspaceId)
-	state.session = newSessionObject()
-	state.lastConversationWorkspaceId = state.workspace?.id
-	updateSessionSelectLabel()
-	renderMessages()
-	elements.composerInput.focus()
+	const active = activeTab()
+	if (active?.type === 'draft' && !state.session?.entries?.length) {
+		elements.composerInput.focus()
+		return
+	}
+	const workspaceId = [state.session?.workspaceId, state.lastConversationWorkspaceId, state.workspace?.id]
+		.find(id => id && state.workspaces.some(w => w.id === id)) || ''
+	await activateTab(createDraftTab(workspaceId))
 }
 
 /**
- * 顶栏会话标题。
- * @returns {void}
+ * 关闭标签页（脏会话先落盘，活动标签关闭后切相邻 / 回落草稿）。
+ * @param {object} tab - 目标标签页。
+ * @returns {Promise<void>}
  */
-function updateSessionTitle() {
-	elements.sessionTitle.textContent = state.session?.title || geti18n('code.sessions.untitled')
+async function closeTab(tab) {
+	const key = tabKeyOf(tab)
+	if (key === state.activeTabKey) {
+		const index = state.tabs.indexOf(tab)
+		const next = state.tabs[index + 1] || state.tabs[index - 1]
+		if (next) await activateTab(next)
+		else {
+			if (state.session) sessionCache.set(key, state.session)
+			state.session = null
+			state.activeTabKey = ''
+		}
+	}
+	if (dirtyTabKey === key) await flushSession()
+	state.tabs = state.tabs.filter(item => tabKeyOf(item) !== key)
+	sessionCache.delete(key)
+	renderTabs()
+	if (!state.activeTabKey || !activeTab()) await startNewSession()
+}
+
+/**
+ * 激活标签页：缓存当前会话、按需切换工作区、加载目标会话并渲染。
+ * @param {object} tab - 目标标签页。
+ * @returns {Promise<void>}
+ */
+async function activateTab(tab) {
+	const key = tabKeyOf(tab)
+	if (key === state.activeTabKey && state.session) return
+	const current = activeTab()
+	if (current && tabKeyOf(current) !== key) {
+		if (state.session) {
+			sessionCache.set(tabKeyOf(current), state.session)
+			// 后台生成：移除当前视图的流式气泡（切回时重建）
+			if (state.generating && generatingSession === state.session) endGeneratingBubble()
+		}
+		// 空草稿离开即丢弃
+		if (current.type === 'draft' && !state.session?.entries?.length)
+			state.tabs = state.tabs.filter(item => tabKeyOf(item) !== tabKeyOf(current))
+	}
+	if (tab.workspaceId && tab.workspaceId !== state.workspace?.id)
+		await selectWorkspace(tab.workspaceId, { fromTabSwitch: true })
+	state.session = tab.type === 'draft'
+		? sessionCache.get(key) || newSessionObject(tab.id)
+		: await loadTabSession(tab)
+	if (tab.type === 'session' && !state.session) {
+		// 会话已不存在：移除标签并回落草稿
+		state.tabs = state.tabs.filter(item => tabKeyOf(item) !== key)
+		state.activeTabKey = ''
+		renderTabs()
+		await startNewSession()
+		return
+	}
+	if (state.session) {
+		state.session.workspaceId = state.workspace?.id || ''
+		sessionCache.set(key, state.session)
+		state.lastConversationWorkspaceId = state.workspace?.id
+	}
+	state.activeTabKey = key
+	state.charname = state.session?.charname || state.charname
+	state.aiSource = state.session?.ai_source ?? ''
+	state.profile = state.session?.profile || state.profile
+	renderTabs()
+	renderMessages()
+	updateCharMenu()
+	renderModePillLabel()
+	renderAiSourcePillLabel()
+	// 切回生成中的会话：重建流式气泡
+	if (state.generating && generatingSession === state.session) startGeneratingBubble()
+}
+
+/**
+ * 加载会话标签的会话对象（内存缓存优先，回退目标工作区磁盘）。
+ * @param {object} tab - 会话标签。
+ * @returns {Promise<object|null>} 会话对象。
+ */
+async function loadTabSession(tab) {
+	const key = tabKeyOf(tab)
+	const cached = sessionCache.get(key)
+	if (cached) return cached
+	try {
+		return await api.loadSession(target(), tab.id)
+	}
+	catch {
+		return state.allSessions.find(s => s.id === tab.id && s.workspaceId === state.workspace?.id) || null
+	}
+}
+
+/**
+ * 切到工作区的草稿标签（无则新建）——工作区 pill 切换的落点。
+ * @param {string} workspaceId - 工作区 id。
+ * @returns {Promise<void>}
+ */
+async function activateDraftForWorkspace(workspaceId) {
+	const draft = state.tabs.find(tab => tab.type === 'draft' && tab.workspaceId === workspaceId)
+	await activateTab(draft || createDraftTab(workspaceId))
 }
 
 /* ---------------- 消息渲染 ---------------- */
@@ -467,42 +637,12 @@ elements.messages.addEventListener('scroll', updateBackToBottom, { passive: true
 /* ---------------- 空态 ---------------- */
 
 /**
- * 渲染空态引导（无工作区 / 新会话 / 未选角色）。
+ * 空态布局开关：无条目时 composer 垂直居中 + wordmark（工作区选择走下方 workspace pill）。
  * @returns {void}
  */
-function renderEmpty() {
-	const empty = document.createElement('div')
-	empty.className = 'code-empty'
-	if (!state.workspace) {
-		const icon = document.createElement('div')
-		icon.className = 'code-empty-icon'
-		icon.textContent = '🗂'
-		const title = document.createElement('div')
-		title.className = 'code-empty-title'
-		title.textContent = geti18n('code.empty.noWorkspace.title')
-		const desc = document.createElement('div')
-		desc.className = 'code-empty-description'
-		desc.textContent = geti18n('code.empty.noWorkspace.description')
-		const action = document.createElement('button')
-		action.type = 'button'
-		action.className = 'btn btn-sm btn-primary mt-1'
-		action.textContent = geti18n('code.empty.noWorkspace.action')
-		action.addEventListener('click', () => void openFolderBrowser())
-		empty.append(icon, title, desc, action)
-	}
-	else {
-		const icon = document.createElement('div')
-		icon.className = 'code-empty-icon'
-		icon.textContent = '💬'
-		const title = document.createElement('div')
-		title.className = 'code-empty-title'
-		title.textContent = geti18n('code.empty.noSession.title')
-		const desc = document.createElement('div')
-		desc.className = 'code-empty-description'
-		desc.textContent = geti18n('code.empty.noSession.description', { charname: state.charname || geti18n('code.char.none') })
-		empty.append(icon, title, desc)
-	}
-	return empty
+function updateEmptyMode() {
+	const empty = !(state.session?.entries?.length || 0)
+	document.querySelector('.code-main')?.classList.toggle('empty-mode', empty)
 }
 
 /**
@@ -510,15 +650,16 @@ function renderEmpty() {
  * @returns {void}
  */
 function renderMessages() {
+	updateEmptyMode()
 	const entries = state.session?.entries || []
 	if (!entries.length) {
-		elements.messages.replaceChildren(renderEmpty(), backToBottom)
+		elements.messages.replaceChildren(backToBottom)
 		updateBackToBottom()
 		return
 	}
 	elements.messages.replaceChildren(...entries.map(renderEntryBubble), backToBottom)
 	scrollMessagesBottom()
-	updateSessionTitle()
+	updateBackToBottom()
 }
 
 /**
@@ -528,9 +669,8 @@ function renderMessages() {
  */
 function appendEntryBubble(entry) {
 	const bubble = renderEntryBubble(entry)
-	// 首条消息到达时移除空态引导（renderMessages 只在无条目时重渲染）
-	elements.messages.querySelector('.code-empty')?.remove()
 	elements.messages.insertBefore(bubble, backToBottom)
+	updateEmptyMode()
 	if (nearBottom()) scrollMessagesBottom()
 	updateBackToBottom()
 	return bubble
@@ -951,7 +1091,7 @@ function getSocket() {
 function onSocketMessage(event) {
 	const msg = JSON.parse(String(event.data))
 	if (msg.type === 'preview') {
-		if (generatingBubble?.renderer) generatingBubble.renderer.setTarget(msg.content)
+		if (generatingSession === state.session && generatingBubble?.renderer) generatingBubble.renderer.setTarget(msg.content)
 		return
 	}
 	if (msg.type === 'done') {
@@ -963,15 +1103,16 @@ function onSocketMessage(event) {
 		return
 	}
 	if (msg.type === 'error') {
-		state.session?.entries.push(...msg.entries || [])
-		for (const entry of msg.entries || []) appendEntryBubble(entry)
+		const session = generatingSession || state.session
 		state.generating = false
 		endGeneratingBubble()
 		const fallback = geti18n('code.error.generate')
 		const text = `${fallback}\n\`\`\`\n${msg.error}\n\`\`\``
-		state.session?.entries.push({ id: crypto.randomUUID().slice(0, 8), uid: 'system', role: 'system', name: 'error', content: text, time: new Date().toISOString() })
-		appendEntryBubble(state.session?.entries.at(-1))
-		markSessionDirty()
+		session?.entries.push(...msg.entries || [], { id: crypto.randomUUID().slice(0, 8), uid: 'system', role: 'system', name: 'error', content: text, time: new Date().toISOString() })
+		if (session === state.session) 
+			for (const entry of session.entries.slice(-((msg.entries || []).length + 1))) appendEntryBubble(entry)
+		
+		markSessionDirty(session)
 	}
 }
 
@@ -1015,19 +1156,23 @@ function endGeneratingBubble() {
  */
 function finishGeneration(entries, memory, aborted = false) {
 	endGeneratingBubble()
-	state.session.entries.push(...entries)
-	for (const entry of entries) appendEntryBubble(entry)
-	if (memory) state.session.memory = memory
-	state.session.updated = new Date().toISOString()
-	if (!state.session.title && entries.length)
-		state.session.title = (entries.find(e => e.role === 'user')?.content || '').slice(0, 40) || state.session.title
+	const session = generatingSession || state.session
+	generatingSession = null
+	if (!session) return
+	const isActive = session === state.session
+	session.entries.push(...entries)
+	if (memory) session.memory = memory
+	session.updated = new Date().toISOString()
+	if (!session.title && entries.length)
+		session.title = (entries.find(e => e.role === 'user')?.content || '').slice(0, 40) || session.title
 	state.generating = false
 	updateSendButton()
-	updateSessionTitle()
-	if (aborted) showToastI18n('info', 'code.error.aborted')
-	updateSessionSelectLabel()
-	renderSessionSelectMenu()
-	markSessionDirty()
+	if (isActive) {
+		for (const entry of entries) appendEntryBubble(entry)
+		if (aborted) showToastI18n('info', 'code.error.aborted')
+	}
+	markSessionDirty(session)
+	renderTabs()
 	void refreshAllSessions()
 }
 
@@ -1059,6 +1204,7 @@ async function sendMessage(content) {
 	}
 	state.session.profile = state.profile
 	state.session.ai_source = state.aiSource
+	generatingSession = state.session
 	appendLocalHistory('message', content)
 	state.generating = true
 	updateSendButton()
@@ -1077,6 +1223,7 @@ async function sendMessage(content) {
 	catch (error) {
 		state.generating = false
 		endGeneratingBubble()
+		generatingSession = null
 		updateSendButton()
 		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
 	}
@@ -1121,28 +1268,43 @@ async function execShellMode(command) {
 
 /**
  * 标记会话为待持久化；焦点已移出窗口且无生成任务时立即写盘。
- * 无工作区时会话无处落盘，跳过以免无效写盘报错。
+ * 草稿一旦可落盘即转为会话标签（防关闭丢失）。无工作区时会话无处落盘，跳过。
+ * @param {object} [session] - 目标会话（默认当前展示会话；后台生成时传入）。
  * @returns {void}
  */
-function markSessionDirty() {
-	if (!state.workspace) return
-	state.dirty = true
-	if (!state.generating && !document.hasFocus())
-		void flushSession()
+function markSessionDirty(session = state.session) {
+	const key = tabKeyOfSession(session)
+	if (!key) return
+	dirtyTabKey = key
+	const tab = state.tabs.find(item => tabKeyOf(item) === key)
+	if (!tab) return
+	const workspace = state.workspaces.find(w => w.id === tab.workspaceId)
+	if (!workspace) return
+	if (tab.type === 'draft') {
+		tab.type = 'session'
+		renderTabs()
+	}
+	// 非生成时标记即落盘（AGENTS 约定），保证总览/标签标题及时可见
+	if (!state.generating) void flushSession()
 }
 
 /**
- * 持久化会话到工作区 `.fount/code/sessions`（生成中、无变更、无工作区时跳过）。
+ * 持久化待写标签的会话到其工作区 `.fount/code/sessions`（生成中、无变更、无工作区时跳过）。
  * @returns {Promise<void>}
  */
 async function flushSession() {
-	if (state.generating || !state.dirty || !state.session || !state.workspace) return
-	state.dirty = false
+	const key = dirtyTabKey
+	if (!key || state.generating) return
+	dirtyTabKey = ''
+	const tab = state.tabs.find(item => tabKeyOf(item) === key)
+	const session = tabKeyOf(activeTab() || {}) === key ? state.session : sessionCache.get(key)
+	const workspace = tab && state.workspaces.find(w => w.id === tab.workspaceId)
+	if (!session || !workspace || !(session.entries?.length || 0)) return
 	try {
-		await api.putSession(target(), state.session)
+		await api.putSession({ machine: String(workspace.machine ?? state.machine), workdir: workspace.path }, session)
 	}
 	catch (error) {
-		state.dirty = true
+		dirtyTabKey = key
 		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
 	}
 }
@@ -1152,8 +1314,12 @@ document.addEventListener('visibilitychange', () => {
 	if (document.hidden) void flushSession()
 })
 window.addEventListener('beforeunload', () => {
-	if (state.dirty && state.session && state.workspace && !state.generating)
-		api.putSession(target(), state.session).catch(() => { })
+	if (!dirtyTabKey || state.generating) return
+	const tab = state.tabs.find(item => tabKeyOf(item) === dirtyTabKey)
+	const session = tabKeyOf(activeTab() || {}) === dirtyTabKey ? state.session : sessionCache.get(dirtyTabKey)
+	const workspace = tab && state.workspaces.find(w => w.id === tab.workspaceId)
+	if (session && workspace && (session.entries?.length || 0))
+		api.putSession({ machine: String(workspace.machine ?? state.machine), workdir: workspace.path }, session).catch(() => { })
 })
 
 /* ---------------- 机器 / 工作区 pill ---------------- */
@@ -1275,13 +1441,17 @@ function renderWorkspacePillLabel() {
 }
 
 /**
- * 选择工作区。
+ * 选择工作区（标签切换复用；底部 pill 切换后落到该工作区的草稿标签）。
  * @param {string} id - 工作区 id。
+ * @param {{fromTabSwitch?: boolean}} [options] - 标签切换内部调用时不激活草稿。
  * @returns {Promise<void>}
  */
-async function selectWorkspace(id) {
+async function selectWorkspace(id, { fromTabSwitch = false } = {}) {
 	const workspace = state.workspaces.find(w => w.id === id)
 	if (!workspace) return
+	// 缓存当前会话，避免工作区切换丢失未保存内容
+	const current = activeTab()
+	if (current && state.session) sessionCache.set(tabKeyOf(current), state.session)
 	state.workspace = workspace
 	if (workspace.machine !== state.machine) {
 		state.machine = String(workspace.machine)
@@ -1301,12 +1471,11 @@ async function selectWorkspace(id) {
 	renderMessages()
 	renderWorkspacePillLabel()
 	renderWorkspaceMenu()
-	updateSessionSelectLabel()
-	renderSessionSelectMenu()
-	updateWorkspaceOverviewLabel()
-	renderWorkspaceOverviewMenu()
+	renderHomeMenu()
+	renderTabs()
 	void ensureHistory(state.shellMode ? 'shell' : 'message')
 	void applyWorkspaceCharConfig()
+	if (!fromTabSwitch) await activateDraftForWorkspace(workspace.id)
 }
 
 /**
@@ -1315,20 +1484,25 @@ async function selectWorkspace(id) {
  */
 async function removeCurrentWorkspace() {
 	if (!state.workspace) return
-	state.workspaces = state.workspaces.filter(w => w.id !== state.workspace.id)
-	await api.removeWorkspace(state.workspace.id).catch(() => { })
+	const removedId = state.workspace.id
+	state.workspaces = state.workspaces.filter(w => w.id !== removedId)
+	await api.removeWorkspace(removedId).catch(() => { })
 	state.workspace = null
 	setPref('workspace', '')
-	state.session = null
-	historyState.mode = null
+	// 丢弃指向该工作区的标签；活动标签被移除时清空会话视图
+	state.tabs = state.tabs.filter(tab => tab.workspaceId !== removedId)
+	if (state.activeTabKey && !activeTab()) {
+		state.activeTabKey = ''
+		state.session = null
+	}
+	dirtyTabKey = ''
 	renderWorkspacePillLabel()
 	renderWorkspaceMenu()
-	updateWorkspaceOverviewLabel()
-	renderWorkspaceOverviewMenu()
-	updateSessionSelectLabel()
-	renderSessionSelectMenu()
+	renderHomeMenu()
 	await Promise.all([refreshAllSessions(), refreshProfiles()])
+	renderTabs()
 	renderMessages()
+	if (!state.activeTabKey) await startNewSession()
 }
 
 /**
@@ -1738,9 +1912,24 @@ async function applyWorkspaceCharConfig() {
 
 /* ---------------- 事件绑定 ---------------- */
 
-elements.newSessionButton.addEventListener('click', () => void startNewSession())
-elements.sessionSelect.addEventListener('click', renderSessionSelectMenu)
-elements.workspaceOverviewPill.addEventListener('click', renderWorkspaceOverviewMenu)
+elements.newTabButton.addEventListener('click', () => void startNewSession())
+elements.homeToggle.addEventListener('click', renderHomeMenu)
+// Alt+1..9 切换标签，Alt+T 新建会话（opencode 用 mod+t / mod+1..9，但浏览器页签保留键无法拦截，改用浏览器安全的 Alt 系）
+document.addEventListener('keydown', event => {
+	if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
+	if (event.key >= '1' && event.key <= '9') {
+		const tab = state.tabs[Number(event.key) - 1]
+		if (tab) {
+			event.preventDefault()
+			void activateTab(tab)
+		}
+		return
+	}
+	if (event.key === 't' || event.key === 'T') {
+		event.preventDefault()
+		void startNewSession()
+	}
+})
 elements.workspacePill.addEventListener('click', () => renderWorkspaceMenu())
 elements.machinePill.addEventListener('click', () => renderMachineMenu())
 elements.modePill.addEventListener('click', () => renderModeMenu())
@@ -1957,8 +2146,7 @@ async function selectBrowsedFolder(path) {
 	state.workspace = state.workspaces.find(w => w.path === path && w.machine === machine) || null
 	renderWorkspacePillLabel()
 	renderWorkspaceMenu()
-	updateWorkspaceOverviewLabel()
-	renderWorkspaceOverviewMenu()
+	renderHomeMenu()
 	dialog.close()
 	await selectWorkspace(state.workspace?.id || '')
 }
@@ -1970,8 +2158,8 @@ async function selectBrowsedFolder(path) {
  * @returns {void}
  */
 function rerenderDynamicText() {
-	renderSessionSelectMenu()
-	renderWorkspaceOverviewMenu()
+	renderHomeMenu()
+	renderTabs()
 	renderMachinePillLabel()
 	renderMachineMenu()
 	renderWorkspacePillLabel()
@@ -1984,13 +2172,10 @@ function rerenderDynamicText() {
 	renderAiSourcePillLabel()
 	updateCharMenu()
 	updateSendButton()
-	updateSessionTitle()
-	updateSessionSelectLabel()
-	updateWorkspaceOverviewLabel()
 	updateComposerPlaceholder()
+	updateEmptyMode()
 	renderCharRecommendation()
 	backToBottom.setAttribute('aria-label', geti18n('code.messages.backToBottom'))
-	if (!(state.session?.entries?.length || 0)) renderMessages()
 }
 
 /**
@@ -2010,22 +2195,33 @@ async function boot() {
 	state.workspaces = workspaces
 	state.machine = getPref('machine', '0')
 	if (!machines.some(m => String(m.id) === state.machine && (m.id === '0' || m.isConnected))) state.machine = '0'
+	state.charname = getPref('charname') || await getAnyPreferredDefaultPart('chars') || null
+	state.profile = getPref('profile', 'build')
+	state.aiSource = getPref('aiSource', '')
+	state.shells = await api.getMachineShells(state.machine).then(r => r.shells).catch(() => [])
+	await Promise.all([refreshProfiles(), refreshAiSources(), refreshAllSessions(), refreshChars()])
 	// `fount run` 打开的页面经 ?workspace= 直达目标工作区
 	const urlWorkspace = new URLSearchParams(location.search).get('workspace')
 	const savedWorkspace = urlWorkspace || getPref('workspace')
 	state.workspace = workspaces.find(w => w.id === savedWorkspace) || workspaces[0] || null
 	if (state.workspace && urlWorkspace) setPref('workspace', state.workspace.id)
-	state.charname = getPref('charname') || await getAnyPreferredDefaultPart('chars') || null
-	state.profile = getPref('profile', 'build')
-	state.aiSource = getPref('aiSource', '')
-	state.shells = await api.getMachineShells(state.machine).then(r => r.shells).catch(() => [])
-	renderMachinePillLabel()
-	renderWorkspacePillLabel()
-	updateCharMenu()
-	updateSendButton()
-	renderShellPillLabel()
-	await Promise.all([refreshProfiles(), refreshAiSources(), refreshAllSessions(), refreshChars()])
-	renderMessages()
+	// 标签恢复：丢弃指向已消失工作区/会话的标签；?workspace= 直达时聚焦该工作区的新草稿
+	loadTabPrefs()
+	state.tabs = state.tabs.filter(tab =>
+		state.workspaces.some(w => w.id === tab.workspaceId)
+		&& state.allSessions.some(s => s.id === tab.id && s.workspaceId === tab.workspaceId))
+	let initialTab = activeTab() || state.tabs[0] || null
+	if (urlWorkspace) {
+		initialTab = createDraftTab(state.workspace?.id || '')
+		state.activeTabKey = ''
+	}
+	else if (!initialTab) initialTab = createDraftTab(state.workspace?.id || '')
+	// 恢复的活动标签指向其他工作区时以标签为准
+	if (!urlWorkspace && initialTab.workspaceId && initialTab.workspaceId !== state.workspace?.id)
+		state.workspace = state.workspaces.find(w => w.id === initialTab.workspaceId) || state.workspace
+	state.activeTabKey = tabKeyOf(initialTab)
+	renderTabs()
+	await activateTab(initialTab)
 	rerenderDynamicText()
 	void ensureHistory(state.shellMode ? 'shell' : 'message')
 	if (state.workspace) void applyWorkspaceCharConfig()

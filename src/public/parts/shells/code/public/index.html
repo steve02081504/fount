@@ -27,28 +27,30 @@
 			<h1 class="sr-only" data-i18n="code.title"></h1>
 			<header class="code-topbar">
 				<div class="code-topbar-left">
-					<div class="dropdown" id="session-select-wrap">
-						<button class="code-pill code-pill-primary" id="session-select" role="button" tabindex="0">
-							<span class="code-pill-label" id="session-select-label" user-content></span>
-							<span class="code-pill-chevron" aria-hidden="true">▾</span>
+					<div class="dropdown" id="home-wrap">
+						<button class="code-iconbtn" id="home-toggle" role="button" tabindex="0" data-i18n="code.home" aria-haspopup="true">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<rect x="3" y="3" width="7" height="7" rx="1"></rect>
+								<rect x="14" y="3" width="7" height="7" rx="1"></rect>
+								<rect x="3" y="14" width="7" height="7" rx="1"></rect>
+								<path d="M17.5 14v7"></path>
+								<path d="M14 17.5h7"></path>
+							</svg>
 						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-80 p-2 shadow" id="session-select-menu"></ul>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-80 p-2 shadow" id="home-menu"></ul>
 					</div>
-					<button class="btn btn-sm btn-primary" id="new-session-button" data-i18n="code.sessions.new"></button>
-				</div>
-				<div class="code-session-title" id="session-title" user-content></div>
-				<div class="code-topbar-right">
-					<div class="dropdown dropdown-end" id="workspace-overview-wrap">
-						<button class="code-pill" id="workspace-overview-pill" role="button" tabindex="0">
-							<span class="code-pill-label" id="workspace-overview-label" user-content></span>
-							<span class="code-pill-chevron" aria-hidden="true">▾</span>
-						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-80 p-2 shadow" id="workspace-overview-menu"></ul>
-					</div>
+					<div class="code-tab-strip" id="tab-strip" role="toolbar" data-i18n="code.tabs"></div>
+					<button class="code-iconbtn" id="new-tab-button" data-i18n="code.newTab">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<path d="M12 5v14"></path>
+							<path d="M5 12h14"></path>
+						</svg>
+					</button>
 				</div>
 			</header>
 			<div class="code-messages" id="messages"></div>
 			<div class="code-composer">
+				<img class="code-wordmark text-icon" id="code-wordmark" src="https://steve02081504.github.io/fount/imgs/title.svg" alt="" aria-hidden="true" draggable="false" />
 				<div class="code-composer-shell">
 					<div id="composer-input" class="code-composer-input" data-markdown-rich-input data-i18n="code.composer" user-content></div>
 					<div class="code-composer-controls">
@@ -110,7 +112,7 @@
 							<li><a data-i18n="code.char.goodAgent" href="https://steve02081504.github.io/fount/blog/" target="_blank" rel="noopener"></a></li>
 						</ul>
 					</div>
-				</div>
+					</div>
 			</div>
 		</main>
 	</div>

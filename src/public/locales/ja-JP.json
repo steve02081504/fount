@@ -6327,36 +6327,32 @@
 		"sessions": {
 			"new": "新規セッション",
 			"untitled": "無題のセッション",
-			"panel": {
-				"aria-label": "セッション"
-			},
-			"close": "サイドバーを閉じる",
-			"toggle": "サイドバー",
-			"deleteAria": "セッションを削除",
-			"deleteConfirm": "セッション「${title}」を削除しますか？この操作は元に戻せません。",
-			"empty": "セッションはまだありません",
 			"yesterday": "昨日"
 		},
-		"conversations": {
-			"open": "会話を開く…"
-		},
 		"workspaces": {
-			"manage": "ワークスペース",
 			"browse": "参照…",
 			"remove": "現在のワークスペースを削除",
 			"none": "ワークスペース未選択",
 			"go": "移動",
 			"select": "選択",
 			"overviewEmpty": "会話はまだありません",
-			"aria-label": "ワークスペースを選択",
 			"path": {
 				"aria-label": "ワークスペースのパス",
 				"placeholder": "ディレクトリパス"
 			}
 		},
+		"home": {
+			"aria-label": "ワークスペースとセッション一覧"
+		},
+		"tabs": {
+			"aria-label": "セッションタブ",
+			"close": "タブを閉じる"
+		},
+		"newTab": {
+			"aria-label": "新規セッション"
+		},
 		"machine": {
 			"local": "ローカル",
-			"aria-label": "マシンを選択",
 			"offline": "オフライン"
 		},
 		"char": {
@@ -6371,12 +6367,7 @@
 			"recommendInstalled": "キャラクター ${charname} をインストールしました"
 		},
 		"composer": {
-			"mode": "モード",
-			"aiSource": "AI ソース",
-			"shell": "Shell",
 			"shellDefault": "デフォルト",
-			"send": "送信",
-			"stop": "停止",
 			"hint": "空欄で ! を入力するとシェルモード · @ でファイル参照 · / でコマンド · ↑↓ 履歴 · Tab 補完",
 			"placeholder": "コマンドを入力、Enter で実行（空にするとシェルモードを終了）",
 			"aria-label": "メッセージ入力",
@@ -6410,17 +6401,6 @@
 		},
 		"messages": {
 			"backToBottom": "最新へ戻る"
-		},
-		"empty": {
-			"noWorkspace": {
-				"title": "ワークスペースを選択",
-				"description": "このマシンまたは接続中の subfount でディレクトリをワークスペースとして選択します。AI はこのディレクトリ内でファイルの読み書きとコード実行を行います。",
-				"action": "ワークスペースを選択…"
-			},
-			"noSession": {
-				"title": "新しいコーディングセッションを開始",
-				"description": "現在のキャラクター：${charname}。メッセージを入力して開始するか、上部のセレクターから履歴セッションを選択してください。"
-			}
 		}
 	}
 }

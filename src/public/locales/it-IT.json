@@ -6326,5 +6326,11 @@
 			"failed": "Accesso non riuscito: ${message}",
 			"missingParams": "Al callback manca code o state."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }

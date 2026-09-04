@@ -72,8 +72,8 @@ test.describe('code shell composer & placeholders', () => {
 		const composer = page.locator('#composer-input')
 		const placeholder = composer.locator('.fount-markdown-rich-input-placeholder')
 		await expect(placeholder).toContainText('输入消息开始')
-		// 点外部可聚焦元素（会话选择器）再点回输入框：占位符不应被旧 i18n 文案（输入命令，Enter 执行…）覆盖
-		await page.locator('#session-select').click()
+		// 点外部可聚焦元素（home 总览按钮）再点回输入框：占位符不应被旧 i18n 文案（输入命令，Enter 执行…）覆盖
+		await page.locator('#home-toggle').click()
 		await expect(composer).not.toBeFocused()
 		await composer.click()
 		await expect(placeholder).toContainText('输入消息开始')
@@ -88,6 +88,10 @@ test.describe('code shell composer & placeholders', () => {
 		await composer.click()
 		await page.keyboard.type('！')
 		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
+		// shell pill 顶格：淡出的其他选择器不再把 shell pill 挤到中间
+		const controlsBox = await page.locator('.code-composer-controls-main').boundingBox()
+		const shellBox = await page.locator('#shell-pill-wrap').boundingBox()
+		expect(shellBox.x - controlsBox.x).toBeLessThan(8)
 		// 叹号被移除，输入框为空 → shell 占位符显示
 		await expect(placeholder).toContainText('输入 shell 命令')
 		// 输入内容后再删到空：不退出 shell 模式
@@ -214,11 +218,13 @@ test.describe('code shell pill dropdowns', () => {
 })
 
 test.describe('code shell sessions & workspace', () => {
-	test('new session button starts an empty session shown in the top selector', async ({ page, baseUrl }) => {
+	test('new tab button reuses the active empty draft tab', async ({ page, baseUrl }) => {
 		await openCode(page, baseUrl)
-		await expect(page.locator('.code-empty-title')).toContainText('选择一个工作区')
-		await page.locator('#new-session-button').click()
-		await expect(page.locator('#session-select-label')).toContainText('未命名会话')
+		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
+		await page.locator('#new-tab-button').click()
+		// 活动标签是空草稿 → 复用而非新建
+		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
+		await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
 	})
 
 	test('selecting a workspace via the folder browser enables the coding session flow', async ({ page, baseUrl }) => {
@@ -226,11 +232,13 @@ test.describe('code shell sessions & workspace', () => {
 		try {
 			await openCode(page, baseUrl)
 			await selectWorkspaceViaBrowser(page, dir)
-			await expect(page.locator('.code-empty-title')).toContainText('开始新的编码会话')
-			// 右侧工作区一览包含该工作区
-			await page.locator('#workspace-overview-pill').click()
-			await expect(page.locator('#workspace-overview-menu')).toContainText(basename(dir))
-			await page.locator('#session-title').click()
+			// 无会话条目 → 保持空态（wordmark 居中）
+			await expect(page.locator('.code-main')).toHaveClass(/empty-mode/)
+			// home 总览菜单按工作区分组
+			await page.locator('#home-toggle').click()
+			await expect(page.locator('#home-menu')).toContainText(basename(dir))
+			await expect(page.locator('#home-menu')).toContainText('暂无会话')
+			await page.mouse.click(10, 300)
 			// 清理：移除工作区，避免污染同相位后续测试
 			await removeCurrentWorkspace(page)
 		}
@@ -263,6 +271,55 @@ test.describe('code shell sessions & workspace', () => {
 			await expect(page.locator('.code-char-recommend-text')).toContainText('GhostCharNotInstalled')
 			await page.locator('.code-char-recommend .btn-ghost').click()
 			await expect(page.locator('.code-char-recommend')).toBeHidden()
+			await removeCurrentWorkspace(page)
+		}
+		finally {
+			rmSync(dir, { recursive: true, force: true })
+		}
+	})
+})
+
+test.describe('code shell tabs', () => {
+	test('tabs: draft → session conversion, switching, closing, and home menu opening', async ({ page, baseUrl }) => {
+		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-tabs-'))
+		try {
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
+			// 执行 shell 命令 → 草稿落盘转为会话标签（标题未命名会话）
+			await page.locator('#composer-input').click()
+			await page.keyboard.type('！echo tab-lifecycle')
+			await page.locator('#send-button').click()
+			await expect(page.locator('.code-message.role-tool')).toContainText('tab-lifecycle')
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			// 会话标签带工作区头像（非草稿铅笔图标）
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-avatar:not(.code-tab-avatar-draft)')).toBeVisible()
+			// + 新建草稿标签
+			await page.locator('#new-tab-button').click()
+			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
+			// 新草稿绑定同一工作区，且为空态布局
+			await expect(page.locator('.code-main')).toHaveClass(/empty-mode/)
+			// 点会话标签切回（消息流恢复）
+			await page.locator('#tab-strip .code-tab', { hasText: '未命名会话' }).click()
+			await expect(page.locator('.code-message.role-tool')).toContainText('tab-lifecycle')
+			await expect(page.locator('.code-main')).not.toHaveClass(/empty-mode/)
+			// home 总览菜单列出该会话，点击打开（已开 → 聚焦）
+			await page.locator('#home-toggle').click()
+			const menuItem = page.locator('#home-menu').locator('.menu-item', { hasText: '未命名会话' })
+			await expect(menuItem).toBeVisible()
+			await menuItem.click()
+			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
+			// 关闭当前活动草稿标签 → 切回相邻会话标签
+			await page.locator('#tab-strip .code-tab', { hasText: '新会话' }).locator('.code-tab-close').click()
+			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			// Alt+T 新建 / Alt+1 切换（浏览器保留键无法拦截，键绑用 Alt 系）
+			await page.keyboard.press('Alt+t')
+			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
+			await page.keyboard.press('Alt+1')
+			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			// 清理：移除工作区，避免污染同相位后续测试
 			await removeCurrentWorkspace(page)
 		}
 		finally {

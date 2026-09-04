@@ -6326,5 +6326,11 @@
 			"failed": "Falha no início de sessão: ${message}",
 			"missingParams": "O callback não tem code ou state."
 		}
+	},
+	"code": {
+		"sessions": {},
+		"workspaces": {},
+		"machine": {},
+		"composer": {}
 	}
 }
