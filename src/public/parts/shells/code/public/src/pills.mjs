@@ -3,6 +3,7 @@
  */
 import { getPartList, runPart } from '/scripts/endpoints/parts.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
+import { openFolderBrowser as openFolderBrowserComponent } from '/scripts/components/folderBrowser.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 import { ensureHistory, removeGhost } from './composer.mjs'
@@ -597,208 +598,46 @@ export async function applyWorkspaceCharConfig() {
 	else showCharRecommendation(spec)
 }
 
-/* ---------------- 文件夹浏览器 ---------------- */
+/* ---------------- 文件夹浏览器（通用组件薄包装） ---------------- */
 
-/** 当前浏览的机器 id。 */
-let browseMachineId = '0'
-/** @type {HTMLDialogElement|null} 当前打开的浏览对话框。 */
-let browseDialog = null
-/** 当前显示的可选条目 {name, path, isDirectory}。 */
-let browseEntries = []
-/** 过滤后的可选条目（键盘导航 / 回车使用）。 */
-let browseFiltered = []
-/** 高亮下标（对应 browseFiltered）。 */
-let browseHighlight = 0
-/** 后端返回的快速访问项（根视图分组）。 */
-let browseQuickAccess = []
-/** 当前视图路径（与输入框值比对，区分「过滤词」与「当前目录路径」）。 */
-let browsePath = ''
-/** 输入框当前是否处于「编辑路径」状态（目录部分已偏离当前视图，高亮取消、回车跳转）。 */
-let browseNavigating = false
-
-/** 打开文件夹浏览器（当前机器）。 */
+/** 打开文件夹浏览器（当前机器；仅显示文件夹，选定即保存为工作区）。 */
 export async function openFolderBrowser() {
-	browseMachineId = store.machine
-	try {
-		browseDialog = await openDialogFromTemplate('folder_browser', {}, {
-			/**
-			 * 绑定浏览操作并加载根目录。
-			 * @param {HTMLDialogElement} dialog - 已打开的对话框。
-			 * @returns {Promise<void>} 根目录加载完成。
-			 */
-			onReady: dialog => {
-				dialog.querySelector('#folder-go-button').addEventListener('click', () => {
-					void openFolderEntries(dialog.querySelector('#folder-path-input').value, dialog)
-				})
-				const input = dialog.querySelector('#folder-path-input')
-				input.addEventListener('input', () => {
-					browseHighlight = 0
-					renderFolderList(dialog)
-				})
-				input.addEventListener('keydown', event => {
-					if (browseNavigating) {
-						// 编辑路径状态：方向键不移动选中，回车跳转到输入路径
-						if (event.key === 'ArrowDown' || event.key === 'ArrowUp') return
-						if (event.key === 'Enter') {
-							event.preventDefault()
-							void openFolderEntries(event.currentTarget.value, dialog)
-						}
-						return
-					}
-					if (event.key === 'ArrowDown') {
-						event.preventDefault()
-						if (!browseFiltered.length) return
-						browseHighlight = Math.min(browseHighlight + 1, browseFiltered.length - 1)
-						renderFolderList(dialog)
-					}
-					else if (event.key === 'ArrowUp') {
-						event.preventDefault()
-						if (!browseFiltered.length) return
-						browseHighlight = Math.max(browseHighlight - 1, 0)
-						renderFolderList(dialog)
-					}
-					else if (event.key === 'Enter') {
-						event.preventDefault()
-						const target = browseFiltered[browseHighlight]
-						if (target) void openFolderEntries(target.path, dialog)
-						else void openFolderEntries(event.currentTarget.value, dialog)
-					}
-				})
-				dialog.querySelector('#folder-select-button').addEventListener('click', () => {
-					void selectBrowsedFolder(dialog.querySelector('#folder-path-input').value)
-				})
-				return openFolderEntries('', dialog, store.workspace?.path || '')
-			},
-		})
-	}
-	catch (error) {
-		browseDialog = null
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-	}
-}
-
-/**
- * 列出目录内容。
- * @param {string} path - 目录路径。
- * @param {HTMLDialogElement} [dialog] - 浏览对话框（缺省用当前打开的对话框）。
- * @param {string} [workspaceParam] - 当前工作区路径（根视图快速访问）。
- * @returns {Promise<void>}
- */
-async function openFolderEntries(path, dialog = browseDialog, workspaceParam = '') {
-	if (!dialog) return
-	try {
-		const data = await api.browseMachine(browseMachineId, path, workspaceParam)
-		browseQuickAccess = data.quickAccess || []
-		browsePath = data.path
-		browseEntries = !data.path ? [...browseQuickAccess, ...data.entries] : data.entries
-		browseHighlight = 0
-		dialog.querySelector('#folder-path-input').value = data.path
-		renderFolderList(dialog)
-	}
-	catch (error) {
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-	}
-}
-
-/**
- * 渲染文件夹列表（基于输入框过滤词；高亮项滚动可见，根视图快速访问分组）。
- * @param {HTMLDialogElement} [dialog] - 浏览对话框（缺省用当前打开的对话框）。
- * @returns {void}
- */
-function renderFolderList(dialog = browseDialog) {
-	if (!dialog) return
-	const input = dialog.querySelector('#folder-path-input')
-	const container = dialog.querySelector('#folder-entries')
-	const raw = input.value
-	// 编辑路径状态：输入含路径分隔符，且目录部分（最后一个 / 或 \ 之前）已偏离当前视图路径 → 取消选中，回车跳转
-	const lastSep = Math.max(raw.lastIndexOf('/'), raw.lastIndexOf('\\'))
-	const dirPart = lastSep === -1 ? '' : raw.slice(0, lastSep)
-	browseNavigating = lastSep !== -1 && raw !== browsePath && dirPart !== browsePath
-	const term = browseNavigating || raw === browsePath ? '' : raw.split(/[\\/]/).pop().trim()
-	const filtered = term
-		? browseEntries.filter(entry => new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(entry.name))
-		: browseEntries
-	browseFiltered = filtered
-	// 编辑路径状态下取消选中（回车跳转而非进入选中项）；否则恢复高亮
-	browseHighlight = browseNavigating ? -1 : filtered.length ? Math.min(Math.max(browseHighlight, 0), filtered.length - 1) : -1
-	container.replaceChildren()
-	if (!filtered.length) {
-		const empty = document.createElement('div')
-		empty.className = 'code-folder-empty'
-		empty.dataset.i18n = 'code.workspaces.noMatch'
-		container.append(empty)
-		return
-	}
-	const grouped = !term && !browsePath && browseQuickAccess.length > 0
-	const quickSet = new Set(browseQuickAccess.map(item => item.path))
-	const quick = grouped ? filtered.filter(entry => quickSet.has(entry.path)) : []
-	const rest = grouped ? filtered.filter(entry => !quickSet.has(entry.path)) : []
-	/**
-	 * 渲染单个条目按钮（高亮项滚动可见）。
-	 * @param {{name: string, path: string, isDirectory: boolean}} entry - 条目。
-	 * @returns {void}
-	 */
-	const appendEntry = entry => {
-		const row = document.createElement('button')
-		row.type = 'button'
-		row.className = 'code-folder-entry hover:bg-base-300/90' + (browseFiltered[browseHighlight] === entry ? ' active' : '')
-		row.textContent = (entry.isDirectory ? '📁 ' : '📄 ') + entry.name
+	await openFolderBrowserComponent({
 		/**
-		 * 进入目录（单击 / 双击）。
+		 * 浏览目录数据源。
+		 * @param {string} path - 目录路径（空 = 根视图）。
+		 * @param {string} workspace - 根视图快速访问的工作区路径。
+		 * @returns {Promise<{path: string, entries: Array<object>, quickAccess?: Array<object>}>} 目录内容。
+		 */
+		browse: (path, workspace) => api.browseMachine(store.machine, path, workspace),
+		dirsOnly: true,
+		initialWorkspace: store.workspace?.path || '',
+		/**
+		 * 选定路径为工作区。
+		 * @param {string} path - 选定的目录路径。
+		 * @returns {Promise<void>}
+		 */
+		onSelect: async path => {
+			if (!path) return
+			const machine = store.machine
+			const name = path.split(/[\\/]/).filter(Boolean).pop() || path
+			const data = await api.addWorkspace({ name, machine, path }).catch(error => {
+				showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+				return null
+			})
+			if (!data) return
+			store.workspaces = data.list
+			store.workspace = store.workspaces.find(w => w.path === path && w.machine === machine) || null
+			renderWorkspacePillLabel()
+			renderWorkspaceMenu()
+			renderHomeMenu()
+			await selectWorkspace(store.workspace?.id || '')
+		},
+		/**
+		 * 出错处理。
+		 * @param {Error} error - 错误。
 		 * @returns {void}
 		 */
-		const enter = () => {
-			if (entry.isDirectory) void openFolderEntries(entry.path)
-		}
-		row.addEventListener('click', enter)
-		row.addEventListener('dblclick', enter)
-		container.append(row)
-		if (browseFiltered[browseHighlight] === entry) row.scrollIntoView({ block: 'nearest' })
-	}
-	/**
-	 * 渲染分组标题（data-i18n 随语种切换自动更新）。
-	 * @param {string} key - i18n 键。
-	 * @returns {void}
-	 */
-	const appendGroup = key => {
-		const heading = document.createElement('div')
-		heading.className = 'code-folder-group'
-		heading.dataset.i18n = key
-		container.append(heading)
-	}
-	if (grouped) {
-		if (quick.length) {
-			appendGroup('code.workspaces.quickAccess')
-			quick.forEach(appendEntry)
-		}
-		if (rest.length) {
-			appendGroup('code.workspaces.roots')
-			rest.forEach(appendEntry)
-		}
-	}
-	else filtered.forEach(appendEntry)
-}
-
-/**
- * 选定当前目录为工作区。
- * @param {string} path - 目录路径。
- * @returns {Promise<void>}
- */
-async function selectBrowsedFolder(path) {
-	const dialog = browseDialog
-	if (!path || !dialog) return
-	const machine = browseMachineId
-	const name = path.split(/[\\/]/).filter(Boolean).pop() || path
-	const data = await api.addWorkspace({ name, machine, path }).catch(error => {
-		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
-		return null
+		onError: error => showToastI18n('error', 'code.error.generic', { error: String(error.message || error) }),
 	})
-	if (!data) return
-	store.workspaces = data.list
-	store.workspace = store.workspaces.find(w => w.path === path && w.machine === machine) || null
-	renderWorkspacePillLabel()
-	renderWorkspaceMenu()
-	renderHomeMenu()
-	dialog.close()
-	await selectWorkspace(store.workspace?.id || '')
 }

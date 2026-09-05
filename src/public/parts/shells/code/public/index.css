@@ -628,38 +628,6 @@ details.code-tool-log > summary .code-tool-log-name {
 	flex-shrink: 0;
 }
 
-/* ---------------- 文件夹浏览器 ---------------- */
-
-.code-folder-entry {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	width: 100%;
-	text-align: left;
-	padding: 0.375rem 0.75rem;
-	cursor: pointer;
-	font-size: 0.875rem;
-}
-
-.code-folder-entry.active {
-	background-color: color-mix(in oklch, var(--color-primary) 15%, transparent);
-}
-
-.code-folder-group {
-	font-size: 0.75rem;
-	opacity: 0.6;
-	user-select: none;
-	padding: 0.5rem 0.75rem 0.25rem;
-	margin-top: 0.25rem;
-}
-
-.code-folder-empty {
-	text-align: center;
-	padding: 1.5rem 0.75rem;
-	opacity: 0.6;
-	font-size: 0.875rem;
-}
-
 .ai-source-row {
 	display: flex;
 	align-items: center;

@@ -6031,6 +6031,18 @@
 		"parentLink": "↑ 前のレベル ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "閲覧",
+			"path": {
+				"aria-label": "ワークスペースのパス",
+				"placeholder": "フィルタ / パス"
+			},
+			"go": "移動",
+			"select": "ワークスペースを選択",
+			"quickAccess": "クイックアクセス",
+			"roots": "ドライブ / ルート",
+			"noMatch": "一致する項目がありません"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "通知"
@@ -6333,16 +6345,7 @@
 			"browse": "参照…",
 			"remove": "現在のワークスペースを削除",
 			"none": "ワークスペース未選択",
-			"go": "移動",
-			"select": "選択",
-			"overviewEmpty": "会話はまだありません",
-			"path": {
-				"aria-label": "ワークスペースのパス",
-				"placeholder": "フィルター / パス"
-			},
-			"quickAccess": "クイックアクセス",
-			"roots": "ドライブ / ルート",
-			"noMatch": "一致する項目がありません"
+			"overviewEmpty": "会話はまだありません"
 		},
 		"home": {
 			"aria-label": "ワークスペースとセッション一覧"

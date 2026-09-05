@@ -336,14 +336,15 @@ test.describe('code shell sessions & workspace', () => {
 			await page.locator('#workspace-pill').click()
 			await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
 			// 打开即列出根（本机盘符 / unix /）
-			await expect(page.locator('#folder-entries .code-folder-entry').first()).toBeVisible()
+			await expect(page.locator('#folder-entries .folder-browser-entry').first()).toBeVisible()
 			// 顶部输入路径回车后列出该目录内容
 			await page.locator('#folder-path-input').fill(dir)
 			await page.locator('#folder-path-input').press('Enter')
 			await expect(page.locator('#folder-entries')).toContainText('inner')
-			// 双击目录进入
-			await page.locator('#folder-entries .code-folder-entry', { hasText: 'inner' }).dblclick()
-			await expect(page.locator('#folder-entries')).toContainText('note.txt')
+			// 双击目录进入（仅显示文件夹：inner 内只有 note.txt，列表应显示无匹配）
+			await page.locator('#folder-entries .folder-browser-entry', { hasText: 'inner' }).dblclick()
+			await expect(page.locator('#folder-path-input')).toHaveValue(dir.replace(/[\\/]+$/, '') + '/inner')
+			await expect(page.locator('#folder-entries .folder-browser-entry')).toHaveCount(0)
 			// 选中当前目录（inner）为工作区
 			await page.locator('#folder-select-button').click()
 			await expect(page.locator('#workspace-pill-label')).toContainText('inner')
@@ -364,20 +365,20 @@ test.describe('code shell sessions & workspace', () => {
 			await openCode(page, baseUrl)
 			await page.locator('#workspace-pill').click()
 			await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
-			await expect(page.locator('#folder-entries .code-folder-entry').first()).toBeVisible()
+			await expect(page.locator('#folder-entries .folder-browser-entry').first()).toBeVisible()
 			// 导航到 <root>：alpha / beta / gamma 三个子目录
 			await page.locator('#folder-path-input').fill(dir)
 			await page.locator('#folder-path-input').press('Enter')
 			await expect(page.locator('#folder-entries')).toContainText('beta')
 			// 输入过滤词 beta：列表仅剩 beta
 			await page.locator('#folder-path-input').fill('beta')
-			await expect(page.locator('#folder-entries .code-folder-entry')).toHaveCount(1)
-			await expect(page.locator('#folder-entries .code-folder-entry')).toContainText('beta')
-			await expect(page.locator('#folder-entries .code-folder-entry')).not.toContainText('alpha')
+			await expect(page.locator('#folder-entries .folder-browser-entry')).toHaveCount(1)
+			await expect(page.locator('#folder-entries .folder-browser-entry')).toContainText('beta')
+			await expect(page.locator('#folder-entries .folder-browser-entry')).not.toContainText('alpha')
 			// 方向键移动高亮（单条目时停在首项）→ 回车进入目录
 			await page.locator('#folder-path-input').press('ArrowDown')
 			await page.locator('#folder-path-input').press('ArrowDown')
-			await expect(page.locator('#folder-entries .code-folder-entry.active')).toContainText('beta')
+			await expect(page.locator('#folder-entries .folder-browser-entry.active')).toContainText('beta')
 			await page.locator('#folder-path-input').press('Enter')
 			await expect(page.locator('#folder-path-input')).toHaveValue(dir.replace(/[\\/]+$/, '') + '/beta')
 			await expect(page.locator('#folder-entries')).toContainText('note.txt')
@@ -397,23 +398,23 @@ test.describe('code shell sessions & workspace', () => {
 			await openCode(page, baseUrl)
 			await page.locator('#workspace-pill').click()
 			await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
-			await expect(page.locator('#folder-entries .code-folder-entry').first()).toBeVisible()
+			await expect(page.locator('#folder-entries .folder-browser-entry').first()).toBeVisible()
 			// 导航到 dir：alpha / beta 两个子目录
 			await page.locator('#folder-path-input').fill(dir)
 			await page.locator('#folder-path-input').press('Enter')
 			await expect(page.locator('#folder-entries')).toContainText('alpha')
-			await expect(page.locator('#folder-entries .code-folder-entry.active')).toHaveCount(1)
+			await expect(page.locator('#folder-entries .folder-browser-entry.active')).toHaveCount(1)
 			// 编辑路径：改为父目录（含分隔符，目录部分偏离当前视图）→ 高亮取消
 			const parent = dirname(dir)
 			await page.locator('#folder-path-input').fill(parent)
-			await expect(page.locator('#folder-entries .code-folder-entry.active')).toHaveCount(0)
+			await expect(page.locator('#folder-entries .folder-browser-entry.active')).toHaveCount(0)
 			// 方向键不再移动选中
 			await page.locator('#folder-path-input').press('ArrowDown')
-			await expect(page.locator('#folder-entries .code-folder-entry.active')).toHaveCount(0)
+			await expect(page.locator('#folder-entries .folder-browser-entry.active')).toHaveCount(0)
 			// 回车跳转到父目录（列出 dir 自身）
 			await page.locator('#folder-path-input').press('Enter')
 			await expect(page.locator('#folder-path-input')).toHaveValue(parent)
-			await expect(page.locator('#folder-entries .code-folder-entry', { hasText: basename(dir) })).toBeVisible()
+			await expect(page.locator('#folder-entries .folder-browser-entry', { hasText: basename(dir) })).toBeVisible()
 		}
 		finally {
 			rmSync(dir, { recursive: true, force: true })
@@ -433,8 +434,8 @@ test.describe('code shell sessions & workspace', () => {
 			await page.locator('#workspace-pill').click()
 			await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
 			// 根视图附带快速访问分组（兄弟目录 + 编辑器源）
-			await expect(page.locator('.code-folder-group').first()).toContainText('快速访问')
-			await expect(page.locator('#folder-entries .code-folder-entry', { hasText: 'sibling' })).toBeVisible()
+			await expect(page.locator('.folder-browser-group').first()).toContainText('快速访问')
+			await expect(page.locator('#folder-entries .folder-browser-entry', { hasText: 'sibling' })).toBeVisible()
 		}
 		finally {
 			rmSync(dir, { recursive: true, force: true })

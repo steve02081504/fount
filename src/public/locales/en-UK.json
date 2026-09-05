@@ -6031,6 +6031,18 @@
 		"parentLink": "↑ Previous level ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Browse",
+			"path": {
+				"aria-label": "Workspace path",
+				"placeholder": "Filter / path"
+			},
+			"go": "Go",
+			"select": "Select",
+			"quickAccess": "Quick access",
+			"roots": "Drives / roots",
+			"noMatch": "No match"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Notifications"
@@ -6330,19 +6342,10 @@
 			"yesterday": "yesterday"
 		},
 		"workspaces": {
-			"path": {
-				"aria-label": "Workspace path",
-				"placeholder": "Filter / path"
-			},
 			"browse": "Browse…",
 			"remove": "Remove current workspace",
 			"none": "No workspace selected",
-			"go": "Go",
-			"select": "Select",
-			"overviewEmpty": "No conversations yet",
-			"quickAccess": "Quick access",
-			"roots": "Drives / roots",
-			"noMatch": "No match"
+			"overviewEmpty": "No conversations yet"
 		},
 		"home": {
 			"aria-label": "Workspaces & sessions"
