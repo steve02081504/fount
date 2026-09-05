@@ -45,28 +45,53 @@ function makeWorkspace(name, files = {}) {
 }
 
 /**
+ * 挂起 page watch 的 locale 轮换（每秒整页重建与下拉点击竞态，flake 源）。
+ * @param {import('npm:@playwright/test').Page} page - Playwright page。
+ * @returns {Promise<void>}
+ */
+async function holdLocale(page) {
+	await page.evaluate(() => globalThis.fount?.test?.watch?.holdLocale?.())
+}
+
+/**
+ * 恢复 locale 轮换。
+ * @param {import('npm:@playwright/test').Page} page - Playwright page。
+ * @returns {Promise<void>}
+ */
+async function releaseLocale(page) {
+	await page.evaluate(() => globalThis.fount?.test?.watch?.releaseLocale?.())
+}
+
+/**
  * 经文件夹浏览器选定目录为工作区。
  * @param {import('npm:@playwright/test').Page} page - Playwright page。
  * @param {string} dir - 目录路径。
  * @returns {Promise<void>}
  */
 async function selectWorkspaceViaBrowser(page, dir) {
-	await page.locator('#workspace-pill').click()
-	await page.locator('#workspace-menu').getByText('浏览…').click()
+	await holdLocale(page)
+	try {
+		await page.locator('#workspace-pill').click()
+		await page.locator('#workspace-menu').getByText('浏览…').click()
+	}
+	finally {
+		await releaseLocale(page)
+	}
 	await page.locator('#folder-path-input').fill(dir)
 	await page.locator('#folder-select-button').click()
 	await expect(page.locator('#workspace-pill-label')).toContainText(basename(dir))
 }
 
 /**
- * 移除当前工作区。
+ * 经 API 移除全部已保存工作区（UI 移除依赖下拉点击，历史上与整页重建/布局抖动竞态 flaky；清理走确定性 API）。
  * @param {import('npm:@playwright/test').Page} page - Playwright page。
+ * @param {string} baseUrl - 测试节点 base URL。
  * @returns {Promise<void>}
  */
-async function removeCurrentWorkspace(page) {
-	await page.locator('#workspace-pill').click()
-	await page.locator('#workspace-menu').getByText('移除当前工作区').click()
-	await expect(page.locator('#workspace-pill-label')).toContainText('未选择工作区')
+async function removeAllWorkspacesViaApi(page, baseUrl) {
+	const data = await (await page.request.get(`${baseUrl}${API_BASE}/workspaces`)).json().catch(() => ({ list: [] }))
+	for (const workspace of data.list || [])
+		await page.request.delete(`${baseUrl}${API_BASE}/workspaces/${workspace.id}`)
 }
 
 test.describe('code shell composer & placeholders', () => {
@@ -173,6 +198,43 @@ test.describe('code shell composer & placeholders', () => {
 		await expect(page.locator('.code-message.role-user')).toContainText('你好', { timeout: 60_000 })
 		await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
 	})
+
+	test('streaming preview fills the generating bubble progressively, then final entry replaces it', async ({ page, baseUrl }) => {
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'streamAgent'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('流式测试')
+		await page.keyboard.press('Control+Enter')
+		// 生成中气泡出现，且随 preview 增长显示第一段（后续 chunk 在 ~300ms 后到达）
+		const generating = page.locator('.code-message.generating .code-message-body')
+		await expect(generating).toBeVisible({ timeout: 60_000 })
+		await expect(generating).toContainText('流式第一', { timeout: 60_000 })
+		// 完成后正式气泡替换生成中气泡
+		await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('流式第一段。流式第二段。', { timeout: 60_000 })
+		await expect(page.locator('.code-message.generating')).toHaveCount(0)
+	})
+
+	test('streaming via AI source StructCall reaches the generating bubble', async ({ page, baseUrl }) => {
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'streamAgent'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		// 挂起 locale 轮换（每秒整页重建会使下拉与点击竞态）
+		await page.evaluate(() => globalThis.fount?.test?.watch?.holdLocale?.())
+		// 请求级 AI 源选 stubAI：角色走 StructCall 委托路径
+		await page.locator('#ai-source-pill').click()
+		await page.locator('#ai-source-menu').locator('.menu-item', { hasText: 'stubAI' }).click()
+		await expect(page.locator('#ai-source-pill-label')).toHaveText('stubAI')
+		await page.evaluate(() => globalThis.fount?.test?.watch?.releaseLocale?.())
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('流式测试 AI 源')
+		await page.keyboard.press('Control+Enter')
+		const generating = page.locator('.code-message.generating .code-message-body')
+		await expect(generating).toBeVisible({ timeout: 60_000 })
+		await expect(generating).toContainText('stub 流式第一', { timeout: 60_000 })
+		await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('stub 流式第一段。stub 流式第二段。', { timeout: 60_000 })
+		await expect(page.locator('.code-message.generating')).toHaveCount(0)
+	})
 })
 
 test.describe('code shell pill dropdowns', () => {
@@ -194,7 +256,8 @@ test.describe('code shell pill dropdowns', () => {
 		await page.locator('#composer-input').click()
 		await page.keyboard.press('Tab')
 		await expect(page.locator('#mode-pill-label')).toHaveText('plan')
-		await expect(page.locator('#toast-container')).toContainText('已切换到 plan 模式')
+		// toast 文案经 data-i18n 随 locale 轮换实时翻译，断言 locale 无关的模式名
+		await expect(page.locator('#toast-container')).toContainText('plan')
 	})
 
 	test('ai source dropdown opens, lists sources, and selecting updates the pill', async ({ page, baseUrl }) => {
@@ -224,9 +287,10 @@ test.describe('code shell pill dropdowns', () => {
 		const dialog = page.locator('dialog.modal:has(#char-switch-list)')
 		await expect(dialog).toBeVisible()
 		const list = dialog.locator('#char-switch-list')
-		await expect(list.locator('.char-option')).toHaveCount(2)
+		await expect(list.locator('.char-option')).toHaveCount(3)
 		await expect(list.locator('.char-option', { hasText: 'codeBuddy' })).toBeVisible()
 		await expect(list.locator('.char-option', { hasText: 'testAgent' })).toBeVisible()
+		await expect(list.locator('.char-option', { hasText: 'streamAgent' })).toBeVisible()
 		await list.locator('.char-option', { hasText: 'testAgent' }).click()
 		await expect(dialog).toBeHidden()
 		await expect(page.locator('#char-pill-label')).toHaveText('testAgent')
@@ -258,7 +322,7 @@ test.describe('code shell sessions & workspace', () => {
 			await expect(page.locator('#home-menu')).toContainText('暂无会话')
 			await page.mouse.click(10, 300)
 			// 清理：移除工作区，避免污染同相位后续测试
-			await removeCurrentWorkspace(page)
+			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
 			rmSync(dir, { recursive: true, force: true })
@@ -273,7 +337,7 @@ test.describe('code shell sessions & workspace', () => {
 			await expect(page.locator('#char-pill-label')).toHaveText('testAgent')
 			await selectWorkspaceViaBrowser(page, dir)
 			await expect(page.locator('#char-pill-label')).toHaveText('codeBuddy')
-			await removeCurrentWorkspace(page)
+			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
 			rmSync(dir, { recursive: true, force: true })
@@ -289,7 +353,7 @@ test.describe('code shell sessions & workspace', () => {
 			await expect(page.locator('.code-char-recommend-text')).toContainText('GhostCharNotInstalled')
 			await page.locator('.code-char-recommend .btn-ghost').click()
 			await expect(page.locator('.code-char-recommend')).toBeHidden()
-			await removeCurrentWorkspace(page)
+			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
 			rmSync(dir, { recursive: true, force: true })
@@ -338,7 +402,7 @@ test.describe('code shell tabs', () => {
 			await page.keyboard.press('Alt+1')
 			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
 			// 清理：移除工作区，避免污染同相位后续测试
-			await removeCurrentWorkspace(page)
+			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
 			rmSync(dir, { recursive: true, force: true })
@@ -369,7 +433,163 @@ test.describe('code shell tabs', () => {
 			await page.locator('#tab-strip .code-tab').first().click()
 			await expect(composer).toContainText('draft A')
 			// 清理：移除工作区，避免污染同相位后续测试
-			await removeCurrentWorkspace(page)
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+		finally {
+			rmSync(dir, { recursive: true, force: true })
+		}
+	})
+})
+
+test.describe('code shell message actions & layout', () => {
+	test('wide layout: messages live in a centered 70% column (char left, user right, composer same width)', async ({ page, baseUrl }) => {
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
+		await page.setViewportSize({ width: 1600, height: 900 })
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('布局测试')
+		await page.keyboard.press('Control+Enter')
+		await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
+		const messagesBox = await page.locator('#messages').boundingBox()
+		const charBox = await page.locator('.code-message.role-char').boundingBox()
+		const userBox = await page.locator('.code-message.role-user').boundingBox()
+		const colLeft = messagesBox.x + messagesBox.width * 0.15
+		const colRight = messagesBox.x + messagesBox.width * 0.85
+		expect(Math.abs(charBox.x - colLeft)).toBeLessThanOrEqual(2)
+		expect(Math.abs(userBox.x + userBox.width - colRight)).toBeLessThanOrEqual(2)
+		// composer 卡片与消息列同宽同缘
+		const shellBox = await page.locator('.code-composer-shell').boundingBox()
+		expect(Math.abs(shellBox.x - colLeft)).toBeLessThanOrEqual(2)
+		expect(Math.abs(shellBox.width - (colRight - colLeft))).toBeLessThanOrEqual(2)
+	})
+
+	test('message actions: hover bar, inline edit, 👍/👎 feedback, drag export, save as HTML', async ({ page, baseUrl }) => {
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('你好')
+		await page.keyboard.press('Control+Enter')
+		await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
+		// 编辑 user 消息（仅改文本，不重发）
+		const userBubble = page.locator('.code-message.role-user')
+		await userBubble.hover()
+		await userBubble.locator('.code-message-edit').click()
+		await page.locator('.code-message-editor textarea').fill('你好（已编辑）')
+		await page.locator('.code-message-editor .btn-primary').click()
+		await expect(userBubble).toContainText('你好（已编辑）')
+		await expect(page.locator('.code-message.role-char')).toContainText('测试回复。')
+		// 👍 切换高亮，再点取消
+		const charBubble = page.locator('.code-message.role-char')
+		await charBubble.locator('.code-message-feedback-up').click()
+		await expect(charBubble.locator('.code-message-feedback-up')).toHaveClass(/active/)
+		await charBubble.locator('.code-message-feedback-up').click()
+		await expect(charBubble.locator('.code-message-feedback-up')).not.toHaveClass(/active/)
+		// 👎 弹原因区（可取消）→ 提交记录
+		await charBubble.locator('.code-message-feedback-down').click()
+		await page.locator('.code-message-feedback-reason textarea').fill('答非所问')
+		await page.locator('.code-message-feedback-reason .btn-primary').click()
+		await expect(charBubble.locator('.code-message-feedback-down')).toHaveClass(/active/)
+		// 拖出导出：mousedown 非正文区置 draggable，dragstart 带原始 markdown
+		const dragText = await page.evaluate(async () => {
+			const bubble = document.querySelector('.code-message.role-char')
+			bubble.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }))
+			await new Promise(resolve => setTimeout(resolve, 120))
+			const dt = new DataTransfer()
+			bubble.dispatchEvent(new DragEvent('dragstart', { bubbles: true, dataTransfer: dt }))
+			return dt.getData('text/plain')
+		})
+		expect(dragText).toContain('测试回复。')
+		// 保存为 HTML（浏览器下载）
+		await charBubble.hover()
+		const downloadPromise = page.waitForEvent('download')
+		await charBubble.locator('.code-message-save-html').click()
+		const download = await downloadPromise
+		expect(download.suggestedFilename()).toMatch(/^fount-code-message-.+\.html$/)
+	})
+
+	test('regen: refresh button on the last char message regenerates it in place', async ({ page, baseUrl }) => {
+		// streamAgent 分片流式（800ms/片）：生成中气泡可被稳定断言
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'streamAgent'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('你好')
+		await page.keyboard.press('Control+Enter')
+		await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('流式第一段。流式第二段。', { timeout: 60_000 })
+		await expect(page.locator('.code-message-feedback-regen')).toBeVisible()
+		await page.locator('.code-message-feedback-regen').click()
+		// 弹出旧回复 → 生成中气泡 → done 追加新回复
+		await expect(page.locator('.code-message.generating')).toBeVisible()
+		await expect(page.locator('.code-message.role-char:not(.generating)')).toContainText('流式第一段。流式第二段。', { timeout: 60_000 })
+		await expect(page.locator('.code-message.generating')).toHaveCount(0)
+		await expect(page.locator('.code-message.role-user')).toHaveCount(1)
+		await expect(page.locator('.code-message.role-char:not(.generating)')).toHaveCount(1)
+	})
+
+	test('edit & feedback persist into the workspace session file', async ({ page, baseUrl }) => {
+		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-actions-'))
+		try {
+			await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			const composer = page.locator('#composer-input')
+			await composer.click()
+			await page.keyboard.type('你好')
+			await page.keyboard.press('Control+Enter')
+			await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
+			const userBubble = page.locator('.code-message.role-user')
+			await userBubble.hover()
+			await userBubble.locator('.code-message-edit').click()
+			await page.locator('.code-message-editor textarea').fill('你好（已编辑）')
+			await page.locator('.code-message-editor .btn-primary').click()
+			await page.locator('.code-message.role-char .code-message-feedback-up').click()
+			// 非生成时 markSessionDirty 立即落盘；轮询读回工作区会话文件
+			await expect(async () => {
+				const tabsData = await (await page.request.get(`${baseUrl}${API_BASE}/tabs`)).json()
+				const active = tabsData.tabs.find(tab => tab.type === 'session')
+				expect(active).toBeTruthy()
+				const res = await page.request.get(`${baseUrl}${API_BASE}/sessions/${active.id}?machine=0&workdir=${encodeURIComponent(dir)}`)
+				const session = await res.json()
+				expect(session.entries.find(entry => entry.role === 'user')?.content).toBe('你好（已编辑）')
+				expect(session.entries.find(entry => entry.role === 'char')?.extension?.feedback?.type).toBe('up')
+			}).toPass()
+		}
+		finally {
+			rmSync(dir, { recursive: true, force: true })
+		}
+	})
+
+	test('attachments: + button and paste add pending files, sent as user entry files', async ({ page, baseUrl }) => {
+		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'codeBuddy'), PREF_PREFIX)
+		await openCode(page, baseUrl)
+		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-attach-'))
+		try {
+			const filePath = join(dir, 'note.txt')
+			writeFileSync(filePath, 'attachment content')
+			const chooserPromise = page.waitForEvent('filechooser')
+			await page.locator('#attach-button').click()
+			const chooser = await chooserPromise
+			await chooser.setFiles(filePath)
+			await expect(page.locator('.code-attachment-chip')).toContainText('note.txt')
+			// 粘贴图片入列
+			await page.evaluate(() => {
+				const file = new File([new Uint8Array([137, 80, 78, 71])], 'pic.png', { type: 'image/png' })
+				const dt = new DataTransfer()
+				dt.items.add(file)
+				document.getElementById('composer-input').dispatchEvent(new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData: dt }))
+			})
+			await expect(page.locator('.code-attachment-chip')).toHaveCount(2)
+			// 发送 → 用户条目带 files（气泡 chip 由服务端条目渲染），发送后预览清空
+			const composer = page.locator('#composer-input')
+			await composer.click()
+			await page.keyboard.type('看附件')
+			await page.keyboard.press('Control+Enter')
+			await expect(page.locator('.code-message.role-char')).toContainText('测试回复。', { timeout: 60_000 })
+			await expect(page.locator('.code-message.role-user')).toContainText('📎 note.txt')
+			await expect(page.locator('.code-message.role-user')).toContainText('📎 pic.png')
+			await expect(page.locator('.code-attachment-chip')).toHaveCount(0)
 		}
 		finally {
 			rmSync(dir, { recursive: true, force: true })

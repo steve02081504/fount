@@ -47,8 +47,14 @@
 				<img class="code-wordmark text-icon" id="code-wordmark" src="https://steve02081504.github.io/fount/imgs/title.svg" alt="" aria-hidden="true" draggable="false" svg-theme-ignore />
 				<div class="code-composer-shell">
 					<div id="composer-input" class="code-composer-input" data-markdown-rich-input data-i18n="code.composer" user-content></div>
+					<div class="code-attachment-preview" id="attachment-preview" hidden></div>
+					<input type="file" id="attach-input" multiple hidden aria-hidden="true" tabindex="-1" />
+					<div class="code-drop-overlay" id="drop-overlay" data-i18n="code.attach.drop" hidden></div>
 					<div class="code-composer-controls">
 						<div class="code-composer-controls-main">
+							<button class="code-attach-button" id="attach-button" type="button" data-i18n="code.attach.add">
+								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+							</button>
 							<div class="dropdown dropdown-top" id="mode-pill-wrap">
 								<button class="code-pill" id="mode-pill" role="button" tabindex="0">
 									<span class="code-pill-label" id="mode-pill-label"></span>

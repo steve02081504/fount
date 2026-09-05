@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { escapeRegExp, parseRegexFromString } from '../../../../scripts/regex.mjs'
+import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
 import { collectUpwardContext, formatUpwardContext } from './src/context_files.mjs'
 import { createTargetExecutor, parseTagAttrs, resolveLocalPath, resolveTarget } from './src/target.mjs'
@@ -84,7 +85,7 @@ export async function fileOperationsReplyHandler(result, args) {
 	if (list_machines_matches.length) {
 		const { listMachines } = await import('./src/target.mjs')
 		const machines = await listMachines(args.username)
-		const content = '可用机器列表：\n```json\n' + JSON.stringify(machines, null, 2) + '\n```'
+		const content = '可用机器列表：\n' + renderMarkdownCodeBlock(JSON.stringify(machines, null, 2), { lang: 'json' })
 		AddLongTimeLog({ name: 'file-operations', role: 'tool', content, files: [] })
 		regen = true
 	}
@@ -111,7 +112,7 @@ export async function fileOperationsReplyHandler(result, args) {
 						const fileObj = await getFileObjFormPathOrUrl(path)
 						if (fileObj.mime_type.startsWith('text/')) {
 							const text = fileObj.buffer.toString('utf-8')
-							file_content += `文件：${path}\n\`\`\`\n${text}\n\`\`\`\n`
+							file_content += `文件：${path}\n${renderMarkdownCodeBlock(text, { lang: inferCodeLanguageFromPath(path) })}\n`
 						}
 						else {
 							files.push(fileObj)
@@ -121,7 +122,7 @@ export async function fileOperationsReplyHandler(result, args) {
 					}
 					const buffer = await executor.readFileBuffer(path)
 					if (looksLikeText(buffer)) {
-						file_content += `文件：${path}\n\`\`\`\n${buffer.toString('utf-8')}\n\`\`\`\n`
+						file_content += `文件：${path}\n${renderMarkdownCodeBlock(buffer.toString('utf-8'), { lang: inferCodeLanguageFromPath(path) })}\n`
 						// 读取文件时一并向上收集 AGENTS.md 与触发的 .agents/docs 文档
 						const context = await collectUpwardContext(executor, target.workdir, path)
 						const contextText = formatUpwardContext(context)
@@ -133,7 +134,7 @@ export async function fileOperationsReplyHandler(result, args) {
 					}
 				}
 				catch (err) {
-					file_content += `读取文件失败：${path}\n\`\`\`\n${err.stack}\n\`\`\`\n`
+					file_content += `读取文件失败：${path}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 				}
 
 			AddLongTimeLog({
@@ -204,7 +205,7 @@ export async function fileOperationsReplyHandler(result, args) {
 			AddLongTimeLog({
 				name: 'file-operations',
 				role: 'tool',
-				content: `解析replace-file失败：\n\`\`\`\n${err}\n\`\`\`\n原始数据:\n<replace-file>${replace_file_content}</replace-file>`,
+				content: `解析replace-file失败：\n${renderMarkdownCodeBlock(err.stack || String(err))}\n原始数据:\n<replace-file>${replace_file_content}</replace-file>`,
 				files: []
 			})
 			continue // Continue to next match instead of stopping
@@ -225,7 +226,7 @@ export async function fileOperationsReplyHandler(result, args) {
 				AddLongTimeLog({
 					name: 'file-operations',
 					role: 'tool',
-					content: `读取文件失败：${path}\n\`\`\`\n${err.stack}\n\`\`\`\n`,
+					content: `读取文件失败：${path}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`,
 					files: []
 				})
 				continue
@@ -257,16 +258,16 @@ export async function fileOperationsReplyHandler(result, args) {
 
 			if (failed_replaces.length) {
 				system_content += `以下 ${failed_replaces.length} 处替换操作失败：\n`
-				system_content += '```json\n' + JSON.stringify(failed_replaces, null, '\t') + '\n```\n'
+				system_content += renderMarkdownCodeBlock(JSON.stringify(failed_replaces, null, '\t'), { lang: 'json' }) + '\n'
 			}
 
 			if (originalContent !== modifiedContent) {
-				system_content += `\n最终文件内容：\n\`\`\`\n${modifiedContent}\n\`\`\`\n若和你的预期不一致，考虑重新替换或使用override-file覆写修正。`
+				system_content += `\n最终文件内容：\n${renderMarkdownCodeBlock(modifiedContent, { lang: inferCodeLanguageFromPath(path) })}\n若和你的预期不一致，考虑重新替换或使用override-file覆写修正。`
 				try {
 					await executor.writeTextFile(path, modifiedContent)
 				}
 				catch (err) {
-					system_content = `写入文件失败：${path}\n\`\`\`\n${err.stack}\n\`\`\`\n`
+					system_content = `写入文件失败：${path}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 				}
 			}
 			// If content didn't change AND no errors, explicitly state that
@@ -309,7 +310,7 @@ export async function fileOperationsReplyHandler(result, args) {
 			AddLongTimeLog({
 				name: 'file-operations',
 				role: 'tool',
-				content: `写入文件失败：${path}\n\`\`\`\n${err.stack}\n\`\`\`\n`,
+				content: `写入文件失败：${path}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`,
 				files: []
 			})
 		}

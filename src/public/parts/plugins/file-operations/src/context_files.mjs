@@ -3,6 +3,8 @@
  * 供 file-operations / code shell 等共用，配合 `target.mjs` 的执行器实现本机/远程一致。
  */
 
+import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../../shells/chat/src/streaming/markdown.mjs'
+
 /**
  * 从 markdown 文本中解析 yaml frontmatter 的简单标量键值。
  * @param {string} text - 文件内容。
@@ -120,8 +122,8 @@ export async function collectUpwardContext(executor, workspaceRoot, filePath) {
 export function formatUpwardContext(context) {
 	const blocks = []
 	for (const item of context.agents)
-		blocks.push(`AGENTS.md（${item.path}）：\n\`\`\`\n${item.content}\n\`\`\``)
+		blocks.push(`AGENTS.md（${item.path}）：\n${renderMarkdownCodeBlock(item.content, { lang: inferCodeLanguageFromPath(item.path) })}`)
 	for (const item of context.docs)
-		blocks.push(`${item.path}：\n\`\`\`\n${item.content}\n\`\`\``)
+		blocks.push(`${item.path}：\n${renderMarkdownCodeBlock(item.content, { lang: inferCodeLanguageFromPath(item.path) })}`)
 	return blocks.join('\n\n')
 }

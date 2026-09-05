@@ -3596,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "正在覆写${filepath}",
 					"readingFilepath": "正在读取${filepath}",
+					"readingFiles": "正在读取${count}个文件",
 					"replacingFilepath": "正在局部替换${filepath}",
 					"runningLang": "正在执行${lang}",
 					"searchingContent": "正在搜索${content}"
@@ -6390,6 +6391,44 @@
 		},
 		"messages": {
 			"backToBottom": "回到最新消息"
+		},
+		"message": {
+			"actions": {
+				"copy": "复制",
+				"edit": "编辑",
+				"saveHtml": "保存为 HTML"
+			},
+			"copied": "已复制到剪贴板",
+			"edit": {
+				"save": "保存",
+				"cancel": "取消",
+				"ariaLabel": {
+					"aria-label": "编辑消息原文"
+				}
+			},
+			"feedback": {
+				"up": "点赞",
+				"down": "点踩",
+				"reasonPlaceholder": {
+					"placeholder": "点踩原因（可选）"
+				},
+				"reasonSave": "提交",
+				"reasonAria": {
+					"aria-label": "点踩原因"
+				}
+			},
+			"regen": "重新生成"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "添加附件",
+				"title": "添加附件"
+			},
+			"remove": {
+				"aria-label": "移除附件"
+			},
+			"drop": "松开以添加附件",
+			"tooLarge": "附件 ${name} 超过 10MB 限制"
 		},
 		"error": {
 			"generic": "出错了：${error}",

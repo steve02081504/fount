@@ -234,19 +234,26 @@
 .code-messages {
 	flex: 1;
 	overflow-y: auto;
-	padding: 1rem 1.25rem 1.5rem;
+	/* 横向 padding 撑出居中 70% 列（窄屏回落边距），消息在其内左右对齐 */
+	padding: 1rem max(1.25rem, 15%) 1.5rem;
 	display: flex;
 	flex-direction: column;
 	gap: 0.875rem;
 	scroll-behavior: smooth;
 }
 
+/* 角色消息贴列左，用户消息贴列右（70% 列右缘，而非页面右缘） */
 .code-message {
 	width: 100%;
-	max-width: 52rem;
-	margin: 0 auto;
 	font-size: 0.9375rem;
 	line-height: 1.6;
+}
+
+/* 窄屏收起 70% 列（铺满边距内） */
+@media (max-width: 48rem) {
+	.code-messages {
+		padding-inline: 1rem;
+	}
 }
 
 /* assistant：无气泡，仅名字行 + 正文 */
@@ -261,7 +268,7 @@
 	margin-top: 0;
 }
 
-/* user：浅色气泡靠右（flex 交叉轴 auto margin 优先于 align-self，只保留左侧 auto 才能真正靠右） */
+/* user：浅色气泡贴 70% 列右缘（flex 交叉轴 auto margin 优先于 align-self，只保留左侧 auto 才能真正靠右） */
 .code-message.role-user {
 	align-self: flex-end;
 	width: auto;
@@ -276,6 +283,114 @@
 .code-message.role-tool,
 .code-message.role-system {
 	font-size: 0.8125rem;
+}
+
+/* ---------------- 消息操作（hover 操作栏 / 反馈条 / 行内编辑） ---------------- */
+
+.code-message {
+	position: relative;
+}
+
+/* hover 操作栏：浮在气泡右上（气泡间 gap 内），悬停/键盘聚焦时显示 */
+.code-message-actions {
+	position: absolute;
+	top: -1.25rem;
+	right: 0;
+	display: flex;
+	align-items: center;
+	gap: 0.125rem;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.12s;
+	z-index: 5;
+	background: color-mix(in oklch, var(--color-base-100) 88%, transparent);
+	border-radius: var(--radius-field);
+	padding: 0.0625rem 0.125rem;
+}
+
+.code-message:hover > .code-message-actions,
+.code-message:focus-within > .code-message-actions,
+.code-message.editing > .code-message-actions {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.code-message-actionbtn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: var(--radius-field);
+	color: var(--color-base-content);
+	opacity: 0.65;
+	cursor: pointer;
+	transition: background-color 0.12s, opacity 0.12s;
+}
+
+.code-message-actionbtn:hover {
+	background: color-mix(in oklch, var(--color-base-content) 10%, transparent);
+	opacity: 1;
+}
+
+.code-message-actionbtn.active {
+	opacity: 1;
+	color: var(--color-success);
+}
+
+/* hidden 属性压过 inline-flex（regen 按钮的显隐开关） */
+.code-message-actionbtn[hidden] {
+	display: none;
+}
+
+/* 角色消息内联反馈条（👍/👎/↻），常驻低透明度、行悬停提亮 */
+.code-message-feedback {
+	display: flex;
+	align-items: center;
+	gap: 0.125rem;
+	margin-top: 0.25rem;
+	opacity: 0.55;
+	transition: opacity 0.12s;
+}
+
+.code-message:hover .code-message-feedback,
+.code-message-feedback:focus-within {
+	opacity: 1;
+}
+
+/* 行内编辑（消息原文） */
+.code-message-editor,
+.code-message-feedback-reason {
+	margin-top: 0.375rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+}
+
+.code-message-editor textarea,
+.code-message-feedback-reason textarea {
+	width: 100%;
+	min-height: 4rem;
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 20%, transparent);
+	border-radius: var(--radius-field);
+	background: var(--color-base-100);
+	color: var(--color-base-content);
+	padding: 0.375rem 0.5rem;
+	font: inherit;
+	font-size: 0.875rem;
+	resize: vertical;
+}
+
+.code-message-editor-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.375rem;
+}
+
+/* 编辑中隐藏正文残影 */
+.code-message.editing .code-message-actions,
+.code-message.editing .code-message-feedback {
+	display: none;
 }
 
 .code-message.role-tool .code-message-body,
@@ -393,18 +508,26 @@ details.code-tool-log > summary .code-tool-log-name {
 /* ---------------- composer ---------------- */
 
 .code-composer {
-	padding: 0 1.25rem 0.75rem;
+	/* 与消息列同一 70% 列：横向 padding 与 .code-messages 对齐 */
+	padding: 0 max(1.25rem, 15%) 0.75rem;
 }
 
 .code-composer-shell {
-	max-width: 52rem;
+	/* 与消息列同宽（占满 composer 内容盒，窄屏媒体查询回落铺满） */
+	position: relative;
 	width: 100%;
-	margin: 0 auto;
+	margin-inline: auto;
 	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 20%, transparent);
 	border-radius: var(--radius-box);
 	background: var(--color-base-100);
 	box-shadow: 0 6px 24px color-mix(in oklch, var(--color-base-content) 10%, transparent);
 	padding: 0.625rem 0.75rem 0.5rem;
+}
+
+@media (max-width: 48rem) {
+	.code-composer {
+		padding-inline: 1rem;
+	}
 }
 
 .code-composer-shell.shell-mode {
@@ -448,6 +571,94 @@ details.code-tool-log > summary .code-tool-log-name {
 	min-width: 0;
 }
 
+/* 附件加号按钮（controls-main 最前） */
+.code-attach-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.875rem;
+	height: 1.875rem;
+	flex-shrink: 0;
+	border-radius: var(--radius-field);
+	color: var(--color-base-content);
+	opacity: 0.7;
+	cursor: pointer;
+	transition: background-color 0.12s, opacity 0.12s;
+}
+
+.code-attach-button:hover {
+	background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
+	opacity: 1;
+}
+
+/* 待发送附件预览条 */
+.code-attachment-preview {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	padding: 0.25rem 0.125rem 0;
+}
+
+.code-attachment-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	max-width: 16rem;
+	height: 1.5rem;
+	padding: 0 0.375rem;
+	border-radius: var(--radius-field);
+	background: color-mix(in oklch, var(--color-base-200) 80%, transparent);
+	font-size: 0.75rem;
+}
+
+.code-attachment-chip-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.code-attachment-chip-remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1rem;
+	height: 1rem;
+	flex-shrink: 0;
+	border-radius: 9999px;
+	color: inherit;
+	opacity: 0.6;
+	cursor: pointer;
+}
+
+.code-attachment-chip-remove:hover {
+	opacity: 1;
+	background: color-mix(in oklch, var(--color-base-content) 12%, transparent);
+}
+
+/* 拖文件悬停遮罩 */
+.code-drop-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 20;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 2px dashed color-mix(in oklch, var(--color-primary) 55%, transparent);
+	border-radius: var(--radius-box);
+	background: color-mix(in oklch, var(--color-base-100) 82%, transparent);
+	font-size: 0.875rem;
+	font-weight: 600;
+	pointer-events: none;
+}
+
+.code-drop-overlay[hidden] {
+	display: none;
+}
+
+.code-composer-shell.drag-over {
+	border-color: color-mix(in oklch, var(--color-primary) 55%, transparent);
+}
+
 /* shell 模式：除 shell pill 外其余选择器淡出；shell pill 顶到最左（淡出的 pill 仍占位，order 纠正） */
 .code-composer-shell.shell-mode .code-composer-controls-main > :not(#shell-pill-wrap) {
 	opacity: 0;
@@ -482,7 +693,6 @@ details.code-tool-log > summary .code-tool-log-name {
 }
 
 .code-composer-hint {
-	max-width: 52rem;
 	margin: 0.375rem auto 0;
 	font-size: 0.6875rem;
 	opacity: 0.5;
@@ -496,7 +706,6 @@ details.code-tool-log > summary .code-tool-log-name {
 	align-items: center;
 	justify-content: center;
 	gap: 0.375rem;
-	max-width: 52rem;
 	margin: 0.75rem auto 0;
 }
 

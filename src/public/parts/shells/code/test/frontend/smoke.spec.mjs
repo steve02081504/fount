@@ -16,6 +16,24 @@ async function openCodeSmoke(page, baseUrl) {
 	await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
 }
 
+/**
+ * 挂起 page watch 的 locale 轮换（每秒整页重建与下拉点击竞态，flake 源）。
+ * @param {import('npm:@playwright/test').Page} page - Playwright page。
+ * @returns {Promise<void>}
+ */
+async function holdLocale(page) {
+	await page.evaluate(() => globalThis.fount?.test?.watch?.holdLocale?.())
+}
+
+/**
+ * 恢复 locale 轮换。
+ * @param {import('npm:@playwright/test').Page} page - Playwright page。
+ * @returns {Promise<void>}
+ */
+async function releaseLocale(page) {
+	await page.evaluate(() => globalThis.fount?.test?.watch?.releaseLocale?.())
+}
+
 test.describe('code shell smoke', () => {
 	test('page boots with pills, draft tab, and centered empty-state guidance', async ({ page, baseUrl }) => {
 		await openCodeSmoke(page, baseUrl)
@@ -35,8 +53,10 @@ test.describe('code shell smoke', () => {
 
 	test('empty state opens folder browser dialog via the workspace pill', async ({ page, baseUrl }) => {
 		await openCodeSmoke(page, baseUrl)
+		await holdLocale(page)
 		await page.locator('#workspace-pill').click()
 		await page.locator('#workspace-menu').getByText('浏览…').click()
+		await releaseLocale(page)
 		await expect(page.locator('dialog.modal:has(#folder-entries)')).toBeVisible()
 		await expect(page.locator('#folder-path-input')).toBeVisible()
 	})
@@ -53,6 +73,7 @@ test.describe('code shell smoke', () => {
 
 	test('workspace / machine dropdown menus render', async ({ page, baseUrl }) => {
 		await openCodeSmoke(page, baseUrl)
+		await holdLocale(page)
 		await page.locator('#workspace-pill').click()
 		await expect(page.locator('#workspace-menu')).toBeVisible()
 		await expect(page.locator('#workspace-menu').getByText('浏览…')).toBeVisible()
@@ -61,5 +82,6 @@ test.describe('code shell smoke', () => {
 		await expect(page.locator('#workspace-menu')).toBeHidden()
 		await page.locator('#machine-pill').click()
 		await expect(page.locator('#machine-menu')).toBeVisible()
+		await releaseLocale(page)
 	})
 })

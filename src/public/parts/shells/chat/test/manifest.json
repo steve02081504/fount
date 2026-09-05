@@ -220,7 +220,7 @@
 		},
 		{
 			"name": "smoke_chat",
-			"expected": "2m29s",
+			"expected": "4m54s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -790,7 +790,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "15m37s",
+			"expected": "25m11s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"

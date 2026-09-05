@@ -48,12 +48,13 @@ else {
 	// 拆掉 on-shutdown 对 fatal 事件的 async exit(1)：Deno 下易与顶层 await/管道交错。
 	// 只打日志不够——须置 exitCode=1，否则 beforeExit→shutdown 会以 0 退出，
 	// 编排器把 worker 启动失败等当成「通过但有噪声」。
-	unset_shutdown_listener('uncaughtException', 'unhandledRejection', 'error')
-	for (const event of ['uncaughtException', 'unhandledRejection', 'error'])
+	for (const event of ['uncaughtException', 'unhandledRejection', 'error']) {
+		unset_shutdown_listener(event)
 		process.on(event, err => {
 			console.error(`${event}:`, err)
 			process.exitCode ||= 1
 		})
+	}
 
 	installNearOomHeapSnapshot({
 		destDir: heapSnapshotDir(REPO_ROOT),

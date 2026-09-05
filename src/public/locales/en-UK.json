@@ -6391,6 +6391,44 @@
 		"messages": {
 			"backToBottom": "Back to latest"
 		},
+		"message": {
+			"actions": {
+				"copy": "Copy",
+				"edit": "Edit",
+				"saveHtml": "Save as HTML"
+			},
+			"copied": "Copied to clipboard",
+			"edit": {
+				"save": "Save",
+				"cancel": "Cancel",
+				"ariaLabel": {
+					"aria-label": "Edit message text"
+				}
+			},
+			"feedback": {
+				"up": "Like",
+				"down": "Dislike",
+				"reasonPlaceholder": {
+					"placeholder": "Reason (optional)"
+				},
+				"reasonSave": "Submit",
+				"reasonAria": {
+					"aria-label": "Dislike reason"
+				}
+			},
+			"regen": "Regenerate"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Add attachment",
+				"title": "Add attachment"
+			},
+			"remove": {
+				"aria-label": "Remove attachment"
+			},
+			"drop": "Drop to attach",
+			"tooLarge": "Attachment ${name} exceeds the 10MB limit"
+		},
 		"error": {
 			"generic": "Something went wrong: ${error}",
 			"generate": "Failed to generate reply",

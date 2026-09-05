@@ -46,7 +46,7 @@
 		},
 		{
 			"name": "live",
-			"expected": "1m34s",
+			"expected": "6m28s",
 			"run": [
 				"deno",
 				"test",

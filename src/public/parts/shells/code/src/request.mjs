@@ -5,11 +5,24 @@
  * @typedef {import('../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t
  * @typedef {import('./sessions.mjs').codeSession_t} codeSession_t
  */
+import { Buffer } from 'node:buffer'
+
 import { localhostLocales } from '../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../server/parts_loader.mjs'
 
 import { codeWorld } from './world.mjs'
+
+/**
+ * 解码条目附件 buffer（前端经 WS 存 base64 字符串；服务端转回 Buffer 供 AI 源读取）。
+ * @param {Buffer|string|Uint8Array|null} value - buffer 或 base64 字符串。
+ * @returns {Buffer} 解码后的 buffer。
+ */
+function decodeFileBuffer(value) {
+	if (!value) return Buffer.alloc(0)
+	if (Buffer.isBuffer(value)) return value
+	return Buffer.from(String(value), 'base64')
+}
 
 /**
  * 会话条目转 chatLogEntry_t。
@@ -24,7 +37,7 @@ function sessionToChatLog(entries) {
 		name: entry.name,
 		content: entry.content,
 		time_stamp: entry.time,
-		files: [],
+		files: (entry.files || []).map(file => ({ name: file.name, mime_type: file.mime_type, buffer: decodeFileBuffer(file.buffer), description: file.description || '' })),
 		extension: entry.extension ?? {},
 	}))
 }
@@ -53,18 +66,20 @@ async function buildCodeChatRequest({ username, session, machine, workdir, ai_so
 	// ai_source 请求级覆盖：loadPart 出实例后传给角色（args.ai_source 为部件实例）
 	const aiSourceInstance = ai_source ? await loadPart(username, 'serviceSources/AI/' + ai_source) : undefined
 	const Charname = (await getPartInfo(char, localhostLocales)).name
+	/** code shell 声明的能力档（请求顶层与 generation_options 同值：AI 源自后者读取）。 */
+	const supported_functions = {
+		markdown: true,
+		mathjax: true,
+		html: true,
+		unsafe_html: true,
+		files: true,
+		add_message: true,
+		fount_i18nkeys: true,
+		fount_assets: true,
+		fount_themes: true,
+	}
 	return {
-		supported_functions: {
-			markdown: true,
-			mathjax: false,
-			html: true,
-			unsafe_html: false,
-			files: true,
-			add_message: false,
-			fount_i18nkeys: false,
-			fount_assets: false,
-			fount_themes: false,
-		},
+		supported_functions,
 		chat_name: 'code-' + session.id,
 		char_id: session.charname,
 		username,
@@ -89,6 +104,7 @@ async function buildCodeChatRequest({ username, session, machine, workdir, ai_so
 		ai_source: aiSourceInstance,
 		workdir: { machine: String(machine ?? '0'), path: workdir },
 		generation_options: {
+			supported_functions,
 			/**
 			 * 转发流式预览。
 			 * @param {import('../../../../../decl/chatLog.ts').chatReply_t} reply - 预览回复。

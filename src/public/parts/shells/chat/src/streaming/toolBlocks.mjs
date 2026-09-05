@@ -45,6 +45,33 @@ function mergeToolBlockFlags(...specs) {
 }
 
 /**
+ * 判定工具块渲染结果是否为块级内容（含围栏代码块，或以块级 HTML 标签开头）。
+ * @param {string} rendered 渲染结果
+ * @returns {boolean} 是否块级
+ */
+function isBlockLevelRendered(rendered) {
+	if (/```|~~~/.test(rendered)) return true
+	return /^[ \t\r\n]*<(?:div|figure|details|blockquote|pre|table|ul|ol|h[1-6])[\s>]/i.test(rendered)
+}
+
+/**
+ * 按需在替换点前后补空行，保证块级渲染结果落在行边界上。
+ * 不补全时，围栏代码块 / 块级 HTML 会被拼接进段落行中，整段渲染随之损坏。
+ * @param {string} display 原文
+ * @param {number} index 匹配起点
+ * @param {number} end 匹配终点
+ * @param {string} rendered 渲染结果
+ * @returns {string} 带行边界补全的替换文本
+ */
+function padBlockRendered(display, index, end, rendered) {
+	if (!isBlockLevelRendered(rendered)) return rendered
+	let padded = rendered
+	if (index > 0 && display[index - 1] !== '\n') padded = `\n\n${padded}`
+	if (end < display.length && display[end] !== '\n') padded += '\n\n'
+	return padded
+}
+
+/**
  * @param {Array<{ start: string|RegExp, end: string|RegExp, renderPending?: Function, renderComplete?: Function }>} toolPairs 工具对
  * @returns {import('../../../../../../decl/chatLog.ts').CharReplyPreviewUpdater_t} 预览更新器
  */
@@ -61,17 +88,26 @@ export function defineToolUseBlocks(toolPairs) {
 				`(?<fountToolStart>${startPattern})(?<fountToolContent>[\\s\\S]*?)(?<fountToolEnd>${endPattern})`,
 				`${blockFlags}g`,
 			)
-			display = display.replace(completeRegex, (...replaceArgs) => {
-				const groups = replaceArgs.at(-1)
-				return completeRenderer(groups.fountToolContent, args, { groups })
-			})
+			const completeMatches = [...display.matchAll(completeRegex)]
+			if (completeMatches.length) {
+				let assembled = ''
+				let lastIndex = 0
+				for (const match of completeMatches) {
+					const { groups } = match
+					assembled += display.slice(lastIndex, match.index)
+						+ padBlockRendered(display, match.index, match.index + match[0].length, completeRenderer(groups.fountToolContent, args, { groups }))
+					lastIndex = match.index + match[0].length
+				}
+				display = assembled + display.slice(lastIndex)
+			}
 			const pendingMatch = new RegExp(
 				`(?<fountToolStart>${startPattern})(?<fountToolContent>[\\s\\S]*)$`,
 				blockFlags,
 			).exec(display)
 			if (pendingMatch) {
 				const { groups } = pendingMatch
-				display = display.slice(0, pendingMatch.index) + pendingRenderer(groups.fountToolContent, args, { groups })
+				const rendered = padBlockRendered(display, pendingMatch.index, display.length, pendingRenderer(groups.fountToolContent, args, { groups }))
+				display = display.slice(0, pendingMatch.index) + rendered
 			}
 		}
 		reply.content_for_show = display
@@ -107,18 +143,26 @@ export function defineInlineToolUses(toolDefs) {
 
 			let matchIndex = 0
 			const pendingRenderer = renderPending || ((...pendingArgs) => renderToolCallingPlaceholder(pendingArgs[1]))
-			display = display.replace(completeRegex, (...replaceArgs) => {
-				const item = cache[matchIndex++]
-				const matchedContent = replaceArgs.at(-1).groups.fountInlineContent
-				if (item instanceof Promise) return pendingRenderer(matchedContent, args)
-				if (item instanceof Error) return `[Error: ${item.message}]`
-				return String(item)
-			})
+			const displayMatches = [...display.matchAll(completeRegex)]
+			if (displayMatches.length) {
+				let assembled = ''
+				let lastIndex = 0
+				for (const match of displayMatches) {
+					const item = cache[matchIndex++]
+					const rendered = item instanceof Promise ? pendingRenderer(match.groups.fountInlineContent, args)
+						: item instanceof Error ? `[Error: ${item.message}]`
+							: String(item)
+					assembled += display.slice(lastIndex, match.index)
+						+ padBlockRendered(display, match.index, match.index + match[0].length, rendered)
+					lastIndex = match.index + match[0].length
+				}
+				display = assembled + display.slice(lastIndex)
+			}
 
 			const pendingMatch = new RegExp(`(?:${startPattern})([\\s\\S]*)$`).exec(display)
 			if (pendingMatch) {
-				const rendered = pendingRenderer(pendingMatch[1] ?? '', args)
-				display = display.slice(0, pendingMatch.index ?? 0) + rendered
+				const rendered = padBlockRendered(display, pendingMatch.index, display.length, pendingRenderer(pendingMatch[1], args))
+				display = display.slice(0, pendingMatch.index) + rendered
 			}
 		}
 

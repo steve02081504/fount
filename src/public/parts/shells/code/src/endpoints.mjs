@@ -347,7 +347,7 @@ export function setEndpoints(router) {
 		res.json({})
 	})
 
-	// AI 会话 WS：send / abort → preview / done / error
+	// AI 会话 WS：send（追加用户消息）/ regen（重新生成最后一条角色回复）/ abort → preview / done / error
 	router.ws('/ws/parts/shells\\:code/session', authenticate, async (ws, req) => {
 		const { username } = getUserByReq(req)
 		/** @type {AbortController|null} */
@@ -370,19 +370,26 @@ export function setEndpoints(router) {
 				controller?.abort()
 				return
 			}
-			if (msg.type !== 'send') return
+			if (msg.type !== 'send' && msg.type !== 'regen') return
 
 			const { session, machine = 0, workdir, ai_source, profile, content } = msg
-			if (!session || !content) {
+			if (!session || (msg.type === 'send' && !content)) {
 				ws.send(JSON.stringify({ type: 'error', error: 'session and content are required.' }))
 				return
 			}
 			controller = new AbortController()
-			const userEntry = sanitizeEntry({ role: 'user', name: username, content, uid: 'user', time_stamp: new Date() })
+			/** 已确定条目（send = 用户消息；regen 开始为空，失败/中断时原样返回）。 */
+			const entries = []
+			const requestSession = { ...session, entries: [...session.entries || []] }
+			if (msg.type === 'send') {
+				const userEntry = sanitizeEntry({ role: 'user', name: username, content, uid: 'user', time_stamp: new Date(), files: Array.isArray(msg.files) ? msg.files : [] })
+				entries.push(userEntry)
+				requestSession.entries.push({ ...userEntry, time: userEntry.time })
+			}
 			try {
 				const { reply, memory } = await triggerCodeReply({
 					username,
-					session: { ...session, entries: [...session.entries || [], { ...userEntry, time: userEntry.time }] },
+					session: requestSession,
 					machine: String(machine ?? '0'),
 					workdir: String(workdir || ''),
 					ai_source: ai_source || undefined,
@@ -397,7 +404,6 @@ export function setEndpoints(router) {
 						catch { /* 连接已关闭 */ }
 					},
 				})
-				const entries = [userEntry]
 				for (const entry of reply?.logContextBefore || [])
 					entries.push(sanitizeEntry(entry))
 				if (reply)
@@ -406,9 +412,9 @@ export function setEndpoints(router) {
 			}
 			catch (error) {
 				if (controller.signal.aborted)
-					ws.send(JSON.stringify({ type: 'aborted', entries: [userEntry] }))
+					ws.send(JSON.stringify({ type: 'aborted', entries }))
 				else
-					ws.send(JSON.stringify({ type: 'error', entries: [userEntry], error: String(error?.stack || error) }))
+					ws.send(JSON.stringify({ type: 'error', entries, error: String(error?.stack || error) }))
 			}
 			finally {
 				controller = null

@@ -3556,6 +3556,7 @@ export type LocaleData = {
 				tool: {
 					overridingFilepath: string
 					readingFilepath: string
+					readingFiles: string
 					replacingFilepath: string
 					runningLang: string
 					searchingContent: string
@@ -6563,6 +6564,7 @@ export type LocaleKeyParams = {
 	'chat.message.view.share.success': { provider: string | number; sponsorLink: string | number }
 	'chat.message.view.tool.overridingFilepath': { filepath: string | number }
 	'chat.message.view.tool.readingFilepath': { filepath: string | number }
+	'chat.message.view.tool.readingFiles': { count: string | number }
 	'chat.message.view.tool.replacingFilepath': { filepath: string | number }
 	'chat.message.view.tool.runningLang': { lang: string | number }
 	'chat.message.view.tool.searchingContent': { content: string | number }

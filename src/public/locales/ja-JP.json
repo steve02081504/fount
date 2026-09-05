@@ -6401,6 +6401,44 @@
 		},
 		"messages": {
 			"backToBottom": "最新へ戻る"
+		},
+		"message": {
+			"actions": {
+				"copy": "コピー",
+				"edit": "編集",
+				"saveHtml": "HTMLとして保存"
+			},
+			"copied": "クリップボードにコピーしました",
+			"edit": {
+				"save": "保存",
+				"cancel": "キャンセル",
+				"ariaLabel": {
+					"aria-label": "メッセージ本文を編集"
+				}
+			},
+			"feedback": {
+				"up": "高評価",
+				"down": "低評価",
+				"reasonPlaceholder": {
+					"placeholder": "低評価の理由（任意）"
+				},
+				"reasonSave": "送信",
+				"reasonAria": {
+					"aria-label": "低評価の理由"
+				}
+			},
+			"regen": "再生成"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "添付ファイルを追加",
+				"title": "添付ファイルを追加"
+			},
+			"remove": {
+				"aria-label": "添付ファイルを削除"
+			},
+			"drop": "ドロップして添付",
+			"tooLarge": "添付 ${name} は10MBの上限を超えています"
 		}
 	}
 }
