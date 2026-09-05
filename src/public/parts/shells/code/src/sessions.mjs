@@ -102,6 +102,11 @@ export async function saveSession(username, workdir, session) {
 export async function deleteSession(username, workdir, id) {
 	if (!isValidSessionId(id) || !workdir?.path) return
 	const executor = createTargetExecutor(username, { machine: workdir.machine ?? '0', workdir: workdir.path })
-	// 执行器无 delete 原语：统一以脚本完成本机/远程删除
-	await executor.execJs(`const fs = await import('node:fs/promises');\nconst path = await import('node:path');\nconst p = path.resolve(${JSON.stringify(workdir.path)}, '.fount/code/sessions/${id}.json');\nawait fs.rm(p, { force: true })`)
+	// 执行器无 delete 原语：统一以 lambda 完成本机/远程删除
+	await executor.execJs(async (root, sessionId) => {
+		const fs = await import('node:fs/promises')
+		const path = await import('node:path')
+		const p = path.resolve(root, `.fount/code/sessions/${sessionId}.json`)
+		await fs.rm(p, { force: true })
+	}, workdir.path, id)
 }

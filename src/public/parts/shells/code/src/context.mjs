@@ -338,31 +338,34 @@ export async function renderCommand(command, argv, executor) {
 export async function searchWorkspaceFiles(username, workdir, query, limit = 20) {
 	if (!workdir?.path) return []
 	const executor = createTargetExecutor(username, { machine: workdir.machine ?? '0', workdir: workdir.path })
-	const script = `\
-const path = await import('node:path')
-const fs = await import('node:fs/promises')
-const ROOT = ${JSON.stringify(workdir.path)}
-const Q = ${JSON.stringify(query.toLowerCase())}
-const LIMIT = ${limit}
-const SKIP = new Set(['node_modules', '.git', 'dist', 'build', '.venv', '__pycache__', 'target'])
-const out = []
-async function walk(dir, depth) {
-	if (out.length >= LIMIT || depth > 8) return
-	let entries
-	try { entries = await fs.readdir(dir, { withFileTypes: true }) } catch { return }
-	for (const e of entries) {
-		if (out.length >= LIMIT) return
-		if (e.name.startsWith('.') && e.name !== '.agents') continue
-		const full = path.join(dir, e.name)
-		if (e.isDirectory()) {
-			if (!SKIP.has(e.name)) await walk(full, depth + 1)
+	return await executor.execJs(async (root, q, limit) => {
+		const path = await import('node:path')
+		const fs = await import('node:fs/promises')
+		const SKIP = new Set(['node_modules', '.git', 'dist', 'build', '.venv', '__pycache__', 'target'])
+		const out = []
+		/**
+		 * 递归遍历目录，收集文件名含 q 的文件。
+		 * @param {string} dir - 当前目录。
+		 * @param {number} depth - 当前深度。
+		 * @returns {Promise<void>}
+		 */
+		async function walk(dir, depth) {
+			if (out.length >= limit || depth > 8) return
+			let entries
+			try { entries = await fs.readdir(dir, { withFileTypes: true }) } catch { return }
+			for (const e of entries) {
+				if (out.length >= limit) return
+				if (e.name.startsWith('.') && e.name !== '.agents') continue
+				const full = path.join(dir, e.name)
+				if (e.isDirectory()) {
+					if (!SKIP.has(e.name)) await walk(full, depth + 1)
+				}
+				else if (e.name.toLowerCase().includes(q)) out.push(full)
+			}
 		}
-		else if (e.name.toLowerCase().includes(Q)) out.push(full)
-	}
-}
-await walk(ROOT, 0)
-return out.map(x => x.slice(ROOT.length).replace(/^\\\\/, '').replace(/^\\//, ''))`
-	return await executor.execJs(script)
+		await walk(root, 0)
+		return out.map(x => x.slice(root.length).replace(/^\\/, '').replace(/^\//, ''))
+	}, workdir.path, query.toLowerCase(), limit)
 }
 
 /**
