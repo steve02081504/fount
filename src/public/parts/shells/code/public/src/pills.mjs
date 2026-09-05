@@ -616,15 +616,15 @@ export async function openFolderBrowser() {
 			 */
 			onReady: dialog => {
 				dialog.querySelector('#folder-go-button').addEventListener('click', () => {
-					void openFolderEntries(dialog.querySelector('#folder-path-input').value)
+					void openFolderEntries(dialog.querySelector('#folder-path-input').value, dialog)
 				})
 				dialog.querySelector('#folder-path-input').addEventListener('keydown', event => {
-					if (event.key === 'Enter') void openFolderEntries(event.currentTarget.value)
+					if (event.key === 'Enter') void openFolderEntries(event.currentTarget.value, dialog)
 				})
 				dialog.querySelector('#folder-select-button').addEventListener('click', () => {
 					void selectBrowsedFolder(dialog.querySelector('#folder-path-input').value)
 				})
-				return openFolderEntries('')
+				return openFolderEntries('', dialog)
 			},
 		})
 	}
@@ -637,10 +637,10 @@ export async function openFolderBrowser() {
 /**
  * 列出目录内容。
  * @param {string} path - 目录路径。
+ * @param {HTMLDialogElement} [dialog] - 浏览对话框（缺省用当前打开的对话框）。
  * @returns {Promise<void>}
  */
-async function openFolderEntries(path) {
-	const dialog = browseDialog
+async function openFolderEntries(path, dialog = browseDialog) {
 	if (!dialog) return
 	try {
 		const data = await api.browseMachine(browseMachineId, path)
@@ -650,12 +650,14 @@ async function openFolderEntries(path) {
 			row.type = 'button'
 			row.className = 'code-folder-entry hover:bg-base-300/90'
 			row.textContent = (entry.isDirectory ? '📁 ' : '📄 ') + entry.name
-			row.addEventListener('click', () => {
+			/**
+			 * 进入目录（单击 / 双击）。
+			 */
+			const enter = () => {
 				if (entry.isDirectory) void openFolderEntries(entry.path)
-			})
-			row.addEventListener('dblclick', () => {
-				if (entry.isFile) void openFolderEntries(data.path.replace(/[^\\/]+$/, ''))
-			})
+			}
+			row.addEventListener('click', enter)
+			row.addEventListener('dblclick', enter)
 			return row
 		}))
 	}

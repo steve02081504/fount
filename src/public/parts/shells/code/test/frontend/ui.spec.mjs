@@ -329,6 +329,31 @@ test.describe('code shell sessions & workspace', () => {
 		}
 	})
 
+	test('folder browser lists drive roots on open and lists a directory after navigating by path', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-browse', { 'inner/note.txt': 'hi' })
+		try {
+			await openCode(page, baseUrl)
+			await page.locator('#workspace-pill').click()
+			await page.locator('#workspace-menu').getByText('浏览…').click()
+			// 打开即列出根（本机盘符 / unix /）
+			await expect(page.locator('#folder-entries .code-folder-entry').first()).toBeVisible()
+			// 顶部输入路径回车后列出该目录内容
+			await page.locator('#folder-path-input').fill(dir)
+			await page.locator('#folder-path-input').press('Enter')
+			await expect(page.locator('#folder-entries')).toContainText('inner')
+			// 双击目录进入
+			await page.locator('#folder-entries .code-folder-entry', { hasText: 'inner' }).dblclick()
+			await expect(page.locator('#folder-entries')).toContainText('note.txt')
+			// 选中当前目录（inner）为工作区
+			await page.locator('#folder-select-button').click()
+			await expect(page.locator('#workspace-pill-label')).toContainText('inner')
+		}
+		finally {
+			rmSync(dir, { recursive: true, force: true })
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+	})
+
 	test('workspace .agents/fount/code.json overrides the selected character when installed', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-char', { '.agents/fount/code.json': JSON.stringify({ char: { partname: 'codeBuddy' } }) })
 		try {
