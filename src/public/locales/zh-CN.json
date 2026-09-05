@@ -6333,14 +6333,17 @@
 		"workspaces": {
 			"path": {
 				"aria-label": "工作区路径",
-				"placeholder": "目录路径"
+				"placeholder": "输入过滤词 / 目录路径"
 			},
 			"browse": "浏览…",
 			"remove": "移除当前工作区",
 			"none": "未选择工作区",
 			"go": "跳转",
 			"select": "选择工作区",
-			"overviewEmpty": "暂无会话"
+			"overviewEmpty": "暂无会话",
+			"quickAccess": "快速访问",
+			"roots": "盘符 / 根目录",
+			"noMatch": "无匹配项"
 		},
 		"home": {
 			"aria-label": "工作区与会话总览"

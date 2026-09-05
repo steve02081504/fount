@@ -6332,14 +6332,17 @@
 		"workspaces": {
 			"path": {
 				"aria-label": "Workspace path",
-				"placeholder": "Directory path"
+				"placeholder": "Filter / path"
 			},
 			"browse": "Browse…",
 			"remove": "Remove current workspace",
 			"none": "No workspace selected",
 			"go": "Go",
 			"select": "Select",
-			"overviewEmpty": "No conversations yet"
+			"overviewEmpty": "No conversations yet",
+			"quickAccess": "Quick access",
+			"roots": "Drives / roots",
+			"noMatch": "No match"
 		},
 		"home": {
 			"aria-label": "Workspaces & sessions"

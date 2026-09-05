@@ -354,6 +354,61 @@ test.describe('code shell sessions & workspace', () => {
 		}
 	})
 
+	test('folder browser filters entries and navigates with arrow + enter', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-filter', {
+			'alpha/note.txt': 'a',
+			'beta/note.txt': 'b',
+			'gamma/note.txt': 'c',
+		})
+		try {
+			await openCode(page, baseUrl)
+			await page.locator('#workspace-pill').click()
+			await page.locator('#workspace-menu').getByText('浏览…').click()
+			await expect(page.locator('#folder-entries .code-folder-entry').first()).toBeVisible()
+			// 导航到 <root>：alpha / beta / gamma 三个子目录
+			await page.locator('#folder-path-input').fill(dir)
+			await page.locator('#folder-path-input').press('Enter')
+			await expect(page.locator('#folder-entries')).toContainText('beta')
+			// 输入过滤词 beta：列表仅剩 beta
+			await page.locator('#folder-path-input').fill('beta')
+			await expect(page.locator('#folder-entries .code-folder-entry')).toHaveCount(1)
+			await expect(page.locator('#folder-entries .code-folder-entry')).toContainText('beta')
+			await expect(page.locator('#folder-entries .code-folder-entry')).not.toContainText('alpha')
+			// 方向键移动高亮（单条目时停在首项）→ 回车进入目录
+			await page.locator('#folder-path-input').press('ArrowDown')
+			await page.locator('#folder-path-input').press('ArrowDown')
+			await expect(page.locator('#folder-entries .code-folder-entry.active')).toContainText('beta')
+			await page.locator('#folder-path-input').press('Enter')
+			await expect(page.locator('#folder-path-input')).toHaveValue(dir.replace(/[\\/]+$/, '') + '/beta')
+			await expect(page.locator('#folder-entries')).toContainText('note.txt')
+		}
+		finally {
+			rmSync(dir, { recursive: true, force: true })
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+	})
+
+	test('folder browser shows quick access group for the current workspace', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-quick', {
+			'current/.git/HEAD': 'ref: refs/heads/main',
+			'sibling/note.txt': 'hi',
+		})
+		try {
+			// 后端先保存工作区（boot 会把它选为当前工作区）
+			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'current', machine: '0', path: join(dir, 'current') } })
+			await openCode(page, baseUrl)
+			await page.locator('#workspace-pill').click()
+			await page.locator('#workspace-menu').getByText('浏览…').click()
+			// 根视图附带快速访问分组（兄弟目录 + 编辑器源）
+			await expect(page.locator('.code-folder-group').first()).toContainText('快速访问')
+			await expect(page.locator('#folder-entries .code-folder-entry', { hasText: 'sibling' })).toBeVisible()
+		}
+		finally {
+			rmSync(dir, { recursive: true, force: true })
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+	})
+
 	test('workspace .agents/fount/code.json overrides the selected character when installed', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-char', { '.agents/fount/code.json': JSON.stringify({ char: { partname: 'codeBuddy' } }) })
 		try {

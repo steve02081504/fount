@@ -6338,8 +6338,11 @@
 			"overviewEmpty": "会話はまだありません",
 			"path": {
 				"aria-label": "ワークスペースのパス",
-				"placeholder": "ディレクトリパス"
-			}
+				"placeholder": "フィルター / パス"
+			},
+			"quickAccess": "クイックアクセス",
+			"roots": "ドライブ / ルート",
+			"noMatch": "一致する項目がありません"
 		},
 		"home": {
 			"aria-label": "ワークスペースとセッション一覧"

@@ -603,6 +603,16 @@ export async function applyWorkspaceCharConfig() {
 let browseMachineId = '0'
 /** @type {HTMLDialogElement|null} 当前打开的浏览对话框。 */
 let browseDialog = null
+/** 当前显示的可选条目 {name, path, isDirectory}。 */
+let browseEntries = []
+/** 过滤后的可选条目（键盘导航 / 回车使用）。 */
+let browseFiltered = []
+/** 高亮下标（对应 browseFiltered）。 */
+let browseHighlight = 0
+/** 后端返回的快速访问项（根视图分组）。 */
+let browseQuickAccess = []
+/** 当前视图路径（与输入框值比对，区分「过滤词」与「当前目录路径」）。 */
+let browsePath = ''
 
 /** 打开文件夹浏览器（当前机器）。 */
 export async function openFolderBrowser() {
@@ -618,13 +628,35 @@ export async function openFolderBrowser() {
 				dialog.querySelector('#folder-go-button').addEventListener('click', () => {
 					void openFolderEntries(dialog.querySelector('#folder-path-input').value, dialog)
 				})
-				dialog.querySelector('#folder-path-input').addEventListener('keydown', event => {
-					if (event.key === 'Enter') void openFolderEntries(event.currentTarget.value, dialog)
+				const input = dialog.querySelector('#folder-path-input')
+				input.addEventListener('input', () => {
+					browseHighlight = 0
+					renderFolderList(dialog)
+				})
+				input.addEventListener('keydown', event => {
+					if (event.key === 'ArrowDown') {
+						event.preventDefault()
+						if (!browseFiltered.length) return
+						browseHighlight = Math.min(browseHighlight + 1, browseFiltered.length - 1)
+						renderFolderList(dialog)
+					}
+					else if (event.key === 'ArrowUp') {
+						event.preventDefault()
+						if (!browseFiltered.length) return
+						browseHighlight = Math.max(browseHighlight - 1, 0)
+						renderFolderList(dialog)
+					}
+					else if (event.key === 'Enter') {
+						event.preventDefault()
+						const target = browseFiltered[browseHighlight]
+						if (target) void openFolderEntries(target.path, dialog)
+						else void openFolderEntries(event.currentTarget.value, dialog)
+					}
 				})
 				dialog.querySelector('#folder-select-button').addEventListener('click', () => {
 					void selectBrowsedFolder(dialog.querySelector('#folder-path-input').value)
 				})
-				return openFolderEntries('', dialog)
+				return openFolderEntries('', dialog, store.workspace?.path || '')
 			},
 		})
 	}
@@ -638,32 +670,97 @@ export async function openFolderBrowser() {
  * 列出目录内容。
  * @param {string} path - 目录路径。
  * @param {HTMLDialogElement} [dialog] - 浏览对话框（缺省用当前打开的对话框）。
+ * @param {string} [workspaceParam] - 当前工作区路径（根视图快速访问）。
  * @returns {Promise<void>}
  */
-async function openFolderEntries(path, dialog = browseDialog) {
+async function openFolderEntries(path, dialog = browseDialog, workspaceParam = '') {
 	if (!dialog) return
 	try {
-		const data = await api.browseMachine(browseMachineId, path)
+		const data = await api.browseMachine(browseMachineId, path, workspaceParam)
+		browseQuickAccess = data.quickAccess || []
+		browsePath = data.path
+		browseEntries = !data.path ? [...browseQuickAccess, ...data.entries] : data.entries
+		browseHighlight = 0
 		dialog.querySelector('#folder-path-input').value = data.path
-		dialog.querySelector('#folder-entries').replaceChildren(...data.entries.map(entry => {
-			const row = document.createElement('button')
-			row.type = 'button'
-			row.className = 'code-folder-entry hover:bg-base-300/90'
-			row.textContent = (entry.isDirectory ? '📁 ' : '📄 ') + entry.name
-			/**
-			 * 进入目录（单击 / 双击）。
-			 */
-			const enter = () => {
-				if (entry.isDirectory) void openFolderEntries(entry.path)
-			}
-			row.addEventListener('click', enter)
-			row.addEventListener('dblclick', enter)
-			return row
-		}))
+		renderFolderList(dialog)
 	}
 	catch (error) {
 		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
 	}
+}
+
+/**
+ * 渲染文件夹列表（基于输入框过滤词；高亮项滚动可见，根视图快速访问分组）。
+ * @param {HTMLDialogElement} [dialog] - 浏览对话框（缺省用当前打开的对话框）。
+ * @returns {void}
+ */
+function renderFolderList(dialog = browseDialog) {
+	if (!dialog) return
+	const input = dialog.querySelector('#folder-path-input')
+	const container = dialog.querySelector('#folder-entries')
+	const raw = input.value
+	const term = raw === browsePath ? '' : raw.split(/[\\/]/).pop().trim()
+	const filtered = term
+		? browseEntries.filter(entry => new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(entry.name))
+		: browseEntries
+	browseFiltered = filtered
+	browseHighlight = filtered.length ? Math.min(Math.max(browseHighlight, 0), filtered.length - 1) : -1
+	container.replaceChildren()
+	if (!filtered.length) {
+		const empty = document.createElement('div')
+		empty.className = 'code-folder-empty'
+		empty.dataset.i18n = 'code.workspaces.noMatch'
+		container.append(empty)
+		return
+	}
+	const grouped = !term && !browsePath && browseQuickAccess.length > 0
+	const quickSet = new Set(browseQuickAccess.map(item => item.path))
+	const quick = grouped ? filtered.filter(entry => quickSet.has(entry.path)) : []
+	const rest = grouped ? filtered.filter(entry => !quickSet.has(entry.path)) : []
+	/**
+	 * 渲染单个条目按钮（高亮项滚动可见）。
+	 * @param {{name: string, path: string, isDirectory: boolean}} entry - 条目。
+	 * @returns {void}
+	 */
+	const appendEntry = entry => {
+		const row = document.createElement('button')
+		row.type = 'button'
+		row.className = 'code-folder-entry hover:bg-base-300/90' + (browseFiltered[browseHighlight] === entry ? ' active' : '')
+		row.textContent = (entry.isDirectory ? '📁 ' : '📄 ') + entry.name
+		/**
+		 * 进入目录（单击 / 双击）。
+		 * @returns {void}
+		 */
+		const enter = () => {
+			if (entry.isDirectory) void openFolderEntries(entry.path)
+		}
+		row.addEventListener('click', enter)
+		row.addEventListener('dblclick', enter)
+		container.append(row)
+		if (browseFiltered[browseHighlight] === entry) row.scrollIntoView({ block: 'nearest' })
+	}
+	/**
+	 * 渲染分组标题（data-i18n 随语种切换自动更新）。
+	 * @param {string} key - i18n 键。
+	 * @returns {void}
+	 */
+	const appendGroup = key => {
+		const heading = document.createElement('div')
+		heading.className = 'code-folder-group'
+		heading.dataset.i18n = key
+		container.append(heading)
+	}
+	if (grouped) {
+		if (quick.length) {
+			appendGroup('code.workspaces.quickAccess')
+			quick.forEach(appendEntry)
+		}
+		if (rest.length) {
+			appendGroup('code.workspaces.roots')
+			rest.forEach(appendEntry)
+		}
+	}
+	else filtered.forEach(appendEntry)
 }
 
 /**

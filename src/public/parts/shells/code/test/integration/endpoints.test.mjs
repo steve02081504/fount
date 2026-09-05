@@ -105,6 +105,49 @@ Deno.test({
 })
 
 Deno.test({
+	name: 'browse returns quick access on root view',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchCodeNode()
+	try {
+		const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_http_qa_'))
+		try {
+			await fs.mkdir(path.join(root, 'ws-a', '.git'), { recursive: true })
+			await fs.mkdir(path.join(root, 'ws-a', 'proj', '.git'), { recursive: true })
+			await fs.mkdir(path.join(root, 'sibling-b'), { recursive: true })
+			assertEquals((await codeFetch(node, 'POST', '/workspaces', { name: 'qa', machine: '0', path: path.join(root, 'ws-a') })).status, 200)
+			const body = await (await codeFetch(node, 'GET', `/machines/0/browse?workspace=${encodeURIComponent(path.join(root, 'ws-a'))}`)).json()
+			const names = body.quickAccess.map(item => item.name)
+			assert(names.includes('sibling-b'), `兄弟目录应在快速访问中：${JSON.stringify(names)}`)
+			assert(names.includes('proj'), `工作区下含 .git 的子目录应在快速访问中：${JSON.stringify(names)}`)
+			assert(!names.includes('ws-a'), '工作区自身不应出现在快速访问中')
+		}
+		finally {
+			await fs.rm(root, { recursive: true, force: true })
+		}
+	}
+	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'quick access empty without workspace',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchCodeNode()
+	try {
+		const body = await (await codeFetch(node, 'GET', '/machines/0/browse?workspace=')).json()
+		assertEquals(body.quickAccess, [])
+	}
+	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
 	name: 'profiles and commands render with argv and js',
 	sanitizeOps: false,
 	sanitizeResources: false,

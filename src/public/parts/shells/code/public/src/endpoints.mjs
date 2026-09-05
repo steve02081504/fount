@@ -48,10 +48,11 @@ export async function getMachineShells(machine) {
  * 浏览机器目录。
  * @param {number} machine - 机器 id。
  * @param {string} [path] - 目录（空 = 根）。
- * @returns {Promise<{path: string, roots: string[], entries: Array<{name: string, path: string, isDirectory: boolean, isFile: boolean}>}>} 目录内容。
+ * @param {string} [workspace] - 当前工作区路径（根视图快速访问）。
+ * @returns {Promise<{path: string, roots: string[], entries: Array<{name: string, path: string, isDirectory: boolean, isFile: boolean}>, quickAccess: Array<{name: string, path: string, isDirectory: boolean}>}>} 目录内容。
  */
-export async function browseMachine(machine, path = '') {
-	return requestJson(`${API_BASE}/machines/${machine}/browse?path=${encodeURIComponent(path)}`)
+export async function browseMachine(machine, path = '', workspace = '') {
+	return requestJson(`${API_BASE}/machines/${machine}/browse?path=${encodeURIComponent(path)}&workspace=${encodeURIComponent(workspace)}`)
 }
 
 /**

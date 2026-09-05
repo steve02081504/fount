@@ -19,6 +19,7 @@ import {
 	resolveCommandArgs,
 	searchWorkspaceFiles,
 } from './context.mjs'
+import { collectEditorSources } from './editor_sources.mjs'
 import { appendOwnHistory, getHistory } from './history.mjs'
 import { triggerCodeReply } from './request.mjs'
 import { availableShells, machineDefaultShell, runShellCommand } from './runner.mjs'
@@ -45,6 +46,106 @@ function getWorkspaces(username) {
 	const data = loadShellData(username, 'code', 'workspaces') ?? {}
 	data.list ??= []
 	return data
+}
+
+/**
+ * 递归扫描工作区下含 `.git` 的子目录（自包含 lambda 在目标机器执行，深度≤4、条目≤100）。
+ * @param {string} username - 用户名。
+ * @param {string} machine - 目标机器标识。
+ * @param {string} root - 工作区路径。
+ * @returns {Promise<Array<{name: string, path: string}>>} 含 `.git` 的子目录。
+ */
+async function findGitDirs(username, machine, root) {
+	const executor = createTargetExecutor(username, { machine })
+	return await executor.execJs(async (root, maxDepth, maxCount) => {
+		const fs = await import('node:fs/promises')
+		const path = await import('node:path')
+		/** @type {string[]} 收集到的 git 目录。 */
+		const out = []
+		/** @type {Set<string>} 已访问目录（防环）。 */
+		const seen = new Set()
+		/**
+		 * 递归收集含 .git 的目录。
+		 * @param {string} dir - 当前目录。
+		 * @param {number} depth - 当前深度。
+		 * @returns {Promise<void>}
+		 */
+		async function walk(dir, depth) {
+			if (out.length >= maxCount || depth > maxDepth || seen.has(dir)) return
+			seen.add(dir)
+			let entries
+			try { entries = await fs.readdir(dir, { withFileTypes: true }) } catch { return }
+			for (const e of entries) {
+				if (out.length >= maxCount) return
+				if (!e.isDirectory() || e.name === '.git' || e.name === 'node_modules' || e.name === '.venv') continue
+				const full = path.join(dir, e.name)
+				try {
+					await fs.access(path.join(full, '.git'))
+					out.push(full)
+					if (out.length >= maxCount) return
+				}
+				catch { /* 无 .git 则继续下探 */ }
+				await walk(full, depth + 1)
+			}
+		}
+		await walk(root, 0)
+		return out.map(p => ({ name: path.basename(p), path: p }))
+	}, root, 4, 100)
+}
+
+/**
+ * 为盘符根视图构建快速访问列表（兄弟目录 + 工作区下含 `.git` 的子目录 + 编辑器常用项目）。
+ * @param {string} username - 用户名。
+ * @param {string} machine - 目标机器标识。
+ * @param {string} workspacePath - 当前工作区路径（空则返回空列表）。
+ * @returns {Promise<Array<{name: string, path: string, isDirectory: boolean}>>} 快速访问条目（按 path 去重）。
+ */
+async function buildQuickAccess(username, machine, workspacePath) {
+	if (!workspacePath) return []
+	const executor = createTargetExecutor(username, { machine })
+	/** @type {Array<{name: string, path: string, isDirectory: boolean}>} */
+	const out = []
+	/** @type {Set<string>} 已收录路径（去重）。 */
+	const seen = new Set()
+	/**
+	 * 收录条目。
+	 * @param {{name: string, path: string}} entry - 候选条目。
+	 * @returns {void}
+	 */
+	const add = entry => {
+		if (!entry?.path || seen.has(entry.path)) return
+		seen.add(entry.path)
+		out.push({ ...entry, isDirectory: true })
+	}
+	const cleaned = String(workspacePath).replace(/[\\/]+$/, '')
+	// 兄弟目录：工作区父目录下其他文件夹（排除工作区自身；目标机器本地路径拼接）
+	try {
+		const siblings = await executor.execJs(async (workspacePath) => {
+			const fs = await import('node:fs/promises')
+			const path = await import('node:path')
+			/** @type {Array<{name: string, path: string}>} 兄弟目录。 */
+			const out = []
+			let entries
+			try { entries = await fs.readdir(path.dirname(workspacePath), { withFileTypes: true }) } catch { return out }
+			for (const e of entries)
+				if (e.isDirectory() && e.name !== path.basename(workspacePath))
+					out.push({ name: e.name, path: path.join(path.dirname(workspacePath), e.name) })
+			return out
+		}, cleaned)
+		for (const item of siblings) add(item)
+	}
+	catch { /* 父目录不可读则跳过兄弟目录 */ }
+	// 工作区下含 .git 的子目录（有限深度）
+	try {
+		for (const item of await findGitDirs(username, machine, cleaned)) add(item)
+	}
+	catch { /* git 扫描失败则跳过 */ }
+	// 编辑器常用项目（VS Code / Notepad++）
+	try {
+		for (const item of await collectEditorSources(username, machine)) add(item)
+	}
+	catch { /* 编辑器源失败则跳过 */ }
+	return out
 }
 
 /**
@@ -123,7 +224,7 @@ export function setEndpoints(router) {
 		res.json({ shells: await availableShells(username, machine), default: await machineDefaultShell(username, machine) })
 	})
 
-	// 文件夹浏览（根 = 盘符 / `/`）
+	// 文件夹浏览（根 = 盘符 / `/`；根视图附带当前工作区快速访问）
 	router.get('/api/parts/shells\\:code/machines/:id/browse', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const machine = req.params.id
@@ -131,7 +232,8 @@ export function setEndpoints(router) {
 		const path = String(req.query.path || '')
 		if (!path) {
 			const roots = await executor.listRoots()
-			res.json({ path: '', roots, entries: roots.map(root => ({ name: root, path: root, isDirectory: true, isFile: false })) })
+			const quickAccess = await buildQuickAccess(username, machine, String(req.query.workspace || '')).catch(() => [])
+			res.json({ path: '', roots, entries: roots.map(root => ({ name: root, path: root, isDirectory: true, isFile: false })), quickAccess })
 			return
 		}
 		const entries = await executor.listDir(path)
