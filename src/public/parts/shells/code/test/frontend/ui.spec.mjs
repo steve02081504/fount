@@ -72,7 +72,7 @@ async function selectWorkspaceViaBrowser(page, dir) {
 	await holdLocale(page)
 	try {
 		await page.locator('#workspace-pill').click()
-		await page.locator('#workspace-menu').getByText('浏览…').click()
+		await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
 	}
 	finally {
 		await releaseLocale(page)
@@ -334,7 +334,7 @@ test.describe('code shell sessions & workspace', () => {
 		try {
 			await openCode(page, baseUrl)
 			await page.locator('#workspace-pill').click()
-			await page.locator('#workspace-menu').getByText('浏览…').click()
+			await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
 			// 打开即列出根（本机盘符 / unix /）
 			await expect(page.locator('#folder-entries .code-folder-entry').first()).toBeVisible()
 			// 顶部输入路径回车后列出该目录内容
@@ -363,7 +363,7 @@ test.describe('code shell sessions & workspace', () => {
 		try {
 			await openCode(page, baseUrl)
 			await page.locator('#workspace-pill').click()
-			await page.locator('#workspace-menu').getByText('浏览…').click()
+			await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
 			await expect(page.locator('#folder-entries .code-folder-entry').first()).toBeVisible()
 			// 导航到 <root>：alpha / beta / gamma 三个子目录
 			await page.locator('#folder-path-input').fill(dir)
@@ -388,6 +388,39 @@ test.describe('code shell sessions & workspace', () => {
 		}
 	})
 
+	test('folder browser treats an edited path as navigation: clears selection and Enter jumps', async ({ page, baseUrl }) => {
+		const dir = makeWorkspace('fe-nav', {
+			'alpha/note.txt': 'a',
+			'beta/note.txt': 'b',
+		})
+		try {
+			await openCode(page, baseUrl)
+			await page.locator('#workspace-pill').click()
+			await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
+			await expect(page.locator('#folder-entries .code-folder-entry').first()).toBeVisible()
+			// 导航到 dir：alpha / beta 两个子目录
+			await page.locator('#folder-path-input').fill(dir)
+			await page.locator('#folder-path-input').press('Enter')
+			await expect(page.locator('#folder-entries')).toContainText('alpha')
+			await expect(page.locator('#folder-entries .code-folder-entry.active')).toHaveCount(1)
+			// 编辑路径：改为父目录（含分隔符，目录部分偏离当前视图）→ 高亮取消
+			const parent = dirname(dir)
+			await page.locator('#folder-path-input').fill(parent)
+			await expect(page.locator('#folder-entries .code-folder-entry.active')).toHaveCount(0)
+			// 方向键不再移动选中
+			await page.locator('#folder-path-input').press('ArrowDown')
+			await expect(page.locator('#folder-entries .code-folder-entry.active')).toHaveCount(0)
+			// 回车跳转到父目录（列出 dir 自身）
+			await page.locator('#folder-path-input').press('Enter')
+			await expect(page.locator('#folder-path-input')).toHaveValue(parent)
+			await expect(page.locator('#folder-entries .code-folder-entry', { hasText: basename(dir) })).toBeVisible()
+		}
+		finally {
+			rmSync(dir, { recursive: true, force: true })
+			await removeAllWorkspacesViaApi(page, baseUrl)
+		}
+	})
+
 	test('folder browser shows quick access group for the current workspace', async ({ page, baseUrl }) => {
 		const dir = makeWorkspace('fe-quick', {
 			'current/.git/HEAD': 'ref: refs/heads/main',
@@ -398,7 +431,7 @@ test.describe('code shell sessions & workspace', () => {
 			await page.request.post(`${baseUrl}${API_BASE}/workspaces`, { data: { name: 'current', machine: '0', path: join(dir, 'current') } })
 			await openCode(page, baseUrl)
 			await page.locator('#workspace-pill').click()
-			await page.locator('#workspace-menu').getByText('浏览…').click()
+			await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
 			// 根视图附带快速访问分组（兄弟目录 + 编辑器源）
 			await expect(page.locator('.code-folder-group').first()).toContainText('快速访问')
 			await expect(page.locator('#folder-entries .code-folder-entry', { hasText: 'sibling' })).toBeVisible()

@@ -144,7 +144,7 @@ export function renderWorkspaceMenu() {
 	const browseBtn = document.createElement('button')
 	browseBtn.type = 'button'
 	browseBtn.className = 'menu-item'
-	browseBtn.textContent = geti18n('code.workspaces.browse')
+	browseBtn.dataset.i18n = 'code.workspaces.browse'
 	browseBtn.addEventListener('click', () => {
 		document.activeElement?.blur()
 		void openFolderBrowser()
@@ -613,6 +613,8 @@ let browseHighlight = 0
 let browseQuickAccess = []
 /** 当前视图路径（与输入框值比对，区分「过滤词」与「当前目录路径」）。 */
 let browsePath = ''
+/** 输入框当前是否处于「编辑路径」状态（目录部分已偏离当前视图，高亮取消、回车跳转）。 */
+let browseNavigating = false
 
 /** 打开文件夹浏览器（当前机器）。 */
 export async function openFolderBrowser() {
@@ -634,6 +636,15 @@ export async function openFolderBrowser() {
 					renderFolderList(dialog)
 				})
 				input.addEventListener('keydown', event => {
+					if (browseNavigating) {
+						// 编辑路径状态：方向键不移动选中，回车跳转到输入路径
+						if (event.key === 'ArrowDown' || event.key === 'ArrowUp') return
+						if (event.key === 'Enter') {
+							event.preventDefault()
+							void openFolderEntries(event.currentTarget.value, dialog)
+						}
+						return
+					}
 					if (event.key === 'ArrowDown') {
 						event.preventDefault()
 						if (!browseFiltered.length) return
@@ -699,12 +710,17 @@ function renderFolderList(dialog = browseDialog) {
 	const input = dialog.querySelector('#folder-path-input')
 	const container = dialog.querySelector('#folder-entries')
 	const raw = input.value
-	const term = raw === browsePath ? '' : raw.split(/[\\/]/).pop().trim()
+	// 编辑路径状态：输入含路径分隔符，且目录部分（最后一个 / 或 \ 之前）已偏离当前视图路径 → 取消选中，回车跳转
+	const lastSep = Math.max(raw.lastIndexOf('/'), raw.lastIndexOf('\\'))
+	const dirPart = lastSep === -1 ? '' : raw.slice(0, lastSep)
+	browseNavigating = lastSep !== -1 && raw !== browsePath && dirPart !== browsePath
+	const term = browseNavigating || raw === browsePath ? '' : raw.split(/[\\/]/).pop().trim()
 	const filtered = term
 		? browseEntries.filter(entry => new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(entry.name))
 		: browseEntries
 	browseFiltered = filtered
-	browseHighlight = filtered.length ? Math.min(Math.max(browseHighlight, 0), filtered.length - 1) : -1
+	// 编辑路径状态下取消选中（回车跳转而非进入选中项）；否则恢复高亮
+	browseHighlight = browseNavigating ? -1 : filtered.length ? Math.min(Math.max(browseHighlight, 0), filtered.length - 1) : -1
 	container.replaceChildren()
 	if (!filtered.length) {
 		const empty = document.createElement('div')

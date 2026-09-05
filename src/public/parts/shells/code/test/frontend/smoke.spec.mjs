@@ -55,7 +55,7 @@ test.describe('code shell smoke', () => {
 		await openCodeSmoke(page, baseUrl)
 		await holdLocale(page)
 		await page.locator('#workspace-pill').click()
-		await page.locator('#workspace-menu').getByText('浏览…').click()
+		await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
 		await releaseLocale(page)
 		await expect(page.locator('dialog.modal:has(#folder-entries)')).toBeVisible()
 		await expect(page.locator('#folder-path-input')).toBeVisible()
@@ -76,7 +76,7 @@ test.describe('code shell smoke', () => {
 		await holdLocale(page)
 		await page.locator('#workspace-pill').click()
 		await expect(page.locator('#workspace-menu')).toBeVisible()
-		await expect(page.locator('#workspace-menu').getByText('浏览…')).toBeVisible()
+		await expect(page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]')).toBeVisible()
 		// 收起 workspace 下拉再开 machine：daisyUI 焦点下拉互切存在竞态
 		await page.mouse.click(10, 300)
 		await expect(page.locator('#workspace-menu')).toBeHidden()
