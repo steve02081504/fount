@@ -327,9 +327,6 @@ function updateBackToBottom() {
 
 elements.messages.addEventListener('scroll', updateBackToBottom, { passive: true })
 
-// 常驻消息流末尾（渲染时会被 replaceChildren / insertBefore 重新定位）
-elements.messages.appendChild(backToBottom)
-
 /**
  * 空态布局开关：无条目且未在生成时 composer 垂直居中 + wordmark。
  * 生成中（entries 仍为空）不算空态——消息流必须保持可见，流式气泡才有容器。
