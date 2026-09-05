@@ -1,0 +1,7 @@
+<div class="dropdown dropdown-top${hidden ? ' hidden' : ''}" id="${name}-pill-wrap">
+	<button class="code-pill" id="${name}-pill" role="button" tabindex="0">
+		<span class="code-pill-label" id="${name}-pill-label"></span>
+		<span class="code-pill-chevron" aria-hidden="true">▾</span>
+	</button>
+	<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 ${menuClass} p-2 shadow" id="${name}-menu">${footer || ''}</ul>
+</div>

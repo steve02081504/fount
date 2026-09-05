@@ -1,60 +1,9 @@
-/* code shell：opencode 风格会话布局。颜色一律引用 daisyUI 语义变量（--color-*），随 data-theme 深浅自适应。 */
-
-.code-layout {
-	display: flex;
-	height: 100dvh;
-	width: 100%;
-	overflow: hidden;
-	background: var(--color-base-100);
-	color: var(--color-base-content);
-}
+/* code shell：opencode 风格会话布局。颜色一律引用 daisyUI 语义变量（--color-*）或原子类，随 data-theme 深浅自适应。 */
 
 /* ---------------- 主区 ---------------- */
 
-.code-main {
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	min-width: 0;
-}
-
 .code-topbar {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 0.125rem 0.5rem;
-	border-bottom: var(--border) solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
 	z-index: 10;
-}
-
-.code-topbar-left {
-	display: flex;
-	align-items: center;
-	gap: 0.375rem;
-	flex-shrink: 0;
-	min-width: 0;
-	flex: 1;
-}
-
-/* ---------------- 顶栏图标按钮（home / 新标签） ---------------- */
-
-.code-iconbtn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 2rem;
-	height: 2rem;
-	flex-shrink: 0;
-	border-radius: var(--radius-field);
-	color: var(--color-base-content);
-	opacity: 0.75;
-	cursor: pointer;
-	transition: background-color 0.12s, opacity 0.12s;
-}
-
-.code-iconbtn:hover {
-	background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
-	opacity: 1;
 }
 
 /* ---------------- 标签条（opencode 式） ---------------- */
@@ -315,32 +264,14 @@
 	pointer-events: auto;
 }
 
-.code-message-actionbtn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 1.5rem;
-	height: 1.5rem;
-	border-radius: var(--radius-field);
-	color: var(--color-base-content);
-	opacity: 0.65;
-	cursor: pointer;
-	transition: background-color 0.12s, opacity 0.12s;
-}
-
-.code-message-actionbtn:hover {
-	background: color-mix(in oklch, var(--color-base-content) 10%, transparent);
-	opacity: 1;
+/* hidden 属性压过 btn 的 inline-flex（regen 按钮的显隐开关） */
+.code-message-actionbtn[hidden] {
+	display: none;
 }
 
 .code-message-actionbtn.active {
 	opacity: 1;
 	color: var(--color-success);
-}
-
-/* hidden 属性压过 inline-flex（regen 按钮的显隐开关） */
-.code-message-actionbtn[hidden] {
-	display: none;
 }
 
 /* 角色消息内联反馈条（👍/👎/↻），常驻低透明度、行悬停提亮 */
@@ -364,26 +295,6 @@
 	margin-top: 0.375rem;
 	display: flex;
 	flex-direction: column;
-	gap: 0.375rem;
-}
-
-.code-message-editor textarea,
-.code-message-feedback-reason textarea {
-	width: 100%;
-	min-height: 4rem;
-	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 20%, transparent);
-	border-radius: var(--radius-field);
-	background: var(--color-base-100);
-	color: var(--color-base-content);
-	padding: 0.375rem 0.5rem;
-	font: inherit;
-	font-size: 0.875rem;
-	resize: vertical;
-}
-
-.code-message-editor-buttons {
-	display: flex;
-	justify-content: flex-end;
 	gap: 0.375rem;
 }
 
@@ -452,7 +363,7 @@ details.code-tool-log > summary .code-tool-log-name {
 	opacity: 0.85;
 }
 
-/* 回到底部浮标（btn-square 保证圆角跟随主题） */
+/* 回到底部浮标（btn-circle 保证圆角跟随主题，此处只管定位与显隐） */
 .code-back-to-bottom {
 	position: sticky;
 	bottom: 0;
@@ -463,13 +374,6 @@ details.code-tool-log > summary .code-tool-log-name {
 	transition: opacity 0.15s, transform 0.15s;
 	width: 2rem;
 	height: 2rem;
-	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 18%, transparent);
-	background: color-mix(in oklch, var(--color-base-100) 92%, transparent);
-	box-shadow: 0 4px 12px color-mix(in oklch, var(--color-base-content) 14%, transparent);
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 }
 
 .code-back-to-bottom.show {
@@ -517,21 +421,16 @@ details.code-tool-log > summary .code-tool-log-name {
 	position: relative;
 	width: 100%;
 	margin-inline: auto;
-	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 20%, transparent);
-	border-radius: var(--radius-box);
-	background: var(--color-base-100);
-	box-shadow: 0 6px 24px color-mix(in oklch, var(--color-base-content) 10%, transparent);
-	padding: 0.625rem 0.75rem 0.5rem;
+}
+
+.code-composer-shell.shell-mode {
+	border-color: color-mix(in oklch, var(--color-warning) 70%, transparent);
 }
 
 @media (max-width: 48rem) {
 	.code-composer {
 		padding-inline: 1rem;
 	}
-}
-
-.code-composer-shell.shell-mode {
-	border-color: color-mix(in oklch, var(--color-warning) 70%, transparent);
 }
 
 .code-composer-input {
@@ -569,26 +468,6 @@ details.code-tool-log > summary .code-tool-log-name {
 	gap: 0.375rem;
 	flex: 1;
 	min-width: 0;
-}
-
-/* 附件加号按钮（controls-main 最前） */
-.code-attach-button {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 1.875rem;
-	height: 1.875rem;
-	flex-shrink: 0;
-	border-radius: var(--radius-field);
-	color: var(--color-base-content);
-	opacity: 0.7;
-	cursor: pointer;
-	transition: background-color 0.12s, opacity 0.12s;
-}
-
-.code-attach-button:hover {
-	background: color-mix(in oklch, var(--color-base-content) 8%, transparent);
-	opacity: 1;
 }
 
 /* 待发送附件预览条 */
@@ -669,29 +548,6 @@ details.code-tool-log > summary .code-tool-log-name {
 	order: -1;
 }
 
-.code-composer-send {
-	flex-shrink: 0;
-	width: 2rem;
-	height: 2rem;
-	border-radius: var(--radius-field);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: var(--color-primary);
-	color: var(--color-primary-content);
-	cursor: pointer;
-	transition: opacity 0.12s;
-}
-
-.code-composer-send:disabled {
-	opacity: 0.45;
-	cursor: default;
-}
-
-.code-composer-send.stop {
-	background: var(--color-error);
-}
-
 .code-composer-hint {
 	margin: 0.375rem auto 0;
 	font-size: 0.6875rem;
@@ -715,10 +571,6 @@ details.code-tool-log > summary .code-tool-log-name {
 	z-index: 60;
 	max-height: 16rem;
 	overflow: auto;
-	border-radius: var(--radius-box);
-	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 18%, transparent);
-	background: var(--color-base-100);
-	box-shadow: 0 8px 28px color-mix(in oklch, var(--color-base-content) 16%, transparent);
 	padding: 0.25rem;
 }
 
@@ -763,14 +615,6 @@ details.code-tool-log > summary .code-tool-log-name {
 	gap: 0.75rem;
 	max-width: 22rem;
 	padding: 0.625rem 0.75rem;
-	border-radius: var(--radius-box);
-	border: var(--border) solid color-mix(in oklch, var(--color-primary) 40%, transparent);
-	background: var(--color-base-100);
-	box-shadow: 0 8px 28px color-mix(in oklch, var(--color-base-content) 16%, transparent);
-}
-
-.code-char-recommend.hidden {
-	display: none;
 }
 
 .code-char-recommend-text {
@@ -797,10 +641,6 @@ details.code-tool-log > summary .code-tool-log-name {
 	font-size: 0.875rem;
 }
 
-.code-folder-entry:hover {
-	background: color-mix(in oklch, var(--color-base-300) 90%, transparent);
-}
-
 .ai-source-row {
 	display: flex;
 	align-items: center;
@@ -816,10 +656,6 @@ details.code-tool-log > summary .code-tool-log-name {
 	padding: 0.375rem 0.5rem;
 	cursor: pointer;
 	border-radius: var(--radius-field);
-}
-
-.char-option:hover {
-	background: color-mix(in oklch, var(--color-base-300) 90%, transparent);
 }
 
 .char-option.active {

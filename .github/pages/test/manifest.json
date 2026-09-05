@@ -21,7 +21,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "5m12s",
+			"expected": "9m2s",
 			"run": [
 				"deno",
 				"run",

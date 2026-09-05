@@ -22,13 +22,13 @@
 	<link rel="stylesheet" href="./index.css" />
 </head>
 <body>
-	<div class="code-layout">
-		<main class="code-main">
+	<div class="code-layout flex h-dvh w-full overflow-hidden bg-base-100 text-base-content">
+		<main class="code-main flex flex-col flex-1 min-w-0">
 			<h1 class="sr-only" data-i18n="code.title"></h1>
-			<header class="code-topbar">
-				<div class="code-topbar-left">
+			<header class="code-topbar flex items-center gap-2 px-2 py-0.5 border-b border-base-content/10">
+				<div class="code-topbar-left flex items-center gap-1.5 shrink-0 min-w-0 flex-1">
 					<div class="dropdown" id="home-wrap">
-						<button class="code-iconbtn" id="home-toggle" role="button" tabindex="0" data-i18n="code.home" aria-haspopup="true">
+						<button class="btn btn-ghost btn-square btn-sm" id="home-toggle" role="button" tabindex="0" data-i18n="code.home" aria-haspopup="true">
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 								<rect x="3" y="3" width="7" height="7" rx="1"></rect>
 								<rect x="14" y="3" width="7" height="7" rx="1"></rect>
@@ -45,39 +45,18 @@
 			<div class="code-messages" id="messages"></div>
 			<div class="code-composer">
 				<img class="code-wordmark text-icon" id="code-wordmark" src="https://steve02081504.github.io/fount/imgs/title.svg" alt="" aria-hidden="true" draggable="false" svg-theme-ignore />
-				<div class="code-composer-shell">
+				<div class="code-composer-shell rounded-box border border-base-content/20 bg-base-100 shadow-xl pt-2.5 px-3 pb-2">
 					<div id="composer-input" class="code-composer-input" data-markdown-rich-input data-i18n="code.composer" user-content></div>
 					<div class="code-attachment-preview" id="attachment-preview" hidden></div>
 					<input type="file" id="attach-input" multiple hidden aria-hidden="true" tabindex="-1" />
 					<div class="code-drop-overlay" id="drop-overlay" data-i18n="code.attach.drop" hidden></div>
 					<div class="code-composer-controls">
-						<div class="code-composer-controls-main">
-							<button class="code-attach-button" id="attach-button" type="button" data-i18n="code.attach.add">
+						<div class="code-composer-controls-main" id="composer-controls-main">
+							<button class="btn btn-ghost btn-square btn-sm" id="attach-button" type="button" data-i18n="code.attach.add">
 								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
 							</button>
-							<div class="dropdown dropdown-top" id="mode-pill-wrap">
-								<button class="code-pill" id="mode-pill" role="button" tabindex="0">
-									<span class="code-pill-label" id="mode-pill-label"></span>
-									<span class="code-pill-chevron" aria-hidden="true">▾</span>
-								</button>
-								<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-48 p-2 shadow" id="mode-menu"></ul>
-							</div>
-							<div class="dropdown dropdown-top" id="ai-source-pill-wrap">
-								<button class="code-pill" id="ai-source-pill" role="button" tabindex="0">
-									<span class="code-pill-label" id="ai-source-pill-label"></span>
-									<span class="code-pill-chevron" aria-hidden="true">▾</span>
-								</button>
-								<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="ai-source-menu"></ul>
-							</div>
-							<div class="dropdown dropdown-top hidden" id="shell-pill-wrap">
-								<button class="code-pill" id="shell-pill" role="button" tabindex="0">
-									<span class="code-pill-label" id="shell-pill-label"></span>
-									<span class="code-pill-chevron" aria-hidden="true">▾</span>
-								</button>
-								<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-48 p-2 shadow" id="shell-menu"></ul>
-							</div>
 						</div>
-						<button class="code-composer-send" id="send-button" data-i18n="code.composer.sendButton">
+						<button class="code-composer-send btn btn-square btn-primary shrink-0 w-8" id="send-button" data-i18n="code.composer.sendButton">
 							<svg id="send-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 								<path d="M12 19V5"></path>
 								<path d="M5 12l7-7 7 7"></path>
@@ -86,33 +65,7 @@
 					</div>
 				</div>
 				<div class="code-composer-hint" id="composer-hint" data-i18n="code.composer.hint"></div>
-				<div class="code-composer-targets">
-					<div class="dropdown dropdown-top" id="machine-pill-wrap">
-						<button class="code-pill" id="machine-pill" role="button" tabindex="0">
-							<span class="code-pill-label" id="machine-pill-label"></span>
-							<span class="code-pill-chevron" aria-hidden="true">▾</span>
-						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="machine-menu"></ul>
-					</div>
-					<div class="dropdown dropdown-top" id="workspace-pill-wrap">
-						<button class="code-pill" id="workspace-pill" role="button" tabindex="0">
-							<span class="code-pill-label" id="workspace-pill-label"></span>
-							<span class="code-pill-chevron" aria-hidden="true">▾</span>
-						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="workspace-menu"></ul>
-					</div>
-					<div class="dropdown dropdown-top" id="char-pill-wrap">
-						<button class="code-pill" id="char-pill" role="button" tabindex="0">
-							<span class="code-pill-label" id="char-pill-label"></span>
-							<span class="code-pill-chevron" aria-hidden="true">▾</span>
-						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="char-menu">
-							<li id="char-switch-item"><button id="char-switch-button" data-i18n="code.char.switch"></button></li>
-							<li><a id="char-settings-link" data-i18n="code.char.settings" href="#"></a></li>
-							<li><a data-i18n="code.char.goodAgent" href="https://steve02081504.github.io/fount/blog/" target="_blank" rel="noopener"></a></li>
-						</ul>
-					</div>
-					</div>
+				<div class="code-composer-targets" id="composer-targets"></div>
 			</div>
 		</main>
 	</div>

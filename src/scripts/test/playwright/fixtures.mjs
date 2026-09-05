@@ -3,7 +3,7 @@ import { test as base, expect, request } from '@playwright/test'
 import { ms } from '../../ms.mjs'
 
 import { loginWithApiKey } from './auth.mjs'
-import { createBrowserDiagnostics, waitForWatchDrain } from './browser_diagnostics.mjs'
+import { runDiagnosedPage, waitForWatchDrain } from './browser_diagnostics.mjs'
 import { installCdnResponseCache } from './cdn_cache.mjs'
 import { requireTestBaseUrl } from './env.mjs'
 import { assertAriaIgnoreIssues } from './github_issue.mjs'
@@ -11,7 +11,7 @@ import { assertIsolatedFrontendTest } from './guards.mjs'
 
 /**
  * fount 前端 E2E 通用 fixture：`baseUrl` / `apiKey` / 已登录 `context` + `page`。
- * page 自动挂载网络诊断（HTTP ≥400 / requestfailed → `[browser:network]`）与 pageerror / `[test:…]` / `[i18n:missing]` / `[i18n:clobber]` 硬断言。
+ * page 自动挂载网络诊断（HTTP ≥400 / requestfailed → `[browser:network]`）与 pageerror / `console.error`（达到 `MAX_CONSOLE_ERRORS` 立即失败并退出，否则结束后判失败）/ `[test:…]` / `[i18n:missing]` / `[i18n:clobber]` 硬断言。
  * @param {object} [options] fixture 选项
  * @param {string} [options.locale='zh-CN'] 浏览器与 localStorage 首选语言
  * @param {object} [options.isolated] 隔离节点断言（run.mjs 注入）
@@ -88,18 +88,17 @@ export function createFountFixtures(options = {}) {
 		 * @param {(page: import('npm:@playwright/test').Page) => Promise<void>} use - Playwright fixture use 回调
 		 */
 		page: async ({ context }, use) => {
-			const diagnostics = createBrowserDiagnostics()
-			const page = await context.newPage()
-			await diagnostics.attach(page)
-			await use(page)
-			// 收尾：watch.drain()；未挂载时 evaluate 立即返回
-			await waitForWatchDrain(page)
-			await assertAriaIgnoreIssues(page)
-			diagnostics.flushNetworkDiagnostics()
-			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
-			expect(diagnostics.pageWatchErrors, 'unexpected page watch console output').toEqual([])
-			expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
-			expect(diagnostics.i18nClobberErrors, 'unexpected i18n child clobber (data-i18n replacing non-text subtree)').toEqual([])
+			await runDiagnosedPage(context, use, async (diagnostics, page) => {
+				// 收尾：watch.drain()；未挂载时 evaluate 立即返回
+				await waitForWatchDrain(page)
+				await assertAriaIgnoreIssues(page)
+				diagnostics.flushNetworkDiagnostics()
+				expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
+				expect(diagnostics.consoleErrors, 'unexpected browser console errors').toEqual([])
+				expect(diagnostics.pageWatchErrors, 'unexpected page watch console output').toEqual([])
+				expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
+				expect(diagnostics.i18nClobberErrors, 'unexpected i18n child clobber (data-i18n replacing non-text subtree)').toEqual([])
+			})
 		},
 	})
 

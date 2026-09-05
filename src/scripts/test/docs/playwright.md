@@ -34,6 +34,7 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 
 - `response ≥ 400` / `requestfailed` → `[browser:network]` noise → imperfect wave.
 - `pageerror`, `[test:…]` console (from `scripts/test/watch/`), and `[i18n:missing]` (from `geti18n`, no dedup) hard-fail.
+- General `console.error` (console `type() === 'error'`) always fails: reaching `MAX_CONSOLE_ERRORS` (13) aborts the test immediately (fail-fast, `runDiagnosedPage` races `use` against the abort promise); 1–12 errors fail at teardown.
 - Dropped request failures: `net::ERR_BLOCKED_BY_ORB`, `net::ERR_ABORTED`.
 - Child-frame `SecurityError` ignored via CDP only (`exception.className` + frame ≠ main; `isIgnoredChildFrameSecurityError`). Main-frame `SecurityError` still hard-fails.
 - Pages fixtures ignore `/api/ping` and localhost/`127.0.0.1:8930` installer probe / `/eula` signal failures only (`shouldIgnoreBrowserNetwork` — both `requestfailed` and HTTP ≥400). Other hosts or other paths on `:8930` still count as noise.

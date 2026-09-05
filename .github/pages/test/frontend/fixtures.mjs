@@ -3,7 +3,7 @@
  */
 import { test as base, expect } from '@playwright/test'
 
-import { createBrowserDiagnostics, waitForWatchDrain } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
+import { runDiagnosedPage, waitForWatchDrain } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
 import { installCdnResponseCache } from 'fount/scripts/test/playwright/cdn_cache.mjs'
 import { requireTestBaseUrl } from 'fount/scripts/test/playwright/env.mjs'
 import { assertAriaIgnoreIssues } from 'fount/scripts/test/playwright/github_issue.mjs'
@@ -65,17 +65,16 @@ export function createPagesFixtures(options = {}) {
 		 * @param {(page: import('npm:@playwright/test').Page) => Promise<void>} use fixture use
 		 */
 		page: async ({ context }, use) => {
-			const diagnostics = createBrowserDiagnostics()
-			const page = await context.newPage()
-			await diagnostics.attach(page)
-			await use(page)
-			// 收尾：watch.drain()（locale + a11y）；未挂载时 evaluate 立即返回
-			await waitForWatchDrain(page)
-			await assertAriaIgnoreIssues(page)
-			diagnostics.flushNetworkDiagnostics()
-			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
-			expect(diagnostics.pageWatchErrors, 'unexpected page watch console output').toEqual([])
-			expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
+			await runDiagnosedPage(context, use, async (diagnostics, page) => {
+				// 收尾：watch.drain()（locale + a11y）；未挂载时 evaluate 立即返回
+				await waitForWatchDrain(page)
+				await assertAriaIgnoreIssues(page)
+				diagnostics.flushNetworkDiagnostics()
+				expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
+				expect(diagnostics.consoleErrors, 'unexpected browser console errors').toEqual([])
+				expect(diagnostics.pageWatchErrors, 'unexpected page watch console output').toEqual([])
+				expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
+			})
 		},
 	})
 

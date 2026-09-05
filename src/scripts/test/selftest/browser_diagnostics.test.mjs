@@ -8,8 +8,10 @@ import { detectNoiseHits } from '../core/output_filter.mjs'
 import {
 	BROWSER_NETWORK_PREFIX,
 	I18N_MISSING_PREFIX,
+	MAX_CONSOLE_ERRORS,
 	PAGE_WATCH_CONSOLE_PREFIX,
 	browserNetworkAggregateKey,
+	createBrowserDiagnostics,
 	formatBrowserNetworkLine,
 	isI18nMissingConsoleText,
 	isIgnoredBrowserNetworkError,
@@ -104,6 +106,113 @@ Deno.test('isPageWatchConsoleText matches page watch prefix', () => {
 	assertEquals(PAGE_WATCH_CONSOLE_PREFIX, '[test:')
 	assertEquals(isPageWatchConsoleText('[test:a11y] color-contrast ...'), true)
 	assertEquals(isPageWatchConsoleText('plain log'), false)
+})
+
+Deno.test('MAX_CONSOLE_ERRORS is the fail-fast abort threshold at 13', () => {
+	assertEquals(MAX_CONSOLE_ERRORS, 13)
+})
+
+/**
+ * 构造 console 消息 mock。
+ * @param {string} type 消息类型（error / log / warning …）
+ * @param {string} text 消息文本
+ * @returns {{ type: () => string, text: () => string }} console 消息
+ */
+function consoleMsg(type, text) {
+	/**
+	 * @returns {string} 消息类型
+	 */
+	const typeFn = () => type
+	/**
+	 * @returns {string} 消息文本
+	 */
+	const textFn = () => text
+	return { type: typeFn, text: textFn }
+}
+
+/**
+ * 构造最小 CDP session mock（够 `attach` 跑通即可）。
+ * @returns {{ send: (method: string) => Promise<unknown>, on: (name: string, cb: (arg: unknown) => void) => void }} session mock
+ */
+function createMockSession() {
+	/** @type {Record<string, Array<(arg: unknown) => void>>} */
+	const listeners = {}
+	/**
+	 * 注册事件监听器。
+	 * @param {string} name 事件名
+	 * @param {(arg: unknown) => void} cb 监听器
+	 * @returns {void}
+	 */
+	const on = (name, cb) => {
+		;(listeners[name] ??= []).push(cb)
+	}
+	/**
+	 * CDP 方法调用。
+	 * @param {string} method 方法名
+	 * @returns {Promise<unknown>} 结果
+	 */
+	const send = async (method) => {
+		if (method === 'Page.getFrameTree') return { frameTree: { frame: { id: 'main' } } }
+		return {}
+	}
+	return { send, on }
+}
+
+/**
+ * 构造最小 Playwright page mock（够 `attach` 跑通即可）。
+ * @returns {{ on: (name: string, cb: (arg: unknown) => void) => void, emitConsole: (msg: ReturnType<typeof consoleMsg>) => void, context: () => { newCDPSession: () => Promise<ReturnType<typeof createMockSession>> } }} page mock
+ */
+function createMockPage() {
+	/** @type {Record<string, Array<(arg: unknown) => void>>} */
+	const listeners = {}
+	/**
+	 * 注册事件监听器。
+	 * @param {string} name 事件名
+	 * @param {(arg: unknown) => void} cb 监听器
+	 * @returns {void}
+	 */
+	const on = (name, cb) => {
+		;(listeners[name] ??= []).push(cb)
+	}
+	/**
+	 * 触发 console 事件。
+	 * @param {ReturnType<typeof consoleMsg>} msg 消息
+	 * @returns {void}
+	 */
+	const emitConsole = (msg) => {
+		for (const cb of listeners.console ?? []) cb(msg)
+	}
+	/**
+	 * 取 browser context mock。
+	 * @returns {{ newCDPSession: () => Promise<ReturnType<typeof createMockSession>> }} context mock
+	 */
+	const context = () => ({ newCDPSession: createMockSession })
+	return { on, emitConsole, context }
+}
+
+Deno.test('createBrowserDiagnostics records console.error separately from page watch output', async () => {
+	const diagnostics = createBrowserDiagnostics()
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	page.emitConsole(consoleMsg('error', 'boom'))
+	page.emitConsole(consoleMsg('log', '[test:a11y] color-contrast ...'))
+	page.emitConsole(consoleMsg('warning', 'meh'))
+	assertEquals(diagnostics.consoleErrors, ['boom'])
+	assertEquals(diagnostics.pageWatchErrors, ['[test:a11y] color-contrast ...'])
+})
+
+Deno.test('createBrowserDiagnostics fires onConsoleErrorThreshold at MAX_CONSOLE_ERRORS', async () => {
+	let thresholdHits = 0
+	/**
+	 * @returns {void}
+	 */
+	const onThreshold = () => { thresholdHits += 1 }
+	const diagnostics = createBrowserDiagnostics({ onConsoleErrorThreshold: onThreshold })
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	for (let i = 0; i < MAX_CONSOLE_ERRORS; i++) page.emitConsole(consoleMsg('error', `e${i}`))
+	assertEquals(diagnostics.consoleErrors.length, MAX_CONSOLE_ERRORS)
+	assertEquals(thresholdHits, 1)
 })
 
 Deno.test('isI18nMissingConsoleText matches i18n missing prefix', () => {

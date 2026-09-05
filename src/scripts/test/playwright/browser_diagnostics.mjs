@@ -2,6 +2,9 @@
  * 前端 Playwright 浏览器诊断：网络异常噪声行 + pageerror / page watch / i18n missing 硬失败。
  */
 
+/** 通用：网页 `console.error` 达到该数立即失败并退出（fail-fast）；少于该数时也在 teardown 判失败。 */
+export const MAX_CONSOLE_ERRORS = 13
+
 /** 写入 suite 输出、供 `detectNoiseHits` 识别的前缀。 */
 export const BROWSER_NETWORK_PREFIX = '[browser:network]'
 
@@ -200,18 +203,23 @@ export function pageErrorFromCdpException(exceptionDetails) {
 
 /**
  * 创建绑定到单个 Playwright page 的诊断收集器。
+ * @param {object} [options] 选项
+ * @param {() => void} [options.onConsoleErrorThreshold] 网页 `console.error` 达到 `MAX_CONSOLE_ERRORS` 时调用（fail-fast 钩子）
  * @returns {{
  *   attach: (page: import('npm:@playwright/test').Page) => Promise<void>,
  *   pageErrors: string[],
+ *   consoleErrors: string[],
  *   pageWatchErrors: string[],
  *   i18nMissingErrors: string[],
  *   i18nClobberErrors: string[],
  *   flushNetworkDiagnostics: () => BrowserNetworkEntry[],
  * }} 诊断 API
  */
-export function createBrowserDiagnostics() {
+export function createBrowserDiagnostics({ onConsoleErrorThreshold } = {}) {
 	/** @type {string[]} */
 	const pageErrors = []
+	/** @type {string[]} */
+	const consoleErrors = []
 	/** @type {string[]} */
 	const pageWatchErrors = []
 	/** @type {string[]} */
@@ -265,6 +273,10 @@ export function createBrowserDiagnostics() {
 			if (isPageWatchConsoleText(text)) pageWatchErrors.push(text)
 			if (isI18nMissingConsoleText(text)) i18nMissingErrors.push(text)
 			if (isI18nClobberConsoleText(text)) i18nClobberErrors.push(text)
+			if (msg.type() === 'error') {
+				consoleErrors.push(text)
+				if (consoleErrors.length >= MAX_CONSOLE_ERRORS) onConsoleErrorThreshold?.()
+			}
 		})
 		page.on('requestfailed', req => {
 			const error = req.failure()?.errorText || null
@@ -305,5 +317,38 @@ export function createBrowserDiagnostics() {
 		return entries
 	}
 
-	return { attach, pageErrors, pageWatchErrors, i18nMissingErrors, i18nClobberErrors, flushNetworkDiagnostics }
+	return { attach, pageErrors, consoleErrors, pageWatchErrors, i18nMissingErrors, i18nClobberErrors, flushNetworkDiagnostics }
+}
+
+/**
+ * 通用诊断页面 fixture 运行器：挂载浏览器诊断，测试结束执行 `teardown` 断言；
+ * 网页 `console.error` 达到 `MAX_CONSOLE_ERRORS` 时立即失败并退出（fail-fast，不再跑后续测试）。
+ * @param {import('npm:@playwright/test').BrowserContext} context 浏览器上下文
+ * @param {(page: import('npm:@playwright/test').Page) => Promise<void>} use Playwright fixture use 回调
+ * @param {(diagnostics: ReturnType<typeof createBrowserDiagnostics>, page: import('npm:@playwright/test').Page) => Promise<void>} teardown 结束断言（abort 时跳过）
+ * @returns {Promise<void>}
+ */
+export async function runDiagnosedPage(context, use, teardown) {
+	/** @type {() => void} */
+	let failEarly
+	let aborted = false
+	const earlyFail = new Promise((_, reject) => {
+		/**
+		 * 触发 fail-fast：标记已中止并拒绝 `earlyFail`。
+		 * @returns {void}
+		 */
+		failEarly = () => {
+			aborted = true
+			reject(new Error(`browser console.error reached ${MAX_CONSOLE_ERRORS}; aborting test`))
+		}
+	})
+	const diagnostics = createBrowserDiagnostics({ onConsoleErrorThreshold: failEarly })
+	const page = await context.newPage()
+	await diagnostics.attach(page)
+	try {
+		await Promise.race([use(page), earlyFail])
+	}
+	finally {
+		if (!aborted) await teardown(diagnostics, page)
+	}
 }
