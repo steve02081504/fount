@@ -47,7 +47,7 @@ import {
 	tabKeyOf,
 	updateSendButton,
 } from './session.mjs'
-import { elements, getPref, richInput, setPref, store } from './store.mjs'
+import { elements, getPref, initComposer, richInput, setPref, store } from './store.mjs'
 
 /** 语言切换时的动态文案重渲染。 */
 function rerenderDynamicText() {
@@ -86,6 +86,9 @@ export async function boot() {
 	store.username = (await whoami()).username
 	await initTranslations('code')
 	await mountPillChrome()
+	// createMarkdownRichInput 初始化即聚焦 composer：待 pill 镀铬挂载后再建，避免早聚焦触发与装载的竞态
+	initComposer()
+	wireComposerEvents()
 	wireGlobalEvents()
 	// 语言切换时重渲染动态文案（geti18n 的 textContent 不随 setLanguage 自动更新）；注册立即触发一次
 	onLanguageChange(rerenderDynamicText)
@@ -124,7 +127,6 @@ export async function boot() {
 		store.workspace = store.workspaces.find(w => w.id === initialTab.workspaceId) || store.workspace
 	store.activeTabKey = tabKeyOf(initialTab)
 	renderTabs()
-	wireComposerEvents()
 	await activateTab(initialTab)
 	rerenderDynamicText()
 	void ensureHistory(store.shellMode ? 'shell' : 'message')

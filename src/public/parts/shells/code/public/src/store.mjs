@@ -106,26 +106,38 @@ export function setPref(key, value) {
 	localStorage.setItem(prefPrefix() + key, value)
 }
 
-/** markdown 富文本输入框（textarea 兼容 API：value / selectionStart / setRangeText）。 */
-export const richInput = createMarkdownRichInput(elements.composerInput, {
-	inlineTokens: [{
-		kind: 'file',
-		regex: /@\[file:([^\]\n]+)\]/,
-		/**
-		 * 解析文件 token 原文。
-		 * @param {string} raw - 匹配的原文（`@[file:…]`）。
-		 * @returns {{kind: string, body: string}} token 描述。
-		 */
-		parse: raw => ({ kind: 'file', body: raw.slice('@[file:'.length, -1) }),
-		/**
-		 * 解析 chip 显示名。
-		 * @param {{kind: string, body: string}} parsed - token 描述。
-		 * @returns {string} chip 文本。
-		 */
-		resolveLabel: parsed => parsed.body,
-	}],
-	useRegisteredInlineTokens: false,
-})
+/**
+ * markdown 富文本输入框（textarea 兼容 API：value / selectionStart / setRangeText）。
+ * 延迟到 boot 挂载 pill 镀铬后初始化：createMarkdownRichInput 初始化即聚焦 composer，
+ * 过早初始化会让页面在 boot 完成前就聚焦输入框，与后续装载竞态。
+ */
+export let richInput = null
+
+/**
+ * 初始化 markdown 富文本输入框（boot 中挂载 pill 后调用）。
+ * @returns {void}
+ */
+export function initComposer() {
+	richInput = createMarkdownRichInput(elements.composerInput, {
+		inlineTokens: [{
+			kind: 'file',
+			regex: /@\[file:([^\]\n]+)\]/,
+			/**
+			 * 解析文件 token 原文。
+			 * @param {string} raw - 匹配的原文（`@[file:…]`）。
+			 * @returns {{kind: string, body: string}} token 描述。
+			 */
+			parse: raw => ({ kind: 'file', body: raw.slice('@[file:'.length, -1) }),
+			/**
+			 * 解析 chip 显示名。
+			 * @param {{kind: string, body: string}} parsed - token 描述。
+			 * @returns {string} chip 文本。
+			 */
+			resolveLabel: parsed => parsed.body,
+		}],
+		useRegisteredInlineTokens: false,
+	})
+}
 
 /** 贴底自动滚容差（px）。 */
 export const SCROLL_TOLERANCE = 96
