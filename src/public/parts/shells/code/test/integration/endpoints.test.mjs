@@ -203,6 +203,50 @@ Deno.test({
 })
 
 Deno.test({
+	name: 'tabs list and draft content roundtrip via backend shell data',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchCodeNode()
+	try {
+		// 空列表回读
+		const empty = await (await codeFetch(node, 'GET', '/tabs')).json()
+		assertEquals(empty.tabs, [])
+		assertEquals(empty.activeTab, '')
+		// 写入草稿与会话标签（含未发送草稿内容）
+		const payload = {
+			tabs: [
+				{ type: 'draft', id: 'draft01', workspaceId: 'ws1', draft: '未发送的内容' },
+				{ type: 'session', id: 'sess01AB', workspaceId: 'ws1' },
+			],
+			activeTab: 't:ws1:draft01',
+		}
+		const saved = await (await codeFetch(node, 'PUT', '/tabs', payload)).json()
+		assertEquals(saved.tabs.length, 2)
+		assertEquals(saved.tabs[0].draft, '未发送的内容')
+		assertEquals(saved.activeTab, 't:ws1:draft01')
+		// 非法 id / type 被过滤
+		const sanitized = await (await codeFetch(node, 'PUT', '/tabs', {
+			tabs: [
+				{ type: 'bogus', id: 'x', workspaceId: 'ws1' },
+				{ type: 'draft', id: 'bad/../path', workspaceId: 'ws1' },
+				{ type: 'session', id: 'ok01', workspaceId: 'ws1' },
+			],
+			activeTab: 't:ws1:ok01',
+		})).json()
+		assertEquals(sanitized.tabs.length, 1)
+		assertEquals(sanitized.tabs[0].id, 'ok01')
+		// 回读一致
+		const got = await (await codeFetch(node, 'GET', '/tabs')).json()
+		assertEquals(got.tabs.length, 1)
+		assertEquals(got.tabs[0].id, 'ok01')
+	}
+	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
 	name: 'exec without workdir runs in the user home directory',
 	sanitizeOps: false,
 	sanitizeResources: false,

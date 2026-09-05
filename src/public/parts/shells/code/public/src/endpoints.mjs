@@ -38,7 +38,7 @@ export async function getMachines() {
 /**
  * 列出机器可用 shell。
  * @param {number} machine - 机器 id。
- * @returns {Promise<{shells: string[]}>} shell 列表。
+ * @returns {Promise<{shells: string[], default: string}>} shell 列表与机器默认 shell。
  */
 export async function getMachineShells(machine) {
 	return requestJson(`${API_BASE}/machines/${machine}/shells`)
@@ -78,6 +78,24 @@ export async function addWorkspace(workspace) {
  */
 export async function removeWorkspace(id) {
 	return requestJson(`${API_BASE}/workspaces/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+
+/**
+ * 读取打开的标签页列表与活动标签（含草稿与未发送草稿内容）。
+ * @returns {Promise<{tabs: Array<{type: string, id: string, workspaceId: string, draft?: string}>, activeTab: string}>} 标签页数据。
+ */
+export async function getTabs() {
+	return requestJson(`${API_BASE}/tabs`)
+}
+
+/**
+ * 保存打开的标签页列表与活动标签。
+ * @param {Array<object>} tabs - 标签页列表。
+ * @param {string} activeTab - 活动标签键。
+ * @returns {Promise<{tabs: Array<object>, activeTab: string}>} 保存结果。
+ */
+export async function putTabs(tabs, activeTab) {
+	return requestJson(`${API_BASE}/tabs`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tabs, activeTab }) })
 }
 
 /**

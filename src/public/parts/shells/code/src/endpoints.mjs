@@ -21,7 +21,7 @@ import {
 } from './context.mjs'
 import { appendOwnHistory, getHistory } from './history.mjs'
 import { triggerCodeReply } from './request.mjs'
-import { availableShells, runShellCommand } from './runner.mjs'
+import { availableShells, machineDefaultShell, runShellCommand } from './runner.mjs'
 import { deleteSession, listSessions, loadSession, saveSession } from './sessions.mjs'
 import { readWorkspaceConfig } from './workspace_config.mjs'
 
@@ -59,6 +59,35 @@ function getAiSourceVisibility(username) {
 }
 
 /**
+ * 读取打开的标签页列表与活动标签（shell data；含草稿与未发送草稿内容）。
+ * @param {string} username - 用户名。
+ * @returns {{tabs: Array<{type: string, id: string, workspaceId: string, draft?: string}>, activeTab: string}} 标签页数据。
+ */
+function getTabs(username) {
+	const data = loadShellData(username, 'code', 'tabs') ?? {}
+	data.tabs ??= []
+	data.activeTab ??= ''
+	return data
+}
+
+/**
+ * 规整标签页对象（仅保留已知字段，校验 id/type）。
+ * @param {object} tab - 待规整的标签页。
+ * @returns {object|null} 规整后的标签页（非法时 null）。
+ */
+function sanitizeTab(tab) {
+	if (!tab || typeof tab !== 'object') return null
+	if (!['draft', 'session'].includes(tab.type)) return null
+	if (typeof tab.id !== 'string' || !/^[A-Za-z0-9_-]{1,64}$/.test(tab.id)) return null
+	return {
+		type: tab.type,
+		id: tab.id,
+		workspaceId: String(tab.workspaceId || ''),
+		...typeof tab.draft === 'string' ? { draft: tab.draft } : {},
+	}
+}
+
+/**
  * 将 tool 日志条目规整为可持久化形状（buffer 转 base64 字符串）。
  * @param {object} entry - chatLogEntry_t 形状的条目。
  * @returns {object} 规整后的条目。
@@ -87,11 +116,11 @@ export function setEndpoints(router) {
 		res.json({ machines: await listMachines(username) })
 	})
 
-	// 机器可用 shell 列表
+	// 机器可用 shell 列表与默认 shell
 	router.get('/api/parts/shells\\:code/machines/:id/shells', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const machine = req.params.id
-		res.json({ shells: await availableShells(username, machine) })
+		res.json({ shells: await availableShells(username, machine), default: await machineDefaultShell(username, machine) })
 	})
 
 	// 文件夹浏览（根 = 盘符 / `/`）
@@ -152,6 +181,23 @@ export function setEndpoints(router) {
 		const data = getWorkspaces(username)
 		data.list = data.list.filter(w => w.id !== req.params.id)
 		saveShellData(username, 'code', 'workspaces', data)
+		res.json(data)
+	})
+
+	// 打开的标签页列表与活动标签（含草稿与未发送草稿内容，跨页面共享）
+	router.get('/api/parts/shells\\:code/tabs', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.json(getTabs(username))
+	})
+
+	router.put('/api/parts/shells\\:code/tabs', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const tabs = Array.isArray(req.body?.tabs) ? req.body.tabs : []
+		const data = {
+			tabs: tabs.map(sanitizeTab).filter(Boolean),
+			activeTab: String(req.body?.activeTab || ''),
+		}
+		assignShellData(username, 'code', 'tabs', data)
 		res.json(data)
 	})
 

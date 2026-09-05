@@ -28,7 +28,6 @@ const elements = {
 	homeToggle: $('home-toggle'),
 	homeMenu: $('home-menu'),
 	tabStrip: $('tab-strip'),
-	newTabButton: $('new-tab-button'),
 	workspacePill: $('workspace-pill'),
 	workspacePillLabel: $('workspace-pill-label'),
 	workspaceMenu: $('workspace-menu'),
@@ -165,29 +164,106 @@ let generatingSession = null
 /** 待落盘标签键（生成中暂存，完成后/失焦时 flush）。 */
 let dirtyTabKey = ''
 
+/** 标签页保存防抖（ms）。 */
+const TAB_SAVE_DEBOUNCE = 300
+/** 标签页保存防抖定时器句柄。 */
+let tabSaveTimer = 0
+/** 跨页面标签同步频道（另开 code 页面收到后刷新标签列表与活动标签）。 */
+const tabsChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('fount-code-tabs') : null
+/** 本页唯一标识（忽略自身广播）。 */
+const pageId = crypto.randomUUID()
+
 /**
- * 从 localStorage 恢复标签页（草稿不可持久化，仅恢复会话标签）。
- * @returns {void}
+ * 从后端恢复标签页（草稿含未发送内容，跨页面共享）。
+ * @returns {Promise<void>}
  */
-function loadTabPrefs() {
+async function loadTabPrefs() {
 	try {
-		const list = JSON.parse(getPref('tabs') || '[]')
-		state.tabs = Array.isArray(list) ? list.filter(tab => tab?.type === 'session' && tab.id && tab.workspaceId) : []
+		const data = await api.getTabs()
+		state.tabs = Array.isArray(data.tabs) ? data.tabs.filter(tab => tab?.id && (tab.type === 'draft' || tab.type === 'session')) : []
+		state.activeTabKey = String(data.activeTab || '')
 	}
 	catch {
 		state.tabs = []
+		state.activeTabKey = ''
 	}
-	state.activeTabKey = getPref('activeTab')
 }
 
 /**
- * 持久化标签页列表与活动标签。
+ * 持久化标签页列表与活动标签到后端（防抖），并广播给其他打开的页面。
  * @returns {void}
  */
 function saveTabPrefs() {
-	setPref('tabs', JSON.stringify(state.tabs.filter(tab => tab.type === 'session')))
-	setPref('activeTab', state.activeTabKey)
+	clearTimeout(tabSaveTimer)
+	tabSaveTimer = setTimeout(() => {
+		tabSaveTimer = 0
+		void persistTabs()
+	}, TAB_SAVE_DEBOUNCE)
 }
+
+/**
+ * 立即持久化待写的标签页（失焦/隐藏/卸载前调用）。
+ * @returns {void}
+ */
+function flushTabPrefs() {
+	if (!tabSaveTimer) return
+	clearTimeout(tabSaveTimer)
+	tabSaveTimer = 0
+	void persistTabs()
+}
+
+/**
+ * 上传当前标签页状态并广播。
+ * @returns {Promise<void>}
+ */
+async function persistTabs() {
+	const payload = {
+		tabs: state.tabs.map(tab => ({ type: tab.type, id: tab.id, workspaceId: tab.workspaceId, ...typeof tab.draft === 'string' ? { draft: tab.draft } : {} })),
+		activeTab: state.activeTabKey,
+	}
+	await api.putTabs(payload.tabs, payload.activeTab).catch(() => { })
+	tabsChannel?.postMessage({ source: pageId, ...payload })
+}
+
+/**
+ * 应用其他页面广播的标签页状态（保留本地当前标签的未发送草稿，不抢夺活动焦点）。
+ * @param {{tabs?: Array<object>, activeTab?: string}} data - 广播负载。
+ * @returns {Promise<void>}
+ */
+async function applyRemoteTabs({ tabs, activeTab: remoteActive } = {}) {
+	if (!Array.isArray(tabs)) return
+	const current = activeTab()
+	const currentKey = current ? tabKeyOf(current) : ''
+	const localDraft = current?.draft
+	state.tabs = tabs
+	if (currentKey) {
+		const kept = state.tabs.find(tab => tabKeyOf(tab) === currentKey)
+		if (kept && localDraft != null) kept.draft = localDraft
+	}
+	const previousActiveKey = state.activeTabKey
+	const keepActive = state.tabs.some(tab => tabKeyOf(tab) === previousActiveKey)
+	state.activeTabKey = keepActive
+		? previousActiveKey
+		: remoteActive && state.tabs.some(tab => tabKeyOf(tab) === remoteActive) ? remoteActive : state.tabs[0] ? tabKeyOf(state.tabs[0]) : ''
+	renderTabs()
+	if (state.activeTabKey !== previousActiveKey) 
+		if (state.activeTabKey) {
+			const nextTab = state.tabs.find(tab => tabKeyOf(tab) === state.activeTabKey)
+			state.activeTabKey = ''
+			await activateTab(nextTab)
+		}
+		else {
+			state.session = null
+			void startNewSession()
+		}
+	
+}
+
+tabsChannel?.addEventListener('message', event => {
+	const data = event.data
+	if (!data || data.source === pageId) return
+	void applyRemoteTabs(data)
+})
 
 /**
  * 新建草稿标签页（未保存的新会话）。
@@ -212,11 +288,20 @@ function tabTitle(tab) {
 	return cached?.title || summary?.title || geti18n('code.sessions.untitled')
 }
 
+/** 新建标签按钮（由 renderTabs 渲染在最后一个标签右侧，随标签条滚动）。 */
+const newTabButton = document.createElement('button')
+newTabButton.type = 'button'
+newTabButton.id = 'new-tab-button'
+newTabButton.className = 'code-iconbtn'
+newTabButton.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>'
+newTabButton.addEventListener('click', () => void startNewSession())
+
 /**
- * 渲染标签条（活动态高亮 / hover 关闭钮 / 中键关闭）。
+ * 渲染标签条（活动态高亮 / hover 关闭钮 / 中键关闭），新建按钮紧随最后一个标签。
  * @returns {void}
  */
 function renderTabs() {
+	newTabButton.setAttribute('aria-label', geti18n('code.newTab.aria-label'))
 	elements.tabStrip.replaceChildren(...state.tabs.map(tab => {
 		const key = tabKeyOf(tab)
 		const wrap = document.createElement('div')
@@ -266,8 +351,7 @@ function renderTabs() {
 		})
 		wrap.append(main, close)
 		return wrap
-	}))
-	saveTabPrefs()
+	}), newTabButton)
 }
 
 /**
@@ -415,15 +499,10 @@ async function openSessionTab(summary) {
 }
 
 /**
- * 新建会话：活动空草稿直接聚焦；否则新建草稿标签（默认在上一个对话的工作区）。
+ * 新建会话：总是新建一个草稿标签（允许多个未开启正式对话的标签并存），默认在上一个对话的工作区。
  * @returns {Promise<void>}
  */
 async function startNewSession() {
-	const active = activeTab()
-	if (active?.type === 'draft' && !state.session?.entries?.length) {
-		elements.composerInput.focus()
-		return
-	}
 	const workspaceId = [state.session?.workspaceId, state.lastConversationWorkspaceId, state.workspace?.id]
 		.find(id => id && state.workspaces.some(w => w.id === id)) || ''
 	await activateTab(createDraftTab(workspaceId))
@@ -450,6 +529,7 @@ async function closeTab(tab) {
 	state.tabs = state.tabs.filter(item => tabKeyOf(item) !== key)
 	sessionCache.delete(key)
 	renderTabs()
+	saveTabPrefs()
 	if (!state.activeTabKey || !activeTab()) await startNewSession()
 }
 
@@ -468,9 +548,8 @@ async function activateTab(tab) {
 			// 后台生成：移除当前视图的流式气泡（切回时重建）
 			if (state.generating && generatingSession === state.session) endGeneratingBubble()
 		}
-		// 空草稿离开即丢弃
-		if (current.type === 'draft' && !state.session?.entries?.length)
-			state.tabs = state.tabs.filter(item => tabKeyOf(item) !== tabKeyOf(current))
+		// 未发送草稿跟随标签（空草稿也保留，允许多个草稿标签并存）
+		current.draft = richInput.value
 	}
 	if (tab.workspaceId && tab.workspaceId !== state.workspace?.id)
 		await selectWorkspace(tab.workspaceId, { fromTabSwitch: true })
@@ -494,13 +573,37 @@ async function activateTab(tab) {
 	state.charname = state.session?.charname || state.charname
 	state.aiSource = state.session?.ai_source ?? ''
 	state.profile = state.session?.profile || state.profile
+	restoreTabDraft(tab)
 	renderTabs()
 	renderMessages()
 	updateCharMenu()
 	renderModePillLabel()
 	renderAiSourcePillLabel()
+	saveTabPrefs()
 	// 切回生成中的会话：重建流式气泡
 	if (state.generating && generatingSession === state.session) startGeneratingBubble()
+}
+
+/**
+ * 恢复标签的未发送草稿到 composer（空草稿清空输入框）。
+ * @param {object} tab - 标签页。
+ * @returns {void}
+ */
+function restoreTabDraft(tab) {
+	richInput.value = tab?.draft || ''
+	historyNav.pos = null
+	removeGhost()
+}
+
+/**
+ * 将当前 composer 内容写入活动标签的草稿（未发送内容随标签持久化到后端）。
+ * @returns {void}
+ */
+function syncActiveTabDraft() {
+	const tab = activeTab()
+	if (!tab) return
+	tab.draft = richInput.value
+	saveTabPrefs()
 }
 
 /**
@@ -522,12 +625,23 @@ async function loadTabSession(tab) {
 
 /**
  * 切到工作区的草稿标签（无则新建）——工作区 pill 切换的落点。
+ * 当前活动为空草稿时直接改绑到目标工作区，避免选择工作区时残留无工作区占位草稿。
  * @param {string} workspaceId - 工作区 id。
  * @returns {Promise<void>}
  */
 async function activateDraftForWorkspace(workspaceId) {
 	const draft = state.tabs.find(tab => tab.type === 'draft' && tab.workspaceId === workspaceId)
-	await activateTab(draft || createDraftTab(workspaceId))
+	if (draft) {
+		await activateTab(draft)
+		return
+	}
+	const current = activeTab()
+	if (current?.type === 'draft' && !current.draft && !state.session?.entries?.length) {
+		current.workspaceId = workspaceId
+		await activateTab(current)
+		return
+	}
+	await activateTab(createDraftTab(workspaceId))
 }
 
 /* ---------------- 消息渲染 ---------------- */
@@ -564,6 +678,8 @@ function renderEntryBubble(entry) {
 	if (entry.role === 'tool' || entry.role === 'system') {
 		const details = document.createElement('details')
 		details.className = 'code-tool-log'
+		// 用户 `!` 执行的 shell 结果（tool 日志 name 固定 'shell'，AI 插件日志用插件名）默认展开
+		if (entry.name === 'shell') details.open = true
 		const summary = document.createElement('summary')
 		const chevron = document.createElement('span')
 		chevron.className = 'code-tool-log-chevron'
@@ -1154,7 +1270,7 @@ function endGeneratingBubble() {
  * @param {boolean} [aborted=false] - 是否被中断。
  * @returns {void}
  */
-function finishGeneration(entries, memory, aborted = false) {
+async function finishGeneration(entries, memory, aborted = false) {
 	endGeneratingBubble()
 	const session = generatingSession || state.session
 	generatingSession = null
@@ -1171,7 +1287,7 @@ function finishGeneration(entries, memory, aborted = false) {
 		for (const entry of entries) appendEntryBubble(entry)
 		if (aborted) showToastI18n('info', 'code.error.aborted')
 	}
-	markSessionDirty(session)
+	await markSessionDirty(session)
 	renderTabs()
 	void refreshAllSessions()
 }
@@ -1260,7 +1376,8 @@ async function execShellMode(command) {
 	state.session.entries.push(toolEntry)
 	appendEntryBubble(toolEntry)
 	state.session.updated = new Date().toISOString()
-	markSessionDirty()
+	// 先等会话落盘完成再刷新聚合，避免总览/标签标题读到旧状态
+	await markSessionDirty()
 	void refreshAllSessions()
 }
 
@@ -1269,8 +1386,9 @@ async function execShellMode(command) {
 /**
  * 标记会话为待持久化；焦点已移出窗口且无生成任务时立即写盘。
  * 草稿一旦可落盘即转为会话标签（防关闭丢失）。无工作区时会话无处落盘，跳过。
+ * 返回触发落盘的 promise，调用方（如随后刷新聚合）可 await 保证先写盘再读。
  * @param {object} [session] - 目标会话（默认当前展示会话；后台生成时传入）。
- * @returns {void}
+ * @returns {Promise<void>|undefined} 已触发落盘时返回其 promise。
  */
 function markSessionDirty(session = state.session) {
 	const key = tabKeyOfSession(session)
@@ -1283,9 +1401,10 @@ function markSessionDirty(session = state.session) {
 	if (tab.type === 'draft') {
 		tab.type = 'session'
 		renderTabs()
+		saveTabPrefs()
 	}
 	// 非生成时标记即落盘（AGENTS 约定），保证总览/标签标题及时可见
-	if (!state.generating) void flushSession()
+	if (!state.generating) return flushSession()
 }
 
 /**
@@ -1309,11 +1428,18 @@ async function flushSession() {
 	}
 }
 
-window.addEventListener('blur', () => void flushSession())
+window.addEventListener('blur', () => {
+	void flushSession()
+	flushTabPrefs()
+})
 document.addEventListener('visibilitychange', () => {
-	if (document.hidden) void flushSession()
+	if (document.hidden) {
+		void flushSession()
+		flushTabPrefs()
+	}
 })
 window.addEventListener('beforeunload', () => {
+	flushTabPrefs()
 	if (!dirtyTabKey || state.generating) return
 	const tab = state.tabs.find(item => tabKeyOf(item) === dirtyTabKey)
 	const session = tabKeyOf(activeTab() || {}) === dirtyTabKey ? state.session : sessionCache.get(dirtyTabKey)
@@ -1366,11 +1492,22 @@ function renderMachinePillLabel() {
 async function selectMachine(id) {
 	state.machine = id
 	setPref('machine', id)
-	state.shells = await api.getMachineShells(id).then(r => r.shells).catch(() => [])
+	await loadShellOptions(id)
 	renderShellMenu()
 	renderShellPillLabel()
 	renderMachinePillLabel()
 	renderMachineMenu()
+}
+
+/**
+ * 加载目标机器 shell 列表，并把选中 shell 默认定为该机器的默认项。
+ * @param {string} machine - 机器 id。
+ * @returns {Promise<void>}
+ */
+async function loadShellOptions(machine) {
+	const data = await api.getMachineShells(machine).catch(() => ({ shells: [], default: '' }))
+	state.shells = data.shells || []
+	state.shell = data.default || state.shells[0] || ''
 }
 
 /**
@@ -1456,7 +1593,7 @@ async function selectWorkspace(id, { fromTabSwitch = false } = {}) {
 	if (workspace.machine !== state.machine) {
 		state.machine = String(workspace.machine)
 		setPref('machine', state.machine)
-		state.shells = await api.getMachineShells(state.machine).then(r => r.shells).catch(() => [])
+		await loadShellOptions(state.machine)
 		renderMachinePillLabel()
 		renderMachineMenu()
 		renderShellMenu()
@@ -1501,6 +1638,7 @@ async function removeCurrentWorkspace() {
 	renderHomeMenu()
 	await Promise.all([refreshAllSessions(), refreshProfiles()])
 	renderTabs()
+	saveTabPrefs()
 	renderMessages()
 	if (!state.activeTabKey) await startNewSession()
 }
@@ -1516,6 +1654,8 @@ function renderShellMenu() {
 		button.type = 'button'
 		button.className = 'menu-item' + (shell === state.shell ? ' active' : '')
 		button.textContent = shell || geti18n('code.composer.shellDefault')
+		// 无可用 shell 时仅留占位项（执行时按目标机器默认 shell）
+		button.disabled = !shell
 		button.addEventListener('click', () => {
 			document.activeElement?.blur()
 			state.shell = shell
@@ -1912,7 +2052,6 @@ async function applyWorkspaceCharConfig() {
 
 /* ---------------- 事件绑定 ---------------- */
 
-elements.newTabButton.addEventListener('click', () => void startNewSession())
 elements.homeToggle.addEventListener('click', renderHomeMenu)
 // Alt+1..9 切换标签，Alt+T 新建会话（opencode 用 mod+t / mod+1..9，但浏览器页签保留键无法拦截，改用浏览器安全的 Alt 系）
 document.addEventListener('keydown', event => {
@@ -1947,10 +2086,11 @@ elements.sendButton.addEventListener('click', () => {
 	const value = richInput.value.trim()
 	if (!value) return
 	richInput.value = ''
-	if (state.shellMode) {
-		exitShellMode()
+	syncActiveTabDraft()
+	if (state.shellMode) 
+		// 发送后保持 shell 模式（退出仅经空内容 Backspace），便于连续执行命令
 		void execShellMode(value).catch(error => showToastI18n('error', 'code.error.generic', { error: String(error.message || error) }))
-	}
+	
 	else void sendMessage(value)
 })
 
@@ -1970,10 +2110,12 @@ function exitShellMode() {
 elements.composerInput.addEventListener('input', () => {
 	if (!fromNav) historyNav.pos = null
 	const value = richInput.value
+	syncActiveTabDraft()
 	// ！/! 切 shell 执行模式：内容为空时键入叹号，进入后移除该字符，供干净命令输入
 	if (!state.shellMode && (value === '！' || value === '!')) {
 		state.shellMode = true
 		richInput.value = ''
+		syncActiveTabDraft()
 		document.querySelector('.code-composer-shell').classList.add('shell-mode')
 		elements.shellPillWrap.classList.remove('hidden')
 		updateComposerPlaceholder()
@@ -2198,18 +2340,18 @@ async function boot() {
 	state.charname = getPref('charname') || await getAnyPreferredDefaultPart('chars') || null
 	state.profile = getPref('profile', 'build')
 	state.aiSource = getPref('aiSource', '')
-	state.shells = await api.getMachineShells(state.machine).then(r => r.shells).catch(() => [])
+	await loadShellOptions(state.machine)
 	await Promise.all([refreshProfiles(), refreshAiSources(), refreshAllSessions(), refreshChars()])
 	// `fount run` 打开的页面经 ?workspace= 直达目标工作区
 	const urlWorkspace = new URLSearchParams(location.search).get('workspace')
 	const savedWorkspace = urlWorkspace || getPref('workspace')
 	state.workspace = workspaces.find(w => w.id === savedWorkspace) || workspaces[0] || null
 	if (state.workspace && urlWorkspace) setPref('workspace', state.workspace.id)
-	// 标签恢复：丢弃指向已消失工作区/会话的标签；?workspace= 直达时聚焦该工作区的新草稿
-	loadTabPrefs()
+	// 标签恢复：丢弃指向已消失工作区/会话的标签（草稿标签连同未发送内容保留）；?workspace= 直达时聚焦该工作区的新草稿
+	await loadTabPrefs()
 	state.tabs = state.tabs.filter(tab =>
-		state.workspaces.some(w => w.id === tab.workspaceId)
-		&& state.allSessions.some(s => s.id === tab.id && s.workspaceId === tab.workspaceId))
+		(tab.workspaceId === '' || state.workspaces.some(w => w.id === tab.workspaceId))
+		&& (tab.type === 'draft' || state.allSessions.some(s => s.id === tab.id && s.workspaceId === tab.workspaceId)))
 	let initialTab = activeTab() || state.tabs[0] || null
 	if (urlWorkspace) {
 		initialTab = createDraftTab(state.workspace?.id || '')

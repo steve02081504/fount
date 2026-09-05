@@ -3,9 +3,22 @@
  */
 import { test, expect } from './fixtures.mjs'
 
+/**
+ * 打开 code shell 页面并等待 boot 完成（boot 末步聚焦 composer）。
+ * 标签页从后端异步恢复，boot 完成前点击 pill 会与重渲染竞态。
+ * @param {import('npm:@playwright/test').Page} page - Playwright page。
+ * @param {string} baseUrl - 测试节点 base URL。
+ * @returns {Promise<void>}
+ */
+async function openCodeSmoke(page, baseUrl) {
+	await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
+	await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
+	await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+}
+
 test.describe('code shell smoke', () => {
 	test('page boots with pills, draft tab, and centered empty-state guidance', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
+		await openCodeSmoke(page, baseUrl)
 		await expect(page.locator('h1')).toHaveCount(1)
 		await expect(page.locator('#machine-pill-label')).toContainText('本机')
 		await expect(page.locator('#workspace-pill-label')).toContainText('未选择工作区')
@@ -21,7 +34,7 @@ test.describe('code shell smoke', () => {
 	})
 
 	test('empty state opens folder browser dialog via the workspace pill', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
+		await openCodeSmoke(page, baseUrl)
 		await page.locator('#workspace-pill').click()
 		await page.locator('#workspace-menu').getByText('浏览…').click()
 		await expect(page.locator('dialog.modal:has(#folder-entries)')).toBeVisible()
@@ -29,8 +42,7 @@ test.describe('code shell smoke', () => {
 	})
 
 	test('typing ！ switches to shell mode', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
-		await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
+		await openCodeSmoke(page, baseUrl)
 		const composer = page.locator('#composer-input')
 		await composer.click()
 		await page.keyboard.type('！')
@@ -40,7 +52,7 @@ test.describe('code shell smoke', () => {
 	})
 
 	test('workspace / machine dropdown menus render', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/parts/shells:code/`, { waitUntil: 'domcontentloaded' })
+		await openCodeSmoke(page, baseUrl)
 		await page.locator('#workspace-pill').click()
 		await expect(page.locator('#workspace-menu')).toBeVisible()
 		await expect(page.locator('#workspace-menu').getByText('浏览…')).toBeVisible()

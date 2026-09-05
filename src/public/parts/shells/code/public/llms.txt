@@ -1,28 +1,31 @@
 # code shell
 
-AI 编码会话界面（opencode 风格 web 布局）：顶栏会话标签条（左上角总览菜单按工作区列出会话，`+` 新建草稿标签）+ 消息流 + 底部 composer（空态时垂直居中显示 wordmark）。与任意角色就工作区对话，在本机或已连接 subfount 上执行代码与读写文件。
+AI 编码会话 shell：与任意角色就工作区对话，在本机或已连接 subfount 上执行代码与读写文件。
 
 - 工作区（workspace）= 一个目录（本机或某台 subfount），保存于用户 shell data；会话存于目标机器工作区 `.fount/code/sessions/<id>.json`。
+- 打开的标签页列表与各标签未发送草稿保存于用户 shell data（`code.tabs`）。
 - 机器 id `"0"` = 本机，其他为已连接 subfount；执行/文件读写默认使用请求的 `workdir`（`{ machine, path }`）。
-- `!` 模式：composer 内容为空时键入 `!`（或 `！`）进入 shell 命令模式，命令在目标机器工作目录执行，输出作为本地消息进入会话。
+- `!` 模式：以 shell 命令执行用户输入，命令在目标机器工作目录执行，输出作为 tool 日志条目进入会话。
 
 ## HTTP API（均需登录；base = `/api/parts/shells:code`）
 
 - `GET /machines` → `{ machines: [{ id, description, deviceInfo, isConnected }] }`（id "0" = 本机）
-- `GET /machines/:id/shells` → `{ shells: string[] }`（`!` 模式下拉与默认 shell 判定）
+- `GET /machines/:id/shells` → `{ shells: string[], default: string }`（default 为目标机器默认 shell，远程信息不可得时为空）
 - `GET /machines/:id/browse?path=` → `{ path, roots, entries: [{ name, path, isDirectory, isFile }] }`；不带 path 返回根（Windows 盘符 / `/`）
 - `GET /workspaces` / `POST /workspaces {name?, machine, path}` / `PUT /workspaces/:id {name}` / `DELETE /workspaces/:id` → 保存的工作区 CRUD
-- `POST /exec {machine, workdir, shell?, command}` → `!` 模式执行；本机未指定 workdir 时在家目录执行；失败结果 `{ code: -1, stdall }`
+- `GET /tabs` → `{ tabs: [{ type: draft|session, id, workspaceId, draft? }], activeTab }`（打开的标签页列表与各标签未发送草稿）
+- `PUT /tabs {tabs, activeTab}` → 保存标签页列表与活动标签（id 须匹配 `[A-Za-z0-9_-]{1,64}`）
+- `POST /exec {machine, workdir, shell?, command}` → 执行 shell 命令；本机未指定 workdir 时在家目录执行；失败结果 `{ code: -1, stdall }`
 - `GET /history?machine&workdir&kind=shell|message&shell=` → `{ own: string[], native: string[] }`（own 为自有历史追加序；native 为原生 shell 历史 newest-first，仅 kind=shell）
 - `POST /history {machine, workdir, kind, command}` → 追加自有历史，返回 `{ own: string[] }`
 - `GET /workspace-config?machine&workdir=` → `.agents/fount/code.json` 解析对象（无则 `{}`）
 - `GET /sessions/all` → `{ sessions: [{ id, title, charname, updated, workspaceId, workspaceName }] }`（跨工作区聚合，按 updated 降序）
-- `GET /files/search?machine&workdir&q=` → `{ files: string[] }`（文件名子串匹配，跳过 node_modules/.git 等；`@` 文件补全数据源）
+- `GET /files/search?machine&workdir&q=` → `{ files: string[] }`（文件名子串匹配，跳过 node_modules/.git 等）
 - `GET /file?machine&workdir&path=` → `{ content, context }`（content 为文件文本，context 为向上收集的 AGENTS.md/触发文档文本）
 - `GET /profiles?machine&workdir=` → `{ profiles: [{ name, source: builtin|global|workspace, description }], commands: [{ name, source, description, params, template }] }`
 - `POST /commands/render {machine, workdir, name, argv}` → `{ content }`（渲染命令模板；缺必填参数 400）
 - `GET /aisources` → `{ sources: string[], defaults: string[], hidden: string[] }`
-- `PUT /aisources/visibility {hidden: string[]}` → 保存 AI 源在下拉中的可见性
+- `PUT /aisources/visibility {hidden: string[]}` → 保存 AI 源可见性
 - `GET /sessions?machine&workdir=` → `{ sessions: [{ id, title, charname, profile, ai_source, created, updated }] }`
 - `POST /sessions {machine, workdir, session}` / `GET /sessions/:id?machine&workdir=` / `PUT /sessions/:id {machine, workdir, session}` / `DELETE /sessions/:id?machine&workdir=` → 会话存取（写目标机器工作区）
 

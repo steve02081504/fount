@@ -98,6 +98,27 @@ export function localDefaultShell() {
 }
 
 /**
+ * 查询目标机器的默认 shell（与该机器不带 shell 执行时的回退逻辑一致）。
+ * @param {string} username - 用户名。
+ * @param {string} machine - 目标机器标识（string）。
+ * @returns {Promise<string>} 默认 shell 名；远程机器信息不可得（未连接）时为空字符串。
+ */
+export async function machineDefaultShell(username, machine) {
+	const machineId = Number.parseInt(String(machine), 10) || 0
+	if (machineId <= 0) {
+		const availability = await available
+		if (process.platform === 'win32') return availability.pwsh ? 'pwsh' : 'powershell'
+		return availability.bash ? 'bash' : 'sh'
+	}
+	const { getAllSubfounts } = await import('../../../shells/subfounts/src/api.mjs')
+	const info = getAllSubfounts(username).find(s => s.id === machineId)
+	const shells = info?.deviceInfo?.shells
+	if (!shells || typeof shells !== 'object') return ''
+	if (info.deviceInfo?.os?.platform === 'win32') return shells.pwsh ? 'pwsh' : 'powershell'
+	return shells.bash ? 'bash' : 'sh'
+}
+
+/**
  * 查询目标机器可用的 shell 列表（供 UI 下拉 / 默认值回退）。
  * @param {string} username - 用户名。
  * @param {string} machine - 目标机器标识（string）。

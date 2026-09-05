@@ -508,7 +508,8 @@ export async function try_auth_request(req, res) {
 	if (apiKey) {
 		const user = await verifyApiKey(apiKey)
 		if (user) { req.user = user; return }
-		return Unauthorized('Invalid API Key: ' + apiKey)
+		// 无效 API Key：帮忙清除，并继续尝试会话认证，避免其永久阻塞登录
+		res.clearCookie('fount-apikey', { path: '/' })
 	}
 
 	// 2. Cookie 令牌认证
@@ -879,6 +880,11 @@ export async function deleteUserAccount(username, password) {
 				revokedAt: Date.now(),
 			}
 	})
+
+	// 顺带清理该用户的 API Key 全局索引，避免孤儿记录残留
+	for (const hash of Object.keys(config.data.apiKeys))
+		if (config.data.apiKeys[hash].username === username)
+			delete config.data.apiKeys[hash]
 
 	delete config.data.users[username]
 	save_config()

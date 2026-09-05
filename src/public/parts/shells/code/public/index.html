@@ -40,17 +40,11 @@
 						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-80 p-2 shadow" id="home-menu"></ul>
 					</div>
 					<div class="code-tab-strip" id="tab-strip" role="toolbar" data-i18n="code.tabs"></div>
-					<button class="code-iconbtn" id="new-tab-button" data-i18n="code.newTab">
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-							<path d="M12 5v14"></path>
-							<path d="M5 12h14"></path>
-						</svg>
-					</button>
 				</div>
 			</header>
 			<div class="code-messages" id="messages"></div>
 			<div class="code-composer">
-				<img class="code-wordmark text-icon" id="code-wordmark" src="https://steve02081504.github.io/fount/imgs/title.svg" alt="" aria-hidden="true" draggable="false" />
+				<img class="code-wordmark text-icon" id="code-wordmark" src="https://steve02081504.github.io/fount/imgs/title.svg" alt="" aria-hidden="true" draggable="false" svg-theme-ignore />
 				<div class="code-composer-shell">
 					<div id="composer-input" class="code-composer-input" data-markdown-rich-input data-i18n="code.composer" user-content></div>
 					<div class="code-composer-controls">
@@ -87,19 +81,19 @@
 				</div>
 				<div class="code-composer-hint" id="composer-hint" data-i18n="code.composer.hint"></div>
 				<div class="code-composer-targets">
-					<div class="dropdown dropdown-top" id="workspace-pill-wrap">
-						<button class="code-pill" id="workspace-pill" role="button" tabindex="0">
-							<span class="code-pill-label" id="workspace-pill-label"></span>
-							<span class="code-pill-chevron" aria-hidden="true">▾</span>
-						</button>
-						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="workspace-menu"></ul>
-					</div>
 					<div class="dropdown dropdown-top" id="machine-pill-wrap">
 						<button class="code-pill" id="machine-pill" role="button" tabindex="0">
 							<span class="code-pill-label" id="machine-pill-label"></span>
 							<span class="code-pill-chevron" aria-hidden="true">▾</span>
 						</button>
 						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="machine-menu"></ul>
+					</div>
+					<div class="dropdown dropdown-top" id="workspace-pill-wrap">
+						<button class="code-pill" id="workspace-pill" role="button" tabindex="0">
+							<span class="code-pill-label" id="workspace-pill-label"></span>
+							<span class="code-pill-chevron" aria-hidden="true">▾</span>
+						</button>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-64 p-2 shadow" id="workspace-menu"></ul>
 					</div>
 					<div class="dropdown dropdown-top" id="char-pill-wrap">
 						<button class="code-pill" id="char-pill" role="button" tabindex="0">

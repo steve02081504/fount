@@ -73,6 +73,14 @@
 	display: none;
 }
 
+/* 新建标签按钮紧贴最后一个标签右侧（随标签条滚动），而非钉在顶栏最右 */
+.code-tab-strip #new-tab-button {
+	width: 1.75rem;
+	height: 1.75rem;
+	flex-shrink: 0;
+	margin-inline-start: 0.125rem;
+}
+
 .code-tab {
 	position: relative;
 	display: flex;
@@ -253,11 +261,12 @@
 	margin-top: 0;
 }
 
-/* user：浅色气泡靠右 */
+/* user：浅色气泡靠右（flex 交叉轴 auto margin 优先于 align-self，只保留左侧 auto 才能真正靠右） */
 .code-message.role-user {
 	align-self: flex-end;
 	width: auto;
 	max-width: min(80%, 44rem);
+	margin: 0 0 0 auto;
 	background: color-mix(in oklch, var(--color-primary) 12%, transparent);
 	border-radius: var(--radius-box);
 	padding: 0.5rem 0.875rem;

@@ -3,12 +3,12 @@
  */
 import os from 'node:os'
 
-import { availableShells, createTargetExecutor, localDefaultShell } from '../../../plugins/file-operations/src/target.mjs'
+import { availableShells, createTargetExecutor, localDefaultShell, machineDefaultShell } from '../../../plugins/file-operations/src/target.mjs'
 
 /**
  * 转发执行器模块的 shell 能力查询（可用 shell 列表 / 本机默认 shell）。
  */
-export { availableShells, localDefaultShell }
+export { availableShells, localDefaultShell, machineDefaultShell }
 
 /**
  * 规范化 shell 执行结果。

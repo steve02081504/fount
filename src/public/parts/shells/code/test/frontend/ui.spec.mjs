@@ -9,16 +9,19 @@ import { basename, dirname, join } from 'node:path'
 import { test, expect } from './fixtures.mjs'
 
 const BASE = '/parts/shells:code/'
+const API_BASE = '/api/parts/shells:code'
 /** 隔离测试用户名（run.mjs testUsername）对应的 localStorage 偏好前缀。 */
 const PREF_PREFIX = 'code.shell.code-fe-user.'
 
 /**
  * 打开 code shell 页面并等待 composer 就绪与 boot 完成（boot 末步聚焦 composer）。
+ * 先清空后端标签页，避免跨测试残留（标签/草稿现存储在后端 shell data）。
  * @param {import('npm:@playwright/test').Page} page - Playwright page。
  * @param {string} baseUrl - 测试节点 base URL。
  * @returns {Promise<void>}
  */
 async function openCode(page, baseUrl) {
+	await page.request.put(`${baseUrl}${API_BASE}/tabs`, { data: { tabs: [], activeTab: '' } })
 	await page.goto(`${baseUrl}${BASE}`, { waitUntil: 'domcontentloaded' })
 	await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
 	// boot 在加载完角色/工作区/会话后聚焦 composer；等焦点落定避免后续点击与 boot 竞态
@@ -116,6 +119,19 @@ test.describe('code shell composer & placeholders', () => {
 		await page.locator('#send-button').click()
 		await expect(page.locator('.code-message.role-user')).toContainText('echo hello-code-shell')
 		await expect(page.locator('.code-message.role-tool')).toContainText('hello-code-shell')
+		// 用户 shell 结果默认展开
+		await expect(page.locator('.code-message.role-tool details.code-tool-log[open]')).toHaveCount(1)
+		// 用户气泡靠右（flex 交叉轴 auto margin 不再压过 align-self）
+		const messagesBox = await page.locator('#messages').boundingBox()
+		const userBox = await page.locator('.code-message.role-user').boundingBox()
+		expect(userBox.x + userBox.width).toBeGreaterThan(messagesBox.x + messagesBox.width * 0.75)
+		// 发送后保持 shell 模式，可直接连续执行命令
+		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
+		await composer.click()
+		await page.keyboard.type('echo again-code-shell')
+		await page.locator('#send-button').click()
+		await expect(page.locator('.code-message.role-tool').last()).toContainText('again-code-shell')
+		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
 	})
 
 	test('shell history: ↑/↓ navigates own history, ghost suggestion accepts via Tab', async ({ page, baseUrl }) => {
@@ -127,9 +143,9 @@ test.describe('code shell composer & placeholders', () => {
 		await page.keyboard.type('echo hello-code-shell')
 		await page.locator('#send-button').click()
 		await expect(page.locator('.code-message.role-tool')).toContainText('hello-code-shell')
-		// 再次进入 shell 模式：↑ 遍历自有历史
+		// 发送后仍处于 shell 模式：直接 ↑ 遍历自有历史
+		await expect(page.locator('#shell-pill-wrap')).toBeVisible()
 		await composer.click()
-		await page.keyboard.type('！')
 		await page.keyboard.press('ArrowUp')
 		await expect(composer).toContainText('echo hello-code-shell')
 		// ↓ 恢复草稿（空）
@@ -218,13 +234,15 @@ test.describe('code shell pill dropdowns', () => {
 })
 
 test.describe('code shell sessions & workspace', () => {
-	test('new tab button reuses the active empty draft tab', async ({ page, baseUrl }) => {
+	test('new tab button opens a new draft tab on each click', async ({ page, baseUrl }) => {
 		await openCode(page, baseUrl)
 		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
 		await page.locator('#new-tab-button').click()
-		// 活动标签是空草稿 → 复用而非新建
-		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(1)
+		// 每次点击都新建草稿标签（允许多个未发送草稿标签并存），而非复用当前空草稿
+		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
 		await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
+		await page.locator('#new-tab-button').click()
+		await expect(page.locator('#tab-strip .code-tab')).toHaveCount(3)
 	})
 
 	test('selecting a workspace via the folder browser enables the coding session flow', async ({ page, baseUrl }) => {
@@ -319,6 +337,37 @@ test.describe('code shell tabs', () => {
 			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
 			await page.keyboard.press('Alt+1')
 			await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('未命名会话')
+			// 清理：移除工作区，避免污染同相位后续测试
+			await removeCurrentWorkspace(page)
+		}
+		finally {
+			rmSync(dir, { recursive: true, force: true })
+		}
+	})
+
+	test('unsent drafts persist per-tab and across reload (backend tabs)', async ({ page, baseUrl }) => {
+		const dir = mkdtempSync(join(tmpdir(), 'fount-code-fe-draft-'))
+		try {
+			await openCode(page, baseUrl)
+			await selectWorkspaceViaBrowser(page, dir)
+			const composer = page.locator('#composer-input')
+			await composer.click()
+			await page.keyboard.type('draft A')
+			// 第二个草稿标签 + 不同的未发送内容
+			await page.locator('#new-tab-button').click()
+			await page.locator('#composer-input').click()
+			await page.keyboard.type('draft B')
+			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
+			// 等后端防抖落盘后刷新，标签列表与活动草稿内容应从后端恢复
+			await page.waitForTimeout(800)
+			await page.reload({ waitUntil: 'domcontentloaded' })
+			await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
+			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')
+			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
+			await expect(composer).toContainText('draft B')
+			// 切回第一个草稿标签，其未发送内容恢复为 A
+			await page.locator('#tab-strip .code-tab').first().click()
+			await expect(composer).toContainText('draft A')
 			// 清理：移除工作区，避免污染同相位后续测试
 			await removeCurrentWorkspace(page)
 		}
