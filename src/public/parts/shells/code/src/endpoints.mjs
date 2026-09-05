@@ -103,19 +103,19 @@ async function findGitDirs(username, machine, root) {
 async function buildQuickAccess(username, machine, workspacePath) {
 	if (!workspacePath) return []
 	const executor = createTargetExecutor(username, { machine })
-	/** @type {Array<{name: string, path: string, isDirectory: boolean}>} */
-	const out = []
-	/** @type {Set<string>} 已收录路径（去重）。 */
-	const seen = new Set()
+	/** @type {Array<{name: string, path: string}>} 候选条目（保持来源顺序）。 */
+	const candidates = []
+	/** @type {Set<string>} 已收录字符串路径（源内粗去重，防同源重复）。 */
+	const rawSeen = new Set()
 	/**
-	 * 收录条目。
+	 * 收集候选（源内按字符串路径粗去重）。
 	 * @param {{name: string, path: string}} entry - 候选条目。
 	 * @returns {void}
 	 */
-	const add = entry => {
-		if (!entry?.path || seen.has(entry.path)) return
-		seen.add(entry.path)
-		out.push({ ...entry, isDirectory: true })
+	const collect = entry => {
+		if (!entry?.path || rawSeen.has(entry.path)) return
+		rawSeen.add(entry.path)
+		candidates.push(entry)
 	}
 	const cleaned = String(workspacePath).replace(/[\\/]+$/, '')
 	// 兄弟目录：工作区父目录下其他文件夹（排除工作区自身；目标机器本地路径拼接）
@@ -132,20 +132,64 @@ async function buildQuickAccess(username, machine, workspacePath) {
 					out.push({ name: e.name, path: path.join(path.dirname(workspacePath), e.name) })
 			return out
 		}, cleaned)
-		for (const item of siblings) add(item)
+		for (const item of siblings) collect(item)
 	}
 	catch { /* 父目录不可读则跳过兄弟目录 */ }
 	// 工作区下含 .git 的子目录（有限深度）
 	try {
-		for (const item of await findGitDirs(username, machine, cleaned)) add(item)
+		for (const item of await findGitDirs(username, machine, cleaned)) collect(item)
 	}
 	catch { /* git 扫描失败则跳过 */ }
-	// 编辑器常用项目（VS Code / Notepad++）
+	// 编辑器常用项目（VS Code / Notepad++ / JetBrains；已按最后活跃排序）
 	try {
-		for (const item of await collectEditorSources(username, machine)) add(item)
+		for (const item of await collectEditorSources(username, machine)) collect(item)
 	}
 	catch { /* 编辑器源失败则跳过 */ }
-	return out
+	// 目标机器上已有的工作区路径（当前 machine）也参与去重，避免重复添加
+	const existingWorkspaces = getWorkspaces(username).list
+		.filter(w => String(w.machine) === String(machine))
+		.map(w => w.path)
+	try {
+		// 统一 realpath 去重：排除已有工作区，同一真实目录保留更短路径名，保持来源顺序
+		return await executor.execJs(async (items, excludes) => {
+			const fs = await import('node:fs/promises')
+			/** @type {Map<string, {name: string, path: string}>} realpath → 条目。 */
+			const seen = new Map()
+			/**
+			 * 解析真实路径（规范化分隔符）。
+			 * @param {string} p - 原始路径。
+			 * @returns {Promise<string|null>} realpath（失败时 null）。
+			 */
+			const realOf = async p => {
+				try { return (await fs.realpath(p)).replace(/\\/g, '/').replace(/\/+$/, '') }
+				catch { return null }
+			}
+			for (const p of excludes) {
+				const real = await realOf(p)
+				if (real) seen.set(real, { name: '', path: p }) // 占位：已存在工作区
+			}
+			/** @type {Array<{name: string, path: string}>} 去重后条目（保持输入顺序）。 */
+			const out = []
+			for (const item of items) {
+				const real = await realOf(item.path)
+				if (!real) continue
+				const existing = seen.get(real)
+				if (existing) {
+					if (item.path.length < existing.path.length) {
+						seen.set(real, item)
+						const idx = out.indexOf(existing)
+						if (idx !== -1) out[idx] = item
+					}
+					continue
+				}
+				seen.set(real, item)
+				out.push(item)
+			}
+			return out
+		}, candidates, existingWorkspaces).then(list => list.map(item => ({ ...item, isDirectory: true })))
+	}
+	catch { /* 去重失败则退回字符串去重结果 */ }
+	return candidates.map(item => ({ ...item, isDirectory: true }))
 }
 
 /**

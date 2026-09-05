@@ -14,25 +14,62 @@ async function scanEditorSources() {
 	const path = await import('node:path')
 	const process = await import('node:process')
 	const decoder = new TextDecoder()
-	/** @type {Map<string, string>} 已收录目录：规范化路径 → 实际路径。 */
+	/** @type {Map<string, {path: string, lastActive: number}>} 已收录目录：realpath → {实际路径, 最后活跃时间}。 */
 	const seen = new Map()
+	/** 递归遍历时跳过的目录名（避免扫 node_modules 等大目录）。 */
+	const SKIP_DIRS = new Set(['node_modules', '.git', 'dist', 'build', '.venv', '__pycache__', 'target', 'bin', 'obj', '.gradle', 'Library'])
 	/**
-	 * 收录目录（stat 确认存在且为目录，规范化分隔符去重）。
+	 * 计算目录树内最后的修改时间（有限深度，跳过 SKIP_DIRS）。
+	 * @param {string} dir - 目录路径。
+	 * @param {number} [depth=0] - 当前深度。
+	 * @returns {Promise<number>} 最后 mtime（毫秒）。
+	 */
+	async function lastActiveOf(dir, depth = 0) {
+		let max = 0
+		try {
+			max = (await fs.stat(dir)).mtimeMs || 0
+		}
+		catch { return max }
+		if (depth >= 2) return max
+		let entries
+		try { entries = await fs.readdir(dir, { withFileTypes: true }) } catch { return max }
+		for (const e of entries) {
+			if (e.isDirectory() && SKIP_DIRS.has(e.name)) continue
+			try {
+				const full = path.join(dir, e.name)
+				const st = await fs.stat(full)
+				if (st.mtimeMs > max) max = st.mtimeMs
+				if (e.isDirectory()) {
+					const sub = await lastActiveOf(full, depth + 1)
+					if (sub > max) max = sub
+				}
+			}
+			catch { /* 单个条目不可读则跳过 */ }
+		}
+		return max
+	}
+	/**
+	 * 收录目录（stat 确认存在且为目录，按 realpath 去重；同一真实目录只保留更短的路径名）。
 	 * @param {string} p - 候选目录。
 	 * @returns {Promise<void>}
 	 */
 	const addDir = async p => {
 		if (!p) return
-		const normalized = p.replace(/\\/g, '/').replace(/\/+$/, '')
-		if (seen.has(normalized)) return
+		let real
 		try {
 			const st = await fs.stat(p)
 			if (!st.isDirectory()) return
+			real = (await fs.realpath(p)).replace(/\\/g, '/').replace(/\/+$/, '')
 		}
 		catch {
 			return
 		}
-		seen.set(normalized, p)
+		const existing = seen.get(real)
+		if (existing !== undefined) {
+			if (p.length < existing.path.length) seen.set(real, { path: p, lastActive: existing.lastActive })
+			return
+		}
+		seen.set(real, { path: p, lastActive: await lastActiveOf(p) })
 	}
 	// VS Code 及 fork 变体的用户数据目录候选名（数据文件同构：User/globalStorage/state.vscdb + User/workspaceStorage）
 	const names = [
@@ -105,7 +142,40 @@ async function scanEditorSources() {
 		}
 		catch { /* 无 Notepad++ 会话文件则跳过 */ }
 	}
-	return [...seen.values()].map(p => ({ name: path.basename(p), path: p }))
+	// JetBrains 家族（Android Studio / IntelliJ IDEA / PyCharm / WebStorm / GoLand / CLion / DataGrip / PhpStorm / Rider…）：
+	// 扫 Google/ 与 JetBrains/ 下每个产品子目录的 options/recentProjects.xml（格式同构，无需枚举产品名）
+	const jetbrainsRoots = []
+	if (process.platform === 'win32' && process.env.APPDATA) {
+		jetbrainsRoots.push(path.join(process.env.APPDATA, 'Google'))
+		jetbrainsRoots.push(path.join(process.env.APPDATA, 'JetBrains'))
+	}
+	else if (process.platform === 'darwin') {
+		const base = path.join(os.homedir(), 'Library', 'Application Support')
+		jetbrainsRoots.push(path.join(base, 'Google'))
+		jetbrainsRoots.push(path.join(base, 'JetBrains'))
+	}
+	else {
+		const base = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config')
+		jetbrainsRoots.push(path.join(base, 'Google'))
+		jetbrainsRoots.push(path.join(base, 'JetBrains'))
+	}
+	for (const root of jetbrainsRoots) {
+		let dirs
+		try { dirs = await fs.readdir(root) } catch { continue }
+		for (const dir of dirs) 
+			try {
+				const xml = await fs.readFile(path.join(root, dir, 'options', 'recentProjects.xml'), 'utf8')
+				for (const match of xml.matchAll(/<entry key="([^"]*)"/g)) {
+					const expanded = match[1].replace(/\$USER_HOME\$/g, os.homedir())
+					if (/\$[A-Z_0-9]+\$/.test(expanded)) continue // 其余宏（如 $APPLICATION_HOME_DIR$）无法可靠展开，跳过
+					await addDir(expanded)
+				}
+			}
+			catch { /* 无 recentProjects.xml 则跳过该产品目录 */ }
+	}
+	return [...seen.values()]
+		.sort((a, b) => b.lastActive - a.lastActive)
+		.map(({ path: p }) => ({ name: path.basename(p), path: p }))
 }
 
 /**

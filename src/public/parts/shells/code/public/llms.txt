@@ -11,7 +11,7 @@ AI 编码会话 shell：与任意角色就工作区对话，在本机或已连�
 
 - `GET /machines` → `{ machines: [{ id, description, deviceInfo, isConnected }] }`（id "0" = 本机）
 - `GET /machines/:id/shells` → `{ shells: string[], default: string }`（default 为目标机器默认 shell，远程信息不可得时为空）
-- `GET /machines/:id/browse?path=&workspace=` → `{ path, roots, entries: [{ name, path, isDirectory, isFile }], quickAccess: [{ name, path, isDirectory }] }`；不带 path 返回根（Windows 盘符 / `/`）；`workspace` 为当前工作区路径，根视图时附带快速访问（工作区兄弟目录 + 工作区下含 `.git` 的子目录 + VS Code/Cursor/Windsurf/Trae 等编辑器常用项目）
+- `GET /machines/:id/browse?path=&workspace=` → `{ path, roots, entries: [{ name, path, isDirectory, isFile }], quickAccess: [{ name, path, isDirectory }] }`；不带 path 返回根（Windows 盘符 / `/`）；`workspace` 为当前工作区路径，根视图时附带快速访问（工作区兄弟目录 + 工作区下含 `.git` 的子目录 + 常用编辑器项目：VS Code/Cursor/Windsurf/Trae 等 fork + JetBrains 家族 Android Studio/IntelliJ IDEA/PyCharm 等 + Notepad++）
 - `GET /workspaces` / `POST /workspaces {name?, machine, path}` / `PUT /workspaces/:id {name}` / `DELETE /workspaces/:id` → 保存的工作区 CRUD
 - `GET /tabs` → `{ tabs: [{ type: draft|session, id, workspaceId, draft? }], activeTab }`（打开的标签页列表与各标签未发送草稿）
 - `PUT /tabs {tabs, activeTab}` → 保存标签页列表与活动标签（id 须匹配 `[A-Za-z0-9_-]{1,64}`）
