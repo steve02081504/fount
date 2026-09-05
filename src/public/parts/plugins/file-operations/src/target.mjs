@@ -34,7 +34,7 @@ import { executeCodeOnSubfount, executeShellOnSubfount } from '../../../shells/s
  * 统一目标执行器。
  * @typedef {object} targetExecutor_t
  * @property {(shell: string|null, code: string) => Promise<any>} execShell - 执行 shell（shell 为 null 时按目标机器默认 shell）。
- * @property {(code: string) => Promise<any>} execJs - 执行 JS（返回 EvalResult.result）。
+ * @property {(codeOrFn: string|Function, ...args: any[]) => Promise<any>} execJs - 执行 JS（返回 EvalResult.result）；函数经参数注入序列化，字符串原样执行。
  * @property {(p: string) => Promise<string>} readTextFile - 读文本文件。
  * @property {(p: string) => Promise<Buffer>} readFileBuffer - 读二进制文件。
  * @property {(p: string, content: string) => Promise<void>} writeTextFile - 写文本文件。
@@ -168,6 +168,18 @@ function unwrapEval(evalResult) {
 }
 
 /**
+ * 将函数/字符串调用统一序列化为可执行脚本：函数自包含、数据经参数注入，字符串保持原样（向后兼容）。
+ * @param {string|Function} codeOrFn - 待执行的函数或代码字符串。
+ * @param {any[]} args - 注入参数（仅函数形式使用）。
+ * @returns {string} 序列化后的脚本。
+ */
+function lambdaSource(codeOrFn, args) {
+	if (typeof codeOrFn === 'function')
+		return `(${codeOrFn})(${args.map(a => JSON.stringify(a)).join(',')})`
+	return codeOrFn
+}
+
+/**
  * 创建本机执行器。
  * @param {target_t} target - 目标。
  * @returns {targetExecutor_t} 执行器。
@@ -199,10 +211,11 @@ function createLocalExecutor(target) {
 		},
 		/**
 		 * 执行 JS。
-		 * @param {string} code - 代码。
+		 * @param {string|Function} codeOrFn - 函数或代码字符串。
+		 * @param {...any} args - 注入参数。
 		 * @returns {Promise<any>} EvalResult.result。
 		 */
-		execJs: async code => unwrapEval(await async_eval(code, {})),
+		execJs: async (codeOrFn, ...args) => unwrapEval(await async_eval(lambdaSource(codeOrFn, args), {})),
 		/**
 		 * 读文本文件。
 		 * @param {string} p - 路径。
@@ -326,10 +339,11 @@ function createRemoteExecutor(username, target) {
 		}),
 		/**
 		 * 执行 JS。
-		 * @param {string} code - 代码。
+		 * @param {string|Function} codeOrFn - 函数或代码字符串。
+		 * @param {...any} args - 注入参数。
 		 * @returns {Promise<any>} EvalResult.result。
 		 */
-		execJs: async code => await run(code),
+		execJs: async (codeOrFn, ...args) => await run(lambdaSource(codeOrFn, args)),
 		/**
 		 * 读文本文件。
 		 * @param {string} p - 路径。

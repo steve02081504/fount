@@ -2,10 +2,6 @@
  * code shell 历史模块：原生 shell 历史解析 + 自有历史（shell/message）读写。
  * 自有历史存于工作区 `.agents/fount/code/{shell,message}_history.json`（`{ entries: string[] }`，追加序）。
  */
-import fs from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
-
 import { createTargetExecutor, joinWorkdir } from '../../../plugins/file-operations/src/target.mjs'
 
 /** 自有历史相对工作区根的子目录。 */
@@ -15,106 +11,67 @@ const HISTORY_DIR = '.agents/fount/code'
 const HISTORY_LIMIT = 500
 
 /**
- * 本机原生历史候选路径（按 shell 类型）。
- * @param {string} shell - shell 名。
- * @param {string} homedir - 家目录。
- * @param {string} appdata - Windows APPDATA（或回退家目录）。
- * @returns {string[]} 候选文件路径。
- */
-function nativeHistoryCandidates(shell, homedir, appdata) {
-	const pwsh = process.platform === 'win32'
-		? path.join(appdata, 'Microsoft', 'Windows', 'PowerShell', 'PSReadLine', 'ConsoleHost_history.txt')
-		: path.join(homedir, '.local', 'share', 'powershell', 'PSReadLine', 'ConsoleHost_history.txt')
-	if (shell === 'pwsh' || shell === 'powershell') return [pwsh]
-	if (shell === 'bash') return [path.join(homedir, '.bash_history')]
-	if (shell === 'zsh') return [path.join(homedir, '.zsh_history')]
-	return [path.join(homedir, '.bash_history'), path.join(homedir, '.zsh_history'), pwsh]
-}
-
-/**
- * 远程原生历史候选相对路径（经远程 shell `cat ~/…` 尽力读取）。
- * @param {string} shell - shell 名。
- * @returns {string[]} 候选路径。
- */
-function nativeHistoryRemoteCandidates(shell) {
-	if (shell === 'pwsh' || shell === 'powershell')
-		return ['.local/share/powershell/PSReadLine/ConsoleHost_history.txt', 'AppData/Roaming/Microsoft/Windows/PowerShell/PSReadLine/ConsoleHost_history.txt']
-	if (shell === 'bash') return ['.bash_history']
-	if (shell === 'zsh') return ['.zsh_history']
-	return ['.bash_history', '.zsh_history', '.local/share/powershell/PSReadLine/ConsoleHost_history.txt']
-}
-
-/**
- * 解析历史文件文本（去空行/前导空格项；zsh 处理 `: <ts>:<n>;<cmd>` 与多行续行）。
- * 结果去重保留最近一次，返回 newest-first。
- * @param {string} text - 文件内容。
- * @param {string} shell - shell 名。
- * @returns {string[]} 历史条目（newest-first）。
- */
-function parseHistoryLines(text, shell) {
-	const lines = (text || '').split(/\r?\n/)
-	/** @type {string[]} */
-	const entries = []
-	if (shell === 'zsh') {
-		let current = ''
-		for (const line of lines) {
-			const match = line.match(/^:\s*\d+:(\d*);(.*)$/)
-			if (match) {
-				if (current) entries.push(current)
-				current = match[2]
-			}
-			else if (line && current) current += '\n' + line
-		}
-		if (current) entries.push(current)
-	}
-	else 
-		for (const line of lines) {
-			const trimmed = line.trim()
-			if (!trimmed || /^\s/.test(line)) continue
-			entries.push(trimmed)
-		}
-	
-	const seen = new Set()
-	/** @type {string[]} */
-	const out = []
-	for (let i = entries.length - 1; i >= 0; i--) {
-		const entry = entries[i].trim()
-		if (!entry || seen.has(entry)) continue
-		seen.add(entry)
-		out.push(entry)
-	}
-	return out
-}
-
-/**
- * 读取目标机器原生 shell 历史（本机用 fs；远程尽力经 shell `cat ~/…`）。
+ * 读取目标机器原生 shell 历史（本机/远程统一经 execJs 自包含 lambda）。
  * @param {string} username - 用户名。
  * @param {string} machine - 目标机器标识（"0" = 本机）。
  * @param {string} shell - shell 名。
  * @returns {Promise<string[]>} 历史条目（newest-first）。
  */
 async function readNativeHistory(username, machine, shell) {
-	if (String(machine) === '0') {
+	const executor = createTargetExecutor(username, { machine })
+	return await executor.execJs(async shellName => {
+		const fs = await import('node:fs/promises')
+		const os = await import('node:os')
+		const path = await import('node:path')
 		const homedir = os.homedir()
 		const appdata = process.env.APPDATA || path.join(homedir, 'AppData', 'Roaming')
-		for (const file of nativeHistoryCandidates(shell, homedir, appdata)) 
+		const pwsh = process.platform === 'win32'
+			? path.join(appdata, 'Microsoft', 'Windows', 'PowerShell', 'PSReadLine', 'ConsoleHost_history.txt')
+			: path.join(homedir, '.local', 'share', 'powershell', 'PSReadLine', 'ConsoleHost_history.txt')
+		const candidates = shellName === 'pwsh' || shellName === 'powershell' ? [pwsh]
+			: shellName === 'bash' ? [path.join(homedir, '.bash_history')]
+			: shellName === 'zsh' ? [path.join(homedir, '.zsh_history')]
+			: [path.join(homedir, '.bash_history'), path.join(homedir, '.zsh_history'), pwsh]
+		for (const file of candidates) 
 			try {
-				return parseHistoryLines(await fs.promises.readFile(file, 'utf-8'), shell)
+				const text = await fs.readFile(file, 'utf-8')
+				// 与模块原 parseHistoryLines 等价：去空行/前导空格项，zsh 处理 `: <ts>:<n>;<cmd>` 续行，去重保留最近一次
+				const lines = (text || '').split(/\r?\n/)
+				/** @type {string[]} */
+				const entries = []
+				if (shellName === 'zsh') {
+					let current = ''
+					for (const line of lines) {
+						const match = line.match(/^:\s*\d+:(\d*);(.*)$/)
+						if (match) {
+							if (current) entries.push(current)
+							current = match[2]
+						}
+						else if (line && current) current += '\n' + line
+					}
+					if (current) entries.push(current)
+				}
+				else
+					for (const line of lines) {
+						const trimmed = line.trim()
+						if (!trimmed || /^\s/.test(line)) continue
+						entries.push(trimmed)
+					}
+				const seen = new Set()
+				/** @type {string[]} */
+				const out = []
+				for (let i = entries.length - 1; i >= 0; i--) {
+					const entry = entries[i].trim()
+					if (!entry || seen.has(entry)) continue
+					seen.add(entry)
+					out.push(entry)
+				}
+				return out
 			}
 			catch { /* 文件不存在等，尝试下一个 */ }
 		
 		return []
-	}
-	const executor = createTargetExecutor(username, { machine })
-	for (const rel of nativeHistoryRemoteCandidates(shell)) 
-		try {
-			const result = await executor.execShell(null, `cat ~/${rel} 2>/dev/null`)
-			if (result && !result.code && typeof result.stdout === 'string' && result.stdout.trim())
-				return parseHistoryLines(result.stdout, shell)
-		}
-		catch { /* 继续尝试 */ }
-	
-	return []
+	}, shell)
 }
 
 /**
