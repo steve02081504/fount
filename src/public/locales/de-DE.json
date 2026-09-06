@@ -3596,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} wird überschrieben",
 					"readingFilepath": "${filepath} wird gelesen",
+					"readingFiles": null,
 					"replacingFilepath": "${filepath} wird teilweise ersetzt",
 					"runningLang": "${lang} wird ausgeführt",
 					"searchingContent": "Suche ${content}"

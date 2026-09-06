@@ -3596,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "Đang ghi đè ${filepath}",
 					"readingFilepath": "Đang đọc ${filepath}",
+					"readingFiles": null,
 					"replacingFilepath": "Đang thay thế nội dung trong ${filepath}",
 					"runningLang": "Đang thực thi ${lang}",
 					"searchingContent": "Đang tìm kiếm ${content}"

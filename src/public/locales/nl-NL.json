@@ -3602,6 +3602,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} wordt overschreven",
 					"readingFilepath": "${filepath} wordt gelezen",
+					"readingFiles": null,
 					"replacingFilepath": "${filepath} wordt aangepast",
 					"runningLang": "${lang} wordt uitgevoerd",
 					"searchingContent": "${content} wordt gezocht"

@@ -3596,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "方覆寫${filepath}",
 					"readingFilepath": "方讀取${filepath}",
+					"readingFiles": "正在读取${count}个文件",
 					"replacingFilepath": "方局部替換${filepath}",
 					"runningLang": "方執${lang}",
 					"searchingContent": "方索${content}"
@@ -6031,6 +6032,19 @@
 		"parentLink": "↑ 上層 ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "浏览",
+			"path": {
+				"aria-label": "工作区路径",
+				"placeholder": "输入过滤词 / 目录路径"
+			},
+			"go": "跳转",
+			"select": "选择工作区",
+			"quickAccess": "快速访问",
+			"roots": "盘符 / 根目录",
+			"noMatch": "无匹配项",
+			"error": "浏览出错"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "告示"
@@ -6322,9 +6336,117 @@
 		}
 	},
 	"code": {
-		"sessions": {},
-		"workspaces": {},
-		"machine": {},
-		"composer": {}
+		"title": "Code",
+		"description": "面向工作区与机器的 AI 编码会话。",
+		"sessions": {
+			"new": "新会话",
+			"untitled": "未命名会话",
+			"yesterday": "昨天"
+		},
+		"workspaces": {
+			"browse": "浏览…",
+			"remove": "移除当前工作区",
+			"none": "未选择工作区",
+			"overviewEmpty": "暂无会话"
+		},
+		"home": {
+			"aria-label": "工作区与会话总览"
+		},
+		"tabs": {
+			"aria-label": "会话标签",
+			"close": "关闭标签"
+		},
+		"newTab": {
+			"aria-label": "新建会话"
+		},
+		"machine": {
+			"local": "本机",
+			"offline": "离线"
+		},
+		"char": {
+			"switch": "切换角色",
+			"settings": "角色设置",
+			"goodAgent": "如何写一个好 agent？",
+			"none": "未选择角色",
+			"recommend": "推荐角色 ${charname} 未安装，是否安装？",
+			"recommendAria": "角色安装推荐",
+			"recommendInstall": "安装",
+			"recommendDismiss": "关闭",
+			"recommendInstalled": "已安装角色 ${charname}"
+		},
+		"composer": {
+			"shellDefault": "默认",
+			"sendButton": {
+				"aria-label": "发送消息"
+			},
+			"sendAria": "发送消息",
+			"stopAria": "停止生成",
+			"modeSwitched": "已切换到 ${mode} 模式",
+			"hint": "空内容键入 ! 切 shell · @ 引用文件 · / 命令 · ↑↓ 历史 · Tab 补全",
+			"placeholder": "输入命令，Enter 执行（清空退出 shell 模式）",
+			"placeholderNormal": "输入消息开始…（@ 引用文件 · / 命令）",
+			"placeholderShell": "输入 shell 命令…（如 git status）",
+			"aria-label": "消息输入框"
+		},
+		"aiSource": {
+			"panelTitle": "管理 AI 源显示",
+			"charOwn": "角色自带",
+			"manage": "管理 AI 源…"
+		},
+		"commands": {
+			"run": "执行"
+		},
+		"messages": {
+			"backToBottom": "回到最新消息"
+		},
+		"message": {
+			"actions": {
+				"copy": "复制",
+				"edit": "编辑",
+				"saveHtml": "保存为 HTML"
+			},
+			"copied": "已复制到剪贴板",
+			"edit": {
+				"save": "保存",
+				"cancel": "取消",
+				"ariaLabel": {
+					"aria-label": "编辑消息原文"
+				}
+			},
+			"feedback": {
+				"up": "点赞",
+				"down": "点踩",
+				"reasonPlaceholder": {
+					"placeholder": "点踩原因（可选）"
+				},
+				"reasonSave": "提交",
+				"reasonAria": {
+					"aria-label": "点踩原因"
+				}
+			},
+			"regen": "重新生成"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "添加附件",
+				"title": "添加附件"
+			},
+			"remove": {
+				"aria-label": "移除附件"
+			},
+			"drop": "松开以添加附件",
+			"tooLarge": "附件 ${name} 超过 10MB 限制"
+		},
+		"error": {
+			"generic": "出错了：${error}",
+			"generate": "生成回复失败",
+			"aborted": "已中止生成",
+			"noChar": "请先选择角色"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
+		}
 	}
 }

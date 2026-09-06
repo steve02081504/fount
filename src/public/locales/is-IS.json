@@ -3596,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "Skrifar yfir ${filepath}",
 					"readingFilepath": "Les ${filepath}",
+					"readingFiles": null,
 					"replacingFilepath": "Skiptir út í ${filepath}",
 					"runningLang": "Keyrir ${lang}",
 					"searchingContent": "Leitar að ${content}"

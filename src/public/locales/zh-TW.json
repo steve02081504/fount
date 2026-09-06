@@ -3595,6 +3595,7 @@
 				"tool": {
 					"overridingFilepath": "正在覆寫${filepath}",
 					"readingFilepath": "正在讀取${filepath}",
+					"readingFiles": null,
 					"replacingFilepath": "正在局部替換${filepath}",
 					"runningLang": "正在執行${lang}",
 					"searchingContent": "正在搜尋${content}"

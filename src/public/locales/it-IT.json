@@ -3602,6 +3602,7 @@
 				"tool": {
 					"overridingFilepath": "Sovrascrittura di ${filepath}",
 					"readingFilepath": "Lettura di ${filepath}",
+					"readingFiles": null,
 					"replacingFilepath": "Sostituzione in ${filepath}",
 					"runningLang": "Esecuzione di ${lang}",
 					"searchingContent": "Ricerca di ${content}"

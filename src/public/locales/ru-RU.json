@@ -3596,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "Перезаписываю ${filepath}",
 					"readingFilepath": "Читаю ${filepath}",
+					"readingFiles": null,
 					"replacingFilepath": "Заменяю фрагмент в ${filepath}",
 					"runningLang": "Выполняю ${lang}",
 					"searchingContent": "Ищу ${content}"

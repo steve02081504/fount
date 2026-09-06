@@ -3596,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} अधिलेखित किया जा रहा है",
 					"readingFilepath": "${filepath} पढ़ा जा रहा है",
+					"readingFiles": null,
 					"replacingFilepath": "${filepath} में अंश बदला जा रहा है",
 					"runningLang": "${lang} चलाया जा रहा है",
 					"searchingContent": "${content} की खोज की जा रही है"

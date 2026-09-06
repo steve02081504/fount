@@ -3596,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} を上書き中",
 					"readingFilepath": "${filepath} を読み込み中",
+					"readingFiles": null,
 					"replacingFilepath": "${filepath} を置き換え中",
 					"runningLang": "${lang} を実行中",
 					"searchingContent": "${content} を検索中"
@@ -6375,17 +6376,17 @@
 		},
 		"composer": {
 			"shellDefault": "デフォルト",
-			"hint": "空欄で ! を入力するとシェルモード · @ でファイル参照 · / でコマンド · ↑↓ 履歴 · Tab 補完",
-			"placeholder": "コマンドを入力、Enter で実行（空にするとシェルモードを終了）",
-			"aria-label": "メッセージ入力",
 			"sendButton": {
 				"aria-label": "メッセージを送信"
 			},
 			"sendAria": "メッセージを送信",
 			"stopAria": "生成を停止",
 			"modeSwitched": "${mode} モードに切り替えました",
+			"hint": "空欄で ! を入力するとシェルモード · @ でファイル参照 · / でコマンド · ↑↓ 履歴 · Tab 補完",
+			"placeholder": "コマンドを入力、Enter で実行（空にするとシェルモードを終了）",
 			"placeholderNormal": "メッセージを入力…（@ でファイル参照、/ でコマンド）",
-			"placeholderShell": "シェルコマンドを入力…（例: git status）"
+			"placeholderShell": "シェルコマンドを入力…（例: git status）",
+			"aria-label": "メッセージ入力"
 		},
 		"aiSource": {
 			"panelTitle": "AI ソース表示管理",
@@ -6394,17 +6395,6 @@
 		},
 		"commands": {
 			"run": "実行"
-		},
-		"error": {
-			"generic": "エラーが発生しました：${error}",
-			"generate": "返信の生成に失敗しました",
-			"aborted": "生成を中止しました",
-			"noChar": "先にキャラクターを選択してください"
-		},
-		"home_function_buttons": {
-			"code": {
-				"title": "Code"
-			}
 		},
 		"messages": {
 			"backToBottom": "最新へ戻る"
@@ -6446,6 +6436,17 @@
 			},
 			"drop": "ドロップして添付",
 			"tooLarge": "添付 ${name} は10MBの上限を超えています"
+		},
+		"error": {
+			"generic": "エラーが発生しました：${error}",
+			"generate": "返信の生成に失敗しました",
+			"aborted": "生成を中止しました",
+			"noChar": "先にキャラクターを選択してください"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }

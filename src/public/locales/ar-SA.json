@@ -3596,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "جارٍ إعادة كتابة ${filepath}",
 					"readingFilepath": "جارٍ قراءة ${filepath}",
+					"readingFiles": null,
 					"replacingFilepath": "جارٍ استبدال جزء في ${filepath}",
 					"runningLang": "جارٍ تنفيذ ${lang}",
 					"searchingContent": "جارٍ البحث عن ${content}"
