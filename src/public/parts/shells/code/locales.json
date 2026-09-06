@@ -4,7 +4,7 @@
 			"name": "Code",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
 			"description": "AI coding sessions with workspace and machine targeting.",
-			"description_markdown": "An opencode-style AI coding workspace: chat with any character over your projects, run code and edit files on the local machine or connected subfounts.",
+			"description_markdown": "An AI coding workspace: chat with any character over your projects, run code and edit files on the local machine or connected subfounts.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -17,7 +17,7 @@
 			"name": "Code",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
 			"description": "面向工作区与机器的 AI 编码会话。",
-			"description_markdown": "opencode 风格的 AI 编码工作区：与任意角色就你的项目对话，在本机或已连接的 subfount 上执行代码与读写文件。",
+			"description_markdown": "AI 编码工作区：与任意角色就你的项目对话，在本机或已连接的 subfount 上执行代码与读写文件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -27,102 +27,225 @@
 			]
 		},
 		"ar-SA": {
-			"name": null,
+			"name": "البرمجة",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
-		},
-		"de-DE": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/computer.svg"
-		},
-		"emoji": {
-			"name": "Code",
-			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": "面向工作区与机器的 AI 编码会话。",
-			"description_markdown": "opencode 风格的 AI 编码工作区：与任意角色就你的项目对话，在本机或已连接的 subfount 上执行代码与读写文件。",
+			"description": "جلسات برمجة بالذكاء الاصطناعي موجَّهة لمساحات العمل والأجهزة.",
+			"description_markdown": "مساحة عمل برمجية بالذكاء الاصطناعي: تحدّث مع أي شخصية عن مشاريعك، ونفّذ الأكواد وعدّل الملفات على الجهاز المحلي أو على أجهزة subfount المتصلة.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"编码",
-				"agent",
-				"开发者"
+				"برمجة",
+				"وكيل",
+				"مطوّر"
+			]
+		},
+		"de-DE": {
+			"name": "Code",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "KI-Programmiersitzungen für Arbeitsbereiche und Maschinen.",
+			"description_markdown": "Ein KI-Programmierarbeitsbereich: Unterhalte dich mit beliebigen Charakteren über deine Projekte, führe Code aus und bearbeite Dateien auf dem lokalen Rechner oder verbundenen Subfounts.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"Code",
+				"Agent",
+				"Entwickler"
+			]
+		},
+		"emoji": {
+			"name": "💻⌨️",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "🤖💬",
+			"description_markdown": "💻🤖💬📝",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"💻",
+				"🤖",
+				"⌨️"
 			]
 		},
 		"es-ES": {
-			"name": null,
+			"name": "Código",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
-		},
-		"fr-FR": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
-		},
-		"hi-IN": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/computer.svg"
-		},
-		"is-IS": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": "AI kóðunarlotur fyrir vinnurými og vélar."
-		},
-		"it-IT": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
-		},
-		"ja-JP": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
-		},
-		"ko-KR": {
-			"name": null,
-			"avatar": "https://api.iconify.design/line-md/computer.svg"
-		},
-		"lzh": {
-			"name": "Code",
-			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": "面向工作区与机器的 AI 编码会话。",
-			"description_markdown": "opencode 风格的 AI 编码工作区：与任意角色就你的项目对话，在本机或已连接的 subfount 上执行代码与读写文件。",
+			"description": "Sesiones de programación con IA para espacios de trabajo y máquinas.",
+			"description_markdown": "Un espacio de trabajo de programación con IA: chatea con cualquier personaje sobre tus proyectos, ejecuta código y edita archivos en la máquina local o en subfounts conectados.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"编码",
+				"código",
+				"agente",
+				"desarrollador"
+			]
+		},
+		"fr-FR": {
+			"name": "Code",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Sessions de codage IA ciblant les espaces de travail et les machines.",
+			"description_markdown": "Un espace de travail de codage IA : discutez avec n'importe quel personnage de vos projets, exécutez du code et modifiez des fichiers sur la machine locale ou des subfounts connectés.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"code",
 				"agent",
-				"开发者"
+				"développeur"
+			]
+		},
+		"hi-IN": {
+			"name": "कोड",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "कार्यक्षेत्र और मशीनों के लिए AI कोडिंग सत्र।",
+			"description_markdown": "एक AI कोडिंग कार्यक्षेत्र: अपने प्रोजेक्ट पर किसी भी किरदार के साथ बातचीत करें, स्थानीय मशीन या कनेक्टेड subfount पर कोड चलाएँ और फ़ाइलें संपादित करें।",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"कोड",
+				"एजेंट",
+				"डेवलपर"
+			]
+		},
+		"is-IS": {
+			"name": "Kóði",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "AI-kóðunarlotur fyrir vinnusvæði og vélar.",
+			"description_markdown": "AI-kóðunarvinnusvæði: talaðu við hvaða persónu sem er um verkefnin þín, keyrðu kóða og breyttu skrám á staðvélinni eða tengdum subfount.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"kóði",
+				"agent",
+				"forritari"
+			]
+		},
+		"it-IT": {
+			"name": "Codice",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "Sessioni di programmazione IA per spazi di lavoro e macchine.",
+			"description_markdown": "Uno spazio di lavoro di programmazione IA: chatta con qualsiasi personaggio dei tuoi progetti, esegui codice e modifica file sulla macchina locale o sui subfount collegati.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"codice",
+				"agente",
+				"sviluppatore"
+			]
+		},
+		"ja-JP": {
+			"name": "コード",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "ワークスペースとマシンを対象とした AI コーディングセッション。",
+			"description_markdown": "AI コーディングワークスペース：任意のキャラクターとプロジェクトについて会話し、ローカルマシンまたは接続中の subfount 上でコードを実行し、ファイルを編集できます。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"コード",
+				"エージェント",
+				"開発者"
+			]
+		},
+		"ko-KR": {
+			"name": "코드",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "워크스페이스와 머신을 대상으로 하는 AI 코딩 세션.",
+			"description_markdown": "AI 코딩 워크스페이스: 어떤 캐릭터와도 프로젝트에 대해 대화하고, 로컬 머신이나 연결된 subfount에서 코드를 실행하고 파일을 편집하세요.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"코딩",
+				"에이전트",
+				"개발자"
+			]
+		},
+		"lzh": {
+			"name": "撰碼",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "以人工智能撰寫程式之會話，施於工作區與機器。",
+			"description_markdown": "以人工智能撰寫程式之工作區：與任意角色共議汝之專案，於本機或所連之 subfount 上執碼運行、讀寫文檔。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"撰碼",
+				"智能體",
+				"開發者"
 			]
 		},
 		"nl-NL": {
-			"name": null,
+			"name": "Code",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
+			"description": "AI-codesessies gericht op werkruimten en machines.",
+			"description_markdown": "Een AI-codeerwerkruimte: chat met elk personage over je projecten, voer code uit en bewerk bestanden op de lokale machine of verbonden subfounts.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"code",
+				"agent",
+				"ontwikkelaar"
+			]
 		},
 		"pt-PT": {
-			"name": null,
+			"name": "Código",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
+			"description": "Sessões de programação com IA direcionadas a espaços de trabalho e máquinas.",
+			"description_markdown": "Um espaço de trabalho de programação com IA: converse com qualquer personagem sobre os seus projetos, execute código e edite ficheiros na máquina local ou em subfounts ligados.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"código",
+				"agente",
+				"programador"
+			]
 		},
 		"ru-RU": {
-			"name": null,
+			"name": "Код",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
+			"description": "ИИ-сессии программирования для рабочих пространств и машин.",
+			"description_markdown": "ИИ-рабочее пространство для кода: общайтесь с любым персонажем о своих проектах, запускайте код и редактируйте файлы на локальной машине или подключённых subfount.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"код",
+				"агент",
+				"разработчик"
+			]
 		},
 		"uk-UA": {
-			"name": null,
+			"name": "Код",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
+			"description": "ІІ-сесії програмування для робочих просторів і машин.",
+			"description_markdown": "ІІ-робочий простір для коду: спілкуйтеся з будь-яким персонажем про свої проєкти, виконуйте код і редагуйте файли на локальній машині або підключених subfount.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"код",
+				"агент",
+				"розробник"
+			]
 		},
 		"vi-VN": {
-			"name": null,
+			"name": "Mã",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
+			"description": "Phiên lập trình AI hướng đến không gian làm việc và máy móc.",
+			"description_markdown": "Không gian làm việc lập trình AI: trò chuyện với bất kỳ nhân vật nào về dự án của bạn, chạy mã và chỉnh sửa tệp trên máy cục bộ hoặc các subfount đã kết nối.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"mã",
+				"tác nhân",
+				"nhà phát triển"
+			]
 		},
 		"zh-TW": {
-			"name": null,
+			"name": "程式碼",
 			"avatar": "https://api.iconify.design/line-md/computer.svg",
-			"description": null
+			"description": "面向工作區與機器的 AI 編碼工作階段。",
+			"description_markdown": "AI 編碼工作區：與任意角色就你的專案對話，在本機或已連接的 subfount 上執行程式碼與讀寫檔案。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"程式碼",
+				"agent",
+				"開發者"
+			]
 		}
 	}
 }
