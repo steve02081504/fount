@@ -10,6 +10,8 @@ import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 
+import { parseVolumeLabels } from '../../../../plugins/file-operations/src/target.mjs'
+
 import { codeFetch } from './helpers/code_http.mjs'
 
 /**
@@ -108,6 +110,16 @@ Deno.test({
 	}
 })
 
+Deno.test('parseVolumeLabels parses Win32_LogicalDisk JSON output', () => {
+	assertEquals(parseVolumeLabels('[{"DeviceID":"C:","VolumeName":"Windows"},{"DeviceID":"D:","VolumeName":null}]'), { 'C:\\': 'Windows', 'D:\\': '' })
+	// 单条时 pwsh 输出对象而非数组
+	assertEquals(parseVolumeLabels('{"DeviceID":"E:","VolumeName":"Data"}'), { 'E:\\': 'Data' })
+	// 非盘符条目被跳过；非法/空输出返回空映射
+	assertEquals(parseVolumeLabels('[{"DeviceID":"x1","VolumeName":"bad"}]'), {})
+	assertEquals(parseVolumeLabels(''), {})
+	assertEquals(parseVolumeLabels('garbage'), {})
+})
+
 Deno.test({
 	name: 'browse lists roots then directories',
 	sanitizeOps: false,
@@ -117,6 +129,10 @@ Deno.test({
 	try {
 		const roots = await (await codeFetch(node, 'GET', '/machines/0/browse')).json()
 		assert(roots.entries.length > 0)
+		for (const entry of roots.entries) {
+			assertEquals(entry.isDirectory, true)
+			assert(entry.name.startsWith(entry.path), `根条目名以路径开头（有卷标时附卷标）：${entry.name}`)
+		}
 		const root = await makeWorkspace(node)
 		try {
 			const entries = await (await codeFetch(node, 'GET', `/machines/0/browse?path=${encodeURIComponent(root)}`)).json()

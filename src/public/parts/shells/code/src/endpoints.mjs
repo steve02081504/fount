@@ -8,7 +8,7 @@ import { httpError } from '../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { getAllDefaultParts, getPartList } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData, assignShellData } from '../../../../../server/setting_loader.mjs'
-import { createTargetExecutor, listMachines } from '../../../plugins/file-operations/src/target.mjs'
+import { createTargetExecutor, listMachines, parseVolumeLabels } from '../../../plugins/file-operations/src/target.mjs'
 
 import {
 	getCommand,
@@ -91,6 +91,26 @@ async function findGitDirs(username, machine, root) {
 		await walk(root, 0)
 		return out.map(p => ({ name: path.basename(p), path: p }))
 	}, root, 4, 100)
+}
+
+/**
+ * 查询目标机器（Windows）各盘符卷标，供根视图展示盘的名字。
+ * @param {string} username - 用户名。
+ * @param {string} machine - 目标机器标识。
+ * @returns {Promise<Record<string, string>>} 盘符根 → 卷标（失败/非 Windows/无 pwsh 时为空对象）。
+ */
+async function getVolumeLabels(username, machine) {
+	try {
+		const platform = listMachines(username).find(m => m.id === String(machine))?.deviceInfo?.os?.platform
+		if (platform !== 'win32') return {}
+		const shells = await availableShells(username, machine)
+		const shell = shells.includes('pwsh') ? 'pwsh' : shells.includes('powershell') ? 'powershell' : null
+		if (!shell) return {}
+		const executor = createTargetExecutor(username, { machine })
+		const result = await executor.execShell(shell, '@(Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID, VolumeName) | ConvertTo-Json -Compress')
+		return parseVolumeLabels(result?.stdout ?? result?.stdall ?? '')
+	}
+	catch { return {} }
 }
 
 /**
@@ -279,8 +299,20 @@ export function setEndpoints(router) {
 		const path = String(req.query.path || '')
 		if (!path) {
 			const roots = await executor.listRoots()
-			const quickAccess = await buildQuickAccess(username, machine, String(req.query.workspace || '')).catch(() => [])
-			res.json({ path: '', roots, entries: roots.map(root => ({ name: root, path: root, isDirectory: true, isFile: false })), quickAccess })
+			const [quickAccess, labels] = await Promise.all([
+				buildQuickAccess(username, machine, String(req.query.workspace || '')).catch(() => []),
+				getVolumeLabels(username, machine),
+			])
+			// 根条目名附卷标（如 `C:\ Windows`；无卷标保持 `C:\`）
+			res.json({
+				path: '',
+				roots,
+				entries: roots.map(root => {
+					const label = labels[String(root).toUpperCase()]
+					return { name: label ? `${root} ${label}` : root, path: root, isDirectory: true, isFile: false }
+				}),
+				quickAccess,
+			})
 			return
 		}
 		const entries = await executor.listDir(path)

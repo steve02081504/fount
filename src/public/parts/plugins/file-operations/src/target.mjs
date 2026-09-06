@@ -404,6 +404,27 @@ export function createTargetExecutor(username, target) {
 }
 
 /**
+ * 解析 PowerShell 查询 Win32_LogicalDisk 的 JSON 输出为盘符根 → 卷标映射。
+ * @param {string} output - pwsh 标准输出（`@(Get-CimInstance …) | ConvertTo-Json -Compress`）。
+ * @returns {Record<string, string>} 盘符根（如 `C:\`）→ 卷标（无卷标为空串）。
+ */
+export function parseVolumeLabels(output) {
+	try {
+		const data = JSON.parse(String(output || ''))
+		const rows = Array.isArray(data) ? data : [data]
+		/** @type {Record<string, string>} */
+		const labels = {}
+		for (const row of rows) {
+			const drive = String(row?.DeviceID || '')
+			if (!/^[A-Za-z]:$/.test(drive)) continue
+			labels[drive.toUpperCase() + '\\'] = String(row?.VolumeName || '')
+		}
+		return labels
+	}
+	catch { return {} }
+}
+
+/**
  * 解析标签属性串（machine / workdir / path 等 `k="v"` 形式）。
  * @param {string} [attrs] - 属性串。
  * @returns {Record<string, string>} 属性表。
