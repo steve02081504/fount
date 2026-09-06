@@ -6041,7 +6041,8 @@
 			"select": "ワークスペースを選択",
 			"quickAccess": "クイックアクセス",
 			"roots": "ドライブ / ルート",
-			"noMatch": "一致する項目がありません"
+			"noMatch": "一致する項目がありません",
+			"error": "閲覧エラー"
 		},
 		"toast": {
 			"container": {

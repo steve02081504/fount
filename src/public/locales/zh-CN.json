@@ -6042,7 +6042,8 @@
 			"select": "选择工作区",
 			"quickAccess": "快速访问",
 			"roots": "盘符 / 根目录",
-			"noMatch": "无匹配项"
+			"noMatch": "无匹配项",
+			"error": "浏览出错"
 		},
 		"toast": {
 			"container": {

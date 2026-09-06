@@ -6041,7 +6041,8 @@
 			"select": "Select",
 			"quickAccess": "Quick access",
 			"roots": "Drives / roots",
-			"noMatch": "No match"
+			"noMatch": "No match",
+			"error": "Browse error"
 		},
 		"toast": {
 			"container": {
