@@ -25,6 +25,104 @@
 				"agent",
 				"开发者"
 			]
+		},
+		"ar-SA": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"de-DE": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg"
+		},
+		"emoji": {
+			"name": "Code",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "面向工作区与机器的 AI 编码会话。",
+			"description_markdown": "opencode 风格的 AI 编码工作区：与任意角色就你的项目对话，在本机或已连接的 subfount 上执行代码与读写文件。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"编码",
+				"agent",
+				"开发者"
+			]
+		},
+		"es-ES": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"fr-FR": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"hi-IN": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg"
+		},
+		"is-IS": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "AI kóðunarlotur fyrir vinnurými og vélar."
+		},
+		"it-IT": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"ja-JP": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"ko-KR": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg"
+		},
+		"lzh": {
+			"name": "Code",
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": "面向工作区与机器的 AI 编码会话。",
+			"description_markdown": "opencode 风格的 AI 编码工作区：与任意角色就你的项目对话，在本机或已连接的 subfount 上执行代码与读写文件。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"编码",
+				"agent",
+				"开发者"
+			]
+		},
+		"nl-NL": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"pt-PT": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"ru-RU": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"uk-UA": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"vi-VN": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
+		},
+		"zh-TW": {
+			"name": null,
+			"avatar": "https://api.iconify.design/line-md/computer.svg",
+			"description": null
 		}
 	}
 }

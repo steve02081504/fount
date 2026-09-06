@@ -6710,8 +6710,8 @@ export type LocaleKeyParams = {
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat.voiceRecording.speechRecognitionFailed': { error: string | number }
 	'code.attach.tooLarge': { name: string | number }
-	'code.char.recommend.main': { charname: string | number }
 	'code.char.recommend.installed': { charname: string | number }
+	'code.char.recommend.main': { charname: string | number }
 	'code.composer.modeSwitched': { mode: string | number }
 	'code.error.generic': { error: string | number }
 	'debug_info.linksCount': { count: string | number }
