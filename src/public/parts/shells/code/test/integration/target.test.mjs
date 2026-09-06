@@ -60,7 +60,10 @@ Deno.test('createArgsExecutorResolver caches per target', () => {
 
 Deno.test('listMachines includes localhost as id 0', async () => {
 	const machines = await listMachines('u')
-	assert(machines.some(m => m.id === '0' && m.isConnected), '本机在列表中且已连接')
+	const local = machines.find(m => m.id === '0')
+	assert(local, '本机在列表中')
+	assertEquals(local.isConnected, true)
+	assertEquals(local.deviceInfo?.os?.platform, process.platform, '本机 deviceInfo 应补 0 支持（os.platform）')
 	assert(machines.every(m => typeof m.description === 'string'), 'description 均为字符串')
 })
 

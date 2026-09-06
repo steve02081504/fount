@@ -148,6 +148,28 @@ Deno.test({
 })
 
 Deno.test({
+	name: 'browse attaches volume labels on local win32',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	if (process.platform !== 'win32') return
+	const { available, pwsh_exec } = await import('npm:@steve02081504/exec')
+	if (!await available.pwsh) return
+	const result = await pwsh_exec('@(Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID, VolumeName) | ConvertTo-Json -Compress', { no_ansi_terminal_sequences: true })
+	const labeled = Object.entries(parseVolumeLabels(result?.stdout ?? result?.stdall ?? '')).filter(([, label]) => label)
+	if (!labeled.length) return
+	const node = await launchCodeNode()
+	try {
+		const roots = await (await codeFetch(node, 'GET', '/machines/0/browse')).json()
+		for (const [drive, label] of labeled)
+			assert(roots.entries.some(e => e.path === drive && e.name === `${drive} ${label}`), `根条目 ${drive} 应附卷标「${label}」：${JSON.stringify(roots.entries)}`)
+	}
+	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
 	name: 'browse returns quick access on root view',
 	sanitizeOps: false,
 	sanitizeResources: false,

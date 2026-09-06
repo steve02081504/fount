@@ -101,7 +101,7 @@ async function findGitDirs(username, machine, root) {
  */
 async function getVolumeLabels(username, machine) {
 	try {
-		const platform = listMachines(username).find(m => m.id === String(machine))?.deviceInfo?.os?.platform
+		const platform = (await listMachines(username)).find(m => m.id === String(machine))?.deviceInfo?.os?.platform
 		if (platform !== 'win32') return {}
 		const shells = await availableShells(username, machine)
 		const shell = shells.includes('pwsh') ? 'pwsh' : shells.includes('powershell') ? 'powershell' : null

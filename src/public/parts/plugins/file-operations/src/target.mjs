@@ -137,6 +137,18 @@ export async function availableShells(username, machine) {
 }
 
 /**
+ * 本机（id 0）的设备信息：本机不在分机上报体系内，自行构建基础信息。
+ * @returns {{hostname: string, os: {platform: string}, timestamp: string}} 本机设备信息。
+ */
+function localDeviceInfo() {
+	return {
+		hostname: os.hostname(),
+		os: { platform: process.platform },
+		timestamp: new Date().toISOString(),
+	}
+}
+
+/**
  * 列出所有可用机器（本机 + 已连接/已断开的 subfount），供 AI 侧 `<list-machines>` 与前端共用。
  * id 归一化为字符串（未来非数字机器标识兼容）。
  * @param {string} username - 用户名。
@@ -147,12 +159,12 @@ export async function listMachines(username) {
 	const subfounts = getAllSubfounts(username)
 	if (!subfounts.length)
 		// 用户管理器不可用（如独立测试环境）时兜底本机：id "0" 始终为当前进程。
-		return [{ id: '0', description: 'localhost', isConnected: true, deviceInfo: null }]
+		return [{ id: '0', description: 'localhost', isConnected: true, deviceInfo: localDeviceInfo() }]
 	return subfounts.map(s => ({
 		id: String(s.id),
 		description: s.description || (s.id === 0 ? 'localhost' : `#${s.id}`),
 		isConnected: s.isConnected,
-		deviceInfo: s.deviceInfo || null,
+		deviceInfo: s.deviceInfo || (s.id === 0 ? localDeviceInfo() : null),
 	}))
 }
 
