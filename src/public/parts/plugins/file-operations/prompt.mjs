@@ -4,6 +4,7 @@
  * @returns {Promise<import('../../../../../src/decl/prompt_struct.ts').single_part_prompt_t>} 单段 prompt。
  */
 export async function getFileOperationsPrompt(args) {
+	const { getConnectedSubfounts } = await import('../../shells/subfounts/src/api.mjs')
 	const prompt = `\
 你可以操作文件系统，通过返回以下格式来触发文件操作：
 
@@ -33,17 +34,31 @@ export async function getFileOperationsPrompt(args) {
 文件的新内容
 </override-file>
 
+${getConnectedSubfounts(args.username).length !== 1 ? `\
 **列出可用机器**：
 <list-machines></list-machines>
 
+- 所有标签都支持可选属性 machine="机器id" 以单次指定目标机器
+- 需要操作其他机器时，先用 <list-machines> 查询目标id。
+- 如：
+[
+${args.UserCharname}: 看看我办公室电脑上的桌面上的\`新建文本文件.txt\`。
+${args.Charname}: <list-machines></list-machines>
+file-operations: 可用机器列表：
+\`\`\`json
+[{id: 0, description: "localhost"}, {id: 1, description: "办公室电脑"}]
+\`\`\`
+${args.Charname}: <view-file machine="1">~/Desktop/新建文本文件.txt</view-file>
+]` : `\
+- 用户对接其他 subfount 后，你也可以操作其他机器里的数据。
+`
+}
+- 所有标签都支持可选属性 workdir="目录" 以单次指定工作目录
+
 **注意事项**：
-- 文件路径可以是相对路径或绝对路径；相对路径基于当前请求的默认工作目录（args.workdir）解析
-- 所有标签都支持可选属性 machine="机器id" 与 workdir="目录" 以指定目标机器和工作目录；未指定时使用请求默认值，workdir 相对路径基于默认工作目录解析
-- 机器 id "0" 为本机；需要确认可用的目标机器（id、备注、系统信息）时，使用 <list-machines> 查询
-- 读取文件时会自动向上查找并加载各级 AGENTS.md，以及触发（yaml 头 glob 匹配）的 .agents/docs/*.md 文档
+- 文件路径可以是相对路径或绝对路径；相对路径基于当前的工作目录解析
 - 使用 <replace-file> 时，可以指定多个 <replacement> 块
 - 设置 regex="true" 可以使用正则表达式进行搜索替换
-- 文本文件会直接显示内容，二进制文件会作为附件提供
 - 操作文件时请谨慎，避免误删除或覆盖重要文件
 `
 
