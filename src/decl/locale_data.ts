@@ -6005,6 +6005,7 @@ export type LocaleData = {
 			quickAccess: string
 			roots: string
 			noMatch: string
+			loading: string
 			error: string
 		}
 		toast: {
