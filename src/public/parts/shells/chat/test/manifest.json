@@ -842,7 +842,7 @@
 				},
 				{
 					"name": "attachments",
-					"expected": "30s",
+					"expected": "1m42s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/attachments.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/render/**",
