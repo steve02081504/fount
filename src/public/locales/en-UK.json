@@ -3596,7 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "Overwriting ${filepath}",
 					"readingFilepath": "Reading ${filepath}",
-					"readingFiles": null,
+					"readingFiles": "Reading ${count} files",
 					"replacingFilepath": "Replacing in ${filepath}",
 					"runningLang": "Running ${lang}",
 					"searchingContent": "Searching ${content}"
@@ -6368,11 +6368,13 @@
 			"settings": "Character settings",
 			"goodAgent": "How to write a good agent?",
 			"none": "No character selected",
-			"recommend": "Recommended character ${charname} is not installed. Install it?",
-			"recommendAria": "Character install recommendation",
-			"recommendInstall": "Install",
-			"recommendDismiss": "Dismiss",
-			"recommendInstalled": "Installed character ${charname}"
+			"recommend": {
+				"main": "Recommended character ${charname} is not installed. Install it?",
+				"aria": "Character install recommendation",
+				"dismiss": "Dismiss",
+				"install": "Install",
+				"installed": "Installed character ${charname}"
+			}
 		},
 		"composer": {
 			"shellDefault": "Default",

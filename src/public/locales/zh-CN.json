@@ -6368,11 +6368,13 @@
 			"settings": "角色设置",
 			"goodAgent": "如何写一个好 agent？",
 			"none": "未选择角色",
-			"recommend": "推荐角色 ${charname} 未安装，是否安装？",
-			"recommendAria": "角色安装推荐",
-			"recommendInstall": "安装",
-			"recommendDismiss": "关闭",
-			"recommendInstalled": "已安装角色 ${charname}"
+			"recommend": {
+				"main": "推荐角色 ${charname} 未安装，是否安装？",
+				"aria": "角色安装推荐",
+				"dismiss": "关闭",
+				"install": "安装",
+				"installed": "已安装角色 ${charname}"
+			}
 		},
 		"composer": {
 			"shellDefault": "默认",

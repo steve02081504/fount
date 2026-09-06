@@ -13,6 +13,7 @@ import {
 	browserNetworkAggregateKey,
 	createBrowserDiagnostics,
 	formatBrowserNetworkLine,
+	isBrowserResourceFailureConsoleText,
 	isI18nMissingConsoleText,
 	isIgnoredBrowserNetworkError,
 	isIgnoredChildFrameSecurityError,
@@ -160,7 +161,7 @@ function createMockSession() {
 
 /**
  * 构造最小 Playwright page mock（够 `attach` 跑通即可）。
- * @returns {{ on: (name: string, cb: (arg: unknown) => void) => void, emitConsole: (msg: ReturnType<typeof consoleMsg>) => void, context: () => { newCDPSession: () => Promise<ReturnType<typeof createMockSession>> } }} page mock
+ * @returns {{ on: (name: string, cb: (arg: unknown) => void) => void, emitConsole: (msg: ReturnType<typeof consoleMsg>) => void, emitRequestFailed: (req: unknown) => void, context: () => { newCDPSession: () => Promise<ReturnType<typeof createMockSession>> } }} page mock
  */
 function createMockPage() {
 	/** @type {Record<string, Array<(arg: unknown) => void>>} */
@@ -183,11 +184,19 @@ function createMockPage() {
 		for (const cb of listeners.console ?? []) cb(msg)
 	}
 	/**
+	 * 触发 requestfailed 事件。
+	 * @param {unknown} req 请求 mock
+	 * @returns {void}
+	 */
+	const emitRequestFailed = (req) => {
+		for (const cb of listeners.requestfailed ?? []) cb(req)
+	}
+	/**
 	 * 取 browser context mock。
 	 * @returns {{ newCDPSession: () => Promise<ReturnType<typeof createMockSession>> }} context mock
 	 */
 	const context = () => ({ newCDPSession: createMockSession })
-	return { on, emitConsole, context }
+	return { on, emitConsole, emitRequestFailed, context }
 }
 
 Deno.test('createBrowserDiagnostics records console.error separately from page watch output', async () => {
@@ -199,6 +208,72 @@ Deno.test('createBrowserDiagnostics records console.error separately from page w
 	page.emitConsole(consoleMsg('warning', 'meh'))
 	assertEquals(diagnostics.consoleErrors, ['boom'])
 	assertEquals(diagnostics.pageWatchErrors, ['[test:a11y] color-contrast ...'])
+})
+
+Deno.test('createBrowserDiagnostics skips browser resource-failure console messages', async () => {
+	const diagnostics = createBrowserDiagnostics()
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	page.emitConsole(consoleMsg('error', 'Failed to load resource: net::ERR_CONNECTION_REFUSED'))
+	page.emitConsole(consoleMsg('error', 'Failed to load resource: the server responded with a status of 404 (Not Found)'))
+	page.emitConsole(consoleMsg('error', 'boom'))
+	assertEquals(diagnostics.consoleErrors, ['boom'])
+})
+
+Deno.test('createBrowserDiagnostics threshold ignores resource-failure console messages', async () => {
+	let thresholdHits = 0
+	/**
+	 * @returns {void}
+	 */
+	const onThreshold = () => { thresholdHits += 1 }
+	const diagnostics = createBrowserDiagnostics({ onConsoleErrorThreshold: onThreshold })
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	for (let i = 0; i < MAX_CONSOLE_ERRORS * 2; i++)
+		page.emitConsole(consoleMsg('error', 'Failed to load resource: net::ERR_CONNECTION_REFUSED'))
+	assertEquals(diagnostics.consoleErrors.length, 0)
+	assertEquals(thresholdHits, 0)
+})
+
+Deno.test('createBrowserDiagnostics merges shouldIgnoreNetwork with the default ignore', async () => {
+	/**
+	 * 构造 requestfailed 请求 mock。
+	 * @param {string} url 请求 URL
+	 * @param {string} errorText 失败文案
+	 * @returns {{ url: () => string, failure: () => { errorText: string }, method: () => string }} 请求 mock
+	 */
+	const requestFailed = (url, errorText) => ({
+		/** @returns {string} 请求 URL */
+		url: () => url,
+		/** @returns {{ errorText: string }} 失败信息 */
+		failure: () => ({ errorText }),
+		/** @returns {string} 请求方法 */
+		method: () => 'GET',
+	})
+	/**
+	 * 额外网络豁免：静态站上 fount 服务（localhost:8931）必然连不上。
+	 * @param {{ url?: string }} entry 网络条目
+	 * @returns {boolean} 是否豁免
+	 */
+	const ignoreFountService = entry => entry.url?.includes('localhost:8931')
+	const diagnostics = createBrowserDiagnostics({
+		shouldIgnoreNetwork: ignoreFountService,
+	})
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	// 默认豁免之外的 8931 探活经扩展谓词丢弃
+	page.emitRequestFailed(requestFailed('http://localhost:8931/parts/shells/home?cold_bootting=true', 'net::ERR_CONNECTION_REFUSED'))
+	assertEquals(diagnostics.flushNetworkDiagnostics(), [])
+	// 未豁免的仍记录
+	page.emitRequestFailed(requestFailed('http://localhost:8930/not-installer', 'net::ERR_CONNECTION_REFUSED'))
+	assertEquals(diagnostics.flushNetworkDiagnostics().length, 1)
+})
+
+Deno.test('isBrowserResourceFailureConsoleText matches failed resource loads', () => {
+	assertEquals(isBrowserResourceFailureConsoleText('Failed to load resource: net::ERR_CONNECTION_REFUSED'), true)
+	assertEquals(isBrowserResourceFailureConsoleText('Failed to load resource: the server responded with a status of 404'), true)
+	assertEquals(isBrowserResourceFailureConsoleText('boom'), false)
+	assertEquals(isBrowserResourceFailureConsoleText('prefixed Failed to load resource: x'), false)
 })
 
 Deno.test('createBrowserDiagnostics fires onConsoleErrorThreshold at MAX_CONSOLE_ERRORS', async () => {

@@ -3602,7 +3602,7 @@
 				"tool": {
 					"overridingFilepath": "A sobrescrever ${filepath}",
 					"readingFilepath": "A ler ${filepath}",
-					"readingFiles": null,
+					"readingFiles": "A ler ${count} ficheiros",
 					"replacingFilepath": "A substituir em ${filepath}",
 					"runningLang": "A executar ${lang}",
 					"searchingContent": "A procurar ${content}"
@@ -6038,6 +6038,19 @@
 		"parentLink": "↑ Nível anterior ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Explorar",
+			"path": {
+				"aria-label": "Caminho da área de trabalho",
+				"placeholder": "Filtro / caminho da pasta"
+			},
+			"go": "Ir",
+			"select": "Selecionar área de trabalho",
+			"quickAccess": "Acesso rápido",
+			"roots": "Unidades / raízes",
+			"noMatch": "Sem resultados",
+			"error": "Erro ao explorar"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Notificações"
@@ -6329,9 +6342,119 @@
 		}
 	},
 	"code": {
-		"sessions": {},
-		"workspaces": {},
-		"machine": {},
-		"composer": {}
+		"title": "Code",
+		"description": "Sessões de programação com IA para áreas de trabalho e máquinas.",
+		"sessions": {
+			"new": "Nova sessão",
+			"untitled": "Sessão sem título",
+			"yesterday": "ontem"
+		},
+		"workspaces": {
+			"browse": "Explorar…",
+			"remove": "Remover a área de trabalho atual",
+			"none": "Nenhuma área de trabalho selecionada",
+			"overviewEmpty": "Ainda sem conversas"
+		},
+		"home": {
+			"aria-label": "Áreas de trabalho e sessões"
+		},
+		"tabs": {
+			"aria-label": "Separadores de sessão",
+			"close": "Fechar separador"
+		},
+		"newTab": {
+			"aria-label": "Nova sessão"
+		},
+		"machine": {
+			"local": "Local",
+			"offline": "offline"
+		},
+		"char": {
+			"switch": "Mudar de personagem",
+			"settings": "Definições do personagem",
+			"goodAgent": "Como escrever um bom agente?",
+			"none": "Nenhum personagem selecionado",
+			"recommend": {
+				"main": "O personagem recomendado ${charname} não está instalado. Instalar?",
+				"aria": "Recomendação de instalação de personagem",
+				"dismiss": "Fechar",
+				"install": "Instalar",
+				"installed": "Personagem ${charname} instalado"
+			}
+		},
+		"composer": {
+			"shellDefault": "Predefinição",
+			"sendButton": {
+				"aria-label": "Enviar mensagem"
+			},
+			"sendAria": "Enviar mensagem",
+			"stopAria": "Parar a geração",
+			"modeSwitched": "Mudado para o modo ${mode}",
+			"hint": "Digite ! num campo vazio para o modo shell · @ para referenciar ficheiros · / para comandos · ↑↓ histórico · Tab para completar",
+			"placeholder": "Digite um comando; Enter executa (esvazie para sair do modo shell)",
+			"placeholderNormal": "Escreva a sua mensagem… (@ para referenciar ficheiros, / para comandos)",
+			"placeholderShell": "Digite um comando shell… (ex.: git status)",
+			"aria-label": "Entrada de mensagem"
+		},
+		"aiSource": {
+			"panelTitle": "Gerir a visibilidade das fontes de IA",
+			"charOwn": "Predefinição do personagem",
+			"manage": "Gerir fontes de IA…"
+		},
+		"commands": {
+			"run": "Executar"
+		},
+		"messages": {
+			"backToBottom": "Voltar ao mais recente"
+		},
+		"message": {
+			"actions": {
+				"copy": "Copiar",
+				"edit": "Editar",
+				"saveHtml": "Guardar como HTML"
+			},
+			"copied": "Copiado para a área de transferência",
+			"edit": {
+				"save": "Guardar",
+				"cancel": "Cancelar",
+				"ariaLabel": {
+					"aria-label": "Editar o texto da mensagem"
+				}
+			},
+			"feedback": {
+				"up": "Gosto",
+				"down": "Não gosto",
+				"reasonPlaceholder": {
+					"placeholder": "Motivo (opcional)"
+				},
+				"reasonSave": "Enviar",
+				"reasonAria": {
+					"aria-label": "Motivo do não gosto"
+				}
+			},
+			"regen": "Regenerar"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Adicionar anexo",
+				"title": "Adicionar anexo"
+			},
+			"remove": {
+				"aria-label": "Remover anexo"
+			},
+			"drop": "Largue para anexar",
+			"tooLarge": "O anexo ${name} excede o limite de 10 MB"
+		},
+		"error": {
+			"generic": "Algo correu mal: ${error}",
+			"generate": "Falha ao gerar a resposta",
+			"aborted": "Geração cancelada",
+			"noChar": "Selecione primeiro um personagem"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
+		}
 	}
 }

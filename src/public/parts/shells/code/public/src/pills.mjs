@@ -525,22 +525,22 @@ export function renderCharRecommendation() {
 	// 固定悬浮卡片需包裹 `<nav>` 地标（axe region 规则要求内容在地标内）
 	const card = document.createElement('nav')
 	card.className = 'code-char-recommend hidden border border-primary/40 rounded-box bg-base-100 shadow-xl'
-	card.setAttribute('aria-label', geti18n('code.char.recommendAria'))
+	card.setAttribute('aria-label', geti18n('code.char.recommend.aria'))
 	const text = document.createElement('div')
 	text.className = 'code-char-recommend-text'
 	text.setAttribute('user-content', '')
-	text.textContent = geti18n('code.char.recommend', { charname: spec.partname })
+	text.textContent = geti18n('code.char.recommend.main', { charname: spec.partname })
 	const actions = document.createElement('div')
 	actions.className = 'code-char-recommend-actions'
 	const installBtn = document.createElement('button')
 	installBtn.type = 'button'
 	installBtn.className = 'btn btn-xs btn-primary'
-	installBtn.textContent = geti18n('code.char.recommendInstall')
+	installBtn.textContent = geti18n('code.char.recommend.install')
 	installBtn.addEventListener('click', () => void installRecommendedChar(spec))
 	const closeBtn = document.createElement('button')
 	closeBtn.type = 'button'
 	closeBtn.className = 'btn btn-xs btn-ghost'
-	closeBtn.textContent = geti18n('code.char.recommendDismiss')
+	closeBtn.textContent = geti18n('code.char.recommend.dismiss')
 	closeBtn.addEventListener('click', dismissCharRecommendation)
 	actions.append(installBtn, closeBtn)
 	card.append(text, actions)
@@ -563,7 +563,7 @@ async function installRecommendedChar(spec) {
 			setPref('charname', spec.partname)
 			updateCharMenu()
 		}
-		showToastI18n('success', 'code.char.recommendInstalled', { charname: spec.partname })
+		showToastI18n('success', 'code.char.recommend.installed', { charname: spec.partname })
 	}
 	catch (error) {
 		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })

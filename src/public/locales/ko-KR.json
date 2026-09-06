@@ -3596,7 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} 덮어쓰는 중",
 					"readingFilepath": "${filepath} 읽기 중",
-					"readingFiles": null,
+					"readingFiles": "${count}개 파일을 읽는 중",
 					"replacingFilepath": "${filepath} 내용 교체 중",
 					"runningLang": "${lang} 실행 중",
 					"searchingContent": "${content} 검색 중"
@@ -6032,6 +6032,19 @@
 		"parentLink": "↑ 이전 수준 ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "찾아보기",
+			"path": {
+				"aria-label": "작업 영역 경로",
+				"placeholder": "필터 / 폴더 경로"
+			},
+			"go": "이동",
+			"select": "작업 영역 선택",
+			"quickAccess": "빠른 접근",
+			"roots": "드라이브 / 루트",
+			"noMatch": "일치하는 항목 없음",
+			"error": "찾아보기 오류"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "알림"
@@ -6323,9 +6336,119 @@
 		}
 	},
 	"code": {
-		"sessions": {},
-		"workspaces": {},
-		"machine": {},
-		"composer": {}
+		"title": "Code",
+		"description": "작업 영역과 머신을 대상으로 하는 AI 코딩 세션.",
+		"sessions": {
+			"new": "새 세션",
+			"untitled": "제목 없는 세션",
+			"yesterday": "어제"
+		},
+		"workspaces": {
+			"browse": "찾아보기…",
+			"remove": "현재 작업 영역 제거",
+			"none": "작업 영역 선택 안 됨",
+			"overviewEmpty": "아직 대화가 없습니다"
+		},
+		"home": {
+			"aria-label": "작업 영역 및 세션"
+		},
+		"tabs": {
+			"aria-label": "세션 탭",
+			"close": "탭 닫기"
+		},
+		"newTab": {
+			"aria-label": "새 세션"
+		},
+		"machine": {
+			"local": "로컬",
+			"offline": "오프라인"
+		},
+		"char": {
+			"switch": "캐릭터 전환",
+			"settings": "캐릭터 설정",
+			"goodAgent": "좋은 에이전트를 어떻게 작성하나요?",
+			"none": "캐릭터 선택 안 됨",
+			"recommend": {
+				"main": "추천 캐릭터 ${charname}이(가) 설치되지 않았습니다. 설치할까요?",
+				"aria": "캐릭터 설치 추천",
+				"dismiss": "닫기",
+				"install": "설치",
+				"installed": "캐릭터 ${charname} 설치됨"
+			}
+		},
+		"composer": {
+			"shellDefault": "기본값",
+			"sendButton": {
+				"aria-label": "메시지 보내기"
+			},
+			"sendAria": "메시지 보내기",
+			"stopAria": "생성 중지",
+			"modeSwitched": "${mode} 모드로 전환됨",
+			"hint": "비어 있을 때 ! 를 입력하면 셸 모드 · @ 로 파일 참조 · / 로 명령 · ↑↓ 기록 · Tab 으로 자동 완성",
+			"placeholder": "명령을 입력하고 Enter 로 실행하세요(비우면 셸 모드 종료)",
+			"placeholderNormal": "메시지를 입력하세요…(@ 로 파일 참조, / 로 명령)",
+			"placeholderShell": "셸 명령을 입력하세요…(예: git status)",
+			"aria-label": "메시지 입력"
+		},
+		"aiSource": {
+			"panelTitle": "AI 소스 표시 관리",
+			"charOwn": "캐릭터 기본값",
+			"manage": "AI 소스 관리…"
+		},
+		"commands": {
+			"run": "실행"
+		},
+		"messages": {
+			"backToBottom": "최신으로 돌아가기"
+		},
+		"message": {
+			"actions": {
+				"copy": "복사",
+				"edit": "편집",
+				"saveHtml": "HTML로 저장"
+			},
+			"copied": "클립보드에 복사됨",
+			"edit": {
+				"save": "저장",
+				"cancel": "취소",
+				"ariaLabel": {
+					"aria-label": "메시지 텍스트 편집"
+				}
+			},
+			"feedback": {
+				"up": "좋아요",
+				"down": "싫어요",
+				"reasonPlaceholder": {
+					"placeholder": "이유(선택 사항)"
+				},
+				"reasonSave": "제출",
+				"reasonAria": {
+					"aria-label": "싫어요 이유"
+				}
+			},
+			"regen": "다시 생성"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "첨부 파일 추가",
+				"title": "첨부 파일 추가"
+			},
+			"remove": {
+				"aria-label": "첨부 파일 제거"
+			},
+			"drop": "놓아서 첨부",
+			"tooLarge": "첨부 파일 ${name}이(가) 10MB 제한을 초과합니다"
+		},
+		"error": {
+			"generic": "문제가 발생했습니다: ${error}",
+			"generate": "답변 생성 실패",
+			"aborted": "생성이 중단되었습니다",
+			"noChar": "먼저 캐릭터를 선택하세요"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
+		}
 	}
 }

@@ -13,6 +13,8 @@ export const PAGE_WATCH_CONSOLE_PREFIX = '[test:'
 
 /** `scripts/i18n` 缺键警告前缀；命中则硬失败（不去重）。 */
 export const I18N_MISSING_PREFIX = '[i18n:missing]'
+/** 浏览器资源加载失败控制台消息前缀（网络诊断已覆盖，不当作页面 `console.error` 硬失败）。 */
+const BROWSER_RESOURCE_FAILURE_PREFIX = 'Failed to load resource:'
 /** `scripts/i18n` 子树覆盖（innerHTML/textContent 白名单外元素）警告前缀；命中则硬失败（不去重）。 */
 export const I18N_CLOBBER_PREFIX = '[i18n:clobber]'
 /**
@@ -148,6 +150,18 @@ export function isI18nClobberConsoleText(text) {
 }
 
 /**
+ * 文本是否为浏览器资源加载失败消息（`Failed to load resource: ...`）。
+ * 这类消息由浏览器为失败的网络请求自动发出，对应网络诊断中的 requestfailed / HTTP ≥400 事件，
+ * 已按软噪声（或探针豁免）处理——不计入页面 `console.error` 硬失败，避免与网络诊断双重判错
+ * （如 pages 安装/等待页对本机 fount 服务的预期探活 connection refused）。
+ * @param {string} text console 文本
+ * @returns {boolean} 是否为资源加载失败消息
+ */
+export function isBrowserResourceFailureConsoleText(text) {
+	return text.startsWith(BROWSER_RESOURCE_FAILURE_PREFIX)
+}
+
+/**
  * 强制跑完 page watch drain（中日英覆盖 + 一轮 a11y）。
  * 未挂载时 `?.()` 立即返回。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
@@ -205,6 +219,7 @@ export function pageErrorFromCdpException(exceptionDetails) {
  * 创建绑定到单个 Playwright page 的诊断收集器。
  * @param {object} [options] 选项
  * @param {() => void} [options.onConsoleErrorThreshold] 网页 `console.error` 达到 `MAX_CONSOLE_ERRORS` 时调用（fail-fast 钩子）
+ * @param {(entry: {kind: string, status?: number|null, url?: string, error?: string|null}) => boolean} [options.shouldIgnoreNetwork] 额外网络豁免谓词（与 `shouldIgnoreBrowserNetwork` 同构，逐条并入）
  * @returns {{
  *   attach: (page: import('npm:@playwright/test').Page) => Promise<void>,
  *   pageErrors: string[],
@@ -215,7 +230,7 @@ export function pageErrorFromCdpException(exceptionDetails) {
  *   flushNetworkDiagnostics: () => BrowserNetworkEntry[],
  * }} 诊断 API
  */
-export function createBrowserDiagnostics({ onConsoleErrorThreshold } = {}) {
+export function createBrowserDiagnostics({ onConsoleErrorThreshold, shouldIgnoreNetwork } = {}) {
 	/** @type {string[]} */
 	const pageErrors = []
 	/** @type {string[]} */
@@ -228,6 +243,13 @@ export function createBrowserDiagnostics({ onConsoleErrorThreshold } = {}) {
 	const i18nClobberErrors = []
 	/** @type {Map<string, BrowserNetworkEntry>} */
 	const aggregates = new Map()
+
+	/**
+	 * 网络条目是否应丢弃（通用豁免 + 本收集器的额外豁免谓词）。
+	 * @param {{kind?: string, status?: number|null, url?: string, error?: string|null}} entry 诊断条目
+	 * @returns {boolean} 应忽略则为 true
+	 */
+	const shouldIgnoreEntry = entry => shouldIgnoreBrowserNetwork(entry) || (shouldIgnoreNetwork?.(entry) ?? false)
 
 	/**
 	 * 经 CDP 挂 pageerror（可区分主/子 frame），并挂网络 / console 诊断。
@@ -273,7 +295,7 @@ export function createBrowserDiagnostics({ onConsoleErrorThreshold } = {}) {
 			if (isPageWatchConsoleText(text)) pageWatchErrors.push(text)
 			if (isI18nMissingConsoleText(text)) i18nMissingErrors.push(text)
 			if (isI18nClobberConsoleText(text)) i18nClobberErrors.push(text)
-			if (msg.type() === 'error') {
+			if (msg.type() === 'error' && !isBrowserResourceFailureConsoleText(text)) {
 				consoleErrors.push(text)
 				if (consoleErrors.length >= MAX_CONSOLE_ERRORS) onConsoleErrorThreshold?.()
 			}
@@ -281,7 +303,7 @@ export function createBrowserDiagnostics({ onConsoleErrorThreshold } = {}) {
 		page.on('requestfailed', req => {
 			const error = req.failure()?.errorText || null
 			const url = req.url()
-			if (shouldIgnoreBrowserNetwork({ kind: 'requestfailed', url, error })) return
+			if (shouldIgnoreEntry({ kind: 'requestfailed', url, error })) return
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'requestfailed',
 				method: req.method(),
@@ -294,7 +316,7 @@ export function createBrowserDiagnostics({ onConsoleErrorThreshold } = {}) {
 			const status = res.status()
 			if (status < 400) return
 			const url = res.url()
-			if (shouldIgnoreBrowserNetwork({ kind: 'http', status, url, error: null })) return
+			if (shouldIgnoreEntry({ kind: 'http', status, url, error: null })) return
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'http',
 				method: res.request().method(),
@@ -326,9 +348,10 @@ export function createBrowserDiagnostics({ onConsoleErrorThreshold } = {}) {
  * @param {import('npm:@playwright/test').BrowserContext} context 浏览器上下文
  * @param {(page: import('npm:@playwright/test').Page) => Promise<void>} use Playwright fixture use 回调
  * @param {(diagnostics: ReturnType<typeof createBrowserDiagnostics>, page: import('npm:@playwright/test').Page) => Promise<void>} teardown 结束断言（abort 时跳过）
+ * @param {Parameters<typeof createBrowserDiagnostics>[0]} [diagnosticsOptions] 传给诊断收集器的额外选项（如 `shouldIgnoreNetwork`）
  * @returns {Promise<void>}
  */
-export async function runDiagnosedPage(context, use, teardown) {
+export async function runDiagnosedPage(context, use, teardown, diagnosticsOptions) {
 	/** @type {() => void} */
 	let failEarly
 	let aborted = false
@@ -342,7 +365,7 @@ export async function runDiagnosedPage(context, use, teardown) {
 			reject(new Error(`browser console.error reached ${MAX_CONSOLE_ERRORS}; aborting test`))
 		}
 	})
-	const diagnostics = createBrowserDiagnostics({ onConsoleErrorThreshold: failEarly })
+	const diagnostics = createBrowserDiagnostics({ onConsoleErrorThreshold: failEarly, ...diagnosticsOptions })
 	const page = await context.newPage()
 	await diagnostics.attach(page)
 	try {

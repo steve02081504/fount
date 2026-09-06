@@ -3596,7 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "Перезаписую ${filepath}",
 					"readingFilepath": "Читаю ${filepath}",
-					"readingFiles": null,
+					"readingFiles": "Читаю ${count} файлів",
 					"replacingFilepath": "Замінюю фрагмент у ${filepath}",
 					"runningLang": "Виконую ${lang}",
 					"searchingContent": "Шукаю ${content}"
@@ -6032,6 +6032,19 @@
 		"parentLink": "↑ Попередній рівень ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Огляд",
+			"path": {
+				"aria-label": "Шлях робочої області",
+				"placeholder": "Фільтр / шлях до папки"
+			},
+			"go": "Перейти",
+			"select": "Вибрати робочу область",
+			"quickAccess": "Швидкий доступ",
+			"roots": "Диски / корені",
+			"noMatch": "Нічого не знайдено",
+			"error": "Помилка огляду"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Сповіщення"
@@ -6323,9 +6336,119 @@
 		}
 	},
 	"code": {
-		"sessions": {},
-		"workspaces": {},
-		"machine": {},
-		"composer": {}
+		"title": "Code",
+		"description": "Сеанси AI-кодування для робочих областей і машин.",
+		"sessions": {
+			"new": "Новий сеанс",
+			"untitled": "Сеанс без назви",
+			"yesterday": "учора"
+		},
+		"workspaces": {
+			"browse": "Огляд…",
+			"remove": "Видалити поточну робочу область",
+			"none": "Робочу область не вибрано",
+			"overviewEmpty": "Розмов ще немає"
+		},
+		"home": {
+			"aria-label": "Робочі області та сеанси"
+		},
+		"tabs": {
+			"aria-label": "Вкладки сеансу",
+			"close": "Закрити вкладку"
+		},
+		"newTab": {
+			"aria-label": "Новий сеанс"
+		},
+		"machine": {
+			"local": "Локально",
+			"offline": "офлайн"
+		},
+		"char": {
+			"switch": "Змінити персонажа",
+			"settings": "Налаштування персонажа",
+			"goodAgent": "Як написати хорошого агента?",
+			"none": "Персонаж не вибраний",
+			"recommend": {
+				"main": "Рекомендований персонаж ${charname} не встановлено. Установити?",
+				"aria": "Рекомендація зі встановлення персонажа",
+				"dismiss": "Закрити",
+				"install": "Установити",
+				"installed": "Персонажа ${charname} встановлено"
+			}
+		},
+		"composer": {
+			"shellDefault": "За замовчуванням",
+			"sendButton": {
+				"aria-label": "Надіслати повідомлення"
+			},
+			"sendAria": "Надіслати повідомлення",
+			"stopAria": "Зупинити генерацію",
+			"modeSwitched": "Перемкнено в режим ${mode}",
+			"hint": "Введіть ! у порожньому полі для режиму shell · @ для посилання на файли · / для команд · ↑↓ історія · Tab для автодоповнення",
+			"placeholder": "Введіть команду; Enter виконає її (очистіть, щоб вийти з режиму shell)",
+			"placeholderNormal": "Напишіть повідомлення… (@ для посилання на файли, / для команд)",
+			"placeholderShell": "Введіть команду shell… (наприклад, git status)",
+			"aria-label": "Поле введення повідомлення"
+		},
+		"aiSource": {
+			"panelTitle": "Керування відображенням джерел AI",
+			"charOwn": "За замовчуванням персонажа",
+			"manage": "Керування джерелами AI…"
+		},
+		"commands": {
+			"run": "Виконати"
+		},
+		"messages": {
+			"backToBottom": "До останнього повідомлення"
+		},
+		"message": {
+			"actions": {
+				"copy": "Копіювати",
+				"edit": "Змінити",
+				"saveHtml": "Зберегти як HTML"
+			},
+			"copied": "Скопійовано в буфер обміну",
+			"edit": {
+				"save": "Зберегти",
+				"cancel": "Скасувати",
+				"ariaLabel": {
+					"aria-label": "Змінити текст повідомлення"
+				}
+			},
+			"feedback": {
+				"up": "Подобається",
+				"down": "Не подобається",
+				"reasonPlaceholder": {
+					"placeholder": "Причина (необов'язково)"
+				},
+				"reasonSave": "Надіслати",
+				"reasonAria": {
+					"aria-label": "Причина «не подобається»"
+				}
+			},
+			"regen": "Перегенерувати"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Додати вкладення",
+				"title": "Додати вкладення"
+			},
+			"remove": {
+				"aria-label": "Видалити вкладення"
+			},
+			"drop": "Відпустіть, щоб прикріпити",
+			"tooLarge": "Вкладення ${name} перевищує ліміт у 10 МБ"
+		},
+		"error": {
+			"generic": "Щось пішло не так: ${error}",
+			"generate": "Не вдалося згенерувати відповідь",
+			"aborted": "Генерацію перервано",
+			"noChar": "Спершу виберіть персонажа"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
+		}
 	}
 }

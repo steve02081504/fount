@@ -35,7 +35,11 @@ function setEditorEnv(root) {
 	return saved
 }
 
-/** 恢复编辑器数据根环境变量。 @param {{ appdata?: string, xdg?: string }} saved setEditorEnv 返回的原值 */
+/**
+ * 恢复编辑器数据根环境变量。
+ * @param {{ appdata?: string, xdg?: string }} saved setEditorEnv 返回的原值
+ * @returns {void}
+ */
 function restoreEditorEnv(saved) {
 	if (saved.appdata === undefined) delete process.env.APPDATA
 	else process.env.APPDATA = saved.appdata

@@ -6330,11 +6330,13 @@ export type LocaleData = {
 			settings: string
 			goodAgent: string
 			none: string
-			recommend: string
-			recommendAria: string
-			recommendInstall: string
-			recommendDismiss: string
-			recommendInstalled: string
+			recommend: {
+				main: string
+				aria: string
+				dismiss: string
+				install: string
+				installed: string
+			}
 		}
 		composer: {
 			shellDefault: string
@@ -6708,8 +6710,8 @@ export type LocaleKeyParams = {
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat.voiceRecording.speechRecognitionFailed': { error: string | number }
 	'code.attach.tooLarge': { name: string | number }
-	'code.char.recommend': { charname: string | number }
-	'code.char.recommendInstalled': { charname: string | number }
+	'code.char.recommend.main': { charname: string | number }
+	'code.char.recommend.installed': { charname: string | number }
 	'code.composer.modeSwitched': { mode: string | number }
 	'code.error.generic': { error: string | number }
 	'debug_info.linksCount': { count: string | number }

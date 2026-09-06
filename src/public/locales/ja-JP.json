@@ -3596,7 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} を上書き中",
 					"readingFilepath": "${filepath} を読み込み中",
-					"readingFiles": null,
+					"readingFiles": "${count}件のファイルを読み込み中",
 					"replacingFilepath": "${filepath} を置き換え中",
 					"runningLang": "${lang} を実行中",
 					"searchingContent": "${content} を検索中"
@@ -6368,11 +6368,13 @@
 			"settings": "キャラクター設定",
 			"goodAgent": "良い agent の書き方",
 			"none": "キャラクター未選択",
-			"recommend": "推奨キャラクター ${charname} が未インストールです。インストールしますか？",
-			"recommendAria": "キャラクターインストールの推奨",
-			"recommendInstall": "インストール",
-			"recommendDismiss": "閉じる",
-			"recommendInstalled": "キャラクター ${charname} をインストールしました"
+			"recommend": {
+				"main": "推奨キャラクター ${charname} が未インストールです。インストールしますか？",
+				"aria": "キャラクターインストールの推奨",
+				"dismiss": "閉じる",
+				"install": "インストール",
+				"installed": "キャラクター ${charname} をインストールしました"
+			}
 		},
 		"composer": {
 			"shellDefault": "デフォルト",

@@ -39,7 +39,8 @@ export function createPagesFixtures(options = {}) {
 			await context.route('http://127.0.0.1:1/**', () => new Promise(() => {}))
 			await context.addInitScript(language => {
 				try {
-					localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
+					// 静态 Pages 的偏好键是 `fountUserPreferredLanguages`（local 版才是 `userPreferredLanguages`）
+					localStorage.setItem('fountUserPreferredLanguages', JSON.stringify([language]))
 					localStorage.setItem('fountTheme', 'light')
 					// 死主机：protocol 页走 offline dialog，避免假 ping 成功后跳走
 					localStorage.setItem('fountHostUrl', 'http://127.0.0.1:9')
@@ -77,6 +78,20 @@ export function createPagesFixtures(options = {}) {
 				expect(diagnostics.consoleErrors, 'unexpected browser console errors').toEqual([])
 				expect(diagnostics.pageWatchErrors, 'unexpected page watch console output').toEqual([])
 				expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
+			}, {
+				// 静态站无 fount 节点：安装/等待页对本机 fount 服务（localhost:8931）的探活
+				// 与冷启动预渲染必然连不上，属预期噪声，与既有死主机路由同一原则
+				/** 
+				 * 额外网络豁免：本机 fount 服务（localhost:8931）在静态站上必然连不上。
+				 * @param {{ url?: string }} entry 网络条目
+				 * @returns {boolean} 是否豁免
+				 */
+				shouldIgnoreNetwork: entry => {
+					if (!entry.url) return false
+					const parsed = new URL(entry.url)
+					if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') return false
+					return parsed.port === '8931'
+				},
 			})
 		},
 	})

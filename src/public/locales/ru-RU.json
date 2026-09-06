@@ -3596,7 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "Перезаписываю ${filepath}",
 					"readingFilepath": "Читаю ${filepath}",
-					"readingFiles": null,
+					"readingFiles": "Читаю ${count} файлов",
 					"replacingFilepath": "Заменяю фрагмент в ${filepath}",
 					"runningLang": "Выполняю ${lang}",
 					"searchingContent": "Ищу ${content}"
@@ -6032,6 +6032,19 @@
 		"parentLink": "↑ Предыдущий уровень../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Обзор",
+			"path": {
+				"aria-label": "Путь рабочего пространства",
+				"placeholder": "Фильтр / путь к папке"
+			},
+			"go": "Перейти",
+			"select": "Выбрать рабочее пространство",
+			"quickAccess": "Быстрый доступ",
+			"roots": "Диски / корни",
+			"noMatch": "Ничего не найдено",
+			"error": "Ошибка при обзоре"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Уведомления"
@@ -6323,9 +6336,119 @@
 		}
 	},
 	"code": {
-		"sessions": {},
-		"workspaces": {},
-		"machine": {},
-		"composer": {}
+		"title": "Code",
+		"description": "Сеансы AI-кодирования для рабочих пространств и машин.",
+		"sessions": {
+			"new": "Новый сеанс",
+			"untitled": "Сеанс без названия",
+			"yesterday": "вчера"
+		},
+		"workspaces": {
+			"browse": "Обзор…",
+			"remove": "Удалить текущее рабочее пространство",
+			"none": "Рабочее пространство не выбрано",
+			"overviewEmpty": "Разговоров пока нет"
+		},
+		"home": {
+			"aria-label": "Рабочие пространства и сеансы"
+		},
+		"tabs": {
+			"aria-label": "Вкладки сеанса",
+			"close": "Закрыть вкладку"
+		},
+		"newTab": {
+			"aria-label": "Новый сеанс"
+		},
+		"machine": {
+			"local": "Локально",
+			"offline": "офлайн"
+		},
+		"char": {
+			"switch": "Сменить персонажа",
+			"settings": "Настройки персонажа",
+			"goodAgent": "Как написать хорошего агента?",
+			"none": "Персонаж не выбран",
+			"recommend": {
+				"main": "Рекомендуемый персонаж ${charname} не установлен. Установить?",
+				"aria": "Рекомендация по установке персонажа",
+				"dismiss": "Закрыть",
+				"install": "Установить",
+				"installed": "Персонаж ${charname} установлен"
+			}
+		},
+		"composer": {
+			"shellDefault": "По умолчанию",
+			"sendButton": {
+				"aria-label": "Отправить сообщение"
+			},
+			"sendAria": "Отправить сообщение",
+			"stopAria": "Остановить генерацию",
+			"modeSwitched": "Переключено в режим ${mode}",
+			"hint": "Введите ! в пустом поле для режима shell · @ для ссылки на файлы · / для команд · ↑↓ история · Tab для автодополнения",
+			"placeholder": "Введите команду; Enter выполнит её (очистите, чтобы выйти из режима shell)",
+			"placeholderNormal": "Напишите сообщение… (@ для ссылки на файлы, / для команд)",
+			"placeholderShell": "Введите команду shell… (например, git status)",
+			"aria-label": "Ввод сообщения"
+		},
+		"aiSource": {
+			"panelTitle": "Управление отображением источников ИИ",
+			"charOwn": "По умолчанию персонажа",
+			"manage": "Управление источниками ИИ…"
+		},
+		"commands": {
+			"run": "Выполнить"
+		},
+		"messages": {
+			"backToBottom": "К последнему сообщению"
+		},
+		"message": {
+			"actions": {
+				"copy": "Копировать",
+				"edit": "Изменить",
+				"saveHtml": "Сохранить как HTML"
+			},
+			"copied": "Скопировано в буфер обмена",
+			"edit": {
+				"save": "Сохранить",
+				"cancel": "Отмена",
+				"ariaLabel": {
+					"aria-label": "Изменить текст сообщения"
+				}
+			},
+			"feedback": {
+				"up": "Нравится",
+				"down": "Не нравится",
+				"reasonPlaceholder": {
+					"placeholder": "Причина (необязательно)"
+				},
+				"reasonSave": "Отправить",
+				"reasonAria": {
+					"aria-label": "Причина «не нравится»"
+				}
+			},
+			"regen": "Перегенерировать"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Добавить вложение",
+				"title": "Добавить вложение"
+			},
+			"remove": {
+				"aria-label": "Удалить вложение"
+			},
+			"drop": "Отпустите, чтобы прикрепить",
+			"tooLarge": "Вложение ${name} превышает лимит в 10 МБ"
+		},
+		"error": {
+			"generic": "Что-то пошло не так: ${error}",
+			"generate": "Не удалось сгенерировать ответ",
+			"aborted": "Генерация прервана",
+			"noChar": "Сначала выберите персонажа"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
+		}
 	}
 }

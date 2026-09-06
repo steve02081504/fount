@@ -34,10 +34,10 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 
 - `response ≥ 400` / `requestfailed` → `[browser:network]` noise → imperfect wave.
 - `pageerror`, `[test:…]` console (from `scripts/test/watch/`), and `[i18n:missing]` (from `geti18n`, no dedup) hard-fail.
-- General `console.error` (console `type() === 'error'`) always fails: reaching `MAX_CONSOLE_ERRORS` (13) aborts the test immediately (fail-fast, `runDiagnosedPage` races `use` against the abort promise); 1–12 errors fail at teardown.
+- General `console.error` (console `type() === 'error'`) always fails: reaching `MAX_CONSOLE_ERRORS` (13) aborts the test immediately (fail-fast, `runDiagnosedPage` races `use` against the abort promise); 1–12 errors fail at teardown. Browser auto-emitted `Failed to load resource: …` messages (requestfailed / HTTP ≥400) are **excluded** from this rule — they belong to the network diagnostics below and would double-count expected probes; real page `console.error()` calls still hard-fail.
 - Dropped request failures: `net::ERR_BLOCKED_BY_ORB`, `net::ERR_ABORTED`.
 - Child-frame `SecurityError` ignored via CDP only (`exception.className` + frame ≠ main; `isIgnoredChildFrameSecurityError`). Main-frame `SecurityError` still hard-fails.
-- Pages fixtures ignore `/api/ping` and localhost/`127.0.0.1:8930` installer probe / `/eula` signal failures only (`shouldIgnoreBrowserNetwork` — both `requestfailed` and HTTP ≥400). Other hosts or other paths on `:8930` still count as noise.
+- Pages fixtures ignore `/api/ping` and localhost/`127.0.0.1:8930` installer probe / `/eula` signal failures only (`shouldIgnoreBrowserNetwork` — both `requestfailed` and HTTP ≥400). Other hosts or other paths on `:8930` still count as noise. The Pages fixture additionally drops all `localhost`/`127.0.0.1:8931` failures via a diagnostics `shouldIgnoreNetwork` predicate (no fount node on the static site — install-wait probing and cold-boot prerender of `8931/parts/shells/home` are expected to be unreachable).
 - Install wait vs homepage: `?from=runner` enters installer wait (EULA + 8930). Bare `/wait/install/` stays the project homepage and does not probe 8930.
 - Do not gate product code on `fount.test.enabled` to paper over these. **URLs are logged as-is** — fixtures must not put durable secrets in URLs.
 - Locale load goes through i18n `loadLocaleData` / `setLanguage` — do not fetch `/api/getlocaledata` from test code.

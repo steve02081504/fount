@@ -3596,7 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "Skrifar yfir ${filepath}",
 					"readingFilepath": "Les ${filepath}",
-					"readingFiles": null,
+					"readingFiles": "Les ${count} skrár",
 					"replacingFilepath": "Skiptir út í ${filepath}",
 					"runningLang": "Keyrir ${lang}",
 					"searchingContent": "Leitar að ${content}"
@@ -6032,6 +6032,19 @@
 		"parentLink": "↑ Fyrra stig ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Fletta",
+			"path": {
+				"aria-label": "Slóð vinnusvæðis",
+				"placeholder": "Sía / slóð möppu"
+			},
+			"go": "Farðu",
+			"select": "Velja vinnusvæði",
+			"quickAccess": "Fljótur aðgangur",
+			"roots": "Drif / rætur",
+			"noMatch": "Engin niðurstaða",
+			"error": "Villa við flakk"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Tilkynningar"
@@ -6323,9 +6336,119 @@
 		}
 	},
 	"code": {
-		"sessions": {},
-		"workspaces": {},
-		"machine": {},
-		"composer": {}
+		"title": "Code",
+		"description": "AI kóðunarlotur fyrir vinnusvæði og vélar.",
+		"sessions": {
+			"new": "Ný lota",
+			"untitled": "Ónefnd lota",
+			"yesterday": "í gær"
+		},
+		"workspaces": {
+			"browse": "Fletta…",
+			"remove": "Fjarlægja núverandi vinnusvæði",
+			"none": "Ekkert vinnusvæði valið",
+			"overviewEmpty": "Engar samræður ennþá"
+		},
+		"home": {
+			"aria-label": "Vinnusvæði og lotur"
+		},
+		"tabs": {
+			"aria-label": "Flipar lotunnar",
+			"close": "Loka flipa"
+		},
+		"newTab": {
+			"aria-label": "Ný lota"
+		},
+		"machine": {
+			"local": "Staðbundið",
+			"offline": "ólínu"
+		},
+		"char": {
+			"switch": "Skipta um persónu",
+			"settings": "Stillingar persónu",
+			"goodAgent": "Hvernig skrifar maður góðan agent?",
+			"none": "Engin persóna valin",
+			"recommend": {
+				"main": "Mælt er með persónunni ${charname} en hún er ekki uppsett. Setja hana upp?",
+				"aria": "Meðmæli um uppsetningu persónu",
+				"dismiss": "Loka",
+				"install": "Setja upp",
+				"installed": "Persónan ${charname} sett upp"
+			}
+		},
+		"composer": {
+			"shellDefault": "Sjálfgefið",
+			"sendButton": {
+				"aria-label": "Senda skilaboð"
+			},
+			"sendAria": "Senda skilaboð",
+			"stopAria": "Stöðva myndun",
+			"modeSwitched": "Skipt yfir í ${mode} ham",
+			"hint": "Sláðu inn ! þegar tómt fyrir skelham · @ til að vísa í skrár · / fyrir skipanir · ↑↓ saga · Tab fyrir klárun",
+			"placeholder": "Sláðu inn skipun; Enter keyrir hana (hreinsaðu til að yfirgefa skelham)",
+			"placeholderNormal": "Skrifaðu skilaboð… (@ til að vísa í skrár, / fyrir skipanir)",
+			"placeholderShell": "Sláðu inn skelskipun… (t.d. git status)",
+			"aria-label": "Innsláttur skilaboða"
+		},
+		"aiSource": {
+			"panelTitle": "Stjórna sýnileika gervigreindargjafa",
+			"charOwn": "Sjálfgefið persónu",
+			"manage": "Stjórna gervigreindargjöfum…"
+		},
+		"commands": {
+			"run": "Keyra"
+		},
+		"messages": {
+			"backToBottom": "Aftur í nýjasta"
+		},
+		"message": {
+			"actions": {
+				"copy": "Afrita",
+				"edit": "Breyta",
+				"saveHtml": "Vista sem HTML"
+			},
+			"copied": "Afritað í klippispjald",
+			"edit": {
+				"save": "Vista",
+				"cancel": "Hætta við",
+				"ariaLabel": {
+					"aria-label": "Breyta texta skilaboða"
+				}
+			},
+			"feedback": {
+				"up": "Líkar",
+				"down": "Líkar ekki",
+				"reasonPlaceholder": {
+					"placeholder": "Ástæða (valfrjálst)"
+				},
+				"reasonSave": "Senda",
+				"reasonAria": {
+					"aria-label": "Ástæða þess að líkar ekki"
+				}
+			},
+			"regen": "Mynda aftur"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Bæta við viðhengi",
+				"title": "Bæta við viðhengi"
+			},
+			"remove": {
+				"aria-label": "Fjarlægja viðhengi"
+			},
+			"drop": "Slepptu til að hengja við",
+			"tooLarge": "Viðhengið ${name} fer yfir 10MB hámark"
+		},
+		"error": {
+			"generic": "Eitthvað fór úrskeiðis: ${error}",
+			"generate": "Mistókst að mynda svar",
+			"aborted": "Myndun hætt",
+			"noChar": "Veldu fyrst persónu"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
+		}
 	}
 }

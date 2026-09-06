@@ -3602,7 +3602,7 @@
 				"tool": {
 					"overridingFilepath": "Écrasement de ${filepath}",
 					"readingFilepath": "Lecture de ${filepath}",
-					"readingFiles": null,
+					"readingFiles": "Lecture de ${count} fichiers",
 					"replacingFilepath": "Remplacement dans ${filepath}",
 					"runningLang": "Exécution de ${lang}",
 					"searchingContent": "Recherche de ${content}"
@@ -6038,6 +6038,19 @@
 		"parentLink": "↑ Niveau précédent ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Parcourir",
+			"path": {
+				"aria-label": "Chemin de l'espace de travail",
+				"placeholder": "Filtre / chemin du dossier"
+			},
+			"go": "Aller",
+			"select": "Choisir l'espace de travail",
+			"quickAccess": "Accès rapide",
+			"roots": "Lecteurs / racines",
+			"noMatch": "Aucun résultat",
+			"error": "Erreur de navigation"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Notifications"
@@ -6329,9 +6342,119 @@
 		}
 	},
 	"code": {
-		"sessions": {},
-		"workspaces": {},
-		"machine": {},
-		"composer": {}
+		"title": "Code",
+		"description": "Sessions de codage IA pour espaces de travail et machines.",
+		"sessions": {
+			"new": "Nouvelle session",
+			"untitled": "Session sans titre",
+			"yesterday": "hier"
+		},
+		"workspaces": {
+			"browse": "Parcourir…",
+			"remove": "Retirer l'espace de travail actuel",
+			"none": "Aucun espace de travail sélectionné",
+			"overviewEmpty": "Aucune conversation pour le moment"
+		},
+		"home": {
+			"aria-label": "Espaces de travail et sessions"
+		},
+		"tabs": {
+			"aria-label": "Onglets de session",
+			"close": "Fermer l'onglet"
+		},
+		"newTab": {
+			"aria-label": "Nouvelle session"
+		},
+		"machine": {
+			"local": "Local",
+			"offline": "hors ligne"
+		},
+		"char": {
+			"switch": "Changer de personnage",
+			"settings": "Paramètres du personnage",
+			"goodAgent": "Comment écrire un bon agent ?",
+			"none": "Aucun personnage sélectionné",
+			"recommend": {
+				"main": "Le personnage recommandé ${charname} n'est pas installé. L'installer ?",
+				"aria": "Recommandation d'installation de personnage",
+				"dismiss": "Fermer",
+				"install": "Installer",
+				"installed": "Personnage ${charname} installé"
+			}
+		},
+		"composer": {
+			"shellDefault": "Par défaut",
+			"sendButton": {
+				"aria-label": "Envoyer le message"
+			},
+			"sendAria": "Envoyer le message",
+			"stopAria": "Arrêter la génération",
+			"modeSwitched": "Mode ${mode} activé",
+			"hint": "! dans un champ vide pour le mode shell · @ pour référencer un fichier · / pour les commandes · ↑↓ historique · Tab pour compléter",
+			"placeholder": "Saisissez une commande, Entrée pour exécuter (vider pour quitter le mode shell)",
+			"placeholderNormal": "Écrivez votre message… (@ pour référencer un fichier, / pour les commandes)",
+			"placeholderShell": "Saisissez une commande shell… (ex. git status)",
+			"aria-label": "Saisie du message"
+		},
+		"aiSource": {
+			"panelTitle": "Gérer l'affichage des sources d'IA",
+			"charOwn": "Défaut du personnage",
+			"manage": "Gérer les sources d'IA…"
+		},
+		"commands": {
+			"run": "Exécuter"
+		},
+		"messages": {
+			"backToBottom": "Retour au plus récent"
+		},
+		"message": {
+			"actions": {
+				"copy": "Copier",
+				"edit": "Modifier",
+				"saveHtml": "Enregistrer en HTML"
+			},
+			"copied": "Copié dans le presse-papiers",
+			"edit": {
+				"save": "Enregistrer",
+				"cancel": "Annuler",
+				"ariaLabel": {
+					"aria-label": "Modifier le texte du message"
+				}
+			},
+			"feedback": {
+				"up": "J'aime",
+				"down": "Je n'aime pas",
+				"reasonPlaceholder": {
+					"placeholder": "Raison (facultatif)"
+				},
+				"reasonSave": "Envoyer",
+				"reasonAria": {
+					"aria-label": "Raison du désaccord"
+				}
+			},
+			"regen": "Régénérer"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Ajouter une pièce jointe",
+				"title": "Ajouter une pièce jointe"
+			},
+			"remove": {
+				"aria-label": "Retirer la pièce jointe"
+			},
+			"drop": "Relâchez pour joindre",
+			"tooLarge": "La pièce jointe ${name} dépasse la limite de 10 Mo"
+		},
+		"error": {
+			"generic": "Une erreur est survenue : ${error}",
+			"generate": "Échec de la génération de la réponse",
+			"aborted": "Génération interrompue",
+			"noChar": "Sélectionnez d'abord un personnage"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
+		}
 	}
 }
