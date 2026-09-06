@@ -102,7 +102,7 @@ async function buildCodeChatRequest({ username, session, machine, workdir, ai_so
 			code: { profile },
 		},
 		ai_source: aiSourceInstance,
-		workdir: { machine: String(machine ?? '0'), path: workdir },
+		workdir: session.memory.workdir ?? { machine: String(machine ?? '0'), path: workdir },
 		generation_options: {
 			supported_functions,
 			/**

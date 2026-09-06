@@ -65,7 +65,7 @@ export async function fileOperationsReplyHandler(result, args) {
 	 * @returns {{executor: ReturnType<typeof createTargetExecutor>, target: ReturnType<typeof resolveTarget>}} 执行器与目标。
 	 */
 	function executorFor(attrs) {
-		const target = resolveTarget(args, parseTagAttrs(attrs))
+		const target = resolveTarget(args, { machine: parseTagAttrs(attrs).machine })
 		const key = target.machine + '|' + (target.workdir || '')
 		if (!executors.has(key))
 			executors.set(key, createTargetExecutor(args.username, target))
@@ -79,6 +79,33 @@ export async function fileOperationsReplyHandler(result, args) {
 		role: 'char',
 		content: '',
 		files: [],
+	}
+
+	// 设置默认工作目录：<set-workdir machine="..." path="..."></set-workdir>；machine/path 独立更新，
+	// 只指定其中一个时保留另一个不变；两者都不填（完全留空）时回到本机。
+	// 就地 mutate args.workdir（chat 经 triggerReply 持久化到 scoped state），并把结果写进 chat_scoped_char_memory
+	// （code shell 的会话 memory 经 WS done 回传持久化，后续请求以其覆盖工作区默认）。
+	const set_workdir_matches = [...content.matchAll(/<set-workdir(?<attrs>[^>]*?)(?:\/>|>\s*<\/set-workdir>)/g)]
+	if (set_workdir_matches.length) {
+		for (const set_match of set_workdir_matches) {
+			const attrs = parseTagAttrs(set_match.groups.attrs)
+			const workdir = args.workdir ??= {}
+			if (!attrs.machine && !attrs.path) attrs.machine = '0' // 回到本机
+			if (attrs.machine) {
+				workdir.machine = attrs.machine
+				delete workdir.path
+			}
+			if (attrs.path) workdir.path = attrs.path
+			args.chat_scoped_char_memory ??= {}
+			args.chat_scoped_char_memory.workdir = { ...workdir }
+			AddLongTimeLog({
+				name: 'file-operations',
+				role: 'tool',
+				content: `默认工作目录已更新为机器 ${workdir.machine}${workdir.path ? ` 的 ${workdir.path}` : ''}。`,
+				files: [],
+			})
+		}
+		regen = true
 	}
 
 	const list_machines_matches = [...content.matchAll(/<list-machines(?<attrs>[^>]*)>(?<content>[^]*?)<\/list-machines>/g)]

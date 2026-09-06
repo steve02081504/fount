@@ -53,7 +53,9 @@ ${args.Charname}: <view-file machine="1">~/Desktop/新建文本文件.txt</view-
 - 用户对接其他 subfount 后，你也可以操作其他机器里的数据。
 `
 }
-- 所有标签都支持可选属性 workdir="目录" 以单次指定工作目录
+**设置默认工作目录**：
+<set-workdir machine="机器id" path="目录"></set-workdir>
+- 该设置持续有效，影响任何操作机器内容的插件
 
 **注意事项**：
 - 文件路径可以是相对路径或绝对路径；相对路径基于当前的工作目录解析
