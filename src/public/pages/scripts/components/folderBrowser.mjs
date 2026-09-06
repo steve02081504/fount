@@ -115,6 +115,7 @@ export async function openFolderBrowser(options) {
 					}
 				})
 				dlg.querySelector('#folder-select-button').addEventListener('click', () => {
+					dlg.close()
 					void onSelect(dlg.querySelector('#folder-path-input').value)
 				})
 				return openEntries('', dlg, options.initialWorkspace || '')

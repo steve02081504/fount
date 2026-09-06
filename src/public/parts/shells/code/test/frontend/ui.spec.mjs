@@ -381,7 +381,8 @@ test.describe('code shell sessions & workspace', () => {
 			await expect(page.locator('#folder-entries .folder-browser-entry.active')).toContainText('beta')
 			await page.locator('#folder-path-input').press('Enter')
 			await expect(page.locator('#folder-path-input')).toHaveValue(dir.replace(/[\\/]+$/, '') + '/beta')
-			await expect(page.locator('#folder-entries')).toContainText('note.txt')
+			// 仅显示文件夹：beta 内只有 note.txt 文件，列表应为空态
+			await expect(page.locator('#folder-entries .folder-browser-entry')).toHaveCount(0)
 		}
 		finally {
 			rmSync(dir, { recursive: true, force: true })
