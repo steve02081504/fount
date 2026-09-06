@@ -12,6 +12,38 @@ import { assertEquals } from 'jsr:@std/assert'
 import { collectEditorSources } from '../../src/editor_sources.mjs'
 
 /**
+ * 构造 VS Code workspace.json 的真实 file:// 文件夹 URL：
+ * Windows 盘符以 %3A 编码（VS Code 真实格式），Unix 保持绝对路径。
+ * @param {string} p 绝对路径
+ * @returns {string} file:// URL
+ */
+function toVsCodeFileUrl(p) {
+	const normalized = p.replace(/\\/g, '/')
+	const drive = /^([A-Za-z]):/.exec(normalized)
+	return `file:///${drive ? drive[1] + '%3A' + normalized.slice(2) : normalized}`
+}
+
+/**
+ * 设置本机平台对应的编辑器数据根环境变量（win32 用 APPDATA，其余用 XDG_CONFIG_HOME）。
+ * @param {string} root 数据根目录
+ * @returns {{ appdata?: string, xdg?: string }} 原值，供 restoreEditorEnv 恢复
+ */
+function setEditorEnv(root) {
+	const saved = { appdata: process.env.APPDATA, xdg: process.env.XDG_CONFIG_HOME }
+	if (process.platform === 'win32') process.env.APPDATA = root
+	else process.env.XDG_CONFIG_HOME = root
+	return saved
+}
+
+/** 恢复编辑器数据根环境变量。 @param {{ appdata?: string, xdg?: string }} saved setEditorEnv 返回的原值 */
+function restoreEditorEnv(saved) {
+	if (saved.appdata === undefined) delete process.env.APPDATA
+	else process.env.APPDATA = saved.appdata
+	if (saved.xdg === undefined) delete process.env.XDG_CONFIG_HOME
+	else process.env.XDG_CONFIG_HOME = saved.xdg
+}
+
+/**
  * 创建模拟的 VS Code fork 数据目录树（Cursor 风格），返回 APPDATA 根。
  * @param {string} root - 临时根目录。
  * @param {string[]} projects - 真实存在的项目目录（相对 root）。
@@ -32,21 +64,20 @@ async function makeFakeEditorData(root, projects) {
 	db.close()
 	for (const p of projects)
 		await mkdir(path.join(root, p), { recursive: true })
-	// workspaceStorage：folder 用 VS Code 真实 file:// URL 格式（盘符 %3A 编码）
+	// workspaceStorage：folder 用 VS Code 真实 file:// URL 格式（Windows 盘符 %3A 编码）
 	await writeFile(path.join(root, 'Cursor', 'User', 'workspaceStorage', 'hash1', 'workspace.json'), JSON.stringify({
-		folder: 'file:///' + path.join(root, projects[0]).replace(/\\/g, '/').replace(/^([A-Za-z]):/, '$1%3A'),
+		folder: toVsCodeFileUrl(path.join(root, projects[0])),
 	}))
 	await writeFile(path.join(root, 'Cursor', 'User', 'workspaceStorage', 'hash2', 'workspace.json'), JSON.stringify({
-		folder: 'file:///' + path.join(root, projects[1]).replace(/\\/g, '/').replace(/^([A-Za-z]):/, '$1%3A'),
+		folder: toVsCodeFileUrl(path.join(root, projects[1])),
 	}))
 }
 
 Deno.test('collectEditorSources discovers VS Code fork variants and decodes file:// folders', async () => {
 	const root = await mkdtemp(path.join(tmpdir(), 'fount_code_editor_src_'))
-	const savedAppdata = process.env.APPDATA
+	const saved = setEditorEnv(root)
 	try {
 		await makeFakeEditorData(root, ['cursor-proj', 'trae-proj'])
-		process.env.APPDATA = root
 		const result = await collectEditorSources('u', '0')
 		const names = result.map(item => item.name).sort()
 		assertEquals(names, ['cursor-proj', 'trae-proj'])
@@ -54,30 +85,27 @@ Deno.test('collectEditorSources discovers VS Code fork variants and decodes file
 			assertEquals(item.path, path.join(root, item.name))
 	}
 	finally {
-		if (savedAppdata === undefined) delete process.env.APPDATA
-		else process.env.APPDATA = savedAppdata
+		restoreEditorEnv(saved)
 		await rm(root, { recursive: true, force: true })
 	}
 })
 
 Deno.test('collectEditorSources returns [] when no editor data exists', async () => {
 	const root = await mkdtemp(path.join(tmpdir(), 'fount_code_editor_empty_'))
-	const savedAppdata = process.env.APPDATA
+	const saved = setEditorEnv(root)
 	try {
-		process.env.APPDATA = root
 		const result = await collectEditorSources('u', '0')
 		assertEquals(result, [])
 	}
 	finally {
-		if (savedAppdata === undefined) delete process.env.APPDATA
-		else process.env.APPDATA = savedAppdata
+		restoreEditorEnv(saved)
 		await rm(root, { recursive: true, force: true })
 	}
 })
 
 Deno.test('collectEditorSources discovers JetBrains recentProjects.xml (Android Studio etc.)', async () => {
 	const root = await mkdtemp(path.join(tmpdir(), 'fount_code_editor_jb_'))
-	const savedAppdata = process.env.APPDATA
+	const saved = setEditorEnv(root)
 	try {
 		// root 在 tmpdir（= homedir 下），entry key 用 $USER_HOME$ + 相对路径即可命中真实目录
 		const relToHome = path.relative(homedir(), root).replace(/\\/g, '/')
@@ -128,8 +156,6 @@ Deno.test('collectEditorSources discovers JetBrains recentProjects.xml (Android 
   </component>
 </application>`)
 
-		process.env.APPDATA = root
-		// 注意：VS Code 候选目录在 APPDATA 下不存在，不影响
 		const result = await collectEditorSources('u', '0')
 		const names = result.map(item => item.name).sort()
 		assertEquals(names, ['android-proj', 'idea-proj'])
@@ -137,15 +163,14 @@ Deno.test('collectEditorSources discovers JetBrains recentProjects.xml (Android 
 		assertEquals(names.includes('bin'), false)
 	}
 	finally {
-		if (savedAppdata === undefined) delete process.env.APPDATA
-		else process.env.APPDATA = savedAppdata
+		restoreEditorEnv(saved)
 		await rm(root, { recursive: true, force: true })
 	}
 })
 
 Deno.test('collectEditorSources sorts projects by last active (mtime of dir + children)', async () => {
 	const root = await mkdtemp(path.join(tmpdir(), 'fount_code_editor_active_'))
-	const savedAppdata = process.env.APPDATA
+	const saved = setEditorEnv(root)
 	try {
 		await makeFakeEditorData(root, ['old-proj', 'new-proj'])
 		// 显式设置 mtime：new-proj 更新（含子文件 mtime），old-proj 更旧
@@ -160,22 +185,20 @@ Deno.test('collectEditorSources sorts projects by last active (mtime of dir + ch
 		await utimes(newDir, newTime, newTime)
 		await utimes(path.join(newDir, 'recent.txt'), newTime, newTime)
 
-		process.env.APPDATA = root
 		const result = await collectEditorSources('u', '0')
 		const names = result.map(item => item.name)
 		// 新活跃项目应排在前面
 		assertEquals(names, ['new-proj', 'old-proj'])
 	}
 	finally {
-		if (savedAppdata === undefined) delete process.env.APPDATA
-		else process.env.APPDATA = savedAppdata
+		restoreEditorEnv(saved)
 		await rm(root, { recursive: true, force: true })
 	}
 })
 
 Deno.test('collectEditorSources dedupes junction/symlink aliases keeping the shorter path', async () => {
 	const root = await mkdtemp(path.join(tmpdir(), 'fount_code_editor_real_'))
-	const savedAppdata = process.env.APPDATA
+	const saved = setEditorEnv(root)
 	const isWin = process.platform === 'win32'
 	try {
 		const real = path.join(root, 'real-proj')
@@ -196,7 +219,6 @@ Deno.test('collectEditorSources dedupes junction/symlink aliases keeping the sho
 		}))
 		db.close()
 
-		process.env.APPDATA = root
 		const result = await collectEditorSources('u', '0')
 		// 同一真实目录只出现一次，且保留更短的路径名（real-proj）
 		assertEquals(result.length, 1)
@@ -204,8 +226,7 @@ Deno.test('collectEditorSources dedupes junction/symlink aliases keeping the sho
 		assertEquals(result[0].path, real)
 	}
 	finally {
-		if (savedAppdata === undefined) delete process.env.APPDATA
-		else process.env.APPDATA = savedAppdata
+		restoreEditorEnv(saved)
 		await rm(root, { recursive: true, force: true })
 	}
 })

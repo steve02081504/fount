@@ -47,7 +47,7 @@
 	transform: translateY(-50%);
 	width: 1.5px;
 	height: 0.75rem;
-	border-radius: 9999px;
+	border-radius: var(--radius-box);
 	background: color-mix(in oklch, var(--color-base-content) 15%, transparent);
 }
 
@@ -91,7 +91,7 @@
 	width: 1rem;
 	height: 1rem;
 	flex-shrink: 0;
-	border-radius: 0.25rem;
+	border-radius: var(--radius-box);
 	font-size: 0.625rem;
 	font-weight: 700;
 	line-height: 1;
@@ -121,7 +121,7 @@
 	inset-inline-end: 0.125rem;
 	width: 1.25rem;
 	height: 1.25rem;
-	border-radius: 0.25rem;
+	border-radius: var(--radius-field);
 	opacity: 0;
 	color: inherit;
 	cursor: pointer;
@@ -363,7 +363,7 @@ details.code-tool-log > summary .code-tool-log-name {
 	opacity: 0.85;
 }
 
-/* 回到底部浮标（btn-circle 保证圆角跟随主题，此处只管定位与显隐） */
+/* 回到底部浮标（btn-square 让圆角跟随主题，此处只管定位与显隐） */
 .code-back-to-bottom {
 	position: sticky;
 	bottom: 0;
@@ -503,7 +503,7 @@ details.code-tool-log > summary .code-tool-log-name {
 	width: 1rem;
 	height: 1rem;
 	flex-shrink: 0;
-	border-radius: 9999px;
+	border-radius: var(--radius-box);
 	color: inherit;
 	opacity: 0.6;
 	cursor: pointer;
@@ -522,7 +522,7 @@ details.code-tool-log > summary .code-tool-log-name {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 2px dashed color-mix(in oklch, var(--color-primary) 55%, transparent);
+	border: var(--border) dashed color-mix(in oklch, var(--color-primary) 55%, transparent);
 	border-radius: var(--radius-box);
 	background: color-mix(in oklch, var(--color-base-100) 82%, transparent);
 	font-size: 0.875rem;

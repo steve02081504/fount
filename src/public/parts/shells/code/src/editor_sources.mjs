@@ -119,9 +119,10 @@ async function scanEditorSources() {
 				if (typeof data?.folder !== 'string') continue
 				let p = data.folder
 				try {
-					// file:///c%3A/Users/... → C:/Users/...（Windows 盘符在 URL 中编码为 %3A，decode 后出现 `/c:/` 需去前导 `/`）
+					// file:///c%3A/Users/... → C:/Users/...（Windows 盘符在 URL 中编码为 %3A，decode 后出现 `/c:/`，需剥掉盘符前的根斜杠；Unix 路径原样保留绝对路径）
 					const parsed = new URL(p)
-					p = decodeURIComponent(parsed.pathname).replace(/^\/+/, '')
+					p = decodeURIComponent(parsed.pathname)
+					if (process.platform === 'win32') p = p.replace(/^\/+/, '')
 				}
 				catch {
 					// 非 file:// 或非法 URL：当作字面路径

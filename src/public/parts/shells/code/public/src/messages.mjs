@@ -314,7 +314,7 @@ export const backToBottom = (() => {
 	const button = document.createElement('button')
 	button.type = 'button'
 	button.id = 'code-back-to-bottom'
-	button.className = 'btn btn-circle btn-ghost btn-sm shadow-lg code-back-to-bottom'
+	button.className = 'btn btn-square btn-ghost btn-sm shadow-lg code-back-to-bottom'
 	button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12l7 7 7-7"></path></svg>'
 	button.addEventListener('click', scrollMessagesBottom)
 	return button
