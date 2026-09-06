@@ -90,14 +90,6 @@ export function resolveTarget(args, explicit = {}) {
 }
 
 /**
- * 本机默认 shell：Windows 用 pwsh，其他平台用 bash。
- * @returns {'pwsh'|'bash'} 默认 shell 名。
- */
-export function localDefaultShell() {
-	return process.platform === 'win32' ? 'pwsh' : 'bash'
-}
-
-/**
  * 查询目标机器的默认 shell（与该机器不带 shell 执行时的回退逻辑一致）。
  * @param {string} username - 用户名。
  * @param {string} machine - 目标机器标识（string）。
@@ -126,8 +118,10 @@ export async function machineDefaultShell(username, machine) {
  */
 export async function availableShells(username, machine) {
 	const machineId = Number.parseInt(String(machine), 10) || 0
-	if (machineId <= 0)
-		return Object.keys(shell_exec_map).filter(name => available[name])
+	if (machineId <= 0) {
+		const availability = await available
+		return Object.keys(shell_exec_map).filter(name => availability[name])
+	}
 	const { getAllSubfounts } = await import('../../../shells/subfounts/src/api.mjs')
 	const info = getAllSubfounts(username).find(s => s.id === machineId)
 	const shells = info?.deviceInfo?.shells

@@ -6043,6 +6043,7 @@
 			"quickAccess": "速達",
 			"roots": "盤符 / 根目",
 			"noMatch": "無相合者",
+			"loading": "載入中…",
 			"error": "瀏覽有誤"
 		},
 		"toast": {

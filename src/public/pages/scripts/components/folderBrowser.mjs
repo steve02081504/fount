@@ -118,7 +118,9 @@ export async function openFolderBrowser(options) {
 					dlg.close()
 					void onSelect(dlg.querySelector('#folder-path-input').value)
 				})
-				return openEntries('', dlg, options.initialWorkspace || '')
+				// 先弹框显示加载占位，数据到达后再渲染（根视图含慢速的后端快速访问构建）
+				showStatus(dlg, 'util.folderBrowser.loading')
+				void openEntries('', dlg, options.initialWorkspace || '')
 			},
 		})
 	}
@@ -148,7 +150,28 @@ async function openEntries(path, dlg = dialog, workspaceParam = '') {
 	}
 	catch (error) {
 		onError(error)
+		showStatus(dlg, 'util.folderBrowser.error')
 	}
+}
+
+/**
+ * 在条目容器中显示状态占位（加载中 / 出错，data-i18n 文案 + daisyUI loading ring）。
+ * @param {HTMLDialogElement} dlg - 对话框。
+ * @param {string} i18nKey - i18n 键（`util.folderBrowser.loading` / `util.folderBrowser.error`）。
+ * @returns {void}
+ */
+function showStatus(dlg, i18nKey) {
+	const container = dlg.querySelector('#folder-entries')
+	container.replaceChildren()
+	const status = document.createElement('div')
+	status.className = 'folder-browser-status'
+	const spinner = document.createElement('span')
+	spinner.className = 'loading loading-ring loading-sm'
+	status.append(spinner)
+	const label = document.createElement('span')
+	label.dataset.i18n = i18nKey
+	status.append(label)
+	container.append(status)
 }
 
 /**
@@ -194,6 +217,8 @@ function renderList(dlg = dialog) {
 		const row = document.createElement('button')
 		row.type = 'button'
 		row.className = 'folder-browser-entry' + (filtered[highlight] === entry ? ' active' : '')
+		// 目录/文件名是用户数据，跳过语种轮换的脚本检查（路径含简体汉字在 ja/en 轮换时误报）
+		row.setAttribute('user-content', '')
 		row.textContent = (entry.isDirectory ? '📁 ' : '📄 ') + entry.name
 		/**
 		 * 进入目录（单击 / 双击）。
@@ -260,6 +285,15 @@ function renderList(dlg = dialog) {
 .folder-browser-empty {
 	padding: 1rem 0.75rem;
 	text-align: center;
+	opacity: 0.6;
+}
+.folder-browser-status {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 1rem 0.75rem;
+	font-size: 0.875rem;
 	opacity: 0.6;
 }
 `

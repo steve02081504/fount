@@ -6049,6 +6049,7 @@
 			"quickAccess": "Snelle toegang",
 			"roots": "Stations / hoofdstations",
 			"noMatch": "Geen resultaten",
+			"loading": "Laden…",
 			"error": "Fout bij bladeren"
 		},
 		"toast": {

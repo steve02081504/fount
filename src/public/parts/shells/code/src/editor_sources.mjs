@@ -2,7 +2,13 @@
  * 编辑器常用项目目录采集：VS Code 最近终端目录 + workspaceStorage + Notepad++ 会话目录。
  * 全部在目标机器上经自包含 lambda 执行（无外部引用，数据均来自目标机器环境）。
  */
+import process from 'node:process'
+
+import { memoizePromise } from '../../../../../scripts/memo.mjs'
 import { createTargetExecutor } from '../../../plugins/file-operations/src/target.mjs'
+
+/** 编辑器常用项目缓存 TTL（毫秒）：扫描目标是慢速 execJs 磁盘遍历，短 TTL 缓存让打开工作区选择器秒出。 */
+const EDITOR_SOURCES_TTL_MS = 5 * 60 * 1000
 
 /**
  * 自包含扫描函数（在目标机器执行）：枚举 VS Code 数据目录与 Notepad++ 会话，返回编辑器常用项目目录。
@@ -179,18 +185,30 @@ async function scanEditorSources() {
 		.map(({ path: p }) => ({ name: path.basename(p), path: p }))
 }
 
+/** 编辑器常用项目采集（TTL 缓存，键 = `username\0machine\0环境指纹`）。 */
+const loadEditorSources = memoizePromise(
+	key => key,
+	async key => {
+		const [username, machine] = key.split('\u0000')
+		const executor = createTargetExecutor(username, { machine })
+		try {
+			return await executor.execJs(scanEditorSources)
+		}
+		catch {
+			return []
+		}
+	},
+	{ ttlMs: EDITOR_SOURCES_TTL_MS },
+)
+
 /**
  * 采集编辑器常用项目目录（VS Code 最近终端目录/工作区 + Notepad++ 会话目录）。
  * @param {string} username - 用户名。
  * @param {string} machine - 目标机器标识。
  * @returns {Promise<Array<{name: string, path: string}>>} 编辑器常用项目目录（执行失败时空数组）。
  */
-export async function collectEditorSources(username, machine) {
-	const executor = createTargetExecutor(username, { machine })
-	try {
-		return await executor.execJs(scanEditorSources)
-	}
-	catch {
-		return []
-	}
+export function collectEditorSources(username, machine) {
+	// 键附编辑器数据根环境指纹：同进程内 APPDATA/XDG_CONFIG_HOME 可能切换（测试隔离），避免跨环境串缓存
+	const envRoot = process.env.APPDATA || process.env.XDG_CONFIG_HOME || ''
+	return loadEditorSources(`${username}\u0000${machine}\u0000${envRoot}`)
 }

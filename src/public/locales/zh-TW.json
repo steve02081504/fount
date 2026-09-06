@@ -6042,6 +6042,7 @@
 			"quickAccess": "快速存取",
 			"roots": "磁碟機 / 根目錄",
 			"noMatch": "無相符項目",
+			"loading": "載入中…",
 			"error": "瀏覽時發生錯誤"
 		},
 		"toast": {

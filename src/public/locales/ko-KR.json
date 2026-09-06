@@ -6043,6 +6043,7 @@
 			"quickAccess": "빠른 접근",
 			"roots": "드라이브 / 루트",
 			"noMatch": "일치하는 항목 없음",
+			"loading": "로딩 중…",
 			"error": "찾아보기 오류"
 		},
 		"toast": {

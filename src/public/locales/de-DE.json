@@ -6043,6 +6043,7 @@
 			"quickAccess": "Schnellzugriff",
 			"roots": "Laufwerke / Wurzeln",
 			"noMatch": "Keine Treffer",
+			"loading": "Wird geladen…",
 			"error": "Fehler beim Durchsuchen"
 		},
 		"toast": {

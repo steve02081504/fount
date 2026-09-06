@@ -6043,6 +6043,7 @@
 			"quickAccess": "快速访问",
 			"roots": "盘符 / 根目录",
 			"noMatch": "无匹配项",
+			"loading": "加载中…",
 			"error": "浏览出错"
 		},
 		"toast": {

@@ -5,6 +5,7 @@ import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
+import { memoizePromise } from '../../../../../scripts/memo.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { getAllDefaultParts, getPartList } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData, assignShellData } from '../../../../../server/setting_loader.mjs'
@@ -93,6 +94,28 @@ async function findGitDirs(username, machine, root) {
 	}, root, 4, 100)
 }
 
+/** 盘符卷标查询（TTL 缓存：卷标几乎不变，避免每次根视图都 spawn pwsh，键 = `username\0machine`）。 */
+const loadVolumeLabels = memoizePromise(
+	key => key,
+	async key => {
+		const sep = key.indexOf('\u0000')
+		const username = key.slice(0, sep)
+		const machine = key.slice(sep + 1)
+		try {
+			const platform = (await listMachines(username)).find(m => m.id === String(machine))?.deviceInfo?.os?.platform
+			if (platform !== 'win32') return {}
+			const shells = await availableShells(username, machine)
+			const shell = shells.includes('pwsh') ? 'pwsh' : shells.includes('powershell') ? 'powershell' : null
+			if (!shell) return {}
+			const executor = createTargetExecutor(username, { machine })
+			const result = await executor.execShell(shell, '@(Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID, VolumeName) | ConvertTo-Json -Compress')
+			return parseVolumeLabels(result?.stdout ?? result?.stdall ?? '')
+		}
+		catch { return {} }
+	},
+	{ ttlMs: 60 * 60 * 1000 },
+)
+
 /**
  * 查询目标机器（Windows）各盘符卷标，供根视图展示盘的名字。
  * @param {string} username - 用户名。
@@ -100,17 +123,7 @@ async function findGitDirs(username, machine, root) {
  * @returns {Promise<Record<string, string>>} 盘符根 → 卷标（失败/非 Windows/无 pwsh 时为空对象）。
  */
 async function getVolumeLabels(username, machine) {
-	try {
-		const platform = (await listMachines(username)).find(m => m.id === String(machine))?.deviceInfo?.os?.platform
-		if (platform !== 'win32') return {}
-		const shells = await availableShells(username, machine)
-		const shell = shells.includes('pwsh') ? 'pwsh' : shells.includes('powershell') ? 'powershell' : null
-		if (!shell) return {}
-		const executor = createTargetExecutor(username, { machine })
-		const result = await executor.execShell(shell, '@(Get-CimInstance Win32_LogicalDisk | Select-Object DeviceID, VolumeName) | ConvertTo-Json -Compress')
-		return parseVolumeLabels(result?.stdout ?? result?.stdall ?? '')
-	}
-	catch { return {} }
+	return await loadVolumeLabels(`${username}\u0000${machine}`)
 }
 
 /**

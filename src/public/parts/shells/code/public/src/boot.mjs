@@ -81,6 +81,15 @@ function warmupMarkdownPipeline() {
 	void renderMarkdownAsString('', store.markdownCache, { allowDangerousHtml: false })
 }
 
+/**
+ * 预热工作区选择器根视图（快速访问/卷标）。后端对编辑器常用项目与盘符卷标做了 TTL 缓存，
+ * 页面加载时后台拉一次，用户点开文件夹浏览器时根视图即可秒出（慢扫描不再阻塞弹框）。
+ * @returns {void}
+ */
+function warmupWorkspaceBrowser() {
+	void api.browseMachine(store.machine, '', store.workspace?.path || '').catch(() => {})
+}
+
 /** 初始化。 */
 export async function boot() {
 	store.username = (await whoami()).username
@@ -111,6 +120,7 @@ export async function boot() {
 	const savedWorkspace = urlWorkspace || getPref('workspace')
 	store.workspace = workspaces.find(w => w.id === savedWorkspace) || workspaces[0] || null
 	if (store.workspace && urlWorkspace) setPref('workspace', store.workspace.id)
+	warmupWorkspaceBrowser()
 	// 标签恢复：丢弃指向已消失工作区/会话的标签（草稿标签连同未发送内容保留）；?workspace= 直达时聚焦该工作区的新草稿
 	await loadTabPrefs()
 	store.tabs = store.tabs.filter(tab =>

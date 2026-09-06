@@ -6043,6 +6043,7 @@
 			"quickAccess": "Fljótur aðgangur",
 			"roots": "Drif / rætur",
 			"noMatch": "Engin niðurstaða",
+			"loading": "Hleð…",
 			"error": "Villa við flakk"
 		},
 		"toast": {

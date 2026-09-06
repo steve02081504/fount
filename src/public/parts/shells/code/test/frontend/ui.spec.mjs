@@ -45,6 +45,33 @@ function makeWorkspace(name, files = {}) {
 }
 
 /**
+ * 删除临时目录（Windows 上会话 flush / Defender 瞬时占用文件句柄使 rmSync 偶发失败，重试摊平竞态）。
+ * @param {string} dir - 目录路径。
+ * @param {number} [attempts=20] - 重试次数（间隔 250ms，默认覆盖 5s 的后端落盘窗口）。
+ * @returns {Promise<void>}
+ */
+async function rmDirRetry(dir, attempts = 20) {
+	for (let i = 0; i < attempts; i++) try {
+		rmSync(dir, { recursive: true, force: true })
+		return
+	}
+	catch (error) {
+		if (i === attempts - 1) throw error
+		await new Promise(resolve => setTimeout(resolve, 250))
+	}
+}
+
+/** 需在 context 关闭后清理的工作区目录集（页面关闭时的会话 flush 会重建已删除的 session 文件）。 */
+const leftoverWorkspaceDirs = new Set()
+
+// afterAll 在所有测试与 fixture teardown（页面关闭触发 beforeunload flush）之后运行，此时删除不会被 flush 重建
+test.afterAll(async () => {
+	for (const dir of leftoverWorkspaceDirs)
+		await rmDirRetry(dir)
+	leftoverWorkspaceDirs.clear()
+})
+
+/**
  * 挂起 page watch 的 locale 轮换（每秒整页重建与下拉点击竞态，flake 源）。
  * @param {import('npm:@playwright/test').Page} page - Playwright page。
  * @returns {Promise<void>}
@@ -672,7 +699,8 @@ test.describe('code shell message actions & layout', () => {
 			}).toPass()
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			// 页面关闭时的会话 flush 会重建 session 文件，最终清理交给 afterAll（context 关闭后执行）
+			leftoverWorkspaceDirs.add(dir)
 		}
 	})
 

@@ -6043,6 +6043,7 @@
 			"quickAccess": "Truy cập nhanh",
 			"roots": "Ổ đĩa / thư mục gốc",
 			"noMatch": "Không có kết quả",
+			"loading": "Đang tải…",
 			"error": "Lỗi duyệt"
 		},
 		"toast": {

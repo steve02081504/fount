@@ -6043,6 +6043,7 @@
 			"quickAccess": "Quick access",
 			"roots": "Drives / roots",
 			"noMatch": "No match",
+			"loading": "Loading…",
 			"error": "Browse error"
 		},
 		"toast": {

@@ -6043,6 +6043,7 @@
 			"quickAccess": "⚡",
 			"roots": "💽",
 			"noMatch": "🚫",
+			"loading": "⏳",
 			"error": "⚠️"
 		},
 		"toast": {

@@ -6049,6 +6049,7 @@
 			"quickAccess": "Accesso rapido",
 			"roots": "Unità / radici",
 			"noMatch": "Nessun risultato",
+			"loading": "Caricamento…",
 			"error": "Errore di navigazione"
 		},
 		"toast": {
