@@ -94,14 +94,14 @@ async function findGitDirs(username, machine, root) {
 }
 
 /**
- * 为盘符根视图构建快速访问列表（兄弟目录 + 工作区下含 `.git` 的子目录 + 编辑器常用项目）。
+ * 为盘符根视图构建快速访问列表（工作区兄弟目录 + 工作区下含 `.git` 的子目录 + 编辑器常用项目）。
+ * 编辑器常用项目不依赖活动工作区，无工作区时也作为「最近项目」推荐。
  * @param {string} username - 用户名。
  * @param {string} machine - 目标机器标识。
- * @param {string} workspacePath - 当前工作区路径（空则返回空列表）。
+ * @param {string} workspacePath - 当前工作区路径（可为空）。
  * @returns {Promise<Array<{name: string, path: string, isDirectory: boolean}>>} 快速访问条目（按 path 去重）。
  */
 async function buildQuickAccess(username, machine, workspacePath) {
-	if (!workspacePath) return []
 	const executor = createTargetExecutor(username, { machine })
 	/** @type {Array<{name: string, path: string}>} 候选条目（保持来源顺序）。 */
 	const candidates = []
@@ -117,34 +117,37 @@ async function buildQuickAccess(username, machine, workspacePath) {
 		rawSeen.add(entry.path)
 		candidates.push(entry)
 	}
-	const cleaned = String(workspacePath).replace(/[\\/]+$/, '')
-	// 兄弟目录：工作区父目录下其他文件夹（排除工作区自身；目标机器本地路径拼接）
-	try {
-		const siblings = await executor.execJs(async (workspacePath) => {
-			const fs = await import('node:fs/promises')
-			const path = await import('node:path')
-			/** @type {Array<{name: string, path: string}>} 兄弟目录。 */
-			const out = []
-			let entries
-			try { entries = await fs.readdir(path.dirname(workspacePath), { withFileTypes: true }) } catch { return out }
-			for (const e of entries)
-				if (e.isDirectory() && e.name !== path.basename(workspacePath))
-					out.push({ name: e.name, path: path.join(path.dirname(workspacePath), e.name) })
-			return out
-		}, cleaned)
-		for (const item of siblings) collect(item)
+	const cleaned = workspacePath ? String(workspacePath).replace(/[\\/]+$/, '') : ''
+	if (cleaned) {
+		// 兄弟目录：工作区父目录下其他文件夹（排除工作区自身；目标机器本地路径拼接）
+		try {
+			const siblings = await executor.execJs(async (workspacePath) => {
+				const fs = await import('node:fs/promises')
+				const path = await import('node:path')
+				/** @type {Array<{name: string, path: string}>} 兄弟目录。 */
+				const out = []
+				let entries
+				try { entries = await fs.readdir(path.dirname(workspacePath), { withFileTypes: true }) } catch { return out }
+				for (const e of entries)
+					if (e.isDirectory() && e.name !== path.basename(workspacePath))
+						out.push({ name: e.name, path: path.join(path.dirname(workspacePath), e.name) })
+				return out
+			}, cleaned)
+			for (const item of siblings) collect(item)
+		}
+		catch { /* 父目录不可读则跳过兄弟目录 */ }
+		// 工作区下含 .git 的子目录（有限深度）
+		try {
+			for (const item of await findGitDirs(username, machine, cleaned)) collect(item)
+		}
+		catch { /* git 扫描失败则跳过 */ }
 	}
-	catch { /* 父目录不可读则跳过兄弟目录 */ }
-	// 工作区下含 .git 的子目录（有限深度）
-	try {
-		for (const item of await findGitDirs(username, machine, cleaned)) collect(item)
-	}
-	catch { /* git 扫描失败则跳过 */ }
-	// 编辑器常用项目（VS Code / Notepad++ / JetBrains；已按最后活跃排序）
+	// 编辑器常用项目（VS Code / Notepad++ / JetBrains；已按最后活跃排序；无活动工作区也作为推荐）
 	try {
 		for (const item of await collectEditorSources(username, machine)) collect(item)
 	}
 	catch { /* 编辑器源失败则跳过 */ }
+	if (!candidates.length) return []
 	// 目标机器上已有的工作区路径（当前 machine）也参与去重，避免重复添加
 	const existingWorkspaces = getWorkspaces(username).list
 		.filter(w => String(w.machine) === String(machine))

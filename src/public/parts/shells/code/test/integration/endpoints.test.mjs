@@ -14,16 +14,43 @@ import { codeFetch } from './helpers/code_http.mjs'
 
 /**
  * 启动仅加载 code shell 的测试节点。
+ * @param {object} [options] 透传给 launchNode 的额外选项（如 extraEnv）。
  * @returns {Promise<object>} 测试节点。
  */
-async function launchCodeNode() {
+async function launchCodeNode(options = {}) {
 	return await launchNode({
 		username: 'code-http-user',
 		apiKey: `fount-code-http-${Date.now().toString(36)}`,
 		loadParts: ['shells/code'],
 		p2p: false,
 		minP2pNode: true,
+		...options,
 	})
+}
+
+/**
+ * 构造 VS Code workspace.json 的真实 file:// 文件夹 URL：
+ * Windows 盘符以 %3A 编码（VS Code 真实格式），Unix 保持绝对路径。
+ * @param {string} p 绝对路径
+ * @returns {string} file:// URL
+ */
+function toVsCodeFileUrl(p) {
+	const normalized = p.replace(/\\/g, '/')
+	const drive = /^([A-Za-z]):/.exec(normalized)
+	return `file:///${drive ? drive[1] + '%3A' + normalized.slice(2) : normalized}`
+}
+
+/**
+ * 创建模拟的编辑器数据目录（Cursor 风格 workspaceStorage）并返回项目根。
+ * @param {string} root - APPDATA/XDG_CONFIG_HOME 假根目录。
+ * @returns {Promise<string>} 模拟的编辑器常用项目路径（真实存在）。
+ */
+async function makeFakeEditorSource(root) {
+	const project = path.join(root, 'cursor-proj')
+	await fs.mkdir(project, { recursive: true })
+	await fs.mkdir(path.join(root, 'Cursor', 'User', 'workspaceStorage', 'hash1'), { recursive: true })
+	await fs.writeFile(path.join(root, 'Cursor', 'User', 'workspaceStorage', 'hash1', 'workspace.json'), JSON.stringify({ folder: toVsCodeFileUrl(project) }), 'utf8')
+	return project
 }
 
 /**
@@ -137,13 +164,45 @@ Deno.test({
 	sanitizeOps: false,
 	sanitizeResources: false,
 }, async () => {
-	const node = await launchCodeNode()
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_http_qa_empty_'))
 	try {
-		const body = await (await codeFetch(node, 'GET', '/machines/0/browse?workspace=')).json()
-		assertEquals(body.quickAccess, [])
+		const node = await launchCodeNode({ extraEnv: { [os.platform() === 'win32' ? 'APPDATA' : 'XDG_CONFIG_HOME']: root } })
+		try {
+			const body = await (await codeFetch(node, 'GET', '/machines/0/browse?workspace=')).json()
+			assertEquals(body.quickAccess, [])
+		}
+		finally {
+			await stopNode(node)
+		}
 	}
 	finally {
-		await stopNode(node)
+		await fs.rm(root, { recursive: true, force: true })
+	}
+})
+
+Deno.test({
+	name: 'quick access lists editor-sourced projects even without an active workspace',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_http_qa_es_'))
+	try {
+		await makeFakeEditorSource(root)
+		// 无活动工作区：编辑器常用项目（VS Code/Cursor 最近打开）仍应作为推荐出现
+		const node = await launchCodeNode({ extraEnv: { [os.platform() === 'win32' ? 'APPDATA' : 'XDG_CONFIG_HOME']: root } })
+		try {
+			const body = await (await codeFetch(node, 'GET', '/machines/0/browse?workspace=')).json()
+			const names = body.quickAccess.map(item => item.name)
+			assert(names.includes('cursor-proj'), `无活动工作区时编辑器常用项目应作为快速访问：${JSON.stringify(names)}`)
+			for (const item of body.quickAccess)
+				assertEquals(item.isDirectory, true)
+		}
+		finally {
+			await stopNode(node)
+		}
+	}
+	finally {
+		await fs.rm(root, { recursive: true, force: true })
 	}
 })
 
