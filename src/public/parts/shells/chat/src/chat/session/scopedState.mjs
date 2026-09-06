@@ -89,7 +89,7 @@ export async function saveScopedMemory(username, groupId, channelId, charname, m
  */
 export async function saveScopedWorkdir(username, groupId, channelId, charname, workdir) {
 	const state = await readScopedState(username, groupId, channelId)
-	const entry = { ...state[charname] || {} }
+	const entry = { ...state[charname] }
 	if (workdir && typeof workdir === 'object') entry.workdir = workdir
 	else delete entry.workdir
 	if (Object.keys(entry).length) state[charname] = entry
