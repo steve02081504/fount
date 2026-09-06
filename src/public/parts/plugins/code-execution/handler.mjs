@@ -318,7 +318,7 @@ export async function codeExecutionReplyHandler(result, args) {
 			const attrs = parseTagAttrs(step.attrs)
 			const target = resolveTarget(args, attrs)
 			const coderesult = target.remote || hasExplicitTarget(attrs)
-				? await executorFor(step.attrs).execJs(step.code)
+				? await executorFor(attrs).execJs(step.code)
 				: await run_jscode_for_AI(step.code)
 			console.info(`${args.Charname} JS result:`, coderesult)
 			toolEntry.content = '执行结果：\n' + util.inspect(coderesult, { depth: 4 })
@@ -362,7 +362,7 @@ export async function codeExecutionReplyHandler(result, args) {
 						const attrs = parseTagAttrs(match.groups.attrs)
 						const target = resolveTarget(args, attrs)
 						const coderesult = target.remote || hasExplicitTarget(attrs)
-							? await executorFor(match.groups.attrs).execJs(jsrunner)
+							? await executorFor(attrs).execJs(jsrunner)
 							: await run_jscode_for_AI(jsrunner)
 						console.info(`${args.Charname} inline JS result:`, coderesult)
 						if (coderesult.error) throw coderesult.error
@@ -435,7 +435,7 @@ export async function codeExecutionReplyHandler(result, args) {
 							if (shell_result instanceof Error) throw shell_result
 
 							if (shell_result.code)
-								throw new Error(`${shell_name} execution of code '${runner}' failed with exit code ${shell_result.exitCode}:\n${util.inspect(shell_result)}`)
+								throw new Error(`${shell_name} execution of code '${runner}' failed with exit code ${shell_result.code}:\n${util.inspect(shell_result)}`)
 
 							return shell_result.stdout.trim()
 						})
@@ -514,7 +514,7 @@ export function GetCodeExecutionPreviewUpdater(next) {
 	}
 
 	const toolDefs = [
-		['inline-js', /<inline-js[^>]*>/, '</inline-js>', async (code, previewArgs, meta) => {
+		['inline-js', /<inline-js(?<attrs>[^>]*)>/, '</inline-js>', async (code, previewArgs, meta) => {
 			const attrs = parseTagAttrs(meta?.match?.groups?.attrs)
 			const target = resolveTarget(previewArgs, attrs)
 			let coderesult
@@ -569,7 +569,7 @@ export function GetCodeExecutionPreviewUpdater(next) {
 		})
 		toolDefs.push([
 			`inline-${shell_name}`,
-			new RegExp(`<inline-${shell_name}[^>]*>`),
+			new RegExp(`<inline-${shell_name}(?<attrs>[^>]*)>`),
 			`</inline-${shell_name}>`,
 			async (code, previewArgs, meta) => {
 				const attrs = parseTagAttrs(meta?.match?.groups?.attrs)
@@ -584,7 +584,7 @@ export function GetCodeExecutionPreviewUpdater(next) {
 				if (shell_result instanceof Error) throw shell_result
 
 				if (shell_result.code)
-					throw new Error(`${shell_name} execution of code '${code}' failed with exit code ${shell_result.exitCode}`)
+					throw new Error(`${shell_name} execution of code '${code}' failed with exit code ${shell_result.code}`)
 
 				return shell_result.stdout.trim()
 			},

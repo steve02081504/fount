@@ -1,10 +1,11 @@
+import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
+
 /**
  * 文件操作插件的 GetPrompt：向角色提示中注入文件操作能力说明。
  * @param {import('../../../../../src/decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求参数。
  * @returns {Promise<import('../../../../../src/decl/prompt_struct.ts').single_part_prompt_t>} 单段 prompt。
  */
 export async function getFileOperationsPrompt(args) {
-	const { getConnectedSubfounts } = await import('../../shells/subfounts/src/api.mjs')
 	const prompt = `\
 你可以操作文件系统，通过返回以下格式来触发文件操作：
 

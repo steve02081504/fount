@@ -280,12 +280,11 @@ def self_test() -> int:
 	"""CLI 冒烟：--help 不得被当脚本 exec + 核心增删改移排操作。"""
 	# 回归：--help/-h 应打印用法并退出 0，而不是被 exec（原报错 bad operand type for unary -: '_Helper'）
 	for flag in ("--help", "-h"):
-		out = StringIO()
-		with redirect_stdout(out):
-			code = main([flag])
-		if code != 0 or "Usage:" not in out.getvalue():
-			print(f"{flag} should print usage and exit 0, got code={code}", file=sys.stderr)
-			return 1
+		output = StringIO()
+		with redirect_stdout(output):
+			if main([flag]) != 0 or "Usage:" not in output.getvalue():
+				print(f"{flag} should print usage and exit 0", file=sys.stderr)
+				return 1
 
 	# 增改移删排 + 定位写入
 	data = {"a": {"c": 1, "b": 2}}

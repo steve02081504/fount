@@ -179,7 +179,7 @@ export class chatReplyRequest_t {
 	/** 请求级 AI 源覆盖（已实例化的 `serviceSources/AI` 部件，调用方负责 loadPart）。缺省/无效值时角色使用自身配置的 AI 源。 */
 	ai_source?: import('./AIsource.ts').AIsource_t<any, any>
 	/** 请求级默认目标机器与工作目录（代码执行 / 文件读写等功能的默认目标）。machine 为目标机器标识（当前为 subfount 数字 id 的十进制字符串，"0"=本机；保留 string 以便未来扩展）。由调用方（shell 等请求构建者）创建传入；char 可传给插件就地 mutate 字段，生成结束由 chat 引擎按 char×频道 快照写回本机。用户无需感知其内部结构。 */
-	workdir?: { machine?: string, path: string }
+	workdir?: { machine?: string, path?: string }
 	generation_options?: GenerationOptions_t
 }
 

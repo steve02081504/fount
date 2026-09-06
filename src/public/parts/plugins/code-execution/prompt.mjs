@@ -2,6 +2,8 @@ import process from 'node:process'
 
 import { available } from 'npm:@steve02081504/exec'
 
+import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
+
 /**
  * 代码执行插件的 GetPrompt：向角色提示中注入代码执行能力说明。
  * @param {import('../../../../../src/decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求参数。
@@ -20,7 +22,6 @@ export async function getCodeExecutionPrompt(args) {
 		)
 	).filter(Boolean).join('\n')
 
-	const { getConnectedSubfounts } = await import('../../shells/subfounts/src/api.mjs')
 	const prompt = `\
 你可以运行js或${availableShells.join('、')}代码，通过返回以下格式来触发执行并获取结果：
 <run-js>code</run-js>

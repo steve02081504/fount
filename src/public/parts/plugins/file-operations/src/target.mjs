@@ -14,7 +14,7 @@ import process from 'node:process'
 import { async_eval } from 'npm:@steve02081504/async-eval'
 import { available, exec, shell_exec_map } from 'npm:@steve02081504/exec'
 
-import { executeCodeOnSubfount, executeShellOnSubfount } from '../../../shells/subfounts/src/api.mjs'
+import { executeCodeOnSubfount, executeShellOnSubfount, getAllSubfounts } from '../../../shells/subfounts/src/api.mjs'
 
 /**
  * 目标描述。
@@ -102,7 +102,6 @@ export async function machineDefaultShell(username, machine) {
 		if (process.platform === 'win32') return availability.pwsh ? 'pwsh' : 'powershell'
 		return availability.bash ? 'bash' : 'sh'
 	}
-	const { getAllSubfounts } = await import('../../../shells/subfounts/src/api.mjs')
 	const info = getAllSubfounts(username).find(s => s.id === machineId)
 	const shells = info?.deviceInfo?.shells
 	if (!shells || typeof shells !== 'object') return ''
@@ -122,7 +121,6 @@ export async function availableShells(username, machine) {
 		const availability = await available
 		return Object.keys(shell_exec_map).filter(name => availability[name])
 	}
-	const { getAllSubfounts } = await import('../../../shells/subfounts/src/api.mjs')
 	const info = getAllSubfounts(username).find(s => s.id === machineId)
 	const shells = info?.deviceInfo?.shells
 	if (shells && typeof shells === 'object')
@@ -149,7 +147,6 @@ function localDeviceInfo() {
  * @returns {Promise<Array<{id: string, description: string, isConnected: boolean, deviceInfo: object|null}>>} 机器清单。
  */
 export async function listMachines(username) {
-	const { getAllSubfounts } = await import('../../../shells/subfounts/src/api.mjs')
 	const subfounts = getAllSubfounts(username)
 	if (!subfounts.length)
 		// 用户管理器不可用（如独立测试环境）时兜底本机：id "0" 始终为当前进程。
@@ -168,8 +165,8 @@ export async function listMachines(username) {
  * @returns {any} result 值。
  */
 function unwrapEval(evalResult) {
-	if (evalResult && typeof evalResult === 'object' && 'error' in evalResult && evalResult.error)
-		throw evalResult.error instanceof Error ? evalResult.error : new Error(String(evalResult.error?.stack || evalResult.error))
+	if (evalResult?.error)
+		throw evalResult.error instanceof Error ? evalResult.error : new Error(String(evalResult.error.stack || evalResult.error))
 	return evalResult?.result ?? evalResult
 }
 

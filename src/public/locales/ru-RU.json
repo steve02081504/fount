@@ -3596,7 +3596,16 @@
 				"tool": {
 					"overridingFilepath": "Перезаписываю ${filepath}",
 					"readingFilepath": "Читаю ${filepath}",
-					"readingFiles": "Читаю ${count} файлов",
+					"readingFiles": {
+						"switch": "count",
+						"default": "Читаю  файлов",
+						"cases": {
+							"1": "Читаю  файл",
+							"2": "Читаю  файла",
+							"3": "Читаю  файла",
+							"4": "Читаю  файла"
+						}
+					},
 					"replacingFilepath": "Заменяю фрагмент в ${filepath}",
 					"runningLang": "Выполняю ${lang}",
 					"searchingContent": "Ищу ${content}"

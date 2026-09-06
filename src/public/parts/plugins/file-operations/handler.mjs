@@ -6,7 +6,7 @@ import { escapeRegExp, parseRegexFromString } from '../../../../scripts/regex.mj
 import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../shells/chat/src/streaming/index.mjs'
 
 import { collectUpwardContext, formatUpwardContext } from './src/context_files.mjs'
-import { createTargetExecutor, parseTagAttrs, resolveLocalPath, resolveTarget } from './src/target.mjs'
+import { createArgsExecutorResolver, listMachines, parseTagAttrs, resolveLocalPath, resolveTarget } from './src/target.mjs'
 
 /**
  * 判定 buffer 是否大致为文本（前 8KB 无 NUL 字节）。
@@ -56,21 +56,7 @@ async function getFileObjFormPathOrUrl(pathOrUrl) {
  */
 export async function fileOperationsReplyHandler(result, args) {
 	const { AddLongTimeLog, Charname } = args
-	/** @type {Map<string, ReturnType<typeof createTargetExecutor>>} */
-	const executors = new Map()
-
-	/**
-	 * 按标签属性解析目标执行器（缺省读 args.workdir）。
-	 * @param {string|undefined} attrs - 标签属性串。
-	 * @returns {{executor: ReturnType<typeof createTargetExecutor>, target: ReturnType<typeof resolveTarget>}} 执行器与目标。
-	 */
-	function executorFor(attrs) {
-		const target = resolveTarget(args, { machine: parseTagAttrs(attrs).machine })
-		const key = target.machine + '|' + (target.workdir || '')
-		if (!executors.has(key))
-			executors.set(key, createTargetExecutor(args.username, target))
-		return { executor: executors.get(key), target }
-	}
+	const executorFor = createArgsExecutorResolver(args)
 
 	const { content } = result
 	let regen = false
@@ -81,8 +67,8 @@ export async function fileOperationsReplyHandler(result, args) {
 		files: [],
 	}
 
-	// 设置默认工作目录：<set-workdir machine="..." path="..."></set-workdir>；machine/path 独立更新，
-	// 只指定其中一个时保留另一个不变；两者都不填（完全留空）时回到本机。
+	// 设置默认工作目录：<set-workdir machine="..." path="..."></set-workdir>；指定 machine 会替换机器并清除已有 path，
+	// 指定 path 会更新路径，两者都留空时回到本机。
 	// 就地 mutate args.workdir（chat 经 triggerReply 持久化到 scoped state），并把结果写进 chat_scoped_char_memory
 	// （code shell 的会话 memory 经 WS done 回传持久化，后续请求以其覆盖工作区默认）。
 	const set_workdir_matches = [...content.matchAll(/<set-workdir(?<attrs>[^>]*?)(?:\/>|>\s*<\/set-workdir>)/g)]
@@ -110,7 +96,6 @@ export async function fileOperationsReplyHandler(result, args) {
 
 	const list_machines_matches = [...content.matchAll(/<list-machines(?<attrs>[^>]*)>(?<content>[^]*?)<\/list-machines>/g)]
 	if (list_machines_matches.length) {
-		const { listMachines } = await import('./src/target.mjs')
 		const machines = await listMachines(args.username)
 		const content = '可用机器列表：\n' + renderMarkdownCodeBlock(JSON.stringify(machines, null, 2), { lang: 'json' })
 		AddLongTimeLog({ name: 'file-operations', role: 'tool', content, files: [] })
@@ -119,18 +104,20 @@ export async function fileOperationsReplyHandler(result, args) {
 
 	const view_files_matches = [...content.matchAll(/<view-file(?<attrs>[^>]*)>(?<paths>[^]*?)<\/view-file>/g)]
 	if (view_files_matches.length) {
-		const attrs = view_files_matches[0].groups.attrs
-		const paths = view_files_matches.flatMap(match => match.groups.paths.split('\n').map(p => p.trim()).filter(path => path))
-		if (paths.length) {
-			const logContent = '<view-file>' + (attrs || '') + '\n' + paths.join('\n') + '\n</view-file>\n'
+		for (const view_match of view_files_matches) {
+			const attrs = view_match.groups.attrs
+			const paths = view_match.groups.paths.split('\n').map(p => p.trim()).filter(path => path)
+			if (!paths.length) continue
+			const logContent = '<view-file' + (attrs || '') + '>\n' + paths.join('\n') + '\n</view-file>\n'
 			if (!tool_calling_log.content) {
 				tool_calling_log.content += logContent
-				AddLongTimeLog(tool_calling_log) // Add log only once if it wasn't added before
+				AddLongTimeLog(tool_calling_log)
 			}
-			else tool_calling_log.content += logContent // Append if already added
+			else tool_calling_log.content += logContent
 
 			console.info('AI查看的文件：', paths)
-			const { executor, target } = executorFor(attrs)
+			const target = resolveTarget(args, parseTagAttrs(attrs))
+			const executor = executorFor(attrs)
 			const files = []
 			let file_content = ''
 			for (const path of paths)
@@ -164,12 +151,7 @@ export async function fileOperationsReplyHandler(result, args) {
 					file_content += `读取文件失败：${path}\n${renderMarkdownCodeBlock(err.stack || String(err))}\n`
 				}
 
-			AddLongTimeLog({
-				name: 'file-operations',
-				role: 'tool',
-				content: file_content,
-				files
-			})
+			AddLongTimeLog({ name: 'file-operations', role: 'tool', content: file_content, files })
 		}
 		regen = true
 	}
@@ -239,7 +221,7 @@ export async function fileOperationsReplyHandler(result, args) {
 		}
 
 		console.info('AI替换的文件：', replace_files_data)
-		const { executor } = executorFor(replace_match.groups.attrs)
+		const executor = executorFor(replace_match.groups.attrs)
 
 		for (const replace_file of replace_files_data) {
 			const { path, replacements } = replace_file
@@ -324,7 +306,7 @@ export async function fileOperationsReplyHandler(result, args) {
 
 		console.info('AI写入的文件：', path, overrideContent)
 		try {
-			const { executor } = executorFor(override_match.groups.attrs)
+			const executor = executorFor(override_match.groups.attrs)
 			await executor.writeTextFile(path, overrideContent.trim() + '\n')
 			AddLongTimeLog({
 				name: 'file-operations',

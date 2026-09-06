@@ -31,6 +31,8 @@ let viewPath = ''
 let navigating = false
 /** 是否仅显示文件夹（隐藏文件）。 */
 let dirsOnly = false
+/** 浏览请求序号（防止陈旧结果覆盖新导航状态）。 */
+let browseSequence = 0
 
 /**
  * 目录数据源（打开时注入）。
@@ -73,17 +75,17 @@ export async function openFolderBrowser(options) {
 		dialog = await openDialogFromTemplate('folder_browser', {}, {
 			/**
 			 * 绑定浏览操作并加载根目录。
-			 * @param {HTMLDialogElement} dlg - 已打开的对话框。
+			 * @param {HTMLDialogElement} dialogElement - 已打开的对话框。
 			 * @returns {Promise<void>} 根目录加载完成。
 			 */
-			onReady: dlg => {
-				dlg.querySelector('#folder-go-button').addEventListener('click', () => {
-					void openEntries(dlg.querySelector('#folder-path-input').value, dlg)
+			onReady: dialogElement => {
+				dialogElement.querySelector('#folder-go-button').addEventListener('click', () => {
+					void openEntries(dialogElement.querySelector('#folder-path-input').value, dialogElement)
 				})
-				const input = dlg.querySelector('#folder-path-input')
+				const input = dialogElement.querySelector('#folder-path-input')
 				input.addEventListener('input', () => {
 					highlight = 0
-					renderList(dlg)
+					renderList(dialogElement)
 				})
 				input.addEventListener('keydown', event => {
 					if (navigating) {
@@ -91,7 +93,7 @@ export async function openFolderBrowser(options) {
 						if (event.key === 'ArrowDown' || event.key === 'ArrowUp') return
 						if (event.key === 'Enter') {
 							event.preventDefault()
-							void openEntries(event.currentTarget.value, dlg)
+							void openEntries(event.currentTarget.value, dialogElement)
 						}
 						return
 					}
@@ -99,28 +101,28 @@ export async function openFolderBrowser(options) {
 						event.preventDefault()
 						if (!filtered.length) return
 						highlight = Math.min(highlight + 1, filtered.length - 1)
-						renderList(dlg)
+						renderList(dialogElement)
 					}
 					else if (event.key === 'ArrowUp') {
 						event.preventDefault()
 						if (!filtered.length) return
 						highlight = Math.max(highlight - 1, 0)
-						renderList(dlg)
+						renderList(dialogElement)
 					}
 					else if (event.key === 'Enter') {
 						event.preventDefault()
 						const target = filtered[highlight]
-						if (target) void openEntries(target.path, dlg)
-						else void openEntries(event.currentTarget.value, dlg)
+						if (target) void openEntries(target.path, dialogElement)
+						else void openEntries(event.currentTarget.value, dialogElement)
 					}
 				})
-				dlg.querySelector('#folder-select-button').addEventListener('click', () => {
-					dlg.close()
-					void onSelect(dlg.querySelector('#folder-path-input').value)
+				dialogElement.querySelector('#folder-select-button').addEventListener('click', () => {
+					dialogElement.close()
+					void onSelect(dialogElement.querySelector('#folder-path-input').value)
 				})
 				// 先弹框显示加载占位，数据到达后再渲染（根视图含慢速的后端快速访问构建）
-				showStatus(dlg, 'util.folderBrowser.loading')
-				void openEntries('', dlg, options.initialWorkspace || '')
+				showStatus(dialogElement, 'util.folderBrowser.loading')
+				void openEntries('', dialogElement, options.initialWorkspace || '')
 			},
 		})
 	}
@@ -133,35 +135,38 @@ export async function openFolderBrowser(options) {
 /**
  * 列出目录内容。
  * @param {string} path - 目录路径。
- * @param {HTMLDialogElement} [dlg] - 对话框（缺省用当前打开的）。
+ * @param {HTMLDialogElement} [dialogElement] - 对话框（缺省用当前打开的）。
  * @param {string} [workspaceParam] - 根视图快速访问的工作区路径。
  * @returns {Promise<void>}
  */
-async function openEntries(path, dlg = dialog, workspaceParam = '') {
-	if (!dlg) return
+async function openEntries(path, dialogElement = dialog, workspaceParam = '') {
+	if (!dialogElement) return
+	const seq = ++browseSequence
 	try {
 		const data = await browse(path, workspaceParam)
+		if (seq !== browseSequence) return
 		quickAccess = data.quickAccess || []
 		viewPath = data.path
 		entries = !data.path ? [...quickAccess, ...data.entries] : data.entries
 		highlight = 0
-		dlg.querySelector('#folder-path-input').value = data.path
-		renderList(dlg)
+		dialogElement.querySelector('#folder-path-input').value = data.path
+		renderList(dialogElement)
 	}
 	catch (error) {
+		if (seq !== browseSequence) return
 		onError(error)
-		showStatus(dlg, 'util.folderBrowser.error')
+		showStatus(dialogElement, 'util.folderBrowser.error')
 	}
 }
 
 /**
  * 在条目容器中显示状态占位（加载中 / 出错，data-i18n 文案 + daisyUI loading ring）。
- * @param {HTMLDialogElement} dlg - 对话框。
+ * @param {HTMLDialogElement} dialogElement - 对话框。
  * @param {string} i18nKey - i18n 键（`util.folderBrowser.loading` / `util.folderBrowser.error`）。
  * @returns {void}
  */
-function showStatus(dlg, i18nKey) {
-	const container = dlg.querySelector('#folder-entries')
+function showStatus(dialogElement, i18nKey) {
+	const container = dialogElement.querySelector('#folder-entries')
 	container.replaceChildren()
 	const status = document.createElement('div')
 	status.className = 'folder-browser-status'
@@ -176,13 +181,13 @@ function showStatus(dlg, i18nKey) {
 
 /**
  * 渲染条目列表（基于输入框过滤词；高亮项滚动可见，根视图快速访问分组）。
- * @param {HTMLDialogElement} [dlg] - 对话框（缺省用当前打开的）。
+ * @param {HTMLDialogElement} [dialogElement] - 对话框（缺省用当前打开的）。
  * @returns {void}
  */
-function renderList(dlg = dialog) {
-	if (!dlg) return
-	const input = dlg.querySelector('#folder-path-input')
-	const container = dlg.querySelector('#folder-entries')
+function renderList(dialogElement = dialog) {
+	if (!dialogElement) return
+	const input = dialogElement.querySelector('#folder-path-input')
+	const container = dialogElement.querySelector('#folder-entries')
 	const raw = input.value
 	// 编辑路径状态：输入含路径分隔符，且目录部分（最后一个 / 或 \ 之前）已偏离当前视图路径 → 取消选中，回车跳转
 	const lastSep = Math.max(raw.lastIndexOf('/'), raw.lastIndexOf('\\'))
@@ -259,43 +264,8 @@ function renderList(dlg = dialog) {
 /* ---------------- 全局样式注入 ---------------- */
 
 {
-	const style = document.createElement('style')
-	style.textContent = /* css */ `\
-.folder-browser-entry {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	width: 100%;
-	padding: 0.375rem 0.75rem;
-	font-size: 0.875rem;
-	text-align: left;
-	background: transparent;
-	border: 0;
-	cursor: pointer;
-}
-.folder-browser-entry.active {
-	background: color-mix(in oklab, var(--color-primary) 15%, transparent);
-}
-.folder-browser-group {
-	padding: 0.25rem 0.75rem;
-	font-size: 0.75rem;
-	font-weight: 600;
-	opacity: 0.6;
-}
-.folder-browser-empty {
-	padding: 1rem 0.75rem;
-	text-align: center;
-	opacity: 0.6;
-}
-.folder-browser-status {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.5rem;
-	padding: 1rem 0.75rem;
-	font-size: 0.875rem;
-	opacity: 0.6;
-}
-`
-	document.head.prepend(style)
+	const link = document.createElement('link')
+	link.rel = 'stylesheet'
+	link.href = new URL('./folderBrowser.css', import.meta.url).href
+	document.head.prepend(link)
 }

@@ -120,15 +120,12 @@ Deno.test('MAX_CONSOLE_ERRORS is the fail-fast abort threshold at 13', () => {
  * @returns {{ type: () => string, text: () => string }} console 消息
  */
 function consoleMsg(type, text) {
-	/**
-	 * @returns {string} 消息类型
-	 */
-	const typeFn = () => type
-	/**
-	 * @returns {string} 消息文本
-	 */
-	const textFn = () => text
-	return { type: typeFn, text: textFn }
+	return {
+		/** @returns {string} 消息类型 */
+		type: () => type,
+		/** @returns {string} 消息文本 */
+		text: () => text,
+	}
 }
 
 /**
@@ -141,11 +138,11 @@ function createMockSession() {
 	/**
 	 * 注册事件监听器。
 	 * @param {string} name 事件名
-	 * @param {(arg: unknown) => void} cb 监听器
+	 * @param {(arg: unknown) => void} callback 监听器
 	 * @returns {void}
 	 */
-	const on = (name, cb) => {
-		;(listeners[name] ??= []).push(cb)
+	const on = (name, callback) => {
+		;(listeners[name] ??= []).push(callback)
 	}
 	/**
 	 * CDP 方法调用。
@@ -169,11 +166,11 @@ function createMockPage() {
 	/**
 	 * 注册事件监听器。
 	 * @param {string} name 事件名
-	 * @param {(arg: unknown) => void} cb 监听器
+	 * @param {(arg: unknown) => void} callback 监听器
 	 * @returns {void}
 	 */
-	const on = (name, cb) => {
-		;(listeners[name] ??= []).push(cb)
+	const on = (name, callback) => {
+		;(listeners[name] ??= []).push(callback)
 	}
 	/**
 	 * 触发 console 事件。
@@ -222,14 +219,13 @@ Deno.test('createBrowserDiagnostics skips browser resource-failure console messa
 
 Deno.test('createBrowserDiagnostics threshold ignores resource-failure console messages', async () => {
 	let thresholdHits = 0
-	/**
-	 * @returns {void}
+	const diagnostics = createBrowserDiagnostics({ /**
+	 *
 	 */
-	const onThreshold = () => { thresholdHits += 1 }
-	const diagnostics = createBrowserDiagnostics({ onConsoleErrorThreshold: onThreshold })
+		onConsoleErrorThreshold: () => { thresholdHits += 1 } })
 	const page = createMockPage()
 	await diagnostics.attach(page)
-	for (let i = 0; i < MAX_CONSOLE_ERRORS * 2; i++)
+	for (let errorIndex = 0; errorIndex < MAX_CONSOLE_ERRORS * 2; errorIndex++)
 		page.emitConsole(consoleMsg('error', 'Failed to load resource: net::ERR_CONNECTION_REFUSED'))
 	assertEquals(diagnostics.consoleErrors.length, 0)
 	assertEquals(thresholdHits, 0)
@@ -250,14 +246,13 @@ Deno.test('createBrowserDiagnostics merges shouldIgnoreNetwork with the default 
 		/** @returns {string} 请求方法 */
 		method: () => 'GET',
 	})
-	/**
-	 * 额外网络豁免：静态站上 fount 服务（localhost:8931）必然连不上。
-	 * @param {{ url?: string }} entry 网络条目
-	 * @returns {boolean} 是否豁免
-	 */
-	const ignoreFountService = entry => entry.url?.includes('localhost:8931')
 	const diagnostics = createBrowserDiagnostics({
-		shouldIgnoreNetwork: ignoreFountService,
+		/**
+		 * 额外网络豁免：静态站上 fount 服务（localhost:8931）必然连不上。
+		 * @param {{ url?: string }} entry 网络条目
+		 * @returns {boolean} 是否豁免
+		 */
+		shouldIgnoreNetwork: entry => entry.url?.includes('localhost:8931'),
 	})
 	const page = createMockPage()
 	await diagnostics.attach(page)
@@ -278,14 +273,13 @@ Deno.test('isBrowserResourceFailureConsoleText matches failed resource loads', (
 
 Deno.test('createBrowserDiagnostics fires onConsoleErrorThreshold at MAX_CONSOLE_ERRORS', async () => {
 	let thresholdHits = 0
-	/**
-	 * @returns {void}
+	const diagnostics = createBrowserDiagnostics({ /**
+	 *
 	 */
-	const onThreshold = () => { thresholdHits += 1 }
-	const diagnostics = createBrowserDiagnostics({ onConsoleErrorThreshold: onThreshold })
+		onConsoleErrorThreshold: () => { thresholdHits += 1 } })
 	const page = createMockPage()
 	await diagnostics.attach(page)
-	for (let i = 0; i < MAX_CONSOLE_ERRORS; i++) page.emitConsole(consoleMsg('error', `e${i}`))
+	for (let errorIndex = 0; errorIndex < MAX_CONSOLE_ERRORS; errorIndex++) page.emitConsole(consoleMsg('error', `e${errorIndex}`))
 	assertEquals(diagnostics.consoleErrors.length, MAX_CONSOLE_ERRORS)
 	assertEquals(thresholdHits, 1)
 })

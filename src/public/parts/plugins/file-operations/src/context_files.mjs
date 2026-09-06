@@ -29,20 +29,21 @@ export function parseFrontmatter(text) {
  * @returns {RegExp} 匹配用正则。
  */
 export function globToRegExp(glob) {
+	const escapeRegex = /[.+^${}()|[\]\\]/g
 	let re = ''
 	for (let i = 0; i < glob.length; i++) {
 		const ch = glob[i]
-		if (glob[i] === '*' && glob[i + 1] === '*' && glob[i + 2] === '/') {
+		if (ch === '*' && glob[i + 1] === '*' && glob[i + 2] === '/') {
 			re += '(?:.*/)?'
 			i += 2
 		}
-		else if (glob[i] === '*' && glob[i + 1] === '*') {
+		else if (ch === '*' && glob[i + 1] === '*') {
 			re += '.*'
 			i++
 		}
 		else if (ch === '*') re += '[^/]*'
 		else if (ch === '?') re += '[^/]'
-		else re += ch.replace(new RegExp('[.+^${}()|[\\]\\\\]', 'g'), '\\$&')
+		else re += ch.replace(escapeRegex, '\\$&')
 	}
 	return new RegExp(`^${re}$`)
 }
@@ -87,8 +88,7 @@ export async function collectUpwardContext(executor, workspaceRoot, filePath) {
 		const entries = await executor.listDir(dir).catch(() => [])
 		if (entries.length) {
 			const agentsFile = entries.find(e => e.isFile && e.name.toLowerCase() === 'agents.md')
-			if (agentsFile && !seen.has(agentsFile.name + '@' + dir)) {
-				seen.add(agentsFile.name + '@' + dir)
+			if (agentsFile) {
 				const content = await executor.readTextFile(dir + '/' + agentsFile.name).catch(() => null)
 				if (content != null) agents.push({ path: dir + '/' + agentsFile.name, content })
 			}

@@ -10,7 +10,7 @@ import process from 'node:process'
 
 import { assertEquals, assert } from 'jsr:@std/assert'
 
-import { CLEANUP_LEAK_EXIT_CODE, findCleanupLeaks, inGitHubActions, isWindows } from '../core/cleanup_check.mjs'
+import { CLEANUP_LEAK_EXIT_CODE, findCleanupLeaks, inGitHubActions, isWindows, msPlaywrightPath } from '../core/cleanup_check.mjs'
 
 Deno.test('cleanup leak exit code is distinct from pass/fail', () => {
 	assertEquals(CLEANUP_LEAK_EXIT_CODE, 3)
@@ -51,9 +51,9 @@ Deno.test('findCleanupLeaks stays empty when no ms-playwright dir exists', () =>
 Deno.test('findCleanupLeaks reports a stray ms-playwright dir', () => {
 	if (inGitHubActions()) return
 	withIsolatedCleanupEnv(scratch => {
-		mkdirSync(join(scratch, 'ms-playwright'))
+		const expected = msPlaywrightPath()
+		mkdirSync(expected, { recursive: true })
 		const leaks = findCleanupLeaks()
-		const expected = join(scratch, 'ms-playwright')
 		assert(leaks.includes(expected), `expected ms-playwright leak, got ${JSON.stringify(leaks)}`)
 	})
 })
@@ -62,21 +62,22 @@ Deno.test('findCleanupLeaks reports a stray ms-playwright dir', () => {
  * 在隔离的临时环境里跑断言：把本机 ms-playwright 位置与临时目录都指到
  * 一个一次性 scratch（fount- 前缀），避免触碰真实用户目录、也不受
  * 真实临时目录里其他 fount[-_]* 条目干扰；无论断言成败都恢复 env 并清理。
- * @param {(scratch: string) => void} fn 断言回调，参数为隔离根目录
+ * @param {(scratch: string) => void} callback 断言回调，参数为隔离根目录
  * @returns {void}
  */
-function withIsolatedCleanupEnv(fn) {
+function withIsolatedCleanupEnv(callback) {
 	const scratch = mkdtempSync(join(tmpdir(), 'fount-cleanup-test-'))
 	const saved = /** @type {Record<string, string | undefined>} */ {}
-	for (const key of ['LOCALAPPDATA', 'XDG_CACHE_HOME', 'TEMP', 'TMP', 'TMPDIR'])
+	for (const key of ['LOCALAPPDATA', 'XDG_CACHE_HOME', 'HOME', 'TEMP', 'TMP', 'TMPDIR'])
 		saved[key] = process.env[key]
 	try {
 		if (isWindows()) process.env.LOCALAPPDATA = scratch
+		else if (process.platform === 'darwin') process.env.HOME = scratch
 		else process.env.XDG_CACHE_HOME = scratch
 		process.env.TEMP = scratch
 		process.env.TMP = scratch
 		process.env.TMPDIR = scratch
-		fn(scratch)
+		callback(scratch)
 	}
 	finally {
 		for (const key of Object.keys(saved)) {

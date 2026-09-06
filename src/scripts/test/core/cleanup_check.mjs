@@ -34,8 +34,11 @@ export function msPlaywrightPath() {
 		const localAppData = process.env.LOCALAPPDATA
 		return localAppData ? join(localAppData, 'ms-playwright') : null
 	}
-	const cacheRoot = process.env.XDG_CACHE_HOME || join(homedir(), '.cache')
-	return join(cacheRoot, 'ms-playwright')
+	if (process.platform === 'darwin') {
+		const home = homedir()
+		return home ? join(home, 'Library', 'Caches', 'ms-playwright') : null
+	}
+	return join(process.env.XDG_CACHE_HOME || join(homedir(), '.cache'), 'ms-playwright')
 }
 
 /**

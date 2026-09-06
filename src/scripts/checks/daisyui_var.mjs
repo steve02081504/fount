@@ -29,7 +29,7 @@ import { listRepoFiles } from './walk.mjs'
 export const DAISYUI_VAR_SUFFIXES = THEME_RADIUS_SUFFIXES
 
 /** daisyUI v4 缩写 → v5 全拼 映射表。 */
-export const DAISYUI_VAR_FULL_NAMES = Object.freeze({
+export const DAISYUI_VAR_FULL_NAMES = {
 	'--b1': '--color-base-100',
 	'--b2': '--color-base-200',
 	'--b3': '--color-base-300',
@@ -50,7 +50,7 @@ export const DAISYUI_VAR_FULL_NAMES = Object.freeze({
 	'--wac': '--color-warning-content',
 	'--er': '--color-error',
 	'--erc': '--color-error-content',
-})
+}
 
 /**
  * 被排除的路径：与 theme_radius 完全一致（测试夹具 / 测试文件 / `.php.html` 诱饵页）。
@@ -61,17 +61,17 @@ export function isDaisyuiVarExcluded(relativePath) {
 	return isThemeRadiusExcluded(relativePath)
 }
 
-const ABBR_ALTERNATION = Object.keys(DAISYUI_VAR_FULL_NAMES)
+const ABBREVIATION_ALTERNATION = Object.keys(DAISYUI_VAR_FULL_NAMES)
 	.map(name => name.slice(2))
 	.sort((a, b) => b.length - a.length)
 	.join('|')
 
 /**
- * 命中形态：`var(--缩写` 引用，或 `--缩写:` 定义 / 内联赋值。
+ * 命中形态：`var(--缩写` 引用、`@property --缩写` 声明，或 `--缩写:` 定义 / 内联赋值。
  * `\b` 保证不命中 `--padding` / `--primary` / `--border` 等长名（缩写后紧跟单词字符即非边界）。
  */
-const ABBR_VAR_RE = new RegExp(
-	`(?:var\\(\\s*)(--(?:${ABBR_ALTERNATION}))\\b|(?<![\\w-])(--(?:${ABBR_ALTERNATION}))\\b\\s*:`,
+const ABBREVIATION_VAR_RE = new RegExp(
+	`(?:var\\(\\s*)(--(?:${ABBREVIATION_ALTERNATION}))\\b|@property\\s+(--(?:${ABBREVIATION_ALTERNATION}))\\b|(?<![\\w-])(--(?:${ABBREVIATION_ALTERNATION}))\\b\\s*:`,
 	'gu',
 )
 
@@ -96,7 +96,7 @@ function stripComments(relativePath, content) {
 }
 
 /**
- * @typedef {{ path: string, line: number, token: string, abbr: string, full: string }} DaisyuiVarIssue 命中条目
+ * @typedef {{ path: string, line: number, token: string, abbreviation: string, full: string }} DaisyuiVarIssue 命中条目
  */
 
 /**
@@ -120,16 +120,15 @@ function lineNumberAt(content, index) {
 export function scanFileDaisyuiVar(relativePath, content) {
 	/** @type {DaisyuiVarIssue[]} */
 	const issues = []
-	const text = stripComments(relativePath, content)
 	const lines = content.split('\n')
 	const ignoredLines = new Set()
 	for (let index = 0; index < lines.length - 1; index++)
 		if (DAISYUI_VAR_IGNORE_DIRECTIVE.test(lines[index])) ignoredLines.add(index + 2)
-	for (const match of text.matchAll(ABBR_VAR_RE)) {
-		const abbr = match[1] ?? match[2]
+	for (const match of stripComments(relativePath, content).matchAll(ABBREVIATION_VAR_RE)) {
+		const abbreviation = match[1] ?? match[2] ?? match[3]
 		const line = lineNumberAt(content, match.index)
 		if (ignoredLines.has(line)) continue
-		issues.push({ path: relativePath, line, token: match[0].trim(), abbr, full: DAISYUI_VAR_FULL_NAMES[abbr] })
+		issues.push({ path: relativePath, line, token: match[0].trim(), abbreviation, full: DAISYUI_VAR_FULL_NAMES[abbreviation] })
 	}
 	return issues
 }
