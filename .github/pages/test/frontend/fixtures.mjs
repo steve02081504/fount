@@ -34,6 +34,9 @@ export function createPagesFixtures(options = {}) {
 		context: async ({ browser }, use) => {
 			const context = await browser.newContext({ locale, serviceWorkers: 'block' })
 			await installCdnResponseCache(context)
+			// 死主机探针：挂起请求由页面自身 AbortController 中止（Chrome 会拦 1/9 等端口为 ERR_UNSAFE_PORT，属预期噪声）
+			await context.route('http://127.0.0.1:9/**', () => new Promise(() => {}))
+			await context.route('http://127.0.0.1:1/**', () => new Promise(() => {}))
 			await context.addInitScript(language => {
 				try {
 					localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
