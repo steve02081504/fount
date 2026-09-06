@@ -2,10 +2,11 @@
 /**
  * code shell 编辑器数据源采集测试：VS Code fork 变种目录发现 + workspaceStorage file:// 解码 + Notepad++ 会话。
  */
-import { mkdtemp, mkdir, writeFile, rm, utimes } from 'node:fs/promises'
+import { mkdtemp, mkdir, writeFile, rm, utimes, symlink } from 'node:fs/promises'
 import { homedir, tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
+import { DatabaseSync } from 'node:sqlite'
 
 import { assertEquals } from 'jsr:@std/assert'
 
@@ -58,7 +59,6 @@ async function makeFakeEditorData(root, projects) {
 	await mkdir(path.join(root, 'Cursor', 'User', 'workspaceStorage', 'hash1'), { recursive: true })
 	await mkdir(path.join(root, 'Cursor', 'User', 'workspaceStorage', 'hash2'), { recursive: true })
 	const dbPath = path.join(root, 'Cursor', 'User', 'globalStorage', 'state.vscdb')
-	const { DatabaseSync } = await import('node:sqlite')
 	const db = new DatabaseSync(dbPath)
 	db.exec('CREATE TABLE ItemTable(key TEXT, value BLOB)')
 	const insert = db.prepare('INSERT INTO ItemTable VALUES (?, ?)')
@@ -208,13 +208,11 @@ Deno.test('collectEditorSources dedupes junction/symlink aliases keeping the sho
 		const real = path.join(root, 'real-proj')
 		const alias = path.join(root, 'alias-proj')
 		await mkdir(real, { recursive: true })
-		const { symlink } = await import('node:fs/promises')
 		if (isWin) await symlink(real, alias, 'junction')
 		else await symlink(real, alias)
 		// 两个路径都出现在历史里（同一真实目录）
 		const dbPath = path.join(root, 'Cursor', 'User', 'globalStorage', 'state.vscdb')
 		await mkdir(path.dirname(dbPath), { recursive: true })
-		const { DatabaseSync } = await import('node:sqlite')
 		const db = new DatabaseSync(dbPath)
 		db.exec('CREATE TABLE ItemTable(key TEXT, value BLOB)')
 		const insert = db.prepare('INSERT INTO ItemTable VALUES (?, ?)')

@@ -12,7 +12,7 @@ import path from 'node:path'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
-import { parseFrontmatter } from '../../../plugins/file-operations/src/context_files.mjs'
+import { parseFrontmatter, collectUpwardContext, formatUpwardContext } from '../../../plugins/file-operations/src/context_files.mjs'
 import { createTargetExecutor, joinWorkdir } from '../../../plugins/file-operations/src/target.mjs'
 
 /** 自带 profile（mode）。 */
@@ -311,7 +311,7 @@ export async function renderCommand(command, argv, executor) {
 		const shell = match[2]
 		const result = await executor.execShell(shell || null, cmd)
 		if (result instanceof Error) throw result
-		if (result.code) throw new Error(`命令执行失败（exit ${result.exitCode}）：${cmd}\n${result.stdall || result.stderr || ''}`)
+		if (result.code) throw new Error(`命令执行失败（exit ${result.code}）：${cmd}\n${result.stdall || result.stderr || ''}`)
 		return String(result.stdout ?? '').trim()
 	})
 	// 内联 JS：${expr} → 求值结果（argv 可用）
@@ -378,7 +378,6 @@ export async function searchWorkspaceFiles(username, workdir, query, limit = 20)
 export async function readFileWithContext(username, workdir, filePath) {
 	const executor = createTargetExecutor(username, { machine: workdir?.machine ?? '0', workdir: workdir?.path })
 	const content = await executor.readTextFile(filePath)
-	const { collectUpwardContext, formatUpwardContext } = await import('../../../plugins/file-operations/src/context_files.mjs')
 	const context = await collectUpwardContext(executor, workdir?.path, filePath)
 	return { content, context: formatUpwardContext(context) }
 }

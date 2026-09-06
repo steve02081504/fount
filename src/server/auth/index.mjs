@@ -645,23 +645,23 @@ export function getLastActiveUsername() {
 	if (!names.length) return ''
 	if (names.length === 1) return names[0]
 	let best = names[0]
-	let bestAt = users[best].lastActiveAt ?? users[best].createdAt ?? 0
+	let latestActivityAt = users[best].lastActiveAt ?? users[best].createdAt ?? 0
 	for (const name of names) {
-		const at = users[name].lastActiveAt ?? users[name].createdAt ?? 0
-		if (at > bestAt) {
+		const activityAt = users[name].lastActiveAt ?? users[name].createdAt ?? 0
+		if (activityAt > latestActivityAt) {
 			best = name
-			bestAt = at
+			latestActivityAt = activityAt
 		}
 	}
-	if (bestAt) return best
-	const userDir = path.join(data_path, 'users')
+	if (latestActivityAt) return best
+	const userDirectory = path.join(data_path, 'users')
 	let bestMtime = -1
 	try {
-		for (const entry of fs.readdirSync(userDir, { withFileTypes: true })) {
+		for (const entry of fs.readdirSync(userDirectory, { withFileTypes: true })) {
 			if (!entry.isDirectory()) continue
-			const st = fs.statSync(path.join(userDir, entry.name), { throwIfNoEntry: false })
-			if (st && st.mtimeMs > bestMtime) {
-				bestMtime = st.mtimeMs
+			const directoryStatus = fs.statSync(path.join(userDirectory, entry.name), { throwIfNoEntry: false })
+			if (directoryStatus && directoryStatus.mtimeMs > bestMtime) {
+				bestMtime = directoryStatus.mtimeMs
 				best = entry.name
 			}
 		}

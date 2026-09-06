@@ -113,15 +113,19 @@ if (args.length) {
 		let username
 		if (command == 'run') username = await getLastActiveUsername()
 		else username = args.shift()
-		let partpath = args.shift()
+		let partPath = args.shift()
+		if (!partPath) {
+			console.errorI18n('fountConsole.ipc.partPathRequired')
+			process.exit(1)
+		}
 		// fount run code -> shells/code
-		if (!partpath.includes('/')) partpath = `shells/${partpath}`
+		if (!partPath.includes('/')) partPath = `shells/${partPath}`
 		// fount run /shells -> shells
-		if (partpath.startsWith('/')) partpath = partpath.slice(1)
+		if (partPath.startsWith('/')) partPath = partPath.slice(1)
 
 		command_obj = {
 			type: 'runpart',
-			data: { username, partpath, args, cwd: process.cwd() },
+			data: { username, partpath: partPath, args, cwd: process.cwd() },
 		}
 	}
 	else if (command == 'shutdown' || command == 'reboot') {

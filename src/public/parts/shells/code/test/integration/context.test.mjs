@@ -75,7 +75,7 @@ Deno.test('commands resolve args and render argv/js/shell inline', async () => {
 		assert(commands.some(c => c.name === 'greet'))
 		const command = await getCommand('u', workdir, 'greet')
 		assert(command.params.name.required)
-		assertThrows(() => resolveCommandArgs(command, {}), undefined, '缺必填参数抛错')
+		assertThrows(() => resolveCommandArgs(command, {}), undefined)
 		assertEquals(resolveCommandArgs(command, { name: 'abc' }).name, 'abc')
 		const { createTargetExecutor } = await import('../../../../plugins/file-operations/src/target.mjs')
 		const executor = createTargetExecutor('u', { machine: 0, workdir: root })

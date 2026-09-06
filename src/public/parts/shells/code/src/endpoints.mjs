@@ -434,13 +434,11 @@ export function setEndpoints(router) {
 	router.get('/api/parts/shells\\:code/sessions/all', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const workspaces = getWorkspaces(username).list || []
-		/** @type {Array<object>} */
-		const sessions = []
-		for (const workspace of workspaces) {
-			const list = await listSessions(username, { machine: workspace.machine, path: workspace.path }).catch(() => [])
-			for (const session of list)
-				sessions.push({ ...session, workspaceId: workspace.id, workspaceName: workspace.name || workspace.path })
-		}
+		const sessions = (await Promise.all(workspaces.map(workspace =>
+			listSessions(username, { machine: workspace.machine, path: workspace.path })
+				.catch(() => [])
+				.then(list => list.map(session => ({ ...session, workspaceId: workspace.id, workspaceName: workspace.name || workspace.path })))
+		))).flat()
 		sessions.sort((a, b) => String(b.updated).localeCompare(String(a.updated)))
 		res.json({ sessions })
 	})
@@ -571,7 +569,8 @@ export function setEndpoints(router) {
 				ws.send(JSON.stringify({ type: 'error', error: 'session and content are required.' }))
 				return
 			}
-			controller = new AbortController()
+			const thisRequestController = new AbortController()
+			controller = thisRequestController
 			/** 已确定条目（send = 用户消息；regen 开始为空，失败/中断时原样返回）。 */
 			const entries = []
 			const requestSession = { ...session, entries: [...session.entries || []] }
@@ -588,7 +587,7 @@ export function setEndpoints(router) {
 					workdir: String(workdir || ''),
 					ai_source: ai_source || undefined,
 					profile,
-					signal: controller.signal,
+					signal: thisRequestController.signal,
 					/**
 					 * 转发流式预览到 WS。
 					 * @param {object} reply - 预览回复。
@@ -605,13 +604,13 @@ export function setEndpoints(router) {
 				ws.send(JSON.stringify({ type: 'done', entries, memory }))
 			}
 			catch (error) {
-				if (controller.signal.aborted)
+				if (thisRequestController.signal.aborted)
 					ws.send(JSON.stringify({ type: 'aborted', entries }))
 				else
 					ws.send(JSON.stringify({ type: 'error', entries, error: String(error?.stack || error) }))
 			}
 			finally {
-				controller = null
+				if (controller === thisRequestController) controller = null
 			}
 		})
 	})

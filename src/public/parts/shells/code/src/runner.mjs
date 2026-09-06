@@ -31,7 +31,7 @@ export { availableShells, localDefaultShell, machineDefaultShell }
  */
 export async function runShellCommand({ username, machine = '0', workdir, shell, command }) {
 	const probeExecutor = createTargetExecutor(username, { machine })
-	const resolvedWorkdir = workdir ?? await probeExecutor.execJs(async () => (await import('node:os')).homedir())
+	const resolvedWorkdir = workdir || await probeExecutor.execJs(async () => (await import('node:os')).homedir())
 	const executor = createTargetExecutor(username, { machine, workdir: resolvedWorkdir })
 	try {
 		const result = await executor.execShell(shell || null, command)

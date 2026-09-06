@@ -8,8 +8,7 @@ const BASE = '/api/parts/shells:code'
  * @returns {Promise<Response>} fetch 响应
  */
 export function codeFetch(node, method, path, body) {
-	const sep = path.includes('?') ? '&' : '?'
-	const url = `${node.baseUrl}${BASE}${path}${sep}fount-apikey=${encodeURIComponent(node.apiKey)}`
+	const url = `${node.baseUrl}${BASE}${path}${path.includes('?') ? '&' : '?'}fount-apikey=${encodeURIComponent(node.apiKey)}`
 	return fetch(url, {
 		method,
 		headers: body ? { 'content-type': 'application/json' } : undefined,
