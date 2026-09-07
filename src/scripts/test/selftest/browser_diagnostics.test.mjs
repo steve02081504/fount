@@ -220,8 +220,8 @@ Deno.test('createBrowserDiagnostics skips browser resource-failure console messa
 Deno.test('createBrowserDiagnostics threshold ignores resource-failure console messages', async () => {
 	let thresholdHits = 0
 	const diagnostics = createBrowserDiagnostics({ /**
-	 *
-	 */
+		 * 控制台错误达到阈值时的回调。
+		 */
 		onConsoleErrorThreshold: () => { thresholdHits += 1 } })
 	const page = createMockPage()
 	await diagnostics.attach(page)
@@ -274,8 +274,8 @@ Deno.test('isBrowserResourceFailureConsoleText matches failed resource loads', (
 Deno.test('createBrowserDiagnostics fires onConsoleErrorThreshold at MAX_CONSOLE_ERRORS', async () => {
 	let thresholdHits = 0
 	const diagnostics = createBrowserDiagnostics({ /**
-	 *
-	 */
+		 * 控制台错误达到阈值时的回调。
+		 */
 		onConsoleErrorThreshold: () => { thresholdHits += 1 } })
 	const page = createMockPage()
 	await diagnostics.attach(page)
