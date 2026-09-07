@@ -1,6 +1,6 @@
 /**
  * AI 源类型别名。
- * @typedef {import('../../../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t
+ * @typedef {import('../../../../../../../../../../../src/decl/AIsource.ts').AIsource_t} AIsource_t
  */
 /**
  * code shell 前端测试用 AI 源 stub：仅用于验证 AI 源 pill 下拉与选择，不发起真实调用。

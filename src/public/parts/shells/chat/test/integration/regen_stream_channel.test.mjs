@@ -8,11 +8,11 @@ import { assertEquals } from 'jsr:@std/assert'
 
 import { createCharBoot } from '../harness.mjs'
 
-const CHAR = 'plain_reply_b'
+const characterId = 'plain_reply_b'
 
 Deno.test('getChannelForCharStream prefers placeholder channelId over default fallback', async () => {
 	const username = `regen-chan-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createCharBoot({ username, chars: CHAR })
+	const { ensureServer } = createCharBoot({ username, chars: characterId })
 	await ensureServer()
 
 	const { getChannelForCharStream } = await import('../../src/chat/session/logEntries.mjs')
@@ -23,7 +23,7 @@ Deno.test('getChannelForCharStream prefers placeholder channelId over default fa
 	const { getActiveGroupRuntime } = await import('../../src/chat/session/persistence.mjs')
 
 	const groupId = await newGroup(username, { name: 'regen-chan' })
-	await addchar(groupId, CHAR, username)
+	await addchar(groupId, characterId, username)
 
 	// 占位条目：Hub 生成路径构造，带真实频道 id 但不在 chatLog 中
 	const placeholder = new chatLogEntry_t()

@@ -72,6 +72,22 @@ async function waitForTextAndQuiet(username, groupId, channelId, text, expected)
 }
 
 /**
+ * 轮询等待角色回复进入在飞状态（触发已发出、生成尚未完成）。
+ * @param {string} groupId 群
+ * @param {string} channelId 频道
+ * @returns {Promise<void>}
+ */
+async function waitForCharReplyInFlight(groupId, channelId) {
+	const { isCharReplyInFlight } = await import('../../src/chat/session/triggerReply.mjs')
+	const start = Date.now()
+	while (Date.now() - start < 20000) {
+		if (isCharReplyInFlight(groupId, channelId, CHAR)) return
+		await new Promise(resolve => setTimeout(resolve, 60))
+	}
+	throw new Error('char reply never became in-flight')
+}
+
+/**
  * 复现 Hub「重新生成」完整序列（handleRegen 的三个 HTTP 调用）。
  * @param {string} username 用户
  * @param {string} groupId 群
@@ -104,20 +120,20 @@ Deno.test('regen aborting an in-flight auto-reply keeps user history on DAG', as
 
 	await postChannelMessage(username, groupId, channelId, { text: `race1-u1 ${username}` })
 	let rows = await waitForTextAndQuiet(username, groupId, channelId, REPLY_TEXT, 1)
-	const c1 = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
-	assertEquals(!!c1, true, 'settled char reply found')
+	const firstReply = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
+	assertEquals(!!firstReply, true, 'settled char reply found')
 
 	// 用户消息 u2 落库 → pipeline 自动触发的生成在飞 → 立刻 regen c1（abort 竞态窗口）
 	await postChannelMessage(username, groupId, channelId, { text: `race1-u2 ${username}` })
-	await new Promise(resolve => setTimeout(resolve, 250))
-	await runRegenSequence(username, groupId, channelId, c1.eventId)
+	await waitForCharReplyInFlight(groupId, channelId)
+	await runRegenSequence(username, groupId, channelId, firstReply.eventId)
 	await waitForTextAndQuiet(username, groupId, channelId, REPLY_TEXT, 0)
 		.catch(() => { /* dedup 可能吞掉 regen 触发；断言只看历史 */ })
 
 	rows = await rehydratedRows(username, groupId, channelId)
 	assertEquals(countText(rows, `race1-u1 ${username}`), 1, 'user1 preserved after abort race')
 	assertEquals(countText(rows, `race1-u2 ${username}`), 1, 'user2 preserved after abort race')
-	assertEquals(rows.some(row => row.eventId === c1.eventId), false, 'regen target deleted')
+	assertEquals(rows.some(row => row.eventId === firstReply.eventId), false, 'regen target deleted')
 })
 
 Deno.test('user message landing during regen streaming keeps history on DAG', async () => {
@@ -136,19 +152,19 @@ Deno.test('user message landing during regen streaming keeps history on DAG', as
 
 	await postChannelMessage(username, groupId, channelId, { text: `race2-u1 ${username}` })
 	let rows = await waitForTextAndQuiet(username, groupId, channelId, REPLY_TEXT, 1)
-	const c1 = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
-	assertEquals(!!c1, true, 'settled char reply found')
+	const firstReply = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
+	assertEquals(!!firstReply, true, 'settled char reply found')
 
 	// regen 触发的生成在飞（~2s）→ 用户在此期间发送 u2（pipeline 触发被 flightKey 去重）
-	await runRegenSequence(username, groupId, channelId, c1.eventId)
-	await new Promise(resolve => setTimeout(resolve, 250))
+	await runRegenSequence(username, groupId, channelId, firstReply.eventId)
+	await waitForCharReplyInFlight(groupId, channelId)
 	await postChannelMessage(username, groupId, channelId, { text: `race2-u2 ${username}` })
 	await waitForTextAndQuiet(username, groupId, channelId, REPLY_TEXT, 1)
 
 	rows = await rehydratedRows(username, groupId, channelId)
 	assertEquals(countText(rows, `race2-u1 ${username}`), 1, 'user1 preserved')
 	assertEquals(countText(rows, `race2-u2 ${username}`), 1, 'user2 preserved')
-	assertEquals(rows.some(row => row.eventId === c1.eventId), false, 'regen target deleted')
+	assertEquals(rows.some(row => row.eventId === firstReply.eventId), false, 'regen target deleted')
 	assertEquals(countText(rows, REPLY_TEXT) >= 1, true, 'regenerated reply present')
 })
 
@@ -168,25 +184,25 @@ Deno.test('regen-send-regen loop keeps full history on DAG', async () => {
 
 	await postChannelMessage(username, groupId, channelId, { text: `race3-u1 ${username}` })
 	let rows = await waitForTextAndQuiet(username, groupId, channelId, REPLY_TEXT, 1)
-	const c1 = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
+	const firstReply = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
 
 	// regen → 静默 → 发消息 → 静默 → 再 regen（真实用户循环）
-	await runRegenSequence(username, groupId, channelId, c1.eventId)
+	await runRegenSequence(username, groupId, channelId, firstReply.eventId)
 	rows = await waitForTextAndQuiet(username, groupId, channelId, REPLY_TEXT, 1)
-	const c1r = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
-	assertEquals(!!c1r && c1r.eventId !== c1.eventId, true, 'regenerated c1 present')
+	const regeneratedFirstReply = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
+	assertEquals(!!regeneratedFirstReply && regeneratedFirstReply.eventId !== firstReply.eventId, true, 'regenerated c1 present')
 
 	await postChannelMessage(username, groupId, channelId, { text: `race3-u2 ${username}` })
 	rows = await waitForTextAndQuiet(username, groupId, channelId, REPLY_TEXT, 2)
-	const c2 = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
+	const secondReply = [...rows].reverse().find(row => row.charId === CHAR && countText([row], REPLY_TEXT))
 
-	await runRegenSequence(username, groupId, channelId, c2.eventId)
+	await runRegenSequence(username, groupId, channelId, secondReply.eventId)
 	await waitForTextAndQuiet(username, groupId, channelId, REPLY_TEXT, 2)
 
 	rows = await rehydratedRows(username, groupId, channelId)
 	assertEquals(countText(rows, `race3-u1 ${username}`), 1, 'user1 preserved after loop')
 	assertEquals(countText(rows, `race3-u2 ${username}`), 1, 'user2 preserved after loop')
 	assertEquals(countText(rows, REPLY_TEXT), 2, 'two regenerated char replies visible')
-	assertEquals(rows.some(row => row.eventId === c1.eventId), false, 'first target deleted')
-	assertEquals(rows.some(row => row.eventId === c2.eventId), false, 'second target deleted')
+	assertEquals(rows.some(row => row.eventId === firstReply.eventId), false, 'first target deleted')
+	assertEquals(rows.some(row => row.eventId === secondReply.eventId), false, 'second target deleted')
 })

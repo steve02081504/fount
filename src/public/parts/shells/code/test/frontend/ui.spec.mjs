@@ -51,12 +51,12 @@ function makeWorkspace(name, files = {}) {
  * @returns {Promise<void>}
  */
 async function rmDirRetry(dir, attempts = 20) {
-	for (let i = 0; i < attempts; i++) try {
+	for (let attempt = 0; attempt < attempts; attempt++) try {
 		rmSync(dir, { recursive: true, force: true })
 		return
 	}
 	catch (error) {
-		if (i === attempts - 1) throw error
+		if (attempt === attempts - 1) throw error
 		await new Promise(resolve => setTimeout(resolve, 250))
 	}
 }
@@ -233,7 +233,7 @@ test.describe('code shell composer & placeholders', () => {
 		await composer.click()
 		await page.keyboard.type('流式测试')
 		await page.keyboard.press('Control+Enter')
-		// 生成中气泡出现，且随 preview 增长显示第一段（后续 chunk 在 ~300ms 后到达）
+		// 生成中气泡出现，且随 preview 增长显示第一段（后续 chunk 在 ~800ms 后到达）
 		const generating = page.locator('.code-message.generating .code-message-body')
 		await expect(generating).toBeVisible({ timeout: 60_000 })
 		await expect(generating).toContainText('流式第一', { timeout: 60_000 })
@@ -246,12 +246,16 @@ test.describe('code shell composer & placeholders', () => {
 		await page.addInitScript(pref => localStorage.setItem(pref + 'charname', 'streamAgent'), PREF_PREFIX)
 		await openCode(page, baseUrl)
 		// 挂起 locale 轮换（每秒整页重建会使下拉与点击竞态）
-		await page.evaluate(() => globalThis.fount?.test?.watch?.holdLocale?.())
-		// 请求级 AI 源选 stubAI：角色走 StructCall 委托路径
-		await page.locator('#ai-source-pill').click()
-		await page.locator('#ai-source-menu').locator('.menu-item', { hasText: 'stubAI' }).click()
-		await expect(page.locator('#ai-source-pill-label')).toHaveText('stubAI')
-		await page.evaluate(() => globalThis.fount?.test?.watch?.releaseLocale?.())
+		await holdLocale(page)
+		try {
+			// 请求级 AI 源选 stubAI：角色走 StructCall 委托路径
+			await page.locator('#ai-source-pill').click()
+			await page.locator('#ai-source-menu').locator('.menu-item', { hasText: 'stubAI' }).click()
+			await expect(page.locator('#ai-source-pill-label')).toHaveText('stubAI')
+		}
+		finally {
+			await releaseLocale(page)
+		}
 		const composer = page.locator('#composer-input')
 		await composer.click()
 		await page.keyboard.type('流式测试 AI 源')
@@ -321,6 +325,13 @@ test.describe('code shell pill dropdowns', () => {
 		await list.locator('.char-option', { hasText: 'testAgent' }).click()
 		await expect(dialog).toBeHidden()
 		await expect(page.locator('#char-pill-label')).toHaveText('testAgent')
+		// 发送一条消息，按回复内容验证切换已生效（testAgent 与 codeBuddy 的回复文案不同）
+		const composer = page.locator('#composer-input')
+		await composer.click()
+		await page.keyboard.type('切换验证')
+		await page.keyboard.press('Control+Enter')
+		await expect(page.locator('.code-message.role-user')).toContainText('切换验证', { timeout: 60_000 })
+		await expect(page.locator('.code-message.role-char')).toContainText('我是 testAgent，角色切换验证。', { timeout: 60_000 })
 	})
 })
 
@@ -564,8 +575,12 @@ test.describe('code shell tabs', () => {
 			await page.locator('#composer-input').click()
 			await page.keyboard.type('draft B')
 			await expect(page.locator('#tab-strip .code-tab')).toHaveCount(2)
-			// 等后端防抖落盘后刷新，标签列表与活动草稿内容应从后端恢复
-			await page.waitForTimeout(800)
+			// 等后端防抖落盘：轮询 /tabs 直到两个草稿标签且第二个 draft 为 'draft B'
+			await expect(async () => {
+				const tabsData = await (await page.request.get(`${baseUrl}${API_BASE}/tabs`)).json()
+				expect(tabsData.tabs).toHaveLength(2)
+				expect(tabsData.tabs[1].draft).toBe('draft B')
+			}).toPass()
 			await page.reload({ waitUntil: 'domcontentloaded' })
 			await page.waitForFunction(() => document.querySelector('#composer-input')?.contentEditable === 'true')
 			await page.waitForFunction(() => document.activeElement?.id === 'composer-input')

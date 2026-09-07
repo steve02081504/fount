@@ -37,6 +37,7 @@ async function releaseLocale(page) {
 test.describe('code shell smoke', () => {
 	test('page boots with pills, draft tab, and centered empty-state guidance', async ({ page, baseUrl }) => {
 		await openCodeSmoke(page, baseUrl)
+		await holdLocale(page)
 		await expect(page.locator('h1')).toHaveCount(1)
 		await expect(page.locator('#machine-pill-label')).toContainText('本机')
 		await expect(page.locator('#workspace-pill-label')).toContainText('未选择工作区')
@@ -49,6 +50,7 @@ test.describe('code shell smoke', () => {
 		await expect(page.locator('#code-wordmark')).toBeVisible()
 		// 启动即有一个活动草稿标签
 		await expect(page.locator('#tab-strip .code-tab[data-active="true"] .code-tab-title')).toContainText('新会话')
+		await releaseLocale(page)
 	})
 
 	test('empty state opens folder browser dialog via the workspace pill', async ({ page, baseUrl }) => {
@@ -56,9 +58,9 @@ test.describe('code shell smoke', () => {
 		await holdLocale(page)
 		await page.locator('#workspace-pill').click()
 		await page.locator('#workspace-menu').locator('[data-i18n="code.workspaces.browse"]').click()
-		await releaseLocale(page)
 		await expect(page.locator('dialog.modal:has(#folder-entries)')).toBeVisible()
 		await expect(page.locator('#folder-path-input')).toBeVisible()
+		await releaseLocale(page)
 	})
 
 	test('typing ！ switches to shell mode', async ({ page, baseUrl }) => {

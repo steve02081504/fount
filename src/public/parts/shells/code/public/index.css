@@ -193,6 +193,7 @@
 
 /* 角色消息贴列左，用户消息贴列右（70% 列右缘，而非页面右缘） */
 .code-message {
+	position: relative;
 	width: 100%;
 	font-size: 0.9375rem;
 	line-height: 1.6;
@@ -207,10 +208,8 @@
 
 /* assistant：无气泡，仅名字行 + 正文 */
 .code-message.role-char .code-message-name {
-	font-size: 0.75rem;
 	font-weight: 600;
 	opacity: 0.75;
-	margin-bottom: 0.25rem;
 }
 
 .code-message.role-char .code-message-body > :first-child {
@@ -235,10 +234,6 @@
 }
 
 /* ---------------- 消息操作（hover 操作栏 / 反馈条 / 行内编辑） ---------------- */
-
-.code-message {
-	position: relative;
-}
 
 /* hover 操作栏：浮在气泡右上（气泡间 gap 内），悬停/键盘聚焦时显示 */
 .code-message-actions {
@@ -567,7 +562,7 @@ details.code-tool-log > summary .code-tool-log-name {
 
 /* slash 命令面板（composer 上方弹出卡片） */
 .code-slash-panel {
-	position: absolute;
+	position: fixed;
 	z-index: 60;
 	max-height: 16rem;
 	overflow: auto;

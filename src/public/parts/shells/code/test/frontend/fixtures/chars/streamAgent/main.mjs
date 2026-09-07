@@ -1,6 +1,6 @@
 /**
  * 角色 API 类型别名。
- * @typedef {import('../../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
+ * @typedef {import('../../../../../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 /** 分片流式内容（800ms/片，模拟真实 AI 流式节奏，供生成中气泡断言增量文本）。 */
 const STREAM_CHUNKS = ['流式第一', '段。', '流式第二', '段。']
@@ -84,7 +84,7 @@ export default {
 			 */
 			GetReply: async args => {
 				args.generation_options ??= {}
-				const oriReplyPreviewUpdater = args.generation_options?.replyPreviewUpdater
+				const oriReplyPreviewUpdater = args.generation_options.replyPreviewUpdater
 				/**
 				 * 预览包装（对齐真实角色模板：先经本层再透传请求级更新器）。
 				 * @param {object} _wrappedArgs - 角色请求上下文（未使用）。

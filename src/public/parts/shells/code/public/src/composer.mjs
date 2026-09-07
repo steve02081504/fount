@@ -203,8 +203,8 @@ function navHistory(direction) {
  * @returns {void}
  */
 export function appendLocalHistory(kind, command) {
-	store.historyState.own = [...store.historyState.own.filter(entry => entry !== command), command]
 	if (!command?.trim()) return
+	store.historyState.own = [...store.historyState.own.filter(entry => entry !== command), command]
 	if (store.workspace)
 		void api.appendHistory(target(), kind, command).catch(() => { })
 	else {
@@ -269,7 +269,7 @@ function showSlashPanel(query) {
 	slashPanel.classList.remove('hidden')
 	const hostRect = elements.composerShell.getBoundingClientRect()
 	slashPanel.style.left = `${hostRect.left}px`
-	slashPanel.style.top = `${hostRect.top - 8}px`
+	slashPanel.style.bottom = `${window.innerHeight - hostRect.top}px`
 	slashPanel.style.minWidth = `${Math.max(240, hostRect.width / 2)}px`
 }
 
@@ -330,7 +330,12 @@ async function openCommandParams(command) {
 					label.className = 'form-control w-full mb-2'
 					const caption = document.createElement('div')
 					caption.className = 'label'
-					caption.innerHTML = `<span class="label-text">${name}${spec?.required ? ' *' : ''}${spec?.description ? ` - ${spec.description}` : ''}</span>`
+					const labelText = document.createElement('span')
+					labelText.className = 'label-text'
+					labelText.textContent = name
+					if (spec?.required) labelText.append(' *')
+					if (spec?.description) labelText.append(' - ', spec.description)
+					caption.appendChild(labelText)
 					const input = document.createElement('input')
 					input.className = 'input input-sm input-bordered w-full'
 					input.value = spec?.default || ''

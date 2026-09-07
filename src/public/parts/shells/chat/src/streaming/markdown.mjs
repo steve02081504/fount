@@ -64,9 +64,8 @@ export function renderMarkdownCodeBlock(code, options = {}) {
 	const fence = getSafeFence(content)
 	const { title = '' } = options
 	// 无 lang 时 title 会占据 info 首个 token（被当作语言解析），标题将丢失；补一个占位语言
-	const lang = options.lang?.trim() || (title ? 'text' : '')
 	const info = [
-		lang,
+		options.lang?.trim() || (title ? 'text' : ''),
 		title ? `title="${escapeMarkdownInfoStringValue(title)}"` : '',
 	].filter(Boolean).join(' ')
 	return `${fence}${info ? info : ''}\n${content}\n${fence}`

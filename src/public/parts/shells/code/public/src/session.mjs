@@ -541,20 +541,54 @@ window.addEventListener('beforeunload', () => {
 /* ---------------- 发送 / 生成 ---------------- */
 
 let socket = null
+/** 连接建立中的共享等待 Promise（并发调用者复用，连接成功后/失败/关闭时清理）。 */
+let socketOpening = null
 
 /**
  * 获取（懒建立）会话 WebSocket。
+ * 仅 OPEN 状态直接复用；CONNECTING 期间并发调用者共享同一个等待 Promise，连接成功后 resolve。
  * @returns {Promise<WebSocket>} 连接。
  */
 function getSocket() {
-	if (socket && socket.readyState <= WebSocket.OPEN) return Promise.resolve(socket)
-	return new Promise((resolve, reject) => {
+	if (socket?.readyState === WebSocket.OPEN) return Promise.resolve(socket)
+	if (socketOpening) return socketOpening
+	socketOpening = new Promise((resolve, reject) => {
 		const protocol = location.protocol === 'https:' ? 'wss' : 'ws'
-		socket = new WebSocket(`${protocol}://${location.host}/ws/parts/shells:code/session`)
-		socket.addEventListener('open', () => resolve(socket), { once: true })
-		socket.addEventListener('error', () => reject(new Error('websocket failed')), { once: true })
-		socket.addEventListener('message', onSocketMessage)
+		const ws = new WebSocket(`${protocol}://${location.host}/ws/parts/shells:code/session`)
+		socket = ws
+		let opened = false
+		ws.addEventListener('open', () => {
+			opened = true
+			socketOpening = null
+			resolve(ws)
+		}, { once: true })
+		ws.addEventListener('error', () => {
+			socketOpening = null
+			reject(new Error('websocket failed'))
+		}, { once: true })
+		ws.addEventListener('close', () => {
+			if (socket !== ws) return
+			socketOpening = null
+			// 尚未连上即断开 = 连接失败（error 分支已 reject；此处兜底覆盖无 error 直接 close 的情形）
+			if (opened) handleSocketClose()
+			else reject(new Error('websocket failed'))
+		})
+		ws.addEventListener('message', onSocketMessage)
 	})
+	return socketOpening
+}
+
+/** socket 断开：结束生成气泡、复位生成态并更新发送按钮（防止流式气泡/停止按钮悬挂）。 */
+function handleSocketClose() {
+	const interrupted = store.generating
+	endGeneratingBubble()
+	store.generating = false
+	store.generatingSession = null
+	updateSendButton()
+	if (interrupted) {
+		updateEmptyMode()
+		showToastI18n('error', 'code.error.generate')
+	}
 }
 
 /**

@@ -54,25 +54,60 @@ export async function mountPillChrome() {
 	elements.charSettingsLink = byId('char-settings-link')
 }
 
+/* ---------------- 菜单项 / 分隔线 ---------------- */
+
+/**
+ * 创建菜单项（li > button.menu-item，点击后收起下拉）。
+ * @param {string|Array<string|Node>} text - 项文本（字符串或节点数组，用于多段内容）。
+ * @param {{active?: boolean, onClick?: () => void, disabled?: boolean, className?: string, i18nKey?: string}} [options] - 行为与样式选项。
+ * @returns {HTMLLIElement} 菜单行。
+ */
+function menuItem(text, { active = false, onClick, disabled = false, className = '', i18nKey = '' } = {}) {
+	const li = document.createElement('li')
+	const button = document.createElement('button')
+	button.type = 'button'
+	button.className = 'menu-item' + (active ? ' active' : '') + (className ? ` ${className}` : '')
+	button.disabled = disabled
+	if (i18nKey) button.dataset.i18n = i18nKey
+	else if (text != null)
+		for (const node of Array.isArray(text) ? text : [text]) button.append(node)
+	button.addEventListener('click', () => {
+		document.activeElement?.blur()
+		onClick?.()
+	})
+	li.appendChild(button)
+	return li
+}
+
+/**
+ * 创建菜单分隔线。
+ * @returns {HTMLLIElement} 分隔行。
+ */
+function menuSeparator() {
+	const li = document.createElement('li')
+	const div = document.createElement('div')
+	div.className = 'divider my-1'
+	li.appendChild(div)
+	return li
+}
+
 /* ---------------- 机器 / shell ---------------- */
 
 /** 渲染机器 pill 下拉。 */
 export function renderMachineMenu() {
 	elements.machineMenu.replaceChildren(...store.machines.map(machine => {
-		const li = document.createElement('li')
-		const button = document.createElement('button')
-		button.type = 'button'
-		button.className = 'menu-item' + (String(machine.id) === store.machine ? ' active' : '')
-		button.textContent = machine.id === '0'
+		const text = machine.id === '0'
 			? geti18n('code.machine.local')
 			: `${machine.description || machine.deviceInfo?.hostname || `#${machine.id}`}${machine.isConnected ? '' : ' (' + geti18n('code.machine.offline') + ')'}`
-		button.disabled = machine.id !== '0' && !machine.isConnected
-		button.addEventListener('click', () => {
-			document.activeElement?.blur()
-			void selectMachine(String(machine.id))
+		return menuItem(text, {
+			active: String(machine.id) === store.machine,
+			disabled: machine.id !== '0' && !machine.isConnected,
+			/**
+			 * 选中该机器。
+			 * @returns {void}
+			 */
+			onClick: () => void selectMachine(String(machine.id)),
 		})
-		li.appendChild(button)
-		return li
 	}))
 }
 
@@ -114,57 +149,43 @@ export async function loadShellOptions(machine) {
 
 /** 渲染工作区 pill 下拉（列表 + 浏览/移除）。 */
 export function renderWorkspaceMenu() {
-	elements.workspaceMenu.replaceChildren()
-	const list = store.workspaces
-	if (list.length) {
-		list.forEach(workspace => {
-			const li = document.createElement('li')
-			const button = document.createElement('button')
-			button.type = 'button'
-			button.className = 'menu-item' + (store.workspace?.id === workspace.id ? ' active' : '')
+	const menu = elements.workspaceMenu
+	menu.replaceChildren()
+	if (store.workspaces.length) {
+		store.workspaces.forEach(workspace => {
 			const name = document.createElement('span')
 			name.textContent = workspace.name || workspace.path
 			const path = document.createElement('span')
 			path.className = 'opacity-60 text-xs'
 			path.textContent = workspace.path
-			button.append(name, path)
-			button.addEventListener('click', () => {
-				document.activeElement?.blur()
-				void selectWorkspace(workspace.id)
-			})
-			li.appendChild(button)
-			elements.workspaceMenu.appendChild(li)
+			menu.appendChild(menuItem([name, path], {
+				active: store.workspace?.id === workspace.id,
+				/**
+				 * 选中该工作区。
+				 * @returns {void}
+				 */
+				onClick: () => void selectWorkspace(workspace.id),
+			}))
 		})
-		const separatorLi = document.createElement('li')
-		const separator = document.createElement('div')
-		separator.className = 'divider my-1'
-		separatorLi.appendChild(separator)
-		elements.workspaceMenu.appendChild(separatorLi)
+		menu.appendChild(menuSeparator())
 	}
-	const browseLi = document.createElement('li')
-	const browseBtn = document.createElement('button')
-	browseBtn.type = 'button'
-	browseBtn.className = 'menu-item'
-	browseBtn.dataset.i18n = 'code.workspaces.browse'
-	browseBtn.addEventListener('click', () => {
-		document.activeElement?.blur()
-		void openFolderBrowser()
-	})
-	browseLi.appendChild(browseBtn)
-	elements.workspaceMenu.appendChild(browseLi)
-	if (store.workspace) {
-		const removeLi = document.createElement('li')
-		const removeBtn = document.createElement('button')
-		removeBtn.type = 'button'
-		removeBtn.className = 'menu-item text-error'
-		removeBtn.textContent = geti18n('code.workspaces.remove')
-		removeBtn.addEventListener('click', () => {
-			document.activeElement?.blur()
-			void removeCurrentWorkspace()
-		})
-		removeLi.appendChild(removeBtn)
-		elements.workspaceMenu.appendChild(removeLi)
-	}
+	menu.appendChild(menuItem('', {
+		i18nKey: 'code.workspaces.browse',
+		/**
+		 * 打开文件夹浏览器。
+		 * @returns {void}
+		 */
+		onClick: () => void openFolderBrowser(),
+	}))
+	if (store.workspace)
+		menu.appendChild(menuItem(geti18n('code.workspaces.remove'), {
+			className: 'text-error',
+			/**
+			 * 移除当前工作区。
+			 * @returns {void}
+			 */
+			onClick: () => void removeCurrentWorkspace(),
+		}))
 }
 
 /** 更新工作区 pill 标签。 */
@@ -237,26 +258,22 @@ async function removeCurrentWorkspace() {
 
 /** 渲染 shell pill 下拉（! 模式）。 */
 export function renderShellMenu() {
-	elements.shellMenu.replaceChildren(...(store.shells.length ? store.shells : ['']).map(shell => {
-		const li = document.createElement('li')
-		const button = document.createElement('button')
-		button.type = 'button'
-		button.className = 'menu-item' + (shell === store.shell ? ' active' : '')
-		button.textContent = shell || geti18n('code.composer.shellDefault')
+	elements.shellMenu.replaceChildren(...(store.shells.length ? store.shells : ['']).map(shell => menuItem(shell || geti18n('code.composer.shellDefault'), {
+		active: shell === store.shell,
 		// 无可用 shell 时仅留占位项（执行时按目标机器默认 shell）
-		button.disabled = !shell
-		button.addEventListener('click', () => {
-			document.activeElement?.blur()
+		disabled: !shell,
+		/**
+		 * 应用选中的 shell 并重读原生历史。
+		 */
+		onClick: () => {
 			store.shell = shell
 			// shell 变更后重读原生历史
 			store.historyState.mode = null
 			void ensureHistory('shell')
 			renderShellMenu()
 			renderShellPillLabel()
-		})
-		li.appendChild(button)
-		return li
-	}))
+		},
+	})))
 }
 
 /** 更新 shell pill 标签。 */
@@ -289,22 +306,18 @@ export async function refreshProfiles() {
 
 /** 渲染 mode/profile pill 下拉。 */
 export function renderModeMenu() {
-	elements.modeMenu.replaceChildren(...store.profiles.map(profile => {
-		const li = document.createElement('li')
-		const button = document.createElement('button')
-		button.type = 'button'
-		button.className = 'menu-item' + (profile.name === store.profile ? ' active' : '')
-		button.textContent = profile.name + (profile.source === 'builtin' ? '' : ` (${profile.source})`)
-		button.addEventListener('click', () => {
-			document.activeElement?.blur()
+	elements.modeMenu.replaceChildren(...store.profiles.map(profile => menuItem(profile.name + (profile.source === 'builtin' ? '' : ` (${profile.source})`), {
+		active: profile.name === store.profile,
+		/**
+		 * 应用选中的 mode。
+		 */
+		onClick: () => {
 			store.profile = profile.name
 			setPref('profile', store.profile)
 			renderModeMenu()
 			renderModePillLabel()
-		})
-		li.appendChild(button)
-		return li
-	}))
+		},
+	})))
 }
 
 /** 更新 mode pill 标签。 */
@@ -345,68 +358,40 @@ export async function refreshAiSources() {
  */
 export function renderAiSourceMenu() {
 	const visible = store.aiSources.filter(name => !store.aiHidden.includes(name))
-	/**
-	 * 渲染单个 AI 源菜单项。
-	 * @param {string} name - 源名。
-	 * @returns {HTMLLIElement} 菜单项。
-	 */
-	const item = name => {
-		const li = document.createElement('li')
-		const button = document.createElement('button')
-		button.type = 'button'
-		button.className = 'menu-item' + (name === store.aiSource ? ' active' : '')
-		button.textContent = name + (store.aiDefaults?.includes(name) ? ' ★' : '')
-		button.addEventListener('click', () => {
-			document.activeElement?.blur()
-			store.aiSource = name
-			setPref('aiSource', store.aiSource)
-			renderAiSourceMenu()
-			renderAiSourcePillLabel()
-		})
-		li.appendChild(button)
-		return li
-	}
-	/**
-	 * 渲染菜单分隔线。
-	 * @returns {HTMLLIElement} 分隔行。
-	 */
-	const separator = () => {
-		const li = document.createElement('li')
-		const div = document.createElement('div')
-		div.className = 'divider my-1'
-		li.appendChild(div)
-		return li
-	}
-	elements.aiSourceMenu.replaceChildren(...visible.map(item),
-		(() => {
-			const li = document.createElement('li')
-			const button = document.createElement('button')
-			button.type = 'button'
-			button.className = 'menu-item' + (!store.aiSource ? ' active' : '')
-			button.textContent = geti18n('code.aiSource.charOwn')
-			button.addEventListener('click', () => {
-				document.activeElement?.blur()
+	elements.aiSourceMenu.replaceChildren(
+		...visible.map(name => menuItem(name + (store.aiDefaults?.includes(name) ? ' ★' : ''), {
+			active: name === store.aiSource,
+			/**
+			 * 切换选中的 AI 源。
+			 */
+			onClick: () => {
+				store.aiSource = name
+				setPref('aiSource', store.aiSource)
+				renderAiSourceMenu()
+				renderAiSourcePillLabel()
+			},
+		})),
+		menuItem(geti18n('code.aiSource.charOwn'), {
+			active: !store.aiSource,
+			/**
+			 * 使用角色自带的 AI 源。
+			 */
+			onClick: () => {
 				store.aiSource = ''
 				setPref('aiSource', '')
 				renderAiSourceMenu()
 				renderAiSourcePillLabel()
-			})
-			li.appendChild(button)
-			return li
-		})(), separator(),
-		(() => {
-			const li = document.createElement('li')
-			const button = document.createElement('button')
-			button.type = 'button'
-			button.className = 'menu-item'
-			button.textContent = geti18n('code.aiSource.manage')
-			button.addEventListener('click', () => {
-				document.activeElement?.blur()
-				void openAiSourcePanel()
-			})
-			li.appendChild(button)
-			return li
-		})())
+			},
+		}),
+		menuSeparator(),
+		menuItem(geti18n('code.aiSource.manage'), {
+			/**
+			 * 打开 AI 源管理面板。
+			 * @returns {void}
+			 */
+			onClick: () => void openAiSourcePanel(),
+		}),
+	)
 }
 
 /** 更新 AI 源 pill 标签。 */

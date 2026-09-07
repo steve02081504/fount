@@ -20,6 +20,17 @@ async function requestJson(url, options) {
 }
 
 /**
+ * 发送 JSON 写请求。
+ * @param {string} url - 请求地址。
+ * @param {any} body - 请求体。
+ * @param {string} [method='POST'] - HTTP 方法。
+ * @returns {Promise<any>} 解析后的 JSON。
+ */
+function sendJson(url, body, method = 'POST') {
+	return requestJson(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+}
+
+/**
  * 获取当前用户信息。
  * @returns {Promise<{username: string}>} 用户信息。
  */
@@ -69,7 +80,7 @@ export async function getWorkspaces() {
  * @returns {Promise<{list: Array<object>}>} 更新后的列表。
  */
 export async function addWorkspace(workspace) {
-	return requestJson(`${API_BASE}/workspaces`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(workspace) })
+	return sendJson(`${API_BASE}/workspaces`, workspace)
 }
 
 /**
@@ -96,7 +107,7 @@ export async function getTabs() {
  * @returns {Promise<{tabs: Array<object>, activeTab: string}>} 保存结果。
  */
 export async function putTabs(tabs, activeTab) {
-	return requestJson(`${API_BASE}/tabs`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tabs, activeTab }) })
+	return sendJson(`${API_BASE}/tabs`, { tabs, activeTab }, 'PUT')
 }
 
 /**
@@ -105,7 +116,7 @@ export async function putTabs(tabs, activeTab) {
  * @returns {Promise<{code?: number, stdout?: string, stderr?: string, stdall?: string}>} 执行结果。
  */
 export async function execShell(options) {
-	return requestJson(`${API_BASE}/exec`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(options) })
+	return sendJson(`${API_BASE}/exec`, options)
 }
 
 /**
@@ -145,7 +156,7 @@ export async function getProfiles(target) {
  * @returns {Promise<{content: string}>} 渲染结果。
  */
 export async function renderCommand(target, name, argv) {
-	return requestJson(`${API_BASE}/commands/render`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...target, name, argv }) })
+	return sendJson(`${API_BASE}/commands/render`, { ...target, name, argv })
 }
 
 /**
@@ -162,7 +173,7 @@ export async function getAiSources() {
  * @returns {Promise<{hidden: string[]}>} 保存结果。
  */
 export async function setAiSourceVisibility(hidden) {
-	return requestJson(`${API_BASE}/aisources/visibility`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hidden }) })
+	return sendJson(`${API_BASE}/aisources/visibility`, { hidden }, 'PUT')
 }
 
 /**
@@ -184,7 +195,7 @@ export async function getHistory(target, kind, shell = '') {
  * @returns {Promise<{own: string[]}>} 追加后的历史。
  */
 export async function appendHistory(target, kind, command) {
-	return requestJson(`${API_BASE}/history`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...target, kind, command }) })
+	return sendJson(`${API_BASE}/history`, { ...target, kind, command })
 }
 
 /**
@@ -220,7 +231,7 @@ export async function listSessions(target) {
  * @returns {Promise<object>} 保存结果。
  */
 export async function saveSession(target, session) {
-	return requestJson(`${API_BASE}/sessions`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...target, session }) })
+	return sendJson(`${API_BASE}/sessions`, { ...target, session })
 }
 
 /**
@@ -240,7 +251,7 @@ export async function loadSession(target, id) {
  * @returns {Promise<object>} 保存结果。
  */
 export async function putSession(target, session) {
-	return requestJson(`${API_BASE}/sessions/${encodeURIComponent(session.id)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...target, session }) })
+	return sendJson(`${API_BASE}/sessions/${encodeURIComponent(session.id)}`, { ...target, session }, 'PUT')
 }
 
 /**

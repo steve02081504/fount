@@ -22,7 +22,7 @@ const fileOpsMain = (await import('../../../../plugins/file-operations/main.mjs'
 // 与 SillyTavern Template 相同的链式组装：插件 updater 包裹 base（此处 base 为 noop）
 const fileOpsUpdater = fileOpsMain.interfaces.chat.GetReplyPreviewUpdater(() => { })
 
-const args = {
+const previewArgs = {
 	supported_functions: { markdown: true, mathjax: true, html: true, unsafe_html: false, files: true, add_message: true, fount_i18nkeys: true, fount_assets: true, fount_themes: true },
 	locales: ['zh-CN'],
 	extension: {},
@@ -73,16 +73,16 @@ function figureParts(html) {
 
 /**
  * 按行切帧。
- * @param {string} s 原文
+ * @param {string} text 原文
  * @returns {string[]} 各帧增量
  */
-const byLine = s => s.match(/[^\n]*\n|[^\n]+/g) || [s]
+const byLine = text => text.match(/[^\n]*\n|[^\n]+/g) || [text]
 /**
  * 按小块（模拟 AI 源逐 token）切帧。
- * @param {string} s 原文
+ * @param {string} text 原文
  * @returns {string[]} 各帧增量
  */
-const bySmallChunks = s => s.match(/[\s\S]{1,7}/g) || [s]
+const bySmallChunks = text => text.match(/[\s\S]{1,7}/g) || [text]
 
 /**
  * 模拟流式：按帧增长 content，跑更新器 + 渲染 + diff 往返校验。
@@ -92,16 +92,14 @@ const bySmallChunks = s => s.match(/[\s\S]{1,7}/g) || [s]
  * @returns {Promise<Array<{ content: string, show: string, html: string }>>} 各帧
  */
 async function streamFrames(updater, finalContent, slicer) {
-	const chunks = slicer(finalContent)
 	const frames = []
 	const tracked = {}
 	let last = { content: '', content_for_show: '', files: [] }
-	for (const chunk of chunks) {
+	for (const chunk of slicer(finalContent)) {
 		const content = (frames.at(-1)?.content ?? '') + chunk
 		const reply = { content }
-		updater(args, reply)
-		const html = await render(reply.content_for_show)
-		frames.push({ content, show: reply.content_for_show, html })
+		updater(previewArgs, reply)
+		frames.push({ content, show: reply.content_for_show, html: await render(reply.content_for_show) })
 		// diff 往返：客户端按 slices 重建应与直算快照逐字节一致
 		const snapshot = { content: reply.content ?? '', content_for_show: reply.content_for_show ?? '', files: reply.files ?? [] }
 		applySlices(tracked, generateDiff(last, snapshot))
@@ -119,9 +117,9 @@ async function streamFrames(updater, finalContent, slicer) {
  * @returns {void}
  */
 function assertNoRawToolTags(frames, labels = ['<view-file', '<replace-file', '<override-file', '<list-machines']) {
-	for (const [i, frame] of frames.entries())
+	for (const [index, frame] of frames.entries())
 		for (const label of labels)
-			assertEquals(frame.html.includes(label), false, `frame ${i} 残留原始标签 ${label}`)
+			assertEquals(frame.html.includes(label), false, `frame ${index} 残留原始标签 ${label}`)
 }
 
 Deno.test('view-file 多路径合并为单个代码块，不再逐行成块', async () => {
@@ -274,11 +272,11 @@ a.txt
 </view-file>`
 	const regenState = '重新生成后的干净回复。'
 	const reply1 = { content: toolState }
-	fileOpsUpdater(args, reply1)
+	fileOpsUpdater(previewArgs, reply1)
 	const html1 = await render(reply1.content_for_show)
 	assertEquals(figureCount(html1), 1)
 	const reply2 = { content: regenState }
-	fileOpsUpdater(args, reply2)
+	fileOpsUpdater(previewArgs, reply2)
 	const html2 = await render(reply2.content_for_show)
 	assertEquals(figureCount(html2), 0)
 	assertEquals(textOf(html2).trim(), regenState)
@@ -308,7 +306,7 @@ Deno.test('向上上下文块也用安全围栏', () => {
 Deno.test('未闭合标签的占位卡在行边界上完整渲染', async () => {
 	const updater = defineToolUseBlocks([{ start: '<do-x>', end: '</do-x>' }])(() => { })
 	const reply = { content: '我马上执行<do-x>' }
-	updater(args, reply)
+	updater(previewArgs, reply)
 	// 占位卡是块级 HTML：可信作者渲染档（StreamRenderer 按 isTrustedMarkdownAuthor 升档）下才保留
 	const html = await render(reply.content_for_show, { trusted: true })
 	const doc = new DOMParser().parseFromString(html, 'text/html')

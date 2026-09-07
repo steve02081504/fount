@@ -9,24 +9,24 @@ import { createMarkdownRichInput } from '/scripts/components/markdownRichInput.m
  * @param {string} id - 元素 id。
  * @returns {HTMLElement} 元素。
  */
-const $ = id => document.getElementById(id)
+const getElementById = id => document.getElementById(id)
 
 /** 静态 DOM 引用；pill 镀铬元素由 `mountPillChrome` 补全。 */
 export const elements = {
-	homeToggle: $('home-toggle'),
-	homeMenu: $('home-menu'),
-	tabStrip: $('tab-strip'),
-	messages: $('messages'),
+	homeToggle: getElementById('home-toggle'),
+	homeMenu: getElementById('home-menu'),
+	tabStrip: getElementById('tab-strip'),
+	messages: getElementById('messages'),
 	composerShell: document.querySelector('.code-composer-shell'),
-	composerInput: $('composer-input'),
-	attachmentPreview: $('attachment-preview'),
-	attachInput: $('attach-input'),
-	dropOverlay: $('drop-overlay'),
-	attachButton: $('attach-button'),
-	sendButton: $('send-button'),
-	sendIcon: $('send-icon'),
-	composerControlsMain: $('composer-controls-main'),
-	composerTargets: $('composer-targets'),
+	composerInput: getElementById('composer-input'),
+	attachmentPreview: getElementById('attachment-preview'),
+	attachInput: getElementById('attach-input'),
+	dropOverlay: getElementById('drop-overlay'),
+	attachButton: getElementById('attach-button'),
+	sendButton: getElementById('send-button'),
+	sendIcon: getElementById('send-icon'),
+	composerControlsMain: getElementById('composer-controls-main'),
+	composerTargets: getElementById('composer-targets'),
 }
 
 /** 全局会话 / 选择状态 + 运行时单例（跨模块读写）。 */

@@ -205,17 +205,36 @@ export function bubbleOfEntry(entry) {
  */
 function bindMessageDragExport(entry, bubble) {
 	let payloadUrl = ''
+	/** 拖拽代号：每次 mousedown 自增；异步导出完成时代号已过期（又开始了新拖拽/已 dragend）则直接丢弃。 */
+	let dragToken = 0
+	/** 撤销当前导出的 object URL。 */
+	const revokePayloadUrl = () => {
+		if (payloadUrl) {
+			URL.revokeObjectURL(payloadUrl)
+			payloadUrl = ''
+		}
+	}
 	bubble.addEventListener('mousedown', event => {
 		if (event.button !== 0) return
 		if (event.target.closest('.code-message-body, .code-message-actions, .code-message-feedback, .code-message-editor, .code-message-feedback-reason, button, textarea, input, summary, a')) return
 		bubble.draggable = true
-		payloadUrl = ''
+		const token = ++dragToken
+		revokePayloadUrl()
 		void renderMarkdownAsStandaloneDocument(messageMarkdown(entry.content)).then(html => {
-			payloadUrl = URL.createObjectURL(new File([html], `fount-code-message-${entry.id}.html`, { type: 'text/html' }))
+			const url = URL.createObjectURL(new File([html], `fount-code-message-${entry.id}.html`, { type: 'text/html' }))
+			// 期间又发起了新拖拽（或已结束），该 URL 无人消费，立即回收
+			if (token !== dragToken) {
+				URL.revokeObjectURL(url)
+				return
+			}
+			revokePayloadUrl()
+			payloadUrl = url
 		}).catch(() => { })
 	})
 	bubble.addEventListener('dragend', () => {
 		bubble.draggable = false
+		dragToken++
+		revokePayloadUrl()
 	})
 	bubble.addEventListener('dragstart', event => {
 		event.dataTransfer.setData('text/plain', entry.content)
@@ -358,10 +377,11 @@ export function renderMessages() {
  * @returns {HTMLElement} 气泡元素。
  */
 export function appendEntryBubble(entry) {
+	const wasNearBottom = nearBottom()
 	const bubble = renderEntryBubble(entry, { isLast: true })
 	elements.messages.insertBefore(bubble, backToBottom)
 	updateEmptyMode()
-	if (nearBottom()) scrollMessagesBottom()
+	if (wasNearBottom) scrollMessagesBottom()
 	updateBackToBottom()
 	updateRegenButtons()
 	return bubble

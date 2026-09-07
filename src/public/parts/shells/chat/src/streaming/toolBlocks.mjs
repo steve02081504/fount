@@ -106,8 +106,7 @@ export function defineToolUseBlocks(toolPairs) {
 			).exec(display)
 			if (pendingMatch) {
 				const { groups } = pendingMatch
-				const rendered = padBlockRendered(display, pendingMatch.index, display.length, pendingRenderer(groups.fountToolContent, args, { groups }))
-				display = display.slice(0, pendingMatch.index) + rendered
+				display = display.slice(0, pendingMatch.index) + padBlockRendered(display, pendingMatch.index, display.length, pendingRenderer(groups.fountToolContent, args, { groups }))
 			}
 		}
 		reply.content_for_show = display
@@ -132,13 +131,12 @@ export function defineInlineToolUses(toolDefs) {
 			const completeRegex = new RegExp(`(?<fountInlineStart>${startPattern})(?<fountInlineContent>[\\s\\S]*?)(?:${endPattern})`, 'g')
 			const matches = [...reply.content.matchAll(completeRegex)]
 
-			for (let index = 0; index < matches.length; index++) {
-				const matchedContent = matches[index].groups.fountInlineContent
+			for (let index = 0; index < matches.length; index++) 
 				if (!(index in cache)) cache[index] = (async () => {
-					try { return cache[index] = await exec(matchedContent, args, { match: matches[index] }) }
+					try { return cache[index] = await exec(matches[index].groups.fountInlineContent, args, { match: matches[index] }) }
 					catch (error) { cache[index] = error }
 				})()
-			}
+			
 			if (matches.length < cache.length) cache.splice(matches.length)
 
 			let matchIndex = 0
@@ -160,10 +158,9 @@ export function defineInlineToolUses(toolDefs) {
 			}
 
 			const pendingMatch = new RegExp(`(?:${startPattern})([\\s\\S]*)$`).exec(display)
-			if (pendingMatch) {
-				const rendered = padBlockRendered(display, pendingMatch.index, display.length, pendingRenderer(pendingMatch[1], args))
-				display = display.slice(0, pendingMatch.index) + rendered
-			}
+			if (pendingMatch) 
+				display = display.slice(0, pendingMatch.index) + padBlockRendered(display, pendingMatch.index, display.length, pendingRenderer(pendingMatch[1], args))
+			
 		}
 
 		reply.content_for_show = display
