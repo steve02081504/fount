@@ -79,10 +79,8 @@ export function saveScopedState(username, groupId, channelId, charname, values) 
 	return withScopedStateMutex(username, groupId, channelId, (state, char) => {
 		const entry = { ...state[char] }
 		if (values.memory !== undefined) entry.memory = values.memory && typeof values.memory === 'object' ? values.memory : {}
-		if (values.workdir !== undefined) {
-			if (values.workdir && typeof values.workdir === 'object') entry.workdir = values.workdir
-			else delete entry.workdir
-		}
+		if (values.workdir && typeof values.workdir === 'object') entry.workdir = values.workdir
+		else if (values.workdir !== undefined) delete entry.workdir
 		if (Object.keys(entry).length) state[char] = entry
 		else delete state[char]
 	}, charname)

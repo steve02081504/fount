@@ -4,8 +4,8 @@
  */
 import process from 'node:process'
 
-import { ms } from '../../../../../scripts/ms.mjs'
 import { memoizePromise } from '../../../../../scripts/memo.mjs'
+import { ms } from '../../../../../scripts/ms.mjs'
 import { createTargetExecutor } from '../../../plugins/file-operations/src/target.mjs'
 
 /** 编辑器常用项目缓存 TTL（毫秒）：扫描目标是慢速 execJs 磁盘遍历，短 TTL 缓存让打开工作区选择器秒出。 */
