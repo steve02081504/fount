@@ -15,6 +15,8 @@ import { scopedStatePath } from '../lib/paths.mjs'
 
 /**
  * 读取频道 scoped 状态文件（整个频道所有 char 的分块）。
+ * 仅文件缺失（ENOENT）返回空态；JSON 解析错误或其它读取错误一律向上抛出，
+ * 避免 saveScopedMemory / saveScopedWorkdir 用空态整体覆盖损坏的频道状态。
  * @param {string} username replica 所有者
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
@@ -25,9 +27,65 @@ async function readScopedState(username, groupId, channelId) {
 		const raw = JSON.parse(await readFile(scopedStatePath(username, groupId, channelId), 'utf8'))
 		return raw && typeof raw === 'object' ? raw : {}
 	}
-	catch {
-		return {}
+	catch (error) {
+		if (error?.code === 'ENOENT') return {}
+		throw error
 	}
+}
+
+/**
+ * 同频道 scoped-state 修改的串行队列：读、改、写在同一队列中依次完成，
+ * 不同频道之间各自独立队列，仍可并行处理。
+ * @type {Map<string, Promise<unknown>>}
+ */
+const channelMutexes = new Map()
+
+/**
+ * 在指定频道的串行队列上执行一次「读 → 改 → 写」的 scoped 状态修改。
+ * @param {string} username replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {(state: Record<string, { memory: object, workdir?: object }>, charname: string) => void} mutate 对分块状态的修改；无 char 时直接返回以跳过写入
+ * @param {string} charname 角色名
+ * @returns {Promise<void>} 修改完成
+ */
+export function withScopedStateMutex(username, groupId, channelId, mutate, charname) {
+	const key = `${username}\u0000${groupId}\u0000${channelId}`
+	const prev = channelMutexes.get(key) ?? Promise.resolve()
+	const next = prev
+		.catch(() => {})
+		.then(async () => {
+			if (!charname) return
+			const state = await readScopedState(username, groupId, channelId)
+			mutate(state, charname)
+			await writeScopedState(username, groupId, channelId, state)
+		})
+	channelMutexes.set(key, next)
+	next.finally(() => { if (channelMutexes.get(key) === next) channelMutexes.delete(key) })
+	return next
+}
+
+/**
+ * 一次读改写同时持久化某 char 的 memory 与 workdir（同一队列内原子完成，
+ * 避免 saveScopedMemory 与 saveScopedWorkdir 各自读全量再写导致字段互相覆盖）。
+ * @param {string} username replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} charname 角色名
+ * @param {{ memory?: object, workdir?: object }} values 要写入的值；对应字段缺省表示不修改
+ * @returns {Promise<void>}
+ */
+export function saveScopedState(username, groupId, channelId, charname, values) {
+	return withScopedStateMutex(username, groupId, channelId, (state, char) => {
+		const entry = { ...state[char] }
+		if (values.memory !== undefined) entry.memory = values.memory && typeof values.memory === 'object' ? values.memory : {}
+		if (values.workdir !== undefined) {
+			if (values.workdir && typeof values.workdir === 'object') entry.workdir = values.workdir
+			else delete entry.workdir
+		}
+		if (Object.keys(entry).length) state[char] = entry
+		else delete state[char]
+	}, charname)
 }
 
 /**
@@ -71,11 +129,7 @@ export async function getScopedCharState(username, groupId, channelId, charname)
  * @returns {Promise<void>}
  */
 export async function saveScopedMemory(username, groupId, channelId, charname, memory) {
-	if (!charname) return
-	const state = await readScopedState(username, groupId, channelId)
-	const entry = state[charname] || {}
-	state[charname] = { ...entry, memory: memory && typeof memory === 'object' ? memory : {} }
-	await writeScopedState(username, groupId, channelId, state)
+	return saveScopedState(username, groupId, channelId, charname, { memory })
 }
 
 /**
@@ -88,13 +142,7 @@ export async function saveScopedMemory(username, groupId, channelId, charname, m
  * @returns {Promise<void>}
  */
 export async function saveScopedWorkdir(username, groupId, channelId, charname, workdir) {
-	const state = await readScopedState(username, groupId, channelId)
-	const entry = { ...state[charname] }
-	if (workdir && typeof workdir === 'object') entry.workdir = workdir
-	else delete entry.workdir
-	if (Object.keys(entry).length) state[charname] = entry
-	else delete state[charname]
-	await writeScopedState(username, groupId, channelId, state)
+	return saveScopedState(username, groupId, channelId, charname, { workdir })
 }
 
 /**

@@ -131,13 +131,16 @@ export async function updateChannel(username, groupId, channelId, patch = {}) {
  * @returns {Promise<object>} 签名事件
  */
 export async function deleteChannel(username, groupId, channelId) {
+	// 先持久化 channel_delete 事件，成功后再清理 scoped state：
+	// 事件写入失败时不删除现有频道数据；清理失败则保留孤儿文件（可被 GC 回收）。
 	const { clearScopedState } = await import('../session/scopedState.mjs')
-	await clearScopedState(username, groupId, channelId)
-	return appendSignedLocalEvent(username, groupId, {
+	const event = await appendSignedLocalEvent(username, groupId, {
 		type: 'channel_delete',
 		timestamp: Date.now(),
 		content: { channelId },
 	})
+	await clearScopedState(username, groupId, channelId)
+	return event
 }
 
 /**

@@ -229,7 +229,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		other_chars,
 		other_personas,
 		chat_scoped_char_memory: scopedState.memory,
-		workdir: scopedState.workdir || { machine: '0' },
+		workdir: scopedState.workdir,
 		plugins: localPlugins,
 		extension: {
 			groupId,
