@@ -6,6 +6,7 @@ import { randomUUID } from 'node:crypto'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { memoizePromise } from '../../../../../scripts/memo.mjs'
+import { ms } from '../../../../../scripts/ms.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { getAllDefaultParts, getPartList } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData, assignShellData } from '../../../../../server/setting_loader.mjs'
@@ -113,7 +114,7 @@ const loadVolumeLabels = memoizePromise(
 		}
 		catch { return {} }
 	},
-	{ ttlMs: 60 * 60 * 1000 },
+	{ ttlMs: ms('1h') },
 )
 
 /**
