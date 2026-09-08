@@ -8,6 +8,7 @@ import { join } from 'node:path'
 
 import { assert, assertEquals } from 'jsr:@std/assert'
 
+import { debugLog } from 'fount/scripts/debug_log.mjs'
 import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 
 import { seedCharFixture, waitUntil } from '../harness.mjs'
@@ -115,7 +116,7 @@ function rowText(row) {
 /**
  * 群内 plain_reply_b 回复的条数。
  * @param {object} modules sim 模块
- * @param {string} node 节点
+ * @param {string} node 节点用户名
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @returns {Promise<number>} 回复条数
@@ -123,6 +124,34 @@ function rowText(row) {
 async function replyCount(modules, node, groupId, channelId) {
 	const rows = await modules.queries.listChannelMessages(node, groupId, channelId, { decrypt: true })
 	return rows.filter(row => rowText(row).includes(REPLY_MARKER)).length
+}
+
+/**
+ * phase 3 超时诊断：区分「settings 未物化 / 消息未联邦到达 / 生成卡 in-flight」三类根因。
+ * @param {object} ctx setupSingleCharGroup 返回值（含 modules / groupId / channelId / NODE_A / stateOf）
+ * @returns {Promise<void>} 转储完成；自身失败不抛，避免吞掉原始超时错误
+ */
+async function dumpFrequencyTimeoutDiagnostics(ctx) {
+	try {
+		const { modules, groupId, channelId, NODE_A, stateOf } = ctx
+		const state = await stateOf(NODE_A, groupId)
+		const rows = await modules.queries.listChannelMessages(NODE_A, groupId, channelId, { decrypt: true })
+		// triggerReply 静态 import 会拉入 session.mjs 顶层 initializeGroupMetadatas（要求已 boot 的 config），
+		// 故这里必须 boot 后动态 import，否则整个测试模块求值失败、Deno.test 注册 0 个。
+		const { isCharReplyInFlight } = await import('../../src/chat/session/triggerReply.mjs')
+		const dump = {
+			autoReplyFrequency: state.groupSettings?.autoReplyFrequency,
+			dagTipCount: Array.isArray(state.dagTips) ? state.dagTips.length : null,
+			governanceFork: state.governanceFork === true,
+			replyInFlight: isCharReplyInFlight(groupId, channelId, CHAR),
+			channelRowTail: rows.slice(-8).map(row => ({ role: row.role, content: String(rowText(row)).slice(0, 60) })),
+		}
+		await debugLog('single_char_group_trigger_timeout', dump)
+		console.error('autoReplyFrequency phase diagnostics:', JSON.stringify(dump))
+	}
+	catch (dumpError) {
+		console.error('diagnostics dump itself failed:', dumpError)
+	}
 }
 
 Deno.test('single-char + single-human chat: fallback replies without mention', async () => {
@@ -138,7 +167,7 @@ Deno.test('single-char + multi-human group: fallback needs mention or autoReplyF
 	// 标记走 allowNoise（stderr 直通）：console.log 的 stdout 会被 deno test 捕获并在满负载下偶发整行丢失。
 	await allowNoise('char part not found', async () => {
 		const ctx = await setupSingleCharGroup()
-		const { modules, groupId, NODE_A, NODE_B, channelId, postMessage } = ctx
+		const { modules, groupId, NODE_A, NODE_B, channelId, postMessage, federate, stateOf } = ctx
 		await joinSecondHuman(ctx)
 
 		// 第二真人发言（未 @）不应触发回复
@@ -163,10 +192,20 @@ Deno.test('single-char + multi-human group: fallback needs mention or autoReplyF
 			content: { autoReplyFrequency: 1 },
 		}, { publishFederation: false })
 		await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ctx.ownerSigner.secretKey })
+		// settings 先联邦给 B：B 的后续消息挂上 settings，避免 A 侧 {settings, msg} 双 tip fork 人工制品
+		await federate(NODE_A, [NODE_B], groupId)
+		// 中间断言：settings 物化失败在此精确报错，而不是下游 30s 盲等超时
+		assertEquals((await stateOf(NODE_A, groupId)).groupSettings.autoReplyFrequency, 1, 'group_settings_update must materialize autoReplyFrequency on A')
 
 		const before = await replyCount(modules, NODE_A, groupId, channelId)
 		await postMessage(NODE_B, groupId, channelId, 'frequency-driven ping', [NODE_A])
 		// 回复由 B→A 联邦往返后在 A 侧 fallback 触发；integration 全量并发时 15s 不够，放宽容忍满负载。
-		await waitUntil(async () => await replyCount(modules, NODE_A, groupId, channelId) > before, 30000, 100)
+		try {
+			await waitUntil(async () => await replyCount(modules, NODE_A, groupId, channelId) > before, 30000, 100)
+		}
+		catch (error) {
+			await dumpFrequencyTimeoutDiagnostics(ctx)
+			throw error
+		}
 	})
 })

@@ -1,3 +1,4 @@
+import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
@@ -84,7 +85,14 @@ async function resolveCharReplyWill(username, groupId, channelId, charname, even
  * @param {Error} error 触发失败原因
  */
 function logTriggerCharReplyFailure(error) {
-	if (error?.http_code === 404 && String(error?.message || '').includes('char not found')) return
+	if (error?.http_code === 404 && String(error?.message || '').includes('char not found')) {
+		// 触发竞态下的预期 404，保持静默不进 stderr，但留 debug 转储避免无痕黑洞
+		void debugLog('trigger_char_reply_404', {
+			message: String(error?.message || ''),
+			stack: String(error?.stack || '').split('\n').slice(0, 5).join('\n'),
+		}).catch(() => { })
+		return
+	}
 	console.error('runTriggerPipeline triggerCharReply failed:', error)
 }
 

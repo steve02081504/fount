@@ -15,8 +15,6 @@ import { openDialogFromTemplate } from '../features/templates.mjs'
 
 /* ---------------- 状态 ---------------- */
 
-/** 当前打开的对话框。 */
-let dialog = null
 /** 当前显示的可选条目 {name, path, isDirectory, isFile}。 */
 let entries = []
 /** 过滤后的可选条目（键盘导航 / 回车使用）。 */
@@ -72,7 +70,7 @@ export async function openFolderBrowser(options) {
 	onError = options.onError || (() => {})
 	dirsOnly = Boolean(options.dirsOnly)
 	try {
-		dialog = await openDialogFromTemplate('folder_browser', {}, {
+		await openDialogFromTemplate('folder_browser', {}, {
 			/**
 			 * 绑定浏览操作并加载根目录。
 			 * @param {HTMLDialogElement} dialogElement - 已打开的对话框。
@@ -127,7 +125,6 @@ export async function openFolderBrowser(options) {
 		})
 	}
 	catch (error) {
-		dialog = null
 		onError(error)
 	}
 }
@@ -135,11 +132,11 @@ export async function openFolderBrowser(options) {
 /**
  * 列出目录内容。
  * @param {string} path - 目录路径。
- * @param {HTMLDialogElement} [dialogElement] - 对话框（缺省用当前打开的）。
+ * @param {HTMLDialogElement} dialogElement - 对话框。
  * @param {string} [workspaceParam] - 根视图快速访问的工作区路径。
  * @returns {Promise<void>}
  */
-async function openEntries(path, dialogElement = dialog, workspaceParam = '') {
+async function openEntries(path, dialogElement, workspaceParam = '') {
 	if (!dialogElement) return
 	const requestSequence = ++browseSequence
 	try {
@@ -186,7 +183,7 @@ function showStatus(dialogElement, i18nKey) {
  * @returns {void}
  */
 function enterEntry(entry, dialogElement) {
-	if (entry.isDirectory) void openEntries(entry.path)
+	if (entry.isDirectory) void openEntries(entry.path, dialogElement)
 	else if (!dirsOnly && entry.isFile) {
 		dialogElement.close()
 		void Promise.resolve().then(() => onSelect(entry.path)).catch(onError)
@@ -195,10 +192,10 @@ function enterEntry(entry, dialogElement) {
 
 /**
  * 渲染条目列表（基于输入框过滤词；高亮项滚动可见，根视图快速访问分组）。
- * @param {HTMLDialogElement} [dialogElement] - 对话框（缺省用当前打开的）。
+ * @param {HTMLDialogElement} dialogElement - 对话框。
  * @returns {void}
  */
-function renderList(dialogElement = dialog) {
+function renderList(dialogElement) {
 	if (!dialogElement) return
 	const input = dialogElement.querySelector('#folder-path-input')
 	const container = dialogElement.querySelector('#folder-entries')
