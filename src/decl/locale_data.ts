@@ -2091,6 +2091,7 @@ export type LocaleData = {
 			unreadDivider: string
 			backToFriends: {
 				'aria-label': string
+				text: string
 			}
 			dmTopicsTitle: string
 			participants: string
@@ -5999,6 +6000,7 @@ export type LocaleData = {
 			path: {
 				'aria-label': string
 				placeholder: string
+				textContent: string
 			}
 			go: string
 			select: string
