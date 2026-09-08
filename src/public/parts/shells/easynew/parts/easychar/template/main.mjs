@@ -200,7 +200,9 @@ export default {
 			 * @returns {Promise<import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatReply_t>} 返回一个包含聊天回复的 Promise。
 			 */
 			async GetReply(args) {
-				if (!AIsource) return { content: getLocale(args.locales, 'noAISourceFeedback') }
+				// 请求级 AI 源覆盖：args.ai_source 已是实例化部件，有值则优先使用
+				const activeSource = args.ai_source || AIsource
+				if (!activeSource) return { content: getLocale(args.locales, 'noAISourceFeedback') }
 
 				args.plugins = Object.assign({}, plugins, args.plugins)
 				const prompt_struct = await buildPromptStruct(args)
@@ -254,7 +256,7 @@ export default {
 				// 在重新生成循环中检查插件触发
 				regen: while (true) {
 					args.generation_options.base_result = result
-					await AIsource.StructCall(prompt_struct, args.generation_options)
+					await activeSource.StructCall(prompt_struct, args.generation_options)
 					let continue_regen = false
 					for (const replyHandler of [
 						...Object.values(args.plugins).map(plugin => plugin.interfaces?.chat?.ReplyHandler)

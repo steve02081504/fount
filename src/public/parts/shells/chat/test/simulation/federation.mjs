@@ -7,7 +7,12 @@ import { join } from 'node:path'
 
 import { bootHeadlessDataRoot } from 'fount/scripts/test/node/boot.mjs'
 
-import { computeFederatableDagTipIds, isFederatableDagEvent } from '../../src/chat/dag/eventTypes.mjs'
+import { computeFederatableDagTipIds, isFederatableDagEvent, registerChatEventTypeDefs } from '../../src/chat/dag/eventTypes.mjs'
+
+// headless sim 不加载 chat part，治理选支注册表须手动注册：
+// 否则 getGovernanceAuthzTypes 为空，DAG 分叉时 consensus 平分退化为 tip 字典序，
+// 悬空父事件（如被 fold 掉父节点的 group_settings_update）可能胜出，把整条真实链折叠掉（丢成员）。
+registerChatEventTypeDefs()
 
 /**
  * 初始化 headless 联邦仿真上下文。

@@ -8,9 +8,12 @@ import { detectNoiseHits } from '../core/output_filter.mjs'
 import {
 	BROWSER_NETWORK_PREFIX,
 	I18N_MISSING_PREFIX,
+	MAX_CONSOLE_ERRORS,
 	PAGE_WATCH_CONSOLE_PREFIX,
 	browserNetworkAggregateKey,
+	createBrowserDiagnostics,
 	formatBrowserNetworkLine,
+	isBrowserResourceFailureConsoleText,
 	isI18nMissingConsoleText,
 	isIgnoredBrowserNetworkError,
 	isIgnoredChildFrameSecurityError,
@@ -104,6 +107,181 @@ Deno.test('isPageWatchConsoleText matches page watch prefix', () => {
 	assertEquals(PAGE_WATCH_CONSOLE_PREFIX, '[test:')
 	assertEquals(isPageWatchConsoleText('[test:a11y] color-contrast ...'), true)
 	assertEquals(isPageWatchConsoleText('plain log'), false)
+})
+
+Deno.test('MAX_CONSOLE_ERRORS is the fail-fast abort threshold at 13', () => {
+	assertEquals(MAX_CONSOLE_ERRORS, 13)
+})
+
+/**
+ * 构造 console 消息 mock。
+ * @param {string} type 消息类型（error / log / warning …）
+ * @param {string} text 消息文本
+ * @returns {{ type: () => string, text: () => string }} console 消息
+ */
+function consoleMsg(type, text) {
+	return {
+		/** @returns {string} 消息类型 */
+		type: () => type,
+		/** @returns {string} 消息文本 */
+		text: () => text,
+	}
+}
+
+/**
+ * 构造最小 CDP session mock（够 `attach` 跑通即可）。
+ * @returns {{ send: (method: string) => Promise<unknown>, on: (name: string, cb: (arg: unknown) => void) => void }} session mock
+ */
+function createMockSession() {
+	/** @type {Record<string, Array<(arg: unknown) => void>>} */
+	const listeners = {}
+	/**
+	 * 注册事件监听器。
+	 * @param {string} name 事件名
+	 * @param {(arg: unknown) => void} callback 监听器
+	 * @returns {void}
+	 */
+	const on = (name, callback) => {
+		;(listeners[name] ??= []).push(callback)
+	}
+	/**
+	 * CDP 方法调用。
+	 * @param {string} method 方法名
+	 * @returns {Promise<unknown>} 结果
+	 */
+	const send = async (method) => {
+		if (method === 'Page.getFrameTree') return { frameTree: { frame: { id: 'main' } } }
+		return {}
+	}
+	return { send, on }
+}
+
+/**
+ * 构造最小 Playwright page mock（够 `attach` 跑通即可）。
+ * @returns {{ on: (name: string, cb: (arg: unknown) => void) => void, emitConsole: (msg: ReturnType<typeof consoleMsg>) => void, emitRequestFailed: (req: unknown) => void, context: () => { newCDPSession: () => Promise<ReturnType<typeof createMockSession>> } }} page mock
+ */
+function createMockPage() {
+	/** @type {Record<string, Array<(arg: unknown) => void>>} */
+	const listeners = {}
+	/**
+	 * 注册事件监听器。
+	 * @param {string} name 事件名
+	 * @param {(arg: unknown) => void} callback 监听器
+	 * @returns {void}
+	 */
+	const on = (name, callback) => {
+		;(listeners[name] ??= []).push(callback)
+	}
+	/**
+	 * 触发 console 事件。
+	 * @param {ReturnType<typeof consoleMsg>} msg 消息
+	 * @returns {void}
+	 */
+	const emitConsole = (msg) => {
+		for (const cb of listeners.console ?? []) cb(msg)
+	}
+	/**
+	 * 触发 requestfailed 事件。
+	 * @param {unknown} req 请求 mock
+	 * @returns {void}
+	 */
+	const emitRequestFailed = (req) => {
+		for (const cb of listeners.requestfailed ?? []) cb(req)
+	}
+	/**
+	 * 取 browser context mock。
+	 * @returns {{ newCDPSession: () => Promise<ReturnType<typeof createMockSession>> }} context mock
+	 */
+	const context = () => ({ newCDPSession: createMockSession })
+	return { on, emitConsole, emitRequestFailed, context }
+}
+
+Deno.test('createBrowserDiagnostics records console.error separately from page watch output', async () => {
+	const diagnostics = createBrowserDiagnostics()
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	page.emitConsole(consoleMsg('error', 'boom'))
+	page.emitConsole(consoleMsg('log', '[test:a11y] color-contrast ...'))
+	page.emitConsole(consoleMsg('warning', 'meh'))
+	assertEquals(diagnostics.consoleErrors, ['boom'])
+	assertEquals(diagnostics.pageWatchErrors, ['[test:a11y] color-contrast ...'])
+})
+
+Deno.test('createBrowserDiagnostics skips browser resource-failure console messages', async () => {
+	const diagnostics = createBrowserDiagnostics()
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	page.emitConsole(consoleMsg('error', 'Failed to load resource: net::ERR_CONNECTION_REFUSED'))
+	page.emitConsole(consoleMsg('error', 'Failed to load resource: the server responded with a status of 404 (Not Found)'))
+	page.emitConsole(consoleMsg('error', 'boom'))
+	assertEquals(diagnostics.consoleErrors, ['boom'])
+})
+
+Deno.test('createBrowserDiagnostics threshold ignores resource-failure console messages', async () => {
+	let thresholdHits = 0
+	const diagnostics = createBrowserDiagnostics({ /**
+		 * 控制台错误达到阈值时的回调。
+		 */
+		onConsoleErrorThreshold: () => { thresholdHits += 1 } })
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	for (let errorIndex = 0; errorIndex < MAX_CONSOLE_ERRORS * 2; errorIndex++)
+		page.emitConsole(consoleMsg('error', 'Failed to load resource: net::ERR_CONNECTION_REFUSED'))
+	assertEquals(diagnostics.consoleErrors.length, 0)
+	assertEquals(thresholdHits, 0)
+})
+
+Deno.test('createBrowserDiagnostics merges shouldIgnoreNetwork with the default ignore', async () => {
+	/**
+	 * 构造 requestfailed 请求 mock。
+	 * @param {string} url 请求 URL
+	 * @param {string} errorText 失败文案
+	 * @returns {{ url: () => string, failure: () => { errorText: string }, method: () => string }} 请求 mock
+	 */
+	const requestFailed = (url, errorText) => ({
+		/** @returns {string} 请求 URL */
+		url: () => url,
+		/** @returns {{ errorText: string }} 失败信息 */
+		failure: () => ({ errorText }),
+		/** @returns {string} 请求方法 */
+		method: () => 'GET',
+	})
+	const diagnostics = createBrowserDiagnostics({
+		/**
+		 * 额外网络豁免：静态站上 fount 服务（localhost:8931）必然连不上。
+		 * @param {{ url?: string }} entry 网络条目
+		 * @returns {boolean} 是否豁免
+		 */
+		shouldIgnoreNetwork: entry => entry.url?.includes('localhost:8931'),
+	})
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	// 默认豁免之外的 8931 探活经扩展谓词丢弃
+	page.emitRequestFailed(requestFailed('http://localhost:8931/parts/shells/home?cold_bootting=true', 'net::ERR_CONNECTION_REFUSED'))
+	assertEquals(diagnostics.flushNetworkDiagnostics(), [])
+	// 未豁免的仍记录
+	page.emitRequestFailed(requestFailed('http://localhost:8930/not-installer', 'net::ERR_CONNECTION_REFUSED'))
+	assertEquals(diagnostics.flushNetworkDiagnostics().length, 1)
+})
+
+Deno.test('isBrowserResourceFailureConsoleText matches failed resource loads', () => {
+	assertEquals(isBrowserResourceFailureConsoleText('Failed to load resource: net::ERR_CONNECTION_REFUSED'), true)
+	assertEquals(isBrowserResourceFailureConsoleText('Failed to load resource: the server responded with a status of 404'), true)
+	assertEquals(isBrowserResourceFailureConsoleText('boom'), false)
+	assertEquals(isBrowserResourceFailureConsoleText('prefixed Failed to load resource: x'), false)
+})
+
+Deno.test('createBrowserDiagnostics fires onConsoleErrorThreshold at MAX_CONSOLE_ERRORS', async () => {
+	let thresholdHits = 0
+	const diagnostics = createBrowserDiagnostics({ /**
+		 * 控制台错误达到阈值时的回调。
+		 */
+		onConsoleErrorThreshold: () => { thresholdHits += 1 } })
+	const page = createMockPage()
+	await diagnostics.attach(page)
+	for (let errorIndex = 0; errorIndex < MAX_CONSOLE_ERRORS; errorIndex++) page.emitConsole(consoleMsg('error', `e${errorIndex}`))
+	assertEquals(diagnostics.consoleErrors.length, MAX_CONSOLE_ERRORS)
+	assertEquals(thresholdHits, 1)
 })
 
 Deno.test('isI18nMissingConsoleText matches i18n missing prefix', () => {
