@@ -20,6 +20,7 @@ async function scanEditorSources() {
 	const os = await import('node:os')
 	const path = await import('node:path')
 	const process = await import('node:process')
+	const { fileURLToPath } = await import('node:url')
 	const decoder = new TextDecoder()
 	/** @type {Map<string, {path: string, lastActive: number}>} 已收录目录：realpath → {实际路径, 最后活跃时间}。 */
 	const seen = new Map()
@@ -126,10 +127,8 @@ async function scanEditorSources() {
 				if (typeof data?.folder !== 'string') continue
 				// workspace.json 的 folder 恒为 file:// URI；非 file 值（异常/其他 scheme）无法映射本地目录，跳过
 				if (!data.folder.startsWith('file:')) continue
-				// file:///c%3A/Users/... → C:/Users/...（Windows 盘符在 URL 中编码为 %3A，decode 后出现 `/c:/`，需剥掉盘符前的根斜杠；Unix 路径原样保留绝对路径）
-				const parsed = new URL(data.folder)
-				const decoded = decodeURIComponent(parsed.pathname)
-				await addDir(process.platform === 'win32' ? decoded.replace(/^\/+/, '') : decoded)
+				// fileURLToPath 处理 Windows 盘符（%3A 编码、盘符前根斜杠）与 UNC 路径（file://server/share → \\server\share），返回目标机文件系统路径
+				await addDir(fileURLToPath(data.folder))
 			}
 			catch { /* 单个 hash 目录异常则跳过 */ }
 		

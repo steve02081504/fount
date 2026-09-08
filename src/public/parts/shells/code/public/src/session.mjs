@@ -506,9 +506,8 @@ export async function flushSession() {
 	if (!key || store.generating) return
 	store.dirtyTabKey = ''
 	const tab = store.tabs.find(item => tabKeyOf(item) === key)
-	// 活动标签判空后直接比较，不向 tabKeyOf 传空对象兜底
-	const active = activeTab()
-	const session = active && tabKeyOf(active) === key ? store.session : store.sessionCache.get(key)
+	// 活动标签判空后直接比较 store.activeTabKey，不向 tabKeyOf 传空对象兜底
+	const session = store.activeTabKey === key ? store.session : store.sessionCache.get(key)
 	const workspace = tab && store.workspaces.find(w => w.id === tab.workspaceId)
 	if (!session || !workspace || !(session.entries?.length || 0)) return
 	try {

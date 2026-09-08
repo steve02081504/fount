@@ -315,10 +315,10 @@ def self_test() -> int:
 	global locales_dir
 	saved_dir = locales_dir
 	try:
-		with tempfile.TemporaryDirectory(prefix="fount-") as tmp:
-			locales_dir = tmp
-			with open(os.path.join(tmp, "bad.json"), "w", encoding="utf-8") as f:
-				f.write("{}")
+		with tempfile.TemporaryDirectory(prefix="fount-") as temporary_locales_dir:
+			locales_dir = temporary_locales_dir
+			with open(os.path.join(temporary_locales_dir, "bad.json"), "w", encoding="utf-8") as locale_file:
+				locale_file.write("{}")
 			errors = process_locale_files("undefined_name_xyz")
 	finally:
 		locales_dir = saved_dir

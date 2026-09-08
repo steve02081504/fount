@@ -10,6 +10,7 @@ import { randomUUID } from 'node:crypto'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { canInChannel, governanceChannelId } from '../../group/access.mjs'
+import { isChannelIdValid } from '../lib/channelId.mjs'
 
 import { appendEvent, appendSignedLocalEvent } from './append.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
@@ -26,6 +27,10 @@ import { setStreamingSession } from './streamingState.mjs'
  */
 export async function createChannel(username, groupId, options, appendOptions = {}) {
 	const channelId = options.channelId || randomUUID()
+	if (!isChannelIdValid(channelId)) throw new Error(`invalid channelId: ${channelId}`)
+	// 频道（重建）后恢复该频道的 scoped 写入（若此前删除被失效标记跳过）
+	const { markScopedStateChannelActive } = await import('../session/scopedState.mjs')
+	markScopedStateChannelActive(username, groupId, channelId)
 	const created = await appendSignedLocalEvent(username, groupId, {
 		type: 'channel_create',
 		timestamp: Date.now(),

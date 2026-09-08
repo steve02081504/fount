@@ -11,6 +11,7 @@ import { dirname } from 'node:path'
 
 import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 
+import { isChannelIdValid } from '../lib/channelId.mjs'
 import { scopedStatePath } from '../lib/paths.mjs'
 
 /**
@@ -41,8 +42,32 @@ async function readScopedState(username, groupId, channelId) {
  */
 const channelMutexes = new Map()
 
+/** 已删除频道的失效标记：删除完成后任何已排队或后续的 scoped 写入都跳过，避免重建已删频道的状态。 */
+const deletedChannelKeys = new Set()
+
+/**
+ * 频道级串行队列键。
+ * @param {string} username replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @returns {string} 队列键
+ */
+const channelKey = (username, groupId, channelId) => `${username}\u0000${groupId}\u0000${channelId}`
+
+/**
+ * 频道重建时清除删除失效标记，恢复该频道的 scoped 写入。
+ * @param {string} username replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @returns {void}
+ */
+export function markScopedStateChannelActive(username, groupId, channelId) {
+	deletedChannelKeys.delete(channelKey(username, groupId, channelId))
+}
+
 /**
  * 在指定频道的串行队列上执行一次「读 → 改 → 写」的 scoped 状态修改。
+ * 非法 channelId 立即拒绝（不进入文件路径）；已删除频道的写入跳过（防重建状态）。
  * @param {string} username replica 所有者
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
@@ -51,11 +76,14 @@ const channelMutexes = new Map()
  * @returns {Promise<void>} 修改完成
  */
 export function withScopedStateMutex(username, groupId, channelId, mutate, charname) {
-	const key = `${username}\u0000${groupId}\u0000${channelId}`
+	if (!isChannelIdValid(channelId)) return Promise.reject(new TypeError(`invalid channelId: ${String(channelId)}`))
+	const key = channelKey(username, groupId, channelId)
+	if (deletedChannelKeys.has(key)) return Promise.resolve()
 	const prev = channelMutexes.get(key) ?? Promise.resolve()
 	const next = prev
 		.catch(() => {})
 		.then(async () => {
+			if (deletedChannelKeys.has(key)) return
 			if (!charname) return
 			const state = await readScopedState(username, groupId, channelId)
 			mutate(state, charname)
@@ -80,10 +108,13 @@ export function withScopedStateMutex(username, groupId, channelId, mutate, charn
  */
 export function saveScopedState(username, groupId, channelId, charname, values) {
 	return withScopedStateMutex(username, groupId, channelId, (state, char) => {
+		if (values.memory !== undefined && (values.memory == null || typeof values.memory !== 'object'))
+			throw new TypeError('scoped state memory must be a non-null object')
+		if (values.workdir !== undefined && (values.workdir == null || typeof values.workdir !== 'object'))
+			throw new TypeError('scoped state workdir must be a non-null object')
 		const entry = { ...state[char] }
-		if (values.memory !== undefined) entry.memory = values.memory && typeof values.memory === 'object' ? values.memory : {}
-		if (values.workdir && typeof values.workdir === 'object') entry.workdir = values.workdir
-		else if (values.workdir !== undefined) delete entry.workdir
+		if (values.memory !== undefined) entry.memory = values.memory
+		if (values.workdir !== undefined) entry.workdir = values.workdir
 		if (Object.keys(entry).length) state[char] = entry
 		else delete state[char]
 	}, charname)
@@ -112,6 +143,7 @@ async function writeScopedState(username, groupId, channelId, state) {
  * @returns {Promise<{ memory: object, workdir: object | undefined }>} 记忆缺省 {}；workdir 未设置时 undefined
  */
 export async function getScopedCharState(username, groupId, channelId, charname) {
+	if (!isChannelIdValid(channelId)) throw new TypeError(`invalid channelId: ${String(channelId)}`)
 	if (!charname) return { memory: {}, workdir: undefined }
 	const entry = (await readScopedState(username, groupId, channelId))[charname]
 	return {
@@ -139,7 +171,7 @@ export async function saveScopedMemory(username, groupId, channelId, charname, m
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} charname 角色名
- * @param {object | undefined} workdir 就地 mutate 后的 workdir 对象 `({ machine?, machineId?, path? })`；undefined 为清除
+ * @param {object | undefined} workdir 就地 mutate 后的 workdir 对象 `({ machine?, machineId?, path? })`；undefined 表示不修改
  * @returns {Promise<void>}
  */
 export async function saveScopedWorkdir(username, groupId, channelId, charname, workdir) {
@@ -148,12 +180,29 @@ export async function saveScopedWorkdir(username, groupId, channelId, charname, 
 
 /**
  * 删除频道全部 scoped 状态（频道删除时 GC）。
+ * 与读改写共用频道串行队列（同一顺序执行），删除时置频道级失效标记；
+ * 删除完成后任何已排队或后续的写入都检查该标记并跳过，避免重建已删频道的状态。
  * @param {string} username replica 所有者
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @returns {Promise<void>}
  */
 export async function clearScopedState(username, groupId, channelId) {
-	if (!username || !groupId || !channelId) return
-	await rm(scopedStatePath(username, groupId, channelId), { force: true })
+	if (!isChannelIdValid(channelId)) throw new TypeError(`invalid channelId: ${String(channelId)}`)
+	if (!username || !groupId) return
+	const key = channelKey(username, groupId, channelId)
+	const prev = channelMutexes.get(key) ?? Promise.resolve()
+	const next = prev
+		.catch(() => {})
+		.then(async () => {
+			deletedChannelKeys.add(key)
+			await rm(scopedStatePath(username, groupId, channelId), { force: true })
+		})
+	channelMutexes.set(key, next)
+	/**
+	 *
+	 */
+	const cleanup = () => { if (channelMutexes.get(key) === next) channelMutexes.delete(key) }
+	next.then(cleanup, cleanup)
+	await next
 }

@@ -3599,12 +3599,10 @@
 					"readingFilepath": "Читаю ${filepath}",
 					"readingFiles": {
 						"switch": "count",
-						"default": "Читаю  файлов",
+						"default": "Читаю ${count} файлов",
 						"cases": {
-							"1": "Читаю  файл",
-							"2": "Читаю  файла",
-							"3": "Читаю  файла",
-							"4": "Читаю  файла"
+							"1": "Читаю ${count} файл",
+							"count >= 2 && count <= 4": "Читаю ${count} файла"
 						}
 					},
 					"replacingFilepath": "Заменяю фрагмент в ${filepath}",

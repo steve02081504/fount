@@ -112,7 +112,7 @@ export async function openFolderBrowser(options) {
 					else if (event.key === 'Enter') {
 						event.preventDefault()
 						const target = filtered[highlight]
-						if (target) void openEntries(target.path, dialogElement)
+						if (target) enterEntry(target, dialogElement)
 						else void openEntries(event.currentTarget.value, dialogElement)
 					}
 				})
@@ -180,6 +180,20 @@ function showStatus(dialogElement, i18nKey) {
 }
 
 /**
+ * 进入条目：目录则打开，非仅目录模式下点选文件即选中（键盘 Enter 与鼠标单击/双击共用）。
+ * @param {{name: string, path: string, isDirectory: boolean, isFile?: boolean}} entry - 条目。
+ * @param {HTMLDialogElement} dialogElement - 对话框。
+ * @returns {void}
+ */
+function enterEntry(entry, dialogElement) {
+	if (entry.isDirectory) void openEntries(entry.path)
+	else if (!dirsOnly && entry.isFile) {
+		dialogElement.close()
+		void Promise.resolve(onSelect(entry.path)).catch(onError)
+	}
+}
+
+/**
  * 渲染条目列表（基于输入框过滤词；高亮项滚动可见，根视图快速访问分组）。
  * @param {HTMLDialogElement} [dialogElement] - 对话框（缺省用当前打开的）。
  * @returns {void}
@@ -229,13 +243,7 @@ function renderList(dialogElement = dialog) {
 		 * 进入目录（单击 / 双击）；非仅目录模式下点选文件即选中。
 		 * @returns {void}
 		 */
-		const enter = () => {
-			if (entry.isDirectory) void openEntries(entry.path)
-			else if (!dirsOnly && entry.isFile) {
-				dialogElement.close()
-				void Promise.resolve(onSelect(entry.path)).catch(onError)
-			}
-		}
+		const enter = () => enterEntry(entry, dialogElement)
 		row.addEventListener('click', enter)
 		row.addEventListener('dblclick', enter)
 		container.append(row)
