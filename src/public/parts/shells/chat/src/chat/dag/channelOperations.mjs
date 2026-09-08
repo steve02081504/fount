@@ -47,9 +47,10 @@ export async function createChannel(username, groupId, options, appendOptions = 
 		},
 	}, appendOptions)
 	// 频道（重建）后恢复该频道的 scoped 写入（若此前删除被失效标记跳过）；
-	// channel_create 持久化失败时保留失效标记，避免未重建的频道写回 scoped state
+	// channel_create 持久化失败时保留失效标记，避免未重建的频道写回 scoped state；
+	// 先序清理失败时标记不会被清除且此处抛错，中止频道创建
 	const { markScopedStateChannelActive } = await import('../session/scopedState.mjs')
-	markScopedStateChannelActive(username, groupId, channelId)
+	await markScopedStateChannelActive(username, groupId, channelId)
 	const { appendChannelKeyRotate } = await import('../channel_keys/schedule.mjs')
 	await appendChannelKeyRotate(username, groupId, channelId)
 	return created

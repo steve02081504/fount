@@ -58,6 +58,8 @@ const channelKey = (username, groupId, channelId) => `${username}\u0000${groupId
  * 频道重建时清除删除失效标记，恢复该频道的 scoped 写入。
  * 与 clearScopedState 共用频道串行队列：激活排在任何待执行的清除之后依次完成，
  * 避免「先删标记 → 清除执行再置标记」导致重建频道的 scoped 写入被误跳过。
+ * 排队中的 clearScopedState（或其它先序操作）失败时不吞掉错误：保留删除失效标记，
+ * 并让本调用拒绝，调用方据此中止频道创建，避免为清理失败的频道恢复 scoped 写入。
  * @param {string} username replica 所有者
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
@@ -68,7 +70,6 @@ export function markScopedStateChannelActive(username, groupId, channelId) {
 	const key = channelKey(username, groupId, channelId)
 	const prev = channelMutexes.get(key) ?? Promise.resolve()
 	const next = prev
-		.catch(() => {})
 		.then(() => {
 			deletedChannelKeys.delete(key)
 		})
