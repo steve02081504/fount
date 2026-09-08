@@ -116,10 +116,10 @@ async function selectWorkspaceViaBrowser(page, dir) {
  * @returns {Promise<void>}
  */
 async function removeAllWorkspacesViaApi(page, baseUrl) {
-	const data = await (await page.request.get(`${baseUrl}${API_BASE}/workspaces`)).json()
-	for (const workspace of data.list || []) {
-		const res = await page.request.delete(`${baseUrl}${API_BASE}/workspaces/${workspace.id}`)
-		if (!res.ok()) throw new Error(`failed to remove workspace ${workspace.id}: ${res.status()} ${res.statusText()}`)
+	const { list } = await (await page.request.get(`${baseUrl}${API_BASE}/workspaces`)).json()
+	for (const workspace of list || []) {
+		const deleteResponse = await page.request.delete(`${baseUrl}${API_BASE}/workspaces/${workspace.id}`)
+		if (!deleteResponse.ok()) throw new Error(`failed to remove workspace ${workspace.id}: ${deleteResponse.status()} ${deleteResponse.statusText()}`)
 	}
 }
 

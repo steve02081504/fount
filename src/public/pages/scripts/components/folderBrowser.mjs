@@ -118,7 +118,7 @@ export async function openFolderBrowser(options) {
 				})
 				dialogElement.querySelector('#folder-select-button').addEventListener('click', () => {
 					dialogElement.close()
-					void Promise.resolve(onSelect(dialogElement.querySelector('#folder-path-input').value)).catch(onError)
+					void Promise.resolve().then(() => onSelect(dialogElement.querySelector('#folder-path-input').value)).catch(onError)
 				})
 				// 先弹框显示加载占位，数据到达后再渲染（根视图含慢速的后端快速访问构建）
 				showStatus(dialogElement, 'util.folderBrowser.loading')
@@ -141,10 +141,10 @@ export async function openFolderBrowser(options) {
  */
 async function openEntries(path, dialogElement = dialog, workspaceParam = '') {
 	if (!dialogElement) return
-	const seq = ++browseSequence
+	const requestSequence = ++browseSequence
 	try {
 		const data = await browse(path, workspaceParam)
-		if (seq !== browseSequence) return
+		if (requestSequence !== browseSequence) return
 		quickAccess = data.quickAccess || []
 		viewPath = data.path
 		entries = !data.path ? [...quickAccess, ...data.entries] : data.entries
@@ -153,7 +153,7 @@ async function openEntries(path, dialogElement = dialog, workspaceParam = '') {
 		renderList(dialogElement)
 	}
 	catch (error) {
-		if (seq !== browseSequence) return
+		if (requestSequence !== browseSequence) return
 		onError(error)
 		showStatus(dialogElement, 'util.folderBrowser.error')
 	}
@@ -180,7 +180,7 @@ function showStatus(dialogElement, i18nKey) {
 }
 
 /**
- * 进入条目：目录则打开，非仅目录模式下点选文件即选中（键盘 Enter 与鼠标单击/双击共用）。
+ * 进入条目：目录则打开，非仅目录模式下点选文件即选中（键盘 Enter 与鼠标单击共用）。
  * @param {{name: string, path: string, isDirectory: boolean, isFile?: boolean}} entry - 条目。
  * @param {HTMLDialogElement} dialogElement - 对话框。
  * @returns {void}
@@ -189,7 +189,7 @@ function enterEntry(entry, dialogElement) {
 	if (entry.isDirectory) void openEntries(entry.path)
 	else if (!dirsOnly && entry.isFile) {
 		dialogElement.close()
-		void Promise.resolve(onSelect(entry.path)).catch(onError)
+		void Promise.resolve().then(() => onSelect(entry.path)).catch(onError)
 	}
 }
 
@@ -240,12 +240,11 @@ function renderList(dialogElement = dialog) {
 		row.setAttribute('user-content', '')
 		row.textContent = (entry.isDirectory ? '📁 ' : '📄 ') + entry.name
 		/**
-		 * 进入目录（单击 / 双击）；非仅目录模式下点选文件即选中。
+		 * 进入目录（单击）；非仅目录模式下点选文件即选中。
 		 * @returns {void}
 		 */
 		const enter = () => enterEntry(entry, dialogElement)
 		row.addEventListener('click', enter)
-		row.addEventListener('dblclick', enter)
 		container.append(row)
 		if (filtered[highlight] === entry) row.scrollIntoView({ block: 'nearest' })
 	}

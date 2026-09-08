@@ -189,7 +189,6 @@ export async function saveScopedWorkdir(username, groupId, channelId, charname, 
  */
 export async function clearScopedState(username, groupId, channelId) {
 	if (!isChannelIdValid(channelId)) throw new TypeError(`invalid channelId: ${String(channelId)}`)
-	if (!username || !groupId) return
 	const key = channelKey(username, groupId, channelId)
 	const prev = channelMutexes.get(key) ?? Promise.resolve()
 	const next = prev
@@ -199,9 +198,7 @@ export async function clearScopedState(username, groupId, channelId) {
 			await rm(scopedStatePath(username, groupId, channelId), { force: true })
 		})
 	channelMutexes.set(key, next)
-	/**
-	 *
-	 */
+	/** 队列完成（含失败）后若仍是本链则移除。 */
 	const cleanup = () => { if (channelMutexes.get(key) === next) channelMutexes.delete(key) }
 	next.then(cleanup, cleanup)
 	await next
