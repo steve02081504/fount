@@ -151,6 +151,8 @@ async function writeScopedState(username, groupId, channelId, state) {
 
 /**
  * 读取某 char 在频道的私域状态：本地记忆与工作目录；无 char（无角色视角）时返回空态。
+ * 与 saveScopedState 对齐：持久化的 workdir 若存在则必须是合法对象，非法值抛错而非缺省，
+ * 避免聊天请求静默丢失持久化的 machine/path 数据。
  * @param {string} username replica 所有者
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
@@ -161,9 +163,11 @@ export async function getScopedCharState(username, groupId, channelId, charname)
 	if (!isChannelIdValid(channelId)) throw new TypeError(`invalid channelId: ${String(channelId)}`)
 	if (!charname) return { memory: {}, workdir: undefined }
 	const entry = (await readScopedState(username, groupId, channelId))[charname]
+	if (entry?.workdir !== undefined && (entry.workdir == null || typeof entry.workdir !== 'object'))
+		throw new TypeError('scoped state workdir must be a non-null object')
 	return {
 		memory: entry?.memory && typeof entry.memory === 'object' ? entry.memory : {},
-		workdir: entry?.workdir && typeof entry.workdir === 'object' ? entry.workdir : undefined,
+		workdir: entry?.workdir === undefined ? undefined : entry.workdir,
 	}
 }
 

@@ -124,8 +124,7 @@ export async function openFolderBrowser(options) {
 		const raw = input.value
 		// 编辑路径状态：输入含路径分隔符，且目录部分（最后一个 / 或 \ 之前）已偏离当前视图路径 → 取消选中，回车跳转
 		const lastSep = Math.max(raw.lastIndexOf('/'), raw.lastIndexOf('\\'))
-		const dirPart = lastSep === -1 ? '' : raw.slice(0, lastSep)
-		navigating = lastSep !== -1 && raw !== viewPath && dirPart !== viewPath
+		navigating = lastSep !== -1 && raw !== viewPath && raw.slice(0, lastSep) !== viewPath
 		const term = navigating || raw === viewPath ? '' : raw.split(/[\\/]/).pop().trim()
 		const baseEntries = dirsOnly ? entries.filter(entry => entry.isDirectory || entry.path === viewPath) : entries
 		const shown = term
@@ -158,12 +157,8 @@ export async function openFolderBrowser(options) {
 			// 目录/文件名是用户数据，跳过语种轮换的脚本检查（路径含简体汉字在 ja/en 轮换时误报）
 			row.setAttribute('user-content', '')
 			row.textContent = (entry.isDirectory ? '📁 ' : '📄 ') + entry.name
-			/**
-			 * 进入目录（单击）；非仅目录模式下点选文件即选中。
-			 * @returns {void}
-			 */
-			const enter = () => enterEntry(entry, dialogElement)
-			row.addEventListener('click', enter)
+			// 进入目录（单击）；非仅目录模式下点选文件即选中
+			row.addEventListener('click', () => enterEntry(entry, dialogElement))
 			container.append(row)
 			if (filtered[highlight] === entry) row.scrollIntoView({ block: 'nearest' })
 		}

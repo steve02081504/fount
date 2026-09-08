@@ -67,3 +67,18 @@ Deno.test('缺失文件视为空态（首次使用）', async () => {
 	assert(state)
 	assertEquals(Object.keys(state.memory), [])
 })
+
+Deno.test('持久化 workdir 存在但非法时读取抛错而非返回缺省', async () => {
+	const { scopedStatePath } = await import('../../src/chat/lib/paths.mjs')
+	const path = scopedStatePath(username, groupId, channelId)
+	await writeFile(path, JSON.stringify({ [charname]: { workdir: 'not-an-object' } }), 'utf8')
+	const { getScopedCharState } = await import('../../src/chat/session/scopedState.mjs')
+	let threw = false
+	try {
+		await getScopedCharState(username, groupId, channelId, charname)
+	}
+	catch {
+		threw = true
+	}
+	assert(threw, '非法 workdir 应抛错')
+})
