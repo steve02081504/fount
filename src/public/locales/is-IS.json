@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "Nýjar fréttir",
 			"backToFriends": {
-				"aria-label": "Farðu aftur til vina"
+				"aria-label": "Farðu aftur til vina",
+				"text": "Farðu aftur til vina"
 			},
 			"dmTopicsTitle": "Umræðuefni",
 			"participants": "Þátttakendur",
@@ -6036,7 +6037,8 @@
 			"title": "Fletta",
 			"path": {
 				"aria-label": "Slóð vinnusvæðis",
-				"placeholder": "Sía / slóð möppu"
+				"placeholder": "Sía / slóð möppu",
+				"textContent": "Slóð vinnusvæðis"
 			},
 			"go": "Farðu",
 			"select": "Velja vinnusvæði",
@@ -6362,7 +6364,7 @@
 		},
 		"machine": {
 			"local": "Staðbundið",
-			"offline": "ólínu"
+			"offline": "Ótengdur"
 		},
 		"char": {
 			"switch": "Skipta um persónu",
@@ -6386,7 +6388,7 @@
 			"stopAria": "Stöðva myndun",
 			"modeSwitched": "Skipt yfir í ${mode} ham",
 			"hint": "Sláðu inn ! þegar tómt fyrir skelham · @ til að vísa í skrár · / fyrir skipanir · ↑↓ saga · Tab fyrir klárun",
-			"placeholder": "Sláðu inn skipun; Enter keyrir hana (hreinsaðu til að yfirgefa skelham)",
+			"placeholder": "Sláðu inn skipun; Ctrl/Cmd+Enter keyrir hana (hreinsaðu til að yfirgefa skelham)",
 			"placeholderNormal": "Skrifaðu skilaboð… (@ til að vísa í skrár, / fyrir skipanir)",
 			"placeholderShell": "Sláðu inn skelskipun… (t.d. git status)",
 			"aria-label": "Innsláttur skilaboða"

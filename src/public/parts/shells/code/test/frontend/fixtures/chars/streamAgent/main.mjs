@@ -86,18 +86,11 @@ export default {
 				args.generation_options ??= {}
 				const oriReplyPreviewUpdater = args.generation_options.replyPreviewUpdater
 				/**
-				 * 预览包装（对齐真实角色模板：先经本层再透传请求级更新器）。
-				 * @param {object} _wrappedArgs - 角色请求上下文（未使用）。
+				 * 请求级预览更新器入口（分片推送后透传请求级更新器）。
 				 * @param {object} reply - 预览回复。
 				 * @returns {void}
 				 */
-				const replyPreviewUpdater = (_wrappedArgs, reply) => oriReplyPreviewUpdater?.(reply)
-				/**
-				 * 请求级预览更新器入口。
-				 * @param {object} reply - 预览回复。
-				 * @returns {void}
-				 */
-				args.generation_options.replyPreviewUpdater = reply => replyPreviewUpdater(args, reply)
+				args.generation_options.replyPreviewUpdater = reply => oriReplyPreviewUpdater?.(reply)
 				const result = { content: '', logContextBefore: [], logContextAfter: [], files: [], extension: {} }
 				if (args.ai_source?.StructCall) {
 					args.generation_options.base_result = result

@@ -239,7 +239,7 @@ export function renderHomeMenu() {
 			menu.appendChild(emptyLi)
 		}
 		else for (const session of sessions) {
-			const li = document.createElement('li')
+			const listItem = document.createElement('li')
 			const button = document.createElement('button')
 			button.type = 'button'
 			button.className = 'menu-item' + (session.id === store.session?.id && session.workspaceId === store.workspace?.id ? ' active' : '')
@@ -255,8 +255,8 @@ export function renderHomeMenu() {
 				document.activeElement?.blur()
 				void openSessionTab(session)
 			})
-			li.appendChild(button)
-			menu.appendChild(li)
+			listItem.appendChild(button)
+			menu.appendChild(listItem)
 		}
 	}
 	const separatorLi = document.createElement('li')
@@ -506,7 +506,9 @@ export async function flushSession() {
 	if (!key || store.generating) return
 	store.dirtyTabKey = ''
 	const tab = store.tabs.find(item => tabKeyOf(item) === key)
-	const session = tabKeyOf(activeTab() || {}) === key ? store.session : store.sessionCache.get(key)
+	// 活动标签判空后直接比较，不向 tabKeyOf 传空对象兜底
+	const active = activeTab()
+	const session = active && tabKeyOf(active) === key ? store.session : store.sessionCache.get(key)
 	const workspace = tab && store.workspaces.find(w => w.id === tab.workspaceId)
 	if (!session || !workspace || !(session.entries?.length || 0)) return
 	try {
@@ -532,7 +534,8 @@ window.addEventListener('beforeunload', () => {
 	flushTabPrefs()
 	if (!store.dirtyTabKey || store.generating) return
 	const tab = store.tabs.find(item => tabKeyOf(item) === store.dirtyTabKey)
-	const session = tabKeyOf(activeTab() || {}) === store.dirtyTabKey ? store.session : store.sessionCache.get(store.dirtyTabKey)
+	const unloadingActive = activeTab()
+	const session = unloadingActive && tabKeyOf(unloadingActive) === store.dirtyTabKey ? store.session : store.sessionCache.get(store.dirtyTabKey)
 	const workspace = tab && store.workspaces.find(w => w.id === tab.workspaceId)
 	if (session && workspace && (session.entries?.length || 0))
 		api.putSession({ machine: String(workspace.machine ?? store.machine), workdir: workspace.path }, session).catch(() => { })
@@ -612,8 +615,11 @@ function onSocketMessage(event) {
 	}
 	if (msg.type === 'error') {
 		const session = store.generatingSession || store.session
+		store.generatingSession = null
 		store.generating = false
 		endGeneratingBubble()
+		// 复位发送按钮（内部同步刷新 regen 按钮），与 finishGeneration 的收尾对齐
+		updateSendButton()
 		const fallback = geti18n('code.error.generate')
 		const text = `${fallback}\n\`\`\`\n${msg.error}\n\`\`\``
 		session?.entries.push(...msg.entries || [], { id: crypto.randomUUID().slice(0, 8), uid: 'system', role: 'system', name: 'error', content: text, time: new Date().toISOString() })

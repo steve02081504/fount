@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "Novas notícias",
 			"backToFriends": {
-				"aria-label": "Voltar para amigos"
+				"aria-label": "Voltar para amigos",
+				"text": "Voltar para amigos"
 			},
 			"dmTopicsTitle": "Tópico",
 			"participants": "Participantes",
@@ -6042,7 +6043,8 @@
 			"title": "Explorar",
 			"path": {
 				"aria-label": "Caminho da área de trabalho",
-				"placeholder": "Filtro / caminho da pasta"
+				"placeholder": "Filtro / caminho da pasta",
+				"textContent": "Caminho da área de trabalho"
 			},
 			"go": "Ir",
 			"select": "Selecionar área de trabalho",
@@ -6392,7 +6394,7 @@
 			"stopAria": "Parar a geração",
 			"modeSwitched": "Mudado para o modo ${mode}",
 			"hint": "Digite ! num campo vazio para o modo shell · @ para referenciar ficheiros · / para comandos · ↑↓ histórico · Tab para completar",
-			"placeholder": "Digite um comando; Enter executa (esvazie para sair do modo shell)",
+			"placeholder": "Digite um comando; Ctrl/Cmd+Enter executa (esvazie para sair do modo shell)",
 			"placeholderNormal": "Escreva a sua mensagem… (@ para referenciar ficheiros, / para comandos)",
 			"placeholderShell": "Digite um comando shell… (ex.: git status)",
 			"aria-label": "Entrada de mensagem"

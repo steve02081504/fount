@@ -124,18 +124,12 @@ async function scanEditorSources() {
 			try {
 				const data = JSON.parse(await fs.readFile(path.join(storageRoot, hash, 'workspace.json'), 'utf8'))
 				if (typeof data?.folder !== 'string') continue
-				let p = data.folder
-				try {
-					// file:///c%3A/Users/... → C:/Users/...（Windows 盘符在 URL 中编码为 %3A，decode 后出现 `/c:/`，需剥掉盘符前的根斜杠；Unix 路径原样保留绝对路径）
-					const parsed = new URL(p)
-					p = decodeURIComponent(parsed.pathname)
-					if (process.platform === 'win32') p = p.replace(/^\/+/, '')
-				}
-				catch {
-					// 非 file:// 或非法 URL：当作字面路径
-					try { p = decodeURIComponent(p) } catch { /* 保留原文 */ }
-				}
-				await addDir(p)
+				// workspace.json 的 folder 恒为 file:// URI；非 file 值（异常/其他 scheme）无法映射本地目录，跳过
+				if (!data.folder.startsWith('file:')) continue
+				// file:///c%3A/Users/... → C:/Users/...（Windows 盘符在 URL 中编码为 %3A，decode 后出现 `/c:/`，需剥掉盘符前的根斜杠；Unix 路径原样保留绝对路径）
+				const parsed = new URL(data.folder)
+				const decoded = decodeURIComponent(parsed.pathname)
+				await addDir(process.platform === 'win32' ? decoded.replace(/^\/+/, '') : decoded)
 			}
 			catch { /* 单个 hash 目录异常则跳过 */ }
 		
@@ -192,12 +186,8 @@ const loadEditorSources = memoizePromise(
 	async key => {
 		const [username, machine] = key.split('\u0000')
 		const executor = createTargetExecutor(username, { machine })
-		try {
-			return await executor.execJs(scanEditorSources)
-		}
-		catch {
-			return []
-		}
+		// 执行失败直接向上抛：memoizePromise 不缓存拒绝，瞬时故障不会被 TTL 固化为空结果
+		return executor.execJs(scanEditorSources)
 	},
 	{ ttlMs: EDITOR_SOURCES_TTL_MS },
 )

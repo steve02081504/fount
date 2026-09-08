@@ -30,11 +30,11 @@ export default {
 	Call: async () => '测试回复。',
 	/**
 	 * 结构化调用：按 replyPreviewUpdater 分片流式推送（验证 AI 源 → 角色 → WS → 前端链路）。
-	 * @param {object} _prompt_struct - 提示词结构（未使用）。
+	 * @param {object} prompt_struct - 提示词结构（未使用）。
 	 * @param {object} [options] - 生成选项。
 	 * @returns {Promise<{content: string, files: any[], extension: object}>} 回复。
 	 */
-	StructCall: async (_prompt_struct, options = {}) => {
+	StructCall: async (prompt_struct, options = {}) => {
 		const { replyPreviewUpdater, base_result } = options
 		const result = base_result ?? { content: '', files: [], extension: {} }
 		result.content = ''

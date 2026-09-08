@@ -14,6 +14,8 @@ const CDN_HOSTS = new Set([
 	'esm.sh',
 	'api.iconify.design',
 	'cdn.jsdelivr.net',
+	'data.jsdelivr.com',
+	'api.github.com',
 ])
 
 /** @type {Map<string, { status: number, headers: Record<string, string>, body: Buffer }>} */

@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "mensajes nuevos",
 			"backToFriends": {
-				"aria-label": "volver con amigos"
+				"aria-label": "volver con amigos",
+				"text": "volver con amigos"
 			},
 			"dmTopicsTitle": "tema",
 			"participants": "Participantes",
@@ -6042,7 +6043,8 @@
 			"title": "Explorar",
 			"path": {
 				"aria-label": "Ruta del espacio de trabajo",
-				"placeholder": "Filtro / ruta de carpeta"
+				"placeholder": "Filtro / ruta de carpeta",
+				"textContent": "Ruta del espacio de trabajo"
 			},
 			"go": "Ir",
 			"select": "Elegir espacio de trabajo",
@@ -6392,7 +6394,7 @@
 			"stopAria": "Detener la generación",
 			"modeSwitched": "Cambiado al modo ${mode}",
 			"hint": "Escribe ! en un campo vacío para el modo shell · @ para referenciar archivos · / para comandos · ↑↓ historial · Tab para completar",
-			"placeholder": "Escribe un comando; Enter lo ejecuta (vacía para salir del modo shell)",
+			"placeholder": "Escribe un comando; Ctrl/Cmd+Enter lo ejecuta (vacía para salir del modo shell)",
 			"placeholderNormal": "Escribe tu mensaje… (@ para referenciar archivos, / para comandos)",
 			"placeholderShell": "Escribe un comando shell… (p. ej. git status)",
 			"aria-label": "Entrada de mensaje"

@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "新しいニュース",
 			"backToFriends": {
-				"aria-label": "友達に戻る"
+				"aria-label": "友達に戻る",
+				"text": "友達に戻る"
 			},
 			"dmTopicsTitle": "トピック",
 			"participants": "参加者",
@@ -6036,7 +6037,8 @@
 			"title": "閲覧",
 			"path": {
 				"aria-label": "ワークスペースのパス",
-				"placeholder": "フィルタ / パス"
+				"placeholder": "フィルタ / パス",
+				"textContent": "ワークスペースのパス"
 			},
 			"go": "移動",
 			"select": "ワークスペースを選択",
@@ -6386,7 +6388,7 @@
 			"stopAria": "生成を停止",
 			"modeSwitched": "${mode} モードに切り替えました",
 			"hint": "空欄で ! を入力するとシェルモード · @ でファイル参照 · / でコマンド · ↑↓ 履歴 · Tab 補完",
-			"placeholder": "コマンドを入力、Enter で実行（空にするとシェルモードを終了）",
+			"placeholder": "コマンドを入力、Ctrl/Cmd+Enter で実行（空にするとシェルモードを終了）",
 			"placeholderNormal": "メッセージを入力…（@ でファイル参照、/ でコマンド）",
 			"placeholderShell": "シェルコマンドを入力…（例: git status）",
 			"aria-label": "メッセージ入力"

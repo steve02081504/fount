@@ -62,11 +62,18 @@ async function makeFakeEditorSource(root) {
  */
 async function makeWorkspace(node) {
 	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'fount_code_http_ws_'))
-	await fs.mkdir(path.join(root, '.agents', 'commands'), { recursive: true })
-	await fs.writeFile(path.join(root, '.agents', 'commands', 'upper.md'), '---\ndescription: 大写\nparams:\n  text:\n    required: true\n---\n${argv.text.toUpperCase()}', 'utf8')
-	await fs.writeFile(path.join(root, 'AGENTS.md'), '# 工作区规则', 'utf8')
-	const res = await codeFetch(node, 'POST', '/workspaces', { name: 'ws1', machine: '0', path: root })
-	assertEquals(res.status, 200)
+	try {
+		await fs.mkdir(path.join(root, '.agents', 'commands'), { recursive: true })
+		await fs.writeFile(path.join(root, '.agents', 'commands', 'upper.md'), '---\ndescription: 大写\nparams:\n  text:\n    required: true\n---\n${argv.text.toUpperCase()}', 'utf8')
+		await fs.writeFile(path.join(root, 'AGENTS.md'), '# 工作区规则', 'utf8')
+		const res = await codeFetch(node, 'POST', '/workspaces', { name: 'ws1', machine: '0', path: root })
+		assertEquals(res.status, 200)
+	}
+	catch (error) {
+		// 任一步失败先清理临时目录再抛原错误，避免残留 fount_code_http_ws_ 触发清理泄漏检查
+		await fs.rm(root, { recursive: true, force: true })
+		throw error
+	}
 	return root
 }
 

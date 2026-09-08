@@ -127,10 +127,9 @@ export async function boot() {
 		(tab.workspaceId === '' || store.workspaces.some(w => w.id === tab.workspaceId))
 		&& (tab.type === 'draft' || store.allSessions.some(s => s.id === tab.id && s.workspaceId === tab.workspaceId)))
 	let initialTab = activeTab() || store.tabs[0] || null
-	if (urlWorkspace) {
+	if (urlWorkspace)
 		initialTab = createDraftTab(store.workspace?.id || '')
-		store.activeTabKey = ''
-	}
+
 	else if (!initialTab) initialTab = createDraftTab(store.workspace?.id || '')
 	// 恢复的活动标签指向其他工作区时以标签为准
 	if (!urlWorkspace && initialTab.workspaceId && initialTab.workspaceId !== store.workspace?.id)
@@ -170,7 +169,7 @@ function wireGlobalEvents() {
 	elements.modePill.addEventListener('click', () => renderModeMenu())
 	elements.aiSourcePill.addEventListener('click', () => renderAiSourceMenu())
 	elements.shellPill.addEventListener('click', () => renderShellMenu())
-	elements.charPill.addEventListener('click', () => { })
+	// charPill 无 click 绑定：daisyUI dropdown 依赖焦点行为展开
 	elements.charSwitchButton.addEventListener('click', () => {
 		void openCharSwitchDialog()
 	})

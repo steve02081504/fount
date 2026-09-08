@@ -411,6 +411,8 @@ export function exitShellMode() {
 	elements.shellPillWrap.classList.add('hidden')
 	updateComposerPlaceholder()
 	removeGhost()
+	// 切回消息历史：避免 ↑/↓ 与影子补全继续使用 shell 命令历史
+	void ensureHistory('message')
 }
 
 /* ---------------- 事件绑定 ---------------- */

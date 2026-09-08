@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "新札",
 			"backToFriends": {
-				"aria-label": "返好友"
+				"aria-label": "返好友",
+				"text": "返好友"
 			},
 			"dmTopicsTitle": "話題",
 			"participants": "參與者",
@@ -6036,7 +6037,8 @@
 			"title": "瀏覽",
 			"path": {
 				"aria-label": "作業區路徑",
-				"placeholder": "鍵入篩詞 / 目錄路徑"
+				"placeholder": "鍵入篩詞 / 目錄路徑",
+				"textContent": "作業區路徑"
 			},
 			"go": "前往",
 			"select": "擇定作業區",
@@ -6386,7 +6388,7 @@
 			"stopAria": "罷生成",
 			"modeSwitched": "已易為 ${mode} 模式",
 			"hint": "空時鍵 ! 以入 shell · @ 以引檔 · / 以施令 · ↑↓ 故錄 · Tab 補全",
-			"placeholder": "鍵令，Enter 以行之（清空則退 shell 模式）",
+			"placeholder": "鍵令，Ctrl/Cmd+Enter 以行之（清空則退 shell 模式）",
 			"placeholderNormal": "鍵訊以始…（@ 引檔 · / 施令）",
 			"placeholderShell": "鍵 shell 令…（如 git status）",
 			"aria-label": "訊框"

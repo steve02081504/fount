@@ -71,14 +71,14 @@ export function stripFrontmatter(text) {
  */
 
 /**
- * 从 .agents 风格目录收集 profile（含 modes/ 子目录）。
+ * 收集单个目录下的 profile markdown 条目（.md 筛选 + 读取 + frontmatter 解析写入汇总表）。
  * @param {import('../../../plugins/file-operations/src/target.mjs').targetExecutor_t} executor - 执行器。
- * @param {string} dir - .agents 目录。
+ * @param {string} dir - profile 目录（根或 modes/）。
  * @param {'global'|'workspace'} source - 来源。
  * @param {Map<string, profileEntry_t>} map - 汇总表（后者覆盖同名）。
- * @returns {Promise<void>}
+ * @returns {Promise<Array<{name: string, isDirectory: boolean, isFile: boolean}>>} 目录条目（供 modes 子目录探测）。
  */
-async function scanProfilesDir(executor, dir, source, map) {
+async function collectProfileEntries(executor, dir, source, map) {
 	const entries = await executor.listDir(dir).catch(() => [])
 	for (const entry of entries.filter(e => e.isFile && e.name.endsWith('.md'))) {
 		const content = await executor.readTextFile(dir + '/' + entry.name).catch(() => null)
@@ -87,17 +87,21 @@ async function scanProfilesDir(executor, dir, source, map) {
 		const { description } = parseFrontmatter(content)
 		map.set(name, { name, source, description: description || '', content: stripFrontmatter(content).trim() })
 	}
+	return entries
+}
+
+/**
+ * 从 .agents 风格目录收集 profile（含 modes/ 子目录）。
+ * @param {import('../../../plugins/file-operations/src/target.mjs').targetExecutor_t} executor - 执行器。
+ * @param {string} dir - .agents 目录。
+ * @param {'global'|'workspace'} source - 来源。
+ * @param {Map<string, profileEntry_t>} map - 汇总表（后者覆盖同名）。
+ * @returns {Promise<void>}
+ */
+async function scanProfilesDir(executor, dir, source, map) {
+	const entries = await collectProfileEntries(executor, dir, source, map)
 	const modesDir = entries.find(e => e.isDirectory && e.name === 'modes')
-	if (modesDir) {
-		const modeEntries = await executor.listDir(dir + '/modes').catch(() => [])
-		for (const entry of modeEntries.filter(e => e.isFile && e.name.endsWith('.md'))) {
-			const content = await executor.readTextFile(dir + '/modes/' + entry.name).catch(() => null)
-			if (content == null) continue
-			const name = entry.name.replace(/\.md$/i, '')
-			const { description } = parseFrontmatter(content)
-			map.set(name, { name, source, description: description || '', content: stripFrontmatter(content).trim() })
-		}
-	}
+	if (modesDir) await collectProfileEntries(executor, dir + '/modes', source, map)
 }
 
 /**
@@ -128,8 +132,7 @@ export async function listProfiles(username, workdir) {
  * @returns {Promise<profileEntry_t|null>} profile 条目（未找到时 null）。
  */
 export async function getProfile(username, workdir, name) {
-	const profiles = await listProfiles(username, workdir)
-	return profiles.find(p => p.name === name) || null
+	return (await listProfiles(username, workdir)).find(profile => profile.name === name) || null
 }
 
 /**
@@ -248,8 +251,7 @@ export async function listCommands(username, workdir) {
  * @returns {Promise<commandEntry_t|null>} 命令条目（未找到时 null）。
  */
 export async function getCommand(username, workdir, name) {
-	const commands = await listCommands(username, workdir)
-	return commands.find(c => c.name === name) || null
+	return (await listCommands(username, workdir)).find(command => command.name === name) || null
 }
 
 /**

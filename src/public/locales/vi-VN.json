@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "tin tức mới",
 			"backToFriends": {
-				"aria-label": "Trở lại với bạn bè"
+				"aria-label": "Trở lại với bạn bè",
+				"text": "Trở lại với bạn bè"
 			},
 			"dmTopicsTitle": "đề tài",
 			"participants": "Người tham gia",
@@ -6036,7 +6037,8 @@
 			"title": "Duyệt",
 			"path": {
 				"aria-label": "Đường dẫn không gian làm việc",
-				"placeholder": "Bộ lọc / đường dẫn thư mục"
+				"placeholder": "Bộ lọc / đường dẫn thư mục",
+				"textContent": "Đường dẫn không gian làm việc"
 			},
 			"go": "Đi",
 			"select": "Chọn không gian làm việc",
@@ -6386,7 +6388,7 @@
 			"stopAria": "Dừng tạo",
 			"modeSwitched": "Đã chuyển sang chế độ ${mode}",
 			"hint": "Gõ ! khi trống để vào chế độ shell · @ để tham chiếu tệp · / để dùng lệnh · ↑↓ lịch sử · Tab để hoàn thành",
-			"placeholder": "Nhập lệnh, Enter để chạy (xóa để thoát chế độ shell)",
+			"placeholder": "Nhập lệnh, Ctrl/Cmd+Enter để chạy (xóa để thoát chế độ shell)",
 			"placeholderNormal": "Nhập tin nhắn… (@ để tham chiếu tệp, / để dùng lệnh)",
 			"placeholderShell": "Nhập lệnh shell… (ví dụ: git status)",
 			"aria-label": "Ô nhập tin nhắn"

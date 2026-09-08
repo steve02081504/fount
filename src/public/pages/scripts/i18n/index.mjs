@@ -8,7 +8,7 @@ import { onElementRemoved } from '../lib/onElementRemoved.mjs'
 import { escapeRegExp } from '../lib/regex.mjs'
 
 import { initTranslations, preferredLangsStorageKey } from './base.mjs'
-import { findDisallowedChildTags } from './clobber_guard.mjs'
+import { findDisallowedChildTags, seedAllowedTagsFromLocaleValues } from './clobber_guard.mjs'
 import { matchLocale } from './locale_match.mjs'
 import { isSwitchValue, resolveSwitchCase } from './switch_value.mjs'
 
@@ -183,6 +183,23 @@ export function setI18nBundle(bundle, locale, pageid, langs) {
 	main_locale = locale
 	saved_pageid = pageid
 	if (langs) lastKnownLangs = langs
+	seedAllowedTagsFromLocaleValues(leafValues(bundle))
+}
+
+/**
+ * 深度遍历值树，收集全部叶子字符串（供 clobber 守卫的动态白名单提取标签）。
+ * @param {unknown} node 值树节点。
+ * @yields {string} 叶子字符串。
+ * @returns {Generator<string, void, unknown>} 叶子字符串生成器。
+ */
+function* leafValues(node) {
+	if (typeof node === 'string') {
+		yield node
+		return
+	}
+	if (node && typeof node === 'object')
+		for (const child of Object.values(node))
+			yield* leafValues(child)
 }
 
 /**

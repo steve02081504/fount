@@ -188,7 +188,7 @@ export default {
 			 * @param {any} args 参数
 			 */
 			GetPrompt: (args) => {
-				return promptBuilder(args, chardata, AIsource?.filename)
+				return promptBuilder(args, chardata, (args.ai_source || AIsource)?.filename)
 			},
 			// no GetPromptForOther, ST card does not support it
 			/**

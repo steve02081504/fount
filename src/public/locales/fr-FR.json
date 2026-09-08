@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "Nouveaux messages",
 			"backToFriends": {
-				"aria-label": "Retourner chez des amis"
+				"aria-label": "Retourner chez des amis",
+				"text": "Retourner chez des amis"
 			},
 			"dmTopicsTitle": "Sujet",
 			"participants": "Participants",
@@ -6042,7 +6043,8 @@
 			"title": "Parcourir",
 			"path": {
 				"aria-label": "Chemin de l'espace de travail",
-				"placeholder": "Filtre / chemin du dossier"
+				"placeholder": "Filtre / chemin du dossier",
+				"textContent": "Chemin de l'espace de travail"
 			},
 			"go": "Aller",
 			"select": "Choisir l'espace de travail",
@@ -6392,7 +6394,7 @@
 			"stopAria": "Arrêter la génération",
 			"modeSwitched": "Mode ${mode} activé",
 			"hint": "! dans un champ vide pour le mode shell · @ pour référencer un fichier · / pour les commandes · ↑↓ historique · Tab pour compléter",
-			"placeholder": "Saisissez une commande, Entrée pour exécuter (vider pour quitter le mode shell)",
+			"placeholder": "Saisissez une commande, Ctrl/Cmd+Entrée pour exécuter (vider pour quitter le mode shell)",
 			"placeholderNormal": "Écrivez votre message… (@ pour référencer un fichier, / pour les commandes)",
 			"placeholderShell": "Saisissez une commande shell… (ex. git status)",
 			"aria-label": "Saisie du message"

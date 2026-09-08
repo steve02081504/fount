@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "新消息",
 			"backToFriends": {
-				"aria-label": "返回好友"
+				"aria-label": "返回好友",
+				"text": "返回好友"
 			},
 			"dmTopicsTitle": "话题",
 			"participants": "参与者",
@@ -6036,7 +6037,8 @@
 			"title": "浏览",
 			"path": {
 				"aria-label": "工作区路径",
-				"placeholder": "输入过滤词 / 目录路径"
+				"placeholder": "输入过滤词 / 目录路径",
+				"textContent": "工作区路径"
 			},
 			"go": "跳转",
 			"select": "选择工作区",
@@ -6386,7 +6388,7 @@
 			"stopAria": "停止生成",
 			"modeSwitched": "已切换到 ${mode} 模式",
 			"hint": "空内容键入 ! 切 shell · @ 引用文件 · / 命令 · ↑↓ 历史 · Tab 补全",
-			"placeholder": "输入命令，Enter 执行（清空退出 shell 模式）",
+			"placeholder": "输入命令，Ctrl/Cmd+Enter 执行（清空退出 shell 模式）",
 			"placeholderNormal": "输入消息开始…（@ 引用文件 · / 命令）",
 			"placeholderShell": "输入 shell 命令…（如 git status）",
 			"aria-label": "消息输入框"

@@ -40,7 +40,7 @@ export async function whoami() {
 
 /**
  * 列出机器（本机 + subfount）。
- * @returns {Promise<{machines: Array<{id: number, description: string, isConnected: boolean, deviceInfo: object|null}>} >} 机器列表。
+ * @returns {Promise<{machines: Array<{id: string, description: string, isConnected: boolean, deviceInfo: object|null}>} >} 机器列表。
  */
 export async function getMachines() {
 	return requestJson(`${API_BASE}/machines`)
@@ -48,7 +48,7 @@ export async function getMachines() {
 
 /**
  * 列出机器可用 shell。
- * @param {number} machine - 机器 id。
+ * @param {string} machine - 机器 id。
  * @returns {Promise<{shells: string[], default: string}>} shell 列表与机器默认 shell。
  */
 export async function getMachineShells(machine) {
@@ -57,7 +57,7 @@ export async function getMachineShells(machine) {
 
 /**
  * 浏览机器目录。
- * @param {number} machine - 机器 id。
+ * @param {string} machine - 机器 id。
  * @param {string} [path] - 目录（空 = 根）。
  * @param {string} [workspace] - 当前工作区路径（根视图快速访问）。
  * @returns {Promise<{path: string, roots: string[], entries: Array<{name: string, path: string, isDirectory: boolean, isFile: boolean}>, quickAccess: Array<{name: string, path: string, isDirectory: boolean}>}>} 目录内容。
@@ -68,7 +68,7 @@ export async function browseMachine(machine, path = '', workspace = '') {
 
 /**
  * 读取保存的工作区列表。
- * @returns {Promise<{list: Array<{id: string, name: string, machine: number, path: string}>}>} 工作区列表。
+ * @returns {Promise<{list: Array<{id: string, name: string, machine: string, path: string}>}>} 工作区列表。
  */
 export async function getWorkspaces() {
 	return requestJson(`${API_BASE}/workspaces`)
@@ -76,7 +76,7 @@ export async function getWorkspaces() {
 
 /**
  * 新增保存的工作区。
- * @param {{name?: string, machine: number, path: string}} workspace - 工作区。
+ * @param {{name?: string, machine: string, path: string}} workspace - 工作区。
  * @returns {Promise<{list: Array<object>}>} 更新后的列表。
  */
 export async function addWorkspace(workspace) {
@@ -112,7 +112,7 @@ export async function putTabs(tabs, activeTab) {
 
 /**
  * `!` 模式 shell 执行。
- * @param {{machine: number, workdir: string, shell?: string, command: string}} options - 执行参数。
+ * @param {{machine: string, workdir: string, shell?: string, command: string}} options - 执行参数。
  * @returns {Promise<{code?: number, stdout?: string, stderr?: string, stdall?: string}>} 执行结果。
  */
 export async function execShell(options) {
@@ -121,7 +121,7 @@ export async function execShell(options) {
 
 /**
  * 工作区内文件搜索（@ 补全）。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @param {string} query - 查询子串。
  * @returns {Promise<{files: string[]}>} 匹配文件（相对路径）。
  */
@@ -131,7 +131,7 @@ export async function searchFiles(target, query) {
 
 /**
  * 读取工作区内文件（附向上上下文）。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @param {string} path - 文件路径。
  * @returns {Promise<{content: string, context: string}>} 文件内容。
  */
@@ -141,7 +141,7 @@ export async function readFile(target, path) {
 
 /**
  * 列出合并后的 profiles 与 commands。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @returns {Promise<{profiles: Array<{name: string, source: string, description: string}>, commands: Array<object>}>} 合并列表。
  */
 export async function getProfiles(target) {
@@ -150,7 +150,7 @@ export async function getProfiles(target) {
 
 /**
  * 渲染命令模板。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @param {string} name - 命令名。
  * @param {Record<string, string>} argv - 参数。
  * @returns {Promise<{content: string}>} 渲染结果。
@@ -178,7 +178,7 @@ export async function setAiSourceVisibility(hidden) {
 
 /**
  * 读取输入历史（自有 + 原生 shell 历史）。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @param {'shell'|'message'} kind - 历史类型。
  * @param {string} [shell] - shell 名（kind 为 shell 时读取原生历史）。
  * @returns {Promise<{own: string[], native: string[]}>} 历史列表。
@@ -189,7 +189,7 @@ export async function getHistory(target, kind, shell = '') {
 
 /**
  * 追加一条输入历史。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @param {'shell'|'message'} kind - 历史类型。
  * @param {string} command - 条目内容。
  * @returns {Promise<{own: string[]}>} 追加后的历史。
@@ -200,7 +200,7 @@ export async function appendHistory(target, kind, command) {
 
 /**
  * 读取工作区配置（.agents/fount/code.json）。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @returns {Promise<object>} 配置对象。
  */
 export async function getWorkspaceConfig(target) {
@@ -217,7 +217,7 @@ export async function listAllSessions() {
 
 /**
  * 列出工作区会话。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @returns {Promise<{sessions: Array<object>}>} 会话摘要列表。
  */
 export async function listSessions(target) {
@@ -226,7 +226,7 @@ export async function listSessions(target) {
 
 /**
  * 新建/保存会话。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @param {object} session - 会话对象。
  * @returns {Promise<object>} 保存结果。
  */
@@ -236,7 +236,7 @@ export async function saveSession(target, session) {
 
 /**
  * 读取会话。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @param {string} id - 会话 id。
  * @returns {Promise<object>} 会话对象。
  */
@@ -246,7 +246,7 @@ export async function loadSession(target, id) {
 
 /**
  * 保存会话（flush）。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @param {object} session - 会话对象。
  * @returns {Promise<object>} 保存结果。
  */
@@ -256,7 +256,7 @@ export async function putSession(target, session) {
 
 /**
  * 删除会话。
- * @param {{machine: number, workdir: string}} target - 目标。
+ * @param {{machine: string, workdir: string}} target - 目标。
  * @param {string} id - 会话 id。
  * @returns {Promise<object>} 删除结果。
  */

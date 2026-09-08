@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "أخبار جديدة",
 			"backToFriends": {
-				"aria-label": "العودة إلى الأصدقاء"
+				"aria-label": "العودة إلى الأصدقاء",
+				"text": "العودة إلى الأصدقاء"
 			},
 			"dmTopicsTitle": "عنوان",
 			"participants": "مشاركون",
@@ -3596,7 +3597,17 @@
 				"tool": {
 					"overridingFilepath": "جارٍ إعادة كتابة ${filepath}",
 					"readingFilepath": "جارٍ قراءة ${filepath}",
-					"readingFiles": "جارٍ قراءة ${count} ملفات",
+					"readingFiles": {
+						"switch": "count",
+						"default": "جارٍ قراءة ${count} ملفاً",
+						"cases": {
+							"0": "جارٍ القراءة",
+							"1": "جارٍ قراءة ملف واحد",
+							"2": "جارٍ قراءة ملفين",
+							"count >= 3 && count <= 10": "جارٍ قراءة ${count} ملفات",
+							"count >= 100": "جارٍ قراءة ${count} ملف"
+						}
+					},
 					"replacingFilepath": "جارٍ استبدال جزء في ${filepath}",
 					"runningLang": "جارٍ تنفيذ ${lang}",
 					"searchingContent": "جارٍ البحث عن ${content}"
@@ -6036,7 +6047,8 @@
 			"title": "تصفح",
 			"path": {
 				"aria-label": "مسار مساحة العمل",
-				"placeholder": "عامل التصفية / مسار المجلد"
+				"placeholder": "عامل التصفية / مسار المجلد",
+				"textContent": "مسار مساحة العمل"
 			},
 			"go": "انتقال",
 			"select": "تحديد مساحة العمل",
@@ -6386,7 +6398,7 @@
 			"stopAria": "إيقاف التوليد",
 			"modeSwitched": "تم التبديل إلى وضع ${mode}",
 			"hint": "اكتب ! عندما يكون الحقل فارغًا لوضع الصدفة · @ للإشارة إلى الملفات · / للأوامر · ↑↓ السجل · Tab للإكمال",
-			"placeholder": "اكتب أمرًا؛ اضغط Enter للتنفيذ (امسح للخروج من وضع الصدفة)",
+			"placeholder": "اكتب أمرًا؛ اضغط Ctrl/Cmd+Enter للتنفيذ (امسح للخروج من وضع الصدفة)",
 			"placeholderNormal": "اكتب رسالتك… (@ للإشارة إلى الملفات، / للأوامر)",
 			"placeholderShell": "اكتب أمر صدفة… (مثال: git status)",
 			"aria-label": "حقل إدخال الرسالة"

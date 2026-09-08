@@ -2127,7 +2127,8 @@
 			},
 			"unreadDivider": "新訊息",
 			"backToFriends": {
-				"aria-label": "返回好友"
+				"aria-label": "返回好友",
+				"text": "返回好友"
 			},
 			"dmTopicsTitle": "話題",
 			"participants": "參與者",
@@ -6035,7 +6036,8 @@
 			"title": "瀏覽",
 			"path": {
 				"aria-label": "工作區路徑",
-				"placeholder": "輸入篩選詞 / 目錄路徑"
+				"placeholder": "輸入篩選詞 / 目錄路徑",
+				"textContent": "工作區路徑"
 			},
 			"go": "前往",
 			"select": "選擇工作區",
@@ -6385,7 +6387,7 @@
 			"stopAria": "停止產生",
 			"modeSwitched": "已切換至 ${mode} 模式",
 			"hint": "空白輸入時按 ! 切換 shell · @ 引用檔案 · / 執行指令 · ↑↓ 歷史記錄 · Tab 自動完成",
-			"placeholder": "輸入指令，Enter 執行（清空以退出 shell 模式）",
+			"placeholder": "輸入指令，Ctrl/Cmd+Enter 執行（清空以退出 shell 模式）",
 			"placeholderNormal": "開始輸入訊息…（@ 引用檔案 · / 執行指令）",
 			"placeholderShell": "輸入 shell 指令…（例如 git status）",
 			"aria-label": "訊息輸入框"

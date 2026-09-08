@@ -8,10 +8,13 @@ const BASE = '/api/parts/shells:code'
  * @returns {Promise<Response>} fetch 响应
  */
 export function codeFetch(node, method, path, body) {
-	const url = `${node.baseUrl}${BASE}${path}${path.includes('?') ? '&' : '?'}fount-apikey=${encodeURIComponent(node.apiKey)}`
+	const url = `${node.baseUrl}${BASE}${path}`
 	return fetch(url, {
 		method,
-		headers: body ? { 'content-type': 'application/json' } : undefined,
+		headers: {
+			...body ? { 'content-type': 'application/json' } : {},
+			authorization: `Bearer ${node.apiKey}`,
+		},
 		body: body ? JSON.stringify(body) : undefined,
 	})
 }

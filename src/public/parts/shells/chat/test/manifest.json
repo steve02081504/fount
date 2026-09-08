@@ -177,7 +177,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "9m39s",
+			"expected": "4m53s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -790,7 +790,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "25m11s",
+			"expected": "33m41s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"

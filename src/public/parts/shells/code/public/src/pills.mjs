@@ -63,7 +63,7 @@ export async function mountPillChrome() {
  * @returns {HTMLLIElement} 菜单行。
  */
 function menuItem(text, { active = false, onClick, disabled = false, className = '', i18nKey = '' } = {}) {
-	const li = document.createElement('li')
+	const listItem = document.createElement('li')
 	const button = document.createElement('button')
 	button.type = 'button'
 	button.className = 'menu-item' + (active ? ' active' : '') + (className ? ` ${className}` : '')
@@ -75,8 +75,8 @@ function menuItem(text, { active = false, onClick, disabled = false, className =
 		document.activeElement?.blur()
 		onClick?.()
 	})
-	li.appendChild(button)
-	return li
+	listItem.appendChild(button)
+	return listItem
 }
 
 /**
@@ -84,11 +84,11 @@ function menuItem(text, { active = false, onClick, disabled = false, className =
  * @returns {HTMLLIElement} 分隔行。
  */
 function menuSeparator() {
-	const li = document.createElement('li')
-	const div = document.createElement('div')
-	div.className = 'divider my-1'
-	li.appendChild(div)
-	return li
+	const listItem = document.createElement('li')
+	const divider = document.createElement('div')
+	divider.className = 'divider my-1'
+	listItem.appendChild(divider)
+	return listItem
 }
 
 /* ---------------- 机器 / shell ---------------- */
@@ -235,8 +235,15 @@ export async function selectWorkspace(id, { fromTabSwitch = false } = {}) {
 async function removeCurrentWorkspace() {
 	if (!store.workspace) return
 	const removedId = store.workspace.id
+	// 后端确认删除成功后才更新本地列表；失败则提示并保留现状
+	try {
+		await api.removeWorkspace(removedId)
+	}
+	catch (error) {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+		return
+	}
 	store.workspaces = store.workspaces.filter(w => w.id !== removedId)
-	await api.removeWorkspace(removedId).catch(() => { })
 	store.workspace = null
 	setPref('workspace', '')
 	// 丢弃指向该工作区的标签；活动标签被移除时清空会话视图

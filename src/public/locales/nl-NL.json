@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "nieuw nieuws",
 			"backToFriends": {
-				"aria-label": "Terug naar vrienden"
+				"aria-label": "Terug naar vrienden",
+				"text": "Terug naar vrienden"
 			},
 			"dmTopicsTitle": "Onderwerp",
 			"participants": "Deelnemers",
@@ -6042,7 +6043,8 @@
 			"title": "Bladeren",
 			"path": {
 				"aria-label": "Pad van de werkruimte",
-				"placeholder": "Filter / mappad"
+				"placeholder": "Filter / mappad",
+				"textContent": "Pad van de werkruimte"
 			},
 			"go": "Ga",
 			"select": "Werkruimte kiezen",
@@ -6392,7 +6394,7 @@
 			"stopAria": "Genereren stoppen",
 			"modeSwitched": "Geschakeld naar de ${mode}-modus",
 			"hint": "Typ ! bij een leeg veld voor de shellmodus · @ om bestanden te verwijzen · / voor opdrachten · ↑↓ geschiedenis · Tab om aan te vullen",
-			"placeholder": "Typ een opdracht; Enter voert uit (leegmaken om de shellmodus te verlaten)",
+			"placeholder": "Typ een opdracht; Ctrl/Cmd+Enter voert uit (leegmaken om de shellmodus te verlaten)",
 			"placeholderNormal": "Typ je bericht… (@ om bestanden te verwijzen, / voor opdrachten)",
 			"placeholderShell": "Typ een shellopdracht… (bijv. git status)",
 			"aria-label": "Berichtinvoer"

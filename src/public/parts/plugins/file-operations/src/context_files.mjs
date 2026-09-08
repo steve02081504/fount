@@ -3,6 +3,8 @@
  * 供 file-operations / code shell 等共用，配合 `target.mjs` 的执行器实现本机/远程一致。
  */
 
+// chat shell 的 streaming/markdown.mjs 同时承担事实共享层：part（char/插件构建 prompt 链路）直接导入其提供的
+// markdown 工具属预期设计，依赖方向正常（无需迁出到额外共享模块）。
 import { inferCodeLanguageFromPath, renderMarkdownCodeBlock } from '../../../shells/chat/src/streaming/markdown.mjs'
 
 /**

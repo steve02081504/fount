@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "new messages",
 			"backToFriends": {
-				"aria-label": "Return to friends"
+				"aria-label": "Return to friends",
+				"text": "Return to friends"
 			},
 			"dmTopicsTitle": "Topic",
 			"participants": "Participants",
@@ -6036,7 +6037,8 @@
 			"title": "Browse",
 			"path": {
 				"aria-label": "Workspace path",
-				"placeholder": "Filter / path"
+				"placeholder": "Filter / path",
+				"textContent": "Workspace path"
 			},
 			"go": "Go",
 			"select": "Select",
@@ -6386,7 +6388,7 @@
 			"stopAria": "Stop generating",
 			"modeSwitched": "Switched to ${mode} mode",
 			"hint": "Type ! when empty for shell mode · @ to reference files · / for commands · ↑↓ history · Tab to complete",
-			"placeholder": "Type a command; Enter runs it (clear to leave shell mode)",
+			"placeholder": "Type a command; Ctrl/Cmd+Enter runs it (clear to leave shell mode)",
 			"placeholderNormal": "Ask anything… (@ to reference files, / for commands)",
 			"placeholderShell": "Type a shell command… (e.g. git status)",
 			"aria-label": "Message input"

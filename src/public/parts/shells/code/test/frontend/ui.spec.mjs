@@ -363,7 +363,7 @@ test.describe('code shell sessions & workspace', () => {
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 		}
 	})
 
@@ -388,7 +388,7 @@ test.describe('code shell sessions & workspace', () => {
 			await expect(page.locator('#workspace-pill-label')).toContainText('inner')
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 	})
@@ -423,7 +423,7 @@ test.describe('code shell sessions & workspace', () => {
 			await expect(page.locator('#folder-entries .folder-browser-entry')).toHaveCount(0)
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 	})
@@ -456,7 +456,7 @@ test.describe('code shell sessions & workspace', () => {
 			await expect(page.locator('#folder-entries .folder-browser-entry', { hasText: basename(dir) })).toBeVisible()
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 	})
@@ -477,7 +477,7 @@ test.describe('code shell sessions & workspace', () => {
 			await expect(page.locator('#folder-entries .folder-browser-entry', { hasText: 'sibling' })).toBeVisible()
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 	})
@@ -493,7 +493,7 @@ test.describe('code shell sessions & workspace', () => {
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 		}
 	})
 
@@ -509,7 +509,7 @@ test.describe('code shell sessions & workspace', () => {
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 		}
 	})
 })
@@ -558,7 +558,7 @@ test.describe('code shell tabs', () => {
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 		}
 	})
 
@@ -593,7 +593,7 @@ test.describe('code shell tabs', () => {
 			await removeAllWorkspacesViaApi(page, baseUrl)
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 		}
 	})
 })
@@ -714,8 +714,10 @@ test.describe('code shell message actions & layout', () => {
 			}).toPass()
 		}
 		finally {
-			// 页面关闭时的会话 flush 会重建 session 文件，最终清理交给 afterAll（context 关闭后执行）
-			leftoverWorkspaceDirs.add(dir)
+			// 先 API 移除工作区让后端释放会话句柄（否则 Windows 上 rm 会持续 EBUSY）；
+			// 页面关闭后的 flush 因工作区已删不会重建，rmDirRetry 此时即可删净
+			await removeAllWorkspacesViaApi(page, baseUrl)
+			await rmDirRetry(dir)
 		}
 	})
 
@@ -750,7 +752,7 @@ test.describe('code shell message actions & layout', () => {
 			await expect(page.locator('.code-attachment-chip')).toHaveCount(0)
 		}
 		finally {
-			rmSync(dir, { recursive: true, force: true })
+			await rmDirRetry(dir)
 		}
 	})
 })

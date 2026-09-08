@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "🆕💬",
 			"backToFriends": {
-				"aria-label": "🔙👫"
+				"aria-label": "🔙👫",
+				"text": "🔙👫"
 			},
 			"dmTopicsTitle": "#️⃣💬",
 			"participants": "👥🤝",
@@ -6036,7 +6037,8 @@
 			"title": "🗂️",
 			"path": {
 				"aria-label": "🗺️",
-				"placeholder": "🔍 / 📁"
+				"placeholder": "🔍 / 📁",
+				"textContent": "🗺️"
 			},
 			"go": "➡️",
 			"select": "✅",

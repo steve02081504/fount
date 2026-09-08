@@ -67,7 +67,6 @@ export class timeSlice_t {
 			playername: undefined,
 			greeting_type: undefined,
 		})
-		delete next.chars_memories
 		next.chars_speaking_frequency = structuredClone(this.chars_speaking_frequency)
 		return next
 	}

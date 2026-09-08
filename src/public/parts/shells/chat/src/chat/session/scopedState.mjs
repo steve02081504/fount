@@ -25,7 +25,8 @@ import { scopedStatePath } from '../lib/paths.mjs'
 async function readScopedState(username, groupId, channelId) {
 	try {
 		const raw = JSON.parse(await readFile(scopedStatePath(username, groupId, channelId), 'utf8'))
-		return raw && typeof raw === 'object' ? raw : {}
+		if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new TypeError('scoped state must be a JSON object')
+		return raw
 	}
 	catch (error) {
 		if (error?.code === 'ENOENT') return {}
@@ -61,7 +62,9 @@ export function withScopedStateMutex(username, groupId, channelId, mutate, charn
 			await writeScopedState(username, groupId, channelId, state)
 		})
 	channelMutexes.set(key, next)
-	next.finally(() => { if (channelMutexes.get(key) === next) channelMutexes.delete(key) })
+	/** 队列完成（含失败）后若仍是本链则移除。 */
+	const cleanup = () => { if (channelMutexes.get(key) === next) channelMutexes.delete(key) }
+	next.then(cleanup, cleanup)
 	return next
 }
 

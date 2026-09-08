@@ -2128,7 +2128,8 @@
 			},
 			"unreadDivider": "nuovi messaggi",
 			"backToFriends": {
-				"aria-label": "Ritorno agli amici"
+				"aria-label": "Ritorno agli amici",
+				"text": "Ritorno agli amici"
 			},
 			"dmTopicsTitle": "Argomento",
 			"participants": "Partecipanti",
@@ -6042,7 +6043,8 @@
 			"title": "Sfoglia",
 			"path": {
 				"aria-label": "Percorso dell'area di lavoro",
-				"placeholder": "Filtro / percorso della cartella"
+				"placeholder": "Filtro / percorso della cartella",
+				"textContent": "Percorso dell'area di lavoro"
 			},
 			"go": "Vai",
 			"select": "Seleziona area di lavoro",
@@ -6392,7 +6394,7 @@
 			"stopAria": "Interrompi generazione",
 			"modeSwitched": "Passato alla modalità ${mode}",
 			"hint": "Digita ! a campo vuoto per la modalità shell · @ per citare file · / per i comandi · ↑↓ cronologia · Tab per il completamento",
-			"placeholder": "Digita un comando; Invio lo esegue (svuota per uscire dalla modalità shell)",
+			"placeholder": "Digita un comando; Ctrl/Cmd+Invio lo esegue (svuota per uscire dalla modalità shell)",
 			"placeholderNormal": "Scrivi un messaggio… (@ per citare file, / per i comandi)",
 			"placeholderShell": "Digita un comando shell… (es. git status)",
 			"aria-label": "Inserimento messaggio"

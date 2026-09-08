@@ -362,6 +362,8 @@ export async function runDiagnosedPage(context, use, teardown, diagnosticsOption
 		 */
 		failEarly = () => {
 			aborted = true
+			// fail-fast 时把已达阈值的 console.error 内容落日志，否则只有计数没有正文（诊断盲区）
+			for (const text of diagnostics?.consoleErrors ?? []) console.error(`[console-error-dump] ${text}`)
 			reject(new Error(`browser console.error reached ${MAX_CONSOLE_ERRORS}; aborting test`))
 		}
 	})
@@ -371,7 +373,13 @@ export async function runDiagnosedPage(context, use, teardown, diagnosticsOption
 	try {
 		await Promise.race([use(page), earlyFail])
 	}
-	finally {
-		if (!aborted) await teardown(diagnostics, page)
+	catch (useError) {
+		// use 已失败：teardown 照常执行（非 aborted），但其拒绝不得覆盖原始测试错误
+		try {
+			if (!aborted) await teardown(diagnostics, page)
+		}
+		catch { /* teardown 失败让位于原始错误 */ }
+		throw useError
 	}
+	if (!aborted) await teardown(diagnostics, page)
 }

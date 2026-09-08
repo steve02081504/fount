@@ -30,11 +30,12 @@ export const codeWorld = {
 				const texts = []
 				const profileName = args.extension?.code?.profile
 				if (profileName) {
-					const profile = await getProfile(args.username, args.workdir, profileName).catch(() => null)
+					// 缺失的 profile 返回 null；真实读取错误向上传播（不静默丢上下文）
+					const profile = await getProfile(args.username, args.workdir, profileName)
 					if (profile?.content)
 						texts.push({ content: profile.content, description: `Profile: ${profile.name}`, important: 0 })
 				}
-				const agentsMd = await loadWorkspaceAgentsMd(args.username, args.workdir).catch(() => null)
+				const agentsMd = await loadWorkspaceAgentsMd(args.username, args.workdir)
 				if (agentsMd)
 					texts.push({ content: agentsMd.content, description: `AGENTS.md (${agentsMd.path})`, important: 0 })
 				return {

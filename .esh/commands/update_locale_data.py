@@ -311,15 +311,17 @@ def self_test() -> int:
 		print("get/has missing mismatch", file=sys.stderr)
 		return 1
 
-	# 任一文件处理失败应让进程非零退出（脚本错误不应静默变绿）
+	# 任一文件处理失败应让进程非零退出（脚本错误不应静默变绿）；locales_dir 恢复必须在 finally（临时目录清理后全局不得残留指向）
 	global locales_dir
 	saved_dir = locales_dir
-	with tempfile.TemporaryDirectory() as tmp:
-		locales_dir = tmp
-		with open(os.path.join(tmp, "bad.json"), "w", encoding="utf-8") as f:
-			f.write("{}")
-		errors = process_locale_files("undefined_name_xyz")
-	locales_dir = saved_dir
+	try:
+		with tempfile.TemporaryDirectory(prefix="fount-") as tmp:
+			locales_dir = tmp
+			with open(os.path.join(tmp, "bad.json"), "w", encoding="utf-8") as f:
+				f.write("{}")
+			errors = process_locale_files("undefined_name_xyz")
+	finally:
+		locales_dir = saved_dir
 	if errors < 1:
 		print("process_locale_files should report per-file errors", file=sys.stderr)
 		return 1
