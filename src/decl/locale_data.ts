@@ -2089,7 +2089,10 @@ export type LocaleData = {
 				'aria-label': string
 			}
 			unreadDivider: string
-			backToFriends: string
+			backToFriends: {
+				'aria-label': string
+				text: string
+			}
 			dmTopicsTitle: string
 			participants: string
 			startChatWith: string
@@ -3556,6 +3559,7 @@ export type LocaleData = {
 				tool: {
 					overridingFilepath: string
 					readingFilepath: string
+					readingFiles: string
 					replacingFilepath: string
 					runningLang: string
 					searchingContent: string
@@ -5991,6 +5995,21 @@ export type LocaleData = {
 		parentLink: string
 	}
 	util: {
+		folderBrowser: {
+			title: string
+			path: {
+				'aria-label': string
+				placeholder: string
+				textContent: string
+			}
+			go: string
+			select: string
+			quickAccess: string
+			roots: string
+			noMatch: string
+			loading: string
+			error: string
+		}
 		toast: {
 			container: {
 				'aria-label': string
@@ -6281,6 +6300,122 @@ export type LocaleData = {
 			missingParams: string
 		}
 	}
+	code: {
+		title: string
+		description: string
+		sessions: {
+			new: string
+			untitled: string
+			yesterday: string
+		}
+		workspaces: {
+			browse: string
+			remove: string
+			none: string
+			overviewEmpty: string
+		}
+		home: {
+			'aria-label': string
+		}
+		tabs: {
+			'aria-label': string
+			close: string
+		}
+		newTab: {
+			'aria-label': string
+		}
+		machine: {
+			local: string
+			offline: string
+		}
+		char: {
+			switch: string
+			settings: string
+			goodAgent: string
+			none: string
+			recommend: {
+				main: string
+				aria: string
+				dismiss: string
+				install: string
+				installed: string
+			}
+		}
+		composer: {
+			shellDefault: string
+			sendButton: {
+				'aria-label': string
+			}
+			sendAria: string
+			stopAria: string
+			modeSwitched: string
+			hint: string
+			placeholder: string
+			placeholderNormal: string
+			placeholderShell: string
+			'aria-label': string
+		}
+		aiSource: {
+			panelTitle: string
+			charOwn: string
+			manage: string
+		}
+		commands: {
+			run: string
+		}
+		messages: {
+			backToBottom: string
+		}
+		message: {
+			actions: {
+				copy: string
+				edit: string
+				saveHtml: string
+			}
+			copied: string
+			edit: {
+				save: string
+				cancel: string
+				ariaLabel: {
+					'aria-label': string
+				}
+			}
+			feedback: {
+				up: string
+				down: string
+				reasonPlaceholder: {
+					placeholder: string
+				}
+				reasonSave: string
+				reasonAria: {
+					'aria-label': string
+				}
+			}
+			regen: string
+		}
+		attach: {
+			add: {
+				'aria-label': string
+				title: string
+			}
+			remove: {
+				'aria-label': string
+			}
+			drop: string
+			tooLarge: string
+		}
+		error: {
+			generic: string
+			generate: string
+			aborted: string
+			noChar: string
+		}
+		home_function_buttons: {
+			code: {
+				title: string
+			}
+		}
+	}
 }
 /**
  * i18n switch 叶子（singular / plural 等），由 geti18n 按 params[switch] 解析。
@@ -6563,6 +6698,7 @@ export type LocaleKeyParams = {
 	'chat.message.view.share.success': { provider: string | number; sponsorLink: string | number }
 	'chat.message.view.tool.overridingFilepath': { filepath: string | number }
 	'chat.message.view.tool.readingFilepath': { filepath: string | number }
+	'chat.message.view.tool.readingFiles': { count: string | number }
 	'chat.message.view.tool.replacingFilepath': { filepath: string | number }
 	'chat.message.view.tool.runningLang': { lang: string | number }
 	'chat.message.view.tool.searchingContent': { content: string | number }
@@ -6576,6 +6712,11 @@ export type LocaleKeyParams = {
 	'chat.stickers.sticker.count': { count: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
 	'chat.voiceRecording.speechRecognitionFailed': { error: string | number }
+	'code.attach.tooLarge': { name: string | number }
+	'code.char.recommend.installed': { charname: string | number }
+	'code.char.recommend.main': { charname: string | number }
+	'code.composer.modeSwitched': { mode: string | number }
+	'code.error.generic': { error: string | number }
 	'debug_info.linksCount': { count: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }

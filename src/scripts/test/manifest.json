@@ -625,6 +625,25 @@
 			]
 		},
 		{
+			"name": "clobber_guard",
+			"expected": 300,
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/clobber_guard.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/clobber_guard.test.mjs",
+				"src/public/pages/scripts/i18n/clobber_guard.mjs",
+				"src/public/pages/scripts/i18n/index.mjs"
+			]
+		},
+		{
 			"name": "epoch_cache",
 			"expected": 200,
 			"run": [

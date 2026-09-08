@@ -221,7 +221,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "23m33s",
+			"expected": "16m46s",
 			"dependsOn": [
 				"server:live",
 				"smoke_social",

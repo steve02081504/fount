@@ -60,7 +60,7 @@
 			"noInstanceRunning": "No running instance detected, please start fount first.",
 			"runPartLog": "Run ${partpath} as ${username}, arguments: ${args}",
 			"invokePartLog": "Call ${partpath} as ${username}, parameter: ${invokedata}",
-			"invalidCommand": "Invalid command, please use \"fount run <username> <component path> <parameters...>\"",
+			"invalidCommand": "Invalid command, please use \"fount run <component path> <parameters...>\" (or \"fount runas <username> <component path>\" to specify a user)",
 			"invalidCommandFormat": "Invalid command format",
 			"unsupportedCommand": "Unsupported command type",
 			"processMessageError": "Error processing IPC message: ${error}",
@@ -2127,7 +2127,10 @@
 				"aria-label": "Remove bookmark"
 			},
 			"unreadDivider": "new messages",
-			"backToFriends": "Return to friends",
+			"backToFriends": {
+				"aria-label": "Return to friends",
+				"text": "Return to friends"
+			},
 			"dmTopicsTitle": "Topic",
 			"participants": "Participants",
 			"startChatWith": "💬 Start chatting with ${name}",
@@ -3594,6 +3597,7 @@
 				"tool": {
 					"overridingFilepath": "Overwriting ${filepath}",
 					"readingFilepath": "Reading ${filepath}",
+					"readingFiles": "Reading ${count} files",
 					"replacingFilepath": "Replacing in ${filepath}",
 					"runningLang": "Running ${lang}",
 					"searchingContent": "Searching ${content}"
@@ -6029,6 +6033,21 @@
 		"parentLink": "↑ Previous level ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Browse",
+			"path": {
+				"aria-label": "Workspace path",
+				"placeholder": "Filter / path",
+				"textContent": "Workspace path"
+			},
+			"go": "Go",
+			"select": "Select",
+			"quickAccess": "Quick access",
+			"roots": "Drives / roots",
+			"noMatch": "No match",
+			"loading": "Loading…",
+			"error": "Browse error"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Notifications"
@@ -6317,6 +6336,122 @@
 			"success": "Signed in. You can close this page.",
 			"failed": "Login failed: ${message}",
 			"missingParams": "Callback is missing code or state."
+		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "AI coding sessions targeting workspaces and machines.",
+		"sessions": {
+			"new": "New session",
+			"untitled": "Untitled session",
+			"yesterday": "yesterday"
+		},
+		"workspaces": {
+			"browse": "Browse…",
+			"remove": "Remove current workspace",
+			"none": "No workspace selected",
+			"overviewEmpty": "No conversations yet"
+		},
+		"home": {
+			"aria-label": "Workspaces & sessions"
+		},
+		"tabs": {
+			"aria-label": "Session tabs",
+			"close": "Close tab"
+		},
+		"newTab": {
+			"aria-label": "New session"
+		},
+		"machine": {
+			"local": "Local",
+			"offline": "offline"
+		},
+		"char": {
+			"switch": "Switch character",
+			"settings": "Character settings",
+			"goodAgent": "How to write a good agent?",
+			"none": "No character selected",
+			"recommend": {
+				"main": "Recommended character ${charname} is not installed. Install it?",
+				"aria": "Character install recommendation",
+				"dismiss": "Dismiss",
+				"install": "Install",
+				"installed": "Installed character ${charname}"
+			}
+		},
+		"composer": {
+			"shellDefault": "Default",
+			"sendButton": {
+				"aria-label": "Send message"
+			},
+			"sendAria": "Send message",
+			"stopAria": "Stop generating",
+			"modeSwitched": "Switched to ${mode} mode",
+			"hint": "Type ! when empty for shell mode · @ to reference files · / for commands · ↑↓ history · Tab to complete",
+			"placeholder": "Type a command; Ctrl/Cmd+Enter runs it (clear to leave shell mode)",
+			"placeholderNormal": "Ask anything… (@ to reference files, / for commands)",
+			"placeholderShell": "Type a shell command… (e.g. git status)",
+			"aria-label": "Message input"
+		},
+		"aiSource": {
+			"panelTitle": "Manage AI source visibility",
+			"charOwn": "Character default",
+			"manage": "Manage AI sources…"
+		},
+		"commands": {
+			"run": "Run"
+		},
+		"messages": {
+			"backToBottom": "Back to latest"
+		},
+		"message": {
+			"actions": {
+				"copy": "Copy",
+				"edit": "Edit",
+				"saveHtml": "Save as HTML"
+			},
+			"copied": "Copied to clipboard",
+			"edit": {
+				"save": "Save",
+				"cancel": "Cancel",
+				"ariaLabel": {
+					"aria-label": "Edit message text"
+				}
+			},
+			"feedback": {
+				"up": "Like",
+				"down": "Dislike",
+				"reasonPlaceholder": {
+					"placeholder": "Reason (optional)"
+				},
+				"reasonSave": "Submit",
+				"reasonAria": {
+					"aria-label": "Dislike reason"
+				}
+			},
+			"regen": "Regenerate"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Add attachment",
+				"title": "Add attachment"
+			},
+			"remove": {
+				"aria-label": "Remove attachment"
+			},
+			"drop": "Drop to attach",
+			"tooLarge": "Attachment ${name} exceeds the 10MB limit"
+		},
+		"error": {
+			"generic": "Something went wrong: ${error}",
+			"generate": "Failed to generate reply",
+			"aborted": "Generation aborted",
+			"noChar": "Select a character first"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }

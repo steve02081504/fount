@@ -1,9 +1,9 @@
 /**
  * 测试残留物检测：确认一次运行没有在系统留下 Playwright 浏览器目录
- * 或 fount 临时目录。仅 Windows、非 CI（GitHub Actions 会装 ms-playwright）生效。
+ * 或 fount 临时目录。非 CI（GitHub Actions 会装 ms-playwright）的全平台生效。
  */
 import { existsSync, readdirSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import process from 'node:process'
 
@@ -25,19 +25,33 @@ export function inGitHubActions() {
 }
 
 /**
+ * 本机 ms-playwright 目录（`playwright install` 下载浏览器的位置）。
+ * 本地前端测试只用系统 Chrome/Edge，不应出现该目录；CI 例外（会安装）。
+ * @returns {string | null} ms-playwright 目录路径；无法确定时返回 null
+ */
+export function msPlaywrightPath() {
+	if (isWindows()) {
+		const localAppData = process.env.LOCALAPPDATA
+		return localAppData ? join(localAppData, 'ms-playwright') : null
+	}
+	if (process.platform === 'darwin') {
+		const home = homedir()
+		return home ? join(home, 'Library', 'Caches', 'ms-playwright') : null
+	}
+	return join(process.env.XDG_CACHE_HOME || join(homedir(), '.cache'), 'ms-playwright')
+}
+
+/**
  * 扫描遗留的 ms-playwright / fount 临时目录。
  * @param {string[]} [baseline] 起始基线路径（debug job 启动时记录），返回中剔除其中已存在者
  * @returns {string[]} 残留路径（空 = 干净）
  */
 export function findCleanupLeaks(baseline = []) {
-	if (!isWindows() || inGitHubActions()) return []
+	if (inGitHubActions()) return []
 	/** @type {string[]} */
 	const leaks = []
-	const localAppData = process.env.LOCALAPPDATA
-	if (localAppData) {
-		const playwrightDir = join(localAppData, 'ms-playwright')
-		if (existsSync(playwrightDir)) leaks.push(playwrightDir)
-	}
+	const playwrightDir = msPlaywrightPath()
+	if (playwrightDir && existsSync(playwrightDir)) leaks.push(playwrightDir)
 	let tempEntries = []
 	try {
 		tempEntries = readdirSync(tmpdir())

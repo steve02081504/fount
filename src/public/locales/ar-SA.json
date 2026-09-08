@@ -2127,7 +2127,10 @@
 				"aria-label": "إزالة الإشارة المرجعية"
 			},
 			"unreadDivider": "أخبار جديدة",
-			"backToFriends": "العودة إلى الأصدقاء",
+			"backToFriends": {
+				"aria-label": "العودة إلى الأصدقاء",
+				"text": "العودة إلى الأصدقاء"
+			},
 			"dmTopicsTitle": "عنوان",
 			"participants": "مشاركون",
 			"startChatWith": "💬 ابدأ الدردشة مع ${name}",
@@ -3594,6 +3597,17 @@
 				"tool": {
 					"overridingFilepath": "جارٍ إعادة كتابة ${filepath}",
 					"readingFilepath": "جارٍ قراءة ${filepath}",
+					"readingFiles": {
+						"switch": "count",
+						"default": "جارٍ قراءة ${count} ملفاً",
+						"cases": {
+							"0": "جارٍ القراءة",
+							"1": "جارٍ قراءة ملف واحد",
+							"2": "جارٍ قراءة ملفين",
+							"count >= 3 && count <= 10": "جارٍ قراءة ${count} ملفات",
+							"count >= 100": "جارٍ قراءة ${count} ملف"
+						}
+					},
 					"replacingFilepath": "جارٍ استبدال جزء في ${filepath}",
 					"runningLang": "جارٍ تنفيذ ${lang}",
 					"searchingContent": "جارٍ البحث عن ${content}"
@@ -6029,6 +6043,21 @@
 		"parentLink": "↑ المستوى السابق ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "تصفح",
+			"path": {
+				"aria-label": "مسار مساحة العمل",
+				"placeholder": "عامل التصفية / مسار المجلد",
+				"textContent": "مسار مساحة العمل"
+			},
+			"go": "انتقال",
+			"select": "تحديد مساحة العمل",
+			"quickAccess": "وصول سريع",
+			"roots": "محركات الأقراص / الجذور",
+			"noMatch": "لا توجد نتائج",
+			"loading": "جارٍ التحميل…",
+			"error": "خطأ في التصفح"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "الإشعارات"
@@ -6317,6 +6346,122 @@
 			"success": "تم تسجيل الدخول. يمكنك إغلاق هذه الصفحة.",
 			"failed": "فشل تسجيل الدخول: ${message}",
 			"missingParams": "الرد ينقصه code أو state."
+		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "جلسات برمجة بالذكاء الاصطناعي لمساحات العمل والآلات.",
+		"sessions": {
+			"new": "جلسة جديدة",
+			"untitled": "جلسة بدون عنوان",
+			"yesterday": "أمس"
+		},
+		"workspaces": {
+			"browse": "تصفح…",
+			"remove": "إزالة مساحة العمل الحالية",
+			"none": "لم يتم تحديد مساحة عمل",
+			"overviewEmpty": "لا توجد محادثات بعد"
+		},
+		"home": {
+			"aria-label": "مساحات العمل والجلسات"
+		},
+		"tabs": {
+			"aria-label": "علامات تبويب الجلسة",
+			"close": "إغلاق علامة التبويب"
+		},
+		"newTab": {
+			"aria-label": "جلسة جديدة"
+		},
+		"machine": {
+			"local": "محلي",
+			"offline": "غير متصل"
+		},
+		"char": {
+			"switch": "تبديل الشخصية",
+			"settings": "إعدادات الشخصية",
+			"goodAgent": "كيف تكتب وكيلًا جيدًا؟",
+			"none": "لم يتم تحديد شخصية",
+			"recommend": {
+				"main": "الشخصية الموصى بها ${charname} غير مثبتة. هل تريد تثبيتها؟",
+				"aria": "توصية بتثبيت شخصية",
+				"dismiss": "إغلاق",
+				"install": "تثبيت",
+				"installed": "تم تثبيت الشخصية ${charname}"
+			}
+		},
+		"composer": {
+			"shellDefault": "الافتراضي",
+			"sendButton": {
+				"aria-label": "إرسال رسالة"
+			},
+			"sendAria": "إرسال رسالة",
+			"stopAria": "إيقاف التوليد",
+			"modeSwitched": "تم التبديل إلى وضع ${mode}",
+			"hint": "اكتب ! عندما يكون الحقل فارغًا لوضع الصدفة · @ للإشارة إلى الملفات · / للأوامر · ↑↓ السجل · Tab للإكمال",
+			"placeholder": "اكتب أمرًا؛ اضغط Ctrl/Cmd+Enter للتنفيذ (امسح للخروج من وضع الصدفة)",
+			"placeholderNormal": "اكتب رسالتك… (@ للإشارة إلى الملفات، / للأوامر)",
+			"placeholderShell": "اكتب أمر صدفة… (مثال: git status)",
+			"aria-label": "حقل إدخال الرسالة"
+		},
+		"aiSource": {
+			"panelTitle": "إدارة عرض مصادر الذكاء الاصطناعي",
+			"charOwn": "افتراضي الشخصية",
+			"manage": "إدارة مصادر الذكاء الاصطناعي…"
+		},
+		"commands": {
+			"run": "تشغيل"
+		},
+		"messages": {
+			"backToBottom": "العودة إلى الأحدث"
+		},
+		"message": {
+			"actions": {
+				"copy": "نسخ",
+				"edit": "تعديل",
+				"saveHtml": "حفظ بصيغة HTML"
+			},
+			"copied": "تم النسخ إلى الحافظة",
+			"edit": {
+				"save": "حفظ",
+				"cancel": "إلغاء",
+				"ariaLabel": {
+					"aria-label": "تعديل نص الرسالة"
+				}
+			},
+			"feedback": {
+				"up": "أعجبني",
+				"down": "لم يعجبني",
+				"reasonPlaceholder": {
+					"placeholder": "السبب (اختياري)"
+				},
+				"reasonSave": "إرسال",
+				"reasonAria": {
+					"aria-label": "سبب عدم الإعجاب"
+				}
+			},
+			"regen": "إعادة التوليد"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "إضافة مرفق",
+				"title": "إضافة مرفق"
+			},
+			"remove": {
+				"aria-label": "إزالة المرفق"
+			},
+			"drop": "أفلت للإرفاق",
+			"tooLarge": "يتجاوز المرفق ${name} حد 10 ميجابايت"
+		},
+		"error": {
+			"generic": "حدث خطأ ما: ${error}",
+			"generate": "فشل توليد الرد",
+			"aborted": "تم إيقاف التوليد",
+			"noChar": "يرجى تحديد شخصية أولًا"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }

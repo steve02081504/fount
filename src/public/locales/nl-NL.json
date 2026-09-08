@@ -2127,7 +2127,10 @@
 				"aria-label": "Bladwijzer verwijderen"
 			},
 			"unreadDivider": "nieuw nieuws",
-			"backToFriends": "Terug naar vrienden",
+			"backToFriends": {
+				"aria-label": "Terug naar vrienden",
+				"text": "Terug naar vrienden"
+			},
 			"dmTopicsTitle": "Onderwerp",
 			"participants": "Deelnemers",
 			"startChatWith": "💬 Begin met chatten met ${name}",
@@ -3600,6 +3603,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} wordt overschreven",
 					"readingFilepath": "${filepath} wordt gelezen",
+					"readingFiles": "${count} bestanden worden gelezen",
 					"replacingFilepath": "${filepath} wordt aangepast",
 					"runningLang": "${lang} wordt uitgevoerd",
 					"searchingContent": "${content} wordt gezocht"
@@ -6035,6 +6039,21 @@
 		"parentLink": "↑ Vorig niveau ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Bladeren",
+			"path": {
+				"aria-label": "Pad van de werkruimte",
+				"placeholder": "Filter / mappad",
+				"textContent": "Pad van de werkruimte"
+			},
+			"go": "Ga",
+			"select": "Werkruimte kiezen",
+			"quickAccess": "Snelle toegang",
+			"roots": "Stations / hoofdstations",
+			"noMatch": "Geen resultaten",
+			"loading": "Laden…",
+			"error": "Fout bij bladeren"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Meldingen"
@@ -6323,6 +6342,122 @@
 			"success": "Ingelogd. Je kunt deze pagina sluiten.",
 			"failed": "Inloggen mislukt: ${message}",
 			"missingParams": "Callback mist code of state."
+		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "AI-codeersessies voor werkruimten en machines.",
+		"sessions": {
+			"new": "Nieuwe sessie",
+			"untitled": "Naamloze sessie",
+			"yesterday": "gisteren"
+		},
+		"workspaces": {
+			"browse": "Bladeren…",
+			"remove": "Huidige werkruimte verwijderen",
+			"none": "Geen werkruimte geselecteerd",
+			"overviewEmpty": "Nog geen gesprekken"
+		},
+		"home": {
+			"aria-label": "Werkruimten en sessies"
+		},
+		"tabs": {
+			"aria-label": "Sessietabbladen",
+			"close": "Tabblad sluiten"
+		},
+		"newTab": {
+			"aria-label": "Nieuwe sessie"
+		},
+		"machine": {
+			"local": "Lokaal",
+			"offline": "offline"
+		},
+		"char": {
+			"switch": "Personage wisselen",
+			"settings": "Personage-instellingen",
+			"goodAgent": "Hoe schrijf je een goede agent?",
+			"none": "Geen personage geselecteerd",
+			"recommend": {
+				"main": "Aanbevolen personage ${charname} is niet geïnstalleerd. Installeren?",
+				"aria": "Aanbeveling personage-installatie",
+				"dismiss": "Sluiten",
+				"install": "Installeren",
+				"installed": "Personage ${charname} geïnstalleerd"
+			}
+		},
+		"composer": {
+			"shellDefault": "Standaard",
+			"sendButton": {
+				"aria-label": "Bericht verzenden"
+			},
+			"sendAria": "Bericht verzenden",
+			"stopAria": "Genereren stoppen",
+			"modeSwitched": "Geschakeld naar de ${mode}-modus",
+			"hint": "Typ ! bij een leeg veld voor de shellmodus · @ om bestanden te verwijzen · / voor opdrachten · ↑↓ geschiedenis · Tab om aan te vullen",
+			"placeholder": "Typ een opdracht; Ctrl/Cmd+Enter voert uit (leegmaken om de shellmodus te verlaten)",
+			"placeholderNormal": "Typ je bericht… (@ om bestanden te verwijzen, / voor opdrachten)",
+			"placeholderShell": "Typ een shellopdracht… (bijv. git status)",
+			"aria-label": "Berichtinvoer"
+		},
+		"aiSource": {
+			"panelTitle": "Zichtbaarheid van AI-bronnen beheren",
+			"charOwn": "Personagestandaard",
+			"manage": "AI-bronnen beheren…"
+		},
+		"commands": {
+			"run": "Uitvoeren"
+		},
+		"messages": {
+			"backToBottom": "Terug naar het nieuwste bericht"
+		},
+		"message": {
+			"actions": {
+				"copy": "Kopiëren",
+				"edit": "Bewerken",
+				"saveHtml": "Opslaan als HTML"
+			},
+			"copied": "Gekopieerd naar het klembord",
+			"edit": {
+				"save": "Opslaan",
+				"cancel": "Annuleren",
+				"ariaLabel": {
+					"aria-label": "Berichttekst bewerken"
+				}
+			},
+			"feedback": {
+				"up": "Vind ik leuk",
+				"down": "Vind ik niet leuk",
+				"reasonPlaceholder": {
+					"placeholder": "Reden (optioneel)"
+				},
+				"reasonSave": "Verzenden",
+				"reasonAria": {
+					"aria-label": "Reden van vind ik niet leuk"
+				}
+			},
+			"regen": "Opnieuw genereren"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Bijlage toevoegen",
+				"title": "Bijlage toevoegen"
+			},
+			"remove": {
+				"aria-label": "Bijlage verwijderen"
+			},
+			"drop": "Loslaten om toe te voegen",
+			"tooLarge": "Bijlage ${name} overschrijdt de limiet van 10 MB"
+		},
+		"error": {
+			"generic": "Er is iets misgegaan: ${error}",
+			"generate": "Het genereren van het antwoord is mislukt",
+			"aborted": "Genereren afgebroken",
+			"noChar": "Selecteer eerst een personage"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }
