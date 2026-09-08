@@ -3,7 +3,7 @@
  */
 import { test as base, expect } from '@playwright/test'
 
-import { createBrowserDiagnostics, waitForWatchDrain } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
+import { runDiagnosedPage, waitForWatchDrain } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
 import { installCdnResponseCache } from 'fount/scripts/test/playwright/cdn_cache.mjs'
 import { requireTestBaseUrl } from 'fount/scripts/test/playwright/env.mjs'
 import { assertAriaIgnoreIssues } from 'fount/scripts/test/playwright/github_issue.mjs'
@@ -34,9 +34,15 @@ export function createPagesFixtures(options = {}) {
 		context: async ({ browser }, use) => {
 			const context = await browser.newContext({ locale, serviceWorkers: 'block' })
 			await installCdnResponseCache(context)
+			// 死主机探针：挂起请求由页面自身 AbortController 中止（Chrome 会拦 1/9 等端口为 ERR_UNSAFE_PORT，属预期噪声）
+			await context.route('http://127.0.0.1:9/**', () => new Promise(() => {}))
+			await context.route('http://127.0.0.1:1/**', () => new Promise(() => {}))
+			// 静态站评语数据：测试环境无 data/comments.json（CI 部署期注入），兜底空列表避免评论轮播的 fetch 失败噪声
+			await context.route('**/data/comments.json*', route => route.fulfill({ status: 200, contentType: 'application/json', body: '[]' }))
 			await context.addInitScript(language => {
 				try {
-					localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
+					// 静态 Pages 的偏好键是 `fountUserPreferredLanguages`（local 版才是 `userPreferredLanguages`）
+					localStorage.setItem('fountUserPreferredLanguages', JSON.stringify([language]))
 					localStorage.setItem('fountTheme', 'light')
 					// 死主机：protocol 页走 offline dialog，避免假 ping 成功后跳走
 					localStorage.setItem('fountHostUrl', 'http://127.0.0.1:9')
@@ -65,17 +71,31 @@ export function createPagesFixtures(options = {}) {
 		 * @param {(page: import('npm:@playwright/test').Page) => Promise<void>} use fixture use
 		 */
 		page: async ({ context }, use) => {
-			const diagnostics = createBrowserDiagnostics()
-			const page = await context.newPage()
-			await diagnostics.attach(page)
-			await use(page)
-			// 收尾：watch.drain()（locale + a11y）；未挂载时 evaluate 立即返回
-			await waitForWatchDrain(page)
-			await assertAriaIgnoreIssues(page)
-			diagnostics.flushNetworkDiagnostics()
-			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
-			expect(diagnostics.pageWatchErrors, 'unexpected page watch console output').toEqual([])
-			expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
+			await runDiagnosedPage(context, use, async (diagnostics, page) => {
+				// 收尾：watch.drain()（locale + a11y）；未挂载时 evaluate 立即返回
+				await waitForWatchDrain(page)
+				await assertAriaIgnoreIssues(page)
+				diagnostics.flushNetworkDiagnostics()
+				expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
+				expect(diagnostics.consoleErrors, 'unexpected browser console errors').toEqual([])
+				expect(diagnostics.pageWatchErrors, 'unexpected page watch console output').toEqual([])
+				expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
+				expect(diagnostics.i18nClobberErrors, 'unexpected i18n child clobber (data-i18n replacing non-text subtree)').toEqual([])
+			}, {
+				// 静态站无 fount 节点：安装/等待页对本机 fount 服务（localhost:8931）的探活
+				// 与冷启动预渲染必然连不上，属预期噪声，与既有死主机路由同一原则
+				/** 
+				 * 额外网络豁免：本机 fount 服务（localhost:8931）在静态站上必然连不上。
+				 * @param {{ url?: string }} entry 网络条目
+				 * @returns {boolean} 是否豁免
+				 */
+				shouldIgnoreNetwork: entry => {
+					if (!entry.url) return false
+					const parsed = new URL(entry.url)
+					if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') return false
+					return parsed.port === '8931'
+				},
+			})
 		},
 	})
 

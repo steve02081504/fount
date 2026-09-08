@@ -17,5 +17,6 @@ alwaysApply: false
 ## Guidelines
 
 - I18n: add global strings to `src/public/locales/zh-CN.json`; plugin-specific copy may use part-local `locales.json`.
+- **Chat as the de-facto shared layer**: importing modules provided by the chat shell (e.g. `shells/chat/src/streaming/markdown.mjs`) is expected design — chat doubles as a shared layer for the prompt-building chain (chars/plugins may optionally consume what chat provides); no need to migrate such utilities into a separate shared module.
 
 **Example**: `src/public/parts/plugins/moltbook/` — tag-based tool handling and logging.

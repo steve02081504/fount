@@ -32,9 +32,37 @@ Deno.test('resolveSwitchCase picks cases then default', () => {
 	assertEquals(resolveSwitchCase(leaf, { count: 1 }), '1 item')
 	assertEquals(resolveSwitchCase(leaf, { count: '1' }), '1 item')
 	assertEquals(resolveSwitchCase(leaf, { count: '99+' }), 'many')
-	assertEquals(resolveSwitchCase(leaf, { count: 2 }), '${count} items')
-	assertEquals(resolveSwitchCase(leaf, {}), '${count} items')
+	// default 回落：字面量键 '1' 求值为 1（非 true）不命中（用不含非法表达式键的 leaf，避免告警噪声）
+	const plain = { switch: 'count', default: '${count} items', cases: { 1: '1 item' } }
+	assertEquals(resolveSwitchCase(plain, { count: 2 }), '${count} items')
+	assertEquals(resolveSwitchCase(plain, {}), '${count} items')
 	assertEquals(resolveSwitchCase('plain', { count: 1 }), 'plain')
+})
+
+Deno.test('resolveSwitchCase supports JS expression case conditions', () => {
+	const leaf = {
+		switch: 'count',
+		default: '${count} files',
+		cases: {
+			1: 'one file',
+			'count >= 3 && count <= 10': 'a few files',
+			'count >= 100': 'many files',
+		},
+	}
+	// 精确匹配优先于表达式
+	assertEquals(resolveSwitchCase(leaf, { count: 1 }), 'one file')
+	// 区间条件命中
+	assertEquals(resolveSwitchCase(leaf, { count: 5 }), 'a few files')
+	assertEquals(resolveSwitchCase(leaf, { count: 100 }), 'many files')
+	// 未命中任何条件走 default
+	assertEquals(resolveSwitchCase(leaf, { count: 11 }), '${count} files')
+	// 字面量键不参与表达式命中（'1' 求值为 1 ≠ true，count=2 不得误命中）
+	const literalLeaf = { switch: 'count', default: 'other', cases: { 1: 'one' } }
+	assertEquals(resolveSwitchCase(literalLeaf, { count: 2 }), 'other')
+	// 表达式可引用 params 的其他键
+	const nameLeaf = { switch: 'count', default: 'unknown', cases: { 'name === \'char\'': 'char!' } }
+	assertEquals(resolveSwitchCase(nameLeaf, { count: 1, name: 'char' }), 'char!')
+	assertEquals(resolveSwitchCase(nameLeaf, { count: 1, name: 'user' }), 'unknown')
 })
 
 Deno.test('camelPrefixes / decapitalize / findPrefixClusters', () => {

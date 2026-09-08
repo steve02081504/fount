@@ -60,7 +60,7 @@
 			"noInstanceRunning": "実行中のインスタンスが検出されませんでした。最初に fount を開始してください。",
 			"runPartLog": "${partpath} を ${username}、引数: ${args} として実行します。",
 			"invokePartLog": "${partpath} を ${username}、パラメータ: ${invokedata} として呼び出します",
-			"invalidCommand": "無効なコマンドです。「fount run <ユーザー名> <コンポーネントパス> <パラメーター...>」を使用してください。",
+			"invalidCommand": "無効なコマンドです。「fount run <コンポーネントパス> <パラメーター...>」を使用してください（ユーザー指定は「fount runas <ユーザー名> <コンポーネントパス>」）。",
 			"invalidCommandFormat": "無効なコマンド形式です。",
 			"unsupportedCommand": "サポートされていないコマンドタイプです。",
 			"processMessageError": "IPCメッセージの処理中にエラーが発生しました：${error}",
@@ -2127,7 +2127,10 @@
 				"aria-label": "ブックマークを削除する"
 			},
 			"unreadDivider": "新しいニュース",
-			"backToFriends": "友達に戻る",
+			"backToFriends": {
+				"aria-label": "友達に戻る",
+				"text": "友達に戻る"
+			},
 			"dmTopicsTitle": "トピック",
 			"participants": "参加者",
 			"startChatWith": "💬 ${name} とチャットを開始",
@@ -3594,6 +3597,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} を上書き中",
 					"readingFilepath": "${filepath} を読み込み中",
+					"readingFiles": "${count}件のファイルを読み込み中",
 					"replacingFilepath": "${filepath} を置き換え中",
 					"runningLang": "${lang} を実行中",
 					"searchingContent": "${content} を検索中"
@@ -6029,6 +6033,21 @@
 		"parentLink": "↑ 前のレベル ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "閲覧",
+			"path": {
+				"aria-label": "ワークスペースのパス",
+				"placeholder": "フィルタ / パス",
+				"textContent": "ワークスペースのパス"
+			},
+			"go": "移動",
+			"select": "ワークスペースを選択",
+			"quickAccess": "クイックアクセス",
+			"roots": "ドライブ / ルート",
+			"noMatch": "一致する項目がありません",
+			"loading": "読み込み中…",
+			"error": "閲覧エラー"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "通知"
@@ -6317,6 +6336,122 @@
 			"success": "ログインしました。このページを閉じてください。",
 			"failed": "ログイン失敗：${message}",
 			"missingParams": "コールバックに code または state がありません。"
+		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "ワークスペースとマシンを対象とする AI コーディングセッション。",
+		"sessions": {
+			"new": "新規セッション",
+			"untitled": "無題のセッション",
+			"yesterday": "昨日"
+		},
+		"workspaces": {
+			"browse": "参照…",
+			"remove": "現在のワークスペースを削除",
+			"none": "ワークスペース未選択",
+			"overviewEmpty": "会話はまだありません"
+		},
+		"home": {
+			"aria-label": "ワークスペースとセッション一覧"
+		},
+		"tabs": {
+			"aria-label": "セッションタブ",
+			"close": "タブを閉じる"
+		},
+		"newTab": {
+			"aria-label": "新規セッション"
+		},
+		"machine": {
+			"local": "ローカル",
+			"offline": "オフライン"
+		},
+		"char": {
+			"switch": "キャラクター切替",
+			"settings": "キャラクター設定",
+			"goodAgent": "良い agent の書き方",
+			"none": "キャラクター未選択",
+			"recommend": {
+				"main": "推奨キャラクター ${charname} が未インストールです。インストールしますか？",
+				"aria": "キャラクターインストールの推奨",
+				"dismiss": "閉じる",
+				"install": "インストール",
+				"installed": "キャラクター ${charname} をインストールしました"
+			}
+		},
+		"composer": {
+			"shellDefault": "デフォルト",
+			"sendButton": {
+				"aria-label": "メッセージを送信"
+			},
+			"sendAria": "メッセージを送信",
+			"stopAria": "生成を停止",
+			"modeSwitched": "${mode} モードに切り替えました",
+			"hint": "空欄で ! を入力するとシェルモード · @ でファイル参照 · / でコマンド · ↑↓ 履歴 · Tab 補完",
+			"placeholder": "コマンドを入力、Ctrl/Cmd+Enter で実行（空にするとシェルモードを終了）",
+			"placeholderNormal": "メッセージを入力…（@ でファイル参照、/ でコマンド）",
+			"placeholderShell": "シェルコマンドを入力…（例: git status）",
+			"aria-label": "メッセージ入力"
+		},
+		"aiSource": {
+			"panelTitle": "AI ソース表示管理",
+			"charOwn": "キャラクター既定",
+			"manage": "AI ソース管理…"
+		},
+		"commands": {
+			"run": "実行"
+		},
+		"messages": {
+			"backToBottom": "最新へ戻る"
+		},
+		"message": {
+			"actions": {
+				"copy": "コピー",
+				"edit": "編集",
+				"saveHtml": "HTMLとして保存"
+			},
+			"copied": "クリップボードにコピーしました",
+			"edit": {
+				"save": "保存",
+				"cancel": "キャンセル",
+				"ariaLabel": {
+					"aria-label": "メッセージ本文を編集"
+				}
+			},
+			"feedback": {
+				"up": "高評価",
+				"down": "低評価",
+				"reasonPlaceholder": {
+					"placeholder": "低評価の理由（任意）"
+				},
+				"reasonSave": "送信",
+				"reasonAria": {
+					"aria-label": "低評価の理由"
+				}
+			},
+			"regen": "再生成"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "添付ファイルを追加",
+				"title": "添付ファイルを追加"
+			},
+			"remove": {
+				"aria-label": "添付ファイルを削除"
+			},
+			"drop": "ドロップして添付",
+			"tooLarge": "添付 ${name} は10MBの上限を超えています"
+		},
+		"error": {
+			"generic": "エラーが発生しました：${error}",
+			"generate": "返信の生成に失敗しました",
+			"aborted": "生成を中止しました",
+			"noChar": "先にキャラクターを選択してください"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }

@@ -13,11 +13,15 @@ import { chatLogEntry_t } from './models.mjs'
 
 /**
  * 根据占位条目前的用户消息推断流式生成应归属的群频道 ID。
+ * 占位条目已带 `extension.chat.channelId` 时直接采用（Hub 生成路径）；
+ * 否则（greeting/旧会话路径）向前扫描 chatLog 找最近 user 消息的频道，回退 default。
  * @param {chatMetadata_t} chatMetadata 元数据
  * @param {chatLogEntry_t} placeholderEntry 生成中的占位条目
  * @returns {string} 频道 ID 或 default
  */
 export function getChannelForCharStream(chatMetadata, placeholderEntry) {
+	const fromPlaceholder = resolveChannelId(placeholderEntry.extension?.chat?.channelId, '')
+	if (fromPlaceholder) return fromPlaceholder
 	const placeholderIndex = chatMetadata.chatLog.findIndex(entry => entry.id === placeholderEntry.id)
 	for (let index = placeholderIndex - 1; index >= 0; index--) {
 		const logEntry = chatMetadata.chatLog[index]

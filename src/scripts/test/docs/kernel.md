@@ -26,7 +26,7 @@ CLI job queue is LIFO among equal `priority` (later enqueued items first; imperf
 
 ## Debug single-step + residue check
 
-`--debug` runs a job's suites one at a time (each suite = one step; the kernel admits at most one running suite while any debug job is active). After each step, and for a whole non-debug run on Windows outside GitHub Actions, the kernel verifies no `%LOCALAPPDATA%\ms-playwright` or `%LOCALAPPDATA%\Temp\fount[-_]*` residue remains (`core/cleanup_check.mjs`). A leak broadcasts `cleanup-leak` (display prints the paths), sets the job exit code `3`, and in debug stops the rest of the job.
+`--debug` runs a job's suites one at a time (each suite = one step; the kernel admits at most one running suite while any debug job is active). After each step, and for a whole non-debug run on non-CI platforms, the kernel verifies no `ms-playwright` dir (`%LOCALAPPDATA%\ms-playwright` on Windows, `~/Library/Caches/ms-playwright` on macOS, `$XDG_CACHE_HOME|~/.cache/ms-playwright` elsewhere) or `fount[-_]*` Temp residue remains (`core/cleanup_check.mjs`). A leak broadcasts `cleanup-leak` (display prints the paths), sets the job exit code `3`, and in debug stops the rest of the job.
 
 ## Display
 

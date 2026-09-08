@@ -2127,7 +2127,10 @@
 				"aria-label": "🗑️🔖"
 			},
 			"unreadDivider": "🆕💬",
-			"backToFriends": "🔙👫",
+			"backToFriends": {
+				"aria-label": "🔙👫",
+				"text": "🔙👫"
+			},
 			"dmTopicsTitle": "#️⃣💬",
 			"participants": "👥🤝",
 			"startChatWith": "💬 ▶️ ${name}",
@@ -3594,6 +3597,7 @@
 				"tool": {
 					"overridingFilepath": "📝 ${filepath}",
 					"readingFilepath": "📖 ${filepath}",
+					"readingFiles": "📖 ${count}",
 					"replacingFilepath": "🔄 ${filepath}",
 					"runningLang": "▶️ ${lang}",
 					"searchingContent": "🔍 ${content}"
@@ -6029,6 +6033,21 @@
 		"parentLink": "🆙 /"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "🗂️",
+			"path": {
+				"aria-label": "🗺️",
+				"placeholder": "🔍 / 📁",
+				"textContent": "🗺️"
+			},
+			"go": "➡️",
+			"select": "✅",
+			"quickAccess": "⚡",
+			"roots": "💽",
+			"noMatch": "🚫",
+			"loading": "⏳",
+			"error": "⚠️"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "🔔"
@@ -6317,6 +6336,122 @@
 			"success": "✅",
 			"failed": "❌ ${message}",
 			"missingParams": "❓ code/state"
+		}
+	},
+	"code": {
+		"title": "💻",
+		"description": "🤖💻",
+		"sessions": {
+			"new": "➕",
+			"untitled": "📝",
+			"yesterday": "🕐"
+		},
+		"workspaces": {
+			"browse": "🔍",
+			"remove": "🗑️",
+			"none": "🚫",
+			"overviewEmpty": "📭"
+		},
+		"home": {
+			"aria-label": "🗂️💬"
+		},
+		"tabs": {
+			"aria-label": "📑",
+			"close": "❌"
+		},
+		"newTab": {
+			"aria-label": "➕"
+		},
+		"machine": {
+			"local": "🖥️",
+			"offline": "📴"
+		},
+		"char": {
+			"switch": "🔄",
+			"settings": "⚙️",
+			"goodAgent": "❓",
+			"none": "🚫",
+			"recommend": {
+				"main": "💡 ${charname} ⬇️?",
+				"aria": "⭐",
+				"dismiss": "✖️",
+				"install": "⬇️",
+				"installed": "✅ ${charname}"
+			}
+		},
+		"composer": {
+			"shellDefault": "🖥️",
+			"sendButton": {
+				"aria-label": "📤"
+			},
+			"sendAria": "📤",
+			"stopAria": "⏹️",
+			"modeSwitched": "➡️ ${mode} ✨",
+			"hint": "! 🐚 · @ 📎 · / ⌨️ · ↑↓ 🕘 · ⇥",
+			"placeholder": "⌨️ ⏎",
+			"placeholderNormal": "@ 📎 · / ⌨️",
+			"placeholderShell": "⌨️ (git status)",
+			"aria-label": "💬"
+		},
+		"aiSource": {
+			"panelTitle": "⚙️ AI 🔌",
+			"charOwn": "🎭",
+			"manage": "⚙️…"
+		},
+		"commands": {
+			"run": "▶️"
+		},
+		"messages": {
+			"backToBottom": "⬇️"
+		},
+		"message": {
+			"actions": {
+				"copy": "📋",
+				"edit": "✏️",
+				"saveHtml": "💾"
+			},
+			"copied": "📋✅",
+			"edit": {
+				"save": "💾",
+				"cancel": "❌",
+				"ariaLabel": {
+					"aria-label": "✏️"
+				}
+			},
+			"feedback": {
+				"up": "👍",
+				"down": "👎",
+				"reasonPlaceholder": {
+					"placeholder": "💬 (✳️)"
+				},
+				"reasonSave": "📤",
+				"reasonAria": {
+					"aria-label": "👎💬"
+				}
+			},
+			"regen": "🔁"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "📎",
+				"title": "📎"
+			},
+			"remove": {
+				"aria-label": "🗑️"
+			},
+			"drop": "📎",
+			"tooLarge": "📎 ${name} ❌10MB"
+		},
+		"error": {
+			"generic": "❌ ${error}",
+			"generate": "❌",
+			"aborted": "⏹️",
+			"noChar": "🎭❓"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "💻"
+			}
 		}
 	}
 }

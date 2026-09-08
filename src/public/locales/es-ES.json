@@ -2127,7 +2127,10 @@
 				"aria-label": "Quitar marcador"
 			},
 			"unreadDivider": "mensajes nuevos",
-			"backToFriends": "volver con amigos",
+			"backToFriends": {
+				"aria-label": "volver con amigos",
+				"text": "volver con amigos"
+			},
 			"dmTopicsTitle": "tema",
 			"participants": "Participantes",
 			"startChatWith": "💬 Empieza a chatear con ${name}",
@@ -3600,6 +3603,7 @@
 				"tool": {
 					"overridingFilepath": "Sobrescribiendo ${filepath}",
 					"readingFilepath": "Leyendo ${filepath}",
+					"readingFiles": "Leyendo ${count} archivos",
 					"replacingFilepath": "Reemplazando en ${filepath}",
 					"runningLang": "Ejecutando ${lang}",
 					"searchingContent": "Buscando ${content}"
@@ -6035,6 +6039,21 @@
 		"parentLink": "↑ Nivel anterior../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Explorar",
+			"path": {
+				"aria-label": "Ruta del espacio de trabajo",
+				"placeholder": "Filtro / ruta de carpeta",
+				"textContent": "Ruta del espacio de trabajo"
+			},
+			"go": "Ir",
+			"select": "Elegir espacio de trabajo",
+			"quickAccess": "Acceso rápido",
+			"roots": "Unidades / raíces",
+			"noMatch": "Sin coincidencias",
+			"loading": "Cargando…",
+			"error": "Error al explorar"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Notificaciones"
@@ -6323,6 +6342,122 @@
 			"success": "Sesión iniciada. Puedes cerrar esta página.",
 			"failed": "Error de inicio de sesión: ${message}",
 			"missingParams": "Al callback le falta code o state."
+		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "Sesiones de codificación con IA para espacios de trabajo y máquinas.",
+		"sessions": {
+			"new": "Nueva sesión",
+			"untitled": "Sesión sin título",
+			"yesterday": "ayer"
+		},
+		"workspaces": {
+			"browse": "Explorar…",
+			"remove": "Quitar el espacio de trabajo actual",
+			"none": "Ningún espacio de trabajo seleccionado",
+			"overviewEmpty": "Aún no hay conversaciones"
+		},
+		"home": {
+			"aria-label": "Espacios de trabajo y sesiones"
+		},
+		"tabs": {
+			"aria-label": "Pestañas de sesión",
+			"close": "Cerrar pestaña"
+		},
+		"newTab": {
+			"aria-label": "Nueva sesión"
+		},
+		"machine": {
+			"local": "Local",
+			"offline": "sin conexión"
+		},
+		"char": {
+			"switch": "Cambiar de personaje",
+			"settings": "Ajustes del personaje",
+			"goodAgent": "¿Cómo escribir un buen agente?",
+			"none": "Ningún personaje seleccionado",
+			"recommend": {
+				"main": "El personaje recomendado ${charname} no está instalado. ¿Instalarlo?",
+				"aria": "Recomendación de instalación de personaje",
+				"dismiss": "Cerrar",
+				"install": "Instalar",
+				"installed": "Personaje ${charname} instalado"
+			}
+		},
+		"composer": {
+			"shellDefault": "Predeterminado",
+			"sendButton": {
+				"aria-label": "Enviar mensaje"
+			},
+			"sendAria": "Enviar mensaje",
+			"stopAria": "Detener la generación",
+			"modeSwitched": "Cambiado al modo ${mode}",
+			"hint": "Escribe ! en un campo vacío para el modo shell · @ para referenciar archivos · / para comandos · ↑↓ historial · Tab para completar",
+			"placeholder": "Escribe un comando; Ctrl/Cmd+Enter lo ejecuta (vacía para salir del modo shell)",
+			"placeholderNormal": "Escribe tu mensaje… (@ para referenciar archivos, / para comandos)",
+			"placeholderShell": "Escribe un comando shell… (p. ej. git status)",
+			"aria-label": "Entrada de mensaje"
+		},
+		"aiSource": {
+			"panelTitle": "Gestionar la visibilidad de las fuentes de IA",
+			"charOwn": "Predeterminado del personaje",
+			"manage": "Gestionar fuentes de IA…"
+		},
+		"commands": {
+			"run": "Ejecutar"
+		},
+		"messages": {
+			"backToBottom": "Volver al último mensaje"
+		},
+		"message": {
+			"actions": {
+				"copy": "Copiar",
+				"edit": "Editar",
+				"saveHtml": "Guardar como HTML"
+			},
+			"copied": "Copiado al portapapeles",
+			"edit": {
+				"save": "Guardar",
+				"cancel": "Cancelar",
+				"ariaLabel": {
+					"aria-label": "Editar el texto del mensaje"
+				}
+			},
+			"feedback": {
+				"up": "Me gusta",
+				"down": "No me gusta",
+				"reasonPlaceholder": {
+					"placeholder": "Motivo (opcional)"
+				},
+				"reasonSave": "Enviar",
+				"reasonAria": {
+					"aria-label": "Motivo del no me gusta"
+				}
+			},
+			"regen": "Regenerar"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Añadir adjunto",
+				"title": "Añadir adjunto"
+			},
+			"remove": {
+				"aria-label": "Quitar adjunto"
+			},
+			"drop": "Suelta para adjuntar",
+			"tooLarge": "El adjunto ${name} supera el límite de 10 MB"
+		},
+		"error": {
+			"generic": "Algo salió mal: ${error}",
+			"generate": "Error al generar la respuesta",
+			"aborted": "Generación cancelada",
+			"noChar": "Selecciona primero un personaje"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }

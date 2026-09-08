@@ -2,6 +2,8 @@ import process from 'node:process'
 
 import { available } from 'npm:@steve02081504/exec'
 
+import { getConnectedSubfounts } from '../../shells/subfounts/src/api.mjs'
+
 /**
  * 代码执行插件的 GetPrompt：向角色提示中注入代码执行能力说明。
  * @param {import('../../../../../src/decl/pluginAPI.ts').chatReplyRequest_t} args - 聊天回复请求参数。
@@ -21,7 +23,7 @@ export async function getCodeExecutionPrompt(args) {
 	).filter(Boolean).join('\n')
 
 	const prompt = `\
-你可以运行NodeJS或${availableShells.join('、')}代码，通过返回以下格式来触发执行并获取结果：
+你可以运行js或${availableShells.join('、')}代码，通过返回以下格式来触发执行并获取结果：
 <run-js>code</run-js>
 或
 <run-${defaultShell}>code</run-${defaultShell}>${available.powershell ? available.pwsh ? `
@@ -66,6 +68,13 @@ return Array.from({ length: 201 }, (_, i) => toEnglishWord(i)).join(', ')
 - 在解决简单问题时使用<inline-js>，并使用大数类型。
 - 在解决复杂数学相关问题时使用<run-js>。
 - 在操作电脑、查看文件、更改设置、播放音乐时使用<run-${defaultShell}>。
+${getConnectedSubfounts(args.username).length === 1 ? `\
+- 用户对接其他 subfount 后，你也可以在其他机器上运行代码。
+` : `\
+- 所有标签都支持可选属性 machine="机器id" 与 workdir="目录" 来单次指定目标机器和工作目录，如<run-pwsh machine="2" workdir="D:\\proj">
+- 需要在其他机器上执行时，先用 <list-machines> 查询目标id。
+- 远程机器上的js代码没有workspace/chat_log/callback等本地上下文，需要这些能力时请在本机执行。
+`}
 - 尽量不要直接删除文件/文件夹，作为替代，考虑移动到回收站。
   * 尤其软件文件夹很可能有用户数据在其中，删除前至少通过命令检查下文件夹架构。
 - 覆写数据时也一样，在用程序删除部分数据或覆写可能的重要文件时考虑进行原文件的备份，以防误操作。

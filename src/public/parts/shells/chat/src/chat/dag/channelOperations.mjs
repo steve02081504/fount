@@ -10,6 +10,7 @@ import { randomUUID } from 'node:crypto'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { canInChannel, governanceChannelId } from '../../group/access.mjs'
+import { isChannelIdValid } from '../lib/channelId.mjs'
 
 import { appendEvent, appendSignedLocalEvent } from './append.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
@@ -26,6 +27,7 @@ import { setStreamingSession } from './streamingState.mjs'
  */
 export async function createChannel(username, groupId, options, appendOptions = {}) {
 	const channelId = options.channelId || randomUUID()
+	if (!isChannelIdValid(channelId)) throw new Error(`invalid channelId: ${channelId}`)
 	const created = await appendSignedLocalEvent(username, groupId, {
 		type: 'channel_create',
 		timestamp: Date.now(),
@@ -44,6 +46,11 @@ export async function createChannel(username, groupId, options, appendOptions = 
 			manualItems: options.manualItems,
 		},
 	}, appendOptions)
+	// 频道（重建）后恢复该频道的 scoped 写入（若此前删除被失效标记跳过）；
+	// channel_create 持久化失败时保留失效标记，避免未重建的频道写回 scoped state；
+	// 先序清理失败时标记不会被清除且此处抛错，中止频道创建
+	const { markScopedStateChannelActive } = await import('../session/scopedState.mjs')
+	await markScopedStateChannelActive(username, groupId, channelId)
 	const { appendChannelKeyRotate } = await import('../channel_keys/schedule.mjs')
 	await appendChannelKeyRotate(username, groupId, channelId)
 	return created
@@ -131,11 +138,16 @@ export async function updateChannel(username, groupId, channelId, patch = {}) {
  * @returns {Promise<object>} 签名事件
  */
 export async function deleteChannel(username, groupId, channelId) {
-	return appendSignedLocalEvent(username, groupId, {
+	// 先持久化 channel_delete 事件，成功后再清理 scoped state：
+	// 事件写入失败时不删除现有频道数据；清理失败则保留孤儿文件（可被 GC 回收）。
+	const { clearScopedState } = await import('../session/scopedState.mjs')
+	const event = await appendSignedLocalEvent(username, groupId, {
 		type: 'channel_delete',
 		timestamp: Date.now(),
 		content: { channelId },
 	})
+	await clearScopedState(username, groupId, channelId)
+	return event
 }
 
 /**

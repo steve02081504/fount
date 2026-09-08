@@ -20,7 +20,7 @@ function renderFileOperationCodeBlock(args, filepath, content, titleKey) {
 }
 
 /**
- * 将 <view-file> 中的路径列表渲染为分段代码块。
+ * 将 <view-file> 中的路径列表渲染为单个代码块（正文为路径列表，不再逐行拆块）。
  * @param {string} content - 标签内容。
  * @param {object} args - 预览更新参数。
  * @returns {string} 渲染结果。
@@ -31,9 +31,11 @@ function renderViewFileBlock(content, args) {
 		.map(x => x.trim())
 		.filter(Boolean)
 	if (!paths.length) return content
-	return paths.map(filepath =>
-		renderFileOperationCodeBlock(args, filepath, filepath, 'chat.message.view.tool.readingFilepath')
-	).join('\n\n')
+	if (paths.length === 1)
+		return renderFileOperationCodeBlock(args, paths[0], paths[0], 'chat.message.view.tool.readingFilepath')
+	return renderMarkdownCodeBlock(paths.join('\n'), {
+		title: getChatI18n(args, 'chat.message.view.tool.readingFiles', { count: paths.length }),
+	})
 }
 
 /**
@@ -89,12 +91,21 @@ export default {
 			ReplyHandler: fileOperationsReplyHandler,
 			GetReplyPreviewUpdater: defineToolUseBlocks([
 				{
-					start: '<view-file>',
+					start: /<list-machines[^>]*>/,
+					end: '</list-machines>',
+					/**
+					 * 渲染待执行的 `<list-machines>` 占位。
+					 * @returns {string} 占位文本。
+					 */
+					renderPending: () => '`list-machines`',
+				},
+				{
+					start: /<view-file[^>]*>/,
 					end: '</view-file>',
 					renderPending: renderViewFileBlock,
 				},
 				{
-					start: '<replace-file>',
+					start: /<replace-file[^>]*>/,
 					end: '</replace-file>',
 					renderPending: renderReplaceFileBlock,
 				},

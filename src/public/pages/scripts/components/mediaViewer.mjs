@@ -27,7 +27,7 @@ function isVideoItem(item) {
  */
 function localizeMediaViewer(root) {
 	setElementI18n(root, 'util.mediaViewer.dialog')
-	setElementI18n(root.querySelector('.media-viewer-backdrop'), 'util.mediaViewer.close')
+	setElementI18n(root.querySelector('.media-viewer-backdrop button'), 'util.mediaViewer.close')
 	setElementI18n(root.querySelector('.media-viewer-download'), 'util.mediaViewer.download')
 	setElementI18n(root.querySelector('.media-viewer-close'), 'util.mediaViewer.close')
 	setElementI18n(root.querySelector('.media-viewer-prev'), 'util.mediaViewer.prev')

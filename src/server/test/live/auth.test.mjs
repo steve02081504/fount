@@ -53,6 +53,45 @@ Deno.test('verifyApiKey accepts valid key and rejects invalid or revoked', async
 })
 
 Deno.test({
+	name: 'deleteUserAccount removes its apiKeys from the global index',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const dataPath = mkdtempSync(join(tmpdir(), 'fount_auth_deluser_'))
+	const username = 'auth-deluser'
+	try {
+		await bootInProcess({
+			dataPath,
+			username,
+			apiKey: 'fount-auth-deluser-key',
+			web: false,
+			resetData: true,
+		})
+		const { config } = await import('../../server.mjs')
+		const { register, generateApiKey, deleteUserAccount, verifyApiKey } = await import('../../auth/index.mjs')
+
+		const targetUser = 'auth-deluser-target'
+		await register(targetUser, 'pw')
+		const { apiKey, jti } = await generateApiKey(targetUser, 'del test')
+		assert(
+			Object.values(config.data.apiKeys).some(k => k.jti === jti),
+			'apiKey record missing before account delete',
+		)
+
+		await deleteUserAccount(targetUser, 'pw')
+
+		assert(
+			!Object.values(config.data.apiKeys).some(k => k.jti === jti),
+			'orphan apiKey record left in config.data.apiKeys after account delete',
+		)
+		assertEquals(await verifyApiKey(apiKey), null)
+	}
+	finally {
+		rmSync(dataPath, { recursive: true, force: true })
+	}
+})
+
+Deno.test({
 	name: 'framework auth HTTP and WebSocket',
 	sanitizeOps: false,
 	sanitizeResources: false,
@@ -123,6 +162,40 @@ Deno.test({
 				? res.headers.getSetCookie()
 				: [res.headers.get('set-cookie')].filter(Boolean)
 			assert(cookies.some(c => String(c).startsWith('accessToken=')), 'missing accessToken cookie')
+		})
+
+		await t.step('invalid fount-apikey cookie cleared and session auth still works', async () => {
+			const loginRes = await fetch(`${baseUrl}/api/login`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ apiKey, deviceid: 'stale-cookie-device' }),
+			})
+			assertEquals(loginRes.status, 200)
+			const accessPair = cookiePairFromSetCookie(loginRes.headers, 'accessToken')
+			assert(accessPair, 'missing accessToken cookie')
+
+			const res = await fetch(`${baseUrl}/api/whoami`, {
+				headers: {
+					Accept: 'application/json',
+					Cookie: `${accessPair}; fount-apikey=stale-invalid-key`,
+				},
+			})
+			assertEquals(res.status, 200)
+			assertEquals((await res.json()).username, username)
+
+			const cleared = cookiePairFromSetCookie(res.headers, 'fount-apikey')
+			assert(cleared != null, 'expected fount-apikey to be cleared in Set-Cookie')
+			assert(!cleared.includes('stale-invalid-key'), `fount-apikey not cleared: ${cleared}`)
+		})
+
+		await t.step('invalid fount-apikey cookie without session still 401', async () => {
+			const res = await fetch(`${baseUrl}/api/whoami`, {
+				headers: {
+					Accept: 'application/json',
+					Cookie: 'fount-apikey=stale-invalid-key',
+				},
+			})
+			assertEquals(res.status, 401)
 		})
 
 		await t.step('concurrent whoami with same refreshToken shares rotated session', async () => {

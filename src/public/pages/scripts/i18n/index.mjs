@@ -8,6 +8,7 @@ import { onElementRemoved } from '../lib/onElementRemoved.mjs'
 import { escapeRegExp } from '../lib/regex.mjs'
 
 import { initTranslations, preferredLangsStorageKey } from './base.mjs'
+import { findDisallowedChildTags, seedAllowedTagsFromLocaleValues } from './clobber_guard.mjs'
 import { matchLocale } from './locale_match.mjs'
 import { isSwitchValue, resolveSwitchCase } from './switch_value.mjs'
 
@@ -182,6 +183,23 @@ export function setI18nBundle(bundle, locale, pageid, langs) {
 	main_locale = locale
 	saved_pageid = pageid
 	if (langs) lastKnownLangs = langs
+	seedAllowedTagsFromLocaleValues(leafValues(bundle))
+}
+
+/**
+ * 深度遍历值树，收集全部叶子字符串（供 clobber 守卫的动态白名单提取标签）。
+ * @param {unknown} node 值树节点。
+ * @yields {string} 叶子字符串。
+ * @returns {Generator<string, void, unknown>} 叶子字符串生成器。
+ */
+function* leafValues(node) {
+	if (typeof node === 'string') {
+		yield node
+		return
+	}
+	if (node && typeof node === 'object')
+		for (const child of Object.values(node))
+			yield* leafValues(child)
 }
 
 /**
@@ -612,6 +630,16 @@ function translateSingularElement(element) {
 		element.setAttribute(attr, value)
 		updated = true
 	}
+	/**
+	 * 子树将被覆盖为文本前检查白名单外元素（svg/img/button/…），仅告警不阻断。
+	 * @param {string} key - i18n 键。
+	 * @returns {void}
+	 */
+	function warnIfClobbers(key) {
+		const tags = findDisallowedChildTags(element)
+		if (tags.length)
+			console.warn(`[i18n:clobber] data-i18n "${key}" 将替换子树 <${element.tagName?.toLowerCase()}> 的 ${tags.join(', ')}`)
+	}
 	for (const key of element.dataset.i18n.split(';').map(k => k.trim())) {
 		if (key.startsWith('\'') && key.endsWith('\'')) {
 			const literal_value = key.slice(1, -1)
@@ -629,6 +657,7 @@ function translateSingularElement(element) {
 					if (translation) updateAttribute(attr, translation)
 				}
 				const values = ['textContent', 'innerHTML']
+				if (values.some(attr => geti18n_nowarn(`${key}.${attr}`))) warnIfClobbers(key)
 				for (const attr of values) {
 					const specificKey = `${key}.${attr}`
 					const translation = geti18n_nowarn(specificKey, element.dataset)
@@ -640,8 +669,10 @@ function translateSingularElement(element) {
 			}
 			else if (geti18n_nowarn(key)) {
 				const translation = toString(geti18n_nowarn(key, element.dataset))
-				if (element.innerHTML !== translation)
+				if (element.innerHTML !== translation) {
+					warnIfClobbers(key)
 					element.innerHTML = translation
+				}
 				updated = true
 			}
 		}

@@ -43,7 +43,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "2m38s",
+			"expected": "6m17s",
 			"trigger": [
 				"shellIntegrationTests",
 				"testFramework"
@@ -61,7 +61,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "4m4s",
+			"expected": "7m57s",
 			"dependsOn": [
 				"server:live"
 			],

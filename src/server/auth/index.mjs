@@ -508,7 +508,8 @@ export async function try_auth_request(req, res) {
 	if (apiKey) {
 		const user = await verifyApiKey(apiKey)
 		if (user) { req.user = user; return }
-		return Unauthorized('Invalid API Key: ' + apiKey)
+		// 无效 API Key：帮忙清除，并继续尝试会话认证，避免其永久阻塞登录
+		res.clearCookie('fount-apikey', { path: '/' })
 	}
 
 	// 2. Cookie 令牌认证
@@ -631,6 +632,42 @@ export function getUserByUsername(username) {
  */
 export function getAllUserNames() {
 	return Object.keys(config.data.users)
+}
+
+/**
+ * 获取最后活跃的用户名（供 `fount run` 默认执行身份）。
+ * 依据登录时记录的 lastActiveAt；无记录回退 createdAt；仍无则按 `data/users/*` 目录 mtime 兜底。
+ * @returns {string} 用户名（无用户时空串）。
+ */
+export function getLastActiveUsername() {
+	const users = getAllUsers()
+	const names = Object.keys(users)
+	if (!names.length) return ''
+	if (names.length === 1) return names[0]
+	let best = names[0]
+	let latestActivityAt = users[best].lastActiveAt ?? users[best].createdAt ?? 0
+	for (const name of names) {
+		const activityAt = users[name].lastActiveAt ?? users[name].createdAt ?? 0
+		if (activityAt > latestActivityAt) {
+			best = name
+			latestActivityAt = activityAt
+		}
+	}
+	if (latestActivityAt) return best
+	const userDirectory = path.join(data_path, 'users')
+	let bestMtime = -1
+	try {
+		for (const entry of fs.readdirSync(userDirectory, { withFileTypes: true })) {
+			if (!entry.isDirectory()) continue
+			const directoryStatus = fs.statSync(path.join(userDirectory, entry.name), { throwIfNoEntry: false })
+			if (directoryStatus && directoryStatus.mtimeMs > bestMtime) {
+				bestMtime = directoryStatus.mtimeMs
+				best = entry.name
+			}
+		}
+	}
+	catch { /* 目录不可用等，保持默认 */ }
+	return best
 }
 
 /**
@@ -843,6 +880,11 @@ export async function deleteUserAccount(username, password) {
 				revokedAt: Date.now(),
 			}
 	})
+
+	// 顺带清理该用户的 API Key 全局索引，避免孤儿记录残留
+	for (const hash of Object.keys(config.data.apiKeys))
+		if (config.data.apiKeys[hash].username === username)
+			delete config.data.apiKeys[hash]
 
 	delete config.data.users[username]
 	save_config()
@@ -1068,6 +1110,8 @@ export async function completeSuccessfulLogin(user, deviceId, req) {
 		userAgent: req?.headers?.['user-agent'],
 		lastSeen: Date.now(),
 	})
+	// 记录最后活跃用户，供 `fount run` 选择默认执行身份。
+	user.lastActiveAt = Date.now()
 	save_config()
 
 	return { status: 200, accessToken, refreshToken }

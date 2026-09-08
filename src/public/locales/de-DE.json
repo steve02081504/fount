@@ -2127,7 +2127,10 @@
 				"aria-label": "Lesezeichen entfernen"
 			},
 			"unreadDivider": "Neue Nachrichten",
-			"backToFriends": "Zurück zu Freunden",
+			"backToFriends": {
+				"aria-label": "Zurück zu Freunden",
+				"text": "Zurück zu Freunden"
+			},
 			"dmTopicsTitle": "Thema",
 			"participants": "Abonnent",
 			"startChatWith": "💬 Beginnen Sie mit ${name} zu chatten",
@@ -3594,6 +3597,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} wird überschrieben",
 					"readingFilepath": "${filepath} wird gelesen",
+					"readingFiles": "${count} Dateien werden gelesen",
 					"replacingFilepath": "${filepath} wird teilweise ersetzt",
 					"runningLang": "${lang} wird ausgeführt",
 					"searchingContent": "Suche ${content}"
@@ -6029,6 +6033,21 @@
 		"parentLink": "↑ Übergeordnetes Verzeichnis ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Durchsuchen",
+			"path": {
+				"aria-label": "Pfad des Arbeitsbereichs",
+				"placeholder": "Filter / Verzeichnispfad",
+				"textContent": "Pfad des Arbeitsbereichs"
+			},
+			"go": "Los",
+			"select": "Arbeitsbereich auswählen",
+			"quickAccess": "Schnellzugriff",
+			"roots": "Laufwerke / Wurzeln",
+			"noMatch": "Keine Treffer",
+			"loading": "Wird geladen…",
+			"error": "Fehler beim Durchsuchen"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Benachrichtigungen"
@@ -6317,6 +6336,122 @@
 			"success": "Angemeldet. Sie können diese Seite schließen.",
 			"failed": "Anmeldung fehlgeschlagen: ${message}",
 			"missingParams": "Callback fehlt code oder state."
+		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "KI-Codierungssitzungen für Arbeitsbereiche und Maschinen.",
+		"sessions": {
+			"new": "Neue Sitzung",
+			"untitled": "Unbenannte Sitzung",
+			"yesterday": "gestern"
+		},
+		"workspaces": {
+			"browse": "Durchsuchen…",
+			"remove": "Aktuellen Arbeitsbereich entfernen",
+			"none": "Kein Arbeitsbereich ausgewählt",
+			"overviewEmpty": "Noch keine Unterhaltungen"
+		},
+		"home": {
+			"aria-label": "Arbeitsbereiche und Sitzungen"
+		},
+		"tabs": {
+			"aria-label": "Sitzungsregisterkarten",
+			"close": "Registerkarte schließen"
+		},
+		"newTab": {
+			"aria-label": "Neue Sitzung"
+		},
+		"machine": {
+			"local": "Lokal",
+			"offline": "offline"
+		},
+		"char": {
+			"switch": "Charakter wechseln",
+			"settings": "Charaktereinstellungen",
+			"goodAgent": "Wie schreibt man einen guten Agenten?",
+			"none": "Kein Charakter ausgewählt",
+			"recommend": {
+				"main": "Empfohlener Charakter ${charname} ist nicht installiert. Installieren?",
+				"aria": "Empfehlung zur Charakterinstallation",
+				"dismiss": "Schließen",
+				"install": "Installieren",
+				"installed": "Charakter ${charname} installiert"
+			}
+		},
+		"composer": {
+			"shellDefault": "Standard",
+			"sendButton": {
+				"aria-label": "Nachricht senden"
+			},
+			"sendAria": "Nachricht senden",
+			"stopAria": "Generierung stoppen",
+			"modeSwitched": "In den ${mode}-Modus gewechselt",
+			"hint": "Bei leerem Feld ! für Shell · @ für Dateiverweise · / für Befehle · ↑↓ Verlauf · Tab zum Vervollständigen",
+			"placeholder": "Befehl eingeben, Ctrl/Cmd+Enter führt aus (leeren zum Verlassen des Shell-Modus)",
+			"placeholderNormal": "Nachricht eingeben… (@ für Dateiverweise, / für Befehle)",
+			"placeholderShell": "Shell-Befehl eingeben… (z. B. git status)",
+			"aria-label": "Nachrichteneingabe"
+		},
+		"aiSource": {
+			"panelTitle": "Anzeige der KI-Quellen verwalten",
+			"charOwn": "Charaktervorgabe",
+			"manage": "KI-Quellen verwalten…"
+		},
+		"commands": {
+			"run": "Ausführen"
+		},
+		"messages": {
+			"backToBottom": "Zur neuesten Nachricht"
+		},
+		"message": {
+			"actions": {
+				"copy": "Kopieren",
+				"edit": "Bearbeiten",
+				"saveHtml": "Als HTML speichern"
+			},
+			"copied": "In die Zwischenablage kopiert",
+			"edit": {
+				"save": "Speichern",
+				"cancel": "Abbrechen",
+				"ariaLabel": {
+					"aria-label": "Nachrichtentext bearbeiten"
+				}
+			},
+			"feedback": {
+				"up": "Gefällt mir",
+				"down": "Gefällt mir nicht",
+				"reasonPlaceholder": {
+					"placeholder": "Grund (optional)"
+				},
+				"reasonSave": "Senden",
+				"reasonAria": {
+					"aria-label": "Grund für Nichtgefallen"
+				}
+			},
+			"regen": "Neu generieren"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Anhang hinzufügen",
+				"title": "Anhang hinzufügen"
+			},
+			"remove": {
+				"aria-label": "Anhang entfernen"
+			},
+			"drop": "Loslassen zum Anhängen",
+			"tooLarge": "Anhang ${name} überschreitet das 10-MB-Limit"
+		},
+		"error": {
+			"generic": "Etwas ist schiefgelaufen: ${error}",
+			"generate": "Antwortgenerierung fehlgeschlagen",
+			"aborted": "Generierung abgebrochen",
+			"noChar": "Wählen Sie zuerst einen Charakter"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }

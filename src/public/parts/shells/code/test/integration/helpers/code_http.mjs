@@ -1,0 +1,20 @@
+const BASE = '/api/parts/shells:code'
+
+/**
+ * @param {object} node launchNode 句柄
+ * @param {string} method HTTP 方法
+ * @param {string} path API 相对路径
+ * @param {object} [body] JSON body
+ * @returns {Promise<Response>} fetch 响应
+ */
+export function codeFetch(node, method, path, body) {
+	const url = `${node.baseUrl}${BASE}${path}`
+	return fetch(url, {
+		method,
+		headers: {
+			...body ? { 'content-type': 'application/json' } : {},
+			authorization: `Bearer ${node.apiKey}`,
+		},
+		body: body ? JSON.stringify(body) : undefined,
+	})
+}

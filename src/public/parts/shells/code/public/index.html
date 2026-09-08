@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="AI coding sessions with workspace and machine targeting." />
+	<meta property="og:title" content="Code: AI Coding Workspaces in fount" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:code/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="An AI coding workspace: chat with any character over your projects, run code and edit files on the local machine or connected subfounts." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="code.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+	<link rel="manifest" href="/manifest.json" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" />
+	<link href="/base.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" />
+</head>
+<body>
+	<div class="code-layout flex h-dvh w-full overflow-hidden bg-base-100 text-base-content">
+		<main class="code-main flex flex-col flex-1 min-w-0">
+			<h1 class="sr-only" data-i18n="code.title"></h1>
+			<header class="code-topbar flex items-center gap-2 px-2 py-0.5 border-b border-base-content/10">
+				<div class="code-topbar-left flex items-center gap-1.5 shrink-0 min-w-0 flex-1">
+					<div class="dropdown" id="home-wrap">
+						<button class="btn btn-ghost btn-square btn-sm" id="home-toggle" type="button" data-i18n="code.home" aria-haspopup="true">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<rect x="3" y="3" width="7" height="7" rx="1"></rect>
+								<rect x="14" y="3" width="7" height="7" rx="1"></rect>
+								<rect x="3" y="14" width="7" height="7" rx="1"></rect>
+								<path d="M17.5 14v7"></path>
+								<path d="M14 17.5h7"></path>
+							</svg>
+						</button>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-80 p-2 shadow" id="home-menu"></ul>
+					</div>
+					<div class="code-tab-strip" id="tab-strip" role="toolbar" data-i18n="code.tabs"></div>
+				</div>
+			</header>
+			<div class="code-messages" id="messages"></div>
+			<div class="code-composer">
+				<img class="code-wordmark text-icon" id="code-wordmark" src="https://steve02081504.github.io/fount/imgs/title.svg" alt="" aria-hidden="true" draggable="false" svg-theme-ignore />
+				<div class="code-composer-shell rounded-box border border-base-content/20 bg-base-100 shadow-xl pt-2.5 px-3 pb-2">
+					<div id="composer-input" class="code-composer-input" role="textbox" data-markdown-rich-input data-i18n="code.composer" user-content></div>
+					<div class="code-attachment-preview" id="attachment-preview" hidden></div>
+					<input type="file" id="attach-input" multiple hidden aria-hidden="true" tabindex="-1" />
+					<div class="code-drop-overlay" id="drop-overlay" data-i18n="code.attach.drop" hidden></div>
+					<div class="code-composer-controls">
+						<div class="code-composer-controls-main" id="composer-controls-main">
+							<button class="btn btn-ghost btn-square btn-sm" id="attach-button" type="button" data-i18n="code.attach.add">
+								<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+							</button>
+						</div>
+						<button type="button" class="code-composer-send btn btn-square btn-primary shrink-0 w-8" id="send-button" data-i18n="code.composer.sendButton">
+							<svg id="send-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<path d="M12 19V5"></path>
+								<path d="M5 12l7-7 7 7"></path>
+							</svg>
+						</button>
+					</div>
+				</div>
+				<div class="code-composer-hint" id="composer-hint" data-i18n="code.composer.hint"></div>
+				<div class="code-composer-targets" id="composer-targets"></div>
+			</div>
+		</main>
+	</div>
+	<script type="module" src="./index.mjs"></script>
+</body>
+</html>

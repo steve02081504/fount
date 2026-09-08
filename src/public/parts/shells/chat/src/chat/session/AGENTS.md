@@ -52,4 +52,5 @@ World shared state / `WorldChatHost`: [docs/world-host.md](docs/world-host.md).
 - Char display: `resolveDisplaySnapshot` with `charId` (not sender persona). Preserve `name`/`avatar` through streaming finalize / `message_edit`.
 - DAG `charId` = `extension.timeSlice.charname` only (`charIdFromChatLogEntry`); never fall back to display `name`. World greeting has no char — `getPartDetails('chars/…')` only when charname is set.
 - Edit/delete Hub path: `PUT/DELETE …/messages/:eventId` → `channel/channelUserHooks.mjs` → `messageMutations`. `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)`.
+- **Streaming placeholder entries are never pushed to `chatLog`** (`triggerCharReply` → `executeGeneration`; finalize only `push`es the final entry). So `getChannelForCharStream` must read the placeholder's own `extension.chat.channelId` — scanning `chatLog` for the preceding user message always falls to `'default'`, which would drop stream preview on non-default channels.
 - Pure projection tests: import `viewerLogProject.mjs` only (not the full session I/O graph).

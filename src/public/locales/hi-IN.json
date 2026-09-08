@@ -2127,7 +2127,10 @@
 				"aria-label": "बुकमार्क हटाएँ"
 			},
 			"unreadDivider": "नई खबर",
-			"backToFriends": "दोस्तों के पास लौटें",
+			"backToFriends": {
+				"aria-label": "दोस्तों के पास लौटें",
+				"text": "दोस्तों के पास लौटें"
+			},
 			"dmTopicsTitle": "विषय",
 			"participants": "प्रतिभागियों",
 			"startChatWith": "💬 ${name} से चैट करना प्रारंभ करें",
@@ -3594,6 +3597,7 @@
 				"tool": {
 					"overridingFilepath": "${filepath} अधिलेखित किया जा रहा है",
 					"readingFilepath": "${filepath} पढ़ा जा रहा है",
+					"readingFiles": "${count} फ़ाइलें पढ़ी जा रही हैं",
 					"replacingFilepath": "${filepath} में अंश बदला जा रहा है",
 					"runningLang": "${lang} चलाया जा रहा है",
 					"searchingContent": "${content} की खोज की जा रही है"
@@ -6029,6 +6033,21 @@
 		"parentLink": "↑ पिछला स्तर ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "ब्राउज़ करें",
+			"path": {
+				"aria-label": "कार्यक्षेत्र पथ",
+				"placeholder": "फ़िल्टर / फ़ोल्डर पथ",
+				"textContent": "कार्यक्षेत्र पथ"
+			},
+			"go": "जाएँ",
+			"select": "कार्यक्षेत्र चुनें",
+			"quickAccess": "त्वरित पहुँच",
+			"roots": "ड्राइव / रूट",
+			"noMatch": "कोई परिणाम नहीं",
+			"loading": "लोड हो रहा है…",
+			"error": "ब्राउज़ करने में त्रुटि"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "सूचनाएँ"
@@ -6317,6 +6336,122 @@
 			"success": "लॉग इन हो गया। इस पेज को बंद कर सकते हैं।",
 			"failed": "लॉगिन विफल: ${message}",
 			"missingParams": "कॉलबैक में code या state नहीं है।"
+		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "कार्यक्षेत्रों और मशीनों के लिए AI कोडिंग सत्र।",
+		"sessions": {
+			"new": "नया सत्र",
+			"untitled": "बिना शीर्षक सत्र",
+			"yesterday": "कल"
+		},
+		"workspaces": {
+			"browse": "ब्राउज़ करें…",
+			"remove": "वर्तमान कार्यक्षेत्र हटाएँ",
+			"none": "कोई कार्यक्षेत्र चयनित नहीं",
+			"overviewEmpty": "अभी कोई वार्तालाप नहीं"
+		},
+		"home": {
+			"aria-label": "कार्यक्षेत्र और सत्र"
+		},
+		"tabs": {
+			"aria-label": "सत्र टैब",
+			"close": "टैब बंद करें"
+		},
+		"newTab": {
+			"aria-label": "नया सत्र"
+		},
+		"machine": {
+			"local": "स्थानीय",
+			"offline": "ऑफ़लाइन"
+		},
+		"char": {
+			"switch": "किरदार बदलें",
+			"settings": "किरदार सेटिंग्स",
+			"goodAgent": "अच्छा एजेंट कैसे लिखें?",
+			"none": "कोई किरदार चयनित नहीं",
+			"recommend": {
+				"main": "अनुशंसित किरदार ${charname} इंस्टॉल नहीं है। इंस्टॉल करें?",
+				"aria": "किरदार इंस्टॉल करने की अनुशंसा",
+				"dismiss": "बंद करें",
+				"install": "इंस्टॉल करें",
+				"installed": "किरदार ${charname} इंस्टॉल किया गया"
+			}
+		},
+		"composer": {
+			"shellDefault": "डिफ़ॉल्ट",
+			"sendButton": {
+				"aria-label": "संदेश भेजें"
+			},
+			"sendAria": "संदेश भेजें",
+			"stopAria": "जनरेशन रोकें",
+			"modeSwitched": "${mode} मोड में बदल गया",
+			"hint": "खाली होने पर ! टाइप करें शेल मोड के लिए · @ फ़ाइल संदर्भ के लिए · / कमांड के लिए · ↑↓ इतिहास · Tab पूर्णता के लिए",
+			"placeholder": "कमांड टाइप करें; Ctrl/Cmd+Enter से चलाएँ (शेल मोड छोड़ने के लिए खाली करें)",
+			"placeholderNormal": "संदेश लिखें… (@ फ़ाइल संदर्भ के लिए, / कमांड के लिए)",
+			"placeholderShell": "शेल कमांड टाइप करें… (उदा. git status)",
+			"aria-label": "संदेश इनपुट"
+		},
+		"aiSource": {
+			"panelTitle": "AI स्रोत प्रदर्शन प्रबंधित करें",
+			"charOwn": "किरदार का डिफ़ॉल्ट",
+			"manage": "AI स्रोत प्रबंधित करें…"
+		},
+		"commands": {
+			"run": "चलाएँ"
+		},
+		"messages": {
+			"backToBottom": "नवीनतम पर वापस जाएँ"
+		},
+		"message": {
+			"actions": {
+				"copy": "कॉपी करें",
+				"edit": "संपादित करें",
+				"saveHtml": "HTML के रूप में सहेजें"
+			},
+			"copied": "क्लिपबोर्ड पर कॉपी किया गया",
+			"edit": {
+				"save": "सहेजें",
+				"cancel": "रद्द करें",
+				"ariaLabel": {
+					"aria-label": "संदेश पाठ संपादित करें"
+				}
+			},
+			"feedback": {
+				"up": "पसंद",
+				"down": "नापसंद",
+				"reasonPlaceholder": {
+					"placeholder": "कारण (वैकल्पिक)"
+				},
+				"reasonSave": "जमा करें",
+				"reasonAria": {
+					"aria-label": "नापसंद का कारण"
+				}
+			},
+			"regen": "फिर से जनरेट करें"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "अनुलग्नक जोड़ें",
+				"title": "अनुलग्नक जोड़ें"
+			},
+			"remove": {
+				"aria-label": "अनुलग्नक हटाएँ"
+			},
+			"drop": "जोड़ने के लिए छोड़ें",
+			"tooLarge": "अनुलग्नक ${name} 10MB सीमा से अधिक है"
+		},
+		"error": {
+			"generic": "कुछ गड़बड़ हो गई: ${error}",
+			"generate": "उत्तर जनरेट करने में विफल",
+			"aborted": "जनरेशन रोक दिया गया",
+			"noChar": "पहले कोई किरदार चुनें"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }

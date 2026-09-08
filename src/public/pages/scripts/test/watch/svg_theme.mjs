@@ -1,6 +1,7 @@
 /**
  * SVG 主题对比检测：页面出现 `<svg>` 时，分别以 `data-theme=light` / `data-theme=dark`
  * 校验 SVG 前景色与其背后背景色不相近（感知色距 ≥ 阈值），防止图标在某一主题下隐身。
+ * 元素带 `svg-theme-ignore` 属性（可写在会被 `svgInliner` 内联的 `<img>` 上，属性随内联复制）时跳过。
  */
 import { wake } from './loop.mjs'
 import { ignore } from './mutation_gate.mjs'
@@ -299,7 +300,7 @@ function run({ draining }) {
 	if (!dirty && !(draining && !drainPassDone)) return true
 	dirty = false
 	try {
-		const svgs = [...document.querySelectorAll('svg')].filter(isVisibleSvg)
+		const svgs = [...document.querySelectorAll('svg')].filter(svg => isVisibleSvg(svg) && !svg.hasAttribute('svg-theme-ignore'))
 		if (!svgs.length) return false
 		ignore(() => {
 			const measureStyle = document.createElement('style')

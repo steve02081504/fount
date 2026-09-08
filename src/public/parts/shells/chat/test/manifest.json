@@ -177,7 +177,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "5m10s",
+			"expected": "4m53s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -197,7 +197,7 @@
 		},
 		{
 			"name": "integration",
-			"expected": "14m6s",
+			"expected": "3m16s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -220,7 +220,7 @@
 		},
 		{
 			"name": "smoke_chat",
-			"expected": "40s",
+			"expected": "4m54s",
 			"dependsOn": [
 				"server:live"
 			],
@@ -244,7 +244,7 @@
 		},
 		{
 			"name": "smoke_ai",
-			"expected": "38s",
+			"expected": "1m57s",
 			"dependsOn": [
 				"server:live",
 				"smoke_chat"
@@ -790,7 +790,7 @@
 		},
 		{
 			"name": "frontend",
-			"expected": "15m37s",
+			"expected": "33m41s",
 			"dependsOn": [
 				"server:live",
 				"e2e_single"
@@ -799,7 +799,7 @@
 			"subtests": [
 				{
 					"name": "smoke",
-					"expected": "1m4s",
+					"expected": "11s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs"
 					]
@@ -842,7 +842,7 @@
 				},
 				{
 					"name": "attachments",
-					"expected": "30s",
+					"expected": "1m42s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/attachments.spec.mjs",
 						"src/public/parts/shells/chat/public/hub/messages/render/**",

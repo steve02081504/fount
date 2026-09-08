@@ -4,6 +4,8 @@
  * 【原理】getSafeFence 按内容中反引号 run 长度选围栏；renderMarkdownCodeBlock 组合 lang/title info 字符串；inferCodeLanguageFromPath 经 lang-map 由扩展名推断高亮语言；getChatI18n 合并 args.locales 与 localhostLocales。
  * 【数据结构】fence 字符串、options `{ lang?, title? }`、LocaleKey、languageMap 查询结果。
  * 【关联】被 toolBlocks 与其它 shell 插件直接 import；依赖 scripts/i18n/bare.mjs。
+ *   本模块同时是事实共享层：chat 在 prompt 构建链路中承担共享职能，其他 part（如 file-operations / code-execution）
+ *   直接导入这里的 markdown 工具属预期设计，依赖方向正常。
  */
 import languageMap from 'https://esm.sh/lang-map'
 
@@ -62,9 +64,10 @@ export function inferCodeLanguageFromPath(filepath) {
 export function renderMarkdownCodeBlock(code, options = {}) {
 	const content = code ?? ''
 	const fence = getSafeFence(content)
-	const { lang = '', title = '' } = options
+	const { title = '' } = options
+	// 无 lang 时 title 会占据 info 首个 token（被当作语言解析），标题将丢失；补一个占位语言
 	const info = [
-		lang.trim(),
+		options.lang?.trim() || (title ? 'text' : ''),
 		title ? `title="${escapeMarkdownInfoStringValue(title)}"` : '',
 	].filter(Boolean).join(' ')
 	return `${fence}${info ? info : ''}\n${content}\n${fence}`

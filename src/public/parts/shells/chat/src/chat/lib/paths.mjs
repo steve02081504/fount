@@ -123,6 +123,18 @@ export function localPluginsPath(username, groupId) {
 }
 
 /**
+ * 频道级私域状态（char 记忆 / workdir）文件路径：`groups/{groupId}/scoped_state/{channelId}.json`，
+ * 按 charname 分块存 `{ [charname]: { memory, workdir } }`；本地不上 DAG / 不联邦复制。
+ * @param {string} username 本地账户名
+ * @param {string} groupId 群组或会话 ID
+ * @param {string} channelId 频道 ID
+ * @returns {string} scoped_state JSON 绝对路径
+ */
+export function scopedStatePath(username, groupId, channelId) {
+	return join(groupDir(username, groupId), 'scoped_state', `${channelId}.json`)
+}
+
+/**
  * 频道消息派生日志 JSONL 路径。
  * @param {string} username 本地账户名
  * @param {string} groupId 群组或会话 ID

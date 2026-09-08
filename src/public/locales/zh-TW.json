@@ -2126,7 +2126,10 @@
 				"aria-label": "移除書籤"
 			},
 			"unreadDivider": "新訊息",
-			"backToFriends": "返回好友",
+			"backToFriends": {
+				"aria-label": "返回好友",
+				"text": "返回好友"
+			},
 			"dmTopicsTitle": "話題",
 			"participants": "參與者",
 			"startChatWith": "💬 開始與 ${name} 聊天",
@@ -3593,6 +3596,7 @@
 				"tool": {
 					"overridingFilepath": "正在覆寫${filepath}",
 					"readingFilepath": "正在讀取${filepath}",
+					"readingFiles": "正在讀取${count}個檔案",
 					"replacingFilepath": "正在局部替換${filepath}",
 					"runningLang": "正在執行${lang}",
 					"searchingContent": "正在搜尋${content}"
@@ -6028,6 +6032,21 @@
 		"parentLink": "↑ 上一級 ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "瀏覽",
+			"path": {
+				"aria-label": "工作區路徑",
+				"placeholder": "輸入篩選詞 / 目錄路徑",
+				"textContent": "工作區路徑"
+			},
+			"go": "前往",
+			"select": "選擇工作區",
+			"quickAccess": "快速存取",
+			"roots": "磁碟機 / 根目錄",
+			"noMatch": "無相符項目",
+			"loading": "載入中…",
+			"error": "瀏覽時發生錯誤"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "通知"
@@ -6316,6 +6335,122 @@
 			"success": "登入成功，可以關閉此頁。",
 			"failed": "登入失敗：${message}",
 			"missingParams": "回調缺少 code 或 state。"
+		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "針對工作區與機器的 AI 程式碼編輯會話。",
+		"sessions": {
+			"new": "新對話",
+			"untitled": "未命名對話",
+			"yesterday": "昨天"
+		},
+		"workspaces": {
+			"browse": "瀏覽…",
+			"remove": "移除目前工作區",
+			"none": "尚未選擇工作區",
+			"overviewEmpty": "尚無對話"
+		},
+		"home": {
+			"aria-label": "工作區與對話總覽"
+		},
+		"tabs": {
+			"aria-label": "對話分頁",
+			"close": "關閉分頁"
+		},
+		"newTab": {
+			"aria-label": "新增對話"
+		},
+		"machine": {
+			"local": "本機",
+			"offline": "離線"
+		},
+		"char": {
+			"switch": "切換角色",
+			"settings": "角色設定",
+			"goodAgent": "如何撰寫一個好的 agent？",
+			"none": "尚未選擇角色",
+			"recommend": {
+				"main": "推薦角色 ${charname} 尚未安裝，是否安裝？",
+				"aria": "角色安裝建議",
+				"dismiss": "關閉",
+				"install": "安裝",
+				"installed": "已安裝角色 ${charname}"
+			}
+		},
+		"composer": {
+			"shellDefault": "預設",
+			"sendButton": {
+				"aria-label": "傳送訊息"
+			},
+			"sendAria": "傳送訊息",
+			"stopAria": "停止產生",
+			"modeSwitched": "已切換至 ${mode} 模式",
+			"hint": "空白輸入時按 ! 切換 shell · @ 引用檔案 · / 執行指令 · ↑↓ 歷史記錄 · Tab 自動完成",
+			"placeholder": "輸入指令，Ctrl/Cmd+Enter 執行（清空以退出 shell 模式）",
+			"placeholderNormal": "開始輸入訊息…（@ 引用檔案 · / 執行指令）",
+			"placeholderShell": "輸入 shell 指令…（例如 git status）",
+			"aria-label": "訊息輸入框"
+		},
+		"aiSource": {
+			"panelTitle": "管理 AI 來源顯示",
+			"charOwn": "角色預設",
+			"manage": "管理 AI 來源…"
+		},
+		"commands": {
+			"run": "執行"
+		},
+		"messages": {
+			"backToBottom": "回到最新訊息"
+		},
+		"message": {
+			"actions": {
+				"copy": "複製",
+				"edit": "編輯",
+				"saveHtml": "另存為 HTML"
+			},
+			"copied": "已複製到剪貼簿",
+			"edit": {
+				"save": "儲存",
+				"cancel": "取消",
+				"ariaLabel": {
+					"aria-label": "編輯訊息原文"
+				}
+			},
+			"feedback": {
+				"up": "喜歡",
+				"down": "不喜歡",
+				"reasonPlaceholder": {
+					"placeholder": "原因（選填）"
+				},
+				"reasonSave": "送出",
+				"reasonAria": {
+					"aria-label": "不喜歡的原因"
+				}
+			},
+			"regen": "重新產生"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "新增附件",
+				"title": "新增附件"
+			},
+			"remove": {
+				"aria-label": "移除附件"
+			},
+			"drop": "放開以新增附件",
+			"tooLarge": "附件 ${name} 超過 10MB 限制"
+		},
+		"error": {
+			"generic": "發生錯誤：${error}",
+			"generate": "產生回覆失敗",
+			"aborted": "已中止產生",
+			"noChar": "請先選擇角色"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }
