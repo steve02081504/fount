@@ -71,7 +71,9 @@ export function withNoDomShimPreload(command) {
 	if (!command.length) return command
 	const start = command[0] === 'deno' ? 1 : 0
 	if (command[start] !== 'test') return command
-	const out = [...command]
-	out.splice(start + 1, 0, `--preload=${import.meta.filename}`)
-	return out
+	return [
+		...command.slice(0, start + 1),
+		`--preload=${import.meta.filename}`,
+		...command.slice(start + 1),
+	]
 }

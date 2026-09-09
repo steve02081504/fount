@@ -23,7 +23,7 @@ const bySmallChunks = text => text.match(/[\s\S]{1,7}/g) || [text]
  * @param {string[]} chunks 各帧增量
  * @returns {string[]} 各帧累积全文
  */
-const accumulate = chunks => chunks.reduce((acc, chunk) => [...acc, (acc.at(-1) ?? '') + chunk], [])
+const accumulate = chunks => chunks.reduce((frames, chunk) => [...frames, (frames.at(-1) ?? '') + chunk], [])
 
 /**
  * 在模块逻辑页里创建客户端 StreamRenderer（detached 容器），逐帧喂入**累积全文**并收集每帧渲染。
@@ -55,8 +55,8 @@ async function streamShow(modulePage, frames, { trusted = false } = {}) {
  */
 async function figureParts(modulePage, html) {
 	return modulePage.run(async arg => {
-		const doc = new DOMParser().parseFromString(`<div id="root">${arg.html}</div>`, 'text/html')
-		return [...doc.querySelectorAll('figure')].map(figure => ({
+		const parsedDocument = new DOMParser().parseFromString(`<div id="root">${arg.html}</div>`, 'text/html')
+		return [...parsedDocument.querySelectorAll('figure')].map(figure => ({
 			title: figure.querySelector('figcaption')?.textContent ?? '',
 			code: figure.querySelector('code')?.textContent ?? '',
 		}))

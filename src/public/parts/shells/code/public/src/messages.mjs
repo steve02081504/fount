@@ -70,17 +70,22 @@ async function saveEntryAsHtml(entry) {
 	showToastI18n('info', 'code.gist_source_plugins.creating')
 	const markdown = messageMarkdown(entry.content)
 	const title = markdown.split(/\r?\n/).find(line => line.trim())?.slice(0, 60) || 'code message'
-	const gist = await createGist({
-		markdown,
-		title,
-		securityLevel: 'trusted',
-		source: {
-			type: 'code',
-			ref: { sessionId: store.session?.id, entryId: entry.id, role: entry.role },
-			exportedAt: Date.now(),
-		},
-	})
-	location.href = '/parts/shells:gist/view?id=' + encodeURIComponent(gist.id)
+	try {
+		const gist = await createGist({
+			markdown,
+			title,
+			securityLevel: 'trusted',
+			source: {
+				type: 'code',
+				ref: { sessionId: store.session?.id, entryId: entry.id, role: entry.role },
+				exportedAt: Date.now(),
+			},
+		})
+		location.href = '/parts/shells:gist/view?id=' + encodeURIComponent(gist.id)
+	}
+	catch (error) {
+		showToastI18n('error', 'code.error.generic', { error: String(error.message || error) })
+	}
 }
 
 /**

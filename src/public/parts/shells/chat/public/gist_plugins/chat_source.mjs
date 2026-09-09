@@ -28,9 +28,9 @@ export default {
 				const date = new Date(exportedAt)
 				parts.push(`${geti18n('chat.gist_source_plugins.exportedAt')}：${Number.isNaN(date.getTime()) ? exportedAt : date.toLocaleString()}`)
 			}
-			const desc = document.createElement('p')
-			desc.textContent = parts.join(' · ')
-			wrap.appendChild(desc)
+			const description = document.createElement('p')
+			description.textContent = parts.join(' · ')
+			wrap.appendChild(description)
 			if (ref.groupId && ref.channelId && ref.eventId) {
 				const href = wrapProtocolHttpsUrl(formatMessageRunUri(ref.groupId, ref.channelId, ref.eventId))
 				const link = document.createElement('a')

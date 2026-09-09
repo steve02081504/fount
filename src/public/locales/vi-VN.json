@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Tạo thông tin thành phần nguồn"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Tạo hoặc xem trước tài liệu Markdown được kéo thả"
+			}
 		}
 	},
 	"chat": {
@@ -3603,6 +3608,19 @@
 					"searchingContent": "Đang tìm kiếm ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "Từ trò chuyện"
+			},
+			"creating": "Đang tạo gist…",
+			"fromGroup": "Từ nhóm",
+			"fromChannel": "Từ kênh",
+			"author": "Tác giả",
+			"exportedAt": "Xuất lúc",
+			"jumpToSource": "Đến nguồn",
+			"sendToChat": "Sao chép vào trò chuyện",
+			"copied": "Đã sao chép vào bộ nhớ tạm"
 		}
 	},
 	"easynew": {
@@ -4931,6 +4949,7 @@
 			"notFound": "Bài đăng không tồn tại hoặc không hiển thị",
 			"loadFailed": "Tải không thành công, vui lòng thử lại sau",
 			"exportMediaFailed": "Không xuất được phương tiện: ${error}",
+			"gistCreateFailed": "Không tạo được gist: ${error}",
 			"detailTitle": "Bưu kiện",
 			"back": "Quay lại"
 		},
@@ -5030,6 +5049,18 @@
 			"follow": "đăng ký",
 			"unfollow": "Hủy đăng ký",
 			"empty": "Chưa có bài viết nào cho chủ đề này"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "Từ bài đăng"
+			},
+			"creating": "Đang tạo gist…",
+			"fromPost": "Từ bài đăng",
+			"author": "Tác giả",
+			"exportedAt": "Xuất lúc",
+			"jumpToSource": "Đến nguồn",
+			"sendToSocial": "Sao chép vào bài đăng",
+			"copied": "Đã sao chép vào bộ nhớ tạm"
 		}
 	},
 	"cabinet": {
@@ -6451,6 +6482,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "Đang tạo gist…",
+			"fromSession": "Từ phiên lập trình",
+			"sessionId": "Phiên",
+			"exportedAt": "Xuất lúc",
+			"sendToWorkspace": "Gửi đến không gian làm việc",
+			"copied": "Đã sao chép vào bộ nhớ tạm",
+			"sent": "Đã gửi đến không gian làm việc",
+			"code": {
+				"title": "Từ phiên lập trình"
+			}
+		}
+	},
+	"gist": {
+		"title": "Thư viện gist",
+		"description": "Lưu, xem, chỉnh sửa và chia sẻ tài liệu Markdown, với mức bảo mật riêng cho từng gist.",
+		"error": {
+			"generic": "Đã xảy ra lỗi: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Thư viện gist"
+			}
+		},
+		"list": {
+			"new": "Gist mới",
+			"empty": "Chưa có gist nào. Nhấp “Gist mới” ở góc trên bên phải để tạo gist đầu tiên.",
+			"updatedAt": "Đã cập nhật"
+		},
+		"source": {
+			"manual": "Thủ công",
+			"chat": "Từ trò chuyện",
+			"social": "Từ bài đăng",
+			"code": "Từ phiên lập trình",
+			"md-drop": "Markdown kéo thả"
+		},
+		"security": {
+			"secure": "Được bảo vệ",
+			"trusted": "Không bảo vệ"
+		},
+		"view": {
+			"back": "Quay lại",
+			"edit": "Chỉnh sửa",
+			"download": "Tải xuống",
+			"share": "Chia sẻ",
+			"delete": "Xóa",
+			"empty": "Gist này trống",
+			"dropRerender": "Đã hiển thị lại bằng Markdown kéo thả",
+			"downgradeConfirm": "Chuyển sang “Không bảo vệ” sẽ cho phép tập lệnh HTML chạy trong bản xem trước, gây rủi ro XSS. Vẫn chuyển?",
+			"shareCopied": "Đã sao chép liên kết chia sẻ vào bộ nhớ tạm",
+			"deleteConfirm": "Xóa gist này? Hành động này không thể hoàn tác.",
+			"notFound": "Không tìm thấy gist — có thể gist đã bị xóa."
+		},
+		"edit": {
+			"save": "Lưu",
+			"cancel": "Quay lại",
+			"title": "Tiêu đề",
+			"editor": {
+				"placeholder": "Nhập Markdown…",
+				"aria-label": "Trình soạn thảo Markdown"
+			},
+			"previewToggle": "Xem trước",
+			"editMode": "Chỉnh sửa",
+			"pasteDangerPrompt": "Bộ nhớ tạm có thể chứa nội dung nguy hiểm (tập lệnh / thuộc tính sự kiện / liên kết không an toàn). ${trust}: giữ không bảo vệ và dán nguyên trạng; ${secure}: chuyển sang bảo vệ trước khi dán.",
+			"pasteTrust": "Tin cậy và dán",
+			"pasteSecure": "Không tin, hãy bảo vệ"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Được bảo vệ",
+				"aria-label": "Mức bảo mật: được bảo vệ"
+			},
+			"trusted": {
+				"title": "Không bảo vệ",
+				"aria-label": "Mức bảo mật: không bảo vệ"
 			}
 		}
 	}

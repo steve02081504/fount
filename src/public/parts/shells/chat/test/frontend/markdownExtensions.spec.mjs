@@ -27,9 +27,10 @@ test.describe('chat markdown extensions', () => {
 		const parsed = await modulePage.run(async () => {
 			const mod = await import('/parts/shells:chat/markdown_extensions/index.mjs')
 			const tokens = mod.default.inlineTokens
+			const linkToken = tokens.find(token => token.kind === 'link')
 			const mention = tokens.find(token => token.kind === 'mention').parse('@[entity:abc123]')
-			const link = tokens.find(token => token.kind === 'link').parse('#[channel:group1/channel2]')
-			const groupLink = tokens.find(token => token.kind === 'link').parse('#[group:g1]')
+			const link = linkToken.parse('#[channel:group1/channel2]')
+			const groupLink = linkToken.parse('#[group:g1]')
 			return { mention, link, groupLink }
 		})
 		expect(parsed.mention.kind).toBe('mention')

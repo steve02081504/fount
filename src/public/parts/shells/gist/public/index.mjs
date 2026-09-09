@@ -2,7 +2,7 @@
  * gist 列表页：加载全部 gist，渲染卡片（标题 / 来源 / 安全等级 / 更新时间）。
  */
 import { handleError } from '/scripts/features/errorHandlers.mjs'
-import { initTranslations, onLanguageChange } from '/scripts/i18n/index.mjs'
+import { initTranslations } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 
 import { listGists } from './src/endpoints.mjs'
@@ -54,12 +54,11 @@ function securityBadge(level) {
 
 /**
  * 本地化时间显示。
- * @param {string} [dateString] - ISO 时间字符串。
+ * @param {number} timestamp - 毫秒时间戳。
  * @returns {string} 本地化时间文本。
  */
-function formatDate(dateString) {
-	if (!dateString) return ''
-	const date = new Date(dateString)
+function formatDate(timestamp) {
+	const date = new Date(timestamp)
 	if (Number.isNaN(date.getTime())) return ''
 	return date.toLocaleString()
 }
@@ -122,7 +121,6 @@ async function render() {
  */
 async function boot() {
 	await initTranslations('gist')
-	onLanguageChange(render)
 	document.getElementById('new-gist-button').addEventListener('click', () => { location.href = EDIT_URL })
 	await render()
 }

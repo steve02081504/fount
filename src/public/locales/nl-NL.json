@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "Genereer informatie over lettertypecomponenten"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "Maak of bekijk een neergezet Markdown-document"
+			}
 		}
 	},
 	"chat": {
@@ -3609,6 +3614,19 @@
 					"searchingContent": "${content} wordt gezocht"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "Uit chat"
+			},
+			"creating": "gist wordt gemaakt…",
+			"fromGroup": "Uit groep",
+			"fromChannel": "Uit kanaal",
+			"author": "Auteur",
+			"exportedAt": "Geëxporteerd op",
+			"jumpToSource": "Ga naar bron",
+			"sendToChat": "Kopiëren naar chat",
+			"copied": "Naar het klembord gekopieerd"
 		}
 	},
 	"easynew": {
@@ -4937,6 +4955,7 @@
 			"notFound": "Bericht bestaat niet of is niet zichtbaar",
 			"loadFailed": "Laden mislukt. Probeer het later opnieuw",
 			"exportMediaFailed": "Media exporteren mislukt: ${error}",
+			"gistCreateFailed": "Maken van het gist is mislukt: ${error}",
 			"detailTitle": "Bericht",
 			"back": "Terug"
 		},
@@ -5036,6 +5055,18 @@
 			"follow": "Volgen",
 			"unfollow": "Uitschrijven",
 			"empty": "Er zijn nog geen berichten voor dit onderwerp"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "Uit bericht"
+			},
+			"creating": "gist wordt gemaakt…",
+			"fromPost": "Uit bericht",
+			"author": "Auteur",
+			"exportedAt": "Geëxporteerd op",
+			"jumpToSource": "Ga naar bron",
+			"sendToSocial": "Kopiëren naar bericht",
+			"copied": "Naar het klembord gekopieerd"
 		}
 	},
 	"cabinet": {
@@ -6457,6 +6488,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "gist wordt gemaakt…",
+			"fromSession": "Uit codeersessie",
+			"sessionId": "Sessie",
+			"exportedAt": "Geëxporteerd op",
+			"sendToWorkspace": "Naar werkruimte verzenden",
+			"copied": "Naar het klembord gekopieerd",
+			"sent": "Naar werkruimte verzonden",
+			"code": {
+				"title": "Uit codeersessie"
+			}
+		}
+	},
+	"gist": {
+		"title": "Gist-bibliotheek",
+		"description": "Markdown-documenten opslaan, bekijken, bewerken en delen, met een beveiligingsniveau per gist.",
+		"error": {
+			"generic": "Er is iets misgegaan: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Gist-bibliotheek"
+			}
+		},
+		"list": {
+			"new": "Nieuw gist",
+			"empty": "Nog geen gist. Klik rechtsboven op “Nieuw gist” om er een te maken.",
+			"updatedAt": "Bijgewerkt"
+		},
+		"source": {
+			"manual": "Handmatig",
+			"chat": "Uit chat",
+			"social": "Uit bericht",
+			"code": "Uit codeersessie",
+			"md-drop": "Neergezet Markdown"
+		},
+		"security": {
+			"secure": "Beschermd",
+			"trusted": "Onbeschermd"
+		},
+		"view": {
+			"back": "Terug",
+			"edit": "Bewerken",
+			"download": "Downloaden",
+			"share": "Delen",
+			"delete": "Verwijderen",
+			"empty": "Deze gist is leeg",
+			"dropRerender": "Opnieuw gerenderd met het neergezette Markdown",
+			"downgradeConfirm": "Overschakelen naar “Onbeschermd” zorgt ervoor dat HTML-scripts in de preview kunnen draaien, met XSS-risico. Toch overschakelen?",
+			"shareCopied": "Deellink naar het klembord gekopieerd",
+			"deleteConfirm": "Deze gist verwijderen? Dit kan niet ongedaan worden gemaakt.",
+			"notFound": "gist niet gevonden — het is mogelijk verwijderd."
+		},
+		"edit": {
+			"save": "Opslaan",
+			"cancel": "Terug",
+			"title": "Titel",
+			"editor": {
+				"placeholder": "Voer Markdown in…",
+				"aria-label": "Markdown-editor"
+			},
+			"previewToggle": "Voorbeeld",
+			"editMode": "Bewerken",
+			"pasteDangerPrompt": "Het klembord kan gevaarlijke inhoud bevatten (scripts / gebeurteniskenmerken / onveilige links). ${trust}: onbeschermd laten en ongewijzigd plakken; ${secure}: vóór het plakken overschakelen naar beschermd.",
+			"pasteTrust": "Vertrouwen en plakken",
+			"pasteSecure": "Niet vertrouwen, beschermen"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "Beschermd",
+				"aria-label": "Beveiligingsniveau: beschermd"
+			},
+			"trusted": {
+				"title": "Onbeschermd",
+				"aria-label": "Beveiligingsniveau: onbeschermd"
 			}
 		}
 	}

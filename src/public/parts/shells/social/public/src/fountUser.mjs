@@ -12,6 +12,7 @@ import { createPost, getPost } from './endpoints/posts.mjs'
 
 /** 最近一次被点击的元素（capture 阶段记录；inline onclick 在目标阶段触发，capture 先执行）。 */
 let lastClickTarget = null
+let clickTrackingBound = false
 
 /**
  * 注册 capture 阶段的点击追踪，供 `fount.user.send` 定位触发帖。
@@ -25,6 +26,8 @@ export function trackClickTarget() {
 	const onCaptureClick = event => {
 		lastClickTarget = event.target instanceof Element ? event.target : null
 	}
+	if (clickTrackingBound) return () => {}
+	clickTrackingBound = true
 	document.addEventListener('click', onCaptureClick, { capture: true })
 	return () => document.removeEventListener('click', onCaptureClick, { capture: true })
 }
@@ -85,9 +88,9 @@ export function registerFountUserApi() {
 		try {
 			return await sendAsUser(input)
 		}
-		catch (err) {
-			showToastI18n('error', 'social.actions.replyFailed', { error: err?.message || String(err) })
-			throw err
+		catch (error) {
+			showToastI18n('error', 'social.actions.replyFailed', { error: error?.message || String(error) })
+			throw error
 		}
 	}
 }

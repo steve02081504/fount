@@ -12,7 +12,7 @@ import { test, expect } from './fixtures.mjs'
  * @returns {Promise<string>} gist id
  */
 async function createGist(request, baseUrl, apiKey, source) {
-	const res = await request.post(`${baseUrl}/api/parts/shells:gist/gists`, {
+	const response = await request.post(`${baseUrl}/api/parts/shells:gist/gists`, {
 		headers: { 'fount-apikey': apiKey },
 		data: {
 			title: `source-${source.type}`,
@@ -21,9 +21,8 @@ async function createGist(request, baseUrl, apiKey, source) {
 			source,
 		},
 	})
-	expect(res.ok(), `create gist failed: ${res.status()}`).toBeTruthy()
-	const body = await res.json()
-	return body.gist.id
+	expect(response.ok(), `create gist failed: ${response.status()}`).toBeTruthy()
+	return (await response.json()).gist.id
 }
 
 test.describe('gist source plugins', () => {
@@ -39,7 +38,7 @@ test.describe('gist source plugins', () => {
 		await expect(page.locator('.gist-source-code button')).toContainText('发送到工作区')
 	})
 
-	test('code source send button copies markdown when no code context', async ({ page, baseUrl, apiKey }) => {
+	test('code source send button copies markdown when no code context', async ({ page, baseUrl, apiKey, context }) => {
 		const id = await createGist(page.request, baseUrl, apiKey, {
 			type: 'code',
 			ref: { sessionId: 'abc-456', role: 'user' },
@@ -47,8 +46,11 @@ test.describe('gist source plugins', () => {
 		await page.goto(`${baseUrl}/parts/shells:gist/view?id=${id}`, { waitUntil: 'domcontentloaded' })
 		const button = page.locator('.gist-source-code button')
 		await expect(button).toBeVisible({ timeout: 30_000 })
+		await context.grantPermissions(['clipboard-read', 'clipboard-write'])
 		await button.click()
 		await expect(page.locator('#toast-container, .toast')).toContainText('已复制', { timeout: 10_000 })
+		await expect.poll(async () => page.evaluate(() => navigator.clipboard.readText()))
+			.toContain('# code source test')
 	})
 
 	test('chat source gist renders description and link', async ({ page, baseUrl, apiKey }) => {
@@ -60,6 +62,11 @@ test.describe('gist source plugins', () => {
 		await page.goto(`${baseUrl}/parts/shells:gist/view?id=${id}`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#source-plugins')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#source-plugins')).toContainText('Alice')
+		const sourceLink = page.locator('#source-plugins a')
+		await expect(sourceLink).toHaveCount(1)
+		await expect(sourceLink).toHaveAttribute('target', '_blank')
+		await expect(sourceLink).toHaveAttribute('rel', 'noopener')
+		await expect(sourceLink).toHaveAttribute('href', 'https://steve02081504.github.io/fount/protocol?url=fount%3A%2F%2Frun%2Fshells%3Achat%2Fmessage%3Bgrp-1%3Bch-1%3Bevt-1')
 	})
 
 	test('social source gist renders description with jump link', async ({ page, baseUrl, apiKey }) => {

@@ -1,8 +1,8 @@
 /**
  * 为 LLM / 读屏路径解析 emoji alt 文本；发帖时把 name/alt 别名改成规范 emojiId。
  */
-import { pickLocalizedSlice } from '../../../../../scripts/i18n/locale_match.mjs'
 import { localesForUser } from '../../../../../scripts/locale.mjs'
+import { pickLocalizedSlice } from '../../../../pages/scripts/i18n/locale_match.mjs'
 import {
 	buildEmojiAliasIndex,
 	degradeEmojiTokensToAlt,

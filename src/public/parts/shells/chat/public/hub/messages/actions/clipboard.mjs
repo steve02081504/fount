@@ -4,9 +4,9 @@
  */
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { store } from '../../core/state.mjs'
+import { exportMessageToGist } from '../exportGist.mjs'
 import { generateMessageStandaloneHtml } from '../exportHtml.mjs'
 import { getMessageText } from '../render/text.mjs'
-import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 
 /**
  * 复制消息分享链接到剪贴板。
@@ -28,31 +28,6 @@ export async function handleCopyShareLink(button, actions) {
 		console.error('copy share link failed', error)
 	}
 	return true
-}
-
-/**
- * 把消息导出为 gist 并跳转查看页。
- * @param {object} channelMessage 消息
- * @param {HTMLElement | null} row 消息行
- * @param {string} eventId 事件 id
- * @returns {Promise<void>} 导出完成
- */
-async function exportMessageToGist(channelMessage, row, eventId) {
-	const markdown = getMessageText(channelMessage) || row?.querySelector('.message-content')?.textContent?.trim() || ''
-	const groupId = store.context.currentGroupId
-	const channelId = store.context.currentChannelId
-	const author = channelMessage?.charId ?? channelMessage?.authorPubKeyHash ?? channelMessage?.sender ?? ''
-	const gist = await createGist({
-		markdown,
-		title: markdown.split('\n').find(Boolean)?.trim().slice(0, 40) || 'gist',
-		securityLevel: 'trusted',
-		source: {
-			type: 'chat',
-			ref: { groupId, channelId, eventId, author },
-			exportedAt: Date.now(),
-		},
-	})
-	location.href = '/parts/shells:gist/view?id=' + encodeURIComponent(gist.id)
 }
 
 /**
@@ -98,7 +73,10 @@ export async function handleClipboardAction(button, row, channelMessage, action)
 		try {
 			const eventId = button.dataset.eventId?.trim() || String(channelMessage?.eventId || '')
 			showToastI18n('info', 'chat.gist_source_plugins.creating')
-			await exportMessageToGist(channelMessage, row, eventId)
+			await exportMessageToGist(channelMessage, row, {
+				groupId: store.context.currentGroupId,
+				channelId: store.context.currentChannelId,
+			}, eventId)
 		}
 		catch (error) {
 			console.error(error)

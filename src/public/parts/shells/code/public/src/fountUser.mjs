@@ -26,21 +26,22 @@ export function registerFountUserApi() {
 		try {
 			payload = normalizeUserSendPayload(input)
 		}
-		catch (err) {
-			showToastI18n('error', 'code.error.generic', { error: String(err?.message || err) })
-			throw err
+		catch (error) {
+			showToastI18n('error', 'code.error.generic', { error: String(error?.message || error) })
+			throw error
 		}
 		const content = String(payload.content.content ?? '').trim()
 		if (!content) return
-		if (payload.files.length) {
+		const generating = store.generating
+		if (payload.files.length && !generating) {
 			store.pendingFiles.push(...payload.files)
 			renderAttachmentPreview()
 		}
 		try {
 			await sendMessage(content)
 		}
-		catch (err) {
-			showToastI18n('error', 'code.error.generic', { error: String(err?.message || err) })
+		catch (error) {
+			showToastI18n('error', 'code.error.generic', { error: String(error?.message || error) })
 		}
 	}
 }

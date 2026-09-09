@@ -5,7 +5,6 @@ import path from 'node:path'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 
 const GIST_ID_RE = /^[A-Za-z0-9_-]{1,64}$/
-const SECURITY_LEVELS = ['secure', 'trusted']
 
 /**
  * 获取用户 gist 存储目录，不存在则递归创建。
@@ -24,7 +23,7 @@ async function getGistDir(username) {
  * @returns {string} 生成的标题。
  */
 function titleFromMarkdown(markdown) {
-	const line = String(markdown ?? '').split('\n').find(l => l.trim())
+	const line = String(markdown ?? '').split('\n').find(line => line.trim())
 	return (line?.trim() || 'Untitled').slice(0, 60)
 }
 
@@ -35,12 +34,11 @@ function titleFromMarkdown(markdown) {
  * @returns {Promise<object>} 创建的完整 gist 对象。
  */
 export async function createGist(username, { markdown, title, securityLevel = 'trusted', source = null } = {}) {
-	if (!SECURITY_LEVELS.includes(securityLevel)) throw new Error(`Invalid securityLevel: ${securityLevel}`)
 	const now = Date.now()
 	const gist = {
 		id: crypto.randomUUID().slice(0, 8),
 		title: title ?? titleFromMarkdown(markdown),
-		markdown: String(markdown ?? ''),
+		markdown,
 		securityLevel,
 		source,
 		createdAt: now,
@@ -107,12 +105,9 @@ export async function listGists(username) {
 export async function updateGist(username, id, data = {}) {
 	const gist = await getGist(username, id)
 	if (!gist) return null
-	if (data.securityLevel !== undefined) {
-		if (!SECURITY_LEVELS.includes(data.securityLevel)) throw new Error(`Invalid securityLevel: ${data.securityLevel}`)
-		gist.securityLevel = data.securityLevel
-	}
-	if (data.markdown !== undefined) gist.markdown = String(data.markdown)
-	if (data.title !== undefined) gist.title = String(data.title)
+	if (data.securityLevel !== undefined) gist.securityLevel = data.securityLevel
+	if (data.markdown !== undefined) gist.markdown = data.markdown
+	if (data.title !== undefined) gist.title = data.title
 	gist.updatedAt = Date.now()
 	await fs.writeFile(path.join(await getGistDir(username), `${id}.json`), JSON.stringify(gist, null, 2), 'utf-8')
 	return gist

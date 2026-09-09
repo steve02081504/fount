@@ -27,10 +27,9 @@ test.describe('Home shell smoke', () => {
 			return list && list.childElementCount > 0
 		}, null, { timeout: 20_000 })
 		await page.evaluate(() => {
-			const md = new File(['# 拖放标题\n\n正文'], 'note.md', { type: 'text/markdown' })
-			const dt = new DataTransfer()
-			dt.items.add(md)
-			document.body.dispatchEvent(new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true }))
+			const dataTransfer = new DataTransfer()
+			dataTransfer.items.add(new File(['# 拖放标题\n\n正文'], 'note.md', { type: 'text/markdown' }))
+			document.body.dispatchEvent(new DragEvent('drop', { dataTransfer, bubbles: true, cancelable: true }))
 		})
 		try {
 			await page.waitForURL(/parts\/shells:gist\/view\/?\?id=/, { timeout: 20_000 })

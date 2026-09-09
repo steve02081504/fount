@@ -147,14 +147,13 @@ async function collectExternalDirectives() {
 			() => '',
 		).catch(() => ''))
 	}
-	const [inlineNames, ...fetchedNames] = await Promise.all([
-		Promise.resolve(inlineTexts.flatMap(text => parseExternalDirectives(text))),
+	for (const name of (await Promise.all([
+		inlineTexts.flatMap(text => parseExternalDirectives(text)),
 		...hrefsToFetch.map(href => sheetTextCache.get(href).then(
 			text => parseExternalDirectives(text),
 			() => [],
 		)),
-	])
-	for (const name of [...inlineNames, ...fetchedNames.flat()]) externalConsumers.add(name)
+	])).flat()) externalConsumers.add(name)
 }
 
 /**

@@ -130,16 +130,17 @@ export async function handlePostProfileActionsClick(target) {
 			}
 			showToastI18n('info', 'social.gist_source_plugins.creating')
 			const markdown = content?.text || ''
-			const title = (markdown.split('\n')[0] || '').slice(0, 60)
-			const author = downloadHtmlButton.closest('.post-card')?.dataset.authorEntity || parsed.entityHash
 			try {
 				const gist = await createGist({
 					markdown,
-					title,
-					securityLevel: 'trusted',
+					securityLevel: 'secure',
 					source: {
 						type: 'social',
-						ref: { entityHash: parsed.entityHash, postId: parsed.postId, author },
+						ref: {
+							entityHash: parsed.entityHash,
+							postId: parsed.postId,
+							author: downloadHtmlButton.closest('.post-card')?.dataset.authorEntity || parsed.entityHash,
+						},
 						exportedAt: Date.now(),
 					},
 				})

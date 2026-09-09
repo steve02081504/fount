@@ -20,8 +20,7 @@ export async function renderGistContent(container, gist) {
 		container.appendChild(empty)
 		return
 	}
-	const fragment = gist.securityLevel === 'secure'
+	container.appendChild(gist.securityLevel === 'secure'
 		? await renderMarkdownNoScriptActivation(markdown, {}, { allowDangerousHtml: false })
-		: await renderMarkdown(markdown, {}, { allowDangerousHtml: true })
-	container.appendChild(fragment)
+		: await renderMarkdown(markdown, {}, { allowDangerousHtml: true }))
 }

@@ -34,7 +34,7 @@ function sendJson(url, body, method = 'POST') {
 
 /**
  * 列出全部 gist（不含 markdown），按创建时间降序。
- * @returns {Promise<Array<{id: string, title: string, securityLevel: 'secure'|'trusted', source: object|null, createdAt: string, updatedAt: string}>>} gist 列表。
+ * @returns {Promise<Array<{id: string, title: string, securityLevel: 'secure'|'trusted', source: object|null, createdAt: number, updatedAt: number}>>} gist 列表。
  */
 export async function listGists() {
 	return requestJson(`${API_BASE}/gists`)
@@ -43,7 +43,7 @@ export async function listGists() {
 /**
  * 新建 gist。
  * @param {{markdown: string, title?: string, securityLevel?: 'secure'|'trusted', source?: object|null}} payload - 创建参数。
- * @returns {Promise<{id: string, title: string, securityLevel: string, source: object|null, createdAt: string, updatedAt: string, markdown: string}>} 新建的 gist。
+ * @returns {Promise<{id: string, title: string, securityLevel: string, source: object|null, createdAt: number, updatedAt: number, markdown: string}>} 新建的 gist。
  */
 export async function createGist(payload) {
 	const { gist } = await sendJson(`${API_BASE}/gists`, payload)
@@ -53,7 +53,7 @@ export async function createGist(payload) {
 /**
  * 读取单个 gist（含 markdown）。
  * @param {string} id - gist id。
- * @returns {Promise<{id: string, title: string, securityLevel: string, source: object|null, createdAt: string, updatedAt: string, markdown: string}>} gist 详情。
+ * @returns {Promise<{id: string, title: string, securityLevel: string, source: object|null, createdAt: number, updatedAt: number, markdown: string}>} gist 详情。
  */
 export async function getGist(id) {
 	const { gist } = await requestJson(`${API_BASE}/gists/${encodeURIComponent(id)}`)
@@ -64,7 +64,7 @@ export async function getGist(id) {
  * 更新 gist。
  * @param {string} id - gist id。
  * @param {{markdown?: string, title?: string, securityLevel?: 'secure'|'trusted'}} payload - 更新字段。
- * @returns {Promise<{id: string, title: string, securityLevel: string, source: object|null, createdAt: string, updatedAt: string, markdown: string}>} 更新后的 gist。
+ * @returns {Promise<{id: string, title: string, securityLevel: string, source: object|null, createdAt: number, updatedAt: number, markdown: string}>} 更新后的 gist。
  */
 export async function updateGist(id, payload) {
 	const { gist } = await sendJson(`${API_BASE}/gists/${encodeURIComponent(id)}`, payload, 'PUT')

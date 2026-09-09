@@ -7,6 +7,8 @@ import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { geti18n, initTranslations, setElementI18n } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 
+import { scrubHtmlActivePayload } from '/scripts/lib/sanitizeHtml.mjs'
+
 import { detectPasteDanger } from './src/dangerDetect.mjs'
 import { createGist, getGist, updateGist } from './src/endpoints.mjs'
 import { renderGistContent } from './src/render.mjs'
@@ -59,7 +61,21 @@ async function renderPreview() {
 }
 
 /**
- * 粘贴安全检测：dangerous 内容 + trusted 档时异步询问后再手动插入。
+ * 安全档兜底：以纯文本形式插入消杀后的剪贴板内容。
+ * @param {string} html 剪贴板 text/html 原文。
+ * @returns {void}
+ */
+function insertSanitizedPaste(html) {
+	const text = scrubHtmlActivePayload(html)?.textContent ?? ''
+	if (!text.trim()) return
+	richInput.focus()
+	document.execCommand('insertText', false, text)
+	richInput.element.dispatchEvent(new Event('input', { bubbles: true }))
+}
+
+/**
+ * 粘贴安全检测：dangerous 内容 + trusted 档时异步询问后再手动插入；
+ * 用户选择不信任时切换为 secure 并以纯文本 / 净化内容插入，不再插入原始 HTML。
  * secure 档或纯文本直接放行默认粘贴。
  * @param {ClipboardEvent} event - 粘贴事件。
  * @returns {void}
@@ -69,15 +85,20 @@ function handlePaste(event) {
 	if (!html) return
 	if (securityLevel === 'secure') return
 	if (!detectPasteDanger(html)) return
+	const plainText = event.clipboardData?.getData('text/plain') ?? ''
 	event.preventDefault()
 	void (async () => {
 		const trust = await confirmAction('gist.edit.pasteDangerPrompt', {
 			trust: geti18n('gist.edit.pasteTrust'),
 			secure: geti18n('gist.edit.pasteSecure'),
 		})
-		if (!trust) setSecurityLevel('secure')
-		richInput.focus()
-		document.execCommand('insertHTML', false, html)
+		if (trust) {
+			richInput.focus()
+			document.execCommand('insertHTML', false, html)
+			return
+		}
+		setSecurityLevel('secure')
+		if (!plainText.trim()) insertSanitizedPaste(html)
 	})().catch(handleError('gist.error.generic'))
 }
 

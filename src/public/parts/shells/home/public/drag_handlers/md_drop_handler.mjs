@@ -4,9 +4,6 @@
  */
 import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 
-/** gist 查看页 URL 前缀。 */
-const GIST_VIEW_URL = '/parts/shells:gist/view'
-
 /**
  * 判断文件是否为 Markdown 文件。
  * @param {File} file 待判断文件
@@ -33,6 +30,6 @@ export default async function (dataTransfer, handlerConfig) {
 		securityLevel: 'secure',
 		source: { type: 'md-drop', ref: { name: file.name }, exportedAt: Date.now() },
 	})
-	location.href = `${GIST_VIEW_URL}?id=${encodeURIComponent(id)}`
+	location.href = `/parts/shells:gist/view?id=${encodeURIComponent(id)}`
 	return true
 }

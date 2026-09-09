@@ -15,8 +15,8 @@ import { authorPresentationKeys } from '../core/domUtils.mjs'
 import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from '../core/state.mjs'
 import { openThread } from '../threadDrawer.mjs'
-import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 
+import { exportMessageToGist } from './exportGist.mjs'
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
 import { shouldConfirmDelete } from './messageActionsUi.mjs'
 import { getMessageText } from './render/text.mjs'
@@ -40,35 +40,6 @@ export function dismissMessageContextMenu() {
 async function copyMessageText(message, row) {
 	const text = getMessageText(message) || row?.querySelector('.message-content')?.textContent?.trim() || ''
 	await navigator.clipboard.writeText(text)
-}
-
-/**
- * 把消息导出为 gist 并跳转查看页。
- * @param {object} message 消息行
- * @param {HTMLElement | null} row 消息 DOM
- * @param {object} actions 操作上下文
- * @param {string} eventId 事件 id
- * @returns {Promise<void>} 导出完成
- */
-async function exportMessageToGist(message, row, actions, eventId) {
-	const markdown = getMessageText(message) || row?.querySelector('.message-content')?.textContent?.trim() || ''
-	const author = message.charId ?? message.authorPubKeyHash ?? message.sender ?? ''
-	const gist = await createGist({
-		markdown,
-		title: markdown.split('\n').find(Boolean)?.trim().slice(0, 40) || 'gist',
-		securityLevel: 'trusted',
-		source: {
-			type: 'chat',
-			ref: {
-				groupId: actions.groupId,
-				channelId: actions.channelId,
-				eventId,
-				author,
-			},
-			exportedAt: Date.now(),
-		},
-	})
-	location.href = '/parts/shells:gist/view?id=' + encodeURIComponent(gist.id)
 }
 
 /**
@@ -115,7 +86,7 @@ export async function showMessageContextMenu(event, row) {
 		void copyMessageText(message, row).then(closeOnce)
 	})
 	menu.querySelector('[data-action="exportHtml"]')?.addEventListener('click', () => {
-		void (async () => {
+		(async () => {
 			try {
 				showToastI18n('info', 'chat.gist_source_plugins.creating')
 				await exportMessageToGist(message, row, actions, eventId)
@@ -127,7 +98,7 @@ export async function showMessageContextMenu(event, row) {
 		})()
 	})
 	menu.querySelector('[data-action="shareExternal"]')?.addEventListener('click', () => {
-		void (async () => {
+		(async () => {
 			try {
 				showToastI18n('info', 'chat.gist_source_plugins.creating')
 				await exportMessageToGist(message, row, actions, eventId)

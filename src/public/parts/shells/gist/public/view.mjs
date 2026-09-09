@@ -134,6 +134,16 @@ async function renderSourcePlugins() {
 }
 
 /**
+ * 显示「未找到」界面：露出错误区，隐藏正文与操作按钮区。
+ * @returns {void}
+ */
+function showNotFound() {
+	document.getElementById('not-found').hidden = false
+	document.getElementById('gist-scroll').hidden = true
+	document.getElementById('gist-actions').hidden = true
+}
+
+/**
  * 读取 gist 并渲染；404 时显示错误区与返回按钮。
  * @param {string} id - gist id。
  * @returns {Promise<void>} 加载完成。
@@ -143,8 +153,7 @@ async function loadGist(id) {
 		gist = await getGist(id)
 	} catch (error) {
 		if (error.status === 404) {
-			document.getElementById('not-found').hidden = false
-			document.getElementById('gist-scroll').hidden = true
+			showNotFound()
 			return
 		}
 		throw error
@@ -169,8 +178,7 @@ async function boot() {
 	document.addEventListener('dragover', event => { event.preventDefault() })
 	document.addEventListener('drop', onDocumentDrop)
 	if (!id) {
-		document.getElementById('not-found').hidden = false
-		document.getElementById('gist-scroll').hidden = true
+		showNotFound()
 		return
 	}
 	await loadGist(id)

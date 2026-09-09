@@ -14,14 +14,18 @@ const TRUSTED = { allowDangerousHtml: true }
  * 在模块逻辑页里渲染 markdown（复用浏览器自带的 getConvertor 缓存）。
  * @param {import('fount/scripts/test/playwright/module_page.mjs').ModulePage} modulePage 模块逻辑页
  * @param {string} markdown 原文
- * @param {{ allowDangerousHtml?: boolean, cache?: object }} [options] 信任档与 rehype 缓存
+ * @param {{ allowDangerousHtml?: boolean }} [options] 信任档
+ * @param {string} [cacheKey] 页面侧 rehype 缓存属性名；同一 key 跨次渲染共享同一缓存
  * @returns {Promise<string>} HTML
  */
-async function renderMarkdown(modulePage, markdown, options = SECURE) {
+async function renderMarkdown(modulePage, markdown, options = SECURE, cacheKey) {
 	return modulePage.run(async arg => {
 		const md = await import('/scripts/features/markdown/index.mjs')
-		return md.renderMarkdownAsString(arg.markdown, arg.cache, { allowDangerousHtml: arg.options.allowDangerousHtml, isStandalone: true })
-	}, { markdown, options, cache: options.cache })
+		const cache = arg.cacheKey
+			? (globalThis.__fountModulePage[arg.cacheKey] ??= { common: {}, specific: {} })
+			: undefined
+		return md.renderMarkdownAsString(arg.markdown, cache, { allowDangerousHtml: arg.options.allowDangerousHtml, isStandalone: true })
+	}, { markdown, options, cacheKey })
 }
 
 /**
@@ -169,9 +173,8 @@ test.describe('markdown secure render', () => {
 
 	test('same Mermaid source twice gets distinct svg ids and non-empty graphs', async ({ modulePage }) => {
 		const md = '```mermaid\nflowchart TD\n  A-->B\n```'
-		const cache = { common: {}, specific: {} }
-		const html1 = await renderMarkdown(modulePage, md, { ...SECURE, cache })
-		const html2 = await renderMarkdown(modulePage, md, { ...SECURE, cache })
+		const html1 = await renderMarkdown(modulePage, md, SECURE, 'mermaidCache')
+		const html2 = await renderMarkdown(modulePage, md, SECURE, 'mermaidCache')
 		expect(html1).not.toContain('mermaid-error-fallback')
 		expect(html2).not.toContain('mermaid-error-fallback')
 		const check = await modulePage.run(async arg => {

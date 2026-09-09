@@ -27,11 +27,13 @@
 			<h1 class="sr-only" data-i18n="gist.title"></h1>
 			<button class="btn btn-ghost btn-sm" id="back-button" type="button" data-i18n="gist.view.back"></button>
 			<span class="gist-view-title flex-1 min-w-0 truncate font-semibold" id="view-title" user-content></span>
-			<button class="btn btn-sm gist-badge" id="security-toggle" type="button" data-i18n="gist.securityToggle.secure"></button>
-			<button class="btn btn-ghost btn-sm" id="edit-button" type="button" data-i18n="gist.view.edit"></button>
-			<button class="btn btn-ghost btn-sm" id="download-button" type="button" data-i18n="gist.view.download"></button>
-			<button class="btn btn-ghost btn-sm" id="share-button" type="button" data-i18n="gist.view.share"></button>
-			<button class="btn btn-ghost btn-sm" id="delete-button" type="button" data-i18n="gist.view.delete"></button>
+			<div class="flex items-center gap-1.5" id="gist-actions">
+				<button class="btn btn-sm gist-badge" id="security-toggle" type="button" data-i18n="gist.securityToggle.secure"></button>
+				<button class="btn btn-ghost btn-sm" id="edit-button" type="button" data-i18n="gist.view.edit"></button>
+				<button class="btn btn-ghost btn-sm" id="download-button" type="button" data-i18n="gist.view.download"></button>
+				<button class="btn btn-ghost btn-sm" id="share-button" type="button" data-i18n="gist.view.share"></button>
+				<button class="btn btn-ghost btn-sm" id="delete-button" type="button" data-i18n="gist.view.delete"></button>
+			</div>
 		</header>
 		<main class="gist-main flex-1 overflow-y-auto" id="gist-scroll">
 			<div class="gist-view-body markdown-body" id="content" data-gist-drop-zone user-content></div>

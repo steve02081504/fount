@@ -30,6 +30,7 @@ export function setEndpoints(router) {
 		const { username } = getUserByReq(req)
 		const { markdown, title, securityLevel, source } = req.body || {}
 		if (!markdown) throw httpError(400, 'markdown is required.')
+		if (typeof markdown !== 'string') throw httpError(400, 'markdown must be a string.')
 		assertSecurityLevel(securityLevel)
 		const gist = await createGist(username, { markdown, title, securityLevel, source })
 		res.status(201).json({ gist })
@@ -45,6 +46,8 @@ export function setEndpoints(router) {
 	router.put('/api/parts/shells\\:gist/gists/:id', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { markdown, title, securityLevel } = req.body || {}
+		if (markdown !== undefined && typeof markdown !== 'string') throw httpError(400, 'markdown must be a string.')
+		if (title !== undefined && typeof title !== 'string') throw httpError(400, 'title must be a string.')
 		assertSecurityLevel(securityLevel)
 		const gist = await updateGist(username, req.params.id, { markdown, title, securityLevel })
 		if (!gist) throw httpError(404, 'gist not found.')
@@ -62,10 +65,10 @@ export function setEndpoints(router) {
 		const loaded = await loadRegistryJsonEntries(username, 'gist_source_plugins')
 		const plugins = loaded.flatMap(({ entry, data }) =>
 			(Array.isArray(data) ? data : []).map(item => ({
-				partpath: entry.partpath,
+				...item,
+				partpath: item.partpath ?? entry.partpath,
 				id: item.id ?? entry.id,
 				level: item.level ?? entry.level,
-				...item,
 			})))
 		res.json({ plugins })
 	})

@@ -25,8 +25,7 @@ export function applySlice(tracked, slice) {
 		case 'rewrite_tail': {
 			const key = slice.field || 'content'
 			tracked[key] ??= ''
-			const safeIndex = Math.min(slice.index, tracked[key].length)
-			tracked[key] = tracked[key].substring(0, safeIndex) + slice.content
+			tracked[key] = tracked[key].substring(0, Math.min(slice.index, tracked[key].length)) + slice.content
 			break
 		}
 		case 'set_files':

@@ -177,7 +177,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"expected": "4m53s",
+			"expected": "2m11s",
 			"trigger": [
 				"shellBackend",
 				"shellPureExtra",
@@ -1049,7 +1049,8 @@
 					"expected": "40s",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/reasoningRender.spec.mjs",
-						"src/public/parts/serviceGenerators/AI/proxy/src/reasoningRenderer.mjs"
+						"src/public/parts/serviceGenerators/AI/proxy/src/reasoningRenderer.mjs",
+						"src/public/pages/scripts/features/markdown/**"
 					]
 				},
 				{

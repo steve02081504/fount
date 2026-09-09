@@ -1,7 +1,7 @@
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
-import { pickLocalizedSlice } from '../../../../../../scripts/i18n/locale_match.mjs'
 import { applySfwOverlay } from '../../../../../../scripts/sfw.mjs'
+import { pickLocalizedSlice } from '../../../../../pages/scripts/i18n/locale_match.mjs'
 
 import { profileAvatarFileUrl, profileSfwAvatarFileUrl } from './filesUrl.mjs'
 

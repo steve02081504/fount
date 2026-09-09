@@ -18,7 +18,6 @@ const MODULE_PAGE_PATH = '/__fount_module_page__.html'
  * @typedef {object} ModulePage
  * @property {import('npm:@playwright/test').Page} page 已就绪的模块逻辑页
  * @property {string} baseUrl 测试根 URL
- * @property {(path: string) => string} resolve 站内相对路径 → 绝对 URL
  * @property {(fn: (arg: any) => unknown, arg?: unknown) => Promise<any>} run 在页面里执行模块逻辑
  */
 
@@ -72,11 +71,6 @@ export async function openModulePage(page, baseUrl) {
 	return {
 		page,
 		baseUrl,
-		/**
-		 * @param {string} path 站内相对路径（如 /scripts/features/markdown/convertor.mjs）
-		 * @returns {string} 绝对 URL
-		 */
-		resolve: path => new URL(path, baseUrl).href,
 		/**
 		 * 在页面里执行模块逻辑；返回值经结构化克隆回 Node 侧。
 		 * @param {(arg: any) => unknown} fn 无闭包的页面侧函数（可 async）

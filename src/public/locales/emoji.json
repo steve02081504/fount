@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "📥🧩📃"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "📂📥📝✨👁️"
+			}
 		}
 	},
 	"chat": {
@@ -3603,6 +3608,19 @@
 					"searchingContent": "🔍 ${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "💬"
+			},
+			"creating": "⏳📄…",
+			"fromGroup": "👥",
+			"fromChannel": "📡",
+			"author": "✍️",
+			"exportedAt": "🕒",
+			"jumpToSource": "↪️",
+			"sendToChat": "📋💬",
+			"copied": "📋✅"
 		}
 	},
 	"easynew": {
@@ -4931,6 +4949,7 @@
 			"notFound": "📄🚫👀",
 			"loadFailed": "📥❌ · 🔁⏳",
 			"exportMediaFailed": "📤🖼️❌ · ${error}",
+			"gistCreateFailed": "🚫👎: ${error}",
 			"detailTitle": "📄",
 			"back": "🔙"
 		},
@@ -5030,6 +5049,18 @@
 			"follow": "🔔",
 			"unfollow": "🔕",
 			"empty": "#️⃣📭"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "📣"
+			},
+			"creating": "⏳📄…",
+			"fromPost": "📣",
+			"author": "✍️",
+			"exportedAt": "🕒",
+			"jumpToSource": "↪️",
+			"sendToSocial": "📋📣",
+			"copied": "📋✅"
 		}
 	},
 	"cabinet": {
@@ -6451,6 +6482,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "💻"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "⏳📄…",
+			"fromSession": "👨💻",
+			"sessionId": "🆔",
+			"exportedAt": "🕒",
+			"sendToWorkspace": "📤🖥️",
+			"copied": "📋✅",
+			"sent": "🖥️✅",
+			"code": {
+				"title": "👨💻"
+			}
+		}
+	},
+	"gist": {
+		"title": "📄📚",
+		"description": "💾👁️✏️🔗🛡️",
+		"error": {
+			"generic": "🚫👎: ${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "📄📚"
+			}
+		},
+		"list": {
+			"new": "🆕📄",
+			"empty": "🈳…↗️🆕📄",
+			"updatedAt": "🕒"
+		},
+		"source": {
+			"manual": "✋",
+			"chat": "💬",
+			"social": "📣",
+			"code": "👨💻",
+			"md-drop": "📂📥📝"
+		},
+		"security": {
+			"secure": "🛡️",
+			"trusted": "⚠️"
+		},
+		"view": {
+			"back": "🔙",
+			"edit": "✏️",
+			"download": "⬇️",
+			"share": "🔗",
+			"delete": "🗑️",
+			"empty": "📄🈳",
+			"dropRerender": "📂📥📝🔄",
+			"downgradeConfirm": "🛡️➡️⚠️💀…❓",
+			"shareCopied": "🔗📋✅",
+			"deleteConfirm": "🗑️📄❓↩️🚫",
+			"notFound": "📄🔍❓"
+		},
+		"edit": {
+			"save": "💾",
+			"cancel": "🔙",
+			"title": "📌",
+			"editor": {
+				"placeholder": "⌨️📝…",
+				"aria-label": "📝✏️"
+			},
+			"previewToggle": "👁️",
+			"editMode": "✏️",
+			"pasteDangerPrompt": "📋⚠️👻🧨… ${trust}: ⚠️📋➡️; ${secure}: 🛡️📋➡️",
+			"pasteTrust": "🤝📋",
+			"pasteSecure": "🙅🛡️📋"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "🛡️",
+				"aria-label": "🛡️🔒"
+			},
+			"trusted": {
+				"title": "⚠️",
+				"aria-label": "⚠️🔓"
 			}
 		}
 	}

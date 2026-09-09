@@ -1138,6 +1138,11 @@ export type LocaleData = {
 				description: string
 			}
 		}
+		home_drag_in_handlers: {
+			handleMarkdownDrop: {
+				description: string
+			}
+		}
 	}
 	chat: {
 		title: string
@@ -3566,6 +3571,19 @@ export type LocaleData = {
 				}
 			}
 		}
+		gist_source_plugins: {
+			chat: {
+				title: string
+			}
+			creating: string
+			fromGroup: string
+			fromChannel: string
+			author: string
+			exportedAt: string
+			jumpToSource: string
+			sendToChat: string
+			copied: string
+		}
 	}
 	easynew: {
 		title: string
@@ -4893,6 +4911,7 @@ export type LocaleData = {
 			notFound: string
 			loadFailed: string
 			exportMediaFailed: string
+			gistCreateFailed: string
 			detailTitle: string
 			back: string
 		}
@@ -4992,6 +5011,18 @@ export type LocaleData = {
 			follow: string
 			unfollow: string
 			empty: string
+		}
+		gist_source_plugins: {
+			social: {
+				title: string
+			}
+			creating: string
+			fromPost: string
+			author: string
+			exportedAt: string
+			jumpToSource: string
+			sendToSocial: string
+			copied: string
 		}
 	}
 	cabinet: {
@@ -6415,6 +6446,18 @@ export type LocaleData = {
 				title: string
 			}
 		}
+		gist_source_plugins: {
+			creating: string
+			fromSession: string
+			sessionId: string
+			exportedAt: string
+			sendToWorkspace: string
+			copied: string
+			sent: string
+			code: {
+				title: string
+			}
+		}
 	}
 	gist: {
 		title: string
@@ -6469,6 +6512,16 @@ export type LocaleData = {
 			pasteDangerPrompt: string
 			pasteTrust: string
 			pasteSecure: string
+		}
+		securityToggle: {
+			secure: {
+				title: string
+				'aria-label': string
+			}
+			trusted: {
+				title: string
+				'aria-label': string
+			}
 		}
 	}
 }
@@ -7059,6 +7112,7 @@ export type LocaleKeyParams = {
 	'social.notifications.repost': { author: string | number }
 	'social.poll.deadline': { deadline: string | number }
 	'social.post.exportMediaFailed': { error: string | number }
+	'social.post.gistCreateFailed': { error: string | number }
 	'social.profile.cabinetsFailed': { error: string | number }
 	'social.profile.loadFailed': { error: string | number }
 	'social.replies.loadFailed': { error: string | number }

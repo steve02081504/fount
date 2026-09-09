@@ -18,6 +18,37 @@
 				"server:live"
 			],
 			"trigger": "frontendShared",
+			"subtests": [
+				{
+					"name": "smoke",
+					"expected": "12s",
+					"triggers": [
+						"src/public/parts/shells/gist/test/frontend/smoke.spec.mjs"
+					]
+				},
+				{
+					"name": "source_plugins",
+					"expected": "30s",
+					"triggers": [
+						"src/public/parts/shells/gist/test/frontend/source_plugins.spec.mjs",
+						"src/public/parts/shells/code/public/gist_plugins/code_source.mjs",
+						"src/public/parts/shells/chat/public/gist_plugins/chat_source.mjs",
+						"src/public/parts/shells/chat/public/shared/runUri.mjs",
+						"src/public/parts/shells/social/public/gist_plugins/social_source.mjs"
+					]
+				},
+				{
+					"name": "edit_security",
+					"expected": "30s",
+					"triggers": [
+						"src/public/parts/shells/gist/test/frontend/edit_security.spec.mjs",
+						"src/public/parts/shells/gist/public/edit.mjs",
+						"src/public/parts/shells/gist/public/edit.html",
+						"src/public/parts/shells/gist/public/src/dangerDetect.mjs",
+						"src/public/pages/scripts/components/markdownRichInput.mjs"
+					]
+				}
+			],
 			"run": [
 				"deno",
 				"run",

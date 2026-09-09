@@ -6524,16 +6524,6 @@
 			"secure": "保護あり",
 			"trusted": "保護なし"
 		},
-		"securityToggle": {
-			"secure": {
-				"title": "保護あり",
-				"aria-label": "セキュリティレベル：保護あり"
-			},
-			"trusted": {
-				"title": "保護なし",
-				"aria-label": "セキュリティレベル：保護なし"
-			}
-		},
 		"view": {
 			"back": "戻る",
 			"edit": "編集",
@@ -6560,6 +6550,16 @@
 			"pasteDangerPrompt": "クリップボードに危険な内容（スクリプト / イベント属性 / 危険なリンク）が含まれています。${trust}：保護なしのまま貼り付け；${secure}：保護ありに切り替えてから貼り付け。",
 			"pasteTrust": "信頼して貼り付け",
 			"pasteSecure": "信頼しない、保護あり"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "保護あり",
+				"aria-label": "セキュリティレベル：保護あり"
+			},
+			"trusted": {
+				"title": "保護なし",
+				"aria-label": "セキュリティレベル：保護なし"
+			}
 		}
 	}
 }

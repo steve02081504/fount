@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "以器衍其標"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "可建可覽拖入之 Markdown 文"
+			}
 		}
 	},
 	"chat": {
@@ -3603,6 +3608,19 @@
 					"searchingContent": "方索${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "自清談"
+			},
+			"creating": "方作 gist…",
+			"fromGroup": "自群",
+			"fromChannel": "自頻道",
+			"author": "作者",
+			"exportedAt": "匯出之時",
+			"jumpToSource": "往其源",
+			"sendToChat": "錄入清談",
+			"copied": "已錄入剪貼板"
 		}
 	},
 	"easynew": {
@@ -4931,6 +4949,7 @@
 			"notFound": "言不見或不可見",
 			"loadFailed": "取錄有失，祈少候復試",
 			"exportMediaFailed": "媒體導出未遂：${error}",
+			"gistCreateFailed": "作 gist 未成：${error}",
 			"detailTitle": "言",
 			"back": "返"
 		},
@@ -5030,6 +5049,18 @@
 			"follow": "訂閱",
 			"unfollow": "否訂閱",
 			"empty": "該話題暫無言"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "自帖"
+			},
+			"creating": "方作 gist…",
+			"fromPost": "自帖",
+			"author": "作者",
+			"exportedAt": "匯出之時",
+			"jumpToSource": "往其源",
+			"sendToSocial": "錄入帖",
+			"copied": "已錄入剪貼板"
 		}
 	},
 	"cabinet": {
@@ -6451,6 +6482,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "方作 gist…",
+			"fromSession": "自編程會話",
+			"sessionId": "會話",
+			"exportedAt": "匯出之時",
+			"sendToWorkspace": "送入工作區",
+			"copied": "已錄入剪貼板",
+			"sent": "已送入工作區",
+			"code": {
+				"title": "自編程會話"
+			}
+		}
+	},
+	"gist": {
+		"title": "gist 文庫",
+		"description": "可存、覽、改、傳 Markdown 之文，其防隨 gist 而異。",
+		"error": {
+			"generic": "有誤：${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "gist 文庫"
+			}
+		},
+		"list": {
+			"new": "新作 gist",
+			"empty": "尚無 gist，可點右上「新作 gist」以建其首。",
+			"updatedAt": "更新於"
+		},
+		"source": {
+			"manual": "手建",
+			"chat": "自清談",
+			"social": "自帖",
+			"code": "自編程會話",
+			"md-drop": "拖入之 Markdown"
+		},
+		"security": {
+			"secure": "有防",
+			"trusted": "無防"
+		},
+		"view": {
+			"back": "還",
+			"edit": "改",
+			"download": "取",
+			"share": "傳",
+			"delete": "刪",
+			"empty": "此 gist 無文",
+			"dropRerender": "已以拖入之 Markdown 重繪",
+			"downgradeConfirm": "改「無防」則 HTML 稿本得行於預覽，恐有 XSS 之患。仍改乎？",
+			"shareCopied": "分享之鏈已錄於剪貼板",
+			"deleteConfirm": "刪此 gist？事不可復。",
+			"notFound": "未見此 gist，或已刪。"
+		},
+		"edit": {
+			"save": "存",
+			"cancel": "還",
+			"title": "標題",
+			"editor": {
+				"placeholder": "書 Markdown 於此…",
+				"aria-label": "Markdown 編輯之器"
+			},
+			"previewToggle": "覽",
+			"editMode": "改",
+			"pasteDangerPrompt": "剪貼板中或含危險之屬（稿本 / 事件屬性 / 危鏈）。${trust}：無防而原樣貼之；${secure}：先改有防，而後貼之。",
+			"pasteTrust": "信而貼之",
+			"pasteSecure": "不信，改有防"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "有防",
+				"aria-label": "安全之級：有防"
+			},
+			"trusted": {
+				"title": "無防",
+				"aria-label": "安全之級：無防"
 			}
 		}
 	}
