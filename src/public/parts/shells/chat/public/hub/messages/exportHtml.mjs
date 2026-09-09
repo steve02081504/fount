@@ -6,7 +6,7 @@ import {
 	downloadHtmlDocument,
 	materializeStandaloneAttachments,
 	renderMarkdownAsStandaloneDocument,
-} from '../../../../../scripts/features/markdown/standaloneDocument.mjs'
+} from '/parts/shells:gist/src/standaloneDocument.mjs'
 import { arrayBufferToBase64 } from '../../../../../scripts/lib/base64.mjs'
 import { fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 import { groupEntityHash } from '../../shared/groupEntityHash.mjs'

@@ -4,7 +4,8 @@
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
-import { downloadHtmlDocument, renderMarkdownAsStandaloneDocument } from '/scripts/features/markdown/standaloneDocument.mjs'
+import { renderMarkdownAsStandaloneDocument } from '/parts/shells:gist/src/standaloneDocument.mjs'
+import { createGist } from '/parts/shells:gist/src/endpoints.mjs'
 
 import { markSessionDirty, regenerateLastReply } from './session.mjs'
 import { elements, store, SCROLL_TOLERANCE } from './store.mjs'
@@ -61,13 +62,25 @@ function renderMessageActions(entry, bubble) {
 }
 
 /**
- * 将消息另存为独立 HTML 文件（离线可读，含主题样式）。
+ * 将消息另存为 gist 并跳转查看页（gist 查看页负责下载 HTML / 分享）。
  * @param {object} entry - 会话条目。
  * @returns {Promise<void>}
  */
 async function saveEntryAsHtml(entry) {
-	const html = await renderMarkdownAsStandaloneDocument(messageMarkdown(entry.content))
-	downloadHtmlDocument(html, `fount-code-message-${entry.id}.html`)
+	showToastI18n('info', 'code.gist_source_plugins.creating')
+	const markdown = messageMarkdown(entry.content)
+	const title = markdown.split(/\r?\n/).find(line => line.trim())?.slice(0, 60) || 'code message'
+	const gist = await createGist({
+		markdown,
+		title,
+		securityLevel: 'trusted',
+		source: {
+			type: 'code',
+			ref: { sessionId: store.session?.id, entryId: entry.id, role: entry.role },
+			exportedAt: Date.now(),
+		},
+	})
+	location.href = '/parts/shells:gist/view?id=' + encodeURIComponent(gist.id)
 }
 
 /**

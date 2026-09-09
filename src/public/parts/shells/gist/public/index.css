@@ -1,0 +1,162 @@
+/* gist shell：文档库列表 / 查看 / 编辑页共享样式。颜色一律引用 daisyUI 语义变量（--color-*）或原子类，随 data-theme 自适应。 */
+
+/* ---------------- 顶栏 ---------------- */
+
+.gist-topbar {
+	z-index: 10;
+}
+
+.gist-page-title {
+	margin: 0;
+}
+
+.gist-view-title {
+	color: var(--color-base-content);
+}
+
+/* ---------------- 列表 ---------------- */
+
+.gist-main {
+	padding: 1rem;
+}
+
+.gist-card {
+	width: 100%;
+	max-width: 46rem;
+	margin-inline: auto;
+	margin-bottom: 0.75rem;
+	padding: 0.875rem 1rem;
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 12%, transparent);
+	border-radius: var(--radius-box);
+	background: color-mix(in oklch, var(--color-base-200) 55%, transparent);
+	transition: background-color 0.12s, border-color 0.12s;
+}
+
+.gist-card:hover {
+	background: color-mix(in oklch, var(--color-base-300) 65%, transparent);
+	border-color: color-mix(in oklch, var(--color-primary) 55%, transparent);
+}
+
+.gist-card-title {
+	font-weight: 600;
+	font-size: 0.9375rem;
+	overflow-wrap: anywhere;
+}
+
+.gist-card-time {
+	font-size: 0.75rem;
+	opacity: 0.6;
+}
+
+.gist-empty-state {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 3rem 1rem;
+	color: var(--color-base-content);
+	opacity: 0.55;
+	font-size: 0.9375rem;
+	text-align: center;
+}
+
+/* ---------------- 徽标 ---------------- */
+
+.gist-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 1.5rem;
+	padding: 0 0.5rem;
+	border-radius: var(--radius-field);
+	font-size: 0.75rem;
+	line-height: 1;
+	white-space: nowrap;
+	user-select: none;
+}
+
+.gist-badge-source {
+	background: color-mix(in oklch, var(--color-base-content) 12%, transparent);
+	color: var(--color-base-content);
+}
+
+.gist-badge-secure {
+	background: color-mix(in oklch, var(--color-success) 18%, transparent);
+	color: var(--color-success);
+}
+
+.gist-badge-trusted {
+	background: color-mix(in oklch, var(--color-warning) 18%, transparent);
+	color: var(--color-warning);
+}
+
+#security-toggle.gist-badge {
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 20%, transparent);
+	cursor: pointer;
+}
+
+/* ---------------- 查看正文 ---------------- */
+
+.gist-view-body,
+.gist-preview {
+	max-width: 46rem;
+	margin-inline: auto;
+	padding: 1rem 0.5rem 2rem;
+	overflow-wrap: anywhere;
+}
+
+/* 正文渲染容器不接管拖放（body 级监听按 data-gist-drop-zone 判断落点） */
+[data-gist-drop-zone] {
+	pointer-events: auto;
+}
+
+.gist-not-found {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 4rem 1rem;
+	color: var(--color-base-content);
+	opacity: 0.7;
+}
+
+.gist-not-found[hidden] {
+	display: none;
+}
+
+/* ---------------- 编辑页 ---------------- */
+
+.gist-field-label {
+	margin-inline-start: 0.25rem;
+}
+
+.gist-editor-wrap {
+	display: flex;
+	flex-direction: column;
+	border: var(--border) solid color-mix(in oklch, var(--color-base-content) 18%, transparent);
+	border-radius: var(--radius-box);
+	background: color-mix(in oklch, var(--color-base-200) 45%, transparent);
+}
+
+.gist-editor-wrap[hidden],
+.gist-preview[hidden] {
+	display: none;
+}
+
+.gist-editor {
+	flex: 1;
+	min-height: 18rem;
+	max-height: 60vh;
+	overflow-y: auto;
+	padding: 0.75rem 1rem;
+	font-size: 0.9375rem;
+	line-height: 1.6;
+}
+
+.gist-security-pill {
+	background: transparent;
+}
+
+.gist-security-pill:has(input:checked) {
+	color: var(--color-primary);
+	font-weight: 600;
+}

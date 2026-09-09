@@ -1,0 +1,10 @@
+{
+	"gist_source_plugins": [
+		{
+			"id": "chat",
+			"level": 0,
+			"path": "/parts/shells:chat/gist_plugins/chat_source.mjs",
+			"info": "chat.gist_source_plugins.chat"
+		}
+	]
+}

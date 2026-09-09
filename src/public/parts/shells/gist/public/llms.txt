@@ -1,0 +1,16 @@
+# gist shell
+
+集中式 Markdown 文档存储与预览站：以 gist 为单位保存笔记、片段与文档。
+
+- gist 数据存于用户目录 `shells/gist/gists/<id>.json`，每用户独立。
+- gist 字段：`id`（8 位随机 id）、`title`（未提供时取自 markdown 首个非空行，截断到 60 字符）、`markdown`、`securityLevel`（`secure` | `trusted`，默认 `trusted`）、`source`（来源元数据 `{ type, ref, exportedAt }` 或 null）、`createdAt`、`updatedAt`（毫秒时间戳）。
+- 列表接口不含 `markdown` 字段，按 `createdAt` 降序。
+
+## HTTP API（均需登录；base = `/api/parts/shells:gist`）
+
+- `GET /gists` → `[{ id, title, securityLevel, source, createdAt, updatedAt }]`（全部 gist 摘要，降序）
+- `POST /gists` body `{ markdown, title?, securityLevel?, source? }` → 201 `{ gist }`；`markdown` 缺失 400
+- `GET /gists/:id` → 200 `{ gist }`；不存在 404
+- `PUT /gists/:id` body `{ markdown?, title?, securityLevel? }` → 200 `{ gist }`；不存在 404；`securityLevel` 非法 400
+- `DELETE /gists/:id` → 200 `{ ok: true }`；不存在 404
+- `GET /source-plugins` → 200 `{ plugins: [{ partpath, id, level, ...条目字段 }] }`（聚合 `gist_source_plugins` 注册表，尚未有注册时为空数组）

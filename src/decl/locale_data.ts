@@ -6416,6 +6416,61 @@ export type LocaleData = {
 			}
 		}
 	}
+	gist: {
+		title: string
+		description: string
+		error: {
+			generic: string
+		}
+		home_function_buttons: {
+			main: {
+				title: string
+			}
+		}
+		list: {
+			new: string
+			empty: string
+			updatedAt: string
+		}
+		source: {
+			manual: string
+			chat: string
+			social: string
+			code: string
+			'md-drop': string
+		}
+		security: {
+			secure: string
+			trusted: string
+		}
+		view: {
+			back: string
+			edit: string
+			download: string
+			share: string
+			delete: string
+			empty: string
+			dropRerender: string
+			downgradeConfirm: string
+			shareCopied: string
+			deleteConfirm: string
+			notFound: string
+		}
+		edit: {
+			save: string
+			cancel: string
+			title: string
+			editor: {
+				placeholder: string
+				'aria-label': string
+			}
+			previewToggle: string
+			editMode: string
+			pasteDangerPrompt: string
+			pasteTrust: string
+			pasteSecure: string
+		}
+	}
 }
 /**
  * i18n switch 叶子（singular / plural 等），由 geti18n 按 params[switch] 解析。
@@ -6908,6 +6963,8 @@ export type LocaleKeyParams = {
 	'fountConsole.verification.codeNotifyBody': { code: string | number }
 	'fountConsole.web.frontendFilesChanged': { path: string | number }
 	'fountConsole.web.requestReceived': { method: string | number; url: string | number }
+	'gist.edit.pasteDangerPrompt': { secure: string | number; trust: string | number }
+	'gist.error.generic': { error: string | number }
 	'home.dragAndDrop.dropError': { error: string | number }
 	'home.emptyList.message': { newpartLink: string | number; telegramLink: string | number }
 	'ide_integration.apiKey.createError': { message: string | number }

@@ -1,0 +1,10 @@
+{
+	"gist_source_plugins": [
+		{
+			"id": "code",
+			"level": 0,
+			"path": "/parts/shells:code/gist_plugins/code_source.mjs",
+			"info": "code.gist_source_plugins.code"
+		}
+	]
+}

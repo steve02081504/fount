@@ -1,0 +1,10 @@
+{
+	"gist_source_plugins": [
+		{
+			"id": "social",
+			"level": 0,
+			"path": "/parts/shells:social/gist_plugins/social_source.mjs",
+			"info": "social.gist_source_plugins.social"
+		}
+	]
+}

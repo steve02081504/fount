@@ -2,8 +2,8 @@
  * 【文件】public/hub/stream/volatileSlots.mjs
  * 【职责】VOLATILE stream_chunk 预览槽：建槽、重排 flush、DOM 绑定、补拉缓冲；停止生成按钮可见性。
  */
+import { applySlices } from '../../shared/streamSlices.mjs'
 import { streamDisplayText } from '../../src/streamDisplay.mjs'
-import { applySlices } from '../../src/streamSlices.mjs'
 import { isTrustedMarkdownAuthor } from '../../src/trustedAuthors.mjs'
 import { StreamRenderer } from '../../src/ui/StreamRenderer.mjs'
 import { resolveEntityHashForAuthorKey } from '../core/domUtils.mjs'

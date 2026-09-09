@@ -1175,6 +1175,11 @@
 			"generateXFountPart": {
 				"description": "生成 fount 组件信息"
 			}
+		},
+		"home_drag_in_handlers": {
+			"handleMarkdownDrop": {
+				"description": "创建或预览拖入的 Markdown 文档"
+			}
 		}
 	},
 	"chat": {
@@ -3603,6 +3608,19 @@
 					"searchingContent": "正在搜索${content}"
 				}
 			}
+		},
+		"gist_source_plugins": {
+			"chat": {
+				"title": "来自聊天"
+			},
+			"creating": "正在创建 gist…",
+			"fromGroup": "来自群",
+			"fromChannel": "来自频道",
+			"author": "作者",
+			"exportedAt": "导出时间",
+			"jumpToSource": "跳转到来源",
+			"sendToChat": "复制到聊天",
+			"copied": "已复制到剪贴板"
 		}
 	},
 	"easynew": {
@@ -4931,6 +4949,7 @@
 			"notFound": "帖子不存在或不可见",
 			"loadFailed": "加载失败，请稍后重试",
 			"exportMediaFailed": "导出媒体失败：${error}",
+			"gistCreateFailed": "创建 gist 失败：${error}",
 			"detailTitle": "帖子",
 			"back": "返回"
 		},
@@ -5030,6 +5049,18 @@
 			"follow": "订阅",
 			"unfollow": "取消订阅",
 			"empty": "该话题暂无帖子"
+		},
+		"gist_source_plugins": {
+			"social": {
+				"title": "来自动态"
+			},
+			"creating": "正在创建 gist…",
+			"fromPost": "来自动态",
+			"author": "作者",
+			"exportedAt": "导出时间",
+			"jumpToSource": "跳转到来源",
+			"sendToSocial": "复制到动态",
+			"copied": "已复制到剪贴板"
 		}
 	},
 	"cabinet": {
@@ -6451,6 +6482,83 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			}
+		},
+		"gist_source_plugins": {
+			"creating": "正在创建 gist…",
+			"fromSession": "来自编码会话",
+			"sessionId": "会话",
+			"exportedAt": "导出时间",
+			"sendToWorkspace": "发送到工作区",
+			"copied": "已复制到剪贴板",
+			"sent": "已发送到工作区",
+			"code": {
+				"title": "来自编码会话"
+			}
+		}
+	},
+	"gist": {
+		"title": "Gist 文档库",
+		"description": "保存、查看、编辑与分享 Markdown 文档，按 gist 设置安全等级。",
+		"error": {
+			"generic": "出错了：${error}"
+		},
+		"home_function_buttons": {
+			"main": {
+				"title": "Gist 文档库"
+			}
+		},
+		"list": {
+			"new": "新建 gist",
+			"empty": "还没有 gist，点击右上角「新建 gist」创建第一个。",
+			"updatedAt": "更新于"
+		},
+		"source": {
+			"manual": "手动创建",
+			"chat": "来自聊天",
+			"social": "来自动态",
+			"code": "来自编码会话",
+			"md-drop": "拖入 Markdown"
+		},
+		"security": {
+			"secure": "已防护",
+			"trusted": "无防护"
+		},
+		"view": {
+			"back": "返回",
+			"edit": "编辑",
+			"download": "下载",
+			"share": "分享",
+			"delete": "删除",
+			"empty": "此 gist 内容为空",
+			"dropRerender": "已用拖入的 Markdown 重新渲染",
+			"downgradeConfirm": "切换到「无防护」将允许 HTML 脚本在预览中执行，存在 XSS 风险。确认切换？",
+			"shareCopied": "分享链接已复制到剪贴板",
+			"deleteConfirm": "确定删除此 gist？此操作不可撤销。",
+			"notFound": "未找到该 gist，它可能已被删除。"
+		},
+		"edit": {
+			"save": "保存",
+			"cancel": "返回",
+			"title": "标题",
+			"editor": {
+				"placeholder": "输入 Markdown 内容…",
+				"aria-label": "Markdown 编辑器"
+			},
+			"previewToggle": "预览",
+			"editMode": "编辑",
+			"pasteDangerPrompt": "检测到剪贴板包含可能危险的内容（脚本 / 事件属性 / 危险链接）。${trust}：保持无防护并原样粘贴；${secure}：切换为已防护后再粘贴。",
+			"pasteTrust": "信任并粘贴",
+			"pasteSecure": "不信任，改为有防护"
+		},
+		"securityToggle": {
+			"secure": {
+				"title": "已防护",
+				"aria-label": "安全等级：已防护"
+			},
+			"trusted": {
+				"title": "无防护",
+				"aria-label": "安全等级：无防护"
 			}
 		}
 	}

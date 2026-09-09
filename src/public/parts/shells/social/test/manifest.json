@@ -65,6 +65,7 @@
 		],
 		"frontendShared": [
 			"src/public/parts/shells/social/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
+			"src/public/parts/shells/gist/public/src/standaloneDocument.mjs",
 			"src/public/parts/shells/social/test/node_bootstrap.mjs",
 			"src/public/parts/shells/social/public/index.html",
 			"src/public/parts/shells/social/public/styles.css",

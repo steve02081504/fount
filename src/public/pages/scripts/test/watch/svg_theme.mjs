@@ -9,8 +9,10 @@ import { createReporter } from './reporter.mjs'
 
 const reporter = createReporter('[test:svg]')
 
-/** 判为"相近"的感知色距（OKLab ΔE）上限：低于该值即前景与背景几乎同色。 */
-export const MIN_COLOR_DISTANCE = 0.05
+/** 判为"相近"的感知色距（OKLab ΔE）上限：低于该值即前景与背景几乎同色。
+ *  0.05 曾放过 fg/bg 同处深色端的情况（如 light 主题 base-content 与 neutral 的 ΔE≈0.07，
+ *  两个近黑灰在图标尺度上仍不可辨），故取 0.10。 */
+export const MIN_COLOR_DISTANCE = 0.10
 
 /** 依次校验的主题。 */
 const THEMES = ['light', 'dark']

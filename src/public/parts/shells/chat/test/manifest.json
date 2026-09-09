@@ -22,8 +22,7 @@
 			"src/server/p2p_server/**",
 			"src/server/{registries.mjs,parts_loader.mjs}",
 			"src/public/pages/scripts/endpoints/registries.mjs",
-			"src/public/pages/scripts/features/markdown/**",
-			"src/public/pages/scripts/lib/{sanitizeHtml,memo}.mjs",
+			"src/public/pages/scripts/lib/memo.mjs",
 			"src/public/parts/shells/chat/public/src/trustedAuthors.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs"
 		],
@@ -165,6 +164,7 @@
 		],
 		"frontendShared": [
 			"src/public/parts/shells/chat/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
+			"src/public/parts/shells/gist/public/src/standaloneDocument.mjs",
 			"src/public/parts/shells/chat/public/index.html",
 			"src/public/parts/shells/chat/public/hub/index.css",
 			"src/scripts/test/playwright/api.mjs",
@@ -1016,6 +1016,57 @@
 						"src/public/parts/shells/chat/public/shared/expandMentions.mjs",
 						"src/public/pages/scripts/features/markdown/**",
 						"src/public/pages/scripts/lib/svgInliner.mjs"
+					]
+				},
+				{
+					"name": "markdownSecureRender",
+					"expected": "2m12s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/markdownSecureRender.spec.mjs",
+						"src/public/pages/scripts/features/markdown/**"
+					]
+				},
+				{
+					"name": "sanitizeHtml",
+					"expected": "40s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/sanitizeHtml.spec.mjs",
+						"src/public/pages/scripts/lib/sanitizeHtml.mjs"
+					]
+				},
+				{
+					"name": "toolStreamRender",
+					"expected": "1m30s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/toolStreamRender.spec.mjs",
+						"src/public/pages/scripts/features/markdown/**",
+						"src/public/parts/shells/chat/public/src/ui/StreamRenderer.mjs",
+						"src/public/parts/plugins/file-operations/{main.mjs,src/context_files.mjs}"
+					]
+				},
+				{
+					"name": "reasoningRender",
+					"expected": "40s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/reasoningRender.spec.mjs",
+						"src/public/parts/serviceGenerators/AI/proxy/src/reasoningRenderer.mjs"
+					]
+				},
+				{
+					"name": "embedCard",
+					"expected": "40s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/embedCard.spec.mjs",
+						"src/public/pages/scripts/features/embedCard.{mjs,css}"
+					]
+				},
+				{
+					"name": "markdownExtensions",
+					"expected": "40s",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/markdownExtensions.spec.mjs",
+						"src/public/parts/shells/chat/public/markdown_extensions/**",
+						"src/public/pages/scripts/features/emoji/packIndex.mjs"
 					]
 				}
 			],

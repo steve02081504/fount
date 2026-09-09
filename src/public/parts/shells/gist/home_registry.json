@@ -1,0 +1,10 @@
+{
+	"home_function_buttons": [
+		{
+			"info": "gist.home_function_buttons.main",
+			"level": 1,
+			"url": "/parts/shells:gist/",
+			"button": "<img src=\"https://api.iconify.design/mdi/notebook-edit-outline.svg\" class=\"text-icon\"/>"
+		}
+	]
+}
