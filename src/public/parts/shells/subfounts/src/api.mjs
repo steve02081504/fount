@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import EventEmitter from 'node:events'
+import { hostname } from 'node:os'
+import process from 'node:process'
 // 远程执行直接传递原始值，不走 V8 serialize/deserialize。
 
 EventEmitter.defaultMaxListeners = Math.max(EventEmitter.defaultMaxListeners, 30)
@@ -301,7 +303,12 @@ class UserSubfountManager {
 			connectedAt: new Date(),
 			disconnectedAt: null,
 			isConnected: true,
-			deviceInfo: null,
+			// 本机不在分机上报体系内（device_info 无本机发送方），主机侧自行构建基础设备信息
+			deviceInfo: {
+				hostname: hostname(),
+				os: { platform: process.platform },
+				timestamp: new Date().toISOString(),
+			},
 			description: hostDescription,
 			executor: new LocalSubfountExecutor(this.username),
 		})

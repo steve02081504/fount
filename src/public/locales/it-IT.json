@@ -2127,7 +2127,10 @@
 				"aria-label": "Rimuovi segnalibro"
 			},
 			"unreadDivider": "nuovi messaggi",
-			"backToFriends": "Ritorno agli amici",
+			"backToFriends": {
+				"aria-label": "Ritorno agli amici",
+				"text": "Ritorno agli amici"
+			},
 			"dmTopicsTitle": "Argomento",
 			"participants": "Partecipanti",
 			"startChatWith": "💬 Inizia a chattare con ${name}",
@@ -3600,6 +3603,7 @@
 				"tool": {
 					"overridingFilepath": "Sovrascrittura di ${filepath}",
 					"readingFilepath": "Lettura di ${filepath}",
+					"readingFiles": "Lettura di ${count} file",
 					"replacingFilepath": "Sostituzione in ${filepath}",
 					"runningLang": "Esecuzione di ${lang}",
 					"searchingContent": "Ricerca di ${content}"
@@ -6035,6 +6039,21 @@
 		"parentLink": "↑ Livello precedente ../"
 	},
 	"util": {
+		"folderBrowser": {
+			"title": "Sfoglia",
+			"path": {
+				"aria-label": "Percorso dell'area di lavoro",
+				"placeholder": "Filtro / percorso della cartella",
+				"textContent": "Percorso dell'area di lavoro"
+			},
+			"go": "Vai",
+			"select": "Seleziona area di lavoro",
+			"quickAccess": "Accesso rapido",
+			"roots": "Unità / radici",
+			"noMatch": "Nessun risultato",
+			"loading": "Caricamento…",
+			"error": "Errore di navigazione"
+		},
 		"toast": {
 			"container": {
 				"aria-label": "Notifiche"
@@ -6323,6 +6342,122 @@
 			"success": "Accesso riuscito. Puoi chiudere questa pagina.",
 			"failed": "Accesso non riuscito: ${message}",
 			"missingParams": "Al callback manca code o state."
+		}
+	},
+	"code": {
+		"title": "Code",
+		"description": "Sessioni di codifica AI per aree di lavoro e macchine.",
+		"sessions": {
+			"new": "Nuova sessione",
+			"untitled": "Sessione senza titolo",
+			"yesterday": "ieri"
+		},
+		"workspaces": {
+			"browse": "Sfoglia…",
+			"remove": "Rimuovi l'area di lavoro corrente",
+			"none": "Nessuna area di lavoro selezionata",
+			"overviewEmpty": "Ancora nessuna conversazione"
+		},
+		"home": {
+			"aria-label": "Aree di lavoro e sessioni"
+		},
+		"tabs": {
+			"aria-label": "Schede della sessione",
+			"close": "Chiudi scheda"
+		},
+		"newTab": {
+			"aria-label": "Nuova sessione"
+		},
+		"machine": {
+			"local": "Locale",
+			"offline": "offline"
+		},
+		"char": {
+			"switch": "Cambia personaggio",
+			"settings": "Impostazioni del personaggio",
+			"goodAgent": "Come scrivere un buon agente?",
+			"none": "Nessun personaggio selezionato",
+			"recommend": {
+				"main": "Il personaggio consigliato ${charname} non è installato. Installarlo?",
+				"aria": "Consiglio di installazione del personaggio",
+				"dismiss": "Chiudi",
+				"install": "Installa",
+				"installed": "Personaggio ${charname} installato"
+			}
+		},
+		"composer": {
+			"shellDefault": "Predefinito",
+			"sendButton": {
+				"aria-label": "Invia messaggio"
+			},
+			"sendAria": "Invia messaggio",
+			"stopAria": "Interrompi generazione",
+			"modeSwitched": "Passato alla modalità ${mode}",
+			"hint": "Digita ! a campo vuoto per la modalità shell · @ per citare file · / per i comandi · ↑↓ cronologia · Tab per il completamento",
+			"placeholder": "Digita un comando; Ctrl/Cmd+Invio lo esegue (svuota per uscire dalla modalità shell)",
+			"placeholderNormal": "Scrivi un messaggio… (@ per citare file, / per i comandi)",
+			"placeholderShell": "Digita un comando shell… (es. git status)",
+			"aria-label": "Inserimento messaggio"
+		},
+		"aiSource": {
+			"panelTitle": "Gestisci la visualizzazione delle fonti AI",
+			"charOwn": "Predefinito del personaggio",
+			"manage": "Gestisci fonti AI…"
+		},
+		"commands": {
+			"run": "Esegui"
+		},
+		"messages": {
+			"backToBottom": "Torna all'ultimo messaggio"
+		},
+		"message": {
+			"actions": {
+				"copy": "Copia",
+				"edit": "Modifica",
+				"saveHtml": "Salva come HTML"
+			},
+			"copied": "Copiato negli appunti",
+			"edit": {
+				"save": "Salva",
+				"cancel": "Annulla",
+				"ariaLabel": {
+					"aria-label": "Modifica il testo del messaggio"
+				}
+			},
+			"feedback": {
+				"up": "Mi piace",
+				"down": "Non mi piace",
+				"reasonPlaceholder": {
+					"placeholder": "Motivo (facoltativo)"
+				},
+				"reasonSave": "Invia",
+				"reasonAria": {
+					"aria-label": "Motivo del non mi piace"
+				}
+			},
+			"regen": "Rigenera"
+		},
+		"attach": {
+			"add": {
+				"aria-label": "Aggiungi allegato",
+				"title": "Aggiungi allegato"
+			},
+			"remove": {
+				"aria-label": "Rimuovi allegato"
+			},
+			"drop": "Rilascia per allegare",
+			"tooLarge": "L'allegato ${name} supera il limite di 10 MB"
+		},
+		"error": {
+			"generic": "Qualcosa è andato storto: ${error}",
+			"generate": "Generazione della risposta non riuscita",
+			"aborted": "Generazione interrotta",
+			"noChar": "Seleziona prima un personaggio"
+		},
+		"home_function_buttons": {
+			"code": {
+				"title": "Code"
+			}
 		}
 	}
 }
