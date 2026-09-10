@@ -6509,6 +6509,9 @@
 			"aborted": "Генерация прервана",
 			"noChar": "Сначала выберите персонажа"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"

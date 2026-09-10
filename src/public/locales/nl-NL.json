@@ -6507,6 +6507,9 @@
 			"aborted": "Genereren afgebroken",
 			"noChar": "Selecteer eerst een personage"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"

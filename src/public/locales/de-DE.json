@@ -6501,6 +6501,9 @@
 			"aborted": "Generierung abgebrochen",
 			"noChar": "Wählen Sie zuerst einen Charakter"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"

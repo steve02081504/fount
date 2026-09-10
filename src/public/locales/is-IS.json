@@ -6501,6 +6501,9 @@
 			"aborted": "Myndun hætt",
 			"noChar": "Veldu fyrst persónu"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"

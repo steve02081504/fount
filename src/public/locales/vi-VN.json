@@ -6501,6 +6501,9 @@
 			"aborted": "Đã hủy việc tạo",
 			"noChar": "Vui lòng chọn nhân vật trước"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"

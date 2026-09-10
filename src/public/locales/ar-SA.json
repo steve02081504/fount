@@ -6511,6 +6511,9 @@
 			"aborted": "تم إيقاف التوليد",
 			"noChar": "يرجى تحديد شخصية أولًا"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"

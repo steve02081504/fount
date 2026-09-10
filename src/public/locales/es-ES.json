@@ -6507,6 +6507,9 @@
 			"aborted": "Generación cancelada",
 			"noChar": "Selecciona primero un personaje"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"

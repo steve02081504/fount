@@ -6501,6 +6501,9 @@
 			"aborted": "생성이 중단되었습니다",
 			"noChar": "먼저 캐릭터를 선택하세요"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
