@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "Chat"
+			},
+			"frequent": {
+				"title": "Favorites"
+			},
+			"network": {
+				"title": "Interconnect"
 			}
 		},
 		"profile": {
@@ -4121,7 +4127,10 @@
 		},
 		"home_function_buttons": {
 			"manage": {
-				"title": "Manage service source"
+				"title": "Configure service sources"
+			},
+			"frequent": {
+				"title": "Favorites"
 			}
 		}
 	},
@@ -4392,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Square"
+			},
+			"frequent": {
+				"title": "Favorites"
+			},
+			"network": {
+				"title": "Interconnect"
 			}
 		},
 		"nav": {
@@ -5079,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Cabinet"
+			},
+			"asset": {
+				"title": "Assets"
 			}
 		},
 		"upload": "Upload",
@@ -5257,6 +5275,14 @@
 		"home_function_buttons": {
 			"integration_related": {
 				"title": "Integrations",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "Terminal Assist"
+					}
+				}
+			},
+			"dev": {
+				"title": "Development",
 				"sub_items": {
 					"terminalAssist": {
 						"title": "Terminal Assist"
@@ -5784,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Access on other devices"
+			},
+			"frequent": {
+				"title": "Favorites"
+			},
+			"network": {
+				"title": "Interconnect"
 			}
 		}
 	},
@@ -5904,16 +5936,11 @@
 			"generalError": "An error occurred: ${message}"
 		},
 		"home_function_buttons": {
-			"in_dev": {
-				"title": "under development",
+			"network": {
+				"title": "Interconnect",
 				"sub_items": {
-					"subfounts_related": {
-						"title": "subdevice",
-						"sub_items": {
-							"main": {
-								"title": "Manage sub-devices"
-							}
-						}
+					"subfounts": {
+						"title": "Sub-devices"
 					}
 				}
 			}
@@ -6482,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "Development"
 			}
 		},
 		"gist_source_plugins": {
@@ -6506,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Gist Library"
+			},
+			"asset": {
+				"title": "Assets"
 			}
 		},
 		"list": {

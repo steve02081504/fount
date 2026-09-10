@@ -4122,6 +4122,9 @@
 		"home_function_buttons": {
 			"manage": {
 				"title": "サービスソースの管理"
+			},
+			"frequent": {
+				"title": "よく使う"
 			}
 		}
 	},
@@ -4392,6 +4395,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "広場"
+			},
+			"frequent": {
+				"title": "よく使う"
+			},
+			"network": {
+				"title": "接続"
 			}
 		},
 		"nav": {
@@ -5079,6 +5088,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "ファイルキャビネット"
+			},
+			"asset": {
+				"title": "アセット"
 			}
 		},
 		"upload": "アップロード",
@@ -5257,6 +5269,14 @@
 		"home_function_buttons": {
 			"integration_related": {
 				"title": "統合",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "ターミナルアシスト"
+					}
+				}
+			},
+			"dev": {
+				"title": "開発",
 				"sub_items": {
 					"terminalAssist": {
 						"title": "ターミナルアシスト"
@@ -5784,6 +5804,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "他のデバイスへのアクセス"
+			},
+			"frequent": {
+				"title": "よく使う"
+			},
+			"network": {
+				"title": "接続"
 			}
 		}
 	},
@@ -5914,6 +5940,14 @@
 								"title": "サブデバイスの管理"
 							}
 						}
+					}
+				}
+			},
+			"network": {
+				"title": "接続",
+				"sub_items": {
+					"subfounts": {
+						"title": "サブデバイス"
 					}
 				}
 			}
@@ -6482,6 +6516,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "開発"
 			}
 		},
 		"gist_source_plugins": {
@@ -6506,6 +6543,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Gist メモ帳"
+			},
+			"asset": {
+				"title": "アセット"
 			}
 		},
 		"list": {

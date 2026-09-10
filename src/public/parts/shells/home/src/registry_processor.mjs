@@ -30,6 +30,7 @@ function mergeButtons(buttonList) {
 				action: nextButton.action ?? baseButton.action,
 				url: nextButton.url ?? baseButton.url,
 				info: baseButton.info ?? nextButton.info,
+				open: nextButton.open ?? baseButton.open,
 			})
 			if (nextButton.sub_items)
 				allSubItems = allSubItems.concat(nextButton.sub_items)

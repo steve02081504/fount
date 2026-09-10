@@ -3216,6 +3216,12 @@
 		"home_function_buttons": {
 			"chatHub": {
 				"title": "聊天"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		},
 		"profile": {
@@ -4121,7 +4127,10 @@
 		},
 		"home_function_buttons": {
 			"manage": {
-				"title": "管理服务源"
+				"title": "配置服务源"
+			},
+			"frequent": {
+				"title": "常用"
 			}
 		}
 	},
@@ -4392,6 +4401,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "广场"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		},
 		"nav": {
@@ -5079,6 +5094,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "文件柜"
+			},
+			"asset": {
+				"title": "资产"
 			}
 		},
 		"upload": "上传",
@@ -5257,6 +5275,14 @@
 		"home_function_buttons": {
 			"integration_related": {
 				"title": "集成",
+				"sub_items": {
+					"terminalAssist": {
+						"title": "终端辅助"
+					}
+				}
+			},
+			"dev": {
+				"title": "开发",
 				"sub_items": {
 					"terminalAssist": {
 						"title": "终端辅助"
@@ -5784,6 +5810,12 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "在其他设备访问"
+			},
+			"frequent": {
+				"title": "常用"
+			},
+			"network": {
+				"title": "互联"
 			}
 		}
 	},
@@ -5904,16 +5936,11 @@
 			"generalError": "发生错误: ${message}"
 		},
 		"home_function_buttons": {
-			"in_dev": {
-				"title": "正在开发",
+			"network": {
+				"title": "互联",
 				"sub_items": {
-					"subfounts_related": {
-						"title": "子设备",
-						"sub_items": {
-							"main": {
-								"title": "管理子设备"
-							}
-						}
+					"subfounts": {
+						"title": "子设备"
 					}
 				}
 			}
@@ -6482,6 +6509,9 @@
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
+			},
+			"dev": {
+				"title": "开发"
 			}
 		},
 		"gist_source_plugins": {
@@ -6506,6 +6536,9 @@
 		"home_function_buttons": {
 			"main": {
 				"title": "Gist 文档库"
+			},
+			"asset": {
+				"title": "资产"
 			}
 		},
 		"list": {

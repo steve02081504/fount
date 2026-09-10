@@ -13,6 +13,20 @@
 					"button": "<img src=\"https://api.iconify.design/line-md/laptop.svg\" class=\"text-icon\"/>"
 				}
 			]
+		},
+		{
+			"id": "dev",
+			"info": "terminal_assistant.home_function_buttons.dev",
+			"level": 6,
+			"button": "<img src=\"https://api.iconify.design/mdi/code-braces.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "terminal_assistant.home_function_buttons.dev.sub_items.terminalAssist",
+					"level": 2,
+					"url": "/parts/shells:shellassist/",
+					"button": "<img src=\"https://api.iconify.design/line-md/laptop.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }

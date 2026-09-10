@@ -1,10 +1,19 @@
 {
 	"home_function_buttons": [
 		{
-			"info": "cabinet.home_function_buttons.main",
-			"level": 4,
-			"url": "/parts/shells:cabinet/",
-			"button": "<img src=\"https://api.iconify.design/mdi/file-cabinet.svg\" class=\"text-icon\"/>"
+			"id": "asset",
+			"info": "cabinet.home_function_buttons.asset",
+			"level": 3,
+			"button": "<img src=\"https://api.iconify.design/mdi/package-variant-closed.svg\" class=\"text-icon\"/>",
+			"sub_items": [
+				{
+					"info": "cabinet.home_function_buttons.main",
+					"level": 1,
+					"url": "/parts/shells:cabinet/",
+					"button": "<img src=\"https://api.iconify.design/mdi/file-cabinet.svg\" class=\"text-icon\"/>"
+				}
+			]
 		}
 	]
 }
+
