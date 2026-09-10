@@ -6507,6 +6507,9 @@
 			"aborted": "Génération interrompue",
 			"noChar": "Sélectionnez d'abord un personnage"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"

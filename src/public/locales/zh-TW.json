@@ -6500,6 +6500,9 @@
 			"aborted": "已中止產生",
 			"noChar": "請先選擇角色"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"

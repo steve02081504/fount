@@ -6501,6 +6501,9 @@
 			"aborted": "जनरेशन रोक दिया गया",
 			"noChar": "पहले कोई किरदार चुनें"
 		},
+		"notify": {
+			"done": null
+		},
 		"home_function_buttons": {
 			"code": {
 				"title": "Code"
